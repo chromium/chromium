@@ -213,8 +213,11 @@ TEST_F(CrostiniDiskTest, AllocatedAboveMax) {
   ASSERT_TRUE(disk_info);
 
   ASSERT_TRUE(disk_info->ticks.size() > 3);
-  EXPECT_EQ(disk_info->default_index, disk_info->ticks.size() - 1);
-  EXPECT_EQ(disk_info->ticks.at(disk_info->default_index)->value,
+  ASSERT_GE(disk_info->default_index, 0);
+  ASSERT_EQ(static_cast<size_t>(disk_info->default_index),
+            disk_info->ticks.size() - 1);
+  EXPECT_EQ(static_cast<uint64_t>(
+                disk_info->ticks.at(disk_info->default_index)->value),
             image->size());
 }
 

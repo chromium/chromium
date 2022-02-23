@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/ukm/ukm_service.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -58,7 +59,7 @@ class UkmTestHelper {
   bool HasUnsentLogs();
 
  private:
-  UkmService* const ukm_service_;
+  const raw_ptr<UkmService> ukm_service_;
 };
 
 }  // namespace ukm

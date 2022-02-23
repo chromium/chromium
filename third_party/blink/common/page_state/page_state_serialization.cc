@@ -29,7 +29,7 @@ namespace blink {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 float g_device_scale_factor_for_testing = 0.0;
 #endif
 
@@ -191,6 +191,7 @@ struct SerializeObject {
 // 28: Add initiator origin to FrameState.
 // 29: Add app history key.
 // 30: Add app history state.
+// 31: Add protect url in appHistory bit.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
@@ -198,7 +199,7 @@ const int kMinVersion = 11;
 // NOTE: When changing the version, please add a backwards compatibility test.
 // See PageStateSerializationTest.DumpExpectedPageStateForBackwardsCompat for
 // instructions on how to generate the new test case.
-const int kCurrentVersion = 30;
+const int kCurrentVersion = 31;
 
 // A bunch of convenience functions to write to/read from SerializeObjects.  The
 // de-serializers assume the input data will be in the correct format and fall
@@ -565,7 +566,7 @@ void ReadFrameState(
   if (obj->version < 14)
     ReadString(obj);  // Skip unused referrer string.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (obj->version == 11) {
     // Now-unused values that shipped in this version of Chrome for Android when
     // it was on a private branch.
@@ -793,6 +794,7 @@ void WriteFrameState(const ExplodedFrameState& state,
   frame->app_history_key = state.app_history_key;
   frame->app_history_id = state.app_history_id;
   frame->app_history_state = state.app_history_state;
+  frame->protect_url_in_app_history = state.protect_url_in_app_history;
 
   // Subitems
   const std::vector<ExplodedFrameState>& children = state.children;
@@ -849,6 +851,7 @@ void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
   state->app_history_key = frame->app_history_key;
   state->app_history_id = frame->app_history_id;
   state->app_history_state = frame->app_history_state;
+  state->protect_url_in_app_history = frame->protect_url_in_app_history;
 
   state->children.resize(frame->children.size());
   int i = 0;
@@ -971,6 +974,7 @@ void ExplodedFrameState::assign(const ExplodedFrameState& other) {
   app_history_key = other.app_history_key;
   app_history_id = other.app_history_id;
   app_history_state = other.app_history_state;
+  protect_url_in_app_history = other.protect_url_in_app_history;
   children = other.children;
 }
 
@@ -1016,7 +1020,7 @@ void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,
   *encoded = obj.GetAsString();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool DecodePageStateWithDeviceScaleFactorForTesting(
     const std::string& encoded,
     float device_scale_factor,

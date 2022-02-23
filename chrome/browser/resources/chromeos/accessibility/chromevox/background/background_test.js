@@ -132,6 +132,42 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     `;
   }
 
+  get listBoxDoc() {
+    return `
+      <p>Start</p>
+      <div role="listbox" aria-expanded="false" aria-label="Select an item">
+        <div aria-selected="true" tabindex="0" role="option">
+          <span>Listbox item one</span>
+        </div>
+        <div aria-selected="false" tabindex="-1" role="option">
+          <span>Listbox item two</span>
+        </div>
+        <div aria-selected="false" role="option">
+          <span>Listbox item three</span>
+        </div>
+      </div>
+      <button>Click</button>
+    `;
+  }
+
+  get nestedListDoc() {
+    return `
+      <div>
+        <ul>
+          <li>Lemons</li>
+          <li>Oranges</li>
+          <li>Berries
+            <ul>
+              <li>Strawberries</li>
+              <li>Raspberries</li>
+            </ul>
+          </li>
+          <li>Bananas</li>
+        </ul>
+      </div>
+    `;
+  }
+
   /**
    * Fires an onCustomSpokenFeedbackToggled event with enabled state of
    * |enabled|.
@@ -331,14 +367,11 @@ TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenu', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree('<p>before</p><a href="a">a</a>', function(rootNode) {
     const go = rootNode.find({role: RoleType.LINK});
-    // Menus no longer nest a message loop, so we can launch menu and confirm
-    // expected speech. The menu will not block test shutdown.
     mockFeedback.call(go.focus.bind(go))
         .expectSpeech('a', 'Link')
         .call(doCmd('contextMenu'))
         .expectSpeech(/menu opened/)
         .call(press(KeyCode.ESCAPE))
-        .expectSpeech(/menu closed/)
         .expectSpeech('a', 'Link');
     mockFeedback.replay();
   }.bind(this));
@@ -710,6 +743,9 @@ TEST_F(
     });
 
 TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
+  // Undoes the ChromeVoxNextE2E call setting this to true. The doDefault action
+  // should always be read.
+  DesktopAutomationHandler.announceActions = false;
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>start</p>
@@ -918,10 +954,19 @@ TEST_F('ChromeVoxBackgroundTest', 'OptionChildIndexCount', function() {
       <div role="option">banana</div>
     </div>
   `;
+
   this.runWithLoadedTree(site, function(root) {
-    mockFeedback.call(doCmd('nextObject'))
+    // Select first child of the list box, similar to what happens if navigated
+    // by Tab.
+    const firstChild = root.find({role: RoleType.PARAGRAPH});
+    mockFeedback
+        .call(
+            () => ChromeVoxState.instance.setCurrentRange(
+                cursors.Range.fromNode(firstChild)))
+        .call(doCmd('nextObject'))
+        .expectSpeech('List box')
         .expectSpeech('Fruits')
-        .expectSpeech('with 2 items')
+        .call(doCmd('nextObject'))
         .expectSpeech('apple')
         .expectSpeech(' 1 of 2 ')
         .call(doCmd('nextObject'))
@@ -2044,10 +2089,17 @@ TEST_F('ChromeVoxBackgroundTest', 'ReadPhoneticPronunciationTest', function() {
   this.runWithLoadedTree(site, function(root) {
     root.find({role: RoleType.BUTTON}).focus();
     mockFeedback.call(doCmd('readPhoneticPronunciation'))
-        .expectSpeech('T: tango, h: hotel, i: india, s: sierra')
+        .expectSpeech(
+            'T: tango, h: hotel, i: india, s: sierra,  : , i: india, ' +
+            's: sierra,  : , a: alpha,  : , b: bravo, u: uniform, t: tango, ' +
+            't: tango, o: oscar, n: november')
         .call(doCmd('nextWord'))
         .call(doCmd('readPhoneticPronunciation'))
         .expectSpeech('i: india, s: sierra')
+        .call(doCmd('previousWord'))
+        .call(doCmd('readPhoneticPronunciation'))
+        .expectSpeech('T: tango, h: hotel, i: india, s: sierra')
+        .call(doCmd('nextWord'))
         .call(doCmd('nextWord'))
         .call(doCmd('nextWord'))
         .call(doCmd('readPhoneticPronunciation'))
@@ -2094,12 +2146,12 @@ TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <h3><a href="#a">inner</a></h3>
-    <p aria-invalid="spelling">some txet</p>
+    <p>some <span aria-invalid="spelling">txet</span></p>
     <button>button A</button>
     <p aria-invalid="true">some other reason</p>
     <p>no error text 1</P>
     <p aria-invalid=false>no error text 2</P>
-    <p aria-invalid="grammar">this are a text</p>
+    <p><span aria-invalid="grammar">this are</span> a test</span></p>
     <p aria-invalid="unknown">error is this</p>
     <a href="#b">outer1</a>
     <h3>outer2</h3>
@@ -2110,21 +2162,21 @@ TEST_F('ChromeVoxBackgroundTest', 'InvalidItemNavigation', function() {
         RoleType.LINK, ChromeVoxState.instance.currentRange.start.node.role);
     assertEquals('inner', ChromeVoxState.instance.currentRange.start.node.name);
     mockFeedback.call(doCmd('nextInvalidItem'))
-        .expectSpeech('some txet', 'misspelled')
+        .expectSpeech('txet', 'misspelled')
         .call(doCmd('nextInvalidItem'))
         .expectSpeech('some other reason')
         .call(doCmd('nextInvalidItem'))
-        .expectSpeech('this are a text', 'grammar error')
+        .expectSpeech('this are', 'grammar error')
         .call(doCmd('nextInvalidItem'))
         .expectSpeech('error is this')
         // Ensure wrap.
         .call(doCmd('nextInvalidItem'))
-        .expectSpeech('some txet')
+        .expectSpeech('txet')
         // Wrap backward.
         .call(doCmd('previousInvalidItem'))
         .expectSpeech('error is this')
         .call(doCmd('previousInvalidItem'))
-        .expectSpeech('this are a text', 'grammar error');
+        .expectSpeech('this are', 'grammar error');
 
     mockFeedback.replay();
   });
@@ -2181,6 +2233,110 @@ TEST_F('ChromeVoxBackgroundTest', 'NonModalDialogHeadingJump', function() {
         .expectSpeech('Heading inside dialog')
         .call(doCmd('previousHeading'))
         .expectSpeech('Heading outside dialog')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'LevelEndsForNestedLists', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div>
+      <ul>
+        <li>Berries
+          <ul>
+            <li>Strawberries</li>
+            <li>Blueberries</li>
+            <li>Raspberries</li>
+          </ul>
+        </li>
+        <li>Citruses
+          <ul>
+              <li>Oranges
+                <ul>
+                  <li>Grapefruits</li>
+                  <li>Mandarins</li>
+                </ul>
+              </li>
+          </ul>
+        </li>
+        <li>Bananas</li>
+      </ul>
+    </div>
+  `;
+
+  this.runWithLoadedTree(site, function(root) {
+    const blueberries = root.find({attributes: {name: 'Blueberries'}});
+    const grapefruits = root.find({attributes: {name: 'Grapefruits'}});
+
+    mockFeedback
+        .call(() => {
+          ChromeVoxState.instance.setCurrentRange(
+              cursors.Range.fromNode(blueberries));
+        })
+        .call(doCmd('nextObject'))
+        .expectSpeech(
+            '◦ Raspberries', 'List item', 'List end', 'nested level 2')
+        .call(() => {
+          ChromeVoxState.instance.setCurrentRange(
+              cursors.Range.fromNode(grapefruits));
+        })
+        .call(doCmd('nextObject'))
+        .expectSpeech('■ Mandarins', 'List item', 'List end', 'nested level 3')
+        .call(doCmd('nextObject'))
+        // Nested level is not mentioned for level 1.
+        .expectSpeech('• Bananas', 'List item', 'List end')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'NestedListNavigationSimple', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.nestedListDoc, function(root) {
+    mockFeedback.expectSpeech('• Lemons', 'List item', 'List', 'with 4 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Oranges', 'List item')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• ', 'Berries', 'List item')
+        .expectBraille('• Berries lstitm')
+        .call(doCmd('nextObject'))
+        .expectSpeech('◦ Strawberries', 'List item', 'List', 'with 2 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('◦ Raspberries', 'List item', 'List end')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Bananas', 'List item', 'List end')
+        .expectBraille('• Bananas lstitm lst end')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'NestedListNavigationMixed', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.nestedListDoc, function(root) {
+    mockFeedback.expectSpeech('• Lemons', 'List item', 'List', 'with 4 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Oranges', 'List item')
+        .call(doCmd('nextLine'))
+        .expectSpeech('• ', 'Berries', 'List item')
+        .call(doCmd('nextLine'))
+        .expectSpeech('◦ Strawberries', 'List item', 'List', 'with 2 items')
+        .call(doCmd('previousLine'))
+        .expectSpeech('• ', 'Berries')
+        .call(doCmd('nextWord'))
+        .expectSpeech('◦ Strawberries')
+        .call(doCmd('nextWord'))
+        .expectSpeech('◦ Raspberries')
+        .call(doCmd('previousObject'))
+        .call(doCmd('previousObject'))
+        .expectSpeech('• ', 'Berries')
+        .call(doCmd('previousCharacter'))
+        .call(doCmd('previousCharacter'))
+        .call(doCmd('previousCharacter'))
+        .expectSpeech('g')  // For Oranges
+        .call(doCmd('nextGroup'))
+        .expectSpeech('◦ Strawberries', '◦ Raspberries')
+        .clearPendingOutput()
+        .call(doCmd('previousGroup'))
+        .expectSpeech('• Oranges')
         .replay();
   });
 });
@@ -3775,6 +3931,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
 TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
+    <p>start</p>
     <div role="listbox" aria-expanded="false" aria-label="Configuration 1">
       <div role="presentation">
         <div role="presentation">
@@ -3827,7 +3984,7 @@ TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
     </div>
   `;
   this.runWithLoadedTree(site, function(root) {
-    mockFeedback
+    mockFeedback.call(press(KeyCode.TAB))
         .expectSpeech(
             'Listbox item 1', ' 1 of 3 ', 'Configuration 1', 'List box')
         .call(press(KeyCode.TAB))
@@ -3836,6 +3993,99 @@ TEST_F('ChromeVoxBackgroundTest', 'MultipleListBoxes', function() {
         .call(press(KeyCode.TAB))
         .expectSpeech(
             'Listbox item 3', ' 3 of 3 ', 'Configuration 3', 'List box')
+        .replay();
+  });
+});
+
+// Make sure linear navigation does not go inside ListBox's options.
+TEST_F('ChromeVoxBackgroundTest', 'ListBoxLinearNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site =
+
+      this.runWithLoadedTree(this.listBoxDoc, function(root) {
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('Select an item', 'List box')
+            .call(doCmd('nextObject'))
+            .expectSpeech('Click', 'Button')
+            .call(doCmd('previousObject'))
+            .expectSpeech('Select an item', 'List box')
+            .replay();
+      });
+});
+
+// Make sure navigation with Tab to ListBox lands on options.
+TEST_F('ChromeVoxBackgroundTest', 'ListBoxItemsNavigation', function() {
+  const mockFeedback = this.createMockFeedback();
+
+  this.runWithLoadedTree(this.listBoxDoc, function(root) {
+    mockFeedback.call(press(KeyCode.TAB))
+        .expectSpeech(
+            'Listbox item one', ' 1 of 3 ', 'Select an item', 'List box')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Listbox item two', ' 2 of 3 ')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Listbox item three', ' 3 of 3 ')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'CrossWindowNextPreviousFocus', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+<div aria-label="first"><button>second</button><button>third</button></div>
+<div aria-label="fourth"><button>fifth</button><button>sixth</button></div>
+`;
+  this.runWithLoadedTree(site, function(root) {
+    // Fake out the divs to be windows.
+    const window1 = root.children[0];
+    const window2 = root.children[1];
+    Object.defineProperty(window1, 'role', {get: () => RoleType.WINDOW});
+    Object.defineProperty(window2, 'role', {get: () => RoleType.WINDOW});
+
+    // Linear nav should just wrap inside the first window.
+    mockFeedback.call(doCmd('nextObject'))
+        .expectSpeech('third', 'Button')
+
+        // Wrap.
+        .call(doCmd('nextObject'))
+        .expectSpeech('second', 'Button', 'first, window')
+
+        // Wrap.
+        .call(doCmd('previousObject'))
+        .expectSpeech('third', 'Button')
+
+        .call(() => {
+          // Link the two "windows" with next/previous focus.
+          Object.defineProperty(window1, 'nextFocus', {get: () => window2});
+          Object.defineProperty(window2, 'previousFocus', {get: () => window1});
+        })
+
+        // window1 -> window2.
+        .call(doCmd('nextObject'))
+        .expectSpeech('fifth', 'Button', 'fourth, window')
+
+        // window2 -> window1.
+        .call(doCmd('previousObject'))
+        .expectSpeech('third', 'Button', 'first, window')
+
+        .call(() => {
+          // Link the two "windows" with next/previous focus in a slightly
+          // different way.
+          Object.defineProperty(window1, 'previousFocus', {get: () => window2});
+          Object.defineProperty(window2, 'nextFocus', {get: () => window1});
+        })
+
+        .call(doCmd('previousObject'))
+        .expectSpeech('second', 'Button')
+
+        // window1 -> window2.
+        .call(doCmd('previousObject'))
+        .expectSpeech('sixth', 'Button', 'fourth, window')
+
+        // window2 -> window1.
+        .call(doCmd('nextObject'))
+        .expectSpeech('second', 'Button', 'first, window')
+
         .replay();
   });
 });

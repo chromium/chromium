@@ -8,8 +8,13 @@ import json
 import math
 import os
 import sys
-import six.moves.urllib.request
 
+from six.moves import urllib
+
+# MIN_VERSION is the earliest working version of the updater for self-update
+# testing. If a backwards-incompatible change to the updater is made, it may be
+# necessary to increase the version.
+MIN_VERSION = 958589
 
 def get_platform():
     return 'Mac_Arm'
@@ -37,13 +42,13 @@ def fetch(platform, minimum, minimum_lexographic):
                       max(a[1], b)),
         map(
             lambda s: s[len(platform) + 1:-1],
-            json.loads(
-                six.moves.urllib.request.urlopen(
+            json.load(
+                urllib.request.urlopen(
                     'https://storage.googleapis.com/storage/v1/b/'
                     'chromium-browser-snapshots/o?prefix=%s%%2F&startOffset=%s'
                     '%%2F%s&fields=prefixes&delimiter=%%2F' %
                     (platform, platform,
-                     minimum_lexographic)).read())['prefixes']),
+                     minimum_lexographic)))['prefixes']),
         (float('inf'), ''))
 
 
@@ -66,12 +71,12 @@ def lastDatum(platform):
     updates every n versions.
   """
     latest = int(
-        six.moves.urllib.request.urlopen(
+        urllib.request.urlopen(
             'https://storage.googleapis.com/storage/v1/b/'
             'chromium-browser-snapshots/o/Mac%2FLAST_CHANGE?alt=media').read())
     min_datum = latest - 3000
     min_datum -= min_datum % 10000
-    return find(platform, min_datum, latest)
+    return max(MIN_VERSION, find(platform, min_datum, latest))
 
 
 def print_latest():

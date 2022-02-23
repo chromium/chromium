@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -44,8 +45,9 @@ const AudioParamDescriptor*
     AudioWorkletProcessorDefinition::GetAudioParamDescriptor (
         const String& key) const {
   for (const auto& descriptor : audio_param_descriptors_) {
-    if (descriptor->name() == key)
+    if (descriptor->name() == key) {
       return descriptor;
+    }
   }
   return nullptr;
 }

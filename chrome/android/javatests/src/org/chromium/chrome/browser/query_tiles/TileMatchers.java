@@ -15,9 +15,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTile;
 import org.chromium.components.query_tiles.QueryTile;
-import org.chromium.ui.widget.ChipView;
 
 /** Helper {@link Matcher}s to validate the Query Tiles UI. */
 final class TileMatchers {

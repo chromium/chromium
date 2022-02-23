@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -25,14 +25,13 @@
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
-#include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/same_party_context.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream.h"
@@ -277,15 +276,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     isolation_info_ = isolation_info;
   }
   const IsolationInfo& isolation_info() const { return isolation_info_; }
-
-  // The party_context_ of this leg of the request. This gets updated on
-  // redirects.
-  const SamePartyContext& same_party_context() const {
-    return same_party_context_;
-  }
-  void set_same_party_context(const SamePartyContext& context) {
-    same_party_context_ = context;
-  }
 
   // Indicate whether SameSite cookies should be attached even though the
   // request is cross-site.
@@ -555,10 +545,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Access the LOAD_* flags modifying this request (see load_flags.h).
   int load_flags() const { return load_flags_; }
 
-  // Returns PrivacyMode that should be used for the request. Updated every time
-  // the request is redirected.
-  PrivacyMode privacy_mode() const { return privacy_mode_; }
-
   // Returns the Secure DNS Policy for the request.
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
@@ -799,11 +785,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void set_send_client_certs(bool send_client_certs) {
     send_client_certs_ = send_client_certs;
   }
+  bool send_client_certs() const { return send_client_certs_; }
 
   bool is_for_websockets() const { return is_for_websockets_; }
 
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
+
+  static bool DefaultCanUseCookies();
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
@@ -892,23 +881,21 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
                                  bool fatal);
   void NotifyReadCompleted(int bytes_read);
 
-  // These functions delegate to the NetworkDelegate if it is not nullptr.
+  // This function delegates to the NetworkDelegate if it is not nullptr.
   // Otherwise, cookies can be used unless SetDefaultCookiePolicyToBlock() has
   // been called.
-  void AnnotateAndMoveUserBlockedCookies(
-      CookieAccessResultList& maybe_included_cookies,
-      CookieAccessResultList& excluded_cookies) const;
   bool CanSetCookie(const net::CanonicalCookie& cookie,
                     CookieOptions* options) const;
-  PrivacyMode DeterminePrivacyMode() const;
 
   // Called just before calling a delegate that may block a request. |type|
   // should be the delegate's event type,
   // e.g. NetLogEventType::NETWORK_DELEGATE_AUTH_REQUIRED.
   void OnCallToDelegate(NetLogEventType type);
   // Called when the delegate lets a request continue.  Also called on
-  // cancellation.
-  void OnCallToDelegateComplete();
+  // cancellation. `error` is an optional error code associated with
+  // completion. It's only for logging purposes, and will not directly cancel
+  // the request if it's a value other than OK.
+  void OnCallToDelegateComplete(int error = OK);
 
   // Records the referrer policy of the given request, bucketed by
   // whether the request is same-origin or not. To save computation,
@@ -919,7 +906,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Contextual information used for this request. Cannot be NULL. This contains
   // most of the dependencies which are shared between requests (disk cache,
   // cookie store, socket pool, etc.)
-  const URLRequestContext* context_;
+  raw_ptr<const URLRequestContext> context_;
 
   // Tracks the time spent in various load states throughout this request.
   NetLogWithSource net_log_;
@@ -931,8 +918,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   SiteForCookies site_for_cookies_;
 
   IsolationInfo isolation_info_;
-
-  SamePartyContext same_party_context_;
 
   bool force_ignore_site_for_cookies_;
   bool force_ignore_top_frame_party_for_cookies_;
@@ -950,11 +935,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Whether the request is allowed to send credentials in general. Set by
   // caller.
   bool allow_credentials_;
-  // Privacy mode for current hop. Based on |allow_credentials_|, |load_flags_|,
-  // and information provided by the NetworkDelegate. Saving cookies can
-  // currently be blocked independently of this field by setting the deprecated
-  // LOAD_DO_NOT_SAVE_COOKIES field in |load_flags_|.
-  PrivacyMode privacy_mode_;
   SecureDnsPolicy secure_dns_policy_;
 
   CookieAccessResultList maybe_sent_cookies_;
@@ -966,7 +946,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Never access methods of the |delegate_| directly. Always use the
   // Notify... methods for this.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   const bool is_for_websockets_;
 

@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
@@ -80,14 +81,9 @@ public class ScreenshotMonitor {
                 return;
             }
 
-            if (!doesChangeLookLikeScreenshot(uri)) return;
-
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    if (mScreenshotMonitor == null) return;
-                    mScreenshotMonitor.onEventOnUiThread(uriPath);
-                }
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                if (mScreenshotMonitor == null || !doesChangeLookLikeScreenshot(uri)) return;
+                mScreenshotMonitor.onEventOnUiThread(uriPath);
             });
         }
     }
@@ -96,6 +92,7 @@ public class ScreenshotMonitor {
     // location of the file in storage by looking for the word "Screenshot", and the width and
     // height of the image.  We do this to differentiate between screenshots and downloaded images.
     private boolean doesChangeLookLikeScreenshot(Uri storeUri) {
+        ThreadUtils.assertOnUiThread();
         // Unit tests do not have a media database to query, so return true here.
         if (mSkipOsCallsForUnitTesting) return true;
 
@@ -140,6 +137,10 @@ public class ScreenshotMonitor {
             }
         } finally {
             cursor.close();
+        }
+
+        if (TextUtils.isEmpty(imageHeightString) || TextUtils.isEmpty(imageWidthString)) {
+            return false;
         }
 
         // Verify that it is in a screenshot directory.  We don't check the file extension because

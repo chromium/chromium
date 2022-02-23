@@ -9,11 +9,11 @@
 #include "net/base/net_export.h"
 #include "net/socket/socket_descriptor.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <stdint.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif  // OS_ANDROID
+#endif
 
 namespace net {
 
@@ -26,15 +26,15 @@ namespace net {
 // copy and assignment operators so that it can easily be passed by value.
 class NET_EXPORT SocketTag {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Default constructor doesn't set any tags.
   SocketTag() : SocketTag(UNSET_UID, UNSET_TAG) {}
   // Create a SocketTag with given UID |uid| and |traffic_stats_tag|.
   SocketTag(uid_t uid, int32_t traffic_stats_tag)
       : uid_(uid), traffic_stats_tag_(traffic_stats_tag) {}
 #else
-  SocketTag() {}
-#endif  // OS_ANDROID
+  SocketTag() = default;
+#endif  // BUILDFLAG(IS_ANDROID)
   ~SocketTag() {}
 
   bool operator<(const SocketTag& other) const;
@@ -44,7 +44,7 @@ class NET_EXPORT SocketTag {
   // Apply this tag to |socket|.
   void Apply(SocketDescriptor socket) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Values to indicate no UID or tag should be set. These values match those in
   // Android:
   // http://androidxref.com/4.4_r1/xref/frameworks/base/core/java/android/net/TrafficStats.java#147
@@ -57,7 +57,7 @@ class NET_EXPORT SocketTag {
   uid_t uid_;
   // TrafficStats tag to tag with.
   int32_t traffic_stats_tag_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   // Copying and assignment are allowed.
 };
 

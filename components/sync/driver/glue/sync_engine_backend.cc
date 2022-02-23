@@ -15,12 +15,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -28,7 +28,6 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/nigori/nigori_model_type_processor.h"
 #include "components/sync/nigori/nigori_storage_impl.h"
@@ -47,7 +46,7 @@ namespace {
 const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
-class SyncInvalidationAdapter : public InvalidationInterface {
+class SyncInvalidationAdapter : public SyncInvalidation {
  public:
   explicit SyncInvalidationAdapter(const std::string& payload)
       : payload_(payload) {}
@@ -177,7 +176,7 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
       for (invalidation::Invalidation invalidation : invalidation_set) {
         RecordRedundantInvalidationsMetric(invalidation, type);
 
-        std::unique_ptr<InvalidationInterface> inv_adapter(
+        std::unique_ptr<SyncInvalidation> inv_adapter(
             new InvalidationAdapter(invalidation));
         sync_manager_->OnIncomingInvalidation(type, std::move(inv_adapter));
         if (!invalidation.is_unknown_version())
@@ -214,8 +213,7 @@ void SyncEngineBackend::DoInitialize(
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
-          sync_data_folder_.Append(kNigoriStorageFilename)),
-      params.encryption_bootstrap_token);
+          sync_data_folder_.Append(kNigoriStorageFilename)));
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -246,7 +244,7 @@ void SyncEngineBackend::DoInitialize(
   ModelTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
 
-  SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
+  SDVLOG(1) << "Control Types " << ModelTypeSetToDebugString(new_control_types)
             << " added; calling ConfigureSyncer";
 
   sync_manager_->ConfigureSyncer(
@@ -284,9 +282,11 @@ void SyncEngineBackend::DoStartSyncing(base::Time last_poll_time) {
 }
 
 void SyncEngineBackend::DoSetEncryptionPassphrase(
-    const std::string& passphrase) {
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(passphrase);
+  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(
+      passphrase, key_derivation_params);
 }
 
 void SyncEngineBackend::DoAddTrustedVaultDecryptionKeys(
@@ -317,10 +317,11 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
 }
 
-void SyncEngineBackend::DoSetDecryptionPassphrase(
-    const std::string& passphrase) {
+void SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetDecryptionPassphrase(passphrase);
+  sync_manager_->GetEncryptionHandler()->SetExplicitPassphraseDecryptionKey(
+      std::move(key));
 }
 
 void SyncEngineBackend::ShutdownOnUIThread() {
@@ -428,7 +429,7 @@ void SyncEngineBackend::SendBufferedProtocolEventsAndEnableForwarding() {
         sync_manager_->GetBufferedProtocolEvents();
 
     // Send them all over the fence to the host.
-    for (auto& event : buffered_events) {
+    for (std::unique_ptr<ProtocolEvent>& event : buffered_events) {
       host_.Call(FROM_HERE, &SyncEngineImpl::HandleProtocolEventOnFrontendLoop,
                  std::move(event));
     }
@@ -457,8 +458,8 @@ void SyncEngineBackend::DoOnInvalidatorClientIdChange(
 
 void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-         base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
+  DCHECK(base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+         base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
   sync_pb::SyncInvalidationsPayload payload_message;
   // TODO(crbug.com/1119804): Track parsing failures in a histogram.
@@ -475,7 +476,7 @@ void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
     }
 
     // TODO(crbug.com/1119798): Use only enabled data types.
-    std::unique_ptr<InvalidationInterface> inv_adapter =
+    std::unique_ptr<SyncInvalidation> inv_adapter =
         std::make_unique<SyncInvalidationAdapter>(payload_message.hint());
     sync_manager_->OnIncomingInvalidation(model_type, std::move(inv_adapter));
   }

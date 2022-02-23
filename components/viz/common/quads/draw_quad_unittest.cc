@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "cc/base/math_util.h"
@@ -115,18 +114,15 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
       render_pass->CreateAndAppendSharedQuadState();                       \
   *copy_shared_state = *shared_state;
 
-#define QUAD_DATA                              \
-  gfx::Rect quad_rect(30, 40, 50, 60);         \
-  gfx::Rect quad_visible_rect(40, 50, 30, 20); \
-  ALLOW_UNUSED_LOCAL(quad_visible_rect);       \
-  bool needs_blending = true;                  \
-  ALLOW_UNUSED_LOCAL(needs_blending);
+#define QUAD_DATA                                               \
+  gfx::Rect quad_rect(30, 40, 50, 60);                          \
+  [[maybe_unused]] gfx::Rect quad_visible_rect(40, 50, 30, 20); \
+  [[maybe_unused]] bool needs_blending = true;
 
 #define SETUP_AND_COPY_QUAD_NEW(Type, quad)                              \
   DrawQuad* copy_new = render_pass->CopyFromAndAppendDrawQuad(quad_new); \
   CompareDrawQuad(quad_new, copy_new);                                   \
-  const Type* copy_quad = Type::MaterialCast(copy_new);                  \
-  ALLOW_UNUSED_LOCAL(copy_quad);
+  [[maybe_unused]] const Type* copy_quad = Type::MaterialCast(copy_new);
 
 #define SETUP_AND_COPY_QUAD_ALL(Type, quad)                              \
   DrawQuad* copy_all = render_pass->CopyFromAndAppendDrawQuad(quad_all); \
@@ -137,8 +133,7 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
   DrawQuad* copy_new =                                               \
       render_pass->CopyFromAndAppendRenderPassDrawQuad(quad_new, a); \
   CompareDrawQuad(quad_new, copy_new);                               \
-  const Type* copy_quad = Type::MaterialCast(copy_new);              \
-  ALLOW_UNUSED_LOCAL(copy_quad);
+  [[maybe_unused]] const Type* copy_quad = Type::MaterialCast(copy_new);
 
 #define SETUP_AND_COPY_QUAD_ALL_RP(Type, quad, a)                    \
   DrawQuad* copy_all =                                               \

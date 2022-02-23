@@ -4,7 +4,7 @@
 
 body {
   border: 0;
-  height: 35px;
+  height: 44px;
   margin: 0;
   overflow: hidden;
   padding: 0;
@@ -13,7 +13,7 @@ body {
 #main {
   background-color: #000;
   display: flex;
-  height: 35px;
+  height: 44px;
   left: 0;
   position: fixed;
   right: 0;
@@ -37,7 +37,7 @@ button:disabled,
 }
 
 #menus_button {
-  height: 35px;
+  height: 44px;
   min-width: 52px;
 }
 
@@ -46,7 +46,7 @@ button:disabled,
 }
 
 #options_close {
-  height: 35px;
+  height: 44px;
   min-width: 48px;
 }
 
@@ -63,24 +63,24 @@ button:disabled,
 }
 
 #options {
-  background-image: url(/chromevox/images/options-19.png);
-  height: 19px;
-  margin: 8px 0;
-  width: 19px;
+  background-image: url(/chromevox/images/options-36.png);
+  height: 36px;
+  margin: 4px 0;
+  width: 36px;
 }
 
 #options:hover {
-  background-image: url(/chromevox/images/options-hover-19.png);
+  background-image: url(/chromevox/images/options-hover-36.png);
 }
 
 #close {
-  background-image: url(/chromevox/images/close-19.png);
-  height: 19px;
-  width: 19px;
+  background-image: url(/chromevox/images/close-36.png);
+  height: 36px;
+  width: 36px;
 }
 
 #close:hover {
-  background-image: url(/chromevox/images/close-hover-19.png);
+  background-image: url(/chromevox/images/close-hover-36.png);
 }
 
 #braille-pan-left {
@@ -110,15 +110,15 @@ button:disabled,
 }
 
 #speech-container {
-  height: 35px;
+  height: 44px;
   margin: 0 12px;
 }
 
 #speech {
   font-family: 'Roboto', sans-serif;
   font-size: 12pt;
-  height: 35px;
-  line-height: 35px;
+  height: 44px;
+  line-height: 44px;
   overflow: hidden;
 }
 
@@ -128,10 +128,10 @@ button:disabled,
 }
 
 #braille-container {
-  height: 35px;
+  height: 44px;
   overflow: hidden;
   position: relative;
-  top: -35px;
+  top: -44px;
 }
 
 #braille-container * {
@@ -172,31 +172,8 @@ button:disabled,
   white-space: pre;
 }
 
-#annotations {
-  background-color: #000;
-  border: 1px solid #fff;
-  color: #fff;
-  font-family: 'Roboto', sans-serif;
-  font-size: 12pt;
-  height: 35px;
-  line-height: 35px;
-  overflow: hidden;
-  width: 80%;
-}
-
-#discard-annotation,
-#save-annotation {
-  background-color: #000;
-  border: 1px solid #fff;
-  color: #fff;
-  font-family: 'Roboto', sans-serif;
-  font-size: 12pt;
-  height: 35px;
-}
-
-#annotations-container,
 #search-container {
-  height: 35px;
+  height: 44px;
   margin: 0 12px;
 }
 
@@ -206,13 +183,12 @@ button:disabled,
   color: #fff;
   font-family: 'Roboto', sans-serif;
   font-size: 12pt;
-  height: 35px;
-  line-height: 35px;
+  height: 44px;
+  line-height: 44px;
   overflow: hidden;
   width: 100%;
 }
 
-#annotations::placeholder,
 #search::placeholder {
   /* Hint text should match the color of the ChromeVox focus ring. */
   color: rgb(247, 152, 58);
@@ -224,7 +200,7 @@ button:disabled,
   left: 0;
   position: fixed;
   right: 0;
-  top: 35px;
+  top: 44px;
 }
 
 #menu-bar {
@@ -306,7 +282,7 @@ button:disabled,
 }
 
 #close:hover {
-  background-image: url(/chromevox/images/close-hover-19.png);
+  background-image: url(/chromevox/images/close-hover-36.png);
 }
 
 .highlighted-cell {

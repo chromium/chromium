@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

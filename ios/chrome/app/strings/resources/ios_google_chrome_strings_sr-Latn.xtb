@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="1096883626080133124">Uradite više pomoću još jednostavnijeg, bezbednijeg i bržeg Google Chrome-a</translation>
+<translation id="1143896152279775643">Lozika se čuva u Google menadžeru lozinki za <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
-<translation id="1314663809820920746">I dalje možete da vidite sve obeleživače, istoriju, lozinke i druga podešavanja na ovom uređaju. Ako unesete promene, one se neće sinhronizovati sa Google nalogom.</translation>
 <translation id="1479202195792305274">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome je potvrdio da je <ph name="ISSUER" /> izdao sertifikat ovog veb-sajta.</translation>
 <translation id="2199719347983604670">Podaci iz Chrome sinhronizacije</translation>
 <translation id="2313070403598893276">Google Chrome je jednostavan, bezbedan i brži nego ikad pre</translation>
+<translation id="2339201583852607431">Lozinka se čuva na vašem Google nalogu (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deli lokaciju sa sajtovima koje dozvolite.</translation>
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će nuditi da prevede stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
@@ -24,6 +25,7 @@
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="257708665678654955">Želite li da Google Chrome sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2671426118752779020">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="2695886661449553974">Chrome ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="2869959624320573933">Prijavite se u Chrome</translation>
@@ -54,8 +56,10 @@
 <translation id="4698415050768537821">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u verziji Chrome beta</translation>
 <translation id="5030102366287574140">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
+<translation id="5119391094379141756">Izaberite Chrome</translation>
 <translation id="5162467219239570114">Chrome je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chrome-a.</translation>
 <translation id="5389212809648216794">Google Chrome ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
+<translation id="5460571915754665838">4. Izaberite Chrome</translation>
 <translation id="5639704535586432836">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Google Chrome i uključite kameru.</translation>
 <translation id="5642200033778930880">Google Chrome ne može da koristi kameru u režimu podeljenog prikaza</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -67,11 +71,13 @@
 <translation id="6063091872902370735">Dozvolite prijavljivanje u Chrome</translation>
 <translation id="6181930887571472871">Pređite na Chrome</translation>
 <translation id="6238746320622508509">Dozvolite Chrome-u da zaključa kartice bez arhiviranja.</translation>
+<translation id="6387994324662817823">Lozinke se čuvaju u Google menadžeru lozinki samo na ovom uređaju.</translation>
 <translation id="6427126399757991875">Vaša organizacija podešava Chrome...</translation>
 <translation id="6600954340915313787">Kopirana u Chrome</translation>
 <translation id="6634107063912726160">Kada se odjavite, Chrome ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="6648150602980899529">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="6676840375528380067">Želite li da obrišete Chrome podatke sa ovog uređaja?</translation>
+<translation id="6709398533399187136">Vaša lozinka je otkrivena pri upadu u podatke. Google menadžer lozinki preporučuje da je odmah promenite.</translation>
 <translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="6964931465519938134">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
@@ -80,6 +86,7 @@
 <translation id="7165736900384873061">Počnite da koristite Google Chrome QR skener</translation>
 <translation id="7172660552945675509">Savet: <ph name="BEGIN_LINK" />Premestite Chrome na dok<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome koristi Face ID da bi lozinkama mogle da pristupaju samo ovlašćene osobe.</translation>
+<translation id="72119412072970160">Možete da koristite lozinke koje ste sačuvali u Google menadžeru lozinki u drugim aplikacijama na iPad-u.</translation>
 <translation id="7261678641327190792">Chrome ne može da vam proverava lozinke</translation>
 <translation id="7272930098487145294">Da biste sačuvali slike, dodirnite Podešavanja da biste omogućili Chrome-u da dodaje slike</translation>
 <translation id="7275945473750112644">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chrome podaci obrisati sa ovog uređaja</translation>
@@ -107,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Ostanite bezbedni uz Google Chrome</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
+<translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 </translationbundle>

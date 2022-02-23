@@ -40,24 +40,12 @@ public class LensIntentParams {
 
         public Builder() {}
 
-        // TODO(b/180967190): remove the with* methods for the required params once
-        // downstream references are updated.
         // lensEntryPoint and isIncognito are required params when creating the
         // LensIntentParams.
         public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
             this();
             this.mLensEntryPoint = lensEntryPoint;
             this.mIsIncognito = isIncognito;
-        }
-
-        /**
-         * Sets the Lens entry point.
-         *
-         * @param lensEntryPoint The entry point to set as a parameter
-         */
-        public Builder withLensEntryPoint(@LensEntryPoint int lensEntryPoint) {
-            this.mLensEntryPoint = lensEntryPoint;
-            return this;
         }
 
         /**
@@ -97,16 +85,6 @@ public class LensIntentParams {
          */
         public Builder withImageTitleOrAltText(String imageTitleOrAltText) {
             this.mImageTitleOrAltText = imageTitleOrAltText;
-            return this;
-        }
-
-        /**
-         * Sets whether the client is incognito.
-         *
-         * @param isIncognito Whether the client is incognito as a boolean parameter
-         */
-        public Builder withIsIncognito(boolean isIncognito) {
-            this.mIsIncognito = isIncognito;
             return this;
         }
 

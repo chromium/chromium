@@ -26,7 +26,7 @@ js_library("guest_os_browser_proxy") {
 js_library("guest_os_shared_usb_devices") {
   deps = [
     ":guest_os_browser_proxy",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -36,7 +36,7 @@ js_library("guest_os_shared_usb_devices") {
 js_library("guest_os_shared_paths") {
   deps = [
     ":guest_os_browser_proxy",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",

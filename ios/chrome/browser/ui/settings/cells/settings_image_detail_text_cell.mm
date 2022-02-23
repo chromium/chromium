@@ -174,10 +174,15 @@
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  if (!self.textLabel.text) {
+    return self.detailTextLabel.text;
+  }
+
   if (self.detailTextLabel.text) {
     return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
                                       self.detailTextLabel.text];
   }
+
   return self.textLabel.text;
 }
 

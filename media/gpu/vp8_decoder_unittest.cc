@@ -27,7 +27,7 @@ const std::string kIFrame = "vp8-I-frame-320x240";
 const std::string kPFrame = "vp8-P-frame-320x240";
 const std::string kCorruptFrame = "vp8-corrupt-I-frame";
 constexpr gfx::Size kVideoSize(320, 240);
-constexpr size_t kRequiredNumOfPictures = 9u;
+constexpr size_t kRequiredNumOfPictures = 8u;
 
 class MockVP8Accelerator : public VP8Decoder::VP8Accelerator {
  public:

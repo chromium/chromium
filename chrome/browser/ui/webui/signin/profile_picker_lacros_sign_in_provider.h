@@ -8,11 +8,9 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-struct CoreAccountInfo;
 
 // Class responsible for showing the lacros sign-in dialog and returning a
 // profile with a kSignin primary account.
@@ -44,13 +42,13 @@ class ProfilePickerLacrosSignInProvider
 
  private:
   // IdentityManager::Observer:
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   void OnLacrosProfileCreated(
       const absl::optional<AccountProfileMapper::AddAccountResult>& result);
 
-  void OnLacrosAccountLoaded(const CoreAccountInfo& account);
+  void OnProfileSignedIn();
 
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;

@@ -65,12 +65,11 @@ source_set("main") {
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:delegate",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:agents",
     "//ios/chrome/browser/web_state_list:session_metrics",
     "//ios/chrome/browser/web_state_list/web_usage_enabler",
-    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -113,7 +112,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/public/test",

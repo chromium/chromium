@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
 #include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,8 +36,7 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
     PrintJobHistoryService::RegisterProfilePrefs(test_prefs_.registry());
 
     auto print_job_database = std::make_unique<TestPrintJobDatabase>();
-    print_job_manager_ =
-        std::make_unique<chromeos::TestCupsPrintJobManager>(&profile_);
+    print_job_manager_ = std::make_unique<TestCupsPrintJobManager>(&profile_);
     print_job_history_service_ = std::make_unique<PrintJobHistoryServiceImpl>(
         std::move(print_job_database), print_job_manager_.get(), &test_prefs_);
   }
@@ -55,7 +54,7 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
   void OnPrintJobsRetrieved(
       base::RepeatingClosure run_loop_closure,
       bool success,
-      std::vector<chromeos::printing::proto::PrintJobInfo> entries) {
+      std::vector<printing::proto::PrintJobInfo> entries) {
     EXPECT_TRUE(success);
     entries_ = std::move(entries);
     run_loop_closure.Run();
@@ -67,7 +66,7 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
     run_loop_closure.Run();
   }
 
-  std::vector<chromeos::printing::proto::PrintJobInfo> GetPrintJobs() {
+  std::vector<printing::proto::PrintJobInfo> GetPrintJobs() {
     base::RunLoop run_loop;
     print_job_history_service_->GetPrintJobs(
         base::BindOnce(&PrintJobHistoryServiceImplTest::OnPrintJobsRetrieved,
@@ -78,9 +77,9 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::TestCupsPrintJobManager> print_job_manager_;
+  std::unique_ptr<TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<PrintJobHistoryService> print_job_history_service_;
-  std::vector<chromeos::printing::proto::PrintJobInfo> entries_;
+  std::vector<printing::proto::PrintJobInfo> entries_;
 
  private:
   TestingProfile profile_;
@@ -92,33 +91,32 @@ TEST_F(PrintJobHistoryServiceImplTest, SaveObservedCupsPrintJob) {
   TestPrintJobHistoryServiceObserver observer(
       print_job_history_service_.get(), save_print_job_run_loop.QuitClosure());
 
-  std::unique_ptr<chromeos::CupsPrintJob> print_job =
-      std::make_unique<chromeos::CupsPrintJob>(
-          chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-          ::printing::PrintJob::Source::PRINT_PREVIEW,
-          /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+  std::unique_ptr<CupsPrintJob> print_job = std::make_unique<CupsPrintJob>(
+      chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
+      ::printing::PrintJob::Source::PRINT_PREVIEW,
+      /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
   save_print_job_run_loop.Run();
 
-  std::vector<chromeos::printing::proto::PrintJobInfo> entries = GetPrintJobs();
+  std::vector<printing::proto::PrintJobInfo> entries = GetPrintJobs();
 
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ(kTitle, entries[0].title());
   EXPECT_EQ(kPagesNumber, entries[0].number_of_pages());
-  EXPECT_EQ(chromeos::printing::proto::PrintJobInfo_PrintJobStatus_CANCELED,
+  EXPECT_EQ(printing::proto::PrintJobInfo_PrintJobStatus_CANCELED,
             entries[0].status());
 }
 
 TEST_F(PrintJobHistoryServiceImplTest, DoesNotSaveIncognitoPrintJobs) {
   // Expect no initial print jobs saved.
-  std::vector<chromeos::printing::proto::PrintJobInfo> entries = GetPrintJobs();
+  std::vector<printing::proto::PrintJobInfo> entries = GetPrintJobs();
   EXPECT_EQ(0u, entries.size());
 
-  auto print_job = std::make_unique<chromeos::CupsPrintJob>(
+  auto print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
       ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO,
-      /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+      /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
 
@@ -132,11 +130,10 @@ TEST_F(PrintJobHistoryServiceImplTest, ObserverTest) {
   TestPrintJobHistoryServiceObserver observer(print_job_history_service_.get(),
                                               run_loop.QuitClosure());
 
-  std::unique_ptr<chromeos::CupsPrintJob> print_job =
-      std::make_unique<chromeos::CupsPrintJob>(
-          chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
-          ::printing::PrintJob::Source::PRINT_PREVIEW,
-          /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+  std::unique_ptr<CupsPrintJob> print_job = std::make_unique<CupsPrintJob>(
+      chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
+      ::printing::PrintJob::Source::PRINT_PREVIEW,
+      /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
   run_loop.Run();
@@ -149,15 +146,15 @@ TEST_F(PrintJobHistoryServiceImplTest, DeleteAllPrintJobs) {
   TestPrintJobHistoryServiceObserver observer(
       print_job_history_service_.get(), save_print_job_run_loop.QuitClosure());
 
-  auto print_job = std::make_unique<chromeos::CupsPrintJob>(
+  auto print_job = std::make_unique<CupsPrintJob>(
       chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
       ::printing::PrintJob::Source::PRINT_PREVIEW,
-      /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+      /*source_id=*/"", printing::proto::PrintSettings());
   print_job_manager_->CreatePrintJob(print_job.get());
   print_job_manager_->CancelPrintJob(print_job.get());
   save_print_job_run_loop.Run();
 
-  std::vector<chromeos::printing::proto::PrintJobInfo> entries = GetPrintJobs();
+  std::vector<printing::proto::PrintJobInfo> entries = GetPrintJobs();
   EXPECT_EQ(1u, entries.size());
 
   // Delete all print jobs.

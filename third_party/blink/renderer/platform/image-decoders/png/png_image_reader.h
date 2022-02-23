@@ -26,11 +26,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_PNG_PNG_IMAGE_READER_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 #define PNG_SET_OPTION_SUPPORTED
 #include "png.h"
@@ -67,7 +67,7 @@ class PLATFORM_EXPORT PNGImageReader final {
     // The number of bytes that contain frame data, starting at start_offset.
     wtf_size_t byte_length;
     wtf_size_t duration;
-    IntRect frame_rect;
+    gfx::Rect frame_rect;
     ImageFrame::DisposalMethod disposal_method;
     ImageFrame::AlphaBlendSource alpha_blend;
   };

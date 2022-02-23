@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_MEDIA_RENDER_MEDIA_CLIENT_H_
 #define CONTENT_RENDERER_MEDIA_RENDER_MEDIA_CLIENT_H_
 
-#include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_client.h"
 
@@ -13,7 +12,7 @@ namespace content {
 
 // RenderMediaClient is purely plumbing to make content embedder customizations
 // visible to the lower media layer.
-class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
+class RenderMediaClient : public media::MediaClient {
  public:
   RenderMediaClient(const RenderMediaClient&) = delete;
   RenderMediaClient& operator=(const RenderMediaClient&) = delete;
@@ -23,9 +22,7 @@ class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
   static void Initialize();
 
   // MediaClient implementation.
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
-      final;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) final;
   bool IsKeySystemsUpdateNeeded() final;
   bool IsSupportedAudioType(const media::AudioType& type) final;
   bool IsSupportedVideoType(const media::VideoType& type) final;

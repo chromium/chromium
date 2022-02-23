@@ -176,9 +176,10 @@ class SetIcon : public ContentAction {
 };
 
 // Helper for getting JS collections into C++.
-static bool AppendJSStringsToCPPStrings(const base::ListValue& append_strings,
-                                        std::vector<std::string>* append_to) {
-  for (const auto& entry : append_strings.GetList()) {
+static bool AppendJSStringsToCPPStrings(
+    const base::Value::ConstListView& append_strings,
+    std::vector<std::string>* append_to) {
+  for (const auto& entry : append_strings) {
     if (entry.is_string()) {
       append_to->push_back(entry.GetString());
     } else {
@@ -255,42 +256,40 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
 bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
                                           std::string* error,
                                           ScriptData* script_data) {
-  const base::ListValue* list_value = NULL;
+  const base::Value* css = dict->FindKey(declarative_content_constants::kCss);
+  const base::Value* js = dict->FindKey(declarative_content_constants::kJs);
 
-  if (!dict->HasKey(declarative_content_constants::kCss) &&
-      !dict->HasKey(declarative_content_constants::kJs)) {
+  if (!css && !js) {
     *error = base::StringPrintf(kMissingParameter, "css or js");
     return false;
   }
-  if (dict->HasKey(declarative_content_constants::kCss)) {
-    if (!dict->GetList(declarative_content_constants::kCss, &list_value) ||
-        !AppendJSStringsToCPPStrings(*list_value,
+  if (css) {
+    if (!css->is_list() ||
+        !AppendJSStringsToCPPStrings(css->GetListDeprecated(),
                                      &script_data->css_file_names)) {
       return false;
     }
   }
-  if (dict->HasKey(declarative_content_constants::kJs)) {
-    if (!dict->GetList(declarative_content_constants::kJs, &list_value) ||
-        !AppendJSStringsToCPPStrings(*list_value,
+  if (js) {
+    if (!js->is_list() ||
+        !AppendJSStringsToCPPStrings(js->GetListDeprecated(),
                                      &script_data->js_file_names)) {
       return false;
     }
   }
-  if (dict->HasKey(declarative_content_constants::kAllFrames)) {
-    absl::optional<bool> all_frames =
-        dict->FindBoolKey(declarative_content_constants::kAllFrames);
-    if (!all_frames.has_value())
+  if (const base::Value* all_frames_val =
+          dict->FindKey(declarative_content_constants::kAllFrames)) {
+    if (!all_frames_val->is_bool())
       return false;
 
-    script_data->all_frames = all_frames.value();
+    script_data->all_frames = all_frames_val->GetBool();
   }
-  if (dict->HasKey(declarative_content_constants::kMatchAboutBlank)) {
-    absl::optional<bool> match_about_blank =
-        dict->FindBoolKey(declarative_content_constants::kMatchAboutBlank);
-    if (!match_about_blank.has_value())
+  if (const base::Value* match_about_blank_val =
+          dict->FindKey(declarative_content_constants::kMatchAboutBlank)) {
+    if (!match_about_blank_val->is_bool())
       return false;
 
-    script_data->match_about_blank = match_about_blank.value();
+    script_data->match_about_blank = match_about_blank_val->GetBool();
   }
 
   return true;
@@ -306,7 +305,7 @@ RequestContentScript::RequestContentScript(
   script_loader_ = ExtensionSystem::Get(browser_context)
                        ->user_script_manager()
                        ->GetUserScriptLoaderForExtension(extension->id());
-  scoped_observation_.Observe(script_loader_);
+  scoped_observation_.Observe(script_loader_.get());
   AddScript();
 }
 
@@ -409,10 +408,10 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   }
 
   gfx::ImageSkia icon;
-  const base::DictionaryValue* canvas_set = NULL;
-  if (dict->GetDictionary("imageData", &canvas_set) &&
-      ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
-          ExtensionAction::IconParseResult::kSuccess) {
+  const base::Value* canvas_set = dict->FindDictKey("imageData");
+  if (canvas_set && ExtensionAction::ParseIconFromCanvasDictionary(
+                        base::Value::AsDictionaryValue(*canvas_set), &icon) !=
+                        ExtensionAction::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;
   }
@@ -423,11 +422,6 @@ std::unique_ptr<ContentAction> SetIcon::Create(
       extensions::image_util::IsIconSufficientlyVisible(bitmap);
   base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisible",
                             is_sufficiently_visible);
-  const bool is_sufficiently_visible_rendered =
-      extensions::ui_util::IsRenderedIconSufficientlyVisibleForBrowserContext(
-          bitmap, browser_context);
-  base::UmaHistogramBoolean("Extensions.DeclarativeSetIconWasVisibleRendered",
-                            is_sufficiently_visible_rendered);
   if (!is_sufficiently_visible && !g_allow_invisible_icons_content_action) {
     *error = kIconNotSufficientlyVisible;
     return nullptr;

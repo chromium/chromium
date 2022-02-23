@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -97,7 +98,7 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
         root->View(), static_cast<const WebMouseEvent&>(event));
 
     HitTestLocation location(root->View()->ConvertFromRootFrame(
-        FlooredIntPoint(mouse_event.PositionInRootFrame())));
+        gfx::ToFlooredPoint(mouse_event.PositionInRootFrame())));
     HitTestResult result = root->GetEventHandler().HitTestResultAtLocation(
         location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
     result.SetToShadowHostIfInRestrictedShadowRoot();
@@ -168,6 +169,7 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
     case WebInputEvent::Type::kGestureTapCancel:
     case WebInputEvent::Type::kGestureDoubleTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGestureShortPress:
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureLongTap:
       return handler.HandleGestureEvent(
@@ -197,7 +199,7 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
     case WebInputEvent::Type::kGesturePinchBegin:
       // Gesture pinch events are handled entirely on the compositor.
       DLOG(INFO) << "Gesture pinch ignored by main thread.";
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebInputEvent::Type::kGesturePinchEnd:
     case WebInputEvent::Type::kGesturePinchUpdate:
       return WebInputEventResult::kNotHandled;

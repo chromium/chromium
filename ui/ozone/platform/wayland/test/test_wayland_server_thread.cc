@@ -96,7 +96,7 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!overlay_prioritizer_.Initialize(display_.get()))
     return false;
-  if (!surface_augmenter_.Initialize(display_.get()))
+  if (!wp_pointer_gestures_.Initialize(display_.get()))
     return false;
 
   client_ = wl_client_create(display_.get(), server_fd.release());
@@ -131,6 +131,12 @@ void TestWaylandServerThread::Resume() {
 MockWpPresentation* TestWaylandServerThread::EnsureWpPresentation() {
   if (wp_presentation_.Initialize(display_.get()))
     return &wp_presentation_;
+  return nullptr;
+}
+
+TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
+  if (surface_augmenter_.Initialize(display_.get()))
+    return &surface_augmenter_;
   return nullptr;
 }
 

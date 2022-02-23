@@ -16,7 +16,7 @@ namespace gpu {
 struct SharedMemoryLimits {
   SharedMemoryLimits() {
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     // Max mapped memory to use for a texture upload depends on device ram.
     // Do not use more than 5% of extra shared memory, and do not use any extra
     // for memory contrained devices (<=1GB).
@@ -75,7 +75,7 @@ struct SharedMemoryLimits {
     return limits;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static SharedMemoryLimits ForDisplayCompositor(const gfx::Size& screen_size) {
     DCHECK(!screen_size.IsEmpty());
 

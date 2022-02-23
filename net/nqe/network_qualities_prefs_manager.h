@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -81,7 +81,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
       const nqe::internal::CachedNetworkQuality& cached_network_quality)
       override;
 
-  NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 
   // Network quality prefs read from the disk at the time of startup.
   ParsedPrefs read_prefs_startup_;

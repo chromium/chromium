@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -14,6 +15,7 @@ import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -31,8 +33,10 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
@@ -52,6 +56,7 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -63,6 +68,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -119,15 +125,40 @@ public class DownloadTest implements CustomMainActivityStart {
         }
     }
 
-    static class TestDownloadInfoBarController extends DownloadInfoBarController {
-        public TestDownloadInfoBarController() {
-            super(/*otrProfileID=*/null);
+    static class TestDownloadMessageUiController extends DownloadMessageUiControllerImpl {
+        public TestDownloadMessageUiController(Delegate delegate) {
+            super(delegate);
         }
 
         @Override
-        protected void showInfoBar(
-                @DownloadInfoBarState int state, DownloadProgressInfoBarData info) {
-            // Do nothing, so we don't impact other info bars.
+        protected void showMessage(int state, DownloadProgressMessageUiData info) {
+            // Do nothing, so we don't impact other messages.
+        }
+    }
+
+    static class TestDownloadMessageUiControllerDelegate
+            implements DownloadMessageUiController.Delegate {
+        @Nullable
+        @Override
+        public Context getContext() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public MessageDispatcher getMessageDispatcher() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public ModalDialogManager getModalDialogManager() {
+            return null;
+        }
+
+        @Override
+        public boolean maybeSwitchToFocusedActivity() {
+            return false;
         }
     }
 
@@ -228,6 +259,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @FlakyTest(message = "https://crbug.com/1287296")
     public void testHttpGetDownload() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
@@ -242,6 +274,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug.com/1270871")
     public void testDangerousDownload() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "dangerous.html"));
         waitForFocus();
@@ -258,6 +291,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @FlakyTest(message = "https://crbug.com/1287296")
     public void testHttpPostDownload() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
         waitForFocus();
@@ -337,7 +371,8 @@ public class DownloadTest implements CustomMainActivityStart {
                 ()
                         -> DownloadManagerService.getDownloadManagerService()
                                    .setInfoBarControllerForTesting(
-                                           new TestDownloadInfoBarController()));
+                                           new TestDownloadMessageUiController(
+                                                   new TestDownloadMessageUiControllerDelegate())));
 
         // Download a file.
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
@@ -397,7 +432,7 @@ public class DownloadTest implements CustomMainActivityStart {
         final int count = model.getCount();
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> TabModelUtils.setIndex(model, count - 2));
+                () -> TabModelUtils.setIndex(model, count - 2, false));
 
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = mDownloadTestRule.getActivity().getActivityTab();
@@ -474,6 +509,7 @@ public class DownloadTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @FlakyTest(message = "https://crbug.com/1287296")
     public void testUrlEscaping() throws Exception {
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
         waitForFocus();

@@ -49,8 +49,8 @@ TEST_P(InstallLimiterTest, ShouldDeferInstall) {
   if (GetParam() != ash::DemoSession::DemoModeConfig::kNone)
     demo_mode_test_helper.InitializeSession(GetParam());
 
-  // In demo mode (either online or offline), all apps larger than 1MB except
-  // for the screensaver should be deferred.
+  // In demo mode, all apps larger than 1MB except for the screensaver
+  // should be deferred.
   for (const std::string& id : screensaver_ids) {
     bool expected_defer_install =
         GetParam() == ash::DemoSession::DemoModeConfig::kNone ||
@@ -68,5 +68,4 @@ INSTANTIATE_TEST_SUITE_P(
     DemoModeConfig,
     InstallLimiterTest,
     ::testing::Values(ash::DemoSession::DemoModeConfig::kNone,
-                      ash::DemoSession::DemoModeConfig::kOnline,
-                      ash::DemoSession::DemoModeConfig::kOffline));
+                      ash::DemoSession::DemoModeConfig::kOnline));

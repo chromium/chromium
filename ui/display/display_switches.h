@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_DISPLAY_SWITCHES_H_
 #define UI_DISPLAY_DISPLAY_SWITCHES_H_
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

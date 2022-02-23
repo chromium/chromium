@@ -125,17 +125,17 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater = WPTExpectationsUpdater(host)
         updater.git_cl = MockGitCL(
             updater.host, {
-                Build('MOCK Try Mac10.10', 333):
+                Build('MOCK Try Mac10.10', 333, 'Build-1'):
                 TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Mac10.11', 111):
+                Build('MOCK Try Mac10.11', 111, 'Build-2'):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Trusty', 222):
+                Build('MOCK Try Trusty', 222, 'Build-3'):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Precise', 333):
+                Build('MOCK Try Precise', 333, 'Build-4'):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win10', 444):
+                Build('MOCK Try Win10', 444, 'Build-5'):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win7', 555):
+                Build('MOCK Try Win7', 555, 'Build-6'):
                 TryJobStatus('COMPLETED', 'SUCCESS'),
             })
 
@@ -143,29 +143,24 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         # results are for the other builders since we shouldn't need to even
         # fetch results, since the try job status already tells us that all
         # of the tests passed.
-        host.results_fetcher.set_results(
-            Build('MOCK Try Mac10.10', 333),
-            WebTestResults({
-                'tests': {
-                    'external': {
-                        'wpt': {
-                            'test': {
-                                'path.html': {
-                                    'expected': 'PASS',
-                                    'actual': 'TIMEOUT',
-                                    'is_unexpected': True,
-                                }
-                            }
-                        }
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/test/path.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
                     }
-                }
-            }))
-        self.assertEqual(0, updater.run())
+                },
+                "status": "ABORT"
+            }
+            """
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 333, 'Build-1'),
+            [json.loads(result)] * 3)
 
-        # Results are only fetched for failing builds.
-        self.assertEqual(host.results_fetcher.fetched_builds,
-                         [BuilderStep(Build('MOCK Try Mac10.10', 333),
-                                      'blink_web_tests (with patch)')])
+        self.assertEqual(0, updater.run())
 
         self.assertEqual(
             host.filesystem.read_text_file(expectations_path),
@@ -186,84 +181,85 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_get_failing_results_dict_only_passing_results(self):
         host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Mac10.10', 123),
-            WebTestResults({
-                'tests': {
-                    'external': {
-                        'wpt': {
-                            'x': {
-                                'passing-test.html': {
-                                    'expected': 'PASS',
-                                    'actual': 'PASS',
-                                },
-                            },
-                        },
-                    },
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/passing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
                 },
-            }))
+                "expected": true,
+                "status": "PASS"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)])
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
-            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123)))
+            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123, 'Build-123'),
+                                              'blink_web_tests'))
 
     def test_get_failing_results_dict_unexpected_pass(self):
         host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Mac10.10', 123),
-            WebTestResults({
-                'tests': {
-                    'external': {
-                        'wpt': {
-                            'x': {
-                                'passing-test.html': {
-                                    'expected': 'FAIL TIMEOUT',
-                                    'actual': 'PASS',
-                                    'is_unexpected': True,
-                                },
-                            },
-                        },
-                    },
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/passing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
                 },
-            }))
+                "expected": false,
+                "status": "PASS"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)])
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
-            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123)))
+            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123, 'Build-123'),
+                                              'blink_web_tests'))
 
     def test_get_failing_results_dict_no_results(self):
         host = self.mock_host()
         host.results_fetcher = MockTestResultsFetcher()
-        host.results_fetcher.set_results(Build('MOCK Try Mac10.10', 123), None)
+        host.results_fetcher.set_results_to_resultdb(Build('MOCK Try Mac10.10', 123), None)
         updater = WPTExpectationsUpdater(host)
         self.assertFalse(
-            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123)))
+            updater.get_failing_results_dicts(Build('MOCK Try Mac10.10', 123),
+                                              'blink_web_tests'))
 
     def test_get_failing_results_dict_some_failing_results(self):
         host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Mac10.10', 123),
-            WebTestResults({
-                'tests': {
-                    'external': {
-                        'wpt': {
-                            'x': {
-                                'failing-test.html': {
-                                    'expected': 'PASS',
-                                    'actual': 'IMAGE',
-                                    'is_unexpected': True,
-                                },
-                            },
-                        },
-                    },
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
                 },
-            }))
+                "expected": false,
+                "status": "FAIL"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)] * 3)
         updater = WPTExpectationsUpdater(host)
         results = updater.get_failing_results_dicts(
-            Build('MOCK Try Mac10.10', 123))
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
         self.assertEqual(results, [{
             'external/wpt/x/failing-test.html': {
                 DesktopConfig(port_name='test-mac-mac10.10'):
                 SimpleTestResult(
-                    actual='IMAGE',
+                    actual='FAIL',
                     expected='',
                     bug='crbug.com/626703',
                 ),
@@ -272,46 +268,68 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_get_failing_results_dict_non_wpt_test(self):
         host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Mac10.10', 123),
-            WebTestResults({
-                'tests': {
-                    'x': {
-                        'failing-test.html': {
-                            'expected': 'PASS',
-                            'actual': 'IMAGE',
-                            'is_unexpected': True,
-                        },
-                    },
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/x/failing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
                 },
-            }))
+                "status": "FAIL"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)] * 3)
         updater = WPTExpectationsUpdater(host)
         results_dict = updater.get_failing_results_dicts(
-            Build('MOCK Try Mac10.10', 123))
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
         self.assertEqual(results_dict, [])
 
-    def test_get_failing_results_dict_webdriver_failing_results_(self):
+    def test_get_failing_results_dict_not_retried_test(self):
         host = self.mock_host()
-        host.results_fetcher.set_results(
-            Build('MOCK Try Trusty', 123),
-            WebTestResults({
-                'tests': {
-                    'external': {
-                        'wpt': {
-                            'x': {
-                                'failing-test.html': {
-                                    'expected': 'PASS',
-                                    'actual': 'IMAGE',
-                                    'is_unexpected': True,
-                                },
-                            },
-                        },
-                    },
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
                 },
-            }))
+                "status": "FAIL"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)])
+        updater = WPTExpectationsUpdater(host)
+        results_dict = updater.get_failing_results_dicts(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
+        self.assertEqual(results_dict, [])
+
+    def test_get_failing_results_dict_webdriver_failing_results(self):
+        host = self.mock_host()
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "linux-blink-rel",
+                        "os": "Trusty",
+                        "test_suite": "blink_web_tests"
+                    }
+                },
+                "status": "FAIL"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Trusty', 123, 'Build-123'),
+            [json.loads(result)] * 3)
 
         host.results_fetcher.set_webdriver_test_results(
-            Build('MOCK Try Trusty', 123), "tryserver.blink",
+            Build('MOCK Try Trusty', 123, 'Build-123'), "tryserver.blink",
             WebTestResults({
                 'tests': {
                     'external': {
@@ -329,13 +347,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             }))
         updater = WPTExpectationsUpdater(host)
         results = updater.get_failing_results_dicts(
-            Build('MOCK Try Trusty', 123))
+            Build('MOCK Try Trusty', 123, 'Build-123'), 'blink_web_tests')
         self.assertEqual(len(results), 2)
         self.assertEqual(results, [{
             'external/wpt/x/failing-test.html': {
                 DesktopConfig('test-linux-trusty'):
                 SimpleTestResult(
-                    actual='IMAGE',
+                    actual='FAIL',
                     expected='',
                     bug='crbug.com/626703',
                 ),
@@ -594,8 +612,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'virtual/foo/external/wpt/test/aa-manual.html': [
-                    'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
-                    'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
+                    '[ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
+                    '[ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
                 ],
             })
 
@@ -1227,7 +1245,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         results = {
             'external/wpt/test/path.html': {
                 'one':
-                SimpleTestResult(expected='PASS', actual='TEXT', bug='bug'),
+                SimpleTestResult(expected='PASS', actual='FAIL', bug='bug'),
                 'two':
                 SimpleTestResult(expected='PASS', actual='TIMEOUT', bug='bug'),
             },
@@ -1255,7 +1273,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         results = {
             'external/wpt/test/path.html': {
                 'one':
-                SimpleTestResult(expected='SLOW', actual='TEXT', bug='bug'),
+                SimpleTestResult(expected='SLOW', actual='FAIL', bug='bug'),
                 'two':
                 SimpleTestResult(expected='SLOW', actual='TIMEOUT', bug='bug'),
             },
@@ -1284,7 +1302,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             'external/wpt/test/foo.html': {
                 'bot':
                 SimpleTestResult(
-                    expected='PASS', actual='TEXT TEXT', bug='bug'),
+                    expected='PASS', actual='FAIL FAIL', bug='bug'),
             },
             'external/wpt/test/bar.html': {
                 'bot':
@@ -1344,7 +1362,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'external/wpt/x-manual.html':
-                ['crbug.com/test external/wpt/x-manual.html [ Skip ]']
+                ['external/wpt/x-manual.html [ Skip ]']
             })
 
     def test_same_platform_one_without_results(self):

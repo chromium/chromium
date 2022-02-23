@@ -9,7 +9,6 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
 #import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,25 +60,7 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
   NSString* embedder_page_script =
       GetWebClient()->GetDocumentStartScriptForAllFrames(browser_state);
   DCHECK(embedder_page_script);
-  NSString* web_bundle = GetPageScript(@"all_frames_web_bundle");
-  NSString* injectedCookieState = @"allow";
-  switch (browser_state->GetCookieBlockingMode()) {
-    case CookieBlockingMode::kBlock:
-      injectedCookieState = @"block";
-      break;
-    case CookieBlockingMode::kBlockThirdParty:
-      injectedCookieState = @"block-third-party";
-      break;
-    case CookieBlockingMode::kAllow:
-      injectedCookieState = @"allow";
-      break;
-  }
-  web_bundle =
-      [web_bundle stringByReplacingOccurrencesOfString:@"$(COOKIE_STATE)"
-                                            withString:injectedCookieState];
-  NSString* script =
-      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
-  return MakeScriptInjectableOnce(@"start_all_frames", script);
+  return MakeScriptInjectableOnce(@"start_all_frames", embedder_page_script);
 }
 
 }  // namespace web

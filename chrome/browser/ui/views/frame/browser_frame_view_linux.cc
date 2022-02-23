@@ -42,7 +42,8 @@ SkRRect BrowserFrameViewLinux::GetRestoredClipRegion() const {
   return clip;
 }
 
-gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues() const {
+// static
+gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues() {
   int elevation = ChromeLayoutProvider::Get()->GetShadowElevationMetric(
       views::Emphasis::kMaximum);
   return gfx::ShadowValue::MakeMdShadowValues(elevation);
@@ -76,8 +77,8 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     canvas->sk_canvas()->clipRRect(clip, SkClipOp::kIntersect, true);
     auto border = layout_->MirroredFrameBorderInsets();
     auto shadow_inset = showing_shadow ? border : gfx::Insets();
-    frame_bg->PaintMaximized(canvas, GetNativeTheme(), shadow_inset.left(),
-                             shadow_inset.top(),
+    frame_bg->PaintMaximized(canvas, GetNativeTheme(), GetColorProvider(),
+                             shadow_inset.left(), shadow_inset.top(),
                              width() - shadow_inset.width());
     if (!showing_shadow)
       frame_bg->FillFrameBorders(canvas, this, border.left(), border.right(),

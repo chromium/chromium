@@ -83,7 +83,8 @@ void WebTimeNavigationObserver::TitleWasSet(content::NavigationEntry* entry) {
 
 WebTimeNavigationObserver::WebTimeNavigationObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<WebTimeNavigationObserver>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver);
 

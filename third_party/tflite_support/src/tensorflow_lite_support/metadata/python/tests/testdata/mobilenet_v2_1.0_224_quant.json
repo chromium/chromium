@@ -1,0 +1,67 @@
+{
+  "name": "ImageClassifier",
+  "description": "Identify the most prominent object in the image from a known set of categories.",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "image",
+          "description": "Input image to be classified.",
+          "content": {
+            "content_properties_type": "ImageProperties",
+            "content_properties": {
+              "color_space": "RGB"
+            }
+          },
+          "process_units": [
+            {
+              "options_type": "NormalizationOptions",
+              "options": {
+                "mean": [
+                  127.5
+                ],
+                "std": [
+                  127.5
+                ]
+              }
+            }
+          ],
+          "stats": {
+            "max": [
+              255.0
+            ],
+            "min": [
+              0.0
+            ]
+          }
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "probability",
+          "description": "Probabilities of the labels respectively.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+            "max": [
+              255.0
+            ],
+            "min": [
+              0.0
+            ]
+          },
+          "associated_files": [
+            {
+              "name": "labels.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

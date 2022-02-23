@@ -14,7 +14,7 @@ int main(int argc, const char* argv[]) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   const base::CommandLine::StringType arg = command_line.GetArgs()[0];
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::string arg_narrow = base::WideToUTF8(arg);
 #else
   const std::string arg_narrow = arg;

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list/add_to_reading_list_modal_infobar_interaction_handler.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_ios_add_to_reading_list_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
@@ -29,18 +30,19 @@
 // Test fixture for ReadingListInfobarModalInteractionHandler.
 class ReadingListInfobarModalInteractionHandlerTest : public PlatformTest {
  public:
-  ReadingListInfobarModalInteractionHandlerTest()
-      : test_browser_(std::make_unique<TestBrowser>()),
-        mock_command_receiver_(
-            OCMStrictProtocolMock(@protocol(BrowserCommands))),
-        handler_(test_browser_.get()) {
+  ReadingListInfobarModalInteractionHandlerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    mock_command_receiver_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
+    handler_ = std::make_unique<ReadingListInfobarModalInteractionHandler>(
+        browser_.get());
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     fake_reading_list_model_ = std::make_unique<FakeReadingListModel>();
 
-    [test_browser_->GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_command_receiver_
                      forProtocol:@protocol(BrowserCommands)];
 
@@ -54,7 +56,7 @@ class ReadingListInfobarModalInteractionHandlerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    [test_browser_->GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         stopDispatchingToTarget:mock_command_receiver_];
     EXPECT_OCMOCK_VERIFY(mock_command_receiver_);
     PlatformTest::TearDown();
@@ -67,9 +69,10 @@ class ReadingListInfobarModalInteractionHandlerTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowser> test_browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   id mock_command_receiver_ = nil;
-  ReadingListInfobarModalInteractionHandler handler_;
+  std::unique_ptr<ReadingListInfobarModalInteractionHandler> handler_;
   web::FakeWebState web_state_;
   std::unique_ptr<FakeReadingListModel> fake_reading_list_model_;
   InfoBarIOS* infobar_;
@@ -81,12 +84,12 @@ TEST_F(ReadingListInfobarModalInteractionHandlerTest, MainButton) {
   ASSERT_FALSE(infobar_->accepted());
   EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
   OCMExpect([mock_command_receiver_ showReadingListIPH]);
-  handler_.PerformMainAction(infobar_);
+  handler_->PerformMainAction(infobar_);
   EXPECT_TRUE(infobar_->accepted());
 }
 
 // Tests NeverAsk() calls proper delegate methods.
 TEST_F(ReadingListInfobarModalInteractionHandlerTest, NeverAsk) {
   EXPECT_CALL(mock_delegate(), NeverShow()).Times(1);
-  handler_.NeverAsk(infobar_);
+  handler_->NeverAsk(infobar_);
 }

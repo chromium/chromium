@@ -29,7 +29,7 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/journey_logger.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
@@ -146,13 +146,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, PaymentSheetShowsApp) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
-          ->AddSecurePaymentConfirmationInstrument(
-              std::make_unique<SecurePaymentConfirmationInstrument>(
-                  std::move(credential_id), "relying-party.example"),
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "relying-party.example",
+                  std::move(user_id)),
               /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kUIDisplayed);
   ExecuteScriptAsync(GetActiveWebContents(),
@@ -175,13 +177,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
   // We test both with and without a matching credential, so add a credential
   // for the former case.
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
-          ->AddSecurePaymentConfirmationInstrument(
-              std::make_unique<SecurePaymentConfirmationInstrument>(
-                  std::move(credential_id), "relying-party.example"),
+          ->AddSecurePaymentConfirmationCredential(
+              std::make_unique<SecurePaymentConfirmationCredential>(
+                  std::move(credential_id), "relying-party.example",
+                  std::move(user_id)),
               /*consumer=*/this);
 
   // canMakePayment does not check for a valid icon, so should return true.
@@ -346,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
 
 // Creation tests do not work on Android because there is not a way to
 // override authenticator creation.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationCreationTest
     : public SecurePaymentConfirmationTest,
       public content::WebContentsObserver {
@@ -637,17 +641,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   std::string first_credential_identifier =
-      content::EvalJs(
-          GetActiveWebContents(),
-          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+      content::EvalJs(GetActiveWebContents(),
+                      "createPublicKeyCredentialWithPaymentExtensionAndReturnIt"
+                      "sId('user_123')")
           .ExtractString();
   ASSERT_EQ(std::string::npos, first_credential_identifier.find("Error"))
       << first_credential_identifier;
 
   std::string second_credential_identifier =
-      content::EvalJs(
-          GetActiveWebContents(),
-          "createPublicKeyCredentialWithPaymentExtensionAndReturnItsId()")
+      content::EvalJs(GetActiveWebContents(),
+                      "createPublicKeyCredentialWithPaymentExtensionAndReturnIt"
+                      "sId('user_456')")
           .ExtractString();
   ASSERT_EQ(std::string::npos, second_credential_identifier.find("Error"))
       << second_credential_identifier;
@@ -667,9 +671,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
             content::EvalJs(
                 GetActiveWebContents(),
                 content::JsReplace("getTotalAmountFromClientData($1, $2);",
-                                   second_credential_identifier, "0.01"),
-                // PaymentRequest.show() for SPC works without user gesture.
-                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                                   second_credential_identifier, "0.01")));
 }
 
 // b.com cannot create a credential with RP = "a.com".
@@ -698,17 +700,23 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                              GetDefaultIconURL()))
           .ExtractString();
 
-  NavigateTo("b.com", "/iframe_poster.html");
+  // Load a cross-origin iframe that can initiate SPC.
+  content::WebContents* tab = GetActiveWebContents();
+  GURL iframe_url = https_server()->GetURL(
+      "b.com", "/secure_payment_confirmation_iframe.html");
+  EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
+
   test_controller()->SetHasAuthenticator(true);
   confirm_payment_ = true;
+
+  // Trigger SPC and capture the response.
   // EvalJs waits for JavaScript promise to resolve.
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
   std::string response =
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace(
-              "postToIframe($1, $2);",
-              https_server()->GetURL("c.com", "/iframe_receiver.html").spec(),
-              credentialIdentifier))
+      content::EvalJs(iframe, content::JsReplace("requestPayment($1);",
+                                                 credentialIdentifier))
           .ExtractString();
 
   ASSERT_EQ(std::string::npos, response.find("Error"));
@@ -722,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   std::string* origin = value->FindStringKey("origin");
   ASSERT_NE(nullptr, origin) << response;
-  EXPECT_EQ(https_server()->GetURL("c.com", "/"), GURL(*origin));
+  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
 
   absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
   ASSERT_TRUE(cross_origin.has_value()) << response;
@@ -734,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   std::string* top_origin = value->FindStringPath("payment.topOrigin");
   ASSERT_NE(nullptr, top_origin) << response;
-  EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*top_origin));
+  EXPECT_EQ(https_server()->GetURL("a.com", "/"), GURL(*top_origin));
 
   std::string* rp = value->FindStringPath("payment.rp");
   ASSERT_NE(nullptr, rp) << response;
@@ -957,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace payments

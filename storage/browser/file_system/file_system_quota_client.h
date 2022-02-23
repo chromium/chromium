@@ -5,13 +5,12 @@
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_SYSTEM_QUOTA_CLIENT_H_
 
-#include <string>
-
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -21,18 +20,15 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace storage {
 
 class FileSystemContext;
+struct BucketLocator;
 
 // All of the public methods of this class are called by the quota manager
 // (except for the constructor/destructor).
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
-    : public StorageKeyQuotaClient {
+    : public mojom::QuotaClient {
  public:
   explicit FileSystemQuotaClient(FileSystemContext* file_system_context);
   ~FileSystemQuotaClient() override;
@@ -40,18 +36,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   FileSystemQuotaClient(const FileSystemQuotaClient&) = delete;
   FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
-  // QuotaClient methods.
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  // mojom::QuotaClient methods.
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
@@ -71,7 +62,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   // `file_system_context_` owns this. We could break the cycle in
   // FileSystemContext::Shutdown(), but then we would have to ensure that
   // Shutdown() is called by all FileSystemContext users.
-  FileSystemContext* const file_system_context_
+  const raw_ptr<FileSystemContext> file_system_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

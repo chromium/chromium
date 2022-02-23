@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/internal/background_service/navigation_monitor_impl.h"
 
 #include "base/bind.h"
@@ -48,7 +49,7 @@ class TestNavigationMonitorObserver : public NavigationMonitor::Observer {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  NavigationMonitor* monitor_;
+  raw_ptr<NavigationMonitor> monitor_;
   bool navigation_in_progress_;
   base::WeakPtrFactory<TestNavigationMonitorObserver> weak_ptr_factory_{this};
 };

@@ -8,8 +8,6 @@
 #include "chrome/browser/ui/views/hover_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-class PrefService;
-
 namespace ui {
 class MouseEvent;
 }
@@ -20,8 +18,7 @@ namespace media_router {
 class CastDialogAccessCodeCastButton : public HoverButton {
  public:
   METADATA_HEADER(CastDialogAccessCodeCastButton);
-  CastDialogAccessCodeCastButton(PressedCallback callback,
-                                 PrefService* pref_service);
+  explicit CastDialogAccessCodeCastButton(PressedCallback callback);
   CastDialogAccessCodeCastButton(const CastDialogAccessCodeCastButton&) =
       delete;
   CastDialogAccessCodeCastButton& operator=(

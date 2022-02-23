@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/backoff_entry.h"
@@ -81,7 +82,7 @@ class AffiliationFetchThrottler
   virtual void InformOfNetworkRequestComplete(bool success);
 
  protected:
-  AffiliationFetchThrottlerDelegate* delegate_;
+  raw_ptr<AffiliationFetchThrottlerDelegate> delegate_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AffiliationFetchThrottlerTest, FailedRequests);
@@ -123,8 +124,8 @@ class AffiliationFetchThrottler
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  network::NetworkConnectionTracker* network_connection_tracker_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  raw_ptr<const base::TickClock> tick_clock_;
   State state_;
   bool has_network_connectivity_;
   bool is_fetch_scheduled_;

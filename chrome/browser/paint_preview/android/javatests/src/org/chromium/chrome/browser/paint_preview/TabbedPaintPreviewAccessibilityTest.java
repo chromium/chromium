@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import android.os.SystemClock;
+import android.view.MotionEvent;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -16,12 +19,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.PlayerManager;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -55,6 +60,7 @@ public class TabbedPaintPreviewAccessibilityTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1287526")
     public void smokeTest() throws ExecutionException, TimeoutException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
@@ -97,5 +103,21 @@ public class TabbedPaintPreviewAccessibilityTest {
                                    .getWebContentsAccessibilityForTesting()
                         != null,
                 "PlayerManager doesn't have a valid WebContentsAccessibility.");
+
+        // Try hit testing.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebContentsAccessibility wcax = tabbedPaintPreview.getPlayerManagerForTesting()
+                                                    .getWebContentsAccessibilityForTesting();
+            wcax.setAccessibilityEnabledForTesting();
+            long time = SystemClock.uptimeMillis();
+            MotionEvent e =
+                    MotionEvent.obtain(time, time, MotionEvent.ACTION_HOVER_ENTER, 20, 20, 0);
+            wcax.onHoverEventNoRenderer(e);
+        });
+
+        // Remove the preview.
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(true, false));
+        CriteriaHelper.pollUiThread(
+                () -> !tabbedPaintPreview.isAttached(), "Paint Preview not removed.");
     }
 }

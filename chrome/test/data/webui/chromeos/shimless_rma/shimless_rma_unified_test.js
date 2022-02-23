@@ -4,8 +4,11 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {allInputsDisabledTest} from './all_inputs_disabled_test.js';
+import {criticalErrorPageTest} from './critical_error_page_test.js';
 import {fakeShimlessRmaServiceTestSuite} from './fake_shimless_rma_service_test.js';
 import {onboardingChooseDestinationPageTest} from './onboarding_choose_destination_page_test.js';
+import {onboardingChooseWipeDevicePageTest} from './onboarding_choose_wipe_device_page_test.js';
 import {onboardingChooseWpDisableMethodPageTest} from './onboarding_choose_wp_disable_method_page_test.js';
 import {onboardingEnterRsuWpDisableCodePageTest} from './onboarding_enter_rsu_wp_disable_code_page_test.js';
 import {onboardingLandingPageTest} from './onboarding_landing_page_test.js';
@@ -14,12 +17,13 @@ import {onboardingSelectComponentsPageTest} from './onboarding_select_components
 import {onboardingUpdatePageTest} from './onboarding_update_page_test.js';
 import {onboardingWaitForManualWpDisablePageTest} from './onboarding_wait_for_manual_wp_disable_page_test.js';
 import {onboardingWpDisableCompletePageTest} from './onboarding_wp_disable_complete_page_test.js';
-import {reimagingCalibrationPageTest} from './reimaging_calibration_page_test.js';
+import {reimagingCalibrationFailedPageTest} from './reimaging_calibration_failed_page_test.js';
 import {reimagingCalibrationRunPageTest} from './reimaging_calibration_run_page_test.js';
 import {reimagingCalibrationSetupPageTest} from './reimaging_calibration_setup_page_test.js';
 import {reimagingDeviceInformationPageTest} from './reimaging_device_information_page_test.js';
 import {reimagingFirmwareUpdatePageTest} from './reimaging_firmware_update_page_test.js';
 import {reimagingProvisioningPageTest} from './reimaging_provisioning_page_test.js';
+import {repairComponentChipElementTest} from './repair_component_chip_test.js';
 import {shimlessRMAAppTest} from './shimless_rma_app_test.js';
 import {wrapupFinalizePageTest} from './wrapup_finalize_page_test.js';
 import {wrapupRepairCompletePageTest} from './wrapup_repair_complete_page_test.js';
@@ -33,9 +37,13 @@ function runSuite(suiteName, testFn) {
   suite(suiteName, testFn);
 }
 
+runSuite('AllInputsDisabledTest', allInputsDisabledTest);
+runSuite('CriticalErrorPageTest', criticalErrorPageTest);
 runSuite('FakeShimlessRmaServiceTestSuite', fakeShimlessRmaServiceTestSuite);
 runSuite(
     'OnboardingChooseDestinationPageTest', onboardingChooseDestinationPageTest);
+runSuite(
+    'OnboardingChooseWipeDevicePageTest', onboardingChooseWipeDevicePageTest);
 runSuite(
     'OnboardingChooseWpDisableMethodPageTest',
     onboardingChooseWpDisableMethodPageTest);
@@ -52,7 +60,8 @@ runSuite(
     onboardingWaitForManualWpDisablePageTest);
 runSuite(
     'OnboardingWpDisableCompletePageTest', onboardingWpDisableCompletePageTest);
-runSuite('ReimagingCalibrationPageTest', reimagingCalibrationPageTest);
+runSuite(
+    'ReimagingCalibrationFailedPageTest', reimagingCalibrationFailedPageTest);
 runSuite('ReimagingCalibrationRunPageTest', reimagingCalibrationRunPageTest);
 runSuite(
     'ReimagingCalibrationSetupPageTest', reimagingCalibrationSetupPageTest);
@@ -60,6 +69,7 @@ runSuite('ReimagingFirmwareUpdatePageTest', reimagingFirmwareUpdatePageTest);
 runSuite(
     'ReimagingDeviceInformationPageTest', reimagingDeviceInformationPageTest);
 runSuite('ReimagingProvisioningPageTest', reimagingProvisioningPageTest);
+runSuite('RepairComponentChipElementTest', repairComponentChipElementTest);
 runSuite('ShimlessRMAAppTest', shimlessRMAAppTest);
 runSuite('WrapupFinalizePageTest', wrapupFinalizePageTest);
 runSuite('WrapupRepairCompletePageTest', wrapupRepairCompletePageTest);

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -16,7 +15,7 @@ namespace content {
 // This class is a singleton that manage global DevTools state for the whole
 // browser.
 // TODO(dgozman): remove this class entirely.
-class CONTENT_EXPORT DevToolsManager {
+class DevToolsManager {
  public:
   // Returns single instance of this class. The instance is destroyed on the
   // browser main loop exit so this method MUST NOT be called after that point.

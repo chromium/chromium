@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -138,7 +139,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  detector->RecordImage(*object, ToGfxSize(image.Size()), *cached_image,
+  detector->RecordImage(*object, image.Size(), *cached_image,
                         current_paint_chunk_properties, &style_image,
                         image_border);
 }
@@ -255,37 +256,39 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
-    base::TimeTicks removed_image_paint_time,
-    uint64_t removed_image_paint_size,
-    bool is_animated) {
+    ImageRecord* image_record,
+    double image_bpp) {
+  // (Experimental) Images with insufficient entropy are not considered
+  // candidates for LCP
+  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
+    if (image_bpp < features::kMinimumEntropyForLCP.Get())
+      return false;
+  }
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
-  if (is_animated) {
-    // Set the animated image flag.
-    largest_contentful_paint_type_ |=
-        LargestContentfulPaintType::kLCPTypeAnimatedImage;
-  } else {
-    // Unset the animated image flag.
-    largest_contentful_paint_type_ &=
-        ~LargestContentfulPaintType::kLCPTypeAnimatedImage;
-  }
-  // Compute LCP by using the largest size (smallest paint time in case of tie).
-  if (removed_image_paint_size < image_paint_size) {
-    largest_image_paint_time_ = image_paint_time;
-    largest_image_paint_size_ = image_paint_size;
-  } else if (removed_image_paint_size > image_paint_size) {
-    largest_image_paint_time_ = removed_image_paint_time;
-    largest_image_paint_size_ = removed_image_paint_size;
-  } else {
-    largest_image_paint_size_ = image_paint_size;
-    if (image_paint_time.is_null()) {
-      largest_image_paint_time_ = removed_image_paint_time;
-    } else {
-      largest_image_paint_time_ =
-          std::min(image_paint_time, removed_image_paint_time);
+  largest_contentful_paint_type_ = 0;
+  if (image_record) {
+    Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
+    HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
+    if (element && !image_node->IsInShadowTree() &&
+        element->IsChangedShortlyAfterMouseover()) {
+      largest_contentful_paint_type_ |=
+          LargestContentfulPaintType::kLCPTypeAfterMouseover;
+    }
+    // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+    // default, we'd be able to use the value of
+    // largest_image_record->first_animated_frame_time directly.
+    if (image_record && image_record->cached_image &&
+        image_record->cached_image->IsAnimatedImageWithPaintedFirstFrame()) {
+      // Set the animated image flag.
+      largest_contentful_paint_type_ |=
+          LargestContentfulPaintType::kLCPTypeAnimatedImage;
     }
   }
+  largest_image_paint_time_ = image_paint_time;
+  largest_image_paint_size_ = image_paint_size;
+  largest_contentful_paint_image_bpp_ = image_bpp;
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;

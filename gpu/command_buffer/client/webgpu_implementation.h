@@ -6,12 +6,12 @@
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_H_
 
 #include <dawn/webgpu.h>
-#include <dawn_wire/WireClient.h>
 
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/client/implementation_base.h"
 #include "gpu/command_buffer/client/logging.h"
@@ -20,10 +20,6 @@
 #include "gpu/command_buffer/client/webgpu_export.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "ui/gl/buildflags.h"
-
-namespace dawn_wire {
-class WireClient;
-}
 
 namespace gpu {
 namespace webgpu {
@@ -125,6 +121,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   ReservedTexture ReserveTexture(WGPUDevice device) override;
   void RequestAdapterAsync(
       PowerPreference power_preference,
+      bool force_fallback_adapter,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) override;
@@ -144,7 +141,7 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   DawnRequestDeviceSerial NextRequestDeviceSerial();
   void LoseContext();
 
-  WebGPUCmdHelper* helper_;
+  raw_ptr<WebGPUCmdHelper> helper_;
 #if BUILDFLAG(USE_DAWN)
   scoped_refptr<DawnWireServices> dawn_wire_;
 #endif

@@ -144,7 +144,7 @@ bool IsNoScriptElement(const WebElement& element) {
 }
 
 bool HasTagName(const WebNode& node, const blink::WebString& tag) {
-  return node.IsElementNode() && node.ToConst<WebElement>().HasHTMLTagName(tag);
+  return node.IsElementNode() && node.To<WebElement>().HasHTMLTagName(tag);
 }
 
 bool IsElementInControlElementSet(
@@ -153,7 +153,7 @@ bool IsElementInControlElementSet(
   if (!element.IsFormControlElement())
     return false;
   const WebFormControlElement form_control_element =
-      element.ToConst<WebFormControlElement>();
+      element.To<WebFormControlElement>();
   return base::Contains(control_elements, form_control_element);
 }
 
@@ -179,7 +179,7 @@ bool IsTraversableContainerElement(const WebNode& node) {
   if (!node.IsElementNode())
     return false;
 
-  const WebElement element = node.ToConst<WebElement>();
+  const WebElement element = node.To<WebElement>();
   return element.HasHTMLTagName("dd") || element.HasHTMLTagName("div") ||
          element.HasHTMLTagName("fieldset") || element.HasHTMLTagName("li") ||
          element.HasHTMLTagName("td") || element.HasHTMLTagName("table");
@@ -254,11 +254,11 @@ std::u16string FindChildTextInner(const WebNode& node,
 
   // Ignore elements known not to contain inferable labels.
   if (node.IsElementNode()) {
-    const WebElement element = node.ToConst<WebElement>();
+    const WebElement element = node.To<WebElement>();
     if (IsOptionElement(element) || IsScriptElement(element) ||
         IsNoScriptElement(element) ||
         (element.IsFormControlElement() &&
-         IsAutofillableElement(element.ToConst<WebFormControlElement>()))) {
+         IsAutofillableElement(element.To<WebFormControlElement>()))) {
       return std::u16string();
     }
 
@@ -809,7 +809,7 @@ std::vector<std::string> AncestorTagNames(
 bool InferLabelForElement(const WebFormControlElement& element,
                           std::u16string* label,
                           FormFieldData::LabelSource* label_source) {
-  if (IsCheckableElement(ToWebInputElement(&element))) {
+  if (IsCheckableElement(element.DynamicTo<WebInputElement>())) {
     if (InferLabelFromNext(element, label, label_source))
       return true;
   }
@@ -932,8 +932,7 @@ ButtonTitleList InferButtonTitlesForForm(const WebElement& root_element) {
        !item.IsNull() && total_length < kMaxLengthForAllButtonTitles;
        item = input_elements.NextItem()) {
     DCHECK(item.IsFormControlElement());
-    WebFormControlElement control_element =
-        item.ToConst<WebFormControlElement>();
+    WebFormControlElement control_element = item.To<WebFormControlElement>();
     if (only_formless_elements && !control_element.Form().IsNull())
       continue;
     bool is_submit_input =
@@ -1003,7 +1002,7 @@ void GetOptionStringsFromElement(const WebSelectElement& select_element,
   options->reserve(list_items.size());
   for (const auto& list_item : list_items) {
     if (IsOptionElement(list_item)) {
-      const WebOptionElement option = list_item.ToConst<WebOptionElement>();
+      const WebOptionElement option = list_item.To<WebOptionElement>();
       options->push_back({.value = option.Value().Utf16(),
                           .content = option.GetText().Utf16()});
     }
@@ -1109,7 +1108,7 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     // Only autofill empty fields (or those with the field's default value
     // attribute) and the field that initiated the filling, i.e. the field the
     // user is currently editing and interacting with.
-    const WebInputElement* input_element = ToWebInputElement(&element);
+    const WebInputElement input_element = element.DynamicTo<WebInputElement>();
     static base::NoDestructor<WebString> kValue("value");
     static base::NoDestructor<WebString> kPlaceholder("placeholder");
 
@@ -1250,16 +1249,16 @@ void FillFormField(const FormFieldData& data,
   if (!data.is_autofilled)
     return;
 
-  WebInputElement* input_element = ToWebInputElement(field);
+  WebInputElement input_element = field->DynamicTo<WebInputElement>();
 
   if (IsCheckableElement(input_element)) {
-    input_element->SetChecked(IsChecked(data.check_status), true);
+    input_element.SetChecked(IsChecked(data.check_status), true);
   } else {
     std::u16string value = data.value;
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
       // If the maxlength attribute contains a negative value, maxLength()
       // returns the default maxlength value.
-      TruncateString(&value, input_element->MaxLength());
+      TruncateString(&value, input_element.MaxLength());
     }
     field->SetAutofillValue(blink::WebString::FromUTF16(value));
   }
@@ -1295,13 +1294,13 @@ void PreviewFormField(const FormFieldData& data,
   // Preview input, textarea and select fields. For input fields, excludes
   // checkboxes and radio buttons, as there is no provision for
   // setSuggestedCheckedValue in WebInputElement.
-  WebInputElement* input_element = ToWebInputElement(field);
+  WebInputElement input_element = field->DynamicTo<WebInputElement>();
   if (IsTextInput(input_element) || IsMonthInput(input_element)) {
     // If the maxlength attribute contains a negative value, maxLength()
     // returns the default maxlength value.
-    input_element->SetSuggestedValue(blink::WebString::FromUTF16(
-        data.value.substr(0, input_element->MaxLength())));
-    input_element->SetAutofillState(WebAutofillState::kPreviewed);
+    input_element.SetSuggestedValue(blink::WebString::FromUTF16(
+        data.value.substr(0, input_element.MaxLength())));
+    input_element.SetAutofillState(WebAutofillState::kPreviewed);
   } else if (IsTextAreaElement(*field) || IsSelectElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
     field->SetAutofillState(WebAutofillState::kPreviewed);
@@ -1688,14 +1687,13 @@ bool IsVisibleIframe(const WebElement& element) {
          bounds.height() > kMinPixelSize;
 }
 
-WebFormElement GetTopmostAncestorFormElement(WebNode n) {
-  WebFormElement owner;
+WebFormElement GetClosestAncestorFormElement(WebNode n) {
   while (!n.IsNull()) {
     if (n.IsElementNode() && n.To<WebElement>().HasHTMLTagName("form"))
-      owner = n.To<WebFormElement>();
+      return n.To<WebFormElement>();
     n = n.ParentNode();
   }
-  return owner;
+  return WebFormElement();
 }
 
 bool IsDomPredecessor(const blink::WebNode& x,
@@ -1831,45 +1829,39 @@ GURL GetDocumentUrlWithoutAuth(const WebDocument& document) {
   return full_origin.ReplaceComponents(rep);
 }
 
-bool IsMonthInput(const WebInputElement* element) {
-  static base::NoDestructor<WebString> kMonth("month");
-  return element && !element->IsNull() &&
-         element->FormControlTypeForAutofill() == *kMonth;
+bool IsMonthInput(const WebInputElement& element) {
+  return !element.IsNull() && element.FormControlTypeForAutofill() == "month";
 }
 
 // All text fields, including password fields, should be extracted.
-bool IsTextInput(const WebInputElement* element) {
-  return element && !element->IsNull() && element->IsTextField();
+bool IsTextInput(const WebInputElement& element) {
+  return !element.IsNull() && element.IsTextField();
 }
 
 bool IsSelectElement(const WebFormControlElement& element) {
-  // Static for improved performance.
-  static base::NoDestructor<WebString> kSelectOne("select-one");
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == *kSelectOne;
+         element.FormControlTypeForAutofill() == "select-one";
 }
 
 bool IsTextAreaElement(const WebFormControlElement& element) {
-  // Static for improved performance.
-  static base::NoDestructor<WebString> kTextArea("textarea");
   return !element.IsNull() &&
-         element.FormControlTypeForAutofill() == *kTextArea;
+         element.FormControlTypeForAutofill() == "textarea";
 }
 
-bool IsCheckableElement(const WebInputElement* element) {
-  if (!element || element->IsNull())
+bool IsCheckableElement(const WebInputElement& element) {
+  if (element.IsNull())
     return false;
 
-  return element->IsCheckbox() || element->IsRadioButton();
+  return element.IsCheckbox() || element.IsRadioButton();
 }
 
-bool IsAutofillableInputElement(const WebInputElement* element) {
+bool IsAutofillableInputElement(const WebInputElement& element) {
   return IsTextInput(element) || IsMonthInput(element) ||
          IsCheckableElement(element);
 }
 
 bool IsAutofillableElement(const WebFormControlElement& element) {
-  const WebInputElement* input_element = ToWebInputElement(&element);
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   return IsAutofillableInputElement(input_element) ||
          IsSelectElement(element) || IsTextAreaElement(element);
 }
@@ -2007,7 +1999,7 @@ void WebFormControlElementToFormField(
   if (!IsAutofillableElement(element))
     return;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
       IsSelectElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
@@ -2022,16 +2014,16 @@ void WebFormControlElementToFormField(
 
   if (IsAutofillableInputElement(input_element)) {
     if (IsTextInput(input_element))
-      field->max_length = input_element->MaxLength();
+      field->max_length = input_element.MaxLength();
 
     SetCheckStatus(field, IsCheckableElement(input_element),
-                   input_element->IsChecked());
+                   input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else if (extract_mask & EXTRACT_OPTIONS) {
     // Set option strings on the field if available.
     DCHECK(IsSelectElement(element));
-    const WebSelectElement select_element = element.ToConst<WebSelectElement>();
+    const WebSelectElement select_element = element.To<WebSelectElement>();
     GetOptionStringsFromElement(select_element, &field->options);
   }
   if (extract_mask & EXTRACT_BOUNDS) {
@@ -2043,8 +2035,9 @@ void WebFormControlElementToFormField(
     }
   }
   if (extract_mask & EXTRACT_DATALIST) {
-    if (auto* input = blink::ToWebInputElement(&element)) {
-      GetDataListSuggestions(*input, &field->datalist_values,
+    if (WebInputElement input = element.DynamicTo<WebInputElement>();
+        !input.IsNull()) {
+      GetDataListSuggestions(input, &field->datalist_values,
                              &field->datalist_labels);
     }
   }
@@ -2055,13 +2048,13 @@ void WebFormControlElementToFormField(
   std::u16string value = element.Value().Utf16();
 
   if (IsSelectElement(element) && (extract_mask & EXTRACT_OPTION_TEXT)) {
-    const WebSelectElement select_element = element.ToConst<WebSelectElement>();
+    const WebSelectElement select_element = element.To<WebSelectElement>();
     // Convert the |select_element| value to text if requested.
     WebVector<WebElement> list_items = select_element.GetListItems();
     for (const auto& list_item : list_items) {
       if (IsOptionElement(list_item)) {
         const WebOptionElement option_element =
-            list_item.ToConst<WebOptionElement>();
+            list_item.To<WebOptionElement>();
         if (option_element.Value().Utf16() == value) {
           value = option_element.GetText().Utf16();
           break;
@@ -2126,7 +2119,7 @@ bool WebFormElementToFormData(
         form_element.GetElementsByHTMLTagName("iframe");
     for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
          iframe = iframes.NextItem()) {
-      if (GetTopmostAncestorFormElement(iframe) == form_element &&
+      if (GetClosestAncestorFormElement(iframe) == form_element &&
           IsVisibleIframe(iframe)) {
         owned_iframes.push_back(iframe);
       }
@@ -2201,7 +2194,7 @@ std::vector<WebElement> GetUnownedIframeElements(const WebDocument& document) {
   for (WebElement iframe = iframes.FirstItem(); !iframe.IsNull();
        iframe = iframes.NextItem()) {
     if (IsVisibleIframe(iframe) &&
-        GetTopmostAncestorFormElement(iframe).IsNull()) {
+        GetClosestAncestorFormElement(iframe).IsNull()) {
       unowned_iframes.push_back(iframe);
     }
   }
@@ -2329,7 +2322,8 @@ void ClearPreviewedElements(
 
     // Clear the suggested value. For the initiating node, also restore the
     // original value.
-    WebInputElement* input_element = ToWebInputElement(&control_element);
+    WebInputElement input_element =
+        control_element.DynamicTo<WebInputElement>();
     if (IsTextInput(input_element) || IsMonthInput(input_element) ||
         IsTextAreaElement(control_element)) {
       control_element.SetSuggestedValue(WebString());
@@ -2422,12 +2416,7 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
     return ButtonTitleList();
   }
 
-  // True if the cache has no entry for |web_form|.
-  bool cache_miss = true;
-  // Iterator pointing to the entry for |web_form| if the entry for |web_form|
-  // is found.
-  ButtonTitlesCache::iterator form_position;
-  std::tie(form_position, cache_miss) = button_titles_cache->emplace(
+  auto [form_position, cache_miss] = button_titles_cache->emplace(
       GetFormRendererId(web_form), ButtonTitleList());
   if (!cache_miss)
     return form_position->second;

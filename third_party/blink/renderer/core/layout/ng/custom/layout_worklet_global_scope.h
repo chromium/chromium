@@ -56,6 +56,12 @@ class CORE_EXPORT LayoutWorkletGlobalScope final : public WorkletGlobalScope {
  private:
   // https://drafts.css-houdini.org/css-layout-api/#layout-definitions
   typedef HeapHashMap<String, Member<CSSLayoutDefinition>> DefinitionMap;
+
+  // TODO(crbug.com/1286244): Return a proper destination for LayoutWorklet.
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kScript;
+  }
+
   DefinitionMap layout_definitions_;
   Member<PendingLayoutRegistry> pending_layout_registry_;
 

@@ -88,7 +88,7 @@
   "chromeos-kevin-rel": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
-      "dcheck_always_on": false,
+      "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true

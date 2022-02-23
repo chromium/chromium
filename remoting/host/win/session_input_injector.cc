@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/sas_injector.h"
 #include "remoting/proto/event.pb.h"

@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"

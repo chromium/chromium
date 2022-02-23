@@ -8,6 +8,7 @@
 
 #import "base/base64.h"
 #include "base/bind.h"
+#include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -317,8 +318,10 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionMessageProperlyEncoded) {
       parsed_function_result.value().FindKeyOfType("parameters",
                                                    base::Value::Type::LIST);
   ASSERT_TRUE(decrypted_parameters);
-  ASSERT_EQ(function_params.size(), decrypted_parameters->GetList().size());
-  EXPECT_EQ(plaintext_param, decrypted_parameters->GetList()[0].GetString());
+  ASSERT_EQ(function_params.size(),
+            decrypted_parameters->GetListDeprecated().size());
+  EXPECT_EQ(plaintext_param,
+            decrypted_parameters->GetListDeprecated()[0].GetString());
 
   absl::optional<base::Value> parsed_message_result =
       base::JSONReader::Read(message_plaintext, false);
@@ -444,6 +447,68 @@ TEST_F(WebFrameImplTest, CallJavaScriptFunctionIFrameFrameWithoutKey) {
   NSString* last_script =
       base::SysUTF16ToNSString(fake_web_state.GetLastExecutedJavascript());
   EXPECT_EQ(last_script.length, 0ul);
+}
+
+// Tests that the WebFrame can execute arbitrary JavaScript
+// if and only if it is a main frame.
+TEST_F(WebFrameImplTest, ExecuteJavaScript) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  FakeWebState fake_web_state;
+  GURL security_origin;
+
+  NSString* script = @"__gCrWeb = {};"
+                     @"__gCrWeb['fakeFunction'] = function() {"
+                     @"  return '10';"
+                     @"}";
+
+  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
+                         /*is_main_frame=*/true, security_origin,
+                         &fake_web_state);
+
+  EXPECT_TRUE(web_frame.ExecuteJavaScript(base::SysNSStringToUTF8(script)));
+
+  WebFrameImpl web_frame2([[WKFrameInfo alloc] init], kFrameId,
+                          /*is_main_frame=*/false, security_origin,
+                          &fake_web_state);
+  // Executing arbitrary code on an iframe should return false.
+  EXPECT_FALSE(web_frame2.ExecuteJavaScript(base::SysNSStringToUTF8(script)));
+}
+
+// Tests that the WebFrame can execute arbitrary JavaScript given
+// a callback if and only if it is a main frame.
+TEST_F(WebFrameImplTest, ExecuteJavaScriptWithCallback) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  FakeWebState fake_web_state;
+  GURL security_origin;
+
+  NSString* script = @"__gCrWeb = {};"
+                     @"__gCrWeb['fakeFunction'] = function() {"
+                     @"  return '10';"
+                     @"}";
+
+  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
+                         /*is_main_frame=*/true, security_origin,
+                         &fake_web_state);
+
+  EXPECT_TRUE(
+      web_frame.ExecuteJavaScript(base::SysNSStringToUTF8(script),
+                                  base::BindOnce(^(const base::Value* value){
+                                  })));
+
+  WebFrameImpl web_frame2([[WKFrameInfo alloc] init], kFrameId,
+                          /*is_main_frame=*/false, security_origin,
+                          &fake_web_state);
+
+  EXPECT_FALSE(
+      web_frame2.ExecuteJavaScript(base::SysNSStringToUTF8(script),
+                                   base::BindOnce(^(const base::Value* value){
+                                   })));
 }
 
 }  // namespace web

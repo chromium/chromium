@@ -26,11 +26,11 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -193,7 +193,7 @@ class ScopedSubpixelOverride {
     // Fonts cached with a different subpixel positioning state are not
     // automatically invalidated and need to be cleared between test
     // runs.
-    FontCache::GetFontCache()->Invalidate();
+    FontCache::Get().Invalidate();
   }
 
  private:
@@ -436,7 +436,7 @@ TEST_F(HarfBuzzShaperTest, ShapeLatinSegment) {
 // <div>0x647<span style="color: red;">0x64A</span></
 // Cannot be enabled on Mac yet, compare
 // https:// https://github.com/harfbuzz/harfbuzz/issues/1415
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ShapeArabicWithContext DISABLED_ShapeArabicWithContext
 #else
 #define MAYBE_ShapeArabicWithContext ShapeArabicWithContext
@@ -667,7 +667,7 @@ TEST_P(ShapeParameterTest, MaxGlyphsClusterDevanagari) {
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = ShapeWithParameter(&shaper);
   EXPECT_EQ(length, result->NumCharacters());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   // Linux and Fuchsia use Lohit Devanagari. When using that font the shaper
   // returns 32767 glyphs instead of 32769.
   // TODO(crbug.com/933551): Add Noto Sans Devanagari to
@@ -1491,7 +1491,7 @@ TEST_F(HarfBuzzShaperTest, SafeToBreakLatinDiscretionaryLigatures) {
 
 // TODO(crbug.com/870712): This test fails due to font fallback differences on
 // Android and Fuchsia.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_SafeToBreakArabicCommonLigatures \
   DISABLED_SafeToBreakArabicCommonLigatures
 #else
@@ -1513,7 +1513,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(2));
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->NextSafeToBreakOffset(4));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
   EXPECT_EQ(11u, result->NextSafeToBreakOffset(6));
   EXPECT_EQ(11u, result->NextSafeToBreakOffset(7));
@@ -1537,7 +1537,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(2));
   EXPECT_EQ(3u, result->PreviousSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(4));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(6));
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(7));
@@ -1789,7 +1789,7 @@ TEST_F(HarfBuzzShaperTest,
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded \
   DISABLED_ShapeHorizontalWithSubpixelPositionWithKerningIsNotRounded
 #else
@@ -1856,9 +1856,9 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
 }
 
 TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
-#if defined(OS_MAC)
-  if (base::mac::IsOS11())
-    GTEST_SKIP() << "Broken on macOS 11: https://crbug.com/1194323";
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS11())
+    GTEST_SKIP() << "Broken on macOS >= 11: https://crbug.com/1194323";
 #endif
   // This test relies on Noto Color Emoji from the third_party directory to not
   // contain sequences and single codepoint emoji from Unicode 13 and 13.1 such
@@ -1877,7 +1877,7 @@ TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
   };
 
   Expectation expectations[] = {{3, 2}, {3, 2}, {6, 4}};
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android 11, SDK level 30, fallback occurs to an emoji
   // font that has coverage for the last segment. Adjust the expectation.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -1900,6 +1900,35 @@ TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
   scoped_refptr<ShapeResult> result =
       shaper.Shape(&emoji_font, TextDirection::kLtr);
   CHECK_EQ(num_calls, base::size(expectations));
+}
+
+// https://crbug.com/1255482
+TEST_F(HarfBuzzShaperTest, OverlyLongGraphemeCluster) {
+  // Letter 'e' with 35000 diacritics, followed by letter 'X'
+  StringBuilder builder;
+  builder.Append('e');
+  for (unsigned i = 0; i < 35000; ++i)
+    builder.Append(kCombiningAcuteAccentCharacter);
+  builder.Append('X');
+  String string = builder.ToString();
+
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
+
+  ASSERT_EQ(2u, runs.size());
+
+  // The first run contains a glyph 'é' with 32767 diacritic glyphs, reaching
+  // the maximum allowed number of glyphs per run. The remaining 2232
+  // diacritics are abandoned.
+  EXPECT_EQ(0u, runs[0].start_index);
+  EXPECT_EQ(35001u, runs[0].num_characters);
+  EXPECT_EQ(32768u, runs[0].num_glyphs);
+
+  // The second run consists of a single glyph 'X'.
+  EXPECT_EQ(35001u, runs[1].start_index);
+  EXPECT_EQ(1u, runs[1].num_characters);
+  EXPECT_EQ(1u, runs[1].num_glyphs);
 }
 
 }  // namespace blink

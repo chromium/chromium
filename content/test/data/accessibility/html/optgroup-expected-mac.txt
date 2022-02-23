@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXList AXRoleDescription='list'
+++++AXList AXRoleDescription='list box'
 ++++++AXGroup AXDescription='Enabled' AXRoleDescription='group'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='Enabled'
 ++++++AXStaticText AXRoleDescription='text' AXValue='One'

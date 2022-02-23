@@ -554,6 +554,25 @@ namespace autotestPrivate {
   };
   callback WindowBoundsCallback = void (SetWindowBoundsResult result);
 
+  // Collected DisplaySmoothness data between startSmoothnessTracking and
+  // stopSmoothnessTracking calls.
+  dictionary DisplaySmoothnessData {
+    // Number of frames expected to be shown for this animation.
+    long framesExpected;
+    // Number of frames actually shown for this animation.
+    long framesProduced;
+    // Number of janks during this animation. A jank is counted when the current
+    // frame latency is larger than previous ones.
+    long jankCount;
+    // Display throughput percentage at fixed intervals.
+    long[] throughput;
+  };
+
+  // Callback invoked to report the smoothness after StopSmoothnessTracking is
+  // called.
+  callback StopSmoothnessTrackingCallback = void
+      (DisplaySmoothnessData data);
+
   // Collected ui::ThroughputTracker data for one animation. It is based on
   // cc::FrameSequenceMetrics::ThroughputData.
   dictionary ThroughputTrackerAnimationData {
@@ -565,11 +584,6 @@ namespace autotestPrivate {
     // frame latency is larger than previous ones.
     long jankCount;
   };
-
-  // Callback invoked to report the smoothness after StopSmoothnessTracking is
-  // called.
-  callback StopSmoothnessTrackingCallback = void
-      (ThroughputTrackerAnimationData data);
 
   // Callback invoked to report the collection ui::ThroughputTracker data
   // after stopThroughputTrackerDataCollection is called.
@@ -586,6 +600,30 @@ namespace autotestPrivate {
   // Callback invoked to return the smoothness percentage after
   // getDisplaySmoothness is called.
   callback GetDisplaySmoothnessCallback = void (long smoothness);
+
+  // Options for resetting the holding space.
+  dictionary ResetHoldingSpaceOptions {
+    // Whether to call `ash::holding_space_prefs::MarkTimeOfFirstAdd()` after
+    // reset. Used to show the holding space tray in tests, since it's otherwise
+    // hidden after OOBE.
+    boolean markTimeOfFirstAdd;
+  };
+
+  callback CouldAllowCrostiniCallback = void (boolean canBeAllowed);
+
+  // Collected chromeos::LoginEventRecorder data.
+  dictionary LoginEventRecorderData {
+    // Event name
+    DOMString name;
+    // Number of frames actually shown for this animation.
+    long microsecnods_since_unix_epoch;
+  };
+
+  // Callback invoked to report the collection ui::LoginEventRecorder data
+  // after getLoginEventRecorderLoginEvents is called.
+  callback GetLoginEventRecorderLoginEventsCallback = void
+      (LoginEventRecorderData[] data);
+
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -743,6 +781,16 @@ namespace autotestPrivate {
     // Remove printer.
     static void removePrinter(DOMString printerId);
 
+    // Start ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void startArc(VoidCallback callback);
+
+    // Stop ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests. Note, this preserves ARC data.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void stopArc(VoidCallback callback);
+
     // Enable/disable the Play Store.
     // |enabled|: if set, enable the Play Store.
     // |callback|: Called when the operation has completed.
@@ -788,6 +836,12 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     [supportsPromises] static void importCrostini(DOMString path,
                                                   VoidCallback callback);
+
+    // Returns whether crostini could ever be allowed.
+    // |callback|: Called with a boolean indicating if crostini can ever be
+    // allowed in the current profile.
+    [supportsPromises] static void couldAllowCrostini(
+        CouldAllowCrostiniCallback callback);
 
     // Sets mock Plugin VM policy.
     // |imageUrl|: URL to the image to install.
@@ -1157,9 +1211,11 @@ namespace autotestPrivate {
 
     // Starts smoothness tracking for a display. If the display id is not
     // specified, the primary display is used. Otherwise, the display specified
-    // by the display id is used.
+    // by the display id is used. If `throughputIntervalMs` is not specified,
+    // default 5 seconds interval is used to collect throughput data.
     [supportsPromises] static void startSmoothnessTracking(
         optional DOMString displayId,
+        optional long throughputIntervalMs,
         VoidCallback callback);
 
     // Stops smoothness tracking for a display and report the smoothness. If
@@ -1202,6 +1258,22 @@ namespace autotestPrivate {
     [supportsPromises] static void getDisplaySmoothness(
         optional DOMString displayId,
         GetDisplaySmoothnessCallback callback);
+
+    // Resets the holding space by removing all items and clearing the prefs.
+    [supportsPromises] static void resetHoldingSpace(
+        optional ResetHoldingSpaceOptions options,
+        VoidCallback callback);
+
+    // Starts collection of ui::LoginEventRecorder data.
+    static void startLoginEventRecorderDataCollection(VoidCallback callback);
+
+    // Stops ui::LoginEventRecorder data collection and reports all the
+    // collected data.
+    static void getLoginEventRecorderLoginEvents(
+        GetLoginEventRecorderLoginEventsCallback callback);
+
+    // Adds login event to test LoginEventRecorderDataCollection API.
+    static void addLoginEventForTesting(VoidCallback callback);
   };
 
   interface Events {

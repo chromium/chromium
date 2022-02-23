@@ -12,7 +12,20 @@
  * @return {Promise<PaymentResponse>} Payment response
  */
 function getPaymentResponse(options) { // eslint-disable-line no-unused-vars
-  var methodData = [{supportedMethods: 'basic-card'}];
+  return getPaymentResponseWithMethod(
+      options, [{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Pops up a payment sheet, allowing options to be
+ * passed in if particular values are needed.
+ *
+ * @param {PaymentOptions?} options Payment options
+ * @param {Array<Object>} methodData An array of payment method objects used as
+ *        the first parameter of the PaymentRequest API.
+ * @return {Promise<PaymentResponse>} Payment response
+ */
+function getPaymentResponseWithMethod(options, methodData) { // eslint-disable-line no-unused-vars, max-len
   var details = {
     total: {
       label: 'Total',

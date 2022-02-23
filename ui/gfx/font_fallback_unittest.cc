@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/cxx17_backports.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -19,7 +20,7 @@
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -170,7 +171,7 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
                          base_font_option_.weight);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Skip testing this call to GetFallbackFont on older windows versions. Some
   // fonts only got introduced on windows 10 and the test will fail on previous
   // versions.

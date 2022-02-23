@@ -75,8 +75,8 @@ TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testInitial', function() {
   assertEquals(null, this.manager.getUncontractedTranslator());
   this.addChangeListener(function() {
     assertNotEquals(null, this.manager.getExpandingTranslator());
-    assertEquals('en-US-comp8', this.manager.getDefaultTranslator().table.id);
-    assertEquals(null, this.manager.getUncontractedTranslator());
+    assertEquals('en-us-comp6', this.manager.getDefaultTranslator().table.id);
+    assertNotEquals(null, this.manager.getUncontractedTranslator());
   });
 });
 
@@ -100,10 +100,10 @@ TEST_F(
         assertNotEquals(null, this.manager.getExpandingTranslator());
         this.addChangeListener(function() {
           assertEquals(
-              'en-UEB-g2', this.manager.getDefaultTranslator().table.id);
+              'en-ueb-g2', this.manager.getDefaultTranslator().table.id);
           assertEquals(
-              'en-US-comp8', this.manager.getUncontractedTranslator().table.id);
+              'en-nabcc', this.manager.getUncontractedTranslator().table.id);
         });
-        this.manager.refresh('en-UEB-g2');
+        this.manager.refresh('en-ueb-g2');
       });
     });

@@ -21,7 +21,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
@@ -116,7 +116,7 @@ class KeyboardLockInteractiveBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_test_server_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
 #endif
 };
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 // https://crbug.com/1108391 Flakey on ChromeOS.
 // https://crbug.com/1121172 Also flaky on Lacros and Mac
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_MAC)
+    BUILDFLAG(IS_MAC)
 #define MAYBE_SubsequentLockCallSupersedesPreviousCall \
   DISABLED_SubsequentLockCallSupersedesPreviousCall
 #else
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_FALSE(IsKeyboardLockActive());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/837438): Enable once browser fullscreen is reliable in tests.
 #define MAYBE_RequestedButNotActiveInBrowserFullscreen \
   DISABLED_RequestedButNotActiveInBrowserFullscreen
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_FALSE(IsKeyboardLockActive());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // BringBrowserWindowToFront hangs on Linux: http://crbug.com/163931
 #define MAYBE_GainAndLoseFocusInWindowMode DISABLED_GainAndLoseFocusInWindowMode
 #else
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_FALSE(IsKeyboardLockActive());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // BringBrowserWindowToFront hangs on Linux: http://crbug.com/163931
 #define MAYBE_GainAndLoseFocusInFullscreen DISABLED_GainAndLoseFocusInFullscreen
 #else

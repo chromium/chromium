@@ -10,7 +10,6 @@
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -20,8 +19,6 @@
 #include "components/metrics/metrics_service_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-
-class PrefService;
 
 namespace android_webview {
 
@@ -156,9 +153,6 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
   ~AwMetricsServiceClient() override;
 
-  // Initializes, but does not necessarily start, the MetricsService.
-  void Initialize(PrefService* pref_service);
-
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;
 
@@ -172,6 +166,10 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
+
+  // Gets the embedding app's package name if it's OK to log. Otherwise, this
+  // returns the empty string.
+  std::string GetAppPackageNameIfLoggable() override;
 
   // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
   // enabled:

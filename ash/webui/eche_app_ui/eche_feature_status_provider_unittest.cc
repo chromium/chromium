@@ -9,11 +9,11 @@
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,7 +78,6 @@ class EcheFeatureStatusProviderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_device_sync_client_.NotifyReady();
     fake_phone_hub_manager.fake_feature_status_provider()->SetStatus(
         phonehub::FeatureStatus::kEnabledAndConnected);
     provider_ = std::make_unique<EcheFeatureStatusProvider>(
@@ -86,6 +85,8 @@ class EcheFeatureStatusProviderTest : public testing::Test {
         &fake_multidevice_setup_client_, &fake_connection_manager_);
     provider_->AddObserver(&fake_observer_);
   }
+
+  void SetDeviceSyncClientReady() { fake_device_sync_client_.NotifyReady(); }
 
   void SetSyncedDevices(
       const absl::optional<multidevice::RemoteDeviceRef>& local_device,
@@ -129,6 +130,11 @@ class EcheFeatureStatusProviderTest : public testing::Test {
         std::make_pair(host_status, host_device));
   }
 
+  void SetHostStatus(HostStatus host_status) {
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(
+        std::make_pair(host_status, absl::nullopt /* host_device */));
+  }
+
   void SetConnectionStatus(secure_channel::ConnectionManager::Status status) {
     fake_connection_manager_.SetStatus(status);
   }
@@ -162,6 +168,12 @@ class EcheFeatureStatusProviderTest : public testing::Test {
 // Tests conditions for kIneligible status, including missing local
 // device and/or phone and various missing properties of these devices.
 TEST_F(EcheFeatureStatusProviderTest, IneligibleForFeature) {
+  SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
+                   {CreatePhoneDevice(/*eche_host_supported=*/true,
+                                      /*eche_host_enabled=*/true)});
+  EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
+
+  SetDeviceSyncClientReady();
   SetSyncedDevices(/*local_device=*/absl::nullopt,
                    /*phone_devices=*/{absl::nullopt});
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
@@ -194,6 +206,7 @@ TEST_F(EcheFeatureStatusProviderTest, IneligibleForFeature) {
 }
 
 TEST_F(EcheFeatureStatusProviderTest, NoEligiblePhones) {
+  SetDeviceSyncClientReady();
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
                       FeatureState::kUnavailableNoVerifiedHost,
                       /*eche_host_supported=*/true,
@@ -201,7 +214,23 @@ TEST_F(EcheFeatureStatusProviderTest, NoEligiblePhones) {
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 }
 
+TEST_F(EcheFeatureStatusProviderTest, NotEnabledByPhone) {
+  SetDeviceSyncClientReady();
+  SetSyncedDevices(CreateLocalDevice(/*supports_eche_client=*/true),
+                   {CreatePhoneDevice(/*eche_host_supported=*/true,
+                                      /*eche_host_enabled=*/false)});
+  SetHostStatus(HostStatus::kHostVerified);
+  SetFeatureState(FeatureState::kEnabledByUser);
+  EXPECT_EQ(FeatureStatus::kNotEnabledByPhone, GetStatus());
+
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*eche_host_supported=*/true,
+                      /*eche_host_enabled=*/false);
+  EXPECT_EQ(FeatureStatus::kNotEnabledByPhone, GetStatus());
+}
+
 TEST_F(EcheFeatureStatusProviderTest, Disabled) {
+  SetDeviceSyncClientReady();
   SetEligibleSyncedDevices();
 
   SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
@@ -223,6 +252,7 @@ TEST_F(EcheFeatureStatusProviderTest, Disabled) {
 }
 
 TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
+  SetDeviceSyncClientReady();
   EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
@@ -276,6 +306,7 @@ TEST_F(EcheFeatureStatusProviderTest, TransitionBetweenAllStatuses) {
 
 TEST_F(EcheFeatureStatusProviderTest,
        TransitionWhenPhoneHubFeatureStatusChanged) {
+  SetDeviceSyncClientReady();
   SetPhoneHubFeatureStatus(phonehub::FeatureStatus::kNotEligibleForFeature);
   EXPECT_EQ(FeatureStatus::kDependentFeature, GetStatus());
 

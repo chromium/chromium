@@ -42,8 +42,9 @@ class MEDIA_MOJO_EXPORT MojoAudioEncoderService final
   void Flush(FlushCallback callback) final;
 
  private:
-  using MojoDoneCallback = base::OnceCallback<void(const media::Status&)>;
-  void OnDone(MojoDoneCallback callback, Status error);
+  using MojoDoneCallback =
+      base::OnceCallback<void(const media::EncoderStatus&)>;
+  void OnDone(MojoDoneCallback callback, EncoderStatus error);
   void OnOutput(EncodedAudioBuffer output,
                 absl::optional<media::AudioEncoder::CodecDescription> desc);
 

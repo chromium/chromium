@@ -8,13 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcut_search_result.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace app_list {
 
@@ -28,7 +28,7 @@ ArcAppShortcutsSearchProvider::ArcAppShortcutsSearchProvider(
 
 ArcAppShortcutsSearchProvider::~ArcAppShortcutsSearchProvider() = default;
 
-ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() {
+ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kArcAppShortcut;
 }
 
@@ -40,13 +40,9 @@ void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
                 GetAppShortcutGlobalQueryItems)
           : nullptr;
 
-  // TODO(931149): Currently we early-exit if the query is empty because we
-  // don't show zero-state arc shortcuts. If this changes in future, remove this
-  // early exit.
-  if (!app_instance || query.empty()) {
-    ClearResults();
+  ClearResultsSilently();
+  if (!app_instance)
     return;
-  }
   last_query_ = query;
 
   if (query.empty()) {
@@ -85,7 +81,7 @@ void ArcAppShortcutsSearchProvider::UpdateRecommendedResults(
       continue;
     auto result = std::make_unique<ArcAppShortcutSearchResult>(
         std::move(item), profile_, list_controller_, true /*is_recommendation*/,
-        std::u16string() /*query*/);
+        std::u16string() /*query*/, app_info->name);
 
     if (!app_info->install_time.is_null() ||
         !app_info->last_launch_time.is_null()) {
@@ -117,7 +113,7 @@ void ArcAppShortcutsSearchProvider::OnGetAppShortcutGlobalQueryItems(
       continue;
     search_results.emplace_back(std::make_unique<ArcAppShortcutSearchResult>(
         std::move(item), profile_, list_controller_,
-        false /*is_recommendation*/, last_query_));
+        false /*is_recommendation*/, last_query_, app_info->name));
   }
   SwapResults(&search_results);
 }

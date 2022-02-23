@@ -21,6 +21,7 @@ mojom::CommitNavigationParamsPtr CreateCommitNavigationParams() {
   auto commit_params = mojom::CommitNavigationParams::New();
   commit_params->navigation_token = base::UnguessableToken::Create();
   commit_params->navigation_timing = mojom::NavigationTiming::New();
+  commit_params->app_history_entry_arrays = mojom::AppHistoryEntryArrays::New();
 
   return commit_params;
 }

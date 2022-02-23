@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) SetPINRequestHandler
   // authenticator_ is the authenticator that was selected by the initial touch.
   // The pointed-at object is owned by the |FidoRequestHandlerBase| superclass
   // of this class.
-  FidoAuthenticator* authenticator_ = nullptr;
+  raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<SetPINRequestHandler> weak_factory_{this};

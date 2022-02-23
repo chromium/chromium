@@ -42,7 +42,6 @@ AndroidCdmFactory::~AndroidCdmFactory() {
 }
 
 void AndroidCdmFactory::Create(
-    const std::string& key_system,
     const CdmConfig& cdm_config,
     const SessionMessageCB& session_message_cb,
     const SessionClosedCB& session_closed_cb,
@@ -58,7 +57,7 @@ void AndroidCdmFactory::Create(
   // Create AesDecryptor here to support External Clear Key key system.
   // This is used for testing.
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting) &&
-      IsExternalClearKey(key_system)) {
+      IsExternalClearKey(cdm_config.key_system)) {
     scoped_refptr<ContentDecryptionModule> cdm(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));
@@ -68,10 +67,11 @@ void AndroidCdmFactory::Create(
 
   std::string error_message;
 
-  if (!MediaDrmBridge::IsKeySystemSupported(key_system)) {
+  if (!MediaDrmBridge::IsKeySystemSupported(cdm_config.key_system)) {
     ReportMediaDrmBridgeKeySystemSupport(false);
     std::move(bound_cdm_created_cb)
-        .Run(nullptr, "Key system not supported unexpectedly: " + key_system);
+        .Run(nullptr,
+             "Key system not supported unexpectedly: " + cdm_config.key_system);
     return;
   }
 
@@ -87,9 +87,8 @@ void AndroidCdmFactory::Create(
       PendingCreation(std::move(factory), std::move(bound_cdm_created_cb)));
   CHECK(result.second);
 
-  raw_factory->Create(key_system, cdm_config, session_message_cb,
-                      session_closed_cb, session_keys_change_cb,
-                      session_expiration_update_cb,
+  raw_factory->Create(cdm_config, session_message_cb, session_closed_cb,
+                      session_keys_change_cb, session_expiration_update_cb,
                       base::BindOnce(&AndroidCdmFactory::OnCdmCreated,
                                      weak_factory_.GetWeakPtr(), creation_id_));
 }

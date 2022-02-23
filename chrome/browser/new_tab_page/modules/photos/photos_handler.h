@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,10 +26,15 @@ class PhotosHandler : public photos::mojom::PhotosHandler {
   void ShouldShowOptInScreen(ShouldShowOptInScreenCallback callback) override;
   void OnUserOptIn(bool accept) override;
   void OnMemoryOpen() override;
+  void ShouldShowSoftOptOutButton(
+      ShouldShowSoftOptOutButtonCallback callback) override;
+  void SoftOptOut() override;
+  void GetOptInTitleText(std::vector<photos::mojom::MemoryPtr> memories,
+                         GetOptInTitleTextCallback callback) override;
 
  private:
   mojo::Receiver<photos::mojom::PhotosHandler> handler_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_PHOTOS_PHOTOS_HANDLER_H_

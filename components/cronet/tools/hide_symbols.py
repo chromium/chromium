@@ -12,7 +12,7 @@
 # This way, we can reduce risk of symbol conflict when linking it into apps
 # by exposing internal symbols, especially in third-party libraries.
 
-from __future__ import print_function
+
 
 import glob
 import optparse

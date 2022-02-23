@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/cors.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/address_space_feature.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
@@ -73,9 +74,9 @@ void RecordAddressSpaceFeature(LocalFrame* client_frame,
   }
 
   LocalDOMWindow* window = client_frame->DomWindow();
-  absl::optional<WebFeature> feature =
-      AddressSpaceFeature(FetchType::kSubresource, window->AddressSpace(),
-                          window->IsSecureContext(), response.AddressSpace());
+  absl::optional<WebFeature> feature = AddressSpaceFeature(
+      FetchType::kSubresource, response.ClientAddressSpace(),
+      window->IsSecureContext(), response.AddressSpace());
   if (!feature.has_value()) {
     return;
   }
@@ -182,16 +183,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
     subresource_filter->ReportAdRequestId(response.RequestId());
 
   DCHECK(frame_client);
-  if (response.GetCTPolicyCompliance() ==
-      ResourceResponse::kCTPolicyDoesNotComply) {
-    CountUsage(
-        frame->IsMainFrame()
-            ? WebFeature::
-                  kCertificateTransparencyNonCompliantSubresourceInMainFrame
-            : WebFeature::
-                  kCertificateTransparencyNonCompliantResourceInSubframe);
-  }
-
   if (response_source == ResponseSource::kFromMemoryCache) {
     ResourceRequest resource_request(resource->GetResourceRequest());
 

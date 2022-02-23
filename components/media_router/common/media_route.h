@@ -43,14 +43,11 @@ class MediaRoute {
   // |description|: Human readable description of the casting activity.
   // |is_local|: true if the route was created from this browser.
   //     provider. empty otherwise.
-  // |for_display|: Set to true if this route should be displayed for
-  //     |media_sink_id| in UI.
   MediaRoute(const MediaRoute::Id& media_route_id,
              const MediaSource& media_source,
              const MediaSink::Id& media_sink_id,
              const std::string& description,
-             bool is_local,
-             bool for_display);
+             bool is_local);
   MediaRoute(const MediaRoute& other);
   MediaRoute();
 
@@ -96,9 +93,6 @@ class MediaRoute {
   }
   RouteControllerType controller_type() const { return controller_type_; }
 
-  void set_for_display(bool for_display) { for_display_ = for_display; }
-  bool for_display() const { return for_display_; }
-
   void set_off_the_record(bool is_off_the_record) {
     is_off_the_record_ = is_off_the_record;
   }
@@ -143,9 +137,6 @@ class MediaRoute {
 
   // The type of MediaRouteController supported by this route.
   RouteControllerType controller_type_ = RouteControllerType::kNone;
-
-  // |true| if the route can be displayed in the UI.
-  bool for_display_ = false;
 
   // |true| if the route was created by an OffTheRecord profile.
   bool is_off_the_record_ = false;

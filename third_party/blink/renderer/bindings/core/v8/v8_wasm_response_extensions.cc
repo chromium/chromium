@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
+#include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -24,8 +25,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
@@ -36,8 +37,14 @@ namespace blink {
 
 namespace {
 
+// The first `kWireBytesDigestSize` bytes of CachedMetadata body stores the
+// SHA-256 hash of the wire bytes and created/consumed here in Blink. The
+// remaining part of CachedMetadata is created/consumed by V8.
+static const size_t kWireBytesDigestSize = 32;
+
 // Wasm only has a single metadata type, but we need to tag it.
-static const int kWasmModuleTag = 1;
+// `2` is used to invalidate old cached data (which used kWasmModuleTag = 1).
+static const int kWasmModuleTag = 2;
 
 void SendCachedData(String response_url,
                     base::Time response_time,
@@ -90,8 +97,13 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     const size_t kWireBytesSizeThresholdBytes = 1UL << 10;  // 1 KB.
     if (wire_bytes.size() < kWireBytesSizeThresholdBytes)
       return;
-
-    v8::OwnedBuffer serialized_module = compiled_module.Serialize();
+    v8::OwnedBuffer serialized_module;
+    {
+      // Use a standard milliseconds based timer (up to 10 seconds, 50 buckets),
+      // similar to "V8.WasmDeserializationTimeMilliSeconds" defined in V8.
+      SCOPED_UMA_HISTOGRAM_TIMER("V8.WasmSerializationTimeMilliSeconds");
+      serialized_module = compiled_module.Serialize();
+    }
     // V8 might not be able to serialize the module.
     if (serialized_module.size == 0)
       return;
@@ -100,12 +112,27 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
                          "v8.wasm.cachedModule", TRACE_EVENT_SCOPE_THREAD,
                          "producedCacheSize", serialized_module.size);
 
+    DigestValue wire_bytes_digest;
+    {
+      TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                   "v8.wasm.compileDigestForCreate");
+      if (!ComputeDigest(kHashAlgorithmSha256,
+                         reinterpret_cast<const char*>(wire_bytes.data()),
+                         wire_bytes.size(), wire_bytes_digest))
+        return;
+      if (wire_bytes_digest.size() != kWireBytesDigestSize)
+        return;
+    }
+
     // The resources needed for caching may have been GC'ed, but we should still
     // save the compiled module. Use the platform API directly.
-    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedData(
+    Vector<uint8_t> serialized_data = CachedMetadata::GetSerializedDataHeader(
         kWasmModuleTag,
+        kWireBytesDigestSize + SafeCast<wtf_size_t>(serialized_module.size));
+    serialized_data.Append(wire_bytes_digest.data(), kWireBytesDigestSize);
+    serialized_data.Append(
         reinterpret_cast<const uint8_t*>(serialized_module.buffer.get()),
-        serialized_module.size);
+        SafeCast<wtf_size_t>(serialized_module.size));
 
     // Make sure the data could be copied.
     if (serialized_data.size() < serialized_module.size)
@@ -147,7 +174,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         streaming_(std::move(streaming)),
         script_state_(script_state),
         cache_handler_(cache_handler),
-        streaming_client_(streaming_client) {}
+        streaming_client_(streaming_client),
+        code_cache_state_(CodeCacheState::kBeforeFirstByte),
+        digestor_(kHashAlgorithmSha256) {}
 
   v8::WasmStreaming* streaming() const { return streaming_.get(); }
 
@@ -161,7 +190,15 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     OnStateChange();
   }
 
+  enum class CodeCacheState {
+    kBeforeFirstByte,
+    kUseCodeCache,
+    kNoCodeCache,
+  };
+
   void OnStateChange() override {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                 "v8.wasm.compileConsume");
     while (true) {
       // |buffer| is owned by |consumer_|.
       const char* buffer = nullptr;
@@ -172,11 +209,16 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         return;
       if (result == BytesConsumer::Result::kOk) {
         if (available > 0) {
-          if (!seen_first_byte) {
-            seen_first_byte = true;
-            MaybeConsumeCodeCache();
-          }
+          if (code_cache_state_ == CodeCacheState::kBeforeFirstByte)
+            code_cache_state_ = MaybeConsumeCodeCache();
+
           DCHECK_NE(buffer, nullptr);
+          if (code_cache_state_ == CodeCacheState::kUseCodeCache) {
+            TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                         "v8.wasm.compileDigestForConsume");
+            digestor_.Update(
+                base::as_bytes(base::make_span(buffer, available)));
+          }
           streaming_->OnBytesReceived(reinterpret_cast<const uint8_t*>(buffer),
                                       available);
         }
@@ -190,9 +232,11 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
           break;
         }
         case BytesConsumer::Result::kDone: {
+          TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                       "v8.wasm.compileConsumeDone");
           {
             ScriptState::Scope scope(script_state_);
-            streaming_->Finish();
+            streaming_->Finish(HasValidCodeCache());
           }
           client_->DidFetchDataLoadedCustomFormat();
           return;
@@ -257,9 +301,9 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     }
   }
 
-  void MaybeConsumeCodeCache() {
+  CodeCacheState MaybeConsumeCodeCache() {
     if (!cache_handler_)
-      return;
+      return CodeCacheState::kNoCodeCache;
 
     // We must wait until we see the first byte of the response body before
     // checking for GetCachedMetadata().  The serialized cache metadata is
@@ -272,14 +316,20 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                            "v8.wasm.moduleCacheHit", TRACE_EVENT_SCOPE_THREAD,
                            "url", url_.Utf8(), "consumedCacheSize",
                            cached_module->size());
-      bool is_valid = streaming_->SetCompiledModuleBytes(
-          reinterpret_cast<const uint8_t*>(cached_module->Data()),
-          cached_module->size());
+
+      bool is_valid =
+          cached_module->size() >= kWireBytesDigestSize &&
+          streaming_->SetCompiledModuleBytes(
+              reinterpret_cast<const uint8_t*>(cached_module->Data()) +
+                  kWireBytesDigestSize,
+              cached_module->size() - kWireBytesDigestSize);
+
       if (is_valid) {
         // Keep the buffer alive until V8 is ready to deserialize it.
         // TODO(bbudge) V8 should notify us if deserialization fails, so we
         // can release the data and reset the cache.
         streaming_client_->SetBuffer(cached_module);
+        return CodeCacheState::kUseCodeCache;
       } else {
         TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                              "v8.wasm.moduleCacheInvalid",
@@ -294,8 +344,40 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         cache_handler_->ClearCachedMetadata(
             /*code_cache_host*/ nullptr,
             CachedMetadataHandler::kClearPersistentStorage);
+        return CodeCacheState::kNoCodeCache;
       }
+    } else {
+      return CodeCacheState::kNoCodeCache;
     }
+  }
+
+  bool HasValidCodeCache() {
+    if (code_cache_state_ != CodeCacheState::kUseCodeCache)
+      return false;
+    if (!cache_handler_)
+      return false;
+    scoped_refptr<CachedMetadata> cached_module =
+        cache_handler_->GetCachedMetadata(kWasmModuleTag);
+    if (!cached_module)
+      return false;
+    if (cached_module->size() < kWireBytesDigestSize)
+      return false;
+
+    DigestValue wire_bytes_digest;
+    digestor_.Finish(wire_bytes_digest);
+    if (digestor_.has_failed() ||
+        memcmp(wire_bytes_digest.data(), cached_module->Data(),
+               kWireBytesDigestSize) != 0) {
+      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                           "v8.wasm.moduleCacheInvalidDigest",
+                           TRACE_EVENT_SCOPE_THREAD);
+      cache_handler_->ClearCachedMetadata(
+          /*code_cache_host*/ nullptr,
+          CachedMetadataHandler::kClearPersistentStorage);
+      return false;
+    }
+
+    return true;
   }
 
   const String url_;
@@ -305,7 +387,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   const Member<ScriptState> script_state_;
   Member<ScriptCachedMetadataHandler> cache_handler_;
   std::shared_ptr<WasmStreamingClient> streaming_client_;
-  bool seen_first_byte = false;
+  CodeCacheState code_cache_state_;
+  Digestor digestor_;
 };
 
 // TODO(mtrofin): WasmDataLoaderClient is necessary so we may provide an

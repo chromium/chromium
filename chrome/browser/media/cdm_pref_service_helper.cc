@@ -222,7 +222,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // Access to the PrefService must be made from the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
 
   DCHECK(!cdm_origin.opaque());
@@ -245,7 +245,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // to get a valid origin ID from `FromDictValue()`.
   if (!cdm_pref_data) {
     DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-    base::DictionaryValue* update_dict = update.Get();
+    base::Value* update_dict = update.Get();
 
     cdm_pref_data = std::make_unique<CdmPrefData>(
         base::UnguessableToken::Create(), base::Time::Now());
@@ -269,7 +269,7 @@ void CdmPrefServiceHelper::SetCdmClientToken(
   DCHECK(!serialized_cdm_origin.empty());
 
   DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-  base::DictionaryValue* dict = update.Get();
+  base::Value* dict = update.Get();
 
   base::Value* dict_value =
       dict->FindKeyOfType(serialized_cdm_origin, base::Value::Type::DICTIONARY);
@@ -296,7 +296,7 @@ void CdmPrefServiceHelper::SetCdmClientToken(
 std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
     PrefService* user_prefs) {
   std::map<std::string, url::Origin> mapping;
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
 
   for (auto key_value : dict->DictItems()) {

@@ -89,7 +89,7 @@ std::unique_ptr<ImageProcessor> CreateImageProcessor(
       ImageProcessor::PortConfig(ip_output_format, ip_output_coded_size, {},
                                  gfx::Rect(visible_size),
                                  {output_storage_type}),
-      {image_processor_output_mode}, VIDEO_ROTATION_0, std::move(error_cb),
+      image_processor_output_mode, VIDEO_ROTATION_0, std::move(error_cb),
       std::move(client_task_runner));
   if (!image_processor)
     return nullptr;
@@ -233,9 +233,9 @@ bool H264InputBufferFragmentSplitter::AdvanceFrameFragment(const uint8_t* data,
       case H264NALU::kEOStream:
       case H264NALU::kFiller:
       case H264NALU::kSPSExt:
-      case H264NALU::kReserved14:
-      case H264NALU::kReserved15:
-      case H264NALU::kReserved16:
+      case H264NALU::kPrefix:
+      case H264NALU::kSubsetSPS:
+      case H264NALU::kDPS:
       case H264NALU::kReserved17:
       case H264NALU::kReserved18:
         // These unconditionally signal a frame boundary.

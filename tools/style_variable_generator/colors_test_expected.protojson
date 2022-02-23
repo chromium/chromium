@@ -27,6 +27,13 @@ test_colors: [
     }
   },
   {
+    key: "bg_color_elevation_1",
+    value: {
+      light_value: 0xFFFFFFFF,
+      dark_value: 0xFF292A2D
+    }
+  },
+  {
     key: "text_color",
     value: {
       light_value: 0xFF000000,

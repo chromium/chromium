@@ -46,11 +46,6 @@ class PlatformSensorLinux : public PlatformSensor {
   // and stores them to a SensorReading structure.
   std::unique_ptr<SensorReader> sensor_reader_;
 
-  // Stores previously read values that are used to
-  // determine whether the recent values are changed
-  // and IPC can be notified that updates are available.
-  SensorReading old_values_;
-
   base::WeakPtrFactory<PlatformSensorLinux> weak_factory_{this};
 };
 

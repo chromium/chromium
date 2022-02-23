@@ -39,8 +39,8 @@ source_set("file_transfer") {
     ]
     deps += [
       "//ipc:ipc",
-      "//remoting/host:base",
       "//remoting/host:common",
+      "//remoting/host/base",
       "//remoting/host/win",
     ]
   } else {

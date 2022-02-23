@@ -13,11 +13,13 @@
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/policies/background_tab_loading_policy.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "content/public/common/url_constants.h"
 
 namespace performance_manager {
@@ -98,7 +100,8 @@ void BackgroundTabLoadingPolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
-    const PageNode* page_node) {
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   switch (page_node->GetLoadingState()) {
     // Loading is complete or stalled.
     case PageNode::LoadingState::kLoadingNotStarted:
@@ -117,6 +120,16 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading starts.
     case PageNode::LoadingState::kLoading: {
+      if (previous_state == PageNode::LoadingState::kLoadedBusy) {
+        // The PageNode remained in |page_nodes_loading_| when it transitioned
+        // from |kLoading| to |kLoadedBusy|, so no change is necessary when it
+        // transitions back to |kLoading|.
+        DCHECK(base::Contains(page_nodes_loading_, page_node));
+        DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+        DCHECK(!FindPageNodeToLoadData(page_node));
+        return;
+      }
+
       // The PageNode started loading because of this policy or because of
       // external factors (e.g. user-initiated). In either case, remove the
       // PageNode from the set of PageNodes for which a load needs to be
@@ -135,9 +148,11 @@ void BackgroundTabLoadingPolicy::OnLoadingStateChanged(
 
     // Loading is progressing.
     case PageNode::LoadingState::kLoadedBusy: {
-      // This PageNode should have been added to |page_nodes_loading_| when it
+      // The PageNode should have been added to |page_nodes_loading_| when it
       // transitioned to |kLoading|.
       DCHECK(base::Contains(page_nodes_loading_, page_node));
+      DCHECK(!base::Contains(page_nodes_load_initiated_, page_node));
+      DCHECK(!FindPageNodeToLoadData(page_node));
       return;
     }
   }
@@ -267,9 +282,21 @@ void BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable(
     return;
   }
 
-  // TODO(crbug.com/1071100): Use real |used_in_bg| data from the database.
+  SiteDataReader* reader = GetSiteDataReader(page_node.get());
+
+  // A tab can't play audio until it has been visible at least once so
+  // UsesAudioInBackground() is ignored.
   DCHECK(!page_node_to_load_data->used_in_bg.has_value());
-  page_node_to_load_data->used_in_bg = false;
+  page_node_to_load_data->used_in_bg =
+      reader ? (reader->UpdatesFaviconInBackground() !=
+                    SiteFeatureUsage::kSiteFeatureNotInUse ||
+                reader->UpdatesTitleInBackground() !=
+                    SiteFeatureUsage::kSiteFeatureNotInUse)
+             : false;
+
+  // TODO(crbug.com/1071100): Set `used_in_bg` if the tab has the notification
+  // permission.
+
   ++tabs_scored_;
   ScoreTab(page_node_to_load_data);
   DispatchNotifyAllTabsScoredIfNeeded();
@@ -293,6 +320,14 @@ void BackgroundTabLoadingPolicy::OnMemoryPressure(
       StopLoadingTabs();
       break;
   }
+}
+
+SiteDataReader* BackgroundTabLoadingPolicy::GetSiteDataReader(
+    const PageNode* page_node) const {
+  auto* data = SiteDataRecorder::Data::FromPageNode(page_node);
+  if (!data)
+    return nullptr;
+  return data->reader();
 }
 
 void BackgroundTabLoadingPolicy::ScoreTab(
@@ -321,13 +356,21 @@ void BackgroundTabLoadingPolicy::ScoreTab(
 
 void BackgroundTabLoadingPolicy::SetUsedInBackgroundAsync(
     PageNodeToLoadData* page_node_to_load_data) {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
-          weak_factory_.GetWeakPtr(),
-          std::move(PageNodeImpl::FromNode(page_node_to_load_data->page_node))
-              ->GetWeakPtr()));
+  const PageNode* page_node = page_node_to_load_data->page_node.get();
+  SiteDataReader* reader = GetSiteDataReader(page_node);
+  auto callback =
+      base::BindOnce(&BackgroundTabLoadingPolicy::OnUsedInBackgroundAvailable,
+                     weak_factory_.GetWeakPtr(),
+                     PageNodeImpl::FromNode(page_node)->GetWeakPtr());
+
+  // The tab won't have a reader if it doesn't have an URL tracked in the
+  // site data database.
+  if (!reader) {
+    std::move(callback).Run();
+    return;
+  }
+
+  reader->RegisterDataLoadedCallback(std::move(callback));
 }
 
 void BackgroundTabLoadingPolicy::DispatchNotifyAllTabsScoredIfNeeded() {

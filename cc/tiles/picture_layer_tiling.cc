@@ -509,7 +509,7 @@ PictureLayerTiling::CoverageIterator::operator++() {
     // unexpectedly. Unfortunately, there isn't much we can do at this point, so
     // we just do the correctness checks if both y and x offsets are
     // 'reasonable', meaning they are less than the specified value.
-    static constexpr int kReasonableOffsetForDcheck = 500'000'000;
+    static constexpr int kReasonableOffsetForDcheck = 100'000'000;
     if (!new_row && current_geometry_rect_.x() <= kReasonableOffsetForDcheck &&
         current_geometry_rect_.y() <= kReasonableOffsetForDcheck) {
       DCHECK_EQ(last_geometry_rect.right(), current_geometry_rect_.x());
@@ -957,6 +957,24 @@ gfx::Rect PictureLayerTiling::EnclosingLayerRectFromContentsRect(
     const gfx::Rect& contents_rect) const {
   return ToEnclosingRect(
       raster_transform_.InverseMapRect(gfx::RectF(contents_rect)));
+}
+
+PictureLayerTiling::TileIterator::TileIterator(PictureLayerTiling* tiling)
+    : tiling_(tiling), iter_(tiling->tiles_.begin()) {}
+
+PictureLayerTiling::TileIterator::~TileIterator() = default;
+
+Tile* PictureLayerTiling::TileIterator::GetCurrent() {
+  return AtEnd() ? nullptr : iter_->second.get();
+}
+
+void PictureLayerTiling::TileIterator::Next() {
+  if (!AtEnd())
+    ++iter_;
+}
+
+bool PictureLayerTiling::TileIterator::AtEnd() const {
+  return iter_ == tiling_->tiles_.end();
 }
 
 }  // namespace cc

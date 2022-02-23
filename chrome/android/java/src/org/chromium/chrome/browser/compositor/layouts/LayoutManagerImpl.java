@@ -24,7 +24,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
@@ -125,6 +124,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Current Layout State
     private Layout mActiveLayout;
     private Layout mNextActiveLayout;
+    private boolean mAnimateNextLayout;
 
     // Current Event Fitler State
     private EventFilter mActiveEventFilter;
@@ -169,9 +169,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     /** The supplier of {@link ThemeColorProvider} for top UI. */
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
-
-    /** A cache of title textures to use in different layouts. */
-    protected Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
@@ -251,17 +248,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier A supplier of the cache of title textures.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -476,7 +470,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
                 mTopUiThemeColorProvider);
 
-        setNextLayout(null);
+        setNextLayout(null, true);
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
@@ -588,8 +582,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
         SceneLayer layer = mActiveLayout.getUpdatedSceneLayer(mCachedWindowViewport,
-                mCachedVisibleViewport, mLayerTitleCacheSupplier.get(), tabContentManager,
-                resourceManager, browserControlsManager);
+                mCachedVisibleViewport, tabContentManager, resourceManager, browserControlsManager);
 
         float offsetPx = mBrowserControlsStateProvider == null
                 ? 0
@@ -797,15 +790,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     @Override
-    public LayoutTab createLayoutTab(int id, boolean incognito, boolean showCloseButton,
-            boolean isTitleNeeded, float maxContentWidth, float maxContentHeight) {
+    public LayoutTab createLayoutTab(
+            int id, boolean incognito, float maxContentWidth, float maxContentHeight) {
         LayoutTab tab = mTabCache.get(id);
         if (tab == null) {
-            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight(), showCloseButton,
-                    isTitleNeeded);
+            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight());
             mTabCache.put(id, tab);
         } else {
-            tab.init(mHost.getWidth(), mHost.getHeight(), showCloseButton, isTitleNeeded);
+            tab.init(mHost.getWidth(), mHost.getHeight());
         }
         if (maxContentWidth > 0.f) tab.setMaxContentWidth(maxContentWidth);
         if (maxContentHeight > 0.f) tab.setMaxContentHeight(maxContentHeight);
@@ -835,6 +827,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      */
     protected Layout getNextLayout() {
         return mNextActiveLayout != null ? mNextActiveLayout : getDefaultLayout();
+    }
+
+    /** @return Whether a next layout has been explicitly specified. */
+    protected boolean hasExplicitNextLayout() {
+        return mNextActiveLayout != null;
     }
 
     @Override
@@ -919,7 +916,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 observer.onFinishedHiding(getActiveLayout().getLayoutType());
             }
 
-            startShowing(mNextActiveLayout, true);
+            startShowing(mNextActiveLayout, mAnimateNextLayout);
         }
     }
 
@@ -929,6 +926,33 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         for (LayoutStateObserver observer : mLayoutObservers) {
             observer.onFinishedShowing(getActiveLayout().getLayoutType());
         }
+    }
+
+    @Override
+    public void showLayout(int layoutType, boolean animate) {
+        Layout activeLayout = getActiveLayout();
+        if (activeLayout != null && !activeLayout.isStartingToHide()) {
+            setNextLayout(getLayoutForType(layoutType), animate);
+            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
+        } else {
+            startShowing(getLayoutForType(layoutType), animate);
+        }
+    }
+
+    /**
+     * @param layoutType A layout type to get the implementation for.
+     * @return The layout implementation for the provided type.
+     */
+    protected Layout getLayoutForType(@LayoutType int layoutType) {
+        // TODO(1248073): Register these types and look them up in a map rather than overriding this
+        //                method in multiple places.
+        // Use the static layout by default or if explicitly specified.
+        if (layoutType == LayoutType.NONE || layoutType == LayoutType.BROWSING) {
+            return mStaticLayout;
+        }
+
+        assert false : "Unsupported layout type: " + layoutType;
+        return null;
     }
 
     /**
@@ -944,7 +968,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         assert layout != null : "Can't show a null layout.";
 
         // Set the new layout
-        setNextLayout(null);
+        setNextLayout(null, true);
         Layout oldLayout = getActiveLayout();
         if (oldLayout != layout) {
             if (oldLayout != null) {
@@ -979,7 +1003,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         getActiveLayout().show(time(), animate);
         mHost.setContentOverlayVisibility(getActiveLayout().shouldDisplayContentOverlay(),
                 getActiveLayout().canHostBeFocusable());
-        mHost.requestRender();
+        requestUpdate();
 
         // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver#onStartedShowing.
         // Notify observers about the new scene.
@@ -997,9 +1021,16 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Sets the next {@link Layout} to show after the current {@link Layout} is finished and is done
      * hiding.
      * @param layout The new {@link Layout} to show.
+     * @param animate Whether the next layout should be animated.
      */
-    public void setNextLayout(Layout layout) {
+    protected void setNextLayout(Layout layout, boolean animate) {
         mNextActiveLayout = (layout == null) ? getDefaultLayout() : layout;
+        mAnimateNextLayout = animate;
+    }
+
+    /** @return The ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
+    public int getNextLayoutType() {
+        return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
     }
 
     @Override

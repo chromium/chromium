@@ -80,7 +80,7 @@ class NGInlineBoxFragmentPainterBase : public InlineBoxPainterBase {
 
   BorderPaintingType GetBorderPaintType(
       const PhysicalRect& adjusted_frame_rect,
-      IntRect& adjusted_clip_rect,
+      gfx::Rect& adjusted_clip_rect,
       bool object_has_multiple_boxes) const override;
   void PaintNormalBoxShadow(const PaintInfo&,
                             const ComputedStyle&,
@@ -191,7 +191,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
     DCHECK_EQ(line_box_fragment.Type(),
               NGPhysicalFragment::NGFragmentType::kFragmentLineBox);
     DCHECK(NeedsPaint(line_box_fragment));
-    DCHECK(layout_block_flow.IsLayoutNGMixin());
+    DCHECK(layout_block_flow.IsLayoutNGObject());
   }
 
   const NGPhysicalLineBoxFragment& PhysicalFragment() const {

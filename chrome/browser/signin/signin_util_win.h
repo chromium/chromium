@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 class Profile;
 
@@ -22,9 +22,9 @@ void SigninWithCredentialProviderIfPossible(Profile* profile);
 // installed returns true.
 bool ReauthWithCredentialProviderIfPossible(Profile* profile);
 
-// Sets the DiceTurnSyncOnHelper delegate for browser tests.
-void SetDiceTurnSyncOnHelperDelegateForTesting(
-    std::unique_ptr<DiceTurnSyncOnHelper::Delegate> delegate);
+// Sets the TurnSyncOnHelper delegate for browser tests.
+void SetTurnSyncOnHelperDelegateForTesting(
+    std::unique_ptr<TurnSyncOnHelper::Delegate> delegate);
 
 }  // namespace signin_util
 

@@ -11,8 +11,8 @@
 namespace mojo {
 
 template <>
-struct CONTENT_EXPORT TypeConverter<blink::mojom::ServiceWorkerState,
-                                    content::ServiceWorkerVersion::Status> {
+struct TypeConverter<blink::mojom::ServiceWorkerState,
+                     content::ServiceWorkerVersion::Status> {
   static blink::mojom::ServiceWorkerState Convert(
       content::ServiceWorkerVersion::Status status);
 };

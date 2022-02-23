@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <script>
-new PaymentRequest(
-    [{supportedMethods: 'basic-card'}],
-    {total: {label: 'Tots', amount: {currency: 'USD', value: '1.00'}}}).show();
+
+/**
+ * Sends a payment request with the basic-card method.
+ */
+function triggerPaymentRequest() {
+  triggerPaymentRequestWithMethods([{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Sends a payment request with the given methods.
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function triggerPaymentRequestWithMethods(methodData) {
+  new PaymentRequest(
+      methodData,
+      {total: {label: 'Tots',
+               amount: {currency: 'USD', value: '1.00'}}}).show();
+}
 </script>

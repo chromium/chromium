@@ -17,7 +17,7 @@
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
-#include "chromeos/network/onc/variable_expander.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -135,7 +135,7 @@ class KerberosCredentialsManager : public KeyedService,
   void ListAccounts(ListAccountsCallback callback);
 
   // Sets the contents of the Kerberos configuration (krb5.conf) to |krb5_conf|
-  // for the account  with given |principal_name|.
+  // for the account with given |principal_name|.
   void SetConfig(std::string principal_name,
                  const std::string& krb5_conf,
                  ResultCallback callback);

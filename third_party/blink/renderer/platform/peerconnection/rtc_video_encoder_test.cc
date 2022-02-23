@@ -47,7 +47,7 @@ const int kInputFrameFillY = 12;
 const int kInputFrameFillU = 23;
 const int kInputFrameFillV = 34;
 const uint16_t kInputFrameHeight = 234;
-const uint16_t kInputFrameWidth = 345;
+const uint16_t kInputFrameWidth = 456;
 const uint16_t kStartBitrate = 100;
 
 const webrtc::VideoEncoder::Capabilities kVideoEncoderCapabilities(
@@ -85,13 +85,14 @@ class RTCVideoEncoderTest
             new media::MockGpuVideoAcceleratorFactories(nullptr)),
         idle_waiter_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/1186051): remove once enabled by default.
     feature_list_.InitAndEnableFeature(media::kVaapiVp9kSVCHWEncoding);
 #endif
   }
 
-  media::MockVideoEncodeAccelerator* ExpectCreateInitAndDestroyVEA() {
+  media::MockVideoEncodeAccelerator* ExpectCreateInitAndDestroyVEA(
+      bool vea_used) {
     // The VEA will be owned by the RTCVideoEncoder once
     // factory.CreateVideoEncodeAccelerator() is called.
     media::MockVideoEncodeAccelerator* mock_vea =
@@ -99,9 +100,11 @@ class RTCVideoEncoderTest
 
     EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
         .WillRepeatedly(Return(mock_vea));
-    EXPECT_CALL(*mock_vea, Initialize)
-        .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
-    EXPECT_CALL(*mock_vea, UseOutputBitstreamBuffer).Times(AtLeast(3));
+    if (vea_used) {
+      EXPECT_CALL(*mock_vea, Initialize)
+          .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
+      EXPECT_CALL(*mock_vea, UseOutputBitstreamBuffer).Times(AtLeast(3));
+    }
     EXPECT_CALL(*mock_vea, Destroy()).Times(1);
     return mock_vea;
   }
@@ -132,7 +135,7 @@ class RTCVideoEncoderTest
     idle_waiter_.Wait();
   }
 
-  void CreateEncoder(webrtc::VideoCodecType codec_type) {
+  void CreateEncoder(webrtc::VideoCodecType codec_type, bool vea_used = true) {
     DVLOG(3) << __func__;
     media::VideoCodecProfile media_profile;
     switch (codec_type) {
@@ -150,7 +153,29 @@ class RTCVideoEncoderTest
         media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
     }
 
-    mock_vea_ = ExpectCreateInitAndDestroyVEA();
+    mock_vea_ = ExpectCreateInitAndDestroyVEA(vea_used);
+    rtc_encoder_ = std::make_unique<RTCVideoEncoder>(media_profile, false,
+                                                     mock_gpu_factories_.get());
+  }
+
+  void CreateEncoderWithoutVea(webrtc::VideoCodecType codec_type) {
+    DVLOG(3) << __func__;
+    media::VideoCodecProfile media_profile;
+    switch (codec_type) {
+      case webrtc::kVideoCodecVP8:
+        media_profile = media::VP8PROFILE_ANY;
+        break;
+      case webrtc::kVideoCodecH264:
+        media_profile = media::H264PROFILE_BASELINE;
+        break;
+      case webrtc::kVideoCodecVP9:
+        media_profile = media::VP9PROFILE_PROFILE0;
+        break;
+      default:
+        ADD_FAILURE() << "Unexpected codec type: " << codec_type;
+        media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
+    }
+
     rtc_encoder_ = std::make_unique<RTCVideoEncoder>(media_profile, false,
                                                      mock_gpu_factories_.get());
   }
@@ -357,8 +382,7 @@ TEST_P(RTCVideoEncoderTest, RepeatedInitSucceeds) {
   codec.codecType = codec_type;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
-
-  ExpectCreateInitAndDestroyVEA();
+  ExpectCreateInitAndDestroyVEA(true);
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
@@ -380,6 +404,39 @@ INSTANTIATE_TEST_SUITE_P(CodecProfiles,
                          Values(webrtc::kVideoCodecH264,
                                 webrtc::kVideoCodecVP8,
                                 webrtc::kVideoCodecVP9));
+
+TEST_F(RTCVideoEncoderTest, H264SoftwareFallbackForOddSize) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type, false);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  codec.width = kInputFrameWidth - 1;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  if (mock_vea_)
+    mock_vea_->Destroy();
+}
+
+TEST_F(RTCVideoEncoderTest, VP8CreateAndInitSucceedsForOddSize) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  codec.width = kInputFrameWidth - 1;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderTest, VP9CreateAndInitSucceedsForOddSize) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  codec.width = kInputFrameWidth - 1;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
 
 // Checks that WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE is returned when there is
 // platform error.
@@ -525,6 +582,20 @@ TEST_F(RTCVideoEncoderTest, EncodeVP9TemporalLayer) {
                                        .build(),
                                    &frame_types));
   }
+}
+
+TEST_F(RTCVideoEncoderTest, InitializeWithTooHighBitrateFails) {
+  // We expect initialization to fail. We do not want a mock video encoder, as
+  // it will not be successfully attached to the rtc_encoder_. So we do not call
+  // CreateEncoder, but instead CreateEncoderWithoutVea.
+  constexpr webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoderWithoutVea(codec_type);
+
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  codec.codecType = codec_type;
+  codec.startBitrate = std::numeric_limits<uint32_t>::max() / 100;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_ERR_PARAMETER,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)

@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 

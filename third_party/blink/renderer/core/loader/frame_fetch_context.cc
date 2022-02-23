@@ -98,7 +98,7 @@
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
@@ -122,24 +122,19 @@ namespace blink {
 
 namespace {
 
-// Client hints sent to third parties are controlled through two mechanisms,
-// based on the state of the experimental flag "FeaturePolicyForClientHints".
+// Requested client hints are always sent for first-party subresources, but
+// third party subresources receive hints based on (1) the state of the flag
+// `kAllowClientHintsToThirdParty` and (2) whether they are a legacy client
+// hint (device-memory, resource-width, viewport-width and dpr).
+// TODO(crbug.com/1227043): Remove both of the above mechanisms.
 //
-// If that flag is disabled (the default), then all hints are always sent for
-// first-party subresources, and the kAllowClientHintsToThirdParty feature
-// controls whether some specific hints are sent to third parties. (Only
-// device-memory, resource-width, viewport-width and DPR are sent under this
-// model). This feature is enabled by default on Android, and disabled by
-// default on all other platforms.
+// If `kAllowClientHintsToThirdParty` is enabled AND the requested client hint
+// is a legacy client hint, then the hint is shared to third parties regardless
+// of permissions policy. This flag is only enabled by default on Android.
 //
-// When the runtime flag is enabled, all client hints except UA are controlled
-// entirely by permissions policy on all platforms. In that case, hints will
-// generally be sent for first-party resources, and not for third-party
-// resources, unless specifically enabled by policy.
-
-// Determines FetchCacheMode for |frame|. This FetchCacheMode should be a base
-// policy to consider one of each resource belonging to the frame, and should
-// not count resource specific conditions in.
+// If `kAllowClientHintsToThirdParty` is disabled OR the requested client hint
+// isn't a legacy client hint, then the hint is shared only to third parties
+// specifically enabled by the permissions policy.
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   if (!frame)
     return mojom::FetchCacheMode::kDefault;
@@ -293,12 +288,6 @@ SubresourceFilter* FrameFetchContext::GetSubresourceFilter() const {
   return document_loader_->GetSubresourceFilter();
 }
 
-PreviewsState FrameFetchContext::previews_state() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return PreviewsTypes::kPreviewsUnspecified;
-  return document_loader_->GetPreviewsState();
-}
-
 LocalFrame* FrameFetchContext::GetFrame() const {
   return document_->GetFrame();
 }
@@ -372,7 +361,15 @@ void FrameFetchContext::PrepareRequest(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kUAReduced)
               .c_str()) == "?1";
-  String user_agent = ua_reduced ? GetReducedUserAgent() : GetUserAgent();
+  const bool ua_full =
+      request.HttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
+              .c_str()) == "?1";
+
+  String user_agent =
+      ua_full ? GetFullUserAgent()
+              : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
   base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
@@ -381,13 +378,6 @@ void FrameFetchContext::PrepareRequest(
 
   if (document_loader_->ForceFetchCacheMode())
     request.SetCacheMode(*document_loader_->ForceFetchCacheMode());
-
-  if (request.GetPreviewsState() == PreviewsTypes::kPreviewsUnspecified) {
-    PreviewsState request_previews_state = document_loader_->GetPreviewsState();
-    if (request_previews_state == PreviewsTypes::kPreviewsUnspecified)
-      request_previews_state = PreviewsTypes::kPreviewsOff;
-    request.SetPreviewsState(request_previews_state);
-  }
 
   GetLocalFrameClient()->DispatchWillSendRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();
@@ -449,12 +439,13 @@ void FrameFetchContext::AddClientHintsIfNecessary(
 
   // Check if |url| is allowed to run JavaScript. If not, client hints are not
   // attached to the requests that initiate on the render side.
-  if (!AllowScriptFromSourceWithoutNotifying(request.Url()))
+  if (!AllowScriptFromSourceWithoutNotifying(
+          request.Url(), GetContentSettingsClient(), GetSettings())) {
     return;
+  }
 
-  // When the runtime flag "FeaturePolicyForClientHints" is enabled, permissions
-  // policy is used to enable hints for all subresources, based on the policy of
-  // the requesting document, and the origin of the resource.
+  // The Permissions policy is used to enable hints for all subresources, based
+  // on the policy of the requesting document, and the origin of the resource.
   const PermissionsPolicy* policy =
       document_
           ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()
@@ -526,19 +517,23 @@ void FrameFetchContext::SetFirstPartyCookie(ResourceRequest& request) {
 }
 
 bool FrameFetchContext::AllowScriptFromSource(const KURL& url) const {
-  if (AllowScriptFromSourceWithoutNotifying(url))
+  if (AllowScriptFromSourceWithoutNotifying(url, GetContentSettingsClient(),
+                                            GetSettings())) {
     return true;
+  }
   WebContentSettingsClient* settings_client = GetContentSettingsClient();
   if (settings_client)
     settings_client->DidNotAllowScript();
   return false;
 }
 
+// static
 bool FrameFetchContext::AllowScriptFromSourceWithoutNotifying(
-    const KURL& url) const {
-  Settings* settings = GetSettings();
+    const KURL& url,
+    WebContentSettingsClient* settings_client,
+    Settings* settings) {
   bool allow_script = !settings || settings->GetScriptEnabled();
-  if (auto* settings_client = GetContentSettingsClient())
+  if (settings_client)
     allow_script = settings_client->AllowScriptFromSource(allow_script, url);
   return allow_script;
 }
@@ -672,9 +667,7 @@ bool FrameFetchContext::ShouldBlockFetchAsCredentialedSubresource(
 
   CountDeprecation(WebFeature::kRequestedSubresourceWithEmbeddedCredentials);
 
-  // TODO(mkwst): Remove the runtime check one way or the other once we're
-  // sure it's going to stick (or that it's not).
-  return RuntimeEnabledFeatures::BlockCredentialedSubresourcesEnabled();
+  return true;
 }
 
 const KURL& FrameFetchContext::Url() const {
@@ -713,6 +706,12 @@ String FrameFetchContext::GetUserAgent() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->user_agent;
   return GetFrame()->Loader().UserAgent();
+}
+
+String FrameFetchContext::GetFullUserAgent() const {
+  if (GetResourceFetcherProperties().IsDetached())
+    return frozen_state_->user_agent;
+  return GetFrame()->Loader().FullUserAgent();
 }
 
 String FrameFetchContext::GetReducedUserAgent() const {
@@ -754,15 +753,20 @@ FetchContext* FrameFetchContext::Detach() {
   if (GetResourceFetcherProperties().IsDetached())
     return this;
 
+  // If the Sec-CH-UA-Full client hint header is set on the request, then the
+  // full User-Agent string should be set on the User-Agent request header.
   // If the Sec-CH-UA-Reduced client hint header is set on the request, then the
   // reduced User-Agent string should also be set on the User-Agent request
   // header.
   const ClientHintsPreferences& client_hints_prefs =
       GetClientHintsPreferences();
   String user_agent = client_hints_prefs.ShouldSend(
-                          network::mojom::WebClientHintsType::kUAReduced)
-                          ? GetReducedUserAgent()
-                          : GetUserAgent();
+                          network::mojom::WebClientHintsType::kFullUserAgent)
+                          ? GetFullUserAgent()
+                          : client_hints_prefs.ShouldSend(
+                                network::mojom::WebClientHintsType::kUAReduced)
+                                ? GetReducedUserAgent()
+                                : GetUserAgent();
 
   frozen_state_ = MakeGarbageCollected<FrozenState>(
       Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
@@ -870,26 +874,30 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   mojom::blink::ConversionPtr conversion = mojom::blink::Conversion::New();
   conversion->reporting_origin = SecurityOrigin::Create(url);
-  conversion->conversion_data = 0UL;
-  conversion->event_source_trigger_data = 0UL;
-  conversion->dedup_key = nullptr;
   conversion->devtools_request_id = devtools_request_id;
 
-  const char kTriggerDataParam[] = "trigger-data";
   URLSearchParams* search_params = URLSearchParams::Create(url.Query());
-  if (search_params->has(kTriggerDataParam)) {
-    bool is_valid_integer = false;
-    uint64_t data =
-        search_params->get(kTriggerDataParam).ToUInt64Strict(&is_valid_integer);
 
-    // Default invalid params to 0.
-    conversion->conversion_data = is_valid_integer ? data : 0UL;
+  auto parse_uint64 = [](const String& string) -> absl::optional<uint64_t> {
+    bool valid = false;
+    uint64_t value = string.ToUInt64Strict(&valid);
+    return valid ? absl::make_optional(value) : absl::nullopt;
+  };
 
-    if (!is_valid_integer) {
+  auto parse_int64 = [](const String& string) -> absl::optional<int64_t> {
+    bool valid = false;
+    int64_t value = string.ToInt64Strict(&valid);
+    return valid ? absl::make_optional(value) : absl::nullopt;
+  };
+
+  if (String string = search_params->get("trigger-data")) {
+    if (absl::optional<uint64_t> value = parse_uint64(string)) {
+      conversion->conversion_data = *value;
+    } else {
       AuditsIssue::ReportAttributionIssue(
           document_->domWindow(),
           AttributionReportingIssueType::kInvalidAttributionData, absl::nullopt,
-          nullptr, devtools_request_id, search_params->get(kTriggerDataParam));
+          nullptr, devtools_request_id, string);
     }
   } else {
     AuditsIssue::ReportAttributionIssue(
@@ -900,33 +908,37 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.
-  const char kEventSourceTriggerDataParam[] = "event-source-trigger-data";
-  if (search_params->has(kEventSourceTriggerDataParam)) {
-    bool is_valid_integer = false;
-    uint64_t data = search_params->get(kEventSourceTriggerDataParam)
-                        .ToUInt64Strict(&is_valid_integer);
-
-    // Default invalid params to 0.
-    conversion->event_source_trigger_data = is_valid_integer ? data : 0UL;
+  if (String string = search_params->get("event-source-trigger-data")) {
+    if (absl::optional<uint64_t> value = parse_uint64(string)) {
+      conversion->event_source_trigger_data = *value;
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidEventSourceTriggerData,
+          absl::nullopt, nullptr, devtools_request_id, string);
+    }
   }
 
-  const char kPriorityParam[] = "priority";
-  if (search_params->has(kPriorityParam)) {
-    bool is_valid_integer = false;
-    int64_t priority =
-        search_params->get(kPriorityParam).ToInt64Strict(&is_valid_integer);
-
-    // Default invalid params to 0.
-    conversion->priority = is_valid_integer ? priority : 0;
+  if (String string = search_params->get("priority")) {
+    if (absl::optional<int64_t> value = parse_int64(string)) {
+      conversion->priority = *value;
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidTriggerPriority, absl::nullopt,
+          nullptr, devtools_request_id, string);
+    }
   }
 
-  const char kDedupKeyParam[] = "dedup-key";
-  if (search_params->has(kDedupKeyParam)) {
-    bool is_valid_integer = false;
-    int64_t dedup_key =
-        search_params->get(kDedupKeyParam).ToInt64Strict(&is_valid_integer);
-    conversion->dedup_key =
-        is_valid_integer ? mojom::blink::DedupKey::New(dedup_key) : nullptr;
+  if (String string = search_params->get("dedup-key")) {
+    if (absl::optional<uint64_t> value = parse_uint64(string)) {
+      conversion->dedup_key = mojom::blink::DedupKey::New(*value);
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidTriggerDedupKey, absl::nullopt,
+          nullptr, devtools_request_id, string);
+    }
   }
 
   if (document_->IsPrerendering()) {

@@ -4,6 +4,8 @@
 
 #include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 
+#include "base/no_destructor.h"
+
 namespace proxy_resolver_win {
 
 WinHttpProxyResolverFunctions::WinHttpProxyResolverFunctions() {

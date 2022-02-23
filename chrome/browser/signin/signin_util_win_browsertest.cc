@@ -23,7 +23,7 @@
 #include "chrome/browser/signin/signin_util_win.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -40,21 +40,21 @@ class SigninUIError;
 
 namespace {
 
-class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
-  ~TestDiceTurnSyncOnHelperDelegate() override {}
+class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
+  ~TestTurnSyncOnHelperDelegate() override {}
 
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override {}
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      TurnSyncOnHelper::SigninChoiceCallback callback) override {
+    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowEnterpriseAccountConfirmation(
       const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      TurnSyncOnHelper::SigninChoiceCallback callback) override {
+    std::move(callback).Run(TurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -213,9 +213,9 @@ class SigninUtilWinBrowserTest
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
 
     SetSigninUtilRegistry();
 
@@ -399,9 +399,9 @@ class ExistingWinBrowserSigninUtilTest
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
     if (!IsPreTest())
       SetSigninUtilRegistry();
 
@@ -510,7 +510,7 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
   // loop is terminated by UnblockOnProfileInitialized.
   run_loop.Run();
 
-  profiles::SwitchToProfile(path, false, ProfileManager::CreateCallback());
+  profiles::SwitchToProfile(path, false);
 }
 
 struct ExistingWinBrowserProfilesSigninUtilTestParams {
@@ -548,9 +548,9 @@ class ExistingWinBrowserProfilesSigninUtilTest
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
     if (!IsPreTest()) {
       SetSigninUtilRegistry();
     } else if (IsPrePreTest() && GetParam().cred_provider_used_other_profile) {

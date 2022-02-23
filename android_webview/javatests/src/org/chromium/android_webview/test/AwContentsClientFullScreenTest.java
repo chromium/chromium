@@ -284,7 +284,6 @@ public class AwContentsClientFullScreenTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @Test
-    @DisabledTest(message = "Flaky - https://crbug.com/1105220")
     public void testPowerSaveBlockerIsTransferredToFullscreen() throws Throwable {
         Assert.assertFalse(DOMUtils.isFullscreen(getWebContentsOnUiThread()));
         loadTestPage(VIDEO_INSIDE_DIV_TEST_URL);

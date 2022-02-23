@@ -23,10 +23,8 @@ class FilteringRanker : public Ranker {
   // Ranker:
   void Start(const std::u16string& query,
              ResultsMap& results,
-             CategoriesMap& categories) override;
-  void Rank(ResultsMap& results,
-            CategoriesMap& categories,
-            ProviderType provider) override;
+             CategoriesList& categories) override;
+  void UpdateResultRanks(ResultsMap& results, ProviderType provider) override;
 
  private:
   std::u16string last_query_;

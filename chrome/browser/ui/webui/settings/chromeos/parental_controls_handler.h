@@ -32,8 +32,8 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
   // Callbacks for handling chrome.send() events.
-  void HandleShowAddSupervisionDialog(const base::ListValue* args);
-  void HandleLaunchFamilyLinkSettings(const base::ListValue* args);
+  void HandleShowAddSupervisionDialog(base::Value::ConstListView args);
+  void HandleLaunchFamilyLinkSettings(base::Value::ConstListView args);
 
   Profile* profile_;
 };

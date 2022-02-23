@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <limits.h>
 
+#include <algorithm>
 #include <cstring>
 #include <string>
 #include <unordered_map>
@@ -19,24 +20,22 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "net/base/address_list.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/url_canon.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
 #include <net/if.h>
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
-#endif  // !defined(OS_ANDROID)
-#endif  // defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
 
@@ -149,7 +148,7 @@ bool IsValidHostLabelCharacter(char c, bool is_first_char) {
 
 absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,
                                               bool require_complete) {
-  base::BigEndianReader reader(dns_name.data(), dns_name.length());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   return DnsDomainToString(reader, require_complete);
 }
 
@@ -238,46 +237,6 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
   return out;
 }
 
-AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
-                                              const AddressList& b) {
-  bool pairwise_mismatch = false;
-  bool any_match = false;
-  bool any_missing = false;
-  bool same_size = a.size() == b.size();
-
-  for (size_t i = 0; i < a.size(); ++i) {
-    bool this_match = false;
-    for (size_t j = 0; j < b.size(); ++j) {
-      if (a[i] == b[j]) {
-        any_match = true;
-        this_match = true;
-        // If there is no match before, and the current match, this means
-        // DELTA_OVERLAP.
-        if (any_missing)
-          return DELTA_OVERLAP;
-      } else if (i == j) {
-        pairwise_mismatch = true;
-      }
-    }
-    if (!this_match) {
-      any_missing = true;
-      // If any match has occurred before, then there is no need to compare the
-      // remaining addresses. This means DELTA_OVERLAP.
-      if (any_match)
-        return DELTA_OVERLAP;
-    }
-  }
-
-  if (same_size && !pairwise_mismatch)
-    return DELTA_IDENTICAL;
-  else if (same_size && !any_missing)
-    return DELTA_REORDERED;
-  else if (any_match)
-    return DELTA_OVERLAP;
-  else
-    return DELTA_DISJOINT;
-}
-
 std::string CreateNamePointer(uint16_t offset) {
   DCHECK_EQ(offset & ~dns_protocol::kOffsetMask, 0);
   char buf[2];
@@ -336,11 +295,7 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
       continue;
 
     if (base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
-      std::string server_method;
-      CHECK(dns_util::IsValidDohTemplate(entry->dns_over_https_template,
-                                         &server_method));
-      doh_servers.emplace_back(entry->dns_over_https_template,
-                               server_method == "POST");
+      doh_servers.emplace_back(entry->doh_server_config);
     }
   }
   return doh_servers;
@@ -354,22 +309,17 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
   std::transform(entries.begin(), entries.end(),
-                 std::back_inserter(doh_servers), [](const auto* entry) {
-                   std::string server_method;
-                   CHECK(dns_util::IsValidDohTemplate(
-                       entry->dns_over_https_template, &server_method));
-                   return DnsOverHttpsServerConfig(
-                       entry->dns_over_https_template, server_method == "POST");
-                 });
+                 std::back_inserter(doh_servers),
+                 [](const auto* entry) { return entry->doh_server_config; });
   return doh_servers;
 }
 
-std::string GetDohProviderIdForHistogramFromDohConfig(
+std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
   const auto it =
       std::find_if(entries.begin(), entries.end(), [&](const auto* entry) {
-        return entry->dns_over_https_template == doh_server.server_template;
+        return entry->doh_server_config == doh_server;
       });
   return it != entries.end() ? (*it)->provider : "Other";
 }

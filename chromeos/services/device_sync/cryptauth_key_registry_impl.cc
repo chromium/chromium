@@ -42,7 +42,7 @@ void CryptAuthKeyRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
 CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
     : CryptAuthKeyRegistry(), pref_service_(pref_service) {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       pref_service_->GetDictionary(prefs::kCryptAuthKeyRegistry);
 
   for (const CryptAuthKeyBundle::Name& name : CryptAuthKeyBundle::AllNames()) {

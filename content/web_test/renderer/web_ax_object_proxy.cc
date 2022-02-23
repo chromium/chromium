@@ -13,7 +13,6 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gin/handle.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -85,18 +84,15 @@ std::string GetAttributes(const blink::WebAXObject& object) {
 gfx::RectF BoundsForObject(const blink::WebAXObject& object) {
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  object.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  object.GetRelativeBounds(container, bounds, transform);
   gfx::RectF computed_bounds(0, 0, bounds.width(), bounds.height());
   while (!container.IsDetached()) {
     computed_bounds.Offset(bounds.x(), bounds.y());
     computed_bounds.Offset(-container.GetScrollOffset().x(),
                            -container.GetScrollOffset().y());
-    if (!matrix.isIdentity()) {
-      gfx::Transform transform(matrix);
-      transform.TransformRect(&computed_bounds);
-    }
-    container.GetRelativeBounds(container, bounds, matrix);
+    transform.TransformRect(&computed_bounds);
+    container.GetRelativeBounds(container, bounds, transform);
   }
   return computed_bounds;
 }
@@ -1734,8 +1730,8 @@ v8::Local<v8::Object> WebAXObjectProxy::OffsetContainer() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
   return factory_->GetOrCreate(container);
 }
 
@@ -1743,8 +1739,8 @@ float WebAXObjectProxy::BoundsInContainerX() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
   return bounds.x();
 }
 
@@ -1752,8 +1748,8 @@ float WebAXObjectProxy::BoundsInContainerY() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
   return bounds.y();
 }
 
@@ -1761,8 +1757,8 @@ float WebAXObjectProxy::BoundsInContainerWidth() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
   return bounds.width();
 }
 
@@ -1770,8 +1766,8 @@ float WebAXObjectProxy::BoundsInContainerHeight() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
   return bounds.height();
 }
 
@@ -1779,9 +1775,9 @@ bool WebAXObjectProxy::HasNonIdentityTransform() {
   UpdateLayout();
   blink::WebAXObject container;
   gfx::RectF bounds;
-  skia::Matrix44 matrix;
-  accessibility_object_.GetRelativeBounds(container, bounds, matrix);
-  return !matrix.isIdentity();
+  gfx::Transform transform;
+  accessibility_object_.GetRelativeBounds(container, bounds, transform);
+  return !transform.IsIdentity();
 }
 
 RootWebAXObjectProxy::RootWebAXObjectProxy(const blink::WebAXObject& object,

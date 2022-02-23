@@ -31,13 +31,13 @@ bool LoadValueEvents(const base::Value* value, ValueEvents* value_events) {
     return false;
 
   int64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
-    if (!entry.is_list() || entry.GetList().size() != 3)
+  for (const auto& entry : value->GetListDeprecated()) {
+    if (!entry.is_list() || entry.GetListDeprecated().size() != 3)
       return false;
-    if (!entry.GetList()[0].is_int())
+    if (!entry.GetListDeprecated()[0].is_int())
       return false;
     const ArcValueEvent::Type type =
-        static_cast<ArcValueEvent::Type>(entry.GetList()[0].GetInt());
+        static_cast<ArcValueEvent::Type>(entry.GetListDeprecated()[0].GetInt());
     switch (type) {
       case ArcValueEvent::Type::kMemTotal:
       case ArcValueEvent::Type::kMemUsed:
@@ -57,14 +57,15 @@ bool LoadValueEvents(const base::Value* value, ValueEvents* value_events) {
       default:
         return false;
     }
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry.GetListDeprecated()[1].is_double() &&
+        !entry.GetListDeprecated()[1].is_int())
       return false;
-    const int64_t timestamp = entry.GetList()[1].GetDouble();
+    const int64_t timestamp = entry.GetListDeprecated()[1].GetDouble();
     if (timestamp < previous_timestamp)
       return false;
-    if (!entry.GetList()[2].is_int())
+    if (!entry.GetListDeprecated()[2].is_int())
       return false;
-    const int value = entry.GetList()[2].GetInt();
+    const int value = entry.GetListDeprecated()[2].GetInt();
     value_events->emplace_back(timestamp, type, value);
     previous_timestamp = timestamp;
   }

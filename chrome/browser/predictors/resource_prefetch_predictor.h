@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -306,8 +307,8 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
     tables_ = tables;
   }
 
-  Profile* const profile_;
-  TestObserver* observer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<TestObserver> observer_;
   const LoadingPredictorConfig config_;
   InitializationState initialization_state_;
   scoped_refptr<ResourcePrefetchPredictorTables> tables_;
@@ -347,7 +348,7 @@ class TestObserver {
   explicit TestObserver(ResourcePrefetchPredictor* predictor);
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
 };
 
 }  // namespace predictors

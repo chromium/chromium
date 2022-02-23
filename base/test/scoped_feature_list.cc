@@ -7,13 +7,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/task_environment.h"
 
 namespace base {
 namespace test {
@@ -26,7 +29,11 @@ std::vector<StringPiece> GetFeatureVector(
     const std::vector<Feature>& features) {
   std::vector<StringPiece> output;
   for (const Feature& feature : features) {
-    output.push_back(feature.name);
+    StringPiece name = feature.name;
+    // Check against special characters used in ParseEnableFeatures function.
+    DCHECK_EQ(StringPiece(name).find_first_of(":.<,/"), StringPiece::npos)
+        << ". Invalid feature name " << name << " with reserved characters.";
+    output.push_back(name);
   }
 
   return output;
@@ -151,6 +158,18 @@ void ScopedFeatureList::Reset() {
 
   init_called_ = false;
 
+  // ThreadPool tasks racily probing FeatureList while it's initialized/reset
+  // are problematic and while callers should ideally set up ScopedFeatureList
+  // before TaskEnvironment, that's not always possible. Fencing execution here
+  // avoids an entire class of bugs by making sure no ThreadPool task queries
+  // FeatureList while it's being modified. This local action is preferred to
+  // requiring all such callers to manually flush all tasks before each
+  // ScopedFeatureList Init/Reset: crbug.com/1275502#c45
+  //
+  // All FeatureList modifications in this file should have this as well.
+  TaskEnvironment::ParallelExecutionFence fence(
+      "ScopedFeatureList must be Reset from the test main thread");
+
   FeatureList::ClearInstanceForTesting();
 
   if (field_trial_list_) {
@@ -174,6 +193,11 @@ void ScopedFeatureList::Init() {
 void ScopedFeatureList::InitWithFeatureList(
     std::unique_ptr<FeatureList> feature_list) {
   DCHECK(!original_feature_list_);
+
+  // Execution fence required while modifying FeatureList, as in Reset.
+  TaskEnvironment::ParallelExecutionFence fence(
+      "ScopedFeatureList must be Init from the test main thread");
+
   original_feature_list_ = FeatureList::ClearInstanceForTesting();
   FeatureList::SetInstance(std::move(feature_list));
   init_called_ = true;
@@ -228,7 +252,7 @@ void ScopedFeatureList::InitWithFeaturesImpl(
 
   std::string current_enabled_features;
   std::string current_disabled_features;
-  FeatureList* feature_list = FeatureList::GetInstance();
+  const FeatureList* feature_list = FeatureList::GetInstance();
   if (feature_list) {
     feature_list->GetFeatureOverrides(&current_enabled_features,
                                       &current_disabled_features);

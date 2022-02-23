@@ -6,14 +6,16 @@
 #define CONTENT_BROWSER_BROADCAST_CHANNEL_BROADCAST_CHANNEL_SERVICE_H_
 
 #include <map>
-#include "content/common/content_export.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/messaging/cloneable_message.mojom.h"
 
 namespace content {
 
-class CONTENT_EXPORT BroadcastChannelService {
+class BroadcastChannelService {
  public:
   BroadcastChannelService();
   // Not copyable or moveable, since this will be a singleton owned by
@@ -30,12 +32,30 @@ class CONTENT_EXPORT BroadcastChannelService {
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
           connection);
 
+  void AddReceiver(std::unique_ptr<BroadcastChannelProvider> provider,
+                   mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider>
+                       pending_receiver);
+
+  void AddAssociatedReceiver(
+      std::unique_ptr<BroadcastChannelProvider> provider,
+      mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+          pending_associated_receiver);
+
  private:
   class Connection;
 
   void UnregisterConnection(Connection*);
   void ReceivedMessageOnConnection(Connection*,
                                    const blink::CloneableMessage& message);
+
+  // Holds non-associated receivers corresponding to the per-thread remote
+  // used for BroadcastChannel instances created from a given worker context.
+  mojo::UniqueReceiverSet<blink::mojom::BroadcastChannelProvider> receivers_;
+
+  // Holds associated receivers that correspond to each renderer-side
+  // BroadcastChannel instance created from frame contexts.
+  mojo::UniqueAssociatedReceiverSet<blink::mojom::BroadcastChannelProvider>
+      associated_receivers_;
 
   std::map<blink::StorageKey,
            std::multimap<std::string, std::unique_ptr<Connection>>>

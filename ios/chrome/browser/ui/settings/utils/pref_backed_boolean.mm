@@ -41,4 +41,8 @@
   _pref.SetValue(value == YES);
 }
 
+- (void)stop {
+  _pref.Destroy();
+}
+
 @end

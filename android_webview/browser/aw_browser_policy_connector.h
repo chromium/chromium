@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_BROWSER_POLICY_CONNECTOR_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_BROWSER_POLICY_CONNECTOR_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 
 namespace android_webview {

@@ -8,7 +8,6 @@
 #include <jni.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/public/cast_sys_info.h"
 
 namespace base {

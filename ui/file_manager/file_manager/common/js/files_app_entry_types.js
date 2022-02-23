@@ -276,19 +276,13 @@ export class EntryList {
   }
 
   /**
-   * Removes the first entry that matches the rootType.
+   * Removes all entries that match the rootType.
    * @param {!VolumeManagerCommon.RootType} rootType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
-   * @return {boolean} if entry was removed.
    */
-  removeByRootType(rootType) {
-    const childIndex = this.children_.findIndex(
-        childEntry => childEntry.rootType === rootType);
-    if (childIndex !== -1) {
-      this.children_.splice(childIndex, 1);
-      return true;
-    }
-    return false;
+  removeAllByRootType(rootType) {
+    this.children_ =
+        this.children_.filter(entry => entry.rootType !== rootType);
   }
 
   /**
@@ -554,19 +548,13 @@ export class VolumeEntry {
   }
 
   /**
-   * Removes the first entry that matches the rootType.
+   * Removes all entries that match the rootType.
    * @param {!VolumeManagerCommon.RootType} rootType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
-   * @return {boolean} if entry was removed.
    */
-  removeByRootType(rootType) {
-    const childIndex = this.children_.findIndex(
-        childEntry => childEntry.rootType === rootType);
-    if (childIndex !== -1) {
-      this.children_.splice(childIndex, 1);
-      return true;
-    }
-    return false;
+  removeAllByRootType(rootType) {
+    this.children_ =
+        this.children_.filter(entry => entry.rootType !== rootType);
   }
 
   /**
@@ -702,5 +690,41 @@ export class FakeEntryImpl {
    */
   createReader() {
     return new StaticReader([]);
+  }
+}
+
+/**
+ * GuestOsPlaceholder is used for placeholder entries in the UI, representing
+ * Guest OSs (e.g. Crostini) that could be mounted but aren't yet.
+ *
+ * @implements FakeEntry
+ */
+export class GuestOsPlaceholder extends FakeEntryImpl {
+  /**
+   * @param {string} label Translated text to be displayed to user.
+   * @param {number} id Id of the guest
+   */
+  constructor(label, id) {
+    super(label, VolumeManagerCommon.RootType.GUEST_OS, undefined, undefined);
+
+    /**
+     * @public {number} The id of this guest
+     */
+    this.id = id;
+
+    /**
+     * @public {string} the class name for this class. It's workaround for the
+     * fact that an instance created on foreground page and sent to background
+     * page can't be checked with "instanceof".
+     */
+    this.type_name = 'GuestOsPlaceholder';
+  }
+
+  /**
+   * String used to determine the icon.
+   * @return {string}
+   */
+  get iconName() {
+    return /** @type{string} */ ('crostini');
   }
 }

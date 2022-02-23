@@ -44,9 +44,9 @@ TEST_F(FirefoxProfileLockTest, ProfileLock) {
   EXPECT_FALSE(lock->HasAcquired());
 
   // In the posix code, we don't delete the file when releasing the lock.
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
   EXPECT_FALSE(base::PathExists(lock_file_path));
-#endif  // !defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_POSIX)
   lock->Lock();
   EXPECT_TRUE(lock->HasAcquired());
   EXPECT_TRUE(base::PathExists(lock_file_path));
@@ -55,9 +55,9 @@ TEST_F(FirefoxProfileLockTest, ProfileLock) {
   lock->Unlock();
   EXPECT_FALSE(lock->HasAcquired());
   // In the posix code, we don't delete the file when releasing the lock.
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
   EXPECT_FALSE(base::PathExists(lock_file_path));
-#endif  // !defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_POSIX)
 }
 
 // If for some reason the lock file is left behind by the previous owner, we
@@ -81,7 +81,7 @@ TEST_F(FirefoxProfileLockTest, ProfileLockOrphaned) {
 
 // This is broken on POSIX since the same process is allowed to reacquire a
 // lock.
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
 // Tests two locks contending for the same lock file.
 TEST_F(FirefoxProfileLockTest, ProfileLockContention) {
   base::FilePath test_path = temp_dir_.GetPath();

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -50,6 +51,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
@@ -57,7 +59,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content.h"
@@ -84,6 +86,8 @@ KURL MainResourceUrlForFrame(Frame* frame) {
 
 const char* RequestContextName(mojom::blink::RequestContextType context) {
   switch (context) {
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
+      return "attribution src endpoint";
     case mojom::blink::RequestContextType::AUDIO:
       return "audio file";
     case mojom::blink::RequestContextType::BEACON:
@@ -234,7 +238,7 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
           source->GetDocument(),
           WebFeature::kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
-  } else if (network::IsUrlPotentiallyTrustworthy(url) &&
+  } else if (!network::IsUrlPotentiallyTrustworthy(url) &&
              base::Contains(url::GetSecureSchemes(),
                             origin->Protocol().Ascii())) {
     UseCounter::Count(

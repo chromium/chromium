@@ -21,7 +21,7 @@ void HandwritingRecognizerImpl::Create(
     handwriting::mojom::HandwritingRecognitionService::
         CreateHandwritingRecognizerCallback callback) {
   std::move(callback).Run(
-      handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+      handwriting::mojom::CreateHandwritingRecognizerResult::kNotSupported,
       mojo::NullRemote());
 }
 

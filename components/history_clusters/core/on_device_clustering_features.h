@@ -17,6 +17,12 @@ namespace features {
 // Enables configuring the on-device clustering backend.
 extern const base::Feature kOnDeviceClustering;
 
+// Uses an in-memory cache that stores engagement score.
+extern const base::Feature kUseEngagementScoreCache;
+
+// Splits clustering task into smaller batches.
+extern const base::Feature kSplitClusteringTasksToSmallerBatches;
+
 // Returns the maximum duration between navigations that
 // a visit can be considered for the same cluster.
 base::TimeDelta ClusterNavigationTimeCutoff();
@@ -52,6 +58,19 @@ bool ShouldHideSingleVisitClustersOnProminentUISurfaces();
 // same way.
 bool ShouldDedupeSimilarVisits();
 
+// Whether to filter clusters that are noisy from the UI. This will
+// heuristically remove clusters that are unlikely to be "interesting".
+bool ShouldFilterNoisyClusters();
+
+// Returns the threshold used to determine if a cluster, and its visits, has
+// too high site engagement to be likely useful.
+float NoisyClusterVisitEngagementThreshold();
+
+// Returns the number of visits considered interesting, or not noisy, required
+// to prevent the cluster from being filtered out (i.e., marked as not visible
+// on the zero state UI).
+size_t NumberInterestingVisitsFilterThreshold();
+
 // Returns the weight to use for the visit duration when ranking visits within a
 // cluster. Will always be greater than or equal to 0.
 float VisitDurationRankingWeight();
@@ -67,6 +86,34 @@ float BookmarkRankingWeight();
 // Returns the weight to use for visits that are search results pages ranking
 // visits within a cluster. Will always be greater than or equal to 0.
 float SearchResultsPageRankingWeight();
+
+// Returns the weight to use for visits that have page titles ranking visits
+// within a cluster. Will always be greater than or equal to 0.
+float HasPageTitleRankingWeight();
+
+// Returns true if content clustering should use the intersection similarity
+// score. Note, if this is used, the threshold used for clustering by content
+// score should be < .5 (see ContentClusteringSimilarityThreshold above) or the
+// weightings between entity and category content similarity scores should be
+// adjusted.
+bool ContentClusterOnIntersectionSimilarity();
+
+// Returns the threshold, in terms of the number of overlapping keywords, to use
+// when clustering based on intersection score.
+int ClusterIntersectionThreshold();
+
+// Whether to include category names in the keywords for a cluster.
+bool ShouldIncludeCategoriesInKeywords();
+
+// Whether to exclude keywords from visits that may be considered "noisy" to the
+// user (i.e. highly engaged, non-SRP).
+bool ShouldExcludeKeywordsFromNoisyVisits();
+
+// Returns the default batch size for annotating visits when clustering.
+size_t GetClusteringTasksBatchSize();
+
+// Whether to split the clusters when a search visit is encountered.
+bool ShouldSplitClustersAtSearchVisits();
 
 }  // namespace features
 }  // namespace history_clusters

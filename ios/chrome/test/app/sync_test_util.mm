@@ -136,12 +136,12 @@ int GetNumberOfSyncEntities(syncer::ModelType type) {
   std::unique_ptr<base::DictionaryValue> entities =
       gSyncFakeServer->GetEntitiesAsDictionaryValue();
 
-  std::string model_type_string = ModelTypeToString(type);
+  std::string model_type_string = ModelTypeToDebugString(type);
   base::ListValue* entity_list = NULL;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return 0;
   }
-  return entity_list->GetList().size();
+  return entity_list->GetListDeprecated().size();
 }
 
 BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,

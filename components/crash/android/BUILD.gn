@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 _jni_sources = [
   "java/src/org/chromium/components/crash/CrashKeys.java",
+  "java/src/org/chromium/components/crash/PureJavaExceptionHandler.java",
   "java/src/org/chromium/components/crash/browser/ChildProcessCrashObserver.java",
   "java/src/org/chromium/components/crash/browser/PackagePaths.java",
   "java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
@@ -22,17 +23,59 @@ java_cpp_enum("java_enums_srcjar") {
 android_library("java") {
   deps = [
     "//base:base_java",
+    "//components/minidump_uploader:minidump_uploader_java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums_srcjar" ]
-  sources = _jni_sources
+  sources = [
+    "java/src/org/chromium/components/crash/LogcatCrashExtractor.java",
+    "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
+    "java/src/org/chromium/components/crash/PureJavaExceptionReporter.java",
+  ]
+  sources += _jni_sources
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/crash/PureJavaExceptionReporterTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/crash/LogcatCrashExtractorTest.java",
+    "junit/src/org/chromium/components/crash/anr/AnrCollectorTest.java",
+  ]
+  deps = [
+    ":anr_collector_java",
+    ":anr_data_proto_java",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+  ]
 }
 
 source_set("crash_android") {
   sources = [
     "crash_keys_android.cc",
     "crash_keys_android.h",
+    "pure_java_exception_handler.cc",
+    "pure_java_exception_handler.h",
   ]
   deps = [
     ":jni_headers",
@@ -73,4 +116,26 @@ static_library("crashpad_main") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/handler",
   ]
+}
+
+source_set("anr_skipped_reason") {
+  sources = [ "anr_skipped_reason.h" ]
+}
+java_cpp_enum("anr_skipped_reason_enum") {
+  sources = [ "anr_skipped_reason.h" ]
+}
+
+proto_java_library("anr_data_proto_java") {
+  proto_path = "."
+  sources = [ "anr_data.proto" ]
+}
+
+android_library("anr_collector_java") {
+  deps = [
+    ":anr_data_proto_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  srcjar_deps = [ ":anr_skipped_reason_enum" ]
+  sources = [ "java/src/org/chromium/components/crash/anr/AnrCollector.java" ]
 }

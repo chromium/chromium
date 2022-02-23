@@ -204,9 +204,9 @@ class PluginVmInstallerTestBase : public testing::Test {
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
     DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kPluginVmImage);
-    base::DictionaryValue* plugin_vm_image = update.Get();
-    plugin_vm_image->SetKey("url", base::Value(url));
-    plugin_vm_image->SetKey("hash", base::Value(hash));
+    base::Value* plugin_vm_image = update.Get();
+    plugin_vm_image->SetStringKey("url", url);
+    plugin_vm_image->SetStringKey("hash", hash);
   }
 
   void SetRequiredFreeDiskSpaceGBPref(int required_free_disk_space) {

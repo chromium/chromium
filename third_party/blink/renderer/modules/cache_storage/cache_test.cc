@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 
-#include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -310,7 +310,7 @@ class TestCache : public Cache {
 
 class CacheStorageTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   TestCache* CreateCache(ScopedFetcherForTests* fetcher,
                          std::unique_ptr<ErrorCacheForTests> cache) {
@@ -443,7 +443,7 @@ TEST_F(CacheStorageTest, BasicArguments) {
   test_cache()->SetExpectedCacheQueryOptions(&expected_query_options);
 
   CacheQueryOptions* options = CacheQueryOptions::Create();
-  options->setIgnoreVary(1);
+  options->setIgnoreVary(true);
 
   Request* request = NewRequestFromUrl(url);
   DCHECK(request);

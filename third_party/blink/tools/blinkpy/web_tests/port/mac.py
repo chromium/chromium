@@ -51,7 +51,7 @@ class MacPort(base.Port):
 
     CONTENT_SHELL_NAME = 'Content Shell'
 
-    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md'
+    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md'
 
     @classmethod
     def determine_full_port_name(cls, host, options, port_name):
@@ -95,7 +95,7 @@ class MacPort(base.Port):
             _log.error('For complete Mac build requirements, please see:')
             _log.error('')
             _log.error(
-                '    https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md'
+                '    https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md'
             )
 
         return result
@@ -108,14 +108,21 @@ class MacPort(base.Port):
     #
 
     def path_to_apache(self):
-        return self._path_from_chromium_base('third_party', 'apache-mac',
-                                             'bin', 'httpd')
+        return '/usr/sbin/httpd'
 
     def path_to_apache_config_file(self):
-        config_file_basename = 'apache2-httpd-%s-php7.conf' % (
-            self._apache_version(), )
-        return self._filesystem.join(self.apache_config_directory(),
-                                     config_file_basename)
+        # TODO(crbug.com/1190885): Workaround for Monterey, should be reverted
+        # once we build chromium specific httpd.
+        if self.host.platform.is_mac_monterey():
+            config_file_name = "apache2-httpd-2.4-prefork.conf"
+            return self._filesystem.join(self.apache_config_directory(), config_file_name)
+
+        config_file_basename = 'apache2-httpd-' + self._apache_version()
+        if self.host.platform.os_version not in ['mac10.12']:
+            config_file_basename += '-php7'
+            if self.host.platform.os_version not in ['mac10.13', 'mac10.14']:
+                config_file_basename += '-prefork'
+        return self._filesystem.join(self.apache_config_directory(), config_file_basename + '.conf')
 
     def _path_to_driver(self, target=None):
         return self._build_path_with_target(target,

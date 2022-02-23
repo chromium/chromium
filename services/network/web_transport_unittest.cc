@@ -14,15 +14,16 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/pem.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_source_x509.h"
 #include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
-#include "net/tools/quic/quic_transport_simple_server.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -263,7 +264,7 @@ class TestClient final : public mojom::WebTransportClient {
 };
 
 quic::ParsedQuicVersion GetTestVersion() {
-  quic::ParsedQuicVersion version = quic::DefaultVersionForQuicTransport();
+  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::RFCv1();
   quic::QuicEnableVersion(version);
   return version;
 }
@@ -661,11 +662,35 @@ class WebTransportWithCustomCertificateTest : public WebTransportTest {
   static std::unique_ptr<quic::ProofSource> CreateProofSource() {
     auto proof_source = std::make_unique<net::ProofSourceChromium>();
     base::FilePath certs_dir = net::GetTestCertsDirectory();
-    EXPECT_TRUE(proof_source->Initialize(
-        certs_dir.AppendASCII("quic-short-lived.pem"),
-        certs_dir.AppendASCII("quic-leaf-cert.key"),
-        certs_dir.AppendASCII("quic-leaf-cert.key.sct")));
-    return proof_source;
+    base::FilePath cert_path = certs_dir.AppendASCII("quic-short-lived.pem");
+    base::FilePath key_path = certs_dir.AppendASCII("quic-ecdsa-leaf.key");
+
+    std::string cert_pem, key_raw;
+    if (!base::ReadFileToString(cert_path, &cert_pem)) {
+      ADD_FAILURE() << "Failed to load the certificate from " << cert_path;
+      return nullptr;
+    }
+    if (!base::ReadFileToString(key_path, &key_raw)) {
+      ADD_FAILURE() << "Failed to load the private key from " << key_path;
+      return nullptr;
+    }
+
+    net::PEMTokenizer pem_tokenizer(cert_pem, {"CERTIFICATE"});
+    if (!pem_tokenizer.GetNext()) {
+      ADD_FAILURE() << "No certificates found in " << cert_path;
+      return nullptr;
+    }
+    auto chain = quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>(
+        new quic::ProofSource::Chain(
+            std::vector<std::string>{pem_tokenizer.data()}));
+    std::unique_ptr<quic::CertificatePrivateKey> key =
+        quic::CertificatePrivateKey::LoadFromDer(key_raw);
+    if (!key) {
+      ADD_FAILURE() << "Failed to parse the key file " << key_path;
+      return nullptr;
+    }
+
+    return quic::ProofSourceX509::Create(std::move(chain), std::move(*key));
   }
 };
 
@@ -678,8 +703,8 @@ TEST_F(WebTransportWithCustomCertificateTest, WithValidFingerprint) {
 
   auto fingerprint = mojom::WebTransportCertificateFingerprint::New(
       "sha-256",
-      "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:"
-      "A2:63:3E:94:94:C0:84:39:D6:64:FA:08:B9:77:37");
+      "6E:8E:7B:43:2A:30:B2:A8:5F:59:56:85:64:C2:48:E9:35:"
+      "CB:63:B0:7A:E9:F5:CA:3C:35:6F:CB:CC:E8:8D:1B");
   std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints;
   fingerprints.push_back(std::move(fingerprint));
 

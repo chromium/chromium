@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
@@ -68,17 +69,15 @@ class IconView : public views::ImageView {
         // it whereas setting the icon size would rescale it incorrectly and
         // keep the bottom empty portion.
         image = gfx::ImageSkiaOperations::CreateTiledImage(
-            gfx::CreateVectorIcon(kGooglePayLogoIcon,
-                                  GetNativeTheme()->ShouldUseDarkColors()
-                                      ? gfx::kGoogleGrey200
-                                      : gfx::kGoogleGrey700),
+            gfx::CreateVectorIcon(
+                kGooglePayLogoIcon,
+                GetColorProvider()->GetColor(kColorGooglePayLogo)),
             /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
         break;
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:
-        image = gfx::CreateVectorIcon(
-            kGoogleGLogoIcon, kIconHeight,
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor));
+        image =
+            gfx::CreateVectorIcon(kGoogleGLogoIcon, kIconHeight,
+                                  GetColorProvider()->GetColor(ui::kColorIcon));
         break;
     }
 
@@ -102,36 +101,29 @@ END_METADATA
 TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
     const std::u16string& window_title,
     Icon icon_to_show) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
+  AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+            views::TableLayout::kFixedSize,
+            views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStart, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize);
 
-  using ColumnSize = views::GridLayout::ColumnSize;
-  // Add columns for the Google Pay icon, the separator, and the title label.
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize, ColumnSize::kUsePreferred,
-                     0, 0);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize, ColumnSize::kUsePreferred,
-                     0, 0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING, 1.f,
-                     ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto* icon_view_ptr =
-      layout->AddView(std::make_unique<IconView>(icon_to_show));
+  auto* icon_view_ptr = AddChildView(std::make_unique<IconView>(icon_to_show));
 
   auto separator = std::make_unique<views::Separator>();
   separator->SetColor(kTitleSeparatorColor);
   separator->SetPreferredHeight(kSeparatorHeight);
-  auto* separator_ptr = layout->AddView(std::move(separator));
+  auto* separator_ptr = AddChildView(std::move(separator));
 
   auto title_label = std::make_unique<views::Label>(
       window_title, views::style::CONTEXT_DIALOG_TITLE);
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetMultiLine(true);
-  auto* title_label_ptr = layout->AddView(std::move(title_label));
+  auto* title_label_ptr = AddChildView(std::move(title_label));
 
   // Add vertical padding to the icon and the separator so they are aligned with
   // the first line of title label. This needs to be done after we create the
@@ -175,8 +167,7 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield() {
 
 LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
                                    LinkClickedCallback callback) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const LegalMessageLine& line : legal_message_lines) {
     views::StyledLabel* label =
         AddChildView(std::make_unique<views::StyledLabel>());
@@ -215,12 +206,10 @@ PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
 
 ProgressBarWithTextView::ProgressBarWithTextView(
     const std::u16string& progress_bar_text) {
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL));
+  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
   progress_label_ =
       AddChildView(std::make_unique<views::Label>(progress_bar_text));

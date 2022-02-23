@@ -1,0 +1,134 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/accelerated_widget.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/gpu_fence_handle.mojom";
+import "ui/gfx/mojom/presentation_feedback.mojom";
+import "ui/gfx/mojom/swap_result.mojom";
+import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
+
+// Used by the GPU for communication with the WaylandBufferManagerHost in
+// the browser process.
+interface WaylandBufferManagerHost {
+  // Sets up an associated pipe between the Gpu and Host.
+  SetWaylandBufferManagerGpu(
+      pending_associated_remote<WaylandBufferManagerGpu>
+        buffer_manager_gpu_associated);
+
+  // The following two methods are used either for hardware accelerated
+  // rendering or for the software rendering.
+  //
+  // If the hardware accelerated rendering path is taken, this method can be
+  // used to ask Wayland to create a wl_buffer based on the |dmabuf_fd|
+  // descriptor. The |size| is the size of the buffer, the |strides|,
+  // |offsets| and |modifiers| are the descriptions of the drm buffer object.
+  // The |format| describes the buffer format (check gfx::BufferFormat) in
+  // fourcc form. The |planes_count| says how many planes the buffer, backed
+  // by the |file| descriptor has. And the |buffer_id| is a unique id for the
+  // buffer, which is used to identify imported wl_buffers on the browser
+  // process side and map them with the buffer objects on the gpu process side.
+  // The buffer will be associated with an AcceleratedWidget as soon as the
+  // very first CommitOverlays request comes from viz to browser process.
+  // If the buffer has been committed at least once, it is not possible to
+  // reassign it to another AcceleratedWidget.
+  CreateDmabufBasedBuffer(handle<platform> dmabuf_fd,
+                          gfx.mojom.Size size,
+                          array<uint32> strides,
+                          array<uint32> offsets,
+                          array<uint64> modifiers,
+                          uint32 format,
+                          uint32 planes_count,
+                          uint32 buffer_id);
+
+  // If software rendering path is used, this method can be used to ask
+  // Wayland to create a wl_buffer based on the |shm_fd| descriptor.
+  // The |length| is the length of the shared memory, |size|
+  // is the size of buffer and |buffer_id| is the id of the buffer.
+  // The buffer will be associated with an AcceleratedWidget as soon as the
+  // very first CommitOverlays request comes from viz to browser process. If
+  // the buffer has been committed at least once, it is not possible to
+  // reassign it to another AcceleratedWidget.
+  CreateShmBasedBuffer(handle<platform> shm_fd,
+                       uint64 length,
+                       gfx.mojom.Size size,
+                       uint32 buffer_id);
+
+  // Creates a browser side solid color wl_buffer that is cleared to a given
+  // |color| on the Wayland compositor side without any performance penalties
+  // compared to creation of dmabuf/shm backed buffers cleared to a certain
+  // color. |color| is a requested color. |size| is a requested size of the
+  // solid color buffer. And |buffer_id| is a unique id for the buffer, which is
+  // used to identify imported wl_buffers on the browser process side and map
+  // them with the buffer objects on the gpu process side.
+  CreateSolidColorBuffer(gfx.mojom.Size size,
+                         skia.mojom.SkColor color,
+                         uint32 buffer_id);
+
+  // These two methods are independent from the type of rendering.
+  //
+  // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|
+  // for the WaylandWindow, which has the following |widget|. The |buffer_id|
+  // is the unique id of the buffer objects being destroyed on the browser
+  // process side. If the buffer with |buffer_id| has never been assigned to an
+  // AcceleratedWidget, it can be destroyed by passing a null widget
+  // with a correct buffer id. Providing wrong pair of the |widget| and the
+  // |buffer_id| will result in the termination of the GPU process.
+  DestroyBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id);
+
+  // Send overlay configurations for a frame to a WaylandWindow with the
+  // following |widget|.
+  CommitOverlays(gfx.mojom.AcceleratedWidget widget,
+                 array<WaylandOverlayConfig> overlays);
+};
+
+
+interface WaylandBufferManagerGpu {
+  // Initializes the gpu side buffer manager by passing the interface pointer of
+  // of the WaylandBufferManagerHost that lives in the browser process to it.
+  // Also supplies the gpu side manager with the supported buffer formats and
+  // modifiers so that gpu side clients could be aware of supported modifiers
+  // the Wayland compositor announces. The modifiers may be empty, which means
+  // modifiers are not supported.
+  // The browser process may also request the client to reset gbm device
+  // instance to avoid using zwp_linux_dmabuf protocol by setting
+  // |supports_dma_buf| to false, which results in using wl_egl_surface in a
+  // single process mode, and software rendering in a multiple process mode.
+  // |supports_viewporter| indicates whether the Wayland server implements
+  // wp_viewporter extension to support cropping and scaling buffers.
+  // |supports_acquire_fence| indicates whether acquire fences can be submitted
+  // with buffers for wayland servers to wait on before accessing buffer
+  // contents.
+  // |supports_non_backed_solid_color_buffers| indicates whether the buffer
+  // manager is able to create a non-backed solid color wl_buffer. The value of
+  // this variable depends on the availability of the surface-augmenter
+  // protocol.
+  // |supports_subpixel_accurate_position| indicates whether overlay delegation
+  // is allowed for quads without final rounding on the Wayland side. Otherwise,
+  // the rounding might result in empty size, which is a Wayland protocol error.
+  Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
+             map<gfx.mojom.BufferFormat,
+                 array<uint64>> buffer_formats_with_modifiers,
+             bool supports_dma_buf,
+             bool supports_viewporter,
+             bool supports_acquire_fence,
+             bool supports_non_backed_solid_color_buffers,
+             bool supports_subpixel_accurate_position);
+
+  // Signals about swap completion.
+  OnSubmission(gfx.mojom.AcceleratedWidget widget,
+               uint32 buffer_id,
+               gfx.mojom.SwapResult swap_result,
+               gfx.mojom.GpuFenceHandle? release_fence_handle);
+
+  // Signals about presentation.
+  OnPresentation(gfx.mojom.AcceleratedWidget widget,
+                 uint32 buffer_id,
+                 gfx.mojom.PresentationFeedback feedback);
+};

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"

@@ -117,22 +117,26 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
                             : base::TimeTicks::Now();
 }
 
-bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
+bool SetKeyboardEventText(
+    char16_t (&to)[blink::WebKeyboardEvent::kTextLengthCap],
+    Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 
   std::u16string text16 = base::UTF8ToUTF16(from.fromJust());
-  if (text16.size() > blink::WebKeyboardEvent::kTextLengthCap)
+  if (text16.size() >= blink::WebKeyboardEvent::kTextLengthCap)
     return false;
 
   for (size_t i = 0; i < text16.size(); ++i)
     to[i] = text16[i];
+  to[text16.size()] = 0;
   return true;
 }
 
 bool GetMouseEventButton(const std::string& button,
                          blink::WebPointerProperties::Button* event_button,
                          int* event_modifiers) {
+  *event_modifiers = blink::WebInputEvent::kFromDebugger;
   if (button.empty())
     return true;
 
@@ -140,19 +144,19 @@ bool GetMouseEventButton(const std::string& button,
     *event_button = blink::WebMouseEvent::Button::kNoButton;
   } else if (button == Input::MouseButtonEnum::Left) {
     *event_button = blink::WebMouseEvent::Button::kLeft;
-    *event_modifiers = blink::WebInputEvent::kLeftButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kLeftButtonDown;
   } else if (button == Input::MouseButtonEnum::Middle) {
     *event_button = blink::WebMouseEvent::Button::kMiddle;
-    *event_modifiers = blink::WebInputEvent::kMiddleButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kMiddleButtonDown;
   } else if (button == Input::MouseButtonEnum::Right) {
     *event_button = blink::WebMouseEvent::Button::kRight;
-    *event_modifiers = blink::WebInputEvent::kRightButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kRightButtonDown;
   } else if (button == Input::MouseButtonEnum::Back) {
     *event_button = blink::WebMouseEvent::Button::kBack;
-    *event_modifiers = blink::WebInputEvent::kBackButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kBackButtonDown;
   } else if (button == Input::MouseButtonEnum::Forward) {
     *event_button = blink::WebMouseEvent::Button::kForward;
-    *event_modifiers = blink::WebInputEvent::kForwardButtonDown;
+    *event_modifiers |= blink::WebInputEvent::kForwardButtonDown;
   } else {
     return false;
   }
@@ -525,12 +529,14 @@ class InputHandler::InputInjector
   base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
 };
 
-InputHandler::InputHandler(bool allow_file_access)
+InputHandler::InputHandler(bool allow_file_access,
+                           bool allow_sending_input_to_browser)
     : DevToolsDomainHandler(Input::Metainfo::domainName),
       host_(nullptr),
       page_scale_factor_(1.0),
       last_id_(0),
-      allow_file_access_(allow_file_access) {}
+      allow_file_access_(allow_file_access),
+      allow_sending_input_to_browser_(allow_sending_input_to_browser) {}
 
 InputHandler::~InputHandler() = default;
 
@@ -668,7 +674,7 @@ void InputHandler::DispatchKeyEvent(
 
   // We do not pass events to browser if there is no native key event
   // due to Mac needing the actual os_event.
-  if (event.native_key_code)
+  if (event.native_key_code && allow_sending_input_to_browser_)
     event.os_event = NativeInputEventBuilder::CreateEvent(event);
   else
     event.skip_in_browser = true;
@@ -1368,7 +1374,7 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
 
   if (!synthetic_pointer_driver_) {
     synthetic_pointer_driver_ =
-        SyntheticPointerDriver::Create(gesture_source_type);
+        SyntheticPointerDriver::Create(gesture_source_type, true);
   }
   std::unique_ptr<SyntheticPointerAction> synthetic_gesture =
       std::make_unique<SyntheticPointerAction>(action_list_params);
@@ -1564,6 +1570,7 @@ void InputHandler::SynthesizePinchGesture(
   SyntheticPinchGestureParams gesture_params;
   const int kDefaultRelativeSpeed = 800;
 
+  gesture_params.from_devtools_debugger = true;
   gesture_params.scale_factor = scale_factor;
   gesture_params.anchor = CssPixelsToPointF(x, y, page_scale_factor_);
   if (!PointIsWithinContents(gesture_params.anchor)) {
@@ -1613,6 +1620,7 @@ void InputHandler::SynthesizeScrollGesture(
   }
 
   SyntheticSmoothScrollGestureParams gesture_params;
+  gesture_params.from_devtools_debugger = true;
   const bool kDefaultPreventFling = true;
   const int kDefaultSpeed = 800;
 
@@ -1724,6 +1732,7 @@ void InputHandler::SynthesizeTapGesture(
   const int kDefaultTapCount = 1;
 
   gesture_params.position = CssPixelsToPointF(x, y, page_scale_factor_);
+  gesture_params.from_devtools_debugger = true;
   if (!PointIsWithinContents(gesture_params.position)) {
     callback->sendFailure(Response::InvalidParams("Position out of bounds"));
     return;

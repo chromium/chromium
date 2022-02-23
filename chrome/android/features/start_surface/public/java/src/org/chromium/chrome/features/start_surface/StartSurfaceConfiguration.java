@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
@@ -40,6 +41,9 @@ public class StartSurfaceConfiguration {
     public static final BooleanCachedFieldTrialParameter START_SURFACE_EXCLUDE_MV_TILES =
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "exclude_mv_tiles", false);
+    public static final BooleanCachedFieldTrialParameter START_SURFACE_EXCLUDE_QUERY_TILES =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, "exclude_query_tiles", true);
     public static final BooleanCachedFieldTrialParameter
             START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
                     new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
@@ -132,6 +136,11 @@ public class StartSurfaceConfiguration {
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM, 7);
 
+    private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
+    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, Integer.MAX_VALUE);
+
     private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
             "signin_promo_NTP_since_first_time_shown_limit_hours";
     public static final IntCachedFieldTrialParameter
@@ -144,6 +153,17 @@ public class StartSurfaceConfiguration {
     public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_RESET_AFTER_HOURS =
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     SIGNIN_PROMO_NTP_RESET_AFTER_HOURS_PARAM, -1);
+
+    private static final String IS_DOODLE_SUPPORTED_PARAM = "is_doodle_supported";
+    public static final BooleanCachedFieldTrialParameter IS_DOODLE_SUPPORTED =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
+
+    private static final String HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP_PARAM =
+            "hide_start_when_last_visited_tab_is_srp";
+    public static final BooleanCachedFieldTrialParameter HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP_PARAM, false);
 
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
@@ -284,6 +304,11 @@ public class StartSurfaceConfiguration {
      */
     public static boolean shouldShowAnimationsForFinale() {
         return HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue() && FINALE_ANIMATION_ENABLED.getValue();
+    }
+
+    @CalledByNative
+    private static boolean isBehaviouralTargetingEnabled() {
+        return !TextUtils.isEmpty(BEHAVIOURAL_TARGETING.getValue());
     }
 
     @VisibleForTesting

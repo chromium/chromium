@@ -11,7 +11,22 @@ const ACCESSIBILITY_COMMON_IME_ID =
  * @fileoverview 'os-settings-add-input-methods-dialog' is a dialog for
  * adding input methods.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './cr_checkbox_with_policy.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import './shared_style.js';
+import './languages.js';
+import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import '../../settings_shared_css.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-add-input-methods-dialog',
 
   properties: {
@@ -165,7 +180,7 @@ Polymer({
     this.inputMethodsToAdd_.forEach(id => {
       this.languageHelper.addInputMethod(id);
     });
-    settings.recordSettingChange();
+    recordSettingChange();
     this.$.dialog.close();
   },
 

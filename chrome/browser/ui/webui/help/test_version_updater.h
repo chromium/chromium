@@ -27,8 +27,8 @@ class TestVersionUpdater : public VersionUpdater {
   void SetReturnedStatus(Status status) { status_ = status; }
 
 // VersionUpdater implementation:
-#if defined(OS_MAC)
-  void PromoteUpdater() const override {}
+#if BUILDFLAG(IS_MAC)
+  void PromoteUpdater() override {}
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,

@@ -9,6 +9,8 @@
 
 #include "base/time/time.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,6 +53,13 @@ class CastMediaSessionControllerTest : public testing::Test {
   void SendToController(MediaSessionAction command) {
     controller_->Send(command);
     controller_->FlushForTesting();
+  }
+
+  void WaitForOneSecond() {
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+    run_loop.Run();
   }
 
  protected:
@@ -132,4 +141,45 @@ TEST_F(CastMediaSessionControllerTest, SeekForwardAfterWaiting) {
 TEST_F(CastMediaSessionControllerTest, SendStopCommand) {
   EXPECT_CALL(mock_controller_, Pause());
   SendToController(MediaSessionAction::kStop);
+}
+
+TEST_F(CastMediaSessionControllerTest, SeekTo) {
+  auto seek_time = base::Seconds(2);
+  EXPECT_CALL(mock_controller_, Seek(seek_time));
+  controller_->SeekTo(seek_time);
+  controller_->FlushForTesting();
+}
+
+TEST_F(CastMediaSessionControllerTest, SetMute) {
+  bool mute = false;
+  EXPECT_CALL(mock_controller_, SetMute(mute));
+  controller_->SetMute(mute);
+  controller_->FlushForTesting();
+}
+
+TEST_F(CastMediaSessionControllerTest, SetVolume) {
+  float volume = 1.1f;
+  EXPECT_CALL(mock_controller_, SetVolume(testing::FloatEq(volume)));
+  controller_->SetVolume(volume);
+  controller_->FlushForTesting();
+}
+
+TEST_F(CastMediaSessionControllerTest, IncrementCurrentTime) {
+  //  Update controller with paused media status should not increment current
+  //  time.
+  media_status_->play_state =
+      media_router::mojom::MediaStatus::PlayState::PAUSED;
+  controller_->OnMediaStatusUpdated(media_status_.Clone());
+  WaitForOneSecond();
+  EXPECT_EQ(media_status_->current_time,
+            controller_->GetMediaStatusForTesting()->current_time);
+
+  // Update controller with playing media status should increment current time.
+  media_status_->play_state =
+      media_router::mojom::MediaStatus::PlayState::PLAYING;
+  controller_->OnMediaStatusUpdated(media_status_.Clone());
+
+  WaitForOneSecond();
+  EXPECT_NE(media_status_->current_time,
+            controller_->GetMediaStatusForTesting()->current_time);
 }

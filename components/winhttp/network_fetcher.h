@@ -34,7 +34,7 @@ namespace winhttp {
 // as it is accessed from the main thread and the worker threads in WinHTTP.
 class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
  public:
-  using FetchCompleteCallback = base::OnceCallback<void()>;
+  using FetchCompleteCallback = base::OnceCallback<void(int response_code)>;
   using FetchStartedCallback =
       base::OnceCallback<void(int response_code, int64_t content_length)>;
   using FetchProgressCallback = base::RepeatingCallback<void(int64_t current)>;
@@ -138,6 +138,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   WriteDataCallback write_data_callback_;
   HRESULT net_error_ = S_OK;
   std::vector<char> read_buffer_;
+  int response_code_ = 0;
   std::string post_response_body_;
   base::FilePath file_path_;
   base::File file_;

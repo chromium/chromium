@@ -15,6 +15,12 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
+class GURL;
+
+namespace url {
+class Origin;
+}
+
 namespace auction_worklet {
 
 class BidderWorklet;
@@ -41,16 +47,25 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
-      mojom::BiddingInterestGroupPtr bidding_interest_group) override;
+      const GURL& script_source_url,
+      const absl::optional<GURL>& wasm_helper_url,
+      const absl::optional<GURL>& trusted_bidding_signals_url,
+      const url::Origin& top_window_origin) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
-      const GURL& script_source_url,
-      LoadSellerWorkletCallback load_seller_worklet_callback) override;
+      const GURL& decision_logic_url,
+      const absl::optional<GURL>& trusted_scoring_signals_url,
+      const url::Origin& top_window_origin) override;
 
  private:
+  void DisconnectSellerWorklet(mojo::ReceiverId receiver_id,
+                               const std::string& reason);
+  void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
+                               const std::string& reason);
+
   mojo::Receiver<mojom::AuctionWorkletService> receiver_;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;

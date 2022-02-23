@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -347,7 +347,7 @@ void WebSocketStream::UnderlyingSink::SendArrayBuffer(
            << " length = " << length;
 
   if (creator_->channel_->Send(*buffer, offset, length, std::move(callback)) ==
-      WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY) {
+      WebSocketChannel::SendResult::kSentSynchronously) {
     is_writing_ = false;
     resolver->Resolve();
   }
@@ -379,7 +379,7 @@ void WebSocketStream::UnderlyingSink::SendString(
   DCHECK_EQ(message.back(), '\0');
   message.pop_back();  // Remove the null terminator.
   if (creator_->channel_->Send(message, std::move(callback)) ==
-      WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY) {
+      WebSocketChannel::SendResult::kSentSynchronously) {
     is_writing_ = false;
     resolver->Resolve();
   }

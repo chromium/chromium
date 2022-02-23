@@ -41,7 +41,7 @@ namespace crashpad {
 namespace test {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string ToUTF8IfWin(const std::wstring& x) {
   return base::WideToUTF8(x);
 }
@@ -70,7 +70,7 @@ class HTTPTransportTestFixture : public MultiprocessExec {
         scheme_and_host_() {
     base::FilePath server_path = TestPaths::Executable().DirName().Append(
         FILE_PATH_LITERAL("http_transport_test_server")
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
             FILE_PATH_LITERAL(".exe")
 #endif
     );
@@ -361,7 +361,7 @@ TEST_P(HTTPTransport, Upload33k_LengthUnknown) {
 }
 
 // This should be on for Fuchsia, but DX-382. Debug and re-enabled.
-#if defined(CRASHPAD_USE_BORINGSSL) && !defined(OS_FUCHSIA)
+#if defined(CRASHPAD_USE_BORINGSSL) && !BUILDFLAG(IS_FUCHSIA)
 // The test server requires BoringSSL or OpenSSL, so https in tests can only be
 // enabled where that's readily available. Additionally on Linux, the bots fail
 // lacking libcrypto.so.1.1, so disabled there for now. On Mac, they could also

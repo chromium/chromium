@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_server_timing.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -146,15 +146,15 @@ class CORE_EXPORT PerformanceResourceTiming
   network::mojom::RequestDestination request_destination_ =
       network::mojom::RequestDestination::kEmpty;
   mojom::blink::CacheState cache_state_ = mojom::blink::CacheState::kNone;
-  uint64_t encoded_body_size_ = 0;
-  uint64_t decoded_body_size_ = 0;
-  bool did_reuse_connection_ = false;
+  const uint64_t encoded_body_size_ = 0;
+  const uint64_t decoded_body_size_ = 0;
+  const bool did_reuse_connection_ = false;
   // Do not access allow_timing_details_ directly.  Instead use the
   // AllowTimingDetails() method which is overridden by some sub-classes.
-  bool allow_timing_details_ = false;
-  bool allow_redirect_details_ = false;
-  bool allow_negative_value_ = false;
-  bool is_secure_transport_ = false;
+  const bool allow_timing_details_ = false;
+  const bool allow_redirect_details_ = false;
+  const bool allow_negative_value_ = false;
+  const bool is_secure_transport_ = false;
   HeapVector<Member<PerformanceServerTiming>> server_timing_;
   HeapVector<Member<PerformanceEntry>> worker_timing_;
 

@@ -51,7 +51,7 @@ TEST(NetworkUtilsTest, IsReservedIPAddress) {
   for (int i = 0; i < 256; i++) {
     net::IPAddress address(i, 0, 0, 1);
     std::string address_string = address.ToString();
-    if (i == 0 || i == 10 || i == 127 || i > 223) {
+    if (i == 0 || i == 10 || i == 127 || i == 192 || i > 223) {
       EXPECT_TRUE(network_utils::IsReservedIPAddress(
           String::FromUTF8(address_string.data(), address_string.length())));
     } else {

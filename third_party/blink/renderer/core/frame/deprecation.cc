@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
@@ -61,12 +61,18 @@ enum Milestone {
   kM98 = 98,
   kM99 = 99,
   kM100 = 100,
+  kM101 = 101,
+  kM102 = 102,
+  kM103 = 103,
+  kM104 = 104,
+  kM105 = 105,
+  kM106 = 106,
 };
 
 // Returns estimated milestone dates as milliseconds since January 1, 1970.
 base::Time::Exploded MilestoneDate(Milestone milestone) {
   // These are the Estimated Stable Dates:
-  // https://www.chromium.org/developers/calendar
+  // https://chromiumdash.appspot.com/schedule
   // All dates except for kUnknown are at 04:00:00 GMT.
   switch (milestone) {
     case kUnknown:
@@ -139,6 +145,18 @@ base::Time::Exploded MilestoneDate(Milestone milestone) {
       return {2022, 3, 0, 1, 4};
     case kM100:
       return {2022, 3, 0, 29, 4};
+    case kM101:
+      return {2022, 4, 0, 26, 4};
+    case kM102:
+      return {2022, 5, 0, 24, 4};
+    case kM103:
+      return {2022, 6, 0, 21, 4};
+    case kM104:
+      return {2022, 7, 0, 26, 4};
+    case kM105:
+      return {2022, 8, 0, 30, 4};
+    case kM106:
+      return {2022, 9, 0, 27, 4};
   }
 
   NOTREACHED();
@@ -389,25 +407,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "sourceBuffers, where newDuration < oldDuration.",
           "6107495151960064");
 
-    case WebFeature::kApplicationCacheAPIInsecureOrigin:
-    case WebFeature::kApplicationCacheManifestSelectInsecureOrigin:
-      return DeprecationInfo::WithDetails(
-          "ApplicationCacheAPIInsecureOrigin", kM70,
-          "Application Cache was previously restricted to secure origins only "
-          "from M70 on but now secure origin use is deprecated and will be "
-          "removed in M82.  Please shift your use case over to Service "
-          "Workers.");
-
-    case WebFeature::kApplicationCacheAPISecureOrigin:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "ApplicationCacheAPISecureOrigin", kM85, "Application Cache API use",
-          "6192449487634432");
-
-    case WebFeature::kApplicationCacheManifestSelectSecureOrigin:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "ApplicationCacheAPISecureOrigin", kM85,
-          "Application Cache API manifest selection", "6192449487634432");
-
     case WebFeature::kNotificationInsecureOrigin:
     case WebFeature::kNotificationAPIInsecureOriginIframe:
     case WebFeature::kNotificationPermissionRequestedInsecureOrigin:
@@ -424,6 +423,13 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "a cross-origin iframe. You should consider requesting permission "
           "from a top-level frame or opening a new window instead.",
           "6451284559265792");
+
+    case WebFeature::kBatteryStatusInsecureOrigin:
+      return DeprecationInfo::WithFeatureAndChromeStatusID(
+          "BatteryStatusInsecureOrigin", Milestone::kM103,
+          "Using the Battery Status API (e.g. navigator.getBattery()) in "
+          "insecure origins like HTTP",
+          "4878376799043584");
 
     case WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton:
       return DeprecationInfo::WithDetailsAndChromeStatusID(
@@ -636,12 +642,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "\"Authorization\" will not be covered by the wildcard symbol (*)in "
           "CORS \"Access-Control-Allow-Headers\" handling.");
 
-    case WebFeature::kOpenWebDatabaseThirdPartyContext:
-      return DeprecationInfo::WithFeatureAndReplacementAndChromeStatusID(
-          "OpenWebDatabaseThirdPartyContext", kM97,
-          "WebSQL in third-party contexts (i.e. cross-site iframes)",
-          "Web Storage or Indexed Database", "5684870116278272");
-
     case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
       return DeprecationInfo::WithDetails(
           "RTCConstraintEnableDtlsSrtpTrue", kM97,
@@ -686,6 +686,12 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "PaymentRequestBasicCard", kM100, "The 'basic-card' payment method",
           "5730051011117056");
 
+    case WebFeature::kPaymentRequestShowWithoutGesture:
+      return DeprecationInfo::WithFeatureAndChromeStatusID(
+          "PaymentRequestShowWithoutGesture", kM102,
+          "Calling PaymentRequest.show() without user activation",
+          "5948593429020672");
+
     case WebFeature::kHostCandidateAttributeGetter:
       return DeprecationInfo::WithFeatureAndReplacement(
           "HostCandidateAttributeGetter", kUnknown,
@@ -696,9 +702,35 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
     case WebFeature::kWebCodecsVideoFrameDefaultTimestamp:
       return DeprecationInfo::WithDetails(
           "WebCodecsVideoFrameDefaultTimestamp", kUnknown,
-          "A VideoFrame was constructed without a timestamp. Support for this  "
-          "may be removed in the future. Please provide an explicit timestamp "
-          "via VideoFrameInit.");
+          "Constructing a VideoFrame without a timestamp is deprecated and "
+          "support will be removed in M99. Please provide a timestamp via "
+          "VideoFrameInit. See "
+          "https://www.chromestatus.com/feature/5667793157488640 for more "
+          "details.");
+
+    case WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader:
+      return DeprecationInfo::WithDetails(
+          "WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader",
+          kM106,
+          String::Format(
+              "Relaxing the same-origin policy by setting \"document.domain\" "
+              "is deprecated, and will be disabled by default in %s. To "
+              "continue using this feature, please opt-out of origin-keyed "
+              "agent clusters by sending an `Origin-Agent-Cluster: ?0` header "
+              "along with the HTTP response for the document and "
+              "frames. See %s for more details.",
+              MilestoneString(kM106).Ascii().c_str(),
+              "https://developer.chrome.com/blog/immutable-document-domain/"));
+
+    case WebFeature::kCrossOriginAccessBasedOnDocumentDomain:
+      return DeprecationInfo::WithDetails(
+          "WebFeature::kCrossOriginAccessBasedOnDocumentDomain", kM106,
+          String::Format(
+              "Relaxing the same-origin policy by setting \"document.domain\" "
+              "is deprecated, and will be disabled by default in %s. This "
+              "deprecation warning is for a cross-origin access that was "
+              "enabled by setting document.domain.",
+              MilestoneString(kM106).Ascii().c_str()));
 
     // Features that aren't deprecated don't have a deprecation message.
     default:
@@ -788,7 +820,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
   // Send the deprecation message as a DevTools issue.
   DCHECK(!info.message_.IsEmpty());
-  AuditsIssue::ReportDeprecationIssue(context, info.message_);
+  AuditsIssue::ReportDeprecationIssue(context, info.message_, info.id_);
 
   Report* report = CreateReportInternal(context->Url(), info);
 

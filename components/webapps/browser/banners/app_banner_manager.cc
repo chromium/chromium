@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -34,6 +35,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -84,7 +86,7 @@ class ConsoleStatusReporter : public AppBannerManager::StatusReporter {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 // Tracks installable status codes via an UMA histogram.
@@ -621,17 +623,28 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   // only allow the page to enter the cache if we know for sure that no
   // installation is needed. Note: this check must happen before calling
   // Terminate as it might set the installable_web_app_check_result_ to kNo.
-  if (installable_web_app_check_result_ != InstallableWebAppCheckResult::kNo &&
-      state_ != State::INACTIVE) {
-    content::BackForwardCache::DisableForRenderFrameHost(
-        handle->GetPreviousRenderFrameHostId(),
-        back_forward_cache::DisabledReason(
-            back_forward_cache::DisabledReasonId::kAppBannerManager));
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheAppBanner)) {
+    if (installable_web_app_check_result_ !=
+            InstallableWebAppCheckResult::kNo &&
+        state_ != State::INACTIVE) {
+      content::BackForwardCache::DisableForRenderFrameHost(
+          handle->GetPreviousRenderFrameHostId(),
+          back_forward_cache::DisabledReason(
+              back_forward_cache::DisabledReasonId::kAppBannerManager));
+    }
   }
 
-  if (state_ != State::COMPLETE && state_ != State::INACTIVE)
-    Terminate();
-  ResetCurrentPageData();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheAppBanner) &&
+      handle->IsServedFromBackForwardCache()) {
+    UpdateState(State::INACTIVE);
+    RequestAppBanner(validated_url_);
+  } else {
+    if (state_ != State::COMPLETE && state_ != State::INACTIVE)
+      Terminate();
+    ResetCurrentPageData();
+  }
 }
 
 void AppBannerManager::DidFinishLoad(
@@ -663,7 +676,7 @@ void AppBannerManager::DidActivatePortal(
   // If this page was loaded in a portal, AppBannerManager may have been
   // instantiated after DidFinishLoad. Trigger the banner pipeline now (on
   // portal activation) if we missed the load event.
-  if (!load_finished_ && !web_contents()->IsLoadingToDifferentDocument()) {
+  if (!load_finished_ && !web_contents()->ShouldShowLoadingUI()) {
     DidFinishLoad(web_contents()->GetMainFrame(),
                   web_contents()->GetLastCommittedURL());
   }
@@ -685,7 +698,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
     case State::PENDING_PROMPT:
       Terminate();
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::COMPLETE:
       if (!manifest_url.is_empty()) {
         // This call resets has_sufficient_engagement_data_. In order to

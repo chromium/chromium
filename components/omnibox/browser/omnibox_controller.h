@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
@@ -44,6 +45,11 @@ class OmniboxController : public AutocompleteController::Observer {
     return autocomplete_controller_.get();
   }
 
+  void set_autocomplete_controller(
+      std::unique_ptr<AutocompleteController> autocomplete_controller) {
+    autocomplete_controller_ = std::move(autocomplete_controller);
+  }
+
   // Set |current_match_| to an invalid value, indicating that we do not yet
   // have a valid match for the current text in the omnibox.
   void InvalidateCurrentMatch();
@@ -63,9 +69,9 @@ class OmniboxController : public AutocompleteController::Observer {
 
   // Weak, it owns us.
   // TODO(beaudoin): Consider defining a delegate to ease unit testing.
-  OmniboxEditModel* omnibox_edit_model_;
+  raw_ptr<OmniboxEditModel> omnibox_edit_model_;
 
-  OmniboxClient* client_;
+  raw_ptr<OmniboxClient> client_;
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 

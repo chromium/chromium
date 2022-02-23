@@ -22,7 +22,8 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ namespace blink {
 namespace {
 
 gfx::Rect GetRect(LayoutObject* layout_object) {
-  return ToGfxRect(EnclosingIntRect(layout_object->VisualRectInDocument()));
+  return ToEnclosingRect(layout_object->VisualRectInDocument());
 }
 
 void FindNodeVectorsDiff(const Vector<Persistent<Node>>& a,

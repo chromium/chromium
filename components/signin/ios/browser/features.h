@@ -23,6 +23,12 @@ extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
 // waiting for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApi[];
 
+// Feature to enable FRE MICe.
+extern const base::Feature kFREMobileIdentityConsistency;
+
+// Feature to enable Unicorn account sign-in for iOS.
+extern const base::Feature kEnableUnicornAccountSupport;
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_

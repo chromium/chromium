@@ -10,17 +10,13 @@
 
 #include "base/callback_forward.h"
 #include "base/threading/sequence_bound.h"
-#include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
+#include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/public/test/test_aggregation_service.h"
 
 namespace base {
 class Clock;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -30,11 +26,10 @@ class AggregatableReportAssembler;
 struct PublicKey;
 
 // Implementation class of a test aggregation service.
-class TestAggregationServiceImpl : public AggregatableReportManager,
+class TestAggregationServiceImpl : public AggregationServiceStorageContext,
                                    public TestAggregationService {
  public:
-  // `clock` must be a non-null pointer to TestAggregationServiceImpl that is
-  // valid as long as this object.
+  // `clock` must be a non-null pointer that is valid as long as this object.
   TestAggregationServiceImpl(
       const base::Clock* clock,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -43,13 +38,13 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
       const TestAggregationServiceImpl& other) = delete;
   ~TestAggregationServiceImpl() override;
 
-  // AggregatableReportManager:
+  // AggregationServiceStorageContext:
   const base::SequenceBound<AggregationServiceKeyStorage>& GetKeyStorage()
       override;
 
   // TestAggregationService:
   void SetDisablePayloadEncryption(bool should_disable) override;
-  void SetPublicKeys(const url::Origin& origin,
+  void SetPublicKeys(const GURL& url,
                      const std::string& json_string,
                      base::OnceCallback<void(bool)> callback) override;
   void AssembleReport(
@@ -60,7 +55,7 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
                   base::OnceCallback<void(bool)> callback) override;
 
   void GetPublicKeys(
-      const url::Origin& origin,
+      const GURL& url,
       base::OnceCallback<void(std::vector<PublicKey>)> callback) const;
 
  private:
@@ -73,4 +68,4 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TEST_AGGREGATION_SERVICE_IMPL_H_
+#endif  // CONTENT_TEST_TEST_AGGREGATION_SERVICE_MANAGER_H_

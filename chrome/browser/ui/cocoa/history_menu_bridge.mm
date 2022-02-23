@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -341,9 +343,11 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(
   }
 
   // Set the icon of the group to the group color circle.
-  const auto& theme = ThemeService::GetThemeProviderForProfile(profile_);
+  AppController* controller =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  const auto& theme = [controller lastActiveThemeProvider];
   const int color_id =
-      GetTabGroupContextMenuColorId(group->visual_data.color());
+      GetTabGroupContextMenuColorIdDeprecated(group->visual_data.color());
   gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
       kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
 

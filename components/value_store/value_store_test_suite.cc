@@ -152,13 +152,13 @@ ValueStoreTestSuite::ValueStoreTestSuite()
   set13_.insert(list13_.begin(), list13_.end());
   set123_.insert(list123_.begin(), list123_.end());
 
-  dict1_->Set(key1_, val1_->CreateDeepCopy());
-  dict3_->Set(key3_, val3_->CreateDeepCopy());
-  dict12_->Set(key1_, val1_->CreateDeepCopy());
-  dict12_->Set(key2_, val2_->CreateDeepCopy());
-  dict123_->Set(key1_, val1_->CreateDeepCopy());
-  dict123_->Set(key2_, val2_->CreateDeepCopy());
-  dict123_->Set(key3_, val3_->CreateDeepCopy());
+  dict1_->SetKey(key1_, val1_->Clone());
+  dict3_->SetKey(key3_, val3_->Clone());
+  dict12_->SetKey(key1_, val1_->Clone());
+  dict12_->SetKey(key2_, val2_->Clone());
+  dict123_->SetKey(key1_, val1_->Clone());
+  dict123_->SetKey(key2_, val2_->Clone());
+  dict123_->SetKey(key3_, val3_->Clone());
 }
 
 ValueStoreTestSuite::~ValueStoreTestSuite() = default;
@@ -320,8 +320,7 @@ TEST_P(ValueStoreTestSuite, DotsInKeyNames) {
   std::vector<std::string> dot_list;
   dot_list.push_back(dot_key);
   base::DictionaryValue dot_dict;
-  dot_dict.SetKey(dot_key,
-                  base::Value::FromUniquePtrValue(dot_value.CreateDeepCopy()));
+  dot_dict.SetKey(dot_key, dot_value.Clone());
 
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(dot_key));
 

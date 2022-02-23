@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/switch_access/switch_access_menu_view.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -238,13 +239,13 @@ void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddPaddingColumn(0 /* resize_percent */, kUnifiedMenuPadding);
+  columns->AddPaddingColumn(0 /* resize_percent */, kBubbleMenuPadding);
   for (int i = 0; i < kMaxColumns; i++) {
     columns->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
                        0, /* resize_percent */
                        views::GridLayout::ColumnSize::kFixed,
                        SwitchAccessMenuButton::kWidthDip, 0);
-    columns->AddPaddingColumn(0 /* resize_percent */, kUnifiedMenuPadding);
+    columns->AddPaddingColumn(0 /* resize_percent */, kBubbleMenuPadding);
   }
 
   int button_count = 0;
@@ -256,19 +257,19 @@ void SwitchAccessMenuView::SetActions(std::vector<std::string> actions) {
     // If this is the first button of a new row, tell the layout to start a
     // new row.
     if (button_count % kMaxColumns == 0)
-      layout->StartRowWithPadding(0, 0, 0, kUnifiedMenuPadding);
+      layout->StartRowWithPadding(0, 0, 0, kBubbleMenuPadding);
     layout->AddView(std::make_unique<SwitchAccessMenuButton>(action, *info.icon,
                                                              info.label_id));
     button_count++;
   }
-  layout->AddPaddingRow(0, kUnifiedMenuPadding);
+  layout->AddPaddingRow(0, kBubbleMenuPadding);
   InvalidateLayout();
 }
 
 int SwitchAccessMenuView::GetBubbleWidthDip() const {
   // In the future this will vary with the number of menu items displayed.
   return (kMaxColumns * SwitchAccessMenuButton::kWidthDip) +
-         ((kMaxColumns - 1) * kUnifiedMenuPadding) +
+         ((kMaxColumns - 1) * kBubbleMenuPadding) +
          kUnifiedMenuItemPadding.left() + kUnifiedMenuItemPadding.right();
 }
 

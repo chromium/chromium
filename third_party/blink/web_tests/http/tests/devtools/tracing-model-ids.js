@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test that tracing model correctly processes trace events.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
 
   var mainThread = 1;
   var pid = 100;

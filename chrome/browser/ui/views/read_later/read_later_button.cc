@@ -107,8 +107,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
           this,
           browser->profile(),
           GURL(chrome::kChromeUIReadLaterURL),
-          IDS_READ_LATER_TITLE,
-          true)),
+          IDS_READ_LATER_TITLE)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
                                       time_elapsed);
@@ -126,7 +125,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
   reading_list_model_ =
       ReadingListModelFactory::GetForBrowserContext(browser_->profile());
   if (reading_list_model_)
-    reading_list_model_scoped_observation_.Observe(reading_list_model_);
+    reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
 
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -155,10 +154,8 @@ void ReadLaterButton::OnThemeChanged() {
   const ui::ThemeProvider* theme_provider = GetThemeProvider();
   if (!theme_provider)
     return;
-  highlight_color_animation_->SetColor(
-      ToolbarButton::AdjustHighlightColorForContrast(
-          theme_provider, gfx::kGoogleBlue300, gfx::kGoogleBlue600,
-          gfx::kGoogleBlue050, gfx::kGoogleBlue900));
+  highlight_color_animation_->SetColor(theme_provider->GetColor(
+      ThemeProperties::COLOR_READ_LATER_BUTTON_HIGHLIGHT));
 
   dot_indicator_->SetColor(
       /*dot_color=*/GetColorProvider()->GetColor(ui::kColorAlertHighSeverity),
@@ -192,7 +189,7 @@ void ReadLaterButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_));
+      reading_list_model_.get()));
   reading_list_model_scoped_observation_.Reset();
   reading_list_model_ = nullptr;
 }
@@ -305,9 +302,10 @@ absl::optional<SkColor>
 ReadLaterButton::HighlightColorAnimation::GetBackgroundColor() const {
   if (!highlight_color_animation_.is_animating())
     return absl::nullopt;
-  SkColor original_bg_color = SkColorSetA(
-      ToolbarButton::GetDefaultBackgroundColor(parent_->GetThemeProvider()),
-      kBackgroundBaseLayerAlpha);
+  SkColor original_bg_color =
+      SkColorSetA(parent_->GetThemeProvider()->GetColor(
+                      ThemeProperties::COLOR_TOOLBAR_BUTTON_BACKGROUND),
+                  kBackgroundBaseLayerAlpha);
   SkColor highlight_bg_color = color_utils::GetResultingPaintColor(
       SkColorSetA(highlight_color_, SkColorGetA(highlight_color_) *
                                         kToolbarInkDropHighlightVisibleOpacity),

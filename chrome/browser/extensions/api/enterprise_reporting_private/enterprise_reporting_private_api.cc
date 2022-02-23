@@ -24,12 +24,12 @@
 namespace extensions {
 
 namespace {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 const char kEndpointVerificationRetrievalFailed[] =
     "Failed to retrieve the endpoint verification data.";
 const char kEndpointVerificationStoreFailed[] =
     "Failed to store the endpoint verification data.";
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
     enterprise_signals::SettingValue value) {
@@ -131,7 +131,7 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
 
 }  // namespace
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace enterprise_reporting {
 const char kDeviceIdNotFound[] = "Failed to retrieve the device id.";
 }  // namespace enterprise_reporting
@@ -155,7 +155,7 @@ EnterpriseReportingPrivateGetDeviceIdFunction::
 
 // getPersistentSecret
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
 
 EnterpriseReportingPrivateGetPersistentSecretFunction::
     EnterpriseReportingPrivateGetPersistentSecretFunction() = default;
@@ -207,7 +207,7 @@ void EnterpriseReportingPrivateGetPersistentSecretFunction::SendResponse(
   }
 }
 
-#endif  // !defined(OS_LINUX)
+#endif  // !BUILDFLAG(IS_LINUX)
 
 // getDeviceData
 
@@ -353,7 +353,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::ToDeviceInfo(
 
 ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner({}).get(), FROM_HERE,
       base::BindOnce(&enterprise_signals::DeviceInfoFetcher::Fetch,
@@ -369,7 +369,7 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
       base::BindOnce(&EnterpriseReportingPrivateGetDeviceInfoFunction::
                          OnDeviceInfoRetrieved,
                      this));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return RespondLater();
 }
@@ -380,7 +380,7 @@ void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
       ToDeviceInfo(std::move(device_signals)).ToValue())));
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // getContextInfo
 

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "components/arc/mojom/pip.mojom.h"
-#include "components/arc/session/connection_observer.h"
+#include "ash/components/arc/mojom/pip.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

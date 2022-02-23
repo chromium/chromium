@@ -249,7 +249,7 @@ class View : public mojom::View {
  public:
   // ...
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void UpdateBrowserControlsState(bool enable_hiding, bool enable_showing,
                                   bool animate);
 #endif
@@ -271,7 +271,7 @@ class View : public mojom::View {
  public:
   // ...
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void UpdateBrowserControlsState(bool enable_hiding, bool enable_showing,
                                   bool animate) override;
 #else
@@ -597,6 +597,71 @@ struct Person {
 };
 ```
 
+### Avoid object lifetime issues with self-owned receivers
+
+When creating new
+[Mojo services](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/mojo_and_services.md)
+in the browser process (exposed to the renderer via `BrowserInterfaceBrokers` in
+a host object like `RenderFrameHostImpl`, `DedicatedWorkerHost`, etc.), one
+approach is to have the interface implementation be owned by the `Receiver`
+using `mojo::MakeSelfOwnedReceiver`. From the
+[`mojo::MakeSelfOwnedReceiver` declaration](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/cpp/bindings/self_owned_receiver.h;l=129;drc=643cdf61903e99f27c3d80daee67e217e9d280e0):
+```
+// Binds the lifetime of an interface implementation to the lifetime of the
+// Receiver. When the Receiver is disconnected (typically by the remote end
+// closing the entangled Remote), the implementation will be deleted.
+```
+Consider such an interface created in `RenderFrameHostImpl`, and consider that
+and a corresponding `Remote` was created for this interface and owned by
+`RenderFrame`. It may seem logical to think that:
+ 1. (true) The `Receiver` owns the interface implementation
+ 2. (true) The lifetime of the `Receiver` is based on the lifetime of the
+    `Remote` in the renderer
+ 3. (true) The `Remote` is owned by the `RenderFrame`
+ 4. (true) The lifetime of the `RenderFrameHostImpl` is based on the lifetime of
+    the `RenderFrame`
+ 5. (true) Destroying the `RenderFrame` will cause the `Remote` to be destroyed,
+    ultimately causing the `Receiver` and the interface implementation to be
+    destroyed. The `RenderFrameHostImpl` will likely be destroyed at some point
+    as well.
+ 6. (false) It's safe to assume that `RenderFrameHostImpl` will outlive the
+    self-owned `Receiver` and interface implementation
+
+A
+[common](https://microsoftedge.github.io/edgevr/posts/yet-another-uaf/)
+mistake based on the last assumption above is to store and use a raw pointer
+to the `RenderFrameHostImpl` object in the interface implementation. If the
+`Receiver` outlives the `RenderFrameHostImpl` and uses the pointer to it, a
+Use-After-Free will occur. One way a malicious site or compromised renderer
+could make this happen is to generate lots of messages to the interface and then
+close the frame. The `Receiver` might have a backlog of messages to process
+before it gets the message indicating that the renderer's `Remote` was closed,
+and the `RenderFrameHostImpl` can be destroyed in the meantime.
+
+Similarly, it's not safe to assume that the `Profile` object (and objects owned
+by it; `StoragePartitionImpl`, for instance) will outlive the `Receiver`. This
+has been observed to be true for at least incognito windows, where a renderer
+can generate messages, close the page, and cause the entire window to close
+(assuming no other pages are open), ultimately causing the
+`OffTheRecordProfileImpl` object to be destroyed before the `Receiver` object.
+
+To avoid these types of issues, some solutions include:
+
+ - Using `DocumentService` or `DocumentUserData` instead of
+   `mojo::MakeSelfOwnedReceiver` for document-based interfaces where the
+   interface implementation needs access to a `RenderFrameHostImpl` object. See
+   the
+   [`DocumentService` declaration](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/document_service.h;l=27;drc=d4bf612a0258dd80cfc6d17d49419dd878ebaeb0)
+   for more details.
+
+ - Having the `Receiver` and/or interface implementation be owned by the object
+   it relies on (for instance, store the `Receiver` in a private member or
+   use a `mojo::UniqueReceiverSet` for storing multiple `Receiver` /
+   interface implementation pairs).
+
+ - Using `WeakPtr`s instead of raw pointers to provide a way to check whether
+   an object has been destroyed.
+
 ## C++ Best Practices
 
 
@@ -847,6 +912,15 @@ Message pipes are fairly inexpensive, but they are not free either: it takes 6
 control messages to establish a message pipe. Keep this in mind: if the
 interface is used relatively frequently, connecting once and reusing the
 interface pointer is probably a good idea.
+
+## Copy data out of BigBuffer before parsing
+
+[BigBuffer](mojo/public/mojom/base/big_buffer.mojom) uses shared memory to make
+passing large messages fast. When shmem is backing the message, it may be
+writable in the sending process while being read in the receiving process. If a
+BigBuffer is received from an untrustworthy process, you should make a copy of
+the data before processing it to avoid time-of-check time-of-use (TOCTOU) bugs.
+The |size()| of the data cannot be manipulated.
 
 
 ## Ensure An Explicit Grant For WebUI Bindings

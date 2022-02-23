@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-
-<head>
-    <meta name="color-scheme" content="dark">
-</head>
-<script>
-    testRunner.waitUntilDone();
-</script>
+<meta name="color-scheme" content="dark">
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../../fast/forms/resources/common.js"></script>
 <script src="../../../fast/forms/resources/picker-common.js"></script>
 <script
-    src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
-<input type="datetime-local" id="datetime-local" value="2019-02-14T13:02">
+  src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+
+<input type="datetime-local" value="2019-02-14T13:02">
+  
 <script>
-    openPicker(document.getElementById('datetime-local'), function () {
-        clickMonthPopupButton();
-        testRunner.notifyDone();
-    });
+  openPickerAppearanceOnly(document.querySelector('input'), () => {
+    clickMonthPopupButton();
+    skipAnimation();
+  });
 </script>

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "build/build_config.h"
@@ -215,11 +216,11 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<RenderProcess> process_;
   // We use a naked pointer because we don't want to expose RenderViewImpl in
   // the embedder's namespace.
-  RenderView* view_ = nullptr;
+  raw_ptr<RenderView> view_ = nullptr;
   // The WebView is owned by `view_` but provided as a raw pointer here. This
   // will provide a transition of eventually removing RenderView and owning
   // it directly here. See https://crbug.com/1155202.
-  blink::WebView* web_view_ = nullptr;
+  raw_ptr<blink::WebView> web_view_ = nullptr;
   RendererBlinkPlatformImplTestOverride blink_platform_impl_;
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<ContentBrowserClient> content_browser_client_;
@@ -241,7 +242,7 @@ class RenderViewTest : public testing::Test {
   std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
   mojo::BinderMap binders_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 

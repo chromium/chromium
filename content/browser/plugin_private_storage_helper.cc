@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -40,9 +40,9 @@ namespace content {
 namespace {
 
 std::string StringTypeToString(const base::FilePath::StringType& value) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return value;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::WideToUTF8(value);
 #endif
 }
@@ -117,7 +117,7 @@ class PluginPrivateDataByOriginChecker {
 
   // Not owned by this object. Caller is responsible for keeping the
   // FileSystemContext alive until |callback_| is called.
-  storage::FileSystemContext* filesystem_context_;
+  raw_ptr<storage::FileSystemContext> filesystem_context_;
 
   const GURL origin_;
   const std::string plugin_name_;
@@ -392,11 +392,11 @@ void PluginPrivateDataDeletionHelper::DecrementTaskCount(
     storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
     // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
     // file system will be partitioned and use the appropriate StorageKey.
-    base::File::Error result = quota_util->DeleteStorageKeyDataOnFileTaskRunner(
-        filesystem_context_.get(), nullptr,
-        blink::StorageKey(url::Origin::Create(origin)),
-        storage::kFileSystemTypePluginPrivate);
-    ALLOW_UNUSED_LOCAL(result);
+    [[maybe_unused]] base::File::Error result =
+        quota_util->DeleteStorageKeyDataOnFileTaskRunner(
+            filesystem_context_.get(), nullptr,
+            blink::StorageKey(url::Origin::Create(origin)),
+            storage::kFileSystemTypePluginPrivate);
     DLOG_IF(ERROR, result != base::File::FILE_OK)
         << "Unable to delete the plugin data for " << origin;
   }

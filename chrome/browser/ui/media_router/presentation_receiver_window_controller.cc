@@ -122,7 +122,7 @@ PresentationReceiverWindowController::PresentationReceiverWindowController(
       title_change_callback_(std::move(title_change_callback)) {
   DCHECK(otr_profile_);
   DCHECK(otr_profile_->IsOffTheRecord());
-  otr_profile_observation_.Observe(otr_profile_);
+  otr_profile_observation_.Observe(otr_profile_.get());
   content::WebContentsObserver::Observe(web_contents_.get());
   web_contents_->SetDelegate(this);
 }

@@ -7,8 +7,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_proxy.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
@@ -19,7 +19,7 @@ namespace ash {
 // make a request for more printers through a side channel e.g. cups_proxy.
 class PrintersServiceProvider
     : public CrosDBusService::ServiceProviderInterface,
-      public chromeos::CupsPrintersManager::Observer {
+      public CupsPrintersManager::Observer {
  public:
   PrintersServiceProvider();
 
@@ -43,8 +43,8 @@ class PrintersServiceProvider
   // A reference on ExportedObject for sending signals.
   scoped_refptr<dbus::ExportedObject> exported_object_;
 
-  base::ScopedObservation<chromeos::CupsPrintersManagerProxy,
-                          chromeos::CupsPrintersManager::Observer>
+  base::ScopedObservation<CupsPrintersManagerProxy,
+                          CupsPrintersManager::Observer>
       printers_manager_observation_{this};
 };
 

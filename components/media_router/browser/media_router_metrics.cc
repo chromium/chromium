@@ -104,10 +104,6 @@ MediaRouterMetrics::~MediaRouterMetrics() = default;
 // static
 const char MediaRouterMetrics::kHistogramCloseLatency[] =
     "MediaRouter.Ui.Action.CloseLatency";
-const char MediaRouterMetrics::kHistogramCloudPrefAtDialogOpen[] =
-    "MediaRouter.Cloud.PrefAtDialogOpen";
-const char MediaRouterMetrics::kHistogramCloudPrefAtInit[] =
-    "MediaRouter.Cloud.PrefAtInit";
 const char MediaRouterMetrics::kHistogramIconClickLocation[] =
     "MediaRouter.Icon.Click.Location";
 const char MediaRouterMetrics::kHistogramMediaRouterFileFormat[] =
@@ -311,16 +307,6 @@ void MediaRouterMetrics::RecordIconStateAtInit(bool is_pinned) {
   // Since this gets called only rarely, use base::UmaHistogramBoolean() to
   // avoid instantiating the caching code.
   base::UmaHistogramBoolean(kHistogramUiIconStateAtInit, is_pinned);
-}
-
-// static
-void MediaRouterMetrics::RecordCloudPrefAtDialogOpen(bool enabled) {
-  base::UmaHistogramBoolean(kHistogramCloudPrefAtDialogOpen, enabled);
-}
-
-// static
-void MediaRouterMetrics::RecordCloudPrefAtInit(bool enabled) {
-  base::UmaHistogramBoolean(kHistogramCloudPrefAtInit, enabled);
 }
 
 // static

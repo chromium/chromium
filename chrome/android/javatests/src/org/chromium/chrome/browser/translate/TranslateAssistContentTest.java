@@ -93,6 +93,7 @@ public class TranslateAssistContentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_ASSIST_CONTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testAssistContentTranslatablePage()
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;
@@ -121,6 +122,7 @@ public class TranslateAssistContentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_ASSIST_CONTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testAssistContentTranslatedPage()
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;

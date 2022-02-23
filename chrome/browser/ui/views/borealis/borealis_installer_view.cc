@@ -60,7 +60,7 @@ void borealis::ShowBorealisInstallerView(Profile* profile) {
     views::DialogDelegate::CreateDialogWidget(g_borealis_installer_view,
                                               nullptr, nullptr);
     g_borealis_installer_view->GetWidget()->GetNativeWindow()->SetProperty(
-        ash::kShelfIDKey, ash::ShelfID(borealis::kBorealisAppId).Serialize());
+        ash::kShelfIDKey, ash::ShelfID(borealis::kInstallerAppId).Serialize());
   }
   g_borealis_installer_view->SetButtonRowInsets(kButtonRowInsets);
   g_borealis_installer_view->GetWidget()->Show();
@@ -205,7 +205,7 @@ bool BorealisInstallerView::Accept() {
   if (state_ == State::kCompleted) {
     // Launch button has been clicked.
     borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-        borealis::kBorealisMainAppId,
+        borealis::kClientAppId,
         base::BindOnce([](borealis::BorealisAppLauncher::LaunchResult result) {
           if (result == borealis::BorealisAppLauncher::LaunchResult::kSuccess)
             return;

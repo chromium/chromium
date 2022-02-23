@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/geo/country_names_for_locale.h"
+
 #include <string>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/geo/country_names_for_locale.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -47,7 +49,7 @@ TEST(CountryNamesForLocaleTest, EmptyCountryCodeForInvalidLocale) {
 
 // The behavior depends on the platform. On Android the locale reverts back to
 // the standard locale.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Test that an empty string is returned for an empty locale.
 TEST(CountryNamesForLocaleTest, EmptyCountryCodeForEmptyLocale) {
   TestCountryNamesForLocale empty_locale_names("");

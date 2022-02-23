@@ -178,5 +178,11 @@ void RecordTileClick(const NTPTileImpression& impression) {
   }
 }
 
+void RecordsMigratedDefaultAppDeleted(
+    const DeletedTileType& most_visited_app_type) {
+  base::UmaHistogramEnumeration("NewTabPage.MostVisitedMigratedDefaultAppType",
+                                most_visited_app_type);
+}
+
 }  // namespace metrics
 }  // namespace ntp_tiles

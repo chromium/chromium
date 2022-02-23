@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos)
+
+source_set("quick_answers") {
+  sources = [
+    "quick_answers_access_token_fetcher.cc",
+    "quick_answers_access_token_fetcher.h",
+    "ui/quick_answers_focus_search.cc",
+    "ui/quick_answers_focus_search.h",
+    "ui/quick_answers_pre_target_handler.cc",
+    "ui/quick_answers_pre_target_handler.h",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//ui/views/controls/webview",
+  ]
+
+  # TODO(b/208563257): Add lacros support for these sources.
+  if (is_chromeos_ash) {
+    sources += [
+      "quick_answers_controller_impl.cc",
+      "quick_answers_controller_impl.h",
+      "quick_answers_state_controller.cc",
+      "quick_answers_state_controller.h",
+      "quick_answers_ui_controller.cc",
+      "quick_answers_ui_controller.h",
+      "ui/quick_answers_view.cc",
+      "ui/quick_answers_view.h",
+      "ui/user_consent_view.cc",
+      "ui/user_consent_view.h",
+    ]
+    deps += [
+      "//ash",
+      "//chrome/browser/chromeos",
+    ]
+  }
+}

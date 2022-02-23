@@ -4,6 +4,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -78,7 +79,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
     }
   }
 
-  views::FocusManager* focus_manager_;
+  raw_ptr<views::FocusManager> focus_manager_;
   int previous_view_id_;
   base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_{this};
 };
@@ -119,7 +120,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
   int menu_open_count() const { return menu_open_count_; }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   // Keeps track of the number of times the menu was opened.
   int menu_open_count_;
   // If this is set then on receiving a notification that the menu was opened
@@ -168,7 +169,7 @@ class KeyboardAccessTest : public InProcessBrowserTest {
     waiter.Wait();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Opens the system menu on Windows with the Alt Space combination and selects
   // the New Tab option from the menu.
   void TestSystemMenuWithKeyboard();
@@ -247,7 +248,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
   ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // This CBT hook is set for the duration of the TestSystemMenuWithKeyboard test
 LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
@@ -395,7 +396,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 // http://crbug.com/62310.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
 #else
@@ -409,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestMenuKeyboardAccess) {
 // http://crbug.com/62310.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
 #else
@@ -420,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestAltMenuKeyboardAccess) {
 }
 
 // If this flakes, use http://crbug.com/62311.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestShiftAltMenuKeyboardAccess DISABLED_TestShiftAltMenuKeyboardAccess
 #else
 #define MAYBE_TestShiftAltMenuKeyboardAccess TestShiftAltMenuKeyboardAccess
@@ -430,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest,
   TestMenuKeyboardAccess(true, true, false);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(KeyboardAccessTest,
                        DISABLED_TestAltMenuKeyboardAccessFocusOmnibox) {
   TestMenuKeyboardAccess(true, false, true);
@@ -446,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest,
 }
 #endif
 
-#if !defined(OS_WIN) && defined(USE_AURA)
+#if !BUILDFLAG(IS_WIN) && defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, TestMenuKeyboardOpenDismiss) {
   TestMenuKeyboardAccessAndDismiss();
 }
@@ -480,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
   ASSERT_EQ(2, browser()->tab_strip_model()->active_index());
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       browser(), ui::VKEY_W, false, false, false, true));
 #else
       browser(), ui::VKEY_W, true, false, false, false));
@@ -488,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 
-#if defined(OS_WIN)  // These keys are Windows-only.
+#if BUILDFLAG(IS_WIN)  // These keys are Windows-only.
 IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
   // Navigate to create some history.
   ASSERT_TRUE(

@@ -51,15 +51,48 @@ constexpr char kCardifiedStateAnimationSmoothnessExit[] =
 constexpr char kAppListZeroStateSearchResultUserActionHistogram[] =
     "Apps.AppList.ZeroStateSearchResultUserActionType";
 
-// The UMA histogram that logs user's decision(remove or cancel) for zero state
+// The UMA histogram that logs user's decision (remove or cancel) for zero state
 // search result removal confirmation.
 constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
     "Apps.AppList.ZeroStateSearchResultRemovalDecision";
+
+// The UMA histogram that logs user's decision (remove or cancel) for search
+// result removal confirmation. Recorded if productivity launcher is enabled, in
+// which case search result removal is enabled outside zero state search.
+// Otherwise, the dialog result is reported using
+// `kAppListZeroStateSearchResultRemovalHistogram`.
+constexpr char kSearchResultRemovalDialogDecisionHistogram[] =
+    "Apps.AppList.SearchResultRemovalDecision";
 
 // The base UMA histogram that logs app launches within the HomeLauncher (tablet
 // mode AppList), and the fullscreen AppList (when ProductivityLauncher is
 // disabled in clamshell mode) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
+
+// UMA histograms that log app launches within the app list, and the shelf.
+// Split depending on whether tablet mode is active or not.
+constexpr char kAppLaunchInTablet[] = "Apps.AppList.AppLaunched.TabletMode";
+constexpr char kAppLaunchInClamshell[] =
+    "Apps.AppList.AppLaunched.ClamshellMode";
+
+// UMA histograms that log launcher workflow actions (launching an app, search
+// result, or a continue section task) in the app list UI. Split depending on
+// whether tablet mode is active or not. Note that unlike `kAppListAppLaunched`
+// histograms, these do not include actions from shelf, but do include non-app
+// launch actions.
+constexpr char kLauncherUserActionInTablet[] =
+    "Apps.AppList.UserAction.TabletMode";
+constexpr char kLauncherUserActionInClamshell[] =
+    "Apps.AppList.UserAction.ClamshellMode";
+
+// UMA histograms that log time elapsed from launcher getting shown at the time
+// of an user taking a launcher workflow action (launching an app, search
+// result, or a continue section task) in the app list UI. Split depending on
+// whether tablet mode is active or not.
+constexpr char kTimeToLauncherUserActionInTablet[] =
+    "Apps.AppList.TimeToUserAction.TabletMode";
+constexpr char kTimeToLauncherUserActionInClamshell[] =
+    "Apps.AppList.TimeToUserAction.ClamshellMode";
 
 // The UMA histograms that log app launches within the AppList, AppListBubble
 // and Shelf. The app launches are divided by histogram for each of the the
@@ -81,6 +114,16 @@ constexpr char kAppListAppLaunchedHomecherAllApps[] =
 constexpr char kAppListAppLaunchedHomecherSearch[] =
     "Apps.AppListAppLaunchedV2.HomecherSearch";
 
+constexpr char kClamshellReorderAnimationSmoothnessHistogram[] =
+    "Apps.Launcher.ProductivityReorderAnimationSmoothness.ClamshellMode";
+constexpr char kTabletReorderAnimationSmoothnessHistogram[] =
+    "Apps.Launcher.ProductivityReorderAnimationSmoothness.TabletMode";
+
+constexpr char kClamshellReorderActionHistogram[] =
+    "Apps.Launcher.ProductivityReorderAction.ClamshellMode";
+constexpr char kTabletReorderActionHistogram[] =
+    "Apps.Launcher.ProductivityReorderAction.TabletMode";
+
 // The prefix for all the variants that track how long the app list is kept
 // open by open method. Suffix is decided in `GetAppListOpenMethod`
 constexpr char kAppListOpenTimePrefix[] = "Apps.AppListOpenTime.";
@@ -94,6 +137,21 @@ enum class ApplistSearchResultOpenedSource {
   kFullscreenTablet = 2,
   kMaxApplistSearchResultOpenedSource = 3,
 };
+
+AppLaunchedMetricParams::AppLaunchedMetricParams() = default;
+
+AppLaunchedMetricParams::AppLaunchedMetricParams(
+    const AppLaunchedMetricParams&) = default;
+
+AppLaunchedMetricParams& AppLaunchedMetricParams::operator=(
+    const AppLaunchedMetricParams&) = default;
+
+AppLaunchedMetricParams::AppLaunchedMetricParams(
+    AppListLaunchedFrom launched_from,
+    AppListLaunchType launch_type)
+    : launched_from(launched_from), launch_type(launch_type) {}
+
+AppLaunchedMetricParams::~AppLaunchedMetricParams() = default;
 
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
                                                 bool is_tablet_mode) {
@@ -162,9 +220,15 @@ void RecordZeroStateSearchResultUserActionHistogram(
 }
 
 void RecordZeroStateSearchResultRemovalHistogram(
-    ZeroStateSearchResutRemovalConfirmation removal_decision) {
+    SearchResultRemovalConfirmation removal_decision) {
   UMA_HISTOGRAM_ENUMERATION(kAppListZeroStateSearchResultRemovalHistogram,
                             removal_decision);
+}
+
+void RecordSearchResultRemovalDialogDecision(
+    SearchResultRemovalConfirmation removal_decision) {
+  base::UmaHistogramEnumeration(kSearchResultRemovalDialogDecisionHistogram,
+                                removal_decision);
 }
 
 std::string GetAppListOpenMethod(AppListShowSource source) {
@@ -224,6 +288,13 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
 
+  if (is_tablet_mode) {
+    base::UmaHistogramEnumeration(kAppLaunchInTablet, launched_from);
+
+  } else {
+    base::UmaHistogramEnumeration(kAppLaunchInClamshell, launched_from);
+  }
+
   if (features::IsProductivityLauncherEnabled() && !is_tablet_mode) {
     if (!app_list_shown) {
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
@@ -281,6 +352,29 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                   launched_from);
       }
       break;
+  }
+}
+
+ASH_EXPORT void RecordLauncherWorkflowMetrics(
+    AppListUserAction action,
+    bool is_tablet_mode,
+    absl::optional<base::TimeTicks> launcher_show_time) {
+  if (is_tablet_mode) {
+    base::UmaHistogramEnumeration(kLauncherUserActionInTablet, action);
+
+    if (launcher_show_time) {
+      base::UmaHistogramMediumTimes(
+          kTimeToLauncherUserActionInTablet,
+          base::TimeTicks::Now() - *launcher_show_time);
+    }
+  } else {
+    base::UmaHistogramEnumeration(kLauncherUserActionInClamshell, action);
+
+    if (launcher_show_time) {
+      base::UmaHistogramMediumTimes(
+          kTimeToLauncherUserActionInClamshell,
+          base::TimeTicks::Now() - *launcher_show_time);
+    }
   }
 }
 
@@ -348,6 +442,10 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::USE_LAUNCH_TYPE_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_TABBED_WINDOW:
     case CommandId::USE_LAUNCH_TYPE_COMMAND_END:
+    case CommandId::REORDER_SUBMENU:
+    case CommandId::REORDER_BY_NAME_ALPHABETICAL:
+    case CommandId::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
+    case CommandId::REORDER_BY_COLOR:
     case CommandId::SHUTDOWN_GUEST_OS:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_FIRST:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_LAST:
@@ -382,6 +480,29 @@ void ReportCardifiedSmoothness(bool is_entering_cardified, int smoothness) {
     UMA_HISTOGRAM_PERCENTAGE(kCardifiedStateAnimationSmoothnessExit,
                              smoothness);
   }
+}
+
+// Reports reorder animation smoothness.
+void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness) {
+  if (in_tablet) {
+    base::UmaHistogramPercentage(kTabletReorderAnimationSmoothnessHistogram,
+                                 smoothness);
+  } else {
+    base::UmaHistogramPercentage(kClamshellReorderAnimationSmoothnessHistogram,
+                                 smoothness);
+  }
+}
+
+void RecordAppListSortAction(AppListSortOrder new_order, bool in_tablet) {
+  // NOTE: (1) kNameReverseAlphabetical is not used for now; (2) Resetting the
+  // sort order is not recorded here.
+  DCHECK(new_order != AppListSortOrder::kNameReverseAlphabetical &&
+         new_order != AppListSortOrder::kCustom);
+
+  if (in_tablet)
+    base::UmaHistogramEnumeration(kTabletReorderActionHistogram, new_order);
+  else
+    base::UmaHistogramEnumeration(kClamshellReorderActionHistogram, new_order);
 }
 
 }  // namespace ash

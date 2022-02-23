@@ -19,7 +19,7 @@ namespace blink {
 
 class PasswordCredentialTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   HTMLFormElement* PopulateForm(const char* enctype, const char* html) {
     StringBuilder b;

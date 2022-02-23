@@ -141,7 +141,7 @@ public class GetStatusTest {
     @Feature({"Cronet"})
     public void testInvalidLoadState() throws Exception {
         try {
-            UrlRequestBase.convertLoadState(LoadState.WAITING_FOR_APPCACHE);
+            UrlRequestBase.convertLoadState(LoadState.OBSOLETE_WAITING_FOR_APPCACHE);
             fail();
         } catch (IllegalArgumentException e) {
             // Expected because LoadState.WAITING_FOR_APPCACHE is not mapped.

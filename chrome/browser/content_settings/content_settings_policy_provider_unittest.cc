@@ -59,7 +59,7 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
 
   provider.ShutdownOnUIThread();
 }
@@ -81,7 +81,7 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule.secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(&rule.value));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule.value));
 
   provider.ShutdownOnUIThread();
 }
@@ -116,9 +116,10 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   sync_preferences::TestingPrefServiceSyncable* prefs =
       profile.GetTestingPrefService();
 
-  auto value = std::make_unique<base::ListValue>();
-  value->Append("[*.]google.com");
-  prefs->SetManagedPref(prefs::kManagedImagesBlockedForUrls, std::move(value));
+  auto value = base::Value(base::Value::Type::LIST);
+  value.Append("[*.]google.com");
+  prefs->SetManagedPref(prefs::kManagedImagesBlockedForUrls,
+                        base::Value::ToUniquePtrValue(std::move(value)));
 
   PolicyProvider provider(prefs);
 
@@ -130,27 +131,25 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
                                          ContentSettingsType::COOKIES, false));
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, youtube_url, youtube_url,
-                         ContentSettingsType::COOKIES, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider, youtube_url, youtube_url,
+                               ContentSettingsType::COOKIES, false));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider, google_url, google_url,
                                          ContentSettingsType::IMAGES, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
-      &provider, google_url, google_url, ContentSettingsType::IMAGES, false));
+  value = TestUtils::GetContentSettingValue(&provider, google_url, google_url,
+                                            ContentSettingsType::IMAGES, false);
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   // The PolicyProvider does not allow setting content settings as they are
   // enforced via policies and not set by the user or extension. So a call to
   // SetWebsiteSetting does nothing.
-  std::unique_ptr<base::Value> value_block(
-      new base::Value(CONTENT_SETTING_BLOCK));
   bool owned = provider.SetWebsiteSetting(yt_url_pattern, yt_url_pattern,
                                           ContentSettingsType::COOKIES,
-                                          std::move(value_block));
+                                          base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,
@@ -167,37 +166,38 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   PolicyProvider provider(prefs);
   GURL google_url("https://mail.google.com");
   // Tests the default setting for auto selecting certificates
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, google_url, google_url,
-                         ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+  EXPECT_EQ(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, google_url, google_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
 
   // Set the content settings pattern list for origins to auto select
   // certificates.
   std::string pattern_str("\"pattern\":\"[*.]google.com\"");
   std::string filter_str("\"filter\":{\"ISSUER\":{\"CN\":\"issuer name\"}}");
-  auto value = std::make_unique<base::ListValue>();
-  value->Append("{" + pattern_str + "," + filter_str + "}");
+  base::Value value(base::Value::Type::LIST);
+  value.Append("{" + pattern_str + "," + filter_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
-                        std::move(value));
+                        base::Value::ToUniquePtrValue(std::move(value)));
   GURL youtube_url("https://www.youtube.com");
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, youtube_url, youtube_url,
-                         ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
-  std::unique_ptr<base::Value> cert_filter_setting(
-      TestUtils::GetContentSettingValue(
-          &provider, google_url, google_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+  EXPECT_EQ(base::Value(),
+            TestUtils::GetContentSettingValue(
+                &provider, youtube_url, youtube_url,
+                ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
+  base::Value cert_filter_setting = TestUtils::GetContentSettingValue(
+      &provider, google_url, google_url,
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, cert_filter_setting->type());
+  ASSERT_EQ(base::Value::Type::DICTIONARY, cert_filter_setting.type());
   base::Value* cert_filters =
-      cert_filter_setting->FindKeyOfType("filters", base::Value::Type::LIST);
+      cert_filter_setting.FindKeyOfType("filters", base::Value::Type::LIST);
   ASSERT_TRUE(cert_filters);
-  ASSERT_FALSE(cert_filters->GetList().empty());
-  base::DictionaryValue* filter;
-  ASSERT_TRUE(cert_filters->GetList().front().GetAsDictionary(&filter));
-  std::string actual_common_name;
-  ASSERT_TRUE(filter->GetString("ISSUER.CN", &actual_common_name));
-  EXPECT_EQ("issuer name", actual_common_name);
+  ASSERT_FALSE(cert_filters->GetListDeprecated().empty());
+  auto& filter = cert_filters->GetListDeprecated().front();
+  ASSERT_TRUE(filter.is_dict());
+  const std::string* actual_common_name = filter.FindStringPath("ISSUER.CN");
+  ASSERT_TRUE(actual_common_name);
+  EXPECT_EQ("issuer name", *actual_common_name);
   provider.ShutdownOnUIThread();
 }
 

@@ -12,6 +12,8 @@
 
 namespace content {
 
+class RenderFrameHost;
+
 // CloseListenerHost is a helper class that notifies a CloseListener
 // in the renderer host of a close signal (e.g., an android back button press).
 class CONTENT_EXPORT CloseListenerHost

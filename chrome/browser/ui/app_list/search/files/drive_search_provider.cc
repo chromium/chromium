@@ -14,6 +14,10 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "url/gurl.h"
 
 namespace app_list {
 namespace {
@@ -21,10 +25,11 @@ namespace {
 using chromeos::string_matching::TokenizedString;
 
 constexpr char kDriveSearchSchema[] = "drive_search://";
-constexpr int kMaxResults = 10;
+constexpr int kMaxResults = 50;
+constexpr size_t kMinQuerySizeForSharedFiles = 5u;
 
-// Outcome of a call to DriveSearchProvider::Start. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
+// Outcome of a call to DriveSearchProvider::Start. These values persist
+// to logs. Entries should not be renumbered and numeric values should never be
 // reused.
 enum class Status {
   kOk = 0,
@@ -35,6 +40,16 @@ enum class Status {
 
 void LogStatus(Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
+}
+
+absl::optional<std::string> GetDriveId(
+    const drivefs::mojom::QueryItemPtr& item) {
+  const std::string kPrefix = "/document/d/";
+
+  std::string path = GURL(item->metadata->alternate_url).path();
+  if (base::StartsWith(path, kPrefix))
+    return path.substr(kPrefix.size());
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -50,7 +65,7 @@ DriveSearchProvider::DriveSearchProvider(Profile* profile)
 
 DriveSearchProvider::~DriveSearchProvider() = default;
 
-ash::AppListSearchResultType DriveSearchProvider::ResultType() {
+ash::AppListSearchResultType DriveSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kDriveSearch;
 }
 
@@ -62,10 +77,6 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
 
-  // This provider does not handle zero-state.
-  if (query.empty())
-    return;
-
   if (!drive_service_ || !drive_service_->is_enabled()) {
     LogStatus(Status::kDriveUnavailable);
     return;
@@ -74,12 +85,10 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  // New scores will be assigned for sorting purposes so use the default
-  // SortField. The SortDirection does nothing in this case.
   drive_service_->SearchDriveByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
-      drivefs::mojom::QueryParameters::SortField::kNone,
-      drivefs::mojom::QueryParameters::SortDirection::kAscending,
+      drivefs::mojom::QueryParameters::SortField::kLastModified,
+      drivefs::mojom::QueryParameters::SortDirection::kDescending,
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindOnce(&DriveSearchProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
@@ -95,16 +104,32 @@ void DriveSearchProvider::SetSearchResults(
     return;
   }
 
+  // Filter out shared files if the query length is below a threshold.
+  if (last_query_.size() < kMinQuerySizeForSharedFiles) {
+    std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
+    for (auto& item : items) {
+      if (!item->metadata->shared)
+        filtered_items.push_back(std::move(item));
+    }
+    items = std::move(filtered_items);
+  }
+
   SearchProvider::Results results;
-  for (const auto& item : items) {
+  for (size_t i = 0; i < items.size(); ++i) {
+    const auto& item = items[i];
+    // Results are returned in descending order of modification time. Set the
+    // relevance in (0,1] based on that.
+    double relevance = 1.0 - static_cast<double>(i) / items.size();
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      results.emplace_back(MakeResult(item->path, type));
+      results.emplace_back(
+          MakeResult(item->path, relevance, type, GetDriveId(item)));
     } else {
-      results.emplace_back(MakeResult(item->path, FileResult::Type::kFile));
+      results.emplace_back(MakeResult(
+          item->path, relevance, FileResult::Type::kFile, GetDriveId(item)));
     }
   }
 
@@ -116,7 +141,9 @@ void DriveSearchProvider::SetSearchResults(
 
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& path,
-    FileResult::Type type) {
+    double relevance,
+    FileResult::Type type,
+    const absl::optional<std::string>& drive_id) {
   // Strip leading separators so that the path can be reparented.
   // TODO(crbug.com/1154513): Remove this step once the drive backend returns
   // results in relative path format.
@@ -131,12 +158,17 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
-  const double relevance =
-      FileResult::CalculateRelevance(last_tokenized_query_, reparented_path);
-  return std::make_unique<FileResult>(
-      kDriveSearchSchema, reparented_path,
-      ash::AppListSearchResultType::kDriveSearch, last_query_, relevance, type,
-      profile_);
+  // Add "Google Drive" as details.
+  std::u16string details =
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+
+  auto result =
+      std::make_unique<FileResult>(kDriveSearchSchema, reparented_path, details,
+                                   ash::AppListSearchResultType::kDriveSearch,
+                                   ash::SearchResultDisplayType::kList,
+                                   relevance, last_query_, type, profile_);
+  result->set_drive_id(drive_id);
+  return result;
 }
 
 }  // namespace app_list

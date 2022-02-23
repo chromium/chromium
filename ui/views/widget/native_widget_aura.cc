@@ -64,12 +64,12 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #endif
 
@@ -208,6 +208,8 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   gfx::NativeView parent = params.parent;
   gfx::NativeView context = params.context;
   if (!params.child) {
+    wm::TransientWindowManager::GetOrCreate(window_)->AddObserver(this);
+
     // Set up the transient child before the window is added. This way the
     // LayoutManager knows the window has a transient parent.
     if (parent && parent->GetType() != aura::client::WINDOW_TYPE_UNKNOWN) {
@@ -708,7 +710,7 @@ bool NativeWidgetAura::IsMinimized() const {
 
 void NativeWidgetAura::Restore() {
   if (window_)
-    window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+    wm::Restore(window_);
 }
 
 void NativeWidgetAura::SetFullscreen(bool fullscreen,
@@ -1005,6 +1007,15 @@ void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
   delegate_->OnNativeWidgetEndUserBoundsChange();
 }
 
+void NativeWidgetAura::OnWindowAddedToRootWindow(aura::Window* window) {
+  delegate_->OnNativeWidgetAddedToCompositor();
+}
+
+void NativeWidgetAura::OnWindowRemovingFromRootWindow(aura::Window* window,
+                                                      aura::Window* new_root) {
+  delegate_->OnNativeWidgetRemovingFromCompositor();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, ui::EventHandler implementation:
 
@@ -1101,19 +1112,18 @@ void NativeWidgetAura::OnDragExited() {
   drop_helper_->OnDragExit();
 }
 
-ui::mojom::DragOperation NativeWidgetAura::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  DCHECK(drop_helper_.get() != nullptr);
-  return drop_helper_->OnDrop(event.data(), event.location(),
-                              last_drop_operation_);
-}
-
 aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
     const ui::DropTargetEvent& event) {
   DCHECK(drop_helper_);
   return drop_helper_->GetDropCallback(event.data(), event.location(),
                                        last_drop_operation_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// NativeWidgetAura, wm::TransientWindowObserver implementation:
+
+void NativeWidgetAura::OnTransientParentChanged(aura::Window* new_parent) {
+  delegate_->OnNativeWidgetParentChanged(new_parent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1141,7 +1151,7 @@ void NativeWidgetAura::SetInitialFocus(ui::WindowShowState show_state) {
 
 namespace {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 void CloseWindow(aura::Window* window) {
   if (window) {
     Widget* widget = Widget::GetWidgetForNativeView(window);
@@ -1155,7 +1165,7 @@ void CloseWindow(aura::Window* window) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BOOL CALLBACK WindowCallbackProc(HWND hwnd, LPARAM lParam) {
   aura::Window* root_window =
       DesktopWindowTreeHostWin::GetContentWindowForHWND(hwnd);
@@ -1167,12 +1177,12 @@ BOOL CALLBACK WindowCallbackProc(HWND hwnd, LPARAM lParam) {
 
 // static
 void Widget::CloseAllSecondaryWidgets() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, 0);
 #endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   DesktopWindowTreeHostLinux::CleanUpWindowList(CloseWindow);
 #endif
 }

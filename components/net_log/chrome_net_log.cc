@@ -26,21 +26,21 @@ std::unique_ptr<base::DictionaryValue> GetPlatformConstantsForNetLog(
   base::DictionaryValue dict;
 
   // We have everything we need to send the right values.
-  dict.SetString("name", version_info::GetProductName());
-  dict.SetString("version", version_info::GetVersionNumber());
-  dict.SetString("cl", version_info::GetLastChange());
-  dict.SetString("version_mod", channel_string);
-  dict.SetString("official",
-                 version_info::IsOfficialBuild() ? "official" : "unofficial");
+  dict.SetStringKey("name", version_info::GetProductName());
+  dict.SetStringKey("version", version_info::GetVersionNumber());
+  dict.SetStringKey("cl", version_info::GetLastChange());
+  dict.SetStringKey("version_mod", channel_string);
+  dict.SetStringKey(
+      "official", version_info::IsOfficialBuild() ? "official" : "unofficial");
   std::string os_type = base::StringPrintf(
       "%s: %s (%s)", base::SysInfo::OperatingSystemName().c_str(),
       base::SysInfo::OperatingSystemVersion().c_str(),
       base::SysInfo::OperatingSystemArchitecture().c_str());
-  dict.SetString("os_type", os_type);
-#if defined(OS_WIN)
-  dict.SetString("command_line", base::WideToUTF8(command_line_string));
+  dict.SetStringKey("os_type", os_type);
+#if BUILDFLAG(IS_WIN)
+  dict.SetStringKey("command_line", base::WideToUTF8(command_line_string));
 #else
-  dict.SetString("command_line", command_line_string);
+  dict.SetStringKey("command_line", command_line_string);
 #endif
 
   constants_dict->SetKey("clientInfo", std::move(dict));

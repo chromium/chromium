@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,6 +22,7 @@
 #include "base/trace_event/traced_value.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace gpu {
 
@@ -52,14 +54,12 @@ Scheduler::SchedulingState::SchedulingState(const SchedulingState& other) =
     default;
 Scheduler::SchedulingState::~SchedulingState() = default;
 
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-Scheduler::SchedulingState::AsValue() const {
-  std::unique_ptr<base::trace_event::TracedValue> state(
-      new base::trace_event::TracedValue());
-  state->SetInteger("sequence_id", sequence_id.GetUnsafeValue());
-  state->SetString("priority", SchedulingPriorityToString(priority));
-  state->SetInteger("order_num", order_num);
-  return std::move(state);
+void Scheduler::SchedulingState::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("sequence_id", sequence_id.GetUnsafeValue());
+  dict.Add("priority", SchedulingPriorityToString(priority));
+  dict.Add("order_num", order_num);
 }
 
 Scheduler::Sequence::Task::Task(base::OnceClosure closure,
@@ -613,11 +613,15 @@ Scheduler::RebuildSchedulingQueueIfNeeded(
 }
 
 void Scheduler::RunNextTask() {
+  static base::CpuReductionExperimentFilter filter;
+  bool log_histograms = filter.ShouldLogHistograms();
   base::AutoLock auto_lock(lock_);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.ThreadSuspendedTime",
-      base::TimeTicks::Now() - run_next_task_scheduled_, base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.ThreadSuspendedTime",
+        base::TimeTicks::Now() - run_next_task_scheduled_,
+        base::Microseconds(10), base::Seconds(30), 100);
+  }
   auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
 
   SchedulingState state;
@@ -642,15 +646,17 @@ void Scheduler::RunNextTask() {
   DCHECK(sequence);
   DCHECK_EQ(sequence->task_runner(), task_runner);
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.TaskDependencyTime",
-      sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskDependencyTime",
+        sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
+        base::Seconds(30), 100);
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.TaskSchedulingDelayTime",
-      sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
-      base::Seconds(30), 100);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskSchedulingDelayTime",
+        sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+        base::Seconds(30), 100);
+  }
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
@@ -658,7 +664,7 @@ void Scheduler::RunNextTask() {
 
   TRACE_EVENT_WITH_FLOW1("gpu,toplevel.flow", "Scheduler::RunNextTask",
                          GetTaskFlowId(state.sequence_id.value(), order_num),
-                         TRACE_EVENT_FLAG_FLOW_IN, "state", state.AsValue());
+                         TRACE_EVENT_FLAG_FLOW_IN, "state", state);
 
   // Begin/FinishProcessingOrderNumber must be called with the lock released
   // because they can renter the scheduler in Enable/DisableSequence.
@@ -704,9 +710,11 @@ void Scheduler::RunNextTask() {
     }
   }
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(), base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(),
+        base::Microseconds(10), base::Seconds(30), 100);
+  }
 
   // Avoid scheduling another RunNextTask if we're done with all tasks.
   auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(task_runner);

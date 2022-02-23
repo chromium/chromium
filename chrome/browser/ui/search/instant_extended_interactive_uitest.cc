@@ -70,7 +70,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
         SetupInstant(browser()->profile(), base_url, ntp_url));
   }
 
-  bool UpdateSearchState(content::WebContents* contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool UpdateSearchState(content::WebContents* contents) {
     return GetIntFromJS(contents, "onMostVisitedChangedCalls",
                         &on_most_visited_change_calls_) &&
            GetIntFromJS(contents, "mostVisitedItemsCount",
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NoMostVisitedChangedOnTabSwitch) {
   EXPECT_EQ(1, on_most_visited_change_calls_);
 }
 
-IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NavigateBackToNTP) {
+IN_PROC_BROWSER_TEST_F(InstantExtendedTest, DISABLED_NavigateBackToNTP) {
   FocusOmnibox();
 
   // Open a new tab page.
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(InstantExtendedTest, NavigateBackToNTP) {
 }
 
 IN_PROC_BROWSER_TEST_F(InstantExtendedTest,
-                       DispatchMVChangeEventWhileNavigatingBackToNTP) {
+                       DISABLED_DispatchMVChangeEventWhileNavigatingBackToNTP) {
   FocusOmnibox();
 
   // Open new tab.

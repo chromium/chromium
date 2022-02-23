@@ -104,15 +104,14 @@ std::string VisitSegmentDatabase::ComputeSegmentName(const GURL& url) {
   // TODO(brettw) this should probably use the registry controlled
   // domains service.
   GURL::Replacements r;
-  std::string host = url.host();
+  base::StringPiece host = url.host_piece();
 
   // Strip various common prefixes in order to group the resulting hostnames
   // together and avoid duplicates.
   for (base::StringPiece prefix : {"www.", "m.", "mobile.", "touch."}) {
     if (host.size() > prefix.size() &&
         base::StartsWith(host, prefix, base::CompareCase::INSENSITIVE_ASCII)) {
-      r.SetHost(host.c_str(),
-                url::Component(prefix.size(), host.size() - prefix.size()));
+      r.SetHostStr(host.substr(prefix.size()));
       break;
     }
   }

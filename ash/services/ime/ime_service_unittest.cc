@@ -11,6 +11,7 @@
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +27,9 @@ using testing::_;
 
 namespace chromeos {
 namespace ime {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
 
 namespace {
 
@@ -66,24 +70,26 @@ class TestDecoderState : public mojom::InputMethod {
         MessagePipeHandleFromInt(host_pipe_handle), host_pipe_version));
     return true;
   }
+
   bool IsInputMethodConnected() {
-    // The receiver resets upon disconnection, so we can just check whether it
-    // is bound.
+    // The receiver resets upon disconnection, so we can just check whether
+    // it is bound.
     return receiver_.is_bound();
   }
 
  private:
-  // mojom::InputMethod:
-  void OnFocus(chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
-               chromeos::ime::mojom::InputMethodSettingsPtr settings) override {
-  }
+  void OnFocusDeprecated(mojom::InputFieldInfoPtr input_field_info,
+                         mojom::InputMethodSettingsPtr settings) override {}
+  void OnFocus(mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings,
+               OnFocusCallback callback) override {}
   void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
-      chromeos::ime::mojom::SelectionRangePtr selection_range) override {}
+      ime::mojom::SelectionRangePtr selection_range) override {}
   void OnCompositionCanceledBySystem() override {}
-  void ProcessKeyEvent(chromeos::ime::mojom::PhysicalKeyEventPtr event,
+  void ProcessKeyEvent(ime::mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override {}
   void OnCandidateSelected(uint32_t selected_candidate_index) override {}
 
@@ -91,38 +97,69 @@ class TestDecoderState : public mojom::InputMethod {
   mojo::Remote<mojom::InputMethodHost> input_method_host_;
 };
 
-ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
-  g_test_decoder_state = state;
+class TestImeDecoder : public ImeDecoder {
+ public:
+  static TestImeDecoder* GetInstance() {
+    static base::NoDestructor<TestImeDecoder> instance;
+    return instance.get();
+  }
 
-  ImeDecoder::EntryPoints entry_points;
-  entry_points.init_once = [](ImeCrosPlatform* platform) {};
-  entry_points.supports = [](const char* ime_spec) {
-    return strcmp(kInvalidImeSpec, ime_spec) != 0;
-  };
-  entry_points.activate_ime = [](const char* ime_spec,
-                                 ImeClientDelegate* delegate) { return true; };
-  entry_points.process = [](const uint8_t* data, size_t size) {};
-  entry_points.connect_to_input_method = [](const char* ime_spec,
-                                            uint32_t receiver_pipe_handle,
-                                            uint32_t host_pipe_handle,
-                                            uint32_t host_pipe_version) {
-    return g_test_decoder_state->ConnectToInputMethod(
-        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
-  };
-  entry_points.is_input_method_connected = []() {
-    return g_test_decoder_state->IsInputMethodConnected();
-  };
-  entry_points.close = []() {};
-  return entry_points;
-}
+  absl::optional<ImeDecoder::EntryPoints> MaybeLoadThenReturnEntryPoints()
+      override {
+    return entry_points_;
+  }
+
+  void ResetState() {
+    delete g_test_decoder_state;
+    g_test_decoder_state = new TestDecoderState();
+
+    entry_points_ = {
+        .init_once = [](ImeCrosPlatform* platform) {},
+        .close = []() {},
+        .supports =
+            [](const char* ime_spec) {
+              return strcmp(kInvalidImeSpec, ime_spec) != 0;
+            },
+        .activate_ime = [](const char* ime_spec,
+                           ImeClientDelegate* delegate) { return true; },
+        .process = [](const uint8_t* data, size_t size) {},
+        .connect_to_input_method =
+            [](const char* ime_spec, uint32_t receiver_pipe_handle,
+               uint32_t host_pipe_handle, uint32_t host_pipe_version) {
+              return g_test_decoder_state->ConnectToInputMethod(
+                  ime_spec, receiver_pipe_handle, host_pipe_handle,
+                  host_pipe_version);
+            },
+        .initialize_connection_factory =
+            [](uint32_t receiver_pipe_handle) { return false; },
+        .is_input_method_connected =
+            []() { return g_test_decoder_state->IsInputMethodConnected(); },
+    };
+  }
+
+ private:
+  friend class base::NoDestructor<TestImeDecoder>;
+
+  explicit TestImeDecoder() { ResetState(); }
+
+  ~TestImeDecoder() override = default;
+
+  absl::optional<ImeDecoder::EntryPoints> entry_points_;
+};
 
 struct MockInputMethodHost : public mojom::InputMethodHost {
   void CommitText(const std::u16string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {
     last_commit = text;
   }
+  void DEPRECATED_SetComposition(
+      const std::u16string& text,
+      std::vector<mojom::CompositionSpanPtr> spans) override {
+    last_composition = text;
+  }
   void SetComposition(const std::u16string& text,
-                      std::vector<mojom::CompositionSpanPtr> spans) override {
+                      std::vector<mojom::CompositionSpanPtr> spans,
+                      uint32_t new_cursor_position) override {
     last_composition = text;
   }
   void SetCompositionRange(uint32_t start_index, uint32_t end_index) override {}
@@ -143,9 +180,24 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   std::u16string last_composition;
 };
 
+class TestFieldTrialParamsRetriever : public FieldTrialParamsRetriever {
+ public:
+  explicit TestFieldTrialParamsRetriever() = default;
+  ~TestFieldTrialParamsRetriever() override = default;
+  TestFieldTrialParamsRetriever(const TestFieldTrialParamsRetriever&) = delete;
+  TestFieldTrialParamsRetriever& operator=(
+      const TestFieldTrialParamsRetriever&) = delete;
+
+  std::string GetFieldTrialParamValueByFeature(
+      const base::Feature& feature,
+      const std::string& param_name) override {
+    return base::StrCat({feature.name, "::", param_name});
+  }
+};
+
 class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  public:
-  ImeServiceTest() : service_(remote_service_.BindNewPipeAndPassReceiver()) {}
+  ImeServiceTest() = default;
 
   ImeServiceTest(const ImeServiceTest&) = delete;
   ImeServiceTest& operator=(const ImeServiceTest&) = delete;
@@ -154,8 +206,12 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
   void CommitText(const std::u16string& text,
                   mojom::CommitTextCursorBehavior cursor_behavior) override {}
+  void DEPRECATED_SetComposition(
+      const std::u16string& text,
+      std::vector<mojom::CompositionSpanPtr> spans) override {}
   void SetComposition(const std::u16string& text,
-                      std::vector<mojom::CompositionSpanPtr> spans) override {}
+                      std::vector<mojom::CompositionSpanPtr> spans,
+                      uint32_t new_cursor_position) override {}
   void SetCompositionRange(uint32_t start_index, uint32_t end_index) override {}
   void FinishComposition() override {}
   void DeleteSurroundingText(uint32_t num_before_cursor,
@@ -172,18 +228,27 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
  protected:
   void SetUp() override {
-    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state_));
+    service_ = std::make_unique<ImeService>(
+        remote_service_.BindNewPipeAndPassReceiver(),
+        TestImeDecoder::GetInstance(),
+        std::make_unique<TestFieldTrialParamsRetriever>());
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    service_.reset();
+    TestImeDecoder::GetInstance()->ResetState();
   }
 
   mojo::Remote<mojom::ImeService> remote_service_;
   mojo::Remote<mojom::InputEngineManager> remote_manager_;
 
+ protected:
+  std::unique_ptr<ImeService> service_;
+
  private:
   base::test::TaskEnvironment task_environment_;
-  ImeService service_;
-  TestDecoderState state_;
 };
 
 }  // namespace
@@ -296,8 +361,8 @@ TEST_F(ImeServiceTest,
 TEST_F(ImeServiceTest, ConnectToInputMethodCanOverrideAnyConnection) {
   bool success1, success2, success3 = true;
   MockInputChannel test_channel;
-  mojo::Receiver<mojom::InputMethodHost> host1(this), host2(this);
   mojo::Remote<mojom::InputMethod> input_method1, input_method2;
+  mojo::Receiver<mojom::InputMethodHost> host1(this), host2(this);
   mojo::Remote<mojom::InputChannel> remote_engine;
 
   remote_manager_->ConnectToImeEngine(
@@ -695,6 +760,22 @@ TEST_F(ImeServiceTest, KhmerKeyboardAltGr) {
         EXPECT_TRUE(mock_host.last_composition.empty());
       }));
   input_method.FlushForTesting();
+}
+
+TEST_F(ImeServiceTest, GetFieldTrialParamValueByFeatureNonConsidered) {
+  const char* value = service_->GetFieldTrialParamValueByFeature(
+      "non-considered-feature", "param-name");
+
+  EXPECT_STREQ(value, "");
+  delete[] value;
+}
+
+TEST_F(ImeServiceTest, GetFieldTrialParamValueByFeatureConsidered) {
+  const char* value = service_->GetFieldTrialParamValueByFeature(
+      "AutocorrectParamsTuning", "param-name");
+
+  EXPECT_STREQ(value, "AutocorrectParamsTuning::param-name");
+  delete[] value;
 }
 
 }  // namespace ime

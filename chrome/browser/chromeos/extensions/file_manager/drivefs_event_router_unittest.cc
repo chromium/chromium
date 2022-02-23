@@ -634,10 +634,10 @@ TEST_F(DriveFsEventRouterTest, OnSyncingStatusUpdate_OnUnmounted) {
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   FileWatchEvent event;
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetString("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetString("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetString("fileFullPath", "/root");
-  event.entry.additional_properties.SetBoolean("fileIsDirectory", true);
+  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
+  event.entry.additional_properties.SetStringKey("fileFullPath", "/root");
+  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
   event.changed_files =
       std::make_unique<std::vector<file_manager_private::FileChange>>();
   event.changed_files->emplace_back();
@@ -684,10 +684,10 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
 TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
   FileWatchEvent event;
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetString("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetString("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetString("fileFullPath", "/root/a");
-  event.entry.additional_properties.SetBoolean("fileIsDirectory", true);
+  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
+  event.entry.additional_properties.SetStringKey("fileFullPath", "/root/a");
+  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
   event.changed_files =
       std::make_unique<std::vector<file_manager_private::FileChange>>();
   event.changed_files->emplace_back();
@@ -701,10 +701,10 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_MultipleDirectories) {
                           MatchFileWatchEvent(event)));
 
   event.event_type = file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
-  event.entry.additional_properties.SetString("fileSystemRoot", "ext:/");
-  event.entry.additional_properties.SetString("fileSystemName", "drivefs");
-  event.entry.additional_properties.SetString("fileFullPath", "/root/b");
-  event.entry.additional_properties.SetBoolean("fileIsDirectory", true);
+  event.entry.additional_properties.SetStringKey("fileSystemRoot", "ext:/");
+  event.entry.additional_properties.SetStringKey("fileSystemName", "drivefs");
+  event.entry.additional_properties.SetStringKey("fileFullPath", "/root/b");
+  event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
   event.changed_files =
       std::make_unique<std::vector<file_manager_private::FileChange>>();
   event.changed_files->emplace_back();

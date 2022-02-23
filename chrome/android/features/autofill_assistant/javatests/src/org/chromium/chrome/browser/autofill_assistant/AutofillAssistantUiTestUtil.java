@@ -52,6 +52,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipIcon;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -535,8 +536,7 @@ class AutofillAssistantUiTestUtil {
      */
     public static void attachToCoordinator(CustomTabActivity activity, View view) {
         ThreadUtils.assertOnUiThread();
-        ViewGroup chromeCoordinatorView =
-                activity.findViewById(org.chromium.chrome.autofill_assistant.R.id.coordinator);
+        ViewGroup chromeCoordinatorView = activity.findViewById(R.id.coordinator);
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.gravity = Gravity.BOTTOM;

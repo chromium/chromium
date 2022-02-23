@@ -172,7 +172,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   // https://crbug.com/1061723: Discussion of issues related to HLG.
   if (__builtin_available(macos 10.15, *)) {
     if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                  ColorSpace::TransferID::SMPTEST2084,
+                                  ColorSpace::TransferID::PQ,
                                   ColorSpace::MatrixID::BT2020_NCL,
                                   ColorSpace::RangeID::LIMITED)) {
       if (__builtin_available(macos 11.0, *)) {
@@ -181,7 +181,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
         return true;
       }
     } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                         ColorSpace::TransferID::ARIB_STD_B67,
+                                         ColorSpace::TransferID::HLG,
                                          ColorSpace::MatrixID::BT2020_NCL,
                                          ColorSpace::RangeID::LIMITED)) {
       if (__builtin_available(macos 11.0, *)) {

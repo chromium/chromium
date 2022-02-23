@@ -11,11 +11,12 @@
 #include <random>
 #include <vector>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-#if !defined(ADDRESS_SANITIZER) || !defined(OS_WIN)
+#if !defined(ADDRESS_SANITIZER) || !BUILDFLAG(IS_WIN)
 // Total allocation of 4GB will fail in 32 bit programs if allocations are
 // leaked.
 const int kIterations = 20;
@@ -136,7 +137,7 @@ class PagedArrayTest : public testing::Test {
 
 // AddressSanitizer on Windows adds additional memory overhead, which
 // causes these tests to go OOM and fail.
-#if !defined(ADDRESS_SANITIZER) || !defined(OS_WIN)
+#if !defined(ADDRESS_SANITIZER) || !BUILDFLAG(IS_WIN)
 TEST_F(PagedArrayTest, TestManyAllocationsDestructorFree) {
   for (int i = 0; i < kIterations; ++i) {
     courgette::PagedArray<int> a;

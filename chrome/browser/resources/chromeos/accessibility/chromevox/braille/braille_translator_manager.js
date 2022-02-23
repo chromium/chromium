@@ -116,7 +116,7 @@ BrailleTranslatorManager = class {
       }
     }
     if (!table) {
-      table = BrailleTable.forId(tables, 'en-US-comp8');
+      table = BrailleTable.forId(tables, 'en-nabcc');
     }
 
     // If the user explicitly set an 8 dot table, use that when looking

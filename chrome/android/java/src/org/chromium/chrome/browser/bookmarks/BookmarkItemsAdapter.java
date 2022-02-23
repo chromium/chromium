@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -23,12 +24,16 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -56,6 +61,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     private final ImageFetcher mImageFetcher;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
+    private final SnackbarManager mSnackbarManager;
 
     // There can only be one promo header at a time. This takes on one of the values:
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
@@ -70,6 +76,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     // Keep track of the currently highlighted bookmark - used for "show in folder" action.
     private BookmarkId mHighlightedBookmark;
+
+    private SubscriptionsManager mSubscriptionsManager;
 
     private BookmarkModelObserver mBookmarkModelObserver = new BookmarkModelObserver() {
         @Override
@@ -117,7 +125,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         }
     };
 
-    BookmarkItemsAdapter(Context context) {
+    BookmarkItemsAdapter(Context context, SnackbarManager snackbarManager) {
         super(context);
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
@@ -127,6 +135,12 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                         Profile.getLastUsedRegularProfile().getProfileKey(),
                         GlobalDiscardableReferencePool.getReferencePool());
         mCommerceSubscriptionsServiceFactory = new CommerceSubscriptionsServiceFactory();
+        mSnackbarManager = snackbarManager;
+
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mSubscriptionsManager = mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
+                                            .getSubscriptionsManager();
+        }
     }
 
     /**
@@ -144,16 +158,20 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return position;
     }
 
+    private void filterForPriceTrackingCategory(List<BookmarkId> bookmarks) {
+        for (int i = bookmarks.size() - 1; i >= 0; i--) {
+            PowerBookmarkMeta meta = mDelegate.getModel().getPowerBookmarkMeta(bookmarks.get(i));
+            if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING
+                    || !meta.getShoppingSpecifics().getIsPriceTracked()) {
+                bookmarks.remove(i);
+                continue;
+            }
+        }
+    }
+
     private void setBookmarks(List<BookmarkId> bookmarks) {
         clearHighlight();
         mElements.clear();
-
-        // Show the tag chiplist only for the shopping folder.
-        // TODO(crbug.com/1247825): Clarify how the tag list should interact with promo headers.
-        PowerBookmarkMeta meta = mDelegate.getModel().getPowerBookmarkMeta(mCurrentFolder);
-        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
-            mElements.add(BookmarkListEntry.createChipList());
-        }
 
         // Restore the header, if it exists, then update it.
         if (hasPromoHeader()) {
@@ -161,22 +179,28 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         }
 
         updateHeader(false);
+        if (BookmarkId.SHOPPING_FOLDER.equals(mCurrentFolder)) {
+            filterForPriceTrackingCategory(bookmarks);
+        }
+
         for (BookmarkId bookmarkId : bookmarks) {
             BookmarkItem item = mDelegate.getModel().getBookmarkById(bookmarkId);
 
             mElements.add(BookmarkListEntry.createBookmarkEntry(
                     item, mDelegate.getModel().getPowerBookmarkMeta(bookmarkId)));
-            // Add a divider below the reading list folder.
-            if (item.getId().getType() == BookmarkType.READING_LIST && item.isFolder()) {
-                mElements.add(BookmarkListEntry.createDivider());
-                assert topLevelFoldersShowing();
-            }
         }
 
         if (mCurrentFolder.getType() == BookmarkType.READING_LIST
                 && mDelegate.getCurrentState() != BookmarkUIState.STATE_SEARCHING) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(mElements, mContext);
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)
+                && topLevelFoldersShowing()) {
+            mElements.add(BookmarkListEntry.createDivider());
+            mElements.add(BookmarkListEntry.createShoppingFilter());
+        }
+
         notifyDataSetChanged();
     }
 
@@ -203,17 +227,16 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return holder;
     }
 
-    private ViewHolder createTagChipListViewHolder(ViewGroup parent) {
-        ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.power_bookmark_tag_chip_list, parent, false);
-        ViewHolder vh = new ViewHolder(row) {};
-        ((PowerBookmarkTagChipList) row).init(mDelegate.getModel());
-        return vh;
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         assert mDelegate != null;
+
+        // The shopping-specific bookmark row is only shown with the visual refresh. When there's a
+        // mismatch, the ViewType is downgraded to ViewType.BOOKMARK.
+        if (viewType == ViewType.SHOPPING_POWER_BOOKMARK
+                && !BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
+            viewType = ViewType.BOOKMARK;
+        }
 
         switch (viewType) {
             case ViewType.PERSONALIZED_SIGNIN_PROMO:
@@ -229,19 +252,24 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             case ViewType.BOOKMARK:
                 return createViewHolderHelper(parent, R.layout.bookmark_item_row);
             case ViewType.SHOPPING_POWER_BOOKMARK:
-                ViewHolder vh =
-                        createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
-                ((PowerBookmarkShoppingItemRow) vh.itemView)
-                        .init(mImageFetcher, mDelegate.getModel(),
-                                mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
-                                        .getSubscriptionsManager());
+                ViewHolder vh = null;
+                if (BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
+                    vh = createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
+                    ((PowerBookmarkShoppingItemRow) vh.itemView)
+                            .init(mImageFetcher, mDelegate.getModel(), mSubscriptionsManager,
+                                    mSnackbarManager);
+                } else {
+                    vh = createViewHolderHelper(parent, R.layout.bookmark_item_row);
+                }
                 return vh;
             case ViewType.DIVIDER:
                 return new ViewHolder(
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.horizontal_divider, parent, false)) {};
-            case ViewType.TAG_CHIP_LIST:
-                return createTagChipListViewHolder(parent);
+            case ViewType.SHOPPING_FILTER:
+                return new ViewHolder(
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.shopping_filter_row, parent, false)) {};
             default:
                 assert false;
                 return null;
@@ -261,7 +289,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         } else if (BookmarkListEntry.isBookmarkEntry(holder.getItemViewType())) {
             BookmarkRow row = ((BookmarkRow) holder.itemView);
             BookmarkId id = getIdByPosition(position);
-            row.setBookmarkId(id, getLocationFromPosition(position));
+            row.setBookmarkId(id, getLocationFromPosition(position),
+                    BookmarkId.SHOPPING_FOLDER.equals(mCurrentFolder));
             row.setDragHandleOnTouchListener((v, event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     mItemTouchHelper.startDrag(holder);
@@ -279,9 +308,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 // We need this in case we are change state during a pulse.
                 ViewHighlighter.turnOffHighlight(holder.itemView);
             }
-        } else if (holder.getItemViewType() == ViewType.TAG_CHIP_LIST) {
-            PowerBookmarkTagChipList tagChipList = ((PowerBookmarkTagChipList) holder.itemView);
-            tagChipList.setBookmarkFolder(mCurrentFolder);
+        } else if (holder.getItemViewType() == ViewType.SHOPPING_FILTER) {
+            LinearLayout layout = ((LinearLayout) holder.itemView);
+            layout.setClickable(true);
+            layout.setOnClickListener(
+                    (view) -> { mDelegate.openFolder(BookmarkId.SHOPPING_FOLDER); });
         }
     }
 
@@ -332,11 +363,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         mDelegate.getSelectionDelegate().addObserver(this);
 
         Runnable promoHeaderChangeAction = () -> {
-            // If top level folders are not showing, update the header and notify.
-            // Otherwise, update header without notifying; we are going to update the bookmarks
-            // list, in case other top-level folders appeared because of the sync, and then
-            // redraw.
-            updateHeader(!topLevelFoldersShowing());
+            // Notify the view of changes to the elements list as the promo might be showing.
+            updateHeader(true);
         };
 
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, promoHeaderChangeAction);
@@ -373,14 +401,16 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             setBookmarks(mDelegate.getModel().getChildIDs(folder));
         }
 
-        if (folder.getType() == BookmarkType.READING_LIST) {
+        if (BookmarkId.SHOPPING_FOLDER.equals(folder)) {
+            mDelegate.getSelectableListLayout().setEmptyViewText(
+                    R.string.tracked_products_empty_list_title);
+        } else if (folder.getType() == BookmarkType.READING_LIST) {
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
             mDelegate.getSelectableListLayout().setEmptyViewText(
-                    R.string.reading_list_empty_list_title, R.string.bookmark_no_result);
+                    R.string.reading_list_empty_list_title);
         } else {
-            mDelegate.getSelectableListLayout().setEmptyViewText(
-                    R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
+            mDelegate.getSelectableListLayout().setEmptyViewText(R.string.bookmarks_folder_empty);
         }
     }
 
@@ -425,7 +455,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      */
     void moveUpOne(BookmarkId bookmarkId) {
         int pos = getPositionForBookmark(bookmarkId);
-        assert isOrderable(getItemByPosition(pos));
+        assert isReorderable(getItemByPosition(pos));
         mElements.remove(pos);
         mElements.add(pos - 1,
                 BookmarkListEntry.createBookmarkEntry(
@@ -439,7 +469,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
      */
     void moveDownOne(BookmarkId bookmarkId) {
         int pos = getPositionForBookmark(bookmarkId);
-        assert isOrderable(getItemByPosition(pos));
+        assert isReorderable(getItemByPosition(pos));
         mElements.remove(pos);
         mElements.add(pos + 1,
                 BookmarkListEntry.createBookmarkEntry(
@@ -567,9 +597,9 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         return endIndex;
     }
 
-    private boolean isOrderable(BookmarkListEntry entry) {
+    private boolean isReorderable(BookmarkListEntry entry) {
         return entry != null && entry.getBookmarkItem() != null
-                && entry.getBookmarkItem().isMovable();
+                && entry.getBookmarkItem().isReorderable();
     }
 
     @Override
@@ -582,7 +612,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     @Override
     @VisibleForTesting
     public boolean isPassivelyDraggable(ViewHolder viewHolder) {
-        return isOrderable(getItemByHolder(viewHolder));
+        return isReorderable(getItemByHolder(viewHolder));
     }
 
     @VisibleForTesting

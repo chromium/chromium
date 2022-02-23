@@ -41,7 +41,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/tracing/background_reached_code_tracing_observer_android.h"
 #endif
 
@@ -94,8 +94,8 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
     : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
       trigger_handle_ids_(0) {
-  AddEnabledStateObserver(BackgroundStartupTracingObserver::GetInstance());
-#if defined(OS_ANDROID)
+  AddEnabledStateObserver(&BackgroundStartupTracingObserver::GetInstance());
+#if BUILDFLAG(IS_ANDROID)
   AddEnabledStateObserver(&BackgroundReachedCodeTracingObserver::GetInstance());
 #endif
 }
@@ -145,8 +145,8 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   std::unique_ptr<BackgroundTracingConfigImpl> config_impl(
       static_cast<BackgroundTracingConfigImpl*>(config.release()));
   config_impl = BackgroundStartupTracingObserver::GetInstance()
-                    ->IncludeStartupConfigIfNeeded(std::move(config_impl));
-#if defined(OS_ANDROID)
+                    .IncludeStartupConfigIfNeeded(std::move(config_impl));
+#if BUILDFLAG(IS_ANDROID)
   config_impl = BackgroundReachedCodeTracingObserver::GetInstance()
                     .IncludeReachedCodeConfigIfNeeded(std::move(config_impl));
 
@@ -157,7 +157,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   } else
 #endif
       if (BackgroundStartupTracingObserver::GetInstance()
-              ->enabled_in_current_session()) {
+              .enabled_in_current_session()) {
     // Anonymize data for startup tracing by default. We currently do not
     // support storing the config in preferences for next session.
     data_filtering = DataFiltering::ANONYMIZE_DATA;

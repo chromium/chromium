@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,7 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
@@ -112,6 +113,43 @@ enum class DisplayCapturePolicyResult {
   kAllowed = 1,
   kMaxValue = kAllowed
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Note: The mismatch between "CropId" and "CropTarget" is due to spec-changes
+// as part of the work in the W3C working group. These will be reflected in
+// code at a later point.
+// TODO(crbug.com/1291140): Remove above explanation once implementation
+// is updated to CropTargets.
+enum class ProduceCropTargetFunctionResult {
+  kPromiseProduced = 0,
+  kGenericError = 1,
+  kInvalidContext = 2,
+  kDuplicateCallBeforePromiseResolution = 3,
+  kDuplicateCallAfterPromiseResolution = 4,
+  kMaxValue = kDuplicateCallAfterPromiseResolution
+};
+
+void RecordUma(ProduceCropTargetFunctionResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.RegionCapture.ProduceCropTarget.Function.Result", result);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProduceCropTargetPromiseResult {
+  kPromiseResolved = 0,
+  kPromiseRejected = 1,
+  kMaxValue = kPromiseRejected
+};
+
+void RecordUma(ProduceCropTargetPromiseResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.RegionCapture.ProduceCropTarget.Promise.Result", result);
+}
+#endif
 
 }  // namespace
 
@@ -186,7 +224,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 
   base::OnceCallback<void(const String&, MediaStreamTrack*)>
       on_success_follow_up;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (media_type == UserMediaRequest::MediaType::kDisplayMedia) {
     on_success_follow_up = WTF::Bind(
         &MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
@@ -300,6 +338,7 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Can only be called from the top-level document.");
+    return;
   }
 
   auto config_ptr = mojom::blink::CaptureHandleConfig::New();
@@ -338,14 +377,28 @@ ScriptPromise MediaDevices::produceCropId(
     ScriptState* script_state,
     V8UnionHTMLDivElementOrHTMLIFrameElement* element_union,
     ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+#if BUILDFLAG(IS_ANDROID)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
+  return ScriptPromise();
+#else
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
+    RecordUma(ProduceCropTargetFunctionResult::kInvalidContext);
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    RecordUma(ProduceCropTargetFunctionResult::kGenericError);
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Missing execution context.");
+    return ScriptPromise();
+  }
+
   auto* element =
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
@@ -353,30 +406,40 @@ ScriptPromise MediaDevices::produceCropId(
 
   const RegionCaptureCropId* const old_crop_id =
       element->GetRegionCaptureCropId();
-  if (old_crop_id) {  // produceCropId() previously called on this element.
+  if (old_crop_id) {
+    // The Element has a crop-ID which was previously produced.
     DCHECK(!old_crop_id->value().is_zero());
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    const ScriptPromise promise = resolver->Promise();
     resolver->Resolve(WTF::String(
         blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    RecordUma(
+        ProduceCropTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
     return promise;
   }
 
-  // TODO(crbug.com/1247761): Produce the crop-ID in the browser process,
-  // where it's free from interference by potential malicious applications
-  // trying to produce collisions. Also, we need it there in order to
-  // validate IDs provided to cropTo() for (1) validity and (2) association
-  // with the current browsing context.
-  const base::GUID new_crop_id = base::GUID::GenerateRandomV4();
-  element->SetRegionCaptureCropId(
-      std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(new_crop_id)));
+  const auto it = crop_id_resolvers_.find(element);
+  if (it != crop_id_resolvers_.end()) {
+    // The Element does not yet have a crop-ID, but the production of one
+    // has already been kicked off, and a response will soon arrive from
+    // the browser process. The Promise we return here will be resolved along
+    // with the original one.
+    RecordUma(
+        ProduceCropTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
+    return it->value->Promise();
+  }
 
-  // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
-  // Multiple calls to produceCropId() will be handled by returning distinct
-  // Promises which are all fulfilled (in sequence) when the first one is
-  // fulfilled.
-  const std::string& serialized_crop_id = new_crop_id.AsLowercaseString();
-  resolver->Resolve(
-      WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
+  // Mints a new crop-ID on the browser process. Resolve when it's produced
+  // and ready to be used.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  crop_id_resolvers_.insert(element, resolver);
+  const ScriptPromise promise = resolver->Promise();
+  GetDispatcherHost(window->GetFrame())
+      ->ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
+                                WrapPersistent(this), WrapPersistent(element)));
+  RecordUma(ProduceCropTargetFunctionResult::kPromiseProduced);
   return promise;
+#endif
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
@@ -624,12 +687,15 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(requests_);
+#if !BUILDFLAG(IS_ANDROID)
+  visitor->Trace(crop_id_resolvers_);
+#endif
   Supplement<Navigator>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     const String& id,
     MediaStreamTrack* track) {
@@ -658,6 +724,31 @@ void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
   track->CloseFocusWindowOfOpportunity();
 
   GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
+}
+
+// An empty |crop_id| signals failure; anything else has to be a valid GUID
+// and signals success.
+void MediaDevices::ResolveProduceCropIdPromise(Element* element,
+                                               const WTF::String& crop_id) {
+  DCHECK(IsMainThread());
+  DCHECK(element);  // Persistent.
+
+  const auto it = crop_id_resolvers_.find(element);
+  DCHECK_NE(it, crop_id_resolvers_.end());
+  ScriptPromiseResolver* const resolver = it->value;
+  crop_id_resolvers_.erase(it);
+
+  if (crop_id.IsEmpty()) {
+    resolver->Reject();
+    RecordUma(ProduceCropTargetPromiseResult::kPromiseRejected);
+  } else {
+    const base::GUID guid = base::GUID::ParseLowercase(crop_id.Ascii());
+    DCHECK(guid.is_valid());
+    element->SetRegionCaptureCropId(
+        std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
+    resolver->Resolve(crop_id);
+    RecordUma(ProduceCropTargetPromiseResult::kPromiseResolved);
+  }
 }
 #endif
 

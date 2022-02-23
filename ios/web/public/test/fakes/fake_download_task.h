@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
@@ -51,6 +50,7 @@ class FakeDownloadTask : public DownloadTask {
 
   // Setters for task properties. Setters invoke OnDownloadUpdated callback.
   void SetWebState(WebState* web_state);
+  void SetState(DownloadTask::State state);
   void SetDone(bool done);
   void SetErrorCode(int error_code);
   void SetHttpCode(int http_code);

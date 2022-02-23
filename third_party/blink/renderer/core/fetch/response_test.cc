@@ -30,7 +30,7 @@ namespace blink {
 namespace {
 
 TEST(ServiceWorkerResponseTest, FromFetchResponseData) {
-  auto page = std::make_unique<DummyPageHolder>(IntSize(1, 1));
+  auto page = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   const KURL url("http://www.response.com");
 
   FetchResponseData* fetch_response_data = FetchResponseData::Create();

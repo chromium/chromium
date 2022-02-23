@@ -47,6 +47,8 @@ class StreamingSearchPrefetchRequest : public BaseSearchPrefetchRequest {
  private:
   // The ongoing prefetch request. Null before and after the fetch.
   std::unique_ptr<StreamingSearchPrefetchURLLoader> streaming_url_loader_;
+
+  base::WeakPtrFactory<StreamingSearchPrefetchRequest> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_REQUEST_H_

@@ -8,9 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "weblayer/browser/java/jni/DownloadImpl_jni.h"
@@ -19,7 +20,7 @@
 namespace weblayer {
 
 DownloadImpl::~DownloadImpl() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_download_) {
     Java_DownloadImpl_onNativeDestroyed(base::android::AttachCurrentThread(),
                                         java_download_);
@@ -27,7 +28,7 @@ DownloadImpl::~DownloadImpl() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void DownloadImpl::SetJavaDownload(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_download) {
@@ -68,7 +69,7 @@ base::android::ScopedJavaLocalRef<jobject> DownloadImpl::GetLargeIconImpl(
 DownloadImpl::DownloadImpl() = default;
 
 bool DownloadImpl::HasBeenAddedToUi() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return static_cast<bool>(java_download_);
 #else
   // Since there is no UI outside of Android, we'll assume true.

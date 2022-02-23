@@ -60,7 +60,7 @@ Origin Origin::Create(const GURL& url) {
 }
 
 Origin Origin::Resolve(const GURL& url, const Origin& base_origin) {
-  if (url.SchemeIs(kAboutScheme))
+  if (url.SchemeIs(kAboutScheme) || url.is_empty())
     return base_origin;
   Origin result = Origin::Create(url);
   if (!result.opaque())
@@ -161,6 +161,20 @@ bool Origin::IsSameOriginWith(const Origin& other) const {
   // scheme/host/port must match, even for opaque origins where |tuple_| holds
   // the precursor origin.
   return std::tie(tuple_, nonce_) == std::tie(other.tuple_, other.nonce_);
+}
+
+bool Origin::IsSameOriginWith(const GURL& url) const {
+  if (opaque())
+    return false;
+
+  // The `url::Origin::Create` call here preserves how IsSameOriginWith was used
+  // historically, even though in some scenarios it is not clearly correct:
+  // - Origin of about:blank and about:srcdoc cannot be correctly
+  //   computed/recovered.
+  // - Ideally passing an invalid `url` would be a caller error (e.g. a DCHECK).
+  // - The caller intent is not always clear wrt handling the outer-vs-inner
+  //   origins/URLs in blob: and filesystem: schemes.
+  return IsSameOriginWith(url::Origin::Create(url));
 }
 
 bool Origin::CanBeDerivedFrom(const GURL& url) const {
@@ -456,7 +470,7 @@ namespace debug {
 ScopedOriginCrashKey::ScopedOriginCrashKey(
     base::debug::CrashKeyString* crash_key,
     const url::Origin* value)
-    : base::debug::ScopedCrashKeyString(
+    : scoped_string_value_(
           crash_key,
           value ? value->GetDebugString(false /* include_nonce */)
                 : "nullptr") {}

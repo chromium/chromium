@@ -56,6 +56,7 @@ class MockSurface : public ServerObject {
   }
   MockXdgSurface* xdg_surface() const { return xdg_surface_; }
 
+  // Must be set iff this MockSurface has role of subsurface.
   void set_sub_surface(TestSubSurface* sub_surface) {
     sub_surface_ = sub_surface;
   }
@@ -93,6 +94,7 @@ class MockSurface : public ServerObject {
     DCHECK(!linux_buffer_releases_.contains(buffer));
     linux_buffer_releases_.emplace(buffer, linux_buffer_release);
   }
+  void ClearBufferReleases();
 
   wl_resource* attached_buffer() const { return attached_buffer_; }
   wl_resource* prev_attached_buffer() const { return prev_attached_buffer_; }

@@ -15,16 +15,18 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
@@ -45,8 +47,9 @@ constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 
 ProductivityLauncherSearchView::ProductivityLauncherSearchView(
     AppListViewDelegate* view_delegate,
+    SearchResultPageDialogController* dialog_controller,
     SearchBoxView* search_box_view)
-    : search_box_view_(search_box_view) {
+    : dialog_controller_(dialog_controller), search_box_view_(search_box_view) {
   DCHECK(view_delegate);
   DCHECK(search_box_view_);
   SetUseDefaultFillLayout(true);
@@ -74,16 +77,48 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
-  for (SearchResultListView::SearchResultListType list_type :
-       SearchResultListView::GetAllListTypesForCategoricalSearch()) {
+  auto add_result_container = [&](SearchResultListView* new_container) {
+    new_container->SetResults(
+        AppListModelProvider::Get()->search_model()->results());
+    new_container->set_delegate(this);
+    result_container_views_.push_back(new_container);
+  };
+
+  // kAnswerCard is always the first list view shown.
+  auto* answer_card_container =
+      scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
+          /*main_view=*/nullptr, view_delegate, dialog_controller_,
+          SearchResultView::SearchResultViewType::kAnswerCard,
+          /*animates_result_updates=*/true, absl::nullopt));
+  answer_card_container->SetListType(
+      SearchResultListView::SearchResultListType::kAnswerCard);
+  add_result_container(answer_card_container);
+
+  // kBestMatch is always the second list view shown.
+  auto* best_match_container =
+      scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
+          /*main_view=*/nullptr, view_delegate, dialog_controller_,
+          SearchResultView::SearchResultViewType::kDefault,
+          /*animated_result_updates=*/true, absl::nullopt));
+  best_match_container->SetListType(
+      SearchResultListView::SearchResultListType::kBestMatch);
+  add_result_container(best_match_container);
+
+  // SearchResultListViews are aware of their relative position in the
+  // Productivity launcher search view. SearchResultListViews with mutable
+  // positions are passed their productivity_launcher_search_view_position to
+  // update their own category type. kAnswerCard and kBestMatch have already
+  // been constructed.
+  const size_t category_count =
+      SearchResultListView::GetAllListTypesForCategoricalSearch().size() -
+      result_container_views_.size();
+  for (size_t i = 0; i < category_count; ++i) {
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-            /*main_view=*/nullptr, view_delegate));
-    result_container->SetListType(list_type);
-    result_container->SetResults(
-        AppListModelProvider::Get()->search_model()->results());
-    result_container->set_delegate(this);
-    result_container_views_.push_back(result_container);
+            /*main_view=*/nullptr, view_delegate, dialog_controller_,
+            SearchResultView::SearchResultViewType::kDefault,
+            /*animates_result_updates=*/true, i));
+    add_result_container(result_container);
   }
 
   scroll_view_->SetContents(std::move(scroll_contents));
@@ -114,6 +149,24 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
       return;
     result_count += view->num_results();
   }
+
+  // If the user cleared the search box text, skip animating the views. The
+  // visible views will animate out and the whole search page will be hidden.
+  // See AppListBubbleSearchPage::AnimateHidePage().
+  if (search_box_view_->HasSearch()) {
+    using AnimationInfo = SearchResultContainerView::ResultsAnimationInfo;
+    AnimationInfo aggregate_animation_info;
+    for (SearchResultContainerView* view : result_container_views_) {
+      absl::optional<AnimationInfo> container_animation_info =
+          view->ScheduleResultAnimations(aggregate_animation_info);
+      DCHECK(container_animation_info);
+      aggregate_animation_info.total_views +=
+          container_animation_info->total_views;
+      aggregate_animation_info.animating_views +=
+          container_animation_info->animating_views;
+    }
+  }
+  Layout();
 
   last_search_result_count_ = result_count;
 
@@ -212,27 +265,41 @@ void ProductivityLauncherSearchView::MaybeNotifySelectedResultChanged() {
   if (ignore_result_changes_for_a11y_)
     return;
 
-  // Ignore result selection change if the focus moved away from the search box
-  // textfield, for example to the close button.
-  if (!search_box_view_->search_box()->HasFocus())
+  if (!result_selection_controller_->selected_result()) {
+    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
     return;
-
-  if (!result_selection_controller_->selected_result())
-    return;
+  }
 
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
-  if (!selected_view)
+  if (!selected_view) {
+    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
     return;
+  }
 
-  selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-  search_box_view_->set_a11y_selection_on_search_result(true);
+  search_box_view_->SetA11yActiveDescendant(
+      selected_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
 bool ProductivityLauncherSearchView::CanSelectSearchResults() {
   DCHECK(!result_container_views_.empty());
-  return result_container_views_.front()->num_results() > 0;
+  return last_search_result_count_ > 0;
+}
+
+int ProductivityLauncherSearchView::TabletModePreferredHeight() {
+  int max_height = 0;
+  for (SearchResultContainerView* view : result_container_views_) {
+    if (view->GetVisible()) {
+      max_height += view->GetPreferredSize().height();
+    }
+  }
+  return max_height;
+}
+
+ui::Layer* ProductivityLauncherSearchView::GetPageAnimationLayer() const {
+  // The scroll view has a layer containing all the visible contents, so use
+  // that for "whole page" animations.
+  return scroll_view_->contents()->layer();
 }
 
 BEGIN_METADATA(ProductivityLauncherSearchView, views::View)

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Tiếng Catalan</translation>
 <translation id="1168100932582989117">Máy chủ có tên của Google</translation>
+<translation id="1171082344678443012">Tệp nén lưu trữ XZ</translation>
 <translation id="1172970565351728681">Còn khoảng <ph name="REMAINING_TIME" /> nữa</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1173916544412572294">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
 <translation id="2028997212275086731">Lưu trữ RAR</translation>
+<translation id="2036414735548252477">Tệp lưu trữ tar nén bằng LZMA</translation>
 <translation id="2037845485764049925">Tiếng Nga</translation>
 <translation id="2044023416777079300">Modem chưa được đăng ký</translation>
 <translation id="2046702855113914483">Mỳ tôm</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Chia sẻ với <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Máy chủ SOCKS</translation>
+<translation id="3104793765551262433">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên đã chặn, Thông tin chi tiết</translation>
 <translation id="3113153474486991170">Không thể mở "<ph name="PATH" />" từ vị trí này. Vui lòng sao chép vào "Tệp của tôi" để mở.</translation>
 <translation id="3113592018909187986">Bạn còn 1 lần nhập. Bạn sẽ không thể dùng mạng này cho đến khi thiết lập một mã PIN mới.</translation>
 <translation id="3124404833828281817">Người mơ mộng</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
 <translation id="3567221313191587603">Chọn một tệp và bật <ph name="OFFLINE_CHECKBOX_NAME" /> để dùng tệp khi không có mạng.</translation>
 <translation id="357479282490346887">Tiếng Lithuania</translation>
+<translation id="3587482841069643663">Tất cả</translation>
 <translation id="3592251141500063301">Không tải được <ph name="FILE_NAME" /> xuống để xem khi không có mạng</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Tiếng Pháp ở Canada</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Đã sao lưu tất cả!</translation>
 <translation id="3634507049637220048">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
 <translation id="3645233063072417428">Đã di chuyển <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
-<translation id="3645531960514756307">Bỏ ghim thư mục</translation>
 <translation id="3685122418104378273">Tính năng đồng bộ hóa Google Drive được tắt theo mặc định khi sử dụng dữ liệu di động.</translation>
 <translation id="3689865792480713551">Hủy <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3691184985318546178">Tiếng Sinhala</translation>
 <translation id="3726463242007121105">Thiết bị này không thể mở được vì hệ thống tệp của thiết bị không được hỗ trợ.</translation>
 <translation id="3727148787322499904">Việc thay đổi cài đặt này sẽ ảnh hưởng đến tất cả các mạng chia sẻ</translation>
+<translation id="3737576078404241332">Xoá khỏi thanh bên</translation>
 <translation id="3741243925913727067">Sao lưu ảnh và video trên thiết bị truyền thông của bạn vào Google Drive.</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
 <translation id="3780536599611287598">Bạn không có quyền di chuyển tệp vào '<ph name="FOLDER_NAME" />'.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Nhà thực vật học</translation>
 <translation id="4326192123064055915">Cà phê</translation>
 <translation id="4336032328163998280">Thao tác sao chép không thành công. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Thêm vào thanh bên</translation>
 <translation id="4348495354623233847">Tiếng Soran (Trung Kurd) bằng bàn phím dựa trên tiếng Ả Rập</translation>
 <translation id="4363958938297989186">Tiếng Nga bằng bàn phím phiên âm</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Thanh trượt âm lượng</translation>
 <translation id="4881695831933465202">Mở</translation>
+<translation id="4886199584824489598">Tệp nén lưu trữ Bzip2</translation>
 <translation id="4900532980794411603">Chia sẻ với ứng dụng Parallels Desktop</translation>
 <translation id="4902546322522096650">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="4905417359854579806">Đã sẵn sàng sao lưu <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Chưa kết nối mạng <ph name="NETWORK_TYPE" /></translation>
 <translation id="6074825444536523002">Biểu mẫu Google</translation>
 <translation id="6079871810119356840">Tiếng Hungary bằng bàn phím Qwerty</translation>
+<translation id="6082256976217156453">Tệp nén lưu trữ LZMA</translation>
 <translation id="6096979789310008754">Đã xóa nội dung tìm kiếm, đang hiển thị tất cả các tệp và thư mục.</translation>
 <translation id="610101264611565198">Đang di chuyển <ph name="FILE_NAME" /> sang <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Dấu cách</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Lộn ngược</translation>
 <translation id="6943836128787782965">HTTP gặp lỗi</translation>
 <translation id="6949408524333579394">Tiếng Serbia (chuyển tự)</translation>
+<translation id="6954309393500027528">Quản trị viên của bạn đã chặn thao tác dán tệp này</translation>
 <translation id="6960565108681981554">Chưa kích hoạt. Hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="696203921837389374">Bật đồng bộ hóa qua dữ liệu di động</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Hangul 3 bộ (Không có Shift)</translation>
 <translation id="8299269255470343364">Tiếng Nhật</translation>
 <translation id="8300849813060516376">OTASP không thành công</translation>
+<translation id="8308481408797647857">Tệp lưu trữ tar nén bằng XZ</translation>
 <translation id="8312871300878166382">Dán vào thư mục</translation>
 <translation id="8329978297633540474">Văn bản thuần túy</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Tiếng Lát-vi-a</translation>
 <translation id="8560515948038859357">Tiếng Quảng Đông</translation>
 <translation id="8561206103590473338">Voi</translation>
+<translation id="8566466896628108558">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên đã chặn, Thông tin chi tiết</translation>
 <translation id="8569764466147087991">Chọn tệp để mở</translation>
 <translation id="8577897833047451336">Tiếng Croatia</translation>
 <translation id="8578308463707544055">Tiếng Indonesia</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Chúng tôi không ngừng tìm cách để giúp cho quá trình duyệt web của bạn trở nên an toàn hơn. Trước đây, bất kỳ trang web nào cũng có thể nhắc bạn thêm tiện ích vào trình duyệt. Trong các phiên bản mới nhất của Google Chrome, bạn phải cho Chrome biết rõ rằng bạn muốn cài đặt các tiện ích này bằng cách thêm chúng thông qua trang Tiện ích. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Ghim thư mục</translation>
 <translation id="9130775360844693113">Thành viên của '<ph name="DESTINATION_NAME" />' sẽ có quyền truy cập vào các tệp này.</translation>
 <translation id="9131598836763251128">Chọn một hoặc nhiều tệp</translation>
 <translation id="9133055936679483811">Nén không thành công. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Người sửa đổi:</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Tệp nén lưu trữ Gzip</translation>
 <translation id="965477715979482472">Tiếng Anh (Nam Phi)</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>

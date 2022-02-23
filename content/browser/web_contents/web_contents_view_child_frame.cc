@@ -28,7 +28,7 @@ WebContentsViewChildFrame::WebContentsViewChildFrame(
   *delegate_view = this;
 }
 
-WebContentsViewChildFrame::~WebContentsViewChildFrame() {}
+WebContentsViewChildFrame::~WebContentsViewChildFrame() = default;
 
 WebContentsView* WebContentsViewChildFrame::GetOuterView() {
   return web_contents_->GetOuterWebContents()->GetView();
@@ -102,7 +102,7 @@ void WebContentsViewChildFrame::SetOverscrollControllerEnabled(bool enabled) {
   // This is managed by the outer view.
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool WebContentsViewChildFrame::CloseTabAfterEventTrackingIfNeeded() {
   return false;
 }

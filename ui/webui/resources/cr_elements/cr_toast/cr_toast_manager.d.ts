@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+
 interface CrToastManagerElement extends HTMLElement {
+  $: {
+    content: HTMLElement,
+    toast: CrToastElement,
+  };
   duration: number;
   isToastOpen: boolean;
   slottedHidden: boolean;

@@ -8,13 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace base {
 class FilePath;
+class Time;
 class Value;
 class Version;
 }  // namespace base
@@ -57,6 +60,10 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetBrandCode(const std::string& id) const;
   void SetBrandCode(const std::string& id, const std::string& bc);
 
+  // These functions access the brand path for the specified id.
+  base::FilePath GetBrandPath(const std::string& id) const;
+  void SetBrandPath(const std::string& id, const base::FilePath& bp);
+
   // These functions access the AP for the specified id.
   std::string GetAP(const std::string& id) const;
   void SetAP(const std::string& id, const std::string& ap);
@@ -72,6 +79,25 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // application has a valid version.
   std::vector<std::string> GetAppIds() const;
 
+  // HadApps is set when the updater processes a registration for an app other
+  // than itself, and is never unset, even if the app is uninstalled.
+  bool GetHadApps() const;
+  void SetHadApps();
+
+  // LastChecked is set when the updater completed successfully a call to
+  // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
+  // argument of the completion callback. This means that the execution path
+  // for updating all applications works end to end, including communicating
+  // with the backend.
+  base::Time GetLastChecked() const;
+  void SetLastChecked(const base::Time& time);
+
+  // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
+  // indicates that the mechanism to initiate automated update checks is
+  // working.
+  base::Time GetLastStarted() const;
+  void SetLastStarted(const base::Time& time);
+
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;
   ~PersistedData();
@@ -86,10 +112,13 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   void SetString(const std::string& id,
                  const std::string& key,
                  const std::string& value);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  PrefService* pref_service_ = nullptr;  // Not owned by this class.
+  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned by this class.
 };
+
+void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);
 
 }  // namespace updater
 

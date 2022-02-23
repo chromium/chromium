@@ -149,6 +149,14 @@ class DragDropView : public View {
     return DragOperation::kMove;
   }
 
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    return base::BindOnce([](const ui::DropTargetEvent& event,
+                             ui::mojom::DragOperation& output_drag_op) {
+      output_drag_op = DragOperation::kMove;
+    });
+  }
+
  private:
   // Drop formats accepted by this View object.
   int formats_ = 0;
@@ -317,8 +325,23 @@ class DragDropCloseView : public DragDropView {
 
   // View:
   DragOperation OnPerformDrop(const ui::DropTargetEvent& event) override {
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    PerformDrop(event, output_drag_op);
+    return output_drag_op;
+  }
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    // base::Unretained is safe here because in the tests the view isn't deleted
+    // before the drop callback is run.
+    return base::BindOnce(&DragDropCloseView::PerformDrop,
+                          base::Unretained(this));
+  }
+
+ private:
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op) {
     GetWidget()->CloseNow();
-    return DragOperation::kMove;
+    output_drag_op = DragOperation::kMove;
   }
 };
 

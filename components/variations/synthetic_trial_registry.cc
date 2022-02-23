@@ -95,7 +95,9 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     AssociateGoogleVariationIDForceHashes(
         GOOGLE_WEB_PROPERTIES_SIGNED_IN, {trial_hash, group_hash},
         static_cast<VariationID>(experiment_id));
-    SyntheticTrialGroup entry(trial_hash, group_hash);
+    SyntheticTrialGroup entry(
+        trial_hash, group_hash,
+        variations::SyntheticTrialAnnotationMode::kNextLog);
     entry.start_time = start_time;
     entry.is_external = true;
     synthetic_trial_groups_.push_back(entry);
@@ -113,6 +115,10 @@ void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
     const SyntheticTrialGroup& trial) {
   for (auto& entry : synthetic_trial_groups_) {
     if (entry.id.name == trial.id.name) {
+      // Don't necessarily need to notify observers when setting
+      // |annotation_mode| as it is only used when producing metrics reports
+      // and does not affect variations service.
+      entry.annotation_mode = trial.annotation_mode;
       if (entry.id.group != trial.id.group) {
         entry.id.group = trial.id.group;
         entry.start_time = base::TimeTicks::Now();
@@ -162,7 +168,8 @@ void SyntheticTrialRegistry::GetSyntheticFieldTrialsOlderThan(
   DCHECK(synthetic_trials);
   synthetic_trials->clear();
   for (const auto& entry : synthetic_trial_groups_) {
-    if (entry.start_time <= time)
+    if (entry.start_time <= time ||
+        entry.annotation_mode == SyntheticTrialAnnotationMode::kCurrentLog)
       synthetic_trials->push_back(entry.id);
   }
 }

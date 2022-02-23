@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -57,8 +58,7 @@ class MockSyncWebSocket : public SyncWebSocket {
       EXPECT_TRUE(dict->GetDictionary("params", &params));
       if (!params)
         return false;
-      int param = -1;
-      EXPECT_TRUE(params->GetInteger("param", &param));
+      int param = params->FindIntKey("param").value_or(-1);
       EXPECT_EQ(1, param);
     }
     return true;
@@ -77,7 +77,11 @@ class MockSyncWebSocket : public SyncWebSocket {
     dict->reset(temp_dict->DeepCopy());
     if (!dict)
       return false;
-    EXPECT_TRUE((*dict)->GetInteger("id", &id_));
+    absl::optional<int> maybe_id = (*dict)->FindIntKey("id");
+    EXPECT_TRUE(maybe_id);
+    if (!maybe_id)
+      return false;
+    id_ = *maybe_id;
     EXPECT_TRUE((*dict)->GetString("method", method));
     // Because ConnectIfNecessary is not waiting for the response, Send can
     // set connect_complete to true
@@ -172,11 +176,11 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   base::DictionaryValue params;
   params.SetInteger("param", 1);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   Status status = client.SendCommandAndGetResult("method", params, &result);
   ASSERT_EQ(kOk, status.code());
   std::string json;
-  base::JSONWriter::Write(*result, &json);
+  base::JSONWriter::Write(result, &json);
   ASSERT_STREQ("{\"param\":1}", json.c_str());
 }
 
@@ -384,7 +388,7 @@ class MockListener : public DevToolsEventListener {
                  const base::DictionaryValue& params) override {
     called_ = true;
     EXPECT_STREQ("method", method.c_str());
-    EXPECT_TRUE(params.HasKey("key"));
+    EXPECT_TRUE(params.FindKey("key"));
     return Status(kOk);
   }
 
@@ -542,12 +546,12 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnEventThenResponse, &first));
   base::DictionaryValue params;
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result);
-  int key;
-  ASSERT_TRUE(result->GetInteger("key", &key));
-  ASSERT_EQ(2, key);
+  ASSERT_TRUE(result.is_dict());
+  absl::optional<int> key = result.FindIntKey("key");
+  ASSERT_TRUE(key);
+  ASSERT_EQ(2, key.value());
 }
 
 TEST(ParseInspectorMessage, NonJson) {
@@ -604,8 +608,7 @@ TEST(ParseInspectorMessage, EventWithParams) {
       0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kEventMessageType, type);
   ASSERT_STREQ("method", event.method.c_str());
-  int key;
-  ASSERT_TRUE(event.params->GetInteger("key", &key));
+  int key = event.params->FindIntKey("key").value_or(-1);
   ASSERT_EQ(100, key);
   EXPECT_EQ("AB3A", session_id);
 }
@@ -649,8 +652,7 @@ TEST(ParseInspectorMessage, Command) {
   ASSERT_EQ(internal::kCommandResponseMessageType, type);
   ASSERT_EQ(1, response.id);
   ASSERT_FALSE(response.error.length());
-  int key;
-  ASSERT_TRUE(response.result->GetInteger("key", &key));
+  int key = response.result->FindIntKey("key").value_or(-1);
   ASSERT_EQ(1, key);
 }
 
@@ -687,6 +689,22 @@ TEST(ParseInspectorError, CdpNotImplementedError) {
   Status status = internal::ParseInspectorError(error);
   ASSERT_EQ(kUnknownCommand, status.code());
   ASSERT_EQ("unknown command: SOME MESSAGE", status.message());
+}
+
+TEST(ParseInspectorError, NoSuchFrameError) {
+  // As the server returns the generic error code: SERVER_ERROR = -32000
+  // we have to rely on the error message content.
+  // A real scenario where this error message occurs is WPT test:
+  // 'cookies/samesite/iframe-reload.https.html'
+  // The error is thrown by InspectorDOMAgent::getFrameOwner
+  // (inspector_dom_agent.cc).
+  const std::string error(
+      "{\"code\":-32000,"
+      "\"message\":\"Frame with the given id was not found.\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kNoSuchFrame, status.code());
+  ASSERT_EQ("no such frame: Frame with the given id was not found.",
+            status.message());
 }
 
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
@@ -762,12 +780,12 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
   base::DictionaryValue params;
   params.SetInteger("param", 1);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result);
-  int key;
-  ASSERT_TRUE(result->GetInteger("key", &key));
-  ASSERT_EQ(2, key);
+  ASSERT_TRUE(result.is_dict());
+  absl::optional<int> key = result.FindIntKey("key");
+  ASSERT_TRUE(key);
+  ASSERT_EQ(2, key.value());
 }
 
 namespace {
@@ -810,7 +828,7 @@ class OnConnectedListener : public DevToolsEventListener {
 
  private:
   std::string method_;
-  DevToolsClient* client_;
+  raw_ptr<DevToolsClient> client_;
   bool on_connected_called_;
   bool on_event_called_;
 };
@@ -973,8 +991,8 @@ class OnEventListener : public DevToolsEventListener {
   }
 
  private:
-  DevToolsClient* client_;
-  OtherEventListener* other_listener_;
+  raw_ptr<DevToolsClient> client_;
+  raw_ptr<OtherEventListener> other_listener_;
 };
 
 }  // namespace
@@ -1085,7 +1103,7 @@ class MockSyncWebSocket6 : public MockSyncWebSocket {
   bool HasNextMessage() override { return messages_->size(); }
 
  private:
-  std::list<std::string>* messages_;
+  raw_ptr<std::list<std::string>> messages_;
 };
 
 class MockDevToolsEventListener : public DevToolsEventListener {
@@ -1245,7 +1263,11 @@ class MockSyncWebSocket7 : public SyncWebSocket {
     EXPECT_TRUE(value->GetAsDictionary(&dict));
     if (!dict)
       return false;
-    EXPECT_TRUE(dict->GetInteger("id", &id_));
+    absl::optional<int> maybe_id = dict->FindIntKey("id");
+    EXPECT_TRUE(maybe_id);
+    if (!maybe_id)
+      return false;
+    id_ = *maybe_id;
     std::string method;
     EXPECT_TRUE(dict->GetString("method", &method));
     EXPECT_STREQ("method", method.c_str());

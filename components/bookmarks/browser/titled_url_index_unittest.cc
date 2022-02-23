@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/bookmarks/browser/typed_count_sorter.h"
@@ -24,6 +25,16 @@ using base::UTF8ToUTF16;
 
 namespace bookmarks {
 namespace {
+
+// Helper to create vector of buckets. Each `pairs` are structured
+// `{min sample, count}`.
+std::vector<base::Bucket> CreateBuckets(
+    const std::vector<std::pair<int, int>>& pairs) {
+  std::vector<base::Bucket> buckets;
+  for (const auto& pair : pairs)
+    buckets.emplace_back(pair.first, pair.second);
+  return buckets;
+}
 
 // Used for sorting in combination with TypedCountSorter.
 class BookmarkClientMock : public TestBookmarkClient {
@@ -236,6 +247,7 @@ TEST_F(TitledUrlIndexTest, GetResultsMatching) {
       {"abc def", "abc d", ""},
   };
   for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
     ResetNodes();
 
     for (const std::string& title :
@@ -563,7 +575,7 @@ TEST_F(TitledUrlIndexTest, GetResultsSortedByTypedCount) {
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
   TitledUrlNode* node =
-      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+      AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
 
   struct TestData {
     const std::string query;
@@ -594,36 +606,152 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
   TitledUrlNode* node =
-      AddNode("termA termB otherTerm xyz ab", GURL("http://foo.com"));
+      AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
 
   struct TestData {
     const std::string query;
     const bool should_be_retrieved;
-  } data[] = {// Should return matches if any input terms match, even if not all
-              // node terms match.
-              {"term not", true},
-              // Should not return duplicate matches.
-              {"term termA termB", true},
-              // Should not early exit when there are no intermediate matches.
-              {"not term", true},
-              // Should not match midword.
-              {"ther", false},
-              // Short input terms should only return exact matches.
-              {"xy", false},
-              {"ab", true}};
+    const int histogram_terms_unioned_count;
+    const std::vector<std::pair<int, int>> histogram_term_node_counts;
+    const int histogram_any_terms_nodes;
+    const int histogram_all_terms_nodes;
+    const int histogram_joint_nodes;
+  } data[] = {
+      // Should return matches if any input terms match, even if not all node
+      // terms match.
+      {"term not", true, 1, {{0, 1}, {2, 1}}, 1, 0, 1},
+      // Should not return duplicate matches.
+      {"term term1 term2", true, 3, {{1, 2}, {2, 1}}, 1, 0, 1},
+      // Should not early exit when there are no intermediate matches.
+      {"not term", true, 1, {{0, 1}, {2, 1}}, 1, 0, 1},
+      // Should not match midword.
+      {"ther", false, 0, {{0, 1}}, 0, 0, 0},
+      // Short input terms should only return exact matches.
+      {"xy", false, 0, {{0, 1}}, 0, 0, 0},
+      {"ab", true, 1, {{1, 1}}, 1, 0, 1}};
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
+    base::HistogramTester histogram_tester;
     std::vector<std::u16string> terms =
         base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
-        terms, query_parser::MatchingAlgorithm::DEFAULT);
+        terms, query_parser::MatchingAlgorithm::DEFAULT, 9);
+
+    // Verify whether the node matched.
     if (test_data.should_be_retrieved) {
       EXPECT_EQ(matches.size(), 1u);
       EXPECT_TRUE(matches.contains(node));
     } else
       EXPECT_TRUE(matches.empty());
+
+    // Verify histograms.
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount",
+        test_data.histogram_terms_unioned_count, 1);
+    EXPECT_EQ(
+        CreateBuckets(test_data.histogram_term_node_counts),
+        histogram_tester.GetAllSamples(
+            "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountPerTerm"));
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms",
+        test_data.histogram_any_terms_nodes, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms",
+        test_data.histogram_all_terms_nodes, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount",
+        test_data.histogram_joint_nodes, 1);
+  };
+}
+
+TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTermsMaxNodes) {
+  std::vector<TitledUrlNode*> nodes = {
+      AddNode("common11", GURL("http://foo.com")),
+      AddNode("common12", GURL("http://foo.com")),
+      AddNode("common13 uncommon", GURL("http://foo.com")),
+      AddNode("common21 uncommon1", GURL("http://foo.com")),
+      AddNode("common22 uncommon1", GURL("http://foo.com")),
+      AddNode("common23 uncommon1", GURL("http://foo.com")),
+  };
+
+  struct TestData {
+    const std::string query;
+    const std::vector<int> retrieved_node_indexes;
+    const bool histogram_any_term_approach_used;
+    const int histogram_terms_unioned_count;
+    const std::vector<std::pair<int, int>> histogram_term_node_counts;
+    const int histogram_any_terms_nodes;
+    const int histogram_all_terms_nodes;
+    const int histogram_joint_nodes;
+  } data[] = {
+      // Should not look for all-term matches if at least 1 term matches at most
+      // `max_nodes`.
+      {"uncommon1", {3, 4, 5}, true, 1, {{3, 1}}, 3, 0, 3},
+      // Like above, but even if some terms match more than `max_nodes`. Should
+      // look for per term matches even after `max_nodes` matches have been
+      // found.
+      {"common uncommon1", {3, 4, 5}, true, 2, {{3, 1}, {6, 1}}, 3, 0, 3},
+      // Should look for all-term matches if all terms match more than
+      // `ma_nodes`.
+      {"uncommon", {2, 3, 4, 5}, true, 1, {{4, 1}}, 3, 4, 4},
+      {"common", {0, 1, 2, 3, 4, 5}, true, 1, {{6, 1}}, 3, 6, 6},
+      {"common uncommon", {2, 3, 4, 5}, true, 2, {{4, 1}, {6, 1}}, 3, 4, 4},
+      {"common x", {0, 1, 2}, true, 1, {{0, 1}, {6, 1}}, 3, 0, 3},
+      // Should not crash if no term has matches.
+      {"x", {}, true, 0, {{0, 1}}, 0, 0, 0},
+  };
+
+  for (const TestData& test_data : data) {
+    SCOPED_TRACE("Query: " + test_data.query);
+    base::HistogramTester histogram_tester;
+    std::vector<std::u16string> terms =
+        base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
+        terms, query_parser::MatchingAlgorithm::DEFAULT, 3);
+
+    // Verify the correct nodes matched.
+    ASSERT_EQ(matches.size(), test_data.retrieved_node_indexes.size());
+    for (int index : test_data.retrieved_node_indexes) {
+      SCOPED_TRACE("node: " +
+                   base::UTF16ToUTF8(nodes[index]->GetTitledUrlNodeTitle()));
+      EXPECT_TRUE(matches.contains(nodes[index]));
+    }
+
+    // Verify histograms.
+    if (test_data.histogram_any_term_approach_used) {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount",
+          test_data.histogram_terms_unioned_count, 1);
+      EXPECT_EQ(
+          CreateBuckets(test_data.histogram_term_node_counts),
+          histogram_tester.GetAllSamples(
+              "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountPerTerm"));
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms",
+          test_data.histogram_any_terms_nodes, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms",
+          test_data.histogram_all_terms_nodes, 1);
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount",
+          test_data.histogram_joint_nodes, 1);
+    } else {
+      // If AnyTermApproach wasn't used, then other histograms shouldn't be
+      // recorded.
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.TermsUnionedCount", 0);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountPerTerm", 0);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAnyTerms", 0);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCountAllTerms", 0);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.AnyTermApproach.NodeCount", 0);
+    }
   };
 }
 
@@ -635,31 +763,45 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
     const bool match_ancestor_titles;
     const bool should_be_retrieved;
     const bool should_have_ancestor_match;
+    const bool histogram_any_term_approach_used;
+    const int histogram_terms_count;
+    const std::vector<std::pair<int, int>> histogram_term_lengths;
+    const bool histogram_matched_node;
   } data[] = {
       // Should exclude matches with ancestor matches when
       // |match_ancestor_titles| is false.
-      {"leaf parent", false, false, false},
+      {"leaf parent", false, false, false, false, 2, {{4, 1}, {6, 1}}, false},
       // Should allow ancestor matches when |match_ancestor_titles| is true.
-      {"leaf parent", true, true, true},
+      {"leaf parent", true, true, true, true, 2, {{4, 1}, {6, 1}}, true},
       // Should not early exit when there are no accumulated
       // non-ancestor matches.
-      {"parent leaf", true, true, true},
+      {"parent leaf", true, true, true, true, 2, {{4, 1}, {6, 1}}, true},
       // Should still require at least 1 non-ancestor match when
       // |match_ancestor_titles| is true.
-      {"parent", true, false, false},
+      {"parent", true, false, false, true, 1, {{6, 1}}, false},
       // Should set |has_ancestor_match| to true even if a term matched
       // both an ancestor and title/URL.
-      {"pare", true, true, true},
+      {"pare", true, true, true, true, 1, {{4, 1}}, true},
       // Short inputs should only match exact title or ancestor terms.
-      {"pa", true, false, false},
+      {"pa", true, false, false, true, 1, {{2, 1}}, false},
       // Should not return matches if a term matches neither the title
       // nor ancestor.
-      {"term not parent", true, false, false}};
+      {"leaf not parent",
+       true,
+       false,
+       false,
+       true,
+       3,
+       {{3, 1}, {4, 1}, {6, 1}},
+       true}};
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
+    base::HistogramTester histogram_tester;
     auto matches = GetResultsMatching(test_data.query, 10,
                                       test_data.match_ancestor_titles);
+
+    // Verify whether the match.
     if (test_data.should_be_retrieved) {
       EXPECT_EQ(matches.size(), 1u);
       EXPECT_EQ(matches[0].node, node);
@@ -667,7 +809,97 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
                 test_data.should_have_ancestor_match);
     } else
       EXPECT_TRUE(matches.empty());
+
+    // Verify histograms.
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.Terms.TermsCount",
+        test_data.histogram_terms_count, 1);
+    EXPECT_EQ(CreateBuckets(test_data.histogram_term_lengths),
+              histogram_tester.GetAllSamples(
+                  "Bookmarks.GetResultsMatching.Terms.TermLength"));
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.AnyTermApproach.Used",
+        test_data.histogram_any_term_approach_used, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.Nodes.Count",
+        test_data.histogram_matched_node, 1);
+    if (test_data.query.size() < 3) {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.Nodes.Count."
+          "InputsShorterThan3CharsLong",
+          test_data.histogram_matched_node, 1);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Nodes.Count.InputsAtLeast3CharsLong",
+          0);
+    } else {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.Nodes.Count.InputsAtLeast3CharsLong",
+          test_data.histogram_matched_node, 1);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Nodes.Count."
+          "InputsShorterThan3CharsLong",
+          0);
+    }
+    if (test_data.histogram_matched_node) {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.Matches.ConsideredCount", 1, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Matches.ConsideredCount", 0);
+    }
+    if (test_data.should_be_retrieved) {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 1, 1);
+    } else if (test_data.histogram_matched_node) {
+      histogram_tester.ExpectUniqueSample(
+          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 0, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Matches.ReturnedCount", 0);
+    }
+    EXPECT_EQ(histogram_tester
+                  .GetAllSamples("Bookmarks.GetResultsMatching.Timing.Total")
+                  .size(),
+              1u);
+    EXPECT_EQ(histogram_tester
+                  .GetAllSamples(
+                      "Bookmarks.GetResultsMatching.Timing.RetrievingNodes")
+                  .size(),
+              1u);
+    if (test_data.histogram_matched_node) {
+      EXPECT_EQ(
+          histogram_tester
+              .GetAllSamples("Bookmarks.GetResultsMatching.Timing.SortingNodes")
+              .size(),
+          1u);
+      EXPECT_EQ(histogram_tester
+                    .GetAllSamples(
+                        "Bookmarks.GetResultsMatching.Timing.CreatingMatches")
+                    .size(),
+                1u);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Timing.SortingNodes", 0);
+      histogram_tester.ExpectTotalCount(
+          "Bookmarks.GetResultsMatching.Timing.CreatingMatches", 0);
+    }
   };
+
+  {
+    // With an empty input, most histograms should not be logged.
+    base::HistogramTester histogram_tester;
+    auto matches = GetResultsMatching("", 10, true);
+    EXPECT_EQ(histogram_tester
+                  .GetAllSamples("Bookmarks.GetResultsMatching.Timing.Total")
+                  .size(),
+              1u);
+    histogram_tester.ExpectUniqueSample(
+        "Bookmarks.GetResultsMatching.Terms.TermsCount", 0, 1);
+    histogram_tester.ExpectTotalCount(
+        "Bookmarks.GetResultsMatching.Terms.TermLength", 0);
+    histogram_tester.ExpectTotalCount(
+        "Bookmarks.GetResultsMatching.Timing.RetrievingNodes", 0);
+  }
 }
 
 }  // namespace

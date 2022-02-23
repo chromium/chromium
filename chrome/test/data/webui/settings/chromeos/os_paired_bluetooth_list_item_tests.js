@@ -18,7 +18,11 @@ suite('OsPairedBluetoothListItemTest', function() {
   /** @type {!SettingsPairedBluetoothListItemElement|undefined} */
   let pairedBluetoothListItem;
 
+  /** @type {!chromeos.bluetoothConfig.mojom} */
+  let mojom;
+
   setup(function() {
+    mojom = chromeos.bluetoothConfig.mojom;
     pairedBluetoothListItem =
         document.createElement('os-settings-paired-bluetooth-list-item');
     document.body.appendChild(pairedBluetoothListItem);
@@ -42,13 +46,15 @@ suite('OsPairedBluetoothListItemTest', function() {
   }
 
   test(
-      'Device name, type, battery info and a11y labels', async function() {
-        // Device with no nickname, battery info and unknown device type.
+      'Device name, type, connection state, battery info and a11y labels',
+      async function() {
+        // Device with no nickname, battery info, not connected and unknown
+        // device type.
         const publicName = 'BeatsX';
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789', /*publicName=*/ publicName,
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
         pairedBluetoothListItem.device = device;
 
         const itemIndex = 3;
@@ -59,6 +65,9 @@ suite('OsPairedBluetoothListItemTest', function() {
 
         const getDeviceName = () => {
           return pairedBluetoothListItem.$.deviceName;
+        };
+        const isShowingSubtitle = () => {
+          return !pairedBluetoothListItem.$.subtitle.hidden;
         };
         const getBatteryInfo = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector(
@@ -77,21 +86,47 @@ suite('OsPairedBluetoothListItemTest', function() {
         };
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, publicName);
+        assertFalse(!!isShowingSubtitle());
         assertFalse(!!getBatteryInfo());
         assertTrue(!!getDeviceTypeIcon());
-        assertEquals(
-            getItemA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemA11yLabelTypeUnknown', itemIndex + 1,
-                listSize, publicName));
-        assertEquals(
-            getSubpageButtonA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', publicName));
 
-        // Set device nickname, type and battery info.
+        let expectedA11yLabel = pairedBluetoothListItem.i18n(
+                                    'bluetoothA11yDeviceName', itemIndex + 1,
+                                    listSize, publicName) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateNotConnected') +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeUnknown');
+        assertEquals(getItemA11yLabel(), expectedA11yLabel);
+
+        // Set device to connecting.
+        device.deviceProperties.connectionState =
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+        pairedBluetoothListItem.device = {...device};
+        await flushAsync();
+
+        assertTrue(!!getDeviceName());
+        assertEquals(getDeviceName().innerText, publicName);
+        assertTrue(!!isShowingSubtitle());
+        assertFalse(!!getBatteryInfo());
+        assertTrue(!!getDeviceTypeIcon());
+
+        expectedA11yLabel = pairedBluetoothListItem.i18n(
+                                'bluetoothA11yDeviceName', itemIndex + 1,
+                                listSize, publicName) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateConnecting') +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeUnknown');
+        assertEquals(getItemA11yLabel(), expectedA11yLabel);
+
+        // Set device nickname, connection state, type and battery info.
         const nickname = 'nickname';
         device.nickname = nickname;
+        device.deviceProperties.connectionState =
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected;
         device.deviceProperties.deviceType =
             chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
         const batteryPercentage = 60;
@@ -101,21 +136,62 @@ suite('OsPairedBluetoothListItemTest', function() {
         pairedBluetoothListItem.device = {...device};
         await flushAsync();
 
+        let expectedA11yBatteryLabel = pairedBluetoothListItem.i18n(
+            'bluetoothA11yDeviceBatteryInfo', batteryPercentage);
+
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, nickname);
+        assertFalse(!!isShowingSubtitle());
         assertTrue(!!getBatteryInfo());
         assertEquals(
             getBatteryInfo().device,
             pairedBluetoothListItem.device.deviceProperties);
+
+        expectedA11yLabel =
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceName', itemIndex + 1, listSize, nickname) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateConnected') +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeComputer');
         assertEquals(
             getItemA11yLabel(),
+            expectedA11yLabel + ' ' + expectedA11yBatteryLabel);
+
+        // Add True Wireless battery information and make sure that it takes
+        // precedence over default battery information.
+        const leftBudBatteryPercentage = 19;
+        const caseBatteryPercentage = 29;
+        const rightBudBatteryPercentage = 39;
+        device.deviceProperties.batteryInfo.leftBudInfo = {
+          batteryPercentage: leftBudBatteryPercentage
+        };
+        device.deviceProperties.batteryInfo.caseInfo = {
+          batteryPercentage: caseBatteryPercentage
+        };
+        device.deviceProperties.batteryInfo.rightBudInfo = {
+          batteryPercentage: rightBudBatteryPercentage
+        };
+        pairedBluetoothListItem.device = {...device};
+        await flushAsync();
+
+        expectedA11yBatteryLabel =
             pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo',
-                itemIndex + 1, listSize, nickname, batteryPercentage));
+                'bluetoothA11yDeviceNamedBatteryInfoLeftBud',
+                leftBudBatteryPercentage) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceNamedBatteryInfoCase',
+                caseBatteryPercentage) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceNamedBatteryInfoRightBud',
+                rightBudBatteryPercentage);
+
         assertEquals(
-            getSubpageButtonA11yLabel(),
-            pairedBluetoothListItem.i18n(
-                'bluetoothPairedDeviceItemSubpageButtonA11yLabel', nickname));
+            getItemA11yLabel(),
+            expectedA11yLabel + ' ' + expectedA11yBatteryLabel);
       });
 
   test('Battery percentage out of bounds', async function() {
@@ -180,5 +256,60 @@ suite('OsPairedBluetoothListItemTest', function() {
     // Simulate clicking the item's subpage button.
     pairedBluetoothListItem.$.subpageButton.click();
     await assertInDetailSubpage();
+  });
+
+  test('Enterprise-managed icon UI state', async function() {
+    const getManagedIcon = () => {
+      return pairedBluetoothListItem.$$('#managedIcon');
+    };
+    assertFalse(!!getManagedIcon());
+
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '12//345&6789',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse,
+        /*opt_isBlockedByPolicy=*/ true);
+
+    pairedBluetoothListItem.device = Object.assign({}, device);
+    await flushAsync();
+
+    // The icon should now be showing.
+    assertTrue(!!getManagedIcon());
+
+    // Simulate hovering over the icon.
+    const showTooltipPromise =
+        eventToPromise('managed-tooltip-state-change', pairedBluetoothListItem);
+    getManagedIcon().dispatchEvent(new Event('mouseenter'));
+
+    // The managed-tooltip-state-changed event should have been fired.
+    const showTooltipEvent = await showTooltipPromise;
+    assertEquals(showTooltipEvent.detail.show, true);
+    assertEquals(showTooltipEvent.detail.element, getManagedIcon());
+    assertEquals(
+        showTooltipEvent.detail.address, device.deviceProperties.address);
+
+    // Simulate the device being unblocked by policy.
+    const hideTooltipPromise =
+        eventToPromise('managed-tooltip-state-change', pairedBluetoothListItem);
+    const device1 = Object.assign({}, device);
+    device1.deviceProperties.isBlockedByPolicy = false;
+    pairedBluetoothListItem.device = Object.assign({}, device1);
+
+    await flushAsync();
+
+    // The icon should now be hidden.
+    assertFalse(!!getManagedIcon());
+
+    // The managed-tooltip-state-changed event should have been fired again.
+    const hideTooltipEvent = await hideTooltipPromise;
+    assertEquals(hideTooltipEvent.detail.show, false);
+    assertEquals(hideTooltipEvent.detail.element, undefined);
+    assertEquals(
+        hideTooltipEvent.detail.address, device.deviceProperties.address);
   });
 });

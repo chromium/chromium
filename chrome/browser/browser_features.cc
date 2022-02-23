@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/system_network_context_manager.h"
 #endif
 
@@ -28,7 +28,24 @@ const base::Feature kColorProviderRedirectionForThemeProvider = {
 // Destroy profiles when their last browser window is closed, instead of when
 // the browser exits.
 const base::Feature kDestroyProfileOnBrowserClose{
-    "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
+  "DestroyProfileOnBrowserClose",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+};
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+};
+#endif
+
+// DestroyProfileOnBrowserClose only covers deleting regular (non-System)
+// Profiles. This flags lets us destroy the System Profile, as well.
+const base::Feature kDestroySystemProfiles{"DestroySystemProfiles",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Nukes profile directory before creating a new profile using
+// ProfileManager::CreateMultiProfileAsync().
+const base::Feature kNukeProfileBeforeCreateMultiAsync{
+    "NukeProfileBeforeCreateMultiAsync", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables executing the browser commands sent by the NTP promos.
 const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
@@ -41,7 +58,12 @@ const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
-#if defined(OS_MAC)
+// Enables using policy::ManagementService to get the browser's and platform
+// management state everywhere.
+const base::Feature kUseManagementService{"UseManagementService",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+#if BUILDFLAG(IS_MAC)
 // Enables integration with the macOS feature Universal Links.
 const base::Feature kEnableUniveralLinks{"EnableUniveralLinks",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -59,7 +81,7 @@ const base::Feature kDoubleTapToZoomInTabletMode{
     "DoubleTapToZoomInTabletMode", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Adds an item to the context menu that copies a link to the page with the
 // selected text highlighted.
 const base::Feature kCopyLinkToText{"CopyLinkToText",
@@ -70,23 +92,18 @@ const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// Results in remembering fonts used at the time of fcp, and prewarming those
+// fonts on subsequent loading of search results pages for the default search
+// engine.
+const base::Feature kPrewarmSearchResultsPageFonts{
+    "PrewarmSearchResultsPageFonts", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Shows a confirmation dialog when updates to PWAs identity (name and icon)
 // have been detected.
 const base::Feature kPwaUpdateDialogForNameAndIcon{
-  "PwaUpdateDialogForNameAndIcon",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables taking snapshots of the user data directory after a major
-// milestone update and restoring them after a version rollback.
-const base::Feature kUserDataSnapshot{"UserDataSnapshot",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+    "PwaUpdateDialogForNameAndIcon", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Gates sandboxed iframe navigation toward external protocol behind any of:
 // - allow-popups
@@ -108,29 +125,36 @@ const base::Feature kSandboxExternalProtocolBlocked{
 
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
-const base::Feature kTriggerNetworkDataMigration{
-    "TriggerNetworkDataMigration", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool ShouldTriggerNetworkDataMigration() {
-#if defined(OS_WIN)
-  // On Windows, if sandbox enabled means data must be migrated.
-  if (SystemNetworkContextManager::IsNetworkSandboxEnabled())
-    return true;
-#endif  // defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(kTriggerNetworkDataMigration))
-    return true;
-  return false;
-}
+const base::Feature kTriggerNetworkDataMigration {
+  "TriggerNetworkDataMigration",
+#if BUILDFLAG(IS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.
 const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enables Certificate Transparency on Android.
 const base::Feature kCertificateTransparencyAndroid{
     "CertificateTransparencyAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
+
+const base::Feature kLargeFaviconFromGoogle{"LargeFaviconFromGoogle",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
+    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
+
+// Enables the use of a `ProfileManagerObserver` to trigger the post profile
+// init step of the browser startup. This affects the initialization order of
+// some features with the goal to improve startup performance in some cases.
+// See https://bit.ly/chromium-startup-no-guest-profile.
+const base::Feature kObserverBasedPostProfileInit{
+    "ObserverBasedPostProfileInit", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

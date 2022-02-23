@@ -41,9 +41,10 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
-  using OmniboxType = ash::SearchResultOmniboxDisplayType;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
+  using TextItem = ash::SearchResultTextItem;
+  using TextVector = std::vector<TextItem>;
 
   SearchResult();
   SearchResult(const SearchResult&) = delete;
@@ -53,8 +54,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const IconInfo& icon() const { return metadata_->icon; }
   void SetIcon(const IconInfo& icon);
 
-  size_t IconDimension() const;
-
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   void SetChipIcon(const gfx::ImageSkia& chip_icon);
 
@@ -62,25 +61,41 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
 
   const std::u16string& title() const { return metadata_->title; }
-  void set_title(const std::u16string& title);
+  void SetTitle(const std::u16string& title);
 
   const Tags& title_tags() const { return metadata_->title_tags; }
-  void set_title_tags(const Tags& tags) { metadata_->title_tags = tags; }
+  void SetTitleTags(const Tags& tags);
+
+  const TextVector& title_text_vector() const {
+    return metadata_->title_vector;
+  }
+  void SetTitleTextVector(const TextVector& vector);
 
   const std::u16string& details() const { return metadata_->details; }
-  void set_details(const std::u16string& details) {
-    metadata_->details = details;
-  }
+  void SetDetails(const std::u16string& details);
 
   const Tags& details_tags() const { return metadata_->details_tags; }
-  void set_details_tags(const Tags& tags) { metadata_->details_tags = tags; }
+  void SetDetailsTags(const Tags& tags);
+
+  const TextVector& details_text_vector() const {
+    return metadata_->details_vector;
+  }
+  void SetDetailsTextVector(const TextVector& vector);
+
+  const TextVector& big_title_text_vector() const {
+    return metadata_->big_title_vector;
+  }
+  void SetBigTitleTextVector(const TextVector& vector);
+
+  const TextVector& keyboard_shortcut_text_vector() const {
+    return metadata_->keyboard_shortcut_vector;
+  }
+  void SetKeyboardShortcutTextVector(const TextVector& vector);
 
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
-  void set_accessible_name(const std::u16string& name) {
-    metadata_->accessible_name = name;
-  }
+  void SetAccessibleName(const std::u16string& name);
 
   float rating() const { return metadata_->rating; }
   void SetRating(float rating);
@@ -131,11 +146,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   DisplayIndex display_index() const { return metadata_->display_index; }
   void set_display_index(DisplayIndex display_index) {
     metadata_->display_index = display_index;
-  }
-
-  OmniboxType omnibox_type() const { return metadata_->omnibox_type; }
-  void set_omnibox_type(OmniboxType omnibox_type) {
-    metadata_->omnibox_type = omnibox_type;
   }
 
   float position_priority() const { return metadata_->position_priority; }

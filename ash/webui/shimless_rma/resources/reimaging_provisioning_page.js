@@ -2,24 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
-// TODO(gavindodd): Update text for i18n
 /** @type {!Object<!ProvisioningStatus, string>} */
-const provisioningStatusText = {
-  [ProvisioningStatus.kInProgress]: 'In progress...',
-  [ProvisioningStatus.kComplete]: 'Complete.',
-  [ProvisioningStatus.kFailedBlocking]: 'Failed, blocking.',
-  [ProvisioningStatus.kFailedNonBlocking]: 'Failed, non blocking.',
+const provisioningStatusTextKeys = {
+  [ProvisioningStatus.kInProgress]: 'provisioningPageProgressText',
+  [ProvisioningStatus.kComplete]: 'provisioningPageCompleteText',
+  [ProvisioningStatus.kFailedBlocking]: 'provisioningPageFailedBlockingText',
+  [ProvisioningStatus.kFailedNonBlocking]:
+      'provisioningPageFailedNonBlockingText',
 };
 
 /**
@@ -29,7 +31,17 @@ const provisioningStatusText = {
  * Currently device information is serial number, region and sku. All values are
  * OEM specific.
  */
-export class ReimagingProvisioningPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingProvisioningPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
   static get is() {
     return 'reimaging-provisioning-page';
   }
@@ -40,6 +52,12 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected {!ProvisioningStatus} */
       status_: {
         type: Object,
@@ -55,6 +73,18 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
       statusString_: {
         type: String,
         computed: 'getStatusString_(status_, progress_)',
+      },
+
+      /** @protected {boolean} */
+      shouldShowSpinner_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @protected {boolean} */
+      shouldShowRetryButton_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -79,9 +109,17 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
    * @return {string}
    */
   getStatusString_() {
-    // TODO(gavindodd): Update text for i18n
-    return provisioningStatusText[this.status_] + ' ' +
-        Math.round(this.progress_ * 100) + '%';
+    if (!this.status_) {
+      return '';
+    }
+
+    if (this.status_ === ProvisioningStatus.kInProgress) {
+      return this.i18n(
+          provisioningStatusTextKeys[this.status_],
+          Math.round(this.progress_ * 100));
+    } else {
+      return this.i18n(provisioningStatusTextKeys[this.status_]);
+    }
   }
 
   /**
@@ -100,6 +138,10 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
         'disable-next-button',
         {bubbles: true, composed: true, detail: disabled},
         ));
+    this.shouldShowSpinner_ = this.status_ === ProvisioningStatus.kInProgress;
+    this.shouldShowRetryButton_ =
+        this.status_ === ProvisioningStatus.kFailedBlocking ||
+        this.status_ === ProvisioningStatus.kFailedNonBlocking;
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -111,7 +153,26 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
       return Promise.reject(new Error('Provisioning is not complete.'));
     }
   }
+
+  /** @private */
+  onRetryProvsioningButtonClicked_() {
+    if (this.status_ !== ProvisioningStatus.kFailedBlocking &&
+        this.status_ !== ProvisioningStatus.kFailedNonBlocking) {
+      console.error('Provisioning has not failed.');
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.retryProvisioning();
+          })
+        },
+        ));
+  }
 }
 
-customElements.define(
-    ReimagingProvisioningPageElement.is, ReimagingProvisioningPageElement);
+customElements.define(ReimagingProvisioningPage.is, ReimagingProvisioningPage);

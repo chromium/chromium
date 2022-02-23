@@ -139,7 +139,7 @@ class RtcpParserTest : public ::testing::Test {
 };
 
 TEST_F(RtcpParserTest, BrokenPacketIsIgnored) {
-  const char bad_packet[] = {0, 0, 0, 0};
+  const uint8_t bad_packet[] = {0, 0, 0, 0};
   RtcpParser parser(kLocalSsrc, kRemoteSsrc);
   base::BigEndianReader reader(bad_packet, sizeof(bad_packet));
   EXPECT_FALSE(parser.Parse(&reader));

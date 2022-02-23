@@ -69,7 +69,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetUrlChain, const std::vector<GURL>&());
   MOCK_CONST_METHOD0(GetOriginalUrl, const GURL&());
   MOCK_CONST_METHOD0(GetReferrerUrl, const GURL&());
-  MOCK_CONST_METHOD0(GetSiteUrl, const GURL&());
+  MOCK_CONST_METHOD0(GetSerializedEmbedderDownloadData, const std::string&());
   MOCK_CONST_METHOD0(GetTabUrl, const GURL&());
   MOCK_CONST_METHOD0(GetTabReferrerUrl, const GURL&());
   MOCK_CONST_METHOD0(GetRequestInitiator, const absl::optional<url::Origin>&());
@@ -130,6 +130,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetOpened, bool());
   MOCK_CONST_METHOD0(GetLastAccessTime, base::Time());
   MOCK_CONST_METHOD0(IsTransient, bool());
+  MOCK_CONST_METHOD0(RequireSafetyChecks, bool());
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
   MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
   MOCK_CONST_METHOD0(GetDownloadSchedule,

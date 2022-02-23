@@ -15,7 +15,6 @@
 
 namespace base {
 class Value;
-class DictionaryValue;
 }
 
 namespace chromeos {
@@ -24,11 +23,15 @@ namespace client_cert {
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDefaultTPMPin[];
 
-enum ConfigType {
-  CONFIG_TYPE_NONE,
-  CONFIG_TYPE_OPENVPN,
-  CONFIG_TYPE_IPSEC,
-  CONFIG_TYPE_EAP
+enum class ConfigType {
+  kNone,
+  kOpenVpn,
+  // We need two separate types for L2TP/IPsec and IKEv2: both of them are used
+  // for IPsec and have the same properties, the only difference is that they
+  // are mapped to different sets of shill service properties.
+  kL2tpIpsec,
+  kIkev2,
+  kEap,
 };
 
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {
@@ -77,14 +80,13 @@ std::string GetPkcs11AndSlotIdFromEapCertId(const std::string& cert_id,
 // and |pkcs11_id| are filled accordingly. In case of OpenVPN or because the
 // property was not set, |tpm_slot| will be set to -1.
 // If an error occurred or no client configuration is found, |cert_config_type|
-// will be set to CONFIG_TYPE_NONE, |tpm_slot| to -1 and |pkcs11_id| to the
+// will be set to ConfigType::kNone, |tpm_slot| to -1 and |pkcs11_id| to the
 // empty string.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-void GetClientCertFromShillProperties(
-    const base::DictionaryValue& shill_properties,
-    ConfigType* cert_config_type,
-    int* tpm_slot,
-    std::string* pkcs11_id);
+void GetClientCertFromShillProperties(const base::Value& shill_properties,
+                                      ConfigType* cert_config_type,
+                                      int* tpm_slot,
+                                      std::string* pkcs11_id);
 
 // Sets the properties of a client cert and the TPM slot that it's contained in.
 // |cert_config_type| determines which dictionary entries to set.
@@ -104,7 +106,7 @@ void SetEmptyShillProperties(const ConfigType cert_config_type,
 // pattern within an EAP, IPsec or OpenVPN configuration.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void OncToClientCertConfig(::onc::ONCSource onc_source,
-                           const base::DictionaryValue& network_config,
+                           const base::Value& network_config,
                            ClientCertConfig* cert_config);
 
 }  // namespace client_cert

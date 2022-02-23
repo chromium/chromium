@@ -33,8 +33,8 @@ UnixDomainServerSocket::~UnixDomainServerSocket() = default;
 // static
 bool UnixDomainServerSocket::GetPeerCredentials(SocketDescriptor socket,
                                                 Credentials* credentials) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   struct ucred user_cred;
   socklen_t len = sizeof(user_cred);
   if (getsockopt(socket, SOL_SOCKET, SO_PEERCRED, &user_cred, &len) < 0)

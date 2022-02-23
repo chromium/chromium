@@ -20,8 +20,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, Construction) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
   });
 }
 
@@ -32,8 +33,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         3.14, CSSPrimitiveValue::UnitType::kEms);
@@ -50,8 +52,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         44, CSSPrimitiveValue::UnitType::kPixels);
@@ -68,8 +71,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value = *CSSNumericLiteralValue::Create(
         1, CSSPrimitiveValue::UnitType::kViewportWidth);
@@ -86,8 +90,9 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionRem) {
     CSSToLengthConversionData::FontSizes fontSizes(16, 16, &font, 1);
     CSSToLengthConversionData::ViewportSize viewportSize(0, 0);
     CSSToLengthConversionData::ContainerSizes container_sizes;
-    CSSToLengthConversionData conversionData(nullptr, fontSizes, viewportSize,
-                                             container_sizes, 1);
+    CSSToLengthConversionData conversionData(
+        nullptr, WritingMode::kHorizontalTb, fontSizes, viewportSize,
+        container_sizes, 1);
 
     CSSPrimitiveValue& value =
         *CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kRems);

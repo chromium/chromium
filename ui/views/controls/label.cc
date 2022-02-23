@@ -157,6 +157,10 @@ void Label::SetTextStyle(int style) {
     return;
 
   text_style_ = style;
+  ApplyBaselineTextStyle();
+}
+
+void Label::ApplyBaselineTextStyle() {
   full_text_->SetFontList(style::GetFont(text_context_, text_style_));
   full_text_->SetMinLineHeight(GetLineHeight());
   ClearDisplayText();

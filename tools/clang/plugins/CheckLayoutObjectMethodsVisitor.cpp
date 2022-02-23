@@ -75,8 +75,9 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
                 cxxRecordDecl(isSameOrDerivedFrom("::blink::LayoutObject"))),
             has(compoundStmt()),
             // Avoid matching the following cases
-            unless(anyOf(isConstexpr(), isDefaulted(), cxxConstructorDecl(),
-                         cxxDestructorDecl(), isStaticStorageClass(),
+            unless(anyOf(isConstexpr(), isDefaulted(), isPure(),
+                         cxxConstructorDecl(), cxxDestructorDecl(),
+                         isStaticStorageClass(),
                          // Do not trace lambdas (no name, possibly tracking
                          // more parameters than intended because of [&]).
                          hasParent(cxxRecordDecl(isLambda())),
@@ -95,12 +96,14 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
     const auto* stmt = method->getBody();
     assert(stmt);
 
-    auto* stmts = llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_front();
-    if (clang::CXXMemberCallExpr::classof(stmts)) {
-      auto* call = llvm::dyn_cast<clang::CXXMemberCallExpr>(stmts);
-      const std::string& name = call->getMethodDecl()->getNameAsString();
-      if (name == "CheckIsNotDestroyed")
-        return;
+    if (!llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_empty()) {
+      auto* stmts = llvm::dyn_cast<clang::CompoundStmt>(stmt)->body_front();
+      if (clang::CXXMemberCallExpr::classof(stmts)) {
+        auto* call = llvm::dyn_cast<clang::CXXMemberCallExpr>(stmts);
+        const std::string& name = call->getMethodDecl()->getNameAsString();
+        if (name == "CheckIsNotDestroyed")
+          return;
+      }
     }
 
     auto* type = method->getParent();

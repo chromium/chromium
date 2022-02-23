@@ -49,7 +49,7 @@ using browsertest_util::WaitForTaskManagerRows;
 class TaskManagerViewTest : public InProcessBrowserTest {
  public:
   TaskManagerViewTest() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     feature_list_.InitAndEnableFeature(features::kViewsTaskManager);
 #endif
   }
@@ -76,7 +76,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   }
 
   views::TableView* GetTable() const {
-    return GetView() ? GetView()->tab_table_ : nullptr;
+    return GetView() ? GetView()->tab_table_.get() : nullptr;
   }
 
   void PressKillButton() { GetView()->Accept(); }
@@ -88,7 +88,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
     DictionaryPrefUpdate dict_update(local_state,
                                      prefs::kTaskManagerColumnVisibility);
-    dict_update->Clear();
+    dict_update->DictClear();
   }
 
   void ToggleColumnVisibility(TaskManagerView* view, int col_id) {

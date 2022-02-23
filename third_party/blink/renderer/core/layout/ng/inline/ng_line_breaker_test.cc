@@ -84,7 +84,7 @@ class NGLineBreakerTest : public NGLayoutTest {
       if (fill_first_space_ && lines.IsEmpty()) {
         first_should_hang_trailing_space_ =
             line_info.ShouldHangTrailingSpaces();
-        first_hang_width_ = line_info.HangWidth();
+        first_hang_width_ = line_info.HangWidthForAlignment();
       }
       lines.push_back(std::make_pair(ToString(line_info.Results(), node),
                                      line_info.Results().back().item_index));

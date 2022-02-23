@@ -20,6 +20,7 @@
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -34,7 +35,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/themed_vector_icon.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -209,43 +209,6 @@ void SearchResultTileItemView::OnResultChanged() {
   UpdateAccessibleName();
 }
 
-std::u16string SearchResultTileItemView::ComputeAccessibleName() const {
-  std::u16string accessible_name;
-  if (!result()->accessible_name().empty())
-    return result()->accessible_name();
-
-  if (result()->result_type() == AppListSearchResultType::kPlayStoreApp ||
-      result()->result_type() == AppListSearchResultType::kInstantApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kPlayStoreReinstallApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kInstalledApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title_->GetText());
-  } else {
-    accessible_name = title_->GetText();
-  }
-
-  if (rating_ && rating_->GetVisible()) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC, accessible_name,
-        rating_->GetText());
-  }
-  if (price_ && price_->GetVisible()) {
-    accessible_name =
-        l10n_util::GetStringFUTF16(IDS_APP_ACCESSIBILITY_APP_WITH_PRICE_ARC,
-                                   accessible_name, price_->GetText());
-  }
-  return accessible_name;
-}
-
 void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
   parent_background_color_ = color;
   UpdateBackgroundColor();
@@ -257,7 +220,6 @@ void SearchResultTileItemView::GetAccessibleNodeData(
 
   // The tile is a list item in the search result page's result list.
   node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 
   // Specify |ax::mojom::StringAttribute::kDescription| with an empty string, so
@@ -353,9 +315,9 @@ void SearchResultTileItemView::OnGetContextMenuModel(
   gfx::Rect anchor_rect = gfx::ToEnclosingRect(GetSelectionRingBounds());
   views::View::ConvertRectToScreen(this, &anchor_rect);
 
-  AppLaunchedMetricParams metric_params = {
+  AppLaunchedMetricParams metric_params(
       AppListLaunchedFrom::kLaunchedFromSearchBox,
-      AppListLaunchType::kAppSearchResult};
+      AppListLaunchType::kAppSearchResult);
   view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
   context_menu_ = std::make_unique<AppListMenuModelAdapter>(
@@ -366,7 +328,7 @@ void SearchResultTileItemView::OnGetContextMenuModel(
       view_delegate_->IsInTabletMode());
   context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      views::MenuRunner::HAS_MNEMONICS |
-                         views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                         views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                          views::MenuRunner::CONTEXT_MENU |
                          views::MenuRunner::FIXED_ANCHOR);
   if (!selected()) {
@@ -411,8 +373,7 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
 
   RecordSearchResultOpenSource(result(), view_delegate_->GetAppListViewState(),
                                view_delegate_->IsInTabletMode());
-  view_delegate_->OpenSearchResult(result()->id(), result()->result_type(),
-                                   event_flags,
+  view_delegate_->OpenSearchResult(result()->id(), event_flags,
                                    AppListLaunchedFrom::kLaunchedFromSearchBox,
                                    AppListLaunchType::kAppSearchResult,
                                    index_in_container(), launch_as_default);

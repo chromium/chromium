@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ContextUtils;
@@ -30,6 +31,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AbstractAppRestrictionsProviderTest {
     /**
      * Minimal concrete class implementing AbstractAppRestrictionsProvider.

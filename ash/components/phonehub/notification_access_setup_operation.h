@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Implements the notification access setup flow. This flow involves:
@@ -96,6 +96,13 @@ std::ostream& operator<<(std::ostream& stream,
                          NotificationAccessSetupOperation::Status status);
 
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::NotificationAccessSetupOperation;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_SETUP_OPERATION_H_

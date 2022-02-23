@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -19,6 +18,8 @@
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class GURL;
+
 namespace base {
 class Clock;
 }  // namespace base
@@ -26,10 +27,6 @@ class Clock;
 namespace sql {
 class Statement;
 }  // namespace sql
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -44,8 +41,7 @@ struct PublicKeyset;
 class CONTENT_EXPORT AggregationServiceStorageSql
     : public AggregationServiceKeyStorage {
  public:
-  // `clock` must be a non-null pointer to an AggregationServiceStorageSql that
-  // is valid as long as this object.
+  // `clock` must be a non-null pointer that is valid as long as this object.
   AggregationServiceStorageSql(bool run_in_memory,
                                const base::FilePath& path_to_database,
                                const base::Clock* clock);
@@ -56,10 +52,9 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   ~AggregationServiceStorageSql() override;
 
   // AggregationServiceKeyStorage:
-  std::vector<PublicKey> GetPublicKeys(const url::Origin& origin) override;
-  void SetPublicKeys(const url::Origin& origin,
-                     const PublicKeyset& keyset) override;
-  void ClearPublicKeys(const url::Origin& origin) override;
+  std::vector<PublicKey> GetPublicKeys(const GURL& url) override;
+  void SetPublicKeys(const GURL& url, const PublicKeyset& keyset) override;
+  void ClearPublicKeys(const GURL& url) override;
   void ClearPublicKeysFetchedBetween(base::Time delete_begin,
                                      base::Time delete_end) override;
   void ClearPublicKeysExpiredBy(base::Time delete_end) override;
@@ -101,16 +96,15 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   };
 
   // Inserts public keys to database.
-  bool InsertPublicKeysImpl(const url::Origin& origin,
-                            const PublicKeyset& keyset)
+  bool InsertPublicKeysImpl(const GURL& url, const PublicKeyset& keyset)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deletes all stored public keys for `origin` from database.
-  bool ClearPublicKeysImpl(const url::Origin& origin)
+  // Deletes all stored public keys for `url` from database.
+  bool ClearPublicKeysImpl(const GURL& url)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Deletes all stored public keys for origins from database.
-  bool ClearPublicKeysByOriginIds(const std::vector<int64_t>& origin_ids)
+  // Deletes all stored public keys for `url_id` from database.
+  bool ClearPublicKeysByUrlId(int64_t url_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Clears all stored public keys.
@@ -119,14 +113,13 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // Initializes the database if necessary, and returns whether the database is
   // open. `creation_policy` indicates whether the database should be created if
   // it is not already.
-  bool EnsureDatabaseOpen(DbCreationPolicy creation_policy)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool EnsureDatabaseOpen(DbCreationPolicy creation_policy)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool InitializeSchema(bool db_empty)
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeSchema(bool db_empty)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  bool CreateSchema()
-      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void HandleInitializationFailure(InitStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);

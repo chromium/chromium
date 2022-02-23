@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/stream_parser.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
@@ -166,7 +165,7 @@ class SourceBuffer final : public EventTargetWithInlineData,
   // A zero |size| is invalid. |pending_append_data_| must previously own
   // nothing. If the allocation is unsuccessful, |pending_append_data_| will
   // own the allocated space. Returns true on success, false otherwise.
-  WARN_UNUSED_RESULT bool AllocatePendingAppendData(wtf_size_t size);
+  [[nodiscard]] bool AllocatePendingAppendData(wtf_size_t size);
 
   // Note that zero-sized async appends are possible. In such case,
   // |pending_append_data_| will be nullptr. Calling ClearPendingAppendData() in

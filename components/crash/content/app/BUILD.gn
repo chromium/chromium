@@ -22,7 +22,6 @@ if (is_win) {
       "//components/crash/core/app:lib",
       "//components/crash/core/common",
       "//content/public/common:result_codes",
-      "//sandbox",
       "//third_party/breakpad:breakpad_handler",
       "//third_party/breakpad:client",
     ]

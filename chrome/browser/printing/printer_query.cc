@@ -13,17 +13,45 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_job_worker_oop.h"
+#include "printing/printing_features.h"
+#endif
 
 namespace printing {
 
+namespace {
+
+CreatePrintJobWorkerCallback* g_create_print_job_worker_for_testing = nullptr;
+
+std::unique_ptr<PrintJobWorker> CreateWorker(int render_process_id,
+                                             int render_frame_id) {
+  if (g_create_print_job_worker_for_testing) {
+    return g_create_print_job_worker_for_testing->Run(render_process_id,
+                                                      render_frame_id);
+  }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+    return std::make_unique<PrintJobWorkerOop>(render_process_id,
+                                               render_frame_id);
+  }
+#endif
+  return std::make_unique<PrintJobWorker>(render_process_id, render_frame_id);
+}
+
+}  // namespace
+
 PrinterQuery::PrinterQuery(int render_process_id, int render_frame_id)
     : cookie_(PrintSettings::NewCookie()),
-      worker_(std::make_unique<PrintJobWorker>(render_process_id,
-                                               render_frame_id)) {
+      worker_(CreateWorker(render_process_id, render_frame_id)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
@@ -126,7 +154,7 @@ void PrinterQuery::SetSettings(base::Value new_settings,
                          base::Unretained(this), std::move(callback))));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrinterQuery::SetSettingsFromPOD(
     std::unique_ptr<printing::PrintSettings> new_settings,
     base::OnceClosure callback) {
@@ -170,6 +198,12 @@ bool PrinterQuery::PostTask(const base::Location& from_here,
                             base::OnceClosure task) {
   return content::GetIOThreadTaskRunner({})->PostTask(from_here,
                                                       std::move(task));
+}
+
+// static
+void PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
+    CreatePrintJobWorkerCallback* callback) {
+  g_create_print_job_worker_for_testing = callback;
 }
 
 bool PrinterQuery::is_valid() const {

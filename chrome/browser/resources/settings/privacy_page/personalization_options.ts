@@ -12,23 +12,28 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '../controls/settings_toggle_button.js';
 import '../people_page/signout_dialog.js';
 import '../prefs/prefs.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_shared_css.js';
-// <if expr="not chromeos">
+// <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+
 // </if>
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-
+import {PrivacyPageVisibility} from '../page_visibility.js';
 import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
+import {getTemplate} from './personalization_options.html.js';
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 
@@ -37,11 +42,12 @@ export interface SettingsPersonalizationOptionsElement {
     toast: CrToastElement,
     signinAllowedToggle: SettingsToggleButtonElement,
     metricsReportingControl: SettingsToggleButtonElement,
+    spellCheckControl: SettingsToggleButtonElement,
   };
 }
 
 const SettingsPersonalizationOptionsElementBase =
-    WebUIListenerMixin(PrefsMixin(PolymerElement));
+    RelaunchMixin(WebUIListenerMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {
@@ -50,7 +56,7 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -102,6 +108,7 @@ export class SettingsPersonalizationOptionsElement extends
     };
   }
 
+  pageVisibility: PrivacyPageVisibility;
   syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos">
@@ -134,6 +141,7 @@ export class SettingsPersonalizationOptionsElement extends
     // </if>
   }
 
+  // <if expr="chromeos">
   /**
    * @return the autocomplete search suggestions CrToggleElement.
    */
@@ -157,6 +165,7 @@ export class SettingsPersonalizationOptionsElement extends
     return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         '#driveSuggestControl');
   }
+  // </if>
 
   // <if expr="_google_chrome and not chromeos">
   private onMetricsReportingChange_() {
@@ -189,6 +198,46 @@ export class SettingsPersonalizationOptionsElement extends
   }
   // </if>
 
+  private showSearchSuggestToggle_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        loadTimeData.getBoolean('isOSSettings')) {
+      // Should be hidden in OS settings.
+      return false;
+    }
+    // </if>
+    if (this.pageVisibility === undefined) {
+      // pageVisibility isn't defined in non-Guest profiles (crbug.com/1288911).
+      return true;
+    }
+    return this.pageVisibility.searchPrediction;
+  }
+
+  // <if expr="chromeos">
+  private showMetricsReportingAsLink_(): boolean {
+    // If SyncSettingsCategorization is enabled, browser settings should show
+    // a link to the OS settings.
+    return loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        !loadTimeData.getBoolean('isOSSettings');
+  }
+
+  private onMetricsReportingLinkClick_() {
+    const chromeOSSyncSettingsPath =
+        loadTimeData.getString('chromeOSSyncSettingsPath');
+    window.location.href = `chrome://os-settings/${chromeOSSyncSettingsPath}`;
+  }
+  // </if>
+
+  private showUrlCollectionToggle_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      // Should be hidden in OS settings.
+      return !loadTimeData.getBoolean('isOSSettings');
+    }
+    // </if>
+    return true;
+  }
+
   // <if expr="_google_chrome">
   private onUseSpellingServiceToggle_(event: Event) {
     // If turning on using the spelling service, automatically turn on
@@ -207,6 +256,13 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private shouldShowDriveSuggest_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        loadTimeData.getBoolean('isOSSettings')) {
+      // Should be hidden in OS settings.
+      return false;
+    }
+    // </if>
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
         !!this.syncStatus && !!this.syncStatus.signedIn &&
         this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
@@ -236,7 +292,13 @@ export class SettingsPersonalizationOptionsElement extends
 
   private onRestartTap_(e: Event) {
     e.stopPropagation();
-    LifetimeBrowserProxyImpl.getInstance().restart();
+    this.performRestart(RestartType.RESTART);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-personalization-options': SettingsPersonalizationOptionsElement;
   }
 }
 

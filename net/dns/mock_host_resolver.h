@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -28,6 +28,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/mdns_listener_update_type.h"
@@ -139,7 +140,9 @@ class MockHostResolverBase
     };
 
     using ErrorResult = Error;
-    using RuleResult = absl::variant<AddressList, ErrorResult>;
+    using RuleResult = absl::variant<AddressList,
+                                     std::vector<HostResolverEndpointResult>,
+                                     ErrorResult>;
 
     // If `default_result` is nullopt, every resolve must match an added rule.
     explicit RuleResolver(
@@ -154,7 +157,7 @@ class MockHostResolverBase
     const RuleResult& Resolve(
         const absl::variant<url::SchemeHostPort, HostPortPair>&
             request_endpoint,
-        DnsQueryType request_type,
+        DnsQueryTypeSet request_types,
         HostResolverSource request_source) const;
 
     void ClearRules();
@@ -177,6 +180,9 @@ class MockHostResolverBase
     void AddIPLiteralRuleWithDnsAliases(base::StringPiece hostname_pattern,
                                         base::StringPiece ip_literal,
                                         std::vector<std::string> dns_aliases);
+    void AddIPLiteralRuleWithDnsAliases(base::StringPiece hostname_pattern,
+                                        base::StringPiece ip_literal,
+                                        std::set<std::string> dns_aliases);
     void AddSimulatedFailure(base::StringPiece hostname_pattern);
     void AddSimulatedTimeoutFailure(base::StringPiece hostname_pattern);
     void AddRuleWithFlags(base::StringPiece host_pattern,
@@ -380,14 +386,14 @@ class MockHostResolverBase
   // RemoveCancelledListener().
   RequestMap requests_;
   size_t next_request_id_;
-  ProbeRequestImpl* doh_probe_request_ = nullptr;
+  raw_ptr<ProbeRequestImpl> doh_probe_request_ = nullptr;
   std::set<MdnsListenerImpl*> listeners_;
 
   size_t num_resolve_;
   size_t num_resolve_from_cache_;
   size_t num_non_local_resolves_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
 };
@@ -523,14 +529,6 @@ class RuleBasedHostResolverProc : public HostResolverProc {
       const std::string& host,
       HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY);
 
-  // Simulate a lookup that returns ERR_DNS_NAME_HTTPS_ONLY regardless of the
-  // request's scheme. After the rule is used once, it is deleted.
-  //
-  // TODO(https://crbug.com/1206799) Once RuleBasedHostResolverProc::Resolve
-  // takes a url::SchemeHostPort parameter, change the semantics of this method
-  // to vary depending on request scheme.
-  void AddSimulatedHTTPSServiceFormRecord(const std::string& host);
-
   // Deletes all the rules that have been added.
   void ClearRules();
 
@@ -547,10 +545,10 @@ class RuleBasedHostResolverProc : public HostResolverProc {
               int* os_error) override;
 
   struct Rule {
+    // TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
     enum ResolverType {
       kResolverTypeFail,
       kResolverTypeFailTimeout,
-      kResolverTypeFailHTTPSServiceFormRecord,
       // TODO(mmenke): Is it really reasonable for a "mock" host resolver to
       // fall back to the system resolver?
       kResolverTypeSystem,

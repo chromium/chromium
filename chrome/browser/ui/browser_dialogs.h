@@ -26,8 +26,8 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/web_applications/web_app_id.h"
 #endif
 
@@ -35,7 +35,7 @@ class Browser;
 class GURL;
 class LoginHandler;
 class Profile;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class SettingsOverriddenDialogController;
@@ -62,7 +62,7 @@ class AuthChallengeInfo;
 namespace permissions {
 class ChooserController;
 enum class PermissionAction;
-}
+}  // namespace permissions
 
 namespace safe_browsing {
 class ChromeCleanerController;
@@ -80,8 +80,8 @@ class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 namespace web_app {
 struct UrlHandlerLaunchParams;
 }
@@ -148,18 +148,18 @@ void ShowBluetoothDeviceCredentialsDialog(
 
 // Callback used to indicate whether a user has accepted the installation of a
 // web app. The boolean parameter is true when the user accepts the dialog. The
-// WebApplicationInfo parameter contains the information about the app,
+// WebAppInstallInfo parameter contains the information about the app,
 // possibly modified by the user.
 using AppInstallationAcceptanceCallback =
-    base::OnceCallback<void(bool, std::unique_ptr<WebApplicationInfo>)>;
+    base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>;
 
 // Shows the Web App install bubble.
 //
-// |web_app_info| is the WebApplicationInfo being converted into an app.
+// |web_app_info| is the WebAppInstallInfo being converted into an app.
 // |web_app_info.app_url| should contain a start url from a web app manifest
 // (for a Desktop PWA), or the current url (when creating a shortcut app).
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebApplicationInfo> web_app_info,
+                             std::unique_ptr<WebAppInstallInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback);
 
 // When an app changes its icon or name, that is considered an app identity
@@ -185,7 +185,7 @@ void ShowWebAppIdentityUpdateDialog(
 // without any user interaction.
 void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The |allowed| is true when the user allows the app to launch.
 // |remember_user_choice| is true if the user wants to persist the decision.
@@ -205,10 +205,10 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
                                 const web_app::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 // Callback that runs when the Web App URL Handler Intent Picker dialog is
 // closed. `accepted` is true when the dialog is accepted, false otherwise.
 // `launch_params` contains information of the app that is selected to open by
@@ -245,13 +245,13 @@ enum class PwaInProductHelpState {
 // Shows the PWA installation confirmation bubble anchored off the PWA install
 // icon in the omnibox.
 //
-// |web_app_info| is the WebApplicationInfo to be installed.
+// |web_app_info| is the WebAppInstallInfo to be installed.
 // |callback| is called when install bubble closed.
 // |iph_state| records whether PWA install iph is shown before Install bubble is
 // shown.
 void ShowPWAInstallBubble(
     content::WebContents* web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
@@ -259,7 +259,7 @@ void ShowPWAInstallBubble(
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Shows the print job confirmation dialog bubble anchored to the toolbar icon
 // for the extension.
@@ -274,15 +274,15 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const std::u16string& printer_name,
                                     base::OnceCallback<void(bool)> callback);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser);
 void HideTaskManagerViews();
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if defined(TOOLKIT_VIEWS)
 
@@ -412,15 +412,16 @@ enum class DialogIdentifier {
   SIGNIN_ENTERPRISE_INTERCEPTION = 110,
   APP_IDENTITY_UPDATE_CONFIRMATION = 111,
   BLUETOOTH_DEVICE_CREDENTIALS = 112,
-  // Add values above this line with a corresponding label in
-  // tools/metrics/histograms/enums.xml
+  SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 113,
+  // Add values above this line with a corresponding label to the "DialogName"
+  // enum in tools/metrics/histograms/enums.xml
   MAX_VALUE
 };
 
 // Record an UMA metric counting the creation of a dialog box of this type.
 void RecordDialogCreation(DialogIdentifier identifier);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Shows the settings reset prompt dialog asking the user if they want to reset
 // some of their settings.
@@ -443,7 +444,7 @@ void ShowChromeCleanerRebootPrompt(
     Browser* browser,
     safe_browsing::ChromeCleanerRebootDialogController* dialog_controller);
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Displays a dialog to notify the user that the extension installation is
 // blocked due to policy. It also show additional information from administrator
@@ -513,13 +514,6 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
 // provided.
 using OnProceedCallback = base::OnceCallback<
     void(bool accepted, const std::string& address, const std::string& port)>;
-
-// Show dialog to accept remote address and port number information, which will
-// be used to make a socket connection. The window is automatically destroyed
-// when it is closed.
-void ShowDirectSocketsConnectionDialog(Browser* browser,
-                                       const std::string& address,
-                                       OnProceedCallback callback);
 
 }  // namespace chrome
 

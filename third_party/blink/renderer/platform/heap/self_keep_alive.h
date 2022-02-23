@@ -44,11 +44,11 @@ class SelfKeepAlive final {
 
  public:
   explicit SelfKeepAlive(
-      const PersistentLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING)
+      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
       : keep_alive_(loc) {}
   explicit SelfKeepAlive(
       Self* self,
-      const PersistentLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING)
+      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
       : keep_alive_(self, loc) {}
 
   SelfKeepAlive& operator=(Self* self) {

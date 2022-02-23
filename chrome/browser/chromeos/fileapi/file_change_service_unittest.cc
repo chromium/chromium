@@ -41,13 +41,6 @@ storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
   return file_manager::util::GetFileManagerFileSystemContext(profile);
 }
 
-// Returns the file system operation runner associated with the specified
-// `profile`.
-storage::FileSystemOperationRunner* GetFileSystemOperationRunner(
-    Profile* profile) {
-  return GetFileSystemContext(profile)->operation_runner();
-}
-
 // Creates a mojo data pipe with the provided `content`.
 mojo::ScopedDataPipeConsumerHandle CreateStream(const std::string& contents) {
   mojo::ScopedDataPipeProducerHandle producer_handle;

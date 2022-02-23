@@ -14,14 +14,14 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
 
 namespace fake_server {
 
 class FakeServer;
 
-class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
+class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
  public:
   FakeServerHttpPostProvider(
       const base::WeakPtr<FakeServer>& fake_server,
@@ -31,7 +31,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProviderInterface {
   FakeServerHttpPostProvider& operator=(const FakeServerHttpPostProvider&) =
       delete;
 
-  // HttpPostProviderInterface implementation.
+  // HttpPostProvider implementation.
   void SetExtraRequestHeaders(const char* headers) override;
   void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
@@ -94,7 +94,7 @@ class FakeServerHttpPostProviderFactory
   ~FakeServerHttpPostProviderFactory() override;
 
   // HttpPostProviderFactory:
-  scoped_refptr<syncer::HttpPostProviderInterface> Create() override;
+  scoped_refptr<syncer::HttpPostProvider> Create() override;
 
  private:
   // |fake_server_| should only be dereferenced on the same thread as

@@ -17,6 +17,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossManagerClient
   FakeFlossManagerClient();
   ~FakeFlossManagerClient() override;
 
+  // Test utility to do fake notification to observers.
+  void NotifyObservers(
+      const base::RepeatingCallback<void(Observer*)>& notify) const;
+
   void SetAdapterPowered(int adapter, bool powered);
 
  private:

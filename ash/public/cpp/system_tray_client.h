@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -43,6 +44,12 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to multiple displays.
   virtual void ShowDisplaySettings() = 0;
 
+  // Shows settings related to multiple displays.
+  virtual void ShowDarkModeSettings() = 0;
+
+  // Shows settings related to storage.
+  virtual void ShowStorageSettings() = 0;
+
   // Shows settings related to power.
   virtual void ShowPowerSettings() = 0;
 
@@ -68,9 +75,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // loaded.
   virtual void ShowAboutChromeOS() = 0;
 
-  // Shows the Chromebook help app.
-  virtual void ShowHelp() = 0;
-
   // Shows accessibility help.
   virtual void ShowAccessibilityHelp() = 0;
 
@@ -85,9 +89,6 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
 
   // Shows the settings related to the stylus tool palette.
   virtual void ShowPaletteSettings() = 0;
-
-  // Shows information about public account mode.
-  virtual void ShowPublicAccountInfo() = 0;
 
   // Shows information about enterprise enrolled devices.
   virtual void ShowEnterpriseInfo() = 0;
@@ -124,12 +125,32 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows the MultiDevice setup flow dialog.
   virtual void ShowMultiDeviceSetup() = 0;
 
+  // Shows the Firmware update app.
+  virtual void ShowFirmwareUpdate() = 0;
+
   // Attempts to restart the system for update.
   virtual void RequestRestartForUpdate() = 0;
 
   // Sets the UI locale to |locale_iso_code| and exit the session to take
   // effect.
   virtual void SetLocaleAndExit(const std::string& locale_iso_code) = 0;
+
+  // Shows the access code casting dialog.
+  virtual void ShowAccessCodeCastingDialog() = 0;
+
+  // Shows a calendar event. If an event is present then we open it, otherwise
+  // we open Google Calendar with no arguments, which as of now just opens on
+  // today's date. We open the calendar PWA if it's installed (and assign true
+  // to |opened_pwa|), a new browser tab otherwise (and assign false to
+  // |opened_pwa|).
+  //
+  // The calendar PWA requires the event URL to have a specific prefix,
+  // so the URL we actually open may not be the same as the URL that was passed
+  // in.  This is guaranteed to be the case if no event URL was passed in.  The
+  // URL we actually opened is assigned to |finalized_event_url|.
+  virtual void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                                 bool& opened_pwa,
+                                 GURL& finalized_event_url) = 0;
 
  protected:
   SystemTrayClient() {}

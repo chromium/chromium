@@ -19,7 +19,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #define AI_ADDRCONFIG 0
 #endif
 
@@ -38,6 +38,20 @@ HostResolverProc::HostResolverProc(HostResolverProc* previous,
 }
 
 HostResolverProc::~HostResolverProc() = default;
+
+int HostResolverProc::Resolve(const std::string& host,
+                              AddressFamily address_family,
+                              HostResolverFlags host_resolver_flags,
+                              AddressList* addrlist,
+                              int* os_error,
+                              NetworkChangeNotifier::NetworkHandle network) {
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    return Resolve(host, address_family, host_resolver_flags, addrlist,
+                   os_error);
+
+  NOTIMPLEMENTED();
+  return ERR_NOT_IMPLEMENTED;
+}
 
 int HostResolverProc::ResolveUsingPrevious(
     const std::string& host,
@@ -114,7 +128,8 @@ int SystemHostResolverCall(const std::string& host,
                            AddressFamily address_family,
                            HostResolverFlags host_resolver_flags,
                            AddressList* addrlist,
-                           int* os_error_opt) {
+                           int* os_error_opt,
+                           NetworkChangeNotifier::NetworkHandle network) {
   // |host| should be a valid domain name. HostResolverImpl::Resolve has checks
   // to fail early if this is not the case.
   DCHECK(IsValidDNSDomain(host));
@@ -122,7 +137,7 @@ int SystemHostResolverCall(const std::string& host,
   struct addrinfo hints = {0};
   hints.ai_family = AddressFamilyToAF(address_family);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // DO NOT USE AI_ADDRCONFIG ON WINDOWS.
   //
   // The following comment in <winsock2.h> is the best documentation I found
@@ -159,13 +174,13 @@ int SystemHostResolverCall(const std::string& host,
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // See crbug.com/1176970. Flag not documented (other than the declaration
   // comment in ws2def.h) but confirmed by Microsoft to work for this purpose
   // and be safe.
   if (host_resolver_flags & HOST_RESOLVER_AVOID_MULTICAST)
     hints.ai_flags |= AI_DNS_ONLY;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Restrict result set to only this socket type to avoid duplicates.
   hints.ai_socktype = SOCK_STREAM;
@@ -176,14 +191,11 @@ int SystemHostResolverCall(const std::string& host,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) && \
-    !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) && \
+    !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_ANDROID))
   DnsReloaderMaybeReload();
 #endif
-  absl::optional<AddressInfo> ai;
-  int err = 0;
-  int os_error = 0;
-  std::tie(ai, err, os_error) = AddressInfo::Get(host, hints);
+  auto [ai, err, os_error] = AddressInfo::Get(host, hints, nullptr, network);
   bool should_retry = false;
   // If the lookup was restricted (either by address family, or address
   // detection), and the results where all localhost of a single family,
@@ -201,7 +213,8 @@ int SystemHostResolverCall(const std::string& host,
     }
   }
   if (should_retry) {
-    std::tie(ai, err, os_error) = AddressInfo::Get(host, hints);
+    std::tie(ai, err, os_error) =
+        AddressInfo::Get(host, hints, nullptr, network);
   }
 
   if (os_error_opt)
@@ -216,16 +229,24 @@ int SystemHostResolverCall(const std::string& host,
 
 SystemHostResolverProc::SystemHostResolverProc() : HostResolverProc(nullptr) {}
 
+int SystemHostResolverProc::Resolve(
+    const std::string& hostname,
+    AddressFamily address_family,
+    HostResolverFlags host_resolver_flags,
+    AddressList* addr_list,
+    int* os_error,
+    NetworkChangeNotifier::NetworkHandle network) {
+  return SystemHostResolverCall(hostname, address_family, host_resolver_flags,
+                                addr_list, os_error, network);
+}
+
 int SystemHostResolverProc::Resolve(const std::string& hostname,
                                     AddressFamily address_family,
                                     HostResolverFlags host_resolver_flags,
                                     AddressList* addr_list,
                                     int* os_error) {
-  return SystemHostResolverCall(hostname,
-                                address_family,
-                                host_resolver_flags,
-                                addr_list,
-                                os_error);
+  return Resolve(hostname, address_family, host_resolver_flags, addr_list,
+                 os_error, NetworkChangeNotifier::kInvalidNetworkHandle);
 }
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;

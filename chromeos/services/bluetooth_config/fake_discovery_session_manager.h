@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_MANAGER_H_
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAKE_DISCOVERY_SESSION_MANAGER_H_
 
-#include "chromeos/services/bluetooth_config/device_cache.h"
+#include "chromeos/services/bluetooth_config/discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
 
 namespace chromeos {
@@ -13,8 +13,9 @@ namespace bluetooth_config {
 
 class FakeDiscoverySessionManager : public DiscoverySessionManager {
  public:
-  FakeDiscoverySessionManager(AdapterStateController* adapter_state_controller,
-                              DeviceCache* device_cache);
+  FakeDiscoverySessionManager(
+      AdapterStateController* adapter_state_controller,
+      DiscoveredDevicesProvider* discovered_devices_provider);
   ~FakeDiscoverySessionManager() override;
 
   // Sets whether a discovery session is active and notifies delegates of the

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"

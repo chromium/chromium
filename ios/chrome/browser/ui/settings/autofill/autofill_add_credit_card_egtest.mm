@@ -22,6 +22,7 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::IconViewForCellWithLabelId;
 using chrome_test_util::PaymentMethodsButton;
+using chrome_test_util::SettingsToolbarAddButton;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::TextFieldForCellWithLabelId;
 
@@ -104,8 +105,13 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
   [super setUp];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:PaymentMethodsButton()];
-  [[EarlGrey selectElementWithMatcher:AddPaymentMethodButton()]
-      performAction:grey_tap()];
+  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
+    [[EarlGrey selectElementWithMatcher:SettingsToolbarAddButton()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:AddPaymentMethodButton()]
+        performAction:grey_tap()];
+  }
 }
 
 - (void)tearDown {

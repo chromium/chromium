@@ -53,6 +53,9 @@ UIImage* GetBrandedImage(BrandedImage branded_image) {
 
     case BrandedImage::kNonModalDefaultBrowserPromo:
       return [UIImage imageNamed:@"chromium_non_default_promo"];
+
+    case BrandedImage::kPasswordSuggestionKey:
+      return [UIImage imageNamed:@"password_suggestion_key"];
   }
 
   NOTREACHED();

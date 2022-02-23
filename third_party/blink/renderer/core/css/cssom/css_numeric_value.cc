@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_math_clamp.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_max.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_min.h"
@@ -91,15 +92,14 @@ CSSMathOperator CanonicalOperator(CSSMathOperator op) {
 
 bool CanCombineNodes(const CSSMathExpressionNode& root,
                      const CSSMathExpressionNode& node) {
-  DCHECK(root.IsBinaryOperation());
-  if (!node.IsBinaryOperation())
+  DCHECK(root.IsOperation());
+  if (!node.IsOperation())
     return false;
   if (node.IsNestedCalc())
     return false;
   return CanonicalOperator(
-             To<CSSMathExpressionBinaryOperation>(root).OperatorType()) ==
-         CanonicalOperator(
-             To<CSSMathExpressionBinaryOperation>(node).OperatorType());
+             To<CSSMathExpressionOperation>(root).OperatorType()) ==
+         CanonicalOperator(To<CSSMathExpressionOperation>(node).OperatorType());
 }
 
 CSSNumericValue* NegateOrInvertIfRequired(CSSMathOperator parent_op,
@@ -130,21 +130,28 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
+  DCHECK(root.IsOperation());
+
   CSSNumericValueVector values;
 
   // When the node is a variadic operation, we return either a CSSMathMin or a
   // CSSMathMax.
-  if (root.IsVariadicOperation()) {
-    const auto& node = To<CSSMathExpressionVariadicOperation>(root);
+  if (const auto& node = To<CSSMathExpressionOperation>(root);
+      (node.IsMinOrMax() || node.IsClamp())) {
     for (const auto& operand : node.GetOperands())
       values.push_back(CalcToNumericValue(*operand));
     if (node.OperatorType() == CSSMathOperator::kMin)
       return CSSMathMin::Create(std::move(values));
-    DCHECK(node.OperatorType() == CSSMathOperator::kMax);
-    return CSSMathMax::Create(std::move(values));
+    if (node.OperatorType() == CSSMathOperator::kMax)
+      return CSSMathMax::Create(std::move(values));
+    DCHECK_EQ(CSSMathOperator::kClamp, node.OperatorType());
+    auto& min = values[0];
+    auto& val = values[1];
+    auto& max = values[2];
+    return CSSMathClamp::Create(std::move(min), std::move(val), std::move(max));
   }
 
-  DCHECK(root.IsBinaryOperation());
+  DCHECK_EQ(To<CSSMathExpressionOperation>(root).GetOperands().size(), 2u);
   // When the node is a binary operator, we return either a CSSMathSum or a
   // CSSMathProduct.
   // For cases like calc(1 + 2 + 3), the calc expression tree looks like:
@@ -165,19 +172,23 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
   // the nodes that we encounter.
   const CSSMathExpressionNode* cur_node = &root;
   do {
-    DCHECK(cur_node->IsBinaryOperation());
-    const CSSMathExpressionBinaryOperation* binary_op =
-        To<CSSMathExpressionBinaryOperation>(cur_node);
-    DCHECK(binary_op->LeftExpressionNode());
-    DCHECK(binary_op->RightExpressionNode());
+    DCHECK(cur_node->IsOperation());
+    const CSSMathExpressionOperation* binary_op =
+        To<CSSMathExpressionOperation>(cur_node);
+    CSSMathExpressionOperation::Operands operands = binary_op->GetOperands();
+    DCHECK_EQ(operands.size(), 2u);
+    const auto* left_node = operands[0].Get();
+    const auto* right_node = operands[1].Get();
+    DCHECK(left_node);
+    DCHECK(right_node);
 
-    auto* const value = CalcToNumericValue(*binary_op->RightExpressionNode());
+    auto* const value = CalcToNumericValue(*right_node);
 
     // If the current node is a '-' or '/', it's really just a '+' or '*' with
     // the right child negated or inverted, respectively.
     values.push_back(
         NegateOrInvertIfRequired(binary_op->OperatorType(), value));
-    cur_node = binary_op->LeftExpressionNode();
+    cur_node = left_node;
   } while (CanCombineNodes(root, *cur_node));
 
   DCHECK(cur_node);
@@ -187,7 +198,7 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
   // the values.
   std::reverse(values.begin(), values.end());
   CSSMathOperator operator_type =
-      To<CSSMathExpressionBinaryOperation>(root).OperatorType();
+      To<CSSMathExpressionOperation>(root).OperatorType();
   if (operator_type == CSSMathOperator::kAdd ||
       operator_type == CSSMathOperator::kSubtract)
     return CSSMathSum::Create(std::move(values));
@@ -247,7 +258,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
     case kPercentageToken:
     case kDimensionToken: {
       const auto token = range.ConsumeIncludingWhitespace();
-      if (!range.AtEnd())
+      if (!range.AtEnd() || !IsValidUnit(token.GetUnitType()))
         break;
       return CSSUnitValue::Create(token.NumericValue(), token.GetUnitType());
     }
@@ -258,7 +269,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
           range.Peek().FunctionId() == CSSValueID::kMax ||
           range.Peek().FunctionId() == CSSValueID::kClamp) {
         CSSMathExpressionNode* expression =
-            CSSMathExpressionNode::ParseCalc(range);
+            CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
         if (expression)
           return CalcToNumericValue(*expression);
       }

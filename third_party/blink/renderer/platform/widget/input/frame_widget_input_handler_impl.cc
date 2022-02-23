@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -269,37 +270,45 @@ void FrameWidgetInputHandlerImpl::SelectRange(const gfx::Point& base,
       widget_, main_thread_frame_widget_input_handler_, base, extent));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
-void FrameWidgetInputHandlerImpl::SelectWordAroundCaret(
-    SelectWordAroundCaretCallback callback) {
+void FrameWidgetInputHandlerImpl::SelectAroundCaret(
+    mojom::blink::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu,
+    SelectAroundCaretCallback callback) {
   // If the mojom channel is registered with compositor thread, we have to run
   // the callback on compositor thread. Otherwise run it on main thread. Mojom
   // requires the callback runs on the same thread.
   if (ThreadedCompositingEnabled()) {
     callback = base::BindOnce(
         [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
-           SelectWordAroundCaretCallback callback, bool did_select,
-           int start_adjust, int end_adjust) {
+           SelectAroundCaretCallback callback,
+           mojom::blink::SelectAroundCaretResultPtr result) {
           callback_task_runner->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), did_select,
-                                        start_adjust, end_adjust));
+              FROM_HERE,
+              base::BindOnce(std::move(callback), std::move(result)));
         },
         base::ThreadTaskRunnerHandle::Get(), std::move(callback));
   }
 
   RunOnMainThread(base::BindOnce(
       [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
-         SelectWordAroundCaretCallback callback) {
+         mojom::blink::SelectionGranularity granularity,
+         bool should_show_handle, bool should_show_context_menu,
+         SelectAroundCaretCallback callback) {
         if (handler) {
-          handler->SelectWordAroundCaret(std::move(callback));
+          handler->SelectAroundCaret(granularity, should_show_handle,
+                                     should_show_context_menu,
+                                     std::move(callback));
         } else {
-          std::move(callback).Run(false, 0, 0);
+          std::move(callback).Run(std::move(nullptr));
         }
       },
-      main_thread_frame_widget_input_handler_, std::move(callback)));
+      main_thread_frame_widget_input_handler_, granularity, should_show_handle,
+      should_show_context_menu, std::move(callback)));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void FrameWidgetInputHandlerImpl::AdjustSelectionByCharacterOffset(
     int32_t start,
@@ -381,7 +390,7 @@ FrameWidgetInputHandlerImpl::HandlingState::HandlingState(
   switch (state) {
     case UpdateState::kIsPasting:
       widget->set_is_pasting(true);
-      FALLTHROUGH;  // Set both
+      [[fallthrough]];  // Set both
     case UpdateState::kIsSelectingRange:
       widget->set_handling_select_range(true);
       break;

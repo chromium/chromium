@@ -9,12 +9,12 @@
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "url/gurl.h"
 

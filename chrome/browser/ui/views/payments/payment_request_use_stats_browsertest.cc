@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -84,7 +86,12 @@ class PaymentRequestShippingAddressUseStatsTest
       const PaymentRequestShippingAddressUseStatsTest&) = delete;
 
  protected:
-  PaymentRequestShippingAddressUseStatsTest() {}
+  PaymentRequestShippingAddressUseStatsTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that use stats for the shipping address used in a Payment Request are
@@ -128,6 +135,74 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest, RecordUse) {
   EXPECT_EQ(kSomeLaterDate, updated_shipping->use_date());
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestShippingAddressUseStatsTest, but with basic-card disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+class PaymentRequestShippingAddressUseStatsBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestShippingAddressUseStatsBasicCardDisabledTest(
+      const PaymentRequestShippingAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+  PaymentRequestShippingAddressUseStatsBasicCardDisabledTest& operator=(
+      const PaymentRequestShippingAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+
+ protected:
+  PaymentRequestShippingAddressUseStatsBasicCardDisabledTest() {
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that use stats for the shipping address used in a Payment Request are
+// properly updated upon completion.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestShippingAddressUseStatsBasicCardDisabledTest,
+    RecordUse) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_free_shipping_test.html");
+  autofill::TestAutofillClock test_clock;
+  test_clock.SetNow(kSomeDate);
+
+  // Create two addresses, one with a higher frequency score so that it is
+  // selected as the default shipping address.
+  autofill::AutofillProfile shipping_address1 =
+      autofill::test::GetFullProfile();
+  AddAutofillProfile(shipping_address1);
+  autofill::AutofillProfile shipping_address2 =
+      autofill::test::GetFullProfile2();
+  shipping_address2.set_use_count(3);
+  AddAutofillProfile(shipping_address2);
+
+  // Check that the initial use stats were set correctly.
+  autofill::AutofillProfile* initial_shipping =
+      GetDataManager()->GetProfileByGUID(shipping_address2.guid());
+  EXPECT_EQ(3U, initial_shipping->use_count());
+  EXPECT_EQ(kSomeDate, initial_shipping->use_date());
+
+  // Complete the Payment Request.
+  test_clock.SetNow(kSomeLaterDate);
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+  WaitForOnPersonalDataChanged();
+
+  // Check that the usage of the profile was recorded.
+  autofill::AutofillProfile* updated_shipping =
+      GetDataManager()->GetProfileByGUID(shipping_address2.guid());
+  EXPECT_EQ(4U, updated_shipping->use_count());
+  EXPECT_EQ(kSomeLaterDate, updated_shipping->use_date());
+}
+
 class PaymentRequestContactAddressUseStatsTest
     : public PaymentRequestBrowserTestBase {
  public:
@@ -137,7 +212,12 @@ class PaymentRequestContactAddressUseStatsTest
       const PaymentRequestContactAddressUseStatsTest&) = delete;
 
  protected:
-  PaymentRequestContactAddressUseStatsTest() {}
+  PaymentRequestContactAddressUseStatsTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that use stats for the contact address used in a Payment Request are
@@ -180,6 +260,73 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest, RecordUse) {
   EXPECT_EQ(kSomeLaterDate, updated_contact->use_date());
 }
 
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestContactAddressUseStatsTest, but with basic-card disabled.
+// Parameterized tests are not used because the test setup for both tests are
+// too different.
+class PaymentRequestContactAddressUseStatsBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestContactAddressUseStatsBasicCardDisabledTest(
+      const PaymentRequestContactAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+  PaymentRequestContactAddressUseStatsBasicCardDisabledTest& operator=(
+      const PaymentRequestContactAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+
+ protected:
+  PaymentRequestContactAddressUseStatsBasicCardDisabledTest() {
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that use stats for the contact address used in a Payment Request are
+// properly updated upon completion.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestContactAddressUseStatsBasicCardDisabledTest,
+    RecordUse) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_name_test.html");
+  autofill::TestAutofillClock test_clock;
+  test_clock.SetNow(kSomeDate);
+
+  // Create two addresses, one with a higher frequency score so that it is
+  // selected as the default contact address.
+  autofill::AutofillProfile contact_address1 = autofill::test::GetFullProfile();
+  AddAutofillProfile(contact_address1);
+  autofill::AutofillProfile contact_address2 =
+      autofill::test::GetFullProfile2();
+  contact_address2.set_use_count(3);
+  AddAutofillProfile(contact_address2);
+
+  // Check that the initial use stats were set correctly.
+  autofill::AutofillProfile* initial_contact =
+      GetDataManager()->GetProfileByGUID(contact_address2.guid());
+  EXPECT_EQ(3U, initial_contact->use_count());
+  EXPECT_EQ(kSomeDate, initial_contact->use_date());
+
+  // Complete the Payment Request.
+  test_clock.SetNow(kSomeLaterDate);
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+  WaitForOnPersonalDataChanged();
+
+  // Check that the usage of the profile was recorded.
+  autofill::AutofillProfile* updated_contact =
+      GetDataManager()->GetProfileByGUID(contact_address2.guid());
+  EXPECT_EQ(4U, updated_contact->use_count());
+  EXPECT_EQ(kSomeLaterDate, updated_contact->use_date());
+}
+
 class PaymentRequestSameShippingAndContactAddressUseStatsTest
     : public PaymentRequestBrowserTestBase {
  public:
@@ -189,7 +336,12 @@ class PaymentRequestSameShippingAndContactAddressUseStatsTest
       const PaymentRequestSameShippingAndContactAddressUseStatsTest&) = delete;
 
  protected:
-  PaymentRequestSameShippingAndContactAddressUseStatsTest() {}
+  PaymentRequestSameShippingAndContactAddressUseStatsTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that use stats for an address that was used both as a shipping and
@@ -229,6 +381,73 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
   // Check that the usage of the profile was only recorded once.
   autofill::AutofillProfile* updated_multi =
       GetDataManager()->GetProfileByGUID(multi_address.guid());
+  EXPECT_EQ(4U, updated_multi->use_count());
+  EXPECT_EQ(kSomeLaterDate, updated_multi->use_date());
+}
+
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestSameShippingAndContactAddressUseStatsTest, but with basic-card
+// disabled. Parameterized tests are not used because the test setup for both
+// tests are too different.
+class PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest(
+      const PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+  PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest&
+  operator=(
+      const PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest&) =
+      delete;
+
+ protected:
+  PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest() {
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that use stats for an address that was used both as a shipping and
+// contact address in a Payment Request are properly updated upon completion.
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestSameShippingAndContactAddressUseStatsBasicCardDisabledTest,
+    RecordUse) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_contact_details_and_free_shipping_test.html");
+  autofill::TestAutofillClock test_clock;
+  test_clock.SetNow(kSomeDate);
+
+  // Create two addresses, one with a higher frequency score so that it is
+  // selected as the default shipping and contact address.
+  autofill::AutofillProfile multi_address1 = autofill::test::GetFullProfile();
+  AddAutofillProfile(multi_address1);
+  autofill::AutofillProfile multi_address2 = autofill::test::GetFullProfile2();
+  multi_address2.set_use_count(3);
+  AddAutofillProfile(multi_address2);
+
+  // Check that the initial use stats were set correctly.
+  autofill::AutofillProfile* initial_multi =
+      GetDataManager()->GetProfileByGUID(multi_address2.guid());
+  EXPECT_EQ(3U, initial_multi->use_count());
+  EXPECT_EQ(kSomeDate, initial_multi->use_date());
+
+  // Complete the Payment Request.
+  test_clock.SetNow(kSomeLaterDate);
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+  WaitForOnPersonalDataChanged();
+
+  // Check that the usage of the profile was only recorded once.
+  autofill::AutofillProfile* updated_multi =
+      GetDataManager()->GetProfileByGUID(multi_address2.guid());
   EXPECT_EQ(4U, updated_multi->use_count());
   EXPECT_EQ(kSomeLaterDate, updated_multi->use_date());
 }

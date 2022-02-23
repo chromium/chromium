@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -62,12 +62,13 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
     const std::string app_key = std::string(kAppKey) + '.' + kAppId;
     auto app_dict = std::make_unique<base::DictionaryValue>();
 
-    app_dict->SetString(app_key + '.' + std::string(kTitleKey), kAppTitle);
-    app_dict->SetString(app_key + '.' + std::string(kIconKey),
-                        GetFullPathToImage(icon_valid).value());
-    if (installed)
-      app_dict->SetString(app_key + '.' + std::string(kLaunchUrlKey),
-                          kLaunchUrl);
+    app_dict->SetStringPath(app_key + '.' + std::string(kTitleKey), kAppTitle);
+    app_dict->SetStringPath(app_key + '.' + std::string(kIconKey),
+                            GetFullPathToImage(icon_valid).value());
+    if (installed) {
+      app_dict->SetStringPath(app_key + '.' + std::string(kLaunchUrlKey),
+                              kLaunchUrl);
+    }
     g_browser_process->local_state()->Set(
         WebKioskAppManager::kWebKioskDictionaryName, *app_dict);
   }
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, LaunchableUrl) {
   EXPECT_EQ(app_data.GetLaunchableUrl(), GURL(kAppUrl));
 
   // `start_url` is treated as launchable URL if the app has been installed.
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kStartUrl);
   app_data.UpdateFromWebAppInfo(std::move(app_info));
   app_data.LoadFromCache();

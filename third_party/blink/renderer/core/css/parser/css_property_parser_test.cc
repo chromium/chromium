@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -309,7 +309,7 @@ TEST(CSSPropertyParserTest, IncompleteColor) {
 }
 
 TEST(CSSPropertyParserTest, ClipPathEllipse) {
-  auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -375,7 +375,8 @@ TEST(CSSPropertyParserTest, ScrollCustomizationPropertyInvalidEntries) {
 }
 
 TEST(CSSPropertyParserTest, GradientUseCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSGradient;
@@ -386,7 +387,8 @@ TEST(CSSPropertyParserTest, GradientUseCount) {
 }
 
 TEST(CSSPropertyParserTest, PaintUseCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), KURL("https://example.com")),
@@ -401,7 +403,8 @@ TEST(CSSPropertyParserTest, PaintUseCount) {
 }
 
 TEST(CSSPropertyParserTest, CrossFadeUseCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kWebkitCrossFade;
@@ -413,7 +416,8 @@ TEST(CSSPropertyParserTest, CrossFadeUseCount) {
 }
 
 TEST(CSSPropertyParserTest, TwoValueOverflowOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -428,7 +432,8 @@ TEST(CSSPropertyParserTest, TwoValueOverflowOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OneValueOverflowOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -443,7 +448,8 @@ TEST(CSSPropertyParserTest, OneValueOverflowOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowXOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -458,7 +464,8 @@ TEST(CSSPropertyParserTest, OverflowXOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowYOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -473,7 +480,8 @@ TEST(CSSPropertyParserTest, OverflowYOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowFirstValueOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -488,7 +496,8 @@ TEST(CSSPropertyParserTest, OverflowFirstValueOverlayCount) {
 }
 
 TEST(CSSPropertyParserTest, OverflowSecondValueOverlayCount) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSValueOverflowOverlay;
@@ -523,7 +532,7 @@ TEST(CSSPropertyParserTest, DropFontfaceDescriptor) {
 class CSSPropertyUseCounterTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     Page::InsertOrdinaryPageForTesting(&dummy_page_holder_->GetPage());
     // Use strict mode.
     GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);

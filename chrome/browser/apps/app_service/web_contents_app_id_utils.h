@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -31,7 +32,7 @@ class WebContents;
 
 namespace apps {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Get ID of the app running in WebContents as defined by the instance registry
 // and the shelf. Checks for web apps, and extension-based apps (hosted app,
 // packaged v1 apps).

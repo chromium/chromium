@@ -7,6 +7,8 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check_op.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -17,14 +19,11 @@
 #endif
 
 namespace {
-
 const CGFloat kLabelMargin = 14;
 const CGFloat kLabelLineSpacing = 4;
 const CGFloat kLabelIconMargin = 8;
 const CGFloat kLabelFontSize = 14;
 const CGFloat kIconSize = 24;
-const CGFloat kIconTopMargin = 10;
-
 }  // namespace
 
 #pragma mark - ContentSuggestionsWhatsNewItem
@@ -52,11 +51,12 @@ const CGFloat kIconTopMargin = 10;
 }
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
-  return [self.cellClass heightForWidth:width withText:self.text];
+  return [ContentSuggestionsWhatsNewCell heightForWidth:width
+                                               withText:self.text];
 }
 
 + (NSString*)accessibilityIdentifier {
-  return @"ContentSuggestionsWhatsNewIdentifier";
+  return kContentSuggestionsWhatsNewIdentifier;
 }
 
 @end
@@ -65,64 +65,31 @@ const CGFloat kIconTopMargin = 10;
 
 @interface ContentSuggestionsWhatsNewCell ()
 
-@property(nonatomic, strong) UIImageView* iconView;
-@property(nonatomic, strong) UILabel* promoLabel;
-@property(nonatomic, strong) UIView* containerView;
+// View containing all UI elements
+@property(nonatomic, strong) ContentSuggestionsWhatsNewView* whatsNewView;
 
 @end
 
 @implementation ContentSuggestionsWhatsNewCell
 
-@synthesize iconView = _iconView;
-@synthesize promoLabel = _promoLabel;
-@synthesize containerView = _containerView;
-
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _iconView = [[UIImageView alloc] init];
-    _promoLabel = [[UILabel alloc] init];
-    _containerView = [[UIView alloc] init];
-
-    _iconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _promoLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _containerView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.contentView addSubview:_containerView];
-    [_containerView addSubview:_iconView];
-    [_containerView addSubview:_promoLabel];
-
-    ApplyVisualConstraintsWithMetrics(
-        @[
-          @"V:|-margin-[promo]-margin-|", @"V:|-iconMargin-[icon(==iconSize)]",
-          @"V:|[container]|", @"H:|[icon(==iconSize)]-spacing-[promo]|",
-          @"H:|->=0-[container]->=0-|"
-        ],
-        @{
-          @"icon" : _iconView,
-          @"promo" : _promoLabel,
-          @"container" : _containerView
-        },
-        @{
-          @"margin" : @(kLabelMargin),
-          @"iconMargin" : @(kIconTopMargin),
-          @"iconSize" : @(kIconSize),
-          @"spacing" : @(kLabelIconMargin)
-        });
-    [NSLayoutConstraint activateConstraints:@[
-      [_containerView.centerXAnchor
-          constraintEqualToAnchor:self.contentView.centerXAnchor]
-    ]];
+    _whatsNewView =
+        [[ContentSuggestionsWhatsNewView alloc] initWithFrame:frame];
+    [self.contentView addSubview:_whatsNewView];
+    _whatsNewView.translatesAutoresizingMaskIntoConstraints = NO;
+    AddSameConstraints(self.contentView, _whatsNewView);
   }
   return self;
 }
 
 - (void)setIcon:(UIImage*)icon {
-  self.iconView.image = icon;
+  self.whatsNewView.iconView.image = icon;
 }
 
 - (void)setText:(NSString*)text {
-  [[self class] configureLabel:self.promoLabel withText:text];
+  [[self class] configureLabel:self.whatsNewView.promoLabel withText:text];
 }
 
 + (CGFloat)heightForWidth:(CGFloat)width withText:(NSString*)text {
@@ -144,7 +111,7 @@ const CGFloat kIconTopMargin = 10;
   // changes, for instance on screen rotation.
   CGFloat parentWidth = CGRectGetWidth(self.contentView.bounds);
 
-  self.promoLabel.preferredMaxLayoutWidth =
+  self.whatsNewView.promoLabel.preferredMaxLayoutWidth =
       parentWidth - kIconSize - kLabelIconMargin;
 
   // Re-layout with the new preferred width to allow the label to adjust its

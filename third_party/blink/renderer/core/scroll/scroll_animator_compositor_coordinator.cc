@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -187,9 +185,6 @@ bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
     CompositorAnimationTimeline* timeline) {
   bool reattached = false;
   CompositorElementId element_id = GetScrollElementId();
-  DCHECK(element_id || (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-                        !GetScrollableArea()->LayerForScrolling()));
-
   if (element_id != element_id_) {
     if (compositor_animation_ && timeline) {
       // Detach from old layer (if any).
@@ -235,14 +230,15 @@ ScrollAnimatorCompositorCoordinator::GetCompositorAnimation() const {
   return compositor_animation_.get();
 }
 
-FloatPoint ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
+gfx::PointF
+ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
     ScrollOffset offset) {
   return GetScrollableArea()->ScrollOffsetToPosition(offset);
 }
 
 ScrollOffset
 ScrollAnimatorCompositorCoordinator::BlinkOffsetFromCompositorOffset(
-    FloatPoint position) {
+    gfx::PointF position) {
   return GetScrollableArea()->ScrollPositionToOffset(position);
 }
 
@@ -253,11 +249,7 @@ bool ScrollAnimatorCompositorCoordinator::HasImplOnlyAnimationUpdate() const {
 
 CompositorElementId ScrollAnimatorCompositorCoordinator::GetScrollElementId()
     const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return GetScrollableArea()->GetScrollElementId();
-
-  cc::Layer* layer = GetScrollableArea()->LayerForScrolling();
-  return layer ? layer->element_id() : CompositorElementId();
+  return GetScrollableArea()->GetScrollElementId();
 }
 
 void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
@@ -269,13 +261,12 @@ void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {
   if (host && element_id) {
     if (!impl_only_animation_adjustment_.IsZero()) {
       host->scroll_offset_animations().AddAdjustmentUpdate(
-          element_id, gfx::Vector2dF(impl_only_animation_adjustment_.width(),
-                                     impl_only_animation_adjustment_.height()));
+          element_id, gfx::Vector2dF(impl_only_animation_adjustment_));
     }
     if (impl_only_animation_takeover_)
       host->scroll_offset_animations().AddTakeoverUpdate(element_id);
   }
-  impl_only_animation_adjustment_ = IntSize();
+  impl_only_animation_adjustment_ = gfx::Vector2d();
   impl_only_animation_takeover_ = false;
 }
 
@@ -294,13 +285,11 @@ void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
 }
 
 void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
-    const IntSize& adjustment) {
+    const gfx::Vector2d& adjustment) {
   if (!GetScrollableArea()->ScrollAnimatorEnabled())
     return;
 
-  impl_only_animation_adjustment_.Enlarge(adjustment.width(),
-                                          adjustment.height());
-
+  impl_only_animation_adjustment_ += adjustment;
   GetScrollableArea()->RegisterForAnimation();
 }
 

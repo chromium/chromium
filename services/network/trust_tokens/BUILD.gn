@@ -10,6 +10,7 @@ source_set("trust_tokens") {
   visibility = [
     ":*",
     "//services/network:network_service",
+    "//services/network:test_support",
     "//services/network:tests",
   ]
 
@@ -105,12 +106,6 @@ source_set("test_support") {
   sources = [
     "test/signed_request_verification_util.cc",
     "test/signed_request_verification_util.h",
-    "test/test_server_handler_registration.cc",
-    "test/test_server_handler_registration.h",
-    "test/trust_token_request_handler.cc",
-    "test/trust_token_request_handler.h",
-    "test/trust_token_test_util.cc",
-    "test/trust_token_test_util.h",
   ]
 
   deps = [

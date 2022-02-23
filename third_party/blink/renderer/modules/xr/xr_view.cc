@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 
@@ -46,6 +46,19 @@ XRView::XRView(XRFrame* frame,
       transformationMatrixToDOMFloat32Array(view_data->ProjectionMatrix());
 }
 
+XRViewport* XRView::Viewport(double framebuffer_scale) {
+  if (!viewport_) {
+    const gfx::Rect& viewport = view_data_->Viewport();
+    double scale = framebuffer_scale * view_data_->CurrentViewportScale();
+
+    viewport_ = MakeGarbageCollected<XRViewport>(
+        viewport.x() * scale, viewport.y() * scale, viewport.width() * scale,
+        viewport.height() * scale);
+  }
+
+  return viewport_;
+}
+
 XRFrame* XRView::frame() const {
   return frame_;
 }
@@ -68,7 +81,7 @@ DOMFloat32Array* XRView::projectionMatrix() const {
 XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
                        double depth_near,
                        double depth_far)
-    : eye_(view->eye) {
+    : eye_(view->eye), viewport_(view->viewport) {
   UpdateView(view, depth_near, depth_far);
 }
 
@@ -83,7 +96,10 @@ void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
       fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
       depth_far);
 
-  mojo_from_view_ = TransformationMatrix(view->mojo_from_view.matrix());
+  mojo_from_view_ = TransformationMatrix(view->mojo_from_view);
+
+  viewport_ = view->viewport;
+  is_first_person_observer_ = view->is_first_person_observer;
 }
 
 void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
@@ -135,25 +151,24 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
   // Transform the x/y coordinate into WebGL normalized device coordinates.
   // Z coordinate of -1 means the point will be projected onto the projection
   // matrix near plane.
-  FloatPoint3D point_in_projection_space(
+  gfx::Point3F point_in_projection_space(
       x / canvas_width * 2.0 - 1.0,
       (canvas_height - y) / canvas_height * 2.0 - 1.0, -1.0);
 
-  FloatPoint3D point_in_view_space =
+  gfx::Point3F point_in_view_space =
       inv_projection_.MapPoint(point_in_projection_space);
 
-  const FloatPoint3D kOrigin(0.0, 0.0, 0.0);
-  const FloatPoint3D kUp(0.0, 1.0, 0.0);
+  const gfx::Vector3dF kUp(0.0, 1.0, 0.0);
 
   // Generate a "Look At" matrix
-  FloatPoint3D z_axis = kOrigin - point_in_view_space;
-  z_axis.Normalize();
+  gfx::Vector3dF z_axis = -point_in_view_space.OffsetFromOrigin();
+  z_axis.GetNormalized(&z_axis);
 
-  FloatPoint3D x_axis = kUp.Cross(z_axis);
-  x_axis.Normalize();
+  gfx::Vector3dF x_axis = gfx::CrossProduct(kUp, z_axis);
+  x_axis.GetNormalized(&x_axis);
 
-  FloatPoint3D y_axis = z_axis.Cross(x_axis);
-  y_axis.Normalize();
+  gfx::Vector3dF y_axis = gfx::CrossProduct(z_axis, x_axis);
+  y_axis.GetNormalized(&y_axis);
 
   // TODO(bajones): There's probably a more efficient way to do this?
   TransformationMatrix inv_pointer(x_axis.x(), y_axis.x(), z_axis.x(), 0.0,
@@ -206,11 +221,16 @@ XRCamera* XRView::camera() const {
   return nullptr;
 }
 
+bool XRView::isFirstPersonObserver() const {
+  return view_data_->IsFirstPersonObserver();
+}
+
 void XRView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(projection_matrix_);
   visitor->Trace(ref_space_from_view_);
   visitor->Trace(view_data_);
+  visitor->Trace(viewport_);
   ScriptWrappable::Trace(visitor);
 }
 

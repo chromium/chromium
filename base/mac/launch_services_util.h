@@ -11,8 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // Launches the application bundle at |bundle_path|, passing argv[1..] from
 // |command_line| as command line arguments if the app isn't already running.
@@ -24,7 +23,6 @@ BASE_EXPORT NSRunningApplication* OpenApplicationWithPath(
     const CommandLine& command_line,
     NSWorkspaceLaunchOptions launch_options);
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_LAUNCH_SERVICES_UTIL_H_

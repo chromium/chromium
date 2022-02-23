@@ -25,16 +25,16 @@ FrameRequestCallbackCollection::RegisterFrameCallback(FrameCallback* callback) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("RequestAnimationFrame",
                                         inspector_animation_frame_event::Data,
                                         context_, id);
-  probe::AsyncTaskScheduledBreakable(context_, "requestAnimationFrame",
-                                     callback->async_task_id());
+  callback->async_task_context()->Schedule(context_, "requestAnimationFrame");
+  probe::BreakableLocation(context_, "requestAnimationFrame");
   return id;
 }
 
 void FrameRequestCallbackCollection::CancelFrameCallback(CallbackId id) {
   for (wtf_size_t i = 0; i < frame_callbacks_.size(); ++i) {
     if (frame_callbacks_[i]->Id() == id) {
-      probe::AsyncTaskCanceledBreakable(context_, "cancelAnimationFrame",
-                                        frame_callbacks_[i]->async_task_id());
+      frame_callbacks_[i]->async_task_context()->Cancel();
+      probe::BreakableLocation(context_, "cancelAnimationFrame");
       frame_callbacks_.EraseAt(i);
       DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
           "CancelAnimationFrame", inspector_animation_frame_event::Data,
@@ -44,8 +44,8 @@ void FrameRequestCallbackCollection::CancelFrameCallback(CallbackId id) {
   }
   for (const auto& callback : callbacks_to_invoke_) {
     if (callback->Id() == id) {
-      probe::AsyncTaskCanceledBreakable(context_, "cancelAnimationFrame",
-                                        callback->async_task_id());
+      callback->async_task_context()->Cancel();
+      probe::BreakableLocation(context_, "cancelAnimationFrame");
       DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
           "CancelAnimationFrame", inspector_animation_frame_event::Data,
           context_, id);
@@ -86,7 +86,7 @@ void FrameRequestCallbackCollection::ExecuteFrameCallbacks(
     DEVTOOLS_TIMELINE_TRACE_EVENT("FireAnimationFrame",
                                   inspector_animation_frame_event::Data,
                                   context_, callback->Id());
-    probe::AsyncTask async_task(context_, callback->async_task_id());
+    probe::AsyncTask async_task(context_, callback->async_task_context());
     probe::UserCallback probe(context_, "requestAnimationFrame", AtomicString(),
                               true);
     if (callback->GetUseLegacyTimeBase())

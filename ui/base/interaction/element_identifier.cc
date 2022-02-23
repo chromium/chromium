@@ -4,6 +4,8 @@
 
 #include "ui/base/interaction/element_identifier.h"
 
+#include <cstring>
+
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 

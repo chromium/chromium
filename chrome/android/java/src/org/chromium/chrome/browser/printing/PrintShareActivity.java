@@ -16,11 +16,11 @@ import org.chromium.printing.PrintingControllerImpl;
  * A simple activity that allows Chrome to expose print as an option in the share menu.
  */
 public class PrintShareActivity extends ChromeAccessorActivity {
-    public static final String BROADCAST_ACTION = "PrintShareActivityBroadcastAction";
+    public static final String SHARE_ACTION = "PrintShareActivityShareAction";
 
     @Override
-    protected String getBroadcastAction() {
-        return BROADCAST_ACTION;
+    protected String getShareAction() {
+        return SHARE_ACTION;
     }
 
     public static boolean featureIsAvailable(Tab currentTab) {

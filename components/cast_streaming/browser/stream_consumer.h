@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_STREAM_CONSUMER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -57,7 +58,7 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
 
-  openscreen::cast::Receiver* const receiver_;
+  const raw_ptr<openscreen::cast::Receiver> receiver_;
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
 

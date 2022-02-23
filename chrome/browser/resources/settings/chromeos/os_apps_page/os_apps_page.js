@@ -22,9 +22,11 @@ import './android_apps_subpage.js';
 import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
-import './app_management_page/uninstall_button.js';
+import '//resources/cr_components/app_management/uninstall_button.js';
 import '../../controls/settings_dropdown_menu.js';
 
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from '//resources/cr_components/app_management/constants.js';
+import {getAppIcon, getSelectedApp} from '//resources/cr_components/app_management/util.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -37,9 +39,7 @@ import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from './app_management_page/constants.js';
 import {AppManagementStoreClient} from './app_management_page/store_client.js';
-import {getAppIcon, getSelectedApp} from './app_management_page/util.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 
 /**
@@ -122,6 +122,12 @@ Polymer({
     showAndroidApps: Boolean,
 
     /**
+     * Show ARCVM Manage USB related settings and sub-page.
+     * @type {boolean}
+     */
+    showArcvmManageUsb: Boolean,
+
+    /**
      * Whether the App Notifications page should be shown.
      * @type {boolean}
      */
@@ -191,6 +197,12 @@ Polymer({
       },
     },
 
+    /** @private {boolean} */
+    isDndEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -222,6 +234,9 @@ Polymer({
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
 
+    this.mojoInterfaceProvider_.getQuietMode().then((result) => {
+      this.isDndEnabled_ = result.enabled;
+    });
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appsWithNotifications_ = result.apps;
     });
@@ -322,14 +337,19 @@ Polymer({
   },
 
   /** Override chromeos.settings.appNotification.onQuietModeChanged */
-  onQuietModeChanged(enabled) {},
+  onQuietModeChanged(enabled) {
+    this.isDndEnabled_ = enabled;
+  },
 
   /**
    * @return {string}
    * @protected
    */
   getAppListCountDescription_() {
-    return this.i18n(
-        'appNotificationsCountDescription', this.appsWithNotifications_.length);
+    return this.isDndEnabled_ ?
+        this.i18n('appNotificationsDoNotDisturbDescription') :
+        this.i18n(
+            'appNotificationsCountDescription',
+            this.appsWithNotifications_.length);
   }
 });

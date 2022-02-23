@@ -4,14 +4,62 @@
 
 #include "ui/color/color_provider_utils.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ui {
+namespace {
+
+using RendererColorId = color::mojom::RendererColorId;
+
+// Below defines the mapping between RendererColorIds and ColorIds.
+struct RendererColorIdTable {
+  RendererColorId renderer_color_id;
+  ColorId color_id;
+};
+constexpr RendererColorIdTable kRendererColorIdMap[] = {
+    {RendererColorId::kColorMenuBackground, kColorMenuBackground},
+    {RendererColorId::kColorMenuItemBackgroundSelected,
+     kColorMenuItemBackgroundSelected},
+    {RendererColorId::kColorMenuSeparator, kColorMenuSeparator},
+    {RendererColorId::kColorOverlayScrollbarFill, kColorOverlayScrollbarFill},
+    {RendererColorId::kColorOverlayScrollbarFillDark,
+     kColorOverlayScrollbarFillDark},
+    {RendererColorId::kColorOverlayScrollbarFillLight,
+     kColorOverlayScrollbarFillLight},
+    {RendererColorId::kColorOverlayScrollbarFillHovered,
+     kColorOverlayScrollbarFillHovered},
+    {RendererColorId::kColorOverlayScrollbarFillHoveredDark,
+     kColorOverlayScrollbarFillHoveredDark},
+    {RendererColorId::kColorOverlayScrollbarFillHoveredLight,
+     kColorOverlayScrollbarFillHoveredLight},
+    {RendererColorId::kColorOverlayScrollbarStroke,
+     kColorOverlayScrollbarStroke},
+    {RendererColorId::kColorOverlayScrollbarStrokeDark,
+     kColorOverlayScrollbarStrokeDark},
+    {RendererColorId::kColorOverlayScrollbarStrokeLight,
+     kColorOverlayScrollbarStrokeLight},
+    {RendererColorId::kColorOverlayScrollbarStrokeHovered,
+     kColorOverlayScrollbarStrokeHovered},
+    {RendererColorId::kColorOverlayScrollbarStrokeHoveredDark,
+     kColorOverlayScrollbarStrokeHoveredDark},
+    {RendererColorId::kColorOverlayScrollbarStrokeHoveredLight,
+     kColorOverlayScrollbarStrokeHoveredLight},
+};
+
+ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
+
+}  // namespace
+
+ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
 base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
   switch (color_mode) {
@@ -50,35 +98,20 @@ base::StringPiece SystemThemeName(
 
 #include "ui/color/color_id_map_macros.inc"
 
-base::StringPiece ColorIdName(ColorId color_id) {
+std::string ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
   auto* i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
-    return i->second;
-  return "<invalid>";
+    return {i->second};
+  base::StringPiece color_name;
+  if (g_color_provider_utils_callbacks &&
+      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
+    return std::string(color_name.data(), color_name.length());
+  return base::StringPrintf("ColorId(%d)", color_id);
 }
 
 #include "ui/color/color_id_map_macros.inc"
-
-base::StringPiece ColorSetIdName(ColorSetId color_set_id) {
-  // Since we're returning a StringPiece we need a stable location to store the
-  // string we may construct below. This is only for immediate logging. The
-  // behavior is undefined if the result is retained beyond the scope in which
-  // this function is called.
-  static char color_set_id_string[20] = "";
-  switch (color_set_id) {
-    case kColorSetNative:
-      return "kColorSetNative";
-    case kColorSetCoreDefaults:
-      return "kColorSetCoreDefaults";
-    default: {
-      std::snprintf(color_set_id_string, sizeof(color_set_id_string),
-                    "ColorSetId(%d)", color_set_id);
-      return color_set_id_string;
-    }
-  }
-}
 
 std::string SkColorName(SkColor color) {
   static const auto color_name_map =
@@ -220,6 +253,45 @@ std::string ConvertSkColorToCSSColor(SkColor color) {
   return base::StringPrintf("#%.2x%.2x%.2x%.2x", SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),
                             SkColorGetA(color));
+}
+
+RendererColorMap CreateRendererColorMap(const ColorProvider& color_provider) {
+  RendererColorMap map;
+  for (const auto& table : kRendererColorIdMap) {
+    map.emplace(table.renderer_color_id,
+                color_provider.GetColor(table.color_id));
+  }
+  return map;
+}
+
+ColorProvider CreateColorProviderFromRendererColorMap(
+    const RendererColorMap& renderer_color_map) {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+
+  for (const auto& table : kRendererColorIdMap)
+    mixer[table.color_id] = {renderer_color_map.at(table.renderer_color_id)};
+  color_provider.GenerateColorMap();
+
+  return color_provider;
+}
+
+bool IsRendererColorMappingEquivalent(
+    const ColorProvider& color_provider,
+    const RendererColorMap& renderer_color_map) {
+  for (const auto& table : kRendererColorIdMap) {
+    // The `renderer_color_map_` should map the full set of renderer color ids.
+    DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
+    if (color_provider.GetColor(table.color_id) !=
+        renderer_color_map.at(table.renderer_color_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void SetColorProviderUtilsCallbacks(ColorProviderUtilsCallbacks* callbacks) {
+  g_color_provider_utils_callbacks = callbacks;
 }
 
 }  // namespace ui

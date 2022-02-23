@@ -15,11 +15,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
@@ -59,9 +59,10 @@ void StartupBrowserWebAppUrlHandlingTest::Start(
     const base::CommandLine& command_line) {
   std::vector<Profile*> last_opened_profiles;
   StartupBrowserCreator browser_creator;
-  browser_creator.Start(command_line,
-                        g_browser_process->profile_manager()->user_data_dir(),
-                        browser()->profile(), last_opened_profiles);
+  browser_creator.Start(
+      command_line, g_browser_process->profile_manager()->user_data_dir(),
+      {browser()->profile(), StartupProfileMode::kBrowserWindow},
+      last_opened_profiles);
 }
 
 void StartupBrowserWebAppUrlHandlingTest::SetUpCommandlineAndStart(

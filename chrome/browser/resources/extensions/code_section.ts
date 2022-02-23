@@ -179,5 +179,12 @@ export class ExtensionsCodeSectionElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-code-section': ExtensionsCodeSectionElement;
+  }
+}
+
+
 customElements.define(
     ExtensionsCodeSectionElement.is, ExtensionsCodeSectionElement);

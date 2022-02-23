@@ -230,7 +230,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
       RTCStatsReportCallback callback,
       const Vector<webrtc::NonStandardGroupId>& exposed_group_ids) {
     native_peer_connection_->GetStats(
-        webrtc_receiver_.get(),
+        rtc::scoped_refptr<webrtc::RtpReceiverInterface>(
+            webrtc_receiver_.get()),
         CreateRTCStatsCollectorCallback(main_task_runner_, std::move(callback),
                                         exposed_group_ids));
   }

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -44,9 +45,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -139,6 +143,54 @@ void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetTextUnderlineOffset(Length());  // crbug.com/1247912
   style.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
+}
+
+// Returns the `<display-outside>` for a `EDisplay` value.
+// https://drafts.csswg.org/css-display-3/#propdef-display
+EDisplay DisplayOutside(EDisplay display) {
+  switch (display) {
+    case EDisplay::kBlock:
+    case EDisplay::kTable:
+    case EDisplay::kWebkitBox:
+    case EDisplay::kFlex:
+    case EDisplay::kGrid:
+    case EDisplay::kBlockMath:
+    case EDisplay::kListItem:
+    case EDisplay::kFlowRoot:
+    case EDisplay::kLayoutCustom:
+    case EDisplay::kTableRowGroup:
+    case EDisplay::kTableHeaderGroup:
+    case EDisplay::kTableFooterGroup:
+    case EDisplay::kTableRow:
+    case EDisplay::kTableColumnGroup:
+    case EDisplay::kTableColumn:
+    case EDisplay::kTableCell:
+    case EDisplay::kTableCaption:
+      return EDisplay::kBlock;
+    case EDisplay::kInline:
+    case EDisplay::kInlineBlock:
+    case EDisplay::kInlineTable:
+    case EDisplay::kWebkitInlineBox:
+    case EDisplay::kInlineFlex:
+    case EDisplay::kInlineGrid:
+    case EDisplay::kInlineLayoutCustom:
+    case EDisplay::kMath:
+      return EDisplay::kInline;
+    case EDisplay::kNone:
+    case EDisplay::kContents:
+      // These values don't have `<display-outside>`.
+      // Returns the original value.
+      return display;
+  }
+  NOTREACHED();
+  return EDisplay::kBlock;
+}
+
+inline bool HasFullNGFragmentationSupport() {
+  return RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled() &&
+         RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled();
 }
 
 }  // namespace
@@ -279,7 +331,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
   style.ResetTextCombine();
   style.SetLetterSpacing(0.0f);
   style.SetTextAlign(ETextAlign::kCenter);
-  style.SetTextDecoration(TextDecoration::kNone);
+  style.SetTextDecorationLine(TextDecorationLine::kNone);
   style.SetTextEmphasisMark(TextEmphasisMark::kNone);
   style.SetVerticalAlign(EVerticalAlign ::kMiddle);
   style.SetWordBreak(EWordBreak::kKeepAll);
@@ -343,19 +395,6 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   if (IsA<HTMLDivElement>(element) || IsA<HTMLSpanElement>(element))
     return;
 
-  if (IsA<HTMLTableCellElement>(element)) {
-    if (style.WhiteSpace() == EWhiteSpace::kWebkitNowrap) {
-      // Figure out if we are really nowrapping or if we should just
-      // use normal instead. If the width of the cell is fixed, then
-      // we don't actually use NOWRAP.
-      if (style.Width().IsFixed())
-        style.SetWhiteSpace(EWhiteSpace::kNormal);
-      else
-        style.SetWhiteSpace(EWhiteSpace::kNowrap);
-    }
-    return;
-  }
-
   if (auto* image = DynamicTo<HTMLImageElement>(element)) {
     if (image->IsCollapsed() || style.Display() == EDisplay::kContents)
       style.SetDisplay(EDisplay::kNone);
@@ -392,6 +431,32 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     style.SetOverflowX(EOverflow::kVisible);
     style.SetOverflowY(EOverflow::kVisible);
     return;
+  }
+
+  if (IsA<HTMLFencedFrameElement>(element)) {
+    // Force the effective CSS `zoom` property to 1, so that the CSS `zoom`
+    // property does not leak to fencedframe `window.innerWidth` and
+    // `window.innerHeight`. crbug.com/1285327
+    style.SetEffectiveZoom(1);
+
+    if (!features::IsFencedFramesMPArchBased()) {
+      // Force the inside-display to `flow`, but honors the outside-display.
+      switch (DisplayOutside(style.Display())) {
+        case EDisplay::kInline:
+        case EDisplay::kContents:
+          style.SetDisplay(EDisplay::kInlineBlock);
+          break;
+        case EDisplay::kBlock:
+          style.SetDisplay(EDisplay::kBlock);
+          break;
+        case EDisplay::kNone:
+          break;
+        default:
+          NOTREACHED();
+          style.SetDisplay(EDisplay::kInlineBlock);
+          break;
+      }
+    }
   }
 
   if (IsA<HTMLRTElement>(element)) {
@@ -659,22 +724,27 @@ static void AdjustEffectiveTouchAction(ComputedStyle& style,
   }
 }
 
-static void AdjustStateForContentVisibility(ComputedStyle& style,
-                                            Element* element) {
-  if (!element)
+static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
+  if (!element || style.IsForcedInert())
     return;
-  auto* context = element->GetDisplayLockContext();
-  // The common case for most elements is that we don't have a context and have
-  // the default (visible) content-visibility value.
-  if (LIKELY(!context &&
-             style.ContentVisibility() == EContentVisibility::kVisible)) {
+
+  if (element->IsInertRoot()) {
+    style.SetIsForcedInert();
     return;
   }
 
-  if (!context)
-    context = &element->EnsureDisplayLockContext();
-  context->SetRequestedState(style.ContentVisibility());
-  context->AdjustElementStyle(&style);
+  Document& document = element->GetDocument();
+  const Element* modal_element = document.ActiveModalDialog();
+  if (!modal_element)
+    modal_element = Fullscreen::FullscreenElementFrom(document);
+  if (modal_element == element) {
+    style.SetIsInert(false);
+    return;
+  }
+  if (modal_element && element == document.documentElement()) {
+    style.SetIsInert(true);
+    return;
+  }
 }
 
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
@@ -773,8 +843,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForFirstLetter(style);
   }
 
-  AdjustStateForContentVisibility(style, element);
-
   // Make sure our z-index value is only applied if the object is positioned.
   if (style.GetPosition() == EPosition::kStatic &&
       !LayoutParentStyleForcesZIndexToCreateStackingContext(
@@ -790,21 +858,21 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       style.OverflowY() != EOverflow::kVisible)
     AdjustOverflow(style, element);
 
-  // overflow-clip-margin only applies if 'overflow: clip' is set along both
-  // axis or 'contain: paint'.
-  if (!style.ContainsPaint() && !(style.OverflowX() == EOverflow::kClip &&
-                                  style.OverflowY() == EOverflow::kClip)) {
-    style.SetOverflowClipMargin(
-        ComputedStyleInitialValues::InitialOverflowClipMargin());
-  }
-
-  if (StopPropagateTextDecorations(style, element))
+  // TODO(rego): When HighlightInheritance (https://crbug.com/1024156) is
+  // enabled, we're going to inherit the text decorations from the parent
+  // elements, that would cause that we paint the decorations more than once in
+  // the highlight pseudos. This doesn't seem right and there's a spec issue
+  // (https://github.com/w3c/csswg-drafts/issues/6829) about not propagating
+  // text decorations on highlights pseudos.
+  if (StopPropagateTextDecorations(style, element) || state.IsForHighlight())
     style.ClearAppliedTextDecorations();
   else
     style.RestoreParentTextDecorations(layout_parent_style);
-  style.ApplyTextDecorations(
-      parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
-      OverridesTextDecorationColors(element));
+  if (style.Display() != EDisplay::kContents) {
+    style.ApplyTextDecorations(
+        parent_style.VisitedDependentColor(GetCSSPropertyTextDecorationColor()),
+        OverridesTextDecorationColors(element));
+  }
 
   // Cull out any useless layers and also repeat patterns into additional
   // layers.
@@ -817,6 +885,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, style);
+
+  AdjustStyleForInert(style, element);
 
   AdjustStyleForEditing(style);
 
@@ -925,16 +995,17 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
   }
 
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+  if (!HasFullNGFragmentationSupport()) {
     // When establishing a block fragmentation context for LayoutNG, we require
     // that everything fragmentable inside can be laid out by NG natively, since
     // NG and legacy layout cannot cooperate within the same fragmentation
-    // context. Set a flag, so that we can quickly determine whether we need to
-    // check that an element is compatible with the NG block fragmentation
-    // machinery.
+    // context. And vice versa (everything inside a legacy fragmentation context
+    // needs to be legacy objects, in order to be fragmentable). Set a flag, so
+    // that we can quickly determine whether we need to check that an element is
+    // compatible with the block fragmentation implementation being used.
     if (style.SpecifiesColumns() ||
         (element && element->GetDocument().Printing()))
-      style.SetInsideNGFragmentationContext(true);
+      style.SetInsideFragmentationContextWithNondeterministicEngine(true);
   }
 }
 }  // namespace blink

@@ -9,9 +9,11 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/resolved_frame_data.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -61,10 +63,16 @@ class OverlayProcessorWebView::Manager
         : return_resource(std::move(return_resource)) {
       representation_ =
           shared_image_manager->ProduceOverlay(mailbox, memory_tracker);
-      if (!representation_)
+      if (!representation_) {
         return;
+      }
 
       read_access_ = representation_->BeginScopedReadAccess(false);
+      if (!read_access_) {
+        LOG(ERROR) << "Couldn't access shared image for read.";
+        return;
+      }
+
       std::vector<gfx::GpuFence> acquire_fences =
           read_access_->TakeAcquireFences();
       if (!acquire_fences.empty()) {
@@ -109,6 +117,15 @@ class OverlayProcessorWebView::Manager
     base::ScopedFD TakeBeginReadFence() { return std::move(begin_read_fence_); }
 
     AHardwareBuffer* GetAHardwareBuffer() {
+      // Note, that it's possible that BeginScopedReadAccess() will fail if
+      // media couldn't get us a frame. We don't fail creation of resource in
+      // this case, because if affects Surface acks and we don't to change the
+      // frame submission flow. Instead we just set empty buffer to the surface.
+      // Note, that it should only happen for the first frame in very rare
+      // cases.
+      if (!read_access_)
+        return nullptr;
+
       DCHECK(representation_);
       DCHECK(read_access_);
 
@@ -534,8 +551,8 @@ class OverlayProcessorWebView::Manager
     TRACE_EVENT1("gpu,benchmark,android_webview",
                  "OverlayProcessorWebview::Manager::UpdateBufferInTransaction",
                  "has_resource", !!resource);
-    if (resource) {
-      auto* buffer = resource->GetAHardwareBuffer();
+    auto* buffer = resource ? resource->GetAHardwareBuffer() : nullptr;
+    if (buffer) {
       auto crop_rect = resource->crop_rect();
 
       // Crop rect defines the valid portion of the buffer, so we use its as a
@@ -579,7 +596,7 @@ class OverlayProcessorWebView::Manager
   base::Lock lock_;
 
   // These can be accessed on any thread, but only initialized in ctor.
-  gpu::SharedImageManager* const shared_image_manager_;
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   std::unique_ptr<gpu::MemoryTypeTracker> memory_tracker_;
 
   // GPU Main Thread task runner.
@@ -666,7 +683,7 @@ OverlayProcessorWebView::TakeSurfaceTransactionOnRT() {
   return manager_->TakeHWUITransaction();
 }
 
-void OverlayProcessorWebView::CheckOverlaySupport(
+void OverlayProcessorWebView::CheckOverlaySupportImpl(
     const viz::OverlayProcessorInterface::OutputSurfaceOverlayPlane*
         primary_plane,
     viz::OverlayCandidateList* candidates) {
@@ -693,8 +710,8 @@ void OverlayProcessorWebView::CheckOverlaySupport(
   }
 
   // Check candidates if they can be used with surface control.
-  OverlayProcessorSurfaceControl::CheckOverlaySupport(primary_plane,
-                                                      candidates);
+  OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(primary_plane,
+                                                          candidates);
 }
 
 void OverlayProcessorWebView::TakeOverlayCandidates(

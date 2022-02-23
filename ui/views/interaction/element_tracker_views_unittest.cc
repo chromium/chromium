@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -30,10 +32,12 @@ namespace views {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID2);
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
 
 namespace {
 
-enum ElementEventType { kShown, kActivated, kHidden };
+enum ElementEventType { kShown, kActivated, kHidden, kCustom };
 
 View* ElementToView(ui::TrackedElement* element) {
   auto* const view_element = element->AsA<TrackedElementViews>();
@@ -53,11 +57,11 @@ class ElementEventWatcher {
   ElementEventWatcher(ui::ElementIdentifier id,
                       ui::ElementContext context,
                       ElementEventType event_type)
-      : id_(id) {
+      : id_(id), event_type_(event_type) {
     auto callback = base::BindRepeating(&ElementEventWatcher::OnEvent,
                                         base::Unretained(this));
     ui::ElementTracker* const tracker = ui::ElementTracker::GetElementTracker();
-    switch (event_type) {
+    switch (event_type_) {
       case ElementEventType::kShown:
         subscription_ = tracker->AddElementShownCallback(id, context, callback);
         break;
@@ -69,6 +73,9 @@ class ElementEventWatcher {
         subscription_ =
             tracker->AddElementHiddenCallback(id, context, callback);
         break;
+      case ElementEventType::kCustom:
+        subscription_ = tracker->AddCustomEventCallback(id, context, callback);
+        break;
     }
   }
 
@@ -77,15 +84,17 @@ class ElementEventWatcher {
 
  private:
   void OnEvent(ui::TrackedElement* element) {
-    EXPECT_EQ(id_, element->identifier());
+    if (event_type_ != ElementEventType::kCustom)
+      EXPECT_EQ(id_, element->identifier());
     last_view_ = ElementToView(element);
     ++event_count_;
   }
 
   const ui::ElementIdentifier id_;
+  const ElementEventType event_type_;
   ui::ElementTracker::Subscription subscription_;
   int event_count_ = 0;
-  View* last_view_ = nullptr;
+  raw_ptr<View> last_view_ = nullptr;
 };
 
 ElementTrackerViews::ViewList ElementsToViews(
@@ -258,10 +267,7 @@ TEST_F(ElementTrackerViewsTest, ButtonPressedSendsActivatedSignal) {
   EXPECT_EQ(button, watcher.last_view());
 
   // Test accessible keypress.
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
 }
@@ -287,13 +293,51 @@ TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
   EXPECT_EQ(button, watcher.last_view());
 
   // Test accessible keypress.
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2U, pressed_count);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, SendCustomEventWithNamedElement) {
+  ElementEventWatcher watcher(kCustomEventType, context(),
+                              ElementEventType::kCustom);
+  auto* const target = widget_->SetContentsView(std::make_unique<View>());
+  target->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_EQ(0, watcher.event_count());
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+  // Send an event with a different ID (which happens to be the element's ID;
+  // this shouldn't happen but we should handle it gracefully).
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  EXPECT_EQ(1, watcher.event_count());
+  // Send another event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+}
+
+TEST_F(ElementTrackerViewsTest, SendCustomEventWithUnnamedElement) {
+  ElementEventWatcher watcher(kCustomEventType, context(),
+                              ElementEventType::kCustom);
+  auto* const target = widget_->SetContentsView(std::make_unique<View>());
+  // View has no pre-set identifier, but this should still work.
+  EXPECT_EQ(0, watcher.event_count());
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(1, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
+  // Send an extraneous event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  EXPECT_EQ(1, watcher.event_count());
+  // Send another event.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
+                                                        target);
+  EXPECT_EQ(2, watcher.event_count());
+  EXPECT_EQ(target, watcher.last_view());
 }
 
 TEST_F(ElementTrackerViewsTest, HandlesCreateWithTheSameIDMultipleTimes) {
@@ -889,10 +933,10 @@ TEST_F(ElementTrackerViewsTest, GetFirstMatchingViewWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
@@ -959,10 +1003,10 @@ TEST_F(ElementTrackerViewsTest, GetAllMatchingViewsWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
@@ -1040,10 +1084,10 @@ TEST_F(ElementTrackerViewsTest, GetAllViewsInAnyContextWithNonViewsElements) {
   const ui::ElementContext context =
       ElementTrackerViews::GetContextForView(contents);
 
-  ui::TestElementPtr test_element1 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
-  ui::TestElementPtr test_element2 =
-      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element1 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
+  ui::test::TestElementPtr test_element2 =
+      std::make_unique<ui::test::TestElement>(kTestElementID, context);
 
   test_element1->Show();
   contents->SetProperty(kElementIdentifierKey, kTestElementID);
@@ -1223,16 +1267,10 @@ TEST_F(ElementTrackerTwoWidgetTest,
   EXPECT_EQ(button2, watcher2.last_view());
 
   // Test accessible keypress.
-  button2->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
-  button2->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                      ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button2);
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(2, watcher2.event_count());
-  button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
-                                    ui::EF_NONE, ui::EventTimeForNow()));
-  button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
-                                     ui::EF_NONE, ui::EventTimeForNow()));
+  views::test::InteractionTestUtilSimulatorViews::PressButton(button);
   EXPECT_EQ(2, watcher.event_count());
   EXPECT_EQ(2, watcher2.event_count());
 }

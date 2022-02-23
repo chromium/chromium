@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/simple_thread.h"
@@ -19,10 +20,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/windows_types.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <pthread.h>
 #endif
 
@@ -31,6 +32,8 @@ namespace internal {
 
 namespace {
 
+constexpr size_t kCount = 5000000;
+
 constexpr char kMetricPrefixThreadLocalStorage[] = "ThreadLocalStorage.";
 constexpr char kMetricBaseRead[] = "read";
 constexpr char kMetricBaseWrite[] = "write";
@@ -38,9 +41,9 @@ constexpr char kMetricBaseReadWrite[] = "read_write";
 constexpr char kMetricSuffixThroughput[] = "_throughput";
 constexpr char kMetricSuffixOperationTime[] = "_operation_time";
 constexpr char kStoryBaseTLS[] = "thread_local_storage";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kStoryBasePlatformFLS[] = "platform_fiber_local_storage";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 constexpr char kStoryBasePlatformTLS[] = "platform_thread_local_storage";
 constexpr char kStoryBaseCPPTLS[] = "c++_platform_thread_local_storage";
 constexpr char kStorySuffixFourThreads[] = "_4_threads";
@@ -89,7 +92,7 @@ class TLSThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* const start_event_;
+  const raw_ptr<WaitableEvent> start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
 };
@@ -180,10 +183,10 @@ TEST_F(ThreadLocalStoragePerfTest, ThreadLocalStorage) {
 
   Benchmark(kStoryBaseTLS, read, write, 10000000, 1);
   Benchmark(std::string(kStoryBaseTLS) + kStorySuffixFourThreads, read, write,
-            10000000, 4);
+            kCount, 4);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void WINAPI destroy(void*) {}
 
@@ -198,7 +201,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformFls) {
 
   Benchmark(kStoryBasePlatformFLS, read, write, 10000000, 1);
   Benchmark(std::string(kStoryBasePlatformFLS) + kStorySuffixFourThreads, read,
-            write, 10000000, 4);
+            write, kCount, 4);
 }
 
 TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
@@ -212,10 +215,10 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
 
   Benchmark(kStoryBasePlatformTLS, read, write, 10000000, 1);
   Benchmark(std::string(kStoryBasePlatformTLS) + kStorySuffixFourThreads, read,
-            write, 10000000, 4);
+            write, kCount, 4);
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
   pthread_key_t key;
@@ -231,7 +234,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
 
   Benchmark(kStoryBasePlatformTLS, read, write, 10000000, 1);
   Benchmark(std::string(kStoryBasePlatformTLS) + kStorySuffixFourThreads, read,
-            write, 10000000, 4);
+            write, kCount, 4);
 }
 
 #endif
@@ -246,7 +249,7 @@ TEST_F(ThreadLocalStoragePerfTest, Cpp11Tls) {
 
   Benchmark(kStoryBaseCPPTLS, read, write, 10000000, 1);
   Benchmark(std::string(kStoryBaseCPPTLS) + kStorySuffixFourThreads, read,
-            write, 10000000, 4);
+            write, kCount, 4);
 }
 
 }  // namespace internal

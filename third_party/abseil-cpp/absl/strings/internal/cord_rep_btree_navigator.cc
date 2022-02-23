@@ -16,6 +16,7 @@
 
 #include <cassert>
 
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 
@@ -39,7 +40,7 @@ inline CordRep* Substring(CordRep* rep, size_t offset, size_t n) {
   assert(n <= rep->length);
   assert(offset < rep->length);
   assert(offset <= rep->length - n);
-  assert(CordRepBtree::IsDataEdge(rep));
+  assert(IsDataEdge(rep));
 
   if (n == 0) return nullptr;
   if (n == rep->length) return CordRep::Ref(rep);
@@ -49,6 +50,7 @@ inline CordRep* Substring(CordRep* rep, size_t offset, size_t n) {
     rep = rep->substring()->child;
   }
 
+  assert(rep->IsExternal() || rep->IsFlat());
   CordRepSubstring* substring = new CordRepSubstring();
   substring->length = n;
   substring->tag = SUBSTRING;

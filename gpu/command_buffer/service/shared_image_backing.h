@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -49,6 +50,7 @@ class SharedImageRepresentationGLTexture;
 class SharedImageRepresentationGLTexturePassthrough;
 class SharedImageRepresentationSkia;
 class SharedImageRepresentationDawn;
+class SharedImageRepresentationLegacyOverlay;
 class SharedImageRepresentationOverlay;
 class SharedImageRepresentationMemory;
 class SharedImageRepresentationVaapi;
@@ -128,7 +130,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual void OnMemoryDump(const std::string& dump_name,
                             base::trace_event::MemoryAllocatorDump* dump,
                             base::trace_event::ProcessMemoryDump* pmd,
-                            uint64_t client_tracing_id) {}
+                            uint64_t client_tracing_id);
 
   // Prepares the backing for use with the legacy mailbox system.
   // TODO(ericrk): Remove this once the new codepath is complete.
@@ -142,7 +144,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // the SharedImage is not backed by a NativePixmap.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the AHardwareBuffer from backing if supported and available.
   virtual std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer();
@@ -188,6 +190,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<SharedImageRepresentationRaster> ProduceRaster(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
+#if BUILDFLAG(IS_ANDROID)
+  virtual std::unique_ptr<SharedImageRepresentationLegacyOverlay>
+  ProduceLegacyOverlay(SharedImageManager* manager, MemoryTypeTracker* tracker);
+#endif
 
   // Used by subclasses during destruction.
   bool have_context() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -249,7 +255,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const uint32_t usage_;
   const size_t estimated_size_;
 
-  SharedImageFactory* factory_ = nullptr;
+  raw_ptr<SharedImageFactory> factory_ = nullptr;
 
   // Bound to the thread on which the backing is created. The |factory_|
   // can only be used from this thread.

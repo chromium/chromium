@@ -167,12 +167,6 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
     for node in extra_app_node:
       app_node.append(node)
 
-  if app_node.find(
-      '{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE) is None:
-    # Assume no backup is intended, appeases AllowBackup lint check and keeping
-    # it working for manifests that do define android:allowBackup.
-    app_node.set('{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE, 'false')
-
   uses_sdk = manifest.find('./uses-sdk')
   if uses_sdk is None:
     uses_sdk = ElementTree.Element('uses-sdk')
@@ -195,7 +189,8 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
-def _RunLint(lint_binary_path,
+def _RunLint(create_cache,
+             lint_binary_path,
              backported_methods_path,
              config_path,
              manifest_path,
@@ -216,9 +211,19 @@ def _RunLint(lint_binary_path,
              warnings_as_errors=False):
   logging.info('Lint starting')
 
+  if create_cache:
+    # Occasionally lint may crash due to re-using intermediate files from older
+    # lint runs. See https://crbug.com/1258178 for context.
+    logging.info('Clearing cache dir %s before creating cache.', cache_dir)
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    os.makedirs(cache_dir)
+
   cmd = [
       lint_binary_path,
-      # Uncomment to update baseline files during lint upgrades.
+      # Uncomment to update baseline files during lint upgrades. Avoid using
+      # for now since it seems to downgrade baseline format from 6 to 5. Until
+      # that is fixed, remove the baseline and re-run lint instead (remember
+      # to remove the LintError entry before committing).
       #'--update-baseline',
       # Uncomment to easily remove fixed lint errors. This is not turned on by
       # default due to: https://crbug.com/1256477#c5
@@ -369,6 +374,9 @@ def _ParseArgs(argv):
   parser.add_argument('--skip-build-server',
                       action='store_true',
                       help='Avoid using the build server.')
+  parser.add_argument('--use-build-server',
+                      action='store_true',
+                      help='Always use the build server.')
   parser.add_argument('--lint-binary-path',
                       required=True,
                       help='Path to lint executable.')
@@ -449,8 +457,10 @@ def main():
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place.
   if (not args.create_cache and not args.skip_build_server
-      and server_utils.MaybeRunCommand(
-          name=args.target_name, argv=sys.argv, stamp_file=args.stamp)):
+      and server_utils.MaybeRunCommand(name=args.target_name,
+                                       argv=sys.argv,
+                                       stamp_file=args.stamp,
+                                       force=args.use_build_server)):
     return
 
   sources = []
@@ -467,7 +477,8 @@ def main():
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
-  _RunLint(args.lint_binary_path,
+  _RunLint(args.create_cache,
+           args.lint_binary_path,
            args.backported_methods,
            args.config_path,
            args.manifest_path,

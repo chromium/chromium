@@ -115,6 +115,15 @@ export const FilesTooltip = Polymer({
   },
 
   /**
+   * Update the tooltip text with the passed-in target.
+   *
+   * @param {!HTMLElement} target
+   */
+  updateTooltipText: function(target) {
+    this.initShowingTooltip_(target);
+  },
+
+  /**
    * @param {!HTMLElement} target
    * @private
    */
@@ -127,7 +136,11 @@ export const FilesTooltip = Polymer({
       }
     }
 
-    if (this.visibleTooltipTarget_ === target) {
+    // Even the current target is the visible tooltip target, we still need to
+    // check if the label is different from the existing tooltip text, because
+    // if label text changes, we need to show the tooltip.
+    if (this.visibleTooltipTarget_ === target &&
+        this.$.label.textContent === target.getAttribute('aria-label')) {
       return;
     }
 

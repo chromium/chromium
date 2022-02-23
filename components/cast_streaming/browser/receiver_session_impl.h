@@ -24,7 +24,8 @@ class ReceiverSessionImpl final
   // surrounding this support.
   ReceiverSessionImpl(
       std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-      MessagePortProvider message_port_provider);
+      MessagePortProvider message_port_provider,
+      ReceiverSession::Client* client);
   ~ReceiverSessionImpl() override;
 
   ReceiverSessionImpl(const ReceiverSessionImpl&) = delete;
@@ -67,6 +68,8 @@ class ReceiverSessionImpl final
 
   mojo::Remote<mojom::CastStreamingBufferReceiver> audio_remote_;
   mojo::Remote<mojom::CastStreamingBufferReceiver> video_remote_;
+
+  ReceiverSession::Client* const client_;
 };
 
 }  // namespace cast_streaming

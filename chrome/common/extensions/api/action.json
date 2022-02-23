@@ -27,6 +27,17 @@
           }
         },
         "description": "The collection of user-specified settings relating to an extension's action."
+      },
+      {
+        "id": "OpenPopupOptions",
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "integer",
+            "description": "The id of the window to open the action popup in. Defaults to the currently-active window if unspecified.",
+            "optional": true
+          }
+        }
       }
     ],
     "functions": [{
@@ -280,6 +291,20 @@
           "name": "userSettings",
           "$ref": "UserSettings"
         }]
+      }
+    }, {
+      "name": "openPopup",
+      "type": "function",
+      "description": "Opens the extension's popup.",
+      "parameters": [{
+        "$ref": "OpenPopupOptions",
+        "name": "options",
+        "optional": true,
+        "description": "Specifies options for opening the popup."
+      }],
+      "returns_async": {
+        "name": "callback",
+        "parameters": []
       }
     }],
     "events": [{

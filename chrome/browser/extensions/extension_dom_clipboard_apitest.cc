@@ -97,7 +97,7 @@ bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script) {
 }  // namespace
 
 // Flaky on Mac. See https://crbug.com/1242373.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Extension DISABLED_Extension
 #else
 #define MAYBE_Extension Extension
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, MAYBE_Extension) {
 }
 
 // Flaky on Mac. See https://crbug.com/900301.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ExtensionNoPermission DISABLED_ExtensionNoPermission
 #else
 #define MAYBE_ExtensionNoPermission ExtensionNoPermission

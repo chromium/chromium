@@ -44,7 +44,7 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -109,6 +109,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DispatchDidFailLoad(const ResourceError&, WebHistoryCommitType) override;
   void DispatchDidDispatchDOMContentLoadedEvent() override;
   void DispatchDidFinishLoad() override;
+  void DispatchDidFinishLoadForPrinting() override;
 
   void BeginNavigation(
       const ResourceRequest&,
@@ -126,7 +127,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       base::TimeTicks input_start_time,
       const String& href_translate,
       const absl::optional<WebImpression>& impression,
-      network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -148,9 +148,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
-                          uint32_t ng_call_count,
-                          uint32_t flexbox_ng_block_count,
-                          uint32_t grid_ng_block_count) override;
+                          uint32_t ng_call_count) override;
   void DidObserveLazyLoadBehavior(
       WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) override;
   void PreloadSubresourceOptimizationsForOrigins(
@@ -176,6 +174,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       DocumentLoader* document_loader,
       std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) override;
   WTF::String UserAgent() override;
+  WTF::String FullUserAgent() override;
   WTF::String ReducedUserAgent() override;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() override;
   WTF::String DoNotTrackValue() override;
@@ -257,7 +256,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void FocusedElementChanged(Element* element) override;
 
   void OnMainFrameIntersectionChanged(
-      const IntRect& intersection_rect) override;
+      const gfx::Rect& intersection_rect) override;
 
   void OnOverlayPopupAdDetected() override;
 
@@ -303,6 +302,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   Member<WebLocalFrameImpl> web_frame_;
 
   String user_agent_;
+  String full_user_agent_;
   String reduced_user_agent_;
 };
 

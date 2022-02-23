@@ -125,6 +125,9 @@ class SelfOwnedReceiver {
 // Any incoming method calls or disconnection notifications will be scheduled
 // to run on |task_runner|. If |task_runner| is null, this defaults to the
 // current SequencedTaskRunner.
+//
+// Note: self-owned receivers are unsafe to use when the interface
+// implementation has lifetime dependencies outside of its control.
 template <typename Interface, typename Impl>
 SelfOwnedReceiverRef<Interface> MakeSelfOwnedReceiver(
     std::unique_ptr<Impl> impl,

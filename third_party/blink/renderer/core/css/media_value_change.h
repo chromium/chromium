@@ -10,6 +10,8 @@ namespace blink {
 enum class MediaValueChange {
   // Viewport or device size changed. width/height/device-width/device-height.
   kSize,
+  // dv* unit evaluation changed.
+  kDynamicViewport,
   // Any other value which affect media query evaluations changed.
   kOther,
 };

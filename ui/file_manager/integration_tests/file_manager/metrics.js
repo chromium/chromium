@@ -5,7 +5,7 @@
  * @fileoverview Tests that enum metrics are recorded correctly.
  */
 
-import {ENTRIES, getHistogramCount, RootPath} from '../test_util.js';
+import {createTestFile, ENTRIES, getHistogramCount, getHistogramSum, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {setupAndWaitUntilReady} from './background.js';
@@ -48,4 +48,60 @@ testcase.metricsOpenSwa = async () => {
       1,
       await getHistogramCount(
           'FileBrowser.SWA.Create', FileDialogTypeValues.FULL_PAGE));
+};
+
+// Test that the DirectoryListLoad UMA is appropriately recorded and the
+// variance is taken into consideration (+/-20%).
+testcase.metricsRecordDirectoryListLoad = async () => {
+  const createEntries = numEntries => {
+    const entries = [];
+    for (let i = 0; i < numEntries; i++) {
+      const testFile = createTestFile('file-' + i + '.txt');
+      entries.push(testFile);
+    }
+    return entries;
+  };
+
+  const entries = createEntries(1000);
+
+  // Open Files app on Downloads with 10 files loaded.
+  // Expect a non-zero load time in the appropriate histogram.
+  let appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, entries.slice(0, 10), []);
+  const tenFilesSum =
+      await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.10');
+  chrome.test.assertTrue(
+      tenFilesSum > 0, 'Load time for 10 files must exceed 0');
+  await remoteCall.closeWindowAndWait(appId);
+
+  // Open Files app on Downloads with 27 files loaded.
+  // Histogram sum is cumulative so given 27 falls outside the buckets (and
+  // their tolerance) the sum should not increase as no load time will be
+  // recorded.
+  appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, entries.slice(0, 27), []);
+  const histogramSum =
+      await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.10');
+  chrome.test.assertEq(
+      tenFilesSum, histogramSum,
+      'Load time for 27 files must equal same load time as previous');
+  await remoteCall.closeWindowAndWait(appId);
+
+  // Open Files app on Downloads with 100 files loaded.
+  // Expect a non-zero load time in the appropriate histogram.
+  appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, entries.slice(0, 100), []);
+  const hundredFilesSum =
+      await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.100');
+  chrome.test.assertTrue(
+      hundredFilesSum > 0, 'Load time for 100 files must exceed 0');
+  await remoteCall.closeWindowAndWait(appId);
+
+  // Open Files app on Downloads with 1000 files loaded.
+  // Expect a non-zero load time in the appropriate histogram.
+  appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, entries, []);
+  const thousandFilesSum =
+      await getHistogramSum('FileBrowser.DirectoryListLoad.my_files.1000');
+  chrome.test.assertTrue(
+      thousandFilesSum > 0, 'Load time for 1000 files must exceed 0');
 };

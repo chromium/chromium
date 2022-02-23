@@ -35,6 +35,7 @@ class RTC_EXPORT MetronomeProvider
   // Manipulate the list of listeners.
   void AddListener(MetronomeProviderListener* listener);
   void RemoveListener(MetronomeProviderListener* listener);
+  bool HasListeners();
 
   // Forwards the call to all listeners.
   void OnStartUsingMetronome(scoped_refptr<MetronomeSource> metronome);

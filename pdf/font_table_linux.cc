@@ -5,7 +5,9 @@
 #include "pdf/font_table_linux.h"
 
 #include <sys/stat.h>
+#include <unistd.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 

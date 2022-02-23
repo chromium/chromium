@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -29,6 +30,8 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -41,15 +44,6 @@
 namespace media {
 
 namespace {
-
-gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_gpu_memory_buffer_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
-  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
-}
-
 // GbmDeviceWrapper is a singleton that provides thread-safe access to a
 // ui::GbmDevice for the purposes of creating native BOs. The ui::GbmDevice is
 // initialized with the first non-vgem render node found that works starting at
@@ -80,9 +74,9 @@ class GbmDeviceWrapper {
     const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
     if (fourcc_format == DRM_FORMAT_INVALID)
       return gfx::GpuMemoryBufferHandle();
-    const uint32_t flags = ui::BufferUsageToGbmFlags(buffer_usage);
+
     std::unique_ptr<ui::GbmBuffer> buffer =
-        gbm_device_->CreateBuffer(fourcc_format, size, flags);
+        CreateGbmBuffer(fourcc_format, size, buffer_usage);
     if (!buffer)
       return gfx::GpuMemoryBufferHandle();
 
@@ -95,6 +89,20 @@ class GbmDeviceWrapper {
     gmb_handle.id = GetNextGpuMemoryBufferId();
     gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
     return gmb_handle;
+  }
+
+  std::unique_ptr<ui::GbmBuffer> ImportGpuMemoryBuffer(
+      gfx::BufferFormat format,
+      const gfx::Size& size,
+      gfx::NativePixmapHandle handle) {
+    base::AutoLock lock(lock_);
+    if (!gbm_device_)
+      return nullptr;
+    const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
+    if (fourcc_format == DRM_FORMAT_INVALID)
+      return nullptr;
+    return gbm_device_->CreateBufferFromHandle(fourcc_format, size,
+                                               std::move(handle));
   }
 
  private:
@@ -126,6 +134,30 @@ class GbmDeviceWrapper {
     }
   }
   ~GbmDeviceWrapper() = default;
+
+  std::unique_ptr<ui::GbmBuffer> CreateGbmBuffer(int fourcc_format,
+                                                 const gfx::Size& size,
+                                                 gfx::BufferUsage buffer_usage)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    uint32_t flags = ui::BufferUsageToGbmFlags(buffer_usage);
+    std::unique_ptr<ui::GbmBuffer> buffer =
+        gbm_device_->CreateBuffer(fourcc_format, size, flags);
+    if (buffer)
+      return buffer;
+
+    // For certain use cases, allocated buffers must be able to be set via kms
+    // on a CRTC. For those cases, the GBM_BO_USE_SCANOUT flag is required.
+    // For other use cases, GBM_BO_USE_SCANOUT may be preferred but is
+    // ultimately optional, so we can fall back to allocation without that
+    // flag.
+    constexpr auto kScanoutUsages = base::MakeFixedFlatSet<gfx::BufferUsage>(
+        {gfx::BufferUsage::SCANOUT,
+         gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
+         gfx::BufferUsage::SCANOUT_FRONT_RENDERING});
+    if (!kScanoutUsages.contains(buffer_usage))
+      flags &= ~GBM_BO_USE_SCANOUT;
+    return gbm_device_->CreateBuffer(fourcc_format, size, flags);
+  }
 
   friend class base::NoDestructor<GbmDeviceWrapper>;
 
@@ -169,6 +201,14 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
   return gmb_handle;
 }
 }  // namespace
+
+gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
+  static base::NoDestructor<base::Lock> id_lock;
+  static int next_gpu_memory_buffer_id = 0;
+  base::AutoLock lock(*id_lock);
+  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
+  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
+}
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     gpu::GpuMemoryBufferFactory* factory,
@@ -336,6 +376,34 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
 
   DCHECK(native_pixmap->AreDmaBufFdsValid());
   return native_pixmap;
+}
+
+bool CanImportGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    const gfx::GpuMemoryBufferHandle& gmb_handle) {
+  if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    VLOGF(1) << "The handle type (" << gmb_handle.type << ") is unsupported";
+    return false;
+  }
+  const auto pixel_format = GfxBufferFormatToVideoPixelFormat(format);
+  if (!pixel_format) {
+    VLOGF(1) << "Unsupported buffer format: "
+             << gfx::BufferFormatToString(format);
+    return false;
+  }
+  if (!VerifyGpuMemoryBufferHandle(*pixel_format, size, gmb_handle)) {
+    VLOGF(1) << "Invalid GpuMemoryBufferHandle provided";
+    return false;
+  }
+  gfx::NativePixmapHandle native_pixmap_handle =
+      gfx::CloneHandleForIPC(gmb_handle.native_pixmap_handle);
+  if (native_pixmap_handle.planes.empty()) {
+    VLOGF(1) << "Could not duplicate the NativePixmapHandle";
+    return false;
+  }
+  return !!GbmDeviceWrapper::Get()->ImportGpuMemoryBuffer(
+      format, size, std::move(native_pixmap_handle));
 }
 
 }  // namespace media

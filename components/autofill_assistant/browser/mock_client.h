@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_CLIENT_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_MOCK_CLIENT_H_
 
+#include "base/callback.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/device_context.h"
@@ -15,6 +16,10 @@
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
 
 namespace autofill_assistant {
 
@@ -37,6 +42,8 @@ class MockClient : public Client {
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
+                     password_manager::PasswordChangeSuccessTracker*());
   MOCK_METHOD0(GetAccessTokenFetcher, AccessTokenFetcher*());
   MOCK_METHOD1(Shutdown, void(Metrics::DropOutReason reason));
   MOCK_METHOD1(RecordDropOut, void(Metrics::DropOutReason reason));
@@ -44,6 +51,9 @@ class MockClient : public Client {
   MOCK_METHOD0(DestroyUI, void());
   MOCK_CONST_METHOD0(HasHadUI, bool());
   MOCK_CONST_METHOD0(IsFirstTimeTriggerScriptUser, bool());
+  MOCK_METHOD1(FetchPaymentsClientToken,
+               void(base::OnceCallback<void(const std::string&)>));
+  MOCK_METHOD0(GetScriptExecutorUiDelegate, ScriptExecutorUiDelegate*());
 
  private:
   std::unique_ptr<MockPersonalDataManager> mock_personal_data_manager_;

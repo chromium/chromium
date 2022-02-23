@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

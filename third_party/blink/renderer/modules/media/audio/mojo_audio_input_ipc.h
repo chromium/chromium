@@ -8,12 +8,13 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/audio/audio_source_parameters.h"
 #include "media/mojo/mojom/audio_input_stream.mojom-blink.h"
+#include "media/mojo/mojom/audio_processing.mojom-blink.h"
+#include "media/webrtc/audio_processor_controls.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,6 +39,8 @@ class MODULES_EXPORT MojoAudioInputIPC
       const media::AudioSourceParameters& source_params,
       mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
           client,
+      mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+          controls_receiver,
       const media::AudioParameters& params,
       bool automatic_gain_control,
       uint32_t total_segments)>;
@@ -87,6 +90,8 @@ class MODULES_EXPORT MojoAudioInputIPC
   StreamAssociatorCB stream_associator_;
 
   mojo::Remote<media::mojom::blink::AudioInputStream> stream_;
+  mojo::Remote<media::mojom::blink::AudioProcessorControls> processor_controls_;
+
   // Initialized on StreamCreated.
   absl::optional<base::UnguessableToken> stream_id_;
   mojo::Receiver<AudioInputStreamClient> stream_client_receiver_{this};

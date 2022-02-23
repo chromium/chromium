@@ -57,9 +57,8 @@ void AssistantTestApiImpl::DisableAnimations() {
 bool AssistantTestApiImpl::IsVisible() {
   if (!TabletMode::Get()->InTabletMode() &&
       features::IsProductivityLauncherEnabled()) {
-    auto* bubble_view = GetAppListBubbleView();
-    // `bubble_view` is null when the bubble launcher is closed.
-    return bubble_view && bubble_view->assistant_page_->GetVisible();
+    return Shell::Get()->app_list_controller()->IsVisible() &&
+           GetAppListBubbleView()->assistant_page_->GetVisible();
   }
   return AppListViewsHaveBeenCreated() && page_view()->GetVisible();
 }
@@ -139,6 +138,15 @@ AppListView* AssistantTestApiImpl::app_list_view() {
 
 aura::Window* AssistantTestApiImpl::root_window() {
   return Shell::Get()->GetPrimaryRootWindow();
+}
+
+void AssistantTestApiImpl::EnableAssistantAndWait() {
+  SetAssistantEnabled(true);
+  GetAssistantState()->NotifyFeatureAllowed(
+      chromeos::assistant::AssistantAllowedState::ALLOWED);
+  GetAssistantState()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+  WaitUntilIdle();
 }
 
 void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
@@ -240,7 +248,7 @@ ContentsView* AssistantTestApiImpl::contents_view() {
 
 ContentsView* AssistantTestApiImpl::contents_view_or_null() const {
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
 
   if (!app_list_view)
     return nullptr;

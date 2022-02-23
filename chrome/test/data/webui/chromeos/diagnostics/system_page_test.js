@@ -239,6 +239,23 @@ export function systemPageTestSuite() {
         .then(() => assertRunTestButtonsEnabled(cards));
   });
 
+  test('SaveSessionLogDisabledWhenPendingResult', () => {
+    return initializeSystemPage(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          assertFalse(getSessionLogButton().disabled);
+          DiagnosticsBrowserProxy.setSuccess(true);
+
+          getSessionLogButton().click();
+          assertTrue(getSessionLogButton().disabled);
+          return flushTasks();
+        })
+        .then(() => {
+          assertFalse(getSessionLogButton().disabled);
+        });
+  });
+
   test('SaveSessionLogSuccessShowsToast', () => {
     return initializeSystemPage(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,

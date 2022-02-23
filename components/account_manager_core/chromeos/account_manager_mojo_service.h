@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void SetAccountManagerUI(
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
 
+  void OnAccountAdditionFinishedForTesting(
+      const account_manager::AccountAdditionResult& result);
+
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
@@ -52,7 +55,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void GetPersistentErrorForAccount(
       mojom::AccountKeyPtr mojo_account_key,
       GetPersistentErrorForAccountCallback callback) override;
-  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
+  void ShowAddAccountDialog(mojom::AccountAdditionOptionsPtr options,
+                            ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;
   void ShowManageAccountsSettings() override;

@@ -24,9 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -71,7 +69,8 @@ public class LongScreenshotsTabServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityWithURL(
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html"));
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mProcessor = new TestCaptureProcessor();
 
@@ -88,11 +87,7 @@ public class LongScreenshotsTabServiceTest {
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedFilesystem() throws Exception {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/chrome/test/data/android/about.html");
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab.loadUrl(new LoadUrlParams(url));
             mLongScreenshotsTabService.captureTab(
                     mTab, new Rect(0, 0, 100, 100), /*inMemory=*/false);
         });
@@ -116,11 +111,7 @@ public class LongScreenshotsTabServiceTest {
     @MediumTest
     @Feature({"LongScreenshots"})
     public void testCapturedMemory() throws Exception {
-        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
-        final String url = testServer.getURL("/chrome/test/data/android/about.html");
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab.loadUrl(new LoadUrlParams(url));
             mLongScreenshotsTabService.captureTab(
                     mTab, new Rect(0, 0, 100, 100), /*inMemory=*/true);
         });

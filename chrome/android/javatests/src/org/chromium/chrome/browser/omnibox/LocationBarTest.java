@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -45,7 +45,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -115,6 +114,7 @@ public class LocationBarTest {
     private LocationBarMediator mLocationBarMediator;
     private String mSearchUrl;
     private ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
+    private OmniboxTestUtils mOmnibox;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -171,6 +171,7 @@ public class LocationBarTest {
     }
 
     private void doPostActivitySetup(ChromeActivity activity) {
+        mOmnibox = new OmniboxTestUtils(activity);
         mUrlBar = activity.findViewById(org.chromium.chrome.R.id.url_bar);
         mLocationBarCoordinator = ((LocationBarCoordinator) activity.getToolbarManager()
                                            .getToolbarLayoutForTesting()
@@ -185,6 +186,9 @@ public class LocationBarTest {
     private void setupSearchEngineLogo(String url) {
         boolean isGoogle = url.equals(GOOGLE_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Do not show a logo image on NTP, unless the default engine is Google, to avoid
+            // occasional timeout in loading it.
+            doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
             doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
             doReturn(url).when(mSearchEngineLogoUtils).getSearchLogoUrl(mTemplateUrlService);
             doReturn(true)
@@ -203,7 +207,7 @@ public class LocationBarTest {
             };
             doAnswer(logoAnswer)
                     .when(mSearchEngineLogoUtils)
-                    .getSearchEngineLogo(any(), anyBoolean(), any(), any(), any());
+                    .getSearchEngineLogo(any(), anyInt(), any(), any(), any());
         });
     }
 
@@ -608,15 +612,10 @@ public class LocationBarTest {
         startActivityNormally();
         assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
 
-        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, true);
-        CriteriaHelper.pollUiThread(() -> mUrlBar.hasFocus());
-        CriteriaHelper.pollUiThread(
-                () -> mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
-
-        OmniboxTestUtils.toggleUrlBarFocus(mUrlBar, false);
-        CriteriaHelper.pollUiThread(() -> !mUrlBar.hasFocus());
-        CriteriaHelper.pollUiThread(
-                () -> !mKeyboardDelegate.isKeyboardShowing(mUrlBar.getContext(), mUrlBar));
+        mOmnibox.requestFocus();
+        mOmnibox.checkFocus(true);
+        mOmnibox.clearFocus();
+        mOmnibox.checkFocus(false);
     }
 
     @Test
@@ -633,7 +632,6 @@ public class LocationBarTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1227573")
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_nonGoogleSearchEngine() {
         setupSearchEngineLogo(NON_GOOGLE_URL);
         startActivityNormally();
@@ -660,8 +658,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.requestFocus(); });
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
+        mOmnibox.requestFocus();
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 

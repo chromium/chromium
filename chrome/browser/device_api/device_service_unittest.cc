@@ -61,8 +61,8 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   void InstallTrustedApp() {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
-    base::DictionaryValue app_policy;
-    app_policy.SetString(web_app::kUrlKey, kDefaultAppInstallUrl);
+    base::Value app_policy(base::Value::Type::DICTIONARY);
+    app_policy.SetStringKey(web_app::kUrlKey, kDefaultAppInstallUrl);
     update->Append(std::move(app_policy));
   }
 

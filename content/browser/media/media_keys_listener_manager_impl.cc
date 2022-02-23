@@ -114,7 +114,7 @@ void MediaKeysListenerManagerImpl::OnMediaKeysAccelerator(
   // We should never receive an accelerator that was never registered.
   DCHECK(delegate_map_.contains(accelerator.key_code()));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // For privacy, we don't want to handle media keys when the system is locked.
   // On Windows and Mac OS X, this will happen unless we explicitly prevent it.
   // TODO(steimel): Consider adding an idle monitor instead and disabling the
@@ -193,6 +193,12 @@ void MediaKeysListenerManagerImpl::OnStop() {
   MaybeSendKeyCode(ui::VKEY_MEDIA_STOP);
 }
 
+void MediaKeysListenerManagerImpl::OnSeek(const base::TimeDelta& time) {
+  if (!CanActiveMediaSessionControllerReceiveEvents())
+    return;
+  active_media_session_controller_->OnSeek(time);
+}
+
 void MediaKeysListenerManagerImpl::OnSeekTo(const base::TimeDelta& time) {
   if (!CanActiveMediaSessionControllerReceiveEvents())
     return;
@@ -210,11 +216,11 @@ void MediaKeysListenerManagerImpl::EnsureAuxiliaryServices() {
   if (auxiliary_services_started_)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac OS, we need to initialize the idle monitor in order to check if the
   // system is locked.
   ui::InitIdleMonitor();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   auxiliary_services_started_ = true;
 }
@@ -225,8 +231,8 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   system_media_controls_ = system_media_controls::SystemMediaControls::Create(
       media::AudioManager::GetGlobalAppName());
 #endif

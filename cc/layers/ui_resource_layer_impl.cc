@@ -29,7 +29,7 @@ UIResourceLayerImpl::UIResourceLayerImpl(LayerTreeImpl* tree_impl, int id)
 UIResourceLayerImpl::~UIResourceLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> UIResourceLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return UIResourceLayerImpl::Create(tree_impl, id());
 }
 

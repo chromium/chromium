@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -156,7 +157,7 @@ class ButtonLayoutTest
   };
 
   views::View host_;
-  ButtonLayout* const layout_;  // Owned by |host_|.
+  const raw_ptr<ButtonLayout> layout_;  // Owned by |host_|.
   const int button_1_width_;
   const int button_2_width_;
 };

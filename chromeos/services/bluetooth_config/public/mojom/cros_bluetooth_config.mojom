@@ -5,6 +5,7 @@
 module chromeos.bluetooth_config.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
 
 // The maximum number of characters a Bluetooth device's nickname can be set
 // to.
@@ -72,18 +73,40 @@ struct BatteryProperties {
   uint8 battery_percentage;
 };
 
-// Battery info belonging to a device. Initially contains an optional
-// "default" set of properties, but will eventually contain information
-// about multiple batteries per device (e.g., Pixel Buds include battery
-// info about the left earbud, right earbud, and case).
+// Battery info belonging to a device. Contains an optional "default" set of
+// properties, and may contain information about multiple batteries per device
+// (e.g., Pixel Buds include battery info about the left earbud, right earbud,
+// and case).
 struct DeviceBatteryInfo {
   BatteryProperties? default_properties;
+  BatteryProperties? left_bud_info;
+  BatteryProperties? right_bud_info;
+  BatteryProperties? case_info;
+};
+
+// True Wireless image info belonging to a device. Contains fields for
+// True Wireless images (stored as base64-encoded data URLs) for the left
+// earbud, right earbud, and case.
+struct TrueWirelessImageInfo {
+  url.mojom.Url left_bud_image_url;
+  url.mojom.Url right_bud_image_url;
+  url.mojom.Url case_image_url;
+};
+
+// Image info belonging to a device. Contains an optional default image (stored
+// as a base64-encoded data URL) as well as optional True Wireless images.
+struct DeviceImageInfo {
+  url.mojom.Url? default_image_url;
+  TrueWirelessImageInfo? true_wireless_images;
 };
 
 // Properties belonging to a Bluetooth device.
 struct BluetoothDeviceProperties {
   // Unique identifier for this device, which is stable across device reboots.
   string id;
+
+  // The Bluetooth address of this device.
+  string address;
 
   // Publicly-visible name provided by the device. If no name is provided by
   // the device, the device address is used as a name.
@@ -99,7 +122,13 @@ struct BluetoothDeviceProperties {
   // Null if no battery information is available for the device.
   DeviceBatteryInfo? battery_info;
 
+  // Null if no device images are available for the device.
+  DeviceImageInfo? image_info;
+
   DeviceConnectionState connection_state;
+
+  // Indicates if the device is blocked by an admin policy.
+  bool is_blocked_by_policy;
 };
 
 // Properties belonging to a Bluetooth device which has been paired to this
@@ -131,9 +160,17 @@ interface SystemPropertiesObserver {
 };
 
 // Observer for changes to Bluetooth device status.
+// Clients include:
+// * Ash system UI; implemented in C++ as part of the browser process
 interface BluetoothDeviceStatusObserver {
   // Invoked when a device has been newly-paired.
   OnDevicePaired(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been connected.
+  OnDeviceConnected(PairedBluetoothDeviceProperties device);
+
+  // Invoked when a device has been disconnected.
+  OnDeviceDisconnected(PairedBluetoothDeviceProperties device);
 };
 
 // Provided to the pairing UI to handle keys that have been entered
@@ -208,6 +245,14 @@ interface DevicePairingHandler {
       string device_id,
       pending_remote<DevicePairingDelegate> delegate) =>
           (PairingResult result);
+
+  // Returns the device with address |device_address|. This can be used
+  // to find the ID of a device where only its address is known in order
+  // to pair with it. Returns null if no device was found. Devices
+  // returned here may not be found in BluetoothDiscoveryDelegate's
+  // discovered devices list as this method retrieves the devices from the
+  // adapter directly without any filtering.
+  FetchDevice(string device_address) => (BluetoothDeviceProperties? device);
 };
 
 // Allows clients of Bluetooth discovery to be notified of the progress of a
@@ -244,8 +289,8 @@ interface CrosBluetoothConfig {
   // observing, disconnect |observer|.
   ObserveSystemProperties(pending_remote<SystemPropertiesObserver> observer);
 
-  // Invokes OnDevicePaired() when a device is newly paired. To stop
-  // observing, disconnect |observer|.
+  // Invokes OnDevicePaired() when a device is newly paired, connected or
+  // disconnected. To stop observing, disconnect |observer|.
   ObserveDeviceStatusChanges(
     pending_remote<BluetoothDeviceStatusObserver> observer);
 

@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
+#include <codecvt>
 #include <ostream>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -21,6 +25,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -30,33 +35,46 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -64,33 +82,97 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/re2/src/re2/re2.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#else
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include <ImageIO/ImageIO.h>
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "skia/ext/skia_utils_mac.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/shortcut.h"
+#include "chrome/browser/browser_process.h"
+#endif
+
 namespace web_app {
 
 namespace {
 
-const base::flat_map<std::string, std::string> g_site_mode_to_path = {
-    {"SiteA", "site_a"},
-    {"SiteB", "site_b"},
-    {"SiteC", "site_c"},
-    {"SiteAFoo", "site_a/foo"},
-    {"SiteABar", "site_a/bar"}};
+// Flushes the shortcuts tasks, which seem to sometimes still hang around after
+// our tasks are done.
+// TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
+// papering over it here.
+void FlushShortcutTasks() {
+  // Execute the UI thread task runner before and after the shortcut task runner
+  // to ensure that tasks get to the shortcut runner, and then any scheduled
+  // replies on the UI thread get run.
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    internals::GetShortcutIOTaskRunner()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+}
 
+const base::flat_map<std::string, std::string>
+    g_site_mode_to_relative_scope_url = {{"SiteA", "site_a"},
+                                         {"SiteB", "site_b"},
+                                         {"SiteC", "site_c"},
+                                         {"SiteAFoo", "site_a/foo"},
+                                         {"SiteABar", "site_a/bar"}};
+
+const base::flat_map<std::string, std::string> g_site_mode_to_app_name = {
+    {"SiteA", "Site A"},
+    {"SiteB", "Site B"},
+    {"SiteC", "Site C"},
+    {"SiteAFoo", "Site A Foo"},
+    {"SiteABar", "Site A Bar"}};
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+const base::flat_map<std::string, SkColor> g_app_name_icon_color = {
+    {"Site A", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site B", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site C", SkColorSetARGB(0x00, 0x00, 0x00, 0x00)},
+    {"Site A Foo", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site A Bar", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site A - Updated name", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)}};
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
  public:
   TestAppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -102,6 +184,7 @@ class TestAppLauncherHandler : public AppLauncherHandler {
     set_web_ui(test_web_ui);
   }
 };
+#endif
 
 class BrowserAddedWaiter final : public BrowserListObserver {
  public:
@@ -123,7 +206,7 @@ class BrowserAddedWaiter final : public BrowserListObserver {
 
  private:
   base::RunLoop run_loop_;
-  Browser* browser_added_ = nullptr;
+  raw_ptr<Browser> browser_added_ = nullptr;
 };
 
 Browser* GetBrowserForAppId(const AppId& app_id) {
@@ -134,6 +217,41 @@ Browser* GetBrowserForAppId(const AppId& app_id) {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(IS_WIN)
+base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
+  base::FilePath shortcut_profile;
+  std::wstring cmd_line_string;
+  if (base::win::ResolveShortcut(shortcut_path, nullptr, &cmd_line_string)) {
+    base::CommandLine shortcut_cmd_line =
+        base::CommandLine::FromString(L"program " + cmd_line_string);
+    shortcut_profile =
+        shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory);
+  }
+  return shortcut_profile;
+}
+
+SkColor IsShortcutAndIconFoundForProfile(Profile* profile,
+                                         const std::string& name,
+                                         base::FilePath shortcut_dir,
+                                         SkColor expected_icon_pixel_color) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+  base::FileEnumerator enumerator(shortcut_dir, false,
+                                  base::FileEnumerator::FILES);
+  while (!enumerator.Next().empty()) {
+    std::wstring shortcut_filename = enumerator.GetInfo().GetName().value();
+    if (re2::RE2::FullMatch(converter.to_bytes(shortcut_filename),
+                            name + "(.*).lnk")) {
+      base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
+      if (GetShortcutProfile(shortcut_path) == profile->GetBaseName()) {
+        SkColor icon_pixel_color = GetIconTopLeftColor(shortcut_path);
+        return (icon_pixel_color == expected_icon_pixel_color);
+      }
+    }
+  }
+  return false;
+}
+#endif
 
 absl::optional<ProfileState> GetStateForProfile(StateSnapshot* state_snapshot,
                                                 Profile* profile) {
@@ -212,22 +330,31 @@ bool BrowserState::operator==(const BrowserState& other) const {
 AppState::AppState(web_app::AppId app_id,
                    const std::string app_name,
                    const GURL app_scope,
+                   const apps::mojom::WindowMode& window_mode,
+                   const apps::mojom::RunOnOsLoginMode& run_on_os_login_mode,
                    const blink::mojom::DisplayMode& effective_display_mode,
                    const blink::mojom::DisplayMode& user_display_mode,
-                   bool installed_locally)
+                   bool installed_locally,
+                   bool shortcut_created)
     : id(app_id),
       name(app_name),
       scope(app_scope),
+      window_mode(window_mode),
+      run_on_os_login_mode(run_on_os_login_mode),
       effective_display_mode(effective_display_mode),
       user_display_mode(user_display_mode),
-      is_installed_locally(installed_locally) {}
+      is_installed_locally(installed_locally),
+      is_shortcut_created(shortcut_created) {}
 AppState::~AppState() = default;
 AppState::AppState(const AppState&) = default;
 bool AppState::operator==(const AppState& other) const {
   return id == other.id && name == other.name && scope == other.scope &&
+         window_mode == other.window_mode &&
+         run_on_os_login_mode == other.run_on_os_login_mode &&
          effective_display_mode == other.effective_display_mode &&
          user_display_mode == other.user_display_mode &&
-         is_installed_locally == other.is_installed_locally;
+         is_installed_locally == other.is_installed_locally &&
+         is_shortcut_created == other.is_shortcut_created;
 }
 
 ProfileState::ProfileState(base::flat_map<Browser*, BrowserState> browser_state,
@@ -296,6 +423,7 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& state) {
       app_value.SetIntKey("user_display_mode",
                           static_cast<int>(app.effective_display_mode));
       app_value.SetBoolKey("is_installed_locally", app.is_installed_locally);
+      app_value.SetBoolKey("is_shortcut_created", app.is_shortcut_created);
 
       app_values.SetKey(app_pair.first, std::move(app_value));
     }
@@ -319,12 +447,12 @@ void WebAppIntegrationTestDriver::SetUp() {
 }
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
-  os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+  shortcut_override_ = OverrideShortcutsForTesting();
 
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
   if (!delegate_->IsSyncTest()) {
-    observation_.Observe(&provider()->registrar());
+    observation_.Observe(&provider()->install_manager());
   }
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
@@ -332,6 +460,57 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
 
 void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   observation_.Reset();
+  if (delegate_->IsSyncTest())
+    delegate_->SyncTurnOff();
+  for (auto* profile : delegate_->GetAllProfiles()) {
+    auto* provider = GetProviderForProfile(profile);
+    base::RunLoop run_loop;
+    std::vector<AppId> app_ids = provider->registrar().GetAppIds();
+    for (auto& app_id : app_ids) {
+      const WebApp* app = provider->registrar().GetAppById(app_id);
+      if (app->IsPolicyInstalledApp())
+        UninstallPolicyAppById(app_id);
+      if (provider->registrar().IsInstalled(app_id)) {
+        DCHECK(app->CanUserUninstallWebApp());
+        provider->install_finalizer().UninstallWebApp(
+            app_id, webapps::WebappUninstallSource::kAppsPage,
+            base::BindLambdaForTesting([&](bool uninstalled) {
+              EXPECT_TRUE(uninstalled);
+              run_loop.Quit();
+            }));
+        run_loop.Run();
+      }
+    }
+    // TODO(crbug.com/1273568): Investigate the true source of flakiness instead
+    // of papering over it here.
+    FlushShortcutTasks();
+  }
+// TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
+// papering over it here.
+#if BUILDFLAG(IS_WIN)
+  if (shortcut_override_->desktop.IsValid())
+    ASSERT_TRUE(shortcut_override_->desktop.Delete());
+  if (shortcut_override_->application_menu.IsValid())
+    ASSERT_TRUE(shortcut_override_->application_menu.Delete());
+#elif BUILDFLAG(IS_MAC)
+  if (shortcut_override_->chrome_apps_folder.IsValid())
+    ASSERT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
+#elif BUILDFLAG(IS_LINUX)
+  if (shortcut_override_->desktop.IsValid())
+    ASSERT_TRUE(shortcut_override_->desktop.Delete());
+#endif
+}
+
+void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
+  BeforeStateChangeAction();
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppIdentityUpdateConfirmationView");
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+  views::test::AcceptDialog(widget);
+
+  AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
@@ -354,6 +533,20 @@ void WebAppIntegrationTestDriver::ClosePwa() {
   ASSERT_TRUE(app_browser()) << "No current app browser";
   app_browser()->window()->Close();
   ui_test_utils::WaitForBrowserToClose(app_browser());
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::DisableRunOnOSLoginMode(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kNotRun);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnableRunOnOSLoginMode(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kWindowed);
   AfterStateChangeAction();
 }
 
@@ -391,6 +584,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(
   AfterStateChangeAction();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -412,6 +606,7 @@ void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   observer.Wait();
   AfterStateChangeAction();
 }
+#endif
 
 void WebAppIntegrationTestDriver::InstallOmniboxIcon(
     const std::string& site_mode) {
@@ -423,7 +618,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(
   base::RunLoop run_loop;
   web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
       [&app_id, &run_loop](const web_app::AppId& installed_app_id,
-                           web_app::InstallResultCode code) {
+                           webapps::InstallResultCode code) {
         app_id = installed_app_id;
         run_loop.Quit();
       }));
@@ -449,36 +644,58 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerTabValue),
-                           /*create_shortcut=*/false);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerTabValue),
-                           /*create_shortcut=*/true);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerWindowValue),
-                           /*create_shortcut=*/false);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
+      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  InstallPolicyAppInternal(site_mode,
-                           base::Value(kDefaultLaunchContainerWindowValue),
-                           /*create_shortcut=*/true);
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
+      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeAllowed(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true,
+      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
+                                     /*is_managed=*/false));
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeBlocked(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  InstallPolicyAppInternal(
+      site_mode, base::Value(kDefaultLaunchContainerTabValue),
+      /*create_shortcut=*/true,
+      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
+                                     /*is_managed=*/true));
   AfterStateChangeAction();
 }
 
@@ -538,6 +755,136 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::LaunchFromMenuOption(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  NavigateBrowser(site_mode);
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  auto app_id = app_state->id;
+
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  BrowserAddedWaiter browser_added_waiter;
+  CHECK(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
+  browser_added_waiter.Wait();
+  app_loaded_observer.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
+  active_app_id_ = app_id;
+
+  ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
+  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchFromShortcut(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  auto app_id = app_state->id;
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  BrowserAddedWaiter browser_added_waiter;
+
+#if BUILDFLAG(IS_MAC)
+  auto* provider = GetProviderForProfile(profile());
+  std::string shortcut_filename =
+      provider->registrar().GetAppShortName(app_id) + ".app";
+  base::FilePath app_shortcut_path =
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
+  base::CommandLine cmd_line =
+      base::CommandLine({"open", app_shortcut_path.value()});
+  ASSERT_TRUE(base::LaunchProcess(cmd_line, base::LaunchOptions()).IsValid());
+#else
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {profile(), StartupProfileMode::kBrowserWindow}, {}));
+#endif
+  browser_added_waiter.Wait();
+  app_browser_ = browser_added_waiter.browser_added();
+  app_loaded_observer.Wait();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_EQ(app_browser()->app_controller()->app_id(), app_state->id);
+  ASSERT_EQ(GetBrowserWindowTitle(app_browser()), app_state->name);
+  active_app_id_ = app_id;
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchAppSettingsFromAppMenu(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+
+  Browser* app_browser = GetAppBrowserForSite(site_mode);
+  ASSERT_TRUE(app_browser);
+
+  // Click App info from app browser.
+  CHECK(chrome::ExecuteCommand(app_browser, IDC_WEB_APP_MENU_APP_INFO));
+
+  content::WebContentsAddedObserver nav_observer;
+
+  // Click settings from page info bubble.
+  views::Widget* page_info_bubble =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetWidget();
+  EXPECT_TRUE(page_info_bubble);
+
+  views::View* settings_button = page_info_bubble->GetRootView()->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SITE_SETTINGS);
+
+  ui::AXActionData data;
+  data.action = ax::mojom::Action::kDoDefault;
+  settings_button->HandleAccessibleAction(data);
+
+  // Wait for new web content to be created.
+  nav_observer.GetWebContents();
+
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
+}
+
+void WebAppIntegrationTestDriver::LaunchAppSettingsFromChromeApps(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  DCHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
+                                 &test_web_ui);
+  base::ListValue web_app_ids;
+  web_app_ids.Append(app_state->id);
+  content::WebContentsAddedObserver nav_observer;
+  handler.HandleShowAppInfo(&web_app_ids);
+  // Wait for new web content to be created.
+  nav_observer.GetWebContents();
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
+}
+
 void WebAppIntegrationTestDriver::NavigateBrowser(
     const std::string& site_mode) {
   BeforeStateChangeAction();
@@ -572,15 +919,67 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(const GURL& url) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::ManifestUpdateTitle(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_title.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents(site_mode, url);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  // TODO(dmurph): Create a map of supported manifest updates keyed on site
-  // mode.
-  ASSERT_EQ("SiteA", site_mode);
-  ForceUpdateManifestContents(
-      site_mode,
-      GetAppURLForManifest(site_mode, blink::mojom::DisplayMode::kMinimalUi));
+  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_minimal_ui.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents(site_mode, url);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::ManifestUpdateScopeSiteAFooTo(
+    const std::string& scope_mode) {
+  BeforeStateChangeAction();
+  // The `scope_mode` would be changing the scope set in the manifest file. For
+  // simplicity, right now only SiteA is supported, so that is just hardcoded in
+  // manifest_scope_site_a.json, which is specified in the URL.
+  ASSERT_EQ("SiteA", scope_mode) << "Only scope mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, "SiteAFoo"));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find("SiteAFoo")->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_scope_site_a.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents("SiteAFoo", url);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::OpenInChrome(const std::string& site_mode) {
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  ASSERT_TRUE(IsBrowserOpen(app_browser())) << "No current app browser.";
+  ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_state->id));
+  CHECK(chrome::ExecuteCommand(app_browser_, IDC_OPEN_IN_CHROME));
+  ui_test_utils::WaitForBrowserToClose(app_browser());
+  ASSERT_FALSE(IsBrowserOpen(app_browser())) << "App browser should be closed.";
+  app_browser_ = nullptr;
+  EXPECT_EQ(GetBrowserWindowTitle(browser()), app_state->name);
+  EXPECT_EQ(GetAppStartURL(site_mode), GetCurrentTab(browser())->GetURL());
   AfterStateChangeAction();
 }
 
@@ -591,9 +990,22 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
+  // Will need to add feature flag based condition for web app settings page
+#if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
                                     true);
+#else
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile(), *delegate);
+  app_management_page_handler.SetWindowMode(app_id,
+                                            apps::mojom::WindowMode::kBrowser);
+#endif
   AfterStateChangeAction();
 }
 
@@ -605,9 +1017,22 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
+  // Will need to add feature flag based condition for web app settings page.
+#if BUILDFLAG(IS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
+#else
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile(), *delegate);
+  app_management_page_handler.SetWindowMode(app_id,
+                                            apps::mojom::WindowMode::kWindow);
+#endif
   AfterStateChangeAction();
 }
 
@@ -659,8 +1084,9 @@ void WebAppIntegrationTestDriver::UninstallFromList(
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   base::RunLoop run_loop;
-  app_service_proxy->UninstallForTesting(app_state->id, nullptr,
-                                         run_loop.QuitClosure());
+  app_service_proxy->UninstallForTesting(
+      app_state->id, nullptr,
+      base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
   run_loop.Run();
 
   ASSERT_NE(nullptr, AppUninstallDialogView::GetActiveViewForTesting());
@@ -733,7 +1159,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
                                      profile(), site_mode);
   DCHECK(policy_app);
   base::RunLoop run_loop;
-  WebAppTestRegistryObserverAdapter observer(profile());
+  WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id) {
@@ -759,6 +1185,34 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
   }
   run_loop.Run();
   AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::UninstallFromOs(
+    const std::string& site_mode) {
+#if BUILDFLAG(IS_WIN)
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  auto app_id = app_state->id;
+  WebAppTestUninstallObserver observer(profile());
+  observer.BeginListening({app_id});
+
+  // Trigger app uninstall via command line.
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kUninstallAppId, app_id);
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
+
+  observer.Wait();
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not supported on non-Windows platforms";
+#endif
 }
 
 void WebAppIntegrationTestDriver::CheckAppListEmpty() {
@@ -813,12 +1267,87 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value());
+
+  ASSERT_TRUE(browser());
+  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  EXPECT_EQ(url, GURL("chrome://app-settings/" + app_state->id));
+  AfterStateCheckAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
+}
+
 void WebAppIntegrationTestDriver::CheckAppNotInList(
     const std::string& site_mode) {
   BeforeStateCheckAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
       after_state_change_action_state_.get(), profile(), site_mode);
   EXPECT_FALSE(app_state.has_value());
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckPlatformShortcutAndIcon(
+    const std::string& site_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_TRUE(app_state->is_shortcut_created);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckPlatformShortcutNotExists(
+    const std::string& site_mode) {
+  // This is to handle if the check happens at the very beginning of the test,
+  // when no web app is installed (or any other action has happened yet).
+  if (!before_state_change_action_state_ && !after_state_change_action_state_)
+    return;
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  if (!app_state) {
+    app_state = GetAppBySiteMode(before_state_change_action_state_.get(),
+                                 profile(), site_mode);
+  }
+  std::string app_name;
+  AppId app_id;
+  // If app_state is still nullptr, the site_mode is manually mapped to get an
+  // app_name and app_id remains empty.
+  if (!app_state) {
+    ASSERT_TRUE(base::Contains(g_site_mode_to_app_name, site_mode));
+    app_name = g_site_mode_to_app_name.find(site_mode)->second;
+  } else {
+    app_name = app_state->name;
+    app_id = app_state->id;
+  }
+  EXPECT_FALSE(IsShortcutAndIconCreated(profile(), app_name, app_id));
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppTitleSiteA(const std::string& title) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), "SiteA");
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->name, title);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppWindowMode(
+    const std::string& site_mode,
+    apps::mojom::WindowMode window_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->window_mode, window_mode);
   AfterStateCheckAction();
 }
 
@@ -899,6 +1428,28 @@ void WebAppIntegrationTestDriver::CheckCustomToolbar() {
                   ->custom_tab_bar()
                   ->close_button_for_testing()
                   ->GetVisible());
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeEnabled(
+    const std::string& site_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->run_on_os_login_mode,
+            apps::mojom::RunOnOsLoginMode::kWindowed);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeDisabled(
+    const std::string& site_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->run_on_os_login_mode,
+            apps::mojom::RunOnOsLoginMode::kNotRun);
   AfterStateCheckAction();
 }
 
@@ -991,7 +1542,8 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
   DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
       << "Manifest update waiting only supported on single profile tests.";
   bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
-  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected";
+  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected "
+                          << old_name;
   if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
     DCHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
@@ -1022,6 +1574,21 @@ void WebAppIntegrationTestDriver::BeforeStateChangeAction() {
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   DCHECK(executing_action_level_ > 0);
   --executing_action_level_;
+#if BUILDFLAG(IS_MAC)
+  for (auto* profile : delegate_->GetAllProfiles()) {
+    std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
+    for (auto& app_id : app_ids) {
+      auto* app_shim_manager = apps::AppShimManager::Get();
+      AppShimHost* app_shim_host = app_shim_manager->FindHost(profile, app_id);
+      if (app_shim_host && !app_shim_host->HasBootstrapConnected()) {
+        base::RunLoop loop;
+        app_shim_host->SetOnShimConnectedForTesting(loop.QuitClosure());
+        loop.Run();
+      }
+    }
+  }
+#endif
+  FlushShortcutTasks();
   after_state_change_action_state_ = ConstructStateSnapshot();
   MaybeWaitForManifestUpdates();
 }
@@ -1040,8 +1607,9 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
 }
 
 GURL WebAppIntegrationTestDriver::GetAppStartURL(const std::string& site_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/basic.html", scope_url_path.c_str()));
 }
@@ -1116,13 +1684,23 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
     auto app_ids = registrar.GetAppIds();
     base::flat_map<AppId, AppState> app_state;
+    WebAppPublisherHelper web_app_publisher_helper(profile, provider(),
+                                                   apps::AppType::kWeb,
+                                                   /*delegate=*/nullptr, true);
     for (const auto& app_id : app_ids) {
-      app_state.emplace(app_id,
-                        AppState(app_id, registrar.GetAppShortName(app_id),
-                                 registrar.GetAppScope(app_id),
-                                 registrar.GetAppEffectiveDisplayMode(app_id),
-                                 registrar.GetAppUserDisplayMode(app_id),
-                                 registrar.IsLocallyInstalled(app_id)));
+      app_state.emplace(
+          app_id,
+          AppState(app_id, registrar.GetAppShortName(app_id),
+                   registrar.GetAppScope(app_id),
+                   web_app_publisher_helper.ConvertDisplayModeToWindowMode(
+                       registrar.GetAppUserDisplayMode(app_id)),
+                   web_app_publisher_helper.ConvertOsLoginModeToMojom(
+                       registrar.GetAppRunOnOsLoginMode(app_id).value),
+                   registrar.GetAppEffectiveDisplayMode(app_id),
+                   registrar.GetAppUserDisplayMode(app_id),
+                   registrar.IsLocallyInstalled(app_id),
+                   IsShortcutAndIconCreated(
+                       profile, registrar.GetAppShortName(app_id), app_id)));
     }
     profile_state_map.emplace(
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
@@ -1130,17 +1708,10 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
 }
 
-GURL WebAppIntegrationTestDriver::GetAppURLForManifest(
-    const std::string& site_mode,
-    DisplayMode display_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
-  std::string str_template = "/web_apps/%s/basic.html";
-  if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
-    str_template += "?manifest=manifest_minimal_ui.json";
-  }
-  return embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+std::string WebAppIntegrationTestDriver::GetBrowserWindowTitle(
+    Browser* browser) {
+  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+  return convert.to_bytes(browser->GetWindowTitleForCurrentTab(false));
 }
 
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(
@@ -1154,8 +1725,9 @@ GURL WebAppIntegrationTestDriver::GetInScopeURL(const std::string& site_mode) {
 
 GURL WebAppIntegrationTestDriver::GetScopeForSiteMode(
     const std::string& site_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/", scope_url_path.c_str()));
 }
@@ -1181,7 +1753,8 @@ void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
 void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     const std::string& site_mode,
     base::Value default_launch_container,
-    const bool create_shortcut) {
+    const bool create_shortcut,
+    const apps::mojom::RunOnOsLoginPtr os_login_mode) {
   GURL url = GetAppStartURL(site_mode);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -1194,25 +1767,63 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     update->Append(item.Clone());
+
+    if (os_login_mode) {
+      base::Value dictItem(base::Value::Type::DICTIONARY);
+      if (os_login_mode->is_managed)
+        dictItem.SetKey(kRunOnOsLogin, base::Value(kBlocked));
+      else
+        dictItem.SetKey(kRunOnOsLogin, base::Value(kAllowed));
+      DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
+                                      prefs::kWebAppSettings);
+      base::Value* dict = updateDict.Get();
+      dict->SetKey(std::move(url.spec()), std::move(dictItem));
+    }
   }
   active_app_id_ = observer.Wait();
 }
 
+void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
+  base::RunLoop run_loop;
+  WebAppInstallManagerObserverAdapter observer(profile());
+  observer.SetWebAppUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        if (id == app_id) {
+          run_loop.Quit();
+        }
+      }));
+  // If there are still install sources, the app might not be fully uninstalled,
+  // so this will listen for the removal of the policy install source.
+  provider()->install_finalizer().SetRemoveSourceCallbackForTesting(
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        if (id == app_id)
+          run_loop.Quit();
+      }));
+  std::string url_spec = provider()->registrar().GetAppStartUrl(id).spec();
+  {
+    ListPrefUpdate update(profile()->GetPrefs(),
+                          prefs::kWebAppInstallForceList);
+    size_t removed_count =
+        update->EraseListValueIf([&](const base::Value& item) {
+          const base::Value* url_value = item.FindKey(kUrlKey);
+          return url_value && url_value->GetString() == url_spec;
+        });
+    ASSERT_GT(removed_count, 0U);
+  }
+  run_loop.Run();
+  const WebApp* app = provider()->registrar().GetAppById(id);
+  if (app == nullptr && active_app_id_ == id)
+    active_app_id_.clear();
+}
+
 bool WebAppIntegrationTestDriver::AreNoAppWindowsOpen(Profile* profile,
                                                       const AppId& app_id) {
-  auto* provider = GetProviderForProfile(profile);
-  const GURL& app_scope = provider->registrar().GetAppScope(app_id);
   auto* browser_list = BrowserList::GetInstance();
   for (Browser* browser : *browser_list) {
-    if (browser->IsAttemptingToCloseBrowser()) {
+    if (browser->IsAttemptingToCloseBrowser())
       continue;
-    }
-    const GURL& browser_url =
-        browser->tab_strip_model()->GetActiveWebContents()->GetURL();
-    if (AppBrowserController::IsWebApp(browser) &&
-        IsInScope(browser_url, app_scope)) {
+    if (AppBrowserController::IsForWebApp(browser, app_id))
       return false;
-    }
   }
   return true;
 }
@@ -1225,12 +1836,12 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   ASSERT_TRUE(app_state.has_value());
   auto app_id = app_state->id;
   active_app_id_ = app_id;
+  app_ids_with_pending_manifest_updates_.insert(app_id);
 
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
   ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param);
-  app_ids_with_pending_manifest_updates_.insert(app_id);
 }
 
 void WebAppIntegrationTestDriver::MaybeWaitForManifestUpdates() {
@@ -1288,9 +1899,83 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
   return LaunchWebAppBrowserAndWait(profile(), app_state->id);
 }
 
+bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
+    Profile* profile,
+    const std::string& name,
+    const AppId& id) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  bool shortcut_correct = false;
+
+#if BUILDFLAG(IS_WIN)
+  DCHECK(base::Contains(g_app_name_icon_color, name));
+  SkColor color = g_app_name_icon_color.find(name)->second;
+  shortcut_correct =
+      (IsShortcutAndIconFoundForProfile(
+           profile, name, shortcut_override_->desktop.GetPath(), color) &&
+       IsShortcutAndIconFoundForProfile(
+           profile, name, shortcut_override_->application_menu.GetPath(),
+           color));
+#elif BUILDFLAG(IS_MAC)
+  DCHECK(base::Contains(g_app_name_icon_color, name));
+  SkColor color = g_app_name_icon_color.find(name)->second;
+  std::string shortcut_filename = name + ".app";
+  base::FilePath app_shortcut_path =
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
+  AppShimRegistry* registry = AppShimRegistry::Get();
+  bool is_app_profile_found = false;
+  // Exits early if the app id is empty because the verification won't work.
+  // TODO(crbug.com/1289865): Figure a way to find the profile that has the app
+  //                          installed without using app ID.
+  if (id.empty())
+    return false;
+  std::set<base::FilePath> app_installed_profiles =
+      registry->GetInstalledProfilesForApp(id);
+  is_app_profile_found = (app_installed_profiles.find(profile->GetPath()) !=
+                          app_installed_profiles.end());
+  bool shortcut_exists =
+      (base::PathExists(app_shortcut_path) && is_app_profile_found);
+  if (shortcut_exists) {
+    SkColor icon_pixel_color = GetIconTopLeftColor(app_shortcut_path);
+    shortcut_correct = (icon_pixel_color == color);
+  }
+#elif BUILDFLAG(IS_LINUX)
+  std::string shortcut_filename =
+      "chrome-" + id + "-" + profile->GetBaseName().value() + ".desktop";
+  base::FilePath desktop_shortcut_path =
+      shortcut_override_->desktop.GetPath().Append(shortcut_filename);
+  shortcut_correct = base::PathExists(desktop_shortcut_path);
+#endif
+
+  return shortcut_correct;
+}
+
+void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
+    const std::string& site_mode,
+    apps::mojom::RunOnOsLoginMode login_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
+  base::RunLoop run_loop;
+  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
+      run_loop.QuitClosure());
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile(), *delegate);
+  app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
+  run_loop.Run();
+#endif
+}
+
 Browser* WebAppIntegrationTestDriver::browser() {
   Browser* browser = active_browser_
-                         ? active_browser_
+                         ? active_browser_.get()
                          : chrome::FindTabbedBrowser(
                                profile(), /*match_original_profiles=*/false);
   DCHECK(browser);

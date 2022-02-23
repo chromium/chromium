@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <!-- The test scans for which source to share according to the title. -->
+    <title>Region Capture Test - Page 1 (Main)</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let capturedStream;
+      let capturedVideoTrack;
+
+      function startEmbeddingFrame(url) {
+        document.getElementById("embedded_frame").src = url;
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      async function startCapture() {
+        if (capturedStream) {
+          window.domAutomationController.send("error-multiple-captures");
+          return;
+        }
+
+        try {
+          capturedStream = await navigator.mediaDevices.getDisplayMedia();
+          [capturedVideoTrack] = capturedStream.getVideoTracks();
+          window.domAutomationController.send("capture-success");
+        } catch (e) {
+          window.domAutomationController.send("capture-failure");
+        }
+      }
+
+      function startCaptureFromEmbeddedFrame() {
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage("start-capture", "*");
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      async function produceCropId(targetFrame, elementId) {
+        if (targetFrame == "top") {
+          const element = document.getElementById(elementId);
+          let cropId;
+          try {
+            cropId = await navigator.mediaDevices.produceCropId(element);
+          } catch (e) {
+            window.domAutomationController.send("top-level-produce-crop-id-error");
+            return;
+          }
+          // Explicitly note emptiness so as to make it clear that this is
+          // genuine emptiness and not a test error on the C++/JS boundary.
+          window.domAutomationController.send(
+              cropId == "" ? "empty-crop-id" : cropId);
+        } else {
+          document
+            .getElementById("embedded_frame")
+            .contentWindow.postMessage("produce-crop-id:" + elementId, "*");
+          // window.domAutomationController.send() called by embedded page.
+        }
+      }
+
+      async function cropTo(cropId) {
+        if (capturedVideoTrack) {
+          try {
+            await capturedVideoTrack.cropTo(cropId);
+            window.domAutomationController.send("top-level-crop-success");
+            return;
+          } catch (e) {
+            window.domAutomationController.send("top-level-crop-error");
+          }
+        } else {
+          document
+            .getElementById("embedded_frame")
+            .contentWindow.postMessage("crop-to:" + cropId, "*");
+          // window.domAutomationController.send() called by embedded page.
+        }
+      }
+
+      // Allows creating new div-elements for which new crop-IDs may be created.
+      async function createNewDivElement(targetFrame, divId) {
+        if (targetFrame == "top") {
+          let newDiv = document.createElement("div");
+          newDiv.id = divId;
+          document.body.appendChild(newDiv);
+          window.domAutomationController.send("top-level-new-div-success");
+        } else {
+          document
+            .getElementById("embedded_frame")
+            .contentWindow.postMessage("create-new-div-element:" + divId, "*");
+          // window.domAutomationController.send() called by embedded page.
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="div">
+      <!-- This DIV is just a convenient target for produceCropId. -->
+      <h1>Region Capture Test - Page 1 (Main)</h1>
+      <br/>
+    </div>
+    <iframe id="embedded_frame" allow="display-capture *"></iframe>
+  </body>
+</html>

@@ -7,9 +7,10 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -36,9 +37,10 @@ class LazyLoadFrameObserver final
     kLoadedNearOrInViewport = 1,
     // The frame was determined to likely be a hidden frame (e.g. analytics or
     // communication iframes), so it was loaded immediately.
-    kLoadedHidden = 2,
+    // Deprecated in Jan 2022.
+    kDeprecatedLoadedHidden = 2,
 
-    kMaxValue = kLoadedHidden
+    kMaxValue = kDeprecatedLoadedHidden
   };
 
   // The loading pipeline for an iframe differs depending on whether the

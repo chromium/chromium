@@ -18,7 +18,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -67,6 +66,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -398,6 +398,7 @@ ShelfLayoutManager::~ShelfLayoutManager() {
 }
 
 void ShelfLayoutManager::InitObservers() {
+  shelf_->AddObserver(this);
   auto* shell = Shell::Get();
   shell->AddShellObserver(this);
   SplitViewController::Get(shelf_widget_->GetNativeWindow())->AddObserver(this);
@@ -434,6 +435,7 @@ void ShelfLayoutManager::PrepareForShutdown() {
 
   SplitViewController::Get(shelf_widget_->GetNativeWindow())
       ->RemoveObserver(this);
+  shelf_->RemoveObserver(this);
 }
 
 bool ShelfLayoutManager::IsVisible() const {
@@ -999,8 +1001,7 @@ void ShelfLayoutManager::SetChildBounds(aura::Window* child,
   }
 }
 
-void ShelfLayoutManager::OnShelfAutoHideBehaviorChanged(
-    aura::Window* root_window) {
+void ShelfLayoutManager::OnShelfAutoHideBehaviorChanged() {
   UpdateVisibilityState();
 }
 
@@ -1080,6 +1081,8 @@ void ShelfLayoutManager::OnAppListVisibilityWillChange(bool shown,
 
 void ShelfLayoutManager::OnAppListVisibilityChanged(bool shown,
                                                     int64_t display_id) {
+  DVLOG(1) << __PRETTY_FUNCTION__ << " shown " << shown << " display "
+           << display_id;
   // Shell may be under destruction.
   if (!shelf_widget_ || !shelf_widget_->GetNativeWindow())
     return;
@@ -1192,6 +1195,19 @@ void ShelfLayoutManager::OnDeskSwitchAnimationFinished() {
 
 float ShelfLayoutManager::GetOpacity() const {
   return target_opacity_;
+}
+
+void ShelfLayoutManager::LockAutoHideState(bool lock_auto_hide_state) {
+  if (is_auto_hide_state_locked_ == lock_auto_hide_state)
+    return;
+  is_auto_hide_state_locked_ = lock_auto_hide_state;
+  // If unlocking, recompute the current state, but do it after the current
+  // event is processed.
+  if (!is_auto_hide_state_locked_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ShelfLayoutManager::UpdateAutoHideState,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void ShelfLayoutManager::OnShelfConfigUpdated() {
@@ -1416,7 +1432,7 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
                    ? HotseatState::kExtended
                    : HotseatState::kHidden;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kDragCancelInProgress: {
       // If the drag being completed is not a Hotseat drag, don't change the
       // state.
@@ -2307,7 +2323,12 @@ bool ShelfLayoutManager::StartAppListDrag(
     float scroll_y_hint) {
   // In tablet mode, home launcher gestures are handled by
   // `swipe_home_to_overview_controller_`.
-  if (Shell::Get()->IsInTabletMode() && event_in_screen.IsGestureEvent())
+  const bool is_tablet_mode = Shell::Get()->IsInTabletMode();
+  if (is_tablet_mode && event_in_screen.IsGestureEvent())
+    return false;
+
+  // Clamshell ProductivityLauncher does not support app list drags.
+  if (!is_tablet_mode && features::IsProductivityLauncherEnabled())
     return false;
 
   // Fullscreen app list can only be dragged from bottom alignment shelf.
@@ -2492,6 +2513,9 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
 
 void ShelfLayoutManager::CompleteAppListDrag(
     const ui::LocatedEvent& event_in_screen) {
+  // ProductivityLauncher does not support app list dragging.
+  DCHECK(!features::IsProductivityLauncherEnabled());
+
   // Change the shelf alignment to vertical during drag will reset
   // |drag_status_| to |kDragNone|.
   if (drag_status_ == kDragNone)

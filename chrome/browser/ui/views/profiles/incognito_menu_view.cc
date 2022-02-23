@@ -28,7 +28,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/style/typography.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -68,7 +68,7 @@ void IncognitoMenuView::BuildMenu() {
           : std::u16string(),
       header_art_icon);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (ProfileShortcutManager::IsFeatureEnabled() &&
       base::FeatureList::IsEnabled(
           features::kEnableIncognitoShortcutOnDesktop)) {
@@ -95,7 +95,7 @@ std::u16string IncognitoMenuView::GetAccessibleWindowTitle() const {
           browser()->profile()));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void IncognitoMenuView::OnCreateShortcutButtonClicked() {
   RecordClick(ActionableItem::kCreateIncognitoShortcutButton);
   ProfileShortcutManager* shortcut_manager =

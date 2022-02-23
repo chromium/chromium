@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -42,7 +44,7 @@ class ExternalProtocolDialogTestApi {
   }
 
  private:
-  ExternalProtocolDialog* dialog_;
+  raw_ptr<ExternalProtocolDialog> dialog_;
 };
 
 }  // namespace test
@@ -99,7 +101,8 @@ class ExternalProtocolDialogBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     dialog_ = new ExternalProtocolDialog(
         web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
-        url::Origin::Create(GURL(initiating_origin)));
+        url::Origin::Create(GURL(initiating_origin)),
+        web_contents->GetMainFrame()->GetWeakDocumentPtr());
   }
 
   void SetChecked(bool checked) {
@@ -157,7 +160,7 @@ class ExternalProtocolDialogBrowserTest
   base::HistogramTester histogram_tester_;
 
  protected:
-  ExternalProtocolDialog* dialog_ = nullptr;
+  raw_ptr<ExternalProtocolDialog> dialog_ = nullptr;
   std::string blocked_scheme_;
   url::Origin blocked_origin_;
   BlockState blocked_state_ = BlockState::UNKNOWN;
@@ -278,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This dialog's default focused control is the Cancel button, but on Mac,
   // the cancel button cannot have initial keyboard focus. Advance focus once
   // on Mac to test whether keyboard focus advancement works there rather than

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -28,7 +28,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleMatrixFilter) {
         FilterOperationResolver::CreateOffscreenFilterOperations(*value, font);
     ASSERT_EQ(fo.size(), 1ul);
     EXPECT_EQ(*fo.at(0), *MakeGarbageCollected<BasicColorMatrixFilterOperation>(
-                             0.5, FilterOperation::SEPIA));
+                             0.5, FilterOperation::kSepia));
   });
 }
 
@@ -46,7 +46,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleTransferFilter) {
     ASSERT_EQ(fo.size(), 1ul);
     EXPECT_EQ(*fo.at(0),
               *MakeGarbageCollected<BasicComponentTransferFilterOperation>(
-                  0.5, FilterOperation::BRIGHTNESS));
+                  0.5, FilterOperation::kBrightness));
   });
 }
 
@@ -81,7 +81,7 @@ TSAN_TEST(FilterOperationResolverThreadedTest, SimpleDropShadow) {
     ASSERT_EQ(fo.size(), 1ul);
     EXPECT_EQ(*fo.at(0),
               *MakeGarbageCollected<DropShadowFilterOperation>(
-                  ShadowData(FloatPoint(10, 5), 1, 0, ShadowStyle::kNormal,
+                  ShadowData(gfx::PointF(10, 5), 1, 0, ShadowStyle::kNormal,
                              StyleColor(Color::kBlack))));
   });
 }
@@ -100,10 +100,10 @@ TSAN_TEST(FilterOperationResolverThreadedTest, CompoundFilter) {
     EXPECT_FALSE(fo.IsEmpty());
     ASSERT_EQ(fo.size(), 2ul);
     EXPECT_EQ(*fo.at(0), *MakeGarbageCollected<BasicColorMatrixFilterOperation>(
-                             0.5, FilterOperation::SEPIA));
+                             0.5, FilterOperation::kSepia));
     EXPECT_EQ(*fo.at(1),
               *MakeGarbageCollected<BasicComponentTransferFilterOperation>(
-                  0.5, FilterOperation::BRIGHTNESS));
+                  0.5, FilterOperation::kBrightness));
   });
 }
 

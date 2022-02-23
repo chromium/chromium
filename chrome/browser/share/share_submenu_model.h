@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_SHARE_SHARE_SUBMENU_MODEL_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
-class Browser;
+class Profile;
+
+namespace content {
+class WebContents;
+}
 
 namespace sharing_hub {
 class SharingHubModel;
@@ -47,12 +52,14 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
   // based on the state of field trials & flags.
   static bool IsEnabled();
 
+  // |web_contents| can be null in tests, otherwise it must outlive |this|. In
+  // other words, this object is tied to a single tab.
   // The |url| parameter is a bit tricky: it is the "target URL" of the
   // containing menu, whatever that happens to be. The exact meaning of that
   // depends on |context|. The |source_endpoint| is the source of |url| or
   // whichever other data is being offered for share (image or similar), and
   // |text| is text describing the data being shared.
-  ShareSubmenuModel(Browser* browser,
+  ShareSubmenuModel(content::WebContents* web_contents,
                     std::unique_ptr<ui::DataTransferEndpoint> source_endpoint,
                     Context context,
                     GURL url,
@@ -77,11 +84,14 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
 
   sharing_hub::SharingHubModel* GetSharingHubModel();
 
-  Browser* browser_;
-  std::unique_ptr<ui::DataTransferEndpoint> source_endpoint_;
-  Context context_;
-  GURL url_;
-  std::u16string text_;
+  Profile* GetProfile();
+
+  raw_ptr<content::WebContents> const web_contents_;
+  // TODO(victorvianna): There's no need to wrap this with std::unique_ptr.
+  std::unique_ptr<ui::DataTransferEndpoint> const source_endpoint_;
+  const Context context_;
+  const GURL url_;
+  const std::u16string text_;
 
   bool menu_opened_for_metrics_ = false;
   bool any_option_selected_for_metrics_ = false;

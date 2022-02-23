@@ -1545,17 +1545,18 @@ TYPED_TEST_P(InstanceTest, InitializerListAssign) {
   }
 }
 
-REGISTER_TYPED_TEST_CASE_P(InstanceTest, Swap, CountConstructorsDestructors,
-                           CountConstructorsDestructorsOnCopyConstruction,
-                           CountConstructorsDestructorsOnMoveConstruction,
-                           CountConstructorsDestructorsOnAssignment,
-                           CountConstructorsDestructorsOnMoveAssignment,
-                           CountElemAssignInlineBacking, RangedConstructor,
-                           RangedAssign, InitializerListAssign);
+REGISTER_TYPED_TEST_SUITE_P(InstanceTest, Swap, CountConstructorsDestructors,
+                            CountConstructorsDestructorsOnCopyConstruction,
+                            CountConstructorsDestructorsOnMoveConstruction,
+                            CountConstructorsDestructorsOnAssignment,
+                            CountConstructorsDestructorsOnMoveAssignment,
+                            CountElemAssignInlineBacking, RangedConstructor,
+                            RangedAssign, InitializerListAssign);
 
 using InstanceTypes =
     ::testing::Types<CopyableOnlyInstance, CopyableMovableInstance>;
-INSTANTIATE_TYPED_TEST_CASE_P(InstanceTestOnTypes, InstanceTest, InstanceTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(InstanceTestOnTypes, InstanceTest,
+                               InstanceTypes);
 
 TEST(DynamicVec, DynamicVecCompiles) {
   DynamicVec v;

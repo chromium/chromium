@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -39,10 +40,14 @@ class AddressProfileSaveManager {
   // |allow_only_silent_updates| allows only for silent updates of profiles
   // that have either a structured name or address or both but do not fulfill
   // the import requirements.
+  // |did_complement_country| is passed through, to collect metrics on whether
+  // the profile is accepted/edited.
+  // TODO(crbug.com/1297032): Cleanup when launched.
   void ImportProfileFromForm(const AutofillProfile& profile,
                              const std::string& app_locale,
                              const GURL& url,
-                             bool allow_only_silent_updates);
+                             bool allow_only_silent_updates,
+                             bool did_complement_country = false);
 
  protected:
   // Initiates showing the prompt to the user.
@@ -78,11 +83,11 @@ class AddressProfileSaveManager {
 
   // A pointer to the autofill client. It is assumed that the client outlives
   // the instance of this class
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.
-  PersonalDataManager* const personal_data_manager_{nullptr};
+  const raw_ptr<PersonalDataManager> personal_data_manager_{nullptr};
 
   base::WeakPtrFactory<AddressProfileSaveManager> weak_ptr_factory_{this};
 };

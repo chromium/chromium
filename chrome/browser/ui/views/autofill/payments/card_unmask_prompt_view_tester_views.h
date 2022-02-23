@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_TESTER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_PROMPT_VIEW_TESTER_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 
 namespace autofill {
@@ -28,7 +29,7 @@ class CardUnmaskPromptViewTesterViews : public CardUnmaskPromptViewTester {
   void EnterCVCAndAccept() override;
 
  private:
-  CardUnmaskPromptViews* view_;
+  raw_ptr<CardUnmaskPromptViews> view_;
 };
 
 }  // namespace autofill

@@ -12,6 +12,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -34,7 +35,6 @@ NavigationEvent::NavigationEvent()
       original_request_url(),
       source_tab_id(SessionID::InvalidValue()),
       target_tab_id(SessionID::InvalidValue()),
-      frame_id(content::RenderFrameHost::kNoFrameTreeNodeId),
       last_updated(base::Time::Now()),
       navigation_initiation(ReferrerChainEntry::UNDEFINED),
       has_committed(false),
@@ -47,7 +47,6 @@ NavigationEvent::NavigationEvent(NavigationEvent&& nav_event)
       server_redirect_urls(std::move(nav_event.server_redirect_urls)),
       source_tab_id(std::move(nav_event.source_tab_id)),
       target_tab_id(std::move(nav_event.target_tab_id)),
-      frame_id(nav_event.frame_id),
       last_updated(nav_event.last_updated),
       navigation_initiation(nav_event.navigation_initiation),
       has_committed(nav_event.has_committed),
@@ -62,7 +61,6 @@ NavigationEvent& NavigationEvent::operator=(NavigationEvent&& nav_event) {
   original_request_url = std::move(nav_event.original_request_url);
   source_tab_id = nav_event.source_tab_id;
   target_tab_id = nav_event.target_tab_id;
-  frame_id = nav_event.frame_id;
   last_updated = nav_event.last_updated;
   navigation_initiation = nav_event.navigation_initiation;
   has_committed = nav_event.has_committed;
@@ -146,7 +144,6 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
                                               nav_event.get());
   // All the other fields are reconstructed based on current content of
   // navigation_handle.
-  nav_event->frame_id = navigation_handle->GetFrameTreeNodeId();
   SetNavigationSourceUrl(navigation_handle, nav_event.get());
   nav_event->original_request_url =
       SafeBrowsingNavigationObserverManager::ClearURLRef(
@@ -257,8 +254,10 @@ void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
   // When navigating a newly created portal contents, establish an association
   // with its creator, so we can track the referrer chain across portal
   // activations.
+  content::NavigationEntry* current_entry =
+      web_contents()->GetController().GetLastCommittedEntry();
   if (web_contents()->IsPortal() &&
-      !web_contents()->GetController().GetLastCommittedEntry()) {
+      (!current_entry || current_entry->IsInitialEntry())) {
     content::RenderFrameHost* initiator_frame_host =
         navigation_handle->GetInitiatorFrameToken().has_value()
             ? content::RenderFrameHost::FromFrameToken(
@@ -327,13 +326,13 @@ void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(
 void SafeBrowsingNavigationObserver::SetNavigationSourceMainFrameUrl(
     content::NavigationHandle* navigation_handle,
     NavigationEvent* nav_event) {
-  if (navigation_handle->IsInMainFrame()) {
+  if (!navigation_handle->GetParentFrameOrOuterDocument()) {
     nav_event->source_main_frame_url = nav_event->source_url;
   } else {
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            navigation_handle->GetParentFrame()
-                ->GetMainFrame()
+            navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetOutermostMainFrame()
                 ->GetLastCommittedURL());
   }
 }

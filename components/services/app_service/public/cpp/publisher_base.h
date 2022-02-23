@@ -101,6 +101,9 @@ class PublisherBase : public apps::mojom::Publisher {
                        apps::mojom::OptionalBool locked) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
   mojo::Receiver<apps::mojom::Publisher> receiver_{this};
 };

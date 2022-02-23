@@ -10,4 +10,9 @@ bool GestureConsumer::RequiresDoubleTapGestureEvents() const {
   return false;
 }
 
+const std::string& GestureConsumer::GetName() const {
+  static const std::string name("GestureConsumer");
+  return name;
+}
+
 }  // namespace ui

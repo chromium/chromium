@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace arc {

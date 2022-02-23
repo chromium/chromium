@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -119,6 +120,23 @@ class TabModel {
     SIZE
   };
 
+  // Various types of user agent.
+  // Values must be numbered from 0 and can't have gaps.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
+  enum class TabUserAgent {
+    // Choose user agent based on default setting.
+    DEFAULT,
+    // Use mobile user agent.
+    MOBILE,
+    // Use desktop user agent.
+    DESKTOP,
+    // User agent not set, due to an earlier version not having the user agent
+    // bit.
+    UNSET,
+    // Must be last.
+    SIZE
+  };
+
   TabModel(const TabModel&) = delete;
   TabModel& operator=(const TabModel&) = delete;
 
@@ -176,7 +194,7 @@ class TabModel {
   LocationBarModel* GetLocationBarModel();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   chrome::android::ActivityType activity_type_;
 

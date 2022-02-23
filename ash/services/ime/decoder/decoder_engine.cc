@@ -14,6 +14,9 @@ namespace ime {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 // A client delegate passed to the shared library in order for the
 // shared library to send replies back to the engine.
 class ClientDelegate : public ImeClientDelegate {
@@ -55,49 +58,37 @@ class ClientDelegate : public ImeClientDelegate {
 
 }  // namespace
 
-DecoderEngine::DecoderEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (!TryLoadDecoder()) {
-    LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
+DecoderEngine::DecoderEngine(
+    ImeCrosPlatform* platform,
+    absl::optional<ImeDecoder::EntryPoints> entry_points)
+    : platform_(platform) {
+  if (!entry_points) {
+    LOG(WARNING) << "DecoderEngine INIT INCOMPLETE.";
+    return;
   }
+
+  decoder_entry_points_ = *entry_points;
+  decoder_entry_points_->init_once(platform_);
 }
 
 DecoderEngine::~DecoderEngine() {}
-
-bool DecoderEngine::TryLoadDecoder() {
-  auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
-      decoder->GetEntryPoints().is_ready) {
-    decoder_entry_points_ = decoder->GetEntryPoints();
-    decoder_entry_points_->init_once(platform_);
-    return true;
-  }
-  return false;
-}
 
 bool DecoderEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputChannel> receiver,
     mojo::PendingRemote<mojom::InputChannel> remote,
     const std::vector<uint8_t>& extra) {
-  if (IsImeSupportedByDecoder(ime_spec)) {
-    // Activates an IME engine via the shared library. Passing a
-    // |ClientDelegate| for engine instance created by the shared library to
-    // make safe calls on the client.
-    if (decoder_entry_points_->activate_ime(
-            ime_spec.c_str(),
-            new ClientDelegate(ime_spec, std::move(remote)))) {
-      decoder_channel_receivers_.Add(this, std::move(receiver));
-      // TODO(https://crbug.com/837156): Registry connection error handler.
-      return true;
-    }
-    return false;
+  // Activates an IME engine via the shared lib. Passing a |ClientDelegate| for
+  // engine instance created by the shared lib to make safe calls on the client.
+  if (decoder_entry_points_ &&
+      decoder_entry_points_->supports(ime_spec.c_str()) &&
+      decoder_entry_points_->activate_ime(
+          ime_spec.c_str(), new ClientDelegate(ime_spec, std::move(remote)))) {
+    decoder_channel_receivers_.Add(this, std::move(receiver));
+    // TODO(https://crbug.com/837156): Registry connection error handler.
+    return true;
   }
   return false;
-}
-
-bool DecoderEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  return decoder_entry_points_ &&
-         decoder_entry_points_->supports(ime_spec.c_str());
 }
 
 void DecoderEngine::ProcessMessage(const std::vector<uint8_t>& message,

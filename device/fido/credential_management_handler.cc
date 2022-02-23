@@ -9,9 +9,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "components/cbor/reader.h"
-#include "components/cbor/values.h"
-#include "components/cbor/writer.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -108,10 +105,13 @@ void CredentialManagementHandler::OnRetriesResponse(
     return;
   }
   state_ = State::kWaitingForPIN;
-  get_pin_callback_.Run(authenticator_->CurrentMinPINLength(),
-                        response->retries,
-                        base::BindOnce(&CredentialManagementHandler::OnHavePIN,
-                                       weak_factory_.GetWeakPtr()));
+  get_pin_callback_.Run(
+      {.min_pin_length = authenticator_->CurrentMinPINLength(),
+       .pin_retries = response->retries,
+       .supports_update_user_information =
+           authenticator_->SupportsUpdateUserInformation()},
+      base::BindOnce(&CredentialManagementHandler::OnHavePIN,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CredentialManagementHandler::OnHavePIN(std::string pin) {
@@ -210,7 +210,7 @@ void CredentialManagementHandler::DeleteCredential(
 }
 
 void CredentialManagementHandler::OnDeleteCredentials(
-    std::vector<std::vector<uint8_t>> remaining_credential_ids,
+    std::vector<device::PublicKeyCredentialDescriptor> remaining_credential_ids,
     CredentialManagementHandler::DeleteCredentialCallback callback,
     CtapDeviceResponseCode status,
     absl::optional<DeleteCredentialResponse> response) {
@@ -227,8 +227,8 @@ void CredentialManagementHandler::OnDeleteCredentials(
     return;
   }
 
-  auto credential_id = *PublicKeyCredentialDescriptor::CreateFromCBORValue(
-      *cbor::Reader::Read(remaining_credential_ids.back()));
+  device::PublicKeyCredentialDescriptor credential_id =
+      std::move(remaining_credential_ids.back());
   remaining_credential_ids.pop_back();
   authenticator_->DeleteCredential(
       *pin_token_, credential_id,
@@ -238,7 +238,7 @@ void CredentialManagementHandler::OnDeleteCredentials(
 }
 
 void CredentialManagementHandler::DeleteCredentials(
-    std::vector<std::vector<uint8_t>> credential_ids,
+    std::vector<device::PublicKeyCredentialDescriptor> credential_ids,
     DeleteCredentialCallback callback) {
   DCHECK(state_ == State::kReady && !get_credentials_callback_);
   if (!authenticator_) {
@@ -254,8 +254,8 @@ void CredentialManagementHandler::DeleteCredentials(
     return;
   }
 
-  auto credential_id = *PublicKeyCredentialDescriptor::CreateFromCBORValue(
-      *cbor::Reader::Read(credential_ids.back()));
+  device::PublicKeyCredentialDescriptor credential_id =
+      std::move(credential_ids.back());
   credential_ids.pop_back();
   authenticator_->DeleteCredential(
       *pin_token_, credential_id,
@@ -316,15 +316,12 @@ void CredentialManagementHandler::OnEnumerateCredentials(
     return;
   }
 
-  // Sort credentials by (RP ID, username, user) ascending.
+  // Sort credentials by (RP ID, userId) ascending.
   for (auto& response : *responses) {
     std::sort(response.credentials.begin(), response.credentials.end(),
               [](const EnumerateCredentialsResponse& a,
                  const EnumerateCredentialsResponse& b) {
-                if (a.user.name == b.user.name) {
-                  return a.user.id < b.user.id;
-                }
-                return a.user.name < b.user.name;
+                return a.user.id < b.user.id;
               });
   }
   std::sort(responses->begin(), responses->end(),

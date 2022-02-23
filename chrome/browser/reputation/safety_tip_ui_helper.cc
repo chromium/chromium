@@ -13,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -33,7 +33,7 @@ void LeaveSiteFromSafetyTip(content::WebContents* web_contents,
   if (navigated_to.is_empty()) {
     navigated_to = GURL(kSafetyTipLeaveSiteUrl);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
     if (tab && tab->IsCustomTab()) {
       auto& controller = web_contents->GetController();

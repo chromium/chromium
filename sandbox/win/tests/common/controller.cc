@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
@@ -226,6 +227,11 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
+#if DCHECK_IS_ON()
+    // Policy can be applied to one target only.
+    DCHECK(!policy_applied_);
+    policy_applied_ = true;
+#endif
     result = broker_->SpawnTarget(prog_name, arguments.c_str(), policy_,
                                   &warning_result, &last_error, &target);
   }

@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_context_stub.h"
 
+#include "build/build_config.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_stub_api.h"
 
@@ -75,7 +76,7 @@ bool GLContextStub::HasRobustness() {
          HasExtension("GL_KHR_robustness") || HasExtension("GL_EXT_robustness");
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void GLContextStub::FlushForDriverCrashWorkaround() {}
 #endif
 

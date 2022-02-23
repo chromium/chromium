@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/eme_constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -167,9 +166,8 @@ void ReportMetrics(ExecutionContext* execution_context,
 }  // namespace
 
 MediaKeySystemAccess::MediaKeySystemAccess(
-    const String& key_system,
     std::unique_ptr<WebContentDecryptionModuleAccess> access)
-    : key_system_(key_system), access_(std::move(access)) {}
+    : access_(std::move(access)) {}
 
 MediaKeySystemAccess::~MediaKeySystemAccess() = default;
 
@@ -212,7 +210,7 @@ ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
   WebMediaKeySystemConfiguration configuration = access_->GetConfiguration();
 
   // 1. Let promise be a new promise.
-  MediaKeysConfig config = {key_system_, UseHardwareSecureCodecs()};
+  MediaKeysConfig config = {keySystem(), UseHardwareSecureCodecs()};
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
       script_state, config, configuration.session_types);
   ScriptPromise promise = helper->Promise();
@@ -228,7 +226,7 @@ ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
       helper->Result(),
       execution_context->GetTaskRunner(TaskType::kInternalMedia));
 
-  ReportMetrics(execution_context, key_system_);
+  ReportMetrics(execution_context, keySystem());
 
   // 3. Return promise.
   return promise;

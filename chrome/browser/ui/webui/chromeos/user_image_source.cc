@@ -18,6 +18,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace chromeos {

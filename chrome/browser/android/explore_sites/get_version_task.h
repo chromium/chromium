@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_GET_VERSION_TASK_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
@@ -29,7 +30,7 @@ class GetVersionTask : public Task {
 
   void FinishedExecuting(std::string result);
 
-  ExploreSitesStore* store_;  // outlives this class.
+  raw_ptr<ExploreSitesStore> store_;  // outlives this class.
   base::OnceCallback<void(std::string)> callback_;
   base::WeakPtrFactory<GetVersionTask> weak_ptr_factory_{this};
 };

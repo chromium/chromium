@@ -75,7 +75,7 @@ TEST(SysStrings, SysUTF8ToWide) {
 }
 
 // Tests depend on setting a specific Linux locale.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST(SysStrings, SysWideToNativeMB) {
 #if !defined(SYSTEM_NATIVE_UTF8)
   ScopedLocale locale("en_US.UTF-8");
@@ -190,6 +190,6 @@ TEST(SysStrings, SysNativeMBAndWide) {
     EXPECT_EQ(wide, trip);
   }
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

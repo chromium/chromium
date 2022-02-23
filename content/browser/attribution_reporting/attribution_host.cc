@@ -9,15 +9,17 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -64,7 +66,7 @@ class ScopedMapDeleter {
   explicit operator bool() const { return it_ != map_->end(); }
 
  private:
-  Map* map_;
+  raw_ptr<Map> map_;
   typename Map::iterator it_;
 };
 
@@ -86,6 +88,7 @@ AttributionHost::AttributionHost(
     WebContents* web_contents,
     std::unique_ptr<AttributionManager::Provider> attribution_manager_provider)
     : WebContentsObserver(web_contents),
+      WebContentsUserData<AttributionHost>(*web_contents),
       attribution_manager_provider_(std::move(attribution_manager_provider)),
       receivers_(web_contents, this) {
   // TODO(csharrison): When https://crbug.com/1051334 is resolved, add a DCHECK
@@ -226,12 +229,12 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     return;
   }
 
-  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
+  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 
 bool AttributionHost::VerifyAndStoreImpression(
-    StorableSource::SourceType source_type,
+    CommonSourceInfo::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     AttributionManager& attribution_manager) {
@@ -269,12 +272,20 @@ void AttributionHost::RegisterConversion(
 
   // Only allow conversion registration on secure pages with a secure conversion
   // redirects.
-  if (!network::IsOriginPotentiallyTrustworthy(conversion_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(main_frame_origin)) {
+  if (!network::IsOriginPotentiallyTrustworthy(conversion_origin)) {
     mojo::ReportBadMessage(
-        "blink.mojom.ConversionHost can only be used in secure contexts with a "
-        "secure conversion registration origin.");
+        "blink.mojom.ConversionHost can only be used in secure contexts.");
+        return;
+  }
+  if (!network::IsOriginPotentiallyTrustworthy(conversion->reporting_origin)) {
+    mojo::ReportBadMessage("blink.mojom.ConversionHost can only be used with "
+        "a secure conversion registration origin.");
+        return;
+  }
+  if (!network::IsOriginPotentiallyTrustworthy(main_frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used with a secure top-level "
+        "frame.");
     return;
   }
 
@@ -288,44 +299,50 @@ void AttributionHost::RegisterConversion(
   if (!allowed)
     return;
 
+  const auto sanitize_trigger_data =
+      [&](const uint64_t unsanitized, CommonSourceInfo::SourceType source_type,
+          devtools_instrumentation::AttributionReportingIssueType issue_type) {
+        const uint64_t sanitized =
+            SanitizeTriggerData(unsanitized, source_type);
+
+        if (sanitized != unsanitized) {
+          devtools_instrumentation::ReportAttributionReportingIssue(
+              render_frame_host, issue_type, conversion->devtools_request_id,
+              base::NumberToString(unsanitized));
+        }
+
+        return sanitized;
+      };
+
+  // TODO(apaseltiner): Set this based on field in `conversion`.
+  absl::optional<int64_t> debug_key;
+
   net::SchemefulSite conversion_destination(main_frame_origin);
 
-  if (!attribution_manager->GetAttributionPolicy().IsTriggerDataInRange(
+  AttributionTrigger storable_conversion(
+      sanitize_trigger_data(
           conversion->conversion_data,
-          StorableSource::SourceType::kNavigation)) {
-    devtools_instrumentation::ReportAttributionReportingIssue(
-        render_frame_host,
-        devtools_instrumentation::AttributionReportingIssueType::
-            kAttributionTriggerDataTooLarge,
-        conversion->devtools_request_id,
-        base::NumberToString(conversion->conversion_data));
-  }
-
-  if (!attribution_manager->GetAttributionPolicy().IsTriggerDataInRange(
+          CommonSourceInfo::SourceType::kNavigation,
+          devtools_instrumentation::AttributionReportingIssueType::
+              kAttributionTriggerDataTooLarge),
+      std::move(conversion_destination), conversion->reporting_origin,
+      sanitize_trigger_data(
           conversion->event_source_trigger_data,
-          StorableSource::SourceType::kEvent)) {
-    devtools_instrumentation::ReportAttributionReportingIssue(
-        render_frame_host,
-        devtools_instrumentation::AttributionReportingIssueType::
-            kAttributionEventSourceTriggerDataTooLarge,
-        conversion->devtools_request_id,
-        base::NumberToString(conversion->event_source_trigger_data));
-  }
-
-  StorableTrigger storable_conversion(
-      attribution_manager->GetAttributionPolicy().SanitizeTriggerData(
-          conversion->conversion_data, StorableSource::SourceType::kNavigation),
-      conversion_destination, conversion->reporting_origin,
-      attribution_manager->GetAttributionPolicy().SanitizeTriggerData(
-          conversion->event_source_trigger_data,
-          StorableSource::SourceType::kEvent),
+          CommonSourceInfo::SourceType::kEvent,
+          devtools_instrumentation::AttributionReportingIssueType::
+              kAttributionEventSourceTriggerDataTooLarge),
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
-          : absl::make_optional(conversion->dedup_key->value));
+          : absl::make_optional(conversion->dedup_key->value),
+      debug_key);
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);
+
+  // TODO(apaseltiner): It would be nice to be able to report an issue in
+  // DevTools in the event that a debug key is present but the corresponding
+  // cookie is not.
   attribution_manager->HandleTrigger(std::move(storable_conversion));
 }
 
@@ -358,11 +375,47 @@ void AttributionHost::RegisterImpression(const blink::Impression& impression) {
 
   const url::Origin& impression_origin =
       render_frame_host->GetLastCommittedOrigin();
-  if (VerifyAndStoreImpression(StorableSource::SourceType::kEvent,
+  if (VerifyAndStoreImpression(CommonSourceInfo::SourceType::kEvent,
                                impression_origin, impression,
                                *attribution_manager)) {
     NotifyImpressionInitiatedByPage(impression_origin, impression);
   }
+}
+
+void AttributionHost::RegisterDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
+  // If there is no attribution manager available, ignore any registrations.
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager)
+    return;
+
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+
+  const url::Origin& frame_origin = render_frame_host->GetLastCommittedOrigin();
+  const url::Origin& top_frame_origin =
+      render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
+
+  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used with a secure top-level "
+        "frame.");
+    return;
+  }
+
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
+      !network::IsOriginPotentiallyTrustworthy(frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used in secure contexts.");
+    return;
+  }
+
+  if (!attribution_manager->GetDataHostManager())
+    return;
+
+  attribution_manager->GetDataHostManager()->RegisterDataHost(
+      std::move(data_host), top_frame_origin);
 }
 
 void AttributionHost::ReportAttributionForCurrentNavigation(
@@ -396,7 +449,7 @@ void AttributionHost::ReportAttributionForCurrentNavigation(
 
   // No navigation in progress and we've already committed the destination for
   // the conversion, so just store the impression.
-  VerifyAndStoreImpression(StorableSource::SourceType::kNavigation,
+  VerifyAndStoreImpression(CommonSourceInfo::SourceType::kNavigation,
                            impression_origin, impression, *attribution_manager);
 }
 

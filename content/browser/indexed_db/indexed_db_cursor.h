@@ -20,7 +20,7 @@
 
 namespace content {
 
-class CONTENT_EXPORT IndexedDBCursor {
+class IndexedDBCursor {
  public:
   IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
                   indexed_db::CursorType cursor_type,

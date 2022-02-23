@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/hid/hid_connection_resource.h"
@@ -83,7 +83,7 @@ class HidConnectFunction : public ExtensionFunction {
   void OnConnectComplete(
       mojo::PendingRemote<device::mojom::HidConnection> connection);
 
-  ApiResourceManager<HidConnectionResource>* connection_manager_;
+  raw_ptr<ApiResourceManager<HidConnectionResource>> connection_manager_;
 };
 
 class HidDisconnectFunction : public ExtensionFunction {

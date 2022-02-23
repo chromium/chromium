@@ -68,7 +68,7 @@ class IndexedDBTransactionTest : public testing::Test {
   void SetUp() override {
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at
-    // https://github.com/google/googletest/blob/master/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
+    // https://github.com/google/googletest/blob/main/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
     leveldb::Status s;
     std::tie(db_, s) = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", backing_store_.get(), factory_.get(), CreateRunTasksCallback(),
@@ -92,9 +92,7 @@ class IndexedDBTransactionTest : public testing::Test {
                          base::Unretained(this), false));
       return;
     }
-    IndexedDBDatabase::RunTasksResult result;
-    leveldb::Status status;
-    std::tie(result, status) = db_->RunTasks();
+    auto [result, status] = db_->RunTasks();
     switch (result) {
       case IndexedDBDatabase::RunTasksResult::kDone:
         return;

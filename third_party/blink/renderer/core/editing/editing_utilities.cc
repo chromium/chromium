@@ -76,7 +76,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -1685,7 +1685,7 @@ wtf_size_t ComputeDistanceToRightGraphemeBoundary(const Position& position) {
       position.ComputeOffsetInContainerNode());
 }
 
-FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
+gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
 }
 

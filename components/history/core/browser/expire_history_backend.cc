@@ -142,7 +142,7 @@ bool IsAnyURLPinned(HistoryBackendClient* backend_client,
 namespace internal {
 
 // Clearing old on-demand favicons is only enabled on mobile.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr bool kClearOldOnDemandFaviconsEnabled = true;
 #else
 constexpr bool kClearOldOnDemandFaviconsEnabled = false;

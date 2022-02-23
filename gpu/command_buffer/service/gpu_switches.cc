@@ -4,8 +4,6 @@
 
 #include "gpu/command_buffer/service/gpu_switches.h"
 
-#include "base/macros.h"
-
 namespace switches {
 
 // Always return success when compiling a shader. Linking will still fail.

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanelInterface;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSetting;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
@@ -25,15 +26,16 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.url.GURL;
 
 import java.util.regex.Pattern;
@@ -136,7 +138,7 @@ class ContextualSearchPolicy {
      */
     boolean shouldPrefetchSearchResult() {
         if (isMandatoryPromoAvailable()
-                || !PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled()) {
+                || PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
             return false;
         }
 
@@ -168,7 +170,7 @@ class ContextualSearchPolicy {
         }
 
         // The user must have decided on privacy to resolve page content on HTTPS.
-        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled();
     }
 
     /** @return Whether a long-press gesture can resolve. */
@@ -177,13 +179,27 @@ class ContextualSearchPolicy {
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS);
     }
 
+    /** Returns whether the Delayed Intelligence Feature is currently enabled or not. */
+    boolean isDelayedIntelligenceEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE);
+    }
+
+    /**
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
+     */
+    boolean isDelayedIntelligenceActive() {
+        return isDelayedIntelligenceEnabled() && !isContextualSearchFullyEnabled();
+    }
+
     /**
      * Returns whether surrounding context can be accessed by other systems or not.
      * @return Whether surroundings are available.
      */
     boolean canSendSurroundings() {
         // The user must have decided on privacy to send page content on HTTPS.
-        return isContextualSearchFullyEnabled() || doesLegacyHttpPolicyApply();
+        return isContextualSearchFullyEnabled();
     }
 
     /**
@@ -301,25 +317,12 @@ class ContextualSearchPolicy {
     }
 
     /**
-     * Determines the policy for sending page content when on plain HTTP pages.
-     * Checks a Feature to use our legacy HTTP policy instead of treating HTTP just like HTTPS.
-     * See https://crbug.com/1129969 for details.
-     * @return whether the legacy policy for plain HTTP pages currently applies.
-     */
-    private boolean doesLegacyHttpPolicyApply() {
-        if (!isBasePageHTTP(mNetworkCommunicator.getBasePageUrl())) return false;
-
-        // Check if the legacy behavior is enabled through a feature.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_LEGACY_HTTP_POLICY);
-    }
-
-    /**
      * Determines whether an error from a search term resolution request should
      * be shown to the user, or not.
      */
     boolean shouldShowErrorCodeInBar() {
         // Builds with lots of real users should not see raw error codes.
-        return !(ChromeVersionInfo.isStableBuild() || ChromeVersionInfo.isBetaBuild());
+        return !(VersionInfo.isStableBuild() || VersionInfo.isBetaBuild());
     }
 
     /**
@@ -385,7 +388,7 @@ class ContextualSearchPolicy {
      * @return {@code true} if the URL should be sent.
      */
     boolean doSendBasePageUrl() {
-        if (!isContextualSearchFullyEnabled()) return false;
+        if (!isContextualSearchFullyEnabled() && !isDelayedIntelligenceActive()) return false;
 
         // Check whether there is a Field Trial setting preventing us from sending the page URL.
         if (ContextualSearchFieldTrial.getSwitch(
@@ -780,6 +783,32 @@ class ContextualSearchPolicy {
     boolean isMissingRelatedSearchesConfiguration() {
         return TextUtils.isEmpty(
                 ContextualSearchFieldTrial.getRelatedSearchesExperimentConfigurationStamp());
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Contextual Triggers Support.
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Returns the size of the selection that should be shown in response to a Tap gesture.
+     * The typical return value is word granularity, but sentence selection and others may be
+     * supported too.
+     */
+    @SelectionGranularity
+    int getSelectionSize() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_SIZE)
+                ? SelectionGranularity.SENTENCE
+                : SelectionGranularity.WORD;
+    }
+
+    /** Returns whether the selection handles should be shown in response to a Tap gesture. */
+    boolean getSelectionShouldShowHandles() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES);
+    }
+
+    /** Returns whether the selection context menu should be shown in response to a Tap gesture. */
+    boolean getSelectionShouldShowMenu() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_MENU);
     }
 
     // --------------------------------------------------------------------------------------------

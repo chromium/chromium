@@ -5,7 +5,6 @@
 #include "net/dns/address_info.h"
 
 #include <memory>
-#include <tuple>
 
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -24,13 +23,16 @@ class MockAddrInfoGetter : public AddrInfoGetter {
  public:
   addrinfo* getaddrinfo(const std::string& host,
                         const addrinfo* hints,
-                        int* out_os_error) override;
+                        int* out_os_error,
+                        NetworkChangeNotifier::NetworkHandle network) override;
   void freeaddrinfo(addrinfo* ai) override;
 };
 
-addrinfo* MockAddrInfoGetter::getaddrinfo(const std::string& host,
-                                          const addrinfo* /* hints */,
-                                          int* out_os_error) {
+addrinfo* MockAddrInfoGetter::getaddrinfo(
+    const std::string& host,
+    const addrinfo* /* hints */,
+    int* out_os_error,
+    NetworkChangeNotifier::NetworkHandle) {
   // Presume success
   *out_os_error = 0;
 
@@ -96,11 +98,8 @@ std::unique_ptr<addrinfo> MakeHints(AddressFamily address_family,
 }
 
 TEST(AddressInfoTest, Failure) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
-  std::tie(ai, err, os_error) = AddressInfo::Get(
+  auto [ai, err, os_error] = AddressInfo::Get(
       "failure.com", *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
       std::move(getter));
 
@@ -109,14 +108,11 @@ TEST(AddressInfoTest, Failure) {
   EXPECT_NE(os_error, 0);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureWin) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
-  std::tie(ai, err, os_error) = AddressInfo::Get(
+  auto [ai, err, os_error] = AddressInfo::Get(
       "failure.com", *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
       std::move(getter));
 
@@ -124,16 +120,13 @@ TEST(AddressInfoTest, FailureWin) {
   EXPECT_EQ(err, ERR_NAME_RESOLUTION_FAILED);
   EXPECT_NE(os_error, 0);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureAndroid) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
   auto getter = std::make_unique<MockAddrInfoGetter>();
-  std::tie(ai, err, os_error) = AddressInfo::Get(
+  auto [ai, err, os_error] = AddressInfo::Get(
       "failure.com", *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
       std::move(getter));
 
@@ -141,13 +134,10 @@ TEST(AddressInfoTest, FailureAndroid) {
   EXPECT_EQ(err, ERR_NAME_NOT_RESOLVED);
   EXPECT_NE(os_error, 0);
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST(AddressInfoTest, Canonical) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
-  std::tie(ai, err, os_error) =
+  auto [ai, err, os_error] =
       AddressInfo::Get("canonical.bar.com",
                        *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
                        std::make_unique<MockAddrInfoGetter>());
@@ -160,10 +150,7 @@ TEST(AddressInfoTest, Canonical) {
 }
 
 TEST(AddressInfoTest, Iteration) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
-  std::tie(ai, err, os_error) =
+  auto [ai, err, os_error] =
       AddressInfo::Get("iteration.test",
                        *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
                        std::make_unique<MockAddrInfoGetter>());
@@ -196,10 +183,7 @@ TEST(AddressInfoTest, Iteration) {
 }
 
 TEST(AddressInfoTest, IsAllLocalhostOfOneFamily) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
-  std::tie(ai, err, os_error) =
+  auto [ai, err, os_error] =
       AddressInfo::Get("alllocalhost.com",
                        *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
                        std::make_unique<MockAddrInfoGetter>());
@@ -211,10 +195,7 @@ TEST(AddressInfoTest, IsAllLocalhostOfOneFamily) {
 }
 
 TEST(AddressInfoTest, IsAllLocalhostOfOneFamilyFalse) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
-  std::tie(ai, err, os_error) =
+  auto [ai, err, os_error] =
       AddressInfo::Get("not.alllocalhost.com",
                        *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
                        std::make_unique<MockAddrInfoGetter>());
@@ -226,10 +207,7 @@ TEST(AddressInfoTest, IsAllLocalhostOfOneFamilyFalse) {
 }
 
 TEST(AddressInfoTest, CreateAddressList) {
-  absl::optional<AddressInfo> ai;
-  int err;
-  int os_error;
-  std::tie(ai, err, os_error) =
+  auto [ai, err, os_error] =
       AddressInfo::Get("www.example.com",
                        *MakeHints(ADDRESS_FAMILY_IPV4, HOST_RESOLVER_CANONNAME),
                        std::make_unique<MockAddrInfoGetter>());

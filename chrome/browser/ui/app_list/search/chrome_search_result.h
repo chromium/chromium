@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,9 +42,11 @@ class ChromeSearchResult {
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
   using DisplayIndex = ash::SearchResultDisplayIndex;
-  using OmniboxType = ash::SearchResultOmniboxDisplayType;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
+  using TextItem = ash::SearchResultTextItem;
+  using TextVector = std::vector<TextItem>;
+  using TextType = ash::SearchResultTextItemType;
 
   ChromeSearchResult();
 
@@ -56,6 +59,20 @@ class ChromeSearchResult {
   const Tags& title_tags() const { return metadata_->title_tags; }
   const std::u16string& details() const { return metadata_->details; }
   const Tags& details_tags() const { return metadata_->details_tags; }
+
+  const TextVector& title_text_vector() const {
+    return metadata_->title_vector;
+  }
+  const TextVector& details_text_vector() const {
+    return metadata_->details_vector;
+  }
+  const TextVector& big_title_text_vector() const {
+    return metadata_->big_title_vector;
+  }
+  const TextVector& keyboard_shortcut_text_vector() const {
+    return metadata_->keyboard_shortcut_vector;
+  }
+
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
@@ -72,11 +89,9 @@ class ChromeSearchResult {
   }
   MetricsType metrics_type() const { return metadata_->metrics_type; }
   DisplayIndex display_index() const { return metadata_->display_index; }
-  OmniboxType omnibox_type() const { return metadata_->omnibox_type; }
   float position_priority() const { return metadata_->position_priority; }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
-  bool is_installing() const { return metadata_->is_installing; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
   const absl::optional<GURL>& query_url() const { return metadata_->query_url; }
   const absl::optional<std::string>& equivalent_result_id() const {
@@ -86,16 +101,18 @@ class ChromeSearchResult {
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
 
-  bool notify_visibility_change() const {
-    return metadata_->notify_visibility_change;
-  }
-
   // The following methods set Chrome side data here, and call model updater
   // interface to update Ash.
   void SetTitle(const std::u16string& title);
   void SetTitleTags(const Tags& tags);
+  void MaybeUpdateTitleVector();
   void SetDetails(const std::u16string& details);
   void SetDetailsTags(const Tags& tags);
+  void MaybeUpdateDetailsVector();
+  void SetTitleTextVector(const TextVector& text_vector);
+  void SetDetailsTextVector(const TextVector& text_vector);
+  void SetBigTitleTextVector(const TextVector& text_vector);
+  void SetKeyboardShortcutTextVector(const TextVector& text_vector);
   void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
   void SetFormattedPrice(const std::u16string& formatted_price);
@@ -105,20 +122,17 @@ class ChromeSearchResult {
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);
   void SetDisplayIndex(DisplayIndex display_index);
-  void SetOmniboxType(OmniboxType omnibox_type);
   void SetPositionPriority(float position_priority);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
   void SetIsOmniboxSearch(bool is_omnibox_search);
   void SetIsRecommendation(bool is_recommendation);
-  void SetIsInstalling(bool is_installing);
-  void SetQueryUrl(const GURL& url);
-  void SetEquivalentResutlId(const std::string& equivlanet_result_id);
+  void SetEquivalentResultId(const std::string& equivalent_result_id);
   void SetIcon(const IconInfo& icon);
+  void SetIconDimension(const int dimension);
   void SetChipIcon(const gfx::ImageSkia& icon);
   void SetBadgeIcon(const ui::ImageModel& badge_icon);
   void SetUseBadgeIconBackground(bool use_badge_icon_background);
-  void SetNotifyVisibilityChange(bool notify_visibility_change);
 
   void SetSearchResultMetadata();
 
@@ -153,6 +167,9 @@ class ChromeSearchResult {
     dismiss_view_on_open_ = dismiss_view_on_open;
   }
 
+  // Maybe returns a Drive file ID for this result, if applicable.
+  virtual absl::optional<std::string> DriveId() const;
+
   // Invokes a custom action on the result. It does nothing by default.
   virtual void InvokeAction(ash::SearchResultActionType action);
 
@@ -168,6 +185,10 @@ class ChromeSearchResult {
   using GetMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(GetMenuModelCallback callback);
+
+  base::WeakPtr<ChromeSearchResult> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  protected:
   // These id setters should be called in derived class constructors only.
@@ -206,9 +227,15 @@ class ChromeSearchResult {
   // behavior so it can be disabled as needed.
   bool dismiss_view_on_open_ = true;
 
+  // Whether the text vector is explicitly set by chrome.
+  bool explicit_title_vector_ = false;
+  bool explicit_details_vector_ = false;
+
   std::unique_ptr<ash::SearchResultMetadata> metadata_;
 
   AppListModelUpdater* model_updater_ = nullptr;
+
+  base::WeakPtrFactory<ChromeSearchResult> weak_ptr_factory_{this};
 };
 
 ::std::ostream& operator<<(::std::ostream& os,

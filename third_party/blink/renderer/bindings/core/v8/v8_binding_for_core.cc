@@ -55,7 +55,9 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/typed_arrays/flexible_array_buffer_view.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
@@ -222,13 +224,18 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
   if (std::isinf(number_value))
     return 0;
 
+  // Confine number to (-kNumberOfValues, kNumberOfValues).
   number_value =
       number_value < 0 ? -floor(fabs(number_value)) : floor(fabs(number_value));
   number_value = fmod(number_value, LimitsTrait::kNumberOfValues);
 
-  return static_cast<T>(number_value > LimitsTrait::kMaxValue
-                            ? number_value - LimitsTrait::kNumberOfValues
-                            : number_value);
+  // Adjust range to [-kMinValue, kMaxValue].
+  if (number_value < LimitsTrait::kMinValue)
+    number_value += LimitsTrait::kNumberOfValues;
+  else if (LimitsTrait::kMaxValue < number_value)
+    number_value -= LimitsTrait::kNumberOfValues;
+
+  return static_cast<T>(number_value);
 }
 
 template <typename T>
@@ -776,6 +783,25 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   return frame->WindowProxy(world)->ContextIfInitialized();
 }
 
+v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame* frame,
+                                             DOMWrapperWorld& world) {
+  DCHECK(frame);
+
+  // TODO(crbug.com/1046282): The following bailout is a temporary fix
+  // introduced due to crbug.com/1037985 .  Remove this temporary fix once
+  // the root cause is fixed.
+  if (frame->IsProvisional()) {
+    base::debug::DumpWithoutCrashing();
+    return v8::Local<v8::Context>();
+  }
+  DCHECK(frame->WindowProxyMaybeUninitialized(world));
+  v8::Local<v8::Context> context =
+      frame->WindowProxyMaybeUninitialized(world)->ContextIfInitialized();
+
+  DCHECK(context.IsEmpty() || frame == ToLocalFrameIfNotDetached(context));
+  return context;
+}
+
 ScriptState* ToScriptState(ExecutionContext* context, DOMWrapperWorld& world) {
   DCHECK(context);
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
@@ -927,6 +953,25 @@ v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext* execution_context) {
 
 v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState* script_state) {
   return ToMicrotaskQueue(ExecutionContext::From(script_state));
+}
+
+bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
+                                   ScriptState* script_state) {
+  if (!execution_context || execution_context->IsContextDestroyed())
+    return false;
+
+  // It's possible that execution_context is the one of the
+  // document tree (i.e. the execution context of the document
+  // that the receiver object currently belongs to) and
+  // script_state is the one of the receiver object's creation
+  // context (i.e. the script state of the V8 context in which
+  // the receiver object was created). So, check the both contexts.
+  // TODO(yukishiino): Find the necessary and sufficient conditions of the
+  // runnability.
+  if (!script_state->ContextIsValid())
+    return false;
+
+  return true;
 }
 
 }  // namespace blink

@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A single attachment to be sent by / received from a |ShareTarget|, can be

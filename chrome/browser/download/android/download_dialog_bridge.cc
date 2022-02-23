@@ -161,14 +161,6 @@ void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
 }
 
 // static
-jboolean JNI_DownloadDialogBridge_IsDataReductionProxyEnabled(JNIEnv* env) {
-  auto* data_reduction_settings =
-      DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
-  return data_reduction_settings->IsDataReductionProxyEnabled();
-}
-
-// static
 jlong JNI_DownloadDialogBridge_GetDownloadLaterMinFileSize(JNIEnv* env) {
   return DownloadDialogBridge::GetDownloadLaterMinFileSize();
 }

@@ -98,6 +98,28 @@ class CompileDbTest(unittest.TestCase):
                           'command': r'clang -g -funroll-loops test.cc'
                       }])
 
+  def testGomaccPathFiltered(self):
+    sys.platform = 'linux2'
+    input_db = [{
+        'command':
+        r'clang -g --gomacc-path /path/to/gomacc -funroll-loops test.cc'
+    }]
+    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
+                      [{
+                          'command': r'clang -g -funroll-loops test.cc'
+                      }])
+
+  def testProfileSampleUseFiltered(self):
+    sys.platform = 'linux2'
+    input_db = [{
+        'command':
+        r'clang -g -fprofile-sample-use=../path/to.prof -funroll-loops test.cc'
+    }]
+    self.assertEquals(compile_db.ProcessCompileDatabase(input_db, []),
+                      [{
+                          'command': r'clang -g -funroll-loops test.cc'
+                      }])
+
   def testFilterArgs(self):
     sys.platform = 'linux2'
     input_db = [{'command': r'clang -g -ffile-compilation-dir=. -O3 test.cc'}]

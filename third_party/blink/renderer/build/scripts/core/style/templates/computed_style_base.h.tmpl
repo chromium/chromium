@@ -22,6 +22,7 @@
 #}
 {% import 'templates/fields/keyword.tmpl' as keyword %}
 {% import 'templates/fields/multi_keyword.tmpl' as multi_keyword %}
+{% import 'templates/fields/bitset_keyword.tmpl' as bitset_keyword %}
 {% import 'templates/fields/primitive.tmpl' as primitive %}
 {% import 'templates/fields/monotonic_flag.tmpl' as monotonic_flag %}
 {% import 'templates/fields/external.tmpl' as external %}
@@ -30,6 +31,7 @@
 {% set field_templates = {
      'keyword': keyword,
      'multi_keyword': multi_keyword,
+     'bitset_keyword': bitset_keyword,
      'primitive': primitive,
      'monotonic_flag': monotonic_flag,
      'external': external,
@@ -165,8 +167,16 @@ class ComputedStyleBase {
   {% endfor %}
 
 #if DCHECK_IS_ON()
-  // Returns a list of all field names that differ between |this| and |o|.
-  CORE_EXPORT Vector<String> DebugDiffFields(const ComputedStyleBase& o) const;
+  enum class DebugField {
+    {% for field in computed_style.all_fields|sort(attribute='name') %}
+    {{field.name}},
+    {% endfor %}
+  };
+
+  CORE_EXPORT static String DebugFieldToString(DebugField);
+
+  // Returns a list of all fields that differ between |this| and |o|.
+  CORE_EXPORT Vector<DebugField> DebugDiffFields(const ComputedStyleBase& o) const;
 #endif // DCHECK_IS_ON()
 
  private:

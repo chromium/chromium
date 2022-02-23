@@ -10,9 +10,28 @@ import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(enable_extensions)
+
 assert(
     !(enable_autofill_assistant_api && is_official_build),
     "The AutofillAssistant Extension API must be disabled in official builds.")
+
+if (is_component_build) {
+  component("extensions") {
+    visibility = [
+      "//extensions/common:common_constants",
+      "//extensions/common:export",
+    ]
+    public_deps = [
+      "//extensions/common:constants_impl",
+      "//extensions/common:export_impl",
+    ]
+  }
+}
+
+# Used by targets that compile into the implementation.
+config("component_implementation") {
+  defines = [ "EXTENSIONS_COMPONENT_IMPLEMENTATION" ]
+}
 
 group("extensions_resources") {
   public_deps = [
@@ -111,8 +130,6 @@ static_library("test_support") {
     "common/scoped_testing_manifest_handler_registry.h",
     "renderer/test_extensions_renderer_client.cc",
     "renderer/test_extensions_renderer_client.h",
-    "test/background_page_watcher.cc",
-    "test/background_page_watcher.h",
     "test/extension_background_page_waiter.cc",
     "test/extension_background_page_waiter.h",
     "test/extension_state_tester.cc",
@@ -203,6 +220,7 @@ repack("shell_and_test_pak") {
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
@@ -259,9 +277,13 @@ test("extensions_unittests") {
     "//ui/gl:test_support",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [
+    "//testing/buildbot/filters:extensions_unittests_filters",
+    "//third_party/mesa_headers",
+  ]
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
       "//build/config/fuchsia/test/network_capabilities.test-cmx",
@@ -276,12 +298,12 @@ test("extensions_browsertests") {
     "//extensions/test/data/",
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "//third_party/tlslite/",
     "$root_out_dir/extensions_shell_and_test.pak",
   ]
 
   deps = [
     "//extensions/browser:browser_tests",
+    "//extensions/renderer:browser_tests",
     "//extensions/shell:browser_tests",
   ]
 
@@ -302,8 +324,6 @@ source_set("chrome_extensions_browsertests") {
     "browser/api/serial/serial_apitest.cc",
     "browser/api/usb/usb_manual_apitest.cc",
     "browser/app_window/app_window_browsertest.cc",
-    "browser/guest_view/mime_handler_view/mime_handler_view_browsertest.cc",
-    "renderer/script_context_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -318,6 +338,7 @@ source_set("chrome_extensions_browsertests") {
     "//chrome/browser",
     "//chrome/common/extensions/api",
     "//chrome/renderer",
+    "//chrome/test:test_support",
     "//components/autofill/content/browser:risk_proto",
     "//components/autofill/content/renderer:test_support",
     "//components/captive_portal/core:test_support",
@@ -361,43 +382,4 @@ source_set("chrome_extensions_browsertests") {
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
   }
-}
-
-# TODO(rockot) bug 505926: This should be deleted for the same reason as
-# chrome_extensions_browsertests.
-source_set("chrome_extensions_interactive_uitests") {
-  testonly = true
-  sources = [
-    "browser/app_window/app_window_interactive_uitest.cc",
-    "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc",
-  ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  # These are the deps from interactive_uitests minus some internal Chrome
-  # ones that aren't allowed to be included here and that aren't needed.
-  deps = [
-    "//chrome/browser",
-    "//chrome/browser/devtools",
-    "//chrome/renderer",
-    "//chrome/test:test_support",
-    "//components/sync",
-    "//content/app/resources",
-    "//crypto:platform",
-    "//crypto:test_support",
-    "//google_apis:test_support",
-    "//net",
-    "//net:net_resources",
-    "//net:test_support",
-    "//skia",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/hunspell",
-    "//third_party/icu",
-    "//third_party/libpng",
-    "//third_party/zlib",
-    "//ui/base:test_support",
-    "//ui/resources:ui_test_pak",
-    "//ui/web_dialogs:test_support",
-  ]
 }

@@ -31,11 +31,14 @@ class FrameRenderer;
 class TestVDAVideoDecoder : public media::VideoDecoder,
                             public VideoDecodeAccelerator::Client {
  public:
+  using OnProvidePictureBuffersCB = base::RepeatingCallback<bool(void)>;
   // Constructor for the TestVDAVideoDecoder.
   TestVDAVideoDecoder(bool use_vd_vda,
+                      OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
                       const gfx::ColorSpace& target_color_space,
                       FrameRenderer* const frame_renderer,
-                      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+                      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+                      bool linear_output = false);
 
   TestVDAVideoDecoder(const TestVDAVideoDecoder&) = delete;
   TestVDAVideoDecoder& operator=(const TestVDAVideoDecoder&) = delete;
@@ -59,7 +62,7 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 
  private:
   // media::VideoDecodeAccelerator::Client implementation
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -103,6 +106,10 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
   // Whether VdVideoDecodeAccelerator is used.
   bool use_vd_vda_;
 
+  // Called when the decoder requests buffers for decoding onto. The callback
+  // returns true if the request should be completed.
+  OnProvidePictureBuffersCB on_provide_picture_buffers_cb_;
+
   // Output color space, used as hint to decoder to avoid conversions.
   const gfx::ColorSpace target_color_space_;
 
@@ -112,6 +119,9 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Owned by VideoDecoderClient.
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  // Whether the decoder output buffers should be allocated with a linear
+  // layout.
+  const bool linear_output_;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   // Map of video frames the decoder uses as output, keyed on picture buffer id.

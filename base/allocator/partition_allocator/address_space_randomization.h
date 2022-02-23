@@ -5,16 +5,18 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_SPACE_RANDOMIZATION_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_SPACE_RANDOMIZATION_H_
 
-#include "base/allocator/partition_allocator/page_allocator.h"
+#include <cstdint>
+
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-namespace base {
+namespace partition_alloc {
 
 // Calculates a random preferred mapping address. In calculating an address, we
 // balance good ASLR against not fragmenting the address space too badly.
-BASE_EXPORT void* GetRandomPageBase();
+BASE_EXPORT uintptr_t GetRandomPageBase();
 
 namespace internal {
 
@@ -52,7 +54,7 @@ AslrMask(uintptr_t bits) {
       return AslrAddress(0x7e8000000000ULL);
     }
 
-  #elif defined(OS_WIN)
+  #elif BUILDFLAG(IS_WIN)
 
     // Windows 8.10 and newer support the full 48 bit address range. Older
     // versions of Windows only support 44 bits. Since ASLROffset() is non-zero
@@ -69,7 +71,7 @@ AslrMask(uintptr_t bits) {
       return 0x80000000ULL;
     }
 
-  #elif defined(OS_APPLE)
+  #elif BUILDFLAG(IS_APPLE)
 
     // macOS as of 10.12.5 does not clean up entries in page map levels 3/4
     // [PDP/PML4] created from mmap or mach_vm_allocate, even after the region
@@ -93,7 +95,7 @@ AslrMask(uintptr_t bits) {
       return AslrAddress(0x1000000000ULL);
     }
 
-  #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+  #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
     #if defined(ARCH_CPU_X86_64)
 
@@ -108,7 +110,7 @@ AslrMask(uintptr_t bits) {
 
     #elif defined(ARCH_CPU_ARM64)
 
-      #if defined(OS_ANDROID)
+      #if BUILDFLAG(IS_ANDROID)
 
       // Restrict the address range on Android to avoid a large performance
       // regression in single-process WebViews. See https://crbug.com/837640.
@@ -134,7 +136,7 @@ AslrMask(uintptr_t bits) {
 
     #elif defined(ARCH_CPU_PPC64)
 
-      #if defined(OS_AIX)
+      #if BUILDFLAG(IS_AIX)
 
         // AIX has 64 bits of virtual addressing, but we limit the address range
         // to (a) minimize segment lookaside buffer (SLB) misses; and (b) use
@@ -156,7 +158,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0);
         }
 
-      #else  // !defined(OS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
+      #else  // !BUILDFLAG(IS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
 
         // Little-endian Linux PPC has 48 bits of virtual addressing. Use 46.
         constexpr ALWAYS_INLINE uintptr_t ASLRMask() {
@@ -166,7 +168,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0);
         }
 
-      #endif  // !defined(OS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
+      #endif  // !BUILDFLAG(IS_AIX) && !defined(ARCH_CPU_BIG_ENDIAN)
 
     #elif defined(ARCH_CPU_S390X)
 
@@ -199,7 +201,7 @@ AslrMask(uintptr_t bits) {
         return AslrMask(30);
       }
 
-      #if defined(OS_SOLARIS)
+      #if BUILDFLAG(IS_SOLARIS)
 
         // For our Solaris/illumos mmap hint, we pick a random address in the
         // bottom half of the top half of the address space (that is, the third
@@ -215,7 +217,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x80000000ULL);
         }
 
-      #elif defined(OS_AIX)
+      #elif BUILDFLAG(IS_AIX)
 
         // The range 0x30000000 - 0xD0000000 is available on AIX; choose the
         // upper range.
@@ -223,7 +225,7 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x90000000ULL);
         }
 
-      #else  // !defined(OS_SOLARIS) && !defined(OS_AIX)
+      #else  // !BUILDFLAG(IS_SOLARIS) && !BUILDFLAG(IS_AIX)
 
         // The range 0x20000000 - 0x60000000 is relatively unpopulated across a
         // variety of ASLR modes (PAE kernel, NX compat mode, etc) and on macOS
@@ -232,12 +234,12 @@ AslrMask(uintptr_t bits) {
           return AslrAddress(0x20000000ULL);
         }
 
-      #endif  // !defined(OS_SOLARIS) && !defined(OS_AIX)
+      #endif  // !BUILDFLAG(IS_SOLARIS) && !BUILDFLAG(IS_AIX)
 
     #endif  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_PPC64) &&
             // !defined(ARCH_CPU_S390X) && !defined(ARCH_CPU_S390)
 
-  #endif  // defined(OS_POSIX)
+  #endif  // BUILDFLAG(IS_POSIX)
 
 #elif defined(ARCH_CPU_32_BITS)
 
@@ -261,6 +263,6 @@ AslrMask(uintptr_t bits) {
 
 }  // namespace internal
 
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_SPACE_RANDOMIZATION_H_

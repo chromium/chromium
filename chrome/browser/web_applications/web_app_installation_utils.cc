@@ -12,13 +12,14 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -62,7 +63,7 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
 
 }  // namespace
 
-void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
+void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app) {
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));
@@ -113,6 +114,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
 
   web_app.SetStorageIsolated(web_app_info.is_storage_isolated);
+  web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
 
   web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
   web_app.SetDownloadedShortcutsMenuIconsSizes(
@@ -130,14 +132,9 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   web_app.SetUrlHandlers(web_app_info.url_handlers);
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-      web_app_info.run_on_os_login) {
-    // TODO(crbug.com/1091964): Obtain actual mode, currently set to the
-    // default (windowed).
-    web_app.SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-  }
-
   web_app.SetCaptureLinks(web_app_info.capture_links);
+
+  web_app.SetHandleLinks(web_app_info.handle_links);
 
   web_app.SetManifestUrl(web_app_info.manifest_url);
 
@@ -147,7 +144,7 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
                                const AppId& app_id,
                                InstallOsHooksOptions* options) {
-#if !defined(OS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
   DCHECK(app_registrar);
 
   // Disable OS integration if the app was installed by default only, and not
@@ -163,7 +160,7 @@ void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
     options->os_hooks[OsHookType::kProtocolHandlers] = false;
     options->os_hooks[OsHookType::kUrlHandlers] = false;
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

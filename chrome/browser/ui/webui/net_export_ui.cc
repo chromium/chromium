@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
@@ -44,7 +45,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
 #endif
 
@@ -142,7 +143,7 @@ class NetExportMessageHandler
   void ShowSelectFileDialog(const base::FilePath& default_path);
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
-  net_log::NetExportFileWriter* file_writer_;
+  raw_ptr<net_log::NetExportFileWriter> file_writer_;
 
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>
@@ -208,7 +209,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
   AllowJavascript();
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_observation_manager_.IsObserving()) {
-    state_observation_manager_.Observe(file_writer_);
+    state_observation_manager_.Observe(file_writer_.get());
   }
   NotifyUIWithState(file_writer_->GetState());
 }
@@ -216,7 +217,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
 void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value::ConstListView params = list->GetList();
+  base::Value::ConstListView params = list->GetListDeprecated();
 
   // Determine the capture mode.
   capture_mode_ = net::NetLogCaptureMode::kDefault;
@@ -255,7 +256,7 @@ void NetExportMessageHandler::OnStopNetLog(const base::ListValue* list) {
                chrome_browser_net::GetPrerenderInfo(profile));
   SetIfNotNull(ui_thread_polled_data.get(), "extensionInfo",
                chrome_browser_net::GetExtensionInfo(profile));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetIfNotNull(ui_thread_polled_data.get(), "serviceProviders",
                chrome_browser_net::GetWindowsServiceProviders());
 #endif
@@ -301,7 +302,7 @@ void NetExportMessageHandler::OnNewState(const base::DictionaryValue& state) {
 // static
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_to_send.empty())
     return;
   std::string email;
@@ -341,7 +342,7 @@ void NetExportMessageHandler::ShowFileInShell(const base::FilePath& path) {
 
 // static
 bool NetExportMessageHandler::UsingMobileUI() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -79,9 +80,9 @@ class SyncUrlFetcher {
 
  private:
   GURL url_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   const scoped_refptr<base::SequencedTaskRunner> network_task_runner_;
-  std::string* response_;
+  raw_ptr<std::string> response_;
   base::WaitableEvent event_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   bool success_;

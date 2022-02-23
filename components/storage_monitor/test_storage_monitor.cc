@@ -106,7 +106,7 @@ bool TestStorageMonitor::GetStorageInfoForPath(
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool TestStorageMonitor::GetMTPStorageInfoFromDeviceId(
     const std::string& storage_device_id,
     std::wstring* device_location,

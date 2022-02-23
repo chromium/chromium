@@ -132,7 +132,7 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   transform_state.Flatten();
   LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
   rect = FragmentsBoundingBox(rect);
-  transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
@@ -171,7 +171,7 @@ void LayoutFlowThread::ComputeLogicalHeight(
 }
 
 void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                                  Vector<FloatQuad>& quads,
+                                                  Vector<gfx::QuadF>& quads,
                                                   MapCoordinatesFlags mode) {
   NOT_DESTROYED();
   LayoutPoint offset_from_flow_thread;
@@ -201,11 +201,12 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
 
 void LayoutFlowThread::AddOutlineRects(
     Vector<PhysicalRect>& rects,
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects_in_flowthread;
-  LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, additional_offset,
+  LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, info, additional_offset,
                                    include_block_overflows);
   // Convert the rectangles from the flow thread coordinate space to the visual
   // space. The approach here is very simplistic; just calculate a bounding box

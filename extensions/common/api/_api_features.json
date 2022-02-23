@@ -80,16 +80,19 @@
   "automationInternal": {
     "internal": true,
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "automation": {
     "dependencies": ["manifest:automation"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "automation.languageAnnotationForStringAttribute": {
     "command_line_switch": "enable-experimental-accessibility-chromevox-sub-node-language-switching",
     "channel": "dev",
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "disallow_for_service_workers": true
   },
   "bluetooth": [{
     "dependencies": ["manifest:bluetooth"],
@@ -247,6 +250,13 @@
     "channel": "dev",
     "dependencies": ["permission:hid"]
   },
+  "i18n": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app",
+                        "login_screen_extension"],
+    "contexts": ["blessed_extension", "unblessed_extension", "content_script",
+                 "lock_screen_extension"]
+  },
   "idle": {
     "dependencies": ["permission:idle"],
     "contexts": ["blessed_extension"]
@@ -317,6 +327,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://download-shelf.top-chrome/*",
       "chrome://eche-app/*",
       "chrome://extensions/*",
@@ -331,14 +342,16 @@
       "chrome://sync-confirmation/*",
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
-      "chrome://welcome/*"
+      "chrome://welcome/*",
+      "chrome://app-settings/*"
     ]
   }, {
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://help-app/*",
-      "chrome-untrusted://media-app/*"
+      "chrome-untrusted://media-app/*",
+      "chrome-untrusted://projector/*"
     ]
   }],
   "metricsPrivate.getIsCrashReportingEnabled": {
@@ -476,11 +489,11 @@
     ],
     "matches": ["<all_urls>"]
   },{
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
-      // Allow only nassh.html page in Terminal System Web App.
-      "chrome-untrusted://terminal/html/nassh.html"
+      // Allow only terminal_ssh.html in Terminal System Web App.
+      "chrome-untrusted://terminal/html/terminal_ssh.html"
     ]
   }],
   "runtime.connectNative": {
@@ -546,11 +559,11 @@
       "chrome://file-manager/*"
     ]
   },{
-    "channel": "dev",
+    "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
-      // Allow only nassh.html page in Terminal System Web App.
-      "chrome-untrusted://terminal/html/nassh.html"
+      // Allow only terminal_ssh.html in Terminal System Web App.
+      "chrome-untrusted://terminal/html/terminal_ssh.html"
     ]
   }],
   "runtime.sendNativeMessage": {

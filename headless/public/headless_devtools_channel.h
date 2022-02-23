@@ -6,7 +6,6 @@
 #define HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_CHANNEL_H_
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "headless/public/headless_export.h"
 
 namespace headless {

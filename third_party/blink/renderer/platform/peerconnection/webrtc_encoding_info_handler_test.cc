@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory.h"
+#include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
@@ -22,6 +23,14 @@
 namespace blink {
 
 namespace {
+using Params = webrtc::SdpVideoFormat::Parameters;
+const webrtc::SdpVideoFormat kVideoFormatVp9{"VP9"};
+const webrtc::SdpVideoFormat kVideoFormatFoo{"Foo"};
+
+const webrtc::SdpAudioFormat kAudioFormatOpus{"opus", /*clockrate_hz=*/8000,
+                                              /*num_channels=*/1};
+const webrtc::SdpAudioFormat kAudioFormatFoo{"Foo", /*clockrate_hz=*/8000,
+                                             /*num_channels=*/1};
 
 class MockVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  public:
@@ -78,12 +87,11 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
   void SetUp() override {}
 
   void VerifyEncodingInfo(
-      const absl::optional<String> audio_mime_type,
-      const absl::optional<String> video_mime_type,
+      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
       const absl::optional<String> video_scalability_mode,
-      const absl::optional<webrtc::SdpVideoFormat> expected_format,
       const CodecSupport support) {
-    if (expected_format) {
+    if (sdp_video_format) {
       const absl::optional<std::string> expected_scalability_mode =
           video_scalability_mode
               ? absl::make_optional(video_scalability_mode->Utf8())
@@ -91,10 +99,10 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 
       ON_CALL(*mock_video_encoder_factory_, QueryCodecSupport)
           .WillByDefault(testing::Invoke(
-              [expected_format, expected_scalability_mode, support](
+              [sdp_video_format, expected_scalability_mode, support](
                   const webrtc::SdpVideoFormat& format,
                   absl::optional<std::string> scalability_mode) {
-                EXPECT_TRUE(format.IsSameCodec(*expected_format));
+                EXPECT_TRUE(format.IsSameCodec(*sdp_video_format));
                 EXPECT_EQ(scalability_mode, expected_scalability_mode);
                 return support;
               }));
@@ -106,7 +114,7 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
     MediaCapabilitiesEncodingInfoCallback encoding_info_callback;
 
     encoding_info_handler.EncodingInfo(
-        audio_mime_type, video_mime_type, video_scalability_mode,
+        sdp_audio_format, sdp_video_format, video_scalability_mode,
         base::BindOnce(
             &MediaCapabilitiesEncodingInfoCallback::OnWebrtcEncodingInfoSupport,
             base::Unretained(&encoding_info_callback)));
@@ -127,17 +135,15 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
 
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicAudio) {
   VerifyEncodingInfo(
-      "audio/opus", /*video_mime_type=*/absl::nullopt,
+      kAudioFormatOpus, /*sdp_video_format=*/absl::nullopt,
       /*video_scalability_mode=*/absl::nullopt,
-      /*expected_format=*/absl::nullopt,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedAudio) {
   VerifyEncodingInfo(
-      "audio/foo", /*video_mime_type=*/absl::nullopt,
+      kAudioFormatFoo, /*sdp_video_format=*/absl::nullopt,
       /*video_scalability_mode=*/absl::nullopt,
-      /*expected_format=*/absl::nullopt,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
@@ -146,50 +152,43 @@ TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedAudio) {
 // VideoEncoderFactory::QueryCodecSupport is correctly returned through the
 // callback.
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicVideo) {
-  const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyEncodingInfo(
-      /*audio_mime_type=*/absl::nullopt, "video/VP9",
-      /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*sdp_audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*video_scalability_mode=*/absl::nullopt,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, BasicVideoPowerEfficient) {
-  const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyEncodingInfo(
-      /*audio_mime_type=*/absl::nullopt, "video/VP9",
-      /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*sdp_audio_format=*/absl::nullopt, kVideoFormatVp9,
+      /*video_scalability_mode=*/absl::nullopt,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, UnsupportedVideo) {
-  const webrtc::SdpVideoFormat kExpectedFormat(
-      "VP9", webrtc::SdpVideoFormat::Parameters{{"profile-level", "5"}});
   VerifyEncodingInfo(
-      /*audio_mime_type=*/absl::nullopt, "video/VP9; profile-level=5",
-      /*video_scalability_mode=*/absl::nullopt, kExpectedFormat,
+      /*sdp_audio_format=*/absl::nullopt, kVideoFormatFoo,
+      /*video_scalability_mode=*/absl::nullopt,
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, VideoWithScalabilityMode) {
-  const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyEncodingInfo(
-      /*audio_mime_type=*/absl::nullopt, "video/VP9", "L1T3", kExpectedFormat,
+      /*sdp_audio_format=*/absl::nullopt, kVideoFormatVp9, "L1T3",
       CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, SupportedAudioUnsupportedVideo) {
-  const webrtc::SdpVideoFormat kExpectedFormat("foo");
   VerifyEncodingInfo(
-      "audio/opus", "video/foo", /*video_scalability_mode=*/absl::nullopt,
-      kExpectedFormat,
+      kAudioFormatOpus, kVideoFormatFoo,
+      /*video_scalability_mode=*/absl::nullopt,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 
 TEST_F(WebrtcEncodingInfoHandlerTests, SupportedVideoUnsupportedAudio) {
-  const webrtc::SdpVideoFormat kExpectedFormat("VP9");
   VerifyEncodingInfo(
-      "audio/foo", "video/VP9", /*video_scalability_mode=*/absl::nullopt,
-      kExpectedFormat,
+      kAudioFormatFoo, kVideoFormatVp9,
+      /*video_scalability_mode=*/absl::nullopt,
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
 }
 

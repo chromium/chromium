@@ -34,18 +34,18 @@ const char* g_invalid_token_for_testing = nullptr;
 bool MaybeReturnCachedStatus(
     const AccountId& account_id,
     TokenHandleUtil::TokenValidationCallback* callback) {
-  std::string saved_status;
-  if (!user_manager::known_user::GetStringPref(
-          account_id, kTokenHandleStatusPref, &saved_status)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* saved_status =
+      known_user.FindStringPath(account_id, kTokenHandleStatusPref);
+  if (!saved_status)
     return false;
-  }
 
-  if (saved_status == kHandleStatusValid) {
+  if (*saved_status == kHandleStatusValid) {
     std::move(*callback).Run(account_id, TokenHandleUtil::VALID);
     return true;
   }
 
-  if (saved_status == kHandleStatusInvalid) {
+  if (*saved_status == kHandleStatusInvalid) {
     std::move(*callback).Run(account_id, TokenHandleUtil::INVALID);
     return true;
   }
@@ -58,42 +58,38 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
                      const std::string& token,
                      const AccountId& account_id,
                      TokenHandleUtil::TokenHandleStatus status) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Check that the token that was checked matches the latest known token.
   // (This may happen if token check took too long, and user went through
   // online sign-in and obtained new token during that time.
-  const base::DictionaryValue* dict = nullptr;
-  std::string latest_token;
-  if (user_manager::known_user::FindPrefs(account_id, &dict)) {
-    auto* latest_token = dict->FindStringPath(kTokenHandlePref);
-    if (latest_token) {
-      if (token != *latest_token) {
-        LOG(WARNING) << "Outdated token, assuming status is unknown";
-        std::move(callback).Run(account_id, TokenHandleUtil::UNKNOWN);
-        return;
-      }
+  if (const std::string* latest_token =
+          known_user.FindStringPath(account_id, kTokenHandlePref)) {
+    if (token != *latest_token) {
+      LOG(WARNING) << "Outdated token, assuming status is unknown";
+      std::move(callback).Run(account_id, TokenHandleUtil::UNKNOWN);
+      return;
     }
   }
 
   if (status != TokenHandleUtil::UNKNOWN) {
     // Update last checked timestamp.
-    user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                      base::TimeToValue(base::Time::Now()));
+    known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
+                       base::TimeToValue(base::Time::Now()));
   }
 
   if (status == TokenHandleUtil::INVALID) {
-    user_manager::known_user::SetStringPref(account_id, kTokenHandleStatusPref,
-                                            kHandleStatusInvalid);
+    known_user.SetStringPref(account_id, kTokenHandleStatusPref,
+                             kHandleStatusInvalid);
   }
   std::move(callback).Run(account_id, status);
 }
 
 // Checks if token handle is explicitly marked as INVALID for |account_id|.
 bool HasTokenStatusInvalid(const AccountId& account_id) {
-  const base::DictionaryValue* dict = nullptr;
-  std::string token;
-  if (!user_manager::known_user::FindPrefs(account_id, &dict))
-    return false;
-  auto* status = dict->FindStringPath(kTokenHandleStatusPref);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* status =
+      known_user.FindStringPath(account_id, kTokenHandleStatusPref);
+
   return status && *status == kHandleStatusInvalid;
 }
 
@@ -106,8 +102,8 @@ TokenHandleUtil::~TokenHandleUtil() = default;
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  bool token_rotated = false;
-  known_user.GetBooleanPref(account_id, kTokenHandleRotated, &token_rotated);
+  bool token_rotated =
+      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
   if (!token_rotated && known_user.GetIsEnterpriseManaged(account_id)) {
     // Ignore not rotated token starting from M94 for enterprise users to avoid
     // blocking them on the login screen. Rotation started in M91.
@@ -115,9 +111,9 @@ bool TokenHandleUtil::HasToken(const AccountId& account_id) {
     return false;
   }
 
-  std::string token;
-  return known_user.GetStringPref(account_id, kTokenHandlePref, &token) &&
-         !token.empty();
+  const std::string* token =
+      known_user.FindStringPath(account_id, kTokenHandlePref);
+  return token && !token->empty();
 }
 
 // static
@@ -138,9 +134,9 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
-  bool token_rotated = false;
-  user_manager::known_user::GetBooleanPref(account_id, kTokenHandleRotated,
-                                           &token_rotated);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  bool token_rotated =
+      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
   return !HasToken(account_id) || HasTokenStatusInvalid(account_id) ||
          !token_rotated;
 }
@@ -150,18 +146,15 @@ void TokenHandleUtil::CheckToken(
     const AccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TokenValidationCallback callback) {
-  const base::DictionaryValue* dict = nullptr;
-  std::string token;
-  if (!user_manager::known_user::FindPrefs(account_id, &dict)) {
-    std::move(callback).Run(account_id, UNKNOWN);
-    return;
-  }
-  if (!dict->GetString(kTokenHandlePref, &token)) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* token =
+      known_user.FindStringPath(account_id, kTokenHandlePref);
+  if (!token) {
     std::move(callback).Run(account_id, UNKNOWN);
     return;
   }
 
-  if (g_invalid_token_for_testing && g_invalid_token_for_testing == token) {
+  if (g_invalid_token_for_testing && g_invalid_token_for_testing == *token) {
     std::move(callback).Run(account_id, INVALID);
     return;
   }
@@ -179,10 +172,10 @@ void TokenHandleUtil::CheckToken(
   }
 
   // Constructor starts validation.
-  validation_delegates_[token] = std::make_unique<TokenDelegate>(
-      weak_factory_.GetWeakPtr(), account_id, token,
+  validation_delegates_[*token] = std::make_unique<TokenDelegate>(
+      weak_factory_.GetWeakPtr(), account_id, *token,
       std::move(url_loader_factory),
-      base::BindOnce(&OnStatusChecked, std::move(callback), token));
+      base::BindOnce(&OnStatusChecked, std::move(callback), *token));
 }
 
 // static
@@ -194,7 +187,7 @@ void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
   known_user.SetStringPref(account_id, kTokenHandleStatusPref,
                            kHandleStatusValid);
   known_user.SetBooleanPref(account_id, kTokenHandleRotated, true);
-  known_user.SetPref(account_id, kTokenHandleLastCheckedPref,
+  known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
                      base::TimeToValue(base::Time::Now()));
 }
 
@@ -216,8 +209,9 @@ void TokenHandleUtil::SetInvalidTokenForTesting(const char* token) {
 // static
 void TokenHandleUtil::SetLastCheckedPrefForTesting(const AccountId& account_id,
                                                    base::Time time) {
-  user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
-                                    base::TimeToValue(time));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
+                     base::TimeToValue(time));
 }
 
 void TokenHandleUtil::OnValidationComplete(const std::string& token) {
@@ -239,7 +233,7 @@ TokenHandleUtil::TokenDelegate::TokenDelegate(
   gaia_client_.GetTokenHandleInfo(token_, kMaxRetries, this);
 }
 
-TokenHandleUtil::TokenDelegate::~TokenDelegate() {}
+TokenHandleUtil::TokenDelegate::~TokenDelegate() = default;
 
 void TokenHandleUtil::TokenDelegate::OnOAuthError() {
   std::move(callback_).Run(account_id_, INVALID);
@@ -261,9 +255,9 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   TokenHandleStatus outcome = UNKNOWN;
   if (!token_info->FindKey("error")) {
-    int expires_in = 0;
-    if (token_info->GetInteger("expires_in", &expires_in))
-      outcome = (expires_in < 0) ? INVALID : VALID;
+    absl::optional<int> expires_in = token_info->FindIntKey("expires_in");
+    if (expires_in)
+      outcome = (*expires_in < 0) ? INVALID : VALID;
   }
 
   const base::TimeDelta duration =

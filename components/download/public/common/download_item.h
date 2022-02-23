@@ -299,10 +299,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // URL of document that is considered the referrer for the original URL.
   virtual const GURL& GetReferrerUrl() const = 0;
 
-  // Site instance URL. Used to locate the correct storage partition during
-  // subsequent browser sessions. This may be different from all of
-  // GetOriginalUrl(), GetURL() and GetReferrerUrl().
-  virtual const GURL& GetSiteUrl() const = 0;
+  // The serialized EmbedderDownloadData string. This is used by the embedder
+  // for placing extra download data, such as the appropriate storage partition
+  // for this download.
+  virtual const std::string& GetSerializedEmbedderDownloadData() const = 0;
 
   // URL of the top level frame at the time the download was initiated.
   virtual const GURL& GetTabUrl() const = 0;
@@ -530,6 +530,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // up after completion and not shown in the UI, and will not prompt to user
   // for target file path determination.
   virtual bool IsTransient() const = 0;
+
+  // Returns whether the download requires safety checks. Only downloads
+  // triggered by Chrome itself are excluded from safety checks.
+  virtual bool RequireSafetyChecks() const = 0;
 
   // Returns whether the download item corresponds to a parallel download. This
   // usually means parallel download has been enabled and the download job is

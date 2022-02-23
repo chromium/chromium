@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_model.h"
-#include "components/arc/arc_util.h"
 #include "ui/events/types/event_type.h"
 
 namespace arc {
@@ -1448,13 +1448,13 @@ bool LoadEvents(const base::Value* value,
   if (!value || !value->is_list())
     return false;
   int64_t previous_timestamp = 0;
-  for (const auto& entry : value->GetList()) {
-    if (!entry.is_list() || entry.GetList().size() < 2)
+  for (const auto& entry : value->GetListDeprecated()) {
+    if (!entry.is_list() || entry.GetListDeprecated().size() < 2)
       return false;
-    if (!entry.GetList()[0].is_int())
+    if (!entry.GetListDeprecated()[0].is_int())
       return false;
     const BufferEventType type =
-        static_cast<BufferEventType>(entry.GetList()[0].GetInt());
+        static_cast<BufferEventType>(entry.GetListDeprecated()[0].GetInt());
 
     if (!IsInRange(type, BufferEventType::kBufferQueueDequeueStart,
                    BufferEventType::kBufferFillJank) &&
@@ -1473,15 +1473,17 @@ bool LoadEvents(const base::Value* value,
       return false;
     }
 
-    if (!entry.GetList()[1].is_double() && !entry.GetList()[1].is_int())
+    if (!entry.GetListDeprecated()[1].is_double() &&
+        !entry.GetListDeprecated()[1].is_int())
       return false;
-    const int64_t timestamp = entry.GetList()[1].GetDouble();
+    const int64_t timestamp = entry.GetListDeprecated()[1].GetDouble();
     if (timestamp < previous_timestamp)
       return false;
-    if (entry.GetList().size() == 3) {
-      if (!entry.GetList()[2].is_string())
+    if (entry.GetListDeprecated().size() == 3) {
+      if (!entry.GetListDeprecated()[2].is_string())
         return false;
-      out_events->emplace_back(type, timestamp, entry.GetList()[2].GetString());
+      out_events->emplace_back(type, timestamp,
+                               entry.GetListDeprecated()[2].GetString());
     } else {
       out_events->emplace_back(type, timestamp);
     }
@@ -1507,7 +1509,7 @@ bool LoadEventsContainer(const base::Value* value,
   if (!buffer_entries)
     return false;
 
-  for (const auto& buffer_entry : buffer_entries->GetList()) {
+  for (const auto& buffer_entry : buffer_entries->GetListDeprecated()) {
     BufferEvents events;
     if (!LoadEvents(&buffer_entry, &events))
       return false;
@@ -1893,12 +1895,12 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::DictionaryValue& root) {
 
   const base::Value* view_list =
       root.FindKeyOfType(kKeyViews, base::Value::Type::LIST);
-  if (!view_list || view_list->GetList().empty()) {
+  if (!view_list || view_list->GetListDeprecated().empty()) {
     // Views are optional for overview tracing.
     if (!skip_structure_validation_)
       return false;
   } else {
-    for (const auto& view_entry : view_list->GetList()) {
+    for (const auto& view_entry : view_list->GetListDeprecated()) {
       if (!view_entry.is_dict())
         return false;
       const base::Value* activity =

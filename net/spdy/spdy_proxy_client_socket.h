@@ -8,11 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -39,6 +38,7 @@ class IOBuffer;
 class ProxyDelegate;
 class SpdyStream;
 
+// Tunnels a stream socket over an HTTP/2 connection.
 class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
                                                  public SpdyStream::Delegate {
  public:
@@ -64,8 +64,6 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   const HttpResponseInfo* GetConnectResponseInfo() const override;
   const scoped_refptr<HttpAuthController>& GetAuthController() const override;
   int RestartWithAuth(CompletionOnceCallback callback) override;
-  bool IsUsingSpdy() const override;
-  NextProto GetProxyNegotiatedProtocol() const override;
   void SetStreamPriority(RequestPriority priority) override;
 
   // StreamSocket implementation.
@@ -128,7 +126,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
 
   // Calls |callback.Run(result)|. Used to run a callback posted to the
   // message loop.
-  void RunCallback(CompletionOnceCallback callback, int result) const;
+  void RunWriteCallback(CompletionOnceCallback callback, int result) const;
 
   void OnIOComplete(int result);
 
@@ -143,7 +141,10 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   // and returns the number of bytes read.
   size_t PopulateUserReadBuffer(char* out, size_t len);
 
-  State next_state_;
+  // Called when the peer sent END_STREAM.
+  void MaybeSendEndStream();
+
+  State next_state_ = STATE_DISCONNECTED;
 
   // Pointer to the SPDY Stream that this sits on top of.
   base::WeakPtr<SpdyStream> spdy_stream_;
@@ -166,7 +167,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* const proxy_delegate_;
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
 
   std::string user_agent_;
 
@@ -185,6 +186,17 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
 
   const NetLogWithSource net_log_;
   const NetLogSource source_dependency_;
+
+  // State for handling END_STREAM. When the peer sends a DATA frame with
+  // END_STREAM, it should be treated as being equivalent to the TCP FIN bit.
+  // We should send a DATA frame with END_STREAM after receiving END_STREAM
+  // as the spec requires.
+  enum class EndStreamState {
+    kNone,
+    kEndStreamReceived,
+    kEndStreamSent,
+  };
+  EndStreamState end_stream_state_ = EndStreamState::kNone;
 
   // The default weak pointer factory.
   base::WeakPtrFactory<SpdyProxyClientSocket> weak_factory_{this};

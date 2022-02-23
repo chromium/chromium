@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -35,6 +34,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
+#include "net/cookies/test_cookie_access_delegate.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/transport_security_state.h"
@@ -60,7 +60,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "net/net_test_jni_headers/AndroidNetworkLibraryTestUtil_jni.h"
 #endif
@@ -94,9 +94,6 @@ const char kSimpleHeadMockWrite[] =
 
 const char kTrustAnchorRequestHistogram[] =
     "Net.Certificate.TrustAnchor.Request";
-
-const char kCTComplianceHistogramName[] =
-    "Net.CertificateTransparency.RequestComplianceStatus";
 
 // Inherit from URLRequestHttpJob to expose the priority and some
 // other hidden functions.
@@ -965,145 +962,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
             reporter.network_isolation_key());
 }
 
-// Tests that the CT compliance histogram is recorded, even if CT is not
-// required.
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobRecordsCTComplianceHistograms) {
-  SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
-  ssl_socket_data.ssl_info.cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
-
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
-                               "Content-Length: 12\r\n\r\n"),
-                      MockRead("Test Content")};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  base::HistogramTester histograms;
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->Start();
-  delegate.RunUntilComplete();
-  EXPECT_THAT(delegate.request_status(), IsOk());
-
-  histograms.ExpectUniqueSample(
-      kCTComplianceHistogramName,
-      static_cast<int32_t>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
-      1);
-}
-
-// Tests that the CT compliance histograms are not recorded for
-// locally-installed trust anchors.
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobDoesNotRecordCTComplianceHistogramsForLocalRoot) {
-  SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
-  ssl_socket_data.ssl_info.cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_socket_data.ssl_info.is_issued_by_known_root = false;
-  ssl_socket_data.ssl_info.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
-
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
-                               "Content-Length: 12\r\n\r\n"),
-                      MockRead("Test Content")};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  base::HistogramTester histograms;
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->Start();
-  delegate.RunUntilComplete();
-  EXPECT_THAT(delegate.request_status(), IsOk());
-
-  histograms.ExpectTotalCount(kCTComplianceHistogramName, 0);
-}
-
-// Tests that the CT compliance histogram is recorded when CT is required but
-// not compliant.
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobRecordsCTRequiredHistogram) {
-  SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
-  ssl_socket_data.ssl_info.cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
-
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
-                               "Content-Length: 12\r\n\r\n"),
-                      MockRead("Test Content")};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  base::HistogramTester histograms;
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->Start();
-  delegate.RunUntilComplete();
-  EXPECT_THAT(delegate.request_status(), IsOk());
-
-  histograms.ExpectUniqueSample(
-      kCTComplianceHistogramName,
-      static_cast<int32_t>(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS),
-      1);
-}
-
-// Tests that the CT compliance histograms are not recorded when there is an
-// unrelated certificate error.
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobDoesNotRecordCTHistogramWithCertError) {
-  SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
-  ssl_socket_data.ssl_info.cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-  ssl_socket_data.ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
-
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
-
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
-                               "Content-Length: 12\r\n\r\n"),
-                      MockRead("Test Content")};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  base::HistogramTester histograms;
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
-  request->Start();
-  delegate.RunUntilComplete();
-  EXPECT_THAT(delegate.request_status(), IsOk());
-
-  histograms.ExpectTotalCount(kCTComplianceHistogramName, 0);
-}
-
 TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {
   MockWrite writes[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -1533,7 +1391,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(URLRequestHttpJobTest, AndroidCleartextPermittedTest) {
   context_.set_check_cleartext_permitted(true);
 
@@ -1710,7 +1568,8 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   base::HistogramTester histograms;
   const std::string test_histogram = "Cookie.CookieSchemeRequestScheme";
 
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.Init();
@@ -1803,7 +1662,8 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
   ASSERT_TRUE(test_server.Start());
 
   FilteringTestNetworkDelegate network_delegate;
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.set_network_delegate(&network_delegate);
@@ -1874,7 +1734,8 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
   FilteringTestNetworkDelegate network_delegate;
   network_delegate.set_block_get_cookies_by_name(true);
   network_delegate.SetCookieFilter("blocked_");
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.set_network_delegate(&network_delegate);
@@ -1951,7 +1812,8 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
   ASSERT_TRUE(https_test.Start());
 
   TestURLRequestContext context;
-  CookieMonster cookie_monster(nullptr, nullptr);
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
   context.set_cookie_store(&cookie_monster);
 
   TestDelegate delegate;
@@ -1999,6 +1861,293 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
     } else {
       EXPECT_EQ("__Host-foo=bar", delegate.data_received());
     }
+  }
+}
+
+// This class test partitioned cookies' interaction with First-Party Sets.
+// When FPS is enabled, top-level sites that are in the same set share a cookie
+// partition.
+TEST_P(PartitionedCookiesURLRequestHttpJobTest,
+       PartitionedCookiesAndFirstPartySets) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  const GURL kOwnerURL("https://owner.com");
+  const SchemefulSite kOwnerSite(kOwnerURL);
+  const url::Origin kOwnerOrigin = url::Origin::Create(kOwnerURL);
+  const IsolationInfo kOwnerIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kOwnerOrigin);
+
+  const GURL kMemberURL("https://member.com");
+  const SchemefulSite kMemberSite(kMemberURL);
+  const url::Origin kMemberOrigin = url::Origin::Create(kMemberURL);
+  const IsolationInfo kMemberIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kMemberOrigin);
+
+  const GURL kNonMemberURL("https://nonmember.com");
+  const url::Origin kNonMemberOrigin = url::Origin::Create(kNonMemberURL);
+  const IsolationInfo kNonMemberIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kNonMemberOrigin);
+
+  base::flat_map<SchemefulSite, std::set<SchemefulSite>> first_party_sets;
+  first_party_sets.insert(std::make_pair(
+      kOwnerSite, std::set<SchemefulSite>({kOwnerSite, kMemberSite})));
+
+  TestURLRequestContext context;
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
+  auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
+  cookie_access_delegate->SetFirstPartySets(first_party_sets);
+  cookie_monster.SetCookieAccessDelegate(std::move(cookie_access_delegate));
+  context.set_cookie_store(&cookie_monster);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-foo=0;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Start with the set's owner as the top-level site.
+  req->set_isolation_info(kOwnerIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {
+    // Test the cookie is present in a request with the same top-frame site as
+    // when the cookie was set.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOwnerIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0", delegate.data_received());
+  }
+
+  {
+    // Requests whose top-frame site are in the set should have access to the
+    // partitioned cookie.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kMemberIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0", delegate.data_received());
+  }
+
+  // Set a cookie from the member site.
+  req = context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-bar=1;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  req->set_isolation_info(kMemberIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {
+    // Check request whose top-frame site is the owner site has the cookie set
+    // on the member site.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOwnerIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0; __Host-bar=1", delegate.data_received());
+  }
+
+  {
+    // Check that the cookies are not available when the top-frame site is not
+    // in the set. If partitioned cookies are disabled, then the cookies should
+    // be available.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kNonMemberIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ("None", delegate.data_received());
+    } else {
+      EXPECT_EQ("__Host-foo=0; __Host-bar=1", delegate.data_received());
+    }
+  }
+}
+
+TEST_P(PartitionedCookiesURLRequestHttpJobTest, PrivacyMode) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  FilteringTestNetworkDelegate network_delegate;
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
+  TestURLRequestContext context(true);
+  context.set_cookie_store(&cm);
+  context.set_network_delegate(&network_delegate);
+  context.Init();
+
+  const url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+  const IsolationInfo kTestIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  // Set an unpartitioned and partitioned cookie.
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      https_test.GetURL(
+          "/set-cookie?__Host-partitioned=0;SameSite=None;Secure;Path=/"
+          ";Partitioned;&__Host-unpartitioned=1;SameSite=None;Secure;Path=/"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_isolation_info(kTestIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {  // Get both cookies when privacy mode is disabled.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-partitioned=0; __Host-unpartitioned=1",
+              delegate.data_received());
+  }
+
+  {  // Get cookies with privacy mode enabled and partitioned state allowed.
+    network_delegate.set_force_privacy_mode(true);
+    network_delegate.set_partitioned_state_allowed(true);
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ(PartitionedCookiesEnabled() ? "__Host-partitioned=0" : "None",
+              delegate.data_received());
+    auto want_exclusion_reasons =
+        PartitionedCookiesEnabled()
+            ? std::vector<CookieInclusionStatus::ExclusionReason>{}
+            : std::vector<CookieInclusionStatus::ExclusionReason>{
+                  CookieInclusionStatus::EXCLUDE_USER_PREFERENCES};
+    EXPECT_THAT(
+        req->maybe_sent_cookies(),
+        UnorderedElementsAre(
+            MatchesCookieWithAccessResult(
+                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieAccessResult(HasExactlyExclusionReasonsForTesting(
+                                              want_exclusion_reasons),
+                                          _, _, _)),
+            MatchesCookieWithAccessResult(
+                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<CookieInclusionStatus::ExclusionReason>{
+                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                    _, _, _))));
+  }
+
+  {  // Get cookies with privacy mode enabled and partitioned state is not
+     // allowed.
+    network_delegate.set_force_privacy_mode(true);
+    network_delegate.set_partitioned_state_allowed(false);
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("None", delegate.data_received());
+    EXPECT_THAT(
+        req->maybe_sent_cookies(),
+        UnorderedElementsAre(
+            MatchesCookieWithAccessResult(
+                MatchesCookieWithName("__Host-partitioned"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<CookieInclusionStatus::ExclusionReason>{
+                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                    _, _, _)),
+            MatchesCookieWithAccessResult(
+                MatchesCookieWithName("__Host-unpartitioned"),
+                MatchesCookieAccessResult(
+                    HasExactlyExclusionReasonsForTesting(
+                        std::vector<CookieInclusionStatus::ExclusionReason>{
+                            CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}),
+                    _, _, _))));
+  }
+}
+
+// TODO(crbug.com/1296161): Remove this code when the partitioned cookies
+// Origin Trial is over.
+TEST_P(PartitionedCookiesURLRequestHttpJobTest,
+       AddsSecCHPartitionedCookiesHeader) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  TestURLRequestContext context;
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
+  context.set_cookie_store(&cookie_monster);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-foo=bar;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  const url::Origin kTopFrameOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+  const IsolationInfo kTestIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  req->set_isolation_info(kTestIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {  // Test request from the same top-level site.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?sec-ch-partitioned-cookies"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ("?0", delegate.data_received());
+    } else {
+      EXPECT_EQ("None", delegate.data_received());
+    }
+  }
+
+  {  // Test request from a different top-level site.
+    const url::Origin kOtherTopFrameOrigin =
+        url::Origin::Create(GURL("https://www.anothertoplevelsite.com"));
+    const IsolationInfo kOtherTestIsolationInfo =
+        IsolationInfo::CreateForInternalRequest(kOtherTopFrameOrigin);
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?sec-ch-partitioned-cookies"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOtherTestIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("None", delegate.data_received());
   }
 }
 

@@ -19,16 +19,16 @@ import '../search_settings.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBasicPageElement} from '../basic_page/basic_page.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+
+import {getTemplate} from './settings_main.html.js';
 
 type MainPageVisibility = {
   about: boolean,
@@ -37,8 +37,8 @@ type MainPageVisibility = {
 
 export interface SettingsMainElement {
   $: {
-    overscroll: HTMLElement,
-  };
+    noSearchResults: HTMLElement,
+  }
 }
 
 const SettingsMainElementBase = RouteObserverMixin(PolymerElement) as
@@ -50,7 +50,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -66,11 +66,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
       advancedToggleExpanded: {
         type: Boolean,
         notify: true,
-      },
-
-      overscroll_: {
-        type: Number,
-        observer: 'overscrollChanged_',
       },
 
       /**
@@ -113,52 +108,14 @@ export class SettingsMainElement extends SettingsMainElementBase {
     };
   }
 
+  prefs: {[key: string]: any};
   advancedToggleExpanded: boolean;
-  private overscroll_: number;
   private showPages_: MainPageVisibility;
   private inSearchMode_: boolean;
   private showNoResultsFound_: boolean;
   private showingSubpage_: boolean;
   toolbarSpinnerActive: boolean;
   pageVisibility: PageVisibility;
-  private boundScroll_: (() => void)|null = null;
-
-  private overscrollChanged_() {
-    assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
-    if (!this.overscroll_ && this.boundScroll_) {
-      this.offsetParent!.removeEventListener('scroll', this.boundScroll_);
-      window.removeEventListener('resize', this.boundScroll_);
-      this.boundScroll_ = null;
-    } else if (this.overscroll_ && !this.boundScroll_) {
-      this.boundScroll_ = () => {
-        if (!this.showingSubpage_) {
-          this.setOverscroll_(0);
-        }
-      };
-      this.offsetParent!.addEventListener('scroll', this.boundScroll_);
-      window.addEventListener('resize', this.boundScroll_);
-    }
-  }
-
-  /**
-   * Sets the overscroll padding. Never forces a scroll, i.e., always leaves
-   * any currently visible overflow as-is.
-   * @param opt_minHeight The minimum overscroll height needed.
-   */
-  private setOverscroll_(opt_minHeight?: number) {
-    const scroller = this.offsetParent;
-    if (!scroller) {
-      return;
-    }
-    const overscroll = this.$.overscroll;
-    const visibleBottom = scroller.scrollTop + scroller.clientHeight;
-    const overscrollBottom = overscroll.offsetTop + overscroll.scrollHeight;
-    // How much of the overscroll is visible (may be negative).
-    const visibleOverscroll =
-        overscroll.scrollHeight - (overscrollBottom - visibleBottom);
-    this.overscroll_ =
-        Math.max(opt_minHeight || 0, Math.ceil(visibleOverscroll));
-  }
 
   /**
    * Updates the hidden state of the about and settings pages based on the
@@ -183,27 +140,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
   private onShowingMainPage_() {
     this.showingSubpage_ = false;
-  }
-
-  /**
-   * A handler for the 'showing-section' event fired from settings-basic-page,
-   * indicating that a section should be scrolled into view as a result of a
-   * navigation.
-   */
-  private onShowingSection_(e: CustomEvent<HTMLElement>) {
-    assert(!loadTimeData.getBoolean('enableLandingPageRedesign'));
-
-    const section = e.detail;
-    // Calculate the height that the overscroll padding should be set to, so
-    // that the given section is displayed at the top of the viewport.
-    // Find the distance from the section's top to the overscroll.
-    const sectionTop =
-        (section.offsetParent as HTMLElement).offsetTop + section.offsetTop;
-    const distance = this.$.overscroll.offsetTop - sectionTop;
-    const overscroll = Math.max(0, this.offsetParent!.clientHeight - distance);
-    this.setOverscroll_(overscroll);
-    section.scrollIntoView();
-    section.focus();
   }
 
   /**
@@ -251,6 +187,12 @@ export class SettingsMainElement extends SettingsMainElementBase {
   private showManagedHeader_(): boolean {
     return !this.inSearchMode_ && !this.showingSubpage_ &&
         !this.showPages_.about;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-main': SettingsMainElement;
   }
 }
 

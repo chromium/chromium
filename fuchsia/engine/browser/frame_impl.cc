@@ -10,6 +10,7 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <limits>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -22,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,6 +49,7 @@
 #include "fuchsia/engine/browser/media_player_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_handler.h"
 #include "fuchsia/engine/browser/receiver_session_client.h"
+#include "fuchsia/engine/browser/url_request_rewrite_type_converters.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -59,6 +62,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
+#include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
@@ -70,9 +74,6 @@ namespace {
 
 // Simulated screen bounds to use when headless rendering is enabled.
 constexpr gfx::Size kHeadlessWindowSize = {1, 1};
-
-// Simulated screen bounds to use when testing the SemanticsManager.
-constexpr gfx::Size kSemanticsTestingWindowSize = {720, 640};
 
 // Name of the Inspect node that holds accessibility information.
 constexpr char kAccessibilityInspectNodeName[] = "accessibility";
@@ -292,7 +293,6 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
                                                : std::string()),
       params_for_popups_(std::move(params)),
       navigation_controller_(web_contents_.get()),
-      url_request_rewrite_rules_manager_(web_contents_.get()),
       permission_controller_(web_contents_.get()),
       binding_(this, std::move(frame_request)),
       media_blocker_(web_contents_.get()),
@@ -312,6 +312,8 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
   web_contents_->SetPageBaseBackgroundColor(SK_AlphaTRANSPARENT);
   Observe(web_contents_.get());
 
+  url_request_rewrite_rules_manager_.AddWebContents(web_contents_.get());
+
   binding_.set_error_handler([this](zx_status_t status) {
     ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
         << " Frame disconnected.";
@@ -323,8 +325,10 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
 
   // TODO(http://crbug.com/1254073): Deprecate autoplay_policy in
   // CreateFrameParams.
-  if (params.has_autoplay_policy())
-    content_area_settings_.set_autoplay_policy(params.autoplay_policy());
+  if (params_for_popups_.has_autoplay_policy()) {
+    content_area_settings_.set_autoplay_policy(
+        params_for_popups_.autoplay_policy());
+  }
 }
 
 FrameImpl::~FrameImpl() {
@@ -433,6 +437,7 @@ void FrameImpl::AddNewContents(
   switch (disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
     case WindowOpenDisposition::NEW_POPUP:
     case WindowOpenDisposition::NEW_WINDOW: {
       if (url_request_rewrite_rules_manager_.GetCachedRules()) {
@@ -527,6 +532,7 @@ void FrameImpl::DestroyWindowTreeHost() {
   window_tree_host_->compositor()->SetVisible(false);
   window_tree_host_.reset();
   accessibility_bridge_.reset();
+  v2_accessibility_bridge_.reset();
 
   // Allows posted focus events to process before the FocusController is torn
   // down.
@@ -550,12 +556,17 @@ void FrameImpl::OnMediaPlayerDisconnect() {
   media_player_ = nullptr;
 }
 
-void FrameImpl::OnAccessibilityError(zx_status_t error) {
+bool FrameImpl::OnAccessibilityError(zx_status_t error) {
   // The task is posted so |accessibility_bridge_| does not tear |this| down
   // while events are still being processed.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FrameImpl::CloseAndDestroyFrame,
                                 weak_factory_.GetWeakPtr(), error));
+
+  // The return value indicates to the accessibility bridge whether we should
+  // attempt to reconnect. Since the frame has been destroyed, no reconnect
+  // attempt should be made.
+  return false;
 }
 
 bool FrameImpl::MaybeHandleCastStreamingMessage(
@@ -589,7 +600,8 @@ void FrameImpl::MaybeStartCastStreaming(
   if (!context_->has_cast_streaming_enabled() || !receiver_session_client_)
     return;
 
-  mojo::AssociatedRemote<mojom::CastStreamingReceiver> cast_streaming_receiver;
+  mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
+      cast_streaming_receiver;
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&cast_streaming_receiver);
@@ -610,22 +622,38 @@ void FrameImpl::UpdateRenderViewZoomLevel(
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
-  fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
-  if (!semantics_manager_for_test_) {
-    semantics_manager =
-        base::ComponentContextForProcess()
-            ->svc()
-            ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
-  }
+  if (use_v2_accessibility_bridge_) {
+    // TODO(crbug.com/1291613): Replace callbacks with an interface that
+    // FrameImpl implements.
+    v2_accessibility_bridge_ =
+        std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
+            root_window(), window_tree_host_->CreateViewRef(),
+            base::BindRepeating(&FrameImpl::GetDeviceScaleFactor,
+                                base::Unretained(this)),
+            base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
+                                base::Unretained(this)),
+            base::BindRepeating(&FrameImpl::OnAccessibilityError,
+                                base::Unretained(this)),
+            inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+  } else {
+    fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
+    if (!semantics_manager_for_test_) {
+      semantics_manager =
+          base::ComponentContextForProcess()
+              ->svc()
+              ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
+    }
 
-  // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
-  // will cause |this| to be closed.
-  accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-      semantics_manager_for_test_ ? semantics_manager_for_test_
-                                  : semantics_manager.get(),
-      window_tree_host_.get(), web_contents_.get(),
-      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
-      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+    // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
+    // will cause |this| to be closed.
+    accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
+        semantics_manager_for_test_ ? semantics_manager_for_test_
+                                    : semantics_manager.get(),
+        window_tree_host_.get(), web_contents_.get(),
+        base::BindOnce(&FrameImpl::OnAccessibilityError,
+                       base::Unretained(this)),
+        inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+  }
 }
 
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
@@ -829,7 +857,7 @@ void FrameImpl::PostMessage(std::string origin,
 
 void FrameImpl::SetNavigationEventListener(
     fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener) {
-  SetNavigationEventListener2(std::move(listener), {});
+  SetNavigationEventListener2(std::move(listener), /*flags=*/{});
 }
 
 void FrameImpl::SetNavigationEventListener2(
@@ -866,11 +894,14 @@ void FrameImpl::SetPopupFrameCreationListener(
 void FrameImpl::SetUrlRequestRewriteRules(
     std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
     SetUrlRequestRewriteRulesCallback callback) {
-  zx_status_t error = url_request_rewrite_rules_manager_.OnRulesUpdated(
-      std::move(rules), std::move(callback));
-  if (error != ZX_OK) {
-    CloseAndDestroyFrame(error);
-    return;
+  auto mojom_rules =
+      mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
+          std::move(rules));
+  if (url_request_rewrite_rules_manager_.OnRulesUpdated(
+          std::move(mojom_rules))) {
+    std::move(callback)();
+  } else {
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
   }
 }
 
@@ -886,11 +917,10 @@ void FrameImpl::EnableHeadlessRendering() {
                       std::move(view_ref_pair));
 
   gfx::Rect bounds(kHeadlessWindowSize);
-  if (semantics_manager_for_test_) {
-    ConnectToAccessibilityBridge();
 
-    // Set bounds for testing hit testing.
-    bounds.set_size(kSemanticsTestingWindowSize);
+  if (window_size_for_test_) {
+    ConnectToAccessibilityBridge();
+    bounds.set_size(*window_size_for_test_);
   }
 
   window_tree_host_->SetBoundsInPixels(bounds);
@@ -1159,6 +1189,14 @@ bool FrameImpl::DidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id) {
+  // Prevent logging when log_level_ is 0. See crbug.com/1292187.
+  // TODO(crbug.com/1292208): Convert to DCHECK when FUCHSIA_LOG_NONE
+  // is defined to be greater than other log levels.
+  if (log_level_ == 0) {
+    // Prevent the default logging mechanism from logging the message.
+    return true;
+  }
+
   FuchsiaLogSeverity severity =
       BlinkConsoleMessageLevelToFxLogSeverity(log_level);
   if (severity < log_level_) {
@@ -1265,9 +1303,6 @@ bool FrameImpl::CanOverscrollContent() {
 
 void FrameImpl::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
     return;
@@ -1287,7 +1322,7 @@ void FrameImpl::DidFinishLoad(content::RenderFrameHost* render_frame_host,
 void FrameImpl::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   // The top-level frame is given a transparent background color.
   // GetView() is guaranteed to be non-null until |frame_host| teardown.
-  if (frame_host == web_contents()->GetMainFrame()) {
+  if (!frame_host->GetParentOrOuterDocument()) {
     frame_host->GetView()->SetBackgroundColor(SK_AlphaTRANSPARENT);
   }
 }
@@ -1318,4 +1353,23 @@ void FrameImpl::ResourceLoadComplete(
 // TODO(crbug.com/1136681#c6): Move below GetBindingChannelForTest when fixed.
 void FrameImpl::EnableExplicitSitesFilter(std::string error_page) {
   explicit_sites_filter_error_page_ = std::move(error_page);
+}
+
+float FrameImpl::GetDeviceScaleFactor() {
+  if (device_scale_factor_for_test_)
+    return *device_scale_factor_for_test_;
+
+  return window_tree_host_->scenic_scale_factor();
+}
+
+void FrameImpl::SetAccessibilityEnabled(bool enabled) {
+  auto* browser_accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+
+  if (enabled) {
+    browser_accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  } else {
+    browser_accessibility_state->RemoveAccessibilityModeFlags(
+        ui::kAXModeComplete);
+  }
 }

@@ -11,6 +11,8 @@ import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.content.browser.selection.SmartSelectionClient;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
@@ -105,14 +107,12 @@ public interface SelectionClient {
     void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix);
 
     /**
-     * Acknowledges that a selectWordAroundCaret action has completed with the given result.
-     * @param didSelect Whether a word was actually selected or not.
-     * @param startAdjust The adjustment to the selection start offset needed to select the word.
-     *        This is typically a negative number (expressed in terms of number of characters).
-     * @param endAdjust The adjustment to the selection end offset needed to select the word.
-     *        This is typically a positive number (expressed in terms of number of characters).
+     * Acknowledges that a selectAroundCaret action has completed with the given result.
+     * @param result Information about the selection including selection state and offset
+     *         adjustments to determine the original or extended selection. {@code null} if the
+     *         selection couldn't be made.
      */
-    void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust);
+    void selectAroundCaretAck(@Nullable SelectAroundCaretResult result);
 
     /**
      * Notifies the SelectionClient that the selection menu has been requested.

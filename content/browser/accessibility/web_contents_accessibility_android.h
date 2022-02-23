@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/web_contents_accessibility.h"
+#include "content/common/content_export.h"
 
 #include <unordered_map>
 
@@ -14,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class MotionEventAndroid;
@@ -33,6 +36,9 @@ constexpr int kDefaultNumberOfTicksForSliders = 20;
 // The minimum amount a slider can move per increment/decement action as a
 // percentage of the total range, regardless of step value set on the element.
 constexpr float kMinimumPercentageMoveForSliders = 0.01f;
+
+// Max dimensions for the image data of a node.
+constexpr gfx::Size kMaxImageSize = gfx::Size(2000, 2000);
 }  // namespace
 
 class BrowserAccessibilityAndroid;
@@ -86,9 +92,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
               jboolean screen_reader_mode);
   void SetAXMode(JNIEnv* env,
                  const base::android::JavaParamRef<jobject>& obj,
-                 jboolean screen_reader_mode);
+                 jboolean screen_reader_mode,
+                 jboolean is_accessibility_enabled);
 
-  base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
+  base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
@@ -187,7 +194,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                        jint start_id,
                        const base::android::JavaParamRef<jstring>& element_type,
                        jboolean forwards,
-                       jboolean can_wrap_to_last_element);
+                       jboolean can_wrap_to_last_element,
+                       jboolean use_default_predicate);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
@@ -299,6 +307,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       jint start,
       jint len);
 
+  // Get the image data for a given node. If no image data is available, this
+  // will call through to |BrowserAccessibilityManager| to populate the data
+  // asynchronously so the next time the method is called the data is ready.
+  jboolean GetImageData(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& obj,
+                        const base::android::JavaParamRef<jobject>& info,
+                        jint unique_id,
+                        jboolean has_sent_previous_request);
+
   void UpdateFrameInfo(float page_scale);
 
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
@@ -374,6 +391,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleNavigate();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
   void HandleEndOfTestSignal();
+  std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
@@ -392,7 +410,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // A weak reference to the Java WebContentsAccessibilityAndroid object.
   JavaObjectWeakGlobalRef java_ref_;
 
-  WebContentsImpl* const web_contents_;
+  const raw_ptr<WebContentsImpl> web_contents_;
 
   bool frame_info_initialized_;
 
@@ -419,7 +437,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // receives accessibility events.
   // Owns itself, and destroyed upon WebContentsObserver::WebContentsDestroyed.
   class Connector;
-  Connector* connector_ = nullptr;
+  raw_ptr<Connector> connector_ = nullptr;
   // This isn't associated with a real WebContents and is only populated when
   // this class is constructed with a ui::AXTreeUpdate.
   std::unique_ptr<BrowserAccessibilityManagerAndroid> manager_;

@@ -1,9 +1,9 @@
 include_rules = [
+  "+components/app_constants/constants.h",
   "+components/crash/content/browser/error_reporting",
   "+components/live_caption",
   "+extensions/strings/grit/extensions_strings.h",
   "+services/network/public",
-  "+ui/base",
 
   # For access to testing command line switches.
   "+ppapi/shared_impl",

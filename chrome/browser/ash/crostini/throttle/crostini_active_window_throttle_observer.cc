@@ -5,14 +5,15 @@
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/window_properties.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
 namespace crostini {
 
 CrostiniActiveWindowThrottleObserver::CrostiniActiveWindowThrottleObserver()
-    : WindowThrottleObserverBase(ThrottleObserver::PriorityLevel::CRITICAL,
-                                 "CrostiniWindowIsActiveWindow") {}
+    : WindowThrottleObserverBase("CrostiniWindowIsActiveWindow") {}
 
 bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
     ActivationReason reason,
@@ -20,9 +21,23 @@ bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
     aura::Window* lost_active) {
   if (!gained_active)
     return false;
+
   // Return true if the gained_active window is a Crostini app.
-  return gained_active->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::CROSTINI_APP);
+  if (gained_active->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::CROSTINI_APP)) {
+    return true;
+  }
+
+  // Return false if the window is not a Chrome app (e.g. the browser, ARC app.)
+  if (gained_active->GetProperty(aura::client::kAppType) !=
+      static_cast<int>(ash::AppType::CHROME_APP)) {
+    return false;
+  }
+
+  // Return true if the ID is the terminal app's. Note that the terminal app is
+  // a Chrome app although it provides a Crostini shell.
+  const std::string* app_id = gained_active->GetProperty(ash::kAppIDKey);
+  return app_id && *app_id == crostini::kCrostiniTerminalSystemAppId;
 }
 
 }  // namespace crostini

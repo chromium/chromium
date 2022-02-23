@@ -101,16 +101,6 @@ FloatingObject* FloatingObject::Create(LayoutBox* layout_object, Type type) {
   new_obj->SetShouldPaint(!layout_object->HasSelfPaintingLayer());
 
   new_obj->SetIsDescendant(true);
-
-  // We set SelfPaintingStatusChanged in case we get to the next compositing
-  // update and still haven't decided who should paint the float. If we've
-  // decided that the current float owner can paint it that step is unnecessary,
-  // so we can clear it now.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      new_obj->ShouldPaint() && layout_object->Layer() &&
-      layout_object->Layer()->SelfPaintingStatusChanged())
-    layout_object->Layer()->ClearSelfPaintingStatusChanged();
-
   return new_obj;
 }
 
@@ -534,7 +524,7 @@ inline FloatingObjectInterval FloatingObjects::IntervalForFloatingObject(
 }
 
 void FloatingObjects::AddPlacedObject(FloatingObject& floating_object) {
-  DCHECK(!layout_object_->IsLayoutNGMixin());
+  DCHECK(!layout_object_->IsLayoutNGObject());
   DCHECK(!floating_object.IsInPlacedTree());
 
   floating_object.SetIsPlaced(true);
@@ -548,7 +538,7 @@ void FloatingObjects::AddPlacedObject(FloatingObject& floating_object) {
 }
 
 void FloatingObjects::RemovePlacedObject(FloatingObject& floating_object) {
-  DCHECK(!layout_object_->IsLayoutNGMixin());
+  DCHECK(!layout_object_->IsLayoutNGObject());
   DCHECK(floating_object.IsPlaced());
   DCHECK(floating_object.IsInPlacedTree());
 

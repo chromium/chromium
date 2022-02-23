@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -63,13 +63,14 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
     command_line.AppendSwitchASCII(switches::kAppId, app_id_);
     command_line.AppendArgPath(path);
 
-    browser_creator.Start(command_line, profile_manager->user_data_dir(),
-                          browser()->profile(), {});
+    browser_creator.Start(
+        command_line, profile_manager->user_data_dir(),
+        {browser()->profile(), StartupProfileMode::kBrowserWindow}, {});
   }
 
   void InstallTestWebApp() {
     const GURL example_url = GURL(kStartUrl);
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = u"Test app";
     web_app_info->start_url = example_url;
     web_app_info->scope = example_url;
@@ -149,8 +150,6 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
-  base::test::ScopedFeatureList feature_list_for_settings_{
-      features::kDesktopPWAsFileHandlingSettingsGated};
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,

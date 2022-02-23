@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">Chrome અપડેટ કરી શકતાં નથી</translation>
 <translation id="1154147086299354128">&amp;Chromeમાં ખોલો</translation>
 <translation id="1182414570724401860">Chrome સુઝાવ આપે છે કે તમે આ ફાઇલને ડાઉનલોડ કરશો નહીં કે ખોલશો નહીં</translation>
+<translation id="1201241595274620956">CloudReady 2.0 શરતો</translation>
 <translation id="1278833599417554002">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="1293325835983155583">આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં <ph name="MANAGER" />ને નીચે સેવાની શરતોને વાંચવાની અને સ્વીકારવાની જરૂર છે. આ શરતો Google Chrome OSની શરતોને વિસ્તૃત, તેમાં ફેરફાર અથવા મર્યાદિત કરતી નથી.</translation>
 <translation id="1302523850133262269">કૃપા કરીને Chrome નવીનતમ સિસ્ટમ અપડેટ્સ ઇન્સ્ટોલ કરે ત્યાં સુધી રાહ જુઓ.</translation>
@@ -24,7 +25,7 @@
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
-<translation id="1587223624401073077">Google Chrome તમારા કેમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="1597911401261118146">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
@@ -40,11 +41,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ખાતરી કરો કે તમે તમારા <ph name="TARGET_DEVICE_NAME" /> પર Chromeમાં સાઇન ઇન કર્યું છે અને પછી ફરીથી મોકલવાનો પ્રયાસ કરો.</translation>
 <translation id="1812689907177901597">આને બંધ કરવાથી, તમે Chromeમાં સાઇન ઇન કર્યા સિવાય Gmail જેવી Googleની સાઇટમાં સાઇન ઇન કરી શકશો</translation>
+<translation id="1847459800604232346">CloudReady 2.0 ફરી શરૂ કરો</translation>
 <translation id="1860536484129686729">Chromeને આ સાઇટ માટે તમારા કૅમેરાના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
+<translation id="1865667134297225786">સાઇન ઇન વિગતો જૂની હોવાને કારણે CloudReady 2.0 તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="1873233029667955273">Google Chrome તમારું ડિફૉલ્ટ બ્રાઉઝર નથી</translation>
 <translation id="1874309113135274312">Google Chrome બીટા (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
+<translation id="1887927549935943139">CloudReady 2.0 તમારા ડેટાને સિંક કરી શક્યું નથી, કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">દરેક પ્રોફાઇલ બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજી ઘણી બાબતો જેવી તેની પોતાની Chrome માહિતી ધરાવે છે</translation>
 <translation id="2063848847527508675">અપડેટ લાગુ કરવા માટે Chrome OSને ફરી શરૂ કરવાની જરૂર છે.</translation>
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
@@ -52,18 +57,23 @@
 <translation id="2121284319307530122">&amp;Chrome અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />વર્તમાન સેટિંગ<ph name="END_LINK" />ની જાણ કરીને Chromeને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="2151406531797534936">કૃપા કરીને હવે Chrome ફરી શરૂ કરો</translation>
-<translation id="2189289170880510015">Chromeની કેટલીક સૌથી મહત્ત્વપૂર્ણ પ્રાઇવસીની પસંદગીઓ કસ્ટમાઇઝ કરો</translation>
+<translation id="2258103955319320201">Chrome બ્રાઉઝર પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે, સાઇન ઇન કરો અને પછી સિંક કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="2290014774651636340">Google API કીઝ ખૂટે છે. Google Chrome ની કેટલીક કાર્યક્ષમતા અક્ષમ થશે.</translation>
 <translation id="2290095356545025170">શું તમને ખાતરી છે કે તમારે Google Chromeને અનઇન્સ્ટૉલ કરવું છે?</translation>
+<translation id="2297776811548050971"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ડેવલપમેન્ટ વાતાવરણ<ph name="END_LINK_LINUX_OSS" />ની જેમ, CloudReady 2.0 વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા તૈયાર કરવામાં આવ્યું છે.</translation>
 <translation id="2309047409763057870">આ Google Chrome નું દ્વિતીય ઇન્સ્ટૉલેશન છે અને આને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવી શકાતું નથી.</translation>
 <translation id="2345992953227471816">Chromeને આ એક્સ્ટેન્શનમાં માલવેર હોવાનું જાણવા મળ્યું છે:</translation>
 <translation id="2348335408836342058">Chromeને આ સાઇટ માટે તમારા કૅમેરા અને માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>
 <translation id="234869673307233423">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="235650106824528204">આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા કોઈપણ Chrome ડેટાને ઑફિસની પ્રોફાઇલના વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2371517829376452747">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />
+      CloudReady 2.0 સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
 <translation id="2429317896000329049">Google Chrome તમારા ડેટાને સમન્વયિત કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સમન્વયન ઉપલબ્ધ નથી.</translation>
 <translation id="2467438592969358367">Google Chrome તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="2485422356828889247">અનઇન્સ્ટૉલ કરો</translation>
 <translation id="2534507159460261402">Google Pay (Chrome પર કૉપિ કરેલ છે)</translation>
+<translation id="2563121210305478421">Chrome ફરીથી લૉન્ચ કરીએ?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chrome તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
 <translation id="2580411288591421699">હાલમાં ચાલી રહ્યું છે તે જ Google Chrome વર્ઝનને ઇન્સ્ટૉલ કરી શકાતું નથી. કૃપા કરીને Google Chrome બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="2586406160782125153">આ, તમારા બ્રાઉઝિંગ ડેટાને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -87,7 +97,9 @@
 <translation id="2926676257163822632">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromeને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="2926952073016206995">આ સાઇટ માટે Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="2929907241665500097">કંઈક ખોટુ થયું હોવાને કારણે Chrome અપડેટ કરી શકાયું નથી. <ph name="BEGIN_LINK" />Chrome અપડેટ કરવામાં આવતી સમસ્યાઓ અને નિષ્ફળ થયેલા અપડેટ સુધારો.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0ને અપડેટ કરવા ફરીથી લૉન્ચ કરો</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
+<translation id="303514781271618814">Chrome એવી સુવિધાઓની શોધખોળ કરી રહ્યું છે જે તમારા ડેટાના મર્યાદિત ઉપયોગ વડે પણ સાઇટને બ્રાઉઝિંગનો પહેલાં જેવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
 <translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
@@ -98,6 +110,7 @@
 <translation id="3114643501466072395">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા અન્ય પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">તમે આગલી વખત Google Chrome ને ફરીથી શરૂ કરશો ત્યારે તમારા ફેરફારો પ્રભાવી થશે.</translation>
 <translation id="3149510190863420837">Chrome ઍપ્લિકેશનો</translation>
+<translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
 <translation id="3360895254066713204">Chrome સહાયક</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome હમણાં ફરીથી લૉન્ચ થશે}=1{Chrome 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chrome # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="3395323229510056640">Chrome OS સાથે સહાય મેળવો</translation>
@@ -111,11 +124,11 @@
 <translation id="3533694711092285624">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે.</translation>
 <translation id="3541482654983822893">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3576528680708590453">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Google Chromeને વૈકલ્પિક બ્રાઉઝર ખોલવા માટે ગોઠવેલું છે.</translation>
+<translation id="3582634744482121096">વૈકલ્પિક: Googleને નિદાન અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને CloudReady 2.0ની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો.</translation>
 <translation id="3582972582564653026">તમારા બધા ડિવાઇસ પર Chromeને સિંક કરો અને મનગમતું બનાવો</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે}=1{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}one{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}other{અપડેટ લાગુ કરવા માટે તમે Chromeને ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપક ઇચ્છે છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}}</translation>
 <translation id="3622797965165704966">હવે તમારા Google એકાઉન્ટ સાથે અને શેર કરેલા કમ્પ્યુટર પર Chromeનો ઉપયોગ કરવો વધુ સરળ છે.</translation>
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
-<translation id="3678552270983184277">મોટા ભાગના લોકો માટે ડિફૉલ્ટ સેટિંગ કામ કરે છે, પરંતુ તમે Chromeનો ઉપયોગ જે રીતે કરવા માગતા હો, એ પ્રમાણે તમે તેમને કસ્ટમાઇઝ કરી શકો છો</translation>
 <translation id="3718181793972440140">આ, 1 આઇટમને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="3735758079232443276">જ્યારે તમે Chrome શરૂ કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="3779473566290487688">Google Chromeની ભાવિ અપડેટ મેળવા માટે, તમારે OS X 10.11 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર OS X 10.10નો ઉપયોગ કરે છે.</translation>
@@ -128,10 +141,11 @@
 <translation id="4050175100176540509">નવીનતમ વર્ઝનમાં મહત્ત્વપૂર્ણ સુરક્ષા સુધારણાઓ અને નવી સુવિધાઓ ઉપલબ્ધ છે.</translation>
 <translation id="4053720452172726777">Google Chrome ને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો</translation>
 <translation id="4110895483821904099">તમારી નવી Chrome પ્રોફાઇલ સેટઅપ કરો</translation>
-<translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
+<translation id="4147555960264124640">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ઇન્સ્ટૉલર આર્કાઇવને અનકોમ્પ્રેસ કરવામાં નિષ્ફળ. કૃપા કરીને Google Chrome ફરીથી ડાઉનલોડ કરો.</translation>
 <translation id="4191857738314598978">{0,plural, =1{એક દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}one{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}other{# દિવસની અંદર Chromeને ફરીથી લૉન્ચ કરો}}</translation>
 <translation id="4205939740494406371">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0 સિસ્ટમ</translation>
 <translation id="4242034826641750751">આ સાઇટ માટે Chromeને કૅમેરા અને માઇક્રોફોનની પરવાનગીઓની જરૂર છે</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="4251615635259297716">તમારા Chrome ડેટાને આ એકાઉન્ટ સાથે લિંક કરીએ?</translation>
@@ -144,21 +158,24 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />ને Chromeમાં ઉમેરવામાં આવ્યું છે</translation>
 <translation id="4384570495110188418">તમે સાઇન ઇન કરેલું ન હોવાને કારણે Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">વધારેલી સુરક્ષા ફિશિંગ અને માલવેરને બ્લૉક કરવામાં વધુ સહાયરૂપ થાય છે</translation>
 <translation id="4450664632294415862">Chrome - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="4480040274068703980">સાઇન ઇનમાં ભૂલ આવવાને કારણે Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="4521185804071812304">વૈકલ્પિક: Googleને નિદાન અને વપરાશ ડેટા ઑટોમૅટિક રીતે મોકલીને Chrome OSની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો.</translation>
+<translation id="4539063627668028557">CloudReady 2.0 વર્ઝન</translation>
 <translation id="4561051373932531560">Google Chrome થી તમે વેબ પર એક ફોન નંબર પર ક્લિક કરી શકો છો અને તેને Skype થી કૉલ કરી શકો છો!</translation>
+<translation id="4562712242781620537">CloudReady 2.0 સિસ્ટમ</translation>
 <translation id="4567424176335768812">તમે <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન છો. હવે તમે તમારા બધા સાઇન ઇન કરેલા ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ અને અન્ય સેટિંગને ઍક્સેસ કરી શકો છો.</translation>
 <translation id="4571503333518166079">Chromeની નોટિફિકેશનની સેટિંગ પર જાઓ</translation>
 <translation id="459622048091363950">એકવાર Chromeને ઍક્સેસ મળે, તે પછી વેબસાઇટ તમારી પાસે ઍક્સેસ માગી શકશે.</translation>
 <translation id="4600710005438004015">Chromeનું નવું વર્ઝન અપડેટ ન થવાથી, તમે નવી સુવિધાઓ અને સુરક્ષાના સુધારા ચૂકી રહ્યા છો.</translation>
 <translation id="4633000520311261472">Chrome ને સુરક્ષિત બનાવવા માટે, અમે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યાં હોઈ શકે છે તેવા કેટલાક એક્સ્ટેન્શન્સને અક્ષમ કર્યા છે.</translation>
-<translation id="4666328473657283332">Chrome પરની તમારી વસ્તુઓને તમારા બધા ડિવાઇસ પર ઍક્સેસ કરવા માટે સાઇન ઇન કરો, જેથી તમે સિંક કરવાની સુવિધા ચાલુ કરી શકો.</translation>
 <translation id="4728575227883772061">અનુલ્લેખિત ભૂલને કારણે ઇન્સ્ટોલેશન નિષ્ફળ રહ્યું. જો Google Chrome હાલમાં ચાલુ હોય, તો કૃપા કરીને તેને બંધ કરો અને તેનો ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4754614261631455953">Google Chrome કૅનેરી (mDNS-In)</translation>
 <translation id="4771048833395599659">આ ફાઇલ જોખમી હોઈ શકે છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
-<translation id="479167709087336770">આ પણ Google શોધમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
+<translation id="479167709087336770">આ પણ Google Searchમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
+<translation id="4873783916118289636">Chromeમાં પ્રાઇવસી અને સુરક્ષા સંબંધિત મુખ્ય નિયંત્રણોનો રિવ્યૂ કરો</translation>
 <translation id="4891791193823137474">Google Chrome ને પૃષ્ટભૂમિમાં ચાલવા દો</translation>
 <translation id="4895437082222824641">નવા Chrome &amp;ટૅબમાં લિંક ખોલો</translation>
 <translation id="4953650215774548573">Google Chrome ને તમારા ડિફોલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
@@ -172,10 +189,9 @@
 <translation id="5170938038195470297">તમારી પ્રોફાઇલનો ઉપયોગ કરી શકાતો નથી કારણ કે તે Google Chromeના નવા વર્ઝન તરફથી છે.
 
 કેટલીક સુવિધાઓ ઉપલબ્ધ થઈ શકે છે. કૃપા કરીને અલગ પ્રોફાઇલ ડિરેક્ટરીનો ઉલ્લેખ કરો અથવા Chromeના નવા વર્ઝનનો ઉપયોગ કરો.</translation>
-<translation id="5193136243808726294">Google Chrome OS, આ પેજને ખોલી શકતું નથી.</translation>
 <translation id="521447420733633466">જો તમે ડિવાઇસ શેર કરતા હો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેઓ તેમને જોઈએ તે પ્રમાણે Chromeનું સેટઅપ કરી શકે છે</translation>
 <translation id="5251420635869119124">અતિથિઓ કંઈપણ પાછળ છોડ્યાં વિના Chrome નો ઉપયોગ કરી શકે છે.</translation>
-<translation id="5251679006894510177">લગભગ અપ ટૂ ડેટ છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે, Chrome ફરીથી લૉન્ચ કરો. છૂપી વિંડો ફરીથી ખૂલશે નહીં.</translation>
+<translation id="5307623274346663914">અપડેટ લાગુ કરવા માટે CloudReady 2.0 ફરી શરૂ કરવાની જરૂર છે.</translation>
 <translation id="5334487786912937552">ફાઇલો ડાઉનલોડ કરવા માટે, Chromeને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
 <translation id="5386244825306882791">જ્યારે તમે Chrome શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="5394833366792865639">Chrome ટૅબ શેર કરો</translation>
@@ -184,12 +200,12 @@
 Google Chrome તમારા સેટિંગને રિકવર કરી શકતું નથી.</translation>
 <translation id="556024056938947818">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5657226924540934362">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />
-      Chrome OS સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> જોખમી હોઈ શકે છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{આ અપડેટ લાગુ કરવા માટે Chrome ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપકનું કહેવું છે}=1{આ અપડેટ લાગુ કરવા માટે Chrome ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપકનું કહેવું છે. તમારી છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}one{આ અપડેટ લાગુ કરવા માટે Chrome ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપકનું કહેવું છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}other{આ અપડેટ લાગુ કરવા માટે Chrome ફરીથી લૉન્ચ કરો એવું તમારા વ્યવસ્થાપકનું કહેવું છે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}}</translation>
+<translation id="5685161537284117504">વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા CloudReady 2.0 તૈયાર કરવામાં આવ્યું છે.</translation>
 <translation id="5686916850681061684">Google Chromeને કસ્ટમાઇઝ કરો અને તેનું નિયંત્રણ કરો. તમારે ક્યાંક ધ્યાન આપવાની જરૂર છે - વિગતો માટે ક્લિક કરો.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">સાઇન ઇનમાં ભૂલ આવવાને કારણે CloudReady 2.0 તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 સેકન્ડમાં ફરી શરૂ થશે}one{Google Chrome # સેકન્ડમાં ફરી શરૂ થશે}other{Google Chrome # સેકન્ડમાં ફરી શરૂ થશે}}</translation>
 <translation id="5736850870166430177">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Safe Browsingને મોકલી શકે છે</translation>
 <translation id="573759479754913123">Chrome OS વિશે</translation>
@@ -200,10 +216,11 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5901850848447342934">તમે Chrome બંધ કરશો, ત્યારે તમને <ph name="BEGIN_BOLD" />મોટાભાગની બધી સાઇટમાંથી સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે. જો સિંક કરવાની સુવિધા બંધ હશે, તો તમને <ph name="BEGIN_BOLD" />Googleની સેવાઓ અને Chromeમાંથી પણ સાઇન આઉટ<ph name="END_BOLD" /> કરવામાં આવશે.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન</translation>
-<translation id="5940385492829620908">તમારું વેબ, બુકમાર્ક્સ અને અન્ય Chrome સામગ્રી અહીં હોય છે.</translation>
+<translation id="5940385492829620908">તમારું વેબ, બુકમાર્ક અને અન્ય Chrome સામગ્રી અહીં હોય છે.</translation>
 <translation id="5941830788786076944">Google Chrome ને ડિફૉલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="6070348360322141662">વધારાની સુરક્ષા માટે, Google Chrome, તમારા ડેટાને એન્ક્રિપ્ટ કરશે</translation>
 <translation id="608006075545470555">આ બ્રાઉઝરમાં ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome હવે પહેલાંથી બહેતર બન્યું છે</translation>
 <translation id="6145313976051292476">Chromeમાં PDFs ખોલો</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -212,7 +229,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6291089322031436445">Chrome Dev ઍપ્લિકેશનો</translation>
 <translation id="6291549208091401781">Google Chrome, તમારા કમ્પ્યુટર પર પહેલાંથી તમામ વપરાશકર્તાઓ માટે ઇન્સ્ટૉલ કરેલ છે.</translation>
 <translation id="6368958679917195344">Chrome OS વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ખુલ્લા સ્ત્રોત સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બને છે.</translation>
-<translation id="6412673304250309937">URLsને Chromeમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
+<translation id="6412673304250309937">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="6418662306461808273">વર્તમાન Chrome પ્રોફાઇલ પર સ્વિચ કરીએ?</translation>
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
@@ -221,33 +238,47 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6679975945624592337">Google Chromeને બૅકગ્રાઉન્ડમાં ચાલવા દો</translation>
 <translation id="6696915334902295848">આ સાઇટ માટે Chromeને માઇક્રોફોનની પરવાનગીની જરૂર છે</translation>
 <translation id="6739177684496155661">નવી Chrome પ્રોફાઇલમાં બ્રાઉઝિંગ ચાલુ રાખીએ?</translation>
+<translation id="6749459139769042303">CloudReady 2.0 માટે સહાય મેળવો</translation>
 <translation id="6750954913813541382">જોડણીની ભૂલો સુધારવા માટે, તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Chrome દ્વારા Googleને મોકલવામાં આવે છે</translation>
 <translation id="677276454032249905">છતાં પણ Chromeમાંથી બહાર નિકળવું છે?</translation>
+<translation id="6814748008107187409">જો આ પેજ પર સેટિંગ બતાવેલું ન હોય, તો તમારા <ph name="LINK_BEGIN" />
+      Chrome OS સેટિંગ<ph name="LINK_END" />માં જુઓ</translation>
 <translation id="683440813066116847">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome કૅનેરી માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="6881299373831449287">Chrome અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="6885412569789873916">Chrome બીટા ઍપ્લિકેશનો</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> માટે જરૂરી છે કે આ ડિવાઇસનો ઉપયોગ કરતા પહેલાં તમે નીચેની સેવાની શરતો વાંચો અને સ્વીકારો. આ શરતો Google CloudReady 2.0ની શરતોનો વિસ્તાર કરતી નથી, તેમાં ફેરફાર કરતી નથી કે તેને મર્યાદિત કરતી નથી.</translation>
 <translation id="6943584222992551122">આ વ્યક્તિનો બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે. આ ડેટા પાછો મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="6967962315388095737">mDNS ટ્રાફિકને મંજૂરી આપવા માટે Google Chrome બીટા માટે ઇનબાઉન્ડ નિયમ.</translation>
 <translation id="6989339256997917931">Google Chrome અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
+<translation id="700644001690392105">CloudReady 2.0 વિશે</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
+<translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
+
+તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="7062128746136194023">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ઉમેરવાની મંજૂરી નથી.</translation>
+<translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
 <translation id="7098166902387133879">Google Chrome તમારા માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="7106741999175697885">કાર્ય વ્યવસ્થાપક - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે.}=1{Chrome માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}one{Chrome માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}other{Chrome માટે નવી અપડેટ ઉપલબ્ધ છે અને તે જેવું તમે ફરીથી લૉન્ચ કરશો, તેને લાગુ કરવામાં આવશે. તમારી # છુપી વિન્ડો ફરીથી ખૂલશે નહીં.}}</translation>
 <translation id="7155997830309522122">જો એવું હોય, તો કૃપા કરીને Chromeમાં તમારા સાચવેલા પાસવર્ડમાં ફેરફાર કરો જેથી તે તમારા નવા પાસવર્ડ સાથે મેળ ખાય.</translation>
 <translation id="7161904924553537242">Google Chrome માં સ્વાગત છે</translation>
-<translation id="7242029209006116544">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર એડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> પર બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડ દ્વારા આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. તમારા અસ્તિત્વમાં છે તે Chrome ડેટાને અલગ રાખવા માટે, તમે વૈકલ્પિક રૂપે એક નવી પ્રોફાઇલ બનાવી શકો છો. <ph name="LEARN_MORE" /></translation>
+<translation id="7242029209006116544">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Google Chrome પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chrome ડેટા, જેમ કે તમારી ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડ દ્વારા આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. તમે હાલના Chrome ડેટાને અલગ રાખવા માટે વૈકલ્પિક રીતે એક નવી પ્રોફાઇલ બનાવી શકો છો. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">આ ભાષાનો ઉપયોગ Google Chrome UI પ્રદર્શિત કરવા માટે થાય છે</translation>
 <translation id="7296210096911315575">મહત્વપૂર્ણ ઉપયોગ અને સુરક્ષા માહિતી</translation>
 <translation id="7308322188646931570">ફાઇલો ડાઉનલોડ કરવા માટે Chromeને સ્ટોરેજના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
+<translation id="7388770099345495132">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં અતિથિ મોડનો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
+
+તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="7398801000654795464">તમે Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું હતું. ફરીથી સાઇન ઇન કરવા માટે કૃપા કરીને એ જ એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="7408085963519505752">Chrome OS શરતો</translation>
 <translation id="7419046106786626209">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>
+<translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7486227612705979895">ઍડ્રેસ બારમાં સૂચનો કરવા માટે, Chrome તમારી ડ્રાઇવને ઍક્સેસ કરશે</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">તમારું ડિવાઇસ અપ ટૂ ડેટ છે કે નહીં, તે જાણવા માટે <ph name="LINK_BEGIN" />Chrome OS સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>
+<translation id="7580049017368059129">તમારું ડિવાઇસ અપ ટૂ ડેટ છે કે નહીં, તે જાણવા માટે <ph name="LINK_BEGIN" />CloudReady 2.0 સેટિંગ<ph name="LINK_END" /> પર જાઓ</translation>
 <translation id="7592736734348559088">સાઇન ઇન વિગતો જૂની હોવાને કારણે Google Chrome તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7629695634924605473">Chrome વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
@@ -255,6 +286,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7651907282515937834">Chrome એન્ટરપ્રાઇઝ લૉગો</translation>
 <translation id="7665553140559834626">&amp;Chrome OS અપડેટ કરવા માટે, ફરીથી લૉન્ચ કરો</translation>
 <translation id="7747138024166251722">ઇન્સ્ટૉલર અસ્થાયી ડિરેક્ટરી બનાવી શક્યું નથી. કૃપા કરીને ખાલી ડિસ્ક સ્પેસ માટે અને સૉફ્ટવેર ઇન્સ્ટૉલ કરવાની પરવાનગી માટે તપાસો.</translation>
+<translation id="7748512868279796735">આ Chrome પ્રોફાઇલ માટે નીચે આપેલા એકાઉન્ટ ઉપલબ્ધ છે</translation>
 <translation id="7761834446675418963">Chrome ને ખોલવા માટે તમારા નામને ક્લિક કરો અને બ્રાઉઝ કરવાનું પ્રારંભ કરો.</translation>
 <translation id="7777080907402804672">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે. તમે આને કોઈપણ સમયે સેટિંગમાં જઈને બંધ કરી શકો છો.</translation>
 <translation id="7781002470561365167">Google Chromeનું નવું વર્ઝન ઉપલબ્ધ છે.</translation>
@@ -272,8 +304,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8008534537613507642">Chrome ફરીથી ઇન્સ્ટોલ કરો</translation>
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
-<translation id="822971176939352383">નીચે જણાવેલા એકાઉન્ટ દ્વારા કોઈ Chrome પ્રોફાઇલમાં સાઇન ઇન કરવામાં આવ્યું નથી. જો તમે અન્ય પ્રોફાઇલમાં એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો પહેલાં તે પ્રોફાઇલને કાઢી નાખો.</translation>
-<translation id="8255190535488645436">Google Chrome તમારા કેમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="828798499196665338">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
 <translation id="8290100596633877290">ઓહ! Google Chrome ક્રેશ થઈ ગયું. હમણાં ફરીથી લોંચ કરીએ?</translation>
@@ -287,6 +318,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">ઑફિસની આ પ્રોફાઇલ તમારી વ્યક્તિગત પ્રોફાઇલથી સાવ અલગ છે.</translation>
 <translation id="8556340503434111824">Google Chromeનું એક નવું વર્ઝન ઉપલબ્ધ છે અને તે પહેલાં કરતાંએ વધુ ઝડપી છે.</translation>
+<translation id="8571790202382503603">Chrome પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chrome પર અલગ-અલગ રાખી શકો છો. આનાથી ઑફિસ અને મનોરંજન વચ્ચે વિભાજન કરવાનું સરળ બને છે.</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
@@ -295,6 +327,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8669527147644353129">Google Chrome સહાયક</translation>
 <translation id="8679801911857917785">જ્યારે તમે Chrome શરૂ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="8686817260976772516">Chrome પ્રોફાઇલ વડે તમે તમારી બધી વસ્તુઓ Chrome પર અલગ-અલગ રાખી શકો છો. મિત્રો અને કુટુંબ માટે પ્રોફાઇલ બનાવો અથવા તેને ઑફિસ અને મનોરંજન વચ્ચે વિભાજિત કરો.</translation>
+<translation id="8712767363896337380">લગભગ અપ ટૂ ડેટ છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે, Chrome ફરીથી લૉન્ચ કરો.</translation>
 <translation id="873133009373065397">Google Chrome ડિફૉલ્ટ બ્રાઉઝરને નિર્ધારિત અથવા સેટ કરી શકતું નથી</translation>
 <translation id="8823341990149967727">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="8834965163890861871">Google Chrome પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
@@ -302,6 +335,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8862326446509486874">તમારી પાસે સિસ્ટમ-સ્તરનાં ઇન્સ્ટોલ માટે ઉચિત અધિકારો નથી. એડમિન તરીકે ઇન્સ્ટૉલરને ફરીથી ચલાવવનો પ્રયાસ કરો.</translation>
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />માંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
+<translation id="8983720963221508955">તમે તમારા એકાઉન્ટમાં Safe Browsingમાં વધારેલી સુરક્ષાની સુવિધા ચાલુ કરી છે. હવે આ સુવિધા Chrome માટે મેળવો.</translation>
 <translation id="8986207147630327271">તમે આ બ્રાઉઝરમાં ઑફિસની પ્રોફાઇલ ઉમેરી રહ્યાં છો અને તમારા વ્યવસ્થાપકને માત્ર ઑફિસની પ્રોફાઇલનો નિયંત્રણ આપી રહ્યાં છો.</translation>
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="9026991721384951619">સાઇન ઇન વિગતો જૂની હોવાને કારણે Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી.</translation>

@@ -5,11 +5,12 @@
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 
 #include "base/check.h"
+#include "build/build_config.h"
 
 TriggeredProfileResetter::TriggeredProfileResetter(Profile* profile)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     : profile_(profile)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 {
 }
 

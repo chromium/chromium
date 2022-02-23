@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="102360288709523007">Bantu jadikan Chromium lebih baik dengan menghantar laporan perangkaan penggunaan dan ranap sistem kepada Google.</translation>
+<translation id="1047130070405668746">Pilih Chromium</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chromium membuat penambahan pada foto anda.</translation>
 <translation id="1289216811211435351">Beralih kepada Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Memaparkan gesaan untuk log masuk ke Chromium.</translation>
 <translation id="1584569488888892906">Chromium mudah, selamat dan lebih pantas berbanding dengan dahulu</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
+<translation id="1722370509450468186">Kata laluan anda akan disimpan dalam Account anda (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Data Chromium dikosongkan</translation>
 <translation id="1838412507805038478">Chromium mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil laman web ini.</translation>
 <translation id="1843424232666537147">Chromium mempunyai ciri yang membantu anda mengurus data Internet dan kepantasan anda memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Pilih Chromium</translation>
 <translation id="2006345422933397527">Chromium tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="2054703085270098503">Kekal Selamat dengan Chromium</translation>
 <translation id="2168108852149185974">Beberapa alat tambah menyebabkan Chromium ranap. Sila nyahpasang:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Tidak disokong pada Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
-<translation id="3946918322491238254">Anda masih boleh melihat semua penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika anda perubahan dibuat, perubahan itu tidak akan disegerakkan ke akaun anda.</translation>
+<translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chromium telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="6752854822223394465">Organisasi anda sedang menyediakan Chromium...</translation>
 <translation id="6820823224820483452">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
+<translation id="7006920032187763988">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPad anda.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat mengemas kini</translation>
 <translation id="7045244423563602563">Peribadikan Chromium Anda</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera anda dalam mod Paparan Pisah</translation>
 <translation id="7108914401277488191">Selesaikan Lebih Banyak Perkara dengan Chromium</translation>
 <translation id="7118091470949186573">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="7175400662502680481">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan mengesyorkan agar anda menukarnya sekarang.</translation>
 <translation id="7208566199746267865">Chromium menjimatkan masa dengan membawa akaun anda ke web. Anda boleh menambahkan atau mengalih keluar akaun dalam Tetapan.</translation>
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="7269362888766543920">Beberapa alat tambah menyebabkan Chromium ranap. Sila cuba menyahpasang alat tambah tersebut.</translation>
 <translation id="7313655110045230863">Untuk menjadikan Chromium sebagai penyemak imbas lalai anda, buka Tetapan. Ketik Apl Penyemak Imbas Lalai, kemudian pilih Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Data yang dipilih telah dialih keluar daripada Chromium dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di history.google.com.</translation>
+<translation id="7395825497086981028">Kata laluan anda akan disimpan pada Pengurus Kata Laluan untuk <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Gunakan Chromium Di Mana-mana Sahaja</translation>
 <translation id="766897673682622022">Kata laluan anda terdedah dalam suatu pelanggaran data. Chromium mengesyorkan supaya kata laluan ditukar sekarang.</translation>
 <translation id="7674213385180944843">Buka Tetapan &gt; Privasi &gt; Kamera &gt; Chromium dan hidupkan kamera.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Kosongkan data Chromium anda daripada peranti ini?</translation>
 <translation id="8175055321229419309">Petua: <ph name="BEGIN_LINK" />Alihkan Chromium ke dok anda<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
+<translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8663480472502753423">Pastikan Chromium terkini</translation>
 <translation id="8776843108004031667">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chromium.</translation>
 <translation id="894437814105052438">Apabila anda log keluar, Chromium tidak akan menyegerakkan sebarang data baharu ke Akaun Google anda. Data yang disegerakkan sebelumnya akan dikekalkan dalam akaun.</translation>
 <translation id="9022552996538154597">Log masuk ke Chromium</translation>
+<translation id="9059693977935746710">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Pengurus Kata Laluan untuk <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium sudah usang</translation>
 <translation id="9110075932708282655">Gunakan Chromium secara Lalai</translation>
 <translation id="921174536258924340">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>

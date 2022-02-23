@@ -29,10 +29,12 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -109,7 +111,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnSuccess() {
+    public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         final AccessTokenData expectedToken = mAccountManagerFacade.getAccessToken(ACCOUNT, scope);
@@ -121,7 +123,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    public void testGetOAuth2AccessTokenOnFailure() {
+    public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
         doReturn(null).when(mAccountManagerFacade).getAccessToken(any(Account.class), anyString());
@@ -141,6 +143,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "Test is flaky, see crbug.com/1291110")
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(

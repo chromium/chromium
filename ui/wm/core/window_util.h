@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -22,7 +21,7 @@ namespace ui {
 class Layer;
 class LayerOwner;
 class LayerTreeOwner;
-}
+}  // namespace ui
 
 namespace wm {
 
@@ -39,6 +38,12 @@ WM_CORE_EXPORT bool WindowStateIs(const aura::Window* window,
 // Sets the window state to |state|.
 WM_CORE_EXPORT void SetWindowState(aura::Window* window,
                                    ui::WindowShowState state);
+
+// Restores the window state from the current state to its previous applicable
+// state. As an example, if the current state is minimized, Restore() will
+// change the window's sate to its applicable pre-minimized state, which is the
+// same as calling Unminimize() function.
+WM_CORE_EXPORT void Restore(aura::Window* window);
 
 // Changes a window's state to its pre-minimized state.
 WM_CORE_EXPORT void Unminimize(aura::Window* window);

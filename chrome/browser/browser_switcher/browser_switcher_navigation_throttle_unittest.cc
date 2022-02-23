@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
@@ -41,11 +42,12 @@ class MockBrowserSwitcherSitelist : public BrowserSwitcherSitelist {
   ~MockBrowserSwitcherSitelist() override = default;
 
   MOCK_CONST_METHOD1(GetDecision, Decision(const GURL&));
-  MOCK_METHOD1(SetIeemSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalGreylist, void(ParsedXml&&));
+  MOCK_METHOD1(SetIeemSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalGreylist, void(RawRuleSet&&));
   MOCK_CONST_METHOD0(GetIeemSitelist, const RuleSet*());
   MOCK_CONST_METHOD0(GetExternalSitelist, const RuleSet*());
+  MOCK_CONST_METHOD0(GetExternalGreylist, const RuleSet*());
 };
 
 }  // namespace
@@ -85,7 +87,7 @@ class BrowserSwitcherNavigationThrottleTest
   Decision go() { return {kGo, kSitelist, bogus_rule_.get()}; }
 
  private:
-  MockBrowserSwitcherSitelist* sitelist_;
+  raw_ptr<MockBrowserSwitcherSitelist> sitelist_;
 
   std::unique_ptr<Rule> bogus_rule_ =
       CanonicalizeRule("//example.com/", ParsingMode::kDefault);
@@ -118,9 +120,14 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
       .WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(false));
+
   std::unique_ptr<NavigationThrottle> throttle =
       CreateNavigationThrottle(handle.get());
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest());
+
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(true));
+
   handle->set_url(GURL("https://bing.com/"));
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest());

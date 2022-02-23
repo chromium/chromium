@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -18,8 +19,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/web_application_info.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -82,8 +82,7 @@ class IntentPickerBubbleViewBrowserTest
 };
 
 // Tests that clicking a link from a tabbed browser to within the scope of an
-// installed app shows the intent picker icon in Omnibox. The intent picker
-// bubble will only show up for android apps which is too hard to test.
+// installed app shows the intent picker icon in Omnibox.
 IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
                        NavigationToInScopeLinkShowsIntentPicker) {
   InstallTestWebApp();
@@ -103,10 +102,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
-  if (!base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) {
-    EXPECT_FALSE(intent_picker_bubble());
-    GetIntentPickerIcon()->ExecuteForTesting();
-  }
+#if !BUILDFLAG(IS_CHROMEOS)
+  // On Chrome OS, the picker bubble will appear automatically.
+  EXPECT_FALSE(intent_picker_bubble());
+  GetIntentPickerIcon()->ExecuteForTesting();
+#endif
 
   waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(intent_picker_bubble());
@@ -139,20 +139,13 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when an
 // outside of scope link is opened within the context of the PWA.
-// Flaky on Linux: https://crbug.com/1186613
-#if defined(OS_LINUX)
-#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
-  DISABLED_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
-#else
-#define MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker \
-  NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker
-#endif
 IN_PROC_BROWSER_TEST_P(
     IntentPickerBubbleViewBrowserTest,
-    MAYBE_NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
+    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
   InstallTestWebApp();
 
   // No intent picker should be seen when first opening the web app.
@@ -183,6 +176,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(nullptr, intent_picker_bubble());
   }
 }
+#endif
 
 // Tests that the intent icon updates its visibiliy when switching between
 // tabs.
@@ -395,7 +389,7 @@ class IntentPickerDialogTest : public DialogBrowserTest {
     add_entry("c");
     add_entry("d");
     IntentPickerBubbleView::ShowBubble(
-        anchor, anchor, PageActionIconType::kIntentPicker,
+        anchor, anchor, IntentPickerBubbleView::BubbleType::kLinkCapturing,
         browser()->tab_strip_model()->GetActiveWebContents(),
         std::move(app_info), true, true,
         url::Origin::Create(GURL("https://c.com")), base::DoNothing());

@@ -1,0 +1,106 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("fast_pair_handshake") {
+  sources = [
+    "fast_pair_data_encryptor.h",
+    "fast_pair_data_encryptor_impl.cc",
+    "fast_pair_data_encryptor_impl.h",
+    "fast_pair_encryption.cc",
+    "fast_pair_encryption.h",
+    "fast_pair_gatt_service_client.h",
+    "fast_pair_gatt_service_client_impl.cc",
+    "fast_pair_gatt_service_client_impl.h",
+    "fast_pair_handshake.cc",
+    "fast_pair_handshake.h",
+    "fast_pair_handshake_impl.cc",
+    "fast_pair_handshake_impl.h",
+    "fast_pair_handshake_lookup.cc",
+    "fast_pair_handshake_lookup.h",
+    "fast_pair_key_pair.cc",
+    "fast_pair_key_pair.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair/public/cpp",
+    "//base",
+    "//crypto:crypto",
+    "//device/bluetooth",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_fast_pair_data_encryptor.cc",
+    "fake_fast_pair_data_encryptor.h",
+    "fake_fast_pair_gatt_service_client.cc",
+    "fake_fast_pair_gatt_service_client.h",
+    "fake_fast_pair_handshake.cc",
+    "fake_fast_pair_handshake.h",
+    "fast_pair_data_encryptor.h",
+    "fast_pair_gatt_service_client.h",
+    "fast_pair_handshake.h",
+    "fast_pair_handshake_lookup.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//ash/services/quick_pair/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_pair_data_encryptor_impl_unittest.cc",
+    "fast_pair_encryption_unittest.cc",
+    "fast_pair_gatt_service_client_unittest.cc",
+    "fast_pair_handshake_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":fast_pair_handshake",
+    ":test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
+    "//ash/services/quick_pair/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("fast_pair_encryption_fuzzer") {
+  sources = [ "fast_pair_encryption_fuzzer.cc" ]
+  deps = [
+    ":fast_pair_handshake",
+    "//ash:test_support",
+    "//ash/quick_pair/common",
+    "//ash/services/quick_pair",
+    "//base",
+  ]
+}

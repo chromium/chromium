@@ -121,7 +121,7 @@ class WeakHandleCore : public WeakHandleCoreBase,
   friend class base::RefCountedThreadSafe<WeakHandleCore<T>>;
 
   // May be destroyed on any thread.
-  ~WeakHandleCore() {}
+  ~WeakHandleCore() = default;
 
   // Must be dereferenced only on the owner thread.  May be destroyed
   // from any thread.
@@ -136,7 +136,7 @@ template <typename T>
 class WeakHandle {
  public:
   // Creates an uninitialized WeakHandle.
-  WeakHandle() {}
+  WeakHandle() = default;
 
   // Creates an initialized WeakHandle from |ptr|.
   explicit WeakHandle(const base::WeakPtr<T>& ptr)

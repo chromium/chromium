@@ -12,12 +12,12 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 base::PlatformThreadId CurrentThread() {
   thread_local base::PlatformThreadId g_id = base::PlatformThread::CurrentId();
   return g_id;
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 
 // For debugging only -- whether a non-main thread has been created.
 
@@ -52,7 +52,7 @@ void Threading::Initialize() {
   WtfThreading();
 }
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
 size_t Threading::ThreadStackSize() {
   // Needed to bootstrap Threading on Windows, because this value is needed
   // before the main thread data is fully initialized.

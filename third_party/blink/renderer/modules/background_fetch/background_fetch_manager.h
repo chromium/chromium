@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 class SkBitmap;
 
@@ -49,7 +48,8 @@ class MODULES_EXPORT BackgroundFetchManager final
   ScriptPromise get(ScriptState* script_state,
                     const String& id,
                     ExceptionState& exception_state);
-  ScriptPromise getIds(ScriptState* script_state);
+  ScriptPromise getIds(ScriptState* script_state,
+                       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 

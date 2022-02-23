@@ -9,7 +9,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 
 /** Delegate for the Collect user data UI which forwards events to a native counterpart. */
@@ -28,39 +30,52 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onContactInfoChanged(
-            @Nullable AssistantCollectUserDataModel.ContactModel contactModel) {
+    public void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+            @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onContactInfoChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    contactModel == null ? null : contactModel.mOption.getProfile());
+                    contactModel == null ? null : contactModel.mOption, eventType);
         }
     }
 
     @Override
-    public void onShippingAddressChanged(
-            @Nullable AssistantCollectUserDataModel.AddressModel addressModel) {
+    public void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+            @AssistantUserDataEventType int eventType) {
+        if (mNativeAssistantCollectUserDataDelegate != 0) {
+            AssistantCollectUserDataNativeDelegateJni.get().onPhoneNumberChanged(
+                    mNativeAssistantCollectUserDataDelegate,
+                    AssistantCollectUserDataNativeDelegate.this,
+                    contactModel == null ? null : contactModel.mOption, eventType);
+        }
+    }
+
+    @Override
+    public void onShippingAddressChanged(@Nullable AssistantOptionModel.AddressModel addressModel,
+            @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onShippingAddressChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    addressModel == null ? null : addressModel.mOption.getProfile());
+                    addressModel == null ? null : addressModel.mOption, eventType);
         }
     }
 
     @Override
     public void onPaymentMethodChanged(
-            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel) {
+            @Nullable AssistantOptionModel.PaymentInstrumentModel paymentInstrumentModel,
+            @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onCreditCardChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
                     paymentInstrumentModel == null ? null
-                                                   : paymentInstrumentModel.mOption.getCard(),
+                                                   : paymentInstrumentModel.mOption.getCreditCard(),
                     paymentInstrumentModel == null
                             ? null
-                            : paymentInstrumentModel.mOption.getBillingProfile());
+                            : paymentInstrumentModel.mOption.getBillingAddress(),
+                    eventType);
         }
     }
 
@@ -84,74 +99,14 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
 
     @Override
     public void onLoginChoiceChanged(
-            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel) {
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel,
+            @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onLoginChoiceChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    loginChoiceModel == null ? null : loginChoiceModel.mOption.getIdentifier());
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (date != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartDateChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, date.getYear(),
-                        date.getMonth(), date.getDay());
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartDateCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (index != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartTimeSlotChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, (int) index);
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartTimeSlotCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (date != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndDateChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, date.getYear(),
-                        date.getMonth(), date.getDay());
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndDateCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (index != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndTimeSlotChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, (int) index);
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndTimeSlotCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
+                    loginChoiceModel == null ? null : loginChoiceModel.mOption.getIdentifier(),
+                    eventType);
         }
     }
 
@@ -182,36 +137,23 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     interface Natives {
         void onContactInfoChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.AutofillProfile contactProfile);
+                @Nullable AssistantAutofillProfile contactProfile, int eventType);
+        void onPhoneNumberChanged(long nativeAssistantCollectUserDataDelegate,
+                AssistantCollectUserDataNativeDelegate caller,
+                @Nullable AssistantAutofillProfile phoneNumber, int eventType);
         void onShippingAddressChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.AutofillProfile address);
+                @Nullable AssistantAutofillProfile address, int eventType);
         void onCreditCardChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.CreditCard card,
-                @Nullable PersonalDataManager.AutofillProfile billingProfile);
+                @Nullable AssistantAutofillCreditCard card,
+                @Nullable AssistantAutofillProfile billingProfile, int eventType);
         void onTermsAndConditionsChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, int state);
         void onTextLinkClicked(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, int link);
         void onLoginChoiceChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, String choice);
-        void onDateTimeRangeStartDateChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int year, int month, int day);
-        void onDateTimeRangeStartTimeSlotChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int index);
-        void onDateTimeRangeEndDateChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int year, int month, int day);
-        void onDateTimeRangeEndTimeSlotChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int index);
-        void onDateTimeRangeStartDateCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeStartTimeSlotCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeEndDateCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeEndTimeSlotCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
+                AssistantCollectUserDataNativeDelegate caller, String choice, int eventType);
         void onKeyValueChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, String key, AssistantValue value);
         void onInputTextFocusChanged(long nativeAssistantCollectUserDataDelegate,

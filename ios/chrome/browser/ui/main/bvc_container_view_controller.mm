@@ -8,7 +8,9 @@
 
 #include "base/check_op.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,6 +22,11 @@
 // tab strip.
 @property(nonatomic, weak)
     ViewRevealingVerticalPanHandler* thumbStripPanHandler;
+
+// Background behind toolbar and webview during animation to avoid seeing
+// partial color streaks from background with different color between the
+// different moving parts.
+@property(nonatomic, strong) UIView* solidBackground;
 
 @end
 
@@ -48,7 +55,7 @@
   }
 
   DCHECK_EQ(nil, self.currentBVC);
-  DCHECK_EQ(0U, self.view.subviews.count);
+  DCHECK_EQ(self.isThumbStripEnabled ? 1U : 0U, self.view.subviews.count);
 
   // Add the new active view controller.
   if (bvc) {
@@ -68,23 +75,29 @@
 
 #pragma mark - UIViewController methods
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+}
+
 - (void)presentViewController:(UIViewController*)viewControllerToPresent
                      animated:(BOOL)flag
                    completion:(void (^)())completion {
-  // Force presentation to go through the current BVC, which does some
-  // associated bookkeeping.
-  DCHECK(self.currentBVC);
-  [self.currentBVC presentViewController:viewControllerToPresent
-                                animated:flag
-                              completion:completion];
+  // Force presentation to go through the current BVC, if possible, which does
+  // some associated bookkeeping.
+  UIViewController* viewController =
+      self.currentBVC ? self.currentBVC : self.fallbackPresenterViewController;
+  [viewController presentViewController:viewControllerToPresent
+                               animated:flag
+                             completion:completion];
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
-  // Force dismissal to go through the current BVC, which does some associated
-  // bookkeeping.
-  DCHECK(self.currentBVC);
-  [self.currentBVC dismissViewControllerAnimated:flag completion:completion];
+  // Force dismissal to go through the current BVC, if possible, which does some
+  // associated bookkeeping.
+  UIViewController* viewController =
+      self.currentBVC ? self.currentBVC : self.fallbackPresenterViewController;
+  [viewController dismissViewControllerAnimated:flag completion:completion];
 }
 
 - (UIViewController*)childViewControllerForStatusBarHidden {
@@ -113,6 +126,10 @@
     if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.revealedHeight);
+    } else if (self.thumbStripPanHandler.currentState ==
+               ViewRevealState::Fullscreen) {
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.baseViewHeight);
     }
   }
 }
@@ -126,12 +143,20 @@
 - (void)thumbStripEnabledWithPanHandler:
     (ViewRevealingVerticalPanHandler*)panHandler {
   DCHECK(!self.thumbStripEnabled);
+  self.solidBackground = [[UIView alloc] initWithFrame:self.view.bounds];
+  self.solidBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  self.solidBackground.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.solidBackground.hidden = YES;
+  [self.view addSubview:self.solidBackground];
   self.thumbStripPanHandler = panHandler;
   [panHandler addAnimatee:self];
 }
 
 - (void)thumbStripDisabled {
   DCHECK(self.thumbStripEnabled);
+  [self.solidBackground removeFromSuperview];
+  self.solidBackground = nil;
   self.view.transform = CGAffineTransformIdentity;
   self.thumbStripPanHandler = nil;
 }
@@ -140,28 +165,47 @@
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
-  // No-op.
+  [self.view sendSubviewToBack:self.solidBackground];
+  self.solidBackground.hidden = NO;
+  self.solidBackground.overrideUserInterfaceStyle =
+      self.incognito ? UIUserInterfaceStyleDark
+                     : UIUserInterfaceStyleUnspecified;
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  CGFloat topOffset = self.view.window.safeAreaInsets.top;
   DCHECK(self.thumbStripPanHandler);
   switch (nextViewRevealState) {
     case ViewRevealState::Hidden:
       self.view.transform = CGAffineTransformIdentity;
+      self.solidBackground.transform =
+          CGAffineTransformMakeTranslation(0, topOffset + kTabStripHeight);
       break;
     case ViewRevealState::Peeked:
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.peekedHeight);
+      self.solidBackground.transform =
+          CGAffineTransformMakeTranslation(0, topOffset);
       break;
     case ViewRevealState::Revealed:
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.revealedHeight);
+      self.solidBackground.transform =
+          CGAffineTransformMakeTranslation(0, topOffset);
+      break;
+    case ViewRevealState::Fullscreen:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.baseViewHeight);
+      self.solidBackground.transform =
+          CGAffineTransformMakeTranslation(0, topOffset);
       break;
   }
 }
 
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  // No-op.
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
+  self.solidBackground.hidden = YES;
 }
 
 @end

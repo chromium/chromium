@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {

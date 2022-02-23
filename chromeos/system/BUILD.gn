@@ -21,16 +21,21 @@ component("system") {
     "cpu_temperature_reader.h",
   ]
 
+  if (is_chromeos) {
+    deps += [ "//chromeos:chromeos_export" ]
+    sources += [
+      "core_scheduling.cc",
+      "core_scheduling.h",
+    ]
+  }
+
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
       "//base",
-      "//chromeos:chromeos_export",
       "//ui/ozone:ozone_base",
     ]
     sources += [
-      "core_scheduling.cc",
-      "core_scheduling.h",
       "devicemode.cc",
       "devicemode.h",
       "factory_ping_embargo_check.cc",

@@ -51,16 +51,16 @@ void PopulateExtensionInfo(
     extension_info->set_state(Info::STATE_TERMINATED);
 
   extension_info->set_type(extension.GetType());
-  std::string update_url;
-  if (extension.manifest()->GetString(extensions::manifest_keys::kUpdateURL,
-                                      &update_url)) {
-    extension_info->set_update_url(update_url);
+  if (const std::string* update_url = extension.manifest()->FindStringPath(
+          extensions::manifest_keys::kUpdateURL)) {
+    extension_info->set_update_url(*update_url);
   }
 
   extension_info->set_installed_by_default(
       extension.was_installed_by_default());
   extension_info->set_installed_by_oem(extension.was_installed_by_oem());
-  extension_info->set_from_bookmark(extension.from_bookmark());
+  // TODO(crbug.com/1065748): Remove this setter.
+  extension_info->set_from_bookmark(false);
   extension_info->set_from_webstore(extension.from_webstore());
   extension_info->set_converted_from_user_script(
       extension.converted_from_user_script());

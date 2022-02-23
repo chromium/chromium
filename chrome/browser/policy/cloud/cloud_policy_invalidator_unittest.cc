@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/policy/cloud/policy_invalidation_util.h"
 #include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
-#include "chrome/common/chrome_features.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -202,7 +201,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
   invalidation::FakeInvalidationService invalidation_service_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
-  MockCloudPolicyClient* client_;
+  raw_ptr<MockCloudPolicyClient> client_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SimpleTestClock clock_;
 
@@ -307,9 +306,8 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
   store_.invalidation_version_ = invalidation_version;
   store_.set_policy_data_for_testing(std::move(data));
   base::DictionaryValue policies;
-  policies.SetInteger(
-      key::kMaxInvalidationFetchDelay,
-      CloudPolicyInvalidator::kMaxFetchDelayMin);
+  policies.SetIntKey(key::kMaxInvalidationFetchDelay,
+                     CloudPolicyInvalidator::kMaxFetchDelayMin);
   store_.policy_map_.LoadFrom(
       &policies,
       POLICY_LEVEL_MANDATORY,
@@ -881,15 +879,10 @@ TEST_F(CloudPolicyInvalidatorTest, Disconnect) {
 class CloudPolicyInvalidatorOwnerNameTest
     : public CloudPolicyInvalidatorTestBase {
  protected:
-  CloudPolicyInvalidatorOwnerNameTest() {
-    features_.InitAndEnableFeature(::features::kInvalidatorUniqueOwnerName);
-  }
-
   PolicyInvalidationScope GetPolicyInvalidationScope() const override {
     return scope_;
   }
 
-  base::test::ScopedFeatureList features_;
   PolicyInvalidationScope scope_;
 };
 

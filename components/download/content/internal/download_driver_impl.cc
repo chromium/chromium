@@ -16,12 +16,15 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/download/internal/background_service/driver_entry.h"
+#include "components/download/network/download_http_utils.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "net/http/http_byte_range.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -171,8 +174,38 @@ void DownloadDriverImpl::Start(
   // collision and return an error to fail the download cleanly.
   for (net::HttpRequestHeaders::Iterator it(request_params.request_headers);
        it.GetNext();) {
+    // Range and If-Range are managed by download core instead.
+    if (it.name() == net::HttpRequestHeaders::kRange ||
+        it.name() == net::HttpRequestHeaders::kIfRange) {
+      continue;
+    }
+
     download_url_params->add_request_header(it.name(), it.value());
   }
+
+  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
+      request_params.request_headers.HasHeader(
+          net::HttpRequestHeaders::kRange)) {
+    absl::optional<net::HttpByteRange> byte_range =
+        ParseRangeHeader(request_params.request_headers);
+    if (byte_range.has_value()) {
+      download_url_params->set_use_if_range(false);
+      if (byte_range->IsSuffixByteRange()) {
+        download_url_params->set_range_request_offset(
+            kInvalidRange, byte_range->suffix_length());
+      } else {
+        download_url_params->set_range_request_offset(
+            byte_range->first_byte_position(),
+            byte_range->last_byte_position());
+      }
+    } else {
+      // The request headers are validated in ControllerImpl::StartDownload.
+      LOG(ERROR) << "Failed to parse Range request header.";
+      NOTREACHED();
+      return;
+    }
+  }
+
   download_url_params->set_guid(guid);
   download_url_params->set_transient(true);
   download_url_params->set_method(request_params.method);
@@ -194,6 +227,7 @@ void DownloadDriverImpl::Start(
     download_url_params->set_isolation_info(
         request_params.isolation_info.value());
   }
+
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
 

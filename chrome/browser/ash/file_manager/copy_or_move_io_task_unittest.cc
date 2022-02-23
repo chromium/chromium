@@ -16,7 +16,11 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -65,9 +69,28 @@ void ExpectFileContents(base::FilePath path, std::string expected) {
 
 const size_t kTestFileSize = 32;
 
+// Creates a new VolumeManager for tests.
+// By default, VolumeManager KeyedService is null for testing.
+std::unique_ptr<KeyedService> BuildVolumeManager(
+    file_manager::FakeDiskMountManager* disk_mount_manager,
+    content::BrowserContext* context) {
+  return std::make_unique<file_manager::VolumeManager>(
+      Profile::FromBrowserContext(context),
+      nullptr /* drive_integration_service */,
+      nullptr /* power_manager_client */, disk_mount_manager,
+      nullptr /* file_system_provider_service */,
+      file_manager::VolumeManager::GetMtpStorageInfoCallback());
+}
+
 class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
  protected:
   void SetUp() override {
+    // Define a VolumeManager to associate with the testing profile.
+    // disk_mount_manager_ outlives profile_, and therefore outlives the
+    // repeating callback.
+    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating(&BuildVolumeManager,
+                                       base::Unretained(&disk_mount_manager_)));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         nullptr, temp_dir_.GetPath());
@@ -80,13 +103,12 @@ class CopyOrMoveIOTaskTest : public testing::TestWithParam<OperationType> {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  file_manager::FakeDiskMountManager disk_mount_manager_;
   TestingProfile profile_;
-
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
-
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
 };
 
 TEST_P(CopyOrMoveIOTaskTest, Basic) {
@@ -340,5 +362,157 @@ INSTANTIATE_TEST_SUITE_P(CopyOrMove,
                                          OperationType::kMove));
 
 }  // namespace
+
+class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
+ public:
+  CopyOrMoveIsCrossFileSystemTest() = default;
+
+ protected:
+  void SetUp() override {
+    // Define a VolumeManager to associate with the testing profile.
+    // disk_mount_manager_ outlives profile_, and therefore outlives the
+    // repeating callback.
+    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating(&BuildVolumeManager,
+                                       base::Unretained(&disk_mount_manager_)));
+
+    // Register and mount the Downloads volume.
+    downloads_volume_path_ =
+        file_manager::util::GetMyFilesFolderForProfile(&profile_);
+    file_manager::VolumeManager* const volume_manager =
+        file_manager::VolumeManager::Get(&profile_);
+    volume_manager->RegisterDownloadsDirectoryForTesting(
+        downloads_volume_path_);
+
+    // Register and mount another volume.
+    test_volume_path_ = profile_.GetPath().Append("test_volume");
+    volume_manager->AddVolumeForTesting(test_volume_path_, VOLUME_TYPE_TESTING,
+                                        chromeos::DEVICE_TYPE_UNKNOWN,
+                                        false /* read_only */);
+  }
+
+  storage::FileSystemURL PathToFileSystemURL(base::FilePath path) {
+    return storage::FileSystemURL::CreateForTest(
+        kTestStorageKey, storage::kFileSystemTypeTest, path);
+  }
+
+  bool IsCrossFileSystem(base::FilePath source_path,
+                         base::FilePath destination_path) {
+    storage::FileSystemURL source_url = PathToFileSystemURL(source_path);
+    storage::FileSystemURL destination_url =
+        PathToFileSystemURL(destination_path);
+    // Define a dummy CopyOrMoveOITask on which
+    // CopyOrMoveIOTask::IsCrossFileSystem can be called.
+    CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
+    return task.IsCrossFileSystemForTesting(source_url, destination_url);
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  file_manager::FakeDiskMountManager disk_mount_manager_;
+  TestingProfile profile_;
+  base::FilePath downloads_volume_path_;
+  base::FilePath test_volume_path_;
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("chrome://abc");
+};
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, NoRegisteredVolume) {
+  // Define a dummy CopyOrMoveOITask on which
+  // CopyOrMoveIOTask::IsCrossFileSystem can be called.
+  CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
+  // The profile path is not on any registered volume. When no volume is
+  // registered for a given path, the result of IsCrossFileSystem is based on
+  // the filesystem_ids of the source and the destination URLs.
+  base::FilePath path = profile_.GetPath().Append("a.txt");
+
+  // Define filesystem URLs with different filesystem_id().
+  std::string source_mount_name = "mount-name-a";
+  std::string destination_mount_name = "mount-name-b";
+  storage::FileSystemURL source_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ source_mount_name, {});
+  storage::FileSystemURL destination_url =
+      storage::FileSystemURL::CreateForTest(
+          {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+          /* filesystem_id */ destination_mount_name, {});
+  ASSERT_TRUE(task.IsCrossFileSystemForTesting(source_url, destination_url));
+
+  // Define filesystem URLs with identical filesystem_id().
+  source_mount_name = "mount-name-c";
+  destination_mount_name = "mount-name-c";
+  source_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ source_mount_name, {});
+  destination_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ destination_mount_name, {});
+  ASSERT_FALSE(task.IsCrossFileSystemForTesting(source_url, destination_url));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, DifferentVolumes) {
+  base::FilePath source_path = test_volume_path_.Append("a/b.txt");
+  base::FilePath destination_path = downloads_volume_path_.Append("c/d.txt");
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = downloads_volume_path_.Append("a.txt");
+  destination_path = test_volume_path_;
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, SameVolumeNotDownloads) {
+  base::FilePath source_path = test_volume_path_.Append("a.txt");
+  base::FilePath destination_path = test_volume_path_.Append("b/a.txt");
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = test_volume_path_.Append("a/b.txt");
+  destination_path = test_volume_path_;
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFilesToMyFiles) {
+  // Downloads is intentionally misspelled in these 2 test cases. These paths
+  // should be interpreted as regular "My files" paths.
+  base::FilePath source_path = downloads_volume_path_.Append("a.txt");
+  base::FilePath destination_path =
+      downloads_volume_path_.Append("Download/a.txt");
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = downloads_volume_path_.Append("a.txt");
+  destination_path = downloads_volume_path_.Append("Downloadss");
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFileToDownloads) {
+  base::FilePath source_path = downloads_volume_path_.Append("a.txt");
+  base::FilePath destination_path =
+      downloads_volume_path_.Append("Downloads/b/a.txt");
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = downloads_volume_path_.Append("a/b.txt");
+  destination_path = downloads_volume_path_.Append("Downloads");
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToMyFiles) {
+  base::FilePath source_path = downloads_volume_path_.Append("Downloads/a.txt");
+  base::FilePath destination_path = downloads_volume_path_.Append("b/a.txt");
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = downloads_volume_path_.Append("Downloads/a/b.txt");
+  destination_path = downloads_volume_path_;
+  ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
+}
+
+TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToDownloads) {
+  base::FilePath source_path = downloads_volume_path_.Append("Downloads/a.txt");
+  base::FilePath destination_path =
+      downloads_volume_path_.Append("Downloads/b/a (1).txt");
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+
+  source_path = downloads_volume_path_.Append("Downloads/a.txt");
+  destination_path = downloads_volume_path_.Append("Downloads");
+  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+}
+
 }  // namespace io_task
 }  // namespace file_manager

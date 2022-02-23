@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

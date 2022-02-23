@@ -46,7 +46,7 @@ class TestContentVerifySingleJobObserver {
       const TestContentVerifySingleJobObserver&) = delete;
 
   // Waits for a ContentVerifyJob to finish and returns job's status.
-  ContentVerifyJob::FailureReason WaitForJobFinished() WARN_UNUSED_RESULT;
+  [[nodiscard]] ContentVerifyJob::FailureReason WaitForJobFinished();
 
   // Waits for ContentVerifyJob to finish the attempt to read content hashes.
   ContentHashReader::InitStatus WaitForOnHashesReady();
@@ -71,7 +71,7 @@ class TestContentVerifySingleJobObserver {
                        const ContentHashReader& hash_reader) override;
 
     // Passed methods from ContentVerifySingleJobObserver:
-    ContentVerifyJob::FailureReason WaitForJobFinished() WARN_UNUSED_RESULT;
+    [[nodiscard]] ContentVerifyJob::FailureReason WaitForJobFinished();
     ContentHashReader::InitStatus WaitForOnHashesReady();
 
    private:

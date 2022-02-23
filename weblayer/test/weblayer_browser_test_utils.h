@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,14 +63,14 @@ void ExecuteScriptWithUserGesture(Tab* tab, const std::string& script);
 /// Gets the title of the current webpage in |shell|.
 const std::u16string& GetTitle(Shell* shell);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Sets up the autofill system to be one that simply forwards detected forms to
 // the passed-in callback.
 void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
         on_received_form_data);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Configures the subresource filter to activate on |url| in |web_contents|.
 void ActivateSubresourceFilterInWebContentsForURL(
@@ -101,7 +102,7 @@ class OneShotNavigationObserver : public NavigationObserver {
   void Finish(Navigation* navigation);
 
   base::RunLoop run_loop_;
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   bool completed_ = false;
   bool is_error_page_ = false;
   bool is_download_ = false;

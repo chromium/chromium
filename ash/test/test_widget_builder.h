@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/compiler_specific.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 #include "ui/base/ui_base_types.h"
@@ -81,7 +80,7 @@ class ASH_EXPORT TestWidgetBuilder {
   // won't be deleted when the window is deleted first and
   // Widget::GetNativeWindow() may return nullptr. Use this if there is a clear
   // owner of the widget that controls the lifetime of the widget.
-  std::unique_ptr<views::Widget> BuildOwnsNativeWidget() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<views::Widget> BuildOwnsNativeWidget();
 
  private:
   views::Widget::InitParams widget_init_params_;

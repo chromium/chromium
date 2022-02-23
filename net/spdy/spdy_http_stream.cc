@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <list>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -29,7 +29,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -103,7 +103,7 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
                                NetLogSource source_dependency,
-                               std::vector<std::string> dns_aliases)
+                               std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -712,7 +712,7 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   }
 }
 
-const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
+const std::set<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 
@@ -721,8 +721,7 @@ base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
     return {};
   }
 
-  const url::Origin origin = url::Origin::Create(request_info_->url);
-  return session()->GetAcceptChViaAlpsForOrigin(origin);
+  return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
 }  // namespace net

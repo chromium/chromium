@@ -5,13 +5,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/protocol_serializer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct Environment {
   Environment() { CHECK(base::CommandLine::Init(0, nullptr)); }
@@ -23,7 +31,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Independently, try serializing a Request.
   base::flat_map<std::string, std::string> additional_attributes;
-  std::map<std::string, std::string> updater_state_attributes;
   std::vector<protocol_request::App> apps;
 
   // Share |data| between |MakeProtocolRequest| args
@@ -39,8 +46,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       GetUtf8String() /* prod_id */, GetUtf8String() /* browser_version */,
       GetUtf8String() /* lang */, GetUtf8String() /* channel */,
       GetUtf8String() /* os_long_name */,
-      GetUtf8String() /* download_preference */, additional_attributes,
-      &updater_state_attributes, std::move(apps));
+      GetUtf8String() /* download_preference */,
+      absl::nullopt /* domain_joined */, additional_attributes,
+      {} /*updater_state_attributes*/, std::move(apps));
 
   update_client::ProtocolHandlerFactoryJSON factory;
   std::unique_ptr<ProtocolSerializer> serializer = factory.CreateSerializer();

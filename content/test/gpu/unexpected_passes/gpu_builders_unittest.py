@@ -3,16 +3,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
+# pylint: disable=protected-access
 
 import unittest
 
 from unexpected_passes import gpu_builders
+from unexpected_passes_common import constants
+from unexpected_passes_common import data_types
 
 
 class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
   def setUp(self):
-    self.instance = gpu_builders.GpuBuilders()
+    self.instance = gpu_builders.GpuBuilders(False)
 
   def testMatch(self):
     """Tests that a match can be successfully found."""
@@ -66,6 +68,33 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
       if 'telemetry_gpu_integration_test' in isolate and 'android' in isolate:
         return
     self.fail('Did not find any Android-specific isolate names')
+
+
+class GetFakeCiBuildersUnittest(unittest.TestCase):
+  def testStringsConvertedToBuilderEntries(self):
+    """Tests that the easier-to-read strings get converted to BuilderEntry."""
+    instance = gpu_builders.GpuBuilders(False)
+    fake_builders = instance.GetFakeCiBuilders()
+    ci_builder = data_types.BuilderEntry(
+        'Optional Linux Release (Intel HD 630)', constants.BuilderTypes.CI,
+        False)
+    expected_try = set([
+        data_types.BuilderEntry('linux_optional_gpu_tests_rel',
+                                constants.BuilderTypes.TRY, False)
+    ])
+    self.assertEqual(fake_builders[ci_builder], expected_try)
+    ci_builder = data_types.BuilderEntry('Optional Linux Release (NVIDIA)',
+                                         constants.BuilderTypes.CI, False)
+    self.assertEqual(fake_builders[ci_builder], expected_try)
+
+
+class GetNonChromiumBuildersUnittest(unittest.TestCase):
+  def testStringsConvertedToBuilderEntries(self):
+    """Tests that the easier-to-read strings get converted to BuilderEntry."""
+    instance = gpu_builders.GpuBuilders(False)
+    builder = data_types.BuilderEntry('Win V8 FYI Release (NVIDIA)',
+                                      constants.BuilderTypes.CI, False)
+    self.assertIn(builder, instance.GetNonChromiumBuilders())
 
 
 if __name__ == '__main__':

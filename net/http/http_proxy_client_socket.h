@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -34,6 +34,7 @@ class IOBuffer;
 class ProxyDelegate;
 class StreamSocket;
 
+// Tunnels a stream socket over an HTTP/1.1 connection.
 class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
  public:
   // Takes ownership of |socket|, which should already be connected by the time
@@ -44,9 +45,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
                         const HostPortPair& endpoint,
                         const ProxyServer& proxy_server,
                         HttpAuthController* http_auth_controller,
-                        bool tunnel,
-                        bool using_spdy,
-                        NextProto negotiated_protocol,
                         ProxyDelegate* proxy_delegate,
                         const NetworkTrafficAnnotationTag& traffic_annotation);
 
@@ -60,8 +58,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const HttpResponseInfo* GetConnectResponseInfo() const override;
   int RestartWithAuth(CompletionOnceCallback callback) override;
   const scoped_refptr<HttpAuthController>& GetAuthController() const override;
-  bool IsUsingSpdy() const override;
-  NextProto GetProxyNegotiatedProtocol() const override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;
@@ -157,11 +153,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   // specified by the URL, due to Alternate-Protocol or fixed testing ports.
   const HostPortPair endpoint_;
   scoped_refptr<HttpAuthController> auth_;
-  const bool tunnel_;
-  // If true, then the connection to the proxy is a SPDY connection.
-  const bool using_spdy_;
-  // Protocol negotiated with the server.
-  NextProto negotiated_protocol_;
 
   std::string request_line_;
   HttpRequestHeaders request_headers_;
@@ -169,7 +160,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* proxy_delegate_;
+  raw_ptr<ProxyDelegate> proxy_delegate_;
 
   // Network traffic annotation for handshaking and setup.
   const NetworkTrafficAnnotationTag traffic_annotation_;

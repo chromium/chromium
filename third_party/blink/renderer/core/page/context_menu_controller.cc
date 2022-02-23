@@ -168,8 +168,8 @@ void ContextMenuController::DocumentDetached(Document* document) {
 void ContextMenuController::HandleContextMenuEvent(MouseEvent* mouse_event) {
   DCHECK(mouse_event->type() == event_type_names::kContextmenu);
   LocalFrame* frame = mouse_event->target()->ToNode()->GetDocument().GetFrame();
-  PhysicalOffset location = PhysicalOffset::FromFloatPointRound(
-      FloatPoint(mouse_event->AbsoluteLocation()));
+  PhysicalOffset location = PhysicalOffset::FromPointFRound(
+      gfx::PointF(mouse_event->AbsoluteLocation()));
 
   if (ShowContextMenu(frame, location, mouse_event->GetMenuSourceType(),
                       mouse_event))
@@ -371,8 +371,8 @@ static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
 }
 
 static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
-  IntRect anchor;
-  IntRect focus;
+  gfx::Rect anchor;
+  gfx::Rect focus;
   selected_frame->Selection().ComputeAbsoluteBounds(anchor, focus);
   anchor = selected_frame->View()->FrameToViewport(anchor);
   focus = selected_frame->View()->FrameToViewport(focus);
@@ -387,7 +387,8 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
   if (doc) {
     Element* focused_element = doc->FocusedElement();
     if (focused_element) {
-      IntRect visible_bound = focused_element->VisibleBoundsInVisualViewport();
+      gfx::Rect visible_bound =
+          focused_element->VisibleBoundsInVisualViewport();
       left = std::max(visible_bound.x(), left);
       top = std::max(visible_bound.y(), top);
       right = std::min(visible_bound.right(), right);
@@ -423,9 +424,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (context_menu_client_receiver_.is_bound())
     context_menu_client_receiver_.reset();
 
-  HitTestRequest::HitTestRequestType type = HitTestRequest::kReadOnly |
-                                            HitTestRequest::kActive |
-                                            HitTestRequest::kRetargetForInert;
+  HitTestRequest::HitTestRequestType type =
+      HitTestRequest::kReadOnly | HitTestRequest::kActive;
   if (base::FeatureList::IsEnabled(
           features::kEnablePenetratingImageSelection)) {
     type |= HitTestRequest::kPenetratingList | HitTestRequest::kListBased;
@@ -644,7 +644,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
         << selected_frame->Selection()
                .ComputeVisibleSelectionInDOMTreeDeprecated();
     if (!result.IsContentEditable()) {
-      UpdateTextFragmentHandler(selected_frame);
+      TextFragmentHandler::OpenedContextMenuOverSelection(selected_frame);
     }
   }
 
@@ -780,20 +780,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       data, host_context_menu_location);
 
   return true;
-}
-
-void ContextMenuController::UpdateTextFragmentHandler(
-    LocalFrame* selected_frame) {
-  if (!selected_frame->GetTextFragmentHandler()) {
-    if (!base::FeatureList::IsEnabled(
-            shared_highlighting::kSharedHighlightingAmp)) {
-      return;
-    }
-
-    selected_frame->CreateTextFragmentHandler();
-  }
-
-  selected_frame->GetTextFragmentHandler()->StartPreemptiveGenerationIfNeeded();
 }
 
 }  // namespace blink

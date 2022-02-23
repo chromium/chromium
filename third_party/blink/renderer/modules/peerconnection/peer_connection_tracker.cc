@@ -353,92 +353,6 @@ String SerializeConfiguration(
   return result.ToString();
 }
 
-// Note: All of these strings need to be kept in sync with
-// peer_connection_update_table.js, in order to be displayed as friendly
-// strings on chrome://webrtc-internals.
-
-const char* GetSignalingStateString(
-    webrtc::PeerConnectionInterface::SignalingState state) {
-  const char* result = "";
-  switch (state) {
-    case webrtc::PeerConnectionInterface::SignalingState::kStable:
-      return "stable";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
-      return "have-local-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
-      return "have-remote-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
-      return "have-local-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
-      return "have-remote-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      break;
-  }
-  return result;
-}
-
-const char* GetIceConnectionStateString(
-    webrtc::PeerConnectionInterface::IceConnectionState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::kIceConnectionNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceConnectionChecking:
-      return "checking";
-    case webrtc::PeerConnectionInterface::kIceConnectionConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::kIceConnectionCompleted:
-      return "completed";
-    case webrtc::PeerConnectionInterface::kIceConnectionFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::kIceConnectionDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::kIceConnectionClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-const char* GetConnectionStateString(
-    webrtc::PeerConnectionInterface::PeerConnectionState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting:
-      return "connecting";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kClosed:
-      return "closed";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-const char* GetIceGatheringStateString(
-    webrtc::PeerConnectionInterface::IceGatheringState state) {
-  switch (state) {
-    case webrtc::PeerConnectionInterface::kIceGatheringNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceGatheringGathering:
-      return "gathering";
-    case webrtc::PeerConnectionInterface::kIceGatheringComplete:
-      return "complete";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 const char* GetTransceiverUpdatedReasonString(
     PeerConnectionTracker::TransceiverUpdatedReason reason) {
   switch (reason) {
@@ -549,7 +463,7 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
         list->Append(std::move(report).value());
     }
 
-    if (!list->GetList().empty()) {
+    if (!list->GetListDeprecated().empty()) {
       PostCrossThreadTask(
           *main_thread_.get(), FROM_HERE,
           CrossThreadBindOnce(&InternalLegacyStatsObserver::OnCompleteImpl,
@@ -573,7 +487,7 @@ class InternalLegacyStatsObserver : public webrtc::StatsObserver {
       std::unique_ptr<base::ListValue> list,
       int lid,
       CrossThreadOnceFunction<void(int, base::Value)> completion_callback) {
-    DCHECK(!list->GetList().empty());
+    DCHECK(!list->GetListDeprecated().empty());
     std::move(completion_callback).Run(lid, std::move(*list.get()));
   }
 
@@ -946,7 +860,7 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   String value = "type: " + type + ", sdp: " + sdp;
   SendPeerConnectionUpdate(
       id,
-      source == SOURCE_LOCAL ? "setLocalDescription" : "setRemoteDescription",
+      source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
       value);
 }
 
@@ -991,10 +905,10 @@ void PeerConnectionTracker::TrackAddIceCandidate(
       ", " + "candidate: " + String(candidate->Candidate());
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
-  DCHECK(source != SOURCE_LOCAL || succeeded);
+  DCHECK(source != kSourceLocal || succeeded);
 
   const char* event =
-      (source == SOURCE_LOCAL)
+      (source == kSourceLocal)
           ? "icecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
@@ -1102,7 +1016,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   String value = "label: " + String::FromUTF8(data_channel->label()) +
                  ", reliable: " + SerializeBoolean(data_channel->reliable());
   SendPeerConnectionUpdate(
-      id, source == SOURCE_LOCAL ? "createDataChannel" : "datachannel", value);
+      id, source == kSourceLocal ? "createDataChannel" : "datachannel", value);
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
@@ -1120,8 +1034,9 @@ void PeerConnectionTracker::TrackSignalingStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "signalingstatechange",
-                           GetSignalingStateString(state));
+  SendPeerConnectionUpdate(
+      id, "signalingstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
@@ -1131,8 +1046,9 @@ void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceconnectionstatechange (legacy)",
-                           GetIceConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "iceconnectionstatechange (legacy)",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackIceConnectionStateChange(
@@ -1142,8 +1058,9 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceconnectionstatechange",
-                           GetIceConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "iceconnectionstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackConnectionStateChange(
@@ -1153,8 +1070,9 @@ void PeerConnectionTracker::TrackConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "connectionstatechange",
-                           GetConnectionStateString(state));
+  SendPeerConnectionUpdate(
+      id, "connectionstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackIceGatheringStateChange(
@@ -1164,8 +1082,9 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "icegatheringstatechange",
-                           GetIceGatheringStateString(state));
+  SendPeerConnectionUpdate(
+      id, "icegatheringstatechange",
+      webrtc::PeerConnectionInterface::AsString(state).data());
 }
 
 void PeerConnectionTracker::TrackSessionDescriptionCallback(
@@ -1179,19 +1098,19 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
     return;
   String update_type;
   switch (action) {
-    case ACTION_SET_LOCAL_DESCRIPTION:
+    case kActionSetLocalDescription:
       update_type = "setLocalDescription";
       break;
-    case ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT:
+    case kActionSetLocalDescriptionImplicit:
       update_type = "setLocalDescription";
       break;
-    case ACTION_SET_REMOTE_DESCRIPTION:
+    case kActionSetRemoteDescription:
       update_type = "setRemoteDescription";
       break;
-    case ACTION_CREATE_OFFER:
+    case kActionCreateOffer:
       update_type = "createOffer";
       break;
-    case ACTION_CREATE_ANSWER:
+    case kActionCreateAnswer:
       update_type = "createAnswer";
       break;
     default:
@@ -1232,24 +1151,44 @@ void PeerConnectionTracker::TrackGetUserMedia(
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
-  // When running tests, it is possible that UserMediaRequest's
-  // ExecutionContext is null.
-  //
-  // TODO(crbug.com/704136): Is there a better way to do this?
-  String security_origin;
-  if (!user_media_request->GetExecutionContext()) {
-    security_origin =
-        SecurityOrigin::CreateFromString("test://test")->ToString();
-  } else {
-    security_origin = user_media_request->GetExecutionContext()
-                          ->GetSecurityOrigin()
-                          ->ToString();
-  }
-
   peer_connection_tracker_host_->GetUserMedia(
-      security_origin, user_media_request->Audio(), user_media_request->Video(),
+      user_media_request->request_id(), user_media_request->Audio(),
+      user_media_request->Video(),
       SerializeMediaConstraints(user_media_request->AudioConstraints()),
       SerializeMediaConstraints(user_media_request->VideoConstraints()));
+}
+
+void PeerConnectionTracker::TrackGetUserMediaSuccess(
+    UserMediaRequest* user_media_request,
+    MediaStream* stream) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  // Serialize audio and video track information (id and label) or an
+  // empty string when there is no such track.
+  String audio_track_info =
+      stream->getAudioTracks().IsEmpty()
+          ? String("")
+          : String("id:") + stream->getAudioTracks()[0]->id() +
+                String(" label:") + stream->getAudioTracks()[0]->label();
+  String video_track_info =
+      stream->getVideoTracks().IsEmpty()
+          ? String("")
+          : String("id:") + stream->getVideoTracks()[0]->id() +
+                String(" label:") + stream->getVideoTracks()[0]->label();
+
+  peer_connection_tracker_host_->GetUserMediaSuccess(
+      user_media_request->request_id(), stream->id(), audio_track_info,
+      video_track_info);
+}
+
+void PeerConnectionTracker::TrackGetUserMediaFailure(
+    UserMediaRequest* user_media_request,
+    const String& error,
+    const String& error_message) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  peer_connection_tracker_host_->GetUserMediaFailure(
+      user_media_request->request_id(), error, error_message);
 }
 
 void PeerConnectionTracker::TrackRtcEventLogWrite(

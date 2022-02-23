@@ -45,6 +45,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -72,6 +73,9 @@ public class ToolbarButtonIphTest {
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
 
+        when(mTracker.shouldTriggerHelpUIWithSnooze(any()))
+                .thenReturn(new TriggerDetails(false, false));
+
         // Start on a page from the test server. This works around a bug that causes the top toolbar
         // to flicker. If the flicker happens while the IPH is visible, it will auto dismiss, and
         // the test case will fail. See https://crbug.com/1144328.
@@ -89,12 +93,15 @@ public class ToolbarButtonIphTest {
     public void testNewTabButtonIph() throws InterruptedException {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE))
                 .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(
+                     FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
 
-            mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-            onView(withId(R.id.home_button)).check(matches(withHighlight(false)));
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        onView(withId(R.id.home_button)).check(matches(withHighlight(false)));
 
-            mActivityTestRule.loadUrl("about:blank");
-            onView(withId(R.id.home_button)).check(matches(withHighlight(true)));
+        mActivityTestRule.loadUrl("about:blank");
+        onView(withId(R.id.home_button)).check(matches(withHighlight(true)));
     }
 
     @Test
@@ -125,6 +132,8 @@ public class ToolbarButtonIphTest {
     public void testTabSwitcherButtonIph() throws InterruptedException {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
                 .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
 
         mActivityTestRule.loadUrl("about:blank");
         ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));

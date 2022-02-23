@@ -10,12 +10,15 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
@@ -154,6 +157,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // IPC::Listener
   bool OnMessageReceived(const IPC::Message& msg) override;
+  std::string ToDebugString() override;
 
   CrossProcessFrameConnector* cross_process_frame_connector() {
     return cross_process_frame_connector_.get();
@@ -314,10 +318,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // equivalent to the result of site_instance_->GetProcess(), but that
   // method has the side effect of creating the process if it doesn't exist.
   // Cache a pointer to avoid unnecessary process creation.
-  RenderProcessHost* process_;
+  raw_ptr<RenderProcessHost> process_;
 
   // The node in the frame tree where this proxy is located.
-  FrameTreeNode* frame_tree_node_;
+  raw_ptr<FrameTreeNode> frame_tree_node_;
 
   // True if we have a live RenderFrameProxy for this host.
   bool render_frame_proxy_created_;
@@ -354,6 +358,10 @@ class CONTENT_EXPORT RenderFrameProxyHost
       remote_main_frame_host_receiver_{this};
 
   blink::RemoteFrameToken frame_token_;
+
+  // Tracks metrics related to postMessage usage.
+  // TODO(crbug.com/1159586): Remove when no longer needed.
+  blink::PostMessageCounter post_message_counter_;
 };
 
 }  // namespace content

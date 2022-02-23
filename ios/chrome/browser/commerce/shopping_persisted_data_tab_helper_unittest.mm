@@ -10,6 +10,8 @@
 #include "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -24,12 +26,12 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
-#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -105,7 +107,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(fake_identity_);
+    auth_service_->SignIn(fake_identity_, nil);
   }
 
   void MockOptimizationGuideResponse(
@@ -122,7 +124,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         {{optimization_guide::features::kOptimizationHints, {}},
          {optimization_guide::features::kOptimizationGuideMetadataValidation,
           {}},
-         {kCommercePriceTracking,
+         {commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
         {});
 
@@ -149,6 +151,10 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         ->GetPriceDrop();
   }
 
+  BOOL IsPriceDropEmpty() {
+    return !GetPriceDrop()->current_price && !GetPriceDrop()->previous_price;
+  }
+
   BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
                              int64_t previous_price_micros) {
     return ShoppingPersistedDataTabHelper::IsQualifyingPriceDrop(
@@ -171,6 +177,7 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -201,7 +208,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceIncreaseNull) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestEqualPriceNull) {
@@ -211,7 +218,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestEqualPriceNull) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropUrl) {
@@ -221,7 +228,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropUrl) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kNoPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
@@ -234,7 +241,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
@@ -244,7 +251,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
@@ -254,7 +261,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
   MockOptimizationGuideResponse(price_tracking_data);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(nullptr, GetPriceDrop());
+  EXPECT_TRUE(IsPriceDropEmpty());
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest,
@@ -297,4 +304,59 @@ TEST_F(ShoppingPersistedDataTabHelperTest,
   EXPECT_EQ(kFormattedTwoDecimalPlaces,
             base::UTF16ToUTF8(FormatPrice(currencyFormatter.get(),
                                           kFormatTwoDecimalPlacesMicros)));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropHistogram) {
+  commerce::PriceTrackingData price_tracking_data;
+  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
+                         kCurrentPriceMicros, kCurrencyCodeUS);
+  MockOptimizationGuideResponse(price_tracking_data);
+  CommitToUrlAndNavigate(GURL(kPriceDropUrl));
+  RunUntilIdle();
+  ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
+      ->LogMetrics(TAB_SWITCHER);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPrice", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop", true,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.IsProductDetailPage", true,
+      1);
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropHistogram) {
+  commerce::PriceTrackingData price_tracking_data;
+  MockOptimizationGuideResponse(price_tracking_data);
+  CommitToUrlAndNavigate(GURL(kNoPriceDropUrl));
+  RunUntilIdle();
+  ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
+      ->LogMetrics(TAB_SWITCHER);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPrice", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop", false,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.IsProductDetailPage",
+      false, 1);
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestProductDetailPageNoPriceHistogram) {
+  commerce::PriceTrackingData price_tracking_data;
+  price_tracking_data.mutable_buyable_product()->set_offer_id(42);
+  MockOptimizationGuideResponse(price_tracking_data);
+  CommitToUrlAndNavigate(GURL(kPriceDropUrl));
+  RunUntilIdle();
+  ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
+      ->LogMetrics(TAB_SWITCHER);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPrice", false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.ContainsPriceDrop", false,
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "Commerce.PriceDrops.ActiveTabEnterTabSwitcher.IsProductDetailPage", true,
+      1);
 }

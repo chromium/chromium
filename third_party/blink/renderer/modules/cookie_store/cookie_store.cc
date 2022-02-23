@@ -28,8 +28,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -66,7 +65,8 @@ network::mojom::blink::CookieManagerGetOptionsPtr ToBackendOptions(
 std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     const KURL& cookie_url,
     const CookieInit* options,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    bool partitioned_cookies_runtime_feature_enabled) {
   const String& name = options->name();
   const String& value = options->value();
   if (name.IsEmpty() && value.Contains('=')) {
@@ -152,18 +152,17 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   }
 
   absl::optional<net::CookiePartitionKey> cookie_partition_key = absl::nullopt;
-  if (options->partitioned()) {
+  if (options->partitioned() && partitioned_cookies_runtime_feature_enabled) {
     // We don't trust the renderer to determine the cookie partition key, so we
     // use this factory to indicate we are using a temporary value here.
     cookie_partition_key = net::CookiePartitionKey::FromScript();
   }
 
-  // TODO(crbug.com/1144187): Add support for SameParty attribute.
   return net::CanonicalCookie::CreateSanitizedCookie(
       cookie_url, name.Utf8(), value.Utf8(), domain.Utf8(), path.Utf8(),
       base::Time() /*creation*/, expires, base::Time() /*last_access*/,
       true /*secure*/, false /*http_only*/, same_site,
-      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      net::CookiePriority::COOKIE_PRIORITY_DEFAULT, options->sameParty(),
       cookie_partition_key);
 }
 
@@ -427,6 +426,7 @@ ScriptPromise CookieStore::DoRead(
   backend_->GetAllForUrl(
       cookie_url, default_site_for_cookies_, default_top_frame_origin_,
       std::move(backend_options),
+      RuntimeEnabledFeatures::PartitionedCookiesEnabled(GetExecutionContext()),
       WTF::Bind(backend_result_converter, WrapPersistent(resolver)));
   return resolver->Promise();
 }
@@ -486,8 +486,9 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  std::unique_ptr<net::CanonicalCookie> canonical_cookie =
-      ToCanonicalCookie(default_cookie_url_, options, exception_state);
+  std::unique_ptr<net::CanonicalCookie> canonical_cookie = ToCanonicalCookie(
+      default_cookie_url_, options, exception_state,
+      RuntimeEnabledFeatures::PartitionedCookiesEnabled(GetExecutionContext()));
   if (!canonical_cookie) {
     DCHECK(exception_state.HadException());
     return ScriptPromise();

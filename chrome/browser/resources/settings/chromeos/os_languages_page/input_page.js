@@ -6,14 +6,45 @@
  * @fileoverview 'os-settings-input-page' is the input sub-page
  * for language and input method settings.
  */
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './add_input_methods_dialog.js';
+import './add_spellcheck_languages_dialog.js';
+import './os_edit_dictionary_page.js';
+import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import '../../settings_page/settings_animated_pages.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
+import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
+import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-input-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -130,22 +161,21 @@ Polymer({
     },
   },
 
-  /** @private {?settings.LanguagesMetricsProxy} */
+  /** @private {?LanguagesMetricsProxy} */
   languagesMetricsProxy_: null,
 
   /** @override */
   created() {
-    this.languagesMetricsProxy_ =
-        settings.LanguagesMetricsProxyImpl.getInstance();
+    this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.OS_LANGUAGES_INPUT) {
+    if (route !== routes.OS_LANGUAGES_INPUT) {
       return;
     }
 
@@ -162,8 +192,8 @@ Polymer({
     // only fire once.
     assert(!oldConfig);
     this.focusConfig.set(
-        settings.routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
-        () => cr.ui.focusWithoutInk(this.$.editDictionarySubpageTrigger));
+        routes.OS_LANGUAGES_EDIT_DICTIONARY.path,
+        () => focusWithoutInk(this.$.editDictionarySubpageTrigger));
   },
 
   /**
@@ -200,8 +230,8 @@ Polymer({
 
     this.languageHelper.setCurrentInputMethod(e.model.item.id);
     this.languagesMetricsProxy_.recordInteraction(
-        settings.LanguagesPageInteraction.SWITCH_INPUT_METHOD);
-    settings.recordSettingChange();
+        LanguagesPageInteraction.SWITCH_INPUT_METHOD);
+    recordSettingChange();
   },
 
   /**
@@ -238,8 +268,8 @@ Polymer({
    * @private
    */
   hasOptionsPageInSettings_(id) {
-    return loadTimeData.getBoolean('imeOptionsInSettings') &&
-        settings.input_method_util.hasOptionsPageInSettings(id);
+    return hasOptionsPageInSettings(
+        id, loadTimeData.getBoolean('allowPredictiveWriting'));
   },
 
   /**
@@ -249,8 +279,8 @@ Polymer({
   navigateToOptionsPageInSettings_(e) {
     const params = new URLSearchParams;
     params.append('id', e.model.item.id);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);
+    Router.getInstance().navigateTo(
+        routes.OS_LANGUAGES_INPUT_METHOD_OPTIONS, params);
   },
 
   /**
@@ -303,7 +333,7 @@ Polymer({
   /** @private */
   onAddInputMethodsDialogClose_() {
     this.showAddInputMethodsDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$.addInputMethod));
+    focusWithoutInk(assert(this.$.addInputMethod));
   },
 
   /** @private */
@@ -325,7 +355,7 @@ Polymer({
     // within a <template is="dom-if">), we need to use
     // this.$$("#addSpellcheckLanguages") instead of
     // this.$.addSpellCheckLanguages.
-    cr.ui.focusWithoutInk(assert(this.$$('#addSpellcheckLanguages')));
+    focusWithoutInk(assert(this.$$('#addSpellcheckLanguages')));
   },
 
   /**
@@ -359,7 +389,7 @@ Polymer({
    */
   onRemoveInputMethodClick_(e) {
     this.languageHelper.removeInputMethod(e.model.item.id);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -377,7 +407,7 @@ Polymer({
    */
   onRemoveSpellcheckLanguageClick_(e) {
     this.languageHelper.toggleSpellCheck(e.model.item.language.code, false);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -540,9 +570,8 @@ Polymer({
    */
   onEditDictionaryClick_() {
     this.languagesMetricsProxy_.recordInteraction(
-        settings.LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_EDIT_DICTIONARY);
+        LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_EDIT_DICTIONARY);
   },
 
   /**
@@ -574,7 +603,7 @@ Polymer({
   /** @private */
   onLanguagePackNoticeLinkClick_() {
     this.languagesMetricsProxy_.recordInteraction(
-        settings.LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
+        LanguagesPageInteraction.OPEN_LANGUAGE_PACKS_LEARN_MORE);
   },
 
   /**

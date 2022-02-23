@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/public/common/download_features.h"
@@ -47,7 +48,7 @@ class ParallelDownloadUtilsRecoverErrorTest
 
  protected:
   // Stream for sending data into the SourceStream.
-  StrictMock<MockInputStream>* input_stream_;
+  raw_ptr<StrictMock<MockInputStream>> input_stream_;
 };
 
 TEST_F(ParallelDownloadUtilsTest, FindSlicesToDownload) {

@@ -118,14 +118,15 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void SetInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy);
   void SetInsecureNavigationsSet(const WebVector<unsigned>&);
-  void FrameRectsChanged(const IntRect& local_frame_rect,
-                         const IntRect& screen_space_rect);
+  void FrameRectsChanged(const gfx::Rect& local_frame_rect,
+                         const gfx::Rect& screen_space_rect);
   void InitializeFrameVisualProperties(const FrameVisualProperties& properties);
   // If 'propagate' is true, updated properties will be sent to the browser.
   // Returns true if visual properties have changed.
   bool SynchronizeVisualProperties(bool propagate = true);
   void ResendVisualProperties();
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
+  void UpdateCompositedLayerBounds();
 
   // Called when the local root's screen infos change.
   void DidChangeScreenInfos(const display::ScreenInfos& screen_info);
@@ -206,7 +207,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void ChildProcessGone() override;
 
   // Called only when this frame has a local frame owner.
-  IntSize GetMainFrameViewportSize() const override;
+  gfx::Size GetMainFrameViewportSize() const override;
   gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;

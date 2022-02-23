@@ -54,7 +54,8 @@ std::unique_ptr<ClearBrowsingDataJob> CreateJob(
     enterprise_management::RemoteCommand command_proto,
     ProfileManager* profile_manager) {
   auto job = std::make_unique<ClearBrowsingDataJob>(profile_manager);
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
+                        enterprise_management::SignedData{}));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
 
@@ -132,7 +133,8 @@ TEST_F(ClearBrowsingDataJobTest, CanParseWithMissingDataTypes) {
   command_proto.set_payload(payload);
 
   auto job = std::make_unique<ClearBrowsingDataJob>(profile_manager());
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
+                        enterprise_management::SignedData{}));
 
   bool done = false;
   // Run should return true because the command will be successfully posted,
@@ -164,7 +166,8 @@ TEST_F(ClearBrowsingDataJobTest, DontInitWhenMissingProfilePath) {
   command_proto.set_payload(payload);
 
   auto job = std::make_unique<ClearBrowsingDataJob>(profile_manager());
-  EXPECT_FALSE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_FALSE(job->Init(base::TimeTicks::Now(), command_proto,
+                         enterprise_management::SignedData{}));
 }
 
 TEST_F(ClearBrowsingDataJobTest, FailureWhenProfileDoesntExist) {
@@ -304,7 +307,7 @@ TEST_F(ClearBrowsingDataJobTest, HandleProfilPathCaseSensitivity) {
 
   bool done = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On windows, paths are case-insensitive so passing a lowercase path should
   // still result in success.
   auto expected = policy::RemoteCommandJob::SUCCEEDED;
@@ -312,7 +315,7 @@ TEST_F(ClearBrowsingDataJobTest, HandleProfilPathCaseSensitivity) {
   // On other platforms, paths are case-sensitive, so passing a lower case path
   // will result in the profile not being found.
   auto expected = policy::RemoteCommandJob::FAILED;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
                        base::BindLambdaForTesting([&] {

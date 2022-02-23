@@ -45,6 +45,7 @@ public interface ContextualSearchPanelInterface {
             @Px int defaultQueryInContentTextMaxWidthPx);
     void setCaption(String caption);
     void ensureCaption();
+    void hideCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);
     void setManagementDelegate(ContextualSearchManagementDelegate delegate);
     void onPanelNavigatedToPrefetchedSearch(boolean didResolve);
@@ -55,7 +56,6 @@ public interface ContextualSearchPanelInterface {
     ContextualSearchBarControl getSearchBarControl();
     ContextualSearchPanelMetrics getPanelMetrics();
     Rect getPanelRect();
-    void setIsPanelHelpActive(boolean isActive);
     void clearRelatedSearches();
 
     /** {@link OverlayPanel} methods */

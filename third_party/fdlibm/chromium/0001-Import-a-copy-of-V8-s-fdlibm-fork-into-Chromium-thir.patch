@@ -65,24 +65,24 @@ new file mode 100644
 index 000000000000..a94f56d77fbf
 --- /dev/null
 +++ b/third_party/fdlibm/DEPS
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,5 @@
 +include_rules = [
 +    "+base/bit_cast.h",
 +    "+base/compiler_specific.h",
-+    "+base/macros.h",
 +    "+build/build_config.h",
 +]
 diff --git a/third_party/fdlibm/README.chromium b/third_party/fdlibm/README.chromium
 index eb45e2ab9438..48b3ab4bc6cc 100644
 --- a/third_party/fdlibm/README.chromium
 +++ b/third_party/fdlibm/README.chromium
-@@ -13,3 +13,13 @@ This library is a copy of that V8 library intended for use in Chromium.
+@@ -13,3 +13,15 @@ This library is a copy of that V8 library intended for use in Chromium.
  
  This library may be useful when mathematical consistency across OS platforms is
  desired.
 +
 +The initial commit is not a pristine import -- the patch in the chromium/
-+subdirectory documents the changes made to the original sources.
++subdirectory documents the changes made to the original sources. This patch was
++produced via `git format-patch` and can be applied using `git am`.
 +
 +Changes from V8 upstream:
 +- Changed namespace to fdlibm.
@@ -90,6 +90,7 @@ index eb45e2ab9438..48b3ab4bc6cc 100644
 +- Implement 32-bit float functions (sinf(), etc.) by calling the 64-bit
 +  versions.
 +- Format the code.
++- Remove MSVC code, which is not supported by Chromium anymore.
 diff --git a/third_party/fdlibm/ieee754.cc b/third_party/fdlibm/ieee754.cc
 index 1706b56dfd90..4825b22fc6f5 100644
 --- a/third_party/fdlibm/ieee754.cc
@@ -99,7 +100,7 @@ index 1706b56dfd90..4825b22fc6f5 100644
  // The following is adapted from fdlibm (http://www.netlib.org/fdlibm).
  //
  // ====================================================
-@@ -12,30 +13,23 @@
+@@ -12,30 +13,21 @@
  // The original source code covered by the above license above has been
  // modified significantly by Google Inc.
  // Copyright 2016 the V8 project authors. All rights reserved.
@@ -115,8 +116,6 @@ index 1706b56dfd90..4825b22fc6f5 100644
 -#include "src/base/macros.h"
 -#include "src/base/overflowing-math.h"
 +#include "base/bit_cast.h"
-+#include "base/compiler_specific.h"
-+#include "base/macros.h"
 +#include "build/build_config.h"
 +#include "third_party/fdlibm/overflowing-math.h"
  
@@ -138,19 +137,24 @@ index 1706b56dfd90..4825b22fc6f5 100644
  /*
   * The original fdlibm code used statements like:
   *  n0 = ((*(int*)&one)>>29)^1;   * index of high word *
-@@ -104,11 +98,11 @@ namespace {
+@@ -104,11 +98,15 @@ namespace {
      (d) = bit_cast<double>(bits);          \
    } while (false)
  
 -int32_t __ieee754_rem_pio2(double x, double* y) V8_WARN_UNUSED_RESULT;
 -double __kernel_cos(double x, double y) V8_WARN_UNUSED_RESULT;
-+int32_t __ieee754_rem_pio2(double x, double* y) WARN_UNUSED_RESULT;
-+double __kernel_cos(double x, double y) WARN_UNUSED_RESULT;
- int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
+-int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
 -                      const int32_t* ipio2) V8_WARN_UNUSED_RESULT;
 -double __kernel_sin(double x, double y, int iy) V8_WARN_UNUSED_RESULT;
-+                      const int32_t* ipio2) WARN_UNUSED_RESULT;
-+double __kernel_sin(double x, double y, int iy) WARN_UNUSED_RESULT;
++[[nodiscard]] int32_t __ieee754_rem_pio2(double x, double* y);
++[[nodiscard]] double __kernel_cos(double x, double y);
++[[nodiscard]] int __kernel_rem_pio2(double* x,
++                                    double* y,
++                                    int e0,
++                                    int nx,
++                                    int prec,
++                                    const int32_t* ipio2);
++[[nodiscard]] double __kernel_sin(double x, double y, int iy);
  
  /* __ieee754_rem_pio2(x,y)
   *
@@ -235,7 +239,7 @@ index 1706b56dfd90..4825b22fc6f5 100644
  #undef EXTRACT_WORDS
  #undef GET_HIGH_WORD
  #undef GET_LOW_WORD
-@@ -3015,6 +3029,5 @@ double tanh(double x) {
+@@ -3015,6 +3029,4 @@ double tanh(double x) {
  #undef SET_HIGH_WORD
  #undef SET_LOW_WORD
  
@@ -243,7 +247,6 @@ index 1706b56dfd90..4825b22fc6f5 100644
 -}  // namespace base
 -}  // namespace v8
 +}  // namespace fdlibm
-+
 diff --git a/third_party/fdlibm/ieee754.h b/third_party/fdlibm/ieee754.h
 index f2b3a3eb5808..27b5013818a2 100644
 --- a/third_party/fdlibm/ieee754.h
@@ -384,7 +387,7 @@ diff --git a/third_party/fdlibm/overflowing-math.h b/third_party/fdlibm/overflow
 index 14dcfb10de1a..815fa624ce11 100644
 --- a/third_party/fdlibm/overflowing-math.h
 +++ b/third_party/fdlibm/overflowing-math.h
-@@ -1,19 +1,19 @@
+@@ -1,19 +1,17 @@
  // Copyright 2019 the V8 project authors. All rights reserved.
 +// Copyright 2020 The Chromium Authors. All rights reserved.
  // Use of this source code is governed by a BSD-style license that can be
@@ -401,8 +404,7 @@ index 14dcfb10de1a..815fa624ce11 100644
  #include <type_traits>
  
 -#include "src/base/macros.h"
-+#include "base/macros.h"
- 
+-
 -namespace v8 {
 -namespace base {
 +namespace fdlibm {

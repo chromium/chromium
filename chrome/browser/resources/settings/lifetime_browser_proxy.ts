@@ -2,12 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="not chromeos_ash">
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// </if>
+
 export interface LifetimeBrowserProxy {
   // Triggers a browser restart.
   restart(): void;
 
   // Triggers a browser relaunch.
   relaunch(): void;
+
+  // <if expr="not chromeos_ash">
+  // Indicates whether a relaunch confirmation dialog needs to be shown or not.
+  shouldShowRelaunchConfirmationDialog(): Promise<boolean>;
+
+  // Returns the description of the relaunch confirmation dialog.
+  // A null value can be returned if the condition to show the relaunch dialog
+  // is no longer true.
+  getRelaunchConfirmationDialogDescription(): Promise<string|null>;
+  // </if>
 
   // <if expr="chromeos">
   // First signs out current user and then performs a restart.
@@ -29,6 +43,16 @@ export class LifetimeBrowserProxyImpl implements LifetimeBrowserProxy {
   relaunch() {
     chrome.send('relaunch');
   }
+
+  // <if expr="not chromeos_ash">
+  shouldShowRelaunchConfirmationDialog() {
+    return sendWithPromise('shouldShowRelaunchConfirmationDialog');
+  }
+
+  getRelaunchConfirmationDialogDescription() {
+    return sendWithPromise('getRelaunchConfirmationDialogDescription');
+  }
+  // </if>
 
   // <if expr="chromeos">
   signOutAndRestart() {

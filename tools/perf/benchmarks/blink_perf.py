@@ -380,7 +380,7 @@ class _BlinkPerfBenchmark(perf_benchmark.PerfBenchmark):
                                   extra_tags=self.TAGS)
 
 
-@benchmark.Info(emails=['dmazzoni@chromium.org'],
+@benchmark.Info(emails=['aleventhal@chromium.org'],
                 component='Blink>Accessibility',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfAccessibility(_BlinkPerfBenchmark):
@@ -712,6 +712,18 @@ class BlinkPerfWebAudio(_BlinkPerfBenchmark):
   @classmethod
   def Name(cls):
     return 'blink_perf.webaudio'
+
+
+@benchmark.Info(emails=['media-dev@chromium.org'],
+                component='Blink>WebCodecs',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
+  SUBDIR = 'webcodecs'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'blink_perf.webcodecs'
 
 
 @benchmark.Info(

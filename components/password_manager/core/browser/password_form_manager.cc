@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_filling.h"
@@ -146,6 +147,21 @@ PasswordFormManager::PasswordFormManager(
   if (owned_form_fetcher_ &&
       !observed_form()->is_gaia_with_skip_save_password_form) {
     owned_form_fetcher_->Fetch();
+
+    WebAuthnCredentialsDelegate* delegate =
+        client_->GetWebAuthnCredentialsDelegate();
+    bool is_webauthn_autofill_enabled =
+        delegate && delegate->IsWebAuthnAutofillEnabled();
+
+    // The barrier closure is invoked by the WebAuthnCredentialsDelegate,
+    // if enabled, and by ProcessServerPredictions. A fill will trigger
+    // when both requests are satisfied.
+    async_predictions_waiter_.InitializeClosure(
+        is_webauthn_autofill_enabled ? 2 : 1);
+    if (is_webauthn_autofill_enabled) {
+      delegate->RetrieveWebAuthnSuggestions(
+          async_predictions_waiter_.closure());
+    }
   }
   votes_uploader_.StoreInitialFieldValues(*observed_form());
 }
@@ -285,12 +301,26 @@ void PasswordFormManager::Save() {
     newly_blocklisted_ = false;
   }
 
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value),
+      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
 
   client_->UpdateFormManagers();
 }
 
 void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
+  // This is potentially the conclusion of a password change flow. It might also
+  // not be related to such a flow at all, but the tracker will figure it out.
+  client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      parsed_submitted_form_->url,
+      base::UTF16ToUTF8(GetPendingCredentials().username_value),
+      PasswordChangeSuccessTracker::EndEvent::kManualFlow);
+
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);
 
@@ -492,7 +522,7 @@ const PasswordForm* PasswordFormManager::GetSubmittedForm() const {
   return parsed_submitted_form_.get();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void PasswordFormManager::PresaveGeneratedPassword(
     PasswordManagerDriver* driver,
     const FormData& form,
@@ -563,7 +593,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
   if (data_found)
     ProvisionallySave(*observed_form(), driver, nullptr);
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 void PasswordFormManager::SaveSuggestedUsernameValueToVotesUploader() {
   votes_uploader_.set_suggested_username(
@@ -627,13 +657,7 @@ PasswordFormManager::PasswordFormManager(
 
 void PasswordFormManager::DelayFillForServerSidePredictions() {
   waiting_for_server_predictions_ = true;
-
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordFormManager::Fill,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kMaxFillingDelayForServerPredictions);
+  async_predictions_waiter_.StartTimer();
 }
 
 void PasswordFormManager::OnFetchCompleted() {
@@ -665,6 +689,10 @@ void PasswordFormManager::OnFetchCompleted() {
   } else if (!waiting_for_server_predictions_) {
     DelayFillForServerSidePredictions();
   }
+}
+
+void PasswordFormManager::OnWaitCompleted() {
+  Fill();
 }
 
 void PasswordFormManager::CreatePendingCredentials() {
@@ -781,8 +809,15 @@ void PasswordFormManager::ProcessServerPredictions(
     return;
   }
   UpdatePredictionsForObservedForm(predictions);
-  if (parser_.predictions())
-    Fill();
+  if (parser_.predictions()) {
+    if (!async_predictions_waiter_.closure().is_null()) {
+      // Signals the availability of server predictions, but there might be
+      // other callbacks still outstanding.
+      async_predictions_waiter_.closure().Run();
+    } else {
+      Fill();
+    }
+  }
 }
 
 void PasswordFormManager::Fill() {
@@ -810,7 +845,7 @@ void PasswordFormManager::Fill() {
 
   if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       .form_renderer_id = observed_password_form->form_data.unique_renderer_id,
 #endif
       .new_password_renderer_id =
@@ -820,7 +855,7 @@ void PasswordFormManager::Fill() {
     });
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Filling on username first flow is not supported on iOS.
   if (observed_password_form->IsSingleUsername())
     return;
@@ -904,7 +939,8 @@ PasswordFormManager::PasswordFormManager(
       password_save_manager_(std::move(password_save_manager)),
       // TODO(https://crbug.com/831123): set correctly
       // |is_possible_change_password_form| in |votes_uploader_| constructor
-      votes_uploader_(client, false /* is_possible_change_password_form */) {
+      votes_uploader_(client, false /* is_possible_change_password_form */),
+      async_predictions_waiter_(this) {
   form_fetcher_->AddConsumer(this);
   if (!metrics_recorder_) {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(

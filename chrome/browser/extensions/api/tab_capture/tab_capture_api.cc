@@ -108,8 +108,8 @@ void AddMediaStreamSourceConstraints(content::WebContents* target_contents,
     if (!msc)
       continue;
     base::DictionaryValue* constraint = &msc->mandatory.additional_properties;
-    constraint->SetString(kMediaStreamSource, kMediaStreamSourceTab);
-    constraint->SetString(kMediaStreamSourceId, device_id);
+    constraint->SetStringKey(kMediaStreamSource, kMediaStreamSourceTab);
+    constraint->SetStringKey(kMediaStreamSourceId, device_id);
   }
 }
 

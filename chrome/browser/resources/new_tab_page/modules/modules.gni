@@ -1,0 +1,46 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("./cart/cart.gni")
+import("./cart_v2/cart_v2.gni")
+import("./drive/drive.gni")
+import("./drive_v2/drive_v2.gni")
+import("./photos/photos.gni")
+import("./recipes_v2/recipes_v2.gni")
+import("./task_module/task_module.gni")
+
+if (!is_official_build) {
+  import("./dummy_v2/dummy_v2.gni")
+}
+
+# List of files that don't need to be passed to html_to_js().
+modules_non_web_component_files =
+    [
+      # modules/ subfolder
+      "modules/module_descriptor.ts",
+      "modules/module_descriptors.ts",
+      "modules/module_registry.ts",
+    ] + cart_non_web_component_files + drive_non_web_component_files +
+    photos_non_web_component_files + task_module_non_web_component_files
+
+if (!is_official_build) {
+  modules_non_web_component_files += dummy_v2_non_web_component_files
+}
+
+# List of files that should be passed to html_to_js().
+modules_web_component_files =
+    [
+      # modules/ subfolder
+      "modules/info_dialog.ts",
+      "modules/module_header.ts",
+      "modules/modules.ts",
+      "modules/module_wrapper.ts",
+    ] + cart_web_component_files + cart_v2_web_component_files +
+    drive_web_component_files + drive_v2_web_component_files +
+    photos_web_component_files + recipes_v2_web_component_files +
+    task_module_web_component_files
+
+if (!is_official_build) {
+  modules_web_component_files += dummy_v2_web_component_files
+}

@@ -32,8 +32,10 @@ enum class AutofillAssistantState {
 
   // Autofill assistant is keeping track of script availability.
   //
-  // In this mode, no UI is shown and scripts are not autostarted. User
-  // actions might be available.
+  // UI will only be shown if the previous state was RUNNING and if the script
+  // finished with tell + stop.
+  //
+  // In this mode, scripts are not autostarted. User actions might be available.
   //
   // Note that it is possible to go from TRACKING to STARTING to trigger
   // whatever autostartable scripts is defined for a page.

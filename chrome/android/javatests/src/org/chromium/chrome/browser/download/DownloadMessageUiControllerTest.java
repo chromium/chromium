@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -19,16 +21,18 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.UUID;
 
@@ -55,7 +59,7 @@ public class DownloadMessageUiControllerTest {
     private static final String MESSAGE_TWO_DOWNLOAD_SCHEDULED = "2 downloads scheduled";
 
     private static final String DESCRIPTION_DOWNLOADING = "See notification for download status";
-    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) example.com";
+    private static final String DESCRIPTION_DOWNLOAD_COMPLETE = "(0.01 KB) www.example.com";
     private static final String DESCRIPTION_DOWNLOAD_SCHEDULED =
             "Download will start when on Wi-Fi";
 
@@ -70,13 +74,36 @@ public class DownloadMessageUiControllerTest {
                 () -> { mTestController = new TestDownloadMessageUiController(); });
     }
 
+    static class TestDelegate implements DownloadMessageUiController.Delegate {
+        @Override
+        @Nullable
+        public Context getContext() {
+            return InstrumentationRegistry.getTargetContext();
+        }
+
+        @Override
+        @Nullable
+        public MessageDispatcher getMessageDispatcher() {
+            return null;
+        }
+
+        @Override
+        @Nullable
+        public ModalDialogManager getModalDialogManager() {
+            return null;
+        }
+
+        @Override
+        public boolean maybeSwitchToFocusedActivity() {
+            return false;
+        }
+    }
+
     static class TestDownloadMessageUiController extends DownloadMessageUiControllerImpl {
         private DownloadProgressMessageUiData mInfo;
 
         public TestDownloadMessageUiController() {
-            super(InstrumentationRegistry.getTargetContext(), /*otrProfileID*/ null,
-                    /*messageDispatcher=*/null, /*modalDialogManager=*/null,
-                    new ActivityTabProvider());
+            super(new TestDelegate());
         }
 
         @Override
@@ -128,7 +155,7 @@ public class DownloadMessageUiControllerTest {
     private static void markItemComplete(OfflineItem item) {
         item.state = OfflineItemState.COMPLETE;
         item.title = TEST_FILE_NAME;
-        item.url = "https://example.com";
+        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         item.receivedBytes = 10L;
         item.totalSizeBytes = 10L;
     }

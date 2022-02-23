@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -136,12 +137,12 @@ class TableViewTestHelper {
   }
 
  private:
-  TableView* table_;
+  raw_ptr<TableView> table_;
 };
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 constexpr int kCtrlOrCmdMask = ui::EF_COMMAND_DOWN;
 #else
 constexpr int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
@@ -196,7 +197,7 @@ class TestTableModel2 : public ui::TableModel {
   int CompareValues(int row1, int row2, int column_id) override;
 
  private:
-  ui::TableModelObserver* observer_ = nullptr;
+  raw_ptr<ui::TableModelObserver> observer_ = nullptr;
 
   absl::optional<std::u16string> tooltip_;
 
@@ -607,7 +608,7 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  TableView* table_ = nullptr;
+  raw_ptr<TableView> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -801,6 +802,19 @@ TEST_P(TableViewTest, ColumnVisibility) {
   EXPECT_EQ(1, table_->GetVisibleColumn(0).column.id);
   EXPECT_EQ(0, table_->GetVisibleColumn(1).column.id);
   EXPECT_EQ("rows=0 4 cols=0 2", helper_->GetPaintRegion(table_->bounds()));
+}
+
+// Regression tests for https://crbug.com/1283805, and
+// https://crbug.com/1283807.
+TEST_P(TableViewTest, NoCrashesWithAllColumnsHidden) {
+  // Set both initially visible columns hidden.
+  table_->SetColumnVisibility(0, false);
+  table_->SetColumnVisibility(1, false);
+  EXPECT_EQ(0u, helper_->visible_col_count());
+
+  // Remove and add rows in this state, there should be no crashes.
+  model_->RemoveRow(0);
+  model_->AddRows(1, 2, /*value_multiplier=*/10);
 }
 
 // Verifies resizing a column using the mouse works.
@@ -1476,7 +1490,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Verifies selection works by way of a gesture.
 TEST_P(TableViewTest, SelectOnTap) {
   // Initially no selection.
@@ -2130,7 +2144,7 @@ class RemoveFocusChangeListenerDelegate : public WidgetDelegate {
   void SetFocusChangeListener(FocusChangeListener* listener);
 
  private:
-  FocusChangeListener* listener_;
+  raw_ptr<FocusChangeListener> listener_;
 };
 
 void RemoveFocusChangeListenerDelegate::SetFocusChangeListener(

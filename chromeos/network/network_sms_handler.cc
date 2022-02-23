@@ -291,7 +291,7 @@ void NetworkSmsHandler::ManagerPropertiesCallback(
 }
 
 void NetworkSmsHandler::UpdateDevices(const base::Value& devices) {
-  for (const auto& item : devices.GetList()) {
+  for (const auto& item : devices.GetListDeprecated()) {
     if (!item.is_string())
       continue;
 
@@ -336,8 +336,9 @@ void NetworkSmsHandler::DevicePropertiesCallback(
 
   const std::string* object_path_string =
       properties->FindStringKey(shill::kDBusObjectProperty);
-  if (!object_path_string) {
-    NET_LOG(ERROR) << "Device has no DBusObject Property: " << device_path;
+  if (!object_path_string || object_path_string->empty()) {
+    NET_LOG(ERROR) << "Device has no or empty DBusObject Property: "
+                   << device_path;
     return;
   }
   dbus::ObjectPath object_path(*object_path_string);

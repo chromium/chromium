@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/ss_bottom_bar_height"
     android:layout_gravity="bottom"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:visibility="invisible">
     <ImageView
         android:layout_width="match_parent"

@@ -24,10 +24,11 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link MessageCardViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
+public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
@@ -180,11 +181,9 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
                                         mItemView.getContext(), R.color.default_text_color_list)
                                 .getDefaultColor()));
         assertThat(actionButton.getCurrentTextColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mItemView.getResources(), R.color.default_text_color_link)));
-        assertThat(closeButton.getImageTintList(),
-                equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color)));
+                equalTo(SemanticColorUtils.getDefaultTextColorLink(mItemView.getContext())));
+        assertThat(closeButton.getImageTintList().getDefaultColor(),
+                equalTo(getActivity().getColor(R.color.default_icon_color_tint_list)));
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(description.getCurrentTextColor(),
@@ -193,9 +192,8 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
         assertThat(actionButton.getCurrentTextColor(),
                 equalTo(ApiCompatibilityUtils.getColor(
                         mItemView.getResources(), R.color.default_text_color_link_light)));
-        assertThat(closeButton.getImageTintList(),
-                equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color_light)));
+        assertThat(closeButton.getImageTintList().getDefaultColor(),
+                equalTo(getActivity().getColor(R.color.default_icon_color_light)));
     }
 
     @Override

@@ -15,7 +15,7 @@
   }
 
   #header {
-    font-size: 1.75rem;  /* 28px */
+    font-size: 1.25rem;  /* 20px */
   }
 
   #placeholder {
@@ -46,7 +46,7 @@
   </template>
 </iron-list>
 <div id="footer" hidden="[[getLoadMoreButtonHidden_(
-    result_, result_.clusters.*, result_.continuationEndTime)]]">
+    result_, result_.clusters.*, result_.canLoadMore)]]">
   <cr-button id="loadMoreButton" on-click="onLoadMoreButtonClick_">
     $i18n{loadMoreButtonLabel}
   </cr-button>

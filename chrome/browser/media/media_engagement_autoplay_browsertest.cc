@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(MediaEngagementAutoplayBrowserTest,
 }
 
 // Disabled due to being flaky. crbug.com/1212507
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_UsePreloadedData_Allowed DISABLED_UsePreloadedData_Allowed
 #else
 #define MAYBE_UsePreloadedData_Allowed UsePreloadedData_Allowed

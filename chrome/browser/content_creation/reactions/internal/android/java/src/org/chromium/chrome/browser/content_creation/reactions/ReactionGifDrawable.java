@@ -19,11 +19,17 @@ public class ReactionGifDrawable extends BaseGifDrawable {
     private final ReactionMetadata mMetadata;
     private boolean mSteppingEnabled;
     private org.chromium.base.Callback<Void> mStepCallback;
+    private boolean mIsCurrentlyDecoding;
+    private boolean mStepOnNextDecode;
 
     public ReactionGifDrawable(
             ReactionMetadata metadata, BaseGifImage gifImage, Bitmap.Config bitmapConfig) {
         super(gifImage, bitmapConfig);
         mMetadata = metadata;
+        mStepOnNextDecode = false;
+
+        // The base class constructor automatically starts decoding the first frame.
+        mIsCurrentlyDecoding = true;
     }
 
     /**
@@ -44,7 +50,7 @@ public class ReactionGifDrawable extends BaseGifDrawable {
         mSteppingEnabled = steppingEnabled;
         if (mSteppingEnabled) {
             stop();
-            reset();
+            requestReset();
         }
     }
 
@@ -59,9 +65,19 @@ public class ReactionGifDrawable extends BaseGifDrawable {
             return false;
         }
         mStepCallback = listener;
+
+        boolean wasSteppingEnabled = mSteppingEnabled;
         setSteppingEnabled(true);
-        run();
-        return true;
+
+        if (mIsCurrentlyDecoding && !wasSteppingEnabled) {
+            // Wait for the current decoding operation to finish. The step will be performed by
+            // postProcessFrame() when the current decoding operation is done.
+            mStepOnNextDecode = true;
+            return false;
+        } else {
+            run();
+            return true;
+        }
     }
 
     public ReactionMetadata getMetadata() {
@@ -72,13 +88,23 @@ public class ReactionGifDrawable extends BaseGifDrawable {
      * Restarts the animation from the first frame.
      */
     public void resetAnimation() {
-        reset();
+        requestReset();
     }
 
     @Override
     protected void postProcessFrame(Bitmap bitmap) {
-        // A frame has just been decoded. If stepping is enabled, notify the listener that a step
-        // has completed.
+        mIsCurrentlyDecoding = false;
+
+        if (mStepOnNextDecode) {
+            // Ignore the frame that was just decoded because stepping mode is being enabled, which
+            // means the reaction is being reset to the first frame anyway. Simply perform the step
+            // manually from here.
+            mStepOnNextDecode = false;
+            run();
+            return;
+        }
+
+        // If stepping is enabled, notify the listener that a step has completed.
         if (mSteppingEnabled && mStepCallback != null) {
             org.chromium.base.Callback<Void> cb = mStepCallback;
             mStepCallback = null;
@@ -104,5 +130,11 @@ public class ReactionGifDrawable extends BaseGifDrawable {
         }
 
         super.invalidateSelf();
+    }
+
+    @Override
+    public void run() {
+        mIsCurrentlyDecoding = true;
+        super.run();
     }
 }

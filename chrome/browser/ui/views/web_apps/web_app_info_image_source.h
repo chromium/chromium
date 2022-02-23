@@ -7,11 +7,11 @@
 
 #include <map>
 
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia_source.h"
 
-// An image source which draws from a WebApplicationInfo icons list.
+// An image source which draws from a WebAppInstallInfo icons list.
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
   WebAppInfoImageSource(int dip_size,

@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 #define COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 
-#include "components/sync/driver/data_type_manager.h"
-
 #include <map>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
+#include "components/sync/driver/data_type_manager.h"
 #include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
 
@@ -113,10 +113,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams(
       const AssociationTypesInfo& association_types_info);
 
-  // Divide |types| into sets by their priorities and return the sets from
-  // high priority to low priority.
-  base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types);
-
   // Update precondition state of types in data_type_status_table_ to match
   // value of DataTypeController::GetPreconditionState().
   void UpdatePreconditionErrors(const ModelTypeSet& desired_types);
@@ -165,11 +161,11 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   ModelTypeSet GetEnabledTypes() const;
 
-  ModelTypeConfigurer* const configurer_;
+  const raw_ptr<ModelTypeConfigurer> configurer_;
 
   // Map of all data type controllers that are available for sync.
   // This list is determined at startup by various command line flags.
-  const DataTypeController::TypeMap* const controllers_;
+  const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
   State state_ = DataTypeManager::STOPPED;
 
@@ -211,7 +207,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // DataTypeManager must have only one observer -- the SyncServiceImpl that
   // created it and manages its lifetime.
-  DataTypeManagerObserver* const observer_;
+  const raw_ptr<DataTypeManagerObserver> observer_;
 
   // For querying failed data types (having unrecoverable error) when
   // configuring backend.
@@ -222,7 +218,7 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // The encryption handler lets the DataTypeManager know the state of sync
   // datatype encryption.
-  const DataTypeEncryptionHandler* encryption_handler_;
+  raw_ptr<const DataTypeEncryptionHandler> encryption_handler_;
 
   // Timing stats of data type configuration.
   std::map<ModelType, DataTypeConfigurationStats> configuration_stats_;

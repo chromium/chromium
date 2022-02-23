@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/ui/views/user_education/tip_marquee_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -123,7 +126,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                  views::LayoutAlignment::kCenter);
   tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kChromeOSTabSearchCaptionButton))
     return;
 #endif
@@ -145,6 +148,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
     tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
   }
+
+  SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 }
 
 TabStripRegionView::~TabStripRegionView() = default;
@@ -188,6 +193,40 @@ void TabStripRegionView::FrameColorsChanged() {
     tab_search_button_->FrameColorsChanged();
   tab_strip_->FrameColorsChanged();
   SchedulePaint();
+}
+
+bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
+  return tab_strip_->CanDrop(data);
+}
+
+bool TabStripRegionView::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  if (!tab_strip_->WantsToReceiveAllDragEvents())
+    return false;
+
+  return tab_strip_->GetDropFormats(formats, format_types);
+}
+
+void TabStripRegionView::OnDragEntered(const ui::DropTargetEvent& event) {
+  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
+  tab_strip_->OnDragEntered(event);
+}
+
+int TabStripRegionView::OnDragUpdated(const ui::DropTargetEvent& event) {
+  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
+  return tab_strip_->OnDragUpdated(event);
+}
+
+void TabStripRegionView::OnDragExited() {
+  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
+  tab_strip_->OnDragExited();
+}
+
+ui::mojom::DragOperation TabStripRegionView::OnPerformDrop(
+    const ui::DropTargetEvent& event) {
+  DCHECK(tab_strip_->WantsToReceiveAllDragEvents());
+  return tab_strip_->OnPerformDrop(event);
 }
 
 void TabStripRegionView::ChildPreferredSizeChanged(views::View* child) {

@@ -14,10 +14,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/language/add_language_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
@@ -31,6 +30,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -76,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, weak) TableViewTextItem* addLanguageItem;
 
 // A reference to the Translate switch item for quick access.
-@property(nonatomic, weak) SettingsSwitchItem* translateSwitchItem;
+@property(nonatomic, weak) TableViewSwitchItem* translateSwitchItem;
 
 // A reference to the Translate switch item for quick access.
 @property(nonatomic, weak) TableViewInfoButtonItem* translateManagedItem;
@@ -166,8 +167,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierTranslate];
   } else {
     // Translate switch item.
-    SettingsSwitchItem* translateSwitchItem =
-        [[SettingsSwitchItem alloc] initWithType:ItemTypeTranslateSwitch];
+    TableViewSwitchItem* translateSwitchItem =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeTranslateSwitch];
     self.translateSwitchItem = translateSwitchItem;
     translateSwitchItem.accessibilityIdentifier =
         kTranslateSwitchAccessibilityIdentifier;
@@ -407,8 +408,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       (ItemType)[self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
     case ItemTypeTranslateSwitch: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(translateSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
@@ -636,8 +637,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  GURL convertedURL = net::GURLWithNSURL(URL);
-  [self view:nil didTapLinkURL:convertedURL];
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 @end

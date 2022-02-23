@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Server nama Google</translation>
+<translation id="1171082344678443012">Arsip terkompresi XZ</translation>
 <translation id="1172970565351728681">Sekitar <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1173916544412572294">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arsip RAR</translation>
+<translation id="2036414735548252477">Arsip tar terkompresi LZMA</translation>
 <translation id="2037845485764049925">Rusia</translation>
 <translation id="2044023416777079300">Modem tidak terdaftar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Bagikan dengan <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
+<translation id="3104793765551262433">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
 <translation id="3113153474486991170">Tidak dapat membuka "<ph name="PATH" />" dari lokasi ini. Salin ke "File saya" untuk membuka.</translation>
 <translation id="3113592018909187986">Tersisa 1 upaya lagi. Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru.</translation>
 <translation id="3124404833828281817">Orang melamun</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
 <translation id="3567221313191587603">Pilih file, dan aktifkan <ph name="OFFLINE_CHECKBOX_NAME" /> untuk mendapatkan akses offline ke file Anda.</translation>
 <translation id="357479282490346887">Lithuania</translation>
+<translation id="3587482841069643663">Semua</translation>
 <translation id="3592251141500063301">Tidak dapat membuat <ph name="FILE_NAME" /> tersedia offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Prancis Kanada</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Semua dicadangkan!</translation>
 <translation id="3634507049637220048">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> item dipindahkan.</translation>
-<translation id="3645531960514756307">Lepas pin pada folder</translation>
 <translation id="3685122418104378273">Sinkronisasi Google Drive dinonaktifkan secara default saat menggunakan data seluler.</translation>
 <translation id="3689865792480713551">Batalkan <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3691184985318546178">Sinhala</translation>
 <translation id="3726463242007121105">Perangkat ini tidak dapat dibuka karena sistem berkasnya tidak didukung.</translation>
 <translation id="3727148787322499904">Perubahan pada setelan ini akan berpengaruh pada semua jaringan bersama</translation>
+<translation id="3737576078404241332">Hapus dari sidebar</translation>
 <translation id="3741243925913727067">Mencadangkan foto dan video perangkat media ke Google Drive.</translation>
 <translation id="3749289110408117711">Nama file</translation>
 <translation id="3780536599611287598">Anda tidak memiliki izin untuk memindahkan file ke '<ph name="FOLDER_NAME" />'.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Ahli botani</translation>
 <translation id="4326192123064055915">Kopi</translation>
 <translation id="4336032328163998280">Operasi penyalinan gagal. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Tambahkan ke sidebar</translation>
 <translation id="4348495354623233847">Kurdi Sorani dengan keyboard berbasis bahasa Arab</translation>
 <translation id="4363958938297989186">Rusia dengan keyboard Fonetik</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Pengatur volume</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4886199584824489598">Arsip terkompresi Bzip2</translation>
 <translation id="4900532980794411603">Bagikan ke Parallels Desktop</translation>
 <translation id="4902546322522096650">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="4905417359854579806">Siap untuk mencadangkan <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Jaringan <ph name="NETWORK_TYPE" />, tidak terhubung</translation>
 <translation id="6074825444536523002">Google Formulir</translation>
 <translation id="6079871810119356840">Hungaria dengan keyboard Qwerty</translation>
+<translation id="6082256976217156453">Arsip terkompresi LZMA</translation>
 <translation id="6096979789310008754">Teks penelusuran dihapus, menampilkan semua file dan folder.</translation>
 <translation id="610101264611565198">Memindahkan <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spasi</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Terbalik</translation>
 <translation id="6943836128787782965">HTTP gagal</translation>
 <translation id="6949408524333579394">Transliterasi Serbia</translation>
+<translation id="6954309393500027528">Penempelan file ini diblokir oleh administrator Anda</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi operator.</translation>
 <translation id="696203921837389374">Aktifkan sinkronisasi melalui data seluler</translation>
 <translation id="6965382102122355670">Oke</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">3 Himpunan Hangul (Tanpa Shift)</translation>
 <translation id="8299269255470343364">Jepang</translation>
 <translation id="8300849813060516376">OTASP gagal</translation>
+<translation id="8308481408797647857">Arsip tar terkompresi XZ</translation>
 <translation id="8312871300878166382">Tempelkan ke folder</translation>
 <translation id="8329978297633540474">Teks biasa</translation>
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Latvia</translation>
 <translation id="8560515948038859357">Kanton</translation>
 <translation id="8561206103590473338">Gajah</translation>
+<translation id="8566466896628108558">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
 <translation id="8569764466147087991">Pilih file yang akan dibuka</translation>
 <translation id="8577897833047451336">Kroasia</translation>
 <translation id="8578308463707544055">Indonesia</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Kami terus mencari cara agar penjelajahan Anda lebih aman. Sebelumnya, situs web apa pun dapat meminta Anda untuk menambahkan ekstensi ke browser. Pada versi terbaru Google Chrome, Anda harus memberitahukan dengan jelas kepada Chrome bahwa Anda ingin memasang ekstensi ini dengan menambahkannya melalui halaman Ekstensi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Pasang pin pada folder</translation>
 <translation id="9130775360844693113">Anggota '<ph name="DESTINATION_NAME" />' akan mendapatkan akses ke item berikut.</translation>
 <translation id="9131598836763251128">Pilih satu atau beberapa file</translation>
 <translation id="9133055936679483811">Gagal membuat file zip. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
+<translation id="961973045258256291">Arsip terkompresi Gzip</translation>
 <translation id="965477715979482472">Inggris (Afrika Selatan)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>

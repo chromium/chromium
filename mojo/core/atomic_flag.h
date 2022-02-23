@@ -5,8 +5,7 @@
 #ifndef MOJO_CORE_ATOMIC_FLAG_H_
 #define MOJO_CORE_ATOMIC_FLAG_H_
 
-#include "base/atomicops.h"
-#include "base/macros.h"
+#include <atomic>
 
 namespace mojo {
 namespace core {
@@ -32,21 +31,20 @@ namespace core {
 // }
 class AtomicFlag {
  public:
-  AtomicFlag() : flag_(0) {}
-
+  AtomicFlag();
   AtomicFlag(const AtomicFlag&) = delete;
   AtomicFlag& operator=(const AtomicFlag&) = delete;
 
   ~AtomicFlag() = default;
 
-  void Set(bool value) { base::subtle::Release_Store(&flag_, value ? 1 : 0); }
+  void Set(bool value) { flag_.store(value, std::memory_order_release); }
 
-  bool Get() const { return base::subtle::Acquire_Load(&flag_) ? true : false; }
+  bool Get() const { return flag_.load(std::memory_order_acquire); }
 
   operator const bool() const { return Get(); }
 
  private:
-  base::subtle::Atomic32 flag_;
+  std::atomic<bool> flag_;
 };
 
 }  // namespace core

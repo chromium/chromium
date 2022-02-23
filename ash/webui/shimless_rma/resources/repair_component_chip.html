@@ -1,4 +1,4 @@
-<style include="cr-shared-style shimless-rma-shared">
+<style include="cr-shared-style shimless-rma-shared shimless-fonts">
   :host {
     padding: 1px;
   }
@@ -9,21 +9,26 @@
   }
 
   #componentButton {
-    align-items: normal;
-    border-radius: 4px;
+    --vertical-padding: 24px;
+    border-radius: 8px;
     box-shadow: var(--cr-card-shadow);
-    height: 70px;
-    margin-bottom: 20px;
-    margin-inline-end: 10px;
-    width: 190px;
+    color: var(--shimless-component-text-color);
+    font-family: var(--shimless-component-font-family);
+    font-size: var(--shimless-component-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    height: calc((2 * var(--vertical-padding)) + 
+        (2 * var(--shimless-component-line-height)));
+    line-height: var(--shimless-component-line-height);
+    padding: 0;
+    width: 100%;
   }
 
   #labelDiv {
     color: grey;
     flex-basis: 155px;
-    margin-bottom: auto;
-    margin-top: auto;
-    padding-inline-start: 20px;
+    inset-inline-start: 0;
+    padding-inline-start: 24px;
+    position: absolute;
   }
 
   :host([checked]) #labelDiv {
@@ -33,14 +38,22 @@
   iron-icon {
     margin-top: 6px;
   }
+
+  #checkIcon {
+    height: 20px;
+    inset-inline-end: 16px;
+    position: absolute;
+    width: 20px;
+  }
 </style>
 
 <cr-button id="componentButton" disabled="[[disabled]]"
     on-click="onComponentButtonClicked_">
   <div id="labelDiv">
     <span id="componentName">[[componentName]]</span>
-    <div>[[componentId]]</div>
+    <div id="componentIdentifier">[[componentIdentifier]]</div>
   </div>
-  <iron-icon icon="shimless-icon24:check-circle" hidden="[[!checked]]">
+  <iron-icon id="checkIcon" icon="shimless-icon24:check-circle"
+      hidden="[[!checked]]">
   </iron-icon>
 </cr-button>

@@ -26,12 +26,7 @@ SmbProvider::SmbProvider()
                     false /* watchable */,
                     true /* multiple_mounts */,
                     extensions::SOURCE_NETWORK),
-      name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)) {
-  icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_16x16,
-                    GURL("chrome://theme/IDR_SMB_ICON"));
-  icon_set_.SetIcon(file_system_provider::IconSet::IconSize::SIZE_32x32,
-                    GURL("chrome://theme/IDR_SMB_ICON@2x"));
-}
+      name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)) {}
 
 SmbProvider::~SmbProvider() = default;
 
@@ -56,6 +51,7 @@ const std::string& SmbProvider::GetName() const {
 }
 
 const file_system_provider::IconSet& SmbProvider::GetIconSet() const {
+  // Returns an empty IconSet.
   return icon_set_;
 }
 

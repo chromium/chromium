@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -24,7 +25,7 @@ class ScriptState;
 // coordinates before being packed up and sent to cc.
 //
 // Explainer for the feature:
-// https://github.com/WICG/ink-enhancement/blob/master/README.md
+// https://github.com/WICG/ink-enhancement/blob/main/README.md
 class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

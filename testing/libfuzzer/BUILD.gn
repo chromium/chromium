@@ -51,6 +51,14 @@ config("fuzzer_test_config") {
 config("no_clusterfuzz") {
 }
 
+# Since most iOS code doesn't compile in other platforms, and not all fuzzers
+# compile in iOS, a clusterfuzz job is set up to run only selected iOS fuzzers.
+# This is a noop config to tag fuzzer tests to be built for the job. iOS
+# Libfuzzer build bot uses this to filter targets while building an archive for
+# the job.
+config("build_for_ios_clusterfuzz_job") {
+}
+
 # noop to tag seed corpus rules.
 source_set("seed_corpus") {
 }

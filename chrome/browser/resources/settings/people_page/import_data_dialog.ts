@@ -15,36 +15,42 @@ import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';
 import '../settings_vars_css.js';
+import '../i18n_setup.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './import_data_browser_proxy.js';
+import {getTemplate} from './import_data_dialog.html.js';
 
-interface SettingsImportDataDialogElement {
+export interface SettingsImportDataDialogElement {
   $: {
-    dialog: CrDialogElement,
     browserSelect: HTMLSelectElement,
+    cancel: CrButtonElement,
+    dialog: CrDialogElement,
+    done: CrButtonElement,
+    import: CrButtonElement,
+    successIcon: HTMLElement,
   };
 }
 
 const SettingsImportDataDialogElementBase =
     WebUIListenerMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
-class SettingsImportDataDialogElement extends
+export class SettingsImportDataDialogElement extends
     SettingsImportDataDialogElementBase {
   static get is() {
     return 'settings-import-data-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -171,6 +177,12 @@ class SettingsImportDataDialogElement extends
   private shouldDisableImport_(): boolean {
     return this.hasImportStatus_(ImportDataStatus.IN_PROGRESS) ||
         this.noImportDataTypeSelected_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-import-data-dialog': SettingsImportDataDialogElement;
   }
 }
 

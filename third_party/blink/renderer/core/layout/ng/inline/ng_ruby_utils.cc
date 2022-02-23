@@ -78,8 +78,7 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
   const LayoutUnit line_height = IsHorizontalWritingMode(writing_mode)
                                      ? rect.size.height
                                      : rect.size.width;
-  LayoutUnit over, under;
-  std::tie(over, under) = AdjustTextOverUnderOffsetsForEmHeight(
+  auto [over, under] = AdjustTextOverUnderOffsetsForEmHeight(
       LayoutUnit(), line_height, style, *shape_view);
   const LayoutUnit over_diff = over;
   const LayoutUnit under_diff = line_height - under;
@@ -279,7 +278,7 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
         }
 
         // Check if we really have an annotation.
-        if (const auto* layout_result = item.layout_result.get()) {
+        if (const auto& layout_result = item.layout_result) {
           LayoutUnit overflow = layout_result->AnnotationOverflow();
           if (IsFlippedLinesWritingMode(line_style.GetWritingMode()))
             overflow = -overflow;

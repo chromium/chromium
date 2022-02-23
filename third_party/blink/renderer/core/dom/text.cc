@@ -195,7 +195,7 @@ String Text::wholeText() const {
   }
   DCHECK_EQ(result.length(), result_length);
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 Text* Text::ReplaceWholeText(const String& new_text) {

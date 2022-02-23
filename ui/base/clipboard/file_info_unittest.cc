@@ -85,7 +85,7 @@ TEST(FileInfoTest, Backslashes) {
     absl::optional<base::FilePath::StringType> path_roundtrip;
   };
   const TestCase tests[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // File paths with backslash should roundtrip on windows.
     {FPL("C:\\path"), "file:///C:/path"},
     {FPL("\\path"), "file:///path"},

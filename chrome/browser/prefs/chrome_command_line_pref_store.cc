@@ -26,8 +26,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -47,10 +45,11 @@
 const CommandLinePrefStore::SwitchToPreferenceMapEntry
     ChromeCommandLinePrefStore::string_switch_map_[] = {
         {switches::kLang, language::prefs::kApplicationLocale},
+        {switches::kAcceptLang, language::prefs::kSelectedLanguages},
         {switches::kAuthServerAllowlist, prefs::kAuthServerAllowlist},
         {switches::kSSLVersionMin, prefs::kSSLVersionMin},
         {switches::kSSLVersionMax, prefs::kSSLVersionMax},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         {switches::kAuthAndroidNegotiateAccountType,
          prefs::kAuthAndroidNegotiateAccountType},
 #endif
@@ -81,16 +80,15 @@ const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
         {safe_browsing::switches::kSbEnableEnhancedProtection,
          prefs::kSafeBrowsingEnhanced, true},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        {chromeos::switches::kEnableTouchpadThreeFingerClick,
+        {ash::switches::kEnableTouchpadThreeFingerClick,
          prefs::kEnableTouchpadThreeFingerClick, true},
         {switches::kEnableUnifiedDesktop,
          prefs::kUnifiedDesktopEnabledByDefault, true},
-        {chromeos::switches::kEnableCastReceiver, prefs::kCastReceiverEnabled,
-         true},
+        {ash::switches::kEnableCastReceiver, prefs::kCastReceiverEnabled, true},
 #endif
         {switches::kEnableLocalSyncBackend,
          syncer::prefs::kEnableLocalSyncBackend, true},
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
         {switches::kUseSystemDefaultPrinter,
          prefs::kPrintPreviewUseSystemDefaultPrinter, true},
 #endif

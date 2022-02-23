@@ -39,6 +39,8 @@ static_library("signaling") {
     "signaling_id_util.cc",
     "signaling_id_util.h",
     "signaling_tracker.h",
+    "xmpp_constants.cc",
+    "xmpp_constants.h",
     "xmpp_log_to_server.cc",
     "xmpp_log_to_server.h",
   ]
@@ -51,7 +53,7 @@ static_library("signaling") {
   public_deps = [
     "//remoting/proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
-    "//third_party/libjingle_xmpp",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
@@ -60,10 +62,10 @@ static_library("signaling") {
     "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//services/network/public/cpp:cpp",
   ]

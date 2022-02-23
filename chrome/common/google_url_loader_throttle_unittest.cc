@@ -11,7 +11,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/base/device_form_factor.h"
 #endif
 
@@ -32,7 +32,7 @@ class GoogleURLLoaderThrottleTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(GoogleURLLoaderThrottleTest, RequestDesktopHeaderForLargeScreen) {
   scoped_feature_list().Reset();

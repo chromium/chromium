@@ -10,7 +10,6 @@
 
 namespace ntp_header {
 
-const CGFloat kMinHeaderHeight = 62;
 const CGFloat kAnimationDistance = 42;
 const CGFloat kFakeLocationBarTopConstraint = 4;
 const CGFloat kScrolledToTopOmniboxBottomMargin = 4;

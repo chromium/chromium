@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/utility/cropping_util.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -61,27 +61,9 @@ void Resize(const gfx::ImageSkia image,
         break;
       case WALLPAPER_LAYOUT_CENTER_CROPPED:
         if (orig_width > new_width && orig_height > new_height) {
-          // The dimension with the smallest ratio must be cropped, the other
-          // one is preserved. Both are set in gfx::Size cropped_size.
-          double horizontal_ratio =
-              static_cast<double>(new_width) / static_cast<double>(orig_width);
-          double vertical_ratio = static_cast<double>(new_height) /
-                                  static_cast<double>(orig_height);
-
-          if (vertical_ratio > horizontal_ratio) {
-            cropped_size = gfx::Size(
-                base::ClampRound(new_width / vertical_ratio), orig_height);
-          } else {
-            cropped_size = gfx::Size(
-                orig_width, base::ClampRound(new_height / horizontal_ratio));
-          }
-          wallpaper_rect.ClampToCenteredSize(cropped_size);
-          SkBitmap sub_image;
-          orig_bitmap.extractSubset(&sub_image,
-                                    gfx::RectToSkIRect(wallpaper_rect));
           new_bitmap = skia::ImageOperations::Resize(
-              sub_image, skia::ImageOperations::RESIZE_LANCZOS3, new_width,
-              new_height);
+              CenterCropImage(orig_bitmap, target_size),
+              skia::ImageOperations::RESIZE_LANCZOS3, new_width, new_height);
         }
         break;
       case NUM_WALLPAPER_LAYOUT:

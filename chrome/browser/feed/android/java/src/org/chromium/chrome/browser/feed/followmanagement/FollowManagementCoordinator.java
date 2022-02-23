@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.Toast;
+
 /**
  * Sets up the model, adapter, and mediator for FollowManagement surface.  It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
@@ -60,7 +62,7 @@ public class FollowManagementCoordinator {
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
         mMediator = new FollowManagementMediator(
-                activity, listItems, WebFeedFaviconFetcher.createDefault());
+                activity, listItems, new MediatorObserver(), WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {
@@ -70,5 +72,17 @@ public class FollowManagementCoordinator {
     private void handleBackArrowClick(View view) {
         // Navigate back.
         mActivity.finish();
+    }
+
+    private class MediatorObserver implements FollowManagementMediator.Observer {
+        @Override
+        public void networkConnectionError() {
+            Toast.makeText(mActivity, R.string.feed_follow_no_connection_error, Toast.LENGTH_LONG)
+                    .show();
+        }
+        @Override
+        public void otherOperationError() {
+            Toast.makeText(mActivity, R.string.feed_follow_unknown_error, Toast.LENGTH_LONG).show();
+        }
     }
 }

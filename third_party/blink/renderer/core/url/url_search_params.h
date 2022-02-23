@@ -11,7 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -25,8 +25,9 @@ class V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 using URLSearchParamsInit =
     V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
-class CORE_EXPORT URLSearchParams final : public ScriptWrappable,
-                                          public PairIterable<String, String> {
+class CORE_EXPORT URLSearchParams final
+    : public ScriptWrappable,
+      public PairIterable<String, IDLString, String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

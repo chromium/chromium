@@ -23,7 +23,7 @@
          and sits in a 48dp x 48dp box.  This means there's an implied 12dp of padding
          around the entire microphone. -->
     <TextView
-            style="@style/TextAppearance.NewTabPageSearchBoxText"
+            style="@style/TextAppearance.SearchBoxText.Widget"
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -39,7 +39,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/btn_mic"
-            android:tint="@color/default_icon_color"
+            android:tint="@color/default_icon_color_baseline"
             android:scaleType="centerInside"
             android:contentDescription="@string/accessibility_toolbar_btn_mic" />
 

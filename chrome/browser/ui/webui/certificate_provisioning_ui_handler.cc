@@ -228,7 +228,7 @@ CertificateProvisioningUiHandler::ReadAndResetUiRefreshCountForTesting() {
 
 void CertificateProvisioningUiHandler::
     HandleRefreshCertificateProvisioningProcesses(const base::ListValue* args) {
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args->GetListDeprecated().size());
   AllowJavascript();
   RefreshCertificateProvisioningProcesses();
 }
@@ -236,13 +236,13 @@ void CertificateProvisioningUiHandler::
 void CertificateProvisioningUiHandler::
     HandleTriggerCertificateProvisioningProcessUpdate(
         const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+  CHECK_EQ(2U, args->GetListDeprecated().size());
   if (!args->is_list())
     return;
-  const base::Value& cert_profile_id = args->GetList()[0];
+  const base::Value& cert_profile_id = args->GetListDeprecated()[0];
   if (!cert_profile_id.is_string())
     return;
-  const base::Value& device_wide = args->GetList()[1];
+  const base::Value& device_wide = args->GetListDeprecated()[1];
   if (!device_wide.is_bool())
     return;
 
@@ -286,7 +286,7 @@ void CertificateProvisioningUiHandler::OnHoldBackUpdatesTimerExpired() {
 bool CertificateProvisioningUiHandler::ShouldUseDeviceWideProcesses(
     Profile* user_profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(user_profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(user_profile);
   return user && user->IsAffiliated();
 }
 

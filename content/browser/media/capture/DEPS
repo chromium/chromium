@@ -9,4 +9,8 @@ specific_include_rules = {
     # Allow inclusion of specific components that we depend on for testing
     "+ui/base/resource/resource_bundle.h",
   ],
+  "desktop_capture_device_unittest.cc": [
+    # Some test cases are not yet supported on Wayland.
+    "+ui/ozone/buildflags.h",
+  ]
 }

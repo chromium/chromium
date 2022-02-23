@@ -215,7 +215,7 @@ class BlobURLTest : public testing::Test {
     base::RunLoop register_loop;
     base::UnguessableToken agent = base::UnguessableToken::Create();
     url_store.Register(std::move(blob_remote), url, agent,
-                       register_loop.QuitClosure());
+                       net::SchemefulSite(origin), register_loop.QuitClosure());
     register_loop.Run();
 
     base::RunLoop resolve_loop;
@@ -226,7 +226,9 @@ class BlobURLTest : public testing::Test {
             [](base::OnceClosure done,
                const base::UnguessableToken& agent_registered,
                const absl::optional<base::UnguessableToken>&
-                   unsafe_agent_cluster_id) {
+                   unsafe_agent_cluster_id,
+               const absl::optional<net::SchemefulSite>&
+                   unsafe_top_level_site) {
               EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
               std::move(done).Run();
             },

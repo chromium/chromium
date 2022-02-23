@@ -11,5 +11,4 @@ ScheduledTaskExecutor::ScheduledTaskData::ScheduledTaskData(
     const ScheduledTaskData&) = default;
 ScheduledTaskExecutor::ScheduledTaskData::~ScheduledTaskData() = default;
 
-
 }  // namespace policy

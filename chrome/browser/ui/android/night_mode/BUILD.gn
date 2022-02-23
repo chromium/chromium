@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateController.java",
     "java/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolder.java",
     "java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java",
@@ -36,9 +37,9 @@ android_library("java") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
-    "//components/prefs/android:java",
     "//components/ukm/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
@@ -107,6 +108,7 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSourceUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageControllerUnitTest.java",
   ]
@@ -126,6 +128,7 @@ android_library("junit") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
     "//components/prefs/android:java",

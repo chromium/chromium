@@ -241,7 +241,7 @@ base::Value GetFileSystemAccountInfo(PrefService* prefs,
                                      const std::string& service_provider) {
   const auto path = GetPrefPath(kAccountInfoPrefPathTemplate, service_provider);
 
-  const base::DictionaryValue* val = prefs->GetDictionary(path);
+  const base::Value* val = prefs->GetDictionary(path);
   DCHECK(val);
   return val->Clone();
 }

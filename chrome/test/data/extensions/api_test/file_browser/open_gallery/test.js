@@ -42,7 +42,7 @@ function openGallery(entry, expectedResult) {
   const descriptor = {
     appId: 'jhdjimmaggjajfjphpljagpgkidjilnj',
     taskType: 'web',
-    actionId: 'open'
+    actionId: 'chrome://media-app/open'
   };
   function taskCallback(taskResult) {
     chrome.test.assertEq(expectedResult, taskResult);

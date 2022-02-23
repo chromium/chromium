@@ -6,11 +6,13 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/multiwindow/CloseConfirmationDialogView.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceInfo.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceIphController.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceState.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemViewBinder.java",
@@ -25,6 +27,7 @@ android_library("java") {
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/user_education:java",
+    "//chrome/browser/util:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
@@ -44,12 +47,15 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/checkmark_24dp.xml",
     "java/res/drawable/circle_green.xml",
+    "java/res/layout/close_confirmation_dialog.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",
     "java/res/layout/instance_switcher_item.xml",
     "java/res/layout/instance_switcher_list.xml",
     "java/res/layout/target_selector_dialog.xml",
     "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/favicon:java_resources",
@@ -67,6 +73,7 @@ java_library("junit") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/UiUtilsUnitTest.java",
   ]
 
@@ -76,6 +83,7 @@ java_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/util:java",
     "//components/favicon/android:java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",

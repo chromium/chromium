@@ -27,8 +27,8 @@ class InteractionMediaQueriesDynamicTest : public ContentBrowserTest {
 }  //  namespace
 
 // Disable test on Android ASAN bot: crbug.com/807420
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    (defined(OS_ANDROID) && !defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
   RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(

@@ -35,8 +35,7 @@ Status NetworkConditionsOverrideManager::OnEvent(
     const std::string& method,
     const base::DictionaryValue& params) {
   if (method == "Page.frameNavigated") {
-    const base::Value* unused_value;
-    if (!params.Get("frame.parentId", &unused_value))
+    if (!params.FindPath("frame.parentId"))
       return ApplyOverrideIfNeeded();
   }
   return Status(kOk);
@@ -62,14 +61,14 @@ Status NetworkConditionsOverrideManager::ApplyOverride(
   if (status.IsError())
     return status;
 
-  std::unique_ptr<base::DictionaryValue> result;
-  bool can = false;
+  base::Value result;
   status = client_->SendCommandAndGetResult(
       "Network.canEmulateNetworkConditions", empty_params, &result);
-  if (status.IsError() || !result->GetBoolean("result", &can))
+  absl::optional<bool> can = result.FindBoolKey("result");
+  if (status.IsError() || !can)
     return Status(kUnknownError,
         "unable to detect if chrome can emulate network conditions", status);
-  if (!can)
+  if (!can.value())
     return Status(kUnknownError, "Cannot emulate network conditions");
 
   return client_->SendCommand("Network.emulateNetworkConditions", params);

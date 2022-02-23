@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -110,7 +111,7 @@ class DialURLFetcher {
 
   // The HTTP method that was started on the fetcher (e.g., "GET").
   std::string method_;
-  network::ResourceRequest* saved_request_for_test_ = nullptr;
+  raw_ptr<network::ResourceRequest> saved_request_for_test_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

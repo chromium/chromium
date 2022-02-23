@@ -152,14 +152,14 @@ class BrowsingDataDeletionTest : public testing::Test {
   bool DeleteCredentials(const std::string& metadata_secret) {
     return TouchIdCredentialStore(
                AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
-        .DeleteCredentials(base::Time(), base::Time::Max());
+        .DeleteCredentialsSync(base::Time(), base::Time::Max());
   }
 
   size_t CountCredentials() { return CountCredentials(kMetadataSecret); }
   size_t CountCredentials(const std::string& metadata_secret) {
     return TouchIdCredentialStore(
                AuthenticatorConfig{kKeychainAccessGroup, metadata_secret})
-        .CountCredentials(base::Time(), base::Time::Max());
+        .CountCredentialsSync(base::Time(), base::Time::Max());
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -213,9 +213,9 @@ const OutputRoleInfo = {
     inherits: 'abstractSpan'
   },
   superscript: {msgId: 'role_superscript', inherits: 'abstractSpan'},
-  tab: {msgId: 'role_tab'},
+  tab: {msgId: 'role_tab', inherits: 'abstractContainer'},
   tabList: {msgId: 'role_tablist', inherits: 'abstractFormFieldContainer'},
-  tabPanel: {msgId: 'role_tabpanel'},
+  tabPanel: {msgId: 'role_tabpanel', inherits: 'abstractContainer'},
   searchBox: {msgId: 'role_search', earconId: 'EDITABLE_TEXT'},
   textField: {msgId: 'input_type_text', earconId: 'EDITABLE_TEXT'},
   textFieldWithComboBox: {msgId: 'role_combobox', earconId: 'EDITABLE_TEXT'},

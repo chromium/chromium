@@ -8,7 +8,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
-#include "third_party/nearby/src/cpp/platform/base/exception.h"
+#include "third_party/nearby/src/internal/platform/exception.h"
 
 namespace location {
 namespace nearby {

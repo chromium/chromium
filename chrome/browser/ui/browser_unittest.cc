@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/browser.h"
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -14,10 +15,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
@@ -26,19 +23,30 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
+#endif
+
 using content::SiteInstance;
 using content::WebContents;
 using content::WebContentsTester;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 using session_manager::SessionState;
+#endif
 
 class BrowserUnitTest : public BrowserWithTestWindowTest {
  public:
-  BrowserUnitTest() {}
+  BrowserUnitTest() = default;
 
   BrowserUnitTest(const BrowserUnitTest&) = delete;
   BrowserUnitTest& operator=(const BrowserUnitTest&) = delete;
 
-  ~BrowserUnitTest() override {}
+  ~BrowserUnitTest() override = default;
 
   // Caller owns the memory.
   std::unique_ptr<WebContents> CreateTestWebContents() {
@@ -84,7 +92,7 @@ TEST_F(BrowserUnitTest, ReloadCrashedTab) {
 
 // This tests a workaround which is not necessary on Mac.
 // https://crbug.com/719230
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SetBackgroundColorForNewTab DISABLED_SetBackgroundColorForNewTab
 #else
 #define MAYBE_SetBackgroundColorForNewTab SetBackgroundColorForNewTab
@@ -250,8 +258,6 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
-  session_manager::SessionManager session_manager;
-
   // Setting up user manager state to be in kiosk mode:
   // Creating a new user manager.
   auto* user_manager = new ash::FakeChromeUserManager();
@@ -263,7 +269,8 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 
   TestingProfile profile;
 
-  session_manager.SetSessionState(SessionState::LOGIN_PRIMARY);
+  session_manager::SessionManager::Get()->SetSessionState(
+      SessionState::LOGIN_PRIMARY);
   // Browser should not be created during login session state.
   EXPECT_EQ(Browser::CreationStatus::kErrorLoadingKiosk,
             Browser::GetCreationStatusForProfile(&profile));
@@ -271,7 +278,7 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   Browser::CreateParams create_params = Browser::CreateParams(&profile, false);
   std::unique_ptr<BrowserWindow> window = CreateBrowserWindow();
   create_params.window = window.get();
-  session_manager.SetSessionState(SessionState::ACTIVE);
+  session_manager::SessionManager::Get()->SetSessionState(SessionState::ACTIVE);
   std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
   // Normal flow, creation succeeds.
   EXPECT_TRUE(test_browser);
@@ -340,7 +347,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
                                             reason);
     }
 
-    Browser* browser_;  // Weak ptr.
+    raw_ptr<Browser> browser_;  // Weak ptr.
     BookmarkBar::State bookmark_bar_state_;
   };
 };

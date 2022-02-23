@@ -4,7 +4,9 @@
 
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
 
+#include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/history_clusters/core/on_device_clustering_util.h"
 
 namespace history_clusters {
 
@@ -15,6 +17,7 @@ ContentVisibilityClusterFinalizer::~ContentVisibilityClusterFinalizer() =
 
 void ContentVisibilityClusterFinalizer::FinalizeCluster(
     history::Cluster& cluster) {
+  ScopedFilterClusterMetricsRecorder metrics_recorder("VisibilityScore");
   for (const auto& visit : cluster.visits) {
     float visibility_score = visit.annotated_visit.content_annotations
                                  .model_annotations.visibility_score;
@@ -25,7 +28,7 @@ void ContentVisibilityClusterFinalizer::FinalizeCluster(
     }
     if (visibility_score < features::ContentVisibilityThreshold()) {
       cluster.should_show_on_prominent_ui_surfaces = false;
-      return;
+      metrics_recorder.set_was_filtered(true);
     }
   }
   // If we get here, this is a visible cluster from our point of view. If the

@@ -10,7 +10,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class AuthenticationService;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 class PrefService;
 
 // A browser-context keyed service that is used to keep the Discover Feed data
@@ -28,10 +28,6 @@ class DiscoverFeedService : public KeyedService,
 
   ~DiscoverFeedService() override;
 
-  // Returns the FeedMetricsRecorder to be used by the Feed, a single instance
-  // of DiscoverFeedMetricsRecorder needs to be used per BrowserState.
-  DiscoverFeedMetricsRecorder* GetDiscoverFeedMetricsRecorder();
-
   // KeyedService:
   void Shutdown() override;
 
@@ -46,7 +42,7 @@ class DiscoverFeedService : public KeyedService,
       identity_manager_observation_{this};
 
   // Metrics recorder for the DiscoverFeed.
-  __strong DiscoverFeedMetricsRecorder* discover_feed_metrics_recorder_ = nil;
+  __strong FeedMetricsRecorder* feed_metrics_recorder_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_DISCOVER_FEED_SERVICE_H_

@@ -320,6 +320,9 @@ found in the LICENSE file.
     <iframe id="iframeExternal" name="test_iframe_external" width="100%" height="500" src=
         "http://localhost:8081/autofill_assistant_external_iframe.html"></iframe>
 
+    <iframe id="iframeRedirecting" name="redirecting_iframe" width="100%" height="500" src=
+        "autofill_assistant_target_website_redirecting_iframe.html"></iframe>
+
     <input type="checkbox" id="terms-and-conditions" />
     <label for="terms-and-conditions" >
       <a href="#">I have read and understood <br />the terms and conditions</a>
@@ -428,5 +431,17 @@ found in the LICENSE file.
       </script>
     </div>
 
+    <div class="dynamic less-than-2-seconds">Dynamic element</div>
+    <script>
+      setTimeout(() => {
+        const el = document.querySelector('.dynamic');
+        el.classList.remove('less-than-2-seconds');
+        el.classList.add('about-2-seconds');
+        setTimeout(() => {
+          el.classList.remove('about-2-seconds');
+          el.classList.add('more-than-2-seconds');
+        }, 200);
+      }, 2000);
+    </script>
   </body>
 </html>

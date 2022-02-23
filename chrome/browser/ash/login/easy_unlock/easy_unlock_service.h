@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -19,9 +20,8 @@
 #include "chrome/browser/ash/login/easy_unlock/smartlock_feature_usage_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;
@@ -50,7 +50,8 @@ namespace ash {
 
 enum class SmartLockState;
 
-class EasyUnlockService : public KeyedService {
+class EasyUnlockService : public KeyedService,
+                          public proximity_auth::ScreenlockBridge::Observer {
  public:
   enum Type { TYPE_REGULAR, TYPE_SIGNIN };
 
@@ -124,6 +125,18 @@ class EasyUnlockService : public KeyedService {
   // Returns true if ChromeOS login is enabled by the user.
   virtual bool IsChromeOSLoginEnabled() const;
 
+  // To be called when EasyUnlockService is "warming up", for example, on screen
+  // lock, after suspend, when the login screen is starting up, etc. During a
+  // period like this, not all sub-systems are fully initialized, particularly
+  // UnlockManager and the Bluetooth stack, so to avoid UI jank, callers can use
+  // this method to fill in the UI with an approximation of what the UI will
+  // look like in <1 second. The resulting initial state will be one of two
+  // possibilities:
+  //   * SmartLockState::kConnectingToPhone: if the feature is allowed, enabled,
+  //     and has kicked off a scan/connection.
+  //   * SmartLockState::kDisabled: if any values above can't be confirmed.
+  virtual SmartLockState GetInitialSmartLockState() const;
+
   // Sets the hardlock state for the associated user.
   void SetHardlockState(SmartLockStateHandler::HardlockState state);
 
@@ -196,14 +209,25 @@ class EasyUnlockService : public KeyedService {
   // definitively.
   virtual void OnUserEnteredPassword();
 
-  // KeyedService override:
+  // KeyedService:
   void Shutdown() override;
+
+  // proximity_auth::ScreenlockBridge::Observer:
+  void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
+                           screen_type) override;
+  void OnScreenDidUnlock(
+      proximity_auth::ScreenlockBridge::LockHandler::ScreenType screen_type)
+      override = 0;
+  void OnFocusedUserChanged(const AccountId& account_id) override = 0;
 
   // Exposes the profile to which the service is attached to subclasses.
   Profile* profile() const { return profile_; }
 
   // Checks whether Easy unlock should be running and updates app state.
   void UpdateAppState();
+
+  // Fill in the UI with the state returned by GetInitialSmartLockState().
+  void ShowInitialSmartLockState();
 
   // Resets the Smart Lock state set by this service.
   void ResetSmartLockState();

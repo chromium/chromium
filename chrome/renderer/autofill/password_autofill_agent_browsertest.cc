@@ -46,13 +46,14 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/common/autofill_features.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -97,9 +98,6 @@ const char16_t kCarolUsername16[] = u"Carol";
 const char kCarolPassword[] = "test";
 const char16_t kCarolPassword16[] = u"test";
 const char16_t kCarolAlternateUsername16[] = u"RealCarolUsername";
-const char16_t kEmptyUsername16[] = u"";
-const char kEmptyUsernamePassword[] = "empty";
-const char16_t kEmptyUsernamePassword16[] = u"empty";
 
 const char kFormHTML[] =
     "<FORM id='LoginTestForm' action='http://www.bidule.com'>"
@@ -331,7 +329,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
@@ -367,8 +365,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     username3_ = kCarolUsername16;
     password3_ = kCarolPassword16;
     alternate_username3_ = kCarolAlternateUsername16;
-    username4_ = kEmptyUsername16;
-    password4_ = kEmptyUsernamePassword16;
 
     FormFieldData username_field;
     username_field.name = kUsernameName16;
@@ -389,10 +385,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     password3.password = password3_;
     password3.username = username3_;
     fill_data_.additional_logins.push_back(std::move(password3));
-    PasswordAndMetadata password4;
-    password3.password = password4_;
-    password4.username = username4_;
-    fill_data_.additional_logins.push_back(std::move(password4));
 
     // We need to set the origin so it matches the frame URL and the action so
     // it matches the form action, otherwise we won't autocomplete.
@@ -432,7 +424,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
             base::Unretained(this)));
   }
 
-  void FocusElement(std::string element_id) {
+  void FocusElement(const std::string& element_id) {
     std::string script =
         "document.getElementById('" + element_id + "').focus()";
     ExecuteJavaScriptForTests(script.c_str());
@@ -533,10 +525,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void SimulateUsernameTyping(const std::string& username) {
     SimulatePointClick(gfx::Point(1, 1));
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    FocusElement(kUsernameName);
+#endif
     SimulateUserInputChangeForElement(&username_element_, username);
   }
 
   void SimulatePasswordTyping(const std::string& password) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    FocusElement(kPasswordName);
+#endif
     SimulateUserInputChangeForElement(&password_element_, password);
   }
 
@@ -562,6 +562,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         SimulateUsernameFieldAutofill(u"Alice");
         break;
     }
+  }
+
+  // Helper to simulate that TouchTofFill was closed in order to test regular
+  // popups, e.g. |ShowPasswordSuggestions|.
+  void SimulateClosingTouchToFillIfAndroid(const std::string& element_id) {
+    // Put the build guard here to save space in the caller test.
+#if BUILDFLAG(IS_ANDROID)
+    FocusElement(element_id);
+    // Don't show a keyboard, but let the caller to trigger it if needed.
+    password_autofill_agent_->TouchToFillClosed(
+        /*show_virtual_keyboard*/ false);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void CheckTextFieldsStateForElements(const WebInputElement& username_element,
@@ -797,12 +809,10 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   std::u16string username1_;
   std::u16string username2_;
   std::u16string username3_;
-  std::u16string username4_;
   std::u16string password1_;
   std::u16string password2_;
   std::u16string password3_;
   std::u16string alternate_username3_;
-  std::u16string password4_;
   PasswordFormFillData fill_data_;
 
   WebInputElement username_element_;
@@ -1771,12 +1781,49 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillPassword) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, TouchToFillSuppressesPopups) {
   SimulateOnFillPasswordForm(fill_data_);
   SimulateSuggestionChoice(username_element_);
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
+  SimulateOnFillPasswordForm(fill_data_);
+
+  auto previous_state = password_element_.GetAutofillState();
+  // Touch to fill will be shown multiple times until TouchToFillClosed()
+  // gets called.
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
+  EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
+
+  EXPECT_CALL(fake_driver_, ShowTouchToFill);
+  base::RunLoop().RunUntilIdle();
+
+  // Make sure that resetting Touch To Fill resets the Autofill state.
+  password_autofill_agent_->TouchToFillClosed(true);
+  EXPECT_FALSE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+  EXPECT_FALSE(password_autofill_agent_->ShouldSuppressKeyboard());
+  EXPECT_EQ(previous_state, password_element_.GetAutofillState());
+
+  // Reload the page and simulate fill.
+  LoadHTML(kFormHTML);
+  UpdateUrlForHTML(kFormHTML);
+  UpdateUsernameAndPasswordElements();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // After the reload touch to fill is shown again.
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
+  EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
+
+  EXPECT_CALL(fake_driver_, ShowTouchToFill);
   base::RunLoop().RunUntilIdle();
 }
 #endif
@@ -1816,43 +1863,6 @@ TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillSignUpForm) {
       password_autofill_agent_->TryToShowTouchToFill(password_element_));
 }
 
-TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
-  SimulateOnFillPasswordForm(fill_data_);
-
-  auto previous_state = password_element_.GetAutofillState();
-  // Touch to fill will be shown multiple times until TouchToFillClosed()
-  // gets called.
-  EXPECT_TRUE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_, ShowTouchToFill);
-  base::RunLoop().RunUntilIdle();
-
-  // Make sure that resetting Touch To Fill resets the Autofill state.
-  password_autofill_agent_->TouchToFillClosed(true);
-  EXPECT_FALSE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-  EXPECT_FALSE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(previous_state, password_element_.GetAutofillState());
-
-  // Reload the page and simulate fill.
-  LoadHTML(kFormHTML);
-  UpdateUrlForHTML(kFormHTML);
-  UpdateUsernameAndPasswordElements();
-  SimulateOnFillPasswordForm(fill_data_);
-
-  // After the reload touch to fill is shown again.
-  EXPECT_TRUE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
-  EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
-
-  EXPECT_CALL(fake_driver_, ShowTouchToFill);
-  base::RunLoop().RunUntilIdle();
-}
-
 // Tests that |FillIntoFocusedField| doesn't fill read-only text fields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedReadonlyTextField) {
   // Neither field should be autocompleted.
@@ -1887,14 +1897,14 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldOnlyIntoPasswordFields) {
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   // Filling a password into a username field doesn't work.
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
 
   password_autofill_agent_->FillIntoFocusedField(
       /*is_password=*/true, kAlicePassword16);
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   // When a password field is focus, the filling works.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
 
   password_autofill_agent_->FillIntoFocusedField(
       /*is_password=*/true, kAlicePassword16);
@@ -1974,6 +1984,8 @@ TEST_F(PasswordAutofillAgentTest, OnChangeLoggingState_Deactivated) {
 // credential suggestion popup, and the user can autocomplete the password by
 // selecting the credential from the popup.
 TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // SimulateElementClick() is called so that a user gesture is actually made
   // and the password can be filled. However, SimulateElementClick() does not
   // actually lead to the AutofillAgent's InputElementClicked() method being
@@ -1990,6 +2002,7 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
 
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 }
+
 TEST_F(PasswordAutofillAgentTest,
        NoPopupOnPasswordFieldWithoutSuggestionsByDefault) {
   ClearUsernameAndPasswordFields();
@@ -2045,6 +2058,8 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
 // load and the element is autofilled, when the user clicks on an element that
 // has a matching username.
 TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2071,6 +2086,8 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
 // Tests that there is an autosuggestion from the password manager when the
 // user clicks on the password field.
 TEST_F(PasswordAutofillAgentTest, NoCredentialsOnPasswordClick) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2184,6 +2201,8 @@ TEST_F(PasswordAutofillAgentTest,
 // test checks that the overwritten password is not reverted back.
 TEST_F(PasswordAutofillAgentTest,
        NoopEditingDoesNotOverwriteManuallyEditedPassword) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -2211,6 +2230,8 @@ TEST_F(PasswordAutofillAgentTest,
 // that autofilling does not rewrite the username, if the value is already
 // there.
 TEST_F(PasswordAutofillAgentTest, AcceptingSuggestionDoesntRewriteUsername) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -2246,8 +2267,9 @@ TEST_F(PasswordAutofillAgentTest,
 }
 
 TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
-  SimulateUsernameTyping("temp");
-  SimulatePasswordTyping("random");
+  FocusElement("random_field");
+  SimulateUsernameTyping("typed_username");
+  SimulatePasswordTyping("typed_password");
 
   // Simulate that the username and the password value was changed by the
   // site's JavaScript before submit.
@@ -2476,6 +2498,8 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
   fill_data_.additional_logins.clear();
 
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
+
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
 
@@ -2500,6 +2524,8 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   fill_data_.username_field = FormFieldData();
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
   fill_data_.additional_logins.clear();
+
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
 
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
@@ -2609,7 +2635,7 @@ TEST_F(PasswordAutofillAgentTest,
       "password" /* new_password_id */, nullptr /* confirm_password_id*/);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
 
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
@@ -2630,7 +2656,7 @@ TEST_F(PasswordAutofillAgentTest,
       "password" /* new_password_id */, nullptr /* confirm_password_id*/);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
@@ -2701,7 +2727,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   // generation but not password autofill.
   SetFocused(password_element_);
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  SimulateElementClick("new_password");
+  FocusElement("new_password");
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
@@ -2743,6 +2769,8 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
 
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
+
   ClearUsernameAndPasswordFields();
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -2759,6 +2787,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
+
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
 
   ClearUsernameAndPasswordFields();
   fill_data_.wait_for_username = true;
@@ -3026,7 +3056,7 @@ TEST_F(PasswordAutofillAgentTest,
 
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutUnfillableField) {
   EXPECT_EQ(FocusedFieldType::kUnknown, fake_driver_.last_focused_field_type());
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
             fake_driver_.last_focused_field_type());
@@ -3041,26 +3071,26 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutUnfillableField) {
 }
 
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableFields) {
-  SimulateElementClick("random_field");
+  FocusElement("random_field");
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableNonSearchField,
             fake_driver_.last_focused_field_type());
 
   // A username field without fill data is indistinguishable from any other text
   // field.
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableNonSearchField,
             fake_driver_.last_focused_field_type());
 
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
             fake_driver_.last_focused_field_type());
 
   // A username field with fill data should be detected.
   SimulateOnFillPasswordForm(fill_data_);
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableUsernameField,
             fake_driver_.last_focused_field_type());
@@ -3068,7 +3098,7 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableFields) {
 
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillablSearchField) {
   LoadHTML(kSearchFieldHTML);
-  SimulateElementClick(kSearchField);
+  FocusElement(kSearchField);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableSearchField,
             fake_driver_.last_focused_field_type());
@@ -3077,7 +3107,7 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillablSearchField) {
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableTextArea) {
   LoadHTML(kSocialNetworkPostFormHTML);
 
-  SimulateElementClick(kSocialMediaTextArea);
+  FocusElement(kSocialMediaTextArea);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableTextArea,
             fake_driver_.last_focused_field_type());
@@ -3351,6 +3381,8 @@ TEST_F(PasswordAutofillAgentTest,
 // Tests that a suggestion dropdown is shown on a password field even if a
 // username field is present.
 TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3366,6 +3398,9 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
   CheckSuggestions(u"", true);
 }
 
+// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
+// Otherwise, remove the TODO and add the reason why it is excluded.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that a suggestion dropdown is shown on each password field. But when a
 // user chose one of the fields to autofill, a suggestion dropdown will be shown
 // only on this field.
@@ -3410,6 +3445,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestMultiplePasswordFields) {
   SimulateElementClick("password");
   CheckSuggestions(u"", true);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
   // Tests that form signature is set iff the flag is enabled.
@@ -3443,6 +3479,8 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
 // Tests that a suggestion dropdown is shown even if JavaScripts updated field
 // names.
 TEST_F(PasswordAutofillAgentTest, SuggestWhenJavaScriptUpdatesFieldNames) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate that JavaScript updated field names.
   auto fill_data = fill_data_;
   fill_data.username_field.name += u"1";
@@ -3676,6 +3714,8 @@ TEST_F(PasswordAutofillAgentTest,
 }
 
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   password_autofill_agent_->FillPasswordForm(fill_data_);
   SimulateElementClick(kPasswordName);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
@@ -3945,6 +3985,17 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
 // Fill on account select for credentials with empty usernames:
 // Do not refill usernames if non-empty username is already selected.
 TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
+  const char kPasswordForEmptyUsernameCredential[] = "empty";
+  const char16_t kPasswordForEmptyUsernameCredential16[] = u"empty";
+
+  // Add a credential with an empty username.
+  PasswordAndMetadata empty_username_credential;
+  empty_username_credential.password = kPasswordForEmptyUsernameCredential16;
+  empty_username_credential.username = u"";
+  fill_data_.additional_logins.push_back(std::move(empty_username_credential));
+
   SimulateOnFillPasswordForm(fill_data_);
   ClearUsernameAndPasswordFields();
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
@@ -3955,9 +4006,10 @@ TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
 
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   SimulateSuggestionChoiceOfUsernameAndPassword(
-      password_element_, kEmptyUsername16, kEmptyUsernamePassword16);
+      password_element_, u"", kPasswordForEmptyUsernameCredential16);
 
-  CheckTextFieldsDOMState(kAliceUsername, true, kEmptyUsernamePassword, true);
+  CheckTextFieldsDOMState(kAliceUsername, true,
+                          kPasswordForEmptyUsernameCredential, true);
 }
 
 // Tests that any fields that have user input are not refilled on the next
@@ -4002,5 +4054,31 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordAutofillAgentTest, TriggerSubmission) {
+  // Simulate the browser sending the login info, but set |wait_for_username|
+  // to prevent the form from being immediately filled because the test
+  // simulates filling with |FillSuggestion|, the function that TouchToFill
+  // uses.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Fill the form.
+  EXPECT_TRUE(password_autofill_agent_->FillSuggestion(
+      username_element_, kAliceUsername16, kAlicePassword16));
+  base::RunLoop().RunUntilIdle();
+  // Check that two input fields are modified as |TriggerSubmission| expects the
+  // last intereacted input to be set.
+  EXPECT_EQ(1, fake_driver_.called_inform_about_user_input_count());
+
+  // Trigger a form submission.
+  password_autofill_agent_->TriggerFormSubmission();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the driver actually has seen a submission.
+  EXPECT_TRUE(fake_driver_.called_password_form_submitted());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

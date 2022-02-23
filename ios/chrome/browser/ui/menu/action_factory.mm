@@ -50,6 +50,19 @@
                            }];
 }
 
+- (UIImage*)configuredSymbolNamed:(NSString*)symbolName
+                     systemSymbol:(BOOL)systemSymbol {
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithWeight:UIImageSymbolWeightMedium];
+  if (systemSymbol) {
+    return [UIImage systemImageNamed:symbolName
+                   withConfiguration:configuration];
+  }
+  return [UIImage imageNamed:symbolName
+                    inBundle:nil
+           withConfiguration:configuration];
+}
+
 - (UIAction*)actionToCopyURL:(const GURL)URL {
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
@@ -190,14 +203,11 @@
 }
 
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
-  int title = IsContextMenuActionsRefreshEnabled()
-                  ? IDS_IOS_CONTENT_CONTEXT_ADDTOPHOTOS
-                  : IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE;
-
-  UIAction* action = [self actionWithTitle:l10n_util::GetNSString(title)
-                                     image:[UIImage imageNamed:@"download"]
-                                      type:MenuActionType::SaveImage
-                                     block:block];
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE)
+                image:[UIImage imageNamed:@"download"]
+                 type:MenuActionType::SaveImage
+                block:block];
   return action;
 }
 

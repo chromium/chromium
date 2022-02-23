@@ -10,6 +10,10 @@
 
 namespace reporting {
 
+// static
+const base::Feature MetricRateController::kEnableTelemetryTestingRates{
+    "EnableTelemetryTestingRates", base::FEATURE_DISABLED_BY_DEFAULT};
+
 MetricRateController::MetricRateController(
     base::RepeatingClosure task,
     ReportingSettings* reporting_settings,
@@ -33,7 +37,10 @@ void MetricRateController::Start() {
       rate_ = base::Milliseconds(current_rate * rate_unit_to_ms_);
     }
   }
-  if (rate_ < base::Milliseconds(1)) {
+  // Use default rate if setting rate is too high or if testing flag is enabled
+  // to have a higher collection and reporting rate set using the default rate.
+  if (rate_ < base::Milliseconds(1) ||
+      base::FeatureList::IsEnabled(kEnableTelemetryTestingRates)) {
     if (default_rate_ < base::Milliseconds(1)) {
       return;
     }

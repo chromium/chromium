@@ -16,21 +16,29 @@ void GetSurfaceReferenceDifference(
     std::vector<SurfaceReference>* references_to_remove) {
   DCHECK(parent_surface_id.is_valid());
 
-  // Find SurfaceIds in |old_referenced_surfaces| that aren't referenced
-  // anymore.
-  for (const SurfaceId& surface_id : old_referenced_surfaces) {
-    if (new_referenced_surfaces.count(surface_id) == 0) {
-      references_to_remove->push_back(
-          SurfaceReference(parent_surface_id, surface_id));
-    }
-  }
+  auto old_it = old_referenced_surfaces.begin();
+  auto old_end = old_referenced_surfaces.end();
+  auto new_it = new_referenced_surfaces.begin();
+  auto new_end = new_referenced_surfaces.end();
 
-  // Find SurfaceIds in |new_referenced_surfaces| that aren't already
-  // referenced.
-  for (const SurfaceId& surface_id : new_referenced_surfaces) {
-    if (old_referenced_surfaces.count(surface_id) == 0) {
+  // Do a linear walk through both old and new references to compute added and
+  // removed entries.
+  while (old_it != old_end || new_it != new_end) {
+    if (old_it == old_end) {
       references_to_add->push_back(
-          SurfaceReference(parent_surface_id, surface_id));
+          SurfaceReference(parent_surface_id, *new_it++));
+    } else if (new_it == new_end) {
+      references_to_remove->push_back(
+          SurfaceReference(parent_surface_id, *old_it++));
+    } else if (*old_it < *new_it) {
+      references_to_remove->push_back(
+          SurfaceReference(parent_surface_id, *old_it++));
+    } else if (*new_it < *old_it) {
+      references_to_add->push_back(
+          SurfaceReference(parent_surface_id, *new_it++));
+    } else {
+      ++new_it;
+      ++old_it;
     }
   }
 }

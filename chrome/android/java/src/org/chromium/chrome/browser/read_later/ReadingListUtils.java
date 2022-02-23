@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.read_later;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUndoController;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -26,6 +29,7 @@ import java.util.List;
 /** Utility functions for reading list feature. */
 public final class ReadingListUtils {
     private static Boolean sReadingListSupportedForTesting;
+    private static Boolean sSkipShowSaveFlowForTesting;
 
     /** Returns whether the URL can be added as reading list article. */
     public static boolean isReadingListSupported(GURL url) {
@@ -38,9 +42,8 @@ public final class ReadingListUtils {
     }
 
     /** Removes from the reading list the entry for the current tab. */
-    public static void deleteFromReadingList(
+    public static void deleteFromReadingList(final BookmarkModel bookmarkModel,
             SnackbarManager snackbarManager, Activity activity, Tab currentTab) {
-        final BookmarkModel bookmarkModel = new BookmarkModel();
         // This undo controller will dismiss itself when any action is taken.
         BookmarkUndoController.createOneshotBookmarkUndoController(
                 activity, bookmarkModel, snackbarManager);
@@ -62,23 +65,55 @@ public final class ReadingListUtils {
     }
 
     /**
+     * Attempts to type swap and show the save flow when the "Add to reading list" menu item
+     * is selected but there's an existing bookmark.
+     *
+     * @param activity The current Activity.
+     * @param bottomsheetController The BottomsheetController, used to show the save flow.
+     * @param bookmarkBridge The BookmarkBridge which is used for bookmark operations.
+     * @param bookmarkId The existing BookmarkId.
+     * @param bookmarkType The intended bookmark type.
+     * @return Whether the given bookmark item has been type-swapped and the save flow shown.
+     */
+    public static boolean maybeTypeSwapAndShowSaveFlow(@NonNull Activity activity,
+            @NonNull BottomSheetController bottomsheetController,
+            @NonNull BookmarkBridge bookmarkBridge, @NonNull BookmarkId bookmarkId,
+            @BookmarkType int bookmarkType) {
+        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping() || bookmarkId == null
+                || bookmarkId.getType() != BookmarkType.NORMAL
+                || bookmarkType != BookmarkType.READING_LIST) {
+            return false;
+        }
+
+        // When selecting the "Add to reading list" menu item while a regular bookmark exists,
+        // remove the regular bookmark first so the save flow is shown.
+        List<BookmarkId> bookmarkIds = new ArrayList<>();
+        bookmarkIds.add(bookmarkId);
+        ReadingListUtils.typeSwapBookmarksIfNecessary(
+                bookmarkBridge, bookmarkIds, bookmarkBridge.getReadingListFolder());
+        if (sSkipShowSaveFlowForTesting) return true;
+        BookmarkUtils.showSaveFlow(activity, bottomsheetController,
+                /*fromExplicitTrackUi=*/false, bookmarkIds.get(0), /*wasBookmarkMoved=*/true);
+        return true;
+    }
+
+    /**
      * Performs type swapping on the given bookmarks if necessary.
      *
      * @param bookmarkBridge The BookmarkBridge to perform add/delete operations.
      * @param bookmarksToMove The List of bookmarks to potentially type swap.
      * @param newParentId The new parentId to use, the {@link BookmarkType} of this is used to
      *         determine if type-swapping is necessary.
-     * @return The new list of bookmarks, some of which may have swapped types.
      */
-    public static List<BookmarkId> typeSwapBookmarksIfNecessary(BookmarkBridge bookmarkBridge,
+    public static void typeSwapBookmarksIfNecessary(BookmarkBridge bookmarkBridge,
             List<BookmarkId> bookmarksToMove, BookmarkId newParentId) {
-        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) return bookmarksToMove;
+        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) return;
 
-        List<BookmarkId> newList = new ArrayList<>();
-        for (int i = 0; i < bookmarksToMove.size(); i++) {
-            BookmarkId bookmarkId = bookmarksToMove.get(i);
+        List<BookmarkId> outputList = new ArrayList<>();
+        while (!bookmarksToMove.isEmpty()) {
+            BookmarkId bookmarkId = bookmarksToMove.remove(0);
             if (bookmarkId.getType() == newParentId.getType()) {
-                newList.add(bookmarkId);
+                outputList.add(bookmarkId);
                 continue;
             }
 
@@ -95,14 +130,20 @@ public final class ReadingListUtils {
 
             if (newBookmark != null) {
                 bookmarkBridge.deleteBookmark(bookmarkId);
-                newList.add(newBookmark);
+                outputList.add(newBookmark);
             }
         }
-        return newList;
+
+        bookmarksToMove.addAll(outputList);
     }
 
     /** For cases where GURLs are faked for testing (e.g. test pages). */
     public static void setReadingListSupportedForTesting(Boolean supported) {
         sReadingListSupportedForTesting = supported;
+    }
+
+    /** For cases where we don't want to mock the entire bookmarks save flow infra. */
+    public static void setSkipShowSaveFlowForTesting(Boolean skipShowSaveFlowForTesting) {
+        sSkipShowSaveFlowForTesting = skipShowSaveFlowForTesting;
     }
 }

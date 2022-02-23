@@ -43,6 +43,15 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
+namespace {
+
+template <typename T>
+std::unique_ptr<T> ClonePtr(const std::unique_ptr<T>& value) {
+  return value ? std::make_unique<T>(*value) : nullptr;
+}
+
+}  // namespace
+
 namespace cc {
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
@@ -63,10 +72,10 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       is_inner_viewport_scroll_layer_(false),
       background_color_(0),
       safe_opaque_background_color_(0),
-      transform_tree_index_(TransformTree::kInvalidNodeId),
-      effect_tree_index_(EffectTree::kInvalidNodeId),
-      clip_tree_index_(ClipTree::kInvalidNodeId),
-      scroll_tree_index_(ScrollTree::kInvalidNodeId),
+      transform_tree_index_(kInvalidPropertyNodeId),
+      effect_tree_index_(kInvalidPropertyNodeId),
+      clip_tree_index_(kInvalidPropertyNodeId),
+      scroll_tree_index_(kInvalidPropertyNodeId),
       current_draw_mode_(DRAW_MODE_NONE),
       needs_push_properties_(false),
       needs_show_scrollbars_(false),
@@ -352,14 +361,13 @@ const Region& LayerImpl::GetAllTouchActionRegions() const {
   return *all_touch_action_regions_;
 }
 
-void LayerImpl::SetCaptureBounds(RegionCaptureBounds bounds) {
-  if (capture_bounds_ == bounds)
-    return;
-  capture_bounds_ = std::move(bounds);
+void LayerImpl::SetCaptureBounds(viz::RegionCaptureBounds bounds) {
+  if (rare_properties_ || !bounds.IsEmpty())
+    EnsureRareProperties().capture_bounds = std::move(bounds);
 }
 
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return LayerImpl::Create(tree_impl, layer_id_);
 }
 
@@ -383,14 +391,8 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer->should_check_backface_visibility_ = should_check_backface_visibility_;
   layer->draws_content_ = draws_content_;
   layer->hit_testable_ = hit_testable_;
-  layer->non_fast_scrollable_region_ = non_fast_scrollable_region_;
   layer->touch_action_region_ = touch_action_region_;
-  layer->all_touch_action_regions_ =
-      all_touch_action_regions_
-          ? std::make_unique<Region>(*all_touch_action_regions_)
-          : nullptr;
-  layer->capture_bounds_ = capture_bounds_;
-  layer->wheel_event_handler_region_ = wheel_event_handler_region_;
+  layer->all_touch_action_regions_ = ClonePtr(all_touch_action_regions_);
   layer->background_color_ = background_color_;
   layer->safe_opaque_background_color_ = safe_opaque_background_color_;
   layer->transform_tree_index_ = transform_tree_index_;
@@ -415,6 +417,13 @@ void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
 
   layer->UpdateDebugInfo(debug_info_.get());
 
+  if (rare_properties_) {
+    layer->rare_properties_ =
+        std::make_unique<RareProperties>(*rare_properties_);
+  } else {
+    layer->rare_properties_.reset();
+  }
+
   // Reset any state that should be cleared for the next update.
   needs_show_scrollbars_ = false;
   ResetChangeTracking();
@@ -433,15 +442,15 @@ bool LayerImpl::LayerPropertyChanged() const {
 
 bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
   if (layer_property_changed_from_property_trees_ ||
-      GetPropertyTrees()->full_tree_damaged)
+      GetPropertyTrees()->full_tree_damaged())
     return true;
-  if (transform_tree_index() == TransformTree::kInvalidNodeId)
+  if (transform_tree_index() == kInvalidPropertyNodeId)
     return false;
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
   if (transform_node && transform_node->transform_changed)
     return true;
-  if (effect_tree_index() == EffectTree::kInvalidNodeId)
+  if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
   if (effect_node && effect_node->effect_changed)
@@ -610,7 +619,7 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
-void LayerImpl::SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset) {
+void LayerImpl::SetCurrentScrollOffset(const gfx::PointF& scroll_offset) {
   DCHECK(IsActive());
   if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))
     layer_tree_impl()->DidUpdateScrollOffset(element_id());
@@ -680,7 +689,7 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
 
   state->SetInteger("sorting_context_id", GetSortingContextId());
 
-  state->SetInteger("draws_content", DrawsContent());
+  state->SetInteger("draws_content", draws_content());
   state->SetInteger("gpu_memory_usage",
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));
 
@@ -701,16 +710,14 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
     GetAllTouchActionRegions().AsValueInto(state);
     state->EndArray();
   }
-  if (!wheel_event_handler_region_.IsEmpty()) {
-    state->BeginArray("wheel_event_handler_region");
-    wheel_event_handler_region_.AsValueInto(state);
-    state->EndArray();
-  }
-  if (!non_fast_scrollable_region_.IsEmpty()) {
-    state->BeginArray("non_fast_scrollable_region");
-    non_fast_scrollable_region_.AsValueInto(state);
-    state->EndArray();
-  }
+
+  state->BeginArray("wheel_event_handler_region");
+  wheel_event_handler_region().AsValueInto(state);
+  state->EndArray();
+
+  state->BeginArray("non_fast_scrollable_region");
+  non_fast_scrollable_region().AsValueInto(state);
+  state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());
   state->SetBoolean("contents_opaque", contents_opaque());
@@ -799,7 +806,8 @@ gfx::Rect LayerImpl::GetScaledEnclosingVisibleRectInTargetSpace(
   DCHECK_GT(scale, 0.0);
 
   bool only_draws_visible_content = GetPropertyTrees()
-                                        ->effect_tree.Node(effect_tree_index())
+                                        ->effect_tree()
+                                        .Node(effect_tree_index())
                                         ->only_draws_visible_content;
   gfx::Rect drawable_bounds = visible_layer_rect();
   if (!only_draws_visible_content) {
@@ -890,19 +898,19 @@ PropertyTrees* LayerImpl::GetPropertyTrees() const {
 }
 
 ClipTree& LayerImpl::GetClipTree() const {
-  return GetPropertyTrees()->clip_tree;
+  return GetPropertyTrees()->clip_tree_mutable();
 }
 
 EffectTree& LayerImpl::GetEffectTree() const {
-  return GetPropertyTrees()->effect_tree;
+  return GetPropertyTrees()->effect_tree_mutable();
 }
 
 ScrollTree& LayerImpl::GetScrollTree() const {
-  return GetPropertyTrees()->scroll_tree;
+  return GetPropertyTrees()->scroll_tree_mutable();
 }
 
 TransformTree& LayerImpl::GetTransformTree() const {
-  return GetPropertyTrees()->transform_tree;
+  return GetPropertyTrees()->transform_tree_mutable();
 }
 
 void LayerImpl::EnsureValidPropertyTreeIndices() const {

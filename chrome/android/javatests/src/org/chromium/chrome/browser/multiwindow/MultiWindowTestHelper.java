@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -13,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -122,7 +122,7 @@ public class MultiWindowTestHelper {
     /**
      * Moves the given activity to the foreground so it can receive user input.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public static void moveActivityToFront(final Activity activity) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Context context = ContextUtils.getApplicationContext();

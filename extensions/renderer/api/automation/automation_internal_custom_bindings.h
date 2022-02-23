@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/common/api/automation.h"
 #include "extensions/renderer/api/automation/automation_ax_tree_wrapper.h"
 #include "extensions/renderer/object_backed_native_handler.h"
@@ -68,10 +67,13 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
                         AutomationAXTreeWrapper** in_out_tree_wrapper,
                         bool should_use_app_id = true) const;
 
-  // Gets the root of a node's child tree and adjusts incoming arguments
-  // accordingly. Returns false if no adjustments were made.
-  bool GetRootOfChildTree(ui::AXNode** in_out_node,
-                          AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+  // Gets the hosting node in a parent tree.
+  ui::AXNode* GetHostInParentTree(
+      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+
+  // Gets the root(s) of a node's child tree. Multiple roots can occur when the
+  // child tree uses ax::mojom::StringAttribute::kAppId.
+  std::vector<ui::AXNode*> GetRootsOfChildTree(ui::AXNode* node) const;
 
   ui::AXNode* GetNextInTreeOrder(
       ui::AXNode* start,
@@ -264,7 +266,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
-  std::map<ui::AXTree*, AutomationAXTreeWrapper*> axtree_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
   bool is_active_profile_;
   std::vector<TreeChangeObserver> tree_change_observers_;

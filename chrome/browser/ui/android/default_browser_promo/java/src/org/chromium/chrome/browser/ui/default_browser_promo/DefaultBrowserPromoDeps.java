@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
@@ -150,11 +149,11 @@ public class DefaultBrowserPromoDeps {
     }
 
     @SuppressLint("NewApi")
-    boolean isRoleAvailable(Activity activity) {
+    boolean isRoleAvailable(Context context) {
         if (getSDKInt() < Build.VERSION_CODES.Q) {
             return false;
         }
-        RoleManager roleManager = (RoleManager) activity.getSystemService(Context.ROLE_SERVICE);
+        RoleManager roleManager = (RoleManager) context.getSystemService(Context.ROLE_SERVICE);
         if (roleManager == null) return false;
         boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
         boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);

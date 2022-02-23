@@ -14,8 +14,6 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -112,7 +110,7 @@ std::string SupervisedUserManagerImpl::GetUserSyncId(
 std::u16string SupervisedUserManagerImpl::GetManagerDisplayName(
     const std::string& user_id) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* manager_names =
+  const base::Value* manager_names =
       local_state->GetDictionary(kSupervisedUserManagerNames);
   const std::string* result = manager_names->FindStringKey(user_id);
   if (result && !result->empty())
@@ -192,7 +190,7 @@ bool SupervisedUserManagerImpl::GetUserStringValue(
     const char* key,
     std::string* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
+  const base::Value* dictionary = local_state->GetDictionary(key);
   const std::string* value = dictionary->FindStringKey(user_id);
   if (!value)
     return false;
@@ -205,7 +203,7 @@ bool SupervisedUserManagerImpl::GetUserIntegerValue(const std::string& user_id,
                                                     const char* key,
                                                     int* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
+  const base::Value* dictionary = local_state->GetDictionary(key);
   absl::optional<int> value = dictionary->FindIntKey(user_id);
   if (!value)
     return false;
@@ -218,7 +216,7 @@ bool SupervisedUserManagerImpl::GetUserBooleanValue(const std::string& user_id,
                                                     const char* key,
                                                     bool* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
+  const base::Value* dictionary = local_state->GetDictionary(key);
   absl::optional<bool> flag = dictionary->FindBoolKey(user_id);
   if (!flag)
     return false;
@@ -232,7 +230,7 @@ void SupervisedUserManagerImpl::SetUserStringValue(const std::string& user_id,
                                                    const std::string& value) {
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  update->SetStringKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserIntegerValue(const std::string& user_id,
@@ -240,7 +238,7 @@ void SupervisedUserManagerImpl::SetUserIntegerValue(const std::string& user_id,
                                                     const int value) {
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  update->SetIntKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
@@ -248,7 +246,7 @@ void SupervisedUserManagerImpl::SetUserBooleanValue(const std::string& user_id,
                                                     const bool value) {
   PrefService* local_state = g_browser_process->local_state();
   DictionaryPrefUpdate update(local_state, key);
-  update->SetKey(user_id, base::Value(value));
+  update->SetBoolKey(user_id, value);
 }
 
 void SupervisedUserManagerImpl::RemoveNonCryptohomeData(

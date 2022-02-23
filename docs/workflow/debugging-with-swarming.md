@@ -66,7 +66,7 @@ A lot of the logic below is wrapped up in `tools/run-swarmed.py`, which you can 
 like this:
 
 ```
-$ tools/run-swarmed.py $outdir $target
+$ tools/run-swarmed.py $outdir $target [-- --gtest_filter=...]
 ```
 
 See the `--help` option of `run-swarmed.py` for more details about that script.
@@ -166,7 +166,7 @@ You can then upload the resulting isolate to the CAS server:
 
 ```
 $ tools/luci-go/isolate archive \
-      -cas-instance chroimum-swarm \
+      -cas-instance chromium-swarm \
       -i $outdir/$target.isolate \
       -dump-json $outdir/$target.archive.json
 ```

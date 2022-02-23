@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "testing/platform_test.h"
@@ -18,11 +19,14 @@ namespace {
 
 class SnapshotBrowserAgentTest : public PlatformTest {
  public:
-  SnapshotBrowserAgentTest() : browser_(std::make_unique<TestBrowser>()) {}
-  ~SnapshotBrowserAgentTest() override { browser_ = nullptr; }
+  SnapshotBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
 };
 

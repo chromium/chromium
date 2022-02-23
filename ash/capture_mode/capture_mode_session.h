@@ -6,6 +6,7 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SESSION_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
@@ -13,6 +14,7 @@
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -31,7 +33,6 @@ class Canvas;
 
 namespace ash {
 
-class CaptureModeAdvancedSettingsView;
 class CaptureModeBarView;
 class CaptureModeController;
 class CaptureModeSessionFocusCycler;
@@ -106,11 +107,21 @@ class ASH_EXPORT CaptureModeSession
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
+  // When performing capture, or at the end of the 3-second count down, the DLP
+  // manager is checked for any restricted content. The DLP manager may choose
+  // to show a system-modal dialog to warn the user about some content they're
+  // about to capture. This function is called to prepare for this case by
+  // hiding all the capture mode UIs and stopping the consumption of input
+  // events, so users can interact with the dialog.
+  void OnWaitingForDlpConfirmationStarted();
+
+  // This function is called when the DLP manager replies back. If `reshow_uis`
+  // is true, then we'll undo the hiding of all the capture mode UIs done in
+  // OnWaitingForDlpConfirmationStarted().
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis);
+
   // Called when the settings menu is toggled.
   void SetSettingsMenuShown(bool shown);
-
-  // Called when the record microphone setting is toggled.
-  void OnMicrophoneChanged(bool microphone_enabled);
 
   // Called when the user performs a capture. Records histograms related to this
   // session.
@@ -135,6 +146,15 @@ class ASH_EXPORT CaptureModeSession
   // as the save folder.
   void OnDefaultCaptureFolderSelectionChanged();
 
+  // Returns the current parent window for
+  // `CaptureModeCameraController::camera_preview_widget_` when capture mode
+  // session is active.
+  aura::Window* GetCameraPreviewParentWindow() const;
+
+  // Returns the confine bounds for the camera preview when capture session is
+  // active.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -158,6 +178,7 @@ class ASH_EXPORT CaptureModeSession
 
   // FolderSelectionDialogController::Delegate:
   void OnFolderSelected(const base::FilePath& path) override;
+  void OnSelectionWindowAdded() override;
   void OnSelectionWindowClosed() override;
 
   // Updates the current cursor depending on current |location_in_screen| and
@@ -170,8 +191,12 @@ class ASH_EXPORT CaptureModeSession
   // events (tabbing through windows in capture window mode).
   void HighlightWindowForTab(aura::Window* window);
 
+  // Called when the settings view has been updated, its bounds may need to be
+  // updated correspondingly.
+  void MaybeUpdateSettingsBounds();
+
  private:
-  friend class CaptureModeAdvancedSettingsTestApi;
+  friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
   friend class CaptureModeTestApi;
@@ -187,6 +212,19 @@ class ASH_EXPORT CaptureModeSession
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Returns a list of all the currently available widgets that are owned by
+  // this session.
+  std::vector<views::Widget*> GetAvailableWidgets();
+
+  // All UI elements, cursors, widgets and paintings on the session's layer can
+  // be either shown or hidden with the below functions.
+  void HideAllUis();
+  void ShowAllUis();
+
+  // Called by `ShowAllUis` for each widget. Returns true if the given `widget`
+  // could be shown, otherwise, returns false.
+  bool CanShowWidget(views::Widget* widget) const;
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
@@ -364,6 +402,10 @@ class ASH_EXPORT CaptureModeSession
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
 
+  // True if all UIs (cursors, widgets, and paintings on the layer) of the
+  // capture mode session is visible.
+  bool is_all_uis_visible_ = true;
+
   // Whether this session was started from a projector workflow.
   const bool is_in_projector_mode_ = false;
 
@@ -435,14 +477,12 @@ class ASH_EXPORT CaptureModeSession
   // any errors, DLP restrictions, or any user cancellation.
   bool is_stopping_to_start_video_recording_ = false;
 
+  // True when we ask the DLP manager to check the screen content before we
+  // perform the capture.
+  bool is_waiting_for_dlp_confirmation_ = false;
+
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
-
-  // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
-  // TODO(conniekxu): remove it when the work of capture mode new settings
-  // is done.
-  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
-      nullptr;
 
   // This helps indicating whether located events should be handled by the
   // capture mode settings menu view or the capture mode Pre-EventHandler. When
@@ -458,6 +498,8 @@ class ASH_EXPORT CaptureModeSession
       folder_selection_dialog_controller_;
 
   std::unique_ptr<UserNudgeController> user_nudge_controller_;
+
+  base::WeakPtrFactory<CaptureModeSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

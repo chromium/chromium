@@ -211,7 +211,7 @@ def HardcodeSharedLibraryDynamicAttributes(zip_path,
   _ProcessZip(zip_path, process_func)
 
 
-class _ResourceStripper(object):
+class _ResourceStripper:
   def __init__(self, partial_path, keep_predicate):
     self.partial_path = partial_path
     self.keep_predicate = keep_predicate
@@ -231,12 +231,12 @@ class _ResourceStripper(object):
     for style in self._IterStyles(entry):
       entries = style.entry
       new_entries = []
-      for entry in entries:
-        full_name = '{}/{}'.format(type_and_name, entry.key.name)
+      for e in entries:
+        full_name = '{}/{}'.format(type_and_name, e.key.name)
         if not self.keep_predicate(full_name):
           logging.debug('Stripped %s/%s', self.partial_path, full_name)
         else:
-          new_entries.append(entry)
+          new_entries.append(e)
 
       if len(new_entries) != len(entries):
         self._has_changes = True

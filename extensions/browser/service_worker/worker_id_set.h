@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 

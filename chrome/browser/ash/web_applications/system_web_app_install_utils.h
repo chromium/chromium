@@ -8,7 +8,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 
 class GURL;
 
@@ -26,7 +26,11 @@ struct IconResourceInfo {
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
     const std::initializer_list<IconResourceInfo>& manifest_icons,
-    WebApplicationInfo& web_app);
+    WebAppInstallInfo& web_app);
+
+// Get correct ChromeOS background color based on if dark mode is requested and
+// if kSemanticColorsDebugOverride is enabled.
+SkColor GetDefaultBackgroundColor(const bool use_dark_mode);
 
 }  // namespace web_app
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
@@ -21,7 +22,6 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/views/controls/styled_label.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -110,9 +110,10 @@ class SharingUiController {
       chrome_browser_sharing::SharingMessage sharing_message,
       absl::optional<SharingMessageSender::ResponseCallback> callback);
 
- private:
   // Updates the omnibox icon if available.
   void UpdateIcon();
+
+ private:
   // Closes the current dialog if there is one.
   void CloseDialog();
   // Shows a new SharingDialog and closes the old one.
@@ -133,9 +134,9 @@ class SharingUiController {
                       const absl::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
-  SharingDialog* dialog_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  SharingService* sharing_service_ = nullptr;
+  raw_ptr<SharingDialog> dialog_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<SharingService> sharing_service_ = nullptr;
 
   bool is_loading_ = false;
   SharingSendMessageResult send_result_ = SharingSendMessageResult::kSuccessful;

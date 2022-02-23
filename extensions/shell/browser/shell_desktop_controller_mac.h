@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/shell/browser/desktop_controller.h"
 
 namespace extensions {

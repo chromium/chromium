@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/lazy_instance_helpers.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -54,7 +55,7 @@ LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>::Create() {
   return ThreadPool::CreateSingleThreadTaskRunner(traits_, thread_mode_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 scoped_refptr<SingleThreadTaskRunner>
 LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>::Create() {
@@ -100,7 +101,7 @@ LazyThreadPoolTaskRunner<TaskRunnerType, com_sta>::Get() {
 template class LazyThreadPoolTaskRunner<SequencedTaskRunner, false>;
 template class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, false>;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template class LazyThreadPoolTaskRunner<SingleThreadTaskRunner, true>;
 #endif
 

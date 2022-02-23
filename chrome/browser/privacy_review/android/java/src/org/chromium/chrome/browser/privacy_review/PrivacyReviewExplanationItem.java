@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.privacy_review;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,16 +23,20 @@ public class PrivacyReviewExplanationItem extends LinearLayout {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.privacy_review_explanation_item, this);
 
-        TypedArray styledAttrs = context.obtainStyledAttributes(
+        TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.PrivacyReviewExplanationItem, 0, 0);
 
         TextView summary = (TextView) view.findViewById(R.id.summary);
-        summary.setText(styledAttrs.getText(R.styleable.PrivacyReviewExplanationItem_summaryText));
+        summary.setText(a.getText(R.styleable.PrivacyReviewExplanationItem_summaryText));
 
-        summary.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                styledAttrs.getDrawable(R.styleable.PrivacyReviewExplanationItem_iconImage), null,
-                null, null);
+        Drawable icon = a.getDrawable(R.styleable.PrivacyReviewExplanationItem_iconImage);
+        ColorStateList tint =
+                a.getColorStateList(R.styleable.PrivacyReviewExplanationItem_iconTint);
+        if (icon != null && tint != null) {
+            icon.setColorFilter(tint.getDefaultColor(), PorterDuff.Mode.SRC_IN);
+        }
+        summary.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
 
-        styledAttrs.recycle();
+        a.recycle();
     }
 }

@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -60,10 +62,6 @@ class PLATFORM_EXPORT PaintChunker final {
     next_chunk_id_ = absl::nullopt;
   }
   bool WillForceNewChunk() const { return will_force_new_chunk_; }
-
-  void SetShouldComputeContentsOpaque(bool should_compute_) {
-    should_compute_contents_opaque_ = should_compute_;
-  }
 
   void AppendByMoving(PaintChunk&&);
 
@@ -139,7 +137,6 @@ class PLATFORM_EXPORT PaintChunker final {
   bool will_force_new_chunk_ = true;
 
   bool current_effectively_invisible_ = false;
-  bool should_compute_contents_opaque_ = true;
 
   Color candidate_background_color_ = Color::kTransparent;
   float candidate_background_area_ = 0;

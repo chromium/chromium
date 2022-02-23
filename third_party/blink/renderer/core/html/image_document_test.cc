@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -107,7 +108,7 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   chrome_client_ = MakeGarbageCollected<WindowToViewportScalingChromeClient>();
   dummy_page_holder_ = nullptr;
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(view_width, view_height), chrome_client_);
+      gfx::Size(view_width, view_height), chrome_client_);
 
   if (page_zoom_factor_)
     dummy_page_holder_->GetFrame().SetPageZoomFactor(page_zoom_factor_);
@@ -243,7 +244,7 @@ TEST_F(ImageDocumentTest, ImageSrcChangedBeforeFinish) {
   blink::test::RunPendingTasks();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE(test) DISABLED_##test
 #else
 #define MAYBE(test) test
@@ -257,8 +258,8 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   GetDocument().ImageClicked(15, 27);
   ScrollOffset offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
-  EXPECT_EQ(20, offset.width());
-  EXPECT_EQ(20, offset.height());
+  EXPECT_EQ(20, offset.x());
+  EXPECT_EQ(20, offset.y());
 
   GetDocument().ImageClicked(20, 20);
 
@@ -266,11 +267,11 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
   if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
-    EXPECT_EQ(11.25f, offset.width());
-    EXPECT_EQ(20, offset.height());
+    EXPECT_EQ(11.25f, offset.x());
+    EXPECT_EQ(20, offset.y());
   } else {
-    EXPECT_EQ(11, offset.width());
-    EXPECT_EQ(20, offset.height());
+    EXPECT_EQ(11, offset.x());
+    EXPECT_EQ(20, offset.y());
   }
 }
 

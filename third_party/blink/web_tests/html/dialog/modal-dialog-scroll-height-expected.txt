@@ -1,5 +1,0 @@
-PASS 600 is 600
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

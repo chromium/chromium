@@ -10,9 +10,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -27,36 +30,117 @@ namespace ash {
 namespace quick_unlock {
 namespace {
 
-// Quick unlock is enabled regardless of flags.
-bool enable_for_testing_ = false;
-bool disable_pin_by_policy_for_testing_ = false;
+TestApi* g_instance = nullptr;
 
 // Options for the quick unlock allowlist.
-const char kQuickUnlockAllowlistOptionAll[] = "all";
-const char kQuickUnlockAllowlistOptionPin[] = "PIN";
-const char kQuickUnlockAllowlistOptionFingerprint[] = "FINGERPRINT";
+const char kFactorsOptionAll[] = "all";
+const char kFactorsOptionPin[] = "PIN";
+const char kFactorsOptionFingerprint[] = "FINGERPRINT";
 
 // Default minimum PIN length. Policy can increase or decrease this value.
 constexpr int kDefaultMinimumPinLength = 6;
 
-bool HasPolicyValue(const PrefService* pref_service, const char* value) {
-  const base::ListValue* quick_unlock_allowlist =
-      pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
-  // TODO(crbug.com/1187106): Use base::Contains once |quick_unlock_allowlist|
-  // is not a ListValue.
-  return std::find(quick_unlock_allowlist->GetList().begin(),
-                   quick_unlock_allowlist->GetList().end(),
-                   base::Value(value)) !=
-         quick_unlock_allowlist->GetList().end();
+bool HasPolicyValue(const PrefService* pref_service,
+                    Purpose purpose,
+                    const char* value) {
+  const base::Value* factors = nullptr;
+  switch (purpose) {
+    case Purpose::kUnlock:
+      factors = pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+      break;
+    case Purpose::kWebAuthn:
+      factors = pref_service->GetList(prefs::kWebAuthnFactors);
+      break;
+    default:
+      return false;
+  }
+  return base::Contains(factors->GetListDeprecated(), base::Value(value));
+}
+
+// Check if fingerprint is disabled for a specific purpose (so not including
+// kAny) by reading the policy value.
+bool IsFingerprintDisabledByPolicySinglePurpose(const PrefService* pref_service,
+                                                Purpose purpose) {
+  DCHECK(purpose != Purpose::kAny);
+  const bool enabled =
+      HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
+      HasPolicyValue(pref_service, purpose, kFactorsOptionFingerprint);
+  return !enabled;
+}
+
+// Check if pin is disabled for a specific purpose (so not including
+// kAny) by reading the policy value.
+bool IsPinDisabledByPolicySinglePurpose(const PrefService* pref_service,
+                                        Purpose purpose) {
+  DCHECK(purpose != Purpose::kAny);
+  const bool enabled =
+      HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
+      HasPolicyValue(pref_service, purpose, kFactorsOptionPin);
+  return !enabled;
 }
 
 }  // namespace
 
-bool IsFingerprintDisabledByPolicy(const PrefService* pref_service) {
-  const bool enabled =
-      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionAll) ||
-      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionFingerprint);
-  return !enabled;
+TestApi::TestApi(bool override_quick_unlock)
+    : overridden_(override_quick_unlock) {
+  old_instance_ = g_instance;
+  g_instance = this;
+  std::fill(pin_purposes_enabled_by_policy_,
+            pin_purposes_enabled_by_policy_ + kNumOfPurposes, false);
+  std::fill(fingerprint_purposes_enabled_by_policy_,
+            fingerprint_purposes_enabled_by_policy_ + kNumOfPurposes, false);
+}
+
+TestApi::~TestApi() {
+  CHECK_EQ(g_instance, this);
+  g_instance = old_instance_;
+}
+
+TestApi* TestApi::Get() {
+  return g_instance;
+}
+
+bool TestApi::IsQuickUnlockOverridden() {
+  return overridden_;
+}
+
+void TestApi::EnablePinByPolicy(Purpose purpose) {
+  if (purpose != Purpose::kAny) {
+    pin_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] = true;
+  }
+  pin_purposes_enabled_by_policy_[static_cast<int>(purpose)] = true;
+}
+
+void TestApi::EnableFingerprintByPolicy(Purpose purpose) {
+  if (purpose != Purpose::kAny) {
+    fingerprint_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] =
+        true;
+  }
+  fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)] = true;
+}
+
+bool TestApi::IsPinEnabledByPolicy(Purpose purpose) {
+  return pin_purposes_enabled_by_policy_[static_cast<int>(purpose)];
+}
+
+bool TestApi::IsFingerprintEnabledByPolicy(Purpose purpose) {
+  return fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)];
+}
+
+bool IsFingerprintDisabledByPolicy(const PrefService* pref_service,
+                                   Purpose purpose) {
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsFingerprintEnabledByPolicy(purpose);
+  }
+
+  if (purpose == Purpose::kAny) {
+    return IsFingerprintDisabledByPolicySinglePurpose(pref_service,
+                                                      Purpose::kUnlock) &&
+           IsFingerprintDisabledByPolicySinglePurpose(pref_service,
+                                                      Purpose::kWebAuthn);
+  }
+  return IsFingerprintDisabledByPolicySinglePurpose(pref_service, purpose);
 }
 
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
@@ -76,11 +160,15 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  base::Value::ListStorage quick_unlock_allowlist_default;
-  quick_unlock_allowlist_default.emplace_back(kQuickUnlockAllowlistOptionAll);
+  base::Value::ListStorage quick_unlock_modes_default;
+  quick_unlock_modes_default.emplace_back(kFactorsOptionAll);
+  base::Value::ListStorage webauthn_factors_default;
+  webauthn_factors_default.emplace_back(kFactorsOptionAll);
   registry->RegisterListPref(
       prefs::kQuickUnlockModeAllowlist,
-      base::Value(std::move(quick_unlock_allowlist_default)));
+      base::Value(std::move(quick_unlock_modes_default)));
+  registry->RegisterListPref(prefs::kWebAuthnFactors,
+                             base::Value(std::move(webauthn_factors_default)));
   registry->RegisterIntegerPref(
       prefs::kQuickUnlockTimeout,
       static_cast<int>(PasswordConfirmationFrequency::TWO_DAYS));
@@ -97,17 +185,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 features::IsPinAutosubmitFeatureEnabled());
 }
 
-bool IsPinDisabledByPolicy(PrefService* pref_service) {
-  if (disable_pin_by_policy_for_testing_)
-    return true;
+bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose) {
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsPinEnabledByPolicy(purpose);
+  }
 
-  if (enable_for_testing_)
-    return false;
-
-  const bool enabled =
-      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionAll) ||
-      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionPin);
-  return !enabled;
+  if (purpose == Purpose::kAny) {
+    return IsPinDisabledByPolicySinglePurpose(pref_service, Purpose::kUnlock) &&
+           IsPinDisabledByPolicySinglePurpose(pref_service, Purpose::kWebAuthn);
+  }
+  return IsPinDisabledByPolicySinglePurpose(pref_service, purpose);
 }
 
 bool IsPinEnabled() {
@@ -141,7 +229,8 @@ FingerprintLocation GetFingerprintLocation() {
 }
 
 bool IsFingerprintSupported() {
-  if (enable_for_testing_)
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden())
     return true;
 
   const base::CommandLine* command_line =
@@ -150,19 +239,21 @@ bool IsFingerprintSupported() {
          command_line->HasSwitch(switches::kFingerprintSensorLocation);
 }
 
-bool IsFingerprintEnabled(Profile* profile) {
-  if (enable_for_testing_)
-    return true;
+bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
+  // Don't need to check these when using flags to control fingerprint behavior
+  // in tests.
+  auto* test_api = TestApi::Get();
+  if (!test_api || !test_api->IsQuickUnlockOverridden()) {
+    if (!IsFingerprintSupported())
+      return false;
 
-  if (!IsFingerprintSupported())
-    return false;
-
-  // Disable fingerprint if the profile does not belong to the primary user.
-  if (profile != ProfileManager::GetPrimaryUserProfile())
-    return false;
+    // Disable fingerprint if the profile does not belong to the primary user.
+    if (profile != ProfileManager::GetPrimaryUserProfile())
+      return false;
+  }
 
   // Disable fingerprint if disallowed by policy.
-  if (IsFingerprintDisabledByPolicy(profile->GetPrefs()))
+  if (IsFingerprintDisabledByPolicy(profile->GetPrefs(), purpose))
     return false;
 
   return true;
@@ -211,14 +302,6 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
   }
   html_source->AddBoolean("useLottieAnimationForFingerprint",
                           is_lottie_animation);
-}
-
-void EnabledForTesting(bool state) {
-  enable_for_testing_ = state;
-}
-
-void DisablePinByPolicyForTesting(bool disable) {
-  disable_pin_by_policy_for_testing_ = disable;
 }
 
 }  // namespace quick_unlock

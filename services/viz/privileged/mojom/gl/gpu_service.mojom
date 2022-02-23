@@ -5,13 +5,15 @@
 module viz.mojom;
 
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/protected_buffer_manager.mojom";
+import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_decode_accelerator.mojom";
+import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_encode_accelerator.mojom";
+import "ash/components/arc/mojom/video_decoder.mojom";
 [EnableIf=is_chromeos_ash]
-import "components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
@@ -61,22 +63,27 @@ interface GpuService {
   CloseChannel(int32 client_id);
 
   // Create a new ARC VideoDecodeAccelerator and binds it to |vda|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=enable_arc_media]
   CreateArcVideoDecodeAccelerator(
       pending_receiver<arc.mojom.VideoDecodeAccelerator> vda);
 
+  // Create a new ARC VideoDecoder and binds it to |vd|.
+  [EnableIf=enable_arc_media]
+  CreateArcVideoDecoder(
+      pending_receiver<arc.mojom.VideoDecoder> vd);
+
   // Create a new ARC VideoEncodeAccelerator and binds it to |vea|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=enable_arc_media]
   CreateArcVideoEncodeAccelerator(
       pending_receiver<arc.mojom.VideoEncodeAccelerator> vea);
 
   // Create a new ARC VideoProtectedBufferAllocator and binds it to |pba|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=enable_arc_media ]
   CreateArcVideoProtectedBufferAllocator(
       pending_receiver<arc.mojom.VideoProtectedBufferAllocator> pba);
 
   // Create a new ARC ProtectedBufferManager and binds it to |pbm|.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=enable_arc_media ]
   CreateArcProtectedBufferManager(
       pending_receiver<arc.mojom.ProtectedBufferManager> pbm);
 

@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -48,10 +49,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "drive_video.icon",
     "extension_app.icon",
     "find_in_page.icon",
-    "google_calendar.icon",
-    "google_keep_note.icon",
-    "google_sites.icon",
-    "google_super_g.icon",
     "http.icon",
     "https_valid_in_chip.icon",
     "incognito.icon",
@@ -106,6 +103,7 @@ static_library("browser") {
     "autocomplete_classifier.h",
     "autocomplete_controller.cc",
     "autocomplete_controller.h",
+    "autocomplete_i18n.h",
     "autocomplete_match.cc",
     "autocomplete_match.h",
     "autocomplete_match_classification.cc",
@@ -118,6 +116,7 @@ static_library("browser") {
     "autocomplete_provider_client.h",
     "autocomplete_provider_debouncer.cc",
     "autocomplete_provider_debouncer.h",
+    "autocomplete_provider_listener.h",
     "autocomplete_result.cc",
     "autocomplete_result.h",
     "base_search_provider.cc",
@@ -134,6 +133,8 @@ static_library("browser") {
     "document_suggestions_service.h",
     "favicon_cache.cc",
     "favicon_cache.h",
+    "history_fuzzy_provider.cc",
+    "history_fuzzy_provider.h",
     "history_match.cc",
     "history_match.h",
     "history_provider.cc",
@@ -193,6 +194,8 @@ static_library("browser") {
     "on_device_head_provider.h",
     "on_device_model_update_listener.cc",
     "on_device_model_update_listener.h",
+    "open_tab_provider.cc",
+    "open_tab_provider.h",
     "query_tile_provider.cc",
     "query_tile_provider.h",
     "remote_suggestions_service.cc",
@@ -273,7 +276,7 @@ static_library("browser") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
-    "//extensions/common:common_constants",
+    "//extensions/buildflags",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -291,6 +294,16 @@ static_library("browser") {
 
   if (!is_ios) {
     deps += [ "//components/keyed_service/content" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+    sources += [
+      "omnibox_input_watcher.cc",
+      "omnibox_input_watcher.h",
+      "omnibox_suggestions_watcher.cc",
+      "omnibox_suggestions_watcher.h",
+    ]
   }
 
   if (is_android) {
@@ -331,6 +344,7 @@ static_library("location_bar") {
   ]
   deps = [
     ":buildflags",
+    "//build:chromeos_buildflags",
     "//components/dom_distiller/core:core",
     "//components/search_engines",
     "//components/strings",
@@ -341,6 +355,10 @@ static_library("location_bar") {
     "//ui/base",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/crosapi/cpp:cpp" ]
+  }
 
   if ((!is_android || enable_vr) && !is_ios) {
     deps += [ ":vector_icons" ]
@@ -396,6 +414,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
       "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
 
     resources_package = "org.chromium.components.omnibox"
@@ -420,6 +439,7 @@ if (is_android) {
 
   java_cpp_enum("browser_java_enums_srcjar") {
     sources = [
+      "actions/omnibox_pedal_concepts.h",
       "autocomplete_match.h",
       "autocomplete_match_type.h",
       "suggestion_answer.h",
@@ -433,6 +453,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
+      "android/java/src/org/chromium/components/omnibox/action/OmniboxPedal.java",
     ]
   }
 }
@@ -534,6 +555,7 @@ source_set("unit_tests") {
     "document_provider_unittest.cc",
     "document_suggestions_service_unittest.cc",
     "favicon_cache_unittest.cc",
+    "history_fuzzy_provider_unittest.cc",
     "history_provider_unittest.cc",
     "history_quick_provider_unittest.cc",
     "history_url_provider_unittest.cc",

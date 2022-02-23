@@ -41,7 +41,7 @@ bool IsGoogleDevice() {
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
-  return chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  return ash::ProfileHelper::Get()->GetUserByProfile(profile);
 }
 
 bool IsAssistantAllowedForUserType(const Profile* profile) {
@@ -136,7 +136,7 @@ AssistantAllowedState IsAssistantAllowedForProfile(const Profile* profile) {
   if (!HasPrimaryAccount(profile))
     return AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER;
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile))
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile))
     return AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER;
 
   if (profile->IsOffTheRecord())

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/test/fake_network_dispatcher.h"
 #include "remoting/test/fake_network_manager.h"

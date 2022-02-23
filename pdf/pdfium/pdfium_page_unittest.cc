@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/range/range.h"
 
@@ -114,7 +115,7 @@ class PDFiumPageLinkTest : public PDFiumTestBase {
   }
 };
 
-TEST_F(PDFiumPageLinkTest, TestLinkGeneration) {
+TEST_F(PDFiumPageLinkTest, LinkGeneration) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("weblinks.pdf"));
@@ -156,7 +157,7 @@ TEST_F(PDFiumPageLinkTest, TestLinkGeneration) {
   EXPECT_EQ(gfx::Rect(82, 67, 161, 21), third_link.bounding_rects[0]);
 }
 
-TEST_F(PDFiumPageLinkTest, TestAnnotLinkGeneration) {
+TEST_F(PDFiumPageLinkTest, AnnotLinkGeneration) {
   struct ExpectedLink {
     int32_t start_char_index;
     int32_t char_count;
@@ -210,7 +211,7 @@ TEST_F(PDFiumPageLinkTest, TestAnnotLinkGeneration) {
   }
 }
 
-TEST_F(PDFiumPageLinkTest, TestGetLinkTarget) {
+TEST_F(PDFiumPageLinkTest, GetLinkTarget) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("in_doc_link_with_various_page_sizes.pdf"));
@@ -247,7 +248,7 @@ TEST_F(PDFiumPageLinkTest, TestGetLinkTarget) {
 
 using PDFiumPageImageTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageImageTest, TestCalculateImages) {
+TEST_F(PDFiumPageImageTest, CalculateImages) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("image_alt_text.pdf"));
@@ -265,7 +266,7 @@ TEST_F(PDFiumPageImageTest, TestCalculateImages) {
   EXPECT_EQ("Image 3", page.images_[2].alt_text);
 }
 
-TEST_F(PDFiumPageImageTest, TestImageAltText) {
+TEST_F(PDFiumPageImageTest, ImageAltText) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
@@ -285,7 +286,7 @@ TEST_F(PDFiumPageImageTest, TestImageAltText) {
 
 using PDFiumPageTextTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageTextTest, TestTextRunBounds) {
+TEST_F(PDFiumPageTextTest, TextRunBounds) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("leading_trailing_spaces_per_text_run.pdf"));
@@ -432,7 +433,7 @@ TEST_F(PDFiumPageTextTest, GetTextRunInfo) {
   ASSERT_FALSE(text_run_info_result.has_value());
 }
 
-TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
+TEST_F(PDFiumPageTextTest, HighlightTextRunInfo) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("highlights.pdf"));
@@ -476,7 +477,7 @@ TEST_F(PDFiumPageTextTest, TestHighlightTextRunInfo) {
 
 using PDFiumPageHighlightTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageHighlightTest, TestPopulateHighlights) {
+TEST_F(PDFiumPageHighlightTest, PopulateHighlights) {
   struct ExpectedHighlight {
     int32_t start_char_index;
     int32_t char_count;
@@ -515,7 +516,7 @@ TEST_F(PDFiumPageHighlightTest, TestPopulateHighlights) {
 
 using PDFiumPageTextFieldTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageTextFieldTest, TestPopulateTextFields) {
+TEST_F(PDFiumPageTextFieldTest, PopulateTextFields) {
   struct ExpectedTextField {
     const char* name;
     const char* value;
@@ -551,7 +552,7 @@ TEST_F(PDFiumPageTextFieldTest, TestPopulateTextFields) {
 
 using PDFiumPageChoiceFieldTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageChoiceFieldTest, TestPopulateChoiceFields) {
+TEST_F(PDFiumPageChoiceFieldTest, PopulateChoiceFields) {
   struct ExpectedChoiceFieldOption {
     const char* name;
     bool is_selected;
@@ -638,7 +639,7 @@ TEST_F(PDFiumPageChoiceFieldTest, TestPopulateChoiceFields) {
 
 using PDFiumPageButtonTest = PDFiumTestBase;
 
-TEST_F(PDFiumPageButtonTest, TestPopulateButtons) {
+TEST_F(PDFiumPageButtonTest, PopulateButtons) {
   struct ExpectedButton {
     const char* name;
     const char* value;
@@ -762,15 +763,25 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
                              const std::string& expectation_file_prefix) {
     PDFiumPage& page = GetPDFiumPageForTest(engine, page_index);
     Thumbnail thumbnail = page.GenerateThumbnail(device_pixel_ratio);
-    EXPECT_EQ(expected_thumbnail_size, gfx::Size(thumbnail.bitmap().width(),
-                                                 thumbnail.bitmap().height()));
+    EXPECT_EQ(expected_thumbnail_size, thumbnail.image_size());
     EXPECT_EQ(device_pixel_ratio, thumbnail.device_pixel_ratio());
+
+    auto image_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(thumbnail.image_size()),
+                          kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+    int stride = thumbnail.stride();
+    ASSERT_GT(stride, 0);
+    ASSERT_EQ(image_info.minRowBytes(), static_cast<size_t>(stride));
+    std::vector<uint8_t> data = thumbnail.TakeData();
+    SkBitmap bitmap;
+    EXPECT_TRUE(bitmap.installPixels(image_info, data.data(),
+                                     image_info.minRowBytes()));
 
     base::FilePath expectation_png_file_path = GetThumbnailTestData(
         expectation_file_prefix, page_index, device_pixel_ratio);
 
     EXPECT_TRUE(cc::MatchesPNGFile(
-        thumbnail.bitmap(), GetTestDataFilePath(expectation_png_file_path),
+        bitmap, GetTestDataFilePath(expectation_png_file_path),
         cc::ExactPixelComparator(/*discard_alpha=*/false)))
         << "Reference: " << expectation_png_file_path;
   }
@@ -808,6 +819,19 @@ TEST_F(PDFiumPageThumbnailTest, GenerateThumbnail) {
                           params.expected_thumbnail_size,
                           "variable_page_sizes");
   }
+}
+
+// For crbug.com/1248455
+TEST_F(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("signature_widget.pdf"));
+  TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
+                        /*expected_thumbnail_size=*/{140, 140},
+                        "signature_widget");
+  TestGenerateThumbnail(*engine, /*page_index=*/0, /*device_pixel_ratio=*/2,
+                        /*expected_thumbnail_size=*/{255, 255},
+                        "signature_widget");
 }
 
 }  // namespace chrome_pdf

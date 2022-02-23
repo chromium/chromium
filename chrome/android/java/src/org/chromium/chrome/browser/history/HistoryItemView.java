@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,8 +23,10 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -54,7 +57,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
                 context.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
 
         mStartIconSelectedColorList =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_inverse);
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorInverse(context));
     }
 
     @Override
@@ -67,7 +70,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
         ApiCompatibilityUtils.setImageTintList(mRemoveButton,
                 AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_secondary));
+                        getContext(), R.color.default_icon_color_secondary_tint_list));
         mRemoveButton.setOnClickListener(v -> remove());
         mRemoveButton.setScaleType(ScaleType.CENTER_INSIDE);
         mRemoveButton.setPaddingRelative(
@@ -89,6 +92,8 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getDomain());
+        SelectableListUtils.setContentDescriptionContext(getContext(), mRemoveButton,
+                item.getTitle(), SelectableListUtils.ContentDescriptionSource.REMOVE_BUTTON);
         mIsItemRemoved = false;
 
         if (item.wasBlockedVisit()) {

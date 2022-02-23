@@ -32,6 +32,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -39,7 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -360,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   EXPECT_EQ("HOWDIE!!!", result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -531,9 +532,9 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Loading an extension requiring the 'lockWindowFullscreenPrivate' permission
 // on non Chrome OS platforms should always fail since the API is available only
 // on Chrome OS.
@@ -543,10 +544,14 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest,
       test_data_dir_.AppendASCII("locked_fullscreen/with_permission"),
       {.ignore_manifest_warnings = true});
   ASSERT_TRUE(extension);
-  EXPECT_EQ(1u, extension->install_warnings().size());
+  EXPECT_EQ(2u, extension->install_warnings().size());
+  // TODO(https://crbug.com/1269161): Remove the check for the deprecated
+  // manifest version when the test extension is updated to MV3.
+  EXPECT_EQ(manifest_errors::kManifestV2IsDeprecatedWarning,
+            extension->install_warnings()[0].message);
   EXPECT_EQ(std::string("'lockWindowFullscreenPrivate' "
                         "is not allowed for specified platform."),
-            extension->install_warnings().front().message);
+            extension->install_warnings()[1].message);
 }
 #endif
 

@@ -10,11 +10,11 @@
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/window_open_disposition.h"
@@ -693,12 +693,12 @@ TEST_F(RestoreDataTest, FetchRestoreWindowId) {
 
 TEST_F(RestoreDataTest, HasAppTypeBrowser) {
   std::unique_ptr<AppLaunchInfo> app_launch_info1 =
-      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId1);
+      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId1);
   restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
   EXPECT_FALSE(restore_data().HasAppTypeBrowser());
 
   std::unique_ptr<AppLaunchInfo> app_launch_info2 =
-      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId2);
+      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId2);
   app_launch_info2->app_type_browser = true;
   restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
   EXPECT_TRUE(restore_data().HasAppTypeBrowser());
@@ -706,13 +706,13 @@ TEST_F(RestoreDataTest, HasAppTypeBrowser) {
 
 TEST_F(RestoreDataTest, HasBrowser) {
   std::unique_ptr<AppLaunchInfo> app_launch_info1 =
-      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId1);
+      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId1);
   app_launch_info1->app_type_browser = true;
   restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
   EXPECT_FALSE(restore_data().HasBrowser());
 
   std::unique_ptr<AppLaunchInfo> app_launch_info2 =
-      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId2);
+      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId2);
   restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
   EXPECT_TRUE(restore_data().HasBrowser());
 }

@@ -17,28 +17,9 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "media/base/media_switches.h"
 
-namespace {
-
-void SetCommandLineSwitch(const std::string& switch_string) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switch_string))
-    command_line->AppendSwitch(switch_string);
-}
-
-void SetCommandLineSwitchASCII(const std::string& switch_string,
-                               const std::string& value) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switch_string))
-    command_line->AppendSwitchASCII(switch_string, value);
-}
-
-}  // namespace
-
 void SetChromeSpecificCommandLineFlags() {
-  // Disable syncing favicons on low end devices.
-  if (base::SysInfo::IsLowEndDevice())
-    SetCommandLineSwitchASCII(switches::kDisableSyncTypes, "Favicon Images");
-
   // Enable DOM Distiller backend.
-  SetCommandLineSwitch(switches::kEnableDomDistiller);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kEnableDomDistiller))
+    command_line->AppendSwitch(switches::kEnableDomDistiller);
 }

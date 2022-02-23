@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Корейская раскладка (Ahnmatae)</translation>
 <translation id="1155759005174418845">Каталанский</translation>
 <translation id="1168100932582989117">Серверы имен Google</translation>
+<translation id="1171082344678443012">Сжатый архив XZ</translation>
 <translation id="1172970565351728681">Осталось около <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1173916544412572294">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">Архив RAR</translation>
+<translation id="2036414735548252477">Сжатый TAR-архив LZMA</translation>
 <translation id="2037845485764049925">Русский</translation>
 <translation id="2044023416777079300">Модем не зарегистрирован.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Поделиться с помощью приложения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3083975830683400843">Устройства Chromebit</translation>
 <translation id="3085752524577180175">SOCKS-прокси</translation>
+<translation id="3104793765551262433">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
 <translation id="3113153474486991170">Не удалось открыть "<ph name="PATH" />" из этого каталога. Чтобы открыть объект, скопируйте его в каталог "Мои файлы".</translation>
 <translation id="3113592018909187986">Осталась одна попытка. Вы не сможете использовать эту сеть, пока не зададите новый PIN-код.</translation>
 <translation id="3124404833828281817">Мечтатель</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Английский (США), международная раскладка (ПК)</translation>
 <translation id="3567221313191587603">Чтобы файл был доступен офлайн, выберите его и установите флажок "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="357479282490346887">Литовский</translation>
+<translation id="3587482841069643663">Все</translation>
 <translation id="3592251141500063301">Не удается скачать файл "<ph name="FILE_NAME" />" для офлайн-доступа.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Канадская (французская)</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Данные сохранены!</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Открепить папку</translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>
 <translation id="3689865792480713551">Отменить <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="3691184985318546178">Сингальский</translation>
 <translation id="3726463242007121105">Невозможно получить доступ к устройству, так как его файловая система не поддерживается.</translation>
 <translation id="3727148787322499904">Изменение этого параметра повлияет на все общие сети</translation>
+<translation id="3737576078404241332">Удалить с боковой панели</translation>
 <translation id="3741243925913727067">Сохранение фото и видео с вашего устройства на Google Диске</translation>
 <translation id="3749289110408117711">Название файла</translation>
 <translation id="3780536599611287598">У вас недостаточно прав для перемещения файлов в папку "<ph name="FOLDER_NAME" />"</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Ботаник</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Не удалось выполнить копирование. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Добавить на боковую панель</translation>
 <translation id="4348495354623233847">Сорани, раскладка с арабским алфавитом</translation>
 <translation id="4363958938297989186">Русский, фонетическая раскладка</translation>
 <translation id="4364327530094270451">Дыня</translation>
@@ -390,7 +395,7 @@
 <translation id="4477219268485577442">Болгарская (фонетическая)</translation>
 <translation id="4508265954913339219">Активация завершилась со сбоем</translation>
 <translation id="4509667233588080747">Английский (США), международная раскладка Workman</translation>
-<translation id="4522570452068850558">Детали</translation>
+<translation id="4522570452068850558">Сведения</translation>
 <translation id="4527800702232535228">Доступ к этой папке предоставлен Parallels Desktop.</translation>
 <translation id="4552678318981539154">Приобретите дополнительное пространство</translation>
 <translation id="4552759165874948005">Сеть <ph name="NETWORK_TYPE" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
 <translation id="4880214202172289027">Ползунок громкости</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4886199584824489598">Сжатый архив bzip2</translation>
 <translation id="4900532980794411603">Предоставить доступ Parallels Desktop</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="4905417359854579806">Файлы (<ph name="FILE_COUNT" />) готовы к сохранению</translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Сеть <ph name="NETWORK_TYPE" />, нет подключения</translation>
 <translation id="6074825444536523002">Форма Google</translation>
 <translation id="6079871810119356840">Венгерский, раскладка QWERTY</translation>
+<translation id="6082256976217156453">Сжатый архив LZMA</translation>
 <translation id="6096979789310008754">Поисковый запрос удален. Показаны все файлы и папки.</translation>
 <translation id="610101264611565198">Перемещение файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="6129953537138746214">Пробел</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Вверх ногами</translation>
 <translation id="6943836128787782965">Произошла ошибка запроса HTTP GET</translation>
 <translation id="6949408524333579394">Сербский, транслитерация</translation>
+<translation id="6954309393500027528">Администратор заблокировал вставку этого файла.</translation>
 <translation id="6960565108681981554">Сеть не активирована. Свяжитесь с оператором.</translation>
 <translation id="696203921837389374">Синхронизировать по мобильной сети</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Корейская раскладка (Sebeolsik без Shift)</translation>
 <translation id="8299269255470343364">Японский</translation>
 <translation id="8300849813060516376">Сбой OTASP</translation>
+<translation id="8308481408797647857">Сжатый TAR-архив XZ</translation>
 <translation id="8312871300878166382">Вставить в папку</translation>
 <translation id="8329978297633540474">Обычный текст</translation>
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Латвийский</translation>
 <translation id="8560515948038859357">Кантонский</translation>
 <translation id="8561206103590473338">Слон</translation>
+<translation id="8566466896628108558">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="SECURITY_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заблокирована администратором, дополнительные сведения</translation>
 <translation id="8569764466147087991">Выберите файл</translation>
 <translation id="8577897833047451336">Хорватский</translation>
 <translation id="8578308463707544055">Индонезийский</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Мы постоянно работаем над тем, чтобы сделать наш браузер ещё более защищенным. Раньше любой сайт мог предложить вам установить расширение, что было небезопасно. В последних версиях Google Chrome добавить расширения можно только на странице "Расширения". <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Закрепить папку</translation>
 <translation id="9130775360844693113">Пользователи общего диска "<ph name="DESTINATION_NAME" />" получат доступ к этим объектам.</translation>
 <translation id="9131598836763251128">Выберите файлы</translation>
 <translation id="9133055936679483811">Не удалось выполнить архивирование. <ph name="ERROR_MESSAGE" />.</translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Кем изменено</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947144732524271678">Выбраны объекты от "<ph name="FROM_ENTRY_NAME" />" до "<ph name="TO_ENTRY_NAME" />" (всего <ph name="ENTRY_COUNT" />).</translation>
+<translation id="961973045258256291">Сжатый архив gzip</translation>
 <translation id="965477715979482472">Английский (ЮАР)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл "<ph name="FILE_NAME" />" уже существует. Заменить его?</translation>

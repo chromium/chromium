@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/crypto.gni")
+import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -15,11 +17,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
 
-  deps = [
-    ":managed_dialog_test",
-    ":most_visited_focus_test",
-    ":most_visited_test",
-  ]
+  deps = [ ":managed_dialog_test" ]
 }
 
 js_library("managed_dialog_test") {
@@ -31,40 +29,27 @@ js_library("managed_dialog_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("most_visited_focus_test") {
-  deps = [
-    ":most_visited_test_support",
-    "..:test_browser_proxy",
-    "..:test_util",
-    "//ui/webui/resources/cr_components/most_visited",
-    "//ui/webui/resources/cr_components/most_visited:browser_proxy",
-    "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+generate_grd("build_grdp") {
+  grd_prefix = "webui_cr_components"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components"
 }
 
-js_library("most_visited_test") {
-  deps = [
-    ":most_visited_test_support",
-    "..:chai_assert",
-    "..:test_browser_proxy",
-    "..:test_util",
-    "//ui/webui/resources/cr_components/most_visited",
-    "//ui/webui/resources/cr_components/most_visited:browser_proxy",
-    "//ui/webui/resources/cr_components/most_visited:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_components/most_visited:window_proxy",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+  in_files = [
+    "most_visited_focus_test.ts",
+    "most_visited_test.ts",
+    "most_visited_test_support.ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("most_visited_test_support") {
-  deps = [
-    "..:chai_assert",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  deps = [ "//ui/webui/resources/cr_components/most_visited:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

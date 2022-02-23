@@ -555,28 +555,6 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetPackageId) {
   EXPECT_EQ(result_no_package_id->PackageId(), "");
 }
 
-TEST_F(GuestOsRegistryServiceTest, MigrateTerminal) {
-  // Add prefs entry for the deleted terminal.
-  base::DictionaryValue registry;
-  registry.SetKey(crostini::kCrostiniDeletedTerminalId,
-                  base::DictionaryValue());
-  profile()->GetPrefs()->Set(guest_os::prefs::kGuestOsRegistry,
-                             std::move(registry));
-
-  // Only current terminal returned.
-  RecreateService();
-  EXPECT_THAT(
-      GetRegisteredAppIds(),
-      testing::UnorderedElementsAre(crostini::kCrostiniTerminalSystemAppId));
-
-  // Deleted terminal removed from prefs.
-  EXPECT_EQ(profile()
-                ->GetPrefs()
-                ->GetDictionary(guest_os::prefs::kGuestOsRegistry)
-                ->FindKey(crostini::kCrostiniDeletedTerminalId),
-            nullptr);
-}
-
 // Validates crash fix from crbug.com/1113477.
 TEST_F(GuestOsRegistryServiceTest, TerminalPrefsAppMerge) {
   // Add prefs entry for terminal.

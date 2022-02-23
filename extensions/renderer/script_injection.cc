@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
@@ -361,10 +360,13 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   } else {
     DCHECK_EQ(mojom::ExecutionWorld::kMain, execution_world);
   }
+  auto promise_behavior =
+      injector_->ShouldWaitForPromise()
+          ? blink::WebLocalFrame::PromiseBehavior::kAwait
+          : blink::WebLocalFrame::PromiseBehavior::kDontWait;
   render_frame_->GetWebFrame()->RequestExecuteScript(
       world_id, sources, is_user_gesture, execution_option, callback.release(),
-      blink::BackForwardCacheAware::kPossiblyDisallow,
-      blink::WebLocalFrame::PromiseBehavior::kDontWait);
+      blink::BackForwardCacheAware::kPossiblyDisallow, promise_behavior);
 }
 
 void ScriptInjection::OnJsInjectionCompleted(

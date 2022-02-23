@@ -16,10 +16,10 @@ import './peripheral_data_access_protection_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
 import '../../settings_page/settings_subpage.js';
-import '../os_people_page/users_page.m.js';
+import '../os_people_page/users_page.js';
 import '../../settings_page/settings_animated_pages.js';
-import '../os_people_page/lock_screen.m.js';
-import '../os_people_page/lock_screen_password_prompt_dialog.m.js';
+import '../os_people_page/lock_screen.js';
+import '../os_people_page/lock_screen_password_prompt_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -31,6 +31,7 @@ import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
+import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './metrics_consent_browser_proxy.js';
 import {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 
 Polymer({
@@ -130,13 +131,26 @@ Polymer({
     },
 
     /**
-     * True if snooping protection is enabled.
+     * True if snooping protection or screen lock is enabled.
      * @private
      */
-    isSnoopingProtectionEnabled_: {
+    isSmartPrivacyEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
+        return loadTimeData.getBoolean('isSnoopingProtectionEnabled') ||
+            loadTimeData.getBoolean('isQuickDimEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * True if OS is running on reven board.
+     * @private
+     */
+    isRevenBranding_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isRevenBranding');
       },
       readOnly: true,
     },
@@ -195,10 +209,43 @@ Polymer({
         return loadTimeData.getBoolean('showSecureDnsSetting');
       },
     },
+
+    // <if expr="_google_chrome">
+    /**
+     * The preference controlling the current user's metrics consent. This will
+     * be loaded from |this.prefs| based on the response from
+     * |this.metricsConsentBrowserProxy_.getMetricsConsentState()|.
+     *
+     * @private
+     * @type {!chrome.settingsPrivate.PrefObject}
+     */
+    metricsConsentPref_: {
+      type: Object,
+      value: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    },
+
+    /** @private */
+    isMetricsConsentConfigurable_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    metricsConsentDesc_: {
+      type: String,
+      value: '',
+    },
+    // </if>
   },
 
   /** @private {?PeripheralDataAccessBrowserProxy} */
   browserProxy_: null,
+
+  /** @private {?MetricsConsentBrowserProxy} */
+  metricsConsentBrowserProxy_: null,
 
   observers: ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'],
 
@@ -213,6 +260,24 @@ Polymer({
             chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
       }
     });
+
+    // <if expr="_google_chrome">
+    this.metricsConsentBrowserProxy_ =
+        MetricsConsentBrowserProxyImpl.getInstance();
+    this.metricsConsentBrowserProxy_.getMetricsConsentState().then(state => {
+      const pref = /** @type {?chrome.settingsPrivate.PrefObject} */ (
+          this.get(state.prefName, this.prefs));
+      if (pref) {
+        this.metricsConsentPref_ = pref;
+        this.isMetricsConsentConfigurable_ = state.isConfigurable;
+        // TODO(crbug/1295789): Revert descriptions back to a single description
+        // once per-user crash is ready.
+        this.metricsConsentDesc_ = state.prefName === 'metrics.user_consent' ?
+            this.i18n('enableLoggingUserDesc') :
+            this.i18n('enableLoggingOwnerDesc');
+      }
+    });
+    // </if>
   },
 
   /**
@@ -416,6 +481,30 @@ Polymer({
     }
     this.setPrefValue(this.dataAccessProtectionPrefName_, false);
   },
+
+  // <if expr="_google_chrome">
+  /** @private */
+  onMetricsConsentChange_() {
+    this.metricsConsentBrowserProxy_
+        .updateMetricsConsent(this.getMetricsToggle_().checked)
+        .then(consent => {
+          if (consent === this.getMetricsToggle_().checked) {
+            this.getMetricsToggle_().sendPrefChange();
+          } else {
+            this.getMetricsToggle_().resetToPrefValue();
+          }
+        });
+  },
+
+  /**
+   * @private
+   * @return {SettingsToggleButtonElement}
+   */
+  getMetricsToggle_() {
+    return /** @type {SettingsToggleButtonElement} */ (
+        this.$$('#enable-logging'));
+  },
+  // </if>
 
   /**
    * This is used to add a keydown listener event for handling keyboard

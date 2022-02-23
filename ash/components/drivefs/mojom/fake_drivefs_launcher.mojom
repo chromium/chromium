@@ -6,7 +6,7 @@ module drivefs.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 
-// This file tracks platform/drivefs/mojom/fake_drivefs_launcher.mojom.
+// This file tracks apps/drive/fs/chromeos/mojom/fake_drivefs_launcher.mojom.
 // Changes should be made there first and then replicated here.
 
 interface FakeDriveFsLauncher {

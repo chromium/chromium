@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {

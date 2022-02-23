@@ -54,7 +54,7 @@ PermissionQuietChip::PermissionQuietChip(
           {GetBlockedPermissionIconId(delegate),
            GetBlockedPermissionIconId(delegate), GetPermissionMessage(delegate),
            false,
-           /*is_prominent=*/false, OmniboxChipButton::Theme::kGray,
+           /*is_prominent=*/false, OmniboxChipButton::Theme::kLowVisibility,
            /*should_expand=*/should_expand}),
       browser_(browser) {
   DCHECK_EQ(1u, delegate->Requests().size());
@@ -87,14 +87,12 @@ views::View* PermissionQuietChip::CreateBubble() {
     bubble_widget->AddObserver(this);
     bubble_widget->Show();
 
+    quiet_request_bubble->set_close_on_deactivate(false);
+
     return quiet_request_bubble;
   }
 
   return nullptr;
-}
-
-bool PermissionQuietChip::ShouldCloseBubbleOnLostFocus() const {
-  return true;
 }
 
 void PermissionQuietChip::RecordChipButtonPressed() {

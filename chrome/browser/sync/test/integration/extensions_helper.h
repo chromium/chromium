@@ -9,33 +9,30 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
 class Profile;
-class SyncedExtensionInstaller;
 
 namespace extensions_helper {
 
 // Returns true iff profiles with indices |index1| and |index2| have the same
 // extensions.
-bool HasSameExtensions(int index1, int index2) WARN_UNUSED_RESULT;
+[[nodiscard]] bool HasSameExtensions(int index1, int index2);
 
 // Returns true iff the profile with index |index| has the same extensions
 // as the verifier.
-bool HasSameExtensionsAsVerifier(int index) WARN_UNUSED_RESULT;
+[[nodiscard]] bool HasSameExtensionsAsVerifier(int index);
 
 // Returns true iff all existing profiles have the same extensions
 // as the verifier.
-bool AllProfilesHaveSameExtensionsAsVerifier() WARN_UNUSED_RESULT;
+[[nodiscard]] bool AllProfilesHaveSameExtensionsAsVerifier();
 
 // Returns true iff all existing profiles have the same extensions.
-bool AllProfilesHaveSameExtensions() WARN_UNUSED_RESULT;
+[[nodiscard]] bool AllProfilesHaveSameExtensions();
 
 // Installs the extension for the given index to |profile|, and returns the
 // extension ID of the new extension.
@@ -88,8 +85,7 @@ bool AwaitAllProfilesHaveSameExtensions();
 // against local server because in such tests extensions are not installed and
 // ExtensionRegistryObserver methods are not called.
 class ExtensionsMatchChecker : public StatusChangeChecker,
-                               public extensions::ExtensionRegistryObserver,
-                               public content::NotificationObserver {
+                               public extensions::ExtensionRegistryObserver {
  public:
   ExtensionsMatchChecker();
 
@@ -114,16 +110,13 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
  private:
+  void OnExtensionUpdatingStarted(Profile* profile);
+
   std::vector<Profile*> profiles_;
-  std::vector<std::unique_ptr<SyncedExtensionInstaller>>
-      synced_extension_installers_;
   content::NotificationRegistrar registrar_;
+
+  base::WeakPtrFactory<ExtensionsMatchChecker> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_EXTENSIONS_HELPER_H_

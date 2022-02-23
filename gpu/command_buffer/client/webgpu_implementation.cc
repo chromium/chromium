@@ -38,16 +38,16 @@ class DawnWireServices : public APIChannel {
                     helper,
                     &memory_transfer_service_,
                     std::move(transfer_buffer)),
-        wire_client_(dawn_wire::WireClientDescriptor{
+        wire_client_(dawn::wire::WireClientDescriptor{
             &serializer_,
             &memory_transfer_service_,
         }) {}
 
   const DawnProcTable& GetProcs() const override {
-    return dawn_wire::client::GetProcs();
+    return dawn::wire::client::GetProcs();
   }
 
-  dawn_wire::WireClient* wire_client() { return &wire_client_; }
+  dawn::wire::WireClient* wire_client() { return &wire_client_; }
   DawnClientSerializer* serializer() { return &serializer_; }
   DawnClientMemoryTransferService* memory_transfer_service() {
     return &memory_transfer_service_;
@@ -70,7 +70,7 @@ class DawnWireServices : public APIChannel {
   bool disconnected_ = false;
   DawnClientMemoryTransferService memory_transfer_service_;
   DawnClientSerializer serializer_;
-  dawn_wire::WireClient wire_client_;
+  dawn::wire::WireClient wire_client_;
 };
 #endif
 
@@ -151,7 +151,7 @@ gpu::ContextResult WebGPUImplementation::Initialize(
   // TODO(senorblanco): Do this only once per process. Doing it once per
   // WebGPUImplementation is non-optimal but valid, since the returned
   // procs are always the same.
-  dawnProcSetProcs(&dawn_wire::client::GetProcs());
+  dawnProcSetProcs(&dawn::wire::client::GetProcs());
 #endif
 
   return gpu::ContextResult::kSuccess;
@@ -351,8 +351,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
 
   static uint32_t return_trace_id = 0;
   TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                         "DawnReturnCommands", TRACE_EVENT_FLAG_FLOW_IN,
-                         return_trace_id++);
+                         "DawnReturnCommands", return_trace_id++,
+                         TRACE_EVENT_FLAG_FLOW_IN);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUImplementation::OnGpuControlReturnData", "bytes",
@@ -412,9 +412,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
         error_message = nullptr;
       }
       if (returned_adapter_info->adapter_properties_size > 0) {
-        if (!dawn_wire::DeserializeWGPUDeviceProperties(
-                &adapter_properties,
-                deserialized_buffer,
+        if (!dawn::wire::DeserializeWGPUDeviceProperties(
+                &adapter_properties, deserialized_buffer,
                 returned_adapter_info->adapter_properties_size)) {
           adapter_service_id = -1;
           adapter_properties = {};
@@ -458,7 +457,7 @@ void WebGPUImplementation::OnGpuControlReturnData(
         error_message = nullptr;
       }
       if (success) {
-        if (!dawn_wire::DeserializeWGPUSupportedLimits(
+        if (!dawn::wire::DeserializeWGPUSupportedLimits(
                 &limits, deserialized_buffer,
                 returned_request_device_info->limits_size)) {
           success = false;
@@ -543,6 +542,7 @@ DawnRequestAdapterSerial WebGPUImplementation::NextRequestAdapterSerial() {
 
 void WebGPUImplementation::RequestAdapterAsync(
     PowerPreference power_preference,
+    bool force_fallback_adapter,
     base::OnceCallback<void(int32_t, const WGPUDeviceProperties&, const char*)>
         request_adapter_callback) {
   if (lost_) {
@@ -560,7 +560,8 @@ void WebGPUImplementation::RequestAdapterAsync(
       std::move(request_adapter_callback);
 
   helper_->RequestAdapter(request_adapter_serial,
-                          static_cast<uint32_t>(power_preference));
+                          static_cast<uint32_t>(power_preference),
+                          force_fallback_adapter);
   helper_->Flush();
 }
 
@@ -582,7 +583,7 @@ void WebGPUImplementation::RequestDeviceAsync(
   }
 
   size_t serialized_device_properties_size =
-      dawn_wire::SerializedWGPUDevicePropertiesSize(
+      dawn::wire::SerializedWGPUDevicePropertiesSize(
           &requested_device_properties);
   DCHECK_NE(0u, serialized_device_properties_size);
 
@@ -607,12 +608,12 @@ void WebGPUImplementation::RequestDeviceAsync(
   // device are seen first. ReserveDevice may reuse an existing ID.
   dawn_wire_->serializer()->Commit();
 
-  dawn_wire::ReservedDevice reservation =
+  dawn::wire::ReservedDevice reservation =
       dawn_wire_->wire_client()->ReserveDevice();
 
   request_device_callback_map_[request_device_serial] = base::BindOnce(
       [](scoped_refptr<DawnWireServices> dawn_wire,
-         dawn_wire::ReservedDevice reservation,
+         dawn::wire::ReservedDevice reservation,
          base::OnceCallback<void(WGPUDevice, const WGPUSupportedLimits*,
                                  const char*)> callback,
          bool success, const WGPUSupportedLimits* limits,
@@ -626,7 +627,7 @@ void WebGPUImplementation::RequestDeviceAsync(
       },
       dawn_wire_, reservation, std::move(request_device_callback));
 
-  dawn_wire::SerializeWGPUDeviceProperties(
+  dawn::wire::SerializeWGPUDeviceProperties(
       &requested_device_properties, reinterpret_cast<char*>(buffer.address()));
 
   helper_->RequestDevice(request_device_serial, requested_adapter_id,
@@ -647,7 +648,7 @@ WGPUDevice WebGPUImplementation::DeprecatedEnsureDefaultDeviceSync() {
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   RequestAdapterAsync(
-      PowerPreference::kDefault,
+      PowerPreference::kDefault, /* force_fallback_adapter */ false,
       base::BindOnce(
           [](WebGPUImplementation* self, WGPUDevice* result,
              base::OnceCallback<void()> done, int32_t adapter_id,

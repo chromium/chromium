@@ -8,6 +8,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
@@ -47,7 +48,9 @@ GtkCssContext WindowContext(bool solid_frame, bool focused) {
 
 GtkCssContext DecorationContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
-  context = AppendCssNodeToStyleContext(context, "#decoration");
+  // GTK4 renders the decoration directly on the window.
+  if (!GtkCheckVersion(4))
+    context = AppendCssNodeToStyleContext(context, "#decoration");
   if (!focused)
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
 
@@ -105,8 +108,11 @@ SkBitmap PaintHeaderbar(const gfx::Size& size,
 int ComputeTopCornerRadius() {
   // In GTK4, there's no way to directly obtain CSS values for a context, so we
   // need to experimentally determine the corner radius by rendering a sample.
-  auto context = HeaderContext(false, false);
-  ApplyCssToContext(context, R"(headerbar {
+  // Additionally, in GTK4, the headerbar corners get clipped by the window
+  // rather than the headerbar having its own rounded corners.
+  auto context = GtkCheckVersion(4) ? DecorationContext(false, false)
+                                    : HeaderContext(false, false);
+  ApplyCssToContext(context, R"(window, headerbar {
     background-image: none;
     background-color: black;
     box-shadow: none;
@@ -115,8 +121,10 @@ int ComputeTopCornerRadius() {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
   })");
-  auto bitmap =
-      PaintHeaderbar({kMaxCornerRadiusDip, kMaxCornerRadiusDip}, context, 1);
+  gfx::Size size_dip{kMaxCornerRadiusDip, kMaxCornerRadiusDip};
+  auto bitmap = GtkCheckVersion(4)
+                    ? PaintBitmap(size_dip, {{0, 0}, size_dip}, context, 1)
+                    : PaintHeaderbar(size_dip, context, 1);
   DCHECK_EQ(bitmap.width(), bitmap.height());
   for (int i = 0; i < bitmap.width(); ++i) {
     if (SkColorGetA(bitmap.getColor(0, i)) == 255 &&
@@ -258,6 +266,17 @@ void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
   auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
                                HeaderContext(solid_frame_, focused), scale);
   image = gfx::ImageSkia::CreateFrom1xBitmap(header);
+  // In GTK4, the headerbar gets clipped by the window.
+  if (GtkCheckVersion(4)) {
+    gfx::RectF bounds_px =
+        gfx::RectF(client_bounds_px.x(), client_bounds_px.y(), header.width(),
+                   header.height());
+    float radius_px = scale * top_corner_radius_dip_;
+    SkVector radii[4]{{radius_px, radius_px}, {radius_px, radius_px}, {}, {}};
+    SkRRect clip;
+    clip.setRectRadii(gfx::RectFToSkRect(bounds_px), radii);
+    canvas->sk_canvas()->clipRRect(clip, SkClipOp::kIntersect, true);
+  }
   draw_image(0, 0, header.width(), header.height(), client_bounds_px.x(),
              client_bounds_px.y(), header.width(), header.height());
 }

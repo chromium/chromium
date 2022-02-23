@@ -5,7 +5,6 @@
 #ifndef REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 #define REMOTING_BASE_PASSTHROUGH_OAUTH_TOKEN_GETTER_H_
 
-#include "base/macros.h"
 #include "remoting/base/oauth_token_getter.h"
 
 namespace remoting {

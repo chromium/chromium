@@ -168,16 +168,18 @@ void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
   [NSLayoutConstraint activateConstraints:constraints];
 }
 
-void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
-                                id<EdgeLayoutGuideProvider> innerView,
-                                CGFloat padding) {
-  AddOptionalVerticalPadding(outerView, innerView, innerView, padding);
+NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(
+    id<EdgeLayoutGuideProvider> outerView,
+    id<EdgeLayoutGuideProvider> innerView,
+    CGFloat padding) {
+  return AddOptionalVerticalPadding(outerView, innerView, innerView, padding);
 }
 
-void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
-                                id<EdgeLayoutGuideProvider> topInnerView,
-                                id<EdgeLayoutGuideProvider> bottomInnerView,
-                                CGFloat padding) {
+NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(
+    id<EdgeLayoutGuideProvider> outerView,
+    id<EdgeLayoutGuideProvider> topInnerView,
+    id<EdgeLayoutGuideProvider> bottomInnerView,
+    CGFloat padding) {
   NSLayoutConstraint* topPaddingConstraint = [topInnerView.topAnchor
       constraintGreaterThanOrEqualToAnchor:outerView.topAnchor
                                   constant:padding];
@@ -186,9 +188,10 @@ void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
       constraintLessThanOrEqualToAnchor:outerView.bottomAnchor
                                constant:-padding];
   bottomPaddingConstraint.priority = UILayoutPriorityDefaultLow;
-
-  [NSLayoutConstraint
-      activateConstraints:@[ topPaddingConstraint, bottomPaddingConstraint ]];
+  NSArray<NSLayoutConstraint*>* contraints =
+      @[ topPaddingConstraint, bottomPaddingConstraint ];
+  [NSLayoutConstraint activateConstraints:contraints];
+  return contraints;
 }
 
 NSLayoutConstraint* VerticalConstraintsWithInset(UIView* innerView,

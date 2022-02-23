@@ -7,6 +7,10 @@
 
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
+#if INSIDE_BLINK
+#include "third_party/blink/renderer/platform/platform_export.h"  // nogncheck
+#endif  // INSIDE_BLINK
+
 namespace blink {
 
 class BackForwardCacheLoaderHelper;

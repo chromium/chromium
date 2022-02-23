@@ -26,7 +26,6 @@ class SerializedScriptValue;
 class V8BlinkAudioWorkletProcessorConstructor;
 struct GlobalScopeCreationParams;
 
-
 // The storage for the construction of AudioWorkletProcessor, contains the
 // processor name and MessageChannelPort object.
 class MODULES_EXPORT ProcessorCreationParams final {
@@ -46,7 +45,6 @@ class MODULES_EXPORT ProcessorCreationParams final {
   const String name_;
   MessagePortChannel message_port_channel_;
 };
-
 
 // This is constructed and destroyed on a worker thread, and all methods also
 // must be called on the worker thread.
@@ -109,11 +107,15 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   void SetObjectProxy(AudioWorkletObjectProxy&);
 
  private:
-  bool is_closing_ = false;
-
   typedef HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>
       ProcessorDefinitionMap;
   typedef HeapVector<Member<AudioWorkletProcessor>> ProcessorInstances;
+
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kAudioWorklet;
+  }
+
+  bool is_closing_ = false;
 
   ProcessorDefinitionMap processor_definition_map_;
   ProcessorInstances processor_instances_;

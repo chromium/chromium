@@ -24,8 +24,16 @@ void ThrottleService::RemoveServiceObserver(ServiceObserver* observer) {
   service_observers_.RemoveObserver(observer);
 }
 
+ThrottleObserver* ThrottleService::GetObserverByName(const std::string& name) {
+  for (auto& observer : observers_) {
+    if (observer->name() == name)
+      return observer.get();
+  }
+  return nullptr;
+}
+
 void ThrottleService::NotifyObserverStateChangedForTesting() {
-  OnObserverStateChanged();
+  OnObserverStateChanged(nullptr);
 }
 
 void ThrottleService::SetObserversForTesting(
@@ -33,11 +41,6 @@ void ThrottleService::SetObserversForTesting(
   StopObservers();
   observers_ = std::move(observers);
   StartObservers();
-}
-
-void ThrottleService::set_level_for_testing(
-    ThrottleObserver::PriorityLevel level) {
-  SetLevel(level);
 }
 
 void ThrottleService::AddObserver(std::unique_ptr<ThrottleObserver> observer) {
@@ -56,34 +59,40 @@ void ThrottleService::StopObservers() {
     observer->StopObserving();
 }
 
-void ThrottleService::SetEnforced(ThrottleObserver::PriorityLevel level) {
-  if (enforced_level_ == level)
-    return;
-  enforced_level_ = level;
-  OnObserverStateChanged();
-}
+void ThrottleService::OnObserverStateChanged(
+    const ThrottleObserver* changed_observer) {
+  DVLOG(1) << "OnObserverStateChanged: changed throttle observer is "
+           << (changed_observer ? changed_observer->name() : "none");
 
-void ThrottleService::OnObserverStateChanged() {
-  ThrottleObserver::PriorityLevel max_level =
-      ThrottleObserver::PriorityLevel::LOW;
   ThrottleObserver* effective_observer = nullptr;
 
-  if (enforced_level_ == ThrottleObserver::PriorityLevel::UNKNOWN) {
-    // Auto mode
+  bool should_throttle = true;
+  // Check if there's an enforcing observer.
+  for (auto& observer : observers_) {
+    if (!observer->enforced())
+      continue;
+    DVLOG(1) << "Enforcing ThrottleObserver is found: name=" << observer->name()
+             << ", active=" << observer->active();
+    should_throttle = !observer->active();
+    effective_observer = observer.get();
+    break;
+  }
+
+  if (!effective_observer) {
+    // No enforcing observer is found. Check if there are one (or more) active
+    // observer(s).
     for (auto& observer : observers_) {
       if (!observer->active())
         continue;
-      DVLOG(1) << "Active Throttle Observer: "
-               << observer->GetDebugDescription();
-      if (observer->level() >= max_level) {
-        max_level = observer->level();
+      DVLOG(1) << "Active ThrottleObserver is found: name=" << observer->name();
+      should_throttle = false;
+      if (!effective_observer)
         effective_observer = observer.get();
-      }
+      // Do not break; here to LOG all active observers. Treat the first one as
+      // an effective observer.
     }
-  } else {
-    // Enforced mode
-    max_level = enforced_level_;
-    DVLOG(1) << "Throttle is enforced to " << enforced_level_;
+    if (!effective_observer)
+      DVLOG(1) << "All ThrottleObserver(s) are inactive";
   }
 
   if (effective_observer != last_effective_observer_) {
@@ -98,17 +107,15 @@ void ThrottleService::OnObserverStateChanged() {
     last_effective_observer_ = effective_observer;
   }
 
-  SetLevel(max_level);
-}
-
-void ThrottleService::SetLevel(ThrottleObserver::PriorityLevel level) {
-  if (level_ == level)
+  if (should_throttle_ && (*should_throttle_ == should_throttle))
     return;
-  level_ = level;
-  ThrottleInstance(level);
+
+  // Do the actual throttling.
+  should_throttle_ = should_throttle;
+  ThrottleInstance(*should_throttle_);
 
   for (auto& observer : service_observers_)
-    observer.OnThrottle(level);
+    observer.OnThrottle(*should_throttle_);
 }
 
 }  // namespace ash

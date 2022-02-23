@@ -668,6 +668,8 @@ export class FileTable extends Table {
         } else {
           this.clearThumbnailImage_(assertInstanceof(box, HTMLDivElement));
         }
+        const icon = listItem.querySelector('.detail-icon');
+        icon.classList.toggle('has-thumbnail', !!event.dataUrl);
       }
     }
   }
@@ -850,7 +852,7 @@ export class FileTable extends Table {
     if (FileType.isImage(entry, mimeType) ||
         FileType.isVideo(entry, mimeType) ||
         FileType.isAudio(entry, mimeType) || FileType.isRaw(entry, mimeType)) {
-      icon.appendChild(this.renderThumbnail_(entry));
+      icon.appendChild(this.renderThumbnail_(entry, icon));
     }
     icon.appendChild(this.renderCheckmark_());
     label.appendChild(icon);
@@ -1135,10 +1137,11 @@ export class FileTable extends Table {
   /**
    * Renders the file thumbnail in the detail table.
    * @param {Entry} entry The Entry object to render.
+   * @param {HTMLDivElement} parent The parent DOM element.
    * @return {!HTMLDivElement} Created element.
    * @private
    */
-  renderThumbnail_(entry) {
+  renderThumbnail_(entry, parent) {
     const box = /** @type {!HTMLDivElement} */
         (this.ownerDocument.createElement('div'));
     box.className = 'detail-thumbnail';
@@ -1149,6 +1152,7 @@ export class FileTable extends Table {
         null;
     if (thumbnailData && thumbnailData.dataUrl) {
       this.setThumbnailImage_(box, thumbnailData.dataUrl);
+      parent.classList.add('has-thumbnail');
     }
 
     return box;

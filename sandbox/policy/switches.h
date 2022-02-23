@@ -36,22 +36,25 @@ SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
+SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SANDBOX_POLICY_EXPORT extern const char kPdfConversionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kXrCompositingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kWindowsSystemProxyResolverSandbox[];
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 SANDBOX_POLICY_EXPORT extern const char kMirroringSandbox[];
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+SANDBOX_POLICY_EXPORT extern const char kHardwareVideoDecodingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -69,16 +72,15 @@ SANDBOX_POLICY_EXPORT extern const char kDisableSetuidSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kGpuSandboxAllowSysVShm[];
 SANDBOX_POLICY_EXPORT extern const char kGpuSandboxFailuresFatal[];
 SANDBOX_POLICY_EXPORT extern const char kNoSandbox[];
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 SANDBOX_POLICY_EXPORT extern const char kNoZygoteSandbox[];
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 SANDBOX_POLICY_EXPORT extern const char kAllowThirdPartyModules[];
 SANDBOX_POLICY_EXPORT extern const char kAddGpuAppContainerCaps[];
-SANDBOX_POLICY_EXPORT extern const char kNoSandboxAndElevatedPrivileges[];
 SANDBOX_POLICY_EXPORT extern const char kAddXrAppContainerCaps[];
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 SANDBOX_POLICY_EXPORT extern const char kEnableSandboxLogging[];
 SANDBOX_POLICY_EXPORT extern const char kDisableMetalShaderCache[];
 #endif
@@ -91,7 +93,6 @@ SANDBOX_POLICY_EXPORT extern const char kNaClLoaderProcess[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiPluginProcess[];
 SANDBOX_POLICY_EXPORT extern const char kRendererProcess[];
 SANDBOX_POLICY_EXPORT extern const char kUtilityProcess[];
-SANDBOX_POLICY_EXPORT extern const char kCloudPrintServiceProcess[];
 SANDBOX_POLICY_EXPORT extern const char kZygoteProcessType[];
 SANDBOX_POLICY_EXPORT extern const char kRelauncherProcessType[];
 

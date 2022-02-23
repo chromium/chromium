@@ -3,6 +3,7 @@
 ## Main style guides
 
 *   [Chromium C++ style guide](c++/c++.md)
+    *   [Modern C++ use](c++/c++-features.md) for allowed/banned features.
     *   See also: [C++ Dos and Don'ts](c++/c++-dos-and-donts.md) for Chromium
         best-practices.
 *   [Chromium Objective-C style guide](objective-c/objective-c.md)

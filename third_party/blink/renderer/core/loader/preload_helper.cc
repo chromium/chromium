@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -99,8 +99,8 @@ MediaValuesCached* CreateMediaValues(
   MediaValuesCached* media_values =
       MakeGarbageCollected<MediaValuesCached>(document);
   if (viewport_description) {
-    FloatSize initial_viewport(media_values->DeviceWidth(),
-                               media_values->DeviceHeight());
+    gfx::SizeF initial_viewport(media_values->DeviceWidth(),
+                                media_values->DeviceHeight());
     PageScaleConstraints constraints = viewport_description->Resolve(
         initial_viewport, document.GetViewportData().ViewportDefaultMinWidth());
     media_values->OverrideViewportDimensions(constraints.layout_size.width(),

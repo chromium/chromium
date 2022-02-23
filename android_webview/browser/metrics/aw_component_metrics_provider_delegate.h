@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_METRICS_AW_COMPONENT_METRICS_PROVIDER_DELEGATE_H_
 #define ANDROID_WEBVIEW_BROWSER_METRICS_AW_COMPONENT_METRICS_PROVIDER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/metrics/component_metrics_provider.h"
 
 namespace component_updater {
@@ -29,7 +30,7 @@ class AwComponentMetricsProviderDelegate
   std::vector<component_updater::ComponentInfo> GetComponents() override;
 
  private:
-  AwMetricsServiceClient* client_;
+  raw_ptr<AwMetricsServiceClient> client_;
 };
 
 }  // namespace android_webview

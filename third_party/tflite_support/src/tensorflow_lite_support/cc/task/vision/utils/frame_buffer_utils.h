@@ -19,9 +19,9 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/status/status.h"
-#include "absl/types/optional.h"
-#include "absl/types/variant.h"
+#include "absl/status/status.h"   // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
+#include "absl/types/variant.h"   // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
@@ -112,6 +112,39 @@ struct CropResizeOperation {
   FrameBuffer::Dimension resize_dimension;
 };
 
+// The parameters needed to crop / resize / pad.
+//
+// The coordinate system has its origin at the upper left corner, and
+// positive values extend down and to the right from it.
+//
+// After the operation, the `crop_origin` will become the new origin.
+// `crop_width` and `crop_height` defines the desired cropping region. After
+// cropping, a resize is performed based on the `resize_width` and
+// `resize_height`.
+//
+// To perform just cropping, the `crop_width` and `crop_height` should be the
+// same as `resize_width` `and resize_height`.
+//
+// The cropped region is resized uniformly (respecting the aspect ratio) to best
+// match the size of the given `output_dimension` in both x and y dimensions.
+// The resized region is aligned to the upper left pixel of the output buffer.
+// The unfilled area of the output buffer remains untouched.
+struct UniformCropResizeOperation {
+  UniformCropResizeOperation(int crop_origin_x,
+                             int crop_origin_y,
+                             FrameBuffer::Dimension crop_dimension,
+                             FrameBuffer::Dimension output_dimension)
+      : crop_origin_x(crop_origin_x),
+        crop_origin_y(crop_origin_y),
+        crop_dimension(crop_dimension),
+        output_dimension(output_dimension) {}
+
+  int crop_origin_x;
+  int crop_origin_y;
+  FrameBuffer::Dimension crop_dimension;
+  FrameBuffer::Dimension output_dimension;
+};
+
 // The parameters needed to convert to the specified format.
 struct ConvertOperation {
   explicit ConvertOperation(FrameBuffer::Format to_format)
@@ -128,8 +161,10 @@ struct OrientOperation {
 
 // A variant of the supported operations on FrameBuffers. Alias for user
 // convenience.
-using FrameBufferOperation =
-    absl::variant<CropResizeOperation, ConvertOperation, OrientOperation>;
+using FrameBufferOperation = absl::variant<CropResizeOperation,
+                                           ConvertOperation,
+                                           OrientOperation,
+                                           UniformCropResizeOperation>;
 
 // Image processing utility. This utility provides both basic image buffer
 // manipulations (e.g. rotation, format conversion, resizing, etc) as well as
@@ -139,7 +174,8 @@ using FrameBufferOperation =
 // Examples:
 //
 //  // Create an instance of FrameBufferUtils with Halide processing engine.
-//  std::unique_ptr<FrameBufferUtils> utils = FrameBufferUtils::Create(kHalide);
+//  std::unique_ptr<FrameBufferUtils> utils =
+//  FrameBufferUtils::Create(kHalide);
 //
 //  // Perform single basic operation by each individual call.
 //  std::unique_ptr<FrameBuffer> input = FrameBuffer::Create(...);
@@ -263,10 +299,17 @@ class FrameBufferUtils {
   // If the `buffer` is already in desired format, then an extra copy will be
   // performed.
   //
+  // If `uniform_resizing` is set to true, the source region is resized
+  // uniformly (respecting the aspect ratio) to best match the dimension of the
+  // given `output_buffer` in both x and y dimensions. The resized region is
+  // aligned to the upper left pixel of the output buffer. The unfilled area of
+  // the output buffer remains untouched. Default `uniform_resizing` to false;
+  //
   // The input param `bounding_box` is defined in the `buffer` coordinate space.
   absl::Status Preprocess(const FrameBuffer& buffer,
                           absl::optional<BoundingBox> bounding_box,
-                          FrameBuffer* output_buffer);
+                          FrameBuffer* output_buffer,
+                          bool uniform_resizing = false);
 
  private:
   // Returns the new FrameBuffer size after the operation is applied.

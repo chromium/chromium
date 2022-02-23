@@ -7,7 +7,7 @@ import {fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_page.js';
-import {RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {State} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -140,8 +140,13 @@ export function onboardingLandingPageTest() {
     assertFalse(isVisible(error));
   });
 
-  test('OnBoardingPageValidationFailedWarningAndErrorVisible', async () => {
+  test('OnBoardingPageValidationFailedWarning', async () => {
     await initializeLandingPage();
+
+    // Link should not be created before the failure occurs.
+    assertFalse(
+        !!component.shadowRoot.querySelector('#unqualifiedComponentsLink'));
+
     service.triggerHardwareVerificationStatusObserver(false, 'FAILURE', 0);
     await flushTasks();
 
@@ -151,8 +156,25 @@ export function onboardingLandingPageTest() {
     const error = component.shadowRoot.querySelector('#errorMessage');
     assertTrue(busy.hidden);
     assertTrue(isVisible(verification));
-    assertEquals('shimless-icon:warning', verification.icon);
-    assertTrue(isVisible(error));
-    assertEquals('FAILURE', error.innerHTML);
+    assertTrue(
+        !!component.shadowRoot.querySelector('#unqualifiedComponentsLink'));
+  });
+
+  test('OnBoardingPageValidationFailedOpenDialog', async () => {
+    await initializeLandingPage();
+
+    const failedComponent = 'Keyboard';
+    service.triggerHardwareVerificationStatusObserver(
+        false, failedComponent, 0);
+    await flushTasks();
+
+    component.shadowRoot.querySelector('#unqualifiedComponentsLink').click();
+
+    assertTrue(
+        component.shadowRoot.querySelector('#unqualifiedComponentsDialog')
+            .open);
+    assertEquals(
+        failedComponent,
+        component.shadowRoot.querySelector('#dialogBody').textContent.trim());
   });
 }

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
@@ -40,7 +41,8 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   LeakDetectionCheckImpl(
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      absl::optional<std::string> api_key);
   ~LeakDetectionCheckImpl() override;
 
   // Returns true if there is a Google account to use for the leak detection
@@ -74,6 +76,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   void DoLeakRequest(
       LookupSingleLeakData data,
       absl::optional<std::string> access_token,
+      absl::optional<std::string> api_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when the single leak lookup request is done. |response| is null in
@@ -89,7 +92,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   void OnAnalyzeSingleLeakResponse(AnalyzeResponseResult result);
 
   // Delegate for the instance. Should outlive |this|.
-  LeakDetectionDelegateInterface* const delegate_;
+  const raw_ptr<LeakDetectionDelegateInterface> delegate_;
   // Helper class to asynchronously prepare the data for the request.
   std::unique_ptr<RequestPayloadHelper> payload_helper_;
   // Class used to initiate a request to the identity leak lookup endpoint. This

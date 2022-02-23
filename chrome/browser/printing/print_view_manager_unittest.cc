@@ -33,7 +33,7 @@
 #include "printing/units.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/mojom/print.mojom.h"
 #endif
 
@@ -61,7 +61,7 @@ class TestPrintQueriesQueue : public PrintQueriesQueue {
   // normally be filled in by the backend `PrintingContext`.
   void SetupPrinterOffsets(int offset_x, int offset_y);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets the printer type to `type`. Used to fill in printer settings that
   // would normally be filled in by the backend `PrintingContext`.
   void SetupPrinterLanguageType(mojom::PrinterLanguageType type);
@@ -70,7 +70,7 @@ class TestPrintQueriesQueue : public PrintQueriesQueue {
  private:
   ~TestPrintQueriesQueue() override = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType printer_language_type_;
 #endif
   int printable_offset_x_;
@@ -92,7 +92,7 @@ class TestPrinterQuery : public PrinterQuery {
   void SetSettings(base::Value new_settings,
                    base::OnceClosure callback) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sets `printer_language_type_` to `type`. Should be called before
   // `SetSettings()`.
   void SetPrinterLanguageType(mojom::PrinterLanguageType type);
@@ -107,7 +107,7 @@ class TestPrinterQuery : public PrinterQuery {
 
  private:
   absl::optional<gfx::Point> offsets_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   absl::optional<mojom::PrinterLanguageType> printer_language_type_;
 #endif
 };
@@ -117,7 +117,7 @@ std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
     int render_frame_id) {
   auto test_query =
       std::make_unique<TestPrinterQuery>(render_process_id, render_frame_id);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   test_query->SetPrinterLanguageType(printer_language_type_);
 #endif
   test_query->SetPrintableAreaOffsets(printable_offset_x_, printable_offset_y_);
@@ -130,7 +130,7 @@ void TestPrintQueriesQueue::SetupPrinterOffsets(int offset_x, int offset_y) {
   printable_offset_y_ = offset_y;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TestPrintQueriesQueue::SetupPrinterLanguageType(
     mojom::PrinterLanguageType type) {
   printer_language_type_ = type;
@@ -145,7 +145,7 @@ TestPrinterQuery::~TestPrinterQuery() = default;
 void TestPrinterQuery::SetSettings(base::Value new_settings,
                                    base::OnceClosure callback) {
   DCHECK(offsets_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(printer_language_type_);
 #endif
   std::unique_ptr<PrintSettings> settings =
@@ -166,14 +166,14 @@ void TestPrinterQuery::SetSettings(base::Value new_settings,
   gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
   paper_rect.Inset(offsets_->x(), offsets_->y());
   settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   settings->set_printer_language_type(*printer_language_type_);
 #endif
 
   GetSettingsDone(std::move(callback), std::move(settings), result);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TestPrinterQuery::SetPrinterLanguageType(mojom::PrinterLanguageType type) {
   printer_language_type_ = type;
 }
@@ -224,7 +224,7 @@ class TestPrintViewManager : public PrintViewManagerBase {
     return test_job()->physical_offsets();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::PrinterLanguageType type() { return test_job()->type(); }
 #endif
 
@@ -248,9 +248,9 @@ class TestPrintViewManager : public PrintViewManagerBase {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
     print_job_->Initialize(std::move(query), RenderSourceName(),
                            number_pages());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return true;
   }
   void SetupScriptedPrintPreview(
@@ -298,7 +298,7 @@ TEST_F(PrintViewManagerTest, PrintSubFrameAndDestroy) {
   EXPECT_FALSE(print_view_manager->print_preview_rfh());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Verifies that `StartPdfToPostScriptConversion` is called with the correct
 // printable area offsets. See crbug.com/821485.
 TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {

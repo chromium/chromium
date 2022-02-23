@@ -129,7 +129,8 @@ TEST_F(DataObjectTest, fileSystemId) {
   FileMetadata metadata;
   metadata.length = 0;
   data_object_->Add(
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible),
+      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible,
+                                    BlobDataHandle::Create()),
       "fileSystemIdForFileSystemFile");
 
   ASSERT_EQ(3U, data_object_->length());

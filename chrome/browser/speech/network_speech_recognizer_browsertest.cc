@@ -46,6 +46,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
            const absl::optional<media::SpeechRecognitionResult>& timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
+  MOCK_METHOD0(OnSpeechRecognitionStopped, void());
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};
@@ -114,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   first_response_loop.Run();
 
   // Try another speech response.
-  fake_speech_recognition_manager_->SetFakeResult("Pictures of mars!");
+  fake_speech_recognition_manager_->SetFakeResult("Pictures of mars!",
+                                                  /*is_final=*/true);
   base::RunLoop second_response_loop;
   EXPECT_CALL(
       *mock_speech_delegate_,

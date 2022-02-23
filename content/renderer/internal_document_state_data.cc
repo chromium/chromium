@@ -5,7 +5,7 @@
 #include "content/renderer/internal_document_state_data.h"
 
 #include "base/memory/ptr_util.h"
-#include "content/public/renderer/document_state.h"
+#include "content/renderer/document_state.h"
 #include "content/renderer/navigation_state.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 

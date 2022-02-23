@@ -9,8 +9,21 @@
 /**
  * Launches the PaymentRequest UI that offers free shipping in California and
  * $5.00 shipping in US. Does not allow shipping outside of US.
+ *
+ * Legacy entry-point until basic-card is disabled
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods(
+      [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}]);
+}
+
+/**
+ * Launches the PaymentRequest UI that offers free shipping in California and
+ * $5.00 shipping in US. Does not allow shipping outside of US.
+ *
+ * @param {String} methodData - An array of payment method objects.
+ */
+function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -25,8 +38,7 @@ function buy() { // eslint-disable-line no-unused-vars
     };
 
     var request = new PaymentRequest(
-        [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
-        details, {requestShipping: true});
+        methodData, details, {requestShipping: true});
 
     request.addEventListener('shippingaddresschange', function(evt) {
       evt.updateWith(new Promise(function(resolve) {

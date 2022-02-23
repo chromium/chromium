@@ -26,10 +26,10 @@ WebGLExtensionName WebGLVideoTexture::GetName() const {
 }
 
 bool WebGLVideoTexture::Supported(WebGLRenderingContextBase* context) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/776222): support extension on Android
   return false;
-#else  // defined OS_ANDROID
+#else
   return true;
 #endif
 }
@@ -77,7 +77,7 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
     return nullptr;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/776222): support extension on Android
   NOTIMPLEMENTED();
   return nullptr;
@@ -143,7 +143,7 @@ VideoFrameMetadata* WebGLVideoTexture::shareVideoImageWEBGL(
   // WebGLVideoTexture.
   current_frame_metadata_->setPresentedFrames(0);
   return current_frame_metadata_;
-#endif  // defined OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool WebGLVideoTexture::releaseVideoImageWEBGL(
@@ -165,7 +165,7 @@ WebGLVideoFrameUploadMetadata WebGLVideoTexture::CreateVideoFrameUploadMetadata(
     return metadata;
 
   metadata.frame_id = frame->unique_id();
-  metadata.visible_rect = IntRect(frame->visible_rect());
+  metadata.visible_rect = frame->visible_rect();
   metadata.timestamp = frame->timestamp();
   if (frame->metadata().frame_duration.has_value()) {
     metadata.expected_timestamp =

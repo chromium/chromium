@@ -9,12 +9,21 @@
 #include <list>
 #include <sstream>
 
-#include "components/arc/mojom/process.mojom.h"
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/mojom/process.mojom.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
 
 namespace {
+
+ArcProcess CreateFromPattern(const ArcProcess& pattern,
+                             const std::string process_name) {
+  return ArcProcess(pattern.nspid(), pattern.pid(), process_name,
+                    pattern.process_state(), pattern.is_focused(),
+                    pattern.last_activity_time());
+}
 
 // Tests that ArcProcess objects can be sorted by their priority (higher to
 // lower). This is critical for the OOM handler to work correctly.
@@ -207,6 +216,60 @@ TEST(ArcProcess, TestStringification) {
   std::stringstream s;
   s << ArcProcess(0, 0, "p", mojom::ProcessState::PERSISTENT, false, 0);
   EXPECT_FALSE(s.str().empty());
+}
+
+TEST(ArcProcess, GmsCoreProtection) {
+  const ArcProcess pattern(0 /* nspid */, 0 /* pid */,
+                           std::string() /* process_name */,
+                           mojom::ProcessState::CACHED_EMPTY,
+                           false /* is_focused */, 0 /* last_activity_time */);
+
+  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.process.gservices")
+                   .IsPersistent());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.process.gservices").IsImportant());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms").IsPersistent());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms").IsImportant());
+  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
+                   .IsPersistent());
+  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
+                   .IsImportant());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms.ui").IsPersistent());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms.ui").IsImportant());
+  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
+                   .IsPersistent());
+  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
+                   .IsImportant());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kGmsCoreLowMemoryKillerProtection,
+                                    true /* enabled */);
+
+  EXPECT_TRUE(CreateFromPattern(pattern, "com.google.process.gservices")
+                  .IsPersistent());
+  EXPECT_TRUE(
+      CreateFromPattern(pattern, "com.google.process.gservices").IsImportant());
+  EXPECT_TRUE(
+      CreateFromPattern(pattern, "com.google.android.gms").IsPersistent());
+  EXPECT_TRUE(
+      CreateFromPattern(pattern, "com.google.android.gms").IsImportant());
+  EXPECT_TRUE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
+                  .IsPersistent());
+  EXPECT_TRUE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
+                  .IsImportant());
+  // GMS UI is not protected.
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms.ui").IsPersistent());
+  EXPECT_FALSE(
+      CreateFromPattern(pattern, "com.google.android.gms.ui").IsImportant());
+  EXPECT_TRUE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
+                  .IsPersistent());
+  EXPECT_TRUE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
+                  .IsImportant());
 }
 
 }  // namespace

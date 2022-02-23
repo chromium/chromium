@@ -45,6 +45,9 @@ enum ApiErrorCode {
   DRIVE_FILE_ERROR = 1000,
   DRIVE_NO_SPACE = 1001,
   DRIVE_RESPONSE_TOO_LARGE = 1002,
+
+  // Needed in order to log this in UMA.
+  kMaxValue = DRIVE_RESPONSE_TOO_LARGE,
 };
 
 // Returns a string representation of ApiErrorCode.

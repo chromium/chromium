@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_MANAGER_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_MANAGER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -37,7 +37,7 @@ class ServiceWorkerManager : public ExtensionRegistryObserver {
                               const Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};

@@ -13,9 +13,9 @@
 namespace cc {
 
 TransformNode::TransformNode()
-    : id(TransformTree::kInvalidNodeId),
-      parent_id(TransformTree::kInvalidNodeId),
-      parent_frame_id(TransformTree::kInvalidNodeId),
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
+      parent_frame_id(kInvalidPropertyNodeId),
       sticky_position_constraint_id(-1),
       sorting_context_id(0),
       needs_local_transform_update(true),

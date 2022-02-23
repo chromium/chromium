@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
@@ -17,12 +18,12 @@
 #include "ui/gl/gl_surface_egl.h"
 #endif  // defined(USE_EGL)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/posix/eintr_wrapper.h"
 #include "third_party/libsync/src/include/sync/sync.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <d3d11_1.h>
 #include "base/strings/stringprintf.h"
 #include "media/base/win/mf_helpers.h"
@@ -67,7 +68,7 @@ void Hang() {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b) {
   if (!a.is_valid())
     return b;
@@ -112,7 +113,7 @@ bool PassthroughCommandDecoderSupported() {
 #endif  // defined(USE_EGL)
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This function is thread safe.
 bool AreOverlaysSupportedWin() {
   return gl::DirectCompositionSurfaceWin::AreOverlaysSupported();
@@ -193,9 +194,9 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
   media::SetDebugName(swap_chain, name_prefix);
   LabelSwapChainBuffers(swap_chain, name_prefix);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 ScopedEnableTextureRectangleInShaderCompiler::
     ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {
@@ -214,7 +215,7 @@ ScopedEnableTextureRectangleInShaderCompiler::
     gl_api_->glDisableFn(GL_TEXTURE_RECTANGLE_ANGLE);
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 ScopedPixelStore::ScopedPixelStore(unsigned int name, int value)
     : name_(name), old_value_(GetIntegerv(name)), value_(value) {

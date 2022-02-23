@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   bool inhibited() const { return inhibited_; }
 
   // |ip_configs_| is kept up to date by NetworkStateHandler.
-  const base::DictionaryValue& ip_configs() const { return ip_configs_; }
+  const base::Value& ip_configs() const { return ip_configs_; }
 
   // Do not use this. It exists temporarily for internet_options_handler.cc
   // which is being deprecated.
-  const base::DictionaryValue& properties() const { return properties_; }
+  const base::Value& properties() const { return properties_; }
 
   // Ethernet specific accessors
   bool eap_authentication_completed() const {
@@ -132,13 +132,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   std::string available_managed_network_path_;
 
   // Keep all Device properties in a dictionary for now. See comment above.
-  base::DictionaryValue properties_;
+  base::Value properties_{base::Value::Type::DICTIONARY};
 
   // List of APNs.
   base::Value apn_list_;
 
   // Dictionary of IPConfig properties, keyed by IpConfig path.
-  base::DictionaryValue ip_configs_;
+  base::Value ip_configs_{base::Value::Type::DICTIONARY};
 };
 
 }  // namespace chromeos

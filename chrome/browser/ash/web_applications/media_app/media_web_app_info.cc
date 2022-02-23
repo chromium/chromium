@@ -9,13 +9,15 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_media_app_resources.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -85,7 +87,7 @@ constexpr FileHandlerConfig kAudioFileHandlers[] = {
 };
 
 // Converts a FileHandlerConfig constexpr into the type needed to populate the
-// WebApplicationInfo's `accept` property.
+// WebAppInstallInfo's `accept` property.
 std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
     base::span<const FileHandlerConfig> config) {
   std::vector<apps::FileHandler::AcceptEntry> result;
@@ -115,9 +117,9 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
               {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
 }
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIMediaAppURL);
   info->scope = GURL(ash::kChromeUIMediaAppURL);
 
@@ -135,8 +137,20 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
           {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
       },
       *info);
-  info->theme_color = 0xff202124;
-  info->background_color = 0xff3c4043;
+
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    auto* color_provider = ash::AshColorProvider::Get();
+    info->theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+    info->dark_mode_theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+    info->background_color = info->theme_color;
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  } else {
+    info->theme_color = 0xff202124;
+    info->background_color = 0xff3c4043;
+  }
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
@@ -156,13 +170,29 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   return info;
 }
 
-std::unique_ptr<WebApplicationInfo> MediaSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> MediaSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForMediaWebApp();
 }
 
-bool MediaSystemAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return true;
+base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  // |launch_dir| is the directory that contains all |launch_files|. If
+  // there are no launch files, launch_dir is empty.
+  base::FilePath launch_dir = params.launch_files.size()
+                                  ? params.launch_files[0].DirName()
+                                  : base::FilePath();
+
+#if DCHECK_IS_ON()
+  // Check |launch_files| all come from the same directory.
+  if (!launch_dir.empty()) {
+    for (auto path : params.launch_files) {
+      DCHECK_EQ(launch_dir, path.DirName());
+    }
+  }
+#endif
+
+  return launch_dir;
 }
 
 bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
@@ -184,4 +214,8 @@ bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 
 bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {
   return !ShouldShowNewWindowMenuOption();
+}
+
+bool MediaSystemAppDelegate::ShouldHandleFileOpenIntents() const {
+  return true;
 }

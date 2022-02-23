@@ -366,7 +366,8 @@ TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
             auto* arc_delegate =
                 static_cast<ArcNotificationDelegate*>(notification.delegate());
             std::unique_ptr<message_center::MessageView> created_view =
-                arc_delegate->CreateCustomMessageView(notification);
+                arc_delegate->CreateCustomMessageView(notification,
+                                                      /*shown_in_popup=*/false);
             notification_view =
                 static_cast<ArcNotificationView*>(created_view.get());
             return created_view;

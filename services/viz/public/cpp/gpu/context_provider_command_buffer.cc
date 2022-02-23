@@ -478,9 +478,13 @@ const gpu::GpuFeatureInfo& ContextProviderCommandBuffer::GetGpuFeatureInfo()
 void ContextProviderCommandBuffer::OnLostContext() {
   CheckValidThreadOrLockAcquired();
 
-  // Ensure |this| isn't destroyed in the middle of OnLostContext() if observers
-  // drop all references to it.
-  scoped_refptr<ContextProviderCommandBuffer> ref(this);
+  // Observers may drop the last persistent references to `this`, but there may
+  // be weak references in use further up the stack. This task is posted to
+  // ensure that destruction is deferred until it's safe.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce([](scoped_refptr<ContextProviderCommandBuffer>) {},
+                     base::WrapRefCounted(this)));
 
   for (auto& observer : observers_)
     observer.OnContextLost();

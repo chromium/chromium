@@ -68,7 +68,11 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
   }
 
   void OnVirtualKeyboardVisibilityChanged(bool is_visible) override {
-    zwp_text_input_v1_send_input_panel_state(text_input_, is_visible);
+    // The detailed spec of |state| is implementation dependent.
+    // So, now we use the lowest bit to indicate whether keyboard is visible.
+    // This behavior is consistent with ozone/wayland to support Lacros.
+    zwp_text_input_v1_send_input_panel_state(text_input_,
+                                             static_cast<uint32_t>(is_visible));
     wl_client_flush(client());
   }
 
@@ -383,7 +387,7 @@ void text_input_set_content_type(wl_client* client,
       type = ui::TEXT_INPUT_TYPE_EMAIL;
       break;
     case ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD:
-      DCHECK(!should_do_learning);
+      should_do_learning = false;
       type = ui::TEXT_INPUT_TYPE_PASSWORD;
       break;
     case ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE:

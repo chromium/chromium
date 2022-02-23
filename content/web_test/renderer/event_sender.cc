@@ -56,7 +56,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -493,7 +493,7 @@ const float kScrollbarPixelsPerTick = 40.0f;
 // Returns true if the specified event corresponds to an edit command, the name
 // of the edit command will be stored in |*name|.
 bool GetEditCommand(const WebKeyboardEvent& event, std::string* name) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We only cares about Left,Right,Up,Down keys with Command or Command+Shift
   // modifiers. These key events correspond to some special movement and
   // selection editor commands. These keys will be marked as system key, which
@@ -529,7 +529,7 @@ bool GetEditCommand(const WebKeyboardEvent& event, std::string* name) {
 }
 
 bool IsSystemKeyEvent(const WebKeyboardEvent& event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return event.GetModifiers() & WebInputEvent::kMetaKey &&
          event.windows_key_code != ui::VKEY_B &&
          event.windows_key_code != ui::VKEY_I;
@@ -627,7 +627,7 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   bool IsDragMode() const;
   void SetIsDragMode(bool drag_mode);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int WmKeyDown() const;
   void SetWmKeyDown(int key_down);
 
@@ -748,7 +748,7 @@ gin::ObjectTemplateBuilder EventSenderBindings::GetObjectTemplateBuilder(
       .SetProperty("forceLayoutOnEvents",
                    &EventSenderBindings::ForceLayoutOnEvents,
                    &EventSenderBindings::SetForceLayoutOnEvents)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       .SetProperty("WM_KEYDOWN", &EventSenderBindings::WmKeyDown,
                    &EventSenderBindings::SetWmKeyDown)
       .SetProperty("WM_KEYUP", &EventSenderBindings::WmKeyUp,
@@ -1111,7 +1111,7 @@ void EventSenderBindings::SetIsDragMode(bool drag_mode) {
     sender_->set_is_drag_mode(drag_mode);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int EventSenderBindings::WmKeyDown() const {
   if (sender_)
     return sender_->wm_key_down();
@@ -1229,7 +1229,7 @@ void EventSender::Reset() {
   is_drag_mode_ = true;
   force_layout_on_events_ = true;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   wm_key_down_ = WM_KEYDOWN;
   wm_key_up_ = WM_KEYUP;
   wm_char_ = WM_CHAR;
@@ -1698,7 +1698,7 @@ std::vector<std::string> EventSender::ContextClick() {
                  click_count_, &event);
   HandleInputEventOnViewOrPopup(event);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   current_pointer_state_[kRawMousePointerId].current_buttons_ &=
       ~GetWebMouseEventModifierForButton(WebMouseEvent::Button::kRight);
   current_pointer_state_[kRawMousePointerId].pressed_button_ =
@@ -1797,7 +1797,7 @@ void EventSender::DumpFilenameBeingDragged() {
                                 std::string(),   // suggested_name
                                 std::string(),   // mime_type
                                 std::string());  // default_name
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       filename = filename.ReplaceExtension(
           base::UTF8ToWide(filename_extension.Utf8()));
 #else

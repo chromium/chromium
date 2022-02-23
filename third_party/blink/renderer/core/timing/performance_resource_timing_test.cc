@@ -16,19 +16,34 @@ class PerformanceResourceTimingTest : public testing::Test {
                                   const AtomicString& connection_info) {
     mojom::blink::ResourceTimingInfo info;
     info.allow_timing_details = true;
-    std::unique_ptr<DummyPageHolder> dummy_page_holder =
-        std::make_unique<DummyPageHolder>();
-    PerformanceResourceTiming* timing =
-        MakeGarbageCollected<PerformanceResourceTiming>(
-            info, base::TimeTicks(),
-            dummy_page_holder->GetDocument()
-                .GetExecutionContext()
-                ->CrossOriginIsolatedCapability(),
-            /*initiator_type=*/"",
-            mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>(),
-            dummy_page_holder->GetDocument().GetExecutionContext());
+    PerformanceResourceTiming* timing = MakePerformanceResourceTiming(info);
     return timing->GetNextHopProtocol(alpn_negotiated_protocol,
                                       connection_info);
+  }
+
+  AtomicString GetNextHopProtocolWithoutTao(
+      const AtomicString& alpn_negotiated_protocol,
+      const AtomicString& connection_info) {
+    mojom::blink::ResourceTimingInfo info;
+    info.allow_timing_details = false;
+    PerformanceResourceTiming* timing = MakePerformanceResourceTiming(info);
+    return timing->GetNextHopProtocol(alpn_negotiated_protocol,
+                                      connection_info);
+  }
+
+ private:
+  PerformanceResourceTiming* MakePerformanceResourceTiming(
+      const mojom::blink::ResourceTimingInfo& info) {
+    std::unique_ptr<DummyPageHolder> dummy_page_holder =
+        std::make_unique<DummyPageHolder>();
+    return MakeGarbageCollected<PerformanceResourceTiming>(
+        info, base::TimeTicks(),
+        dummy_page_holder->GetDocument()
+            .GetExecutionContext()
+            ->CrossOriginIsolatedCapability(),
+        /*initiator_type=*/"",
+        mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>(),
+        dummy_page_holder->GetDocument().GetExecutionContext());
   }
 };
 
@@ -60,4 +75,13 @@ TEST_F(PerformanceResourceTimingTest, TestNoChangeWhenOtherwise) {
   EXPECT_EQ(GetNextHopProtocol(alpn_negotiated_protocol, connection_info),
             alpn_negotiated_protocol);
 }
+
+TEST_F(PerformanceResourceTimingTest, TestNextHopProtocolIsGuardedByTao) {
+  AtomicString connection_info = "http/1.1";
+  AtomicString alpn_negotiated_protocol = "RandomProtocol";
+  EXPECT_EQ(
+      GetNextHopProtocolWithoutTao(alpn_negotiated_protocol, connection_info),
+      "");
+}
+
 }  // namespace blink

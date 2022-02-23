@@ -303,12 +303,23 @@ class TrialComparisonCertVerifierTest : public TestWithTaskEnvironment {
         GetTestCertsDirectory(), "multi-root-chain2.pem",
         X509Certificate::FORMAT_AUTO);
     ASSERT_TRUE(cert_chain_2_);
+
+    lets_encrypt_dst_x3_ = CreateCertificateChainFromFile(
+        GetTestCertsDirectory(), "lets-encrypt-dst-x3-root.pem",
+        X509Certificate::FORMAT_AUTO);
+    ASSERT_TRUE(lets_encrypt_dst_x3_);
+    lets_encrypt_isrg_x1_ = CreateCertificateChainFromFile(
+        GetTestCertsDirectory(), "lets-encrypt-isrg-x1-root.pem",
+        X509Certificate::FORMAT_AUTO);
+    ASSERT_TRUE(lets_encrypt_isrg_x1_);
   }
 
  protected:
   scoped_refptr<X509Certificate> cert_chain_1_;
   scoped_refptr<X509Certificate> cert_chain_2_;
   scoped_refptr<X509Certificate> leaf_cert_1_;
+  scoped_refptr<X509Certificate> lets_encrypt_dst_x3_;
+  scoped_refptr<X509Certificate> lets_encrypt_isrg_x1_;
   base::HistogramTester histograms_;
 };
 
@@ -1518,7 +1529,7 @@ TEST_F(TrialComparisonCertVerifierTest, MacUndesiredRevocationChecking) {
   EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _, _))
       .WillOnce(DoAll(SetArgPointee<7>(ok_result), Return(OK)));
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // The secondary should have been called twice on Mac due to attempting
   // the kIgnoredMacUndesiredRevocationCheckingWorkaround.
   EXPECT_CALL(
@@ -1556,7 +1567,7 @@ TEST_F(TrialComparisonCertVerifierTest, MacUndesiredRevocationChecking) {
   histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
   histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
                                1);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Expect no report.
   EXPECT_EQ(0U, reports.size());
 
@@ -1591,7 +1602,7 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
   scoped_refptr<MockCertVerifyProc> verify_proc2 =
       base::MakeRefCounted<MockCertVerifyProc>();
   EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _, _))
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       // The secondary should have been called twice on Mac due to attempting
       // the kIgnoredMacUndesiredRevocationCheckingWorkaround.
       .Times(2)
@@ -2054,7 +2065,7 @@ TEST_F(TrialComparisonCertVerifierTest, BothKnownRootsIgnored) {
                                  1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Ignore results for windows when REV_CHECKING_ENABLED errors are reported
 // in both primary and trial verifiers.
 TEST_F(TrialComparisonCertVerifierTest, RevCheckingIgnoredWin) {
@@ -2166,6 +2177,55 @@ TEST_F(TrialComparisonCertVerifierTest,
       "Net.CertVerifier_TrialComparisonResult",
       TrialComparisonResult::kIgnoredBuiltinAuthorityInvalidPlatformSymantec,
       1);
+}
+
+TEST_F(TrialComparisonCertVerifierTest, LetsEncryptSpecialCase) {
+  CertVerifyResult primary_result;
+  primary_result.verified_cert = lets_encrypt_dst_x3_;
+  primary_result.cert_status = CERT_STATUS_DATE_INVALID;
+  scoped_refptr<FakeCertVerifyProc> verify_proc1 =
+      base::MakeRefCounted<FakeCertVerifyProc>(ERR_CERT_DATE_INVALID,
+                                               primary_result);
+
+  CertVerifyResult secondary_result;
+  secondary_result.verified_cert = lets_encrypt_isrg_x1_;
+  scoped_refptr<FakeCertVerifyProc> verify_proc2 =
+      base::MakeRefCounted<FakeCertVerifyProc>(OK, secondary_result);
+
+  std::vector<TrialReportInfo> reports;
+  TrialComparisonCertVerifier verifier(
+      verify_proc1, verify_proc2,
+      base::BindRepeating(&RecordTrialReport, &reports));
+  verifier.set_trial_allowed(true);
+
+  CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
+                                     /*ocsp_response=*/std::string(),
+                                     /*sct_list=*/std::string());
+  CertVerifyResult result;
+  TestCompletionCallback callback;
+  std::unique_ptr<CertVerifier::Request> request;
+  int error = verifier.Verify(params, &result, callback.callback(), &request,
+                              NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  EXPECT_TRUE(request);
+
+  error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_DATE_INVALID));
+
+  verify_proc2->WaitForVerifyCall();
+  RunUntilIdle();
+
+  // Expect no report.
+  EXPECT_TRUE(reports.empty());
+
+  EXPECT_EQ(1, verify_proc1->num_verifications());
+  EXPECT_EQ(1, verify_proc2->num_verifications());
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
+  histograms_.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialSecondary",
+                               1);
+  histograms_.ExpectUniqueSample(
+      "Net.CertVerifier_TrialComparisonResult",
+      TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot, 1);
 }
 
 }  // namespace net

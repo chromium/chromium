@@ -2,204 +2,261 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(wnwen): Move to chrome.storage.local, wrap calls, add JsDocs.
-
 /**
- * Convert the string to boolean if possible.
- * @return {(boolean|string)} The Boolean value if possible, 'undefined'
- *     otherwise.
+ * Class to handle both storing values using the chrome.storage API, and
+ * fetching/caching values that have been stored that way.
  */
-function stringToBoolean(str) {
-  return (str == 'true') ? true : (str == 'false') ? false : 'undefined';
-}
+class Storage {
+  /**
+   * @param {function()=} opt_callbackForTesting
+   * @private
+   */
+  constructor(opt_callbackForTesting) {
+    /** @private {number} */
+    this.baseDelta_ = Storage.DELTA.defaultValue;
 
-function validBoolean(b) {
-  return b == true || b == false;
-}
+    /** @private {!Object<string, number>} */
+    this.siteDeltas_ = Storage.SITE_DELTAS.defaultValue;
 
+    /** @private {number} */
+    this.severity_ = Storage.SEVERITY.defaultValue;
 
-// ======= Delta setting =======
+    /** @private {!OptionalCvdType} */
+    this.type_ = Storage.TYPE.defaultValue;
 
-/** @const {number} */ var DEFAULT_DELTA = 0.5;
-/** @const {string} */ var LOCAL_STORAGE_TAG_DELTA = 'cvd_delta';
-/** @const {string} */ var LOCAL_STORAGE_TAG_SITE_DELTA = 'cvd_site_delta';
+    /** @private {boolean} */
+    this.simulate_ = Storage.SIMULATE.defaultValue;
 
+    /** @private {boolean} */
+    this.enable_ = Storage.ENABLE.defaultValue;
 
-function validDelta(delta) {
-  return delta >= 0 && delta <= 1;
-}
-
-
-function getDefaultDelta() {
-  var delta = localStorage[LOCAL_STORAGE_TAG_DELTA];
-  if (validDelta(delta)) {
-    return delta;
+    this.init_(opt_callbackForTesting);
   }
-  delta = DEFAULT_DELTA;
-  localStorage[LOCAL_STORAGE_TAG_DELTA] = delta;
-  return delta;
-}
 
+  // ======= Public methods =======
 
-function setDefaultDelta(delta) {
-  if (!validDelta(delta)) {
-    delta = DEFAULT_DELTA;
-  }
-  localStorage[LOCAL_STORAGE_TAG_DELTA] = delta;
-}
-
-
-function getSiteDelta(site) {
-  var delta = getDefaultDelta();
-  try {
-    var siteDeltas = JSON.parse(localStorage[LOCAL_STORAGE_TAG_SITE_DELTA]);
-    delta = siteDeltas[site];
-    if (!validDelta(delta)) {
-      delta = getDefaultDelta();
+  static initialize() {
+    if (!Storage.instance) {
+      Storage.instance = new Storage();
     }
-  } catch (e) {
-    delta = getDefaultDelta();
   }
-  return delta;
-}
 
+  /** @return {number} */
+  static get baseDelta() { return Storage.instance.baseDelta_; }
+  /** @return {number} */
+  static get severity() { return Storage.instance.severity_; }
+  /** @return {!OptionalCvdType} */
+  static get type() { return Storage.instance.type_; }
+  /** @return {boolean} */
+  static get simulate() { return Storage.instance.simulate_; }
+  /** @return {boolean} */
+  static get enable() { return Storage.instance.enable_; }
 
-function setSiteDelta(site, delta) {
-  if (!validDelta(delta)) {
-    delta = getDefaultDelta();
+  /**
+   * @param {string} site
+   * @return {number}
+   */
+  static getSiteDelta(site) {
+    const delta = Storage.instance.siteDeltas_[site];
+    if (Storage.DELTA.validate(delta)) {
+      return delta;
+    }
+    Storage.setSiteDelta(site, Storage.baseDelta);
+    return Storage.baseDelta;
   }
-  var siteDeltas = {};
-  try {
-    siteDeltas = JSON.parse(localStorage[LOCAL_STORAGE_TAG_SITE_DELTA]);
-  } catch (e) {
-    siteDeltas = {};
+
+  /** @param {number} newDelta */
+  static set baseDelta(newDelta) {
+    Storage.instance.setOrResetValue_(Storage.DELTA, newDelta);
+    Storage.instance.store_(Storage.DELTA);
   }
-  siteDeltas[site] = delta;
-  localStorage[LOCAL_STORAGE_TAG_SITE_DELTA] = JSON.stringify(siteDeltas);
-}
 
-
-function resetSiteDeltas() {
-  var siteDeltas = {};
-  localStorage[LOCAL_STORAGE_TAG_SITE_DELTA] = JSON.stringify(siteDeltas);
-}
-
-
-// ======= Severity setting =======
-
-/** @const {number} */ var DEFAULT_SEVERITY = 1.0;
-/** @const {string} */ var LOCAL_STORAGE_TAG_SEVERITY = 'cvd_severity';
-
-
-function validSeverity(severity) {
-  return severity >= 0 && severity <= 1;
-}
-
-
-function getDefaultSeverity() {
-  var severity = localStorage[LOCAL_STORAGE_TAG_SEVERITY];
-  if (validSeverity(severity)) {
-    return severity;
+  /** @param {number} newSeverity */
+  static set severity(newSeverity) {
+    Storage.instance.setOrResetValue_(Storage.SEVERITY, newSeverity);
+    Storage.instance.store_(Storage.SEVERITY);
   }
-  severity = DEFAULT_SEVERITY;
-  localStorage[LOCAL_STORAGE_TAG_SEVERITY] = severity;
-  return severity;
-}
 
-
-function setDefaultSeverity(severity) {
-  if (!validSeverity(severity)) {
-    severity = DEFAULT_SEVERITY;
+  /** @param {!CvdType} newCvdType */
+  static set type(newCvdType) {
+    Storage.instance.setOrResetValue_(Storage.TYPE, newCvdType);
+    Storage.instance.store_(Storage.TYPE);
   }
-  localStorage[LOCAL_STORAGE_TAG_SEVERITY] = severity;
-}
 
-
-// ======= Type setting =======
-
-/** @const {string} */ var INVALID_TYPE_PLACEHOLDER = '';
-/** @const {string} */ var LOCAL_STORAGE_TAG_TYPE = 'cvd_type';
-
-
-function validType(type) {
-  return type === 'PROTANOMALY' ||
-      type === 'DEUTERANOMALY' ||
-      type === 'TRITANOMALY';
-}
-
-
-function getDefaultType() {
-  var type = localStorage[LOCAL_STORAGE_TAG_TYPE];
-  if (validType(type)) {
-    return type;
+  /** @param {boolean} newValue */
+  static set simulate(newValue) {
+    Storage.instance.setOrResetValue_(Storage.SIMULATE, newValue);
+    Storage.instance.store_(Storage.SIMULATE);
   }
-}
 
-
-function setDefaultType(type) {
-  if (!validType(type)) {
-    type = INVALID_TYPE_PLACEHOLDER;
+  /** @param {boolean} newValue */
+  static set enable(newValue) {
+    Storage.instance.setOrResetValue_(Storage.ENABLE, newValue);
+    Storage.instance.store_(Storage.ENABLE);
   }
-  localStorage[LOCAL_STORAGE_TAG_TYPE] = type;
-}
 
-
-// ======= Simulate setting =======
-
-/** @const {boolean} */ var DEFAULT_SIMULATE = false;
-/** @const {string} */ var LOCAL_STORAGE_TAG_SIMULATE = 'cvd_simulate';
-
-
-function getDefaultSimulate() {
-  var simulate = localStorage[LOCAL_STORAGE_TAG_SIMULATE];
-
-  simulate = stringToBoolean(simulate);
-
-  if (validBoolean(simulate)) {
-    return simulate;
+  /**
+   * @param {string} site
+   * @param {number} delta
+   */
+  static setSiteDelta(site, delta) {
+    if (Storage.DELTA.validate(delta)) {
+      Storage.instance.siteDeltas_[site] = delta;
+    } else {
+      Storage.instance.siteDeltas_[site] = Storage.baseDelta;
+    }
+    Storage.instance.store_(Storage.SITE_DELTAS);
   }
-  simulate = DEFAULT_SIMULATE;
-  localStorage[LOCAL_STORAGE_TAG_SIMULATE] = simulate;
-  return simulate;
-}
 
+  // ======== Private Methods ========
 
-function setDefaultSimulate(simulate) {
-  if (!validBoolean(simulate)) {
-    simulate = DEFAULT_SIMULATE;
+  /**
+   * @param {!Storage.Value} container
+   * @param {*} newValue
+   * @private
+   */
+  setOrResetValue_(container, newValue) {
+    if (newValue === container.get()) {
+      return;
+    }
+
+    if (container.validate(newValue)) {
+      container.set(newValue);
+    } else {
+      container.reset();
+    }
+
+    container.listeners.forEach(listener => listener(newValue));
   }
-  localStorage[LOCAL_STORAGE_TAG_SIMULATE] = simulate;
-}
 
-
-// ======= Enable setting =======
-
-/** @const {boolean} */ var DEFAULT_ENABLE = false;
-/** @const {string} */ var LOCAL_STORAGE_TAG_ENABLE = 'cvd_enable';
-
-
-function validEnable(enable) {
-  return enable == true || enable == false;
-}
-
-
-function getDefaultEnable() {
-  var enable = localStorage[LOCAL_STORAGE_TAG_ENABLE];
-
-  enable = stringToBoolean(enable);
-
-  if (validBoolean(enable)) {
-    return enable;
+  /**
+   * @param {!Storage.Value} value
+   * @private
+   */
+  store_(value) {
+    chrome.storage.local.set({ [value.key]: value.get() });
   }
-  enable = DEFAULT_ENABLE;
-  localStorage[LOCAL_STORAGE_TAG_ENABLE] = enable;
-  return enable;
-}
 
+  /**
+   * @param {function()} opt_callback
+   * @private
+   */
+  init_(opt_callback) {
+    chrome.storage.onChanged.addListener(this.onChange_.bind(this));
 
-function setDefaultEnable(enable) {
-  if (!validBoolean(enable)) {
-    enable = DEFAULT_ENABLE;
+    chrome.storage.local.get(null /* all values */, (results) => {
+      const storedValues = Storage.ALL_VALUES.filter(v => results[v.key]);
+      for (const value of storedValues) {
+        this.setOrResetValue_(value, results[value.key]);
+      }
+      opt_callback ? opt_callback() : undefined;
+    });
   }
-  localStorage[LOCAL_STORAGE_TAG_ENABLE] = enable;
+
+  /**
+   * @param {!Object<string, chrome.storage.StorageChange>} changes
+   * @private
+   */
+  onChange_(changes) {
+    const changedValues = Storage.ALL_VALUES.filter(v => changes[v.key]);
+    for (const value of changedValues) {
+      this.setOrResetValue_(value, changes[value.key].newValue);
+    }
+  }
+
+  // ======== Stored Values ========
+
+  /** @const {string} */
+  static INVALID_TYPE_PLACEHOLDER = '';
+
+  /**
+   * @typedef {{
+   *     key: string,
+   *     defaultValue: *,
+   *     validate: function(*): boolean,
+   *     get: function(): *,
+   *     set: function(*),
+   *     reset: function(),
+   *     listeners: !Array<function(*)>
+   * }}
+   */
+  static Value;
+
+  /** @const {!Storage.Value} */
+  static DELTA = {
+    key: 'cvd_delta',
+    defaultValue: 0.5,
+    validate: (delta) => delta >= 0 && delta <= 1,
+    get: () => Storage.instance.baseDelta_,
+    set: (delta) => Storage.instance.baseDelta_ = delta,
+    reset: () => Storage.instance.baseDelta_ = Storage.DELTA.defaultValue,
+    listeners: [],
+  };
+
+  /** @const {!Storage.Value} */
+  static SITE_DELTAS = {
+    key: 'cvd_site_delta',
+    defaultValue: {},
+    validate: (siteDeltas) => typeof (siteDeltas) === 'object',
+    get: () => Storage.instance.siteDeltas_,
+    set: (siteDeltas) => {
+      for (const site of Object.keys(siteDeltas)) {
+        if (Storage.DELTA.validate(siteDeltas[site])) {
+          Storage.instance.siteDeltas_[site] = siteDeltas[site];
+        }
+      }
+    },
+    reset: () => {} /* Do nothing */,
+    listeners: [],
+  };
+
+  /** @const {!Storage.Value} */
+  static SEVERITY = {
+    key: 'cvd_severity',
+    defaultValue: 1.0,
+    validate: (severity) => severity >= 0 && severity <= 1,
+    get: () => Storage.instance.severity_,
+    set: (severity) => Storage.instance.severity_ = severity,
+    reset: () => Storage.instance.severity_ = Storage.SEVERITY.defaultValue,
+    listeners: [],
+  };
+
+  /** @const {!Storage.Value} */
+  static TYPE = {
+    key: 'cvd_type',
+    defaultValue: Storage.INVALID_TYPE_PLACEHOLDER,
+    validate: (type) => Object.values(CvdType).includes(type),
+    get: () => Storage.instance.type_,
+    set: (type) => Storage.instance.type_ = type,
+    reset: () => Storage.instance.type_ = Storage.TYPE.defaultValue,
+    listeners: [],
+  };
+
+  /** @const {!Storage.Value} */
+  static SIMULATE = {
+    key: 'cvd_simulate',
+    defaultValue: false,
+    validate: (simulate) => typeof (simulate) === 'boolean',
+    get: () => Storage.instance.simulate_,
+    set: (simulate) => Storage.instance.simulate_ = simulate,
+    reset: () => Storage.instance.simulate_ = Storage.SIMULATE.defaultValue,
+    listeners: [],
+  };
+
+  /** @const {!Storage.Value} */
+  static ENABLE = {
+    key: 'cvd_enable',
+    defaultValue: false,
+    validate: (enable) => typeof (enable) === 'boolean',
+    get: () => Storage.instance.enable_,
+    set: (enable) => Storage.instance.enable_ = enable,
+    reset: () => Storage.instance.enable_ = Storage.ENABLE.defaultValue,
+    listeners: [],
+  };
+
+  /** @const {!Array<!Storage.Value>} */
+  static ALL_VALUES = [
+      Storage.DELTA, Storage.SITE_DELTAS, Storage.SEVERITY, Storage.TYPE,
+      Storage.SIMULATE, Storage.ENABLE,
+  ];
 }

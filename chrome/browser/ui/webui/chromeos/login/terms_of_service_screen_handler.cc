@@ -75,7 +75,7 @@ void TermsOfServiceScreenHandler::Show(const std::string& manager) {
   UpdateTermsOfServiceInUI();
 
   base::DictionaryValue data;
-  data.SetString("manager", manager_);
+  data.SetStringKey("manager", manager_);
 
   ShowScreenWithData(kScreenId, &data);
 }

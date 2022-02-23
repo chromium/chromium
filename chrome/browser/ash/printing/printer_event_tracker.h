@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/synchronization/lock.h"
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/metrics_proto/printer_event.pb.h"
 
@@ -44,7 +44,7 @@ class PrinterEventTracker : public KeyedService {
   // Store a succesful USB printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
   void RecordUsbPrinterInstalled(
-      const chromeos::PrinterDetector::DetectedPrinter& printer,
+      const PrinterDetector::DetectedPrinter& printer,
       SetupMode mode);
 
   // Store a succesful network printer installation. |mode| indicates if
@@ -56,8 +56,7 @@ class PrinterEventTracker : public KeyedService {
   void RecordSetupAbandoned(const chromeos::Printer& printer);
 
   // Record an abandoned setup for a USB printer.
-  void RecordUsbSetupAbandoned(
-      const chromeos::PrinterDetector::DetectedPrinter& printer);
+  void RecordUsbSetupAbandoned(const PrinterDetector::DetectedPrinter& printer);
 
   // Store a printer removal.
   void RecordPrinterRemoved(const chromeos::Printer& printer);

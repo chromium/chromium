@@ -8,43 +8,15 @@
  */
 
 import '../../../cr_elements/shared_style_css.m.js';
-import './bluetooth_icons.js';
+import './bluetooth_battery_icon_percentage.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getBatteryPercentage} from './bluetooth_utils.js';
-
-/**
- * The threshold percentage where any battery percentage lower is considered
- * 'low battery'.
- * @type {number}
- */
-const LOW_BATTERY_THRESHOLD_PERCENTAGE = 25;
-
-/**
- * Ranges for each battery icon, where the value of the first index is the
- * minimum battery percentage in the range (inclusive), and the second index is
- * the maximum battery percentage in the range (inclusive).
- * @type {Array<Array<number>>}
- */
-const BATTERY_ICONS_RANGES = [
-  [0, 7], [8, 14], [15, 21], [22, 28], [29, 35], [36, 42], [43, 49], [50, 56],
-  [57, 63], [64, 70], [71, 77], [78, 85], [86, 92], [93, 100]
-];
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const BluetoothDeviceBatteryInfoElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+import {BatteryType} from './bluetooth_types.js';
+import {getBatteryPercentage, hasAnyDetailedBatteryInfo} from './bluetooth_utils.js';
 
 /** @polymer */
-export class BluetoothDeviceBatteryInfoElement extends
-    BluetoothDeviceBatteryInfoElementBase {
+export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
   static get is() {
     return 'bluetooth-device-battery-info';
   }
@@ -62,12 +34,23 @@ export class BluetoothDeviceBatteryInfoElement extends
         type: Object,
       },
 
-      /** @private {boolean} */
-      isLowBattery_: {
-        reflectToAttribute: true,
+      /**
+       * Enum used as an ID for specific UI elements.
+       * A BatteryType is passed between html and JS for
+       * certain UI elements to determine their state.
+       *
+       * @type {!BatteryType}
+       */
+      BatteryType: {
+        type: Object,
+        value: BatteryType,
+      },
+
+      /** @protected {boolean} */
+      showMultipleBatteries_: {
         type: Boolean,
-        computed: 'computeIsLowBattery_(device)',
-      }
+        computed: 'computeShowMultipleBatteries_(device)',
+      },
     };
   }
 
@@ -77,56 +60,19 @@ export class BluetoothDeviceBatteryInfoElement extends
    * @return {boolean}
    * @private
    */
-  computeIsLowBattery_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
-    if (batteryPercentage === undefined) {
-      return false;
-    }
-    return batteryPercentage < LOW_BATTERY_THRESHOLD_PERCENTAGE;
+  computeShowMultipleBatteries_(device) {
+    return hasAnyDetailedBatteryInfo(device);
   }
 
   /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
-   * @return {string}
+   * @param {!BatteryType} batteryType
+   * @return {boolean}
    * @private
    */
-  getBatteryPercentageString_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
-    if (batteryPercentage === undefined) {
-      return '';
-    }
-
-    return this.i18n(
-        'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage);
-  }
-
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getBatteryIcon_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
-    if (batteryPercentage === undefined) {
-      return '';
-    }
-
-    // Range should always find a value because this element should not be
-    // showing if batteryPercentage is out of bounds.
-    const range = BATTERY_ICONS_RANGES.find(range => {
-      return range[0] <= batteryPercentage && batteryPercentage <= range[1];
-    });
-    assert(
-        !!range && range.length === 2, 'Battery percentage range is invalid');
-
-    return 'bluetooth:battery-' + range[0] + '-' + range[1];
-  }
-
-  /** @return {boolean} */
-  getIsLowBatteryForTest() {
-    return this.isLowBattery_;
+  shouldShowBattery_(device, batteryType) {
+    return getBatteryPercentage(device, batteryType) !== undefined;
   }
 }
 

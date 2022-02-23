@@ -152,12 +152,6 @@ interface FrameSinkManager {
   // reachable from the root surface.
   RequestCopyOfOutput(SurfaceId surface_id, CopyOutputRequest request);
 
-  // Marks a region as having been recently async queried. This is used by the
-  // HitTestAggregator to highlight queried regions if hit-test debugging is
-  // enabled.
-  SetHitTestAsyncQueriedDebugRegions(
-      FrameSinkId root_frame_sink_id,
-      array<FrameSinkId> hit_test_async_queried_debug_queue);
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is

@@ -43,15 +43,24 @@ enum AlphaDisposition {
   kDontChangeAlpha,
 };
 
-enum DataU8ColorType {
-  kRGBAColorType,
-  kN32ColorType,
+enum class PredefinedColorSpace {
+  kSRGB,
+  kRec2020,
+  kP3,
+  kRec2100HLG,
+  kRec2100PQ,
+  kSRGBLinear,
 };
 
-enum ImageDataStorageFormat {
-  kUint8ClampedArrayStorageFormat,
-  kUint16ArrayStorageFormat,
-  kFloat32ArrayStorageFormat,
+enum class CanvasPixelFormat {
+  kUint8,
+  kF16,
+};
+
+enum class ImageDataStorageFormat {
+  kUint8,
+  kUint16,
+  kFloat32,
 };
 
 enum ImageEncodingMimeType {
@@ -113,6 +122,10 @@ enum class BlendMode {
   kSaturation,
   kColor,
   kLuminosity,
+  // The following is only used in CSS mix-blend-mode, and maps to a composite
+  // operator. Canvas uses the same enum but the kPlusLighter is not a valid
+  // canvas value. We should consider splitting the enums.
+  kPlusLighter,
 };
 
 enum OpacityMode {
@@ -199,10 +212,16 @@ enum WindRule {
   RULE_EVENODD = static_cast<int>(SkPathFillType::kEvenOdd)
 };
 
-PLATFORM_EXPORT String CompositeOperatorName(CompositeOperator, BlendMode);
-PLATFORM_EXPORT bool ParseCompositeAndBlendMode(const String&,
-                                                CompositeOperator&,
-                                                BlendMode&);
+// Note that this is only appropriate to use in canvas globalCompositeOperator
+// cases.
+// TODO(vmpstr): Move these functions to near where they are used.
+PLATFORM_EXPORT String CanvasCompositeOperatorName(CompositeOperator,
+                                                   BlendMode);
+PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const String&,
+                                                      CompositeOperator&,
+                                                      BlendMode&);
+
+PLATFORM_EXPORT String BlendModeToString(BlendMode);
 
 PLATFORM_EXPORT String ImageEncodingMimeTypeName(ImageEncodingMimeType);
 PLATFORM_EXPORT bool ParseImageEncodingMimeType(const String&,
@@ -219,6 +238,12 @@ PLATFORM_EXPORT bool ParseTextAlign(const String&, TextAlign&);
 
 PLATFORM_EXPORT String TextBaselineName(TextBaseline);
 PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
+
+PLATFORM_EXPORT String PredefinedColorSpaceName(PredefinedColorSpace);
+
+PLATFORM_EXPORT String CanvasPixelFormatName(CanvasPixelFormat);
+
+PLATFORM_EXPORT String ImageDataStorageFormatName(ImageDataStorageFormat);
 
 }  // namespace blink
 

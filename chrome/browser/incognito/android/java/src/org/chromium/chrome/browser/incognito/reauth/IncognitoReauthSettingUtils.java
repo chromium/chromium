@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
@@ -14,11 +13,12 @@ import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.incognito.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -30,7 +30,7 @@ public class IncognitoReauthSettingUtils {
     /**
      * @return A boolean indicating if the screen lock is enabled in device or not.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public static boolean isDeviceScreenLockEnabled() {
         if (sIsDeviceScreenLockEnabledForTesting != null) {
             return sIsDeviceScreenLockEnabledForTesting;
@@ -77,8 +77,7 @@ public class IncognitoReauthSettingUtils {
     // click behaviour is dependent on {@link IncognitoReauthSettingSwitchPreference} so
     // need to refactor that as well.
     private static SpannableString buildLinkToAndroidScreenLockSettings(Activity activity) {
-        int color = ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.default_text_color_link);
+        int color = SemanticColorUtils.getDefaultTextColorLink(activity);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
         return SpanApplier.applySpans(

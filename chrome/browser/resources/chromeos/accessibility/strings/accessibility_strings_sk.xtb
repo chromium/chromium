@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Oblasť na precvičovanie: rozbaľovacie zoznamy</translation>
 <translation id="1195238899008218998">Doslov</translation>
 <translation id="1197088940767939838">Oranžová</translation>
+<translation id="1198865190323699001">Dotykové gestá</translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1206619573307042055">pohyblivý prvok</translation>
 <translation id="1207086294218137981">Žiadny ďalší nadpis štvrtej úrovne</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{pravá hranatá zátvorka}few{# pravé hranaté zátvorky}many{# right brackets}other{# pravých hranatých zátvoriek}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{otáznik}few{# otázniky}many{# question marks}other{# otáznikov}}</translation>
+<translation id="3505359110822747654">Zbalenie ponúk čítačky ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{vsuvka}few{# vsuvky}many{# carets}other{# vsuviek}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{biely grafický znak}few{# biele grafické znaky}many{# white bullets}other{# bielych grafických znakov}}</translation>
 <translation id="352577523970648069">Upraviteľné textové pole</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">vystrihnúť <ph name="TEXT" />.</translation>
@@ -624,7 +627,7 @@
 <translation id="5302089807023311274">Bibliografický odkaz</translation>
 <translation id="530391007967514163">Vyskúšajte prechádzať v texte nižšie preskakovaním po nadpisoch.</translation>
 <translation id="5304943142864553931">karta <ph name="TITLE" /></translation>
-<translation id="5308380583665731573">Pripojenie</translation>
+<translation id="5308380583665731573">Pripojiť</translation>
 <translation id="5310788376443009632">odstránené:</translation>
 <translation id="5316825363044614340">prejsť na ďalší riadok</translation>
 <translation id="5320727453979144100">Rýchly režim bol povolený</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Dokončili ste rýchlu orientáciu.</translation>
 <translation id="5534303576632885660">hlavička</translation>
 <translation id="5539820223028224601">Bledosivá</translation>
+<translation id="554893713779400387">Prepnúť diktovanie</translation>
 <translation id="5549179427201066174">Zapnúť alebo vypnúť zvukovú spätnú väzbu (zvukové signály)</translation>
 <translation id="556042886152191864">Tlačidlo</translation>
 <translation id="5561345396546889625">Ďalší zoznam</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Ďalšie začiarkavacie políčko</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, prepínač nie je vybraný</translation>
 <translation id="5601172225407283979">Vykonať predvolenú akciu</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{štvorcový grafický znak}few{# štvorcové grafické znaky}many{# square bullets}other{# štvorcových grafických znakov}}</translation>
 <translation id="5608798115546226984">Vložené automatické dopĺňanie</translation>
 <translation id="5616029807486814372">Ďalšia lekcia</translation>
 <translation id="561939826962581046">čas</translation>
@@ -1095,6 +1100,7 @@
 <translation id="8659501358298941449">Rozbaľovacie zoznamy</translation>
 <translation id="8666733765751421568"><ph name="TYPE" />, koniec</translation>
 <translation id="867187640362843212">Nadpis 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}few{úroveň vnorenia: #}many{úroveň vnorenia: #}other{úroveň vnorenia: #}}</translation>
 <translation id="8693391540059827073">Moje obľúbené obdobie</translation>
 <translation id="8696284982970258155">Zelenkavobiela</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{zvislá čiara}few{# zvislé čiary}many{# vertical pipes}other{# zvislých čiar}}</translation>
@@ -1162,6 +1168,7 @@
 <translation id="9223032053830369045">Tmavočervená</translation>
 <translation id="923331726185079994">Aplikácia ChromeVox bola aktualizovaná</translation>
 <translation id="93384979447910801">Tmavá morská zelená</translation>
+<translation id="937605981140327129">Aplikácia TalkBack nie je momentálne nainštalovaná. Nainštalujte si Služby dostupnosti pre Android z Obchodu Play a skúste to znova.</translation>
 <translation id="948171205378458592">Znížiť rýchlosť reči</translation>
 <translation id="957570623732056069">Na túto lekciu prejdete potiahnutím jedným prstom doľava alebo doprava</translation>
 <translation id="958854023026327378">Potiahnite prstom nadol</translation>

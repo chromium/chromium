@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.display_cutout;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
@@ -12,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -196,7 +196,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      *     equivalent value.
      */
     @VisibleForTesting
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public int computeDisplayCutoutMode() {
         // If we are not interactable then force the default mode.
         if (!mDelegate.isInteractable()) {

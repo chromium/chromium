@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -265,8 +266,8 @@ class WebRtcStatsPerfBrowserTest : public WebRtcTestBase {
   }
 
  private:
-  content::WebContents* left_tab_ = nullptr;
-  content::WebContents* right_tab_ = nullptr;
+  raw_ptr<content::WebContents> left_tab_ = nullptr;
+  raw_ptr<content::WebContents> right_tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -319,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1241344): test fails on some mac bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2 \
   DISABLED_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_VP9Profile2
 #else

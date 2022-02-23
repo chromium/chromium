@@ -4,7 +4,9 @@
 
 #include "base/syslog_logging.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <sddl.h>
@@ -13,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // <syslog.h> defines LOG_INFO, LOG_WARNING macros that could conflict with
 // base::LOG_INFO, base::LOG_WARNING.
 #include <syslog.h>
@@ -33,7 +35,7 @@ bool g_logging_enabled = true;
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -87,7 +89,7 @@ void ResetEventSourceForTesting() {
   g_user_sid = nullptr;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 EventLogMessage::EventLogMessage(const char* file,
                                  int line,
@@ -99,7 +101,7 @@ EventLogMessage::~EventLogMessage() {
   if (!g_logging_enabled)
     return;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If g_event_source_name is nullptr (which it is per default) SYSLOG will
   // degrade gracefully to regular LOG. If you see this happening most probably
   // you are using SYSLOG before you called SetEventSourceName.
@@ -109,7 +111,7 @@ EventLogMessage::~EventLogMessage() {
   ScopedEventLogHandle event_log_handle(
       RegisterEventSourceA(nullptr, g_event_source_name->c_str()));
 
-  if (!event_log_handle.IsValid()) {
+  if (!event_log_handle.is_valid()) {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
     return;
   }
@@ -138,14 +140,14 @@ EventLogMessage::~EventLogMessage() {
     stream() << " !!ERROR GETTING USER SID!!";
   }
 
-  if (!ReportEventA(event_log_handle.Get(), log_type, g_category, g_event_id,
+  if (!ReportEventA(event_log_handle.get(), log_type, g_category, g_event_id,
                     user_sid, 1, 0, strings, nullptr)) {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
   }
 
   if (user_sid != nullptr)
     ::LocalFree(user_sid);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const char kEventSource[] = "chrome";
   openlog(kEventSource, LOG_NOWAIT | LOG_PID, LOG_USER);
   // We can't use the defined names for the logging severity from syslog.h
@@ -169,7 +171,7 @@ EventLogMessage::~EventLogMessage() {
   }
   syslog(priority, "%s", log_message_.str().c_str());
   closelog();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SetSyslogLoggingForTesting(bool logging_enabled) {

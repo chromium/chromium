@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_AUDIO_AUDIO_PLAYBACK_SINK_H_
 #define REMOTING_CLIENT_AUDIO_AUDIO_PLAYBACK_SINK_H_
 
-#include "base/macros.h"
-
 namespace remoting {
 
 class AsyncAudioDataSupplier;

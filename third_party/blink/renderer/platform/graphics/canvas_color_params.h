@@ -19,38 +19,13 @@ class ColorSpace;
 
 namespace blink {
 
-enum class CanvasColorSpace {
-  kSRGB,
-  kRec2020,
-  kP3,
-};
-
-enum class CanvasPixelFormat {
-  kUint8,
-  kF16,
-};
-
-constexpr const char* kSRGBCanvasColorSpaceName = "srgb";
-constexpr const char* kRec2020CanvasColorSpaceName = "rec2020";
-constexpr const char* kP3CanvasColorSpaceName = "display-p3";
-
-constexpr const char* kUint8CanvasPixelFormatName = "uint8";
-constexpr const char* kF16CanvasPixelFormatName = "float16";
-
-// Return the CanvasColorSpace for the specified |name|. On invalid inputs,
-// returns CanvasColorSpace::kSRGB.
-CanvasColorSpace PLATFORM_EXPORT
-CanvasColorSpaceFromName(const String& color_space_name);
-
-String PLATFORM_EXPORT CanvasColorSpaceToName(CanvasColorSpace color_space);
-
 // Return the SkColorSpace for the specified |color_space|.
 sk_sp<SkColorSpace> PLATFORM_EXPORT
-CanvasColorSpaceToSkColorSpace(CanvasColorSpace color_space);
+PredefinedColorSpaceToSkColorSpace(PredefinedColorSpace color_space);
 
-// Return the named CanvasColorSpace that best matches |sk_color_space|.
-CanvasColorSpace PLATFORM_EXPORT
-CanvasColorSpaceFromSkColorSpace(const SkColorSpace* sk_color_space);
+// Return the named PredefinedColorSpace that best matches |sk_color_space|.
+PredefinedColorSpace PLATFORM_EXPORT
+PredefinedColorSpaceFromSkColorSpace(const SkColorSpace* sk_color_space);
 
 class PLATFORM_EXPORT CanvasColorParams {
   DISALLOW_NEW();
@@ -58,17 +33,15 @@ class PLATFORM_EXPORT CanvasColorParams {
  public:
   // The default constructor will create an output-blended 8-bit surface.
   CanvasColorParams();
-  CanvasColorParams(CanvasColorSpace, CanvasPixelFormat, OpacityMode);
-  CanvasColorParams(const WTF::String& color_space,
-                    const WTF::String& pixel_format,
-                    bool has_alpha);
+  CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, OpacityMode);
+  CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, bool has_alpha);
 
-  CanvasColorSpace ColorSpace() const { return color_space_; }
+  PredefinedColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
   OpacityMode GetOpacityMode() const { return opacity_mode_; }
 
   String GetColorSpaceAsString() const;
-  const char* GetPixelFormatAsString() const;
+  String GetPixelFormatAsString() const;
 
   SkColorInfo GetSkColorInfo() const;
 
@@ -82,8 +55,7 @@ class PLATFORM_EXPORT CanvasColorParams {
   uint8_t BytesPerPixel() const;
 
  private:
-
-  CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
+  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
   CanvasPixelFormat pixel_format_ = CanvasPixelFormat::kUint8;
   OpacityMode opacity_mode_ = kNonOpaque;
 };

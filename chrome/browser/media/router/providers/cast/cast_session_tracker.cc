@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/cast_channel/cast_socket_service.h"
@@ -21,7 +22,7 @@ CastSessionTracker* CastSessionTracker::GetInstance() {
     return instance_for_test_;
 
   static CastSessionTracker* instance = new CastSessionTracker(
-      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceImpl(),
+      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceBase(),
       GetCastMessageHandler(),
       cast_channel::CastSocketService::GetInstance()->task_runner());
   return instance;
@@ -135,7 +136,7 @@ void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
   updated_status->EraseListValueIf(
       [](auto const& media) { return !media.is_dict(); });
 
-  base::Value::ListView media_list = updated_status->GetList();
+  base::Value::ListView media_list = updated_status->GetListDeprecated();
 
   // Backfill messages from receivers to make them compatible with Cast SDK.
   for (auto& media : media_list) {
@@ -173,7 +174,8 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
       session->value().FindKeyOfType("media", base::Value::Type::LIST);
   if (!session_media_value)
     return;
-  const auto& session_media_value_list = session_media_value->GetList();
+  const auto& session_media_value_list =
+      session_media_value->GetListDeprecated();
   for (auto& media : media_list) {
     const base::Value* media_session_id_value =
         media.FindKeyOfType("mediaSessionId", base::Value::Type::INTEGER);

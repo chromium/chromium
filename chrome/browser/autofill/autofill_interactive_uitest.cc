@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -79,15 +80,30 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/dom_us_layout_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+// Includes for ChromeVox accessibility tests.
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
+#include "ui/base/test/ui_controls.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+
 using base::ASCIIToUTF16;
 using content::URLLoaderInterceptor;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
 
 namespace autofill {
 
@@ -101,7 +117,7 @@ static const char kTestShippingFormString[] = R"(
   </head>
   <body>
     An example of a shipping address form.
-    <form action="https://www.example.com/" method="POST">
+    <form action="https://www.example.com/" method="POST" id="shipping">
     <label for="firstname">First name:</label>
      <input type="text" id="firstname"><br>
     <label for="lastname">Last name:</label>
@@ -131,130 +147,6 @@ static const char kTestShippingFormString[] = R"(
     </form>
     )";
 
-static const char kTestBillingFormString[] =
-    "An example of a billing address form."
-    "<form action=\"https://www.example.com/\" method=\"POST\">"
-    "<label for=\"firstname_billing\">First name:</label>"
-    " <input type=\"text\" id=\"firstname_billing\"><br>"
-    "<label for=\"lastname_billing\">Last name:</label>"
-    " <input type=\"text\" id=\"lastname_billing\"><br>"
-    "<label for=\"address1_billing\">Address line 1:</label>"
-    " <input type=\"text\" id=\"address1_billing\"><br>"
-    "<label for=\"address2_billing\">Address line 2:</label>"
-    " <input type=\"text\" id=\"address2_billing\"><br>"
-    "<label for=\"city_billing\">City:</label>"
-    " <input type=\"text\" id=\"city_billing\"><br>"
-    "<label for=\"state_billing\">State:</label>"
-    " <select id=\"state_billing\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">California</option>"
-    " <option value=\"TX\">Texas</option>"
-    " </select><br>"
-    "<label for=\"zip_billing\">ZIP code:</label>"
-    " <input type=\"text\" id=\"zip_billing\"><br>"
-    "<label for=\"country_billing\">Country:</label>"
-    " <select id=\"country_billing\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">Canada</option>"
-    " <option value=\"US\">United States</option>"
-    " </select><br>"
-    "<label for=\"phone_billing\">Phone number:</label>"
-    " <input type=\"text\" id=\"phone_billing\"><br>"
-    "</form>";
-
-// TODO(crbug.com/609861): Remove the autocomplete attribute from the textarea
-// field when the bug is fixed.
-static const char kTestEventFormString[] =
-    "<script type=\"text/javascript\">"
-    "var inputfocus = false;"
-    "var inputkeydown = false;"
-    "var inputinput = false;"
-    "var inputchange = false;"
-    "var inputkeyup = false;"
-    "var inputblur = false;"
-    "var textfocus = false;"
-    "var textkeydown = false;"
-    "var textinput= false;"
-    "var textchange = false;"
-    "var textkeyup = false;"
-    "var textblur = false;"
-    "var selectfocus = false;"
-    "var selectinput = false;"
-    "var selectchange = false;"
-    "var selectblur = false;"
-    "</script>"
-    "A form for testing events."
-    "<form action=\"https://www.example.com/\" method=\"POST\">"
-    "<label for=\"firstname\">First name:</label>"
-    " <input type=\"text\" id=\"firstname\"><br>"
-    "<label for=\"lastname\">Last name:</label>"
-    " <input type=\"text\" id=\"lastname\""
-    " onfocus=\"inputfocus = true\" onkeydown=\"inputkeydown = true\""
-    " oninput=\"inputinput = true\" onchange=\"inputchange = true\""
-    " onkeyup=\"inputkeyup = true\" onblur=\"inputblur = true\" ><br>"
-    "<label for=\"address1\">Address line 1:</label>"
-    " <input type=\"text\" id=\"address1\"><br>"
-    "<label for=\"address2\">Address line 2:</label>"
-    " <input type=\"text\" id=\"address2\"><br>"
-    "<label for=\"city\">City:</label>"
-    " <textarea rows=\"4\" cols=\"50\" id=\"city\" name=\"city\""
-    " autocomplete=\"address-level2\" onfocus=\"textfocus = true\""
-    " onkeydown=\"textkeydown = true\" oninput=\"textinput = true\""
-    " onchange=\"textchange = true\" onkeyup=\"textkeyup = true\""
-    " onblur=\"textblur = true\"></textarea><br>"
-    "<label for=\"state\">State:</label>"
-    " <select id=\"state\""
-    " onfocus=\"selectfocus = true\" oninput=\"selectinput = true\""
-    " onchange=\"selectchange = true\" onblur=\"selectblur = true\" >"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">California</option>"
-    " <option value=\"NY\">New York</option>"
-    " <option value=\"TX\">Texas</option>"
-    " </select><br>"
-    "<label for=\"zip\">ZIP code:</label>"
-    " <input type=\"text\" id=\"zip\"><br>"
-    "<label for=\"country\">Country:</label>"
-    " <select id=\"country\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">Canada</option>"
-    " <option value=\"US\">United States</option>"
-    " </select><br>"
-    "<label for=\"phone\">Phone number:</label>"
-    " <input type=\"text\" id=\"phone\"><br>"
-    "</form>";
-
-static const char kTestShippingFormWithCompanyString[] =
-    "An example of a shipping address form."
-    "<form action=\"https://www.example.com/\" method=\"POST\">"
-    "<label for=\"firstname\">First name:</label>"
-    " <input type=\"text\" id=\"firstname\"><br>"
-    "<label for=\"lastname\">Last name:</label>"
-    " <input type=\"text\" id=\"lastname\"><br>"
-    "<label for=\"address1\">Address line 1:</label>"
-    " <input type=\"text\" id=\"address1\"><br>"
-    "<label for=\"address2\">Address line 2:</label>"
-    " <input type=\"text\" id=\"address2\"><br>"
-    "<label for=\"city\">City:</label>"
-    " <input type=\"text\" id=\"city\"><br>"
-    "<label for=\"state\">State:</label>"
-    " <select id=\"state\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">California</option>"
-    " <option value=\"TX\">Texas</option>"
-    " </select><br>"
-    "<label for=\"zip\">ZIP code:</label>"
-    " <input type=\"text\" id=\"zip\"><br>"
-    "<label for=\"country\">Country:</label>"
-    " <select id=\"country\">"
-    " <option value=\"\" selected=\"yes\">--</option>"
-    " <option value=\"CA\">Canada</option>"
-    " <option value=\"US\">United States</option>"
-    " </select><br>"
-    "<label for=\"phone\">Phone number:</label>"
-    " <input type=\"text\" id=\"phone\"><br>"
-    "<label for=\"company\">First company:</label>"
-    " <input type=\"text\" id=\"company\"><br>"
-    "</form>";
 // Searches all frames of the primary page in |web_contents| and returns one
 // called |name|. If there are none, returns null, if there are more, returns
 // an arbitrary one.
@@ -266,9 +158,674 @@ content::RenderFrameHost* RenderFrameHostForName(
       base::BindRepeating(&content::FrameMatchesName, name));
 }
 
-}  // namespace
+// Represents a JavaScript expression that evaluates to a HTMLElement.
+using ElementExpr = base::StrongAlias<struct ElementExprTag, std::string>;
 
-// AutofillInteractiveTestBase ------------------------------------------------
+ElementExpr GetElementById(const std::string& id) {
+  return ElementExpr(
+      base::StringPrintf("document.getElementById(`%s`)", id.c_str()));
+}
+
+// Represents a field's expected or actual (as extracted from the DOM) id (not
+// its name) and value.
+struct FieldValue {
+  std::string id;
+  std::string value;
+};
+
+std::ostream& operator<<(std::ostream& os, const FieldValue& field) {
+  return os << "{" << field.id << "=" << field.value << "}";
+}
+
+// Returns the field IDs and values of a collection of fields.
+//
+// Note that `control_elements` is *not* the ID of a form, but a JavaScript
+// expression that evaluates to a collection of form-control elements, such has
+// `document.getElementById('myForm').elements`.
+std::vector<FieldValue> GetFieldValues(
+    const ElementExpr& control_elements,
+    content::ToRenderFrameHost execution_target) {
+  std::string script = base::StringPrintf(
+      R"( const fields = [];
+          for (const field of %s) {
+            fields.push({
+              id: field.id,
+              value: field.value
+            });
+          }
+          fields;
+        )",
+      control_elements->c_str());
+  content::EvalJsResult r = content::EvalJs(execution_target, script);
+  DCHECK(r.value.is_list()) << r.error;
+  std::vector<FieldValue> fields;
+  for (const base::Value& field : r.value.GetListDeprecated()) {
+    fields.push_back({.id = *field.FindStringKey("id"),
+                      .value = *field.FindStringKey("value")});
+  }
+  return fields;
+}
+
+// Returns the center point of a DOM element.
+gfx::Point GetCenter(const ElementExpr& e,
+                     content::ToRenderFrameHost execution_target) {
+  std::string x_script = base::StringPrintf(
+      R"( const bounds = (%s).getBoundingClientRect();
+          Math.floor(bounds.left + bounds.width / 2))",
+      e->c_str());
+  std::string y_script = base::StringPrintf(
+      R"( const bounds = (%s).getBoundingClientRect();
+          Math.floor(bounds.top + bounds.height / 2)
+      )",
+      e->c_str());
+  int x = content::EvalJs(execution_target, x_script).ExtractInt();
+  int y = content::EvalJs(execution_target, y_script).ExtractInt();
+  return gfx::Point(x, y);
+}
+
+// Triggers a JavaScript event like 'focus' and waits for the event to happen.
+[[nodiscard]] AssertionResult TriggerAndWaitForEvent(
+    const ElementExpr& e,
+    const std::string& event_name,
+    content::ToRenderFrameHost execution_target) {
+  std::string script = base::StringPrintf(
+      R"( if (document.readyState === 'complete') {
+            function handler(e) {
+              e.target.removeEventListener(e.type, arguments.callee);
+              domAutomationController.send(true);
+            }
+            const target = %s;
+            target.addEventListener('%s', handler);
+            target.%s();
+          } else {
+            domAutomationController.send(false);
+          })",
+      e->c_str(), event_name.c_str(), event_name.c_str());
+  content::EvalJsResult result = content::EvalJs(
+      execution_target, script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+  if (!result.error.empty()) {
+    return AssertionFailure() << __func__ << "(): " << result.error;
+  } else if (false == result) {
+    return AssertionFailure()
+           << __func__ << "(): couldn't trigger " << event_name << " on " << *e;
+  } else {
+    return AssertionSuccess();
+  }
+}
+
+// True iff `e` is the deepest active element in the given frame.
+//
+// "Deepest" refers to the shadow DOM: if an <input> in the shadow DOM is
+// focused, then this <input> and the shadow host are active elements, but
+// IsFocusedField() only returns true for the <input>.
+bool IsFocusedField(const ElementExpr& e,
+                    content::ToRenderFrameHost execution_target) {
+  std::string script = base::StringPrintf(
+      "const e = (%s); e === e.getRootNode().activeElement", e->c_str());
+  return true == content::EvalJs(execution_target, script);
+}
+
+// Unfocuses the currently focused field.
+[[nodiscard]] AssertionResult BlurFocusedField(
+    content::ToRenderFrameHost execution_target) {
+  std::string script = R"(
+    if (document.activeElement !== null)
+      document.activeElement.blur();
+  )";
+  return content::ExecJs(execution_target, script);
+}
+
+// A helper function for focusing a field in AutofillFlow().
+// Consider using AutofillFlow() instead.
+[[nodiscard]] AssertionResult FocusField(
+    const ElementExpr& e,
+    content::ToRenderFrameHost execution_target) {
+  if (IsFocusedField(e, execution_target)) {
+    AssertionResult r = BlurFocusedField(execution_target);
+    if (!r)
+      return r;
+  }
+  return TriggerAndWaitForEvent(e, "focus", execution_target);
+}
+
+// The different ways of triggering the Autofill dropdown.
+//
+// A difference in their behaviour is that (only) ByArrow() opens implicitly
+// selects the top-most suggestion.
+struct ShowMethod {
+  constexpr static ShowMethod ByArrow() { return {.arrow = true}; }
+  constexpr static ShowMethod ByClick() { return {.click = true}; }
+  constexpr static ShowMethod ByChar(char c) { return {.character = c}; }
+
+  bool selects_first_suggestion() { return arrow; }
+
+  // Exactly one of the members should be evaluate to `true`.
+  const bool arrow = false;
+  const char character = '\0';
+  const bool click = false;
+};
+
+// We choose the timeout empirically. 250 ms are not enough; tests become flaky:
+// in ShowAutofillPopup(), the preview triggered by an "arrow down" sometimes
+// only arrives after >250 ms and thus arrives during the DoNothingAndWait(),
+// which causes a crash.
+constexpr base::TimeDelta kAutofillFlowDefaultTimeout = base::Seconds(2);
+
+struct ShowAutofillPopupParams {
+  ShowMethod show_method = ShowMethod::ByArrow();
+  int num_profile_suggestions = 1;
+  size_t max_tries = 5;
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
+  absl::optional<content::ToRenderFrameHost> execution_target = {};
+};
+
+// A helper function for showing the popup in AutofillFlow().
+// Consider using AutofillFlow() instead.
+[[nodiscard]] AssertionResult ShowAutofillPopup(const ElementExpr& e,
+                                                AutofillUiTest* test,
+                                                ShowAutofillPopupParams p) {
+  constexpr auto kSuggest = ObservedUiEvents::kSuggestionShown;
+  constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
+
+  content::ToRenderFrameHost execution_target =
+      p.execution_target.value_or(test->GetWebContents());
+  content::RenderFrameHost* rfh = execution_target.render_frame_host();
+  content::RenderWidgetHostView* view = rfh->GetView();
+  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
+
+  auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
+    constexpr auto kDown = ui::DomKey::ARROW_DOWN;
+    if (base::Contains(exp, ObservedUiEvents::kSuggestionShown)) {
+      return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
+    } else {
+      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
+                                         p.timeout);
+    }
+  };
+  auto Backspace = [&]() {
+    return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
+  };
+  auto Char = [&](const std::string& code, std::list<ObservedUiEvents> exp) {
+    ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code);
+    ui::DomKey dom_key;
+    ui::KeyboardCode keyboard_code;
+    CHECK(ui::DomCodeToUsLayoutDomKey(dom_code, ui::EF_SHIFT_DOWN, &dom_key,
+                                      &keyboard_code));
+    return test->SendKeyToPageAndWait(dom_key, dom_code, keyboard_code,
+                                      std::move(exp), p.timeout);
+  };
+  auto Click = [&](std::list<ObservedUiEvents> exp) {
+    gfx::Point point = view->TransformPointToRootCoordSpace(GetCenter(e, rfh));
+    test->test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
+                                           p.timeout);
+    content::SimulateMouseClickAt(test->GetWebContents(), 0,
+                                  blink::WebMouseEvent::Button::kLeft, point);
+    return test->test_delegate()->Wait();
+  };
+
+  // It seems that due to race conditions with Blink's layouting
+  // (crbug.com/1175735#c9), the below focus events are sometimes too early:
+  // Autofill closes the popup right away because it is outside of the content
+  // area. To work around this, we attempt to bring up the Autofill popup
+  // multiple times, with some delay.
+  AssertionResult a = AssertionFailure()
+                      << __func__ << "(): with " << p.num_profile_suggestions
+                      << " profile suggestions";
+  bool field_was_focused_initially = IsFocusedField(e, rfh);
+  for (size_t i = 1; i <= p.max_tries; ++i) {
+    a = a << "Iteration " << i << "/" << p.max_tries << ". ";
+    // The translate bubble may overlap with the Autofill popup. This causes
+    // flakiness. See crbug.com/1175735#c10.
+    translate::test_utils::CloseCurrentBubble(test->browser());
+    if (i > 1) {
+      test->DoNothingAndWaitAndIgnoreEvents(p.timeout);
+      if (field_was_focused_initially) {
+        // The Autofill popup may have opened due to a severely delayed event on
+        // a slow bot. To reset the popup, we re-focus the field.
+        a << "Trying to re-focus the field. ";
+        if (AssertionResult b = BlurFocusedField(rfh); !b)
+          a = a << b;
+        if (AssertionResult b = FocusField(e, rfh); !b)
+          a = a << b;
+      }
+    }
+
+    bool has_preview = 0 < p.num_profile_suggestions;
+    if (p.show_method.arrow) {
+      // Press arrow down to open the popup and select first suggestion.
+      // Depending on the platform, this requires one or two arrow-downs.
+      if (!IsFocusedField(e, rfh))
+        return a << "Field " << *e << " must be focused. ";
+      if (!ShouldAutoselectFirstSuggestionOnArrowDown()) {
+        if (!ArrowDown({kSuggest})) {
+          a << "Cannot trigger suggestions by first arrow. ";
+          continue;
+        }
+        if (!(has_preview ? ArrowDown({kPreview}) : ArrowDown({}))) {
+          a << "Cannot select first suggestion by second arrow. ";
+          continue;
+        }
+      } else if (!(has_preview ? ArrowDown({kSuggest, kPreview})
+                               : ArrowDown({kSuggest}))) {
+        a << "Cannot trigger and select first suggestion by arrow. ";
+        continue;
+      }
+    } else if (p.show_method.character) {
+      // Enter character to open the popup, but do not select an option.
+      // If necessary, delete past iterations character first.
+      if (!IsFocusedField(e, rfh))
+        return a << "Field " << *e << " must be focused. ";
+      if (i > 1 && !Backspace())
+        a << "Cannot undo past iteration's key. ";
+      std::string code = std::string("Key") + p.show_method.character;
+      if (!Char(code, {kSuggest})) {
+        a << "Cannot trigger suggestions by key. ";
+        continue;
+      }
+    } else if (p.show_method.click) {
+      // Click item to open the popup, but do not select an option.
+      if (!Click({kSuggest})) {
+        a << "Cannot trigger and select first suggestion by click. ";
+        continue;
+      }
+    }
+    return AssertionSuccess();
+  }
+  return a << "Couldn't show Autofill suggestions on " << *e << ". ";
+}
+
+struct AutofillSuggestionParams {
+  int num_profile_suggestions = 1;
+  int current_index = 0;
+  int target_index = 0;
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
+  absl::optional<content::ToRenderFrameHost> execution_target = {};
+};
+
+// A helper function for selecting a suggestion in AutofillFlow().
+// Consider using AutofillFlow() instead.
+[[nodiscard]] AssertionResult SelectAutofillSuggestion(
+    const ElementExpr& e,
+    AutofillUiTest* test,
+    AutofillSuggestionParams p) {
+  content::RenderWidgetHost* widget =
+      p.execution_target.value_or(test->GetWebContents())
+          .render_frame_host()
+          ->GetView()
+          ->GetRenderWidgetHost();
+
+  constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
+
+  auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
+    return test->SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
+                                       widget, p.timeout);
+  };
+
+  for (int i = p.current_index + 1; i <= p.target_index; ++i) {
+    bool has_preview = i < p.num_profile_suggestions;
+    if (!(has_preview ? ArrowDown({kPreview}) : ArrowDown({}))) {
+      return AssertionFailure()
+             << __func__ << "(): Couldn't go to " << i << "th suggestion with"
+             << (has_preview ? "" : "out") << " preview";
+    }
+  }
+  return AssertionSuccess();
+}
+
+// A helper function for accepting a suggestion in AutofillFlow().
+// Consider using AutofillFlow() instead.
+[[nodiscard]] AssertionResult AcceptAutofillSuggestion(
+    const ElementExpr& e,
+    AutofillUiTest* test,
+    AutofillSuggestionParams p) {
+  content::RenderWidgetHost* widget =
+      p.execution_target.value_or(test->GetWebContents())
+          .render_frame_host()
+          ->GetView()
+          ->GetRenderWidgetHost();
+
+  constexpr auto kFill = ObservedUiEvents::kFormDataFilled;
+
+  auto Enter = [&](std::list<ObservedUiEvents> exp) {
+    return test->SendKeyToPopupAndWait(ui::DomKey::ENTER, std::move(exp),
+                                       widget);
+  };
+
+  bool has_fill = p.target_index < p.num_profile_suggestions;
+  if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a)
+    return a;
+  if (!(has_fill ? Enter({kFill}) : Enter({}))) {
+    return AssertionFailure()
+           << __func__ << "(): Couldn't accept to " << p.target_index
+           << "th suggestion with" << (has_fill ? "" : "out") << " fill";
+  }
+  return AssertionSuccess();
+}
+
+// An Autofill consists of four stages:
+// 1. focusing the field,
+// 2. showing the Autofill popup,
+// 3. selecting the desired suggestion,
+// 4. accepting the selected suggestion.
+//
+// To reduce flakiness when in Stage 2, this does multiple attempts.
+// Depending on the `show_method`, showing may already select the first
+// suggestion; see ShowMethod for details.
+//
+// Selecting a profile suggestion (address or credit card) also triggers
+// preview. By contrast, "Clear" and "Manage" do not cause a preview. The
+// Autofill flow expects a preview for (only) the indices less than
+// `num_profile_suggestions`. The selected `target_index` may be greater or
+// equal to `num_profile_suggestions` to select "Clear" or "Manager".
+//
+// A callback can be set to be executed after each stage. Again note that
+// `show_method` may select the first suggestion.
+//
+// The default `execution_target` is the main frame.
+struct AutofillFlowParams {
+  bool do_focus = true;
+  bool do_show = true;
+  bool do_select = true;
+  bool do_accept = true;
+  ShowMethod show_method = ShowMethod::ByArrow();
+  int num_profile_suggestions = 1;
+  int target_index = 0;
+  base::RepeatingClosure after_focus = {};
+  base::RepeatingClosure after_show = {};
+  base::RepeatingClosure after_select = {};
+  base::RepeatingClosure after_accept = {};
+  size_t max_show_tries = 5;
+  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
+  absl::optional<content::ToRenderFrameHost> execution_target = {};
+};
+
+[[nodiscard]] AssertionResult AutofillFlow(const ElementExpr& e,
+                                           AutofillUiTest* test,
+                                           AutofillFlowParams p = {}) {
+  content::ToRenderFrameHost execution_target =
+      p.execution_target.value_or(test->GetWebContents());
+
+  if (p.do_focus) {
+    AssertionResult a = FocusField(e, execution_target);
+    if (!a)
+      return a;
+    if (p.after_focus)
+      p.after_focus.Run();
+  }
+
+  if (p.do_show) {
+    AssertionResult a =
+        ShowAutofillPopup(e, test,
+                          {.show_method = p.show_method,
+                           .num_profile_suggestions = p.num_profile_suggestions,
+                           .max_tries = p.max_show_tries,
+                           .timeout = p.timeout,
+                           .execution_target = execution_target});
+    if (!a)
+      return a;
+    if (p.after_show)
+      p.after_show.Run();
+  }
+
+  if (p.do_select) {
+    AssertionResult a = SelectAutofillSuggestion(
+        e, test,
+        {.num_profile_suggestions = p.num_profile_suggestions,
+         .current_index = p.show_method.selects_first_suggestion() ? 0 : -1,
+         .target_index = p.target_index,
+         .timeout = p.timeout,
+         .execution_target = execution_target});
+    if (!a)
+      return a;
+    if (p.after_select)
+      p.after_select.Run();
+  }
+
+  if (p.do_accept) {
+    AssertionResult a = AcceptAutofillSuggestion(
+        e, test,
+        {.num_profile_suggestions = p.num_profile_suggestions,
+         .current_index = p.target_index,
+         .target_index = p.target_index,
+         .timeout = p.timeout,
+         .execution_target = execution_target});
+    if (!a)
+      return a;
+    if (p.after_accept)
+      p.after_accept.Run();
+  }
+
+  return AssertionSuccess();
+}
+
+const std::vector<FieldValue> kEmptyAddress{
+    {"firstname", ""}, {"lastname", ""}, {"address1", ""},
+    {"address2", ""},  {"city", ""},     {"state", ""},
+    {"zip", ""},       {"country", ""},  {"phone", ""}};
+
+const std::vector<FieldValue> kDefaultAddress{
+    {"firstname", "Milton"},
+    {"lastname", "Waddams"},
+    {"address1", "4120 Freidrich Lane"},
+    {"address2", "Basement"},
+    {"city", "Austin"},
+    {"state", "TX"},
+    {"zip", "78744"},
+    {"country", "US"},
+    {"phone", "15125551234"}};
+
+// Returns a copy of |fields| except that the value of `update.id` is set to
+// `update.value`.
+[[nodiscard]] std::vector<FieldValue> MergeValue(std::vector<FieldValue> fields,
+                                                 const FieldValue& update) {
+  for (auto& field : fields) {
+    if (field.id == update.id) {
+      field.value = update.value;
+      return fields;
+    }
+  }
+  NOTREACHED();
+  return fields;
+}
+
+// Returns a copy of |fields| merged with |updates|.
+[[nodiscard]] std::vector<FieldValue> MergeValues(
+    std::vector<FieldValue> fields,
+    const std::vector<FieldValue>& updates) {
+  for (auto& update : updates)
+    fields = MergeValue(std::move(fields), update);
+  return fields;
+}
+
+// Matches a container of FieldValues if the `i`th actual FieldValue::value
+// matches the `i`th `expected` FieldValue::value.
+// As a sanity check, also requires that the `i`th actual FieldValue::id
+// starts with the `i`th `expected` FieldValue::id.
+[[nodiscard]] auto ValuesAre(const std::vector<FieldValue>& expected) {
+  auto FieldEq = [](const FieldValue& expected) {
+    return ::testing::AllOf(
+        ::testing::Field(&FieldValue::id, ::testing::StartsWith(expected.id)),
+        ::testing::Field(&FieldValue::value, ::testing::Eq(expected.value)));
+  };
+  std::vector<decltype(FieldEq(expected[0]))> matchers;
+  for (const FieldValue& field : expected)
+    matchers.push_back(FieldEq(field));
+  return ::testing::UnorderedElementsAreArray(matchers);
+}
+
+// An object that waits for an observed form-control element to change its value
+// to a non-empty string.
+//
+// See ListenForValueChange() for details.
+class ValueWaiter {
+ public:
+  static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(5);
+
+  ValueWaiter(int waiterId, content::ToRenderFrameHost execution_target)
+      : waiterId_(waiterId), execution_target_(execution_target) {}
+
+  // Returns the non-empty value of the observed form-control element, or
+  // absl::nullopt if no value change is observed before `timeout`.
+  [[nodiscard]] absl::optional<std::string> Wait(
+      base::TimeDelta timeout = kDefaultTimeout) && {
+    const std::string kFunction = R"(
+      // Polls the value of `window[observedValueSlots]` and replies with the
+      // value once its non-`undefined` or `timeoutMillis` have elapsed.
+      //
+      // The value is expected to be populated by listenForValueChange().
+      function pollValue(waiterId, timeoutMillis) {
+        console.log(`pollValue('${waiterId}', ${timeoutMillis})`);
+
+        let interval = undefined;
+        let timeout = undefined;
+
+        function reply(r) {
+          console.log(`pollValue('${waiterId}', ${timeoutMillis}): `+
+                      `replying '${r}'`);
+          window.domAutomationController.send(r);
+          clearTimeout(timeout);
+          clearInterval(interval);
+        }
+
+        function replyIfSet(r) {
+          if (r !== undefined)
+            reply(r);
+        }
+
+        timeout = setTimeout(function() {
+          console.log(`pollValue('${waiterId}', ${timeoutMillis}): timeout`);
+          reply('');
+        }, timeoutMillis);
+
+        const kPollingIntervalMillis = 100;
+        interval = setInterval(function() {
+          replyIfSet(window.observedValueSlots[waiterId]);
+        }, kPollingIntervalMillis);
+
+        replyIfSet(window.observedValueSlots[waiterId]);
+      }
+    )";
+    std::string call = base::StringPrintf("pollValue(`%d`, %" PRId64 ")",
+                                          waiterId_, timeout.InMilliseconds());
+    content::EvalJsResult r =
+        content::EvalJs(execution_target_, kFunction + call,
+                        content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+    std::string value = r.ExtractString();
+    return !value.empty() ? absl::make_optional(value) : absl::nullopt;
+  }
+
+ private:
+  int waiterId_;
+  content::ToRenderFrameHost execution_target_;
+};
+
+// Registers observers for a value change of a field `id`. This listener fires
+// on the first time *any* object whose ID is `id` changes its value to a
+// non-empty string after the global `unblock_variable` has become true.
+//
+// It is particularly useful for detecting refills.
+//
+// For example, consider the following chain JavaScript statements:
+//
+// 1. window.unblock = undefined // or any other value that converts to false;
+// 2. document.body.innerHTML += '<input id="id">';
+// 3. document.getElementById('id').value = "foo";
+// 4. document.getElementById('id').remove();
+// 5. document.body.innerHTML += '<input id="id">';
+// 6. document.getElementById('id').value = "foo";
+// 7. window.unblock = true;
+// 8. document.getElementById('id').value = "";
+// 9. document.getElementById('id').value = "bar";
+//
+// Then `ListenForValueChange("id", "unblock", rfh).Wait(base::Seconds(5)) ==
+// "bar"` the ListenForValueChange() call happens any point before Event 9 and
+// Event 9 happens no later than 5 seconds after that.
+[[nodiscard]] ValueWaiter ListenForValueChange(
+    const std::string& id,
+    const absl::optional<std::string>& unblock_variable,
+    content::ToRenderFrameHost execution_target) {
+  const std::string kFunction = R"(
+    // This function observes the DOM for an attached form-control element `id`.
+    //
+    // On the first `change` event of such an element, it stores that element's
+    // value in an array `window[observedValueSlots]`.
+    //
+    // Returns the index of that value.
+    function listenForValueChange(id, unblockVariable) {
+      console.log(`listenForValueChange('${id}')`);
+
+      if (window.observedValueSlots === undefined)
+        window.observedValueSlots = [];
+
+      const waiterId = window.observedValueSlots.length;
+      window.observedValueSlots.push(undefined);
+
+      let observer = undefined;
+
+      function changeHandler() {
+        console.log(`listenForValueChange('${id}'): observed change in event `+
+                    `handler: '${document.getElementById(id).value}'`);
+        // Since other handlers may manipulate the fields value or remove it
+        // from the DOM or replace it, we delay its execution.
+        setTimeout(function() {
+          console.log(`listenForValueChange('${id}'): observed change after `+
+                      `event handler: '${document.getElementById(id).value}'`);
+          if (unblockVariable && window[unblockVariable] !== true) {
+            console.log(`listenForValueChange('${id}'): `+
+                        `observed change, blocked by '${unblockVariable}'`);
+            return;
+          }
+          const e = document.getElementById(id);
+          if (e === undefined) {
+            console.log(`listenForValueChange('${id}'): element not found`);
+            return;
+          }
+          if (e.value === '') {
+            console.log(`listenForValueChange('${id}'): empty value`);
+            return;
+          }
+          console.log(`listenForValueChange('${id}'): storing in slot`);
+          window.observedValueSlots[waiterId] = e.value;
+          e.removeEventListener('change', changeHandler);
+          observer.disconnect();
+        }, 0);
+      }
+
+      // Observes the DOM to see if a new element `id` is added or some element
+      // changes its ID to `id`.
+      observer = new MutationObserver(function(mutations) {
+        const e = document.getElementById(id);
+        if (e !== null) {
+          console.log(`listenForValueChange('${id}'): some element has been `+
+                      `attached or change`);
+          e.addEventListener('change', changeHandler);
+        }
+      });
+      observer.observe(document, {
+        attributes: true,
+        childList: true,
+        characterData: false,
+        subtree: true
+      });
+
+      const e = document.getElementById(id);
+      if (e !== null) {
+        console.log(`listenForValueChange('${id}'): element exists already`);
+        e.addEventListener('change', changeHandler);
+      }
+
+      return waiterId;
+    }
+  )";
+  std::string call =
+      base::StringPrintf("listenForValueChange(`%s`, `%s`)", id.c_str(),
+                         unblock_variable.value_or("").c_str());
+  content::EvalJsResult r = content::EvalJs(execution_target, kFunction + call);
+  int waiterId = r.ExtractInt();
+  return ValueWaiter(waiterId, execution_target);
+}
+
+}  // namespace
 
 // Test fixtures derive from this class. This class hierarchy allows test
 // fixtures to have distinct list of test parameters.
@@ -277,21 +834,54 @@ content::RenderFrameHost* RenderFrameHostForName(
 //                         this run with all possible valid combinations of
 //                         features and field trials.
 class AutofillInteractiveTestBase : public AutofillUiTest {
- protected:
+ public:
   AutofillInteractiveTestBase()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitAndEnableFeature(blink::features::kAutofillShadowDOM);
   }
+  ~AutofillInteractiveTestBase() override = default;
 
- public:
   AutofillInteractiveTestBase(const AutofillInteractiveTestBase&) = delete;
   AutofillInteractiveTestBase& operator=(const AutofillInteractiveTestBase&) =
       delete;
 
- protected:
-  ~AutofillInteractiveTestBase() override = default;
+  std::vector<FieldValue> GetFormValues(
+      const ElementExpr& form = GetElementById("shipping")) {
+    return ::autofill::GetFieldValues(ElementExpr(*form + ".elements"),
+                                      GetWebContents());
+  }
 
-  // InProcessBrowserTest:
+  base::RepeatingClosure ExpectValues(
+      const std::vector<FieldValue>& expected_values,
+      const ElementExpr& form = GetElementById("shipping")) {
+    return base::BindRepeating(
+        [](AutofillInteractiveTestBase* self,
+           const std::vector<FieldValue>& expected_values,
+           const ElementExpr& form) {
+          EXPECT_THAT(self->GetFormValues(form), ValuesAre(expected_values));
+        },
+        this, expected_values, form);
+  }
+
+  content::EvalJsResult GetFieldValueById(const std::string& field_id) {
+    return GetFieldValue(GetElementById(field_id));
+  }
+
+  content::EvalJsResult GetFieldValue(ElementExpr e) {
+    return GetFieldValue(e, GetWebContents());
+  }
+
+  content::EvalJsResult GetFieldValue(
+      const ElementExpr& e,
+      content::ToRenderFrameHost execution_target) {
+    std::string script = base::StringPrintf("%s.value", e->c_str());
+    return content::EvalJs(execution_target, script);
+  }
+
+  ValueWaiter ListenForRefill(const std::string& id) {
+    return ListenForValueChange(id, "refill", GetWebContents());
+  }
+
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
@@ -355,26 +945,22 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return std::move(response);
   }
 
-  const translate::LanguageState& GetLanguageState() {
-    auto* const client = ChromeTranslateClient::FromWebContents(
+  translate::LanguageState& GetLanguageState() {
+    ChromeTranslateClient* client = ChromeTranslateClient::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    CHECK(client);
-
-    return client->GetLanguageState();
+    return *client->GetTranslateManager()->GetLanguageState();
   }
 
   // This is largely a copy of CheckForTranslateUI() from Translate's
   // translate_language_browsertest.cc.
   void NavigateToContentAndWaitForLanguageDetection(const char* content) {
     ASSERT_TRUE(browser());
-
     auto waiter = CreateTranslateWaiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
         translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
 
     SetTestUrlResponse(content);
-    ASSERT_NO_FATAL_FAILURE(
-        ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
     waiter->Wait();
 
     // Language detection sometimes fires early with an "und" (= undetermined)
@@ -445,80 +1031,33 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     AddTestCreditCard(browser()->profile(), card);
   }
 
-  // Populates a webpage form using autofill data and keypress events.
-  // This function focuses the specified input field in the form, and then
-  // sends keypress events to the tab to cause the form to be populated.
-  void PopulateForm(const std::string& field_id) {
-    std::string js("document.getElementById('" + field_id + "').focus();");
-    ASSERT_TRUE(content::ExecuteScript(GetWebContents(), js));
-
-    ShowDropdownAndSelectFirstSuggestionUsingArrowDown();
-    SendKeyToPopupAndWait(ui::DomKey::ENTER,
-                          {ObservedUiEvents::kFormDataFilled});
-  }
-
-  void ExpectFieldValue(const std::string& field_name,
-                        const std::string& expected_value) {
-    std::string value;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.getElementById('" +
-            field_name + "').value);",
-        &value));
-    EXPECT_EQ(expected_value, value) << "for field " << field_name;
-  }
-
-  void AssertFieldValue(const std::string& field_name,
-                        const std::string& expected_value) {
-    std::string value;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.getElementById('" +
-            field_name + "').value);",
-        &value));
-    ASSERT_EQ(expected_value, value) << "for field " << field_name;
-  }
-
-  void GetFieldBackgroundColor(const std::string& field_name,
-                               std::string* color) {
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-        GetWebContents(),
-        "window.domAutomationController.send("
-        "    document.defaultView.getComputedStyle(document.getElementById('" +
-            field_name + "')).backgroundColor);",
-        color));
-  }
-
   void SimulateURLFetch() {
-    std::string script =
-        " var google = {};"
-        "google.translate = (function() {"
-        "  return {"
-        "    TranslateService: function() {"
-        "      return {"
-        "        isAvailable : function() {"
-        "          return true;"
-        "        },"
-        "        restore : function() {"
-        "          return;"
-        "        },"
-        "        getDetectedLanguage : function() {"
-        "          return \"ja\";"
-        "        },"
-        "        translatePage : function(sourceLang, targetLang,"
-        "                                 onTranslateProgress) {"
-        "          document.getElementsByTagName(\"body\")[0].innerHTML = `" +
-        std::string(kTestShippingFormString) +
-        "              `;"
-        "          onTranslateProgress(100, true, false);"
-        "        }"
-        "      };"
-        "    }"
-        "  };"
-        "})();"
-        "cr.googleTranslate.onTranslateElementLoad();";
+    std::string script = R"(
+        var google = {};
+        google.translate = (function() {
+          return {
+            TranslateService: function() {
+              return {
+                isAvailable : function() {
+                  return true;
+                },
+                restore : function() {
+                  return;
+                },
+                getDetectedLanguage : function() {
+                  return "ja";
+                },
+                translatePage : function(sourceLang, targetLang,
+                                         onTranslateProgress) {
+                  document.getElementsByTagName("body")[0].innerHTML = `)" +
+                         std::string(kTestShippingFormString) + R"(`;
+                  onTranslateProgress(100, true, false);
+                }
+              };
+            }
+          };
+        })();
+        cr.googleTranslate.onTranslateElementLoad(); )";
 
     controllable_http_response_->WaitForRequest();
     controllable_http_response_->Send(
@@ -527,55 +1066,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         "\r\n");
     controllable_http_response_->Send(script);
     controllable_http_response_->Done();
-  }
-
-  void FocusFieldByName(const std::string& name) {
-    bool result = false;
-    std::string script = base::StringPrintf(
-        R"( function onFocusHandler(e) {
-              e.target.removeEventListener(e.type, arguments.callee);
-              domAutomationController.send(true);
-            }
-            if (document.readyState === 'complete') {
-              var target = document.getElementById('%s');
-              target.addEventListener('focus', onFocusHandler);
-              target.focus();
-            } else {
-              domAutomationController.send(false);
-            })",
-        name.c_str());
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(), script,
-                                                     &result));
-    ASSERT_TRUE(result);
-  }
-
-  void FocusFirstNameField() { FocusFieldByName("firstname"); }
-
-  // Simulates a click on the middle of the DOM element with the given |id|.
-  void ClickElementWithId(const std::string& id) {
-    int x;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(),
-        "var bounds = document.getElementById('" + id +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.left + bounds.width / 2));",
-        &x));
-    int y;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-        GetWebContents(),
-        "var bounds = document.getElementById('" + id +
-            "').getBoundingClientRect();"
-            "domAutomationController.send("
-            "    Math.floor(bounds.top + bounds.height / 2));",
-        &y));
-    content::SimulateMouseClickAt(GetWebContents(), 0,
-                                  blink::WebMouseEvent::Button::kLeft,
-                                  gfx::Point(x, y));
-  }
-
-  void ClickFirstNameField() {
-    ASSERT_NO_FATAL_FAILURE(ClickElementWithId("firstname"));
   }
 
   // Make a pointless round trip to the renderer, giving the popup a chance to
@@ -587,57 +1077,32 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         GetWebContents(), "domAutomationController.send(42)", &unused));
   }
 
-  void ExpectFilledTestForm() {
-    ExpectFieldValue("firstname", "Milton");
-    ExpectFieldValue("lastname", "Waddams");
-    ExpectFieldValue("address1", "4120 Freidrich Lane");
-    ExpectFieldValue("address2", "Basement");
-    ExpectFieldValue("city", "Austin");
-    ExpectFieldValue("state", "TX");
-    ExpectFieldValue("zip", "78744");
-    ExpectFieldValue("country", "US");
-    ExpectFieldValue("phone", "15125551234");
-  }
-
-  void ExpectClearedForm() {
-    ExpectFieldValue("firstname", "");
-    ExpectFieldValue("lastname", "");
-    ExpectFieldValue("address1", "");
-    ExpectFieldValue("address2", "");
-    ExpectFieldValue("city", "");
-    ExpectFieldValue("state", "");
-    ExpectFieldValue("zip", "");
-    ExpectFieldValue("country", "");
-    ExpectFieldValue("phone", "");
-  }
-
-  void FillElementWithValue(const std::string& element_name,
+  void FillElementWithValue(const std::string& element_id,
                             const std::string& value) {
-    // Sends "|element_name|:|value|" to |msg_queue| if the |element_name|'s
+    // Sends "|element_id|:|value|" to |msg_queue| if the |element_id|'s
     // value has changed to |value|.
-    std::string script =
-        base::StringPrintf(R"(
-    (function() {
-      const element_name = '%s';
-      const value = '%s';
-      const field = document.getElementById(element_name);
-      const listener = function() {
-        if (field.value === value) {
-          field.removeEventListener('input', listener);
-          domAutomationController.send(element_name +':'+ field.value);
-        }
-      }
-      field.addEventListener('input', listener, false);
-      return 'done';
-    })();)",
-                           element_name.c_str(), value.c_str());
-    ASSERT_TRUE(ExecJs(GetWebContents(), script));
+    std::string script = base::StringPrintf(
+        R"( (function() {
+              const element_id = '%s';
+              const value = '%s';
+              const field = document.getElementById(element_id);
+              const listener = function() {
+                if (field.value === value) {
+                  field.removeEventListener('input', listener);
+                  domAutomationController.send(element_id +':'+ field.value);
+                }
+              };
+              field.addEventListener('input', listener, false);
+              return 'done';
+            })(); )",
+        element_id.c_str(), value.c_str());
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
 
     content::DOMMessageQueue msg_queue;
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
-      const ui::PrintableCodeEntry* code_entry = std::find_if(
-          std::begin(ui::kPrintableCodeMap), std::end(ui::kPrintableCodeMap),
+      const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
+          ui::kPrintableCodeMap,
           [character](const ui::PrintableCodeEntry& entry) {
             return entry.character[0] == character ||
                    entry.character[1] == character;
@@ -651,112 +1116,13 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     }
     std::string reply;
     ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
-    ASSERT_EQ("\"" + element_name + ":" + value + "\"", reply);
+    ASSERT_EQ("\"" + element_id + ":" + value + "\"", reply);
   }
 
-  void DeleteElementValue(const std::string& element_name) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(),
-        "document.getElementById('" + element_name + "').value = '';"));
-    AssertFieldValue(element_name, "");
-  }
-
-  void TryBasicFormFill() {
-    FocusFirstNameField();
-
-    // Start filling the first name field with "M" and wait for the popup to be
-    // shown.
-    SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                         ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-
-    // Press the down arrow to select the suggestion and preview the autofilled
-    // form.
-    SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                          {ObservedUiEvents::kPreviewFormData});
-
-    // The previewed values should not be accessible to JavaScript.
-    ExpectFieldValue("firstname", "M");
-    ExpectFieldValue("lastname", std::string());
-    ExpectFieldValue("address1", std::string());
-    ExpectFieldValue("address2", std::string());
-    ExpectFieldValue("city", std::string());
-    ExpectFieldValue("state", std::string());
-    ExpectFieldValue("zip", std::string());
-    ExpectFieldValue("country", std::string());
-    ExpectFieldValue("phone", std::string());
-    // TODO(isherman): It would be nice to test that the previewed values are
-    // displayed: http://crbug.com/57220
-
-    // Press Enter to accept the autofill suggestions.
-    SendKeyToPopupAndWait(ui::DomKey::ENTER,
-                          {ObservedUiEvents::kFormDataFilled});
-
-    // The form should be filled.
-    ExpectFilledTestForm();
-  }
-
-  void ShowDropdownAndSelectFirstSuggestionUsingArrowDown(
-      content::RenderWidgetHost* widget = nullptr) {
-    if (ShouldAutoselectFirstSuggestionOnArrowDown()) {
-      SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                           {ObservedUiEvents::kSuggestionShown,
-                            ObservedUiEvents::kPreviewFormData});
-    } else {
-      SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                           {ObservedUiEvents::kSuggestionShown});
-      SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                            {ObservedUiEvents::kPreviewFormData}, widget);
-    }
-  }
-
-  void TryClearForm() {
-    ShowDropdownAndSelectFirstSuggestionUsingArrowDown();
-    SendKeyToDataListPopup(ui::DomKey::ARROW_DOWN);  // clear
-    SendKeyToDataListPopup(ui::DomKey::ENTER);
-
-    ExpectClearedForm();
-  }
-
-  void TriggerFormFill(const std::string& field_name) {
-    FocusFieldByName(field_name);
-    TriggerFormFillAlreadyFocused();
-  }
-
-  void TriggerFormFillAlreadyFocused() {
-    // Start filling the first name field with "M" and wait for the popup to be
-    // shown.
-    SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                         ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-
-    // Press the down arrow to select the suggestion and preview the autofilled
-    // form.
-    SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                          {ObservedUiEvents::kPreviewFormData});
-
-    // Press Enter to accept the autofill suggestions.
-    SendKeyToPopupAndWait(ui::DomKey::ENTER,
-                          {ObservedUiEvents::kFormDataFilled});
-  }
-
-  // Note: suggestion_position is 1-based, so 1 corresponds to the first
-  // position, 2 to second position, and so on.
-  void AcceptSuggestionUsingArrowDown(
-      int suggestion_position = 1,
-      content::RenderWidgetHost* widget = nullptr) {
-    // Show the dropdown and select the first suggestion using arrow down.
-    ShowDropdownAndSelectFirstSuggestionUsingArrowDown(widget);
-
-    // If not selecting the first suggestion, press the down arrow
-    // |suggestion_position - 1| times to select the suggestion requested and
-    // preview the autofilled form.
-    for (int i = 1; i < suggestion_position; ++i) {
-      SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                            {ObservedUiEvents::kPreviewFormData}, widget);
-    }
-
-    // Press Enter to accept the autofill suggestions.
-    SendKeyToPopupAndWait(ui::DomKey::ENTER,
-                          {ObservedUiEvents::kFormDataFilled}, widget);
+  void DeleteElementValue(const ElementExpr& field) {
+    std::string script = base::StringPrintf("%s.value = '';", field->c_str());
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
+    ASSERT_EQ("", GetFieldValue(field));
   }
 
   GURL GetTestUrl() const { return https_server_.GetURL(kTestUrlPath); }
@@ -796,8 +1162,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 const char AutofillInteractiveTestBase::kTestUrlPath[] =
     "/internal/test_url_path";
 
-// AutofillInteractiveTest ----------------------------------------------------
-
 class AutofillInteractiveTest : public AutofillInteractiveTestBase {
  protected:
   AutofillInteractiveTest() = default;
@@ -824,13 +1188,11 @@ class AutofillInteractiveTestWithHistogramTester
     url_loader_interceptor_ =
         std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
             [&](URLLoaderInterceptor::RequestParams* params) {
-              for (const auto& s : allowlist) {
-                const bool is_match =
-                    params->url_request.url.spec().find(s) != std::string::npos;
-                if (is_match)
-                  return false;  // Do not intercept.
-              }
-              return true;  // Intercept
+              // Intercept if not allow-listed.
+              return base::ranges::all_of(allowlist, [&params](const auto& s) {
+                return params->url_request.url.spec().find(s) ==
+                       std::string::npos;
+              });
             }));
     AutofillInteractiveTest::SetUp();
   }
@@ -853,24 +1215,19 @@ class AutofillInteractiveTestWithHistogramTester
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-// Test is flaky on Linux TSAN, see http://crbug.com/1045709.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_BasicFormFill DISABLED_BasicFormFill
-#else
-#define MAYBE_BasicFormFill BasicFormFill
-#endif  // THREAD_SANITIZER
-// Test that basic form fill is working.
+// Test the basic form-fill flow.
+// TODO(https://crbug.com/1045709): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
-                       MAYBE_BasicFormFill) {
+                       BasicFormFill) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Assert that the network isolation key is populated for 2 requests:
@@ -884,279 +1241,231 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicClear) {
   CreateTestProfile();
-
   SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Load the test page.
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  TryBasicFormFill();
-
-  TryClearForm();
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
+  static const char kTestBillingFormString[] =
+      R"( An example of a billing address form.
+          <form action="https://www.example.com/" method="POST" id="billing">
+          <label for="firstname_billing">First name:</label>
+           <input type="text" id="firstname_billing"><br>
+          <label for="lastname_billing">Last name:</label>
+           <input type="text" id="lastname_billing"><br>
+          <label for="address1_billing">Address line 1:</label>
+           <input type="text" id="address1_billing"><br>
+          <label for="address2_billing">Address line 2:</label>
+           <input type="text" id="address2_billing"><br>
+          <label for="city_billing">City:</label>
+           <input type="text" id="city_billing"><br>
+          <label for="state_billing">State:</label>
+           <select id="state_billing">
+           <option value="" selected="yes">--</option>
+           <option value="CA">California</option>
+           <option value="TX">Texas</option>
+           </select><br>
+          <label for="zip_billing">ZIP code:</label>
+           <input type="text" id="zip_billing"><br>
+          <label for="country_billing">Country:</label>
+           <select id="country_billing">
+           <option value="" selected="yes">--</option>
+           <option value="CA">Canada</option>
+           <option value="US">United States</option>
+           </select><br>
+          <label for="phone_billing">Phone number:</label>
+           <input type="text" id="phone_billing"><br>
+          </form> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(
       base::StrCat({kTestShippingFormString, kTestBillingFormString}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Fill first section.
-  TryBasicFormFill();
+  // Fill shipping form.
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(GetElementById("shipping")),
+              ValuesAre(kDefaultAddress));
+  EXPECT_THAT(GetFormValues(GetElementById("billing")),
+              ValuesAre(kEmptyAddress));
 
-  // Fill second section.
-  FocusFieldByName("firstname_billing");
-  AcceptSuggestionUsingArrowDown();
+  // Fill billing form.
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_billing"), this));
+  EXPECT_THAT(GetFormValues(GetElementById("billing")),
+              ValuesAre(kDefaultAddress));
+  EXPECT_THAT(GetFormValues(GetElementById("shipping")),
+              ValuesAre(kDefaultAddress));
 
-  // Clear second section.
-  ShowDropdownAndSelectFirstSuggestionUsingArrowDown();
-  SendKeyToDataListPopup(ui::DomKey::ARROW_DOWN);  // clear
-  SendKeyToDataListPopup(ui::DomKey::ENTER);
-
-  ExpectFieldValue("firstname_billing", "");
-  ExpectFieldValue("lastname_billing", "");
-  ExpectFieldValue("address1_billing", "");
-  ExpectFieldValue("address2_billing", "");
-  ExpectFieldValue("city_billing", "");
-  ExpectFieldValue("state_billing", "");
-  ExpectFieldValue("zip_billing", "");
-  ExpectFieldValue("country_billing", "");
-  ExpectFieldValue("phone_billing", "");
-
-  // First section should still be filled.
-  ExpectFilledTestForm();
+  // Clear billing form.
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_billing"), this,
+                           {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(GetElementById("shipping")),
+              ValuesAre(kDefaultAddress));
+  EXPECT_THAT(GetFormValues(GetElementById("billing")),
+              ValuesAre(kEmptyAddress));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Modify a field.
-  FocusFieldByName("city");
+  ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
   FillElementWithValue("city", "Montreal");
 
-  // Fill
-  FocusFirstNameField();
-  AcceptSuggestionUsingArrowDown();
-
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Waddams");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Montreal");  // Modified by the user.
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"city", "Montreal"})));
 }
 
 // Test that autofill doesn't refill a select field initially modified by the
 // user.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Modify a field.
-  FocusFieldByName("state");
+  ASSERT_TRUE(FocusField(GetElementById("state"), GetWebContents()));
   FillElementWithValue("state", "CA");
 
-  // Fill
-  FocusFirstNameField();
-  AcceptSuggestionUsingArrowDown();
-
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Waddams");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("state", "CA");  // Modified by the user.
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"state", "CA"})));
 }
 
 // Test that autofill works when the website prefills the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
   const char kPrefillScript[] =
-      "<script>"
-      "document.getElementById('firstname').value = 'Seb';"
-      "document.getElementById('lastname').value = 'Bell';"
-      "document.getElementById('address1').value = '3243 Notre-Dame Ouest';"
-      "document.getElementById('address2').value = 'apt 843';"
-      "document.getElementById('city').value = 'Montreal';"
-      "document.getElementById('zip').value = 'H5D 4D3';"
-      "document.getElementById('phone').value = '15142223344';"
-      "</script>";
-
+      R"( <script>
+            document.getElementById('firstname').value = 'Seb';
+            document.getElementById('lastname').value = 'Bell';
+            document.getElementById('address1').value = '3243 Notre-Dame Ouest';
+            document.getElementById('address2').value = 'apt 843';
+            document.getElementById('city').value = 'Montreal';
+            document.getElementById('zip').value = 'H5D 4D3';
+            document.getElementById('phone').value = '15142223344';
+          </script>)";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(base::StrCat({kTestShippingFormString, kPrefillScript}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // We need to delete the prefilled value and then trigger the autofill.
-  FocusFirstNameField();
-  DeleteElementValue("firstname");
-
-  AcceptSuggestionUsingArrowDown();
-  ExpectFilledTestForm();
+  auto Delete = [this] { DeleteElementValue(GetElementById("firstname")); };
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this,
+                   {.after_focus = base::BindLambdaForTesting(Delete)}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Test that autofill doesn't refill a field modified by the user.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        FillChangeSecondFieldRefillAndClearFirstFill) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Change the last name.
-  FocusFieldByName("lastname");
+  ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
-
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Wadda");  // Modified by the user.
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
   // Fill again by focusing on the first field.
-  FocusFirstNameField();
-  AcceptSuggestionUsingArrowDown();
-
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname",
-                   "Wadda");  // Modified by the user, should not be autofilled.
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
   // Clear everything except last name by selecting 'clear' on the first field.
-  ShowDropdownAndSelectFirstSuggestionUsingArrowDown();
-  SendKeyToDataListPopup(ui::DomKey::ARROW_DOWN);  // clear
-  SendKeyToDataListPopup(ui::DomKey::ENTER);
-
-  ExpectFieldValue("firstname", "");
-  ExpectFieldValue("lastname",
-                   "Wadda");  // Modified by the user, should not be autofilled.
-  ExpectFieldValue("address1", "");
-  ExpectFieldValue("address2", "");
-  ExpectFieldValue("city", "");
-  ExpectFieldValue("state", "");
-  ExpectFieldValue("zip", "");
-  ExpectFieldValue("country", "");
-  ExpectFieldValue("phone", "");
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kEmptyAddress, {"lastname", "Wadda"})));
 }
 
 // Test that multiple autofillings work.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        FillChangeSecondFieldRefillAndClearSecondField) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Change the last name.
-  FocusFieldByName("lastname");
+  ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Wadda");  // Modified by the user.
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.do_focus = false,
+                            .do_show = false,
+                            .show_method = ShowMethod::ByChar('M')}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  // Autofill the last name.
-  // Note: the dropdown is already visible at this point, no need to send an
-  // ARROW_DOWN to the page to show it.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  ExpectFilledTestForm();
-
-  TryClearForm();
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
 // Test that multiple autofillings work.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        FillChangeSecondFieldRefillSecondFieldClearFirst) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
-  TryBasicFormFill();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Change the last name.
-  FocusFieldByName("lastname");
+  ASSERT_TRUE(FocusField(GetElementById("lastname"), GetWebContents()));
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
   SendKeyToPageAndWait(ui::DomKey::BACKSPACE,
                        {ObservedUiEvents::kSuggestionShown});
+  EXPECT_THAT(GetFormValues(),
+              ValuesAre(MergeValue(kDefaultAddress, {"lastname", "Wadda"})));
 
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Wadda");  // Modified by the user.
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("lastname"), this));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  // Autofill the last name.
-  // Note: the dropdown is already visible at this point, no need to send an
-  // ARROW_DOWN to the page to show it.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  ExpectFilledTestForm();
-
-  // Clear everything by selecting 'clear' on the first field.
-  FocusFirstNameField();
-  TryClearForm();
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
 // Test that multiple autofillings work.
@@ -1164,160 +1473,107 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        FillThenFillSomeWithAnotherProfileThenClear) {
   CreateTestProfile();
   CreateSecondTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Delete some fields.
-  FocusFieldByName("city");
-  DeleteElementValue("city");
-  FocusFieldByName("address1");
-  DeleteElementValue("address1");
+  ASSERT_TRUE(FocusField(GetElementById("city"), GetWebContents()));
+  DeleteElementValue(GetElementById("city"));
+  ASSERT_TRUE(AutofillFlow(
+      GetElementById("address1"), this,
+      {.target_index = 1, .after_focus = base::BindLambdaForTesting([&]() {
+                            DeleteElementValue(GetElementById("address1"));
+                          })}));
+  // Address line 1 and city from the second profile.
+  EXPECT_THAT(
+      GetFormValues(),
+      ValuesAre(MergeValues(kDefaultAddress, {{"address1", "333 Cat Queen St."},
+                                              {"city", "Liliput"}})));
 
-  AcceptSuggestionUsingArrowDown(/*suggestion_position=*/2);
-
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("lastname", "Waddams");
-  ExpectFieldValue("address1", "333 Cat Queen St.");  // second profile
-  ExpectFieldValue("address2", "Basement");
-  ExpectFieldValue("city", "Liliput");  // second profile
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("zip", "78744");
-  ExpectFieldValue("country", "US");
-  ExpectFieldValue("phone", "15125551234");
-
-  // Clear everything by selecting 'clear' on the first field.
-  FocusFirstNameField();
-  TryClearForm();
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kEmptyAddress));
 }
 
 // Test that form filling can be initiated by pressing the down arrow.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillViaDownArrow) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Focus a fillable field.
-  FocusFirstNameField();
-
-  AcceptSuggestionUsingArrowDown();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
   // The form should be filled.
-  ExpectFilledTestForm();
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillSelectViaTab) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Focus a fillable field.
-  FocusFirstNameField();
-
-  AcceptSuggestionUsingArrowDown();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
   // The form should be filled.
-  ExpectFilledTestForm();
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillViaClick) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Focus a fillable field.
-  ASSERT_NO_FATAL_FAILURE(FocusFirstNameField());
-
-  // Now click it.
-  test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
-  ASSERT_NO_FATAL_FAILURE(ClickFirstNameField());
-  EXPECT_TRUE(test_delegate()->Wait());
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // The form should be filled.
-  ExpectFilledTestForm();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByClick(),
+                            .execution_target = GetWebContents()}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
-
-class AutofillCompanyInteractiveTest : public AutofillInteractiveTestBase {
- protected:
-  AutofillCompanyInteractiveTest() = default;
-  ~AutofillCompanyInteractiveTest() override = default;
-
-  void SetUp() override { AutofillInteractiveTestBase::SetUp(); }
-};
 
 // Makes sure that the first click does or does not activate the autofill popup
 // on the initial click within a fillable field.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, Click) {
-  // Make sure autofill data exists.
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // This click should activate the autofill popup.
-  test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
-  ASSERT_NO_FATAL_FAILURE(ClickFirstNameField());
-  EXPECT_TRUE(test_delegate()->Wait());
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // The form should be filled.
-  ExpectFilledTestForm();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.do_focus = false,
+                            .show_method = ShowMethod::ByClick(),
+                            .execution_target = GetWebContents()}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Makes sure that clicking outside the focused field doesn't activate
 // the popup.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DontAutofillForOutsideClick) {
   static const char kDisabledButton[] =
-      "<button disabled id='disabled-button'>Cant click this</button>";
-
+      R"(<button disabled id='disabled-button'>Cant click this</button>)";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(base::StrCat({kTestShippingFormString, kDisabledButton}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
-
-  ASSERT_NO_FATAL_FAILURE(FocusFirstNameField());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Clicking a disabled button will generate a mouse event but focus doesn't
   // change. This tests that autofill can handle a mouse event outside a focused
   // input *without* showing the popup.
-  ASSERT_NO_FATAL_FAILURE(ClickElementWithId("disabled-button"));
-  ASSERT_NO_FATAL_FAILURE(MakeSurePopupDoesntAppear());
+  ASSERT_FALSE(AutofillFlow(GetElementById("disabled-button"), this,
+                            {.do_focus = false,
+                             .do_select = false,
+                             .do_accept = false,
+                             .show_method = ShowMethod::ByClick(),
+                             .execution_target = GetWebContents()}));
 
-  test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
-  ASSERT_NO_FATAL_FAILURE(ClickFirstNameField());
-  EXPECT_TRUE(test_delegate()->Wait());
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.do_focus = false,
+                            .show_method = ShowMethod::ByClick(),
+                            .execution_target = GetWebContents()}));
 }
 
 // Makes sure that clicking a field while there is no enough height in the
@@ -1329,92 +1585,75 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // is no enough space to show at least one row of the autofill popup and hence
   // the autofill shouldn't be shown.
   static const char kTestFormWithLargeInputField[] =
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "<label for=\"firstname\">First name:</label>"
-      " <input type=\"text\" id=\"firstname\" style=\"position:fixed; "
-      "top:-100px;height:5120px\"><br>"
-      "<label for=\"lastname\">Last name:</label>"
-      " <input type=\"text\" id=\"lastname\"><br>"
-      "<label for=\"city\">City:</label>"
-      " <input type=\"text\" id=\"city\"><br>"
-      "</form>";
-
+      R"(<form action="https://www.example.com/" method="POST">
+         <label for="firstname">First name:</label>
+         <input type="text" id="firstname" style="position:fixed;
+           top:-100px;height:5120px"><br>
+         <label for="lastname">Last name:</label>
+         <input type="text" id="lastname"><br>
+         <label for="city">City:</label>
+         <input type="text" id="city"><br>
+         </form>)";
   CreateTestProfile();
   SetTestUrlResponse(kTestFormWithLargeInputField);
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  FocusFirstNameField();
-  SendKeyToPage(GetWebContents(), ui::DomKey::ARROW_DOWN);
-  ASSERT_NO_FATAL_FAILURE(MakeSurePopupDoesntAppear());
+  ASSERT_FALSE(AutofillFlow(GetElementById("firstname"), this,
+                            {.do_select = false,
+                             .do_accept = false,
+                             .show_method = ShowMethod::ByClick(),
+                             // Since failure is expected, no need to retry
+                             // showing the Autofill popup too often.
+                             .max_show_tries = 2,
+                             .execution_target = GetWebContents()}));
 }
 
 // Test that a field is still autofillable after the previously autofilled
 // value is deleted.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke and accept the Autofill popup and verify the form was filled.
-  FocusFirstNameField();
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-  ExpectFilledTestForm();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M')}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Delete the value of a filled field.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(), "document.getElementById('firstname').value = '';"));
-  ExpectFieldValue("firstname", "");
+  DeleteElementValue(GetElementById("firstname"));
 
-  // Invoke and accept the Autofill popup and verify the field was filled.
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-  ExpectFieldValue("firstname", "Milton");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M')}));
+  EXPECT_EQ("Milton", GetFieldValue(GetElementById("firstname")));
 }
 
 // Test that an input field is not rendered with the yellow autofilled
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =
-      "<p>The text is some page content to paint</p>"
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
-      "  <datalist id=\"dl\">"
-      "  <option value=\"Adam\"></option>"
-      "  <option value=\"Bob\"></option>"
-      "  <option value=\"Carl\"></option>"
-      "  </datalist>"
-      "</form>";
-
-  // Load the test page.
+      R"( <p>The text is some page content to paint</p>
+          <form action="https://www.example.com/" method="POST">
+            <input list="dl" type="search" id="firstname"><br>
+            <datalist id="dl">
+            <option value="Adam"></option>
+            <option value="Bob"></option>
+            <option value="Carl"></option>
+            </datalist>
+          </form> )";
   SetTestUrlResponse(kTestForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  std::string orginalcolor;
-  GetFieldBackgroundColor("firstname", &orginalcolor);
-
-  FocusFirstNameField();
-  SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                       {ObservedUiEvents::kSuggestionShown});
-  SendKeyToDataListPopup(ui::DomKey::ARROW_DOWN);
-  SendKeyToDataListPopup(ui::DomKey::ENTER);
-  // Pressing the down arrow preselects the first item. Pressing it again
-  // selects the second item.
-  ExpectFieldValue("firstname", "Bob");
-  std::string color;
-  GetFieldBackgroundColor("firstname", &color);
-  EXPECT_EQ(color, orginalcolor);
+  auto GetBackgroundColor = [this](const ElementExpr& id) {
+    std::string script = base::StringPrintf(
+        "document.defaultView.getComputedStyle(%s).backgroundColor",
+        id->c_str());
+    return content::EvalJs(GetWebContents(), script).ExtractString();
+  };
+  std::string orginalcolor = GetBackgroundColor(GetElementById("firstname"));
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.num_profile_suggestions = 0, .target_index = 1}));
+  EXPECT_EQ("Bob", GetFieldValueById("firstname"));
+  EXPECT_EQ(GetBackgroundColor(GetElementById("firstname")), orginalcolor);
 }
 
 // Test that an <input> field with a <datalist> has a working drop down even if
@@ -1424,20 +1663,17 @@ IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
   static const char kTestForm[] =
-      "<p>The text is some page content to paint</p>"
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
-      "  <datalist id=\"dl\">"
-      "  <option value=\"Adam\"></option>"
-      "  <option value=\"Bob\"></option>"
-      "  <option value=\"Carl\"></option>"
-      "  </datalist>"
-      "</form>";
-
-  // Load the test page.
+      R"( <p>The text is some page content to paint</p>
+          <form action="https://www.example.com/" method="POST">
+            <input list="dl" type="search" id="firstname"><br>
+            <datalist id="dl">
+            <option value="Adam"></option>
+            <option value="Bob"></option>
+            <option value="Carl"></option>
+            </datalist>
+          </form> )";
   SetTestUrlResponse(kTestForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   ASSERT_TRUE(content::ExecuteScript(
       GetWebContents(),
@@ -1451,64 +1687,42 @@ IN_PROC_BROWSER_TEST_F(
 
   // Regression test for crbug.com/918351 whether the datalist becomes available
   // again.
-  FocusFirstNameField();
-  SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                       {ObservedUiEvents::kSuggestionShown});
-  SendKeyToDataListPopup(ui::DomKey::ARROW_DOWN);
-  SendKeyToDataListPopup(ui::DomKey::ENTER);
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.num_profile_suggestions = 0, .target_index = 1}));
   // Pressing the down arrow preselects the first item. Pressing it again
   // selects the second item.
-  ExpectFieldValue("firstname", "Bob");
+  EXPECT_EQ("Bob", GetFieldValueById("firstname"));
 }
 
 // Test that a JavaScript oninput event is fired after auto-filling a form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
   static const char kOnInputScript[] =
-      "<script>"
-      "focused_fired = false;"
-      "unfocused_fired = false;"
-      "changed_select_fired = false;"
-      "unchanged_select_fired = false;"
-      "document.getElementById('firstname').oninput = function() {"
-      "  focused_fired = true;"
-      "};"
-      "document.getElementById('lastname').oninput = function() {"
-      "  unfocused_fired = true;"
-      "};"
-      "document.getElementById('state').oninput = function() {"
-      "  changed_select_fired = true;"
-      "};"
-      "document.getElementById('country').oninput = function() {"
-      "  unchanged_select_fired = true;"
-      "};"
-      "document.getElementById('country').value = 'US';"
-      "</script>";
-
+      R"( <script>
+          focused_fired = false;
+          unfocused_fired = false;
+          changed_select_fired = false;
+          unchanged_select_fired = false;
+          document.getElementById('firstname').oninput = function() {
+            focused_fired = true;
+          };
+          document.getElementById('lastname').oninput = function() {
+            unfocused_fired = true;
+          };
+          document.getElementById('state').oninput = function() {
+            changed_select_fired = true;
+          };
+          document.getElementById('country').oninput = function() {
+            unchanged_select_fired = true;
+          };
+          document.getElementById('country').value = 'US';
+          </script> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(base::StrCat({kTestShippingFormString, kOnInputScript}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  FocusFirstNameField();
-
-  // Start filling the first name field with "M" and wait for the popup to be
-  // shown.
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // The form should be filled.
-  ExpectFilledTestForm();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M')}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   bool focused_fired = false;
   bool unfocused_fired = false;
@@ -1535,51 +1749,34 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnInputAfterAutofill) {
 // Test that a JavaScript onchange event is fired after auto-filling a form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
   static const char kOnChangeScript[] =
-      "<script>"
-      "focused_fired = false;"
-      "unfocused_fired = false;"
-      "changed_select_fired = false;"
-      "unchanged_select_fired = false;"
-      "document.getElementById('firstname').onchange = function() {"
-      "  focused_fired = true;"
-      "};"
-      "document.getElementById('lastname').onchange = function() {"
-      "  unfocused_fired = true;"
-      "};"
-      "document.getElementById('state').onchange = function() {"
-      "  changed_select_fired = true;"
-      "};"
-      "document.getElementById('country').onchange = function() {"
-      "  unchanged_select_fired = true;"
-      "};"
-      "document.getElementById('country').value = 'US';"
-      "</script>";
-
+      R"( <script>
+          focused_fired = false;
+          unfocused_fired = false;
+          changed_select_fired = false;
+          unchanged_select_fired = false;
+          document.getElementById('firstname').onchange = function() {
+            focused_fired = true;
+          };
+          document.getElementById('lastname').onchange = function() {
+            unfocused_fired = true;
+          };
+          document.getElementById('state').onchange = function() {
+            changed_select_fired = true;
+          };
+          document.getElementById('country').onchange = function() {
+            unchanged_select_fired = true;
+          };
+          document.getElementById('country').value = 'US';
+          </script> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(base::StrCat({kTestShippingFormString, kOnChangeScript}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  FocusFirstNameField();
-
-  // Start filling the first name field with "M" and wait for the popup to be
-  // shown.
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M')}));
 
   // The form should be filled.
-  ExpectFilledTestForm();
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   bool focused_fired = false;
   bool unfocused_fired = false;
@@ -1605,39 +1802,32 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnChangeAfterAutofill) {
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
   static const char kInputFiresBeforeChangeScript[] =
-      "<script>"
-      "inputElementEvents = [];"
-      "function recordInputElementEvent(e) {"
-      "  if (e.target.tagName != 'INPUT') throw 'only <input> tags allowed';"
-      "  inputElementEvents.push(e.type);"
-      "}"
-      "selectElementEvents = [];"
-      "function recordSelectElementEvent(e) {"
-      "  if (e.target.tagName != 'SELECT') throw 'only <select> tags allowed';"
-      "  selectElementEvents.push(e.type);"
-      "}"
-      "document.getElementById('lastname').oninput = recordInputElementEvent;"
-      "document.getElementById('lastname').onchange = recordInputElementEvent;"
-      "document.getElementById('country').oninput = recordSelectElementEvent;"
-      "document.getElementById('country').onchange = recordSelectElementEvent;"
-      "</script>";
-
+      R"(<script>
+         inputElementEvents = [];
+         function recordInputElementEvent(e) {
+           if (e.target.tagName != 'INPUT') throw 'only <input> tags allowed';
+           inputElementEvents.push(e.type);
+         }
+         selectElementEvents = [];
+         function recordSelectElementEvent(e) {
+           if (e.target.tagName != 'SELECT') throw 'only <select> tags allowed';
+           selectElementEvents.push(e.type);
+         }
+         document.getElementById('lastname').oninput = recordInputElementEvent;
+         document.getElementById('lastname').onchange = recordInputElementEvent;
+         document.getElementById('country').oninput = recordSelectElementEvent;
+         document.getElementById('country').onchange = recordSelectElementEvent;
+         </script>)";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(
       base::StrCat({kTestShippingFormString, kInputFiresBeforeChangeScript}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke and accept the Autofill popup and verify the form was filled.
-  FocusFirstNameField();
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-  ExpectFilledTestForm();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   int num_input_element_events = -1;
   ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
@@ -1684,25 +1874,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, InputFiresBeforeChange) {
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        AutofillFormsDistinguishedById) {
   static const char kScript[] =
-      "<script>"
-      "var mainForm = document.forms[0];"
-      "mainForm.id = 'mainForm';"
-      "var newForm = document.createElement('form');"
-      "newForm.action = mainForm.action;"
-      "newForm.method = mainForm.method;"
-      "newForm.id = 'newForm';"
-      "mainForm.parentNode.insertBefore(newForm, mainForm);"
-      "</script>";
-
+      R"( <script>
+          var mainForm = document.forms[0];
+          mainForm.id = 'mainForm';
+          var newForm = document.createElement('form');
+          newForm.action = mainForm.action;
+          newForm.method = mainForm.method;
+          newForm.id = 'newForm';
+          mainForm.parentNode.insertBefore(newForm, mainForm);
+          </script> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(base::StrCat({kTestShippingFormString, kScript}));
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(
+                                MergeValue(kEmptyAddress, {"firstname", "M"}),
+                                GetElementById("mainForm"))}));
+  EXPECT_THAT(GetFormValues(GetElementById("mainForm")),
+              ValuesAre(kDefaultAddress));
 }
 
 // Test that we properly autofill forms with repeated fields.
@@ -1711,220 +1902,282 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // JavaScript, with only one actually visible at any given time.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
   static const char kForm[] =
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "<label for=\"firstname\">First name:</label>"
-      " <input type=\"text\" id=\"firstname\""
-      "        onfocus=\"domAutomationController.send(true)\"><br>"
-      "<label for=\"lastname\">Last name:</label>"
-      " <input type=\"text\" id=\"lastname\"><br>"
-      "<label for=\"address1\">Address line 1:</label>"
-      " <input type=\"text\" id=\"address1\"><br>"
-      "<label for=\"address2\">Address line 2:</label>"
-      " <input type=\"text\" id=\"address2\"><br>"
-      "<label for=\"city\">City:</label>"
-      " <input type=\"text\" id=\"city\"><br>"
-      "<label for=\"state\">State:</label>"
-      " <select id=\"state\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">California</option>"
-      " <option value=\"TX\">Texas</option>"
-      " </select><br>"
-      "<label for=\"state_freeform\" style=\"display:none\">State:</label>"
-      " <input type=\"text\" id=\"state_freeform\""
-      "        style=\"display:none\"><br>"
-      "<label for=\"zip\">ZIP code:</label>"
-      " <input type=\"text\" id=\"zip\"><br>"
-      "<label for=\"country\">Country:</label>"
-      " <select id=\"country\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">Canada</option>"
-      " <option value=\"US\">United States</option>"
-      " </select><br>"
-      "<label for=\"phone\">Phone number:</label>"
-      " <input type=\"text\" id=\"phone\"><br>"
-      "</form>";
-
+      R"( <form action="https://www.example.com/" method="POST">
+          <label for="firstname">First name:</label>
+           <input type="text" id="firstname"><br>
+          <label for="lastname">Last name:</label>
+           <input type="text" id="lastname"><br>
+          <label for="address1">Address line 1:</label>
+           <input type="text" id="address1"><br>
+          <label for="address2">Address line 2:</label>
+           <input type="text" id="address2"><br>
+          <label for="city">City:</label>
+           <input type="text" id="city"><br>
+          <label for="state">State:</label>
+           <select id="state">
+           <option value="" selected="yes">--</option>
+           <option value="CA">California</option>
+           <option value="TX">Texas</option>
+           </select><br>
+          <label for="state_freeform" style="display:none">State:</label>
+           <input type="text" id="state_freeform" style="display:none"><br>
+          <label for="zip">ZIP code:</label>
+           <input type="text" id="zip"><br>
+          <label for="country">Country:</label>
+           <select id="country">
+           <option value="" selected="yes">--</option>
+           <option value="CA">Canada</option>
+           <option value="US">United States</option>
+           </select><br>
+          <label for="phone">Phone number:</label>
+           <input type="text" id="phone"><br>
+          </form> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
-  ExpectFieldValue("state_freeform", std::string());
+  std::vector<FieldValue> empty = kEmptyAddress;
+  empty.insert(empty.begin() + 6, {"state_freeform", ""});
+  std::vector<FieldValue> filled = kDefaultAddress;
+  filled.insert(filled.begin() + 6, {"state_freeform", ""});
+
+  ASSERT_TRUE(AutofillFlow(
+      GetElementById("firstname"), this,
+      {.show_method = ShowMethod::ByChar('M'),
+       .after_select = ExpectValues(MergeValue(empty, {"firstname", "M"}),
+                                    ElementExpr("document.forms[0]"))}));
+  EXPECT_THAT(GetFormValues(ElementExpr("document.forms[0]")),
+              ValuesAre(filled));
 }
 
 // Test that we properly autofill forms with non-autofillable fields.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       AutofillFormWithNonAutofillableField) {
+                       AutofillFormWithAutocompleteOffField) {
   static const char kForm[] =
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "<label for=\"firstname\">First name:</label>"
-      " <input type=\"text\" id=\"firstname\""
-      "        onfocus=\"domAutomationController.send(true)\"><br>"
-      "<label for=\"middlename\">Middle name:</label>"
-      " <input type=\"text\" id=\"middlename\" autocomplete=\"off\" /><br>"
-      "<label for=\"lastname\">Last name:</label>"
-      " <input type=\"text\" id=\"lastname\"><br>"
-      "<label for=\"address1\">Address line 1:</label>"
-      " <input type=\"text\" id=\"address1\"><br>"
-      "<label for=\"address2\">Address line 2:</label>"
-      " <input type=\"text\" id=\"address2\"><br>"
-      "<label for=\"city\">City:</label>"
-      " <input type=\"text\" id=\"city\"><br>"
-      "<label for=\"state\">State:</label>"
-      " <select id=\"state\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">California</option>"
-      " <option value=\"TX\">Texas</option>"
-      " </select><br>"
-      "<label for=\"zip\">ZIP code:</label>"
-      " <input type=\"text\" id=\"zip\"><br>"
-      "<label for=\"country\">Country:</label>"
-      " <select id=\"country\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">Canada</option>"
-      " <option value=\"US\">United States</option>"
-      " </select><br>"
-      "<label for=\"phone\">Phone number:</label>"
-      " <input type=\"text\" id=\"phone\"><br>"
-      "</form>";
-
+      R"( <form action="https://www.example.com/" method="POST">
+          <label for="firstname">First name:</label>
+           <input type="text" id="firstname"><br>
+          <label for="middlename">Middle name:</label>
+           <input type="text" id="middlename" autocomplete="off" /><br>
+          <label for="lastname">Last name:</label>
+           <input type="text" id="lastname"><br>
+          <label for="address1">Address line 1:</label>
+           <input type="text" id="address1"><br>
+          <label for="address2">Address line 2:</label>
+           <input type="text" id="address2"><br>
+          <label for="city">City:</label>
+           <input type="text" id="city"><br>
+          <label for="state">State:</label>
+           <select id="state">
+           <option value="" selected="yes">--</option>
+           <option value="CA">California</option>
+           <option value="TX">Texas</option>
+           </select><br>
+          <label for="zip">ZIP code:</label>
+           <input type="text" id="zip"><br>
+          <label for="country">Country:</label>
+           <select id="country">
+           <option value="" selected="yes">--</option>
+           <option value="CA">Canada</option>
+           <option value="US">United States</option>
+           </select><br>
+          <label for="phone">Phone number:</label>
+           <input type="text" id="phone"><br>
+          </form> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  std::vector<FieldValue> empty = kEmptyAddress;
+  empty.insert(empty.begin() + 1, {"middlename", ""});
+  std::vector<FieldValue> filled = kDefaultAddress;
+  filled.insert(filled.begin() + 1, {"middlename", "C."});
+
+  ASSERT_TRUE(AutofillFlow(
+      GetElementById("firstname"), this,
+      {.show_method = ShowMethod::ByChar('M'),
+       .after_select = ExpectValues(MergeValue(empty, {"firstname", "M"}),
+                                    ElementExpr("document.forms[0]"))}));
+  EXPECT_THAT(GetFormValues(ElementExpr("document.forms[0]")),
+              ValuesAre(filled));
 }
 
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   static const char kDynamicForm[] =
-      "<p>Some text to paint</p>"
-      "<form id=\"form\" action=\"https://www.example.com/\""
-      "      method=\"POST\"></form>"
-      "<script>"
-      "function AddElement(name, label) {"
-      "  var form = document.getElementById('form');"
-      ""
-      "  var label_text = document.createTextNode(label);"
-      "  var label_element = document.createElement('label');"
-      "  label_element.setAttribute('for', name);"
-      "  label_element.appendChild(label_text);"
-      "  form.appendChild(label_element);"
-      ""
-      "  if (name === 'state' || name === 'country') {"
-      "    var select_element = document.createElement('select');"
-      "    select_element.setAttribute('id', name);"
-      "    select_element.setAttribute('name', name);"
-      ""
-      "    /* Add an empty selected option. */"
-      "    var default_option = new Option('--', '', true);"
-      "    select_element.appendChild(default_option);"
-      ""
-      "    /* Add the other options. */"
-      "    if (name == 'state') {"
-      "      var option1 = new Option('California', 'CA');"
-      "      select_element.appendChild(option1);"
-      "      var option2 = new Option('Texas', 'TX');"
-      "      select_element.appendChild(option2);"
-      "    } else {"
-      "      var option1 = new Option('Canada', 'CA');"
-      "      select_element.appendChild(option1);"
-      "      var option2 = new Option('United States', 'US');"
-      "      select_element.appendChild(option2);"
-      "    }"
-      ""
-      "    form.appendChild(select_element);"
-      "  } else {"
-      "    var input_element = document.createElement('input');"
-      "    input_element.setAttribute('id', name);"
-      "    input_element.setAttribute('name', name);"
-      ""
-      "    /* Add the onfocus listener to the 'firstname' field. */"
-      "    if (name === 'firstname') {"
-      "      input_element.onfocus = function() {"
-      "        domAutomationController.send(true);"
-      "      };"
-      "    }"
-      ""
-      "    form.appendChild(input_element);"
-      "  }"
-      ""
-      "  form.appendChild(document.createElement('br'));"
-      "};"
-      ""
-      "function BuildForm() {"
-      "  var elements = ["
-      "    ['firstname', 'First name:'],"
-      "    ['lastname', 'Last name:'],"
-      "    ['address1', 'Address line 1:'],"
-      "    ['address2', 'Address line 2:'],"
-      "    ['city', 'City:'],"
-      "    ['state', 'State:'],"
-      "    ['zip', 'ZIP code:'],"
-      "    ['country', 'Country:'],"
-      "    ['phone', 'Phone number:'],"
-      "  ];"
-      ""
-      "  for (var i = 0; i < elements.length; i++) {"
-      "    var name = elements[i][0];"
-      "    var label = elements[i][1];"
-      "    AddElement(name, label);"
-      "  }"
-      "};"
-      "</script>";
+      R"( <p>Some text to paint</p>
+          <form id="form" action="https://www.example.com/"
+                method="POST"></form>
+          <script>
+          function AddElement(name, label) {
+            var form = document.getElementById('form');
 
+            var label_text = document.createTextNode(label);
+            var label_element = document.createElement('label');
+            label_element.setAttribute('for', name);
+            label_element.appendChild(label_text);
+            form.appendChild(label_element);
+
+            if (name === 'state' || name === 'country') {
+              var select_element = document.createElement('select');
+              select_element.setAttribute('id', name);
+              select_element.setAttribute('name', name);
+
+              /* Add an empty selected option. */
+              var default_option = new Option('--', '', true);
+              select_element.appendChild(default_option);
+
+              /* Add the other options. */
+              if (name == 'state') {
+                var option1 = new Option('California', 'CA');
+                select_element.appendChild(option1);
+                var option2 = new Option('Texas', 'TX');
+                select_element.appendChild(option2);
+              } else {
+                var option1 = new Option('Canada', 'CA');
+                select_element.appendChild(option1);
+                var option2 = new Option('United States', 'US');
+                select_element.appendChild(option2);
+              }
+
+              form.appendChild(select_element);
+            } else {
+              var input_element = document.createElement('input');
+              input_element.setAttribute('id', name);
+              input_element.setAttribute('name', name);
+
+              form.appendChild(input_element);
+            }
+
+            form.appendChild(document.createElement('br'));
+          };
+
+          function BuildForm() {
+            var elements = [
+              ['firstname', 'First name:'],
+              ['lastname', 'Last name:'],
+              ['address1', 'Address line 1:'],
+              ['address2', 'Address line 2:'],
+              ['city', 'City:'],
+              ['state', 'State:'],
+              ['zip', 'ZIP code:'],
+              ['country', 'Country:'],
+              ['phone', 'Phone number:'],
+            ];
+
+            for (var i = 0; i < elements.length; i++) {
+              var name = elements[i][0];
+              var label = elements[i][1];
+              AddElement(name, label);
+            }
+          };
+          </script> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kDynamicForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Dynamically construct the form.
   ASSERT_TRUE(content::ExecuteScript(GetWebContents(), "BuildForm();"));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(
+                                MergeValue(kEmptyAddress, {"firstname", "M"}),
+                                GetElementById("form"))}));
+  EXPECT_THAT(GetFormValues(GetElementById("form")),
+              ValuesAre(kDefaultAddress));
 }
 
 // Test that form filling works after reloading the current page.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterReload) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   // Reload the page.
   content::WebContents* web_contents = GetWebContents();
   web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Test that filling a form sends all the expected events to the different
 // fields being filled.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
+  // TODO(crbug.com/609861): Remove the autocomplete attribute from the textarea
+  // field when the bug is fixed.
+  static const char kTestEventFormString[] =
+      R"( <script type="text/javascript">
+          var inputfocus = false;
+          var inputkeydown = false;
+          var inputinput = false;
+          var inputchange = false;
+          var inputkeyup = false;
+          var inputblur = false;
+          var textfocus = false;
+          var textkeydown = false;
+          var textinput= false;
+          var textchange = false;
+          var textkeyup = false;
+          var textblur = false;
+          var selectfocus = false;
+          var selectinput = false;
+          var selectchange = false;
+          var selectblur = false;
+          </script>
+          A form for testing events.
+          <form action="https://www.example.com/" method="POST" id="shipping">
+          <label for="firstname">First name:</label>
+           <input type="text" id="firstname"><br>
+          <label for="lastname">Last name:</label>
+           <input type="text" id="lastname"
+           onfocus="inputfocus = true" onkeydown="inputkeydown = true"
+           oninput="inputinput = true" onchange="inputchange = true"
+           onkeyup="inputkeyup = true" onblur="inputblur = true" ><br>
+          <label for="address1">Address line 1:</label>
+           <input type="text" id="address1"><br>
+          <label for="address2">Address line 2:</label>
+           <input type="text" id="address2"><br>
+          <label for="city">City:</label>
+           <textarea rows="4" cols="50" id="city" name="city"
+           autocomplete="address-level2" onfocus="textfocus = true"
+           onkeydown="textkeydown = true" oninput="textinput = true"
+           onchange="textchange = true" onkeyup="textkeyup = true"
+           onblur="textblur = true"></textarea><br>
+          <label for="state">State:</label>
+           <select id="state"
+           onfocus="selectfocus = true" oninput="selectinput = true"
+           onchange="selectchange = true" onblur="selectblur = true" >
+           <option value="" selected="yes">--</option>
+           <option value="CA">California</option>
+           <option value="NY">New York</option>
+           <option value="TX">Texas</option>
+           </select><br>
+          <label for="zip">ZIP code:</label>
+           <input type="text" id="zip"><br>
+          <label for="country">Country:</label>
+           <select id="country">
+           <option value="" selected="yes">--</option>
+           <option value="CA">Canada</option>
+           <option value="US">United States</option>
+           </select><br>
+          <label for="phone">Phone number:</label>
+           <input type="text" id="phone"><br>
+          </form> )";
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestEventFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill.
-  TryBasicFormFill();
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
   // Checks that all the events were fired for the input field.
   bool input_focus_triggered;
@@ -2019,56 +2272,59 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
   CreateTestProfile();
 
   static const char kForm[] =
-      "<form action=\"https://www.example.com/\" method=\"POST\">"
-      "<label for=\"fn\">Nom</label>"
-      " <input type=\"text\" id=\"fn\""
-      "        onfocus=\"domAutomationController.send(true)\""
-      "><br>"
-      "<label for=\"ln\">Nom de famille</label>"
-      " <input type=\"text\" id=\"ln\"><br>"
-      "<label for=\"a1\">Address line 1:</label>"
-      " <input type=\"text\" id=\"a1\"><br>"
-      "<label for=\"a2\">Address line 2:</label>"
-      " <input type=\"text\" id=\"a2\"><br>"
-      "<label for=\"ci\">City:</label>"
-      " <input type=\"text\" id=\"ci\"><br>"
-      "<label for=\"st\">State:</label>"
-      " <select id=\"st\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">California</option>"
-      " <option value=\"TX\">Texas</option>"
-      " </select><br>"
-      "<label for=\"z\">ZIP code:</label>"
-      " <input type=\"text\" id=\"z\"><br>"
-      "<label for=\"co\">Country:</label>"
-      " <select id=\"co\">"
-      " <option value=\"\" selected=\"yes\">--</option>"
-      " <option value=\"CA\">Canada</option>"
-      " <option value=\"US\">United States</option>"
-      " </select><br>"
-      "<label for=\"ph\">Phone number:</label>"
-      " <input type=\"text\" id=\"ph\"><br>"
-      "</form>"
-      // Add additional French characters to ensure the translate bar
-      // will appear.
-      //
-      // TODO(crbug.com/1258185): The current translate testing overrides the
-      // result to be Adopted Language: 'fr' (the language the Chrome's
-      // translate feature believes the page language to be in). The behavior
-      // required here is to only force a translation which should not rely on
-      // language detection. The override simply just seeds the translate code
-      // so that a translate event occurs in a more testable way.
-      "Nous serons importants et intéressants, mais les épreuves et les peines"
-      "peuvent lui en procurer de grandes en raison de situations "
-      "occasionnelles."
-      "Puis quelques avantages";
+      R"( <form action="https://www.example.com/" method="POST">
+          <label for="fn">Nom</label>
+           <input type="text" id="fn"><br>
+          <label for="ln">Nom de famille</label>
+           <input type="text" id="ln"><br>
+          <label for="a1">Address line 1:</label>
+           <input type="text" id="a1"><br>
+          <label for="a2">Address line 2:</label>
+           <input type="text" id="a2"><br>
+          <label for="ci">City:</label>
+           <input type="text" id="ci"><br>
+          <label for="st">State:</label>
+           <select id="st">
+           <option value="" selected="yes">--</option>
+           <option value="CA">California</option>
+           <option value="TX">Texas</option>
+           </select><br>
+          <label for="z">ZIP code:</label>
+           <input type="text" id="z"><br>
+          <label for="co">Country:</label>
+           <select id="co">
+           <option value="" selected="yes">--</option>
+           <option value="CA">Canada</option>
+           <option value="US">United States</option>
+           </select><br>
+          <label for="ph">Phone number:</label>
+           <input type="text" id="ph"><br>
+          </form>
+          Nous serons importants et intéressants, mais les épreuves et les
+          peines peuvent lui en procurer de grandes en raison de situations
+          occasionnelles.
+          Puis quelques avantages
+          )";
+  // The above additional French words ensure the translate bar will appear.
+  //
+  // TODO(crbug.com/1258185): The current translate testing overrides the
+  // result to be Adopted Language: 'fr' (the language the Chrome's
+  // translate feature believes the page language to be in). The behavior
+  // required here is to only force a translation which should not rely on
+  // language detection. The override simply just seeds the translate code
+  // so that a translate event occurs in a more testable way.
 
   NavigateToContentAndWaitForLanguageDetection(kForm);
   ASSERT_EQ("fr", GetLanguageState().current_language());
   ASSERT_NO_FATAL_FAILURE(Translate(true));
   ASSERT_EQ("fr", GetLanguageState().source_language());
   ASSERT_EQ("en", GetLanguageState().current_language());
-  TryBasicFormFill();
+
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByChar('M'),
+                            .after_select = ExpectValues(MergeValue(
+                                kEmptyAddress, {"firstname", "M"}))}));
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Test phone fields parse correctly from a given profile.
@@ -2089,43 +2345,42 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ComparePhoneNumbers) {
 
   GURL url = embedded_test_server()->GetURL("/autofill/form_phones.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("NAME_FIRST1");
 
-  ExpectFieldValue("NAME_FIRST1", "Bob");
-  ExpectFieldValue("NAME_LAST1", "Smith");
-  ExpectFieldValue("ADDRESS_HOME_LINE1", "1234 H St.");
-  ExpectFieldValue("ADDRESS_HOME_CITY", "San Jose");
-  ExpectFieldValue("ADDRESS_HOME_STATE", "CA");
-  ExpectFieldValue("ADDRESS_HOME_ZIP", "95110");
-  ExpectFieldValue("PHONE_HOME_WHOLE_NUMBER", "14085554567");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST1"), this));
+  EXPECT_EQ("Bob", GetFieldValueById("NAME_FIRST1"));
+  EXPECT_EQ("Smith", GetFieldValueById("NAME_LAST1"));
+  EXPECT_EQ("1234 H St.", GetFieldValueById("ADDRESS_HOME_LINE1"));
+  EXPECT_EQ("San Jose", GetFieldValueById("ADDRESS_HOME_CITY"));
+  EXPECT_EQ("CA", GetFieldValueById("ADDRESS_HOME_STATE"));
+  EXPECT_EQ("95110", GetFieldValueById("ADDRESS_HOME_ZIP"));
+  EXPECT_EQ("14085554567", GetFieldValueById("PHONE_HOME_WHOLE_NUMBER"));
 
-  PopulateForm("NAME_FIRST2");
-  ExpectFieldValue("NAME_FIRST2", "Bob");
-  ExpectFieldValue("NAME_LAST2", "Smith");
-  ExpectFieldValue("PHONE_HOME_CITY_CODE-1", "408");
-  ExpectFieldValue("PHONE_HOME_NUMBER", "5554567");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST2"), this));
+  EXPECT_EQ("Bob", GetFieldValueById("NAME_FIRST2"));
+  EXPECT_EQ("Smith", GetFieldValueById("NAME_LAST2"));
+  EXPECT_EQ("408", GetFieldValueById("PHONE_HOME_CITY_CODE-1"));
+  EXPECT_EQ("5554567", GetFieldValueById("PHONE_HOME_NUMBER"));
 
-  PopulateForm("NAME_FIRST3");
-  ExpectFieldValue("NAME_FIRST3", "Bob");
-  ExpectFieldValue("NAME_LAST3", "Smith");
-  ExpectFieldValue("PHONE_HOME_CITY_CODE-2", "408");
-  ExpectFieldValue("PHONE_HOME_NUMBER_3-1", "555");
-  ExpectFieldValue("PHONE_HOME_NUMBER_4-1", "4567");
-  ExpectFieldValue("PHONE_HOME_EXT-1", std::string());
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST3"), this));
+  EXPECT_EQ("Bob", GetFieldValueById("NAME_FIRST3"));
+  EXPECT_EQ("Smith", GetFieldValueById("NAME_LAST3"));
+  EXPECT_EQ("408", GetFieldValueById("PHONE_HOME_CITY_CODE-2"));
+  EXPECT_EQ("555", GetFieldValueById("PHONE_HOME_NUMBER_3-1"));
+  EXPECT_EQ("4567", GetFieldValueById("PHONE_HOME_NUMBER_4-1"));
+  EXPECT_EQ("", GetFieldValueById("PHONE_HOME_EXT-1"));
 
-  PopulateForm("NAME_FIRST4");
-  ExpectFieldValue("NAME_FIRST4", "Bob");
-  ExpectFieldValue("NAME_LAST4", "Smith");
-  ExpectFieldValue("PHONE_HOME_COUNTRY_CODE-1", "1");
-  ExpectFieldValue("PHONE_HOME_CITY_CODE-3", "408");
-  ExpectFieldValue("PHONE_HOME_NUMBER_3-2", "555");
-  ExpectFieldValue("PHONE_HOME_NUMBER_4-2", "4567");
-  ExpectFieldValue("PHONE_HOME_EXT-2", std::string());
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST4"), this));
+  EXPECT_EQ("Bob", GetFieldValueById("NAME_FIRST4"));
+  EXPECT_EQ("Smith", GetFieldValueById("NAME_LAST4"));
+  EXPECT_EQ("1", GetFieldValueById("PHONE_HOME_COUNTRY_CODE-1"));
+  EXPECT_EQ("408", GetFieldValueById("PHONE_HOME_CITY_CODE-3"));
+  EXPECT_EQ("555", GetFieldValueById("PHONE_HOME_NUMBER_3-2"));
+  EXPECT_EQ("4567", GetFieldValueById("PHONE_HOME_NUMBER_4-2"));
+  EXPECT_EQ("", GetFieldValueById("PHONE_HOME_EXT-2"));
 }
 
 // Test that Autofill does not fill in Company Name if disabled
-IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
-                       NoAutofillForCompanyName) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForCompanyName) {
   std::string addr_line1("1234 H St.");
   std::string company_name("Company X");
 
@@ -2144,44 +2399,56 @@ IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
   GURL url =
       embedded_test_server()->GetURL("/autofill/read_only_field_test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  ExpectFieldValue("address", addr_line1);
-  ExpectFieldValue("company", company_name);
+  EXPECT_EQ(addr_line1, GetFieldValueById("address"));
+  EXPECT_EQ(company_name, GetFieldValueById("company"));
 }
 
-// Test that Autofill does not fill in Company Name if disabled
-IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest,
+// TODO(https://crbug.com/1279102): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        NoAutofillSugggestionForCompanyName) {
+  static const char kTestShippingFormWithCompanyString[] = R"(
+      An example of a shipping address form.
+      <form action="https://www.example.com/" method="POST">
+      <label for="firstname">First name:</label>
+       <input type="text" id="firstname"><br>
+      <label for="lastname">Last name:</label>
+       <input type="text" id="lastname"><br>
+      <label for="address1">Address line 1:</label>
+       <input type="text" id="address1"><br>
+      <label for="address2">Address line 2:</label>
+       <input type="text" id="address2"><br>
+      <label for="city">City:</label>
+       <input type="text" id="city"><br>
+      <label for="state">State:</label>
+       <select id="state">
+       <option value="" selected="yes">--</option>
+       <option value="CA">California</option>
+       <option value="TX">Texas</option>
+       </select><br>
+      <label for="zip">ZIP code:</label>
+       <input type="text" id="zip"><br>
+      <label for="country">Country:</label>
+       <select id="country">
+       <option value="" selected="yes">--</option>
+       <option value="CA">Canada</option>
+       <option value="US">United States</option>
+       </select><br>
+      <label for="phone">Phone number:</label>
+       <input type="text" id="phone"><br>
+      <label for="company">First company:</label>
+       <input type="text" id="company"><br>
+      </form>
+  )";
   CreateTestProfile();
-
-  std::string company_name("Initech");
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormWithCompanyString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Focus the company field.
-  FocusFieldByName("company");
-
-  // Now click it.
-  test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown},
-                                   base::Seconds(3));
-  ASSERT_NO_FATAL_FAILURE(ClickElementWithId("company"));
-
-  test_delegate()->Wait();
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // The form should be filled.
-  ExpectFieldValue("company", company_name);
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.show_method = ShowMethod::ByClick(),
+                            .execution_target = GetWebContents()}));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
 }
 
 // Test that Autofill does not fill in read-only fields.
@@ -2203,10 +2470,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, NoAutofillForReadOnlyFields) {
   GURL url =
       embedded_test_server()->GetURL("/autofill/read_only_field_test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
-  ExpectFieldValue("email", std::string());
-  ExpectFieldValue("address", addr_line1);
+  EXPECT_EQ("", GetFieldValueById("email"));
+  EXPECT_EQ(addr_line1, GetFieldValueById("address"));
 }
 
 // Test form is fillable from a profile after form was reset.
@@ -2220,22 +2487,22 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FormFillableOnReset) {
   GURL url =
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("NAME_FIRST");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
   ASSERT_TRUE(content::ExecuteScript(
       GetWebContents(), "document.getElementById('testform').reset()"));
 
-  PopulateForm("NAME_FIRST");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
-  ExpectFieldValue("NAME_FIRST", "Milton");
-  ExpectFieldValue("NAME_LAST", "Waddams");
-  ExpectFieldValue("EMAIL_ADDRESS", "red.swingline@initech.com");
-  ExpectFieldValue("ADDRESS_HOME_LINE1", "4120 Freidrich Lane");
-  ExpectFieldValue("ADDRESS_HOME_CITY", "Austin");
-  ExpectFieldValue("ADDRESS_HOME_STATE", "Texas");
-  ExpectFieldValue("ADDRESS_HOME_ZIP", "78744");
-  ExpectFieldValue("ADDRESS_HOME_COUNTRY", "United States");
-  ExpectFieldValue("PHONE_HOME_WHOLE_NUMBER", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("NAME_FIRST"));
+  EXPECT_EQ("Waddams", GetFieldValueById("NAME_LAST"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("EMAIL_ADDRESS"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("ADDRESS_HOME_LINE1"));
+  EXPECT_EQ("Austin", GetFieldValueById("ADDRESS_HOME_CITY"));
+  EXPECT_EQ("Texas", GetFieldValueById("ADDRESS_HOME_STATE"));
+  EXPECT_EQ("78744", GetFieldValueById("ADDRESS_HOME_ZIP"));
+  EXPECT_EQ("United States", GetFieldValueById("ADDRESS_HOME_COUNTRY"));
+  EXPECT_EQ("15125551234", GetFieldValueById("PHONE_HOME_WHOLE_NUMBER"));
 }
 
 // Test Autofill distinguishes a middle initial in a name.
@@ -2246,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   GURL url =
       embedded_test_server()->GetURL("/autofill/autofill_middleinit_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("NAME_FIRST");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
   // In the legacy implementation for names, the initial is always created
   // without a trailing dot even if the user explicitely used a dot.
@@ -2255,9 +2522,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // are fully launched.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForMoreStructureInNames)) {
-    ExpectFieldValue("NAME_MIDDLE", "C.");
+    EXPECT_EQ("C.", GetFieldValueById("NAME_MIDDLE"));
   } else {
-    ExpectFieldValue("NAME_MIDDLE", "C");
+    EXPECT_EQ("C", GetFieldValueById("NAME_MIDDLE"));
   }
 }
 
@@ -2277,9 +2544,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   GURL url = embedded_test_server()->GetURL(
       "/autofill/autofill_confirmemail_form.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("NAME_FIRST");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
-  ExpectFieldValue("EMAIL_CONFIRM", email);
+  EXPECT_EQ(email, GetFieldValueById("EMAIL_CONFIRM"));
   // TODO(isherman): verify entire form.
 }
 
@@ -2302,7 +2569,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   streets.push_back("Ln");
   streets.push_back("Ct");
 
-  const int kNumProfiles = 1500;
+  constexpr int kNumProfiles = 1500;
   std::vector<AutofillProfile> profiles;
   for (int i = 0; i < kNumProfiles; i++) {
     AutofillProfile profile;
@@ -2328,7 +2595,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   GURL url = embedded_test_server()->GetURL(
       "/autofill/latency_after_submit_test.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  PopulateForm("NAME_FIRST");
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
 
   content::WindowedNotificationObserver load_stop_observer(
       content::NOTIFICATION_LOAD_STOP,
@@ -2347,28 +2614,20 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        DisableAutocompleteWhileFilling) {
   CreateTestProfile();
-
-  // Load the test page.
   SetTestUrlResponse(kTestShippingFormString);
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
-  // Invoke Autofill: Start filling the first name field with "M" and wait for
-  // the popup to be shown.
-  FocusFirstNameField();
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
+  // When suggestions are shown, disable autocomplete for the active field.
+  auto SetAutocompleteOff = [this]() {
+    ASSERT_TRUE(content::ExecuteScript(
+        GetWebContents(),
+        "document.querySelector('input').autocomplete = 'off';"));
+  };
 
-  // Now that the popup with suggestions is showing, disable autocomplete for
-  // the active field.
-  ASSERT_TRUE(content::ExecuteScript(
-      GetWebContents(),
-      "document.querySelector('input').autocomplete = 'off';"));
-
-  // Press the down arrow to select the suggestion and attempt to preview the
-  // autofilled form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
+  ASSERT_TRUE(AutofillFlow(
+      GetElementById("firstname"), this,
+      {.show_method = ShowMethod::ByChar('M'),
+       .after_select = base::BindLambdaForTesting(SetAutocompleteOff)}));
 }
 
 // Test that a page with 2 forms with no name and id containing fields with no
@@ -2376,58 +2635,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        FillFormAndFieldWithNoNameOrId) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "/autofill/forms_without_identifiers.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Focus on the first field of the second form.
-  bool result = false;
-  std::string script =
-      R"( function onFocusHandler(e) {
-          e.target.removeEventListener(e.type, arguments.callee);
-          domAutomationController.send(true);
-        }
-        if (document.readyState === 'complete') {
-          var target = document.forms[1].elements[0];
-          target.addEventListener('focus', onFocusHandler);
-          target.focus();
-        } else {
-          domAutomationController.send(false);
-        })";
+  auto name = ElementExpr("document.forms[1].elements[0]");
+  auto email = ElementExpr("document.forms[1].elements[1]");
   ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(GetWebContents(), script, &result));
-  ASSERT_TRUE(result);
-
-  // Start filling the first name field with "M" and wait for the popup to be
-  // shown.
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-
-  // Press the down arrow to select the suggestion and preview the autofilled
-  // form.
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-
-  // Press Enter to accept the autofill suggestions.
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // Make sure that the form was filled.
-  std::string value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(),
-      "window.domAutomationController.send("
-      "    document.forms[1].elements[0].value);",
-      &value));
-  EXPECT_EQ("Milton C. Waddams", value) << "for first field";
-
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(),
-      "window.domAutomationController.send("
-      "    document.forms[1].elements[1].value);",
-      &value));
-  EXPECT_EQ("red.swingline@initech.com", value) << "for second field";
+      AutofillFlow(name, this, {.show_method = ShowMethod::ByChar('M')}));
+  EXPECT_EQ("Milton C. Waddams", GetFieldValue(name));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValue(email));
 }
 
 // The following four tests verify that we can autofill forms with multiple
@@ -2436,145 +2653,115 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        Dynamic_MultipleNoNameForms_BadNames_FourthForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/multiple_noname_forms_badnames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  TriggerFormFill("firstname_4");
-  DoNothingAndWait(2);  // Wait to make sure possible refills have happened.
-  // Make sure the correct form was filled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("lastname_1", "");
-  ExpectFieldValue("email_1", "");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("lastname_2", "");
-  ExpectFieldValue("email_2", "");
-  ExpectFieldValue("firstname_3", "");
-  ExpectFieldValue("lastname_3", "");
-  ExpectFieldValue("email_3", "");
-  ExpectFieldValue("firstname_4", "Milton");
-  ExpectFieldValue("lastname_4", "Waddams");
-  ExpectFieldValue("email_4", "red.swingline@initech.com");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_4"), this));
+  DoNothingAndWait(base::Seconds(2));  // Wait to for possible refills.
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("lastname_1"));
+  EXPECT_EQ("", GetFieldValueById("email_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("lastname_2"));
+  EXPECT_EQ("", GetFieldValueById("email_2"));
+  EXPECT_EQ("", GetFieldValueById("firstname_3"));
+  EXPECT_EQ("", GetFieldValueById("lastname_3"));
+  EXPECT_EQ("", GetFieldValueById("email_3"));
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_4"));
+  EXPECT_EQ("Waddams", GetFieldValueById("lastname_4"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_4"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        Dynamic_MultipleNoNameForms_BadNames_ThirdForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/multiple_noname_forms_badnames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  TriggerFormFill("firstname_3");
-  DoNothingAndWait(2);  // Wait to make sure possible refills have happened.
-  // Make sure the correct form was filled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("lastname_1", "");
-  ExpectFieldValue("email_1", "");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("lastname_2", "");
-  ExpectFieldValue("email_2", "");
-  ExpectFieldValue("firstname_3", "Milton");
-  ExpectFieldValue("lastname_3", "Waddams");
-  ExpectFieldValue("email_3", "red.swingline@initech.com");
-  ExpectFieldValue("firstname_4", "");
-  ExpectFieldValue("lastname_4", "");
-  ExpectFieldValue("email_4", "");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_3"), this));
+  DoNothingAndWait(base::Seconds(2));  // Wait to for possible refills.
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("lastname_1"));
+  EXPECT_EQ("", GetFieldValueById("email_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("lastname_2"));
+  EXPECT_EQ("", GetFieldValueById("email_2"));
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_3"));
+  EXPECT_EQ("Waddams", GetFieldValueById("lastname_3"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_3"));
+  EXPECT_EQ("", GetFieldValueById("firstname_4"));
+  EXPECT_EQ("", GetFieldValueById("lastname_4"));
+  EXPECT_EQ("", GetFieldValueById("email_4"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        Dynamic_MultipleNoNameForms_BadNames_SecondForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/multiple_noname_forms_badnames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  TriggerFormFill("firstname_2");
-  DoNothingAndWait(2);  // Wait to make sure possible refills have happened.
-  // Make sure the correct form was filled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("lastname_1", "");
-  ExpectFieldValue("email_1", "");
-  ExpectFieldValue("firstname_2", "Milton");
-  ExpectFieldValue("lastname_2", "Waddams");
-  ExpectFieldValue("email_2", "red.swingline@initech.com");
-  ExpectFieldValue("firstname_3", "");
-  ExpectFieldValue("lastname_3", "");
-  ExpectFieldValue("email_3", "");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_2"), this));
+  DoNothingAndWait(base::Seconds(2));  // Wait to for possible refills.
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("lastname_1"));
+  EXPECT_EQ("", GetFieldValueById("email_1"));
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("Waddams", GetFieldValueById("lastname_2"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_2"));
+  EXPECT_EQ("", GetFieldValueById("firstname_3"));
+  EXPECT_EQ("", GetFieldValueById("lastname_3"));
+  EXPECT_EQ("", GetFieldValueById("email_3"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
                        Dynamic_MultipleNoNameForms_BadNames_FirstForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/multiple_noname_forms_badnames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-
-  TriggerFormFill("firstname_1");
-  DoNothingAndWait(2);  // Wait to make sure possible refills have happened.
-  // Make sure the correct form was filled.
-  ExpectFieldValue("firstname_1", "Milton");
-  ExpectFieldValue("lastname_1", "Waddams");
-  ExpectFieldValue("email_1", "red.swingline@initech.com");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("lastname_2", "");
-  ExpectFieldValue("email_2", "");
-  ExpectFieldValue("firstname_3", "");
-  ExpectFieldValue("lastname_3", "");
-  ExpectFieldValue("email_3", "");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_1"), this));
+  DoNothingAndWait(base::Seconds(2));  // Wait to for possible refills.
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("Waddams", GetFieldValueById("lastname_1"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("lastname_2"));
+  EXPECT_EQ("", GetFieldValueById("email_2"));
+  EXPECT_EQ("", GetFieldValueById("firstname_3"));
+  EXPECT_EQ("", GetFieldValueById("lastname_3"));
+  EXPECT_EQ("", GetFieldValueById("email_3"));
 }
 
 // Test that we can Autofill forms where some fields name change during the
 // fill.
-IN_PROC_BROWSER_TEST_F(AutofillCompanyInteractiveTest, FieldsChangeName) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FieldsChangeName) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "/autofill/field_changing_name_during_fill.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  ASSERT_TRUE(has_filled);
-
-  // Make sure the form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
-class AutofillCreditCardInteractiveTest : public AutofillInteractiveTestBase {
- protected:
-  AutofillCreditCardInteractiveTest() = default;
-
+class AutofillInteractiveTestCreditCard : public AutofillInteractiveTestBase {
  public:
-  AutofillCreditCardInteractiveTest(const AutofillCreditCardInteractiveTest&) =
+  AutofillInteractiveTestCreditCard() = default;
+  AutofillInteractiveTestCreditCard(const AutofillInteractiveTestCreditCard&) =
       delete;
-  AutofillCreditCardInteractiveTest& operator=(
-      const AutofillCreditCardInteractiveTest&) = delete;
-
- protected:
-  ~AutofillCreditCardInteractiveTest() override = default;
+  AutofillInteractiveTestCreditCard& operator=(
+      const AutofillInteractiveTestCreditCard&) = delete;
+  ~AutofillInteractiveTestCreditCard() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutofillInteractiveTestBase::SetUpCommandLine(command_line);
@@ -2591,46 +2778,29 @@ class AutofillCreditCardInteractiveTest : public AutofillInteractiveTestBase {
 };
 
 // Test that credit card autofill works.
-IN_PROC_BROWSER_TEST_F(AutofillCreditCardInteractiveTest, FillLocalCreditCard) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestCreditCard, FillLocalCreditCard) {
   CreateTestCreditCart();
-
-  // Navigate to the page.
   GURL url = https_server()->GetURL("a.com",
                                     "/autofill/autofill_creditcard_form.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Trigger the autofill.
-  FocusFieldByName("CREDIT_CARD_NAME_FULL");
-  AcceptSuggestionUsingArrowDown();
-
-  ExpectFieldValue("CREDIT_CARD_NAME_FULL", "Milton Waddams");
-  ExpectFieldValue("CREDIT_CARD_NUMBER", "4111111111111111");
-  ExpectFieldValue("CREDIT_CARD_EXP_MONTH", "09");
-  ExpectFieldValue("CREDIT_CARD_EXP_4_DIGIT_YEAR", "2999");
+  ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NAME_FULL"), this));
+  EXPECT_EQ("Milton Waddams", GetFieldValueById("CREDIT_CARD_NAME_FULL"));
+  EXPECT_EQ("4111111111111111", GetFieldValueById("CREDIT_CARD_NUMBER"));
+  EXPECT_EQ("09", GetFieldValueById("CREDIT_CARD_EXP_MONTH"));
+  EXPECT_EQ("2999", GetFieldValueById("CREDIT_CARD_EXP_4_DIGIT_YEAR"));
 }
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   base::HistogramTester histogram;
-
   CreateTestProfile();
-
   GURL url =
       embedded_test_server()->GetURL("/autofill/formless_no_autocomplete.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // There should a form we can trigger fill on (using the firstname field).
-  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
-  TriggerFormFill("firstname");
-
-  // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2639,13 +2809,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
   // triees to preview or fill.
   histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
 
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we do not fill formless non-checkout forms when we enable the
@@ -2655,22 +2825,12 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, NoAutocomplete) {
 // of the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   CreateTestProfile();
-
   base::HistogramTester histogram;
-
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_some_autocomplete.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
-  TriggerFormFill("firstname");
-
-  // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2679,35 +2839,26 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
   // triees to preview or fill.
   histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
 
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   CreateTestProfile();
-
   base::HistogramTester histogram;
-
   GURL url = embedded_test_server()->GetURL(
       "/autofill/formless_all_autocomplete.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_EQ(1U, GetBrowserAutofillManager()->NumFormsDetected());
-  TriggerFormFill("firstname");
-
-  // Wait for the fill to happen.
-  bool has_filled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                                   "hasFilled()", &has_filled));
-  EXPECT_TRUE(has_filled);
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -2715,13 +2866,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, DISABLED_AllAutocomplete) {
   // available to be filled.
   histogram.ExpectUniqueSample("Autofill.NumElementsMatchesNumFields", true, 2);
 
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // An extension of the test fixture for tests with site isolation.
@@ -2747,14 +2898,8 @@ class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
   }
 };
 
-// Flaky on ChromeOS http://crbug.com/1175735
-#if defined(OS_CHROMEOS)
-#define MAYBE_SimpleCrossSiteFill DISABLED_SimpleCrossSiteFill
-#else
-#define MAYBE_SimpleCrossSiteFill SimpleCrossSiteFill
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
-                       MAYBE_SimpleCrossSiteFill) {
+// TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest, SimpleCrossSiteFill) {
   test_delegate()->SetIgnoreBackToBackMessages(
       ObservedUiEvents::kPreviewFormData, true);
   CreateTestProfile();
@@ -2770,7 +2915,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
       content::NavigateIframeToURL(GetWebContents(), "crossFrame", iframe_url));
 
   // Wait to make sure the cross-frame form is parsed.
-  DoNothingAndWait(2);
+  DoNothingAndWait(base::Seconds(2));
 
   // Let |test_delegate()| also observe autofill events in the iframe.
   content::RenderFrameHost* cross_frame =
@@ -2782,22 +2927,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
   ASSERT_TRUE(cross_driver);
   cross_driver->browser_autofill_manager()->SetTestDelegate(test_delegate());
 
-  // Focus the form in the iframe and simulate choosing a suggestion via
-  // keyboard.
-  std::string script_focus("document.getElementById('NAME_FIRST').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
-  content::RenderWidgetHost* widget =
-      cross_frame->GetView()->GetRenderWidgetHost();
-  AcceptSuggestionUsingArrowDown(/*suggestion_position=*/1, widget);
-
-  // Check that the suggestion was filled.
-  std::string value;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      cross_frame,
-      "window.domAutomationController.send("
-      "    document.getElementById('NAME_FIRST').value);",
-      &value));
-  EXPECT_EQ("Milton", value);
+  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this,
+                           {.execution_target = cross_frame}));
+  EXPECT_EQ("Milton", GetFieldValue(GetElementById("NAME_FIRST"), cross_frame));
 }
 
 // This test verifies that credit card (payment card list) popup works when the
@@ -2805,10 +2937,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
   CreateTestCreditCart();
   // Main frame is on a.com, iframe is on b.com.
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/cross_origin_iframe.html");
+  GURL url =
+      https_server()->GetURL("a.com", "/autofill/cross_origin_iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  GURL iframe_url = embedded_test_server()->GetURL(
+  GURL iframe_url = https_server()->GetURL(
       "b.com", "/autofill/autofill_creditcard_form.html");
   EXPECT_TRUE(
       content::NavigateIframeToURL(GetWebContents(), "crossFrame", iframe_url));
@@ -2823,31 +2955,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, CrossSitePaymentForms) {
   ASSERT_TRUE(cross_driver);
   cross_driver->browser_autofill_manager()->SetTestDelegate(test_delegate());
 
-  // Focus the form in the iframe and simulate choosing a suggestion via
-  // keyboard.
-  std::string script_focus(
-      "window.focus();"
-      "document.getElementById('CREDIT_CARD_NUMBER').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
-
-  // Wait to make sure iframe is fully rendered. Without the wait, Chrome
-  // sometimes got the signal to render a dropdown at a time and coordinate
-  // where the trigger element was outside the view port of the website.
-  DoNothingAndWait(2);
-
-  // Send an arrow dow keypress in order to trigger the autofill popup.
-  SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                       {ObservedUiEvents::kSuggestionShown});
+  auto Wait = [this]() { DoNothingAndWait(base::Seconds(2)); };
+  ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NUMBER"), this,
+                           {.after_focus = base::BindLambdaForTesting(Wait),
+                            .execution_target = cross_frame}));
 }
 
-// Flaky on ChromeOS http://crbug.com/1175735
-#if defined(OS_CHROMEOS)
-#define MAYBE_DeletingFrameUnderSuggestion DISABLED_DeletingFrameUnderSuggestion
-#else
-#define MAYBE_DeletingFrameUnderSuggestion DeletingFrameUnderSuggestion
-#endif
+// TODO(https://crbug.com/1175735): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
-                       MAYBE_DeletingFrameUnderSuggestion) {
+                       DeletingFrameUnderSuggestion) {
   // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
   // and becomes smaller because of that.  Investigate this and remove the line
   // below if possible.
@@ -2876,20 +2992,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 
   // Focus the form in the iframe and simulate choosing a suggestion via
   // keyboard.
-  std::string script_focus("document.getElementById('NAME_FIRST').focus();");
-  ASSERT_TRUE(content::ExecuteScript(cross_frame, script_focus));
-  SendKeyToPageAndWait(ui::DomKey::ARROW_DOWN,
-                       {ObservedUiEvents::kSuggestionShown});
-  content::RenderWidgetHost* widget =
-      cross_frame->GetView()->GetRenderWidgetHost();
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData}, widget);
+  ASSERT_TRUE(
+      AutofillFlow(GetElementById("NAME_FIRST"), this,
+                   {.do_accept = false, .execution_target = cross_frame}));
   // Do not accept the suggestion yet, to keep the pop-up shown.
   EXPECT_TRUE(IsPopupShown());
 
   // Delete the iframe.
   std::string script_delete =
-      "document.body.removeChild(document.getElementById('crossFrame'));";
+      R"(document.body.removeChild(document.getElementById('crossFrame')))";
   ASSERT_TRUE(content::ExecuteScript(GetWebContents(), script_delete));
 
   // The popup should have disappeared with the iframe.
@@ -2898,30 +3009,19 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveIsolationTest,
 
 // The boolean parameter controls whether or not
 // features::kAutofillAcrossIframes is enabled.
-class AutofillDynamicFormInteractiveTest
+class AutofillInteractiveTestDynamicForm
     : public AutofillInteractiveTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  AutofillDynamicFormInteractiveTest(
-      const AutofillDynamicFormInteractiveTest&) = delete;
-  AutofillDynamicFormInteractiveTest& operator=(
-      const AutofillDynamicFormInteractiveTest&) = delete;
-
- protected:
-  AutofillDynamicFormInteractiveTest() {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-    (GetParam() ? enabled : disabled)
-        .push_back(features::kAutofillAcrossIframes);
-    scoped_feature_.InitWithFeatures(enabled, disabled);
-    // Setup that the test expects a re-fill to happen.
-    test_delegate()->SetIsExpectingDynamicRefill(true);
+  AutofillInteractiveTestDynamicForm() {
+    scoped_feature_list_.InitWithFeatureState(features::kAutofillAcrossIframes,
+                                              GetParam());
   }
-
-  ~AutofillDynamicFormInteractiveTest() override = default;
-
-  // AutofillInteractiveTestBase:
-  void SetUp() override { AutofillInteractiveTestBase::SetUp(); }
+  AutofillInteractiveTestDynamicForm(
+      const AutofillInteractiveTestDynamicForm&) = delete;
+  AutofillInteractiveTestDynamicForm& operator=(
+      const AutofillInteractiveTestDynamicForm&) = delete;
+  ~AutofillInteractiveTestDynamicForm() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     AutofillInteractiveTestBase::SetUpCommandLine(command_line);
@@ -2931,741 +3031,617 @@ class AutofillDynamicFormInteractiveTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_;
-};
-
-// The boolean parameters indicate whether features::kAutofillAcrossIframes and
-// features::kAutofillRefillWithRendererIds, respectively, are enabled.
-class AutofillDynamicFormReplacementInteractiveTest
-    : public AutofillInteractiveTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
- public:
-  AutofillDynamicFormReplacementInteractiveTest()
-      : autofill_across_iframes_(std::get<0>(GetParam())),
-        refill_with_renderer_ids_(std::get<1>(GetParam())) {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
-    (autofill_across_iframes_ ? enabled : disabled)
-        .push_back(features::kAutofillAcrossIframes);
-    (refill_with_renderer_ids_ ? enabled : disabled)
-        .push_back(features::kAutofillRefillWithRendererIds);
-    scoped_feature_.InitWithFeatures(enabled, disabled);
-  }
-
- protected:
-  const bool autofill_across_iframes_;
-  const bool refill_with_renderer_ids_;
-  base::test::ScopedFeatureList scoped_feature_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that we can Autofill dynamically generated forms.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill) {
   CreateTestProfile();
-
   GURL url =
       embedded_test_server()->GetURL("a.com", "/autofill/dynamic_form.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname_form1", "Milton");
-  ExpectFieldValue("address_form1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_form1", "TX");
-  ExpectFieldValue("city_form1", "Austin");
-  ExpectFieldValue("company_form1", "Initech");
-  ExpectFieldValue("email_form1", "red.swingline@initech.com");
-  ExpectFieldValue("phone_form1", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_form1"));
+  EXPECT_EQ("TX", GetFieldValueById("state_form1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
+  EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        TwoDynamicChangingFormsFill) {
-  // Setup that the test expects a re-fill to happen.
-  test_delegate()->SetIsExpectingDynamicRefill(true);
-
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL("a.com",
                                             "/autofill/two_dynamic_forms.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
-  TriggerFormFill("firstname_form1");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled('firstname_form1')", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form1"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname_form1", "Milton");
-  ExpectFieldValue("address_form1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_form1", "TX");
-  ExpectFieldValue("city_form1", "Austin");
-  ExpectFieldValue("company_form1", "Initech");
-  ExpectFieldValue("email_form1", "red.swingline@initech.com");
-  ExpectFieldValue("phone_form1", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_form1"));
+  EXPECT_EQ("TX", GetFieldValueById("state_form1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
+  EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 
-  TriggerFormFill("firstname_form2");
-
-  // Wait for the re-fill to happen.
-  has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled('firstname_form2')", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  refill = ListenForRefill("firstname_form2");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_form2"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname_form2", "Milton");
-  ExpectFieldValue("address_form2", "4120 Freidrich Lane");
-  ExpectFieldValue("state_form2", "TX");
-  ExpectFieldValue("city_form2", "Austin");
-  ExpectFieldValue("company_form2", "Initech");
-  ExpectFieldValue("email_form2", "red.swingline@initech.com");
-  ExpectFieldValue("phone_form2", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_form2"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_form2"));
+  EXPECT_EQ("TX", GetFieldValueById("state_form2"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_form2"));
+  EXPECT_EQ("Initech", GetFieldValueById("company_form2"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form2"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form2"));
 }
 
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
 // Test that forms that dynamically change a second time do not get filled.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SecondChange) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/double_dynamic_form.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
-  TriggerFormFill("firstname");
-
-  // Wait for two dynamic changes to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form2");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure the new form was not filled.
-  ExpectFieldValue("firstname_form2", "");
-  ExpectFieldValue("address_form2", "");
-  ExpectFieldValue("state_form2", "CA");  // Default value.
-  ExpectFieldValue("city_form2", "");
-  ExpectFieldValue("company_form2", "");
-  ExpectFieldValue("email_form2", "");
-  ExpectFieldValue("phone_form2", "");
+  EXPECT_EQ("", GetFieldValueById("firstname_form2"));
+  EXPECT_EQ("", GetFieldValueById("address_form2"));
+  EXPECT_EQ("CA", GetFieldValueById("state_form2"));  // Default value.
+  EXPECT_EQ("", GetFieldValueById("city_form2"));
+  EXPECT_EQ("", GetFieldValueById("company_form2"));
+  EXPECT_EQ("", GetFieldValueById("email_form2"));
+  EXPECT_EQ("", GetFieldValueById("phone_form2"));
 }
 
 // Test that forms that dynamically change after a second do not get filled.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AfterDelay) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_after_delay.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure that the new form was not filled.
-  ExpectFieldValue("firstname_form1", "");
-  ExpectFieldValue("address_form1", "");
-  ExpectFieldValue("state_form1", "CA");  // Default value.
-  ExpectFieldValue("city_form1", "");
-  ExpectFieldValue("company_form1", "");
-  ExpectFieldValue("email_form1", "");
-  ExpectFieldValue("phone_form1", "");
+  EXPECT_EQ("", GetFieldValueById("firstname_form1"));
+  EXPECT_EQ("", GetFieldValueById("address_form1"));
+  EXPECT_EQ("CA", GetFieldValueById("state_form1"));  // Default value.
+  EXPECT_EQ("", GetFieldValueById("city_form1"));
+  EXPECT_EQ("", GetFieldValueById("company_form1"));
+  EXPECT_EQ("", GetFieldValueById("email_form1"));
+  EXPECT_EQ("", GetFieldValueById("phone_form1"));
 }
 
 // Test that only field of a type group that was filled initially get refilled.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AddsNewFieldTypeGroups) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_new_field_types.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
-  TriggerFormFill("firstname");
-
-  // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // The fields present in the initial fill should be filled.
-  ExpectFieldValue("firstname_form1", "Milton");
-  ExpectFieldValue("address_form1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_form1", "TX");
-  ExpectFieldValue("city_form1", "Austin");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_form1"));
+  EXPECT_EQ("TX", GetFieldValueById("state_form1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
   // Fields from group that were not present in the initial fill should not be
   // filled
-  ExpectFieldValue("company_form1", "");
+  EXPECT_EQ("", GetFieldValueById("company_form1"));
   // Fields that were present but hidden in the initial fill should not be
   // filled.
-  ExpectFieldValue("email_form1", "");
+  EXPECT_EQ("", GetFieldValueById("email_form1"));
   // The phone should be filled even if it's a different format than the initial
   // fill.
-  ExpectFieldValue("phone_form1", "5125551234");
+  EXPECT_EQ("5125551234", GetFieldValueById("phone_form1"));
 }
 
 // Test that we can autofill forms that dynamically change select fields to text
 // fields by changing the visibilities.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_SelectToText) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_select_to_text.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-  TriggerFormFill("firstname");
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_us", "Texas");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("Texas", GetFieldValueById("state_us"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can autofill forms that dynamically change the visibility of a
 // field after it's autofilled.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_VisibilitySwitch) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_visibility_switch.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-  TriggerFormFill("firstname");
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
   // Both fields must be filled after a refill.
-  ExpectFieldValue("state_first", "Texas");
-  ExpectFieldValue("state_second", "Texas");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Texas", GetFieldValueById("state_first"));
+  EXPECT_EQ("Texas", GetFieldValueById("state_second"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappears) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-  TriggerFormFill("firstname");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("address1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname2", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_noname_form.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-  TriggerFormFill("firstname");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("address1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname2", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
 IN_PROC_BROWSER_TEST_P(
-    AutofillDynamicFormInteractiveTest,
+    AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleBadNameForms) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com",
       "/autofill/dynamic_form_element_invalid_multiple_badname_forms.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ValueWaiter refill = ListenForRefill("address1_7");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
-  TriggerFormFill("firstname_5");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("address1_3", "");
-  ExpectFieldValue("country_4", "CA");  // default
-  ExpectFieldValue("firstname_6", "Milton");
-  ExpectFieldValue("address1_7", "4120 Freidrich Lane");
-  ExpectFieldValue("country_8", "US");
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("address1_3"));
+  EXPECT_EQ("CA", GetFieldValueById("country_4"));  // default
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_6"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1_7"));
+  EXPECT_EQ("US", GetFieldValueById("country_8"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned_badnames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ValueWaiter refill = ListenForRefill("address1_7");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
-  TriggerFormFill("firstname_5");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("address1_3", "");
-  ExpectFieldValue("country_4", "CA");  // default
-  ExpectFieldValue("firstname_6", "Milton");
-  ExpectFieldValue("address1_7", "4120 Freidrich Lane");
-  ExpectFieldValue("country_8", "US");
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("address1_3"));
+  EXPECT_EQ("CA", GetFieldValueById("country_4"));  // default
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_6"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1_7"));
+  EXPECT_EQ("US", GetFieldValueById("country_8"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with no name.
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_P(
-    AutofillDynamicFormInteractiveTest,
+    AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com",
       "/autofill/dynamic_form_element_invalid_multiple_noname_forms.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ValueWaiter refill = ListenForRefill("address1_7");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_5"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
-  TriggerFormFill("firstname_5");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-
-  ASSERT_TRUE(has_refilled);
   // Make sure the second form was filled correctly, and the first form was left
   // unfilled.
-  ExpectFieldValue("firstname_1", "");
-  ExpectFieldValue("firstname_2", "");
-  ExpectFieldValue("address1_3", "");
-  ExpectFieldValue("country_4", "CA");  // default
-  ExpectFieldValue("firstname_6", "Milton");
-  ExpectFieldValue("address1_7", "4120 Freidrich Lane");
-  ExpectFieldValue("country_8", "US");
+  EXPECT_EQ("", GetFieldValueById("firstname_1"));
+  EXPECT_EQ("", GetFieldValueById("firstname_2"));
+  EXPECT_EQ("", GetFieldValueById("address1_3"));
+  EXPECT_EQ("CA", GetFieldValueById("country_4"));  // default
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_6"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1_7"));
+  EXPECT_EQ("US", GetFieldValueById("country_8"));
 }
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the elements are unowned.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsUnowned) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
-  TriggerFormFill("firstname");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("address1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname2", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname2"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that credit card fields are re-filled.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AlsoForCreditCard) {
   CreateTestCreditCart();
-
-  // Navigate to the page.
   GURL url = https_server()->GetURL("a.com",
                                     "/autofill/dynamic_form_credit_card.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
+  ValueWaiter refill = ListenForRefill("cc-name");
+  ASSERT_TRUE(AutofillFlow(GetElementById("cc-name"), this,
+                           {.show_method = ShowMethod::ByChar('M')}));
+  ASSERT_TRUE(std::move(refill).Wait());
 
-  // Trigger the initial fill.
-  FocusFieldByName("cc-name");
-  SendKeyToPageAndWait(ui::DomKey::FromCharacter('M'), ui::DomCode::US_M,
-                       ui::VKEY_M, {ObservedUiEvents::kSuggestionShown});
-  SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN,
-                        {ObservedUiEvents::kPreviewFormData});
-  SendKeyToPopupAndWait(ui::DomKey::ENTER, {ObservedUiEvents::kFormDataFilled});
-
-  // Wait for the dynamic change to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
-
-  // There should be no values in the fields.
-  ExpectFieldValue("cc-name", "Milton Waddams");
-  ExpectFieldValue("cc-num", "4111111111111111");
-  ExpectFieldValue("cc-exp-month", "09");
-  ExpectFieldValue("cc-exp-year", "2999");
-  ExpectFieldValue("cc-csc", "");
+  EXPECT_EQ("Milton Waddams", GetFieldValueById("cc-name"));
+  EXPECT_EQ("4111111111111111", GetFieldValueById("cc-num"));
+  EXPECT_EQ("09", GetFieldValueById("cc-exp-month"));
+  EXPECT_EQ("2999", GetFieldValueById("cc-exp-year"));
+  EXPECT_EQ("", GetFieldValueById("cc-csc"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_select_options_change.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_FALSE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // The fields that were initially filled and not reset should still be filled.
-  ExpectFieldValue("firstname", "");  // That field value was reset dynamically.
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "CA");  // Default value.
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("", GetFieldValueById(
+                    "firstname"));  // That field value was reset dynamically.
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("CA", GetFieldValueById("state"));  // Default value.
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can Autofill dynamically generated forms with no name if the
 // NameForAutofill of the first field matches.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormReplacementInteractiveTest,
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_FormWithoutName) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_no_name.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // TODO(crbug/896689): Cleanup feature, also in JS code.
-  if (refill_with_renderer_ids_) {
-    ASSERT_TRUE(content::ExecuteScript(
-        GetWebContents(), "window.kAutofillRefillWithRendererIds = true;"));
-  }
-
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_form1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname_form1", "Milton");
-  ExpectFieldValue("address_form1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_form1", "TX");
-  ExpectFieldValue("city_form1", "Austin");
-  ExpectFieldValue("company_form1", "Initech");
-  ExpectFieldValue("email_form1", "red.swingline@initech.com");
-  ExpectFieldValue("phone_form1", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_form1"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_form1"));
+  EXPECT_EQ("TX", GetFieldValueById("state_form1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_form1"));
+  EXPECT_EQ("Initech", GetFieldValueById("company_form1"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_form1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed for forms with no names if the NameForAutofill of the first
 // field matches.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_FormWithoutName) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com",
       "/autofill/dynamic_form_with_no_name_select_options_change.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 // Test that we can Autofill dynamically generated synthetic forms if the
 // NameForAutofill of the first field matches.
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SyntheticForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_synthetic_form.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname_syntheticform1");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname_syntheticform1", "Milton");
-  ExpectFieldValue("address_syntheticform1", "4120 Freidrich Lane");
-  ExpectFieldValue("state_syntheticform1", "TX");
-  ExpectFieldValue("city_syntheticform1", "Austin");
-  ExpectFieldValue("company_syntheticform1", "Initech");
-  ExpectFieldValue("email_syntheticform1", "red.swingline@initech.com");
-  ExpectFieldValue("phone_syntheticform1", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname_syntheticform1"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address_syntheticform1"));
+  EXPECT_EQ("TX", GetFieldValueById("state_syntheticform1"));
+  EXPECT_EQ("Austin", GetFieldValueById("city_syntheticform1"));
+  EXPECT_EQ("Initech", GetFieldValueById("company_syntheticform1"));
+  EXPECT_EQ("red.swingline@initech.com",
+            GetFieldValueById("email_syntheticform1"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone_syntheticform1"));
 }
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-IN_PROC_BROWSER_TEST_P(AutofillDynamicFormInteractiveTest,
+// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_synthetic_form_select_options_change.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  TriggerFormFill("firstname");
-
-  // Wait for the re-fill to happen.
-  bool has_refilled = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetWebContents(), "hasRefilled()", &has_refilled));
-  ASSERT_TRUE(has_refilled);
+  ValueWaiter refill = ListenForRefill("firstname");
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  ExpectFieldValue("firstname", "Milton");
-  ExpectFieldValue("address1", "4120 Freidrich Lane");
-  ExpectFieldValue("state", "TX");
-  ExpectFieldValue("city", "Austin");
-  ExpectFieldValue("company", "Initech");
-  ExpectFieldValue("email", "red.swingline@initech.com");
-  ExpectFieldValue("phone", "15125551234");
+  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
+  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
+  EXPECT_EQ("TX", GetFieldValueById("state"));
+  EXPECT_EQ("Austin", GetFieldValueById("city"));
+  EXPECT_EQ("Initech", GetFieldValueById("company"));
+  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
+  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ShadowDOM) {
   CreateTestProfile();
-
   GURL url =
       embedded_test_server()->GetURL("a.com", "/autofill/shadowdom.html");
-  ASSERT_NO_FATAL_FAILURE(
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  bool result = false;
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(GetWebContents(),
-                                           R"( function onFocusHandler(e) {
-              e.target.removeEventListener(e.type, arguments.callee);
-              domAutomationController.send(true);
-            }
-            if (document.readyState === 'complete') {
-              var target = getNameElement();
-              target.addEventListener('focus', onFocusHandler);
-              target.focus();
-            } else {
-              domAutomationController.send(false);
-            })",
-                                           &result));
-  ASSERT_TRUE(result);
-  TriggerFormFillAlreadyFocused();
+  ASSERT_TRUE(AutofillFlow(ElementExpr("getNameElement()"), this));
 
-  std::string name;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getName())",
-      &name));
-  EXPECT_EQ("Milton C. Waddams", name) << " for field name";
+  auto Js = [this](const std::string& code) {
+    return content::EvalJs(GetWebContents(), code);
+  };
 
-  std::string address;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getAddress())",
-      &address));
-  EXPECT_EQ("4120 Freidrich Lane", address) << " for field address";
-
-  std::string city;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getCity())",
-      &city));
-  EXPECT_EQ("Austin", city) << " for field city";
-
-  std::string state;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getState())",
-      &state));
-  EXPECT_EQ("TX", state) << " for field state";
-
-  std::string zip;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      GetWebContents(), "window.domAutomationController.send(getZip())", &zip));
-  EXPECT_EQ("78744", zip) << " for field zip";
+  EXPECT_EQ("Milton C. Waddams", Js("getName()"));
+  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress()"));
+  EXPECT_EQ("Austin", Js("getCity()"));
+  EXPECT_EQ("TX", Js("getState()"));
+  EXPECT_EQ("78744", Js("getZip()"));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillDynamicFormInteractiveTest,
+INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
+                         AutofillInteractiveTestDynamicForm,
                          testing::Bool());
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         AutofillDynamicFormReplacementInteractiveTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// ChromeVox is only available on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+
+class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
+ public:
+  AutofillInteractiveTestChromeVox() = default;
+  ~AutofillInteractiveTestChromeVox() override = default;
+
+  void TearDownOnMainThread() override {
+    // Unload the ChromeVox extension so the browser doesn't try to respond to
+    // in-flight requests during test shutdown. https://crbug.com/923090
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    AutomationManagerAura::GetInstance()->Disable();
+  }
+
+  void EnableChromeVox() {
+    // Test setup.
+    // Enable ChromeVox, disable earcons and wait for key mappings to be
+    // fetched.
+    ASSERT_FALSE(ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+    // TODO(accessibility): fix console error/warnings and insantiate
+    // |console_observer_| here.
+
+    // Load ChromeVox and block until it's fully loaded.
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    sm_.ExpectSpeechPattern("*");
+    sm_.Call([this]() { DisableEarcons(); });
+  }
+
+  void DisableEarcons() {
+    // Playing earcons from within a test is not only annoying if you're
+    // running the test locally, but seems to cause crashes
+    // (http://crbug.com/396507). Work around this by just telling
+    // ChromeVox to not ever play earcons (prerecorded sound effects).
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId,
+        "ChromeVox.earcons.playEarcon = function() {};");
+  }
+
+  ash::test::SpeechMonitor sm_;
+};
+
+// Ensure that autofill suggestions are properly read out via ChromeVox.
+// This is a regressions test for crbug.com/1208913.
+// TODO(https://crbug.com/1294266): Check back if flakiness is fixed now.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
+                       TestNotificationOfAutofillDropdown) {
+  CreateTestProfile();
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  EnableChromeVox();
+  content::EnableAccessibilityForWebContents(web_contents());
+
+  // The following contains a sequence of calls to
+  // sm_.ExpectSpeechPattern() and test_delegate()->Wait(). It is essential
+  // to first flush the expected speech patterns, otherwise the two functions
+  // start incompatible RunLoops.
+  sm_.ExpectSpeechPattern("Web Content");
+  sm_.Call([this]() {
+    content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
+                                                           "First name:");
+    web_contents()->Focus();
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
+    ASSERT_TRUE(FocusField(GetElementById("firstname"), GetWebContents()));
+  });
+  sm_.ExpectSpeechPattern("First name:");
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("Region");
+  // Wait for suggestions popup to show up. This needs to happen before we
+  // simulate the cursor down key press.
+  sm_.Call([this]() { test_delegate()->Wait(); });
+  sm_.Call([this]() {
+    test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData});
+    ASSERT_TRUE(
+        ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
+                                  ui::VKEY_DOWN, false, false, false, false));
+  });
+  sm_.ExpectSpeechPattern("Autofill menu opened");
+  sm_.ExpectSpeechPattern("Milton 4120 Freidrich Lane");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("1 of 2");
+  sm_.Call([this]() { test_delegate()->Wait(); });
+  sm_.Replay();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace autofill

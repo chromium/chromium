@@ -42,20 +42,31 @@ static WebSourceBufferClient::ParseWarning ParseWarningToBlink(
 #undef CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE
 }
 
+static_assert(media::kInfiniteDuration == base::TimeDelta::Max());
+static_assert(media::kNoTimestamp == base::TimeDelta::Min());
+
 static base::TimeDelta DoubleToTimeDelta(double time) {
   DCHECK(!std::isnan(time));
   DCHECK_NE(time, -std::numeric_limits<double>::infinity());
 
-  if (time == std::numeric_limits<double>::infinity())
+  // API sometimes needs conceptual +Infinity,
+  if (time == std::numeric_limits<double>::infinity()) {
     return media::kInfiniteDuration;
+  }
 
-  constexpr double max_time_in_seconds =
-      base::TimeDelta::FiniteMax().InSecondsF();
+  base::TimeDelta converted_time = base::Seconds(time);
 
-  if (time >= max_time_in_seconds)
+  // Avoid saturating finite positive input to kInfiniteDuration.
+  if (converted_time == media::kInfiniteDuration) {
     return base::TimeDelta::FiniteMax();
+  }
 
-  return base::Microseconds(time * base::Time::kMicrosecondsPerSecond);
+  // Avoid saturating finite negative input to KNoTimestamp.
+  if (converted_time == media::kNoTimestamp) {
+    return base::TimeDelta::FiniteMin();
+  }
+
+  return converted_time;
 }
 
 WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,

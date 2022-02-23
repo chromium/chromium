@@ -6,11 +6,14 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/registration_data.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -23,7 +26,14 @@ constexpr char kPV[] = "pv";    // Key for storing product version.
 constexpr char kFP[] = "fp";    // Key for storing fingerprint.
 constexpr char kECP[] = "ecp";  // Key for storing existence checker path.
 constexpr char kBC[] = "bc";    // Key for storing brand code.
+constexpr char kBP[] = "bp";    // Key for storing brand path.
 constexpr char kAP[] = "ap";    // Key for storing ap.
+
+constexpr char kHadApps[] = "had_apps";
+
+// TODO(crbug.com/1292189): rename "updater_time" to "last_checked".
+constexpr char kLastChecked[] = "update_time";
+constexpr char kLastStarted[] = "last_started";
 
 }  // namespace
 
@@ -65,14 +75,7 @@ void PersistedData::SetFingerprint(const std::string& id,
 base::FilePath PersistedData::GetExistenceCheckerPath(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if defined(OS_WIN)
-  base::FilePath::StringType ecp;
-  const std::string str = GetString(id, kECP);
-  return base::UTF8ToWide(str.c_str(), str.size(), &ecp) ? base::FilePath(ecp)
-                                                         : base::FilePath();
-#else
-  return base::FilePath(GetString(id, kECP));
-#endif  // OS_WIN
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kECP));
 }
 
 void PersistedData::SetExistenceCheckerPath(const std::string& id,
@@ -91,6 +94,17 @@ void PersistedData::SetBrandCode(const std::string& id, const std::string& bc) {
   SetString(id, kBC, bc);
 }
 
+base::FilePath PersistedData::GetBrandPath(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kBP));
+}
+
+void PersistedData::SetBrandPath(const std::string& id,
+                                 const base::FilePath& bp) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kBP, bp.AsUTF8Unsafe());
+}
+
 std::string PersistedData::GetAP(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetString(id, kAP);
@@ -105,6 +119,7 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   SetProductVersion(rq.app_id, rq.version);
   SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
   SetBrandCode(rq.app_id, rq.brand_code);
+  SetBrandPath(rq.app_id, rq.brand_path);
   SetAP(rq.app_id, rq.ap);
 }
 
@@ -145,7 +160,7 @@ const base::Value* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return nullptr;
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       pref_service_->GetDictionary(kPersistedDataPreference);
   if (!dict)
     return nullptr;
@@ -187,6 +202,47 @@ void PersistedData::SetString(const std::string& id,
     return;
   DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
+}
+
+bool PersistedData::GetHadApps() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_ && pref_service_->GetBoolean(kHadApps);
+}
+
+void PersistedData::SetHadApps() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetBoolean(kHadApps, true);
+}
+
+base::Time PersistedData::GetLastChecked() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetTime(kLastChecked);
+}
+
+void PersistedData::SetLastChecked(const base::Time& time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetTime(kLastChecked, time);
+}
+
+base::Time PersistedData::GetLastStarted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return pref_service_->GetTime(kLastStarted);
+}
+
+void PersistedData::SetLastStarted(const base::Time& time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pref_service_)
+    pref_service_->SetTime(kLastStarted, time);
+}
+
+// Register persisted data prefs, except for kPersistedDataPreference.
+// kPersistedDataPreference is registered by update_client::RegisterPrefs.
+void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry) {
+  registry->RegisterBooleanPref(kHadApps, false);
+  registry->RegisterTimePref(kLastChecked, {});
+  registry->RegisterTimePref(kLastStarted, {});
 }
 
 }  // namespace updater

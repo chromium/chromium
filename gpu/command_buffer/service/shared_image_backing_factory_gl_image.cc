@@ -41,12 +41,14 @@ SharedImageBackingFactoryGLImage::SharedImageBackingFactoryGLImage(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     ImageFactory* image_factory,
-    gl::ProgressReporter* progress_reporter)
+    gl::ProgressReporter* progress_reporter,
+    const bool for_shared_memory_gmbs)
     : SharedImageBackingFactoryGLCommon(gpu_preferences,
                                         workarounds,
                                         gpu_feature_info,
                                         progress_reporter),
-      image_factory_(image_factory) {
+      image_factory_(image_factory),
+      for_shared_memory_gmbs_(for_shared_memory_gmbs) {
   scoped_refptr<gles2::FeatureInfo> feature_info =
       new gles2::FeatureInfo(workarounds, gpu_feature_info);
   feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
@@ -177,12 +179,12 @@ SharedImageBackingFactoryGLImage::CreateSharedImage(
   // always bindable.
 #if DCHECK_IS_ON()
   bool texture_2d_support = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // If the PlatformSpecificTextureTarget on Mac is GL_TEXTURE_2D, this is
   // supported.
   texture_2d_support =
       (gpu::GetPlatformSpecificTextureTarget() == GL_TEXTURE_2D);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   DCHECK(handle_type == gfx::SHARED_MEMORY_BUFFER || target != GL_TEXTURE_2D ||
          texture_2d_support || image->ShouldBindOrCopy() == gl::GLImage::BIND);
 #endif  // DCHECK_IS_ON()
@@ -259,7 +261,13 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
   if (thread_safe) {
     return false;
   }
-#if defined(OS_MAC)
+  // If the GLImage factory is created specifically for SHARED_MEMORY Gmbs,
+  // make sure that it used for that purpose based on flag
+  if ((for_shared_memory_gmbs_ && gmb_type != gfx::SHARED_MEMORY_BUFFER) ||
+      (!for_shared_memory_gmbs_ && gmb_type == gfx::SHARED_MEMORY_BUFFER)) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
   *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
@@ -273,7 +281,7 @@ bool SharedImageBackingFactoryGLImage::IsSupported(
   }
   bool needs_interop_factory = (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
                                (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Scanout on Android requires explicit fence synchronization which is only
   // supported by the interop factory.
   needs_interop_factory |= usage & SHARED_IMAGE_USAGE_SCANOUT;

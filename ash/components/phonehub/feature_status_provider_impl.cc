@@ -16,18 +16,17 @@
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
-using multidevice::RemoteDeviceRef;
-using multidevice::RemoteDeviceRefList;
-using multidevice::SoftwareFeature;
-using multidevice::SoftwareFeatureState;
-
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
-using multidevice_setup::mojom::HostStatus;
+using ::chromeos::multidevice::RemoteDeviceRef;
+using ::chromeos::multidevice::RemoteDeviceRefList;
+using ::chromeos::multidevice::SoftwareFeature;
+using ::chromeos::multidevice::SoftwareFeatureState;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::HostStatus;
 
 bool IsEligiblePhoneHubHost(const RemoteDeviceRef& device) {
   // Device must be capable of being a multi-device host.
@@ -321,4 +320,4 @@ void FeatureStatusProviderImpl::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

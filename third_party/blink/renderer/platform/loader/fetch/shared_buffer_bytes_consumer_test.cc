@@ -33,9 +33,7 @@ TEST(SharedBufferBytesConsumerTest, Read) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* test_reader =
       MakeGarbageCollected<BytesConsumerTestReader>(bytes_consumer);
-  Vector<char> data_from_consumer;
-  BytesConsumer::Result result;
-  std::tie(result, data_from_consumer) = test_reader->Run(task_runner.get());
+  auto [result, data_from_consumer] = test_reader->Run(task_runner.get());
   EXPECT_EQ(BytesConsumer::Result::kDone, result);
   EXPECT_EQ(PublicState::kClosed, bytes_consumer->GetPublicState());
   EXPECT_EQ(flatten_expected_data,

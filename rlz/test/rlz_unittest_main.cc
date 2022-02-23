@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "rlz/lib/rlz_value_store.h"
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   if (ret == 0) {
     // Now re-run all the tests using a supplementary brand code.  This brand
     // code will remain in effect for the lifetime of the branding object.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     // Set a temporary directory for RLZ here, because SupplementaryBranding
     // creates and owns RlzValueStore object for its lifetime.
     base::ScopedTempDir temp_dir;

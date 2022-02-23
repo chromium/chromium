@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_representation_dawn_ozone.h"
 
-#include <dawn_native/VulkanBackend.h>
+#include <dawn/native/VulkanBackend.h>
 
 #include <vulkan/vulkan.h>
 #include "base/logging.h"
@@ -78,7 +78,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
-  dawn_native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
+  dawn::native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
   descriptor.cTextureDescriptor = &texture_descriptor;
   descriptor.isInitialized = IsCleared();
 
@@ -99,7 +99,7 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
     }
   }
 
-  texture_ = dawn_native::vulkan::WrapVulkanImage(device_, &descriptor);
+  texture_ = dawn::native::vulkan::WrapVulkanImage(device_, &descriptor);
   if (!texture_) {
     close(fd);
   }
@@ -113,8 +113,8 @@ void SharedImageRepresentationDawnOzone::EndAccess() {
   }
 
   // Grab the signal semaphore from dawn
-  dawn_native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
-  if (!dawn_native::vulkan::ExportVulkanImage(
+  dawn::native::vulkan::ExternalImageExportInfoOpaqueFD export_info;
+  if (!dawn::native::vulkan::ExportVulkanImage(
           texture_, VK_IMAGE_LAYOUT_UNDEFINED, &export_info)) {
     DLOG(ERROR) << "Failed to export Dawn Vulkan image.";
   } else {

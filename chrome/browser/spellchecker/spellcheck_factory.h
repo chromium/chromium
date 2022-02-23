@@ -42,12 +42,12 @@ class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceWindowsHybridBrowserTest,
                            WindowsHybridSpellcheck);
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                            WindowsHybridSpellcheckDelayInit);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_SPELLCHECKER_SPELLCHECK_FACTORY_H_

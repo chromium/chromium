@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_executor.h"
@@ -28,7 +29,7 @@ class Clock;
 }  // namespace base
 
 namespace segmentation_platform {
-class FeatureAggregator;
+class FeatureListQueryProcessor;
 class SignalDatabase;
 
 namespace proto {
@@ -61,7 +62,7 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
       SignalDatabase* signal_database,
-      std::unique_ptr<FeatureAggregator> feature_aggregator,
+      FeatureListQueryProcessor* feature_list_query_processor,
       const SegmentationModelUpdatedCallback& model_updated_callback);
   ~ModelExecutionManagerImpl() override;
 
@@ -75,10 +76,9 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
                     ModelExecutionCallback callback) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
-                           InitializationFlow);
+  friend class SegmentationPlatformServiceImplTest;
+
   struct ExecutionState;
-  struct FeatureState;
   struct ModelExecutionTraceEvent;
 
   // Callback method for when the SegmentInfo (segment metadata) has been
@@ -87,25 +87,19 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       std::unique_ptr<ExecutionState> state,
       absl::optional<proto::SegmentInfo> segment_info);
 
-  // ProcessFeatures is the core function for processing all the required ML
-  // features in the correct order. It fetches samples for one feature at a
-  // time, makes sure the data is processed, and then is invoked again to
-  // process the next feature.
-  void ProcessFeatures(std::unique_ptr<ExecutionState> state);
+  // Callback method for when the processing of the model metadata's feature
+  // list has completed, which either result in an error or a valid input tensor
+  // for executing the model.
+  void OnProcessingFeatureListComplete(std::unique_ptr<ExecutionState> state,
+                                       bool error,
+                                       const std::vector<float>& input_tensor);
 
-  // Callback method for when all relevant samples for a particular feature has
-  // been loaded. Processes the samples, and inserts them into the input tensor
-  // that is later given to the ML execution.
-  void OnGetSamplesForFeature(std::unique_ptr<ExecutionState> state,
-                              std::unique_ptr<FeatureState> feature_state,
-                              std::vector<SignalDatabase::Sample> samples);
-
-  // ExecuteModel takes the current input tensor and passes it to the ML model
-  // for execution.
+  // ExecuteModel takes the current input tensor and passes it to the ML
+  // model for execution.
   void ExecuteModel(std::unique_ptr<ExecutionState> state);
 
-  // Callback method for when the model execution has completed which gives the
-  // end result to the initial ModelExecutionCallback passed to
+  // Callback method for when the model execution has completed which gives
+  // the end result to the initial ModelExecutionCallback passed to
   // ExecuteModel(...).
   void OnModelExecutionComplete(std::unique_ptr<ExecutionState> state,
                                 const absl::optional<float>& result);
@@ -126,15 +120,15 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Callback after fetching the current SegmentInfo from the
   // SegmentInfoDatabase. This is part of the flow for informing the
   // SegmentationModelUpdatedCallback about a changed model.
-  // Merges the PredictionResult from the previously stored SegmentInfo with the
-  // newly updated one, and stores the new version in the DB.
+  // Merges the PredictionResult from the previously stored SegmentInfo with
+  // the newly updated one, and stores the new version in the DB.
   void OnSegmentInfoFetchedForModelUpdate(
       optimization_guide::proto::OptimizationTarget segment_id,
       proto::SegmentationModelMetadata metadata,
       absl::optional<proto::SegmentInfo> segment_info);
 
-  // Callback after storing the updated version of the SegmentInfo. Responsible
-  // for invoking the SegmentationModelUpdatedCallback.
+  // Callback after storing the updated version of the SegmentInfo.
+  // Responsible for invoking the SegmentationModelUpdatedCallback.
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
                                   bool success);
 
@@ -143,16 +137,16 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       model_handlers_;
 
   // Used to access the current time.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Database for segment information and metadata.
-  SegmentInfoDatabase* segment_database_;
+  raw_ptr<SegmentInfoDatabase> segment_database_;
 
   // Main signal database for user actions and histograms.
-  SignalDatabase* signal_database_;
+  raw_ptr<SignalDatabase> signal_database_;
 
-  // The FeatureAggregator aggregates all the data based on metadata and input.
-  std::unique_ptr<FeatureAggregator> feature_aggregator_;
+  // Feature list processor for processing a model metadata's feature list.
+  raw_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 
   // Invoked whenever there is an update to any of the relevant ML models.
   SegmentationModelUpdatedCallback model_updated_callback_;

@@ -50,6 +50,7 @@ NewTabPageTabHelper::~NewTabPageTabHelper() = default;
 NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
+  active_ = IsNTPURL(web_state_->GetVisibleURL());
 }
 
 void NewTabPageTabHelper::SetDelegate(

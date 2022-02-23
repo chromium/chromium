@@ -16,6 +16,7 @@ class OverlayRequest;
 class OverlayPresenterObserver : public base::CheckedObserver {
  public:
   OverlayPresenterObserver();
+  ~OverlayPresenterObserver() override;
 
   // The request support for this observer.  Request-specific observer callbacks
   // will not be executed for unsupported requests.  By default, all requests

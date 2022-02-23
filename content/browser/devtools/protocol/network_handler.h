@@ -70,7 +70,8 @@ class NetworkHandler : public DevToolsDomainHandler,
   NetworkHandler(const std::string& host_id,
                  const base::UnguessableToken& devtools_token,
                  DevToolsIOContext* io_context,
-                 base::RepeatingClosure update_loader_factories_callback);
+                 base::RepeatingClosure update_loader_factories_callback,
+                 bool allow_file_access);
 
   NetworkHandler(const NetworkHandler&) = delete;
   NetworkHandler& operator=(const NetworkHandler&) = delete;
@@ -107,6 +108,12 @@ class NetworkHandler : public DevToolsDomainHandler,
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
   void OnReportUpdated(const net::ReportingReport& report) override;
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
+  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
@@ -145,6 +152,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  Maybe<bool> same_party,
                  Maybe<std::string> source_scheme,
                  Maybe<int> source_port,
+                 Maybe<std::string> partition_key,
                  std::unique_ptr<SetCookieCallback> callback) override;
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
@@ -308,8 +316,6 @@ class NetworkHandler : public DevToolsDomainHandler,
       Response response,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
-  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
-      const net::ReportingReport& report);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;
@@ -337,6 +343,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       loaders_;
   absl::optional<std::set<net::SourceStream::SourceType>>
       accepted_stream_types_;
+  const bool allow_file_access_;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 

@@ -36,8 +36,8 @@ bool CreatePairImpl(ScopedHandle* socket_a,
                     ScopedHandle* socket_b,
                     bool overlapped) {
   DCHECK_NE(socket_a, socket_b);
-  DCHECK(!socket_a->IsValid());
-  DCHECK(!socket_b->IsValid());
+  DCHECK(!socket_a->is_valid());
+  DCHECK(!socket_b->is_valid());
 
   wchar_t name[kPipePathMax];
   ScopedHandle handle_a;
@@ -64,10 +64,9 @@ bool CreatePairImpl(ScopedHandle* socket_a,
         kInBufferSize,
         kDefaultTimeoutMilliSeconds,
         NULL));
-  } while (!handle_a.IsValid() &&
-           (GetLastError() == ERROR_PIPE_BUSY));
+  } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
-  if (!handle_a.IsValid()) {
+  if (!handle_a.is_valid()) {
     NOTREACHED();
     return false;
   }
@@ -86,12 +85,12 @@ bool CreatePairImpl(ScopedHandle* socket_a,
                                     OPEN_EXISTING,  // opens existing pipe.
                                     flags,
                                     NULL));     // no template file.
-  if (!handle_b.IsValid()) {
+  if (!handle_b.is_valid()) {
     DPLOG(ERROR) << "CreateFileW failed";
     return false;
   }
 
-  if (!ConnectNamedPipe(handle_a.Get(), NULL)) {
+  if (!ConnectNamedPipe(handle_a.get(), NULL)) {
     DWORD error = GetLastError();
     if (error != ERROR_PIPE_CONNECTED) {
       DPLOG(ERROR) << "ConnectNamedPipe failed";
@@ -263,15 +262,15 @@ size_t SyncSocket::Peek() {
 }
 
 bool SyncSocket::IsValid() const {
-  return handle_.IsValid();
+  return handle_.is_valid();
 }
 
 SyncSocket::Handle SyncSocket::handle() const {
-  return handle_.Get();
+  return handle_.get();
 }
 
 SyncSocket::Handle SyncSocket::Release() {
-  return handle_.Take();
+  return handle_.release();
 }
 
 bool CancelableSyncSocket::Shutdown() {

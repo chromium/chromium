@@ -6,13 +6,19 @@
 #define COMPONENTS_VIZ_TEST_TEST_GLES2_INTERFACE_H_
 
 #include <stddef.h>
+
+#include <limits>
+#include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -172,7 +178,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   virtual GLuint NextRenderbufferId();
   virtual void RetireRenderbufferId(GLuint id);
 
-  void SetMaxSamples(int max_samples);
   void set_context_lost_callback(base::OnceClosure callback) {
     context_lost_callback_ = std::move(callback);
   }
@@ -223,7 +228,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   int width_ = 0;
   int height_ = 0;
   float scale_factor_ = -1.f;
-  TestContextSupport* test_support_ = nullptr;
+  raw_ptr<TestContextSupport> test_support_ = nullptr;
   gfx::Rect update_rect_;
   UpdateType last_update_type_ = NO_UPDATE;
   GLuint64 next_insert_fence_sync_ = 1;

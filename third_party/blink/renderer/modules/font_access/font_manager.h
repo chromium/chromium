@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
 
@@ -38,9 +37,6 @@ class FontManager final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
  private:
-  void DidShowFontChooser(ScriptPromiseResolver* resolver,
-                          mojom::blink::FontEnumerationStatus status,
-                          Vector<mojom::blink::FontMetadataPtr> fonts);
   void DidGetEnumerationResponse(ScriptPromiseResolver* resolver,
                                  const Vector<String>& selection,
                                  mojom::blink::FontEnumerationStatus,

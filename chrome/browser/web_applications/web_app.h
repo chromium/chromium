@@ -14,19 +14,21 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_data.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
+using WebAppSources = std::bitset<Source::kMaxValue + 1>;
 class WebApp {
  public:
   explicit WebApp(const AppId& app_id);
@@ -141,12 +143,12 @@ class WebApp {
 
   const apps::FileHandlers& file_handlers() const { return file_handlers_; }
 
-  bool file_handler_permission_blocked() const {
-    return file_handler_permission_blocked_;
-  }
-
   ApiApprovalState file_handler_approval_state() const {
     return file_handler_approval_state_;
+  }
+
+  OsIntegrationState file_handler_os_integration_state() const {
+    return file_handler_os_integration_state_;
   }
 
   const absl::optional<apps::ShareTarget>& share_target() const {
@@ -181,6 +183,11 @@ class WebApp {
     return run_on_os_login_mode_;
   }
 
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state()
+      const {
+    return run_on_os_login_os_integration_state_;
+  }
+
   bool window_controls_overlay_enabled() const {
     return window_controls_overlay_enabled_;
   }
@@ -209,8 +216,8 @@ class WebApp {
   }
 
   // Represents the "shortcuts" field in the manifest.
-  const std::vector<WebApplicationShortcutsMenuItemInfo>&
-  shortcuts_menu_item_infos() const {
+  const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos()
+      const {
     return shortcuts_menu_item_infos_;
   }
 
@@ -221,6 +228,8 @@ class WebApp {
   }
 
   blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
+
+  blink::mojom::HandleLinks handle_links() const { return handle_links_; }
 
   const GURL& manifest_url() const { return manifest_url_; }
 
@@ -236,12 +245,22 @@ class WebApp {
 
   const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
 
+  const std::vector<PermissionsPolicyDeclaration>& permissions_policy() const {
+    return permissions_policy_;
+  }
+
+  const absl::optional<webapps::WebappInstallSource>
+  install_source_for_metrics() const {
+    return install_source_for_metrics_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(Source::Type source);
   void RemoveSource(Source::Type source);
   bool HasAnySources() const;
   bool HasOnlySource(Source::Type source) const;
+  WebAppSources GetSources() const;
 
   bool IsSynced() const;
   bool IsPreinstalledApp() const;
@@ -279,11 +298,12 @@ class WebApp {
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
   void SetShortcutsMenuItemInfos(
-      std::vector<WebApplicationShortcutsMenuItemInfo>
-          shortcuts_menu_item_infos);
+      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos);
   void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetFileHandlerApprovalState(ApiApprovalState approval_state);
+  void SetFileHandlerOsIntegrationState(
+      OsIntegrationState os_integration_state);
   void SetShareTarget(absl::optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
       std::vector<std::string> additional_search_terms);
@@ -300,15 +320,20 @@ class WebApp {
   void SetInstallTime(const base::Time& time);
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
+  void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
+  void SetHandleLinks(blink::mojom::HandleLinks handle_links);
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const absl::optional<std::string>& manifest_id);
-  void SetFileHandlerPermissionBlocked(bool permission_blocked);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
+  void SetPermissionsPolicy(
+      std::vector<PermissionsPolicyDeclaration> permissions_policy);
+  void SetInstallSourceForMetrics(
+      absl::optional<webapps::WebappInstallSource> install_source);
 
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
@@ -316,16 +341,13 @@ class WebApp {
   base::Value AsDebugValue() const;
 
  private:
-  using Sources = std::bitset<Source::kMaxValue + 1>;
-  bool HasAnySpecifiedSourcesAndNoOtherSources(Sources specified_sources) const;
-
   friend class WebAppDatabase;
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
   AppId app_id_;
 
   // This set always contains at least one source.
-  Sources sources_;
+  WebAppSources sources_;
 
   std::string name_;
   std::string description_;
@@ -354,7 +376,7 @@ class WebApp {
   SortedSizesPx downloaded_icon_sizes_monochrome_;
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
   std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
   absl::optional<apps::ShareTarget> share_target_;
@@ -369,25 +391,36 @@ class WebApp {
   base::Time install_time_;
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
+  // Tracks if the app run on os login mode has been registered with the OS.
+  // This might go out of sync with actual OS integration status, as Chrome does
+  // not actively monitor OS registries.
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   SyncFallbackData sync_fallback_data_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;
+  blink::mojom::HandleLinks handle_links_ =
+      blink::mojom::HandleLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
   absl::optional<std::string> manifest_id_;
-  // A flag that's meant to represent the state of the File Handler API
-  // permission (used when DesktopPWAsFileHandlingSettingsGated is *not*
-  // enabled). When the permission is blocked, file handling shouldn't be
-  // registered with the OS.
-  bool file_handler_permission_blocked_ = false;
-  // The state of the user's approval of the app's use of the File Handler API
-  // (used when DesktopPWAsFileHandlingSettingsGated is enabled).
+  // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;
+  // Tracks whether file handling has been or should be enabled at the OS level.
+  // This might go out of sync with actual OS integration status, as Chrome does
+  // not actively monitor OS registries.
+  OsIntegrationState file_handler_os_integration_state_ =
+      OsIntegrationState::kDisabled;
   bool window_controls_overlay_enabled_ = false;
   bool is_storage_isolated_ = false;
   absl::optional<LaunchHandler> launch_handler_;
   absl::optional<AppId> parent_app_id_;
+  std::vector<PermissionsPolicyDeclaration> permissions_policy_;
+  // The source of the latest install, used for logging metrics. WebAppRegistrar
+  // provides range validation. Optional only to support legacy installations,
+  // since this used to be tracked as a pref. It might also be null if the value
+  // read from the database is not recognized by this client.
+  absl::optional<webapps::WebappInstallSource> install_source_for_metrics_;
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()

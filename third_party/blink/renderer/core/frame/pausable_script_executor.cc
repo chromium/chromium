@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -25,8 +24,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -50,7 +49,7 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
 
  private:
   // A helper class that handles a result from a single promise value.
-  class OnSettled : public NewScriptFunction::Callable {
+  class OnSettled : public ScriptFunction::Callable {
    public:
     OnSettled(PromiseAggregator* aggregator,
               wtf_size_t index,
@@ -62,11 +61,11 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
     OnSettled& operator=(const OnSettled&) = delete;
     ~OnSettled() override = default;
 
-    static NewScriptFunction* New(ScriptState* script_state,
-                                  PromiseAggregator* aggregator,
-                                  wtf_size_t index,
-                                  bool was_fulfilled) {
-      return MakeGarbageCollected<NewScriptFunction>(
+    static ScriptFunction* New(ScriptState* script_state,
+                               PromiseAggregator* aggregator,
+                               wtf_size_t index,
+                               bool was_fulfilled) {
+      return MakeGarbageCollected<ScriptFunction>(
           script_state,
           MakeGarbageCollected<OnSettled>(aggregator, index, was_fulfilled));
     }
@@ -88,7 +87,7 @@ class PromiseAggregator : public GarbageCollected<PromiseAggregator> {
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(aggregator_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
    private:

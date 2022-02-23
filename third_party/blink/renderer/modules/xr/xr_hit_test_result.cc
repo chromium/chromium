@@ -27,8 +27,7 @@ XRPose* XRHitTestResult::getPose(XRSpace* other) {
   auto maybe_other_space_native_from_mojo = other->NativeFromMojo();
   DCHECK(maybe_other_space_native_from_mojo);
 
-  auto mojo_from_this =
-      TransformationMatrix(mojo_from_this_.ToTransform().matrix());
+  auto mojo_from_this = TransformationMatrix(mojo_from_this_.ToTransform());
 
   auto other_native_from_mojo = *maybe_other_space_native_from_mojo;
   auto other_offset_from_other_native = other->OffsetFromNativeMatrix();
@@ -77,8 +76,7 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
 
   auto space_from_mojo = mojo_from_space.Inverse();
   auto space_from_anchor =
-      space_from_mojo *
-      TransformationMatrix(mojo_from_this_.ToTransform().matrix());
+      space_from_mojo * TransformationMatrix(mojo_from_this_.ToTransform());
 
   return session_->CreateAnchorHelper(
       script_state, space_from_anchor,

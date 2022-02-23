@@ -6,7 +6,6 @@
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/NativeUmaRecorder_jni.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"

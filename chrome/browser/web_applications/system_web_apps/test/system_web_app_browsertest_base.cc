@@ -22,8 +22,6 @@
 namespace web_app {
 
 SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
-  os_hooks_suppress_ =
-      web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   EnableSystemWebAppsInLacrosForTesting();
 #endif
@@ -85,7 +83,7 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
 
   if (wait_for_load) {
     navigation_observer.Wait();

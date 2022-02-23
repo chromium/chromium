@@ -26,7 +26,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlMixinInterface} from '../controls/pref_control_mixin.js';
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
@@ -38,6 +38,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, InstalledApp, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
+import {getTemplate} from './clear_browsing_data_dialog.html.js';
 
 /**
  * InstalledAppsDialogActions enum.
@@ -101,7 +102,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -162,10 +163,10 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: false,
       },
 
-      isSupervised_: {
+      isChildAccount_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isSupervised');
+          return loadTimeData.getBoolean('isChildAccount');
         },
       },
 
@@ -245,11 +246,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: () => loadTimeData.getBoolean('installedAppsInCbd'),
       },
 
-      searchHistoryLinkFlagEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('searchHistoryLink'),
-      },
-
       googleSearchHistoryString_: {
         type: String,
         computed: 'computeGoogleSearchHistoryString_(isNonGoogleDse_)',
@@ -271,7 +267,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private clearingInProgress_: boolean;
   private clearingDataAlertString_: string;
   private clearButtonDisabled_: boolean;
-  private isSupervised_: boolean;
+  private isChildAccount_: boolean;
   private showHistoryDeletionDialog_: boolean;
   private showPasswordsDeletionDialogLater_: boolean;
   private showPasswordsDeletionDialog_: boolean;
@@ -285,7 +281,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   private tabsNames_: Array<string>;
   private installedApps_: Array<InstalledApp>;
   private installedAppsFlagEnabled_: boolean;
-  private searchHistoryLinkFlagEnabled_: boolean;
   private googleSearchHistoryString_: string;
   private isNonGoogleDse_: boolean;
   private nonGoogleSearchHistoryString_: string;
@@ -376,18 +371,9 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /** Choose a label for the history checkbox. */
   private browsingCheckboxLabel_(
-      isSyncConsented: boolean, isSyncingHistory: boolean,
-      hasSyncError: boolean, historySummary: string,
-      historySummarySignedIn: string, historySummarySignedInNoLink: string,
-      historySummarySynced: string): string {
-    if (this.searchHistoryLinkFlagEnabled_) {
-      return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
-    } else if (isSyncingHistory && !hasSyncError) {
-      return historySummarySynced;
-    } else if (isSyncConsented && !this.isSyncPaused_) {
-      return historySummarySignedIn;
-    }
-    return historySummary;
+      isSyncingHistory: boolean, historySummary: string,
+      historySummarySignedInNoLink: string): string {
+    return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
   }
 
   /** Choose a label for the cookie checkbox. */
@@ -604,18 +590,9 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');
   }
 
-  private shouldShowGoogleSearchHistoryLabel_(isSignedIn: boolean): boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
-  }
-
-  private shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse: boolean):
-      boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isNonGoogleDse;
-  }
-
   private shouldShowFooter_(): boolean {
     let showFooter = false;
-    // <if expr="not chromeos">
+    // <if expr="not chromeos and not lacros">
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;

@@ -83,6 +83,13 @@ public interface FeedLaunchReliabilityLogger {
     default void logFeedLaunchOtherStart(long timestamp) {}
 
     /**
+     * Log when the user switches to another feed tab.
+     * @param toStreamType New feed type.
+     * @param timestamp Event time.
+     */
+    default void logSwitchedFeeds(@StreamType int toStreamType, long timestamp) {}
+
+    /**
      * Log when cached feed content is about to be read.
      * @param timestamp Event time.
      */
@@ -125,7 +132,9 @@ public interface FeedLaunchReliabilityLogger {
     }
 
     /**
-     * Log to mark the end of the feed launch.
+     * Log to mark the end of the feed launch. Logs a "launched finished" event with the timestamp
+     * and result (or instead with the pending "launch finished" timestamp and result if there was a
+     * call to pendingFinished()).
      * @param timestamp Event time, possibly the same as one of the other events.
      * @param result DiscoverLaunchResult.
      */
@@ -139,4 +148,21 @@ public interface FeedLaunchReliabilityLogger {
      *         feed launch in progress.
      */
     default void logLaunchFinished(long timestamp, int result, boolean onlyIfLaunchInProgress) {}
+
+    /**
+     * Keep a tentative timestamp and status for "launch finished" if the user left the feed but
+     * might return before it finishes loading.
+     * If the next call is to logLaunchFinished(), logLaunchFinished() will log the pending
+     * "launch finished" timestamp and status and clear them. If the next call is to
+     * cancelPendingFinished(), the pending "launch finished" is cleared. If there is already a
+     * pending "launch finished", calling pendingFinished() again has no effect.
+     * @param timestamp Event time in nanoseconds.
+     * @param result DiscoverLaunchResult.
+     */
+    default void pendingFinished(long timestamp, int result) {}
+
+    /**
+     * If a timestamp and status code were recorded with pendingFinished(), drop them.
+     */
+    default void cancelPendingFinished() {}
 }

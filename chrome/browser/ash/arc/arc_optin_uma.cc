@@ -6,6 +6,10 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/auth.mojom.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -14,10 +18,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/auth.mojom.h"
 
 namespace arc {
 
@@ -166,11 +166,10 @@ void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time) {
                                 base::Milliseconds(10), base::Seconds(20), 50);
 }
 
-void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
-                                        const Profile* profile) {
+void UpdateDeferredLaunchTime(const base::TimeDelta& elapsed_time) {
   base::UmaHistogramCustomTimes(
-      GetHistogramNameByUserType("Arc.PlayStoreShown.TimeDelta", profile),
-      elapsed_time, base::Seconds(1), base::Minutes(10), 50);
+      "Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch", elapsed_time,
+      base::Milliseconds(10), base::Seconds(60), 50);
 }
 
 void UpdateAuthTiming(const char* histogram_name,

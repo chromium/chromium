@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -47,6 +48,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
 
+  base::WeakPtr<PageImpl> GetWeakPtrImpl();
+
   void UpdateManifestUrl(const GURL& manifest_url);
 
   RenderFrameHostImpl& GetMainDocument() const;
@@ -56,6 +59,18 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   void set_is_on_load_completed_in_main_document(bool completed) {
     is_on_load_completed_in_main_document_ = completed;
+  }
+
+  bool is_main_document_element_available() const {
+    return is_main_document_element_available_;
+  }
+  void set_is_main_document_element_available(bool completed) {
+    is_main_document_element_available_ = completed;
+  }
+
+  bool uses_temporary_zoom_level() const { return uses_temporary_zoom_level_; }
+  void set_uses_temporary_zoom_level(bool level) {
+    uses_temporary_zoom_level_ = level;
   }
 
   void OnFirstVisuallyNonEmptyPaint();
@@ -74,12 +89,20 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
+  // Notifies the page's color scheme was inferred.
+  void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);
+
   absl::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }
 
   absl::optional<SkColor> background_color() const {
     return main_document_background_color_;
+  }
+
+  absl::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
+      const {
+    return main_document_inferred_color_scheme_;
   }
 
   void SetContentsMimeType(std::string mime_type);
@@ -140,6 +163,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   void set_page_scale_factor(float scale) { page_scale_factor_ = scale; }
   float page_scale_factor() const { return page_scale_factor_; }
 
+  void set_virtual_keyboard_overlays_content(bool vk_overlays_content) {
+    virtual_keyboard_overlays_content_ = vk_overlays_content;
+  }
+  bool virtual_keyboard_overlays_content() const {
+    return virtual_keyboard_overlays_content_;
+  }
+
+  const std::string& GetEncoding() { return canonical_encoding_; }
+  void UpdateEncoding(const std::string& encoding_name);
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -151,6 +184,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // True if we've received a notification that the window.document element
+  // became available for the main document.
+  bool is_main_document_element_available_ = false;
+
+  // True if plugin zoom level is set for the main document.
+  bool uses_temporary_zoom_level_ = false;
 
   // Overall load progress of this Page. Initial load progress value is 0.0
   // before the load has begun.
@@ -183,6 +223,10 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // The background color for the underlying document as computed by CSS.
   absl::optional<SkColor> main_document_background_color_;
+
+  // The inferred color scheme of the document.
+  absl::optional<blink::mojom::PreferredColorScheme>
+      main_document_inferred_color_scheme_;
 
   // Contents MIME type for the main document. It can be used to check whether
   // we can do something for special contents.
@@ -227,6 +271,17 @@ class CONTENT_EXPORT PageImpl : public Page {
   // scale factor when performing session history navigations (see
   // blink::PageState).
   float page_scale_factor_ = 1.f;
+
+  // If true, then the Virtual keyboard rectangle that occludes the content is
+  // sent to the VirtualKeyboard API where it fires overlaygeometrychange JS
+  // event notifying the web authors that Virtual keyboard has occluded the
+  // content.
+  bool virtual_keyboard_overlays_content_ = false;
+
+  // The last reported character encoding, not canonicalized.
+  std::string last_reported_encoding_;
+  // The canonicalized character encoding.
+  std::string canonical_encoding_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

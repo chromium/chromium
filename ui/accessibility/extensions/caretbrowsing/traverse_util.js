@@ -107,9 +107,9 @@ TraverseUtil.isWhitespace = function(c) {
  * @return {Selection} the selection object.
  */
 TraverseUtil.setSelection = function(start, end) {
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   sel.removeAllRanges();
-  var range = document.createRange();
+  const range = document.createRange();
   range.setStart(start.node, start.index);
   range.setEnd(end.node, end.index);
   sel.addRange(range);
@@ -126,7 +126,7 @@ TraverseUtil.setSelection = function(start, end) {
 TraverseUtil.isVisible = function(node) {
   if (!node.style)
     return true;
-  var style = window.getComputedStyle(/** @type {Element} */(node), null);
+  const style = window.getComputedStyle(/** @type {Element} */(node), null);
   return (!!style && style.display != 'none' && style.visibility != 'hidden');
 };
 
@@ -158,10 +158,10 @@ TraverseUtil.isSkipped = function(node) {
 TraverseUtil.forwardsChar = function(cursor, nodesCrossed) {
   while (true) {
     // Move down until we get to a leaf node.
-    var childNode = null;
+    let childNode = null;
     if (!TraverseUtil.treatAsLeafNode(cursor.node)) {
-      for (var i = cursor.index; i < cursor.node.childNodes.length; i++) {
-        var node = cursor.node.childNodes[i];
+      for (let i = cursor.index; i < cursor.node.childNodes.length; i++) {
+        const node = cursor.node.childNodes[i];
         if (TraverseUtil.isSkipped(node)) {
           nodesCrossed.push(node);
           continue;
@@ -189,8 +189,8 @@ TraverseUtil.forwardsChar = function(cursor, nodesCrossed) {
     // Move to the next sibling, going up the tree as necessary.
     while (cursor.node != null) {
       // Try to move to the next sibling.
-      var siblingNode = null;
-      for (var node = cursor.node.nextSibling;
+      let siblingNode = null;
+      for (let node = cursor.node.nextSibling;
            node != null;
            node = node.nextSibling) {
         if (TraverseUtil.isSkipped(node)) {
@@ -240,10 +240,10 @@ TraverseUtil.forwardsChar = function(cursor, nodesCrossed) {
 TraverseUtil.backwardsChar = function(cursor, nodesCrossed) {
   while (true) {
     // Move down until we get to a leaf node.
-    var childNode = null;
+    let childNode = null;
     if (!TraverseUtil.treatAsLeafNode(cursor.node)) {
-      for (var i = cursor.index - 1; i >= 0; i--) {
-        var node = cursor.node.childNodes[i];
+      for (let i = cursor.index - 1; i >= 0; i--) {
+        const node = cursor.node.childNodes[i];
         if (TraverseUtil.isSkipped(node)) {
           nodesCrossed.push(node);
           continue;
@@ -274,8 +274,8 @@ TraverseUtil.backwardsChar = function(cursor, nodesCrossed) {
     // Move to the previous sibling, going up the tree as necessary.
     while (true) {
       // Try to move to the previous sibling.
-      var siblingNode = null;
-      for (var node = cursor.node.previousSibling;
+      let siblingNode = null;
+      for (let node = cursor.node.previousSibling;
            node != null;
            node = node.previousSibling) {
         if (TraverseUtil.isSkipped(node)) {
@@ -334,12 +334,12 @@ TraverseUtil.getNextChar = function(
 
   // Save the starting position and get the first character.
   startCursor.copyFrom(endCursor);
-  var c = TraverseUtil.forwardsChar(endCursor, nodesCrossed);
+  let c = TraverseUtil.forwardsChar(endCursor, nodesCrossed);
   if (c == null)
     return null;
 
   // Keep track of whether the first character was whitespace.
-  var initialWhitespace = TraverseUtil.isWhitespace(c);
+  const initialWhitespace = TraverseUtil.isWhitespace(c);
 
   // Keep scanning until we find a non-whitespace or non-skipped character.
   while ((TraverseUtil.isWhitespace(c)) ||
@@ -356,7 +356,7 @@ TraverseUtil.getNextChar = function(
     return c;
   }
   else {
-    for (var i = 0; i < nodesCrossed.length; i++) {
+    for (let i = 0; i < nodesCrossed.length; i++) {
       if (TraverseUtil.isSkipped(nodesCrossed[i])) {
         // We need to make sure that startCursor and endCursor aren't
         // surrounding a skippable node.
@@ -394,12 +394,12 @@ TraverseUtil.getPreviousChar = function(
 
   // Save the starting position and get the first character.
   endCursor.copyFrom(startCursor);
-  var c = TraverseUtil.backwardsChar(startCursor, nodesCrossed);
+  let c = TraverseUtil.backwardsChar(startCursor, nodesCrossed);
   if (c == null)
     return null;
 
   // Keep track of whether the first character was whitespace.
-  var initialWhitespace = TraverseUtil.isWhitespace(c);
+  const initialWhitespace = TraverseUtil.isWhitespace(c);
 
   // Keep scanning until we find a non-whitespace or non-skipped character.
   while ((TraverseUtil.isWhitespace(c)) ||
@@ -415,7 +415,7 @@ TraverseUtil.getPreviousChar = function(
     endCursor.index++;
     return c;
   } else {
-    for (var i = 0; i < nodesCrossed.length; i++) {
+    for (let i = 0; i < nodesCrossed.length; i++) {
       if (TraverseUtil.isSkipped(nodesCrossed[i])) {
         startCursor.index++;
         endCursor.copyFrom(startCursor);
@@ -446,8 +446,8 @@ TraverseUtil.getNextWord = function(startCursor, endCursor,
     nodesCrossed) {
 
   // Find the first non-whitespace or non-skipped character.
-  var cursor = endCursor.clone();
-  var c = TraverseUtil.forwardsChar(cursor, nodesCrossed);
+  const cursor = endCursor.clone();
+  let c = TraverseUtil.forwardsChar(cursor, nodesCrossed);
   if (c == null)
     return null;
   while ((TraverseUtil.isWhitespace(c)) ||
@@ -468,8 +468,8 @@ TraverseUtil.getNextWord = function(startCursor, endCursor,
   // would cross a tag.  Don't actually return any tags crossed, because this
   // word goes up until the tag boundary but not past it.
   endCursor.copyFrom(cursor);
-  var word = c;
-  var newNodesCrossed = [];
+  let word = c;
+  const newNodesCrossed = [];
   c = TraverseUtil.forwardsChar(cursor, newNodesCrossed);
   if (c == null) {
     return word;
@@ -503,8 +503,8 @@ TraverseUtil.getNextWord = function(startCursor, endCursor,
 TraverseUtil.getPreviousWord = function(startCursor, endCursor,
     nodesCrossed) {
   // Find the first non-whitespace or non-skipped character.
-  var cursor = startCursor.clone();
-  var c = TraverseUtil.backwardsChar(cursor, nodesCrossed);
+  const cursor = startCursor.clone();
+  let c = TraverseUtil.backwardsChar(cursor, nodesCrossed);
   if (c == null)
     return null;
   while ((TraverseUtil.isWhitespace(c) ||
@@ -524,8 +524,8 @@ TraverseUtil.getPreviousWord = function(startCursor, endCursor,
   // would cross a tag.  Don't actually return any tags crossed, because this
   // word goes up until the tag boundary but not past it.
   startCursor.copyFrom(cursor);
-  var word = c;
-  var newNodesCrossed = [];
+  let word = c;
+  const newNodesCrossed = [];
   c = TraverseUtil.backwardsChar(cursor, newNodesCrossed);
   if (c == null)
     return word;
@@ -562,11 +562,11 @@ TraverseUtil.getNextSentence = function(
       function(str, word, nodes) {
         if (str.substr(-1) == '.')
           return true;
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && (style.display != 'inline' ||
                         breakTags[nodes[i].tagName])) {
             return true;
@@ -597,11 +597,11 @@ TraverseUtil.getPreviousSentence = function(
       function(str, word, nodes) {
         if (word.substr(-1) == '.')
           return true;
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && (style.display != 'inline' ||
                         breakTags[nodes[i].tagName])) {
             return true;
@@ -633,11 +633,11 @@ TraverseUtil.getNextLine = function(
       function(str, word, nodes) {
         if (str.length + word.length + 1 > lineLength)
           return true;
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && (style.display != 'inline' ||
                         breakTags[nodes[i].tagName])) {
             return true;
@@ -669,11 +669,11 @@ TraverseUtil.getPreviousLine = function(
       function(str, word, nodes) {
         if (str.length + word.length + 1 > lineLength)
           return true;
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && (style.display != 'inline' ||
                         breakTags[nodes[i].tagName])) {
             return true;
@@ -700,11 +700,11 @@ TraverseUtil.getNextParagraph = function(startCursor, endCursor,
   return TraverseUtil.getNextString(
       startCursor, endCursor, nodesCrossed,
       function(str, word, nodes) {
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && style.display != 'inline') {
             return true;
           }
@@ -730,11 +730,11 @@ TraverseUtil.getPreviousParagraph = function(
   return TraverseUtil.getPreviousString(
       startCursor, endCursor, nodesCrossed,
       function(str, word, nodes) {
-        for (var i = 0; i < nodes.length; i++) {
+        for (let i = 0; i < nodes.length; i++) {
           if (TraverseUtil.isSkipped(nodes[i])) {
             return true;
           }
-          var style = window.getComputedStyle(nodes[i], null);
+          const style = window.getComputedStyle(nodes[i], null);
           if (style && style.display != 'inline') {
             return true;
           }
@@ -776,11 +776,11 @@ TraverseUtil.getNextString = function(
     startCursor, endCursor, nodesCrossed, breakBefore) {
   // Get the first word and set the start cursor to the start of the
   // first word.
-  var wordStartCursor = endCursor.clone();
-  var wordEndCursor = endCursor.clone();
-  var newNodesCrossed = [];
-  var str = '';
-  var word = TraverseUtil.getNextWord(
+  const wordStartCursor = endCursor.clone();
+  const wordEndCursor = endCursor.clone();
+  let newNodesCrossed = [];
+  let str = '';
+  let word = TraverseUtil.getNextWord(
       wordStartCursor, wordEndCursor, newNodesCrossed);
   if (word == null)
     return null;
@@ -835,11 +835,11 @@ TraverseUtil.getPreviousString = function(
     startCursor, endCursor, nodesCrossed, breakBefore) {
   // Get the first word and set the end cursor to the end of the
   // first word.
-  var wordStartCursor = startCursor.clone();
-  var wordEndCursor = startCursor.clone();
-  var newNodesCrossed = [];
-  var str = '';
-  var word = TraverseUtil.getPreviousWord(
+  const wordStartCursor = startCursor.clone();
+  const wordEndCursor = startCursor.clone();
+  let newNodesCrossed = [];
+  let str = '';
+  let word = TraverseUtil.getPreviousWord(
       wordStartCursor, wordEndCursor, newNodesCrossed);
   if (word == null)
     return null;
@@ -856,7 +856,7 @@ TraverseUtil.getPreviousString = function(
     str = word + str;
     nodesCrossed = nodesCrossed.concat(newNodesCrossed);
     startCursor.copyFrom(wordStartCursor);
-v
+
     // Get the previous word and go back to the top of the loop.
     newNodesCrossed = [];
     word = TraverseUtil.getPreviousWord(

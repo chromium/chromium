@@ -25,6 +25,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -60,16 +61,27 @@ FetchParameters CSSImageValue::PrepareFetch(
     const Document& document,
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) const {
-  // The PotentiallyDanglingMarkup() flag is lost when storing the absolute url
-  // as a string from which the KURL is constructed here.
-  // The url passed into the constructor had the PotentiallyDanglingMarkup flag
-  // set. That information needs to be passed on to the fetch code to block such
-  // resources from loading.
-  KURL request_url = potentially_dangling_markup_
-                         ? document.CompleteURL(relative_url_)
-                         : KURL(absolute_url_);
-  SECURITY_CHECK(request_url.PotentiallyDanglingMarkup() ==
-                 potentially_dangling_markup_);
+  KURL request_url;
+  if (potentially_dangling_markup_) {
+    // The PotentiallyDanglingMarkup() flag is lost when storing the absolute
+    // url as a string from which the KURL is constructed here. The url passed
+    // into the constructor had the PotentiallyDanglingMarkup flag set. That
+    // information needs to be passed on to the fetch code to block such
+    // resources from loading.
+    request_url = document.CompleteURL(relative_url_);
+
+    // Note: the PotentiallyDanglingMarkup() state on the base url may have
+    // changed if the base url for the document changed since last time the url
+    // was resolved. This change in base url resolving is different from the
+    // typical behavior for base url changes. CSS urls are typically not re-
+    // resolved. This is mentioned in the "What “browser eccentricities”?" note
+    // in https://www.w3.org/TR/css-values-3/#local-urls
+    //
+    // Having the more spec-compliant behavior for the dangling markup edge case
+    // should be fine.
+  } else {
+    request_url = KURL(absolute_url_);
+  }
   ResourceRequest resource_request(request_url);
   resource_request.SetReferrerPolicy(
       ReferrerUtils::MojoReferrerPolicyResolveDefault(
@@ -101,15 +113,6 @@ FetchParameters CSSImageValue::PrepareFetch(
           WebLocalFrameClient::LazyLoadBehavior::kDeferredImage);
     }
     params.SetLazyImageDeferred();
-  }
-
-  if (base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) &&
-      params.Url().ProtocolIsInHTTPFamily() &&
-      GetNetworkStateNotifier().SaveDataEnabled()) {
-    auto& subresource_request = params.MutableResourceRequest();
-    subresource_request.SetPreviewsState(
-        subresource_request.GetPreviewsState() |
-        PreviewsTypes::kSubresourceRedirectOn);
   }
 
   if (origin_clean_ != OriginClean::kTrue)

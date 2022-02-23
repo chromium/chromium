@@ -114,7 +114,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!handle.IsValid())
+  if (!handle.is_valid())
     return {};
 
   if (size == 0)
@@ -123,21 +123,21 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
   if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return {};
 
-  if (!IsSectionSafeToMap(handle.Get()))
+  if (!IsSectionSafeToMap(handle.get()))
     return {};
 
   CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.Get(), mode, size));
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
 
 HANDLE PlatformSharedMemoryRegion::GetPlatformHandle() const {
-  return handle_.Get();
+  return handle_.get();
 }
 
 bool PlatformSharedMemoryRegion::IsValid() const {
-  return handle_.IsValid();
+  return handle_.is_valid();
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
@@ -150,7 +150,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
   HANDLE duped_handle;
   ProcessHandle process = GetCurrentProcess();
   BOOL success =
-      ::DuplicateHandle(process, handle_.Get(), process, &duped_handle, 0,
+      ::DuplicateHandle(process, handle_.get(), process, &duped_handle, 0,
                         FALSE, DUPLICATE_SAME_ACCESS);
   if (!success)
     return {};
@@ -166,12 +166,12 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
 
-  win::ScopedHandle handle_copy(handle_.Take());
+  win::ScopedHandle handle_copy(handle_.release());
 
   HANDLE duped_handle;
   ProcessHandle process = GetCurrentProcess();
   BOOL success =
-      ::DuplicateHandle(process, handle_copy.Get(), process, &duped_handle,
+      ::DuplicateHandle(process, handle_copy.get(), process, &duped_handle,
                         FILE_MAP_READ | SECTION_QUERY, FALSE, 0);
   if (!success)
     return false;
@@ -201,7 +201,7 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   // address space for a single entry.
   for (int i = 0; i < 2; ++i) {
     *memory = MapViewOfFile(
-        handle_.Get(), FILE_MAP_READ | (write_allowed ? FILE_MAP_WRITE : 0),
+        handle_.get(), FILE_MAP_READ | (write_allowed ? FILE_MAP_WRITE : 0),
         static_cast<uint64_t>(offset) >> 32, static_cast<DWORD>(offset), size);
     if (*memory)
       break;

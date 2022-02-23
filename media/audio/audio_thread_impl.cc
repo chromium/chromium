@@ -17,16 +17,16 @@ AudioThreadImpl::AudioThreadImpl()
     : thread_("AudioThread"),
       hang_monitor_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   base::Thread::Options thread_options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   thread_.init_com_with_mta(true);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // FIDL-based APIs require async_t, which is initialized on IO thread.
   thread_options.message_pump_type = base::MessagePumpType::IO;
   thread_options.priority = base::ThreadPriority::REALTIME_AUDIO;
 #endif
   CHECK(thread_.StartWithOptions(std::move(thread_options)));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, the audio task runner must belong to the main thread.
   // See http://crbug.com/158170.
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
@@ -35,7 +35,7 @@ AudioThreadImpl::AudioThreadImpl()
 #endif
   worker_task_runner_ = thread_.task_runner();
 
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   // Since we run on the main thread on Mac, we don't need a hang monitor.
   // https://crbug.com/946968: The hang monitor possibly causes crashes on
   // Android

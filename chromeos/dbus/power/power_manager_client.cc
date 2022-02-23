@@ -489,6 +489,28 @@ class PowerManagerClientImpl : public PowerManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetKeyboardBacklightToggledOff(bool toggled_off) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kSetKeyboardBacklightToggledOffMethod);
+    dbus::MessageWriter(&method_call).AppendBool(toggled_off);
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
+  void GetKeyboardBacklightToggledOff(
+      DBusMethodCallback<bool> callback) override {
+    dbus::MethodCall method_call(
+        power_manager::kPowerManagerInterface,
+        power_manager::kGetKeyboardBacklightToggledOffMethod);
+    power_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(
+            &PowerManagerClientImpl::OnGetKeyboardBacklightToggledOff,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void GetSwitchStates(DBusMethodCallback<SwitchStates> callback) override {
     dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
                                  power_manager::kGetSwitchStatesMethod);
@@ -890,6 +912,25 @@ class PowerManagerClientImpl : public PowerManagerClient {
       return;
     }
     std::move(callback).Run(state);
+  }
+
+  void OnGetKeyboardBacklightToggledOff(DBusMethodCallback<bool> callback,
+                                        dbus::Response* response) {
+    if (!response) {
+      POWER_LOG(ERROR) << "Error calling "
+                       << power_manager::kGetKeyboardBacklightToggledOffMethod;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    dbus::MessageReader reader(response);
+    bool toggled_off = false;
+    if (!reader.PopBool(&toggled_off)) {
+      POWER_LOG(ERROR) << "Error reading response from powerd: "
+                       << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(toggled_off);
   }
 
   void CheckAmbientColorSupport() {

@@ -19,7 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -463,9 +463,9 @@ class ObfuscatedFileUtilTest : public testing::Test,
     }
 
     std::unique_ptr<FileSystemOperationContext> context_;
-    SandboxFileSystemTestHelper* sandbox_file_system_;
+    raw_ptr<SandboxFileSystemTestHelper> sandbox_file_system_;
     int64_t expected_usage_;
-    ObfuscatedFileUtilTest* const test_;
+    const raw_ptr<ObfuscatedFileUtilTest> test_;
   };
 
   std::unique_ptr<UsageVerifyHelper> AllowUsageIncrease(
@@ -1284,10 +1284,8 @@ TEST_P(ObfuscatedFileUtilTest, TestPathQuotas) {
   bool exclusive = true;
   bool recursive = true;
   url = CreateURLFromUTF8("directory/to/use");
-  std::vector<base::FilePath::StringType> components;
-  url.path().GetComponents(&components);
   path_cost = 0;
-  for (const auto& component : components) {
+  for (const auto& component : url.path().GetComponents()) {
     path_cost +=
         ObfuscatedFileUtil::ComputeFilePathCost(base::FilePath(component));
   }
@@ -2043,7 +2041,7 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
 }
 
 // crbug.com/176470
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestQuotaOnCopyFile DISABLED_TestQuotaOnCopyFile
 #else
 #define MAYBE_TestQuotaOnCopyFile TestQuotaOnCopyFile

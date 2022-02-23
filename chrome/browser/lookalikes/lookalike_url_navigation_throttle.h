@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
@@ -75,10 +76,14 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
 
   // Returns whether |url| is a lookalike, setting |match_type| and
   // |suggested_url| appropriately. Used in PerformChecks() on a per-URL basis.
+  // |get_domain_info_duration| should hold zero when IsLookalikeUrl() is
+  // invoked. After invocation, it will hold the duration spent in
+  // GetDomainInfo() if GetDomainInfo() was invoked.
   bool IsLookalikeUrl(const GURL& url,
                       const std::vector<DomainInfo>& engaged_sites,
                       LookalikeUrlMatchType* match_type,
-                      GURL* suggested_url);
+                      GURL* suggested_url,
+                      base::TimeDelta* get_domain_info_duration);
 
   // Shows a full page interstitial. |safe_domain| is the domain suggested as
   // safe by the interstitial. |lookalike_domain| is the domain that triggered
@@ -112,7 +117,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                   bool triggered_by_initial_url,
                                   bool validation_success);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool use_test_profile_ = false;
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;

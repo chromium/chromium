@@ -11,23 +11,24 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
+import '../i18n_setup.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
+import {getTemplate} from './site_details_permission.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {
+    details: HTMLElement,
     permission: HTMLSelectElement,
+    permissionItem: HTMLElement,
+    permissionSecondary: HTMLElement,
   };
 }
 
@@ -41,7 +42,7 @@ export class SiteDetailsPermissionElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -225,16 +226,15 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param settingDetail A sublabel for the permission.
    * @return Whether the permission will have a source string to display.
    */
   private hasPermissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting, settingDetail: string|null): boolean {
+      setting: ContentSetting): boolean {
     // This method assumes that an empty string will be returned for categories
     // that have no permission info string.
     return this.permissionInfoString_(
-               source, category, setting, settingDetail,
+               source, category, setting,
                // Set all permission info string arguments as null. This is OK
                // because there is no need to know what the information string
                // will be, just whether there is one or not.
@@ -248,14 +248,12 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param settingDetail A sublabel for the permission.
    * @return CSS class applied when there is an additional description string.
    */
   private permissionInfoStringClass_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting, settingDetail: string|null): string {
-    return this.hasPermissionInfoString_(
-               source, category, setting, settingDetail) ?
+      setting: ContentSetting): string {
+    return this.hasPermissionInfoString_(source, category, setting) ?
         'two-line' :
         '';
   }
@@ -341,10 +339,6 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param settingDetail If non-empty, the string to display as the
-   *     permission info. This overrides other calculations made by this
-   *     function, and is used for situations where extra data about the
-   *     permission is required to compose the substring.
    * @param  allowlistString The string to show if the permission is
    *     allowlisted.
    * @param adsBlacklistString The string to show if the site is
@@ -355,25 +349,16 @@ export class SiteDetailsPermissionElement extends
    */
   private permissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting, settingDetail: string|null,
-      allowlistString: string|null, adsBlacklistString: string|null,
-      adsBlockString: string|null, embargoString: string|null,
-      insecureOriginString: string|null, killSwitchString: string|null,
-      extensionAllowString: string|null, extensionBlockString: string|null,
-      extensionAskString: string|null, policyAllowString: string|null,
-      policyBlockString: string|null,
+      setting: ContentSetting, allowlistString: string|null,
+      adsBlacklistString: string|null, adsBlockString: string|null,
+      embargoString: string|null, insecureOriginString: string|null,
+      killSwitchString: string|null, extensionAllowString: string|null,
+      extensionBlockString: string|null, extensionAskString: string|null,
+      policyAllowString: string|null, policyBlockString: string|null,
       policyAskString: string|null): (string|null) {
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return null;
-    }
-
-    if (settingDetail) {
-      // For now, settingDetail is only used for file extensions.
-      // TODO(estade): assert in the other direction as well: the FILE_HANDLING
-      // category should always have detail text.
-      assert(category === ContentSettingsTypes.FILE_HANDLING);
-      return settingDetail;
     }
 
     const extensionStrings: {[key: string]: string|null} = {};

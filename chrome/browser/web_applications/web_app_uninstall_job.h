@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UNINSTALL_JOB_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/origin.h"
 
@@ -21,6 +22,8 @@ namespace web_app {
 
 class OsIntegrationManager;
 class WebAppIconManager;
+class WebAppInstallManager;
+class WebAppInstallFinalizer;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -45,6 +48,8 @@ class WebAppUninstallJob {
                      WebAppSyncBridge* sync_bridge,
                      WebAppIconManager* icon_manager,
                      WebAppRegistrar* registrar,
+                     WebAppInstallManager* install_manager,
+                     WebAppInstallFinalizer* install_finalizer,
                      PrefService* profile_prefs);
   ~WebAppUninstallJob();
 
@@ -70,6 +75,7 @@ class WebAppUninstallJob {
   void StopAppRegistryModification();
 
  private:
+  void OnSubAppUninstalled(bool success);
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
   void MaybeFinishUninstall();
@@ -80,16 +86,19 @@ class WebAppUninstallJob {
     kDone = 2,
   } state_ = State::kNotStarted;
 
-  OsIntegrationManager* os_integration_manager_;
-  WebAppSyncBridge* sync_bridge_;
-  WebAppIconManager* icon_manager_;
-  WebAppRegistrar* registrar_;
-  PrefService* profile_prefs_;
+  raw_ptr<OsIntegrationManager> os_integration_manager_;
+  raw_ptr<WebAppSyncBridge> sync_bridge_;
+  raw_ptr<WebAppIconManager> icon_manager_;
+  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
+  raw_ptr<PrefService> profile_prefs_;
 
   AppId app_id_;
   webapps::WebappUninstallSource source_;
   ModifyAppRegistry delete_option_;
   UninstallCallback callback_;
+  size_t num_pending_sub_app_uninstalls_;
 
   bool app_data_deleted_ = false;
   bool hooks_uninstalled_ = false;

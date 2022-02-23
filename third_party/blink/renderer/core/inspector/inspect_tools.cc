@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -82,17 +83,17 @@ Node* HoveredNodeForPoint(LocalFrame* frame,
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebGestureEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebMouseEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
@@ -100,7 +101,7 @@ Node* HoveredNodeForEvent(LocalFrame* frame,
                           bool ignore_pointer_events_none) {
   WebPointerEvent transformed_point = event.WebPointerEventInRootFrame();
   return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(transformed_point.PositionInWidget())),
+      frame, gfx::ToRoundedPoint(transformed_point.PositionInWidget()),
       ignore_pointer_events_none);
 }
 
@@ -306,7 +307,7 @@ void SearchingForNodeTool::NodeHighlightRequested(Node* node) {
 
 QuadHighlightTool::QuadHighlightTool(InspectorOverlayAgent* overlay,
                                      OverlayFrontend* frontend,
-                                     std::unique_ptr<FloatQuad> quad,
+                                     std::unique_ptr<gfx::QuadF> quad,
                                      Color color,
                                      Color outline_color)
     : InspectTool(overlay, frontend),
@@ -798,8 +799,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
     scale = frame->GetPage()->PageScaleFactor();
     if (const RootFrameViewport* root_frame_viewport =
             frame->View()->GetRootFrameViewport()) {
-      gfx::Vector2d scroll_offset = ToGfxVector2d(FlooredIntSize(
-          root_frame_viewport->LayoutViewport().GetScrollOffset()));
+      gfx::Vector2d scroll_offset = gfx::ToFlooredVector2d(
+          root_frame_viewport->LayoutViewport().GetScrollOffset());
       // Accunt for the layout scroll (different from viewport scroll offset).
       p1 += scroll_offset;
       p2 += scroll_offset;
@@ -812,8 +813,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
   p2 = gfx::ScaleToRoundedPoint(p2, dp_to_dip);
 
   // Points are in device independent pixels (dip) now.
-  IntRect rect =
-      UnionRectsEvenIfEmpty(IntRect(p1, IntSize()), IntRect(p2, IntSize()));
+  gfx::Rect rect = UnionRectsEvenIfEmpty(gfx::Rect(p1, gfx::Size()),
+                                         gfx::Rect(p2, gfx::Size()));
   frontend_->screenshotRequested(protocol::Page::Viewport::create()
                                      .setX(rect.x())
                                      .setY(rect.y())

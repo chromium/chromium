@@ -11,6 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
@@ -26,11 +27,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/cursor/cursor_util.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
-#include "ui/base/cursor/cursor_util.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -46,8 +48,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/window_util.h"
 #endif
 
 namespace exo {
@@ -126,6 +130,10 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
   if (cursor_client)
     cursor_client->AddObserver(this);
   helper->AddFocusObserver(this);
+
+  auto* drag_drop_client = helper->GetDragDropClient();
+  if (drag_drop_client)
+    drag_drop_client->AddObserver(this);
 }
 
 Pointer::~Pointer() {
@@ -144,6 +152,10 @@ Pointer::~Pointer() {
     VLOG(1) << "Pointer constraint broken by pointer destruction";
     pointer_constraint_delegate_->OnConstraintBroken();
   }
+  for (auto it : constraints_) {
+    it.first->RemoveSurfaceObserver(this);
+    it.second->OnDefunct();
+  }
   if (stylus_delegate_)
     stylus_delegate_->OnPointerDestroying(this);
   // TODO(sky): CursorClient does not exist in mash
@@ -154,6 +166,10 @@ Pointer::~Pointer() {
   if (root_surface())
     root_surface()->RemoveSurfaceObserver(this);
   helper->RemoveFocusObserver(this);
+
+  auto* drag_drop_client = helper->GetDragDropClient();
+  if (drag_drop_client)
+    drag_drop_client->RemoveObserver(this);
 }
 
 void Pointer::SetCursor(Surface* surface, const gfx::Point& hotspot) {
@@ -243,18 +259,41 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
   // lock support unless we are on chromeos.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Surface* constrained_surface = delegate->GetConstrainedSurface();
-  if (!constrained_surface)
+  if (!constrained_surface) {
+    delegate->OnDefunct();
     return false;
-  // Pointer lock should be enabled for ARC by default. The kExoPointerLock
-  // should only apply to Crostini windows.
-  bool is_arc_window =
-      ash::IsArcWindow(constrained_surface->window()->GetToplevelWindow());
-  if (!is_arc_window &&
-      !base::FeatureList::IsEnabled(chromeos::features::kExoPointerLock))
+  }
+
+  // Pointer lock is permitted for ARC windows, and for windows configured to
+  // notify the user on lock activation. In the latter case, the
+  // kExoPointerLock feature must be enabled.
+  aura::Window* toplevel = constrained_surface->window()->GetToplevelWindow();
+  bool permitted =
+      ash::IsArcWindow(toplevel) ||
+      (base::FeatureList::IsEnabled(chromeos::features::kExoPointerLock) &&
+       toplevel->GetProperty(chromeos::kUseOverviewToExitPointerLock));
+  if (!permitted) {
+    delegate->OnDefunct();
     return false;
+  }
+
+  // Can only have one active constraint request per surface
+  auto result = constraints_.try_emplace(constrained_surface, delegate);
+  if (result.first->second != delegate) {
+    VLOG(1) << "Pointer constraint not granted; one already exists.";
+    delegate->OnAlreadyConstrained();
+    delegate->OnDefunct();
+    return false;
+  }
+
+  if (!constrained_surface->HasSurfaceObserver(this))
+    constrained_surface->AddSurfaceObserver(this);
+
   bool success = EnablePointerCapture(constrained_surface);
-  if (success)
+  if (success) {
     pointer_constraint_delegate_ = delegate;
+    delegate->OnConstraintActivated();
+  }
   return success;
 #else
   NOTIMPLEMENTED();
@@ -262,14 +301,68 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
 #endif
 }
 
-void Pointer::UnconstrainPointer() {
-  if (pointer_constraint_delegate_) {
-    DisablePointerCapture();
-    pointer_constraint_delegate_ = nullptr;
+bool Pointer::UnconstrainPointerByUserAction() {
+  // Prevent pointer capture until the next user action that permits it,
+  // even if a constraint is currently not active (to prevent an app from
+  // rapidly toggling pointer capture to evade such prevention).
+  capture_permitted_ = false;
+  UpdateCursor();  // forces the cursor to be visible in case the app hid it
+
+  if (pointer_constraint_delegate_ && capture_window_) {
+    VLOG(1) << "Pointer constraint broken by user action";
+    UnconstrainPointer();
+    return true;
+  } else {
+    VLOG(1) << "Pointer constraint forbidden by user (though none active now)";
+    return false;
   }
 }
 
+void Pointer::RemoveConstraintDelegate(PointerConstraintDelegate* delegate) {
+  delegate->OnDefunct();
+
+  Surface* surface = delegate->GetConstrainedSurface();
+  auto it = constraints_.find(surface);
+  if (it != constraints_.end() && it->second == delegate) {
+    constraints_.erase(it);
+    MaybeRemoveSurfaceObserver(surface);
+  }
+}
+
+void Pointer::UnconstrainPointer() {
+  if (pointer_constraint_delegate_) {
+    pointer_constraint_delegate_->OnConstraintBroken();
+    if (!pointer_constraint_delegate_->IsPersistent()) {
+      RemoveConstraintDelegate(pointer_constraint_delegate_);
+    }
+    pointer_constraint_delegate_ = nullptr;
+    DisablePointerCapture();
+  }
+}
+
+void Pointer::MaybeReactivatePointerConstraint(Surface* surface) {
+  if (!pointer_constraint_delegate_ && surface) {
+    auto it = constraints_.find(surface);
+    if (it != constraints_.end())
+      ConstrainPointer(it->second);
+  }
+}
+
+void Pointer::OnPointerConstraintDelegateDestroying(
+    PointerConstraintDelegate* delegate) {
+  if (pointer_constraint_delegate_ == delegate) {
+    DisablePointerCapture();
+    pointer_constraint_delegate_ = nullptr;
+  }
+  RemoveConstraintDelegate(delegate);
+}
+
 bool Pointer::EnablePointerCapture(Surface* capture_surface) {
+  if (!capture_permitted_) {
+    VLOG(1) << "Unable to re-capture the pointer due to previous user action.";
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(kPointerCapture)) {
     LOG(WARNING) << "Unable to capture the pointer, feature is disabled.";
     return false;
@@ -278,12 +371,9 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
   aura::Window* window = capture_surface->window();
   aura::Window* active_window = WMHelper::GetInstance()->GetActiveWindow();
   if (!active_window || !active_window->Contains(window)) {
-    LOG(ERROR) << "Cannot enable pointer capture on an inactive window.";
+    VLOG(1) << "Cannot enable pointer capture on an inactive window.";
     return false;
   }
-
-  if (!capture_surface->HasSurfaceObserver(this))
-    capture_surface->AddSurfaceObserver(this);
 
   capture_window_ = window;
 
@@ -296,6 +386,8 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
 
   if (ShouldMoveToCenter())
     MoveCursorToCenterOfActiveDisplay();
+
+  seat_->NotifyPointerCaptureEnabled(this, window);
 
   return true;
 }
@@ -314,9 +406,12 @@ void Pointer::DisablePointerCapture() {
                      : root->bounds().CenterPoint();
   root->MoveCursorTo(p);
 
+  aura::Window* window = capture_window_;
   capture_window_ = nullptr;
   location_when_pointer_capture_enabled_.reset();
   UpdateCursor();
+
+  seat_->NotifyPointerCaptureDisabled(this, window);
 }
 
 void Pointer::SetStylusDelegate(PointerStylusDelegate* delegate) {
@@ -347,24 +442,36 @@ void Pointer::OnSurfaceCommit() {
 // SurfaceObserver overrides:
 
 void Pointer::OnSurfaceDestroying(Surface* surface) {
+  bool was_correctly_subscribed = false;
   if (surface && pointer_constraint_delegate_ &&
       surface == pointer_constraint_delegate_->GetConstrainedSurface()) {
     surface->RemoveSurfaceObserver(this);
     VLOG(1) << "Pointer constraint broken by surface destruction";
-    pointer_constraint_delegate_->OnConstraintBroken();
     UnconstrainPointer();
+    was_correctly_subscribed = true;
   }
-  if (surface && surface->window() == capture_window_)
+  if (surface && surface->window() == capture_window_) {
     DisablePointerCapture();
+    was_correctly_subscribed = true;
+  }
+
+  auto it = constraints_.find(surface);
+  if (it != constraints_.end()) {
+    it->second->OnDefunct();
+    constraints_.erase(it);
+    surface->RemoveSurfaceObserver(this);
+    was_correctly_subscribed = true;
+  }
+
   if (surface == focus_surface_) {
     SetFocus(nullptr, gfx::PointF(), 0);
-    return;
-  }
-  if (surface == root_surface()) {
+    was_correctly_subscribed = true;
+  } else if (surface == root_surface()) {
     UpdatePointerSurface(nullptr);
-    return;
+    was_correctly_subscribed = true;
   }
-  NOTREACHED();
+  DCHECK(was_correctly_subscribed);
+  DCHECK(!surface->HasSurfaceObserver(this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -451,8 +558,17 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_RELEASED:
       seat_->AbortPendingDragOperation();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_MOUSE_PRESSED: {
+      if (!capture_permitted_) {
+        // Clicking any surface with a constraint delegate permits capture
+        auto it = constraints_.find(focus_surface_);
+        if (it != constraints_.end()) {
+          capture_permitted_ = true;
+          UpdateCursor();
+          ConstrainPointer(it->second);
+        }
+      }
       delegate_->OnPointerButton(event->time_stamp(),
                                  event->changed_button_flags(),
                                  event->type() == ui::ET_MOUSE_PRESSED);
@@ -590,6 +706,41 @@ void Pointer::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// aura::client::DragDropClientObserver overrides:
+void Pointer::OnDragStarted() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag 'n drop operations driven by sources different than pointer/mouse
+  // should have not effect here.
+  WMHelper* helper = WMHelper::GetInstance();
+  if (auto* drag_drop_client = helper->GetDragDropClient()) {
+    if (static_cast<ash::DragDropController*>(drag_drop_client)
+            ->event_source() != ui::mojom::DragEventSource::kMouse)
+      return;
+  }
+
+  SetFocus(nullptr, gfx::PointF(), 0);
+#endif
+}
+
+void Pointer::OnDragCompleted(const ui::DropTargetEvent& event) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag 'n drop operations driven by sources different than pointer/mouse
+  // should have not effect here.
+  WMHelper* helper = WMHelper::GetInstance();
+  if (auto* drag_drop_client = helper->GetDragDropClient()) {
+    if (static_cast<ash::DragDropController*>(drag_drop_client)
+            ->event_source() != ui::mojom::DragEventSource::kMouse)
+      return;
+  }
+
+  auto* target_window = ash::window_util::GetEventHandlerForEvent(event);
+  auto* surface = Surface::AsSurface(target_window);
+  if (surface)
+    SetFocus(surface, event.location_f(), /*button_flags=*/0);
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // aura::client::CursorClientObserver overrides:
 
 void Pointer::OnCursorSizeChanged(ui::CursorSize cursor_size) {
@@ -627,12 +778,13 @@ void Pointer::OnWindowFocused(aura::Window* gained_focus,
   if (capture_window_ && capture_window_ != gained_focus) {
     if (pointer_constraint_delegate_) {
       VLOG(1) << "Pointer constraint broken by focus change";
-      pointer_constraint_delegate_->OnConstraintBroken();
       UnconstrainPointer();
     } else {
       DisablePointerCapture();
     }
   }
+  if (gained_focus)
+    MaybeReactivatePointerConstraint(Surface::AsSurface(gained_focus));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -657,10 +809,11 @@ void Pointer::SetFocus(Surface* surface,
   // First generate a leave event if we currently have a target in focus.
   if (focus_surface_) {
     delegate_->OnPointerLeave(focus_surface_);
-    focus_surface_->RemoveSurfaceObserver(this);
     // Require SetCursor() to be called and cursor to be re-defined in
     // response to each OnPointerEnter() call.
+    Surface* old_surface = focus_surface_;
     focus_surface_ = nullptr;
+    MaybeRemoveSurfaceObserver(old_surface);
     cursor_capture_weak_ptr_factory_.InvalidateWeakPtrs();
   }
   // Second generate an enter event if focus moved to a new surface.
@@ -680,12 +833,14 @@ void Pointer::UpdatePointerSurface(Surface* surface) {
     host_window()->SetTransform(gfx::Transform());
     if (host_window()->parent())
       host_window()->parent()->RemoveChild(host_window());
-    root_surface()->RemoveSurfaceObserver(this);
+    Surface* old_surface = root_surface();
     SetRootSurface(nullptr);
+    MaybeRemoveSurfaceObserver(old_surface);
   }
 
   if (surface) {
-    surface->AddSurfaceObserver(this);
+    if (!surface->HasSurfaceObserver(this))
+      surface->AddSurfaceObserver(this);
     // Note: Surface window needs to be added to the tree so we can take a
     // snapshot. Where in the tree is not important but we might as well use
     // the cursor container.
@@ -770,8 +925,8 @@ void Pointer::UpdateCursor() {
 
     // Use panel_rotation() rather than "natural" rotation, as it actually
     // relates to the hardware you're about to draw the cursor bitmap on.
-    ui::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),
-                                              &bitmap, &hotspot);
+    aura::ScaleAndRotateCursorBitmapAndHotpoint(scale, display.panel_rotation(),
+                                                &bitmap, &hotspot);
 
     // TODO(reveman): Add interface for creating cursors from GpuMemoryBuffers
     // and use that here instead of the current bitmap API.
@@ -783,6 +938,12 @@ void Pointer::UpdateCursor() {
     cursor_.set_custom_hotspot(hotspot);
   }
 
+  // When pointer capture is broken, use the standard system cursor instead of
+  // the application-requested one. But we keep the app-requested cursor around
+  // for when capture becomes permitted again.
+  const ui::Cursor& cursor =
+      capture_permitted_ ? cursor_ : ui::mojom::CursorType::kPointer;
+
   // If there is a focused surface, update its widget as the views framework
   // expect that Widget knows the current cursor. Otherwise update the
   // cursor directly on CursorClient.
@@ -791,13 +952,13 @@ void Pointer::UpdateCursor() {
     do {
       views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
       if (widget) {
-        widget->SetCursor(cursor_);
+        widget->SetCursor(cursor);
         return;
       }
       window = window->parent();
     } while (window);
   } else {
-    cursor_client->SetCursor(cursor_);
+    cursor_client->SetCursor(cursor);
   }
 }
 
@@ -854,6 +1015,23 @@ bool Pointer::HandleRelativePointerMotion(
       time_stamp, delta,
       ordinal_motion.has_value() ? ordinal_motion.value() : delta);
   return true;
+}
+
+bool Pointer::ShouldObserveSurface(Surface* surface) {
+  if (!surface)
+    return false;
+
+  if (surface == root_surface() || surface == focus_surface_ ||
+      constraints_.find(surface) != constraints_.end()) {
+    return true;
+  }
+  return false;
+}
+
+void Pointer::MaybeRemoveSurfaceObserver(Surface* surface) {
+  if (!ShouldObserveSurface(surface)) {
+    surface->RemoveSurfaceObserver(this);
+  }
 }
 
 }  // namespace exo

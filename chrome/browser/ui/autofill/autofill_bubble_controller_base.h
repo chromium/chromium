@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_BUBBLE_CONTROLLER_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace autofill {
 
@@ -46,8 +50,7 @@ class AutofillBubbleControllerBase : public content::WebContentsObserver {
 
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  AutofillBubbleBase* bubble_view_ = nullptr;
-
+  raw_ptr<AutofillBubbleBase> bubble_view_ = nullptr;
 };
 
 }  // namespace autofill

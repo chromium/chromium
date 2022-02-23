@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -71,6 +70,12 @@ class MODULES_EXPORT ScreenOrientationController final
   void PageVisibilityChanged() override;
 
   void UpdateOrientation();
+
+  // Sends binding requests to the browser for
+  // device::mojom::blink::ScreenOrientation. This method can be called when:
+  // * `this` is created in non-prerendering context.
+  // * The corresponding prerendering context is activated.
+  void BuildMojoConnection();
 
   bool IsActiveAndVisible() const;
 

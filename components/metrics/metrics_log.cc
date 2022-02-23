@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
@@ -43,11 +44,11 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/current_module.h"
 #endif
@@ -92,7 +93,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   }
 
  private:
-  MetricsLog* const log_;
+  const raw_ptr<MetricsLog> log_;
 };
 
 // Convenience function to return the given time at a resolution in seconds.
@@ -312,7 +313,7 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Remove any trailing null characters.
   // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
   // iOS's implementation of HardwareModelName().
@@ -321,8 +322,8 @@ void MetricsLog::RecordCoreSystemProfile(
       hardware_class.substr(0, strlen(hardware_class.c_str())));
 #else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
-#endif  // defined(OS_IOS)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
@@ -342,20 +343,20 @@ void MetricsLog::RecordCoreSystemProfile(
 // OperatingSystemVersion refers to the ChromeOS release version.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   os->set_kernel_version(base::SysInfo::KernelVersion());
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Linux operating system version is copied over into kernel version to be
   // consistent.
   os->set_kernel_version(base::SysInfo::OperatingSystemVersion());
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const auto* build_info = base::android::BuildInfo::GetInstance();
   os->set_build_fingerprint(build_info->android_build_fp());
   if (!package_name.empty() && package_name != "com.android.chrome")
     system_profile->set_app_package_name(package_name);
   system_profile->set_installer_package(
       internal::ToInstallerPackage(build_info->installer_package_name()));
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif
 }
@@ -368,24 +369,34 @@ void MetricsLog::RecordHistogramDelta(const std::string& histogram_name,
 }
 
 void MetricsLog::RecordPreviousSessionData(
-    DelegatingProvider* delegating_provider) {
+    DelegatingProvider* delegating_provider,
+    PrefService* local_state) {
   delegating_provider->ProvidePreviousSessionData(uma_proto());
+  // Schedule a Local State write to flush updated prefs to disk. This is done
+  // because a side effect of providing data—namely stability data—is updating
+  // Local State prefs.
+  local_state->CommitPendingWrite();
 }
 
 void MetricsLog::RecordCurrentSessionData(
-    DelegatingProvider* delegating_provider,
     base::TimeDelta incremental_uptime,
-    base::TimeDelta uptime) {
+    base::TimeDelta uptime,
+    DelegatingProvider* delegating_provider,
+    PrefService* local_state) {
   DCHECK(!closed_);
   DCHECK(has_environment_);
 
-  // Record recent delta for critical stability metrics.  We can't wait for a
+  // Record recent delta for critical stability metrics. We can't wait for a
   // restart to gather these, as that delay biases our observation away from
   // users that run happily for a looooong time.  We send increments with each
-  // uma log upload, just as we send histogram data.
+  // UMA log upload, just as we send histogram data.
   WriteRealtimeStabilityAttributes(incremental_uptime, uptime);
 
   delegating_provider->ProvideCurrentSessionData(uma_proto());
+  // Schedule a Local State write to flush updated prefs to disk. This is done
+  // because a side effect of providing data—namely stability data—is updating
+  // Local State prefs.
+  local_state->CommitPendingWrite();
 }
 
 void MetricsLog::WriteMetricsEnableDefault(EnableMetricsDefault metrics_default,
@@ -522,5 +533,13 @@ void MetricsLog::GetEncodedLog(std::string* encoded_log) {
   DCHECK(closed_);
   uma_proto_.SerializeToString(encoded_log);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void MetricsLog::SetUserId(const std::string& user_id) {
+  uint64_t hashed_user_id = Hash(user_id);
+  uma_proto_.set_user_id(hashed_user_id);
+  log_metadata_.user_id = hashed_user_id;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace metrics

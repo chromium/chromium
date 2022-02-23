@@ -42,6 +42,9 @@ public class FourStateCookieSettingsPreference
         // An enum indicating when to block third-party cookies.
         public @CookieControlsMode int cookieControlsMode;
 
+        // Whether the incognito mode is enabled.
+        public boolean isIncognitoModeEnabled;
+
         // Whether the cookies content setting is enforced.
         public boolean cookiesContentSettingEnforced;
         //  Whether third-party blocking is enforced.
@@ -146,7 +149,8 @@ public class FourStateCookieSettingsPreference
             return CookieSettingsState.BLOCK;
         } else if (params.cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
             return CookieSettingsState.BLOCK_THIRD_PARTY;
-        } else if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY) {
+        } else if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
+                && params.isIncognitoModeEnabled) {
             return CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO;
         } else {
             return CookieSettingsState.ALLOW;
@@ -207,7 +211,11 @@ public class FourStateCookieSettingsPreference
     private RadioButtonWithDescription[] getEnforcedButtons(Params params) {
         if (!params.cookiesContentSettingEnforced && !params.cookieControlsModeEnforced) {
             // Nothing is enforced.
-            return buttons();
+            if (!params.isIncognitoModeEnabled) {
+                return buttons(mBlockThirdPartyIncognitoButton);
+            } else {
+                return buttons();
+            }
         }
         if (params.cookiesContentSettingEnforced && params.cookieControlsModeEnforced) {
             return buttons(mAllowButton, mBlockThirdPartyIncognitoButton, mBlockThirdPartyButton,
@@ -215,7 +223,11 @@ public class FourStateCookieSettingsPreference
         }
         if (params.cookiesContentSettingEnforced) {
             if (params.allowCookies) {
-                return buttons(mBlockButton);
+                if (!params.isIncognitoModeEnabled) {
+                    return buttons(mBlockButton, mBlockThirdPartyIncognitoButton);
+                } else {
+                    return buttons(mBlockButton);
+                }
             } else {
                 return buttons(mAllowButton, mBlockThirdPartyIncognitoButton,
                         mBlockThirdPartyButton, mBlockButton);
@@ -233,5 +245,11 @@ public class FourStateCookieSettingsPreference
     public boolean isButtonEnabledForTesting(CookieSettingsState state) {
         assert getButton(state) != null;
         return getButton(state).isEnabled();
+    }
+
+    @VisibleForTesting
+    public boolean isButtonCheckedForTesting(CookieSettingsState state) {
+        assert getButton(state) != null;
+        return getButton(state).isChecked();
     }
 }

@@ -31,7 +31,6 @@
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_input_context_handler_interface.h"
@@ -248,7 +247,7 @@ Dictation::Dictation(Profile* profile)
     : current_state_(SPEECH_RECOGNIZER_OFF),
       composition_(std::make_unique<ui::CompositionText>()),
       profile_(profile) {
-  DCHECK(!switches::IsExperimentalAccessibilityDictationExtensionEnabled());
+  DCHECK(!features::IsExperimentalAccessibilityDictationExtensionEnabled());
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }

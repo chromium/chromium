@@ -4,9 +4,10 @@
 
 package org.chromium.device.bluetooth;
 
-import android.annotation.TargetApi;
 import android.bluetooth.le.ScanFilter;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  */
 @JNINamespace("device")
 @JNIAdditionalImport(Wrappers.class)
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 final class ChromeBluetoothScanFilterList {
     ArrayList<ScanFilter> mFilters;
 

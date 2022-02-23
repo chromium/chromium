@@ -55,7 +55,7 @@ cmake "${absl_dir}" \
   -DABSL_USE_EXTERNAL_GOOGLETEST=ON \
   -DABSL_FIND_GOOGLETEST=ON  \
   -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_TESTING=ON \
+  -DABSL_BUILD_TESTING=ON \
   -DBUILD_SHARED_LIBS="${build_shared_libs}"
 make -j $(nproc)
 ctest -j $(nproc) --output-on-failure

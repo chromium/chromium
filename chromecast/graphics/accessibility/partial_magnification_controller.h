@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/graphics/accessibility/magnification_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

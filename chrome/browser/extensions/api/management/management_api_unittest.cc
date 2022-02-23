@@ -113,7 +113,8 @@ bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::Value& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), base::Value::AsListValue(args).CreateDeepCopy(),
+      function.get(),
+      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())),
       browser(), api_test_utils::NONE);
 }
 
@@ -386,7 +387,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     // If we try uninstall the extension itself, the uninstall should succeed
     // (even though we auto-cancel any dialog), because the dialog is never
     // shown.
-    uninstall_args.EraseListIter(uninstall_args.GetList().begin());
+    uninstall_args.EraseListIter(uninstall_args.GetListDeprecated().begin());
     function = new ManagementUninstallSelfFunction();
     function->set_extension(extension);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));

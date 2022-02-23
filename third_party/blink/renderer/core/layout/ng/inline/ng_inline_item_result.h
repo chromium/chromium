@@ -50,6 +50,8 @@ struct CORE_EXPORT NGInlineItemResult {
     hyphen_shape_result = nullptr;
   }
 
+  void Trace(Visitor* visitor) const;
+
   // The NGInlineItem and its index.
   const NGInlineItem* item;
   unsigned item_index;
@@ -82,11 +84,12 @@ struct CORE_EXPORT NGInlineItemResult {
   scoped_refptr<const ShapeResult> hyphen_shape_result;
 
   // NGLayoutResult for atomic inline items.
-  scoped_refptr<const NGLayoutResult> layout_result;
+  Member<const NGLayoutResult> layout_result;
 
   // NGPositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
+  GC_PLUGIN_IGNORE("crbug.com/1146383")
   absl::optional<NGPositionedFloat> positioned_float;
 
   // Margins, borders, and padding for open tags.
@@ -159,8 +162,10 @@ struct CORE_EXPORT NGInlineItemResult {
 };
 
 // Represents a set of NGInlineItemResult that form a line box.
-using NGInlineItemResults = Vector<NGInlineItemResult, 32>;
+using NGInlineItemResults = HeapVector<NGInlineItemResult, 32>;
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGInlineItemResult)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_RESULT_H_

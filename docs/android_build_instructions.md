@@ -71,7 +71,7 @@ cd src
 ### Converting an existing Linux checkout
 
 If you have an existing Linux checkout, you can add Android support by
-appending `target_os = ['android']` to your `.gclient` file (in the
+appending `target_os = ['linux', 'android']` to your `.gclient` file (in the
 directory above `src`):
 
 ```shell
@@ -372,28 +372,32 @@ Args that affect build speed:
  * `treat_warnings_as_errors = false` *(default=`true`)*
    * Causes any compiler warnings or lint checks to not fail the build.
    * Allows you to iterate without needing to satisfy static analysis checks.
- * `use_errorprone_java_compiler = false` *(default=`true`)*
-   * Don't run Errorprone checks when compiling Java files.
-   * Speeds up Java compiles by ~30% at the cost of not seeing ErrorProne
-     warnings.
- * `disable_android_lint = true` *(default=`false`)*
-   * Don't run Android Lint when building APK / App Bundle targets.
-   * Lint usually takes > 60 seconds to run, so disabling it dramatically
-     reduces incremental build times.
+ * `android_static_analysis = "build_server"` *(default=`"on"`)*
+   * Offloads static analysis steps to the build server. Explained below.
+   * Set this to `"off"` if you want to turn off static analysis altogether.
+ * `incremental_install = true` *(default=`false`)*
+   * Makes build and install quite a bit faster. Explained in a later section.
 
-#### Running analysis build steps in the background
+#### Running static analysis with the build server
 Normally analysis build steps like lint and errorprone will run in parallel with
 the rest of the build. The build will then wait for all analysis steps to
 complete successfully. By offloading analysis build steps to a separate build
 server to be run lazily at a low priority when the machine is idle, the actual
 build can complete up to 50-80% faster.
 
-To take advantage of this speedup, run the script at
+There are **two** steps to using the build server. First, add the gn arg:
+
+```gn
+android_static_analysis = "build_server"
+```
+
+Second, run the script at
 [//build/android/fast_local_dev_server.py][fast_local_dev] in a separate
-terminal window. All your local builds will now forward analysis
-steps to this server. Analysis steps include android lint, errorprone, bytecode
-processor, etc. The output of these analysis checks will then be displayed in
-the terminal window running the server.
+terminal.
+
+All your local builds will now forward analysis steps to this server. Analysis
+steps include android lint, errorprone, bytecode processor. The output of these
+analysis checks will then be displayed in the terminal running the server.
 
 **Note**: Since the build completes before the analysis checks finish, the build
 will not fail if an analysis check fails. Make sure to check the terminal that
@@ -423,7 +427,6 @@ build as normal APKs even when `incremental_install = true`.
 
 Running on an emulator is the same as on a device. Refer to
 [android_emulator.md](android_emulator.md) for setting up emulators.
-
 
 ## Tips, tricks, and troubleshooting
 

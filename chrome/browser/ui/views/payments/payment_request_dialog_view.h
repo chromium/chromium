@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/view_stack.h"
 #include "components/payments/content/initialization_task.h"
@@ -176,7 +177,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
       const autofill::CreditCard& credit_card,
       base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
           result_delegate,
-      content::WebContents* web_contents) override;
+      content::RenderFrameHost* render_frame_host) override;
 
   // Hides the full dialog spinner with the "processing" label.
   void HideProcessingSpinner();
@@ -218,12 +219,12 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   // The PaymentRequest object that initiated this dialog.
   base::WeakPtr<PaymentRequest> request_;
   ControllerMap controller_map_;
-  ViewStack* view_stack_;
+  raw_ptr<ViewStack> view_stack_;
 
   // A full dialog overlay that shows a spinner and the "processing" label. It's
   // hidden until ShowProcessingSpinner is called.
-  views::View* throbber_overlay_;
-  views::Throbber* throbber_;
+  raw_ptr<views::View> throbber_overlay_;
+  raw_ptr<views::Throbber> throbber_;
 
   base::WeakPtr<ObserverForTest> observer_for_testing_;
 

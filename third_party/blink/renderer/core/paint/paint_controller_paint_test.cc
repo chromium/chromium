@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
+using testing::_;
 using testing::ElementsAre;
 
 namespace blink {
@@ -214,10 +215,8 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
   auto& div3 = *GetLayoutObjectByElementId("div3");
   auto& div4 = *GetLayoutObjectByElementId("div4");
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    EXPECT_EQ(gfx::Rect(0, 0, 4200, 4200),
-              container.FirstFragment().GetContentsCullRect().Rect());
-  }
+  EXPECT_EQ(gfx::Rect(0, 0, 4200, 4200),
+            container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div1.Id(), kBackgroundType),
@@ -248,10 +247,8 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
       ScrollOffset(5000, 5000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    EXPECT_EQ(gfx::Rect(1000, 1000, 8100, 8100),
-              container.FirstFragment().GetContentsCullRect().Rect());
-  }
+  EXPECT_EQ(gfx::Rect(1000, 1000, 8100, 8100),
+            container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div2.Id(), kBackgroundType),
@@ -319,11 +316,10 @@ TEST_P(PaintControllerPaintTest, ScrollHitTestOrder) {
       ContentPaintChunks(),
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          IsPaintChunk(
-              1, 2,
-              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
-              container.FirstFragment().LocalBorderBoxProperties(), nullptr,
-              gfx::Rect(0, 0, 200, 200)),
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(container.Id(), kBackgroundChunkType),
+                       container.FirstFragment().LocalBorderBoxProperties(),
+                       nullptr, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
@@ -331,7 +327,9 @@ TEST_P(PaintControllerPaintTest, ScrollHitTestOrder) {
           IsPaintChunk(
               2, 4,
               PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
-              container.FirstFragment().ContentsProperties())));
+              container.FirstFragment().ContentsProperties()),
+          // Hit test chunk for forceDocumentScroll.
+          IsPaintChunk(4, 4)));
 }
 
 TEST_P(PaintControllerPaintTest, NonStackingScrollHitTestOrder) {

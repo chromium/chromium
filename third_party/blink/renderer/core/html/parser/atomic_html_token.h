@@ -30,7 +30,6 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -130,49 +129,6 @@ class CORE_EXPORT AtomicHTMLToken {
           data_ = token.Data().AsString8();
         else
           data_ = token.Data().AsString();
-        break;
-    }
-  }
-
-  explicit AtomicHTMLToken(const CompactHTMLToken& token)
-      : type_(token.GetType()) {
-    switch (type_) {
-      case HTMLToken::kUninitialized:
-        NOTREACHED();
-        break;
-      case HTMLToken::DOCTYPE:
-        name_ = AtomicString(token.Data());
-        doctype_data_ = std::make_unique<DoctypeData>();
-        doctype_data_->has_public_identifier_ = true;
-        token.PublicIdentifier().AppendTo(doctype_data_->public_identifier_);
-        doctype_data_->has_system_identifier_ = true;
-        token.SystemIdentifier().AppendTo(doctype_data_->system_identifier_);
-        doctype_data_->force_quirks_ = token.DoctypeForcesQuirks();
-        break;
-      case HTMLToken::kEndOfFile:
-        break;
-      case HTMLToken::kStartTag:
-        attributes_.ReserveInitialCapacity(token.Attributes().size());
-        for (const CompactHTMLToken::Attribute& attribute :
-             token.Attributes()) {
-          QualifiedName name(g_null_atom, AtomicString(attribute.GetName()),
-                             g_null_atom);
-          // FIXME: This is N^2 for the number of attributes.
-          if (!FindAttributeInVector(attributes_, name)) {
-            attributes_.push_back(
-                Attribute(name, AtomicString(attribute.Value())));
-          } else {
-            duplicate_attribute_ = true;
-          }
-        }
-        FALLTHROUGH;
-      case HTMLToken::kEndTag:
-        self_closing_ = token.SelfClosing();
-        name_ = AtomicString(token.Data());
-        break;
-      case HTMLToken::kCharacter:
-      case HTMLToken::kComment:
-        data_ = token.Data();
         break;
     }
   }

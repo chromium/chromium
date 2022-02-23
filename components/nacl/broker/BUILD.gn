@@ -48,7 +48,7 @@ source_set("broker") {
 source_set("content_dummy") {
   check_includes = false
   sources = [
-    "//content/public/common/sandbox_init.h",
+    "//content/public/common/sandbox_init_win.h",
     "//content/public/common/sandboxed_process_launcher_delegate.h",
   ]
 }

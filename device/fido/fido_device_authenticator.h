@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -93,6 +92,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void DeleteCredential(const pin::TokenResponse& pin_token,
                         const PublicKeyCredentialDescriptor& credential_id,
                         DeleteCredentialCallback callback) override;
+  bool SupportsUpdateUserInformation() const override;
   void UpdateUserInformation(const pin::TokenResponse& pin_token,
                              const PublicKeyCredentialDescriptor& credential_id,
                              const PublicKeyCredentialUserEntity& updated_user,
@@ -138,12 +138,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   bool IsInPairingMode() const override;
   bool IsPaired() const override;
   bool RequiresBlePairingPin() const override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool IsWinNativeApiAuthenticator() const override;
-#endif  // defined(OS_WIN)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
   bool IsTouchIdAuthenticator() const override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsChromeOSAuthenticator() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -74,7 +74,8 @@ class TestWebUIController : public WebUIController {
       web_ui_impl->AddRequestableScheme(scheme.c_str());
     }
 
-    WebUIDataSource* data_source = WebUIDataSource::Create(base_url.host());
+    WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
+        web_ui->GetWebContents()->GetBrowserContext(), base_url.host());
     data_source->SetRequestFilter(
         base::BindRepeating([](const std::string& path) { return true; }),
         base::BindRepeating(&GetResource));
@@ -90,9 +91,6 @@ class TestWebUIController : public WebUIController {
       data_source->DisableDenyXFrameOptions();
     if (config.disable_trusted_types)
       data_source->DisableTrustedTypesCSP();
-
-    WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                         data_source);
   }
   TestWebUIController(const TestWebUIController&) = delete;
   void operator=(const TestWebUIController&) = delete;
@@ -109,8 +107,8 @@ void AddUntrustedDataSource(
     BrowserContext* browser_context,
     const std::string& host,
     absl::optional<TestUntrustedDataSourceHeaders> headers) {
-  auto* untrusted_data_source =
-      WebUIDataSource::Create(GetChromeUntrustedUIURL(host).spec());
+  auto* untrusted_data_source = WebUIDataSource::CreateAndAdd(
+      browser_context, GetChromeUntrustedUIURL(host).spec());
   untrusted_data_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) { return true; }),
       base::BindRepeating(&GetResource));
@@ -153,13 +151,13 @@ void AddUntrustedDataSource(
           break;
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
+        case network::mojom::CrossOriginOpenerPolicyValue::
+            kSameOriginAllowPopupsPlusCoep:
           NOTIMPLEMENTED();
           break;
       }
     }
   }
-
-  WebUIDataSource::Add(browser_context, untrusted_data_source);
 }
 
 // static

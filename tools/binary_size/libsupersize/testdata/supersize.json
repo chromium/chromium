@@ -1,0 +1,18 @@
+{
+  "apk_files": {
+    "assets/icudtl.dat": {
+      "source_path": "../../third_party/icu/android/icudtl.dat"
+    }
+  },
+  "apk_splits": {
+    "on_demand": {
+      "default_component": "DEFAULT"
+    }
+  },
+  "native_files": {
+    "smalltest.so": {
+      "component": "SMALL"
+    }
+  }
+}
+

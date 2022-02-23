@@ -38,7 +38,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -307,7 +307,7 @@ class GLRendererCopierPixelTest
 // On Android KitKat bots (but not newer ones), the left column of pixels in the
 // result is off-by-one in the red channel. Use the off-by-one camparator as a
 // workaround.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define PIXEL_COMPARATOR() cc::FuzzyPixelOffByOneComparator(false)
 #else
 #define PIXEL_COMPARATOR() cc::ExactPixelComparator(false)

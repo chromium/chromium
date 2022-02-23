@@ -11,7 +11,8 @@ import android.app.Activity;
  */
 public interface FirstRunFragment {
     /**
-     * Notifies this fragment that native has been initialized.
+     * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have
+     * been fully initialized, including native initialization.
      */
     default void onNativeInitialized() {}
 

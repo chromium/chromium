@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,7 +35,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
 
   ~TestPrefDelegate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    value_->Clear();
+    value_->DictClear();
     EXPECT_EQ(0U, value_->DictSize());
   }
 

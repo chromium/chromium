@@ -23,12 +23,10 @@ public class SectionHeaderViewBinder
     @Override
     public void bind(PropertyModel model, SectionHeaderView view, PropertyKey key) {
         if (key == SectionHeaderListProperties.IS_SECTION_ENABLED_KEY) {
-            boolean isExpanding = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
-            if (isExpanding) {
-                view.expandHeader();
+            boolean isEnabled = model.get(SectionHeaderListProperties.IS_SECTION_ENABLED_KEY);
+            view.setTextsEnabled(isEnabled);
+            if (isEnabled) {
                 setActiveTab(model, view);
-            } else {
-                view.collapseHeader();
             }
         } else if (key == SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY) {
             setActiveTab(model, view);
@@ -107,6 +105,13 @@ public class SectionHeaderViewBinder
                 PropertyModel tabModel = headers.get(i);
                 view.setOptionsIndicatorVisibilityForHeader(
                         i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
+            }
+        }
+        if (payload == null || payload == SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY) {
+            for (int i = index; i < index + count; i++) {
+                PropertyModel tabModel = headers.get(i);
+                view.updateDrawable(
+                        i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_IS_OPEN_KEY));
             }
         }
     }

@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
@@ -112,17 +111,20 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplayKioskEnabled) {
       "}]",
       browser_context()));
 
-  std::unique_ptr<base::DictionaryValue> set_info =
+  std::unique_ptr<base::DictionaryValue> set_info_value =
       provider_->GetSetInfoValue();
-  ASSERT_TRUE(set_info);
-  EXPECT_TRUE(api_test_utils::GetBoolean(set_info.get(), "isPrimary"));
+  ASSERT_TRUE(set_info_value);
+  base::Value::DictStorage set_info =
+      std::move(*set_info_value).TakeDictDeprecated();
+
+  EXPECT_TRUE(api_test_utils::GetBoolean(set_info, "isPrimary"));
   EXPECT_EQ("mirroringId",
-            api_test_utils::GetString(set_info.get(), "mirroringSourceId"));
-  EXPECT_EQ(100, api_test_utils::GetInteger(set_info.get(), "boundsOriginX"));
-  EXPECT_EQ(200, api_test_utils::GetInteger(set_info.get(), "boundsOriginY"));
-  EXPECT_EQ(90, api_test_utils::GetInteger(set_info.get(), "rotation"));
-  base::DictionaryValue* overscan;
-  ASSERT_TRUE(set_info->GetDictionary("overscan", &overscan));
+            api_test_utils::GetString(set_info, "mirroringSourceId"));
+  EXPECT_EQ(100, api_test_utils::GetInteger(set_info, "boundsOriginX"));
+  EXPECT_EQ(200, api_test_utils::GetInteger(set_info, "boundsOriginY"));
+  EXPECT_EQ(90, api_test_utils::GetInteger(set_info, "rotation"));
+  base::Value::DictStorage overscan =
+      api_test_utils::GetDict(set_info, "overscan");
   EXPECT_EQ(1, api_test_utils::GetInteger(overscan, "left"));
   EXPECT_EQ(2, api_test_utils::GetInteger(overscan, "top"));
   EXPECT_EQ(3, api_test_utils::GetInteger(overscan, "right"));

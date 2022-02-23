@@ -322,6 +322,24 @@ NavigationSimulatorImpl::CreateFromPendingInFrame(
   return simulator;
 }
 
+// static
+std::unique_ptr<NavigationSimulator> NavigationSimulator::CreateForFencedFrame(
+    const GURL& original_url,
+    RenderFrameHost* fenced_frame_root) {
+  DCHECK(fenced_frame_root->IsFencedFrameRoot());
+  std::unique_ptr<NavigationSimulatorImpl> simulator =
+      NavigationSimulatorImpl::CreateRendererInitiated(original_url,
+                                                       fenced_frame_root);
+  simulator->set_supports_loading_mode_header("fenced-frame");
+  simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  // When InitialNavigationEntry is enabled, set should_replace_current_entry to
+  // true, to pass the DidCommitParams check that expects the initial
+  // NavigationEntry to always be replaced.
+  simulator->set_should_replace_current_entry(
+      blink::features::IsInitialNavigationEntryEnabled());
+  return simulator;
+}
+
 NavigationSimulatorImpl::NavigationSimulatorImpl(
     const GURL& original_url,
     bool browser_initiated,
@@ -378,7 +396,7 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // |same_document_| should always be false here.
   referrer_ = request_->common_params().referrer.Clone();
   transition_ = request_->GetPageTransition();
-  if (!request->IsInMainFrame()) {
+  if (!request_->IsInMainFrame()) {
     // Subframe transitions always start as MANUAL_SUBFRAME, and the final
     // value will be calculated at DidCommit time (see
     // BuildDidCommitProvisionalLoadParams()).
@@ -402,20 +420,22 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // there.
   if (num_did_start_navigation_called_ == 0) {
     num_did_start_navigation_called_++;
-    RegisterTestThrottle(request);
+    RegisterTestThrottle();
     PrepareCompleteCallbackOnRequest();
   }
 }
 
-void NavigationSimulatorImpl::RegisterTestThrottle(NavigationRequest* request) {
+void NavigationSimulatorImpl::RegisterTestThrottle() {
+  DCHECK(request_);
+
   // Page activating navigations don't run throttles so we don't need to
   // register it in that case.
   if (request_->IsPageActivation())
     return;
 
-  request->RegisterThrottleForTesting(
+  request_->RegisterThrottleForTesting(
       std::make_unique<NavigationThrottleCallbackRunner>(
-          request,
+          request_,
           base::BindOnce(&NavigationSimulatorImpl::OnWillStartRequest,
                          weak_factory_.GetWeakPtr()),
           base::BindRepeating(&NavigationSimulatorImpl::OnWillRedirectRequest,
@@ -571,6 +591,9 @@ void NavigationSimulatorImpl::ReadyToCommit() {
   }
 
   response_headers_->SetHeader("Content-Type", contents_mime_type_);
+  if (!supports_loading_mode_header_.empty())
+    response_headers_->SetHeader("Supports-Loading-Mode",
+                                 supports_loading_mode_header_);
   PrepareCompleteCallbackOnRequest();
   request_->set_ready_to_commit_callback_for_testing(
       base::BindOnce(&NavigationSimulatorImpl::ReadyToCommitComplete,
@@ -681,6 +704,11 @@ void NavigationSimulatorImpl::Commit() {
   if (same_document_) {
     browser_interface_broker_receiver_.reset();
   }
+
+  // The initial `navigation_url_` may have been mapped to a new URL at this
+  // point. Overwrite it here with the desired value to correctly mock the
+  // DidCommitProvisionalLoadParams.
+  navigation_url_ = request_->GetURL();
 
   auto params = BuildDidCommitProvisionalLoadParams(
       same_document_ /* same_document */, false /* failed_navigation */,
@@ -900,10 +928,6 @@ void NavigationSimulatorImpl::SetInitiatorFrame(
     // TODO(https://crbug.com/1072790): Support cross-process initiators here by
     // using NavigationRequest::CreateBrowserInitiated() (like
     // RenderFrameProxyHost does) for the navigation.
-    CHECK_EQ(render_frame_host_->GetProcess(),
-             initiator_frame_host->GetProcess())
-        << "The initiator frame must belong to the same process as the frame "
-           "you are navigating";
     set_initiator_origin(initiator_frame_host->GetLastCommittedOrigin());
   }
 
@@ -934,6 +958,11 @@ void NavigationSimulatorImpl::SetHasUserGesture(bool has_user_gesture) {
   CHECK_EQ(INITIALIZATION, state_) << "The has_user_gesture parameter cannot "
                                       "be set after the navigation has started";
   has_user_gesture_ = has_user_gesture;
+}
+
+void NavigationSimulatorImpl::SetNavigationInputStart(
+    base::TimeTicks navigation_input_start) {
+  navigation_input_start_ = navigation_input_start;
 }
 
 void NavigationSimulatorImpl::SetReloadType(ReloadType reload_type) {
@@ -1137,7 +1166,7 @@ void NavigationSimulatorImpl::DidStartNavigation(
   request_->set_has_user_gesture(has_user_gesture_);
 
   // Add a throttle to count NavigationThrottle calls count.
-  RegisterTestThrottle(request);
+  RegisterTestThrottle();
   PrepareCompleteCallbackOnRequest();
 
   if (did_start_navigation_closure_)
@@ -1281,6 +1310,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           absl::nullopt /* web_bundle_token */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
+  common_params->input_start = navigation_input_start_;
   common_params->url = navigation_url_;
   common_params->initiator_origin = initiator_origin_.value();
   common_params->method = initial_method_;
@@ -1312,10 +1342,15 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   if (!request)
     return false;
 
-  // Prerendered page activation can be deferred by CommitDeferringConditions in
-  // BeginNavigation(), and `request_` hasn't been set by DidStartNavigation()
-  // yet. In that case, we set it here.
-  if (request->is_potentially_prerendered_page_activation_for_testing()) {
+  // `request_` may not have been set by DidStartNavigation() yet, due to
+  // either:
+  // 1) Prerendered page activation can be deferred by CommitDeferringConditions
+  //    in BeginNavigation().
+  // 2) Fenced frame navigation can be deferred on pending URL mapping.
+  //
+  // In these cases, we set the `request_` here.
+  if (request->is_potentially_prerendered_page_activation_for_testing() ||
+      request->is_deferred_on_fenced_frame_url_mapping_for_testing()) {
     DCHECK(!request_);
     request_ = request;
   }

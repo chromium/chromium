@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -16,7 +15,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
 
@@ -24,200 +24,237 @@ namespace enterprise_connectors {
 
 namespace {
 
+constexpr VAType kVAType = VAType::DEFAULT_VA;
+
 // Size of nonce for challenge response.
 const size_t kChallengResponseNonceBytesSize = 32;
 
-}  // namespace
-
-DesktopAttestationService::DesktopAttestationService(
-    std::unique_ptr<KeyPersistenceDelegate> key_persistence_delegate)
-    : key_persistence_delegate_(std::move(key_persistence_delegate)) {
-  DCHECK(key_persistence_delegate_);
-  key_pair_ = SigningKeyPair::Create(key_persistence_delegate_.get());
-}
-
-DesktopAttestationService::~DesktopAttestationService() = default;
-
-bool DesktopAttestationService::ChallengeComesFromVerifiedAccess(
-    const std::string& serialized_signed_data,
-    const std::string& public_key_modulus_hex) {
-  SignedData signed_challenge;
-  signed_challenge.ParseFromString(serialized_signed_data);
+// Verifies that the `signed_challenge_data` comes from Verified Access.
+bool ChallengeComesFromVerifiedAccess(
+    const SignedData& signed_challenge_data,
+    const std::string& va_public_key_modulus_hex) {
   // Verify challenge signature.
   return CryptoUtility::VerifySignatureUsingHexKey(
-      public_key_modulus_hex, signed_challenge.data(),
-      signed_challenge.signature());
+      va_public_key_modulus_hex, signed_challenge_data.data(),
+      signed_challenge_data.signature());
 }
 
-std::string DesktopAttestationService::ExportPublicKey() {
-  if (!key_pair_ || !key_pair_->key()) {
-    return std::string();
-  }
-  auto public_key_info = key_pair_->key()->GetSubjectPublicKeyInfo();
-  return std::string(public_key_info.begin(), public_key_info.end());
-}
-
-void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
-    const std::string& challenge,
-    std::unique_ptr<DeviceTrustSignals> signals,
-    AttestationCallback callback) {
-  DCHECK(!ExportPublicKey().empty());
-  DCHECK(signals);
-  DCHECK(signals->has_device_id() && !signals->device_id().empty());
-  DCHECK(signals->has_obfuscated_customer_id() &&
-         !signals->obfuscated_customer_id().empty());
-
-  AttestationCallback reply = base::BindOnce(
-      &DesktopAttestationService::ParseChallengeResponseAndRunCallback,
-      weak_factory_.GetWeakPtr(), challenge, std::move(callback));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(
-          &DesktopAttestationService::
-              VerifyChallengeAndMaybeCreateChallengeResponse,
-          base::Unretained(this), JsonChallengeToProtobufChallenge(challenge),
-          google_keys_.va_signing_key(VAType::DEFAULT_VA).modulus_in_hex(),
-          std::move(signals)),
-      std::move(reply));
-}
-
-std::string
-DesktopAttestationService::VerifyChallengeAndMaybeCreateChallengeResponse(
-    const std::string& serialized_signed_data,
-    const std::string& public_key_modulus_hex,
-    std::unique_ptr<DeviceTrustSignals> signals) {
-  if (!ChallengeComesFromVerifiedAccess(serialized_signed_data,
-                                        public_key_modulus_hex)) {
-    LOG(ERROR) << "Challenge signature verification did not succeed.";
-    return std::string();
-  }
-  // If the verification that the challenge comes from Verified Access succeed,
-  // generate the challenge response.
-  SignEnterpriseChallengeRequest request;
-  SignEnterpriseChallengeReply result;
-  request.set_challenge(serialized_signed_data);
-  request.set_va_type(VAType::DEFAULT_VA);
-  SignEnterpriseChallenge(request, std::move(signals), &result);
-  return result.challenge_response();
-}
-
-void DesktopAttestationService::ParseChallengeResponseAndRunCallback(
-    const std::string& challenge,
-    AttestationCallback callback,
-    const std::string& challenge_response_proto) {
-  if (challenge_response_proto != std::string()) {
-    // Return to callback (throttle with the challenge response) with empty
-    // challenge response.
-    std::move(callback).Run(
-        ProtobufChallengeToJsonChallenge(challenge_response_proto));
-  } else {
-    // Make challenge response
-    std::move(callback).Run("");
-  }
-}
-
-void DesktopAttestationService::SignEnterpriseChallenge(
-    const SignEnterpriseChallengeRequest& request,
-    std::unique_ptr<DeviceTrustSignals> signals,
-    SignEnterpriseChallengeReply* result) {
-  // Validate that the challenge is coming from the expected source.
-  SignedData signed_challenge;
-  if (!signed_challenge.ParseFromString(request.challenge())) {
-    LOG(ERROR) << __func__ << ": Failed to parse signed challenge.";
-    result->set_status(STATUS_INVALID_PARAMETER_ERROR);
-    return;
-  }
-  KeyInfo key_info;
-  // Fill `key_info` out for Chrome Browser.
-  // TODO(crbug.com/1241870): Remove public key from signals.
-  key_info.set_key_type(CBCM);
-  key_info.set_browser_instance_public_key(ExportPublicKey());
-  key_info.set_device_id(signals->device_id());
-  key_info.set_customer_id(signals->obfuscated_customer_id());
-
-  key_info.set_allocated_device_trust_signals(signals.release());
-
+// The KeyInfo message encrypted using a public encryption key, with
+// the following parameters:
+//   Key encryption: RSA-OAEP with no custom parameters.
+//   Data encryption: 256-bit key, AES-CBC with PKCS5 padding.
+//   MAC: HMAC-SHA-512 using the AES key.
+absl::optional<std::string> CreateChallengeResponseString(
+    const std::string& serialized_key_info,
+    const SignedData& signed_challenge_data,
+    const std::string& wrapping_key_modulus_hex,
+    const std::string& wrapping_key_id) {
   ChallengeResponse response_pb;
-  *response_pb.mutable_challenge() = signed_challenge;
+  *response_pb.mutable_challenge() = signed_challenge_data;
 
   crypto::RandBytes(base::WriteInto(response_pb.mutable_nonce(),
                                     kChallengResponseNonceBytesSize + 1),
                     kChallengResponseNonceBytesSize);
-  if (!EncryptEnterpriseKeyInfo(request.va_type(), key_info,
-                                response_pb.mutable_encrypted_key_info())) {
-    LOG(ERROR) << __func__ << ": Failed to encrypt KeyInfo.";
-    result->set_status(STATUS_UNEXPECTED_DEVICE_ERROR);
-    return;
-  }
-
-  // Serialize and sign the response protobuf.
-  std::string serialized;
-  if (!response_pb.SerializeToString(&serialized)) {
-    result->set_status(STATUS_UNEXPECTED_DEVICE_ERROR);
-    return;
-  }
-  // Sign data using the client generated key pair.
-  if (!SignChallengeData(serialized, result->mutable_challenge_response())) {
-    result->clear_challenge_response();
-    result->set_status(STATUS_UNEXPECTED_DEVICE_ERROR);
-    return;
-  }
-}
-
-bool DesktopAttestationService::EncryptEnterpriseKeyInfo(
-    VAType va_type,
-    const KeyInfo& key_info,
-    EncryptedData* encrypted_data) {
-  std::string serialized;
-  if (!key_info.SerializeToString(&serialized)) {
-    LOG(ERROR) << "Failed to serialize key info.";
-    return false;
-  }
 
   std::string key;
-  if (!CryptoUtility::EncryptWithSeed(serialized, encrypted_data, key)) {
-    LOG(ERROR) << "EncryptWithSeed failed.";
-    return false;
+  if (!CryptoUtility::EncryptWithSeed(
+          serialized_key_info, response_pb.mutable_encrypted_key_info(), key)) {
+    return absl::nullopt;
   }
-  bssl::UniquePtr<RSA> rsa(CryptoUtility::GetRSA(
-      google_keys_.va_encryption_key(va_type).modulus_in_hex()));
-  if (!rsa)
-    return false;
-  if (!CryptoUtility::WrapKeyOAEP(
-          key, rsa.get(), google_keys_.va_encryption_key(va_type).key_id(),
-          encrypted_data)) {
-    encrypted_data->Clear();
-    return false;
+
+  bssl::UniquePtr<RSA> rsa(CryptoUtility::GetRSA(wrapping_key_modulus_hex));
+  if (!rsa) {
+    return absl::nullopt;
   }
-  return true;
+
+  if (!CryptoUtility::WrapKeyOAEP(key, rsa.get(), wrapping_key_id,
+                                  response_pb.mutable_encrypted_key_info())) {
+    return absl::nullopt;
+  }
+
+  // Convert the challenge response proto to a string before returning it.
+  std::string serialized_response;
+  if (!response_pb.SerializeToString(&serialized_response)) {
+    return absl::nullopt;
+  }
+  return serialized_response;
 }
 
-bool DesktopAttestationService::SignChallengeData(const std::string& data,
-                                                  std::string* response) {
+}  // namespace
+
+DesktopAttestationService::DesktopAttestationService(
+    DeviceTrustKeyManager* key_manager)
+    : key_manager_(key_manager),
+      background_task_runner_(base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  DCHECK(key_manager_);
+}
+
+DesktopAttestationService::~DesktopAttestationService() = default;
+
+// Goes through the following steps in order:
+// - Export public key,
+// - Validate challenge comes from VA,
+// - Generated challenge response,
+// - Sign response,
+// - Encode encrypted data,
+// - Reply to callback.
+void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
+    const std::string& challenge,
+    std::unique_ptr<DeviceTrustSignals> signals,
+    AttestationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(signals);
+
+  // Signals have to at least have the non-empty device ID and obfuscated
+  // customer ID.
+  if (!signals || !signals->has_device_id() || signals->device_id().empty() ||
+      !signals->has_obfuscated_customer_id() ||
+      signals->obfuscated_customer_id().empty()) {
+    LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  key_manager_->ExportPublicKeyAsync(
+      base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
+                     weak_factory_.GetWeakPtr(), challenge, std::move(signals),
+                     std::move(callback)));
+}
+
+void DesktopAttestationService::OnPublicKeyExported(
+    const std::string& challenge,
+    std::unique_ptr<DeviceTrustSignals> signals,
+    AttestationCallback callback,
+    absl::optional<std::string> exported_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!exported_key) {
+    // No key is available, so mark the device as untrusted (no challenge
+    // response).
+    LogAttestationResult(DTAttestationResult::kMissingSigningKey);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  auto serialized_signed_data = JsonChallengeToProtobufChallenge(challenge);
+
   SignedData signed_data;
-  signed_data.set_data(data);
+  if (serialized_signed_data.empty() ||
+      !signed_data.ParseFromString(serialized_signed_data)) {
+    // Challenge is not properly formatted, so mark the device as untrusted (no
+    // challenge response).
+    LogAttestationResult(DTAttestationResult::kBadChallengeFormat);
+    std::move(callback).Run(std::string());
+    return;
+  }
 
-  absl::optional<std::vector<uint8_t>> signature;
-  if (key_pair_ && key_pair_->key()) {
-    signature =
-        key_pair_->key()->SignSlowly(base::as_bytes(base::make_span(data)));
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ChallengeComesFromVerifiedAccess, signed_data,
+                     google_keys_.va_signing_key(kVAType).modulus_in_hex()),
+      base::BindOnce(&DesktopAttestationService::OnChallengeValidated,
+                     weak_factory_.GetWeakPtr(), signed_data,
+                     exported_key.value(), std::move(signals),
+                     std::move(callback)));
+}
+
+void DesktopAttestationService::OnChallengeValidated(
+    const SignedData& signed_data,
+    const std::string& exported_public_key,
+    std::unique_ptr<DeviceTrustSignals> signals,
+    AttestationCallback callback,
+    bool is_va_challenge) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_va_challenge) {
+    // Challenge does not come from VA, so mark the device as untrusted (no
+    // challenge response).
+    LogAttestationResult(DTAttestationResult::kBadChallengeSource);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  // Fill `key_info` out for Chrome Browser.
+  // TODO(crbug.com/1241870): Remove public key from signals.
+  KeyInfo key_info;
+  key_info.set_key_type(CBCM);
+  key_info.set_browser_instance_public_key(exported_public_key);
+  key_info.set_device_id(signals->device_id());
+  key_info.set_customer_id(signals->obfuscated_customer_id());
+  key_info.set_allocated_device_trust_signals(signals.release());
+
+  std::string serialized_key_info;
+  if (!key_info.SerializeToString(&serialized_key_info)) {
+    LogAttestationResult(DTAttestationResult::kFailedToSerializeKeyInfo);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  auto va_encryption_key = google_keys_.va_encryption_key(kVAType);
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&CreateChallengeResponseString, serialized_key_info,
+                     signed_data, va_encryption_key.modulus_in_hex(),
+                     va_encryption_key.key_id()),
+      base::BindOnce(&DesktopAttestationService::OnResponseCreated,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DesktopAttestationService::OnResponseCreated(
+    AttestationCallback callback,
+    absl::optional<std::string> serialized_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!serialized_response) {
+    // Failed to create a response, so mark the device as untrusted (no
+    // challenge response).
+    LogAttestationResult(DTAttestationResult::kFailedToGenerateResponse);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  key_manager_->SignStringAsync(
+      serialized_response.value(),
+      base::BindOnce(&DesktopAttestationService::OnResponseSigned,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     serialized_response.value()));
+}
+
+void DesktopAttestationService::OnResponseSigned(
+    AttestationCallback callback,
+    const std::string& serialized_response,
+    absl::optional<std::vector<uint8_t>> encrypted_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!encrypted_response) {
+    // Failed to sign the response, so mark the device as untrusted (no
+    // challenge response).
+    LogAttestationResult(DTAttestationResult::kFailedToSignResponse);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  // Encode the challenge-response values into a JSON string and return them.
+  SignedData signed_data;
+  signed_data.set_data(serialized_response);
+  signed_data.set_signature(encrypted_response->data(),
+                            encrypted_response->size());
+
+  std::string serialized_attestation_response;
+  if (!signed_data.SerializeToString(&serialized_attestation_response)) {
+    LogAttestationResult(DTAttestationResult::kFailedToSerializeResponse);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::string json_response;
+  if (!serialized_attestation_response.empty()) {
+    LogAttestationResult(DTAttestationResult::kSuccess);
+    json_response =
+        ProtobufChallengeToJsonChallenge(serialized_attestation_response);
   } else {
-    LOG(ERROR) << __func__ << ": Failed, no key to sign data.";
-    return false;
+    LogAttestationResult(DTAttestationResult::kEmptySerializedResponse);
   }
 
-  if (signature.has_value()) {
-    signed_data.set_signature(signature->data(), signature->size());
-  } else {
-    LOG(ERROR) << __func__ << ": Failed to sign data.";
-    return false;
-  }
-
-  if (!signed_data.SerializeToString(response)) {
-    LOG(ERROR) << __func__ << ": Failed to serialize signed data.";
-    return false;
-  }
-  return true;
+  std::move(callback).Run(json_response);
 }
 
 }  // namespace enterprise_connectors

@@ -82,30 +82,90 @@ TEST_P(ParameterizedLayoutInlineTest, PhysicalLinesBoundingBox) {
 
 TEST_F(LayoutInlineTest, SimpleContinuation) {
   SetBodyInnerHTML(
-      "<span id='splitInline'><i id='before'></i><h1 id='blockChild'></h1><i "
-      "id='after'></i></span>");
+      "<span id='splitInline'>"
+      "<i id='before'></i>"
+      "<h1 id='blockChild'></h1>"
+      "<i id='after'></i>"
+      "</span>");
 
   auto* split_inline_part1 =
       To<LayoutInline>(GetLayoutObjectByElementId("splitInline"));
   ASSERT_TRUE(split_inline_part1);
   ASSERT_TRUE(split_inline_part1->FirstChild());
-  EXPECT_EQ(split_inline_part1->FirstChild(),
-            GetLayoutObjectByElementId("before"));
-  EXPECT_FALSE(split_inline_part1->FirstChild()->NextSibling());
+  auto* before = GetLayoutObjectByElementId("before");
+  EXPECT_EQ(split_inline_part1->FirstChild(), before);
+  auto* block_child = GetLayoutObjectByElementId("blockChild");
+  auto* after = GetLayoutObjectByElementId("after");
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) {
+    EXPECT_EQ(split_inline_part1->FirstChild(), before);
+    LayoutObject* anonymous = block_child->Parent();
+    EXPECT_TRUE(anonymous->IsBlockInInline());
+    EXPECT_EQ(before->NextSibling(), anonymous);
+    EXPECT_EQ(anonymous->NextSibling(), after);
+    EXPECT_FALSE(after->NextSibling());
+  } else {
+    EXPECT_FALSE(split_inline_part1->FirstChild()->NextSibling());
+    auto* block = To<LayoutBlockFlow>(split_inline_part1->Continuation());
+    ASSERT_TRUE(block);
+    ASSERT_TRUE(block->FirstChild());
+    EXPECT_EQ(block->FirstChild(), block_child);
+    EXPECT_FALSE(block->FirstChild()->NextSibling());
 
-  auto* block = To<LayoutBlockFlow>(split_inline_part1->Continuation());
-  ASSERT_TRUE(block);
-  ASSERT_TRUE(block->FirstChild());
-  EXPECT_EQ(block->FirstChild(), GetLayoutObjectByElementId("blockChild"));
-  EXPECT_FALSE(block->FirstChild()->NextSibling());
+    auto* split_inline_part2 = To<LayoutInline>(block->Continuation());
+    ASSERT_TRUE(split_inline_part2);
+    ASSERT_TRUE(split_inline_part2->FirstChild());
+    EXPECT_EQ(split_inline_part2->FirstChild(), after);
+    EXPECT_FALSE(split_inline_part2->FirstChild()->NextSibling());
+    EXPECT_FALSE(split_inline_part2->Continuation());
+  }
+}
 
-  auto* split_inline_part2 = To<LayoutInline>(block->Continuation());
-  ASSERT_TRUE(split_inline_part2);
-  ASSERT_TRUE(split_inline_part2->FirstChild());
-  EXPECT_EQ(split_inline_part2->FirstChild(),
-            GetLayoutObjectByElementId("after"));
-  EXPECT_FALSE(split_inline_part2->FirstChild()->NextSibling());
-  EXPECT_FALSE(split_inline_part2->Continuation());
+TEST_F(LayoutInlineTest, BlockInInlineRemove) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  ScopedLayoutNGBlockInInlineForTest ng_block_in_inline(true);
+  SetBodyInnerHTML(R"HTML(
+    <div>
+      <span id="span">before
+        <div id="block"></div>
+      after</span>
+    </div>
+  )HTML");
+
+  // Check `#block` is in an anonymous block.
+  const auto* span = GetLayoutObjectByElementId("span");
+  Element* block_element = GetElementById("block");
+  const auto* block = block_element->GetLayoutObject();
+  EXPECT_FALSE(block->IsInline());
+  EXPECT_TRUE(block->Parent()->IsBlockInInline());
+  EXPECT_EQ(block->Parent()->Parent(), span);
+
+  // Remove `#block`. All children are now inline.
+  // Check if the |IsBlockInInline| anonymous block was removed.
+  Node* after_block = block_element->nextSibling();
+  block_element->remove();
+  UpdateAllLifecyclePhasesForTest();
+  for (const auto* child = span->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    EXPECT_TRUE(child->IsInline());
+    EXPECT_FALSE(child->IsBlockInInline());
+  }
+
+  // Re-insert `#block`.
+  after_block->parentNode()->insertBefore(block_element, after_block);
+  UpdateAllLifecyclePhasesForTest();
+  block = block_element->GetLayoutObject();
+  EXPECT_FALSE(block->IsInline());
+  EXPECT_TRUE(block->Parent()->IsBlockInInline());
+  EXPECT_EQ(block->Parent()->Parent(), span);
+
+  // Insert another block before the "after" text node.
+  // This should be in the existing anonymous block, next to the `#block`.
+  Document& document = GetDocument();
+  Element* block2_element = document.CreateElementForBinding("div");
+  after_block->parentNode()->insertBefore(block2_element, after_block);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(block2_element->GetLayoutObject(), block->NextSibling());
 }
 
 TEST_F(LayoutInlineTest, RegionHitTest) {
@@ -332,7 +392,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocument) {
         font: 20px/20px Ahem;
       }
     </style>
-    <div>
+    <div style="width: 400px">
       <span>xx<br>
         <span id="target">yy
           <div style="width:111px;height:222px;background:yellow"></div>
@@ -343,9 +403,11 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocument) {
   )HTML");
 
   auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
+  const int width =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 111;
+  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
             target->VisualRectInDocument());
-  EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
+  EXPECT_EQ(PhysicalRect(0, 20, width, 222 + 20 * 2),
             target->VisualRectInDocument(kUseGeometryMapper));
 }
 
@@ -369,7 +431,9 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocumentVerticalRL) {
   )HTML");
 
   auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
-  PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, 222);
+  const int height =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 222;
+  PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, height);
   EXPECT_EQ(expected, target->VisualRectInDocument());
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
 }
@@ -444,7 +508,7 @@ TEST_P(ParameterizedLayoutInlineTest, FocusRingRecursiveContinuations) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
 
   EXPECT_THAT(
       rects, UnorderedElementsAre(PhysicalRect(0, 0, 100, 20),   // 'SPAN0'
@@ -481,8 +545,9 @@ TEST_P(ParameterizedLayoutInlineTest, FocusRingRecursiveInlinesVerticalRL) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  auto rects = target->OutlineRects(target->FirstFragment().PaintOffset(),
-                                    NGOutlineType::kIncludeBlockVisualOverflow);
+  auto rects =
+      target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
+                           NGOutlineType::kIncludeBlockVisualOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 120),     // 'INLINE'
                          PhysicalRect(160, 0, 20, 80),      // 'TEXT'
@@ -519,8 +584,9 @@ TEST_P(ParameterizedLayoutInlineTest,
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  auto rects = target->OutlineRects(target->FirstFragment().PaintOffset(),
-                                    NGOutlineType::kIncludeBlockVisualOverflow);
+  auto rects =
+      target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
+                           NGOutlineType::kIncludeBlockVisualOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 100),   // 'SPAN0'
                          PhysicalRect(140, 0, 40, 400),   // div DIV1
@@ -556,7 +622,7 @@ TEST_P(ParameterizedLayoutInlineTest, FocusRingRecursiveInlines) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
 
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(0, 0, 120, 20),     // 'INLINE'
@@ -574,6 +640,7 @@ TEST_P(ParameterizedLayoutInlineTest,
       body {
         margin: 30px 50px;
         font: 20px/20px Ahem;
+        width: 400px;
       }
     </style>
     <br><br>
@@ -606,7 +673,9 @@ TEST_P(ParameterizedLayoutInlineTest,
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
   // This rect covers the overflowing images and continuations.
   // 168 = (30 + 4) * 2 + 100. 4 is the descent of the font.
-  EXPECT_EQ(PhysicalRect(50, 170, 100, 168),
+  const int width =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 100;
+  EXPECT_EQ(PhysicalRect(50, 170, width, 168),
             GetLayoutObjectByElementId("target6")
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
 }
@@ -652,7 +721,9 @@ TEST_P(ParameterizedLayoutInlineTest,
             GetLayoutObjectByElementId("target5")
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
   // This rect covers the overflowing images and continuations.
-  EXPECT_EQ(PhysicalRect(390, 70, 160, 100),
+  const int height =
+      RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled() ? 400 : 100;
+  EXPECT_EQ(PhysicalRect(390, 70, 160, height),
             GetLayoutObjectByElementId("target6")
                 ->AbsoluteBoundingBoxRectHandlingEmptyInline());
 }

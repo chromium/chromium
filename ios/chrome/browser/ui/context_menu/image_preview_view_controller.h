@@ -10,6 +10,19 @@
 // View Controller showing a preview of an image.
 @interface ImagePreviewViewController : UIViewController
 
+// Initializes with |preferredContentSize|.
+- (instancetype)initWithPreferredContentSize:(CGSize)preferredContentSize
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+// Sets the displayed image to |image|.
+- (void)updateImage:(UIImage*)image;
+
 // Sets the displayed image to |data|.
 - (void)updateImageData:(NSData*)data;
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/main_application_delegate.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
@@ -74,6 +75,7 @@ void IterateToStage(InitStage startInitStage,
 class SafeModeAppStateAgentTest : public BlockCleanupTest {
  protected:
   SafeModeAppStateAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
     window_ = [OCMockObject mockForClass:[UIWindow class]];
     browser_launcher_mock_ =
         [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
@@ -84,8 +86,6 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
     main_application_delegate_ =
         [OCMockObject mockForClass:[MainApplicationDelegate class]];
   }
-
-  void SetUp() override { BlockCleanupTest::SetUp(); }
 
   void swizzleSafeModeShouldStart(BOOL shouldStart) {
     safe_mode_swizzle_block_ = ^BOOL(id self) {
@@ -108,7 +108,9 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
                                  startupInformation:startup_information_mock_
                                 applicationDelegate:main_application_delegate_];
 
-      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_];
+      main_scene_state_ =
+          [main_scene_state_ initWithAppState:app_state_
+                                 browserState:browser_state_.get()];
       main_scene_state_.window = getWindowMock();
     }
     return app_state_;
@@ -122,6 +124,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   AppState* app_state_;
   FakeSceneState* main_scene_state_;
 

@@ -5,8 +5,8 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,7 +39,6 @@ void CheckSuccess(base::OnceClosure quit_closure,
   EXPECT_EQ(expect, is_success);
   std::move(quit_closure).Run();
 }
-
 
 class TestSensorClient : public mojom::SensorClient {
  public:
@@ -162,7 +161,7 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
 
     fake_platform_sensor_provider_ = new FakePlatformSensorProvider();
     device_service_impl()->SetPlatformSensorProviderForTesting(
-        base::WrapUnique(fake_platform_sensor_provider_));
+        base::WrapUnique(fake_platform_sensor_provider_.get()));
     device_service()->BindSensorProvider(
         sensor_provider_.BindNewPipeAndPassReceiver());
   }
@@ -171,7 +170,7 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // This object is owned by the DeviceService instance.
-  FakePlatformSensorProvider* fake_platform_sensor_provider_;
+  raw_ptr<FakePlatformSensorProvider> fake_platform_sensor_provider_;
 };
 
 // Requests the SensorProvider to create a sensor.
@@ -266,17 +265,17 @@ TEST_F(GenericSensorServiceTest, InvalidAddConfigurationTest) {
 // Tests adding more than one clients. Sensor should send notification to all
 // its clients.
 TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();
@@ -309,17 +308,17 @@ TEST_F(GenericSensorServiceTest, MultipleClientsTest) {
 // Tests adding more than one clients. If mojo connection is broken on one
 // client, other clients should not be affected.
 TEST_F(GenericSensorServiceTest, ClientMojoConnectionBrokenTest) {
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();
@@ -351,52 +350,52 @@ TEST_F(GenericSensorServiceTest, ClientMojoConnectionBrokenTest) {
 
 // Test add and remove configuration operations.
 TEST_F(GenericSensorServiceTest, AddAndRemoveConfigurationTest) {
-  auto client = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency value
-  // should be 30.0
-  PlatformSensorConfiguration configuration_30(30.0);
-  client->sensor()->AddConfiguration(
-      configuration_30,
-      base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                     base::Unretained(client.get()),
-                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
+  // should be 10.0.
   {
+    PlatformSensorConfiguration configuration_10(10.0);
+    client->sensor()->AddConfiguration(
+        configuration_10,
+        base::BindOnce(&TestSensorClient::OnAddConfiguration,
+                       base::Unretained(client.get()),
+                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
     base::RunLoop run_loop;
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency value
-  // should be 30.0 instead of 20.0
+  // should be 40.0.
+  PlatformSensorConfiguration configuration_40(40.0);
+  client->sensor()->AddConfiguration(
+      configuration_40,
+      base::BindOnce(&TestSensorClient::OnAddConfiguration,
+                     base::Unretained(client.get()),
+                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
   {
     base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_20(20.0);
-    client->sensor()->AddConfiguration(
-        configuration_20,
-        base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                       base::Unretained(client.get()),
-                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 40.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  // After 'configuration_30' is removed, expect the SensorReadingChanged() will
-  // be called. The frequency value should be 20.0.
+  // After |configuration_40| is removed, expect the SensorReadingChanged() will
+  // be called. The frequency value should be 10.0.
   {
     base::RunLoop run_loop;
-    client->sensor()->RemoveConfiguration(configuration_30);
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 20.0));
+    client->sensor()->RemoveConfiguration(configuration_40);
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -446,27 +445,27 @@ TEST_F(GenericSensorServiceTest, SuspendTest) {
 // Test suspend and resume. After resuming, client can add configuration and
 // be notified by SensorReadingChanged() as usual.
 TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
-  auto client = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  auto client = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client.get()), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency should
-  // be 30.0 after AddConfiguration.
+  // be 10.0 after AddConfiguration.
   {
     base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_1(30.0);
+    PlatformSensorConfiguration configuration_1(10.0);
     client->sensor()->AddConfiguration(
         configuration_1,
         base::BindOnce(&TestSensorClient::OnAddConfiguration,
                        base::Unretained(client.get()),
                        base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -493,17 +492,17 @@ TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
 // Test suspend when there are more than one client. The suspended client won't
 // receive SensorReadingChanged() notification.
 TEST_F(GenericSensorServiceTest, MultipleClientsSuspendAndResumeTest) {
-  auto client_1 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
-  auto client_2 = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  auto client_1 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
+  auto client_2 = std::make_unique<TestSensorClient>(SensorType::PRESSURE);
   {
     base::RunLoop run_loop;
     auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_1.get()), barrier_closure));
     sensor_provider_->GetSensor(
-        SensorType::AMBIENT_LIGHT,
+        SensorType::PRESSURE,
         base::BindOnce(&TestSensorClient::OnSensorCreated,
                        base::Unretained(client_2.get()), barrier_closure));
     run_loop.Run();

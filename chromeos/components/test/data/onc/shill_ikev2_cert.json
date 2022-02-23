@@ -1,0 +1,13 @@
+{ "GUID": "guid",
+  "Type": "vpn",
+  "Name": "MyIKEv2VPN",
+  "Provider.Host": "some.host.org",
+  "Provider.Type": "ikev2",
+  "IKEv2.AuthenticationType": "Cert",
+  "IKEv2.CACertPEM": ["1234"],
+  "IKEv2.ClientCertID": "123456abcdef",
+  "IKEv2.ClientCertSlot": "1",
+  "IKEv2.LocalIdentity": "local-id",
+  "IKEv2.RemoteIdentity": "remote-id",
+  "SaveCredentials": true
+}

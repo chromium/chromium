@@ -21,10 +21,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/tpm/stub_install_attributes.h"
@@ -153,8 +151,7 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   return local_state;
 }
 
-void PrintErrorAndFail(const std::string& error_name,
-                       std::unique_ptr<base::DictionaryValue>) {
+void PrintErrorAndFail(const std::string& error_name) {
   LOG(ERROR) << error_name;
   FAIL();
 }
@@ -196,7 +193,7 @@ bool NetworkExists(const std::string& guid) {
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
   base::RunLoop run_loop;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, base::Value::AsDictionaryValue(config),
+      kDeviceUserHash, config,
       base::BindLambdaForTesting(
           [&](const std::string& service_path, const std::string& guid) {
             run_loop.Quit();
@@ -212,7 +209,7 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
   const chromeos::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), base::Value::AsDictionaryValue(config),
+      network_state->path(), config,
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }),
       base::BindOnce(&PrintErrorAndFail));
   run_loop.Run();
@@ -309,13 +306,10 @@ class RollbackNetworkConfigTest : public testing::Test {
   void RegisterAndSetUpPrefs() {
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+    network_handler_test_helper_.RegisterPrefs(user_prefs_.registry(),
+                                               local_state_.registry());
+
+    network_handler_test_helper_.InitializePrefs(&user_prefs_, &local_state_);
   }
 
   void SetUp() override { SetEmptyDevicePolicy(); }

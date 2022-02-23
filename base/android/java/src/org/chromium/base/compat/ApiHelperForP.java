@@ -4,7 +4,6 @@
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
 import android.content.ClipboardManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -17,6 +16,8 @@ import android.telephony.TelephonyManager;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.annotations.VerifiesOnP;
 
 /**
@@ -25,7 +26,7 @@ import org.chromium.base.annotations.VerifiesOnP;
  * encountering the new APIs.
  */
 @VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public final class ApiHelperForP {
     private ApiHelperForP() {}
 

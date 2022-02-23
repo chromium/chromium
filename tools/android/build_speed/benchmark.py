@@ -9,7 +9,7 @@ Example Command:
 
 Example Output:
     Summary
-    gn args: target_os="android" use_goma=true android_fast_local_dev=true
+    gn args: target_os="android" use_goma=true incremental_install=true
     gn gen: 6.7s
     chrome_java_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_java_sig: 38.9s avg (38.8s, 39.1s)
@@ -30,27 +30,37 @@ import pathlib
 import re
 import subprocess
 import sys
-import threading
 import time
 import shutil
 
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Callable, Iterator, List, Tuple, Optional
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
 _SRC_ROOT = pathlib.Path(__file__).parents[3].resolve()
 sys.path.append(str(_SRC_ROOT / 'build' / 'android'))
 from pylib import constants
+import devil_chromium
 
-_COMMON_ARGS = [
+sys.path.append(str(_SRC_ROOT / 'third_party' / 'catapult' / 'devil'))
+from devil.android.sdk import adb_wrapper
+from devil.android import device_utils
+
+_EMULATOR_AVD_DIR = _SRC_ROOT / 'tools' / 'android' / 'avd'
+_AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
+# Use API 28 as it's the highest API version that monochrome supports.
+_AVD_CONFIG = _EMULATOR_AVD_DIR / 'proto' / 'generic_android28.textpb'
+_SECONDS_TO_POLL_FOR_EMULATOR = 30
+
+_GN_ARGS = [
     'target_os="android"',
     'use_goma=true',
+    'incremental_install=true',
 ]
 
-_GN_ARG_PRESETS = {
-    'fast_local_dev': _COMMON_ARGS + ['android_fast_local_dev=true'],
-    'incremental_install': _COMMON_ARGS + ['incremental_install=true'],
-}
+_EMULATOR_GN_ARGS = [
+    'target_cpu="x86"',
+]
 
 _TARGETS = {
     'bundle': 'chrome_modern_public_bundle',
@@ -96,65 +106,65 @@ class Benchmark:
 
 _BENCHMARKS = [
     Benchmark('chrome_java_nosig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': 'sInstance = instance;',
         'to_string': 'sInstance = instance;String test = "Test";',
         # pylint: disable=line-too-long
         'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     }),
     Benchmark('chrome_java_sig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': 'AppHooksImpl sInstance;',
         'to_string': 'AppHooksImpl sInstance;public void NewInterfaceMethod(){}',
         # pylint: disable=line-too-long
         'change_file': 'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     }),
     Benchmark('chrome_java_res', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': '14181C',
         'to_string': '14181D',
         'change_file': 'chrome/android/java/res/values/colors.xml',
     }),
     Benchmark('module_java_public_sig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': 'INVALID_WINDOW_INDEX = -1',
         'to_string': 'INVALID_WINDOW_INDEX = -2',
         # pylint: disable=line-too-long
         'change_file': 'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',
     }),
     Benchmark('module_java_internal_nosig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': '"TabModelSelector',
         'to_string': '"DifferentUniqueString',
         # pylint: disable=line-too-long
         'change_file': 'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',
     }),
     Benchmark('base_java_nosig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': '"SysUtil',
         'to_string': '"SysUtil1',
         'change_file': 'base/android/java/src/org/chromium/base/SysUtils.java',
     }),
     Benchmark('base_java_sig', {
-        'kind': 'incremental',
+        'kind': 'incremental_build_and_install',
         'from_string': 'SysUtils";',
         'to_string': 'SysUtils";public void NewInterfaceMethod(){}',
         'change_file': 'base/android/java/src/org/chromium/base/SysUtils.java',
     }),
     Benchmark('turbine_headers', {
-        'kind': 'incremental',
+        'kind': 'incremental_build',
         'from_string': '# found in the LICENSE file.',
         'to_string': '#temporary_edit_for_benchmark.py',
         'change_file': 'build/android/gyp/turbine.py',
     }),
     Benchmark('compile_java', {
-        'kind': 'incremental',
+        'kind': 'incremental_build',
         'from_string': '# found in the LICENSE file.',
         'to_string': '#temporary_edit_for_benchmark.py',
         'change_file': 'build/android/gyp/compile_java.py',
     }),
     Benchmark('write_build_config', {
-        'kind': 'incremental',
+        'kind': 'incremental_build',
         'from_string': '# found in the LICENSE file.',
         'to_string': '#temporary_edit_for_benchmark.py',
         'change_file': 'build/android/gyp/write_build_config.py',
@@ -176,14 +186,14 @@ def _backup_file(file_path: str):
 
 
 @contextlib.contextmanager
-def _run_server(no_server: bool):
-    if no_server:
-        yield
-        return
+def _server():
     cmd = [_SRC_ROOT / 'build' / 'android' / 'fast_local_dev_server.py']
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
+    # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
+    #     server cannot be started.
     server_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
+    logging.debug('Started fast local dev server.')
     try:
         yield
     finally:
@@ -192,6 +202,55 @@ def _run_server(no_server: bool):
         # when the current build is done to avoid skewing the next benchmark.
         server_proc.terminate()
         server_proc.wait()
+
+
+def _detect_emulators() -> List[device_utils.DeviceUtils]:
+    return [
+        device_utils.DeviceUtils(d) for d in adb_wrapper.AdbWrapper.Devices()
+        if d.is_emulator
+    ]
+
+
+def _poll_for_emulators(
+        condition: Callable[[List[device_utils.DeviceUtils]], bool], *,
+        expected: str):
+    for sec in range(_SECONDS_TO_POLL_FOR_EMULATOR):
+        emulators = _detect_emulators()
+        if condition(emulators):
+            break
+        logging.debug(f'Waited {sec}s for emulator to become ready...')
+        time.sleep(1)
+    else:
+        raise Exception(
+            f'Emulator is not ready after {_SECONDS_TO_POLL_FOR_EMULATOR}s. '
+            f'Expected {expected}.')
+
+
+@contextlib.contextmanager
+def _emulator():
+    _poll_for_emulators(lambda emulators: len(emulators) == 0,
+                        expected='no running emulators')
+    try:
+        cmd = [_AVD_SCRIPT, 'start', '-q', '--avd-config', _AVD_CONFIG]
+        subprocess.run(cmd, check=True, capture_output=True)
+    except subprocess.CalledProcessError:
+        print('Unable to start the emulator. Perhaps you need to install it:')
+        print(f'{_AVD_SCRIPT} install --avd-config {_AVD_CONFIG}')
+        raise
+    _poll_for_emulators(lambda emulators: len(emulators) == 1,
+                        expected='exactly one emulator started successfully')
+    device = _detect_emulators()[0]
+    logging.debug(f'Started: {device.serial}.')
+    try:
+        # Ensure the emulator and its disk are fully set up.
+        device.WaitUntilFullyBooted(decrypt=True)
+        # TODO(wnwen): Remove once split apks are used instead of side-loading.
+        device.adb.Shell('settings put global hidden_api_policy_p_apps 0')
+        yield device
+    finally:
+        device.adb.Emu('kill')
+        _poll_for_emulators(lambda emulators: len(emulators) == 0,
+                            expected='no running emulators')
 
 
 def _run_and_time_cmd(cmd: List[str]) -> float:
@@ -215,15 +274,89 @@ def _run_gn_gen(out_dir: str) -> float:
     return _run_and_time_cmd(['gn', 'gen', '-C', out_dir])
 
 
-def _run_autoninja(out_dir: str, *args: str) -> float:
-    return _run_and_time_cmd(['autoninja', '-C', out_dir] + list(args))
+def _run_autoninja(out_dir: str, target: str) -> float:
+    return _run_and_time_cmd(['autoninja', '-C', out_dir, target])
+
+
+def _run_install(out_dir: str, target: str) -> float:
+    # Example script path: out/Debug/bin/chrome_public_apk
+    script_path = os.path.join(out_dir, 'bin', target)
+    # Disable first run to get a more accurate timing of startup.
+    cmd = [
+        script_path, 'run', '--args=--disable-fre', '--exit-on-match',
+        '^Successfully loaded native library$'
+    ]
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        cmd += ['-vv']
+    return _run_and_time_cmd(cmd)
+
+
+def _remove_deleted_files(emulator: device_utils.DeviceUtils):
+    # This is necessary to terminate all non-chrome processes still holding
+    # file descriptors open for deleted chrome apk files. Otherwise the
+    # emulator will run out of space.
+    find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  */ /g"'
+    # Example output:
+    # COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+    # gle.android.gms 2492 u0_a10 94r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
+    # s.nexuslauncher 2679 u0_a7 64r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes8.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes8.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes7.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes7.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes6.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes6.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes5.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes5.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes4.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes4.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes3.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes3.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
+    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
+    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
+    output = emulator.RunShellCommand(find_holders_of_deleted_fds_cmd,
+                                      shell=True,
+                                      as_root=True,
+                                      check_return=True)
+    pids = set()
+    for line in output:
+        command, pid, user, *_ = line.split()
+        # Avoid killing chrome or system processes as that can lead to pm failures like:
+        # Unexpected pm path output: 'cmd: Failure calling service package: Broken pipe (32)'
+        if 'chrome' in command or 'boxed_process' in command:
+            continue
+        if user == 'system':
+            continue
+        if pid in pids:
+            continue
+        logging.debug('Terminating command=%s pid=%s user=%s', command, pid,
+                      user)
+        pids.add(pid)
+    if pids:
+        emulator.RunShellCommand('kill ' + ' '.join(pids),
+                                 shell=True,
+                                 as_root=True,
+                                 check_return=True)
+
+
+def _run_and_maybe_install(out_dir: str, target: str,
+                           emulator: Optional[device_utils.DeviceUtils]
+                           ) -> float:
+    total_time = _run_autoninja(out_dir, target)
+    if emulator:
+        total_time += _run_install(out_dir, target)
+        _remove_deleted_files(emulator)
+    return total_time
+
+
+def _maybe_uninstall(out_dir: str, target: str,
+                     emulator: Optional[device_utils.DeviceUtils]):
+    if emulator:
+        _run_and_time_cmd([os.path.join(out_dir, 'bin', target), 'uninstall'])
 
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
-                               to_string: str,
-                               change_file: str) -> Iterator[float]:
+                               to_string: str, change_file: str,
+                               emulator: Optional[device_utils.DeviceUtils]
+                               ) -> Iterator[float]:
     # This ensures that the only change is the one that this script makes.
-    prep_time = _run_autoninja(out_dir, target)
+    prep_time = _run_and_maybe_install(out_dir, target, emulator)
     logging.info(f'Took {prep_time:.1f}s to prep this test')
     change_file_path = os.path.join(_SRC_ROOT, change_file)
     with _backup_file(change_file_path):
@@ -234,17 +367,25 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
             assert content != new_content, (
                 f'Need to update {from_string} in {change_file}')
             f.write(new_content)
-        yield _run_autoninja(out_dir, target)
+        yield _run_and_maybe_install(out_dir, target, emulator)
     # Since we are restoring the original file, this is the same incremental
     # change, just reversed, so do a second run to save on prep time. This
     # ensures a minimum of two runs.
     pathlib.Path(change_file_path).touch()
-    yield _run_autoninja(out_dir, target)
+    second_run_time = _run_and_maybe_install(out_dir, target, emulator)
+    # Ensure that we clean-up before the last yield so that the emulator does
+    # not run out of space for the next benchmark.
+    _maybe_uninstall(out_dir, target, emulator)
+    yield second_run_time
 
 
-def _run_benchmark(*, kind: str, **kwargs: str) -> Iterator[float]:
-    if kind == 'incremental':
-        return _run_incremental_benchmark(**kwargs)
+def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
+                   **kwargs: Dict) -> Iterator[float]:
+    if kind == 'incremental_build':
+        assert not emulator, f'Install not supported for {kwargs}.'
+        return _run_incremental_benchmark(emulator=None, **kwargs)
+    elif kind == 'incremental_build_and_install':
+        return _run_incremental_benchmark(emulator=emulator, **kwargs)
     else:
         raise NotImplementedError(f'Benchmark type {kind} is not defined.')
 
@@ -275,10 +416,13 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: str, target: str, repeat: int,
-                   no_server: bool) -> Iterator[Tuple[str, List[float]]]:
+                   no_server: bool,
+                   use_emulator: bool) -> Iterator[Tuple[str, List[float]]]:
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
-    with _backup_file(args_gn_path), _run_server(no_server):
+    emulator_ctx = _emulator if use_emulator else contextlib.nullcontext
+    server_ctx = _server if not no_server else contextlib.nullcontext
+    with _backup_file(args_gn_path), emulator_ctx() as emulator:
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
@@ -289,11 +433,16 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
             time_taken = []
             for run_num in range(repeat):
                 logging.info(f'Run number: {run_num + 1}')
-                for elapsed in _run_benchmark(out_dir=out_dir,
-                                              target=target,
-                                              **benchmark.info):
-                    logging.info(f'Time: {elapsed:.1f}s')
-                    time_taken.append(elapsed)
+                # Run the fast local dev server fresh for each benchmark run
+                # to avoid later benchmarks being slower due to the server
+                # accumulating queued tasks.
+                with server_ctx():
+                    for elapsed in _run_benchmark(out_dir=out_dir,
+                                                  target=target,
+                                                  emulator=emulator,
+                                                  **benchmark.info):
+                        logging.info(f'Time: {elapsed:.1f}s')
+                        time_taken.append(elapsed)
             logging.info(f'Completed {benchmark.name}')
             logging.info('Result: %s', _format_result(time_taken))
             yield benchmark.name, time_taken
@@ -322,11 +471,6 @@ def main():
                         metavar='BENCHMARK',
                         choices=list(_all_benchmark_and_suite_names()),
                         help='Names of benchmark(s) or suites(s) to run.')
-    parser.add_argument('-A',
-                        '--args',
-                        choices=_GN_ARG_PRESETS.keys(),
-                        default='incremental_install',
-                        help='The set of GN args to use for these benchmarks.')
     parser.add_argument('--bundle',
                         action='store_true',
                         help='Switch the default target from apk to bundle.')
@@ -343,6 +487,12 @@ def main():
         '-C',
         '--output-directory',
         help='If outdir is not provided, will attempt to guess.')
+    parser.add_argument(
+        '--use-emulator',
+        action='store_true',
+        help='Use an emulator to include install/launch timing.')
+    parser.add_argument('--target',
+                        help='Specify this to override the default target.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -364,12 +514,20 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-    target = _TARGETS['bundle' if args.bundle else 'apk']
-    gn_args = _GN_ARG_PRESETS[args.args]
-    results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat, args.no_server)
+    gn_args = _GN_ARGS
+    if args.use_emulator:
+        devil_chromium.Initialize()
+        gn_args += _EMULATOR_GN_ARGS
 
-    print(f'Summary ({"not " if args.no_server else ""}using build server)')
+    if args.target:
+        target = args.target
+    else:
+        target = _TARGETS['bundle' if args.bundle else 'apk']
+    results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
+                             args.repeat, args.no_server, args.use_emulator)
+    server_str = f'{"not " if args.no_server else ""}using build server'
+    emulator_str = f'{"" if args.use_emulator else "not "}using emulator'
+    print(f'Summary ({server_str}; {emulator_str})')
     print(f'gn args: {" ".join(gn_args)}')
     print(f'target: {target}')
     for name, result in results:

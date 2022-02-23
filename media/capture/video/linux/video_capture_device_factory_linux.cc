@@ -22,7 +22,7 @@
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/video_capture_device_linux.h"
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #include <sys/videoio.h>
 #else
 #include <linux/videodev2.h>
@@ -130,8 +130,7 @@ void VideoCaptureDeviceFactoryLinux::SetV4L2EnvironmentForTesting(
   device_provider_ = std::move(device_provider);
 }
 
-std::unique_ptr<VideoCaptureDevice>
-VideoCaptureDeviceFactoryLinux::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryLinux::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto self =
@@ -145,10 +144,11 @@ VideoCaptureDeviceFactoryLinux::CreateDevice(
       HANDLE_EINTR(v4l2_->open(device_descriptor.device_id.c_str(), O_RDONLY)));
   if (!fd.is_valid()) {
     DLOG(ERROR) << "Cannot open device";
-    return nullptr;
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::kV4L2FailedToOpenV4L2DeviceDriverFile);
   }
 
-  return self;
+  return VideoCaptureErrorOrDevice(std::move(self));
 }
 
 void VideoCaptureDeviceFactoryLinux::GetDevicesInfo(

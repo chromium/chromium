@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/madv_free_discardable_memory_posix.h"
+
 #include <errno.h>
 #include <inttypes.h>
 #include <sys/mman.h>
@@ -15,11 +17,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/madv_free_discardable_memory_allocator_posix.h"
-#include "base/memory/madv_free_discardable_memory_posix.h"
 #include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/tracing_buildflags.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/memory_allocator_dump.h"  // no-presubmit-check
@@ -48,7 +50,7 @@ base::MadvFreeSupport ProbePlatformMadvFreeSupport() {
   // the MADV_FREE define will not exist and the probe will default to
   // unsupported, regardless of whether the target system actually supports
   // MADV_FREE.
-#if !defined(OS_APPLE) && defined(MADV_FREE)
+#if !BUILDFLAG(IS_APPLE) && defined(MADV_FREE)
   uint8_t* dummy_page = static_cast<uint8_t*>(AllocatePages(1));
   dummy_page[0] = 1;
 
@@ -292,7 +294,7 @@ void MadvFreeDiscardableMemoryPosix::SetKeepMemoryForTesting(bool keep_memory) {
 
 bool MadvFreeDiscardableMemoryPosix::IsResident() const {
   DFAKE_SCOPED_RECURSIVE_LOCK(thread_collision_warner_);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   std::vector<char> vec(allocated_pages_);
 #else
   std::vector<unsigned char> vec(allocated_pages_);

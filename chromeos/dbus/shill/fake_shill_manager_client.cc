@@ -82,7 +82,7 @@ std::string GetStringValue(const base::Value& dict, const char* key) {
 
 // Returns whether added.
 bool AppendIfNotPresent(base::ListValue* list, base::Value value) {
-  if (base::Contains(list->GetList(), value))
+  if (base::Contains(list->GetListDeprecated(), value))
     return false;
   list->Append(std::move(value));
   return true;
@@ -222,7 +222,8 @@ bool IsCellularTechnology(const std::string& type) {
           type == shill::kNetworkTechnologyHspa ||
           type == shill::kNetworkTechnologyHspaPlus ||
           type == shill::kNetworkTechnologyLte ||
-          type == shill::kNetworkTechnologyLteAdvanced);
+          type == shill::kNetworkTechnologyLteAdvanced ||
+          type == shill::kNetworkTechnology5gNr);
 }
 
 void SetInitialDeviceProperty(const std::string& device_path,
@@ -247,7 +248,8 @@ const char kRoamingRequired[] = "required";
 const char FakeShillManagerClient::kFakeEthernetNetworkGuid[] = "eth1_guid";
 
 FakeShillManagerClient::FakeShillManagerClient()
-    : cellular_technology_(shill::kNetworkTechnologyGsm) {
+    : cellular_technology_(shill::kNetworkTechnologyGsm),
+      return_null_properties_(false) {
   ParseCommandLineSwitch();
 }
 
@@ -268,6 +270,13 @@ void FakeShillManagerClient::RemovePropertyChangedObserver(
 void FakeShillManagerClient::GetProperties(
     DBusMethodCallback<base::Value> callback) {
   VLOG(1) << "Manager.GetProperties";
+  if (return_null_properties_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FakeShillManagerClient::PassNullopt,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubProperties,
@@ -466,7 +475,7 @@ void FakeShillManagerClient::GetService(const base::Value& properties,
       FROM_HERE, base::BindOnce(std::move(callback), dbus::ObjectPath()));
 }
 
-void FakeShillManagerClient::ConnectToBestServices(
+void FakeShillManagerClient::ScanAndConnectToBestServices(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (best_service_.empty()) {
@@ -482,7 +491,7 @@ void FakeShillManagerClient::ConnectToBestServices(
 void FakeShillManagerClient::AddPasspointCredentials(
     const dbus::ObjectPath& profile_path,
     const base::Value& properties,
-    ObjectPathCallback callback,
+    base::OnceClosure callback,
     ErrorCallback error_callback) {
   return;
 }
@@ -653,7 +662,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   // ServiceCompleteList contains string path values for each service.
   base::Value* complete_path_list =
       stub_properties_.FindListKey(shill::kServiceCompleteListProperty);
-  if (!complete_path_list || complete_path_list->GetList().empty())
+  if (!complete_path_list || complete_path_list->GetListDeprecated().empty())
     return;
   base::Value prev_complete_path_list = complete_path_list->Clone();
 
@@ -669,7 +678,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
 
   // Build a list of dictionaries for each service in the list.
   std::vector<base::Value> complete_dict_list;
-  for (const base::Value& value : complete_path_list->GetList()) {
+  for (const base::Value& value : complete_path_list->GetListDeprecated()) {
     std::string service_path = value.GetString();
     const base::Value* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
@@ -1062,6 +1071,11 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
 
 // Private methods
 
+void FakeShillManagerClient::PassNullopt(
+    DBusMethodCallback<base::Value> callback) const {
+  std::move(callback).Run(absl::nullopt);
+}
+
 void FakeShillManagerClient::PassStubProperties(
     DBusMethodCallback<base::Value> callback) const {
   base::Value stub_properties = stub_properties_.Clone();
@@ -1124,7 +1138,7 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   const base::Value* technologies =
       stub_properties_.FindListKey(shill::kEnabledTechnologiesProperty);
   if (technologies)
-    return base::Contains(technologies->GetList(), base::Value(type));
+    return base::Contains(technologies->GetListDeprecated(), base::Value(type));
   return false;
 }
 
@@ -1150,7 +1164,7 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
   if (service_list) {
     ShillServiceClient::TestInterface* service_client =
         ShillServiceClient::Get()->GetTestInterface();
-    for (const base::Value& v : service_list->GetList()) {
+    for (const base::Value& v : service_list->GetListDeprecated()) {
       std::string service_path = v.GetString();
       const base::Value* properties =
           service_client->GetServiceProperties(service_path);
@@ -1167,11 +1181,15 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
 }
 
 void FakeShillManagerClient::ClearProfiles() {
-  if (GetListProperty(shill::kProfilesProperty)->GetList().empty()) {
+  if (GetListProperty(shill::kProfilesProperty)->GetListDeprecated().empty()) {
     return;
   }
   GetListProperty(shill::kProfilesProperty)->ClearList();
   CallNotifyObserversPropertyChanged(shill::kProfilesProperty);
+}
+
+void FakeShillManagerClient::SetShouldReturnNullProperties(bool value) {
+  return_null_properties_ = value;
 }
 
 void FakeShillManagerClient::ScanCompleted(const std::string& device_path) {

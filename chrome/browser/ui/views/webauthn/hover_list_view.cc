@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
@@ -53,7 +54,7 @@ class ListItemVectorIconView : public views::ImageView {
   }
 
  private:
-  const gfx::VectorIcon* vector_icon_;
+  raw_ptr<const gfx::VectorIcon> vector_icon_;
   int icon_size_;
 };
 
@@ -194,7 +195,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
 
   scroll_view_ = new views::ScrollView();
   scroll_view_->SetContents(std::move(item_container));
-  AddChildView(scroll_view_);
+  AddChildView(scroll_view_.get());
   scroll_view_->ClipHeightTo(GetPreferredViewHeight(),
                              GetPreferredViewHeight());
 

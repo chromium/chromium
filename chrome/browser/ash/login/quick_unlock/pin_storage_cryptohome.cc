@@ -4,38 +4,45 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 
-namespace ash {
-namespace quick_unlock {
+namespace ash::quick_unlock {
 namespace {
 
 // Read the salt from local state.
 std::string GetSalt(const AccountId& account_id) {
-  std::string salt;
-  user_manager::known_user::GetStringPref(account_id,
-                                          prefs::kQuickUnlockPinSalt, &salt);
-  return salt;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (const std::string* salt =
+          known_user.FindStringPath(account_id, prefs::kQuickUnlockPinSalt)) {
+    return *salt;
+  }
+  return std::string();
 }
 
 // Write the salt to local state.
 void WriteSalt(const AccountId& account_id, const std::string& salt) {
-  user_manager::known_user::SetStringPref(account_id,
-                                          prefs::kQuickUnlockPinSalt, salt);
+  if (!g_browser_process->local_state())
+    return;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetStringPref(account_id, prefs::kQuickUnlockPinSalt, salt);
 }
 
 template <typename ReplyType>
@@ -119,6 +126,20 @@ void CheckForCryptohomedService(int attempt,
                                 PinStorageCryptohome::BoolCallback result) {
   UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &OnCryptohomedServiceAvailable, attempt, std::move(result)));
+}
+
+bool IsCryptohomePinDisabledByPolicy(const AccountId& account_id,
+                                     Purpose purpose) {
+  auto* test_api = quick_unlock::TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsPinEnabledByPolicy(purpose);
+  }
+  PrefService* pref_service = nullptr;
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile) {
+    pref_service = profile->GetPrefs();
+  }
+  return pref_service && IsPinDisabledByPolicy(pref_service, purpose);
 }
 
 }  // namespace
@@ -260,7 +281,13 @@ void PinStorageCryptohome::OnSystemSaltObtained(
 }
 
 void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
+                                           Purpose purpose,
                                            BoolCallback result) const {
+  if (IsCryptohomePinDisabledByPolicy(account_id, purpose)) {
+    std::move(result).Run(false);
+    return;
+  }
+
   user_data_auth::GetKeyDataRequest request;
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
   *request.mutable_account_id() =
@@ -273,7 +300,12 @@ void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
 
 void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
                                            const Key& key,
+                                           Purpose purpose,
                                            BoolCallback result) {
+  if (IsCryptohomePinDisabledByPolicy(account_id, purpose)) {
+    std::move(result).Run(false);
+    return;
+  }
   const std::string secret = PinBackend::ComputeSecret(
       key.GetSecret(), GetSalt(account_id), key.GetKeyType());
   ::user_data_auth::CheckKeyRequest request;
@@ -288,5 +320,4 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
                      std::move(result)));
 }
 
-}  // namespace quick_unlock
-}  // namespace ash
+}  // namespace ash::quick_unlock

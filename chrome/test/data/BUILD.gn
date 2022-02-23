@@ -4,7 +4,6 @@
 
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -26,7 +25,10 @@ grit("webui_test_resources") {
     "webui_test_resources.pak",
   ]
 
-  deps = [ ":web_ui_test_bindings_js" ]
+  deps = [
+    ":web_ui_test_bindings_js__generator",
+    ":web_ui_test_mojom_js_module",
+  ]
 
   output_dir = "$root_gen_dir/chrome"
 }
@@ -40,9 +42,12 @@ mojom("web_ui_test_bindings") {
 }
 
 copy("web_ui_test_mojom_js_module") {
-  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/web_ui_test.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/webui/web_ui_test.mojom-webui.js" ]
-  deps = [ ":web_ui_test_bindings_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/test/data/webui/mojo/foobar.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/test/data/webui/web_ui_test.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/webui/{{source_file_part}}" ]
+  deps = [ ":web_ui_test_bindings_js__generator" ]
 }
 
 group("closure_compile") {
@@ -51,9 +56,6 @@ group("closure_compile") {
     "cast:closure_compile",
   ]
 
-  if (enable_pdf) {
-    deps += [ "pdf:closure_compile" ]
-  }
   if (!is_android) {
     deps += [ "webui:closure_compile" ]
   }

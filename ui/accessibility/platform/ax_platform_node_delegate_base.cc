@@ -170,6 +170,10 @@ bool AXPlatformNodeDelegateBase::GetStringListAttribute(
   return GetData().GetStringListAttribute(attribute, value);
 }
 
+bool AXPlatformNodeDelegateBase::HasHtmlAttribute(const char* attribute) const {
+  return GetData().HasHtmlAttribute(attribute);
+}
+
 const base::StringPairs& AXPlatformNodeDelegateBase::GetHtmlAttributes() const {
   return GetData().html_attributes;
 }
@@ -209,7 +213,7 @@ ax::mojom::NameFrom AXPlatformNodeDelegateBase::GetNameFrom() const {
   return GetData().GetNameFrom();
 }
 
-std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
+std::u16string AXPlatformNodeDelegateBase::GetTextContentUTF16() const {
   // Unlike in web content The "kValue" attribute always takes precedence,
   // because we assume that users of this base class, such as Views controls,
   // are carefully crafted by hand, in contrast to HTML pages, where any content
@@ -228,7 +232,7 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
   if (IsLeaf() && !IsInvisibleOrIgnored())
     return GetString16Attribute(ax::mojom::StringAttribute::kName);
 
-  std::u16string inner_text;
+  std::u16string text_content;
   for (int i = 0; i < GetChildCount(); ++i) {
     // TODO(nektar): Add const to all tree traversal methods and remove
     // const_cast.
@@ -236,9 +240,9 @@ std::u16string AXPlatformNodeDelegateBase::GetInnerText() const {
         const_cast<AXPlatformNodeDelegateBase*>(this)->ChildAtIndex(i));
     if (!child || !child->GetDelegate())
       continue;
-    inner_text += child->GetDelegate()->GetInnerText();
+    text_content += child->GetDelegate()->GetTextContentUTF16();
   }
-  return inner_text;
+  return text_content;
 }
 
 std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
@@ -265,7 +269,6 @@ const AXTree::Selection AXPlatformNodeDelegateBase::GetUnignoredSelection()
 AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  NOTIMPLEMENTED();
   return AXNodePosition::CreateNullPosition();
 }
 
@@ -273,7 +276,6 @@ AXNodePosition::AXPositionInstance
 AXPlatformNodeDelegateBase::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  NOTIMPLEMENTED();
   return AXNodePosition::CreateNullPosition();
 }
 
@@ -487,22 +489,30 @@ bool AXPlatformNodeDelegateBase::ChildIteratorBase::operator!=(
   return rhs.GetIndexInParent() != index_;
 }
 
-void AXPlatformNodeDelegateBase::ChildIteratorBase::operator++() {
+AXPlatformNodeDelegateBase::ChildIteratorBase&
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator++() {
   index_++;
+  return *this;
 }
 
-void AXPlatformNodeDelegateBase::ChildIteratorBase::operator++(int) {
+AXPlatformNodeDelegateBase::ChildIteratorBase&
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator++(int) {
   index_++;
+  return *this;
 }
 
-void AXPlatformNodeDelegateBase::ChildIteratorBase::operator--() {
+AXPlatformNodeDelegateBase::ChildIteratorBase&
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator--() {
   DCHECK_GT(index_, 0);
   index_--;
+  return *this;
 }
 
-void AXPlatformNodeDelegateBase::ChildIteratorBase::operator--(int) {
+AXPlatformNodeDelegateBase::ChildIteratorBase&
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator--(int) {
   DCHECK_GT(index_, 0);
   index_--;
+  return *this;
 }
 
 gfx::NativeViewAccessible
@@ -517,16 +527,16 @@ int AXPlatformNodeDelegateBase::ChildIteratorBase::GetIndexInParent() const {
   return index_;
 }
 
-AXPlatformNodeDelegate& AXPlatformNodeDelegateBase::ChildIteratorBase::
-operator*() const {
+AXPlatformNodeDelegate&
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator*() const {
   AXPlatformNode* platform_node =
       AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
   DCHECK(platform_node && platform_node->GetDelegate());
   return *(platform_node->GetDelegate());
 }
 
-AXPlatformNodeDelegate* AXPlatformNodeDelegateBase::ChildIteratorBase::
-operator->() const {
+AXPlatformNodeDelegate*
+AXPlatformNodeDelegateBase::ChildIteratorBase::operator->() const {
   AXPlatformNode* platform_node =
       AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
   return platform_node ? platform_node->GetDelegate() : nullptr;
@@ -591,18 +601,6 @@ gfx::Rect AXPlatformNodeDelegateBase::GetInnerTextRangeBoundsRect(
     const AXClippingBehavior clipping_behavior,
     AXOffscreenResult* offscreen_result = nullptr) const {
   return gfx::Rect();
-}
-
-gfx::Rect AXPlatformNodeDelegateBase::GetClippedScreenBoundsRect(
-    AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
-                       AXClippingBehavior::kClipped, offscreen_result);
-}
-
-gfx::Rect AXPlatformNodeDelegateBase::GetUnclippedScreenBoundsRect(
-    AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
-                       AXClippingBehavior::kUnclipped, offscreen_result);
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegateBase::HitTestSync(
@@ -941,14 +939,6 @@ std::u16string AXPlatformNodeDelegateBase::GetAuthorUniqueId() const {
 const AXUniqueId& AXPlatformNodeDelegateBase::GetUniqueId() const {
   static base::NoDestructor<AXUniqueId> dummy_unique_id;
   return *dummy_unique_id;
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::FindTextBoundary(
-    ax::mojom::TextBoundary boundary,
-    int offset,
-    ax::mojom::MoveDirection direction,
-    ax::mojom::TextAffinity affinity) const {
-  return absl::nullopt;
 }
 
 const std::vector<gfx::NativeViewAccessible>

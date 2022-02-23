@@ -18,6 +18,10 @@ set -e -x
 #   iOS 13/macOS 10.15 - https://support.apple.com/en-us/HT210176
 # 730 is used here as just a short-hand for 2 years
 CERT_LIFETIME=730
+# Some tests mock a test cert as being a public cert, so use the max public
+# cert lifetime for those certs. The current limit is 398 days for certs issued
+# after 2020-09-01.
+PUBLIC_CERT_LIFETIME=397
 
 rm -rf out
 mkdir out
@@ -27,11 +31,19 @@ openssl rand -hex -out out/2048-sha256-root-serial 16
 touch out/2048-sha256-root-index.txt
 
 # Generate the key or copy over the existing one if present.
-if [ -f ../certificates/root_ca_cert.pem ]; then
-  openssl rsa -in ../certificates/root_ca_cert.pem -out out/2048-sha256-root.key
-else
-  openssl genrsa -out out/2048-sha256-root.key 2048
-fi
+function copy_or_generate_key {
+  existing_pem_filename="$1"
+  out_key_filename="$2"
+  if grep -q -- '-----BEGIN.*PRIVATE KEY-----' "$existing_pem_filename" ; then
+    openssl pkey -in "$existing_pem_filename" -out "$out_key_filename"
+  else
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -out "$out_key_filename"
+  fi
+}
+
+# Generate the key or copy over the existing one if present.
+copy_or_generate_key ../certificates/root_ca_cert.pem out/2048-sha256-root.key
 
 # Generate the root certificate
 CA_NAME="req_ca_dn" \
@@ -55,12 +67,8 @@ openssl rand -hex -out out/int/2048-sha256-int-serial 16
 touch out/int/2048-sha256-int-index.txt
 
 # Copy over an existing key if present.
-if [ -f ../certificates/intermediate_ca_cert.pem ]; then
-  openssl rsa -in ../certificates/intermediate_ca_cert.pem \
-    -out out/int/2048-sha256-int.key
-else
-  openssl genrsa -out out/int/2048-sha256-int.key 2048
-fi
+copy_or_generate_key ../certificates/intermediate_ca_cert.pem \
+  out/int/2048-sha256-int.key
 
 CA_NAME="req_intermediate_dn" \
   openssl req \
@@ -79,44 +87,59 @@ CA_NAME="req_intermediate_dn" \
     -config ca.cnf
 
 # Generate the leaf certificate requests
+
+copy_or_generate_key ../certificates/expired_cert.pem out/expired_cert.key
 openssl req \
   -new \
-  -keyout out/expired_cert.key \
+  -key out/expired_cert.key \
   -out out/expired_cert.req \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/ok_cert.pem out/ok_cert.key
 openssl req \
   -new \
-  -keyout out/ok_cert.key \
+  -key out/ok_cert.key \
   -out out/ok_cert.req \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/name_constraint_good.pem \
+  out/name_constrained.key
 openssl req \
   -new \
-  -keyout out/wildcard.key \
+  -key out/name_constrained.key \
+  -out out/name_constrained.req \
+  -config ee.cnf
+
+copy_or_generate_key ../certificates/wildcard.pem out/wildcard.key
+openssl req \
+  -new \
+  -key out/wildcard.key \
   -out out/wildcard.req \
   -reqexts req_wildcard \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/localhost_cert.pem out/localhost_cert.key
 SUBJECT_NAME="req_localhost_cn" \
 openssl req \
   -new \
-  -keyout out/localhost_cert.key \
+  -key out/localhost_cert.key \
   -out out/localhost_cert.req \
   -reqexts req_localhost_san \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/test_names.pem out/test_names.key
 openssl req \
   -new \
-  -keyout out/test_names.key \
+  -key out/test_names.key \
   -out out/test_names.req \
   -reqexts req_test_names \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/ev-multi-oid.pem out/ev-multi-oid.key
 SUBJECT_NAME="req_dn" \
 openssl req \
   -new \
-  -keyout out/ev-multi-oid.key \
+  -key out/ev-multi-oid.key \
   -out out/ev-multi-oid.req \
   -reqexts req_extensions \
   -config ee.cnf \
@@ -166,7 +189,7 @@ CA_NAME="req_ca_dn" \
     -extensions name_constraint_bad \
     -subj "/CN=Leaf certificate/" \
     -days ${CERT_LIFETIME} \
-    -in out/ok_cert.req \
+    -in out/name_constrained.req \
     -out out/name_constraint_bad.pem \
     -config ca.cnf
 
@@ -176,7 +199,7 @@ CA_NAME="req_ca_dn" \
     -extensions name_constraint_good \
     -subj "/CN=Leaf Certificate/" \
     -days ${CERT_LIFETIME} \
-    -in out/ok_cert.req \
+    -in out/name_constrained.req \
     -out out/name_constraint_good.pem \
     -config ca.cnf
 
@@ -229,9 +252,9 @@ CA_NAME="req_ca_dn" \
     > ../certificates/expired_cert.pem"
 /bin/sh -c "cat out/2048-sha256-root.key out/2048-sha256-root.pem \
     > ../certificates/root_ca_cert.pem"
-/bin/sh -c "cat out/ok_cert.key out/name_constraint_bad.pem \
+/bin/sh -c "cat out/name_constrained.key out/name_constraint_bad.pem \
     > ../certificates/name_constraint_bad.pem"
-/bin/sh -c "cat out/ok_cert.key out/name_constraint_good.pem \
+/bin/sh -c "cat out/name_constrained.key out/name_constraint_good.pem \
     > ../certificates/name_constraint_good.pem"
 /bin/sh -c "cat out/ok_cert.key out/bad_validity.pem \
     > ../certificates/bad_validity.pem"
@@ -245,7 +268,7 @@ CA_NAME="req_ca_dn" \
     > ../certificates/x509_verify_results.chain.pem"
 /bin/sh -c "cat out/test_names.key out/test_names.pem \
     > ../certificates/test_names.pem"
-/bin/sh -c "cat out/ev-multi-oid.pem \
+/bin/sh -c "cat out/ev-multi-oid.key out/ev-multi-oid.pem \
     > ../certificates/ev-multi-oid.pem"
 
 # Now generate the one-off certs
@@ -272,7 +295,7 @@ SUBJECT_NAME="req_punycode_dn" \
 
 ## Reject intranet hostnames in "publicly" trusted certs
 SUBJECT_NAME="req_intranet_dn" \
-  openssl req -x509 -days ${CERT_LIFETIME} -extensions req_intranet_san \
+  openssl req -x509 -days ${PUBLIC_CERT_LIFETIME} -extensions req_intranet_san \
     -config ../scripts/ee.cnf -newkey rsa:2048 -text \
     -out ../certificates/reject_intranet_hosts.pem
 
@@ -532,14 +555,6 @@ CA_NAME="req_ca_dn" \
     -out ../certificates/post_june_2016.pem \
     -config ca.cnf
 
-# Includes the TLS feature extension
-openssl req -x509 -newkey rsa:2048 \
-  -keyout out/tls_feature_extension.key \
-  -out ../certificates/tls_feature_extension.pem \
-  -days 365 \
-  -extensions req_extensions_with_tls_feature \
-  -nodes -config ee.cnf
-
 # Includes the canSignHttpExchangesDraft extension
 openssl req -x509 -newkey rsa:2048 \
   -keyout out/can_sign_http_exchanges_draft_extension.key \
@@ -558,11 +573,12 @@ openssl req -x509 -newkey rsa:2048 \
   -nodes -config ee.cnf
 
 # SHA-1 certificate issued by locally trusted CA
+copy_or_generate_key ../certificates/sha1_leaf.pem out/sha1_leaf.key
 openssl req \
   -config ../scripts/ee.cnf \
-  -newkey rsa:2048 \
+  -new \
   -text \
-  -keyout out/sha1_leaf.key \
+  -key out/sha1_leaf.key \
   -out out/sha1_leaf.req
 CA_NAME="req_ca_dn" \
   openssl ca \
@@ -577,12 +593,14 @@ CA_NAME="req_ca_dn" \
     > ../certificates/sha1_leaf.pem"
 
 # Certificate with only a common name (no SAN) issued by a locally trusted CA
+copy_or_generate_key ../certificates/common_name_only.pem \
+  out/common_name_only.key
 openssl req \
   -config ../scripts/ee.cnf \
   -reqexts req_no_san \
-  -newkey rsa:2048 \
+  -new \
   -text \
-  -keyout out/common_name_only.key \
+  -key out/common_name_only.key \
   -out out/common_name_only.req
 CA_NAME="req_ca_dn" \
   openssl ca \
@@ -641,8 +659,7 @@ CA_NAME="req_ca_dn" \
   openssl ca \
     -batch \
     -extensions user_cert \
-    -startdate 190701000000Z \
-    -enddate   211217000000Z \
+    -days 900 \
     -in out/900_days_after_2019_07_01.req \
     -out ../certificates/900_days_after_2019_07_01.pem \
     -config ca.cnf

@@ -12,6 +12,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
@@ -875,5 +876,9 @@ void CompositorTimingHistory::ClearHistory() {
   bmf_start_to_ready_to_commit_critical_history_.Clear();
   bmf_start_to_ready_to_commit_not_critical_history_.Clear();
   bmf_queue_to_activate_critical_history_.Clear();
+}
+
+size_t CompositorTimingHistory::CommitDurationSampleCountForTesting() const {
+  return commit_duration_history_.sample_count();
 }
 }  // namespace cc

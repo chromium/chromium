@@ -71,20 +71,21 @@ const std::string& ReplacementAppsInfo::GetReplacementAndroidApp(
 
 bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
                                      std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementWebApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementWebApp);
+  if (app_value == nullptr) {
     return true;
   }
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
   const GURL web_app_url(app_value->GetString());
   if (!web_app_url.is_valid() || !web_app_url.SchemeIs(url::kHttpsScheme)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementWebApp);
+    *error = errors::kInvalidReplacementWebApp;
     return false;
   }
 
@@ -94,14 +95,15 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
 
 bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
                                          std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementAndroidApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementAndroidApp);
+  if (app_value == nullptr) {
     return true;
   }
 
   DCHECK(app_value);
   if (!app_value->is_string()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidReplacementAndroidApp);
+    *error = errors::kInvalidReplacementAndroidApp;
     return false;
   }
 

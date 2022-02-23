@@ -5,6 +5,7 @@
 #ifndef CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 #define CC_ANIMATION_ELEMENT_ANIMATIONS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"
@@ -16,8 +17,8 @@
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 class TransformOperations;
@@ -151,11 +152,11 @@ class CC_ANIMATION_EXPORT ElementAnimations
   void OnTransformAnimated(const gfx::TransformOperations& operations,
                            int target_property_id,
                            gfx::KeyframeModel* keyframe_model) override;
-  void OnScrollOffsetAnimated(const gfx::Vector2dF& scroll_offset,
+  void OnScrollOffsetAnimated(const gfx::PointF& scroll_offset,
                               int target_property_id,
                               gfx::KeyframeModel* keyframe_model) override;
 
-  gfx::Vector2dF ScrollOffsetForAnimation() const;
+  gfx::PointF ScrollOffsetForAnimation() const;
 
   // Returns a map of target property to the ElementId for that property, for
   // KeyframeEffects associated with this ElementAnimations.
@@ -202,7 +203,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
                            const gfx::Transform& transform,
                            gfx::KeyframeModel* keyframe_model);
   void OnScrollOffsetAnimated(ElementListType list_type,
-                              const gfx::Vector2dF& scroll_offset,
+                              const gfx::PointF& scroll_offset,
                               gfx::KeyframeModel* keyframe_model);
 
   static gfx::TargetProperties GetPropertiesMaskForAnimationState();
@@ -216,7 +217,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
       gfx::KeyframeModel* keyframe_model) const;
 
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
-  AnimationHost* animation_host_;
+  raw_ptr<AnimationHost> animation_host_;
   ElementId element_id_;
 
   bool has_element_in_active_list_;

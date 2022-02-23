@@ -8,7 +8,6 @@
 // audio_decoder.cc.
 
 dictionary AudioDecoderConfig {
-  // TODO(chcunningham): reference spec registry.
   required DOMString codec;
 
   // Rate of samples per second. 44100, 48000, etc.

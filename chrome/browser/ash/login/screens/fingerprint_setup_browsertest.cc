@@ -55,7 +55,9 @@ class FingerprintSetupTest : public OobeBaseTest {
 
   void SetUpOnMainThread() override {
     // Enable fingerprint for testing.
-    quick_unlock::EnabledForTesting(true);
+    test_api_ = std::make_unique<quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+    test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kUnlock);
 
     // Override the screen exit callback with our own method.
     FingerprintSetupScreen* fingerprint_screen =
@@ -143,6 +145,7 @@ class FingerprintSetupTest : public OobeBaseTest {
   FingerprintSetupScreen::ScreenExitCallback original_callback_;
   base::RepeatingClosure screen_exit_callback_;
   LoginManagerMixin login_manager_{&mixin_host_};
+  std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollHalf) {
@@ -204,8 +207,9 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintEnrollLimit) {
 IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintDisabled) {
   PerformLogin();
 
-  // Disable fingerprint
-  quick_unlock::EnabledForTesting(false);
+  // Disable fingerprint (resetting flags).
+  auto test_api = std::make_unique<quick_unlock::TestApi>(
+      /*override_quick_unlock=*/true);
 
   WizardController::default_controller()->AdvanceToScreen(
       FingerprintSetupScreenView::kScreenId);

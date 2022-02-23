@@ -321,9 +321,9 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
 
  protected:
   // Overridden from ui::EventDispatcherDelegate (via ui::EventProcessor)
-  ui::EventDispatchDetails PreDispatchEvent(ui::EventTarget* target,
-                                            ui::Event* event) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails PreDispatchEvent(
+      ui::EventTarget* target,
+      ui::Event* event) override;
 
  private:
   static EventGeneratorDelegateMac* instance_;

@@ -3,27 +3,19 @@
 # found in the LICENSE file.
 """GPU-specific implementation of the unexpected passes' builders module."""
 
-from __future__ import print_function
-
-import os
-import sys
-
 from unexpected_passes_common import builders
+from unexpected_passes_common import constants
+from unexpected_passes_common import data_types
 
-CHROMIUM_SRC_DIR = os.path.realpath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
-TOOLS_PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
-
-sys.path.append(TOOLS_PERF_DIR)
 from chrome_telemetry_build import android_browser_types as abt
-sys.path.remove(TOOLS_PERF_DIR)
 
 
 class GpuBuilders(builders.Builders):
-  def __init__(self):
-    super(GpuBuilders, self).__init__()
+  def __init__(self, include_internal_builders):
+    super().__init__(include_internal_builders)
     self._isolate_names = None
     self._fake_ci_builders = None
+    self._non_chromium_builders = None
 
   def _BuilderRunsTestOfInterest(self, test_map, suite):
     tests = test_map.get('isolated_scripts', [])
@@ -37,8 +29,8 @@ class GpuBuilders(builders.Builders):
   def GetIsolateNames(self):
     if self._isolate_names is None:
       self._isolate_names = {
-          'fuchsia_telemetry_gpu_integration_test',
           'telemetry_gpu_integration_test',
+          'telemetry_gpu_integration_test_fuchsia',
       }
       # Android targets are split based on binary type, so add those using the
       # maintained list of suffixes.
@@ -81,15 +73,25 @@ class GpuBuilders(builders.Builders):
       self._fake_ci_builders = {}
       for try_builder, ci_builder_list in fake_try_builders.items():
         for ci in ci_builder_list:
-          self._fake_ci_builders.setdefault(ci, set()).add(try_builder)
+          self._fake_ci_builders.setdefault(
+              data_types.BuilderEntry(ci, constants.BuilderTypes.CI, False),
+              set()).add(
+                  data_types.BuilderEntry(try_builder,
+                                          constants.BuilderTypes.TRY, False))
 
     return self._fake_ci_builders
 
   def GetNonChromiumBuilders(self):
-    return {
-        'Win V8 FYI Release (NVIDIA)',
-        'Mac V8 FYI Release (Intel)',
-        'Linux V8 FYI Release - pointer compression (NVIDIA)',
-        'Linux V8 FYI Release (NVIDIA)',
-        'Android V8 FYI Release (Nexus 5X)',
-    }
+    if self._non_chromium_builders is None:
+      str_builders = {
+          'Win V8 FYI Release (NVIDIA)',
+          'Mac V8 FYI Release (Intel)',
+          'Linux V8 FYI Release - pointer compression (NVIDIA)',
+          'Linux V8 FYI Release (NVIDIA)',
+          'Android V8 FYI Release (Nexus 5X)',
+      }
+      self._non_chromium_builders = {
+          data_types.BuilderEntry(b, constants.BuilderTypes.CI, False)
+          for b in str_builders
+      }
+    return self._non_chromium_builders

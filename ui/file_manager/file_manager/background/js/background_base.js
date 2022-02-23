@@ -70,8 +70,8 @@ export class BackgroundBaseImpl {
     await this.initializationPromise_;
 
     // Volume list needs to be initialized (more precisely,
-    // chrome.fileSystem.requestFileSystem needs to be called to grant
-    // access) before resolveIsolatedEntries().
+    // chrome.fileManagerPrivate.getVolumeRoot needs to be called to grant
+    // access).
     await volumeManagerFactory.getInstance();
 
     const isolatedEntries = launchData.items.map(item => item.entry);

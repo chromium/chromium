@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import android.os.Build;
 import android.os.StrictMode;
 
 import java.io.Closeable;
@@ -83,6 +84,21 @@ public final class StrictModeContext implements Closeable {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
         StrictMode.setThreadPolicy(
                 new StrictMode.ThreadPolicy.Builder(oldPolicy).permitCustomSlowCalls().build());
+        return new StrictModeContext(oldPolicy);
+    }
+
+    /**
+     * Convenience method for disabling StrictMode for unbuffered input/output operations with
+     * try-with-resources.
+     * For API level 25- this method will do nothing;
+     * because StrictMode.ThreadPolicy.Builder#permitUnbufferedIo is added in API level 26.
+     */
+    public static StrictModeContext allowUnbufferedIo() {
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.getThreadPolicy();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            StrictMode.setThreadPolicy(
+                    new StrictMode.ThreadPolicy.Builder(oldPolicy).permitUnbufferedIo().build());
+        }
         return new StrictModeContext(oldPolicy);
     }
 

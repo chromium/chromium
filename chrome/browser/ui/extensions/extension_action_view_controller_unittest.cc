@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -37,6 +39,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
@@ -44,6 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::ManifestLocation;
+using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 
 class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
  public:
@@ -106,7 +110,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
       const std::string& name,
-      extensions::ExtensionBuilder::ActionType action_type) {
+      extensions::ActionInfo::Type action_type) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetAction(action_type)
@@ -127,10 +131,10 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
  private:
   // The ExtensionService associated with the primary profile.
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 
   // ToolbarActionsModel associated with the main profile.
-  ToolbarActionsModel* toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
 
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
 
@@ -143,8 +147,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionWantsToRunAppearance) {
   const std::string id =
-      CreateAndAddExtension(
-          "extension", extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
+      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_PAGE)
           ->id();
 
   AddTab(browser(), GURL("chrome://newtab"));
@@ -168,7 +171,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser action")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -216,7 +219,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
 TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("page action")
-          .SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_PAGE)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -298,8 +301,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 
   // After triggering the action it should have access, which is reflected in
   // the tooltip.
-  action_controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
+  action_controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
   image_source = action_controller->GetIconImageSourceForTesting(web_contents,
                                                                  view_size());
   EXPECT_FALSE(image_source->grayscale());
@@ -312,16 +315,16 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionContextMenuVisibility) {
   std::string id =
-      CreateAndAddExtension(
-          "extension", extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_BROWSER)
           ->id();
 
   // Check that the context menu has the proper string for the action's pinned
   // state.
   auto check_visibility_string = [](ToolbarActionViewController* action,
                                     int expected_visibility_string) {
-    ui::SimpleMenuModel* context_menu =
-        static_cast<ui::SimpleMenuModel*>(action->GetContextMenu());
+    ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
+        action->GetContextMenu(extensions::ExtensionContextMenuModel::
+                                   ContextMenuSource::kToolbarAction));
     int visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
     ASSERT_GE(visibility_index, 0);
@@ -345,7 +348,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   toolbar_model()->SetActionVisibility(id, false);
   EXPECT_FALSE(container()->IsActionVisibleOnToolbar(action));
   base::RunLoop run_loop;
-  container()->PopOutAction(action, false, run_loop.QuitClosure());
+  container()->PopOutAction(action, run_loop.QuitClosure());
   EXPECT_TRUE(container()->IsActionVisibleOnToolbar(action));
   // The string should still just be "pin".
   check_visibility_string(action, IDS_EXTENSIONS_PIN_TO_TOOLBAR);
@@ -528,7 +531,7 @@ scoped_refptr<const extensions::Extension>
 ExtensionActionViewControllerGrayscaleTest::CreateExtension(
     PermissionType permission_type) {
   extensions::ExtensionBuilder builder("extension");
-  builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER)
       .SetLocation(ManifestLocation::kInternal);
   constexpr char kHostGoogle[] = "https://www.google.com/*";
   switch (permission_type) {
@@ -576,7 +579,7 @@ TEST_F(ExtensionActionViewControllerGrayscaleTest,
 TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension name")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -645,8 +648,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kPending,
+              controller->GetSiteInteraction(web_contents));
     EXPECT_TRUE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
@@ -660,8 +663,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   // and verify the expected appearance.
   NavigateAndCommitActiveTab(kGrantedHost);
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kActive,
+              controller->GetSiteInteraction(web_contents));
     // This is a little unintuitive, but if an extension is using a page action
     // and has not specified any declarative rules or manually changed it's
     // enabled state, it can have access to a page but be in the disabled state.
@@ -678,8 +681,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   // Navigate to a restricted URL and verify the expected appearance.
   NavigateAndCommitActiveTab(kRestrictedHost);
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kNone,
+              controller->GetSiteInteraction(web_contents));
     EXPECT_FALSE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
@@ -692,11 +695,10 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
 
 // Tests that an extension with the activeTab permission is shown to be pending
 // user approval for normal web pages, but not for restricted URLs.
-TEST_F(ExtensionActionViewControllerUnitTest,
-       GetPageInteractionStatusWithActiveTab) {
+TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .AddPermission("activeTab")
           .Build();
   extension_service()->AddExtension(extension.get());
@@ -710,38 +712,38 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kPending,
+            controller->GetSiteInteraction(web_contents));
 
   // Click on the action, which grants activeTab and allows the extension to
   // access the page. This changes the page interaction status to "active".
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-            controller->GetPageInteractionStatus(web_contents));
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
+  EXPECT_EQ(SiteInteraction::kActive,
+            controller->GetSiteInteraction(web_contents));
 
   // Now navigate to a restricted URL. Clicking the extension won't give access
   // here, so the page interaction status should be "none".
   NavigateAndCommitActiveTab(GURL("chrome://extensions"));
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
 }
 
 // Tests that file URLs only show as pending user approval for activeTab
 // extensions if the extension has file URL access.
 TEST_F(ExtensionActionViewControllerUnitTest,
-       GetPageInteractionStatusActiveTabWithFileURL) {
+       GetSiteInteractionActiveTabWithFileURL) {
   // We need to use a TestExtensionDir here to allow for the reload when giving
   // an extension file URL access.
   extensions::TestExtensionDir test_dir;
   test_dir.WriteManifest(R"(
     {
       "name": "Active Tab Page Interaction with File URLs",
-      "description": "Testing PageInteractionStatus and ActiveTab on file URLs",
+      "description": "Testing SiteInteraction and ActiveTab on file URLs",
       "version": "0.1",
       "manifest_version": 2,
       "browser_action": {},
@@ -761,12 +763,12 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
 
   // After being granted access to file URLs the page interaction status should
   // show as "pending". A click will grant activeTab, giving access to the page
@@ -779,12 +781,12 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(extension);
   // Refresh the controller as the extension has been reloaded.
   controller = GetViewControllerForId(extension->id());
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-            controller->GetPageInteractionStatus(web_contents));
-  controller->ExecuteAction(
-      true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kPending,
+            controller->GetSiteInteraction(web_contents));
+  controller->ExecuteUserAction(
+      ToolbarActionViewController::InvocationSource::kToolbarButton);
+  EXPECT_EQ(SiteInteraction::kActive,
+            controller->GetSiteInteraction(web_contents));
 }
 
 // ExtensionActionViewController::GetIcon() can potentially be called with a
@@ -794,7 +796,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension name")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .AddPermission("https://example.com/")
           .Build();
 

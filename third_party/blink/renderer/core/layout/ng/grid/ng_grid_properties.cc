@@ -4,25 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 
-#include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
-
 namespace blink {
 
-NGGridProperties::NGGridProperties()
-    : has_auto_max_column(false),
-      has_auto_max_row(false),
-      has_auto_min_column(false),
-      has_auto_min_row(false),
-      has_baseline_column(false),
-      has_baseline_row(false),
-      has_flexible_column(false),
-      has_flexible_row(false),
-      has_intrinsic_column(false),
-      has_intrinsic_row(false),
-      has_orthogonal_item(false) {}
-
-bool NGGridProperties::HasBaseline(GridTrackSizingDirection direction) const {
-  return (direction == kForColumns)
+bool NGGridProperties::HasBaseline(
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
              ? (has_baseline_column ||
                 (has_orthogonal_item && has_baseline_row))
              : (has_baseline_row ||
@@ -30,20 +16,39 @@ bool NGGridProperties::HasBaseline(GridTrackSizingDirection direction) const {
 }
 
 bool NGGridProperties::HasFlexibleTrack(
-    GridTrackSizingDirection direction) const {
-  return (direction == kForColumns) ? has_flexible_column : has_flexible_row;
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? column_properties.HasProperty(
+                   TrackSpanProperties::kHasFlexibleTrack)
+             : row_properties.HasProperty(
+                   TrackSpanProperties::kHasFlexibleTrack);
 }
 
 bool NGGridProperties::HasIntrinsicTrack(
-    GridTrackSizingDirection direction) const {
-  return (direction == kForColumns) ? has_intrinsic_column : has_intrinsic_row;
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? column_properties.HasProperty(
+                   TrackSpanProperties::kHasIntrinsicTrack)
+             : row_properties.HasProperty(
+                   TrackSpanProperties::kHasIntrinsicTrack);
 }
 
-bool NGGridProperties::HasAutoMaxTrack(
-    GridTrackSizingDirection direction) const {
-  return (direction == kForColumns)
-             ? (has_auto_min_column || has_auto_max_column)
-             : (has_auto_min_row || has_auto_max_row);
+bool NGGridProperties::IsDependentOnAvailableSize(
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? column_properties.HasProperty(
+                   TrackSpanProperties::kIsDependentOnAvailableSize)
+             : row_properties.HasProperty(
+                   TrackSpanProperties::kIsDependentOnAvailableSize);
+}
+
+bool NGGridProperties::IsSpanningOnlyDefiniteTracks(
+    const GridTrackSizingDirection track_direction) const {
+  return (track_direction == kForColumns)
+             ? !column_properties.HasProperty(
+                   TrackSpanProperties::kHasNonDefiniteTrack)
+             : !row_properties.HasProperty(
+                   TrackSpanProperties::kHasNonDefiniteTrack);
 }
 
 }  // namespace blink

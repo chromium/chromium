@@ -45,21 +45,24 @@ bool MetricsServiceAccessor::IsMetricsReportingEnabled(
 bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     MetricsService* metrics_service,
     base::StringPiece trial_name,
-    base::StringPiece group_name) {
+    base::StringPiece group_name,
+    variations::SyntheticTrialAnnotationMode annotation_mode) {
   return RegisterSyntheticFieldTrialWithNameAndGroupHash(
       metrics_service, variations::HashName(trial_name),
-      variations::HashName(group_name));
+      variations::HashName(group_name), annotation_mode);
 }
 
 // static
 bool MetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameAndGroupHash(
     MetricsService* metrics_service,
     uint32_t trial_name_hash,
-    uint32_t group_name_hash) {
+    uint32_t group_name_hash,
+    variations::SyntheticTrialAnnotationMode annotation_mode) {
   if (!metrics_service)
     return false;
 
-  variations::SyntheticTrialGroup trial_group(trial_name_hash, group_name_hash);
+  variations::SyntheticTrialGroup trial_group(trial_name_hash, group_name_hash,
+                                              annotation_mode);
   metrics_service->synthetic_trial_registry()->RegisterSyntheticFieldTrial(
       trial_group);
   return true;
@@ -69,6 +72,11 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrialWithNameAndGroupHash(
 void MetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
     bool value) {
   g_force_official_enabled_test = value;
+}
+
+// static
+bool MetricsServiceAccessor::IsForceMetricsReportingEnabledPrefLookup() {
+  return g_force_official_enabled_test;
 }
 
 }  // namespace metrics

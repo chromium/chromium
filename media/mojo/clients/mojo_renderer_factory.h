@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/buildflags.h"
@@ -47,7 +48,7 @@ class MojoRendererFactory final : public RendererFactory {
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) final;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<MojoRenderer> CreateMediaFoundationRenderer(
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
@@ -62,7 +63,7 @@ class MojoRendererFactory final : public RendererFactory {
       VideoRendererSink* video_renderer_sink);
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MojoRenderer> CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<mojom::FlingingRendererClientExtension>
@@ -82,7 +83,7 @@ class MojoRendererFactory final : public RendererFactory {
  private:
   // InterfaceFactory or InterfaceProvider used to create or connect to remote
   // renderer.
-  media::mojom::InterfaceFactory* interface_factory_ = nullptr;
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_ = nullptr;
 };
 
 }  // namespace media

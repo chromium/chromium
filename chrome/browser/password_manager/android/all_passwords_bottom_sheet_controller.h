@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/biometric_authenticator.h"
@@ -85,10 +87,10 @@ class AllPasswordsBottomSheetController
   // This controller doesn't take |web_contents_| ownership.
   // This controller is attached to this |web_contents_| lifetime. It will be
   // destroyed if |web_contents_| is destroyed.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // The controller doesn't take |store_| ownership.
-  password_manager::PasswordStoreInterface* store_;
+  raw_ptr<password_manager::PasswordStoreInterface> store_;
 
   // A callback method will be consumed when the user dismisses the BottomSheet.
   base::OnceCallback<void()> dismissal_callback_;
@@ -106,7 +108,10 @@ class AllPasswordsBottomSheetController
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell `PasswordReuseDetectionManager` that a password has been
   // reused.
-  password_manager::PasswordManagerClient* client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_

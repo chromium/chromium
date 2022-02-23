@@ -7,7 +7,9 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -30,6 +32,10 @@ class PasswordStoreSites
   bool IsSiteInPasswordStore(const GURL& url) const;
 
  private:
+  // Reads all logins from the password store and starts observing the store for
+  //  future changes.
+  void DoDeferredInitialization();
+
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
       password_manager::PasswordStoreInterface* store,
@@ -44,13 +50,15 @@ class PasswordStoreSites
       override;
 
   // The password store |this| is observing site entries from.
-  password_manager::PasswordStoreInterface* password_store_;
+  raw_ptr<password_manager::PasswordStoreInterface> password_store_;
 
   // Set of sites saved in the password store. Will be absl::nullopt until the
   // sites are retrieved the fist time.
   absl::optional<std::set<std::string>> password_sites_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PasswordStoreSites> weak_ptr_factory_{this};
 };
 
 }  // namespace login_detection

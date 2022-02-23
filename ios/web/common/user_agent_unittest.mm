@@ -37,9 +37,6 @@ using UserAgentTest = PlatformTest;
 
 // Tests conversions between UserAgentType values and their descriptions
 TEST_F(UserAgentTest, UserAgentTypeDescription) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kUseDefaultUserAgentInWebClient);
-
   const std::string kMobileDescription("MOBILE");
   const std::string kDesktopDescription("DESKTOP");
   const std::string kAutomaticDescription("AUTOMATIC");

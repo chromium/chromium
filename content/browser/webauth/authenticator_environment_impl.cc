@@ -9,12 +9,14 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_discovery.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "device/fido/fido_discovery_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/webauthn_api.h"
 #endif
 
@@ -101,9 +103,9 @@ AuthenticatorEnvironmentImpl::MaybeGetDiscoveryFactoryTestOverride() {
   return replaced_discovery_factory_.get();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 device::WinWebAuthnApi* AuthenticatorEnvironmentImpl::win_webauthn_api() const {
-  return win_webauthn_api_for_testing_ ? win_webauthn_api_for_testing_
+  return win_webauthn_api_for_testing_ ? win_webauthn_api_for_testing_.get()
                                        : device::WinWebAuthnApi::GetDefault();
 }
 

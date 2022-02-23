@@ -5,6 +5,7 @@
 #include "components/exo/wayland/weston_test.h"
 
 #include <linux/input.h>
+#include <stdint.h>
 #include <wayland-server-core.h>
 #include <weston-test-server-protocol.h>
 
@@ -12,7 +13,9 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "components/exo/surface.h"
+#include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/base/test/ui_controls.h"
@@ -23,7 +26,47 @@
 
 namespace exo {
 namespace wayland {
+
+// Tracks button and mouse states for testing.
+struct WestonTest::WestonTestState {
+  explicit WestonTestState(Server* s) : server(s) {}
+
+  WestonTestState(const WestonTestState&) = delete;
+  WestonTestState& operator=(const WestonTestState&) = delete;
+
+  Server* server;
+
+  bool left_button_pressed = false;
+  bool middle_button_pressed = false;
+  bool right_button_pressed = false;
+
+  bool control_pressed = false;
+  bool alt_pressed = false;
+  bool shift_pressed = false;
+  bool command_pressed = false;
+};
+
+class ScopedEventDispatchDisabler {
+ public:
+  ScopedEventDispatchDisabler(Server* server) : server_(server) {
+    server_->wayland_watcher_->StopForTesting();
+  }
+  ScopedEventDispatchDisabler(const ScopedEventDispatchDisabler&) = delete;
+  ScopedEventDispatchDisabler& operator=(const ScopedEventDispatchDisabler&) =
+      delete;
+  ~ScopedEventDispatchDisabler() {
+    server_->wayland_watcher_->StartForTesting();
+  }
+
+ private:
+  Server* server_;
+};
+
 namespace {
+
+using WestonTestState = WestonTest::WestonTestState;
+
+constexpr uint32_t kWestonTestVersion = 1;
 
 static void weston_test_move_surface(struct wl_client* client,
                                      struct wl_resource* resource,
@@ -41,6 +84,8 @@ static void weston_test_move_pointer(struct wl_client* client,
                                      uint32_t tv_nsec,
                                      int32_t x,
                                      int32_t y) {
+  auto* weston_test = GetUserDataAs<WestonTestState>(resource);
+
   // Convert cursor point from window space to root space
   gfx::Point point_in_root(x, y);
   if (surface_resource) {
@@ -51,7 +96,13 @@ static void weston_test_move_pointer(struct wl_client* client,
   base::RunLoop run_loop;
   ui_controls::SendMouseMoveNotifyWhenDone(point_in_root.x(), point_in_root.y(),
                                            run_loop.QuitClosure());
-  run_loop.Run();
+  {
+    // Do not process incoming wayland events which may destroy resources.
+    ScopedEventDispatchDisabler disable(weston_test->server);
+    run_loop.Run();
+  }
+
+  // TODO(https://crbug.com/1284726): This should not be necessary.
   weston_test_send_pointer_position(resource, x, y);
 }
 
@@ -67,8 +118,8 @@ static void weston_test_send_button(struct wl_client* client,
   DCHECK(button != BTN_BACK);
 
   // Track mouse click state
-  auto* weston_test = GetUserDataAs<WestonTestState>(resource);
   ui_controls::MouseButton mouse_button = ui_controls::LEFT;
+  auto* weston_test = GetUserDataAs<WestonTestState>(resource);
   switch (button) {
     case BTN_LEFT:
       mouse_button = ui_controls::LEFT;
@@ -92,19 +143,27 @@ static void weston_test_send_button(struct wl_client* client,
   base::RunLoop run_loop;
   ui_controls::SendMouseEventsNotifyWhenDone(mouse_button, mouse_state,
                                              run_loop.QuitClosure());
-  run_loop.Run();
+  {
+    // Do not process incoming wayland events which may destroy resources.
+    ScopedEventDispatchDisabler disable(weston_test->server);
+    run_loop.Run();
+  }
+  // TODO(https://crbug.com/1284726): This should not be necessary.
   weston_test_send_pointer_button(resource, button, state);
 }
 
 static void weston_test_reset_pointer(struct wl_client* client,
                                       struct wl_resource* resource) {
   auto* weston_test = GetUserDataAs<WestonTestState>(resource);
+  ScopedEventDispatchDisabler disable(weston_test->server);
+
   if (weston_test->left_button_pressed) {
     weston_test->left_button_pressed = false;
     base::RunLoop run_loop;
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::LEFT, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
+    // TODO(https://crbug.com/1284726): This should not be necessary.
     weston_test_send_pointer_button(resource, BTN_LEFT,
                                     WL_POINTER_BUTTON_STATE_RELEASED);
   }
@@ -114,6 +173,7 @@ static void weston_test_reset_pointer(struct wl_client* client,
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::MIDDLE, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
+    // TODO(https://crbug.com/1284726): This should not be necessary.
     weston_test_send_pointer_button(resource, BTN_MIDDLE,
                                     WL_POINTER_BUTTON_STATE_RELEASED);
   }
@@ -123,6 +183,7 @@ static void weston_test_reset_pointer(struct wl_client* client,
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::RIGHT, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
+    // TODO(https://crbug.com/1284726): This should not be necessary.
     weston_test_send_pointer_button(resource, BTN_RIGHT,
                                     WL_POINTER_BUTTON_STATE_RELEASED);
   }
@@ -153,8 +214,9 @@ static void weston_test_send_key(struct wl_client* client,
                                  uint32_t tv_nsec,
                                  uint32_t key,
                                  uint32_t state) {
-  ui::DomCode dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(key);
   auto* weston_test = GetUserDataAs<WestonTestState>(resource);
+
+  ui::DomCode dom_code = ui::KeycodeConverter::EvdevCodeToDomCode(key);
 
   // Get keyboard modifiers
   switch (dom_code) {
@@ -197,7 +259,12 @@ static void weston_test_send_key(struct wl_client* client,
       weston_test->shift_pressed, weston_test->alt_pressed,
       weston_test->command_pressed,
       run_loop.QuitClosure());
-  run_loop.Run();
+  {
+    // Do not process incoming wayland events which may destroy resources.
+    ScopedEventDispatchDisabler disable(weston_test->server);
+    run_loop.Run();
+  }
+
   weston_test_send_keyboard_key(resource, key, state);
 }
 
@@ -240,8 +307,6 @@ const struct weston_test_interface weston_test_implementation = {
     weston_test_device_add,   weston_test_capture_screenshot,
     weston_test_send_touch};
 
-}  // namespace
-
 void bind_weston_test(wl_client* client,
                       void* data,
                       uint32_t version,
@@ -252,6 +317,16 @@ void bind_weston_test(wl_client* client,
   wl_resource_set_implementation(resource, &weston_test_implementation, data,
                                  nullptr);
 }
+
+}  // namespace
+
+WestonTest::WestonTest(Server* server)
+    : data_(std::make_unique<WestonTestState>(server)) {
+  wl_global_create(server->GetWaylandDisplay(), &weston_test_interface,
+                   kWestonTestVersion, data_.get(), bind_weston_test);
+}
+
+WestonTest::~WestonTest() = default;
 
 }  // namespace wayland
 }  // namespace exo

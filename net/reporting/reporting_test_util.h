@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/unguessable_token.h"
@@ -179,8 +179,8 @@ class TestReportingContext : public ReportingContext {
   // Owned by the DeliveryAgent and GarbageCollector, respectively, but
   // referenced here to preserve type:
 
-  base::MockOneShotTimer* delivery_timer_;
-  base::MockOneShotTimer* garbage_collection_timer_;
+  raw_ptr<base::MockOneShotTimer> delivery_timer_;
+  raw_ptr<base::MockOneShotTimer> garbage_collection_timer_;
 };
 
 // A unit test base class that provides a TestReportingContext and shorthand
@@ -290,7 +290,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
-  ReportingCache::PersistentReportingStore* store_;
+  raw_ptr<ReportingCache::PersistentReportingStore> store_;
 };
 
 class TestReportingService : public ReportingService {
@@ -368,6 +368,8 @@ class TestReportingService : public ReportingService {
   ReportingContext* GetContextForTesting() const override;
 
   std::vector<const ReportingReport*> GetReports() const override;
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override;
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override;
   void RemoveReportingCacheObserver(ReportingCacheObserver* observer) override;
 

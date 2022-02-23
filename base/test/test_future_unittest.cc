@@ -4,9 +4,10 @@
 
 #include "base/test/test_future.h"
 
+#include <tuple>
+
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
@@ -77,7 +78,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
                   base::Milliseconds(1));
 
-  future.Wait();
+  std::ignore = future.Wait();
 
   EXPECT_EQ(expected_value, future.Get());
 }
@@ -223,7 +224,7 @@ TEST_F(TestFutureTest, ShouldAllowAccessingTupleValueThroughGetMethod) {
   RunLater(base::BindOnce(future.GetCallback(), expected_int_value,
                           expected_string_value));
 
-  ignore_result(future.Get());
+  std::ignore = future.Get();
 
   EXPECT_EQ(expected_int_value, future.Get<0>());
   EXPECT_EQ(expected_string_value, future.Get<1>());

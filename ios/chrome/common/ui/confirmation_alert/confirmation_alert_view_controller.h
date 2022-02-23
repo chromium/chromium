@@ -34,6 +34,10 @@ extern NSString* const
 // Text style for the title. If nil, will default to UIFontTextStyleTitle1.
 @property(nonatomic, copy) NSString* titleTextStyle;
 
+// (Optional) The additional headline below the main title. Must be set before
+// the view is loaded.
+@property(nonatomic, copy) NSString* secondaryTitleString;
+
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleString;
 

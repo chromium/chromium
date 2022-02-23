@@ -19,7 +19,7 @@ from pylib.local.device import local_device_instrumentation_test_run
 class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
 
   def setUp(self):
-    super(LocalDeviceInstrumentationTestRunTest, self).setUp()
+    super().setUp()
     self._env = mock_environment.MockEnvironment()
     self._ti = mock_test_instance.MockTestInstance()
     self._obj = (

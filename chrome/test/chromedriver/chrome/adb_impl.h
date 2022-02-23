@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/chrome/adb.h"
 

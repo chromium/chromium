@@ -36,8 +36,10 @@
       <output filename="components_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="components_strings_af.pak" type="data_package" lang="af" />
       <output filename="components_strings_is.pak" type="data_package" lang="is" />
+      <output filename="components_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="components_strings_am.pak" type="data_package" lang="am" />
     <output filename="components_strings_ar.pak" type="data_package" lang="ar" />
@@ -191,8 +193,10 @@
       <output filename="java/res/values-zh-rHK/components_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_strings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/components_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/components_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/components_strings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
-
 
     <!-- Pseudolocales -->
     <output filename="components_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
@@ -297,6 +301,7 @@
       <part file="crash_strings.grdp" />
       <part file="dialog_strings.grdp" />
       <part file="dom_distiller_strings.grdp" />
+      <part file="enterprise_strings.grdp" />
       <part file="error_page_strings.grdp" />
       <part file="find_in_page_strings.grdp" />
       <part file="flags_strings.grdp" />
@@ -320,8 +325,8 @@
       <part file="print_media_strings.grdp" />
       <part file="printing_component_strings.grdp" />
       <part file="privacy_sandbox_strings.grdp" />
+      <part file="protocol_handler_strings.grdp" />
       <part file="reset_password_strings.grdp" />
-      <part file="safe_browsing_strings.grdp" />
       <part file="security_interstitials_strings.grdp" />
       <part file="send_tab_to_self_strings.grdp" />
       <part file="site_settings_strings.grdp" />
@@ -336,7 +341,7 @@
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
 
-      <if expr="not is_android and not is_ios">
+      <if expr="not is_ios">
         <part file="management_strings.grdp" />
       </if>
       <if expr="not is_android and not is_ios">

@@ -196,7 +196,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
     // TODO(michaeln): if the reason for eviction is low physical disk space,
     // make 'unlimited' storage keys subject to eviction too.
     quota_eviction_handler_->GetEvictionBucket(
-        blink::mojom::StorageType::kTemporary, settings.pool_size,
+        blink::mojom::StorageType::kTemporary,
         base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionBucket,
                        weak_factory_.GetWeakPtr()));
     return;

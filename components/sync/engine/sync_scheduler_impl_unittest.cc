@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
@@ -20,11 +21,11 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/extensions_activity.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/test/engine/fake_model_type_processor.h"
 #include "components/sync/test/engine/mock_connection_manager.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
@@ -390,7 +391,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return scheduler_->retry_timer_.GetCurrentDelay();
   }
 
-  static std::unique_ptr<InvalidationInterface> BuildInvalidation(
+  static std::unique_ptr<SyncInvalidation> BuildInvalidation(
       int64_t version,
       const std::string& payload) {
     return MockInvalidation::Build(version, payload);
@@ -457,8 +458,8 @@ class SyncSchedulerImplTest : public testing::Test {
   std::unique_ptr<SyncCycleContext> context_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   MockNudgeHandler mock_nudge_handler_;
-  MockSyncer* syncer_ = nullptr;
-  MockDelayProvider* delay_ = nullptr;
+  raw_ptr<MockSyncer> syncer_ = nullptr;
+  raw_ptr<MockDelayProvider> delay_ = nullptr;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
   base::WeakPtrFactory<SyncSchedulerImplTest> weak_ptr_factory_{this};
 };
@@ -2029,7 +2030,7 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
 
 TEST_F(SyncSchedulerImplTest, TestResetPollIntervalOnStartFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kSyncResetPollIntervalOnStart);
+  feature_list.InitAndEnableFeature(kSyncResetPollIntervalOnStart);
   base::Time now = base::Time::Now();
   EXPECT_THAT(ComputeLastPollOnStart(
                   /*last_poll=*/now - base::Days(1),

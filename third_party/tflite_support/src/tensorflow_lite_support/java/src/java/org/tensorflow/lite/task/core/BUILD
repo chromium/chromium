@@ -1,5 +1,4 @@
 load("@build_bazel_rules_android//android:rules.bzl", "android_library")
-load("@org_tensorflow//tensorflow/java:build_defs.bzl", "JAVACOPTS")
 
 package(
     default_visibility = ["//tensorflow_lite_support:users"],
@@ -9,11 +8,13 @@ package(
 android_library(
     name = "base-task-api",
     srcs = glob(["**/*.java"]),
-    javacopts = JAVACOPTS,
+    javacopts = ["-source 7 -target 7"],
     visibility = ["//visibility:public"],
+    # LINT.IfChange(dep)
     deps = [
         "@com_google_auto_value",
     ],
+    # LINT.ThenChange(<INTERNAL>/release/build_task_base_pom.sh:dep)
 )
 
 alias(

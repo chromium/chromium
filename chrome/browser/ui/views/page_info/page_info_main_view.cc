@@ -14,14 +14,16 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
-#include "components/page_info/features.h"
+#include "components/page_info/core/features.h"
 #include "components/permissions/permission_util.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -48,10 +50,20 @@ constexpr float kMaxPermissionRowCount = 10.5;
 
 }  // namespace
 
+PageInfoMainView::ContainerView::ContainerView() {
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+}
+
+void PageInfoMainView::ContainerView::Update() {
+  PreferredSizeChanged();
+}
+
 PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
+    PageInfoHistoryController* history_controller,
     base::OnceClosure initialized_callback)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
@@ -71,7 +83,7 @@ PageInfoMainView::PageInfoMainView(
       ->SetProperty(views::kMarginsKey,
                     gfx::Insets(0, 0, hover_list_spacing, 0));
 
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
 #endif
 
@@ -99,8 +111,16 @@ PageInfoMainView::PageInfoMainView(
         std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   }
 
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
+    history_controller->InitRow(AddChildView(CreateContainerView()));
+  }
+
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
     about_this_site_section_ = AddChildView(CreateContainerView());
+  }
+
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
+    ads_personalization_section_ = AddChildView(CreateContainerView());
   }
 
   presenter_->InitializeUiState(this, std::move(initialized_callback));
@@ -132,7 +152,7 @@ void PageInfoMainView::EnsureCookieInfo() {
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
             tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
             .release();
-    site_settings_view_->AddChildView(cookie_button_);
+    site_settings_view_->AddChildView(cookie_button_.get());
   }
 }
 
@@ -344,7 +364,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 }
 
 void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // For now, this has only VR settings.
   if (!info.is_vr_presentation_in_headset)
     return;
@@ -410,6 +430,20 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 #endif
 }
 
+void PageInfoMainView::SetAdPersonalizationInfo(
+    const AdPersonalizationInfo& info) {
+  if (!ads_personalization_section_)
+    return;
+  ads_personalization_section_->RemoveAllChildViews();
+
+  if (!info.has_joined_user_to_interest_group)
+    return;
+
+  ads_personalization_section_->AddChildView(CreateAdPersonalizationSection());
+
+  PreferredSizeChanged();
+}
+
 void PageInfoMainView::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission) {
   presenter_->OnSitePermissionChanged(permission.type, permission.setting,
@@ -427,10 +461,7 @@ void PageInfoMainView::OnChosenObjectDeleted(
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateContainerView() {
-  auto container_view = std::make_unique<views::View>();
-  container_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  return container_view;
+  return std::make_unique<ContainerView>();
 }
 
 void PageInfoMainView::HandleMoreInfoRequest(views::View* source) {
@@ -466,6 +497,10 @@ gfx::Size PageInfoMainView::CalculatePreferredSize() const {
     width = std::max(width, permissions_view_->GetPreferredSize().width());
   }
   return gfx::Size(width, views::View::GetHeightForWidth(width));
+}
+
+void PageInfoMainView::ChildPreferredSizeChanged(views::View* child) {
+  PreferredSizeChanged();
 }
 
 std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
@@ -522,4 +557,30 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_button->SetSubtitleMultiline(false);
 
   return about_this_site_section;
+}
+
+std::unique_ptr<views::View>
+PageInfoMainView::CreateAdPersonalizationSection() {
+  auto ads_personalization_section = std::make_unique<views::View>();
+  ads_personalization_section
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  ads_personalization_section->AddChildView(
+      PageInfoViewFactory::CreateSeparator());
+  // TODO(olesiamarukhno): Use correct strings (tooltip).
+  ads_personalization_section->AddChildView(
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                // TODO(olesiamarukhno): Open a subpage.
+                view->navigation_handler_->OpenAdPersonalizationPage();
+              },
+              this),
+          PageInfoViewFactory::GetAdPersonalizationIcon(),
+          IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
+          /*tooltip_text=*/std::u16string(), std::u16string(),
+          PageInfoViewFactory::GetOpenSubpageIcon()));
+
+  return ads_personalization_section;
 }

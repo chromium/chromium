@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -34,12 +35,12 @@ perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
   return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 perfetto::ThreadTrack ConvertThreadId(const int& thread) {
   return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace legacy
 

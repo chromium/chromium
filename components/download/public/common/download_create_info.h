@@ -70,8 +70,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   GURL referrer_url;
   net::ReferrerPolicy referrer_policy;
 
-  // Site URL for the site instance that initiated the download.
-  GURL site_url;
+  // The serialized embedder download data for the site instance that initiated
+  // the download.
+  std::string serialized_embedder_download_data;
 
   // The URL of the tab that started us.
   GURL tab_url;
@@ -100,6 +101,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   // Whether the download should be transient. A transient download is
   // short-lived and is not shown in the UI.
   bool transient;
+
+  // Whether this download requires safety checks.
+  bool require_safety_checks;
 
   absl::optional<ui::PageTransition> transition_type;
 

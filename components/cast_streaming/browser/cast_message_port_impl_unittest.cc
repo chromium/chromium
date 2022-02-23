@@ -247,7 +247,7 @@ TEST_F(CastMessagePortImplTest, MediaStatus) {
 
   const base::Value* status_value = return_value->FindListKey(kKeyStatus);
   ASSERT_TRUE(status_value);
-  EXPECT_EQ(status_value->GetList().size(), 1u);
+  EXPECT_EQ(status_value->GetListDeprecated().size(), 1u);
 }
 
 // Checks sending invalid media messages results in no response.

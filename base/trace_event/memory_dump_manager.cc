@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/allocator/buildflags.h"
@@ -17,7 +18,6 @@
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -35,14 +35,14 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/java_heap_dump_provider_android.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE)
 #include "base/trace_event/cfi_backtrace_android.h"
 #endif
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 namespace trace_event {
@@ -133,7 +133,7 @@ void MemoryDumpManager::Initialize(
   RegisterDumpProvider(MallocDumpProvider::GetInstance(), "Malloc", nullptr);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RegisterDumpProvider(JavaHeapDumpProvider::GetInstance(), "JavaHeap",
                        nullptr);
 #endif
@@ -345,7 +345,7 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
     MemoryDumpProviderInfo* mdpinfo =
         pmd_async_state->pending_dump_providers.back().get();
 
-    // If we are in background mode, we should invoke only the whitelisted
+    // If we are in background mode, we should invoke only the allowed
     // providers. Ignore other providers and continue.
     if (pmd_async_state->req_args.level_of_detail ==
             MemoryDumpLevelOfDetail::BACKGROUND &&
@@ -377,8 +377,8 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
                  Unretained(pmd_async_state.get())));
 
     if (did_post_task) {
-      // Ownership is tranferred to the posted task.
-      ignore_result(pmd_async_state.release());
+      // Ownership is transferred to the posted task.
+      std::ignore = pmd_async_state.release();
       return;
     }
 

@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_onboarding_ui_tracker.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeOnboardingUiTracker::FakeOnboardingUiTracker() = default;
@@ -33,4 +33,4 @@ void FakeOnboardingUiTracker::HandleGetStarted() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

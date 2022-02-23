@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -36,6 +36,7 @@ namespace blink {
 class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
+class ExecutionContext;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -45,6 +46,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kImport,
     kMedia,
     kFontFace,
+    kFontPaletteValues,
     kPage,
     kProperty,
     kKeyframes,
@@ -71,6 +73,9 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsContainerRule() const { return GetType() == kContainer; }
   bool IsCounterStyleRule() const { return GetType() == kCounterStyle; }
   bool IsFontFaceRule() const { return GetType() == kFontFace; }
+  bool IsFontPaletteValuesRule() const {
+    return GetType() == kFontPaletteValues;
+  }
   bool IsKeyframesRule() const { return GetType() == kKeyframes; }
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
   bool IsLayerBlockRule() const { return GetType() == kLayerBlock; }
@@ -377,12 +382,13 @@ class StyleRuleSupports : public StyleRuleCondition {
     return MakeGarbageCollected<StyleRuleSupports>(*this);
   }
 
+  void SetConditionText(const ExecutionContext*, String);
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     StyleRuleCondition::TraceAfterDispatch(visitor);
   }
 
  private:
-  String condition_text_;
   bool condition_is_supported_;
 };
 
@@ -397,6 +403,8 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   StyleRuleContainer* Copy() const {
     return MakeGarbageCollected<StyleRuleContainer>(*this);
   }
+
+  void SetConditionText(const ExecutionContext*, String);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

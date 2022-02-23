@@ -17,6 +17,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "sysmem_native_pixmap.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
@@ -128,12 +129,19 @@ void ScenicSurface::OnScenicEvents(
     DCHECK(event.is_gfx());
     switch (event.gfx().Which()) {
       case fuchsia::ui::gfx::Event::kMetrics: {
-        DCHECK(event.gfx().metrics().node_id == main_shape_.id());
+        DCHECK_EQ(event.gfx().metrics().node_id, main_shape_.id());
         // This is enough to track size because |main_shape_| is 1x1.
         const auto& metrics = event.gfx().metrics().metrics;
         main_shape_size_.set_width(metrics.scale_x);
         main_shape_size_.set_height(metrics.scale_y);
         UpdateViewHolderScene();
+        break;
+      }
+      case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
+        DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
+        // Present an empty frame to ensure that the outdated content doesn't
+        // become visible if the view is attached again.
+        PresentEmptyImage();
         break;
       }
       default:
@@ -188,12 +196,14 @@ void ScenicSurface::Present(
     auto& overlay_data = overlay.overlay_plane_data;
     if (!overlay_view_info.visible ||
         overlay_view_info.plane_z_order != overlay_data.z_order ||
-        overlay_view_info.display_bounds != overlay_data.display_bounds ||
+        overlay_view_info.display_bounds !=
+            gfx::ToNearestRect(overlay_data.display_bounds) ||
         overlay_view_info.crop_rect != overlay_data.crop_rect ||
         overlay_view_info.plane_transform != overlay_data.plane_transform) {
       overlay_view_info.visible = true;
       overlay_view_info.plane_z_order = overlay_data.z_order;
-      overlay_view_info.display_bounds = overlay_data.display_bounds;
+      overlay_view_info.display_bounds =
+          gfx::ToNearestRect(overlay_data.display_bounds);
       overlay_view_info.crop_rect = overlay_data.crop_rect;
       overlay_view_info.plane_transform = overlay_data.plane_transform;
       layout_update_required = true;
@@ -517,6 +527,66 @@ void ScenicSurface::UpdateViewHolderScene() {
   main_shape_.SetTranslation(0.f, 0.f, min_z_order * kElevationStep);
 
   safe_presenter_.QueuePresent();
+}
+
+void ScenicSurface::PresentEmptyImage() {
+  if (last_frame_present_time_ == base::TimeTicks())
+    return;
+
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr dummy_collection_token;
+  zx_status_t status =
+      sysmem_buffer_manager_->GetAllocator()->AllocateSharedCollection(
+          dummy_collection_token.NewRequest());
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status)
+        << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
+    return;
+  }
+  dummy_collection_token->SetName(100u, "DummyImageCollection");
+  dummy_collection_token->SetDebugClientInfo("chromium", 0u);
+
+  fuchsia::sysmem::BufferCollectionTokenSyncPtr token_for_scenic;
+  dummy_collection_token->Duplicate(ZX_RIGHT_SAME_RIGHTS,
+                                    token_for_scenic.NewRequest());
+  token_for_scenic->SetDebugClientInfo("scenic", 0u);
+
+  const uint32_t image_id = ++next_unique_id_;
+  image_pipe_->AddBufferCollection(image_id, std::move(token_for_scenic));
+
+  // Synchroniously wait for the collection to be allocated before proceeding.
+  fuchsia::sysmem::BufferCollectionSyncPtr dummy_collection;
+  status = sysmem_buffer_manager_->GetAllocator()->BindSharedCollection(
+      std::move(dummy_collection_token), dummy_collection.NewRequest());
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.Allocator.BindSharedCollection()";
+    return;
+  }
+
+  fuchsia::sysmem::BufferCollectionConstraints constraints;
+  constraints.usage.none = fuchsia::sysmem::noneUsage;
+  constraints.min_buffer_count = 1;
+  constraints.image_format_constraints_count = 0;
+  status = dummy_collection->SetConstraints(/*has_constraints=*/true,
+                                            std::move(constraints));
+  zx_status_t wait_status;
+  fuchsia::sysmem::BufferCollectionInfo_2 buffers_info;
+  status =
+      dummy_collection->WaitForBuffersAllocated(&wait_status, &buffers_info);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection failed";
+    return;
+  }
+  dummy_collection->Close();
+
+  // Present the first image from the collection.
+  fuchsia::sysmem::ImageFormat_2 image_format;
+  image_format.coded_width = 1;
+  image_format.coded_height = 1;
+  image_pipe_->AddImage(image_id, image_id, 0, image_format);
+
+  image_pipe_->PresentImage(image_id, last_frame_present_time_.ToZxTime(), {},
+                            {}, [](fuchsia::images::PresentationInfo) {});
+  image_pipe_->RemoveBufferCollection(image_id);
 }
 
 ScenicSurface::PresentedFrame::PresentedFrame(

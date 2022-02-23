@@ -5,6 +5,7 @@
 #ifndef WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 #define WEBLAYER_BROWSER_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 namespace weblayer {
@@ -53,7 +54,7 @@ class PageSpecificContentSettingsDelegate
   void OnServiceWorkerAccessAllowed(const url::Origin& origin) override;
   void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace weblayer

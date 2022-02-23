@@ -8,7 +8,6 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

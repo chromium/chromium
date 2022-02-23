@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -30,6 +29,9 @@ class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
   static HistoryServiceFactory* GetInstance();
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
 
   HistoryServiceFactory(const HistoryServiceFactory&) = delete;
   HistoryServiceFactory& operator=(const HistoryServiceFactory&) = delete;

@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -107,7 +107,7 @@ class CORE_EXPORT WorkletGlobalScope
   // For origin trials, instead consider the context of the document which
   // created the worklet, since the origin trial tokens are inherited from the
   // document.
-  bool DocumentSecureContext() const { return document_secure_context_; }
+  bool DocumentSecureContext() const { return IsCreatorSecureContext(); }
 
   void Trace(Visitor*) const override;
 
@@ -161,6 +161,10 @@ class CORE_EXPORT WorkletGlobalScope
                      WorkerThread*,
                      bool create_microtask_queue);
 
+  // Returns a destination used for fetching worklet scripts.
+  // https://html.spec.whatwg.org/C/#worklet-destination-type
+  virtual network::mojom::RequestDestination GetDestination() const = 0;
+
   EventTarget* ErrorEventTarget() final { return nullptr; }
 
   // The |url_| and |user_agent_| are inherited from the parent Document.
@@ -170,9 +174,6 @@ class CORE_EXPORT WorkletGlobalScope
   // Used for module fetch and origin trials, inherited from the parent
   // Document.
   const scoped_refptr<const SecurityOrigin> document_security_origin_;
-
-  // Used for origin trials, inherited from the parent Document.
-  const bool document_secure_context_;
 
   CrossThreadPersistent<WorkletModuleResponsesMap> module_responses_map_;
 

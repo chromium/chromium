@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -135,6 +136,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
     SyncSwitchItem* button =
         [[SyncSwitchItem alloc] initWithType:SyncEverythingItemType];
     button.text = GetNSString(IDS_IOS_SYNC_EVERYTHING_TITLE);
+    button.accessibilityIdentifier = kSyncEverythingItemAccessibilityIdentifier;
     self.syncEverythingItem = button;
     [self updateSyncEverythingItemNotifyConsumer:NO];
   } else {
@@ -142,8 +144,11 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         [[TableViewInfoButtonItem alloc] initWithType:SyncEverythingItemType];
     button.text = GetNSString(IDS_IOS_SYNC_EVERYTHING_TITLE);
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    button.accessibilityIdentifier = kSyncEverythingItemAccessibilityIdentifier;
     self.syncEverythingItem = button;
   }
+  self.syncEverythingItem.accessibilityIdentifier =
+      kSyncEverythingItemAccessibilityIdentifier;
   [model addItem:self.syncEverythingItem
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
@@ -337,18 +342,22 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 #pragma mark - Loads sign out section
 
 - (void)loadSignOutSection {
+  if (!self.syncConsentGiven) {
+    self.signOutAndTurnOffSyncItem = nil;
+    return;
+  }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
-  [model addSectionWithIdentifier:SignOutSectionIdentifier];
+  NSInteger syncDataTypeSectionIndex =
+      [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
+  DCHECK_NE(NSNotFound, syncDataTypeSectionIndex);
+  [model insertSectionWithIdentifier:SignOutSectionIdentifier
+                             atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:SignOutItemType];
   item.text = GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC);
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
-
-  if (!self.syncConsentGiven) {
-    return;
-  }
   [model addItem:self.signOutAndTurnOffSyncItem
       toSectionWithIdentifier:SignOutSectionIdentifier];
 
@@ -360,31 +369,29 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
             initWithType:SignOutItemFooterType];
     footerItem.text = l10n_util::GetNSString(
         IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
-    footerItem.urls = std::vector<GURL>{GURL("chrome://management/")};
+    footerItem.urls =
+        @[ [[CrURL alloc] initWithGURL:GURL("chrome://management/")] ];
     [model setFooter:footerItem
         forSectionWithIdentifier:SignOutSectionIdentifier];
   }
 }
 
 - (void)updateSignOutSection {
-  BOOL hasModelUpdate = NO;
   TableViewModel* model = self.consumer.tableViewModel;
-  BOOL hasSignOutItem = [model hasItem:self.signOutAndTurnOffSyncItem];
-  if (!hasSignOutItem && self.syncConsentGiven) {
+  BOOL hasSignOutSection =
+      [model hasSectionForSectionIdentifier:SignOutSectionIdentifier];
+  if (!hasSignOutSection && self.syncConsentGiven) {
+    [self loadSignOutSection];
     DCHECK(self.signOutAndTurnOffSyncItem);
-    [model addItem:self.signOutAndTurnOffSyncItem
-        toSectionWithIdentifier:SignOutSectionIdentifier];
-    hasModelUpdate = YES;
-  } else if (hasSignOutItem && !self.syncConsentGiven) {
-    [model removeItemWithType:SignOutItemType
-        fromSectionWithIdentifier:SignOutSectionIdentifier];
-    hasModelUpdate = YES;
-  }
-
-  if (hasModelUpdate) {
     NSUInteger sectionIndex =
         [model sectionForSectionIdentifier:SignOutSectionIdentifier];
-    [self.consumer reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+    [self.consumer insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+  } else if (hasSignOutSection && !self.syncConsentGiven) {
+    NSUInteger sectionIndex =
+        [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+    [model removeSectionWithIdentifier:SignOutSectionIdentifier];
+    self.signOutAndTurnOffSyncItem = nil;
+    [self.consumer deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
   }
 }
 
@@ -396,34 +403,42 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
     (SyncSetupService::SyncableDatatype)dataType {
   NSInteger itemType = 0;
   int textStringID = 0;
+  NSString* accessibilityIdentifier = nil;
   switch (dataType) {
     case SyncSetupService::kSyncBookmarks:
       itemType = BookmarksDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_BOOKMARKS;
+      accessibilityIdentifier = kSyncBookmarksIdentifier;
       break;
     case SyncSetupService::kSyncOmniboxHistory:
       itemType = HistoryDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TYPED_URLS;
+      accessibilityIdentifier = kSyncOmniboxHistoryIdentifier;
       break;
     case SyncSetupService::kSyncPasswords:
       itemType = PasswordsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PASSWORDS;
+      accessibilityIdentifier = kSyncPasswordsIdentifier;
       break;
     case SyncSetupService::kSyncOpenTabs:
       itemType = OpenTabsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TABS;
+      accessibilityIdentifier = kSyncOpenTabsIdentifier;
       break;
     case SyncSetupService::kSyncAutofill:
       itemType = AutofillDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_AUTOFILL;
+      accessibilityIdentifier = kSyncAutofillIdentifier;
       break;
     case SyncSetupService::kSyncPreferences:
       itemType = SettingsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PREFERENCES;
+      accessibilityIdentifier = kSyncPreferencesIdentifier;
       break;
     case SyncSetupService::kSyncReadingList:
       itemType = ReadingListDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_READING_LIST;
+      accessibilityIdentifier = kSyncReadingListIdentifier;
       break;
     case SyncSetupService::kNumberOfSyncableDatatypes:
       NOTREACHED();
@@ -431,16 +446,19 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   }
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
+  DCHECK(accessibilityIdentifier);
   if (![self isManagedSyncSettingsDataType:dataType]) {
     SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
     switchItem.text = GetNSString(textStringID);
     switchItem.dataType = dataType;
+    switchItem.accessibilityIdentifier = accessibilityIdentifier;
     return switchItem;
   } else {
     TableViewInfoButtonItem* button =
         [[TableViewInfoButtonItem alloc] initWithType:itemType];
     button.text = GetNSString(textStringID);
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    button.accessibilityIdentifier = accessibilityIdentifier;
     return button;
   }
 }

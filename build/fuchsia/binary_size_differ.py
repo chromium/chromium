@@ -29,7 +29,7 @@ from common import SDK_ROOT, DIR_SOURCE_ROOT
 from binary_sizes import GetPackageSizes, ReadPackageBlobsJson
 from binary_sizes import PACKAGES_SIZE_FILE
 
-_MAX_DELTA_BYTES = 16 * 1024  # 16 KiB
+_MAX_DELTA_BYTES = 12 * 1024  # 12 KiB
 
 
 def GetPackageBlobsFromFile(blob_file_path):
@@ -55,7 +55,7 @@ def ComputePackageDiffs(before_blobs_file, after_blobs_file):
     growth['uncompressed'][package_name] = (
         after_blobs[package_name].uncompressed -
         before_blobs[package_name].uncompressed)
-    if growth['compressed'][package_name] > _MAX_DELTA_BYTES:
+    if growth['compressed'][package_name] >= _MAX_DELTA_BYTES:
       if status_code == 1:
         summary = 'Failed! '
       status_code = 1

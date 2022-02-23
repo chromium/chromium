@@ -10,6 +10,7 @@
   animation-duration: 0.1s;
   animation-timing-function: linear;
   animation-name: anim;
+  animation-play-state:  paused;
 }
 @keyframes anim {
   from { left: 200px; }
@@ -47,6 +48,9 @@
   animation-iteration-count: 2.4;
   animation-direction: alternate-reverse;
 }
+.running {
+  animation-play-state:  running;
+}
 </style>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -65,8 +69,7 @@ const expectedValues = [
 async_test(t => {
   function assertAnimatedValue(expected, actual, isStart, id) {
     var identifier = (isStart ? 'Start' : 'End') + ' of animation for element \'' + id + '\'';
-    var diff = Math.abs(expected - actual);
-    assert_less_than(diff, 5, identifier + ': Saw something close to ' + expected);
+    assert_equals(actual, expected, identifier);
   }
 
   function endTest() {
@@ -85,6 +88,7 @@ async_test(t => {
       var expectedValue = expectedValues[i].start;
       var realValue = parseFloat(window.getComputedStyle(el).left);
       assertAnimatedValue(expectedValue, realValue, true, expectedValues[i].id);
+      el.classList.add('running');
     }
     document.addEventListener("animationend", t.step_func(() => {
       if (++animsFinished == numAnims) {

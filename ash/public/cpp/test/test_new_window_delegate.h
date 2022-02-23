@@ -27,7 +27,7 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
       aura::Window* source_window,
       const ui::OSExchangeData& drop_data,
       NewWindowForDetachingTabCallback closure) override;
-  void OpenUrl(const GURL& url, bool from_user_interaction) override;
+  void OpenUrl(const GURL& url, OpenUrlFrom from) override;
   void OpenCalculator() override;
   void OpenFileManager() override;
   void OpenDownloadsFolder() override;
@@ -39,14 +39,23 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegate : public NewWindowDelegate {
   void ShowTaskManager() override;
   void OpenFeedbackPage(FeedbackSource source,
                         const std::string& description_template) override;
+  void OpenPersonalizationHub() override;
 };
 
 // NewWindowDelegateProvider implementation to provide TestNewWindowDelegate.
 class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
     : public NewWindowDelegateProvider {
  public:
+  // This provider's GetInstance() and GetPrimary() will both return |delegate|.
   explicit TestNewWindowDelegateProvider(
       std::unique_ptr<TestNewWindowDelegate> delegate);
+
+  // This provider's GetInstance() will return |ash|, its GetPrimary() will
+  // return |lacros|.
+  explicit TestNewWindowDelegateProvider(
+      std::unique_ptr<TestNewWindowDelegate> ash,
+      std::unique_ptr<TestNewWindowDelegate> lacros);
+
   TestNewWindowDelegateProvider(const TestNewWindowDelegateProvider&) = delete;
   TestNewWindowDelegateProvider& operator=(
       const TestNewWindowDelegateProvider&) = delete;
@@ -57,7 +66,8 @@ class ASH_PUBLIC_EXPORT TestNewWindowDelegateProvider
   NewWindowDelegate* GetPrimary() override;
 
  private:
-  std::unique_ptr<TestNewWindowDelegate> delegate_;
+  std::unique_ptr<TestNewWindowDelegate> ash_;
+  std::unique_ptr<TestNewWindowDelegate> lacros_;
 };
 
 }  // namespace ash

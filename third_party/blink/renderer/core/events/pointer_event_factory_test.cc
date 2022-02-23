@@ -106,7 +106,7 @@ class PointerEventFactoryTest : public testing::Test {
                                  WebPointerProperties::Button::kNoButton,
                                  gfx::PointF(50, 50), gfx::PointF(20, 20)),
             type),
-        FloatPoint(100, 100));
+        gfx::PointF(100, 100));
     return pointer_event;
   }
   void CreateAndCheckPointerTransitionEvent(PointerEvent*, const AtomicString&);
@@ -575,7 +575,7 @@ TEST_F(PointerEventFactoryTest, LastPointerPosition) {
                                WebPointerProperties::Button::kNoButton,
                                gfx::PointF(50, 50), gfx::PointF(20, 20)),
           WebInputEvent::Type::kPointerMove),
-      FloatPoint(20, 20));
+      gfx::PointF(20, 20));
 }
 
 TEST_F(PointerEventFactoryTest, CoalescedEvents) {

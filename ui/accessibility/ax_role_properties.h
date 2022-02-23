@@ -227,6 +227,10 @@ AX_BASE_EXPORT bool SupportsHierarchicalLevel(const ax::mojom::Role role);
 // Returns true if the provided role can have an orientation.
 AX_BASE_EXPORT bool SupportsOrientation(const ax::mojom::Role role);
 
+// Returns true if the provided role can have the required attribute,
+// e.g. <div contenteditable aria-required></div> or <input required>
+AX_BASE_EXPORT bool SupportsRequired(const ax::mojom::Role role);
+
 // Returns true if the provided role supports toggle.
 AX_BASE_EXPORT bool SupportsToggle(const ax::mojom::Role role);
 

@@ -78,6 +78,7 @@ GLContextCGL::GLContextCGL(GLShareGroup* share_group)
 bool GLContextCGL::Initialize(GLSurface* compatible_surface,
                               const GLContextAttribs& attribs) {
   DCHECK(compatible_surface);
+  DCHECK(share_group());
 
   // webgl_compatibility_context and disabling bind_generates_resource are not
   // supported.
@@ -86,9 +87,6 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
 
   GpuPreference gpu_preference =
       GLSurface::AdjustGpuPreference(attribs.gpu_preference);
-
-  GLContextCGL* share_context = share_group() ?
-      static_cast<GLContextCGL*>(share_group()->GetContext()) : nullptr;
 
   CGLPixelFormatObj format = GetPixelFormat();
   if (!format)
@@ -106,9 +104,7 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
   }
 
   CGLError res = CGLCreateContext(
-      format,
-      share_context ?
-          static_cast<CGLContextObj>(share_context->GetHandle()) : nullptr,
+      format, static_cast<CGLContextObj>(share_group()->GetHandle()),
       reinterpret_cast<CGLContextObj*>(&context_));
   if (res != kCGLNoError) {
     LOG(ERROR) << "Error creating context.";

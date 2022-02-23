@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 if (is_android) {
@@ -40,13 +39,31 @@ source_set("time_zone_monitor") {
     deps += [ "//ui/gfx" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "time_zone_monitor_linux.cc" ]
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
   if (is_chromeos_ash) {
-    sources += [ "time_zone_monitor_chromeos.cc" ]
+    sources += [ "time_zone_monitor_ash.cc" ]
     deps += [ "//ash/components/settings" ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [
+      "time_zone_monitor_lacros.cc",
+      "time_zone_monitor_lacros.h",
+
+      # Keep using linux implementation as a fallback.
+      # TODO(crbug.com/1288168): TODO clean up this, when we no longer need
+      # to support older ash.
+      "time_zone_monitor_linux.cc",
+    ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 
   if (is_mac) {

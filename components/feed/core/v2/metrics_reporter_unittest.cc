@@ -11,11 +11,15 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/common/pref_names.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
+#include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/types.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,13 +61,13 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
     std::map<FeedEngagementType, int> result;
     const char* histogram_name;
     switch (stream_type.GetType()) {
-      case StreamType::Type::kForYou:
+      case StreamKind::kForYou:
         histogram_name = "ContentSuggestions.Feed.EngagementType";
         break;
-      case StreamType::Type::kWebFeed:
+      case StreamKind::kFollowing:
         histogram_name = "ContentSuggestions.Feed.WebFeed.EngagementType";
         break;
-      case StreamType::Type::kUnspecified:
+      case StreamKind::kUnknown:
         histogram_name = "ContentSuggestions.Feed.AllFeeds.EngagementType";
         break;
     }
@@ -83,6 +87,10 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override {
     std::move(callback).Run(kSubscriptionCount);
   }
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+    register_feed_user_settings_field_trial_calls_.push_back(
+        static_cast<std::string>(group));
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -90,6 +98,7 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   std::unique_ptr<MetricsReporter> reporter_;
   base::HistogramTester histogram_;
   base::UserActionTester user_actions_;
+  std::vector<std::string> register_feed_user_settings_field_trial_calls_;
 };
 
 TEST_F(MetricsReporterTest, SliceViewedReportsSuggestionShown) {
@@ -1015,6 +1024,142 @@ TEST_F(MetricsReporterTest, ReportNotice) {
                   .GetAllSamples(
                       "ContentSuggestions.Feed.NoticeAcknowledgementPath.Test")
                   .empty());
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotEnabled) {
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/false,
+                                   /*isFeedVisible=*/false,
+                                   /*isSignedIn=*/false, feedstore::Metadata());
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kFeedNotEnabledByPolicy,
+                                1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotEnabledByPolicy"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedOut) {
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/false,
+                                   /*isSignedIn=*/false, feedstore::Metadata());
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kFeedNotVisibleSignedOut,
+                                1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotVisibleSignedOut"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedNotVisible_SignedIn) {
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/false,
+                                   /*isSignedIn=*/true, feedstore::Metadata());
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kFeedNotVisibleSignedIn,
+                                1);
+  EXPECT_EQ(std::vector<std::string>({"FeedNotVisibleSignedIn"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_EnabledSignedOut) {
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/false, feedstore::Metadata());
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedOut, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedOut"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOff) {
+  feedstore::Metadata metadata;
+  // Content age is within kUserSettingsMaxAge.
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now() - kUserSettingsMaxAge));
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOffDpOff, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOffDpOff"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOff) {
+  feedstore::Metadata metadata;
+  // Content age is within kUserSettingsMaxAge.
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now()));
+  metadata.set_web_and_app_activity_enabled(true);
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOnDpOff, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOnDpOff"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOffDpOn) {
+  feedstore::Metadata metadata;
+  // Only the first stream has age less than kUserSettingsMaxAge.
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now()));
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now() - kUserSettingsMaxAge -
+                                   base::Seconds(1)));
+  metadata.set_discover_personalization_enabled(true);
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOffDpOn, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOffDpOn"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_WaaOnDpOn) {
+  feedstore::Metadata metadata;
+  // Only the second stream has age less than kUserSettingsMaxAge.
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now() - kUserSettingsMaxAge -
+                                   base::Seconds(1)));
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now()));
+  metadata.set_discover_personalization_enabled(true);
+  metadata.set_web_and_app_activity_enabled(true);
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInWaaOnDpOn, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInWaaOnDpOn"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataTooOld) {
+  feedstore::Metadata metadata;
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now() - kUserSettingsMaxAge -
+                                   base::Seconds(1)));
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInNoRecentData, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInNoRecentData"}),
+            register_feed_user_settings_field_trial_calls_);
+}
+
+TEST_F(MetricsReporterTest, UserSettingsOnStart_FeedDataFromFuture) {
+  feedstore::Metadata metadata;
+  metadata.add_stream_metadata()->set_last_fetch_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now() + base::Seconds(1)));
+  reporter_->OnMetadataInitialized(/*isEnabledByEnterprisePolicy=*/true,
+                                   /*isFeedVisible=*/true,
+                                   /*isSignedIn=*/true, metadata);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserSettingsOnStart",
+                                UserSettingsOnStart::kSignedInNoRecentData, 1);
+  EXPECT_EQ(std::vector<std::string>({"SignedInNoRecentData"}),
+            register_feed_user_settings_field_trial_calls_);
 }
 
 }  // namespace feed

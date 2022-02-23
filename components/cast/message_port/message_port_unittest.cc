@@ -17,9 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 #ifdef PostMessage
 #undef PostMessage
@@ -122,7 +122,7 @@ TEST_F(MessagePortTest, WrapPlatformPort) {
   // Initialize ports from the platform type instead of agnostic CreatePair
 #if BUILDFLAG(USE_MESSAGE_PORT_CORE)
   cast_api_bindings::CreateMessagePortCorePair(&client_, &server_);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   fidl::InterfaceHandle<fuchsia::web::MessagePort> port0;
   fidl::InterfaceRequest<fuchsia::web::MessagePort> port1 = port0.NewRequest();
   client_ = MessagePortFuchsia::Create(std::move(port0));
@@ -131,7 +131,7 @@ TEST_F(MessagePortTest, WrapPlatformPort) {
   auto pair = blink::WebMessagePort::CreatePair();
   client_ = MessagePortCast::Create(std::move(pair.first));
   server_ = MessagePortCast::Create(std::move(pair.second));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   TestPostMessage();
 }
@@ -146,7 +146,7 @@ TEST_F(MessagePortTest, UnwrapPlatformPort) {
       cast_api_bindings::MessagePortCore::FromMessagePort(client_.release()));
   server_.reset(
       cast_api_bindings::MessagePortCore::FromMessagePort(server_.release()));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   client_ = MessagePortFuchsia::Create(
       MessagePortFuchsia::FromMessagePort(client_.get())->TakeClientHandle());
   server_ = MessagePortFuchsia::Create(
@@ -156,7 +156,7 @@ TEST_F(MessagePortTest, UnwrapPlatformPort) {
       MessagePortCast::FromMessagePort(client_.get())->TakePort());
   server_ = MessagePortCast::Create(
       MessagePortCast::FromMessagePort(server_.get())->TakePort());
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   TestPostMessage();
 }
@@ -179,9 +179,9 @@ const MessagePortTestParam MessagePortTestParams[] = {
     {MessagePortTestType::PLATFORM, &CreatePlatformMessagePortPair},
     {MessagePortTestType::PLATFORM_TO_BLINK, &CreatePlatformToBlinkPair},
     {MessagePortTestType::BLINK_TO_PLATFORM, &CreateBlinkToPlatformPair},
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     {MessagePortTestType::FUCHSIA, &MessagePortFuchsia::CreatePair},
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
     {MessagePortTestType::CORE, &CreateMessagePortCorePair},
     {MessagePortTestType::CAST, &MessagePortCast::CreatePair}};
 
@@ -218,7 +218,7 @@ TEST_P(ParameterizedMessagePortTest, OnError) {
   SetDefaultReceivers();
   client_->PostMessage("");
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // blink::WebMessagePort reports failure when PostMessage returns false, but
   // fuchsia::web::MessagePort will not report the error until the port closes
   server_receiver_.RunUntilMessageCountEqual(1);

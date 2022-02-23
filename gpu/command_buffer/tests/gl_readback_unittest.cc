@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,7 +146,7 @@ static GLuint CompileShader(GLenum type, const char *data) {
 // backend. crbug.com/607283.
 // TODO(zmo): This test also fails on some android devices when the readback
 // type is HALF_FLOAT_OES. Likely it's due to a driver bug. crbug.com/607936.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadPixelsFloat DISABLED_ReadPixelsFloat
 #else
 #define MAYBE_ReadPixelsFloat ReadPixelsFloat

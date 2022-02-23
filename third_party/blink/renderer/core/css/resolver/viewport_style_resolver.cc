@@ -69,10 +69,8 @@ ViewportStyleResolver::ViewportStyleResolver(Document& document)
 
 void ViewportStyleResolver::Reset() {
   property_set_ = nullptr;
-  has_viewport_units_ = false;
   DCHECK(initial_style_);
-  initial_style_->SetHasViewportUnits(false);
-  needs_update_ = kNoUpdate;
+  needs_update_ = false;
 }
 
 void ViewportStyleResolver::CollectViewportRulesFromUASheets() {
@@ -156,10 +154,6 @@ void ViewportStyleResolver::Resolve() {
     description.SetViewportFit(ViewportFitValue());
 
   document_->GetViewportData().SetViewportDescription(description);
-
-  DCHECK(initial_style_);
-  if (initial_style_->HasViewportUnits())
-    has_viewport_units_ = true;
 }
 
 float ViewportStyleResolver::ViewportArgumentValue(CSSPropertyID id) const {
@@ -248,12 +242,12 @@ Length ViewportStyleResolver::ViewportLengthValue(CSSPropertyID id) {
 
   CSSToLengthConversionData::FontSizes font_sizes(initial_style_.get(),
                                                   initial_style_.get());
-  CSSToLengthConversionData::ViewportSize viewport_size(
-      view->InitialViewportWidth(), view->InitialViewportHeight());
+  CSSToLengthConversionData::ViewportSize viewport_size;
   CSSToLengthConversionData::ContainerSizes container_sizes;
 
   Length result = primitive_value->ConvertToLength(CSSToLengthConversionData(
-      initial_style_.get(), font_sizes, viewport_size, container_sizes, 1.0f));
+      initial_style_.get(), WritingMode::kHorizontalTb, font_sizes,
+      viewport_size, container_sizes, 1.0f));
 
   if (result.IsFixed() && document_->GetPage()) {
     float scaled_value =
@@ -287,27 +281,17 @@ void ViewportStyleResolver::InitialStyleChanged() {
   initial_style_ = nullptr;
   // We need to recollect if the initial font size changed and media queries
   // depend on font relative lengths.
-  needs_update_ = kCollectRules;
+  needs_update_ = true;
 }
 
-void ViewportStyleResolver::InitialViewportChanged() {
-  if (needs_update_ == kCollectRules)
-    return;
-  if (has_viewport_units_)
-    needs_update_ = kResolve;
-  if (needs_update_ == kNoUpdate)
-    return;
-  document_->ScheduleLayoutTreeUpdateIfNeeded();
-}
-
-void ViewportStyleResolver::SetNeedsCollectRules() {
-  needs_update_ = kCollectRules;
+void ViewportStyleResolver::SetNeedsUpdate() {
+  needs_update_ = true;
   document_->ScheduleLayoutTreeUpdateIfNeeded();
 }
 
 void ViewportStyleResolver::UpdateViewport(
     DocumentStyleSheetCollection& collection) {
-  if (needs_update_ == kNoUpdate) {
+  if (!needs_update_) {
     // If initial_style_ is cleared it means things are dirty, so we should not
     // end up here.
     DCHECK(initial_style_);
@@ -315,12 +299,10 @@ void ViewportStyleResolver::UpdateViewport(
   }
   if (!initial_style_)
     initial_style_ = document_->GetStyleResolver().StyleForViewport();
-  if (needs_update_ == kCollectRules) {
-    Reset();
-    CollectViewportRulesFromUASheets();
-  }
+  Reset();
+  CollectViewportRulesFromUASheets();
   Resolve();
-  needs_update_ = kNoUpdate;
+  needs_update_ = false;
 }
 
 void ViewportStyleResolver::Trace(Visitor* visitor) const {

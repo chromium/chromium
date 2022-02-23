@@ -147,7 +147,7 @@ LoginScreenDefaultPolicyBrowsertestBase::
 
 void LoginScreenDefaultPolicyBrowsertestBase::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-  login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
+  login_profile_ = ash::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
 }
 
@@ -167,8 +167,8 @@ LoginScreenDefaultPolicyLoginScreenBrowsertest::
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpCommandLine(
     base::CommandLine* command_line) {
   LoginScreenDefaultPolicyBrowsertestBase::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 }
 
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpOnMainThread() {
@@ -178,12 +178,12 @@ void LoginScreenDefaultPolicyLoginScreenBrowsertest::SetUpOnMainThread() {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 
   MagnificationManager* magnification_manager = MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 }
 
 void LoginScreenDefaultPolicyLoginScreenBrowsertest::TearDownOnMainThread() {

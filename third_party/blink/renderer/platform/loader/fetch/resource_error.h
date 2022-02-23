@@ -64,6 +64,7 @@ class PLATFORM_EXPORT ResourceError final {
   static ResourceError CacheMissError(const KURL&);
   static ResourceError TimeoutError(const KURL&);
   static ResourceError Failure(const KURL&);
+  static ResourceError HttpError(const KURL&);
 
   ResourceError() = delete;
   // |error_code| must not be 0.
@@ -100,6 +101,9 @@ class PLATFORM_EXPORT ResourceError final {
   bool IsCacheMiss() const;
   bool WasBlockedByResponse() const;
   bool ShouldCollapseInitiator() const { return should_collapse_inititator_; }
+  bool IsCancelledFromHttpError() const {
+    return is_cancelled_from_http_error_;
+  }
 
   absl::optional<ResourceRequestBlockedReason> GetResourceRequestBlockedReason()
       const;
@@ -131,6 +135,7 @@ class PLATFORM_EXPORT ResourceError final {
   bool has_copy_in_cache_ = false;
   absl::optional<network::CorsErrorStatus> cors_error_status_;
   bool should_collapse_inititator_ = false;
+  bool is_cancelled_from_http_error_ = false;
 
   absl::optional<network::mojom::BlockedByResponseReason>
       blocked_by_response_reason_;

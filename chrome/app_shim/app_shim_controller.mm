@@ -507,7 +507,7 @@ void AppShimController::UpdateProfileMenu(
     [item setState:mojo_item->active ? NSOnState : NSOffState];
     [item setTarget:profile_menu_target_.get()];
     gfx::Image icon(mojo_item->icon);
-    [item setImage:icon.ToNSImage()];
+    [item setImage:icon.AsNSImage()];
     [menu insertItem:item atIndex:i];
   }
 }

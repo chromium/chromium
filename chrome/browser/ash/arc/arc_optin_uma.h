@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "components/arc/mojom/app.mojom-forward.h"
-#include "components/arc/mojom/auth.mojom-forward.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/auth.mojom-forward.h"
 
 class Profile;
 
@@ -263,10 +263,7 @@ void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
                               const std::string& mode,
                               const Profile* profile);
 void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
-// TODO(khmel): Remove this in favor of UpdateArcUiAvailableTime once it is
-// rolled and has confirmed usability.
-void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
-                                        const Profile* profile);
+void UpdateDeferredLaunchTime(const base::TimeDelta& elapsed_time);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSupervisionTransitionResultUMA(mojom::ManagementChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);

@@ -121,6 +121,15 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
       bounds.set_y(next_y);
       next_y += bounds.height();
       iter->SetBounds(bounds);
+
+      // Overcan and native resolution are excluded for now as they require
+      // special handing (has_overscan flag. resolution change makes sense
+      // only on external).
+      display_manager_->RegisterDisplayProperty(
+          iter->id(), iter->GetRotation(Display::RotationSource::USER),
+          /*overscan_insets=*/nullptr,
+          /*native_resolution=*/gfx::Size(), iter->device_scale_factor(),
+          iter->zoom_factor(), iter->refresh_rate(), iter->is_interlaced());
     }
   }
 

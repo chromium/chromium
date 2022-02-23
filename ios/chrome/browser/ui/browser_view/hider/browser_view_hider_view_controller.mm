@@ -61,7 +61,9 @@
   if (sender.state != UIGestureRecognizerStateEnded) {
     return;
   }
-  [self.panGestureHandler setNextState:ViewRevealState::Hidden animated:YES];
+  [self.panGestureHandler setNextState:ViewRevealState::Hidden
+                              animated:YES
+                               trigger:ViewRevealTrigger::FakeTab];
 }
 
 - (void)setPanGestureHandler:
@@ -69,9 +71,11 @@
   _panGestureHandler = panGestureHandler;
   [self.view removeGestureRecognizer:self.panGestureRecognizer];
 
-  UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
-      initWithTarget:panGestureHandler
-              action:@selector(handlePanGesture:)];
+  UIPanGestureRecognizer* panGestureRecognizer =
+      [[ViewRevealingPanGestureRecognizer alloc]
+          initWithTarget:panGestureHandler
+                  action:@selector(handlePanGesture:)
+                 trigger:ViewRevealTrigger::FakeTab];
   panGestureRecognizer.delegate = panGestureHandler;
   panGestureRecognizer.maximumNumberOfTouches = 1;
   [self.view addGestureRecognizer:panGestureRecognizer];
@@ -109,7 +113,11 @@
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
-  self.view.alpha = currentViewRevealState == ViewRevealState::Revealed ? 1 : 0;
+  self.view.alpha =
+      currentViewRevealState == ViewRevealState::Revealed ||
+              currentViewRevealState == ViewRevealState::Fullscreen
+          ? 1
+          : 0;
   self.view.hidden = NO;
 }
 
@@ -122,13 +130,17 @@
       self.view.alpha = 0;
       break;
     case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
       self.view.alpha = 1;
       break;
   }
 }
 
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  self.view.hidden = viewRevealState != ViewRevealState::Revealed;
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
+  self.view.hidden = currentViewRevealState != ViewRevealState::Revealed &&
+                     currentViewRevealState != ViewRevealState::Fullscreen;
 }
 
 @end

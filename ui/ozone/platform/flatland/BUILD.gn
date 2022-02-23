@@ -59,20 +59,21 @@ source_set("flatland") {
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/ime/fuchsia",
     "//ui/display/fake",
     "//ui/events:dom_keycode_converter",
     "//ui/events/ozone/layout",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom",
+    "//ui/ozone/platform/scenic/mojom",
   ]
 
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
     "//ui/gfx/geometry",
     "//ui/platform_window",
   ]
@@ -88,14 +89,18 @@ source_set("flatland_unittests") {
   sources = [
     "tests/fake_flatland.cc",
     "tests/fake_flatland.h",
+    "tests/fake_view_ref_focused.cc",
+    "tests/fake_view_ref_focused.h",
     "tests/flatland_connection_unittest.cc",
+    "tests/flatland_window_unittest.cc",
   ]
   deps = [
     ":flatland",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/pkg/async-testing",
+    "//ui/events:test_support",
     "//ui/ozone:platform",
+    "//ui/ozone:test_support",
   ]
 }

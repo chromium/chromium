@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_LOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_LOCK_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"

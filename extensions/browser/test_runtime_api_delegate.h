@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_TEST_RUNTIME_API_DELEGATE_H_
 #define EXTENSIONS_BROWSER_TEST_RUNTIME_API_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 
 namespace extensions {

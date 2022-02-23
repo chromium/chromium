@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -35,6 +36,11 @@ std::wstring GetShortcutFilenameForProfile(const std::u16string& profile_name);
 std::wstring GetUniqueShortcutFilenameForProfile(
     const std::u16string& profile_name,
     const std::set<base::FilePath>& excludes);
+
+// Looks through the various Windows directories that could have pinned
+// shortcuts and returns a vector of shortcuts with profile `profile_path`.
+const std::vector<base::FilePath> GetPinnedShortCutsForProfile(
+    const base::FilePath& profile_path);
 
 // This class checks that shortcut filename matches certain profile.
 class ShortcutFilenameMatcher {
@@ -128,7 +134,7 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
       NonProfileShortcutAction action,
       bool incognito);
 
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
   // The profile icon of these profiles needs to be updated when an avatar image
   // is loaded.
   std::set<base::FilePath> profiles_with_pending_avatar_load_;

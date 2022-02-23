@@ -74,6 +74,9 @@
   <message name="IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL" desc="A label for the 'My files' root which is parent of Downloads, Linux and Android files. Use sentence case.">
     My files
   </message>
+  <message name="IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL" desc="A label for the 'All' root of media views.">
+    All
+  </message>
   <message name="IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL" desc="A label for the 'Images' root of media views.">
     Images
   </message>
@@ -470,11 +473,11 @@
   <message name="IDS_FILE_BROWSER_SET_WALLPAPER_BUTTON_LABEL" desc="The context menu item to set wallpaper.">
     Set as wallpaper
   </message>
-  <message name="IDS_FILE_BROWSER_PIN_FOLDER_BUTTON_LABEL" desc="Menu item label, pinning the selected folder to the left nav.">
-    Pin folder
+  <message name="IDS_FILE_BROWSER_PIN_FOLDER_BUTTON_LABEL" desc="Menu item label, add the selected folder to the left nav.">
+    Add to sidebar
   </message>
-  <message name="IDS_FILE_BROWSER_UNPIN_FOLDER_BUTTON_LABEL" desc="Menu item label, unpinning the selected folder from the left nav.">
-    Unpin folder
+  <message name="IDS_FILE_BROWSER_UNPIN_FOLDER_BUTTON_LABEL" desc="Menu item label, remove the selected folder from the left nav.">
+    Remove from sidebar
   </message>
   <message name="IDS_FILE_BROWSER_SELECT_ALL_COMMAND_LABEL" desc="Menu item label, select all files and folders in the right view">
     Select all
@@ -1273,8 +1276,26 @@
   <message name="IDS_FILE_BROWSER_TAR_BZIP2_ARCHIVE_FILE_TYPE" desc="Bzip2 compressed tar archive file type">
     Bzip2 compressed tar archive
   </message>
+  <message name="IDS_FILE_BROWSER_BZIP2_ARCHIVE_FILE_TYPE" desc="Bzip2 compressed archive file type">
+    Bzip2 compressed archive
+  </message>
   <message name="IDS_FILE_BROWSER_TAR_GZIP_ARCHIVE_FILE_TYPE" desc="Gzip compressed tar archive file type">
     Gzip compressed tar archive
+  </message>
+  <message name="IDS_FILE_BROWSER_GZIP_ARCHIVE_FILE_TYPE" desc="Gzip compressed archive file type">
+    Gzip compressed archive
+  </message>
+  <message name="IDS_FILE_BROWSER_TAR_LZMA_ARCHIVE_FILE_TYPE" desc="LZMA compressed tar archive file type">
+    LZMA compressed tar archive
+  </message>
+  <message name="IDS_FILE_BROWSER_LZMA_ARCHIVE_FILE_TYPE" desc="LZMA compressed archive file type">
+    LZMA compressed archive
+  </message>
+  <message name="IDS_FILE_BROWSER_TAR_XZ_ARCHIVE_FILE_TYPE" desc="XZ compressed tar archive file type">
+    XZ compressed tar archive
+  </message>
+  <message name="IDS_FILE_BROWSER_XZ_ARCHIVE_FILE_TYPE" desc="XZ compressed archive file type">
+    XZ compressed archive
   </message>
   <message name="IDS_FILE_BROWSER_PLAIN_TEXT_FILE_TYPE" desc="Plain text file type">
     Plain text
@@ -1533,4 +1554,13 @@
   <message name="IDS_VIDEO_PLAYER_DISABLE_SUBTITLES_BUTTON_LABEL" desc="Label for a button which is used to disable subtitles in video player.">
     Disable subtitles
   </message>
+
+<!-- Data Leak Prevention -->
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST" desc="A toast informing the user that copying files is blocked by the administrator.">
+    Pasting this file is blocked by your administrator
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_TOAST_BUTTON_LABEL" desc="Toast button label, learn more about data leak prevention policies.">
+    Learn more
+  </message>
+
 </grit-part>

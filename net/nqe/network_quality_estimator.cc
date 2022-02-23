@@ -40,17 +40,12 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
-#include "net/nqe/connectivity_monitor.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/throughput_analyzer.h"
 #include "net/nqe/weighted_observation.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
-
-#if defined(OS_ANDROID)
-#include "net/android/network_library.h"
-#endif  // OS_ANDROID
 
 namespace net {
 
@@ -141,8 +136,7 @@ NetworkQualityEstimator::NetworkQualityEstimator(
       net_log_(NetLogWithSource::Make(
           net_log,
           net::NetLogSourceType::NETWORK_QUALITY_ESTIMATOR)),
-      event_creator_(net_log_),
-      connectivity_monitor_(std::make_unique<ConnectivityMonitor>()) {
+      event_creator_(net_log_) {
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
             base::size(rtt_ms_observations_));
 
@@ -247,7 +241,6 @@ void NetworkQualityEstimator::NotifyStartTransaction(
     MaybeComputeEffectiveConnectionType();
   }
   throughput_analyzer_->NotifyStartTransaction(request);
-  connectivity_monitor_->TrackNewRequest(request);
 }
 
 bool NetworkQualityEstimator::IsHangingRequest(
@@ -347,7 +340,6 @@ void NetworkQualityEstimator::NotifyHeadersReceived(
   throughput_analyzer_->NotifyBytesRead(request);
   throughput_analyzer_->NotifyExpectedResponseContentSize(
       request, request.GetExpectedContentSize());
-  connectivity_monitor_->NotifyRequestProgress(request);
 }
 
 void NetworkQualityEstimator::NotifyBytesRead(
@@ -355,7 +347,6 @@ void NetworkQualityEstimator::NotifyBytesRead(
     int64_t prefilter_total_bytes_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   throughput_analyzer_->NotifyBytesRead(request);
-  connectivity_monitor_->NotifyRequestProgress(request);
 }
 
 void NetworkQualityEstimator::NotifyRequestCompleted(
@@ -368,7 +359,6 @@ void NetworkQualityEstimator::NotifyRequestCompleted(
     return;
 
   throughput_analyzer_->NotifyRequestCompleted(request);
-  connectivity_monitor_->NotifyRequestCompleted(request);
 }
 
 void NetworkQualityEstimator::NotifyURLRequestDestroyed(
@@ -379,7 +369,6 @@ void NetworkQualityEstimator::NotifyURLRequestDestroyed(
     return;
 
   throughput_analyzer_->NotifyRequestCompleted(request);
-  connectivity_monitor_->NotifyRequestCompleted(request);
 }
 
 void NetworkQualityEstimator::AddRTTObserver(RTTObserver* rtt_observer) {
@@ -516,7 +505,6 @@ void NetworkQualityEstimator::OnConnectionTypeChanged(
 
   GatherEstimatesForNextConnectionType();
   throughput_analyzer_->OnConnectionTypeChanged();
-  connectivity_monitor_->NotifyConnectionTypeChanged(type);
 }
 
 void NetworkQualityEstimator::GatherEstimatesForNextConnectionType() {

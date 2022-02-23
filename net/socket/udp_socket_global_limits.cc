@@ -25,7 +25,7 @@ class GlobalUDPSocketCounts {
     return *singleton;
   }
 
-  bool TryAcquireSocket() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TryAcquireSocket() {
     int previous = count_.Increment(1);
     if (previous >= GetMax()) {
       count_.Increment(-1);

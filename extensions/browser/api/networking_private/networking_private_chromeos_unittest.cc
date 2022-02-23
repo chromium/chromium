@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -233,6 +232,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     service_test()->AddService(kCellularServicePath, kCellularGuid,
                                kCellularName, shill::kTypeCellular,
                                shill::kStateOnline, true /* visible */);
+    service_test()->SetServiceProperty(kCellularServicePath,
+                                       shill::kCellularAllowRoamingProperty,
+                                       base::Value(false));
     service_test()->SetServiceProperty(
         kCellularServicePath, shill::kAutoConnectProperty, base::Value(true));
     service_test()->SetServiceProperty(

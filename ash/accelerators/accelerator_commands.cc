@@ -12,9 +12,15 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/time/calendar_metrics.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -23,12 +29,14 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 
@@ -201,6 +209,22 @@ void ShiftPrimaryDisplay() {
       primary_display_iter->id(), true /* throttle */);
 }
 
+void ToggleCalendar() {
+  aura::Window* target_root = Shell::GetRootWindowForNewWindows();
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(target_root)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown()) {
+    tray->CloseBubble();
+  } else {
+    tray->ShowBubble();
+    tray->ActivateBubble();
+    tray->bubble()->ShowCalendarView(
+        calendar_metrics::CalendarViewShowSource::kAccelerator,
+        calendar_metrics::CalendarEventSource::kKeyboard);
+  }
+}
+
 void ToggleFloating() {
   DCHECK(features::IsWindowControlMenuEnabled());
   aura::Window* active_window = window_util::GetActiveWindow();
@@ -215,6 +239,12 @@ void ToggleFullscreen() {
     return;
   const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   WindowState::Get(active_window)->OnWMEvent(&event);
+}
+
+void ToggleKeyboardBacklight() {
+  KeyboardBrightnessControlDelegate* delegate =
+      Shell::Get()->keyboard_brightness_control_delegate();
+  delegate->HandleToggleKeyboardBacklight();
 }
 
 void ToggleMaximized() {

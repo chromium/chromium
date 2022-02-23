@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog_proxy.h"
@@ -35,6 +35,7 @@ class ChromotingHostContext;
 class DesktopEnvironmentFactory;
 class FtlSignalingConnector;
 class HostEventLogger;
+class HostEventReporter;
 class HostStatusLogger;
 class LogToServer;
 class OAuthTokenGetter;
@@ -118,10 +119,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Disconnects and shuts down the host.
   virtual void Disconnect();
 
-  // remoting::HostStatusObserver implementation.
-  void OnAccessDenied(const std::string& jid) override;
-  void OnClientConnected(const std::string& jid) override;
-  void OnClientDisconnected(const std::string& jid) override;
+  // HostStatusObserver implementation.
+  void OnClientAccessDenied(const std::string& signaling_id) override;
+  void OnClientConnected(const std::string& signaling_id) override;
+  void OnClientDisconnected(const std::string& signaling_id) override;
 
   void SetStateForTesting(It2MeHostState state,
                           protocol::ErrorCode error_code) {
@@ -200,6 +201,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<HostEventLogger> host_event_logger_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<HostEventReporter> host_event_reporter_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromotingHost> host_;
   int failed_login_attempts_ = 0;

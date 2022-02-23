@@ -69,7 +69,7 @@ TEST_F(ClipboardUtilsTest, GetClipboardText) {
 
 // Bookmark clipboard apparently not supported on Linux.
 // See TODO on ClipboardText.BookmarkTest.
-#if !defined(OS_POSIX) || defined(OS_MAC)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
   const std::u16string kTitle(u"The Example Company");
   // Can we pull a bookmark off the clipboard?
   {

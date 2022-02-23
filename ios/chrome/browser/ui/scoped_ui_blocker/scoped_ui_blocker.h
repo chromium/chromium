@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 
 @protocol UIBlockerManager;
 @protocol UIBlockerTarget;

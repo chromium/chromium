@@ -34,7 +34,7 @@ void CRASH_EXPORT ZombieDisable();
 
 }  // namespace ObjcEvilDoers
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #if defined(__OBJC__)
 
 #import <Foundation/Foundation.h>
@@ -44,6 +44,6 @@ void CRASH_EXPORT ZombieDisable();
 @end
 
 #endif  // __OBJC__
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 #endif  // COMPONENTS_CRASH_CORE_COMMON_OBJC_ZOMBIE_H_

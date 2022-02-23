@@ -84,7 +84,8 @@ ExceptionSnapshotWin::~ExceptionSnapshotWin() {
 bool ExceptionSnapshotWin::Initialize(
     ProcessReaderWin* process_reader,
     DWORD thread_id,
-    WinVMAddress exception_pointers_address) {
+    WinVMAddress exception_pointers_address,
+    uint32_t* gather_indirectly_referenced_memory_cap) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   const ProcessReaderWin::Thread* thread = nullptr;
@@ -132,7 +133,10 @@ bool ExceptionSnapshotWin::Initialize(
 #endif
 
   CaptureMemoryDelegateWin capture_memory_delegate(
-      process_reader, *thread, &extra_memory_, nullptr);
+      process_reader,
+      *thread,
+      &extra_memory_,
+      gather_indirectly_referenced_memory_cap);
   CaptureMemory::PointedToByContext(context_, &capture_memory_delegate);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);

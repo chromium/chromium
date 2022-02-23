@@ -51,10 +51,8 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
       frame_tree_node->IsMainFrame() &&
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
           ->IsPortal();
-  bool is_fenced_frame_main_frame =
-      frame_tree_node->IsMainFrame() && frame_tree_node->IsFencedFrameRoot();
-  bool needs_host_attached = new_host->is_local_root_subframe() ||
-                             is_portal_main_frame || is_fenced_frame_main_frame;
+  bool needs_host_attached =
+      new_host->is_local_root_subframe() || is_portal_main_frame;
 
   if (needs_host_attached) {
     if (!agent_host) {
@@ -82,16 +80,10 @@ void TargetAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
 void TargetAutoAttacher::AddClient(Client* client,
                                    bool wait_for_debugger_on_start,
                                    base::OnceClosure callback) {
-  bool need_update = clients_.empty();
   clients_.AddObserver(client);
-  if (wait_for_debugger_on_start) {
-    need_update = need_update || clients_requesting_wait_for_debugger_.empty();
+  if (wait_for_debugger_on_start)
     clients_requesting_wait_for_debugger_.insert(client);
-  }
-  if (need_update)
-    UpdateAutoAttach(std::move(callback));
-  else
-    std::move(callback).Run();
+  UpdateAutoAttach(std::move(callback));
 }
 
 void TargetAutoAttacher::UpdateWaitForDebuggerOnStart(
@@ -99,15 +91,11 @@ void TargetAutoAttacher::UpdateWaitForDebuggerOnStart(
     bool wait_for_debugger_on_start,
     base::OnceClosure callback) {
   DCHECK(clients_.HasObserver(client));
-  bool was_empty = clients_requesting_wait_for_debugger_.empty();
   if (wait_for_debugger_on_start)
     clients_requesting_wait_for_debugger_.insert(client);
   else
     clients_requesting_wait_for_debugger_.erase(client);
-  if (clients_requesting_wait_for_debugger_.empty() != was_empty)
-    UpdateAutoAttach(std::move(callback));
-  else
-    std::move(callback).Run();
+  UpdateAutoAttach(std::move(callback));
 }
 
 void TargetAutoAttacher::RemoveClient(Client* client) {
@@ -162,12 +150,12 @@ RendererAutoAttacherBase::RendererAutoAttacherBase(
 RendererAutoAttacherBase::~RendererAutoAttacherBase() = default;
 
 void RendererAutoAttacherBase::UpdateAutoAttach(base::OnceClosure callback) {
-  DevToolsRendererChannel::ChildWorkerCreatedCallback report_worker_callback;
+  DevToolsRendererChannel::ChildTargetCreatedCallback report_worker_callback;
   if (auto_attach()) {
     report_worker_callback = base::BindRepeating(
         &RendererAutoAttacherBase::ChildWorkerCreated, base::Unretained(this));
   }
-  renderer_channel_->SetReportChildWorkers(std::move(report_worker_callback),
+  renderer_channel_->SetReportChildTargets(std::move(report_worker_callback),
                                            wait_for_debugger_on_start(),
                                            std::move(callback));
 }

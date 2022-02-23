@@ -68,6 +68,10 @@ export class NetworkUIBrowserProxy {
    * @param {string} hostname
    */
   setHostname(hostname) {}
+
+  disableActiveESimProfile() {}
+
+  resetEuicc() {}
 }
 
 /**
@@ -146,6 +150,16 @@ export class NetworkUIBrowserProxyImpl {
    */
   setHostname(hostname) {
     chrome.send('setHostname', [hostname]);
+  }
+
+  /** @override */
+  disableActiveESimProfile() {
+    chrome.send('disableActiveESimProfile');
+  }
+
+  /** @override */
+  resetEuicc() {
+    chrome.send('resetEuicc');
   }
 }
 

@@ -11,7 +11,6 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -22,7 +21,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -65,6 +63,7 @@ import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
@@ -80,9 +79,8 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -98,7 +96,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
-public class TabListViewHolderTest extends DummyUiActivityTestCase {
+public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mMocker = new JniMocker();
 
@@ -302,18 +300,17 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     }
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            model.set(TabProperties.IS_SELECTED, true);
-            Assert.assertNotNull(holder.getForeground());
-            model.set(TabProperties.IS_SELECTED, false);
-            Assert.assertNull(holder.getForeground());
-        } else {
-            model.set(TabProperties.IS_SELECTED, true);
-            View selectedView = holder.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.VISIBLE, selectedView.getVisibility());
-            model.set(TabProperties.IS_SELECTED, false);
-            Assert.assertEquals(View.GONE, selectedView.getVisibility());
-        }
+        model.set(TabProperties.IS_SELECTED, true);
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(holder));
+        model.set(TabProperties.IS_SELECTED, false);
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(holder));
+    }
+
+    private void tabListSelected(ViewGroup holder, PropertyModel model) {
+        model.set(TabProperties.IS_SELECTED, true);
+        Assert.assertNotNull(holder.getForeground());
+        model.set(TabProperties.IS_SELECTED, false);
+        Assert.assertNull(holder.getForeground());
     }
 
     private void testSelectableTabClickToSelect(
@@ -358,7 +355,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         Assert.assertEquals(0, actionButton.getBackground().getLevel());
         Assert.assertEquals(0, actionButton.getDrawable().getAlpha());
 
-        testGridSelected(mSelectableTabListView, mSelectableModel);
+        tabListSelected(mSelectableTabListView, mSelectableModel);
         mSelectableModel.set(TabProperties.IS_SELECTED, true);
         ImageView endButton = mSelectableTabListView.findViewById(R.id.end_button);
         Assert.assertEquals(1, endButton.getBackground().getLevel());
@@ -384,13 +381,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
 
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            View selectedView = mTabGridView.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.VISIBLE, selectedView.getVisibility());
-        } else {
-            Drawable selectedDrawable = mTabGridView.getForeground();
-            Assert.assertNotNull(selectedDrawable);
-        }
+        Assert.assertTrue(TabUiTestHelper.isTabViewSelected(mTabGridView));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGridModel.set(TabProperties.IS_SELECTED, false);
@@ -400,14 +391,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         CriteriaHelper.pollUiThread(
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            View selectedView = mTabGridView.findViewById(R.id.selected_view_below_lollipop);
-            Assert.assertEquals(View.GONE, selectedView.getVisibility());
-        } else {
-            Drawable selectedDrawable = mTabGridView.getForeground();
-            Assert.assertNull(selectedDrawable);
-        }
+        Assert.assertFalse(TabUiTestHelper.isTabViewSelected(mTabGridView));
     }
 
     @Test
@@ -880,6 +864,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @UiThreadTest
     public void testPriceDropEndToEnd() {
         ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
+        ShoppingPersistedTabData.onDeferredStartup();
         PersistedTabDataConfiguration.setUseTestConfig(true);
         setPriceTrackingEnabledForTesting(true);
         mockCurrencyFormatter();

@@ -19,6 +19,9 @@ const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';
 const DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID =
     'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 
+// The help topic regarding language packs.
+const HELP_LANGUAGE_PACKS = 11383012;
+
 /**
  * UI mode for the dialog.
  * @enum {string}
@@ -142,17 +145,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
        * @private
        */
       chromeVoxHintGiven_: Boolean,
-
-      /**
-       * Whether the subtitle for the language section should be shown.
-       */
-      shouldShowLanguageSectionSubtitle_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.valueExists('languagePacksEnabled') &&
-              loadTimeData.getBoolean('languagePacksEnabled');
-        },
-      },
     };
   }
 
@@ -316,6 +308,15 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    */
   onWelcomeNextButtonClicked_() {
     this.userActed('continue');
+  }
+
+  /**
+   * Handle "Quick Start" button for "Welcome" screen.
+   *
+   * @private
+   */
+  onQuickStartButtonClicked_() {
+    this.userActed('activateQuickStart');
   }
 
   /**
@@ -541,8 +542,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   onLanguageLearnMoreLinkClicked_(e) {
-    // TODO(b/200128583): Open the OOBE help app with the help centre article
-    // for language packs, or pop up a <oobe-modal-dialog> with similar content.
+    chrome.send('launchHelpApp', [HELP_LANGUAGE_PACKS]);
 
     // Can't use this.$.languagesLearnMore here as the element is in a <dom-if>.
     this.shadowRoot.querySelector('#languagesLearnMore').focus();

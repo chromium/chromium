@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -14,14 +15,10 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -32,6 +29,9 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -51,7 +51,7 @@ constexpr int kTextPaddingY = 9;
 constexpr int kFontSize = 14;
 
 void DrawIcon(cc::PaintCanvas* canvas,
-              const PaintFlags& flags,
+              const cc::PaintFlags& flags,
               float x,
               float y,
               const SkSamplingOptions& sampling,
@@ -67,14 +67,15 @@ void DrawIcon(cc::PaintCanvas* canvas,
   // area) and so that all placeholder images on the same page look consistent.
   canvas->drawImageRect(
       icon_image->PaintImageForCurrentFrame(),
-      IntRect(gfx::Point(), icon_image->Size()),
-      FloatRect(x, y, scale_factor * kIconWidth, scale_factor * kIconHeight),
+      SkRect::MakeWH(icon_image->width(), icon_image->height()),
+      SkRect::MakeXYWH(x, y, scale_factor * kIconWidth,
+                       scale_factor * kIconHeight),
       sampling, &flags, SkCanvas::kFast_SrcRectConstraint);
 }
 
 void DrawCenteredIcon(cc::PaintCanvas* canvas,
-                      const PaintFlags& flags,
-                      const FloatRect& dest_rect,
+                      const cc::PaintFlags& flags,
+                      const gfx::RectF& dest_rect,
                       const SkSamplingOptions& sampling,
                       float scale_factor) {
   DrawIcon(
@@ -209,7 +210,7 @@ PlaceholderImage::SharedFont* PlaceholderImage::SharedFont::g_instance_ =
     nullptr;
 
 PlaceholderImage::PlaceholderImage(ImageObserver* observer,
-                                   const IntSize& size,
+                                   const gfx::Size& size,
                                    int64_t original_resource_size)
     : Image(observer),
       size_(size),
@@ -220,7 +221,7 @@ PlaceholderImage::PlaceholderImage(ImageObserver* observer,
 
 PlaceholderImage::~PlaceholderImage() = default;
 
-IntSize PlaceholderImage::SizeWithConfig(SizeConfig) const {
+gfx::Size PlaceholderImage::SizeWithConfig(SizeConfig) const {
   return size_;
 }
 
@@ -241,7 +242,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   auto builder = CreatePaintImageBuilder().set_completion_state(
       PaintImage::CompletionState::DONE);
 
-  const gfx::Rect dest_rect(0, 0, size_.width(), size_.height());
+  const gfx::Rect dest_rect(size_);
   if (paint_record_for_current_frame_) {
     return builder
         .set_paint_record(paint_record_for_current_frame_, dest_rect,
@@ -250,9 +251,9 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
   }
 
   PaintRecorder paint_recorder;
-  SkRect sk_dest_rect = gfx::RectToSkRect(dest_rect);
-  Draw(paint_recorder.beginRecording(sk_dest_rect), PaintFlags(), sk_dest_rect,
-       sk_dest_rect, ImageDrawOptions());
+  Draw(paint_recorder.beginRecording(gfx::RectToSkRect(dest_rect)),
+       cc::PaintFlags(), gfx::RectF(dest_rect), gfx::RectF(dest_rect),
+       ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
   paint_record_content_id_ = PaintImage::GetNextContentId();
@@ -272,20 +273,20 @@ void PlaceholderImage::SetIconAndTextScaleFactor(
 }
 
 void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
-                            const PaintFlags& base_flags,
-                            const FloatRect& dest_rect,
-                            const FloatRect& src_rect,
+                            const cc::PaintFlags& base_flags,
+                            const gfx::RectF& dest_rect,
+                            const gfx::RectF& src_rect,
                             const ImageDrawOptions& draw_options) {
-  if (!src_rect.Intersects(FloatRect(0.0f, 0.0f,
-                                     static_cast<float>(size_.width()),
-                                     static_cast<float>(size_.height())))) {
+  if (!src_rect.Intersects(gfx::RectF(0.0f, 0.0f,
+                                      static_cast<float>(size_.width()),
+                                      static_cast<float>(size_.height())))) {
     return;
   }
 
-  PaintFlags flags(base_flags);
-  flags.setStyle(PaintFlags::kFill_Style);
+  cc::PaintFlags flags(base_flags);
+  flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(SkColorSetARGB(0x80, 0xD9, 0xD9, 0xD9));
-  canvas->drawRect(dest_rect, flags);
+  canvas->drawRect(gfx::RectFToSkRect(dest_rect), flags);
 
   if (dest_rect.width() <
           icon_and_text_scale_factor_ * (kIconWidth + 2 * kFeaturePaddingX) ||
@@ -349,14 +350,14 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   flags.setColor(SkColorSetARGB(0xAB, 0, 0, 0));
   shared_font_->font().DrawBidiText(
       canvas, TextRunPaintInfo(TextRun(text_)),
-      FloatPoint(text_x, feature_y + icon_and_text_scale_factor_ *
-                                         (kTextPaddingY + kFontSize)),
+      gfx::PointF(text_x, feature_y + icon_and_text_scale_factor_ *
+                                          (kTextPaddingY + kFontSize)),
       Font::kUseFallbackIfFontNotReady, 1.0f, flags);
 }
 
 void PlaceholderImage::DrawPattern(GraphicsContext& context,
-                                   const PaintFlags& base_flags,
-                                   const FloatRect& dest_rect,
+                                   const cc::PaintFlags& base_flags,
+                                   const gfx::RectF& dest_rect,
                                    const ImageTilingInfo& tiling_info,
                                    const ImageDrawOptions& draw_options) {
   DCHECK(context.Canvas());

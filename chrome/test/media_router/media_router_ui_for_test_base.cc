@@ -4,6 +4,7 @@
 
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
 
+#include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "ui/events/base_event_utils.h"
@@ -26,24 +27,6 @@ ui::MouseEvent CreateMouseReleasedEvent() {
   return CreateMouseEvent(ui::ET_MOUSE_RELEASED);
 }
 
-// Routes observer that calls a callback once there are no routes.
-class NoRoutesObserver : public MediaRoutesObserver {
- public:
-  NoRoutesObserver(MediaRouter* router, base::OnceClosure callback)
-      : MediaRoutesObserver(router), callback_(std::move(callback)) {}
-  ~NoRoutesObserver() override = default;
-
-  void OnRoutesUpdated(
-      const std::vector<MediaRoute>& routes,
-      const std::vector<MediaRoute::Id>& joinable_route_ids) override {
-    if (callback_ && routes.empty())
-      std::move(callback_).Run();
-  }
-
- private:
-  base::OnceClosure callback_;
-};
-
 }  // namespace
 
 void MediaRouterUiForTestBase::TearDown() {
@@ -57,15 +40,6 @@ void MediaRouterUiForTestBase::StartCasting(const std::string& sink_name) {
 
 void MediaRouterUiForTestBase::StopCasting(const std::string& sink_name) {
   StopCasting(GetSinkButton(sink_name));
-}
-
-void MediaRouterUiForTestBase::WaitUntilNoRoutes() {
-  base::RunLoop run_loop;
-  NoRoutesObserver no_routes_observer(
-      MediaRouterFactory::GetApiForBrowserContext(
-          web_contents_->GetBrowserContext()),
-      run_loop.QuitClosure());
-  run_loop.Run();
 }
 
 MediaRoute::Id MediaRouterUiForTestBase::GetRouteIdForSink(

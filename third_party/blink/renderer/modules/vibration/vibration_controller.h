@@ -20,13 +20,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_VIBRATION_VIBRATION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_VIBRATION_VIBRATION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "services/device/public/mojom/vibration_manager.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"

@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

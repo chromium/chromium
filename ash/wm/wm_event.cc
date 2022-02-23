@@ -73,6 +73,7 @@ bool WMEvent::IsTransitionEvent() const {
     case WM_EVENT_FULLSCREEN:
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
+    case WM_EVENT_RESTORE:
     case WM_EVENT_SHOW_INACTIVE:
     case WM_EVENT_PIN:
     case WM_EVENT_TRUSTED_PIN:

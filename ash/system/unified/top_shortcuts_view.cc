@@ -15,11 +15,11 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/collapse_button.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
@@ -28,6 +28,7 @@
 #include "base/cxx17_backports.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -202,27 +203,31 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   }
 
   bool reboot = shell->shutdown_controller()->reboot_on_shutdown();
-  power_button_ = new TopShortcutButton(
+
+  power_button_ = new IconButton(
       base::BindRepeating(&UnifiedSystemTrayController::HandlePowerAction,
                           base::Unretained(controller)),
-      kUnifiedMenuPowerIcon,
+      IconButton::Type::kSmall, &kUnifiedMenuPowerIcon,
       reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN);
   power_button_->SetID(VIEW_ID_POWER_BUTTON);
   container_->AddChildView(power_button_);
 
   if (can_show_settings && can_lock_screen) {
-    lock_button_ = new TopShortcutButton(
+    lock_button_ = new IconButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleLockAction,
                             base::Unretained(controller)),
-        kUnifiedMenuLockIcon, IDS_ASH_STATUS_TRAY_LOCK);
+        IconButton::Type::kSmall, &kUnifiedMenuLockIcon,
+        IDS_ASH_STATUS_TRAY_LOCK);
     container_->AddChildView(lock_button_);
   }
 
   if (can_show_settings) {
-    settings_button_ = new TopShortcutButton(
+    settings_button_ = new IconButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleSettingsAction,
                             base::Unretained(controller)),
-        kUnifiedMenuSettingsIcon, IDS_ASH_STATUS_TRAY_SETTINGS);
+        IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
+        IDS_ASH_STATUS_TRAY_SETTINGS);
+    settings_button_->SetID(VIEW_ID_SETTINGS_BUTTON_VIEW);
     container_->AddChildView(settings_button_);
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(

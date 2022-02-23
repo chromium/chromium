@@ -132,8 +132,8 @@ void SerialIoHandler::StartOpen(
   DCHECK(open_complete_);
   DCHECK(!file_.IsValid());
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_WRITE |
-              base::File::FLAG_EXCLUSIVE_WRITE | base::File::FLAG_ASYNC |
+              base::File::FLAG_WIN_EXCLUSIVE_READ | base::File::FLAG_WRITE |
+              base::File::FLAG_WIN_EXCLUSIVE_WRITE | base::File::FLAG_ASYNC |
               base::File::FLAG_TERMINAL_DEVICE;
   base::File file(port_, flags);
   io_task_runner->PostTask(

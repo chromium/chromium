@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

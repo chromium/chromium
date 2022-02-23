@@ -31,6 +31,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -80,6 +81,8 @@ public class PriceMessageServiceUnitTest {
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                CommerceSubscriptionsServiceConfig.IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM, "true");
         FeatureList.setTestValues(testValues);
 
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
@@ -116,18 +119,20 @@ public class PriceMessageServiceUnitTest {
     @Test
     public void testPrepareMessage_PriceWelcome_ExceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT - 1);
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
-        assertEquals(MAX_SHOW_COUNT, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
+        assertEquals(
+                MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
     }
 
     @Test
     public void testPrepareMessage_PriceAlerts_ExceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT - 1);
+                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
-        assertEquals(MAX_SHOW_COUNT, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
+        assertEquals(
+                MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
     }
 

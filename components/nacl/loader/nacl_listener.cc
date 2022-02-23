@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/nacl/loader/nacl_listener.h"
-#include "base/bind.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -13,7 +12,10 @@
 #include <memory>
 #include <utility>
 
-#if defined(OS_POSIX)
+#include "base/bind.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -41,18 +43,16 @@
 #include "native_client/src/public/nacl_app.h"
 #include "native_client/src/public/nacl_desc.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/public/common/zygote/sandbox_support_linux.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/posix/eintr_wrapper.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
-
-#include "content/public/common/sandbox_init.h"
 #endif
 
 namespace {
@@ -79,7 +79,7 @@ void LoadStatusCallback(int load_status) {
       static_cast<NaClErrorCode>(load_status));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int AttachDebugExceptionHandler(const void* info, size_t info_size) {
   std::string info_string(reinterpret_cast<const char*>(info), info_size);
   bool result = false;
@@ -156,10 +156,10 @@ NaClListener::NaClListener()
     : shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
       io_thread_("NaCl_IOThread"),
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       prereserved_sandbox_size_(0),
 #endif
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       number_of_cores_(-1),  // unknown/error
 #endif
       is_started_(false) {
@@ -226,7 +226,7 @@ void NaClListener::Listen() {
   base::RunLoop().Run();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 int NaClListener::MakeSharedMemorySegment(size_t length, int executable) {
   return content::SharedMemoryIPCSupport::MakeSharedMemorySegment(length,
@@ -288,7 +288,7 @@ void NaClListener::OnAddPrefetchedResource(
 
 void NaClListener::OnStart(nacl::NaClStartParams params) {
   is_started_ = true;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   int urandom_fd = HANDLE_EINTR(dup(base::GetUrandomFD()));
   if (urandom_fd < 0) {
     LOG(FATAL) << "Failed to dup() the urandom FD";
@@ -348,11 +348,11 @@ void NaClListener::OnStart(nacl::NaClStartParams params) {
     LOG(FATAL) << "NaClChromeMainArgsCreate() failed";
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   args->number_of_cores = number_of_cores_;
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   args->create_memory_object_func = &MakeSharedMemorySegment;
 #endif
 
@@ -361,7 +361,7 @@ void NaClListener::OnStart(nacl::NaClStartParams params) {
   base::PlatformFile irt_handle =
       IPC::PlatformFileForTransitToPlatformFile(params.irt_handle);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   args->irt_fd = _open_osfhandle(reinterpret_cast<intptr_t>(irt_handle),
                                  _O_RDONLY | _O_BINARY);
   if (args->irt_fd < 0) {
@@ -405,18 +405,18 @@ void NaClListener::OnStart(nacl::NaClStartParams params) {
     args->pnacl_mode = 0;
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   args->debug_stub_server_bound_socket_fd =
       IPC::PlatformFileForTransitToPlatformFile(
           params.debug_stub_server_bound_socket);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   args->attach_debug_exception_handler_func = AttachDebugExceptionHandler;
   args->debug_stub_server_port_selected_handler_func =
       DebugStubPortSelectedHandler;
 #endif
   args->load_status_handler_func = LoadStatusCallback;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   args->prereserved_sandbox_size = prereserved_sandbox_size_;
 #endif
 

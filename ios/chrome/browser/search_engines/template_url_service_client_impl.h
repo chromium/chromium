@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"

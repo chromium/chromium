@@ -171,11 +171,8 @@ class WebSettings {
   virtual void SetMinimumFontSize(int) = 0;
   virtual void SetMinimumLogicalFontSize(int) = 0;
   virtual void SetHideScrollbars(bool) = 0;
-  virtual void SetOfflineWebApplicationCacheEnabled(bool) = 0;
   virtual void SetPasswordEchoDurationInSeconds(double) = 0;
   virtual void SetPasswordEchoEnabled(bool) = 0;
-  virtual void SetPictographFontFamily(const WebString&,
-                                       UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetPluginsEnabled(bool) = 0;
   virtual void SetPresentationReceiver(bool) = 0;
   virtual void SetAvailablePointerTypes(int) = 0;
@@ -270,11 +267,6 @@ class WebSettings {
   virtual void SetLazyImageLoadingDistanceThresholdPx2G(int) = 0;
   virtual void SetLazyImageLoadingDistanceThresholdPx3G(int) = 0;
   virtual void SetLazyImageLoadingDistanceThresholdPx4G(int) = 0;
-  virtual void SetLazyImageFirstKFullyLoadUnknown(int) = 0;
-  virtual void SetLazyImageFirstKFullyLoadSlow2G(int) = 0;
-  virtual void SetLazyImageFirstKFullyLoad2G(int) = 0;
-  virtual void SetLazyImageFirstKFullyLoad3G(int) = 0;
-  virtual void SetLazyImageFirstKFullyLoad4G(int) = 0;
   virtual void SetForceDarkModeEnabled(bool) = 0;
   virtual void SetPreferredColorScheme(blink::mojom::PreferredColorScheme) = 0;
   virtual void SetPreferredContrast(mojom::PreferredContrast) = 0;

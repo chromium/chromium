@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_sync_controller.h"
@@ -24,7 +25,7 @@ BackgroundSyncScheduler* BackgroundSyncScheduler::GetFor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
 
-  return browser_context->impl()->background_sync_scheduler();
+  return BrowserContextImpl::From(browser_context)->background_sync_scheduler();
 }
 
 BackgroundSyncScheduler::BackgroundSyncScheduler() = default;
@@ -60,7 +61,7 @@ void BackgroundSyncScheduler::ScheduleDelayedProcessing(
                        storage_partition, std::move(delayed_task)));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ScheduleOrCancelBrowserWakeupForSyncType(sync_type, storage_partition);
 #endif
 }
@@ -85,7 +86,7 @@ void BackgroundSyncScheduler::CancelDelayedProcessing(
     delayed_processing_info.erase(storage_partition);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ScheduleOrCancelBrowserWakeupForSyncType(sync_type, storage_partition);
 #endif
 }
@@ -109,7 +110,7 @@ void BackgroundSyncScheduler::RunDelayedTaskAndPruneInfoMap(
   CancelDelayedProcessing(storage_partition, sync_type);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BackgroundSyncScheduler::ScheduleOrCancelBrowserWakeupForSyncType(
     blink::mojom::BackgroundSyncType sync_type,
     StoragePartitionImpl* storage_partition) {

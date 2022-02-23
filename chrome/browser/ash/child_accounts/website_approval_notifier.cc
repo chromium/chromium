@@ -57,8 +57,8 @@ GURL GetURLToOpen(const std::string& allowed_host) {
 
 void OnNotificationClick(const GURL& url) {
   base::RecordAction(base::UserMetricsAction(kNotificationClickedActionName));
-  NewWindowDelegate::GetInstance()->OpenUrl(url,
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 }  // namespace

@@ -69,7 +69,7 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
 };
 
 // TODO(1115950): Flaky on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default

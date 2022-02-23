@@ -27,14 +27,16 @@ OfflineAudioWorkletThread::OfflineAudioWorkletThread(
   // OfflineAudioWorkletThread always uses a NORMAL priority thread.
   params.thread_priority = base::ThreadPriority::NORMAL;
 
-  if (++s_ref_count_ == 1)
+  if (++s_ref_count_ == 1) {
     EnsureSharedBackingThread(params);
+  }
 }
 
 OfflineAudioWorkletThread::~OfflineAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0)
+  if (--s_ref_count_ == 0) {
     ClearSharedBackingThread();
+  }
 }
 
 WorkerBackingThread& OfflineAudioWorkletThread::GetWorkerBackingThread() {

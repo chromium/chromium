@@ -54,7 +54,7 @@ std::unique_ptr<WebRequestActionSet> CreateSetOfActions(const char* json) {
   CHECK(parsed_value->is_list());
 
   WebRequestActionSet::Values actions;
-  for (const base::Value& entry : parsed_value->GetList()) {
+  for (const base::Value& entry : parsed_value->GetListDeprecated()) {
     CHECK(entry.is_dict());
     actions.push_back(base::DictionaryValue::From(
         base::Value::ToUniquePtrValue(entry.Clone())));

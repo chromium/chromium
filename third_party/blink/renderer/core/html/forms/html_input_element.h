@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_INPUT_ELEMENT_H_
 
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
@@ -211,8 +212,8 @@ class CORE_EXPORT HTMLInputElement
   bool LayoutObjectIsNeeded(const ComputedStyle&) const final;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void DetachLayoutTree(bool performing_reattach) final;
-  void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
-                                        const FocusOptions*) final;
+  void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
+                              const FocusOptions*) final;
 
   // FIXME: For isActivatedSubmit and setActivatedSubmit, we should use the
   // NVI-idiom here by making it private virtual in all classes and expose a
@@ -322,6 +323,10 @@ class CORE_EXPORT HTMLInputElement
   bool ShouldDrawCapsLockIndicator() const;
   void SetShouldRevealPassword(bool value);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
+#if BUILDFLAG(IS_ANDROID)
+  bool IsLastInputElementInForm();
+  void DispatchSimulatedEnter();
+#endif
   AXObject* PopupRootAXObject();
   void DidNotifySubtreeInsertionsToDocument() override;
 

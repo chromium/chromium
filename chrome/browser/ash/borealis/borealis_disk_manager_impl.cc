@@ -95,6 +95,18 @@ BorealisDiskManagerImpl::~BorealisDiskManagerImpl() {
       .RemoveDiskManagerDelegate(this);
 }
 
+// Helper function that returns how many bytes the |available_space| would
+// need to be expanded by in order to regenreate the buffer.
+int64_t MissingBufferBytes(int64_t available_space) {
+  return std::max(int64_t(kTargetBufferBytes - available_space), int64_t(0));
+}
+
+// Helper function that returns how much space is available when excluding
+// the buffer space.
+int64_t ExcludeBufferBytes(int64_t available_space) {
+  return std::max(int64_t(available_space - kTargetBufferBytes), int64_t(0));
+}
+
 class BorealisDiskManagerImpl::BuildDiskInfo
     : public Transition<BorealisDiskInfo,
                         BorealisDiskInfo,
@@ -267,6 +279,9 @@ class BorealisDiskManagerImpl::ResizeDisk
       if (client_request_) {
         RecordBorealisDiskClientAvailableSpaceAtRequestHistogram(
             original_disk_info_.available_space);
+        // Regenerate the buffer, if needed, by tacking it onto the existing
+        // request.
+        space_delta_ += MissingBufferBytes(original_disk_info_.available_space);
       }
       if (original_disk_info_.expandable_space < space_delta_) {
         Fail(Described<BorealisResizeDiskResult>(
@@ -538,15 +553,17 @@ void BorealisDiskManagerImpl::BuildGetDiskInfoResponse(
   } else {
     if (disk_info_or_error.Value()->has_fixed_size) {
       response.available_bytes =
-          std::max(int64_t(disk_info_or_error.Value()->available_space -
-                           kTargetBufferBytes),
-                   int64_t(0));
+          ExcludeBufferBytes(disk_info_or_error.Value()->available_space);
     } else {
       // If the disk is still sparse, then we set the available space to 0 in
       // order to force the client to request for more space if it needs any.
       response.available_bytes = 0;
     }
-    response.expandable_bytes = disk_info_or_error.Value()->expandable_space;
+    // Space for regenerating the buffer needs to be set aside, so we mark it
+    // as non-expandable to the client in our response.
+    response.expandable_bytes =
+        disk_info_or_error.Value()->expandable_space -
+        MissingBufferBytes(disk_info_or_error.Value()->available_space);
     response.disk_size = disk_info_or_error.Value()->disk_size;
   }
   RecordBorealisDiskClientGetDiskInfoResultHistogram(
@@ -601,8 +618,9 @@ void BorealisDiskManagerImpl::OnRequestSpaceDelta(
             std::move(disk_info_or_error.Error())));
     return;
   }
-  int64_t delta = disk_info_or_error.Value()->second.disk_size -
-                  disk_info_or_error.Value()->first.disk_size;
+  int64_t delta =
+      ExcludeBufferBytes(disk_info_or_error.Value()->second.available_space) -
+      ExcludeBufferBytes(disk_info_or_error.Value()->first.available_space);
   if (expanding) {
     if (delta < target_delta) {
       EmitResizeDiskMetric(expanding,

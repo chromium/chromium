@@ -14,13 +14,10 @@ enum class UserAgentType : short {
   // Used for pages that are generated for app-specific URLs.
   NONE = 0,
 
-  // The default user agent type. The user agent used will depend on the size of
-  // the application window.
+  // The default user agent type. The default user agent will be determined by
+  // the WebClient.
   AUTOMATIC,
 
-  // TODO(crbug.com/1025227): Update comments.
-  // The default user agent type if kUseDefaultUserAgentInWebClient isn't
-  // enabled.
   // Used to specify a mobile browser user agent.
   MOBILE,
 

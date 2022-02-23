@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.attribution_reporting;
 import android.util.Pair;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.FileProperties;
+import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.AttributionFileProperties;
+import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.CachedEnumMetric;
 
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,8 +92,10 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 stream = filePair.first;
                 long fileSize = filePair.second;
 
-                // TODO(https://crbug.com/1210171): Record metrics for dropped impressions.
-                if (fileSize >= MAX_STORAGE_BYTES_PER_PACKAGE) return true;
+                if (fileSize >= MAX_STORAGE_BYTES_PER_PACKAGE) {
+                    cacheAttributionEvent(AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL);
+                    return true;
+                }
 
                 stream.writeUTF(parameters.getSourceEventId());
                 stream.writeUTF(parameters.getDestination());
@@ -101,21 +106,25 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 // purposes).
                 stream.writeLong(System.currentTimeMillis());
                 stream.writeChar(SENTINEL);
+                cacheAttributionEvent(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE);
                 return fileSize + BYTES_PER_ATTRIBUTION_ESTIMATE >= STORAGE_FLUSH_THRESHOLD;
             } catch (Exception e) {
+                cacheAttributionEvent(AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED);
                 Log.w(TAG, WRITE_FAILURE, e);
                 return false;
             } finally {
                 try {
                     if (stream != null) stream.close();
                 } catch (Exception e) {
+                    cacheAttributionEvent(AttributionMetrics.AttributionEvent.FILE_CLOSE_FAILED);
                     Log.w(TAG, WRITE_FAILURE, e);
                 }
             }
         }
     }
 
-    private void readImpressions(List<AttributionParameters> output, FileProperties<R> properties) {
+    private void readImpressions(
+            List<AttributionParameters> output, AttributionFileProperties<R> properties) {
         try {
             // If user downgraded Chrome and the schema changed, just discard the attributions.
             if (properties.version > VERSION) return;
@@ -134,7 +143,8 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 long eventTime = properties.reader.readLong();
                 char sentinel = properties.reader.readChar();
                 if (sentinel != SENTINEL) {
-                    // TODO(https://crbug.com/1210171): Record metrics for dropped impressions.
+                    // Note that metrics for failed reads are captured in
+                    // getAndClearStoredImpressions().
                     Log.w(TAG, "Failed to read Impression data, data was corrupted.");
                     return;
                 }
@@ -144,7 +154,6 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 output.add(params);
             }
         } catch (Exception e) {
-            // TODO(https://crbug.com/1210171): Record metrics for dropped impressions.
             Log.w(TAG, READ_FAILURE, e);
         } finally {
             try {
@@ -155,17 +164,50 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
         }
     }
 
+    public void cacheAttributionEvent(@AttributionMetrics.AttributionEvent int event) {
+        try {
+            synchronized (sFileLock) {
+                mFileManager.incrementEnumMetric(AttributionMetrics.ATTRIBUTION_EVENTS_NAME, event);
+            }
+        } catch (IOException e) {
+        }
+    }
+
     public List<AttributionParameters> getAndClearStoredImpressions() {
+        ThreadUtils.assertOnBackgroundThread();
         List<AttributionParameters> parameters = new ArrayList<>();
+        int cachedAttributions = -1;
         synchronized (sFileLock) {
             try {
-                for (FileProperties<R> properties : mFileManager.getAllFiles()) {
+                for (CachedEnumMetric metric : mFileManager.getCachedEnumMetrics()) {
+                    if (AttributionMetrics.isValidAttributionEventMetric(
+                                metric.metricName, metric.enumValue)) {
+                        if (metric.enumValue
+                                == AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE) {
+                            cachedAttributions = metric.count;
+                        }
+                        AttributionMetrics.recordAttributionEvent(metric.enumValue, metric.count);
+                    } else {
+                        // Drop unrecognized metrics, probably caused by version skew.
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to record Attribution metrics.", e);
+            }
+            try {
+                for (AttributionFileProperties<R> properties :
+                        mFileManager.getAllAttributionFiles()) {
                     readImpressions(parameters, properties);
                 }
             } catch (Exception e) {
                 Log.w(TAG, READ_FAILURE, e);
             }
             mFileManager.clearAllData();
+        }
+        if (cachedAttributions > parameters.size()) {
+            AttributionMetrics.recordAttributionEvent(
+                    AttributionMetrics.AttributionEvent.DROPPED_READ_FAILED,
+                    cachedAttributions - parameters.size());
         }
         return parameters;
     }

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
 
@@ -24,6 +24,15 @@ class ExceptionHandler {
   ExceptionHandler& operator=(const ExceptionHandler&) = delete;
 
   ~ExceptionHandler();
+
+  // Returns a v8::Value wrapping a weak reference to this ExceptionHandler.
+  v8::Local<v8::Value> GetV8Wrapper(v8::Isolate* isolate);
+
+  // Returns the ExceptionHandler associated with `value`, or null if the value
+  // doesn't refer to a valid ExceptionHandler (which could happen with a
+  // irrelevant v8::Value or if the ExceptionHandler was destroyed).
+  static ExceptionHandler* FromV8Wrapper(v8::Isolate* isolate,
+                                         v8::Local<v8::Value> value);
 
   // Handles an exception in the given |context|. |message| is a message to
   // prefix the error message with, e.g. "Exception in response to foo".
@@ -43,12 +52,23 @@ class ExceptionHandler {
   void SetHandlerForContext(v8::Local<v8::Context> context,
                             v8::Local<v8::Function> handler);
 
+  // Safely runs an `extension_callback` with the provided `callback_arguments`,
+  // handling any exceptions that arise. If an exception is found, prefixes the
+  // exception with `message`.
+  void RunExtensionCallback(
+      v8::Local<v8::Context> context,
+      v8::Local<v8::Function> extension_callback,
+      std::vector<v8::Local<v8::Value>> callback_arguments,
+      const std::string& message);
+
  private:
   // Returns the custom handler for the given |context|, or an empty handle if
   // no custom handle exists.
   v8::Local<v8::Function> GetCustomHandler(v8::Local<v8::Context> context);
 
   binding::AddConsoleError add_console_error_;
+
+  base::WeakPtrFactory<ExceptionHandler> weak_factory_{this};
 };
 
 }  // namespace extensions

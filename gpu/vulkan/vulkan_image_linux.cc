@@ -4,9 +4,10 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
+#include <tuple>
+
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -102,7 +103,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
                            &import_memory_fd_info, requirements);
   // If Initialize successfully, the fd in scoped_fd should be owned by vulkan.
   if (result)
-    ignore_result(scoped_fd.release());
+    std::ignore = scoped_fd.release();
 
   return result;
 }

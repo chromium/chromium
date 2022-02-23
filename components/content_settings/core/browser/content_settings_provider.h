@@ -51,7 +51,7 @@ class ProviderInterface {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
+      base::Value&& value,
       const ContentSettingConstraints& constraints) = 0;
 
   // Resets all content settings for the given |content_type| and empty resource

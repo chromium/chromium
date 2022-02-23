@@ -24,7 +24,13 @@ static const char kZygoteHelloMessage[] = "ZYGOTE_OK";
 static const char kZygoteChildPingMessage[] = "CHILD_PING";
 
 // Maximum allowable length for messages sent to the zygote.
-const size_t kZygoteMaxMessageLength = 12288;
+const size_t kZygoteMaxMessageLength = 64 * 1024;
+static_assert(kZygoteMaxMessageLength < 200 * 1024,
+              "Raising kZygoteMaxMessageLength past the maximum single "
+              "datagram size for a Unix domain socket will cause long "
+              "messages to be silently truncated. See "
+              "https://crbug.com/1278226. Values as low as 212992 have "
+              "been observed in the wild.");
 
 // File descriptors initialized by the Zygote Host
 const int kZygoteSocketPairFd = base::GlobalDescriptors::kBaseDescriptor;

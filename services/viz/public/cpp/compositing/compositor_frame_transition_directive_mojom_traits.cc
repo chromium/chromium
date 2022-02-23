@@ -178,9 +178,11 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
       !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
+  bool is_renderer_driven_animation = data.is_renderer_driven_animation();
 
   *out = viz::CompositorFrameTransitionDirective(
-      sequence_id, type, effect, root_config, std::move(shared_elements));
+      sequence_id, type, is_renderer_driven_animation, effect, root_config,
+      std::move(shared_elements));
   return true;
 }
 

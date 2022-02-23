@@ -92,6 +92,11 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return directive.type();
   }
 
+  static bool is_renderer_driven_animation(
+      const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.is_renderer_driven_animation();
+  }
+
   static viz::CompositorFrameTransitionDirective::Effect effect(
       const viz::CompositorFrameTransitionDirective& directive) {
     return directive.effect();

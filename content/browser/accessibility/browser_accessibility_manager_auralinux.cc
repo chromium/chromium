@@ -73,6 +73,12 @@ void BrowserAccessibilityManagerAuraLinux::FireSelectedEvent(
   FireEvent(node, ax::mojom::Event::kSelection);
 }
 
+void BrowserAccessibilityManagerAuraLinux::FireBusyChangedEvent(
+    BrowserAccessibility* node,
+    bool is_busy) {
+  ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnBusyStateChanged(is_busy);
+}
+
 void BrowserAccessibilityManagerAuraLinux::FireLoadingEvent(
     BrowserAccessibility* node,
     bool is_loading) {
@@ -122,8 +128,10 @@ void BrowserAccessibilityManagerAuraLinux::FireEvent(BrowserAccessibility* node,
 
 void BrowserAccessibilityManagerAuraLinux::FireBlinkEvent(
     ax::mojom::Event event_type,
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node);
+    BrowserAccessibility* node,
+    int action_request_id) {
+  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                              action_request_id);
 
   switch (event_type) {
     case ax::mojom::Event::kScrolledToAnchor:
@@ -189,6 +197,10 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       FireEvent(node, ax::mojom::Event::kCheckedStateChanged);
       break;
+    case ui::AXEventGenerator::Event::BUSY_CHANGED:
+      FireBusyChangedEvent(node, node->GetData().GetBoolAttribute(
+                                     ax::mojom::BoolAttribute::kBusy));
+      break;
     case ui::AXEventGenerator::Event::COLLAPSED:
       FireExpandedEvent(node, false);
       break;
@@ -219,10 +231,15 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireAriaCurrentChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
+      DCHECK_EQ(node->GetRole(), ax::mojom::Role::kRootWebArea);
+      DCHECK(
+          !node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, false);
       FireEvent(node, ax::mojom::Event::kLoadComplete);
       break;
     case ui::AXEventGenerator::Event::LOAD_START:
+      DCHECK_EQ(node->GetRole(), ax::mojom::Role::kRootWebArea);
+      DCHECK(node->GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kBusy));
       FireLoadingEvent(node, true);
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
@@ -276,7 +293,6 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ALERT:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:

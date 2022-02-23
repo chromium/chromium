@@ -123,4 +123,11 @@ class CryptAuthDeviceManager {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::CryptAuthDeviceManager;
+}  // namespace device_sync
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_DEVICE_MANAGER_H_

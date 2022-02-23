@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.widget.image_tiles.ImageTile;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +27,14 @@ public class QueryTile extends ImageTile {
     public final List<QueryTile> children;
 
     /** The urls of the images to be shown for the tile. */
-    public final List<String> urls;
+    public final List<GURL> urls;
 
     /** The urls of the images to be shown for the tile. */
     public final List<String> searchParams;
 
     /** Constructor. */
     public QueryTile(String id, String displayTitle, String accessibilityText, String queryText,
-            String[] urls, String[] searchParams, List<QueryTile> children) {
+            GURL[] urls, String[] searchParams, List<QueryTile> children) {
         super(id, displayTitle, accessibilityText);
         this.queryText = queryText;
         this.urls = Arrays.asList(urls);

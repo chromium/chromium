@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/osd_plane.h"
 #include "chromecast/public/osd_plane_shlib.h"

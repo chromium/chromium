@@ -89,7 +89,7 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(
-          url, options, net::CookiePartitionKeychain(),
+          url, options, net::CookiePartitionKeyCollection(),
           base::BindLambdaForTesting(
               [&](const net::CookieAccessResultList& cookie_list,
                   const net::CookieAccessResultList& excluded_cookies) {
@@ -292,18 +292,23 @@ class RestrictedCookieManagerInterceptor
                            const net::SiteForCookies& site_for_cookies,
                            const url::Origin& top_frame_origin,
                            const std::string& cookie,
+                           bool partitioned_cookies_runtime_feature_enabled,
                            SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin, std::move(cookie),
+        /*partitioned_cookies_runtime_feature_enabled=*/false,
         std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
                         const url::Origin& top_frame_origin,
+                        bool partitioned_cookies_runtime_feature_enabled,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
-        URLToUse(url), site_for_cookies, top_frame_origin, std::move(callback));
+        URLToUse(url), site_for_cookies, top_frame_origin,
+        /*partitioned_cookies_runtime_feature_enabled=*/false,
+        std::move(callback));
   }
 
  private:

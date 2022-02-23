@@ -35,4 +35,12 @@ void FakeInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& selection_range) {}
 
+void FakeInputMethodContext::SetContentType(TextInputType input_type,
+                                            int input_flags) {}
+
+VirtualKeyboardController*
+FakeInputMethodContext::GetVirtualKeyboardController() {
+  return nullptr;
+}
+
 }  // namespace ui

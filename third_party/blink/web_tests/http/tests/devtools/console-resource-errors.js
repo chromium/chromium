@@ -39,7 +39,7 @@
   ConsoleTestRunner.expandConsoleMessages(onExpandedMessages);
 
   async function onExpandedMessages() {
-    await ConsoleTestRunner.dumpConsoleMessagesWithClasses(true);
+    await ConsoleTestRunner.dumpConsoleMessagesWithClasses(true, true);
     TestRunner.completeTest();
   }
 })();

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 
 namespace ipc_fuzzer {

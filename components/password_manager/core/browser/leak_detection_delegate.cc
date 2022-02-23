@@ -47,24 +47,31 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
-void LeakDetectionDelegate::StartLeakCheck(const PasswordForm& form) {
+void LeakDetectionDelegate::StartLeakCheck(
+    const PasswordForm& credentials,
+    bool submitted_form_was_likely_signup_form) {
   if (client_->IsIncognito())
     return;
 
   if (!CanStartLeakCheck(*client_->GetPrefs(), client_))
     return;
 
-  if (form.username_value.empty())
+  if (credentials.username_value.empty())
     return;
 
-  DCHECK(!form.password_value.empty());
+  DCHECK(!credentials.password_value.empty());
+
+  is_likely_signup_form_ = submitted_form_was_likely_signup_form;
+
   leak_check_ = leak_factory_->TryCreateLeakCheck(
-      this, client_->GetIdentityManager(), client_->GetURLLoaderFactory());
+      this, client_->GetIdentityManager(), client_->GetURLLoaderFactory(),
+      client_->GetChannel());
   // Reset the helper to avoid notifications from the currently running check.
   helper_.reset();
   if (leak_check_) {
     is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
-    leak_check_->Start(form.url, form.username_value, form.password_value);
+    leak_check_->Start(credentials.url, credentials.username_value,
+                       credentials.password_value);
   }
 }
 
@@ -85,9 +92,13 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
       false);
   if (is_leaked || force_dialog_for_testing) {
     PasswordScriptsFetcher* scripts_fetcher = nullptr;
+    // Password change scripts require password generation, so only bother
+    // querying for script availability if generation is available.
+    // Similarly, password change scripts should only be offered during sign-in
+    // (not during sign-up), so don't query if this was a new-password form.
     if (client_->GetPasswordFeatureManager()->IsGenerationEnabled() &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordScriptsFetching) &&
+        !is_likely_signup_form_ &&
+        password_manager::features::IsPasswordScriptsFetchingEnabled() &&
         base::FeatureList::IsEnabled(
             password_manager::features::kPasswordChange)) {
       scripts_fetcher = client_->GetPasswordScriptsFetcher();
@@ -116,23 +127,6 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     identities.emplace_back(u, username);
   }
   client_->MaybeReportEnterprisePasswordBreachEvent(identities);
-
-  bool force_dialog_for_testing = base::GetFieldTrialParamByFeatureAsBool(
-      password_manager::features::kPasswordChange,
-      password_manager::features::
-          kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-      false);
-  if (force_dialog_for_testing) {
-    helper_.reset();
-    // Correct leak_type to offer change password.
-    CredentialLeakType leak_type =
-        CreateLeakType(is_saved, IsReused(false),
-                       IsSyncing(client_->GetPasswordSyncState() ==
-                                 SyncState::kSyncingNormalEncryption),
-                       has_change_script);
-    client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
-    return;
-  }
 
   DCHECK(is_leaked_timer_);
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",

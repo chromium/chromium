@@ -21,6 +21,7 @@
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -254,6 +255,10 @@ HistogramBase* Histogram::FactoryGet(const std::string& name,
   bool valid_arguments =
       InspectConstructionArguments(name, &minimum, &maximum, &bucket_count);
   DCHECK(valid_arguments) << name;
+  if (!valid_arguments) {
+    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
+    return DummyHistogram::GetInstance();
+  }
 
   return Factory(name, minimum, maximum, bucket_count, flags).Build();
 }
@@ -430,32 +435,32 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
 
   // Checks below must be done after any min/max swap.
   if (*minimum > *maximum) {
+    DLOG(ERROR) << "Histogram: " << name << " has swapped minimum/maximum";
     check_okay = false;
     std::swap(*minimum, *maximum);
   }
 
   // Defensive code for backward compatibility.
   if (*minimum < 1) {
-    DVLOG(1) << "Histogram: " << name << " has bad minimum: " << *minimum;
+    // TODO(crbug.com/1288842): Temporarily disabled during cleanup.
+    // DLOG(ERROR) << "Histogram: " << name << " has bad minimum: " << *minimum;
     *minimum = 1;
     if (*maximum < 1)
       *maximum = 1;
   }
   if (*maximum >= kSampleType_MAX) {
-    DVLOG(1) << "Histogram: " << name << " has bad maximum: " << *maximum;
+    DLOG(ERROR) << "Histogram: " << name << " has bad maximum: " << *maximum;
     *maximum = kSampleType_MAX - 1;
   }
   if (*bucket_count > kBucketCount_MAX) {
     UmaHistogramSparse("Histogram.TooManyBuckets.1000",
                        static_cast<Sample>(HashMetricName(name)));
 
-    // TODO(bcwhite): Look at injecting allowlist (using hashes) from a higher
-    // layer rather than hardcoding them here.
     // Blink.UseCounter legitimately has more than 1000 entries in its enum.
     if (!StartsWith(name, "Blink.UseCounter")) {
-      DVLOG(1) << "Histogram: " << name
-               << " has bad bucket_count: " << *bucket_count << " (limit "
-               << kBucketCount_MAX << ")";
+      DLOG(ERROR) << "Histogram: " << name
+                  << " has bad bucket_count: " << *bucket_count << " (limit "
+                  << kBucketCount_MAX << ")";
 
       // Assume it's a mistake and limit to 100 buckets, plus under and over.
       // If the DCHECK doesn't alert the user then hopefully the small number
@@ -574,14 +579,6 @@ bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {
 base::Value Histogram::ToGraphDict() const {
   std::unique_ptr<SampleVector> snapshot = SnapshotAllSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
-}
-
-void Histogram::ValidateHistogramContents() const {
-  CHECK(unlogged_samples_);
-  CHECK(unlogged_samples_->bucket_ranges());
-  CHECK(logged_samples_);
-  CHECK(logged_samples_->bucket_ranges());
-  CHECK_NE(0U, logged_samples_->id());
 }
 
 void Histogram::SerializeInfoImpl(Pickle* pickle) const {
@@ -733,7 +730,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  const DescriptionPair* descriptions_;
+  raw_ptr<const DescriptionPair> descriptions_;
 };
 
 LinearHistogram::~LinearHistogram() = default;
@@ -811,6 +808,10 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
   bool valid_arguments = Histogram::InspectConstructionArguments(
       name, &minimum, &maximum, &bucket_count);
   DCHECK(valid_arguments) << name;
+  if (!valid_arguments) {
+    DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
+    return DummyHistogram::GetInstance();
+  }
 
   return Factory(name, minimum, maximum, bucket_count, flags, descriptions)
       .Build();
@@ -1117,7 +1118,7 @@ class CustomHistogram::Factory : public Histogram::Factory {
   }
 
  private:
-  const std::vector<Sample>* custom_ranges_;
+  raw_ptr<const std::vector<Sample>> custom_ranges_;
 };
 
 HistogramBase* CustomHistogram::FactoryGet(

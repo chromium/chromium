@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +34,7 @@ constexpr char kTestExtensionID[] = "cmgkkmeeoiceijkpmaabbmpgnkpaaela";
 
 std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::TestCupsPrintJobManager>(
+  return std::make_unique<ash::TestCupsPrintJobManager>(
       Profile::FromBrowserContext(context));
 }
 
@@ -70,7 +70,7 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
 
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    chromeos::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
+    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildTestCupsPrintJobManager));
   }
 
@@ -98,14 +98,14 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
           browser()->profile()),
       run_loop.QuitClosure());
 
-  std::unique_ptr<chromeos::CupsPrintJob> print_job =
-      std::make_unique<chromeos::CupsPrintJob>(
+  std::unique_ptr<ash::CupsPrintJob> print_job =
+      std::make_unique<ash::CupsPrintJob>(
           chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
           ::printing::PrintJob::Source::PRINT_PREVIEW,
-          /*source_id=*/"", chromeos::printing::proto::PrintSettings());
-  chromeos::TestCupsPrintJobManager* print_job_manager =
-      static_cast<chromeos::TestCupsPrintJobManager*>(
-          chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(
+          /*source_id=*/"", ash::printing::proto::PrintSettings());
+  ash::TestCupsPrintJobManager* print_job_manager =
+      static_cast<ash::TestCupsPrintJobManager*>(
+          ash::CupsPrintJobManagerFactory::GetForBrowserContext(
               browser()->profile()));
   print_job_manager->CreatePrintJob(print_job.get());
   print_job_manager->CancelPrintJob(print_job.get());

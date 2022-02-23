@@ -7,11 +7,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/cert/cert_verify_proc.h"
@@ -22,7 +24,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/x509_util_nss.h"
 #endif
 
@@ -116,7 +118,7 @@ class MultiThreadedCertVerifier::InternalRequest
                             std::unique_ptr<ResultHelper> verify_result);
 
   CompletionOnceCallback callback_;
-  CertVerifyResult* caller_result_;
+  raw_ptr<CertVerifyResult> caller_result_;
 
   base::WeakPtrFactory<InternalRequest> weak_factory_{this};
 };
@@ -242,7 +244,7 @@ void MultiThreadedCertVerifier::SetConfig(const CertVerifier::Config& config) {
 
 // TODO(https://crbug.com/978854): Pass these into the actual CertVerifyProc
 // rather than relying on global side-effects.
-#if !defined(USE_NSS_CERTS)
+#if !BUILDFLAG(USE_NSS_CERTS)
   // Not yet implemented.
   DCHECK(config.additional_untrusted_authorities.empty());
 #else

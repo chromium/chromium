@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.app.Activity;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -51,7 +50,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -68,10 +66,11 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -142,7 +141,6 @@ public class ContextualSearchManager
     @VisibleForTesting
     protected final ContextualSearchTranslation mTranslateController;
     private final ContextualSearchSelectionClient mContextualSearchSelectionClient;
-    private final ContextualSearchIPH mInProductHelp;
 
     private final ScrimCoordinator mScrimCoordinator;
 
@@ -179,6 +177,8 @@ public class ContextualSearchManager
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private boolean mDidStartLoadingResolvedSearchRequest;
+    private boolean mDidStartDelayedIntelligentResolveRequest;
+
     private long mLoadedSearchUrlTimeMs;
     private boolean mWereSearchResultsSeen;
     private boolean mWereInfoBarsHidden;
@@ -229,9 +229,9 @@ public class ContextualSearchManager
     /** Tap Experiments and other variable behavior. */
     private QuickAnswersHeuristic mQuickAnswersHeuristic;
 
-    // Counter for how many times we've called SelectWordAroundCaret without an ACK returned.
+    // Counter for how many times we've called SelectAroundCaret without an ACK returned.
     // TODO(donnd): replace with a more systematic approach using the InternalStateController.
-    private int mSelectWordAroundCaretCounter;
+    private int mSelectAroundCaretCounter;
 
     /** An observer that reports selected context to GSA for search quality. */
     private ContextualSearchObserver mContextReportingObserver;
@@ -317,7 +317,6 @@ public class ContextualSearchManager
                 mPolicy, getContextualSearchInternalStateHandler());
         mInteractionRecorder = new ContextualSearchRankerLoggerImpl();
         mContextualSearchSelectionClient = new ContextualSearchSelectionClient();
-        mInProductHelp = new ContextualSearchIPH();
     }
 
     /**
@@ -363,8 +362,6 @@ public class ContextualSearchManager
             mLayoutManager.addSceneOverlay((SceneOverlay) panel);
         }
 
-        mInProductHelp.setParentView(parentView);
-
         mRedirectHandler = RedirectHandler.create();
 
         mIsShowingPromo = false;
@@ -404,7 +401,6 @@ public class ContextualSearchManager
         assert panel != null;
         mSearchPanel = panel;
         mPolicy.setContextualSearchPanel(panel);
-        mInProductHelp.setSearchPanel(panel);
     }
 
     @Override
@@ -499,8 +495,6 @@ public class ContextualSearchManager
         mRelatedSearches = null;
         mIsRelatedSearchesSerp = false;
 
-        mInProductHelp.onCloseContextualSearch(Profile.getLastUsedRegularProfile());
-
         if (mIsShowingPromo && !mDidLogPromoOutcome && mSearchPanel.wasPromoInteractive()) {
             ContextualSearchUma.logPromoOutcome(mWasActivatedByTap, mIsMandatoryPromo);
             mDidLogPromoOutcome = true;
@@ -508,7 +502,6 @@ public class ContextualSearchManager
 
         mIsShowingPromo = false;
         mSearchPanel.setIsPromoActive(false, false);
-        mSearchPanel.setIsPanelHelpActive(false);
         mSearchPanel.clearRelatedSearches();
         notifyHideContextualSearch();
     }
@@ -571,7 +564,6 @@ public class ContextualSearchManager
             mDidStartLoadingResolvedSearchRequest = false;
             mSearchPanel.setSearchTerm(selection);
             mIsRelatedSearchesSerp = false;
-            ensureCaption();
             if (shouldPrefetch) loadSearchUrl();
         } else {
             // The selection is no longer valid, so we can't build a request.  Don't show the UX.
@@ -588,15 +580,11 @@ public class ContextualSearchManager
             mSearchPanel.setIsPromoActive(true, mIsMandatoryPromo);
             mSearchPanel.setDidSearchInvolvePromo();
         }
-        mSearchPanel.setIsPanelHelpActive(true);
 
         mSearchPanel.requestPanelShow(stateChangeReason);
 
         assert mSelectionController.getSelectionType() != SelectionType.UNDETERMINED;
         mWasActivatedByTap = mSelectionController.getSelectionType() == SelectionType.TAP;
-
-        mInProductHelp.onSearchPanelShown(
-                mWasActivatedByTap, Profile.fromWebContents(mTabSupplier.get().getWebContents()));
     }
 
     @Override
@@ -769,7 +757,10 @@ public class ContextualSearchManager
 
     @Override
     public void handleSearchTermResolutionResponse(ResolvedSearchTerm resolvedSearchTerm) {
-        if (!mInternalStateController.isStillWorkingOn(InternalState.RESOLVING)) return;
+        if (!mInternalStateController.isStillWorkingOn(InternalState.RESOLVING)
+                && !mDidStartDelayedIntelligentResolveRequest) {
+            return;
+        }
 
         // Show an appropriate message for what to search for.
         String message;
@@ -802,7 +793,8 @@ public class ContextualSearchManager
                 && (mSelectionController.getSelectionType() == SelectionType.TAP
                         || mSelectionController.getSelectionType()
                                 == SelectionType.RESOLVING_LONG_PRESS)) {
-            String originalSelection = mContext == null ? null : mContext.getInitialSelectedWord();
+            String originalSelection =
+                    mContext == null ? null : mContext.getSelectionBeingResolved();
             String currentSelection = mSelectionController.getSelectedText();
             if (currentSelection != null) currentSelection = currentSelection.trim();
             if (originalSelection != null && originalSelection.trim().equals(currentSelection)) {
@@ -817,6 +809,13 @@ public class ContextualSearchManager
         mInternalStateController.notifyFinishedWorkOn(InternalState.RESOLVING);
     }
 
+    /**
+     * Displays the given {@link ResolvedSearchTerm} in the panel and logs the action.
+     * @param resolvedSearchTerm The bundle of data from the server to be displayed
+     * @param message The main message to display in the Bar
+     * @param doLiteralSearch Whether this is a literal search for the verbatim selection
+     *     or a resolved search.
+     */
     void displayResolvedSearchTerm(
             ResolvedSearchTerm resolvedSearchTerm, String message, boolean doLiteralSearch) {
         boolean receivedCaptionOrThumbnail = !TextUtils.isEmpty(resolvedSearchTerm.caption())
@@ -857,17 +856,10 @@ public class ContextualSearchManager
             boolean doesAnswer = false;
             setCaption(resolvedSearchTerm.caption(), doesAnswer);
         }
-        ensureCaption();
 
         boolean quickActionShown =
                 mSearchPanel.getSearchBarControl().getQuickActionControl().hasQuickAction();
         mReceivedContextualCardsEntityData = !quickActionShown && receivedCaptionOrThumbnail;
-
-        if (mReceivedContextualCardsEntityData) {
-            mInProductHelp.onEntityDataReceived(
-                    mWasActivatedByTap, Profile.getLastUsedRegularProfile());
-        }
-
         ContextualSearchUma.logContextualCardsDataShown(mReceivedContextualCardsEntityData);
         mSearchPanel.getPanelMetrics().setWasContextualCardsDataShown(
                 mReceivedContextualCardsEntityData, resolvedSearchTerm.cardTagEnum());
@@ -895,6 +887,36 @@ public class ContextualSearchManager
             }
             mPolicy.logSearchTermResolutionDetails(searchTerm);
         }
+    }
+
+    /**
+     * Prepares the current {@link ContextualSearchContext} for an upcoming resolve request by
+     * setting properties like the appropriate languages for translation.
+     */
+    private void prepareContextResolveProperties() {
+        ContextualSearchInteractionPersister.PersistedInteraction interaction =
+                mInteractionRecorder.getInteractionPersister().getAndClearPersistedInteraction();
+        String targetLanguage = mTranslateController.getTranslateServiceTargetLanguage();
+        targetLanguage = targetLanguage != null ? targetLanguage : "";
+        String fluentLanguages = mTranslateController.getTranslateServiceFluentLanguages();
+        fluentLanguages = fluentLanguages != null ? fluentLanguages : "";
+        mContext.setResolveProperties(mPolicy.getHomeCountry(mActivity),
+                mPolicy.doSendBasePageUrl(), interaction.getEventId(),
+                interaction.getEncodedUserInteractions(), targetLanguage, fluentLanguages);
+    }
+
+    /** Issues a resolve request for the current selection. */
+    private void issueResolveRequest() {
+        boolean isExactSearch = mSelectionController.isAdjustedSelection();
+        mContext.prepareToResolve(
+                isExactSearch, mPolicy.getRelatedSearchesStamp(getBasePageLanguage()));
+        mNetworkCommunicator.startSearchTermResolutionRequest(
+                mSelectionController.getSelectedText(), isExactSearch, mContext);
+    }
+
+    /** Resets internal state that should be reset whenever a Search ends (panel is closed). */
+    void resetStateAfterSearch() {
+        mDidStartDelayedIntelligentResolveRequest = false;
     }
 
     /**
@@ -1174,6 +1196,19 @@ public class ContextualSearchManager
                     // the case where it needed to be.
                     mSearchRequest.setNormalPriority();
                     loadSearchUrl();
+                    // For the Delayed Intelligence Feature start a resolve request on the first
+                    // panel open.
+                    if (!mDidStartDelayedIntelligentResolveRequest
+                            && mPolicy.isDelayedIntelligenceActive()
+                            && !TextUtils.isEmpty(mSelectionController.getSelectedText())) {
+                        mDidStartDelayedIntelligentResolveRequest = true;
+                        String selection = mSelectionController.getSelectedText();
+                        // Make sure no surrounding text is sent to Google servers by setting the
+                        // surroundings range to match the selection itself.
+                        mContext.setSurroundingsAndSelection(selection, 0, selection.length());
+                        prepareContextResolveProperties();
+                        issueResolveRequest();
+                    }
                 }
                 mShouldLoadDelayedSearch = true;
                 mPolicy.updateCountersForOpen();
@@ -1194,27 +1229,27 @@ public class ContextualSearchManager
         }
 
         @Override
-        public boolean shouldInterceptNavigation(
-                ExternalNavigationHandler externalNavHandler, NavigationParams navigationParams) {
+        public boolean shouldInterceptNavigation(ExternalNavigationHandler externalNavHandler,
+                NavigationHandle navigationHandle, GURL escapedUrl) {
             assert mSearchPanel != null;
-            mRedirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
-                    navigationParams.isRedirect,
-                    navigationParams.hasUserGesture || navigationParams.hasUserGestureCarryover,
-                    mLastUserInteractionTimeSupplier.get(), RedirectHandler.INVALID_ENTRY_INDEX);
+            mRedirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
+                    navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
+                    mLastUserInteractionTimeSupplier.get(),
+                    RedirectHandler.NO_COMMITTED_ENTRY_INDEX, true /* isInitialNavigation */);
             ExternalNavigationParams params =
                     new ExternalNavigationParams
-                            .Builder(navigationParams.url, false, navigationParams.referrer,
-                                    navigationParams.pageTransitionType,
-                                    navigationParams.isRedirect)
+                            .Builder(escapedUrl, false, navigationHandle.getReferrerUrl(),
+                                    navigationHandle.pageTransition(),
+                                    navigationHandle.isRedirect())
                             .setApplicationMustBeInForeground(true)
                             .setRedirectHandler(mRedirectHandler)
-                            .setIsMainFrame(navigationParams.isMainFrame)
+                            .setIsMainFrame(navigationHandle.isInPrimaryMainFrame())
                             .build();
             if (externalNavHandler.shouldOverrideUrlLoading(params).getResultType()
                     != OverrideUrlLoadingResultType.NO_OVERRIDE) {
                 return false;
             }
-            return !navigationParams.isExternalProtocol;
+            return !navigationHandle.isExternalProtocol();
         }
     }
 
@@ -1380,40 +1415,12 @@ public class ContextualSearchManager
 
     @Override
     public void onPanelFinishedShowing() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mInProductHelp.onPanelFinishedShowing(mWasActivatedByTap, profile);
-        // Try to figure out the language of the selection and show an IPH if a translation
-        // is needed.
-        if (mContext != null && mPolicy.isUserUndecided()
-                && mTranslateController.needsTranslation(mContext.getDetectedLanguage())) {
-            mInProductHelp.onTranslationNeeded(profile);
-        }
-    }
-
-    @Override
-    public void onPanelResized() {
-        mInProductHelp.updateBubblePosition();
+        resetStateAfterSearch();
     }
 
     @Override
     public ScrimCoordinator getScrimCoordinator() {
         return mScrimCoordinator;
-    }
-
-    @Override
-    public void onPromoOptIn() {
-        mInProductHelp.doUserOptedInNotifications(Profile.getLastUsedRegularProfile());
-    }
-
-    @Override
-    public boolean isPanelHelpEnabled() {
-        return mPolicy.isLongpressInPanelHelpCondition()
-                && mInProductHelp.startShowingInPanelHelp(Profile.getLastUsedRegularProfile());
-    }
-
-    @Override
-    public void onPanelHelpOkClicked() {
-        mInProductHelp.onPanelHelpOkClicked(Profile.getLastUsedRegularProfile());
     }
 
     @Override
@@ -1459,6 +1466,11 @@ public class ContextualSearchManager
         }
     }
 
+    @Override
+    public boolean isDelayedIntelligenceActive() {
+        return mPolicy.isDelayedIntelligenceActive();
+    }
+
     /** @return The {@link SelectionClient} used by Contextual Search. */
     SelectionClient getContextualSearchSelectionClient() {
         return mContextualSearchSelectionClient;
@@ -1485,19 +1497,19 @@ public class ContextualSearchManager
         }
 
         @Override
-        public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {
-            if (mSelectWordAroundCaretCounter > 0) mSelectWordAroundCaretCounter--;
-            if (mSelectWordAroundCaretCounter > 0
+        public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {
+            if (mSelectAroundCaretCounter > 0) mSelectAroundCaretCounter--;
+            if (mSelectAroundCaretCounter > 0
                     || !mInternalStateController.isStillWorkingOn(
-                               InternalState.START_SHOWING_TAP_UI)) {
+                            InternalState.START_SHOWING_TAP_UI)) {
                 return;
             }
 
-            // Process normally unless something went wrong with the selection or an IPH triggered
-            // on tap when promoting longpress, otherwise just finish up.
-            if (didSelect && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
+            // Process normally unless something went wrong with the selection.
+            if (result != null) {
                 assert mContext != null;
-                mContext.onSelectionAdjusted(startAdjust, endAdjust);
+                mContext.onSelectionAdjusted(
+                        result.getExtendedStartAdjust(), result.getExtendedEndAdjust());
                 // There's a race condition when we select the word between this Ack response and
                 // the onSelectionChanged call.  Update the selection in case this method won the
                 // race so we ensure that there's a valid selected word.
@@ -1617,20 +1629,8 @@ public class ContextualSearchManager
     }
 
     @Override
-    public void handleValidTap(int x, int y) {
+    public void handleValidTap() {
         if (isSuppressed()) return;
-
-        if (!mPolicy.isTapSupported() && mPolicy.canResolveLongpress()) {
-            // User tapped when Longpress is needed.  Convert location to screen coordinates, and
-            // put up some in-product help.
-            int yOffset = (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
-            int parentScreenXy[] = new int[2];
-            mParentView.getLocationInWindow(parentScreenXy);
-            mInProductHelp.onNonTriggeringTap(Profile.getLastUsedRegularProfile(),
-                    new Point(x + parentScreenXy[0], y + yOffset + parentScreenXy[1]),
-                    new CtrSuppression().getPrevious28DayCtr() > 0,
-                    () -> mSelectionController.clearSelection());
-        }
 
         // This will synchronously advance to the next state (and possibly others) before
         // returning.
@@ -1646,8 +1646,8 @@ public class ContextualSearchManager
 
     /**
      * Notifies this class that the selection has changed. This may be due to the user moving the
-     * selection handles after a long-press, or after a Tap gesture has called selectWordAroundCaret
-     * to expand the selection to a whole word.
+     * selection handles after a long-press, or after a Tap gesture has called selectAroundCaret
+     * to expand the selection to a whole word or sentence.
      */
     @Override
     public void handleSelection(
@@ -1699,13 +1699,13 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             if (selectionValid) {
                 mSearchPanel.setSearchTerm(selection);
+                mSearchPanel.hideCaption();
                 // If we have a literal search request we should update that too.
                 if (mSearchRequest != null) {
                     mSearchRequest = new ContextualSearchRequest(
                             selection, mPolicy.shouldPrefetchSearchResult());
                 }
                 mIsRelatedSearchesSerp = false;
-                ensureCaption();
             } else {
                 hideContextualSearch(StateChangeReason.INVALID_SELECTION);
             }
@@ -1736,7 +1736,6 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             mSearchPanel.setSearchTerm(selection);
             mIsRelatedSearchesSerp = false;
-            ensureCaption();
         }
     }
 
@@ -1760,12 +1759,8 @@ public class ContextualSearchManager
                 if (isSearchPanelShowing()) {
                     mSearchPanel.closePanel(reason, false);
                 } else {
-                    // Also clear any tap-based selection unless the Tap IPH is showing. In the
-                    // latter case we preserve the selection so the help bubble has something to
-                    // point to.
-                    if (!mPolicy.isLiteralSearchTapEnabled()
-                            && mSelectionController.getSelectionType() == SelectionType.TAP
-                            && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
+                    // Clear any tap-based selection, but not longpress based selections.
+                    if (mSelectionController.getSelectionType() == SelectionType.TAP) {
                         mSelectionController.clearSelection();
                     }
                 }
@@ -1783,19 +1778,7 @@ public class ContextualSearchManager
 
                 boolean isResolvingGesture = mPolicy.isResolvingGesture();
                 if (isResolvingGesture && mPolicy.shouldPreviousGestureResolve()) {
-                    ContextualSearchInteractionPersister.PersistedInteraction interaction =
-                            mInteractionRecorder.getInteractionPersister()
-                                    .getAndClearPersistedInteraction();
-                    String targetLanguage =
-                            mTranslateController.getTranslateServiceTargetLanguage();
-                    targetLanguage = targetLanguage != null ? targetLanguage : "";
-                    String fluentLanguages =
-                            mTranslateController.getTranslateServiceFluentLanguages();
-                    fluentLanguages = fluentLanguages != null ? fluentLanguages : "";
-                    mContext.setResolveProperties(mPolicy.getHomeCountry(mActivity),
-                            mPolicy.doSendBasePageUrl(), interaction.getEventId(),
-                            interaction.getEncodedUserInteractions(), targetLanguage,
-                            fluentLanguages);
+                    prepareContextResolveProperties();
                 }
                 WebContents webContents = getBaseWebContents();
                 if (webContents != null) {
@@ -1814,7 +1797,6 @@ public class ContextualSearchManager
             public void tapGestureCommit() {
                 mInternalStateController.notifyStartingWorkOn(InternalState.TAP_GESTURE_COMMIT);
                 if (!mPolicy.isTapSupported()
-                                && !mInProductHelp.isShowingForTappedButShouldLongpress()
                         || mSelectionController.getSelectionType()
                                 == SelectionType.RESOLVING_LONG_PRESS) {
                     hideContextualSearch(StateChangeReason.UNKNOWN);
@@ -1837,16 +1819,6 @@ public class ContextualSearchManager
             @Override
             public void decideSuppression() {
                 mInternalStateController.notifyStartingWorkOn(InternalState.DECIDING_SUPPRESSION);
-
-                // We may have gotten here even without Tap being supported if an IPH for Tap
-                // is active.  In that case we want to be sure to show, so skip the suppression
-                // decision.
-                if (mInProductHelp.isShowingForTappedButShouldLongpress()) {
-                    mInternalStateController.notifyFinishedWorkOn(
-                            InternalState.DECIDING_SUPPRESSION);
-                    return;
-                }
-
                 // TODO(donnd): Move handleShouldSuppressTap out of the Selection Controller.
                 mSelectionController.handleShouldSuppressTap(mContext, mInteractionRecorder);
             }
@@ -1858,8 +1830,10 @@ public class ContextualSearchManager
                 if (baseWebContents != null) {
                     mInternalStateController.notifyStartingWorkOn(
                             InternalState.START_SHOWING_TAP_UI);
-                    mSelectWordAroundCaretCounter++;
-                    baseWebContents.selectWordAroundCaret();
+                    mSelectAroundCaretCounter++;
+                    baseWebContents.selectAroundCaret(mPolicy.getSelectionSize(),
+                            mPolicy.getSelectionShouldShowHandles(),
+                            mPolicy.getSelectionShouldShowMenu());
                     // Let the policy know that a valid tap gesture has been received.
                     mPolicy.registerTap();
                 } else {
@@ -1881,6 +1855,8 @@ public class ContextualSearchManager
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        // We may have been destroyed.
+                        if (mSearchPanel != null) mSearchPanel.hideCaption();
                         mInternalStateController.notifyFinishedWorkOn(
                                 InternalState.WAITING_FOR_POSSIBLE_TAP_NEAR_PREVIOUS);
                     }
@@ -1918,10 +1894,7 @@ public class ContextualSearchManager
                 WebContents baseWebContents = getBaseWebContents();
                 boolean isExactResolve = mSelectionController.isAdjustedSelection();
                 if (baseWebContents != null && mContext != null && mContext.canResolve()) {
-                    mContext.prepareToResolve(
-                            isExactResolve, mPolicy.getRelatedSearchesStamp(getBasePageLanguage()));
-                    mNetworkCommunicator.startSearchTermResolutionRequest(
-                            selection, mSelectionController.isAdjustedSelection(), mContext);
+                    issueResolveRequest();
                 } else {
                     // Something went wrong and we couldn't resolve.
                     hideContextualSearch(StateChangeReason.UNKNOWN);
@@ -1959,6 +1932,25 @@ public class ContextualSearchManager
                                 ? StateChangeReason.TEXT_SELECT_LONG_PRESS
                                 : StateChangeReason.TEXT_SELECT_TAP);
                 mInternalStateController.notifyFinishedWorkOn(InternalState.SHOWING_LITERAL_SEARCH);
+            }
+
+            @Override
+            public void showingTapSearch() {
+                mInternalStateController.notifyStartedAndFinished(InternalState.SHOWING_TAP_SEARCH);
+            }
+
+            @Override
+            public void showingIntelligentLongpress() {
+                mInternalStateController.notifyStartedAndFinished(
+                        InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
+            }
+
+            @Override
+            public void completeSearch() {
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
+                    mSearchPanel.ensureCaption();
+                }
             }
         };
     }
@@ -2025,13 +2017,6 @@ public class ContextualSearchManager
     // ============================================================================================
     // Misc helpers
     // ============================================================================================
-
-    /** Ensures that a caption has been set. We use a default guidance message by default. */
-    private void ensureCaption() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
-            mSearchPanel.ensureCaption();
-        }
-    }
 
     /**
      * Build the searches suggestions for the Bar or Panel.

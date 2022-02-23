@@ -11,6 +11,7 @@
 #include "android_webview/browser/metrics/renderer_process_metrics_provider.h"
 #include "android_webview/browser/metrics/visibility_metrics_provider.h"
 #include "android_webview/browser/page_load_metrics/aw_page_load_metrics_provider.h"
+#include "android_webview/browser/tracing/aw_background_tracing_metrics_provider.h"
 #include "components/metrics/component_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 
@@ -31,6 +32,8 @@ void AwMetricsServiceClientDelegate::RegisterAdditionalMetricsProviders(
       std::make_unique<metrics::ComponentMetricsProvider>(
           std::make_unique<AwComponentMetricsProviderDelegate>(
               AwMetricsServiceClient::GetInstance())));
+  service->RegisterMetricsProvider(
+      std::make_unique<tracing::AwBackgroundTracingMetricsProvider>());
 }
 
 void AwMetricsServiceClientDelegate::AddWebViewAppStateObserver(

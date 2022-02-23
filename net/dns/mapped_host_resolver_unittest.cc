@@ -75,8 +75,7 @@ TEST(MappedHostResolverTest, Inclusion) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.5:80",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.5:80", FirstAddress(*request->GetAddressResults()));
   request.reset();
 
   // Try resolving "foo.com:77". This will NOT be remapped, so result
@@ -88,8 +87,7 @@ TEST(MappedHostResolverTest, Inclusion) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.8:77",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.8:77", FirstAddress(*request->GetAddressResults()));
   request.reset();
 
   // Remap "*.org" to "proxy:99".
@@ -103,8 +101,7 @@ TEST(MappedHostResolverTest, Inclusion) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.11:99",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.11:99", FirstAddress(*request->GetAddressResults()));
 }
 
 TEST(MappedHostResolverTest, MapsHostWithScheme) {
@@ -129,7 +126,7 @@ TEST(MappedHostResolverTest, MapsHostWithScheme) {
 
   EXPECT_THAT(callback.GetResult(rv), IsOk());
   EXPECT_THAT(
-      request->GetAddressResults().value().endpoints(),
+      request->GetAddressResults()->endpoints(),
       testing::ElementsAre(IPEndPoint(IPAddress(192, 168, 1, 22), 155)));
 }
 
@@ -157,7 +154,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToIpLiteral) {
   int rv = request->Start(callback.callback());
 
   EXPECT_THAT(callback.GetResult(rv), IsOk());
-  EXPECT_THAT(request->GetAddressResults().value().endpoints(),
+  EXPECT_THAT(request->GetAddressResults()->endpoints(),
               testing::ElementsAre(IPEndPoint(expected_address, 156)));
 }
 
@@ -184,7 +181,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNonCanon) {
 
   EXPECT_THAT(callback.GetResult(rv), IsOk());
   EXPECT_THAT(
-      request->GetAddressResults().value().endpoints(),
+      request->GetAddressResults()->endpoints(),
       testing::ElementsAre(IPEndPoint(IPAddress(192, 168, 1, 23), 157)));
 }
 
@@ -210,7 +207,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNameWithPort) {
 
   EXPECT_THAT(callback.GetResult(rv), IsOk());
   EXPECT_THAT(
-      request->GetAddressResults().value().endpoints(),
+      request->GetAddressResults()->endpoints(),
       testing::ElementsAre(IPEndPoint(IPAddress(192, 168, 1, 24), 258)));
 }
 
@@ -235,7 +232,7 @@ TEST(MappedHostResolverTest, HandlesUnmappedHostWithScheme) {
 
   EXPECT_THAT(callback.GetResult(rv), IsOk());
   EXPECT_THAT(
-      request->GetAddressResults().value().endpoints(),
+      request->GetAddressResults()->endpoints(),
       testing::ElementsAre(IPEndPoint(IPAddress(192, 168, 1, 23), 155)));
 }
 
@@ -269,8 +266,7 @@ TEST(MappedHostResolverTest, Exclusion) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.3:80",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.3:80", FirstAddress(*request->GetAddressResults()));
   request.reset();
 
   // Try resolving "chrome.com:80". Should be remapped to "baz:80".
@@ -281,8 +277,7 @@ TEST(MappedHostResolverTest, Exclusion) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.5:80",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.5:80", FirstAddress(*request->GetAddressResults()));
 }
 
 TEST(MappedHostResolverTest, SetRulesFromString) {
@@ -311,8 +306,7 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.7:80",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.7:80", FirstAddress(*request->GetAddressResults()));
   request.reset();
 
   // Try resolving "chrome.net:80". Should be remapped to "bar:60".
@@ -323,8 +317,7 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.9:60",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.9:60", FirstAddress(*request->GetAddressResults()));
 }
 
 // Parsing bad rules should silently discard the rule (and never crash).
@@ -377,8 +370,7 @@ TEST(MappedHostResolverTest, MapToError) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback2.WaitForResult();
   EXPECT_THAT(rv, IsOk());
-  EXPECT_EQ("192.168.1.5:80",
-            FirstAddress(request->GetAddressResults().value()));
+  EXPECT_EQ("192.168.1.5:80", FirstAddress(*request->GetAddressResults()));
 }
 
 TEST(MappedHostResolverTest, MapHostWithSchemeToError) {

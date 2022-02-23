@@ -5,6 +5,7 @@
 #include "net/ssl/ssl_key_logger.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
 
 namespace net {
 

@@ -49,7 +49,7 @@ enum class FetchResponseSource;
 enum class FetchResponseType : int32_t;
 enum class IPAddressSpace : int32_t;
 class LoadTimingInfo;
-}
+}  // namespace mojom
 }  // namespace network
 
 namespace net {
@@ -140,7 +140,6 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
 
   BLINK_PLATFORM_EXPORT void SetHasMajorCertificateErrors(bool);
-  BLINK_PLATFORM_EXPORT void SetCTPolicyCompliance(net::ct::CTPolicyCompliance);
   BLINK_PLATFORM_EXPORT void SetIsLegacyTLSVersion(bool);
   BLINK_PLATFORM_EXPORT void SetHasRangeRequested(bool);
   BLINK_PLATFORM_EXPORT void SetTimingAllowPassed(bool);
@@ -216,6 +215,11 @@ class WebURLResponse {
   // Address space from which this resource was fetched.
   BLINK_PLATFORM_EXPORT network::mojom::IPAddressSpace AddressSpace() const;
   BLINK_PLATFORM_EXPORT void SetAddressSpace(network::mojom::IPAddressSpace);
+
+  BLINK_PLATFORM_EXPORT network::mojom::IPAddressSpace ClientAddressSpace()
+      const;
+  BLINK_PLATFORM_EXPORT void SetClientAddressSpace(
+      network::mojom::IPAddressSpace);
 
   // ALPN negotiated protocol of the socket which fetched this resource.
   BLINK_PLATFORM_EXPORT bool WasAlpnNegotiated() const;

@@ -69,13 +69,14 @@ PresentationServiceImpl::PresentationServiceImpl(
       // TODO(imcheng): Consider using RenderFrameHost* directly instead of IDs.
       render_process_id_(render_frame_host->GetProcess()->GetID()),
       render_frame_id_(render_frame_host->GetRoutingID()),
-      is_main_frame_(!render_frame_host->GetParent()) {
+      is_outermost_document_(!render_frame_host->GetParentOrOuterDocument()) {
   DCHECK(render_frame_host_);
   DCHECK(web_contents);
   CHECK(render_frame_host_->IsRenderFrameLive());
 
   DVLOG(2) << "PresentationServiceImpl: " << render_process_id_ << ", "
-           << render_frame_id_ << " is main frame: " << is_main_frame_;
+           << render_frame_id_
+           << " is outermost document: " << is_outermost_document_;
 
   if (auto* delegate = GetPresentationServiceDelegate())
     delegate->AddObserver(render_process_id_, render_frame_id_, this);
@@ -141,6 +142,10 @@ void PresentationServiceImpl::SetController(
 void PresentationServiceImpl::SetReceiver(
     mojo::PendingRemote<blink::mojom::PresentationReceiver>
         presentation_receiver_remote) {
+  // Mojo interfaces for Presentation API are disabled during pre-rendering.
+  DCHECK_NE(render_frame_host_->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+
   // Presentation receiver virtual web tests (which have the flag set) has no
   // ReceiverPresentationServiceDelegate implementation.
   // TODO(imcheng): Refactor content_browser_client to return a no-op
@@ -150,10 +155,10 @@ void PresentationServiceImpl::SetReceiver(
     return;
   }
 
-  if (!receiver_delegate_ || !is_main_frame_) {
+  if (!receiver_delegate_ || !is_outermost_document_) {
     presentation_service_receivers_.ReportBadMessage(
         "SetReceiver can only be called from a "
-        "presentation receiver main frame.");
+        "presentation receiver outermost document.");
     return;
   }
 
@@ -365,7 +370,7 @@ bool PresentationServiceImpl::RunAndEraseReconnectPresentationMojoCallback(
 void PresentationServiceImpl::SetDefaultPresentationUrls(
     const std::vector<GURL>& presentation_urls) {
   DVLOG(2) << "SetDefaultPresentationUrls";
-  if (!controller_delegate_ || !is_main_frame_)
+  if (!controller_delegate_ || !is_outermost_document_)
     return;
 
   if (default_presentation_urls_ == presentation_urls)
@@ -487,7 +492,7 @@ void PresentationServiceImpl::Reset() {
   if (controller_delegate_)
     controller_delegate_->Reset(render_process_id_, render_frame_id_);
 
-  if (receiver_delegate_ && is_main_frame_)
+  if (receiver_delegate_ && is_outermost_document_)
     receiver_delegate_->Reset(render_process_id_, render_frame_id_);
 
   default_presentation_urls_.clear();

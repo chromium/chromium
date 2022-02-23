@@ -115,26 +115,29 @@
   <message name="IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on.">
     Allow this extension to read and change all your data on websites you visit:
   </message>
-  <message name="IDS_EXTENSIONS_NEW_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on, for the new site access settings.">
+  <message name="IDS_EXTENSIONS_NEW_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on, for the new site access settings.">
     Choose when this extension can read and change your site data
+  </message>
+  <message name="IDS_EXTENSIONS_HOST_PERMISSIONS_SUB_HEADING" desc="The heading above the details of which websites an extension is allowed to run on, for the new site access settings.">
+    You can always click the extension to use it on any site
   </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension.">
     On click
   </message>
-  <message name="IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension, for the new site access settings.">
+  <message name="IDS_EXTENSIONS_HOST_ACCESS_WHEN_CLICKED" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension, for the new site access settings.">
     When I click the extension
   </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_SPECIFIC_SITES" desc="The text for the option to allow an extension to read and change data on a select set of sites.">
     On specific sites
   </message>
-  <message name="IDS_EXTENSIONS_HOST_CUSTOMIZE_FOR_EACH_SITE" desc="The text for the option to customize which sites an extension is allowed to read and change data, for the new site access settings.">
-    Customize for each site
+  <message name="IDS_EXTENSIONS_HOST_ACCESS_ALLOW_ON_SPECIFIC_SITES" desc="The text for the option to customize which sites an extension is allowed to read and change data, for the new site access settings.">
+    Allow on specific sites
   </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_ALL_SITES" desc="The text for the option to allow an extension to read and change data on all websites.">
     On all sites
   </message>
-  <message name="IDS_EXTENSIONS_NEW_HOST_ACCESS_ON_ALL_SITES" desc="The text for the option to allow an extension to read and change data on all websites, for the new site access settings.">
-    Always on all sites
+  <message name="IDS_EXTENSIONS_HOST_ACCESS_ALLOW_ON_ALL_SITES" desc="The text for the option to allow an extension to read and change data on all websites, for the new site access settings.">
+    Allow on all sites
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ALLOWED_HOSTS" desc="The heading above the section listing any sites the extension is allowed to run on.">
     Allowed sites
@@ -226,6 +229,12 @@
   <message name="IDS_EXTENSIONS_ITEM_DETAILS" desc="The text on the button to show more details for a given extension.">
     Details
   </message>
+  <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button on details page. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
+    <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex></ph> details page back button
+  </message>
+  <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the Extensions page to navigate away from the currently displaying details page to the previous visited page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
+    Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex> details page</ph>.
+  </message>
   <message name="IDS_EXTENSIONS_EXTENSION_A11Y_ASSOCIATION" desc="Label used to associate an app or extension with actions a user can take. This label is for screen readers and will only be read out lout. Ex: a button labeled 'Delete' would have the description 'Related to AdBlock'. Without the added description a user on a screen reader would not have context of the extension they want to delete. Note that the action can be 'view details', 'enable', 'delete', 'errors', or something else.">
     Related to <ph name="NAME_PH">$1<ex>AdBlock</ex></ph>
   </message>
@@ -263,7 +272,10 @@
     Permissions
   </message>
   <message name="IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY" desc="The text to indicate that an extension does not have any special permissions.">
-    This extension requires no special permissions.
+    This extension requires no special permissions
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_PERMISSIONS_AND_SITE_ACCESS_EMPTY" desc="The text to indicate that an extension does not have any special permissions or any site access.">
+    This extension requires no special permissions and has no additional site access
   </message>
   <message name="IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION" desc="The label on the button to remove an extension.">
     Remove extension
@@ -271,17 +283,14 @@
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS" desc="The label above the list of the websites that the extension can access.">
     Site access
   </message>
-  <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_NEW" desc="The label of the button to click to view the list of websites that the extension can access.">
-    Site permissions
-  </message>
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST" desc="The label of the option to add a new site that the extension should be allowed to access.">
     Add a new page
   </message>
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY" desc="The text to indicate that an extension does not have any site access.">
-    This extension has no additional site access.
+    This extension has no additional site access
   </message>
-  <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_SUBLABEL" desc="The sublabel of the button to click to view the list of websites that the extension can access.">
-    Choose when this extension can read and change your site data
+  <message name="IDS_EXTENSIONS_REMOVE_SITES_DIALOG_TITLE" desc="The title for the dialog to warn the user when changing site access settings will clear the list of specific sites added.">
+    Remove the specific sites you added?
   </message>
   <message name="IDS_EXTENSIONS_ITEM_SOURCE" desc="The label above an extension's source, which indicates where the extension came from (webstore, third-party, local disk, etc).">
     Source
@@ -366,6 +375,39 @@
   </message>
   <message name="IDS_EXTENSIONS_SEARCH" desc="The text displayed in the search box on the chrome://extensions page.">
     Search extensions
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS" desc="The text for the link to manage site permissions for extensions.">
+    Site permissions
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_PAGE_TITLE" desc="The title for the extensions site permissions management page.">
+    Site permissions
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_VIEW_ALL_SITES" desc="The label of the button to click to view extension site permissions for all sites.">
+    See extension permissions for other sites
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_PAGE_TITLE" desc="The title for the all sites subpage for extensions site permissions management.">
+    All sites
+  </message>
+  <message name="IDS_EXTENSIONS_PERMITTED_SITES" desc="The label above the list of sites that extensions are always permitted to run in.">
+    All extensions allowed
+  </message>
+  <message name="IDS_EXTENSIONS_RESTRICTED_SITES" desc="The label above the list of sites that extensions are not allowed to run in.">
+    Not allowed to use extensions
+  </message>
+  <message name="IDS_EXTENSIONS_NO_SITES_ADDED" desc="The text displayed when a list of sites in the site permissions page is empty.">
+    No sites added
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ADD_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to add a new site. Used for the permitted and restricted site lists.">
+    Add site
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to edit an existing site. Used for the permitted and restricted site lists.">
+    Edit site
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
+    Not a valid web address
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_LABEL" desc="The label for the input field where a user enters a new site. Used for the permitted and restricted site lists.">
+    Site URL
   </message>
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT" desc="The label for a button to edit the shortcut.">
     Edit shortcut

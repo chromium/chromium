@@ -57,7 +57,7 @@ GPU_EXPORT void CacheGpuFeatureInfo(const GpuFeatureInfo& gpu_feature_info);
 // return true; otherwise, return false;
 GPU_EXPORT bool PopGpuFeatureInfoCache(GpuFeatureInfo* gpu_feature_info);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Check if GL bindings are initialized. If not, initializes GL
 // bindings, create a GL context, collects GPUInfo, make blocklist and
 // GPU driver bug workaround decisions. This is intended to be called
@@ -66,7 +66,7 @@ GPU_EXPORT bool InitializeGLThreadSafe(base::CommandLine* command_line,
                                        const GpuPreferences& gpu_preferences,
                                        GPUInfo* out_gpu_info,
                                        GpuFeatureInfo* out_gpu_feature_info);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Returns whether SwiftShader should be enabled. If true, the proper command
 // line switch to enable SwiftShader will be appended to 'command_line'.
@@ -96,10 +96,10 @@ GPU_EXPORT void RecordDevicePerfInfoHistograms();
 // Currently only record for AMD/Nvidia GPUs.
 GPU_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu
 

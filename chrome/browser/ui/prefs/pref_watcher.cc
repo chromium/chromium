@@ -22,6 +22,10 @@
 #include "ash/constants/ash_pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
+#endif
+
 namespace {
 
 // The list of prefs we want to observe.
@@ -43,9 +47,9 @@ const char* const kWebPrefsToObserve[] = {
     prefs::kAccessibilityCaptionsBackgroundColor,
     prefs::kAccessibilityCaptionsTextShadow,
     prefs::kAccessibilityCaptionsBackgroundOpacity,
-#if defined(OS_ANDROID)
-    prefs::kWebKitFontScaleFactor,
-    prefs::kWebKitForceEnableZoom,
+#if BUILDFLAG(IS_ANDROID)
+    browser_ui::prefs::kWebKitFontScaleFactor,
+    browser_ui::prefs::kWebKitForceEnableZoom,
     prefs::kWebKitPasswordEchoEnabled,
 #endif
     prefs::kWebKitForceDarkModeEnabled,
@@ -89,12 +93,12 @@ PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   profile_pref_change_registrar_.Add(prefs::kCaretBrowsingEnabled,
                                      renderer_callback);
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   profile_pref_change_registrar_.Add(prefs::kFullscreenAllowed,
                                      renderer_callback);
 #endif

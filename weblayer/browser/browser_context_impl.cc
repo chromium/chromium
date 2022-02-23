@@ -4,7 +4,9 @@
 
 #include "weblayer/browser/browser_context_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/client_hints/browser/client_hints.h"
@@ -36,6 +38,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
@@ -47,18 +50,19 @@
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/public/common/switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
+#include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/unified_consent/pref_names.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <KnownFolders.h>
 #include <shlobj.h>
 #include "base/win/scoped_co_mem.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/nix/xdg_util.h"
 #endif
 
@@ -120,8 +124,6 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
 }
 
 BrowserContextImpl::~BrowserContextImpl() {
-  NotifyWillBeDestroyed();
-
   BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
       this);
 }
@@ -130,15 +132,13 @@ base::FilePath BrowserContextImpl::GetDefaultDownloadDirectory() {
   // Note: if we wanted to productionize this on Windows/Linux, refactor
   // src/chrome's GetDefaultDownloadDirectory.
   base::FilePath download_dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::GetDownloadsDirectory(&download_dir);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::win::ScopedCoMem<wchar_t> path_buf;
   if (SUCCEEDED(
           SHGetKnownFolderPath(FOLDERID_Downloads, 0, nullptr, &path_buf))) {
     download_dir = base::FilePath(path_buf.get());
-  } else {
-    NOTREACHED();
   }
 #else
   download_dir = base::nix::GetXDGUserDirectory("DOWNLOAD", "Downloads");
@@ -230,7 +230,7 @@ BrowserContextImpl::RetriveInProgressDownloadManager() {
       base::BindRepeating(&content::DownloadRequestUtils::IsURLSafe),
       base::BindRepeating(&BindWakeLockProvider));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   download_manager->set_default_download_dir(GetDefaultDownloadDirectory());
 #endif
 
@@ -289,12 +289,18 @@ void BrowserContextImpl::RegisterPrefs(
   pref_registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(pref_registry);
   permissions::GeolocationPermissionContextAndroid::RegisterProfilePrefs(
       pref_registry);
   pref_registry->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
+  pref_registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor,
+                                    1.0);
+  blink::web_pref::WebPreferences pref_defaults;
+  pref_registry->RegisterBooleanPref(browser_ui::prefs::kWebKitForceEnableZoom,
+                                     pref_defaults.force_enable_zoom);
 #endif
 
   BrowserContextDependencyManager::GetInstance()
@@ -326,7 +332,7 @@ class BrowserContextImpl::WebLayerVariationsClient
   }
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 variations::VariationsClient* BrowserContextImpl::GetVariationsClient() {

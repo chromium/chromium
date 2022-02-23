@@ -5,7 +5,6 @@
 #ifndef SERVICES_SHAPE_DETECTION_FACE_DETECTION_PROVIDER_MAC_H_
 #define SERVICES_SHAPE_DETECTION_FACE_DETECTION_PROVIDER_MAC_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
 

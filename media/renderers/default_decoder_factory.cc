@@ -17,12 +17,12 @@
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_audio_decoder.h"
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "media/filters/fuchsia/fuchsia_video_decoder.h"
 #endif
 
@@ -62,7 +62,7 @@ void DefaultDecoderFactory::CreateAudioDecoders(
   if (is_shutdown_)
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // DecryptingAudioDecoder is only needed in External Clear Key testing to
   // cover the audio decrypt-and-decode path.
   if (base::FeatureList::IsEnabled(kExternalClearKeyForTesting)) {
@@ -141,7 +141,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
   if (is_shutdown_)
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   video_decoders->push_back(
       std::make_unique<DecryptingVideoDecoder>(task_runner, media_log));
 #endif
@@ -149,7 +149,7 @@ void DefaultDecoderFactory::CreateVideoDecoders(
   // Perfer an external decoder since one will only exist if it is hardware
   // accelerated.
   if (external_decoder_factory_ && gpu_factories &&
-      gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+      gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
     // |gpu_factories_| requires that its entry points be called on its
     // |GetTaskRunner()|. Since |pipeline_| will own decoders created from the
     // factories, require that their message loops are identical.
@@ -160,9 +160,9 @@ void DefaultDecoderFactory::CreateVideoDecoders(
         std::move(request_overlay_info_cb), target_color_space, video_decoders);
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1122116): Minimize Fuchsia-specific code paths.
-  if (gpu_factories && gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+  if (gpu_factories && gpu_factories->IsGpuVideoDecodeAcceleratorEnabled()) {
     auto* context_provider = gpu_factories->GetMediaContextProvider();
 
     // GetMediaContextProvider() may return nullptr when the context was lost

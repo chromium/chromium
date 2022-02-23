@@ -4,4 +4,25 @@ specific_include_rules = {
   "form_input_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^autofill_tab_helper.mm": [
+    "+ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h",
+  ],
+  "^form_input_accessory_view_handler.mm": [
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+  ],
+  "^form_suggestion_controller.mm": [
+    "+ios/chrome/browser/ui/util/ui_util.h",
+  ],
+  "^form_suggestion_label.mm": [
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/common/ui/colors/semantic_color_names.h",
+    "+ios/chrome/common/ui/util/constraints_ui_util.h",
+  ],
+  "^form_suggestion_view.mm": [
+    "+ios/chrome/browser/ui/util/rtl_geometry.h",
+    "+ios/chrome/common/ui/util/constraints_ui_util.h",
+  ],
+
 }

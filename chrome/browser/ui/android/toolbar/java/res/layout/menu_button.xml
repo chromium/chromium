@@ -14,7 +14,7 @@
 
        <org.chromium.ui.widget.ChromeImageButton
            android:id="@+id/menu_button"
-           style="@style/ToolbarMenuButtonPhone"
+           style="@style/ToolbarMenuButton"
            android:src="@drawable/ic_more_vert_24dp"
            android:contentDescription="@string/accessibility_toolbar_btn_menu"
            android:layout_gravity="center"
@@ -22,7 +22,7 @@
 
        <ImageView
            android:id="@+id/menu_badge"
-           style="@style/ToolbarMenuButtonPhone"
+           style="@style/ToolbarMenuButton"
            android:src="@drawable/badge_update_dark"
            tools:ignore="ContentDescription"
            android:importantForAccessibility="no"

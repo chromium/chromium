@@ -913,8 +913,8 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
     ParseCertificateOptions options;
     options.allow_invalid_serial_numbers = true;
     scoped_refptr<ParsedCertificate> anchor_cert = ParsedCertificate::Create(
-        x509_util::CreateCryptoBuffer(CFDataGetBytePtr(der_data.get()),
-                                      CFDataGetLength(der_data.get())),
+        x509_util::CreateCryptoBuffer(base::make_span(
+            CFDataGetBytePtr(der_data.get()), CFDataGetLength(der_data.get()))),
         options, &errors);
     if (!anchor_cert) {
       // TODO(crbug.com/634443): return errors better.

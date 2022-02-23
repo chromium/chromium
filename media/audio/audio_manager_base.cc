@@ -228,6 +228,9 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStream(
       break;
     case AudioParameters::AUDIO_BITSTREAM_AC3:
     case AudioParameters::AUDIO_BITSTREAM_EAC3:
+    case AudioParameters::AUDIO_BITSTREAM_DTS:
+    case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
+    case AudioParameters::AUDIO_BITSTREAM_IEC61937:
       stream = MakeBitstreamOutputStream(params, device_id, log_callback);
       break;
     case AudioParameters::AUDIO_FAKE:

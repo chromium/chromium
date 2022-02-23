@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -36,10 +37,14 @@ class MetricsProvider;
 // which the browser process starts; does some work, e.g. servicing a sync; and
 // ends without ever becoming visible. Note that the point in startup at which
 // this value is determined is likely before the UI is visible.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class StartupVisibility {
   kUnknown = 0,
   kBackground = 1,
   kForeground = 2,
+  kMaxValue = kForeground,
 };
 
 // Denotes the type of EntropyProvider to use for one-time randomization.
@@ -124,15 +129,15 @@ class MetricsStateManager final {
   // that Chrome crashed or otherwise did not shut down cleanly, e.g. maybe the
   // OS crashed.
   //
-  // If |write_synchronously| is true, then |has_session_shutdown_cleanly| is
+  // If |is_extended_safe_mode| is true, then |has_session_shutdown_cleanly| is
   // written to disk synchronously. If false, a write is scheduled, and for
   // clients in the Extended Variations Safe Mode experiment, a synchronous
   // write is done, too.
   //
-  // Note: |write_synchronously| should be true only for the Extended Variations
-  // Safe Mode experiment.
+  // Note: |is_extended_safe_mode| should be true only for the Extended
+  // Variations Safe Mode experiment.
   void LogHasSessionShutdownCleanly(bool has_session_shutdown_cleanly,
-                                    bool write_synchronously = false);
+                                    bool is_extended_safe_mode = false);
 
   // Forces the client ID to be generated. This is useful in case it's needed
   // before recording.
@@ -311,11 +316,11 @@ class MetricsStateManager final {
   static bool instance_exists_;
 
   // Weak pointer to the local state prefs store.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Weak pointer to an enabled state provider. Used to know whether the user
   // has consented to reporting, and if reporting should be done.
-  EnabledStateProvider* enabled_state_provider_;
+  raw_ptr<EnabledStateProvider> enabled_state_provider_;
 
   // A callback run during client id creation so this MetricsStateManager can
   // store a backup of the newly generated ID.

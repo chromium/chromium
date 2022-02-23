@@ -42,7 +42,7 @@
 #include <stdint.h>
 #endif
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #include <machine/ieee.h>
 #include <sys/types.h>
 #endif

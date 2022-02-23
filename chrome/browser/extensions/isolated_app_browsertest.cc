@@ -104,8 +104,8 @@ class IsolatedAppTest : public ExtensionBrowserTest {
   }
 
   // Returns whether the given tab's current URL has the given cookie.
-  bool WARN_UNUSED_RESULT HasCookie(WebContents* contents,
-                                    const std::string& cookie) {
+  [[nodiscard]] bool HasCookie(WebContents* contents,
+                               const std::string& cookie) {
     int value_size;
     std::string actual_cookie;
     ui_test_utils::GetCookies(contents->GetLastCommittedURL(), contents,
@@ -508,8 +508,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
 
   // Navigating the second tab out of the app should cause a process swap.
   const GURL& non_app_url(base_url.Resolve("non_app/main.html"));
-  NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(1),
-                     non_app_url);
+  EXPECT_TRUE(NavigateInRenderer(
+      browser()->tab_strip_model()->GetWebContentsAt(1), non_app_url));
   EXPECT_NE(process_id_1, browser()
                               ->tab_strip_model()
                               ->GetWebContentsAt(1)

@@ -10,10 +10,3 @@ source_set("omaha_api") {
     "//url",
   ]
 }
-
-source_set("test_omaha") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_omaha.cc" ]
-  deps = [ ":omaha_api" ]
-}

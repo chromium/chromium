@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_GUEST_VIEW_APP_VIEW_APP_VIEW_GUEST_INTERNAL_API_H_
 #define EXTENSIONS_BROWSER_API_GUEST_VIEW_APP_VIEW_APP_VIEW_GUEST_INTERNAL_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {

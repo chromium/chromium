@@ -87,9 +87,8 @@ public class KeyNavigationUtil {
      * @return Whether the event should be processed as ENTER.
      */
     public static boolean isEnter(KeyEvent event) {
-        return isActionUp(event)
-                && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-                        || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
+        return (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER);
     }
 
     /**

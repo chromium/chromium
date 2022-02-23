@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 71 tests; 49 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 73 tests; 51 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup.
 PASS "data://test/,X"
 FAIL "data://test:test/,X" assert_unreached: Should have rejected: undefined Reached unreachable code
@@ -20,6 +20,8 @@ FAIL "data:;x=x;charset=x,X" assert_equals: expected "text/plain;x=x;charset=x" 
 FAIL "data:;x=x,X" assert_equals: expected "text/plain;x=x" but got "text/plain;charset=US-ASCII"
 PASS "data:text/plain;charset=windows-1252,%C2%B1"
 PASS "data:text/plain;Charset=UTF-8,%C2%B1"
+PASS "data:text/plain;charset=windows-1252,áñçə💩"
+PASS "data:text/plain;charset=UTF-8,áñçə💩"
 PASS "data:image/gif,%C2%B1"
 PASS "data:IMAGE/gif,%C2%B1"
 FAIL "data:IMAGE/gif;hi=x,%C2%B1" assert_equals: expected "image/gif;hi=x" but got "image/gif"

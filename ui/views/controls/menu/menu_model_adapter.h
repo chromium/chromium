@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -98,11 +99,11 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // Container of ui::MenuModel pointers as encountered by preorder
   // traversal.  The first element is always the top-level model
   // passed to the constructor.
-  ui::MenuModel* menu_model_;
+  raw_ptr<ui::MenuModel> menu_model_;
 
   // Pointer to the MenuItemView created and updated by |this|, but not owned by
   // |this|.
-  MenuItemView* menu_;
+  raw_ptr<MenuItemView> menu_;
 
   // Mouse event flags which can trigger menu actions.
   int triggerable_event_flags_;

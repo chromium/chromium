@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "ipc/ipc_message.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
 
@@ -15,30 +16,29 @@ namespace guest_view {
 
 class GuestViewContainer;
 
-// A GuestViewRequest is the base class for an asynchronous operation performed
-// on a GuestView or GuestViewContainer from JavaScript. This operation may be
-// queued until the container is ready to be operated upon (it has geometry).
-// A GuestViewRequest may or may not have a callback back into JavaScript.
-// Typically, performing a request involves sending an IPC to the browser
-// process in PerformRequest. Handling a response involves receiving a related
-// IPC from the browser process in HandleResponse.
-class GuestViewRequest {
+// This class represents an attach request from Javascript.
+// A GuestViewAttachRequest is an asynchronous operation performed on a
+// GuestView or GuestViewContainer from JavaScript. This operation may be queued
+// until the container is ready to be operated upon (it has geometry). A
+// GuestViewAttachRequest may or may not have a callback back into JavaScript.
+// Performing a request involves sending an IPC to the browser process in
+// PerformRequest which the browser will acknowledge.
+class GuestViewAttachRequest {
  public:
-  GuestViewRequest(GuestViewContainer* container,
-                   v8::Local<v8::Function> callback,
-                   v8::Isolate* isolate);
+  GuestViewAttachRequest(GuestViewContainer* container,
+                         int render_frame_routing_id,
+                         int guest_instance_id,
+                         std::unique_ptr<base::DictionaryValue> params,
+                         v8::Local<v8::Function> callback,
+                         v8::Isolate* isolate);
 
-  GuestViewRequest(const GuestViewRequest&) = delete;
-  GuestViewRequest& operator=(const GuestViewRequest&) = delete;
+  GuestViewAttachRequest(const GuestViewAttachRequest&) = delete;
+  GuestViewAttachRequest& operator=(const GuestViewAttachRequest&) = delete;
 
-  virtual ~GuestViewRequest();
+  ~GuestViewAttachRequest();
 
   // Performs the associated request.
-  virtual void PerformRequest() = 0;
-
-  // Called by GuestViewContainer when the browser process has responded to the
-  // request initiated by PerformRequest.
-  virtual void HandleResponse(const IPC::Message& message) = 0;
+  void PerformRequest();
 
   // Called to call the callback associated with this request if one is
   // available.
@@ -47,14 +47,17 @@ class GuestViewRequest {
   void ExecuteCallbackIfAvailable(int argc,
                                   std::unique_ptr<v8::Local<v8::Value>[]> argv);
 
-  GuestViewContainer* container() const { return container_; }
-
-  v8::Isolate* isolate() const { return isolate_; }
-
  private:
+  void OnAcknowledged();
+
   GuestViewContainer* const container_;
   v8::Global<v8::Function> callback_;
   v8::Isolate* const isolate_;
+  const int render_frame_routing_id_;
+  const int guest_instance_id_;
+  std::unique_ptr<base::DictionaryValue> params_;
+
+  base::WeakPtrFactory<GuestViewAttachRequest> weak_ptr_factory_{this};
 };
 
 }  // namespace guest_view

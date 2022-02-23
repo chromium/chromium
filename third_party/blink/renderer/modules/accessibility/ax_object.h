@@ -34,7 +34,6 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
@@ -44,10 +43,9 @@
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -55,9 +53,10 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/geometry/quad_f.h"
 
-namespace skia {
-class Matrix44;
+namespace gfx {
+class Transform;
 }
 
 namespace ui {
@@ -563,8 +562,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
                                  NameSources* name_sources) const {
     return String();
   }
-  virtual String TextFromDescendants(AXObjectSet& visited,
-                                     bool recursive) const {
+  virtual String TextFromDescendants(
+      AXObjectSet& visited,
+      const AXObject* aria_label_or_description_root,
+      bool recursive) const {
     return String();
   }
 
@@ -603,10 +604,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual int HeadingLevel() const { return 0; }
   // Value should be 1-based. 0 means not supported.
   virtual unsigned HierarchicalLevel() const { return 0; }
-  // Return the content of an image or canvas as an image data url in
-  // PNG format. If |maxSize| is not empty and if the image is larger than
-  // those dimensions, the image will be resized proportionally first to fit.
-  virtual String ImageDataUrl(const IntSize& max_size) const {
+  // Return the snapshot of an element as an image data url in PNG format.
+  // If |maxSize| is not empty and if the image is larger than those dimensions,
+  // the image will be resized proportionally first to fit.
+  virtual String ImageDataUrl(const gfx::Size& max_size) const {
     return g_null_atom;
   }
   // If this element points to another element in the same page, e.g.
@@ -846,11 +847,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // If the object clips its children, for example by having overflow:hidden,
   // set |clips_children| to true.
   virtual void GetRelativeBounds(AXObject** out_container,
-                                 FloatRect& out_bounds_in_container,
-                                 skia::Matrix44& out_container_transform,
+                                 gfx::RectF& out_bounds_in_container,
+                                 gfx::Transform& out_container_transform,
                                  bool* clips_children = nullptr) const;
 
-  FloatRect LocalBoundingBoxRectForAccessibility();
+  gfx::RectF LocalBoundingBoxRectForAccessibility();
 
   // Get the bounds in frame-relative coordinates as a LayoutRect.
   LayoutRect GetBoundsInFrameCoordinates() const;
@@ -1061,6 +1062,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // the parent. It calls ComputeParentImpl() for the actual work.
   AXObject* ComputeParent() const;
 
+  // Same as ComputeParent, but does not assert if there is no parent to compute
+  // (i.e. because the parent does not belong to the tree anymore).
+  AXObject* ComputeParentOrNull() const;
+
   // Can this node be used to compute the natural parent of an object?
   // These are objects that can have some children, but the children are
   // only of a certain type or from another part of the tree, and therefore
@@ -1227,7 +1232,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestScrollToGlobalPointAction(const gfx::Point&);
   bool RequestScrollToMakeVisibleAction();
   bool RequestScrollToMakeVisibleWithSubFocusAction(
-      const IntRect&,
+      const gfx::Rect&,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment);
   bool RequestSetSelectedAction(bool);
@@ -1251,7 +1256,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
   bool OnNativeScrollToMakeVisibleAction() const;
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
-      const IntRect&,
+      const gfx::Rect&,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
   virtual bool OnNativeSetSelectedAction(bool);
@@ -1302,7 +1307,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Blink-internal DOM Node ID. Currently used for PDF exporting.
   int GetDOMNodeId() const;
 
-  bool IsHiddenForTextAlternativeCalculation() const;
+  bool IsHiddenForTextAlternativeCalculation(
+      const AXObject* aria_label_or_description_root) const;
 
   // What should the role be assuming an ARIA role is not present?
   virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const = 0;
@@ -1444,7 +1450,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;
   mutable int cached_aria_row_index_;
-  mutable FloatRect cached_local_bounding_box_rect_for_accessibility_;
+  mutable gfx::RectF cached_local_bounding_box_rect_for_accessibility_;
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
@@ -1457,7 +1463,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   ax::mojom::blink::Role RemapAriaRoleDueToParent(ax::mojom::blink::Role) const;
   unsigned ComputeAriaColumnIndex() const;
   unsigned ComputeAriaRowIndex() const;
-  bool ComputeIsHiddenViaStyle() const;
+  const ComputedStyle* GetComputedStyle() const;
+  bool ComputeIsHiddenViaStyle(const ComputedStyle*) const;
+  bool ComputeIsInertViaStyle(const ComputedStyle*,
+                              IgnoredReasons* = nullptr) const;
 
   // This returns true if the element associated with this AXObject is has
   // focusable style, meaning that it is visible. Note that we prefer to rely on

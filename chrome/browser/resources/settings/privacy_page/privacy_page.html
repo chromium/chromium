@@ -21,7 +21,7 @@
         --settings-collapse-separator-line: var(--cr-separator-line);
       }
 
-      settings-privacy-review-page {
+      settings-privacy-guide-page {
         background-color: var(--cr-card-background-color);
         border-radius: var(--cr-card-border-radius);
         box-shadow: var(--cr-card-shadow);
@@ -51,18 +51,19 @@
             sub-label="Experimental button, click to show a test IPH bubble"
             on-click="onShowIPHBubbleTap_">
         </cr-link-row>
-        <template is="dom-if" if="[[enablePrivacyReview_]]">
-          <cr-link-row id="privacyReviewLinkRow" class="hr"
-              start-icon="settings20:explore"
-              label="$i18n{privacyReviewLabel}"
-              sub-label="$i18n{privacyReviewSublabel}"
-              on-click="onPrivacyReviewClick_"
+        <template is="dom-if" if="[[enablePrivacyGuide_]]">
+          <cr-link-row id="privacyGuideLinkRow" class="hr"
+              start-icon="settings20:wind-rose"
+              label="$i18n{privacyGuideLabel}"
+              sub-label="$i18n{privacyGuideSublabel}"
+              on-click="onPrivacyGuideClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
         <iph-bubble id="iphBubble"
             anchor-id="cookiesLinkRow"
-            body="Click on the &quot;Cookies and other site data&quot; section">
+            body="Click on the &quot;Cookies and other site data&quot; section"
+            position="below">
         </iph-bubble>
         <cr-link-row id="cookiesLinkRow" start-icon="settings:cookie"
             class="hr" label="$i18n{cookiePageTitle}"
@@ -84,7 +85,7 @@
             class="hr"
             label="$i18n{privacySandboxTitle}"
             sub-label="[[computePrivacySandboxSublabel_(
-                prefs.privacy_sandbox.apis_enabled.*)]]"
+                prefs.privacy_sandbox.*)]]"
             on-click="onPrivacySandboxClick_"
             external
             role-description="$i18n{subpageArrowRoleDescription}">
@@ -111,6 +112,13 @@
             <security-keys-subpage></security-keys-subpage>
           </settings-subpage>
         </template>
+      </template>
+
+      <template is="dom-if" route-path="/securityKeys/phones">
+        <settings-subpage associated-control="[[$$('#securityLinkRow')]]"
+            page-title="$i18n{securityKeysPhonesManage}">
+          <security-keys-phones-subpage></security-keys-phones-subpage>
+        </settings-subpage>
       </template>
 
       <template is="dom-if" route-path="/content">
@@ -223,15 +231,15 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[enablePrivacyReview_]]">
-        <template is="dom-if" route-path="/privacy/review">
-          <settings-subpage id="privacy-review"
+      <template is="dom-if" if="[[enablePrivacyGuide_]]">
+        <template is="dom-if" route-path="/privacy/guide">
+          <settings-subpage id="privacy-guide"
               class="multi-card"
-              page-title="$i18n{privacyReviewLabel}"
-              associated-control="[[$$('#privacyReviewLinkRow')]]">
-            <settings-privacy-review-page prefs="{{prefs}}"
+              page-title="$i18n{privacyGuideLabel}"
+              associated-control="[[$$('#privacyGuideLinkRow')]]">
+            <settings-privacy-guide-page prefs="{{prefs}}"
                 focus-config="[[focusConfig_]]">
-            </settings-privacy-review-page>
+            </settings-privacy-guide-page>
           </settings-subpage>
         </template>
       </template>
@@ -931,16 +939,20 @@
         <settings-subpage page-title="$i18n{siteSettingsWindowPlacement}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsWindowPlacementBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsWindowPlacementAskRecommended}"
-              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsWindowPlacementDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
+              allow-option-label="$i18n{siteSettingsWindowPlacementAsk}"
+              allow-option-icon="settings:window-placement"
+              block-option-label="$i18n{siteSettingsWindowPlacementBlocked}"
+              block-option-icon="settings:window-placement-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
-              block-header="$i18n{siteSettingsBlock}"
-              allow-header="$i18n{siteSettingsAllow}"
+              allow-header="$i18n{siteSettingsWindowPlacementAskExceptions}"
+              block-header="$i18n{siteSettingsWindowPlacementBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>
@@ -963,30 +975,6 @@
               category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
               block-header="$i18n{siteSettingsFontsBlockedExceptions}"
               allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/content/fileHandlers" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsFileHandling}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsFileHandlingDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
-              allow-option-label="$i18n{siteSettingsFileHandlingAllowed}"
-              allow-option-icon="settings:file-handling"
-              block-option-label="$i18n{siteSettingsFileHandlingBlocked}"
-              block-option-icon="settings:file-handling-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
-              block-header=
-                  "$i18n{siteSettingsFileHandlingBlockedExceptions}"
-              allow-header=
-                  "$i18n{siteSettingsFileHandlingAllowedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>

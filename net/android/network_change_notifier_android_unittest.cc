@@ -40,7 +40,9 @@ class NetworkChangeNotifierDelegateAndroidObserver
   typedef NetworkChangeNotifier::NetworkList NetworkList;
 
   NetworkChangeNotifierDelegateAndroidObserver()
-      : type_notifications_count_(0), max_bandwidth_notifications_count_(0) {}
+      : type_notifications_count_(0),
+        max_bandwidth_notifications_count_(0),
+        default_network_active_notifications_count_(0) {}
 
   // NetworkChangeNotifierDelegateAndroid::Observer:
   void OnConnectionTypeChanged() override { type_notifications_count_++; }
@@ -59,14 +61,22 @@ class NetworkChangeNotifierDelegateAndroidObserver
 
   void OnNetworkMadeDefault(NetworkHandle network) override {}
 
+  void OnDefaultNetworkActive() override {
+    default_network_active_notifications_count_++;
+  }
+
   int type_notifications_count() const { return type_notifications_count_; }
   int bandwidth_notifications_count() const {
     return max_bandwidth_notifications_count_;
+  }
+  int default_network_active_notifications_count() const {
+    return default_network_active_notifications_count_;
   }
 
  private:
   int type_notifications_count_;
   int max_bandwidth_notifications_count_;
+  int default_network_active_notifications_count_;
 };
 
 class NetworkChangeNotifierObserver
@@ -236,10 +246,20 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
     base::RunLoop().RunUntilIdle();
   }
 
+  void FakeDefaultNetworkActive() {
+    delegate_.FakeDefaultNetworkActive();
+    // See comment above.
+    base::RunLoop().RunUntilIdle();
+  }
+
   void FakePurgeActiveNetworkList(NetworkChangeNotifier::NetworkList networks) {
     delegate_.FakePurgeActiveNetworkList(networks);
     // See comment above.
     base::RunLoop().RunUntilIdle();
+  }
+
+  bool is_default_network_active_api_supported() const {
+    return delegate_.is_default_network_active_api_supported_;
   }
 
   NetworkChangeNotifierDelegateAndroid delegate_;
@@ -494,6 +514,59 @@ TEST_F(NetworkChangeNotifierDelegateAndroidTest, TypeChangeIsSynchronous) {
   // Note that there's no call to |base::RunLoop::RunUntilIdle| here. The
   // update must happen synchronously.
   EXPECT_EQ(initial_value + 1, delegate_observer_.type_notifications_count());
+}
+
+TEST_F(NetworkChangeNotifierDelegateAndroidTest, DefaultNetworkActive) {
+  // No notifications should be received when there are no observers.
+  EXPECT_EQ(0, delegate_observer_.default_network_active_notifications_count());
+  FakeDefaultNetworkActive();
+  EXPECT_EQ(0, delegate_observer_.default_network_active_notifications_count());
+
+  if (is_default_network_active_api_supported()) {
+    // Simulate calls to NetworkChangeNotifier::AddDefaultNetworkObserver().
+    // Notifications should be received now.
+    delegate_.DefaultNetworkActiveObserverAdded();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(1,
+              delegate_observer_.default_network_active_notifications_count());
+    delegate_.DefaultNetworkActiveObserverAdded();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(2,
+              delegate_observer_.default_network_active_notifications_count());
+
+    // Simulate call to NetworkChangeNotifier::AddDefaultNetworkObserver().
+    // Notifications should be received until the last observer has been
+    // removed.
+    delegate_.DefaultNetworkActiveObserverRemoved();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(3,
+              delegate_observer_.default_network_active_notifications_count());
+    delegate_.DefaultNetworkActiveObserverRemoved();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(3,
+              delegate_observer_.default_network_active_notifications_count());
+
+    // Double check that things keep working as expected after re-adding an
+    // observer.
+    delegate_.DefaultNetworkActiveObserverAdded();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(4,
+              delegate_observer_.default_network_active_notifications_count());
+
+    // Cleanup: delegate destructor DCHECKS that all observers have been
+    // removed.
+    delegate_.DefaultNetworkActiveObserverRemoved();
+  } else {
+    // When the API is not supported no notification should be delivered.
+    delegate_.DefaultNetworkActiveObserverAdded();
+    FakeDefaultNetworkActive();
+    EXPECT_EQ(0,
+              delegate_observer_.default_network_active_notifications_count());
+
+    // Cleanup: delegate destructor DCHECKS that all observers have been
+    // removed.
+    delegate_.DefaultNetworkActiveObserverRemoved();
+  }
 }
 
 }  // namespace net

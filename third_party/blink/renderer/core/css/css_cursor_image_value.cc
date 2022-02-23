@@ -54,7 +54,7 @@ bool CSSCursorImageValue::Equals(const CSSCursorImageValue& other) const {
   return (hot_spot_specified_
               ? other.hot_spot_specified_ && hot_spot_ == other.hot_spot_
               : !other.hot_spot_specified_) &&
-         DataEquivalent(image_value_, other.image_value_);
+         base::ValuesEquivalent(image_value_, other.image_value_);
 }
 
 void CSSCursorImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {

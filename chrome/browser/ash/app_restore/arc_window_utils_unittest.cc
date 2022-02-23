@@ -49,9 +49,7 @@ class ArcWindowUtilsTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {::full_restore::features::kFullRestore,
-         ::full_restore::features::kArcGhostWindow},
-        {});
+        {::full_restore::features::kArcGhostWindow}, {});
     wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
   }
 

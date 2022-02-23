@@ -57,15 +57,14 @@ const uint32 kURLLoadOptionBlockLocalRequest = 256;
 // URLLoaderFactory is an interface for requesting URLs. It creates URLLoader
 // instances. One URLLoader instance can load one URL.
 interface URLLoaderFactory {
-  // Creates a URLLoader and starts loading with the given |request|. |client|'s
+  // Creates a URLLoader and starts loading with the given `request`. `client`'s
   // methods will be called when certain events related to that loading
   // (e.g., response arrival) happen.
   //
-  // |request_id| is an arbitrary id for the request. The (routing_id,
-  // request_id) pair must be unique over all calls to CreateLoaderAndStart()
-  // on this factory.
+  // `request_id` is an arbitrary id for the request. `request_id` should be
+  // unique over all calls to CreateLoaderAndStart() on this factory, or 0.
   //
-  // |options| is a bitfield of the options defined above.
+  // `options` is a bitfield of the options defined above.
   CreateLoaderAndStart(pending_receiver<URLLoader> loader,
                        int32 request_id,
                        uint32 options,

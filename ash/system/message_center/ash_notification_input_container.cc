@@ -27,7 +27,7 @@ namespace {
 constexpr int kBetweenChildSpacing = 12;
 
 // Insets for inside the border.
-constexpr gfx::Insets kInsideBorderInsets(6, 16, 14, 16);
+constexpr gfx::Insets kInsideBorderInsets(6, 16, 14, 6);
 
 // The icon size of inline reply input field.
 constexpr int kInputReplyButtonSize = 20;

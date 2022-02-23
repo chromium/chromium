@@ -17,10 +17,10 @@ namespace ash {
 // Controller of a quick action item that toggles silence phone mode.
 class ASH_EXPORT SilencePhoneQuickActionController
     : public QuickActionControllerBase,
-      public chromeos::phonehub::DoNotDisturbController::Observer {
+      public phonehub::DoNotDisturbController::Observer {
  public:
   explicit SilencePhoneQuickActionController(
-      chromeos::phonehub::DoNotDisturbController* dnd_controller);
+      phonehub::DoNotDisturbController* dnd_controller);
   ~SilencePhoneQuickActionController() override;
   SilencePhoneQuickActionController(SilencePhoneQuickActionController&) =
       delete;
@@ -34,7 +34,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
   QuickActionItem* CreateItem() override;
   void OnButtonPressed(bool is_now_enabled) override;
 
-  // chromeos::phonehub::DoNotDisturbController::Observer:
+  // phonehub::DoNotDisturbController::Observer:
   void OnDndStateChanged() override;
 
  private:
@@ -54,7 +54,7 @@ class ASH_EXPORT SilencePhoneQuickActionController
   // phone. Make changes to item's state if necessary.
   void CheckRequestedState();
 
-  chromeos::phonehub::DoNotDisturbController* dnd_controller_ = nullptr;
+  phonehub::DoNotDisturbController* dnd_controller_ = nullptr;
   QuickActionItem* item_ = nullptr;
 
   // Keep track the current state of the item.

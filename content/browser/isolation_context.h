@@ -26,9 +26,11 @@ class CONTENT_EXPORT IsolationContext {
   // creating this object on the IO thread, the BrowserOrResourceContext
   // version should be used instead.
   IsolationContext(BrowsingInstanceId browsing_instance_id,
-                   BrowserContext* browser_context);
+                   BrowserContext* browser_context,
+                   bool is_guest);
   IsolationContext(BrowsingInstanceId browsing_instance_id,
-                   BrowserOrResourceContext browser_or_resource_context);
+                   BrowserOrResourceContext browser_or_resource_context,
+                   bool is_guest);
 
   // Also temporarily allow constructing an IsolationContext not associated
   // with a specific BrowsingInstance.  Callers can use this when they don't
@@ -62,11 +64,19 @@ class CONTENT_EXPORT IsolationContext {
     return browser_or_resource_context_;
   }
 
+  // True when the BrowsingInstance associated with this context is used in a
+  // <webview> guest.
+  bool is_guest() const { return is_guest_; }
+
  private:
   // When non-null, associates this context with a particular BrowsingInstance.
-  BrowsingInstanceId browsing_instance_id_;
+  const BrowsingInstanceId browsing_instance_id_;
 
-  BrowserOrResourceContext browser_or_resource_context_;
+  const BrowserOrResourceContext browser_or_resource_context_;
+
+  // Specifies whether the BrowsingInstance associated with this context is for
+  // a <webview> guest.
+  const bool is_guest_;
 };
 
 }  // namespace content

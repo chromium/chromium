@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/gurl.h"
 
@@ -48,7 +48,7 @@ class AppBannerManagerBrowserTestBase : public InProcessBrowserTest {
   GURL GetBannerURLWithManifestAndQuery(const std::string& manifest_url,
                                         const std::string& key,
                                         const std::string& value);
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 #endif  // CHROME_BROWSER_BANNERS_APP_BANNER_MANAGER_BROWSERTEST_BASE_H_

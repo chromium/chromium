@@ -106,7 +106,7 @@ String SystemClipboard::ReadPlainText() {
   return ReadPlainText(buffer_);
 }
 
-String SystemClipboard::ReadPlainText(mojom::ClipboardBuffer buffer) {
+String SystemClipboard::ReadPlainText(mojom::blink::ClipboardBuffer buffer) {
   if (!IsValidBufferType(buffer) || !clipboard_.is_bound())
     return String();
   String text;
@@ -114,12 +114,22 @@ String SystemClipboard::ReadPlainText(mojom::ClipboardBuffer buffer) {
   return text;
 }
 
+void SystemClipboard::ReadPlainText(
+    mojom::blink::ClipboardBuffer buffer,
+    mojom::blink::ClipboardHost::ReadTextCallback callback) {
+  if (!IsValidBufferType(buffer) || !clipboard_.is_bound()) {
+    std::move(callback).Run(String());
+    return;
+  }
+  clipboard_->ReadText(buffer_, std::move(callback));
+}
+
 void SystemClipboard::WritePlainText(const String& plain_text,
                                      SmartReplaceOption) {
   // TODO(https://crbug.com/106449): add support for smart replace, which is
   // currently under-specified.
   String text = plain_text;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
   if (clipboard_.is_bound())
@@ -141,6 +151,15 @@ String SystemClipboard::ReadHTML(KURL& url,
     fragment_end = 0;
   }
   return html;
+}
+
+void SystemClipboard::ReadHTML(
+    mojom::blink::ClipboardHost::ReadHtmlCallback callback) {
+  if (!IsValidBufferType(buffer_) || !clipboard_.is_bound()) {
+    std::move(callback).Run(String(), KURL(), 0, 0);
+    return;
+  }
+  clipboard_->ReadHtml(buffer_, std::move(callback));
 }
 
 void SystemClipboard::WriteHTML(const String& markup,
@@ -212,7 +231,7 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   }
 
   if (url.IsValid() && !url.IsEmpty()) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // See http://crbug.com/838808: Not writing text/plain on Mac for
     // consistency between platforms, and to help fix errors in applications
     // which prefer text/plain content over image content for compatibility with
@@ -287,7 +306,7 @@ void SystemClipboard::CommitWrite() {
 }
 
 void SystemClipboard::CopyToFindPboard(const String& text) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (clipboard_.is_bound())
     clipboard_->WriteStringToFindPboard(text);
 #endif

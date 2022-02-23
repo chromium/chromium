@@ -10,9 +10,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,12 +22,15 @@
 class Profile;
 class ProfileManager;
 
+namespace ash {
+class PrinterConfigurer;
+struct PrintServersConfig;
+}  // namespace ash
+
 namespace chromeos {
 class CupsPrinterStatus;
 class PpdProvider;
 class Printer;
-class PrinterConfigurer;
-struct PrintServersConfig;
 }  // namespace chromeos
 
 namespace crosapi {
@@ -36,8 +39,8 @@ namespace crosapi {
 // UI thread.
 class LocalPrinterAsh : public mojom::LocalPrinter,
                         public ProfileManagerObserver,
-                        public chromeos::CupsPrintJobManager::Observer,
-                        public chromeos::PrintServersManager::Observer {
+                        public ash::CupsPrintJobManager::Observer,
+                        public ash::PrintServersManager::Observer {
  public:
   LocalPrinterAsh();
   LocalPrinterAsh(const LocalPrinterAsh&) = delete;
@@ -53,7 +56,7 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   // The mojom PrintServersConfig object contains all information in the
   // PrintServersConfig object.
   static mojom::PrintServersConfigPtr ConfigToMojom(
-      const chromeos::PrintServersConfig& config);
+      const ash::PrintServersConfig& config);
 
   // The mojom LocalDestinationInfo object is a subset of the chromeos Printer
   // object.
@@ -71,21 +74,20 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  // chromeos::CupsPrintJobManager::Observer:
-  void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobStarted(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobUpdated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobSuspended(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobResumed(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  // ash::CupsPrintJobManager::Observer:
+  void OnPrintJobCreated(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobStarted(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobUpdated(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobSuspended(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobResumed(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<ash::CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<ash::CupsPrintJob> job) override;
 
   // chromeos::PrintServersManager::Observer:
-  void OnPrintServersChanged(
-      const chromeos::PrintServersConfig& config) override;
+  void OnPrintServersChanged(const ash::PrintServersConfig& config) override;
   void OnServerPrintersChanged(
-      const std::vector<chromeos::PrinterDetector::DetectedPrinter>&) override;
+      const std::vector<ash::PrinterDetector::DetectedPrinter>&) override;
 
   // crosapi::mojom::LocalPrinter:
   void GetPrinters(GetPrintersCallback callback) override;
@@ -116,14 +118,14 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
                            AddPrintJobObserverCallback callback) override;
 
  private:
-  void NotifyPrintJobUpdate(base::WeakPtr<chromeos::CupsPrintJob> job,
+  void NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
                             mojom::PrintJobStatus status);
 
   // Exposed so that unit tests can override them.
   virtual Profile* GetProfile();
   virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile);
-  virtual std::unique_ptr<chromeos::PrinterConfigurer> CreatePrinterConfigurer(
+  virtual std::unique_ptr<ash::PrinterConfigurer> CreatePrinterConfigurer(
       Profile* profile);
 
   ProfileManager* profile_manager_ = nullptr;

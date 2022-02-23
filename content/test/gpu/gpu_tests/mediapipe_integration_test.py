@@ -9,12 +9,12 @@ import sys
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 # Tests will be stored individually in subdirectories underneath this base
 # directory.
-_DATA_PATH = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                          'data', 'gpu', 'mediapipe')
+_DATA_PATH = os.path.join(gpu_path_util.GPU_DATA_DIR, 'mediapipe')
 
 
 class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -43,12 +43,14 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def GenerateGpuTests(cls, options):
-    for entry in next(os.walk(_DATA_PATH))[1]:
-      yield ('MediaPipe_mediapipe_%s' % entry, _get_test_html(entry), ())
+    for entry in os.scandir(_DATA_PATH):
+      if entry.is_dir():
+        yield ('MediaPipe_mediapipe_%s' % entry.name,
+               _get_test_html(entry.name), ())
 
-  def RunActualGpuTest(self, url, *_):
+  def RunActualGpuTest(self, test_path, *args):
     action_runner = self.tab.action_runner
-    action_runner.Navigate(self.UrlOfStaticFilePath(url))
+    action_runner.Navigate(self.UrlOfStaticFilePath(test_path))
     action_runner.WaitForJavaScriptCondition('window.runTest !== undefined')
     action_runner.EvaluateJavaScript('window.runTest()')
     # 120s timeout: some of these tests time out on bots pretty regularly, even

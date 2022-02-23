@@ -39,7 +39,7 @@
 #include "components/user_prefs/user_prefs.h"
 #endif
 
-#if !(defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_CHROMEOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
 #error This file currently only supports Chrome OS, Android and Windows.
 #endif
 
@@ -72,7 +72,7 @@ ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
       permissions::PermissionContextBase::GetPermissionStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
          content_setting == CONTENT_SETTING_ASK ||
 #endif
          content_setting == CONTENT_SETTING_BLOCK);
@@ -134,7 +134,7 @@ bool ProtectedMediaIdentifierPermissionContext::IsRestrictedToSecureOrigins()
 // across platforms.
 bool ProtectedMediaIdentifierPermissionContext::
     IsProtectedMediaIdentifierEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   // Identifier is not allowed in incognito or guest mode.
   if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
@@ -146,7 +146,7 @@ bool ProtectedMediaIdentifierPermissionContext::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(chromeos::switches::kSystemDevMode) &&
-      !command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode)) {
+      !command_line->HasSwitch(ash::switches::kAllowRAInDevMode)) {
     DVLOG(1) << "Protected media identifier disabled in dev mode.";
     return false;
   }
@@ -162,7 +162,7 @@ bool ProtectedMediaIdentifierPermissionContext::
     return false;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 
   return true;
 }

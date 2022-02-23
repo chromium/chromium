@@ -73,11 +73,11 @@ bool MixerPipeline::BuildPipeline(PostProcessingPipelineParser* config,
     int input_channels = (stream_pipeline.num_input_channels.has_value()
                               ? stream_pipeline.num_input_channels.value()
                               : expected_input_channels);
-    const std::string& name = device_ids->GetList()[0].GetString();
+    const std::string& name = device_ids->GetListDeprecated()[0].GetString();
     LOG(INFO) << input_channels << " input channels to '" << name << "' group";
 
-    DCHECK(!device_ids->GetList().empty());
-    DCHECK(device_ids->GetList()[0].is_string());
+    DCHECK(!device_ids->GetListDeprecated().empty());
+    DCHECK(device_ids->GetListDeprecated()[0].is_string());
     filter_groups_.push_back(
         CreateFilterGroup(input_channels, name, stream_pipeline.pipeline,
                           factory, stream_pipeline.volume_limits));
@@ -150,7 +150,7 @@ bool MixerPipeline::SetGroupDeviceIds(const base::Value* ids,
   DCHECK(filter_group);
   DCHECK(ids->is_list());
 
-  for (const base::Value& stream_type_val : ids->GetList()) {
+  for (const base::Value& stream_type_val : ids->GetListDeprecated()) {
     DCHECK(stream_type_val.is_string());
     const std::string& stream_type = stream_type_val.GetString();
     if (!IsOutputDeviceId(stream_type)) {

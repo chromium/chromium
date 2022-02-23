@@ -47,6 +47,13 @@ enum WebClientHintsType {
   kViewportWidth = 22, // The `sec-ch-` variant of kViewportWidth_DEPRECATED
   // A new client hint to deprecate `sec-ch-ua-full-version`
   kUAFullVersionList = 23,
+  // A client hint which, if set, signifies to the origin that the User-Agent
+  // header contains the full user agent string.
+  kFullUserAgent = 24,
+  kUAWoW64 = 25,
+  // A client hint which, if set, signifies to the origin that the client
+  // supports the Partitioned cookie attribute.
+  kPartitionedCookies = 26,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };

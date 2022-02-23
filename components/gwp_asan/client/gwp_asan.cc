@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <tuple>
 
 #include "base/allocator/buildflags.h"
 #include "base/callback_helpers.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
@@ -56,7 +56,7 @@ constexpr double kDefaultProcessSamplingProbability = 0.015;
 // we want to perform additional testing (e.g., on canary/dev builds).
 constexpr int kDefaultProcessSamplingBoost2 = 10;
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 constexpr base::FeatureState kDefaultEnabled = base::FEATURE_ENABLED_BY_DEFAULT;
 #else
 constexpr base::FeatureState kDefaultEnabled =
@@ -197,9 +197,9 @@ void EnableForMalloc(bool boost_sampling, const char* process_type) {
         settings->total_pages, settings->sampling_frequency, base::DoNothing());
     return true;
   }();
-  ignore_result(init_once);
+  std::ignore = init_once;
 #else
-  ignore_result(internal::kGwpAsanMalloc);
+  std::ignore = internal::kGwpAsanMalloc;
   DLOG(WARNING) << "base::allocator shims are unavailable for GWP-ASan.";
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
@@ -217,9 +217,9 @@ void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
         settings->total_pages, settings->sampling_frequency, base::DoNothing());
     return true;
   }();
-  ignore_result(init_once);
+  std::ignore = init_once;
 #else
-  ignore_result(internal::kGwpAsanPartitionAlloc);
+  std::ignore = internal::kGwpAsanPartitionAlloc;
   DLOG(WARNING) << "PartitionAlloc hooks are unavailable for GWP-ASan.";
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 }

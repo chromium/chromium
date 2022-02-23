@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("commands") {
+  friend = [ ":unit_tests" ]
+
   public = [
     "key_rotation_command.h",
     "key_rotation_command_factory.h",
@@ -47,4 +49,21 @@ source_set("test_support") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (is_win) {
+    sources = [ "win_key_rotation_command_unittest.cc" ]
+
+    deps = [
+      ":commands",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/installer/util:constants",
+      "//testing/gtest",
+    ]
+  }
 }

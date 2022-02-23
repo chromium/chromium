@@ -22,15 +22,44 @@ class WebContents;
 
 namespace embedder_support {
 
-// Returns the product used in building the user-agent.
-std::string GetProduct();
+// TODO(crbug.com/1291612): Move this enum definition to
+// chrome/browser/chrome_content_browser_client.h
+// TODO(crbug.com/1290820): Remove this enum along with policy.
+enum ForceMajorVersionToMinorPosition {
+  kDefault = 0,
+  kForceDisabled = 1,
+  kForceEnabled = 2,
+};
 
-// Returns the user agent string for Chrome. If the ReduceUserAgent
-// feature is enabled, this will return |GetReducedUserAgent|
-std::string GetUserAgent();
+struct UserAgentOptions {
+  bool force_major_version_100 = false;
+  ForceMajorVersionToMinorPosition force_major_to_minor = kDefault;
+};
+
+// Returns the product string, e.g. "Chrome/98.0.4521.0".  If `allow_override`
+// is set to true, it's possible to have a mismatch between the product's
+// version number and the version number in the User-Agent string if there are
+// flag-enabled overrides.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+std::string GetProduct(
+    bool allow_override = false,
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
+
+// Returns the user agent string for Chrome.
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+std::string GetFullUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the reduced user agent string for Chrome.
-std::string GetReducedUserAgent();
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+std::string GetReducedUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
+
+// Returns the full or "reduced" user agent string, depending on the
+// UserAgentReduction enterprise policy and blink::features::kReduceUserAgent
+// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+std::string GetUserAgent(
+    ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns UserAgentMetadata per the default policy.
 // This override is currently used in fuchsia, where the enterprise policy
@@ -63,7 +92,7 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     bool enable_updated_grease_by_policy,
     blink::UserAgentBrandVersionType output_version_type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This sets a user agent string to simulate a desktop user agent on mobile.
 // If |override_in_new_tabs| is true, and the first navigation in the tab is
 // renderer initiated, then is-overriding-user-agent is set to true for the
@@ -73,9 +102,15 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  bool override_in_new_tabs);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int GetHighestKnownUniversalApiContractVersionForTesting();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+
+// Returns the ForcemajorVersionToMinorPosition enum value corresponding to
+// the provided integer policy value for ForceMajorVersionToMinorPosition.
+// TODO(crbug.com/1290820): Remove this function with policy.
+embedder_support::ForceMajorVersionToMinorPosition GetMajorToMinorFromPrefs(
+    PrefService* pref_service);
 
 }  // namespace embedder_support
 

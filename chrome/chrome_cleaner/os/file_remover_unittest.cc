@@ -522,7 +522,7 @@ TEST_P(FileRemoverQuarantineTest, FailToQuarantine) {
   // Acquire exclusive read access to the file, so the archiver can't open the
   // file.
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
-                            base::File::FLAG_EXCLUSIVE_READ);
+                            base::File::FLAG_WIN_EXCLUSIVE_READ);
   ASSERT_TRUE(file.IsValid());
 
   (use_reboot_removal_)

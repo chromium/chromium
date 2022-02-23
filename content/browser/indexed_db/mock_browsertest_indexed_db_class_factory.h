@@ -18,7 +18,6 @@
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 
 namespace content {
@@ -32,7 +31,7 @@ class LevelDBSnapshot;
 class TransactionalLevelDBTransaction;
 class TransactionalLevelDBDatabase;
 
-class CONTENT_EXPORT MockBrowserTestIndexedDBClassFactory
+class MockBrowserTestIndexedDBClassFactory
     : public IndexedDBClassFactory,
       public DefaultTransactionalLevelDBFactory,
       public storage::mojom::MockFailureInjector {

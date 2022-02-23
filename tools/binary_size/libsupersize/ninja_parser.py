@@ -48,7 +48,7 @@ class _SourceMapper:
     obj_path = by_basename.get(obj_name)
     if not obj_path:
       # Found the library, but it doesn't list the .o file.
-      logging.warning('no obj basename for %s', path)
+      logging.warning('no obj basename for %s %s', path, obj_name)
       return None
     return self._dep_map.get(obj_path)
 

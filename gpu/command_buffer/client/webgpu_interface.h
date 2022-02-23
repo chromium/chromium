@@ -66,6 +66,7 @@ class WebGPUInterface : public InterfaceBase {
   virtual ReservedTexture ReserveTexture(WGPUDevice device) = 0;
   virtual void RequestAdapterAsync(
       PowerPreference power_preference,
+      bool force_fallback_adapter,
       base::OnceCallback<void(int32_t,
                               const WGPUDeviceProperties&,
                               const char*)> request_adapter_callback) = 0;

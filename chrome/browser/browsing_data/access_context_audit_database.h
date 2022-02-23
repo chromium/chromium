@@ -31,8 +31,8 @@ class AccessContextAuditDatabase
     kServiceWorker = 5,
     kCacheStorage = 6,
     kIndexedDB = 7,
-    kAppCache = 8,
-    kMaxValue = kAppCache
+    kAppCacheDeprecated = 8,
+    kMaxValue = kAppCacheDeprecated
   };
 
   // An individual record of a Storage API access, associating the individual

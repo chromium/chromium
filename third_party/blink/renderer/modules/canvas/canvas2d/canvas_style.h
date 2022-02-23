@@ -27,9 +27,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_STYLE_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -51,7 +52,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
   CanvasPattern* GetCanvasPattern() const { return pattern_; }
 
-  void ApplyToFlags(PaintFlags&) const;
+  void ApplyToFlags(cc::PaintFlags&) const;
   RGBA32 PaintColor() const;
 
   bool IsEquivalentRGBA(RGBA32 rgba) const {

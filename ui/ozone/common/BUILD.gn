@@ -9,6 +9,10 @@ assert(use_ozone)
 
 source_set("common") {
   sources = [
+    "bitmap_cursor.cc",
+    "bitmap_cursor.h",
+    "bitmap_cursor_factory.cc",
+    "bitmap_cursor_factory.h",
     "egl_util.cc",
     "egl_util.h",
     "features.cc",
@@ -22,11 +26,16 @@ source_set("common") {
   ]
 
   public_deps = [
-    "//build:chromeos_buildflags",
+    "//base",
+    "//skia",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+    "//ui/gfx/geometry",
     "//ui/ozone:ozone_base",
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//ui/gfx/ipc/color",
     "//ui/gl",
     "//ui/gl:buildflags",
@@ -34,8 +43,23 @@ source_set("common") {
 
   data_deps = [ "//third_party/mesa_headers" ]
 
-  visibility = [ "//ui/ozone/platform/*" ]
+  visibility = [
+    ":*",
+    "//ui/ozone/platform/*",
+  ]
 
   # Out of tree platforms can depend on this.
   visibility += ozone_external_platform_visibility
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "bitmap_cursor_factory_unittest.cc" ]
+  deps = [
+    ":common",
+    "//build:chromeos_buildflags",
+    "//testing/gtest",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+  ]
 }

@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var LineChartTest = LineChartTest || {};
+import {Scrollbar} from 'chrome://sys-internals/line_chart/scrollbar.js';
 
-LineChartTest.Scrollbar = function() {
+import {assertCloseTo} from '../test_util.js';
+
+suite('LineChart_Scrollbar', function() {
   test('Scrollbar integration test', function() {
-    const scrollbar = new LineChart.Scrollbar(function() {});
+    const scrollbar = new Scrollbar(function() {});
     scrollbar.resize(100);
     scrollbar.setRange(1000);
 
-    /* See |LineChart.Scrollbar.isScrolledToRightEdge()|. */
+    /* See |Scrollbar.isScrolledToRightEdge()|. */
     const scrollError = 2;
     assertFalse(scrollbar.isScrolledToRightEdge());
-    TestUtil.assertCloseTo(scrollbar.getPosition(), 0, scrollError);
+    assertCloseTo(scrollbar.getPosition(), 0, scrollError);
     scrollbar.scrollToRightEdge();
     assertTrue(scrollbar.isScrolledToRightEdge());
-    TestUtil.assertCloseTo(scrollbar.getPosition(), 1000, scrollError);
+    assertCloseTo(scrollbar.getPosition(), 1000, scrollError);
     scrollbar.setPosition(500);
     assertFalse(scrollbar.isScrolledToRightEdge());
-    TestUtil.assertCloseTo(scrollbar.getPosition(), 500, scrollError);
+    assertCloseTo(scrollbar.getPosition(), 500, scrollError);
     scrollbar.setRange(100);
     assertTrue(scrollbar.isScrolledToRightEdge());
-    TestUtil.assertCloseTo(scrollbar.getPosition(), 100, scrollError);
+    assertCloseTo(scrollbar.getPosition(), 100, scrollError);
   });
-
-  mocha.run();
-};
+});

@@ -5,7 +5,6 @@
 #ifndef UI_BASE_WIN_ATL_MODULE_H_
 #define UI_BASE_WIN_ATL_MODULE_H_
 
-#include "base/compiler_specific.h"
 #include "base/win/atl.h"
 
 namespace ui {

@@ -12,8 +12,8 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/skottie_color_map.h"
 #include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
 
 namespace cc {
 class ImageProvider;
@@ -121,7 +121,9 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,
-                   SkottieFrameDataMap images) override;
+                   SkottieFrameDataMap images,
+                   const SkottieColorMap& color_map,
+                   SkottieTextPropertyValueMap text_map) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,
@@ -163,10 +165,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
  private:
   void FlushAfterDrawIfNeeded();
 
-  int max_texture_size() const {
-    auto* context = canvas_->recordingContext();
-    return context ? context->maxTextureSize() : 0;
-  }
+  int GetMaxTextureSize() const;
 
   SkCanvas* canvas_;
   SkBitmap bitmap_;

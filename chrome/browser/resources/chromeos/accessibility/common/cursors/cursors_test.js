@@ -33,18 +33,19 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
     window.NODE = cursors.Unit.NODE;
     window.BOUND = cursors.Movement.BOUND;
     window.DIRECTIONAL = cursors.Movement.DIRECTIONAL;
+    window.SYNC = cursors.Movement.SYNC;
   }
 
   /**
    * Performs a series of operations on a cursor and asserts the result.
    * @param {cursors.Cursor} cursor The starting cursor.
    * @param {!Array<Array<
-   *     cursors.Unit|
-   *     cursors.Movement|
-   *     constants.Dir|
-   *     Object>>}
-   *     moves An array of arrays. Each inner array contains 4 items: unit,
-   *     movement, direction, and assertions object. See example below.
+   *          cursors.Unit|
+   *          cursors.Movement|
+   *          constants.Dir|
+   *          {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: unit, movement, direction, and assertions
+   *     object. See example below.
    */
   cursorMoveAndAssert(cursor, moves) {
     let move = null;
@@ -59,12 +60,11 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
    * Performs a series of operations on a range and asserts the result.
    * @param {cursors.Range} range The starting range.
    * @param {!Array<Array<
-   *          cursors.Unit|
-   *          cursors.Movement|
-   *          constants.Dir|
-   *          Object>>}
-   *     moves An array of arrays. Each inner array contains 4 items: unit,
-   *     direction, start and end assertions objects. See example below.
+   *         cursors.Unit|
+   *         constants.Dir|
+   *         {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: unit, direction, start and end assertions
+   *     objects. See example below.
    */
   rangeMoveAndAssert(range, moves) {
     let move = null;
@@ -80,7 +80,7 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
 
   /**
    * Makes assertions about the given |cursor|.
-   * @param {Object} expected
+   * @param {{index: number, value: string}} expected
    * @param {Cursor} cursor
    */
   makeCursorAssertion(expected, cursor) {
@@ -88,13 +88,21 @@ AccessibilityExtensionCursorsTest = class extends ChromeVoxNextE2ETest {
       assertEquals(expected.value, cursor.node.name);
     }
     if (goog.isDef(expected.index)) {
-      assertEquals(expected.index, cursor.index);
+      assertEquals(expected.index, cursor.index,
+        'wrong index at ' + expected.value + ', expected: ' + expected.index + ' actual: ' + cursor.index);
     }
   }
 
   /**
    * Runs the specified moves on the |doc| and asserts expectations.
    * @param {function} doc
+   * @param {!Array<Array<
+   *          cursors.Unit|
+   *          cursors.Movement|
+   *          constants.Dir|
+   *          {index: number, value: string}>>} moves An array of arrays. Each
+   *     inner array contains 4 items: see |cursorMoveAndAssert| and
+   *     |rangeMoveAndAssert|.
    * @param {string=} opt_testType Either CURSOR or RANGE.
    */
   runCursorMovesOnDocument(doc, moves, opt_testType) {
@@ -215,6 +223,21 @@ TEST_F('AccessibilityExtensionCursorsTest', 'LineCursor', function() {
     // Bump against an edge.
     [LINE, DIRECTIONAL, BACKWARD, {value: 'same line'}],
     [LINE, BOUND, BACKWARD, {value: 'start '}]
+  ]);
+});
+
+TEST_F('AccessibilityExtensionCursorsTest', 'SyncCursor', function() {
+  this.runCursorMovesOnDocument(this.simpleDoc, [
+    [WORD, SYNC, FORWARD, {index: 0, value: 'start '}],
+
+    [NODE, DIRECTIONAL, FORWARD, {value: 'same line'}],
+    [CHARACTER, SYNC, FORWARD, {index: 0, value: 'same line'}],
+
+    [NODE, DIRECTIONAL, BACKWARD, {value: 'start '}],
+    [CHARACTER, SYNC, BACKWARD, {index: 5, value: 'start '}],
+
+    [NODE, DIRECTIONAL, FORWARD, {value: 'same line'}],
+    [WORD, SYNC, BACKWARD, {index: 5, value: 'same line'}],
   ]);
 });
 
@@ -435,37 +458,6 @@ TEST_F(
           });
     });
 
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'MultiLineOffsetSelection',
-    function() {
-      this.runWithLoadedTree(this.multiInlineDoc, function(root) {
-        const secondLine = root.firstChild.firstChild.firstChild.nextSibling;
-        assertEquals('inlineTextBox', secondLine.role);
-        assertEquals('diff ', secondLine.name);
-
-        let secondLineCursor = new cursors.Cursor(secondLine, -1);
-        // The selected node moves to the static text node.
-        assertEquals(
-            secondLineCursor.node.parent, secondLineCursor.selectionNode);
-
-        // This selects the entire node via a character offset.
-        assertEquals(6, secondLineCursor.selectionIndex);
-
-        // Index into the characters.
-        secondLineCursor = new cursors.Cursor(secondLine, 1);
-        assertEquals(7, secondLineCursor.selectionIndex);
-
-        // Now, try selecting via node offsets.
-        let cursor = new cursors.Cursor(root.firstChild, -1);
-        assertEquals(root, cursor.selectionNode);
-        assertEquals(0, cursor.selectionIndex);
-
-        cursor = new cursors.Cursor(root.firstChild.nextSibling, -1);
-        assertEquals(root, cursor.selectionNode);
-        assertEquals(1, cursor.selectionIndex);
-      });
-    });
-
 TEST_F('AccessibilityExtensionCursorsTest', 'InlineElementOffset', function() {
   this.runWithLoadedTree(
       `
@@ -611,94 +603,6 @@ TEST_F(
             const deep = cursor.deepEquivalent;
             assertEquals(RoleType.STATIC_TEXT, deep.node.role);
             assertEquals(4, deep.index);
-          });
-    });
-
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsRichText',
-    function() {
-      this.runWithLoadedTree(
-          `
-    <div contenteditable><p>test</p><p>123</p></div>
-  `,
-          function(root) {
-            const textField = root.firstChild;
-            const paragraph = textField.firstChild;
-            const otherParagraph = textField.lastChild;
-            const staticText = paragraph.firstChild;
-            const otherStaticText = otherParagraph.firstChild;
-
-            // Ranges by default surround a node. Ensure it results in a
-            // collapsed selection.
-            let range = cursors.Range.fromNode(staticText);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(paragraph, range.start.selectionNode);
-            assertEquals(paragraph, range.end.selectionNode);
-
-            // Text selection.
-            range = new cursors.Range(
-                new cursors.Cursor(staticText, 2),
-                new cursors.Cursor(staticText, 4));
-            assertEquals(2, range.start.selectionIndex);
-            assertEquals(4, range.end.selectionIndex);
-            assertEquals(staticText, range.start.selectionNode);
-            assertEquals(staticText, range.end.selectionNode);
-
-            // Tree selection.
-            range = cursors.Range.fromNode(paragraph);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(textField, range.start.selectionNode);
-            assertEquals(textField, range.end.selectionNode);
-
-            range = cursors.Range.fromNode(otherStaticText);
-            assertEquals(0, range.start.selectionIndex);
-            assertEquals(0, range.end.selectionIndex);
-            assertEquals(otherParagraph, range.start.selectionNode);
-            assertEquals(otherParagraph, range.end.selectionNode);
-
-            range = cursors.Range.fromNode(otherParagraph);
-            assertEquals(1, range.start.selectionIndex);
-            assertEquals(1, range.end.selectionIndex);
-            assertEquals(textField, range.start.selectionNode);
-            assertEquals(textField, range.end.selectionNode);
-          });
-    });
-
-TEST_F(
-    'AccessibilityExtensionCursorsTest', 'SelectionAdjustmentsNonRichText',
-    function() {
-      this.runWithLoadedTree(
-          `
-    <input type="text"></input>
-    <textarea></textarea>
-  `,
-          function(root) {
-            const testEditable = function(edit) {
-              // Occurs as part of ordinary (non-text) navigation.
-              let range = cursors.Range.fromNode(edit);
-              assertEquals(-1, range.start.selectionIndex);
-              assertEquals(-1, range.end.selectionIndex);
-              assertEquals(edit, range.start.selectionNode);
-              assertEquals(edit, range.end.selectionNode);
-
-              // Occurs as a result of explicit text nav e.g. nextCharacter
-              // command.
-              range = new cursors.Range(
-                  new cursors.Cursor(edit, 2), new cursors.Cursor(edit, 3));
-              assertEquals(2, range.start.selectionIndex);
-              assertEquals(3, range.end.selectionIndex);
-              assertEquals(edit, range.start.selectionNode);
-              assertEquals(edit, range.end.selectionNode);
-            };
-
-            const textField = root.firstChild.firstChild;
-            const textArea = root.lastChild.lastChild;
-
-            // Both of these should behave in the same way.
-            testEditable(textField);
-            testEditable(textArea);
           });
     });
 

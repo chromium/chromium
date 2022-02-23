@@ -248,12 +248,13 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   InitCB bound_init_cb = BindToCurrentLoop(std::move(init_cb));
 
   if (config.is_encrypted()) {
-    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (!ConfigureDecoder(config, low_delay)) {
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -261,7 +262,7 @@ void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
   state_ = DecoderState::kNormal;
-  std::move(bound_init_cb).Run(OkStatus());
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -275,12 +276,12 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
   if (state_ == DecoderState::kError) {
-    std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (state_ == DecoderState::kDecodeFinished) {
-    std::move(decode_cb_bound).Run(DecodeStatus::OK);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -306,7 +307,7 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (!FFmpegDecode(*buffer)) {
     state_ = DecoderState::kError;
-    std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -315,7 +316,7 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   // VideoDecoderShim expects that |decode_cb| is called only after
   // |output_cb_|.
-  std::move(decode_cb_bound).Run(DecodeStatus::OK);
+  std::move(decode_cb_bound).Run(DecoderStatus::Codes::kOk);
 }
 
 void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {

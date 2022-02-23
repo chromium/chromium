@@ -65,7 +65,7 @@ ServiceProviderConfig::ServiceProviderConfig(const std::string& config) {
     return;
 
   for (const base::Value& service_provider_value :
-       service_providers->GetList()) {
+       service_providers->GetListDeprecated()) {
     const std::string* name = service_provider_value.FindStringKey(kKeyName);
     if (name)
       service_providers_.emplace(*name, service_provider_value);
@@ -118,7 +118,7 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
     const base::Value* supported_tags =
         analysis->FindListKey(kKeySupportedTags);
     if (supported_tags) {
-      for (const base::Value& tag : supported_tags->GetList()) {
+      for (const base::Value& tag : supported_tags->GetListDeprecated()) {
         if (!tag.is_dict())
           continue;
 
@@ -169,7 +169,7 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
 
     const base::Value* scopes = file_system->FindListKey(kKeyFsScopes);
     if (scopes) {
-      for (const base::Value& scope : scopes->GetList()) {
+      for (const base::Value& scope : scopes->GetListDeprecated()) {
         if (!scope.is_string())
           continue;
 
@@ -179,7 +179,7 @@ ServiceProviderConfig::ServiceProvider::ServiceProvider(
 
     const base::Value* disbles = file_system->FindListKey(kKeyFsDisable);
     if (disbles) {
-      for (const base::Value& disable : disbles->GetList()) {
+      for (const base::Value& disable : disbles->GetListDeprecated()) {
         if (!disable.is_string())
           continue;
 
@@ -199,7 +199,7 @@ ServiceProviderConfig::ServiceProvider::Tag::Tag(const base::Value& tag_value) {
 
   const base::Value* mime_types = tag_value.FindListKey(kKeyMimeTypes);
   if (mime_types) {
-    for (const base::Value& mime_type : mime_types->GetList()) {
+    for (const base::Value& mime_type : mime_types->GetListDeprecated()) {
       if (!mime_type.is_string())
         continue;
 

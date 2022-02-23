@@ -14,6 +14,7 @@
 #include "base/cpu.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -122,7 +123,7 @@ class TransportClient final : public media::cast::CastTransport::Client {
   }
 
  private:
-  Session* const session_;  // Outlives this class.
+  const raw_ptr<Session> session_;  // Outlives this class.
 };
 
 // Generates a string with cryptographically secure random bytes.
@@ -168,14 +169,14 @@ bool IsHardwareH264EncodingSupported(
 // TODO(crbug.com/1015482): Look into why H.264 hardware encoder on MacOS is
 // broken.
 // TODO(crbug.com/1015482): Look into HW encoder initialization issues on Win.
-#if !defined(OS_APPLE) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
   for (const auto& vea_profile : profiles) {
     if (vea_profile.profile >= media::H264PROFILE_MIN &&
         vea_profile.profile <= media::H264PROFILE_MAX) {
       return true;
     }
   }
-#endif  // !defined(OS_APPLE) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
   return false;
 }
 
@@ -415,7 +416,7 @@ Session::Session(
     gpu_channel_host_ = gpu_->EstablishGpuChannelSync();
     if (gpu_channel_host_ &&
         gpu_channel_host_->gpu_feature_info().status_values
-                [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] ==
+                [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] ==
             gpu::kGpuFeatureStatusEnabled) {
       supported_profiles_ =
           media::GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
@@ -551,8 +552,7 @@ void Session::CreateVideoEncodeAccelerator(
         vea.InitWithNewPipeAndPassReceiver());
     // std::make_unique doesn't work to create a unique pointer of the subclass.
     mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
-        new media::MojoVideoEncodeAccelerator(std::move(vea),
-                                              supported_profiles_));
+        new media::MojoVideoEncodeAccelerator(std::move(vea)));
   }
   std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
                           std::move(mojo_vea));

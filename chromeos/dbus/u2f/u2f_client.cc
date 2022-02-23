@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,8 +39,12 @@ constexpr char kGetAssertionStatusHistogram[] =
 // infinite DBus timeouts.
 const int kU2FInfiniteTimeout = dbus::ObjectProxy::TIMEOUT_INFINITE;
 
-// Timeout for all other methods.
+// Timeout for methods which don't take time proportional to the number of total
+// credentials.
 constexpr int kU2FShortTimeout = 3000;
+// Timeout for methods which take time proportional to the number of total
+// credentials.
+constexpr int kU2FMediumTimeout = 10000;
 
 // U2FClientStatus represents the outcome of a DBus method call to u2fd. It
 // needs to be kept in sync with the WebAuthenticationU2FClientStatus metrics
@@ -102,6 +105,14 @@ class U2FClientImpl : public U2FClient {
   void HasLegacyU2FCredentials(
       const u2f::HasCredentialsRequest& request,
       DBusMethodCallback<u2f::HasCredentialsResponse> callback) override;
+  void CountCredentials(
+      const u2f::CountCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse> callback)
+      override;
+  void DeleteCredentials(
+      const u2f::DeleteCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse> callback)
+      override;
   void CancelWebAuthnFlow(
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) override;
@@ -231,7 +242,7 @@ void U2FClientImpl::HasCredentials(
   dbus::MessageWriter writer(&method_call);
   writer.AppendProtoAsArrayOfBytes(request);
   proxy_->CallMethod(
-      &method_call, kU2FShortTimeout,
+      &method_call, kU2FMediumTimeout,
       base::BindOnce(
           &U2FClientImpl::HandleResponse<u2f::HasCredentialsResponse>,
           weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -245,10 +256,38 @@ void U2FClientImpl::HasLegacyU2FCredentials(
   dbus::MessageWriter writer(&method_call);
   writer.AppendProtoAsArrayOfBytes(request);
   proxy_->CallMethod(
-      &method_call, kU2FShortTimeout,
+      &method_call, kU2FMediumTimeout,
       base::BindOnce(
           &U2FClientImpl::HandleResponse<u2f::HasCredentialsResponse>,
           weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void U2FClientImpl::CountCredentials(
+    const u2f::CountCredentialsInTimeRangeRequest& request,
+    DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse> callback) {
+  dbus::MethodCall method_call(u2f::kU2FInterface,
+                               u2f::kU2FCountCredentialsInTimeRange);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(request);
+  proxy_->CallMethod(
+      &method_call, kU2FMediumTimeout,
+      base::BindOnce(&U2FClientImpl::HandleResponse<
+                         u2f::CountCredentialsInTimeRangeResponse>,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void U2FClientImpl::DeleteCredentials(
+    const u2f::DeleteCredentialsInTimeRangeRequest& request,
+    DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse> callback) {
+  dbus::MethodCall method_call(u2f::kU2FInterface,
+                               u2f::kU2FDeleteCredentialsInTimeRange);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(request);
+  proxy_->CallMethod(
+      &method_call, kU2FMediumTimeout,
+      base::BindOnce(&U2FClientImpl::HandleResponse<
+                         u2f::DeleteCredentialsInTimeRangeResponse>,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void U2FClientImpl::CancelWebAuthnFlow(

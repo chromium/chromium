@@ -1,0 +1,35 @@
+UNKNOWN focusable has_input_focus label='Table example #2'
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN label='1'
+++++++++++++++STATIC_TEXT label='1'
+++++++++++++++++UNKNOWN label='1'
+++++++++++++UNKNOWN label='2'
+++++++++++++++STATIC_TEXT label='2'
+++++++++++++++++UNKNOWN label='2'
+++++++++++++UNKNOWN label='3'
+++++++++++++++STATIC_TEXT label='3'
+++++++++++++++++UNKNOWN label='3'
+++++++++++UNKNOWN
+++++++++++++UNKNOWN label='4'
+++++++++++++++STATIC_TEXT label='4'
+++++++++++++++++UNKNOWN label='4'
+++++++++++++UNKNOWN label='5'
+++++++++++++++STATIC_TEXT label='5'
+++++++++++++++++UNKNOWN label='5'
+++++++++++++UNKNOWN label='6'
+++++++++++++++STATIC_TEXT label='6'
+++++++++++++++++UNKNOWN label='6'
+++++++++++UNKNOWN
+++++++++++++UNKNOWN label='7'
+++++++++++++++STATIC_TEXT label='7'
+++++++++++++++++UNKNOWN label='7'
+++++++++++++UNKNOWN label='8'
+++++++++++++++STATIC_TEXT label='8'
+++++++++++++++++UNKNOWN label='8'
+++++++++++++UNKNOWN label='9'
+++++++++++++++STATIC_TEXT label='9'
+++++++++++++++++UNKNOWN label='9'

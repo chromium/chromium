@@ -9,31 +9,29 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/key_system_properties.h"
 
-typedef std::vector<std::unique_ptr<media::KeySystemProperties>>
-    KeySystemPropertiesVector;
-typedef base::RepeatingCallback<void(KeySystemPropertiesVector*)>
-    KeySystemsProviderDelegate;
+using KeySystemsProviderDelegate =
+    base::RepeatingCallback<void(media::KeySystemPropertiesVector*)>;
 
 class ChromeKeySystemsProvider {
  public:
   ChromeKeySystemsProvider();
-
   ChromeKeySystemsProvider(const ChromeKeySystemsProvider&) = delete;
   ChromeKeySystemsProvider& operator=(const ChromeKeySystemsProvider&) = delete;
-
   ~ChromeKeySystemsProvider();
 
-  // Adds properties for supported key systems.
-  void AddSupportedKeySystems(KeySystemPropertiesVector* key_systems);
+  // Gets supported key system properties.
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb);
 
   // Returns whether client key systems properties should be updated.
   // TODO(chcunningham): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume AddSupportedKeySystems has just one caller).
+  // less fragile (don't assume GetSupportedKeySystems has just one caller).
   bool IsKeySystemsUpdateNeeded();
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
@@ -41,18 +39,21 @@ class ChromeKeySystemsProvider {
   void SetProviderDelegateForTesting(KeySystemsProviderDelegate test_provider);
 
  private:
-  // Whether AddSupportedKeySystems() has ever been called.
-  bool has_updated_;
+  void OnSupportedKeySystemsReady(media::GetSupportedKeySystemsCB cb,
+                                  media::KeySystemPropertiesVector key_systems);
+
+  // Whether GetSupportedKeySystems() has ever been called.
+  bool has_updated_ = false;
 
   // Whether a future update is needed. For example, when some potentially
   // supported key systems are NOT supported yet. This could happen when the
   // required component for a key system is not yet available.
-  bool is_update_needed_;
+  bool is_update_needed_ = true;
 
   // Throttle how often we signal an update is needed to avoid unnecessary high
   // frequency of expensive IPC calls.
   base::TimeTicks last_update_time_ticks_;
-  const base::TickClock* tick_clock_;
+  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
   // Ensure all methods are called from the same (Main) thread.
   base::ThreadChecker thread_checker_;
@@ -60,6 +61,8 @@ class ChromeKeySystemsProvider {
   // For unit tests to inject their own key systems. Will bypass adding default
   // Chrome key systems when set.
   KeySystemsProviderDelegate test_provider_;
+
+  base::WeakPtrFactory<ChromeKeySystemsProvider> weak_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_MEDIA_CHROME_KEY_SYSTEMS_PROVIDER_H_

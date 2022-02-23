@@ -140,7 +140,7 @@ bool PNGImageReader::ShouldDecodeWithNewPNG(wtf_size_t index) const {
     return true;
   const bool first_frame_decode_in_progress = progressive_decode_offset_;
   const bool frame_size_matches_ihdr =
-      frame_info_[index].frame_rect == IntRect(0, 0, width_, height_);
+      frame_info_[index].frame_rect == gfx::Rect(0, 0, width_, height_);
   if (index)
     return first_frame_decode_in_progress || !frame_size_matches_ihdr;
   return !first_frame_decode_in_progress && !frame_size_matches_ihdr;
@@ -202,8 +202,8 @@ void PNGImageReader::StartFrameDecoding(const FastSharedBufferReader& reader,
   DCHECK_GT(ihdr_offset_, initial_offset_);
   ProcessData(reader, initial_offset_, ihdr_offset_ - initial_offset_);
 
-  const IntRect& frame_rect = frame_info_[index].frame_rect;
-  if (frame_rect == IntRect(0, 0, width_, height_)) {
+  const gfx::Rect& frame_rect = frame_info_[index].frame_rect;
+  if (frame_rect == gfx::Rect(0, 0, width_, height_)) {
     DCHECK_GT(idat_offset_, ihdr_offset_);
     ProcessData(reader, ihdr_offset_, idat_offset_ - ihdr_offset_);
     return;
@@ -384,7 +384,7 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
     // This should never be read in this case, but initialize just in case.
     frame.byte_length = kFirstFrameIndicator;
     frame.duration = 0;
-    frame.frame_rect = IntRect(0, 0, width_, height_);
+    frame.frame_rect = gfx::Rect(0, 0, width_, height_);
     frame.disposal_method = ImageFrame::DisposalMethod::kDisposeKeep;
     frame.alpha_blend = ImageFrame::AlphaBlendSource::kBlendAtopBgcolor;
     DCHECK(frame_info_.IsEmpty());
@@ -623,7 +623,7 @@ bool PNGImageReader::ParseSize(const FastSharedBufferReader& reader) {
       chunk =
           ReadAsConstPngBytep(reader, read_offset_ + 8, length, read_buffer);
       if (!ParseFrameInfo(chunk) ||
-          new_frame_.frame_rect != IntRect(0, 0, width_, height_)) {
+          new_frame_.frame_rect != gfx::Rect(0, 0, width_, height_)) {
         ignore_animation_ = true;
         continue;
       }
@@ -704,7 +704,7 @@ bool PNGImageReader::ParseFrameInfo(const png_byte* data) {
   }
 
   new_frame_.frame_rect =
-      IntRect(x_offset, y_offset, frame_width, frame_height);
+      gfx::Rect(x_offset, y_offset, frame_width, frame_height);
 
   if (delay_denominator)
     new_frame_.duration = delay_numerator * 1000 / delay_denominator;

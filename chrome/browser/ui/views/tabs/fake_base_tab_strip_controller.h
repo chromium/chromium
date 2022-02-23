@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -49,6 +49,7 @@ class FakeBaseTabStripController : public TabStripController {
   void AddSelectionFromAnchorTo(int index) override;
   bool BeforeCloseTab(int index, CloseTabSource source) override;
   void CloseTab(int index) override;
+  void ToggleTabAudioMute(int index) override;
   void MoveTab(int from_index, int to_index) override;
   void MoveGroup(const tab_groups::TabGroupId&, int to_index) override;
   bool ToggleTabGroupCollapsedState(
@@ -99,7 +100,7 @@ class FakeBaseTabStripController : public TabStripController {
  private:
   void SetActiveIndex(int new_index);
 
-  TabStrip* tab_strip_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
 
   int num_tabs_ = 0;
   int active_index_ = -1;

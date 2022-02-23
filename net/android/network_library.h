@@ -5,6 +5,7 @@
 #ifndef NET_ANDROID_NETWORK_LIBRARY_H_
 #define NET_ANDROID_NETWORK_LIBRARY_H_
 
+#include <android/multinetwork.h>
 #include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -19,6 +20,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/socket/socket_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -113,6 +115,26 @@ NET_EXPORT_PRIVATE bool ReportBadDefaultNetwork();
 NET_EXPORT_PRIVATE void TagSocket(SocketDescriptor socket,
                                   uid_t uid,
                                   int32_t tag);
+
+// Binds this socket to `network`. All data traffic on the socket will be sent
+// and received via `network`. This call will fail if `network` has
+// disconnected. Communication using this socket will fail if `network`
+// disconnects.
+// Returns a net error code.
+NET_EXPORT_PRIVATE int BindToNetwork(
+    SocketDescriptor socket,
+    NetworkChangeNotifier::NetworkHandle network);
+
+// Perform hostname resolution via the DNS servers associated with `network`.
+// All arguments are used identically as those passed to Android NDK API
+// android_getaddrinfofornetwork:
+// https://developer.android.com/ndk/reference/group/networking#group___networking_1ga0ae9e15612e6411855e295476a98ceee
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
+    NetworkChangeNotifier::NetworkHandle network,
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res);
 
 }  // namespace android
 }  // namespace net

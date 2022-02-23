@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -76,8 +77,8 @@ class DownloadShelfUITest : public BrowserWithTestWindowTest {
   TestDownloadShelfUI* download_shelf_ui() { return download_shelf_ui_.get(); }
 
  protected:
-  TestDownloadShelfHandler* handler_;
-  base::MockRetainingOneShotTimer* mock_timer_;
+  raw_ptr<TestDownloadShelfHandler> handler_;
+  raw_ptr<base::MockRetainingOneShotTimer> mock_timer_;
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
@@ -122,7 +123,7 @@ TEST_F(DownloadShelfUITest, DownloadLifecycle) {
   DownloadUIModel* download_model_ptr = download_model.get();
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
   download_shelf_ui()->DoShowDownload(std::move(download_model),
-                                      base::TimeTicks::Now());
+                                      base::Time::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
 
   // Assert handler OnDownloadUpdated called on item progress and update
@@ -156,7 +157,7 @@ TEST_F(DownloadShelfUITest, DownloadProgress) {
       DownloadItemModel::Wrap(download_item.get());
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
   download_shelf_ui()->DoShowDownload(std::move(download_model),
-                                      base::TimeTicks::Now());
+                                      base::Time::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
   ASSERT_TRUE(mock_timer_->IsRunning());
 

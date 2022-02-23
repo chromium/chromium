@@ -4,12 +4,10 @@
 
 package org.chromium.android_webview.nonembedded;
 
-import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 
@@ -26,7 +24,6 @@ import java.io.OutputStream;
  * Content provider for about:credits.
  * Used by SystemWebview and TrichromeWebview, but not Monochrome.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class LicenseContentProvider
         extends ContentProvider implements ContentProvider.PipeDataWriter<String> {
     public static final String LICENSES_URI_SUFFIX = "LicenseContentProvider/webview_licenses";

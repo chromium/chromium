@@ -37,8 +37,9 @@ enum class ShouldSwapBrowsingInstance {
   kNo_Guest = 18,
   kNo_HasNotComittedAnyNavigation = 19,
   kNo_UnloadHandlerExistsOnSameSiteNavigation = 20,
+  kNo_NotPrimaryMainFrame = 21,
 
-  kMaxValue = kNo_UnloadHandlerExistsOnSameSiteNavigation
+  kMaxValue = kNo_NotPrimaryMainFrame
 };
 
 }  // namespace content

@@ -13,6 +13,8 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/process/launch.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/com_classes.h"
@@ -35,17 +37,27 @@ bool IsInternalService() {
              kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
 }
 
+HRESULT RunWakeTask() {
+  base::CommandLine run_updater_wake_command(
+      base::CommandLine::ForCurrentProcess()->GetProgram());
+  run_updater_wake_command.AppendSwitch(kWakeSwitch);
+  run_updater_wake_command.AppendSwitch(kSystemSwitch);
+  run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
+  run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                             kLoggingModuleSwitchValue);
+  VLOG(2) << "Launching Wake command: "
+          << run_updater_wake_command.GetCommandLineString();
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  const base::Process process =
+      base::LaunchProcess(run_updater_wake_command, options);
+  return process.IsValid() ? S_OK : HRESULTFromLastError();
+}
+
 }  // namespace
 
-int ServiceMain::RunComService(const base::CommandLine* command_line) {
-  base::win::ScopedCOMInitializer com_initializer(
-      base::win::ScopedCOMInitializer::kMTA);
-  if (!com_initializer.Succeeded()) {
-    LOG(ERROR) << "Failed to initialize COM";
-    return CO_E_INITIALIZATIONFAILED;
-  }
-
-  // Run the COM service.
+int ServiceMain::RunWindowsService(const base::CommandLine* command_line) {
   ServiceMain* service = ServiceMain::GetInstance();
   if (!service->InitWithCommandLine(command_line))
     return ERROR_BAD_ARGUMENTS;
@@ -102,7 +114,7 @@ int ServiceMain::RunAsService() {
   return service_status_.dwWin32ExitCode;
 }
 
-void ServiceMain::ServiceMainImpl() {
+void ServiceMain::ServiceMainImpl(const base::CommandLine& command_line) {
   service_status_handle_ =
       ::RegisterServiceCtrlHandler(GetServiceName(IsInternalService()).c_str(),
                                    &ServiceMain::ServiceControlHandler);
@@ -114,7 +126,7 @@ void ServiceMain::ServiceMainImpl() {
 
   // When the Run function returns, the service has stopped.
   // `hr` can be either a HRESULT or a Windows error code.
-  const HRESULT hr = Run();
+  const HRESULT hr = Run(command_line);
   if (hr != S_OK) {
     service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
     service_status_.dwServiceSpecificExitCode = hr;
@@ -124,7 +136,7 @@ void ServiceMain::ServiceMainImpl() {
 }
 
 int ServiceMain::RunInteractive() {
-  return Run();
+  return RunCOMServer();
 }
 
 // static
@@ -143,7 +155,7 @@ void ServiceMain::ServiceControlHandler(DWORD control) {
 
 // static
 void WINAPI ServiceMain::ServiceMainEntry(DWORD argc, wchar_t* argv[]) {
-  ServiceMain::GetInstance()->ServiceMainImpl();
+  ServiceMain::GetInstance()->ServiceMainImpl(base::CommandLine(argc, argv));
 }
 
 void ServiceMain::SetServiceStatus(DWORD state) {
@@ -151,7 +163,17 @@ void ServiceMain::SetServiceStatus(DWORD state) {
   ::SetServiceStatus(service_status_handle_, &service_status_);
 }
 
-HRESULT ServiceMain::Run() {
+HRESULT ServiceMain::Run(const base::CommandLine& command_line) {
+  if (command_line.HasSwitch(kComServiceSwitch)) {
+    VLOG(2) << "Running COM server within the Windows Service";
+    return RunCOMServer();
+  }
+
+  VLOG(2) << "Running Wake task from the Windows Service";
+  return RunWakeTask();
+}
+
+HRESULT ServiceMain::RunCOMServer() {
   base::SingleThreadTaskExecutor service_task_executor(
       base::MessagePumpType::UI);
 

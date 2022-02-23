@@ -877,20 +877,19 @@ const GridTrackSize& GridTrackSizingAlgorithm::RawGridTrackSize(
     GridTrackSizingDirection direction,
     wtf_size_t translated_index) const {
   bool is_row_axis = direction == kForColumns;
-  const Vector<GridTrackSize, 1>& track_styles =
-      is_row_axis
-          ? layout_grid_->StyleRef().GridTemplateColumns().LegacyTrackList()
-          : layout_grid_->StyleRef().GridTemplateRows().LegacyTrackList();
-  const Vector<GridTrackSize, 1>& auto_repeat_track_styles =
-      is_row_axis ? layout_grid_->StyleRef().GridAutoRepeatColumns()
-                  : layout_grid_->StyleRef().GridAutoRepeatRows();
+  const ComputedStyle& grid_container_style = layout_grid_->StyleRef();
+  const ComputedGridTrackList& computed_grid_track_list =
+      is_row_axis ? grid_container_style.GridTemplateColumns()
+                  : grid_container_style.GridTemplateRows();
+  const Vector<GridTrackSize, 1>& track_list_sizes =
+      computed_grid_track_list.track_sizes.LegacyTrackList();
+  const Vector<GridTrackSize, 1>& auto_repeat_track_sizes =
+      computed_grid_track_list.auto_repeat_track_sizes;
   const Vector<GridTrackSize, 1>& auto_track_styles =
-      is_row_axis ? layout_grid_->StyleRef().GridAutoColumns().LegacyTrackList()
-                  : layout_grid_->StyleRef().GridAutoRows().LegacyTrackList();
+      is_row_axis ? grid_container_style.GridAutoColumns().LegacyTrackList()
+                  : grid_container_style.GridAutoRows().LegacyTrackList();
   wtf_size_t insertion_point =
-      is_row_axis
-          ? layout_grid_->StyleRef().GridAutoRepeatColumnsInsertionPoint()
-          : layout_grid_->StyleRef().GridAutoRepeatRowsInsertionPoint();
+      computed_grid_track_list.auto_repeat_insertion_point;
   wtf_size_t auto_repeat_tracks_count = grid_.AutoRepeatTracks(direction);
 
   // We should not use GridPositionsResolver::explicitGridXXXCount() for this
@@ -898,7 +897,7 @@ const GridTrackSize& GridTrackSizingAlgorithm::RawGridTrackSize(
   // grid-template-rows|columns (if grid-template-areas is specified for
   // example).
   wtf_size_t explicit_tracks_count =
-      track_styles.size() + auto_repeat_tracks_count;
+      track_list_sizes.size() + auto_repeat_tracks_count;
 
   int untranslated_index_as_int =
       static_cast<int>(translated_index - grid_.ExplicitGridStart(direction));
@@ -920,15 +919,15 @@ const GridTrackSize& GridTrackSizingAlgorithm::RawGridTrackSize(
   }
 
   if (LIKELY(!auto_repeat_tracks_count) || untranslated_index < insertion_point)
-    return track_styles[untranslated_index];
+    return track_list_sizes[untranslated_index];
 
   if (untranslated_index < (insertion_point + auto_repeat_tracks_count)) {
     wtf_size_t auto_repeat_local_index = untranslated_index - insertion_point;
-    return auto_repeat_track_styles[auto_repeat_local_index %
-                                    auto_repeat_track_styles.size()];
+    return auto_repeat_track_sizes[auto_repeat_local_index %
+                                   auto_repeat_track_sizes.size()];
   }
 
-  return track_styles[untranslated_index - auto_repeat_tracks_count];
+  return track_list_sizes[untranslated_index - auto_repeat_tracks_count];
 }
 
 bool GridTrackSizingAlgorithm::IsRelativeGridLengthAsAuto(

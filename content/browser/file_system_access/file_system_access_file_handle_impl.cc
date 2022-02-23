@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_error_or.h"
@@ -39,7 +40,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -55,63 +56,32 @@ using WriteLockType = FileSystemAccessWriteLockManager::WriteLockType;
 
 namespace {
 
-void CreateBlobOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const scoped_refptr<ChromeBlobStorageContext>& blob_context,
-    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
-    const storage::FileSystemURL& url,
-    const std::string& blob_uuid,
-    const std::string& content_type,
-    const base::File::Info& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
-  // Only append if the file has data.
-  if (info.size > 0) {
-    // Use AppendFileSystemFile here, since we're streaming the file directly
-    // from the file system backend, and the file thus might not actually be
-    // backed by a file on disk.
-    blob_builder->AppendFileSystemFile(url, 0, info.size, info.last_modified,
-                                       std::move(file_system_context));
-  }
-  blob_builder->set_content_type(content_type);
-
-  std::unique_ptr<BlobDataHandle> blob_handle =
-      blob_context->context()->AddFinishedBlob(std::move(blob_builder));
-
-  // Since the blob we're creating doesn't depend on other blobs, and doesn't
-  // require blob memory/disk quota, creating the blob can't fail.
-  DCHECK(!blob_handle->IsBroken());
-
-  BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
-}
-
-std::pair<base::File, base::FileErrorOr<int>> GetFileLengthOnBlockingThread(
+std::pair<base::File, base::FileErrorOr<int64_t>> GetFileLengthOnBlockingThread(
     base::File file) {
   int64_t file_length = file.GetLength();
   if (file_length < 0)
     return {std::move(file), base::File::GetLastFileError()};
-  return {std::move(file), file_length};
+  return {std::move(file), std::move(file_length)};
 }
 
 bool HasWritePermission(const base::FilePath& path) {
   if (!base::PathExists(path))
     return true;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int mode;
   if (!base::GetPosixFilePermissions(path, &mode))
     return true;
 
   if (!(mode & base::FILE_PERMISSION_WRITE_BY_USER))
     return false;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD attrs = ::GetFileAttributes(path.value().c_str());
   if (attrs == INVALID_FILE_ATTRIBUTES)
     return true;
   if (attrs & FILE_ATTRIBUTE_READONLY)
     return false;
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   return true;
 }
@@ -288,7 +258,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), file_delegate_host_remote.InitWithNewPipeAndPassReceiver(),
-          mojo::NullReceiver(), 0, std::move(lock));
+          mojo::NullReceiver(), 0, std::move(lock),
+          base::ScopedClosureRunner());
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
@@ -317,8 +288,11 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     base::File file,
-    base::OnceClosure /*on_close_callback*/) {
+    base::OnceClosure on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ScopedClosureRunner scoped_on_close_callback(
+      std::move(on_close_callback));
 
   blink::mojom::FileSystemAccessErrorPtr result =
       file_system_access_error::FromFileError(file.error_details());
@@ -346,17 +320,19 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
       base::BindOnce(&GetFileLengthOnBlockingThread, std::move(file)),
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(lock)));
+                     std::move(lock), std::move(scoped_on_close_callback)));
 }
 
 void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-    std::pair<base::File, base::FileErrorOr<int>> file_and_length) {
+    base::ScopedClosureRunner on_close_callback,
+    std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::File file = std::move(file_and_length.first);
-  base::FileErrorOr<int> length_or_error = std::move(file_and_length.second);
+  base::FileErrorOr<int64_t> length_or_error =
+      std::move(file_and_length.second);
 
   if (length_or_error.is_error()) {
     std::move(callback).Run(
@@ -373,7 +349,8 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), mojo::NullReceiver(),
           capacity_allocation_host_remote.InitWithNewPipeAndPassReceiver(),
-          length_or_error.value(), std::move(lock));
+          length_or_error.value(), std::move(lock),
+          std::move(on_close_callback));
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
@@ -472,11 +449,11 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CreateBlobOnIOThread,
-                     base::WrapRefCounted(file_system_context()),
+      base::BindOnce(&ChromeBlobStorageContext::CreateFileSystemBlob,
                      base::WrapRefCounted(manager()->blob_context()),
+                     base::WrapRefCounted(file_system_context()),
                      std::move(blob_receiver), url(), std::move(uuid),
-                     std::move(content_type), info));
+                     std::move(content_type), info.size, info.last_modified));
 }
 
 void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(

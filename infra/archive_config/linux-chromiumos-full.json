@@ -9,13 +9,11 @@
                 "chrome_crashpad_handler",
                 "icudtl.dat",
                 "keyboard_resources.pak",
-                "libclearkeycdm.so",
                 "libminigbm.so",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
                 "nacl_helper",
                 "nacl_helper_bootstrap",
-                "nacl_helper_nonsfi",
                 "nacl_irt_x86_64.nexe",
                 "product_logo_48.png",
                 "resources.pak",
@@ -23,7 +21,7 @@
                 "xdg-mime",
                 "xdg-settings"
             ],
-            "dirs": ["locales", "resources"],
+            "dirs": ["ClearKeyCdm", "locales", "resources"],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "chrome-chromeos"}
             ],

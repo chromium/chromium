@@ -8,7 +8,9 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,14 +24,14 @@
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/trace_event/trace_event.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
 #include "weblayer/browser/java/jni/NavigationControllerImpl_jni.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -100,7 +102,7 @@ class NavigationControllerImpl::NavigationThrottleImpl
   }
 
  private:
-  NavigationControllerImpl* controller_;
+  raw_ptr<NavigationControllerImpl> controller_;
   bool should_cancel_ = false;
 };
 
@@ -142,7 +144,7 @@ NavigationImpl* NavigationControllerImpl::GetNavigationImplFromId(
 void NavigationControllerImpl::OnFirstContentfulPaint(
     const base::TimeTicks& navigation_start,
     const base::TimeDelta& first_contentful_paint) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TRACE_EVENT0("weblayer",
                "Java_NavigationControllerImpl_onFirstContentfulPaint2");
   int64_t first_contentful_paint_ms = first_contentful_paint.InMilliseconds();
@@ -159,7 +161,7 @@ void NavigationControllerImpl::OnFirstContentfulPaint(
 void NavigationControllerImpl::OnLargestContentfulPaint(
     const base::TimeTicks& navigation_start,
     const base::TimeDelta& largest_contentful_paint) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TRACE_EVENT0("weblayer",
                "Java_NavigationControllerImpl_onLargestContentfulPaint2");
   int64_t largest_contentful_paint_ms =
@@ -183,7 +185,7 @@ void NavigationControllerImpl::OnPageDestroyed(Page* page) {
 void NavigationControllerImpl::OnPageLanguageDetermined(
     Page* page,
     const std::string& language) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationControllerImpl_onPageLanguageDetermined(
       env, java_controller_, static_cast<PageImpl*>(page)->java_page(),
@@ -194,7 +196,7 @@ void NavigationControllerImpl::OnPageLanguageDetermined(
     observer.OnPageLanguageDetermined(page, language);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NavigationControllerImpl::SetNavigationControllerImpl(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_controller) {
@@ -277,7 +279,7 @@ void NavigationControllerImpl::WillRedirectRequest(
   DCHECK(!active_throttle_);
   base::AutoReset<NavigationThrottleImpl*> auto_reset(&active_throttle_,
                                                       throttle);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_controller_) {
     TRACE_EVENT0("weblayer",
                  "Java_NavigationControllerImpl_navigationRedirected");
@@ -361,24 +363,52 @@ void NavigationControllerImpl::Stop() {
 }
 
 int NavigationControllerImpl::GetNavigationListSize() {
+  content::NavigationEntry* current_entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  if (current_entry && current_entry->IsInitialEntry()) {
+    // If we're currently on the initial NavigationEntry, no navigation has
+    // committed, so the initial NavigationEntry should not be part of the
+    // "Navigation List", and we should return 0 as the navigation list size.
+    // This also preserves the old behavior where we used to not have the
+    // initial NavigationEntry.
+    return 0;
+  }
+
   return web_contents()->GetController().GetEntryCount();
 }
 
 int NavigationControllerImpl::GetNavigationListCurrentIndex() {
+  content::NavigationEntry* current_entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  if (current_entry && current_entry->IsInitialEntry()) {
+    // If we're currently on the initial NavigationEntry, no navigation has
+    // committed, so the initial NavigationEntry should not be part of the
+    // "Navigation List", and we should return -1 as the current index. This
+    // also preserves the old behavior where we used to not have the initial
+    // NavigationEntry.
+    return -1;
+  }
+
   return web_contents()->GetController().GetCurrentEntryIndex();
 }
 
 GURL NavigationControllerImpl::GetNavigationEntryDisplayURL(int index) {
   auto* entry = web_contents()->GetController().GetEntryAtIndex(index);
-  if (!entry)
-    return GURL();
+  // This function should never be called when GetNavigationListSize() is 0
+  // because `index` should be between 0 and GetNavigationListSize() - 1, which
+  // also means `entry` must not be the initial NavigationEntry.
+  DCHECK_NE(0, GetNavigationListSize());
+  DCHECK(!entry->IsInitialEntry());
   return entry->GetVirtualURL();
 }
 
 std::string NavigationControllerImpl::GetNavigationEntryTitle(int index) {
   auto* entry = web_contents()->GetController().GetEntryAtIndex(index);
-  if (!entry)
-    return std::string();
+  // This function should never be called when GetNavigationListSize() is 0
+  // because `index` should be between 0 and GetNavigationListSize() - 1, which
+  // also means `entry` must not be the initial NavigationEntry.
+  DCHECK_NE(0, GetNavigationListSize());
+  DCHECK(!entry->IsInitialEntry());
   return base::UTF16ToUTF8(entry->GetTitle());
 }
 
@@ -407,7 +437,7 @@ void NavigationControllerImpl::DidStartNavigation(
   navigation->set_safe_to_disable_network_error_auto_reload(true);
   navigation->set_safe_to_disable_intent_processing(true);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Desktop mode and per-navigation UA use the same mechanism and so don't
   // interact well. It's not possible to support both at the same time since
   // if there's a per-navigation UA active and desktop mode is turned on, or
@@ -418,7 +448,7 @@ void NavigationControllerImpl::DidStartNavigation(
 #endif
     navigation->set_safe_to_set_user_agent(true);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NavigationUIDataImpl* navigation_ui_data = static_cast<NavigationUIDataImpl*>(
       navigation_handle->GetNavigationUIData());
   if (navigation_ui_data) {
@@ -460,7 +490,7 @@ void NavigationControllerImpl::DidRedirectNavigation(
 
 void NavigationControllerImpl::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
   // frames. This caller was converted automatically to the primary main frame
   // to preserve its semantics. Follow up to confirm correctness.
@@ -509,7 +539,7 @@ void NavigationControllerImpl::DidFinishNavigation(
     PageImpl::GetOrCreateForPage(rfh->GetPage());
     navigation->set_safe_to_get_page();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Ensure that the Java-side Page object for this navigation is
     // populated from and linked to the native Page object. Without this
     // call, the Java-side navigation object won't be created and linked to
@@ -528,7 +558,7 @@ void NavigationControllerImpl::DidFinishNavigation(
   if (navigation_handle->HasCommitted() &&
       navigation_handle->GetNetErrorCode() == net::OK &&
       !navigation_handle->IsErrorPage()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (java_controller_) {
       TRACE_EVENT0("weblayer",
                    "Java_NavigationControllerImpl_navigationCompleted");
@@ -545,7 +575,7 @@ void NavigationControllerImpl::DidFinishNavigation(
         return;
     }
   } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (java_controller_) {
       TRACE_EVENT0("weblayer",
                    "Java_NavigationControllerImpl_navigationFailed");
@@ -583,7 +613,7 @@ void NavigationControllerImpl::DidStopLoading() {
 }
 
 void NavigationControllerImpl::LoadProgressChanged(double progress) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_controller_) {
     TRACE_EVENT0("weblayer",
                  "Java_NavigationControllerImpl_loadProgressChanged");
@@ -596,7 +626,7 @@ void NavigationControllerImpl::LoadProgressChanged(double progress) {
 }
 
 void NavigationControllerImpl::DidFirstVisuallyNonEmptyPaint() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TRACE_EVENT0("weblayer",
                "Java_NavigationControllerImpl_onFirstContentfulPaint");
   Java_NavigationControllerImpl_onFirstContentfulPaint(AttachCurrentThread(),
@@ -609,7 +639,7 @@ void NavigationControllerImpl::DidFirstVisuallyNonEmptyPaint() {
 
 void NavigationControllerImpl::OldPageNoLongerRendered(const GURL& url,
                                                        bool success) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TRACE_EVENT0("weblayer",
                "Java_NavigationControllerImpl_onOldPageNoLongerRendered");
   JNIEnv* env = AttachCurrentThread();
@@ -622,17 +652,17 @@ void NavigationControllerImpl::OldPageNoLongerRendered(const GURL& url,
 }
 
 void NavigationControllerImpl::NotifyLoadStateChanged() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_controller_) {
     TRACE_EVENT0("weblayer", "Java_NavigationControllerImpl_loadStateChanged");
     Java_NavigationControllerImpl_loadStateChanged(
         AttachCurrentThread(), java_controller_, web_contents()->IsLoading(),
-        web_contents()->IsLoadingToDifferentDocument());
+        web_contents()->ShouldShowLoadingUI());
   }
 #endif
   for (auto& observer : observers_) {
     observer.LoadStateChanged(web_contents()->IsLoading(),
-                              web_contents()->IsLoadingToDifferentDocument());
+                              web_contents()->ShouldShowLoadingUI());
   }
 }
 
@@ -643,7 +673,7 @@ void NavigationControllerImpl::DoNavigate(
   // Navigations should use the default user-agent (which may be overridden if
   // desktop mode is turned on). If the embedder wants a custom user-agent, the
   // embedder will call Navigation::SetUserAgentString() in DidStartNavigation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We need to set UA_OVERRIDE_FALSE if per navigation UA is set. However at
   // this point we don't know if the embedder will call that later. Since we
   // ensure that the two can't be set at the same time, it's sufficient to
@@ -684,7 +714,7 @@ void NavigationControllerImpl::ProcessDelayedLoad() {
     DoNavigate(std::move(delayed_load_params_));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jlong JNI_NavigationControllerImpl_GetNavigationController(JNIEnv* env,
                                                                   jlong tab) {
   return reinterpret_cast<jlong>(

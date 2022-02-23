@@ -32,7 +32,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_input_element.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/autofill/content/renderer/page_passwords_analyser.h"
 #endif
 
@@ -136,9 +136,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
   void SetLoggingState(bool active) override;
-  void TouchToFillClosed(bool show_virtual_keyboard) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
+#if BUILDFLAG(IS_ANDROID)
+  void TouchToFillClosed(bool show_virtual_keyboard) override;
+  void TriggerFormSubmission() override;
+#endif
 
   // FormTracker::Observer
   void OnProvisionallySaveForm(const blink::WebFormElement& form,
@@ -555,7 +558,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PagePasswordsAnalyser page_passwords_analyser_;
 #endif
 

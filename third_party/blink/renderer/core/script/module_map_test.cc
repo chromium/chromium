@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -183,7 +183,7 @@ void ModuleMapTestModulator::ResolveFetches() {
   test_requests_.clear();
 }
 
-class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
+class ModuleMapTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -197,8 +197,8 @@ class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
 };
 
 void ModuleMapTest::SetUp() {
-  ParametrizedModuleTest::SetUp();
-  PageTestBase::SetUp(IntSize(500, 500));
+  ModuleTestBase::SetUp();
+  PageTestBase::SetUp(gfx::Size(500, 500));
   NavigateTo(KURL("https://example.com"));
   modulator_ = MakeGarbageCollected<ModuleMapTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));
@@ -206,11 +206,11 @@ void ModuleMapTest::SetUp() {
 }
 
 void ModuleMapTest::TearDown() {
-  ParametrizedModuleTest::TearDown();
+  ModuleTestBase::TearDown();
   PageTestBase::TearDown();
 }
 
-TEST_P(ModuleMapTest, sequentialRequests) {
+TEST_F(ModuleMapTest, sequentialRequests) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
@@ -257,7 +257,7 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   EXPECT_TRUE(client2->GetModuleScript());
 }
 
-TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
+TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
@@ -297,10 +297,5 @@ TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
   EXPECT_TRUE(client2->WasNotifyFinished());
   EXPECT_TRUE(client2->GetModuleScript());
 }
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleMapTestGroup,
-                         ModuleMapTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

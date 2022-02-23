@@ -8,13 +8,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/connection_holder.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"

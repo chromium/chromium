@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
@@ -16,13 +17,25 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
-    "color_set.h",
   ]
 
   public_deps = [
-    "//base:base",
-    "//skia:skia",
+    ":mojom",
+    "//base",
+    "//skia",
+    "//ui/gfx:color_utils",
   ]
+}
+
+component("color_switches") {
+  sources = [
+    "color_switches.cc",
+    "color_switches.h",
+  ]
+
+  defines = [ "IS_COLOR_SWITCHES_IMPL" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("color") {
@@ -37,7 +50,6 @@ component("color") {
     "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
-    "color_set.cc",
     "color_transform.cc",
     "color_transform.h",
   ]
@@ -46,8 +58,8 @@ component("color") {
 
   public_deps = [
     ":color_headers",
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
     "//ui/gfx:color_utils",
   ]
 
@@ -92,6 +104,27 @@ test("color_unittests") {
   ]
 }
 
+if (is_win) {
+  component("accent_color_observer") {
+    sources = [
+      "win/accent_color_observer.cc",
+      "win/accent_color_observer.h",
+    ]
+
+    defines = [ "IS_COLOR_IMPL" ]
+
+    public_deps = [
+      "//base",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    deps = [
+      "//skia",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}
+
 component("mixers") {
   sources = [
     "color_mixers.cc",
@@ -117,7 +150,11 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_mac) {
+  if (is_chromeos) {
+    sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
+  } else if (is_linux) {
+    sources += [ "linux/native_color_mixers_linux.cc" ]
+  } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
       "mac/native_color_mixers_mac.mm",
@@ -126,5 +163,13 @@ component("mixers") {
     ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers_win.cc" ]
+    deps += [
+      ":accent_color_observer",
+      ":color_switches",
+    ]
   }
+}
+
+mojom("mojom") {
+  sources = [ "color_id.mojom" ]
 }

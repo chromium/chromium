@@ -8,6 +8,7 @@
 #include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/synthetic_trials.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -61,13 +62,15 @@ class FieldTrialsProviderTest : public ::testing::Test {
   // Register trials which should get recorded.
   void RegisterExpectedSyntheticTrials() {
     for (const ActiveGroupId& id : kSyntheticTrialIds) {
-      registry_.RegisterSyntheticFieldTrial(
-          SyntheticTrialGroup(id.name, id.group));
+      registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
+          id.name, id.group,
+          variations::SyntheticTrialAnnotationMode::kNextLog));
     }
   }
   // Register trial which shouldn't get recorded.
   void RegisterExtraSyntheticTrial() {
-    registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(100, 1000));
+    registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
+        100, 1000, variations::SyntheticTrialAnnotationMode::kNextLog));
   }
 
   // Waits until base::TimeTicks::Now() no longer equals |value|. This should

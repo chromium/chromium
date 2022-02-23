@@ -87,7 +87,7 @@ bool BitstreamValidator::Initialize(const VideoDecoderConfig& decoder_config) {
   bool success = false;
   base::WaitableEvent initialized;
   VideoDecoder::InitCB init_done = base::BindOnce(
-      [](bool* result, base::WaitableEvent* initialized, Status status) {
+      [](bool* result, base::WaitableEvent* initialized, DecoderStatus status) {
         *result = true;
         if (!status.is_ok()) {
           LOG(ERROR) << "Failed decoder initialization ("
@@ -228,6 +228,10 @@ void BitstreamValidator::ProcessBitstreamTask(
     const H264Metadata& metadata = *bitstream->metadata.h264;
     should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
     should_flush = frame_index == last_frame_index_;
+  } else if (bitstream->metadata.vp8) {
+    const Vp8Metadata& metadata = *bitstream->metadata.vp8;
+    should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
+    should_flush = frame_index == last_frame_index_;
   }
 
   if (should_flush) {
@@ -264,14 +268,14 @@ void BitstreamValidator::ProcessBitstreamTask(
   }
 }
 
-void BitstreamValidator::DecodeDone(int64_t timestamp, Status status) {
+void BitstreamValidator::DecodeDone(int64_t timestamp, DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   if (!status.is_ok()) {
     base::AutoLock lock(validator_lock_);
     if (!decode_error_) {
       decode_error_ = true;
       LOG(ERROR) << "DecodeStatus is not OK, status="
-                 << GetDecodeStatusString(status.code());
+                 << static_cast<int>(status.code());
     }
   }
   if (timestamp == kEOSTimeStamp) {

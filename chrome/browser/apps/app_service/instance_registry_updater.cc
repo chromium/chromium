@@ -100,17 +100,14 @@ void InstanceRegistryUpdater::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
-void InstanceRegistryUpdater::OnInstance(const base::UnguessableToken& id,
-                                         const std::string& app_id,
-                                         aura::Window* window,
-                                         InstanceState state) {
-  auto instance = std::make_unique<apps::Instance>(app_id, id);
-  instance->SetWindow(window);
+void InstanceRegistryUpdater::OnInstance(
+    const base::UnguessableToken& instance_id,
+    const std::string& app_id,
+    aura::Window* window,
+    InstanceState state) {
+  auto instance = std::make_unique<apps::Instance>(app_id, instance_id, window);
   instance->UpdateState(state, base::Time::Now());
-
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  deltas.push_back(std::move(instance));
-  instance_registry_.OnInstances(std::move(deltas));
+  instance_registry_.OnInstance(std::move(instance));
 }
 
 }  // namespace apps

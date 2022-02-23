@@ -59,7 +59,10 @@ source_set("libc++abi") {
 
   defines = [
     "LIBCXXABI_SILENT_TERMINATE",
-    "_LIBCPP_ENABLE_CXX17_REMOVED_UNEXPECTED_FUNCTIONS",
+
+    # TODO(crbug.com/1298070) _LIBCPP_CONSTINIT is defined in a libc++ revision
+    # more recent than the one currently used in Chromium.
+    "_LIBCPP_CONSTINIT=constinit",
   ]
 
   configs -= [

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -29,7 +28,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   DCHECK(DisplayItem::IsDrawingType(display_item_type));
 
   context.SetInDrawingRecorder(true);
-  context.BeginRecording(FloatRect());
+  context.BeginRecording(gfx::RectF());
 
   if (context.NeedsDOMNodeId()) {
     DOMNodeId dom_node_id = display_item_client.OwnerNodeId();

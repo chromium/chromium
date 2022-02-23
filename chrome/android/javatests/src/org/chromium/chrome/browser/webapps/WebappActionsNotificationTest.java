@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.annotation.TargetApi;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -17,6 +16,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -56,7 +56,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.M) // NotificationManager.getActiveNotifications
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 public class WebappActionsNotificationTest {
     private static final String WEB_APP_PATH = "/chrome/test/data/banners/manifest_test_page.html";
 

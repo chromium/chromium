@@ -28,8 +28,11 @@
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/style_sheet.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -132,6 +135,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
     return !viewport_dependent_media_query_results_.IsEmpty() ||
            !device_dependent_media_query_results_.IsEmpty();
   }
+  bool HasDynamicViewportDependentMediaQueries() const;
   const MediaQueryResultList& ViewportDependentMediaQueryResults() const {
     return viewport_dependent_media_query_results_;
   }
@@ -266,6 +270,8 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet {
   scoped_refptr<MediaQuerySet> media_queries_;
   MediaQueryResultList viewport_dependent_media_query_results_;
   MediaQueryResultList device_dependent_media_query_results_;
+  // See MediaQueryExpValue::UnitFlags.
+  unsigned media_query_unit_flags_ = 0;
 
   Member<Node> owner_node_;
   Member<CSSRule> owner_rule_;

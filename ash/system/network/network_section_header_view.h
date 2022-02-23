@@ -9,16 +9,18 @@
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
+class IconButton;
 class TrayNetworkStateModel;
 
 namespace tray {
@@ -116,7 +118,9 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   // TrayNetworkStateObserver:
   void DeviceStateListChanged() override;
 
-  void PerformAddExtraButtons(bool enabled);
+  void PerformAddExtraButtons(
+      bool enabled,
+      chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
 
   void AddCellularButtonPressed();
 
@@ -132,11 +136,16 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
 
   // Button that navigates to the Settings mobile data subpage with the eSIM
   // setup dialog open. This is null when the device is not eSIM-capable.
-  TopShortcutButton* add_esim_button_ = nullptr;
+  IconButton* add_esim_button_ = nullptr;
 
   // Indicates whether add_esim_button_ should be enabled when the device is
   // not inhibited.
   bool can_add_esim_button_be_enabled_ = false;
+
+  // CrosBluetoothConfig remote that is only bound if the Bluetooth
+  // Revamp flag is enabled.
+  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
 
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
 };
@@ -164,7 +173,7 @@ class WifiSectionHeaderView : public NetworkSectionHeaderView {
   void JoinButtonPressed();
 
   // A button to invoke "Join Wi-Fi network" dialog.
-  views::Button* join_button_ = nullptr;
+  IconButton* join_button_ = nullptr;
 };
 
 }  // namespace tray

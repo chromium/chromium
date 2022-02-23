@@ -69,7 +69,7 @@ TEST(UrlUtilsTest, IsSafeRedirectTarget) {
 #endif
   EXPECT_FALSE(
       IsSafeRedirectTarget(GURL(), CreateValidURL("blob:https://foo.com/bar")));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(
       IsSafeRedirectTarget(GURL(), CreateValidURL("content://foo.bar")));
 #endif

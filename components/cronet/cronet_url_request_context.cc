@@ -22,6 +22,7 @@
 #include "base/files/scoped_file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
@@ -95,7 +96,7 @@ class NetLogWithNetworkChangeEvents {
   }
 
  private:
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
   // LoggingNetworkChangeObserver logs network change events to a NetLog.
   // This class bundles one LoggingNetworkChangeObserver with one NetLog,
   // so network change event are logged just once in the NetLog.
@@ -145,7 +146,10 @@ CronetURLRequestContext::CronetURLRequestContext(
     std::unique_ptr<URLRequestContextConfig> context_config,
     std::unique_ptr<Callback> callback,
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
-    : default_load_flags_(
+    : bidi_stream_detect_broken_connection_(
+          context_config->bidi_stream_detect_broken_connection),
+      heartbeat_interval_(context_config->heartbeat_interval),
+      default_load_flags_(
           net::LOAD_NORMAL |
           (context_config->load_disable_cache ? net::LOAD_DISABLE_CACHE : 0)),
       network_tasks_(
@@ -162,7 +166,7 @@ CronetURLRequestContext::CronetURLRequestContext(
 
 CronetURLRequestContext::~CronetURLRequestContext() {
   DCHECK(!GetNetworkTaskRunner()->BelongsToCurrentThread());
-  GetNetworkTaskRunner()->DeleteSoon(FROM_HERE, network_tasks_);
+  GetNetworkTaskRunner()->DeleteSoon(FROM_HERE, network_tasks_.get());
 }
 
 CronetURLRequestContext::NetworkTasks::NetworkTasks(
@@ -300,7 +304,7 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
 
   config->ConfigureURLRequestContextBuilder(&context_builder);
   effective_experimental_options_ =
-      std::move(config->effective_experimental_options);
+      base::Value(config->effective_experimental_options);
 
   if (config->enable_network_quality_estimator) {
     DCHECK(!network_quality_estimator_);
@@ -325,7 +329,7 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
 
   // Set up pref file if storage path is specified.
   if (!config->storage_path.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath storage_path(
         base::FilePath::FromUTF8Unsafe(config->storage_path));
 #else
@@ -486,7 +490,7 @@ class CronetURLRequestContext::ContextGetter
   ~ContextGetter() override { DCHECK(cronet_context_->IsOnNetworkThread()); }
 
   // CronetURLRequestContext associated with this ContextGetter.
-  CronetURLRequestContext* const cronet_context_;
+  const raw_ptr<CronetURLRequestContext> cronet_context_;
 };
 
 net::URLRequestContextGetter*
@@ -532,7 +536,7 @@ CronetURLRequestContext::GetNetworkTaskRunner() const {
 
 bool CronetURLRequestContext::StartNetLogToFile(const std::string& file_name,
                                                 bool log_all) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath file_path(base::FilePath::FromUTF8Unsafe(file_name));
 #else
   base::FilePath file_path(file_name);
@@ -657,7 +661,7 @@ void CronetURLRequestContext::NetworkTasks::StartNetLogToBoundedFile(
 
   // TODO(eroman): The cronet API passes a directory here. But it should now
   // just pass a file path.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath file_path(base::FilePath::FromUTF8Unsafe(dir_path));
 #else
   base::FilePath file_path(dir_path);
@@ -703,9 +707,9 @@ void CronetURLRequestContext::NetworkTasks::StopNetLogCompleted() {
 
 base::Value CronetURLRequestContext::NetworkTasks::GetNetLogInfo() const {
   base::Value net_info = net::GetNetInfo(context_.get());
-  if (effective_experimental_options_) {
+  if (!effective_experimental_options_.DictEmpty()) {
     net_info.SetKey("cronetExperimentalParams",
-                    effective_experimental_options_->Clone());
+                    effective_experimental_options_.Clone());
   }
   return net_info;
 }

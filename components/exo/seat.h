@@ -37,6 +37,7 @@ class KeyEvent;
 namespace exo {
 class DragDropOperation;
 class DataExchangeDelegate;
+class Pointer;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -62,8 +63,6 @@ class Seat : public aura::client::FocusChangeObserver,
   using FocusChangedCallback =
       base::RepeatingCallback<void(Surface*, Surface*, bool)>;
 
-  void SetFocusChangedCallback(FocusChangedCallback callback);
-
   void Shutdown();
 
   // Registers the observer with the given priority.
@@ -83,7 +82,13 @@ class Seat : public aura::client::FocusChangeObserver,
     return 0 <= priority && priority <= kMaxObserverPriority;
   }
 
-  // Returns currently focused surface. This is vertual so that we can override
+  // Notify observers about pointer capture state changes.
+  void NotifyPointerCaptureEnabled(Pointer* pointer,
+                                   aura::Window* capture_window);
+  void NotifyPointerCaptureDisabled(Pointer* pointer,
+                                    aura::Window* capture_window);
+
+  // Returns currently focused surface. This is virtual so that we can override
   // the behavior for testing.
   virtual Surface* GetFocusedSurface();
 
@@ -160,6 +165,18 @@ class Seat : public aura::client::FocusChangeObserver,
  private:
   class RefCountedScopedClipboardWriter;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when the focused window is a Lacros window and a source
+  // DataTransferEndpoint is read in the available MIME types. This
+  // is currently used to synchronize clipboard source metadata from
+  // Lacros to Ash.
+  void OnDataTransferEndpointRead(
+      scoped_refptr<RefCountedScopedClipboardWriter> writer,
+      base::OnceClosure callback,
+      const std::string& mime_type,
+      std::u16string data);
+#endif
+
   // Called when data is read from FD passed from a client.
   // |data| is read data. |source| is source of the data, or nullptr if
   // DataSource has already been destroyed.
@@ -221,8 +238,6 @@ class Seat : public aura::client::FocusChangeObserver,
   bool changing_clipboard_data_to_selection_source_;
 
   gfx::PointF last_pointer_location_;
-
-  std::vector<FocusChangedCallback> focus_changed_callbacks_;
 
   bool was_shutdown_ = false;
 

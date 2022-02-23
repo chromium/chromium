@@ -1,0 +1,1 @@
+textField name='Label text' nameFrom=relatedElement

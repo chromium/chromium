@@ -149,7 +149,7 @@ static base::Time kLiveTimelineOffset() {
   return timeline_offset;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class ScopedVerboseLogEnabler {
  public:
   ScopedVerboseLogEnabler() : old_level_(logging::GetMinLogLevel()) {
@@ -363,13 +363,13 @@ class FailingVideoDecoder : public VideoDecoder {
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override {
-    std::move(init_cb).Run(OkStatus());
+    std::move(init_cb).Run(DecoderStatus::Codes::kOk);
   }
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               DecodeCB decode_cb) override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(decode_cb), DecodeStatus::DECODE_ERROR));
+        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
   }
   void Reset(base::OnceClosure closure) override { std::move(closure).Run(); }
   bool NeedsBitstreamConversion() const override { return true; }
@@ -745,7 +745,7 @@ TEST_F(PipelineIntegrationTest, PlaybackTooManyChannels) {
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Enable scoped logs to help track down hangs.  http://crbug.com/1014646
   ScopedVerboseLogEnabler scoped_log_enabler;
 #endif
@@ -782,7 +782,7 @@ TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithVideoTrackDisabledThenEnabled) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Enable scoped logs to help track down hangs.  http://crbug.com/1014646
   ScopedVerboseLogEnabler scoped_log_enabler;
 #endif
@@ -847,7 +847,7 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
 }
 
 // TODO(https://crbug.com/1009964): Enable test when MacOS flake is fixed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TrackStatusChangesWhileSuspended \
   DISABLED_TrackStatusChangesWhileSuspended
 #else
@@ -1747,7 +1747,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_WebM) {
   Stop();
 }
 
-#if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_ANDROID)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PipelineIntegrationTest, BasicPlaybackHi10PVP9) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x180-hi10p-vp9.webm"));
 
@@ -2611,7 +2611,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VideoOnly_MP4_HEV1) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 TEST_F(PipelineIntegrationTest, SeekWhilePaused) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Enable scoped logs to help track down hangs.  http://crbug.com/1014646
   ScopedVerboseLogEnabler scoped_log_enabler;
 #endif
@@ -2640,7 +2640,7 @@ TEST_F(PipelineIntegrationTest, SeekWhilePaused) {
 }
 
 TEST_F(PipelineIntegrationTest, SeekWhilePlaying) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Enable scoped logs to help track down hangs.  http://crbug.com/1014646
   ScopedVerboseLogEnabler scoped_log_enabler;
 #endif

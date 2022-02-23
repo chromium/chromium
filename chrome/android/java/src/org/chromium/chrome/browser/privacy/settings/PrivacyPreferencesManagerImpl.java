@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -44,6 +43,11 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return sInstance;
     }
 
+    @VisibleForTesting
+    public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
+        sInstance = instance;
+    }
+
     protected boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -61,12 +65,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         NetworkInfo networkInfo =
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return networkInfo != null;
-    }
-
-    @Override
-    public boolean shouldPrerender() {
-        if (!DeviceClassManager.enablePrerendering()) return false;
-        return canPrefetchAndPrerender();
     }
 
     @Override
@@ -104,6 +102,16 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
+    public boolean isUsageAndCrashReportingPermittedByPolicy() {
+        // Skip if native browser process is not yet fully initialized.
+        if (!BrowserStartupController.getInstance().isNativeStarted()) {
+            return true;
+        }
+
+        return !PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
+    }
+
+    @Override
     public boolean isUsageAndCrashReportingPermittedByUser() {
         return mPrefs.readBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, false);
     }
@@ -119,15 +127,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
                 && (isUsageAndCrashReportingPermittedByUser() || isUploadEnabledForTests());
     }
 
-    /**
-     * Checks whether network predictions are allowed given preferences and current network
-     * connection type.
-     * @return Whether network predictions are allowed.
-     */
-    private boolean canPrefetchAndPrerender() {
-        return PrivacyPreferencesManagerImplJni.get().canPrefetchAndPrerender();
-    }
-
     @Override
     public boolean isMetricsReportingEnabled() {
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingEnabled();
@@ -139,33 +138,14 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
-    public boolean isMetricsReportingManaged() {
-        return PrivacyPreferencesManagerImplJni.get().isMetricsReportingManaged();
-    }
-
-    @Override
-    public boolean getNetworkPredictionEnabled() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionEnabled();
-    }
-
-    @Override
-    public void setNetworkPredictionEnabled(boolean enabled) {
-        PrivacyPreferencesManagerImplJni.get().setNetworkPredictionEnabled(enabled);
-    }
-
-    @Override
-    public boolean isNetworkPredictionManaged() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionManaged();
+    public boolean isMetricsReportingDisabledByPolicy() {
+        return PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
     }
 
     @NativeMethods
     public interface Natives {
-        boolean canPrefetchAndPrerender();
-        boolean getNetworkPredictionManaged();
-        boolean getNetworkPredictionEnabled();
-        void setNetworkPredictionEnabled(boolean enabled);
         boolean isMetricsReportingEnabled();
         void setMetricsReportingEnabled(boolean enabled);
-        boolean isMetricsReportingManaged();
+        boolean isMetricsReportingDisabledByPolicy();
     }
 }

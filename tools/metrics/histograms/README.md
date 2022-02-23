@@ -382,8 +382,8 @@ After a histogram expires, it ceases to be displayed on the dashboard.
 Follow [these directions](#extending) to extend it.
 
 Once a histogram has expired, the code that records it becomes dead code and
-should be removed from the codebase along with marking the histogram definition
-as obsolete.
+should be removed from the codebase. You should also [clean up](#obsolete) the
+corresponding entry in histograms.xml.
 
 In **rare** cases, the expiry can be set to "never". This is used to denote
 metrics of critical importance that are, typically, used for other reports. For
@@ -511,7 +511,7 @@ changes.
 Please delete code that emits to histograms that are no longer needed.
 Histograms take up memory. Cleaning up histograms that you no longer care
 about is good! But see the note below on
-[Cleaning Up Histogram Entries](#Cleaning-Up-Histogram-Entries).
+[Cleaning Up Histogram Entries](#obsolete).
 
 ## Documenting Histograms
 
@@ -609,42 +609,52 @@ with the histogram. If there isn't a parallel DIR_METADATA file with such a
 component, but a parent directory has one, then the parent directory's component
 is used.
 
-### Cleaning Up Histogram Entries
+### Cleaning Up Histogram Entries {#obsolete}
 
-Do not delete histograms from histograms.xml files or move them to
-obsolete_histograms.xml. Instead, mark unused histograms as obsolete and
-annotate them with the date or milestone in the `<obsolete>` tag entry. They
-will later get moved to obsolete_histograms.xml via tooling.
+If a histogram is no longer being emitted to, there are two options to clean up
+the entry: either mark the histogram as obsolete or remove the corresponding
+histograms.xml entry. This also applies to variants of a
+[patterned histogram](#Patterned-Histograms) and to suffix entries for a
+suffixed histogram.
 
-If deprecating only some variants of a
-[patterned histogram](#Patterned-Histograms), mark each deprecated `<variant>`
-as obsolete as well. Similarly, if the histogram used histogram suffixes, mark
-the suffix entry for the histogram as obsolete.
+However you proceed, a changelist that obsoletes a histogram entry should be
+reviewed by all current owners.
 
-If the histogram is being replaced by a new version:
+Note: the Chrome team is in the process of streamlining this process so that a
+histogram entry can be deleted and an obsoletion message recorded in a single
+change list.
 
-* Note in the `<obsolete>` message the name of the replacement histogram.
+#### Option: Add an Obsoletion Message
 
-* Make sure the descriptions of the original and replacement histogram are
-  different. It's never appropriate for them to be identical. Either the old
-  description was wrong, and it should be revised to explain what it actually
-  measured, or the old histogram was measuring something not as useful as the
-  replacement, in which case the new histogram is measuring something different
-  and needs to have a new description.
+You can choose to add a message to a histogram entry which will mark it as
+obsolete, and which will also provide relevant information to interested Chrome
+developers.
 
-A changelist that marks a histogram as obsolete should be reviewed by all
-current owners.
+* Add the obsoletion message between `<obsolete>` and `</obsolete>` tags within
+  the `<histogram>` block.
+* This should include the date or milestone when the entry became obsolete.
+* You could also include information about why the histogram has become
+  obsolete. For example, you might indicate how the histogram's summary did not
+  accurately describe the collected data.
+* If the obsolete histogram is being replaced, include the name of the
+  replacement and make sure that the new description is different from the
+  original to reflect the change between versions.
 
-Deleting histogram entries would be bad if someone accidentally reused your old
-histogram name and thereby corrupted new data with whatever old data is still
-coming in. It's also useful to keep obsolete histogram descriptions in
-[histograms.xml](./histograms.xml)—that way, if someone is searching for a
-histogram to answer a particular question, they can learn if there was a
-histogram at some point that did so even if it isn't active now.
+#### Option: Remove the Entry
 
-*Exception:* It is ok to delete the metadata for any histogram that has never
-been recorded to. For example, it's fine to correct a typo where the histogram
-name in the metadata does not match the name in the Chromium source code.
+If you do not want to add an obsoletion message, you can simply delete the
+entry in the histograms.xml file.
+
+* In some cases there may be artifacts that remain, with some examples being:
+  * Empty `<token>` blocks.
+  * `<enum>` blocks from enums.xml that are no longer used.
+  * Suffix entries in histogram_suffixes_list.xml.
+* Please remove these artifacts if you find them.
+  * **Exception**: please mark `<int value=...>` blocks as obsolete rather than
+    deleting them.
+* A histogram entry can be removed after an obsoletion message was added, but
+  please check that at least a day has passed since the change landed. This
+  ensures that the message will be recorded by internal tools.
 
 ### Patterned Histograms
 
@@ -716,9 +726,6 @@ owners:
   <owner>subteam@chromium.org</owner>
 </variant>
 ```
-
-As [with histogram entries](#Cleaning-Up-Histogram-Entries), never delete
-variants. If the variant expansion is no longer used, mark it as `<obsolete>`.
 
 *** promo
 Tip: You can run `print_expanded_histograms.py --pattern=` to show all generated

@@ -189,7 +189,7 @@ static bool ShouldIgnoreListItem(Node* node) {
       IsA<HTMLOListElement>(*parent)) {
     AtomicString role = AccessibleNode::GetPropertyOrARIAAttribute(
         parent, AOMStringProperty::kRole);
-    if (!role.IsEmpty() && role != "list")
+    if (!role.IsEmpty() && role != "list" && role != "directory")
       return true;
   }
   return false;
@@ -348,10 +348,10 @@ bool AXLayoutObject::IsLinked() const {
 
 bool AXLayoutObject::IsOffScreen() const {
   DCHECK(layout_object_);
-  IntRect content_rect =
-      PixelSnappedIntRect(layout_object_->VisualRectInDocument());
+  gfx::Rect content_rect =
+      ToPixelSnappedRect(layout_object_->VisualRectInDocument());
   LocalFrameView* view = layout_object_->GetFrame()->View();
-  IntRect view_rect(gfx::Point(), view->Size());
+  gfx::Rect view_rect(gfx::Point(), view->Size());
   view_rect.Intersect(content_rect);
   return view_rect.IsEmpty();
 }
@@ -377,7 +377,7 @@ bool AXLayoutObject::IsNotUserSelectable() const {
   if (!style)
     return false;
 
-  return (style->UserSelect() == EUserSelect::kNone);
+  return (style->UsedUserSelect() == EUserSelect::kNone);
 }
 
 //
@@ -407,7 +407,7 @@ AXObjectInclusion AXLayoutObject::DefaultObjectInclusion(
 }
 
 static bool HasLineBox(const LayoutBlockFlow& block_flow) {
-  if (!block_flow.IsLayoutNGMixin())
+  if (!block_flow.IsLayoutNGObject())
     return block_flow.FirstLineBox();
 
   // TODO(layout-dev): We should call this function after layout completion.
@@ -732,9 +732,8 @@ ax::mojom::blink::ListStyle AXLayoutObject::GetListStyle() const {
 }
 
 static bool ShouldUseLayoutNG(const LayoutObject& layout_object) {
-  return (layout_object.IsInline() || layout_object.IsLayoutInline() ||
-          layout_object.IsText()) &&
-         layout_object.ContainingNGBlockFlow();
+  return layout_object.IsInline() &&
+         layout_object.IsInLayoutNGInlineFormattingContext();
 }
 
 // Get the deepest descendant that is included in the tree.
@@ -867,6 +866,10 @@ AXObject* AXLayoutObject::NextOnLine() const {
   }
 
   DCHECK(GetLayoutObject());
+
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
+    return nullptr;
+  }
 
   if (GetLayoutObject()->IsBoxListMarkerIncludingNG()) {
     // A list marker should be followed by a list item on the same line.
@@ -1020,6 +1023,10 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
 
   DCHECK(GetLayoutObject());
 
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetLayoutObject())) {
+    return nullptr;
+  }
+
   AXObject* previous_sibling = AccessibilityIsIncludedInTree()
                                    ? PreviousSiblingIncludingIgnored()
                                    : nullptr;
@@ -1147,6 +1154,10 @@ String AXLayoutObject::TextAlternative(
         name_sources->back().type = name_from;
         name_sources->back().text = text_alternative.value();
       }
+      // Ensure that text nodes count toward
+      // kMaxDescendantsForTextAlternativeComputation when calculating the name
+      // for their direct parent (see AXNodeObject::TextFromDescendants).
+      visited.insert(this);
       return text_alternative.value();
     }
   }
@@ -1173,8 +1184,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   PaintLayer* layer = To<LayoutBox>(layout_object_.Get())->Layer();
   DCHECK(layer);
 
-  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kRetargetForInert);
+  HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(point);
   HitTestResult hit_test_result = HitTestResult(request, location);
   layer->HitTest(location, hit_test_result,
@@ -1288,7 +1298,7 @@ bool AXLayoutObject::IsDataTable() const {
   // If there are at least 20 rows, we'll call it a data table.
   HTMLTableRowsCollection* rows = table_element->rows();
   int num_rows = rows->length();
-  if (num_rows >= 20)
+  if (num_rows >= AXObjectCacheImpl::kDataTableHeuristicMinRows)
     return true;
   if (num_rows <= 0)
     return false;
@@ -1754,7 +1764,7 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
     return nullptr;
 
   for (const auto& child : parent->ChildrenIncludingIgnored()) {
-    if (child->GetBoundsInFrameCoordinates().Contains(point))
+    if (child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
       return child.Get();
   }
 

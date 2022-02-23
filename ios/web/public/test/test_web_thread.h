@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/web/public/thread/web_thread.h"
 
 namespace base {

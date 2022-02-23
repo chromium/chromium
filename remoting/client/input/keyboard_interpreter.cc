@@ -58,7 +58,7 @@ void KeyboardInterpreter::HandleDeleteEvent(uint8_t modifiers) {
   }
 
   base::queue<KeyEvent> keys;
-  // TODO(nicholss): Handle modifers.
+  // TODO(nicholss): Handle modifiers.
   // Key press.
   keys.push({static_cast<uint32_t>(ui::DomCode::BACKSPACE), true});
 

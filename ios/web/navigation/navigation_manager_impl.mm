@@ -24,6 +24,7 @@
 #import "ios/web/navigation/crw_navigation_item_holder.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#include "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -426,42 +427,12 @@ void NavigationManagerImpl::SetPendingItemIndex(int index) {
   pending_item_index_ = index;
 }
 
-void NavigationManagerImpl::ApplyWKWebViewForwardHistoryClobberWorkaround() {
-  DCHECK(web_view_cache_.IsAttachedToWebView());
-
-  int current_item_index = web_view_cache_.GetCurrentItemIndex();
-  DCHECK_GE(current_item_index, 0);
-
-  int item_count = GetItemCount();
-  DCHECK_LT(current_item_index, item_count);
-
-  std::vector<std::unique_ptr<NavigationItem>> forward_items(
-      item_count - current_item_index);
-
-  for (size_t i = 0; i < forward_items.size(); i++) {
-    const NavigationItemImpl* item =
-        GetNavigationItemImplAtIndex(i + current_item_index);
-    forward_items[i] = std::make_unique<NavigationItemImpl>(*item);
-  }
-
-  DiscardNonCommittedItems();
-
-  // Replace forward history in WKWebView with |forward_items|.
-  // |last_committed_item_index| is set to 0 so that when this partial session
-  // restoration finishes, the current item is the first item in
-  // |forward_itmes|, which is also the current item before the session
-  // restoration, but because of crbug.com/887497 is expected to be clobbered
-  // with the wrong web content. The partial restore effectively forces a fresh
-  // load of this item while maintaining forward history.
-  UnsafeRestore(/*last_committed_item_index_=*/0, std::move(forward_items));
-}
-
 void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
     const GURL& url) {
   next_pending_url_should_skip_serialization_ = url;
 }
 
-bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
+bool NavigationManagerImpl::RestoreNativeSession(const GURL& url) {
   DCHECK(is_restore_session_in_progress_);
 
   GURL targetURL;
@@ -470,8 +441,10 @@ bool NavigationManagerImpl::RestoreSessionFromCache(const GURL& url) {
     return false;
   }
 
-  if (!web::GetWebClient()->RestoreSessionFromCache(GetWebState()))
+  if (!web::GetWebClient()->RestoreSessionFromCache(GetWebState()) &&
+      !synthesized_restore_helper_.Restore(GetWebState())) {
     return false;
+  }
 
   // Native restore worked, abort unsafe restore.
   DiscardNonCommittedItems();
@@ -948,11 +921,12 @@ void NavigationManagerImpl::Restore(
 
   DCHECK_LT(last_committed_item_index, static_cast<int>(items.size()));
   DCHECK(items.empty() || last_committed_item_index >= 0);
-  if (items.empty())
-    return;
 
   if (!web_view_cache_.IsAttachedToWebView())
     web_view_cache_.ResetToAttached();
+
+  if (items.empty())
+    return;
 
   DiscardNonCommittedItems();
   if (GetItemCount() > 0) {
@@ -1124,6 +1098,11 @@ void NavigationManagerImpl::UnsafeRestore(
   // history restore so information such as scroll position is restored.
   int first_index = -1;
   GURL url;
+
+  bool off_the_record = browser_state_->IsOffTheRecord();
+  synthesized_restore_helper_.Init(last_committed_item_index, items,
+                                   off_the_record);
+
   wk_navigation_util::CreateRestoreSessionUrl(last_committed_item_index, items,
                                               &url, &first_index);
   DCHECK_GE(first_index, 0);
@@ -1306,6 +1285,8 @@ bool NavigationManagerImpl::CanTrustLastCommittedItem(
 
 void NavigationManagerImpl::FinalizeSessionRestore() {
   is_restore_session_in_progress_ = false;
+  synthesized_restore_helper_.Clear();
+
   for (base::OnceClosure& callback : restore_session_completion_callbacks_) {
     std::move(callback).Run();
   }

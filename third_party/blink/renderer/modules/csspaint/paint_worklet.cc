@@ -99,7 +99,7 @@ wtf_size_t PaintWorklet::SelectNewGlobalScope() {
 
 scoped_refptr<Image> PaintWorklet::Paint(const String& name,
                                          const ImageResourceObserver& observer,
-                                         const FloatSize& container_size,
+                                         const gfx::SizeF& container_size,
                                          const CSSStyleValueVector* data,
                                          float device_scale_factor) {
   if (!document_definition_map_.Contains(name))

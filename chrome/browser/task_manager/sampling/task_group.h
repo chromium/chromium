@@ -42,7 +42,7 @@ constexpr int kUnsupportedVMRefreshFlags =
     REFRESH_TYPE_WEBCACHE_STATS | REFRESH_TYPE_NETWORK_USAGE |
     REFRESH_TYPE_NACL | REFRESH_TYPE_IDLE_WAKEUPS | REFRESH_TYPE_HANDLES |
     REFRESH_TYPE_START_TIME | REFRESH_TYPE_CPU_TIME | REFRESH_TYPE_PRIORITY |
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     REFRESH_TYPE_FD_COUNT |
 #endif
     REFRESH_TYPE_HARD_FAULTS;
@@ -108,14 +108,14 @@ class TaskGroup {
   base::TimeDelta cpu_time() const { return cpu_time_; }
   void set_footprint_bytes(int64_t footprint) { memory_footprint_ = footprint; }
   int64_t footprint_bytes() const { return memory_footprint_; }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Calculates swapped memory for Lacros too, so that we don't have to
   // re-calculate it in ash.
   int64_t swapped_bytes() const { return swapped_mem_bytes_; }
   void set_swapped_bytes(int64_t swapped_bytes) {
     swapped_mem_bytes_ = swapped_bytes;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   int64_t gpu_memory() const { return gpu_memory_; }
   void set_gpu_memory(int64_t gpu_mem_bytes) { gpu_memory_ = gpu_mem_bytes; }
   bool gpu_memory_has_duplicates() const { return gpu_memory_has_duplicates_; }
@@ -133,13 +133,13 @@ class TaskGroup {
     is_backgrounded_ = is_backgrounded;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int64_t gdi_current_handles() const { return gdi_current_handles_; }
   int64_t gdi_peak_handles() const { return gdi_peak_handles_; }
   int64_t user_current_handles() const { return user_current_handles_; }
   int64_t user_peak_handles() const { return user_peak_handles_; }
   int64_t hard_faults_per_second() const { return hard_faults_per_second_; }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_NACL)
   int nacl_debug_stub_port() const { return nacl_debug_stub_port_; }
@@ -148,10 +148,10 @@ class TaskGroup {
   }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   int open_fd_count() const { return open_fd_count_; }
   void set_open_fd_count(int open_fd_count) { open_fd_count_ = open_fd_count; }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   int idle_wakeups_per_second() const { return idle_wakeups_per_second_; }
   void set_idle_wakeups_per_second(int idle_wakeups) {
@@ -168,9 +168,9 @@ class TaskGroup {
   void RefreshNaClDebugStubPort(int child_process_unique_id);
   void OnRefreshNaClDebugStubPortDone(int port);
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   void OnOpenFdCountRefreshDone(int open_fd_count);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   void OnCpuRefreshDone(double cpu_usage);
   void OnSwappedMemRefreshDone(int64_t swapped_mem_bytes);
@@ -229,21 +229,21 @@ class TaskGroup {
   // uploaded by all tasks in this process.
   int64_t cumulative_per_process_network_usage_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows GDI and USER Handles.
   int64_t gdi_current_handles_;
   int64_t gdi_peak_handles_;
   int64_t user_current_handles_;
   int64_t user_peak_handles_;
   int64_t hard_faults_per_second_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(ENABLE_NACL)
   int nacl_debug_stub_port_;
 #endif  // BUILDFLAG(ENABLE_NACL)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // The number of file descriptors currently open by the process.
   int open_fd_count_;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   int idle_wakeups_per_second_;
   bool gpu_memory_has_duplicates_;
   bool is_backgrounded_;

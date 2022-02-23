@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
@@ -134,18 +133,9 @@ bool LegacyRenderWidgetHostHWND::InitOrDeleteSelf(HWND parent) {
   // heap-use-after-free crash (https://crbug.com/1194694).
   auto weak_ptr = weak_factory_.GetWeakPtr();
   RECT rect = {0};
-  DWORD window_ex_style = WS_EX_TRANSPARENT;
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    // For Windows 8 or greater set layered window (WS_EX_LAYERED) style to
-    // avoid black flash on first paint of LegacyRenderWidgetHostHWND.
-    // Also set WS_EX_NOREDIRECTIONBITMAP flag to avoid additional bitmap in
-    // layered window. Issue 1257540 (https://crbug.com/1257540).
-    window_ex_style |= WS_EX_LAYERED | WS_EX_NOREDIRECTIONBITMAP;
-  }
-
   Base::Create(parent, rect, L"Chrome Legacy Window",
                WS_CHILDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-               window_ex_style);
+               WS_EX_TRANSPARENT);
   if (!weak_ptr) {
     // Base::Create() runs nested windows message loops that could end up
     // deleting `this`. Therefore, upon returning false here, `this` is already

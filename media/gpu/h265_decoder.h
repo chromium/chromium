@@ -160,9 +160,9 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
 
   // AcceleratedVideoDecoder implementation.
   void SetStream(int32_t id, const DecoderBuffer& decoder) override;
-  bool Flush() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
   void Reset() override;
-  DecodeResult Decode() override WARN_UNUSED_RESULT;
+  [[nodiscard]] DecodeResult Decode() override;
   gfx::Size GetPicSize() const override;
   gfx::Rect GetVisibleRect() const override;
   VideoCodecProfile GetProfile() const override;

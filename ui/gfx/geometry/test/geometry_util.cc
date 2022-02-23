@@ -11,6 +11,8 @@
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -86,8 +88,8 @@ template <typename T>
                                                      const Transform& rhs) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!FloatAlmostEqual(lhs.matrix().get(row, col),
-                            rhs.matrix().get(row, col))) {
+      if (!FloatAlmostEqual(lhs.matrix().rc(row, col),
+                            rhs.matrix().rc(row, col))) {
         return EqFailure(lhs_expr, rhs_expr, lhs, rhs)
                << "\nFirst difference at row: " << row << " col: " << col;
       }
@@ -104,7 +106,7 @@ template <typename T>
                                                     float abs_error) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!FloatNear(lhs.matrix().get(row, col), rhs.matrix().get(row, col),
+      if (!FloatNear(lhs.matrix().rc(row, col), rhs.matrix().rc(row, col),
                      abs_error)) {
         return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs,
                            abs_error)
@@ -135,6 +137,23 @@ Transform InvertAndCheck(const Transform& transform) {
     return ::testing::AssertionSuccess();
   }
   return EqFailure(lhs_expr, rhs_expr, lhs, rhs);
+}
+
+::testing::AssertionResult AssertBoxFloatNear(const char* lhs_expr,
+                                              const char* rhs_expr,
+                                              const char* abs_error_expr,
+                                              const BoxF& lhs,
+                                              const BoxF& rhs,
+                                              float abs_error) {
+  if (FloatNear(lhs.x(), rhs.x(), abs_error) &&
+      FloatNear(lhs.y(), rhs.y(), abs_error) &&
+      FloatNear(lhs.z(), rhs.z(), abs_error) &&
+      FloatNear(lhs.width(), rhs.width(), abs_error) &&
+      FloatNear(lhs.height(), rhs.height(), abs_error) &&
+      FloatNear(lhs.depth(), rhs.depth(), abs_error)) {
+    return ::testing::AssertionSuccess();
+  }
+  return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs, abs_error);
 }
 
 ::testing::AssertionResult AssertPointFloatEqual(const char* lhs_expr,
@@ -325,12 +344,20 @@ void PrintTo(const PointF& point, ::std::ostream* os) {
   *os << point.ToString();
 }
 
-void PrintTo(const Insets& insets, ::std::ostream* os) {
-  *os << insets.ToString();
+void PrintTo(const Insets& input, ::std::ostream* os) {
+  *os << input.ToString();
 }
 
-void PrintTo(const InsetsF& insets, ::std::ostream* os) {
-  *os << insets.ToString();
+void PrintTo(const InsetsF& input, ::std::ostream* os) {
+  *os << input.ToString();
+}
+
+void PrintTo(const Outsets& input, ::std::ostream* os) {
+  *os << input.ToString();
+}
+
+void PrintTo(const OutsetsF& input, ::std::ostream* os) {
+  *os << input.ToString();
 }
 
 void PrintTo(const QuadF& quad, ::std::ostream* os) {

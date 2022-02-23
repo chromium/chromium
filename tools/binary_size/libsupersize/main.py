@@ -7,7 +7,6 @@
 
 import argparse
 import atexit
-import collections
 import distutils.spawn
 import logging
 import platform
@@ -18,7 +17,7 @@ import archive
 import console
 import diff
 import file_format
-import html_report
+import models
 
 
 def _LogPeakRamUsage():
@@ -45,7 +44,6 @@ class _DiffAction:
   @staticmethod
   def Run(args, on_config_error):
     args.output_directory = None
-    args.tool_prefix = None
     args.inputs = [args.before, args.after]
     args.query = '\n'.join([
         'd = Diff()',
@@ -71,6 +69,9 @@ class _SaveDiffAction:
     parser.add_argument(
         'output_file',
         help='Write generated data to the specified .sizediff file.')
+    parser.add_argument('--title',
+                        help='Value for the "title" build_config entry.')
+    parser.add_argument('--url', help='Value for the "url" build_config entry.')
 
   @staticmethod
   def Run(args, on_config_error):
@@ -83,18 +84,22 @@ class _SaveDiffAction:
 
     before_size_info = archive.LoadAndPostProcessSizeInfo(args.before)
     after_size_info = archive.LoadAndPostProcessSizeInfo(args.after)
+    # If a URL or title exists, we only want to add it to the build config of
+    # the after size file.
+    if args.title:
+      after_size_info.build_config[models.BUILD_CONFIG_TITLE] = args.title
+    if args.url:
+      after_size_info.build_config[models.BUILD_CONFIG_URL] = args.url
     delta_size_info = diff.Diff(before_size_info, after_size_info)
 
     file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
 
 def main():
-  parser = argparse.ArgumentParser(description=__doc__)
+  parser = argparse.ArgumentParser(prog='supersize', description=__doc__)
   sub_parsers = parser.add_subparsers()
-  actions = collections.OrderedDict()
+  actions = {}
   actions['archive'] = (archive, 'Create a .size file')
-  actions['html_report'] = (
-      html_report, 'Create a stand-alone report from a .size file.')
   actions['console'] = (
       console,
       'Starts an interactive Python console for analyzing .size files.')

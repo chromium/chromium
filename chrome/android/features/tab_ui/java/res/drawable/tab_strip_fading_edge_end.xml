@@ -6,6 +6,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
 <gradient
     android:startColor="@color/white_alpha_8"
-    android:endColor="@color/default_bg_color"
+    android:endColor="@macro/default_bg_color"
     android:type="linear" />
 </shape>

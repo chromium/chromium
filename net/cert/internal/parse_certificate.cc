@@ -71,7 +71,7 @@ DEFINE_CERT_ERROR_ID(kSerialNumberNotValidInteger,
                      "Serial number is not a valid INTEGER");
 
 // Returns true if |input| is a SEQUENCE and nothing else.
-WARN_UNUSED_RESULT bool IsSequenceTLV(const der::Input& input) {
+[[nodiscard]] bool IsSequenceTLV(const der::Input& input) {
   der::Parser parser(input);
   der::Parser unused_sequence_parser;
   if (!parser.ReadSequence(&unused_sequence_parser))
@@ -82,7 +82,7 @@ WARN_UNUSED_RESULT bool IsSequenceTLV(const der::Input& input) {
 
 // Reads a SEQUENCE from |parser| and writes the full tag-length-value into
 // |out|. On failure |parser| may or may not have been advanced.
-WARN_UNUSED_RESULT bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
+[[nodiscard]] bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
   return parser->ReadRawTLV(out) && IsSequenceTLV(*out);
 }
 
@@ -97,8 +97,8 @@ WARN_UNUSED_RESULT bool ReadSequenceTLV(der::Parser* parser, der::Input* out) {
 //     Implementations SHOULD be prepared to accept any version certificate.
 //     At a minimum, conforming implementations MUST recognize version 3
 //     certificates.
-WARN_UNUSED_RESULT bool ParseVersion(const der::Input& in,
-                                     CertificateVersion* version) {
+[[nodiscard]] bool ParseVersion(const der::Input& in,
+                                CertificateVersion* version) {
   der::Parser parser(in);
   uint64_t version64;
   if (!parser.ReadUint64(&version64))
@@ -125,7 +125,7 @@ WARN_UNUSED_RESULT bool ParseVersion(const der::Input& in,
 }
 
 // Returns true if every bit in |bits| is zero (including empty).
-WARN_UNUSED_RESULT bool BitStringIsAllZeros(const der::BitString& bits) {
+[[nodiscard]] bool BitStringIsAllZeros(const der::BitString& bits) {
   // Note that it is OK to read from the unused bits, since BitString parsing
   // guarantees they are all zero.
   for (size_t i = 0; i < bits.bytes().Length(); ++i) {
@@ -137,40 +137,42 @@ WARN_UNUSED_RESULT bool BitStringIsAllZeros(const der::BitString& bits) {
 
 // Parses a DistributionPointName.
 //
-// Currently this implementation is only concerned with URIs encoded in
-// fullName and skips the rest (it does not fully parse the GeneralNames).
-//
-// URIs found in fullName are appended to |uris|.
-//
 // From RFC 5280:
 //
 //    DistributionPointName ::= CHOICE {
 //      fullName                [0]     GeneralNames,
 //      nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
 bool ParseDistributionPointName(const der::Input& dp_name,
-                                std::vector<base::StringPiece>* uris) {
-  bool has_full_name;
-  der::Input der_full_name;
-  if (!der::Parser(dp_name).ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 0, &der_full_name,
-          &has_full_name)) {
+                                ParsedDistributionPoint* distribution_point) {
+  der::Parser parser(dp_name);
+  absl::optional<der::Input> der_full_name;
+  if (!parser.ReadOptionalTag(
+          der::kTagContextSpecific | der::kTagConstructed | 0,
+          &der_full_name)) {
     return false;
   }
-  if (!has_full_name) {
-    // Only process DistributionPoints which provide "fullName".
-    return true;
+  if (der_full_name) {
+    // TODO(mattm): surface the CertErrors.
+    CertErrors errors;
+    distribution_point->distribution_point_fullname =
+        GeneralNames::CreateFromValue(*der_full_name, &errors);
+    if (!distribution_point->distribution_point_fullname)
+      return false;
+    return !parser.HasMore();
   }
 
-  // TODO(mattm): surface the CertErrors.
-  CertErrors errors;
-  std::unique_ptr<GeneralNames> full_name =
-      GeneralNames::CreateFromValue(der_full_name, &errors);
-  if (!full_name)
+  if (!parser.ReadOptionalTag(
+          der::kTagContextSpecific | der::kTagConstructed | 1,
+          &distribution_point
+               ->distribution_point_name_relative_to_crl_issuer)) {
     return false;
+  }
+  if (distribution_point->distribution_point_name_relative_to_crl_issuer) {
+    return !parser.HasMore();
+  }
 
-  // This code is only interested in extracting the URIs from fullName.
-  *uris = full_name->uniform_resource_identifiers;
-  return true;
+  // The CHOICE must contain either fullName or nameRelativeToCRLIssuer.
+  return false;
 }
 
 // RFC 5280, section 4.2.1.13.
@@ -190,48 +192,37 @@ bool ParseAndAddDistributionPoint(
     return false;
 
   //  distributionPoint       [0]     DistributionPointName OPTIONAL,
-  bool distribution_point_present;
-  der::Input name;
+  absl::optional<der::Input> distribution_point_name;
   if (!distrib_point_parser.ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 0, &name,
-          &distribution_point_present)) {
+          der::kTagContextSpecific | der::kTagConstructed | 0,
+          &distribution_point_name)) {
     return false;
   }
 
-  if (!distribution_point_present) {
-    // Only process DistributionPoints which provide a "distributionPoint".
-    return true;
+  if (distribution_point_name &&
+      !ParseDistributionPointName(*distribution_point_name,
+                                  &distribution_point)) {
+    return false;
   }
 
   //  reasons                 [1]     ReasonFlags OPTIONAL,
-  bool reasons_present;
-  if (!distrib_point_parser.SkipOptionalTag(der::kTagContextSpecific | 1,
-                                            &reasons_present)) {
+  if (!distrib_point_parser.ReadOptionalTag(der::kTagContextSpecific | 1,
+                                            &distribution_point.reasons)) {
     return false;
   }
-
-  // If it contains a subset of reasons then we skip it. We aren't
-  // interested in subsets of CRLs and the RFC states that there MUST be
-  // a CRL that covers all reasons.
-  if (reasons_present) {
-    return true;
-  }
-
-  // Extract the URIs from the DistributionPointName.
-  if (!ParseDistributionPointName(name, &distribution_point.uris))
-    return false;
 
   //  cRLIssuer               [2]     GeneralNames OPTIONAL }
-  bool crl_issuer_present;
-  der::Input crl_issuer;
   if (!distrib_point_parser.ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 2, &crl_issuer,
-          &crl_issuer_present)) {
+          der::kTagContextSpecific | der::kTagConstructed | 2,
+          &distribution_point.crl_issuer)) {
     return false;
   }
+  // TODO(eroman): Parse "cRLIssuer"?
 
-  distribution_point.has_crl_issuer = crl_issuer_present;
-  // TODO(eroman): Parse "cRLIssuer".
+  // RFC 5280, section 4.2.1.13:
+  // either distributionPoint or cRLIssuer MUST be present.
+  if (!distribution_point_name && !distribution_point.crl_issuer)
+    return false;
 
   if (distrib_point_parser.HasMore())
     return false;
@@ -632,136 +623,6 @@ bool ParseExtension(const der::Input& extension_tlv, ParsedExtension* out) {
   return true;
 }
 
-der::Input SubjectKeyIdentifierOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-subjectKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 14 }
-  //
-  // In dotted notation: 2.5.29.14
-  static const uint8_t oid[] = {0x55, 0x1d, 0x0e};
-  return der::Input(oid);
-}
-
-der::Input KeyUsageOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-keyUsage OBJECT IDENTIFIER ::=  { id-ce 15 }
-  //
-  // In dotted notation: 2.5.29.15
-  static const uint8_t oid[] = {0x55, 0x1d, 0x0f};
-  return der::Input(oid);
-}
-
-der::Input SubjectAltNameOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-subjectAltName OBJECT IDENTIFIER ::=  { id-ce 17 }
-  //
-  // In dotted notation: 2.5.29.17
-  static const uint8_t oid[] = {0x55, 0x1d, 0x11};
-  return der::Input(oid);
-}
-
-der::Input BasicConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-basicConstraints OBJECT IDENTIFIER ::=  { id-ce 19 }
-  //
-  // In dotted notation: 2.5.29.19
-  static const uint8_t oid[] = {0x55, 0x1d, 0x13};
-  return der::Input(oid);
-}
-
-der::Input NameConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-nameConstraints OBJECT IDENTIFIER ::=  { id-ce 30 }
-  //
-  // In dotted notation: 2.5.29.30
-  static const uint8_t oid[] = {0x55, 0x1d, 0x1e};
-  return der::Input(oid);
-}
-
-der::Input CertificatePoliciesOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-certificatePolicies OBJECT IDENTIFIER ::=  { id-ce 32 }
-  //
-  // In dotted notation: 2.5.29.32
-  static const uint8_t oid[] = {0x55, 0x1d, 0x20};
-  return der::Input(oid);
-}
-
-der::Input AuthorityKeyIdentifierOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-authorityKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 35 }
-  //
-  // In dotted notation: 2.5.29.35
-  static const uint8_t oid[] = {0x55, 0x1d, 0x23};
-  return der::Input(oid);
-}
-
-der::Input PolicyConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-policyConstraints OBJECT IDENTIFIER ::=  { id-ce 36 }
-  //
-  // In dotted notation: 2.5.29.36
-  static const uint8_t oid[] = {0x55, 0x1d, 0x24};
-  return der::Input(oid);
-}
-
-der::Input ExtKeyUsageOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-extKeyUsage OBJECT IDENTIFIER ::= { id-ce 37 }
-  //
-  // In dotted notation: 2.5.29.37
-  static const uint8_t oid[] = {0x55, 0x1d, 0x25};
-  return der::Input(oid);
-}
-
-der::Input AuthorityInfoAccessOid() {
-  // From RFC 5280:
-  //
-  //     id-pe-authorityInfoAccess OBJECT IDENTIFIER ::= { id-pe 1 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.1.1
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x01, 0x01};
-  return der::Input(oid);
-}
-
-der::Input AdCaIssuersOid() {
-  // From RFC 5280:
-  //
-  //     id-ad-caIssuers OBJECT IDENTIFIER ::= { id-ad 2 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.48.2
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x02};
-  return der::Input(oid);
-}
-
-der::Input AdOcspOid() {
-  // From RFC 5280:
-  //
-  //     id-ad-ocsp OBJECT IDENTIFIER ::= { id-ad 1 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.48.1
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x01};
-  return der::Input(oid);
-}
-
-der::Input CrlDistributionPointsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-cRLDistributionPoints OBJECT IDENTIFIER ::=  { id-ce 31 }
-  //
-  // In dotted notation: 2.5.29.31
-  static const uint8_t oid[] = {0x55, 0x1d, 0x1f};
-  return der::Input(oid);
-}
-
 NET_EXPORT bool ParseExtensions(
     const der::Input& extensions_tlv,
     std::map<der::Input, ParsedExtension>* extensions) {
@@ -890,12 +751,10 @@ bool ParseKeyUsage(const der::Input& key_usage_tlv, der::BitString* key_usage) {
 
 bool ParseAuthorityInfoAccess(
     const der::Input& authority_info_access_tlv,
-    std::vector<base::StringPiece>* out_ca_issuers_uris,
-    std::vector<base::StringPiece>* out_ocsp_uris) {
+    std::vector<AuthorityInfoAccessDescription>* out_access_descriptions) {
   der::Parser parser(authority_info_access_tlv);
 
-  out_ca_issuers_uris->clear();
-  out_ocsp_uris->clear();
+  out_access_descriptions->clear();
 
   //    AuthorityInfoAccessSyntax  ::=
   //            SEQUENCE SIZE (1..MAX) OF AccessDescription
@@ -906,23 +765,52 @@ bool ParseAuthorityInfoAccess(
     return false;
 
   while (sequence_parser.HasMore()) {
+    AuthorityInfoAccessDescription access_description;
+
     //    AccessDescription  ::=  SEQUENCE {
     der::Parser access_description_sequence_parser;
     if (!sequence_parser.ReadSequence(&access_description_sequence_parser))
       return false;
 
     //            accessMethod          OBJECT IDENTIFIER,
-    der::Input access_method_oid;
-    if (!access_description_sequence_parser.ReadTag(der::kOid,
-                                                    &access_method_oid))
+    if (!access_description_sequence_parser.ReadTag(
+            der::kOid, &access_description.access_method_oid)) {
       return false;
+    }
 
     //            accessLocation        GeneralName  }
+    if (!access_description_sequence_parser.ReadRawTLV(
+            &access_description.access_location)) {
+      return false;
+    }
+
+    if (access_description_sequence_parser.HasMore())
+      return false;
+
+    out_access_descriptions->push_back(access_description);
+  }
+
+  return true;
+}
+
+bool ParseAuthorityInfoAccessURIs(
+    const der::Input& authority_info_access_tlv,
+    std::vector<base::StringPiece>* out_ca_issuers_uris,
+    std::vector<base::StringPiece>* out_ocsp_uris) {
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  if (!ParseAuthorityInfoAccess(authority_info_access_tlv,
+                                &access_descriptions)) {
+    return false;
+  }
+
+  for (const auto& access_description : access_descriptions) {
+    der::Parser access_location_parser(access_description.access_location);
     der::Tag access_location_tag;
     der::Input access_location_value;
-    if (!access_description_sequence_parser.ReadTagAndValue(
-            &access_location_tag, &access_location_value))
+    if (!access_location_parser.ReadTagAndValue(&access_location_tag,
+                                                &access_location_value)) {
       return false;
+    }
 
     // GeneralName ::= CHOICE {
     if (access_location_tag == der::ContextSpecificPrimitive(6)) {
@@ -931,13 +819,12 @@ bool ParseAuthorityInfoAccess(
       if (!base::IsStringASCII(uri))
         return false;
 
-      if (access_method_oid == AdCaIssuersOid())
+      if (access_description.access_method_oid == der::Input(kAdCaIssuersOid))
         out_ca_issuers_uris->push_back(uri);
-      else if (access_method_oid == AdOcspOid())
+      else if (access_description.access_method_oid == der::Input(kAdOcspOid))
         out_ocsp_uris->push_back(uri);
     }
   }
-
   return true;
 }
 

@@ -4,8 +4,11 @@
 
 enum PredefinedColorSpace {
     "srgb", // default
-    "rec2020",
+    "rec2020", // Enabled only in CanvasColorManagementV2 (not in any spec)
     "display-p3",
+    "rec2100-hlg", // Enabled only in CanvasHDR
+    "rec2100-pq", // Enabled only in CanvasHDR
+    "srgb-linear", // Enabled only in CanvasHDR
 };
 
 enum ImageDataStorageFormat {

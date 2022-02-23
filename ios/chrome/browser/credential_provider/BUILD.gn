@@ -13,16 +13,6 @@ buildflag_header("buildflags") {
   ]
 }
 
-source_set("feature_flags") {
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
-  frameworks = [ "Foundation.framework" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider") {
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -43,7 +33,6 @@ if (ios_enable_credential_provider_extension) {
     public_deps = [ "//base" ]
     deps = [
       ":buildflags",
-      ":feature_flags",
       "//base",
       "//components/autofill/core/common",
       "//components/keyed_service/core",
@@ -51,6 +40,7 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:affiliation",
       "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
       "//ios/chrome/browser/browser_state",
@@ -91,6 +81,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
       "//ios/chrome/common/credential_provider:ui",
+      "//ios/chrome/test:test_support",
       "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
       "//ios/public/provider/chrome/browser/signin:test_support",
       "//ios/web/public/test",

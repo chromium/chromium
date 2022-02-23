@@ -29,6 +29,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -206,15 +208,8 @@ public abstract class ToolbarLayout
         return mThemeColorProvider == null ? mDefaultTint : mThemeColorProvider.getTint();
     }
 
-    /**
-     * @return Whether to use light assets.
-     */
-    protected boolean useLight() {
-        return mThemeColorProvider != null && mThemeColorProvider.useLight();
-    }
-
     @Override
-    public void onTintChanged(ColorStateList tint, boolean useLight) {}
+    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {}
 
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {}
@@ -295,6 +290,16 @@ public abstract class ToolbarLayout
 
             @Override
             public boolean isUsingBrandColor() {
+                return false;
+            }
+
+            @Override
+            public int getSecurityIconResource(boolean isTablet) {
+                return 0;
+            }
+
+            @Override
+            public boolean isPaintPreview() {
                 return false;
             }
         };
@@ -846,6 +851,14 @@ public abstract class ToolbarLayout
     }
 
     /**
+     * Returns whether there are any ongoing animations.
+     */
+    @VisibleForTesting
+    public boolean isAnimationRunningForTesting() {
+        return false;
+    }
+
+    /**
      * Sets the toolbar hairline color, if the toolbar has a hairline below it.
      * @param toolbarColor The toolbar color to base the hairline color on.
      */
@@ -858,4 +871,12 @@ public abstract class ToolbarLayout
                 ThemeUtils.getToolbarHairlineColor(getContext(), toolbarColor, isIncognito());
         shadow.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
+
+    /**
+     * Sets the {@link BrowserStateBrowserControlsVisibilityDelegate} instance the toolbar should
+     * use to manipulate the visibility of browser controls; notably, "browser controls" includes
+     * the toolbar itself.
+     */
+    public void setBrowserControlsVisibilityDelegate(
+            BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {}
 }

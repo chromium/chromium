@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_UTIL_H_
 #define CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -28,12 +27,16 @@ namespace pdf_extension_test_util {
 // `wait_for_hit_test_data`, otherwise the necessary hit test data may not be
 // available by the time this function returns. (This behavior is the default,
 // since the delay should be small.)
-testing::AssertionResult EnsurePDFHasLoaded(
+[[nodiscard]] testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data = true) WARN_UNUSED_RESULT;
+    bool wait_for_hit_test_data = true);
 
 gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
                                          const gfx::Point& point);
+
+// Synchronously sets the input focus on the plugin frame by clicking on the
+// top-left corner of a PDF document.
+void SetInputFocusOnPlugin(content::WebContents* guest_contents);
 
 }  // namespace pdf_extension_test_util
 

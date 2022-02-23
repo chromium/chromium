@@ -27,6 +27,12 @@ const char kTitle[] = "title";
 const char kReferrerPolicy[] = "always";
 const char kLinkText[] = "link text";
 const char kAlt[] = "alt text";
+const double kNaturalWidth = 200.0;
+const double kNaturalHeight = 300.0;
+const double kBoundingBoxX = 10.0;
+const double kBoundingBoxY = 20.0;
+const double kBoundingBoxWidth = 50.0;
+const double kBoundingBoxHeight = 200.0;
 }
 
 namespace web {
@@ -46,6 +52,10 @@ TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
   EXPECT_NSEQ(params.link_text, nil);
   EXPECT_NSEQ(params.title_attribute, nil);
   EXPECT_NSEQ(params.alt_text, nil);
+  EXPECT_NEAR(params.natural_width, 0.0, DBL_EPSILON);
+  EXPECT_NEAR(params.natural_height, 0.0, DBL_EPSILON);
+  EXPECT_TRUE(CGRectIsEmpty(params.bounding_box));
+  EXPECT_EQ(params.screenshot, nil);
 }
 
 // Tests the parsing of the element NSDictionary.
@@ -57,6 +67,19 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   element_dict.SetStringKey(kContextMenuElementReferrerPolicy, kReferrerPolicy);
   element_dict.SetStringKey(kContextMenuElementInnerText, kLinkText);
   element_dict.SetStringKey(kContextMenuElementAlt, kAlt);
+  element_dict.SetDoubleKey(kContextMenuElementNaturalWidth, kNaturalWidth);
+  element_dict.SetDoubleKey(kContextMenuElementNaturalHeight, kNaturalHeight);
+  base::Value bounding_box_element_dict(base::Value::Type::DICTIONARY);
+  bounding_box_element_dict.SetDoubleKey(kContextMenuElementBoundingBoxX,
+                                         kBoundingBoxX);
+  bounding_box_element_dict.SetDoubleKey(kContextMenuElementBoundingBoxY,
+                                         kBoundingBoxY);
+  bounding_box_element_dict.SetDoubleKey(kContextMenuElementBoundingBoxWidth,
+                                         kBoundingBoxWidth);
+  bounding_box_element_dict.SetDoubleKey(kContextMenuElementBoundingBoxHeight,
+                                         kBoundingBoxHeight);
+  element_dict.SetKey(kContextMenuElementBoundingBox,
+                      std::move(bounding_box_element_dict));
   ContextMenuParams params =
       ContextMenuParamsFromElementDictionary(&element_dict);
 
@@ -71,6 +94,14 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
 
   EXPECT_NSEQ(params.title_attribute, @(kTitle));
   EXPECT_NSEQ(params.alt_text, @(kAlt));
+
+  EXPECT_NEAR(params.natural_width, kNaturalWidth, DBL_EPSILON);
+  EXPECT_NEAR(params.natural_height, kNaturalHeight, DBL_EPSILON);
+
+  EXPECT_NEAR(params.bounding_box.origin.x, kBoundingBoxX, DBL_EPSILON);
+  EXPECT_NEAR(params.bounding_box.origin.y, kBoundingBoxY, DBL_EPSILON);
+  EXPECT_NEAR(params.bounding_box.size.width, kBoundingBoxWidth, DBL_EPSILON);
+  EXPECT_NEAR(params.bounding_box.size.height, kBoundingBoxHeight, DBL_EPSILON);
 }
 
 

@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-
 namespace forwarder2 {
 
 class Socket;

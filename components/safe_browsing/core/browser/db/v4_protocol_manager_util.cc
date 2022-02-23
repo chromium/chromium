@@ -113,13 +113,13 @@ std::ostream& operator<<(std::ostream& os, const ListIdentifier& id) {
 }
 
 PlatformType GetCurrentPlatformType() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return WINDOWS_PLATFORM;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return LINUX_PLATFORM;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return IOS_PLATFORM;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return OSX_PLATFORM;
 #else
   return ANDROID_PLATFORM;
@@ -294,18 +294,6 @@ base::TimeDelta V4ProtocolManagerUtil::GetNextBackOffInterval(
       base::Minutes(*multiplier * (1 + base::RandDouble()) * 15);
   base::TimeDelta day = base::Hours(24);
   return next < day ? next : day;
-}
-
-// static
-void V4ProtocolManagerUtil::RecordHttpResponseOrErrorCode(
-    const char* metric_name,
-    int net_error,
-    int response_code) {
-  base::UmaHistogramSparse(
-      metric_name,
-      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
-          ? response_code
-          : net_error);
 }
 
 // static

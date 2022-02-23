@@ -18,10 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace base {
-class DictionaryValue;
-}  // namespace base
-
 namespace chromeos {
 
 class NetworkActivationHandler;
@@ -125,12 +121,8 @@ class OtaActivatorImpl : public OtaActivator,
   void AttemptToSendMetadataToDelegate();
   void AttemptToCompleteActivation();
 
-  void OnCompleteActivationError(
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
-  void OnNetworkConnectionError(
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnCompleteActivationError(const std::string& error_name);
+  void OnNetworkConnectionError(const std::string& error_name);
 
   void FlushForTesting();
 

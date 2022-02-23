@@ -15,7 +15,3 @@
 #else
 #include "third_party/blink/renderer/build/linux/prefix.h"
 #endif
-
-// Include Oilpan's handle.h by default, as it is included by a significant
-// portion of platform/ source files.
-#include "third_party/blink/renderer/platform/heap/handle.h"

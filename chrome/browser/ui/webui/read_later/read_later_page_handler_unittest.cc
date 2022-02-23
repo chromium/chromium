@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -159,7 +160,7 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestReadLaterPageHandler> handler_;
-  ReadingListModel* model_;
+  raw_ptr<ReadingListModel> model_;
 };
 
 TEST_F(TestReadLaterPageHandlerTest, GetReadLaterEntries) {
@@ -354,6 +355,22 @@ TEST_F(TestReadLaterPageHandlerTest, OpenURLAndReadd) {
       {std::make_pair(GURL(kTabUrl3), kTabName3),
        std::make_pair(GURL(kTabUrl1), kTabName1)},
       /* expected_read_data= */ {});
+}
+
+TEST_F(TestReadLaterPageHandlerTest,
+       CurrentPageActionButtonStateChangedOnActiveTabChange) {
+  handler()->SetActiveTabURL(GURL("http://google.com"));
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            read_later::mojom::CurrentPageActionButtonState::kAdd);
+  handler()->SetActiveTabURL(GURL("google.com"));
+  EXPECT_EQ(handler()->GetCurrentPageActionButtonStateForTesting(),
+            read_later::mojom::CurrentPageActionButtonState::kDisabled);
+  // Expect ItemsChanged to be called four times from the two AddEntry calls in
+  // SetUp() each AddEntry call while the reading list is open triggers items to
+  // be marked as read which triggers an ItemsChanged call.
+  EXPECT_CALL(page_, ItemsChanged(testing::_)).Times(4);
+  // Expect CurrentPageActionButtonStateChanged to be called twice.
+  EXPECT_CALL(page_, CurrentPageActionButtonStateChanged(testing::_)).Times(2);
 }
 
 }  // namespace

@@ -33,10 +33,6 @@ class Browser {
 
     // Last key used to encrypt incognito profile.
     std::vector<uint8_t> last_crypto_key;
-
-    // If non-empty used to restore the state of the browser. This is only used
-    // if |id| is empty.
-    std::vector<uint8_t> minimal_state;
   };
 
   // Creates a new Browser. |persistence_info|, if non-null, is used for saving
@@ -70,8 +66,7 @@ class Browser {
   virtual std::vector<uint8_t> GetMinimalPersistenceState() = 0;
 
   // Returns true if this Browser is in the process of restoring the previous
-  // state. That is, PersistenceInfo was supplied to the constructor and
-  // the state is asynchronously being loaded.
+  // state.
   virtual bool IsRestoringPreviousState() = 0;
 
   virtual void AddObserver(BrowserObserver* observer) = 0;

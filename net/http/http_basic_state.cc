@@ -4,6 +4,7 @@
 
 #include "net/http/http_basic_state.h"
 
+#include <set>
 #include <utility>
 
 #include "base/check_op.h"
@@ -75,11 +76,11 @@ bool HttpBasicState::IsConnectionReused() const {
          connection_->reuse_type() == ClientSocketHandle::UNUSED_IDLE;
 }
 
-const std::vector<std::string>& HttpBasicState::GetDnsAliases() const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+const std::set<std::string>& HttpBasicState::GetDnsAliases() const {
+  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return (connection_ && connection_->socket())
              ? connection_->socket()->GetDnsAliases()
-             : *emptyvector_result;
+             : *emptyset_result;
 }
 
 }  // namespace net

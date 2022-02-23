@@ -15,8 +15,8 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow_lite_support/cc/task/vision/core/label_map_item.h"
 
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_split.h"
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "absl/strings/str_split.h"   // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 
 namespace tflite {

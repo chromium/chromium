@@ -79,16 +79,45 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kPoints,
     kPicas,
     kQuarterMillimeters,
+
+    // https://drafts.csswg.org/css-values-4/#viewport-relative-lengths
+    //
+    // See also IsViewportPercentageLength.
     kViewportWidth,
     kViewportHeight,
+    kViewportInlineSize,
+    kViewportBlockSize,
     kViewportMin,
     kViewportMax,
+    kSmallViewportWidth,
+    kSmallViewportHeight,
+    kSmallViewportInlineSize,
+    kSmallViewportBlockSize,
+    kSmallViewportMin,
+    kSmallViewportMax,
+    kLargeViewportWidth,
+    kLargeViewportHeight,
+    kLargeViewportInlineSize,
+    kLargeViewportBlockSize,
+    kLargeViewportMin,
+    kLargeViewportMax,
+    kDynamicViewportWidth,
+    kDynamicViewportHeight,
+    kDynamicViewportInlineSize,
+    kDynamicViewportBlockSize,
+    kDynamicViewportMin,
+    kDynamicViewportMax,
+
+    // https://drafts.csswg.org/css-contain-3/#container-lengths
+    //
+    // See also IsContainerPercentageLength.
     kContainerWidth,
     kContainerHeight,
     kContainerInlineSize,
     kContainerBlockSize,
     kContainerMin,
     kContainerMax,
+
     kRems,
     kChs,
     kUserUnits,  // The SVG term for unitless lengths
@@ -128,8 +157,28 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeZeroCharacterWidth,
     kUnitTypeViewportWidth,
     kUnitTypeViewportHeight,
+    kUnitTypeViewportInlineSize,
+    kUnitTypeViewportBlockSize,
     kUnitTypeViewportMin,
     kUnitTypeViewportMax,
+    kUnitTypeSmallViewportWidth,
+    kUnitTypeSmallViewportHeight,
+    kUnitTypeSmallViewportInlineSize,
+    kUnitTypeSmallViewportBlockSize,
+    kUnitTypeSmallViewportMin,
+    kUnitTypeSmallViewportMax,
+    kUnitTypeLargeViewportWidth,
+    kUnitTypeLargeViewportHeight,
+    kUnitTypeLargeViewportInlineSize,
+    kUnitTypeLargeViewportBlockSize,
+    kUnitTypeLargeViewportMin,
+    kUnitTypeLargeViewportMax,
+    kUnitTypeDynamicViewportWidth,
+    kUnitTypeDynamicViewportHeight,
+    kUnitTypeDynamicViewportInlineSize,
+    kUnitTypeDynamicViewportBlockSize,
+    kUnitTypeDynamicViewportMin,
+    kUnitTypeDynamicViewportMax,
     kUnitTypeContainerWidth,
     kUnitTypeContainerHeight,
     kUnitTypeContainerInlineSize,
@@ -171,7 +220,13 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitCategory UnitTypeToUnitCategory(UnitType);
   static float ClampToCSSLengthRange(double);
 
-  enum class ValueRange { kAll, kNonNegative, kInteger, kPositiveInteger };
+  enum class ValueRange {
+    kAll,
+    kNonNegative,
+    kInteger,
+    kNonNegativeInteger,
+    kPositiveInteger
+  };
 
   static Length::ValueRange ConversionToLengthValueRange(ValueRange);
   static ValueRange ValueRangeForLengthValueRange(Length::ValueRange);
@@ -182,7 +237,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   }
   bool IsAngle() const;
   static bool IsViewportPercentageLength(UnitType type) {
-    return type >= UnitType::kViewportWidth && type <= UnitType::kViewportMax;
+    return type >= UnitType::kViewportWidth &&
+           type <= UnitType::kDynamicViewportMax;
   }
   static bool IsContainerPercentageLength(UnitType type) {
     return type >= UnitType::kContainerWidth && type <= UnitType::kContainerMax;

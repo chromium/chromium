@@ -11,8 +11,8 @@
 
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom-forward.h"
-#include "libassistant/shared/public/platform_audio_output.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"

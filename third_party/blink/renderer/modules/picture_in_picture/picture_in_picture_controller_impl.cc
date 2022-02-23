@@ -15,10 +15,12 @@
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_options.h"
+#include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -26,7 +28,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_event.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
@@ -83,68 +85,42 @@ PictureInPictureControllerImpl::IsDocumentAllowed(bool report_failure) const {
 }
 
 PictureInPictureController::Status
-PictureInPictureControllerImpl::VerifyElementAndOptions(
-    const HTMLElement& element,
-    const PictureInPictureOptions* options) const {
-  if (!IsA<HTMLVideoElement>(element) && options) {
-    // If either the width or height is present then we should make sure they
-    // are both present and valid.
-    if (options->hasWidth() || options->hasHeight()) {
-      if (!options->hasWidth() || options->width() <= 0)
-        return Status::kInvalidWidthOrHeightOption;
-
-      if (!options->hasHeight() || options->height() <= 0)
-        return Status::kInvalidWidthOrHeightOption;
-    }
-  }
-
-  return IsElementAllowed(element, /*report_failure=*/true);
-}
-
-PictureInPictureController::Status
 PictureInPictureControllerImpl::IsElementAllowed(
-    const HTMLElement& element) const {
+    const HTMLVideoElement& element) const {
   return IsElementAllowed(element, /*report_failure=*/false);
 }
 
 PictureInPictureController::Status
-PictureInPictureControllerImpl::IsElementAllowed(const HTMLElement& element,
-                                                 bool report_failure) const {
+PictureInPictureControllerImpl::IsElementAllowed(
+    const HTMLVideoElement& video_element,
+    bool report_failure) const {
   PictureInPictureController::Status status = IsDocumentAllowed(report_failure);
   if (status != Status::kEnabled)
     return status;
 
-  const auto* video_element = DynamicTo<HTMLVideoElement>(element);
-  if (!video_element)
-    return Status::kEnabled;
-
-  if (video_element->getReadyState() == HTMLMediaElement::kHaveNothing)
+  if (video_element.getReadyState() == HTMLMediaElement::kHaveNothing)
     return Status::kMetadataNotLoaded;
 
-  if (!video_element->HasVideo())
+  if (!video_element.HasVideo())
     return Status::kVideoTrackNotAvailable;
 
-  if (video_element->FastHasAttribute(html_names::kDisablepictureinpictureAttr))
+  if (video_element.FastHasAttribute(html_names::kDisablepictureinpictureAttr))
     return Status::kDisabledByAttribute;
 
   return Status::kEnabled;
 }
 
 void PictureInPictureControllerImpl::EnterPictureInPicture(
-    HTMLElement* element,
-    PictureInPictureOptions* options,
+    HTMLVideoElement* video_element,
     ScriptPromiseResolver* resolver) {
-  auto* video_element = DynamicTo<HTMLVideoElement>(*element);
-  if (!video_element) {
-    // TODO(https://crbug.com/953957): Support element level pip.
-    if (resolver)
-      resolver->Resolve();
+  if (!video_element->GetWebMediaPlayer()) {
+    if (resolver) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, ""));
+    }
 
     return;
   }
-
-  DCHECK(video_element->GetWebMediaPlayer());
-  DCHECK(!options);
 
   if (picture_in_picture_element_ == video_element) {
     if (resolver)
@@ -167,7 +143,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   mojo::PendingRemote<mojom::blink::PictureInPictureSessionObserver>
       session_observer;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent);
+      video_element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent);
   session_observer_receiver_.Bind(
       session_observer.InitWithNewPipeAndPassReceiver(), task_runner);
 
@@ -392,6 +368,37 @@ bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
   return (picture_in_picture_element_ == AutoPictureInPictureElement());
 }
 
+void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
+    ScriptState* script_state,
+    LocalDOMWindow& opener,
+    PictureInPictureWindowOptions* options,
+    ScriptPromiseResolver* resolver,
+    ExceptionState& exception_state) {
+  WebPictureInPictureWindowOptions web_options;
+  web_options.size = gfx::Size(options->width(), options->height());
+  web_options.constrain_aspect_ratio = options->constrainAspectRatio();
+
+  auto* dom_window = opener.openPictureInPictureWindow(
+      script_state->GetIsolate(), web_options, exception_state);
+
+  // If we can't create a window then reject the promise with the exception
+  // state.
+  if (!dom_window || exception_state.HadException()) {
+    resolver->Reject();
+    return;
+  }
+
+  auto* local_dom_window = dom_window->ToLocalDOMWindow();
+  DCHECK(local_dom_window);
+
+  // TODO(https://crbug.com/1253970): Use the real size returned by the browser
+  // side when we get one.
+  picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
+      GetExecutionContext(), web_options.size, local_dom_window->document());
+
+  resolver->Resolve(picture_in_picture_window_);
+}
+
 void PictureInPictureControllerImpl::PageVisibilityChanged() {
   DCHECK(GetSupplementable());
 
@@ -406,8 +413,7 @@ void PictureInPictureControllerImpl::PageVisibilityChanged() {
   // If page becomes hidden and entering Auto Picture-in-Picture is allowed,
   // enter Picture-in-Picture.
   if (GetSupplementable()->hidden() && IsEnterAutoPictureInPictureAllowed()) {
-    EnterPictureInPicture(AutoPictureInPictureElement(), nullptr /* options */,
-                          nullptr /* promise */);
+    EnterPictureInPicture(AutoPictureInPictureElement(), /*promise=*/nullptr);
   }
 }
 

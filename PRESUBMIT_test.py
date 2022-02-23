@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import io
 import os.path
 import subprocess
 import unittest
@@ -155,24 +156,15 @@ class CheckSingletonInHeadersTest(unittest.TestCase):
     self.assertEqual(0, len(warnings))
 
 
-class InvalidOSMacroNamesTest(unittest.TestCase):
-  def testInvalidOSMacroNames(self):
-    lines = ['#if defined(OS_WINDOWS)',
+class DeprecatedOSMacroNamesTest(unittest.TestCase):
+  def testDeprecatedOSMacroNames(self):
+    lines = ['#if defined(OS_WIN)',
              ' #elif defined(OS_WINDOW)',
-             ' # if defined(OS_MAC) || defined(OS_CHROME)',
-             '# else  // defined(OS_MACOSX)',
-             '#endif  // defined(OS_MACOS)']
-    errors = PRESUBMIT._CheckForInvalidOSMacrosInFile(
+             ' # if defined(OS_MAC) || defined(OS_CHROME)']
+    errors = PRESUBMIT._CheckForDeprecatedOSMacrosInFile(
         MockInputApi(), MockFile('some/path/foo_platform.cc', lines))
-    self.assertEqual(len(lines), len(errors))
-    self.assertTrue(':1 OS_WINDOWS' in errors[0])
-    self.assertTrue('(did you mean OS_WIN?)' in errors[0])
-
-  def testValidOSMacroNames(self):
-    lines = ['#if defined(%s)' % m for m in PRESUBMIT._VALID_OS_MACROS]
-    errors = PRESUBMIT._CheckForInvalidOSMacrosInFile(
-        MockInputApi(), MockFile('some/path/foo_platform.cc', lines))
-    self.assertEqual(0, len(errors))
+    self.assertEqual(len(lines) + 1, len(errors))
+    self.assertTrue(':1: defined(OS_WIN) -> BUILDFLAG(IS_WIN)' in errors[0])
 
 
 class InvalidIfDefinedMacroNamesTest(unittest.TestCase):
@@ -515,9 +507,26 @@ class UserMetricsActionTest(unittest.TestCase):
 
 
 class PydepsNeedsUpdatingTest(unittest.TestCase):
+  class MockPopen:
+    def __init__(self, stdout_func):
+      self._stdout_func = stdout_func
 
-  class MockSubprocess(object):
+    def wait(self):
+      self.stdout = io.StringIO(self._stdout_func())
+      return 0
+
+  class MockSubprocess:
     CalledProcessError = subprocess.CalledProcessError
+    PIPE = 0
+
+    def __init__(self):
+      self._popen_func = None
+
+    def SetPopenCallback(self, func):
+      self._popen_func = func
+
+    def Popen(self, cmd, *args, **kwargs):
+      return PydepsNeedsUpdatingTest.MockPopen(lambda: self._popen_func(cmd))
 
   def _MockParseGclientArgs(self, is_android=True):
     return lambda: {'checkout_android': 'true' if is_android else 'false' }
@@ -555,7 +564,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testAddedPydep(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
@@ -579,7 +588,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testRemovedPydep(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
@@ -594,7 +603,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testRandomPyIgnored(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
@@ -606,54 +615,56 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testRelevantPyNoChange(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return self.checker._file_cache['A.pydeps']
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
 
   def testRelevantPyOneChange(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output A.pydeps A --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(1, len(results))
+    # Check that --output "" is not included.
+    self.assertNotIn('""', str(results[0]))
     self.assertIn('File is stale', str(results[0]))
 
   def testRelevantPyTwoChanges(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
       MockAffectedFile('C.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def popen_callback(cmd):
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(2, len(results))
@@ -662,18 +673,18 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testRelevantAndroidPyInNonAndroidCheckout(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.mock_input_api.files = [
       MockAffectedFile('D.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --output D.pydeps D --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
     PRESUBMIT._ParseGclientArgs = self._MockParseGclientArgs(is_android=False)
 
     results = self._RunCheck()
@@ -683,7 +694,7 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
 
   def testGnPathsAndMissingOutputFlag(self):
     # PRESUBMIT.CheckPydepsNeedsUpdating is only implemented for Linux.
-    if self.mock_input_api.platform != 'linux2':
+    if not self.mock_input_api.platform.startswith('linux'):
       return []
 
     self.checker._file_cache = {
@@ -696,11 +707,11 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
       MockAffectedFile('A.py', []),
     ]
 
-    def mock_check_output(cmd, shell=False, env=None):
+    def popen_callback(cmd):
       self.assertEqual('CMD --gn-paths A --output A.pydeps --output ""', cmd)
       return 'changed data'
 
-    self.mock_input_api.subprocess.check_output = mock_check_output
+    self.mock_input_api.subprocess.SetPopenCallback(popen_callback)
 
     results = self._RunCheck()
     self.assertEqual(1, len(results))
@@ -1027,6 +1038,234 @@ class AccessibilityRelnotesFieldTest(unittest.TestCase):
     self.assertEqual(0, len(msgs),
                      'Expected %d messages, found %d: %s'
                      % (0, len(msgs), msgs))
+
+class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
+  # Test that no warning is raised when the Android file is also modified.
+  def testAndroidChangeIncluded(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+          [''], action='A'),
+        MockAffectedFile(
+          'accessibility/WebContentsAccessibilityEventsTest.java',
+          [''], action='M')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that a warning is raised when the Android file is not modified.
+  def testAndroidChangeMissing(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+          [''], action='A'),
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (1, len(msgs), msgs))
+
+  # Test that Android change is not required when no html file is added/removed.
+  def testIgnoreNonHtmlFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.txt',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/event/foo.cc',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/event/foo.h',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/event/foo.py',
+          [''], action='A')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that Android change is not required for unrelated html files.
+  def testIgnoreNonRelatedHtmlFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/html/foo.html',
+          [''], action='A'),
+        MockAffectedFile('chrome/tests/data/accessibility/foo.html',
+          [''], action='A')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that only modifying an html file will not trigger the warning.
+  def testIgnoreModifiedFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+          [''], action='M')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that deleting an html file will trigger the warning.
+  def testAndroidChangeMissingOnDeletedFile(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+          [], action='D')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityEventsTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (1, len(msgs), msgs))
+
+class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
+  # Test that no warning is raised when the Android file is also modified.
+  def testAndroidChangeIncluded(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+          [''], action='A'),
+        MockAffectedFile(
+          'accessibility/WebContentsAccessibilityTreeTest.java',
+          [''], action='M')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that no warning is raised when the Android file is also modified.
+  def testAndroidChangeIncludedManyFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/accname/foo.html',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/css/foo.html',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/html/foo.html',
+          [''], action='A'),
+        MockAffectedFile(
+          'accessibility/WebContentsAccessibilityTreeTest.java',
+          [''], action='M')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that a warning is raised when the Android file is not modified.
+  def testAndroidChangeMissing(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+          [''], action='A'),
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (1, len(msgs), msgs))
+
+  # Test that Android change is not required when no html file is added/removed.
+  def testIgnoreNonHtmlFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/accname/foo.txt',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/aria/foo.cc',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/css/foo.h',
+          [''], action='A'),
+        MockAffectedFile('content/test/data/accessibility/tree/foo.py',
+          [''], action='A')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that Android change is not required for unrelated html files.
+  def testIgnoreNonRelatedHtmlFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/event/foo.html',
+          [''], action='A'),
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that only modifying an html file will not trigger the warning.
+  def testIgnoreModifiedFiles(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/aria/foo.html',
+          [''], action='M')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (0, len(msgs), msgs))
+
+  # Test that deleting an html file will trigger the warning.
+  def testAndroidChangeMissingOnDeletedFile(self):
+    mock_input_api = MockInputApi()
+
+    mock_input_api.files = [
+        MockAffectedFile('content/test/data/accessibility/accname/foo.html',
+          [], action='D')
+    ]
+
+    msgs = PRESUBMIT.CheckAccessibilityTreeTestsAreIncludedForAndroid(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(1, len(msgs),
+                     'Expected %d messages, found %d: %s'
+                     % (1, len(msgs), msgs))
 
 class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
   def testCheckAndroidTestAnnotationUsage(self):
@@ -1523,8 +1762,7 @@ class HardcodedGoogleHostsTest(unittest.TestCase):
 class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
 
   def testWarnsOnChromeOsDirectories(self):
-    input_api = MockInputApi()
-    input_api.files = [
+    files = [
       MockFile('ash/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
       MockFile('chrome/browser/chromeos/file.cc',
@@ -1536,9 +1774,12 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       MockFile('components/exo/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
     ]
-    warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
-      input_api, MockOutputApi())
-    self.assertEqual(1, len(warnings))
+    input_api = MockInputApi()
+    for file in files:
+      input_api.files = [file]
+      warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
+        input_api, MockOutputApi())
+      self.assertEqual(1, len(warnings))
 
   def testDoesNotWarnOnSyncOsPref(self):
     input_api = MockInputApi()
@@ -1550,7 +1791,7 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       input_api, MockOutputApi())
     self.assertEqual(0, len(warnings))
 
-  def testDoesNotWarnOnCrossPlatformDirectories(self):
+  def testDoesNotWarnOnOtherDirectories(self):
     input_api = MockInputApi()
     input_api.files = [
       MockFile('chrome/browser/ui/file.cc',
@@ -1558,6 +1799,8 @@ class ChromeOsSyncedPrefRegistrationTest(unittest.TestCase):
       MockFile('components/sync/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
       MockFile('content/browser/file.cc',
+               ['PrefRegistrySyncable::SYNCABLE_PREF']),
+      MockFile('a/notchromeos/file.cc',
                ['PrefRegistrySyncable::SYNCABLE_PREF']),
     ]
     warnings = PRESUBMIT.CheckChromeOsSyncedPrefRegistration(
@@ -3894,6 +4137,201 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
     self.assertEqual(
         'Broken .*MIGRATE_OBSOLETE_.*_PREFS markers in browser_prefs.cc.',
         errors[0].message)
+
+class MPArchApiUsage(unittest.TestCase):
+  def _assert_notify(
+      self, expected_uses, msg, local_path, new_contents):
+    mock_input_api = MockInputApi()
+    mock_output_api = MockOutputApi()
+    mock_input_api.files = [
+        MockFile(local_path, new_contents),
+    ]
+    result = PRESUBMIT.CheckMPArchApiUsage(mock_input_api, mock_output_api)
+    self.assertEqual(
+        bool(expected_uses),
+        'mparch-reviews+watch@chromium.org' in mock_output_api.more_cc,
+        msg)
+    if expected_uses:
+        self.assertEqual(1, len(result), msg)
+        self.assertEqual(result[0].type, 'notify', msg)
+        self.assertEqual(sorted(result[0].items), sorted(expected_uses), msg)
+
+  def testNotify(self):
+    self._assert_notify(
+        ['WebContentsObserver', 'WebContentsUserData'],
+        'Introduce WCO and WCUD',
+        'chrome/my_feature.h',
+        ['class MyFeature',
+         '    : public content::WebContentsObserver,',
+         '      public content::WebContentsUserData<MyFeature> {};',
+        ])
+    self._assert_notify(
+        ['DidFinishNavigation'],
+        'Introduce WCO override',
+        'chrome/my_feature.h',
+        ['void DidFinishNavigation(',
+         '    content::NavigationHandle* navigation_handle) override;',
+        ])
+    self._assert_notify(
+        ['IsInMainFrame'],
+        'Introduce IsInMainFrame',
+        'chrome/my_feature.cc',
+        ['void DoSomething(content::NavigationHandle* navigation_handle) {',
+         '  if (navigation_handle->IsInMainFrame())',
+         '    all_of_our_page_state.reset();',
+         '}',
+        ])
+    self._assert_notify(
+        ['FromRenderFrameHost'],
+        'Introduce WC::FromRenderFrameHost',
+        'chrome/my_feature.cc',
+        ['void DoSomething(content::RenderFrameHost* rfh) {',
+         '  auto* wc = content::WebContents::FromRenderFrameHost(rfh);',
+         '  ChangeTabState(wc);',
+         '}',
+        ])
+
+  def testNoNotify(self):
+    self._assert_notify(
+        [],
+        'No API usage',
+        'chrome/my_feature.cc',
+        ['void DoSomething() {',
+         '  // TODO: Something',
+         '}',
+        ])
+    # Something under a top level directory we're not concerned about happens
+    # to share a name with a content API.
+    self._assert_notify(
+        [],
+        'Uninteresting top level directory',
+        'third_party/my_dep/my_code.cc',
+        ['bool HasParent(Node* node) {',
+         '  return node->GetParent();',
+         '}',
+        ])
+    # We're not concerned with usage in test code.
+    self._assert_notify(
+        [],
+        'Usage in test code',
+        'chrome/my_feature_unittest.cc',
+        ['TEST_F(MyFeatureTest, DoesSomething) {',
+         '  EXPECT_TRUE(web_contents()->GetMainFrame());',
+         '}',
+        ])
+
+
+class AssertAshOnlyCodeTest(unittest.TestCase):
+    def testErrorsOnlyOnAshDirectories(self):
+        files_in_ash = [
+            MockFile('ash/BUILD.gn', []),
+            MockFile('chrome/browser/ash/BUILD.gn', []),
+        ]
+        other_files = [
+            MockFile('chrome/browser/BUILD.gn', []),
+            MockFile('chrome/browser/BUILD.gn', ['assert(is_chromeos_ash)']),
+        ]
+        input_api = MockInputApi()
+        input_api.files = files_in_ash
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(2, len(errors))
+
+        input_api.files = other_files
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+    def testDoesNotErrorOnNonGNFiles(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/test.h', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/test.cc',
+                     ['assert(is_chromeos_ash)']),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+    def testDeletedFile(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/BUILD.gn', []),
+            MockFile('ash/foo/BUILD.gn', [], action='D'),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(1, len(errors))
+
+    def testDoesNotErrorWithAssertion(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/BUILD.gn', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/BUILD.gn',
+                     ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/BUILD.gn',
+                     ['assert(is_chromeos_ash, "test")']),
+        ]
+        errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
+
+class CheckRawPtrUsageTest(unittest.TestCase):
+  def testAllowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        # Browser-side files are allowed.
+        MockAffectedFile('test10/browser/foo.h', ['raw_ptr<int>']),
+        MockAffectedFile('test11/browser/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test12/blink/common/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test13/blink/public/common/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test14/blink/public/platform/foo.cc',
+                         ['raw_ptr<int>']),
+
+        # Non-C++ files are allowed.
+        MockAffectedFile('test20/renderer/foo.md', ['raw_ptr<int>']),
+
+        # Mentions in a comment are allowed.
+        MockAffectedFile('test30/renderer/foo.cc', ['//raw_ptr<int>']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
+    self.assertFalse(errors)
+
+  def testDisallowedCases(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile('test1/renderer/foo.h', ['raw_ptr<int>']),
+        MockAffectedFile('test2/renderer/foo.cc', ['raw_ptr<int>']),
+        MockAffectedFile('test3/blink/public/web/foo.cc', ['raw_ptr<int>']),
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
+    self.assertEqual(len(mock_input_api.files), len(errors))
+    for error in errors:
+      self.assertTrue(
+          'raw_ptr<T> should not be used in Renderer-only code' in
+          error.message)
+
+
+class AssertPythonShebangTest(unittest.TestCase):
+    def testError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('ash/test.py', ['#!/usr/bin/python']),
+            MockFile('chrome/test.py', ['#!/usr/bin/python2']),
+            MockFile('third_party/blink/test.py', ['#!/usr/bin/python3']),
+            MockFile('empty.py', []),
+        ]
+        errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
+        self.assertEqual(3, len(errors))
+
+    def testNonError(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('chrome/browser/BUILD.gn', ['#!/usr/bin/python']),
+            MockFile('third_party/blink/web_tests/external/test.py',
+                     ['#!/usr/bin/python2']),
+            MockFile('third_party/test/test.py', ['#!/usr/bin/python3']),
+        ]
+        errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
+        self.assertEqual(0, len(errors))
 
 
 if __name__ == '__main__':

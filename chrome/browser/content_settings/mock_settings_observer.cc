@@ -9,7 +9,7 @@
 
 MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)
     : map_(map) {
-  observation_.Observe(map_);
+  observation_.Observe(map_.get());
 }
 
 MockSettingsObserver::~MockSettingsObserver() = default;

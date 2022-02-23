@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "url/gurl.h"
 

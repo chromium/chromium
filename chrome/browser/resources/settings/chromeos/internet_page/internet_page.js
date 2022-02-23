@@ -421,6 +421,26 @@ Polymer({
     this.updateIsConnectedToNonCellularNetwork_();
   },
 
+  /** NetworkListenerBehavior override */
+  onNetworkStateChanged(network) {
+    if (!network) {
+      return;
+    }
+    // Only WiFi or Cellular network state can be changed by global policy
+    // update.
+    const mojom = chromeos.networkConfig.mojom;
+    if (network.type !== mojom.NetworkType.kWiFi &&
+        network.type !== mojom.NetworkType.kCellular) {
+      return;
+    }
+
+    // TODO(b/218871322): we should refresh the global policy once the
+    // OnPolicyChanged() is added to CrosNetworkConfigObserver
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
+    });
+  },
+
   onVpnProvidersChanged() {
     this.networkConfig_.getVpnProviders().then(response => {
       const providers = response.providers;
@@ -813,9 +833,22 @@ Polymer({
   /**
    * @param {!mojom.GlobalPolicy} globalPolicy
    * @param {boolean} managedNetworkAvailable
+   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
+   * @return {boolean}
+   * @private
+   */
+  shouldShowAddWiFiRow_(globalPolicy, managedNetworkAvailable, deviceStates) {
+    return this.allowAddWiFiConnection_(
+               globalPolicy, managedNetworkAvailable) &&
+        this.wifiIsEnabled_(deviceStates);
+  },
+
+  /**
+   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {boolean} managedNetworkAvailable
    * @return {boolean}
    */
-  allowAddConnection_(globalPolicy, managedNetworkAvailable) {
+  allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable) {
     if (!globalPolicy) {
       return true;
     }
@@ -823,6 +856,18 @@ Polymer({
     return !globalPolicy.allowOnlyPolicyWifiNetworksToConnect &&
         (!globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable ||
          !managedNetworkAvailable);
+  },
+
+  /**
+   * @param {!mojom.GlobalPolicy} globalPolicy
+   * @param {boolean} managedNetworkAvailable
+   * @return {boolean}
+   */
+  allowAddConnection_(globalPolicy, managedNetworkAvailable) {
+    if (!this.vpnIsProhibited_) {
+      return true;
+    }
+    return this.allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable);
   },
 
   /**

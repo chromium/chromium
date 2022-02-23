@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -75,7 +76,7 @@ class VideoThumbnailDecoderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  MockVideoDecoder* mock_video_decoder_;
+  raw_ptr<MockVideoDecoder> mock_video_decoder_;
   std::unique_ptr<VideoThumbnailDecoder> thumbnail_decoder_;
 
   // The video frame returned from the thumbnail decoder.
@@ -87,11 +88,11 @@ class VideoThumbnailDecoderTest : public testing::Test {
 TEST_F(VideoThumbnailDecoderTest, Success) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(DoAll(RunOnceCallback<3>(OkStatus()),
+      .WillOnce(DoAll(RunOnceCallback<3>(DecoderStatus::Codes::kOk),
                       RunCallback<4>(expected_frame)));
   EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
       .Times(2)
-      .WillRepeatedly(RunOnceCallback<1>(DecodeStatus::OK));
+      .WillRepeatedly(RunOnceCallback<1>(DecoderStatus::Codes::kOk));
 
   Start();
   EXPECT_TRUE(frame());
@@ -101,7 +102,7 @@ TEST_F(VideoThumbnailDecoderTest, Success) {
 TEST_F(VideoThumbnailDecoderTest, InitializationFailed) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<3>(StatusCode::kCodeOnlyForTesting));
+      .WillOnce(RunOnceCallback<3>(DecoderStatus::Codes::kFailed));
 
   Start();
   EXPECT_FALSE(frame());
@@ -111,9 +112,9 @@ TEST_F(VideoThumbnailDecoderTest, InitializationFailed) {
 TEST_F(VideoThumbnailDecoderTest, DecodingFailed) {
   auto expected_frame = CreateFrame();
   EXPECT_CALL(*mock_video_decoder(), Initialize_(_, _, _, _, _, _))
-      .WillOnce(RunOnceCallback<3>(OkStatus()));
+      .WillOnce(RunOnceCallback<3>(DecoderStatus::Codes::kOk));
   EXPECT_CALL(*mock_video_decoder(), Decode_(_, _))
-      .WillOnce(RunOnceCallback<1>(DecodeStatus::DECODE_ERROR));
+      .WillOnce(RunOnceCallback<1>(DecoderStatus::Codes::kFailed));
 
   Start();
   EXPECT_FALSE(frame());

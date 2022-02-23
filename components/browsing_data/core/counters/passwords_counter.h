@@ -63,8 +63,11 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
   ~PasswordsCounter() override;
 
   const char* GetPrefName() const override;
+
  protected:
+  virtual void OnPasswordsFetchDone();
   virtual std::unique_ptr<PasswordsResult> MakeResult();
+  void Count() override;
 
   bool is_sync_active() { return sync_tracker_.IsSyncActive(); }
   int num_passwords();
@@ -75,8 +78,6 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
  private:
   void OnInitialized() override;
   void OnFetchDone();
-
-  void Count() override;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
   std::unique_ptr<PasswordStoreFetcher> profile_store_fetcher_;

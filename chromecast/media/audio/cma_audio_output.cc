@@ -57,16 +57,20 @@ CmaAudioOutput::CmaAudioOutput(
     SampleFormat sample_format,
     const std::string& device_id,
     const std::string& application_session_id,
+    bool use_hw_av_sync,
+    int audio_track_session_id,
     chromecast::mojom::MultiroomInfoPtr multiroom_info,
     CmaBackendFactory* cma_backend_factory,
     CmaBackend::Decoder::Delegate* delegate)
     : audio_params_(audio_params),
       sample_size_(GetSampleSize(sample_format)),
+      use_hw_av_sync_(use_hw_av_sync),
       delegate_(delegate),
       timestamp_helper_(audio_params_.sample_rate()) {
   DCHECK(delegate_);
   Initialize(sample_format, device_id, application_session_id,
-             std::move(multiroom_info), cma_backend_factory);
+             audio_track_session_id, std::move(multiroom_info),
+             cma_backend_factory);
 }
 
 CmaAudioOutput::~CmaAudioOutput() = default;
@@ -75,6 +79,7 @@ void CmaAudioOutput::Initialize(
     SampleFormat sample_format,
     const std::string& device_id,
     const std::string& application_session_id,
+    int audio_track_session_id,
     chromecast::mojom::MultiroomInfoPtr multiroom_info,
     CmaBackendFactory* cma_backend_factory) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
@@ -83,7 +88,13 @@ void CmaAudioOutput::Initialize(
 
   auto cma_backend_task_runner = std::make_unique<TaskRunnerImpl>();
   MediaPipelineDeviceParams device_params(
-      MediaPipelineDeviceParams::kModeIgnorePts,
+      // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
+      // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
+      // buffer the early pushed data, instead of dropping them.
+      audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
+          ? (use_hw_av_sync_ ? MediaPipelineDeviceParams::kModeHwAvSyncPts
+                             : MediaPipelineDeviceParams::kModeSyncPts)
+          : MediaPipelineDeviceParams::kModeIgnorePts,
       MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);
   device_params.session_id = application_session_id;
@@ -109,6 +120,8 @@ void CmaAudioOutput::Initialize(
   audio_config.bytes_per_channel = sample_size_;
   audio_config.channel_number = audio_params_.channels();
   audio_config.samples_per_second = audio_params_.sample_rate();
+  audio_config.use_hw_av_sync = use_hw_av_sync_;
+  audio_config.audio_track_session_id = audio_track_session_id;
   DCHECK(IsValidConfig(audio_config));
   // Need to first set the config of the audio decoder then initialize the cma
   // backend if succeed.
@@ -179,7 +192,11 @@ void CmaAudioOutput::PushBuffer(
       0u);
   DCHECK(audio_decoder_);
 
-  decoder_buffer->set_timestamp(timestamp_helper_.GetTimestamp());
+  if (!use_hw_av_sync_) {
+    // Keep the timestamp of the buffer if the stream is on hardware av sync
+    // mode.
+    decoder_buffer->set_timestamp(timestamp_helper_.GetTimestamp());
+  }
   int frame_count =
       decoder_buffer->data_size() / (sample_size_ * audio_params_.channels());
   timestamp_helper_.AddFrames(frame_count);

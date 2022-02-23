@@ -9,8 +9,8 @@ import android.graphics.Bitmap;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.SaveBitmapDelegate;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /**
  * ScreenshotShareSheetSaveDelegate is in charge of download the current bitmap.

@@ -71,6 +71,7 @@ class StyleSVGResource;
 class TextSizeAdjust;
 class TranslateTransformOperation;
 class UnzoomedLength;
+struct ComputedGridTrackList;
 
 class StyleBuilderConverterBase {
   STATIC_ONLY(StyleBuilderConverterBase);
@@ -124,6 +125,9 @@ class StyleBuilderConverter {
   static scoped_refptr<FontVariationSettings> ConvertFontVariationSettings(
       const StyleResolverState&,
       const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertFontPalette(
+      StyleResolverState& state,
+      const CSSValue& value);
   static FontDescription::Size ConvertFontSize(StyleResolverState&,
                                                const CSSValue&);
   static float ConvertFontSizeAdjust(StyleResolverState&, const CSSValue&);
@@ -225,17 +229,9 @@ class StyleBuilderConverter {
   static TransformOrigin ConvertTransformOrigin(StyleResolverState&,
                                                 const CSSValue&);
 
-  static void ConvertGridTrackList(
-      const CSSValue&,
-      GridTrackList&,
-      NamedGridLinesMap&,
-      OrderedNamedGridLines&,
-      Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
-      NamedGridLinesMap&,
-      OrderedNamedGridLines&,
-      wtf_size_t& auto_repeat_insertion_point,
-      AutoRepeatType&,
-      StyleResolverState&);
+  static void ConvertGridTrackList(const CSSValue&,
+                                   ComputedGridTrackList&,
+                                   StyleResolverState&);
   static void CreateImplicitNamedGridLinesFromGridArea(
       const NamedGridAreaMap&,
       NamedGridLinesMap&,
@@ -294,8 +290,8 @@ class StyleBuilderConverter {
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);
 
-  static AtomicString ConvertContainerName(StyleResolverState&,
-                                           const CSSValue&);
+  static Vector<AtomicString> ConvertContainerName(StyleResolverState&,
+                                                   const CSSValue&);
 
   static absl::optional<StyleIntrinsicLength> ConvertIntrinsicDimension(
       const StyleResolverState&,

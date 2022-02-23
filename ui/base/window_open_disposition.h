@@ -26,8 +26,10 @@ enum class WindowOpenDisposition {
   // no session history; and behaves like CURRENT_TAB instead of
   // NEW_FOREGROUND_TAB when no existing tab is found.
   SWITCH_TO_TAB,
+  // Creates a new document picture-in-picture window showing a child WebView.
+  NEW_PICTURE_IN_PICTURE,
   // Update when adding a new disposition.
-  MAX_VALUE = SWITCH_TO_TAB
+  MAX_VALUE = NEW_PICTURE_IN_PICTURE,
 };
 
 namespace ui {

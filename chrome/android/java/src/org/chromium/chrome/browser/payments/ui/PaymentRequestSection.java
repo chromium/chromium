@@ -36,7 +36,9 @@ import androidx.gridlayout.widget.GridLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -167,8 +169,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         setGravity(Gravity.CENTER_VERTICAL);
 
         // Set the styling of the view.
-        mUnfocusedBackgroundColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.payment_request_bg);
+        mUnfocusedBackgroundColor = ChromeSemanticColorUtils.getPaymentRequestBg(context);
         mFocusedBackgroundColor = ApiCompatibilityUtils.getColor(
                 getResources(), R.color.payments_section_edit_background);
         mLargeSpacing =
@@ -366,7 +367,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         // The title is always displayed for the row at the top of the main section.
         mTitleView = new TextView(getContext());
         mTitleView.setText(sectionName);
-        ApiCompatibilityUtils.setTextAppearance(mTitleView, R.style.TextAppearance_TextMedium_Blue);
+        ApiCompatibilityUtils.setTextAppearance(
+                mTitleView, R.style.TextAppearance_TextMedium_Accent1);
         mainSectionLayout.addView(
                 mTitleView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
@@ -1453,8 +1455,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                 if (builder.length() > 0) builder.append(labelSeparator);
                 String editMessage = item.getEditMessage();
                 builder.append(editMessage);
-                Object foregroundSpanner = new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                        getContext().getResources(), R.color.default_text_color_link));
+                Object foregroundSpanner = new ForegroundColorSpan(
+                        SemanticColorUtils.getDefaultTextColorLink(getContext()));
                 Object sizeSpanner = new AbsoluteSizeSpan(14, true);
                 int startIndex = builder.length() - editMessage.length();
                 builder.setSpan(foregroundSpanner, startIndex, builder.length(), 0);

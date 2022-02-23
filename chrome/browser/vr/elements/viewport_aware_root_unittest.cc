@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -34,8 +35,8 @@ bool MatricesAreNearlyEqual(const gfx::Transform& lhs,
                             const gfx::Transform& rhs) {
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      if (!base::IsApproximatelyEqual(lhs.matrix().get(row, col),
-                                      rhs.matrix().get(row, col), kEpsilon)) {
+      if (!base::IsApproximatelyEqual(lhs.matrix().rc(row, col),
+                                      rhs.matrix().rc(row, col), kEpsilon)) {
         return false;
       }
     }
@@ -149,8 +150,8 @@ class ViewportAwareRootTest : public testing::Test {
     return changed;
   }
 
-  ViewportAwareRootForTesting* viewport_root;
-  UiElement* viewport_element;
+  raw_ptr<ViewportAwareRootForTesting> viewport_root;
+  raw_ptr<UiElement> viewport_element;
 
  private:
   std::unique_ptr<UiScene> scene_;

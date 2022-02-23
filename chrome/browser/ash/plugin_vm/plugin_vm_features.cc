@@ -30,7 +30,7 @@ ProfileSupported CheckProfileSupported(const Profile* profile) {
     return ProfileSupported::kErrorNotSupported;
   }
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return ProfileSupported::kErrorNonPrimary;
   }
 
@@ -42,11 +42,11 @@ ProfileSupported CheckProfileSupported(const Profile* profile) {
     return ProfileSupported::kErrorOffTheRecord;
   }
 
-  if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return ProfileSupported::kErrorEphemeral;
   }
 
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     VLOG(1) << "non-regular profile is not supported";
     // If this happens, the profile is for something like the sign in screen or
     // lock screen. Return a generic error code because the user will not be
@@ -75,7 +75,7 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
 
   // Check that the user is affiliated.
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user == nullptr || !user->IsAffiliated()) {
     return PolicyConfigured::kErrorUserNotAffiliated;
   }

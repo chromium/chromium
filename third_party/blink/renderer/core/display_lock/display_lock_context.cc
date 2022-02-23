@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -27,11 +26,10 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -333,9 +331,12 @@ void DisplayLockContext::DidStyleSelf() {
 }
 
 void DisplayLockContext::DidStyleChildren() {
-  // TODO(vmpstr): Is this needed here?
-  if (element_->ChildNeedsReattachLayoutTree())
-    element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
+  if (!element_->ChildNeedsReattachLayoutTree())
+    return;
+  auto* parent = element_->GetReattachParent();
+  if (!parent || parent->ChildNeedsReattachLayoutTree())
+    return;
+  element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
 bool DisplayLockContext::ShouldLayoutChildren() const {
@@ -680,9 +681,6 @@ bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
 
 bool DisplayLockContext::MarkNeedsCullRectUpdate() {
   DCHECK(ConnectedToView());
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return false;
-
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetForcesChildrenCullRectUpdate();
     return true;
@@ -700,46 +698,9 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
 
   auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
   if (layout_box && layout_box->HasSelfPaintingLayer()) {
-    if (layout_box->Layer()->ChildNeedsCompositingInputsUpdate() &&
-        layout_box->Layer()->Parent()) {
-      // Note that if the layer's child needs compositing inputs update, then
-      // that layer itself also needs compositing inputs update. In order to
-      // propagate the dirty bit, we need to mark this layer's _parent_ as a
-      // needing an update.
-      layout_box->Layer()->Parent()->SetNeedsCompositingInputsUpdate();
-    }
-    if (needs_compositing_requirements_update_)
-      layout_box->Layer()->SetNeedsCompositingRequirementsUpdate();
-    needs_compositing_requirements_update_ = false;
-
     if (needs_compositing_dependent_flag_update_)
       layout_box->Layer()->SetNeedsCompositingInputsUpdate();
     needs_compositing_dependent_flag_update_ = false;
-
-    if (needs_graphics_layer_rebuild_)
-      layout_box->Layer()->SetNeedsGraphicsLayerRebuild();
-    needs_graphics_layer_rebuild_ = false;
-
-    if (forced_graphics_layer_update_blocked_) {
-      // We only add an extra dirty bit to the compositing state, which is safe
-      // since we do this before updating the compositing state.
-      DisableCompositingQueryAsserts disabler;
-
-      auto* compositing_parent =
-          layout_box->Layer()->EnclosingLayerWithCompositedLayerMapping(
-              kIncludeSelf);
-      if (compositing_parent) {
-        compositing_parent->GetCompositedLayerMapping()
-            ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-      } else {
-        // If we don't have a compositing layer mapping ancestor in this frame,
-        // then mark this layer as needing a graphics layer rebuild, since what
-        // we want is to clear any dangling trees in this subtree or composite
-        // the frame again if something in the subtree still needs compositing.
-        layout_box->Layer()->SetNeedsGraphicsLayerRebuild();
-      }
-    }
-    forced_graphics_layer_update_blocked_ = false;
 
     return true;
   }
@@ -770,15 +731,11 @@ bool DisplayLockContext::IsElementDirtyForLayout() const {
 
 bool DisplayLockContext::IsElementDirtyForPrePaint() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
-    auto* layout_box = DynamicTo<LayoutBoxModelObject>(layout_object);
     return PrePaintTreeWalk::ObjectRequiresPrePaint(*layout_object) ||
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
            needs_prepaint_subtree_walk_ ||
            needs_effective_allowed_touch_action_update_ ||
-           needs_blocking_wheel_event_handler_update_ ||
-           needs_compositing_requirements_update_ ||
-           (layout_box && layout_box->HasSelfPaintingLayer() &&
-            layout_box->Layer()->ChildNeedsCompositingInputsUpdate());
+           needs_blocking_wheel_event_handler_update_;
   }
   return false;
 }
@@ -1116,7 +1073,13 @@ void DisplayLockContext::DetachDescendantTopLayerElements() {
 
   // Detach all top layer elements contained by the element inducing this
   // display lock.
-  for (auto top_layer_element : document_->TopLayerElements()) {
+  // Detaching a layout tree can cause further top layer elements to be removed
+  // from the top layer element's list (in a nested top layer element case --
+  // since we would remove the ::backdrop pseudo when the layout object
+  // disappears). This means that we're potentially modifying the list as we're
+  // traversing it. Instead of doing that, make a copy.
+  auto top_layer_elements = document_->TopLayerElements();
+  for (auto top_layer_element : top_layer_elements) {
     auto* ancestor = top_layer_element.Get();
     while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
       if (ancestor == element_) {

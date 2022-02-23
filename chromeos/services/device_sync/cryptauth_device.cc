@@ -185,9 +185,6 @@ base::Value CryptAuthDevice::AsReadableDictionary() const {
   dict.SetStringKey("DeviceSync:BetterTogether device public key",
                     cryptauthv2::TruncateStringForLogs(util::EncodeAsString(
                         device_better_together_public_key)));
-  dict.SetStringKey(
-      "Last update time",
-      base::TimeFormatShortDateAndTimeWithTimeZone(last_update_time));
   dict.SetKey("Feature states",
               FeatureStatesToReadableDictionary(feature_states));
   dict.SetKey(

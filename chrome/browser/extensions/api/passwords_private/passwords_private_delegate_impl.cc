@@ -43,11 +43,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
@@ -342,12 +342,12 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
     password_manager::ReauthPurpose purpose,
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
         callback) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(web_contents_);
   bool result = password_manager_util_win::AuthenticateUser(
       web_contents_->GetTopLevelNativeWindow(), purpose);
   std::move(callback).Run(result);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   bool result = password_manager_util_mac::AuthenticateUser(purpose);
   std::move(callback).Run(result);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -542,6 +542,16 @@ bool PasswordsPrivateDelegateImpl::ChangeInsecureCredential(
 bool PasswordsPrivateDelegateImpl::RemoveInsecureCredential(
     const api::passwords_private::InsecureCredential& credential) {
   return password_check_delegate_.RemoveInsecureCredential(credential);
+}
+
+bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return password_check_delegate_.MuteInsecureCredential(credential);
+}
+
+bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return password_check_delegate_.UnmuteInsecureCredential(credential);
 }
 
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(

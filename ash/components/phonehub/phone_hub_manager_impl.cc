@@ -26,16 +26,16 @@
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/phone_status_processor.h"
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/components/phonehub/tether_controller_impl.h"
 #include "ash/components/phonehub/user_action_recorder_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 const char kSecureChannelFeatureName[] = "phone_hub";
 const char kConnectionResultMetricName[] = "PhoneHub.Connection.Result";
@@ -113,6 +113,13 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           show_multidevice_setup_dialog_callback)),
       notification_processor_(
           std::make_unique<NotificationProcessor>(notification_manager_.get())),
+      recent_apps_interaction_handler_(
+          features::IsPhoneHubRecentAppsEnabled()
+              ? std::make_unique<RecentAppsInteractionHandlerImpl>(
+                    pref_service,
+                    multidevice_setup_client,
+                    notification_access_manager_.get())
+              : nullptr),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),
           feature_status_provider_.get(),
@@ -122,11 +129,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           screen_lock_manager_.get(),
           notification_processor_.get(),
           multidevice_setup_client,
-          phone_model_.get())),
-      recent_apps_interaction_handler_(
-          features::IsPhoneHubRecentAppsEnabled()
-              ? std::make_unique<RecentAppsInteractionHandler>()
-              : nullptr),
+          phone_model_.get(),
+          recent_apps_interaction_handler_.get())),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
                                                  user_action_recorder_.get(),
@@ -229,8 +233,8 @@ void PhoneHubManagerImpl::Shutdown() {
   browser_tabs_model_controller_.reset();
   browser_tabs_model_provider_.reset();
   tether_controller_.reset();
-  recent_apps_interaction_handler_.reset();
   phone_status_processor_.reset();
+  recent_apps_interaction_handler_.reset();
   notification_processor_.reset();
   onboarding_ui_tracker_.reset();
   notification_manager_.reset();
@@ -250,4 +254,4 @@ void PhoneHubManagerImpl::Shutdown() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -93,7 +93,8 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis4Dots + digits + base::i18n::kPopDirectionalFormatting;
+      CreditCard::GetMidlineEllipsisDots(4) + digits +
+      base::i18n::kPopDirectionalFormatting;
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
                           digits, /*obfuscation_length=*/4));
 }
@@ -1845,7 +1846,7 @@ INSTANTIATE_TEST_SUITE_P(
         ShouldUpdateExpirationTestCase{false, kOneYear,
                                        CreditCard::FULL_SERVER_CARD}));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class CreditCardTestForKeyboardAccessory : public testing::Test {
  public:
   void SetUp() override {
@@ -1861,11 +1862,12 @@ TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis2Dots + digits + base::i18n::kPopDirectionalFormatting;
+      CreditCard::GetMidlineEllipsisDots(2) + digits +
+      base::i18n::kPopDirectionalFormatting;
 
   EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
                           digits, /*obfuscation_length=*/2));
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

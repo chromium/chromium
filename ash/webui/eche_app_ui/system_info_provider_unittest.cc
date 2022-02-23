@@ -25,24 +25,38 @@ const char kFakeBoardName[] = "atlas";
 const bool kFakeTabletMode = true;
 const ConnectionStateType kFakeWifiConnectionState =
     ConnectionStateType::kConnected;
+const bool kFakeDebugMode = false;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
                std::string& board_name,
                bool& tablet_mode,
-               std::string& wifi_connection_state) {
+               std::string& wifi_connection_state,
+               bool& debug_mode) {
   std::unique_ptr<base::Value> message_value =
       base::JSONReader::ReadDeprecated(json);
   base::DictionaryValue* message_dictionary;
   message_value->GetAsDictionary(&message_dictionary);
-  message_dictionary->GetString(kJsonDeviceNameKey, &device_name);
-  message_dictionary->GetString(kJsonBoardNameKey, &board_name);
+  const std::string* device_name_ptr =
+      message_dictionary->FindStringKey(kJsonDeviceNameKey);
+  if (device_name_ptr)
+    device_name = *device_name_ptr;
+  const std::string* board_name_ptr =
+      message_dictionary->FindStringKey(kJsonBoardNameKey);
+  if (board_name_ptr)
+    board_name = *board_name_ptr;
   absl::optional<bool> tablet_mode_opt =
       message_dictionary->FindBoolKey(kJsonTabletModeKey);
   if (tablet_mode_opt.has_value())
     tablet_mode = tablet_mode_opt.value();
-  message_dictionary->GetString(kJsonWifiConnectionStateKey,
-                                &wifi_connection_state);
+  const std::string* wifi_connection_state_ptr =
+      message_dictionary->FindStringKey(kJsonWifiConnectionStateKey);
+  if (wifi_connection_state_ptr)
+    wifi_connection_state = *wifi_connection_state_ptr;
+  absl::optional<bool> debug_mode_opt =
+      message_dictionary->FindBoolKey(kJsonDebugModeKey);
+  if (debug_mode_opt.has_value())
+    debug_mode = debug_mode_opt.value();
 }
 
 class FakeTabletMode : public ash::TabletMode {
@@ -158,15 +172,18 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   std::string board_name = "";
   bool tablet_mode = false;
   std::string wifi_connection_state = "";
+  bool debug_mode = true;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
-  ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state);
+  ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
+            debug_mode);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
   EXPECT_EQ(tablet_mode, kFakeTabletMode);
   EXPECT_EQ(wifi_connection_state, "connected");
+  EXPECT_EQ(debug_mode, kFakeDebugMode);
 }
 
 }  // namespace eche_app

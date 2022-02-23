@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 class TimeDelta;
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageProxy {
   void RunFlushForTestingClosure();
 
   // Not owned.
-  InterfaceEndpointClient* const owner_;
+  const raw_ptr<InterfaceEndpointClient> owner_;
   bool encountered_error_ = false;
 
   base::OnceClosure pending_flush_callback_;

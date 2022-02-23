@@ -1,0 +1,105 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management_tmp"
+preprocess_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
+
+web_component_files = [
+  "icons.ts",
+  "more_permissions_item.ts",
+  "permission_item.ts",
+  "run_on_os_login_item.ts",
+  "shared_style.ts",
+  "shared_vars.ts",
+  "toggle_row.ts",
+  "uninstall_button.ts",
+  "window_mode_item.ts",
+]
+
+non_web_component_files = [
+  "constants.ts",
+  "permission_constants.ts",
+  "permission_util.ts",
+  "browser_proxy.ts",
+  "util.ts",
+]
+
+html_to_js("web_components") {
+  js_files = web_component_files
+}
+
+mojom("mojo_bindings") {
+  sources = [ "app_management.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//components/services/app_service/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  visibility = [ ":build_ts" ]
+  in_folder = "."
+  out_folder = preprocess_folder_tmp
+  in_files = non_web_component_files
+}
+
+preprocess_if_expr("preprocess_generated") {
+  visibility = [ ":build_ts" ]
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder_tmp
+  in_files = web_component_files
+}
+
+copy("copy_mojo") {
+  deps = [
+    ":mojo_bindings_webui_js",
+    "//components/services/app_service/public/mojom:types_js__generator",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/components/services/app_service/public/mojom/types.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/app_management/app_management.mojom-webui.js",
+  ]
+  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = web_component_files + non_web_component_files + [
+               "app_management.mojom-webui.js",
+               "types.mojom-webui.js",
+             ]
+
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_app_management"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components/app_management"
+}

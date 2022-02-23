@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -19,8 +18,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "weblayer/browser/browser_list_observer.h"
 #include "weblayer/browser/profile_impl.h"
-
-class PrefService;
 
 namespace weblayer {
 
@@ -42,9 +39,6 @@ class WebLayerMetricsServiceClient
   ~WebLayerMetricsServiceClient() override;
 
   void RegisterExternalExperiments(const std::vector<int>& experiment_ids);
-
-  // Initializes, but does not necessarily start, the MetricsService.
-  void Initialize(PrefService* pref_service);
 
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;

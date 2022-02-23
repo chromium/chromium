@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/url.mojom";
 
@@ -132,7 +133,8 @@ interface URLLoaderNetworkServiceObserver {
   // Network Service for security concerns (e.g. |header_value| => booleans).
   OnClearSiteData(url.mojom.Url url,
                   string header_value,
-                  int32 load_flags) => ();
+                  int32 load_flags,
+                  CookiePartitionKey? cookie_partition_key) => ();
 
   // Called periodically to update the client about progress of the current
   // loads. To avoid flooding the client, it has to ack the update before it can

@@ -6,24 +6,31 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+// </if>
 import './icons.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {assert} from 'chrome://resources/js/assert_ts.js';
+// </if>
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin} from '../data/destination.js';
-// <if expr="chromeos or lacros">
+import {Destination} from '../data/destination.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 // </if>
 
+import {getTemplate} from './destination_list_item.html.js';
 import {updateHighlights} from './highlight_utils.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 enum DestinationConfigStatus {
   IDLE = 0,
   IN_PROGRESS = 1,
@@ -40,7 +47,7 @@ export class PrintPreviewDestinationListItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -69,7 +76,11 @@ export class PrintPreviewDestinationListItemElement extends
             'configurationStatus_)',
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
+
+      // Holds status of iron-media-query (prefers-color-scheme: dark).
+      isDarkModeActive_: Boolean,
+
       isDestinationCrosLocal_: {
         type: Boolean,
         computed: 'computeIsDestinationCrosLocal_(destination)',
@@ -98,7 +109,7 @@ export class PrintPreviewDestinationListItemElement extends
           'destination.displayName, destination.isOfflineOrInvalid, ' +
           'destination.isExtension)',
       'updateHighlightsAndHint_(destination, searchQuery)',
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       'requestPrinterStatus_(destination.key)',
       // </if>
     ];
@@ -111,7 +122,8 @@ export class PrintPreviewDestinationListItemElement extends
   private searchHint_: string;
   private statusText_: string;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
+  private isDarkModeActive_: boolean;
   private isDestinationCrosLocal_: boolean;
   private configurationStatus_: DestinationConfigStatus;
   // </if>
@@ -132,7 +144,7 @@ export class PrintPreviewDestinationListItemElement extends
     }
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Called if the printer configuration request is accepted. Show the waiting
    * message to the user as the configuration might take longer than expected.
@@ -196,7 +208,7 @@ export class PrintPreviewDestinationListItemElement extends
       return '';
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination.origin === DestinationOrigin.CROS) {
       // Don't show status text when destination is configuring.
       if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
@@ -225,18 +237,18 @@ export class PrintPreviewDestinationListItemElement extends
       return '';
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
           this.destination.printerStatusReason,
-          this.destination.isEnterprisePrinter);
+          this.destination.isEnterprisePrinter, this.isDarkModeActive_);
     }
     // </if>
 
     return this.destination.icon;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * True when the destination is a CrOS local printer.
    */
@@ -262,6 +274,13 @@ export class PrintPreviewDestinationListItemElement extends
     }
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-list-item':
+        PrintPreviewDestinationListItemElement;
+  }
 }
 
 customElements.define(

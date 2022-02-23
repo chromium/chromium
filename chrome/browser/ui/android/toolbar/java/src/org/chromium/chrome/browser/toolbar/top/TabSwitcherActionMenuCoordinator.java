@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -28,7 +29,6 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
-import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -93,7 +93,7 @@ public class TabSwitcherActionMenuCoordinator {
     @VisibleForTesting
     public void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
             Callback<Integer> onItemClicked) {
-        RectProvider rectProvider = getRectProvider(anchorView);
+        RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
         BasicListMenu listMenu = new BasicListMenu(context, listItems, (model) -> {
             onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
         });
@@ -118,18 +118,6 @@ public class TabSwitcherActionMenuCoordinator {
 
         anchorView.setDelegate(delegate);
         anchorView.showMenu();
-    }
-
-    protected RectProvider getRectProvider(View anchorView) {
-        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
-        rectProvider.setIncludePadding(true);
-
-        int toolbarHeight = anchorView.getHeight();
-        int iconHeight =
-                anchorView.getResources().getDimensionPixelSize(R.dimen.toolbar_icon_height);
-        int paddingBottom = (toolbarHeight - iconHeight) / 2;
-        rectProvider.setInsetPx(0, 0, 0, paddingBottom);
-        return rectProvider;
     }
 
     @VisibleForTesting

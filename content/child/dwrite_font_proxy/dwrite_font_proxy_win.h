@@ -128,17 +128,22 @@ class DWriteFontCollectionProxy
       EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
   DWriteFontFamilyProxy* GetOrCreateFamilyLockRequired(UINT32 family_index)
       EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
-  absl::optional<UINT32> FindFamilyIndexLockRequired(
-      const std::u16string& family_name,
-      HRESULT* hresult_out = nullptr) EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  absl::optional<UINT32> FindFamilyIndex(const std::u16string& family_name,
+                                         HRESULT* hresult_out = nullptr)
+      LOCKS_EXCLUDED(families_lock_);
 
   HRESULT FindFamilyName(const std::u16string& family_name,
                          UINT32* index,
-                         BOOL* exists) LOCKS_EXCLUDED(families_lock_);
-  DWriteFontFamilyProxy* FindFamily(const std::u16string& family_name)
-      LOCKS_EXCLUDED(families_lock_);
+                         BOOL* exists);
+  DWriteFontFamilyProxy* FindFamily(const std::u16string& family_name);
 
   void PrewarmFamilyOnWorker(const std::u16string family_name);
+
+  // Special values for |family_names_|.
+  enum FamilyIndex : UINT32 { kFamilyNotFound = UINT32_MAX };
+  static bool IsValidFamilyIndex(UINT32 index) {
+    return index != kFamilyNotFound;
+  }
 
   base::Lock families_lock_;
 

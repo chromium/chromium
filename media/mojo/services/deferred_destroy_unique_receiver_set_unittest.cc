@@ -48,8 +48,7 @@ DeferredDestroyPingImpl* AddDeferredDestroyReceiver(
     mojo::PendingRemote<PingService>* ptr) {
   auto impl = std::make_unique<DeferredDestroyPingImpl>();
   DeferredDestroyPingImpl* impl_ptr = impl.get();
-  receivers->AddReceiver(std::move(impl),
-                         ptr->InitWithNewPipeAndPassReceiver());
+  receivers->Add(std::move(impl), ptr->InitWithNewPipeAndPassReceiver());
   return impl_ptr;
 }
 

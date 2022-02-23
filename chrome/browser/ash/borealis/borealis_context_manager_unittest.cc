@@ -69,7 +69,7 @@ class BorealisContextManagerImplForTesting : public BorealisContextManagerImpl {
  private:
   base::queue<std::unique_ptr<BorealisTask>> GetTasks() override {
     base::queue<std::unique_ptr<BorealisTask>> task_queue;
-    for (int i = 0; i < tasks_; i++) {
+    for (size_t i = 0; i < tasks_; i++) {
       if (!success_ && tasks_ > 1 && i == 0) {
         // If we are testing the case for multiple tasks, and at least one of
         // them fails, we want the first task to succeed.

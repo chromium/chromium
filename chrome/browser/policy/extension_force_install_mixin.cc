@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -61,7 +62,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #endif
@@ -100,7 +101,7 @@ class ForceInstallPrefObserver final {
   void OnPrefChanged();
   bool IsForceInstallPrefSet() const;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   const std::string pref_name_;
   const extensions::ExtensionId extension_id_;
   PrefChangeRegistrar pref_change_registrar_;
@@ -169,7 +170,7 @@ class ForceInstallWaiter final {
 
   const ExtensionForceInstallMixin::WaitMode wait_mode_;
   const extensions::ExtensionId extension_id_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<ForceInstallPrefObserver> force_install_pref_observer_;
   std::unique_ptr<extensions::TestExtensionRegistryObserver> registry_observer_;
   std::unique_ptr<extensions::ExtensionHostTestHelper>
@@ -385,10 +386,10 @@ void UpdatePolicyViaDevicePolicyCrosTestHelper(
   device_policy_cros_test_helper->RefreshDevicePolicy();
 }
 
-void UpdatePolicyViaLocalPolicyMixin(
+void UpdatePolicyViaEmbeddedPolicyMixin(
     const extensions::ExtensionId& extension_id,
     const GURL& update_manifest_url,
-    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type,
@@ -400,12 +401,9 @@ void UpdatePolicyViaLocalPolicyMixin(
           MakeForceInstallPolicyItemValue(extension_id, update_manifest_url));
   user_policy_builder->Build();
 
-  if (!local_policy_mixin->server()->UpdatePolicy(
-          policy_type, account_id,
-          user_policy_builder->payload().SerializeAsString())) {
-    ADD_FAILURE() << "Local policy test server update failed";
-    return;
-  }
+  policy_test_server_mixin->UpdatePolicy(
+      policy_type, account_id,
+      user_policy_builder->payload().SerializeAsString());
 
   base::RunLoop run_loop;
   g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
@@ -485,25 +483,25 @@ void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
   device_policy_cros_test_helper_ = device_policy_cros_test_helper;
 }
 
-void ExtensionForceInstallMixin::InitWithLocalPolicyMixin(
+void ExtensionForceInstallMixin::InitWithEmbeddedPolicyMixin(
     Profile* profile,
-    ash::LocalPolicyTestServerMixin* local_policy_mixin,
+    ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type) {
-  DCHECK(local_policy_mixin);
+  DCHECK(policy_test_server_mixin);
   DCHECK(user_policy_builder);
   DCHECK(!account_id.empty());
   DCHECK(!policy_type.empty());
   DCHECK(!initialized_) << "Init already called";
   DCHECK(!profile_);
-  DCHECK(!local_policy_mixin_);
+  DCHECK(!policy_test_server_mixin_);
   DCHECK(!user_policy_builder_);
   DCHECK(account_id_.empty());
   DCHECK(policy_type_.empty());
   initialized_ = true;
   profile_ = profile;
-  local_policy_mixin_ = local_policy_mixin;
+  policy_test_server_mixin_ = policy_test_server_mixin;
   user_policy_builder_ = user_policy_builder;
   account_id_ = account_id;
   policy_type_ = policy_type;
@@ -836,11 +834,11 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
                                               device_policy_cros_test_helper_);
     return true;
   }
-  if (local_policy_mixin_) {
+  if (policy_test_server_mixin_) {
     bool success = false;
-    UpdatePolicyViaLocalPolicyMixin(extension_id, update_manifest_url,
-                                    local_policy_mixin_, user_policy_builder_,
-                                    account_id_, policy_type_, &success);
+    UpdatePolicyViaEmbeddedPolicyMixin(
+        extension_id, update_manifest_url, policy_test_server_mixin_,
+        user_policy_builder_, account_id_, policy_type_, &success);
     return success;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

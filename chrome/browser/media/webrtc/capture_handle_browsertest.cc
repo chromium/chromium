@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -180,8 +181,8 @@ struct TabInfo {
     EXPECT_EQ(script_result, "embedding-done");
   }
 
-  Browser* browser;
-  WebContents* web_contents;
+  raw_ptr<Browser> browser;
+  raw_ptr<WebContents> web_contents;
   int tab_strip_index;
   std::string capture_handle;  // Expected value for those who may observe.
 };
@@ -332,7 +333,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
 
   // Incognito browser.
   // Note: The regular one is accessible via browser().
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
@@ -373,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted \
   DISABLED_HandleNotExposedIfTopLevelAllowlistedButCallingFrameNotAllowlisted
 #else
@@ -412,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1217873): Test disabled on Mac due to multiple failing bots.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted \
   DISABLED_HandleExposedIfCallingFrameAllowlistedEvenIfTopLevelNotAllowlisted
 #else
@@ -700,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug/1219998): Disabled because of flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RegularTabCannotReadIncognitoTabCaptureHandle \
   DISABLED_RegularTabCannotReadIncognitoTabCaptureHandle
 #else
@@ -760,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
 }
 
 // TODO(crbug/1219998): Disabled because of flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture \
   DISABLED_IncognitoTabCanReadIncognitoTabCaptureHandleIfSelfCapture
 #else
@@ -800,7 +801,7 @@ class CaptureHandleBrowserTestPrerender : public CaptureHandleBrowserTest {
 
  protected:
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
-  WebContents* captured_web_contents_ = nullptr;
+  raw_ptr<WebContents> captured_web_contents_ = nullptr;
 };
 
 // Verifies that pre-rendered pages don't change the capture handle config.

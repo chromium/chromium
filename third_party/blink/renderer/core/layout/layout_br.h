@@ -47,7 +47,7 @@ class LayoutBR : public LayoutText {
               LayoutUnit /* xpos */,
               TextDirection,
               HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
-              FloatRect* /* glyphBounds */ = nullptr,
+              gfx::RectF* /* glyphBounds */ = nullptr,
               float /* expansion */ = false) const override {
     NOT_DESTROYED();
     return 0;
@@ -58,7 +58,7 @@ class LayoutBR : public LayoutText {
               TextDirection,
               bool = false /* firstLine */,
               HashSet<const SimpleFontData*>* = nullptr /* fallbackFonts */,
-              FloatRect* /* glyphBounds */ = nullptr,
+              gfx::RectF* /* glyphBounds */ = nullptr,
               float /* expansion */ = false) const override {
     NOT_DESTROYED();
     return 0;

@@ -8,9 +8,11 @@
 #include <fuchsia/scenic/scheduling/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl_test_base.h>
+#include <fuchsia/ui/pointer/cpp/fidl.h>
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/interface_handle.h>
+#include <lib/fidl/cpp/interface_request.h>
 
 #include <string>
 
@@ -57,6 +59,10 @@ class FakeFlatland
  public:
   using PresentHandler =
       base::RepeatingCallback<void(fuchsia::ui::composition::PresentArgs)>;
+  using ViewRefFocusedRequestHandler =
+      fidl::InterfaceRequestHandler<fuchsia::ui::views::ViewRefFocused>;
+  using TouchSourceRequestHandler =
+      fidl::InterfaceRequestHandler<fuchsia::ui::pointer::TouchSource>;
 
   FakeFlatland();
   ~FakeFlatland() override;
@@ -71,6 +77,13 @@ class FakeFlatland
   // This can only be called once.
   fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> Connect(
       async_dispatcher_t* dispatcher = nullptr);
+
+  // Returns a request handler that binds the incoming FIDL requests to this
+  // session's FIDL channels on the `dispatcher`.
+  //
+  // This can only be called once.
+  fidl::InterfaceRequestHandler<fuchsia::ui::composition::Flatland>
+  GetRequestHandler(async_dispatcher_t* dispatcher = nullptr);
 
   // Disconnect the session's FIDL channels with an error.
   // TODO: Call this internally upon command error, instead of CHECK'ing.
@@ -92,12 +105,23 @@ class FakeFlatland
   void FireOnFramePresentedEvent(
       fuchsia::scenic::scheduling::FramePresentedInfo frame_presented_info);
 
+  void SetViewRefFocusedRequestHandler(ViewRefFocusedRequestHandler handler);
+  void SetTouchSourceRequestHandler(TouchSourceRequestHandler handler);
+
  private:
   // |fuchsia::ui::composition::testing::Flatland_TestBase|
   void NotImplemented_(const std::string& name) override;
 
   // |fuchsia::ui::composition::Flatland|
   void Present(fuchsia::ui::composition::PresentArgs args) override;
+
+  // |fuchsia::ui::composition::Flatland|
+  void CreateView2(
+      fuchsia::ui::views::ViewCreationToken token,
+      fuchsia::ui::views::ViewIdentityOnCreation view_identity,
+      fuchsia::ui::composition::ViewBoundProtocols view_protocols,
+      fidl::InterfaceRequest<fuchsia::ui::composition::ParentViewportWatcher>
+          parent_viewport_watcher) override;
 
   // |fuchsia::ui::composition::Flatland|
   void SetDebugName(std::string debug_name) override;
@@ -107,6 +131,8 @@ class FakeFlatland
   std::string debug_name_;
 
   PresentHandler present_handler_;
+  ViewRefFocusedRequestHandler view_ref_focused_handler_;
+  TouchSourceRequestHandler touch_source_request_handler_;
 };
 
 }  // namespace ui

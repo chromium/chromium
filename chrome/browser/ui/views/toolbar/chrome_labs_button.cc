@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/grit/generated_resources.h"
@@ -45,12 +46,12 @@ ChromeLabsButton::ChromeLabsButton(BrowserView* browser_view,
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
   new_experiments_indicator_ = views::DotIndicator::Install(image());
   UpdateDotIndicator();
+
+  chrome_labs_coordinator_ = std::make_unique<ChromeLabsCoordinator>(
+      this, browser_view_->browser(), model_);
 }
 
-ChromeLabsButton::~ChromeLabsButton() {
-  // Make sure the bubble is destroyed if the button is being destroyed.
-  ChromeLabsBubbleView::Hide();
-}
+ChromeLabsButton::~ChromeLabsButton() = default;
 
 void ChromeLabsButton::Layout() {
   ToolbarButton::Layout();
@@ -77,8 +78,8 @@ void ChromeLabsButton::ButtonPressed() {
   }
 #endif
 
-  if (ChromeLabsBubbleView::IsShowing()) {
-    ChromeLabsBubbleView::Hide();
+  if (chrome_labs_coordinator_->BubbleExists()) {
+    chrome_labs_coordinator_->Hide();
     return;
   }
 
@@ -103,19 +104,21 @@ void ChromeLabsButton::ButtonPressed() {
     is_waiting_to_show = true;
     service->IsOwnerAsync(base::BindOnce(
         [](ChromeLabsButton* button, base::WeakPtr<BrowserView> browser_view,
-           const ChromeLabsBubbleViewModel* model, bool is_owner) {
+           ChromeLabsCoordinator* coordinator, bool is_owner) {
+          // BrowserView may have been destroyed before async function returns
           if (!browser_view)
             return;
-          ChromeLabsBubbleView::Show(button, browser_view->browser(), model,
-                                     is_owner);
+          is_owner
+              ? coordinator->Show(
+                    ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType)
+              : coordinator->Show();
           button->is_waiting_to_show = false;
         },
-        this, browser_view_->GetAsWeakPtr(), model_));
+        this, browser_view_->GetAsWeakPtr(), chrome_labs_coordinator_.get()));
     return;
   }
 #endif
-  ChromeLabsBubbleView::Show(this, browser_view_->browser(), model_,
-                             /*user_is_chromeos_owner=*/false);
+  chrome_labs_coordinator_->Show();
 }
 
 void ChromeLabsButton::UpdateDotIndicator() {
@@ -128,7 +131,7 @@ void ChromeLabsButton::UpdateDotIndicator() {
                               chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  base::DictionaryValue* new_badge_prefs = update.Get();
+  base::Value* new_badge_prefs = update.Get();
 
   std::vector<std::string> lab_internal_names;
   const std::vector<LabInfo>& all_labs = model_->GetLabInfo();

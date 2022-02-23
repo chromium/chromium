@@ -26,7 +26,7 @@
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
@@ -109,7 +109,7 @@ void NetworkMetricsProvider::SetNetworkConnectionTracker(
 }
 
 void NetworkMetricsProvider::FinalizingMetricsLogRecord() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Metrics logged here will be included in every metrics log record.  It's not
   // yet clear if these metrics are generally useful enough to warrant being
   // added to the SystemProfile proto, so they are logged here as histograms for

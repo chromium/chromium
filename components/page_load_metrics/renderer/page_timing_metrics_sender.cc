@@ -24,10 +24,6 @@
 
 namespace page_load_metrics {
 
-const base::Feature kLayoutShiftNormalizationEmitShiftsForKeyMetrics{
-    "LayoutShiftNormalizationEmitShiftsForKeyMetrics",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 const int kInitialTimerDelayMillis = 50;
 const int64_t kInputDelayAdjustmentMillis = int64_t(50);
@@ -62,7 +58,6 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
-      new_deferred_resource_data_(mojom::DeferredResourceCounts::New()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
@@ -105,48 +100,22 @@ void PageTimingMetricsSender::DidObserveLayoutShift(
     bool after_input_or_scroll) {
   DCHECK(score > 0);
   render_data_.layout_shift_delta += score;
-  if (base::FeatureList::IsEnabled(
-          kLayoutShiftNormalizationEmitShiftsForKeyMetrics)) {
-    render_data_.new_layout_shifts.push_back(
-        mojom::LayoutShift::New(base::TimeTicks::Now(), score));
-  }
+  render_data_.new_layout_shifts.push_back(
+      mojom::LayoutShift::New(base::TimeTicks::Now(), score));
   if (!after_input_or_scroll)
     render_data_.layout_shift_delta_before_input_or_scroll += score;
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::DidObserveLayoutNg(
-    uint32_t all_block_count,
-    uint32_t ng_block_count,
-    uint32_t all_call_count,
-    uint32_t ng_call_count,
-    uint32_t flexbox_ng_block_count,
-    uint32_t grid_ng_block_count) {
+void PageTimingMetricsSender::DidObserveLayoutNg(uint32_t all_block_count,
+                                                 uint32_t ng_block_count,
+                                                 uint32_t all_call_count,
+                                                 uint32_t ng_call_count) {
   render_data_.all_layout_block_count_delta += all_block_count;
   render_data_.ng_layout_block_count_delta += ng_block_count;
   render_data_.all_layout_call_count_delta += all_call_count;
   render_data_.ng_layout_call_count_delta += ng_call_count;
-  render_data_.flexbox_ng_layout_block_count_delta += flexbox_ng_block_count;
-  render_data_.grid_ng_layout_block_count_delta += grid_ng_block_count;
   EnsureSendTimer();
-}
-
-void PageTimingMetricsSender::DidObserveLazyLoadBehavior(
-    blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {
-  switch (lazy_load_behavior) {
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kDeferredFrame:
-      ++new_deferred_resource_data_->deferred_frames;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kDeferredImage:
-      ++new_deferred_resource_data_->deferred_images;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedFrame:
-      ++new_deferred_resource_data_->frames_loaded_after_deferral;
-      break;
-    case blink::WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedImage:
-      ++new_deferred_resource_data_->images_loaded_after_deferral;
-      break;
-  }
 }
 
 void PageTimingMetricsSender::DidObserveMobileFriendlinessChanged(
@@ -345,12 +314,10 @@ void PageTimingMetricsSender::SendNow() {
   }
   sender_->SendTiming(last_timing_, metadata_, std::move(new_features_),
                       std::move(resources), render_data_, last_cpu_timing_,
-                      std::move(new_deferred_resource_data_),
                       std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
   mobile_friendliness_ = absl::nullopt;
   InitiateUserInteractionTiming();
-  new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
   new_features_.clear();
   metadata_->intersection_update.reset();
   last_cpu_timing_->task_time = base::TimeDelta();

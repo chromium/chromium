@@ -136,6 +136,9 @@ export class ExternalMetadataProvider extends MetadataProvider {
       if (prop.canShare !== undefined || nameMap['canShare']) {
         item.canShare = prop.canShare;
       }
+      if (prop.canPin !== undefined || nameMap['canPin']) {
+        item.canPin = prop.canPin;
+      }
       if (prop.isMachineRoot !== undefined || nameMap['isMachineRoot']) {
         item.isMachineRoot = prop.isMachineRoot;
       }
@@ -179,6 +182,7 @@ ExternalMetadataProvider.PROPERTY_NAMES = [
   'canRename',
   'canAddChildren',
   'canShare',
+  'canPin',
   'isMachineRoot',
   'isExternalMedia',
   'isArbitrarySyncFolder',

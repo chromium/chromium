@@ -15,7 +15,7 @@
 
 namespace optimization_guide {
 
-// TODO(crbug/1249632): Remove this entirely.
+// TODO(crbug/1278828): Remove this entirely.
 class HumanReadablePageEntitiesModelExecutor {
  public:
   virtual ~HumanReadablePageEntitiesModelExecutor() = default;

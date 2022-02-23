@@ -64,6 +64,9 @@ class MessageCenterImpl : public MessageCenter,
   NotificationList::Notifications GetNotifications() override;
   const NotificationList::Notifications& GetVisibleNotifications() override;
   NotificationList::PopupNotifications GetPopupNotifications() override;
+  NotificationList::PopupNotifications GetPopupNotificationsWithoutBlocker(
+      const NotificationBlocker& blocker) const override;
+
   void AddNotification(std::unique_ptr<Notification> notification) override;
   void UpdateNotification(
       const std::string& old_id,
@@ -95,6 +98,7 @@ class MessageCenterImpl : public MessageCenter,
   void PausePopupTimers() override;
   const std::u16string& GetSystemNotificationAppName() const override;
   void SetSystemNotificationAppName(const std::u16string& name) override;
+  void OnMessageViewHovered(const std::string& notification_id) override;
 
   // NotificationBlocker::Observer overrides:
   void OnBlockingStateChanged(NotificationBlocker* blocker) override;

@@ -66,10 +66,6 @@ TEST(AudioParameters, GetBytesPerBuffer) {
   EXPECT_EQ(800, AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
                                  CHANNEL_LAYOUT_STEREO, 1000, 200)
                      .GetBytesPerBuffer(kSampleFormatS16));
-  EXPECT_EQ(300,
-            AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                            CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 1000, 100)
-                .GetBytesPerBuffer(kSampleFormatU8));
 }
 
 TEST(AudioParameters, Compare) {
@@ -92,15 +88,6 @@ TEST(AudioParameters, Compare) {
       AudioParameters(AudioParameters::AUDIO_PCM_LINEAR, CHANNEL_LAYOUT_STEREO,
                       2000, 200),
 
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 1000, 100),
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 1000, 200),
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 2000, 100),
-      AudioParameters(AudioParameters::AUDIO_PCM_LINEAR,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 2000, 200),
-
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                       CHANNEL_LAYOUT_MONO, 1000, 100),
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -118,15 +105,6 @@ TEST(AudioParameters, Compare) {
                       CHANNEL_LAYOUT_STEREO, 2000, 100),
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                       CHANNEL_LAYOUT_STEREO, 2000, 200),
-
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 1000, 100),
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 1000, 200),
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 2000, 100),
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                      CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, 2000, 200),
   };
 
   for (size_t i = 0; i < base::size(values); ++i) {

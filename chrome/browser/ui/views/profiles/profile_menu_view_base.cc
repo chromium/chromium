@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -57,6 +58,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -323,7 +325,7 @@ class AvatarImageView : public views::ImageView {
   }
 
   ui::ImageModel avatar_image_;
-  const ProfileMenuViewBase* root_view_;
+  raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
 class SyncButton : public HoverButton {
@@ -342,7 +344,7 @@ class SyncButton : public HoverButton {
   }
 
  private:
-  const ProfileMenuViewBase* root_view_;
+  raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
 BEGIN_METADATA(SyncButton, HoverButton)
@@ -360,7 +362,7 @@ class SyncImageView : public views::ImageView {
   }
 
  private:
-  const ProfileMenuViewBase* root_view_;
+  raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
@@ -505,9 +507,8 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
 
   signin_ui_util::RecordProfileMenuViewShown(browser->profile());
   // Close any existing IPH bubble for the profile menu.
-  FeaturePromoController* promo_controller =
-      browser->window()->GetFeaturePromoController();
-  promo_controller->CloseBubble(feature_engagement::kIPHProfileSwitchFeature);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHProfileSwitchFeature);
 
   ProfileMenuViewBase* bubble = nullptr;
   if (view_mode == profiles::BUBBLE_VIEW_MODE_INCOGNITO) {
@@ -610,7 +611,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // crbug.com/1161166: Orca does not read the accessible window title of the
   // bubble, so we duplicate it in the top-level menu item. To be revisited
   // after considering other options, including fixes on the AT side.
@@ -919,7 +920,7 @@ int ProfileMenuViewBase::GetMaxHeight() const {
           ->GetDisplayNearestPoint(anchor_rect.CenterPoint())
           .work_area();
   int available_space = screen_space.bottom() - anchor_rect.bottom();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows the bubble can also be show to the top of the anchor.
   available_space =
       std::max(available_space, anchor_rect.y() - screen_space.y());
@@ -980,16 +981,14 @@ void ProfileMenuViewBase::Reset() {
   scroll_view->ClipHeightTo(0, GetMaxHeight());
   scroll_view->SetContents(std::move(components));
 
-  // Create a grid layout to set the menu width.
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, kMenuWidth,
-                     kMenuWidth);
-  layout->StartRow(1.0f, 0);
-  layout->AddView(std::move(scroll_view));
+  // Create a table layout to set the menu width.
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(
+          views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
+          views::TableLayout::kFixedSize,
+          views::TableLayout::ColumnSize::kFixed, kMenuWidth, kMenuWidth)
+      .AddRows(1, 1.0f);
+  AddChildView(std::move(scroll_view));
 }
 
 void ProfileMenuViewBase::FocusFirstProfileButton() {
@@ -1070,7 +1069,7 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
   }
 
  private:
-  ProfileMenuViewBase* owner_;
+  raw_ptr<ProfileMenuViewBase> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };

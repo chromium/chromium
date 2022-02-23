@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -33,7 +34,7 @@ struct SameSizeAsCSSRule : public GarbageCollected<SameSizeAsCSSRule>,
   ~SameSizeAsCSSRule() override;
   unsigned char bitfields;
   Member<ScriptWrappable> member;
-  static_assert(kBlinkGCHasDebugChecks ||
+  static_assert(kBlinkMemberGCHasDebugChecks ||
                     ::WTF::internal::SizesEqual<sizeof(Member<ScriptWrappable>),
                                                 sizeof(void*)>::value,
                 "Member<ScriptWrappable> should stay small");
@@ -51,6 +52,13 @@ const CSSParserContext* CSSRule::ParserContext(
   CSSStyleSheet* style_sheet = parentStyleSheet();
   return style_sheet ? style_sheet->Contents()->ParserContext()
                      : StrictCSSParserContext(secure_context_mode);
+}
+
+void CSSRule::CountUse(WebFeature feature) const {
+  CSSStyleSheet* style_sheet = parentStyleSheet();
+  Document* document = style_sheet ? style_sheet->OwnerDocument() : nullptr;
+  if (document)
+    document->CountUse(feature);
 }
 
 void CSSRule::SetParentStyleSheet(CSSStyleSheet* style_sheet) {

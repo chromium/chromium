@@ -11,6 +11,14 @@
     More actions
   </message>
 
+  <if expr="not chromeos">
+    <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
+      {COUNT, plural,
+      =1 {Your Incognito window won't open after you relaunch}
+      other {Your {COUNT} Incognito windows won't reopen after you relaunch}}
+    </message>
+  </if>
+
   <!-- About Page -->
   <message name="IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION" desc="The text label describing the version of the browser, example: Version 57.0.2937.0 (Developer Build) unknown (64-bit)">
     Version <ph name="PRODUCT_VERSION">$1<ex>15.0.865.0</ex></ph> (<ph name="PRODUCT_CHANNEL">$2<ex>Developer Build</ex></ph>) <ph name="PRODUCT_MODIFIER">$3</ph> <ph name="PRODUCT_VERSION_BITS">$4</ph>
@@ -113,7 +121,7 @@
   <message name="IDS_SETTINGS_HOME_BUTTON_DISABLED" desc="Sub label for the Show home button setting when disabled.">
     Disabled
   </message>
-  <if expr="chromeos or lacros">
+  <if expr="chromeos_ash or chromeos_lacros">
     <message name="IDS_SETTINGS_THEMES" desc="Name of the control which allows the user to get a theme for the browser.">
       Browser themes
     </message>
@@ -137,7 +145,7 @@
       Use Classic
     </message>
   </if>
-  <if expr="not is_linux or chromeos or lacros or is_fuchsia">
+  <if expr="not is_linux or chromeos_ash or chromeos_lacros or is_fuchsia">
     <message name="IDS_SETTINGS_RESET_TO_DEFAULT_THEME" desc="Name of the control which resets the browser theme back to the default theme.">
       Reset to default
     </message>
@@ -229,7 +237,7 @@
     Edit
   </message>
   <message name="IDS_SETTINGS_END_TIME" desc="The label of the end time bubble of settings-scheduler-slider">
-    End time
+    End time <ph name="TIME">$1<ex>5:00 AM</ex></ph>
   </message>
   <message name="IDS_SETTINGS_NOT_VALID" desc="Text indicating that an input is not valid.">
     Not valid
@@ -247,7 +255,7 @@
     Slider: <ph name="MIN_LABEL">$1<ex>Slowest</ex></ph> to <ph name="MAX_LABEL">$2<ex>Fastest</ex></ph>
   </message>
   <message name="IDS_SETTINGS_START_TIME" desc="The label of the start time bubble of settings-scheduler-slider">
-    Start time
+    Start time <ph name="TIME">$1<ex>9:06 PM</ex></ph>
   </message>
 
   <!-- Autofill Page -->
@@ -283,6 +291,33 @@
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_ADDRESS" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored autofill address. The address is described by the name of the recipient and usually the beginning of the address (i.e. street name and building number). The name and the address are separated by comma.">
     More actions for <ph name="ADDRESS_SUMMARY">$1<ex>John Doe, 123 Main Street</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_FOR_CREDIT_CARD" desc="The (accessibility) title of a button, which brings up a menu of actions that can be taken on a stored credit card. The credit card is described by the credit card nickname or the credit card network and last 4 digits of the card number.">
+    More actions for <ph name="CARD_DESCRIPTION">$1<ex>My main card</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_MORE_ACTIONS_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
+    <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_ADD_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to enroll a card in the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Add virtual card
+  </message>
+  <message name="IDS_AUTOFILL_REMOVE_VIRTUAL_CARD" desc="The text shown in the secondary action menu button to unenroll a card from the virtual card feature. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    Remove virtual card
+  </message>
+  <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD" desc="The text shown in the secondary action menu button to direct users to pay.google.com to edit the information of credit cards stored in Google Payments.">
+    Edit in Google Pay
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENABLED_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been generated for the credit card and is enabled. Virtual cards are credit cards generated from the actual cards and provide extra security.">
+    (Virtual card enabled)
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE" desc="The text shown as the title of the virtual card unenroll dialog.">
+    Remove your virtual card
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_LABEL" desc="The text shown inside the virtual card unenroll dialog. Has a link.">
+    You will no longer be able to use your virtual card with Google Pay. <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>Learn about virtual cards<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_CONFIRM_BUTTON_LABEL" desc="The text shown in the confirm button of the virtual card unenroll dialog.">
+    Remove
   </message>
   <message name="IDS_SETTINGS_ADDRESS_REMOVE" desc="Label for a context menu item that removes the selected address." meaning="Remove selected address.">
     Remove
@@ -428,6 +463,9 @@
   <message name="IDS_SETTINGS_COMPROMISED_PASSWORDS_ADVICE" desc="Description of what user should do after compromised passwords are found.">
     Change these passwords immediately to keep your account safe:
   </message>
+  <message name="IDS_SETTINGS_MUTED_PASSWORDS" desc="Text for a label showing how many passwords were discarded / muted from compromised strings warnings.">
+    Dismissed warnings (<ph name="MUTED_PASSWORDS">$1<ex>2</ex></ph>)
+  </message>
   <message name="IDS_SETTINGS_WEAK_PASSWORDS" desc="Title for list of weak credentials after passwords bulk check.">
     Weak passwords
   </message>
@@ -457,6 +495,12 @@
   </message>
   <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_REMOVE" desc="Action menu item for a row which displays a compromised password. It will open a confirmation dialog for deleting the password.">
     Remove password
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_MUTE" desc="Action menu item for a row which displays a compromised password. It will mute/dismiss the compromised password warning.">
+    Dismiss warning
+  </message>
+  <message name="IDS_SETTINGS_COMPROMISED_PASSWORD_UNMUTE" desc="Action menu item for a row which displays a muted/dismissed compromised password. It will unmute/restore the compromised password and reenable the warning.">
+    Restore warning
   </message>
   <message name="IDS_SETTINGS_REMOVE_COMPROMISED_PASSWORD_CONFIRMATION_TITLE" desc="Compromised password remove dialog conformation title.">
     Remove password?
@@ -525,7 +569,13 @@
     Make sure the password you are saving matches your password for <ph name="WEBSITE">$1<ex>airbnb.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED" desc="An error message when user tried editing the username to a value which is already used for the same site.">
-    You already saved this username for this site
+    You already saved a password with this username for <ph name="WEBSITE">$1<ex>website.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD" desc="A link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
+    View password
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_VIEW_EXISTING_PASSWORD_ARIA_DESCRIPTION" desc="An accessibility description for a link text shown together with an error message when user tried editing the username to a value which is already used for the same site. On click shows existing password editor.">
+    View password with username <ph name="USERNAME">$1<ex>username</ex></ph> for <ph name="WEBSITE">$2<ex>website.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MISSING_TLD" desc="An error message when user entered a URL without a top-level domain as a site for a new password. It suggests to use the same value but with common top level domain." meaning="Suggesting user to add the top-level domain in the website text.">
     Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
@@ -553,6 +603,9 @@
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_PASSWORD" desc="Label for the saved password when editing a password.">
     Password
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_NOTE" desc="Label for the password note when viewing or editing a password.">
+    Note
   </message>
   <message name="IDS_SETTINGS_ADDRESS_NONE" desc="Placeholder that is shown when there are no addresses in the list of saved addresses.">
     Saved addresses will appear here
@@ -589,6 +642,9 @@
   </message>
   <message name="IDS_SETTINGS_PASSWORD_DELETED_PASSWORD_FROM_ACCOUNT_AND_DEVICE" desc="Label for an undo tooltip following deletion of a password from the account and the device.">
     Password deleted from this device and your Google Account
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_COPIED_TO_CLIPBOARD" desc="Label for a tooltip following copying a password to the clipboard.">
+    Password copied to clipboard
   </message>
   <message name="IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT" desc="Message displayed in the moving multiple passwords to the user Google Account banner.">
     To easily use them on all your devices, you can move them to your Google Account
@@ -703,13 +759,14 @@
   <message name="IDS_SETTINGS_PASSWORD_ROW_FEDERATED_MORE_ACTIONS" desc="The ARIA (accessibility) message for the More Actions button, which sits in every row of the password list. For this row does not include a password, only information of the account. It opens a menu with a list of actions, which apply to the account presented on this row.">
     More actions, saved account for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
   </message>
-  <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-  <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_LABEL" desc="Label for the link to the page to opt in to trusted vault encryption">
-    Trusted vault
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_LABEL" desc="Label for the on-device encryption banner in settings.">
+    On-device encryption
   </message>
-  <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-  <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_SUB_LABEL" desc="Sub-label for the link to the page to opt in to trusted vault encryption">
-    Opt in to trusted vault
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is being offered to opt in.">
+    For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
+  </message>
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is already opted in.">
+    Your passwords are encrypted on your device before they‘re saved to Google Password Manager
   </message>
   <message name="IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Show Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Reveals password when clicked.">
     Show password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
@@ -986,14 +1043,8 @@
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A subtext for the basic tab explaining browsing history.">
     Clears history, including in the search box
   </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN" desc="A description explaining other forms of activity for signed in users.">
-    Clears history in the search box. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-  </message>
   <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN_NO_LINK" desc="A description explaining from which devices history will be cleared.">
     Clears history from all synced devices
-  </message>
-  <message name="IDS_SETTINGS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED" desc="A description for the basic tab explaining browsing history for users with history sync.">
-    Clears history from all signed-in devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target='_blank' href='$1'&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_GOOGLE_DSE" desc="A description explaining that search history and other forms of activity can be cleared through the Google account.">
     <ph name="BEGIN_LINK_SEARCH">&lt;a target="_blank" href="$1"&gt;</ph>Search history<ph name="END_LINK_SEARCH">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_GOOGLE">&lt;a target="_blank" href="$2"&gt;</ph>other forms of activity<ph name="END_LINK_GOOGLE">&lt;/a&gt;</ph> may be saved in your Google Account when you're signed in. You can delete them anytime.
@@ -1108,6 +1159,9 @@
   </message>
   <message name="IDS_SETTINGS_ON_STARTUP_OPEN_SPECIFIC" desc="Radio button option to open a specific set of pages.">
     Open a specific page or set of pages
+  </message>
+  <message name="IDS_SETTINGS_ON_STARTUP_CONTINUE_AND_OPEN_SPECIFIC" desc="Radio button option to continue where you left off and open a specific set of pages.">
+    Continue where you left off and open a specific set of pages
   </message>
   <message name="IDS_SETTINGS_ON_STARTUP_USE_CURRENT" desc="Button to use current pages.">
     Use current pages
@@ -1248,25 +1302,42 @@
     </if>
   </if>
   <if expr="chromeos">
-    <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
-      Manage languages in Chrome OS settings
-    </message>
+    <if expr="reven">
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in CloudReady 2.0.">
+        Manage languages in CloudReady 2.0 settings
+      </message>
+    </if>
+    <if expr="not reven">
+      <message name="IDS_SETTINGS_LANGUAGES_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open languages settings in Chrome OS.">
+        Manage languages in Chrome OS settings
+      </message>
+    </if>
     <message name="IDS_SETTINGS_LANGUAGES_KEYBOARD_APPS" desc="Title for the list of keyboard apps installed via Play Store by the user.">
       Keyboard apps
     </message>
   </if>
 
   <!-- Privacy Page -->
+  <message name="IDS_SETTINGS_PRIVACY" desc="Name of the settings page which allows users to modify privacy and security settings.">
+    Privacy and security
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_V2" desc="Name of the settings page which allows users to modify privacy and security settings.">
     Security and Privacy
   </message>
   <message name="IDS_SETTINGS_PRIVACY_MORE" desc="Label on the expansion button to show more privacy settings.">
     More
   </message>
-  <if expr="chromeos or lacros">
-    <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
-      Manage secure DNS in Chrome OS settings
-    </message>
+  <if expr="chromeos_ash or chromeos_lacros">
+    <if expr="reven">
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in CloudReady 2.0.">
+        Manage secure DNS in CloudReady 2.0 settings
+      </message>
+    </if>
+    <if expr="not reven">
+      <message name="IDS_SETTINGS_SECURE_DNS_OPEN_CHROME_OS_SETTINGS_LABEL" desc="Label for the section that allow users to open Secure DNS settings in Chrome OS.">
+        Manage secure DNS in Chrome OS settings
+      </message>
+    </if>
   </if>
 
   <!-- Privacy Sandbox -->
@@ -1331,135 +1402,223 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE" desc="Label on the button in the dialog shown to users when they interacted with cookies to make them aware of the Privacy Sandbox.">
     More
   </message>
+  <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE" translateable="false" desc="Title of the Trails section of the privacy sandbox settings.">
+    Trials
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_SUMMARY" translateable="false" desc="Summary of the Trails section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_TITLE" translateable="false" desc="Title of the Ad Personalization section of the privacy sandbox settings.">
+    Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_SUMMARY" translateable="false" desc="Summary of the Ad Personalization section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_TITLE" translateable="false" desc="Title of the Ad Measurement section of the privacy sandbox settings.">
+    Ad measurement
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" translateable="false" desc="Summary of the Ad Measurement section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE" translateable="false" desc="Title of the Spam and Fraud section of the privacy sandbox settings.">
+    Spam &#38; fraud reduction
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY" translateable="false" desc="Summary of the Spam and Fraud section of the privacy sandbox settings.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" translateable="false" desc="Title of the dialog to learn more about ad personalization.">
+    About Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
+    Your interests as estimated by your browser
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_FLEDGE_TITLE" translateable="false" desc="Title of the website-based interests section of the dialog to learn more about ad personalization.">
+    Your interests as defined by sites you visit
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES" translateable="false" desc="Title of the data types subsection of the dialog to learn more about ad personalization.">
+    What data is used:
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE" translateable="false" desc="Title of the data usage subsection of the dialog to learn more about ad personalization.">
+    How we use this data:
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT" translateable="false" desc="Title of the data management subsection of the dialog to learn more about ad personalization.">
+    How you can manage your data:
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TITLE" translateable="false" desc="Title of the 'ad personalization' dialog.">
+    Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the main page of the 'ad personalization' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_DESCRIPTION" translateable="false" desc="Description of the removed interests page of the 'ad personalization' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_TITLE" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
+    Your interests as estimated by your browser
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TOPICS_EMPTY" translateable="false" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
+    A list of interests will appear here as you browse the web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_EMPTY" translateable="false" desc="Description of the empty state of the removed browser-based interests section of the 'ad personalization' dialog.">
+    You haven’t removed any interests
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_INTERESTS_LABEL" translateable="false" desc="Label of the row to go to the removed browser-based interests section of the 'ad personalization' dialog.">
+    Interests you removed
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_TITLE" translateable="false" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
+    Sites you visit that define your interests
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_EMPTY" translateable="false" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
+    A list of sites you've visited will appear here as you browse the web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_EMPTY" translateable="false" desc="Description of the empty state of the removed website-based interests section of the 'ad personalization' dialog.">
+    You haven’t removed any sites
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" translateable="false" desc="Title of the 'ad measurement' dialog.">
+    Ad measurement
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the 'ad measurement' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT" translateable="false" desc="Control measurement description of the 'ad measurement' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>browsing history<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" translateable="false" desc="Title of the 'spam and fraud reduction' dialog.">
+    Spam and fraud reduction
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1" translateable="false" desc="First description of the 'spam and fraud reduction' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION2" translateable="false" desc="Second description of the 'spam and fraud reduction' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION3" translateable="false" desc="Third description of the 'spam and fraud reduction' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+  </message>
 
-  <!-- Privacy Review -->
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">
-    Privacy and security review
+  <!-- Privacy Guide -->
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the 'Privacy Guide'. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
+    Privacy Guide
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
-    Review the most important privacy and security controls in one place
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the 'Privacy Guide'.">
+    Review key privacy and security controls
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_TITLE" desc="Title of a card in the settings page that promotes the privacy review feature.">
-    Privacy review
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_HEADER" desc="Text of a button on a card in the settings page that starts the 'Privacy Guide'. 'Privacy Guide' is a term, see go/glossarymanager/termset?gid=27517723&amp;tsid=28b420b3.">
+    Take the Privacy Guide
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY" desc="Body text of a card in the settings page that explains what the privacy review feature is.">
-    Understand and review the most critical privacy settings in one place
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the privacy review feature.">
-    Review my settings
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_BACK_BUTTON" desc="Text of a button in the privacy review that reverses to the previous step in the review.">
-    Back
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_STEPS" is_accessibility_with_no_ui="true" desc="Spoken by screenreaders indicating what step the user is in and how many steps there are in total.">
-    Step <ph name="CURRENT_STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>2</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON" desc="Text of a button in the privacy review that advances to the next step in the review.">
-    Next
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_FEATURE_DESCRIPTION_HEADER" desc="Header of a description text that describes the benefits that a particular feature has. This description is shown to users alongside the feature itself in the privacy review.">
-    What you get
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WHAT_YOU_SHARE_WITH_GOOGLE" desc="Header of a text column that describes the information a feature shares with Google.">
-    What you share with Google
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WHAT_YOU_SHARE_WITH_WEBSITES" desc="Header of a text column that describes the information a feature shares with websites.">
-    What you share with websites
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_START_BUTTON" desc="Text of a button in the welcome card in the privacy review that starts the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_START_BUTTON" desc="Text of a button on a card in the settings page that starts the 'Privacy Guide'.">
     Get started
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_DONT_SHOW_AGAIN_CHECKBOX" desc="Text of a checkbox in the welcome card in the privacy review that prevents the welcome card from being shown again in the future.">
-    Don’t show this step again
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_BACK_BUTTON" desc="Text of a button in the privacy guide that reverses to the previous step in the 'Privacy Guide'.">
+    Back
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER" desc="A header shown at the top of the completion card in the privacy review that informs users that they completed the privacy review.">
-    Review complete!
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_STEPS" is_accessibility_with_no_ui="true" desc="Spoken by screenreaders indicating what step the user is in and how many steps there are in total.">
+    Step <ph name="CURRENT_STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>2</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_SUB_HEADER" desc="A subheader shown at the top of the completion card in the privacy review that informs users that they can explore more settings or complete the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_NEXT_BUTTON" desc="Text of a button in the 'Privacy Guide' that advances to the next step in the privacy guide.">
+    Next
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_FEATURE_DESCRIPTION_HEADER" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself in the 'Privacy Guide'.">
+    When on
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself in the 'Privacy Guide'.">
+    Things to consider
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the 'Privacy Guide', explaining to users what the 'Privacy Guide' is.">
+    A guide of your privacy choices
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_WELCOME_CARD_SUB_HEADER" desc="A subheader shown at on the welcome card in the 'Privacy Guide', explaining to users what the 'Privacy Guide' is.">
+    Take a guided tour of key privacy and security controls. For more options, go to individual settings.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_HEADER" desc="A header shown at the top of the completion card in the 'Privacy Guide' that informs users that they completed the 'Privacy Guide'.">
+    Review complete
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_SUB_HEADER" desc="A subheader shown at the top of the completion card in the 'Privacy Guide' that informs users that they can explore more settings or complete the 'Privacy Guide'.">
     Explore more settings below or finish now
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON" desc="Text of a button in the completion card in the privacy review that leads the user back to Chrome settings.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_LEAVE_BUTTON" desc="Text of a button in the completion card in the 'Privacy Guide' that leads the user back to Chrome settings.">
     Done
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the 'Privacy Guide'.">
     Privacy Sandbox trial
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
     Web &#38; App Activity
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the privacy review.">
-    Review settings for search and browsing optimization
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the 'Privacy Guide'.">
+    Choose your search and browsing quality
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Faster browsing: For example, proactively load specific further content based on the current page
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    You'll browse faster because content is proactively loaded based on your current webpage visit
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Improved browsing: For example, suggestions in the Omnibox before you start typing
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    You'll get improved suggestions in the address bar
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'make searches and browsing better' in the privacy review.">
-    Improved Chrome using page metrics
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    URLs you visit are sent to Google to predict what sites you might visit next
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'make searches and browsing better' in the privacy review.">
-    URL of the pages you visit, e.g. https://www.google.com
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the privacy review.">
-    The URLs are shared with Google to understand the browsing behavior
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_CARD_HEADER" desc="Header of the 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_CARD_HEADER" desc="Header of the 'clear cookies on exit' card in the 'Privacy Guide'.">
     Review automatic data clearing
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the privacy review.">
-    Review whether to sync history
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the 'Privacy Guide'.">
+    Choose whether to sync history
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the privacy review.">
-    You can continue your browsing session on any of your synced devices
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_SETTING_LABEL" desc="Label of the history sync settings toggle in the 'Privacy Guide'.">
+    History sync
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION2" desc="A part of the feature description of history sync in the privacy review.">
-    You'll see your Chrome history on all your synced devices
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the 'Privacy guide'.">
+    You'll have your history on all your synced devices so you can continue what you were doing
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of history sync in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_FEATURE_DESCRIPTION2" desc="A part of the feature description of history sync in the 'Privacy guide'.">
+    If Google is also your default search engine, you'll see better, contextually relevant suggestions
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_HISTORY_SYNC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of history sync in the 'Privacy guide'.">
     The URLs you visit are saved to your Google Account
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_HEADER" desc="Header of the cookies card in the privacy review.">
-    Choose when to block third-party cookies
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_HEADER" desc="Header of the cookies card in the 'Privacy guide'.">
+    Choose your third-party cookie preferences
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_SUBHEADER" desc="A subheader for the cookies card of the privacy review, for blocking third party cookies in incognito.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_SUBHEADER" desc="A subheader for the cookies card of the 'Privacy guide', for blocking third party cookies in incognito.">
     Block third-party cookies in Incognito
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
-    Features on some sites may not work
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
+    Features on some sites may not work in Incognito
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the privacy review.">
-    When you aren't in Incognito mode, sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
+    Sites can use cookies to see your browsing activity across different sites, for example, to personalize ads
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_SUBHEADER" desc="A subheader for the cookies card of the privacy review, for blocking third party cookies.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_INCOGNITO_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the third party cookie blocking in incognito section of the cookies card in the 'Privacy guide'.">
+    When you’re in Incognito mode, sites can only use cookies to see your browsing activity on their own site. Cookies are deleted at the end of the Incognito session.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_SUBHEADER" desc="A subheader for the cookies card of the 'Privacy guide', for blocking third party cookies.">
     Block all third-party cookies
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION1" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_FEATURE_DESCRIPTION2" desc="A part of the feature description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
     Features on some sites may not work
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking section of the cookies card in the privacy review.">
-    Sites can only use your cookies to see your browsing activity on their own site
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COOKIES_CARD_BLOCK_TPC_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the third party cookie blocking section of the cookies card in the 'Privacy guide'.">
+    Sites can only use cookies to see your browsing activity on their own site
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_HEADER" desc="Header of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_HEADER" desc="Header of the safe browsing card in the 'Privacy guide'.">
     Choose your Safe Browsing protection
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the 'Privacy guide'.">
     Sends URLs to Safe Browsing to check them
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the 'Privacy guide'.">
     Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION3" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_ENHANCED_PROTECTION_PRIVACY_DESCRIPTION3" desc="A part of the privacy description of the enhanced protection section of the safe browsing card in the 'Privacy guide'.">
     Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION1" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION1" desc="A part of the feature description of the standard protection section of the safe browsing card in the 'Privacy guide'.">
     Detects and warns you about dangerous events when they happen
   </message>
 
@@ -1687,7 +1846,7 @@
     Standard protection
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC" desc="Description for safe browsing standard protection mode">
-    Standard protection against websites, downloads, and extensions that are known to be dangerous.
+    Standard protection against websites, downloads, and extensions that are known to be dangerous
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
     Show standard protection details
@@ -1918,6 +2077,12 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE" desc="Title for a dialog that allows editing an existing search engine.">
     Edit search engine
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_TITLE" desc="Title for a dialog that confirms that a user wants to delete an existing search engine.">
+    Delete search engine
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_DESCRIPTION" desc="Description text for a dialog that confirms that a user wants to delete an existing search engine.">
+    Are you sure you want to delete this search engine?
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DEFAULT_ENGINES" desc="Label for 'default' Search Engines section">
     Default search engines
   </message>
@@ -1925,16 +2090,16 @@
     Search engines
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINES_EXPLANATION" desc="Explanation for 'Search Engines' section">
-    To use a search engine other than the default, type its shortcut followed by your preferred keyboard shortcut. You can also change your default search engine here.
+    To use a search engine other than the default, type its shortcut in the address bar followed by your preferred keyboard shortcut. You can also change your default search engine here.
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH" desc="Label for 'Site Search' section">
     Site search
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION" desc="Explanation for 'Site Search' section. Used interchangeably with IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK">
-    To search a specific site or part of Chrome, you can type the shortcuts here into the address bar, then press Tab or Space.
+    To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK" desc="Explanation for 'Site Search' section">
-    To search a specific site or part of Chrome, you can use the shortcuts here. For example, to search only Gmail, type "@gmail", then press Tab or Space.
+    To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut. For example, to search only Bookmarks, type "@bookmarks", then press Tab or Space.
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SITES_ADDED" desc="Text shown when the 'Site Search' section is empty">
     No sites added
@@ -1997,10 +2162,10 @@
     Keyboard shortcut
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION" desc="Text explaining how to use keyword mode">
-    In the address bar, enter the keyword for the website you want to search. Then, use a keyboard shortcut to continue.
+    In the address bar, use this keyboard shortcut with shortcuts for search engines and site search
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_DESCRIPTION_STARTER_PACK" desc="Text explaining how to use keyboard mode, if scoped search starter pack is enabled">
-    In the address bar, enter the shortcut for the site you want to search, such as "@gmail". Then, press your preferred keyboard shortcut, and enter your search term.
+    In the address bar, enter the shortcut for the site you want to search, such as "@bookmarks". Then, press your preferred keyboard shortcut, and enter your search term.
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB" desc="Label for setting that toggles whether scoped search mode can be triggered by space">
     Space or Tab
@@ -2009,13 +2174,13 @@
     Tab
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_SITES" desc="Label for button that expands the Site Search list of search engines to show all entries">
-    Additional Sites
+    Additional sites
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_INACTIVE_SITES" desc="Label for button that expands the Inactive Sites list of search engines to show all entries">
-    Additional Inactive Sites
+    Additional inactive sites
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_EXTENSIONS" desc="Label for button that expands the list of extensions to show all entries">
-    Additional Extensions
+    Additional extensions
   </message>
 
   <!-- Site Settings Page -->
@@ -2048,6 +2213,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT_METHOD_NAME" desc="A selection menu option to sort the All Sites list by the name of the site, which is derived from its URL." meaning="Name of an inanimate object">
     Name
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_ENTRY_PARTITIONED_LABEL" desc="The label which is applied to site entries which are partitioned. These entries represent data whose access scope is limited to the site the labeled entry appears under">
+    Partitioned
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_REPRESENTATION_SEPARATOR" desc="The separator used to split up the display of a URL into host and scheme/protocol, when the scheme is not HTTPS. For example, it will be used in a string that looks like 'google.co.uk — http'.">
       —
@@ -2186,21 +2354,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the device use content setting.">
     Not allowed to know when you're actively using your device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_DESCRIPTION" desc="Description of the file handling content setting.">
-    Web apps typically ask to open certain types of files so you can work on those files where you want, like opening documents in your preferred word processor
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ALLOWED" desc="Label for the enabled option of the file handling content setting.">
-    Web apps can ask to open types of files
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCKED" desc="Label for the disabled option of the file handling content setting.">
-    Don't allow web apps to open types of files
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the file handling content setting.">
-    Allowed to open types of files
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the file handling content setting.">
-    Not allowed to open types of files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
@@ -2540,6 +2693,9 @@
   <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL" desc="Label for allow all cookies radio toggle">
     Allow all cookies
   </message>
+  <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of allowing all cookies. Only visible by screen reader software.">
+    Show details about allowing all cookies
+  </message>
   <message name="IDS_SETTINGS_COOKIES_ALLOW_ALL_BULLET_ONE" desc="Description for the first bullet of allow all cookies radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
@@ -2548,6 +2704,9 @@
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO" desc="Label for block third party cookies in Incognito radio toggle">
     Block third-party cookies in Incognito
+  </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies in Incognito. Only visible by screen reader software.">
+    Show details about blocking third-party cookies in Incognito
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO_BULLET_ONE" desc="Description for the first bullet of block third party cookies in Incognito radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
@@ -2558,6 +2717,9 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY" desc="Label for block third party cookies radio toggle">
     Block third-party cookies
   </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking third party cookies. Only visible by screen reader software.">
+    Show details about blocking third-party cookies
+  </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_BULLET_ONE" desc="Description for the first bullet of block third party cookies radio toggle">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
   </message>
@@ -2566,6 +2728,9 @@
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL" desc="Label for block all cookies radio toggle">
     Block all cookies (not recommended)
+  </message>
+  <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_EXPAND_A11Y_LABEL" desc="Label for the button that toggles showing the detailed description of blocking all cookies. Only visible by screen reader software.">
+    Show details about blocking all cookies
   </message>
   <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_ONE" desc="Description for the first bullet of block all cookies radio toggle">
     Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
@@ -2813,14 +2978,20 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_BLOCK" desc="The block label for automatic download in site settings.">
     Do not allow any site to download multiple files automatically
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK" desc="The ask label for the window placement site settings.">
-    Ask when a site wants to open and place windows on your screens
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_DESCRIPTION" desc="Description of the window placement site setting.">
+    Sites usually open and place windows to show additional documents or fullscreen content on your screens
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK_RECOMMENDED" desc="The ask label for the window placement site settings (with the 'recommended' suffix).">
-    Ask when a site wants to open and place windows on your screens (recommended)
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK" desc="Label for the enabled option of the window placement site setting.">
+    Sites can ask to use info about your screens to open and place windows
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCK" desc="The block label for the window placement site settings.">
-    Block sites from opening and placing windows on your screens
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCKED" desc="Label for the disabled option of the window placement site setting.">
+    Don't allow sites use info about your screens to open and place windows
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK_EXCEPTIONS" desc="Label for the enabled exceptions site list of the window placement site setting.">
+    Allowed to use info about your screens to open and place windows
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the window placement site setting.">
+    Not allowed to use info about your screens to open and place windows
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_ASK" desc="The ask label for the local font access site settings.">
     Ask when a site wants to use fonts installed on your device
@@ -2833,12 +3004,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
     Block sites from knowing when you're actively using this device
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ASK" desc="The ask label for the file handling site settings.">
-    Ask when a web app wants to open types of files
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCK" desc="The block label for the file handling site settings.">
-    Block web apps from opening types of files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED" desc="A generic Allowed label to show in Site Settings when Allow is NOT the recommended option.">
     Allowed
@@ -3066,6 +3231,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_APP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin, and that origin also has an installed web app">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and its installed app?
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_PARTITIONED_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origins partitioned data. That data will be partitioned on a specific eTLD +1.">
+    Clear site data for <ph name="SITE_NAME">$1<ex>www.ad-tech.com</ex></ph> partitioned on <ph name="PARTITION_SITE_NAME">$2<ex>www.publisher.com</ex></ph>?
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_GROUP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a group of sites">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and all sites under it?
   </message>
@@ -3197,16 +3365,9 @@
   <message name="IDS_SETTINGS_COOKIES_COOKIE_EXPIRES_LABEL" desc="The Cookie Expires label">
     Expires
   </message>
-  <message name="IDS_SETTINGS_COOKIES_APPLICATION_CACHE" desc="The text shown when there is an Application Cache (name of an HTML standard) in the Cookies table">
-    Application cache
-  </message>
   <message name="IDS_SETTINGS_COOKIES_FLASH_LSO" desc="The text shown when Flash has Local Shared Objects (informally known as 'Flash cookies') stored">
     Flash data
   </message>
-  <message name="IDS_SETTINGS_COOKIES_APPLICATION_CACHE_MANIFEST_LABEL" desc="The Manifest label (manifest is a URL specified by the application cache)">
-    Manifest
-  </message>
-
   <message name="IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES" desc="A label showing the number of cookies set on a site.">
     {NUM_COOKIES, plural,
         =1 {1 cookie}
@@ -3327,9 +3488,6 @@
   <message name="IDS_SETTINGS_USER_EVENTS_CHECKBOX_TEXT" desc="Description text for the checkbox which enables or disables recording user events.">
     Uses content on sites you visit, plus browser activity and interactions, for personalization
   </message>
-  <message name="IDS_SETTINGS_MANAGE_SYNCED_DATA_TITLE" desc="Title for the link to manage Chrome Sync data via Google Dashboard.">
-    Manage synced data on Google Dashboard
-  </message>
   <message name="IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
     Encrypt synced data with your own <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
   </message>
@@ -3448,10 +3606,12 @@
   </message>
 
   <!-- System Page -->
-  <if expr="not chromeos and not lacros">
+  <if expr="not chromeos">
     <message name="IDS_SETTINGS_SYSTEM" desc="Title of the system settings.">
       System
     </message>
+  </if>
+  <if expr="not chromeos and not lacros">
     <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via hardware acceleration (GPU) when available.">
       Use hardware acceleration when available
     </message>
@@ -3463,6 +3623,14 @@
     </message>
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by policy. This is used in place of IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL above.">
       <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is using proxy settings from your administrator
+    </message>
+  </if>
+  <if expr="lacros">
+    <message name="IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL" desc="Label for the checkbox that enables using the ash proxy for the Lacros browser.">
+      Use Chrome OS proxy settings for this profile.
+    </message>
+    <message name="IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL" desc="Non-interactive label that describes that the primary profile uses the computer's proxy settings.">
+      This profile uses Chrome OS proxy settings.
     </message>
   </if>
 
@@ -3734,17 +3902,32 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_LABEL" desc="The label for a menu item that when clicked lets the user view and erase credentials on their security key (an authentication hardware device).">
     Sign-in data
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DESC" desc="The description for a menu item that when clicked lets the user view and erase credentials on their security key (an authentication hardware device).">
-    View and delete sign-in data stored on your security key
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_USERNAME_LABEL" desc="A column heading of a table that lists sign-in data stored on a security key (an authentication hardware device). This column contains the user name (e.g. exampleuser@google.com) for each credential.">
+    Username
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DIALOG_TITLE" desc="The title of a dialog that lets users view and erase credentials on their security key (an authentication hardware device).">
-    Security key sign-in data
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_DISPLAYNAME_LABEL" desc="A column heading of a table that lists sign-in data stored on a security key (an authentication hardware device). This column contains the display name (e.g. John Smith) for each credential.">
+    Name
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_WEBSITE" desc="A column heading of a table that lists credentials stored on a security key (an authentication hardware device). This column contains the domain name (e.g. google.com) for each credential.">
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_WEBSITE_LABEL" desc="A column heading of a table that lists sign-in data stored on a security key (an authentication hardware device). This column contains the domain name (e.g. google.com) for each credential.">
     Website
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_USERNAME" desc="A column heading of a table that lists credentials stored on a security key (an authentication hardware device). This column contains the user name (e.g. exampleuser@google.com) for each credential.">
-    Username
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DESC" desc="The description for a menu item that when clicked lets the user view, edit, and erase credentials on their security key (an authentication hardware device).">
+    Manage sign-in data stored on your security key
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DIALOG_TITLE" desc="The title of a dialog that lets users manage sign-in data on their security key (an authentication hardware device).">
+    Security key sign-in data
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_UPDATE_CREDENTIAL_DIALOG_TITLE" desc="The title of a dialog that lets users update sign-in data on their security key (an authentication hardware device).">
+    Edit sign-in data
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_CONFIRM_DELETE_TITLE" desc="The title of a prompt that asks users to confirm whether they want to delete the selected sign-in data on their security key (an authentication hardware device).">
+    Delete sign-in data
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_CONFIRM_DELETE_CREDENTIAL" desc="A confirmation message shown to confirm the user wants to delete the selected sign-in data. Security keys are external devices used to authenticate people.">
+    Are you sure you want to delete the selected sign-in data?
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_INPUT_ERROR_TOO_LONG" desc="A validation error shown beneath a text box where the user is expected to enter a username or displayname for a security key. Security keys are external devices used to authenticate people.">
+    Input must be at most 62 characters
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_NO_CREDENTIALS" desc="An error message shown when a user attempts to view the credentials on their security key (an authentication hardware device) but no such credentials exist.">
     This security key does not have any sign-in data
@@ -3761,11 +3944,17 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_ERROR" desc="An error message shown when a user attempts to view the credentials on their security key (an authentication hardware device), but an error with the device was encountered.">
     Your security key couldn't be read
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_SUCCESS" desc="A confirmation message shown when a user deletes an individual credential on their security key (an authentication hardware device).">
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DELETE_SUCCESS" desc="A confirmation message shown when a user deletes an individual credential on their security key (an authentication hardware device) and succeeds.">
     Your sign-in data was deleted
   </message>
-  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_FAILED" desc="An error message shown when a user attempts to delete an individual credential on their security key (an authentication hardware device).">
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_DELETE_FAILED" desc="An error message shown when a user attempts to delete an individual credential on their security key (an authentication hardware device) and fails.">
     Your sign-in data couldn't be deleted
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_UPDATE_SUCCESS" desc="A confirmation message shown when a user updates an individual credential on their security key (an authentication hardware device) and succeeds.">
+    Your sign-in data was updated
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_UPDATE_FAILED" desc="An error message shown when a user attempts to update an individual credential on their security key (an authentication hardware device) and fails.">
+    Your sign-in data couldn't be updated
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_SUBPAGE_LABEL" desc="The label for a menu item that when clicked lets the user view, add, rename, and delete fingerprints on their security key (an authentication hardware device).">
     Fingerprints
@@ -3826,5 +4015,26 @@
   </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_FORCE_PIN_CHANGE" desc="An error message shown when a user attempts to use a security key (an authentication hardware device) that has a default PIN (short, often numeric codes that are often used with, for example, ATM cards) set. Before using the key, the user needs to change the PIN to a new code.">
     To use your new security key, set a new PIN
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONE_EDIT_DIALOG_TITLE" desc="The title of a dialog that is shown when a user chooses to edit details of a phone that can be used to sign-in with.">
+    Edit phone
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_YOUR_DEVICES" desc="The title of a section on a settings page that lists phoens that are signed into (and syncing with) the user's Google account.">
+    Your devices
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_SYNCED_DESC" desc="The description of a section on a settings page that lists phoens that are signed into (and syncing with) the user's Google account.">
+    You're signed in to Chrome on these devices, so you can use them as security keys.
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DEVICES" desc="The title of a section on a settings page that lists phoens that can be used for signing into websites. The word 'linked' was picked to be distinct from 'paired', as in 'Bluetooth pairing'. The technology does use Bluetooth, but is distinct from Bluetooth pairing.">
+    Linked devices
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DESC" desc="The description of a section on a settings page that lists phoens that can be used for signing into websites. The word 'linked' was picked to be distinct from 'paired', as in 'Bluetooth pairing'. The technology does use Bluetooth, but is distinct from Bluetooth pairing.">
+    You linked these devices by scanning a QR code.
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE" desc="The title of an option in Chrome's privacy settings for managing phones that can be used to sign into websites.">
+    Manage phones
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC" desc="The description of an option in Chrome's privacy settings for managing phones that can be used for signing into websites. A 'security key' is typically a USB peripherial used to secure sign-ins. In this case a phone can be used as a security key.">
+    Control which phones you use as security keys
   </message>
 </grit-part>

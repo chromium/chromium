@@ -10,6 +10,7 @@
 
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -43,6 +44,9 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   // Metadata containing information to draw a delegated ink trail using
   // platform APIs.
   std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
+#if BUILDFLAG(IS_MAC)
+  gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
+#endif
 };
 
 }  // namespace viz

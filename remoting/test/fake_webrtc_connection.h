@@ -6,7 +6,6 @@
 #define REMOTING_TEST_FAKE_WEBRTC_CONNECTION_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/protocol/webrtc_transport.h"
 

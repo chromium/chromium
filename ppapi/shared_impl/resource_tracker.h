@@ -11,7 +11,6 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_checker_impl.h"

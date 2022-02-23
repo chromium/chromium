@@ -49,8 +49,8 @@ class DisplaySize {
   uint32_t dpi_;
 };
 
-}  // namespace remoting
+std::ostream& operator<<(std::ostream& out, const DisplaySize& size);
 
-std::ostream& operator<<(std::ostream& out, const remoting::DisplaySize& size);
+}  // namespace remoting
 
 #endif  // REMOTING_PROTOCOL_DISPLAY_SIZE_H_

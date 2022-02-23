@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/metadata/property_metadata.h"
 
@@ -44,24 +43,24 @@
   ui::metadata::ClassMetaData* GetClassMetaData() override;
 
 // Metadata Class -------------------------------------------------------------
-#define METADATA_CLASS_INTERNAL(class_name, file, line)               \
-  class METADATA_CLASS_NAME_INTERNAL(class_name)                      \
-      : public ui::metadata::ClassMetaData {                          \
-   public:                                                            \
-    using TheClass = class_name;                                      \
-    explicit METADATA_CLASS_NAME_INTERNAL(class_name)()               \
-        : ClassMetaData(file, line) {                                 \
-      BuildMetaData();                                                \
-    }                                                                 \
-    METADATA_CLASS_NAME_INTERNAL(class_name)                          \
-    (const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;      \
-    METADATA_CLASS_NAME_INTERNAL(class_name) & operator=(             \
-        const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;   \
-                                                                      \
-   private:                                                           \
-    friend class class_name;                                          \
-    void BuildMetaData();                                             \
-    static ui::metadata::ClassMetaData* meta_data_ ALLOW_UNUSED_TYPE; \
+#define METADATA_CLASS_INTERNAL(class_name, file, line)              \
+  class METADATA_CLASS_NAME_INTERNAL(class_name)                     \
+      : public ui::metadata::ClassMetaData {                         \
+   public:                                                           \
+    using TheClass = class_name;                                     \
+    explicit METADATA_CLASS_NAME_INTERNAL(class_name)()              \
+        : ClassMetaData(file, line) {                                \
+      BuildMetaData();                                               \
+    }                                                                \
+    METADATA_CLASS_NAME_INTERNAL(class_name)                         \
+    (const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;     \
+    METADATA_CLASS_NAME_INTERNAL(class_name) & operator=(            \
+        const METADATA_CLASS_NAME_INTERNAL(class_name) &) = delete;  \
+                                                                     \
+   private:                                                          \
+    friend class class_name;                                         \
+    void BuildMetaData();                                            \
+    [[maybe_unused]] static ui::metadata::ClassMetaData* meta_data_; \
   }
 
 #define METADATA_PROPERTY_TYPE_INTERNAL(property_type, property_name, ...) \

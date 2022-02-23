@@ -9,14 +9,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -216,7 +214,7 @@ void CanvasCaptureHandler::StartVideoCapture(
       std::make_unique<CanvasCaptureHandlerDelegate>(new_frame_callback);
   DCHECK(delegate_);
   ask_for_new_frame_ = true;
-  running_callback.Run(true);
+  running_callback.Run(RunState::kRunning);
 }
 
 void CanvasCaptureHandler::RequestRefreshFrame() {

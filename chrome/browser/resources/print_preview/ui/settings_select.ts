@@ -5,14 +5,15 @@
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectOption} from '../data/cdd.js';
+import {CapabilityWithReset, SelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
+import {getTemplate} from './settings_select.html.js';
 
 const PrintPreviewSettingsSelectElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
@@ -24,7 +25,7 @@ export class PrintPreviewSettingsSelectElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -40,7 +41,7 @@ export class PrintPreviewSettingsSelectElement extends
   }
 
   ariaLabel: string;
-  capability: SelectOption[];
+  capability: CapabilityWithReset&{option: SelectOption[]};
   settingName: string;
   disabled: boolean;
 
@@ -72,8 +73,8 @@ export class PrintPreviewSettingsSelectElement extends
   private getDisplayName_(option: SelectOption): string {
     let displayName = option.custom_display_name;
     if (!displayName && option.custom_display_name_localized) {
-      displayName = getStringForCurrentLocale(
-          assert(option.custom_display_name_localized));
+      displayName =
+          getStringForCurrentLocale(option.custom_display_name_localized);
     }
     return displayName || option.name || '';
   }
@@ -84,7 +85,6 @@ export class PrintPreviewSettingsSelectElement extends
       newValue = JSON.parse(value);
     } catch (e) {
       assertNotReached();
-      return;
     }
     if (value !== JSON.stringify(this.getSettingValue(this.settingName))) {
       this.setSetting(this.settingName, newValue);

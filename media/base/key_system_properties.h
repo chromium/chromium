@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "build/build_config.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
@@ -19,8 +20,18 @@ class MEDIA_EXPORT KeySystemProperties {
  public:
   virtual ~KeySystemProperties() {}
 
-  // Gets the name of this key system.
-  virtual std::string GetKeySystemName() const = 0;
+  // Gets the base key system name, e.g. "org.chromium.foo".
+  virtual std::string GetBaseKeySystemName() const = 0;
+
+  // Returns whether the `key_system` is supported. Only the base key system and
+  // some of its sub key systems should be supported, e.g. for base key system
+  // name "org.chromium.foo", "org.chromium.foo" and "org.chromium.foo.bar"
+  // could be supported, but "org.chromium.baz" should NOT be supported.
+  virtual bool IsSupportedKeySystem(const std::string& key_system) const;
+
+  // Whether the base key system should be used for all supported key systems
+  // when creating CDMs.
+  virtual bool ShouldUseBaseKeySystemName() const;
 
   // Returns whether |init_data_type| is supported by this key system.
   virtual bool IsSupportedInitDataType(
@@ -48,6 +59,7 @@ class MEDIA_EXPORT KeySystemProperties {
   // TODO(crbug.com/1204284): Refactor this and remove the
   // `hw_secure_requirement` argument.
   virtual EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const = 0;
@@ -65,6 +77,12 @@ class MEDIA_EXPORT KeySystemProperties {
   // Returns whether AesDecryptor can be used for this key system.
   virtual bool UseAesDecryptor() const;
 };
+
+using KeySystemPropertiesVector =
+    std::vector<std::unique_ptr<KeySystemProperties>>;
+
+using GetSupportedKeySystemsCB =
+    base::OnceCallback<void(KeySystemPropertiesVector)>;
 
 }  // namespace media
 

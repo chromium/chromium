@@ -74,15 +74,13 @@ base::CallbackListSubscription AddVerifierToElementWithPrefix(
 
   bool success = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{
-        bool verifier_added = false;
         std::unique_ptr<base::Value> value =
             web::test::ExecuteJavaScript(web_state, kAddVerifierScript);
         if (value) {
-          std::string error;
-          if (value->GetAsString(&error)) {
-            DLOG(ERROR) << "Verifier injection failed: " << error
+          if (value->is_string()) {
+            DLOG(ERROR) << "Verifier injection failed: " << value->GetString()
                         << ", retrying.";
-          } else if (value->GetAsBoolean(&verifier_added)) {
+          } else if (value->is_bool()) {
             return true;
           }
         }

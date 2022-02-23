@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -225,14 +226,15 @@ class PasswordCheckManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   TestingProfile profile_;
-  BulkLeakCheckService* service_ =
+  raw_ptr<BulkLeakCheckService> service_ =
       CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
-  syncer::TestSyncService* sync_service_ = CreateAndUseSyncService(&profile_);
+  raw_ptr<syncer::TestSyncService> sync_service_ =
+      CreateAndUseSyncService(&profile_);
   NiceMock<MockPasswordCheckManagerObserver> mock_observer_;
-  MockPasswordScriptsFetcher* fetcher_ =
+  raw_ptr<MockPasswordScriptsFetcher> fetcher_ =
       CreateAndUseMockPasswordScriptsFetcher(&profile_);
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<PasswordCheckManager> manager_;
@@ -303,6 +305,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged).Times(AtLeast(1));
@@ -414,6 +417,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
@@ -444,6 +448,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
@@ -474,6 +479,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
 
@@ -507,8 +513,9 @@ TEST_F(PasswordCheckManagerTest,
   // Enable password sync
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
-      /*enabled_features=*/{password_manager::features::
-                                kPasswordScriptsFetching},
+      /*enabled_features=*/
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching},
       /*disabled_features=*/{
           password_manager::features::kPasswordChangeInSettings});
 
@@ -542,6 +549,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings},
       {});
 
@@ -574,6 +582,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings,
        password_manager::features::kPasswordChangeOnlyRecentCredentials},
       {});
@@ -607,6 +616,7 @@ TEST_F(PasswordCheckManagerTest,
   sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordDomainCapabilitiesFetching,
        password_manager::features::kPasswordChangeInSettings,
        password_manager::features::kPasswordChangeOnlyRecentCredentials},
       {});

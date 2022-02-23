@@ -57,12 +57,6 @@ WebrtcFrameSchedulerSimple::~WebrtcFrameSchedulerSimple() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void WebrtcFrameSchedulerSimple::OnEncoderReady() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  encoder_ready_ = true;
-  ScheduleNextFrame();
-}
-
 void WebrtcFrameSchedulerSimple::OnKeyFrameRequested() {
   DCHECK(thread_checker_.CalledOnValidThread());
   key_frame_request_ = true;
@@ -147,6 +141,8 @@ void WebrtcFrameSchedulerSimple::OnEncodedFrameSent(
 
 void WebrtcFrameSchedulerSimple::SetMaxFramerateFps(int max_framerate_fps) {
   // TODO(http://crbug.com/1268253): Implement this.
+  encoder_ready_ = true;
+  ScheduleNextFrame();
 }
 
 void WebrtcFrameSchedulerSimple::SetTickClockForTest(

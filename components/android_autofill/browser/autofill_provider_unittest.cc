@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -29,6 +33,9 @@ class AndroidAutofillManagerTestHelper : public AndroidAutofillManager {
 
 class AutofillProviderTestHelper : public TestAutofillProvider {
  public:
+  explicit AutofillProviderTestHelper(content::WebContents* web_contents)
+      : TestAutofillProvider(web_contents) {}
+
   bool HasServerPrediction() const { return manager_->has_server_prediction(); }
 
  private:
@@ -44,14 +51,17 @@ class AutofillProviderTestHelper : public TestAutofillProvider {
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override {}
 
-  AndroidAutofillManager* manager_;
+  raw_ptr<AndroidAutofillManager> manager_;
 };
 
 class AutofillProviderTest : public testing::Test {
  public:
   void SetUp() override {
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        &browser_context_, nullptr);
+    // Owned by WebContents.
     autofill_provider_test_helper_ =
-        std::make_unique<AutofillProviderTestHelper>();
+        new AutofillProviderTestHelper(web_contents_.get());
     android_autofill_manager_test_helper_ =
         std::make_unique<AndroidAutofillManagerTestHelper>(
             autofill_provider_test_helper_.get());
@@ -66,7 +76,11 @@ class AutofillProviderTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<AutofillProviderTestHelper> autofill_provider_test_helper_;
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  // Owned by WebContents.
+  raw_ptr<AutofillProviderTestHelper> autofill_provider_test_helper_;
   std::unique_ptr<AndroidAutofillManagerTestHelper>
       android_autofill_manager_test_helper_;
 };

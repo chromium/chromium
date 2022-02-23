@@ -6,12 +6,19 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kLatencyHistogramVariant[] = "Common";
+constexpr char kLatencyHistogramWithCacheVariant[] = "Common.WithCache";
+
+}  // namespace
 
 CommonSignalsDecorator::CommonSignalsDecorator(PrefService* local_state,
                                                PrefService* profile_prefs)
@@ -24,6 +31,8 @@ CommonSignalsDecorator::~CommonSignalsDecorator() = default;
 
 void CommonSignalsDecorator::Decorate(SignalsType& signals,
                                       base::OnceClosure done_closure) {
+  auto start_time = base::TimeTicks::Now();
+
   signals.set_os(policy::GetOSPlatform());
   signals.set_os_version(policy::GetOSVersion());
   signals.set_display_name(policy::GetDeviceName());
@@ -58,24 +67,39 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
         static_cast<int32_t>(password_protection_warning_trigger.value()));
   }
 
+  if (cached_device_model_ && cached_device_manufacturer_) {
+    UpdateFromCache(signals);
+    LogSignalsCollectionLatency(kLatencyHistogramWithCacheVariant, start_time);
+    std::move(done_closure).Run();
+    return;
+  }
+
   auto callback =
       base::BindOnce(&CommonSignalsDecorator::OnHardwareInfoRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
-                     std::move(done_closure));
+                     start_time, std::move(done_closure));
 
   base::SysInfo::GetHardwareInfo(std::move(callback));
 }
 
 void CommonSignalsDecorator::OnHardwareInfoRetrieved(
     SignalsType& signals,
+    base::TimeTicks start_time,
     base::OnceClosure done_closure,
     base::SysInfo::HardwareInfo hardware_info) {
-  // TODO(b/178421844): Look into adding caching support for these signals, as
-  // they will never change throughout the browser's lifetime.
-  signals.set_device_model(hardware_info.model);
-  signals.set_device_manufacturer(hardware_info.manufacturer);
+  cached_device_model_ = hardware_info.model;
+  cached_device_manufacturer_ = hardware_info.manufacturer;
+
+  UpdateFromCache(signals);
+
+  LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
   std::move(done_closure).Run();
+}
+
+void CommonSignalsDecorator::UpdateFromCache(SignalsType& signals) {
+  signals.set_device_model(cached_device_model_.value());
+  signals.set_device_manufacturer(cached_device_manufacturer_.value());
 }
 
 }  // namespace enterprise_connectors

@@ -18,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
@@ -41,7 +42,7 @@
 #include "ui/gl/scoped_make_current.h"
 #include "ui/gl/sync_control_vsync_provider.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #include "base/android/build_info.h"
 #endif
@@ -52,10 +53,6 @@
 
 #if !defined(EGL_OPENGL_ES3_BIT)
 #define EGL_OPENGL_ES3_BIT 0x00000040
-#endif
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"
 #endif
 
 // Not present egl/eglext.h yet.
@@ -215,6 +212,7 @@ bool g_egl_angle_display_power_preference_supported = false;
 bool g_egl_angle_external_context_and_surface_supported = false;
 bool g_egl_ext_query_device_supported = false;
 bool g_egl_angle_context_virtualization_supported = false;
+bool g_egl_angle_vulkan_image_supported = false;
 EGLGpuSwitchingObserver* g_egl_gpu_switching_observer = nullptr;
 
 constexpr const char kSwapEventTraceCategories[] = "gpu";
@@ -825,8 +823,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
                         const base::CommandLine* command_line,
                         std::vector<DisplayType>* init_displays) {
   bool usingSoftwareGL =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests) ||
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless);
+      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
   bool isSwANGLE = GetGLImplementationParts() == GetSoftwareGLImplementation();
 
   // SwiftShader does not use the platform extensions
@@ -899,7 +896,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
 
   if (supports_angle_opengl) {
     if (use_angle_default && !supports_angle_d3d) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Don't request desktopGL on android
       AddInitDisplay(init_displays, ANGLE_OPENGLES);
 #else
@@ -1068,7 +1065,7 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   // because it is emulated with pbuffers if native support is not present. See
   // https://crbug.com/382349.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Use the WebGL compatibility extension for detecting ANGLE. ANGLE always
   // exposes it.
   bool is_angle = g_egl_create_context_webgl_compatability_supported;
@@ -1106,7 +1103,7 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   // that version onward.
   g_egl_android_native_fence_sync_supported =
       HasEGLExtension("EGL_ANDROID_native_fence_sync");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!g_egl_android_native_fence_sync_supported &&
       base::android::BuildInfo::GetInstance()->sdk_int() >=
           base::android::SDK_VERSION_NOUGAT &&
@@ -1131,6 +1128,9 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
 
   g_egl_angle_context_virtualization_supported =
       HasEGLExtension("EGL_ANGLE_context_virtualization");
+
+  g_egl_angle_vulkan_image_supported =
+      HasEGLExtension("EGL_ANGLE_vulkan_image");
 
   if (g_egl_angle_power_preference_supported) {
     g_egl_gpu_switching_observer = new EGLGpuSwitchingObserver();
@@ -1302,6 +1302,11 @@ bool GLSurfaceEGL::IsANGLEContextVirtualizationSupported() {
   return g_egl_angle_context_virtualization_supported;
 }
 
+// static
+bool GLSurfaceEGL::IsANGLEVulkanImageSupported() {
+  return g_egl_angle_vulkan_image_supported;
+}
+
 bool GLSurfaceEGL::IsEGLQueryDeviceSupported() {
   return g_egl_ext_query_device_supported;
 }
@@ -1411,13 +1416,13 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
           GetANGLEImplementationFromDisplayType(display_type));
     }
 
-#if defined(USE_X11)
-    // Unset DISPLAY env, so the vulkan can be initialized successfully, if the
-    // X server doesn't support Vulkan surface.
-    absl::optional<ui::ScopedUnsetDisplay> unset_display;
-    if (display_type == ANGLE_VULKAN && !ui::IsVulkanSurfaceSupported())
-      unset_display.emplace();
-#endif  // defined(USE_X11)
+    // The platform may need to unset its platform specific display env in case
+    // of vulkan if the platform doesn't support Vulkan surface.
+    absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
+    if (display_type == ANGLE_VULKAN) {
+      unset_display = GLDisplayEglUtil::GetInstance()
+                          ->MaybeGetScopedDisplayUnsetForVulkan();
+    }
 
     if (!eglInitialize(display, nullptr, nullptr)) {
       bool is_last = disp_index == init_displays.size() - 1;
@@ -1454,12 +1459,12 @@ NativeViewGLSurfaceEGL::NativeViewGLSurfaceEGL(
     EGLNativeWindowType window,
     std::unique_ptr<gfx::VSyncProvider> vsync_provider)
     : window_(window), vsync_provider_external_(std::move(vsync_provider)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (window)
     ANativeWindow_acquire(window);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   RECT windowRect;
   if (GetClientRect(window_, &windowRect))
     size_ = gfx::Rect(windowRect).size();
@@ -1702,11 +1707,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffers(
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceEGL:RealSwapBuffers",
       "width", GetSize().width(),
       "height", GetSize().height());
-
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
 
   EGLuint64KHR new_frame_id = 0;
   bool new_frame_id_is_valid = true;
@@ -2047,10 +2047,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::SwapBuffersWithDamage(
     const std::vector<int>& rects,
     PresentationCallback callback) {
   DCHECK(supports_swap_buffer_with_damage_);
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
 
   GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
       presentation_helper_.get(), std::move(callback));
@@ -2073,10 +2069,6 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
   TRACE_EVENT2("gpu", "NativeViewGLSurfaceEGL:PostSubBuffer", "width", width,
                "height", height);
   DCHECK(supports_post_sub_buffer_);
-  if (!CommitAndClearPendingOverlays()) {
-    DVLOG(1) << "Failed to commit pending overlay planes.";
-    return gfx::SwapResult::SWAP_FAILED;
-  }
   if (surface_origin_ == gfx::SurfaceOrigin::kTopLeft) {
     // With EGL_SURFACE_ORIENTATION_INVERT_Y_ANGLE the contents are rendered
     // inverted, but the PostSubBuffer rectangle is still measured from the
@@ -2095,24 +2087,13 @@ gfx::SwapResult NativeViewGLSurfaceEGL::PostSubBuffer(
 }
 
 bool NativeViewGLSurfaceEGL::SupportsCommitOverlayPlanes() {
-#if defined(OS_ANDROID)
-  return true;
-#else
   return false;
-#endif
 }
 
 gfx::SwapResult NativeViewGLSurfaceEGL::CommitOverlayPlanes(
     PresentationCallback callback) {
-  DCHECK(SupportsCommitOverlayPlanes());
-  // Here we assume that the overlays scheduled on this surface will display
-  // themselves to the screen right away in |CommitAndClearPendingOverlays|,
-  // rather than being queued and waiting for a "swap" signal.
-  GLSurfacePresentationHelper::ScopedSwapBuffers scoped_swap_buffers(
-      presentation_helper_.get(), std::move(callback));
-  if (!CommitAndClearPendingOverlays())
-    scoped_swap_buffers.set_result(gfx::SwapResult::SWAP_FAILED);
-  return scoped_swap_buffers.result();
+  NOTREACHED();
+  return gfx::SwapResult::SWAP_FAILED;
 }
 
 bool NativeViewGLSurfaceEGL::OnMakeCurrent(GLContext* context) {
@@ -2139,37 +2120,16 @@ bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
     GLImage* image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-#if !defined(OS_ANDROID)
   NOTIMPLEMENTED();
   return false;
-#else
-  pending_overlays_.push_back(
-      GLSurfaceOverlay(image, std::move(gpu_fence), overlay_plane_data));
-  return true;
-#endif
 }
 
 NativeViewGLSurfaceEGL::~NativeViewGLSurfaceEGL() {
   Destroy();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (window_)
     ANativeWindow_release(window_);
 #endif
-}
-
-bool NativeViewGLSurfaceEGL::CommitAndClearPendingOverlays() {
-  if (pending_overlays_.empty())
-    return true;
-
-  bool success = true;
-#if defined(OS_ANDROID)
-  for (auto& overlay : pending_overlays_)
-    success &= overlay.ScheduleOverlayPlane(window_);
-  pending_overlays_.clear();
-#else
-  NOTIMPLEMENTED();
-#endif
-  return success;
 }
 
 PbufferGLSurfaceEGL::PbufferGLSurfaceEGL(const gfx::Size& size)
@@ -2184,7 +2144,7 @@ PbufferGLSurfaceEGL::PbufferGLSurfaceEGL(const gfx::Size& size)
 bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   EGLSurface old_surface = surface_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is to allow context virtualization which requires on- and offscreen
   // to use a compatible config. We expect the client to request RGB565
   // onscreen surface also for this to work (with the exception of
@@ -2284,7 +2244,7 @@ EGLSurface PbufferGLSurfaceEGL::GetHandle() {
 }
 
 void* PbufferGLSurfaceEGL::GetShareHandle() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return NULL;
 #else

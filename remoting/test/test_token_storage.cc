@@ -9,7 +9,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -4,7 +4,12 @@
 
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/cup.h"
+#include "components/autofill_assistant/browser/service/cup_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
@@ -115,6 +120,20 @@ void SendRequestNoAuth(
                   loader_factory, std::move(callback));
 }
 
+void VerifyCupResponse(
+    std::unique_ptr<autofill_assistant::cup::CUP> cup,
+    autofill_assistant::ServiceRequestSender::ResponseCallback callback,
+    int http_status,
+    const std::string& response) {
+  absl::optional<std::string> unpacked_response = cup->UnpackResponse(response);
+  if (!unpacked_response) {
+    LOG(ERROR) << "Failed to unpack or verify a response.";
+    return std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
+  }
+
+  return std::move(callback).Run(http_status, *unpacked_response);
+}
+
 }  // namespace
 
 namespace autofill_assistant {
@@ -122,12 +141,14 @@ namespace autofill_assistant {
 ServiceRequestSenderImpl::ServiceRequestSenderImpl(
     content::BrowserContext* context,
     AccessTokenFetcher* access_token_fetcher,
+    std::unique_ptr<cup::CUPFactory> cup_factory,
     std::unique_ptr<SimpleURLLoaderFactory> loader_factory,
     const std::string& api_key,
     bool auth_enabled,
     bool disable_auth_if_no_access_token)
     : context_(context),
       access_token_fetcher_(access_token_fetcher),
+      cup_factory_(std::move(cup_factory)),
       loader_factory_(std::move(loader_factory)),
       api_key_(api_key),
       auth_enabled_(auth_enabled),
@@ -139,7 +160,30 @@ ServiceRequestSenderImpl::~ServiceRequestSenderImpl() = default;
 
 void ServiceRequestSenderImpl::SendRequest(const GURL& url,
                                            const std::string& request_body,
-                                           ResponseCallback callback) {
+                                           ResponseCallback callback,
+                                           RpcType rpc_type) {
+  if (!cup::ShouldSignRequests(rpc_type)) {
+    InternalSendRequest(url, request_body, std::move(callback));
+    return;
+  }
+
+  std::unique_ptr<cup::CUP> cup =
+      cup_factory_->CreateInstance(RpcType::GET_ACTIONS);
+  std::string signed_request = cup->PackAndSignRequest(request_body);
+
+  auto maybe_wrapped_callback = std::move(callback);
+  if (cup::ShouldVerifyResponses(rpc_type)) {
+    maybe_wrapped_callback = base::BindOnce(&VerifyCupResponse, std::move(cup),
+                                            std::move(maybe_wrapped_callback));
+  }
+
+  InternalSendRequest(url, signed_request, std::move(maybe_wrapped_callback));
+}
+
+void ServiceRequestSenderImpl::InternalSendRequest(
+    const GURL& url,
+    const std::string& request_body,
+    ResponseCallback callback) {
   if (auth_enabled_ && access_token_fetcher_ == nullptr) {
     LOG(ERROR) << "auth requested, but no access token fetcher provided";
     std::move(callback).Run(net::HTTP_UNAUTHORIZED, std::string());
@@ -220,7 +264,7 @@ void ServiceRequestSenderImpl::RetryIfUnauthorized(
     DCHECK(!retried_with_fresh_access_token_);
     retried_with_fresh_access_token_ = true;
     access_token_fetcher_->InvalidateAccessToken(access_token);
-    SendRequest(url, request_body, std::move(callback));
+    InternalSendRequest(url, request_body, std::move(callback));
     return;
   }
   std::move(callback).Run(http_status, response);

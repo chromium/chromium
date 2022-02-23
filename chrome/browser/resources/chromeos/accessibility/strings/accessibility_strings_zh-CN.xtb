@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">练习区：下拉列表</translation>
 <translation id="1195238899008218998">后记</translation>
 <translation id="1197088940767939838">橙色</translation>
+<translation id="1198865190323699001">触摸手势</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">没有下一个 4 级标题</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{1个右方括号}other{#个右方括号}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{1个问号}other{#个问号}}</translation>
+<translation id="3505359110822747654">收起 ChromeVox 菜单</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{1个插入符号}other{#个插入符号}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{白色项目符号}other{# 个白色项目符号}}</translation>
 <translation id="352577523970648069">可编辑的文本字段</translation>
 <translation id="3538907380453898475">说明表</translation>
 <translation id="3549141990712742152">剪切<ph name="TEXT" />。</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">已完成快速入门教程！</translation>
 <translation id="5534303576632885660">标头标记</translation>
 <translation id="5539820223028224601">庚斯博罗灰色</translation>
+<translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5549179427201066174">开启或关闭声音反馈（耳标）</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5561345396546889625">下一个列表</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">下一个复选框</translation>
 <translation id="5598905979683743333"><ph name="NAME" />，未选中的单选按钮</translation>
 <translation id="5601172225407283979">执行默认操作</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{方形项目符号}other{# 个方形项目符号}}</translation>
 <translation id="5608798115546226984">自动填充内嵌</translation>
 <translation id="5616029807486814372">下一课</translation>
 <translation id="561939826962581046">time</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">下拉列表</translation>
 <translation id="8666733765751421568">已到<ph name="TYPE" />末尾</translation>
 <translation id="867187640362843212">5 级标题标记</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{嵌套的级别 #}}</translation>
 <translation id="8693391540059827073">我最喜爱的季节</translation>
 <translation id="8696284982970258155">蜜瓜绿色</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{1个竖线符号}other{#个竖线符号}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">深红色</translation>
 <translation id="923331726185079994">ChromeVox 已更新</translation>
 <translation id="93384979447910801">暗海绿色</translation>
+<translation id="937605981140327129">目前未安装 TalkBack。请通过 Play 商店安装 Android AccessibilitySuite，然后重试。</translation>
 <translation id="948171205378458592">减慢语速</translation>
 <translation id="957570623732056069">用 1 根手指向左或向右滑动屏幕即可浏览此课程</translation>
 <translation id="958854023026327378">向下滑动一根手指</translation>

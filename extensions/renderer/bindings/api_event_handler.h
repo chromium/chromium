@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"
 #include "extensions/renderer/bindings/event_emitter.h"
@@ -21,7 +21,6 @@ class ListValue;
 
 namespace extensions {
 class ExceptionHandler;
-struct EventFilteringInfo;
 
 // The object to handle API events. This includes vending v8::Objects for the
 // event; handling adding, removing, and querying listeners; and firing events
@@ -73,11 +72,11 @@ class APIEventHandler {
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
                           const base::ListValue& arguments,
-                          const EventFilteringInfo* filter);
+                          mojom::EventFilteringInfoPtr filter);
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
                           std::vector<v8::Local<v8::Value>>* arguments,
-                          const EventFilteringInfo* filter,
+                          mojom::EventFilteringInfoPtr filter,
                           JSRunner::ResultCallback callback);
 
   // Registers a |function| to serve as an "argument massager" for the given

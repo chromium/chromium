@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>horizontal_scroller.html</title>
+<style>
+  * {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  #bar {
+    background-color: green;
+    height: 50.5px;
+    margin-right: -100px; /* enforce horizontal scroll bar */
+  }
+
+  #link {
+    background-color: red;
+  }
+</style>
+<script>
+function registerClick() {
+  document.getElementById('click-counter').value += 1;
+  return false;
+}
+</script>
+<div id="bar"></div>
+<a id="link" href="#" onclick="return registerClick();">Click me</a>
+<div>
+  <input id="click-counter" type="number" value="0"/>
+</div>

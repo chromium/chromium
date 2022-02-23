@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/ppb_input_event.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_input_event_api.h"

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "cc/paint/paint_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -21,14 +22,14 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -58,8 +59,8 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
     Image* image = image_.get();
     std::unique_ptr<SkCanvas> null_canvas = SkMakeNullCanvas();
     SkiaPaintCanvas canvas(null_canvas.get());
-    PaintFlags flags;
-    FloatRect dummy_rect(0, 0, 100, 100);
+    cc::PaintFlags flags;
+    gfx::RectF dummy_rect(0, 0, 100, 100);
     image->Draw(&canvas, flags, dummy_rect, dummy_rect, ImageDrawOptions());
   }
 
@@ -246,7 +247,8 @@ TEST_F(SVGImageTest, PaintFrameForCurrentFrameWithMQAndZoom) {
        kShouldPause);
 
   scoped_refptr<SVGImageForContainer> container = SVGImageForContainer::Create(
-      &GetImage(), FloatSize(100, 100), 2, NullURL());
+      &GetImage(), gfx::SizeF(100, 100), 2, NullURL(),
+      mojom::blink::PreferredColorScheme::kLight);
   SkBitmap bitmap =
       container->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   ASSERT_EQ(bitmap.width(), 100);

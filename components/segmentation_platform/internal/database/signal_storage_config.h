@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
@@ -95,7 +96,7 @@ class SignalStorageConfig {
 
   std::unique_ptr<SignalStorageConfigProtoDb> database_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   base::WeakPtrFactory<SignalStorageConfig> weak_ptr_factory_{this};
 };

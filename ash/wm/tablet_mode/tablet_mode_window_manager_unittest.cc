@@ -1807,4 +1807,87 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
   EXPECT_TRUE(home_screen_window->TargetVisibility());
 }
 
+// Test the basic restore behavior in tablet mode. Different with the restore
+// behavior in clamshell mode, a window can not be restored to kNormal window
+// state if it's maximizable.
+TEST_F(TabletModeWindowManagerTest, BasicRestoreBehaviors) {
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+  gfx::Rect rect(10, 10, 200, 50);
+  std::unique_ptr<aura::Window> window(
+      CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
+
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Restoring a maximized window in tablet mode will still keep it in maximized
+  // state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kPrimarySnapped window state.
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  // Restoring a snapped window in tablet mode will change the window back to
+  // maximized window state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kFullscreen window state.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  // Restoring a fullscreen window in tablet mode will change the window back to
+  // maximized window state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kMinimized window state.
+  const WMEvent minimized_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimized_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsMaximized());
+
+  // Transition to kPrimarySnapped first and then to kFullscreen and then try to
+  // restore it.
+  window_state->OnWMEvent(&snap_left);
+  window_state->OnWMEvent(&fullscreen_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+
+  // Minimize and then restore it will still restore the window back to snapped
+  // window state.
+  window_state->OnWMEvent(&minimized_event);
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+}
+
+TEST_F(TabletModeWindowManagerTest, NonMaximizableWindowRestore) {
+  TabletModeWindowManager* manager = CreateTabletModeWindowManager();
+  EXPECT_TRUE(manager);
+
+  gfx::Rect rect(10, 10, 200, 50);
+  gfx::Size max_size(300, 200);
+  std::unique_ptr<aura::Window> window(CreateNonMaximizableWindow(
+      aura::client::WINDOW_TYPE_NORMAL, rect, max_size));
+
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsMaximized());
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kFullscreen);
+
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  // Restoring a kNormal window will keep it in the same kNormal state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+}
+
 }  // namespace ash

@@ -4,18 +4,18 @@
 
 #include "printing/backend/printing_restrictions.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 namespace printing {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kAllowedColorModes[] = "allowedColorModes";
 const char kAllowedDuplexModes[] = "allowedDuplexModes";
 const char kAllowedPinModes[] = "allowedPinModes";
 const char kDefaultColorMode[] = "defaultColorMode";
 const char kDefaultDuplexMode[] = "defaultDuplexMode";
 const char kDefaultPinMode[] = "defaultPinMode";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kPaperSizeName[] = "name";
 const char kPaperSizeNameCustomOption[] = "custom";

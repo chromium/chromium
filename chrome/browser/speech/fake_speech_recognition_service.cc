@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/run_loop.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,11 +63,16 @@ void FakeSpeechRecognitionService::Stop() {
   capturing_audio_ = false;
   device_id_ = "";
   audio_parameters_ = absl::nullopt;
+  MarkDone();
 }
 
 void FakeSpeechRecognitionService::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr buffer) {
   has_received_audio_ = true;
+}
+
+void FakeSpeechRecognitionService::MarkDone() {
+  recognizer_client_remote_->OnSpeechRecognitionStopped();
 }
 
 void FakeSpeechRecognitionService::SendSpeechRecognitionResult(

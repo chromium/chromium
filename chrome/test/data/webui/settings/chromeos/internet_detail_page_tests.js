@@ -143,6 +143,8 @@ suite('InternetDetailPage', function() {
 
   setup(function() {
     loadTimeData.overrideValues({
+      esimPolicyEnabled: true,
+      extendedOpenVpnSettingsEnabled: true,
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
           'internetAddConnectionExpandA11yLabel',
@@ -456,13 +458,64 @@ suite('InternetDetailPage', function() {
       internetDetailPage.init('vpn1_guid', 'VPN', 'vpn1');
     }
 
-    function initWireGuard() {
+    /**
+     * @param {chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+     *     Managed properties used to initialize the network.
+     */
+    function initManagedVpn(managedProperties) {
       init();
       const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kVPN, true);
+      mojoApi_.resetForTest();
+      mojoApi_.addNetworksForTest([
+        OncMojo.managedPropertiesToNetworkState(managedProperties),
+      ]);
+      mojoApi_.setManagedPropertiesForTest(managedProperties);
+      internetDetailPage.init(
+          managedProperties.guid, 'VPN', managedProperties.name.activeValue);
+    }
+
+    /**
+     * @param {chromeos.networConfig.mojom.OncSource=} opt_oncSource If
+     *     provided, sets the source (user / device / policy) of the network.
+     */
+    function initAdvancedVpn(opt_oncSource) {
+      const mojom = chromeos.networkConfig.mojom;
+      const vpn1 = OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kVPN, 'vpn1_guid', 'vpn1');
+      vpn1.source = opt_oncSource;
+      vpn1.typeProperties.vpn.type = mojom.VpnType.kOpenVPN;
+      vpn1.typeProperties.vpn.openVpn = {
+        auth: 'MD5',
+        cipher: 'AES-192-CBC',
+        compressionAlgorithm: 'LZO',
+        tlsAuthContents: 'FAKE_CREDENTIAL_VPaJDV9x',
+        keyDirection: '1',
+      };
+      initManagedVpn(vpn1);
+    }
+
+    function initVpnWithNoAdvancedProperties() {
+      const mojom = chromeos.networkConfig.mojom;
+      const vpn1 = OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kVPN, 'vpn1_guid', 'vpn1');
+      vpn1.source = mojom.OncSource.kUserPolicy;
+      vpn1.typeProperties.vpn.type = mojom.VpnType.kOpenVPN;
+      // Try out all the values considered "empty" to make sure we do not
+      // register any of them as set.
+      vpn1.typeProperties.vpn.openVpn = {
+        auth: '',
+        cipher: undefined,
+        compressionAlgorithm: null,
+      };
+      initManagedVpn(vpn1);
+    }
+
+    function initWireGuard() {
+      const mojom = chromeos.networkConfig.mojom;
       const wg1 = OncMojo.getDefaultManagedProperties(
-          chromeos.networkConfig.mojom.NetworkType.kVPN, 'wg1_guid', 'wg1');
-      wg1.typeProperties.vpn.type =
-          chromeos.networkConfig.mojom.VpnType.kWireGuard;
+          mojom.NetworkType.kVPN, 'wg1_guid', 'wg1');
+      wg1.typeProperties.vpn.type = mojom.VpnType.kWireGuard;
       wg1.typeProperties.vpn.wireguard = {
         peers: {
           activeValue: [{
@@ -473,13 +526,7 @@ suite('InternetDetailPage', function() {
         }
       };
       wg1.staticIpConfig = {ipAddress: {activeValue: '10.10.0.1'}};
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kVPN, true);
-      mojoApi_.resetForTest();
-      mojoApi_.addNetworksForTest([
-        OncMojo.managedPropertiesToNetworkState(wg1),
-      ]);
-      mojoApi_.setManagedPropertiesForTest(wg1);
-      internetDetailPage.init('wg1_guid', 'VPN', 'wg1');
+      initManagedVpn(wg1);
     }
 
     test('VPN config allowed', function() {
@@ -506,6 +553,20 @@ suite('InternetDetailPage', function() {
       });
     });
 
+    test('Managed VPN with advanced fields', function() {
+      initAdvancedVpn(chromeos.networkConfig.mojom.OncSource.kUserPolicy);
+      return flushAsync().then(() => {
+        assertTrue(!!internetDetailPage.$$('#advancedFields'));
+      });
+    });
+
+    test('Unmanaged VPN with advanced fields', function() {
+      initAdvancedVpn(chromeos.networkConfig.mojom.OncSource.kUser);
+      return flushAsync().then(() => {
+        assertFalse(!!internetDetailPage.$$('#advancedFields'));
+      });
+    });
+
     // Regression test for issue fixed as part of https://crbug.com/1191626
     // where page would throw an exception if prefs were undefined. Prefs are
     // expected to be undefined if InternetDetailPage is loaded directly (e.g.,
@@ -526,6 +587,17 @@ suite('InternetDetailPage', function() {
       initWireGuard();
       return flushAsync().then(() => {
         assertTrue(!!internetDetailPage.$$('#wgPublicKeyField'));
+      });
+    });
+
+    test('Advanced section hidden when properties are not set', function() {
+      initVpnWithNoAdvancedProperties();
+      return flushAsync().then(() => {
+        const expandButtons = internetDetailPage.shadowRoot.querySelectorAll(
+            'cr-expand-button.settings-box');
+        expandButtons.forEach(button => {
+          assertNotEquals('Advanced', button.textContent.trim());
+        });
       });
     });
 

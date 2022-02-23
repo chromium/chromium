@@ -13,6 +13,7 @@ goog.provide('__crWeb.navigationListeners');
 
 window.addEventListener('hashchange', function(evt) {
   __gCrWeb.common.sendWebKitMessage(
-      'NavigationEventMessage', {'command': 'hashchange'});
+      'NavigationEventMessage',
+      {'command': 'hashchange', 'frame_id': __gCrWeb.message.getFrameId()});
 });
 }());  // End of anonymous object

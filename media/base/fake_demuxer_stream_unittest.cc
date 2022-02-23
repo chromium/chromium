@@ -114,7 +114,7 @@ class FakeDemuxerStreamTest : public testing::Test {
   }
 
   void ReadUntilPending() {
-    while (1) {
+    while (true) {
       read_pending_ = true;
       stream_->Read(base::BindOnce(&FakeDemuxerStreamTest::BufferReady,
                                    base::Unretained(this)));

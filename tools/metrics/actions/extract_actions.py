@@ -97,80 +97,17 @@ QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
 # generate the known actions to AddComputedActions() below.
 KNOWN_COMPUTED_USERS = (
     'back_forward_menu_model.cc',
-    'options_page_view.cc',
-    'render_view_host.cc',  # called using webkit identifiers
     'user_metrics.cc',  # method definition
-    'new_tab_ui.cc',  # most visited clicks 1-9
-    'extension_metrics_module.cc',  # extensions hook for user metrics
-    'language_options_handler_common.cc',  # languages and input methods in CrOS
-    'cros_language_options_handler.cc',  # languages and input methods in CrOS
     'external_metrics.cc',  # see AddChromeOSActions()
-    'core_options_handler.cc',  # see AddWebUIActions()
-    'browser_render_process_host.cc',  # see AddRendererActions()
     'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
     'render_process_host_impl.cc',  # browser side impl for
     # RenderThread::RecordComputedAction()
     'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
-    'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
     'pepper_pdf_host.cc',  # see AddClosedSourceActions()
-    'record_user_action.cc',  # see RecordUserAction.java
     'blink_platform_impl.cc',  # see WebKit/public/platform/Platform.h
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
     'sharing_hub_sub_menu_model.cc',  # share targets
-)
-
-# Language codes used in Chrome. The list should be updated when a new
-# language is added to app/l10n_util.cc, as follows:
-#
-# % (cat app/l10n_util.cc | \
-#    perl -n0e 'print $1 if /kAcceptLanguageList.*?\{(.*?)\}/s' | \
-#    perl -nle 'print $1, if /"(.*)"/'; echo 'es-419') | \
-#   sort | perl -pe "s/(.*)\n/'\$1', /" | \
-#   fold -w75 -s | perl -pe 's/^/  /;s/ $//'; echo
-#
-# The script extracts language codes from kAcceptLanguageList, but es-419
-# (Spanish in Latin America) is an exception.
-LANGUAGE_CODES = (
-  'af', 'am', 'ar', 'az', 'be', 'bg', 'bh', 'bn', 'br', 'bs', 'ca', 'co',
-  'cs', 'cy', 'da', 'de', 'de-AT', 'de-CH', 'de-DE', 'el', 'en', 'en-AU',
-  'en-CA', 'en-GB', 'en-NZ', 'en-US', 'en-ZA', 'eo', 'es', 'es-419', 'et',
-  'eu', 'fa', 'fi', 'fil', 'fo', 'fr', 'fr-CA', 'fr-CH', 'fr-FR', 'fy',
-  'ga', 'gd', 'gl', 'gn', 'gu', 'ha', 'haw', 'he', 'hi', 'hr', 'hu', 'hy',
-  'ia', 'id', 'is', 'it', 'it-CH', 'it-IT', 'ja', 'jw', 'ka', 'kk', 'km',
-  'kn', 'ko', 'ku', 'ky', 'la', 'ln', 'lo', 'lt', 'lv', 'mk', 'ml', 'mn',
-  'mo', 'mr', 'ms', 'mt', 'nb', 'ne', 'nl', 'nn', 'no', 'oc', 'om', 'or',
-  'pa', 'pl', 'ps', 'pt', 'pt-BR', 'pt-PT', 'qu', 'rm', 'ro', 'ru', 'sd',
-  'sh', 'si', 'sk', 'sl', 'sn', 'so', 'sq', 'sr', 'st', 'su', 'sv', 'sw',
-  'ta', 'te', 'tg', 'th', 'ti', 'tk', 'to', 'tr', 'tt', 'tw', 'ug', 'uk',
-  'ur', 'uz', 'vi', 'xh', 'yi', 'yo', 'zh', 'zh-CN', 'zh-TW', 'zu',
-)
-
-# Input method IDs used in Chrome OS. The list should be updated when a
-# new input method is added to
-# chromeos/ime/input_methods.txt in the Chrome tree, as
-# follows:
-#
-# % sort chromeos/ime/input_methods.txt | \
-#   perl -ne "print \"'\$1', \" if /^([^#]+?)\s/" | \
-#   fold -w75 -s | perl -pe 's/^/  /;s/ $//'; echo
-#
-# The script extracts input method IDs from input_methods.txt.
-INPUT_METHOD_IDS = (
-  'xkb:am:phonetic:arm', 'xkb:be::fra', 'xkb:be::ger', 'xkb:be::nld',
-  'xkb:bg::bul', 'xkb:bg:phonetic:bul', 'xkb:br::por', 'xkb:by::bel',
-  'xkb:ca::fra', 'xkb:ca:eng:eng', 'xkb:ca:multix:fra', 'xkb:ch::ger',
-  'xkb:ch:fr:fra', 'xkb:cz::cze', 'xkb:cz:qwerty:cze', 'xkb:de::ger',
-  'xkb:de:neo:ger', 'xkb:dk::dan', 'xkb:ee::est', 'xkb:es::spa',
-  'xkb:es:cat:cat', 'xkb:fi::fin', 'xkb:fr::fra', 'xkb:gb:dvorak:eng',
-  'xkb:gb:extd:eng', 'xkb:ge::geo', 'xkb:gr::gre', 'xkb:hr::scr',
-  'xkb:hu::hun', 'xkb:il::heb', 'xkb:is::ice', 'xkb:it::ita', 'xkb:jp::jpn',
-  'xkb:latam::spa', 'xkb:lt::lit', 'xkb:lv:apostrophe:lav', 'xkb:mn::mon',
-  'xkb:no::nob', 'xkb:pl::pol', 'xkb:pt::por', 'xkb:ro::rum', 'xkb:rs::srp',
-  'xkb:ru::rus', 'xkb:ru:phonetic:rus', 'xkb:se::swe', 'xkb:si::slv',
-  'xkb:sk::slo', 'xkb:tr::tur', 'xkb:ua::ukr', 'xkb:us::eng',
-  'xkb:us:altgr-intl:eng', 'xkb:us:colemak:eng', 'xkb:us:dvorak:eng',
-  'xkb:us:intl:eng',
 )
 
 # The path to the root of the repository.
@@ -204,18 +141,6 @@ def AddComputedActions(actions):
     for i in range(1, 20):
       actions.add(dir + 'HistoryClick' + str(i))
       actions.add(dir + 'ChapterClick' + str(i))
-
-  # Actions for new_tab_ui.cc.
-  for i in range(1, 10):
-    actions.add('MostVisited%d' % i)
-
-  # Actions for language_options_handler.cc (Chrome OS specific).
-  for input_method_id in INPUT_METHOD_IDS:
-    actions.add('LanguageOptions_DisableInputMethod_%s' % input_method_id)
-    actions.add('LanguageOptions_EnableInputMethod_%s' % input_method_id)
-  for language_code in LANGUAGE_CODES:
-    actions.add('LanguageOptions_UiLanguageChange_%s' % language_code)
-    actions.add('LanguageOptions_SpellCheckLanguageChange_%s' % language_code)
 
   # Actions for sharing_hub_bubble_controller.cc and
   # sharing_hub_sub_menu_model.cc.

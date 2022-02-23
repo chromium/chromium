@@ -440,6 +440,50 @@ TEST_F(FeatureConfigConditionValidatorTest, TwoFailingPreconditions) {
   EXPECT_FALSE(result.preconditions_ok);
 }
 
+TEST_F(FeatureConfigConditionValidatorTest, PriorityNotification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
+  std::vector<std::string> all_feature_names = {
+      kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name};
+
+  FeatureConfig foo_config = GetAcceptingFeatureConfig();
+  FeatureConfig bar_config = GetAcceptingFeatureConfig();
+
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
+          .NoErrors());
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
+          .NoErrors());
+
+  validator_.SetPriorityNotification(kFeatureConfigTestFeatureFoo.name);
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
+          .NoErrors());
+  ConditionValidator::Result result =
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.priority_notification_ok);
+
+  validator_.SetPriorityNotification(absl::nullopt);
+  validator_.SetPriorityNotification(kFeatureConfigTestFeatureBar.name);
+  EXPECT_FALSE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
+          .NoErrors());
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
+          .NoErrors());
+
+  validator_.SetPriorityNotification(absl::nullopt);
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
+          .NoErrors());
+  EXPECT_TRUE(
+      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
+          .NoErrors());
+}
+
 TEST_F(FeatureConfigConditionValidatorTest, SessionRate) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

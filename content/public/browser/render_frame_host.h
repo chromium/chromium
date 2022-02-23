@@ -35,7 +35,7 @@
 class GURL;
 
 namespace base {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 template <typename T>
 class JavaRef;
@@ -101,6 +101,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
+class DocumentRef;
 struct GlobalRenderFrameHostId;
 class RenderProcessHost;
 class RenderViewHost;
@@ -108,6 +109,7 @@ class RenderWidgetHost;
 class RenderWidgetHostView;
 class SiteInstance;
 class StoragePartition;
+class WeakDocumentPtr;
 class WebUI;
 class Page;
 
@@ -155,7 +157,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       int render_process_id,
       const blink::RemoteFrameToken& placeholder_frame_token);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the RenderFrameHost object associated with a Java native pointer.
   static RenderFrameHost* FromJavaRenderFrameHost(
       const base::android::JavaRef<jobject>& jrender_frame_host_android);
@@ -688,7 +690,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
     // After a cross-document navigation, the old documents are going to run
     // unload handlers in the background and will be deleted thereafter e.g.
     // after a DidFinishNavigation in the same frame for a different
-    // RenderFrameHost, up until RenderFrameDeleted.
+    // RenderFrameHost, up until RenderFrameDeleted. Use
+    // RenderFrameHostWrapper::WaitUntilRenderFrameDelete() to wait until
+    // RenderFrameHost is deleted in tests.
     kPendingDeletion,
   };
 
@@ -707,6 +711,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // a state.  Eventually, we should make sure that embedders only learn about
   // new RenderFrameHosts when they reach the kPendingCommit state.
   virtual LifecycleState GetLifecycleState() = 0;
+
+  // Returns true if and only if the `lifecycle_state` matches
+  // `GetLifecycleState`. This is helpful for determining if a RenderFrameHost
+  // is in a specific state since GetLifecycleState can crash on speculative
+  // frames. TODO(crbug.com/1183639): Remove this method once
+  // GetLifecycleState() can be used for speculative.
+  virtual bool IsInLifecycleState(LifecycleState lifecycle_state) = 0;
 
   // Returns true if the document hosted in this RenderFrameHost is committed
   // and lives inside a page presented to the user for the WebContents it is in
@@ -801,7 +812,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void SetWebUIProperty(const std::string& name,
                                 const std::string& value) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the Java object of this instance.
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetJavaRenderFrameHost() = 0;
@@ -811,7 +822,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // implemented in Java in the browser process to C++ code in the browser
   // process.
   virtual service_manager::InterfaceProvider* GetJavaInterfaces() = 0;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Stops and disables the hang monitor for beforeunload. This avoids flakiness
   // in tests that need to observe beforeunload dialogs, which could fail if the
@@ -994,7 +1005,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void DisableWebRtcEventLogOutput(int lid) = 0;
 
   // Return true if onload has been executed in the renderer in the main frame.
-  virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
+  virtual bool IsDocumentOnLoadCompletedInPrimaryMainFrame() = 0;
 
   // Returns the raw list of favicon candidates as reported to observers via
   // since the last navigation start. If called on a subframe, returns the
@@ -1015,6 +1026,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This can't be called for pending commit RFH because the value is set
   // during call to RenderFrameHostImpl::DidNavigate which happens after commit.
   virtual bool IsErrorDocument() = 0;
+
+  // Return checked and weak references, respectively, to the current document
+  // in this RenderFrameHost, which will be no longer valid once the
+  // RenderFrameHost is deleted or navigates to another document.
+  virtual DocumentRef GetDocumentRef() = 0;
+  virtual WeakDocumentPtr GetWeakDocumentPtr() = 0;
 
  private:
   // This interface should only be implemented inside content.

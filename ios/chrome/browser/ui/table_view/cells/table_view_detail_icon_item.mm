@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -19,7 +20,10 @@ namespace {
 
 // Proportion of Cell's textLabel/detailTextLabel. This guarantees that the
 // textLabel occupies 75% of the row space and detailTextLabel occupies 25%.
-const CGFloat kCellLabelsWidthProportion = 3.0f;
+constexpr CGFloat kCellLabelsWidthProportion = 3.f;
+
+// Minimum cell height when the cell has 2 lines.
+constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 
 }  // namespace
 
@@ -39,7 +43,7 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
-  cell.detailTextLabel.text = self.detailText;
+  [cell setDetailText:self.detailText];
 
   // Update the icon image, if one is present.
   UIImage* iconImage = nil;
@@ -56,15 +60,18 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
 
 @interface TableViewDetailIconCell ()
 
-// When they are activated, the labels are on one line.
-// They conflict with the accessibilityConstraints.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* standardConstraints;
-// When they are activated, each label is on its own line, with no line number
-// limit. They conflict with the standardConstraints.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* accessibilityConstraints;
 // View containing UILabels |text| and |detailText|.
 @property(nonatomic, strong) UIStackView* textStackView;
+// Padding layout constraints.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* verticalPaddingConstraints;
+// Constraint to set the cell minimun height.
+@property(nonatomic, strong) NSLayoutConstraint* minimumCellHeightConstraint;
+// Text width constraint between the title and the detail text.
+@property(nonatomic, strong) NSLayoutConstraint* textWidthConstraint;
+// Detail text. Can be nil if no text is set.
+@property(nonatomic, strong) UILabel* detailTextLabel;
+
 @end
 
 @implementation TableViewDetailIconCell {
@@ -95,16 +102,8 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
 
-    _detailTextLabel = [[UILabel alloc] init];
-    _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _detailTextLabel.backgroundColor = UIColor.clearColor;
-
-    _textStackView = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
+    _textStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ _textLabel ]];
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_textStackView];
 
@@ -117,37 +116,14 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
         constraintEqualToAnchor:_iconImageView.trailingAnchor
                        constant:kTableViewImagePadding];
 
-    // In case the two labels don't fit in width, have the |textLabel| be 3
-    // times the width of the |detailTextLabel| (so 75% / 25%).
-    NSLayoutConstraint* widthConstraint = [_textLabel.widthAnchor
-        constraintEqualToAnchor:_detailTextLabel.widthAnchor
-                     multiplier:kCellLabelsWidthProportion];
-    // Set low priority to the proportion constraint between |_textLabel| and
-    // |_detailTextLabel|, so that it won't break other layouts.
-    widthConstraint.priority = UILayoutPriorityDefaultLow;
-
-    NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
+    _minimumCellHeightConstraint = [contentView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
-    // Don't set the priority to required to avoid clashing with the estimated
-    // height.
-    heightConstraint.priority = UILayoutPriorityRequired - 1;
-
-    _standardConstraints = @[
-      [_textStackView.centerYAnchor
-          constraintEqualToAnchor:contentView.centerYAnchor],
-      widthConstraint,
-      heightConstraint,
-    ];
-
-    _accessibilityConstraints = @[
-      [_textStackView.topAnchor
-          constraintEqualToAnchor:contentView.topAnchor
-                         constant:kTableViewLargeVerticalSpacing],
-      [_textStackView.bottomAnchor
-          constraintEqualToAnchor:contentView.bottomAnchor
-                         constant:-kTableViewLargeVerticalSpacing],
-
-    ];
+    // Lower the priority for transition. The content view has autoresizing mask
+    // to have the same height than the cell. To avoid breaking the constaints
+    // while updatingn the minimum height constant, the constraint has to have
+    // a lower priority.
+    _minimumCellHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+    _minimumCellHeightConstraint.active = YES;
 
     [NSLayoutConstraint activateConstraints:@[
       // Image.
@@ -164,7 +140,9 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
       // Text labels.
       [_textStackView.trailingAnchor
           constraintEqualToAnchor:contentView.trailingAnchor
-                         constant:-kTableViewTrailingContentPadding],
+                         constant:-kTableViewHorizontalSpacing],
+      [_textStackView.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
       _iconHiddenConstraint,
 
       // Leading constraint for |customSeparator|.
@@ -172,10 +150,10 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
           constraintEqualToAnchor:_textStackView.leadingAnchor],
     ]];
 
-    AddOptionalVerticalPadding(contentView, _textStackView,
-                               kTableViewOneLabelCellVerticalSpacing);
+    _verticalPaddingConstraints = AddOptionalVerticalPadding(
+        contentView, _textStackView, kTableViewTwoLabelsCellVerticalSpacing);
 
-    [self updateForAccessibilityContentSizeCategory:
+    [self updateCellForAccessibilityContentSizeCategory:
               UIContentSizeCategoryIsAccessibilityCategory(
                   self.traitCollection.preferredContentSizeCategory)];
   }
@@ -199,25 +177,48 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
   }
 }
 
+#pragma mark - Properties
+
 - (void)setTextLayoutConstraintAxis:
     (UILayoutConstraintAxis)textLayoutConstraintAxis {
-  UIFontTextStyle preferredFont =
-      textLayoutConstraintAxis == UILayoutConstraintAxisVertical
-          ? kTableViewSublabelFontStyle
-          : UIFontTextStyleBody;
-  self.detailTextLabel.font = [UIFont preferredFontForTextStyle:preferredFont];
+  CGFloat verticalPaddingConstant = 0;
+  switch (textLayoutConstraintAxis) {
+    case UILayoutConstraintAxisVertical:
+      verticalPaddingConstant = kTableViewTwoLabelsCellVerticalSpacing;
+      self.minimumCellHeightConstraint.constant =
+          kChromeTableViewTwoLinesCellHeight;
+      DCHECK(self.detailTextLabel);
+      break;
+    case UILayoutConstraintAxisHorizontal:
+      verticalPaddingConstant = kTableViewOneLabelCellVerticalSpacing;
+      self.minimumCellHeightConstraint.constant = kChromeTableViewCellHeight;
+      break;
+  }
+  DCHECK(verticalPaddingConstant);
+  for (NSLayoutConstraint* constraint in self.verticalPaddingConstraints) {
+    constraint.constant = verticalPaddingConstant;
+  }
 
   self.textStackView.axis = textLayoutConstraintAxis;
 
-  [self updateForAccessibilityContentSizeCategory:
+  [self updateCellForAccessibilityContentSizeCategory:
             UIContentSizeCategoryIsAccessibilityCategory(
                 self.traitCollection.preferredContentSizeCategory)];
 }
 
-#pragma mark - Properties
-
 - (UILayoutConstraintAxis)textLayoutConstraintAxis {
   return self.textStackView.axis;
+}
+
+- (void)setDetailText:(NSString*)detailText {
+  if (detailText.length > 0) {
+    if (!self.detailTextLabel) {
+      [self createDetailTextLabel];
+    }
+    self.detailTextLabel.text = detailText;
+  } else if (self.detailTextLabel) {
+    [self removeDetailTextLabel];
+  }
 }
 
 #pragma mark - UIView
@@ -230,7 +231,7 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
   if (isCurrentCategoryAccessibility !=
       UIContentSizeCategoryIsAccessibilityCategory(
           previousTraitCollection.preferredContentSizeCategory)) {
-    [self updateForAccessibilityContentSizeCategory:
+    [self updateCellForAccessibilityContentSizeCategory:
               isCurrentCategoryAccessibility];
   }
 }
@@ -242,26 +243,60 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
 
   [self setTextLayoutConstraintAxis:UILayoutConstraintAxisHorizontal];
   [self setIconImage:nil];
+  [self setDetailText:nil];
 }
 
 #pragma mark - Private
 
+- (void)createDetailTextLabel {
+  if (self.detailTextLabel) {
+    return;
+  }
+  self.detailTextLabel = [[UILabel alloc] init];
+  self.detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.detailTextLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  self.detailTextLabel.adjustsFontForContentSizeCategory = YES;
+  self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  self.detailTextLabel.backgroundColor = UIColor.clearColor;
+  [self.textStackView addArrangedSubview:self.detailTextLabel];
+  // In case the two labels don't fit in width, have the |textLabel| be 3
+  // times the width of the |detailTextLabel| (so 75% / 25%).
+  self.textWidthConstraint = [self.textLabel.widthAnchor
+      constraintEqualToAnchor:self.detailTextLabel.widthAnchor
+                   multiplier:kCellLabelsWidthProportion];
+  // Set low priority to the proportion constraint between |self.textLabel| and
+  // |self.detailTextLabel|, so that it won't break other layouts.
+  self.textWidthConstraint.priority = UILayoutPriorityDefaultLow;
+  [self updateCellForAccessibilityContentSizeCategory:
+            UIContentSizeCategoryIsAccessibilityCategory(
+                self.traitCollection.preferredContentSizeCategory)];
+}
+
+- (void)removeDetailTextLabel {
+  if (!self.detailTextLabel) {
+    return;
+  }
+  [self.detailTextLabel removeFromSuperview];
+  self.detailTextLabel = nil;
+  self.textWidthConstraint = nil;
+  self.textLayoutConstraintAxis = UILayoutConstraintAxisHorizontal;
+}
+
 // Updates the cell such as it is layouted correctly with regard to the
 // preferred content size category, if it is an
 // |accessibilityContentSizeCategory| or not.
-- (void)updateForAccessibilityContentSizeCategory:
+- (void)updateCellForAccessibilityContentSizeCategory:
     (BOOL)accessibilityContentSizeCategory {
   if (accessibilityContentSizeCategory) {
-    [NSLayoutConstraint deactivateConstraints:_standardConstraints];
-    [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+    _textWidthConstraint.active = NO;
     // detailTextLabel is laid below textLabel with accessibility content size
     // category.
     _detailTextLabel.textAlignment = NSTextAlignmentNatural;
     _detailTextLabel.numberOfLines = 0;
     _textLabel.numberOfLines = 0;
   } else {
-    [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
-    [NSLayoutConstraint activateConstraints:_standardConstraints];
+    _textWidthConstraint.active = YES;
     // detailTextLabel is laid after textLabel and should have a trailing text
     // alignment with non-accessibility content size category if in horizontal
     // axis layout.
@@ -277,6 +312,11 @@ const CGFloat kCellLabelsWidthProportion = 3.0f;
     _detailTextLabel.numberOfLines = 1;
     _textLabel.numberOfLines = 1;
   }
+  UIFontTextStyle preferredFont =
+      _textStackView.axis == UILayoutConstraintAxisVertical
+          ? kTableViewSublabelFontStyle
+          : UIFontTextStyleBody;
+  _detailTextLabel.font = [UIFont preferredFontForTextStyle:preferredFont];
 }
 
 - (NSString*)accessibilityLabel {

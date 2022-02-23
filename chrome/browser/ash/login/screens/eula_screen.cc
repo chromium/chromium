@@ -96,8 +96,6 @@ std::string EulaScreen::GetResultString(Result result) {
       return "Back";
     case Result::ALREADY_ACCEPTED:
     case Result::ALREADY_ACCEPTED_DEMO_MODE:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -120,16 +118,6 @@ EulaScreen::~EulaScreen() {
 bool EulaScreen::MaybeSkip(WizardContext* context) {
   // This should be kept in sync with `testapi_shouldSkipEula`. If the logic
   // became too complicated we need to consider extract and reuse parts of it.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    const auto* const demo_setup_controller =
-        WizardController::default_controller()->demo_setup_controller();
-    if (demo_setup_controller) {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO);
-    } else {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR);
-    }
-    return true;
-  }
 
   if (!context->is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
@@ -167,7 +155,7 @@ bool EulaScreen::IsUsageStatsEnabled() const {
 
 void EulaScreen::OnViewDestroyed(EulaView* view) {
   if (view_ == view)
-    view_ = NULL;
+    view_ = nullptr;
 }
 
 void EulaScreen::ShowImpl() {
@@ -178,7 +166,7 @@ void EulaScreen::ShowImpl() {
     TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
-  if (WizardController::UsingHandsOffEnrollment())
+  if (WizardController::IsZeroTouchHandsOffOobeFlow())
     OnUserAction(kUserActionAcceptButtonClicked);
   else if (view_)
     view_->Show();

@@ -12,6 +12,7 @@ source_set("wm") {
   defines = [ "IS_CHROMEOS_UI_WM_IMPL" ]
 
   sources = [
+    "desks/chromeos_desks_histogram_enums.h",
     "desks/desks_helper.h",
     "features.cc",
     "features.h",

@@ -7,6 +7,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
@@ -103,7 +104,7 @@ class GlLegacySharedImage {
   Mailbox mailbox() { return mailbox_; }
 
  private:
-  gles2::MailboxManagerImpl* mailbox_manager_;
+  raw_ptr<gles2::MailboxManagerImpl> mailbox_manager_;
   gfx::Size size_;
   Mailbox mailbox_;
   std::unique_ptr<SharedImageBacking> backing_;

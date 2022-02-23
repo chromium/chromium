@@ -103,7 +103,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_MENU_TITLE));
   menu_runner_ = std::make_unique<views::MenuRunner>(
       root_view_, views::MenuRunner::CONTEXT_MENU |
-                      views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                      views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                       views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(
       /*widget_owner=*/nullptr, /*menu_button_controller=*/nullptr, anchor_rect,

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_COMMON_CAST_EXTENSIONS_API_PROVIDER_H_
 #define CHROMECAST_COMMON_CAST_EXTENSIONS_API_PROVIDER_H_
 
-#include "base/macros.h"
 #include "extensions/common/extensions_api_provider.h"
 
 namespace extensions {

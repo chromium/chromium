@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "content/common/content_export.h"
 
@@ -74,7 +75,7 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
  private:
   base::TimeDelta total_active_time_;
   base::TimeTicks current_active_time_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace content

@@ -22,20 +22,21 @@
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_error_notifier_factory_ash.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
+#include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
 #include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
-#include "chrome/browser/ui/ash/desks_client.h"
+#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -46,7 +47,6 @@
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
@@ -54,12 +54,15 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
-#include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
+#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
@@ -147,9 +150,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (chromeos::features::IsAmbientModeEnabled())
     ambient_client_ = std::make_unique<AmbientClientImpl>();
 
-  quick_answers_browser_client_ =
-      std::make_unique<QuickAnswersBrowserClientImpl>();
-
   ash_shell_init_ = std::make_unique<AshShellInit>();
 
   screen_orientation_delegate_ =
@@ -170,6 +170,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
         std::make_unique<ChromeNewWindowDelegateProvider>(
             std::move(chrome_new_window_client),
             std::move(crosapi_new_window_delegate));
+    arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
   }
 
   ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
@@ -218,16 +219,20 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 #endif
 
-  night_light_client_ = std::make_unique<NightLightClient>(
+  night_light_client_ = std::make_unique<ash::NightLightClient>(
       g_browser_process->shared_url_loader_factory());
   night_light_client_->Start();
 
   if (ash::features::IsProjectorEnabled()) {
-    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
     projector_client_ = std::make_unique<ProjectorClientImpl>();
+
+    // ProjectorAppClient may trigger function that eventually use the
+    // ProjectorClient. Therefore, create the ProjectorAppClient after the
+    // ProjectorClient.
+    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   }
 
-  desks_client_ = std::make_unique<DesksClient>();
+  desks_templates_client_ = std::make_unique<DesksTemplatesClient>();
 
   if (ash::features::IsBluetoothRevampEnabled()) {
     chromeos::bluetooth_config::FastPairDelegate* delegate =
@@ -239,7 +244,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 }
 
-void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
+void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
+                                                     bool is_initial_profile) {
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
+
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.
@@ -283,8 +293,14 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
-  // Initialize TabScrubber after the Ash Shell has been initialized.
-  TabScrubber::GetInstance();
+  quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
+  QuickAnswersController::Get()->SetClient(
+      std::make_unique<quick_answers::QuickAnswersClient>(
+          g_browser_process->shared_url_loader_factory(),
+          QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+
+  // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
+  TabScrubberChromeOS::GetInstance();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -304,7 +320,10 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
-  desks_client_.reset();
+  desks_templates_client_.reset();
+
+  projector_client_.reset();
+  projector_app_client_.reset();
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
@@ -312,6 +331,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
+  quick_answers_controller_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();
@@ -327,6 +347,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   session_controller_client_.reset();
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
+  arc_open_url_delegate_impl_.reset();
   new_window_delegate_provider_.reset();
   accessibility_controller_client_.reset();
   // AppListClientImpl indirectly holds WebContents for answer card and
@@ -358,12 +379,12 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override {
     Profile* profile =
-        chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-    if (chromeos::ProfileHelper::IsRegularProfile(profile) &&
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+    if (ash::ProfileHelper::IsRegularProfile(profile) &&
         !profile->IsGuestSession()) {
       // Start the error notifier services to show auth/sync notifications.
       ash::SigninErrorNotifierFactory::GetForProfile(profile);
-      SyncErrorNotifierFactory::GetForProfile(profile);
+      ash::SyncErrorNotifierFactory::GetForProfile(profile);
     }
 
     if (ChromeShelfController::instance()) {

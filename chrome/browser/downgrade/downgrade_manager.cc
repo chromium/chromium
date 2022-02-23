@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/enterprise_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/downgrade/downgrade_utils.h"
 #include "chrome/browser/downgrade/snapshot_manager.h"
@@ -40,7 +38,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
 #endif
 
@@ -154,18 +152,14 @@ void DeleteMovedUserData(const base::FilePath& user_data_dir,
 }
 
 bool UserDataSnapshotEnabled() {
-  if (g_snapshots_enabled_for_testing)
-    return true;
-  bool is_enterprise_managed =
-#if defined(OS_WIN) || defined(OS_MAC)
-      base::IsMachineExternallyManaged() ||
+  return g_snapshots_enabled_for_testing ||
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+         base::IsMachineExternallyManaged() ||
 #endif
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
-  return is_enterprise_managed &&
-         base::FeatureList::IsEnabled(features::kUserDataSnapshot);
+         policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsAdministratorDrivenDowngrade(uint16_t current_milestone) {
   const auto downgrade_version = InstallUtil::GetDowngradeVersion();
   return downgrade_version &&
@@ -307,9 +301,9 @@ DowngradeManager::Type DowngradeManager::GetDowngradeType(
   DCHECK(!user_data_dir.empty());
   DCHECK_LT(current_version, last_version);
 
-#if defined(OS_WIN)
-    // Move User Data aside for a clean launch if it follows an
-    // administrator-driven downgrade.
+#if BUILDFLAG(IS_WIN)
+  // Move User Data aside for a clean launch if it follows an
+  // administrator-driven downgrade.
   if (IsAdministratorDrivenDowngrade(current_version.components()[0]))
     return Type::kAdministrativeWipe;
 #endif
@@ -331,7 +325,7 @@ DowngradeManager::Type DowngradeManager::GetDowngradeTypeWithSnapshot(
   const auto snapshot_to_restore =
       GetSnapshotToRestore(current_version, user_data_dir);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Move User Data aside for a clean launch if it follows an
   // administrator-driven downgrade when no snapshot is found.
   if (!snapshot_to_restore && IsAdministratorDrivenDowngrade(milestone))

@@ -39,11 +39,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -54,6 +56,7 @@ import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -62,18 +65,15 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.IOException;
 import java.util.List;
@@ -111,23 +111,21 @@ public class SyncConsentFragmentTest {
     }
 
     @Rule
-    public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
+    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountInfoService());
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public final ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -233,8 +231,7 @@ public class SyncConsentFragmentTest {
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -253,8 +250,7 @@ public class SyncConsentFragmentTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -267,19 +263,21 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testFragmentWithRegularChildAccount() throws IOException {
+    public void testFragmentWithChildAccount() throws IOException {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
         Assert.assertEquals(1, startPageHistogram.getDelta());
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child");
     }
@@ -287,63 +285,47 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testFragmentWithUSMChildAccount() throws IOException {
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void testFragmentWithChildAccountAllowSyncOff() throws IOException {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
         Assert.assertEquals(1, startPageHistogram.getDelta());
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "sync_consent_fragment_with_usm_child");
+                "sync_consent_fragment_with_regular_child_allow_sync_off");
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
     @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
-    public void testFragmentWithRegularChildAccountLegacy() throws IOException {
+    public void testFragmentWithChildAccountLegacy() throws IOException {
         HistogramDelta startPageHistogram =
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, true);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         launchActivityWithFragment(fragment);
         Assert.assertEquals(1, startPageHistogram.getDelta());
+        // TODO(https://crbug.com/1291903): Rewrite this test when RenderTestRule is integrated with
+        // Espresso.
+        onView(withId(R.id.positive_button)).check(matches(isDisplayed()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "sync_consent_fragment_with_regular_child_legacy");
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @CommandLineFlags.Remove({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
-    public void testFragmentWithUSMChildAccountLegacy() throws IOException {
-        HistogramDelta startPageHistogram =
-                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);
-        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
-        fragment.setPageDelegate(mFirstRunPageDelegateMock);
-
-        launchActivityWithFragment(fragment);
-        Assert.assertEquals(1, startPageHistogram.getDelta());
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "sync_consent_fragment_with_usm_child_legacy");
     }
 
     @Test
@@ -353,8 +335,7 @@ public class SyncConsentFragmentTest {
         mAccountManagerTestRule.addTestAccountThenSignin();
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
 
@@ -374,8 +355,7 @@ public class SyncConsentFragmentTest {
                 "Primary account should be a different account!", defaultAccount, primaryAccount);
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
@@ -392,8 +372,7 @@ public class SyncConsentFragmentTest {
     public void testFRESyncConsentScreenWhenSignedInWithoutSyncDynamically() throws IOException {
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
@@ -441,8 +420,7 @@ public class SyncConsentFragmentTest {
     public void testSigninFREFragmentWithoutSelectedAccount() {
         CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+        bundle.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);

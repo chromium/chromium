@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "ash/components/login/auth/challenge_response_key.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -29,8 +31,6 @@
 #include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
-#include "chromeos/login/auth/challenge_response_key.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -117,13 +117,14 @@ void DisplayNotification(const std::u16string& title,
 // Loads the persistently stored information about the challenge-response keys
 // that can be used for authenticating the user.
 void LoadStoredChallengeResponseSpkiKeysForUser(
+    PrefService* local_state,
     const AccountId& account_id,
     base::flat_map<std::string, std::vector<std::string>>* extension_to_spkis,
     base::flat_set<std::string>* extension_ids) {
   // TODO(crbug.com/1164373) This approach does not work for ephemeral users.
   // Instead, only get the certificate that was actually used on the last login.
   const base::Value known_user_value =
-      user_manager::known_user::GetChallengeResponseKeys(account_id);
+      user_manager::KnownUser(local_state).GetChallengeResponseKeys(account_id);
   std::vector<DeserializedChallengeResponseKey>
       deserialized_challenge_response_keys;
   DeserializeChallengeResponseKeyFromKnownUser(
@@ -172,7 +173,8 @@ SecurityTokenSessionController::SecurityTokenSessionController(
   certificate_provider_ =
       certificate_provider_service_->CreateCertificateProvider();
   LoadStoredChallengeResponseSpkiKeysForUser(
-      user_->GetAccountId(), &extension_to_spkis_, &observed_extensions_);
+      local_state_, user_->GetAccountId(), &extension_to_spkis_,
+      &observed_extensions_);
   UpdateNotificationPref();
   behavior_ = GetBehaviorFromPref();
   pref_change_registrar_.Init(profile_prefs_);
@@ -202,7 +204,8 @@ void SecurityTokenSessionController::OnChallengeResponseKeysUpdated() {
   extension_to_spkis_.clear();
   observed_extensions_.clear();
   LoadStoredChallengeResponseSpkiKeysForUser(
-      user_->GetAccountId(), &extension_to_spkis_, &observed_extensions_);
+      local_state_, user_->GetAccountId(), &extension_to_spkis_,
+      &observed_extensions_);
 }
 
 void SecurityTokenSessionController::OnCertificatesUpdated(

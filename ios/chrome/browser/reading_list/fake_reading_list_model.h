@@ -6,12 +6,14 @@
 #define IOS_CHROME_BROWSER_READING_LIST_FAKE_READING_LIST_MODEL_H_
 
 #include "components/reading_list/core/reading_list_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A simple implementation of ReadingListModel with minimal function
 // implementation. Add implementation as needed for new tests.
 class FakeReadingListModel : public ReadingListModel {
  public:
-  ~FakeReadingListModel() override {}
+  FakeReadingListModel();
+  ~FakeReadingListModel() override;
   bool loaded() const override;
 
   syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override;
@@ -71,11 +73,13 @@ class FakeReadingListModel : public ReadingListModel {
       const GURL& url,
       const reading_list::ContentSuggestionsExtra& extra) override;
 
-  void SetEntry(ReadingListEntry* entry);
+  void SetEntry(ReadingListEntry entry);
   void SetLoaded();
 
+  const ReadingListEntry* entry();
+
  private:
-  ReadingListEntry* entry_ = nullptr;
+  absl::optional<ReadingListEntry> entry_;
   bool loaded_ = false;
 };
 

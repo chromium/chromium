@@ -83,6 +83,24 @@ id<GREYMatcher> VisibleTabGridEditButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
+void WaitForTabGridFullscreen() {
+  if (![ChromeEarlGrey isThumbstripEnabledForWindowWithNumber:0]) {
+    return;
+  }
+
+  // Check that the bvc hider is visible.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(@"BrowserViewHiderView")]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())
+                    error:&error];
+    return error == nil;
+  };
+  bool fullscreenAchieved = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(fullscreenAchieved, @"BrowserViewHiderView still shown");
+}
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -94,36 +112,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 @end
 
 @implementation TabGridTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  // Features are enabled or disabled based on the name of the test that is
-  // running. This is done because it is inefficient to use
-  // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
-      [self isRunningTest:@selector
-            (testUndoCloseAllNotAvailableAfterNewTabCreation)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionCloseTabs)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionDeselectAll)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionSelectAll)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionAddToBookmarks)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionAddToReadingList)] ||
-      [self isRunningTest:@selector(testTabGridBulkActionShare)]) {
-    config.features_enabled.push_back(kTabsBulkActions);
-  } else if (
-      [self isRunningTest:@selector
-            (testCloseAllAndUndoCloseAll_BulkActionsDisabled)] ||
-      [self isRunningTest:@selector
-            (testUndoCloseAllNotAvailableAfterNewTabCreation_BulkActionsDisabled
-                )]) {
-    config.features_disabled.push_back(kTabsBulkActions);
-  }
-
-  config.features_disabled.push_back(kStartSurface);
-
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -177,33 +165,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
 
 // Tests that tapping Close All shows no tabs, shows Undo button, and displays
 // the empty state. Then tests tapping Undo shows Close All button again.
-// Validates this case when Tab Grid Bulk Actions feature is disabled.
-- (void)testCloseAllAndUndoCloseAll_BulkActionsDisabled {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridRegularTabsEmptyStateView()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that tapping Close All shows no tabs, shows Undo button, and displays
-// the empty state. Then tests tapping Undo shows Close All button again.
 // Validates this case when Tab Grid Bulk Actions feature is enabled.
 - (void)testCloseAllAndUndoCloseAll {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
@@ -239,30 +200,6 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Tests that the Undo button is no longer available after tapping Close All,
-// then creating a new tab, then coming back to the tab grid.
-// Validates this case when Tab Grid Bulk Actions feature is disabled.
-- (void)testUndoCloseAllNotAvailableAfterNewTabCreation_BulkActionsDisabled {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Create a new tab then come back to tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_tap()];
-  // Undo is no longer available.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCloseAllButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -943,6 +880,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Tap tab to select.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -998,6 +936,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Tap "Select all" and close selected tabs.
   [[EarlGrey
@@ -1045,6 +984,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Ensure button label is "Select All" and select all items.
   [[EarlGrey selectElementWithMatcher:SelectAllButton()]
@@ -1104,6 +1044,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -1159,6 +1100,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -1204,6 +1146,7 @@ id<GREYMatcher> VisibleTabGridEditButton() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
+  WaitForTabGridFullscreen();
 
   // Select the first and last items.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]

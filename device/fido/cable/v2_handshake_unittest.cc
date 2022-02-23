@@ -28,10 +28,10 @@ TEST(CableV2Encoding, TunnelServerURLs) {
 
   // The hash function shouldn't change across releases, so test a hashed
   // domain.
-  const tunnelserver::KnownDomainID kHashedDomain(512);
+  const tunnelserver::KnownDomainID kHashedDomain(266);
   const GURL hashed_url =
       tunnelserver::GetNewTunnelURL(kHashedDomain, tunnel_id);
-  EXPECT_TRUE(hashed_url.spec().find("//cable.snorzvaajskg.org/") !=
+  EXPECT_TRUE(hashed_url.spec().find("//cable.wufkweyy3uaxb.com/") !=
               std::string::npos)
       << url;
 }
@@ -86,6 +86,9 @@ TEST(CableV2Encoding, QRs) {
                    &qr_key[qr_key.size() - decoded->secret.size()],
                    decoded->secret.size()),
             0);
+  // There are two registered domains at the time of writing the test. That
+  // number should only grow over time.
+  EXPECT_GE(decoded->num_known_domains, 2u);
 
   url[0] ^= 4;
   EXPECT_FALSE(qr::Parse(url));
@@ -115,20 +118,11 @@ TEST(CableV2Encoding, PaddedCBOR) {
   EXPECT_EQ(1u, decoded->GetMap().size());
 }
 
-// FutureEncodePaddedCBORMapFunction is the future replacement for
-// |EncodePaddedCBORMap|. See comment on |DecodePaddedCBORMap16|.
-absl::optional<std::vector<uint8_t>> FutureEncodePaddedCBORMapFunction(
+// EncodePaddedCBORMapOld is the old padding function that used to be used.
+// We should still be compatible with it until M99 has been out in the world
+// for long enough.
+absl::optional<std::vector<uint8_t>> EncodePaddedCBORMapOld(
     cbor::Value::MapValue map) {
-  // TODO: when promoting this function, update comment on
-  // |kPostHandshakeMsgPaddingGranularity|.
-
-  // The number of padding bytes is a uint16_t, so the granularity cannot be
-  // larger than that.
-  static_assert(kFuturePostHandshakeMsgPaddingGranularity > 0, "");
-  static_assert(kFuturePostHandshakeMsgPaddingGranularity - 1 <=
-                    std::numeric_limits<uint16_t>::max(),
-                "");
-
   absl::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
@@ -136,41 +130,33 @@ absl::optional<std::vector<uint8_t>> FutureEncodePaddedCBORMapFunction(
   }
 
   base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
-  padded_size_checked += sizeof(uint16_t);  // padding-length bytes
-  padded_size_checked =
-      (padded_size_checked + kFuturePostHandshakeMsgPaddingGranularity - 1) &
-      ~(kFuturePostHandshakeMsgPaddingGranularity - 1);
+  padded_size_checked += 1;  // padding-length byte
+  padded_size_checked = (padded_size_checked + 255) & ~255;
   if (!padded_size_checked.IsValid()) {
     return absl::nullopt;
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
-  DCHECK_GE(padded_size, cbor_bytes->size() + sizeof(uint16_t));
-  const size_t extra_bytes = padded_size - cbor_bytes->size();
-  const size_t num_padding_bytes =
-      extra_bytes - sizeof(uint16_t) /* length of padding length */;
+  DCHECK_GT(padded_size, cbor_bytes->size());
+  const size_t extra_padding = padded_size - cbor_bytes->size();
 
   cbor_bytes->resize(padded_size);
-  const uint16_t num_padding_bytes16 =
-      base::checked_cast<uint16_t>(num_padding_bytes);
-  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
-         &num_padding_bytes16, sizeof(num_padding_bytes16));
+  DCHECK_LE(extra_padding, 256u);
+  cbor_bytes->at(padded_size - 1) = static_cast<uint8_t>(extra_padding - 1);
 
   return *cbor_bytes;
 }
 
-TEST(CableV2Encoding, FuturePaddedCBOR) {
-  // Test that we can decode messages padded by the encoding function that
-  // will be used in the future.
+TEST(CableV2Encoding, OldPaddedCBOR) {
+  // Test that we can decode messages padded by the old encoding function.
   for (size_t i = 0; i < 512; i++) {
     SCOPED_TRACE(i);
 
-    // Check that new->old direction works.
     const std::vector<uint8_t> dummy_array(i);
     cbor::Value::MapValue map;
     map.emplace(1, dummy_array);
     absl::optional<std::vector<uint8_t>> encoded =
-        FutureEncodePaddedCBORMapFunction(std::move(map));
+        EncodePaddedCBORMapOld(std::move(map));
     ASSERT_TRUE(encoded);
 
     absl::optional<cbor::Value> decoded = DecodePaddedCBORMap(*encoded);
@@ -374,6 +360,43 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
         *initiator_result->first));
     EXPECT_EQ(initiator_result->second, responder_result->second);
   }
+}
+
+TEST_F(CableV2HandshakeTest, ConstructionTransition) {
+  std::array<uint8_t, 32> key1, key2;
+  std::fill(key1.begin(), key1.end(), 1);
+  std::fill(key2.begin(), key2.end(), 2);
+
+  Crypter a(key1, key2);
+  Crypter b(key2, key1);
+
+  std::vector<uint8_t> message, ciphertext, plaintext;
+  message.resize(100);
+  std::fill(message.begin(), message.end(), 42);
+
+  // Encrypt a message using the new construction.
+  a.GetNewConstructionFlagForTesting() = true;
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+
+  // The new construction should be automatically detected so this should work
+  // and should cause the flag to be set.
+  EXPECT_FALSE(b.GetNewConstructionFlagForTesting());
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+  EXPECT_TRUE(b.GetNewConstructionFlagForTesting());
+
+  // Sending messages still works.
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+
+  // But old-construction messages will no longer be accepted.
+  ciphertext = message;
+  a.GetNewConstructionFlagForTesting() = false;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_FALSE(b.Decrypt(ciphertext, &plaintext));
 }
 
 }  // namespace

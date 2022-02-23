@@ -21,23 +21,29 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui_untrusted.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/video_tutorials/video_player_ui.h"
-#endif  // defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/feed/feed_ui_config.h"
+#include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
+#include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
 #include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
-#include "ash/webui/projector_app/untrusted_projector_ui_config.h"
+#include "chrome/browser/ash/web_applications/camera_app/camera_app_untrusted_ui_config.h"
+#include "chrome/browser/ash/web_applications/crosh_ui.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
+#include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_annotator_ui_config.h"
+#include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
-#include "ash/webui/telemetry_extension_ui/telemetry_extension_untrusted_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -52,52 +58,68 @@ namespace {
 // constructing from a vector is O(n log n).
 WebUIConfigList CreateConfigs() {
   WebUIConfigList config_list;
-  auto register_config =
+  // Delete [[maybe_unused]] once register_config is used outside of Chrome OS.
+  [[maybe_unused]] auto register_config =
       [&config_list](std::unique_ptr<ui::WebUIConfig> config) {
         DCHECK_EQ(config->scheme(), content::kChromeUIUntrustedScheme);
         const std::string& host = config->host();
         config_list.emplace_back(host, std::move(config));
       };
-  // Delete once register_config is used outside of Chrome OS.
-  ALLOW_UNUSED_LOCAL(register_config);
 
   // Register WebUIConfigs below.
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   register_config(std::make_unique<printing::PrintPreviewUIUntrustedConfig>());
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   register_config(std::make_unique<video_tutorials::VideoPlayerUIConfig>());
-#endif  // defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
+  register_config(std::make_unique<feed::FeedUIConfig>());
+  register_config(
+      std::make_unique<image_editor::ImageEditorUntrustedUIConfig>());
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  register_config(std::make_unique<CroshUIConfig>());
   register_config(std::make_unique<TerminalUIConfig>());
   register_config(std::make_unique<ash::eche_app::UntrustedEcheAppUIConfig>());
   register_config(std::make_unique<MediaAppGuestUIConfig>());
   register_config(std::make_unique<ash::UntrustedPersonalizationAppUIConfig>());
   register_config(std::make_unique<ash::HelpAppUntrustedUIConfig>());
+  register_config(std::make_unique<ash::CameraAppUntrustedUIConfig>());
   register_config(
       std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())
-    register_config(std::make_unique<ash::UntrustedProjectorUIConfig>());
-  if (ash::features::IsFileManagerSwaEnabled())
+    register_config(std::make_unique<UntrustedProjectorUIConfig>());
+  if (ash::features::IsProjectorAnnotatorEnabled())
+    register_config(std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
+  if (ash::features::IsFileManagerSwaEnabled()) {
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());
+  }
+  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+    register_config(
+        std::make_unique<ash::feedback::OsFeedbackUntrustedUIConfig>());
+  }
 #if !defined(OFFICIAL_BUILD)
-  register_config(std::make_unique<ash::TelemetryExtensionUntrustedUIConfig>());
   register_config(std::make_unique<ash::UntrustedSampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   return config_list;
 }
 
 }  // namespace
 
 // static
-void ChromeUntrustedWebUIControllerFactory::RegisterInstance() {
+ChromeUntrustedWebUIControllerFactory*
+ChromeUntrustedWebUIControllerFactory::GetInstance() {
   static base::NoDestructor<ChromeUntrustedWebUIControllerFactory> instance;
-  content::WebUIControllerFactory::RegisterFactory(instance.get());
+  return instance.get();
+}
+
+// static
+void ChromeUntrustedWebUIControllerFactory::RegisterInstance() {
+  content::WebUIControllerFactory::RegisterFactory(GetInstance());
 }
 
 ChromeUntrustedWebUIControllerFactory::ChromeUntrustedWebUIControllerFactory()

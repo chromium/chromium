@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,6 +26,7 @@ class WebContents;
 }  // namespace content
 
 namespace views {
+class Button;
 class Checkbox;
 class Widget;
 }  // namespace views
@@ -35,7 +36,6 @@ class Event;
 }  // namespace ui
 
 class IntentPickerLabelButton;
-class PageActionIconView;
 
 // A bubble that displays a list of applications (icons and names), after the
 // list the UI displays a checkbox to allow the user remember the selection and
@@ -64,10 +64,10 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   METADATA_HEADER(IntentPickerBubbleView);
 
   using AppInfo = apps::IntentPickerAppInfo;
+  using BubbleType = apps::IntentPickerBubbleType;
 
   IntentPickerBubbleView(views::View* anchor_view,
-                         PageActionIconView* icon_view,
-                         PageActionIconType icon_type,
+                         BubbleType bubble_type,
                          std::vector<AppInfo> app_info,
                          IntentPickerResponse intent_picker_cb,
                          content::WebContents* web_contents,
@@ -82,8 +82,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   static views::Widget* ShowBubble(
       views::View* anchor_view,
-      PageActionIconView* icon_view,
-      PageActionIconType icon_type,
+      views::Button* highlighted_button,
+      BubbleType bubble_type,
       content::WebContents* web_contents,
       std::vector<AppInfo> app_info,
       bool show_stay_in_chrome,
@@ -98,7 +98,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // LocationBarBubbleDelegateView overrides:
   bool ShouldShowCloseButton() const override;
 
-  PageActionIconType icon_type() const { return icon_type_; }
+  BubbleType bubble_type() const { return bubble_type_; }
 
  protected:
   // LocationBarBubbleDelegateView overrides:
@@ -120,6 +120,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WebContentsTiedToBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, WindowTitle);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, ButtonLabels);
+  FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewTest, RememberCheckbox);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTest,
                            DoubleClickOpensApp);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
@@ -133,7 +134,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            DismissBubble);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
-                           ShowBubbleTwice);
+                           ShowBubbleMultipleTimes);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
                            PushStateLoadingTest);
   FRIEND_TEST_ALL_PREFIXES(IntentPickerBubbleViewBrowserTestChromeOS,
@@ -153,8 +154,7 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
 
   static std::unique_ptr<IntentPickerBubbleView> CreateBubbleViewForTesting(
       views::View* anchor_view,
-      PageActionIconView* icon_view,
-      PageActionIconType icon_type,
+      BubbleType bubble_type,
       std::vector<AppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
@@ -214,8 +214,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // Updates whether the persistence checkbox is enabled or not.
   void UpdateCheckboxState();
 
-  // Clears the current bubble and updates the icon.
-  void ClearBubbleView();
+  // Clears this bubble from being considered the currently open bubble.
+  void ClearIntentPickerBubbleView();
 
   gfx::ImageSkia GetAppImageForTesting(size_t index);
   views::InkDropState GetInkDropStateForTesting(size_t);
@@ -229,11 +229,11 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // Pre-select the first app on the list.
   size_t selected_app_tag_ = 0;
 
-  views::ScrollView* scroll_view_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   std::vector<AppInfo> app_info_;
 
-  views::Checkbox* remember_selection_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> remember_selection_checkbox_ = nullptr;
 
   // Tells whether 'Stay in Chrome' button should be shown or hidden.
   const bool show_stay_in_chrome_;
@@ -241,11 +241,8 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   // Whether 'Remember my choice' checkbox should be shown or hidden.
   const bool show_remember_selection_;
 
-  // The corresponding icon view shown in the omnibox.
-  PageActionIconView* icon_view_;
-
-  // The type of the icon shown in the omnibox.
-  const PageActionIconType icon_type_;
+  // The type of bubble to show, used to customize some text and behavior.
+  const BubbleType bubble_type_;
 
   // The origin initiating this picker.
   const absl::optional<url::Origin> initiating_origin_;

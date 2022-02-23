@@ -26,7 +26,6 @@
         --ink-color: var(--settings-nav-item-color);
         background: none;
         border: none;
-        border-radius: initial;
         box-shadow: none;
         color: var(--settings-nav-item-color);
         height: unset;
@@ -41,13 +40,6 @@
 
       :host-context(.focus-outline-visible) #advancedButton:focus {
         outline: auto 5px -webkit-focus-ring-color;
-      }
-
-      :host-context([enable-branding-update]) #advancedButton {
-        /* Override the border-radius: initial on #advancedButton. Can be
-         * removed once enable-branding-update launches. */
-        border-end-end-radius: 100px;
-        border-start-end-radius: 100px;
       }
 
       #advancedButton > span,
@@ -69,19 +61,7 @@
         margin-top: 8px;
       }
 
-      #extensionsLink iron-icon {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) #extensionsLink iron-icon {
-        display: block;
-      }
-
       #aboutIcon {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) #aboutIcon {
         --cr-icon-image: url(//resources/images/chrome_logo_dark.svg);
         -webkit-mask-size: 18px;
         background-color: var(--iron-icon-fill-color);
@@ -118,16 +98,6 @@
             $i18n{autofillPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <template is="dom-if" if="[[!enableLandingPageRedesign_]]">
-            <a role="menuitem" href="/safetyCheck"
-                hidden="[[!pageVisibility.safetyCheck]]"
-                id="safetyCheck"
-                class="cr-nav-menu-item">
-              <iron-icon icon="settings20:safety-check"></iron-icon>
-              $i18n{safetyCheckSectionTitle}
-              <paper-ripple></paper-ripple>
-            </a>
-          </template>
           <a role="menuitem" href="/privacy"
               hidden="[[!pageVisibility.privacy]]"
               class="cr-nav-menu-item">
@@ -196,7 +166,7 @@
                 $i18n{a11yPageTitle}
                 <paper-ripple></paper-ripple>
               </a>
-    <if expr="not chromeos and not lacros">
+    <if expr="not chromeos">
               <a role="menuitem" href="/system" class="cr-nav-menu-item"
                   disabled$="[[!advancedOpened]]">
                 <iron-icon icon="settings:build"></iron-icon>

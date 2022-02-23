@@ -87,6 +87,13 @@ group("pdf_fuzzers") {
       ":pdf_cpdf_tounicodemap_fuzzer",
       ":pdf_nametree_fuzzer",
     ]
+    if (pdf_enable_xfa) {
+      deps += [
+        ":pdf_xfa_fdp_fuzzer",
+        ":pdf_xfa_raw_fuzzer",
+        ":pdf_xfa_xdp_fdp_fuzzer",
+      ]
+    }
   }
 }
 
@@ -272,6 +279,17 @@ if (is_clang) {
   }
 
   pdfium_fuzzer_test("pdf_nametree_fuzzer") {
+  }
+
+  if (pdf_enable_xfa) {
+    pdfium_fuzzer_test("pdf_xfa_fdp_fuzzer") {
+    }
+    pdfium_fuzzer_test("pdf_xfa_raw_fuzzer") {
+      dict = "dicts/pdf_xfa_raw_fuzzer.dict"
+    }
+    pdfium_fuzzer_test("pdf_xfa_xdp_fdp_fuzzer") {
+      dict = "dicts/pdf_xfa_raw_fuzzer.dict"
+    }
   }
 }
 

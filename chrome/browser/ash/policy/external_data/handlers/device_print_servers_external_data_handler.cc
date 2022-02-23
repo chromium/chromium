@@ -7,14 +7,14 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
+#include "chrome/browser/ash/printing/print_servers_provider.h"
+#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "components/policy/policy_constants.h"
 
 namespace {
 
-base::WeakPtr<chromeos::PrintServersProvider> GetDevicePrintServersProvider() {
-  return chromeos::PrintServersProviderFactory::Get()->GetForDevice();
+base::WeakPtr<ash::PrintServersProvider> GetDevicePrintServersProvider() {
+  return ash::PrintServersProviderFactory::Get()->GetForDevice();
 }
 
 }  // namespace

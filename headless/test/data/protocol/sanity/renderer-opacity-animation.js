@@ -36,23 +36,20 @@
          </style>
          <div></div>`);
 
-    let ctx = await new Promise(async fulfill => {
-        // Give page 500ms before capturing first screenshot. The screenshot
-        // should fall into animamtion-delay interval, so no animation effects
-        // should be present and the point shoule be white.
-        await virtualTimeController.grantInitialTime(500, 100,
-            null,
-            async () => fulfill(await virtualTimeController.captureScreenshot())
-        );
-        frameNavigationHelper.navigate('http://example.com/');
-    });
+    await virtualTimeController.initialize(100);
+    await frameNavigationHelper.navigate('http://example.com/');
+    // Give page 500ms before capturing first screenshot. The screenshot
+    // should fall into animamtion-delay interval, so no animation effects
+    // should be present and the point should be white.
+    await virtualTimeController.grantTime(500);
+    const ctx = await virtualTimeController.captureScreenshot();
     let rgba = ctx.getImageData(25, 25, 1, 1).data;
     testRunner.log(`rgba @(25,25) before animaion started: ${rgba}`);
     // After additional 550ms, the animation should have started and the test
-    // point shoule be green.
-    await new Promise(fulfill => virtualTimeController.grantTime(550, fulfill));
-    ctx = await virtualTimeController.captureScreenshot();
-    rgba = ctx.getImageData(25, 25, 1, 1).data;
+    // point should be green.
+    await virtualTimeController.grantTime(550);
+    const ctx2 = await virtualTimeController.captureScreenshot();
+    rgba = ctx2.getImageData(25, 25, 1, 1).data;
     testRunner.log(`rgba @(25,25) after animation started: ${rgba}`);
     testRunner.completeTest();
   })

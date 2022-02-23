@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/win/current_module.h"
@@ -21,7 +21,7 @@
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef decltype(::GetFontData)* GetFontDataPtr;
 GetFontDataPtr g_original_get_font_data = nullptr;
 
@@ -46,12 +46,12 @@ DWORD WINAPI GetFontDataPatch(HDC hdc,
   }
   return rv;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
 void MaybePatchGdiGetFontData() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Only patch utility processes which explicitly need GDI.
   auto& command_line = *base::CommandLine::ForCurrentProcess();
   auto service_sandbox_type =
@@ -80,5 +80,5 @@ void MaybePatchGdiGetFontData() {
       reinterpret_cast<void*>(GetFontDataPatch));
   g_original_get_font_data = reinterpret_cast<GetFontDataPtr>(
       patch_get_font_data->original_function());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }

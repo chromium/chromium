@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/test/scoped_feature_list.h"
@@ -173,7 +174,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool check_eligibility_after_pagehide_ = false;
   std::string unload_support_ = "always";
 
-  const int kMaxBufferedBytesPerRequest = 7000;
   const int kMaxBufferedBytesPerProcess = 10000;
   const base::TimeDelta kGracePeriodToFinishLoading = base::Seconds(5);
 
@@ -246,7 +246,54 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool fail_for_unexpected_messages_while_cached_ = true;
 };
 
-void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+[[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+
+class HighCacheSizeBackForwardCacheBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  // The number of pages the BackForwardCache can hold per tab.
+  // The number 5 was picked since Android ASAN trybot failed to keep more than
+  // 6 pages in memory.
+  const size_t kBackForwardCacheSize = 5;
+};
+
+// An implementation of PageLifecycleStateManager::TestDelegate for testing.
+class PageLifecycleStateManagerTestDelegate
+    : public PageLifecycleStateManager::TestDelegate {
+ public:
+  explicit PageLifecycleStateManagerTestDelegate(
+      PageLifecycleStateManager* manager);
+
+  ~PageLifecycleStateManagerTestDelegate() override;
+
+  // Waits for the renderer finishing to set the state of being in back/forward
+  // cache.
+  void WaitForInBackForwardCacheAck();
+
+  void OnStoreInBackForwardCacheSent(base::OnceClosure cb);
+  void OnDisableJsEvictionSent(base::OnceClosure cb);
+  void OnRestoreFromBackForwardCacheSent(base::OnceClosure cb);
+
+ private:
+  // PageLifecycleStateManager::TestDelegate:
+  void OnLastAcknowledgedStateChanged(
+      const blink::mojom::PageLifecycleState& old_state,
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnUpdateSentToRenderer(
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnDeleted() override;
+
+  raw_ptr<PageLifecycleStateManager> manager_;
+  base::OnceClosure store_in_back_forward_cache_sent_;
+  base::OnceClosure store_in_back_forward_cache_ack_received_;
+  base::OnceClosure restore_from_back_forward_cache_sent_;
+  base::OnceClosure disable_eviction_sent_;
+};
+
+// Gets the value of a key in local storage by evaluating JS.
+EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key);
 
 }  // namespace content
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service.h"
 
+#include <memory>
 #include <vector>
 
 #include "ash/calendar/calendar_controller.h"
@@ -36,7 +37,8 @@ const char kTestUserAgent[] = "test-user-agent";
 
 class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
-  CalendarKeyedServiceTest() : fake_user_manager_(new FakeChromeUserManager) {}
+  CalendarKeyedServiceTest()
+      : fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
   CalendarKeyedServiceTest(const CalendarKeyedServiceTest& other) = delete;
   CalendarKeyedServiceTest& operator=(const CalendarKeyedServiceTest& other) =
@@ -64,7 +66,7 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
         kSecondaryProfileName,
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         u"Test profile",
-        /*avatar_id=*/1, std::string() /*supervised_user_id*/,
+        /*avatar_id=*/1,
         /*testing_factories=*/{});
   }
 
@@ -79,7 +81,7 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  FakeChromeUserManager* fake_user_manager_;
+  std::unique_ptr<FakeChromeUserManager> fake_user_manager_;
 };
 
 class CalendarKeyedServiceIOTest : public testing::Test {

@@ -49,6 +49,21 @@ void FakeSemanticsManager::CheckNumActions() {
   }
 }
 
+bool FakeSemanticsManager::RequestAccessibilityActionSync(
+    uint32_t node_id,
+    fuchsia::accessibility::semantics::Action action) {
+  base::RunLoop run_loop;
+  bool action_handled = false;
+  listener_->OnAccessibilityActionRequested(
+      node_id, action, [&action_handled, &run_loop](bool handled) {
+        action_handled = handled;
+        run_loop.QuitClosure().Run();
+      });
+  run_loop.Run();
+
+  return action_handled;
+}
+
 void FakeSemanticsManager::RequestAccessibilityAction(
     uint32_t node_id,
     fuchsia::accessibility::semantics::Action action) {

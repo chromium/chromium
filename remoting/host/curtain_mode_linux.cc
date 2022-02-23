@@ -5,7 +5,6 @@
 #include "remoting/host/curtain_mode.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/base/logging.h"

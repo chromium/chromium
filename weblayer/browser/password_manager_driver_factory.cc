@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/password_manager_driver_factory.h"
 
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/site_isolation/site_isolation_policy.h"
@@ -83,12 +83,14 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
 
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_{this};
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
 };
 
 PasswordManagerDriverFactory::PasswordManagerDriverFactory(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PasswordManagerDriverFactory>(
+          *web_contents) {}
 
 PasswordManagerDriverFactory::~PasswordManagerDriverFactory() = default;
 
@@ -118,11 +120,9 @@ PasswordManagerDriverFactory::GetDriverForFrame(
             content::WebContents::FromRenderFrameHost(render_frame_host));
   DCHECK(render_frame_host->IsRenderFrameCreated());
 
-  // TryEmplace() will return an iterator to the driver corresponding to
-  // `render_frame_host`. It creates a new one if required.
-  return &base::TryEmplace(frame_driver_map_, render_frame_host,
-                           render_frame_host)
-              .first->second;
+  auto [it, inserted] =
+      frame_driver_map_.try_emplace(render_frame_host, render_frame_host);
+  return &it->second;
 }
 
 void PasswordManagerDriverFactory::RenderFrameDeleted(

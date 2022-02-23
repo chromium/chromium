@@ -6,7 +6,6 @@
 #define GOOGLE_APIS_GAIA_FAKE_OAUTH2_ACCESS_TOKEN_MANAGER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 

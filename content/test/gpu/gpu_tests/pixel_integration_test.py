@@ -2,16 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import logging
 import os
+import posixpath
 import sys
 import time
 
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_integration_test_base
+
+import gpu_path_util
 
 from telemetry.util import image_util
 
@@ -87,8 +88,8 @@ class PixelIntegrationTest(
       pages += namespace.DirectCompositionPages(cls.test_base_name)
       pages += namespace.HdrTestPages(cls.test_base_name)
     for p in pages:
-      yield (p.name, skia_gold_integration_test_base.GPU_RELATIVE_PATH + p.url,
-             (p))
+      yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
+                                    p.url), (p))
 
   def RunActualGpuTest(self, test_path, *args):
     page = args[0]
@@ -112,7 +113,7 @@ class PixelIntegrationTest(
     finally:
       test_messages = _TestHarnessMessages(tab)
       if test_messages:
-        logging.info('Logging messages from the test:\n' + test_messages)
+        logging.info('Logging messages from the test:\n%s', test_messages)
       if do_page_action or page.restart_browser_after_test:
         self._RestartBrowser(
             'Must restart after page actions or if required by test')
@@ -182,12 +183,12 @@ class PixelIntegrationTest(
   def _AssertLowPowerGPU(self):
     if self._IsDualGPUMacLaptop():
       if not self._IsIntelGPUActive():
-        self.fail('Low power GPU should have been active but wasn\'t')
+        self.fail("Low power GPU should have been active but wasn't")
 
   def _AssertHighPerformanceGPU(self):
     if self._IsDualGPUMacLaptop():
       if self._IsIntelGPUActive():
-        self.fail('High performance GPU should have been active but wasn\'t')
+        self.fail("High performance GPU should have been active but wasn't")
 
   #
   # Optional actions pages can take.
@@ -226,7 +227,7 @@ class PixelIntegrationTest(
     dummy_tab.action_runner.Wait(2)
     # Close new tab.
     dummy_tab.Close()
-    tab.EvaluateJavaScript("copyImage()")
+    tab.EvaluateJavaScript('copyImage()')
 
   def _RunTestWithHighPerformanceTab(self, tab, page):
     del page  # Unused in this particular action.
@@ -243,9 +244,9 @@ class PixelIntegrationTest(
     tab.EvaluateJavaScript('domAutomationController._readyForActions = false')
     high_performance_tab = tab.browser.tabs.New()
     high_performance_tab.Navigate(
-        self.
-        UrlOfStaticFilePath(skia_gold_integration_test_base.GPU_RELATIVE_PATH +
-                            'functional_webgl_high_performance.html'),
+        self.UrlOfStaticFilePath(
+            posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
+                           'functional_webgl_high_performance.html')),
         script_to_evaluate_on_commit=test_harness_script)
     high_performance_tab.action_runner.WaitForJavaScriptCondition(
         'domAutomationController._finished', timeout=30)

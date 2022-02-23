@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/values_equivalent.h"
 #include "base/values.h"
 
 namespace payments {
@@ -51,9 +52,7 @@ PaymentDetails& PaymentDetails::operator=(const PaymentDetails& other) {
 }
 
 bool PaymentDetails::operator==(const PaymentDetails& other) const {
-  return id == other.id &&
-         ((!total && !other.total) ||
-          (total && other.total && *total == *other.total)) &&
+  return id == other.id && base::ValuesEquivalent(total, other.total) &&
          display_items == other.display_items &&
          shipping_options == other.shipping_options &&
          modifiers == other.modifiers && error == other.error;
@@ -92,7 +91,8 @@ bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
   const base::Value* display_items_list =
       value.FindListKey(kPaymentDetailsDisplayItems);
   if (display_items_list) {
-    for (const base::Value& payment_item_dict : display_items_list->GetList()) {
+    for (const base::Value& payment_item_dict :
+         display_items_list->GetListDeprecated()) {
       PaymentItem payment_item;
       if (!payment_item.FromValue(payment_item_dict)) {
         return false;
@@ -105,7 +105,7 @@ bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
       value.FindListKey(kPaymentDetailsShippingOptions);
   if (shipping_options_list) {
     for (const base::Value& shipping_option_dict :
-         shipping_options_list->GetList()) {
+         shipping_options_list->GetListDeprecated()) {
       PaymentShippingOption shipping_option;
       if (!shipping_option.FromValue(shipping_option_dict)) {
         return false;
@@ -117,7 +117,8 @@ bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
   const base::Value* modifiers_list =
       value.FindListKey(kPaymentDetailsModifiers);
   if (modifiers_list) {
-    for (const base::Value& modifier_dict : modifiers_list->GetList()) {
+    for (const base::Value& modifier_dict :
+         modifiers_list->GetListDeprecated()) {
       PaymentDetailsModifier modifier;
       if (!modifier.method_data.FromValue(modifier_dict)) {
         return false;
@@ -133,7 +134,7 @@ bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
           modifier_dict.FindListKey(kPaymentDetailsAdditionalDisplayItems);
       if (additional_display_items_list) {
         for (const base::Value& additional_display_item_dict :
-             additional_display_items_list->GetList()) {
+             additional_display_items_list->GetListDeprecated()) {
           PaymentItem additional_display_item;
           if (!additional_display_item.FromValue(
                   additional_display_item_dict)) {

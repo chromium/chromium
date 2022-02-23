@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+  "+components/policy",
+  "+components/prefs",
+  "+components/url_matcher",
+  "+components/user_prefs",
+  "+content/public/browser",
+  "+ui/base/l10n",
+]

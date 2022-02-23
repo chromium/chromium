@@ -128,6 +128,9 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   // TODO(crbug.com/1237462): Consider creating a MockSodaInstaller class that
   // implements these test-specific methods.
+  void NeverDownloadSodaForTesting() {
+    never_download_soda_for_testing_ = true;
+  }
   void NotifySodaInstalledForTesting();
   void NotifySodaErrorForTesting();
   void UninstallSodaForTesting();
@@ -193,6 +196,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   bool soda_binary_installed_ = false;
   bool soda_installer_initialized_ = false;
   bool is_soda_downloading_ = false;
+  bool never_download_soda_for_testing_ = false;
 
   // Tracks all downloaded language packs.
   std::set<LanguageCode> installed_languages_;

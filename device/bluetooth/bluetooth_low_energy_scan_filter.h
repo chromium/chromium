@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -73,14 +74,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
       Range device_range,
       base::TimeDelta device_found_timeout,
       base::TimeDelta device_lost_timeout,
-      const std::vector<Pattern>& patterns);
+      const std::vector<Pattern>& patterns,
+      absl::optional<base::TimeDelta> rssi_sampling_period);
 
   static std::unique_ptr<BluetoothLowEnergyScanFilter> Create(
       int16_t device_found_rssi_threshold,
       int16_t device_lost_rssi_threshold,
       base::TimeDelta device_found_timeout,
       base::TimeDelta device_lost_timeout,
-      const std::vector<Pattern>& patterns);
+      const std::vector<Pattern>& patterns,
+      absl::optional<base::TimeDelta> rssi_sampling_period);
 
   BluetoothLowEnergyScanFilter(const BluetoothLowEnergyScanFilter&) = delete;
   BluetoothLowEnergyScanFilter& operator=(const BluetoothLowEnergyScanFilter&) =
@@ -96,13 +99,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
   base::TimeDelta device_found_timeout() const { return device_found_timeout_; }
   base::TimeDelta device_lost_timeout() const { return device_lost_timeout_; }
   const std::vector<Pattern>& patterns() const { return patterns_; }
+  const absl::optional<base::TimeDelta>& rssi_sampling_period() const {
+    return rssi_sampling_period_;
+  }
 
  private:
-  BluetoothLowEnergyScanFilter(int16_t device_found_rssi_threshold,
-                               int16_t device_lost_rssi_threshold,
-                               base::TimeDelta device_found_timeout,
-                               base::TimeDelta device_lost_timeout,
-                               std::vector<Pattern> patterns);
+  BluetoothLowEnergyScanFilter(
+      int16_t device_found_rssi_threshold,
+      int16_t device_lost_rssi_threshold,
+      base::TimeDelta device_found_timeout,
+      base::TimeDelta device_lost_timeout,
+      std::vector<Pattern> patterns,
+      absl::optional<base::TimeDelta> rssi_sampling_period);
 
   bool IsValid() const;
 
@@ -126,6 +134,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
 
   // Must not be empty. For each pattern, Pattern::IsValid() must also pass.
   std::vector<Pattern> patterns_;
+
+  // Must be between 0 and 254000 ms, inclusive. Will be rounded up to the
+  // nearest 100 ms. If set to 0 all advertisement packets from in-range devices
+  // are propagated. If unset only the first advertisement packet of in-range
+  // devices are propagated. If set between 1 and 254000 ms advertisements are
+  // propagated after the specified time period (rounded up to the nearest 100
+  // ms). A lower sampling period will result in higher power consumption, with
+  // the default setting being the most power-efficient.
+  absl::optional<base::TimeDelta> rssi_sampling_period_;
 };
 
 }  // namespace device

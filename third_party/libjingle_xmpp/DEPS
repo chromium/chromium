@@ -2,7 +2,6 @@ include_rules = [
   "+base/check.h",
   "+base/check_op.h",
   "+base/logging.h",
-  "+base/macros.h",
   "+base/notreached.h",
   "+base/stl_util.h",
   "+net/base/host_port_pair.h",

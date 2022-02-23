@@ -250,7 +250,7 @@ bool ProxyBypassRules::MatchesImplicitRules(const GURL& url) {
   //     [FE80::]/10
   return IsLocalhost(url) || IsIPv4MappedLoopback(url) ||
          IsLinkLocalIP(url)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
          // See http://crbug.com/904889
          || (url.host_piece() == "loopback") ||
          (url.host_piece() == "loopback.")

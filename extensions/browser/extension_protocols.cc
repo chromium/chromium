@@ -22,7 +22,7 @@
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram.h"
@@ -89,6 +89,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -130,9 +131,9 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
     real_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
-    real_client_->OnReceiveResponse(std::move(response_head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    real_client_->OnReceiveResponse(std::move(response_head), std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -451,11 +452,11 @@ void AddCacheHeaders(net::HttpResponseHeaders& headers,
   // On Fuchsia, some resources are served from read-only filesystems which
   // don't manage creation timestamps. Cache-control headers should still
   // be generated for those resources.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   if (last_modified_time.is_null()) {
     return;
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Hash the time and make an etag to avoid exposing the exact
   // user installation time of the extension.
@@ -736,8 +737,16 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         return;
       }
 
-      client_remote->OnReceiveResponse(std::move(head));
-      client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
+      if (base::FeatureList::IsEnabled(
+              network::features::kCombineResponseBody)) {
+        client_remote->OnReceiveResponse(std::move(head),
+                                         std::move(consumer_handle));
+      } else {
+        client_remote->OnReceiveResponse(std::move(head),
+                                         mojo::ScopedDataPipeConsumerHandle());
+        client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
+      }
+
       client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       return;
     }
@@ -894,7 +903,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     }
   };
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   bool is_web_view_request_;
   ukm::SourceIdObj ukm_source_id_;
 

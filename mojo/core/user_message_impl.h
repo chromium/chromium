@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/ports/event.h"
@@ -176,6 +175,9 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   size_t GetSizeIfSerialized() const override;
 
   // The event which owns this serialized message. Not owned.
+  //
+  // `message_event_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data and tab_search:top100:2020).
   ports::UserMessageEvent* const message_event_;
 
   // Unserialized message state.
@@ -204,6 +206,10 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   // serialized message buffer. |user_payload_| is the address of the first byte
   // after any serialized dispatchers, with the payload comprising the remaining
   // |user_payload_size_| bytes of the message.
+  //
+  // `header_` and `user_payload_` are not a raw_ptr<...> for performance
+  // reasons (based on analysis of sampling profiler data and
+  // tab_search:top100:2020).
   void* header_ = nullptr;
   size_t header_size_ = 0;
   void* user_payload_ = nullptr;

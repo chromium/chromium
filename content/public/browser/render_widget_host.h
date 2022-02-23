@@ -226,7 +226,7 @@ class CONTENT_EXPORT RenderWidgetHost {
                                  blink::mojom::InputEventResultState state,
                                  const blink::WebInputEvent&) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Not all key events are triggered through InputEvent on Android.
     // InputEvents are only triggered when user typed in through number bar on
     // Android keyboard. This function is triggered when text is committed in
@@ -246,7 +246,7 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddInputEventObserver(InputEventObserver* observer) = 0;
   virtual void RemoveInputEventObserver(InputEventObserver* observer) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Add/remove an Ime input event observer.
   virtual void AddImeInputEventObserver(InputEventObserver* observer) = 0;
   virtual void RemoveImeInputEventObserver(InputEventObserver* observer) = 0;

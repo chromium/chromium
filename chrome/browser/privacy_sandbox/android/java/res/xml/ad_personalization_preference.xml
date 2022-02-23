@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.LongSummaryTextMessagePreference
+        android:summary="@string/privacy_sandbox_ad_personalization_description"
+        android:selectable="false"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:key="topic_interests"
+        android:title="@string/privacy_sandbox_topic_interests_category" />
+
+    <Preference
+        android:key="empty_topics"
+        android:summary="@string/privacy_sandbox_topic_empty_state"
+        android:selectable="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="removed_topics"
+        android:title="@string/privacy_sandbox_remove_interest_title"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationRemovedFragment"
+        app:userAction="Settings.PrivacySandbox.RemovedInterests.Opened"/>
+
+    <PreferenceCategory
+        android:title="@string/privacy_sandbox_fledge_interests_category" />
+
+    <Preference
+        android:summary="@string/privacy_sandbox_fledge_under_development_notice"
+        android:selectable="false"
+        app:allowDividerBelow="false"/>
+
+</PreferenceScreen>

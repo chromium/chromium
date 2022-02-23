@@ -153,11 +153,11 @@ bool CSSNumericLiteralValue::IsComputationallyIndependent() const {
 }
 
 static String FormatNumber(double number, const char* suffix) {
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   unsigned oldFormat = _set_output_format(_TWO_DIGIT_EXPONENT);
 #endif
   String result = String::Format("%.6g%s", number, suffix);
-#if defined(OS_WIN) && _MSC_VER < 1900
+#if BUILDFLAG(IS_WIN) && _MSC_VER < 1900
   _set_output_format(oldFormat);
 #endif
   return result;
@@ -219,8 +219,28 @@ String CSSNumericLiteralValue::CustomCSSText() const {
     case UnitType::kFraction:
     case UnitType::kViewportWidth:
     case UnitType::kViewportHeight:
+    case UnitType::kViewportInlineSize:
+    case UnitType::kViewportBlockSize:
     case UnitType::kViewportMin:
     case UnitType::kViewportMax:
+    case UnitType::kSmallViewportWidth:
+    case UnitType::kSmallViewportHeight:
+    case UnitType::kSmallViewportInlineSize:
+    case UnitType::kSmallViewportBlockSize:
+    case UnitType::kSmallViewportMin:
+    case UnitType::kSmallViewportMax:
+    case UnitType::kLargeViewportWidth:
+    case UnitType::kLargeViewportHeight:
+    case UnitType::kLargeViewportInlineSize:
+    case UnitType::kLargeViewportBlockSize:
+    case UnitType::kLargeViewportMin:
+    case UnitType::kLargeViewportMax:
+    case UnitType::kDynamicViewportWidth:
+    case UnitType::kDynamicViewportHeight:
+    case UnitType::kDynamicViewportInlineSize:
+    case UnitType::kDynamicViewportBlockSize:
+    case UnitType::kDynamicViewportMin:
+    case UnitType::kDynamicViewportMax:
     case UnitType::kContainerWidth:
     case UnitType::kContainerHeight:
     case UnitType::kContainerInlineSize:

@@ -32,6 +32,8 @@ namespace random_internal {
 // to intercept such calls.
 template <typename URBG>
 struct DistributionCaller {
+  static_assert(!std::is_pointer<URBG>::value,
+                "You must pass a reference, not a pointer.");
   // SFINAE to detect whether the URBG type includes a member matching
   // bool InvokeMock(base_internal::FastTypeIdType, void*, void*).
   //

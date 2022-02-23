@@ -7,6 +7,7 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -21,20 +22,31 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MockIdpNetworkRequestManager& operator=(const MockIdpNetworkRequestManager&) =
       delete;
 
-  MOCK_METHOD1(FetchIdpWellKnown, void(FetchWellKnownCallback));
-  MOCK_METHOD3(FetchClientIdMetadata,
+  bool IsMockIdpNetworkRequestManager() const override { return true; }
+
+  MOCK_METHOD3(FetchManifest,
+               void(absl::optional<int>,
+                    absl::optional<int>,
+                    FetchManifestCallback));
+  MOCK_METHOD3(FetchClientMetadata,
                void(const GURL&,
                     const std::string&,
-                    FetchClientIdMetadataCallback));
+                    FetchClientMetadataCallback));
   MOCK_METHOD3(SendSigninRequest,
                void(const GURL&, const std::string&, SigninRequestCallback));
-  MOCK_METHOD2(SendAccountsRequest, void(const GURL&, AccountsRequestCallback));
+  MOCK_METHOD3(SendAccountsRequest,
+               void(const GURL&, const std::string&, AccountsRequestCallback));
   MOCK_METHOD4(SendTokenRequest,
                void(const GURL&,
                     const std::string&,
                     const std::string&,
                     TokenRequestCallback));
   MOCK_METHOD2(SendLogout, void(const GURL& logout_url, LogoutCallback));
+  MOCK_METHOD4(SendRevokeRequest,
+               void(const GURL&,
+                    const std::string&,
+                    const std::string&,
+                    RevokeCallback));
 };
 
 }  // namespace content

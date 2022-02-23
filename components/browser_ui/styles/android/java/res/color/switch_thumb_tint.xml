@@ -4,10 +4,7 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- This would ideally be colorSwitchThumbNormal at 38% alpha. However, making the thumb
-         translucent causes the track to be visible behind the thumb. This color is not compatible
-         with dynamic colors. -->
-    <item android:color="?attr/colorSwitchThumbDisabledNonDynamic" android:state_enabled="false"/>
-    <item android:color="?attr/colorPrimaryNonDynamic" android:state_checked="true"/>
-    <item android:color="?attr/colorSwitchThumbNormalNonDynamic"/>
+    <item android:color="@macro/switch_thumb_disabled_color" android:state_enabled="false"/>
+    <item android:color="@macro/default_control_color_active" android:state_checked="true"/>
+    <item android:color="@macro/switch_enabled_unchecked_color_dark"/>
 </selector>

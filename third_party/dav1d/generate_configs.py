@@ -135,6 +135,10 @@ def GenerateConfig(config_dir, env, special_args=[]):
           # platform's default stack alignment; https://crbug.com/928743.
           (r'(#define STACK_ALIGNMENT \d{1,2})',
            r'// \1 -- Stack alignment is controlled by Chromium'),
+
+          # Android doesn't have pthread_getaffinity_np.
+          (r'(#define HAVE_PTHREAD_GETAFFINITY_NP \d{1,2})',
+           r'// \1 -- Controlled by Chomium'),
       ])
 
   config_asm_path = os.path.join(temp_dir, 'config.asm')

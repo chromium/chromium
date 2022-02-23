@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "extensions/common/event_filter.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
 namespace base {
 class DictionaryValue;
@@ -19,7 +20,6 @@ class DictionaryValue;
 namespace extensions {
 class EventFilter;
 class ValueCounter;
-struct EventFilteringInfo;
 
 // A class to track all event listeners across multiple v8::Contexts. Each
 // context has a "context owner", which may be the same across multiple
@@ -28,8 +28,6 @@ struct EventFilteringInfo;
 // tracking when a new listener is added requires looking at more than a
 // single context.
 //
-// TODO(devlin): We should combine this with EventBookkeeper and use it with
-// both native and JS bindings.
 // TODO(devlin): We should incorporate the notifications for newly added/
 // removed listeners into this class, rather than having callers worry about
 // it based on return values.
@@ -86,9 +84,10 @@ class ListenerTracker {
 
   // Returns a set of filter IDs to that correspond to the given |event_name|,
   // |filter|, and |routing_id|.
-  std::set<int> GetMatchingFilteredListeners(const std::string& event_name,
-                                             const EventFilteringInfo& filter,
-                                             int routing_id);
+  std::set<int> GetMatchingFilteredListeners(
+      const std::string& event_name,
+      mojom::EventFilteringInfoPtr filter,
+      int routing_id);
 
   EventFilter* event_filter_for_testing() { return &event_filter_; }
 

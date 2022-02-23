@@ -13,7 +13,7 @@
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
+#include "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -44,6 +44,8 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetStringKey("iconClass", "icon-offline");
   load_time_data->SetStringKey("type", "CAPTIVE_PORTAL");
   load_time_data->SetBoolKey("overridable", false);
+  load_time_data->SetBoolKey("hide_primary_button", false);
+
   load_time_data->SetStringKey(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
@@ -94,7 +96,7 @@ void IOSCaptivePortalBlockingPage::HandleCommand(
     captive_portal::CaptivePortalMetrics::LogCaptivePortalBlockingPageEvent(
         captive_portal::CaptivePortalMetrics::OPEN_LOGIN_PAGE);
 
-    CaptivePortalDetectorTabHelper::FromWebState(web_state())
+    CaptivePortalTabHelper::FromWebState(web_state())
         ->DisplayCaptivePortalLoginPage(landing_url_);
   }
 }

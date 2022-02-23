@@ -188,7 +188,7 @@ AnimationWorkletProxyClient::SelectGlobalScopeAndUpdateAnimatorsIfNecessary() {
   if (--next_global_scope_switch_countdown_ < 0) {
     int last_global_scope_index = current_global_scope_index_;
     current_global_scope_index_ =
-        (++current_global_scope_index_ % global_scopes_.size());
+        (current_global_scope_index_ + 1) % global_scopes_.size();
     global_scopes_[last_global_scope_index]->MigrateAnimatorsTo(
         global_scopes_[current_global_scope_index_]);
     // Introduce an element of randomness in the switching interval to make

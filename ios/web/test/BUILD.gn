@@ -61,6 +61,7 @@ source_set("test_support") {
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/navigation:core",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/public/test/http_server",
@@ -81,6 +82,18 @@ source_set("test_support") {
     "web_test_with_web_controller.mm",
     "wk_web_view_crash_utils.h",
     "wk_web_view_crash_utils.mm",
+  ]
+}
+
+source_set("js_test_util_internal") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [ "//base/test:test_support" ]
+
+  sources = [
+    "js_test_util_internal.h",
+    "js_test_util_internal.mm",
   ]
 }
 

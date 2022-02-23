@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -78,7 +79,7 @@ class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
   void set_windows_error(int windows_error) { windows_error_ = windows_error; }
 
   std::unique_ptr<Request> GetProxyForUrl(
-      const std::string& url,
+      const GURL& url,
       WindowsSystemProxyResolutionRequest* callback_target) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return std::make_unique<MockRequest>(callback_target, proxy_list_,
@@ -144,7 +145,7 @@ class WindowsSystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
  private:
   std::unique_ptr<WindowsSystemProxyResolutionService>
       proxy_resolution_service_;
-  MockWindowsSystemProxyResolver* proxy_resolver_;
+  raw_ptr<MockWindowsSystemProxyResolver> proxy_resolver_;
 };
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, CreateWithNullResolver) {

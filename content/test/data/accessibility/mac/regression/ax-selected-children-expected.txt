@@ -1,0 +1,3 @@
+button.accessibilityAttributeValue(AXSelected)=0
+div.accessibilityAttributeNames.has(AXSelectedChildren)='no'
+div.accessibilityAttributeValue(AXSelectedChildren)=[]

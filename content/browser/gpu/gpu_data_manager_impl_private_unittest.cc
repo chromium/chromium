@@ -65,8 +65,8 @@ static GURL GetDomain2ForTesting() {
   return GURL("http://bar.com/");
 }
 
-gpu::GpuFeatureInfo ALLOW_UNUSED_TYPE
-GetGpuFeatureInfoWithOneDisabled(gpu::GpuFeatureType disabled_feature) {
+[[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
+    gpu::GpuFeatureType disabled_feature) {
   gpu::GpuFeatureInfo gpu_feature_info;
   for (auto& status : gpu_feature_info.status_values)
     status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
@@ -282,8 +282,8 @@ TEST_F(GpuDataManagerImplPrivateTest, UnblockThisDomainFrom3DAPIs) {
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
 // not support falling back to software from Vulkan.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackToSwiftShader) {
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
@@ -302,7 +302,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackWithSwiftShaderDisabled) {
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
 }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if !defined(CAST_AUDIO_ONLY)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
@@ -310,8 +310,8 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // !IS_CHROMECAST
-#endif  // !OS_ANDROID && !OS_CHROMEOS
+#endif  // !defined(CAST_AUDIO_ONLY)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Chromecast audio-only builds should not launch the GPU process.
 #if defined(CAST_AUDIO_ONLY)
@@ -322,7 +322,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 }
 #endif  // IS_CHROMECAST
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalToGL) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMetal);
@@ -347,7 +347,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromMetalWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VULKAN)
 // TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.
@@ -368,7 +368,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithVulkanFeatureFlag) {
 
 // Don't run these tests on Fuchsia, which doesn't support falling back from
 // Vulkan.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
@@ -395,13 +395,13 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 
   // The first fallback should go to SwiftShader on platforms where fallback to
   // software is allowed.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
-#endif  // !OS_ANDROID && !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVulkan);
@@ -416,8 +416,8 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   manager->FallBackToNextGpuMode();
   EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
 }
-#endif  // !OS_ANDROID && !OS_CHROMEOS
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 #endif  // !IS_CHROMEOS_LACROS
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/speech/tts_crosapi_util.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace tts_crosapi_util {
 
 content::TtsEventType FromMojo(crosapi::mojom::TtsEventType mojo_event) {

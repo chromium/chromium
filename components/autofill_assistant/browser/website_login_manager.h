@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -69,10 +70,12 @@ class WebsiteLoginManager {
 
   // Generates new strong password. |form/field_signature| are used to fetch
   // password requirements. |max_length| is the "max_length" attribute of input
-  // field that limits the length of value.
-  virtual std::string GeneratePassword(autofill::FormSignature form_signature,
-                                       autofill::FieldSignature field_signature,
-                                       uint64_t max_length) = 0;
+  // field that limits the length of value. Returns |absl::nullopt| if the
+  // password cannot be generated for some reason.
+  virtual absl::optional<std::string> GeneratePassword(
+      autofill::FormSignature form_signature,
+      autofill::FieldSignature field_signature,
+      uint64_t max_length) = 0;
 
   // Presaves generated passwod for the form. Password will be saved after
   // successful form submission.

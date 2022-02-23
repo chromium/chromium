@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/filesystem/directory_entry_sync.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_flags.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/filesystem/directory_reader_sync.h"
 #include "third_party/blink/renderer/modules/filesystem/entry.h"
 #include "third_party/blink/renderer/modules/filesystem/file_entry_sync.h"

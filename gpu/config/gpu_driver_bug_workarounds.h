@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/gpu_export.h"

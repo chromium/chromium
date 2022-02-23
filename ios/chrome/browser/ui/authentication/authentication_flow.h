@@ -36,18 +36,11 @@ class Browser;
 // Designated initializer.
 // * |browser| is the current browser where the authentication flow is being
 //   presented.
-// * |shouldClearData| indicates how to handle existing data when the signed in
-//   account is being switched. Possible values:
-//     * User choice: present an alert view asking the user whether the data
-//       should be cleared or merged.
-//     * Clear data: data is removed before signing in with |identity|.
-//     * Merge data: data is not removed before signing in with |identity|.
 // * |postSignInAction| represents the action to be taken once |identity| is
 //   signed in.
 // * |presentingViewController| is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(ChromeIdentity*)identity
-                shouldClearData:(ShouldClearData)shouldClearData
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController
     NS_DESIGNATED_INITIALIZER;

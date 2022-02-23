@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "ui/aura/client/default_capture_client.h"

@@ -12,10 +12,17 @@
 namespace blink {
 
 NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
-                                           const NGBlockBreakToken* break_token)
+                                           const NGBlockBreakToken* break_token,
+                                           bool calculate_child_idx)
     : next_unstarted_child_(first_child),
       break_token_(break_token),
       child_token_idx_(0) {
+  if (calculate_child_idx) {
+    // If we are set up to provide the child index, we also need to visit all
+    // siblings, also when processing break tokens.
+    child_idx_.emplace(0);
+    tracked_child_ = first_child;
+  }
   if (break_token_) {
     const auto& child_break_tokens = break_token_->ChildBreakTokens();
     // If there are child break tokens, we don't yet know which one is the the
@@ -33,11 +40,13 @@ NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
 NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
     const NGInlineBreakToken* previous_inline_break_token) {
   if (previous_inline_break_token) {
+    DCHECK(!child_idx_);
     return Entry(previous_inline_break_token->InputNode(),
-                 previous_inline_break_token);
+                 previous_inline_break_token, absl::nullopt);
   }
 
   const NGBreakToken* current_child_break_token = nullptr;
+  absl::optional<wtf_size_t> current_child_idx;
   NGLayoutInputNode current_child = next_unstarted_child_;
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume
@@ -45,23 +54,37 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
     // each).
     DCHECK(!next_unstarted_child_);
     const auto& child_break_tokens = break_token_->ChildBreakTokens();
-    if (child_token_idx_ < child_break_tokens.size()) {
-      current_child_break_token = child_break_tokens[child_token_idx_++];
-      current_child = current_child_break_token->InputNode();
+    DCHECK_LT(child_token_idx_, child_break_tokens.size());
+    current_child_break_token = child_break_tokens[child_token_idx_++];
+    current_child = current_child_break_token->InputNode();
 
-      if (child_token_idx_ == child_break_tokens.size()) {
-        // We reached the last child break token. Prepare for the next unstarted
-        // sibling, and forget the parent break token.
-        if (!break_token_->HasSeenAllChildren())
-          next_unstarted_child_ = current_child.NextSibling();
-        break_token_ = nullptr;
+    if (child_idx_) {
+      while (tracked_child_ != current_child) {
+        tracked_child_ = tracked_child_.NextSibling();
+        (*child_idx_)++;
       }
+      current_child_idx = child_idx_;
+    }
+
+    if (child_token_idx_ == child_break_tokens.size()) {
+      // We reached the last child break token. Prepare for the next unstarted
+      // sibling, and forget the parent break token.
+      if (!break_token_->HasSeenAllChildren())
+        AdvanceToNextChild(current_child);
+      break_token_ = nullptr;
     }
   } else if (next_unstarted_child_) {
-    next_unstarted_child_ = next_unstarted_child_.NextSibling();
+    current_child_idx = child_idx_;
+    AdvanceToNextChild(next_unstarted_child_);
   }
 
-  return Entry(current_child, current_child_break_token);
+  return Entry(current_child, current_child_break_token, current_child_idx);
+}
+
+void NGBlockChildIterator::AdvanceToNextChild(const NGLayoutInputNode& child) {
+  next_unstarted_child_ = child.NextSibling();
+  if (child_idx_)
+    (*child_idx_)++;
 }
 
 }  // namespace blink

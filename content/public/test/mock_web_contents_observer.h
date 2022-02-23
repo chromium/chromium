@@ -95,14 +95,8 @@ class MockWebContentsObserver : public WebContentsObserver {
   MOCK_METHOD(void, DidStartLoading, (), (override));
   MOCK_METHOD(void, DidStopLoading, (), (override));
   MOCK_METHOD(void, LoadProgressChanged, (double progress), (override));
-  MOCK_METHOD(void,
-              DocumentAvailableInMainFrame,
-              (RenderFrameHost* render_frame_host),
-              (override));
-  MOCK_METHOD(void,
-              DocumentOnLoadCompletedInMainFrame,
-              (RenderFrameHost* render_frame_host),
-              (override));
+  MOCK_METHOD(void, PrimaryMainDocumentElementAvailable, (), (override));
+  MOCK_METHOD(void, DocumentOnLoadCompletedInPrimaryMainFrame, (), (override));
   MOCK_METHOD(void,
               DOMContentLoaded,
               (RenderFrameHost* render_frame_host),
@@ -194,11 +188,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (RenderFrameHost* render_frame_host,
                const gfx::Size& frame_size),
               (override));
-  MOCK_METHOD(void, TitleWasSet, (NavigationEntry* entry), (override));
-  MOCK_METHOD(void,
-              AppCacheAccessed,
-              (const GURL& manifest_url, bool blocked_by_policy),
-              (override));
+  MOCK_METHOD(void, TitleWasSet, (NavigationEntry * entry), (override));
   MOCK_METHOD(void, PepperInstanceCreated, (), (override));
   MOCK_METHOD(void, PepperInstanceDeleted, (), (override));
   MOCK_METHOD(void,
@@ -314,11 +304,6 @@ class MockWebContentsObserver : public WebContentsObserver {
               MediaMutedStatusChanged,
               (const MediaPlayerId& id, bool muted),
               (override));
-  MOCK_METHOD(void,
-              MediaBufferUnderflow,
-              (const MediaPlayerId& id),
-              (override));
-  MOCK_METHOD(void, MediaPlayerSeek, (const MediaPlayerId& id), (override));
   MOCK_METHOD(void, MediaDestroyed, (const MediaPlayerId& id), (override));
   MOCK_METHOD(void,
               OnPageScaleFactorChanged,

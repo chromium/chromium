@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
+#include "components/permissions/permission_request_manager.h"
 
 namespace content {
 class WebContents;
@@ -26,7 +27,9 @@ class Widget;
 // When Chrome displays an accuracy tip, we create a bubble view anchored to the
 // lock icon. Accuracy tip info is also displayed in the usual
 // PageInfoBubbleView, just less prominently.
-class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
+class AccuracyTipBubbleView
+    : public PageInfoBubbleViewBase,
+      public permissions::PermissionRequestManager::Observer {
  public:
   using AccuracyTipInteraction = accuracy_tips::AccuracyTipInteraction;
 
@@ -51,7 +54,11 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
   AccuracyTipBubbleView& operator=(const AccuracyTipBubbleView&) = delete;
 
   // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // permissions::PermissionRequestManager::Observer:
+  void OnBubbleAdded() override;
 
  private:
   void OpenHelpCenter();
@@ -62,6 +69,10 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
 
   base::OnceCallback<void(AccuracyTipInteraction)> close_callback_;
   AccuracyTipInteraction action_taken_ = AccuracyTipInteraction::kNoAction;
+
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ACCURACY_TIP_BUBBLE_VIEW_H_

@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -35,7 +35,7 @@ constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint32_t kMaxSharedFileBytes = 50U * 1024 * 1024;
 
 constexpr uint32_t kMaxTitleLength = 16U * 1024;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr uint32_t kMaxTextLength = 120U * 1024;
 #else
 constexpr uint32_t kMaxTextLength = 1U * 1024 * 1024;
@@ -231,7 +231,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 // when the share completes. This goes against the web share spec to work around
 // the platform-specific bug, it is explicitly skipping section §2.1.2 step 2 of
 // the Web Share spec. https://www.w3.org/TR/web-share/#share-method
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (!clients_.IsEmpty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "A earlier share had not yet completed.");
@@ -244,6 +244,13 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
+    return ScriptPromise();
+  }
+
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Web Share is not allowed in a fenced frame tree.");
     return ScriptPromise();
   }
 

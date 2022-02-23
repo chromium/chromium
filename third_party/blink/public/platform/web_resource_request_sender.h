@@ -24,7 +24,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -200,7 +199,6 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
     // it's not completed. Used both to distinguish completion from
     // cancellation, and to log histograms.
     int net_error = net::ERR_IO_PENDING;
-    PreviewsState previews_state = PreviewsTypes::PREVIEWS_UNSPECIFIED;
 
     std::unique_ptr<ThrottlingURLLoader> url_loader;
     std::unique_ptr<MojoURLLoaderClient> url_loader_client;

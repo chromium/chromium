@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/macros.h"
 
 namespace base {
 

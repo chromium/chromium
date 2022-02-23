@@ -7,6 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
+#include "ash/components/disks/disk.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +25,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -31,13 +38,7 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "chromeos/disks/disk.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -149,8 +150,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(profile_.get(),
                                                  "/media/archive/foo"));
 
-  chromeos::disks::DiskMountManager::InitializeForTesting(
-      new FakeDiskMountManager);
+  ash::disks::DiskMountManager::InitializeForTesting(new FakeDiskMountManager);
   TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
   ash::FakeChromeUserManager user_manager;
   user_manager.AddUser(
@@ -202,7 +202,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   // path for a guest profile.
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(&guest_profile, "foo"));
 
-  chromeos::disks::DiskMountManager::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilTest, MultiProfileDownloadsFolderMigration) {
@@ -428,8 +428,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
         profile_.get(), base::FilePath(test.inside), vm_mount,
         /*map_crostini_home=*/false, &url));
     EXPECT_TRUE(url.is_valid());
-    EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/",
-              url.origin().GetURL());
+    EXPECT_EQ(file_manager::util::GetFileManagerURL(), url.origin().GetURL());
     EXPECT_EQ(test.mount_name, url.filesystem_id());
     EXPECT_EQ(test.mount_name + "/" + test.relative_path,
               url.virtual_path().value());
@@ -462,8 +461,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       profile_.get(), base::FilePath("/home/testuser/path/in/crostini"),
       vm_mount, /*map_crostini_home=*/true, &url));
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/",
-            url.origin().GetURL());
+  EXPECT_EQ(file_manager::util::GetFileManagerURL(), url.origin().GetURL());
   EXPECT_EQ("crostini_0123456789abcdef_termina_penguin/path/in/crostini",
             url.virtual_path().value());
   EXPECT_FALSE(ConvertPathInsideVMToFileSystemURL(
@@ -637,22 +635,27 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
                                      storage::FileSystemMountOption(),
                                      crostini_mount_point_);
 
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new FakeDiskMountManager);
 
     // Add the disk and mount point for a fake removable device.
+    ASSERT_TRUE(ash::disks::DiskMountManager::GetInstance()->AddDiskForTest(
+        ash::disks::Disk::Builder()
+            .SetDevicePath("/device/source_path")
+            .SetFileSystemUUID("0123-abcd")
+            .Build()));
     ASSERT_TRUE(
-        chromeos::disks::DiskMountManager::GetInstance()->AddDiskForTest(
-            chromeos::disks::Disk::Builder()
-                .SetDevicePath("/device/source_path")
-                .SetFileSystemUUID("0123-abcd")
-                .Build()));
-    ASSERT_TRUE(
-        chromeos::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
-            chromeos::disks::DiskMountManager::MountPointInfo(
+        ash::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
+            ash::disks::DiskMountManager::MountPointInfo(
                 "/device/source_path", "/media/removable/a",
                 chromeos::MOUNT_TYPE_DEVICE,
-                chromeos::disks::MOUNT_CONDITION_NONE)));
+                ash::disks::MOUNT_CONDITION_NONE)));
+
+    // Add a Share Cache mount point for the primary profile.
+    ASSERT_TRUE(mount_points->RegisterFileSystem(
+        kShareCacheMountPointName, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(),
+        util::GetShareCacheFilePath(primary_profile)));
 
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.
@@ -665,10 +668,12 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
     user_manager_enabler_.reset();
     profile_manager_.reset();
 
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+
     // Run all pending tasks before destroying testing profile.
     base::RunLoop().RunUntilIdle();
 
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
   }
 
  protected:
@@ -684,6 +689,24 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 FileSystemURL CreateExternalURL(const base::FilePath& path) {
   return FileSystemURL::CreateForTest(blink::StorageKey(),
                                       storage::kFileSystemTypeExternal, path);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Archive) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"", "--enable-arcvm"});
+  GURL url;
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      base::FilePath::FromUTF8Unsafe("/media/archive/Smile 🙂.zip/"
+                                     "Folder ({[<!@#$%^&*_-+=`~;:'\"?>\\]})/"
+                                     ".File.txt"),
+      &url, &requires_sharing));
+  EXPECT_EQ(
+      GURL("content://org.chromium.arc.volumeprovider/archive/"
+           "Smile%20%F0%9F%99%82.zip/"
+           "Folder%20(%7B%5B%3C!@%23$%25%5E&*_-+=%60~;%3A'%22%3F%3E%5C%5D%7D)/"
+           ".File.txt"),
+      url);
+  EXPECT_TRUE(requires_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Removable) {
@@ -702,7 +725,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyFiles) {
   GURL url;
   bool requires_sharing = false;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   EXPECT_TRUE(ConvertPathToArcUrl(myfiles.AppendASCII("a/b/c"), &url,
                                   &requires_sharing));
@@ -729,7 +752,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
   GURL url;
   bool requires_sharing = false;
   const base::FilePath downloads2 = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user2@gmail.com-hash"));
   EXPECT_FALSE(ConvertPathToArcUrl(downloads2.AppendASCII("a/b/c"), &url,
                                    &requires_sharing));
@@ -783,6 +806,20 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
   EXPECT_TRUE(requires_sharing);
 }
 
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_ShareCache) {
+  GURL url;
+  bool requires_seneschal_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      util::GetShareCacheFilePath(ProfileManager::GetPrimaryUserProfile())
+          .AppendASCII("a/b/c"),
+      &url, &requires_seneschal_sharing));
+  EXPECT_EQ(GURL("content://org.chromium.arc.chromecontentprovider/"
+                 "externalfile%3AShareCache%2Fa%2Fb%2Fc"),
+            url);
+  // ShareCache files do not need to be shared to ARC through Seneschal.
+  EXPECT_FALSE(requires_seneschal_sharing);
+}
+
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidMountType) {
   base::RunLoop run_loop;
@@ -824,7 +861,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Removable) {
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_MyFiles) {
   base::test::ScopedRunningOnChromeOS running_on_chromeos;
   const base::FilePath myfiles = GetMyFilesFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
@@ -865,7 +902,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest,
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
   const base::FilePath downloads = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(
@@ -889,7 +926,7 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertToContentUrls_Downloads) {
 TEST_F(FileManagerPathUtilConvertUrlTest,
        ConvertToContentUrls_InvalidDownloads) {
   const base::FilePath downloads = GetDownloadsFolderForProfile(
-      chromeos::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
+      ash::ProfileHelper::Get()->GetProfileByUserIdHashForTest(
           "user2@gmail.com-hash"));
   base::RunLoop run_loop;
   ConvertToContentUrls(

@@ -118,8 +118,9 @@ class DISPLAY_EXPORT Screen {
   // (both of which may or may not be `nearest_id`).
   display::ScreenInfos GetScreenInfosNearestDisplay(int64_t nearest_id) const;
 
-  // Suspends the platform-specific screensaver, if applicable.
-  virtual void SetScreenSaverSuspended(bool suspend);
+  // Suspends or un-suspends the platform-specific screensaver, and returns
+  // whether the operation was successful.
+  virtual bool SetScreenSaverSuspended(bool suspend);
 
   // Returns whether the screensaver is currently running.
   virtual bool IsScreenSaverActive() const;

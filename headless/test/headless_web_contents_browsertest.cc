@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -112,14 +113,14 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, WindowOpen) {
     EXPECT_NE(parent->window_tree_host(), child->window_tree_host());
 
   gfx::Rect expected_bounds(0, 0, 200, 100);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_EQ(expected_bounds, child->web_contents()->GetViewBounds());
   EXPECT_EQ(expected_bounds, child->web_contents()->GetContainerBounds());
-#else   // !defined(OS_MAC)
+#else   // !BUILDFLAG(IS_MAC)
   // Mac does not support GetViewBounds() and view positions are random.
   EXPECT_EQ(expected_bounds.size(),
             child->web_contents()->GetContainerBounds().size());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
@@ -259,7 +260,7 @@ class HeadlessWebContentsScreenshotWindowPositionTest
   }
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_P(
     HeadlessWebContentsScreenshotWindowPositionTest);
@@ -726,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, BrowserOpenInTab) {
 }
 
 // BeginFrameControl is not supported on MacOS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 class HeadlessWebContentsBeginFrameControlTest
     : public HeadlessBrowserTest,
@@ -899,8 +900,8 @@ class HeadlessWebContentsBeginFrameControlTest
             base::Unretained(this)));
   }
 
-  HeadlessBrowserContext* browser_context_ = nullptr;  // Not owned.
-  HeadlessWebContentsImpl* web_contents_ = nullptr;    // Not owned.
+  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;  // Not owned.
+  raw_ptr<HeadlessWebContentsImpl> web_contents_ = nullptr;    // Not owned.
 
   bool page_ready_ = false;
   bool needs_begin_frames_ = false;
@@ -1042,7 +1043,7 @@ class HeadlessWebContentsBeginFrameControlViewportTest
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(
     HeadlessWebContentsBeginFrameControlViewportTest);
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 class CookiesEnabled : public HeadlessAsyncDevTooledBrowserTest,
                        page::Observer {
@@ -1064,10 +1065,10 @@ class CookiesEnabled : public HeadlessAsyncDevTooledBrowserTest,
   }
 
   void OnResult(std::unique_ptr<runtime::EvaluateResult> result) {
-    std::string value;
     EXPECT_TRUE(result->GetResult()->HasValue());
-    EXPECT_TRUE(result->GetResult()->GetValue()->GetAsString(&value));
-    EXPECT_EQ("0", value);
+    const base::Value* value = result->GetResult()->GetValue();
+    EXPECT_TRUE(value->is_string());
+    EXPECT_EQ("0", value->GetString());
     FinishAsynchronousTest();
   }
 };

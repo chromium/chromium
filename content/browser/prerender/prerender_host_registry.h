@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_HOST_REGISTRY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -72,10 +73,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                          WebContents& web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
-  // immediately removed from the map of non-reserved or reserved hosts but
-  // asynchronously destroyed so that prerendered pages can cancel themselves
-  // without concern for self destruction.
-  void CancelHost(int frame_tree_node_id,
+  // immediately removed from the map of non-reserved hosts but asynchronously
+  // destroyed so that prerendered pages can cancel themselves without concern
+  // for self destruction.
+  // Returns true if a cancelation has occurred.
+  bool CancelHost(int frame_tree_node_id,
                   PrerenderHost::FinalStatus final_status);
 
   // Applies CancelHost for all existing PrerenderHost.
@@ -145,6 +147,13 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // This will cancel all hosts in `prerender_host_by_frame_tree_node_id_`.
   void CancelAllHostsForTesting();
 
+  // Gets the trigger type from the reserved PrerenderHost.
+  PrerenderTriggerType GetPrerenderTriggerType(int frame_tree_node_id);
+  // Gets the embedder histogram suffix from the reserved PrerenderHost. Only
+  // used for metrics.
+  const std::string& GetPrerenderEmbedderHistogramSuffix(
+      int frame_tree_node_id);
+
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
   // Applies the callback function to all prerender hosts owned by
@@ -162,9 +171,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   void NotifyTrigger(const GURL& url);
 
-  // Currently the number of speculationrules-triggered prerenders is limited to
-  // one per WebContentsImpl.
-  const size_t kMaxNumOfRunningPrerenders = 1;
+  // Returns whether a certain type of PrerenderTriggerType is allowed to be
+  // added to PrerenderHostRegistry according to the limit of the given
+  // PrerenderTriggerType.
+  bool IsAllowedToStartPrerenderingForTrigger(
+      PrerenderTriggerType trigger_type);
 
   // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are

@@ -69,7 +69,8 @@ public class LongScreenshotsCompositor {
     @VisibleForTesting
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+            long nativeAxTree) {
         mContentSize = getMainFrameValues(frameContentSize);
         Size offsetSize = getMainFrameValues(scrollOffsets);
         mScrollOffset = new Point(offsetSize.getWidth(), offsetSize.getHeight());

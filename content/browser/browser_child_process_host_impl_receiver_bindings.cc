@@ -24,12 +24,12 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_interface.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/sandbox_support_mac_impl.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
@@ -65,7 +65,7 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
     static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
     sandbox_support->BindReceiver(std::move(r));
@@ -73,7 +73,7 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
   }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (auto r = receiver.As<mojom::FontCacheWin>()) {
     FontCacheDispatcher::Create(std::move(r));
     return;

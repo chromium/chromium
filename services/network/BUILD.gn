@@ -161,6 +161,7 @@ component("network_service") {
     "upload_progress_tracker.h",
     "url_loader.cc",
     "url_loader.h",
+    "url_loader_context.h",
     "url_loader_factory.cc",
     "url_loader_factory.h",
     "url_request_context_builder_mojo.cc",
@@ -213,14 +214,24 @@ component("network_service") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cert_verifier_with_trust_anchors.cc",
       "cert_verifier_with_trust_anchors.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
       "dhcp_pac_file_fetcher_mojo.cc",
       "dhcp_pac_file_fetcher_mojo.h",
-      "nss_temp_certs_cache_chromeos.cc",
-      "nss_temp_certs_cache_chromeos.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "windows_system_proxy_resolver_mojo.cc",
+      "windows_system_proxy_resolver_mojo.h",
     ]
   }
 
@@ -237,8 +248,9 @@ component("network_service") {
     "//components/network_session_configurator/common",
     "//components/os_crypt",
     "//components/prefs",
+    "//components/url_matcher",
     "//components/web_package",
-    "//jingle/glue:fake_ssl_socket",
+    "//components/webrtc:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
@@ -406,7 +418,6 @@ source_set("tests") {
       "//net/tools/testserver/",
       "//services/test/data",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-      "//third_party/tlslite/",
     ]
   }
 
@@ -414,8 +425,11 @@ source_set("tests") {
     sources += [
       "cert_verifier_with_trust_anchors_unittest.cc",
       "dhcp_pac_file_fetcher_mojo_unittest.cc",
-      "nss_temp_certs_cache_chromeos_unittest.cc",
     ]
+  }
+
+  if (is_win) {
+    sources += [ "windows_system_proxy_resolver_mojo_unittest.cc" ]
   }
 
   deps = [
@@ -427,8 +441,8 @@ source_set("tests") {
     "//components/prefs:test_support",
     "//components/variations:test_support",
     "//components/web_package",
+    "//components/webrtc:fake_ssl_socket",
     "//crypto",
-    "//jingle/glue:fake_ssl_socket",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",
@@ -457,6 +471,8 @@ source_set("tests") {
       "ct_log_list_distributor_unittest.cc",
       "expect_ct_reporter_unittest.cc",
       "sct_auditing/sct_auditing_cache_unittest.cc",
+      "sct_auditing/sct_auditing_handler_unittest.cc",
+      "sct_auditing/sct_auditing_reporter_unittest.cc",
     ]
     deps += [ "//components/certificate_transparency" ]
   }
@@ -472,6 +488,8 @@ source_set("test_support") {
   sources = [
     "mojo_socket_test_util.cc",
     "mojo_socket_test_util.h",
+    "test/client_security_state_builder.cc",
+    "test/client_security_state_builder.h",
     "test/fake_test_cert_verifier_params_factory.cc",
     "test/fake_test_cert_verifier_params_factory.h",
     "test/mock_devtools_observer.cc",
@@ -492,6 +510,8 @@ source_set("test_support") {
     "test/test_resource_scheduler.h",
     "test/test_shared_url_loader_factory.cc",
     "test/test_shared_url_loader_factory.h",
+    "test/test_udp_socket.cc",
+    "test/test_udp_socket.h",
     "test/test_url_loader_client.cc",
     "test/test_url_loader_client.h",
     "test/test_url_loader_factory.cc",
@@ -500,8 +520,16 @@ source_set("test_support") {
     "test/test_url_loader_network_observer.h",
     "test/test_utils.cc",
     "test/test_utils.h",
+    "test/trust_token_request_handler.cc",
+    "test/trust_token_request_handler.h",
+    "test/trust_token_test_server_handler_registration.cc",
+    "test/trust_token_test_server_handler_registration.h",
+    "test/trust_token_test_util.cc",
+    "test/trust_token_test_util.h",
     "test/udp_socket_test_util.cc",
     "test/udp_socket_test_util.h",
+    "test/url_loader_context_for_tests.cc",
+    "test/url_loader_context_for_tests.h",
   ]
 
   if (is_chromeos_ash) {
@@ -516,11 +544,13 @@ source_set("test_support") {
     "//services/network/public/cpp:buildflags",
     "//services/network/public/mojom",
     "//services/network/trust_tokens:test_support",
+    "//services/network/trust_tokens:trust_tokens",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/cbor:cbor",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:test_support",

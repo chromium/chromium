@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -81,10 +81,9 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -103,6 +102,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   bool WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
@@ -129,6 +129,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      content::RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override;
   void OverrideURLLoaderFactoryParams(
@@ -153,10 +154,10 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
   const Extension* GetExtension(content::SiteInstance* site_instance);
 
   // Owned by content::BrowserMainLoop.
-  ShellBrowserMainParts* browser_main_parts_;
+  raw_ptr<ShellBrowserMainParts> browser_main_parts_;
 
   // Owned by ShellBrowserMainParts.
-  ShellBrowserMainDelegate* browser_main_delegate_;
+  raw_ptr<ShellBrowserMainDelegate> browser_main_delegate_;
 };
 
 }  // namespace extensions

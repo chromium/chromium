@@ -27,7 +27,6 @@
 #ifndef HTMLTokenizer_h
 #define HTMLTokenizer_h
 
-#include "base/macros.h"
 #include "ios/third_party/blink/src/html_input_stream_preprocessor.h"
 #include "ios/third_party/blink/src/html_token.h"
 

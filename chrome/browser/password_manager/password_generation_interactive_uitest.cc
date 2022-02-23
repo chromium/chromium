@@ -12,7 +12,9 @@
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -219,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_FALSE(GenerationPopupShowing());
   // The same flow happens when user generates a password from the context menu.
   password_manager_util::UserTriggeredManualGenerationFromContextMenu(
-      ChromePasswordManagerClient::FromWebContents(WebContents()));
+      ChromePasswordManagerClient::FromWebContents(WebContents()),
+      autofill::ChromeAutofillClient::FromWebContents(WebContents()));
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kShown);
   EXPECT_TRUE(GenerationPopupShowing());
   SendKeyToPopup(ui::VKEY_DOWN);
@@ -355,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                             false);
 
   // Submit form.
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   std::string submit_script =
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit_script));

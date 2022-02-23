@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_system_media_capability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_configuration.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {

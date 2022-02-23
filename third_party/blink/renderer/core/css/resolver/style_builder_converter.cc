@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -179,7 +179,7 @@ static FontDescription::GenericFamilyType ConvertGenericFamily(
     CSSValueID value_id) {
   switch (value_id) {
     case CSSValueID::kWebkitBody:
-      return FontDescription::kStandardFamily;
+      return FontDescription::kWebkitBodyFamily;
     case CSSValueID::kSerif:
       return FontDescription::kSerifFamily;
     case CSSValueID::kSansSerif:
@@ -210,7 +210,8 @@ static bool ConvertFontFamilyName(
     generic_family = ConvertGenericFamily(cssValueID);
     if (generic_family != FontDescription::kNoFamily) {
       family_name = font_builder->GenericFontFamilyName(generic_family);
-      if (cssValueID == CSSValueID::kWebkitBody && !family_name.IsEmpty()) {
+      if (document_for_count && cssValueID == CSSValueID::kWebkitBody &&
+          !family_name.IsEmpty()) {
         // TODO(crbug.com/1065468): Remove this counter when it's no longer
         // necessary.
         document_for_count->CountUse(
@@ -242,7 +243,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
   FontFamily* curr_family = nullptr;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool has_seen_system_ui = false;
 #endif
 
@@ -266,7 +267,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     // TODO(crbug.com/1065468): Get rid of GenericFamilyType.
     bool is_generic = generic_family != FontDescription::kNoFamily ||
                       IsA<CSSIdentifierValue>(*family);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(https://crbug.com/554590): Remove this counter when it's no longer
     // necessary.
     if (!has_seen_system_ui) {
@@ -276,7 +277,7 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
     if (IsA<CSSFontFamilyValue>(*family) &&
         family_name == FontCache::LegacySystemFontFamily()) {
       family_name = font_family_names::kSystemUi;
-      if (!has_seen_system_ui)
+      if (document_for_count && !has_seen_system_ui)
         document_for_count->CountUse(WebFeature::kBlinkMacSystemFont);
     }
 #endif
@@ -346,6 +347,32 @@ StyleBuilderConverter::ConvertFontVariationSettings(
   }
   std::sort(settings->begin(), settings->end(), CompareTags);
   return settings;
+}
+
+scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kNormal) {
+    return nullptr;
+  }
+
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kDark) {
+    return FontPalette::Create(FontPalette::kDarkPalette);
+  }
+
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kLight) {
+    return FontPalette::Create(FontPalette::kLightPalette);
+  }
+
+  auto* custom_identifier = DynamicTo<CSSCustomIdentValue>(value);
+  if (custom_identifier) {
+    return FontPalette::Create(custom_identifier->Value());
+  }
+
+  return nullptr;
 }
 
 float MathScriptScaleFactor(StyleResolverState& state) {
@@ -874,12 +901,17 @@ StyleContentAlignmentData StyleBuilderConverter::ConvertContentAlignmentData(
 
 GridAutoFlow StyleBuilderConverter::ConvertGridAutoFlow(StyleResolverState&,
                                                         const CSSValue& value) {
-  const auto& list = To<CSSValueList>(value);
+  const auto* list = DynamicTo<CSSValueList>(&value);
+  if (list)
+    DCHECK_GE(list->length(), 1u);
+  else
+    DCHECK(value.IsIdentifierValue());
 
-  DCHECK_GE(list.length(), 1u);
-  const CSSIdentifierValue& first = To<CSSIdentifierValue>(list.Item(0));
+  const CSSIdentifierValue& first =
+      To<CSSIdentifierValue>(list ? list->Item(0) : value);
   const CSSIdentifierValue* second =
-      list.length() == 2 ? &To<CSSIdentifierValue>(list.Item(1)) : nullptr;
+      list && list->length() == 2 ? &To<CSSIdentifierValue>(list->Item(1))
+                                  : nullptr;
 
   switch (first.GetValueID()) {
     case CSSValueID::kRow:
@@ -989,6 +1021,7 @@ static void ConvertGridLineNamesList(
     bool is_first_repeat = false) {
   DCHECK(value.IsGridLineNamesValue());
 
+  // TODO(ansollan): Serialize subgrid's empty lines.
   for (auto& named_grid_line_value : To<CSSValueList>(value)) {
     String named_grid_line =
         To<CSSCustomIdentValue>(*named_grid_line_value).Value();
@@ -1006,6 +1039,13 @@ static void ConvertGridLineNamesList(
 GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
     StyleResolverState& state,
     const CSSValue& value) {
+  const CSSValueList* list = DynamicTo<CSSValueList>(value);
+  if (!list) {
+    const auto& ident = To<CSSIdentifierValue>(value);
+    DCHECK_EQ(ident.GetValueID(), CSSValueID::kAuto);
+    return GridTrackList(GridTrackSize(Length::Auto()));
+  }
+
   Vector<GridTrackSize, 1> track_sizes;
   for (auto& curr_value : To<CSSValueList>(value)) {
     DCHECK(!curr_value->IsGridLineNamesValue());
@@ -1019,70 +1059,91 @@ GridTrackList StyleBuilderConverter::ConvertGridTrackSizeList(
 
 void StyleBuilderConverter::ConvertGridTrackList(
     const CSSValue& value,
-    GridTrackList& track_sizes,
-    NamedGridLinesMap& named_grid_lines,
-    OrderedNamedGridLines& ordered_named_grid_lines,
-    Vector<GridTrackSize, 1>& auto_repeat_track_sizes,
-    NamedGridLinesMap& auto_repeat_named_grid_lines,
-    OrderedNamedGridLines& auto_repeat_ordered_named_grid_lines,
-    wtf_size_t& auto_repeat_insertion_point,
-    AutoRepeatType& auto_repeat_type,
+    ComputedGridTrackList& computed_grid_track_list,
     StyleResolverState& state) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
     return;
   }
 
+  GridTrackList& track_sizes = computed_grid_track_list.track_sizes;
+  Vector<GridTrackSize, 1>& auto_repeat_track_sizes =
+      computed_grid_track_list.auto_repeat_track_sizes;
+
   wtf_size_t current_named_grid_line = 0;
   auto ConvertLineNameOrTrackSize = [&](const CSSValue& curr_value,
                                         bool is_in_repeat = false,
                                         bool is_first_repeat = false) {
     if (curr_value.IsGridLineNamesValue()) {
-      ConvertGridLineNamesList(curr_value, current_named_grid_line,
-                               named_grid_lines, ordered_named_grid_lines,
-                               is_in_repeat, is_first_repeat);
+      ConvertGridLineNamesList(
+          curr_value, current_named_grid_line,
+          computed_grid_track_list.named_grid_lines,
+          computed_grid_track_list.ordered_named_grid_lines, is_in_repeat,
+          is_first_repeat);
+      if (computed_grid_track_list.axis_type == GridAxisType::kSubgriddedAxis)
+        ++current_named_grid_line;
     } else {
+      DCHECK_EQ(computed_grid_track_list.axis_type,
+                GridAxisType::kStandaloneAxis);
       ++current_named_grid_line;
       track_sizes.LegacyTrackList().push_back(
           ConvertGridTrackSize(state, curr_value));
     }
   };
 
-  for (auto curr_value : To<CSSValueList>(value)) {
+  const auto& values = To<CSSValueList>(value);
+  auto* curr_value = values.begin();
+
+  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled()) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kSubgrid) {
+      computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
+      ++curr_value;
+    }
+  }
+
+  for (; curr_value != values.end(); ++curr_value) {
     if (auto* grid_auto_repeat_value =
-            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value.Get())) {
+            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value->Get())) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
       wtf_size_t auto_repeat_index = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
       DCHECK(auto_repeat_id == CSSValueID::kAutoFill ||
              auto_repeat_id == CSSValueID::kAutoFit);
-      auto_repeat_type = auto_repeat_id == CSSValueID::kAutoFill
-                             ? AutoRepeatType::kAutoFill
-                             : AutoRepeatType::kAutoFit;
-      for (auto auto_repeat_value : To<CSSValueList>(*curr_value)) {
+      computed_grid_track_list.auto_repeat_type =
+          (auto_repeat_id == CSSValueID::kAutoFill) ? AutoRepeatType::kAutoFill
+                                                    : AutoRepeatType::kAutoFit;
+      for (const CSSValue* auto_repeat_value : To<CSSValueList>(**curr_value)) {
         if (auto_repeat_value->IsGridLineNamesValue()) {
-          ConvertGridLineNamesList(*auto_repeat_value, auto_repeat_index,
-                                   auto_repeat_named_grid_lines,
-                                   auto_repeat_ordered_named_grid_lines);
+          ConvertGridLineNamesList(
+              *auto_repeat_value, auto_repeat_index,
+              computed_grid_track_list.auto_repeat_named_grid_lines,
+              computed_grid_track_list.auto_repeat_ordered_named_grid_lines);
+          if (computed_grid_track_list.axis_type ==
+              GridAxisType::kSubgriddedAxis)
+            ++auto_repeat_index;
           continue;
         }
         ++auto_repeat_index;
         repeated_track_sizes.push_back(
             ConvertGridTrackSize(state, *auto_repeat_value));
       }
-      if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+      if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
         track_sizes.NGTrackList().AddRepeater(
             repeated_track_sizes,
-            static_cast<NGGridTrackRepeater::RepeatType>(auto_repeat_type));
+            static_cast<NGGridTrackRepeater::RepeatType>(
+                computed_grid_track_list.auto_repeat_type));
       }
       DCHECK(auto_repeat_track_sizes.IsEmpty());
       auto_repeat_track_sizes = std::move(repeated_track_sizes);
-      auto_repeat_insertion_point = current_named_grid_line++;
+      computed_grid_track_list.auto_repeat_insertion_point =
+          current_named_grid_line++;
       continue;
     }
 
     if (auto* grid_integer_repeat_value =
-            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value.Get())) {
+            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value->Get())) {
       const wtf_size_t repetitions = grid_integer_repeat_value->Repetitions();
 
       for (wtf_size_t i = 0; i < repetitions; ++i) {
@@ -1093,7 +1154,9 @@ void StyleBuilderConverter::ConvertGridTrackList(
         }
       }
 
-      if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+      if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
+          (computed_grid_track_list.axis_type ==
+           GridAxisType::kStandaloneAxis)) {
         Vector<GridTrackSize, 1> repeater_track_sizes;
         for (auto integer_repeat_value : *grid_integer_repeat_value) {
           if (!integer_repeat_value->IsGridLineNamesValue()) {
@@ -1108,18 +1171,20 @@ void StyleBuilderConverter::ConvertGridTrackList(
       continue;
     }
 
-    ConvertLineNameOrTrackSize(*curr_value);
-    if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
-        !curr_value->IsGridLineNamesValue()) {
+    ConvertLineNameOrTrackSize(**curr_value);
+    if (RuntimeEnabledFeatures::LayoutNGEnabled() &&
+        !curr_value->Get()->IsGridLineNamesValue()) {
       track_sizes.NGTrackList().AddRepeater(
-          {ConvertGridTrackSize(state, *curr_value)});
+          {ConvertGridTrackSize(state, **curr_value)});
     }
   }
 
-  // The parser should have rejected any <track-list> without any <track-size>
-  // as this is not conformant to the syntax.
+  // Unless the axis is subgridded, the parser should have rejected any
+  // <track-list> without any <track-size> as this is not conformant to
+  // the syntax.
   DCHECK(!track_sizes.LegacyTrackList().IsEmpty() ||
-         !auto_repeat_track_sizes.IsEmpty());
+         !auto_repeat_track_sizes.IsEmpty() ||
+         (computed_grid_track_list.axis_type == GridAxisType::kSubgriddedAxis));
 }
 
 void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
@@ -1498,7 +1563,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
         switch (value_id) {
           case CSSValueID::kInvalid:
             NOTREACHED();
-            FALLTHROUGH;
+            [[fallthrough]];
           case CSSValueID::kInternalQuirkInherit:
           case CSSValueID::kWebkitLink:
           case CSSValueID::kWebkitActivelink:
@@ -1513,7 +1578,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
     }
   }
 
-  return ShadowData(FloatPoint(x, y), blur, spread, shadow_style, color);
+  return ShadowData(gfx::PointF(x, y), blur, spread, shadow_style, color);
 }
 
 scoped_refptr<ShadowList> StyleBuilderConverter::ConvertShadowList(
@@ -1614,7 +1679,7 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
     CSSValueID value_id = identifier_value->GetValueID();
     if (value_id == CSSValueID::kCurrentcolor)
       return StyleColor::CurrentColor();
-    if (StyleColor::IsSystemColor(value_id)) {
+    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       CountSystemColorComputeToSelfUsage(state);
       return StyleColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
@@ -1637,7 +1702,7 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
       return StyleAutoColor::CurrentColor();
     if (value_id == CSSValueID::kAuto)
       return StyleAutoColor::AutoColor();
-    if (StyleColor::IsSystemColor(value_id)) {
+    if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
       CountSystemColorComputeToSelfUsage(state);
       return StyleAutoColor(
           state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
@@ -1663,19 +1728,19 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
   }
 
   if (local_value->IsURIValue()) {
-    paint.type = SVG_PAINTTYPE_URI;
+    paint.type = SVGPaintType::kUri;
     paint.resource = ConvertElementReference(state, *local_value);
   } else {
     auto* local_identifier_value = DynamicTo<CSSIdentifierValue>(local_value);
     if (local_identifier_value &&
         local_identifier_value->GetValueID() == CSSValueID::kNone) {
       paint.type =
-          !paint.resource ? SVG_PAINTTYPE_NONE : SVG_PAINTTYPE_URI_NONE;
+          !paint.resource ? SVGPaintType::kNone : SVGPaintType::kUriNone;
     } else {
       // TODO(fs): Pass along |for_visited_link|.
       paint.color = ConvertStyleColor(state, *local_value);
       paint.type =
-          !paint.resource ? SVG_PAINTTYPE_COLOR : SVG_PAINTTYPE_URI_COLOR;
+          !paint.resource ? SVGPaintType::kColor : SVGPaintType::kUriColor;
     }
   }
   return paint;
@@ -1697,6 +1762,13 @@ TextEmphasisPosition StyleBuilderConverter::ConvertTextTextEmphasisPosition(
     const CSSValue& value) {
   const auto& list = To<CSSValueList>(value);
   CSSValueID first = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
+  if (list.length() < 2) {
+    if (first == CSSValueID::kOver)
+      return TextEmphasisPosition::kOverRight;
+    if (first == CSSValueID::kUnder)
+      return TextEmphasisPosition::kUnderRight;
+    return TextEmphasisPosition::kOverRight;
+  }
   CSSValueID second = To<CSSIdentifierValue>(list.Item(1)).GetValueID();
   if (first == CSSValueID::kOver && second == CSSValueID::kRight)
     return TextEmphasisPosition::kOverRight;
@@ -1858,7 +1930,7 @@ StyleBuilderConverter::ConvertTranslate(StyleResolverState& state,
 Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return Rotation(FloatPoint3D(0, 0, 1), 0);
+    return Rotation(gfx::Vector3dF(0, 0, 1), 0);
   }
 
   const auto& list = To<CSSValueList>(value);
@@ -1876,7 +1948,7 @@ Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
   }
   double angle =
       To<CSSPrimitiveValue>(list.Item(list.length() - 1)).ComputeDegrees();
-  return Rotation(FloatPoint3D(x, y, z), angle);
+  return Rotation(gfx::Vector3dF(x, y, z), angle);
 }
 
 scoped_refptr<RotateTransformOperation> StyleBuilderConverter::ConvertRotate(
@@ -2090,15 +2162,15 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
 }
 
 namespace {
-FloatSize GetRatioFromList(const CSSValueList& list) {
+gfx::SizeF GetRatioFromList(const CSSValueList& list) {
   auto* ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(0));
   if (!ratio) {
     DCHECK_EQ(list.length(), 2u);
     ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(1));
   }
   DCHECK(ratio);
-  return FloatSize(ratio->First().GetFloatValue(),
-                   ratio->Second().GetFloatValue());
+  return gfx::SizeF(ratio->First().GetFloatValue(),
+                    ratio->Second().GetFloatValue());
 }
 
 bool ListHasAuto(const CSSValueList& list) {
@@ -2120,7 +2192,7 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
-    return StyleAspectRatio(EAspectRatioType::kAuto, FloatSize());
+    return StyleAspectRatio(EAspectRatioType::kAuto, gfx::SizeF());
 
   // (auto, (1, 2)) or ((1, 2), auto) or ((1, 2))
   const CSSValueList& list = To<CSSValueList>(value);
@@ -2130,7 +2202,7 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
   bool has_auto = ListHasAuto(list);
   EAspectRatioType type =
       has_auto ? EAspectRatioType::kAutoAndRatio : EAspectRatioType::kRatio;
-  FloatSize ratio = GetRatioFromList(list);
+  gfx::SizeF ratio = GetRatioFromList(list);
   return StyleAspectRatio(type, ratio);
 }
 
@@ -2193,13 +2265,20 @@ ScrollbarGutter StyleBuilderConverter::ConvertScrollbarGutter(
   return flags;
 }
 
-AtomicString StyleBuilderConverter::ConvertContainerName(
+Vector<AtomicString> StyleBuilderConverter::ConvertContainerName(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value))
-    return AtomicString(custom_ident_value->Value());
-  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
-  return AtomicString();
+  Vector<AtomicString> names;
+
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+    return names;
+  }
+
+  for (const auto& item : To<CSSValueList>(value))
+    names.push_back(To<CSSCustomIdentValue>(item.Get())->Value());
+
+  return names;
 }
 
 absl::optional<StyleIntrinsicLength>

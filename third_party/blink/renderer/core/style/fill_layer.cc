@@ -21,9 +21,10 @@
 
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -170,8 +171,8 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
 }
 
 bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
-  return DataEquivalent(image_, o.image_) && position_x_ == o.position_x_ &&
-         position_y_ == o.position_y_ &&
+  return base::ValuesEquivalent(image_, o.image_) &&
+         position_x_ == o.position_x_ && position_y_ == o.position_y_ &&
          background_x_origin_ == o.background_x_origin_ &&
          background_y_origin_ == o.background_y_origin_ &&
          attachment_ == o.attachment_ && clip_ == o.clip_ &&
@@ -356,6 +357,9 @@ void FillLayer::ComputeCachedProperties() const {
       any_layer_has_image_ && Attachment() == EFillAttachment::kFixed;
   any_layer_has_default_attachment_image_ =
       any_layer_has_image_ && Attachment() == EFillAttachment::kScroll;
+  any_layer_uses_current_color_ =
+      (image_ && image_->IsGeneratedImage() &&
+       To<StyleGeneratedImage>(image_.Get())->IsUsingCurrentColor());
   cached_properties_computed_ = true;
 
   if (next_) {
@@ -370,6 +374,7 @@ void FillLayer::ComputeCachedProperties() const {
         next_->any_layer_has_fixed_attachment_image_;
     any_layer_has_default_attachment_image_ |=
         next_->any_layer_has_default_attachment_image_;
+    any_layer_uses_current_color_ |= next_->any_layer_uses_current_color_;
   }
 }
 
@@ -395,7 +400,7 @@ bool FillLayer::ImageIsOpaque(const Document& document,
   // checking for IsEmpty.
   return image_->KnownToBeOpaque(document, style) &&
          !image_
-              ->ImageSize(style.EffectiveZoom(), FloatSize(),
+              ->ImageSize(style.EffectiveZoom(), gfx::SizeF(),
                           kRespectImageOrientation)
               .IsEmpty();
 }
@@ -425,7 +430,8 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
     case kCompositeSourceOver:
       return GetBlendMode() == BlendMode::kNormal && ImageTilesLayer() &&
              ImageIsOpaque(document, style);
-    default: {}
+    default: {
+    }
   }
 
   return false;

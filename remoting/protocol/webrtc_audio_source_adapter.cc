@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_source.h"
 

@@ -7,10 +7,12 @@
 <style>
 #inline-unquoted {
     background-image: url();
+    cursor: url(), pointer;
 }
 
 #inline-quoted {
     background-image: url("");
+    cursor: url(""), pointer;
 }
 </style>
 <link rel=stylesheet href=support/empty-urls.css>
@@ -31,6 +33,7 @@ for (let id of ids) {
         const el = document.getElementById(id);
         const style = window.getComputedStyle(el);
         assert_equals(style["background-image"], 'url("")');
+        assert_equals(style["cursor"], 'url(""), pointer');
     }, "empty URL: " + id);
 }
 </script>

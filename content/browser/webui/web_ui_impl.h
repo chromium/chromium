@@ -11,8 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -73,7 +74,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               MessageCallback callback) override;
+                               DeprecatedMessageCallback2 callback) override;
   void RegisterDeprecatedMessageCallback(
       base::StringPiece message,
       const DeprecatedMessageCallback& callback) override;
@@ -124,7 +125,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void DisallowJavascriptOnAllHandlers();
 
   // A map of message name -> message handling callback.
-  std::map<std::string, MessageCallback> message_callbacks_;
+  std::map<std::string, DeprecatedMessageCallback2>
+      deprecated_message_callbacks_2_;
 
   // A map of message name -> message handling callback.
   std::map<std::string, DeprecatedMessageCallback>
@@ -140,10 +142,10 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   std::vector<std::string> requestable_schemes_;
 
   // RenderFrameHost associated with |this|.
-  RenderFrameHostImpl* frame_host_;
+  raw_ptr<RenderFrameHostImpl> frame_host_;
 
   // Non-owning pointer to the WebContentsImpl this WebUI is associated with.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   // The WebUIMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;

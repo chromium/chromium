@@ -18,6 +18,7 @@
     display: flex;
     flex-flow: column;
     height: calc(100% - var(--cr-button-height) - 2 * var(--footer-spacing));
+    justify-content: space-evenly;
   }
 
   #leftBanner {
@@ -53,7 +54,7 @@
 
   #wrapper {
     display: flex;
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     margin-bottom: 4px;
     margin-inline-end: 140px;
     margin-inline-start: 140px;
@@ -111,8 +112,8 @@
   iron-icon[icon='profiles:add'] {
     --iron-icon-height: var(--profile-card-avatar-icon-size);
     --iron-icon-width: var(--profile-card-avatar-icon-size);
-    --iron-icon-fill-color: var(--google-grey-refresh-100);
-    --iron-icon-stroke-color: var(--google-grey-refresh-700);
+    --iron-icon-fill-color: var(--google-grey-100);
+    --iron-icon-stroke-color: var(--google-grey-700);
   }
 
   #browseAsGuestButton {
@@ -144,11 +145,11 @@
 
     .profile-item,
     #addProfile.profile-item {
-      border-color: var(--google-grey-refresh-700);
+      border-color: var(--google-grey-700);
     }
 
     iron-icon[icon='profiles:add'] {
-      --iron-icon-fill-color: var(--google-grey-refresh-500);
+      --iron-icon-fill-color: var(--google-grey-500);
       --iron-icon-stroke-color: rgb(48, 48, 50);
     }
   }

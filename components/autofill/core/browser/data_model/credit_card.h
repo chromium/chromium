@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
@@ -21,8 +20,7 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A midline horizontal ellipsis (U+22EF).
-extern const char16_t kMidlineEllipsis4Dots[];
-extern const char16_t kMidlineEllipsis2Dots[];
+extern const char16_t kMidlineEllipsisDot[];
 
 namespace internal {
 
@@ -67,22 +65,32 @@ class CreditCard : public AutofillDataModel {
   };
 
   // Whether the card has been enrolled in the virtual card feature. This must
-  // stay in sync with the proto enum in autofill_specifics.proto.
+  // stay in sync with the proto enum in autofill_specifics.proto. A java
+  // IntDef@ is generated from this.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
   enum VirtualCardEnrollmentState {
     // State unspecified. This is the default value of this enum. Should not be
     // ever used with cards.
     UNSPECIFIED = 0,
-    // Card is not enrolled and does not have related virtual card.
+    // Deprecated. Card is not enrolled and does not have related virtual card.
     UNENROLLED = 1,
     // Card is enrolled and has related virtual cards.
     ENROLLED = 2,
+    // Card is not enrolled and is not eligible for enrollment.
+    UNENROLLED_AND_NOT_ELIGIBLE = 3,
+    // Card is not enrolled but is eligible for enrollment.
+    UNENROLLED_AND_ELIGIBLE = 4,
   };
 
   CreditCard(const std::string& guid, const std::string& origin);
 
-  // Creates a server card.  The type must be MASKED_SERVER_CARD or
+  // Creates a server card. The type must be MASKED_SERVER_CARD or
   // FULL_SERVER_CARD.
   CreditCard(RecordType type, const std::string& server_id);
+
+  // Creates a server card with non-legacy instrument id. The type must be
+  // MASKED_SERVER_CARD or FULL_SERVER_CARD.
+  CreditCard(RecordType type, const int64_t& instrument_id);
 
   // For use in STL containers.
   CreditCard();
@@ -111,6 +119,9 @@ class CreditCard : public AutofillDataModel {
   // Returns whether the nickname is valid. Note that empty nicknames are valid
   // because they are not required.
   static bool IsNicknameValid(const std::u16string& nickname);
+
+  // Returns string of dots for hidden card information.
+  static std::u16string GetMidlineEllipsisDots(size_t num_dots);
 
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
@@ -177,8 +188,8 @@ class CreditCard : public AutofillDataModel {
   // two wouldn't result in unverified data overwriting verified data,
   // overwrites |this| card's data with the data in |imported_card|. Returns
   // true if the card numbers match, false otherwise.
-  bool UpdateFromImportedCard(const CreditCard& imported_card,
-                              const std::string& app_locale) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateFromImportedCard(const CreditCard& imported_card,
+                                            const std::string& app_locale);
 
   // Comparison for Sync.  Returns 0 if the card is the same as |this|, or < 0,
   // or > 0 if it is different.  The implied ordering can be used for culling
@@ -275,6 +286,11 @@ class CreditCard : public AutofillDataModel {
   // A label for this card formatted as '••••2345' where the number of dots are
   // specified by the `obfuscation_length`.
   std::u16string ObfuscatedLastFourDigits(int obfuscation_length = 4) const;
+  // A label for this card formatted '••••••••••••2345' where every digit in the
+  // the credit card number is obfuscated except for the last four. This method
+  // is primarily used for splitting the preview of a credit card number into
+  // several fields.
+  std::u16string ObfuscatedLastFourDigitsForSplitFields() const;
   // The string used to represent the icon to be used for the autofill
   // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
   std::string CardIconStringForAutofillSuggestion() const;
@@ -291,10 +307,10 @@ class CreditCard : public AutofillDataModel {
       std::u16string customized_nickname = std::u16string(),
       int obfuscation_length = 4) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Label for the card to be displayed in the manual filling view on Android.
   std::u16string CardIdentifierStringForManualFilling() const;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // A label for this card formatted as 'Nickname - ****2345, expires on MM/YY'
   // if nickname experiment is turned on and nickname is available; otherwise,
@@ -316,6 +332,7 @@ class CreditCard : public AutofillDataModel {
   std::u16string ExpirationDateForDisplay() const;
   // Expiration functions.
   std::u16string Expiration2DigitMonthAsString() const;
+  std::u16string Expiration2DigitYearAsString() const;
   std::u16string Expiration4DigitYearAsString() const;
 
   // Whether the cardholder name was created from separate first name and last
@@ -350,10 +367,10 @@ class CreditCard : public AutofillDataModel {
   }
 
  private:
+  friend class CreditCardTestApi;
+
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationDateFromString);
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
-
-  std::u16string Expiration2DigitYearAsString() const;
 
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;

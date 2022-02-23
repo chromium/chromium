@@ -31,7 +31,7 @@ namespace internal {
 
 namespace {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_ReservedHost DISABLED_ReservedHost
 #else
@@ -86,7 +86,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHost) {
   EXPECT_EQ(2u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_ReservedHostUncached DISABLED_ReservedHostUncached
 #else
@@ -125,7 +125,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // Flaky on iOS: crbug.com/672917.
 // Flaky on Android: crbug.com/1223950
 #define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
@@ -177,7 +177,7 @@ TEST(NetworkQualityEstimatorUtilTest,
                                        NetworkIsolationKey()));
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_Localhost DISABLED_Localhost
 #else

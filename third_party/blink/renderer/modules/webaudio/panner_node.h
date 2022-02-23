@@ -34,8 +34,9 @@
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
@@ -141,15 +142,15 @@ class PannerHandler final : public AudioHandler {
 
   void CalculateAzimuthElevation(double* out_azimuth,
                                  double* out_elevation,
-                                 const FloatPoint3D& position,
-                                 const FloatPoint3D& listener_position,
-                                 const FloatPoint3D& listener_forward,
-                                 const FloatPoint3D& listener_up);
+                                 const gfx::Point3F& position,
+                                 const gfx::Point3F& listener_position,
+                                 const gfx::Vector3dF& listener_forward,
+                                 const gfx::Vector3dF& listener_up);
 
   // Returns the combined distance and cone gain attenuation.
-  float CalculateDistanceConeGain(const FloatPoint3D& position,
-                                  const FloatPoint3D& orientation,
-                                  const FloatPoint3D& listener_position);
+  float CalculateDistanceConeGain(const gfx::Point3F& position,
+                                  const gfx::Vector3dF& orientation,
+                                  const gfx::Point3F& listener_position);
 
   void AzimuthElevation(double* out_azimuth, double* out_elevation);
   float DistanceConeGain();
@@ -176,7 +177,7 @@ class PannerHandler final : public AudioHandler {
   double cached_elevation_;
   float cached_distance_cone_gain_;
 
-  const FloatPoint3D GetPosition() const {
+  gfx::Point3F GetPosition() const {
     auto x = position_x_->IsAudioRate() ? position_x_->FinalValue()
                                         : position_x_->Value();
     auto y = position_y_->IsAudioRate() ? position_y_->FinalValue()
@@ -184,10 +185,10 @@ class PannerHandler final : public AudioHandler {
     auto z = position_z_->IsAudioRate() ? position_z_->FinalValue()
                                         : position_z_->Value();
 
-    return FloatPoint3D(x, y, z);
+    return gfx::Point3F(x, y, z);
   }
 
-  const FloatPoint3D Orientation() const {
+  gfx::Vector3dF Orientation() const {
     auto x = orientation_x_->IsAudioRate() ? orientation_x_->FinalValue()
                                            : orientation_x_->Value();
     auto y = orientation_y_->IsAudioRate() ? orientation_y_->FinalValue()
@@ -195,7 +196,7 @@ class PannerHandler final : public AudioHandler {
     auto z = orientation_z_->IsAudioRate() ? orientation_z_->FinalValue()
                                            : orientation_z_->Value();
 
-    return FloatPoint3D(x, y, z);
+    return gfx::Vector3dF(x, y, z);
   }
 
   // True if any of this panner's AudioParams have automations.
@@ -213,8 +214,8 @@ class PannerHandler final : public AudioHandler {
   scoped_refptr<AudioParamHandler> orientation_y_;
   scoped_refptr<AudioParamHandler> orientation_z_;
 
-  FloatPoint3D last_position_;
-  FloatPoint3D last_orientation_;
+  gfx::Point3F last_position_;
+  gfx::Vector3dF last_orientation_;
 
   // Synchronize process() with setting of the panning model, source's location
   // information, listener, distance parameters and sound cones.
@@ -231,7 +232,7 @@ class PannerNode final : public AudioNode {
                             ExceptionState&);
   PannerHandler& GetPannerHandler() const;
 
-  PannerNode(BaseAudioContext&);
+  explicit PannerNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

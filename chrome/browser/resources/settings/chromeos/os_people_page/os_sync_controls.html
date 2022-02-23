@@ -1,222 +1,94 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style settings-shared">
+  .settings-box {
+    border-top: none;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="os_sync_browser_proxy.html">
-<link rel="import" href="../../people_page/sync_browser_proxy.html">
+  .list-item {
+    display: flex;
+  }
 
-<dom-module id="os-sync-controls">
-  <template>
-    <style include="settings-shared">
-      :host {
-        --shown-avatar-size: 40px;
-        --sync-icon-border-size: 2px;
-        --sync-icon-size: 16px;
-      }
+  .list-item > div {
+    flex: 1;
+  }
 
-      #avatarContainer {
-        height: var(--shown-avatar-size);
-        position: relative;
-      }
-
-      #avatarIcon {
-        border-radius: 20px;
-        flex-shrink: 0;
-        height: var(--shown-avatar-size);
-        width: var(--shown-avatar-size);
-      }
-
-      /* Similar to browser settings-sync-account-control styling. */
-      #syncIconContainer {
-        align-items: center;
-        background: var(--cros-icon-color-positive);
-        border: var(--sync-icon-border-size) solid
-            var(--cros-bg-color-elevation-1);
-        border-radius: 50%;
-        display: flex;
-        height: var(--sync-icon-size);
-        position: absolute;
-        right: -6px;
-        top: calc(var(--shown-avatar-size) - var(--sync-icon-size) -
-            var(--sync-icon-border-size));
-        width: var(--sync-icon-size);
-      }
-
-      :host-context([dir='rtl']) #syncIconContainer {
-        left: -6px;
-        right: initial;
-      }
-
-      #syncIconContainer.sync-problem {
-        background: var(--cros-icon-color-alert);
-      }
-
-      #syncIconContainer.sync-paused {
-        background: var(--cros-icon-color-prominent);
-      }
-
-      #syncIconContainer.sync-disabled {
-        background: var(--cros-icon-color-disabled);
-      }
-
-      #syncIconContainer iron-icon {
-        fill: var(--cros-bg-color-elevation-1);
-        height: 12px;
-        margin: auto;
-        width: 12px;
-      }
-
-      .settings-box {
-        border-top: none;
-      }
-
-      .flex {
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-      }
-
-      .list-item {
-        display: flex;
-      }
-
-      .list-item > div {
-        flex: 1;
-      }
-
-      div[label-disabled] {
-        opacity: var(--cr-disabled-opacity);
-      }
-    </style>
-    <div class="settings-box first two-line">
-      <div id="avatarContainer">
-        <img id="avatarIcon" alt="" src="[[profileIconUrl]]">
-        <div id="syncIconContainer" hidden="[[!osSyncFeatureEnabled]]"
-            class$="[[getSyncIconStyle_(
-                syncStatus.hasError, syncStatus.statusAction,
-                syncStatus.disabled)]]">
-          <iron-icon icon$="[[getSyncIcon_(
-              syncStatus.hasError, syncStatus.statusAction,
-              syncStatus.disabled)]]"></iron-icon>
-        </div>
-      </div>
-      <div class="middle two-line no-min-width">
-        <div class="flex text-elide settings-box-text">
-          <span id="accountTitle" aria-hidden="true">
-            [[getAccountTitle_(profileName, syncStatus.hasError)]]
-          </span>
-          <div id="accountSubtitle" class="secondary" aria-hidden="true">
-            [[getAccountSubtitle_(profileEmail, syncStatus.hasError,
-                osSyncFeatureEnabled)]]
-          </div>
-        </div>
-      </div>
-
-      <template is="dom-if" if="[[syncConsentOptionalEnabled_]]" restamp>
-        <cr-button id="syncOnOffButton"
-            class="action-button"
-            on-click="onSyncOnOffButtonClick_"
-            aria-labelledby="syncOnOffButton accountTitle accountSubtitle"
-            aria-describedby="featureLabel"
-            deep-link-focus-id$="[[Setting.kSplitSyncOnOff]]">
-          [[getSyncOnOffButtonLabel_(osSyncFeatureEnabled)]]
-        </cr-button>
-      </template>
+  div[label-disabled] {
+    opacity: var(--cr-disabled-opacity);
+  }
+</style>
+<div id="featureLabel" class="settings-box">
+  <localized-link class="secondary"
+      localized-string="$i18n{osSyncFeatureLabel}"
+      link-url="$i18n{browserSettingsSyncSetupUrl}">
+  </localized-link>
+</div>
+<div id="syncDataRadio" class="cr-row first">
+  <cr-radio-group
+      selected="[[selectedSyncDataRadio_(osSyncPrefs)]]"
+      on-selected-changed="onSyncDataRadioSelectionChanged_">
+    <cr-radio-button name="sync-everything">
+      $i18n{syncEverythingCheckboxLabel}
+    </cr-radio-button>
+    <cr-radio-button name="customize-sync">
+      $i18n{customizeSyncLabel}
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<div class="cr-row first">
+  <h2 class="cr-title-text flex">$i18n{syncData}</h2>
+</div>
+<div class="list-frame" id="sync-data-types">
+  <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
+    <div id="osAppsCheckboxLabel"
+        label-disabled$="[[areDataTypeTogglesDisabled_]]">
+      $i18n{osSyncAppsCheckboxLabel}
     </div>
-
-    <div id="featureLabel" class="settings-box">
-      <localized-link class="secondary"
-          localized-string="$i18n{osSyncFeatureLabel}"
-          link-url="$i18n{browserSettingsSyncSetupUrl}">
-      </localized-link>
+    <cr-toggle id="osAppsControl"
+        checked="{{osSyncPrefs.osAppsSynced}}"
+        on-change="onAppsSyncedChanged_"
+        disabled="[[areDataTypeTogglesDisabled_]]"
+        aria-labelledby="osAppsCheckboxLabel">
+    </cr-toggle>
+  </div>
+  <div class="list-item" hidden="[[!osSyncPrefs.osPreferencesRegistered]]">
+    <div id="osSettingsCheckboxLabel"
+        label-disabled$="[[areDataTypeTogglesDisabled_]]">
+      $i18n{osSyncSettingsCheckboxLabel}
     </div>
-
-    <div class="settings-box">
-      <div id="syncEverythingCheckboxLabel"
-          class="start"
-          label-disabled$="[[!osSyncFeatureEnabled]]">
-        $i18n{syncEverythingCheckboxLabel}
-      </div>
-      <cr-toggle id="syncAllOsTypesControl"
-          checked="{{osSyncPrefs.syncAllOsTypes}}"
-          on-change="onSyncAllOsTypesChanged_"
-          disabled="[[!osSyncFeatureEnabled]]"
-          aria-labelledby="syncEverythingCheckboxLabel">
-      </cr-toggle>
+    <cr-toggle id="osPreferencesControl"
+        checked="{{osSyncPrefs.osPreferencesSynced}}"
+        on-change="onSingleSyncDataTypeChanged_"
+        disabled="[[areDataTypeTogglesDisabled_]]"
+        aria-labelledby="osSettingsCheckboxLabel">
+    </cr-toggle>
+  </div>
+  <div class="list-item"
+       hidden="[[!osSyncPrefs.osWifiConfigurationsRegistered]]">
+    <div id="osWifiConfigurationsCheckboxLabel"
+        label-disabled$="[[areDataTypeTogglesDisabled_]]">
+      $i18n{osSyncWifiConfigurationsCheckboxLabel}
     </div>
-
-    <div class="list-frame" id="sync-data-types">
-      <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
-        <div id="osAppsCheckboxLabel"
-            label-disabled$="[[areDataTypeTogglesDisabled_]]">
-          $i18n{osSyncAppsCheckboxLabel}
-        </div>
-        <cr-toggle id="osAppsControl"
-            checked="{{osSyncPrefs.osAppsSynced}}"
-            on-change="onAppsSyncedChanged_"
-            disabled="[[areDataTypeTogglesDisabled_]]"
-            aria-labelledby="osAppsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!osSyncPrefs.osPreferencesRegistered]]">
-        <div id="osSettingsCheckboxLabel"
-            label-disabled$="[[areDataTypeTogglesDisabled_]]">
-          $i18n{osSyncSettingsCheckboxLabel}
-        </div>
-        <cr-toggle id="osPreferencesControl"
-            checked="{{osSyncPrefs.osPreferencesSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[areDataTypeTogglesDisabled_]]"
-            aria-labelledby="osSettingsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item"
-           hidden="[[!osSyncPrefs.osWifiConfigurationsRegistered]]">
-        <div id="osWifiConfigurationsCheckboxLabel"
-            label-disabled$="[[areDataTypeTogglesDisabled_]]">
-          $i18n{osSyncWifiConfigurationsCheckboxLabel}
-        </div>
-        <cr-toggle checked="{{osSyncPrefs.osWifiConfigurationsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[areDataTypeTogglesDisabled_]]"
-            aria-labelledby="osWifiConfigurationsCheckboxLabel">
-        </cr-toggle>
-      </div>
-
-      <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
-        <!-- Wallpaper sync is a special case; its implementation relies upon
-             the chrome.storage.sync API, which is controlled by the apps
-             toggle. Thus, the wallpaper label and toggle are only shown when
-             apps are registered and are disabled if apps syncing is off.
-             TODO(https://crbug.com/967987): Break this dependency. -->
-        <div id="wallpaperCheckboxLabel"
-            label-disabled$="[[shouldWallpaperSyncSectionBeDisabled_(
-                areDataTypeTogglesDisabled_, osSyncPrefs.osAppsSynced)]]">
-          $i18n{wallpaperCheckboxLabel}
-        </div>
-        <cr-toggle checked="{{osSyncPrefs.wallpaperEnabled}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[shouldWallpaperSyncSectionBeDisabled_(
-                areDataTypeTogglesDisabled_, osSyncPrefs.osAppsSynced)]]"
-            aria-labelledby="wallpaperCheckboxLabel">
-        </cr-toggle>
-      </div>
-
+    <cr-toggle checked="{{osSyncPrefs.osWifiConfigurationsSynced}}"
+        on-change="onSingleSyncDataTypeChanged_"
+        disabled="[[areDataTypeTogglesDisabled_]]"
+        aria-labelledby="osWifiConfigurationsCheckboxLabel">
+    </cr-toggle>
+  </div>
+  <div class="list-item" hidden="[[!osSyncPrefs.osAppsRegistered]]">
+    <!-- Wallpaper sync is a special case; its implementation relies upon
+         the chrome.storage.sync API, which is controlled by the apps
+         toggle. Thus, the wallpaper label and toggle are only shown when
+         apps are registered and are disabled if apps syncing is off.
+         TODO(https://crbug.com/967987): Break this dependency. -->
+    <div id="wallpaperCheckboxLabel"
+        label-disabled$="[[shouldWallpaperSyncSectionBeDisabled_(
+            areDataTypeTogglesDisabled_, osSyncPrefs.osAppsSynced)]]">
+      $i18n{wallpaperCheckboxLabel}
     </div>
-  </template>
-  <script src="os_sync_controls.js"></script>
-</dom-module>
+    <cr-toggle checked="{{osSyncPrefs.wallpaperEnabled}}"
+        on-change="onSingleSyncDataTypeChanged_"
+        disabled="[[shouldWallpaperSyncSectionBeDisabled_(
+            areDataTypeTogglesDisabled_, osSyncPrefs.osAppsSynced)]]"
+        aria-labelledby="wallpaperCheckboxLabel">
+    </cr-toggle>
+  </div>
+</div>

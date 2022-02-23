@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tracing;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +11,7 @@ import android.content.Context;
 import android.os.Build;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -83,7 +83,7 @@ public class TracingNotificationManager {
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean notificationChannelEnabled(String channelId) {
         NotificationChannel channel = getNotificationManager(ContextUtils.getApplicationContext())
                                               .getNotificationChannel(channelId);

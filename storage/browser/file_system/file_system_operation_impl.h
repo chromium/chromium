@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -201,7 +201,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationImpl
   scoped_refptr<FileSystemContext> file_system_context_;
 
   std::unique_ptr<FileSystemOperationContext> operation_context_;
-  AsyncFileUtil* async_file_util_;  // Not owned.
+  raw_ptr<AsyncFileUtil> async_file_util_;  // Not owned.
 
   std::unique_ptr<FileWriterDelegate> file_writer_delegate_;
   std::unique_ptr<RecursiveOperationDelegate> recursive_operation_delegate_;

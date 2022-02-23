@@ -26,14 +26,14 @@
 #include "net/base/url_util.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
@@ -167,8 +167,8 @@ void DownloadCommands::ExecuteCommand(Command command) {
   model_->ExecuteCommand(this, command);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 Browser* DownloadCommands::GetBrowser() const {
   if (!model_)
@@ -188,7 +188,7 @@ bool DownloadCommands::IsDownloadPdf() const {
 }
 
 bool DownloadCommands::CanOpenPdfInSystemViewer() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_adobe_pdf_reader_up_to_date = false;
   if (IsDownloadPdf() && IsAdobeReaderDefaultPDFViewer()) {
     is_adobe_pdf_reader_up_to_date =
@@ -197,13 +197,13 @@ bool DownloadCommands::CanOpenPdfInSystemViewer() const {
   return IsDownloadPdf() &&
          (IsAdobeReaderDefaultPDFViewer() ? is_adobe_pdf_reader_up_to_date
                                           : true);
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
   return IsDownloadPdf();
 #endif
 }
 
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 void DownloadCommands::CopyFileAsImageToClipboard() {
   if (!model_)

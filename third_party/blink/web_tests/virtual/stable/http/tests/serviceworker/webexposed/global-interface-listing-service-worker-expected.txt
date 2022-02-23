@@ -13,7 +13,9 @@ interface AbortSignal : EventTarget
     attribute @@toStringTag
     getter aborted
     getter onabort
+    getter reason
     method constructor
+    method throwIfAborted
     setter onabort
 interface BackgroundFetchEvent : ExtendableEvent
     attribute @@toStringTag
@@ -110,6 +112,9 @@ interface CanMakePaymentEvent : ExtendableEvent
     getter topOrigin
     method constructor
     method respondWith
+interface CanvasFilter
+    attribute @@toStringTag
+    method constructor
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
@@ -851,12 +856,16 @@ interface NotificationEvent : ExtendableEvent
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
+    getter oncontextlost
+    getter oncontextrestored
     getter width
     method constructor
     method convertToBlob
     method getContext
     method transferToImageBitmap
     setter height
+    setter oncontextlost
+    setter oncontextrestored
     setter width
 interface OffscreenCanvasRenderingContext2D
     attribute @@toStringTag
@@ -865,10 +874,14 @@ interface OffscreenCanvasRenderingContext2D
     getter fillStyle
     getter filter
     getter font
+    getter fontKerning
+    getter fontStretch
+    getter fontVariantCaps
     getter globalAlpha
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter letterSpacing
     getter lineCap
     getter lineDashOffset
     getter lineJoin
@@ -881,6 +894,8 @@ interface OffscreenCanvasRenderingContext2D
     getter strokeStyle
     getter textAlign
     getter textBaseline
+    getter textRendering
+    getter wordSpacing
     method arc
     method arcTo
     method beginPath
@@ -889,6 +904,7 @@ interface OffscreenCanvasRenderingContext2D
     method clip
     method closePath
     method constructor
+    method createConicGradient
     method createImageData
     method createLinearGradient
     method createPattern
@@ -901,6 +917,7 @@ interface OffscreenCanvasRenderingContext2D
     method getImageData
     method getLineDash
     method getTransform
+    method isContextLost
     method isPointInPath
     method isPointInStroke
     method lineTo
@@ -909,9 +926,11 @@ interface OffscreenCanvasRenderingContext2D
     method putImageData
     method quadraticCurveTo
     method rect
+    method reset
     method resetTransform
     method restore
     method rotate
+    method roundRect
     method save
     method scale
     method setLineDash
@@ -925,10 +944,14 @@ interface OffscreenCanvasRenderingContext2D
     setter fillStyle
     setter filter
     setter font
+    setter fontKerning
+    setter fontStretch
+    setter fontVariantCaps
     setter globalAlpha
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter letterSpacing
     setter lineCap
     setter lineDashOffset
     setter lineJoin
@@ -941,6 +964,8 @@ interface OffscreenCanvasRenderingContext2D
     setter strokeStyle
     setter textAlign
     setter textBaseline
+    setter textRendering
+    setter wordSpacing
 interface Path2D
     attribute @@toStringTag
     method addPath
@@ -954,6 +979,7 @@ interface Path2D
     method moveTo
     method quadraticCurveTo
     method rect
+    method roundRect
 interface PaymentInstruments
     attribute @@toStringTag
     method clear
@@ -2869,6 +2895,7 @@ interface WritableStream
     method getWriter
 interface WritableStreamDefaultController
     attribute @@toStringTag
+    getter signal
     method constructor
     method error
 interface WritableStreamDefaultWriter

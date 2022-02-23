@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -66,7 +66,7 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
   }
 
   std::string InstallTestPWA() {
-    auto web_application_info = std::make_unique<WebApplicationInfo>();
+    auto web_application_info = std::make_unique<WebAppInstallInfo>();
     web_application_info->start_url = GURL(kUrlString);
     web_application_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
     Profile* profile = browser()->profile();

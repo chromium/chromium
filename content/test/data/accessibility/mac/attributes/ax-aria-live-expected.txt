@@ -1,1 +1,2 @@
-div.AXARIALive='polite'
+div.accessibilityAttributeNames.has(AXARIALive)='yes'
+div.accessibilityAttributeValue(AXARIALive)='polite'

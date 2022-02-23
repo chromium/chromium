@@ -21,6 +21,9 @@ namespace network_diagnostics {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 // The number of hosts the the routine tries to open socket connections to (if
 // DNS resolution is successful). Value equals the number of random hosts
 // + fixed hosts queried by HttpFirewallRoutine.

@@ -319,7 +319,7 @@ TEST_F(PictureLayerTilingSetTestWithResources, TwoTilings_Larger) {
 }
 
 // Test is flaky: https://crbug.com/1056828.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_ManyTilings_Equal DISABLED_ManyTilings_Equal
 #else
 #define MAYBE_ManyTilings_Equal ManyTilings_Equal
@@ -329,7 +329,7 @@ TEST_F(PictureLayerTilingSetTestWithResources, MAYBE_ManyTilings_Equal) {
 }
 
 // Test is flaky: https://crbug.com/1056828.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_ManyTilings_NotEqual DISABLED_ManyTilings_NotEqual
 #else
 #define MAYBE_ManyTilings_NotEqual ManyTilings_NotEqual

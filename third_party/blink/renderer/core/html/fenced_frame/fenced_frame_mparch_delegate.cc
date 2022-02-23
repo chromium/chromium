@@ -38,4 +38,8 @@ void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
   remote_->Navigate(url);
 }
 
+void FencedFrameMPArchDelegate::DidGetRemoved() {
+  remote_.reset();
+}
+
 }  // namespace blink

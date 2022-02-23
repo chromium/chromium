@@ -7,87 +7,104 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info_proto_conversions.h"
-#include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
-#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
 #include "chromeos/printing/printer_configuration.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 FakePrintJobControllerAsh::FakePrintJobControllerAsh(
-    chromeos::TestCupsPrintJobManager* print_job_manager,
-    chromeos::CupsPrintersManager* printers_manager)
+    ash::TestCupsPrintJobManager* print_job_manager,
+    ash::CupsPrintersManager* printers_manager)
     : print_job_manager_(print_job_manager),
-      printers_manager_(printers_manager) {}
+      printers_manager_(printers_manager) {
+  DCHECK(print_job_manager_);
+  DCHECK(printers_manager_);
+  print_job_manager_->AddObserver(this);
+}
 
-FakePrintJobControllerAsh::~FakePrintJobControllerAsh() = default;
+FakePrintJobControllerAsh::~FakePrintJobControllerAsh() {
+  print_job_manager_->RemoveObserver(this);
+}
 
-void FakePrintJobControllerAsh::StartPrintJob(
+void FakePrintJobControllerAsh::OnPrintJobDone(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  jobs_.erase(job->GetUniqueId());
+}
+
+void FakePrintJobControllerAsh::OnPrintJobError(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  jobs_.erase(job->GetUniqueId());
+}
+
+void FakePrintJobControllerAsh::OnPrintJobCancelled(
+    base::WeakPtr<ash::CupsPrintJob> job) {
+  jobs_.erase(job->GetUniqueId());
+}
+
+scoped_refptr<printing::PrintJob> FakePrintJobControllerAsh::StartPrintJob(
     const std::string& extension_id,
     std::unique_ptr<printing::MetafileSkia> metafile,
-    std::unique_ptr<printing::PrintSettings> settings,
-    StartPrintJobCallback callback) {
+    std::unique_ptr<printing::PrintSettings> settings) {
+  auto job = base::MakeRefCounted<printing::PrintJob>();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&FakePrintJobControllerAsh::StartPrinting,
+                                weak_ptr_factory_.GetWeakPtr(), job,
+                                extension_id, std::move(settings)));
+  return job;
+}
+
+void FakePrintJobControllerAsh::StartPrinting(
+    scoped_refptr<printing::PrintJob> job,
+    const std::string& extension_id,
+    std::unique_ptr<printing::PrintSettings> settings) {
+  job_id_++;
+  job->SetSource(printing::PrintJob::Source::EXTENSION, extension_id);
+
   absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(base::UTF16ToUTF8(settings->device_name()));
   if (!printer) {
-    std::move(callback).Run(nullptr);
+    int observer_count = 0;
+    for (auto& observer : job->GetObserversForTesting()) {
+      observer.OnFailed();
+      observer_count++;
+    }
+    EXPECT_EQ(1, observer_count);
     return;
   }
 
-  // Create a new CupsPrintJob.
-  auto print_job = std::make_unique<chromeos::CupsPrintJob>(
-      *printer, ++job_id_, base::UTF16ToUTF8(settings->title()),
-      /*total_page_number=*/1, printing::PrintJob::Source::EXTENSION,
-      extension_id, chromeos::PrintSettingsToProto(*settings));
-  print_job_manager_->CreatePrintJob(print_job.get());
-  std::move(callback).Run(
-      std::make_unique<std::string>(print_job->GetUniqueId()));
-  jobs_[print_job->GetUniqueId()] = std::move(print_job);
-
-  // Notify DOC_DONE.
-  auto job = base::MakeRefCounted<printing::PrintJob>();
-  job->SetSource(crosapi::mojom::PrintJob::Source::EXTENSION, extension_id);
   auto document = base::MakeRefCounted<printing::PrintedDocument>(
       std::move(settings), std::u16string(), 0);
-  auto details = base::MakeRefCounted<printing::JobEventDetails>(
-      printing::JobEventDetails::DOC_DONE, job_id_, document.get());
-  PrintingAPIHandler::Get(ProfileManager::GetPrimaryUserProfile())
-      ->Observe(chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                content::Source<printing::PrintJob>(job.get()),
-                content::Details<printing::JobEventDetails>(details.get()));
-}
+  int observer_count = 0;
+  for (auto& observer : job->GetObserversForTesting()) {
+    observer.OnDocDone(job_id_, document.get());
+    observer_count++;
+  }
+  EXPECT_EQ(1, observer_count);
 
-void FakePrintJobControllerAsh::OnPrintJobCreated(
-    const std::string& extension_id,
-    const std::string& job_id) {
-  DCHECK(jobs_.contains(job_id));
-  DCHECK(jobs_[job_id]);
-  print_job_manager_->StartPrintJob(jobs_[job_id].get());
-}
-
-void FakePrintJobControllerAsh::OnPrintJobFinished(const std::string& job_id) {
-  jobs_.erase(job_id);
-}
-
-chromeos::CupsPrintJob* FakePrintJobControllerAsh::GetCupsPrintJob(
-    const std::string& job_id) {
-  auto it = jobs_.find(job_id);
-  if (it == jobs_.end())
-    return nullptr;
-  return it->second.get();
+  // Create a new CupsPrintJob.
+  auto print_job = std::make_unique<ash::CupsPrintJob>(
+      *printer, job_id_, base::UTF16ToUTF8(document->settings().title()),
+      /*total_page_number=*/1, printing::PrintJob::Source::EXTENSION,
+      extension_id, chromeos::PrintSettingsToProto(document->settings()));
+  print_job_manager_->CreatePrintJob(print_job.get());
+  print_job_manager_->StartPrintJob(print_job.get());
+  std::string id = print_job->GetUniqueId();
+  jobs_[std::move(id)] = std::move(print_job);
 }
 
 }  // namespace extensions

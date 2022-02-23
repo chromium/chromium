@@ -34,6 +34,56 @@ def _IsTargettingWindows(target_os):
   return sys.platform == 'win32'
 
 
+def _FilterFlags(command, additional_filtered_flags):
+  # Dictionary from flags to filter, to the number of additional arguments each
+  # flag consumes (so we can remove any flag parameters).
+  flags_to_filter = {
+      # These are Visual Studio-specific arguments not recognized or used by
+      # some third-party clang tooling. They only suppress or activate graphical
+      # output anyway.
+      '/nologo': 0,
+      '/showIncludes': 0,
+      # Drop frontend-only arguments, which generally aren't needed by clang
+      # tooling.
+      '-Xclang': 1,
+      # This is used for profiling-guided optimizations. Not necessary by tools,
+      # and clangd complains it cannot find the referenced profile file.
+      '-fprofile-sample-use': 1,
+      # Remove goma compiler path, as this flag is not recognized by clang.
+      '--gomacc-path': 1,
+  }
+  # Add user-added flags. We only support flags with no parameters here.
+  if additional_filtered_flags:
+    flags_to_filter.update((flag, 0) for flag in additional_filtered_flags)
+
+  filtered_command_parts = []
+  parts_to_consume = 0
+  for command_part in command.split():
+    # Consume flag parameters.
+    if parts_to_consume > 0:
+      parts_to_consume -= 1
+      continue
+    # Handle -flag=parameter syntax. We only support a single parameter here.
+    split_flag = command_part.split("=", 1)
+    if len(split_flag) == 2 and split_flag[0] in flags_to_filter:
+      expected_params = flags_to_filter[split_flag[0]]
+      if expected_params == 1:
+        continue
+      elif _debugging:
+        print("Expecting %s to have %d parameters, but got 1" %
+              (split_flag[0], expected_params))
+        print("The flag will be kept in the command!")
+    # Handle regular parameters.
+    if command_part in flags_to_filter:
+      parts_to_consume = flags_to_filter[command_part]
+      continue
+    # This command part is not in the filter list, nor should be consumed as a
+    # flag parameter.
+    filtered_command_parts.append(command_part)
+
+  return ' '.join(filtered_command_parts)
+
+
 def _ProcessCommand(command, filtered_args, target_os):
   # If the driver mode is not already set then define it. Driver mode is
   # automatically included in the compile db by clang starting with release
@@ -60,28 +110,7 @@ def _ProcessCommand(command, filtered_args, target_os):
     print('Command:', command)
     print('Regex:', _GOMA_CMD_LINE_RE.pattern)
 
-  # Remove some blocklisted arguments. These are Visual Studio-specific
-  # arguments not recognized or used by some third-party clang tooling. They
-  # only suppress or activate graphical output anyway.
-  args_to_remove = ['/nologo', '/showIncludes']
-  if filtered_args:
-    args_to_remove.extend(filtered_args)
-  command_parts = filter(lambda arg: arg not in args_to_remove, command.split())
-
-  # Drop frontend-only arguments, which generally aren't needed by clang
-  # tooling.
-  filtered_command_parts = []
-  skip_next = False
-  for command_part in command_parts:
-    if command_part == '-Xclang':
-      skip_next = True
-      continue
-    if skip_next:
-      skip_next = False
-      continue
-    filtered_command_parts.append(command_part)
-
-  return ' '.join(filtered_command_parts)
+  return _FilterFlags(command, filtered_args)
 
 
 def _ProcessEntry(entry, filtered_args, target_os):

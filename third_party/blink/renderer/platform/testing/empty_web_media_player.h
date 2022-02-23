@@ -35,7 +35,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void SetVolume(double) override {}
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
-  void SetAutoplayInitiated(bool) override {}
+  void SetWasPlayedWithUserActivation(bool) override {}
   void OnRequestPictureInPicture() override {}
   SurfaceLayerMode GetVideoSurfaceLayerMode() const override {
     return SurfaceLayerMode::kNever;

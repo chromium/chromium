@@ -146,6 +146,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const base::FilePath& component_policy_cache_path,
     PolicyEnforcement enforcement_type,
+    PrefService* local_state,
     base::TimeDelta policy_refresh_timeout,
     base::OnceClosure fatal_error_callback,
     const AccountId& account_id,
@@ -164,16 +165,18 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
                                     PolicyEnforcement::kServerCheckRequired ||
                                 !policy_refresh_timeout.is_zero()),
       enforcement_type_(enforcement_type),
+      local_state_(local_state),
       account_id_(account_id),
       fatal_error_callback_(std::move(fatal_error_callback)) {
   DCHECK(profile_);
+  DCHECK(local_state_);
   time_init_started_ = base::Time::Now();
 
   // Some tests don't want to complete policy initialization until they have
   // manually injected policy even though the profile itself is synchronously
   // initialized.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kWaitForInitialPolicyFetchForTest)) {
+          ash::switches::kWaitForInitialPolicyFetchForTest)) {
     waiting_for_policy_fetch_ = true;
   }
 
@@ -216,15 +219,12 @@ void UserCloudPolicyManagerAsh::SetSystemURLLoaderFactoryForTests(
 UserCloudPolicyManagerAsh::~UserCloudPolicyManagerAsh() = default;
 
 void UserCloudPolicyManagerAsh::Connect(
-    PrefService* local_state,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   DCHECK(device_management_service);
-  DCHECK(local_state);
 
   CHECK(!core()->client());
 
-  local_state_ = local_state;
   // Note: |system_url_loader_factory| can be null for tests.
   // Use the system URL loader context here instead of a context derived
   // from the Profile because Connect() is called before the profile is
@@ -253,7 +253,7 @@ void UserCloudPolicyManagerAsh::Connect(
     // never be set (because we can't wait).
     CHECK(!waiting_for_policy_fetch_ ||
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              chromeos::switches::kWaitForInitialPolicyFetchForTest));
+              ash::switches::kWaitForInitialPolicyFetchForTest));
     if (!client()->is_registered() &&
         enforcement_type_ != PolicyEnforcement::kPolicyOptional) {
       // We expected to load policy, but we don't have policy, so exit the
@@ -276,7 +276,7 @@ void UserCloudPolicyManagerAsh::Connect(
   app_install_event_log_uploader_ =
       std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
   extension_install_event_log_uploader_ =
-      std::make_unique<ExtensionInstallEventLogUploader>(profile_);
+      ExtensionInstallEventLogUploader::Create(profile_);
 }
 
 void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
@@ -547,7 +547,8 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
   auto* user_manager = ash::ChromeUserManager::Get();
-  user_manager::known_user::SetProfileRequiresPolicy(
+  user_manager::KnownUser known_user(local_state_);
+  known_user.SetProfileRequiresPolicy(
       account_id_,
       policy_required ? user_manager::ProfileRequiresPolicy::kPolicyRequired
                       : user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
@@ -559,7 +560,7 @@ void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
     // any of those flags set at startup anyway for ephemeral sessions.
     base::CommandLine command_line =
         base::CommandLine(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line.AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                    policy_required ? "true" : "false");
     base::CommandLine::StringVector flags;
     flags.assign(command_line.argv().begin() + 1, command_line.argv().end());
@@ -590,7 +591,7 @@ void UserCloudPolicyManagerAsh::GetChromePolicy(PolicyMap* policy_map) {
 void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
   // By-pass token fetching for test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          ash::switches::kDisableGaiaServices)) {
     OnOAuth2PolicyTokenFetched(
         "fake_policy_token",
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));
@@ -623,7 +624,7 @@ void UserCloudPolicyManagerAsh::FetchPolicyOAuthToken() {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kWaitForInitialPolicyFetchForTest)) {
+          ash::switches::kWaitForInitialPolicyFetchForTest)) {
     // Some tests don't want to complete policy initialization until they have
     // manually injected policy. Do not treat this as a policy fetch error.
     return;
@@ -787,13 +788,19 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   // TODO(crbug.com/1102047): Split up Chrome OS reporting code into its own
   // delegates, then use the Chrome OS delegate factory here.
   enterprise_reporting::ReportingDelegateFactoryDesktop delegate_factory;
-  report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
-      client(),
+  enterprise_reporting::ReportScheduler::CreateParams params;
+  params.client = client();
+  params.delegate =
+      std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_);
+  params.report_generator =
       std::make_unique<enterprise_reporting::ReportGenerator>(
-          &delegate_factory),
+          &delegate_factory);
+  params.real_time_report_generator =
       std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
-          &delegate_factory),
-      std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_));
+          &delegate_factory);
+
+  report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
+      std::move(params));
 
   report_scheduler_->OnDMTokenUpdated();
 }

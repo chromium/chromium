@@ -18,6 +18,9 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -26,10 +29,12 @@ namespace password_manager {
 namespace {
 
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Pointer;
+using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 using Type = PasswordStoreChange::Type;
@@ -67,10 +72,16 @@ class PasswordStoreProxyBackendTest : public testing::Test {
  protected:
   PasswordStoreProxyBackendTest() {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-        &main_backend_, &shadow_backend_);
+        &main_backend_, &shadow_backend_, &prefs_, &sync_delegate_);
 
-    feature_list_.InitAndEnableFeature(
-        features::kUnifiedPasswordManagerShadowAndroid);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kUnifiedPasswordManagerShadowAndroid,
+         features::kUnifiedPasswordManagerShadowWriteOperationsAndroid},
+        /*disabled_features=*/{});
+
+    prefs_.registry()->RegisterIntegerPref(
+        prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
   }
 
   void TearDown() override {
@@ -81,13 +92,17 @@ class PasswordStoreProxyBackendTest : public testing::Test {
     proxy_backend_.reset();
   }
 
+  MockPasswordBackendSyncDelegate& sync_delegate() { return sync_delegate_; }
   PasswordStoreBackend& proxy_backend() { return *proxy_backend_; }
   MockPasswordStoreBackend& main_backend() { return main_backend_; }
   MockPasswordStoreBackend& shadow_backend() { return shadow_backend_; }
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple prefs_;
   std::unique_ptr<PasswordStoreProxyBackend> proxy_backend_;
+  testing::NiceMock<MockPasswordBackendSyncDelegate> sync_delegate_;
   StrictMock<MockPasswordStoreBackend> main_backend_;
   StrictMock<MockPasswordStoreBackend> shadow_backend_;
 };
@@ -132,36 +147,33 @@ TEST_F(PasswordStoreProxyBackendTest, CallCompletionWithFailureForAnyError) {
 }
 
 TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
-  EXPECT_CALL(main_backend(), GetSyncStatus)
-      .WillOnce(WithArg<0>(
-          Invoke([](auto callback) { std::move(callback).Run(true); })));
-  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
-        std::move(reply).Run(CreateTestLogins());
-      })));
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync);
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToGetAutofillableLoginsAsync) {
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAutofillableLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(shadow_backend(), GetAutofillableLoginsAsync);
   proxy_backend().GetAutofillableLoginsAsync(mock_reply.Get());
 }
 
@@ -175,6 +187,9 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToFillMatchingLoginsAsync) {
       .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(shadow_backend(), FillMatchingLoginsAsync);
   proxy_backend().FillMatchingLoginsAsync(mock_reply.Get(),
                                           /*include_psl=*/false,
                                           std::vector<PasswordFormDigest>());
@@ -186,6 +201,8 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToAddLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::ADD, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), AddLoginAsync).Times(AnyNumber());
   EXPECT_CALL(main_backend(), AddLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
@@ -200,6 +217,8 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToUpdateLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::UPDATE, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), UpdateLoginAsync).Times(AnyNumber());
   EXPECT_CALL(main_backend(), UpdateLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
@@ -214,6 +233,8 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToRemoveLoginAsync) {
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, form));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), RemoveLoginAsync).Times(AnyNumber());
   EXPECT_CALL(main_backend(), RemoveLoginAsync(Eq(form), _))
       .WillOnce(WithArg<1>(
           Invoke([&change_list](PasswordStoreChangeListReply reply) -> void {
@@ -230,6 +251,9 @@ TEST_F(PasswordStoreProxyBackendTest,
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), RemoveLoginsByURLAndTimeAsync)
+      .Times(AnyNumber());
   EXPECT_CALL(main_backend(),
               RemoveLoginsByURLAndTimeAsync(_, Eq(kStart), Eq(kEnd), _, _))
       .WillOnce(WithArg<4>(
@@ -249,6 +273,9 @@ TEST_F(PasswordStoreProxyBackendTest,
   PasswordStoreChangeList change_list;
   change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
   EXPECT_CALL(mock_reply, Run(Eq(change_list)));
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), RemoveLoginsCreatedBetweenAsync)
+      .Times(AnyNumber());
   EXPECT_CALL(main_backend(),
               RemoveLoginsCreatedBetweenAsync(Eq(kStart), Eq(kEnd), _))
       .WillOnce(WithArg<2>(
@@ -263,6 +290,9 @@ TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToDisableAutoSignInForOriginsAsync) {
   base::MockCallback<base::OnceClosure> mock_reply;
   EXPECT_CALL(mock_reply, Run);
+  // This test doesn't care about the shadow backend.
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync)
+      .Times(AnyNumber());
   EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync)
       .WillOnce(WithArg<1>(
           Invoke([](base::OnceClosure reply) { std::move(reply).Run(); })));
@@ -287,20 +317,26 @@ TEST_F(PasswordStoreProxyBackendTest,
   proxy_backend().CreateSyncControllerDelegate();
 }
 
-TEST_F(PasswordStoreProxyBackendTest, NoShadowGetAllLoginsWhenSyncDisabled) {
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowGetAllLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
-  EXPECT_CALL(main_backend(), GetSyncStatus)
-      .WillOnce(WithArg<0>(
-          Invoke([](auto callback) { std::move(callback).Run(false); })));
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(shadow_backend(), GetAllLoginsAsync).Times(0);
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
 
@@ -315,6 +351,428 @@ TEST_F(PasswordStoreProxyBackendTest, NoShadowGetAllLoginsWhenSyncDisabled) {
   histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 0);
   histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 0);
   histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 0);
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowGetAutofillableLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), GetAutofillableLoginsAsync);
+  EXPECT_CALL(shadow_backend(), GetAutofillableLoginsAsync).Times(0);
+  proxy_backend().GetAutofillableLoginsAsync(/*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowFillMatchingLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), FillMatchingLoginsAsync);
+  EXPECT_CALL(shadow_backend(), FillMatchingLoginsAsync).Times(0);
+  proxy_backend().FillMatchingLoginsAsync(/*callback=*/base::DoNothing(),
+                                          /*include_psl=*/false,
+                                          std::vector<PasswordFormDigest>());
+}
+
+TEST_F(PasswordStoreProxyBackendTest, NoShadowAddLoginAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), AddLoginAsync);
+  EXPECT_CALL(shadow_backend(), AddLoginAsync).Times(0);
+  proxy_backend().AddLoginAsync(CreateTestForm(),
+                                /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowAddLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), AddLoginAsync);
+  EXPECT_CALL(shadow_backend(), AddLoginAsync).Times(0);
+  proxy_backend().AddLoginAsync(CreateTestForm(),
+                                /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowAddLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), AddLoginAsync);
+  EXPECT_CALL(shadow_backend(), AddLoginAsync);
+  proxy_backend().AddLoginAsync(CreateTestForm(),
+                                /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest, ShadowAddLoginAsyncBasicMetricsTesting) {
+  base::HistogramTester histogram_tester;
+  // Set the prefs such that no initial migration is required to allow shadow
+  // write operations.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  // Shadow write operations run only for non-syncing users.
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  PasswordForm test_form = CreateTestForm();
+
+  PasswordStoreChangeList main_backend_changelist;
+  main_backend_changelist.emplace_back(PasswordStoreChange::ADD, test_form);
+
+  PasswordStoreChangeList shadow_backend_changelist;
+  shadow_backend_changelist.emplace_back(PasswordStoreChange::UPDATE,
+                                         test_form);
+
+  EXPECT_CALL(main_backend(), AddLoginAsync)
+      .WillOnce(WithArg<1>(Invoke(
+          [&main_backend_changelist](PasswordStoreChangeListReply reply)
+              -> void { std::move(reply).Run(main_backend_changelist); })));
+
+  EXPECT_CALL(shadow_backend(), AddLoginAsync)
+      .WillOnce(WithArg<1>(Invoke(
+          [&shadow_backend_changelist](PasswordStoreChangeListReply reply)
+              -> void { std::move(reply).Run(shadow_backend_changelist); })));
+
+  proxy_backend().AddLoginAsync(test_form,
+                                /*callback=*/base::DoNothing());
+
+  std::string prefix =
+      "PasswordManager.PasswordStoreProxyBackend.AddLoginAsync.";
+
+  histogram_tester.ExpectUniqueSample(prefix + "Diff.Abs", 2, 1);
+  histogram_tester.ExpectUniqueSample(prefix + "MainMinusShadow.Abs", 1, 1);
+  histogram_tester.ExpectUniqueSample(prefix + "ShadowMinusMain.Abs", 1, 1);
+  histogram_tester.ExpectUniqueSample(prefix + "InconsistentPasswords.Abs", 0,
+                                      1);
+}
+
+TEST_F(PasswordStoreProxyBackendTest, NoShadowUpdateLoginAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), UpdateLoginAsync);
+  EXPECT_CALL(shadow_backend(), UpdateLoginAsync).Times(0);
+  proxy_backend().UpdateLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowUpdateLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), UpdateLoginAsync);
+  EXPECT_CALL(shadow_backend(), UpdateLoginAsync).Times(0);
+  proxy_backend().UpdateLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowGetAllLoginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
+      CreateTestLogins();
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(main_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  proxy_backend().GetAllLoginsAsync(mock_reply.Get());
+
+  std::string prefix =
+      "PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.";
+
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 1);
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowUpdateLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), UpdateLoginAsync);
+  EXPECT_CALL(shadow_backend(), UpdateLoginAsync);
+  proxy_backend().UpdateLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest, NoShadowRemoveLoginAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), RemoveLoginAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginAsync).Times(0);
+  proxy_backend().RemoveLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowRemoveLoginAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginAsync).Times(0);
+  proxy_backend().RemoveLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowRemoveLoginAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginAsync);
+  proxy_backend().RemoveLoginAsync(CreateTestForm(),
+                                   /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowRemoveLoginsByURLAndTimeAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsByURLAndTimeAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsByURLAndTimeAsync).Times(0);
+  proxy_backend().RemoveLoginsByURLAndTimeAsync(
+      base::BindRepeating(&FilterNoUrl),
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*sync_completion=*/base::OnceCallback<void(bool)>(),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    NoShadowRemoveLoginsByURLAndTimeAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsByURLAndTimeAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsByURLAndTimeAsync).Times(0);
+  proxy_backend().RemoveLoginsByURLAndTimeAsync(
+      base::BindRepeating(&FilterNoUrl),
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*sync_completion=*/base::OnceCallback<void(bool)>(),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowRemoveLoginsByURLAndTimeAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsByURLAndTimeAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsByURLAndTimeAsync);
+  proxy_backend().RemoveLoginsByURLAndTimeAsync(
+      base::BindRepeating(&FilterNoUrl),
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*sync_completion=*/base::OnceCallback<void(bool)>(),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowRemoveLoginsCreatedBetweenAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsCreatedBetweenAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    NoShadowRemoveLoginsCreatedBetweenAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsCreatedBetweenAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsCreatedBetweenAsync).Times(0);
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowRemoveLoginsCreatedBetweenAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), RemoveLoginsCreatedBetweenAsync);
+  EXPECT_CALL(shadow_backend(), RemoveLoginsCreatedBetweenAsync);
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(
+      /*delete_begin=*/base::Time::FromTimeT(111111),
+      /*delete_end=*/base::Time::FromTimeT(22222222),
+      /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       NoShadowDisableAutoSignInForOriginsAsyncWhenSyncEnabled) {
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync).Times(0);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    NoShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationIncomplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync).Times(0);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
+}
+
+TEST_F(
+    PasswordStoreProxyBackendTest,
+    ShadowDisableAutoSignInForOriginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+
+  EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(main_backend(), DisableAutoSignInForOriginsAsync);
+  EXPECT_CALL(shadow_backend(), DisableAutoSignInForOriginsAsync);
+  proxy_backend().DisableAutoSignInForOriginsAsync(
+      base::BindRepeating(&FilterNoUrl), /*completion=*/base::DoNothing());
 }
 
 // Holds the main and shadow backend's logins and the expected number of common
@@ -363,18 +821,17 @@ TEST_P(PasswordStoreProxyBackendTestWithLoginsParams,
        GetAllLoginsAsyncMetrics) {
   const LoginsMetricsParam& p = GetParam();
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   {
     EXPECT_CALL(mock_reply, Run(_));
     EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetMainLogins());
         })));
-    EXPECT_CALL(main_backend(), GetSyncStatus)
-        .WillOnce(WithArg<0>(
-            Invoke([](auto callback) { std::move(callback).Run(true); })));
+    EXPECT_CALL(sync_delegate(), IsSyncingPasswordsEnabled)
+        .WillRepeatedly(Return(true));
     EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetShadowLogins());
         })));
     proxy_backend().GetAllLoginsAsync(mock_reply.Get());

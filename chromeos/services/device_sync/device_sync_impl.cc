@@ -793,7 +793,7 @@ void DeviceSyncImpl::OnPrimaryAccountChanged(
       ProcessPrimaryAccountInfo(event.GetCurrentState().primary_account);
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      FALLTHROUGH;
+      [[fallthrough]];
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       // Ignored
       break;

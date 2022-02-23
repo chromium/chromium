@@ -170,6 +170,10 @@ id<GREYMatcher> ToolsMenuButton() {
   return [ChromeMatchersAppInterface toolsMenuButton];
 }
 
+id<GREYMatcher> NewTabButton() {
+  return [ChromeMatchersAppInterface openNewTabButton];
+}
+
 id<GREYMatcher> ShareButton() {
   return [ChromeMatchersAppInterface shareButton];
 }
@@ -194,18 +198,20 @@ id<GREYMatcher> CloseTabMenuButton() {
   return [ChromeMatchersAppInterface closeTabMenuButton];
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on) {
-  return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier
-                                            isToggledOn:is_toggled_on];
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on) {
+  return
+      [ChromeMatchersAppInterface tableViewSwitchCell:accessibility_identifier
+                                          isToggledOn:is_toggled_on];
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on,
-                                   BOOL is_enabled) {
-  return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier
-                                            isToggledOn:is_toggled_on
-                                              isEnabled:is_enabled];
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on,
+                                    BOOL is_enabled) {
+  return
+      [ChromeMatchersAppInterface tableViewSwitchCell:accessibility_identifier
+                                          isToggledOn:is_toggled_on
+                                            isEnabled:is_enabled];
 }
 
 id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,
@@ -427,6 +433,18 @@ id<GREYMatcher> NTPCollectionView() {
   return [ChromeMatchersAppInterface ntpCollectionView];
 }
 
+id<GREYMatcher> NTPIncognitoView() {
+  return [ChromeMatchersAppInterface ntpIncognitoView];
+}
+
+id<GREYMatcher> NTPFeedMenuEnableButton() {
+  return [ChromeMatchersAppInterface ntpFeedMenuEnableButton];
+}
+
+id<GREYMatcher> NTPFeedMenuDisableButton() {
+  return [ChromeMatchersAppInterface ntpFeedMenuDisableButton];
+}
+
 id<GREYMatcher> WarningMessageView() {
   return [ChromeMatchersAppInterface warningMessageView];
 }
@@ -636,6 +654,10 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
   return [ChromeMatchersAppInterface
       historyEntryForURL:base::SysUTF8ToNSString(url)
                    title:base::SysUTF8ToNSString(title)];
+}
+
+id<GREYMatcher> SettingsToolbarAddButton() {
+  return [ChromeMatchersAppInterface settingsToolbarAddButton];
 }
 
 #pragma mark - Manual Fallback

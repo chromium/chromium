@@ -5,5 +5,4 @@ include_rules = [
   "+components/prefs",
   "+components/favicon",
   "+content/public/browser",
-  "+ui/base",
 ]

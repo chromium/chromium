@@ -1,6 +1,3 @@
-# Device Motion / Orientation API related
-per-file DeviceSensors.java=timvolodine@chromium.org
-
 # Media Session API related
 per-file AudioFocus*.java=steimel@chromium.org
 

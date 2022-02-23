@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline API instrumentation of a SendRequest, ReceiveResponse etc.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()
@@ -29,7 +29,7 @@
 
   await UI.viewManager.showView('timeline');
   const panel = UI.panels.timeline;
-  panel._disableCaptureJSProfileSetting.set(true);
+  panel.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
 
   var recordTypes = TimelineModel.TimelineModel.RecordType;

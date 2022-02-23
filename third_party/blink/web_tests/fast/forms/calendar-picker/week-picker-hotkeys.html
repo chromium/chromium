@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -13,7 +15,7 @@
 
 promise_test(() => {
   let weekElement = document.getElementById('week-0');
-  return openPickerWithPromise(weekElement)
+  return openPicker(weekElement)
   .then(() => {
     eventSender.keyDown('Home');
     assert_equals(weekElement.value, "2018-W22", "Home hotkey should go to the first week of the month");

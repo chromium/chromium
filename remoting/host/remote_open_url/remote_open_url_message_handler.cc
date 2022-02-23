@@ -8,8 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "remoting/base/compound_buffer.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
-#include "remoting/host/remote_open_url/remote_open_url_constants.h"
 #include "remoting/protocol/message_serialization.h"
 #include "url/gurl.h"
 
@@ -38,20 +36,8 @@ mojom::OpenUrlResult ToMojomOpenUrlResult(
 RemoteOpenUrlMessageHandler::RemoteOpenUrlMessageHandler(
     const std::string& name,
     std::unique_ptr<protocol::MessagePipe> pipe)
-    : RemoteOpenUrlMessageHandler(
-          name,
-          std::move(pipe),
-          std::make_unique<MojoIpcServer<mojom::RemoteUrlOpener>>(
-              GetRemoteOpenUrlIpcChannelName(),
-              this)) {}
-
-RemoteOpenUrlMessageHandler::RemoteOpenUrlMessageHandler(
-    const std::string& name,
-    std::unique_ptr<protocol::MessagePipe> pipe,
-    std::unique_ptr<IpcServer> ipc_server)
     : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {
-  ipc_server_ = std::move(ipc_server);
-  ipc_server_->set_disconnect_handler(base::BindRepeating(
+  receivers_.set_disconnect_handler(base::BindRepeating(
       &RemoteOpenUrlMessageHandler::OnIpcDisconnected, base::Unretained(this)));
 }
 
@@ -61,10 +47,17 @@ RemoteOpenUrlMessageHandler::~RemoteOpenUrlMessageHandler() {
   OnDisconnecting();
 }
 
-void RemoteOpenUrlMessageHandler::OnConnected() {
+void RemoteOpenUrlMessageHandler::AddReceiver(
+    mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ipc_server_->StartServer();
+  AddReceiverAndGetReceiverId(std::move(receiver));
+}
+
+void RemoteOpenUrlMessageHandler::ClearReceivers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  receivers_.Clear();
 }
 
 void RemoteOpenUrlMessageHandler::OnIncomingMessage(
@@ -86,13 +79,11 @@ void RemoteOpenUrlMessageHandler::OnIncomingMessage(
   }
   std::move(it->second).Run(ToMojomOpenUrlResult(response.result()));
   callbacks_.erase(it);
-  ipc_server_->Close(response.id());
+  receivers_.Remove(response.id());
 }
 
 void RemoteOpenUrlMessageHandler::OnDisconnecting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ipc_server_->StopServer();
 
   // The remote connection is going away, so inform all IPC clients to open the
   // URL locally.
@@ -100,12 +91,29 @@ void RemoteOpenUrlMessageHandler::OnDisconnecting() {
     std::move(entry.second).Run(mojom::OpenUrlResult::LOCAL_FALLBACK);
   }
   callbacks_.clear();
+  receivers_.Clear();
+}
+
+base::WeakPtr<RemoteOpenUrlMessageHandler>
+RemoteOpenUrlMessageHandler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+mojo::ReceiverId RemoteOpenUrlMessageHandler::AddReceiverAndGetReceiverId(
+    mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!connected()) {
+    LOG(WARNING) << "RemoteOpenUrlMessageHandler has not been connected";
+    return 0u;
+  }
+  return receivers_.Add(this, std::move(receiver));
 }
 
 void RemoteOpenUrlMessageHandler::OnIpcDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = callbacks_.find(ipc_server_->current_receiver());
+  auto it = callbacks_.find(receivers_.current_receiver());
   if (it != callbacks_.end()) {
     LOG(WARNING)
         << "The client has disconnected before the response is received.";
@@ -119,10 +127,11 @@ void RemoteOpenUrlMessageHandler::OpenUrl(const GURL& url,
 
   if (!url.is_valid()) {
     std::move(callback).Run(mojom::OpenUrlResult::FAILURE);
+    receivers_.Remove(receivers_.current_receiver());
     return;
   }
 
-  mojo::ReceiverId id = ipc_server_->current_receiver();
+  mojo::ReceiverId id = receivers_.current_receiver();
   DCHECK(callbacks_.find(id) == callbacks_.end())
       << "The client has made more than one call to OpenUrl().";
 

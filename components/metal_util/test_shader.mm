@@ -8,7 +8,7 @@
 #import <Metal/Metal.h>
 
 #include "base/bind.h"
-#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/mac/scoped_dispatch_object.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
@@ -20,11 +20,13 @@
 #include "base/task/thread_pool.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/metal_util/device.h"
-#include "components/metal_util/switches.h"
 
 namespace metal {
 
 namespace {
+
+base::Feature kMetalTestShaders{"MetalTestShaders",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char* kTestShaderSource =
     ""
@@ -874,10 +876,7 @@ void TestShaderNow(base::scoped_nsprotocol<id<MTLDevice>> device,
 void TestShader(TestShaderCallback callback,
                 const base::TimeDelta& delay,
                 const base::TimeDelta& timeout) {
-  bool disabled_at_command_line =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableMetalTestShaders);
-  if (disabled_at_command_line)
+  if (!base::FeatureList::IsEnabled(kMetalTestShaders))
     return;
 
   // Select a component to test at random.

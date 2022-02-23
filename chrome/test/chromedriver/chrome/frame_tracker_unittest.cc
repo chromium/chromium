@@ -36,7 +36,7 @@ TEST(FrameTracker, GetContextIdForFrame) {
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsOk());
-  nav_params.Clear();
+  nav_params.DictClear();
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Page.frameNavigated", nav_params).code());
   ASSERT_EQ(kNoSuchExecutionContext,

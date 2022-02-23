@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -77,7 +78,7 @@ class UkmService : public UkmRecorderImpl {
   void EnableReporting();
   void DisableReporting();
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void OnAppEnterBackground();
   void OnAppEnterForeground();
 #endif
@@ -113,10 +114,6 @@ class UkmService : public UkmRecorderImpl {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   int32_t report_count() const { return report_count_; }
-
-  void set_restrict_to_whitelist_entries_for_testing(bool value) {
-    restrict_to_whitelist_entries_ = value;
-  }
 
   // Enables adding the synced user's noised birth year and gender to the UKM
   // report. For more details, see doc of metrics::DemographicMetricsProvider in
@@ -162,9 +159,6 @@ class UkmService : public UkmRecorderImpl {
   // Called by log_uploader_ when the an upload is completed.
   void OnLogUploadComplete(int response_code);
 
-  // ukm::UkmRecorderImpl:
-  bool ShouldRestrictToWhitelistedEntries() const override;
-
   // Adds the user's birth year and gender to the UKM |report| only if (1) the
   // provider is registered and (2) the feature is enabled. For more details,
   // see doc of metrics::DemographicMetricsProvider in
@@ -174,10 +168,7 @@ class UkmService : public UkmRecorderImpl {
   void SetInitializationCompleteCallbackForTesting(base::OnceClosure callback);
 
   // A weak pointer to the PrefService used to read and write preferences.
-  PrefService* pref_service_;
-
-  // If true, only whitelisted Entries should be recorded.
-  bool restrict_to_whitelist_entries_;
+  raw_ptr<PrefService> pref_service_;
 
   // The UKM client id stored in prefs.
   uint64_t client_id_ = 0;
@@ -190,7 +181,7 @@ class UkmService : public UkmRecorderImpl {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  metrics::MetricsServiceClient* const client_;
+  const raw_ptr<metrics::MetricsServiceClient> client_;
 
   // Registered metrics providers.
   metrics::DelegatingProvider metrics_providers_;

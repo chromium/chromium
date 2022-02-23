@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -530,7 +530,7 @@ void SerialConnection::Close(base::OnceClosure callback) {
 }
 
 void SerialConnection::InitSerialPortForTesting() {
-  ignore_result(serial_port_.BindNewPipeAndPassReceiver());
+  std::ignore = serial_port_.BindNewPipeAndPassReceiver();
 }
 
 void SerialConnection::SetTimeoutCallback() {

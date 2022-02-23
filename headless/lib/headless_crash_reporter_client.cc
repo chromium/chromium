@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -18,7 +19,7 @@ namespace headless {
 
 namespace {
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
 
@@ -29,14 +30,7 @@ constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
 HeadlessCrashReporterClient::HeadlessCrashReporterClient() = default;
 HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
-void HeadlessCrashReporterClient::GetProductNameAndVersion(
-    const char** product_name,
-    const char** version) {
-  *product_name = kChromeHeadlessProductName;
-  *version = PRODUCT_VERSION;
-}
-
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 void HeadlessCrashReporterClient::GetProductNameAndVersion(
     std::string* product_name,
     std::string* version,
@@ -45,14 +39,10 @@ void HeadlessCrashReporterClient::GetProductNameAndVersion(
   *version = PRODUCT_VERSION;
   *channel = "";
 }
-
-base::FilePath HeadlessCrashReporterClient::GetReporterLogFilename() {
-  return base::FilePath(FILE_PATH_LITERAL("uploads.log"));
-}
-#endif  // defined(OS_POSIX) && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::wstring* crash_dir
 #else
     base::FilePath* crash_dir
@@ -60,10 +50,14 @@ bool HeadlessCrashReporterClient::GetCrashDumpLocation(
 ) {
   base::FilePath crash_directory = crash_dumps_dir_;
   if (crash_directory.empty() &&
+      !base::PathService::Get(base::DIR_TEMP, &crash_directory) &&
       !base::PathService::Get(base::DIR_MODULE, &crash_directory)) {
     return false;
   }
-#if defined(OS_WIN)
+  if (crash_dumps_dir_.empty()) {
+    crash_directory = crash_directory.Append(FILE_PATH_LITERAL("Crashpad"));
+  }
+#if BUILDFLAG(IS_WIN)
   *crash_dir = crash_directory.value();
 #else
   *crash_dir = std::move(crash_directory);
@@ -71,12 +65,20 @@ bool HeadlessCrashReporterClient::GetCrashDumpLocation(
   return true;
 }
 
-bool HeadlessCrashReporterClient::EnableBreakpadForProcess(
-    const std::string& process_type) {
-  return process_type == ::switches::kRendererProcess ||
-         process_type == ::switches::kPpapiPluginProcess ||
-         process_type == ::switches::kZygoteProcess ||
-         process_type == ::switches::kGpuProcess;
+bool HeadlessCrashReporterClient::IsRunningUnattended() {
+  // CHROME_HEADLESS is not equivalent to running in headless mode. This
+  // environment variable is set in non-production environments which might be
+  // running with crash-dumping enabled. It is used to disable certain dialogs
+  // and in this particular usage disables crash report upload, while leaving
+  // dumping enabled.
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  return env->HasVar("CHROME_HEADLESS");
+}
+
+bool HeadlessCrashReporterClient::GetCollectStatsConsent() {
+  // Headless has no way to configure this setting so consent is implied by
+  // the crash reporter being enabled.
+  return true;
 }
 
 }  // namespace content

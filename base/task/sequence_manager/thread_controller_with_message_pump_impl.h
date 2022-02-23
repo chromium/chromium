@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/run_loop.h"
@@ -37,6 +38,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       public RunLoop::Delegate,
       public RunLoop::NestingObserver {
  public:
+  static void InitializeFeatures();
+  static void ResetFeatures();
+
   ThreadControllerWithMessagePumpImpl(
       std::unique_ptr<MessagePump> message_pump,
       const SequenceManager::Settings& settings);
@@ -58,7 +62,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void WillQueueTask(PendingTask* pending_task,
                      const char* task_queue_name) override;
   void ScheduleWork() override;
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;
+  void SetNextDelayedDoWork(LazyNow* lazy_now,
+                            absl::optional<WakeUp> wake_up) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
   void SetTickClock(const TickClock* clock) override;
   bool RunsTasksInCurrentSequence() override;
@@ -73,10 +78,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   void DetachFromMessagePump() override;
 #endif
   bool ShouldQuitRunLoopWhenIdle() override;
@@ -105,8 +110,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     MainThreadOnly();
     ~MainThreadOnly();
 
-    SequencedTaskSource* task_source = nullptr;            // Not owned.
-    RunLoop::NestingObserver* nesting_observer = nullptr;  // Not owned.
+    raw_ptr<SequencedTaskSource> task_source = nullptr;            // Not owned.
+    raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
     std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly
@@ -147,10 +152,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   friend class DoWorkScope;
   friend class RunScope;
 
-  // Returns the ready time for the next pending task, is_null() if the next
-  // task can run immediately, or is_max() if there are no more immediate or
-  // delayed tasks.
-  TimeTicks DoWorkImpl(LazyNow* continuation_lazy_now);
+  // Returns a WakeUp for the next pending task, is_immediate() if the next task
+  // can run immediately, or nullopt if there are no more immediate or delayed
+  // tasks.
+  absl::optional<WakeUp> DoWorkImpl(LazyNow* continuation_lazy_now);
 
   void InitializeThreadTaskRunnerHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
@@ -188,14 +193,16 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   TaskAnnotator task_annotator_;
 
-  const TickClock* time_source_;  // Not owned.
+  raw_ptr<const TickClock> time_source_;  // Not owned.
 
   // Non-null provider of id state for identifying distinct work items executed
   // by the message loop (task, event, etc.). Cached on the class to avoid TLS
   // lookups on task execution.
-  WorkIdProvider* work_id_provider_ = nullptr;
+  raw_ptr<WorkIdProvider> work_id_provider_ = nullptr;
 
-  // Required to register the current thread as a sequence.
+  // Required to register the current thread as a sequence. Must be declared
+  // after |main_thread_only_| so that the destructors of state stored in the
+  // map run while the main thread state is still valid (crbug.com/1221382)
   base::internal::SequenceLocalStorageMap sequence_local_storage_map_;
   std::unique_ptr<
       base::internal::ScopedSetSequenceLocalStorageMapForCurrentThread>

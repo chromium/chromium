@@ -11,13 +11,13 @@
 
 #include "base/callback.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -27,7 +27,8 @@ namespace web_app {
 
 // |app_id| may be empty on failure.
 using OnceInstallCallback =
-    base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code)>;
 using OnceUninstallCallback =
     base::OnceCallback<void(const AppId& app_id, bool uninstalled)>;
 
@@ -35,13 +36,13 @@ using OnceUninstallCallback =
 // web app.
 using WebAppInstallationAcceptanceCallback =
     base::OnceCallback<void(bool user_accepted,
-                            std::unique_ptr<WebApplicationInfo>)>;
+                            std::unique_ptr<WebAppInstallInfo>)>;
 
 // Callback to show the WebApp installation confirmation bubble in UI.
-// |web_app_info| is the WebApplicationInfo to be installed.
+// |web_app_info| is the WebAppInstallInfo to be installed.
 using WebAppInstallDialogCallback = base::OnceCallback<void(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;
 
@@ -82,16 +83,22 @@ struct WebAppInstallParams {
   absl::optional<std::u16string> fallback_app_name;
 
   bool locally_installed = true;
+
+  // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
+  // meaning that all other OS Hooks related parameters will be ignored.
+  bool bypass_os_hooks = false;
+
   // These OS shortcut fields can't be true if |locally_installed| is false.
+  // They only have an effect when |bypass_os_hooks| is false.
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
   bool add_to_quick_launch_bar = true;
-  bool run_on_os_login = false;
 
   // These have no effect outside of Chrome OS.
   bool add_to_search = true;
   bool add_to_management = true;
   bool is_disabled = false;
+  bool handles_file_open_intents = true;
 
   bool bypass_service_worker_check = false;
   bool require_manifest = false;

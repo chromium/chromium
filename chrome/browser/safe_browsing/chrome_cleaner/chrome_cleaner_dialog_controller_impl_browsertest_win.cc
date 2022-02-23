@@ -6,12 +6,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -87,7 +88,7 @@ class ChromeCleanerPromptUserTest
 
  protected:
   MockChromeCleanerController mock_cleaner_controller_;
-  ChromeCleanerDialogControllerImpl* dialog_controller_;
+  raw_ptr<ChromeCleanerDialogControllerImpl> dialog_controller_;
   StrictMock<MockChromeCleanerPromptDelegate> mock_delegate_;
 
   std::string old_seed_;

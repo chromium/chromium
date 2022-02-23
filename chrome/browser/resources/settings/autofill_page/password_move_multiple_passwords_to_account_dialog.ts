@@ -15,26 +15,29 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './password_move_multiple_passwords_to_account_dialog.html.js';
 import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 
-interface PasswordMoveMultiplePasswordsToAccountDialogElement {
+export interface PasswordMoveMultiplePasswordsToAccountDialogElement {
   $: {
     dialog: CrDialogElement,
+    moveButton: HTMLElement,
+    cancelButton: HTMLElement,
   };
 }
 
-class PasswordMoveMultiplePasswordsToAccountDialogElement extends
+export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
     PolymerElement {
   static get is() {
     return 'password-move-multiple-passwords-to-account-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

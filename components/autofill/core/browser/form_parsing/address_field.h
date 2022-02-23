@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
@@ -42,11 +43,6 @@ class AddressField : public FormField {
     RESULT_MATCH_NAME,       // Only the name matches the pattern.
     RESULT_MATCH_NAME_LABEL  // Name and label both match the pattern.
   };
-
-  static const int kZipCodeMatchType;
-  static const int kCityMatchType;
-  static const int kStateMatchType;
-  static const int kDependentLocalityMatchType;
 
   explicit AddressField(LogManager* log_manager);
 
@@ -90,7 +86,7 @@ class AddressField : public FormField {
   ParseNameLabelResult ParseNameAndLabelSeparately(
       AutofillScanner* scanner,
       const std::u16string& pattern,
-      int match_type,
+      MatchParams match_type,
       const std::vector<MatchingPattern>& patterns,
       AutofillField** match,
       const RegExLogging& logging);
@@ -118,7 +114,7 @@ class AddressField : public FormField {
       AutofillScanner* scanner,
       const LanguageCode& page_language);
 
-  LogManager* log_manager_;
+  raw_ptr<LogManager> log_manager_;
   AutofillField* company_ = nullptr;
   AutofillField* street_name_ = nullptr;
   AutofillField* house_number_ = nullptr;

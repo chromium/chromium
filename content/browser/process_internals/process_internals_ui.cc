@@ -31,8 +31,9 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
   web_ui->SetBindings(BINDINGS_POLICY_NONE);
 
   // Create a WebUIDataSource to serve the HTML/JS files to the WebUI.
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIProcessInternalsHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIProcessInternalsHost);
 
   source->AddResourcePath("process_internals.js", IDR_PROCESS_INTERNALS_JS);
   source->AddResourcePath("process_internals.css", IDR_PROCESS_INTERNALS_CSS);
@@ -42,8 +43,6 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");
-
-  WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(), source);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProcessInternalsUI)

@@ -179,7 +179,7 @@ size_t BitDepth(VideoPixelFormat format) {
   switch (format) {
     case PIXEL_FORMAT_UNKNOWN:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I422:

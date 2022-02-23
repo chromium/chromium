@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/formats/mp2t/es_parser_h264.h"
 
 static void NewVideoConfig(const media::VideoDecoderConfig& config) {}
@@ -16,7 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::mp2t::EsParserH264 es_parser(base::BindRepeating(&NewVideoConfig),
                                       base::BindRepeating(&EmitBuffer));
   if (!es_parser.Parse(data, size, media::kNoTimestamp,
-                       media::kNoDecodeTimestamp())) {
+                       media::kNoDecodeTimestamp)) {
     return 0;
   }
   return 0;

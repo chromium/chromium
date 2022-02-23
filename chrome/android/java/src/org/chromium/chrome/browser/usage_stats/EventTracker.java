@@ -60,9 +60,6 @@ public class EventTracker {
     public Promise<Void> addWebsiteEvent(WebsiteEvent event) {
         final Promise<Void> writePromise = new Promise<>();
         mRootPromise.then((result) -> {
-            assert result.size() == 0
-                    || event.getTimestamp() >= result.get(result.size() - 1).getTimestamp();
-
             List<WebsiteEventProtos.WebsiteEvent> eventsList = Arrays.asList(getProtoEvent(event));
             mBridge.addEvents(eventsList, (didSucceed) -> {
                 if (didSucceed) {

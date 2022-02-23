@@ -153,9 +153,9 @@ class PrefTestCase {
 
     pref_ = name;
     if (value)
-      value_ = value->CreateDeepCopy();
+      value_ = value->Clone();
     if (default_value)
-      default_value_ = default_value->CreateDeepCopy();
+      default_value_ = default_value->Clone();
 
     if (value && default_value) {
       ADD_FAILURE()
@@ -170,8 +170,16 @@ class PrefTestCase {
 
   const std::string& pref() const { return pref_; }
 
-  const base::Value* value() const { return value_.get(); }
-  const base::Value* default_value() const { return default_value_.get(); }
+  const base::Value* value() const {
+    if (value_.is_none())
+      return nullptr;
+    return &value_;
+  }
+  const base::Value* default_value() const {
+    if (default_value_.is_none())
+      return nullptr;
+    return &default_value_;
+  }
 
   PrefLocation location() const { return location_; }
 
@@ -185,8 +193,8 @@ class PrefTestCase {
   bool check_for_recommended_;
 
   // At most one of these will be set.
-  std::unique_ptr<base::Value> value_;
-  std::unique_ptr<base::Value> default_value_;
+  base::Value value_;
+  base::Value default_value_;
 };
 
 // Contains the testing details for a single pref affected by a policy. This is
@@ -215,7 +223,8 @@ class PolicyPrefMappingTest {
     const base::Value* required_preprocessor_macros_value =
         mapping.FindListKey("required_preprocessor_macros");
     if (required_preprocessor_macros_value) {
-      for (const auto& macro : required_preprocessor_macros_value->GetList())
+      for (const auto& macro :
+           required_preprocessor_macros_value->GetListDeprecated())
         required_preprocessor_macros_.push_back(macro.GetString());
     }
   }
@@ -291,7 +300,7 @@ class PolicyTestCase {
 
     const base::Value* os_list = test_case.FindListKey("os");
     if (os_list) {
-      for (const auto& os : os_list->GetList()) {
+      for (const auto& os : os_list->GetListDeprecated()) {
         if (os.is_string())
           supported_os_.push_back(os.GetString());
       }
@@ -300,7 +309,8 @@ class PolicyTestCase {
     const base::Value* policy_pref_mapping_tests =
         test_case.FindListKey("policy_pref_mapping_tests");
     if (policy_pref_mapping_tests) {
-      for (const auto& mapping : policy_pref_mapping_tests->GetList()) {
+      for (const auto& mapping :
+           policy_pref_mapping_tests->GetListDeprecated()) {
         if (mapping.is_dict()) {
           policy_pref_mapping_tests_.push_back(
               std::make_unique<PolicyPrefMappingTest>(mapping));
@@ -324,20 +334,22 @@ class PolicyTestCase {
   }
 
   bool IsOsSupported() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     const std::string os("android");
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     const std::string os("chromeos_ash");
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     const std::string os("chromeos_lacros");
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
     const std::string os("ios");
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     const std::string os("linux");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     const std::string os("mac");
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     const std::string os("win");
+#elif BUILDFLAG(IS_FUCHSIA)
+    const std::string os("fuchsia");
 #else
 #error "Unknown platform"
 #endif
@@ -345,7 +357,7 @@ class PolicyTestCase {
   }
 
   bool IsOsCovered() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     return base::Contains(supported_os_, "chromeos_ash") ||
            base::Contains(supported_os_, "chromeos_lacros");
 #else
@@ -474,9 +486,9 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
                        const base::Value& policies_settings,
                        PolicyLevel level) {
   PolicyMap policy_map;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_map);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   for (auto it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     const PolicySettings policy_settings =

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -30,6 +31,7 @@ class CORE_EXPORT OutlinePainter {
   static void PaintOutlineRects(const PaintInfo&,
                                 const DisplayItemClient&,
                                 const Vector<PhysicalRect>&,
+                                const LayoutObject::OutlineInfo&,
                                 const ComputedStyle&,
                                 const Document&);
 
@@ -37,10 +39,8 @@ class CORE_EXPORT OutlinePainter {
                                  const Path&,
                                  const ComputedStyle&);
 
-  static int OutlineOutsetExtent(const ComputedStyle&);
-
-  // For pre-CompositeAfterPaint only.
-  static int FocusRingWidthInsideBorderBox(const ComputedStyle&);
+  static int OutlineOutsetExtent(const ComputedStyle&,
+                                 const LayoutObject::OutlineInfo&);
 
   struct Line {
     SkPoint start;

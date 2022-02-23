@@ -20,19 +20,19 @@ namespace extensions {
 // static
 Feature::Platform Feature::GetCurrentPlatform() {
 // TODO(https://crbug.com/1052397): For readability, this should become
-// defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS). The second conditional
-// should be defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
+// BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS). The second
+// conditional should be BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return LACROS_PLATFORM;
 #elif BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   return CHROMEOS_PLATFORM;
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   return LINUX_PLATFORM;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return MACOSX_PLATFORM;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return WIN_PLATFORM;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return FUCHSIA_PLATFORM;
 #else
   return UNSPECIFIED_PLATFORM;
@@ -41,9 +41,9 @@ Feature::Platform Feature::GetCurrentPlatform() {
 
 Feature::Availability Feature::IsAvailableToExtension(
     const Extension* extension) const {
-  return IsAvailableToManifest(extension->hashed_id(), extension->GetType(),
-                               extension->location(),
-                               extension->manifest_version());
+  return IsAvailableToManifest(
+      extension->hashed_id(), extension->GetType(), extension->location(),
+      extension->manifest_version(), kUnspecifiedContextId);
 }
 
 Feature::Feature() : no_parent_(false) {}

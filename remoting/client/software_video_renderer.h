@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -77,9 +77,9 @@ class SoftwareVideoRenderer : public protocol::VideoRenderer,
   // |owned_consumer_| and |consumer_| should refer to the same object if
   // |owned_consumer_| is not null.
   std::unique_ptr<protocol::FrameConsumer> owned_consumer_;
-  protocol::FrameConsumer* const consumer_;
+  const raw_ptr<protocol::FrameConsumer> consumer_;
 
-  protocol::FrameStatsConsumer* stats_consumer_ = nullptr;
+  raw_ptr<protocol::FrameStatsConsumer> stats_consumer_ = nullptr;
 
   std::unique_ptr<VideoDecoder> decoder_;
 

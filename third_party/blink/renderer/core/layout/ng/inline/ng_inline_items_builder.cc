@@ -400,6 +400,24 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     if (!text_.length() && !item.Length() && collapse_spaces)
       continue;
 
+    // We are reusing items that included 'generated line breaks', inserted to
+    // deal with leading preserved space sequences. If we are performing a
+    // relayout after removing a <br> (eg. <div>abc<br><span> dfg</span></div>)
+    // it may imply that the preserved spaces are not a leading sequence
+    // anymore.
+    if (item.IsGeneratedForLineBreak()) {
+      // We wont restore 'generated line breaks' at the start
+      // TODO(jfernandez): How it's possible that we have a generated break at
+      // position 0 ?
+      if (!text_.length())
+        continue;
+      int index = text_.length() - 1;
+      while (index >= 0 && text_[index] == kSpaceCharacter)
+        --index;
+      if (index >= 0 && text_[index] != kNewlineCharacter)
+        continue;
+    }
+
     unsigned start = text_.length();
     text_.Append(original_string, item.StartOffset(), item.Length());
 

@@ -33,6 +33,7 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
+#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
@@ -42,12 +43,12 @@
 #include "extensions/common/features/behavior_feature.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -84,6 +85,7 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/script_injection_manager.h"
 #include "extensions/renderer/set_icon_natives.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/test_features_native_handler.h"
 #include "extensions/renderer/test_native_handler.h"
@@ -128,11 +130,6 @@ using content::RenderThread;
 
 namespace extensions {
 
-// Constant to define the default profile id for the renderer to 0.
-// Since each renderer is associated with a single context, we don't need
-// separate ids for the profile.
-const int kRendererProfileId = 0;
-
 namespace {
 
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
@@ -156,7 +153,7 @@ void CallModuleMethod(const std::string& module_name,
       content::V8ValueConverter::Create();
 
   std::vector<v8::Local<v8::Value>> arguments;
-  for (const auto& arg : args->GetList()) {
+  for (const auto& arg : args->GetListDeprecated()) {
     arguments.push_back(converter->ToV8Value(&arg, context->v8_context()));
   }
 
@@ -275,7 +272,8 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
       activity_logging_enabled_(false),
-      receiver_(this) {
+      receiver_(this),
+      dispatcher_(this) {
   bindings_system_ = CreateBindingsSystem(
       IPCMessageSender::CreateMainThreadIPCMessageSender());
 
@@ -299,6 +297,14 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   // Extension resources are HTTP-like and safe to expose to the fetch API. The
   // rules for the fetch API are consistent with XHR.
   WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(extension_scheme);
+
+  // Register WebSecurityPolicy allowlists for the file:// scheme.
+  WebString file_scheme(WebString::FromASCII(url::kFileScheme));
+
+  // Extensions are allowed to make cross-origin requests to file scheme iff the
+  // user explicitly grants them access post-installation in the
+  // chrome://extensions page.
+  WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(file_scheme);
 
   // Extension resources, when loaded as the top-level document, should bypass
   // Blink's strict first-party origin checks.
@@ -760,16 +766,17 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
   // |frame_helper| and |render_frame| might be dead by now.
 }
 
-void Dispatcher::DispatchEvent(const std::string& extension_id,
-                               const std::string& event_name,
-                               const base::ListValue& event_args,
-                               const EventFilteringInfo* filtering_info) const {
+void Dispatcher::DispatchEventHelper(
+    const std::string& extension_id,
+    const std::string& event_name,
+    const base::ListValue& event_args,
+    mojom::EventFilteringInfoPtr filtering_info) const {
   script_context_set_->ForEach(
       extension_id, nullptr,
       base::BindRepeating(
           &NativeExtensionBindingsSystem::DispatchEventInContext,
           base::Unretained(bindings_system_.get()), event_name, &event_args,
-          filtering_info));
+          base::OwnedRef(std::move(filtering_info))));
 }
 
 void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
@@ -849,7 +856,11 @@ std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
 
       {"keep_alive", IDR_KEEP_ALIVE_JS},
       {"mojo_bindings", IDR_MOJO_MOJO_BINDINGS_JS},
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       {"mojo_bindings_lite", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
+#endif
+
       {"extensions/common/mojom/keep_alive.mojom", IDR_KEEP_ALIVE_MOJOM_JS},
 
       // Custom bindings.
@@ -961,7 +972,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnDeliverMessage)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -978,16 +988,24 @@ void Dispatcher::RegisterMojoInterfaces(
   // never deleted).
   associated_interfaces->AddInterface(base::BindRepeating(
       &Dispatcher::OnRendererAssociatedRequest, base::Unretained(this)));
+  associated_interfaces->AddInterface(base::BindRepeating(
+      &Dispatcher::OnEventDispatcherRequest, base::Unretained(this)));
 }
 
 void Dispatcher::UnregisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   associated_interfaces->RemoveInterface(mojom::Renderer::Name_);
+  associated_interfaces->RemoveInterface(mojom::EventDispatcher::Name_);
 }
 
 void Dispatcher::OnRendererAssociatedRequest(
     mojo::PendingAssociatedReceiver<mojom::Renderer> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+void Dispatcher::OnEventDispatcherRequest(
+    mojo::PendingAssociatedReceiver<mojom::EventDispatcher> dispatcher) {
+  dispatcher_.Bind(std::move(dispatcher));
 }
 
 void Dispatcher::ActivateExtension(const std::string& extension_id) {
@@ -1138,7 +1156,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 
   // Invalidates the messages map for the extension in case the extension is
   // reloaded with a new messages map.
-  EraseL10nMessagesMap(extension_id);
+  SharedL10nMap::GetInstance().EraseMessagesMap(extension_id);
 
   // Update the origin access map so that any content scripts injected no longer
   // have dedicated allow/block lists for extra origins.
@@ -1160,13 +1178,14 @@ void Dispatcher::SuspendExtension(
   // the browser know when we are starting and stopping the event dispatch, so
   // that it still considers the extension idle despite any activity the suspend
   // event creates.
-  DispatchEvent(extension_id, kOnSuspendEvent, base::ListValue(), nullptr);
+  DispatchEventHelper(extension_id, kOnSuspendEvent, base::ListValue(),
+                      nullptr);
   std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
-  DispatchEvent(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
-                nullptr);
+  DispatchEventHelper(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
+                      nullptr);
 }
 
 void Dispatcher::SetSystemFont(const std::string& font_family,
@@ -1282,10 +1301,10 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
       NULL);  // All render frames.
 }
 
-void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
-                                 const base::ListValue& event_args) {
+void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
+                               base::Value event_args) {
   content::RenderFrame* background_frame =
-      ExtensionFrameHelper::GetBackgroundPageFrame(params.extension_id);
+      ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
 
   // Synthesize a user gesture if this was in response to user action; this is
   // necessary if the gesture was e.g. by clicking on the extension toolbar
@@ -1296,29 +1315,34 @@ void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
   // the user gesture. This is intentional, since frames other than the
   // background page should have their own user gestures, such as through button
   // clicks.
-  if (params.is_user_gesture && background_frame) {
+  if (params->is_user_gesture && background_frame) {
     ScriptContext* background_context =
         ScriptContextSet::GetMainWorldContextForFrame(background_frame);
     if (background_context && bindings_system_->HasEventListenerInContext(
-                                  params.event_name, background_context)) {
+                                  params->event_name, background_context)) {
       background_frame->GetWebFrame()->NotifyUserActivation(
           blink::mojom::UserActivationNotificationType::kExtensionEvent);
     }
   }
 
-  DispatchEvent(params.extension_id, params.event_name, event_args,
-                &params.filtering_info);
+  DispatchEventHelper(params->extension_id, params->event_name,
+                      base::Value::AsListValue(event_args),
+                      mojom::EventFilteringInfo::From(params->filtering_info));
 
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
     const Extension* extension =
-        RendererExtensionRegistry::Get()->GetByID(params.extension_id);
+        RendererExtensionRegistry::Get()->GetByID(params->extension_id);
     if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
-          background_frame->GetRoutingID(), params.event_id));
+          background_frame->GetRoutingID(), params->event_id));
     }
   }
+}
+
+void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
+  SetCurrentDeveloperMode(kRendererProfileId, current_developer_mode);
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,

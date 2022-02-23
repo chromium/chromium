@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "v8/include/v8.h"
 
 namespace extensions {

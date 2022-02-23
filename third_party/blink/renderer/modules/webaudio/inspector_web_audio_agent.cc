@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -65,16 +64,18 @@ InspectorWebAudioAgent::InspectorWebAudioAgent(Page* page)
 InspectorWebAudioAgent::~InspectorWebAudioAgent() = default;
 
 void InspectorWebAudioAgent::Restore() {
-  if (!enabled_.Get())
+  if (!enabled_.Get()) {
     return;
+  }
 
   AudioGraphTracer* graph_tracer = AudioGraphTracer::FromPage(page_);
   graph_tracer->SetInspectorAgent(this);
 }
 
 Response InspectorWebAudioAgent::enable() {
-  if (enabled_.Get())
+  if (enabled_.Get()) {
     return Response::Success();
+  }
   enabled_.Set(true);
   AudioGraphTracer* graph_tracer = AudioGraphTracer::FromPage(page_);
   graph_tracer->SetInspectorAgent(this);
@@ -82,8 +83,9 @@ Response InspectorWebAudioAgent::enable() {
 }
 
 Response InspectorWebAudioAgent::disable() {
-  if (!enabled_.Get())
+  if (!enabled_.Get()) {
     return Response::Success();
+  }
   enabled_.Clear();
   AudioGraphTracer* graph_tracer = AudioGraphTracer::FromPage(page_);
   graph_tracer->SetInspectorAgent(nullptr);
@@ -94,12 +96,14 @@ Response InspectorWebAudioAgent::getRealtimeData(
     const protocol::WebAudio::GraphObjectId& contextId,
     std::unique_ptr<ContextRealtimeData>* out_data) {
   auto* const graph_tracer = AudioGraphTracer::FromPage(page_);
-  if (!enabled_.Get())
+  if (!enabled_.Get()) {
     return Response::ServerError("Enable agent first.");
+  }
 
   BaseAudioContext* context = graph_tracer->GetContextById(contextId);
-  if (!context)
+  if (!context) {
     return Response::ServerError("Cannot find BaseAudioContext with such id.");
+  }
 
   if (!context->HasRealtimeConstraint()) {
     return Response::ServerError(

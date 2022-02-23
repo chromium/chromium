@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/components/webui/sync_internals/sync_internals_ui.h"
 
 namespace web {

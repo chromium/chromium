@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 
 class ChromePageInfoUiDelegate;
@@ -42,6 +44,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void OpenSecurityPage() override;
   void OpenPermissionPage(ContentSettingsType type) override;
   void OpenAboutThisSitePage(const page_info::proto::SiteInfo& info) override;
+  void OpenAdPersonalizationPage() override;
   void CloseBubble() override;
 
   // WebContentsObserver:
@@ -64,7 +67,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void WebContentsDestroyed() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  PageSwitcherView* page_container_ = nullptr;
+  raw_ptr<PageSwitcherView> page_container_ = nullptr;
 
   // The presenter that controls the Page Info UI.
   std::unique_ptr<PageInfo> presenter_;
@@ -74,6 +77,8 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   std::unique_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
   std::unique_ptr<PageInfoViewFactory> view_factory_;
+
+  std::unique_ptr<PageInfoHistoryController> history_controller_;
 
   base::WeakPtrFactory<PageInfoBubbleView> weak_factory_{this};
 };

@@ -6,20 +6,23 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_PERSISTENT_H_
 
 #include "base/bind.h"
-#include "third_party/blink/renderer/platform/bindings/buildflags.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/heap_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "v8/include/cppgc/cross-thread-persistent.h"
 #include "v8/include/cppgc/persistent.h"
 #include "v8/include/cppgc/source-location.h"
 
-#if BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-#define PERSISTENT_LOCATION_FOR_DEBUGGING blink::PersistentLocation::Current()
-#else  // !BUILDFLAG(RAW_HEAP_SNAPSHOTS)
-#define PERSISTENT_LOCATION_FOR_DEBUGGING blink::PersistentLocation()
-#endif  // !BUILDFLAG(RAW_HEAP_SNAPSHOTS)
+// Required to optimize away locations for builds that do not need them to avoid
+// binary size blowup.
+#if BUILDFLAG(VERBOSE_PERSISTENT)
+#define PERSISTENT_LOCATION_FROM_HERE blink::PersistentLocation::Current()
+#else  // !BUILDFLAG(VERBOSE_PERSISTENT)
+#define PERSISTENT_LOCATION_FROM_HERE blink::PersistentLocation()
+#endif  // !BUILDFLAG(VERBOSE_PERSISTENT)
 
 namespace blink {
 
@@ -40,28 +43,28 @@ using PersistentLocation = cppgc::SourceLocation;
 template <typename T>
 Persistent<T> WrapPersistent(
     T* value,
-    const cppgc::SourceLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING) {
+    const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return Persistent<T>(value, loc);
 }
 
 template <typename T>
 WeakPersistent<T> WrapWeakPersistent(
     T* value,
-    const cppgc::SourceLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING) {
+    const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return WeakPersistent<T>(value, loc);
 }
 
 template <typename T>
 CrossThreadPersistent<T> WrapCrossThreadPersistent(
     T* value,
-    const cppgc::SourceLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING) {
+    const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return CrossThreadPersistent<T>(value, loc);
 }
 
 template <typename T>
 CrossThreadWeakPersistent<T> WrapCrossThreadWeakPersistent(
     T* value,
-    const cppgc::SourceLocation& loc = PERSISTENT_LOCATION_FOR_DEBUGGING) {
+    const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE) {
   return CrossThreadWeakPersistent<T>(value, loc);
 }
 
@@ -167,28 +170,44 @@ template <typename T>
 struct HashTraits<blink::CrossThreadWeakPersistent<T>>
     : BasePersistentHashTraits<T, blink::CrossThreadWeakPersistent<T>> {};
 
+// Default hash for hash tables with Persistent<>-derived elements.
+template <typename T>
+struct PersistentHashBase : PtrHash<T> {
+  STATIC_ONLY(PersistentHashBase);
+
+  template <typename U>
+  static unsigned GetHash(const U& key) {
+    return PtrHash<T>::GetHash(key);
+  }
+
+  template <typename U, typename V>
+  static bool Equal(const U& a, const V& b) {
+    return a == b;
+  }
+};
+
 template <typename T>
 struct DefaultHash<blink::Persistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::WeakPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::CrossThreadPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::CrossThreadWeakPersistent<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = PersistentHashBase<T>;
 };
 
 template <typename T>

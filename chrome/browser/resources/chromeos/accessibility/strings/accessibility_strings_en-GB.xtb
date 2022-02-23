@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Practice area: drop-down lists</translation>
 <translation id="1195238899008218998">Afterword</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1198865190323699001">Touch gestures</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No next level 4 heading</translation>
@@ -69,6 +70,7 @@
 <translation id="1354356357730355833">copy</translation>
 <translation id="135978014023467274">You've been updated to ChromeVox 63!</translation>
 <translation id="1360699455582016846">Click the item under routing key <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">move to the next character</translation>
 <translation id="1377925789329510816">This is the last heading. Press Search+H to wrap to the first heading, or Search+Shift+H to go to the second heading on this page.</translation>
 <translation id="138218114945450791">Light blue</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -213,6 +215,7 @@
 <translation id="2450814015951372393">Tick box</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="2462626033734746142">Radio button group</translation>
+<translation id="2467741090055146971">unselect</translation>
 <translation id="2471138580042810658">Heading 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisks}}</translation>
 <translation id="2490721194269245365">Rosy Brown</translation>
@@ -387,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{right bracket}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{question mark}other{# question marks}}</translation>
+<translation id="3505359110822747654">ChromeVox menus collapse</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{caret}other{# carets}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{white bullet}other{# white bullets}}</translation>
 <translation id="352577523970648069">An editable text field</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">cut <ph name="TEXT" />.</translation>
@@ -565,6 +570,7 @@
 <translation id="4854380505292502090">No previous media widget</translation>
 <translation id="4855927945655956315">Essential keys: Control</translation>
 <translation id="4862744964787595316">Not bold</translation>
+<translation id="4865995900839719272">move to the previous line</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Enable TTS logging</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +629,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, tab</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5310788376443009632">removed:</translation>
+<translation id="5316825363044614340">move to the next line</translation>
 <translation id="5320727453979144100">Sticky mode enabled</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{comma}other{# commas}}</translation>
 <translation id="532485153932049746">Text formatting
@@ -659,6 +666,7 @@
 <translation id="5522423213731659107">Quick orientation complete!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
+<translation id="554893713779400387">Toggle dictation</translation>
 <translation id="5549179427201066174">Turn sound feedback (earcons) on or off</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5561345396546889625">Next list</translation>
@@ -669,6 +677,7 @@
 <translation id="5597170376237141345">Next tick box</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radio button unselected</translation>
 <translation id="5601172225407283979">Perform default action</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{square bullet}other{# square bullets}}</translation>
 <translation id="5608798115546226984">Auto-completion inline</translation>
 <translation id="5616029807486814372">Next lesson</translation>
 <translation id="561939826962581046">time</translation>
@@ -902,6 +911,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">No previous-form field</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">help</translation>
 <translation id="7317017974771324508">partially selected</translation>
 <translation id="7322442671176251901">Explore by touch</translation>
 <translation id="7344012264516629579">Additional jump commands include jumping by link, button and tick box, to name a few. A full list of jump commands can be found in the ChromeVox menus, which can be opened by pressing Search + full-stop.</translation>
@@ -1091,6 +1101,7 @@
 <translation id="8659501358298941449">Drop-down lists</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> end</translation>
 <translation id="867187640362843212">Heading 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{nested level #}}</translation>
 <translation id="8693391540059827073">My favourite season</translation>
 <translation id="8696284982970258155">Honeydew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pipe}other{# vertical pipes}}</translation>
@@ -1129,6 +1140,7 @@
 <translation id="9014206344398081366">ChromeVox tutorial</translation>
 <translation id="9040132695316389094">Heading 1</translation>
 <translation id="9061884144798498064">Select an 8-dot braille table:</translation>
+<translation id="9063946545000394379">move to the previous character</translation>
 <translation id="9065283790526219006">+pop-up</translation>
 <translation id="9065912140022662363">No next radio button</translation>
 <translation id="9067522039955793016">Page break</translation>
@@ -1157,6 +1169,7 @@
 <translation id="9223032053830369045">Dark Red</translation>
 <translation id="923331726185079994">ChromeVox Updated</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>
+<translation id="937605981140327129">TalkBack is currently not installed. Please install Android Accessibility Suite through Play Store and try again.</translation>
 <translation id="948171205378458592">Decrease rate of speech</translation>
 <translation id="957570623732056069">Swipe left or right with one finger to navigate this lesson</translation>
 <translation id="958854023026327378">Swipe one finger down</translation>

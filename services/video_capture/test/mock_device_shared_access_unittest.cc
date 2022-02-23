@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -94,12 +95,12 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop,
                media::VideoCaptureParams* requested_settings,
-               mojom::CreatePushSubscriptionResultCode result_code,
+               mojom::CreatePushSubscriptionResultCodePtr result_code,
                const media::VideoCaptureParams&
                    settings_source_was_opened_with) {
-              ASSERT_EQ(mojom::CreatePushSubscriptionResultCode::
+              ASSERT_EQ(mojom::CreatePushSubscriptionSuccessCode::
                             kCreatedWithRequestedSettings,
-                        result_code);
+                        result_code->get_success_code());
               ASSERT_EQ(*requested_settings, settings_source_was_opened_with);
               run_loop->Quit();
             },
@@ -110,12 +111,14 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
   void LetClient2ConnectWithRequestableSettingsAndExpectToGetThem() {
     LetClient2ConnectWithRequestableSettings(
         false /*force_reopen_with_new_settings*/,
-        mojom::CreatePushSubscriptionResultCode::kCreatedWithRequestedSettings);
+        mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+            mojom::CreatePushSubscriptionSuccessCode::
+                kCreatedWithRequestedSettings));
   }
 
   void LetClient2ConnectWithRequestableSettings(
       bool force_reopen_with_new_settings,
-      mojom::CreatePushSubscriptionResultCode expected_result_code) {
+      mojom::CreatePushSubscriptionResultCodePtr expected_result_code) {
     base::RunLoop run_loop;
     source_->CreatePushSubscription(
         std::move(video_frame_handler_2_), requestable_settings_,
@@ -124,25 +127,29 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop,
                media::VideoCaptureParams* requested_settings,
-               mojom::CreatePushSubscriptionResultCode expected_result_code,
-               mojom::CreatePushSubscriptionResultCode result_code,
+               mojom::CreatePushSubscriptionResultCodePtr expected_result_code,
+               mojom::CreatePushSubscriptionResultCodePtr result_code,
                const media::VideoCaptureParams&
                    settings_source_was_opened_with) {
               ASSERT_EQ(expected_result_code, result_code);
-              if (expected_result_code ==
-                  mojom::CreatePushSubscriptionResultCode::
-                      kCreatedWithRequestedSettings) {
-                ASSERT_EQ(*requested_settings, settings_source_was_opened_with);
-              }
-              if (expected_result_code ==
-                  mojom::CreatePushSubscriptionResultCode::
-                      kCreatedWithDifferentSettings) {
-                ASSERT_FALSE(*requested_settings ==
-                             settings_source_was_opened_with);
+              if (expected_result_code->is_success_code()) {
+                mojom::CreatePushSubscriptionSuccessCode success_code =
+                    expected_result_code->get_success_code();
+                if (success_code == mojom::CreatePushSubscriptionSuccessCode::
+                                        kCreatedWithRequestedSettings) {
+                  ASSERT_EQ(*requested_settings,
+                            settings_source_was_opened_with);
+                }
+                if (success_code == mojom::CreatePushSubscriptionSuccessCode::
+                                        kCreatedWithDifferentSettings) {
+                  ASSERT_FALSE(*requested_settings ==
+                               settings_source_was_opened_with);
+                }
               }
               run_loop->Quit();
             },
-            &run_loop, &requestable_settings_, expected_result_code));
+            &run_loop, &requestable_settings_,
+            std::move(expected_result_code)));
     run_loop.Run();
   }
 
@@ -161,12 +168,12 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop_1,
                media::VideoCaptureParams* requested_settings,
-               mojom::CreatePushSubscriptionResultCode result_code,
+               mojom::CreatePushSubscriptionResultCodePtr result_code,
                const media::VideoCaptureParams&
                    settings_source_was_opened_with) {
-              ASSERT_EQ(mojom::CreatePushSubscriptionResultCode::
+              ASSERT_EQ(mojom::CreatePushSubscriptionSuccessCode::
                             kCreatedWithRequestedSettings,
-                        result_code);
+                        result_code->get_success_code());
               ASSERT_EQ(*requested_settings, settings_source_was_opened_with);
               run_loop_1->Quit();
             },
@@ -184,12 +191,12 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop_2,
                media::VideoCaptureParams* requested_settings,
-               mojom::CreatePushSubscriptionResultCode result_code,
+               mojom::CreatePushSubscriptionResultCodePtr result_code,
                const media::VideoCaptureParams&
                    settings_source_was_opened_with) {
-              ASSERT_EQ(mojom::CreatePushSubscriptionResultCode::
+              ASSERT_EQ(mojom::CreatePushSubscriptionSuccessCode::
                             kCreatedWithDifferentSettings,
-                        result_code);
+                        result_code->get_success_code());
               ASSERT_EQ(*requested_settings, settings_source_was_opened_with);
               run_loop_2->Quit();
             },
@@ -258,7 +265,7 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   media::MockDevice mock_device_;
-  media::MockDeviceFactory* mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
   std::unique_ptr<DeviceFactoryMediaToMojoAdapter> service_device_factory_;
   std::unique_ptr<VideoSourceProviderImpl> source_provider_;
   mojo::Remote<mojom::VideoSource> source_;
@@ -302,7 +309,9 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   LetClient2ConnectWithRequestableSettings(
       true /*force_reopen_with_new_settings*/,
-      mojom::CreatePushSubscriptionResultCode::kCreatedWithRequestedSettings);
+      mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+          mojom::CreatePushSubscriptionSuccessCode::
+              kCreatedWithRequestedSettings));
   subscription_2_->Activate();
   SendFrameAndExpectToArriveAtBothSubscribers();
 }
@@ -312,7 +321,9 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
   LetClient1ConnectWithRequestableSettingsAndExpectToGetThem();
   LetClient2ConnectWithRequestableSettings(
       true /*force_reopen_with_new_settings*/,
-      mojom::CreatePushSubscriptionResultCode::kCreatedWithRequestedSettings);
+      mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+          mojom::CreatePushSubscriptionSuccessCode::
+              kCreatedWithRequestedSettings));
   subscription_1_->Activate();
   subscription_2_->Activate();
   SendFrameAndExpectToArriveAtBothSubscribers();
@@ -346,7 +357,9 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   LetClient2ConnectWithRequestableSettings(
       true /*force_reopen_with_new_settings*/,
-      mojom::CreatePushSubscriptionResultCode::kCreatedWithRequestedSettings);
+      mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+          mojom::CreatePushSubscriptionSuccessCode::
+              kCreatedWithRequestedSettings));
   subscription_2_->Activate();
 
   mock_device_.SendOnStarted();
@@ -361,7 +374,9 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
 
   LetClient2ConnectWithRequestableSettings(
       false /*force_reopen_with_new_settings*/,
-      mojom::CreatePushSubscriptionResultCode::kFailed);
+      mojom::CreatePushSubscriptionResultCode::NewErrorCode(
+          media::VideoCaptureError::
+              kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested));
 }
 
 TEST_F(MockVideoCaptureDeviceSharedAccessTest,

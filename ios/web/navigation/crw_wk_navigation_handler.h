@@ -73,6 +73,11 @@ class WKBackForwardListItemHolder;
     didCompleteLoadWithSuccess:(BOOL)loadSuccess
                     forContext:(web::NavigationContextImpl*)context;
 
+// Resumes download using |webView|
+- (void)resumeDownloadWithData:(NSData*)data
+             completionHandler:(void (^)(WKDownload*))completionHandler
+    API_AVAILABLE(ios(15));
+
 @end
 
 // Handler class for WKNavigationDelegate, deals with navigation callbacks from

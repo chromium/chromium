@@ -11,7 +11,6 @@
 #include <new>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/template_util.h"
 #include "mojo/public/cpp/bindings/lib/hash_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"

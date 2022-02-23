@@ -37,6 +37,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
@@ -243,7 +244,10 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // this worker to FrozenPaused and may enter a nested run loop. Only one
   // nested message loop will be entered but |pause_or_freeze_count_| will be
   // incremented on each call. May be called multiple times and from any thread.
-  void Freeze();
+  //
+  // `is_in_back_forward_cache` represents whether the page goes to back/forward
+  // cache.
+  void Freeze(bool is_in_back_forward_cache);
 
   // Decrements |pause_or_freeze_count_| and if count is zero then
   // it will exit the entered nested run loop. Might be called from any thread.
@@ -389,8 +393,10 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   bool CheckRequestedToTerminate() LOCKS_EXCLUDED(mutex_);
 
   class InterruptData;
-  void PauseOrFreeze(mojom::FrameLifecycleState state);
-  void PauseOrFreezeOnWorkerThread(mojom::FrameLifecycleState state);
+  void PauseOrFreeze(mojom::blink::FrameLifecycleState state,
+                     bool is_in_back_forward_cache);
+  void PauseOrFreezeOnWorkerThread(mojom::blink::FrameLifecycleState state,
+                                   bool is_in_back_forward_cache);
   void ResumeOnWorkerThread();
   void PauseOrFreezeWithInterruptDataOnWorkerThread(InterruptData*);
   static void PauseOrFreezeInsideV8InterruptOnWorkerThread(v8::Isolate*,

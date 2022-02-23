@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<div style="display: flex">
+  <div id="container" style="width: 200px; height: 200px; overflow: scroll">
+    <div id="content" style="position: relative; background: green; width: 300px; height: 100px"></div>
+    <div style="height: 210px"></div>
+  </div>
+</div>

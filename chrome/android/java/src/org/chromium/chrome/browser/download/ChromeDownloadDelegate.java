@@ -21,8 +21,8 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -73,7 +73,7 @@ public class ChromeDownloadDelegate implements UserData {
         final String fileName = downloadInfo.getFileName();
         assert !TextUtils.isEmpty(fileName);
         final String newMimeType = MimeUtils.remapGenericMimeType(
-                downloadInfo.getMimeType(), downloadInfo.getUrl(), fileName);
+                downloadInfo.getMimeType(), downloadInfo.getUrl().getSpec(), fileName);
         new AsyncTask<Pair<String, File>>() {
             @Override
             protected Pair<String, File> doInBackground() {
@@ -91,12 +91,12 @@ public class ChromeDownloadDelegate implements UserData {
                             downloadInfo, fullDirPath, externalStorageState)) {
                     return;
                 }
-                String url = sanitizeDownloadUrl(downloadInfo);
+                GURL url = sanitizeDownloadUrl(downloadInfo);
                 if (url == null) return;
                 DownloadInfo newInfo = DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
                                                .setUrl(url)
                                                .setMimeType(newMimeType)
-                                               .setDescription(url)
+                                               .setDescription(url.getSpec())
                                                .setFileName(fileName)
                                                .setIsGETRequest(true)
                                                .build();
@@ -112,7 +112,7 @@ public class ChromeDownloadDelegate implements UserData {
      *
      * @param downloadInfo Information about the download.
      */
-    protected String sanitizeDownloadUrl(DownloadInfo downloadInfo) {
+    protected GURL sanitizeDownloadUrl(DownloadInfo downloadInfo) {
         return downloadInfo.getUrl();
     }
 
@@ -198,9 +198,8 @@ public class ChromeDownloadDelegate implements UserData {
         if (mTab == null) return true;
         String fileName =
                 URLUtil.guessFileName(url.getSpec(), null, MimeUtils.OMA_DRM_MESSAGE_MIME);
-        // TODO(https://crbug.com/783819): Convert DownloadInfo to GURL.
         final DownloadInfo downloadInfo =
-                new DownloadInfo.Builder().setUrl(url.getSpec()).setFileName(fileName).build();
+                new DownloadInfo.Builder().setUrl(url).setFileName(fileName).build();
         WindowAndroid window = mTab.getWindowAndroid();
         if (window.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             onDownloadStartNoStream(downloadInfo);

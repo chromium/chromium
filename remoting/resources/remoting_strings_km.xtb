@@ -26,7 +26,6 @@
 <translation id="225614027745146050">ស្វាគមន៍</translation>
 <translation id="2320166752086256636">លាក់ក្តារចុច</translation>
 <translation id="2329392777730037872">មិនអាចបើក <ph name="URL" /> នៅលើ​កម្មវិធីភ្ញៀវបានទេ។</translation>
-<translation id="2333212046079545895">រក្សាសិទ្ធិគ្រប់យ៉ាងដោយ Google LLC ឆ្នាំ 2021។</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2366718077645204424">មិនអាចទៅកាន់ឧបករណ៍ចែករំលែកបណ្តាញ។ វាអាចមកពីការតំឡើងបណ្តាញដែលអ្នកកំពុងប្រើប្រាស់។</translation>
 <translation id="2370754117186920852">បានឃើញ<ph name="OPTIONAL_OFFLINE_REASON" />  ចុងក្រោយនៅលើអ៊ីនធឺណិតកាលពី <ph name="RELATIVE_TIMESTAMP" /></translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">សេវាកម្មនេះបើកដំណើរការភ្ជាប់ចូលមកពីអតិថិជន Chrome Remote Desktop។</translation>
 <translation id="2647232381348739934">សេវាកម្ម Chromoting</translation>
 <translation id="2676780859508944670">កំពុងដំណើរការ…</translation>
+<translation id="2692522824157224199">រក្សាសិទ្ធិដោយ Google LLC ឆ្នាំ 2022។ រក្សាសិទ្ធិគ្រប់យ៉ាង។</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">មានបញ្ហា​ក្នុងការ​ផ្ទៀងផ្ទាត់ សូមចូល​គណនី​ម្តងទៀត។</translation>
 <translation id="2803375539583399270">បញ្ចូលកូដ PIN</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">កម្មវិធីបញ្ជូន URL បន្តរបស់ <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">លេខកូូដចូលប្រើគ្មានសុពលភាព។ សូមព្យាយាមម្តងទៀត។</translation>
 <translation id="4281844954008187215">លក្ខខណ្ឌសេវាកម្ម</translation>
+<translation id="4372650392690220936">រក្សាសិទ្ធិដោយ Chromium Authors ឆ្នាំ 2022។ រក្សាសិទ្ធិគ្រប់យ៉ាង។</translation>
 <translation id="4405930547258349619">បណ្ណាល័យស្នូល</translation>
 <translation id="443560535555262820">បើក​ចំណូលចិត្ត "ភាពងាយស្រួល"</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
-<translation id="4512952200932940229">រក្សាសិទ្ធិដោយ Chromium Authors ឆ្នាំ 2021។ រក្សាសិទ្ធិគ្រប់យ៉ាង។</translation>
 <translation id="4513946894732546136">មតិ</translation>
 <translation id="4563926062592110512">អតិថិជនបានផ្តាច់៖ <ph name="CLIENT_USERNAME" />។</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> មិនត្រូវបានកំណត់​រចនាសម្ព័ន្ធ​បានត្រឹមត្រូវទេ។ សូមជ្រើសរើសកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើមផ្សេង បន្ទាប់មកបើកការបញ្ជូន URL បន្តម្ដងទៀត។</translation>

@@ -20,6 +20,7 @@ namespace device {
 void BluetoothSerialPortImpl::Open(
     scoped_refptr<BluetoothAdapter> adapter,
     const std::string& address,
+    const BluetoothUUID& service_class_id,
     mojom::SerialConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
@@ -32,7 +33,7 @@ void BluetoothSerialPortImpl::Open(
   auto* port = new BluetoothSerialPortImpl(
       std::move(adapter), address, std::move(options), std::move(client),
       std::move(watcher));
-  port->OpenSocket(std::move(callback));
+  port->OpenSocket(service_class_id, std::move(callback));
 }
 
 BluetoothSerialPortImpl::BluetoothSerialPortImpl(
@@ -60,7 +61,8 @@ BluetoothSerialPortImpl::~BluetoothSerialPortImpl() {
     bluetooth_socket_->Disconnect(base::DoNothing());
 }
 
-void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
+void BluetoothSerialPortImpl::OpenSocket(const BluetoothUUID& service_class_id,
+                                         OpenCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BluetoothDevice* device = bluetooth_adapter_->GetDevice(address_);
   if (!device) {
@@ -69,22 +71,15 @@ void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
     return;
   }
 
-  BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
-  if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
-    auto split_callback = base::SplitOnceCallback(std::move(callback));
-    device->ConnectToService(
-        GetSerialPortProfileUUID(),
-        base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnected,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(split_callback.first)),
-        base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnectedError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(split_callback.second)));
-    return;
-  }
-
-  std::move(callback).Run(mojo::NullRemote());
-  delete this;
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  device->ConnectToService(
+      service_class_id,
+      base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnected,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&BluetoothSerialPortImpl::OnSocketConnectedError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void BluetoothSerialPortImpl::OnSocketConnected(

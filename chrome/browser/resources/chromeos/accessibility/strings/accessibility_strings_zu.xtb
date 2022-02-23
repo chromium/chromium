@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Indawo yokuphrakthiza: Uhlu olushona ezansi</translation>
 <translation id="1195238899008218998">Amazwi angemuva</translation>
 <translation id="1197088940767939838">Olintshi</translation>
+<translation id="1198865190323699001">Ukuthinta</translation>
 <translation id="1201402288615127009">Okulandelayo</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Asikho isihloko esilandelayo seleveli engu-4</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ubakaki ongakwesokudla}one{# abakaki abangakwesokudla}other{# abakaki abangakwesokudla}}</translation>
 <translation id="3494946239022273294">I-mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{uphawu lombuzo}one{# izimpawu zombuzo}other{# izimpawu zombuzo}}</translation>
+<translation id="3505359110822747654">Amamenyu e-ChromeVox ayagoqwa</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ikharethi}one{# amakharethi}other{# amakharethi}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ichashazi elimhlophe}one{amachashazi amhlophe angu-#}other{amachashazi amhlophe angu-#}}</translation>
 <translation id="352577523970648069">Inkambu yombhalo ohlelekayo</translation>
 <translation id="3538907380453898475">i-dscrplst</translation>
 <translation id="3549141990712742152">sika<ph name="TEXT" />.</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Umumo osheshayo uqedile!</translation>
 <translation id="5534303576632885660">i-hdr</translation>
 <translation id="5539820223028224601">I-Gainsboro</translation>
+<translation id="554893713779400387">Guqula ukuthola</translation>
 <translation id="5549179427201066174">Vula noma uvale ukuphendula komsindo (ama-earcorn)</translation>
 <translation id="556042886152191864">Inkinobho</translation>
 <translation id="5561345396546889625">Uhlu olulandelayo</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Ibhokisi lokuhlola elilandelayo</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, inkinobho yerediyo iyekise ukukhethwa</translation>
 <translation id="5601172225407283979">Yenza isenzo esizenzakalelayo</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ichashazi eliyisikwele}one{amachashazi ayisikwele angu-#}other{amachashazi ayisikwele angu-#}}</translation>
 <translation id="5608798115546226984">Ukuqedelelwa okuzenzakalelayo ngaphakathi kolayini</translation>
 <translation id="5616029807486814372">Isifundo esilandelayo</translation>
 <translation id="561939826962581046">isikhathi</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">Izinhla ezishona ezansi</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ukuphela</translation>
 <translation id="867187640362843212">Isihloko 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{ileveli yesidleke engu-#}other{ileveli yesidleke engu-#}}</translation>
 <translation id="8693391540059827073">Isizini yami eyintandokazi</translation>
 <translation id="8696284982970258155">I-HoneyDew</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ipayipi}one{# amapayipi amile}other{# amapayipi amile}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">Okubomvu ngokumnyama</translation>
 <translation id="923331726185079994">I-ChromeVox ibuyekeziwe</translation>
 <translation id="93384979447910801">Okuluhlaza kakhulu kolwandle</translation>
+<translation id="937605981140327129">I-TalkBack ayifakiwe okwamanje. Sicela ufake i-Android AccessibilitySuite nge-Play Store bese uyazama futhi.</translation>
 <translation id="948171205378458592">Yehlisa isilinganiselo senkulumo</translation>
 <translation id="957570623732056069">Swayiphela kwesobunxele noma kwesokudla ngomunwe owodwa ukuze uzulazule kulesi sifundo</translation>
 <translation id="958854023026327378">Swayiphela umunwe owodwa phansi</translation>

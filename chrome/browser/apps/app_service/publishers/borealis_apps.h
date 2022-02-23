@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -25,6 +26,10 @@
 class Profile;
 
 namespace apps {
+
+class PublisherHost;
+
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
@@ -46,11 +51,13 @@ class BorealisApps
   BorealisApps& operator=(const BorealisApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
   // Helper method to get the registry used by this profile
   guest_os::GuestOsRegistryService* Registry();
 
   // Turns GuestOsRegistry's "app" into one the AppService can use.
-  std::unique_ptr<App> CreateApp(
+  AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 
@@ -59,6 +66,8 @@ class BorealisApps
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool new_icon_key);
 
+  void Initialize();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
@@ -66,6 +75,8 @@ class BorealisApps
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

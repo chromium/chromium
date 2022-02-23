@@ -12,7 +12,7 @@
 
 namespace ash {
 
-using mojom_vkey = ash::accelerator_keys::mojom::VKey;
+using mojom_vkey = ash::mojom::VKey;
 
 namespace {
 

@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
@@ -59,7 +59,7 @@ class CORE_EXPORT ModuleScript : public Script {
   // Callers must enter a `v8::HandleScope` before calling.
   // See the class comments of `RethrowErrorsOption` and
   // `ScriptEvaluationResult` for exception handling and return value semantics.
-  WARN_UNUSED_RESULT ScriptEvaluationResult RunScriptAndReturnValue(
+  [[nodiscard]] ScriptEvaluationResult RunScriptAndReturnValue(
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow());
 

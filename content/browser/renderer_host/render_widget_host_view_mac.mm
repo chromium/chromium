@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -47,6 +47,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_visibility_state.h"
+#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -168,7 +169,7 @@ id RenderWidgetHostViewMac::GetAccessibilityFocusedUIElement() {
     DCHECK(focused_item);
     if (focused_item) {
       BrowserAccessibilityCocoa* focused_item_cocoa =
-          ToBrowserAccessibilityCocoa(focused_item);
+          focused_item->GetNativeViewAccessible();
       DCHECK(focused_item_cocoa);
       if (focused_item_cocoa)
         return focused_item_cocoa;
@@ -225,7 +226,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
     // first to rebaseline some unreliable web tests.
     // NOTE: This will not be run for child frame widgets, which do not have
     // an owner delegate and won't get a RenderViewHost here.
-    ignore_result(owner_delegate->GetWebkitPreferencesForWidget());
+    std::ignore = owner_delegate->GetWebkitPreferencesForWidget();
   }
 
   cursor_manager_ = std::make_unique<CursorManager>(this);
@@ -843,18 +844,17 @@ namespace {
 // TODO(avi): Move this to be a lambda when P0839R0 lands in C++.
 void AddTextNodesToVector(const ui::AXNode* node,
                           std::vector<std::u16string>* strings) {
-  const ui::AXNodeData& node_data = node->data();
-
-  if (node_data.role == ax::mojom::Role::kStaticText) {
-    if (node_data.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
-      strings->emplace_back(
-          node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-    }
+  if (node->GetRole() == ax::mojom::Role::kStaticText) {
+    std::u16string value;
+    if (node->GetString16Attribute(ax::mojom::StringAttribute::kName, &value))
+      strings->emplace_back(value);
     return;
   }
 
-  for (const auto* child : node->children())
-    AddTextNodesToVector(child, strings);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    AddTextNodesToVector(iter.get(), strings);
+  }
 }
 
 using SpeechCallback = base::OnceCallback<void(const std::u16string&)>;
@@ -1072,14 +1072,17 @@ gfx::Range RenderWidgetHostViewMac::ConvertCharacterRangeToCompositionRange(
   if (composition_info->range.is_reversed())
     return gfx::Range::InvalidRange();
 
-  if (request_range.start() < composition_info->range.start() ||
-      request_range.start() > composition_info->range.end() ||
-      request_range.end() > composition_info->range.end()) {
+  if (request_range.start() < composition_info->range.start())
     return gfx::Range::InvalidRange();
-  }
 
-  return gfx::Range(request_range.start() - composition_info->range.start(),
-                    request_range.end() - composition_info->range.start());
+  // Heuristic: truncate the request range within the composition range.
+  uint32_t truncated_request_start =
+      std::min(request_range.start(), composition_info->range.end());
+  uint32_t truncated_request_end =
+      std::min(request_range.end(), composition_info->range.end());
+
+  return gfx::Range(truncated_request_start - composition_info->range.start(),
+                    truncated_request_end - composition_info->range.start());
 }
 
 WebContents* RenderWidgetHostViewMac::GetWebContents() {
@@ -1102,11 +1105,22 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
   if (!selection)
     return false;
 
-  // If requested range is same as caret location, we can just return it.
-  if (selection->range().is_empty() && requested_range == selection->range()) {
+  // If requested range is right after caret, we can just return it.
+  if (selection->range().is_empty() &&
+      requested_range.start() == selection->range().end()) {
     DCHECK(GetFocusedWidget());
     if (actual_range)
       *actual_range = requested_range;
+
+    // Check selection bounds first (currently populated only for EditContext)
+    const absl::optional<gfx::Rect> text_selection_bound =
+        GetTextInputManager()->GetTextSelectionBounds();
+    if (text_selection_bound) {
+      *rect = text_selection_bound.value();
+      return true;
+    }
+
+    // If no selection bounds, fall back to use selection region.
     *rect = GetTextInputManager()
                 ->GetSelectionRegion(GetFocusedWidget()->GetView())
                 ->caret_rect;
@@ -1127,15 +1141,16 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     return true;
   }
 
+  // If firstRectForCharacterRange in WebFrame is failed in renderer,
+  // ImeCompositionRangeChanged will be sent with empty vector.
+  if (!composition_info || composition_info->character_bounds.empty())
+    return false;
+
   const gfx::Range request_range_in_composition =
       ConvertCharacterRangeToCompositionRange(requested_range);
   if (request_range_in_composition == gfx::Range::InvalidRange())
     return false;
 
-  // If firstRectForCharacterRange in WebFrame is failed in renderer,
-  // ImeCompositionRangeChanged will be sent with empty vector.
-  if (!composition_info || composition_info->character_bounds.empty())
-    return false;
   DCHECK_EQ(composition_info->character_bounds.size(),
             composition_info->range.length());
 
@@ -1163,6 +1178,12 @@ void RenderWidgetHostViewMac::FocusedNodeChanged(
     NSRect bounds = NSRectFromCGRect(node_bounds_in_screen.ToCGRect());
     UAZoomChangeFocus(&bounds, NULL, kUAZoomFocusTypeOther);
   }
+}
+
+void RenderWidgetHostViewMac::ClearFallbackSurfaceForCommitPending() {
+  browser_compositor_->GetDelegatedFrameHost()
+      ->ClearFallbackSurfaceForCommitPending();
+  browser_compositor_->InvalidateLocalSurfaceIdOnEviction();
 }
 
 void RenderWidgetHostViewMac::ResetFallbackToFirstNavigationSurface() {
@@ -1513,7 +1534,7 @@ void RenderWidgetHostViewMac::ShowSharePicker(
 
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
   if (auto* manager = host()->GetRootBrowserAccessibilityManager())
-    return ToBrowserAccessibilityCocoa(manager->GetRoot());
+    return manager->GetRoot()->GetNativeViewAccessible();
   return nil;
 }
 
@@ -1836,10 +1857,16 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayFromRange(
 }
 
 void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
-    const gfx::PointF& root_point) {
+    const gfx::PointF& root_point_in_dips) {
   if (!host() || !host()->delegate() ||
       !host()->delegate()->GetInputEventRouter())
     return;
+
+  // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
+  // which means we have to scale the point by device scale factor.
+  gfx::PointF root_point = root_point_in_dips;
+  if (IsUseZoomForDSFEnabled())
+    root_point.Scale(GetDeviceScaleFactor());
 
   gfx::PointF transformed_point;
   RenderWidgetHostImpl* widget_host =
@@ -1892,13 +1919,10 @@ void RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
 
 bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     const gfx::Range& requested_range,
-    const gfx::Rect& in_rect,
-    const gfx::Range& in_actual_range,
     gfx::Rect* rect,
     gfx::Range* actual_range,
     bool* success) {
-  *rect = in_rect;
-  *actual_range = in_actual_range;
+  *actual_range = requested_range;
   if (!GetFocusedWidget()) {
     *success = false;
     return true;
@@ -1908,24 +1932,21 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
                                            actual_range)) {
     // https://crbug.com/121917
     base::ScopedAllowBlocking allow_wait;
+    // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
     *rect = TextInputClientMac::GetInstance()->GetFirstRectForRange(
         GetFocusedWidget(), requested_range);
-    // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
-    *actual_range = requested_range;
   }
   return true;
 }
 
 void RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     const gfx::Range& requested_range,
-    const gfx::Rect& rect,
-    const gfx::Range& actual_range,
     SyncGetFirstRectForRangeCallback callback) {
   gfx::Rect out_rect;
   gfx::Range out_actual_range;
   bool success;
-  SyncGetFirstRectForRange(requested_range, rect, actual_range, &out_rect,
-                           &out_actual_range, &success);
+  SyncGetFirstRectForRange(requested_range, &out_rect, &out_actual_range,
+                           &success);
   std::move(callback).Run(out_rect, out_actual_range, success);
 }
 
@@ -2168,7 +2189,7 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     int32_t target_widget_process_id,
     int32_t target_widget_routing_id,
     ui::mojom::AttributedStringPtr attributed_string,
-    const gfx::Point& baseline_point) {
+    const gfx::Point& baseline_point_in_layout_space) {
   if (!attributed_string || attributed_string->string.empty()) {
     // The PDF plugin does not support getting the attributed string at point.
     // Until it does, use NSPerformService(), which opens Dictionary.app.
@@ -2195,12 +2216,18 @@ void RenderWidgetHostViewMac::OnGotStringForDictionaryOverlay(
     // https://crbug.com/737032
     auto* widget_host = content::RenderWidgetHost::FromID(
         target_widget_process_id, target_widget_routing_id);
-    gfx::Point updated_baseline_point = baseline_point;
+    gfx::Point updated_baseline_point = baseline_point_in_layout_space;
     if (widget_host) {
       if (auto* rwhv = widget_host->GetView()) {
-        updated_baseline_point =
-            rwhv->TransformPointToRootCoordSpace(baseline_point);
+        updated_baseline_point = rwhv->TransformPointToRootCoordSpace(
+            baseline_point_in_layout_space);
       }
+    }
+    // If zoom-for-dsf is enabled, then layout space is physical pixels. Scale
+    // it to get DIPs, which is what ns_view_ expects.
+    if (IsUseZoomForDSFEnabled()) {
+      updated_baseline_point = gfx::ScaleToRoundedPoint(
+          updated_baseline_point, 1.f / GetDeviceScaleFactor());
     }
     ns_view_->ShowDictionaryOverlay(std::move(attributed_string),
                                     updated_baseline_point);

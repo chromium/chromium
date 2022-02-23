@@ -11,18 +11,28 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 
 class Browser;
+@class SignoutActionSheetCoordinator;
 
 // Delegate that handles user interactions with sign-out action sheet.
 @protocol SignoutActionSheetCoordinatorDelegate
 
-// Called when the user has selected a data retention strategy, either to
-// clear or keep their data, before the strategy is implemented on signout.
-- (void)didSelectSignoutDataRetentionStrategy;
+// Called when the sign-out flow is in progress. The UI needs to be blocked
+// until the sign-out flow is done.
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator;
+
+// Called when the sign-out flow is done. The UI can be unblocked.
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator;
 
 @end
 
 // Displays sign-out action sheet with options to clear or keep user data
 // on the device. The user must be signed-in to use these actions.
+// The owner is responsible to block the UI, when the sign-out flow is in
+// progress.
+// The UI needs to be blocked and unblocked using methods from
+// SignoutActionSheetCoordinatorDelegate.
 @interface SignoutActionSheetCoordinator : ChromeCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

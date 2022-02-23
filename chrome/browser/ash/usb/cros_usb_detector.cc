@@ -9,12 +9,18 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -29,10 +35,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_util.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/device_service.h"
@@ -46,6 +48,7 @@ namespace {
 
 constexpr uint32_t kAllInterfacesMask = ~0U;
 const char16_t kParallelsShortName[] = u"Parallels";
+const char16_t kParallelsName[] = u"Parallels Desktop";
 
 // Not owned locally.
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
@@ -230,12 +233,34 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
   return filter;
 }
 
+std::u16string CombineVmNames(const std::vector<std::u16string>& vm_names) {
+  std::u16string res;
+  size_t pos = 0;
+  while (pos < vm_names.size()) {
+    res.append(vm_names[pos]);
+    pos++;
+    if (pos < vm_names.size()) {
+      res.append(u" ");
+      res.append(l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_OR));
+      res.append(u" ");
+    }
+  }
+  return res;
+}
+
+// Returns true if user enables ARC on ARCVM enabled devices.
+bool IsPlayStoreEnabledWithArcVmForProfile(const Profile* profile) {
+  return arc::IsArcPlayStoreEnabledForProfile(profile) && arc::IsArcVmEnabled();
+}
+
 void ShowNotificationForDevice(const std::string& guid,
                                const std::u16string& label) {
   message_center::RichNotificationData rich_notification_data;
   std::vector<std::string> vm_names;
   std::string settings_sub_page;
   std::u16string vm_name;
+  std::u16string vm_name_button_text;
+  std::vector<std::u16string> vm_names_in_notification;
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
   rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
@@ -246,29 +271,45 @@ void ShowNotificationForDevice(const std::string& guid,
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
     vm_names.emplace_back(crostini::kCrostiniDefaultVmName);
+    vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page =
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
   if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
-    vm_name = kParallelsShortName;
+    vm_name = kParallelsName;
+    vm_name_button_text = kParallelsShortName;
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
-            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM,
+            vm_name_button_text)));
     vm_names.emplace_back(plugin_vm::kPluginVmName);
+    vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page =
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  std::u16string message;
-  if (vm_names.size() == 1) {
-    message = l10n_util::GetStringFUTF16(
-        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label, vm_name);
-  } else {
-    // Note: we assume right now that multi-VM is Linux and Plugin VM.
-    message = l10n_util::GetStringFUTF16(
-        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_LINUX_PLUGIN_VM, label);
-    settings_sub_page = std::string();
+  if (IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
+      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
+    vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
+    vm_name_button_text =
+        l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM,
+            vm_name_button_text)));
+    vm_names.emplace_back(arc::kArcVmName);
+    vm_names_in_notification.emplace_back(vm_name);
+    settings_sub_page =
+        chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
   }
+
+  DCHECK(vm_names_in_notification.size());
+  std::u16string message = l10n_util::GetStringFUTF16(
+      IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label,
+      CombineVmNames(vm_names_in_notification));
+
+  if (vm_names.size() > 1)
+    settings_sub_page = std::string();
 
   std::string notification_id = CrosUsbDetector::MakeNotificationId(guid);
   message_center::Notification notification(
@@ -464,7 +505,9 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
-      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
+      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
+      !(IsPlayStoreEnabledWithArcVmForProfile(profile()) &&
+        base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm))) {
     return false;
   }
   if (!device.shareable) {
@@ -526,8 +569,10 @@ void CrosUsbDetector::OnMountEvent(
 
   for (auto& it : usb_devices_) {
     UsbDevice& device = it.second;
-    if (device.info->bus_number == disk->bus_number() &&
-        device.info->port_number == disk->device_number()) {
+    if (disk->bus_number() ==
+            base::checked_cast<int64_t>(device.info->bus_number) &&
+        disk->device_number() ==
+            base::checked_cast<int64_t>(device.info->port_number)) {
       bool was_empty = device.mount_points.empty();
       if (event == disks::DiskMountManager::MOUNTING) {
         device.mount_points.insert(mount_info.mount_path);
@@ -570,8 +615,10 @@ void CrosUsbDetector::OnDeviceChecked(
 
   // Storage devices already plugged in at log-in time will already be mounted.
   for (const auto& iter : disks::DiskMountManager::GetInstance()->disks()) {
-    if (iter.second->bus_number() == device_info->bus_number &&
-        iter.second->device_number() == device_info->port_number &&
+    if (iter.second->bus_number() ==
+            base::checked_cast<int64_t>(device_info->bus_number) &&
+        iter.second->device_number() ==
+            base::checked_cast<int64_t>(device_info->port_number) &&
         iter.second->is_mounted()) {
       new_device.mount_points.insert(iter.second->mount_path());
     }
@@ -580,7 +627,6 @@ void CrosUsbDetector::OnDeviceChecked(
   // Copy fields prior to moving |device_info| and |new_device|.
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
-  uint32_t allowed_interfaces_mask = new_device.allowed_interfaces_mask;
 
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
@@ -591,20 +637,6 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
-
-  // Temporarily allow User to attach un claimed USB devices to ARC VM.
-  // This part as well as the emperiment flag should go away once UI permission
-  // is integrated in |ShowNotificationForDevice|.
-  if (arc::IsArcVmEnabled() &&
-      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm)) {
-    if (has_supported_interface || allowed_interfaces_mask != 0) {
-      // USB devices not claimed by Chrome OS get automatically attached to the
-      // ARCVM. Note that this relies on the underlying VM (ARCVM) having
-      // its own permission model to restrict access to the device.
-      AttachUsbDeviceToVm(arc::kArcVmName, guid, base::DoNothing());
-      return;
-    }
-  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {

@@ -22,6 +22,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -496,6 +497,37 @@ void LoginShelfView::CallIfDisplayIsOn(const base::RepeatingClosure& closure) {
   closure.Run();
 }
 
+void LoginShelfView::OnRequestShutdownConfirmed() {
+  test_shutdown_confirmation_bubble_ = nullptr;
+  Shell::Get()->lock_state_controller()->RequestShutdown(
+      ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
+}
+
+void LoginShelfView::OnRequestShutdownCancelled() {
+  test_shutdown_confirmation_bubble_ = nullptr;
+}
+
+void LoginShelfView::RequestShutdown() {
+  if (base::FeatureList::IsEnabled(features::kShutdownConfirmationBubble)) {
+    Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    // When the created ShelfShutdownConfirmationBubble is destroyed, it would
+    // call LoginShelfView::OnRequestShutdownCancelled() in the destructor to
+    // ensure that the pointer test_shutdown_confirmation_bubble_ here is
+    // cleaned up.
+    // And ShelfShutdownConfirmationBubble would be destroyed when it's
+    // dismissed or its buttons were presses.
+    test_shutdown_confirmation_bubble_ = new ShelfShutdownConfirmationBubble(
+        GetViewByID(kShutdown), shelf->alignment(),
+        shelf->shelf_widget()->GetShelfBackgroundColor(),
+        base::BindOnce(&LoginShelfView::OnRequestShutdownConfirmed,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&LoginShelfView::OnRequestShutdownCancelled,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    OnRequestShutdownConfirmed();
+  }
+}
+
 LoginShelfView::LoginShelfView(
     LockScreenActionBackgroundController* lock_screen_action_background)
     : lock_screen_action_background_(lock_screen_action_background) {
@@ -514,16 +546,18 @@ LoginShelfView::LoginShelfView(
     button->SetID(id);
     AddChildView(button);
   };
-  const auto shutdown_restart_callback = base::BindRepeating(
+  const auto shutdown_callback = base::BindRepeating(
+      &LoginShelfView::RequestShutdown, weak_ptr_factory_.GetWeakPtr());
+  add_button(
+      kShutdown,
+      base::BindRepeating(&LoginShelfView::CallIfDisplayIsOn,
+                          weak_ptr_factory_.GetWeakPtr(), shutdown_callback),
+      IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
+  const auto restart_callback = base::BindRepeating(
       &LockStateController::RequestShutdown,
       base::Unretained(Shell::Get()->lock_state_controller()),
       ShutdownReason::LOGIN_SHUT_DOWN_BUTTON);
-  add_button(kShutdown,
-             base::BindRepeating(&LoginShelfView::CallIfDisplayIsOn,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 shutdown_restart_callback),
-             IDS_ASH_SHELF_SHUTDOWN_BUTTON, kShelfShutdownButtonIcon);
-  add_button(kRestart, std::move(shutdown_restart_callback),
+  add_button(kRestart, std::move(restart_callback),
              IDS_ASH_SHELF_RESTART_BUTTON, kShelfShutdownButtonIcon);
   add_button(
       kSignOut,
@@ -795,6 +829,11 @@ void LoginShelfView::HandleLocaleChange() {
       button->SetAccessibleName(button->GetText());
     }
   }
+}
+
+ShelfShutdownConfirmationBubble*
+LoginShelfView::GetShutdownConfirmationBubbleForTesting() {
+  return test_shutdown_confirmation_bubble_;
 }
 
 bool LoginShelfView::LockScreenActionBackgroundAnimating() const {

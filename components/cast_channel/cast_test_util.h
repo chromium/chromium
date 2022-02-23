@@ -99,6 +99,12 @@ class MockCastSocketService : public CastSocketServiceImpl {
                void(const net::IPEndPoint& ip_endpoint,
                     CastSocket::OnOpenCallback& open_cb));
   MOCK_CONST_METHOD1(GetSocket, CastSocket*(int channel_id));
+  MOCK_METHOD(CastSocket*,
+              GetSocket,
+              (const net::IPEndPoint& ip_endpoint),
+              (override, const));
+  MOCK_METHOD(std::unique_ptr<CastSocket>, RemoveSocket, (int channel_id), ());
+  MOCK_METHOD(void, CloseSocket, (int channel_id), (override));
 };
 
 class MockCastSocket : public CastSocket {

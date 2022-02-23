@@ -45,7 +45,8 @@ SearchControllerImpl::SearchControllerImpl(
     Profile* profile)
     : profile_(profile),
       mixer_(std::make_unique<Mixer>(model_updater, this)),
-      metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
+      metrics_observer_(
+          std::make_unique<SearchMetricsObserver>(profile, notifier)),
       list_controller_(list_controller) {
   DCHECK(!app_list_features::IsCategoricalSearchEnabled());
 }
@@ -56,15 +57,19 @@ void SearchControllerImpl::InitializeRankers() {
   mixer_->InitializeRankers(profile_);
 }
 
-void SearchControllerImpl::Start(const std::u16string& query) {
+void SearchControllerImpl::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   for (Observer& observer : observer_list_) {
     observer.OnResultsCleared();
   }
+
   for (const auto& provider : providers_) {
-    provider->Start(query);
+    if (query.empty())
+      provider->StartZeroState();
+    else
+      provider->Start(query);
   }
 
   dispatching_query_ = false;
@@ -72,6 +77,14 @@ void SearchControllerImpl::Start(const std::u16string& query) {
   query_for_recommendation_ = query.empty();
 
   OnResultsChanged();
+}
+
+void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
+                                          base::TimeDelta timeout) {
+  // Only used for the productivity launcher.
+  // TODO(crbug.com/1269115): Unimplemented.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, std::move(on_done), timeout);
 }
 
 void SearchControllerImpl::ViewClosing() {
@@ -124,9 +137,13 @@ void SearchControllerImpl::AddProvider(
   providers_.emplace_back(std::move(provider));
 }
 
-void SearchControllerImpl::SetResults(
-    const ash::AppListSearchResultType provider_type,
-    Results results) {
+void SearchControllerImpl::SetResults(const SearchProvider* provider,
+                                      Results results) {
+  // Should only be called when IsCategoricalSearchEnabled is true.
+  NOTREACHED();
+}
+
+void SearchControllerImpl::Publish() {
   // Should only be called when IsCategoricalSearchEnabled is true.
   NOTREACHED();
 }
@@ -278,6 +295,11 @@ base::Time SearchControllerImpl::session_start() {
 void SearchControllerImpl::set_results_changed_callback_for_test(
     ResultsChangedCallback callback) {
   results_changed_callback_ = std::move(callback);
+}
+
+void SearchControllerImpl::disable_ranking_for_test() {
+  // Only called for the productivity launcher.
+  NOTREACHED();
 }
 
 }  // namespace app_list

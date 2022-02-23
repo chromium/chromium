@@ -51,9 +51,6 @@ class ArchiveHandler7zImpl : public ArchiveHandler {
   ZipReader zip_reader_;
   // Copy of the archive's content to unpack.
   std::string content_;
-  // AdvanceToNextEntry() is skipped upon the first call to
-  // GetNextEntry() as it is already position correctly by OpenFromString().
-  bool first_entry_processed_;
   // Set to true if the archive provided in the constructor opens successfully.
   bool initialized_;
 };
@@ -68,7 +65,6 @@ ArchiveHandler::ArchiveHandler() {}
 
 ArchiveHandler7zImpl::ArchiveHandler7zImpl(absl::string_view content)
     : content_(content) {
-  first_entry_processed_ = false;
   initialized_ = false;
 
   if (content_.empty()) {
@@ -95,30 +91,14 @@ bool ArchiveHandler7zImpl::GetNextEntry(std::string *filename, int64_t *size,
     return false;
   }
 
-  if (first_entry_processed_) {
-    if (!zip_reader_.AdvanceToNextEntry()) {
-      return false;
-    }
-  } else {
-    first_entry_processed_ = true;
-  }
-  
-  if (!zip_reader_.HasMore()){
-      return false;
-  }
-
-  if (!zip_reader_.OpenCurrentEntryInZip()) {
+  const ::zip::ZipReader::Entry *const entry = zip_reader_.Next();
+  if (!entry) {
     return false;
   }
 
-  ::zip::ZipReader::EntryInfo* current_entry_info = zip_reader_.current_entry_info();
-  *size = current_entry_info->original_size();
-  *isdir = current_entry_info->is_directory();
-#if defined(_WIN32)
-  *filename = base::WideToUTF8(current_entry_info->file_path().value());
-#else
-  *filename = current_entry_info->file_path().value();
-#endif  // _WIN32
+  *size = entry->original_size;
+  *isdir = entry->is_directory;
+  *filename = entry->path.AsUTF8Unsafe();
 
   return true;
 }

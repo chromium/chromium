@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1302104331113804646">Hintaseurannan asetukset</translation>
 <translation id="1378979118429748177">Saat ilmoituksia, kun hinnat laskevat</translation>
+<translation id="1403228085774130835">Löydät suljetut välilehdet Chromen päävalikon Hiljattain suljetut välilehdet ‑kohdasta</translation>
+<translation id="1455506303394048917">Toimintasi näillä incognito-välilehdillä tyhjennetään laitteelta</translation>
+<translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="2118649612461486615">Kaupan tiedot</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">Välilehtesi on koottu tänne</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvostelu)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvostelua)}}</translation>
 <translation id="4850886885716139402">Näytä</translation>
+<translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>
 <translation id="492284538114688557">Hinnan lasku havaittu</translation>
 <translation id="5007392906805964215">Tarkista</translation>
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
+<translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5533021382642990449">Näytä myöhemmin</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">Katso palautuskäytäntö ja muita</translation>
 <translation id="7352298686197644113">Katso, minkä avoimilta välilehdiltäsi löytyvän tuotteen voit saada edullisempaan hintaan</translation>
 <translation id="753732157349120914">Välilehtien vaihtaja</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvostelu Googlesta}other{<ph name="REVIEWS_COUNT_MANY" /> arvostelua Googlesta}}</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>
 <translation id="7792771145871471484">Tarkista ehdotukset.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lisää <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmäksi}other{Lisää <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmäksi}}</translation>

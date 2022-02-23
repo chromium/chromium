@@ -7,7 +7,7 @@ import {fakeComponentsForRepairStateTest} from 'chrome://shimless-rma/fake_data.
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboarding_select_components_page.js';
-import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {Component, ComponentRepairStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
@@ -15,9 +15,9 @@ import {flushTasks} from '../../test_util.js';
 
 export function onboardingSelectComponentsPageTest() {
   /**
-   * ShimlessRmaElement is needed to handle the 'transition-state' event used by
+   * ShimlessRma is needed to handle the 'transition-state' event used by
    * the rework button.
-   * @type {?ShimlessRmaElement}
+   * @type {?ShimlessRma}
    */
   let shimless_rma_component = null;
 
@@ -54,8 +54,8 @@ export function onboardingSelectComponentsPageTest() {
     // Initialize the fake data.
     service.setGetComponentListResult(deviceComponents);
 
-    shimless_rma_component = /** @type {!ShimlessRmaElement} */ (
-        document.createElement('shimless-rma'));
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
     assertTrue(!!shimless_rma_component);
     document.body.appendChild(shimless_rma_component);
 
@@ -75,7 +75,7 @@ export function onboardingSelectComponentsPageTest() {
         component.shadowRoot.querySelector('#componentCamera');
     assertTrue(!!cameraComponent);
     assertFalse(cameraComponent.disabled);
-    cameraComponent.click();
+    cameraComponent.shadowRoot.querySelector('#componentButton').click();
     return flushTasks();
   }
 
@@ -112,12 +112,15 @@ export function onboardingSelectComponentsPageTest() {
         component.shadowRoot.querySelector('#componentTouchpad');
     assertFalse(reworkFlowLink.hidden);
     assertEquals('Camera', cameraComponent.componentName);
+    assertEquals('Camera_XYZ_1', cameraComponent.componentIdentifier);
     assertFalse(cameraComponent.disabled);
     assertFalse(cameraComponent.checked);
     assertEquals('Battery', batteryComponent.componentName);
+    assertEquals('Battery_XYZ_Lithium', batteryComponent.componentIdentifier);
     assertTrue(batteryComponent.disabled);
     assertFalse(batteryComponent.checked);
     assertEquals('Touchpad', touchpadComponent.componentName);
+    assertEquals('Touchpad_XYZ_2', touchpadComponent.componentIdentifier);
     assertFalse(touchpadComponent.disabled);
     assertTrue(touchpadComponent.checked);
   });
@@ -165,5 +168,34 @@ export function onboardingSelectComponentsPageTest() {
 
     assertEquals(1, callCounter);
     assertDeepEquals(expectedResult, savedResult);
+  });
+
+  test('SelectComponentsPageDisablesComponents', async () => {
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+
+    const cameraComponent =
+        component.shadowRoot.querySelector('#componentCamera');
+    const touchpadComponent =
+        component.shadowRoot.querySelector('#componentTouchpad');
+    assertFalse(cameraComponent.disabled);
+    assertFalse(touchpadComponent.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(cameraComponent.disabled);
+    assertTrue(touchpadComponent.disabled);
+  });
+
+  test('SelectComponentsPageReworkLinkDisabled', async () => {
+    const resolver = new PromiseResolver();
+    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
+    let callCounter = 0;
+    service.reworkMainboard = () => {
+      callCounter++;
+      return resolver.promise;
+    };
+
+    component.allButtonsDisabled = true;
+    await clickReworkButton();
+
+    assertEquals(0, callCounter);
   });
 }

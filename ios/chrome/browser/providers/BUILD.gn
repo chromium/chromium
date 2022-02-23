@@ -6,17 +6,14 @@ source_set("providers") {
   sources = [
     "chromium_browser_provider.h",
     "chromium_browser_provider.mm",
-    "chromium_logo_controller.h",
-    "chromium_logo_controller.mm",
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/voice:voice_search_language",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ui/base",
@@ -41,15 +38,19 @@ group("chromium_providers") {
 
     # The individual API implementations.
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
+    "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
     "//ios/chrome/browser/providers/lens:chromium_lens",
     "//ios/chrome/browser/providers/modals:chromium_modals",
     "//ios/chrome/browser/providers/omaha:chromium_omaha",
     "//ios/chrome/browser/providers/overrides:chromium_overrides",
+    "//ios/chrome/browser/providers/password_auto_fill:chromium_password_auto_fill",
     "//ios/chrome/browser/providers/risk_data:chromium_risk_data",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",
+    "//ios/chrome/browser/providers/signin:chromium_signin_sso",
     "//ios/chrome/browser/providers/text_zoom:chromium_text_zoom",
+    "//ios/chrome/browser/providers/ui_utils:chromium_ui_utils",
     "//ios/chrome/browser/providers/url_rewriters:chromium_url_rewriters",
     "//ios/chrome/browser/providers/voice_search:chromium_voice_search",
 

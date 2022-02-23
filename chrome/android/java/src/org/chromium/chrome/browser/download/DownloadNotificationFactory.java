@@ -271,7 +271,8 @@ public final class DownloadNotificationFactory {
                     Intent intent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                     intent.setFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    builder.setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
+                    builder.setContentIntent(PendingIntentProvider.getActivity(
+                            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
                 } else if (downloadUpdate.getIsOpenable()) {
                     Intent intent;
                     if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())

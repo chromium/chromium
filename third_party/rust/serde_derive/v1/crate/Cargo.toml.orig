@@ -1,0 +1,31 @@
+[package]
+name = "serde_derive"
+version = "1.0.130" # remember to update html_root_url
+authors = ["Erick Tryzelaar <erick.tryzelaar@gmail.com>", "David Tolnay <dtolnay@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
+homepage = "https://serde.rs"
+repository = "https://github.com/serde-rs/serde"
+documentation = "https://serde.rs/derive.html"
+keywords = ["serde", "serialization", "no_std"]
+readme = "crates-io.md"
+include = ["build.rs", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APACHE", "LICENSE-MIT"]
+
+[features]
+default = []
+deserialize_in_place = []
+
+[lib]
+name = "serde_derive"
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = "1.0.60"
+
+[dev-dependencies]
+serde = { version = "1.0", path = "../serde" }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

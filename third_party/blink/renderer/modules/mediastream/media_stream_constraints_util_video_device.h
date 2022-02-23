@@ -15,15 +15,9 @@
 
 namespace blink {
 class MediaConstraints;
-class WebString;
 }  // namespace blink
 
 namespace blink {
-
-// Calculates and returns videoKind value for |format|.
-// See https://w3c.github.io/mediacapture-depth.
-MODULES_EXPORT WebString
-GetVideoKindForFormat(const media::VideoCaptureFormat& format);
 
 MODULES_EXPORT MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
     mojom::blink::FacingMode video_facing);

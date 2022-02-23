@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -40,7 +40,7 @@ class USBDevice : public ScriptWrappable,
   }
   bool IsInterfaceClaimed(wtf_size_t configuration_index,
                           wtf_size_t interface_index) const;
-  wtf_size_t SelectedAlternateInterface(wtf_size_t interface_index) const;
+  wtf_size_t SelectedAlternateInterfaceIndex(wtf_size_t interface_index) const;
 
   // USBDevice.idl
   uint8_t usbVersionMajor() const { return Info().usb_version_major; }
@@ -179,7 +179,7 @@ class USBDevice : public ScriptWrappable,
   // configured. Use the index returned by FindInterfaceIndex().
   WTF::Vector<bool> claimed_interfaces_;
   WTF::Vector<bool> interface_state_change_in_progress_;
-  WTF::Vector<wtf_size_t> selected_alternates_;
+  WTF::Vector<wtf_size_t> selected_alternate_indices_;
 
   // These bit sets have one entry for each endpoint. Index using the endpoint
   // number (lower 4 bits of the endpoint address).

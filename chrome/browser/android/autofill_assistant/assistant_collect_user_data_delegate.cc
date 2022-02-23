@@ -8,13 +8,11 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/android/locale_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantCollectUserDataNativeDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 
 using base::android::AttachCurrentThread;
@@ -38,55 +36,80 @@ AssistantCollectUserDataDelegate::~AssistantCollectUserDataDelegate() {
 void AssistantCollectUserDataDelegate::OnContactInfoChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jcontact_profile) {
-  if (!jcontact_profile) {
-    ui_controller_->OnContactInfoChanged(nullptr);
-    return;
+    const base::android::JavaParamRef<jobject>& jcontact_profile,
+    jint event_type) {
+  std::unique_ptr<autofill::AutofillProfile> contact_profile;
+  if (jcontact_profile) {
+    contact_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jcontact_profile, env, contact_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
 
-  auto contact_profile = std::make_unique<autofill::AutofillProfile>();
-  autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-      jcontact_profile, env, contact_profile.get());
+  ui_controller_->OnContactInfoChanged(
+      std::move(contact_profile), static_cast<UserDataEventType>(event_type));
+}
 
-  ui_controller_->OnContactInfoChanged(std::move(contact_profile));
+void AssistantCollectUserDataDelegate::OnPhoneNumberChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    const base::android::JavaParamRef<jobject>& jphone_number,
+    jint event_type) {
+  std::unique_ptr<autofill::AutofillProfile> phone_number_profile;
+  if (jphone_number) {
+    phone_number_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jphone_number, env, phone_number_profile.get(),
+        base::android::GetDefaultLocaleString());
+  }
+
+  ui_controller_->OnPhoneNumberChanged(
+      std::move(phone_number_profile),
+      static_cast<UserDataEventType>(event_type));
 }
 
 void AssistantCollectUserDataDelegate::OnShippingAddressChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jobject>& jaddress) {
-  if (!jaddress) {
-    ui_controller_->OnShippingAddressChanged(nullptr);
-    return;
+    const base::android::JavaParamRef<jobject>& jaddress,
+    jint event_type) {
+  std::unique_ptr<autofill::AutofillProfile> shipping_address_profile;
+  if (jaddress) {
+    shipping_address_profile = std::make_unique<autofill::AutofillProfile>();
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jaddress, env, shipping_address_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
 
-  auto shipping_address = std::make_unique<autofill::AutofillProfile>();
-  autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-      jaddress, env, shipping_address.get());
-  ui_controller_->OnShippingAddressChanged(std::move(shipping_address));
+  ui_controller_->OnShippingAddressChanged(
+      std::move(shipping_address_profile),
+      static_cast<UserDataEventType>(event_type));
 }
 
 void AssistantCollectUserDataDelegate::OnCreditCardChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jcard,
-    const base::android::JavaParamRef<jobject>& jbilling_profile) {
-  std::unique_ptr<autofill::CreditCard> card;
+    const base::android::JavaParamRef<jobject>& jbilling_profile,
+    jint event_type) {
+  std::unique_ptr<autofill::CreditCard> credit_card;
   if (jcard) {
-    card = std::make_unique<autofill::CreditCard>();
-    autofill::PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
-        jcard, env, card.get());
+    credit_card = std::make_unique<autofill::CreditCard>();
+    ui_controller_android_utils::PopulateAutofillCreditCardFromJava(
+        jcard, env, credit_card.get(), base::android::GetDefaultLocaleString());
   }
 
   std::unique_ptr<autofill::AutofillProfile> billing_profile;
   if (jbilling_profile) {
     billing_profile = std::make_unique<autofill::AutofillProfile>();
-    autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-        jbilling_profile, env, billing_profile.get());
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jbilling_profile, env, billing_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
 
-  ui_controller_->OnCreditCardChanged(std::move(card),
-                                      std::move(billing_profile));
+  ui_controller_->OnCreditCardChanged(
+      std::move(credit_card), std::move(billing_profile),
+      static_cast<UserDataEventType>(event_type));
 }
 
 void AssistantCollectUserDataDelegate::OnTermsAndConditionsChanged(
@@ -107,67 +130,12 @@ void AssistantCollectUserDataDelegate::OnTextLinkClicked(
 void AssistantCollectUserDataDelegate::OnLoginChoiceChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jidentifier) {
+    const base::android::JavaParamRef<jstring>& jidentifier,
+    jint event_type) {
   std::string identifier =
       ui_controller_android_utils::SafeConvertJavaStringToNative(env,
                                                                  jidentifier);
   ui_controller_->OnLoginChoiceChanged(identifier);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint year,
-    jint month,
-    jint day) {
-  ui_controller_->OnDateTimeRangeStartDateChanged(year, month, day);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeStartDateCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint index) {
-  ui_controller_->OnDateTimeRangeStartTimeSlotChanged(index);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeStartTimeSlotCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint year,
-    jint month,
-    jint day) {
-  ui_controller_->OnDateTimeRangeEndDateChanged(year, month, day);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeEndDateCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint index) {
-  ui_controller_->OnDateTimeRangeEndTimeSlotChanged(index);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeEndTimeSlotCleared();
 }
 
 void AssistantCollectUserDataDelegate::OnKeyValueChanged(

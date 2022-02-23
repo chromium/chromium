@@ -6,9 +6,9 @@
 
 #include <vector>
 
+#include "ash/components/login/auth/stub_authenticator_builder.h"
+#include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chromeos/login/auth/stub_authenticator_builder.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -42,7 +42,7 @@ LoggedInUserMixin::LoggedInUserMixin(
     bool should_launch_browser,
     absl::optional<AccountId> account_id,
     bool include_initial_user,
-    bool use_local_policy_server)
+    bool use_embedded_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
@@ -51,12 +51,13 @@ LoggedInUserMixin::LoggedInUserMixin(
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),
                      &fake_gaia_),
-      local_policy_server_(mixin_host),
-      user_policy_(mixin_host,
-                   user_.account_id,
-                   use_local_policy_server ? &local_policy_server_ : nullptr),
+      embedded_policy_server_(mixin_host),
+      user_policy_(
+          mixin_host,
+          user_.account_id,
+          use_embedded_policy_server ? &embedded_policy_server_ : nullptr),
       user_policy_helper_(user_.account_id.GetUserEmail(),
-                          &local_policy_server_),
+                          &embedded_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
       fake_gaia_(mixin_host),
       test_base_(test_base) {

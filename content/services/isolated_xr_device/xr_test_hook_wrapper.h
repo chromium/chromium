@@ -25,7 +25,7 @@ class XRTestHookWrapper : public VRTestHook {
       mojo::PendingRemote<device_test::mojom::XRTestHook> hook_info);
   virtual ~XRTestHookWrapper();
 
-  void OnFrameSubmitted(SubmittedFrameData frame_data) override;
+  void OnFrameSubmitted(const std::vector<ViewData>& views) override;
   DeviceConfig WaitGetDeviceConfig() override;
   PoseFrameData WaitGetPresentingPose() override;
   PoseFrameData WaitGetMagicWindowPose() override;

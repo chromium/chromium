@@ -114,18 +114,18 @@ DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() {}
 
 void DeviceLoginScreenPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-  login_profile_ = chromeos::ProfileHelper::GetSigninProfile();
+  login_profile_ = ash::ProfileHelper::GetSigninProfile();
   ASSERT_TRUE(login_profile_);
   // Set the login screen profile.
   auto* accessibility_manager = ash::AccessibilityManager::Get();
   ASSERT_TRUE(accessibility_manager);
   accessibility_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 
   auto* magnification_manager = ash::MagnificationManager::Get();
   ASSERT_TRUE(magnification_manager);
   magnification_manager->SetProfileForTest(
-      chromeos::ProfileHelper::GetSigninProfile());
+      ash::ProfileHelper::GetSigninProfile());
 }
 
 void DeviceLoginScreenPolicyBrowsertest::
@@ -138,8 +138,8 @@ void DeviceLoginScreenPolicyBrowsertest::
 void DeviceLoginScreenPolicyBrowsertest::SetUpCommandLine(
     base::CommandLine* command_line) {
   DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(ash::switches::kLoginManager);
+  command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 }
 
 bool DeviceLoginScreenPolicyBrowsertest::IsPrefManaged(

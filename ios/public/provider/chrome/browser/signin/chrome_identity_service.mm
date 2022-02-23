@@ -149,26 +149,15 @@ NSString* ChromeIdentityService::GetCachedHostedDomainForIdentity(
 void ChromeIdentityService::CanOfferExtendedSyncPromos(
     ChromeIdentity* identity,
     CapabilitiesCallback completion) {
-  NSString* canOfferExtendedChromeSyncPromos = [NSString
-      stringWithUTF8String:kCanOfferExtendedChromeSyncPromosCapabilityName];
-  base::TimeTicks fetch_start = base::TimeTicks::Now();
-  FetchCapabilities(
-      @[ canOfferExtendedChromeSyncPromos ], identity,
-      ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
-        base::UmaHistogramTimes(
-            "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
-            base::TimeTicks::Now() - fetch_start);
+  FetchCapability(identity, @(kCanOfferExtendedChromeSyncPromosCapabilityName),
+                  completion);
+}
 
-        FetchCapabilitiesResult result = ComputeFetchCapabilitiesResult(
-            [capabilities objectForKey:canOfferExtendedChromeSyncPromos],
-            error);
-        base::UmaHistogramEnumeration(
-            "Signin.AccountCapabilities.GetFromSystemLibraryResult",
-            result.fetch_result);
-
-        if (completion)
-          completion(result.capability_value);
-      });
+void ChromeIdentityService::IsSubjectToParentalControls(
+    ChromeIdentity* identity,
+    CapabilitiesCallback completion) {
+  FetchCapability(identity, @(kIsSubjectToParentalControlsCapabilityName),
+                  completion);
 }
 
 bool ChromeIdentityService::IsServiceSupported() {
@@ -210,9 +199,9 @@ void ChromeIdentityService::FetchCapabilities(
   // Implementation provided by subclass.
 }
 
-void ChromeIdentityService::FireIdentityListChanged(bool keychainReload) {
+void ChromeIdentityService::FireIdentityListChanged(bool notify_user) {
   for (auto& observer : observer_list_)
-    observer.OnIdentityListChanged(keychainReload);
+    observer.OnIdentityListChanged(notify_user);
 }
 
 void ChromeIdentityService::FireAccessTokenRefreshFailed(
@@ -225,6 +214,28 @@ void ChromeIdentityService::FireAccessTokenRefreshFailed(
 void ChromeIdentityService::FireProfileDidUpdate(ChromeIdentity* identity) {
   for (auto& observer : observer_list_)
     observer.OnProfileUpdate(identity);
+}
+
+void ChromeIdentityService::FetchCapability(ChromeIdentity* identity,
+                                            NSString* capability_name,
+                                            CapabilitiesCallback completion) {
+  base::TimeTicks fetch_start = base::TimeTicks::Now();
+  FetchCapabilities(
+      @[ capability_name ], identity,
+      ^(NSDictionary<NSString*, NSNumber*>* capabilities, NSError* error) {
+        base::UmaHistogramTimes(
+            "Signin.AccountCapabilities.GetFromSystemLibraryDuration",
+            base::TimeTicks::Now() - fetch_start);
+
+        FetchCapabilitiesResult result = ComputeFetchCapabilitiesResult(
+            [capabilities objectForKey:capability_name], error);
+        base::UmaHistogramEnumeration(
+            "Signin.AccountCapabilities.GetFromSystemLibraryResult",
+            result.fetch_result);
+
+        if (completion)
+          completion(result.capability_value);
+      });
 }
 
 }  // namespace ios

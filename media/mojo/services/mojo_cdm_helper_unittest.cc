@@ -74,12 +74,12 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MockCdmStorage>(),
                                 std::move(receiver));
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RegisterMuteStateObserver(
       mojo::PendingRemote<mojom::MuteStateObserver> observer) override {}
   void CreateDCOMPSurfaceRegistry(
       mojo::PendingReceiver<mojom::DCOMPSurfaceRegistry> receiver) override {}
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}
 };

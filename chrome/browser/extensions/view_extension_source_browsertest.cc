@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // Open a new view-source tab for that URL.
   GURL view_source_url(content::kViewSourceScheme + std::string(":") +
                        bookmarks_extension_url.spec());
-  AddTabAtIndex(1, view_source_url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, view_source_url, ui::PAGE_TRANSITION_TYPED));
   content::WebContents* view_source_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(view_source_url, view_source_tab->GetVisibleURL());

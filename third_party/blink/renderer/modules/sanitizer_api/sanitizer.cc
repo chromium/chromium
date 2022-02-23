@@ -29,15 +29,14 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/xml/dom_parser.h"
+#include "third_party/blink/renderer/modules/sanitizer_api/builtins.h"
+#include "third_party/blink/renderer/modules/sanitizer_api/config_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -51,33 +50,15 @@ bool ConfigIsEmpty(const SanitizerConfig* config) {
           !config->hasAllowComments());
 }
 
-SanitizerConfig* SanitizerConfigCopy(const SanitizerConfig* config) {
-  if (!config)
-    return nullptr;
-
-  SanitizerConfig* copy = SanitizerConfig::Create();
-  if (config->hasAllowAttributes()) {
-    copy->setAllowAttributes(config->allowAttributes());
-  }
-  if (config->hasAllowCustomElements()) {
-    copy->setAllowCustomElements(config->allowCustomElements());
-  }
-  if (config->hasAllowComments()) {
-    copy->setAllowComments(config->allowComments());
-  }
-  if (config->hasAllowElements()) {
-    copy->setAllowElements(config->allowElements());
-  }
-  if (config->hasBlockElements()) {
-    copy->setBlockElements(config->blockElements());
-  }
-  if (config->hasDropAttributes()) {
-    copy->setDropAttributes(config->dropAttributes());
-  }
-  if (config->hasDropElements()) {
-    copy->setDropElements(config->dropElements());
-  }
-  return copy;
+String FromAPI(Node* node) {
+  DCHECK(node);
+  DCHECK(node->IsElementNode());
+  Element* element = To<Element>(node);
+  if (element->IsSVGElement())
+    return "svg:" + element->localName();
+  if (node->IsMathMLElement())
+    return "math:" + element->localName();
+  return element->localName();
 }
 
 }  // anonymous namespace
@@ -91,7 +72,7 @@ Sanitizer::Sanitizer(ExecutionContext* execution_context,
     UseCounter::Count(execution_context,
                       WebFeature::kSanitizerAPIDefaultConfiguration);
   }
-  config_ = SanitizerConfigImpl::From(config);
+  config_ = FromAPI(config);
 }
 
 Sanitizer::~Sanitizer() = default;
@@ -130,8 +111,6 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
                                 const String& local_name,
                                 const String& markup,
                                 ExceptionState& exception_state) {
-  if (baseline_drop_elements_.Contains(local_name.LowerASCII()))
-    return nullptr;
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   Document* inert_document = DocumentInit::Create()
                                  .WithURL(window->Url())
@@ -144,6 +123,18 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
     exception_state.ClearException();
     return nullptr;
   }
+
+  // 2. If the element kind [...] is regular and if the baseline
+  //    element allow list does not contain element name, then return null.
+  // See: https://wicg.github.io/sanitizer-api/#sanitizefor
+  bool is_regular =
+      element->IsHTMLElement() &&
+      !To<HTMLElement>(element)->IsHTMLUnknownElement() &&
+      !CustomElement::IsValidName(AtomicString(local_name), false);
+  if (is_regular && !Match(FromAPI(element), GetBaselineAllowElements())) {
+    return nullptr;
+  }
+
   element->setInnerHTML(markup, exception_state);
   if (exception_state.HadException()) {
     exception_state.ClearException();
@@ -223,59 +214,55 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
   while (node) {
     switch (node->getNodeType()) {
       case Node::NodeType::kElementNode: {
-        // TODO(crbug.com/1126936): Review the sanitising algorithm for
-        // non-HTMLs.
+        Element* element = To<Element>(node);
         // 1. Let |name| be |element|'s tag name.
-        String name = node->nodeName().LowerASCII();
+        String name = FromAPI(element);
 
-        // 2. Detect whether current element is a custom element or not.
+        // 2. Detect element kind. (regular element, custom element, or else.)
         bool is_custom_element =
-            CustomElement::IsValidName(AtomicString(name.LowerASCII()), false);
+            CustomElement::IsValidName(AtomicString(name), false);
+        bool is_regular = element->IsHTMLElement() && !is_custom_element &&
+                          !To<HTMLElement>(element)->IsHTMLUnknownElement();
 
         // 3. If |kind| is `regular` and if |name| is not contained in the
-        // default element allow list, then 'drop'
-        if (baseline_drop_elements_.Contains(name)) {
-          node = DropElement(node, fragment);
+        // baseline element allow list, then 'drop'
+        if (is_regular && !Match(name, GetBaselineAllowElements())) {
+          node = DropNode(element, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
         } else if (is_custom_element && !config_.allow_custom_elements_) {
           // 4. If |kind| is `custom` and if allow_custom_elements_ is unset or
           // set to anything other than `true`, then 'drop'.
-          node = DropElement(node, fragment);
+          node = DropNode(element, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-        } else if (!node->IsHTMLElement()) {
-          // Presently unspec-ed: If |node| is in a non-HTML namespace: Drop.
-          node = DropElement(node, fragment);
-          UseCounter::Count(window->GetExecutionContext(),
-                            WebFeature::kSanitizerAPIActionTaken);
-        } else if (config_.drop_elements_.Contains(name)) {
+        } else if (Match(name, config_.drop_elements_)) {
           // 5. If |name| is in |config|'s [=element drop list=] then 'drop'.
-          node = DropElement(node, fragment);
+          node = DropNode(element, fragment);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-        } else if (config_.block_elements_.Contains(name)) {
+        } else if (Match(name, config_.block_elements_)) {
           // 6. If |name| is in |config|'s [=element block list=] then 'block'.
-          node = BlockElement(node, fragment, exception_state);
+          node = BlockElement(element, fragment, exception_state);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-        } else if (!config_.allow_elements_.Contains(name)) {
+        } else if (!Match(name, config_.allow_elements_)) {
           // 7. if |name| is not in |config|'s [=element allow list=] then
           // 'block'.
-          node = BlockElement(node, fragment, exception_state);
+          node = BlockElement(element, fragment, exception_state);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-        } else if (IsA<HTMLTemplateElement>(node)) {
+        } else if (IsA<HTMLTemplateElement>(element)) {
           // 8. If |element|'s [=element interface=] is {{HTMLTemplateElement}}
           // Run the steps of the [=sanitize document fragment=] algorithm on
           // |element|'s |content| attribute.
-          DoSanitizing(To<HTMLTemplateElement>(node)->content(), window,
+          DoSanitizing(To<HTMLTemplateElement>(element)->content(), window,
                        exception_state);
           UseCounter::Count(window->GetExecutionContext(),
                             WebFeature::kSanitizerAPIActionTaken);
-          node = KeepElement(node, fragment, name, window);
+          node = KeepElement(element, fragment, window);
         } else {
-          node = KeepElement(node, fragment, name, window);
+          node = KeepElement(element, fragment, window);
         }
         break;
       }
@@ -286,25 +273,25 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
       case Node::NodeType::kCommentNode:
         // Comment: Drop (unless allowed by config).
         node = config_.allow_comments_ ? NodeTraversal::Next(*node, fragment)
-                                       : DropElement(node, fragment);
+                                       : DropNode(node, fragment);
         break;
       case Node::NodeType::kDocumentNode:
       case Node::NodeType::kDocumentFragmentNode:
         // Document & DocumentFragment: Drop (unless it's the root).
         node = !node->parentNode() ? NodeTraversal::Next(*node, fragment)
-                                   : DropElement(node, fragment);
+                                   : DropNode(node, fragment);
         break;
       default:
         // Default: Drop anything not explicitly handled.
-        node = DropElement(node, fragment);
+        node = DropNode(node, fragment);
         break;
     }
   }
 }
 
-// If the current element needs to be dropped, remove current element entirely
+// If the current node needs to be dropped, remove current node entirely
 // and proceed to its next sibling.
-Node* Sanitizer::DropElement(Node* node, ContainerNode* fragment) {
+Node* Sanitizer::DropNode(Node* node, ContainerNode* fragment) {
   Node* tmp = node;
   node = NodeTraversal::NextSkippingChildren(*node, fragment);
   tmp->remove();
@@ -313,42 +300,31 @@ Node* Sanitizer::DropElement(Node* node, ContainerNode* fragment) {
 
 // If the current element should be blocked, append its children after current
 // node to parent node, remove current element and proceed to the next node.
-Node* Sanitizer::BlockElement(Node* node,
+Node* Sanitizer::BlockElement(Element* element,
                               ContainerNode* fragment,
                               ExceptionState& exception_state) {
-  ContainerNode* parent = node->parentNode();
-  Node* next_sibling = node->nextSibling();
-  while (Node* child = node->firstChild()) {
+  ContainerNode* parent = element->parentNode();
+  Node* next_sibling = element->nextSibling();
+  while (Node* child = element->firstChild()) {
     parent->InsertBefore(child, next_sibling, exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
   }
-  Node* tmp = node;
-  node = NodeTraversal::Next(*node, fragment);
+  Node* tmp = element;
+  Node* result = NodeTraversal::Next(*element, fragment);
   tmp->remove();
-  return node;
-}
-
-// Helper to check whether a given attribute match list matches an attribute /
-// element name pair. This observes wildcard ("*") as element name.
-bool Sanitizer::AttrListMatches(const HashMap<String, Vector<String>>& map,
-                                const String& attr,
-                                const String& element) {
-  const auto node_iter = map.find(attr);
-  return (node_iter != map.end()) && (node_iter->value == kVectorStar ||
-                                      node_iter->value.Contains(element));
+  return result;
 }
 
 // Remove any attributes to be dropped from the current element, and proceed to
 // the next node (preorder, depth-first traversal).
-Node* Sanitizer::KeepElement(Node* node,
+Node* Sanitizer::KeepElement(Element* element,
                              ContainerNode* fragment,
-                             String& node_name,
                              LocalDOMWindow* window) {
-  Element* element = To<Element>(node);
-  if (AttrListMatches(config_.allow_attributes_, "*", node_name)) {
-  } else if (AttrListMatches(config_.drop_attributes_, "*", node_name)) {
+  String node_name = FromAPI(element);
+  if (Match(Wildcard(), node_name, config_.allow_attributes_)) {
+  } else if (Match(Wildcard(), node_name, config_.drop_attributes_)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
@@ -358,9 +334,9 @@ Node* Sanitizer::KeepElement(Node* node,
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      bool drop = AttrListMatches(baseline_drop_attributes_, name, node_name) ||
-                  AttrListMatches(config_.drop_attributes_, name, node_name) ||
-                  !AttrListMatches(config_.allow_attributes_, name, node_name);
+      bool drop = !Match(name, node_name, GetBaselineAllowAttributes()) ||
+                  Match(name, node_name, config_.drop_attributes_) ||
+                  !Match(name, node_name, config_.allow_attributes_);
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.
@@ -396,16 +372,16 @@ Node* Sanitizer::KeepElement(Node* node,
       }
     }
   }
-  node = NodeTraversal::Next(*node, fragment);
-  return node;
+  return NodeTraversal::Next(*element, fragment);
+  ;
 }
 
 SanitizerConfig* Sanitizer::getConfiguration() const {
-  return SanitizerConfigImpl::ToAPI(config_);
+  return ToAPI(config_);
 }
 
 SanitizerConfig* Sanitizer::getDefaultConfiguration() {
-  return SanitizerConfigCopy(SanitizerConfigImpl::DefaultConfig());
+  return ToAPI(GetDefaultConfig());
 }
 
 Sanitizer* Sanitizer::getDefaultInstance() {

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_type.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 
+@protocol AdaptiveToolbarMenusProvider;
 @class AdaptiveToolbarViewController;
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
@@ -35,6 +36,9 @@
 @property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
+
+// Provider for the context menus.
+@property(nonatomic, weak) id<AdaptiveToolbarMenusProvider> menuProvider;
 
 // Returns the tools menu button.
 - (ToolbarToolsMenuButton*)toolsMenuButton;

@@ -43,7 +43,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   }
 
   ScrollbarOrientation orientation() const { return orientation_; }
-  bool is_left_side_vertical_scrollbar() {
+  bool is_left_side_vertical_scrollbar() const {
     return is_left_side_vertical_scrollbar_;
   }
 

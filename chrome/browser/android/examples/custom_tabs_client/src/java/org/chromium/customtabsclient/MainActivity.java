@@ -64,6 +64,7 @@ public class MainActivity
     private Button mMayLaunchButton;
     private Button mLaunchButton;
     private Button mLaunchIncognitoButton;
+    private Button mLaunchPartialHeightCctButton;
     private MediaPlayer mMediaPlayer;
 
     /**
@@ -110,6 +111,7 @@ public class MainActivity
         mMayLaunchButton = (Button) findViewById(R.id.may_launch_button);
         mLaunchButton = (Button) findViewById(R.id.launch_button);
         mLaunchIncognitoButton = findViewById(R.id.launch_incognito_button);
+        mLaunchPartialHeightCctButton = findViewById(R.id.launch_pcct_button);
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         mEditText.requestFocus();
         mConnectButton.setOnClickListener(this);
@@ -117,6 +119,7 @@ public class MainActivity
         mMayLaunchButton.setOnClickListener(this);
         mLaunchButton.setOnClickListener(this);
         mLaunchIncognitoButton.setOnClickListener(this);
+        mLaunchPartialHeightCctButton.setOnClickListener(this);
         mMediaPlayer = MediaPlayer.create(this, R.raw.amazing_grace);
         findViewById(R.id.register_twa_service).setOnClickListener(this);
 
@@ -246,13 +249,20 @@ public class MainActivity
             customTabsIntent.intent.putExtra(
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     viewId == R.id.launch_incognito_button);
-            if (session != null) {
-                CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent);
-            } else {
-                if (!TextUtils.isEmpty(mPackageNameToBind)) {
-                    customTabsIntent.intent.setPackage(mPackageNameToBind);
-                }
-            }
+            configSessionConnection(session, customTabsIntent);
+            customTabsIntent.launchUrl(this, Uri.parse(url));
+        } else if (viewId == R.id.launch_pcct_button) {
+            CustomTabsSession session = getSession();
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
+            builder.setToolbarColor(Color.parseColor(TOOLBAR_COLOR)).setShowTitle(true);
+            prepareMenuItems(builder);
+            prepareActionButton(builder);
+            builder.setStartAnimations(this, R.anim.slide_in_up, R.anim.slide_out_bottom);
+            builder.setExitAnimations(this, R.anim.slide_in_bottom, R.anim.slide_out_up);
+            CustomTabsIntent customTabsIntent = builder.build();
+            configSessionConnection(session, customTabsIntent);
+            customTabsIntent.intent.putExtra(
+                    "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL", 500);
             customTabsIntent.launchUrl(this, Uri.parse(url));
         }
     }
@@ -283,6 +293,17 @@ public class MainActivity
         BottomBarManager.setMediaPlayer(mMediaPlayer);
         builder.setSecondaryToolbarViews(BottomBarManager.createRemoteViews(this, true),
                 BottomBarManager.getClickableIDs(), BottomBarManager.getOnClickPendingIntent(this));
+    }
+
+    private void configSessionConnection(
+            CustomTabsSession session, CustomTabsIntent customTabsIntent) {
+        if (session != null) {
+            CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent);
+        } else {
+            if (!TextUtils.isEmpty(mPackageNameToBind)) {
+                customTabsIntent.intent.setPackage(mPackageNameToBind);
+            }
+        }
     }
 
     @Override

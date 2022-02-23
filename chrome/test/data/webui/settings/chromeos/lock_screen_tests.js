@@ -46,17 +46,32 @@ suite('LockScreenPage', function() {
 
   test('Lock screen options disabled by policy', async () => {
     const unlockTypeRadioGroup = lockScreenPage.$$('#unlockType');
-    assertTrue(!!unlockTypeRadioGroup);
+    assertTrue(!!unlockTypeRadioGroup, 'Unlock type radio group not found');
 
     await test_util.flushTasks();
-    assertFalse(unlockTypeRadioGroup.disabled);
-    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', true);
+    assertFalse(
+        unlockTypeRadioGroup.disabled,
+        'Unlock type radio group unexpectedly disabled');
 
-    await test_util.flushTasks();
-    assertTrue(unlockTypeRadioGroup.disabled);
+    // This block is not really validating the change because it checks the same
+    // state as initial. However it improves the reliability of the next assert
+    // block as it adds some wait time.
     cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
-
     await test_util.flushTasks();
-    assertFalse(unlockTypeRadioGroup.disabled);
+    assertFalse(
+        unlockTypeRadioGroup.disabled,
+        'Unlock type radio group unexpectedly disabled after policy change');
+
+    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', true);
+    await test_util.flushTasks();
+    assertTrue(
+        unlockTypeRadioGroup.disabled,
+        'Unlock type radio group unexpectedly enabled after policy change');
+
+    cr.webUIListenerCallback('quick-unlock-disabled-by-policy-changed', false);
+    await test_util.flushTasks();
+    assertFalse(
+        unlockTypeRadioGroup.disabled,
+        'Unlock type radio group unexpectedly disabled after policy change');
   });
 });

@@ -4,6 +4,7 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
@@ -17,16 +18,21 @@
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/test/test_utils.h"
 
 namespace ash {
 
@@ -40,6 +46,9 @@ AppListTestHelper::AppListTestHelper() {
   app_list_controller_->SetClient(app_list_client_.get());
   app_list_controller_->SetActiveModel(/*profile_id=*/1, &model_,
                                        &search_model_);
+  // Disable app list nudge as default.
+  DisableAppListNudge(true);
+  ContinueSectionView::SetPrivacyNoticeAcceptedForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {
@@ -89,6 +98,25 @@ void AppListTestHelper::ToggleAndRunLoop(uint64_t display_id,
   WaitUntilIdle();
 }
 
+void AppListTestHelper::WaitForLayerAnimation(ui::Layer* layer) {
+  auto* compositor = layer->GetCompositor();
+  while (layer->GetAnimator()->is_animating()) {
+    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  }
+
+  // Ensure there is one more frame presented after animation finishes
+  // to allow animation throughput data is passed from cc to ui.
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
+}
+
+void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
+    views::View* view,
+    int vertical_offset,
+    base::TimeDelta duration) {
+  GetBubbleAppsPage()->SlideViewIntoPosition(view, vertical_offset, duration);
+}
+
 void AppListTestHelper::CheckVisibility(bool visible) {
   EXPECT_EQ(visible, app_list_controller_->IsVisible());
   EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(absl::nullopt));
@@ -130,9 +158,7 @@ void AppListTestHelper::AddRecentApps(int num_apps) {
     // result IDs must match app item IDs in the app list data model.
     result->set_result_id(test::AppListTestModel::GetItemName(i));
     result->set_result_type(AppListSearchResultType::kInstalledApp);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
     GetSearchResults()->Add(std::move(result));
   }
 }
@@ -149,8 +175,16 @@ bool AppListTestHelper::IsInFolderView() {
       ->IsInFolderView();
 }
 
+void AppListTestHelper::DisableAppListNudge(bool disable) {
+  AppListNudgeController::SetNudgeDisabledForTest(disable);
+}
+
 AppListView* AppListTestHelper::GetAppListView() {
-  return app_list_controller_->presenter()->GetView();
+  return app_list_controller_->fullscreen_presenter()->GetView();
+}
+
+SearchBoxView* AppListTestHelper::GetSearchBoxView() {
+  return GetAppListView()->search_box_view();
 }
 
 AppsContainerView* AppListTestHelper::GetAppsContainerView() {
@@ -178,6 +212,18 @@ PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
 
 views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
   return GetAppsContainerView()->GetSeparatorView();
+}
+
+SearchResultPageView* AppListTestHelper::GetFullscreenSearchResultPageView() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->search_result_page_view();
+}
+
+SearchResultPageAnchoredDialog*
+AppListTestHelper::GetFullscreenSearchPageDialog() {
+  return GetFullscreenSearchResultPageView()->dialog_for_test();
 }
 
 AppListBubbleView* AppListTestHelper::GetBubbleView() {
@@ -221,6 +267,11 @@ AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
       ->search_page_;
 }
 
+SearchResultPageAnchoredDialog* AppListTestHelper::GetBubbleSearchPageDialog() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->search_page_dialog_controller_->dialog();
+}
 AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
@@ -229,6 +280,11 @@ AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
 
 SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
   return AppListModelProvider::Get()->search_model()->results();
+}
+
+std::vector<ash::AppListSearchResultCategory>*
+AppListTestHelper::GetOrderedResultCategories() {
+  return AppListModelProvider::Get()->search_model()->ordered_categories();
 }
 
 ProductivityLauncherSearchView*

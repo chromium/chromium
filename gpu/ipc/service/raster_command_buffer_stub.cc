@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -37,11 +36,11 @@
 #include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/ipc/service/stream_texture_android.h"
 #endif
 

@@ -275,14 +275,14 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::
   }
 
   // If there is nothing to check, terminate immediately.
-  if (value->GetList().size() == 0) {
+  if (value->GetListDeprecated().size() == 0) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(true);
     return;
   }
 
   // Start a fetcher for each connection URL that needs to be checked.
-  for (const base::Value& elem : value->GetList()) {
+  for (const base::Value& elem : value->GetListDeprecated()) {
     if (!elem.is_dict())
       continue;
 
@@ -715,12 +715,12 @@ GaiaCookieManagerService::GetURLLoaderFactory() {
 
 void GaiaCookieManagerService::MarkListAccountsStale() {
   list_accounts_stale_ = true;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&GaiaCookieManagerService::ForceOnCookieChangeProcessing,
                      weak_ptr_factory_.GetWeakPtr()));
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void GaiaCookieManagerService::OnCookieChange(

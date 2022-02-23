@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/gl_ozone_glx.h"
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_context_glx.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -15,7 +16,7 @@ namespace ui {
 
 namespace {
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 const char kGLLibraryName[] = "libGL.so";
 #else
 const char kGLLibraryName[] = "libGL.so.1";

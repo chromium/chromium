@@ -126,6 +126,10 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
     TabStripModel* tab_strip = browser->tab_strip_model();
     if (!tab_strip)
       return RespondNow(Error(tabs_constants::kTabStripNotEditableQueryError));
+    if (!tab_strip->SupportsTabGroups())
+      return RespondNow(
+          Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+
     for (const tab_groups::TabGroupId& id :
          tab_strip->group_model()->ListTabGroups()) {
       const tab_groups::TabGroupVisualData* visual_data =
@@ -190,6 +194,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
       ExtensionTabUtil::GetEditableTabStripModel(browser);
   if (!tab_strip_model)
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  if (!tab_strip_model->SupportsTabGroups())
+    return RespondNow(
+        Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
@@ -243,6 +250,12 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     *error = tabs_constants::kTabStripNotEditableError;
     return false;
   }
+
+  if (!source_tab_strip->SupportsTabGroups()) {
+    *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
   gfx::Range tabs =
       source_tab_strip->group_model()->GetTabGroup(*group)->ListTabs();
   if (tabs.length() == 0)
@@ -270,36 +283,43 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     }
 
     // If windowId is different from the current window, move between windows.
-    if (target_browser != source_browser) {
-      TabStripModel* target_tab_strip =
-          ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-      if (!target_tab_strip) {
-        *error = tabs_constants::kTabStripNotEditableError;
-        return false;
-      }
-
-      if (new_index > target_tab_strip->count() || new_index < 0)
-        new_index = target_tab_strip->count();
-
-      if (!IndexSupportsGroupMove(target_tab_strip, new_index, error))
-        return false;
-
-      target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
-
-      for (size_t i = 0; i < tabs.length(); ++i) {
-        // Detach tabs from the same index each time, since each detached tab is
-        // removed from the model, and groups are always contiguous.
-        std::unique_ptr<content::WebContents> web_contents =
-            source_tab_strip->DetachWebContentsAtForInsertion(tabs.start());
-
-        // Attach tabs in consecutive indices, to insert them in the same order.
-        target_tab_strip->InsertWebContentsAt(new_index + i,
-                                              std::move(web_contents),
-                                              TabStripModel::ADD_NONE, *group);
-      }
-
-      return true;
+    if (target_browser == source_browser) {
+      return false;
     }
+
+    TabStripModel* target_tab_strip =
+        ExtensionTabUtil::GetEditableTabStripModel(target_browser);
+    if (!target_tab_strip) {
+      *error = tabs_constants::kTabStripNotEditableError;
+      return false;
+    }
+
+    if (!target_tab_strip->SupportsTabGroups()) {
+      *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+      return false;
+    }
+
+    if (new_index > target_tab_strip->count() || new_index < 0)
+      new_index = target_tab_strip->count();
+
+    if (!IndexSupportsGroupMove(target_tab_strip, new_index, error))
+      return false;
+
+    target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
+
+    for (size_t i = 0; i < tabs.length(); ++i) {
+      // Detach tabs from the same index each time, since each detached tab is
+      // removed from the model, and groups are always contiguous.
+      std::unique_ptr<content::WebContents> web_contents =
+          source_tab_strip->DetachWebContentsAtForInsertion(tabs.start());
+
+      // Attach tabs in consecutive indices, to insert them in the same order.
+      target_tab_strip->InsertWebContentsAt(new_index + i,
+                                            std::move(web_contents),
+                                            TabStripModel::ADD_NONE, *group);
+    }
+
+    return true;
   }
 
   // Perform a move within the same window.

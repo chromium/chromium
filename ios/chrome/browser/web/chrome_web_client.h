@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #import "ios/web/public/web_client.h"
 
 // Chrome implementation of WebClient.
@@ -43,8 +42,6 @@ class ChromeWebClient : public web::WebClient {
       web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
-  bool IsLegacyTLSAllowedForHost(web::WebState* web_state,
-                                 const std::string& hostname) override;
   void PrepareErrorPage(web::WebState* web_state,
                         const GURL& url,
                         NSError* error,
@@ -56,7 +53,7 @@ class ChromeWebClient : public web::WebClient {
   UIView* GetWindowedContainer() override;
   bool EnableLongPressAndForceTouchHandling() const override;
   bool EnableLongPressUIContextMenu() const override;
-  web::UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
+  web::UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                          const GURL& url) override;
   bool RestoreSessionFromCache(web::WebState* web_state) const override;
   void CleanupNativeRestoreURLs(web::WebState* web_state) const override;

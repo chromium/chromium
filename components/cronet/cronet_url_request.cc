@@ -298,7 +298,7 @@ void CronetURLRequest::NetworkTasks::Start(
   if (upload)
     url_request_->set_upload(std::move(upload));
   if (traffic_stats_tag_set_ || traffic_stats_uid_set_) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url_request_->set_socket_tag(net::SocketTag(
         traffic_stats_uid_set_ ? traffic_stats_uid_ : net::SocketTag::UNSET_UID,
         traffic_stats_tag_set_ ? traffic_stats_tag_

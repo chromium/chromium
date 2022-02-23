@@ -10,6 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/supports_user_data.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
+#include "ui/base/page_transition_types.h"
 
 namespace content {
 class NavigationHandle;
@@ -17,9 +18,13 @@ class NavigationThrottle;
 class WebContents;
 }
 
-namespace navigation_interception {
+namespace url {
+class Origin;
+}
 
-class NavigationParams;
+class GURL;
+
+namespace navigation_interception {
 
 // Native side of the InterceptNavigationDelegate Java interface.
 // This is used to create a InterceptNavigationResourceThrottle that calls the
@@ -63,16 +68,16 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
       content::NavigationHandle* handle,
       navigation_interception::SynchronyMode mode);
 
-  virtual bool ShouldIgnoreNavigation(
-      const NavigationParams& navigation_params);
+  bool ShouldIgnoreNavigation(content::NavigationHandle* navigation_handle);
 
-  // Updates |last_user_gesture_carryover_timestamp_| when user gesture is
-  // carried over.
-  void UpdateLastUserGestureCarryoverTimestamp();
+  void HandleExternalProtocolDialog(
+      const GURL& url,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const absl::optional<url::Origin>& initiating_origin);
 
  private:
   JavaObjectWeakGlobalRef weak_jdelegate_;
-  base::TimeTicks last_user_gesture_carryover_timestamp_;
   bool escape_external_handler_value_ = false;
 };
 

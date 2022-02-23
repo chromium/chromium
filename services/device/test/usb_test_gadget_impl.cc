@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -65,7 +66,7 @@ class UsbTestGadgetImpl : public UsbTestGadget {
  private:
   std::string device_address_;
   scoped_refptr<UsbDevice> device_;
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
 };
 
 namespace {
@@ -183,10 +184,10 @@ int SimplePOSTRequest(
     const GURL& url,
     const std::string& form_data) {
   net::TestDelegate delegate;
-  net::TestURLRequestContext request_context;
+  auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
 
   std::unique_ptr<net::URLRequest> request =
-      CreateSimpleRequest(request_context, &delegate, url,
+      CreateSimpleRequest(*request_context, &delegate, url,
                           "application/x-www-form-urlencoded", form_data);
   request->set_method("POST");
 
@@ -201,7 +202,8 @@ class UsbGadgetFactory : public UsbService::Observer {
   // TODO(crbug.com/1010491): Remove `io_task_runner` parameter.
   UsbGadgetFactory(UsbService* usb_service,
                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
-      : usb_service_(usb_service) {
+      : usb_service_(usb_service),
+        request_context_(net::CreateTestURLRequestContextBuilder()->Build()) {
     // Gadget tests shouldn't be enabled without available |usb_service|.
     DCHECK(usb_service_);
 
@@ -210,7 +212,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     session_id_ =
         base::StringPrintf("%" CrPRIdPid "-%d", process_id, next_session_id++);
 
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   ~UsbGadgetFactory() override = default;
@@ -278,7 +280,7 @@ class UsbGadgetFactory : public UsbService::Observer {
         "session_id=%s", net::EscapeUrlEncodedData(session_id_, true).c_str());
 
     std::unique_ptr<net::URLRequest> request =
-        CreateSimpleRequest(request_context_, &delegate_, url,
+        CreateSimpleRequest(*request_context_, &delegate_, url,
                             "application/x-www-form-urlencoded", form_data);
     request->set_method("POST");
     request->Start();
@@ -291,7 +293,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     GURL url("http://" + serial_number_ + "/version");
 
     std::unique_ptr<net::URLRequest> request = CreateSimpleRequest(
-        request_context_, &delegate_, url, std::string(), std::string());
+        *request_context_, &delegate_, url, std::string(), std::string());
     request->set_method("GET");
     request->Start();
     delegate_.set_on_complete(
@@ -319,7 +321,7 @@ class UsbGadgetFactory : public UsbService::Observer {
     }
 
     std::unique_ptr<net::URLRequest> request = CreateSimpleRequest(
-        request_context_, &delegate_, url, "multipart/form-data; boundary=foo",
+        *request_context_, &delegate_, url, "multipart/form-data; boundary=foo",
         mime_header + package + mime_footer);
     request->set_method("POST");
     request->Start();
@@ -402,9 +404,9 @@ class UsbGadgetFactory : public UsbService::Observer {
         base::Milliseconds(kReenumeratePeriod));
   }
 
-  UsbService* usb_service_ = nullptr;
+  raw_ptr<UsbService> usb_service_ = nullptr;
   net::TestDelegate delegate_;
-  net::TestURLRequestContext request_context_;
+  std::unique_ptr<net::URLRequestContext> request_context_;
   std::string session_id_;
   scoped_refptr<UsbDevice> device_;
   std::string serial_number_;
@@ -423,7 +425,7 @@ class DeviceAddListener : public UsbService::Observer {
       : usb_service_(usb_service),
         serial_number_(serial_number),
         product_id_(product_id) {
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   DeviceAddListener(const DeviceAddListener&) = delete;
@@ -475,7 +477,7 @@ class DeviceAddListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
   const std::string serial_number_;
   const int product_id_;
   base::RunLoop run_loop_;
@@ -488,7 +490,7 @@ class DeviceRemoveListener : public UsbService::Observer {
  public:
   DeviceRemoveListener(UsbService* usb_service, scoped_refptr<UsbDevice> device)
       : usb_service_(usb_service), device_(device) {
-    observation_.Observe(usb_service_);
+    observation_.Observe(usb_service_.get());
   }
 
   DeviceRemoveListener(const DeviceRemoveListener&) = delete;
@@ -523,7 +525,7 @@ class DeviceRemoveListener : public UsbService::Observer {
     }
   }
 
-  UsbService* usb_service_;
+  raw_ptr<UsbService> usb_service_;
   base::RunLoop run_loop_;
   scoped_refptr<UsbDevice> device_;
   base::ScopedObservation<UsbService, UsbService::Observer> observation_{this};

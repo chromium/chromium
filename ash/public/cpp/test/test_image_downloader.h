@@ -28,6 +28,7 @@ class ASH_PUBLIC_EXPORT TestImageDownloader : public ImageDownloader {
   void Download(const GURL& url,
                 const net::NetworkTrafficAnnotationTag& annotation_tag,
                 const net::HttpRequestHeaders& additional_headers,
+                absl::optional<AccountId> credentials_account_id,
                 DownloadCallback callback) override;
 
  private:

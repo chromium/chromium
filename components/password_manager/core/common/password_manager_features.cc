@@ -20,16 +20,12 @@ const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
 // from the page.
 const base::Feature kDetectFormSubmissionOnFormClear = {
     "DetectFormSubmissionOnFormClear",
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT
 #else
     base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 };
-
-// Enables the editing of passwords in Chrome settings.
-const base::Feature kEditPasswordsInSettings = {
-    "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables UI that allows the user to create a strong password even if the field
 // wasn't parsed as a new password field.
@@ -46,7 +42,7 @@ const base::Feature kEnableOverwritingPlaceholderUsernames{
 // in but not syncing.
 const base::Feature kEnablePasswordsAccountStorage = {
     "EnablePasswordsAccountStorage",
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT
 #else
     base::FEATURE_ENABLED_BY_DEFAULT
@@ -67,11 +63,36 @@ const base::Feature kFillingAcrossAffiliatedWebsites{
 const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_LINUX)
+// When enabled, initial sync will be forced during startup if the password
+// store has encryption service failures.
+const base::Feature kForceInitialSyncWhenDecryptionFails = {
+    "ForceInitialSyncWhenDecryptionFails", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables finding a confirmation password field during saving by inspecting the
 // values of the fields. Used as a kill switch.
 // TODO(crbug.com/1164861): Remove once confirmed to be safe (around M92 or so).
 const base::Feature kInferConfirmationPasswordField = {
     "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Feature flag that updates icons, strings, and views for Google Password
+// Manager.
+const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
+    "IOSEnablePasswordManagerBrandingUpdate",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables (un)muting compromised passwords from bulk leak check in settings.
+const base::Feature kMuteCompromisedPasswords{
+    "MuteCompromisedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables adding, displaying and modifying extra notes to stored credentials.
+const base::Feature kPasswordNotes{"PasswordNotes",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables sending credentials from the settings UI.
+const base::Feature kSendPasswords{"SendPasswords",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables password leak detection for unauthenticated users.
 const base::Feature kLeakDetectionUnauthenticated = {
@@ -90,6 +111,11 @@ const base::Feature kPasswordChangeOnlyRecentCredentials = {
 // Enables password change flow from bulk leak check in settings.
 const base::Feature kPasswordChangeInSettings = {
     "PasswordChangeInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables fetching credentials capabilities from server for the
+// |PasswordChangeInSettings| and |PasswordChange| features.
+const base::Feature kPasswordDomainCapabilitiesFetching = {
+    "PasswordDomainCapabilitiesFetching", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls the ability to import passwords from Chrome's settings page.
 const base::Feature kPasswordImport = {"PasswordImport",
@@ -123,17 +149,43 @@ const base::Feature kReparseServerPredictionsFollowingFormChange = {
 const base::Feature kSecondaryServerFieldPredictions = {
     "SecondaryServerFieldPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Displays at least the decryptable and never saved logins in the password
+// manager
+const base::Feature kSkipUndecryptablePasswords = {
+    "SkipUndecryptablePasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables the addition of passwords in Chrome Settings.
 // TODO(crbug/1226008): Remove once it's launched.
 const base::Feature kSupportForAddPasswordsInSettings = {
     "SupportForAddPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if BUILDFLAG(IS_LINUX)
+// When enabled, all undecryptable passwords are deleted from the local database
+// during initial sync flow.
+const base::Feature kSyncUndecryptablePasswordsLinux = {
+    "SyncUndecryptablePasswordsLinux", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables the experiment to automatically submit a form after filling by
+// TouchToFill
+const base::Feature kTouchToFillPasswordSubmission = {
+    "TouchToFillPasswordSubmission", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+// Enables the intent fetching for the credential manager in Google Mobile
+// Services. It does not enable launching the credential manager.
+const base::Feature kUnifiedCredentialManagerDryRun = {
+    "UnifiedCredentialManagerDryRun", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables use of Google Mobile Services for password storage. Chrome's local
 // database will be unused but kept in sync for local passwords.
 const base::Feature kUnifiedPasswordManagerAndroid{
@@ -149,6 +201,12 @@ const base::Feature kUnifiedPasswordManagerMigration{
 // source of truth.
 const base::Feature kUnifiedPasswordManagerShadowAndroid{
     "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Similar to kUnifiedPasswordManagerShadowAndroid but send modify operations
+// instead of read operations.Relevant only for non-sync'ing users.
+const base::Feature kUnifiedPasswordManagerShadowWriteOperationsAndroid{
+    "UnifiedPasswordManagerShadowWriteOperationsAndroid",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
@@ -176,11 +234,17 @@ const base::Feature kUsernameFirstFlowFallbackCrowdsourcing = {
     "UsernameFirstFlowFallbackCrowdsourcing",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_ANDROID)
+// Returns true if the client is part of the live_experiment group for
+// |kPasswordDomainCapabilitiesFetching|, otherwise, the client is assumed to be
+// in the regular launch group.
+extern const base::FeatureParam<bool> kPasswordChangeLiveExperimentParam = {
+    &kPasswordDomainCapabilitiesFetching, "live_experiment", false};
+
+#if BUILDFLAG(IS_ANDROID)
 // Current migration version to Google Mobile Services. If version saved in pref
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.
 extern const base::FeatureParam<int> kMigrationVersion = {
-    &kUnifiedPasswordManagerMigration, "migration_version", 0};
+    &kUnifiedPasswordManagerMigration, "migration_version", 1};
 #endif
 
 // Field trial identifier for password generation requirements.
@@ -211,6 +275,11 @@ const char kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission[] =
 // settings.
 const char kPasswordChangeInSettingsWithForcedWarningForEverySite[] =
     "should_force_warning_for_every_site_in_settings";
+
+bool IsPasswordScriptsFetchingEnabled() {
+  return base::FeatureList::IsEnabled(kPasswordScriptsFetching) ||
+         base::FeatureList::IsEnabled(kPasswordDomainCapabilitiesFetching);
+}
 
 }  // namespace features
 

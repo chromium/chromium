@@ -40,9 +40,20 @@ bool KioskOemManifestParser::Load(const base::FilePath& kiosk_oem_file,
   }
 
   dict->GetString(kDeviceRequisition, &manifest->device_requisition);
-  dict->GetBoolean(kKeyboardDrivenOobe, &manifest->keyboard_driven_oobe);
-  if (!dict->GetBoolean(kEnterpriseManaged, &manifest->enterprise_managed) ||
-      !dict->GetBoolean(kAllowReset, &manifest->can_exit_enrollment)) {
+
+  if (absl::optional<bool> v = dict->FindBoolPath(kKeyboardDrivenOobe)) {
+    manifest->keyboard_driven_oobe = *v;
+  }
+
+  if (absl::optional<bool> v = dict->FindBoolPath(kEnterpriseManaged)) {
+    manifest->enterprise_managed = *v;
+  } else {
+    return false;
+  }
+
+  if (absl::optional<bool> v = dict->FindBoolPath(kAllowReset)) {
+    manifest->can_exit_enrollment = *v;
+  } else {
     return false;
   }
 

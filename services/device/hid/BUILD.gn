@@ -20,6 +20,7 @@ source_set("hid") {
     "hid_device_info.h",
     "hid_manager_impl.cc",
     "hid_manager_impl.h",
+    "hid_report_type.h",
     "hid_service.cc",
     "hid_service.h",
   ]
@@ -29,6 +30,7 @@ source_set("hid") {
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
+    "//services/device:utility",
     "//services/device/public/cpp/hid",
     "//services/device/public/mojom",
   ]

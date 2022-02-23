@@ -7,8 +7,8 @@
 
 #include <string>
 
+#include "ash/components/login/auth/key.h"
 #include "base/callback.h"
-#include "chromeos/login/auth/key.h"
 #include "components/prefs/pref_service.h"
 
 class AccountId;
@@ -18,6 +18,7 @@ class ScopedKeepAlive;
 namespace ash {
 namespace quick_unlock {
 class PinStorageCryptohome;
+enum class Purpose;
 
 // Provides high-level access to the user's PIN. The underlying storage can be
 // either cryptohome or prefs.
@@ -75,11 +76,14 @@ class PinBackend {
   // Is PIN authentication available for the given account? Even if PIN is set,
   // it may not be available for authentication due to some additional
   // restrictions.
-  void CanAuthenticate(const AccountId& account_id, BoolCallback result);
+  void CanAuthenticate(const AccountId& account_id,
+                       Purpose purpose,
+                       BoolCallback result);
 
   // Try to authenticate.
   void TryAuthenticate(const AccountId& account_id,
                        const Key& key,
+                       Purpose purpose,
                        BoolCallback result);
 
   // Returns true if the cryptohome backend should be used. Sometimes the prefs

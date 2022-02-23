@@ -109,6 +109,8 @@ component("evdev") {
     "touch_filter/palm_detection_filter_factory.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_v2.cc",
+    "touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_v2.h",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.cc",
     "touch_filter/palm_model/onedevice_train_palm_detection_filter_model.h",
     "touch_filter/shared_palm_detection_filter_state.h",
@@ -159,6 +161,8 @@ component("evdev") {
       "libgestures_glue/gesture_property_provider.h",
       "libgestures_glue/gesture_timer_provider.cc",
       "libgestures_glue/gesture_timer_provider.h",
+      "libgestures_glue/haptic_touchpad_handler.cc",
+      "libgestures_glue/haptic_touchpad_handler.h",
     ]
 
     deps += [ "//ui/ozone/public/mojom:gesture_properties_service" ]
@@ -182,6 +186,7 @@ component("evdev") {
   }
 
   visibility += [
+    "//ash/webui/diagnostics_ui/*",
     "//ui/chromeos/*",
     "//ui/ozone/*",
   ]
@@ -233,6 +238,9 @@ source_set("unittests") {
     "gamepad_event_converter_evdev_unittest.cc",
     "input_controller_evdev_unittest.cc",
     "input_injector_evdev_unittest.cc",
+    "libgestures_glue/haptic_touchpad_handler.cc",
+    "libgestures_glue/haptic_touchpad_handler.h",
+    "libgestures_glue/haptic_touchpad_handler_unittest.cc",
     "microphone_mute_switch_event_converter_evdev_unittest.cc",
     "stylus_button_event_converter_evdev_unittest.cc",
     "tablet_event_converter_evdev_unittest.cc",

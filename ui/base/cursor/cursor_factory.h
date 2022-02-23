@@ -29,7 +29,7 @@ class Point;
 namespace ui {
 class PlatformCursor;
 
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactoryObserver {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactoryObserver {
  public:
   // Called by the factory after it has loaded the cursor theme.
   virtual void OnThemeLoaded() = 0;
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactoryObserver {
   virtual ~CursorFactoryObserver();
 };
 
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorFactory {
  public:
   CursorFactory();
   virtual ~CursorFactory();
@@ -81,8 +81,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   base::ObserverList<CursorFactoryObserver>::Unchecked observers_;
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-COMPONENT_EXPORT(UI_BASE_CURSOR_BASE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(UI_BASE_CURSOR)
 std::vector<std::string> CursorNamesFromType(mojom::CursorType type);
 #endif
 

@@ -31,16 +31,6 @@
         }
       },
       {
-        "id": "MatchClassificationRaw",
-        "nodoc": true,
-        "type": "object",
-        "description": "The style ranges for the description, as provided by ToValue().",
-        "properties": {
-          "offset": { "type": "integer" },
-          "type": { "type": "integer" }
-        }
-      },
-      {
         "id": "SuggestResult",
         "type": "object",
         "description": "A suggest result.",
@@ -69,16 +59,6 @@
               "name": "matchClassification",
               "$ref": "MatchClassification"
             }
-          },
-          "descriptionStylesRaw": {
-            "nodoc": true,
-            "optional": true,
-            "type": "array",
-            "description": "An array of style ranges for the description, as provided by ToValue().",
-            "items": {
-              "name": "matchClassificationRaw",
-              "$ref": "MatchClassificationRaw"
-            }
           }
         }
       },
@@ -101,16 +81,6 @@
             "items": {
               "name": "matchClassification",
               "$ref": "MatchClassification"
-            }
-          },
-          "descriptionStylesRaw": {
-            "nodoc": true,
-            "optional": true,
-            "type": "array",
-            "description": "An array of style ranges for the description, as provided by ToValue().",
-            "items": {
-              "name": "matchClassificationRaw",
-              "$ref": "MatchClassificationRaw"
             }
           }
         }
@@ -155,7 +125,12 @@
             "$ref": "DefaultSuggestResult",
             "description": "A partial SuggestResult object, without the 'content' parameter."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [

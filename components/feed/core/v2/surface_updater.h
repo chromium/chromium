@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -18,6 +19,7 @@
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/stream_surface_set.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feedui {
 class StreamUpdate;
@@ -42,7 +44,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   // of surfaces. When |model| is null, this does not send any updates to
   // surfaces, so they will keep any content they may have been displaying
   // before. We don't send a zero-state in this case, since we might want to
-  // immedately trigger a load.
+  // immediately trigger a load.
   void SetModel(StreamModel* model);
 
   // StreamModel::Observer.
@@ -59,6 +61,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   void LoadStreamComplete(bool success,
                           LoadStreamStatus load_stream_status,
                           feedwire::DiscoverLaunchResult launch_result);
+
   // Called to indicate whether or not we are currently trying to load more
   // content at the bottom of the stream.
   void SetLoadingMore(bool is_loading);
@@ -98,8 +101,8 @@ class SurfaceUpdater : public StreamModel::Observer,
   void RemoveDatastoreEntry(const std::string& key);
 
   // Owned by |FeedStream|.
-  MetricsReporter* metrics_reporter_;
-  StreamSurfaceSet* surfaces_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<StreamSurfaceSet> surfaces_;
 
   // Members that affect what is sent to surfaces. A value change of these may
   // require sending an update to surfaces.
@@ -119,7 +122,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   std::map<std::string, std::string> xsurface_datastore_entries_;
 
   // Owned by |FeedStream|. Null when the model is not loaded.
-  StreamModel* model_ = nullptr;
+  raw_ptr<StreamModel> model_ = nullptr;
 
   LaunchReliabilityLogger launch_reliability_logger_;
   bool load_stream_started_ = false;

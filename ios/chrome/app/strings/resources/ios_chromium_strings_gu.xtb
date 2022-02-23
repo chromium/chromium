@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="102360288709523007">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromiumને બહેતર બનાવવામાં મદદ કરો.</translation>
+<translation id="1047130070405668746">Chromium પસંદ કરો</translation>
+<translation id="1091252999271033193">આનો અર્થ છે કે Chromium દરેક વખતે મોબાઇલ સાઇટની વિનંતી કરશે.</translation>
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1257458525759135959">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chromium તમારા ફોટા ઉમેરી શકે</translation>
 <translation id="1289216811211435351">Chromium પર સ્વિચ કરો</translation>
@@ -13,18 +15,21 @@
 <translation id="1531155317299575425">Chromiumમાં સાઇન ઇન કરવા માટેના સંકેતો બતાવો.</translation>
 <translation id="1584569488888892906">Chromium હવે પહેલાં કરતાં વધુ સરળ, સુરક્ષિત અને ઝડપી છે</translation>
 <translation id="1617663976202781617">Chromium સિંકમાંનો ડેટા</translation>
+<translation id="1722370509450468186">તમારો પાસવર્ડ તમારા એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="1736662517232558588">Chromium ડેટા સાફ કર્યો</translation>
 <translation id="1838412507805038478">Chromium એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર જારી કર્યું છે.</translation>
 <translation id="1843424232666537147">Chromium માં એવી સુવિધાઓ છે જે તમારા ઇન્ટરનેટ ડેટા અને તમે કેટલી ઝડપથી વેબ પૃષ્ઠોને લોડ કરવામાં સમર્થ છો તેનું સંચાલન કરવામાં તમારી સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Chromium પસંદ કરો</translation>
 <translation id="2006345422933397527">Chromium અપડેટ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="2054703085270098503">Chromiumનો ઉપયોગ કરીને સલામત રહો</translation>
 <translation id="2168108852149185974">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="2178608107313874732">Chromium, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
-<translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાની ઓફર કરવા માગો છો?</translation>
+<translation id="2195025571279539885">શું તમે Chromiumને આ સાઇટથી આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાનું ઑફર કરવા માગો છો?</translation>
 <translation id="2218146227246548550">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">આનો અર્થ છે કે Chromium દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
 <translation id="2426113998523353159">તમારી સંસ્થા માટે જરૂરી છે કે Chromiumનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
-<translation id="2450140762465183767">હવે તમે જ્યારે પણ સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="2450140762465183767">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium <ph name="END_BOLD" />પસંદ કરો</translation>
 <translation id="2567507405773541360">અગાઉ ક્યારેય ન હતું એટલા સરળ, સુરક્ષિત અને વધુ ઝડપી Chromium વડે વધુ કાર્યો પૂર્ણ કરો</translation>
 <translation id="2590893390871230428">તમારો Chromium ડેટા સિંક કરો</translation>
@@ -40,10 +45,10 @@
 <translation id="3472200483164753384">Chromium Canary પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="3639997914391704523">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Chromium તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="3805899903892079518">Chromiumને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
-<translation id="3946918322491238254">તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગને જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તેમને તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
+<translation id="4043291146360695975">આ ડિવાઇસના પાસવર્ડ માત્ર આ ડિવાઇસના પાસવર્ડ મેનેજરમાં સાચવવામાં આવે છે.</translation>
 <translation id="4099085513035183040">Chromium બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4555020257205549924">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chromium, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="4585809515399340748">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="4585809515399340748">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
 <translation id="4681781466797808448">Chromium સ્કૅન ચાલુ કરો</translation>
 <translation id="4736424910885271643">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે</translation>
 <translation id="4806326830773390517">Googleને વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ ઑટોમૅટિક રીતે મોકલીને Chromiumને બહેતર બનાવવામાં સહાય કરો</translation>
@@ -73,21 +78,24 @@
 <translation id="6424492062988593837">Chrome હવે વધારે સારું બન્યું છે! નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="6752854822223394465">તમારી સંસ્થા Chromiumનું સેટઅપ કરી રહી છે…</translation>
 <translation id="6820823224820483452">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરો.</translation>
+<translation id="7006920032187763988">તમે પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPad પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="7018284295775193585">Chromium અપડેટ થઈ શકતું નથી</translation>
 <translation id="7045244423563602563">Chromium કસ્ટમાઇઝ કરો</translation>
-<translation id="7099326575020694068">Chromium, વિભાજિત દૃશ્ય મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
+<translation id="7099326575020694068">Chromium, વિભાજિત વ્યૂ મોડમાં તમારા કૅમેરાનો ઉપયોગ કરી શકતુંં નથી</translation>
 <translation id="7108914401277488191">Chromium વડે વધુ કાર્યો કરો</translation>
-<translation id="7118091470949186573">હવે તમે સંદેશા, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="7118091470949186573">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromiumનો ઉપયોગ કરી શકશો.</translation>
+<translation id="7175400662502680481">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. પાસવર્ડ મેનેજર હમણાં જ તેને બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="7208566199746267865">વેબ પર તમારા એકાઉન્ટ લાવીને Chromium તમારો સમય બચાવે છે. તમે સેટિંગમાં એકાઉન્ટ ઉમેરી અથવા કાઢી નાખી શકો છો.</translation>
 <translation id="725427773388857052">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chromium તમારી સહાય કરી શકે છે.</translation>
 <translation id="7269362888766543920">કેટલાક એડ-ઓનને કારણે Chromium ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7313655110045230863">Chromiumને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે, સેટિંગ ખોલો. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો અને પછી Chromiumને પસંદ કરો.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">પસંદ કરેલ ડેટા Chromium અને સિંક કરેલ ડિવાઇસમાંથી દૂર કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને history.google.com પરની બીજા Google સેવાઓમાંની પ્રવૃત્તિ હોય શકે છે.</translation>
+<translation id="7395825497086981028">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
 <translation id="7400689562045506105">Chromium નો ઉપયોગ સર્વત્ર કરો</translation>
 <translation id="766897673682622022">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. Chromium હમણાં જ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="7674213385180944843">સેટિંગ &gt; પ્રાઇવસી &gt; કૅમેરા &gt; Chromium ખોલો અને કૅમેરા ચાલુ કરો.</translation>
-<translation id="7746854981345936341">Chromium ટિપ. પાછળ, ફૉર્વર્ડ અને શોધ જેવાં કેટલાક બટનો હવે તમારી સ્ક્રીનના તળિયે છે.</translation>
+<translation id="7746854981345936341">Chromium ટિપ. પાછળ, ફૉરવર્ડ કરો અને શોધો જેવાં કેટલાક બટનો હવે તમારી સ્ક્રીનના તળિયે છે.</translation>
 <translation id="7763454117143368771">જોખમકારક સાઇટથી સુરક્ષિત રહેવા અને તમારા પાસવર્ડ સલામત રાખવા માટે, તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="786327964234957808">તમે <ph name="USER_EMAIL1" />થી <ph name="USER_EMAIL2" /> પર સિંક એકાઉન્ટને સ્વિચ કરી રહ્યાં છો. તમારો અસ્તિત્વમાંનો Chromium ડેટા <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. આ ડિવાઇસ પરથી આ તમારા ડેટાને ડિલીટ કરશે, પરંતુ તમારો ડેટા <ph name="USER_EMAIL1" /> માં રહેશે.</translation>
 <translation id="7890287942691234100">Chromium સ્કૅનરને ઉપયોગ કરવાનું શરૂ કરો</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરીએ?</translation>
 <translation id="8175055321229419309">ટિપ: <ph name="BEGIN_LINK" />Chromium ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
+<translation id="858114650497379505">તમે પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPhone પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8663480472502753423">Chromium અપ ટૂ ડેટ રાખો</translation>
 <translation id="8776843108004031667">Chromiumમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
 <translation id="894437814105052438">તમે સાઇન આઉટ કરશો, ત્યારે Chromium કોઈપણ નવા ડેટાને તમારા Google એકાઉન્ટ સાથે સિંક કરશે નહીં. અગાઉ સિંક કરેલો ડેટા એકાઉન્ટમાં રહે છે.</translation>
 <translation id="9022552996538154597">Chromium માં સાઇન ઇન કરો</translation>
+<translation id="9059693977935746710">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તે <ph name="EMAIL" /> માટેના પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે</translation>
 <translation id="9089354809943900324">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="9110075932708282655">ડિફૉલ્ટ રીતે Chromiumનો ઉપયોગ કરો</translation>
 <translation id="921174536258924340">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>

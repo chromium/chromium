@@ -19,7 +19,7 @@
 #include "sandbox/policy/switches.h"
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
@@ -32,7 +32,7 @@ ServiceExecutableEnvironment::ServiceExecutableEnvironment()
     : ipc_thread_("IPC Thread") {
   DCHECK(!base::CurrentThread::Get());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(sandbox::policy::switches::kServiceSandboxType)) {

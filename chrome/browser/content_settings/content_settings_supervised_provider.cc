@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 
@@ -61,8 +62,7 @@ SupervisedProvider::SupervisedProvider(
                               base::Unretained(this)));
 }
 
-SupervisedProvider::~SupervisedProvider() {
-}
+SupervisedProvider::~SupervisedProvider() = default;
 
 std::unique_ptr<RuleIterator> SupervisedProvider::GetRuleIterator(
     ContentSettingsType content_type,
@@ -79,11 +79,9 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
     base::AutoLock auto_lock(lock_);
     for (const auto& entry : kContentSettingsFromSupervisedSettingsMap) {
       ContentSetting new_setting = CONTENT_SETTING_DEFAULT;
-      if (settings && settings->HasKey(entry.setting_name)) {
-        bool new_is_set = false;
-        bool is_bool = settings->GetBoolean(entry.setting_name, &new_is_set);
-        DCHECK(is_bool);
-        if (new_is_set)
+      if (settings && settings->FindKey(entry.setting_name)) {
+        DCHECK(settings->FindKey(entry.setting_name)->is_bool());
+        if (settings->FindBoolKey(entry.setting_name).value_or(false))
           new_setting = entry.content_setting;
       }
       if (new_setting != value_map_.GetContentSetting(entry.content_type)) {
@@ -104,7 +102,7 @@ bool SupervisedProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value>&& value,
+    base::Value&& value,
     const ContentSettingConstraints& constraints) {
   return false;
 }

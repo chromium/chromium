@@ -15,9 +15,13 @@ responseXML serialized
   <d id="id3">Three</d>
 </doc>
 getAllResponseHeaders()
+content-type: text/xml
+last-modified: (date)
+
 status
-0
+200
 statusText
+OK
 readyState
 4
 Event information

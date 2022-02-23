@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 
 // Interface for getting the cause of page loads to blink. This service lives
 // in blink and is used to implement the File Handling proposal:
-// https://github.com/WICG/file-handling/blob/master/explainer.md
+// https://github.com/WICG/file-handling/blob/main/explainer.md
 // TODO(crbug.com/829689): Replace link to explainer with link to spec, when
 // available.
 //

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <ostream>
 #include <tuple>
 
 #include "base/check_op.h"

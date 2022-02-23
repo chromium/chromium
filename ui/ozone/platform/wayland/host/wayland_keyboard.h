@@ -5,8 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_KEYBOARD_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_KEYBOARD_H_
 
-#include <keyboard-extension-unstable-v1-client-protocol.h>
-
 #include <cstdint>
 
 #include "base/time/time.h"

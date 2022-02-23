@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gl_scaler.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -84,7 +85,7 @@ class VIZ_COMMON_EXPORT GLNV12Converter final : public ContextLostObserver {
   // [Re]Configure the converter with the given |new_params|. Returns true on
   // success, or false on failure. If |new_params| does not specify an
   // |output_color_space|, it will be default to REC709.
-  bool Configure(const Parameters& new_params) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Configure(const Parameters& new_params);
 
   // Returns the currently-configured and resolved Parameters. Results are
   // undefined if Configure() has never been called successfully.
@@ -167,7 +168,7 @@ class VIZ_COMMON_EXPORT GLNV12Converter final : public ContextLostObserver {
 
   // The provider of the GL context. This is non-null while the GL context is
   // valid and GLNV12Converter is observing for context loss.
-  ContextProvider* context_provider_;
+  raw_ptr<ContextProvider> context_provider_;
 
   // Scales the source content and produces either:
   //   * MRT path: NV61-format output in two textures.

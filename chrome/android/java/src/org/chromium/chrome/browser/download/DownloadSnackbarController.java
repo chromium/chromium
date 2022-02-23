@@ -44,7 +44,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     @Override
     public void onAction(Object actionData) {
         if (!(actionData instanceof ActionDataInfo)) {
-            DownloadManagerService.openDownloadsPage(ContextUtils.getApplicationContext(),
+            DownloadManagerService.openDownloadsPage(
                     /*otrProfileID=*/null, DownloadOpenSource.SNACK_BAR);
             return;
         }
@@ -134,9 +134,9 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     private boolean isShowingDownloadInfoBar(OTRProfileID otrProfileID) {
-        DownloadMessageUiController infoBarController =
-                DownloadManagerService.getDownloadManagerService().getInfoBarController(
+        DownloadMessageUiController messageUiController =
+                DownloadManagerService.getDownloadManagerService().getMessageUiController(
                         otrProfileID);
-        return infoBarController == null ? false : infoBarController.isShowing();
+        return messageUiController == null ? false : messageUiController.isShowing();
     }
 }

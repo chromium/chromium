@@ -14,7 +14,7 @@
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -110,7 +110,7 @@ bool MediaPathFilter::ShouldSkip(const base::FilePath& path) {
   if (base_name == FILE_PATH_LITERAL("__MACOSX"))
     return true;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD file_attributes = ::GetFileAttributes(path.value().c_str());
   if ((file_attributes != INVALID_FILE_ATTRIBUTES) &&
       ((file_attributes & FILE_ATTRIBUTE_HIDDEN) != 0))
@@ -132,7 +132,7 @@ bool MediaPathFilter::ShouldSkip(const base::FilePath& path) {
       base::StartsWith(base_name, win_vista_recycle_bin_name,
                        base::CompareCase::INSENSITIVE_ASCII))
     return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return false;
 }
 

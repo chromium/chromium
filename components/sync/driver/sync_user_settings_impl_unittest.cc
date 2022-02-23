@@ -60,9 +60,10 @@ class MockSyncServiceCryptoDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(void, CryptoRequiredUserActionChanged, (), (override));
   MOCK_METHOD(void, ReconfigureDataTypesDueToCrypto, (), (override));
   MOCK_METHOD(void,
-              EncryptionBootstrapTokenChanged,
+              SetEncryptionBootstrapToken,
               (const std::string&),
               (override));
+  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (override));
 };
 
 class SyncUserSettingsImplTest : public testing::Test {

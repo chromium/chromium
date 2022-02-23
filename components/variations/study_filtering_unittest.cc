@@ -52,7 +52,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyChannel) {
   const Study::Channel channels[] = {
       Study::CANARY, Study::DEV, Study::BETA, Study::STABLE,
   };
-  bool channel_added[base::size(channels)] = {0};
+  bool channel_added[base::size(channels)] = {false};
 
   Study::Filter filter;
 
@@ -97,7 +97,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyFormFactor) {
   ASSERT_EQ(Study::FormFactor_ARRAYSIZE,
             static_cast<int>(base::size(form_factors)));
 
-  bool form_factor_added[base::size(form_factors)] = {0};
+  bool form_factor_added[base::size(form_factors)] = {false};
   Study::Filter filter;
 
   for (size_t i = 0; i <= base::size(form_factors); ++i) {
@@ -138,7 +138,7 @@ TEST(VariationsStudyFilteringTest, CheckStudyFormFactor) {
 
   // Test exclude_form_factors, forward order.
   filter.clear_form_factor();
-  bool form_factor_excluded[base::size(form_factors)] = {0};
+  bool form_factor_excluded[base::size(form_factors)] = {false};
   for (size_t i = 0; i <= base::size(form_factors); ++i) {
     for (size_t j = 0; j < base::size(form_factors); ++j) {
       const bool expected = filter.exclude_form_factor_size() == 0 ||

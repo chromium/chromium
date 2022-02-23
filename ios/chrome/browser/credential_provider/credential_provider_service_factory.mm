@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/credential_provider/credential_provider_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/common/password_manager_features.h"

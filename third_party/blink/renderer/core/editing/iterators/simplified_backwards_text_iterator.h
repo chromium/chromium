@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/fully_clipped_state_stack.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -135,6 +135,8 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 
 using SimplifiedBackwardsTextIterator =
     SimplifiedBackwardsTextIteratorAlgorithm<EditingStrategy>;
+using SimplifiedBackwardsTextIteratorInFlatTree =
+    SimplifiedBackwardsTextIteratorAlgorithm<EditingInFlatTreeStrategy>;
 
 }  // namespace blink
 

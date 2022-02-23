@@ -117,7 +117,8 @@ public class AutofillAssistantDetailsUiTest {
                     mTestRule.getActivity().getResources(), R.drawable.btn_close);
 
             return new AssistantDetailsCoordinator(InstrumentationRegistry.getTargetContext(),
-                    model, new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
+                    new AssistantStaticDependenciesChrome().createInfoPageUtil(), model,
+                    new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
         });
 
         runOnUiThreadBlocking(()

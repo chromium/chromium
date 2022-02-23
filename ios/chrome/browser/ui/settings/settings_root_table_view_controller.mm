@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #include "base/notreached.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/bar_button_activity_indicator.h"
@@ -106,7 +107,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                            target:nil
                            action:nil];
 
-  UIBarButtonItem* toolbarLeftButton = nil;
+  UIBarButtonItem* toolbarLeftButton = flexibleSpace;
   if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
     toolbarLeftButton = self.deleteButton;
   } else if (self.shouldShowAddButtonInToolbar) {
@@ -117,14 +118,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
       self.tableView.editing ? [self createEditModeDoneButtonForToolbar:YES]
                              : [self createEditButtonForToolbar:YES];
 
-  if (toolbarLeftButton) {
-    [self
-        setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
+  [self setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
                animated:YES];
-  } else {
-    [self setToolbarItems:@[ flexibleSpace, editOrDoneButton, flexibleSpace ]
-                 animated:YES];
-  }
 
   if (self.tableView.editing) {
     self.deleteButton.enabled = NO;
@@ -188,6 +183,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
   self.backButtonItem = self.navigationItem.leftBarButtonItem;
   self.shouldShowDeleteButtonInToolbar = YES;
+  self.extendedLayoutIncludesOpaqueBars = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -251,10 +247,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
   DCHECK(self.dispatcher);
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
   [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
@@ -287,17 +284,20 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                              : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
   [button setEnabled:[self editButtonEnabled]];
+  button.accessibilityIdentifier = kSettingsToolbarEditButtonId;
   return button;
 }
 
 - (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar {
   // Create a custom Done bar button item, as Material Navigation Bar does not
   // handle a system UIBarButtonSystemItemDone item.
-  return [[UIBarButtonItem alloc]
+  UIBarButtonItem* button = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
               style:(toolbar ? UIBarButtonItemStylePlain
                              : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
+  button.accessibilityIdentifier = kSettingsToolbarEditDoneButtonId;
+  return button;
 }
 
 - (UIBarButtonItem*)createEditModeCancelButton {

@@ -48,24 +48,35 @@ DrawImage::DrawImage(PaintImage image,
                      const SkIRect& src_rect,
                      PaintFlags::FilterQuality filter_quality,
                      const SkM44& matrix,
+                     absl::optional<size_t> frame_index)
+    : paint_image_(std::move(image)),
+      use_dark_mode_(use_dark_mode),
+      src_rect_(src_rect),
+      filter_quality_(filter_quality),
+      frame_index_(frame_index) {
+  matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
+}
+
+DrawImage::DrawImage(PaintImage image,
+                     bool use_dark_mode,
+                     const SkIRect& src_rect,
+                     PaintFlags::FilterQuality filter_quality,
+                     const SkM44& matrix,
                      absl::optional<size_t> frame_index,
-                     const absl::optional<gfx::ColorSpace>& color_space,
-                     float sdr_white_level)
+                     const TargetColorParams& target_color_params)
     : paint_image_(std::move(image)),
       use_dark_mode_(use_dark_mode),
       src_rect_(src_rect),
       filter_quality_(filter_quality),
       frame_index_(frame_index),
-      target_color_space_(color_space),
-      sdr_white_level_(sdr_white_level) {
+      target_color_params_(target_color_params) {
   matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
 }
 
 DrawImage::DrawImage(const DrawImage& other,
                      float scale_adjustment,
                      size_t frame_index,
-                     const gfx::ColorSpace& color_space,
-                     float sdr_white_level)
+                     const TargetColorParams& target_color_params)
     : paint_image_(other.paint_image_),
       use_dark_mode_(other.use_dark_mode_),
       src_rect_(other.src_rect_),
@@ -74,11 +85,7 @@ DrawImage::DrawImage(const DrawImage& other,
                           other.scale_.height() * scale_adjustment)),
       matrix_is_decomposable_(other.matrix_is_decomposable_),
       frame_index_(frame_index),
-      target_color_space_(color_space),
-      sdr_white_level_(sdr_white_level) {
-  if (sdr_white_level_ == gfx::ColorSpace::kDefaultSDRWhiteLevel)
-    sdr_white_level_ = other.sdr_white_level_;
-}
+      target_color_params_(target_color_params) {}
 
 DrawImage::DrawImage(const DrawImage& other) = default;
 DrawImage::DrawImage(DrawImage&& other) = default;
@@ -93,8 +100,7 @@ bool DrawImage::operator==(const DrawImage& other) const {
          src_rect_ == other.src_rect_ &&
          filter_quality_ == other.filter_quality_ && scale_ == other.scale_ &&
          matrix_is_decomposable_ == other.matrix_is_decomposable_ &&
-         target_color_space_ == other.target_color_space_ &&
-         sdr_white_level_ == other.sdr_white_level_;
+         target_color_params_ == other.target_color_params_;
 }
 
 }  // namespace cc

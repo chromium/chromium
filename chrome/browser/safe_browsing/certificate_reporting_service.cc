@@ -35,12 +35,6 @@ bool ReportCompareFunc(const CertificateReportingService::Report& item1,
   return item1.creation_time > item2.creation_time;
 }
 
-// Records an UMA histogram of the net errors when certificate reports
-// fail to send.
-void RecordUMAOnFailure(int net_error) {
-  base::UmaHistogramSparse("SSL.CertificateErrorReportFailure", -net_error);
-}
-
 void RecordUMAEvent(CertificateReportingService::ReportOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION(
       CertificateReportingService::kReportEventHistogram, outcome,
@@ -169,7 +163,6 @@ void CertificateReportingService::Reporter::ErrorCallback(
     int report_id,
     int net_error,
     int http_response_code) {
-  RecordUMAOnFailure(net_error);
   RecordUMAEvent(ReportOutcome::FAILED);
   if (retries_enabled_) {
     auto it = inflight_reports_.find(report_id);

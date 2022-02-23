@@ -73,7 +73,7 @@ absl::optional<std::string> MapJsonErrorToReason(
     // Returns the reason of the first error.
     const base::ListValue* errors = nullptr;
     if (error->GetListWithoutPathExpansion(kErrorErrorsKey, &errors)) {
-      const base::Value& first_error = errors->GetList()[0];
+      const base::Value& first_error = errors->GetListDeprecated()[0];
       if (first_error.is_dict()) {
         const std::string* reason = first_error.FindStringKey(kErrorReasonKey);
         if (reason)

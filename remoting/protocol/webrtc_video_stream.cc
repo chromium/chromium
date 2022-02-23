@@ -12,7 +12,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
-#include "remoting/protocol/webrtc_frame_scheduler_simple.h"
+#include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
@@ -23,13 +23,6 @@
 
 namespace remoting {
 namespace protocol {
-
-namespace {
-
-const char kStreamLabel[] = "screen_stream";
-const char kVideoLabel[] = "screen_video";
-
-}  // namespace
 
 struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   FrameStats() = default;
@@ -46,9 +39,9 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
   uint32_t capturer_id = 0;
 };
 
-WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
-    : video_stats_dispatcher_(kStreamLabel),
-      session_options_(session_options) {}
+WebrtcVideoStream::WebrtcVideoStream(const std::string& stream_name,
+                                     const SessionOptions& session_options)
+    : stream_name_(stream_name), session_options_(session_options) {}
 
 WebrtcVideoStream::~WebrtcVideoStream() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -76,11 +69,11 @@ void WebrtcVideoStream::Start(
       base::BindRepeating(&WebrtcVideoStream::OnSinkAddedOrUpdated,
                           weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
-      peer_connection_factory->CreateVideoTrack(kVideoLabel,
+      peer_connection_factory->CreateVideoTrack(stream_name_,
                                                 video_track_source_);
 
   webrtc::RtpTransceiverInit init;
-  init.stream_ids = {kStreamLabel};
+  init.stream_ids = {stream_name_};
 
   // value() DCHECKs if AddTransceiver() fails, which only happens if a track
   // was already added with the stream label.
@@ -91,16 +84,12 @@ void WebrtcVideoStream::Start(
 
   video_encoder_factory->SetVideoChannelStateObserver(
       weak_factory_.GetWeakPtr());
-  scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
+  scheduler_ = std::make_unique<WebrtcFrameSchedulerConstantRate>();
   scheduler_->Start(base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
-
-  video_stats_dispatcher_.Init(webrtc_transport->CreateOutgoingChannel(
-                                   video_stats_dispatcher_.channel_name()),
-                               this);
 }
 
-void WebrtcVideoStream::SelectSource(int id) {
+void WebrtcVideoStream::SelectSource(webrtc::ScreenId id) {
   capturer_->SelectSource(id);
 }
 
@@ -126,11 +115,6 @@ void WebrtcVideoStream::SetLosslessColor(bool want_lossless) {
 void WebrtcVideoStream::SetObserver(Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   observer_ = observer;
-}
-
-void WebrtcVideoStream::OnEncoderReady() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  scheduler_->OnEncoderReady();
 }
 
 void WebrtcVideoStream::OnKeyFrameRequested() {
@@ -179,16 +163,6 @@ void WebrtcVideoStream::OnCaptureResult(
                                          std::move(current_frame_stats_));
 }
 
-void WebrtcVideoStream::OnChannelInitialized(
-    ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(&video_stats_dispatcher_ == channel_dispatcher);
-}
-void WebrtcVideoStream::OnChannelClosed(
-    ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(&video_stats_dispatcher_ == channel_dispatcher);
-  LOG(WARNING) << "video_stats channel was closed.";
-}
-
 void WebrtcVideoStream::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -202,7 +176,6 @@ void WebrtcVideoStream::CaptureNextFrame() {
 
 void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  OnEncoderReady();
 
   VLOG(0) << "WebRTC requested max framerate: " << wants.max_framerate_fps
           << " FPS";
@@ -227,7 +200,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   }
 
   // Send FrameStats message.
-  if (video_stats_dispatcher_.is_connected()) {
+  if (video_stats_dispatcher_ && video_stats_dispatcher_->is_connected()) {
     // The down-cast is safe, because the |stats| object was originally created
     // by this class and attached to the frame.
     const auto* current_frame_stats =
@@ -273,7 +246,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     // interface, and move this logic to the encoders.
     stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
 
-    video_stats_dispatcher_.OnVideoFrameStats(result.frame_id, stats);
+    video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
   }
 }
 

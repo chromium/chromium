@@ -8,7 +8,9 @@
 #include <set>
 #include <utility>
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/stat.h>
 #endif
 
@@ -16,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
 #include "base/token.h"
@@ -427,7 +428,7 @@ ExternalMojoBroker::ExternalMojoBroker(const std::string& broker_path) {
       named_channel.TakeServerEndpoint();
   DCHECK(server_endpoint.is_valid());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   chmod(broker_path.c_str(), 0770);
 #endif
 

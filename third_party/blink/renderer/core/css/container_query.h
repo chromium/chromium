@@ -6,35 +6,64 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 
 namespace blink {
 
-class CORE_EXPORT ContainerQuery final
-    : public GarbageCollected<ContainerQuery> {
+// Not to be confused with regular selectors. This refers to container
+// selection by e.g. name() or type().
+//
+// https://drafts.csswg.org/css-contain-3/#container-rule
+class CORE_EXPORT ContainerSelector {
  public:
-  ContainerQuery(const AtomicString& name, scoped_refptr<MediaQuerySet>);
-  ContainerQuery(const ContainerQuery&);
+  ContainerSelector() = default;
+  ContainerSelector(const ContainerSelector&) = default;
+  explicit ContainerSelector(const AtomicString& name) : name_(name) {}
+  explicit ContainerSelector(unsigned type) : type_(type) {}
+  explicit ContainerSelector(const AtomicString& name, unsigned type)
+      : name_(name), type_(type) {}
+
+  bool IsNearest() const { return name_.IsNull() && type_ == 0; }
 
   const AtomicString& Name() const { return name_; }
-  PhysicalAxes QueriedAxes() const { return queried_axes_; }
+  unsigned Type() const { return type_; }
 
   String ToString() const;
 
-  void Trace(Visitor*) const {}
+ private:
+  AtomicString name_;
+  // EContainerType
+  unsigned type_ = 0;
+};
+
+class CORE_EXPORT ContainerQuery final
+    : public GarbageCollected<ContainerQuery> {
+ public:
+  ContainerQuery(const ContainerSelector&,
+                 std::unique_ptr<MediaQueryExpNode> query);
+  ContainerQuery(const ContainerQuery&);
+
+  const ContainerSelector& Selector() const { return selector_; }
+  const ContainerQuery* Parent() const { return parent_.Get(); }
+
+  ContainerQuery* CopyWithParent(const ContainerQuery*) const;
+
+  String ToString() const;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
 
  private:
   friend class ContainerQueryTest;
   friend class ContainerQueryEvaluator;
   friend class CSSContainerRule;
+  friend class StyleRuleContainer;
 
-  scoped_refptr<MediaQuerySet> MediaQueries() const { return media_queries_; }
+  const MediaQueryExpNode& Query() const { return *query_; }
 
-  AtomicString name_;
-  // TODO(crbug.com/1214810): Refactor to avoid internal MediaQuerySet.
-  scoped_refptr<MediaQuerySet> media_queries_;
-  PhysicalAxes queried_axes_{kPhysicalAxisNone};
+  ContainerSelector selector_;
+  std::unique_ptr<MediaQueryExpNode> query_;
+  Member<const ContainerQuery> parent_;
 };
 
 }  // namespace blink

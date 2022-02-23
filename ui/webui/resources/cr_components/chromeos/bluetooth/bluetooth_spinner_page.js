@@ -7,6 +7,8 @@
  * UI element which shows a loading spinner.
  */
 
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
 import './bluetooth_base_page.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ButtonBarState, ButtonState} from './bluetooth_types.js';

@@ -41,10 +41,25 @@ VideoFrameFileWriter::VideoFrameFileWriter(
 }
 
 VideoFrameFileWriter::~VideoFrameFileWriter() {
-  base::AutoLock auto_lock(frame_writer_lock_);
-  DCHECK_EQ(0u, num_frames_writing_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_sequence_checker_);
+  if (frame_writer_thread_.task_runner()) {
+    // It's safe to use base::Unretained(this) because we own
+    // |frame_writer_thread_|, so |this| should be valid until at least the
+    // frame_writer_thread_.Stop() returns below which won't happen until
+    // CleanUpOnWriterThread() returns.
+    frame_writer_thread_.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&VideoFrameFileWriter::CleanUpOnWriterThread,
+                                  base::Unretained(this)));
+  }
 
   frame_writer_thread_.Stop();
+  base::AutoLock auto_lock(frame_writer_lock_);
+  DCHECK_EQ(0u, num_frames_writing_);
+}
+
+void VideoFrameFileWriter::CleanUpOnWriterThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
+  video_frame_mapper_.reset();
 }
 
 // static
@@ -81,6 +96,7 @@ std::unique_ptr<VideoFrameFileWriter> VideoFrameFileWriter::Create(
 }
 
 bool VideoFrameFileWriter::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(writer_sequence_checker_);
   if (!frame_writer_thread_.Start()) {
     LOG(ERROR) << "Failed to start file writer thread";
     return false;

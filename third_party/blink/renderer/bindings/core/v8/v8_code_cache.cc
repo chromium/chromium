@@ -10,11 +10,11 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -103,10 +103,10 @@ std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
 V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
-                               const ScriptSourceCode& source) {
-  return GetCompileOptions(cache_options, source.CacheHandler(),
-                           source.Source().length(),
-                           source.SourceLocationType());
+                               const ClassicScript& classic_script) {
+  return GetCompileOptions(cache_options, classic_script.CacheHandler(),
+                           classic_script.SourceText().length(),
+                           classic_script.SourceLocationType());
 }
 
 std::tuple<v8::ScriptCompiler::CompileOptions,
@@ -244,7 +244,7 @@ static void ProduceCacheInternal(
               static_cast<int>(100.0 * length / source_text_length);
           DEFINE_THREAD_SAFE_STATIC_LOCAL(
               CustomCountHistogram, code_cache_size_histogram,
-              ("V8.CodeCacheSizeRatio", 0, 10000, 50));
+              ("V8.CodeCacheSizeRatio", 1, 10000, 50));
           code_cache_size_histogram.Count(cache_size_ratio);
         }
         cache_handler->ClearCachedMetadata(

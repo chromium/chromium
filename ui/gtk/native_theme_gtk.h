@@ -42,6 +42,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                            const gfx::Rect& rect,
                            ColorScheme color_scheme) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                           const ui::ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
@@ -53,15 +54,18 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                             ColorScheme color_scheme) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
-  void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          State state,
-                          const gfx::Rect& rect,
-                          const MenuSeparatorExtraParams& menu_separator,
-                          ColorScheme color_scheme) const override;
+  void PaintMenuSeparator(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuSeparatorExtraParams& menu_separator) const override;
   void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ui::ColorProvider* color_provider,
                                State state,
                                const gfx::Rect& rect,
                                const MenuItemExtraParams& menu_item,
@@ -75,13 +79,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
- protected:
-  // ui::NativeThemeBase:
-  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
-
  private:
   friend class base::NoDestructor<NativeThemeGtk>;
 
@@ -89,8 +86,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   ~NativeThemeGtk() override;
 
   void SetThemeCssOverride(ScopedCssProvider provider);
-
-  mutable absl::optional<SkColor> color_cache_[kColorId_NumColors];
 
   ScopedCssProvider theme_css_override_;
 };

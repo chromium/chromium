@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"

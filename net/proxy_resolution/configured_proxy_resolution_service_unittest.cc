@@ -13,8 +13,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -148,7 +148,8 @@ class ConfiguredProxyResolutionServiceTest : public ::testing::Test,
 
  private:
   NeverPollPolicy never_poll_policy_;
-  const ConfiguredProxyResolutionService::PacPollPolicy* previous_policy_;
+  raw_ptr<const ConfiguredProxyResolutionService::PacPollPolicy>
+      previous_policy_;
 };
 
 const char kValidPacScript1[] = "pac-script-v1-FindProxyForURL";
@@ -537,7 +538,7 @@ class DeletingCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<T>* deletee_;
+  raw_ptr<std::unique_ptr<T>> deletee_;
 };
 
 template <typename T>
@@ -3936,7 +3937,7 @@ class SanitizeUrlHelper {
     factory = new MockAsyncProxyResolverFactory(false);
 
     service_ = std::make_unique<ConfiguredProxyResolutionService>(
-        std::move(config_service), base::WrapUnique(factory), nullptr,
+        std::move(config_service), base::WrapUnique(factory.get()), nullptr,
         /*quick_check_enabled=*/true);
 
     // Do an initial request to initialize the service (configure the PAC
@@ -3994,7 +3995,7 @@ class SanitizeUrlHelper {
 
  private:
   MockAsyncProxyResolver resolver;
-  MockAsyncProxyResolverFactory* factory;
+  raw_ptr<MockAsyncProxyResolverFactory> factory;
   std::unique_ptr<ConfiguredProxyResolutionService> service_;
 };
 

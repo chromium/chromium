@@ -68,8 +68,9 @@ class WebAppAudioFocusBrowserTest : public WebAppControllerBrowserTest {
   }
 
   content::WebContents* AddTestPageTabAtIndex(int index) {
-    AddTabAtIndex(index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
-                  ui::PAGE_TRANSITION_TYPED);
+    EXPECT_TRUE(AddTabAtIndex(
+        index, embedded_test_server()->GetURL(kAudioFocusTestPageURL),
+        ui::PAGE_TRANSITION_TYPED));
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(tab));
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
     replacements.SetQuery(new_query_string.c_str(), new_query);
     GURL new_url =
         web_contents->GetLastCommittedURL().ReplaceComponents(replacements);
-    NavigateInRenderer(web_contents, new_url);
+    ASSERT_TRUE(NavigateInRenderer(web_contents, new_url));
     EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
   }
 
@@ -166,7 +167,9 @@ IN_PROC_BROWSER_TEST_F(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
 
   // Navigate away and check that the group id is still the same because we are
   // part of the same window.
-  NavigateInRenderer(web_contents, GURL("https://www.example.com"));
+  // TODO(https://crbug.com/1204391): Understand why this returns false.
+  ASSERT_FALSE(
+      NavigateInRenderer(web_contents, GURL("https://www.example.com")));
   EXPECT_EQ(group_id, GetAudioFocusGroupId(web_contents));
 }
 

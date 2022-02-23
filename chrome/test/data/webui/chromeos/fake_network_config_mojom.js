@@ -78,6 +78,9 @@
     /** @private {!Map<string, !Array<!Object>>} */
     this.trafficCountersMap_ = new Map();
 
+    /** @private {!Map<string, !Array<!Object>>} */
+    this.autoResetValuesMap_ = new Map();
+
     this.resetForTest();
   }
 
@@ -128,6 +131,9 @@
 
     this.vpnProviders_ = [];
 
+    this.serverCas_ = [];
+    this.userCerts_ = [];
+
     ['getNetworkState',
      'getNetworkStateList',
      'getDeviceStateList',
@@ -145,6 +151,7 @@
      'getSupportedVpnTypes',
      'requestTrafficCounters',
      'resetTrafficCounters',
+     'setTrafficCountersAutoReset',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -212,6 +219,7 @@
     });
     if (idx >= 0) {
       this.networkStates_[idx] = networkState;
+      this.onNetworkStateChanged(networkState);
     } else {
       this.networkStates_.push(networkState);
     }
@@ -261,7 +269,31 @@
     assert(!!network, 'Network not found: ' + guid);
     const managed = this.managedProperties_.get(guid);
     if (managed) {
-      managed.trafficCounterResetTime = lastResetTime;
+      assert(
+          !!managed.trafficCounterProperties,
+          'Missing traffic counter properties for network: ' + guid);
+      managed.trafficCounterProperties.lastResetTime = lastResetTime;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {string} friendlyDate a human readable date representing
+   * the last reset time
+   *
+   */
+  setFriendlyDateForTest(guid, friendlyDate) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      assert(
+          !!managed.trafficCounterProperties,
+          'Missing traffic counter properties for network: ' + guid);
+      managed.trafficCounterProperties.friendlyDate = friendlyDate;
     }
     this.onActiveNetworksChanged();
   }
@@ -355,6 +387,15 @@
 
   onNetworkStateListChanged() {
     this.observers_.forEach(o => o.onNetworkStateListChanged());
+  }
+
+  onNetworkStateChanged(networkState) {
+    // Calling onActiveNetworksChanged will trigger mojo checks on all
+    // NetworkStateProperties. Ensure the networkState has name and guid field.
+    if (networkState.name === undefined || networkState.guid === undefined) {
+      return;
+    }
+    this.observers_.forEach(o => o.onNetworkStateChanged(networkState));
   }
 
   onDeviceStateListChanged() {
@@ -575,6 +616,11 @@
     });
   }
 
+  /** @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy */
+  setGlobalPolicy(globalPolicy) {
+    this.globalPolicy_ = globalPolicy;
+  }
+
   /**
    * @return {!Promise<{
    *     result: !Array<!chromeos.networkConfig.mojom.VpnProvider>}>}
@@ -651,5 +697,37 @@
       counter.txBytes = 0;
     });
     this.methodCalled('resetTrafficCounters');
+  }
+
+  /**
+   * @param {string} guid
+   * @param {boolean} autoReset
+   * @param {?chromeos.networkConfig.mojom.UInt32Value} resetDay
+   */
+  setAutoResetValues_(guid, autoReset, resetDay) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      managed.trafficCounterProperties.autoReset = autoReset;
+      managed.trafficCounterProperties.userSpecifiedResetDay =
+          resetDay ? resetDay.value : 1;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {boolean} autoReset
+   * @param {?chromeos.networkConfig.mojom.UInt32Value} resetDay
+   */
+  setTrafficCountersAutoReset(guid, autoReset, resetDay) {
+    return new Promise(resolve => {
+      this.methodCalled('setTrafficCountersAutoReset');
+      this.setAutoResetValues_(guid, autoReset, resetDay);
+      resolve(true);
+    });
   }
 }

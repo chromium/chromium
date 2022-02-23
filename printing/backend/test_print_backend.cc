@@ -41,7 +41,7 @@ mojom::ResultCode ReportErrorNotImplemented(const base::Location& from_here) {
 
 }  // namespace
 
-TestPrintBackend::TestPrintBackend() : PrintBackend(/*locale=*/std::string()) {}
+TestPrintBackend::TestPrintBackend() = default;
 
 TestPrintBackend::~TestPrintBackend() = default;
 

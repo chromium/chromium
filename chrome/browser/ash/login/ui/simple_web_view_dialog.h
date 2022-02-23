@@ -67,7 +67,7 @@ class SimpleWebViewDialog : public views::View,
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
 
   // Implements LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;

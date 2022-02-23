@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
 

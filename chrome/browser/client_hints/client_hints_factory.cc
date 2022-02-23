@@ -50,7 +50,7 @@ KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
       HostContentSettingsMapFactory::GetForProfile(context),
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
-      embedder_support::GetUserAgentMetadata());
+      g_browser_process->local_state());
 }
 
 content::BrowserContext* ClientHintsFactory::GetBrowserContextToUse(

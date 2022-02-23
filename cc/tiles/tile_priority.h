@@ -63,6 +63,8 @@ struct CC_EXPORT TilePriority {
 
 std::string TilePriorityBinToString(TilePriority::PriorityBin bin);
 
+// It is expected the values are ordered from most restrictive to least
+// restrictive. See IsTileMemoryLimitPolicyMoreRestictive().
 enum TileMemoryLimitPolicy {
   // Nothing. This mode is used when visible is set to false.
   ALLOW_NOTHING = 0,  // Decaf.
@@ -77,6 +79,10 @@ enum TileMemoryLimitPolicy {
   ALLOW_ANYTHING = 3  // Venti.
 };
 std::string TileMemoryLimitPolicyToString(TileMemoryLimitPolicy policy);
+
+// Returns true if `policy1` is more restrictive than `policy2`.
+bool IsTileMemoryLimitPolicyMoreRestictive(TileMemoryLimitPolicy policy1,
+                                           TileMemoryLimitPolicy policy2);
 
 enum TreePriority {
   SAME_PRIORITY_FOR_BOTH_TREES,

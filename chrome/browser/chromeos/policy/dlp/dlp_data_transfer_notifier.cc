@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
-#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "ui/aura/window_tree_host.h"
@@ -16,6 +16,14 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/window_tree_host_lookup.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_browser_helper_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -40,32 +48,39 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
                                  const gfx::Size& bubble_size) {
   display::Screen* screen = display::Screen::GetScreen();
   display::Display display = screen->GetPrimaryDisplay();
-  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* host = dlp::GetActiveWindowTreeHost();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  DCHECK(host);
   ui::TextInputClient* text_input_client =
       host->GetInputMethod()->GetTextInputClient();
 
+  gfx::Point widget_origin =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+
   // `text_input_client` may be null. For example, in clamshell mode and without
   // any window open.
-  if (!text_input_client)
-    return;
+  if (text_input_client) {
+    gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
 
-  gfx::Rect caret_bounds = text_input_client->GetCaretBounds();
-
-  // Note that the width of caret's bounds may be zero in some views (such as
-  // the search bar of Google search web page). So we cannot use
-  // gfx::Size::IsEmpty() here. In addition, the applications using IFrame may
-  // provide unreliable `caret_bounds` which are not fully contained by the
-  // display bounds.
-  const bool caret_bounds_are_valid = caret_bounds.size() != gfx::Size() &&
-                                      IsRectContainedByAnyDisplay(caret_bounds);
-  if (!caret_bounds_are_valid) {
-    caret_bounds.set_origin(
-        display::Screen::GetScreen()->GetCursorScreenPoint());
+    // Note that the width of caret's bounds may be zero in some views (such as
+    // the search bar of Google search web page). So we cannot use
+    // gfx::Size::IsEmpty() here. In addition, the applications using IFrame may
+    // provide unreliable `caret_bounds` which are not fully contained by the
+    // display bounds.
+    const bool caret_bounds_are_valid =
+        caret_bounds.size() != gfx::Size() &&
+        IsRectContainedByAnyDisplay(caret_bounds);
+    if (caret_bounds_are_valid)
+      widget_origin = caret_bounds.origin();
   }
 
   gfx::Rect widget_bounds =
-      gfx::Rect(caret_bounds.x(), caret_bounds.y(), bubble_size.width(),
+      gfx::Rect(widget_origin.x(), widget_origin.y(), bubble_size.width(),
                 bubble_size.height());
   widget_bounds.AdjustToFit(display.work_area());
 
@@ -92,6 +107,11 @@ views::Widget::InitParams GetWidgetInitParams() {
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = nullptr;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // WaylandPopups in Lacros need a context window to allow custom positioning.
+  // Here, we pass the active Lacros window as context for the bubble widget.
+  params.context = dlp::GetActiveAuraWindow();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return params;
 }
 

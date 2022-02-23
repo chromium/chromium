@@ -90,8 +90,9 @@ void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 }
 
 void StereoPannerHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   stereo_panner_ = std::make_unique<StereoPanner>(Context()->sampleRate());
 
@@ -107,8 +108,9 @@ void StereoPannerHandler::SetChannelCount(unsigned channel_count,
   if (channel_count > 0 && channel_count <= 2) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax)
+      if (InternalChannelCountMode() != kMax) {
         UpdateChannelsForInputs();
+      }
     }
   } else {
     exception_state.ThrowDOMException(
@@ -142,8 +144,9 @@ void StereoPannerHandler::SetChannelCountMode(const String& mode,
     new_channel_count_mode_ = old_mode;
   }
 
-  if (new_channel_count_mode_ != old_mode)
+  if (new_channel_count_mode_ != old_mode) {
     Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  }
 }
 
 // ----------------------------------------------------------------
@@ -174,8 +177,9 @@ StereoPannerNode* StereoPannerNode::Create(BaseAudioContext* context,
                                            ExceptionState& exception_state) {
   StereoPannerNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

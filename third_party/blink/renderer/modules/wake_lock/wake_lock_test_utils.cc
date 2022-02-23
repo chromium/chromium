@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,7 +16,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_sentinel.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/wake_lock/wake_lock_sentinel.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
@@ -37,7 +39,7 @@ void RunWithStack(base::RunLoop* run_loop) {
 
 // Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
 // function that invokes |callback| when a ScriptPromise is resolved.
-class ClosureRunnerCallable final : public NewScriptFunction::Callable {
+class ClosureRunnerCallable final : public ScriptFunction::Callable {
  public:
   explicit ClosureRunnerCallable(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
@@ -171,7 +173,7 @@ void MockPermissionService::SetPermissionResponse(WakeLockType type,
 }
 
 void MockPermissionService::OnConnectionError() {
-  ignore_result(receiver_.Unbind());
+  std::ignore = receiver_.Unbind();
 }
 
 bool MockPermissionService::GetWakeLockTypeFromDescriptor(
@@ -288,7 +290,7 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 
 void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
       GetScriptState(),
       MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
@@ -302,7 +304,7 @@ void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
   base::RunLoop run_loop;
   promise.Then(
       nullptr,
-      MakeGarbageCollected<NewScriptFunction>(
+      MakeGarbageCollected<ScriptFunction>(
           GetScriptState(),
           MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the

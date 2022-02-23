@@ -34,7 +34,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
@@ -50,8 +49,7 @@ public class SyncErrorCardPreferenceTest {
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_error badge
     // for Sync error card.
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountInfoService());
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -98,25 +96,6 @@ public class SyncErrorCardPreferenceTest {
     @AfterClass
     public static void tearDownAfterActivityDestroyed() {
         ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-    }
-
-    @Test
-    @LargeTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAndroidSyncDisabled(boolean nightModeEnabled) throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeSyncServiceImpl.setSyncAllowedByPlatform(false);
-
-            Assert.assertEquals("ANDROID_SYNC_DISABLED SyncError should be set",
-                    SyncSettingsUtils.SyncError.ANDROID_SYNC_DISABLED,
-                    SyncSettingsUtils.getSyncError());
-        });
-
-        mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(
-                getPersonalizedSyncPromoView(), "sync_error_card_android_sync_disabled");
     }
 
     @Test

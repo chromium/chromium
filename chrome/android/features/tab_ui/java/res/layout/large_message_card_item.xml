@@ -77,6 +77,6 @@
             android:layout_marginEnd="16dp"
             android:layout_gravity="end"
             android:contentDescription="@string/close"
-            android:tint="?attr/default_icon_color" />
+            android:tint="@macro/default_icon_color" />
     </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 </org.chromium.chrome.browser.tasks.tab_management.LargeMessageCardView>

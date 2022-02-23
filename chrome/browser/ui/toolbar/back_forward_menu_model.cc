@@ -292,6 +292,8 @@ void BackForwardMenuModel::OnFavIconDataAvailable(
 
 int BackForwardMenuModel::GetHistoryItemCount() const {
   WebContents* contents = GetWebContents();
+  if (!contents)
+    return 0;
 
   int items = contents->GetController().GetCurrentEntryIndex();
   if (model_type_ == ModelType::kForward) {
@@ -403,9 +405,9 @@ std::u16string BackForwardMenuModel::GetShowFullHistoryLabel() const {
 
 WebContents* BackForwardMenuModel::GetWebContents() const {
   // We use the test web contents if the unit test has specified it.
-  return test_web_contents_ ?
-      test_web_contents_ :
-      browser_->tab_strip_model()->GetActiveWebContents();
+  return test_web_contents_
+             ? test_web_contents_.get()
+             : browser_->tab_strip_model()->GetActiveWebContents();
 }
 
 int BackForwardMenuModel::MenuIndexToNavEntryIndex(int index) const {

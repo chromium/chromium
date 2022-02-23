@@ -8,18 +8,48 @@
 
 #include <string>
 
+namespace {
+
+const char kFakeDeviceIdForTesting[] = "0123";
+
+}  // namespace
+
 namespace chromeos {
 
 FakeFwupdClient::FakeFwupdClient() = default;
 FakeFwupdClient::~FakeFwupdClient() = default;
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
-void FakeFwupdClient::RequestUpgrades(std::string device_id) {}
 
 void FakeFwupdClient::RequestDevices() {
   // TODO(swifton): This is a stub.
-  auto devices = std::make_unique<FwupdDeviceList>();
+  FwupdDeviceList devices;
   for (auto& observer : observers_)
-    observer.OnDeviceListResponse(devices.get());
+    observer.OnDeviceListResponse(&devices);
+}
+
+void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
+  // TODO(swifton): This is a stub.
+
+  // This matches the behavior of the real class. I.e. if you send an unknown
+  // id, nothing happens.
+  if (device_id != kFakeDeviceIdForTesting)
+    return;
+
+  FwupdUpdateList updates;
+  for (auto& observer : observers_)
+    observer.OnUpdateListResponse(device_id, &updates);
+}
+
+void FakeFwupdClient::InstallUpdate(const std::string& device_id,
+                                    base::ScopedFD file_descriptor,
+                                    FirmwareInstallOptions options) {
+  // This matches the behavior of the real class. I.e. if you send an unknown
+  // id, nothing happens.
+  if (device_id != kFakeDeviceIdForTesting)
+    return;
+
+  for (auto& observer : observers_)
+    observer.OnInstallResponse(install_success_);
 }
 
 }  // namespace chromeos

@@ -313,7 +313,8 @@ typedef NTSTATUS(WINAPI* NtSetInformationThreadFunction)(
 // Partial definition only:
 typedef enum _PROCESSINFOCLASS {
   ProcessBasicInformation = 0,
-  ProcessExecuteFlags = 0x22
+  ProcessExecuteFlags = 0x22,
+  ProcessHandleTable = 0x3A
 } PROCESSINFOCLASS;
 
 // For the structure documentation, see
@@ -723,13 +724,6 @@ typedef NTSTATUS(WINAPI* NtQuerySystemInformation)(
     IN ULONG SystemInformationLength,
     OUT PULONG ReturnLength);
 
-typedef NTSTATUS(WINAPI* NtQueryObject)(IN HANDLE Handle,
-                                        IN OBJECT_INFORMATION_CLASS
-                                            ObjectInformationClass,
-                                        OUT PVOID ObjectInformation,
-                                        IN ULONG ObjectInformationLength,
-                                        OUT PULONG ReturnLength);
-
 // -----------------------------------------------------------------------
 // Strings
 
@@ -760,12 +754,6 @@ typedef VOID(WINAPI* RtlInitUnicodeStringFunction)(IN OUT PUNICODE_STRING
                                                    IN PCWSTR SourceString);
 
 typedef ULONG(WINAPI* RtlNtStatusToDosErrorFunction)(NTSTATUS status);
-
-typedef enum _EVENT_TYPE {
-  NotificationEvent,
-  SynchronizationEvent
-} EVENT_TYPE,
-    *PEVENT_TYPE;
 
 typedef NTSTATUS(WINAPI* NtCreateDirectoryObjectFunction)(
     PHANDLE DirectoryHandle,

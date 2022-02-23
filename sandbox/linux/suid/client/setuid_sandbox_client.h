@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/environment.h"
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {

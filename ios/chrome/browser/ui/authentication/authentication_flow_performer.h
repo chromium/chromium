@@ -37,10 +37,12 @@ class ChromeBrowserState;
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(ChromeIdentity*)identity;
 
-// Signs |identity| with |hostedDomain| into |browserState|.
+// Signs |identity| with |hostedDomain| into |browserState| and calls
+// |completion| after sign-in is complete.
 - (void)signInIdentity:(ChromeIdentity*)identity
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState;
+        toBrowserState:(ChromeBrowserState*)browserState
+            completion:(signin_ui::CompletionCallback)completion;
 
 // Signs out of |browserState| and sends |didSignOut| to the delegate when
 // complete.

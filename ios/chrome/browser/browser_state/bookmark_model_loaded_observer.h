@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_BOOKMARK_MODEL_LOADED_OBSERVER_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_BOOKMARK_MODEL_LOADED_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 
 class ChromeBrowserState;

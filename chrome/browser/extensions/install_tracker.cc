@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "content/public/browser/notification_service.h"

@@ -65,7 +65,8 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // mixed content for now. Once/if the browser should also check form submits
   // for mixed content than this will be allowed to happen and this DCHECK
   // should be updated.
-  DCHECK(navigation_request->frame_tree_node()->parent());
+  DCHECK(navigation_request->GetParentFrameOrOuterDocument());
+
   RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
   DCHECK(!navigation_request->GetRedirectChain().empty());
@@ -178,10 +179,8 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
   // Cancel the prerendering page to prevent the problems that can be the
   // logging UMA, UKM and calling DidChangeVisibleSecurityState() through this
   // throttle.
-  if (mixed_content_frame->GetLifecycleState() ==
-      RenderFrameHost::LifecycleState::kPrerendering) {
-    mixed_content_frame->CancelPrerendering(
-        PrerenderHost::FinalStatus::kMixedContent);
+  if (mixed_content_frame->CancelPrerendering(
+          PrerenderHost::FinalStatus::kMixedContent)) {
     return true;
   }
 
@@ -252,10 +251,11 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
 RenderFrameHostImpl* MixedContentNavigationThrottle::InWhichFrameIsContentMixed(
     FrameTreeNode* node,
     const GURL& url) {
-  // Main frame navigations cannot be mixed content.
+  // Main frame navigations cannot be mixed content. But, fenced frame
+  // navigations should be considered as well because it can be mixed content.
   // TODO(carlosk): except for form submissions which might be supported in the
   // future.
-  if (node->IsMainFrame())
+  if (!node->GetParentOrOuterDocument())
     return nullptr;
 
   // There's no mixed content if any of these are true:
@@ -266,8 +266,9 @@ RenderFrameHostImpl* MixedContentNavigationThrottle::InWhichFrameIsContentMixed(
   // exist, here they are partially fulfilled here  and partially replaced by
   // DoesOriginSchemeRestrictMixedContent.
   RenderFrameHostImpl* mixed_content_frame = nullptr;
-  RenderFrameHostImpl* root = node->parent()->GetMainFrame();
-  RenderFrameHostImpl* parent = node->parent();
+  RenderFrameHostImpl* parent = node->GetParentOrOuterDocument();
+  RenderFrameHostImpl* root = parent->GetOutermostMainFrame();
+
   if (!IsUrlPotentiallySecure(url)) {
     // TODO(carlosk): we might need to check more than just the immediate parent
     // and the root. See https://crbug.com/623486.

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
+#include "device/fido/fido_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -39,6 +40,10 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 base::StringPiece ToString(FidoTransportProtocol protocol);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+AuthenticatorAttachment AuthenticatorAttachmentFromTransport(
+    FidoTransportProtocol transport);
 
 }  // namespace device
 

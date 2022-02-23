@@ -11,7 +11,8 @@
 namespace weblayer {
 
 TrustedCDNObserver::TrustedCDNObserver(content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<TrustedCDNObserver>(*web_contents) {}
 
 TrustedCDNObserver::~TrustedCDNObserver() = default;
 

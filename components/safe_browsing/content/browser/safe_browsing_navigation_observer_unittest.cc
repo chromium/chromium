@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -28,7 +29,10 @@ namespace safe_browsing {
 
 class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
  public:
-  SBNavigationObserverTest() {}
+  SBNavigationObserverTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kOmitNonUserGesturesFromReferrerChain);
+  }
 
   SBNavigationObserverTest(const SBNavigationObserverTest&) = delete;
   SBNavigationObserverTest& operator=(const SBNavigationObserverTest&) = delete;
@@ -48,9 +52,6 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_ =
         new SafeBrowsingNavigationObserver(web_contents(), settings_map_.get(),
                                            navigation_observer_manager_.get());
-
-    scoped_feature_list_.InitAndEnableFeature(
-        kOmitNonUserGesturesFromReferrerChain);
   }
   void TearDown() override {
     delete navigation_observer_;
@@ -182,7 +183,9 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
-  SafeBrowsingNavigationObserver* navigation_observer_;
+  raw_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

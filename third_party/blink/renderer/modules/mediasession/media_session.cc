@@ -195,8 +195,14 @@ void MediaSession::OnMetadataChanged() {
   if (!service)
     return;
 
-  service->SetMetadata(MediaMetadataSanitizer::SanitizeAndConvertToMojo(
-      metadata_, GetSupplementable()->DomWindow()));
+  // OnMetadataChanged() is called from a timer. The Window/ExecutionContext
+  // might detaches in the meantime. See https://crbug.com/1269522
+  ExecutionContext* context = GetSupplementable()->DomWindow();
+  if (!context)
+    return;
+
+  service->SetMetadata(
+      MediaMetadataSanitizer::SanitizeAndConvertToMojo(metadata_, context));
 }
 
 void MediaSession::setActionHandler(const String& action,

@@ -33,9 +33,11 @@ namespace {
 
 using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
 
-// UMA histogram name.
+// UMA histogram names.
 const char kAccountAdditionResultStatus[] =
     "AccountManager.AccountAdditionResultStatus";
+const char kGetAccountsMojoStatus[] =
+    "AccountManager.FacadeGetAccountsMojoStatus";
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -67,6 +69,36 @@ void UnmarshalPersistentError(
     return;
   }
   std::move(callback).Run(maybe_error.value());
+}
+
+// Returns whether an account should be available in ARC after it's added
+// in-session.
+bool GetIsAvailableInArcBySource(
+    AccountManagerFacade::AccountAdditionSource source) {
+  switch (source) {
+    // Accounts added from Ash should be available in ARC.
+    case AccountManagerFacade::AccountAdditionSource::kSettingsAddAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::
+        kAccountManagerMigrationWelcomeScreen:
+    case AccountManagerFacade::AccountAdditionSource::kArc:
+    case AccountManagerFacade::AccountAdditionSource::kOnboarding:
+      return true;
+    // Accounts added from the browser should not be available in ARC.
+    case AccountManagerFacade::AccountAdditionSource::kPrintPreviewDialog:
+    case AccountManagerFacade::AccountAdditionSource::kChromeProfileCreation:
+    case AccountManagerFacade::AccountAdditionSource::kOgbAddAccount:
+      return false;
+    // These are reauthentication cases. ARC visibility shouldn't change for
+    // reauthentication.
+    case AccountManagerFacade::AccountAdditionSource::kContentAreaReauth:
+    case AccountManagerFacade::AccountAdditionSource::
+        kSettingsReauthAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::
+        kAvatarBubbleReauthAccountButton:
+    case AccountManagerFacade::AccountAdditionSource::kChromeExtensionReauth:
+      NOTREACHED();
+      return false;
+  }
 }
 
 }  // namespace
@@ -244,10 +276,22 @@ void AccountManagerFacadeImpl::RemoveObserver(Observer* observer) {
 
 void AccountManagerFacadeImpl::GetAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback) {
+  // Record the status of the mojo connection, to get more information about
+  // https://crbug.com/1287297
+  FacadeMojoStatus mojo_status = FacadeMojoStatus::kOk;
+  if (!account_manager_remote_)
+    mojo_status = FacadeMojoStatus::kNoRemote;
+  else if (remote_version_ < RemoteMinVersions::kGetAccountsMinVersion)
+    mojo_status = FacadeMojoStatus::kVersionMismatch;
+  else if (!is_initialized_)
+    mojo_status = FacadeMojoStatus::kUninitialized;
+  base::UmaHistogramEnumeration(kGetAccountsMojoStatus, mojo_status);
+
   if (!account_manager_remote_ ||
       remote_version_ < RemoteMinVersions::kGetAccountsMinVersion) {
-    // Remote side doesn't support GetAccounts, return an empty list.
-    std::move(callback).Run({});
+    // Remote side is disconnected or doesn't support GetAccounts. Do not return
+    // an empty list as that may cause Lacros to delete user profiles.
+    // TODO(https://crbug.com/1287297): Try to reconnect, or return an error.
     return;
   }
   RunAfterInitializationSequence(
@@ -293,7 +337,14 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 
   base::UmaHistogramEnumeration(kAccountAdditionSource, source);
 
+  crosapi::mojom::AccountAdditionOptionsPtr options =
+      crosapi::mojom::AccountAdditionOptions::New();
+  options->is_available_in_arc = GetIsAvailableInArcBySource(source);
+  options->show_arc_availability_picker =
+      (source == AccountManagerFacade::AccountAdditionSource::kArc);
+
   account_manager_remote_->ShowAddAccountDialog(
+      std::move(options),
       base::BindOnce(&AccountManagerFacadeImpl::OnShowAddAccountDialogFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -367,6 +418,12 @@ void AccountManagerFacadeImpl::RemoveAccountForTesting(
 std::string AccountManagerFacadeImpl::
     GetAccountAdditionResultStatusHistogramNameForTesting() {
   return kAccountAdditionResultStatus;
+}
+
+// static
+std::string
+AccountManagerFacadeImpl::GetAccountsMojoStatusHistogramNameForTesting() {
+  return kGetAccountsMojoStatus;
 }
 
 void AccountManagerFacadeImpl::OnReceiverReceived(

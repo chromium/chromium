@@ -8,18 +8,18 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/native_library.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_mechanism.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <GSS/gssapi.h>
-#elif defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_FREEBSD)
 #include <gssapi/gssapi.h>
 #else
 #include <gssapi.h>

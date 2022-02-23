@@ -7,13 +7,6 @@
 namespace media_router {
 namespace prefs {
 
-// Whether or not the user has explicitly set the cloud services preference
-// through the first run flow.
-const char kMediaRouterCloudServicesPrefSet[] =
-    "media_router.cloudservices.prefset";
-// Whether or not the user has enabled cloud services with Media Router.
-const char kMediaRouterEnableCloudServices[] =
-    "media_router.cloudservices.enabled";
 // Whether or not the user has enabled Media Remoting. Defaults to true.
 const char kMediaRouterMediaRemotingEnabled[] =
     "media_router.media_remoting.enabled";

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -51,6 +52,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
                                    const AppId& to_app) override;
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const AppId& app_id) override;
+  bool IsAppInQuickLaunchBar(const AppId& app_id) const override;
   bool IsInAppWindow(content::WebContents* web_contents,
                      const AppId* app_id) const override;
   void NotifyOnAssociatedAppChanged(content::WebContents* web_contents,
@@ -78,7 +80,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Attempts to uninstall the given web app id. Meant to be used with OS-level
   // uninstallation support/hooks.
   void UninstallWebAppFromStartupSwitch(const AppId& app_id);
@@ -107,10 +109,10 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  WebAppSyncBridge* sync_bridge_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
 
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;
   std::map<AppId, size_t> num_windows_for_apps_map_;

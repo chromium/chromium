@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 
 #include "base/check_op.h"
+#include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -134,7 +135,7 @@ InstallStageTracker* InstallStageTracker::Get(
 InstallStageTracker::UserInfo InstallStageTracker::GetUserInfo(
     Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return UserInfo();
 

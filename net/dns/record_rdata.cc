@@ -68,7 +68,7 @@ std::unique_ptr<SrvRecordRdata> SrvRecordRdata::Create(
 
   std::unique_ptr<SrvRecordRdata> rdata(new SrvRecordRdata);
 
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   // 2 bytes for priority, 2 bytes for weight, 2 bytes for port.
   reader.ReadU16(&rdata->priority_);
   reader.ReadU16(&rdata->weight_);
@@ -318,7 +318,7 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
   std::unique_ptr<OptRecordRdata> rdata(new OptRecordRdata);
   rdata->buf_.assign(data.begin(), data.end());
 
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   while (reader.remaining() > 0) {
     uint16_t opt_code, opt_data_size;
     base::StringPiece opt_data;
@@ -412,7 +412,7 @@ uint16_t IntegrityRecordRdata::Type() const {
 // static
 std::unique_ptr<IntegrityRecordRdata> IntegrityRecordRdata::Create(
     const base::StringPiece& data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   // Parse a U16-prefixed |Nonce| followed by a |Digest|.
   base::StringPiece parsed_nonce, parsed_digest;
 

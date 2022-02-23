@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
@@ -32,9 +33,7 @@
 #include "build/build_config.h"
 #include "content/app/resources/grit/content_resources.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/appcache_interfaces.h"
 #include "content/common/child_process.mojom.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -97,7 +96,7 @@ class NestedMessageLoopRunnerImpl
   }
 
  private:
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -222,10 +221,6 @@ BlinkPlatformImpl::GetBrowserInterfaceBroker() {
   return browser_interface_broker_proxy_.get();
 }
 
-bool BlinkPlatformImpl::IsURLSupportedForAppCache(const blink::WebURL& url) {
-  return IsSchemeSupportedForAppCache(url);
-}
-
 bool BlinkPlatformImpl::IsURLSavableForSavableResource(
     const blink::WebURL& url) {
   return IsSavableURL(url);
@@ -234,7 +229,7 @@ bool BlinkPlatformImpl::IsURLSavableForSavableResource(
 size_t BlinkPlatformImpl::MaxDecodedImageBytes() {
   const int kMB = 1024 * 1024;
   const int kMaxNumberOfBytesPerPixel = 4;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::IsLowEndDevice()) {
     // Limit image decoded size to 3M pixels on low end devices.
     // 4 is maximum number of bytes per pixel.

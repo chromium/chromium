@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Добавлен сайт <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="1384959399684842514">Скачивание приостановлено.</translation>
+<translation id="1409426117486808224">Упрощенный просмотр открытых вкладок</translation>
 <translation id="1415402041810619267">URL укорочен</translation>
 <translation id="1446450296470737166">Полный доступ к управлению MIDI-устройствами</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Однократно</translation>
+<translation id="2253414712144136228">Удалить пункт "<ph name="NAME_OF_LIST_ITEM" />"</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
 <translation id="2315043854645842844">Сертификат, выбранный клиентом, не поддерживается операционной системой.</translation>
+<translation id="2321958826496381788">Перемещайте ползунок, пока текст не станет удобным для чтения. После двойного нажатия на абзац текст должен быть такого размера.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2379925928934107488">Если тёмная тема активирована в Chrome, она будет использоваться для сайтов, когда это возможно.</translation>
+<translation id="2387895666653383613">Масштабирование текста</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">Показать информацию</translation>
 <translation id="3123473560110926937">Заблокировано на некоторых сайтах</translation>
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">Из интернета</translation>
 <translation id="321187648315454507">Чтобы получать уведомления из приложения "<ph name="APP_NAME" />", включите их в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Предоставить сайтам доступ к датчикам (рекомендуется)</translation>
@@ -110,6 +115,7 @@
 <translation id="3835233591525155343">Использование устройства</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Перемотать вперед</translation>
+<translation id="3895926599014793903">Принудительно изменять масштаб</translation>
 <translation id="3955193568934677022">Разрешить сайтам воспроизводить защищенный контент (рекомендуется)</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3987993985790029246">Копировать ссылку</translation>
@@ -117,7 +123,9 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
+<translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4194328954146351878">Запрашивать для сайтов разрешение на доступ к информации и ее изменение через NFC (рекомендуется)</translation>
 <translation id="4200726100658658164">Открыть настройки геолокации</translation>
 <translation id="4226663524361240545">Вибрация при получении уведомлений</translation>
 <translation id="4259722352634471385">Навигация заблокирована: <ph name="URL" /></translation>
@@ -126,6 +134,7 @@
 <translation id="42981349822642051">Развернуть</translation>
 <translation id="4336434711095810371">Удалить все данные</translation>
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
+<translation id="4428065317363009941">Персонализация рекламы</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="445467742685312942">Разрешить сайтам воспроизводить защищенный контент</translation>
 <translation id="4468959413250150279">Отключить звуки на определенном сайте</translation>
@@ -149,11 +158,14 @@
 <translation id="5048398596102334565">Предоставить сайтам доступ к датчикам движения (рекомендуется)</translation>
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>
 <translation id="5063480226653192405">Использование</translation>
+<translation id="509133520954049755">Запрос версии для ПК</translation>
 <translation id="5100237604440890931">Свернуто. Нажмите, чтобы развернуть.</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
+<translation id="5134599672855298214">Запрос мобильной версии (рекомендуется)</translation>
 <translation id="5186036860380548585">Действие доступно вверху экрана</translation>
 <translation id="5197729504361054390">Сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> получит доступ к выбранным контактам.</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
+<translation id="5264323282659631142">Удалить элемент "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5301954838959518834">ОК</translation>
@@ -164,6 +176,7 @@
 <translation id="5354152178998424783">Будут удалены данные и файлы cookie (всего <ph name="DATASIZE" />), сохраненные сайтами.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и ещё 1)}one{(и ещё #)}few{(и ещё #)}many{(и ещё #)}other{(и ещё #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
+<translation id="5412236728747081950">Этот сайт использует информацию из Chrome о ваших интересах, чтобы показывать более подходящие рекламные объявления.</translation>
 <translation id="5438097262470833822">Будут отозваны разрешения для <ph name="WEBSITE" />.</translation>
 <translation id="5489227211564503167">Просмотрено <ph name="ELAPSED_TIME" /> из <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокировать объявления на сайтах, которые показывают навязчивую или вводящую в заблуждение рекламу</translation>
@@ -175,10 +188,10 @@
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
+<translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
 <translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
-<translation id="5710871682236653961">Запрашивать для сайтов разрешение на обмен информацией через NFC (рекомендуется)</translation>
 <translation id="5719847187258001597">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" /> или его приложением, добавленным на главный экран.</translation>
 <translation id="5771720122942595109">Заблокировано: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -228,16 +241,16 @@
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6818926723028410516">Выберите объекты</translation>
 <translation id="6864395892908308021">Это устройство не поддерживает NFC.</translation>
-<translation id="6910211073230771657">Удалено</translation>
 <translation id="6912998170423641340">Блокировать сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="6945221475159498467">Выбрать</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6992289844737586249">Запрашивать разрешение на доступ к микрофону (рекомендуется)</translation>
 <translation id="7000754031042624318">Отключено в настройках Android</translation>
 <translation id="7016516562562142042">Открыт доступ для текущей поисковой системы</translation>
+<translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Выбран 1 объект}one{Выбран # объект}few{Выбрано # объекта}many{Выбрано # объектов}other{Выбрано # объекта}}</translation>
-<translation id="7070090581017165256">О сайте</translation>
 <translation id="7087918508125750058">Выбрано: <ph name="ITEM_COUNT" />. Меню находится в верхней части экрана.</translation>
 <translation id="7141896414559753902">Блокировать всплывающие окна и переадресацию на сайтах (рекомендуется)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
@@ -252,8 +265,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Сайт использует ваш микрофон</translation>
 <translation id="7561196759112975576">Всегда</translation>
-<translation id="7572498721684305250">Запретить сайтам обмен информацией через NFC.</translation>
 <translation id="757524316907819857">Запретить сайтам воспроизводить защищенный контент</translation>
+<translation id="7577900504646297215">Управление интересами</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7781829728241885113">Вчера</translation>
@@ -286,6 +299,7 @@
 <translation id="8211406090763984747">Безопасное подключение</translation>
 <translation id="8249310407154411074">Переместить в начало</translation>
 <translation id="8261506727792406068">Удалить</translation>
+<translation id="8284326494547611709">Субтитры</translation>
 <translation id="8300705686683892304">Под управлением приложения</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
 <translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта</translation>
@@ -319,6 +333,7 @@
 <translation id="8903921497873541725">Увеличить</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функция NFC на этом устройстве отключена. Включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Запретить сайтам получать доступ к информации и изменять ее через NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блокировать файлы cookie для определенного сайта.</translation>
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>

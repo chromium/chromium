@@ -12,9 +12,9 @@
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -40,7 +40,7 @@ FCMHandler::~FCMHandler() {
 void FCMHandler::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!IsListening());
-  DCHECK(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
+  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
   gcm_driver_->AddAppHandler(app_id_, this);
   waiting_for_token_ = true;
   StartTokenFetch(base::BindOnce(&FCMHandler::DidRetrieveToken,
@@ -116,7 +116,7 @@ void FCMHandler::OnMessage(const std::string& app_id,
                            const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(app_id, app_id_);
-  DCHECK(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
+  DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
   for (InvalidationsListener& listener : listeners_) {
     listener.OnInvalidationReceived(message.raw_data);

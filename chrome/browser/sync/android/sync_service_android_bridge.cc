@@ -111,16 +111,9 @@ jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {
   return native_sync_service_->CanSyncFeatureStart();
 }
 
-jboolean SyncServiceAndroidBridge::IsSyncAllowedByPlatform(JNIEnv* env) {
+jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return !native_sync_service_->HasDisableReason(
-      syncer::SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-}
-
-void SyncServiceAndroidBridge::SetSyncAllowedByPlatform(JNIEnv* env,
-                                                        jboolean allowed) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->SetSyncAllowedByPlatform(allowed);
+  return native_sync_service_->IsSyncFeatureEnabled();
 }
 
 jboolean SyncServiceAndroidBridge::IsSyncFeatureActive(JNIEnv* env) {
@@ -310,17 +303,6 @@ jboolean SyncServiceAndroidBridge::RequiresClientUpgrade(JNIEnv* env) {
   return native_sync_service_->RequiresClientUpgrade();
 }
 
-void SyncServiceAndroidBridge::SetDecoupledFromAndroidMasterSync(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->SetDecoupledFromAndroidMasterSync();
-}
-
-jboolean SyncServiceAndroidBridge::GetDecoupledFromAndroidMasterSync(
-    JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return native_sync_service_->GetDecoupledFromAndroidMasterSync();
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 SyncServiceAndroidBridge::GetAccountInfo(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -375,7 +357,7 @@ jlong SyncServiceAndroidBridge::GetLastSyncedTimeForDebugging(JNIEnv* env) {
 
 jlong SyncServiceAndroidBridge::GetNativeSyncServiceImplForTest(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return reinterpret_cast<intptr_t>(native_sync_service_);
+  return reinterpret_cast<intptr_t>(native_sync_service_.get());
 }
 
 static jlong JNI_SyncServiceImpl_Init(

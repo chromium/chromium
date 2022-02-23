@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/common_cert_errors.h"
@@ -24,20 +25,20 @@ namespace net {
 namespace {
 
 bool IsHandledCriticalExtension(const ParsedExtension& extension) {
-  if (extension.oid == BasicConstraintsOid())
+  if (extension.oid == der::Input(kBasicConstraintsOid))
     return true;
   // Key Usage is NOT processed for end-entity certificates (this is the
   // responsibility of callers), however it is considered "handled" here in
   // order to allow being marked as critical.
-  if (extension.oid == KeyUsageOid())
+  if (extension.oid == der::Input(kKeyUsageOid))
     return true;
-  if (extension.oid == ExtKeyUsageOid())
+  if (extension.oid == der::Input(kExtKeyUsageOid))
     return true;
-  if (extension.oid == NameConstraintsOid())
+  if (extension.oid == der::Input(kNameConstraintsOid))
     return true;
-  if (extension.oid == SubjectAltNameOid())
+  if (extension.oid == der::Input(kSubjectAltNameOid))
     return true;
-  if (extension.oid == CertificatePoliciesOid()) {
+  if (extension.oid == der::Input(kCertificatePoliciesOid)) {
     // Policy qualifiers are skipped during processing, so if the
     // extension is marked critical need to ensure there weren't any
     // qualifiers other than User Notice / CPS.
@@ -49,17 +50,17 @@ bool IsHandledCriticalExtension(const ParsedExtension& extension) {
     //   qualifier), or MUST reject the certificate.
     std::vector<der::Input> unused_policies;
     CertErrors unused_errors;
-    return ParseCertificatePoliciesExtension(
+    return ParseCertificatePoliciesExtensionOids(
         extension.value, true /*fail_parsing_unknown_qualifier_oids*/,
         &unused_policies, &unused_errors);
 
     // TODO(eroman): Give a better error message.
   }
-  if (extension.oid == PolicyMappingsOid())
+  if (extension.oid == der::Input(kPolicyMappingsOid))
     return true;
-  if (extension.oid == PolicyConstraintsOid())
+  if (extension.oid == der::Input(kPolicyConstraintsOid))
     return true;
-  if (extension.oid == InhibitAnyPolicyOid())
+  if (extension.oid == der::Input(kInhibitAnyPolicyOid))
     return true;
 
   return false;
@@ -90,7 +91,7 @@ void VerifyNoUnconsumedCriticalExtensions(const ParsedCertificate& cert,
 //    support key rollover or changes in certificate policies.  These
 //    self-issued certificates are not counted when evaluating path length
 //    or name constraints.
-WARN_UNUSED_RESULT bool IsSelfIssued(const ParsedCertificate& cert) {
+[[nodiscard]] bool IsSelfIssued(const ParsedCertificate& cert) {
   return cert.normalized_subject() == cert.normalized_issuer();
 }
 
@@ -172,9 +173,9 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         return;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == AnyEKU())
+        if (key_purpose_oid == der::Input(kAnyEKU))
           return;
-        if (key_purpose_oid == ServerAuth())
+        if (key_purpose_oid == der::Input(kServerAuth))
           return;
       }
 
@@ -185,7 +186,7 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
       bool has_nsgc = false;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == NetscapeServerGatedCrypto()) {
+        if (key_purpose_oid == der::Input(kNetscapeServerGatedCrypto)) {
           has_nsgc = true;
           break;
         }
@@ -222,9 +223,9 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         return;
 
       for (const auto& key_purpose_oid : cert.extended_key_usage()) {
-        if (key_purpose_oid == AnyEKU())
+        if (key_purpose_oid == der::Input(kAnyEKU))
           return;
-        if (key_purpose_oid == ClientAuth())
+        if (key_purpose_oid == der::Input(kClientAuth))
           return;
       }
 
@@ -343,8 +344,10 @@ class ValidPolicyTree {
       policy_set->insert(node.root_policy);
 
     // If the result includes anyPolicy, simplify it to a set of size 1.
-    if (policy_set->size() > 1 && SetContains(*policy_set, AnyPolicy()))
-      *policy_set = {AnyPolicy()};
+    if (policy_set->size() > 1 &&
+        SetContains(*policy_set, der::Input(kAnyPolicyOid))) {
+      *policy_set = {der::Input(kAnyPolicyOid)};
+    }
   }
 
   // Adds a node |n| to the current level which is a child of |parent|
@@ -369,8 +372,9 @@ class ValidPolicyTree {
 
     // Consider the root policy as the first policy other than anyPolicy (or
     // anyPolicy if it hasn't been restricted yet).
-    new_node.root_policy =
-        (parent.root_policy == AnyPolicy()) ? policy_oid : parent.root_policy;
+    new_node.root_policy = (parent.root_policy == der::Input(kAnyPolicyOid))
+                               ? policy_oid
+                               : parent.root_policy;
 
     current_level_.push_back(std::move(new_node));
   }
@@ -379,7 +383,7 @@ class ValidPolicyTree {
   // nullptr if there is none.
   static const Node* FindAnyPolicyNode(const Level& level) {
     for (const Node& node : level) {
-      if (node.valid_policy == AnyPolicy())
+      if (node.valid_policy == der::Input(kAnyPolicyOid))
         return &node;
     }
     return nullptr;
@@ -575,7 +579,7 @@ class PathVerifier {
   //    certificate.
   size_t max_path_length_;
 
-  VerifyCertificateChainDelegate* delegate_;
+  raw_ptr<VerifyCertificateChainDelegate> delegate_;
 };
 
 void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
@@ -600,7 +604,7 @@ void PathVerifier::VerifyPolicies(const ParsedCertificate& cert,
     //          P.  Perform the following steps in order:
     bool cert_has_any_policy = false;
     for (const der::Input& p_oid : cert.policy_oids()) {
-      if (p_oid == AnyPolicy()) {
+      if (p_oid == der::Input(kAnyPolicyOid)) {
         cert_has_any_policy = true;
         continue;
       }
@@ -692,8 +696,8 @@ void PathVerifier::VerifyPolicyMappings(const ParsedCertificate& cert,
   //       special value anyPolicy does not appear as an
   //       issuerDomainPolicy or a subjectDomainPolicy.
   for (const ParsedPolicyMapping& mapping : cert.policy_mappings()) {
-    if (mapping.issuer_domain_policy == AnyPolicy() ||
-        mapping.subject_domain_policy == AnyPolicy()) {
+    if (mapping.issuer_domain_policy == der::Input(kAnyPolicyOid) ||
+        mapping.subject_domain_policy == der::Input(kAnyPolicyOid)) {
       // Because this implementation continues processing certificates after
       // this error, clear the valid policy tree to ensure the
       // "user_constrained_policy_set" output upon failure is empty.

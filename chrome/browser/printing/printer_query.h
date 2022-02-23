@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
@@ -20,6 +21,9 @@ class Location;
 namespace printing {
 
 class PrintJobWorker;
+
+using CreatePrintJobWorkerCallback = base::RepeatingCallback<std::unique_ptr<
+    PrintJobWorker>(int render_process_id, int render_frame_id)>;
 
 // Query the printer for settings.
 class PrinterQuery {
@@ -41,7 +45,7 @@ class PrinterQuery {
   // Detach the PrintJobWorker associated to this object. Virtual so that tests
   // can override.
   // Called on the UI thread.
-  // TODO(thestig): Do |worker_| and |callback_| need locks?
+  // TODO(thestig): Do `worker_` and `callback_` need locks?
   virtual std::unique_ptr<PrintJobWorker> DetachWorker();
 
   const PrintSettings& settings() const;
@@ -49,10 +53,10 @@ class PrinterQuery {
   std::unique_ptr<PrintSettings> ExtractSettings();
 
   // Initializes the printing context. It is fine to call this function multiple
-  // times to reinitialize the settings. |web_contents_observer| can be queried
+  // times to reinitialize the settings. `web_contents_observer` can be queried
   // to find the owner of the print setting dialog box. It is unused when
-  // |ask_for_user_settings| is DEFAULTS.
-  // Caller has to ensure that |this| is alive until |callback| is run.
+  // `ask_for_user_settings` is DEFAULTS.
+  // Caller has to ensure that `this` is alive until `callback` is run.
   void GetSettings(GetSettingsAskParam ask_user_for_settings,
                    uint32_t expected_page_count,
                    bool has_selection,
@@ -61,14 +65,14 @@ class PrinterQuery {
                    bool is_modifiable,
                    base::OnceClosure callback);
 
-  // Updates the current settings with |new_settings| dictionary values.
-  // Caller has to ensure that |this| is alive until |callback| is run.
+  // Updates the current settings with `new_settings` dictionary values.
+  // Caller has to ensure that `this` is alive until `callback` is run.
   virtual void SetSettings(base::Value new_settings,
                            base::OnceClosure callback);
 
-#if defined(OS_CHROMEOS)
-  // Updates the current settings with |new_settings|.
-  // Caller has to ensure that |this| is alive until |callback| is run.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Updates the current settings with `new_settings`.
+  // Caller has to ensure that `this` is alive until `callback` is run.
   void SetSettingsFromPOD(std::unique_ptr<PrintSettings> new_settings,
                           base::OnceClosure callback);
 #endif
@@ -84,6 +88,10 @@ class PrinterQuery {
 
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
+
+  // Provide an override for generating worker threads in tests.
+  static void SetCreatePrintJobWorkerCallbackForTest(
+      CreatePrintJobWorkerCallback* callback);
 
  protected:
   // Virtual so that tests can override.

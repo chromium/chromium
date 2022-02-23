@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -79,8 +80,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> parent_widget_;
-  views::Widget* widget_ = nullptr;
-  EditAddressProfileView* dialog_;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<EditAddressProfileView> dialog_;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 
@@ -94,7 +95,7 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
   dialog_->ShowForWebContents(test_web_contents_.get());
 
   gfx::NativeView parent = gfx::kNullNativeView;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We need a native view parent for the dialog to avoid a DCHECK
   // on Mac.
   parent_widget_ = CreateTestWidget();
@@ -104,7 +105,7 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
       views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(), parent);
   widget_->SetVisibilityChangedAnimationsEnabled(false);
   widget_->Show();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Necessary for Mac. On other platforms this happens in the focus
   // manager, but it's disabled for Mac due to crbug.com/650859.
   parent_widget_->Activate();

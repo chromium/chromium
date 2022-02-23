@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_chrome_payment_request_delegate.h"
@@ -109,6 +110,7 @@ class PaymentRequestBrowserTestBase
   // Test will open a browser window to |file_path| (relative to
   // components/test/data/payments).
   void NavigateTo(const std::string& file_path);
+  void NavigateTo(const std::string& hostname, const std::string& file_path);
 
   void SetIncognito();
   void SetInvalidSsl();
@@ -144,9 +146,18 @@ class PaymentRequestBrowserTestBase
   void OnProcessingSpinnerHidden() override;
   void OnPaymentHandlerWindowOpened() override;
 
+  void InstallPaymentApp(const std::string& hostname,
+                         const std::string& service_worker_filename,
+                         std::string* url_method_output);
+
+  void InstallPaymentAppWithoutIcon(const std::string& hostname,
+                                    const std::string& service_worker_filename,
+                                    std::string* url_method_output);
+
   // Will call JavaScript to invoke the PaymentRequest dialog and verify that
   // it's open and ready for input.
   void InvokePaymentRequestUI();
+  void InvokePaymentRequestUIWithJs(const std::string& script);
 
   // Will expect that all strings in |expected_strings| are present in output.
   void ExpectBodyContains(const std::vector<std::string>& expected_strings);
@@ -166,10 +177,8 @@ class PaymentRequestBrowserTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  // Convenience method to get a list of PaymentRequest associated with
-  // |web_contents|.
-  const std::vector<PaymentRequest*> GetPaymentRequests(
-      content::WebContents* web_contents);
+  // Convenience method to get all the `PaymentRequest`s that are still alive.
+  const std::vector<PaymentRequest*> GetPaymentRequests();
 
   autofill::PersonalDataManager* GetDataManager();
   // Adds the various models to the database, waiting until the personal data
@@ -279,13 +288,14 @@ class PaymentRequestBrowserTestBase
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // Weak, owned by the PaymentRequest object.
-  TestChromePaymentRequestDelegate* delegate_ = nullptr;
+  raw_ptr<TestChromePaymentRequestDelegate> delegate_ = nullptr;
   syncer::TestSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   bool is_incognito_ = false;
   bool is_valid_ssl_ = true;
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
+  std::vector<base::WeakPtr<PaymentRequest>> requests_;
 
   base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };

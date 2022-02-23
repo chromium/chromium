@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/hash/hash.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"

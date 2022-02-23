@@ -35,7 +35,8 @@ void PopulateChromeFrameBinders(
 // GetInterface() handler callbacks for chrome-specific document-scoped
 // interfaces used from WebUI pages (e.g. chrome://bluetooth-internals).
 void PopulateChromeWebUIFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
+    content::RenderFrameHost* render_frame_host);
 
 // PopulateChromeWebUIFrameInterfaceBrokers registers BrowserInterfaceBrokers
 // for each WebUI, these brokers are used to handle that WebUI's JavaScript
@@ -94,8 +95,8 @@ void RegisterWebUIControllerInterfaceBinder(
   map->Add<Interface>(
       base::BindRepeating([](content::RenderFrameHost* host,
                              mojo::PendingReceiver<Interface> receiver) {
-        // This is expected to be called only for main frames.
-        if (host->GetParent()) {
+        // This is expected to be called only for outermost main frames.
+        if (host->GetParentOrOuterDocument()) {
           ReceivedBadMessage(
               host->GetProcess(),
               bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);

@@ -40,17 +40,11 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
 
   static get properties() {
     return {
-      /** @protected */
-      verificationMessage_: {
-        type: String,
-        value: '',
-      },
-
       /**
-       * Error code from rmad service, not i18n.
+       * List of unqualified components from rmad service, not i18n.
        * @protected
        */
-      errorMessage_: {
+      componentsList_: {
         type: String,
         value: '',
       },
@@ -68,6 +62,12 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
       isCompliant_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @protected */
+      verificationFailedMessage_: {
+        type: String,
+        value: '',
       },
     };
   }
@@ -91,7 +91,6 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   /** @override */
   ready() {
     super.ready();
-    this.verificationMessage_ = this.i18n('validatingComponentsText');
   }
 
   /** @return {!Promise<StateResult>} */
@@ -118,18 +117,36 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    * @param {string} errorMessage
    */
   onHardwareVerificationResult(isCompliant, errorMessage) {
-    if (isCompliant) {
-      this.verificationMessage_ = this.i18n('validatedComponentsSuccessText');
-    } else {
-      this.verificationMessage_ = this.i18n('validatedComponentsFailText');
-      this.errorMessage_ = errorMessage;
-    }
     this.isCompliant_ = isCompliant;
     this.verificationInProgress_ = false;
+
+    if (!this.isCompliant_) {
+      this.componentsList_ = errorMessage;
+      this.setVerificationFailedMessage_();
+    }
+
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: false},
         ));
+  }
+
+  /** @private */
+  setVerificationFailedMessage_() {
+    this.verificationFailedMessage_ =
+        this.i18nAdvanced('validatedComponentsFailText', {attrs: ['id']});
+    const linkElement =
+        this.shadowRoot.querySelector('#unqualifiedComponentsLink');
+    linkElement.setAttribute('href', '#');
+    linkElement.addEventListener(
+        'click',
+        () => this.shadowRoot.querySelector('#unqualifiedComponentsDialog')
+                  .showModal());
+  }
+
+  /** @private */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
   }
 }
 

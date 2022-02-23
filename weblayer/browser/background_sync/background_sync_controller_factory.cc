@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/background_sync/background_sync_controller_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "weblayer/browser/background_sync/background_sync_delegate_impl.h"

@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -19,6 +20,9 @@ namespace {
 constexpr char kOutOfBoundsAccess[] =
     "Attempted to access data that is out-of-bounds.";
 
+constexpr char kArrayBufferDetached[] =
+    "Attempted to access data from a detached data buffer.";
+
 size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
   switch (data_format) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
@@ -27,7 +31,7 @@ size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
       return 4;
   }
 }
-}
+}  // namespace
 
 namespace blink {
 
@@ -66,6 +70,13 @@ float XRCPUDepthInformation::getDepthInMeters(
     float y,
     ExceptionState& exception_state) const {
   DVLOG(3) << __func__ << ": x=" << x << ", y=" << y;
+
+  // Check if `data_` is detached:
+  if(data_->IsDetached()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kArrayBufferDetached);
+    return 0.0;
+  }
 
   if (!ValidateFrame(exception_state)) {
     return 0.0;
@@ -112,6 +123,8 @@ float XRCPUDepthInformation::getDepthInMeters(
 
 float XRCPUDepthInformation::GetItem(size_t index) const {
   DVLOG(3) << __func__ << ": index=" << index;
+
+  CHECK(!data_->IsDetached());
 
   switch (data_format_) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha: {

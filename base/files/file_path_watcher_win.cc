@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -44,12 +45,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   // the directory sub trees. Returns true if no fatal error occurs. |handle|
   // will receive the handle value if |dir| is watchable, otherwise
   // INVALID_HANDLE_VALUE.
-  static bool SetupWatchHandle(const FilePath& dir,
-                               bool recursive,
-                               HANDLE* handle) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool SetupWatchHandle(const FilePath& dir,
+                                             bool recursive,
+                                             HANDLE* handle);
 
   // (Re-)Initialize the watch handle.
-  bool UpdateWatch() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateWatch();
 
   // Destroy the watch handle.
   void DestroyWatch();
@@ -61,7 +62,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate,
   FilePath target_;
 
   // Set to true in the destructor.
-  bool* was_deleted_ptr_ = nullptr;
+  raw_ptr<bool> was_deleted_ptr_ = nullptr;
 
   // Handle for FindFirstChangeNotification.
   HANDLE handle_ = INVALID_HANDLE_VALUE;

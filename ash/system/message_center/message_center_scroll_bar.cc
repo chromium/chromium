@@ -6,10 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -56,7 +56,7 @@ MessageCenterScrollBar::~MessageCenterScrollBar() = default;
 bool MessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {
-    CollectScrollActionReason(ScrollActionReason::kByMouseWheel);
+    CollectScrollActionReason(ScrollActionReason::kByArrowKey);
     stats_recorded_ = true;
   }
   return views::OverlayScrollBar::OnKeyPressed(event);
@@ -138,7 +138,7 @@ RoundedMessageCenterScrollBar::~RoundedMessageCenterScrollBar() = default;
 bool RoundedMessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {
-    CollectScrollActionReason(ScrollActionReason::kByMouseWheel);
+    CollectScrollActionReason(ScrollActionReason::kByArrowKey);
     stats_recorded_ = true;
   }
   return RoundedScrollBar::OnKeyPressed(event);

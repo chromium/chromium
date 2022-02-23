@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #error "MacOS only - iOS uses platform_shared_memory_region_posix.cc"
 #endif
 

@@ -17,7 +17,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -232,7 +231,8 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     response->mime_type = *mime_type;
     response->headers = CreateHeaders(*mime_type, charset);
     response->content_length = content_length;
-    client_->OnReceiveResponse(std::move(response));
+    client_->OnReceiveResponse(std::move(response),
+                               mojo::ScopedDataPipeConsumerHandle());
 
     // Set up the Mojo DataPipe used for streaming the response payload to the
     // client.

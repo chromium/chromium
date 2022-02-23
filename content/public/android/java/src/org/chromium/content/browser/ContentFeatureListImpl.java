@@ -28,8 +28,23 @@ public class ContentFeatureListImpl {
         return ContentFeatureListImplJni.get().isEnabled(featureName);
     }
 
+    /**
+     * Returns a field trial param as an int for the specified feature.
+     * {@see ContentFeatureList#getFieldTrialParamByFeatureAsInt}
+     *
+     * Note: Features queried through this API must be added to the array
+     * |kFeaturesExposedToJava| in content/browser/android/content_feature_list.cc
+     */
+    public static int getFieldTrialParamByFeatureAsInt(
+            String featureName, String paramName, int defaultValue) {
+        return ContentFeatureListImplJni.get().getFieldTrialParamByFeatureAsInt(
+                featureName, paramName, defaultValue);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabled(String featureName);
+        int getFieldTrialParamByFeatureAsInt(
+                String featureName, String paramName, int defaultValue);
     }
 }

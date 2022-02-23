@@ -162,18 +162,18 @@ bool KURL::IsLocalFile() const {
   // and including feed would allow feeds to potentially let someone's blog
   // read the contents of the clipboard on a drag, even without a drop.
   // Likewise with using the FrameLoader::shouldTreatURLAsLocal() function.
-  return ProtocolIs("file");
+  return ProtocolIs(url::kFileScheme);
 }
 
 bool ProtocolIsJavaScript(const String& url) {
-  return ProtocolIs(url, "javascript");
+  return ProtocolIs(url, url::kJavaScriptScheme);
 }
 
 const KURL& BlankURL() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_blank_url, ());
   KURL& blank_url = *static_blank_url;
   if (blank_url.IsNull())
-    blank_url = KURL(AtomicString("about:blank"));
+    blank_url = KURL(AtomicString(url::kAboutBlankURL));
   return blank_url;
 }
 
@@ -181,7 +181,7 @@ const KURL& SrcdocURL() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<KURL>, static_srcdoc_url, ());
   KURL& srcdoc_url = *static_srcdoc_url;
   if (srcdoc_url.IsNull())
-    srcdoc_url = KURL(AtomicString("about:srcdoc"));
+    srcdoc_url = KURL(AtomicString(url::kAboutSrcdocURL));
   return srcdoc_url;
 }
 
@@ -332,7 +332,7 @@ bool KURL::HasPort() const {
 }
 
 bool KURL::ProtocolIsJavaScript() const {
-  return ComponentStringView(parsed_.scheme) == "javascript";
+  return ComponentStringView(parsed_.scheme) == url::kJavaScriptScheme;
 }
 
 bool KURL::ProtocolIsInHTTPFamily() const {
@@ -497,8 +497,8 @@ bool KURL::SetProtocol(const String& protocol) {
   if (SchemeRegistry::IsSpecialScheme(Protocol()) &&
       SchemeRegistry::IsSpecialScheme(new_protocol_canon)) {
     // The protocol is lower-cased during canonicalization.
-    const bool new_protocol_is_file = new_protocol_canon == "file";
-    const bool old_protocol_is_file = ProtocolIs("file");
+    const bool new_protocol_is_file = new_protocol_canon == url::kFileScheme;
+    const bool old_protocol_is_file = ProtocolIs(url::kFileScheme);
 
     // https://url.spec.whatwg.org/#scheme-state
     // 3. If url includes credentials or has a non-null port, and buffer is

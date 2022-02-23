@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -160,43 +160,24 @@ TEST_P(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
 
   auto layer1 = cc::Layer::Create();
   SetFakeCcLayer(layer1.get());
-  ASSERT_TRUE(video()->GetLayoutObject()->HasLayer());
-  auto* paint_layer =
-      To<LayoutBoxModelObject>(video()->GetLayoutObject())->Layer();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  auto* painting_layer =
+      To<LayoutBoxModelObject>(video()->GetLayoutObject())->PaintingLayer();
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 
   // Change to another cc layer.
   auto layer2 = cc::Layer::Create();
   SetFakeCcLayer(layer2.get());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 
   // Remove cc layer.
   SetFakeCcLayer(nullptr);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
-  else
-    EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {

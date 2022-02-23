@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "components/app_restore/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
@@ -41,9 +40,6 @@ AppRestoreArcTaskHandlerFactory::~AppRestoreArcTaskHandlerFactory() = default;
 
 KeyedService* AppRestoreArcTaskHandlerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!::full_restore::features::IsFullRestoreEnabled())
-    return nullptr;
-
   if (!arc::IsArcAllowedForProfile(Profile::FromBrowserContext(context)))
     return nullptr;
 

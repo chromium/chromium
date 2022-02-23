@@ -9,5 +9,7 @@
 
 extern NSString* const kSettingsToolbarAddButtonId;
 extern NSString* const kSettingsToolbarDeleteButtonId;
+extern NSString* const kSettingsToolbarEditButtonId;
+extern NSString* const kSettingsToolbarEditDoneButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_ROOT_TABLE_CONSTANTS_H_

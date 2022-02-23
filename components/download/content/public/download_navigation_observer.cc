@@ -12,6 +12,7 @@ DownloadNavigationObserver::DownloadNavigationObserver(
     content::WebContents* web_contents,
     NavigationMonitor* navigation_monitor)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<DownloadNavigationObserver>(*web_contents),
       navigation_monitor_(navigation_monitor) {}
 
 DownloadNavigationObserver::~DownloadNavigationObserver() = default;

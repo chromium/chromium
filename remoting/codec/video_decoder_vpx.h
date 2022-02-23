@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/codec/scoped_vpx_codec.h"
 #include "remoting/codec/video_decoder.h"
 

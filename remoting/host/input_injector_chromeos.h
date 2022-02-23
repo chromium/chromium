@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_injector.h"
 

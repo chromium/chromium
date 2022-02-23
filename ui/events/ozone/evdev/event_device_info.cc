@@ -21,6 +21,10 @@
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
 #endif
 
+#ifndef INPUT_PROP_HAPTICPAD
+#define INPUT_PROP_HAPTICPAD 0x07
+#endif
+
 namespace ui {
 
 namespace {
@@ -39,6 +43,7 @@ constexpr struct {
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
     {0x045e, 0x082a},  // Microsoft Pro IntelliMouse
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
+    {0x045e, 0x095d},  // Microsoft Surface Mobile Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
     {0x046d, 0x4026},  // Logitech T400
     {0x046d, 0x405e},  // Logitech M720 Triathlon (Unifying)
@@ -64,6 +69,7 @@ constexpr struct {
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
+    {0x046d, 0xc534},  // Logitech M170
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
@@ -75,11 +81,15 @@ constexpr struct {
     {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless (USB dongle)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
+    {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
+    {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
     {0x256c, 0x006d},  // Huion HS64
+    {0x258a, 0x1007},  // Acer Cestus 330
+    {0x2717, 0x003b},  // Xiaomi Mi Portable Mouse
     {0x28bd, 0x0914},  // XP-Pen Star G640
     {0x28bd, 0x091f},  // XP-Pen Artist 12 Pro
     {0x28bd, 0x0928},  // XP-Pen Deco mini7W
@@ -92,7 +102,6 @@ constexpr struct {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
 
-#if defined(USE_LIBINPUT)
 // Certain devices need to be forced to use libinput in place of
 // evdev/libgestures
 constexpr struct {
@@ -113,7 +122,6 @@ bool IsForceLibinput(const EventDeviceInfo& devinfo) {
 
   return false;
 }
-#endif
 
 // Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
 // incorrectly over Bluetooth.
@@ -564,7 +572,6 @@ bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
 
 bool EventDeviceInfo::UseLibinput() const {
   bool useLibinput = false;
-#if defined(USE_LIBINPUT)
   if (HasTouchpad()) {
     auto overridden_state =
         base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
@@ -575,7 +582,6 @@ bool EventDeviceInfo::UseLibinput() const {
                     IsSemiMultitouch() || IsForceLibinput(*this);
     }
   }
-#endif
 
   return useLibinput;
 }
@@ -624,6 +630,10 @@ bool EventDeviceInfo::HasPointingStick() const {
 
 bool EventDeviceInfo::HasTouchpad() const {
   return HasAbsXY() && HasPointer() && !HasStylus();
+}
+
+bool EventDeviceInfo::HasHapticTouchpad() const {
+  return HasTouchpad() && HasProp(INPUT_PROP_HAPTICPAD);
 }
 
 bool EventDeviceInfo::HasTablet() const {
@@ -714,6 +724,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
       {0x18d1, 0x5052},  // Google, Star PID (homestar)
       {0x18d1, 0x5056},  // Google, bland PID (mrbland)
       {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
+      {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 

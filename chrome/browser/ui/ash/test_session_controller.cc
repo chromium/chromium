@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/callback.h"
 
 TestSessionController::TestSessionController() = default;
 TestSessionController::~TestSessionController() = default;

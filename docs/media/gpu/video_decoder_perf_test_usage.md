@@ -3,7 +3,7 @@ The video decoder performance tests are a set of tests used to measure the
 performance of various video decoder implementations. These tests run directly
 on top of the video decoder implementation, and don't require the full Chrome
 browser stack. They are build on top of the
-[GoogleTest](https://github.com/google/googletest/blob/master/README.md)
+[GoogleTest](https://github.com/google/googletest/blob/main/README.md)
 framework.
 
 [TOC]
@@ -84,22 +84,34 @@ All performance metrics are written to _perf_metrics/<test_name>.json_.
 ## Command line options
 Multiple command line arguments can be given to the command:
 
-     -v                  enable verbose mode, e.g. -v=2.
-    --vmodule            enable verbose mode for the specified module,
-                         e.g. --vmodule=*media/gpu*=2.
-    --output_folder      overwrite the output folder used to store
-                         performance metrics, if not specified results
-                         will be stored in the current working directory.
-    --use-legacy         use the legacy VDA-based video decoders.\n"
-    --use_vd             use the new VD-based video decoders.\n"
-                         (enabled by default)\n"
-    --use_vd_vda         use the new VD-based video decoders with a wrapper
-                         that translates to the VDA interface, used to test
-                         interaction with older components expecting the VDA
-                         interface.
-    --gtest_help         display the gtest help and exit.
-    --help               display this help and exit.
+     -v                   enable verbose mode, e.g. -v=2.
+    --vmodule             enable verbose mode for the specified module,
+                          e.g. --vmodule=*media/gpu*=2.
+
+    --output_folder       overwrite the output folder used to store
+                          performance metrics, if not specified results
+                          will be stored in the current working directory.
+    --use-legacy          use the legacy VDA-based video decoders.
+    --use_vd              use the new VD-based video decoders.
+                          (enabled by default)
+    --use_vd_vda          use the new VD-based video decoders with a
+                          wrapper that translates to the VDA interface,
+                          used to test interaction with older components
+                          expecting the VDA interface.
+    --linear_output       use linear buffers as the final output of the
+                          decoder which may require the use of an image
+                          processor internally. This flag only works in
+                          conjunction with --use_vd_vda.
+                          Disabled by default.
+    --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                          i.e., only on devices that use the VA-API with a libva
+                          backend that's known to be thread-safe and only in
+                          portions of the Chrome stack that should be able to
+                          deal with the absence of the lock
+                          (not the VaapiVideoDecodeAccelerator).
+
+    --gtest_help          display the gtest help and exit.
+    --help                display this help and exit.
 
 ## Source code
 See the video decoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_decode_accelerator_perf_tests.cc).
-

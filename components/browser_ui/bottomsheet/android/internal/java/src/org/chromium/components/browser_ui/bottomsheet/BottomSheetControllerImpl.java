@@ -406,8 +406,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         if (mBottomSheet == null) mSheetInitializer.run();
 
-        // If already showing the requested content, do nothing.
-        if (content == mBottomSheet.getCurrentSheetContent()) return true;
+        // If already showing (or queued to show) the requested content, do nothing.
+        if (content == mBottomSheet.getCurrentSheetContent() || mContentQueue.contains(content)) {
+            return content == mBottomSheet.getCurrentSheetContent();
+        }
 
         boolean shouldSwapForPriorityContent = mBottomSheet.getCurrentSheetContent() != null
                 && content.getPriority() < mBottomSheet.getCurrentSheetContent().getPriority()

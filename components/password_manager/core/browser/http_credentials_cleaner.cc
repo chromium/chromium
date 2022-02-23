@@ -37,7 +37,7 @@ void HttpCredentialCleaner::StartCleaning(Observer* observer) {
   DCHECK(observer);
   DCHECK(!observer_);
   observer_ = observer;
-  store_->GetAutofillableLogins(this);
+  store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void HttpCredentialCleaner::OnGetPasswordStoreResults(

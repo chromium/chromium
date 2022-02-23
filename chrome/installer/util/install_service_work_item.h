@@ -37,9 +37,18 @@ class InstallServiceWorkItem : public WorkItem {
   // |display_name| is the human-readable name that is visible in the Service
   // control panel. For example, "Chrome Elevation Service".
   //
+  // |start_type| is typically SERVICE_DEMAND_START or SERVICE_AUTO_START.
+  //
   // |service_cmd_line| is the command line with which the service is invoked by
   // the SCM. For example,
   // "C:\Program Files (x86)\Google\Chrome\ElevationService.exe" /svc
+  //
+  // |com_service_cmd_line_args| indicates switches that the SCM needs to pass
+  // to ServiceMain() during COM activation. This is used to distinguish a
+  // non-COM SCM activation (for example, an AUTO start, or when someone
+  // manually starts the service using the control panel) from a COM service
+  // activation. For example, "comsvc" could be a switch used to indicate a COM
+  // activation.
   //
   // NOTE: |registry_path| is mapped to the 32-bit view of the registry for
   // legacy reasons. |registry_path| is the path in HKEY_LOCAL_MACHINE under
@@ -52,7 +61,9 @@ class InstallServiceWorkItem : public WorkItem {
   // required, |iids| should contain the Interfaces and Typelibs to register.
   InstallServiceWorkItem(const std::wstring& service_name,
                          const std::wstring& display_name,
+                         uint32_t start_type,
                          const base::CommandLine& service_cmd_line,
+                         const base::CommandLine& com_service_cmd_line_args,
                          const std::wstring& registry_path,
                          const std::vector<GUID>& clsids,
                          const std::vector<GUID>& iids);

@@ -317,10 +317,13 @@ void VEAEncoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size,
   }
 
   // TODO(b/181797390): Use VBR bitrate mode.
+  // TODO(crbug.com/1289907): remove the cast to uint32_t once
+  // |bits_per_second_| is stored as uint32_t.
   const media::VideoEncodeAccelerator::Config config(
       pixel_format, input_visible_size_, codec_,
-      media::Bitrate::ConstantBitrate(bits_per_second_), absl::nullopt,
-      absl::nullopt, level_, false, storage_type,
+      media::Bitrate::ConstantBitrate(
+          base::saturated_cast<uint32_t>(bits_per_second_)),
+      absl::nullopt, absl::nullopt, level_, false, storage_type,
       media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   if (!video_encoder_ || !video_encoder_->Initialize(config, this))
     NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);

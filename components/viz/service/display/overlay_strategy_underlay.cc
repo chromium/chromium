@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -22,7 +23,7 @@ OverlayStrategyUnderlay::OverlayStrategyUnderlay(
 OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
 
 bool OverlayStrategyUnderlay::Attempt(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -38,9 +39,10 @@ bool OverlayStrategyUnderlay::Attempt(
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
-    if (!OverlayCandidate::FromDrawQuad(
+    if (OverlayCandidate::FromDrawQuad(
             resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) ||
+            *it, GetPrimaryPlaneDisplayRect(primary_plane),
+            &candidate) != OverlayCandidate::CandidateStatus::kSuccess ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
          !candidate.is_opaque)) {
       continue;
@@ -77,13 +79,8 @@ bool OverlayStrategyUnderlay::Attempt(
     // If the candidate can be handled by an overlay, create a pass for it. We
     // need to switch out the video quad with an underlay hole quad.
     if (new_candidate_list.back().overlay_handled) {
-      if (candidate.has_mask_filter) {
-        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
-                                                       SkBlendMode::kDstOut);
-      } else {
-        render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorTRANSPARENT,
-                                                       SkBlendMode::kSrcOver);
-      }
+      OverlayProposedCandidate proposed_candidate(it, candidate, this);
+      CommitCandidate(proposed_candidate, render_pass);
       candidate_list->swap(new_candidate_list);
       return true;
     }
@@ -93,14 +90,14 @@ bool OverlayStrategyUnderlay::Attempt(
 }
 
 void OverlayStrategyUnderlay::ProposePrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
-    OverlayProposedCandidateList* candidates,
+    std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList& quad_list = render_pass->quad_list;
@@ -108,9 +105,10 @@ void OverlayStrategyUnderlay::ProposePrioritized(
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
 
-    if (!OverlayCandidate::FromDrawQuad(
+    if (OverlayCandidate::FromDrawQuad(
             resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate) ||
+            *it, GetPrimaryPlaneDisplayRect(primary_plane),
+            &candidate) != OverlayCandidate::CandidateStatus::kSuccess ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&
          !candidate.is_opaque)) {
       continue;
@@ -135,7 +133,7 @@ void OverlayStrategyUnderlay::ProposePrioritized(
 }
 
 bool OverlayStrategyUnderlay::AttemptPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -144,14 +142,14 @@ bool OverlayStrategyUnderlay::AttemptPrioritized(
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
-    OverlayProposedCandidate* proposed_candidate) {
+    const OverlayProposedCandidate& proposed_candidate) {
   // Before we attempt an overlay strategy, the candidate list should be empty.
   DCHECK(candidate_list->empty());
   auto* render_pass = render_pass_list->back().get();
 
   // Add the overlay.
   OverlayCandidateList new_candidate_list = *candidate_list;
-  new_candidate_list.push_back(proposed_candidate->candidate);
+  new_candidate_list.push_back(proposed_candidate.candidate);
   new_candidate_list.back().plane_z_order = -1;
 
   if (primary_plane) {
@@ -169,23 +167,28 @@ bool OverlayStrategyUnderlay::AttemptPrioritized(
     capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
   }
 
-  // If the candidate can be handled by an overlay, create a pass for it. We
-  // need to switch out the video quad with an underlay hole quad.
   if (new_candidate_list.back().overlay_handled) {
-    if (proposed_candidate->candidate.has_mask_filter) {
-      render_pass->ReplaceExistingQuadWithSolidColor(
-          proposed_candidate->quad_iter, SK_ColorBLACK, SkBlendMode::kDstOut);
-    } else {
-      render_pass->ReplaceExistingQuadWithSolidColor(
-          proposed_candidate->quad_iter, SK_ColorTRANSPARENT,
-          SkBlendMode::kSrcOver);
-    }
+    CommitCandidate(proposed_candidate, render_pass);
     candidate_list->swap(new_candidate_list);
-
     return true;
   }
 
   return false;
+}
+
+void OverlayStrategyUnderlay::CommitCandidate(
+    const OverlayProposedCandidate& proposed_candidate,
+    AggregatedRenderPass* render_pass) {
+  // If the candidate can be handled by an overlay, create a pass for it. We
+  // need to switch out the video quad with an underlay hole quad.
+  if (proposed_candidate.candidate.has_mask_filter) {
+    render_pass->ReplaceExistingQuadWithSolidColor(
+        proposed_candidate.quad_iter, SK_ColorBLACK, SkBlendMode::kDstOut);
+  } else {
+    render_pass->ReplaceExistingQuadWithSolidColor(proposed_candidate.quad_iter,
+                                                   SK_ColorTRANSPARENT,
+                                                   SkBlendMode::kSrcOver);
+  }
 }
 
 // Turn on blending for the output surface plane so the underlay could show

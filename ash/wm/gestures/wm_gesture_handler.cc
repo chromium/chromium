@@ -6,7 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -37,8 +38,6 @@ constexpr char kExitOverviewToastId[] = "ash.wm.reverse_exit_overview_toast";
 constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
 constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
 
-constexpr base::TimeDelta kToastDurationMs = base::Milliseconds(2500);
-
 // Check if the user used the wrong gestures.
 bool g_did_wrong_enter_overview_gesture = false;
 bool g_did_wrong_exit_overview_gesture = false;
@@ -63,10 +62,11 @@ float GetOffset(float offset) {
   return IsNaturalScrollOn() ? -offset : offset;
 }
 
-void ShowReverseGestureToast(const char* toast_id, int message_id) {
+void ShowReverseGestureToast(const char* toast_id,
+                             ToastCatalogName catalog_name,
+                             int message_id) {
   Shell::Get()->toast_manager()->Show(
-      ToastData(toast_id, l10n_util::GetStringUTF16(message_id),
-                kToastDurationMs.InMilliseconds(), absl::nullopt));
+      ToastData(toast_id, catalog_name, l10n_util::GetStringUTF16(message_id)));
 }
 
 // When reverse scrolling for touchpad is Off, if the user performs wrong
@@ -92,8 +92,11 @@ bool MaybeHandleWrongVerticalGesture(float offset_y, bool in_overview) {
 
   if (*did_wrong_ptr) {
     ShowReverseGestureToast(
-        toast_id, in_overview ? IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE
-                              : IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE);
+        toast_id,
+        in_overview ? ToastCatalogName::kExitOverviewGesture
+                    : ToastCatalogName::kEnterOverviewGesture,
+        in_overview ? IDS_CHANGE_EXIT_OVERVIEW_REVERSE_GESTURE
+                    : IDS_CHANGE_ENTER_OVERVIEW_REVERSE_GESTURE);
   } else {
     *did_wrong_ptr = true;
   }
@@ -149,6 +152,7 @@ void MaybeHandleWrongHorizontalGesture(bool move_left,
       g_did_wrong_next_desk_gesture = true;
     } else {
       ShowReverseGestureToast(kSwitchNextDeskToastId,
+                              ToastCatalogName::kNextDeskGesture,
                               IDS_CHANGE_NEXT_DESK_REVERSE_GESTURE);
     }
     return;
@@ -160,6 +164,7 @@ void MaybeHandleWrongHorizontalGesture(bool move_left,
       g_did_wrong_last_desk_gesture = true;
     } else {
       ShowReverseGestureToast(kSwitchLastDeskToastId,
+                              ToastCatalogName::kPreviousDeskGesture,
                               IDS_CHANGE_LAST_DESK_REVERSE_GESTURE);
     }
     return;

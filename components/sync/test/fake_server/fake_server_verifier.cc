@@ -76,13 +76,13 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     return DictionaryCreationAssertionFailure();
   }
 
-  string model_type_string = ModelTypeToString(model_type);
+  string model_type_string = ModelTypeToDebugString(model_type);
   base::ListValue* entity_list = nullptr;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return UnknownTypeAssertionFailure(model_type_string);
-  } else if (expected_count != entity_list->GetList().size()) {
-    return VerificationCountAssertionFailure(entity_list->GetList().size(),
-                                             expected_count)
+  } else if (expected_count != entity_list->GetListDeprecated().size()) {
+    return VerificationCountAssertionFailure(
+               entity_list->GetListDeprecated().size(), expected_count)
            << "\n\n"
            << ConvertFakeServerContentsToString(*entities);
   }
@@ -100,12 +100,12 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     return DictionaryCreationAssertionFailure();
   }
 
-  string model_type_string = ModelTypeToString(model_type);
+  string model_type_string = ModelTypeToDebugString(model_type);
   base::ListValue* entity_list = nullptr;
   size_t actual_count = 0;
   if (entities->GetList(model_type_string, &entity_list)) {
     base::Value name_value(name);
-    for (const auto& entity : entity_list->GetList()) {
+    for (const base::Value& entity : entity_list->GetListDeprecated()) {
       if (name_value == entity)
         actual_count++;
     }
@@ -132,7 +132,7 @@ AssertionResult FakeServerVerifier::VerifySessions(
   std::map<int, int> tab_ids_to_window_ids;
   std::map<int, std::string> tab_ids_to_urls;
   std::string session_tag;
-  for (const auto& entity : sessions) {
+  for (const sync_pb::SyncEntity& entity : sessions) {
     sync_pb::SessionSpecifics session_specifics = entity.specifics().session();
 
     // Ensure that all session tags match the first entity. Only one session is
@@ -168,7 +168,7 @@ AssertionResult FakeServerVerifier::VerifySessions(
   // the SessionHeader also ensures its data corresponds to the data stored in
   // each SessionTab.
   SessionsHierarchy actual_sessions;
-  for (const auto& window : session_header.window()) {
+  for (const sync_pb::SessionWindow& window : session_header.window()) {
     std::multiset<std::string> tab_urls;
     for (int tab_id : window.tab()) {
       if (tab_ids_to_window_ids.find(tab_id) == tab_ids_to_window_ids.end()) {

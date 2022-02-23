@@ -208,6 +208,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE_CTA_EXPERIMENT" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         You can now use Chrome any time you tap on links in messages, documents, and other apps.
       </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP_SUBTITLE" desc="The subtitle explaining what the choosen mode (here desktop, the other possible state is mobile) will do in the browser">
+        This means Chrome will request the desktop site every time.
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE" desc="The subtitle explaining what the choosen mode (here mobile, the other possible state is desktop) will do in the browser">
+        This means Chrome will request the mobile site every time.
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_NON_MODAL_TITLE" desc="Title for the non-modal default browser promotion banner">
         Set Chrome as Default?
       </message>
@@ -240,9 +246,6 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE" desc="The signout dialog title when forced sign-in is enabled. (Force Sign In) [iOS only]">
         Sign out of Chrome?
-      </message>
-      <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
-          You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your Google Account.
       </message>
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chrome uses Face ID to ensure authorized access to your passwords.
@@ -328,8 +331,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_MOVE_TO_DOCK_TIP" desc="Text displayed on the New Tab Page for the move Chrome to the dock promo. [iOS only]">
         Tip: <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Move Chrome to your dock<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
       </message>
-      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN" desc="The title of the Import Data settings screen when signing in. [30em]">
-        Sign in to Chrome
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
+        <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph> was using Chrome and left bookmarks, passwords, and other settings on this device.
       </message>
       <message name="IDS_IOS_PAGE_INFO_CHROME_PAGE_LABEL" desc="Label to display at the top of the site information screen when the page you are on is a Google Chrome page.">
         Google Chrome Page
@@ -364,6 +367,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SAVE_IMAGE_PRIVACY_ALERT_MESSAGE_GO_TO_SETTINGS" desc="Body of the alert shown when the user tries to save an image but we lack permission to add to photos. This body tells the user he'll be redirected to the Settings app. [Length: 100em] [iOS only].">
         To save images, tap on Settings to let Chrome add to your photos
       </message>
+      <message name="IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING" desc="Helper text above the save credentials modal's primary action button. [Length: unlimited] [iOS only]">
+        Passwords are saved to Google Password Manager on this device only.
+      </message>
       <message name="IDS_IOS_SCANNER_CAMERA_IN_USE_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner but the camera is in use by another application. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera because it's in use by another application
       </message>
@@ -381,6 +387,12 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera in Split View mode
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPad [iPadOS only]">
+        You can use the passwords you saved to Google Password Manager in other apps on your iPad.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
+        You can use the passwords you saved to Google Password Manager in other apps on your iPhone.
       </message>
       <message name="IDS_IOS_SHORT_PRODUCT_NAME" desc="The Chrome application short name">
         Chrome
@@ -408,6 +420,12 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chrome just got better! A new version is available.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        Select Chrome
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4" desc="Text of the row indicating the fourth step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        4. Select Chrome
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER" desc="Informational header at the top of the safety check page">
         Chrome can help keep you safe from data breaches, unsafe websites and more.
@@ -448,6 +466,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT" desc="This text is shown when sign-in is disabled by policy and the user taps on the info pop-over of the 'Sign in to Chrome' button in the settings. [iOS only]">
         Your organization requires you to stay signed out of Chrome.
       </message>
+      <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
+            You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chrome can't check your passwords
       </message>
@@ -472,11 +493,20 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
         Your password was exposed in a data breach. Chrome recommends changing the password now.
       </message>
+      <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
+        Your password was exposed in a data breach. Google Password Manager recommends changing it now.
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chrome.
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT" desc="Feature title in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Allow Chrome Sign-in
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER" desc="Disclaimer telling users what will happen to their passwords">
+        Your password will be saved in your Google Account (<ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>).
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
+        Your password will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
     </messages>
   </release>

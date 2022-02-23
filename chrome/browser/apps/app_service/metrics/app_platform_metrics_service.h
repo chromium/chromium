@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_input_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -44,6 +45,8 @@ class AppPlatformMetricsService {
   }
 
  private:
+  friend class AppPlatformInputMetricsTest;
+
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
 
@@ -61,6 +64,7 @@ class AppPlatformMetricsService {
   base::RepeatingTimer five_minutes_timer_;
 
   std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
+  std::unique_ptr<apps::AppPlatformInputMetrics> app_platform_input_metrics_;
 };
 
 }  // namespace apps

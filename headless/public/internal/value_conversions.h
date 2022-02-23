@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/values.h"
-#include "headless/lib/browser/protocol/base_string_adapter.h"
 #include "headless/public/util/error_reporter.h"
 
 namespace headless {
@@ -179,7 +178,7 @@ struct FromValue<std::vector<T>> {
       return result;
     }
     errors->Push();
-    for (const auto& item : value.GetList())
+    for (const auto& item : value.GetListDeprecated())
       result.push_back(FromValue<T>::Parse(item, errors));
     errors->Pop();
     return result;

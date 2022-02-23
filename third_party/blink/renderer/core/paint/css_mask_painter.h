@@ -7,8 +7,8 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -22,7 +22,7 @@ class CORE_EXPORT CSSMaskPainter {
   // Returns the bounding box of the computed mask, which could be
   // smaller or bigger than the reference box. Returns nullopt if the
   // there is no mask or the mask is invalid.
-  static absl::optional<IntRect> MaskBoundingBox(
+  static absl::optional<gfx::Rect> MaskBoundingBox(
       const LayoutObject&,
       const PhysicalOffset& paint_offset);
 };

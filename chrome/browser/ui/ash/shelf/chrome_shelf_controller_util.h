@@ -48,7 +48,17 @@ void PinAppWithIDToShelf(const std::string& app_id);
 // Unpins an app from the shelf, if it is in the shelf. Otherwise does nothing.
 void UnpinAppWithIDFromShelf(const std::string& app_id);
 
+// Returns whether the app with `app_id` has been pinned to the shelf.
+bool IsAppWithIDPinnedToShelf(const std::string& app_id);
+
 apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);
+
+// Checks if |BrowserAppShelfController| and |BrowserAppShelfItemController| can
+// handle the app indicated by |app_id|. Returns true if the app is a web app,
+// system web app, or Lacros browser (kWeb, kSystemWeb, kStandaloneBrowser app
+// service types respectively).
+bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
+                                              Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_

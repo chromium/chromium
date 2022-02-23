@@ -91,18 +91,17 @@ The Omaha protocol is anonymous, but allows servers to compute the number of
 unique active or update-checking devices. This is accomplished through
 client-regulated counting.
 
-The idea of client-regulated counting is to inspect all update
-check requests received over the last N days and discard all but one from each
+The idea of client-regulated counting is to inspect all update check requests
+received over the last N days and discard all but the first request from each
 client. The number of remaining requests is equal to the number of unique
 clients.
 
 Each response from the server contains a numeric date, representing the date (in
 the server's choice of timezone) that the client's request was received. The
 client stores this date, and sends it on the next request to the server. When
-inspecting this next request, the server can determine whether the date is
-greater than or equal to (current date - N). If so, this is the first request
-from the client in the N-day window. Otherwise, there is another request from
-this client in the N-day window and this request can be excluded from the count.
+inspecting the next request, the server can determine whether the date is before
+(current date - N + 1). If so, this is the first request from the client in the
+N-day window. Otherwise, this request is a "duplicate" and can be discarded.
 
 In certain environments (for example, frequently re-imaged VMs in internet
 cafes), it is likely that the client may fail to update the date of the last

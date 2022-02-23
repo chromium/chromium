@@ -153,6 +153,8 @@ component("accessibility") {
     "ax_tree_source_observer.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
+    "test_ax_tree_manager.cc",
+    "test_ax_tree_manager.h",
   ]
 
   deps = [
@@ -215,8 +217,6 @@ static_library("test_support") {
   sources = [
     "test_ax_node_helper.cc",
     "test_ax_node_helper.h",
-    "test_ax_tree_manager.cc",
-    "test_ax_tree_manager.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
@@ -284,6 +284,23 @@ test("accessibility_unittests") {
     "//ui/accessibility/mojom",
     "//ui/gfx:test_support",
   ]
+
+  data_deps = [ "//testing/buildbot/filters:accessibility_unittests_filters" ]
+
+  if (is_fuchsia) {
+    sources += [
+      "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",
+      "platform/fuchsia/semantic_provider_unittest.cc",
+    ]
+
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/inspect",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
 
   if (has_native_accessibility) {
     # This test depends heavily on NativeViewAccessible, which is only

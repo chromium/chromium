@@ -204,6 +204,10 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 // This property is set from the delegate headerInset and cached on first
 // call. The cached value is reset when the webview proxy is set.
 @property(nonatomic, readonly) CGFloat initialContentInset;
+// Initial content offset for the scroll view. This is used to determine how
+// far the view scrolled and where to return the content offset to when
+// bouncing
+@property(nonatomic, readonly) CGFloat initialContentOffset;
 // Initial top inset for the header.
 // This property is set from the delegate headerInset and cached on first
 // call. The cached value is reset when the webview proxy is set.
@@ -867,6 +871,11 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   return self.initialHeaderInset;
 }
 
+- (CGFloat)initialContentOffset {
+  return
+      [self.delegate initialContentOffsetForOverscrollActionsController:self];
+}
+
 - (CGFloat)initialHeaderInset {
   return [self.delegate headerInsetForOverscrollActionsController:self];
 }
@@ -914,9 +923,10 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   _dpLink = dpLink;
   memset(&_bounceState, 0, sizeof(_bounceState));
   if (self.overscrollState == OverscrollState::ACTION_READY) {
-    const UIEdgeInsets insets =
-        TopContentInset(self.scrollView, -[self scrollView].contentOffset.y +
-                                             self.initialContentInset);
+    CGFloat distanceScrolled =
+        [self scrollView].contentOffset.y - self.initialContentOffset;
+    const UIEdgeInsets insets = TopContentInset(
+        self.scrollView, -distanceScrolled + self.initialContentInset);
     [self setScrollViewContentInset:insets];
     [[self scrollView] setScrollIndicatorInsets:insets];
   }

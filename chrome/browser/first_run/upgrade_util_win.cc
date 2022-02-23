@@ -59,39 +59,59 @@ bool GetNewerChromeFile(base::FilePath* path) {
 
 bool InvokeGoogleUpdateForRename() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // This has been identified as very slow on some startups. Detailed trace
+  // events below try to shine a light on each steps. crbug.com/1252004
   TRACE_EVENT0("startup", "upgrade_util::InvokeGoogleUpdateForRename");
 
   Microsoft::WRL::ComPtr<IProcessLauncher> ipl;
-  HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&ipl));
-  if (FAILED(hr)) {
-    LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
-               << hr;
-    return false;
+  {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename CoCreateInstance");
+    HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
+                                    CLSCTX_ALL, IID_PPV_ARGS(&ipl));
+    if (FAILED(hr)) {
+      TRACE_EVENT0("startup",
+                   "InvokeGoogleUpdateForRename CoCreateInstance failed");
+      LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
+                 << hr;
+      return false;
+    }
   }
 
   ULONG_PTR process_handle;
-  hr = ipl->LaunchCmdElevated(install_static::GetAppGuid(),
-                              google_update::kRegRenameCmdField,
-                              ::GetCurrentProcessId(), &process_handle);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "IProcessLauncher::LaunchCmdElevated failed; hr = "
-               << std::hex << hr;
-    return false;
+  {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename LaunchCmdElevated");
+    HRESULT hr = ipl->LaunchCmdElevated(
+        install_static::GetAppGuid(),
+        google_update::kRegRenameCmdField,
+        ::GetCurrentProcessId(), &process_handle);
+    if (FAILED(hr)) {
+      TRACE_EVENT0("startup",
+                   "InvokeGoogleUpdateForRename LaunchCmdElevated failed");
+      LOG(ERROR) << "IProcessLauncher::LaunchCmdElevated failed; hr = "
+                 << std::hex << hr;
+      return false;
+    }
   }
 
   base::Process rename_process(
       reinterpret_cast<base::ProcessHandle>(process_handle));
   int exit_code;
-  if (!rename_process.WaitForExit(&exit_code)) {
-    PLOG(ERROR) << "WaitForExit of rename process failed";
-    return false;
+  {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename WaitForExit");
+    if (!rename_process.WaitForExit(&exit_code)) {
+      TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename WaitForExit failed");
+      PLOG(ERROR) << "WaitForExit of rename process failed";
+      return false;
+    }
   }
 
   if (exit_code != installer::RENAME_SUCCESSFUL) {
+    TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename !RENAME_SUCCESSFUL");
     LOG(ERROR) << "Rename process failed with exit code " << exit_code;
     return false;
   }
+
+  TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename RENAME_SUCCESSFUL");
 
   return true;
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)

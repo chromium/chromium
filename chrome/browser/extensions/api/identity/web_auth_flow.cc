@@ -117,7 +117,7 @@ void WebAuthFlow::Start() {
   auto event =
       std::make_unique<Event>(events::IDENTITY_PRIVATE_ON_WEB_FLOW_REQUEST,
                               identity_private::OnWebFlowRequest::kEventName,
-                              std::move(*args).TakeList(), profile_);
+                              std::move(*args).TakeListDeprecated(), profile_);
   ExtensionSystem* system = ExtensionSystem::Get(profile_);
 
   extensions::ComponentLoader* component_loader =
@@ -223,16 +223,14 @@ void WebAuthFlow::DidStopLoading() {
 
 void WebAuthFlow::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame())
     BeforeUrlLoaded(navigation_handle->GetURL());
 }
 
 void WebAuthFlow::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  BeforeUrlLoaded(navigation_handle->GetURL());
+  if (navigation_handle->IsInPrimaryMainFrame())
+    BeforeUrlLoaded(navigation_handle->GetURL());
 }
 
 void WebAuthFlow::DidFinishNavigation(
@@ -240,9 +238,6 @@ void WebAuthFlow::DidFinishNavigation(
   // Websites may create and remove <iframe> during the auth flow. In
   // particular, to integrate CAPTCHA tests. Chrome shouldn't abort the auth
   // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 

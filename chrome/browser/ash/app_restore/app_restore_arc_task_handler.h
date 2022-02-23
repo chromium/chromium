@@ -18,6 +18,7 @@ class Profile;
 namespace ash {
 namespace full_restore {
 class ArcWindowHandler;
+class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
 
 namespace app_restore {
@@ -46,11 +47,20 @@ class AppRestoreArcTaskHandler : public KeyedService,
   }
 #endif
 
+  // Check if the AppId existed in any arc app launch handler restore queue.
+  // When different launch handler which corresponding to different restore
+  // purpose trying to restore the same ARC app, it will be confusing ARC that
+  // which window info should be applied.
+  bool IsAppPendingRestore(const std::string& arc_app_id) const;
+
   ArcAppLaunchHandler* desks_templates_arc_app_launch_handler() {
-    return desks_templates_arc_app_launch_handler_.get();
+    return desks_templates_arc_app_launch_handler_observer_;
   }
   ArcAppLaunchHandler* full_restore_arc_app_launch_handler() {
-    return full_restore_arc_app_launch_handler_.get();
+    return full_restore_arc_app_launch_handler_observer_;
+  }
+  ArcAppLaunchHandler* window_predictor_arc_app_launch_handler() {
+    return window_predictor_arc_app_launch_handler_observer_;
   }
 
   // ArcAppListPrefs::Observer.
@@ -75,9 +85,11 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // Invoked when ChromeShelfController is created.
   void OnShelfReady();
 
- private:
   // KeyedService:
   void Shutdown() override;
+
+ private:
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
@@ -88,8 +100,12 @@ class AppRestoreArcTaskHandler : public KeyedService,
 
   // The ArcAppLaunchHandlers, one for each feature that wants to launch ARC
   // apps.
-  std::unique_ptr<ArcAppLaunchHandler> desks_templates_arc_app_launch_handler_;
-  std::unique_ptr<ArcAppLaunchHandler> full_restore_arc_app_launch_handler_;
+  std::vector<std::unique_ptr<ArcAppLaunchHandler>> arc_app_launcher_handers_;
+  ArcAppLaunchHandler* desks_templates_arc_app_launch_handler_observer_ =
+      nullptr;
+  ArcAppLaunchHandler* full_restore_arc_app_launch_handler_observer_ = nullptr;
+  ArcAppLaunchHandler* window_predictor_arc_app_launch_handler_observer_ =
+      nullptr;
 };
 
 }  // namespace app_restore

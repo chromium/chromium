@@ -186,7 +186,7 @@ def make_callback_invocation_function(cg_context,
     func_decl = CxxFuncDeclNode(name=function_name,
                                 arg_decls=arg_decls,
                                 return_type=maybe_return_type,
-                                warn_unused_result=True)
+                                nodiscard=True)
     if cg_context.callback_function:
         if is_construct_call:
             comment = T("""\
@@ -251,7 +251,7 @@ if (!callback_relevant_script_state) {
                 body=[
                     T("v8::HandleScope handle_scope(${isolate});"),
                     T("v8::Context::Scope context_scope("
-                      "CallbackObject()->GetCreationContextChecked());"),
+                      "callback_relevant_script_state->GetContext());"),
                     T("${exception_state}.ThrowException("
                       "static_cast<ExceptionCode>(ESErrorType::kError), "
                       "\"The provided callback is no longer runnable.\");"),
@@ -412,7 +412,7 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
         T("v8::TryCatch try_catch(${isolate});"),
         T("try_catch.SetVerbose(true);"),
         EmptyNode(),
-        F("ignore_result({api_func_name}({arg_names}));",
+        F("std::ignore = {api_func_name}({arg_names});",
           api_func_name=api_func_name,
           arg_names=", ".join(arg_names)),
     ])
@@ -594,8 +594,10 @@ def generate_callback_function(callback_function_identifier):
         "third_party/blink/renderer/platform/bindings/callback_function_base.h",
         "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
     ])
+    source_node.accumulator.add_stdcpp_include_headers([
+        "tuple",
+    ])
     source_node.accumulator.add_include_headers([
-        "base/macros.h",
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",

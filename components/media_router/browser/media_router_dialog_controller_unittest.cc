@@ -21,7 +21,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/media_router/browser/android/media_router_dialog_controller_android.h"
 #endif
 
@@ -101,7 +101,7 @@ class MediaRouterDialogControllerTest
   std::unique_ptr<MockWebContentsDelegate> web_contents_delegate_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The non-Android implementation is tested in
 // MediaRouterDialogControllerViewsTest.
 TEST_F(MediaRouterDialogControllerTest, CreateForWebContents) {
@@ -170,7 +170,7 @@ TEST_F(MediaRouterDialogControllerTest, StartPresentationContext) {
                      base::Unretained(this)));
 
   MediaRoute route("routeId", MediaSource::ForTab(1), "sinkId", "Description",
-                   false, false);
+                   false);
   auto result = RouteRequestResult::FromSuccess(route, "presentationId");
 
   EXPECT_CALL(*this, RequestSuccess(_, _, _)).Times(1);

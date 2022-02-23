@@ -18,6 +18,49 @@ extern char kPkPassMimeType[];
 
 // MIME Type for 3D models.
 extern char kUsdzMimeType[];
+
+// MIME Type for ZIP archive.
+extern char kZipArchiveMimeType[];
+
+// MIME Type for Microsoft application.
+extern char kMicrosoftApplicationMimeType[];
+
+// MIME Type for Android package archive.
+extern char kAndroidPackageArchiveMimeType[];
+
+// MIME Type for iCalendar.
+extern char kCalendarMimeType[];
+
+// MIME Type for Apple disk image.
+extern char kAppleDiskImageMimeType[];
+
+// MIME Type for Apple installer package.
+extern char kAppleInstallerPackageMimeType[];
+
+// MIME Type for 7z archive.
+extern char kSevenZipArchiveMimeType[];
+
+// MIME Type for RAR archive.
+extern char kRARArchiveMimeType[];
+
+// MIME Type for TAR archive.
+extern char kTarArchiveMimeType[];
+
+// MIME Type for Adobe Flash .
+extern char kAdobeFlashMimeType[];
+
+// MIME Type for Amazon kindle book.
+extern char kAmazonKindleBookMimeType[];
+
+// MIME Type for binary data.
+extern char kBinaryDataMimeType[];
+
+// MIME Type for BitTorrent.
+extern char kBitTorrentMimeType[];
+
+// MIME Type for Java archive.
+extern char kJavaArchiveMimeType[];
+
 // Legacy USDZ content types.
 extern char kLegacyUsdzMimeType[];
 extern char kLegacyPixarUsdzMimeType[];

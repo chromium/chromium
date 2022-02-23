@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSepa
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
@@ -58,6 +57,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -422,7 +422,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         DimmingDialog.setVisibleStatusBarIconColor(mCardEditorDialog.getWindow());
 
         // Allow screenshots of the credit card number in Canary, Dev, and developer builds.
-        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
+        if (VersionInfo.isBetaBuild() || VersionInfo.isStableBuild()) {
             mCardEditorDialog.disableScreenshots();
         }
 

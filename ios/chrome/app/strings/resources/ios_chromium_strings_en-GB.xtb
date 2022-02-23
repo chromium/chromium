@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="102360288709523007">Help make Chromium better by sending usage statistics and crash reports to Google.</translation>
+<translation id="1047130070405668746">Select Chromium</translation>
+<translation id="1091252999271033193">This means that Chromium will request the mobile site every time.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1289216811211435351">Switch to Chromium</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">Shows prompts to sign in to Chromium.</translation>
 <translation id="1584569488888892906">Chromium is simple, secure and faster than ever</translation>
 <translation id="1617663976202781617">Data from Chromium sync</translation>
+<translation id="1722370509450468186">Your password will be saved in your Account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cleared Chromium Data</translation>
 <translation id="1838412507805038478">Chromium verified that <ph name="ISSUER" /> issued this website's certificate.</translation>
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Select Chromium</translation>
 <translation id="2006345422933397527">Chromium couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="2054703085270098503">Stay safe with Chromium</translation>
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2218146227246548550">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">This means that Chromium will request the desktop site every time.</translation>
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
 <translation id="2450140762465183767">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="3946918322491238254">You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your account.</translation>
+<translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">You can now use Chromium whenever you tap on links in messages, documents and other apps.</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6752854822223394465">Your organisation is setting up Chromium…</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
+<translation id="7006920032187763988">You can use the passwords that you saved to Password Manager in other apps on your iPad.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
 <translation id="7108914401277488191">Get more done with Chromium</translation>
 <translation id="7118091470949186573">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
+<translation id="7175400662502680481">Your password was exposed in a data breach. Password Manager recommends changing it now.</translation>
 <translation id="7208566199746267865">Chromium saves you time by bringing your accounts to the web. You can add or remove accounts in Settings.</translation>
 <translation id="725427773388857052">Chromium can help keep you safe from data breaches, unsafe websites and more.</translation>
 <translation id="7269362888766543920">Some add-ons cause Chromium to crash. Please try uninstalling them.</translation>
 <translation id="7313655110045230863">To make Chromium your default browser, open Settings. Tap 'Default browser app', and then select Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">The selected data has been removed from Chromium and synced devices. Your Google Account may have other forms of browsing history such as searches and activity from other Google services at history.google.com.</translation>
+<translation id="7395825497086981028">Your password will be saved to Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
 <translation id="766897673682622022">Your password was exposed in a data breach. Chromium recommends changing the password now.</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>
+<translation id="858114650497379505">You can use the passwords that you saved to Password Manager in other apps on your iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
+<translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9110075932708282655">Use Chromium by default</translation>
 <translation id="921174536258924340">Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>

@@ -83,7 +83,9 @@ enum class ReauthenticationStatus {
 
     BOOL success = [data
         writeToURL:fileURL
-           options:(NSDataWritingAtomic | NSDataWritingFileProtectionComplete)
+           options:
+               (NSDataWritingAtomic |
+                NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication)
              error:&error];
 
     if (!success) {

@@ -190,10 +190,15 @@ class PolicyBlocklistNavigationThrottleTest
   std::unique_ptr<policy::PolicyService> policy_service_;
 };
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, ThrottledPoliciesEmptyBlocklist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded);
+class PolicyBlocklistNavigationThrottle_ThrottledPoliciesTest
+    : public PolicyBlocklistNavigationThrottleTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded};
+};
+
+TEST_F(PolicyBlocklistNavigationThrottle_ThrottledPoliciesTest,
+       EmptyBlocklist) {
   auto policy_service =
       policy::PolicyServiceImpl::CreateWithThrottledInitialization(
           policy::PolicyServiceImpl::Providers());
@@ -209,10 +214,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, ThrottledPoliciesEmptyBlocklist) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, ThrottledPoliciesBlocklist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded);
+TEST_F(PolicyBlocklistNavigationThrottle_ThrottledPoliciesTest, Blocklist) {
   auto policy_service =
       policy::PolicyServiceImpl::CreateWithThrottledInitialization(
           policy::PolicyServiceImpl::Providers());

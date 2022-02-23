@@ -158,7 +158,7 @@ def CallAndRecordIfStale(function,
     new_metadata.ToFile(f)
 
 
-class Changes(object):
+class Changes:
   """Provides and API for querying what changed between runs."""
 
   def __init__(self, old_metadata, new_metadata, force, missing_outputs,
@@ -262,11 +262,11 @@ class Changes(object):
     """Returns a human-readable description of what changed."""
     if self.force:
       return 'force=True'
-    elif self.missing_outputs:
+    if self.missing_outputs:
       return 'Outputs do not exist:\n  ' + '\n  '.join(self.missing_outputs)
-    elif self.too_new:
+    if self.too_new:
       return 'Outputs newer than stamp file:\n  ' + '\n  '.join(self.too_new)
-    elif self.old_metadata is None:
+    if self.old_metadata is None:
       return 'Previous stamp file not found.'
 
     if self.old_metadata.StringsMd5() != self.new_metadata.StringsMd5():
@@ -294,7 +294,7 @@ class Changes(object):
     return 'I have no idea what changed (there is a bug).'
 
 
-class _Metadata(object):
+class _Metadata:
   """Data model for tracking change metadata.
 
   Args:

@@ -21,19 +21,26 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /**
 Render tests for {@link TextViewWithTightWrap}.
 */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class TextViewWithTightWrapTest extends DummyUiActivityTestCase {
+public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
+    private static final int RENDER_TEST_REVISION = 2;
+    private static final String RENDER_TEST_REVISION_DESCRIPTION = "Update the text style.";
+
     private TextViewWithTightWrap mTextView;
     private View mView;
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
+                    .build();
 
     @Before
     public void setup() {
@@ -44,7 +51,7 @@ public class TextViewWithTightWrapTest extends DummyUiActivityTestCase {
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mTextView = mView.findViewById(R.id.message);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mView.setBackgroundColor(R.color.filled_button_bg);
+            mView.setBackgroundColor(activity.getColor(R.color.filled_button_bg));
             mTextView.setText("First line\nVery very very very long second line");
             getActivity().setContentView(mView, params);
         });

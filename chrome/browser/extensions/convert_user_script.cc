@@ -92,20 +92,20 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // The script may not have a name field, but we need one for an extension. If
   // it is missing, use the filename of the original URL.
   if (!script.name().empty())
-    root->SetString(manifest_keys::kName, script.name());
+    root->SetStringKey(manifest_keys::kName, script.name());
   else
-    root->SetString(manifest_keys::kName, original_url.ExtractFileName());
+    root->SetStringKey(manifest_keys::kName, original_url.ExtractFileName());
 
   // Not all scripts have a version, but we need one. Default to 1.0 if it is
   // missing.
   if (!script.version().empty())
-    root->SetString(manifest_keys::kVersion, script.version());
+    root->SetStringKey(manifest_keys::kVersion, script.version());
   else
-    root->SetString(manifest_keys::kVersion, "1.0");
+    root->SetStringKey(manifest_keys::kVersion, "1.0");
 
-  root->SetString(manifest_keys::kDescription, script.description());
-  root->SetString(manifest_keys::kPublicKey, key);
-  root->SetBoolean(manifest_keys::kConvertedFromUserScript, true);
+  root->SetStringKey(manifest_keys::kDescription, script.description());
+  root->SetStringKey(manifest_keys::kPublicKey, key);
+  root->SetBoolKey(manifest_keys::kConvertedFromUserScript, true);
 
   // If the script provides its own match patterns, we use those. Otherwise, we
   // generate some using the include globs.

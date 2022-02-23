@@ -5,10 +5,12 @@
 #ifndef CONTENT_BROWSER_WEB_DATABASE_WEB_DATABASE_HOST_IMPL_H_
 #define CONTENT_BROWSER_WEB_DATABASE_WEB_DATABASE_HOST_IMPL_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/common/content_export.h"
@@ -40,46 +42,32 @@ class CONTENT_EXPORT WebDatabaseHostImpl
       scoped_refptr<storage::DatabaseTracker> db_tracker,
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, OpenFileCreatesBucket);
-  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesUnauthorized);
-  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesInvalid);
-  FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, ProcessShutdown);
-
   // blink::mojom::WebDatabaseHost:
   void OpenFile(const std::u16string& vfs_file_name,
                 int32_t desired_flags,
                 OpenFileCallback callback) override;
-
   void DeleteFile(const std::u16string& vfs_file_name,
                   bool sync_dir,
                   DeleteFileCallback callback) override;
-
   void GetFileAttributes(const std::u16string& vfs_file_name,
                          GetFileAttributesCallback callback) override;
-
   void SetFileSize(const std::u16string& vfs_file_name,
                    int64_t expected_size,
                    SetFileSizeCallback callback) override;
-
   void GetSpaceAvailable(const url::Origin& origin,
                          GetSpaceAvailableCallback callback) override;
-
   void Opened(const url::Origin& origin,
               const std::u16string& database_name,
               const std::u16string& database_description) override;
-
   void Modified(const url::Origin& origin,
                 const std::u16string& database_name) override;
-
   void Closed(const url::Origin& origin,
               const std::u16string& database_name) override;
-
   void HandleSqliteError(const url::Origin& origin,
                          const std::u16string& database_name,
                          int32_t error) override;
 
-  // DatabaseTracker::Observer callbacks (tracker sequence)
+  // DatabaseTracker::Observer:
   void OnDatabaseSizeChanged(const std::string& origin_identifier,
                              const std::u16string& database_name,
                              int64_t database_size) override;
@@ -87,6 +75,7 @@ class CONTENT_EXPORT WebDatabaseHostImpl
       const std::string& origin_identifier,
       const std::u16string& database_name) override;
 
+ private:
   void DatabaseDeleteFile(const std::u16string& vfs_file_name,
                           bool sync_dir,
                           DeleteFileCallback callback,

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
@@ -167,11 +168,16 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) override;
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
+  bool ExecuteScriptForTest(
+      const std::string& script,
+      int64_t service_worker_version_id,
+      ServiceWorkerScriptExecutionCallback callback) override;
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,
@@ -466,50 +472,17 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // This is used as a callback of GetRegisteredStorageKeys when initialising to
   // store a list of storage keys that have registered service workers.
   void DidGetRegisteredStorageKeys(
+      base::TimeTicks start_time,
       const std::vector<blink::StorageKey>& storage_keys);
 
-  // Temporary for https://crbug.com/1161153.
+  // TODO(https://crbug.com/1295029): Remove. Temporary workaround.
   void StartServiceWorkerAndDispatchMessageOnUIThread(
       const GURL& scope,
       const blink::StorageKey& key,
       blink::TransferableMessage message,
       ResultCallback callback);
-  void DeleteForStorageKeyOnUIThread(
-      const blink::StorageKey& key,
-      ResultCallback callback,
-      scoped_refptr<base::TaskRunner> callback_runner);
-  void GetRegistrationUserDataOnUIThread(int64_t registration_id,
-                                         const std::vector<std::string>& keys,
-                                         GetUserDataCallback callback);
-  void GetRegistrationUserDataByKeyPrefixOnUIThread(
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserDataCallback callback);
-  void GetRegistrationUserKeysAndDataByKeyPrefixOnUIThread(
-      int64_t registration_id,
-      const std::string& key_prefix,
-      GetUserKeysAndDataCallback callback);
-  void StoreRegistrationUserDataOnUIThread(
-      int64_t registration_id,
-      const blink::StorageKey& key,
-      const std::vector<std::pair<std::string, std::string>>& key_value_pairs,
-      StatusCallback callback);
-  void ClearRegistrationUserDataOnUIThread(int64_t registration_id,
-                                           const std::vector<std::string>& keys,
-                                           StatusCallback callback);
-  void ClearRegistrationUserDataByKeyPrefixesOnUIThread(
-      int64_t registration_id,
-      const std::vector<std::string>& key_prefixes,
-      StatusCallback callback);
-  void GetUserDataForAllRegistrationsOnUIThread(
-      const std::string& key,
-      GetUserDataForAllRegistrationsCallback callback);
-  void GetUserDataForAllRegistrationsByKeyPrefixOnUIThread(
-      const std::string& key_prefix,
-      GetUserDataForAllRegistrationsCallback callback);
-  void ClearUserDataForAllRegistrationsByKeyPrefixOnUIThread(
-      const std::string& key_prefix,
-      StatusCallback callback);
+
+  void ClearRunningServiceWorkers();
 
   scoped_refptr<network::SharedURLLoaderFactory>
   GetLoaderFactoryForBrowserInitiatedRequest(
@@ -532,8 +505,12 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Initialized in Init(); true if the user data directory is empty.
   bool is_incognito_ = false;
 
+  // Indicates if we are in the middle of deleting the `context_core_` in
+  // order to start over.
+  bool is_deleting_and_starting_over_ = false;
+
   // Raw pointer to the StoragePartitionImpl owning |this|.
-  StoragePartitionImpl* storage_partition_ = nullptr;
+  raw_ptr<StoragePartitionImpl> storage_partition_ = nullptr;
 
   // Map that contains all service workers that are considered "running". Used
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.

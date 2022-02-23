@@ -13,18 +13,19 @@ import {MacroName} from './macro_names.js';
 export class RepeatableKeyPressMacro extends Macro {
   /**
    * @param {MacroName} macroName The name of the macro.
-   * @param {number} repeat The number of times to repeat the key press.
+   * @param {string|number} repeat The number of times to repeat the key press.
+   *     May be 3 or '3'.
    */
   constructor(macroName, repeat) {
     super(macroName);
 
     /** @private {number} */
-    this.repeat_ = repeat;
+    this.repeat_ = parseInt(repeat, /*base=*/ 10);
   }
 
   /** @override */
   checkContext() {
-    if (typeof (this.repeat_) !== 'number') {
+    if (isNaN(this.repeat_)) {
       // This might occur if the numbers grammar did not recognize the
       // spoken number, so we could get a string like "three" instead of
       // the number 3.

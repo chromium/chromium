@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_UI_DEVTOOLS_VIEWS_DEVTOOLS_EVENT_UTIL_H_
 #define COMPONENTS_UI_DEVTOOLS_VIEWS_DEVTOOLS_EVENT_UTIL_H_
 
-#include "components/ui_devtools/DOM.h"
+#include "components/ui_devtools/dom.h"
 #include "ui/events/event_utils.h"
 
 namespace ui_devtools {

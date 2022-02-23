@@ -68,7 +68,7 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
   std::unique_ptr<base::ListValue> items =
       MenuModelToValue(pending_menu_->menu_model());
   args->Set(webview::kContextMenuItems, std::move(items));
-  args->SetInteger(webview::kRequestId, request_id);
+  args->SetIntKey(webview::kRequestId, request_id);
   web_view_guest()->DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventContextMenuShow, std::move(args)));
   return true;
@@ -83,9 +83,9 @@ std::unique_ptr<base::ListValue> ChromeWebViewGuestDelegate::MenuModelToValue(
         new base::DictionaryValue());
     // TODO(lazyboy): We need to expose some kind of enum equivalent of
     // |command_id| instead of plain integers.
-    item_value->SetInteger(webview::kMenuItemCommandId,
-                           menu_model.GetCommandIdAt(i));
-    item_value->SetString(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
+    item_value->SetIntKey(webview::kMenuItemCommandId,
+                          menu_model.GetCommandIdAt(i));
+    item_value->SetStringKey(webview::kMenuItemLabel, menu_model.GetLabelAt(i));
     items->Append(std::move(item_value));
   }
   return items;

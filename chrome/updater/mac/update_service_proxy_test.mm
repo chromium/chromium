@@ -500,6 +500,10 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   base::scoped_nsobject<CRUPriorityWrapper> wrapped_priority(
       [[CRUPriorityWrapper alloc]
           initWithPriority:UpdateService::Priority::kForeground]);
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      wrapped_policySameVersionUpdate([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:
+              UpdateService::PolicySameVersionUpdate::kNotAllowed]);
   StateChangeTestEngine state_change_engine(
       std::vector<StateChangeTestEngine::StatePair>{
           CheckingForUpdatesStates(test_app_id), UpdateFoundStates(test_app_id),
@@ -519,6 +523,7 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   OCMExpect([mock_remote_object
                 checkForUpdateWithAppID:base::SysUTF8ToNSString(test_app_id)
                                priority:wrapped_priority.get()
+                policySameVersionUpdate:wrapped_policySameVersionUpdate.get()
                             updateState:update_state_observer_capturer.Capture()
                                   reply:reply_block_capturer.Capture()])
       .andDo(^(NSInvocation*) {
@@ -533,6 +538,7 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &state_change_engine]() {
         service_->Update("test_app_id", UpdateService::Priority::kForeground,
+                         UpdateService::PolicySameVersionUpdate::kNotAllowed,
                          state_change_engine.Watch(),
                          base::BindLambdaForTesting(
                              [this](UpdateService::Result actual_result) {

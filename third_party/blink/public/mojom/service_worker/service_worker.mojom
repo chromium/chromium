@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
@@ -149,7 +150,7 @@ const int32 kServiceWorkerDefaultIdleDelayInSeconds = 30;
 // An interface for talking to a running service worker thread. The browser
 // process uses this interface to request the renderer to do things like
 // dispatch events to the service worker. This interface is bound on the
-// service worker thread and is implemented by ServiceWorkerContextClient.
+// service worker thread and is implemented by ServiceWorkerGlobalScope.
 //
 // This is the master interface for the Mojo message pipe between the browser
 // process and the service worker thread in the renderer process. Other service
@@ -179,9 +180,6 @@ interface ServiceWorker {
   // ServiceWorkerGlobalScope#registration object and
   // ServiceWorkerGlobalScope#serviceWorker object. JavaScript execution of the
   // service worker does not start until this message is received.
-  // When the service worker is new and going to be registered,
-  // |subresource_loader_factories| is non-null and it should be used for all
-  // subsequent requests.
   // |reporting_observer_receiver| will be set to the worker global scope so
   // that reports queued to the remote of |reporting_observer_receiver| will
   // be notified to ReportingObservers registered with the global scope.
@@ -190,7 +188,6 @@ interface ServiceWorker {
       ServiceWorkerRegistrationObjectInfo registration_info,
       ServiceWorkerObjectInfo service_worker_info,
       FetchHandlerExistence fetch_handler_existence,
-      URLLoaderFactoryBundle? subresource_loader_factories,
       pending_receiver<ReportingObserver>? reporting_observer_receiver);
 
   // These methods dispatch InstallEvent and ActivateEvent to the
@@ -307,4 +304,19 @@ interface ServiceWorker {
 
   // Adds a message to DevTools console which is associated with this worker.
   AddMessageToConsole(ConsoleMessageLevel level, string message);
+
+  // Executes the given `javascript` in the context of the running worker.
+  // `wants_result` indicates whether a result from the executing `javascript`
+  // should be returned via the provided callback.
+  // Currently, this only supports synchronous script execution, and the
+  // returned value is the result of the final execution in the provided
+  // javascript.
+  // If an exception is thrown, a stringified version is returned through the
+  // error parameter.
+  // TODO(devlin): Expand this to allow returning a promise for asynchronous
+  // execution.
+  ExecuteScriptForTest(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result)
+      => (mojo_base.mojom.Value result, string? error);
 };

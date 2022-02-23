@@ -2,40 +2,87 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/cocoa/defaults_utils.h"
+
 #include <AppKit/AppKit.h>
 
-#include "ui/base/cocoa/defaults_utils.h"
+#include <algorithm>
+
+namespace {
+
+bool& BlinkPeriodNeedsRefresh() {
+  static bool blink_period_needs_refresh = []() {
+    [[NSNotificationCenter defaultCenter]
+        addObserverForName:NSApplicationWillBecomeActiveNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification* notification) {
+                  // Refresh the insertion point blink period in case the user
+                  // changed it in System Preferences. Call the original
+                  // function to set the flag. The compiler doesn't like
+                  // blink_period_needs_refresh's static scope so it won't let
+                  // us pass it into the block. There's no worry of infinite
+                  // recursion as well never hit this code path a second time.
+                  BlinkPeriodNeedsRefresh() = true;
+                }];
+    return true;
+  }();
+
+  return blink_period_needs_refresh;
+}
+
+}  // namespace
 
 namespace ui {
 
-bool TextInsertionCaretBlinkPeriod(base::TimeDelta* delta) {
-  const int kMaximumReasonableIntervalMs = 60 * 1000;
+absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults() {
+  static absl::optional<base::TimeDelta> blink_period;
+
+  if (!BlinkPeriodNeedsRefresh()) {
+    return blink_period;
+  }
+
+  BlinkPeriodNeedsRefresh() = false;
+
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   // 10.10+
-  double on_period_ms = [defaults
-      doubleForKey:@"NSTextInsertionPointBlinkPeriodOn"];
-  double off_period_ms = [defaults
-      doubleForKey:@"NSTextInsertionPointBlinkPeriodOff"];
+  NSInteger on_period_ms =
+      [defaults integerForKey:@"NSTextInsertionPointBlinkPeriodOn"];
+  NSInteger off_period_ms =
+      [defaults integerForKey:@"NSTextInsertionPointBlinkPeriodOff"];
   // 10.9
-  double period_ms = [defaults
-      doubleForKey:@"NSTextInsertionPointBlinkPeriod"];
-  if (on_period_ms == 0.0 && off_period_ms == 0.0 && period_ms == 0.0)
-    return false;
-  // Neither Blink nor Views support having separate on and off intervals, so
-  // this function takes the average. There's a special case: setting
-  // on_period_ms very high functions to permanently enable the cursor, which is
-  // what happens when the blink period in Blink/Views is set to 0. Setting
-  // off_period_ms very high would disable the cursor entirely, but Blink/Views
-  // do not support that so it's not implemented here.
+  NSInteger period_ms =
+      [defaults integerForKey:@"NSTextInsertionPointBlinkPeriod"];
+
+  // If any of the periods is negative the requested blink time makes no sense.
+  // In that case use the default blink time.
+  if ((on_period_ms == 0 && off_period_ms == 0 && period_ms == 0) ||
+      on_period_ms < 0 || off_period_ms < 0 || period_ms < 0) {
+    blink_period = absl::nullopt;
+    return blink_period;
+  }
+
+  const int kMaximumReasonableIntervalMs = 60 * 1000;
   if (on_period_ms > kMaximumReasonableIntervalMs ||
       period_ms > kMaximumReasonableIntervalMs) {
-    *delta = base::TimeDelta();
+    // Treat an exceedingly long on_period_ms as permanently enabling
+    // the cursor. In Blink/Views this is signaled by a blink period of 0.
+    // Conversely, a high off_period_ms would permanently disable the cursor,
+    // but Blink and Views don't support that so it's not implemented here.
+    blink_period = base::TimeDelta();
   } else if (on_period_ms || off_period_ms) {
-    *delta = base::Milliseconds((on_period_ms + off_period_ms) / 2);
+    // When both on and off periods are defined take the average (neither Blink
+    // nor Views support separate on and off intervals).
+    blink_period = base::Milliseconds((on_period_ms + off_period_ms) / 2);
   } else {
-    *delta = base::Milliseconds(period_ms);
+    blink_period = base::Milliseconds(period_ms);
   }
-  return true;
+
+  return blink_period;
+}
+
+bool& BlinkPeriodRefreshFlagForTesting() {
+  return BlinkPeriodNeedsRefresh();
 }
 
 }  // namespace ui

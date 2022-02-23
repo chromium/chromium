@@ -20,7 +20,7 @@
 namespace extensions {
 
 const char kTestHostName[] = "com.chrome.test.native_host";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kTestHostPath[] = "C:\\ProgramFiles\\host.exe";
 #else
 const char kTestHostPath[] = "/usr/bin/host";

@@ -1,0 +1,13 @@
+<!--
+@SCRIPT:
+  listbox.accessibilityAttributeNames.has(AXIsMultiSelectable)
+  listbox.accessibilityAttributeValue(AXIsMultiSelectable)
+  listbox_not.accessibilityAttributeNames.has(AXIsMultiSelectable)
+  listbox_not.accessibilityAttributeValue(AXIsMultiSelectable)
+  not_applicable.accessibilityAttributeNames.has(AXIsMultiSelectable)
+  not_applicable.accessibilityAttributeValue(AXIsMultiSelectable)
+-->
+<!DOCTYPE html>
+<ul id="listbox" role="listbox" aria-multiselectable="true"></ul>
+<ul id="listbox_not" role="listbox"></ul>
+<div id="not_applicable"></div>

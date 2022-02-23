@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"

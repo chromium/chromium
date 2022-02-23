@@ -123,13 +123,14 @@ class CORE_EXPORT NGFragmentItem {
   void SetSvgLineLocalRect(const PhysicalRect& unscaled_rect);
 
   // A sequence number of fragments generated from a |LayoutObject|.
-  // For line boxes, please see |kInitialLineFragmentId|.
+  // For line boxes, this is a sequence number for the containing
+  // |LayoutBlockFlow|, starting at |kInitialLineFragmentId|.
   wtf_size_t FragmentId() const {
-    DCHECK_NE(Type(), kLine);
+    DCHECK(Type() != kLine || fragment_id_ >= kInitialLineFragmentId);
     return fragment_id_;
   }
   void SetFragmentId(wtf_size_t id) const {
-    DCHECK_NE(Type(), kLine);
+    DCHECK(Type() != kLine || id >= kInitialLineFragmentId);
     fragment_id_ = id;
   }
   // The initial framgent_id for line boxes.
@@ -137,8 +138,6 @@ class CORE_EXPORT NGFragmentItem {
   // its |LayoutBlockFlow| as their |DisplayItemClient|, but multicol also uses
   // fragment id for |LayoutBlockFlow| today. The plan is to make |FragmentData|
   // a |DisplayItemClient| instead.
-  // TODO(kojii): The fragment id for line boxes must be unique across NG block
-  // fragmentation. This is not implemented yet.
   static constexpr wtf_size_t kInitialLineFragmentId = 0x80000000;
 
   // Return true if this is the first fragment generated from a node.
@@ -179,6 +178,10 @@ class CORE_EXPORT NGFragmentItem {
   // Use |LayoutObject|+|FragmentId()| for |DisplayItem::Id|.
   const DisplayItemClient* GetDisplayItemClient() const {
     return GetLayoutObject();
+  }
+
+  bool IsRelayoutBoundary() const {
+    return layout_object_->IsRelayoutBoundary();
   }
 
   wtf_size_t DeltaToNextForSameLayoutObject() const {
@@ -252,8 +255,9 @@ class CORE_EXPORT NGFragmentItem {
     return nullptr;
   }
 
-  // Returns block of block-in-inline.
-  LayoutBlock& BlockInInline() const;
+  // Returns block of block-in-inline. Note: We can have LayoutBlock and
+  // LayoutImage. See http://crbug.com/1295087
+  LayoutObject& BlockInInline() const;
 
   bool HasNonVisibleOverflow() const;
   bool IsScrollContainer() const;
@@ -453,13 +457,13 @@ class CORE_EXPORT NGFragmentItem {
   bool HasSvgTransformForBoundingBox() const;
   // A transform which should be used on computing a bounding box.
   // This contains no transform for lengthAdjust=spacingAndGlyphs because
-  // FloatRectInContainerFragment() already takes into account of
+  // RectInContainerFragment() already takes into account of
   // lengthAdjust=spacingAndGlyphs.
   AffineTransform BuildSvgTransformForBoundingBox() const;
 
   // Returns a transformed text cell in the unscaled coordination system.
   // This works only with kSvgText type.
-  FloatQuad SvgUnscaledQuad() const;
+  gfx::QuadF SvgUnscaledQuad() const;
 
   // Returns a font scaling factor for SVG <text>.
   // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.

@@ -420,7 +420,7 @@ public class AssistantChoiceList extends GridLayout {
                 R.dimen.autofill_assistant_choicelist_edit_button_size);
         ChromeImageView editButton = new ChromeImageView(getContext());
         editButton.setImageDrawable(TintedDrawable.constructTintedDrawable(
-                getContext(), editButtonDrawable, R.color.default_icon_color));
+                getContext(), editButtonDrawable, R.color.default_icon_color_tint_list));
         editButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         editButton.setLayoutParams(new ViewGroup.LayoutParams(editButtonSize, editButtonSize));
 

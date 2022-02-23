@@ -62,7 +62,7 @@ UBool U_CALLCONV TestFirstAndLastCharsInCategory(const void* context,
 
 TEST(UnicodeUtilitiesTest, Separators) {
   // clang-format off
-  static const bool kLatinSeparatorTable[256] = {
+  static constexpr int kLatinSeparatorTable[256] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       // space ! " # $ % & ' ( ) * + , - . /
@@ -89,7 +89,8 @@ TEST(UnicodeUtilitiesTest, Separators) {
   // clang-format on
 
   for (UChar32 character = 0; character < kMaxLatinCharCount; ++character) {
-    EXPECT_EQ(IsSeparator(character), kLatinSeparatorTable[character]);
+    EXPECT_EQ(IsSeparator(character),
+              static_cast<bool>(kLatinSeparatorTable[character]));
   }
 
   g_is_test_first_and_last_chars_in_category_failed = false;

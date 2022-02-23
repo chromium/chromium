@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/drivefs/drivefs_auth.h"
 #include "ash/components/drivefs/drivefs_session.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -18,24 +19,23 @@
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace drive {
-class DriveNotificationManager;
-}
-
-namespace chromeos {
+namespace ash {
 namespace disks {
 class DiskMountManager;
-}
-}  // namespace chromeos
+}  // namespace disks
+}  // namespace ash
+
+namespace drive {
+class DriveNotificationManager;
+}  // namespace drive
 
 namespace network {
 class NetworkConnectionTracker;
-}
+}  // namespace network
 
 namespace drivefs {
 
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
               MountObserver* mount_observer,
               network::NetworkConnectionTracker* network_connection_tracker,
               const base::Clock* clock,
-              chromeos::disks::DiskMountManager* disk_mount_manager,
+              ash::disks::DiskMountManager* disk_mount_manager,
               std::unique_ptr<base::OneShotTimer> timer);
 
   DriveFsHost(const DriveFsHost&) = delete;
@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHost {
   MountObserver* const mount_observer_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
   const base::Clock* const clock_;
-  chromeos::disks::DiskMountManager* const disk_mount_manager_;
+  ash::disks::DiskMountManager* const disk_mount_manager_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   std::unique_ptr<DriveFsAuth> account_token_delegate_;

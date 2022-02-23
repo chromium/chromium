@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -56,6 +57,7 @@ struct TestLeakDetectionRequest : LeakDetectionRequestInterface {
   // LeakDetectionRequestInterface:
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
                         const absl::optional<std::string>& access_token,
+                        const absl::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
     encrypted_payload = std::move(payload.encrypted_payload);
@@ -106,7 +108,7 @@ class BulkLeakCheckTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   ::testing::StrictMock<MockBulkLeakCheckDelegateInterface> delegate_;
-  MockLeakDetectionRequestFactory* request_factory_;
+  raw_ptr<MockLeakDetectionRequestFactory> request_factory_;
   BulkLeakCheckImpl bulk_check_;
 };
 
@@ -215,7 +217,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessDoesNetworkRequest) {
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
               LookupSingleLeak(
-                  _, Optional(Eq(kAccessToken)),
+                  _, Optional(Eq(kAccessToken)), /*api_key=*/Eq(absl::nullopt),
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
@@ -244,9 +246,11 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsMultipleNetworkRequests) {
   auto network_request1 = std::make_unique<MockLeakDetectionRequest>();
   auto network_request2 = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request1,
-              LookupSingleLeak(_, Optional(Eq(kAccessToken)), _, _));
+              LookupSingleLeak(_, Optional(Eq(kAccessToken)),
+                               /*api_key=*/Eq(absl::nullopt), _, _));
   EXPECT_CALL(*network_request2,
-              LookupSingleLeak(_, Optional(Eq(kAccessToken)), _, _));
+              LookupSingleLeak(_, Optional(Eq(kAccessToken)),
+                               /*api_key=*/Eq(absl::nullopt), _, _));
   EXPECT_CALL(*request_factory(), CreateNetworkRequest)
       .WillOnce(Return(ByMove(std::move(network_request1))))
       .WillOnce(Return(ByMove(std::move(network_request2))));

@@ -6,7 +6,6 @@
 #define REMOTING_BASE_OAUTH_TOKEN_GETTER_PROXY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/oauth_token_getter.h"

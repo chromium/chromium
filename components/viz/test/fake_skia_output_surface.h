@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -97,7 +98,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void ScheduleOverlays(OverlayList overlays,
                         std::vector<gpu::SyncToken> sync_tokens,
                         base::OnceClosure on_finished) override {}
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetEnableDCLayers(bool enable) override {}
 #endif
   void CopyOutput(AggregatedRenderPassId id,
@@ -110,7 +111,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   gpu::SharedImageInterface* GetSharedImageInterface() override;
   gpu::SyncToken Flush() override;
   void OnObservingBeginFrameSourceChanged(bool observing) override {}
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   SkCanvas* BeginPaintRenderPassOverlay(
       const gfx::Size& size,
       ResourceFormat format,
@@ -130,7 +131,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       ResourceFormat format,
       bool concurrent_reads,
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-      sk_sp<SkColorSpace> color_space) override;
+      sk_sp<SkColorSpace> color_space,
+      bool raw_draw_if_possible) override;
 
   // If set true, callbacks triggering will be in a reverse order as SignalQuery
   // calls.
@@ -168,7 +170,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void SwapBuffersAck();
 
   scoped_refptr<ContextProvider> context_provider_;
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
 
   std::unique_ptr<TextureDeleter> texture_deleter_;
 

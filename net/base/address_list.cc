@@ -9,14 +9,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/values.h"
 #include "net/base/sys_addrinfo.h"
-#include "net/log/net_log_capture_mode.h"
 
 namespace net {
 
@@ -41,6 +37,9 @@ AddressList::AddressList(const IPEndPoint& endpoint,
     : dns_aliases_(std::move(aliases)) {
   push_back(endpoint);
 }
+
+AddressList::AddressList(std::vector<IPEndPoint> endpoints)
+    : endpoints_(std::move(endpoints)) {}
 
 // static
 AddressList AddressList::CreateFromIPAddress(const IPAddress& address,
@@ -88,17 +87,6 @@ AddressList AddressList::CopyWithPort(const AddressList& list, uint16_t port) {
   return out;
 }
 
-// TODO(cammie/ericorth): Consider changing the return value to
-// base::StringPiece (by non-const value), which  is often a better type
-// for passing/returning non-owned strings. In this case, because it could
-// point directly at a string literal/constant, it would allow us to avoid
-// creating a full std::string (and the annoyance of needing NoDestructor)
-// just to store empty.
-const std::string& AddressList::GetCanonicalName() const {
-  static const base::NoDestructor<std::string> nullstring_result;
-  return dns_aliases_.size() >= 1 ? dns_aliases_.front() : *nullstring_result;
-}
-
 void AddressList::SetDefaultCanonicalName() {
   DCHECK(!empty());
   DCHECK(dns_aliases_.empty());
@@ -129,13 +117,17 @@ void AddressList::AppendDnsAliases(std::vector<std::string> aliases) {
 
 base::Value AddressList::NetLogParams() const {
   base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value list(base::Value::Type::LIST);
 
+  base::Value address_list(base::Value::Type::LIST);
   for (const auto& ip_endpoint : *this)
-    list.Append(ip_endpoint.ToString());
+    address_list.Append(ip_endpoint.ToString());
+  dict.SetKey("address_list", std::move(address_list));
 
-  dict.SetKey("address_list", std::move(list));
-  dict.SetStringKey("canonical_name", GetCanonicalName());
+  base::Value alias_list(base::Value::Type::LIST);
+  for (const std::string& alias : dns_aliases_)
+    alias_list.Append(alias);
+  dict.SetKey("aliases", std::move(alias_list));
+
   return dict;
 }
 

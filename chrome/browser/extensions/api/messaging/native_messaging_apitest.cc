@@ -47,6 +47,20 @@ class NativeMessagingApiTestBase : public ExtensionApiTest {
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
+// Tests basic functionality of chrome.runtime.sendNativeMessage in an MV3
+// extension.
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, SendNativeMessage) {
+  constexpr bool kUserLevel = false;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, UserLevelSendNativeMessage) {
+  constexpr bool kUserLevel = true;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
  public:
@@ -127,7 +141,7 @@ class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
 };
 
 // Disabled on Windows due to timeouts; see https://crbug.com/984897.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success
@@ -149,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   EXPECT_TRUE(
       g_browser_process->background_mode_manager()->IsBackgroundModeActive());
@@ -187,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, UnsupportedByNativeHost) {
                                  ScopedTestNativeMessagingHost::kHostName);
   command_line.AppendSwitch(switches::kNoStartupWindow);
 
-  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(command_line, {},
-                                                          profile()->GetPath());
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      command_line, {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   if (!catcher.GetNextResult()) {
     FAIL() << catcher.message();
@@ -217,7 +232,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
     // On Mac, the browser remains alive when no windows are open, so observing
     // the KeepAliveRegistry cannot detect when the native messaging keep-alive
     // has been released; poll for changes instead.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     polling_timer_.Start(
         FROM_HERE, base::Milliseconds(100),
         base::BindRepeating(&TestKeepAliveStateObserver::PollKeepAlive,
@@ -238,7 +253,7 @@ class TestKeepAliveStateObserver : public KeepAliveStateObserver {
 
   void OnKeepAliveRestartStateChanged(bool can_restart) override {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PollKeepAlive() {
     OnKeepAliveStateChanged(
         KeepAliveRegistry::GetInstance()->IsOriginRegistered(
@@ -257,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Error) {
       base::Seconds(2));
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -279,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("\"connect id!\""), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -301,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, TooLongConnectId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine(std::string(21, 'a')), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -323,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, InvalidExtensionId) {
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       CreateNativeMessagingConnectCommandLine("test-connect-id", "abcd"), {},
-      profile()->GetPath());
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
   ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT));
 
@@ -397,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
 }
 
 // Flaky on a Windows bot. See crbug.com/1030332.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Success DISABLED_Success
 #else
 #define MAYBE_Success Success

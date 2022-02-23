@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
@@ -75,7 +76,7 @@ class TestNetworkConnectionObserver
 
  private:
   size_t num_notifications_;
-  network::NetworkConnectionTracker* tracker_;
+  raw_ptr<network::NetworkConnectionTracker> tracker_;
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType connection_type_;
 
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(NetworkConnectionTrackerBrowserTest,
   // NetworkService on ChromeOS doesn't yet have a NetworkChangeManager
   // implementation. OSX uses a separate binary for service processes and
   // browser test fixture doesn't have NetworkServiceTest mojo code.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   network::NetworkConnectionTracker* tracker =
       content::GetNetworkConnectionTracker();
   EXPECT_NE(nullptr, tracker);

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ppapi/c/private/ppp_pdf.h"
 #include "ppapi/proxy/interface_proxy.h"
 

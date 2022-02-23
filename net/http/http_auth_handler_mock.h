@@ -10,11 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "url/gurl.h"
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -47,7 +52,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int nonce_count,
                           const NetLogWithSource& net_log,
@@ -107,7 +112,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
   CompletionOnceCallback callback_;
   bool generate_async_;
   int generate_rv_;
-  std::string* auth_token_;
+  raw_ptr<std::string> auth_token_;
   bool first_round_;
   bool connection_based_;
   bool allows_default_credentials_;

@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/public/cpp/gamepad.h"

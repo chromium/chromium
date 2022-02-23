@@ -335,7 +335,7 @@ let searchInProgress_ = false;
  * @type {Object}
  */
 const IGNORE_NODE_NAMES = new Set(['SCRIPT', 'STYLE', 'EMBED',
-  'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME']);
+  'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME', 'NOSCRIPT']);
 
 /**
  * Class name of CSS element that highlights matches with yellow.

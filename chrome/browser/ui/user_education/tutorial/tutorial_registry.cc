@@ -7,25 +7,28 @@
 #include <memory>
 #include <vector>
 
-#include "base/no_destructor.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 
 TutorialRegistry::TutorialRegistry() = default;
 TutorialRegistry::~TutorialRegistry() = default;
 
+bool TutorialRegistry::IsTutorialRegistered(TutorialIdentifier id) const {
+  return base::Contains(tutorial_registry_, id);
+}
+
 std::unique_ptr<Tutorial> TutorialRegistry::CreateTutorial(
     TutorialIdentifier id,
     TutorialService* tutorial_service,
-    TutorialBubbleFactoryRegistry* bubble_factory_registry,
     ui::ElementContext context) {
   DCHECK(tutorial_registry_.size() > 0);
   auto pair = tutorial_registry_.find(id);
-  if (pair == tutorial_registry_.end()) {
+  if (pair == tutorial_registry_.end())
     return nullptr;
-  }
-  return Tutorial::Builder::BuildFromDescription(
-      pair->second, tutorial_service, bubble_factory_registry, context);
+  return Tutorial::Builder::BuildFromDescription(pair->second, tutorial_service,
+                                                 context);
 }
 
 const std::vector<TutorialIdentifier>
@@ -40,5 +43,9 @@ TutorialRegistry::GetTutorialIdentifiers() {
 
 void TutorialRegistry::AddTutorial(TutorialIdentifier id,
                                    TutorialDescription description) {
-  tutorial_registry_.insert(std::make_pair(id, description));
+  tutorial_registry_.emplace(id, std::move(description));
+}
+
+void TutorialRegistry::RemoveTutorialForTesting(TutorialIdentifier id) {
+  tutorial_registry_.erase(id);
 }

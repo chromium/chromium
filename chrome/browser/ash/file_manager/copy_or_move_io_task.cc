@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -52,15 +53,13 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
     const storage::FileSystemOperation::CopyOrMoveProgressCallback&
         progress_callback,
     storage::FileSystemOperation::StatusCallback complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return file_system_context->operation_runner()->Copy(
-      source_url, destination_url,
-      storage::FileSystemOperation::CopyOrMoveOptionSet(
-          storage::FileSystemOperation::CopyOrMoveOption::
-              kPreserveLastModified),
+      source_url, destination_url, options,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
       std::move(complete_callback));
 }
@@ -70,18 +69,13 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
     const storage::FileSystemOperation::CopyOrMoveProgressCallback&
         progress_callback,
     storage::FileSystemOperation::StatusCallback complete_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(crbug.com/1200251): This won't give progress updates for moves between
-  // "My Files" and "Downloads". Fix once support for forcing cross filesystem
-  // moves is available in the storage layer.
   return file_system_context->operation_runner()->Move(
-      source_url, destination_url,
-      storage::FileSystemOperation::CopyOrMoveOptionSet(
-          storage::FileSystemOperation::CopyOrMoveOption::
-              kPreserveLastModified),
+      source_url, destination_url, options,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
       std::move(complete_callback));
 }
@@ -121,6 +115,67 @@ CopyOrMoveIOTask::~CopyOrMoveIOTask() {
             },
             file_system_context_, *operation_id_));
   }
+}
+
+bool CopyOrMoveIOTask::IsCrossFileSystemForTesting(
+    const storage::FileSystemURL& source_url,
+    const storage::FileSystemURL& destination_url) {
+  return IsCrossFileSystem(source_url, destination_url);
+}
+
+// Helper function for copy or move tasks that determines whether or not
+// entries identified by their URLs should be considered as being on the
+// different file systems or not. The entries are seen as being on different
+// filesystems if either:
+// - the entries are not on the same volume OR
+// - one entry is in My files, and the other one in Downloads.
+// crbug.com/1200251
+bool CopyOrMoveIOTask::IsCrossFileSystem(
+    const storage::FileSystemURL& source_url,
+    const storage::FileSystemURL& destination_url) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  file_manager::VolumeManager* const volume_manager =
+      file_manager::VolumeManager::Get(profile_);
+
+  base::WeakPtr<file_manager::Volume> source_volume =
+      volume_manager->FindVolumeFromPath(source_url.path());
+  base::WeakPtr<file_manager::Volume> destination_volume =
+      volume_manager->FindVolumeFromPath(destination_url.path());
+
+  if (!(source_volume && destination_volume)) {
+    // When either volume is unavailable, fallback to only checking the
+    // filesystem_id, which uniquely maps a URL to its ExternalMountPoints
+    // instance. NOTE: different volumes (e.g. for removables), might share the
+    // same ExternalMountPoints. NOTE 2: if either volume is unavailable, the
+    // operation itself is likely to fail.
+    return source_url.filesystem_id() != destination_url.filesystem_id();
+  }
+
+  if (source_volume->volume_id() != destination_volume->volume_id()) {
+    return true;
+  }
+
+  // On volumes other than DOWNLOADS, I/O operations within volumes that have
+  // the same ID are considered same-filesystem.
+  if (source_volume->type() != file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY) {
+    return false;
+  }
+
+  // The Downloads folder being bind mounted in My files, I/O operations within
+  // My files may need to be considered cross-filesystem (if one path is in
+  // Downloads and the other is not).
+  base::FilePath my_files_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
+  base::FilePath downloads_path = my_files_path.Append("Downloads");
+
+  bool source_in_downloads = downloads_path.IsParent(source_url.path());
+  // The destination_url can be the destination folder, so Downloads is a valid
+  // destination.
+  bool destination_in_downloads =
+      downloads_path == destination_url.path() ||
+      downloads_path.IsParent(destination_url.path());
+  return source_in_downloads != destination_in_downloads;
 }
 
 void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
@@ -212,14 +267,12 @@ void CopyOrMoveIOTask::GotFreeDiskSpace(int64_t free_space) {
   }
 
   int64_t required_bytes = progress_.total_bytes;
+
+  // Move operations that are same-filesystem do not require disk space.
   if (progress_.type == OperationType::kMove) {
-    // Ignore source files that are on the same volume when calculating size for
-    // moves.
-    // TODO(crbug.com/1200251): This needs some special handling for moves
-    // between "Downloads" and "My Files" due to the bind mount.
-    for (int i = 0; i < source_sizes_.size(); i++) {
-      if (progress_.sources[i].url.filesystem_id() ==
-          progress_.destination_folder.filesystem_id()) {
+    for (size_t i = 0; i < source_sizes_.size(); i++) {
+      if (!IsCrossFileSystem(progress_.sources[i].url,
+                             progress_.destination_folder)) {
         required_bytes -= source_sizes_[i];
       }
     }
@@ -260,14 +313,32 @@ void CopyOrMoveIOTask::CopyOrMoveFile(
 
   last_progress_size_ = 0;
 
+  const storage::FileSystemURL& source_url = progress_.sources[idx].url;
+  const storage::FileSystemURL& destination_url = destination_result.value();
+
+  // File browsers generally default to preserving mtimes on copy/move so we
+  // should do the same.
+  storage::FileSystemOperation::CopyOrMoveOptionSet options =
+      storage::FileSystemOperation::CopyOrMoveOptionSet(
+          storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
+          storage::FileSystemOperation::CopyOrMoveOption::
+              kRemovePartiallyCopiedFilesOnError);
+  // To ensure progress updates, force cross-filesystem I/O operations when the
+  // source and the destination are on different volumes, or between My files
+  // and Downloads.
+  if (IsCrossFileSystem(source_url, destination_url)) {
+    options.Put(
+        storage::FileSystemOperation::CopyOrMoveOption::kForceCrossFilesystem);
+  }
+
   auto* transfer_function = progress_.type == OperationType::kCopy
                                 ? &StartCopyOnIOThread
                                 : &StartMoveOnIOThread;
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(transfer_function, file_system_context_,
-                     progress_.sources[idx].url, destination_result.value(),
+      base::BindOnce(transfer_function, file_system_context_, source_url,
+                     destination_url, options,
                      google_apis::CreateRelayCallback(base::BindRepeating(
                          &CopyOrMoveIOTask::OnCopyOrMoveProgress,
                          weak_ptr_factory_.GetWeakPtr())),

@@ -6,41 +6,25 @@
 #define ASH_SHELL_DELEGATE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/callback.h"
-#include "base/callback_forward.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/files/file_path.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/ui/base/window_pin_type.h"
-#include "components/favicon_base/favicon_callback.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace aura {
 class Window;
 }
 
-namespace base {
-class CancelableTaskTracker;
-}
-
 namespace ui {
 class OSExchangeData;
-}
-
-namespace app_restore {
-struct AppLaunchInfo;
-}
-
-namespace desks_storage {
-class DeskModel;
 }
 
 namespace ash {
@@ -49,7 +33,7 @@ class AccessibilityDelegate;
 class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
-class DeskTemplate;
+class DesksTemplatesDelegate;
 class NearbyShareController;
 class NearbyShareDelegate;
 
@@ -78,11 +62,14 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<NearbyShareDelegate> CreateNearbyShareDelegate(
       NearbyShareController* controller) const = 0;
 
+  virtual std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
+      const = 0;
+
   // Check whether the current tab of the browser window can go back.
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
   // Sets the tab scrubber |enabled_| field to |enabled|.
-  virtual void SetTabScrubberEnabled(bool enabled) = 0;
+  virtual void SetTabScrubberChromeOSEnabled(bool enabled) = 0;
 
   // Returns true if |window| allows default touch behaviors. If false, it means
   // no default touch behavior is allowed (i.e., the touch action of window is
@@ -144,40 +131,9 @@ class ASH_EXPORT ShellDelegate {
   // launched or removed.
   virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
 
-  // Returns the app launch data that's associated with a particular |window| in
-  // order to construct a desk template. Return nullptr if no such app launch
-  // data can be constructed, which can happen if the |window| does not have
-  // an app id associated with it, or we're not in the primary active user
-  // session.
-  virtual std::unique_ptr<app_restore::AppLaunchInfo>
-  GetAppLaunchDataForDeskTemplate(aura::Window* window) const = 0;
-
-  // Returns either the local desk storage backend or Chrome sync desk storage
-  // backend depending on the feature flag DeskTemplateSync.
-  virtual desks_storage::DeskModel* GetDeskModel();
-
-  // Fetches the favicon for `page_url` and returns it via the provided
-  // `callback`. `callback` may be called synchronously.
-  virtual void GetFaviconForUrl(const std::string& page_url,
-                                int desired_icon_size,
-                                favicon_base::FaviconRawBitmapCallback callback,
-                                base::CancelableTaskTracker* teacker) const = 0;
-
-  // Fetches the icon for the app with `app_id` and returns it via the provided
-  // `callback`. `callback` may be called synchronously.
-  virtual void GetIconForAppId(
-      const std::string& app_id,
-      int desired_icon_size,
-      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
-      const = 0;
-
-  // Launches apps into the active desk. Ran immediately after a desk is created
-  // for a template.
-  virtual void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template) = 0;
-
-  // Checks whether `window` is supported in the desks templates feature.
-  virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;
+  // Returns the last committed URL from the web contents if the given |window|
+  // contains a browser frame, otherwise returns GURL::EmptyURL().
+  virtual const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window);
 };
 
 }  // namespace ash

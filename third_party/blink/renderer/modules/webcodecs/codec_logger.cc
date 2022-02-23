@@ -1,75 +1,42 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
-
-#include <string>
-
-#include "media/base/media_util.h"
-#include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
-#include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "base/strings/string_util.h"
 
 namespace blink {
 
-CodecLogger::CodecLogger(
-    ExecutionContext* context,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(context);
+namespace internal {
 
-  // Owners of |this| should be ExecutionLifeCycleObservers, and should call
-  // Neuter() if |context| is destroyed. The MediaInspectorContextImpl must
-  // outlive |parent_media_log_|. If |context| is already destroyed, owners
-  // might never call Neuter(), and MediaInspectorContextImpl* could be garbage
-  // collected before |parent_media_log_| is destroyed.
-  if (!context->IsContextDestroyed()) {
-    parent_media_log_ = Platform::Current()->GetMediaLog(
-        MediaInspectorContextImpl::From(*context), task_runner,
-        /*is_on_worker=*/!IsMainThread());
+std::string SanitizeStringProperty(WebString value) {
+  std::string converted = value.Utf8();
+  return base::IsStringUTF8(converted) ? converted : "[invalid property]";
+}
+
+void SendPlayerNameInformationInternal(media::MediaLog* media_log,
+                                       const ExecutionContext& context,
+                                       std::string loadedAs) {
+  media_log->AddEvent<media::MediaLogEvent::kLoad>("Webcodecs::" + loadedAs);
+  WebString frame_title;
+  if (context.IsWindow()) {
+    const auto& dom_context = To<LocalDOMWindow>(context);
+    frame_title = dom_context.name();
+    if (!frame_title.length()) {
+      auto* frame = WebLocalFrameImpl::FromFrame(dom_context.GetFrame());
+      if (frame)
+        frame_title = frame->GetDocument().Title();
+    }
+  } else if (context.IsWorkerOrWorkletGlobalScope()) {
+    const auto& worker_context = To<WorkerOrWorkletGlobalScope>(context);
+    frame_title = worker_context.Name();
+    if (!frame_title.length())
+      frame_title = worker_context.Url().GetString();
   }
-
-  // NullMediaLog silently and safely does nothing.
-  if (!parent_media_log_)
-    parent_media_log_ = std::make_unique<media::NullMediaLog>();
-
-  // This allows us to destroy |parent_media_log_| and stop logging,
-  // without causing problems to |media_log_| users.
-  media_log_ = parent_media_log_->Clone();
+  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
+      internal::SanitizeStringProperty(frame_title));
 }
 
-DOMException* CodecLogger::MakeException(std::string error_msg,
-                                         media::Status status) {
-  media_log_->NotifyError(status);
-
-  if (status_code_ == media::StatusCode::kOk) {
-    DCHECK(!status.is_ok());
-    status_code_ = status.code();
-  }
-
-  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kOperationError,
-                                            error_msg.c_str());
-}
-
-DOMException* CodecLogger::MakeException(std::string error_msg,
-                                         media::StatusCode code,
-                                         const base::Location& location) {
-  if (status_code_ == media::StatusCode::kOk) {
-    DCHECK_NE(code, media::StatusCode::kOk);
-    status_code_ = code;
-  }
-
-  return MakeException(error_msg, media::Status(code, error_msg, location));
-}
-
-CodecLogger::~CodecLogger() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void CodecLogger::Neuter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  parent_media_log_ = nullptr;
-}
+}  // namespace internal
 
 }  // namespace blink

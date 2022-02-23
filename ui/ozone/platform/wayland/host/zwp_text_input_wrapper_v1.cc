@@ -9,6 +9,7 @@
 
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -66,12 +67,16 @@ void ZWPTextInputWrapperV1::Reset() {
 }
 
 void ZWPTextInputWrapperV1::Activate(WaylandWindow* window) {
-  zwp_text_input_v1_activate(obj_.get(), connection_->seat(),
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }
 
 void ZWPTextInputWrapperV1::Deactivate() {
-  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat());
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat()->wl_object());
 }
 
 void ZWPTextInputWrapperV1::ShowInputPanel() {
@@ -92,6 +97,11 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
     const gfx::Range& selection_range) {
   zwp_text_input_v1_set_surrounding_text(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
+}
+
+void ZWPTextInputWrapperV1::SetContentType(uint32_t content_hint,
+                                           uint32_t content_purpose) {
+  zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
 }
 
 void ZWPTextInputWrapperV1::ResetInputEventState() {
@@ -124,7 +134,8 @@ void ZWPTextInputWrapperV1::OnInputPanelState(
     void* data,
     struct zwp_text_input_v1* text_input,
     uint32_t state) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnInputPanelState(state);
 }
 
 // static

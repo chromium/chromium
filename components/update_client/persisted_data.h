@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 
@@ -137,8 +138,8 @@ class PersistedData {
                              const std::set<std::string>& active_ids);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  PrefService* pref_service_;
-  ActivityDataService* activity_data_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ActivityDataService> activity_data_service_;
 };
 
 }  // namespace update_client

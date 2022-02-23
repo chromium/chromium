@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
@@ -106,7 +107,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
@@ -296,6 +297,7 @@ class InspectorCSSAgent::ModifyRuleAction final
     kSetStyleText,
     kSetMediaRuleText,
     kSetContainerRuleText,
+    kSetSupportsRuleText,
     kSetKeyframeKey
   };
 
@@ -330,6 +332,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       case kSetContainerRuleText:
         return style_sheet_->SetContainerRuleText(
             new_range_, old_text_, nullptr, nullptr, exception_state);
+      case kSetSupportsRuleText:
+        return style_sheet_->SetSupportsRuleText(new_range_, old_text_, nullptr,
+                                                 nullptr, exception_state);
       case kSetKeyframeKey:
         return style_sheet_->SetKeyframeKey(new_range_, old_text_, nullptr,
                                             nullptr, exception_state);
@@ -355,6 +360,10 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetContainerRuleText:
         css_rule_ = style_sheet_->SetContainerRuleText(
+            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+        break;
+      case kSetSupportsRuleText:
+        css_rule_ = style_sheet_->SetSupportsRuleText(
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       case kSetKeyframeKey:
@@ -532,6 +541,11 @@ CSSMediaRule* InspectorCSSAgent::AsCSSMediaRule(CSSRule* rule) {
 // static
 CSSContainerRule* InspectorCSSAgent::AsCSSContainerRule(CSSRule* rule) {
   return DynamicTo<CSSContainerRule>(rule);
+}
+
+// static
+CSSSupportsRule* InspectorCSSAgent::AsCSSSupportsRule(CSSRule* rule) {
+  return DynamicTo<CSSSupportsRule>(rule);
 }
 
 InspectorCSSAgent::InspectorCSSAgent(
@@ -874,6 +888,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   if (!response.IsSuccess())
     return response;
 
+  Element* animating_element = element;
   PseudoId element_pseudo_id = element->GetPseudoId();
   if (element_pseudo_id) {
     element = element->ParentOrShadowHostElement();
@@ -943,7 +958,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     inherited_entries->fromJust()->emplace_back(std::move(entry));
   }
 
-  *css_keyframes_rules = AnimationsForNode(element);
+  *css_keyframes_rules = AnimationsForNode(element, animating_element);
   return Response::Success();
 }
 
@@ -966,7 +981,8 @@ static CSSKeyframesRule* FindKeyframesRule(CSSRuleCollection* css_rules,
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>
-InspectorCSSAgent::AnimationsForNode(Element* element) {
+InspectorCSSAgent::AnimationsForNode(Element* element,
+                                     Element* animating_element) {
   auto css_keyframes_rules =
       std::make_unique<protocol::Array<protocol::CSS::CSSKeyframesRule>>();
   Document& document = element->GetDocument();
@@ -982,8 +998,8 @@ InspectorCSSAgent::AnimationsForNode(Element* element) {
     AtomicString animation_name(animation_data->NameList()[i]);
     if (animation_name == CSSAnimationData::InitialName())
       continue;
-    StyleRuleKeyframes* keyframes_rule =
-        style_resolver.FindKeyframesRule(element, animation_name);
+    StyleRuleKeyframes* keyframes_rule = style_resolver.FindKeyframesRule(
+        element, animating_element, animation_name);
     if (!keyframes_rule)
       continue;
 
@@ -1518,8 +1534,37 @@ Response InspectorCSSAgent::setContainerQueryText(
   if (success) {
     CSSContainerRule* rule =
         InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
-    *result = BuildContainerQueryObject(rule->container(),
-                                        rule->parentStyleSheet(), rule->Name());
+    *result = BuildContainerQueryObject(rule);
+  }
+  return InspectorDOMAgent::ToResponse(exception_state);
+}
+
+Response InspectorCSSAgent::setSupportsText(
+    const String& style_sheet_id,
+    std::unique_ptr<protocol::CSS::SourceRange> range,
+    const String& text,
+    std::unique_ptr<protocol::CSS::CSSSupports>* result) {
+  FrontendOperationScope scope;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (!response.IsSuccess())
+    return response;
+  SourceRange text_range;
+  response =
+      JsonRangeToSourceRange(inspector_style_sheet, range.get(), &text_range);
+  if (!response.IsSuccess())
+    return response;
+
+  DummyExceptionStateForTesting exception_state;
+  ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
+      ModifyRuleAction::kSetSupportsRuleText, inspector_style_sheet, text_range,
+      text);
+  bool success = dom_agent_->History()->Perform(action, exception_state);
+  if (success) {
+    CSSSupportsRule* rule =
+        InspectorCSSAgent::AsCSSSupportsRule(action->TakeRule());
+    *result = BuildSupportsObject(rule);
   }
   return InspectorDOMAgent::ToResponse(exception_state);
 }
@@ -1756,11 +1801,9 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     has_media_query_items = true;
   }
 
-  // The |mediaText()| getter does not require an ExecutionContext as it is
-  // only used for setting/parsing new media queries and features.
   std::unique_ptr<protocol::CSS::CSSMedia> media_object =
       protocol::CSS::CSSMedia::create()
-          .setText(media->mediaText(/*execution_context=*/nullptr))
+          .setText(media->MediaTextInternal())
           .setSource(source)
           .build();
   if (has_media_query_items)
@@ -1863,33 +1906,26 @@ InspectorCSSAgent::BuildMediaListChain(CSSRule* rule) {
 }
 
 std::unique_ptr<protocol::CSS::CSSContainerQuery>
-InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
-                                             CSSStyleSheet* parent_style_sheet,
-                                             const AtomicString& name) {
-  // The |mediaText()| getter does not require an ExecutionContext as it is
-  // only used for setting/parsing new media queries and features.
+InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
       protocol::CSS::CSSContainerQuery::create()
-          .setText(media->mediaText(/*execution_context=*/nullptr))
+          .setText(rule->ConditionTextInternal())
           .build();
 
-  auto it = css_style_sheet_to_inspector_style_sheet_.find(parent_style_sheet);
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
   if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
     InspectorStyleSheet* inspector_style_sheet = it->value;
     container_query_object->setStyleSheetId(inspector_style_sheet->Id());
   }
 
-  CSSRule* parent_rule = media->ParentRule();
-  if (!parent_rule)
-    return container_query_object;
-
   InspectorStyleSheet* inspector_style_sheet =
-      BindStyleSheet(parent_rule->parentStyleSheet());
+      BindStyleSheet(rule->parentStyleSheet());
   container_query_object->setRange(
-      inspector_style_sheet->RuleHeaderSourceRange(parent_rule));
+      inspector_style_sheet->RuleHeaderSourceRange(rule));
 
-  if (!name.IsEmpty())
-    container_query_object->setName(name);
+  if (!rule->Name().IsEmpty())
+    container_query_object->setName(rule->Name());
 
   return container_query_object;
 }
@@ -1897,15 +1933,8 @@ InspectorCSSAgent::BuildContainerQueryObject(const MediaList* media,
 void InspectorCSSAgent::CollectContainerQueriesFromRule(
     CSSRule* rule,
     protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries) {
-  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule)) {
-    MediaList* media_list = container_rule->container();
-    if (!media_list || !media_list->length())
-      return;
-
-    container_queries->emplace_back(BuildContainerQueryObject(
-        media_list, container_rule->parentStyleSheet(),
-        container_rule->Name()));
-  }
+  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule))
+    container_queries->emplace_back(BuildContainerQueryObject(container_rule));
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
@@ -1920,6 +1949,48 @@ InspectorCSSAgent::BuildContainerQueries(CSSRule* rule) {
     parent_rule = parent_rule->parentRule();
   }
   return container_queries;
+}
+
+std::unique_ptr<protocol::CSS::CSSSupports>
+InspectorCSSAgent::BuildSupportsObject(CSSSupportsRule* rule) {
+  std::unique_ptr<protocol::CSS::CSSSupports> supports_object =
+      protocol::CSS::CSSSupports::create()
+          .setText(rule->ConditionTextInternal())
+          .build();
+
+  auto it =
+      css_style_sheet_to_inspector_style_sheet_.find(rule->parentStyleSheet());
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
+    supports_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
+
+  InspectorStyleSheet* inspector_style_sheet =
+      BindStyleSheet(rule->parentStyleSheet());
+  supports_object->setRange(inspector_style_sheet->RuleHeaderSourceRange(rule));
+
+  return supports_object;
+}
+
+void InspectorCSSAgent::CollectSupportsFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSSupports>* supports_list) {
+  if (auto* supports_rule = DynamicTo<CSSSupportsRule>(rule))
+    supports_list->emplace_back(BuildSupportsObject(supports_rule));
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
+InspectorCSSAgent::BuildSupportsList(CSSRule* rule) {
+  if (!rule)
+    return nullptr;
+  auto supports_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSSupports>>();
+  CSSRule* parent_rule = rule;
+  while (parent_rule) {
+    CollectSupportsFromRule(parent_rule, supports_list.get());
+    parent_rule = parent_rule->parentRule();
+  }
+  return supports_list;
 }
 
 InspectorStyleSheetForInlineStyle* InspectorCSSAgent::AsInspectorStyleSheet(
@@ -2100,6 +2171,7 @@ std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
   result->setMedia(BuildMediaListChain(rule));
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
     result->setContainerQueries(BuildContainerQueries(rule));
+  result->setSupports(BuildSupportsList(rule));
   return result;
 }
 
@@ -2527,6 +2599,7 @@ void InspectorCSSAgent::BuildRulesMap(
       if (it == css_style_sheet_to_inspector_style_sheet_.end())
         continue;
       InspectorStyleSheet* imported_style_sheet = it->value;
+      CHECK_NE(imported_style_sheet, nullptr);
       BuildRulesMap(imported_style_sheet, rule_to_css_rule);
     }
   }
@@ -2558,9 +2631,10 @@ Response InspectorCSSAgent::takeCoverageDelta(
     BuildRulesMap(style_sheet, &rule_to_css_rule);
 
     for (auto used_rule : *entry.value) {
-      CSSStyleRule* css_style_rule = rule_to_css_rule.at(used_rule);
-      if (!css_style_rule)
+      auto rule_to_css_rule_it = rule_to_css_rule.find(used_rule);
+      if (rule_to_css_rule_it == rule_to_css_rule.end())
         continue;
+      CSSStyleRule* css_style_rule = rule_to_css_rule_it->value;
       auto it = css_style_sheet_to_inspector_style_sheet_.find(
           const_cast<CSSStyleSheet*>(css_style_rule->parentStyleSheet()));
       if (it == css_style_sheet_to_inspector_style_sheet_.end())

@@ -52,7 +52,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
 
@@ -86,29 +86,24 @@ std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
   return out_str;
 }
 
-std::unique_ptr<base::Value> ConvertDictKeyStyle(const base::Value& value) {
-  const base::DictionaryValue* dict = nullptr;
-  if (value.GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> out_dict(
-        new base::DictionaryValue());
-    for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-         it.Advance()) {
-      out_dict->SetKey(
-          ConvertFromCamelCase(it.key(), '_'),
-          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(it.value())));
+base::Value ConvertDictKeyStyle(const base::Value& value) {
+  if (value.is_dict()) {
+    base::Value out(base::Value::Type::DICTIONARY);
+    for (auto kv : value.DictItems()) {
+      out.SetKey(ConvertFromCamelCase(kv.first, '_'),
+                 ConvertDictKeyStyle(kv.second));
     }
-    return std::move(out_dict);
+    return out;
   }
 
-  const base::ListValue* list = nullptr;
-  if (value.GetAsList(&list)) {
-    std::unique_ptr<base::ListValue> out_list(new base::ListValue());
-    for (const auto& key : list->GetList())
-      out_list->Append(ConvertDictKeyStyle(key));
-    return std::move(out_list);
+  if (value.is_list()) {
+    base::Value out(base::Value::Type::LIST);
+    for (const auto& v : value.GetListDeprecated())
+      out.Append(ConvertDictKeyStyle(v));
+    return out;
   }
 
-  return base::Value::ToUniquePtrValue(value.Clone());
+  return value.Clone();
 }
 
 class DevToolsTraceEndpointProxy : public TracingController::TraceDataEndpoint {
@@ -517,7 +512,7 @@ TracingHandler::TracingHandler(DevToolsIOContext* io_context)
       gzip_compression_(false),
       buffer_usage_reporting_interval_(0) {
   bool use_video_capture_api = true;
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // Video capture API cannot be used on Android WebView.
   if (!CompositorImpl::IsInitialized())
     use_video_capture_api = false;
@@ -727,15 +722,10 @@ void TracingHandler::Start(Maybe<std::string> categories,
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
     if (config.isJust()) {
-      std::unique_ptr<base::Value> value = protocol::toBaseValue(
-          protocol::ValueTypeConverter<Tracing::TraceConfig>::ToValue(
-              *config.fromJust())
-              .get(),
-          1000);
-      if (value && value->is_dict()) {
-        browser_config = GetTraceConfigFromDevToolsConfig(
-            *static_cast<base::DictionaryValue*>(value.get()));
-      }
+      base::flat_map<std::string, base::Value> dict;
+      CHECK(crdtp::ConvertProtocolValue(*config.fromJust(), &dict));
+      browser_config =
+          GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
     } else if (categories.isJust() || options.isJust()) {
       browser_config = base::trace_event::TraceConfig(categories.fromMaybe(""),
                                                       options.fromMaybe(""));
@@ -1150,17 +1140,11 @@ bool TracingHandler::IsStartupTracingActive() {
 
 // static
 base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
-    const base::DictionaryValue& devtools_config) {
-  std::unique_ptr<base::Value> value = ConvertDictKeyStyle(devtools_config);
-  DCHECK(value && value->is_dict());
-  std::unique_ptr<base::DictionaryValue> tracing_dict(
-      static_cast<base::DictionaryValue*>(value.release()));
-
-  std::string mode;
-  if (tracing_dict->GetString(kRecordModeParam, &mode))
-    tracing_dict->SetString(kRecordModeParam, ConvertFromCamelCase(mode, '-'));
-
-  return base::trace_event::TraceConfig(*tracing_dict);
+    const base::Value& devtools_config) {
+  base::Value config = ConvertDictKeyStyle(devtools_config);
+  if (std::string* mode = config.FindStringPath(kRecordModeParam))
+    config.SetStringPath(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
+  return base::trace_event::TraceConfig(config);
 }
 
 }  // namespace protocol

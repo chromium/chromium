@@ -20,7 +20,6 @@ import json
 import os
 import pipes
 import platform
-import pprint
 import re
 import shutil
 import sys
@@ -630,8 +629,7 @@ class MetaBuildWrapper(object):
     if self.args.swarmed:
       cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
       return self._RunUnderSwarming(self.args.path, self.args.target, cmd)
-    else:
-      return self._RunLocallyIsolated(self.args.path, self.args.target)
+    return self._RunLocallyIsolated(self.args.path, self.args.target)
 
   def CmdZip(self):
     ret = self.CmdIsolate()
@@ -647,7 +645,9 @@ class MetaBuildWrapper(object):
           self.PathJoin(self.args.path, self.args.target + '.isolate'),
           '-outdir', zip_dir
       ]
-      self.Run(remap_cmd)
+      ret, _, _ = self.Run(remap_cmd)
+      if ret:
+        return ret
 
       zip_path = self.args.zip_path
       with zipfile.ZipFile(
@@ -656,6 +656,7 @@ class MetaBuildWrapper(object):
           for filename in files:
             path = self.PathJoin(root, filename)
             fp.write(path, self.RelPath(path, zip_dir))
+      return 0
     finally:
       if zip_dir:
         self.RemoveDirectory(zip_dir)
@@ -1171,7 +1172,7 @@ class MetaBuildWrapper(object):
     # Create a reverse map from isolate label to isolate dict.
     isolate_map = self.ReadIsolateMap()
     isolate_dict_map = {}
-    for key, isolate_dict in isolate_map.iteritems():
+    for key, isolate_dict in isolate_map.items():
       isolate_dict_map[isolate_dict['label']] = isolate_dict
       isolate_dict_map[isolate_dict['label']]['isolate_key'] = key
 
@@ -1407,7 +1408,7 @@ class MetaBuildWrapper(object):
         # shouldn't generate isolates for them.
         raise MBErr('Cannot generate isolate for %s since it is an '
                     'additional_compile_target.' % target)
-      elif fuchsia or ios or target_type == 'generated_script':
+      if fuchsia or ios or target_type == 'generated_script':
         # iOS and Fuchsia targets end up as groups.
         # generated_script targets are always actions.
         rpaths = [stamp_runtime_deps]
@@ -1538,6 +1539,7 @@ class MetaBuildWrapper(object):
               'Chromium Helper.app/',
               'Chromium.app/',
               'ChromiumUpdater.app/',
+              'ChromiumUpdater_test.app/',
               'Content Shell.app/',
               'Google Chrome Framework.framework/',
               'Google Chrome Helper (Alerts).app/',
@@ -1547,6 +1549,7 @@ class MetaBuildWrapper(object):
               'Google Chrome Helper.app/',
               'Google Chrome.app/',
               'GoogleUpdater.app/',
+              'GoogleUpdater_test.app/',
               'UpdaterTestApp Framework.framework/',
               'UpdaterTestApp.app/',
               'blink_deprecated_test_plugin.plugin/',
@@ -1572,18 +1575,16 @@ class MetaBuildWrapper(object):
       return 1
 
     self.WriteFile(isolate_path,
-      pprint.pformat({
+      json.dumps({
         'variables': {
           'command': command,
           'files': files,
         }
-      }) + '\n')
+      }, sort_keys=True) + '\n')
 
     self.WriteJSON(
       {
         'args': [
-          '--isolated',
-          self.ToSrcRelPath('%s/%s.isolated' % (build_dir, target)),
           '--isolate',
           self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
         ],
@@ -1721,8 +1722,8 @@ class MetaBuildWrapper(object):
     # under Xvfb on Linux.
     # TODO(tonikitoo,msisov,fwang): Find a way to run tests for the Wayland
     # backend.
-    use_xvfb = (self.platform == 'linux2' and not is_android and not is_fuchsia
-                and not is_cros_device)
+    use_xvfb = (self.platform.startswith('linux') and not is_android
+                and not is_fuchsia and not is_cros_device)
 
     asan = 'is_asan=true' in vals['gn_args']
     msan = 'is_msan=true' in vals['gn_args']
@@ -1736,7 +1737,7 @@ class MetaBuildWrapper(object):
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
 
-    if isolate_map[target].get('python3'):
+    if isolate_map[target].get('python3', True):
       extra_files = ['../../.vpython3']
       vpython_exe = 'vpython3'
     else:
@@ -1779,8 +1780,7 @@ class MetaBuildWrapper(object):
           # Enable lsan when asan is enabled except on Windows where LSAN isn't
           # supported.
           # TODO(https://crbug.com/948939): Enable on Mac once things pass.
-          # TODO(https://crbug.com/974478): Enable on ChromeOS once things pass.
-          '--lsan=%d' % (asan and not is_mac and not is_win and not is_cros),
+          '--lsan=%d' % (asan and not is_mac and not is_win),
           '--msan=%d' % msan,
           '--tsan=%d' % tsan,
           '--cfi-diag=%d' % cfi_diag,
@@ -2075,6 +2075,8 @@ class MetaBuildWrapper(object):
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            env=env, stdin=subprocess.PIPE)
       out, err = p.communicate(input=stdin)
+      out = out.decode('utf-8')
+      err = err.decode('utf-8')
     else:
       p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
                            env=env)

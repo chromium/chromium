@@ -369,16 +369,27 @@
                          }];
 }
 
-- (void)consistencyPromoSigninMediatorGenericErrorDidHappen:
-    (ConsistencyPromoSigninMediator*)mediator {
+- (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
+                        errorDidHappen:
+                            (ConsistencyPromoSigninMediatorError)error {
+  NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
+  NSString* errorMessage = nil;
+  switch (error) {
+    case ConsistencyPromoSigninMediatorErrorGeneric:
+      errorMessage =
+          l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
+      break;
+    case ConsistencyPromoSigninMediatorErrorTimeout:
+      errorMessage =
+          l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TIMEOUT_ERROR);
+      break;
+  }
   DCHECK(!self.alertCoordinator);
   [self.defaultAccountCoordinator stopSigninSpinner];
-  NSString* errorMessage = l10n_util::GetNSString(IDS_IOS_SIGN_IN_AUTH_FAILURE);
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
-                           title:l10n_util::GetNSString(
-                                     IDS_IOS_SIGN_IN_FAILURE_TITLE)
+                           title:errorTitle
                          message:errorMessage];
 
   __weak __typeof(self) weakSelf = self;

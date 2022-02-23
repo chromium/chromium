@@ -16,7 +16,7 @@ const double kEpsilon = 1.0e-6;
 namespace gfx {
 
 std::string Vector3dF::ToString() const {
-  return base::StringPrintf("[%f %f %f]", x_, y_, z_);
+  return base::StringPrintf("[%g %g %g]", x_, y_, z_);
 }
 
 bool Vector3dF::IsZero() const {

@@ -5,13 +5,11 @@
 package org.chromium.content.browser.accessibility;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
@@ -171,6 +169,19 @@ public class BrowserAccessibilityState {
         }
     }
 
+    @VisibleForTesting
+    public static void setScreenReaderModeForTesting(boolean enabled) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set screen reader mode since a real screen reader isn't run during tests.
+        sScreenReader = enabled;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(sScreenReader);
+        }
+    }
+
     static void updateAccessibilityServices() {
         sInitialized = true;
         sEventTypeMask = 0;
@@ -314,7 +325,6 @@ public class BrowserAccessibilityState {
     }
 
     @CalledByNative
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     static void registerObservers() {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         contentResolver.registerContentObserver(

@@ -33,7 +33,8 @@ class ArcNotificationView : public message_center::MessageView,
 
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
-                      const message_center::Notification& notification);
+                      const message_center::Notification& notification,
+                      bool shown_in_popup);
 
   ArcNotificationView(const ArcNotificationView&) = delete;
   ArcNotificationView& operator=(const ArcNotificationView&) = delete;
@@ -63,6 +64,8 @@ class ArcNotificationView : public message_center::MessageView,
   void OnSnoozeButtonPressed(const ui::Event& event) override;
   void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
+  base::TimeDelta GetBoundsAnimationDuration(
+      const message_center::Notification&) const override;
 
   // views::SlideOutControllerDelegate:
   void OnSlideChanged(bool in_progress) override;
@@ -96,6 +99,8 @@ class ArcNotificationView : public message_center::MessageView,
 
   // The view for the custom content. Owned by view hierarchy.
   ArcNotificationContentView* const content_view_;
+
+  const bool shown_in_popup_;
 
   std::unique_ptr<views::Painter> focus_painter_;
 };

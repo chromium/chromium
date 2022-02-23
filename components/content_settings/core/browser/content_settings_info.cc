@@ -28,9 +28,9 @@ ContentSettingsInfo::ContentSettingsInfo(
 ContentSettingsInfo::~ContentSettingsInfo() {}
 
 ContentSetting ContentSettingsInfo::GetInitialDefaultSetting() const {
-  const base::Value* initial_default =
+  const base::Value& initial_default =
       website_settings_info()->initial_default_value();
-  DCHECK(initial_default);
+  DCHECK(initial_default.is_int());
   return ValueToContentSetting(initial_default);
 }
 

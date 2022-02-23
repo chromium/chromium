@@ -58,9 +58,10 @@ void SaveCardMessageControllerAndroid::Show(
   save_card_message_confirm_controller_ =
       std::make_unique<SaveCardMessageConfirmController>(this, web_contents);
 
-  if (is_upload_ && !legal_message_lines.empty()) {
-    save_card_message_confirm_controller_->SetLegalMessageLine(
-        legal_message_lines.front());
+  if (is_upload_) {
+    for (const auto& line : legal_message_lines) {
+      save_card_message_confirm_controller_->AddLegalMessageLine(line);
+    }
   }
 
   message_ = std::make_unique<messages::MessageWrapper>(

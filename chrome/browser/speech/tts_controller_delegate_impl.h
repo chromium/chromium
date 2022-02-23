@@ -12,7 +12,7 @@
 class PrefService;
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 // Singleton class that manages Chrome side logic for TTS and TTS engine
@@ -44,8 +44,7 @@ class TtsControllerDelegateImpl : public content::TtsControllerDelegate {
 
   virtual const PrefService* GetPrefService(content::TtsUtterance* utterance);
 
-  const base::DictionaryValue* GetLangToVoicePref(
-      content::TtsUtterance* utterance);
+  const base::Value* GetLangToVoicePref(content::TtsUtterance* utterance);
 
   friend struct base::DefaultSingletonTraits<TtsControllerDelegateImpl>;
 };

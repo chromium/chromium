@@ -12,11 +12,11 @@ mixed_source_set("test_mixed_source_set") {
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
   rs_visibility = [
-    "//build/rust/tests/test_rust_unittests",
-    "//build/rust/tests/test_rust_exe",
+    "//build/rust/tests/test_rust_unittests:*",
+    "//build/rust/tests/test_rust_exe:*",
   ]
   visibility = [
-    "//build/rust/tests",
+    "//build/rust/tests:*",
     "//build/rust/tests/test_cpp_including_rust:*",
   ]
   deps = [ ":some_headers" ]

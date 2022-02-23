@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -104,7 +106,9 @@ ResourceLoadScheduler::ResourceLoadScheduler(
                                kTightLimitForRendererSideResourceScheduler);
 
   scheduler_observer_handle_ = frame_or_worker_scheduler->AddLifecycleObserver(
-      FrameScheduler::ObserverType::kLoader, this);
+      FrameScheduler::ObserverType::kLoader,
+      WTF::BindRepeating(&ResourceLoadScheduler::OnLifecycleStateChanged,
+                         WrapWeakPersistent(this)));
 }
 
 ResourceLoadScheduler::~ResourceLoadScheduler() = default;

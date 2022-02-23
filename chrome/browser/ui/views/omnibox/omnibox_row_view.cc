@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -232,13 +233,13 @@ class OmniboxRowView::HeaderView : public views::View {
 
   // Non-owning pointer our parent row view. We access a lot of private members
   // of our outer class. This lets us save quite a bit of state duplication.
-  OmniboxRowView* const row_view_;
+  const raw_ptr<OmniboxRowView> row_view_;
 
   // The Label containing the header text. This is never nullptr.
-  views::Label* header_label_;
+  raw_ptr<views::Label> header_label_;
 
   // The button used to toggle hiding suggestions with this header.
-  views::ToggleImageButton* header_toggle_button_;
+  raw_ptr<views::ToggleImageButton> header_toggle_button_;
 
   // The group ID associated with this header.
   int suggestion_group_id_ = 0;

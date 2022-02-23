@@ -16,7 +16,9 @@ namespace scheduler {
 WorkerSchedulerProxy::WorkerSchedulerProxy(FrameOrWorkerScheduler* scheduler) {
   DCHECK(scheduler);
   throttling_observer_handle_ = scheduler->AddLifecycleObserver(
-      FrameOrWorkerScheduler::ObserverType::kWorkerScheduler, this);
+      FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
+      base::BindRepeating(&WorkerSchedulerProxy::OnLifecycleStateChanged,
+                          base::Unretained(this)));
   if (FrameScheduler* frame_scheduler = scheduler->ToFrameScheduler()) {
     parent_frame_type_ = GetFrameOriginType(frame_scheduler);
     initial_frame_status_ = GetFrameStatus(frame_scheduler);

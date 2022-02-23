@@ -5,6 +5,7 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
     <title>$i18n{appTitle}</title>
   </head>
   <style>
@@ -12,6 +13,10 @@
       height: 100vh;
       margin: 0;
       overflow: hidden;
+    }
+
+    html {
+      background-color: var(--cros-bg-color);
     }
   </style>
   <body>

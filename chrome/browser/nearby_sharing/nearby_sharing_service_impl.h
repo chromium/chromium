@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
@@ -43,8 +45,6 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "net/base/network_change_notifier.h"
@@ -61,7 +61,7 @@ class PrefService;
 class Profile;
 
 namespace NearbySharingServiceUnitTests {
-class NearbySharingServiceImplTest;
+class NearbySharingServiceImplTestBase;
 }
 
 // All methods should be called from the same sequence that created the service.
@@ -85,7 +85,7 @@ class NearbySharingServiceImpl
       NotificationDisplayService* notification_display_service,
       Profile* profile,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-      chromeos::nearby::NearbyProcessManager* process_manager,
+      ash::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client);
   ~NearbySharingServiceImpl() override;
 
@@ -152,7 +152,7 @@ class NearbySharingServiceImpl
   }
 
  private:
-  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTest;
+  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTestBase;
 
   // nearby_share::mojom::NearbyShareSettingsObserver:
   void OnEnabledChanged(bool enabled) override;
@@ -183,6 +183,9 @@ class NearbySharingServiceImpl
                              bool present) override;
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
+  void LowEnergyScanSessionHardwareOffloadingStatusChanged(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+          status) override;
 
   // PowerClient::Observer:
   void SuspendImminent() override;
@@ -344,14 +347,14 @@ class NearbySharingServiceImpl
   void OnOutgoingMutualAcceptanceTimeout(const ShareTarget& share_target);
 
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void CleanupAfterNearbyProcessStopped();
   void RestartNearbyProcessIfAppropriate(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   bool ShouldRestartNearbyProcess(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void ClearRecentNearbyProcessUnexpectedShutdownCount();
   void BindToNearbyProcess();
@@ -412,9 +415,8 @@ class NearbySharingServiceImpl
   PrefService* prefs_ = nullptr;
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
@@ -542,6 +544,10 @@ class NearbySharingServiceImpl
 
   // Used to debounce OnNetworkChanged processing.
   base::RetainingOneShotTimer on_network_changed_delay_timer_;
+
+  // Used to prevent the "Device nearby is sharing" notification from appearing
+  // immediately after a completed share.
+  base::OneShotTimer fast_initiation_scanner_cooldown_timer_;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.

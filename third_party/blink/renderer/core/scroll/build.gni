@@ -5,7 +5,6 @@
 import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources_scroll = [
-  "ns_scroller_imp_details.h",
   "programmatic_scroll_animator.cc",
   "programmatic_scroll_animator.h",
   "scroll_alignment.cc",
@@ -46,8 +45,8 @@ if (is_mac) {
   blink_core_sources_scroll += [
     "mac_scrollbar_animator_impl.h",
     "mac_scrollbar_animator_impl.mm",
+    "scrollbar_theme_mac.cc",
     "scrollbar_theme_mac.h",
-    "scrollbar_theme_mac.mm",
     "web_scrollbar_theme.mm",
   ]
 }
@@ -66,7 +65,3 @@ blink_core_tests_scroll = [
   "scrollbar_test_suite.h",
   "scrollbar_theme_overlay_test.cc",
 ]
-
-if (is_mac) {
-  blink_core_tests_scroll += [ "scrollbar_theme_mac_test.mm" ]
-}

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/version_info/version_info.h"
@@ -59,6 +58,12 @@ class RenderThread;
 }  // namespace content
 
 namespace extensions {
+
+// Constant to define the default profile id for the renderer to 0.
+// Since each renderer is associated with a single context, we don't need
+// separate ids for the profile.
+const int kRendererProfileId = 0;
+
 class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
@@ -68,7 +73,6 @@ class ScriptContext;
 class ScriptContextSetIterable;
 class ScriptInjectionManager;
 class WorkerScriptContextSet;
-struct EventFilteringInfo;
 struct Message;
 struct PortId;
 
@@ -76,7 +80,8 @@ struct PortId;
 // renderer extension related state.
 class Dispatcher : public content::RenderThreadObserver,
                    public UserScriptSetManager::Observer,
-                   public mojom::Renderer {
+                   public mojom::Renderer,
+                   public mojom::EventDispatcher {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
 
@@ -168,10 +173,10 @@ class Dispatcher : public content::RenderThreadObserver,
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
   // Dispatches the event named |event_name| to all render views.
-  void DispatchEvent(const std::string& extension_id,
-                     const std::string& event_name,
-                     const base::ListValue& event_args,
-                     const EventFilteringInfo* filtering_info) const;
+  void DispatchEventHelper(const std::string& extension_id,
+                           const std::string& event_name,
+                           const base::ListValue& event_args,
+                           mojom::EventFilteringInfoPtr filtering_info) const;
 
   // Shared implementation of the various MessageInvoke IPCs.
   void InvokeModuleSystemMethod(content::RenderFrame* render_frame,
@@ -232,6 +237,7 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::string& extension_id,
       mojom::Renderer::SuspendExtensionCallback callback) override;
   void CancelSuspendExtension(const std::string& extension_id) override;
+  void SetDeveloperMode(bool current_developer_mode) override;
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session_type,
                       bool lock_screen_context) override;
@@ -265,6 +271,8 @@ class Dispatcher : public content::RenderThreadObserver,
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
+  void OnEventDispatcherRequest(
+      mojo::PendingAssociatedReceiver<mojom::EventDispatcher> receiver);
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
                         const Message& message);
@@ -276,8 +284,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
-  void OnDispatchEvent(const mojom::DispatchEventParams& params,
-                       const base::ListValue& event_args);
+  void DispatchEvent(mojom::DispatchEventParamsPtr params,
+                     base::Value event_args) override;
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;
@@ -372,6 +380,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // Extensions renderer receiver. This is an associated receiver because
   // it is dependent on other messages sent on other associated channels.
   mojo::AssociatedReceiver<mojom::Renderer> receiver_;
+
+  // Extensions Dipsatch receiver. This is an associated receiver because
+  // it is dependent on other messages sent on other associated channels.
+  mojo::AssociatedReceiver<mojom::EventDispatcher> dispatcher_;
 
   // Used to hold a service worker information which is ready to execute but the
   // onloaded message haven't been received yet. We need to defer service worker

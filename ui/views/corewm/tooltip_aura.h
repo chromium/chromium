@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -79,11 +80,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // The widget containing the tooltip. May be NULL.
-  TooltipWidget* widget_ = nullptr;
+  raw_ptr<TooltipWidget> widget_ = nullptr;
 
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
-  aura::Window* tooltip_window_ = nullptr;
+  raw_ptr<aura::Window> tooltip_window_ = nullptr;
 };
 
 }  // namespace corewm

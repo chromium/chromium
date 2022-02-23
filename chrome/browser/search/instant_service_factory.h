@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 

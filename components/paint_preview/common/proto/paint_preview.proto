@@ -89,7 +89,7 @@ message ChromeVersionProto {
 }
 
 // Metadata for the capture.
-// NEXT_TAG = 4
+// NEXT_TAG = 5
 message MetadataProto {
   // URL of the root frame.
   // required
@@ -102,6 +102,9 @@ message MetadataProto {
 
   // Records the version of Chrome when the capture occurred.
   optional ChromeVersionProto chrome_version = 3;
+
+  // Records the page scale factor of the page when it was captured.
+  optional float page_scale_factor = 4;
 }
 
 // A paint preview of the entire page.

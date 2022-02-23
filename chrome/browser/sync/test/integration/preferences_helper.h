@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <memory>
@@ -67,23 +68,24 @@ scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile);
 
 // Used to verify that the boolean preference with name |pref_name| has the
 // same value across all profiles.
-bool BooleanPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BooleanPrefMatches(const char* pref_name);
 
 // Used to verify that the integer preference with name |pref_name| has the
 // same value across all profiles.
-bool IntegerPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool IntegerPrefMatches(const char* pref_name);
 
 // Used to verify that the string preference with name |pref_name| has the
 // same value across all profiles.
-bool StringPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool StringPrefMatches(const char* pref_name);
 
 // Used to verify that the list preference with name |pref_name| has the
 // same value across all profiles.
-bool ListPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ListPrefMatches(const char* pref_name);
 
 // Returns a server-side preference in FakeServer for |pref_name| or nullopt if
 // no preference exists.
 absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+    syncer::ModelType model_type,
     const std::string& pref_name,
     fake_server::FakeServer* fake_server);
 
@@ -157,7 +159,8 @@ class ClearedPrefMatchChecker : public PrefMatchChecker {
 class FakeServerPrefMatchesValueChecker
     : public fake_server::FakeServerMatchStatusChecker {
  public:
-  FakeServerPrefMatchesValueChecker(const std::string& pref_name,
+  FakeServerPrefMatchesValueChecker(syncer::ModelType model_type,
+                                    const std::string& pref_name,
                                     const std::string& expected_value);
 
  protected:
@@ -165,6 +168,7 @@ class FakeServerPrefMatchesValueChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
+  const syncer::ModelType model_type_;
   const std::string pref_name_;
   const std::string expected_value_;
 };

@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/cpp/toast_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -54,9 +54,9 @@ class CrostiniUnsupportedActionNotifier
     virtual std::string GetLocalizedDisplayName(
         const ash::input_method::InputMethodDescriptor& descriptor);
 
-    // How long in milliseconds toasts should be displayed for. Timing varies
-    // depending on e.g. whether screen magnification is enabled.
-    virtual int ToastTimeoutMs();
+    // How long toasts should be displayed for. Timing varies depending on
+    // e.g. whether screen magnification is enabled.
+    virtual base::TimeDelta ToastTimeout();
 
     virtual void AddFocusObserver(aura::client::FocusChangeObserver* observer);
     virtual void RemoveFocusObserver(

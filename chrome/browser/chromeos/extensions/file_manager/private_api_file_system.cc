@@ -9,8 +9,12 @@
 
 #include <algorithm>
 #include <cctype>
+#include <memory>
 #include <utility>
+#include <vector>
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -22,6 +26,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -33,19 +38,21 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_stream_md5_digester.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/storage_monitor/storage_info.h"
@@ -67,6 +74,7 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -74,7 +82,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 using file_manager::util::EntryDefinition;
@@ -364,20 +372,20 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
   return prefix_matches;
 }
 
-chromeos::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
+ash::disks::FormatFileSystemType ApiFormatFileSystemToChromeEnum(
     api::file_manager_private::FormatFileSystemType filesystem) {
   switch (filesystem) {
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NONE:
-      return chromeos::disks::FormatFileSystemType::kUnknown;
+      return ash::disks::FormatFileSystemType::kUnknown;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_VFAT:
-      return chromeos::disks::FormatFileSystemType::kVfat;
+      return ash::disks::FormatFileSystemType::kVfat;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_EXFAT:
-      return chromeos::disks::FormatFileSystemType::kExfat;
+      return ash::disks::FormatFileSystemType::kExfat;
     case api::file_manager_private::FORMAT_FILE_SYSTEM_TYPE_NTFS:
-      return chromeos::disks::FormatFileSystemType::kNtfs;
+      return ash::disks::FormatFileSystemType::kNtfs;
   }
   NOTREACHED() << "Unknown format filesystem " << filesystem;
-  return chromeos::disks::FormatFileSystemType::kUnknown;
+  return ash::disks::FormatFileSystemType::kUnknown;
 }
 
 absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
@@ -385,10 +393,12 @@ absl::optional<file_manager::io_task::OperationType> IOTaskTypeToChromeEnum(
   switch (type) {
     case api::file_manager_private::IO_TASK_TYPE_COPY:
       return file_manager::io_task::OperationType::kCopy;
-    case api::file_manager_private::IO_TASK_TYPE_MOVE:
-      return file_manager::io_task::OperationType::kMove;
     case api::file_manager_private::IO_TASK_TYPE_DELETE:
       return file_manager::io_task::OperationType::kDelete;
+    case api::file_manager_private::IO_TASK_TYPE_EXTRACT:
+      return file_manager::io_task::OperationType::kExtract;
+    case api::file_manager_private::IO_TASK_TYPE_MOVE:
+      return file_manager::io_task::OperationType::kMove;
     case api::file_manager_private::IO_TASK_TYPE_ZIP:
       return file_manager::io_task::OperationType::kZip;
     case api::file_manager_private::IO_TASK_TYPE_NONE:
@@ -798,7 +808,7 @@ FileManagerPrivateSinglePartitionFormatFunction::Run() {
   const DiskMountManager::DiskMap& disks =
       DiskMountManager::GetInstance()->disks();
 
-  chromeos::disks::Disk* device_disk;
+  ash::disks::Disk* device_disk;
   DiskMountManager::DiskMap::const_iterator it;
 
   for (it = disks.begin(); it != disks.end(); ++it) {
@@ -876,6 +886,94 @@ std::vector<int64_t> GetLocalDiskSpaces(
 }
 
 }  // namespace
+
+FileManagerPrivateInternalGetDisallowedTransfersFunction::
+    FileManagerPrivateInternalGetDisallowedTransfersFunction() = default;
+
+FileManagerPrivateInternalGetDisallowedTransfersFunction::
+    ~FileManagerPrivateInternalGetDisallowedTransfersFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
+  }
+
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager) {
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
+  }
+
+  using extensions::api::file_manager_private_internal::GetDisallowedTransfers::
+      Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  profile_ = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile_, render_frame_host());
+
+  for (const std::string& url : params->entries) {
+    FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(GURL(url)));
+    if (!file_system_url.is_valid()) {
+      return RespondNow(Error("File URL was invalid"));
+    }
+    source_urls_.push_back(file_system_url);
+  }
+
+  destination_url_ = file_system_context->CrackURLInFirstPartyContext(
+      GURL(params->destination_entry));
+  if (!destination_url_.is_valid()) {
+    return RespondNow(Error("File URL was invalid"));
+  }
+
+  files_controller_ =
+      std::make_unique<policy::DlpFilesController>(profile_, rules_manager);
+  files_controller_->GetDisallowedTransfers(
+      source_urls_, destination_url_,
+      base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
+                         OnGetDisallowedFiles,
+                     this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalGetDisallowedTransfersFunction::
+    OnGetDisallowedFiles(std::vector<storage::FileSystemURL> disallowed_files) {
+  file_manager::util::FileDefinitionList file_definition_list;
+  for (const auto& file : disallowed_files) {
+    file_manager::util::FileDefinition file_definition;
+    // Disallowed transfers lists regular files not directories.
+    file_definition.is_directory = false;
+    file_definition.virtual_path = file.virtual_path();
+    file_definition.absolute_path = file.path();
+    file_definition_list.emplace_back(std::move(file_definition));
+  }
+
+  file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
+      file_manager::util::GetFileSystemContextForSourceURL(profile_,
+                                                           source_url()),
+      url::Origin::Create(source_url().DeprecatedGetOriginAsURL()),
+      file_definition_list,  // Safe, since copied internally.
+      base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
+                         OnConvertFileDefinitionListToEntryDefinitionList,
+                     this));
+}
+
+void FileManagerPrivateInternalGetDisallowedTransfersFunction::
+    OnConvertFileDefinitionListToEntryDefinitionList(
+        std::unique_ptr<file_manager::util::EntryDefinitionList>
+            entry_definition_list) {
+  DCHECK(entry_definition_list);
+
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      file_manager::util::ConvertEntryDefinitionListToListValue(
+          *entry_definition_list))));
+}
 
 FileManagerPrivateInternalStartCopyFunction::
     FileManagerPrivateInternalStartCopyFunction() = default;
@@ -1278,7 +1376,7 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
   }
 
   for (const auto& hashAndPath : search_results) {
-    DCHECK(result->HasKey(hashAndPath.hash));
+    DCHECK(result->FindKey(hashAndPath.hash));
     base::ListValue* list;
     result->GetListWithoutPathExpansion(hashAndPath.hash, &list);
     list->Append(hashAndPath.path.value());

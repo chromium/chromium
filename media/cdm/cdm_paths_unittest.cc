@@ -12,34 +12,22 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Only verify platform specific path on some platforms.
-// Note: The condition list here must be consistent with condition on
-// "cdm_platform_specific_path" in cdm_paths.gni.
-// TODO(crbug.com/971433). Move the CDMs out of the install directory on
-// ChromeOS.
-#if (defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-     BUILDFLAG(IS_CHROMEOS_LACROS))
-#define CDM_USE_PLATFORM_SPECIFIC_PATH
-#endif
-
 namespace media {
 
 namespace {
-
-#if defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
 
 // Special path used in chrome components.
 const char kPlatformSpecific[] = "_platform_specific";
 
 // Name of the component platform.
 const char kComponentPlatform[] =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     "mac";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     "win";
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
     "cros";
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
     "linux";
 #else
     "unsupported_platform";
@@ -69,16 +57,6 @@ base::FilePath GetExpectedPlatformSpecificDirectory(
       .AppendASCII(kPlatformArch);
 }
 
-#else
-
-// If the CDM is not a component, it has no platform specific path.
-base::FilePath GetExpectedPlatformSpecificDirectory(
-    const std::string& base_path) {
-  return base::FilePath();
-}
-
-#endif  // defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
-
 std::string GetFlag() {
   return BUILDFLAG(CDM_PLATFORM_SPECIFIC_PATH);
 }
@@ -86,23 +64,15 @@ std::string GetFlag() {
 }  // namespace
 
 TEST(CdmPathsTest, FlagSpecified) {
-#if defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
   EXPECT_FALSE(GetFlag().empty());
-#else
-  EXPECT_TRUE(GetFlag().empty());
-#endif
 }
 
 TEST(CdmPathsTest, Prefix) {
   const char kPrefix[] = "prefix";
   auto path = GetPlatformSpecificDirectory(kPrefix);
 
-#if defined(CDM_USE_PLATFORM_SPECIFIC_PATH)
   EXPECT_TRUE(base::StartsWith(path.MaybeAsASCII(), kPrefix,
                                base::CompareCase::SENSITIVE));
-#else
-  EXPECT_TRUE(path.MaybeAsASCII().empty());
-#endif
 }
 
 TEST(CdmPathsTest, Expected) {

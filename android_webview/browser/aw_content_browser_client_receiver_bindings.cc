@@ -34,12 +34,8 @@ void CreateMediaDrmStorage(
     return;
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents) << "WebContents not available.";
-
   auto* aw_browser_context =
-      static_cast<AwBrowserContext*>(web_contents->GetBrowserContext());
+      static_cast<AwBrowserContext*>(render_frame_host->GetBrowserContext());
   DCHECK(aw_browser_context) << "AwBrowserContext not available.";
 
   PrefService* pref_service = aw_browser_context->GetPrefService();

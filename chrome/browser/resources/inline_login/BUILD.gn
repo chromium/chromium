@@ -13,15 +13,21 @@ js_type_check("closure_compile") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
       ]
   deps = [
+    ":arc_account_picker_app",
     ":inline_login_app",
     ":inline_login_browser_proxy",
+    ":inline_login_util",
+    ":signin_blocked_by_policy_page",
     ":welcome_page_app",
   ]
 }
 
 js_library("inline_login_app") {
   deps = [
+    ":arc_account_picker_app",
     ":inline_login_browser_proxy",
+    ":inline_login_util",
+    ":signin_blocked_by_policy_page",
     ":welcome_page_app",
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
@@ -37,6 +43,21 @@ js_library("inline_login_app") {
 js_library("welcome_page_app") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("arc_account_picker_app") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("signin_blocked_by_policy_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -49,9 +70,15 @@ js_library("inline_login_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
+js_library("inline_login_util") {
+  deps = [ "//ui/webui/resources/js:assert.m" ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "inline_login_app.js",
+    "signin_blocked_by_policy_page.js",
     "welcome_page_app.js",
+    "arc_account_picker_app.js",
   ]
 }

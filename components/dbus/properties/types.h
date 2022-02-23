@@ -15,8 +15,12 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "dbus/message.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace detail {
 

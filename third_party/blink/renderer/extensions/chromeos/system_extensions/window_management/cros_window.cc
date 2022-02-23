@@ -4,59 +4,74 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
-CrosWindow::CrosWindow(CrosWindowManagement* manager) : manager_(manager) {}
+CrosWindow::CrosWindow(CrosWindowManagement* manager,
+                       mojom::blink::CrosWindowPtr window)
+    : window_management_(manager), window_(std::move(window)) {}
 
 void CrosWindow::Trace(Visitor* visitor) const {
-  visitor->Trace(manager_);
+  visitor->Trace(window_management_);
   ScriptWrappable::Trace(visitor);
 }
 
 String CrosWindow::appId() {
-  return String();
+  return window_->app_id;
 }
 
 String CrosWindow::title() {
-  return String();
+  return window_->title;
 }
 
 bool CrosWindow::isFullscreen() {
-  return false;
+  return window_->is_fullscreen;
 }
 
 bool CrosWindow::isMinimised() {
-  return false;
+  return window_->is_minimized;
 }
 
 bool CrosWindow::isVisible() {
-  return false;
+  return window_->is_visible;
 }
 
-size_t CrosWindow::hash() {
-  return 0;
+String CrosWindow::id() {
+  return String::FromUTF8(window_->id.ToString());
 }
 
 DOMPoint* CrosWindow::origin() {
-  return DOMPoint::Create(0, 0);
+  return DOMPoint::Create(window_->bounds.x(), window_->bounds.y());
 }
 
 DOMRect* CrosWindow::bounds() {
-  return DOMRect::Create(0, 0, 0, 0);
+  return DOMRect::Create(window_->bounds.x(), window_->bounds.y(),
+                         window_->bounds.width(), window_->bounds.height());
 }
 
 bool CrosWindow::setOrigin(double x, double y) {
-  return false;
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return false;
+  }
+  cros_window_management->SetWindowBounds(
+      window_->id, x, y, window_->bounds.width(), window_->bounds.height());
+  return true;
 }
 
 bool CrosWindow::setBounds(double x, double y, double width, double height) {
-  return false;
+  auto* cros_window_management =
+      window_management_->GetCrosWindowManagementOrNull();
+  if (!cros_window_management) {
+    return false;
+  }
+  cros_window_management->SetWindowBounds(window_->id, x, y, width, height);
+  return true;
 }
 
 bool CrosWindow::setFullscreen(bool value) {

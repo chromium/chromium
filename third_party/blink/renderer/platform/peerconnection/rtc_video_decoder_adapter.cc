@@ -262,7 +262,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     GetDecoderCounter()->IncrementCount();
   }
 
-#if defined(OS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   const bool has_software_fallback =
       video_codec_type_ != webrtc::kVideoCodecH264;
 #else
@@ -295,7 +295,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
     // the OS is windows but not win7, we will return true in
     // 'Vp9HwSupportForSpatialLayers' instead of false.
     bool need_fallback_to_software = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (video_decoder_->GetDecoderType() == media::VideoDecoderType::kD3D11 &&
         base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding)) {
       need_fallback_to_software = false;
@@ -478,7 +478,7 @@ void RTCVideoDecoderAdapter::InitializeOnMediaThread(
 
 // static
 void RTCVideoDecoderAdapter::OnInitializeDone(base::OnceCallback<void(bool)> cb,
-                                              media::Status status) {
+                                              media::DecoderStatus status) {
   std::move(cb).Run(status.is_ok());
 }
 
@@ -512,13 +512,15 @@ void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
   }
 }
 
-void RTCVideoDecoderAdapter::OnDecodeDone(media::Status status) {
-  DVLOG(3) << __func__ << "(" << status.code() << ")";
+void RTCVideoDecoderAdapter::OnDecodeDone(media::DecoderStatus status) {
+  DVLOG(3) << __func__ << "(" << status.group() << ":"
+           << static_cast<int>(status.code()) << ")";
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   outstanding_decode_requests_--;
 
-  if (!status.is_ok() && status.code() != media::StatusCode::kAborted) {
+  if (!status.is_ok() &&
+      status.code() != media::DecoderStatus::Codes::kAborted) {
     DVLOG(2) << "Entering permanent error state";
     base::UmaHistogramSparse("Media.RTCVideoDecoderError",
                              static_cast<int>(status.code()));
@@ -540,9 +542,9 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
   const base::TimeDelta timestamp = frame->timestamp();
   webrtc::VideoFrame rtc_frame =
       webrtc::VideoFrame::Builder()
-          .set_video_frame_buffer(
+          .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
               new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  std::move(frame)))
+                  std::move(frame))))
           .set_timestamp_rtp(static_cast<uint32_t>(timestamp.InMicroseconds()))
           .set_timestamp_us(0)
           .set_rotation(webrtc::kVideoRotation_0)
@@ -635,7 +637,7 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
       media::DecoderBuffer::CreateEOSBuffer(),
       WTF::Bind(
           [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
-             media::Status status) {
+             media::DecoderStatus status) {
             if (status.is_ok())
               std::move(flush_success).Run();
             else

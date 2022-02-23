@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
   EXPECT_EQ(tab_helper->frames_.size(), 1U);
 
   // Load a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           GetWebContents()->GetMainFrame(), fenced_frame_url);

@@ -21,7 +21,7 @@ bool AddSuggestionsFromListValue(int remote_category_id,
                                  const base::Time& fetch_time) {
   DCHECK(list.is_list());
 
-  for (const base::Value& value : list.GetList()) {
+  for (const base::Value& value : list.GetListDeprecated()) {
     const base::DictionaryValue* dict = nullptr;
     if (!value.GetAsDictionary(&dict)) {
       return false;
@@ -93,7 +93,7 @@ bool JsonToCategories(const base::Value& parsed,
     return false;
   }
 
-  for (const base::Value& v : categories_value->GetList()) {
+  for (const base::Value& v : categories_value->GetListDeprecated()) {
     if (!v.is_dict())
       return false;
 

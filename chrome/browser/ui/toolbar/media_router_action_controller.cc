@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -61,20 +62,31 @@ void MediaRouterActionController::OnIssuesCleared() {
 }
 
 void MediaRouterActionController::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
+    const std::vector<media_router::MediaRoute>& routes) {
   has_local_display_route_ =
-      std::find_if(
-          routes.begin(), routes.end(),
-          [](const media_router::MediaRoute& route) {
-            bool should_hide_presentation =
-                media_router::GlobalMediaControlsCastStartStopEnabled() &&
-                !(route.media_source().IsTabMirroringSource() ||
-                  route.media_source().IsDesktopMirroringSource() ||
-                  route.media_source().IsLocalFileSource());
-            return route.is_local() && route.for_display() &&
-                   !should_hide_presentation;
-          }) != routes.end();
+      std::find_if(routes.begin(), routes.end(),
+                   [this](const media_router::MediaRoute& route) {
+                     // The Cast icon should be hidden if there only are
+                     // non-local and non-display routes.
+                     if (!route.is_local()) {
+                       return false;
+                     }
+                     // When this feature is disabled, we show the Cast icon
+                     // regardless of the media source.
+                     if (!media_router::GlobalMediaControlsCastStartStopEnabled(
+                             this->profile_)) {
+                       return true;
+                     }
+                     // When the feature is enabled, presentation routes are
+                     // controlled through the global media controls most of the
+                     // time. So we do not request to show the Cast icon when
+                     // there only are presentation routes.
+                     // In other words, the Cast icon is shown when there are
+                     // mirroring or local file sources.
+                     return route.media_source().IsTabMirroringSource() ||
+                            route.media_source().IsDesktopMirroringSource() ||
+                            route.media_source().IsLocalFileSource();
+                   }) != routes.end();
   MaybeAddOrRemoveAction();
 }
 
@@ -160,9 +172,6 @@ MediaRouterActionController::MediaRouterActionController(
   if (!profile_->IsOffTheRecord()) {
     media_router::MediaRouterMetrics::RecordIconStateAtInit(
         MediaRouterActionController::GetAlwaysShowActionPref(profile_));
-    media_router::MediaRouterMetrics::RecordCloudPrefAtInit(
-        profile_->GetPrefs()->GetBoolean(
-            media_router::prefs::kMediaRouterEnableCloudServices));
   }
 }
 

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/clock.h"
@@ -284,11 +285,11 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
   DCHECK(policy_value->is_dict());
 
   const base::Value* entries = policy_value->FindListKey("entries");
-  if (!entries || entries->GetList().empty())
+  if (!entries || entries->GetListDeprecated().empty())
     return absl::nullopt;
 
   // Currently only single daily window is supported.
-  const auto& window = entries->GetList().front();
+  const auto& window = entries->GetListDeprecated().front();
   const absl::optional<int> hour = window.FindIntPath("start.hour");
   const absl::optional<int> minute = window.FindIntPath("start.minute");
   const absl::optional<int> duration_mins = window.FindIntKey("duration_mins");

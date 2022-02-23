@@ -43,6 +43,7 @@ message FollowWebFeedRequest {
     string name = 1;
     string web_page_uri = 2;
   }
+  string canonical_uri = 5;
   repeated string page_rss_uris = 3;
   ConsistencyToken consistency_token = 4;
 }

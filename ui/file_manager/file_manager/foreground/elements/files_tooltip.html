@@ -4,69 +4,41 @@
   -->
 <style>
   :host {
+    background-color: var(--cros-tooltip-background-color);
+    color: var(--cros-tooltip-label-color);
+    display: flex;
+    height: 24px;
     opacity: 0;
-    padding: 4px 6px 0;
     pointer-events: none;
     position: absolute;
     transition: opacity 300ms;
     z-index: 1000;
   }
 
-  :host([files-ng]) {
-    display: flex;
-    height: 24px;
-    /* Remove: only here to override non-files-ng :host padding: rule. */
-    padding: unset;
-  }
-
   :host([visible]) {
-    opacity: .9;
+    opacity: 100%;
   }
 
-  :host([files-ng][visible]) {
-    opacity: 80%;
-  }
-
-  :host > #label {
-    background-color: #323232;
-    border-radius: 2px;
-    color: white;
-    font-size: 12px;
-    line-height: 28px;
-    padding: 0 14px;
-    white-space: nowrap;
-  }
-
-  :host([files-ng]) > #label {
+  #label {
     align-items: center;
-    background-color: var(--cros-bg-color-elevation-1);
     border-radius: 2px;
-    color: var(--cros-text-color-primary);
     display: inline-flex;
     font-size: 12px;
-    /* Remove: only here to override non-files-ng line-height: 28px. */
-    line-height: unset;
     padding: 0 8px;
     white-space: nowrap;
   }
 
-  :host([files-ng]) > #label[invert] {
-    background-color: white;
-    color: var(--google-grey-900);
-  }
-
-  :host([files-ng].card-tooltip) {
+  :host(.card-tooltip) {
     background-color: var(--cros-bg-color-elevation-1);
     border-radius: 8px;
     box-shadow: var(--cros-elevation-1-shadow);
+    color: var(--cros-text-color-primary);
     height: auto;
     margin-top: 4px;
     padding: 12px 16px;
   }
 
-  :host([files-ng]) > #label.card-label {
-    background-color: var(--cros-bg-color-elevation-1);
-    color: var(--cros-text-color-primary);
+  #label.card-label {
     line-height: 18px;
     margin: 0;
     max-width: 192px;
@@ -74,8 +46,8 @@
     white-space: normal;
   }
 
-  :host([files-ng]) > #label.card-label a {
-    color: var(--google-blue-600);
+  #label.card-label a {
+    color: var(--cros-link-color);
   }
 </style>
 <div id="label"></div>

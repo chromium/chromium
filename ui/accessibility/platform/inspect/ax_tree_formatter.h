@@ -22,6 +22,7 @@ class AXNode;
 class AXScriptInstruction;
 class AXTreeID;
 class AXPlatformNodeDelegate;
+class AXInspectScenario;
 
 // A utility class for formatting platform-specific accessibility information,
 // for use in testing, debugging, and developer tools.
@@ -93,6 +94,11 @@ class AX_EXPORT AXTreeFormatter {
 
   // Dumps accessibility tree.
   virtual std::string FormatTree(const base::Value& tree_node) const = 0;
+
+  // Evaluates script instructions for the window returned by the selector.
+  virtual std::string EvaluateScript(
+      const AXTreeSelector& selector,
+      const AXInspectScenario& scenario) const = 0;
 
   // Evaluates script instructions between the given indices.
   virtual std::string EvaluateScript(

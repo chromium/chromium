@@ -36,15 +36,16 @@ LocalMuter::~LocalMuter() {
   coordinator_->RemoveObserver(group_id_, this);
 }
 
-void LocalMuter::SetAllBindingsLostCallback(base::OnceClosure callback) {
+void LocalMuter::SetAllBindingsLostCallback(base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  all_bindings_lost_callback_ = std::move(callback);
+  all_bindings_lost_callback_ = callback;
 }
 
 void LocalMuter::AddReceiver(
     mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   receivers_.Add(this, std::move(receiver));
 }
 
@@ -63,8 +64,8 @@ void LocalMuter::OnMemberLeftGroup(LoopbackGroupMember* member) {
 void LocalMuter::OnBindingLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (receivers_.empty()) {
-    std::move(all_bindings_lost_callback_).Run();
+  if (!HasReceivers()) {
+    all_bindings_lost_callback_.Run();
   }
 }
 

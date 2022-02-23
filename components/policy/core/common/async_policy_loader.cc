@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 
@@ -80,7 +81,7 @@ void AsyncPolicyLoader::Reload(bool force) {
 }
 
 bool AsyncPolicyLoader::ShouldFilterSensitivePolicies() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(management_service_);
   return management_service_->GetManagementAuthorityTrustworthiness() <
          ManagementAuthorityTrustworthiness::TRUSTED;

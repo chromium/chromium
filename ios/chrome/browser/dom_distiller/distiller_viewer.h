@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/dom_distiller/core/dom_distiller_request_view_base.h"
 #include "components/dom_distiller/core/task_tracker.h"
 

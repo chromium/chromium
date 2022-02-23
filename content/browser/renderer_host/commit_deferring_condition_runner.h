@@ -88,9 +88,19 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // registered conditions. This is typically used for adding a condition before
   // NavigationRequest is created.
   using ConditionGenerator =
-      base::RepeatingCallback<std::unique_ptr<CommitDeferringCondition>()>;
+      base::RepeatingCallback<std::unique_ptr<CommitDeferringCondition>(
+          NavigationHandle&,
+          CommitDeferringCondition::NavigationType)>;
+
+  // Specifies whether a ConditionGenerator installs its condition to run
+  // before existing conditions or after. Note: generators are run in the order
+  // in which they are added.
+  enum class InsertOrder { kBefore, kAfter };
+
   // Returns a generator id that is used for uninstalling the generator.
-  static int InstallConditionGeneratorForTesting(ConditionGenerator generator);
+  static int InstallConditionGeneratorForTesting(ConditionGenerator generator,
+                                                 InsertOrder order);
+
   // `generator_id` should be an identifier returned by
   // InstallConditionGeneratorForTesting().
   static void UninstallConditionGeneratorForTesting(int generator_id);
@@ -117,7 +127,8 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   void ResumeProcessing();
 
   void ProcessConditions();
-  void AddCondition(std::unique_ptr<CommitDeferringCondition> condition);
+  void AddCondition(std::unique_ptr<CommitDeferringCondition> condition,
+                    InsertOrder order = InsertOrder::kAfter);
 
   std::vector<std::unique_ptr<CommitDeferringCondition>> conditions_;
 

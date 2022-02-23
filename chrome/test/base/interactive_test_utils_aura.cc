@@ -10,7 +10,7 @@
 
 namespace ui_test_utils {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void HideNativeWindow(gfx::NativeWindow window) {
   HideNativeWindowAura(window);
 }

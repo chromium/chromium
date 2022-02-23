@@ -16,7 +16,6 @@ class View;
 
 constexpr float kToolbarInkDropVisibleOpacity = 0.06f;
 constexpr float kToolbarInkDropHighlightVisibleOpacity = 0.08f;
-constexpr SkAlpha kToolbarButtonBackgroundAlpha = 32;
 
 // Creates insets for a host view so that when insetting from the host view
 // the resulting mask or inkdrop has the desired inkdrop size.

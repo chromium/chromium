@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 namespace enterprise_connectors {
 
@@ -48,9 +48,9 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   URLMatchingID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
-  if (enable && enable->is_list() && !enable->GetList().empty()) {
+  if (enable && enable->is_list() && !enable->GetListDeprecated().empty()) {
     filters_validated_ = true;
-    for (const base::Value& value : enable->GetList()) {
+    for (const base::Value& value : enable->GetListDeprecated()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ true, &id);
     }
@@ -62,8 +62,8 @@ FileSystemServiceSettings::FileSystemServiceSettings(
   }
 
   const base::Value* disable = settings_value.FindListKey(kKeyDisable);
-  if (disable && disable->is_list() && !disable->GetList().empty()) {
-    for (const base::Value& value : disable->GetList()) {
+  if (disable && disable->is_list() && !disable->GetListDeprecated().empty()) {
+    for (const base::Value& value : disable->GetListDeprecated()) {
       filters_validated_ &=
           AddUrlPatternSettings(value, /* enabled = */ false, &id);
     }
@@ -206,13 +206,13 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
     return false;
   }
 
-  for (const base::Value& url : url_list->GetList())
+  for (const base::Value& url : url_list->GetListDeprecated())
     CHECK(url.is_string());
 
   // This pre-increments the id by size of url_list_value.
   URLMatchingID pre_id = *id;
-  policy::url_util::AddFilters(url_matcher_.get(), enabled, id,
-                               &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(url_matcher_.get(), enabled, id,
+                                &base::Value::AsListValue(*url_list));
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
   if (!mime_types)
@@ -220,7 +220,7 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
 
   URLPatternSettings setting;
   bool has_wildcard = false;
-  for (const base::Value& mime_type : mime_types->GetList()) {
+  for (const base::Value& mime_type : mime_types->GetListDeprecated()) {
     if (mime_type.is_string()) {
       const std::string& m = mime_type.GetString();
       setting.mime_types.insert(m);

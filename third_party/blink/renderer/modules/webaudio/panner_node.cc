@@ -42,8 +42,9 @@
 namespace blink {
 
 static void FixNANs(double& x) {
-  if (std::isnan(x) || std::isinf(x))
+  if (std::isnan(x) || std::isinf(x)) {
     x = 0.0;
+  }
 }
 
 PannerHandler::PannerHandler(AudioNode& node,
@@ -107,8 +108,9 @@ PannerHandler::~PannerHandler() {
 void PannerHandler::ProcessIfNecessary(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
 
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   // Ensure that we only process once per rendering quantum.
   // This handles the "fanout" problem where an output is connected to multiple
@@ -283,12 +285,12 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   float total_gain[GetDeferredTaskHandler().RenderQuantumFrames()];
 
   for (unsigned k = 0; k < frames_to_process; ++k) {
-    FloatPoint3D panner_position(panner_x[k], panner_y[k], panner_z[k]);
-    FloatPoint3D orientation(orientation_x[k], orientation_y[k],
-                             orientation_z[k]);
-    FloatPoint3D listener_position(listener_x[k], listener_y[k], listener_z[k]);
-    FloatPoint3D listener_forward(forward_x[k], forward_y[k], forward_z[k]);
-    FloatPoint3D listener_up(up_x[k], up_y[k], up_z[k]);
+    gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
+    gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
+                               orientation_z[k]);
+    gfx::Point3F listener_position(listener_x[k], listener_y[k], listener_z[k]);
+    gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
+    gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
 
     CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
                               listener_position, listener_forward, listener_up);
@@ -327,8 +329,9 @@ void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
 }
 
 void PannerHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   auto listener = Listener();
   panner_ = Panner::Create(panning_model_, Context()->sampleRate(),
@@ -344,8 +347,9 @@ void PannerHandler::Initialize() {
 }
 
 void PannerHandler::Uninitialize() {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   panner_.reset();
   auto listener = Listener();
@@ -376,12 +380,13 @@ String PannerHandler::PanningModel() const {
 void PannerHandler::SetPanningModel(const String& model) {
   // WebIDL should guarantee that we are never called with an invalid string
   // for the model.
-  if (model == "equalpower")
+  if (model == "equalpower") {
     SetPanningModel(Panner::PanningModel::kEqualPower);
-  else if (model == "HRTF")
+  } else if (model == "HRTF") {
     SetPanningModel(Panner::PanningModel::kHRTF);
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 // This method should only be called from setPanningModel(const String&)!
@@ -427,12 +432,13 @@ String PannerHandler::DistanceModel() const {
 }
 
 void PannerHandler::SetDistanceModel(const String& model) {
-  if (model == "linear")
+  if (model == "linear") {
     SetDistanceModel(DistanceEffect::kModelLinear);
-  else if (model == "inverse")
+  } else if (model == "inverse") {
     SetDistanceModel(DistanceEffect::kModelInverse);
-  else if (model == "exponential")
+  } else if (model == "exponential") {
     SetDistanceModel(DistanceEffect::kModelExponential);
+  }
 }
 
 bool PannerHandler::SetDistanceModel(unsigned model) {
@@ -457,8 +463,9 @@ bool PannerHandler::SetDistanceModel(unsigned model) {
 }
 
 void PannerHandler::SetRefDistance(double distance) {
-  if (RefDistance() == distance)
+  if (RefDistance() == distance) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -467,8 +474,9 @@ void PannerHandler::SetRefDistance(double distance) {
 }
 
 void PannerHandler::SetMaxDistance(double distance) {
-  if (MaxDistance() == distance)
+  if (MaxDistance() == distance) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -477,8 +485,9 @@ void PannerHandler::SetMaxDistance(double distance) {
 }
 
 void PannerHandler::SetRolloffFactor(double factor) {
-  if (RolloffFactor() == factor)
+  if (RolloffFactor() == factor) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -487,8 +496,9 @@ void PannerHandler::SetRolloffFactor(double factor) {
 }
 
 void PannerHandler::SetConeInnerAngle(double angle) {
-  if (ConeInnerAngle() == angle)
+  if (ConeInnerAngle() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -497,8 +507,9 @@ void PannerHandler::SetConeInnerAngle(double angle) {
 }
 
 void PannerHandler::SetConeOuterAngle(double angle) {
-  if (ConeOuterAngle() == angle)
+  if (ConeOuterAngle() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -507,8 +518,9 @@ void PannerHandler::SetConeOuterAngle(double angle) {
 }
 
 void PannerHandler::SetConeOuterGain(double angle) {
-  if (ConeOuterGain() == angle)
+  if (ConeOuterGain() == angle) {
     return;
+  }
 
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
@@ -552,80 +564,86 @@ void PannerHandler::SetOrientation(float x,
 void PannerHandler::CalculateAzimuthElevation(
     double* out_azimuth,
     double* out_elevation,
-    const FloatPoint3D& position,
-    const FloatPoint3D& listener_position,
-    const FloatPoint3D& listener_forward,
-    const FloatPoint3D& listener_up) {
+    const gfx::Point3F& position,
+    const gfx::Point3F& listener_position,
+    const gfx::Vector3dF& listener_forward,
+    const gfx::Vector3dF& listener_up) {
   // Calculate the source-listener vector
-  FloatPoint3D source_listener = position - listener_position;
+  gfx::Vector3dF source_listener = position - listener_position;
 
   // Quick default return if the source and listener are at the same position.
-  if (source_listener.IsZero()) {
+  if (!source_listener.GetNormalized(&source_listener)) {
     *out_azimuth = 0;
     *out_elevation = 0;
     return;
   }
 
-  // normalize() does nothing if the length of |sourceListener| is zero.
-  source_listener.Normalize();
-
   // Align axes
-  FloatPoint3D listener_right = listener_forward.Cross(listener_up);
-  listener_right.Normalize();
+  gfx::Vector3dF listener_right =
+      gfx::CrossProduct(listener_forward, listener_up);
+  listener_right.GetNormalized(&listener_right);
 
-  FloatPoint3D listener_forward_norm = listener_forward;
-  listener_forward_norm.Normalize();
+  gfx::Vector3dF listener_forward_norm = listener_forward;
+  listener_forward_norm.GetNormalized(&listener_forward_norm);
 
-  FloatPoint3D up = listener_right.Cross(listener_forward_norm);
+  gfx::Vector3dF up = gfx::CrossProduct(listener_right, listener_forward_norm);
 
-  float up_projection = source_listener.Dot(up);
+  float up_projection = gfx::DotProduct(source_listener, up);
 
-  FloatPoint3D projected_source = source_listener - up_projection * up;
-  projected_source.Normalize();
+  gfx::Vector3dF projected_source =
+      source_listener - gfx::ScaleVector3d(up, up_projection);
+  projected_source.GetNormalized(&projected_source);
 
-  // Don't use AngleBetween here.  It produces the wrong value when one of the
-  // vectors has zero length.  We know here that |projected_source| and
-  // |listener_right| are "normalized", so the dot product is good enough.
-  double azimuth =
-      Rad2deg(acos(ClampTo(projected_source.Dot(listener_right), -1.0f, 1.0f)));
+  // Don't use gfx::AngleBetweenVectorsInDegrees here.  It produces the wrong
+  // value when one of the vectors has zero length.  We know here that
+  // |projected_source| and |listener_right| are "normalized", so the dot
+  // product is good enough.
+  double azimuth = Rad2deg(acos(
+      ClampTo(gfx::DotProduct(projected_source, listener_right), -1.0f, 1.0f)));
   FixNANs(azimuth);  // avoid illegal values
 
   // Source  in front or behind the listener
-  double front_back = projected_source.Dot(listener_forward_norm);
-  if (front_back < 0.0)
+  double front_back = gfx::DotProduct(projected_source, listener_forward_norm);
+  if (front_back < 0.0) {
     azimuth = 360.0 - azimuth;
+  }
 
   // Make azimuth relative to "front" and not "right" listener vector
-  if ((azimuth >= 0.0) && (azimuth <= 270.0))
+  if ((azimuth >= 0.0) && (azimuth <= 270.0)) {
     azimuth = 90.0 - azimuth;
-  else
+  } else {
     azimuth = 450.0 - azimuth;
+  }
 
   // Elevation
-  double elevation = 90 - Rad2deg(source_listener.AngleBetween(up));
+  double elevation =
+      90 - gfx::AngleBetweenVectorsInDegrees(source_listener, up);
   FixNANs(elevation);  // avoid illegal values
 
-  if (elevation > 90.0)
+  if (elevation > 90.0) {
     elevation = 180.0 - elevation;
-  else if (elevation < -90.0)
+  } else if (elevation < -90.0) {
     elevation = -180.0 - elevation;
+  }
 
-  if (out_azimuth)
+  if (out_azimuth) {
     *out_azimuth = azimuth;
-  if (out_elevation)
+  }
+  if (out_elevation) {
     *out_elevation = elevation;
+  }
 }
 
 float PannerHandler::CalculateDistanceConeGain(
-    const FloatPoint3D& position,
-    const FloatPoint3D& orientation,
-    const FloatPoint3D& listener_position) {
-  double listener_distance = position.DistanceTo(listener_position);
+    const gfx::Point3F& position,
+    const gfx::Vector3dF& orientation,
+    const gfx::Point3F& listener_position) {
+  double listener_distance = (position - listener_position).Length();
   double distance_gain = distance_effect_.Gain(listener_distance);
   double cone_gain =
       cone_effect_.Gain(position, orientation, listener_position);
 
-  return float(distance_gain * cone_gain);
+  return static_cast<float>(distance_gain * cone_gain);
 }
 
 void PannerHandler::AzimuthElevation(double* out_azimuth,
@@ -662,11 +680,13 @@ float PannerHandler::DistanceConeGain() {
 }
 
 void PannerHandler::MarkPannerAsDirty(unsigned dirty) {
-  if (dirty & PannerHandler::kAzimuthElevationDirty)
+  if (dirty & PannerHandler::kAzimuthElevationDirty) {
     is_azimuth_elevation_dirty_ = true;
+  }
 
-  if (dirty & PannerHandler::kDistanceConeGainDirty)
+  if (dirty & PannerHandler::kDistanceConeGainDirty) {
     is_distance_cone_gain_dirty_ = true;
+  }
 }
 
 void PannerHandler::SetChannelCount(unsigned channel_count,
@@ -678,8 +698,9 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   if (channel_count > 0 && channel_count <= 2) {
     if (channel_count_ != channel_count) {
       channel_count_ = channel_count;
-      if (InternalChannelCountMode() != kMax)
+      if (InternalChannelCountMode() != kMax) {
         UpdateChannelsForInputs();
+      }
     }
   } else {
     exception_state.ThrowDOMException(
@@ -713,8 +734,9 @@ void PannerHandler::SetChannelCountMode(const String& mode,
     new_channel_count_mode_ = old_mode;
   }
 
-  if (new_channel_count_mode_ != old_mode)
+  if (new_channel_count_mode_ != old_mode) {
     Context()->GetDeferredTaskHandler().AddChangedChannelCountMode(this);
+  }
 }
 
 bool PannerHandler::HasSampleAccurateValues() const {
@@ -735,8 +757,8 @@ bool PannerHandler::IsAudioRate() const {
 void PannerHandler::UpdateDirtyState() {
   DCHECK(Context()->IsAudioThread());
 
-  FloatPoint3D current_position = GetPosition();
-  FloatPoint3D current_orientation = Orientation();
+  gfx::Point3F current_position = GetPosition();
+  gfx::Vector3dF current_orientation = Orientation();
 
   bool has_moved = current_position != last_position_ ||
                    current_orientation != last_orientation_;
@@ -822,8 +844,9 @@ PannerNode* PannerNode::Create(BaseAudioContext* context,
                                ExceptionState& exception_state) {
   PannerNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

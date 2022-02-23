@@ -11,6 +11,7 @@
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -96,12 +97,13 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     SurfaceState& operator=(SurfaceState&& other);
 
     int z_order = 0;
-    AHardwareBuffer* hardware_buffer = nullptr;
+    raw_ptr<AHardwareBuffer> hardware_buffer = nullptr;
     gfx::Rect dst;
     gfx::Rect src;
     gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
     bool opaque = true;
     gfx::ColorSpace color_space;
+    absl::optional<gfx::HDRMetadata> hdr_metadata;
 
     // Indicates whether buffer for this layer was updated in the currently
     // pending transaction, or the last transaction submitted if there isn't

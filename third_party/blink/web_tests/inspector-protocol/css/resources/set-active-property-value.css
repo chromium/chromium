@@ -19,11 +19,17 @@
 
 #parent-div {
     width: 100px;
-    contain: size layout style;
+    container-type: size;
 }
 
-@container (min-width: 50px) {
+@container size(min-width: 50px) {
     #inspected {
         padding-right: 10px;
+    }
+}
+
+@supports (display: grid) or (display: inline-grid) {
+    #inspected {
+        display: grid;
     }
 }

@@ -27,7 +27,9 @@
 
 namespace syncer {
 
+class KeyDerivationParams;
 class ModelTypeController;
+class Nigori;
 class SyncEngineImpl;
 
 class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
@@ -110,10 +112,13 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DoStartSyncing(base::Time last_poll_time);
 
   // Called to set the passphrase for encryption.
-  void DoSetEncryptionPassphrase(const std::string& passphrase);
+  void DoSetEncryptionPassphrase(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params);
 
-  // Called to decrypt the pending keys using user-entered passphrases.
-  void DoSetDecryptionPassphrase(const std::string& passphrase);
+  // Called to decrypt the pending keys using the |key| derived from
+  // user-entered passphrase.
+  void DoSetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key);
 
   // Called to decrypt the pending keys using trusted vault keys.
   void DoAddTrustedVaultDecryptionKeys(

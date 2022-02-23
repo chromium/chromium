@@ -54,10 +54,6 @@ static_library("browser") {
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
     ]
-
-    if (build_with_internal_optimization_guide) {
-      deps = [ "//components/optimization_guide/internal" ]
-    }
   }
 }
 
@@ -83,7 +79,9 @@ source_set("unit_tests") {
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
-  if (build_with_tflite_lib) {
+
+  # crbug.com/1279884 Flaky on CrOS
+  if (!is_chromeos && build_with_tflite_lib) {
     sources += [ "page_content_annotations_model_manager_unittest.cc" ]
   }
   deps = [

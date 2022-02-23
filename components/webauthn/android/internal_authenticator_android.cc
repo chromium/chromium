@@ -143,9 +143,13 @@ void InternalAuthenticatorAndroid::InvokeMakeCredentialResponse(
         buf_in, buf_size, &response);
   }
 
+  DCHECK_NE(
+      status,
+      static_cast<int>(
+          blink::mojom::AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS));
   std::move(make_credential_response_callback_)
       .Run(static_cast<blink::mojom::AuthenticatorStatus>(status),
-           std::move(response));
+           std::move(response), /*dom_exception_details=*/nullptr);
 }
 
 void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
@@ -163,9 +167,13 @@ void InternalAuthenticatorAndroid::InvokeGetAssertionResponse(
         buf_in, buf_size, &response);
   }
 
+  DCHECK_NE(
+      status,
+      static_cast<int>(
+          blink::mojom::AuthenticatorStatus::ERROR_WITH_DOM_EXCEPTION_DETAILS));
   std::move(get_assertion_response_callback_)
       .Run(static_cast<blink::mojom::AuthenticatorStatus>(status),
-           std::move(response));
+           std::move(response), /*dom_exception_details=*/nullptr);
 }
 
 void InternalAuthenticatorAndroid::

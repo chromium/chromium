@@ -40,7 +40,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 
@@ -58,9 +57,6 @@ public class AssistantVoiceSearchServiceRenderTest {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();

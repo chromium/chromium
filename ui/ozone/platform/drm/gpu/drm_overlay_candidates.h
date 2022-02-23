@@ -29,6 +29,7 @@ class DrmOverlayCandidates : public OverlayCandidatesOzone {
   // OverlayCandidatesOzone:
   void CheckOverlaySupport(
       std::vector<OverlaySurfaceCandidate>* candidates) override;
+  void RegisterOverlayRequirement(bool requires_overlay) override;
 
  private:
   DrmOverlayManager* const overlay_manager_;  // Not owned.

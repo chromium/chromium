@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 
@@ -32,8 +31,8 @@ BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
 // TODO: this can be removed when Breakpad is no longer supported.
 BASE_EXPORT extern size_t g_oom_size;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_AIX)
 // The maximum allowed value for the OOM score.
 const int kMaxOomScore = 1000;
 
@@ -53,7 +52,7 @@ namespace internal {
 bool ReleaseAddressSpaceReservation();
 }  // namespace internal
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace win {
 
 // Custom Windows exception code chosen to indicate an out of memory error.
@@ -77,11 +76,19 @@ const DWORD kOomExceptionCode = 0xe0000008;
 // specifically ASan and other sanitizers.
 // Return value tells whether the allocation succeeded. If it fails |result| is
 // set to NULL, otherwise it holds the memory address.
-BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedMalloc(size_t size,
-                                                    void** result);
-BASE_EXPORT WARN_UNUSED_RESULT bool UncheckedCalloc(size_t num_items,
-                                                    size_t size,
-                                                    void** result);
+//
+// Note: You *must* use UncheckedFree() to free() the memory allocated, not
+// regular free(). This also means that this a pointer allocated below cannot be
+// passed to realloc().
+[[nodiscard]] BASE_EXPORT bool UncheckedMalloc(size_t size, void** result);
+[[nodiscard]] BASE_EXPORT bool UncheckedCalloc(size_t num_items,
+                                               size_t size,
+                                               void** result);
+
+// *Must* be used to free memory allocated with base::UncheckedMalloc() and
+// base::UncheckedCalloc().
+// TODO(crbug.com/1279371): Enforce it, when all callers are converted.
+BASE_EXPORT void UncheckedFree(void* ptr);
 
 }  // namespace base
 

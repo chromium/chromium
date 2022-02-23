@@ -621,7 +621,7 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void VotesUploader::CalculateUsernamePromptEditState(
     const std::u16string& saved_username) {
   if (!single_username_vote_data_ ||
@@ -662,7 +662,7 @@ void VotesUploader::CalculateUsernamePromptEditState(
   }
   single_username_vote_data_->prompt_edit = prompt_edit;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
   DCHECK(form_structure);
@@ -882,7 +882,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
   } else {
 // It's not possible to edit username in the save prompt on Android, thus it's
 // not possible to rely on this heuristic.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     const auto& prompt_edit = single_username_vote_data_->prompt_edit;
     // There is no meaningful data on prompt edit, the vote should not be sent.
     if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED)
@@ -897,7 +897,7 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
                     : AutofillUploadContents::Field::WEAK;
 #else
     return false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
   available_field_types->insert(type);
   SaveFieldVote(form_signature, field->GetFieldSignature(), type);

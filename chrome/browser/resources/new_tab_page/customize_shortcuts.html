@@ -62,7 +62,7 @@
   }
 
   ntp-mini-page {
-    --ntp-mini-page-shortcut-color: var(--google-grey-refresh-500);
+    --ntp-mini-page-shortcut-color: var(--google-grey-500);
   }
 
   .selected ntp-mini-page {
@@ -228,7 +228,7 @@
       -webkit-mask-image: url(icons/check_circle.svg);
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-size: 28px;
-      background-color: var(--google-blue-refresh-300);
+      background-color: var(--google-blue-300);
       content: '';
       display: block;
       height: 28px;
@@ -245,7 +245,7 @@
     <cr-button id="optionCustomLinksButton" class="option-image" tabindex="0"
         aria-pressed$="[[getCustomLinksAriaPressed_(customLinksEnabled_,
             hide_)]]"
-        title="[[i18n('myShortcuts')]]" on-click="onCustomLinksClick_" noink>
+        title="$i18n{myShortcuts}" on-click="onCustomLinksClick_" noink>
       <div class="option-icon"></div>
       <div class="option-mini">
         <ntp-mini-page single-colored-logo></ntp-mini-page>
@@ -253,15 +253,15 @@
       <div class="selected-circle"></div>
       <div class="selected-check"></div>
     </cr-button>
-    <div class="option-title">[[i18n('myShortcuts')]]</div>
-    <div class="option-description">[[i18n('shortcutsCurated')]]</div>
+    <div class="option-title">$i18n{myShortcuts}</div>
+    <div class="option-description">$i18n{shortcutsCurated}</div>
   </div>
   <div id="optionMostVisited"
       class$="option [[getMostVisitedSelected_(customLinksEnabled_, hide_)]]">
     <cr-button id="optionMostVisitedButton" class="option-image" tabindex="0"
         aria-pressed$="[[getMostVisitedAriaPressed_(customLinksEnabled_,
             hide_)]]"
-        title="[[i18n('mostVisited')]]" on-click="onMostVisitedClick_"
+        title="$i18n{mostVisited}" on-click="onMostVisitedClick_"
         on-keydown="onMostVistedKey" noink>
       <div class="option-icon"></div>
       <div class="option-mini">
@@ -270,18 +270,18 @@
       <div class="selected-circle"></div>
       <div class="selected-check"></div>
     </cr-button>
-    <div class="option-title">[[i18n('mostVisited')]]</div>
-    <div class="option-description">[[i18n('shortcutsSuggested')]]</div>
+    <div class="option-title">$i18n{mostVisited}</div>
+    <div class="option-description">$i18n{shortcutsSuggested}</div>
   </div>
 </div>
 <div id="hide" class$="[[getHideClass_(hide_)]]">
   <div id="hideIcon" class="cr-icon icon-visibility-off"></div>
   <div id="hideTitleContainer">
-    <div id="hideTitle">[[i18n('hideShortcuts')]]</div>
+    <div id="hideTitle">$i18n{hideShortcuts}</div>
     <div id="hideDescription" class="option-description">
-      [[i18n('hideShortcutsDesc')]]
+      $i18n{hideShortcutsDesc}
     </div>
   </div>
-  <cr-toggle id="hideToggle" title="[[i18n('hideShortcuts')]]"
+  <cr-toggle id="hideToggle" title="$i18n{hideShortcuts}"
       checked="[[hide_]]" on-change="onHideChange_"></cr-toggle>
 </div>

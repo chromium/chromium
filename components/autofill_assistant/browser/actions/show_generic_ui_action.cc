@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
@@ -17,79 +18,7 @@
 
 namespace autofill_assistant {
 
-namespace {
-
-void WriteCreditCardsToUserModel(
-    std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
-        credit_cards,
-    const ShowGenericUiProto::RequestAutofillCreditCards& proto,
-    UserModel* user_model) {
-  DCHECK(credit_cards);
-  DCHECK(user_model);
-  ValueProto model_value;
-  model_value.set_is_client_side_only(true);
-  for (const auto& credit_card : *credit_cards) {
-    DCHECK(!credit_card->guid().empty());
-    model_value.mutable_credit_cards()->add_values()->set_guid(
-        credit_card->guid());
-  }
-  user_model->SetAutofillCreditCards(std::move(credit_cards));
-  user_model->SetValue(proto.model_identifier(), model_value);
-}
-
-void WriteProfilesToUserModel(
-    std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
-        profiles,
-    const ShowGenericUiProto::RequestAutofillProfiles& proto,
-    UserModel* user_model) {
-  DCHECK(profiles);
-  DCHECK(user_model);
-  ValueProto model_value;
-  model_value.set_is_client_side_only(true);
-  for (const auto& profile : *profiles) {
-    DCHECK(!profile->guid().empty());
-    model_value.mutable_profiles()->add_values()->set_guid(profile->guid());
-  }
-  user_model->SetAutofillProfiles(std::move(profiles));
-  user_model->SetValue(proto.model_identifier(), model_value);
-}
-
-void WriteLoginOptionsToUserModel(
-    const ShowGenericUiProto::RequestLoginOptions& proto,
-    UserModel* user_model,
-    std::vector<WebsiteLoginManager::Login> logins) {
-  DCHECK(user_model);
-  ValueProto model_value;
-  model_value.set_is_client_side_only(true);
-  for (const auto& login_option : proto.login_options()) {
-    switch (login_option.type_case()) {
-      case ShowGenericUiProto::RequestLoginOptions::LoginOption::
-          kCustomLoginOption:
-        *model_value.mutable_login_options()->add_values() =
-            login_option.custom_login_option();
-        break;
-      case ShowGenericUiProto::RequestLoginOptions::LoginOption::
-          kPasswordManagerLogins: {
-        for (const auto& login : logins) {
-          auto* option = model_value.mutable_login_options()->add_values();
-          option->set_label(login.username);
-          option->set_sublabel(
-              login_option.password_manager_logins().sublabel());
-          option->set_payload(login_option.password_manager_logins().payload());
-        }
-        break;
-      }
-      case ShowGenericUiProto::RequestLoginOptions::LoginOption::TYPE_NOT_SET:
-        NOTREACHED();
-        break;
-    }
-  }
-  user_model->SetValue(proto.model_identifier(), model_value);
-}
-}  // namespace
-
 void ShowGenericUiAction::OnInterruptStarted() {
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
   delegate_->ClearGenericUi();
 }
 
@@ -109,9 +38,7 @@ ShowGenericUiAction::ShowGenericUiAction(ActionDelegate* delegate,
   DCHECK(proto_.has_show_generic_ui());
 }
 
-ShowGenericUiAction::~ShowGenericUiAction() {
-  delegate_->GetPersonalDataManager()->RemoveObserver(this);
-}
+ShowGenericUiAction::~ShowGenericUiAction() = default;
 
 bool ShowGenericUiAction::ShouldInterruptOnPause() const {
   return true;
@@ -155,27 +82,6 @@ void ShowGenericUiAction::InternalProcessAction(
     delegate_->GetUserModel()->SetValue(additional_value.model_identifier(),
                                         value);
   }
-  if (proto_.show_generic_ui().has_request_login_options()) {
-    auto login_options =
-        proto_.show_generic_ui().request_login_options().login_options();
-    if (std::find_if(login_options.begin(), login_options.end(),
-                     [&](const auto& option) {
-                       return option.type_case() ==
-                              ShowGenericUiProto::RequestLoginOptions::
-                                  LoginOption::kPasswordManagerLogins;
-                     }) != login_options.end()) {
-      delegate_->GetWebsiteLoginManager()->GetLoginsForUrl(
-          delegate_->GetWebContents()->GetLastCommittedURL(),
-          base::BindOnce(&WriteLoginOptionsToUserModel,
-                         proto_.show_generic_ui().request_login_options(),
-                         delegate_->GetUserModel()));
-    } else {
-      WriteLoginOptionsToUserModel(
-          proto_.show_generic_ui().request_login_options(),
-          delegate_->GetUserModel(),
-          /* logins = */ std::vector<WebsiteLoginManager::Login>());
-    }
-  }
 
   base::OnceCallback<void()> end_on_navigation_callback;
   if (proto_.show_generic_ui().end_on_navigation()) {
@@ -203,27 +109,29 @@ void ShowGenericUiAction::OnViewInflationFinished(bool first_inflation,
     return;
   }
 
-  delegate_->GetPersonalDataManager()->AddObserver(this);
-  OnPersonalDataChanged();
-
   if (!first_inflation) {
     return;
   }
 
   for (const auto& element_check :
        proto_.show_generic_ui().periodic_element_checks().element_checks()) {
-    preconditions_.emplace_back(std::make_unique<ElementPrecondition>(
-        element_check.element_condition()));
+    preconditions_.emplace_back(element_check.element_condition());
   }
   if (proto_.show_generic_ui().allow_interrupt() ||
-      std::any_of(
-          preconditions_.begin(), preconditions_.end(),
-          [&](const auto& precondition) { return !precondition->empty(); })) {
+      base::ranges::any_of(preconditions_, [&](const auto& precondition) {
+        return !BatchElementChecker::IsElementConditionEmpty(precondition);
+      })) {
     has_pending_wait_for_dom_ = true;
 
+    // TODO(b/219004758): Enable observer-based WaitForDom, which would require
+    // negating the preconditions that matched in the previous check, so that we
+    // are alerted every time one changes instead of every time one becomes
+    // true.
     delegate_->WaitForDom(
-        base::TimeDelta::Max(), proto_.show_generic_ui().allow_interrupt(),
-        this,
+        /* max_wait_time= */ base::TimeDelta::Max(),
+        /* allow_observer_mode = */ false,
+        proto_.show_generic_ui().allow_interrupt(),
+        /* observer= */ this,
         base::BindRepeating(&ShowGenericUiAction::RegisterChecks,
                             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&ShowGenericUiAction::OnWaitForElementTimed,
@@ -252,9 +160,10 @@ void ShowGenericUiAction::RegisterChecks(
   }
 
   for (size_t i = 0; i < preconditions_.size(); i++) {
-    preconditions_[i]->Check(
-        checker, base::BindOnce(&ShowGenericUiAction::OnPreconditionResult,
-                                weak_ptr_factory_.GetWeakPtr(), i));
+    checker->AddElementConditionCheck(
+        preconditions_[i],
+        base::BindOnce(&ShowGenericUiAction::OnPreconditionResult,
+                       weak_ptr_factory_.GetWeakPtr(), i));
   }
   // Let WaitForDom know we're still waiting for elements.
   checker->AddAllDoneCallback(base::BindOnce(
@@ -266,6 +175,7 @@ void ShowGenericUiAction::OnPreconditionResult(
     size_t precondition_index,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   if (should_end_action_) {
     return;
@@ -342,33 +252,6 @@ void ShowGenericUiAction::EndAction(const ClientStatus& status) {
   }
 
   std::move(callback_).Run(std::move(processed_action_proto_));
-}
-
-void ShowGenericUiAction::OnPersonalDataChanged() {
-  if (proto_.show_generic_ui().has_request_profiles()) {
-    auto profiles = std::make_unique<
-        std::vector<std::unique_ptr<autofill::AutofillProfile>>>();
-    for (const auto* profile :
-         delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
-      profiles->emplace_back(user_data::MakeUniqueFromProfile(*profile));
-    }
-    WriteProfilesToUserModel(std::move(profiles),
-                             proto_.show_generic_ui().request_profiles(),
-                             delegate_->GetUserModel());
-  }
-
-  if (proto_.show_generic_ui().has_request_credit_cards()) {
-    auto credit_cards =
-        std::make_unique<std::vector<std::unique_ptr<autofill::CreditCard>>>();
-    for (const auto* credit_card :
-         delegate_->GetPersonalDataManager()->GetCreditCardsToSuggest(true)) {
-      credit_cards->emplace_back(
-          std::make_unique<autofill::CreditCard>(*credit_card));
-    }
-    WriteCreditCardsToUserModel(std::move(credit_cards),
-                                proto_.show_generic_ui().request_credit_cards(),
-                                delegate_->GetUserModel());
-  }
 }
 
 }  // namespace autofill_assistant

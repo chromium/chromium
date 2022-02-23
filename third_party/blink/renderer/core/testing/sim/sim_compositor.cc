@@ -11,8 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -62,7 +61,7 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame->View()->PaintOutsideOfLifecycle(builder->Context(),
-                                         kGlobalPaintFlattenCompositingLayers);
+                                         PaintFlag::kOmitCompositingInfo);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
   SimCanvas canvas(infinite_rect.width(), infinite_rect.height());

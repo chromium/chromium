@@ -24,6 +24,12 @@ constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
 // restore window id as -1, to add the ARC app window to the hidden container.
 constexpr int32_t kParentToHiddenContainer = -1;
 
+// Returns true if `window` is an ARC window. Otherwise, returns false.
+bool IsArcWindow(aura::Window* window);
+
+// Returns true if `window` is a Lacros window. Otherwise, returns false.
+bool IsLacrosWindow(aura::Window* window);
+
 // Applies properties from `window_info` to the given `property_handler`.
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full
@@ -45,7 +51,7 @@ int32_t FetchRestoreWindowId(const std::string& app_id);
 
 // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
 // apps.
-COMPONENT_EXPORT(APP_RESTORE) int32_t GetArcSessionId();
+COMPONENT_EXPORT(APP_RESTORE) int32_t CreateArcSessionId();
 
 // Sets `arc_session_id` for `window_id`. `arc session id` is assigned when ARC
 // apps are restored.
@@ -59,6 +65,25 @@ int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
 // Returns the restore window id for the ARC app's `session_id`.
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
+
+// Remove the "_crx_" prefix from a given `app_name` to get the app id.
+COMPONENT_EXPORT(APP_RESTORE)
+std::string GetAppIdFromAppName(const std::string& app_name);
+
+// Returns the Lacros window id for `window`.
+const std::string GetLacrosWindowId(aura::Window* window);
+
+// Returns the restore window id for the Lacros window with `lacros_window_id`.
+COMPONENT_EXPORT(APP_RESTORE)
+int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id);
+
+// Invoked when Lacros window is created. `browser_session_id` is the
+// current browser session id. `restored_browser_session_id` is the restored
+// browser session id.
+COMPONENT_EXPORT(APP_RESTORE)
+void OnLacrosWindowAdded(aura::Window* const window,
+                         uint32_t browser_session_id,
+                         uint32_t restored_browser_session_id);
 
 }  // namespace app_restore
 

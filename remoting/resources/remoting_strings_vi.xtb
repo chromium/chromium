@@ -26,7 +26,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="225614027745146050">Chào mừng</translation>
 <translation id="2320166752086256636">Ẩn bàn phím</translation>
 <translation id="2329392777730037872">Không mở được <ph name="URL" /> trên ứng dụng.</translation>
-<translation id="2333212046079545895">Bản quyền 2021 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2366718077645204424">Không thể kết nối với máy chủ. Điều này có thể do cấu hình của mạng bạn đang sử dụng.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Nhìn thấy trực tuyến lần cuối <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="2599300881200251572">Dịch vụ này kích hoạt các kết nối đến từ ứng dụng khách Chrome Remote Desktop.</translation>
 <translation id="2647232381348739934">Dịch vụ kết nối từ xa trên Chrome</translation>
 <translation id="2676780859508944670">Đang xử lý...</translation>
+<translation id="2692522824157224199">Bản quyền 2022 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="2699970397166997657">Kết nối từ xa trên Chrome</translation>
 <translation id="2758123043070977469">Đã xảy ra lỗi khi xác thực, vui lòng đăng nhập lại.</translation>
 <translation id="2803375539583399270">Nhập mã PIN</translation>
@@ -73,10 +73,10 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4257751272692708833">Trình chuyển tiếp URL của <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Mã truy cập không hợp lệ. Vui lòng thử lại.</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
+<translation id="4372650392690220936">Bản quyền 2022 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="4405930547258349619">Thư viện trung tâm</translation>
 <translation id="443560535555262820">Mở tùy chọn Hỗ trợ tiếp cận</translation>
 <translation id="4450893287417543264">Không hiện lại</translation>
-<translation id="4512952200932940229">Bản quyền 2021 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4563926062592110512">Ứng dụng khách đã ngắt kết nối: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> không được thiết lập chính xác. Vui lòng chọn một trình duyệt web mặc định khác, sau đó bật lại tính năng chuyển tiếp URL.</translation>

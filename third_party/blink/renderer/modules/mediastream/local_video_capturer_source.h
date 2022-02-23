@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
@@ -60,9 +59,6 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
   void RequestRefreshFrame() override;
   void MaybeSuspend() override;
   void Resume() override;
-  void Crop(const base::Token& crop_id,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
-      override;
   void StopCapture() override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
   void OnLog(const std::string& message) override;

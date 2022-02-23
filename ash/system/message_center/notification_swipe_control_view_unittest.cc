@@ -7,7 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -41,6 +44,15 @@ class MockMessageView : public message_center::MessageView {
     return buttons_view_.get();
   }
 
+  float GetSlideAmount() const override {
+    return slide_amount_.value_or(
+        message_center::MessageView::GetSlideAmount());
+  }
+
+  void ResetSlideAmount() { slide_amount_.reset(); }
+
+  void set_slide_amount(float slide_amount) { slide_amount_ = slide_amount; }
+
   MOCK_METHOD(void,
               OnSettingsButtonPressed,
               (const ui::Event& event),
@@ -52,18 +64,25 @@ class MockMessageView : public message_center::MessageView {
 
  private:
   std::unique_ptr<message_center::NotificationControlButtonsView> buttons_view_;
+  absl::optional<float> slide_amount_;
 };
 
 }  // namespace
 
 namespace ash {
 
-class NotificationSwipeControlViewTest : public testing::Test {
+class NotificationSwipeControlViewTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
  public:
   NotificationSwipeControlViewTest() = default;
   ~NotificationSwipeControlViewTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     message_center::MessageCenter::Initialize(
         std::make_unique<message_center::FakeLockScreenController>());
 
@@ -81,6 +100,8 @@ class NotificationSwipeControlViewTest : public testing::Test {
     message_view_ = std::make_unique<MockMessageView>(notification);
   }
 
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
+
   void TearDown() override { message_center::MessageCenter::Shutdown(); }
 
  protected:
@@ -88,9 +109,14 @@ class NotificationSwipeControlViewTest : public testing::Test {
 
  private:
   std::unique_ptr<MockMessageView> message_view_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         NotificationSwipeControlViewTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   auto swipe_control_view =
       std::make_unique<NotificationSwipeControlView>(message_view());
 
@@ -106,7 +132,10 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*show_settings=*/true, /*show_snooze=*/true);
+  if (features::IsNotificationsRefreshEnabled())
+    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
@@ -114,13 +143,20 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*show_settings=*/true, /*show_snooze=*/true);
+  if (features::IsNotificationsRefreshEnabled())
+    swipe_control_view->settings_button_->SetHasInkDropActionOnClick(false);
+
   views::test::ButtonTestApi(swipe_control_view->settings_button_)
       .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
 }
 
-TEST_F(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
+TEST_P(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
+  // There's no snooze button in the new feature, return early.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
+
   auto swipe_control_view =
       std::make_unique<NotificationSwipeControlView>(message_view());
 
@@ -136,7 +172,7 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*show_settings=*/true, /*show_snooze=*/true);
   views::test::ButtonTestApi(swipe_control_view->snooze_button_)
       .NotifyClick(press);
   EXPECT_TRUE(swipe_control_view);
@@ -144,10 +180,38 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSnoozeButtonPressed) {
   // Second click deletes |swipe_control_view| in the handler.
   swipe_control_view->ShowButtons(
       NotificationSwipeControlView::ButtonPosition::LEFT,
-      /*has_settings_button=*/true, /*has_snooze_button=*/true);
+      /*show_settings=*/true, /*show_snooze=*/true);
   views::test::ButtonTestApi(swipe_control_view->snooze_button_)
       .NotifyClick(press);
   EXPECT_FALSE(swipe_control_view);
+}
+
+TEST_P(NotificationSwipeControlViewTest, SettingsButtonVisibility) {
+  // We only test this case in the new feature.
+  if (!features::IsNotificationsRefreshEnabled())
+    return;
+
+  auto swipe_control_view =
+      std::make_unique<NotificationSwipeControlView>(message_view());
+  int available_space =
+      kNotificationSwipeControlPadding.left() +
+      swipe_control_view->settings_button_->GetPreferredSize().width();
+
+  // The settings button should not be visible if there's not enough space.
+  message_view()->set_slide_amount(available_space - 10);
+  swipe_control_view->UpdateButtonsVisibility();
+  EXPECT_FALSE(swipe_control_view->settings_button_->GetVisible());
+
+  // Should be visible if have enough space.
+  message_view()->set_slide_amount(available_space);
+  swipe_control_view->UpdateButtonsVisibility();
+  EXPECT_TRUE(swipe_control_view->settings_button_->GetVisible());
+
+  message_view()->set_slide_amount(available_space + 10);
+  swipe_control_view->UpdateButtonsVisibility();
+  EXPECT_TRUE(swipe_control_view->settings_button_->GetVisible());
+
+  message_view()->ResetSlideAmount();
 }
 
 }  // namespace ash

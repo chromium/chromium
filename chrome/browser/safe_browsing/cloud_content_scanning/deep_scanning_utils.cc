@@ -53,12 +53,15 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       "pending-text-upload-scans");
   static crash_reporter::CrashKeyString<7> pending_file_downloads(
       "pending-file-download-scans");
+  static crash_reporter::CrashKeyString<7> pending_prints(
+      "pending-print-scans");
   static crash_reporter::CrashKeyString<7> total_file_uploads(
       "total-file-upload-scans");
   static crash_reporter::CrashKeyString<7> total_text_uploads(
       "total-text-upload-scans");
   static crash_reporter::CrashKeyString<7> total_file_downloads(
       "total-file-download-scans");
+  static crash_reporter::CrashKeyString<7> total_prints("total-print-scans");
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -66,12 +69,16 @@ crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
       return &pending_text_uploads;
     case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
       return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
       return &total_text_uploads;
     case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
       return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
   }
 }
 
@@ -79,9 +86,11 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
   static int pending_file_uploads = 0;
   static int pending_text_uploads = 0;
   static int pending_file_downloads = 0;
+  static int pending_prints = 0;
   static int total_file_uploads = 0;
   static int total_text_uploads = 0;
   static int total_file_downloads = 0;
+  static int total_prints = 0;
   switch (key) {
     case ScanningCrashKey::PENDING_FILE_UPLOADS:
       return &pending_file_uploads;
@@ -89,12 +98,16 @@ int* GetScanCrashKeyCount(ScanningCrashKey key) {
       return &pending_text_uploads;
     case ScanningCrashKey::PENDING_FILE_DOWNLOADS:
       return &pending_file_downloads;
+    case ScanningCrashKey::PENDING_PRINTS:
+      return &pending_prints;
     case ScanningCrashKey::TOTAL_FILE_UPLOADS:
       return &total_file_uploads;
     case ScanningCrashKey::TOTAL_TEXT_UPLOADS:
       return &total_text_uploads;
     case ScanningCrashKey::TOTAL_FILE_DOWNLOADS:
       return &total_file_downloads;
+    case ScanningCrashKey::TOTAL_PRINTS:
+      return &total_prints;
   }
 }
 
@@ -183,7 +196,8 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& trigger,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
-    const enterprise_connectors::ContentAnalysisResponse& response) {
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    absl::optional<std::u16string> user_justification) {
   DCHECK(std::all_of(download_digest_sha256.begin(),
                      download_digest_sha256.end(), [](const char& c) {
                        return (c >= '0' && c <= '9') ||
@@ -201,7 +215,8 @@ void ReportAnalysisConnectorWarningBypass(
 
     router->OnAnalysisConnectorWarningBypassed(
         url, file_name, download_digest_sha256, mime_type, trigger,
-        response.request_token(), access_point, result, content_size);
+        response.request_token(), access_point, result, content_size,
+        user_justification);
   }
 }
 
@@ -232,6 +247,8 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
       return "DragAndDrop";
     case DeepScanAccessPoint::PASTE:
       return "Paste";
+    case DeepScanAccessPoint::PRINT:
+      return "Print";
   }
   NOTREACHED();
   return "";

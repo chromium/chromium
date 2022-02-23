@@ -183,6 +183,24 @@ mojom("mojom") {
       traits_headers = [ "//services/viz/public/cpp/compositing/vertical_scroll_direction_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.VideoCaptureTarget"
+          cpp = "::viz::VideoCaptureTarget"
+        },
+        {
+          mojom = "viz.mojom.VideoCaptureSubTarget"
+          cpp = "::viz::VideoCaptureSubTarget"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h" ]
+      traits_public_deps = [
+        "//components/viz/common",
+        "//ui/gfx/geometry/mojom",
+      ]
+    },
   ]
   cpp_typemaps = shared_cpp_typemaps
   cpp_typemaps += [
@@ -225,6 +243,7 @@ mojom("mojom") {
           mojom = "viz.mojom.CompositorFrame"
           cpp = "::viz::CompositorFrame"
           move_only = true
+          forward_declaration = "namespace viz { class CompositorFrame; }"
         },
       ]
       traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.cc" ]

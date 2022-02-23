@@ -50,7 +50,6 @@ namespace {
 // Name of disk cache directory.
 const base::FilePath::CharType kDiskCacheDirectoryName[] =
     FILE_PATH_LITERAL("disk_cache");
-// TODO(xunjieli): Refactor constants in io_thread.cc.
 const char kQuicFieldTrialName[] = "QUIC";
 const char kQuicConnectionOptions[] = "connection_options";
 const char kQuicClientConnectionOptions[] = "client_connection_options";
@@ -94,6 +93,8 @@ const char kQuicVersion[] = "quic_version";
 const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed";
 const char kQuicFlags[] = "set_quic_flags";
 const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
+const char kRetryWithoutAltSvcOnQuicErrors[] =
+    "retry_without_alt_svc_on_quic_errors";
 
 // AsyncDNS experiment dictionary name.
 const char kAsyncDnsFieldTrialName[] = "AsyncDNS";
@@ -167,9 +168,17 @@ const char kDisableTlsZeroRtt[] = "disable_tls_zero_rtt";
 // underlying OS.
 const char kSpdyGoAwayOnIpChange[] = "spdy_go_away_on_ip_change";
 
+// Whether the connection status of all bidirectional streams (created through
+// the Cronet engine) should be monitored.
+// The value must be an integer (> 0) and will be interpreted as a suggestion
+// for the period of the heartbeat signal. See
+// SpdySession#EnableBrokenConnectionDetection for more info.
+const char kBidiStreamDetectBrokenConnection[] =
+    "bidi_stream_detect_broken_connection";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const bool kDefaultQuicGoAwaySessionsOnIpChange = true;
 #else
 const bool kDefaultQuicGoAwaySessionsOnIpChange = false;
@@ -218,6 +227,15 @@ ParseNetworkErrorLoggingHeaders(
   return result;
 }
 
+// Applies |f| to the value contained by |maybe|, returns empty optional
+// otherwise.
+template <typename T, typename F>
+auto map(absl::optional<T> maybe, F&& f) {
+  if (!maybe)
+    return absl::optional<base::invoke_result_t<F, T>>();
+  return absl::optional<base::invoke_result_t<F, T>>(f(maybe.value()));
+}
+
 }  // namespace
 
 URLRequestContextConfig::QuicHint::QuicHint(const std::string& host,
@@ -254,7 +272,7 @@ URLRequestContextConfig::URLRequestContextConfig(
     const std::string& storage_path,
     const std::string& accept_language,
     const std::string& user_agent,
-    const std::string& experimental_options,
+    base::Value::DictStorage experimental_options,
     std::unique_ptr<net::CertVerifier> mock_cert_verifier,
     bool enable_network_quality_estimator,
     bool bypass_public_key_pinning_for_local_trust_anchors,
@@ -273,40 +291,110 @@ URLRequestContextConfig::URLRequestContextConfig(
       enable_network_quality_estimator(enable_network_quality_estimator),
       bypass_public_key_pinning_for_local_trust_anchors(
           bypass_public_key_pinning_for_local_trust_anchors),
+      effective_experimental_options(
+          base::Value(experimental_options).TakeDictDeprecated()),
+      experimental_options(std::move(experimental_options)),
       network_thread_priority(network_thread_priority),
-      experimental_options(experimental_options) {}
+      bidi_stream_detect_broken_connection(false),
+      heartbeat_interval(base::Seconds(0)) {
+  SetContextConfigExperimentalOptions();
+}
 
 URLRequestContextConfig::~URLRequestContextConfig() {}
 
-bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
+// static
+std::unique_ptr<URLRequestContextConfig>
+URLRequestContextConfig::CreateURLRequestContextConfig(
+    bool enable_quic,
+    const std::string& quic_user_agent_id,
+    bool enable_spdy,
+    bool enable_brotli,
+    HttpCacheType http_cache,
+    int http_cache_max_size,
+    bool load_disable_cache,
+    const std::string& storage_path,
+    const std::string& accept_language,
+    const std::string& user_agent,
+    const std::string& unparsed_experimental_options,
+    std::unique_ptr<net::CertVerifier> mock_cert_verifier,
+    bool enable_network_quality_estimator,
+    bool bypass_public_key_pinning_for_local_trust_anchors,
+    absl::optional<double> network_thread_priority) {
+  absl::optional<base::Value::DictStorage> experimental_options =
+      ParseExperimentalOptions(unparsed_experimental_options);
+  if (!experimental_options) {
+    // For the time being maintain backward compatibility by only failing to
+    // parse when DCHECKs are enabled.
+    if (ExperimentalOptionsParsingIsAllowedToFail())
+      return nullptr;
+    else
+      experimental_options = base::Value::DictStorage();
+  }
+  return base::WrapUnique(new URLRequestContextConfig(
+      enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
+      http_cache_max_size, load_disable_cache, storage_path, accept_language,
+      user_agent, std::move(experimental_options.value()),
+      std::move(mock_cert_verifier), enable_network_quality_estimator,
+      bypass_public_key_pinning_for_local_trust_anchors,
+      network_thread_priority));
+}
+
+// static
+absl::optional<base::Value::DictStorage>
+URLRequestContextConfig::ParseExperimentalOptions(
+    std::string unparsed_experimental_options) {
+  // From a user perspective no experimental options means an empty string. The
+  // underlying code instead expects and empty dictionary. Normalize this.
+  if (unparsed_experimental_options.empty())
+    unparsed_experimental_options = "{}";
+  DVLOG(1) << "Experimental Options:" << unparsed_experimental_options;
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(
+          unparsed_experimental_options);
+  if (!parsed_json.value) {
+    LOG(ERROR) << "Parsing experimental options failed: '"
+               << unparsed_experimental_options << "', error "
+               << parsed_json.error_message;
+    return absl::nullopt;
+  }
+
+  base::Value experimental_options_value = std::move(parsed_json.value.value());
+  if (!experimental_options_value.is_dict()) {
+    LOG(ERROR) << "Experimental options string is not a dictionary: "
+               << experimental_options_value;
+    return absl::nullopt;
+  }
+
+  return std::move(experimental_options_value).TakeDictDeprecated();
+}
+
+void URLRequestContextConfig::SetContextConfigExperimentalOptions() {
+  auto iter = experimental_options.find(kBidiStreamDetectBrokenConnection);
+  if (iter == experimental_options.end())
+    return;
+
+  const base::Value& heartbeat_interval_value = iter->second;
+  if (!heartbeat_interval_value.is_int()) {
+    LOG(ERROR) << "\"" << kBidiStreamDetectBrokenConnection
+               << "\" config params \"" << heartbeat_interval_value
+               << "\" is not an int";
+    experimental_options.erase(iter);
+    effective_experimental_options.erase(kBidiStreamDetectBrokenConnection);
+    return;
+  }
+
+  int heartbeat_interval_secs = heartbeat_interval_value.GetInt();
+  heartbeat_interval = base::Seconds(heartbeat_interval_secs);
+  bidi_stream_detect_broken_connection = heartbeat_interval_secs > 0;
+  experimental_options.erase(iter);
+}
+
+void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
     net::URLRequestContextBuilder* context_builder,
     net::HttpNetworkSessionParams* session_params,
     net::QuicParams* quic_params) {
   if (experimental_options.empty())
-    return true;
-
-  DVLOG(1) << "Experimental Options:" << experimental_options;
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(experimental_options);
-
-  if (!parsed_json.value) {
-    LOG(ERROR) << "Parsing experimental options failed: '"
-               << experimental_options << "', error "
-               << parsed_json.error_message;
-    return false;
-  }
-
-  std::unique_ptr<base::Value> root =
-      base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
-
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(root));
-
-  if (!dict) {
-    LOG(ERROR) << "Experimental options string is not a dictionary: "
-               << experimental_options;
-    return false;
-  }
+    return;
 
   bool async_dns_enable = false;
   bool stale_dns_enable = false;
@@ -314,27 +402,26 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
   bool disable_ipv6_on_wifi = false;
   bool nel_enable = false;
 
-  effective_experimental_options = dict->CreateDeepCopy();
   StaleHostResolver::StaleOptions stale_dns_options;
-  std::string host_resolver_rules_string;
+  const std::string* host_resolver_rules_string;
 
-  for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd(); it.Advance()) {
-    if (it.key() == kQuicFieldTrialName) {
-      const base::DictionaryValue* quic_args = nullptr;
-      if (!it.value().GetAsDictionary(&quic_args)) {
-        LOG(ERROR) << "Quic config params \"" << it.value()
+  for (const auto& iter : experimental_options) {
+    if (iter.first == kQuicFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "Quic config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
 
-      std::string quic_version_string;
-      if (quic_args->GetString(kQuicVersion, &quic_version_string)) {
+      const base::Value& quic_args = iter.second;
+      const std::string* quic_version_string =
+          quic_args.FindStringKey(kQuicVersion);
+      if (quic_version_string) {
         quic::ParsedQuicVersionVector supported_versions =
-            quic::ParseQuicVersionVectorString(quic_version_string);
-        absl::optional<bool> obsolete_versions_allowed =
-            quic_args->FindBoolKey(kQuicObsoleteVersionsAllowed);
-        if (!obsolete_versions_allowed || !*obsolete_versions_allowed) {
+            quic::ParseQuicVersionVectorString(*quic_version_string);
+        if (!quic_args.FindBoolKey(kQuicObsoleteVersionsAllowed)
+                 .value_or(false)) {
           quic::ParsedQuicVersionVector filtered_versions;
           quic::ParsedQuicVersionVector obsolete_versions =
               net::ObsoleteQuicVersions();
@@ -356,176 +443,157 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
           quic_params->supported_versions = supported_versions;
       }
 
-      std::string quic_connection_options;
-      if (quic_args->GetString(kQuicConnectionOptions,
-                               &quic_connection_options)) {
+      const std::string* quic_connection_options =
+          quic_args.FindStringKey(kQuicConnectionOptions);
+      if (quic_connection_options) {
         quic_params->connection_options =
-            quic::ParseQuicTagVector(quic_connection_options);
+            quic::ParseQuicTagVector(*quic_connection_options);
       }
 
-      std::string quic_client_connection_options;
-      if (quic_args->GetString(kQuicClientConnectionOptions,
-                               &quic_client_connection_options)) {
+      const std::string* quic_client_connection_options =
+          quic_args.FindStringKey(kQuicClientConnectionOptions);
+      if (quic_client_connection_options) {
         quic_params->client_connection_options =
-            quic::ParseQuicTagVector(quic_client_connection_options);
+            quic::ParseQuicTagVector(*quic_client_connection_options);
       }
 
       // TODO(rtenneti): Delete this option after apps stop using it.
       // Added this for backward compatibility.
-      if (quic_args->FindBoolKey(kQuicStoreServerConfigsInProperties)) {
+      if (quic_args.FindBoolKey(kQuicStoreServerConfigsInProperties)
+              .value_or(false)) {
         quic_params->max_server_configs_stored_in_properties =
             net::kDefaultMaxQuicServerEntries;
       }
 
-      int quic_max_server_configs_stored_in_properties = 0;
-      if (quic_args->GetInteger(
-              kQuicMaxServerConfigsStoredInProperties,
-              &quic_max_server_configs_stored_in_properties)) {
-        quic_params->max_server_configs_stored_in_properties =
-            static_cast<size_t>(quic_max_server_configs_stored_in_properties);
-      }
+      quic_params->max_server_configs_stored_in_properties =
+          static_cast<size_t>(
+              quic_args.FindIntKey(kQuicMaxServerConfigsStoredInProperties)
+                  .value_or(
+                      quic_params->max_server_configs_stored_in_properties));
 
-      int quic_idle_connection_timeout_seconds = 0;
-      if (quic_args->GetInteger(kQuicIdleConnectionTimeoutSeconds,
-                                &quic_idle_connection_timeout_seconds)) {
-        quic_params->idle_connection_timeout =
-            base::Seconds(quic_idle_connection_timeout_seconds);
-      }
+      quic_params->idle_connection_timeout =
+          map(quic_args.FindIntKey(kQuicIdleConnectionTimeoutSeconds),
+              base::Seconds<int>)
+              .value_or(quic_params->idle_connection_timeout);
 
-      int quic_max_time_before_crypto_handshake_seconds = 0;
-      if (quic_args->GetInteger(
-              kQuicMaxTimeBeforeCryptoHandshakeSeconds,
-              &quic_max_time_before_crypto_handshake_seconds)) {
-        quic_params->max_time_before_crypto_handshake =
-            base::Seconds(quic_max_time_before_crypto_handshake_seconds);
-      }
+      quic_params->max_time_before_crypto_handshake =
+          map(quic_args.FindIntKey(kQuicMaxTimeBeforeCryptoHandshakeSeconds),
+              base::Seconds<int>)
+              .value_or(quic_params->max_time_before_crypto_handshake);
 
-      int quic_max_idle_time_before_crypto_handshake_seconds = 0;
-      if (quic_args->GetInteger(
-              kQuicMaxIdleTimeBeforeCryptoHandshakeSeconds,
-              &quic_max_idle_time_before_crypto_handshake_seconds)) {
-        quic_params->max_idle_time_before_crypto_handshake =
-            base::Seconds(quic_max_idle_time_before_crypto_handshake_seconds);
-      }
+      quic_params->max_idle_time_before_crypto_handshake =
+          map(quic_args.FindIntKey(
+                  kQuicMaxIdleTimeBeforeCryptoHandshakeSeconds),
+              base::Seconds<int>)
+              .value_or(quic_params->max_idle_time_before_crypto_handshake);
 
-      absl::optional<bool> quic_close_sessions_on_ip_change =
-          quic_args->FindBoolKey(kQuicCloseSessionsOnIpChange);
-      if (quic_close_sessions_on_ip_change) {
-        quic_params->close_sessions_on_ip_change =
-            *quic_close_sessions_on_ip_change;
-        if (*quic_close_sessions_on_ip_change &&
-            kDefaultQuicGoAwaySessionsOnIpChange) {
-          // "close_sessions_on_ip_change" and "goaway_sessions_on_ip_change"
-          // are mutually exclusive. Turn off the goaway option which is
-          // default on for iOS if "close_sessions_on_ip_change" is set via
-          // experimental options.
-          quic_params->goaway_sessions_on_ip_change = false;
-        }
+      quic_params->close_sessions_on_ip_change =
+          quic_args.FindBoolKey(kQuicCloseSessionsOnIpChange)
+              .value_or(quic_params->close_sessions_on_ip_change);
+      if (quic_params->close_sessions_on_ip_change &&
+          kDefaultQuicGoAwaySessionsOnIpChange) {
+        // "close_sessions_on_ip_change" and "goaway_sessions_on_ip_change"
+        // are mutually exclusive. Turn off the goaway option which is
+        // default on for iOS if "close_sessions_on_ip_change" is set via
+        // experimental options.
+        quic_params->goaway_sessions_on_ip_change = false;
       }
 
       quic_params->goaway_sessions_on_ip_change =
-          quic_args->FindBoolKey(kQuicGoAwaySessionsOnIpChange)
+          quic_args.FindBoolKey(kQuicGoAwaySessionsOnIpChange)
               .value_or(quic_params->goaway_sessions_on_ip_change);
       quic_params->go_away_on_path_degrading =
-          quic_args->FindBoolKey(kGoAwayOnPathDegrading)
+          quic_args.FindBoolKey(kGoAwayOnPathDegrading)
               .value_or(quic_params->go_away_on_path_degrading);
       quic_params->allow_server_migration =
-          quic_args->FindBoolKey(kQuicAllowServerMigration)
+          quic_args.FindBoolKey(kQuicAllowServerMigration)
               .value_or(quic_params->allow_server_migration);
 
-      std::string user_agent_id;
-      if (quic_args->GetString(kQuicUserAgentId, &user_agent_id)) {
-        quic_params->user_agent_id = user_agent_id;
+      const std::string* user_agent_id =
+          quic_args.FindStringKey(kQuicUserAgentId);
+      if (user_agent_id) {
+        quic_params->user_agent_id = *user_agent_id;
       }
 
       quic_params->enable_socket_recv_optimization =
-          quic_args->FindBoolKey(kQuicEnableSocketRecvOptimization)
+          quic_args.FindBoolKey(kQuicEnableSocketRecvOptimization)
               .value_or(quic_params->enable_socket_recv_optimization);
 
-      int quic_max_time_on_non_default_network_seconds = 0;
-      int quic_max_migrations_to_non_default_network_on_write_error = 0;
-      int quic_max_migrations_to_non_default_network_on_path_degrading = 0;
-
       absl::optional<bool> quic_migrate_sessions_on_network_change_v2_in =
-          quic_args->FindBoolKey(kQuicMigrateSessionsOnNetworkChangeV2);
+          quic_args.FindBoolKey(kQuicMigrateSessionsOnNetworkChangeV2);
       if (quic_migrate_sessions_on_network_change_v2_in.has_value()) {
         quic_params->migrate_sessions_on_network_change_v2 =
             quic_migrate_sessions_on_network_change_v2_in.value();
-        if (quic_args->GetInteger(
-                kQuicMaxTimeOnNonDefaultNetworkSeconds,
-                &quic_max_time_on_non_default_network_seconds)) {
-          quic_params->max_time_on_non_default_network =
-              base::Seconds(quic_max_time_on_non_default_network_seconds);
-        }
-        if (quic_args->GetInteger(
-                kQuicMaxMigrationsToNonDefaultNetworkOnWriteError,
-                &quic_max_migrations_to_non_default_network_on_write_error)) {
-          quic_params->max_migrations_to_non_default_network_on_write_error =
-              quic_max_migrations_to_non_default_network_on_write_error;
-        }
-        if (quic_args->GetInteger(
-                kQuicMaxMigrationsToNonDefaultNetworkOnPathDegrading,
-                &quic_max_migrations_to_non_default_network_on_path_degrading)) {
-          quic_params->max_migrations_to_non_default_network_on_path_degrading =
-              quic_max_migrations_to_non_default_network_on_path_degrading;
-        }
+        quic_params->max_time_on_non_default_network =
+            map(quic_args.FindIntKey(kQuicMaxTimeOnNonDefaultNetworkSeconds),
+                base::Seconds<int>)
+                .value_or(quic_params->max_time_on_non_default_network);
+        quic_params->max_migrations_to_non_default_network_on_write_error =
+            quic_args
+                .FindIntKey(kQuicMaxMigrationsToNonDefaultNetworkOnWriteError)
+                .value_or(
+                    quic_params
+                        ->max_migrations_to_non_default_network_on_write_error);
+        quic_params->max_migrations_to_non_default_network_on_path_degrading =
+            quic_args
+                .FindIntKey(
+                    kQuicMaxMigrationsToNonDefaultNetworkOnPathDegrading)
+                .value_or(
+                    quic_params
+                        ->max_migrations_to_non_default_network_on_path_degrading);
       }
 
-      int quic_idle_session_migration_period_seconds = 0;
-
       absl::optional<bool> quic_migrate_idle_sessions_in =
-          quic_args->FindBoolKey(kQuicMigrateIdleSessions);
+          quic_args.FindBoolKey(kQuicMigrateIdleSessions);
       if (quic_migrate_idle_sessions_in.has_value()) {
         quic_params->migrate_idle_sessions =
             quic_migrate_idle_sessions_in.value();
-        if (quic_args->GetInteger(
-                kQuicIdleSessionMigrationPeriodSeconds,
-                &quic_idle_session_migration_period_seconds)) {
-          quic_params->idle_session_migration_period =
-              base::Seconds(quic_idle_session_migration_period_seconds);
-        }
+        quic_params->idle_session_migration_period =
+            map(quic_args.FindIntKey(kQuicIdleSessionMigrationPeriodSeconds),
+                base::Seconds<int>)
+                .value_or(quic_params->idle_session_migration_period);
       }
 
-      absl::optional<bool> quic_migrate_sessions_early_v2_in =
-          quic_args->FindBoolKey(kQuicMigrateSessionsEarlyV2);
-      if (quic_migrate_sessions_early_v2_in.has_value()) {
-        quic_params->migrate_sessions_early_v2 =
-            quic_migrate_sessions_early_v2_in.value();
-      }
+      quic_params->migrate_sessions_early_v2 =
+          quic_args.FindBoolKey(kQuicMigrateSessionsEarlyV2)
+              .value_or(quic_params->migrate_sessions_early_v2);
 
-      int quic_retransmittable_on_wire_timeout_milliseconds = 0;
-      if (quic_args->GetInteger(
-              kQuicRetransmittableOnWireTimeoutMilliseconds,
-              &quic_retransmittable_on_wire_timeout_milliseconds)) {
-        quic_params->retransmittable_on_wire_timeout = base::Milliseconds(
-            quic_retransmittable_on_wire_timeout_milliseconds);
-      }
+      quic_params->retransmittable_on_wire_timeout =
+          map(quic_args.FindIntKey(
+                  kQuicRetransmittableOnWireTimeoutMilliseconds),
+              base::Milliseconds<int>)
+              .value_or(quic_params->retransmittable_on_wire_timeout);
 
       quic_params->retry_on_alternate_network_before_handshake =
-          quic_args->FindBoolKey(kQuicRetryOnAlternateNetworkBeforeHandshake)
+          quic_args.FindBoolKey(kQuicRetryOnAlternateNetworkBeforeHandshake)
               .value_or(
                   quic_params->retry_on_alternate_network_before_handshake);
 
       quic_params->race_stale_dns_on_connection =
-          quic_args->FindBoolKey(kQuicRaceStaleDNSOnConnection)
+          quic_args.FindBoolKey(kQuicRaceStaleDNSOnConnection)
               .value_or(quic_params->race_stale_dns_on_connection);
 
       quic_params->allow_port_migration =
-          quic_args->FindBoolKey(kAllowPortMigration)
+          quic_args.FindBoolKey(kAllowPortMigration)
               .value_or(quic_params->allow_port_migration);
 
+      quic_params->retry_without_alt_svc_on_quic_errors =
+          quic_args.FindBoolKey(kRetryWithoutAltSvcOnQuicErrors)
+              .value_or(quic_params->retry_without_alt_svc_on_quic_errors);
+
       quic_params->disable_tls_zero_rtt =
-          quic_args->FindBoolKey(kDisableTlsZeroRtt)
+          quic_args.FindBoolKey(kDisableTlsZeroRtt)
               .value_or(quic_params->disable_tls_zero_rtt);
 
       quic_params->disable_bidirectional_streams =
-          quic_args->FindBoolKey(kQuicDisableBidirectionalStreams)
+          quic_args.FindBoolKey(kQuicDisableBidirectionalStreams)
               .value_or(quic_params->disable_bidirectional_streams);
 
-      std::string quic_host_allowlist;
-      if (quic_args->GetString(kQuicHostWhitelist, &quic_host_allowlist)) {
+      const std::string* quic_host_allowlist =
+          quic_args.FindStringKey(kQuicHostWhitelist);
+      if (quic_host_allowlist) {
         std::vector<std::string> host_vector =
-            base::SplitString(quic_host_allowlist, ",", base::TRIM_WHITESPACE,
+            base::SplitString(*quic_host_allowlist, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_ALL);
         session_params->quic_host_allowlist.clear();
         for (const std::string& host : host_vector) {
@@ -533,10 +601,10 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
         }
       }
 
-      std::string quic_flags;
-      if (quic_args->GetString(kQuicFlags, &quic_flags)) {
+      const std::string* quic_flags = quic_args.FindStringKey(kQuicFlags);
+      if (quic_flags) {
         for (const auto& flag :
-             base::SplitString(quic_flags, ",", base::TRIM_WHITESPACE,
+             base::SplitString(*quic_flags, ",", base::TRIM_WHITESPACE,
                                base::SPLIT_WANT_ALL)) {
           std::vector<std::string> tokens = base::SplitString(
               flag, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -546,106 +614,102 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
         }
       }
 
-      int quic_ios_network_service_type;
-      if (quic_args->GetInteger(kQuicIOSNetworkServiceType,
-                                &quic_ios_network_service_type)) {
-        quic_params->ios_network_service_type = quic_ios_network_service_type;
-      }
-    } else if (it.key() == kAsyncDnsFieldTrialName) {
-      const base::DictionaryValue* async_dns_args = nullptr;
-      if (!it.value().GetAsDictionary(&async_dns_args)) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+      quic_params->ios_network_service_type =
+          quic_args.FindIntKey(kQuicIOSNetworkServiceType)
+              .value_or(quic_params->ios_network_service_type);
+    } else if (iter.first == kAsyncDnsFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      async_dns_enable = async_dns_args->FindBoolKey(kAsyncDnsEnable)
+      const base::Value& async_dns_args = iter.second;
+      async_dns_enable = async_dns_args.FindBoolKey(kAsyncDnsEnable)
                              .value_or(async_dns_enable);
-    } else if (it.key() == kStaleDnsFieldTrialName) {
-      const base::DictionaryValue* stale_dns_args = nullptr;
-      if (!it.value().GetAsDictionary(&stale_dns_args)) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+    } else if (iter.first == kStaleDnsFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      absl::optional<bool> stale_dns_enable_in =
-          stale_dns_args->FindBoolKey(kStaleDnsEnable);
-      if (stale_dns_enable_in.has_value() && stale_dns_enable_in.value()) {
-        stale_dns_enable = stale_dns_enable_in.value();
+      const base::Value& stale_dns_args = iter.second;
+      stale_dns_enable =
+          stale_dns_args.FindBoolKey(kStaleDnsEnable).value_or(false);
 
-        int delay;
-        if (stale_dns_args->GetInteger(kStaleDnsDelayMs, &delay))
-          stale_dns_options.delay = base::Milliseconds(delay);
-        int max_expired_time_ms;
-        if (stale_dns_args->GetInteger(kStaleDnsMaxExpiredTimeMs,
-                                       &max_expired_time_ms)) {
-          stale_dns_options.max_expired_time =
-              base::Milliseconds(max_expired_time_ms);
-        }
-        int max_stale_uses;
-        if (stale_dns_args->GetInteger(kStaleDnsMaxStaleUses, &max_stale_uses))
-          stale_dns_options.max_stale_uses = max_stale_uses;
+      if (stale_dns_enable) {
+        stale_dns_options.delay =
+            map(stale_dns_args.FindIntKey(kStaleDnsDelayMs),
+                base::Milliseconds<int>)
+                .value_or(stale_dns_options.delay);
+        stale_dns_options.max_expired_time =
+            map(stale_dns_args.FindIntKey(kStaleDnsMaxExpiredTimeMs),
+                base::Milliseconds<int>)
+                .value_or(stale_dns_options.max_expired_time);
+        stale_dns_options.max_stale_uses =
+            stale_dns_args.FindIntKey(kStaleDnsMaxStaleUses)
+                .value_or(stale_dns_options.max_stale_uses);
         stale_dns_options.allow_other_network =
-            stale_dns_args->FindBoolKey(kStaleDnsAllowOtherNetwork)
+            stale_dns_args.FindBoolKey(kStaleDnsAllowOtherNetwork)
                 .value_or(stale_dns_options.allow_other_network);
         enable_host_cache_persistence =
-            stale_dns_args->FindBoolKey(kStaleDnsPersist)
+            stale_dns_args.FindBoolKey(kStaleDnsPersist)
                 .value_or(enable_host_cache_persistence);
-        int persist_timer;
-        if (stale_dns_args->GetInteger(kStaleDnsPersistTimer, &persist_timer))
-          host_cache_persistence_delay_ms = persist_timer;
+        host_cache_persistence_delay_ms =
+            stale_dns_args.FindIntKey(kStaleDnsPersistTimer)
+                .value_or(host_cache_persistence_delay_ms);
         stale_dns_options.use_stale_on_name_not_resolved =
-            stale_dns_args->FindBoolKey(kStaleDnsUseStaleOnNameNotResolved)
+            stale_dns_args.FindBoolKey(kStaleDnsUseStaleOnNameNotResolved)
                 .value_or(stale_dns_options.use_stale_on_name_not_resolved);
       }
-    } else if (it.key() == kHostResolverRulesFieldTrialName) {
-      const base::DictionaryValue* host_resolver_rules_args = nullptr;
-      if (!it.value().GetAsDictionary(&host_resolver_rules_args)) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+    } else if (iter.first == kHostResolverRulesFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      host_resolver_rules_enable = host_resolver_rules_args->GetString(
-          kHostResolverRules, &host_resolver_rules_string);
-    } else if (it.key() == kNetworkErrorLoggingFieldTrialName) {
-      const base::DictionaryValue* nel_args = nullptr;
-      if (!it.value().GetAsDictionary(&nel_args)) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+      const base::Value& host_resolver_rules_args = iter.second;
+      host_resolver_rules_string =
+          host_resolver_rules_args.FindStringKey(kHostResolverRules);
+      host_resolver_rules_enable = !!host_resolver_rules_string;
+    } else if (iter.first == kNetworkErrorLoggingFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      nel_enable = nel_args->FindBoolKey(kNetworkErrorLoggingEnable)
-                       .value_or(nel_enable);
+      const base::Value& nel_args = iter.second;
+      nel_enable =
+          nel_args.FindBoolKey(kNetworkErrorLoggingEnable).value_or(nel_enable);
 
       const auto* preloaded_report_to_headers_config =
-          nel_args->FindKeyOfType(kNetworkErrorLoggingPreloadedReportToHeaders,
-                                  base::Value::Type::LIST);
+          nel_args.FindListKey(kNetworkErrorLoggingPreloadedReportToHeaders);
       if (preloaded_report_to_headers_config) {
         preloaded_report_to_headers = ParseNetworkErrorLoggingHeaders(
-            preloaded_report_to_headers_config->GetList());
+            preloaded_report_to_headers_config->GetListDeprecated());
       }
 
-      const auto* preloaded_nel_headers_config = nel_args->FindKeyOfType(
-          kNetworkErrorLoggingPreloadedNELHeaders, base::Value::Type::LIST);
+      const auto* preloaded_nel_headers_config =
+          nel_args.FindListKey(kNetworkErrorLoggingPreloadedNELHeaders);
       if (preloaded_nel_headers_config) {
         preloaded_nel_headers = ParseNetworkErrorLoggingHeaders(
-            preloaded_nel_headers_config->GetList());
+            preloaded_nel_headers_config->GetListDeprecated());
       }
-    } else if (it.key() == kDisableIPv6OnWifi) {
-      if (!it.value().is_bool()) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+    } else if (iter.first == kDisableIPv6OnWifi) {
+      if (!iter.second.is_bool()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a bool";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      disable_ipv6_on_wifi = it.value().GetBool();
-    } else if (it.key() == kSSLKeyLogFile) {
-      if (it.value().is_string()) {
+      disable_ipv6_on_wifi = iter.second.GetBool();
+    } else if (iter.first == kSSLKeyLogFile) {
+      if (iter.second.is_string()) {
         base::FilePath ssl_key_log_file(
-            base::FilePath::FromUTF8Unsafe(it.value().GetString()));
+            base::FilePath::FromUTF8Unsafe(iter.second.GetString()));
         if (!ssl_key_log_file.empty()) {
           // SetSSLKeyLogger is only safe to call before any SSLClientSockets
           // are created. This should not be used if there are multiple
@@ -656,37 +720,37 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
               std::make_unique<net::SSLKeyLoggerImpl>(ssl_key_log_file));
         }
       }
-    } else if (it.key() == kNetworkQualityEstimatorFieldTrialName) {
-      const base::DictionaryValue* nqe_args = nullptr;
-      if (!it.value().GetAsDictionary(&nqe_args)) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+    } else if (iter.first == kNetworkQualityEstimatorFieldTrialName) {
+      if (!iter.second.is_dict()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a dictionary value";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
 
-      std::string nqe_option;
-      if (nqe_args->GetString(net::kForceEffectiveConnectionType,
-                              &nqe_option)) {
+      const base::Value& nqe_args = iter.second;
+      const std::string* nqe_option =
+          nqe_args.FindStringKey(net::kForceEffectiveConnectionType);
+      if (nqe_option) {
         nqe_forced_effective_connection_type =
-            net::GetEffectiveConnectionTypeForName(nqe_option);
-        if (!nqe_option.empty() && !nqe_forced_effective_connection_type) {
+            net::GetEffectiveConnectionTypeForName(*nqe_option);
+        if (!nqe_option->empty() && !nqe_forced_effective_connection_type) {
           LOG(ERROR) << "\"" << nqe_option
                      << "\" is not a valid effective connection type value";
         }
       }
-    } else if (it.key() == kSpdyGoAwayOnIpChange) {
-      if (!it.value().is_bool()) {
-        LOG(ERROR) << "\"" << it.key() << "\" config params \"" << it.value()
+    } else if (iter.first == kSpdyGoAwayOnIpChange) {
+      if (!iter.second.is_bool()) {
+        LOG(ERROR) << "\"" << iter.first << "\" config params \"" << iter.second
                    << "\" is not a bool";
-        effective_experimental_options->RemoveKey(it.key());
+        effective_experimental_options.erase(iter.first);
         continue;
       }
-      session_params->spdy_go_away_on_ip_change = it.value().GetBool();
+      session_params->spdy_go_away_on_ip_change = iter.second.GetBool();
     } else {
-      LOG(WARNING) << "Unrecognized Cronet experimental option \"" << it.key()
-                   << "\" with params \"" << it.value();
-      effective_experimental_options->RemoveKey(it.key());
+      LOG(WARNING) << "Unrecognized Cronet experimental option \"" << iter.first
+                   << "\" with params \"" << iter.second;
+      effective_experimental_options.erase(iter.first);
     }
   }
 
@@ -712,7 +776,7 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
     if (host_resolver_rules_enable) {
       std::unique_ptr<net::MappedHostResolver> remapped_resolver(
           new net::MappedHostResolver(std::move(host_resolver)));
-      remapped_resolver->SetRulesFromString(host_resolver_rules_string);
+      remapped_resolver->SetRulesFromString(*host_resolver_rules_string);
       host_resolver = std::move(remapped_resolver);
     }
     context_builder->set_host_resolver(std::move(host_resolver));
@@ -734,7 +798,6 @@ bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
     context_builder->set_network_error_logging_enabled(true);
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-  return true;
 }
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
@@ -769,12 +832,8 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
         kDefaultQuicGoAwaySessionsOnIpChange;
   }
 
-  // Somewhat hacky DCHECK use here. We don't want to crash third party
-  // applications on invalid experimental options in prod, yet, detecting
-  // an issue early is useful during development.
-  bool experimental_options_success = ParseAndSetExperimentalOptions(
-      context_builder, &session_params, quic_context->params());
-  DCHECK(experimental_options_success);
+  SetContextBuilderExperimentalOptions(context_builder, &session_params,
+                                       quic_context->params());
 
   context_builder->set_http_network_session_params(session_params);
   context_builder->set_quic_context(std::move(quic_context));
@@ -793,7 +852,7 @@ URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() {}
 
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfigBuilder::Build() {
-  return std::make_unique<URLRequestContextConfig>(
+  return URLRequestContextConfig::CreateURLRequestContextConfig(
       enable_quic, quic_user_agent_id, enable_spdy, enable_brotli, http_cache,
       http_cache_max_size, load_disable_cache, storage_path, accept_language,
       user_agent, experimental_options, std::move(mock_cert_verifier),

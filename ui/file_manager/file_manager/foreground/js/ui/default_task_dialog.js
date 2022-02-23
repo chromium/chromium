@@ -88,20 +88,27 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
   renderItem(item) {
     const result = this.document_.createElement('li');
 
-    const div = this.document_.createElement('div');
-    div.textContent = item.label;
+    // Task label.
+    const labelSpan = this.document_.createElement('span');
+    labelSpan.classList.add('label');
+    labelSpan.textContent = item.label;
+
+    // Task file type icon.
+    const iconDiv = this.document_.createElement('div');
+    iconDiv.classList.add('icon');
 
     if (item.iconType) {
-      div.setAttribute('file-type-icon', item.iconType);
+      iconDiv.setAttribute('file-type-icon', item.iconType);
     } else if (item.iconUrl) {
-      div.style.backgroundImage = 'url(' + item.iconUrl + ')';
+      iconDiv.style.backgroundImage = 'url(' + item.iconUrl + ')';
     }
 
     if (item.class) {
-      div.classList.add(item.class);
+      iconDiv.classList.add(item.class);
     }
 
-    result.appendChild(div);
+    result.appendChild(labelSpan);
+    result.appendChild(iconDiv);
     // A11y - make it focusable and readable.
     result.setAttribute('tabindex', '-1');
 

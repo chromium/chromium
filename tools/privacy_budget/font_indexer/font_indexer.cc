@@ -87,7 +87,7 @@ const char kOutputHeader[] =
     "digest\tPostScript name string digest";
 const char kOutputSeparator[] = "\t";
 
-FontIndexer::FontIndexer() : font_cache_(blink::FontCache::GetFontCache()) {}
+FontIndexer::FontIndexer() : font_cache_(&blink::FontCache::Get()) {}
 FontIndexer::~FontIndexer() = default;
 
 void FontIndexer::PrintAllFonts() {
@@ -100,10 +100,10 @@ void FontIndexer::PrintAllFonts() {
 void FontIndexer::FontListHasLoaded(std::unique_ptr<base::ListValue> list) {
   std::cout << kOutputHeader << std::endl;
 
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   for (const auto& i : list_view) {
     DCHECK(i.is_list());
-    base::Value::ConstListView font = i.GetList();
+    base::Value::ConstListView font = i.GetListDeprecated();
 
     std::string non_localized_name = font[0].GetString();
     PrintAllFontsWithName(non_localized_name.c_str());
@@ -121,7 +121,7 @@ bool FontIndexer::DoesFontHaveDigest(WTF::AtomicString name,
       font_cache_->GetFontData(font_description, name);
   DCHECK(font_data);
   return blink::FontGlobalContext::Get()
-             ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+             .GetOrComputeTypefaceDigest(font_data->PlatformData())
              .ToUkmMetricValue() == digest;
 }
 
@@ -175,7 +175,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
         font_cache_->GetFontData(blink::FontDescription(), name);
     default_font_digest =
         font_data ? blink::FontGlobalContext::Get()
-                        ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                        .GetOrComputeTypefaceDigest(font_data->PlatformData())
                         .ToUkmMetricValue()
                   : 0;
   }
@@ -236,7 +236,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
                 font_cache_->GetFontData(font_description, name)) {
           uint64_t typeface_digest =
               blink::FontGlobalContext::Get()
-                  ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                  .GetOrComputeTypefaceDigest(font_data->PlatformData())
                   .ToUkmMetricValue();
           if (set_of_digests.insert(typeface_digest).is_new_entry) {
             WTF::String postscript_name =

@@ -50,6 +50,11 @@ struct DownloadRow {
   // The site URL for the site instance that initiated the download.
   GURL site_url;
 
+  // The serialized proto for embedder-specific data that pertains to the site
+  // instance that initiated the download. The embedder is responsible for
+  // serializing and deserializing this data.
+  std::string embedder_download_data;
+
   // The URL of the tab that initiated the download, if any. Not changed by
   // UpdateDownload().
   GURL tab_url;

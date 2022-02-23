@@ -11,8 +11,10 @@ import time
 import zipfile
 
 from collections import namedtuple
+from devil.android import apk_helper
 from devil.android import logcat_monitor
 from py_utils.tempfile_ext import NamedTemporaryDirectory
+from telemetry.core import util
 from telemetry.testing import serially_executed_browser_test_case
 
 logger = logging.getLogger(__name__)
@@ -83,14 +85,19 @@ class WebViewCrxSmokeTests(
     super(WebViewCrxSmokeTests, cls).SetUpProcess()
     assert cls._finder_options.crx_file, '--crx-file is required'
     assert cls._finder_options.component_name, '--component-name is required'
-    assert cls._finder_options.webview_package_name, (
-        '--webview-package-name is required')
-
 
     cls.SetBrowserOptions(cls._finder_options)
-    cls._device_components_dir = ('/data/data/%s/app_webview/components' %
-                                  cls._finder_options.webview_package_name)
+    webview_package_name = cls._finder_options.webview_package_name
 
+    if not webview_package_name:
+      webview_provider_apk = (cls._browser_to_create
+                              .settings.GetApkName(cls._device))
+      webview_apk_path = util.FindLatestApkOnHost(
+          cls._finder_options.chrome_root, webview_provider_apk)
+      webview_package_name = apk_helper.GetPackageName(webview_apk_path)
+
+    cls._device_components_dir = ('/data/data/%s/app_webview/components' %
+                                  webview_package_name)
     logcat_output_dir = (
         os.path.dirname(cls._typ_runner.args.write_full_results_to or '') or
         os.getcwd())

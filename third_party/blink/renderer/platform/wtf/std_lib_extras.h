@@ -28,8 +28,8 @@
 
 #include <cstddef>
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
@@ -97,11 +97,10 @@ class StaticSingleton final {
   StaticSingleton(const StaticSingleton&) = delete;
   StaticSingleton& operator=(const StaticSingleton&) = delete;
 
-  Type& Get(bool allow_cross_thread_use) {
+  Type& Get([[maybe_unused]] bool allow_cross_thread_use) {
 #if DCHECK_IS_ON()
     DCHECK(IsNotRacy(allow_cross_thread_use));
 #endif
-    ALLOW_UNUSED_LOCAL(allow_cross_thread_use);
     return Wrapper<Type>::Unwrap(instance_.Get());
   }
 

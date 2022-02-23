@@ -56,6 +56,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/animationworklet",
     "//third_party/blink/renderer/modules/app_banner",
     "//third_party/blink/renderer/modules/audio_output_devices",
+    "//third_party/blink/renderer/modules/autofill_assistant",
     "//third_party/blink/renderer/modules/background_fetch",
     "//third_party/blink/renderer/modules/background_sync",
     "//third_party/blink/renderer/modules/badging",
@@ -173,13 +174,14 @@ component("modules") {
     sub_modules += [
       "//third_party/blink/renderer/modules/direct_sockets",
       "//third_party/blink/renderer/modules/serial",
+      "//third_party/blink/renderer/modules/window_controls_overlay",
     ]
   }
 
   deps = [
     ":make_modules_generated",
+    "//components/webrtc:thread_wrapper",
     "//gin",
-    "//jingle:webrtc_glue",
     "//net:net",
     "//third_party/blink/renderer/bindings/modules/v8:generated",
     "//third_party/blink/renderer/core",
@@ -280,9 +282,6 @@ group("make_modules_generated") {
     "//ui/accessibility:ax_enums_mojo_blink_headers",
     "//ui/display/mojom:mojom_blink_headers",
   ]
-  if (is_fuchsia) {
-    public_deps += [ "//media/fuchsia/mojom:mojom_blink_headers" ]
-  }
 }
 
 # generate_event_interfaces ----------------------------------------------------
@@ -427,6 +426,7 @@ source_set("unit_tests") {
     "animationworklet/animation_worklet_global_scope_test.cc",
     "animationworklet/animation_worklet_proxy_client_test.cc",
     "animationworklet/worklet_animation_test.cc",
+    "autofill_assistant/node_signals_test.cc",
     "background_fetch/background_fetch_icon_loader_test.cc",
     "background_fetch/background_fetch_manager_test.cc",
     "cache_storage/cache_test.cc",
@@ -457,15 +457,16 @@ source_set("unit_tests") {
     "manifest/image_resource_type_converters_test.cc",
     "manifest/manifest_manager_unittest.cc",
     "manifest/manifest_parser_unittest.cc",
+    "media/audio/audio_output_ipc_factory_test.cc",
     "media/audio/audio_renderer_mixer_manager_test.cc",
     "media/audio/audio_renderer_sink_cache_test.cc",
     "media/audio/mojo_audio_input_ipc_test.cc",
     "media/audio/mojo_audio_output_ipc_test.cc",
-    "media/audio/web_audio_output_ipc_factory_test.cc",
     "media/webmediaplayer_util_unittest.cc",
     "media_capabilities/media_capabilities_test.cc",
     "media_controls/elements/media_control_animated_arrow_container_element_test.cc",
     "media_controls/elements/media_control_display_cutout_fullscreen_button_element_test.cc",
+    "media_controls/elements/media_control_elements_helper_test.cc",
     "media_controls/elements/media_control_input_element_test.cc",
     "media_controls/elements/media_control_loading_panel_element_test.cc",
     "media_controls/elements/media_control_panel_element_test.cc",
@@ -557,6 +558,7 @@ source_set("unit_tests") {
     "peerconnection/webrtc_media_stream_track_adapter_map_test.cc",
     "peerconnection/webrtc_media_stream_track_adapter_test.cc",
     "peerconnection/webrtc_set_description_observer_test.cc",
+    "peerconnection/webrtc_video_perf_reporter_test.cc",
     "picture_in_picture/picture_in_picture_controller_test.cc",
     "presentation/mock_presentation_service.h",
     "presentation/presentation_availability_state_test.cc",
@@ -570,7 +572,6 @@ source_set("unit_tests") {
     "remoteplayback/remote_playback_test.cc",
     "scheduler/dom_scheduler_test.cc",
     "screen_orientation/screen_orientation_controller_test.cc",
-    "sensor/ambient_light_sensor_test.cc",
     "sensor/sensor_test_utils.cc",
     "sensor/sensor_test_utils.h",
     "service_worker/service_worker_container_test.cc",
@@ -578,6 +579,7 @@ source_set("unit_tests") {
     "service_worker/service_worker_installed_scripts_manager_test.cc",
     "service_worker/thread_safe_script_container_test.cc",
     "service_worker/web_embedded_worker_impl_test.cc",
+    "service_worker/web_service_worker_fetch_context_impl_test.cc",
     "video_rvfc/video_frame_callback_requester_impl_test.cc",
     "video_rvfc/video_frame_request_callback_collection_test.cc",
     "wake_lock/wake_lock_manager_test.cc",
@@ -729,6 +731,25 @@ if (use_libfuzzer) {
     ]
 
     seed_corpus = "webcodecs/fuzzer_seed_corpus/video_frame_copy_to"
+
+    deps = [
+      ":modules",
+      "//third_party/blink/renderer/core:testing",
+      "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+
+  fuzzer_test("webcodecs_audio_data_copy_to_fuzzer") {
+    sources = [
+      "webcodecs/audio_data_copy_to_fuzzer.cc",
+      "webcodecs/fuzzer_utils.cc",
+      "webcodecs/fuzzer_utils.h",
+    ]
+
+    seed_corpus = "webcodecs/fuzzer_seed_corpus/audio_data_copy_to"
 
     deps = [
       ":modules",

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
@@ -20,7 +21,7 @@
 #include "cc/trees/target_property.h"
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -48,7 +49,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   KeyframeEffect& operator=(const KeyframeEffect&) = delete;
 
   // ElementAnimations object where this controller is listed.
-  scoped_refptr<ElementAnimations> element_animations() const {
+  scoped_refptr<const ElementAnimations> element_animations() const {
     return element_animations_;
   }
 
@@ -169,7 +170,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void MarkFinishedKeyframeModels(base::TimeTicks monotonic_time);
 
   bool HasElementInActiveList() const;
-  gfx::Vector2dF ScrollOffsetForAnimation() const;
+  gfx::PointF ScrollOffsetForAnimation() const;
   void GenerateEvent(AnimationEvents* events,
                      const KeyframeModel& keyframe_model,
                      AnimationEvent::Type type,
@@ -179,7 +180,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
       const KeyframeModel& keyframe_model,
       base::TimeTicks monotonic_time);
 
-  Animation* animation_;
+  raw_ptr<Animation> animation_;
 
   ElementId element_id_;
 

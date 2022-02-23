@@ -7,10 +7,16 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
 
 namespace chromeos {
 
@@ -23,6 +29,9 @@ constexpr uint64_t kDircryptoMigrationMaxProgress = 15;
 
 // Template for auth session ID.
 constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
+
+// Guest username constant that mirrors the one in real cryptohome
+constexpr char kGuestUserName[] = "$guest";
 
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeUserDataAuthClient* g_instance = nullptr;
@@ -71,17 +80,34 @@ void FakeUserDataAuthClient::Mount(
     MountCallback callback) {
   ::user_data_auth::CryptohomeErrorCode error = cryptohome_error_;
   last_mount_request_ = request;
+  ++mount_request_count_;
   ::user_data_auth::MountReply reply;
-  reply.set_sanitized_username(GetStubSanitizedUsername(request.account()));
-  if (IsEcryptfsUserHome(request.account()) &&
-      !request.to_migrate_from_ecryptfs() &&
-      request.force_dircrypto_if_available()) {
-    error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
+
+  cryptohome::AccountIdentifier account;
+  if (request.guest_mount()) {
+    account.set_account_id(kGuestUserName);
+    reply.set_sanitized_username(GetStubSanitizedUsername(account));
+  } else {
+    if (request.has_account()) {
+      account = request.account();
+      reply.set_sanitized_username(GetStubSanitizedUsername(account));
+      if (mount_create_required_ && !request.has_create())
+        error = ::user_data_auth::CryptohomeErrorCode::
+            CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
+    } else {
+      auto auth_session = auth_sessions_.find(request.auth_session_id());
+      DCHECK(auth_session != std::end(auth_sessions_));
+      account = auth_session->second.account;
+    }
+
+    reply.set_sanitized_username(GetStubSanitizedUsername(account));
+    if (IsEcryptfsUserHome(account) && !request.to_migrate_from_ecryptfs() &&
+        request.force_dircrypto_if_available()) {
+      error = ::user_data_auth::CryptohomeErrorCode::
+          CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
+    }
   }
-  if (mount_create_required_ && !request.has_create())
-    error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
+
   reply.set_error(error);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
@@ -89,12 +115,6 @@ void FakeUserDataAuthClient::Remove(
     const ::user_data_auth::RemoveRequest& request,
     RemoveCallback callback) {
   ReturnProtobufMethodCallback(::user_data_auth::RemoveReply(),
-                               std::move(callback));
-}
-void FakeUserDataAuthClient::Rename(
-    const ::user_data_auth::RenameRequest& request,
-    RenameCallback callback) {
-  ReturnProtobufMethodCallback(::user_data_auth::RenameReply(),
                                std::move(callback));
 }
 void FakeUserDataAuthClient::GetKeyData(
@@ -245,11 +265,14 @@ void FakeUserDataAuthClient::StartAuthSession(
   ::user_data_auth::StartAuthSessionReply reply;
   reply.set_auth_session_id(auth_session_id);
 
+  reply.set_user_exists(UserExists(request.account_id()));
+
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 void FakeUserDataAuthClient::AuthenticateAuthSession(
     const ::user_data_auth::AuthenticateAuthSessionRequest& request,
     AuthenticateAuthSessionCallback callback) {
+  last_authenticate_auth_session_request_ = request;
   ::user_data_auth::AuthenticateAuthSessionReply reply;
 
   const std::string auth_session_id = request.auth_session_id();
@@ -380,6 +403,30 @@ FakeUserDataAuthClient::FindKey(
 
   // Specific label
   return keys.find(label);
+}
+
+base::FilePath FakeUserDataAuthClient::GetUserProfileDir(
+    const cryptohome::AccountIdentifier& account_id) const {
+  DCHECK(!user_data_dir_.empty());
+  // "u-" below corresponds to chrome::kProfileDirPrefix,
+  // which can not be easily included.
+  std::string user_dir =
+      "u-" + UserDataAuthClient::GetStubSanitizedUsername(account_id);
+  base::FilePath profile_dir = user_data_dir_.Append(user_dir);
+  return profile_dir;
+}
+
+bool FakeUserDataAuthClient::UserExists(
+    const cryptohome::AccountIdentifier& account_id) const {
+  if (existing_users_.find(account_id) != std::end(existing_users_))
+    return true;
+  base::ScopedAllowBlockingForTesting allow_io;
+  return base::PathExists(GetUserProfileDir(account_id));
+}
+
+void FakeUserDataAuthClient::AddExistingUser(
+    const cryptohome::AccountIdentifier& account_id) {
+  existing_users_.insert(account_id);
 }
 
 }  // namespace chromeos

@@ -36,6 +36,34 @@ class WebAuthenticationProxyDetachFunction : public ExtensionFunction {
                              WEB_AUTHENTICATION_PROXY_DETACH)
 };
 
+class WebAuthenticationProxyCompleteCreateRequestFunction
+    : public ExtensionFunction {
+ public:
+  WebAuthenticationProxyCompleteCreateRequestFunction();
+
+ protected:
+  ~WebAuthenticationProxyCompleteCreateRequestFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("webAuthenticationProxy.completeCreateRequest",
+                             WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST)
+};
+
+class WebAuthenticationProxyCompleteGetRequestFunction
+    : public ExtensionFunction {
+ public:
+  WebAuthenticationProxyCompleteGetRequestFunction();
+
+ protected:
+  ~WebAuthenticationProxyCompleteGetRequestFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("webAuthenticationProxy.completeGetRequest",
+                             WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST)
+};
+
 class WebAuthenticationProxyCompleteIsUvpaaRequestFunction
     : public ExtensionFunction {
  public:

@@ -96,7 +96,7 @@
 
 #endif
 
-namespace pa {
+namespace partition_alloc::internal {
 
 // Used for PA_DEBUG_DATA_ON_STACK, below.
 struct alignas(16) DebugKv {
@@ -120,7 +120,8 @@ struct alignas(16) DebugKv {
     v = value;
   }
 };
-}  // namespace pa
+
+}  // namespace partition_alloc::internal
 
 #define PA_CONCAT(x, y) x##y
 #define PA_CONCAT2(x, y) PA_CONCAT(x, y)
@@ -144,8 +145,8 @@ struct alignas(16) DebugKv {
 // With gdb, one can use:
 // x/8g <STACK_POINTER>
 // to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
-#define PA_DEBUG_DATA_ON_STACK(name, value)      \
-  pa::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
-  base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
+#define PA_DEBUG_DATA_ON_STACK(name, value)                               \
+  ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
+  ::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

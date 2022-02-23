@@ -23,10 +23,12 @@ std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
 // have to be used with -[VideoCaptureDeviceAVFoundation setCaptureDevice:].
 base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames();
 
-// Extracts |base_address| and |length| out of a SampleBuffer.
-void ExtractBaseAddressAndLength(char** base_address,
-                                 size_t* length,
-                                 CMSampleBufferRef sample_buffer);
+// Extracts |base_address| and |length| out of a SampleBuffer. Returns true on
+// success and false if we failed to retrieve the information due to OS call
+// error return, or unexpected output parameters.
+[[nodiscard]] bool ExtractBaseAddressAndLength(char** base_address,
+                                               size_t* length,
+                                               CMSampleBufferRef sample_buffer);
 
 gfx::Size CAPTURE_EXPORT GetPixelBufferSize(CVPixelBufferRef pixel_buffer);
 gfx::Size CAPTURE_EXPORT GetSampleBufferSize(CMSampleBufferRef sample_buffer);

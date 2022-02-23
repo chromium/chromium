@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstring>
 #include <map>
 #include <memory>
 #include <string>
@@ -27,6 +28,7 @@
 #include "media/filters/frame_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::Milliseconds;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::StrictMock;
@@ -34,10 +36,19 @@ using ::testing::Values;
 
 namespace {
 
-// Helper to shorten "base::Milliseconds(...)" in these test
-// cases for integer milliseconds.
-constexpr base::TimeDelta Milliseconds(int64_t milliseconds) {
-  return base::Milliseconds(milliseconds);
+// Helpers to encode/decode a base::TimeDelta to/from a string, used in these
+// tests to populate coded frame payloads with an encoded version of the
+// original frame timestamp while (slightly) obfuscating the payload itself to
+// help ensure the payload itself is neither changed by frame processing nor
+// interpreted directly and mistakenly as a base::TimeDelta by frame processing.
+std::string EncodeTestPayload(base::TimeDelta timestamp) {
+  return base::NumberToString(timestamp.InMicroseconds());
+}
+
+base::TimeDelta DecodeTestPayload(std::string payload) {
+  int64_t microseconds = 0;
+  CHECK(base::StringToInt64(payload, &microseconds));
+  return base::Microseconds(microseconds);
 }
 
 }  // namespace
@@ -141,6 +152,27 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
     frame_processor_->SetGroupStartTimestampIfInSequenceMode(timestamp_offset_);
   }
 
+  base::TimeDelta MillisecondStringToTimestamp(std::string ts_string) {
+    if (ts_string == "Min") {
+      return kNoTimestamp;
+    }
+
+    if (ts_string == "Max") {
+      return kInfiniteDuration;
+    }
+
+    // Handle large integers precisely without converting through a double.
+    if (ts_string.find('.') == std::string::npos) {
+      int64_t milliseconds;
+      CHECK(base::StringToInt64(ts_string, &milliseconds));
+      return Milliseconds(milliseconds);
+    }
+
+    double ts_double;
+    CHECK(base::StringToDouble(ts_string, &ts_double));
+    return Milliseconds(ts_double);
+  }
+
   BufferQueue StringToBufferQueue(const std::string& buffers_to_append,
                                   const TrackId track_id,
                                   const DemuxerStream::Type type) {
@@ -163,22 +195,26 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         buffer_timestamps.push_back(buffer_timestamps[0]);
       CHECK_EQ(2u, buffer_timestamps.size());
 
-      double time_in_ms, decode_time_in_ms;
-      CHECK(base::StringToDouble(buffer_timestamps[0], &time_in_ms));
-      CHECK(base::StringToDouble(buffer_timestamps[1], &decode_time_in_ms));
+      const base::TimeDelta pts =
+          MillisecondStringToTimestamp(buffer_timestamps[0]);
+      const DecodeTimestamp dts = DecodeTimestamp::FromPresentationTime(
+          MillisecondStringToTimestamp(buffer_timestamps[1]));
 
-      // Create buffer. Encode the original time_in_ms as the buffer's data to
-      // enable later verification of possible buffer relocation in presentation
+      // Create buffer. Encode the original pts as the buffer's data to enable
+      // later verification of possible buffer relocation in presentation
       // timeline due to coded frame processing.
-      const uint8_t* timestamp_as_data =
-          reinterpret_cast<uint8_t*>(&time_in_ms);
-      scoped_refptr<StreamParserBuffer> buffer =
-          StreamParserBuffer::CopyFrom(timestamp_as_data, sizeof(time_in_ms),
-                                       is_keyframe, type, track_id);
-      buffer->set_timestamp(base::Milliseconds(time_in_ms));
-      if (time_in_ms != decode_time_in_ms) {
-        buffer->SetDecodeTimestamp(DecodeTimestamp::FromPresentationTime(
-            base::Milliseconds(decode_time_in_ms)));
+      const std::string payload_string = EncodeTestPayload(pts);
+      const char* pts_as_cstr = payload_string.c_str();
+      scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
+          reinterpret_cast<const uint8_t*>(pts_as_cstr), strlen(pts_as_cstr),
+          is_keyframe, type, track_id);
+      CHECK(DecodeTestPayload(
+                std::string(reinterpret_cast<const char*>(buffer->data()),
+                            buffer->data_size())) == pts);
+
+      buffer->set_timestamp(pts);
+      if (DecodeTimestamp::FromPresentationTime(pts) != dts) {
+        buffer->SetDecodeTimestamp(dts);
       }
 
       buffer->set_duration(frame_duration_);
@@ -298,9 +334,11 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
 
       // Decode the original_time_in_ms from the buffer's data.
       double original_time_in_ms;
-      ASSERT_EQ(sizeof(original_time_in_ms), last_read_buffer_->data_size());
-      original_time_in_ms = *(reinterpret_cast<const double*>(
-          last_read_buffer_->data()));
+      original_time_in_ms =
+          DecodeTestPayload(std::string(reinterpret_cast<const char*>(
+                                            last_read_buffer_->data()),
+                                        last_read_buffer_->data_size()))
+              .InMillisecondsF();
       if (original_time_in_ms != time_in_ms)
         ss << ":" << original_time_in_ms;
 
@@ -2294,6 +2332,247 @@ TEST_P(FrameProcessorTest, NonkeyframeAudioBuffering_TrimSpliceOverlap) {
   CheckExpectedRangesByTimestamp(audio_.get(), "{ [0,55) }");
   CheckReadsAndKeyframenessThenReadStalls(audio_.get(),
                                           "0K 10N 20N 22N 32K 42N 45K");
+}
+
+TEST_P(FrameProcessorTest, FrameDuration_kNoTimestamp_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  frame_duration_ = kNoTimestamp;
+  EXPECT_MEDIA_LOG(FrameDurationUnknown("audio", 1000));
+  EXPECT_FALSE(ProcessFrames("1K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Pts_BeforeTimestampOffsetApplied_kNoTimestamp_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  EXPECT_MEDIA_LOG(PtsUnknown("audio"));
+  EXPECT_FALSE(ProcessFrames("MinK", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Pts_BeforeTimestampOffsetApplied_kInfiniteDuration_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("Before adjusting by timestampOffset",
+                                       "PTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("MaxK", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_BeforeTimestampOffsetApplied_kNoDecodeTimestamp_UsesPtsIfValid) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // When PTS is valid, but DTS is kNoDecodeTimestamp, then
+  // StreamParserBuffer::GetDecodeTimestamp() just returns the frame's PTS.
+  EXPECT_CALL(callbacks_, PossibleDurationIncrease(Milliseconds(10)));
+  EXPECT_TRUE(ProcessFrames("0|MinK", ""));
+
+  CheckExpectedRangesByTimestamp(audio_.get(), "{ [0,10) }");
+  CheckReadsAndKeyframenessThenReadStalls(audio_.get(), "0K");
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_BeforeTimestampOffsetApplied_kMaxDecodeTimestamp_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("Before adjusting by timestampOffset",
+                                       "DTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("0|MaxK", ""));
+}
+
+TEST_P(FrameProcessorTest, After_Sequence_OffsetUpdate_kNoTimestamp_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // (-Infinity + 5)ms minus 10ms saturates to (-Infinity)ms.
+  SetTimestampOffset(kNoTimestamp + Milliseconds(5));
+  EXPECT_MEDIA_LOG(SequenceOffsetUpdateOutOfRange());
+  EXPECT_FALSE(ProcessFrames("10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       After_Sequence_OffsetUpdate_kInfiniteDuration_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // (+Infinity - 5)ms minus -10ms saturates to (+Infinity)ms.
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(SequenceOffsetUpdateOutOfRange());
+  EXPECT_FALSE(ProcessFrames("-10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Before_Sequence_OffsetUpdate_kInfiniteDuration_Fails) {
+  if (!use_sequence_mode_) {
+    DVLOG(1) << "Skipping segments mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Effectively sets group start timestamp to +Infinity.
+  SetTimestampOffset(kInfiniteDuration);
+  EXPECT_MEDIA_LOG(
+      SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp());
+
+  // That infinite value fails precondition of finite value for group start
+  // timestamp when about to update timestampOffset based upon it.
+  EXPECT_FALSE(ProcessFrames("0K", ""));
+}
+
+TEST_P(FrameProcessorTest, Segments_InfiniteTimestampOffset_Fails) {
+  if (use_sequence_mode_) {
+    DVLOG(1) << "Skipping sequence mode variant; inapplicable to this case.";
+    return;
+  }
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  SetTimestampOffset(kInfiniteDuration);
+  EXPECT_MEDIA_LOG(OffsetOutOfRange());
+  EXPECT_FALSE(ProcessFrames("0K", ""));
+}
+
+TEST_P(FrameProcessorTest, Pts_AfterTimestampOffsetApplied_kNoTimestamp_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_VIDEO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Note, SetTimestampOffset(kNoTimestamp) hits DCHECK. This test instead
+  // checks that the result of offset application to PTS gives parse error if
+  // the result is <= kNoTimestamp. Getting such a result requires different
+  // test logic for segments vs sequence append modes.
+  if (use_sequence_mode_) {
+    // Use an extremely out-of-order DTS/PTS GOP to get the resulting
+    // timestampOffset needed for application to a nonkeyframe PTS (continuous
+    // in DTS time with its GOP's keyframe), resulting with kNoTimestamp PTS.
+    // First, calculate (-kNoTimestamp - 10ms), truncated down to nearest
+    // millisecond, for use as keyframe PTS and DTS.
+    frame_duration_ = Milliseconds(1);
+    base::TimeDelta ts =
+        Milliseconds(((kNoTimestamp + Milliseconds(10)) * -1).InMilliseconds());
+    std::string ts_str = base::NumberToString(ts.InMilliseconds());
+
+    // Append the keyframe and expect success for this step.
+    EXPECT_CALL(callbacks_, PossibleDurationIncrease(frame_duration_));
+    EXPECT_TRUE(ProcessFrames("", ts_str + "|" + ts_str + "K"));
+    EXPECT_EQ(timestamp_offset_.InMicroseconds(), (-1 * ts).InMicroseconds());
+
+    // A nonkeyframe with the same DTS as previous frame does not cause any
+    // discontinuity. Append such a frame, with PTS before offset applied that
+    // saturates to kNoTimestamp when the offset is applied.
+    EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                         "PTS", "video"));
+    EXPECT_FALSE(ProcessFrames("", "-20|" + ts_str));
+  } else {
+    // Set the offset to be just above kNoTimestamp, and append a frame with a
+    // PTS that is negative by at least that small amount. The result should
+    // saturate to kNoTimestamp for PTS.
+    SetTimestampOffset(kNoTimestamp + Milliseconds(1));
+    EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                         "PTS", "video"));
+    EXPECT_FALSE(ProcessFrames("", "-2K"));
+  }
+}
+
+TEST_P(FrameProcessorTest,
+       Pts_AfterTimestampOffsetApplied_kInfiniteDuration_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_VIDEO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Use a video GOP with a nonkeyframe PTS that jumps forward far enough to
+  // saturate to kInfiniteDuration after timestampOffset is applied. Take care
+  // to avoid saturating the (earlier) keyframe's frame_end_timestamp to
+  // kInfiniteDuration, avoiding a different parse error case.
+  // First, calculate (kInfiniteDuration - 2ms), truncated down to nearest
+  // millisecond for use as keyframe PTS (after timestamp offset application).
+  // It's also used for start of DTS sequence.
+  frame_duration_ = Milliseconds(1);
+  base::TimeDelta ts =
+      Milliseconds((kInfiniteDuration - Milliseconds(2)).InMilliseconds());
+
+  // Append the keyframe and expect success for this step.
+  SetTimestampOffset(ts);
+  EXPECT_CALL(callbacks_, PossibleDurationIncrease(ts + frame_duration_));
+  EXPECT_TRUE(ProcessFrames("", "0K"));
+
+  // Sequence mode might adjust the offset. This test's logic should ensure the
+  // offset is the same as in segments mode at this point.
+  EXPECT_EQ(timestamp_offset_.InMicroseconds(), ts.InMicroseconds());
+
+  // A nonkeyframe with same DTS as previous frame does not cause any
+  // discontinuity. Append such a frame, with PTS jumped 3ms forwards such that
+  // it saturates to kInfiniteDuration when offset is applied.
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "PTS", "video"));
+  EXPECT_FALSE(ProcessFrames("", "3|0"));
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_AfterTimestampOffsetApplied_kNoDecodeTimestamp_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  SetTimestampOffset(kNoTimestamp + Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "DTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("0|-10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_AfterTimestampOffsetApplied_kMaxDecodeTimestamp_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "DTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("0|10K", ""));
+}
+
+TEST_P(FrameProcessorTest, FrameEndTimestamp_kInfiniteDuration_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  frame_duration_ = Milliseconds(10);
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameEndTimestampOutOfRange("audio"));
+  EXPECT_FALSE(ProcessFrames("0|0K", ""));
 }
 
 INSTANTIATE_TEST_SUITE_P(SequenceMode, FrameProcessorTest, Values(true));

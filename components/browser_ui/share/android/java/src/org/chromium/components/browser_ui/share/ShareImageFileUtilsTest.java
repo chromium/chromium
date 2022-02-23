@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -19,6 +18,7 @@ import android.os.Environment;
 import android.os.Looper;
 import android.provider.MediaStore;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -38,7 +38,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeoutException;
  * Tests of {@link ShareImageFileUtils}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ShareImageFileUtilsTest extends DummyUiActivityTestCase {
+public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final byte[] TEST_IMAGE_DATA = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     private static final String TEST_IMAGE_FILE_NAME = "chrome-test-bitmap";
@@ -164,7 +164,7 @@ public class ShareImageFileUtilsTest extends DummyUiActivityTestCase {
         waitForAsync();
     }
 
-    @TargetApi(29)
+    @RequiresApi(29)
     private void deleteMediaStoreFiles() {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor =

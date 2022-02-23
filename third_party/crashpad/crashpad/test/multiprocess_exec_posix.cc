@@ -26,11 +26,11 @@
 #include "util/misc/scoped_forbid_return.h"
 #include "util/posix/close_multiple.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <stdio_ext.h>
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "util/mach/task_for_pid.h"
 #endif
 
@@ -90,7 +90,7 @@ void MultiprocessExec::MultiprocessChild() {
 
   int rv;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   __fpurge(stdin);
 #else
   rv = fpurge(stdin);
@@ -154,7 +154,7 @@ void MultiprocessExec::MultiprocessChild() {
 }
 
 ProcessType MultiprocessExec::ChildProcess() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   return TaskForPID(ChildPID());
 #else
   return ChildPID();

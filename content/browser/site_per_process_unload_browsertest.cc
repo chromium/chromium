@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   GURL cross_site_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), cross_site_url));
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 //     |
 //     C3
 // TODO(crbug.com/1012185): Flaky timeouts on Linux and Mac.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_UnloadHandlerSubframes DISABLED_UnloadHandlerSubframes
 #else
 #define MAYBE_UnloadHandlerSubframes UnloadHandlerSubframes
@@ -1324,7 +1324,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The test assumes the previous page gets deleted after navigation. Disable
   // back-forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   GURL A1_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   GURL A3_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1339,10 +1339,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   delete_B1.WaitUntilDeleted();
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// See crbug.com/1275848.
+#define MAYBE_NestedSubframeWithUnloadHandler \
+  DISABLED_NestedSubframeWithUnloadHandler
+#else
+#define MAYBE_NestedSubframeWithUnloadHandler NestedSubframeWithUnloadHandler
+#endif
 // After a same-origin iframe navigation, check that gradchild iframe are
 // properly deleted and their unload handler executed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       NestedSubframeWithUnloadHandler) {
+                       MAYBE_NestedSubframeWithUnloadHandler) {
   GURL main_url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(b,c))");
   GURL iframe_new_url = embedded_test_server()->GetURL("b.com", "/title1.html");

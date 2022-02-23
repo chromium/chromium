@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Needed for defined(OS_WIN)
+// Needed for BUILDFLAG(IS_WIN)
 #include "build/build_config.h"
 
 // Windows headers must come first.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -15,12 +15,12 @@
 
 #include "ui/events/platform/platform_event_source.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/env.h"
 #include "ui/events/event.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/task/current_thread.h"
 #endif
 
@@ -39,7 +39,7 @@ NativeEventObserver::~NativeEventObserver() {
   DeregisterObserver();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void NativeEventObserver::RegisterObserver() {
   aura::Env::GetInstance()->AddWindowEventDispatcherObserver(this);
 }
@@ -61,9 +61,9 @@ void NativeEventObserver::OnWindowEventDispatcherFinishedProcessingEvent(
   did_run_event_callback_.Run(info.unique_id);
   events_being_processed_.pop_back();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void NativeEventObserver::RegisterObserver() {
   base::CurrentUIThread::Get()->AddMessagePumpObserver(this);
 }
@@ -76,12 +76,12 @@ void NativeEventObserver::WillDispatchMSG(const MSG& msg) {
 void NativeEventObserver::DidDispatchMSG(const MSG& msg) {
   did_run_event_callback_.Run(&msg);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 void NativeEventObserver::RegisterObserver() {}
 void NativeEventObserver::DeregisterObserver() {}
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace responsiveness
 }  // namespace content

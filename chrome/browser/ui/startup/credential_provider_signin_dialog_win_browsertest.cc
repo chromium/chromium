@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/window_container_type.mojom-shared.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -52,8 +54,8 @@ class CredentialProviderSigninDialogWinBaseTest : public InProcessBrowserTest {
   content::WebContents* web_contents() { return web_contents_; }
   virtual void WaitForDialogToLoad();
 
-  views::WebDialogView* web_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<views::WebDialogView> web_view_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 CredentialProviderSigninDialogWinBaseTest::
@@ -220,6 +222,23 @@ IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
   EXPECT_EQ(credential_provider::kUiecAbort, exit_code);
   EXPECT_TRUE(result_access_token_.empty());
   EXPECT_TRUE(result_refresh_token_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
+                       ShouldNotCreateWebContents) {
+  ShowSigninDialog(base::CommandLine(base::CommandLine::NoProgram::NO_PROGRAM));
+  WaitForDialogToLoad();
+
+  ASSERT_TRUE(web_view_->IsWebContentsCreationOverridden(
+      nullptr /* source_site_instance */,
+      content::mojom::WindowContainerType::NORMAL /* window_container_type */,
+      GURL() /* opener_url */, "foo" /* frame_name */,
+      GURL::EmptyGURL() /* target_url */));
+
+  web_view_->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,

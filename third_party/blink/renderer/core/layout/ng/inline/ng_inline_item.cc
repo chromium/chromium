@@ -74,7 +74,9 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
                            LayoutObject* layout_object)
     : start_offset_(start),
       end_offset_(end),
-      layout_object_(layout_object),
+      // Use atomic construction to allow for concurrently marking NGInlineItem.
+      layout_object_(layout_object,
+                     Member<LayoutObject>::AtomicInitializerTag{}),
       type_(type),
       text_type_(static_cast<unsigned>(NGTextType::kNormal)),
       style_variant_(static_cast<unsigned>(NGStyleVariant::kStandard)),

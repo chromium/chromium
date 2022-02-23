@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 

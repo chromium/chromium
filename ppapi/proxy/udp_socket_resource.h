@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/proxy/udp_socket_resource_base.h"
 #include "ppapi/thunk/ppb_udp_socket_api.h"

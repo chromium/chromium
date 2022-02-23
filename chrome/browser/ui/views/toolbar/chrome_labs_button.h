@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -49,6 +51,10 @@ class ChromeLabsButton : public ToolbarButton {
     return new_experiments_indicator_->GetVisible();
   }
 
+  ChromeLabsCoordinator* GetChromeLabsCoordinatorForTesting() {
+    return chrome_labs_coordinator_.get();
+  }
+
  private:
   void ButtonPressed();
 
@@ -61,7 +67,7 @@ class ChromeLabsButton : public ToolbarButton {
   std::unique_ptr<base::ElapsedTimer> ash_owner_check_timer_;
 #endif
 
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_waiting_to_show = false;
@@ -69,9 +75,11 @@ class ChromeLabsButton : public ToolbarButton {
   bool should_circumvent_device_check_for_testing_ = false;
 #endif
 
-  const ChromeLabsBubbleViewModel* model_;
+  raw_ptr<const ChromeLabsBubbleViewModel> model_;
 
-  views::DotIndicator* new_experiments_indicator_;
+  raw_ptr<views::DotIndicator> new_experiments_indicator_;
+
+  std::unique_ptr<ChromeLabsCoordinator> chrome_labs_coordinator_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUTTON_H_

@@ -11,8 +11,8 @@
 #include "remoting/base/constants.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -83,8 +83,8 @@ void XmppLogToServer::SendPendingEntries() {
     pending_entries_.pop_front();
   }
   // Send the stanza to the server and ignore the response.
-  iq_sender_->SendIq(jingle_xmpp::STR_SET, directory_bot_jid_,
-                     std::move(stanza), IqSender::ReplyCallback());
+  iq_sender_->SendIq(kIqTypeSet, directory_bot_jid_, std::move(stanza),
+                     IqSender::ReplyCallback());
 }
 
 ServerLogEntry::Mode XmppLogToServer::mode() const {

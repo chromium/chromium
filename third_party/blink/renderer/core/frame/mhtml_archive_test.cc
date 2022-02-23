@@ -364,7 +364,7 @@ TEST_F(MHTMLArchiveTest, MHTMLFromScheme) {
   CheckLoadResult(ToKURL("http://www.example.com"), data.get(),
                   MHTMLLoadResult::kSuccess);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CheckLoadResult(ToKURL("content://foo"), data.get(),
                   MHTMLLoadResult::kSuccess);
 #else

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback_helpers.h"
@@ -21,6 +22,7 @@ namespace ash {
 namespace {
 
 using camera_app::mojom::DocumentOutputFormat;
+using chromeos::machine_learning::mojom::Rotation;
 
 camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
   switch (s) {
@@ -237,6 +239,11 @@ void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
   camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
 }
 
+void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+}
+
 void CameraAppHelperImpl::SetCameraUsageMonitor(
     mojo::PendingRemote<CameraUsageOwnershipMonitor> usage_monitor,
     SetCameraUsageMonitorCallback callback) {
@@ -312,6 +319,7 @@ void CameraAppHelperImpl::ScanDocumentCorners(
 void CameraAppHelperImpl::ConvertToDocument(
     const std::vector<uint8_t>& jpeg_data,
     const std::vector<gfx::PointF>& corners,
+    Rotation rotation,
     DocumentOutputFormat output_format,
     ConvertToDocumentCallback callback) {
   DCHECK(document_scanner_service_);
@@ -334,7 +342,7 @@ void CameraAppHelperImpl::ConvertToDocument(
   // posted to other sequence with weak pointer of |document_scanner_service|.
   // Therefore, it is safe to use |base::Unretained(this)| here.
   document_scanner_service_->DoPostProcessing(
-      std::move(memory.region), corners,
+      std::move(memory.region), corners, rotation,
       base::BindOnce(&CameraAppHelperImpl::OnConvertedToDocument,
                      base::Unretained(this), output_format,
                      std::move(callback)));

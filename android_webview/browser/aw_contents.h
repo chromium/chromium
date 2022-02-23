@@ -24,7 +24,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/js_injection/browser/js_communication_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -313,22 +312,23 @@ class AwContents : public FindHelper::Listener,
   void OnWebLayoutContentsSizeChanged(const gfx::Size& contents_size) override;
 
   // BrowserViewRendererClient implementation.
-  void PostInvalidate() override;
+  void PostInvalidate(bool inside_vsync) override;
   void OnNewPicture() override;
   gfx::Point GetLocationOnScreen() override;
   void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) override;
 
   // |new_value| is in physical pixel scale.
-  void ScrollContainerViewTo(const gfx::Vector2d& new_value) override;
+  void ScrollContainerViewTo(const gfx::Point& new_value) override;
 
-  void UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+  void UpdateScrollState(const gfx::Point& max_scroll_offset,
                          const gfx::SizeF& contents_size_dip,
                          float page_scale_factor,
                          float min_page_scale_factor,
                          float max_page_scale_factor) override;
   void DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                     const gfx::Vector2dF& overscroll_velocity) override;
+                     const gfx::Vector2dF& overscroll_velocity,
+                     bool inside_vsync) override;
   ui::TouchHandleDrawable* CreateDrawable() override;
 
   void ClearCache(JNIEnv* env,
@@ -390,6 +390,7 @@ class AwContents : public FindHelper::Listener,
   // content::WebContentsObserver overrides
   void RenderViewHostChanged(content::RenderViewHost* old_host,
                              content::RenderViewHost* new_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -429,7 +430,7 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   bool view_tree_force_dark_state_ = false;
-  bool scheme_http_or_https_ = false;
+  std::string scheme_;
 
   // GURL is supplied by the content layer as requesting frame.
   // Callback is supplied by the content layer, and is invoked with the result

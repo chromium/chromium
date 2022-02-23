@@ -45,6 +45,7 @@ void FileSystemAccessTabHelper::WebContentsDestroyed() {
 
 FileSystemAccessTabHelper::FileSystemAccessTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<FileSystemAccessTabHelper>(*web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FileSystemAccessTabHelper);

@@ -35,9 +35,9 @@
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -85,7 +85,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/trusted_vault/securebox.h"
@@ -615,7 +615,7 @@ class WebviewLoginTestWithSyncTrustedVaultEnabled : public WebviewLoginTest {
   WebviewLoginTestWithSyncTrustedVaultEnabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
-        ::switches::kSyncTrustedVaultPassphraseRecovery);
+        ::syncer::kSyncTrustedVaultPassphraseRecovery);
   }
 };
 
@@ -711,8 +711,15 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, ErrorScreenOnGaiaError) {
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 
+// Device settings could only change on the owned device.
+class WebviewDeviceOwnedLoginTest : public WebviewLoginTest {
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
 // Create new account option should be available only if the settings allow it.
-IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowNewUser) {
+IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   WaitForGaiaPageLoad();
 
   std::string frame_url = "$('gaia-signin').authenticator_.reloadUrl_";
@@ -1922,7 +1929,8 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   }
 
   void UpdateServedPolicyFromDevicePolicyTestHelper() {
-    local_policy_mixin_.UpdateDevicePolicy(device_policy_builder()->payload());
+    policy_test_server_mixin_.UpdateDevicePolicy(
+        device_policy_builder()->payload());
   }
 
   policy::DevicePolicyBuilder* device_policy_builder() {
@@ -1942,7 +1950,7 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   // A proxy server which requires authentication using the 'Basic'
   // authentication method.
   std::unique_ptr<net::SpawnedTestServer> auth_proxy_server_;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::DevicePolicyBuilder device_policy_builder_;
 
   DeviceStateMixin device_state_{
@@ -2009,9 +2017,9 @@ class WebviewChildLoginTest : public WebviewLoginTest {
   AccountId child_account_id_{
       AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
                                      FakeGaiaMixin::kFakeUserGaiaId)};
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, child_account_id_,
-                                     &local_policy_mixin_};
+                                     &policy_test_server_mixin_};
 };
 
 // Test verfies case when user info message sent before authentication is

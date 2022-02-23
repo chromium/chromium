@@ -23,3 +23,8 @@ void AuthenticationServiceObserverBridge::OnPrimaryAccountRestricted() {
   if ([observer_ respondsToSelector:@selector(onPrimaryAccountRestricted)])
     [observer_ onPrimaryAccountRestricted];
 }
+
+void AuthenticationServiceObserverBridge::OnServiceStatusChanged() {
+  if ([observer_ respondsToSelector:@selector(onServiceStatusChanged)])
+    [observer_ onServiceStatusChanged];
+}

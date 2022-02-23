@@ -14,7 +14,7 @@ from PRESUBMIT_test_mocks import MockFile, MockInputApi
 
 class InvalidOSMacroNamesTest(unittest.TestCase):
   def testChromeDoesNotUseOSAPPLE(self):
-    lines = ['#if defined(OS_APPLE)',
+    lines = ['#if BUILDFLAG(IS_APPLE)',
              '#error OS_APPLE not allowed',
              '#endif']
     errors = PRESUBMIT._CheckNoOSAPPLEMacrosInChromeFile(
@@ -23,7 +23,7 @@ class InvalidOSMacroNamesTest(unittest.TestCase):
     self.assertEqual('    chrome/path/foo_platform.cc:1', errors[0])
 
   def testChromeDoesNotUseOSIOS(self):
-    lines = ['#if defined(OS_IOS)',
+    lines = ['#if BUILDFLAG(IS_IOS)',
              '#error OS_IOS not allowed',
              '#endif']
     errors = PRESUBMIT._CheckNoOSIOSMacrosInChromeFile(

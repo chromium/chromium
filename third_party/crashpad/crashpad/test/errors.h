@@ -67,7 +67,7 @@ std::string ErrnoMessage(int err, const std::string& base = std::string());
 //!     a colon.
 std::string ErrnoMessage(const std::string& base = std::string());
 
-#if defined(OS_WIN) || DOXYGEN
+#if BUILDFLAG(IS_WIN) || DOXYGEN
 //! \brief Formats an error message using `GetLastError()`.
 //!
 //! The returned string will combine the \a base string, if supplied, with a

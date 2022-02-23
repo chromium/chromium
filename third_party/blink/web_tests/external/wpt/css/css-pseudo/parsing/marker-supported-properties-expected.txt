@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 tests; 55 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 62 tests; 59 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -35,6 +35,7 @@ PASS Property animation-iteration-count value 'infinite' in ::marker
 PASS Property animation-name value 'anim' in ::marker
 PASS Property animation-play-state value 'paused' in ::marker
 PASS Property animation-timing-function value 'linear' in ::marker
+FAIL Property animation-composition value 'add' in ::marker assert_true: animation-composition doesn't seem to be supported in the computed style expected true got false
 PASS Property transition value 'display 1s linear 2s' in ::marker
 PASS Property transition-delay value '1s' in ::marker
 PASS Property transition-duration value '2s' in ::marker
@@ -49,10 +50,10 @@ PASS Property text-transform value 'uppercase' in ::marker
 PASS Property word-break value 'break-word' in ::marker
 PASS Property word-spacing value '10px' in ::marker
 PASS Property text-decoration-skip-ink value 'none' in ::marker
-FAIL Property text-emphasis value 'dot rgb(0, 255, 0)' in ::marker assert_true: text-emphasis doesn't seem to be supported in the computed style expected true got false
-FAIL Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker assert_true: text-emphasis-color doesn't seem to be supported in the computed style expected true got false
-FAIL Property text-emphasis-position value 'under left' in ::marker assert_true: text-emphasis-position doesn't seem to be supported in the computed style expected true got false
-FAIL Property text-emphasis-style value 'dot' in ::marker assert_true: text-emphasis-style doesn't seem to be supported in the computed style expected true got false
+PASS Property text-emphasis value 'dot rgb(0, 255, 0)' in ::marker
+PASS Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker
+PASS Property text-emphasis-position value 'under left' in ::marker
+PASS Property text-emphasis-style value 'dot' in ::marker
 PASS Property text-shadow value 'rgb(0, 255, 0) 1px 2px 3px' in ::marker
 PASS Property display value 'none' in ::marker
 PASS Property position value 'absolute' in ::marker

@@ -150,13 +150,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   void Init(NetworkStateHandler* network_state_handler,
             NetworkDeviceHandler* network_device_handler);
 
-  // Called when a configuration completes. This will wait for the cached
-  // state (NetworkStateHandler) to update before triggering the callback.
+  // Called when a configuration completes. This will use
+  // NotifyConfigurationCompleted to defer notifying observers that a
+  // configuration was completed and invoking |callback| until the cached state
+  // (NetworkStateHandler) to update before triggering the callback.
   void ConfigurationCompleted(const std::string& profile_path,
                               const std::string& guid,
                               base::Value configure_properties,
                               network_handler::ServiceResultCallback callback,
                               const dbus::ObjectPath& service_path);
+
+  // Used by ConfigurationCompleted to defer notifying observers and invoking
+  // the provided callback.
+  void NotifyConfigurationCompleted(
+      network_handler::ServiceResultCallback callback,
+      const std::string& service_path,
+      const std::string& guid);
 
   void ConfigurationFailed(network_handler::ErrorCallback error_callback,
                            const std::string& dbus_error_name,

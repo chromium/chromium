@@ -234,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "enhancedNetworkVoices", "dictationCommands" ],
+        "enum": [ "enhancedNetworkVoices", "dictationCommands", "dictationHints" ],
         "description": "Subset of accessibility features."
       },
       {
@@ -242,6 +242,49 @@
         "type": "string",
         "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit", "changeSpeed" ],
         "description": "Actions that can be performed in the Select-to-speak panel."
+      },
+      {
+        "id": "SetNativeChromeVoxResponse",
+        "type": "string",
+        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" ],
+        "description": "Response code for onNativeChromeVoxArcSupportResult"
+      },
+      {
+        "id": "DictationBubbleIconType",
+        "type": "string",
+        "enum": [ "hidden", "standby", "macroSuccess", "macroFail" ],
+        "description": "The icon shown in the Dictation bubble UI."
+      },
+      {
+        "id": "DictationBubbleHintType",
+        "type": "string",
+        "enum": ["trySaying", "type", "delete", "selectAll", "undo", "help", "unselect", "copy"],
+        "description": "Types of hints displayed in the Dictation bubble UI."
+      },
+      {
+        "id": "DictationBubbleProperties",
+        "type": "object",
+        "properties": {
+          "visible": {
+            "type": "boolean",
+            "description": "Whether or not the UI should be visible."
+          },
+          "icon": {
+            "$ref": "DictationBubbleIconType",
+            "description": "The icon to show in the Dictation bubble UI."
+          },
+          "text": {
+            "type": "string",
+            "description": "The text to be displayed in the bubble UI. If `text` is undefined, the bubble will clear its current text.",
+            "optional": true
+          },
+          "hints": {
+            "type": "array",
+            "items": { "$ref": "DictationBubbleHintType" },
+            "description": "Array of hints to show in the UI.",
+            "optional": true
+          }
+        }
       }
     ],
     "properties": {
@@ -423,7 +466,18 @@
             "type": "boolean",
             "description": "True for ChromeVox (native), false for TalkBack."
           }
-        ]
+        ],
+	"returns_async": {
+	  "name": "callback",
+	  "desctiprion": "Callback function.",
+	  "parameters": [
+            {
+	      "name": "response",
+	      "$ref": "SetNativeChromeVoxResponse",
+	      "description": "Return Success if successfully toggled. Return error description otherwise."
+	    }
+	  ]
+	}
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -645,6 +699,18 @@
             }
           ]
         }
+      },
+      {
+        "name": "updateDictationBubble",
+        "type": "function",
+        "description": "Updates Dictation's bubble UI.",
+        "parameters": [
+          {
+            "name": "properties",
+            "$ref": "DictationBubbleProperties",
+            "description": "Properties for the updated Dictation bubble UI."
+          }
+        ]
       }
     ],
     "events": [

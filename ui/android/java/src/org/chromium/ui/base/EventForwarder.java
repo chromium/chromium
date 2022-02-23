@@ -4,7 +4,6 @@
 
 package org.chromium.ui.base;
 
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.os.Build;
@@ -14,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
@@ -307,7 +307,7 @@ public class EventForwarder {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public static int getMouseEventActionButton(MotionEvent event) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return ApiHelperForM.getActionButton(event);
@@ -322,7 +322,7 @@ public class EventForwarder {
      * @param event {@link DragEvent} instance.
      * @param containerView A view on which the drag event is taking place.
      */
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public boolean onDragEvent(DragEvent event, View containerView) {
         if (mNativeEventForwarder == 0 || Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             return false;
@@ -333,9 +333,14 @@ public class EventForwarder {
         // text/* will match text/uri-list, text/html, text/plain.
         String[] mimeTypes =
                 clipDescription == null ? new String[0] : clipDescription.filterMimeTypes("text/*");
+        // mimeTypes is null iff there is no matching text MIME type.
+        // Try if there is any matching image MIME type.
+        if (mimeTypes == null) {
+            mimeTypes = clipDescription.filterMimeTypes("image/*");
+        }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            // TODO(hush): support dragging more than just text.
+            // TODO(crbug.com/1289393): support dragging more than text and image.
             return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
         }
 

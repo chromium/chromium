@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -124,27 +125,7 @@ class ToolbarButton : public views::LabelButton,
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
-  ui::MenuModel* menu_model_for_test() { return model_.get(); }
-
-  // Chooses from |desired_dark_color| and |desired_light_color| based on
-  // whether the toolbar background is dark or light.
-  //
-  // If the resulting color will achieve sufficient contrast,
-  // returns it. Otherwise, blends it towards |dark_extreme| if it's light, or
-  // |dark_extreme| if it's dark until minimum contrast is achieved, and returns
-  // the result.
-  static SkColor AdjustHighlightColorForContrast(
-      const ui::ThemeProvider* theme_provider,
-      SkColor desired_dark_color,
-      SkColor desired_light_color,
-      SkColor dark_extreme,
-      SkColor light_extreme);
-
-  // Returns the default background and border color used for toolbar buttons
-  // (when having a highlight text, see SetHighlight()).
-  static SkColor GetDefaultBackgroundColor(
-      const ui::ThemeProvider* theme_provider);
-  static SkColor GetDefaultBorderColor(views::View* host_view);
+  ui::MenuModel* menu_model() { return model_.get(); }
 
  protected:
   // Returns if menu should be shown. Override this to change default behavior.
@@ -216,7 +197,7 @@ class ToolbarButton : public views::LabelButton,
 
     void ClearHighlightColor();
 
-    ToolbarButton* const parent_;
+    const raw_ptr<ToolbarButton> parent_;
 
     // A highlight color is used to signal special states. When set this color
     // is used as a base for background, text, border and ink drops. When not
@@ -262,7 +243,7 @@ class ToolbarButton : public views::LabelButton,
   // The model that populates the attached menu.
   std::unique_ptr<ui::MenuModel> model_;
 
-  TabStripModel* const tab_strip_model_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 
   // Indicates if menu is currently showing.
   bool menu_showing_ = false;

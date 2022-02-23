@@ -5,15 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
 class ListValue;
-}
-
-namespace whats_new {
-class WhatsNewFetcher;
 }
 
 // Page handler for chrome://whats-new.
@@ -26,19 +21,9 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
 
  private:
   void HandleInitialize(const base::ListValue* args);
-  void OnFetchResult(const std::string& callback_id,
-                     bool is_auto,
-                     bool success,
-                     bool page_not_found,
-                     std::unique_ptr<std::string> body);
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
-
-  std::unique_ptr<whats_new::WhatsNewFetcher> fetcher_;
-  base::WeakPtrFactory<WhatsNewHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_HANDLER_H_

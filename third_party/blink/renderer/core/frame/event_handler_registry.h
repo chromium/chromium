@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"  // TODO(sashab): Remove this.
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 
 namespace blink {

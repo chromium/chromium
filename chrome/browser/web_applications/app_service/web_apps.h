@@ -9,13 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -26,6 +29,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
+
 class Profile;
 
 namespace webapps {
@@ -35,6 +40,7 @@ enum class WebappUninstallSource;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace apps {
 class InstanceRegistry;
+struct AppLaunchParams;
 }
 #endif
 
@@ -72,7 +78,7 @@ class WebApps : public apps::PublisherBase,
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
 
-  apps::mojom::AppType app_type() { return app_type_; }
+  apps::AppType app_type() { return app_type_; }
 
   WebAppPublisherHelper& publisher_helper() { return publisher_helper_; }
 
@@ -86,6 +92,8 @@ class WebApps : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(apps::AppLaunchParams&& params,
+                           apps::LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -113,16 +121,21 @@ class WebApps : public apps::PublisherBase,
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
   // WebAppPublisherHelper::Delegate overrides.
-  void PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) override;
-  void PublishWebApp(apps::mojom::AppPtr mojom_app) override;
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override;
+  void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
 
-  std::vector<std::unique_ptr<apps::App>> CreateWebApps();
+  std::vector<apps::AppPtr> CreateWebApps();
   void ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out);
   void InitWebApps();
   void StartPublishingWebApps(
@@ -146,8 +159,6 @@ class WebApps : public apps::PublisherBase,
                                  int command_id,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
 
   void GetAppShortcutMenuModel(const std::string& app_id,
                                apps::mojom::MenuItemsPtr menu_items,
@@ -162,16 +173,16 @@ class WebApps : public apps::PublisherBase,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  WebAppProvider* const provider_;
+  const raw_ptr<WebAppProvider> provider_;
 
   // app_service_ is owned by the object that owns this object.
-  apps::mojom::AppService* app_service_;
+  raw_ptr<apps::mojom::AppService> app_service_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::InstanceRegistry* const instance_registry_;

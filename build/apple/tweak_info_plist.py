@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -229,6 +229,16 @@ def _RemoveGTMKeys(plist):
   _RemoveKeys(plist, 'GTMUserAgentID', 'GTMUserAgentVersion')
 
 
+def _AddPrivilegedHelperId(plist, privileged_helper_id):
+  plist['SMPrivilegedExecutables'] = {
+      privileged_helper_id: 'identifier ' + privileged_helper_id
+  }
+
+
+def _RemovePrivilegedHelperId(plist):
+  _RemoveKeys(plist, 'SMPrivilegedExecutables')
+
+
 def Main(argv):
   parser = optparse.OptionParser('%prog [options]')
   parser.add_option('--plist',
@@ -306,6 +316,12 @@ def Main(argv):
                     type='string',
                     default=None,
                     help='The version string [major.minor.build.patch]')
+  parser.add_option('--privileged_helper_id',
+                    dest='privileged_helper_id',
+                    action='store',
+                    type='string',
+                    default=None,
+                    help='The id of the privileged helper executable.')
   (options, args) = parser.parse_args(argv)
 
   if len(args) > 0:
@@ -404,6 +420,12 @@ def Main(argv):
     _AddGTMKeys(plist, options.platform)
   else:
     _RemoveGTMKeys(plist)
+
+  # Add SMPrivilegedExecutables keys.
+  if options.privileged_helper_id:
+    _AddPrivilegedHelperId(plist, options.privileged_helper_id)
+  else:
+    _RemovePrivilegedHelperId(plist)
 
   output_path = options.plist_path
   if options.plist_output is not None:

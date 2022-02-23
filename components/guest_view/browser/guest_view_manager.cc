@@ -229,9 +229,10 @@ int GuestViewManager::GetGuestInstanceIDForElementID(int owner_process_id,
 }
 
 SiteInstance* GuestViewManager::GetGuestSiteInstance(
-    const GURL& guest_site) {
+    const content::StoragePartitionConfig& storage_partition_config) {
   for (const auto& guest : guest_web_contents_by_instance_id_) {
-    if (guest.second->GetSiteInstance()->GetSiteURL() == guest_site)
+    if (guest.second->GetSiteInstance()->GetStoragePartitionConfig() ==
+        storage_partition_config)
       return guest.second->GetSiteInstance();
   }
   return nullptr;

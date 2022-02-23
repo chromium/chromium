@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -18,7 +19,7 @@ namespace {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      device_test::mojom::SubmittedFrameDataPtr frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   // The test waits for a submitted frame before returning.
@@ -38,14 +39,14 @@ class MyXRMock : public MockXRDeviceHookBase {
  private:
   // Set to null on background thread after calling Quit(), so we can ensure we
   // only call Quit once.
-  base::RunLoop* wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
 
   int wait_frame_count_ = 0;
   int num_frames_submitted_ = 0;
 };
 
 void MyXRMock::OnFrameSubmitted(
-    device_test::mojom::SubmittedFrameDataPtr frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   num_frames_submitted_++;
   if (num_frames_submitted_ >= wait_frame_count_ && wait_frame_count_ > 0 &&

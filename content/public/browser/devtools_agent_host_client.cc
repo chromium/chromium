@@ -6,6 +6,11 @@
 
 namespace content {
 
+bool DevToolsAgentHostClient::MayAttachToRenderFrameHost(
+    RenderFrameHost* render_frame_host) {
+  return true;
+}
+
 bool DevToolsAgentHostClient::MayAttachToURL(const GURL& url, bool is_webui) {
   return true;
 }
@@ -13,6 +18,10 @@ bool DevToolsAgentHostClient::MayAttachToURL(const GURL& url, bool is_webui) {
 // Defaults to true, restricted clients must override this to false.
 bool DevToolsAgentHostClient::MayAttachToBrowser() {
   return true;
+}
+
+bool DevToolsAgentHostClient::MaySendInputEventsToBrowser() {
+  return MayAttachToBrowser();
 }
 
 // File access is allowed by default, only restricted clients that represent
@@ -33,6 +42,15 @@ bool DevToolsAgentHostClient::UsesBinaryProtocol() {
 // this to true.
 bool DevToolsAgentHostClient::AllowUnsafeOperations() {
   return false;
+}
+
+absl::optional<url::Origin>
+DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
+  return absl::nullopt;
+}
+
+std::string DevToolsAgentHostClient::GetTypeForMetrics() {
+  return "Other";
 }
 
 }  // namespace content

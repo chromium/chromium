@@ -44,6 +44,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
@@ -102,8 +103,6 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
   s->BindInt64(index++, modification_date.ToTimeT());
   s->BindString(index++, profile.origin());
   s->BindString(index++, profile.language_code());
-  s->BindInt64(index++, profile.GetClientValidityBitfieldValue());
-  s->BindBool(index++, profile.is_client_validity_states_updated());
   s->BindString(index++, profile.profile_label());
   s->BindBool(index++, profile.disallow_settings_visible_updates());
 }
@@ -125,8 +124,6 @@ void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
   profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile->set_origin(s.ColumnString(index++));
   profile->set_language_code(s.ColumnString(index++));
-  profile->SetClientValidityFromBitfieldValue(s.ColumnInt64(index++));
-  profile->set_is_client_validity_states_updated(s.ColumnBool(index++));
   profile->set_profile_label(s.ColumnString(index++));
   profile->set_disallow_settings_visible_updates(s.ColumnBool(index++));
 }
@@ -651,11 +648,11 @@ bool AutofillTable::CreateTablesIfNecessary() {
   return (InitMainTable() && InitCreditCardsTable() && InitProfilesTable() &&
           InitProfileAddressesTable() && InitProfileNamesTable() &&
           InitProfileEmailsTable() && InitProfilePhonesTable() &&
-          InitProfileTrashTable() && InitMaskedCreditCardsTable() &&
-          InitUnmaskedCreditCardsTable() && InitServerCardMetadataTable() &&
-          InitServerAddressesTable() && InitServerAddressMetadataTable() &&
-          InitAutofillSyncMetadataTable() && InitModelTypeStateTable() &&
-          InitPaymentsCustomerDataTable() && InitPaymentsUPIVPATable() &&
+          InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
+          InitServerCardMetadataTable() && InitServerAddressesTable() &&
+          InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
+          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
+          InitPaymentsUPIVPATable() &&
           InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
           InitOfferEligibleInstrumentTable() &&
           InitOfferMerchantDomainTable() && InitCreditCardArtImagesTable());
@@ -777,6 +774,12 @@ bool AutofillTable::MigrateToVersion(int version,
     case 98:
       *update_compatible_version = true;
       return MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
+    case 99:
+      *update_compatible_version = true;
+      return MigrateToVersion99RemoveAutofillProfilesTrashTable();
+    case 100:
+      *update_compatible_version = true;
+      return MigrateToVersion100RemoveProfileValidityBitfieldColumn();
   }
   return true;
 }
@@ -1110,17 +1113,13 @@ bool AutofillTable::UpdateAutofillEntries(
 }
 
 bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
-  if (IsAutofillGUIDInTrash(profile.guid()))
-    return true;
-
   sql::Statement s(db_->GetUniqueStatement(
       "INSERT INTO autofill_profiles"
       "(guid, company_name, street_address, dependent_locality, city, state,"
       " zipcode, sorting_code, country_code, use_count, use_date, "
-      " date_modified, origin, language_code, validity_bitfield, "
-      " is_client_validity_states_updated, label, "
-      " disallow_settings_visible_updates) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      " date_modified, origin, language_code, "
+      " label, disallow_settings_visible_updates) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   BindAutofillProfileToStatement(profile, AutofillClock::Now(), &s);
 
   if (!s.Run())
@@ -1131,11 +1130,6 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
 
 bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   DCHECK(base::IsValidGUID(profile.guid()));
-
-  // Don't update anything until the trash has been emptied.  There may be
-  // pending modifications to process.
-  if (!IsAutofillProfilesTrashEmpty())
-    return true;
 
   std::unique_ptr<AutofillProfile> old_profile =
       GetAutofillProfile(profile.guid());
@@ -1149,16 +1143,14 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
       "SET guid=?, company_name=?, street_address=?, dependent_locality=?, "
       "    city=?, state=?, zipcode=?, sorting_code=?, country_code=?, "
       "    use_count=?, use_date=?, date_modified=?, origin=?, "
-      "    language_code=?, validity_bitfield=?, "
-      "    is_client_validity_states_updated=?, "
-      "    label=?, disallow_settings_visible_updates=? "
+      "    language_code=?, label=?, disallow_settings_visible_updates=? "
       "WHERE guid=?"));
   BindAutofillProfileToStatement(profile,
                                  update_modification_date
                                      ? AutofillClock::Now()
                                      : old_profile->modification_date(),
                                  &s);
-  s.BindString(18, profile.guid());
+  s.BindString(16, profile.guid());
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
@@ -1174,17 +1166,6 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
 
 bool AutofillTable::RemoveAutofillProfile(const std::string& guid) {
   DCHECK(base::IsValidGUID(guid));
-
-  if (IsAutofillGUIDInTrash(guid)) {
-    sql::Statement s_trash(db_->GetUniqueStatement(
-        "DELETE FROM autofill_profiles_trash WHERE guid = ?"));
-    s_trash.BindString(0, guid);
-
-    bool success = s_trash.Run();
-    DCHECK_GT(db_->GetLastChangeCount(), 0) << "Expected item in trash";
-    return success;
-  }
-
   sql::Statement s(
       db_->GetUniqueStatement("DELETE FROM autofill_profiles WHERE guid = ?"));
   s.BindString(0, guid);
@@ -1201,8 +1182,7 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   sql::Statement s(db_->GetUniqueStatement(
       "SELECT guid, company_name, street_address, dependent_locality, city,"
       " state, zipcode, sorting_code, country_code, use_count, use_date,"
-      " date_modified, origin, language_code, validity_bitfield,"
-      " is_client_validity_states_updated, label,"
+      " date_modified, origin, language_code, label,"
       " disallow_settings_visible_updates "
       "FROM autofill_profiles "
       "WHERE guid=?"));
@@ -1227,15 +1207,11 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   // The details should be added after the other info to make sure they don't
   // change when we change the names/emails/phones.
   AddAutofillProfileDetailsFromStatement(s, profile.get());
-  bool validation_status = profile->is_client_validity_states_updated();
 
   // The structured address information should be added after the street_address
   // from the query above was  written because this information is used to
   // detect changes by a legacy client.
   AddAutofillProfileAddressesToProfile(db_, profile.get());
-  // Set the validation status again to prevent a change due to the repeated
-  // writing.
-  profile->set_is_client_validity_states_updated(validation_status);
 
   // For more-structured profiles, the profile must be finalized to fully
   // populate the name fields.
@@ -3526,6 +3502,51 @@ bool AutofillTable::MigrateToVersion98RemoveStatusColumnMaskedCreditCards() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion99RemoveAutofillProfilesTrashTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         db_->Execute("DROP TABLE autofill_profiles_trash") &&
+         transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion100RemoveProfileValidityBitfieldColumn() {
+  // Sqlite does not support "alter table drop column" syntax, so it has be done
+  // manually.
+  sql::Transaction transaction(db_);
+
+  return transaction.Begin() &&
+         db_->Execute(
+             "CREATE TABLE autofill_profiles_tmp ( "
+             "guid VARCHAR PRIMARY KEY, "
+             "company_name VARCHAR, "
+             "street_address VARCHAR, "
+             "dependent_locality VARCHAR, "
+             "city VARCHAR, "
+             "state VARCHAR, "
+             "zipcode VARCHAR, "
+             "sorting_code VARCHAR, "
+             "country_code VARCHAR, "
+             "date_modified INTEGER NOT NULL DEFAULT 0, "
+             "origin VARCHAR DEFAULT '', "
+             "language_code VARCHAR, "
+             "use_count INTEGER NOT NULL DEFAULT 0, "
+             "use_date INTEGER NOT NULL DEFAULT 0, "
+             "label VARCHAR, "
+             "disallow_settings_visible_updates INTEGER NOT NULL DEFAULT 0)") &&
+         db_->Execute(
+             "INSERT INTO autofill_profiles_tmp "
+             "SELECT guid, company_name, street_address, dependent_locality, "
+             "city, state, zipcode, sorting_code, country_code, date_modified, "
+             "origin, language_code, use_count, use_date, label, "
+             "disallow_settings_visible_updates "
+             " FROM autofill_profiles") &&
+         db_->Execute("DROP TABLE autofill_profiles") &&
+         db_->Execute(
+             "ALTER TABLE autofill_profiles_tmp "
+             "RENAME TO autofill_profiles") &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3666,21 +3687,6 @@ bool AutofillTable::InsertAutofillEntry(const AutofillEntry& entry) {
   return s.Run();
 }
 
-bool AutofillTable::IsAutofillProfilesTrashEmpty() {
-  sql::Statement s(
-      db_->GetUniqueStatement("SELECT guid FROM autofill_profiles_trash"));
-
-  return !s.Step();
-}
-
-bool AutofillTable::IsAutofillGUIDInTrash(const std::string& guid) {
-  sql::Statement s(db_->GetUniqueStatement(
-      "SELECT guid FROM autofill_profiles_trash WHERE guid = ?"));
-  s.BindString(0, guid);
-
-  return s.Step();
-}
-
 void AutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db_->transaction_nesting(), 0);
@@ -3818,9 +3824,6 @@ bool AutofillTable::InitProfilesTable() {
             "language_code VARCHAR, "
             "use_count INTEGER NOT NULL DEFAULT 0, "
             "use_date INTEGER NOT NULL DEFAULT 0, "
-            "validity_bitfield UNSIGNED NOT NULL DEFAULT 0, "
-            "is_client_validity_states_updated BOOL NOT NULL DEFAULT "
-            "FALSE, "
             "label VARCHAR, "
             "disallow_settings_visible_updates INTEGER NOT NULL DEFAULT 0)")) {
       NOTREACHED();
@@ -3920,17 +3923,6 @@ bool AutofillTable::InitProfilePhonesTable() {
     if (!db_->Execute("CREATE TABLE autofill_profile_phones ( "
                       "guid VARCHAR, "
                       "number VARCHAR)")) {
-      NOTREACHED();
-      return false;
-    }
-  }
-  return true;
-}
-
-bool AutofillTable::InitProfileTrashTable() {
-  if (!db_->DoesTableExist("autofill_profiles_trash")) {
-    if (!db_->Execute("CREATE TABLE autofill_profiles_trash ( "
-                      "guid VARCHAR)")) {
       NOTREACHED();
       return false;
     }

@@ -13,25 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
-import {deepQuerySelector, dispatchMouseEvent, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
-
-const ACTIVE_CLASS = 'emoji-group-active';
-
-/**
- * Checks if the given emoji-group-button element is activated.
- * @param {?Element} element element to check.
- * @return {boolean} true if active, false otherwise.
- */
-function isGroupButtonActive(element) {
-  assert(element, 'group button element should not be null');
-  return element.classList.contains(ACTIVE_CLASS);
-}
-
-function assertCloseTo(actual, expected) {
-  assertTrue(
-      Math.abs(1 - actual / expected) <= 0.001,
-      `expected ${expected} to be close to ${actual}`);
-}
+import {assertCloseTo, deepQuerySelector, dispatchMouseEvent, isGroupButtonActive, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
 
 suite('<emoji-picker>', () => {
@@ -47,7 +29,7 @@ suite('<emoji-picker>', () => {
 
     emojiPicker =
         /** @type {!EmojiPicker} */ (document.createElement('emoji-picker'));
-    emojiPicker.emojiDataUrl = '/emoji_test_ordering.json';
+    emojiPicker.emojiDataUrl = '/emoji_test_ordering';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
 
@@ -161,9 +143,10 @@ suite('<emoji-picker>', () => {
                 'button'));
 
         // check text is correct.
-        const recentText = recentlyUsed.innerText;
-        await navigator.clipboard.readText().then(
-            text => assertEquals(String.fromCodePoint(128512), text));
+        await (waitForCondition(async () => {
+          const clipboardtext = await navigator.clipboard.readText();
+          return clipboardtext === String.fromCodePoint(128512);
+        }));
       });
 
   test('recently-used should have variants for variant emoji', async () => {

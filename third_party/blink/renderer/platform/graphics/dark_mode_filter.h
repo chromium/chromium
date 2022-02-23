@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -30,10 +30,7 @@ class PLATFORM_EXPORT DarkModeFilter {
   explicit DarkModeFilter(const DarkModeSettings& settings);
   ~DarkModeFilter();
 
-  // TODO(gilmanmh): Add a role for shadows. In general, we don't want to
-  // invert shadows, but we may need to do some other kind of processing for
-  // them.
-  enum class ElementRole { kText, kListSymbol, kBackground, kSVG };
+  enum class ElementRole { kForeground, kListSymbol, kBackground, kSVG };
 
   DarkModeImagePolicy GetDarkModeImagePolicy() const;
 

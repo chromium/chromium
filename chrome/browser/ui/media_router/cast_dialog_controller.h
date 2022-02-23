@@ -11,13 +11,14 @@
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 
-namespace ui {
-struct SelectedFileInfo;
-}  // namespace ui
+namespace content {
+class WebContents;
+}
 
 namespace media_router {
 
 class CastDialogModel;
+class StartPresentationContext;
 
 // Controller component of the Cast dialog. Responsible for handling user input,
 // updating the CastDialogModel, and notifying CastDialogView of updates.
@@ -49,13 +50,19 @@ class CastDialogController {
   // is invalid.
   virtual void StopCasting(const MediaRoute::Id& route_id) = 0;
 
-  // Prompts the user to select a local file to cast. The callback is called
-  // with the info for the selected file, or nullptr if the user declined.
-  virtual void ChooseLocalFile(
-      base::OnceCallback<void(const ui::SelectedFileInfo*)> callback) = 0;
-
   // Removes the specified issue. No-op if the ID is invalid.
   virtual void ClearIssue(const Issue::Id& issue_id) = 0;
+
+  // Gets the tab contents (if any) that was used to initiate this dialog box.
+  virtual content::WebContents* GetInitiator() = 0;
+
+  // Returns the StartPresentationContext that this dialog was going to use for
+  // presentation mode. The dialog box is relinquishing ownership of the context
+  // and so will not start a presentation mode after this point. It's intended
+  // this API should only be used to transfer ownership to some new component
+  // that will want to start a presentation mode route.
+  virtual std::unique_ptr<StartPresentationContext>
+  TakeStartPresentationContext() = 0;
 };
 
 }  // namespace media_router

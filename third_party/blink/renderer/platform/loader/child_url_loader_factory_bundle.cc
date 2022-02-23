@@ -72,8 +72,9 @@ class URLLoaderRelay : public network::mojom::URLLoaderClient,
     client_sink_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    client_sink_->OnReceiveResponse(std::move(head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    client_sink_->OnReceiveResponse(std::move(head), std::move(body));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -199,7 +200,8 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
 
     mojo::Remote<network::mojom::URLLoaderClient> client_remote(
         std::move(client));
-    client_remote->OnReceiveResponse(std::move(transferrable_loader->head));
+    client_remote->OnReceiveResponse(std::move(transferrable_loader->head),
+                                     std::move(transferrable_loader->body));
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<URLLoaderRelay>(
             std::move(transferrable_loader->url_loader),

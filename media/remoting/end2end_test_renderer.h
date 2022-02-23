@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
@@ -66,7 +67,7 @@ class End2EndTestRenderer final : public Renderer {
 
   void InitializeReceiverRenderer(PipelineStatus status);
   void OnCourierRendererInitialized(PipelineStatus status);
-  void OnReceiverInitalized(PipelineStatus status);
+  void OnReceiverInitialized(PipelineStatus status);
   void CompleteInitialize();
 
   // Callback function when RPC message is received.
@@ -85,10 +86,10 @@ class End2EndTestRenderer final : public Renderer {
 
   // Receiver components.
   std::unique_ptr<TestRemotee> media_remotee_;
-  ReceiverController* receiver_controller_;
+  raw_ptr<ReceiverController> receiver_controller_;
   std::unique_ptr<Receiver> receiver_;
   std::unique_ptr<StreamProvider> stream_provider_;
-  openscreen::cast::RpcMessenger* receiver_rpc_messenger_;
+  raw_ptr<openscreen::cast::RpcMessenger> receiver_rpc_messenger_;
 
   // Handle of |receiver_|
   int receiver_renderer_handle_ =

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 using ::testing::_;
@@ -88,12 +90,12 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   std::unique_ptr<LoadingPredictor> loading_predictor_;
   // Owned by |loading_predictor_|.
-  StrictMock<MockLoadingDataCollector>* mock_collector_;
+  raw_ptr<StrictMock<MockLoadingDataCollector>> mock_collector_;
   // Owned elsewhere.
-  NiceMock<MockOptimizationGuideKeyedService>*
+  raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_;
   // Owned by |web_contents()|.
-  LoadingPredictorTabHelper* tab_helper_;
+  raw_ptr<LoadingPredictorTabHelper> tab_helper_;
 };
 
 void LoadingPredictorTabHelperTest::SetUp() {
@@ -264,7 +266,7 @@ TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 // Tests that a resource load is correctly recorded.
@@ -342,7 +344,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
   // Trigger onLoad to get rid of previous prediction.
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   base::HistogramTester histogram_tester;
 
@@ -363,7 +365,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       null_optimization_guide_prediction;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
                                     _, null_optimization_guide_prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectTotalCount(
       "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
@@ -409,7 +411,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
@@ -463,7 +465,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Optimization guide predictions came after commit.
   histogram_tester.ExpectUniqueSample(
@@ -522,7 +524,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
@@ -552,7 +554,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should not be recorded since prediction did not come back.
   histogram_tester.ExpectTotalCount(
@@ -596,7 +598,7 @@ TEST_F(
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Invoke callback after document completed in main frame..
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
@@ -638,7 +640,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should still be recorded even though no predictions were
   // returned.
@@ -681,7 +683,7 @@ TEST_F(
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_,
               RecordMainFrameLoadComplete(_, optimization_guide_prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should still be recorded even though no predictions were
   // returned.
@@ -761,7 +763,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),
       GURL("http://other.org/resource3"), GURL("http://preconnectonly.com/")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
@@ -819,7 +821,7 @@ class LoadingPredictorTabHelperTestCollectorTest
   void SetUp() override;
 
  protected:
-  TestLoadingDataCollector* test_collector_;
+  raw_ptr<TestLoadingDataCollector> test_collector_;
 };
 
 void LoadingPredictorTabHelperTestCollectorTest::SetUp() {
@@ -859,6 +861,47 @@ TEST_F(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
   tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
                                     *resource_load_info);
   EXPECT_EQ(2u, test_collector_->count_resource_loads_completed());
+}
+
+class LoadingPredictorTabHelperTestCollectorFencedFramesTest
+    : public LoadingPredictorTabHelperTestCollectorTest {
+ public:
+  LoadingPredictorTabHelperTestCollectorFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~LoadingPredictorTabHelperTestCollectorFencedFramesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LoadingPredictorTabHelperTestCollectorFencedFramesTest,
+       DoNotRecordResourceLoadComplete) {
+  NavigateAndCommitInFrame("http://test.org", main_rfh());
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  // Navigate a fenced frame.
+  GURL fenced_frame_url = GURL("https://fencedframe.com");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
+                                                         fenced_frame_root);
+  navigation_simulator->Commit();
+
+  EXPECT_EQ(0u, test_collector_->count_resource_loads_completed());
+
+  // Load a sub resource on the main frame and record it.
+  auto resource_load_info = CreateResourceLoadInfo(
+      "http://test.org/script.js", network::mojom::RequestDestination::kScript);
+  tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
+                                    *resource_load_info);
+  EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
+
+  // Load a sub resource on the fenced frame and do not record it.
+  tab_helper_->ResourceLoadComplete(
+      fenced_frame_root, content::GlobalRequestID(), *resource_load_info);
+  EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
 }
 
 }  // namespace predictors

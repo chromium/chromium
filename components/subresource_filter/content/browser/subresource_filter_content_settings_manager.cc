@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -27,7 +28,7 @@ const char kActivatedKey[] = "Activated";
 const char kNonRenewingExpiryTime[] = "NonRenewingExpiryTime";
 
 bool ShouldUseSmartUI() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -140,8 +141,9 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
 std::unique_ptr<base::DictionaryValue>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
-  return base::DictionaryValue::From(settings_map_->GetWebsiteSetting(
-      url, GURL(), ContentSettingsType::ADS_DATA, nullptr));
+  return base::DictionaryValue::From(content_settings::ToNullableUniquePtrValue(
+      settings_map_->GetWebsiteSetting(
+          url, GURL(), ContentSettingsType::ADS_DATA, nullptr)));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
@@ -161,7 +163,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   // intervention metadata and should not override the expiry time that
   // was previously set.
   base::Time expiry_time = base::Time::Now() + kMaxPersistMetadataDuration;
-  if (dict && dict->HasKey(kNonRenewingExpiryTime)) {
+  if (dict && dict->FindKey(kNonRenewingExpiryTime)) {
     absl::optional<double> metadata_expiry_time =
         dict->FindDoubleKey(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
@@ -170,7 +172,9 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
 
   content_settings::ContentSettingConstraints constraints = {expiry_time};
   settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::ADS_DATA, std::move(dict), constraints);
+      url, GURL(), ContentSettingsType::ADS_DATA,
+      content_settings::FromNullableUniquePtrValue(std::move(dict)),
+      constraints);
 }
 
 std::unique_ptr<base::DictionaryValue>

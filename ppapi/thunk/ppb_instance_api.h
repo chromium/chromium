@@ -140,7 +140,7 @@ class PPB_Instance_API {
   // Testing and URLUtil.
   virtual PP_Var GetDocumentURL(PP_Instance instance,
                                 PP_URLComponents_Dev* components) = 0;
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // URLUtil.
   virtual PP_Var ResolveRelativeToDocument(
       PP_Instance instance,
@@ -153,7 +153,7 @@ class PPB_Instance_API {
                                       PP_URLComponents_Dev* components) = 0;
   virtual PP_Var GetPluginReferrerURL(PP_Instance instance,
                                       PP_URLComponents_Dev* components) = 0;
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   static const ApiID kApiID = API_ID_PPB_INSTANCE;
 };

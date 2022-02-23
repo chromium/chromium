@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_COPY_TEXTURE_CHROMIUM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_COPY_TEXTURE_CHROMIUM_H_
 
-#include "base/macros.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/gpu_gles2_export.h"
@@ -75,7 +74,6 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) = 0;
 
@@ -102,7 +100,6 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) = 0;
 

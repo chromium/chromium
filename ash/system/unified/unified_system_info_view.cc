@@ -19,6 +19,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/supervised/supervised_icon_string.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
@@ -32,9 +33,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
@@ -76,6 +74,9 @@ class DateView : public views::Button, public ClockObserver {
   void OnThemeChanged() override;
 
  private:
+  // Callback called when this is pressed.
+  void OnButtonPressed(const ui::Event& event);
+
   void Update();
 
   // views::Button:
@@ -87,17 +88,19 @@ class DateView : public views::Button, public ClockObserver {
   void OnSystemClockCanSetTimeChanged(bool can_set_time) override;
   void Refresh() override;
 
+  // Owned by the views hierarchy.
   views::Label* label_;
+
+  // Unowned.
+  UnifiedSystemTrayController* const controller_;
 };
 
 DateView::DateView(UnifiedSystemTrayController* controller)
-    : Button(base::BindRepeating(
-          features::IsCalendarViewEnabled()
-              ? &UnifiedSystemTrayController::ShowCalendarView
-              : &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
-          base::Unretained(controller))) {
+    : Button(base::BindRepeating(&DateView::OnButtonPressed,
+                                 base::Unretained(this))),
+      label_(AddChildView(std::make_unique<views::Label>())),
+      controller_(controller) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
   Update();
@@ -121,11 +124,28 @@ void DateView::OnThemeChanged() {
       AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
+void DateView::OnButtonPressed(const ui::Event& event) {
+  if (features::IsCalendarViewEnabled() && controller_->IsExpanded()) {
+    controller_->ShowCalendarView(
+        calendar_metrics::CalendarViewShowSource::kDateView,
+        calendar_metrics::GetEventType(event));
+    return;
+  }
+
+  controller_->HandleOpenDateTimeSettingsAction();
+}
+
 void DateView::Update() {
   base::Time now = base::Time::Now();
   label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_DATE, FormatDayOfWeek(now), FormatDate(now)));
-  SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
+  if (features::IsCalendarViewEnabled()) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_CALENDAR_ENTRY_ACCESSIBLE_DESCRIPTION,
+        TimeFormatFriendlyDateAndTime(now)));
+  } else {
+    SetAccessibleName(TimeFormatFriendlyDateAndTime(now));
+  }
   label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
   NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }

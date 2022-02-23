@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonisht</translation>
 <translation id="1168100932582989117">Serverët e emrave të Google</translation>
+<translation id="1171082344678443012">Arkivë e ngjeshur XZ</translation>
 <translation id="1172970565351728681">Koha e mbetur: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Riemërto</translation>
 <translation id="1173916544412572294">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Kjo dosje është ndarë me Linux</translation>
 <translation id="1864756863218646478">Ky skedar nuk mund të gjendej.</translation>
 <translation id="1884013283844450420">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, lidhu</translation>
+<translation id="1914901738028575085">Pajisja me CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malajalamisht me transliterim</translation>
 <translation id="1920798810075583923">Shalqi</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> u formatua</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
 <translation id="2028997212275086731">Arkiv RAR</translation>
+<translation id="2036414735548252477">Arkivë e ngjeshur LZMA</translation>
 <translation id="2037845485764049925">Rusisht</translation>
 <translation id="2044023416777079300">Modemi nuk është regjistruar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">Ndaje me <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Pajisjet Chromebit</translation>
 <translation id="3085752524577180175">Strehuesi i protokollit SOCKS</translation>
+<translation id="3104793765551262433">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="3113153474486991170">"<ph name="PATH" />" nuk mund të hapej nga kjo vendndodhje. Kopjoje te "Skedarët e mi" për ta hapur.</translation>
 <translation id="3113592018909187986">Ke 1 përpjekje të mbetur. Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN.</translation>
 <translation id="3124404833828281817">Person duke ëndërruar me sy hapur</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">Anglisht (SHBA) me tastierën ndërkombëtare për PC</translation>
 <translation id="3567221313191587603">Zgjidh një skedar dhe aktivizo <ph name="OFFLINE_CHECKBOX_NAME" /> për qasje jashtë linje te skedarët e tu.</translation>
 <translation id="357479282490346887">Lituanisht</translation>
+<translation id="3587482841069643663">Të gjitha</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> nuk mund të ofrohej jashtë linje</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Frëngjishte kanadeze</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Të gjitha u rezervuan!</translation>
 <translation id="3634507049637220048">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, menaxhuar nga administratori yt, detaje</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> artikuj janë zhvendosur.</translation>
-<translation id="3645531960514756307">Zhgozhdo dosjen</translation>
 <translation id="3685122418104378273">Sinkronizimi i "Diskut të Google" është çaktivizuar si parazgjedhje kur përdor të dhënat celulare.</translation>
 <translation id="3689865792480713551">Anuloje <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, i paaktivizuar, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detajet</translation>
 <translation id="3691184985318546178">Sinhala</translation>
 <translation id="3726463242007121105">Kjo pajisje nuk mund të hapet sepse sistemi i saj i skedarëve nuk mbështetet.</translation>
 <translation id="3727148787322499904">Ndryshimi i këtij cilësimi do të ndikojë në të gjitha rrjetet e ndara</translation>
+<translation id="3737576078404241332">Hiq nga shiriti anësor</translation>
 <translation id="3741243925913727067">Rezervo fotografitë dhe videot e pajisjes media te "Disku i Google".</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
 <translation id="3780536599611287598">Nuk ke autorizim për t'i lëvizur skedarët në "<ph name="FOLDER_NAME" />".</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Kafeja</translation>
 <translation id="4336032328163998280">Veprimi i kopjimit dështoi. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Shto në shiritin anësor</translation>
 <translation id="4348495354623233847">Kurdishte sorani me tastierë arabe</translation>
 <translation id="4363958938297989186">Rusisht me tastierë fonetike</translation>
 <translation id="4364327530094270451">Pjepër</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bajtë</translation>
 <translation id="4880214202172289027">Rrëshqitësi i volumit</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="4886199584824489598">Arkivë e ngjeshur bzip2</translation>
 <translation id="4900532980794411603">Ndaj me Parallels Desktop</translation>
 <translation id="4902546322522096650">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4905417359854579806">Gati për të rezervuar <ph name="FILE_COUNT" /></translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013">Rrjeti <ph name="NETWORK_TYPE" />, nuk është lidhur</translation>
 <translation id="6074825444536523002">Formulari i Google</translation>
 <translation id="6079871810119356840">Hungarisht me tastierë Qwerty</translation>
+<translation id="6082256976217156453">Arkivë e ngjeshur LZMA</translation>
 <translation id="6096979789310008754">Teksti i kërkimit u fshi, duke treguar të gjithë skedarët dhe dosjet.</translation>
 <translation id="610101264611565198">Po zhvendos <ph name="FILE_NAME" /> në <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Hapësirë</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">Përmbys</translation>
 <translation id="6943836128787782965">Marrja e HTTP-së dështoi</translation>
 <translation id="6949408524333579394">Serbisht me transliterim</translation>
+<translation id="6954309393500027528">Ngjitja e këtij skedari është bllokuar nga administratori yt</translation>
 <translation id="6960565108681981554">Nuk është aktivizuar. Kontakto me operatorin celular.</translation>
 <translation id="696203921837389374">Aktivizo sinkronizimin nëpërmjet të dhënave celulare</translation>
 <translation id="6965382102122355670">Në rregull</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">Kompleti 3 Hangul (pa zhvendosje)</translation>
 <translation id="8299269255470343364">Japonisht</translation>
 <translation id="8300849813060516376">OTASP dështoi</translation>
+<translation id="8308481408797647857">Arkivë e ngjeshur tar XZ</translation>
 <translation id="8312871300878166382">Ngjite në dosje</translation>
 <translation id="8329978297633540474">Tekst i thjeshtë</translation>
 <translation id="8335587457941836791">Zhgozhdo nga rafti</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">Letonisht</translation>
 <translation id="8560515948038859357">Kantonisht</translation>
 <translation id="8561206103590473338">Elefant</translation>
+<translation id="8566466896628108558">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bllokuar nga administratori yt, detajet</translation>
 <translation id="8569764466147087991">Zgjidh një skedar për ta hapur</translation>
 <translation id="8577897833047451336">Kroatisht</translation>
 <translation id="8578308463707544055">Indonezisht</translation>
@@ -891,6 +902,7 @@
 <translation id="8714406895390098252">Biçikleta</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
 <translation id="872537912056138402">Kroatisht</translation>
+<translation id="873847021056608403">Pajisjet me CloudReady 2.0</translation>
 <translation id="8743164338060742337">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
 <translation id="8750438273876807512">Prek dhe mbaj të shtypur një skedar, trokit te <ph name="ICON" /> dhe zgjidh "Gozhdo te rafti" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="8787254343425541995">Lejo përfaqësues për rrjete të ndara</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">Ne kërkojmë vazhdimisht mënyra për ta bërë shfletimin tënd më të sigurt. Më parë, çdo uebsajt mund të të kërkonte të shtoje një shtesë në shfletues. Në versioniet e fundit të Google Chrome, duhet t'i tregosh ti vetë posaçërisht Chrome se dëshiron t'i instalosh këto shtesa duke i shtuar ato përmes faqes "Shtesat". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="912419004897138677">Kodeku</translation>
-<translation id="9129931661813833980">Gozhdo dosjen</translation>
 <translation id="9130775360844693113">Anëtarët e "<ph name="DESTINATION_NAME" />" do të fitojnë qasje te këta artikuj.</translation>
 <translation id="9131598836763251128">Zgjidh një ose më shumë skedarë</translation>
 <translation id="9133055936679483811">Ngjeshja dështoi. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">Modifikuar nga</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Arkivë e ngjeshur gzip</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>

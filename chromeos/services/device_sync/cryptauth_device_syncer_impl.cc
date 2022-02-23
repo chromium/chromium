@@ -312,7 +312,7 @@ void CryptAuthDeviceSyncerImpl::OnSyncMetadataFinished(
   switch (CryptAuthDeviceSyncResult::GetResultType(device_sync_result_code)) {
     case CryptAuthDeviceSyncResult::ResultType::kNonFatalError:
       did_non_fatal_error_occur_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthDeviceSyncResult::ResultType::kSuccess:
       // At a minimum, the local device metadata should be returned if no fatal
       // error occurred.
@@ -388,7 +388,7 @@ void CryptAuthDeviceSyncerImpl::OnGetFeatureStatusesFinished(
   switch (CryptAuthDeviceSyncResult::GetResultType(device_sync_result_code)) {
     case CryptAuthDeviceSyncResult::ResultType::kNonFatalError:
       did_non_fatal_error_occur_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthDeviceSyncResult::ResultType::kSuccess:
       // We require that the local device feature statuses are returned; the
       // local device is needed in the registry.
@@ -697,7 +697,7 @@ void CryptAuthDeviceSyncerImpl::OnShareGroupPrivateKeyFinished(
   switch (CryptAuthDeviceSyncResult::GetResultType(device_sync_result_code)) {
     case CryptAuthDeviceSyncResult::ResultType::kNonFatalError:
       did_non_fatal_error_occur_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthDeviceSyncResult::ResultType::kSuccess:
       AttemptNextStep();
       return;

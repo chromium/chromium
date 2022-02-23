@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -17,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -64,28 +66,8 @@ class FontAccessManagerSync {
     return result;
   }
 
-  std::pair<FontEnumerationStatus, std::vector<blink::mojom::FontMetadataPtr>>
-  ChooseLocalFonts(const std::vector<std::string>& selection) {
-    std::pair<FontEnumerationStatus, std::vector<blink::mojom::FontMetadataPtr>>
-        result;
-
-    base::RunLoop run_loop;
-    manager_->ChooseLocalFonts(
-        selection,
-        base::BindLambdaForTesting(
-            [&](FontEnumerationStatus status,
-                std::vector<blink::mojom::FontMetadataPtr> font_metadata) {
-              result.first = status;
-              result.second = std::move(font_metadata);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-
-    return result;
-  }
-
  private:
-  blink::mojom::FontAccessManager* const manager_;
+  const raw_ptr<blink::mojom::FontAccessManager> manager_;
 };
 
 class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
@@ -100,17 +82,17 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
 
     const int process_id = main_rfh()->GetProcess()->GetID();
     const int routing_id = main_rfh()->GetRoutingID();
-    const GlobalRenderFrameHostId frame_id =
-        GlobalRenderFrameHostId{process_id, routing_id};
+    const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
 
     cache_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache =
-        FontEnumerationCache::CreateForTesting(cache_task_runner_,
-                                               absl::nullopt);
+        FontEnumerationCache::CreateForTesting(
+            cache_task_runner_, FontEnumerationDataSource::Create(),
+            /* locale_override= */ absl::nullopt);
     manager_impl_ = FontAccessManagerImpl::CreateForTesting(
         std::move(font_enumeration_cache));
-    manager_impl_->BindReceiver(kTestOrigin, frame_id,
+    manager_impl_->BindReceiver(kTestOrigin, main_frame_id,
                                 manager_.BindNewPipeAndPassReceiver());
     manager_sync_ = std::make_unique<FontAccessManagerSync>(manager_.get());
 
@@ -177,17 +159,9 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
         }));
   }
 
-  void SetFrameHidden() {
-    static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
-  }
+  void SetFrameHidden() { test_rvh()->SimulateWasHidden(); }
 
-  void SimulateUserActivation() {
-    static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->UpdateUserActivationState(
-            blink::mojom::UserActivationUpdateType::kNotifyActivation,
-            blink::mojom::UserActivationNotificationType::kTest);
-  }
+  void SimulateUserActivation() { main_test_rfh()->SimulateUserActivation(); }
 
  protected:
   const GURL kTestUrl = GURL("https://example.com/font_access");
@@ -202,7 +176,6 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 namespace {
 
 void ValidateFontEnumerationBasic(FontEnumerationStatus status,
@@ -219,10 +192,6 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
         << "postscript_name size is not zero.";
     EXPECT_GT(font.full_name().size(), 0ULL) << "full_name size is not zero.";
     EXPECT_GT(font.family().size(), 0ULL) << "family size is not zero.";
-    EXPECT_GE(font.stretch(), 0.5f) << "stretch is in 0.5..2.0.";
-    EXPECT_LE(font.stretch(), 2.0f) << "stretch is in 0.5..2.0.";
-    EXPECT_GE(font.weight(), 1.f) << "weight is in 1..1000.";
-    EXPECT_LE(font.weight(), 1000.f) << "weight is in 1..1000.";
 
     if (previous_font.IsInitialized()) {
       EXPECT_LT(previous_font.postscript_name(), font.postscript_name())
@@ -239,10 +208,7 @@ TEST_F(FontAccessManagerImplTest, FailsIfFrameNotInViewport) {
   AutoGrantPermission();
   SetFrameHidden();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kNotVisible);
   EXPECT_FALSE(region.IsValid());
 }
@@ -251,49 +217,56 @@ TEST_F(FontAccessManagerImplTest, EnumerationConsumesUserActivation) {
   AskGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk)
-      << "Font Enumeration was successful.";
+  {
+    const auto [status, region] = manager_sync_->EnumerateLocalFonts();
+    if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+      EXPECT_EQ(status, FontEnumerationStatus::kOk)
+          << "Font Enumeration was successful.";
+    } else {
+      // TODO(crbug.com/1296792): Figure out Android situation.
+      EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+    }
+  }
 
   AskGrantPermission();
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-  EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation)
-      << "User Activation Required.";
+  {
+    const auto [status, region] = manager_sync_->EnumerateLocalFonts();
+    EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation)
+        << "User Activation Required.";
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, PreviouslyGrantedValidateEnumerationBasic) {
   AutoGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
-  ValidateFontEnumerationBasic(std::move(status), std::move(region));
+  auto [status, region] = manager_sync_->EnumerateLocalFonts();
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_EQ(status, FontEnumerationStatus::kOk);
+    ValidateFontEnumerationBasic(std::move(status), std::move(region));
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
   AskGrantPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_EQ(status, FontEnumerationStatus::kOk);
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, EnumerationFailsIfNoActivation) {
   AskGrantPermission();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kNeedsUserActivation);
 }
 
@@ -301,10 +274,7 @@ TEST_F(FontAccessManagerImplTest, PermissionDeniedOnAskErrors) {
   AskDenyPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
 
@@ -312,36 +282,9 @@ TEST_F(FontAccessManagerImplTest, PermissionPreviouslyDeniedErrors) {
   AutoDenyPermission();
   SimulateUserActivation();
 
-  FontEnumerationStatus status;
-  base::ReadOnlySharedMemoryRegion region;
-  std::tie(status, region) = manager_sync_->EnumerateLocalFonts();
-
+  const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
-
-TEST_F(FontAccessManagerImplTest, FontAccessContextFindAllFontsTest) {
-  FontAccessContext* font_access_context =
-      static_cast<FontAccessContext*>(manager_impl_.get());
-
-  FontEnumerationStatus status;
-  std::vector<blink::mojom::FontMetadata> fonts;
-
-  base::RunLoop run_loop;
-  font_access_context->FindAllFonts(base::BindLambdaForTesting(
-      [&](FontEnumerationStatus find_status,
-          std::vector<blink::mojom::FontMetadata> find_fonts) {
-        status = find_status;
-        fonts = std::move(find_fonts);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
-  EXPECT_GT(fonts.size(), 0u)
-      << "Enumeration expected to yield at least 1 font";
-}
-
-#endif
 
 }  // namespace
 

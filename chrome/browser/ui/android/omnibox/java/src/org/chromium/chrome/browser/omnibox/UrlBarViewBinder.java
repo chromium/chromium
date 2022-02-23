@@ -19,7 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -72,8 +72,8 @@ class UrlBarViewBinder {
                     view.setSelection(view.getText().length());
                 }
             }
-        } else if (UrlBarProperties.OMNIBOX_THEME.equals(propertyKey)) {
-            updateTextColors(view, model.get(UrlBarProperties.OMNIBOX_THEME));
+        } else if (UrlBarProperties.BRANDED_COLOR_SCHEME.equals(propertyKey)) {
+            updateTextColors(view, model.get(UrlBarProperties.BRANDED_COLOR_SCHEME));
         } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
             final boolean incognitoColorsEnabled =
                     model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
@@ -92,12 +92,12 @@ class UrlBarViewBinder {
         }
     }
 
-    private static void updateTextColors(UrlBar view, @OmniboxTheme int omniboxTheme) {
-        final @ColorInt int textColor =
-                OmniboxResourceProvider.getUrlBarPrimaryTextColor(view.getContext(), omniboxTheme);
+    private static void updateTextColors(UrlBar view, @BrandedColorScheme int brandedColorScheme) {
+        final @ColorInt int textColor = OmniboxResourceProvider.getUrlBarPrimaryTextColor(
+                view.getContext(), brandedColorScheme);
 
-        final @ColorInt int hintColor =
-                OmniboxResourceProvider.getUrlBarHintTextColor(view.getContext(), omniboxTheme);
+        final @ColorInt int hintColor = OmniboxResourceProvider.getUrlBarHintTextColor(
+                view.getContext(), brandedColorScheme);
 
         view.setTextColor(textColor);
         setHintTextColor(view, hintColor);

@@ -19,14 +19,21 @@
 
 namespace password_manager {
 
+class MockPasswordBackendSyncDelegate
+    : public PasswordStoreBackend::SyncDelegate {
+ public:
+  MockPasswordBackendSyncDelegate();
+  ~MockPasswordBackendSyncDelegate() override;
+
+  MOCK_METHOD(bool, IsSyncingPasswordsEnabled, (), (override));
+
+  MOCK_METHOD(absl::optional<std::string>, GetSyncingAccount, (), (override));
+};
+
 class MockPasswordStoreBackend : public PasswordStoreBackend {
  public:
   MockPasswordStoreBackend();
   ~MockPasswordStoreBackend() override;
-
-  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
   MOCK_METHOD(void,
               InitBackend,
@@ -36,10 +43,13 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (override));
   MOCK_METHOD(void, Shutdown, (base::OnceClosure), (override));
 
-  MOCK_METHOD(void, GetAllLoginsAsync, (LoginsReply callback), (override));
+  MOCK_METHOD(void,
+              GetAllLoginsAsync,
+              (LoginsOrErrorReply callback),
+              (override));
   MOCK_METHOD(void,
               GetAutofillableLoginsAsync,
-              (LoginsReply callback),
+              (LoginsOrErrorReply callback),
               (override));
   MOCK_METHOD(void,
               FillMatchingLoginsAsync,
@@ -84,13 +94,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               CreateSyncControllerDelegate,
               (),
               (override));
-  MOCK_METHOD(void,
-              GetSyncStatus,
-              (base::OnceCallback<void(bool)>),
-              (override));
-
- private:
-  base::WeakPtrFactory<MockPasswordStoreBackend> weak_ptr_factory_{this};
+  MOCK_METHOD(void, ClearAllLocalPasswords, (), (override));
 };
 
 }  // namespace password_manager

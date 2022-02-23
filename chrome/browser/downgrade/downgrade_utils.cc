@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "base/files/file.h"
 #endif
 
@@ -29,13 +29,13 @@ base::FilePath GetTempDirNameForDelete(const base::FilePath& dir,
 
 bool MoveWithoutFallback(const base::FilePath& source,
                          const base::FilePath& target) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(grt): check whether or not this is sufficiently atomic when |source|
   // is on a network share.
   auto result = ::MoveFileEx(source.value().c_str(), target.value().c_str(), 0);
   PLOG_IF(ERROR, !result) << source << " -> " << target;
   return result;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Windows compatibility: if |target| exists, |source| and |target|
   // must be the same type, either both files, or both directories.
   base::stat_wrapper_t target_info;

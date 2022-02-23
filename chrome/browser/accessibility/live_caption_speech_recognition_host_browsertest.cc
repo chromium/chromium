@@ -30,8 +30,7 @@
 namespace {
 // Chrome OS requires an additional feature flag to enable Live Caption.
 std::vector<base::Feature> RequiredFeatureFlags() {
-  std::vector<base::Feature> features = {media::kLiveCaption,
-                                         media::kUseSodaForLiveCaption};
+  std::vector<base::Feature> features = {media::kLiveCaption};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   features.push_back(ash::features::kOnDeviceSpeechRecognition);
 #endif
@@ -230,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   OnSpeechRecognitionError(frame_host);
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                        MediaEffectivelyFullscreenChanged) {
   content::WebContents* web_contents =

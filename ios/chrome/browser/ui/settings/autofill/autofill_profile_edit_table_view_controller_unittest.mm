@@ -67,6 +67,7 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    personal_data_manager_->OnSyncServiceInitialized(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(
         personal_data_manager_);
 

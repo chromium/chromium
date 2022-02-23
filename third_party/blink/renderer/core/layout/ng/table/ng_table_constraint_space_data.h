@@ -13,10 +13,10 @@
 
 namespace blink {
 
-// Same NGTableConstraintSpaceData object gets passed on ConstraintSpace to
-// all rows and sections in a single table. It contains all the geometry
-// information needed to layout sections/rows/cells. This is different from most
-// other algorithms, where constraint space data is not shared.
+// The same NGTableConstraintSpaceData object gets passed on the constraint
+// space to all rows and sections within a single table. It contains all the
+// geometry information needed to layout sections/rows/cells. This is different
+// from most other algorithms, where the constraint space data is not shared.
 class NGTableConstraintSpaceData
     : public RefCounted<NGTableConstraintSpaceData> {
  public:
@@ -26,28 +26,30 @@ class NGTableConstraintSpaceData
         : offset(offset),
           inline_size(inline_size),
           is_collapsed(is_collapsed) {}
-    const LayoutUnit offset;
-    const LayoutUnit inline_size;
-    const bool is_collapsed;
+
     bool operator==(const ColumnLocation& other) const {
       return offset == other.offset && inline_size == other.inline_size &&
              is_collapsed == other.is_collapsed;
     }
+
+    const LayoutUnit offset;
+    const LayoutUnit inline_size;
+    const bool is_collapsed;
   };
 
   // Section hold row index information used to map between table and
   // section row indexes.
   struct Section {
-    Section(wtf_size_t start_row_index, wtf_size_t rowspan)
-        : start_row_index(start_row_index), rowspan(rowspan) {}
+    Section(wtf_size_t start_row_index, wtf_size_t row_count)
+        : start_row_index(start_row_index), row_count(row_count) {}
 
     bool MaySkipLayout(const Section& other) const {
       // We don't compare |start_row_index| as this is allowed to change.
-      return rowspan == other.rowspan;
+      return row_count == other.row_count;
     }
 
-    wtf_size_t start_row_index;  // First section row in table grid.
-    wtf_size_t rowspan;
+    const wtf_size_t start_row_index;  // First section row in table grid.
+    const wtf_size_t row_count;
   };
 
   // Data needed by row layout algorithm.
@@ -75,51 +77,51 @@ class NGTableConstraintSpaceData
              is_collapsed == other.is_collapsed;
     }
 
-    LayoutUnit baseline;
-    LayoutUnit block_size;
-    wtf_size_t start_cell_index;
-    wtf_size_t cell_count;
-    bool has_baseline_aligned_percentage_block_size_descendants;
-    bool is_collapsed;
+    const LayoutUnit baseline;
+    const LayoutUnit block_size;
+    const wtf_size_t start_cell_index;
+    const wtf_size_t cell_count;
+    const bool has_baseline_aligned_percentage_block_size_descendants;
+    const bool is_collapsed;
   };
 
   // Data needed to layout a single cell.
   struct Cell {
-    Cell(NGBoxStrut border_box_borders,
+    Cell(NGBoxStrut borders,
          LayoutUnit block_size,
          wtf_size_t start_column,
          bool has_grown,
          bool is_constrained)
-        : border_box_borders(border_box_borders),
+        : borders(borders),
           block_size(block_size),
           start_column(start_column),
           has_grown(has_grown),
           is_constrained(is_constrained) {}
+
     bool operator==(const Cell& other) const {
-      return border_box_borders == other.border_box_borders &&
-             block_size == other.block_size &&
+      return borders == other.borders && block_size == other.block_size &&
              start_column == other.start_column &&
              has_grown == other.has_grown &&
              is_constrained == other.is_constrained;
     }
     bool operator!=(const Cell& other) const { return !(*this == other); }
+
     // Size of borders drawn on the inside of the border box.
-    NGBoxStrut border_box_borders;
+    const NGBoxStrut borders;
     // Size of the cell. Need this for cells that span multiple rows.
-    LayoutUnit block_size;
-    wtf_size_t start_column;
-    bool has_grown;
-    bool is_constrained;
+    const LayoutUnit block_size;
+    const wtf_size_t start_column;
+    const bool has_grown;
+    const bool is_constrained;
   };
 
   bool IsTableSpecificDataEqual(const NGTableConstraintSpaceData& other) const {
-    return table_inline_size == other.table_inline_size &&
+    return column_locations == other.column_locations &&
            table_writing_direction == other.table_writing_direction &&
            table_border_spacing == other.table_border_spacing &&
            is_table_block_size_specified ==
                other.is_table_block_size_specified &&
-           hide_table_cell_if_empty == other.hide_table_cell_if_empty &&
-           column_locations == other.column_locations;
+           has_collapsed_borders == other.has_collapsed_borders;
   }
 
   bool MaySkipRowLayout(const NGTableConstraintSpaceData& other,
@@ -166,15 +168,15 @@ class NGTableConstraintSpaceData
     if (!new_section.MaySkipLayout(old_section))
       return false;
 
-    DCHECK_EQ(new_section.rowspan, old_section.rowspan);
+    DCHECK_EQ(new_section.row_count, old_section.row_count);
 
     const wtf_size_t new_start_row_index = new_section.start_row_index;
     const wtf_size_t old_start_row_index = old_section.start_row_index;
 
     const wtf_size_t new_end_row_index =
-        new_start_row_index + new_section.rowspan;
+        new_start_row_index + new_section.row_count;
     const wtf_size_t old_end_row_index =
-        old_start_row_index + old_section.rowspan;
+        old_start_row_index + old_section.row_count;
 
     for (wtf_size_t new_row_index = new_start_row_index,
                     old_row_index = old_start_row_index;
@@ -191,14 +193,12 @@ class NGTableConstraintSpaceData
   Vector<Section> sections;
   Vector<Row> rows;
   Vector<Cell> cells;
-  LayoutUnit table_inline_size;
   WritingDirectionMode table_writing_direction =
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
   LogicalSize table_border_spacing;
 
   // If the block-size of the table is specified (not 'auto').
   bool is_table_block_size_specified;
-  bool hide_table_cell_if_empty;  // currently on regular constraint space.
   bool has_collapsed_borders;
 };
 

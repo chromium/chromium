@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 

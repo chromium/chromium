@@ -4,6 +4,7 @@
 
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
+#include "base/callback_forward.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
@@ -32,13 +33,13 @@ std::vector<std::u16string> GetExtensionDescriptionList(NSPopUpButton* popup) {
   return extension_descriptions;
 }
 
-// Fake user event to select the item at the given |index| from the extension
+// Fake user event to select the item at the given `index` from the extension
 // dropdown popup.
 void SelectItemAtIndex(NSPopUpButton* popup, int index) {
   [[popup menu] performActionForItemAtIndex:index];
 }
 
-// Returns the NSPopupButton associated with the given |panel|.
+// Returns the NSPopupButton associated with the given `panel`.
 NSPopUpButton* GetPopup(NSSavePanel* panel) {
   return [[panel accessoryView] viewWithTag:kFileTypePopupTag];
 }
@@ -51,8 +52,7 @@ std::vector<T> GetVectorFromArray(const T (&data)[N]) {
 
 }  // namespace
 
-namespace ui {
-namespace test {
+namespace ui::test {
 
 // Helper test base to initialize SelectFileDialogImpl.
 class SelectFileDialogMacTest : public ::testing::Test,
@@ -69,7 +69,8 @@ class SelectFileDialogMacTest : public ::testing::Test,
                     void* params) override {}
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_ = base::test::TaskEnvironment(
+      base::test::TaskEnvironment::MainThreadType::UI);
 
   struct FileDialogArguments {
     SelectFileDialog::Type type = SelectFileDialog::SELECT_SAVEAS_FILE;
@@ -78,17 +79,49 @@ class SelectFileDialogMacTest : public ::testing::Test,
     SelectFileDialog::FileTypeInfo* file_types = nullptr;
     int file_type_index = 0;
     base::FilePath::StringType default_extension;
-    gfx::NativeWindow owning_window = nullptr;
     void* params = nullptr;
   };
 
-  // Helper method to launch a dialog with the given |args|.
-  void SelectFileWithParams(FileDialogArguments args) {
+  // Helper method to create a dialog with the given `args`. Returns the created
+  // NSSavePanel.
+  NSSavePanel* SelectFileWithParams(FileDialogArguments args) {
+    base::scoped_nsobject<NSWindow> parent_window([[NSWindow alloc]
+        initWithContentRect:NSMakeRect(0, 0, 100, 100)
+                  styleMask:NSTitledWindowMask
+                    backing:NSBackingStoreBuffered
+                      defer:NO]);
+    [parent_window setReleasedWhenClosed:NO];
+    parent_windows_.push_back(parent_window);
+
     dialog_->SelectFile(args.type, args.title, args.default_path,
                         args.file_types, args.file_type_index,
-                        args.default_extension, args.owning_window,
+                        args.default_extension, parent_window.get(),
                         args.params);
+
+    // At this point, the Mojo IPC to show the dialog is queued up. Spin the
+    // message loop to get the Mojo IPC to happen.
     base::RunLoop().RunUntilIdle();
+
+    // Now there is an actual panel that exists.
+    NSSavePanel* panel = remote_cocoa::SelectFileDialogBridge::
+        GetLastCreatedNativePanelForTesting();
+    DCHECK(panel);
+
+    // Pump the message loop until the panel reports that it's visible.
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+    id<NSObject> observer = [NSNotificationCenter.defaultCenter
+        addObserverForName:NSWindowDidUpdateNotification
+                    object:panel
+                     queue:nil
+                usingBlock:^(NSNotification* note) {
+                  if (panel.visible)
+                    quit_closure.Run();
+                }];
+    run_loop.Run();
+    [NSNotificationCenter.defaultCenter removeObserver:observer];
+
+    return panel;
   }
 
   // Returns the number of panels currently active.
@@ -96,20 +129,22 @@ class SelectFileDialogMacTest : public ::testing::Test,
     return dialog_->dialog_data_list_.size();
   }
 
-  // Returns the most recently created NSSavePanel.
-  NSSavePanel* GetPanel() const {
-    DCHECK_GE(GetActivePanelCount(), 1lu);
-    return remote_cocoa::SelectFileDialogBridge::
-        GetLastCreatedNativePanelForTesting();
+  // Sets a callback to be called when a dialog is closed.
+  void SetDialogClosedCallback(base::RepeatingClosure callback) {
+    dialog_->dialog_closed_callback_for_testing_ = callback;
   }
 
   void ResetDialog() {
     dialog_ = new SelectFileDialogImpl(this, nullptr);
+
+    // Spin the run loop to get any pending Mojo IPC sent.
     base::RunLoop().RunUntilIdle();
   }
 
  private:
   scoped_refptr<SelectFileDialogImpl> dialog_;
+
+  std::vector<base::scoped_nsobject<NSWindow>> parent_windows_;
 };
 
 class SelectFileDialogMacOpenAndSaveTest
@@ -138,10 +173,7 @@ TEST_F(SelectFileDialogMacTest, ExtensionPopup) {
 
   FileDialogArguments args;
   args.file_types = &file_type_info;
-
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
-
+  NSSavePanel* panel = SelectFileWithParams(args);
   NSPopUpButton* popup = GetPopup(panel);
   EXPECT_TRUE(popup);
 
@@ -193,8 +225,7 @@ TEST_P(SelectFileDialogMacOpenAndSaveTest, IncludeAllFiles) {
   args.type = GetParam();
   args.file_types = &file_type_info;
 
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
 
   NSPopUpButton* popup = GetPopup(panel);
   EXPECT_TRUE(popup);
@@ -242,8 +273,7 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
 
   args.file_type_index = 2;
   args.default_extension = "jpg";
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
   NSPopUpButton* popup = GetPopup(panel);
   EXPECT_TRUE(popup);
   // Verify that the file_type_index causes the second item to be initially
@@ -256,8 +286,7 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
   ResetDialog();
   args.file_type_index = 0;
   args.default_extension = "pdf";
-  SelectFileWithParams(args);
-  panel = GetPanel();
+  panel = SelectFileWithParams(args);
   popup = GetPopup(panel);
   EXPECT_TRUE(popup);
   // Verify that the first item was selected, since the default extension passed
@@ -271,8 +300,7 @@ TEST_F(SelectFileDialogMacTest, InitialSelection) {
   ResetDialog();
   args.file_type_index = 0;
   args.default_extension = "jpg";
-  SelectFileWithParams(args);
-  panel = GetPanel();
+  panel = SelectFileWithParams(args);
   popup = GetPopup(panel);
   EXPECT_TRUE(popup);
   // Verify that the extension group corresponding to the default extension is
@@ -304,8 +332,7 @@ TEST_F(SelectFileDialogMacTest, EmptyDescription) {
   FileDialogArguments args;
   args.file_types = &file_type_info;
 
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
   NSPopUpButton* popup = GetPopup(panel);
   EXPECT_TRUE(popup);
 
@@ -334,8 +361,7 @@ TEST_P(SelectFileDialogMacOpenAndSaveTest, EmptyExtension) {
   args.type = GetParam();
   args.file_types = &file_type_info;
 
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
   EXPECT_FALSE([panel accessoryView]);
 
   // Ensure other file types are allowed.
@@ -345,8 +371,7 @@ TEST_P(SelectFileDialogMacOpenAndSaveTest, EmptyExtension) {
 // Verify that passing a null file_types value causes no extension dropdown to
 // display.
 TEST_F(SelectFileDialogMacTest, FileTypesNull) {
-  SelectFileWithParams({});
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams({});
   EXPECT_TRUE([panel allowsOtherFileTypes]);
   EXPECT_FALSE([panel accessoryView]);
 
@@ -388,8 +413,7 @@ TEST_F(SelectFileDialogMacTest, SelectionType) {
         base::StringPrintf("i=%lu file_dialog_type=%d", i, test_cases[i].type));
     args.type = test_cases[i].type;
     ResetDialog();
-    SelectFileWithParams(args);
-    NSSavePanel* panel = GetPanel();
+    NSSavePanel* panel = SelectFileWithParams(args);
 
     EXPECT_EQ_BOOL(test_cases[i].options & HAS_ACCESSORY_VIEW,
                    [panel accessoryView]);
@@ -417,34 +441,38 @@ TEST_F(SelectFileDialogMacTest, DialogMessage) {
   const std::string test_title = "test title";
   FileDialogArguments args;
   args.title = base::ASCIIToUTF16(test_title);
-  SelectFileWithParams(args);
-  EXPECT_EQ(test_title, base::SysNSStringToUTF8([GetPanel() message]));
+  NSSavePanel* panel = SelectFileWithParams(args);
+  EXPECT_EQ(test_title, base::SysNSStringToUTF8([panel message]));
 }
 
 // Verify that multiple file dialogs are correctly handled.
 TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
   FileDialogArguments args;
-  SelectFileWithParams(args);
-  NSSavePanel* panel1 = GetPanel();
-  SelectFileWithParams(args);
-  NSSavePanel* panel2 = GetPanel();
+  NSSavePanel* panel1 = SelectFileWithParams(args);
+  NSSavePanel* panel2 = SelectFileWithParams(args);
   EXPECT_EQ(2lu, GetActivePanelCount());
 
   // Verify closing the panel decreases the panel count.
+  base::RunLoop run_loop1;
+  SetDialogClosedCallback(run_loop1.QuitClosure());
   [panel1 cancel:nil];
-  base::RunLoop().RunUntilIdle();
+  run_loop1.Run();
   EXPECT_EQ(1lu, GetActivePanelCount());
 
   // In 10.15, file picker dialogs are remote, and the restriction of apps not
   // being allowed to OK their own file requests has been extended from just
   // sandboxed apps to all apps. If we can test OK-ing our own dialogs, sure,
   // but if not, at least try to close them all.
+  base::RunLoop run_loop2;
+  SetDialogClosedCallback(run_loop2.QuitClosure());
   if (base::mac::IsAtMostOS10_14())
     [panel2 ok:nil];
   else
     [panel2 cancel:nil];
-  base::RunLoop().RunUntilIdle();
+  run_loop2.Run();
   EXPECT_EQ(0lu, GetActivePanelCount());
+
+  SetDialogClosedCallback({});
 }
 
 // Verify that the default_path argument is respected.
@@ -452,8 +480,7 @@ TEST_F(SelectFileDialogMacTest, DefaultPath) {
   FileDialogArguments args;
   args.default_path = base::GetHomeDir().AppendASCII("test.txt");
 
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
 
   [panel setExtensionHidden:NO];
 
@@ -472,22 +499,19 @@ TEST_F(SelectFileDialogMacTest, MultipleExtension) {
   FileDialogArguments args;
 
   args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_normal));
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
   EXPECT_TRUE([panel canSelectHiddenExtension]);
   EXPECT_TRUE([panel isExtensionHidden]);
 
   ResetDialog();
   args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_multiple));
-  SelectFileWithParams(args);
-  panel = GetPanel();
+  panel = SelectFileWithParams(args);
   EXPECT_FALSE([panel canSelectHiddenExtension]);
   EXPECT_FALSE([panel isExtensionHidden]);
 
   ResetDialog();
   args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_long));
-  SelectFileWithParams(args);
-  panel = GetPanel();
+  panel = SelectFileWithParams(args);
   EXPECT_FALSE([panel canSelectHiddenExtension]);
   EXPECT_FALSE([panel isExtensionHidden]);
 }
@@ -507,8 +531,7 @@ TEST_F(SelectFileDialogMacTest, KeepExtensionVisible) {
   FileDialogArguments args;
   args.file_types = &file_type_info;
 
-  SelectFileWithParams(args);
-  NSSavePanel* panel = GetPanel();
+  NSSavePanel* panel = SelectFileWithParams(args);
   EXPECT_FALSE([panel canSelectHiddenExtension]);
   EXPECT_FALSE([panel isExtensionHidden]);
 }
@@ -521,26 +544,26 @@ TEST_F(SelectFileDialogMacTest, Lifetime) {
     FileDialogArguments args;
     // Set a type (Save dialogs do not have a delegate).
     args.type = SelectFileDialog::SELECT_OPEN_MULTI_FILE;
-    SelectFileWithParams(args);
-    panel.reset([GetPanel() retain]);
+    panel.reset([SelectFileWithParams(args) retain]);
 
     EXPECT_TRUE([panel isVisible]);
     EXPECT_NE(nil, [panel delegate]);
 
-    // Newer versions of AppKit may clear out weak delegate pointers when
-    // dealloc is called on the delegate. Put a ref into the autorelease pool to
-    // simulate what happens on older versions.
+    // Newer versions of AppKit (>= 10.13) appear to clear out weak delegate
+    // pointers when dealloc is called on the delegate. Put a ref into the
+    // autorelease pool to simulate what happens on older versions.
     [[[panel delegate] retain] autorelease];
 
+    // This will cause the `SelectFileDialogImpl` destructor to be called, and
+    // it will tear down the `SelectFileDialogBridge` via a Mojo IPC.
     ResetDialog();
 
-    // The SelectFileDialogImpl destructor invokes [panel cancel]. That should
-    // close the panel, and run the completion handler.
+    // The `SelectFileDialogBridge` destructor invokes `[panel cancel]`. That
+    // should close the panel, and run the completion handler.
     EXPECT_EQ(nil, [panel delegate]);
     EXPECT_FALSE([panel isVisible]);
   }
   EXPECT_EQ(nil, [panel delegate]);
 }
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

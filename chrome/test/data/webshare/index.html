@@ -32,7 +32,7 @@
 
     async function share_multiple_files() {
       try {
-        const first_file = create_file('sample.mp3', 'audio/mpeg', 345);
+        const first_file = create_file('sam.ple.mp3', 'audio/mpeg', 345);
         const second_file = create_file('../sample.mp4', 'video/mp4', 67890);
         await navigator.share({files: [first_file, second_file]});
         return 'share succeeded';

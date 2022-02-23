@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -110,6 +111,91 @@ TEST_F(SimplifiedBackwardsTextIteratorTest, Basic) {
   EXPECT_FALSE(iterator.AtEnd());
   iterator.Advance();
   EXPECT_TRUE(iterator.AtEnd());
+}
+
+TEST_F(SimplifiedBackwardsTextIteratorTest, NbspCharacter) {
+  SetBodyContent("<p>123 456&nbsp;789</p>");
+  const Element* const p = GetDocument().QuerySelector("p");
+  SimplifiedBackwardsTextIteratorInFlatTree iterator(
+      EphemeralRangeInFlatTree(PositionInFlatTree(p->firstChild(), 0),
+                               PositionInFlatTree(p->firstChild(), 11)));
+  EXPECT_EQ(11, iterator.length());
+  EXPECT_EQ('9', iterator.CharacterAt(0));
+  EXPECT_EQ('8', iterator.CharacterAt(1));
+  EXPECT_EQ('7', iterator.CharacterAt(2));
+  EXPECT_EQ(kNoBreakSpaceCharacter, iterator.CharacterAt(3));
+  EXPECT_EQ('6', iterator.CharacterAt(4));
+  EXPECT_EQ('5', iterator.CharacterAt(5));
+  EXPECT_EQ('4', iterator.CharacterAt(6));
+  EXPECT_EQ(' ', iterator.CharacterAt(7));
+  EXPECT_EQ('3', iterator.CharacterAt(8));
+  EXPECT_EQ('2', iterator.CharacterAt(9));
+  EXPECT_EQ('1', iterator.CharacterAt(10));
+
+  EXPECT_FALSE(iterator.AtEnd());
+  iterator.Advance();
+  EXPECT_TRUE(iterator.AtEnd());
+
+  TextIteratorBehavior behavior =
+      TextIteratorBehavior::Builder().SetEmitsSpaceForNbsp(true).Build();
+  SimplifiedBackwardsTextIteratorInFlatTree emits_space_iterator(
+      EphemeralRangeInFlatTree(PositionInFlatTree(p->firstChild(), 0),
+                               PositionInFlatTree(p->firstChild(), 11)),
+      behavior);
+  EXPECT_EQ(11, emits_space_iterator.length());
+  EXPECT_EQ('9', emits_space_iterator.CharacterAt(0));
+  EXPECT_EQ('8', emits_space_iterator.CharacterAt(1));
+  EXPECT_EQ('7', emits_space_iterator.CharacterAt(2));
+  EXPECT_EQ(' ', emits_space_iterator.CharacterAt(3));
+  EXPECT_EQ('6', emits_space_iterator.CharacterAt(4));
+  EXPECT_EQ('5', emits_space_iterator.CharacterAt(5));
+  EXPECT_EQ('4', emits_space_iterator.CharacterAt(6));
+  EXPECT_EQ(' ', emits_space_iterator.CharacterAt(7));
+  EXPECT_EQ('3', emits_space_iterator.CharacterAt(8));
+  EXPECT_EQ('2', emits_space_iterator.CharacterAt(9));
+  EXPECT_EQ('1', emits_space_iterator.CharacterAt(10));
+
+  EXPECT_FALSE(emits_space_iterator.AtEnd());
+  emits_space_iterator.Advance();
+  EXPECT_TRUE(emits_space_iterator.AtEnd());
+}
+
+TEST_F(SimplifiedBackwardsTextIteratorTest, EmitsPunctuationForImage) {
+  SetBodyContent("<img id='img'><p>1</p>");
+  const Element* const p = GetDocument().QuerySelector("p");
+  const Element* const img = GetDocument().QuerySelector("img");
+  SimplifiedBackwardsTextIteratorInFlatTree iterator(EphemeralRangeInFlatTree(
+      PositionInFlatTree(img, 0), PositionInFlatTree(p->firstChild(), 1)));
+  EXPECT_EQ(1, iterator.length());
+  EXPECT_EQ('1', iterator.CharacterAt(0));
+  iterator.Advance();
+  EXPECT_EQ(1, iterator.length());
+  EXPECT_EQ('\n', iterator.CharacterAt(0));
+  iterator.Advance();
+  EXPECT_EQ(0, iterator.length());
+
+  EXPECT_TRUE(iterator.AtEnd());
+
+  TextIteratorBehavior behavior =
+      TextIteratorBehavior::Builder()
+          .SetEmitsPunctuationForReplacedElements(true)
+          .Build();
+  SimplifiedBackwardsTextIteratorInFlatTree with_punctuation_iterator(
+      EphemeralRangeInFlatTree(PositionInFlatTree(img, 0),
+                               PositionInFlatTree(p->firstChild(), 1)),
+      behavior);
+  EXPECT_EQ(1, with_punctuation_iterator.length());
+  EXPECT_EQ('1', with_punctuation_iterator.CharacterAt(0));
+  with_punctuation_iterator.Advance();
+  EXPECT_EQ(1, with_punctuation_iterator.length());
+  EXPECT_EQ('\n', with_punctuation_iterator.CharacterAt(0));
+  with_punctuation_iterator.Advance();
+  EXPECT_EQ(1, with_punctuation_iterator.length());
+  EXPECT_EQ(',', with_punctuation_iterator.CharacterAt(0));
+
+  EXPECT_FALSE(with_punctuation_iterator.AtEnd());
+  with_punctuation_iterator.Advance();
+  EXPECT_TRUE(with_punctuation_iterator.AtEnd());
 }
 
 TEST_F(SimplifiedBackwardsTextIteratorTest, FirstLetter) {

@@ -37,9 +37,7 @@ void LayoutOutsideListMarker::UpdateLayout() {
 
 void LayoutOutsideListMarker::UpdateMargins() {
   NOT_DESTROYED();
-  LayoutUnit margin_start;
-  LayoutUnit margin_end;
-  std::tie(margin_start, margin_end) = ListMarker::InlineMarginsForOutside(
+  auto [margin_start, margin_end] = ListMarker::InlineMarginsForOutside(
       GetDocument(), StyleRef(), list_marker_.ListItem(*this)->StyleRef(),
       PreferredLogicalWidths().min_size);
   SetMarginStart(margin_start);

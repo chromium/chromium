@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_BOOKMARK_APP_UTIL_H_
 
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "extensions/common/constants.h"
 
 namespace content {
@@ -33,7 +33,7 @@ bool BookmarkAppIsLocallyInstalled(const ExtensionPrefs* prefs,
 bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url);
 
 struct LaunchContainerAndType {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   extensions::LaunchType launch_type;
 };
 

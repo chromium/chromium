@@ -129,7 +129,7 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
 
     if (event_types) {
       const base::Value::ConstListView event_types_list =
-          event_types->GetList();
+          event_types->GetListDeprecated();
       for (size_t j = 0; j < event_types_list.size(); j++) {
         std::string event_type;
         if (event_types_list[j].is_string())
@@ -156,7 +156,7 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
                                       &voices_data)) {
     const char* error = nullptr;
     return ValidateAndConvertToTtsVoiceVector(
-        extension, voices_data->GetList(),
+        extension, voices_data->GetListDeprecated(),
         /* return_after_first_error = */ false, &error);
   }
 
@@ -277,7 +277,7 @@ void TtsExtensionEngine::Speak(content::TtsUtterance* utterance,
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TTS_ENGINE_ON_SPEAK, tts_engine_events::kOnSpeak,
-      std::move(*args).TakeList(), profile);
+      std::move(*args).TakeListDeprecated(), profile);
   event_router->DispatchEventToExtension(engine_id, std::move(event));
 }
 
@@ -393,7 +393,7 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
   // Validate the voices and return an error if there's a problem.
   const char* error = nullptr;
   auto tts_voices = ValidateAndConvertToTtsVoiceVector(
-      extension(), voices_data.GetList(),
+      extension(), voices_data.GetListDeprecated(),
       /* return_after_first_error = */ true, &error);
   if (error)
     return RespondNow(Error(error));
@@ -426,15 +426,18 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
       event->GetString(constants::kEventTypeKey, &event_type));
 
   int char_index = 0;
-  if (event->FindKey(constants::kCharIndexKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        event->GetInteger(constants::kCharIndexKey, &char_index));
+  const base::Value* char_index_value =
+      event->FindKey(constants::kCharIndexKey);
+  if (char_index_value) {
+    EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
+    char_index = char_index_value->GetInt();
   }
 
   int length = -1;
-  if (event->FindKey(constants::kLengthKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        event->GetInteger(constants::kLengthKey, &length));
+  const base::Value* length_value = event->FindKey(constants::kLengthKey);
+  if (length_value) {
+    EXTENSION_FUNCTION_VALIDATE(length_value->is_int());
+    length = length_value->GetInt();
   }
 
   // Make sure the extension has included this event type in its manifest.
@@ -509,22 +512,25 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
     return RespondNow(Error("Invalid audio buffer format."));
 
   // Interpret the audio buffer as a sequence of float samples.
-  int sample_count = audio_buffer_blob->size() / 4;
+  size_t sample_count = audio_buffer_blob->size() / 4;
   std::vector<float> audio_buffer(sample_count);
   const float* view = reinterpret_cast<const float*>(&(*audio_buffer_blob)[0]);
   for (size_t i = 0; i < sample_count; i++, view++)
     audio_buffer[i] = *view;
 
   int char_index = 0;
-  EXTENSION_FUNCTION_VALIDATE(audio->GetInteger(
-      tts_extension_api_constants::kCharIndexKey, &char_index));
+  const base::Value* char_index_value =
+      audio->FindKey(tts_extension_api_constants::kCharIndexKey);
+  EXTENSION_FUNCTION_VALIDATE(char_index_value);
+  EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
+  char_index = char_index_value->GetInt();
 
-  bool is_last_buffer = false;
-  EXTENSION_FUNCTION_VALIDATE(audio->GetBoolean(
-      tts_extension_api_constants::kIsLastBufferKey, &is_last_buffer));
+  absl::optional<bool> is_last_buffer =
+      audio->FindBoolPath(tts_extension_api_constants::kIsLastBufferKey);
+  EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
 
   TtsExtensionEngine::GetInstance()->SendAudioBuffer(
-      utterance_id, audio_buffer, char_index, is_last_buffer);
+      utterance_id, audio_buffer, char_index, *is_last_buffer);
   return RespondNow(NoArguments());
 #else
   // Given tts engine json api definition, we should never get here.

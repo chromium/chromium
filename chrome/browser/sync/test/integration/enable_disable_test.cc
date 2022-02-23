@@ -27,9 +27,8 @@
 namespace {
 
 using syncer::ModelType;
-using syncer::ModelTypeFromString;
 using syncer::ModelTypeSet;
-using syncer::ModelTypeToString;
+using syncer::ModelTypeToDebugString;
 using syncer::SyncUserSettings;
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
@@ -160,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableOneAtATime) {
                   histogram_tester.GetBucketCount(
                       "Sync.PostedDataTypeGetUpdatesRequest",
                       static_cast<int>(ModelTypeHistogramValue(grouped_type))))
-            << " for " << ModelTypeToString(grouped_type);
+            << " for " << ModelTypeToDebugString(grouped_type);
       } else if (previously_active_types.Has(grouped_type)) {
         // If the type was already configured, no additional configuration cycle
         // is expected, but it's impossible to rule out that the type has issued
@@ -171,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableOneAtATime) {
                   histogram_tester.GetBucketCount(
                       "Sync.PostedDataTypeGetUpdatesRequest",
                       static_cast<int>(ModelTypeHistogramValue(grouped_type))))
-            << " for " << ModelTypeToString(grouped_type);
+            << " for " << ModelTypeToDebugString(grouped_type);
       }
 
       previously_active_types.Put(grouped_type);
@@ -202,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, DisableOneAtATime) {
   // did not check these after disabling inside the above loop.
   for (ModelType multi_grouped_type : multi_grouped_types_) {
     EXPECT_FALSE(IsModelTypeActive(multi_grouped_type))
-        << " for " << ModelTypeToString(multi_grouped_type);
+        << " for " << ModelTypeToDebugString(multi_grouped_type);
   }
 }
 
@@ -234,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   // did not check these after disabling inside the above loop.
   for (ModelType multi_grouped_type : multi_grouped_types_) {
     EXPECT_FALSE(IsModelTypeActive(multi_grouped_type))
-        << " for " << ModelTypeToString(multi_grouped_type);
+        << " for " << ModelTypeToDebugString(multi_grouped_type);
   }
 }
 
@@ -317,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, EnableAndRestart) {
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType model_type : ResolveGroup(type)) {
       EXPECT_TRUE(IsModelTypeActive(model_type))
-          << " for " << ModelTypeToString(model_type);
+          << " for " << ModelTypeToDebugString(model_type);
     }
   }
 }
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     for (ModelType model_type : ResolveGroup(type)) {
       EXPECT_TRUE(IsModelTypeActive(model_type))
-          << " for " << ModelTypeToString(model_type);
+          << " for " << ModelTypeToDebugString(model_type);
     }
   }
 }

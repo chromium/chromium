@@ -5,6 +5,10 @@
 #ifndef NET_TEST_CERT_BUILDER_H_
 #define NET_TEST_CERT_BUILDER_H_
 
+#include <map>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/signature_algorithm.h"
@@ -14,6 +18,10 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 class GURL;
+
+namespace base {
+class FilePath;
+}
 
 namespace net {
 
@@ -38,17 +46,35 @@ class CertBuilder {
   CertBuilder(CRYPTO_BUFFER* orig_cert, CertBuilder* issuer);
   ~CertBuilder();
 
+  // Initializes a CertBuilder using the certificate and private key from
+  // |cert_and_key_file| as a template. If |issuer| is null then the generated
+  // certificate will be self-signed. Otherwise, it will be signed using
+  // |issuer|.
+  static std::unique_ptr<CertBuilder> FromFile(
+      const base::FilePath& cert_and_key_file,
+      CertBuilder* issuer);
+
   // Creates a CertBuilder that will return a static |cert| and |key|.
   // This may be passed as the |issuer| param of another CertBuilder to create
   // a cert chain that ends in a pre-defined certificate.
   static std::unique_ptr<CertBuilder> FromStaticCert(CRYPTO_BUFFER* cert,
                                                      EVP_PKEY* key);
+  // Like FromStaticCert, but loads the certificate and private key from the
+  // PEM file |cert_and_key_file|.
+  static std::unique_ptr<CertBuilder> FromStaticCertFile(
+      const base::FilePath& cert_and_key_file);
 
   // Creates a simple leaf->intermediate->root chain of CertBuilders with no AIA
   // or CrlDistributionPoint extensions, and leaf having a subjectAltName of
   // www.example.com.
   static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
                                 std::unique_ptr<CertBuilder>* out_intermediate,
+                                std::unique_ptr<CertBuilder>* out_root);
+
+  // Creates a simple leaf->root chain of CertBuilders with no AIA or
+  // CrlDistributionPoint extensions, and leaf having a subjectAltName of
+  // www.example.com.
+  static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
                                 std::unique_ptr<CertBuilder>* out_root);
 
   // Sets a value for the indicated X.509 (v3) extension.
@@ -228,7 +254,7 @@ class CertBuilder {
   bssl::UniquePtr<CRYPTO_BUFFER> cert_;
   bssl::UniquePtr<EVP_PKEY> key_;
 
-  CertBuilder* issuer_ = nullptr;
+  raw_ptr<CertBuilder> issuer_ = nullptr;
 };
 
 }  // namespace net

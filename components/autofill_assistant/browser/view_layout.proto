@@ -112,8 +112,10 @@ message DrawableProto {
     ShapeDrawableProto shape = 3;
     // An icon from a predefined set of known icons.
     Icon icon = 4;
-    // A Base64 encoded image string.
-    bytes base64 = 5;
+    // Image data.
+    bytes image_data = 5;
+    // Image data encoded as a base64 string.
+    string image_data_base64 = 7;
     // The favicon for a given URL.
     FaviconDrawableProto favicon = 6;
   }

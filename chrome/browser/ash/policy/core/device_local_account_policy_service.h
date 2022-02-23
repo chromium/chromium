@@ -11,11 +11,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/core/device_local_account_extension_tracker.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -24,6 +25,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
 class DeviceSettingsService;
@@ -136,7 +139,8 @@ class DeviceLocalAccountPolicyBroker
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);
 
-  AffiliatedInvalidationServiceProvider* const invalidation_service_provider_;
+  const raw_ptr<AffiliatedInvalidationServiceProvider>
+      invalidation_service_provider_;
   const std::string account_id_;
   const std::string user_id_;
   const base::FilePath component_policy_cache_path_;
@@ -249,12 +253,12 @@ class DeviceLocalAccountPolicyService {
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 
-  chromeos::SessionManagerClient* session_manager_client_;
-  ash::DeviceSettingsService* device_settings_service_;
-  ash::CrosSettings* cros_settings_;
-  AffiliatedInvalidationServiceProvider* invalidation_service_provider_;
+  raw_ptr<chromeos::SessionManagerClient> session_manager_client_;
+  raw_ptr<ash::DeviceSettingsService> device_settings_service_;
+  raw_ptr<ash::CrosSettings> cros_settings_;
+  raw_ptr<AffiliatedInvalidationServiceProvider> invalidation_service_provider_;
 
-  DeviceManagementService* device_management_service_;
+  raw_ptr<DeviceManagementService> device_management_service_;
 
   // The device-local account policy brokers, keyed by user ID.
   PolicyBrokerMap policy_brokers_;

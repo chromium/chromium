@@ -18,5 +18,15 @@
     <dimen name="toolbar_shadow_height">8dp</dimen>
     <dimen name="toolbar_hairline_height">1dp</dimen>
 
+    <!-- Alpha values for various things -->
+    <item name="icon_animated_faded_alpha" format="float" type="dimen">0.3</item>
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
+    <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
+    <item name="switch_track_disabled_alpha" format="float" type="dimen">0.12</item>
+    <item name="switch_track_enabled_alpha" format="float" type="dimen">0.3</item>
+
+    <!-- Surface color elevations -->
+    <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="snackbar_background_color_elev">@dimen/default_elevation_0</dimen>
 </resources>

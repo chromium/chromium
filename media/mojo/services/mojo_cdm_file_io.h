@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
@@ -90,10 +91,10 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   // Callback to notify client of error asynchronously.
   void NotifyClientOfError(ErrorType error);
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   // Results of cdm::FileIO operations are sent asynchronously via |client_|.
-  cdm::FileIOClient* client_ = nullptr;
+  raw_ptr<cdm::FileIOClient> client_ = nullptr;
 
   mojo::Remote<mojom::CdmStorage> cdm_storage_;
 

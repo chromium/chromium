@@ -2,47 +2,349 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
 
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
 
-class AppRegistryCacheTest : public testing::Test {
+namespace {
+
+apps::AppPtr MakeApp(const char* app_id,
+                     const char* name,
+                     apps::AppType app_type = apps::AppType::kArc,
+                     apps::Readiness readiness = apps::Readiness::kUnknown,
+                     uint64_t timeline = 0) {
+  auto app = std::make_unique<apps::App>(app_type, app_id);
+  app->readiness = readiness;
+  app->name = name;
+  app->icon_key =
+      apps::IconKey(timeline, /*resource_id=*/0, /*icon_effects=*/0);
+  return app;
+}
+
+apps::mojom::AppPtr MakeMojomApp(
+    const char* app_id,
+    const char* name,
+    apps::mojom::AppType app_type = apps::mojom::AppType::kArc,
+    apps::mojom::Readiness readiness = apps::mojom::Readiness::kUnknown) {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type;
+  app->app_id = app_id;
+  app->readiness = readiness;
+  app->name = name;
+  return app;
+}
+
+class MockRegistryObserver : public apps::AppRegistryCache::Observer {
  public:
-  std::unique_ptr<App> MakeApp(const char* app_id,
-                               const char* name,
-                               Readiness readiness = Readiness::kUnknown,
-                               uint64_t timeline = 0) {
-    std::unique_ptr<App> app = std::make_unique<App>(AppType::kArc, app_id);
-    app->readiness = readiness;
-    app->name = name;
-    app->icon_key = IconKey(timeline, /*resource_id=*/0, /*icon_effects=*/0);
-    return app;
+  MOCK_METHOD(void, OnAppUpdate, (const apps::AppUpdate& update), ());
+
+  MOCK_METHOD(void,
+              OnAppRegistryCacheWillBeDestroyed,
+              (apps::AppRegistryCache * cache),
+              ());
+};
+
+MATCHER_P(HasAppId, app_id, "Has the correct app id") {
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    return arg.GetAppId() == app_id;
+  } else {
+    return arg.AppId() == app_id;
+  }
+}
+
+// Responds to a cache's OnAppUpdate to call back into the cache, checking that
+// the cache presents a self-consistent snapshot. For example, the app names
+// should match for the outer and inner AppUpdate.
+//
+// In the tests below, just "recursive" means that cache.OnApps calls
+// observer.OnAppsUpdate which calls cache.ForApp and cache.ForAllApps.
+// "Super-recursive" means that cache.OnApps calls observer.OnAppsUpdate calls
+// cache.OnApps which calls observer.OnAppsUpdate.
+class RecursiveObserver : public AppRegistryCache::Observer {
+ public:
+  explicit RecursiveObserver(AppRegistryCache* cache) : cache_(cache) {
+    Observe(cache);
+  }
+
+  ~RecursiveObserver() override = default;
+
+  void PrepareForOnApps(int expected_num_apps,
+                        const std::string& expected_name_for_p,
+                        std::vector<AppPtr>* super_recursive_apps = nullptr) {
+    expected_name_for_p_ = expected_name_for_p;
+    expected_num_apps_ = expected_num_apps;
+    num_apps_seen_on_app_update_ = 0;
+    old_names_.clear();
+
+    names_snapshot_.clear();
+    check_names_snapshot_ = true;
+    if (super_recursive_apps) {
+      check_names_snapshot_ = false;
+      super_recursive_apps_.swap(*super_recursive_apps);
+    }
+  }
+
+  int NumAppsSeenOnAppUpdate() { return num_apps_seen_on_app_update_; }
+
+  AppType app_type() const { return app_type_; }
+
+ protected:
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const AppUpdate& outer) override {
+    EXPECT_EQ(account_id_, outer.AccountId());
+    int num_apps = 0;
+    cache_->ForAllApps([this, &outer, &num_apps](const AppUpdate& inner) {
+      if (check_names_snapshot_) {
+        if (num_apps_seen_on_app_update_ == 0) {
+          // If this is the first time that OnAppUpdate is called, after a
+          // PrepareForOnApps call, then just populate the names_snapshot_ map.
+          names_snapshot_[inner.GetAppId()] = inner.Name();
+        } else {
+          // Otherwise, check that the names found during this OnAppUpdate call
+          // match those during the first OnAppUpdate call.
+          auto iter = names_snapshot_.find(inner.GetAppId());
+          EXPECT_EQ(inner.Name(),
+                    (iter != names_snapshot_.end()) ? iter->second : "");
+        }
+      }
+
+      if (outer.GetAppId() == inner.GetAppId()) {
+        ExpectEq(outer, inner);
+      }
+
+      if (inner.GetAppId() == "p") {
+        EXPECT_EQ(expected_name_for_p_, inner.Name());
+      }
+
+      num_apps++;
+    });
+    EXPECT_EQ(expected_num_apps_, num_apps);
+
+    EXPECT_FALSE(cache_->ForApp(
+        "no_such_app_id",
+        [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
+
+    EXPECT_TRUE(cache_->ForApp(
+        outer.GetAppId(),
+        [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
+
+    if (outer.NameChanged()) {
+      std::string old_name;
+      auto iter = old_names_.find(outer.GetAppId());
+      if (iter != old_names_.end()) {
+        old_name = iter->second;
+      }
+      // The way the tests are configured, if an app's name changes, it should
+      // increase (in string comparison order): e.g. from "" to "mango" or from
+      // "mango" to "mulberry" and never from "mulberry" to "melon".
+      EXPECT_LT(old_name, outer.Name());
+    }
+    old_names_[outer.GetAppId()] = outer.Name();
+
+    std::vector<AppPtr> super_recursive;
+    while (!super_recursive_apps_.empty()) {
+      AppPtr app = std::move(super_recursive_apps_.back());
+      super_recursive_apps_.pop_back();
+      if (app.get() == nullptr) {
+        // This is the placeholder 'punctuation'.
+        break;
+      }
+      super_recursive.push_back(std::move(app));
+    }
+    if (!super_recursive.empty()) {
+      cache_->OnApps(std::move(super_recursive), AppType::kArc,
+                     false /* should_notify_initialized */);
+    }
+
+    num_apps_seen_on_app_update_++;
+  }
+
+  void OnAppTypeInitialized(AppType app_type) override { app_type_ = app_type; }
+
+  void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
+  static void ExpectEq(const AppUpdate& outer, const AppUpdate& inner) {
+    EXPECT_EQ(outer.GetAppType(), inner.GetAppType());
+    EXPECT_EQ(outer.GetAppId(), inner.GetAppId());
+    EXPECT_EQ(outer.StateIsNull(), inner.StateIsNull());
+    EXPECT_EQ(outer.GetReadiness(), inner.GetReadiness());
+    EXPECT_EQ(outer.Name(), inner.Name());
+  }
+
+  raw_ptr<AppRegistryCache> cache_;
+  std::string expected_name_for_p_;
+  int expected_num_apps_;
+  int num_apps_seen_on_app_update_;
+  AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
+  AppType app_type_ = AppType::kUnknown;
+
+  // Records previously seen app names, keyed by app_id's, so we can check
+  // that, for these tests, a given app's name is always increasing (in string
+  // comparison order).
+  std::map<std::string, std::string> old_names_;
+
+  // Non-empty when this.OnAppsUpdate should trigger more cache_.OnApps calls.
+  //
+  // During OnAppsUpdate, this vector (a stack) is popped from the back until a
+  // nullptr 'punctuation' element (a group terminator) is seen. If that group
+  // of popped elements (in LIFO order) is non-empty, that group forms the
+  // vector of App's passed to cache_.OnApps.
+  std::vector<AppPtr> super_recursive_apps_;
+
+  // For non-super-recursive tests (i.e. for check_names_snapshot_ == true), we
+  // check that the "app_id to name" mapping is consistent across every
+  // OnAppsUpdate call to this observer. For super-recursive tests, that
+  // mapping can change as updates are processed, so the names_snapshot_ check
+  // is skipped.
+  bool check_names_snapshot_ = false;
+  std::map<std::string, std::string> names_snapshot_;
+};
+
+// InitializedObserver is used to test the OnAppTypeInitialized interface for
+// AppRegistryCache::Observer.
+class InitializedObserver : public apps::AppRegistryCache::Observer {
+ public:
+  explicit InitializedObserver(apps::AppRegistryCache* cache) {
+    cache_ = cache;
+    Observe(cache);
+  }
+
+  ~InitializedObserver() override = default;
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+      updated_ids_.insert(update.GetAppId());
+    } else {
+      updated_ids_.insert(update.AppId());
+    }
+  }
+
+  void UpdateApps() {
+    std::vector<AppPtr> deltas;
+    deltas.push_back(MakeApp("n", "noodle", AppType::kArc));
+    deltas.push_back(MakeApp("s", "salmon", AppType::kChromeApp));
+    cache_->OnApps(std::move(deltas), AppType::kUnknown,
+                   false /* should_notify_initialized */);
+
+    std::vector<apps::mojom::AppPtr> mojom_deltas;
+    mojom_deltas.push_back(
+        MakeMojomApp("n", "noodle", apps::mojom::AppType::kArc));
+    mojom_deltas.push_back(
+        MakeMojomApp("s", "salmon", apps::mojom::AppType::kChromeApp));
+    cache_->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+                   false /* should_notify_initialized */);
+  }
+
+  void OnAppTypeInitialized(apps::AppType app_type) override {
+    app_types_.insert(app_type);
+    ++initialized_app_type_count_;
+    app_count_at_initialization_ = updated_ids_.size();
+    UpdateApps();
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
+  }
+
+  std::set<apps::AppType> app_types() const { return app_types_; }
+
+  int initialized_app_type_count() const { return initialized_app_type_count_; }
+
+  int app_count_at_initialization() const {
+    return app_count_at_initialization_;
+  }
+
+ private:
+  std::set<std::string> updated_ids_;
+  std::set<apps::AppType> app_types_;
+  int initialized_app_type_count_ = 0;
+  int app_count_at_initialization_ = 0;
+  apps::AppRegistryCache* cache_ = nullptr;
+};
+
+}  // namespace
+
+class AppRegistryCacheTest : public testing::Test,
+                             public testing::WithParamInterface<bool>,
+                             public AppRegistryCache::Observer {
+ public:
+  AppRegistryCacheTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        kAppServiceOnAppUpdateWithoutMojom, IsOnAppUpdateWithoutMojomEnabled());
   }
 
   void CallForAllApps(AppRegistryCache& cache) {
-    cache.ForAllApps([this](const AppUpdate& update) { OnAppUpdate(update); });
-  }
-
-  void OnAppUpdate(const AppUpdate& update) {
-    EXPECT_NE("", update.GetName());
-    if (!apps_util::IsInstalled(update.GetReadiness())) {
-      return;
+    if (IsOnAppUpdateWithoutMojomEnabled()) {
+      cache.ForAllApps(
+          [this](const AppUpdate& update) { OnAppUpdate(update); });
+    } else {
+      cache.ForEachApp(
+          [this](const AppUpdate& update) { OnAppUpdate(update); });
     }
-    updated_ids_.insert(update.GetAppId());
-    updated_names_.insert(update.GetName());
   }
 
-  std::string GetName(const AppRegistryCache& cache,
-                      const std::string& app_id) {
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const AppUpdate& update) override {
+    EXPECT_EQ(account_id_, update.AccountId());
+
+    if (IsOnAppUpdateWithoutMojomEnabled()) {
+      EXPECT_NE("", update.Name());
+      if (!apps_util::IsInstalled(update.GetReadiness())) {
+        return;
+      }
+      if (update.ReadinessChanged() &&
+          (update.GetReadiness() == Readiness::kReady)) {
+        num_freshly_installed_++;
+      }
+      updated_ids_.insert(update.GetAppId());
+      updated_names_.insert(update.Name());
+    } else {
+      EXPECT_NE("", update.Name());
+      if (!apps_util::IsInstalled(update.Readiness())) {
+        return;
+      }
+      if (update.ReadinessChanged() &&
+          (update.Readiness() == apps::mojom::Readiness::kReady)) {
+        num_freshly_installed_++;
+      }
+      updated_ids_.insert(update.AppId());
+      updated_names_.insert(update.Name());
+    }
+  }
+
+  void OnAppTypeInitialized(AppType app_type) override { app_type_ = app_type; }
+
+  void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override {
+    // The test code explicitly calls both AddObserver and RemoveObserver.
+    NOTREACHED();
+  }
+
+  std::string GetName(AppRegistryCache& cache, const std::string& app_id) {
     std::string name;
-    cache.ForApp(app_id,
-                 [&name](const AppUpdate& update) { name = update.GetName(); });
+    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+      cache.ForApp(app_id,
+                   [&name](const AppUpdate& update) { name = update.Name(); });
+    } else {
+      cache.ForOneApp(
+          app_id, [&name](const AppUpdate& update) { name = update.Name(); });
+    }
     return name;
   }
 
@@ -68,16 +370,72 @@ class AppRegistryCacheTest : public testing::Test {
     updated_names_.clear();
   }
 
+  void DisableOnAppTypeInitializedFlag() {
+    scoped_feature_list_.Reset();
+    if (IsOnAppUpdateWithoutMojomEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppUpdateWithoutMojom},
+          /*disabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom,
+                                 kAppServiceOnAppUpdateWithoutMojom});
+    }
+  }
+
+  void EnableOnAppTypeInitializedFlag() {
+    scoped_feature_list_.Reset();
+    if (IsOnAppUpdateWithoutMojomEnabled())
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppUpdateWithoutMojom,
+                                kAppServiceOnAppTypeInitializedWithoutMojom},
+          /*disabled_features=*/{});
+    else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom},
+          /*disabled_features=*/{kAppServiceOnAppUpdateWithoutMojom});
+    }
+  }
+
+  bool IsOnAppUpdateWithoutMojomEnabled() const { return GetParam(); }
+
+  const AccountId& account_id() const { return account_id_; }
+
+  void SetAppType(AppType app_type) { app_type_ = app_type; }
+
+  AppType app_type() const { return app_type_; }
+
   std::set<std::string> updated_ids_;
   std::set<std::string> updated_names_;
+  int num_freshly_installed_ = 0;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
+  AppType app_type_ = AppType::kUnknown;
 };
 
-TEST_F(AppRegistryCacheTest, OnApps) {
+TEST_P(AppRegistryCacheTest, OnApps) {
   AppRegistryCache cache;
-  std::vector<std::unique_ptr<App>> deltas;
+  cache.SetAccountId(account_id());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(MakeMojomApp("a", "apple"));
+  mojom_deltas.push_back(
+      MakeMojomApp("b", "banana", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  mojom_deltas.push_back(
+      MakeMojomApp("c", "cherry", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
+               false /* should_notify_initialized */);
+
+  std::vector<AppPtr> deltas;
   deltas.push_back(MakeApp("a", "apple"));
-  deltas.push_back(MakeApp("b", "banana", Readiness::kReady));
-  deltas.push_back(MakeApp("c", "cherry", Readiness::kDisabledByPolicy,
+  deltas.push_back(MakeApp("b", "banana", AppType::kArc, Readiness::kReady));
+  deltas.push_back(MakeApp("c", "cherry", AppType::kArc,
+                           Readiness::kDisabledByPolicy,
                            /*timeline=*/10));
   cache.OnApps(std::move(deltas), AppType::kUnknown,
                false /* should_notify_initialized */);
@@ -97,8 +455,16 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   EXPECT_NE(updated_names_.end(), updated_names_.find("cherry"));
   Clear();
 
+  mojom_deltas.clear();
+  mojom_deltas.push_back(MakeMojomApp("a", "apricot",
+                                      apps::mojom::AppType::kArc,
+                                      apps::mojom::Readiness::kReady));
+  mojom_deltas.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
   deltas.clear();
-  deltas.push_back(MakeApp("a", "apricot", Readiness::kReady));
+  deltas.push_back(MakeApp("a", "apricot", AppType::kArc, Readiness::kReady));
   deltas.push_back(MakeApp("d", "durian"));
   cache.OnApps(std::move(deltas), AppType::kUnknown,
                false /* should_notify_initialized */);
@@ -116,14 +482,47 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
   EXPECT_NE(updated_names_.end(), updated_names_.find("apricot"));
   Clear();
+
+  // Test that ForOneApp succeeds for "c" and fails for "e".
+
+  bool found_c = false;
+  EXPECT_TRUE(cache.ForApp("c", [&found_c](const apps::AppUpdate& update) {
+    found_c = true;
+    EXPECT_EQ("c", update.GetAppId());
+  }));
+  EXPECT_TRUE(found_c);
+
+  bool found_e = false;
+  EXPECT_FALSE(cache.ForApp("e", [&found_e](const apps::AppUpdate& update) {
+    found_e = true;
+    EXPECT_EQ("e", update.GetAppId());
+  }));
+  EXPECT_FALSE(found_e);
 }
 
-TEST_F(AppRegistryCacheTest, Removed) {
+TEST_P(AppRegistryCacheTest, Removed) {
   AppRegistryCache cache;
+  testing::StrictMock<MockRegistryObserver> observer;
+  cache.SetAccountId(account_id());
+  cache.AddObserver(&observer);
 
-  std::vector<std::unique_ptr<App>> apps;
-  apps.push_back(MakeApp("app", "app", Readiness::kReady));
+  // Starting with an empty cache.
+  cache.ForAllApps([&observer](const apps::AppUpdate& update) {
+    observer.OnAppUpdate(update);
+  });
+
+  // We add the app, and expect to be notified.
+  EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
+
+  std::vector<AppPtr> apps;
+  apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
   cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  mojom_apps.push_back(MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
                false /* should_notify_initialized */);
 
   CallForAllApps(cache);
@@ -135,9 +534,48 @@ TEST_F(AppRegistryCacheTest, Removed) {
 
   // Uninstall the app, then remove it.
   apps.clear();
-  apps.push_back(MakeApp("app", "app", Readiness::kUninstalledByUser));
-  apps.push_back(MakeApp("app", "app", Readiness::kRemoved));
+  apps.push_back(
+      MakeApp("app", "app", AppType::kArc, Readiness::kUninstalledByUser));
+  apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kRemoved));
+
+  mojom_apps.clear();
+  mojom_apps.push_back(
+      MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kUninstalledByUser));
+  mojom_apps.push_back(MakeMojomApp("app", "app", apps::mojom::AppType::kArc,
+                                    apps::mojom::Readiness::kRemoved));
+
+  if (IsOnAppUpdateWithoutMojomEnabled()) {
+    // We should see one call informing us that the app was uninstalled.
+    EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
+        .WillOnce(testing::Invoke([&observer, &cache](const AppUpdate& update) {
+          EXPECT_EQ(Readiness::kUninstalledByUser, update.GetReadiness());
+          // Even though we have queued the removal, checking the cache now
+          // shows the app is still present.
+          EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
+          cache.ForAllApps([&observer](const AppUpdate& update) {
+            observer.OnAppUpdate(update);
+          });
+        }));
+  } else {
+    // We should see one call informing us that the app was uninstalled.
+    EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
+        .WillOnce(testing::Invoke([&observer, &cache](const AppUpdate& update) {
+          EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
+                    update.Readiness());
+          // Even though we have queued the removal, checking the cache now
+          // shows the app is still present.
+          EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
+          cache.ForEachApp([&observer](const AppUpdate& update) {
+            observer.OnAppUpdate(update);
+          });
+        }));
+  }
+
   cache.OnApps(std::move(apps), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
                false /* should_notify_initialized */);
 
   // The cache is now empty.
@@ -146,6 +584,781 @@ TEST_F(AppRegistryCacheTest, Removed) {
   EXPECT_TRUE(updated_ids_.empty());
   EXPECT_TRUE(updated_names_.empty());
   Clear();
+  cache.RemoveObserver(&observer);
 }
+
+TEST_P(AppRegistryCacheTest, Observer) {
+  std::vector<AppPtr> deltas;
+  AppRegistryCache cache;
+  cache.SetAccountId(account_id());
+  cache.AddObserver(this);
+
+  num_freshly_installed_ = 0;
+  updated_ids_.clear();
+  deltas.clear();
+  deltas.push_back(
+      MakeApp("a", "avocado", AppType::kArc, Readiness::kDisabledByPolicy));
+  deltas.push_back(
+      MakeApp("c", "cucumber", AppType::kArc, Readiness::kDisabledByPolicy));
+  deltas.push_back(
+      MakeApp("e", "eggfruit", AppType::kArc, Readiness::kDisabledByPolicy));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(
+      MakeMojomApp("a", "avocado", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  mojom_deltas.push_back(
+      MakeMojomApp("c", "cucumber", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  mojom_deltas.push_back(
+      MakeMojomApp("e", "eggfruit", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  EXPECT_EQ(0, num_freshly_installed_);
+  EXPECT_EQ(3u, updated_ids_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("e"));
+  EXPECT_EQ(AppType::kArc, app_type());
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+  }
+
+  SetAppType(AppType::kUnknown);
+  num_freshly_installed_ = 0;
+  updated_ids_.clear();
+  deltas.clear();
+  deltas.push_back(
+      MakeApp("b", "blueberry", AppType::kArc, Readiness::kDisabledByPolicy));
+  deltas.push_back(MakeApp("c", "cucumber", AppType::kArc, Readiness::kReady));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               false /* should_notify_initialized */);
+
+  mojom_deltas.clear();
+  mojom_deltas.push_back(
+      MakeMojomApp("b", "blueberry", apps::mojom::AppType::kArc,
+                   apps::mojom::Readiness::kDisabledByPolicy));
+  mojom_deltas.push_back(MakeMojomApp("c", "cucumber",
+                                      apps::mojom::AppType::kArc,
+                                      apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
+               false /* should_notify_initialized */);
+
+  EXPECT_EQ(1, num_freshly_installed_);
+  EXPECT_EQ(2u, updated_ids_.size());
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
+  EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
+  EXPECT_EQ(AppType::kUnknown, app_type());
+
+  cache.RemoveObserver(this);
+
+  num_freshly_installed_ = 0;
+  updated_ids_.clear();
+  deltas.clear();
+  deltas.push_back(MakeApp("f", "fig", AppType::kArc, Readiness::kReady));
+  cache.OnApps(std::move(deltas), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  mojom_deltas.clear();
+  mojom_deltas.push_back(MakeMojomApp("f", "fig", apps::mojom::AppType::kArc,
+                                      apps::mojom::Readiness::kReady));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  EXPECT_EQ(0, num_freshly_installed_);
+  EXPECT_EQ(0u, updated_ids_.size());
+  EXPECT_EQ(AppType::kUnknown, app_type());
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+  }
+}
+
+TEST_P(AppRegistryCacheTest, Recursive) {
+  if (!base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    return;
+  }
+
+  EnableOnAppTypeInitializedFlag();
+
+  std::vector<AppPtr> deltas;
+  AppRegistryCache cache;
+  cache.SetAccountId(account_id());
+  RecursiveObserver observer(&cache);
+
+  observer.PrepareForOnApps(2, "peach");
+
+  deltas.clear();
+  deltas.push_back(MakeApp("o", "orange"));
+  deltas.push_back(MakeApp("p", "peach"));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               true /* should_notify_initialized */);
+  EXPECT_EQ(2, observer.NumAppsSeenOnAppUpdate());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(MakeMojomApp("o", "orange"));
+  mojom_deltas.push_back(MakeMojomApp("p", "peach"));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  observer.PrepareForOnApps(3, "pear");
+
+  deltas.clear();
+  deltas.push_back(MakeApp("p", "pear", AppType::kArc, Readiness::kReady));
+  deltas.push_back(MakeApp("q", "quince"));
+  cache.OnApps(std::move(deltas), AppType::kUnknown,
+               false /* should_notify_initialized */);
+  EXPECT_EQ(2, observer.NumAppsSeenOnAppUpdate());
+
+  mojom_deltas.clear();
+  mojom_deltas.push_back(MakeMojomApp("p", "pear", apps::mojom::AppType::kArc,
+                                      apps::mojom::Readiness::kReady));
+  mojom_deltas.push_back(MakeMojomApp("q", "quince"));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  observer.PrepareForOnApps(3, "plum");
+
+  deltas.clear();
+  deltas.push_back(MakeApp("p", "pear"));
+  deltas.push_back(MakeApp("p", "pear"));
+  deltas.push_back(MakeApp("p", "plum"));
+  cache.OnApps(std::move(deltas), AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  mojom_deltas.clear();
+  mojom_deltas.push_back(MakeMojomApp("p", "pear"));
+  mojom_deltas.push_back(MakeMojomApp("p", "pear"));
+  mojom_deltas.push_back(MakeMojomApp("p", "plum"));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
+               false /* should_notify_initialized */);
+
+  EXPECT_EQ(1, observer.NumAppsSeenOnAppUpdate());
+  EXPECT_EQ(AppType::kArc, observer.app_type());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+}
+
+TEST_P(AppRegistryCacheTest, SuperRecursive) {
+  if (!base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    return;
+  }
+
+  EnableOnAppTypeInitializedFlag();
+
+  std::vector<AppPtr> deltas;
+  AppRegistryCache cache;
+  cache.SetAccountId(account_id());
+  RecursiveObserver observer(&cache);
+
+  // Set up a series of OnApps to be called during observer.OnAppUpdate:
+  //  - the 1st update is {"blackberry, "coconut"}.
+  //  - the 2nd update is {}.
+  //  - the 3rd update is {"blackcurrant", "apricot", "blueberry"}.
+  //  - the 4th update is {"avocado"}.
+  //  - the 5th update is {}.
+  //  - the 6th update is {"boysenberry"}.
+  //
+  // The vector is processed in LIFO order with nullptr punctuation to
+  // terminate each group. See the comment on the
+  // RecursiveObserver::super_recursive_apps_ field.
+  std::vector<AppPtr> super_recursive_apps;
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(MakeApp("b", "boysenberry"));
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(MakeApp("a", "avocado"));
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(MakeApp("b", "blueberry"));
+  super_recursive_apps.push_back(MakeApp("a", "apricot"));
+  super_recursive_apps.push_back(MakeApp("b", "blackcurrant"));
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(MakeApp("c", "coconut"));
+  super_recursive_apps.push_back(MakeApp("b", "blackberry"));
+
+  observer.PrepareForOnApps(3, "", &super_recursive_apps);
+  deltas.clear();
+  deltas.push_back(MakeApp("a", "apple"));
+  deltas.push_back(MakeApp("b", "banana"));
+  deltas.push_back(MakeApp("c", "cherry"));
+  cache.OnApps(std::move(deltas), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  mojom_deltas.push_back(MakeMojomApp("a", "apple"));
+  mojom_deltas.push_back(MakeMojomApp("b", "banana"));
+  mojom_deltas.push_back(MakeMojomApp("c", "cherry"));
+  cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // After all of that, check that for each app_id, the last delta won.
+  EXPECT_EQ("avocado", GetName(cache, "a"));
+  EXPECT_EQ("boysenberry", GetName(cache, "b"));
+  EXPECT_EQ("coconut", GetName(cache, "c"));
+  EXPECT_EQ(AppType::kArc, observer.app_type());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for the non
+// mojom App type first, with the disabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithDisableFlagNonMojomUpdateFirst) {
+  DisableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are
+  // initialized again.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for the mojom
+// App type first, with the disabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithDisableFlagMojomUpdateFirst) {
+  DisableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // When OnAppUpdate is called for mojom App, "a" and "c" are updated.
+  // When OnAppUpdate is called for non mojom App, no app is updated.
+  int app_count = IsOnAppUpdateWithoutMojomEnabled() ? 0 : 2;
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the Apps are added.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for multiple
+// App types, with the disabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithDisableFlagMultipleAppTypes) {
+  DisableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(
+      MakeMojomApp("d", "durian", apps::mojom::AppType::kChromeApp));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kChromeApp,
+               true /* should_notify_initialized */);
+
+  // When OnAppUpdate is called for mojom App, "a", "c", "d", "n", "s" are
+  // updated. When OnAppUpdate is called for non mojom App, "a", "c", "n", "s"
+  // is updated.
+  int app_count = IsOnAppUpdateWithoutMojomEnabled() ? 4 : 5;
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are added.
+  EXPECT_EQ(2u, observer1.app_types().size());
+  EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kChromeApp));
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kChromeApp));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian", AppType::kChromeApp));
+  cache.OnApps(std::move(deltas2), AppType::kChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for empty apps
+// vector, with the disabled flag.
+TEST_P(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
+  DisableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  cache.OnApps(std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // initialized.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+  EXPECT_FALSE(
+      cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  cache.OnApps(std::move(mojom_deltas1),
+               apps::mojom::AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are initialized.
+  EXPECT_TRUE(base::Contains(observer1.app_types(),
+                             apps::AppType::kStandaloneBrowserChromeApp));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // initialized again.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2),
+               apps::mojom::AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are
+  // initialized again.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas3;
+  cache.OnApps(std::move(mojom_deltas3), apps::mojom::AppType::kRemote,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when the mojom Apps are initialized.
+  EXPECT_EQ(2u, observer1.app_types().size());
+  EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kRemote));
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kRemote));
+
+  std::vector<AppPtr> deltas3;
+  cache.OnApps(std::move(deltas3), AppType::kRemote,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // initialized.
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for the non
+// mojom App type first, with the enabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithEnableFlagNonMojomUpdateFirst) {
+  EnableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(0u, cache.InitializedAppTypes().size());
+  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
+  // Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when more Apps are
+  // added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for the mojom
+// App type first, with the enabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithEnableFlagMojomUpdateFirst) {
+  EnableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are added.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(0u, cache.InitializedAppTypes().size());
+  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
+  // Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the Apps are added.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for multiple
+// App types, with the enabled flag.
+TEST_P(AppRegistryCacheTest,
+       OnAppTypeInitializedWithEnableFlagMultipleAppTypes) {
+  EnableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  deltas1.push_back(MakeApp("a", "avocado"));
+  deltas1.push_back(MakeApp("c", "cucumber"));
+  cache.OnApps(std::move(deltas1), AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // added.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  mojom_deltas1.push_back(MakeMojomApp("a", "avocado"));
+  mojom_deltas1.push_back(MakeMojomApp("c", "cucumber"));
+  cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
+  // Apps are added.
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kArc));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(
+      MakeMojomApp("d", "durian", apps::mojom::AppType::kChromeApp));
+  cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are added.
+  EXPECT_EQ(1u, observer1.app_types().size());
+  EXPECT_FALSE(base::Contains(observer1.app_types(), AppType::kChromeApp));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_FALSE(cache.IsAppTypeInitialized(AppType::kChromeApp));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian", AppType::kChromeApp));
+  cache.OnApps(std::move(deltas2), AppType::kChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the non mojom and mojom
+  // Apps are added.
+  EXPECT_EQ(2u, observer1.app_types().size());
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kChromeApp));
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(5, observer1.app_count_at_initialization());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kChromeApp));
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+// Verify the OnAppTypeInitialized callback when OnApps is called for empty apps
+// vector, with the enabled flag.
+TEST_P(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
+  EnableOnAppTypeInitializedFlag();
+
+  AppRegistryCache cache;
+  InitializedObserver observer1(&cache);
+
+  std::vector<AppPtr> deltas1;
+  cache.OnApps(std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // initialized.
+  EXPECT_TRUE(observer1.app_types().empty());
+  EXPECT_EQ(0, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_TRUE(cache.InitializedAppTypes().empty());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas1;
+  cache.OnApps(std::move(mojom_deltas1),
+               apps::mojom::AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the mojom and non mojom
+  // Apps are initialized.
+  EXPECT_TRUE(base::Contains(observer1.app_types(),
+                             AppType::kStandaloneBrowserChromeApp));
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kStandaloneBrowserChromeApp));
+
+  std::vector<AppPtr> deltas2;
+  deltas2.push_back(MakeApp("d", "durian"));
+  cache.OnApps(std::move(deltas2), AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the non mojom Apps are
+  // initialized again.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas2;
+  mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
+  cache.OnApps(std::move(mojom_deltas2),
+               apps::mojom::AppType::kStandaloneBrowserChromeApp,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are
+  // initialized again.
+  EXPECT_EQ(1, observer1.initialized_app_type_count());
+  EXPECT_EQ(0, observer1.app_count_at_initialization());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<apps::mojom::AppPtr> mojom_deltas3;
+  cache.OnApps(std::move(mojom_deltas3), apps::mojom::AppType::kRemote,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is not called when the mojom Apps are
+  // initialized.
+  EXPECT_EQ(1u, observer1.app_types().size());
+  EXPECT_EQ(1u, cache.InitializedAppTypes().size());
+
+  std::vector<AppPtr> deltas3;
+  cache.OnApps(std::move(deltas3), AppType::kRemote,
+               true /* should_notify_initialized */);
+
+  // Verify OnAppTypeInitialized is called when both the mojom and non mojom
+  // Apps are initialized.
+  EXPECT_EQ(2u, observer1.app_types().size());
+  EXPECT_TRUE(base::Contains(observer1.app_types(), AppType::kRemote));
+  EXPECT_EQ(2, observer1.initialized_app_type_count());
+  EXPECT_EQ(2u, cache.InitializedAppTypes().size());
+  EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kRemote));
+
+  // Verify the new observers should not have OnAppTypeInitialized called.
+  InitializedObserver observer2(&cache);
+  EXPECT_TRUE(observer2.app_types().empty());
+  EXPECT_EQ(0, observer2.initialized_app_type_count());
+  EXPECT_EQ(0, observer2.app_count_at_initialization());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppRegistryCacheTest,
+    testing::Bool() /* IsOnAppUpdateWithoutMojomEnabled */);
 
 }  // namespace apps

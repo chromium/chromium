@@ -29,6 +29,17 @@ Normalizes each UTF-8 string in the input tensor using the specified rule.
 
 See http://unicode.org/reports/tr15/
 
+#### Examples:
+
+```
+>>> # input: <string>[num_strings]
+>>> normalize_utf8(["株式会社", "ＫＡＤＯＫＡＷＡ"])
+>>> # output: <string>[num_strings]
+<tf.Tensor: shape=(2,), dtype=string, numpy=
+array([b'\xe6\xa0\xaa\xe5\xbc\x8f\xe4\xbc\x9a\xe7\xa4\xbe', b'KADOKAWA'],
+      dtype=object)>
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>

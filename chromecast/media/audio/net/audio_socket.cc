@@ -37,7 +37,7 @@ bool GetMetaDataPaddingBytes(const char* data,
     return false;
   }
 
-  base::ReadBigEndian(data, &padding_bytes);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &padding_bytes);
   size -= sizeof(padding_bytes);
 
   if (padding_bytes < 0 || padding_bytes > 3) {
@@ -150,7 +150,8 @@ bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
 bool AudioSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
   uint16_t payload_size;
-  base::ReadBigEndian(audio_buffer->data(), &payload_size);
+  base::ReadBigEndian(reinterpret_cast<uint8_t*>(audio_buffer->data()),
+                      &payload_size);
   DCHECK_GE(payload_size, kAudioHeaderSize);
   return SendBuffer(0, std::move(audio_buffer),
                     sizeof(uint16_t) + payload_size);
@@ -229,7 +230,8 @@ void AudioSocket::OnSendUnblocked() {
   pending_writes_.swap(pending);
   for (auto& m : pending) {
     uint16_t message_size;
-    base::ReadBigEndian(m.second->data(), &message_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(m.second->data()),
+                        &message_size);
     SendBufferToSocket(m.first, std::move(m.second),
                        sizeof(uint16_t) + message_size);
   }

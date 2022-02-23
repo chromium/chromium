@@ -13,6 +13,7 @@
 
 #include "apps/app_lifetime_monitor.h"
 #include "base/callback_forward.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
@@ -187,6 +188,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
+
+  static base::ScopedCFTypeRef<CFStringRef>
+      BuildAppShimRequirementStringFromFrameworkRequirementString(CFStringRef);
 
  protected:
   typedef std::set<Browser*> BrowserSet;

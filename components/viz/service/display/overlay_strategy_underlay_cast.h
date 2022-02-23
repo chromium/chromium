@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
 
   ~OverlayStrategyUnderlayCast() override;
 
-  bool Attempt(const skia::Matrix44& output_color_matrix,
+  bool Attempt(const SkM44& output_color_matrix,
                const OverlayProcessorInterface::FilterOperationsMap&
                    render_pass_backdrop_filters,
                DisplayResourceProvider* resource_provider,
@@ -41,18 +41,18 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
                OverlayCandidateList* candidate_list,
                std::vector<gfx::Rect>* content_bounds) override;
 
-  void ProposePrioritized(const skia::Matrix44& output_color_matrix,
+  void ProposePrioritized(const SkM44& output_color_matrix,
                           const OverlayProcessorInterface::FilterOperationsMap&
                               render_pass_backdrop_filters,
                           DisplayResourceProvider* resource_provider,
                           AggregatedRenderPassList* render_pass_list,
                           SurfaceDamageRectList* surface_damage_rect_list,
                           const PrimaryPlane* primary_plane,
-                          OverlayProposedCandidateList* candidates,
+                          std::vector<OverlayProposedCandidate>* candidates,
                           std::vector<gfx::Rect>* content_bounds) override;
 
   bool AttemptPrioritized(
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,
@@ -61,7 +61,10 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
       const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
-      OverlayProposedCandidate* proposed_candidate) override;
+      const OverlayProposedCandidate& proposed_candidate) override;
+
+  void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
+                       AggregatedRenderPass* render_pass) override;
 
 #if BUILDFLAG(IS_CHROMECAST)
   // In Chromecast build, OverlayStrategyUnderlayCast needs a valid mojo

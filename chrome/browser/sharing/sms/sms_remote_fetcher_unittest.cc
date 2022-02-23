@@ -53,7 +53,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);
@@ -86,7 +86,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);
@@ -131,7 +131,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);
@@ -170,7 +170,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 TEST(SmsRemoteFetcherTest, RequestCancelled) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);
@@ -219,7 +219,7 @@ TEST(SmsRemoteFetcherTest, FeatureDisabled) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   base::RunLoop loop;
@@ -245,7 +245,7 @@ TEST(SmsRemoteFetcherTest, NoSharingService) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   base::RunLoop loop;
@@ -271,7 +271,7 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);
@@ -316,7 +316,7 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
   content::BrowserTaskEnvironment task_environment;
   base::HistogramTester histogram_tester;
   TestingProfile profile;
-  content::WebContents::CreateParams create_params(&profile, nullptr);
+  content::WebContents::CreateParams create_params(&profile);
   auto web_contents = content::WebContents::Create(create_params);
 
   MockSharingService* service = CreateSharingService(&profile);

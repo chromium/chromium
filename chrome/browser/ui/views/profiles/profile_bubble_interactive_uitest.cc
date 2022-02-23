@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -82,7 +83,7 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   void Refocus(views::View* view) {
     EXPECT_FALSE(view->HasFocus());
     // Mac uses Cmd-Option-ArrowDown, other platforms use F6.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::KeyboardCode key = ui::VKEY_DOWN;
     bool alt = true;
     bool command = true;
@@ -153,20 +154,13 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuInteractiveUiTest, OtherProfileFocus) {
   base::HistogramTester histogram_tester;
   // Add an additional profiles.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile_manager->GenerateNextProfileDirectoryPath(),
-      base::BindLambdaForTesting(
-          [&run_loop](Profile* profile, Profile::CreateStatus status) {
-            if (status == Profile::CREATE_STATUS_INITIALIZED)
-              run_loop.Quit();
-          }));
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
 
   // Open the menu using the keyboard.
   bool control = false;
   bool command = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command = true;
 #else
   control = true;

@@ -33,7 +33,7 @@ void DiskCacheDirPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
 
   base::FilePath::StringType expanded_value =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       policy::path_parser::ExpandPathVariables(base::UTF8ToWide(*string_value));
 #else
       policy::path_parser::ExpandPathVariables(*string_value);

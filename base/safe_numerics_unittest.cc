@@ -14,7 +14,7 @@
 // WARNING: This block must come before the base/numerics headers are included.
 // These tests deliberately cause arithmetic boundary errors. If the compiler is
 // aggressive enough, it can const detect these errors, so we disable warnings.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(disable : 4756)  // Arithmetic overflow.
 #pragma warning(disable : 4293)  // Invalid shift.
 #endif
@@ -109,6 +109,59 @@ static_assert(FastIntegerArithmeticPromotion<int32_t, uint32_t>::is_contained,
 static_assert(!FastIntegerArithmeticPromotion<intmax_t, int8_t>::is_contained,
               "");
 static_assert(!FastIntegerArithmeticPromotion<uintmax_t, int8_t>::is_contained,
+              "");
+
+// Test compile-time (constexpr) evaluation of checking and saturation.
+constexpr int32_t kIntOne = 1;
+static_assert(1 == checked_cast<uint8_t>(kIntOne), "");
+static_assert(1 == saturated_cast<uint8_t>(kIntOne), "");
+static_assert(2U == MakeClampedNum(kIntOne) + 1, "");
+static_assert(2U == (MakeCheckedNum(kIntOne) + 1).ValueOrDie(), "");
+static_assert(0U == MakeClampedNum(kIntOne) - 1, "");
+static_assert(0U == (MakeCheckedNum(kIntOne) - 1).ValueOrDie(), "");
+static_assert(-1 == -MakeClampedNum(kIntOne), "");
+static_assert(-1 == (-MakeCheckedNum(kIntOne)).ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) * 1, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) * 1).ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) / 1, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) / 1).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(-kIntOne).Abs(), "");
+static_assert(1 == MakeCheckedNum(-kIntOne).Abs().ValueOrDie(), "");
+static_assert(1U == MakeClampedNum(kIntOne) % 2, "");
+static_assert(1U == (MakeCheckedNum(kIntOne) % 2).ValueOrDie(), "");
+static_assert(0U == MakeClampedNum(kIntOne) >> 1U, "");
+static_assert(0U == (MakeCheckedNum(kIntOne) >> 1U).ValueOrDie(), "");
+static_assert(2U == MakeClampedNum(kIntOne) << 1U, "");
+static_assert(2U == (MakeCheckedNum(kIntOne) << 1U).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(kIntOne) & 1U, "");
+static_assert(1 == (MakeCheckedNum(kIntOne) & 1U).ValueOrDie(), "");
+static_assert(1 == MakeClampedNum(kIntOne) | 1U, "");
+static_assert(1 == (MakeCheckedNum(kIntOne) | 1U).ValueOrDie(), "");
+static_assert(0 == MakeClampedNum(kIntOne) ^ 1U, "");
+static_assert(0 == (MakeCheckedNum(kIntOne) ^ 1U).ValueOrDie(), "");
+constexpr float kFloatOne = 1.0;
+static_assert(1 == int{checked_cast<int8_t>(kFloatOne)}, "");
+static_assert(1 == int{saturated_cast<int8_t>(kFloatOne)}, "");
+static_assert(2U == unsigned{MakeClampedNum(kFloatOne) + 1}, "");
+static_assert(2U ==
+                  (MakeCheckedNum(kFloatOne) + 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(0U == unsigned{MakeClampedNum(kFloatOne) - 1}, "");
+static_assert(0U ==
+                  (MakeCheckedNum(kFloatOne) - 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(-1 == int{-MakeClampedNum(kFloatOne)}, "");
+static_assert(-1 == (-MakeCheckedNum(kFloatOne)).Cast<int>().ValueOrDie(), "");
+static_assert(1U == unsigned{MakeClampedNum(kFloatOne) * 1}, "");
+static_assert(1U ==
+                  (MakeCheckedNum(kFloatOne) * 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(1U == unsigned{MakeClampedNum(kFloatOne) / 1}, "");
+static_assert(1U ==
+                  (MakeCheckedNum(kFloatOne) / 1).Cast<unsigned>().ValueOrDie(),
+              "");
+static_assert(1 == int{MakeClampedNum(-kFloatOne).Abs()}, "");
+static_assert(1 == MakeCheckedNum(-kFloatOne).Abs().Cast<int>().ValueOrDie(),
               "");
 
 template <typename U>

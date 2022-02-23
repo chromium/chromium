@@ -285,10 +285,8 @@ void CellularInhibitor::OnSetPropertySuccess() {
   CheckInhibitPropertyIfNeeded();
 }
 
-void CellularInhibitor::OnSetPropertyError(
-    bool attempted_inhibit,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void CellularInhibitor::OnSetPropertyError(bool attempted_inhibit,
+                                           const std::string& error_name) {
   NET_LOG(ERROR) << (attempted_inhibit ? "Inhibit" : "Uninhibit")
                  << "CellularScanning() failed: " << error_name;
   ReturnSetInhibitPropertyResult(/*success=*/false,
@@ -383,6 +381,9 @@ std::ostream& operator<<(
       break;
     case chromeos::CellularInhibitor::InhibitReason::kResettingEuiccMemory:
       stream << "[Resetting EUICC memory]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kDisablingProfile:
+      stream << "[Disabling profile]";
       break;
   }
   return stream;

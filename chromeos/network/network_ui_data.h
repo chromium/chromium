@@ -9,12 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/values.h"
 #include "components/onc/onc_constants.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
 
 namespace chromeos {
 
@@ -34,11 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   static std::unique_ptr<NetworkUIData> CreateFromONC(
       ::onc::ONCSource onc_source);
 
-  // Returns a |user_settings_| as a DictionaryValue*.
-  const base::DictionaryValue* GetUserSettingsDictionary() const;
+  // Returns a |user_settings_| as a base::Value::Type::DICTIONARY Value*.
+  const base::Value* GetUserSettingsDictionary() const;
 
   // Setus |user_settings_| to the provided value which must be a dictionary.
-  void SetUserSettingsDictionary(std::unique_ptr<base::Value> dict);
+  void SetUserSettingsDictionary(base::Value dict);
 
   // Returns a JSON string representing currently configured values for storing
   // in Shill.
@@ -50,7 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   std::string GetONCSourceAsString() const;
 
   ::onc::ONCSource onc_source_;
-  std::unique_ptr<base::Value> user_settings_;
+  // This can be a NONE value if there is no user settings dictionary, or a
+  // DICTIONARY value otherwise.
+  base::Value user_settings_;
 };
 
 }  // namespace chromeos

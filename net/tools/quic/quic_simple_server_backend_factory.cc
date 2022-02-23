@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "net/tools/quic/quic_simple_server_backend_factory.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 #include "net/tools/quic/quic_http_proxy_backend_stream.h"
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(
+DEFINE_QUICHE_COMMAND_LINE_FLAG(
     std::string,
     quic_mode,
     "cache",
     "Specifies the mode for the server to operate in. Either "
     "'cache' or 'proxy'");
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(
+DEFINE_QUICHE_COMMAND_LINE_FLAG(
     std::string,
     quic_proxy_backend_url,
     "",

@@ -10,7 +10,6 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
@@ -21,7 +20,7 @@
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 

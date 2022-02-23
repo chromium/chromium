@@ -7,9 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_manager_core/account.h"
@@ -21,11 +19,12 @@
 class ProfileAccountManagerTest : public testing::Test {
  public:
   ProfileAccountManagerTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(testing_profile_manager_.SetUp());
     testing_profile_manager_.SetAccountProfileMapper(
-        std::make_unique<AccountProfileMapper>(&mock_facade_, storage()));
+        std::make_unique<AccountProfileMapper>(
+            &mock_facade_, storage(),
+            testing_profile_manager_.local_state()->Get()));
   }
 
   AccountProfileMapper* mapper() {
@@ -39,7 +38,6 @@ class ProfileAccountManagerTest : public testing::Test {
                 ->GetProfileAttributesStorage();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   account_manager::MockAccountManagerFacade mock_facade_;
   TestingProfileManager testing_profile_manager_;

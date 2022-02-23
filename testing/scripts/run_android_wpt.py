@@ -35,7 +35,7 @@ import common
 
 from wpt_android_lib import (
     WPTWeblayerAdapter, WPTWebviewAdapter, WPTClankAdapter,
-    add_emulator_args, get_device)
+    add_emulator_args, get_devices)
 
 logger = logging.getLogger(__name__)
 
@@ -65,13 +65,13 @@ from blinkpy.web_tests.port.android import (
 
 from devil import devil_env
 
-def _get_adapter(product, device):
+def _get_adapter(product, devices):
   if product == ANDROID_WEBLAYER:
-    return WPTWeblayerAdapter(device)
+    return WPTWeblayerAdapter(devices)
   elif product == ANDROID_WEBVIEW:
-    return WPTWebviewAdapter(device)
+    return WPTWebviewAdapter(devices)
   else:
-    return WPTClankAdapter(device)
+    return WPTClankAdapter(devices)
 
 
 # This is not really a "script test" so does not need to manually add
@@ -92,12 +92,12 @@ def main():
   args, _ = product_parser.parse_known_args()
   product = args.product
 
-  with get_device(args) as device:
-    if not device:
+  with get_devices(args) as devices:
+    if not devices:
       logger.error('There are no devices attached to this host. Exiting...')
       return
 
-    adapter = _get_adapter(product, device)
+    adapter = _get_adapter(product, devices)
     if adapter.options.verbose:
       if adapter.options.verbose == 1:
         logger.setLevel(logging.INFO)

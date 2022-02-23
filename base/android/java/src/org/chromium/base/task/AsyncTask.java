@@ -14,6 +14,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.DoNotInline;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,9 +38,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class AsyncTask<Result> {
     private static final String TAG = "AsyncTask";
 
+    private static final String GET_STATUS_UMA_HISTOGRAM =
+            "Android.Jank.AsyncTaskGetOnUiThreadStatus";
+
     /**
      * An {@link Executor} that can be used to execute tasks in parallel.
-     * We use the lowest task priority, and mayBlock = true since any user of this could block.
+     * We use the lowest task priority, and mayBlock = true since any user of this could
+     * block.
      */
     public static final Executor THREAD_POOL_EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, r);
@@ -68,8 +73,10 @@ public abstract class AsyncTask<Result> {
     }
 
     /**
-     * Indicates the current status of the task. Each status will be set only once
-     * during the lifetime of a task.
+     * Indicates the current status of the task. Each status will be set only once during the
+     * lifetime of a task. AsyncTaskStatus corresponding to this is defined in
+     * tools/metrics/histograms/enums.xml. Entries should not be renumbered and numeric values
+     * should never be reused.
      */
     @IntDef({Status.PENDING, Status.RUNNING, Status.FINISHED})
     @Retention(RetentionPolicy.SOURCE)
@@ -86,6 +93,10 @@ public abstract class AsyncTask<Result> {
          * Indicates that {@link AsyncTask#onPostExecute} has finished.
          */
         int FINISHED = 2;
+        /**
+         * Just used for reporting this status to UMA.
+         */
+        int NUM_ENTRIES = 3;
     }
 
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
@@ -142,6 +153,20 @@ public abstract class AsyncTask<Result> {
      * @return The current status.
      */
     public final @Status int getStatus() {
+        return mStatus;
+    }
+
+    /**
+     * Returns the current status of this task, with adjustments made to make UMA more useful.
+     * Namely, we are going to return "PENDING" until the asynctask actually starts running. Right
+     * now, as soon as you try to schedule the AsyncTask, it gets set to "RUNNING" which doesn't
+     * make sense. However, we aren't fixing this globally as this is the well-defined API
+     * AsyncTasks have, so we are just fixing this for our UMA reporting.
+     *
+     * @return The current status.
+     */
+    public final @Status int getUmaStatus() {
+        if (mStatus == Status.RUNNING && !mTaskInvoked.get()) return Status.PENDING;
         return mStatus;
     }
 
@@ -283,7 +308,10 @@ public abstract class AsyncTask<Result> {
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public final Result get() throws InterruptedException, ExecutionException {
         Result r;
-        if (getStatus() != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
+        int status = getUmaStatus();
+        if (status != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);
             StackTraceElement[] stackTrace = new Exception().getStackTrace();
             String caller = "";
             if (stackTrace.length > 1) {
@@ -318,7 +346,10 @@ public abstract class AsyncTask<Result> {
     public final Result get(long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
         Result r;
-        if (getStatus() != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
+        int status = getUmaStatus();
+        if (status != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);
             StackTraceElement[] stackTrace = new Exception().getStackTrace();
             String caller = "";
             if (stackTrace.length > 1) {
@@ -437,7 +468,8 @@ public abstract class AsyncTask<Result> {
         @Override
         @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void run() {
-            try (TraceEvent e = TraceEvent.scoped("AsyncTask.run: " + mFuture.getBlamedClass())) {
+            try (TraceEvent e = TraceEvent.scoped(
+                         "AsyncTask.run: " + mFuture.getBlamedClass().getName())) {
                 super.run();
             }
         }

@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -97,6 +97,7 @@ static bool IsAllowed(ExecutionContext* execution_context,
 void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
                                             EventTarget& event_target,
                                             const ScriptValue& e) {
+  ScriptState::Scope scope(script_state);
   V8ScriptRunner::ReportException(script_state->GetIsolate(), e.V8Value());
 }
 
@@ -232,6 +233,7 @@ ScriptValue WindowOrWorkerGlobalScope::structuredClone(
     const ScriptValue& message,
     const StructuredSerializeOptions* options,
     ExceptionState& exception_state) {
+  ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
   Transferables transferables;

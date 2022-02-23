@@ -119,7 +119,7 @@ void SystemInfoHandler::RegisterMessages() {
 
 void SystemInfoHandler::HandleRequestSystemInfo(const base::ListValue* args) {
   AllowJavascript();
-  callback_id_ = args->GetList()[0].GetString();
+  callback_id_ = args->GetListDeprecated()[0].GetString();
 
   system_logs::SystemLogsFetcher* fetcher =
       system_logs::BuildAboutSystemLogsFetcher();
@@ -136,8 +136,8 @@ void SystemInfoHandler::OnSystemInfo(
   for (SystemLogsResponse::const_iterator it = sys_info->begin();
        it != sys_info->end(); ++it) {
     auto val = std::make_unique<base::DictionaryValue>();
-    val->SetString("statName", it->first);
-    val->SetString("statValue", it->second);
+    val->SetStringKey("statName", it->first);
+    val->SetStringKey("statValue", it->second);
     data.Append(std::move(val));
   }
   ResolveJavascriptCallback(base::Value(callback_id_), data);

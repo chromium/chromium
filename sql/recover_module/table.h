@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "sql/recover_module/parsing.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -103,7 +104,7 @@ class VirtualTable {
   sqlite3_vtab sqlite_table_;
 
   // See the corresponding getters for these members' purpose.
-  sqlite3_file* const sqlite_file_;
+  const raw_ptr<sqlite3_file> sqlite_file_;
   const int root_page_id_;
   const int page_size_;
   const std::vector<RecoveredColumnSpec> column_specs_;

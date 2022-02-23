@@ -24,12 +24,11 @@ class TestUtils {
   // given |content_type|. The returned content
   // setting applies to the primary and secondary URL, and to the normal or
   // incognito mode, depending on |include_incognito|.
-  static base::Value* GetContentSettingValue(
-      const ProviderInterface* provider,
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      bool include_incognito);
+  static base::Value GetContentSettingValue(const ProviderInterface* provider,
+                                            const GURL& primary_url,
+                                            const GURL& secondary_url,
+                                            ContentSettingsType content_type,
+                                            bool include_incognito);
 
   static ContentSetting GetContentSetting(
       const ProviderInterface* provider,
@@ -41,7 +40,7 @@ class TestUtils {
   // This wrapper exists only to make
   // HostContentSettingsMap::GetContentSettingValueAndPatterns public for use in
   // tests.
-  static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
+  static base::Value GetContentSettingValueAndPatterns(
       content_settings::RuleIterator* rule_iterator,
       const GURL& primary_url,
       const GURL& secondary_url,

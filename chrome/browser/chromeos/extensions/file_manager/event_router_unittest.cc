@@ -25,12 +25,12 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
   EXPECT_EQ(ext_event.vm_name, "vmname");
   EXPECT_EQ(ext_event.entries.size(), 1u);
   base::DictionaryValue ext_props;
-  ext_props.SetString(
+  ext_props.SetStringKey(
       "fileSystemRoot",
       "filesystem:chrome-extension://extensionid/external/mountname/");
-  ext_props.SetString("fileSystemName", "filesystemname");
-  ext_props.SetString("fileFullPath", "/full/path");
-  ext_props.SetBoolean("fileIsDirectory", true);
+  ext_props.SetStringKey("fileSystemName", "filesystemname");
+  ext_props.SetStringKey("fileFullPath", "/full/path");
+  ext_props.SetBoolKey("fileIsDirectory", true);
   EXPECT_EQ(ext_event.entries[0].additional_properties, ext_props);
 
   extensions::api::file_manager_private::CrostiniEvent swa_event;
@@ -46,11 +46,11 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
   EXPECT_EQ(swa_event.vm_name, "vmname");
   EXPECT_EQ(swa_event.entries.size(), 1u);
   base::DictionaryValue swa_props;
-  swa_props.SetString("fileSystemRoot",
-                      "filesystem:chrome://file-manager/external/mountname/");
-  swa_props.SetString("fileSystemName", "filesystemname");
-  swa_props.SetString("fileFullPath", "/full/path");
-  swa_props.SetBoolean("fileIsDirectory", true);
+  swa_props.SetStringKey(
+      "fileSystemRoot", "filesystem:chrome://file-manager/external/mountname/");
+  swa_props.SetStringKey("fileSystemName", "filesystemname");
+  swa_props.SetStringKey("fileFullPath", "/full/path");
+  swa_props.SetBoolKey("fileIsDirectory", true);
   EXPECT_EQ(swa_event.entries[0].additional_properties, swa_props);
 }
 

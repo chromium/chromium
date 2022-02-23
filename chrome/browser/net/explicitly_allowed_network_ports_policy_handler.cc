@@ -45,7 +45,7 @@ void ExplicitlyAllowedNetworkPortsPolicyHandler::ApplyList(
     base::Value filtered_list,
     PrefValueMap* prefs) {
   base::ListValue integer_list;
-  auto list_view = filtered_list.GetList();
+  auto list_view = filtered_list.GetListDeprecated();
   for (const base::Value& value : list_view) {
     const std::string& as_string = value.GetString();
     int as_int;

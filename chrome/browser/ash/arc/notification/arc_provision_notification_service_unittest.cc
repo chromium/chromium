@@ -7,6 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/values.h"
@@ -22,10 +26,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -68,8 +68,11 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
 
-    if (should_create_session_manager)
-      session_manager_ = std::make_unique<session_manager::SessionManager>();
+    if (should_create_session_manager) {
+      // SessionManager is created by
+      // |AshTestHelper::bluetooth_config_test_helper()|.
+      session_manager_ = session_manager::SessionManager::Get();
+    }
 
     // This creates |profile()|, so it has to come after the arc managers.
     BrowserWithTestWindowTest::SetUp();
@@ -96,7 +99,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    session_manager_.reset();
 
     chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
@@ -110,7 +112,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  session_manager::SessionManager* session_manager_;
 
  private:
   user_manager::ScopedUserManager user_manager_enabler_;

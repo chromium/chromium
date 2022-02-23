@@ -333,7 +333,7 @@ void JankMonitorImpl::ThreadExecutionState::DidRunTaskOrEvent(
     // in context menus, among others). Simply ignore the mismatches for now.
     // See https://crbug.com/929813 for the details of why the mismatch
     // happens.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
     task_execution_metadata_.clear();
 #endif
     return;

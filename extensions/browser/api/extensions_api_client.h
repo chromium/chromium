@@ -165,10 +165,10 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<DevicePermissionsPrompt>
   CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns true if device policy allows detaching a given USB device.
   virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>
@@ -210,7 +210,7 @@ class ExtensionsAPIClient {
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       std::vector<uint8_t> image_data,
@@ -218,7 +218,7 @@ class ExtensionsAPIClient {
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
 

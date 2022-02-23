@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/protocol/audio_stream.h"
 #include "third_party/webrtc/api/scoped_refptr.h"

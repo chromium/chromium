@@ -113,10 +113,6 @@ ObjectProxy::ReplyCallbackHolder::ReleaseCallback() {
   return std::move(callback_);
 }
 
-bool ObjectProxy::ReplyCallbackHolder::IsNullCallback() const {
-  return callback_.is_null();
-}
-
 ObjectProxy::ObjectProxy(Bus* bus,
                          const std::string& service_name,
                          const ObjectPath& object_path,
@@ -182,10 +178,6 @@ std::unique_ptr<Response> ObjectProxy::CallMethodAndBlock(
 void ObjectProxy::CallMethod(MethodCall* method_call,
                              int timeout_ms,
                              ResponseCallback callback) {
-  // `callback` should not be null. Otherwise, it crashes later in OnCallMethod.
-  // TODO(http://crbug/1211451): Remove after fix.
-  CHECK(!callback.is_null());
-
   auto internal_callback = base::BindOnce(
       &ObjectProxy::OnCallMethod, this, method_call->GetInterface(),
       method_call->GetMember(), std::move(callback));
@@ -204,8 +196,6 @@ void ObjectProxy::CallMethodWithErrorResponse(
 
   ReplyCallbackHolder callback_holder(bus_->GetOriginTaskRunner(),
                                       std::move(callback));
-  // TODO(http://crbug/1211451): Remove after fix.
-  CHECK(!callback_holder.IsNullCallback());
 
   if (!method_call->SetDestination(service_name_) ||
       !method_call->SetPath(object_path_)) {
@@ -351,9 +341,6 @@ void ObjectProxy::StartAsyncMethodCall(int timeout_ms,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  // TODO(http://crbug/1211451): Remove after fix.
-  CHECK(!callback_holder.IsNullCallback());
-
   if (!bus_->Connect() || !bus_->SetUpAsyncOperations()) {
     // In case of a failure, run the error callback with nullptr.
     base::OnceClosure task =
@@ -395,9 +382,6 @@ void ObjectProxy::OnPendingCallIsComplete(ReplyCallbackHolder callback_holder,
   bus_->AssertOnDBusThread();
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-
-  // TODO(http://crbug/1211451): Remove after fix.
-  CHECK(!callback_holder.IsNullCallback());
 
   DBusMessage* response_message = dbus_pending_call_steal_reply(pending_call);
 
@@ -452,9 +436,6 @@ void ObjectProxy::RunResponseOrErrorCallback(
     base::TimeTicks start_time,
     Response* response,
     ErrorResponse* error_response) {
-  // TODO(http://crbug/1211451): Remove after fix.
-  CHECK(!callback_holder.IsNullCallback());
-
   bus_->AssertOnOriginThread();
   callback_holder.ReleaseCallback().Run(response, error_response);
 
@@ -647,16 +628,6 @@ void ObjectProxy::OnCallMethod(const std::string& interface_name,
                                ResponseCallback response_callback,
                                Response* response,
                                ErrorResponse* error_response) {
-  // Crash on null `response_callback` with details of the call.
-  // TODO(http://crbug/1211451): Remove after fix.
-  DEBUG_ALIAS_FOR_CSTR(interface_name_copy, interface_name.c_str(), 64);
-  DEBUG_ALIAS_FOR_CSTR(method_name_copy, method_name.c_str(), 64);
-  DEBUG_ALIAS_FOR_CSTR(object_path_copy, object_path_.value().c_str(), 64);
-  LOG_IF(FATAL, response_callback.is_null())
-      << "Null response_callback"
-      << ", method:" << interface_name << "." << method_name
-      << ", obj=" << object_path_.value();
-
   if (response) {
     // Method call was successful.
     std::move(response_callback).Run(response);

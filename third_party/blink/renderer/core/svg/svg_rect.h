@@ -36,7 +36,7 @@ class SVGRect final : public SVGPropertyHelper<SVGRect> {
 
   static SVGRect* CreateInvalid() {
     SVGRect* rect = MakeGarbageCollected<SVGRect>();
-    rect->SetInvalid();
+    rect->is_valid_ = false;
     return rect;
   }
 
@@ -73,12 +73,12 @@ class SVGRect final : public SVGPropertyHelper<SVGRect> {
   float CalculateDistance(const SVGPropertyBase* to,
                           const SVGElement* context_element) const override;
 
-  bool IsValid() const { return is_valid_; }
-  void SetInvalid();
-
   static AnimatedPropertyType ClassType() { return kAnimatedRect; }
 
  private:
+  friend class SVGFitToViewBox;
+  bool IsValid() const { return is_valid_; }
+
   template <typename CharType>
   SVGParsingError Parse(const CharType*& ptr, const CharType* end);
   void Set(float x, float y, float width, float height);

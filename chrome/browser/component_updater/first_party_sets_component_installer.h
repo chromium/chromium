@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -27,10 +28,12 @@ class ComponentUpdateService;
 
 class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
+  using SetsReadyOnceCallback = base::OnceCallback<void(base::File)>;
+
   // |on_sets_ready| will be called on the UI thread when the sets are ready. It
   // is exposed here for testing.
   explicit FirstPartySetsComponentInstallerPolicy(
-      base::RepeatingCallback<void(const std::string&)> on_sets_ready);
+      SetsReadyOnceCallback on_sets_ready);
   ~FirstPartySetsComponentInstallerPolicy() override;
 
   FirstPartySetsComponentInstallerPolicy(
@@ -41,7 +44,13 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Calls the callback with the current First-Party Sets data, if the data
   // exists and can be read.
   static void ReconfigureAfterNetworkRestart(
-      const base::RepeatingCallback<void(const std::string&)>&);
+      SetsReadyOnceCallback on_sets_ready);
+
+  // Sends the given file to the NetworkService to initialize the FirstPartySets
+  // instance. Should only be called once at runtime.
+  static void SendFileToNetworkService(base::File sets_file);
+
+  void OnRegistrationComplete();
 
   // Resets static state. Should only be used to clear state during testing.
   static void ResetForTesting();
@@ -55,23 +64,27 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                                        base::StringPiece contents);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+                           NonexistentFile_OnRegistrationComplete);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            LoadsSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+                           IgnoreNewSets_NoInitialComponent);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureDisabledTest,
                            GetInstallerAttributes_Disabled);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerNonDogFooderTest,
                            GetInstallerAttributes_NonDogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerDogFooderTest,
                            GetInstallerAttributes_Dogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerV2FormatTest,
                            GetInstallerAttributes_V2OptOut);
 
   // The following methods override ComponentInstallerPolicy.
@@ -97,7 +110,9 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
-  base::RepeatingCallback<void(const std::string&)> on_sets_ready_;
+  // We use a OnceCallback to ensure we only pass along the sets file once
+  // during Chrome's lifetime (modulo reconfiguring the network service).
+  SetsReadyOnceCallback on_sets_ready_;
 };
 
 // Call once during startup to make the component update service aware of

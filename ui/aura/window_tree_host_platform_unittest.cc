@@ -4,6 +4,7 @@
 
 #include "ui/aura/window_tree_host_platform.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -21,14 +22,14 @@ class WindowTreeHostPlatformTest : public test::AuraTestBase {
   // test::AuraTestBase:
   void SetUp() override {
     test::AuraTestBase::SetUp();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     scoped_feature_list_.InitAndDisableFeature(
         features::kApplyNativeOcclusionToCompositor);
 #endif
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
 };
@@ -94,8 +95,8 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
   }
 
  private:
-  WindowTreeHostPlatform* host_;
-  ui::PlatformWindow* platform_window_;
+  raw_ptr<WindowTreeHostPlatform> host_;
+  raw_ptr<ui::PlatformWindow> platform_window_;
   bool should_change_bounds_in_on_resized_ = true;
   int on_host_will_process_bounds_change_count_ = 0;
   int on_host_did_process_bounds_change_count_ = 0;

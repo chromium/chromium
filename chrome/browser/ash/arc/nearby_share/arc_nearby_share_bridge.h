@@ -9,9 +9,9 @@
 #include <map>
 #include <memory>
 
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
-#include "components/arc/mojom/nearby_share.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -52,6 +52,10 @@ class ArcNearbyShareBridge : public KeyedService,
       StartNearbyShareCallback callback) override;
 
  private:
+  // Deletes the temporary cache path managed by NearbyShareSessionImpl which
+  // is used for share files preparation.
+  void DeleteShareCacheFilePaths();
+
   // Called by NearbyShareSessionImpl when the session is finished and can be
   // cleaned up.
   void OnNearbyShareSessionFinished(uint32_t task_id);

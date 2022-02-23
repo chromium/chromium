@@ -30,13 +30,14 @@ struct Env {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-void OnDecodeComplete(base::OnceClosure quit_closure, media::Status status) {
+void OnDecodeComplete(base::OnceClosure quit_closure,
+                      media::DecoderStatus status) {
   std::move(quit_closure).Run();
 }
 
 void OnInitDone(base::OnceClosure quit_closure,
                 bool* success_dest,
-                media::Status status) {
+                media::DecoderStatus status) {
   *success_dest = status.is_ok();
   std::move(quit_closure).Run();
 }
@@ -48,8 +49,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create Env on the first run of LLVMFuzzerTestOneInput otherwise
   // message_loop will be created before this process forks when used with AFL,
   // causing hangs.
-  static Env* env = new Env();
-  ALLOW_UNUSED_LOCAL(env);
+  [[maybe_unused]] static Env* env = new Env();
   std::mt19937_64 rng;
 
   {  // Seed rng from data.

@@ -154,7 +154,7 @@ TEST_F(SettingsTest, UnlinkFile) {
   EXPECT_TRUE(settings()->SetUploadsEnabled(true));
   EXPECT_TRUE(settings()->SetLastUploadAttemptTime(time(nullptr)));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(_wunlink(settings_path().value().c_str()), 0)
       << ErrnoMessage("_wunlink");
 #else

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
-
 #include "base/test/trace_event_analyzer.h"
+#include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/browser_test.h"
@@ -12,7 +12,7 @@
 
 using ukm::builders::PageLoad;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FirstInputDelay DISABLED_FirstInputDelay
 #else
 #define MAYBE_FirstInputDelay FirstInputDelay
@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_FirstInputDelay) {
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
   web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   StartTracing({"loading"});
 

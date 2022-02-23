@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.autofill_assistant.AssistantDependencyUtilsChrome;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -36,7 +37,7 @@ import java.util.function.Consumer;
  * <p>To extend the set of direct actions beyond what's provided by this class, register handlers to
  * the coordinator {@code mCoordinator}.
  */
-@TargetApi(29)
+@RequiresApi(29)
 public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
@@ -152,7 +153,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
                 .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
 
-        if (AutofillAssistantFacade.areDirectActionsAvailable(activityType)) {
+        if (AssistantDependencyUtilsChrome.areDirectActionsAvailable(activityType)) {
             DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(context,
                     bottomSheetController, browserControls, compositorViewHolder,
                     activityTabProvider);
@@ -207,7 +208,7 @@ public class DirectActionInitializer implements NativeInitObserver, DestroyObser
     void registerDirectActions() {
         registerCommonChromeActions(mContext, mActivityType, mMenuOrKeyboardActionController,
                 mGoBackAction, mTabModelSelector, mFindToolbarManager,
-                AutofillAssistantFacade.areDirectActionsAvailable(mActivityType)
+                AssistantDependencyUtilsChrome.areDirectActionsAvailable(mActivityType)
                         ? mBottomSheetController
                         : null,
                 mBrowserControls, mCompositorViewHolder, mActivityTabProvider);

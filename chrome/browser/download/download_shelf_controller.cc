@@ -26,7 +26,7 @@ DownloadShelfController::DownloadShelfController(Profile* profile)
     : profile_(profile) {
   aggregator_ =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
-  observation_.Observe(aggregator_);
+  observation_.Observe(aggregator_.get());
 }
 
 DownloadShelfController::~DownloadShelfController() = default;

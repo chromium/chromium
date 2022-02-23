@@ -124,3 +124,27 @@
 
 # crbug.com/1187536
 -org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
+
+# crbug.com/1272997
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFormActionTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTriggerScriptIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBackButtonIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantGenericUiTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantNavigationIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantInterruptIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPersonalDataManagerTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantInputActionIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantBottomsheetTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantKeyboardIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUpdateClientSettingsIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTtsIntegrationTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAutostartTest*
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPasswordManagerIntegrationTest*
+
+
+
+

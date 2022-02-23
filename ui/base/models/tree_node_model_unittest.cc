@@ -285,4 +285,53 @@ TEST_F(TreeNodeModelTest, IsRoot) {
   EXPECT_FALSE(child1->is_root());
 }
 
+TEST_F(TreeNodeModelTest, ReorderChildren) {
+  TestNode root;
+
+  TestNode* child0 = root.Add(std::make_unique<TestNode>(), 0);
+  TestNode* child1 = root.Add(std::make_unique<TestNode>(), 1);
+  TestNode* child2 = root.Add(std::make_unique<TestNode>(), 2);
+  TestNode* child3 = root.Add(std::make_unique<TestNode>(), 3);
+
+  ASSERT_EQ(4u, root.children().size());
+  ASSERT_EQ(child0, root.children()[0].get());
+  ASSERT_EQ(child1, root.children()[1].get());
+  ASSERT_EQ(child2, root.children()[2].get());
+  ASSERT_EQ(child3, root.children()[3].get());
+
+  root.ReorderChildren({3, 1, 2, 0});
+
+  ASSERT_EQ(4u, root.children().size());
+  EXPECT_EQ(child3, root.children()[0].get());
+  EXPECT_EQ(child1, root.children()[1].get());
+  EXPECT_EQ(child2, root.children()[2].get());
+  EXPECT_EQ(child0, root.children()[3].get());
+}
+
+TEST_F(TreeNodeModelTest, SortChildren) {
+  TestNode root;
+
+  TestNode* child3 = root.Add(std::make_unique<TestNode>(3), 0);
+  TestNode* child1 = root.Add(std::make_unique<TestNode>(1), 1);
+  TestNode* child2 = root.Add(std::make_unique<TestNode>(2), 2);
+  TestNode* child0 = root.Add(std::make_unique<TestNode>(0), 3);
+
+  ASSERT_EQ(4u, root.children().size());
+  ASSERT_EQ(child3, root.children()[0].get());
+  ASSERT_EQ(child1, root.children()[1].get());
+  ASSERT_EQ(child2, root.children()[2].get());
+  ASSERT_EQ(child0, root.children()[3].get());
+
+  root.SortChildren([](const std::unique_ptr<TestNode>& lhs,
+                       const std::unique_ptr<TestNode>& rhs) {
+    return lhs->value < rhs->value;
+  });
+
+  ASSERT_EQ(4u, root.children().size());
+  EXPECT_EQ(child0, root.children()[0].get());
+  EXPECT_EQ(child1, root.children()[1].get());
+  EXPECT_EQ(child2, root.children()[2].get());
+  EXPECT_EQ(child3, root.children()[3].get());
+}
+
 }  // namespace ui

@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_DATABASE_H_
 
 #include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_elevation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -41,7 +40,7 @@ namespace blink {
 
 class HRTFKernel;
 
-class PLATFORM_EXPORT HRTFDatabase {
+class HRTFDatabase {
   USING_FAST_MALLOC(HRTFDatabase);
 
  public:

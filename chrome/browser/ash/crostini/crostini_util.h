@@ -32,14 +32,11 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class PrefService;
 class Profile;
 
 namespace crostini {
 
-// TODO(crbug.com/1092657): kCrostiniDeletedTerminalId can be removed after M86.
-// We use an arbitrary well-formed extension id for the Terminal app, this
-// is equal to GenerateId("Terminal").
-extern const char kCrostiniDeletedTerminalId[];
 // web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
 extern const char kCrostiniTerminalSystemAppId[];
@@ -200,6 +197,9 @@ void ShowCrostiniRecoveryView(Profile* profile,
                               int64_t display_id,
                               const std::vector<LaunchArg>& args,
                               CrostiniSuccessCallback callback);
+
+// Remove duplicate containers in the existing kCrostiniContainers pref.
+void RemoveDuplicateContainerEntries(PrefService* prefs);
 
 // Add a newly created LXD container to the kCrostiniContainers pref
 void AddNewLxdContainerToPrefs(Profile* profile,

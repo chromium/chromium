@@ -25,9 +25,9 @@
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/operating_system_matching.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
@@ -954,7 +954,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   auto local_operation_delegate =
       std::make_unique<StrictMock<MockLocalOperationDelegate>>();
   auto metrics_delegate = std::make_unique<StrictMock<MockMetricsDelegate>>();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, AddKey(_)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginIssuance(_))
@@ -972,7 +972,7 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   EXPECT_CALL(*local_operation_delegate, FulfillIssuance(_, _))
       .WillOnce(WithArgs<1>(Invoke(receive_answer)));
   EXPECT_CALL(*metrics_delegate, WillExecutePlatformProvidedOperation());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   TrustTokenRequestIssuanceHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -987,19 +987,19 @@ TEST_F(TrustTokenRequestIssuanceHelperTestWithPlatformIssuance,
   // if we're not on Android, we should observe error saying we couldn't execute
   // issuance locally.
   ASSERT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
             mojom::TrustTokenOperationStatus::kUnknownError
 #else
             mojom::TrustTokenOperationStatus::kUnavailable
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   );
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   histograms.ExpectUniqueSample(
       "Net.TrustTokens.IssuanceHelperLocalFulfillResult",
       mojom::FulfillTrustTokenIssuanceAnswer::Status::kUnknownError,
       /*expected_count=*/1);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace network

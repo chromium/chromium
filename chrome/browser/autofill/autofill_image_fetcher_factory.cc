@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"

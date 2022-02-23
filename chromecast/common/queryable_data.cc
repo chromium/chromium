@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/no_destructor.h"
+
 namespace chromecast {
 
 namespace {

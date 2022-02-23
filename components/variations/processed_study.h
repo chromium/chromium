@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 
 namespace variations {
@@ -51,11 +52,11 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
 
   // Gets the default experiment name for the study, or a generic one if none is
   // specified.
-  const char* GetDefaultExperimentName() const;
+  const base::StringPiece GetDefaultExperimentName() const;
 
  private:
   // Corresponding Study object. Weak reference.
-  const Study* study_ = nullptr;
+  raw_ptr<const Study> study_ = nullptr;
 
   // Computed total group probability for the study.
   base::FieldTrial::Probability total_probability_ = 0;

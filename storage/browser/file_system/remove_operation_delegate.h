@@ -5,7 +5,6 @@
 #ifndef STORAGE_BROWSER_FILE_SYSTEM_REMOVE_OPERATION_DELEGATE_H_
 #define STORAGE_BROWSER_FILE_SYSTEM_REMOVE_OPERATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 
 namespace storage {

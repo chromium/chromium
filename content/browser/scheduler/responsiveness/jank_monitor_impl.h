@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/jank_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

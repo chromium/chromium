@@ -11,10 +11,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface AbortSignal : EventTarget
 [Worker]     static method abort
+[Worker]     static method timeout
 [Worker]     attribute @@toStringTag
 [Worker]     getter aborted
 [Worker]     getter onabort
+[Worker]     getter reason
 [Worker]     method constructor
+[Worker]     method throwIfAborted
 [Worker]     setter onabort
 [Worker] interface AudioData
 [Worker]     attribute @@toStringTag
@@ -531,7 +534,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createWritable
 [Worker]     method getFile
 [Worker]     method move
-[Worker]     method rename
 [Worker] interface FileSystemHandle
 [Worker]     attribute @@toStringTag
 [Worker]     getter kind
@@ -541,7 +543,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method move
 [Worker]     method queryPermission
 [Worker]     method remove
-[Worker]     method rename
 [Worker]     method requestPermission
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag
@@ -842,6 +843,37 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onsourceclose
 [Worker]     setter onsourceended
 [Worker]     setter onsourceopen
+[Worker] interface MediaStreamTrack : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter contentHint
+[Worker]     getter enabled
+[Worker]     getter id
+[Worker]     getter kind
+[Worker]     getter label
+[Worker]     getter muted
+[Worker]     getter oncapturehandlechange
+[Worker]     getter onended
+[Worker]     getter onmute
+[Worker]     getter onunmute
+[Worker]     getter readyState
+[Worker]     method applyConstraints
+[Worker]     method clone
+[Worker]     method constructor
+[Worker]     method getCapabilities
+[Worker]     method getCaptureHandle
+[Worker]     method getConstraints
+[Worker]     method getSettings
+[Worker]     method stop
+[Worker]     setter contentHint
+[Worker]     setter enabled
+[Worker]     setter oncapturehandlechange
+[Worker]     setter onended
+[Worker]     setter onmute
+[Worker]     setter onunmute
+[Worker] interface MediaStreamTrackGenerator : MediaStreamTrack
+[Worker]     attribute @@toStringTag
+[Worker]     getter writable
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
@@ -1015,12 +1047,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
+[Worker]     getter oncontextlost
+[Worker]     getter oncontextrestored
 [Worker]     getter width
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
 [Worker]     method transferToImageBitmap
 [Worker]     setter height
+[Worker]     setter oncontextlost
+[Worker]     setter oncontextrestored
 [Worker]     setter width
 [Worker] interface OffscreenCanvasRenderingContext2D
 [Worker]     attribute @@toStringTag
@@ -1169,6 +1205,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter duration
 [Worker]     getter entryType
 [Worker]     getter name
+[Worker]     getter navigationCount
 [Worker]     getter startTime
 [Worker]     method constructor
 [Worker]     method toJSON
@@ -1372,7 +1409,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method text
 [Worker] interface Scheduler
 [Worker]     attribute @@toStringTag
-[Worker]     getter currentTaskSignal
 [Worker]     method constructor
 [Worker]     method postTask
 [Worker] interface SecurityPolicyViolationEvent : Event
@@ -2410,6 +2446,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute WAIT_FAILED
 [Worker]     attribute ZERO
 [Worker]     getter canvas
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     method activeTexture
@@ -2490,6 +2527,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawElements
 [Worker]     method drawElementsInstanced
 [Worker]     method drawRangeElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method endQuery
@@ -2959,6 +2997,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute VIEWPORT
 [Worker]     attribute ZERO
 [Worker]     getter canvas
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     method activeTexture
@@ -3009,6 +3048,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method disableVertexAttribArray
 [Worker]     method drawArrays
 [Worker]     method drawElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method finish
@@ -3204,7 +3244,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onmessage
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter addressSpace
 [Worker]     getter caches
 [Worker]     getter crossOriginIsolated
 [Worker]     getter crypto
@@ -3291,6 +3330,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getWriter
 [Worker] interface WritableStreamDefaultController
 [Worker]     attribute @@toStringTag
+[Worker]     getter signal
 [Worker]     method constructor
 [Worker]     method error
 [Worker] interface WritableStreamDefaultWriter

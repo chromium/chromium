@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 
 // This is a helper utility to wrap a base::OnceCallback such that if the

@@ -64,7 +64,7 @@ void TestBiodObserver::BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
 }
 
 void TestBiodObserver::BiodAuthScanDoneReceived(
-    biod::ScanResult scan_result,
+    const biod::FingerprintMessage& msg,
     const AuthScanMatches& matches) {
   matches.empty() ? num_unmatched_auth_scans_received_++
                   : num_matched_auth_scans_received_++;

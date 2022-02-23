@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 #define CHROME_BROWSER_PASSWORD_CHECK_ANDROID_PASSWORD_CHECK_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece_forward.h"
@@ -195,10 +196,10 @@ class PasswordCheckManager
   bool IsEligibleForAutoChange(
       const password_manager::CredentialWithPassword& credenital) const;
 
-  // Returns true if the password scripts fetching (kPasswordScriptsFetching) is
-  // enabled. To have precise metrics about user actions on credentials with
-  // scripts, scripts are fetched only for the users who can start a script,
-  // i.e. sync users.
+  // Returns true if the password scripts fetching (kPasswordScriptsFetching or
+  // kPasswordDomainCapabilitiesFetching) is enabled. To have precise metrics
+  // about user actions on credentials with scripts, scripts are fetched only
+  // for the users who can start a script, i.e. sync users.
   bool ShouldFetchPasswordScripts() const;
 
   // Callback when PasswordScriptsFetcher's cache has been warmed up.
@@ -218,10 +219,10 @@ class PasswordCheckManager
 
   // Obsever being notified of UI-relevant events.
   // It must outlive `this`.
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   // The profile for which the passwords are checked.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Object storing the progress of a running password check.
   std::unique_ptr<PasswordCheckProgress> progress_;
@@ -234,7 +235,7 @@ class PasswordCheckManager
 
   // Used to check whether autofill assistant scripts are available for
   // the specified domain.
-  password_manager::PasswordScriptsFetcher* password_script_fetcher_ =
+  raw_ptr<password_manager::PasswordScriptsFetcher> password_script_fetcher_ =
       PasswordScriptsFetcherFactory::GetInstance()->GetForBrowserContext(
           profile_);
 

@@ -10,7 +10,7 @@
 #include "ash/components/phonehub/fake_user_action_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -154,4 +154,4 @@ TEST_F(DoNotDisturbControllerImplTest, RequestNewDoNotDisturbState) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

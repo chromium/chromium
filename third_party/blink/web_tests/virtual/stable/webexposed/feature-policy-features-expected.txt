@@ -14,10 +14,12 @@ ch-ua
 ch-ua-arch
 ch-ua-bitness
 ch-ua-full-version
+ch-ua-full-version-list
 ch-ua-mobile
 ch-ua-model
 ch-ua-platform
 ch-ua-platform-version
+ch-ua-wow64
 ch-viewport-width
 ch-width
 clipboard-read
@@ -31,6 +33,7 @@ geolocation
 gyroscope
 hid
 idle-detection
+keyboard-map
 magnetometer
 microphone
 midi
@@ -40,6 +43,7 @@ picture-in-picture
 publickey-credentials-get
 screen-wake-lock
 serial
+shared-autofill
 sync-xhr
 usb
 xr-spatial-tracking

@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <fstream>
 
-#include "absl/strings/str_cat.h"
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 
 namespace tflite {
 namespace task {
@@ -59,6 +59,22 @@ std::string LoadBinaryContent(const char* filename) {
   input_file.seekg(0, std::ios::beg);
   input_file.read(const_cast<char*>(buffer.c_str()), buffer_size);
   return buffer;
+}
+
+int FindTensorIndexByMetadataName(
+    const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
+        tensor_metadatas,
+    absl::string_view name) {
+  if (tensor_metadatas == nullptr) {
+    return -1;
+  }
+  for (int i = 0; i < tensor_metadatas->size(); i++) {
+    if (name == tensor_metadatas->Get(i)->name()->c_str()) {
+      return i;
+    }
+  }
+  // Returns -1 if not found.
+  return -1;
 }
 
 }  // namespace core

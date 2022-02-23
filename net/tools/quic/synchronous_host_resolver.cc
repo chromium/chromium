@@ -10,7 +10,6 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -86,7 +85,7 @@ void ResolverThread::Run() {
   }
 
   if (rv_ == OK) {
-    *addresses_ = request->GetAddressResults().value();
+    *addresses_ = *request->GetAddressResults();
   }
 }
 

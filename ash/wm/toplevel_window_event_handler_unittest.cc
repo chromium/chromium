@@ -1142,6 +1142,44 @@ TEST_F(ToplevelWindowEventHandlerTest, EnterResizeLoopOnResize) {
   EXPECT_FALSE(window_observer.in_resize_loop());
 }
 
+// Explicitly start a window drag using a child window as a target of drag
+// events.
+TEST_F(ToplevelWindowEventHandlerTest, ExplicitDragWithChildWindow) {
+  std::unique_ptr<aura::Window> w1(CreateWindow(HTCLIENT));
+  w1->SetName("parent");
+  auto* c1 = new aura::Window(
+      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+      aura::client::WINDOW_TYPE_CONTROL);
+  c1->SetName("child");
+  c1->Init(ui::LAYER_TEXTURED);
+  w1->AddChild(c1);
+  c1->SetBounds(gfx::Rect(25, 25, 50, 50));
+  c1->Show();
+  c1->SetBounds(gfx::Rect(1, 1, 100, 100));
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), c1);
+  auto* toplevel_window_event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+
+  generator.PressLeftButton();
+
+  // Do not capture where because we're dragging using a window that is
+  // different from w1.
+  ASSERT_TRUE(toplevel_window_event_handler->AttemptToStartDrag(
+      w1.get(), gfx::PointF(50, 50), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_MOUSE,
+      base::DoNothing(),
+      /*update_gesture_target=*/false,
+      /*grab_capture=*/false));
+
+  EXPECT_TRUE(toplevel_window_event_handler->is_drag_in_progress());
+  generator.MoveMouseBy(20, 10);
+  EXPECT_EQ(gfx::Rect(21, 11, 100, 100), w1->bounds());
+  generator.MoveMouseBy(20, 10);
+  EXPECT_EQ(gfx::Rect(41, 21, 100, 100), w1->bounds());
+}
+
+namespace {
+
 // Provides common setup and convenience for a handful of tests.
 class ToplevelWindowEventHandlerDragTest : public AshTestBase {
  public:
@@ -1186,6 +1224,8 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
   std::unique_ptr<aura::Window> dragged_window_;
   std::unique_ptr<aura::Window> non_dragged_window_;
 };
+
+}  // namespace
 
 // In tablet mode, the window's resizability shouldn't be taken into account
 // when dragging from the top. Regression test for https://crbug.com/1444132

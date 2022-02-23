@@ -35,13 +35,13 @@ class MojoAudioEncoder final : public AudioEncoder,
   // media::AudioEncoder implementation.
   void Initialize(const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) final;
+                  EncoderStatusCB done_cb) final;
 
   void Encode(std::unique_ptr<AudioBus> audio_bus,
               base::TimeTicks capture_time,
-              StatusCB done_cb) final;
+              EncoderStatusCB done_cb) final;
 
-  void Flush(StatusCB done_cb) final;
+  void Flush(EncoderStatusCB done_cb) final;
 
   // AudioEncoderClient implementation.
   void OnEncodedBufferReady(media::EncodedAudioBuffer buffer,
@@ -51,23 +51,24 @@ class MojoAudioEncoder final : public AudioEncoder,
   // Using std::list here for stable iterators, so we can add and remove
   // pending callbacks without worry and nuke them all at once if need be
   // if Mojo connection error occurs.
-  using PendingCallbacksList = std::list<StatusCB>;
+  using PendingCallbacksList = std::list<EncoderStatusCB>;
   using PendingCallbackHandle = PendingCallbacksList::iterator;
 
-  // It is different from regular StatusCB because mojo only gives us
-  // `const Status&` instead of `Status`.
-  using WrappedStatusCB = base::OnceCallback<void(const Status& error)>;
+  // It is different from regular EncoderStatusCB because mojo only gives us
+  // `const EncoderStatus&` instead of `EncoderStatus`.
+  using WrappedEncoderStatusCB =
+      base::OnceCallback<void(const EncoderStatus& error)>;
 
   void CallAndReleaseCallback(PendingCallbackHandle handle,
-                              const Status& status);
-  void CallAndReleaseAllPendingCallbacks(Status status)
+                              const EncoderStatus& status);
+  void CallAndReleaseAllPendingCallbacks(EncoderStatus status)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
-  WrappedStatusCB WrapCallbackAsPending(StatusCB callback)
+  WrappedEncoderStatusCB WrapCallbackAsPending(EncoderStatusCB callback)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void BindRemote();
   void OnConnectionError();
-  void PostStatusCallback(StatusCB callback, Status status);
+  void PostStatusCallback(EncoderStatusCB callback, EncoderStatus status);
 
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::PendingRemote<mojom::AudioEncoder> pending_remote_encoder_

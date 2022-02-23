@@ -48,8 +48,8 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
           layout_image.GetDocument().GetExecutionContext()))
     return false;
 
-  DoubleSize layout_size(layout_image.ContentSize());
-  IntSize image_size = image->Size();
+  LayoutSize layout_size = layout_image.ContentSize();
+  gfx::Size image_size = image->Size();
   if (layout_size.IsEmpty() || image_size.IsEmpty())
     return false;
 
@@ -60,9 +60,9 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
   const double dsf =
       layout_image.GetDocument().GetPage()->DeviceScaleFactorDeprecated();
   const double downscale_ratio_width =
-      image_size.width() / layout_size.Width() / dsf;
+      image_size.width() / layout_size.Width().ToDouble() / dsf;
   const double downscale_ratio_height =
-      image_size.height() / layout_size.Height() / dsf;
+      image_size.height() / layout_size.Height().ToDouble() / dsf;
 
   const LayoutImageResource* image_resource = layout_image.ImageResource();
   const ImageResourceContent* cached_image =
@@ -129,7 +129,7 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   paint_info.context.Save();
   PhysicalRect focus_rect = layout_image_.PhysicalContentBoxRect();
   focus_rect.Move(paint_offset);
-  paint_info.context.Clip(PixelSnappedIntRect(focus_rect));
+  paint_info.context.Clip(ToPixelSnappedRect(focus_rect));
   OutlinePainter::PaintFocusRingPath(paint_info.context, path,
                                      *area_element_style);
   paint_info.context.Restore();
@@ -169,7 +169,7 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   if (!has_image) {
     // Draw an outline rect where the image should be.
-    IntRect paint_rect = PixelSnappedIntRect(content_rect);
+    gfx::Rect paint_rect = ToPixelSnappedRect(content_rect);
     BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                                 paint_offset);
     context.SetStrokeStyle(kSolidStroke);
@@ -186,7 +186,6 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                               paint_offset);
-  DCHECK(paint_info.PaintContainer());
   PaintIntoRect(context, paint_rect, content_rect);
 }
 
@@ -198,12 +197,12 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     return;  // FIXME: should we just ASSERT these conditions? (audit all
              // callers).
 
-  IntRect pixel_snapped_dest_rect = PixelSnappedIntRect(dest_rect);
+  gfx::Rect pixel_snapped_dest_rect = ToPixelSnappedRect(dest_rect);
   if (pixel_snapped_dest_rect.IsEmpty())
     return;
 
   scoped_refptr<Image> image =
-      image_resource.GetImage(FloatSize(dest_rect.size));
+      image_resource.GetImage(gfx::SizeF(dest_rect.size));
   if (!image || image->IsNull())
     return;
 
@@ -212,17 +211,17 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   auto respect_orientation = image->HasDefaultOrientation()
                                  ? kDoNotRespectImageOrientation
                                  : image_resource.ImageOrientation();
-  FloatRect src_rect(FloatPoint(), image->SizeAsFloat(respect_orientation));
+  gfx::RectF src_rect(image->SizeAsFloat(respect_orientation));
 
   // If the content rect requires clipping, adjust |srcRect| and
   // |pixelSnappedDestRect| over using a clip.
   if (!content_rect.Contains(dest_rect)) {
-    IntRect pixel_snapped_content_rect = PixelSnappedIntRect(content_rect);
+    gfx::Rect pixel_snapped_content_rect = ToPixelSnappedRect(content_rect);
     pixel_snapped_content_rect.Intersect(pixel_snapped_dest_rect);
     if (pixel_snapped_content_rect.IsEmpty())
       return;
-    src_rect = MapRect(FloatRect(pixel_snapped_content_rect),
-                       FloatRect(pixel_snapped_dest_rect), src_rect);
+    src_rect = gfx::MapRect(gfx::RectF(pixel_snapped_content_rect),
+                            gfx::RectF(pixel_snapped_dest_rect), src_rect);
     pixel_snapped_dest_rect = pixel_snapped_content_rect;
   }
 
@@ -236,7 +235,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
       inspector_paint_image_event::Data, layout_image_, src_rect,
-      FloatRect(dest_rect));
+      gfx::RectF(dest_rect));
 
   ScopedInterpolationQuality interpolation_quality_scope(
       context, layout_image_.StyleRef().GetInterpolationQuality());
@@ -266,7 +265,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   context.DrawImage(image.get(), decode_mode,
                     PaintAutoDarkMode(layout_image_.StyleRef(),
                                       DarkModeFilter::ElementRole::kBackground),
-                    FloatRect(pixel_snapped_dest_rect), &src_rect,
+                    gfx::RectF(pixel_snapped_dest_rect), &src_rect,
                     SkBlendMode::kSrcOver, respect_orientation);
 
   if (ImageResourceContent* image_content = image_resource.CachedImage()) {
@@ -277,12 +276,12 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       ImageElementTiming::From(*window).NotifyImagePainted(
           layout_image_, *image_content,
           context.GetPaintController().CurrentPaintChunkProperties(),
-          ToGfxRect(pixel_snapped_dest_rect));
+          pixel_snapped_dest_rect);
     }
     PaintTimingDetector::NotifyImagePaint(
-        layout_image_, ToGfxSize(image->Size()), *image_content,
+        layout_image_, image->Size(), *image_content,
         context.GetPaintController().CurrentPaintChunkProperties(),
-        ToGfxRect(pixel_snapped_dest_rect));
+        pixel_snapped_dest_rect);
   }
 }
 

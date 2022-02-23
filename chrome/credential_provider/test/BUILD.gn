@@ -69,6 +69,5 @@ test("gcp_unittests") {
   data = [
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "//third_party/tlslite/",
   ]
 }

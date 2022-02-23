@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
   void OnRead(int rv);
   void OnGetLength(int64_t rv);
 
-  net::IOBuffer* read_buf_;
+  raw_ptr<net::IOBuffer> read_buf_;
   int read_buf_len_;
   net::CompletionOnceCallback read_callback_;
   net::Int64CompletionOnceCallback get_length_callback_;

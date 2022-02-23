@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/test/task_environment.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/service/gpu_init.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -49,18 +51,20 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
       base::SingleThreadTaskRunner* task_runner)
       : VizCompositorThreadRunner(), task_runner_(task_runner) {}
 
-  base::PlatformThreadId thread_id() override {
-    return base::PlatformThreadId();
-  }
   base::SingleThreadTaskRunner* task_runner() override { return task_runner_; }
+  bool CreateHintSessionFactory(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::RepeatingClosure* wake_up_closure) override {
+    return false;
+  }
   MOCK_METHOD1(CreateFrameSinkManager, void(mojom::FrameSinkManagerParamsPtr));
-  MOCK_METHOD4(CreateFrameSinkManager,
+  MOCK_METHOD3(CreateFrameSinkManager,
                void(mojom::FrameSinkManagerParamsPtr,
                     gpu::CommandBufferTaskExecutor*,
-                    GpuServiceImpl*,
-                    gfx::RenderingPipeline*));
+                    GpuServiceImpl*));
+
  private:
-  base::SingleThreadTaskRunner* const task_runner_;
+  const raw_ptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 class MockPowerMonitorSource : public base::PowerMonitorSource {
@@ -77,7 +81,7 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
  private:
   // An external flag to signal as to whether or not this object is still
   // alive.
-  bool* leak_guard_;
+  raw_ptr<bool> leak_guard_;
 };
 
 TEST(VizMainImplTest, OopVizDependencyInjection) {

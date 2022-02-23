@@ -66,7 +66,7 @@ class WebRtcVideoCaptureBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1235254): This test is flakey on macOS.
 #define MAYBE_RecoverFromCrashInVideoCaptureProcess \
   DISABLED_RecoverFromCrashInVideoCaptureProcess

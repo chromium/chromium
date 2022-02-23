@@ -21,25 +21,26 @@
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/isolation_prefs_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
-#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_mover.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
-#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_shortcut_manager.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -190,12 +191,22 @@ WebAppIconManager& WebAppProvider::icon_manager() {
   return *icon_manager_;
 }
 
+WebAppTranslationManager& WebAppProvider::translation_manager() {
+  CheckIsConnected();
+  return *translation_manager_;
+}
+
 SystemWebAppManager& WebAppProvider::system_web_app_manager() {
   CheckIsConnected();
   return *system_web_app_manager_;
 }
 
 OsIntegrationManager& WebAppProvider::os_integration_manager() {
+  CheckIsConnected();
+  return *os_integration_manager_;
+}
+
+const OsIntegrationManager& WebAppProvider::os_integration_manager() const {
   CheckIsConnected();
   return *os_integration_manager_;
 }
@@ -209,8 +220,7 @@ void WebAppProvider::Shutdown() {
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
   registrar_->Shutdown();
-  if (web_app_mover_)
-    web_app_mover_->Shutdown();
+  is_registry_ready_ = false;
 }
 
 void WebAppProvider::StartImpl() {
@@ -259,9 +269,12 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   }
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
-      profile, *registrar, base::MakeRefCounted<FileUtilsWrapper>());
-  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-      profile, icon_manager.get(), web_app_policy_manager_.get());
+      profile, *registrar, *install_manager_,
+      base::MakeRefCounted<FileUtilsWrapper>());
+  auto translation_manager = std::make_unique<WebAppTranslationManager>(
+      profile, install_manager_.get(),
+      base::MakeRefCounted<FileUtilsWrapper>());
+  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);
 
   if (g_os_integration_manager_factory_for_testing) {
     os_integration_manager_ =
@@ -276,8 +289,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         protocol_handler_manager.get());
 
     std::unique_ptr<UrlHandlerManager> url_handler_manager;
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
     url_handler_manager = std::make_unique<UrlHandlerManagerImpl>(profile);
 #endif
 
@@ -286,45 +299,45 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), std::move(url_handler_manager));
   }
 
-  web_app_mover_ = WebAppMover::CreateIfNeeded(
-      profile, registrar.get(), install_finalizer_.get(),
-      install_manager_.get(), sync_bridge.get());
-
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
   icon_manager_ = std::move(icon_manager);
+  translation_manager_ = std::move(translation_manager);
 }
 
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  install_finalizer_->SetSubsystems(registrar_.get(), ui_manager_.get(),
-                                    sync_bridge_.get(),
-                                    os_integration_manager_.get());
+  install_finalizer_->SetSubsystems(
+      install_manager_.get(), registrar_.get(), ui_manager_.get(),
+      sync_bridge_.get(), os_integration_manager_.get(), icon_manager_.get(),
+      web_app_policy_manager_.get(), translation_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),
                                   install_finalizer_.get());
   manifest_update_manager_->SetSubsystems(
-      registrar_.get(), icon_manager_.get(), ui_manager_.get(),
-      install_finalizer_.get(), system_web_app_manager_.get(),
-      os_integration_manager_.get(), sync_bridge_.get());
+      install_manager_.get(), registrar_.get(), icon_manager_.get(),
+      ui_manager_.get(), install_finalizer_.get(),
+      system_web_app_manager_.get(), os_integration_manager_.get(),
+      sync_bridge_.get());
   externally_managed_app_manager_->SetSubsystems(
-      registrar_.get(), os_integration_manager_.get(), ui_manager_.get(),
-      install_finalizer_.get(), install_manager_.get());
+      registrar_.get(), ui_manager_.get(), install_finalizer_.get(),
+      install_manager_.get());
   preinstalled_web_app_manager_->SetSubsystems(
-      registrar_.get(), externally_managed_app_manager_.get());
+      registrar_.get(), ui_manager_.get(),
+      externally_managed_app_manager_.get());
   system_web_app_manager_->SetSubsystems(
       externally_managed_app_manager_.get(), registrar_.get(),
-      sync_bridge_.get(), ui_manager_.get(), os_integration_manager_.get(),
-      web_app_policy_manager_.get());
+      sync_bridge_.get(), ui_manager_.get(), web_app_policy_manager_.get());
   web_app_policy_manager_->SetSubsystems(externally_managed_app_manager_.get(),
                                          registrar_.get(), sync_bridge_.get(),
                                          system_web_app_manager_.get(),
                                          os_integration_manager_.get());
+  registrar_->SetSubsystems(web_app_policy_manager_.get());
   ui_manager_->SetSubsystems(sync_bridge_.get(), os_integration_manager_.get());
-  os_integration_manager_->SetSubsystems(registrar_.get(), ui_manager_.get(),
+  os_integration_manager_->SetSubsystems(sync_bridge_.get(), registrar_.get(),
+                                         ui_manager_.get(),
                                          icon_manager_.get());
-  registrar_->SetSubsystems(os_integration_manager_.get());
 
   connected_ = true;
 }
@@ -340,6 +353,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   registrar_->Start();
   install_finalizer_->Start();
   icon_manager_->Start();
+  translation_manager_->Start();
   install_manager_->Start();
   preinstalled_web_app_manager_->Start();
   web_app_policy_manager_->Start();
@@ -347,10 +361,9 @@ void WebAppProvider::OnSyncBridgeReady() {
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
-  if (web_app_mover_)
-    web_app_mover_->Start();
 
   on_registry_ready_.Signal();
+  is_registry_ready_ = true;
 }
 
 void WebAppProvider::CheckIsConnected() const {
@@ -369,6 +382,30 @@ void WebAppProvider::RegisterProfilePrefs(
   IsolationPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);
   RegisterDailyWebAppMetricsProfilePrefs(registry);
+}
+
+// static
+void WebAppProvider::MigrateProfilePrefs(Profile* profile) {
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (provider) {
+    provider->on_registry_ready_.Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppProvider::DoMigrateProfilePrefs,
+                       provider->weak_ptr_factory_.GetWeakPtr(), profile));
+  }
+}
+
+void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
+  std::map<AppId, int> sources =
+      TakeAllWebAppInstallSources(profile->GetPrefs());
+  ScopedRegistryUpdate update(sync_bridge_.get());
+  for (const auto& iter : sources) {
+    WebApp* web_app = update->UpdateApp(iter.first);
+    if (web_app && !web_app->install_source_for_metrics()) {
+      web_app->SetInstallSourceForMetrics(
+          static_cast<webapps::WebappInstallSource>(iter.second));
+    }
+  }
 }
 
 }  // namespace web_app

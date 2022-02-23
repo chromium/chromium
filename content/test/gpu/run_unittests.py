@@ -7,15 +7,10 @@
 This script DOES NOT run tests. run_gpu_test does that.
 """
 
-from __future__ import print_function
-
 import sys
 
-from gpu_tests import path_util
-
-path_util.SetupTelemetryPaths()
-
 import gpu_project_config
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
 
 from telemetry.testing import unittest_runner
 

@@ -22,11 +22,8 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
   ReadableStreamDefaultControllerWithScriptScope(ScriptState* script_state,
                                                  ScriptValue controller);
 
-  // Users of the ReadableStreamDefaultControllerWithScriptScope can call this
-  // to note that the stream has been canceled and thus they don't anticipate
-  // using the ReadableStreamDefaultControllerWithScriptScope anymore.
-  // (Close/DesiredSize/Enqueue/Error will become no-ops afterward.)
-  void NoteHasBeenCanceled();
+  // After calling this the other methods will no longer do anything.
+  void Deactivate();
 
   void Close();
   double DesiredSize() const;

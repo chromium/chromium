@@ -11,15 +11,18 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 #include "printing/printing_context.h"
@@ -32,6 +35,11 @@
 namespace crash_keys {
 class ScopedPrinterInfo;
 }
+
+namespace gfx {
+class Rect;
+class Size;
+}  // namespace gfx
 
 namespace printing {
 
@@ -84,7 +92,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
  private:
   friend class PrintBackendServiceTestImpl;
 
-  struct DocumentContainer;
+  class DocumentHelper;
 
   class PrintingContextDelegate : public PrintingContext::Delegate {
    public:
@@ -118,6 +126,8 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   void FetchCapabilities(
       const std::string& printer_name,
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
+  void UseDefaultSettings(
+      mojom::PrintBackendService::UseDefaultSettingsCallback callback) override;
   void UpdatePrintSettings(
       base::flat_map<std::string, base::Value> job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
@@ -126,18 +136,40 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       int document_cookie,
       const std::u16string& document_name,
       mojom::PrintTargetType target_type,
-      int page_count,
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback) override;
+#if BUILDFLAG(IS_WIN)
+  void RenderPrintedPage(
+      int32_t document_cookie,
+      uint32_t page_index,
+      mojom::MetafileDataType page_data_type,
+      base::ReadOnlySharedMemoryRegion serialized_page,
+      const gfx::Size& page_size,
+      const gfx::Rect& page_content_rect,
+      float shrink_factor,
+      mojom::PrintBackendService::RenderPrintedPageCallback callback) override;
+#endif  // BUILDFLAG(IS_WIN)
+  void DocumentDone(
+      int32_t document_cookie,
+      mojom::PrintBackendService::DocumentDoneCallback callback) override;
 
-  // Helper function that runs on a task runner.
-  mojom::ResultCode StartPrintingReadyDocument(
-      PrintBackendServiceImpl::DocumentContainer& document_container);
-
-  // Callback from helper function.
-  void OnDidStartPrintingReadyDocument(
-      PrintBackendServiceImpl::DocumentContainer& document_container,
+  // Callbacks from worker functions.
+  void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
+                                       mojom::ResultCode result);
+#if BUILDFLAG(IS_WIN)
+  void OnDidRenderPrintedPage(
+      DocumentHelper& document_helper,
+      mojom::PrintBackendService::RenderPrintedPageCallback callback,
       mojom::ResultCode result);
+#endif
+  void OnDidDocumentDone(
+      DocumentHelper& document_helper,
+      mojom::PrintBackendService::DocumentDoneCallback callback,
+      mojom::ResultCode result);
+
+  // Utility helpers.
+  DocumentHelper* GetDocumentHelper(int document_cookie);
+  void RemoveDocumentHelper(DocumentHelper& document_helper);
 
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated by the
@@ -148,13 +180,15 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   PrintingContextDelegate context_delegate_;
 
-  // Want all callbacks to be made from common thread, not a thread runner.
-  SEQUENCE_CHECKER(callback_sequence_checker_);
+  // Want all callbacks and document helper sequence manipulations to be made
+  // from main thread, not a thread runner.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 
   // Sequence of documents to be printed, in the order received.  Documents
   // could be removed from the list in any order, depending upon the speed
-  // with which concurrent printing jobs are able to complete.
-  std::vector<std::unique_ptr<DocumentContainer>> documents_;
+  // with which concurrent printing jobs are able to complete.  The
+  // `DocumentHelper` objects are used and accessed only on the main thread.
+  std::vector<std::unique_ptr<DocumentHelper>> documents_;
 
   mojo::Receiver<mojom::PrintBackendService> receiver_;
 };

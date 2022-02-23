@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/timing/layout_shift_attribution.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

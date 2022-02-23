@@ -9,6 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/mock_auth_status_consumer.h"
+#include "ash/components/login/auth/test_attempt_state.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,19 +36,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/mock_auth_status_consumer.h"
-#include "chromeos/login/auth/test_attempt_state.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -299,7 +299,8 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
-    state_ = std::make_unique<TestAttemptState>(user_context_);
+    state_ = std::make_unique<TestAttemptState>(
+        std::make_unique<UserContext>(user_context_));
   }
 
   // Tears down the test fixture.
@@ -580,7 +581,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should not have found the owner key, so login should
@@ -630,7 +632,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should find the owner key, so login should succeed.
@@ -849,7 +852,7 @@ TEST_F(CryptohomeAuthenticatorTest, DriveLoginWithPreHashedPassword) {
                          std::make_unique<std::string>(kSalt));
   ExpectMountExCall(false /* expect_create_attempt */);
 
-  auth_->AuthenticateToLogin(user_context_);
+  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 
@@ -865,7 +868,7 @@ TEST_F(CryptohomeAuthenticatorTest, FailLoginWithMissingSalt) {
   ExpectGetKeyDataExCall(std::make_unique<int64_t>(Key::KEY_TYPE_SALTED_SHA256),
                          std::unique_ptr<std::string>());
 
-  auth_->AuthenticateToLogin(user_context_);
+  auth_->AuthenticateToLogin(std::make_unique<UserContext>(user_context_));
   run_loop_.Run();
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/aura/test/aura_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -35,7 +36,7 @@ class WindowTreeHostTestApi {
   }
 
  private:
-  WindowTreeHost* host_;
+  raw_ptr<WindowTreeHost> host_;
 };
 
 const gfx::Point& QueryLatestMousePositionRequestInHost(WindowTreeHost* host) {

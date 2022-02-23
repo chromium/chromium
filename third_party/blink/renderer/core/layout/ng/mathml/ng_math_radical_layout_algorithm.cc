@@ -61,7 +61,7 @@ void NGMathRadicalLayoutAlgorithm::GatherChildren(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
@@ -77,8 +77,8 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   NGBlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);
 
-  scoped_refptr<const NGLayoutResult> base_layout_result;
-  scoped_refptr<const NGLayoutResult> index_layout_result;
+  const NGLayoutResult* base_layout_result = nullptr;
+  const NGLayoutResult* index_layout_result = nullptr;
   if (base) {
     // Handle layout of base child. For <msqrt> the base is anonymous and uses
     // the row layout algorithm.

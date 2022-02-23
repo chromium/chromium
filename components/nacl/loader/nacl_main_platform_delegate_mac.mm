@@ -4,15 +4,6 @@
 
 #include "components/nacl/loader/nacl_main_platform_delegate.h"
 
-#import <Cocoa/Cocoa.h>
-
-#include "base/command_line.h"
-#include "components/nacl/common/nacl_switches.h"
-#include "content/public/common/sandbox_init.h"
-#include "sandbox/mac/seatbelt.h"
-#include "sandbox/mac/seatbelt_exec.h"
-#include "sandbox/policy/sandbox_type.h"
-
 void NaClMainPlatformDelegate::EnableSandbox(
     const content::MainFunctionParams& parameters) {
   // The sandbox on macOS is enabled as soon as main() executes, so there is

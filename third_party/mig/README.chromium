@@ -1,8 +1,8 @@
 Name: Cross-Platform Mach Interface Generator (mig)
 URL: https://github.com/markmentovai/bootstrap_cmds
-Version: 121
-Revision: 1146f2bf0e78b3a4855fb556cc08d83568d28a4a
-License: APPLE PUBLIC SOURCE LICENSE
+Version: 122
+Revision: 3cc6b1cf291f8fccfbf6444d6630a02a54c16831
+License: Apple Public Source License 2.0
 License File: NOT_SHIPPED
 Security Critical: no
 

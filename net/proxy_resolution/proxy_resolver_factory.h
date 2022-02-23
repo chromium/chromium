@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/service/gpu_channel_manager.h"
+
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -13,13 +15,13 @@
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
-#include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
 namespace {
@@ -122,7 +124,7 @@ class GpuChannelManagerTest : public GpuChannelTestCommon {
                                   GpuPeakMemoryAllocationSource::UNKNOWN);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void TestApplicationBackgrounded(ContextType type,
                                    bool should_destroy_channel) {
     ASSERT_TRUE(channel_manager());
@@ -186,7 +188,7 @@ TEST_F(GpuChannelManagerTest, EstablishChannel) {
   EXPECT_EQ(channel_manager()->LookupChannel(kClientId), channel);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(GpuChannelManagerTest, OnBackgroundedWithoutWebGL) {
   TestApplicationBackgrounded(CONTEXT_TYPE_OPENGLES2, true);
 }

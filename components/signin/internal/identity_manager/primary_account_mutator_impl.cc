@@ -37,9 +37,9 @@ PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // |account_consistency_| is not used on CHROMEOS_ASH, however it is preferred
-  // to have it defined to avoid a lof of ifdefs in the header file.
-  signin::AccountConsistencyMethod unused = account_consistency_;
-  ALLOW_UNUSED_LOCAL(unused);
+  // to have it defined to avoid a lot of ifdefs in the header file.
+  [[maybe_unused]] signin::AccountConsistencyMethod unused =
+      account_consistency_;
 #endif
 }
 
@@ -75,8 +75,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
       if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
         return PrimaryAccountError::kSyncConsentAlreadySet;
 #endif
-      primary_account_manager_->SetSyncPrimaryAccountInfo(account_info);
-      return PrimaryAccountError::kNoError;
+      break;
     case ConsentLevel::kSignin:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Chrome OS the UPA can only be set once and never removed or changed.
@@ -84,10 +83,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
           !primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 #endif
       DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
-      primary_account_manager_->SetUnconsentedPrimaryAccountInfo(account_info);
-      return PrimaryAccountError::kNoError;
+      break;
   }
-  CHECK(false) << "Unknown consent level: " << static_cast<int>(consent_level);
+  primary_account_manager_->SetPrimaryAccountInfo(account_info, consent_level);
   return PrimaryAccountError::kNoError;
 }
 
@@ -110,8 +108,17 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
       // should consider moving it to |SigninManager|.
       return token_service_->RefreshTokenHasError(
           primary_account_manager_->GetPrimaryAccountId(ConsentLevel::kSync));
-    case AccountConsistencyMethod::kDisabled:
     case AccountConsistencyMethod::kMirror:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // TODO(crbug.com/1217645): Consider making this return false only for the
+      // main profile and return true, otherwise. This requires implementing
+      // ProfileOAuth2TokenServiceDelegateChromeOS::Revoke* and it's not clear
+      // what these functions should do.
+      return false;
+#else
+      return true;
+#endif
+    case AccountConsistencyMethod::kDisabled:
       return true;
   }
 }
@@ -120,11 +127,6 @@ bool PrimaryAccountMutatorImpl::RevokeConsentShouldClearPrimaryAccount() const {
 void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros with Mirror, revoking consent is not supported yet.
-  // TODO(https://crbug.com/1260291): Remove this when it is supported.
-  CHECK_NE(account_consistency_, AccountConsistencyMethod::kMirror);
-#endif
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -142,12 +144,6 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     signin_metrics::SignoutDelete delete_metric) {
   if (!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin))
     return false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros with Mirror, signout is not supported yet.
-  // TODO(https://crbug.com/1260291): Remove this when signout is supported.
-  CHECK_NE(account_consistency_, AccountConsistencyMethod::kMirror);
-#endif
 
   primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
   return true;

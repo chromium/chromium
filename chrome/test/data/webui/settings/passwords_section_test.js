@@ -10,7 +10,7 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl, TrustedVaultBannerState, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -1135,7 +1135,7 @@ suite('PasswordsSection', function() {
         createPasswordEntry({url: 'goo.gl', username: 'bart'});
     const passwordsSection = elementFactory.createPasswordsSection(
         passwordManager, [passwordEntry], []);
-    const toastManager = passwordsSection.$.passwordsListHandler.$.toast;
+    const toastManager = passwordsSection.$.passwordsListHandler.$.removalToast;
 
     // Click the remove button on the first password and assert that an undo
     // toast is shown.
@@ -1870,6 +1870,27 @@ suite('PasswordsSection', function() {
                 '#addPasswordButton'));
       });
 
+  test(
+      'addPasswordButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
+      function() {
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+        const passwordsSection =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        const addButton =
+            passwordsSection.shadowRoot.querySelector('#addPasswordButton');
+
+        passwordsSection.set('prefs.credentials_enable_service', {
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          value: false,
+        });
+        flush();
+        assertTrue(addButton.style.display === 'none');
+
+        passwordsSection.set('prefs.credentials_enable_service.value', true);
+        flush();
+        assertFalse(addButton.style.display === 'none');
+      });
+
   test('addPasswordButtonOpensAddPasswordDialog', function() {
     loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
     const passwordsSection =
@@ -1882,5 +1903,32 @@ suite('PasswordsSection', function() {
     const addDialog =
         passwordsSection.shadowRoot.querySelector('#addPasswordDialog');
     assertTrue(!!addDialog);
+  });
+
+  test('trustedVaultBannerVisibilityChangesWithState', function() {
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed',
+        TrustedVaultBannerState.NOT_SHOWN);
+    flush();
+    assertTrue(passwordsSection.$.trustedVaultBanner.hidden);
+
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed',
+        TrustedVaultBannerState.OFFER_OPT_IN);
+    flush();
+    assertFalse(passwordsSection.$.trustedVaultBanner.hidden);
+    assertEquals(
+        passwordsSection.i18n('trustedVaultBannerSubLabelOfferOptIn'),
+        passwordsSection.$.trustedVaultBanner.subLabel);
+
+    webUIListenerCallback(
+        'trusted-vault-banner-state-changed', TrustedVaultBannerState.OPTED_IN);
+    flush();
+    assertFalse(passwordsSection.$.trustedVaultBanner.hidden);
+    assertEquals(
+        passwordsSection.i18n('trustedVaultBannerSubLabelOptedIn'),
+        passwordsSection.$.trustedVaultBanner.subLabel);
   });
 });

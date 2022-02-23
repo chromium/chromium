@@ -46,7 +46,9 @@ _CONFIG = [
             'base::ApplyMetadataToPastSamples',
             'base::AutoReset',
             'base::Contains',
+            'base::CpuReductionExperimentFilter',
             'base::CreateSequencedTaskRunner',
+            'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',
             'base::ElapsedTimer',
@@ -108,6 +110,7 @@ _CONFIG = [
             'absl::make_optional',
             'base::make_span',
             'absl::nullopt',
+            'absl::nullopt_t',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
             'base::size',
@@ -195,6 +198,12 @@ _CONFIG = [
 
             # //base/strings/char_traits.h.
             'base::CharTraits',
+
+            # //base/synchronization/lock.h.
+            'base::AutoLock',
+            'base::AutoUnlock',
+            'base::AutoTryLock',
+            'base::Lock',
 
             # //base/synchronization/waitable_event.h.
             'base::WaitableEvent',
@@ -302,6 +311,8 @@ _CONFIG = [
             # Chromium geometry types.
             'gfx::Insets',
             'gfx::InsetsF',
+            'gfx::Outsets',
+            'gfx::OutsetsF',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Point3F',
@@ -315,35 +326,53 @@ _CONFIG = [
             'gfx::Transform',
             'gfx::Vector2d',
             'gfx::Vector2dF',
+            'gfx::Vector3dF',
 
             # Chromium geometry operations.
             'cc::MathUtil',
+            'gfx::AngleBetweenVectorsInDegrees',
             'gfx::BoundingRect',
             'gfx::ComputeApproximateMaxScale',
-            'gfx::Determinant',
+            'gfx::CrossProduct',
+            'gfx::DotProduct',
             'gfx::IntersectRects',
+            'gfx::MapRect',
             'gfx::PointAtOffsetFromOrigin',
+            'gfx::PointFToSkPoint',
+            'gfx::PointToSkIPoint',
+            'gfx::MapRect',
             'gfx::MaximumCoveredRect',
             'gfx::RectFToSkRect',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
             'gfx::ScalePoint',
             'gfx::ScaleToCeiledSize',
-            'gfx::ScaleToEnclosingRectSafe',
+            'gfx::ScaleToEnclosingRect',
             'gfx::ScaleToFlooredSize',
+            'gfx::ScaleToRoundedRect',
+            'gfx::ScaleToRoundedSize',
             'gfx::ScaleSize',
             'gfx::ScalePoint',
             'gfx::ScaleToRoundedPoint',
             'gfx::ScaleVector2d',
+            'gfx::ScaleVector3d',
+            'gfx::SizeFToSkSize',
+            'gfx::SizeToSkISize',
+            'gfx::SkIPointToPoint',
             'gfx::SkIRectToRect',
+            'gfx::SkISizeToSize',
+            'gfx::SkPointToPointF',
             'gfx::SkRectToRectF',
+            'gfx::SkSizeToSizeF',
             'gfx::SubtractRects',
             'gfx::ToCeiledPoint',
             'gfx::ToCeiledSize',
+            'gfx::ToCeiledVector2d',
             'gfx::ToEnclosedRect',
             'gfx::ToEnclosingRect',
             'gfx::ToFlooredPoint',
             'gfx::ToFlooredSize',
+            'gfx::ToFlooredVector2d',
             'gfx::ToRoundedPoint',
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
@@ -356,6 +385,11 @@ _CONFIG = [
 
             # Range type.
             'gfx::Range',
+
+            # Mac CALayer result (error code)
+            'gfx::CALayerResult',
+            'gfx::kCALayerUnknownDidNotSwap',
+            'gfx::kCALayerUnknownNoWidget',
 
             # Wrapper of SkRegion used in Chromium.
             'cc::Region',
@@ -436,7 +470,7 @@ _CONFIG = [
 
             # Document transitions
             'cc::DocumentTransitionRequest',
-            'cc::SharedElementLayer',
+            'cc::DocumentTransitionContentLayer',
             'viz::SharedElementResourceId',
 
             # base/types/strong_alias.h
@@ -475,7 +509,6 @@ _CONFIG = [
             'layout_invalidation_reason::.+',
             'media_constraints_impl::.+',
             'media_element_parser_helpers::.+',
-            'mobile_metrics_test_helpers::.+',
             'file_system_access_error::.+',
             'network_utils::.+',
             'origin_trials::.+',
@@ -619,8 +652,11 @@ _CONFIG = [
             'base::(scoped_nsobject|ScopedCFTypeRef)',
 
             # absl::variant and getters:
-            'absl::variant',
+            'absl::get',
             'absl::get_if',
+            'absl::holds_alternative',
+            'absl::variant',
+            'absl::visit',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',
@@ -729,7 +765,6 @@ _CONFIG = [
             'cc::TranslateOp',
             'gfx::DisplayColorSpaces',
             'gfx::FontRenderParams',
-            'gfx::RenderingPipeline',
             'ui::ImeTextSpan',
             'viz::FrameSinkId',
             'viz::LocalSurfaceId',
@@ -1105,12 +1140,21 @@ _CONFIG = [
         'paths': [
             'third_party/blink/renderer/modules/encryptedmedia/',
             'third_party/blink/renderer/modules/media/',
-            'third_party/blink/renderer/modules/media_capabilities/',
             'third_party/blink/renderer/modules/video_rvfc/',
         ],
         'allowed': [
             'media::.+',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/media_capabilities/',
+        ],
+        'allowed': [
+            'media::.+',
             'media_capabilities_identifiability_metrics::.+',
+            'webrtc::SdpVideoFormat',
+            'webrtc::SdpAudioFormat',
         ]
     },
     {
@@ -1124,8 +1168,6 @@ _CONFIG = [
             'base::Unretained',
             'base::NoDestructor',
             'base::flat_map',
-            'base::AutoLock',
-            'base::Lock',
             'base::EraseIf',
             'base::ScopedPlatformFile',
             'mojo::WrapCallbackWithDefaultInvokeIfNotRun',
@@ -1188,7 +1230,6 @@ _CONFIG = [
         ],
         'allowed': [
             'media::.+',
-            'base::AutoLock',
             'base::Hash',
             'base::Lock',
             'base::StringPrintf',
@@ -1250,6 +1291,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/webcodecs/',
         ],
         'allowed': [
+            'base::ClampMul',
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
             'cc::kNumYUVPlanes',
@@ -1295,7 +1337,6 @@ _CONFIG = [
             'third_party/blink/renderer/modules/webrtc/',
         ],
         'allowed': [
-            'base::AutoLock',
             'base::Erase',
             'base::Lock',
             'base::StringPrintf',
@@ -1406,6 +1447,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h',
+            'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.mm',
+        ],
+        'allowed': [
+            'ui::ScrollbarAnimationTimerMac',
+            'ui::OverlayScrollbarAnimatorMac',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/crypto/',
         ],
         'allowed': ['crypto::.+'],
@@ -1430,8 +1481,6 @@ _CONFIG = [
         ],
         'allowed': [
             'absl::.+',
-            'base::AutoLock',
-            'base::AutoUnlock',
             # TODO(crbug.com/1266408): Temporarily added to enable splitting UMA stats based on tier.
             'base::CPU',
             'base::LazyInstance',
@@ -1453,7 +1502,7 @@ _CONFIG = [
             'base::Thread',
             'base::WrapRefCounted',
             'cricket::.*',
-            'jingle_glue::JingleThreadWrapper',
+            'webrtc::ThreadWrapper',
             # TODO(crbug.com/787254): Remove GURL usage.
             'GURL',
             'media::.+',
@@ -1578,15 +1627,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/webdatabase/dom_window_web_database.cc',
-            'third_party/blink/renderer/controller/blink_initializer.cc',
-        ],
-        'allowed': [
-            'base::CommandLine',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/controller/blink_shutdown.cc',
         ],
         'allowed': [
@@ -1600,6 +1640,27 @@ _CONFIG = [
         'allowed': [
             'base::SingleSampleMetric',
             'base::SingleSampleMetricsFactory',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/service_worker/navigation_preload_request.cc',
+            'third_party/blink/renderer/modules/service_worker/navigation_preload_request.h',
+        ],
+        'allowed': [
+            'net::ERR_.+',
+            'net::HttpResponseHeaders',
+            'net::OK',
+            'net::RedirectInfo',
+        ],
+    },
+    {
+        # base::Value is used in test-only script execution in worker contexts.
+        'paths': [
+            'third_party/blink/renderer/modules/service_worker/service_worker_global_scope.cc',
+        ],
+        'allowed': [
+            'base::Value',
         ],
     },
 ]

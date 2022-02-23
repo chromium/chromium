@@ -319,8 +319,10 @@ ChromeVoxEditableTextBase = class {
     if (evt.start === evt.end) {
       // It's currently a cursor.
       if (this.start !== this.end) {
-        // It was previously a selection, so just announce 'unselected'.
-        this.speak(Msgs.getMsg('Unselected'), evt.triggeredByUser);
+        // It was previously a selection.
+        this.speak(
+            this.value.substring(this.start, this.end), evt.triggeredByUser);
+        this.speak(Msgs.getMsg('removed_from_selection'));
       } else if (
           this.getLineIndex(this.start) !== this.getLineIndex(evt.start)) {
         // Moved to a different line; read it.
@@ -516,11 +518,6 @@ ChromeVoxEditableTextBase = class {
     }
 
     if (this.multiline) {
-      // Fall back to announce deleted but omit the text that was deleted.
-      if (evt.value.length < prev.value.length) {
-        this.speak(
-            Msgs.getMsg('text_deleted'), evt.triggeredByUser, personality);
-      }
       // The below is a somewhat loose way to deal with non-standard
       // insertions/deletions. Intentionally skip for multiline since deletion
       // announcements are covered above and insertions are non-standard

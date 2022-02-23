@@ -35,7 +35,10 @@ const char kSandboxPaymentsManageCardsUrl[] =
     "https://pay.sandbox.google.com/payments/"
     "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
     "paymentMethods";
-
+// LINT.IfChange
+const char kVirtualCardEnrollmentSupportUrl[] =
+    "https://support.google.com/googlepay/answer/11234179";
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ChromeStringConstants.java)
 }  // namespace
 
 namespace payments {
@@ -62,6 +65,10 @@ GURL GetManageInstrumentsUrl() {
 GURL GetManageAddressesUrl() {
   // Billing addresses are now managed as a part of the payment instrument.
   return GetManageInstrumentsUrl();
+}
+
+GURL GetVirtualCardEnrollmentSupportUrl() {
+  return GURL(kVirtualCardEnrollmentSupportUrl);
 }
 
 }  // namespace payments

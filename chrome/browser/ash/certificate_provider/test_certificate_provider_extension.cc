@@ -67,7 +67,7 @@ base::Value ConvertBytesToValue(base::span<const uint8_t> bytes) {
 
 std::vector<uint8_t> ExtractBytesFromValue(const base::Value& value) {
   std::vector<uint8_t> bytes;
-  for (const base::Value& item_value : value.GetList())
+  for (const base::Value& item_value : value.GetListDeprecated())
     bytes.push_back(base::checked_cast<uint8_t>(item_value.GetInt()));
   return bytes;
 }
@@ -221,7 +221,7 @@ void TestCertificateProviderExtension::TriggerSetCertificates() {
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FOR_TEST,
       extensions::api::test::OnMessage::kEventName,
-      std::move(*message).TakeList(), browser_context_);
+      std::move(*message).TakeListDeprecated(), browser_context_);
   extensions::EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id(), std::move(event));
 }
@@ -231,20 +231,21 @@ void TestCertificateProviderExtension::HandleMessage(
   // Handle the request and reply to it (possibly, asynchronously).
   base::Value message_value = ParseJsonToValue(message);
   CHECK(message_value.is_list());
-  CHECK(message_value.GetList().size());
-  CHECK(message_value.GetList()[0].is_string());
-  const std::string& request_type = message_value.GetList()[0].GetString();
+  CHECK(message_value.GetListDeprecated().size());
+  CHECK(message_value.GetListDeprecated()[0].is_string());
+  const std::string& request_type =
+      message_value.GetListDeprecated()[0].GetString();
   ReplyToJsCallback send_reply_to_js_callback =
       base::BindOnce(&SendReplyToJs, &message_listener_);
   if (request_type == "getCertificates") {
-    CHECK_EQ(message_value.GetList().size(), 1U);
+    CHECK_EQ(message_value.GetListDeprecated().size(), 1U);
     HandleCertificatesRequest(std::move(send_reply_to_js_callback));
   } else if (request_type == "onSignatureRequested") {
-    CHECK_EQ(message_value.GetList().size(), 4U);
+    CHECK_EQ(message_value.GetListDeprecated().size(), 4U);
     HandleSignatureRequest(
-        /*sign_request=*/message_value.GetList()[1],
-        /*pin_status=*/message_value.GetList()[2],
-        /*pin=*/message_value.GetList()[3],
+        /*sign_request=*/message_value.GetListDeprecated()[1],
+        /*pin_status=*/message_value.GetListDeprecated()[2],
+        /*pin=*/message_value.GetListDeprecated()[3],
         std::move(send_reply_to_js_callback));
   } else {
     LOG(FATAL) << "Unexpected JS message type: " << request_type;

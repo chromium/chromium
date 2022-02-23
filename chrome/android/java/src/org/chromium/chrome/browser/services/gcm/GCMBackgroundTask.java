@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.services.gcm;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -20,7 +20,7 @@ import org.chromium.components.gcm_driver.GCMMessage;
  * Processes jobs that have been scheduled for delivering GCM messages to the native GCM Driver,
  * processing for which may exceed the lifetime of the GcmListenerService.
  */
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public class GCMBackgroundTask implements BackgroundTask {
     private static final String TAG = "GCMBackgroundTask";
 

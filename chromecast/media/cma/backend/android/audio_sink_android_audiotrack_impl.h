@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
@@ -45,12 +44,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
       delete;
   AudioSinkAndroidAudioTrackImpl& operator=(
       const AudioSinkAndroidAudioTrackImpl&) = delete;
-
-  // Gets the Android audio session ids used for media and communication (TTS)
-  // tracks.
-  // Set a return value pointer to null if that id is not needed.
-  // Returns true if the ids populated are valid.
-  static bool GetSessionIds(int* media_id, int* communication_id);
 
   static int64_t GetMinimumBufferedTime(int num_channels,
                                         int samples_per_second);
@@ -88,7 +81,9 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   AudioSinkAndroidAudioTrackImpl(AudioSinkAndroid::Delegate* delegate,
                                  int num_channels,
                                  int input_samples_per_second,
+                                 int audio_track_session_id,
                                  bool primary,
+                                 bool use_hw_av_sync,
                                  const std::string& device_id,
                                  AudioContentType content_type);
 
@@ -102,10 +97,11 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   void ScheduleWaitForEosTask();
   void OnPlayoutDone();
 
-  // Reformats audio data from planar float into interleaved float for
-  // AudioTrack. I.e.:
+  // Reformats audio data from planar into interleaved for AudioTrack. I.e.:
   // "LLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRR" -> "LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR".
-  void ReformatData();
+  // If using hardware av sync, also convert audio data from float to int16_t.
+  // Returns the data size after reformatting.
+  int ReformatData();
 
   void TrackRawMonotonicClockDeviation();
 
@@ -122,14 +118,26 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   const int num_channels_;
   const int input_samples_per_second_;
   const bool primary_;
+  const bool use_hw_av_sync_;
   const std::string device_id_;
   const AudioContentType content_type_;
 
   float stream_volume_multiplier_;
   float limiter_volume_multiplier_;
 
+  // Buffers shared between native and Java space to move data across the JNI.
+  // We use direct buffers so that the native class can have access to the
+  // underlying memory address. This avoids the need to copy from a jbyteArray
+  // to native memory. More discussion of this here:
+  // http://developer.android.com/training/articles/perf-jni.html Owned by
+  // j_audio_sink_audiotrack_impl_.
+  uint8_t* direct_pcm_buffer_address_;  // PCM audio data native->java
+  // rendering delay+timestamp return value, java->native
+  uint64_t* direct_rendering_delay_address_;
+
   // Java AudioSinkAudioTrackImpl instance.
-  base::android::ScopedJavaGlobalRef<jobject> j_audio_sink_audiotrack_impl_;
+  const base::android::ScopedJavaGlobalRef<jobject>
+      j_audio_sink_audiotrack_impl_;
 
   // Thread that feeds audio data into the Java instance though JNI,
   // potentially blocking. When in Play mode the Java AudioTrack blocks as it
@@ -143,19 +151,10 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
 
   const scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
 
-  // Buffers shared between native and Java space to move data across the JNI.
-  // We use direct buffers so that the native class can have access to the
-  // underlying memory address. This avoids the need to copy from a jbyteArray
-  // to native memory. More discussion of this here:
-  // http://developer.android.com/training/articles/perf-jni.html Owned by
-  // j_audio_sink_audiotrack_impl_.
-  uint8_t* direct_pcm_buffer_address_;  // PCM audio data native->java
-  // rendering delay+timestamp return value, java->native
-  uint64_t* direct_rendering_delay_address_;
-
   State state_;
 
   scoped_refptr<DecoderBufferBase> pending_data_;
+  int pending_data_bytes_after_reformat_;
   int pending_data_bytes_already_fed_;
 
   MediaPipelineBackendAndroid::RenderingDelay sink_rendering_delay_;

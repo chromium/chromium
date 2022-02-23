@@ -38,8 +38,9 @@ enum class State {
 
 enum class OperationType {
   kCopy,
-  kMove,
   kDelete,
+  kExtract,
+  kMove,
   kZip,
 };
 
@@ -71,6 +72,9 @@ struct ProgressStatus {
   // Allow ProgressStatus to be moved.
   ProgressStatus(ProgressStatus&& other);
   ProgressStatus& operator=(ProgressStatus&& other);
+
+  // True if the task is in a terminal state and won't receive further updates.
+  bool IsCompleted() const;
 
   // Task state.
   State state;

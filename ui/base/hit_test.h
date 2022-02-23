@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Define the HT* values so that this header can be included whether or not
 // windows.h has been included. The definitions must exactly match to avoid
@@ -79,7 +79,7 @@ enum HitTestCompat {
   HTZOOM
 };
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace ui {
 

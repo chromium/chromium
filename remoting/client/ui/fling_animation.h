@@ -6,6 +6,7 @@
 #define REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "remoting/client/ui/fling_tracker.h"
 
@@ -43,7 +44,7 @@ class FlingAnimation {
 
   base::TimeTicks fling_start_time_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // FlingAnimation is neither copyable nor movable.
   FlingAnimation(const FlingAnimation&) = delete;

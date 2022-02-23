@@ -13,9 +13,15 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+namespace bluetooth_config {
+class DeviceImageInfo;
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace ash {
 namespace quick_pair {
@@ -39,6 +45,10 @@ class FakeFastPairRepository : public FastPairRepository {
 
   bool HasKeyForDevice(const std::string& mac_address);
 
+  void set_is_network_connected(bool is_connected) {
+    is_network_connected_ = is_connected;
+  }
+
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
@@ -49,10 +59,16 @@ class FakeFastPairRepository : public FastPairRepository {
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
   bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  void FetchDeviceImages(scoped_refptr<Device> device) override;
+  bool PersistDeviceImages(scoped_refptr<Device> device) override;
+  bool EvictDeviceImages(const device::BluetoothDevice* device) override;
+  absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
+  GetImagesForDevice(const std::string& device_id) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);
 
+  bool is_network_connected_ = true;
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
   base::flat_map<std::string, std::vector<uint8_t>> saved_account_keys_;
   absl::optional<PairingMetadata> check_account_key_result_;

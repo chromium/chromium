@@ -278,6 +278,34 @@ function setUpLogDisplayConfig() {
       window.getSelection().collapse(textNode, textNode.length);
     }
   });
+
+  const downloadFakeButton = document.getElementById('download-fake-button');
+  downloadFakeButton.addEventListener('click', () => {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = window.URL.createObjectURL(blob);
+    const dateString = new Date()
+                           .toISOString()
+                           .replace(/T/g, '_')
+                           .replace(/\..+/, '')
+                           .replace(/:/g, '-');
+    const filename = `autofill-internals-${dateString}.html`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  });
+// <if expr="is_ios">
+  // Hide this until downloading a file works on iOS, see
+  // https://bugs.webkit.org/show_bug.cgi?id=167341
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1252380
+  downloadFakeButton.style = 'display: none';
+// </if>
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {

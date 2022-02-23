@@ -32,7 +32,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -200,8 +201,11 @@ public class InfoBarContainerTest {
         return new Runnable() {
             @Override
             public void run() {
-                PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(
-                        networkPredictionEnabled);
+                if (networkPredictionEnabled) {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
+                } else {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+                }
             }
         };
     }
@@ -220,8 +224,8 @@ public class InfoBarContainerTest {
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
                     @Override
                     public Boolean call() {
-                        return PrivacyPreferencesManagerImpl.getInstance()
-                                .getNetworkPredictionEnabled();
+                        return PreloadPagesSettingsBridge.getState()
+                                != PreloadPagesState.NO_PRELOADING;
                     }
                 });
         try {

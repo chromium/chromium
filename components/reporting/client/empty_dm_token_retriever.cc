@@ -4,6 +4,8 @@
 
 #include "components/reporting/client/empty_dm_token_retriever.h"
 
+#include <utility>
+
 #include "base/callback.h"
 
 namespace reporting {

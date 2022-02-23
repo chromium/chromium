@@ -6,6 +6,7 @@
 
 #include "ash/constants/devicetype.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
@@ -20,6 +21,9 @@ std::u16string GetChromeOSDeviceName() {
 }
 
 int GetChromeOSDeviceTypeResourceId() {
+#if BUILDFLAG(IS_REVEN)
+  return IDS_REVEN_DEVICE_NAME;
+#else
   switch (chromeos::GetDeviceType()) {
     case chromeos::DeviceType::kChromebase:
       return IDS_CHROMEBASE_DEVICE_NAME;
@@ -35,6 +39,7 @@ int GetChromeOSDeviceTypeResourceId() {
 
   NOTREACHED();
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME;
+#endif
 }
 
 std::u16string GetChromeOSDeviceNameInPlural() {
@@ -42,6 +47,9 @@ std::u16string GetChromeOSDeviceNameInPlural() {
 }
 
 int GetChromeOSDeviceTypeInPluralResourceId() {
+#if BUILDFLAG(IS_REVEN)
+  return IDS_REVEN_DEVICE_NAME_IN_PLURAL;
+#else
   switch (chromeos::GetDeviceType()) {
     case chromeos::DeviceType::kChromebase:
       return IDS_CHROMEBASE_DEVICE_NAME_IN_PLURAL;
@@ -57,6 +65,7 @@ int GetChromeOSDeviceTypeInPluralResourceId() {
 
   NOTREACHED();
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL;
+#endif
 }
 
 }  // namespace ui

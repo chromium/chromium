@@ -138,7 +138,7 @@ void DeserializeSTSData(const base::Value& sts_list,
 
   base::Time current_time(base::Time::Now());
 
-  for (const base::Value& sts_entry : sts_list.GetList()) {
+  for (const base::Value& sts_entry : sts_list.GetListDeprecated()) {
     if (!sts_entry.is_dict())
       continue;
 
@@ -227,7 +227,7 @@ void DeserializeExpectCTData(const base::Value& ct_list,
 
   const base::Time current_time(base::Time::Now());
 
-  for (const base::Value& ct_entry : ct_list.GetList()) {
+  for (const base::Value& ct_entry : ct_list.GetListDeprecated()) {
     if (!ct_entry.is_dict())
       continue;
 

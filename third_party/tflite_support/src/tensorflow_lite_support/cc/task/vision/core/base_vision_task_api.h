@@ -21,9 +21,9 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/time/clock.h"
+#include "absl/memory/memory.h"  // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/time/clock.h"     // from @com_google_absl
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/integral_types.h"
@@ -31,6 +31,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "tensorflow_lite_support/cc/task/core/tflite_engine.h"
+#include "tensorflow_lite_support/cc/task/processor/image_preprocessor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.h"
@@ -56,19 +57,15 @@ class BaseVisionTaskApi
   BaseVisionTaskApi(const BaseVisionTaskApi&) = delete;
   BaseVisionTaskApi& operator=(const BaseVisionTaskApi&) = delete;
 
-  // Number of bytes required for 8-bit per pixel RGB color space.
-  static constexpr int kRgbPixelBytes = 3;
-
   // Sets the ProcessEngine used for image pre-processing. Must be called before
   // any inference is performed. Can be called between inferences to override
   // the current process engine.
   void SetProcessEngine(const FrameBufferUtils::ProcessEngine& process_engine) {
-    frame_buffer_utils_ = FrameBufferUtils::Create(process_engine);
+    process_engine_ = process_engine;
   }
 
  protected:
-  using tflite::task::core::
-      BaseTaskApi<OutputType, const FrameBuffer&, const BoundingBox&>::engine_;
+  FrameBufferUtils::ProcessEngine process_engine_;
 
   // Checks input tensor and metadata (if any) are valid, or return an error
   // otherwise. This must be called once at initialization time, before running
@@ -76,19 +73,10 @@ class BaseVisionTaskApi
   // Note: the underlying interpreter and metadata extractor are assumed to be
   // already successfully initialized before calling this method.
   virtual absl::Status CheckAndSetInputs() {
-    ASSIGN_OR_RETURN(
-        ImageTensorSpecs input_specs,
-        BuildInputImageTensorSpecs(*engine_->interpreter(),
-                                   *engine_->metadata_extractor()));
-
-    if (input_specs.color_space != tflite::ColorSpaceType_RGB) {
-      return tflite::support::CreateStatusWithPayload(
-          absl::StatusCode::kUnimplemented,
-          "BaseVisionTaskApi only supports RGB color space for now.");
-    }
-
-    input_specs_ = absl::make_unique<ImageTensorSpecs>(input_specs);
-
+    // BaseTaskApi always assume having a single input.
+    ASSIGN_OR_RETURN(preprocessor_,
+                     ::tflite::task::processor::ImagePreprocessor::Create(
+                         this->GetTfLiteEngine(), {0}, process_engine_));
     return absl::OkStatus();
   }
 
@@ -115,153 +103,28 @@ class BaseVisionTaskApi
   absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                           const FrameBuffer& frame_buffer,
                           const BoundingBox& roi) override {
-    if (input_specs_ == nullptr) {
+    if (preprocessor_ == nullptr) {
+      return tflite::support::CreateStatusWithPayload(
+          absl::StatusCode::kInternal,
+          "Uninitialized preprocessor: CheckAndSetInputs must be called "
+          "at initialization time.");
+    }
+    if (GetInputSpecs().image_height == 0 && GetInputSpecs().image_width == 0) {
       return tflite::support::CreateStatusWithPayload(
           absl::StatusCode::kInternal,
           "Uninitialized input tensor specs: CheckAndSetInputs must be called "
           "at initialization time.");
     }
-
-    if (frame_buffer_utils_ == nullptr) {
-      return tflite::support::CreateStatusWithPayload(
-          absl::StatusCode::kInternal,
-          "Uninitialized frame buffer utils: SetProcessEngine must be called "
-          "at initialization time.");
-    }
-
-    if (input_tensors.size() != 1) {
-      return tflite::support::CreateStatusWithPayload(
-          absl::StatusCode::kInternal, "A single input tensor is expected.");
-    }
-
-    // Input data to be normalized (if needed) and used for inference. In most
-    // cases, this is the result of image preprocessing. In case no image
-    // preprocessing is needed (see below), this points to the input frame
-    // buffer raw data.
-    const uint8* input_data;
-    size_t input_data_byte_size;
-
-    // Optional buffers in case image preprocessing is needed.
-    std::unique_ptr<FrameBuffer> preprocessed_frame_buffer;
-    std::vector<uint8> preprocessed_data;
-
-    if (IsImagePreprocessingNeeded(frame_buffer, roi)) {
-      // Preprocess input image to fit model requirements.
-      // For now RGB is the only color space supported, which is ensured by
-      // `CheckAndSetInputs`.
-      FrameBuffer::Dimension to_buffer_dimension = {input_specs_->image_width,
-                                                    input_specs_->image_height};
-      input_data_byte_size =
-          GetBufferByteSize(to_buffer_dimension, FrameBuffer::Format::kRGB);
-      preprocessed_data.resize(input_data_byte_size / sizeof(uint8), 0);
-      input_data = preprocessed_data.data();
-
-      FrameBuffer::Plane preprocessed_plane = {
-          /*buffer=*/preprocessed_data.data(),
-          /*stride=*/{input_specs_->image_width * kRgbPixelBytes,
-                      kRgbPixelBytes}};
-      preprocessed_frame_buffer = FrameBuffer::Create(
-          {preprocessed_plane}, to_buffer_dimension, FrameBuffer::Format::kRGB,
-          FrameBuffer::Orientation::kTopLeft);
-
-      RETURN_IF_ERROR(frame_buffer_utils_->Preprocess(
-          frame_buffer, roi, preprocessed_frame_buffer.get()));
-    } else {
-      // Input frame buffer already targets model requirements: skip image
-      // preprocessing. For RGB, the data is always stored in a single plane.
-      input_data = frame_buffer.plane(0).buffer;
-      input_data_byte_size = frame_buffer.plane(0).stride.row_stride_bytes *
-                             frame_buffer.dimension().height;
-    }
-
-    // Then normalize pixel data (if needed) and populate the input tensor.
-    switch (input_specs_->tensor_type) {
-      case kTfLiteUInt8:
-        if (input_tensors[0]->bytes != input_data_byte_size) {
-          return tflite::support::CreateStatusWithPayload(
-              absl::StatusCode::kInternal,
-              "Size mismatch or unsupported padding bytes between pixel data "
-              "and input tensor.");
-        }
-        // No normalization required: directly populate data.
-        tflite::task::core::PopulateTensor(
-            input_data, input_data_byte_size / sizeof(uint8), input_tensors[0]);
-        break;
-      case kTfLiteFloat32: {
-        if (input_tensors[0]->bytes / sizeof(float) !=
-            input_data_byte_size / sizeof(uint8)) {
-          return tflite::support::CreateStatusWithPayload(
-              absl::StatusCode::kInternal,
-              "Size mismatch or unsupported padding bytes between pixel data "
-              "and input tensor.");
-        }
-        // Normalize and populate.
-        float* normalized_input_data =
-            tflite::task::core::AssertAndReturnTypedTensor<float>(
-                input_tensors[0]);
-        const tflite::task::vision::NormalizationOptions&
-            normalization_options = input_specs_->normalization_options.value();
-        if (normalization_options.num_values == 1) {
-          float mean_value = normalization_options.mean_values[0];
-          float inv_std_value = (1.0f / normalization_options.std_values[0]);
-          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
-               i++, input_data++, normalized_input_data++) {
-            *normalized_input_data =
-                inv_std_value * (static_cast<float>(*input_data) - mean_value);
-          }
-        } else {
-          std::array<float, 3> inv_std_values = {
-              1.0f / normalization_options.std_values[0],
-              1.0f / normalization_options.std_values[1],
-              1.0f / normalization_options.std_values[2]};
-          for (size_t i = 0; i < input_data_byte_size / sizeof(uint8);
-               i++, input_data++, normalized_input_data++) {
-            *normalized_input_data = inv_std_values[i % 3] *
-                                     (static_cast<float>(*input_data) -
-                                      normalization_options.mean_values[i % 3]);
-          }
-        }
-        break;
-      }
-      case kTfLiteInt8:
-        return tflite::support::CreateStatusWithPayload(
-            absl::StatusCode::kUnimplemented,
-            "kTfLiteInt8 input type is not implemented yet.");
-      default:
-        return tflite::support::CreateStatusWithPayload(
-            absl::StatusCode::kInternal, "Unexpected input tensor type.");
-    }
-
-    return absl::OkStatus();
+    return preprocessor_->Preprocess(frame_buffer, roi);
   }
 
-  // Utils for input image preprocessing (resizing, colorspace conversion, etc).
-  std::unique_ptr<FrameBufferUtils> frame_buffer_utils_;
-
-  // Parameters related to the input tensor which represents an image.
-  std::unique_ptr<ImageTensorSpecs> input_specs_;
+  // Returns the spec for the input image.
+  const vision::ImageTensorSpecs& GetInputSpecs() const {
+    return preprocessor_->GetInputSpecs();
+  }
 
  private:
-  // Returns false if image preprocessing could be skipped, true otherwise.
-  bool IsImagePreprocessingNeeded(const FrameBuffer& frame_buffer,
-                                  const BoundingBox& roi) {
-    // Is crop required?
-    if (roi.origin_x() != 0 || roi.origin_y() != 0 ||
-        roi.width() != frame_buffer.dimension().width ||
-        roi.height() != frame_buffer.dimension().height) {
-      return true;
-    }
-
-    // Are image transformations required?
-    if (frame_buffer.orientation() != FrameBuffer::Orientation::kTopLeft ||
-        frame_buffer.format() != FrameBuffer::Format::kRGB ||
-        frame_buffer.dimension().width != input_specs_->image_width ||
-        frame_buffer.dimension().height != input_specs_->image_height) {
-      return true;
-    }
-
-    return false;
-  }
+  std::unique_ptr<processor::ImagePreprocessor> preprocessor_ = nullptr;
 };
 
 }  // namespace vision

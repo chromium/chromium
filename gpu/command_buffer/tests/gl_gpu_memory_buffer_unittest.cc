@@ -29,7 +29,7 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/test/gl_image_test_support.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
 #endif
@@ -72,7 +72,7 @@ class GpuMemoryBufferTest : public testing::TestWithParam<gfx::BufferFormat> {
   GLManager gl_;
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 class GpuMemoryBufferTestEGL : public testing::Test,
                                public gpu::GpuCommandBufferTestEGL {
  public:
@@ -90,7 +90,7 @@ class GpuMemoryBufferTestEGL : public testing::Test,
   bool egl_initialized_{false};
   std::unique_ptr<gfx::ClientNativePixmapFactory> native_pixmap_factory_;
 };
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -364,7 +364,7 @@ TEST_P(GpuMemoryBufferTest, Lifecycle) {
   glDeleteTextures(1, &texture_id);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Test glCreateImageCHROMIUM with gfx::NATIVE_PIXMAP. Basically the test
 // reproduces the situation where some dmabuf fds are available outside the
 // gpu process and the user wants to import them using glCreateImageCHROMIUM.
@@ -478,7 +478,7 @@ TEST_F(GpuMemoryBufferTestEGL, GLCreateImageCHROMIUMFromNativePixmap) {
   glDestroyImageCHROMIUM(image_id);
   glDeleteTextures(1, &texture_id);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     GpuMemoryBufferTests,

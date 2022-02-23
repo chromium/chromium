@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 import android.app.Activity;
+import android.content.res.ColorStateList;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,11 +18,15 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -160,14 +166,20 @@ public class CustomTabToolbarColorController {
         if (mToolbarManager == null) return;
 
         mToolbarManager.setShouldUpdateToolbarPrimaryColor(true);
-        mToolbarManager.onThemeColorChanged(computeColor(), false);
+        final Tab tab = mTabProvider.getTab();
+        final @ToolbarColorType int toolbarColorType =
+                computeToolbarColorType(mIntentDataProvider, mUseTabThemeColor, tab);
+        final @ColorInt int color = computeColor(tab, toolbarColorType);
+        final @BrandedColorScheme int brandedColorScheme =
+                computeBrandedColorScheme(toolbarColorType, color);
+        final ColorStateList tint =
+                ThemeUtils.getThemedToolbarIconTint(mActivity, brandedColorScheme);
+        mToolbarManager.onThemeColorChanged(color, false);
+        mToolbarManager.onTintChanged(tint, brandedColorScheme);
         mToolbarManager.setShouldUpdateToolbarPrimaryColor(false);
     }
 
-    private int computeColor() {
-        Tab tab = mTabProvider.getTab();
-        @ToolbarColorType
-        int toolbarColorType = computeToolbarColorType(mIntentDataProvider, mUseTabThemeColor, tab);
+    private @ColorInt int computeColor(Tab tab, @ToolbarColorType int toolbarColorType) {
         switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR:
                 return mTopUiThemeColorProvider.calculateColor(tab, tab.getThemeColor());
@@ -177,6 +189,23 @@ public class CustomTabToolbarColorController {
                 return mIntentDataProvider.getColorProvider().getToolbarColor();
         }
         return getDefaultColor();
+    }
+
+    private @BrandedColorScheme int computeBrandedColorScheme(
+            @ToolbarColorType int toolbarColorType, @ColorInt int toolbarColor) {
+        switch (toolbarColorType) {
+            case ToolbarColorType.THEME_COLOR:
+                return OmniboxResourceProvider.getBrandedColorScheme(
+                        mActivity, mIntentDataProvider.isIncognito(), toolbarColor);
+            case ToolbarColorType.DEFAULT_COLOR:
+                return mIntentDataProvider.isIncognito() ? BrandedColorScheme.INCOGNITO
+                                                         : BrandedColorScheme.APP_DEFAULT;
+            case ToolbarColorType.INTENT_TOOLBAR_COLOR:
+                return ColorUtils.shouldUseLightForegroundOnBackground(toolbarColor)
+                        ? BrandedColorScheme.DARK_BRANDED_THEME
+                        : BrandedColorScheme.LIGHT_BRANDED_THEME;
+        }
+        return BrandedColorScheme.APP_DEFAULT;
     }
 
     private int getDefaultColor() {

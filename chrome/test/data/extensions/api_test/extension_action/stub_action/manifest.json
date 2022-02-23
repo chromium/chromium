@@ -1,0 +1,9 @@
+{
+  "name": "Stub Action Extension",
+  "manifest_version": 3,
+  "version": "0.1",
+  "background": {"service_worker": "worker.js"},
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

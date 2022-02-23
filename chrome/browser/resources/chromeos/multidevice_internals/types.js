@@ -259,9 +259,24 @@ export const FileType = {
 };
 
 /**
+ * @enum{number}
+ */
+export const DownloadResult = {
+  SUCCESS: 0,
+  ERROR_GENERIC: 1,
+  ERROR_STORAGE: 2,
+  ERROR_NETWORK: 3,
+};
+
+/**
  * @typedef {{
+ *   isCameraRollEnabled: boolean,
+ *   isOnboardingDismissed: boolean,
+ *   isFileAccessGranted: boolean,
+ *   isLoadingViewShown: boolean,
  *   numberOfThumbnails: number,
  *   fileType: !FileType,
+ *   downloadResult: !DownloadResult,
  * }}
  */
 export let CameraRollManager;

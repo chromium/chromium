@@ -94,7 +94,7 @@ absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
 
   // 1. Create "capability name" -> "boolean value" mapping.
   std::map<std::string, bool> boolean_capabilities;
-  for (const auto& capability_value : list->GetList()) {
+  for (const auto& capability_value : list->GetListDeprecated()) {
     const std::string* name =
         capability_value.FindStringKey(kAccountCapabilityNameKey);
     if (!name)

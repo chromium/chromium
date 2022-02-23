@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -230,7 +230,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
     CHECK(https_server_.Start());
   }
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = https_server_.GetURL(app_host, GetAppUrlPath());
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());

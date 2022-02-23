@@ -57,7 +57,10 @@ class PinDialogManager final {
 
   // Removes the specified sign request, aborting both the current and the
   // future PIN dialogs related to it.
-  void AbortSignRequest(const std::string& extension_id, int sign_request_id);
+  void RemoveSignRequest(const std::string& extension_id, int sign_request_id);
+
+  // Returns the number of pending sign requests stored in sign_requests_
+  int StoredSignRequestsForTesting() const;
 
   // Creates and displays a new PIN dialog, or reuses the old dialog with just
   // updating the parameters if active one exists.

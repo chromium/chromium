@@ -62,13 +62,13 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
   // Triggers a refresh of the expensive process' stats, on the worker thread.
   void Refresh(base::ProcessId process_id, int64_t refresh_flags);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Specifies a function to use in place of NtQuerySystemInformation.
   typedef int (*QuerySystemInformationForTest)(unsigned char* buffer,
                                                int buffer_size);
   static void SetQuerySystemInformationForTest(
       QuerySystemInformationForTest query_system_information);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   friend class base::RefCountedThreadSafe<SharedSampler>;
@@ -76,7 +76,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 
   typedef std::map<base::ProcessId, OnSamplingCompleteCallback> CallbacksMap;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Contains all results of refresh for a single process.
   struct ProcessIdAndSamplingResult {
     base::ProcessId process_id;
@@ -133,7 +133,7 @@ class SharedSampler : public base::RefCountedThreadSafe<SharedSampler> {
 
   // To assert we're running on the correct thread.
   base::SequenceChecker worker_pool_sequenced_checker_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace task_manager

@@ -4,8 +4,6 @@
      found in the LICENSE file. -->
 
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
     android:viewportWidth="51"
     android:viewportHeight="18"
     android:width="51dp"
@@ -37,5 +35,5 @@
     </group>
     <path
         android:pathData="M50 16l0 -14 1 0 0 14z"
-        android:fillColor="@color/divider_line_bg_color" />
+        android:fillColor="@macro/divider_line_bg_color" />
 </vector>

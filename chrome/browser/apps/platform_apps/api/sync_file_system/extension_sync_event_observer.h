@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -67,10 +67,10 @@ class ExtensionSyncEventObserver : public sync_file_system::SyncEventObserver,
   static const char* service_name() { return "ExtensionSyncEventObserver"; }
   static const bool kServiceIsCreatedWithBrowserContext = false;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Not owned. If not null, then this is registered to SyncFileSystemService.
-  sync_file_system::SyncFileSystemService* sync_service_;
+  raw_ptr<sync_file_system::SyncFileSystemService> sync_service_;
 
   void BroadcastOrDispatchEvent(
       const GURL& app_origin,

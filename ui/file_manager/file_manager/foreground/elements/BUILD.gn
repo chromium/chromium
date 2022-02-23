@@ -33,7 +33,6 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":files_format_dialog",
     ":files_icon_button",
-    ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
     ":files_password_dialog",
@@ -56,7 +55,6 @@ html_to_js("web_components") {
   js_files = [
     "files_format_dialog.js",
     "files_icon_button.js",
-    "files_message.js",
     "files_metadata_box.js",
     "files_metadata_entry.js",
     "files_password_dialog.js",
@@ -84,6 +82,7 @@ js_library("files_format_dialog") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
@@ -98,22 +97,6 @@ js_library("files_icon_button") {
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_unittest("files_message_unittest.m") {
-  deps = [
-    ":files_message",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("files_message") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -256,7 +239,6 @@ js_library("xf_display_panel") {
 js_test_gen_html("js_test_gen_html_modules") {
   is_polymer3 = true
   deps = [
-    ":files_message_unittest.m",
     ":files_password_dialog_unittest.m",
     ":files_toast_unittest.m",
     ":files_tooltip_unittest.m",

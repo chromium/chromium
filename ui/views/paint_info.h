@@ -6,6 +6,7 @@
 #define UI_VIEWS_PAINT_INFO_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
@@ -118,7 +119,7 @@ class VIEWS_EXPORT PaintInfo {
 
   // Compositor PaintContext associated with the view this object belongs to.
   ui::PaintContext context_;
-  const ui::PaintContext* root_context_;
+  raw_ptr<const ui::PaintContext> root_context_;
 
   // True if the individual View has been marked invalid for paint (i.e.
   // SchedulePaint() was invoked on the View).

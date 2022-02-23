@@ -11,17 +11,17 @@
 #include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void OnFileQuarantined(AVScanningFileValidator::ResultCallback result_callback,
                        quarantine::mojom::QuarantineFileResult result) {
   std::move(result_callback)
@@ -48,7 +48,7 @@ void ScanFile(
     std::move(result_callback).Run(base::File::FILE_OK);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -59,7 +59,7 @@ void AVScanningFileValidator::StartPostWriteValidation(
     ResultCallback result_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ScanFile(dest_platform_path, quarantine_connection_callback_,
            std::move(result_callback));
 #else

@@ -184,6 +184,13 @@ class PLATFORM_EXPORT SegmentedString {
   };
   void Prepend(const SegmentedString&, PrependType);
 
+  const SegmentedString* NextSegmentedString() const {
+    return next_segmented_string_;
+  }
+  void SetNextSegmentedString(const SegmentedString* next) {
+    next_segmented_string_ = next;
+  }
+
   bool ExcludeLineNumbers() const {
     return current_string_.ExcludeLineNumbers();
   }
@@ -326,6 +333,7 @@ class PLATFORM_EXPORT SegmentedString {
   Deque<SegmentedSubstring> substrings_;
   bool closed_;
   bool empty_;
+  const SegmentedString* next_segmented_string_ = nullptr;
 };
 
 }  // namespace blink

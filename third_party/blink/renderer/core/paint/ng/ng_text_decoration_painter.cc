@@ -43,7 +43,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
   decoration_info_.reset();
   clip_rect_.reset();
 
-  if (style_.TextDecorationsInEffect() != TextDecoration::kNone &&
+  if (style_.TextDecorationsInEffect() != TextDecorationLine::kNone &&
       // Ellipsis should not have text decorations. This is not defined, but
       // 4 impls do this: <https://github.com/w3c/csswg-drafts/issues/6531>
       !text_item_.IsEllipsis()) {
@@ -75,12 +75,14 @@ void NGTextDecorationPainter::Begin(Phase phase) {
       decoration_info_.emplace(
           PhysicalOffset(decoration_rect_.offset.left, top),
           decoration_rect_.Width(), style_.GetFontBaseline(), style_,
-          scaled_font, effective_selection_decoration, nullptr, scaling_factor);
+          scaled_font, effective_selection_decoration, nullptr,
+          MinimumThickness1(false), scaling_factor);
     } else {
       decoration_info_.emplace(
           decoration_rect_.offset, decoration_rect_.Width(),
           style_.GetFontBaseline(), style_, text_item_.ScaledFont(),
-          effective_selection_decoration, nullptr);
+          effective_selection_decoration, nullptr,
+          MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
     }
 
     if (UNLIKELY(selection_)) {

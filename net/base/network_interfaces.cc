@@ -7,11 +7,11 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 #include "net/base/winsock_init.h"
 #endif
@@ -44,7 +44,7 @@ NetworkInterface::~NetworkInterface() = default;
 ScopedWifiOptions::~ScopedWifiOptions() = default;
 
 std::string GetHostName() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnsureWinsockInit();
 #endif
 

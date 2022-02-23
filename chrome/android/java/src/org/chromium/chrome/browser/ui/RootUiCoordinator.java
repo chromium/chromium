@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.ChromePowerModeVoter;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
@@ -45,9 +47,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.crash.PureJavaExceptionReporter;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -57,6 +58,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -71,6 +74,7 @@ import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
@@ -84,6 +88,7 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
@@ -177,6 +182,12 @@ public class RootUiCoordinator
     protected LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
+    /**
+     * A controller which is used to show an Incognito re-auth dialog when the feature is
+     * available.
+     */
+    private @Nullable IncognitoReauthController mIncognitoReauthController;
+
     /** A means of providing the theme color to different features. */
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -248,6 +259,7 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
+    private final OmniboxPedalDelegate mOmniboxPedalDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
 
     /**
@@ -325,6 +337,7 @@ public class RootUiCoordinator
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             boolean initializeUiWithIncognitoColors) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
@@ -352,6 +365,7 @@ public class RootUiCoordinator
         mStatusBarColorProvider = statusBarColorProvider;
         mIntentRequestTracker = intentRequestTracker;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
+        mOmniboxPedalDelegate = omniboxPedalDelegate;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
@@ -536,6 +550,10 @@ public class RootUiCoordinator
             mScrollCaptureManager = null;
         }
 
+        if (mIncognitoReauthController != null) {
+            mIncognitoReauthController.destroy();
+        }
+
         mActivity = null;
     }
 
@@ -652,11 +670,27 @@ public class RootUiCoordinator
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
         }
-        DownloadManagerService.getDownloadManagerService().onActivityLaunched(mActivity,
-                () -> mMessageDispatcher, mModalDialogManagerSupplier.get(), mActivityTabProvider);
 
         initMerchantTrustSignals();
         initScrollCapture();
+
+        // TODO(1293885): Remove this validator once we have an API on the backend that sends
+        //                success/failure information back.
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mBookmarkBridgeSupplier.addObserver((bridge) -> {
+                PowerBookmarkUtils.validateBookmarkedCommerceSubscriptions(bridge,
+                        new CommerceSubscriptionsServiceFactory()
+                                .getForLastUsedProfile()
+                                .getSubscriptionsManager());
+            });
+        }
+
+        if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
+            mIncognitoReauthController =
+                    new IncognitoReauthController(mActivity, mTabModelSelectorSupplier.get(),
+                            mActivityLifecycleDispatcher, mModalDialogManagerSupplier.get(),
+                            mLayoutStateProviderOneShotSupplier, mProfileSupplier);
+        }
     }
 
     private void initMerchantTrustSignals() {
@@ -673,7 +707,7 @@ public class RootUiCoordinator
 
     private void initScrollCapture() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SCROLL_CAPTURE)) {
+                || DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
             return;
         }
 
@@ -725,8 +759,12 @@ public class RootUiCoordinator
 
         if (shareDirectly) {
             RecordUserAction.record("MobileMenuDirectShare");
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    tab.getWebContents(), "MobileMenu.DirectShare", "HasOccurred");
         } else {
             RecordUserAction.record("MobileMenuShare");
+            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                    tab.getWebContents(), "MobileMenu.Share", "HasOccurred");
         }
         shareDelegate.share(tab, shareDirectly, ShareOrigin.OVERFLOW_MENU);
     }
@@ -755,11 +793,14 @@ public class RootUiCoordinator
         } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {
             onShareMenuItemSelected(id == R.id.direct_share_menu_id,
                     mTabModelSelectorSupplier.get().isIncognitoSelected());
+            return true;
         } else if (id == R.id.paint_preview_show_id) {
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
+            return true;
         } else if (id == R.id.get_image_descriptions_id) {
             ImageDescriptionsController.getInstance().onImageDescriptionsMenuItemSelected(mActivity,
                     mModalDialogManagerSupplier.get(), mActivityTabProvider.get().getWebContents());
+            return true;
         }
 
         return false;
@@ -914,6 +955,7 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
+
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
@@ -931,7 +973,7 @@ public class RootUiCoordinator
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
-                    mInitializeUiWithIncognitoColors);
+                    mOmniboxPedalDelegate, mInitializeUiWithIncognitoColors);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -1029,6 +1071,10 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
+            AppMenuCoordinatorFactory.setExceptionReporter(
+                    (throwable)
+                            -> ChromePureJavaExceptionReporter.reportJavaException(
+                                    (Throwable) throwable));
 
             mAppMenuCoordinator.registerAppMenuBlocker(this);
             mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
@@ -1123,7 +1169,8 @@ public class RootUiCoordinator
                 () -> mActivity.findViewById(R.id.sheet_container));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
-                        -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));
+                        -> ChromePureJavaExceptionReporter.reportJavaException(
+                                (Throwable) throwable));
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
 
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,

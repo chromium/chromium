@@ -4,9 +4,12 @@
 
 #include "net/socket/connect_job.h"
 
+#include <set>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -133,9 +136,13 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
-void ConnectJob::SetSocket(
-    std::unique_ptr<StreamSocket> socket,
-    absl::optional<std::vector<std::string>> dns_aliases) {
+const ConnectionEndpointMetadata& ConnectJob::GetEndpointMetadata() const {
+  static const base::NoDestructor<ConnectionEndpointMetadata> empty_metadata;
+  return *empty_metadata;
+}
+
+void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
+                           absl::optional<std::set<std::string>> dns_aliases) {
   if (socket) {
     net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
     if (dns_aliases)

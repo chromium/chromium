@@ -15,7 +15,8 @@ import '../site_favicon.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './search_engine_entry.html.js';
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
@@ -33,7 +34,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -82,9 +83,24 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     return this.isActiveSearchEnginesFlagEnabled && this.engine.default;
   }
 
-  private onDeleteTap_() {
-    this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+  private onDeleteTap_(e: Event) {
+    e.preventDefault();
     this.closePopupMenu_();
+
+    if (!this.engine.shouldConfirmDeletion) {
+      this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent('delete-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        engine: this.engine,
+        anchorElement: assert(
+            this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!),
+      },
+    }));
   }
 
   private onDotsTap_() {

@@ -8,6 +8,10 @@
 #error "This file requires ARC support."
 #endif
 
+FakeReadingListModel::FakeReadingListModel() = default;
+
+FakeReadingListModel::~FakeReadingListModel() = default;
+
 bool FakeReadingListModel::loaded() const {
   return loaded_;
 }
@@ -58,8 +62,9 @@ void FakeReadingListModel::ResetLocalUnseenFlag() {
 const ReadingListEntry* FakeReadingListModel::GetEntryByURL(
     const GURL& gurl) const {
   DCHECK(loaded_);
+  DCHECK(entry_);
   if (entry_->URL() == gurl) {
-    return entry_;
+    return &entry_.value();
   }
   return nullptr;
 }
@@ -97,6 +102,7 @@ void FakeReadingListModel::RemoveEntryByURL(const GURL& url) {
 }
 
 void FakeReadingListModel::SetReadStatus(const GURL& url, bool read) {
+  DCHECK(entry_);
   if (entry_->URL() == url) {
     entry_->SetRead(true, base::Time());
   }
@@ -134,8 +140,8 @@ void FakeReadingListModel::SetContentSuggestionsExtra(
   NOTREACHED();
 }
 
-void FakeReadingListModel::SetEntry(ReadingListEntry* entry) {
-  entry_ = entry;
+void FakeReadingListModel::SetEntry(ReadingListEntry entry) {
+  entry_ = std::move(entry);
 }
 
 void FakeReadingListModel::SetLoaded() {
@@ -143,4 +149,8 @@ void FakeReadingListModel::SetLoaded() {
   for (auto& observer : observers_) {
     observer.ReadingListModelLoaded(this);
   }
+}
+
+const ReadingListEntry* FakeReadingListModel::entry() {
+  return entry_ ? &entry_.value() : nullptr;
 }

@@ -45,7 +45,7 @@
 #include "ui/compositor/compositor.h"
 
 // ImageTransportFactory::GetInstance is not available on all build configs.
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #define CAN_USE_IMAGE_TRANSPORT_FACTORY 1
 #endif
 
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1235254): This test is flakey on macOS.
 #define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1235254): This test is flakey on macOS.
 #define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage

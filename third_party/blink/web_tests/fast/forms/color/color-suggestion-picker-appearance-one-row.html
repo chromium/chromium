@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-testRunner.waitUntilDone();
-</script>
-<script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <input type='color' id='color' value='#ff0000' list='single'>
 <datalist id='single'>
     <option>#000000</option>
 </datalist>
+
 <script>
-openPickerAppearanceOnly(document.getElementById('color'), () => testRunner.notifyDone());
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>

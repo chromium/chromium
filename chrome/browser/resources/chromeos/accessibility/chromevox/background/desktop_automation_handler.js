@@ -8,6 +8,7 @@
 
 goog.provide('DesktopAutomationHandler');
 
+goog.require('AutoScrollHandler');
 goog.require('AutomationObjectConstructorInstaller');
 goog.require('BaseAutomationHandler');
 goog.require('ChromeVoxState');
@@ -93,8 +94,11 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.LIVE_REGION_CHANGED, this.onLiveRegionChanged);
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
-    this.addListener_(EventType.MENU_END, this.onMenuEnd);
-    this.addListener_(EventType.MENU_START, this.onEventDefault);
+    this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
+    this.addListener_(EventType.MENU_START, (event) => {
+      Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
+      this.onEventDefault(event);
+    });
     this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
     this.addListener_(
         EventType.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
@@ -142,6 +146,13 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!AutomationNode} node The hit result.
    */
   onHitTestResult(node) {
+    // It's possible the |node| hit has lost focus (via its root).
+    const host = node.root.parent;
+    if (node.parent && host && host.role === RoleType.WEB_VIEW &&
+        !host.state.focused) {
+      return;
+    }
+
     // It is possible that the user moved since we requested a hit test.  Bail
     // if the current range is valid and on the same page as the hit result
     // (but not the root).
@@ -297,6 +308,10 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     }
 
     if (!node.root) {
+      return;
+    }
+
+    if (!AutoScrollHandler.getInstance().onFocusEventNavigation(node)) {
       return;
     }
 
@@ -497,7 +512,9 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
               .deepEquivalent);
 
       // Sync ChromeVox range with selection.
-      ChromeVoxState.instance.setCurrentRange(selectedRange);
+      if (!ChromeVoxState.isReadingContinuously) {
+        ChromeVoxState.instance.setCurrentRange(selectedRange);
+      }
     }
     this.textEditHandler_.onEvent(evt);
   }
@@ -612,19 +629,24 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       const target = evt.target;
 
       // Desktop tabs get "selection" when there's a focused webview during
-      // tab switching. Read it, but don't steal focus which is on the
-      // omnibox. We have to resort to this check to get tab switching read out
-      // because on switching to a new tab, focus actually remains on the *same*
-      // omnibox.
-      const currentRange = ChromeVoxState.instance.currentRange;
+      // tab switching.
       if (target.role === RoleType.TAB &&
-          target.root.role === RoleType.DESKTOP && currentRange &&
-          currentRange.start && currentRange.start.node &&
-          currentRange.start.node.className === 'OmniboxViewViews') {
-        const range = cursors.Range.fromNode(target);
-        new Output()
-            .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
-            .go();
+          target.root.role === RoleType.DESKTOP) {
+        // Read it only if focus is on the
+        // omnibox. We have to resort to this check to get tab switching read
+        // out because on switching to a new tab, focus actually remains on the
+        // *same* omnibox.
+        const currentRange = ChromeVoxState.instance.currentRange;
+        if (currentRange && currentRange.start && currentRange.start.node &&
+            currentRange.start.node.className === 'OmniboxViewViews') {
+          const range = cursors.Range.fromNode(target);
+          new Output()
+              .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
+              .go();
+        }
+
+        // This also suppresses tab selection output when ChromeVox is not on
+        // the omnibox.
         return;
       }
 
@@ -658,6 +680,25 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         override = !!walker || override;
       }
 
+      // Autofill popup menu items are always announced on selection events,
+      // independent of focus.
+      // The AutofillPopupSeparatorView is intentionally omitted because it
+      // cannot be focused.
+      if (target.className === 'AutofillPopupSuggestionView' ||
+          target.className === 'PasswordPopupSuggestionView' ||
+          target.className === 'AutofillPopupFooterView' ||
+          target.className === 'AutofillPopupWarningView' ||
+          target.className === 'AutofillPopupBaseView') {
+        override = true;
+      }
+
+      // The popup view associated with a datalist element does not descend
+      // from the input with which it is associated.
+      if (focus.role === RoleType.TEXT_FIELD_WITH_COMBO_BOX &&
+          target.role === RoleType.LIST_BOX_OPTION) {
+        override = true;
+      }
+
       if (override || AutomationUtil.isDescendantOf(target, focus)) {
         this.onEventDefault(evt);
       }
@@ -669,16 +710,18 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onMenuEnd(evt) {
-    this.onEventDefault(evt);
-
     // This is a work around for Chrome context menus not firing a focus event
     // after you close them.
     chrome.automation.getFocus(function(focus) {
       if (focus) {
-        const event = new CustomAutomationEvent(
-            EventType.FOCUS, focus,
-            {eventFrom: 'page', eventFromAction: ActionType.FOCUS});
-        this.onFocus(event);
+        // Directly output the node here; do not go through |onFocus| as it
+        // contains a lot of logic that can move the selection (if in an
+        // editable).
+        const range = cursors.Range.fromNode(focus);
+        new Output()
+            .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
+            .go();
+        ChromeVoxState.instance.setCurrentRange(range);
       }
     }.bind(this));
   }

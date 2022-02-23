@@ -73,17 +73,4 @@ TEST_F(SodaComponentInstallerTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SodaComponentInstallerTest,
-       TestComponentRegistrationWhenUseSodaForLiveCaptionFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({media::kLiveCaption},
-                                       {media::kUseSodaForLiveCaption});
-  std::unique_ptr<SodaComponentMockComponentUpdateService> component_updater(
-      new SodaComponentMockComponentUpdateService());
-  EXPECT_CALL(*component_updater, RegisterComponent(testing::_)).Times(0);
-  RegisterSodaComponent(component_updater.get(), &local_state_,
-                        base::OnceClosure(), base::OnceClosure());
-  task_environment_.RunUntilIdle();
-}
-
 }  // namespace component_updater

@@ -140,4 +140,7 @@ extern NSString* const kSettingsHandoffCellId;
 // The accessibility identifier of the Cookies cell.
 extern NSString* const kSettingsCookiesCellId;
 
+// The accessibility identifier of the Default Site Mode cell.
+extern NSString* const kSettingsDefaultSiteModeCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

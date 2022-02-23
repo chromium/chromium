@@ -140,8 +140,9 @@ ScriptProcessorHandler::~ScriptProcessorHandler() {
 }
 
 void ScriptProcessorHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
   AudioHandler::Initialize();
 }
 
@@ -275,8 +276,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
   DCHECK(IsMainThread());
 
-  if (!Context() || !Context()->GetExecutionContext())
+  if (!Context() || !Context()->GetExecutionContext()) {
     return;
+  }
 
   DCHECK_LT(double_buffer_index, 2u);
 
@@ -298,8 +300,9 @@ void ScriptProcessorHandler::FireProcessEventForOfflineAudioContext(
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
 
-  if (!Context() || !Context()->GetExecutionContext())
+  if (!Context() || !Context()->GetExecutionContext()) {
     return;
+  }
 
   DCHECK_LT(double_buffer_index, 2u);
   if (double_buffer_index > 1) {
@@ -369,8 +372,9 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
     : AudioNode(context) {
   // Regardless of the allowed buffer sizes, we still need to process at the
   // granularity of the AudioNode.
-  if (buffer_size < context.GetDeferredTaskHandler().RenderQuantumFrames())
+  if (buffer_size < context.GetDeferredTaskHandler().RenderQuantumFrames()) {
     buffer_size = context.GetDeferredTaskHandler().RenderQuantumFrames();
+  }
 
   // Create double buffers on both the input and output sides.
   // These AudioBuffers will be directly accessed in the main thread by
@@ -408,10 +412,12 @@ static uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
   uint32_t buffer_size =
       1 << static_cast<uint32_t>(log2(4 * callback_buffer_size) + 0.5);
 
-  if (buffer_size < 256)
+  if (buffer_size < 256) {
     return 256;
-  if (buffer_size > 16384)
+  }
+  if (buffer_size > 16384) {
     return 16384;
+  }
 
   return buffer_size;
 }
@@ -522,8 +528,9 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
       context, context.sampleRate(), buffer_size, number_of_input_channels,
       number_of_output_channels);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   return node;
 }
@@ -625,13 +632,15 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
 
 bool ScriptProcessorNode::HasPendingActivity() const {
   // To prevent the node from leaking after the context is closed.
-  if (context()->IsContextCleared())
+  if (context()->IsContextCleared()) {
     return false;
+  }
 
   // If |onaudioprocess| event handler is defined, the node should not be
   // GCed even if it is out of scope.
-  if (HasEventListeners(event_type_names::kAudioprocess))
+  if (HasEventListeners(event_type_names::kAudioprocess)) {
     return true;
+  }
 
   return false;
 }

@@ -40,7 +40,6 @@ using ::testing::NiceMock;
 using ::testing::Truly;
 
 const char kHttpUrl[] = "http://test";
-const char kHttpsUrl[] = "https://test";
 const char kHttpRedirect[] = "http://test/ing";
 const char kEtag[] = "\"arglebargle glopy-glyf?\"";
 
@@ -50,18 +49,8 @@ const int kHttpPartialContent = 206;
 
 enum NetworkState { kNone, kLoaded, kLoading };
 
-static bool want_frfr = false;
-
-// Predicate that checks the Accept-Encoding request header and FRFR previews
-// state.
-static bool CorrectAcceptEncodingAndPreviewsState(
-    const WebURLRequest& request) {
-  bool has_frfr =
-      request.GetPreviewsState() & PreviewsTypes::kSrcVideoRedirectOn;
-  if (has_frfr != want_frfr) {
-    return false;
-  }
-
+// Predicate that checks the Accept-Encoding request header.
+static bool CorrectAcceptEncoding(const WebURLRequest& request) {
   std::string value = request
                           .HttpHeaderField(WebString::FromUTF8(
                               net::HttpRequestHeaders::kAcceptEncoding))
@@ -87,7 +76,6 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
       const ResourceMultiBufferDataProviderTest&) = delete;
 
   void Initialize(const char* url, int first_position) {
-    want_frfr = false;
     gurl_ = GURL(url);
     url_data_ = url_index_.GetByUrl(gurl_, UrlData::CORS_UNSPECIFIED,
                                     UrlIndex::kNormal);
@@ -214,8 +202,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
       const WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
     EXPECT_CALL(*url_loader.get(),
-                LoadAsynchronously(Truly(CorrectAcceptEncodingAndPreviewsState),
-                                   loader_));
+                LoadAsynchronously(Truly(CorrectAcceptEncoding), loader_));
     return url_loader;
   }
 
@@ -333,52 +320,6 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
   Redirect(kHttpRedirect);
   PartialResponse(2048, 4096, 32000);
   StopWhenLoad();
-}
-
-TEST_F(ResourceMultiBufferDataProviderTest, TestSaveDataFRFRPreviewsState) {
-  struct TestCase {
-    std::string label;
-    bool enable_save_data;
-    std::string url;
-    bool want_frfr_previews_enabled;
-  };
-  const TestCase kTestCases[]{
-      {
-          "SaveData on, HTTP URL: FRFR previews state should exist.",
-          true,
-          kHttpUrl,
-          true,
-      },
-      {
-          "SaveData on, HTTPS URL: FRFR previews state should exist.",
-          true,
-          kHttpsUrl,
-          true,
-      },
-      {
-          "SaveData off, HTTP URL: FRFR previews state should not exist.",
-          false,
-          kHttpUrl,
-          false,
-      },
-      {
-          "SaveData off, HTTPS URL: FRFR previews state should not exist.",
-          false,
-          kHttpsUrl,
-          false,
-      },
-  };
-  for (const TestCase& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.label);
-    WebNetworkStateNotifier::SetSaveDataEnabled(test_case.enable_save_data);
-
-    Initialize(test_case.url.c_str(), 0);
-    want_frfr = test_case.want_frfr_previews_enabled;
-
-    Start();
-    FullResponse(1024);
-    StopWhenLoad();
-  }
 }
 
 }  // namespace blink

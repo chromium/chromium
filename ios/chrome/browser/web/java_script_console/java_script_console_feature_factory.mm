@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature.h"

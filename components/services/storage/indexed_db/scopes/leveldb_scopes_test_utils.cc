@@ -101,9 +101,7 @@ void LevelDBScopesTestBase::SetUpBreakableDB(
     TearDown();
   ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
 
-  leveldb::Status status;
-  std::unique_ptr<leveldb::DB> temp_real_db;
-  std::tie(temp_real_db, status) =
+  auto [temp_real_db, status] =
       leveldb_factory_->OpenDB(temp_directory_.GetPath().AsUTF8Unsafe(),
                                /*create_if_missing=*/true, kWriteBufferSize);
   ASSERT_TRUE(status.ok());
@@ -124,10 +122,8 @@ void LevelDBScopesTestBase::SetUpFlakyDB(
   if (leveldb_)
     TearDown();
   ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
-  leveldb::Status status;
 
-  std::unique_ptr<leveldb::DB> temp_db;
-  std::tie(temp_db, status) =
+  auto [temp_db, status] =
       leveldb_factory_->OpenDB(temp_directory_.GetPath().AsUTF8Unsafe(),
                                /*create_if_missing=*/true, kWriteBufferSize);
   ASSERT_TRUE(status.ok());

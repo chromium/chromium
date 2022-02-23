@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -13,16 +12,18 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/filename_util.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -55,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 // TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent DISABLED_OnMaximizedEvent
 #define MAYBE_OnRestoredEvent DISABLED_OnRestoredEvent
@@ -63,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #define MAYBE_OnMinimizedEvent OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent OnMaximizedEvent
 #define MAYBE_OnRestoredEvent OnRestoredEvent
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
   EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
@@ -137,21 +138,20 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
   const char kNoAlphaDir[] =
       "platform_apps/windows_api_alpha_enabled/has_permissions_no_alpha";
-  const char kHasAlphaDir[] =
+  [[maybe_unused]] const char kHasAlphaDir[] =
       "platform_apps/windows_api_alpha_enabled/has_permissions_has_alpha";
-  ALLOW_UNUSED_LOCAL(kHasAlphaDir);
   const char* test_dir = kNoAlphaDir;
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(USE_AURA) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!ui::win::IsAeroGlassEnabled()) {
     test_dir = kNoAlphaDir;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))
@@ -191,11 +191,33 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
       << message_;
 }
 
+// Tests that component extensions are allowed to open chrome:-scheme URLs in
+// app windows, but not other absolute URLs.
+IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OpeningAbsoluteURLs) {
+  base::FilePath file_path = test_data_dir_.AppendASCII("body1.html");
+  GURL file_url = net::FilePathToFileURL(file_path);
+  EXPECT_TRUE(RunExtensionTest(
+      "platform_apps/windows_api_opening_absolute_urls",
+      {.custom_arg = file_url.spec().c_str(), .launch_as_platform_app = true},
+      {.load_as_component = true}))
+      << message_;
+  // The app should have successfully opened the chrome://version page.
+  AppWindowRegistry::AppWindowList app_windows =
+      AppWindowRegistry::Get(profile())->GetAppWindowsForApp(
+          last_loaded_extension_id());
+  ASSERT_EQ(1u, app_windows.size());
+  content::WebContents* app_window_contents =
+      (*app_windows.begin())->web_contents();
+  EXPECT_EQ(GURL("chrome://version"),
+            app_window_contents->GetLastCommittedURL());
+  EXPECT_FALSE(app_window_contents->GetMainFrame()->IsErrorDocument());
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
-  EXPECT_TRUE(RunExtensionTest(
-      "platform_apps/windows_api_ime/has_permissions_whitelisted", {},
-      {.load_as_component = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_ime/has_permissions_allowed",
+                       {}, {.load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunExtensionTest(
@@ -205,9 +227,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNoPermissions) {
-  EXPECT_TRUE(RunExtensionTest(
-      "platform_apps/windows_api_ime/no_permissions_whitelisted", {},
-      {.load_as_component = true}))
+  EXPECT_TRUE(
+      RunExtensionTest("platform_apps/windows_api_ime/no_permissions_allowed",
+                       {}, {.load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunExtensionTest(

@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(ClearBrowsingDataHandlerBrowserTest, GetInstalledApps) {
   ASSERT_TRUE(call_data.arg2()->GetBool());
 
   // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::span<const base::Value> result =
+      call_data.arg3()->GetListDeprecated();
   ASSERT_EQ(1U, result.size());
   auto& installed_app = result.back();
   ASSERT_EQ(url.host(), *(installed_app.FindStringKey("registerableDomain")));

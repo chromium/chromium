@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/authenticator_get_info_response.h"
 #include "device/fido/fido_constants.h"

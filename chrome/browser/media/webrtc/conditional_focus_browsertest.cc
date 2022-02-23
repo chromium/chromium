@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -161,12 +162,12 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   }
 
  protected:
-  WebContents* captured_tab_ = nullptr;
-  WebContents* capturing_tab_ = nullptr;
+  raw_ptr<WebContents> captured_tab_ = nullptr;
+  raw_ptr<WebContents> capturing_tab_ = nullptr;
 };
 
 // Flaky on Win bots and on linux release bots http://crbug.com/1264744
-#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
   DISABLED_CapturedTabFocusedIfNoExplicitCallToFocus
 #else
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
 }
 
 // Flaky on Win bots and on linux release bots http://crbug.com/1264744
-#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(NDEBUG))
 #define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
   DISABLED_CapturedTabFocusedIfExplicitlyCallingFocus
 #else
@@ -206,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Win7 CI builder. See https://crbug.com/1255957.
 #define MAYBE_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus \
   DISABLED_CapturedTabFocusedIfAppWaitsTooLongBeforeCallingFocus
@@ -257,8 +258,16 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }
 
+// TODO(crbug.com/1285418): Flaky on Win and Linux bots.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  DISABLED_ExceptionRaisedIfFocusCalledMultipleTimes
+#else
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  ExceptionRaisedIfFocusCalledMultipleTimes
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       ExceptionRaisedIfFocusCalledMultipleTimes) {
+                       MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes) {
   // Setup.
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);

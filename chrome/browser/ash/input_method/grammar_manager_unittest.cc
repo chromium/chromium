@@ -45,7 +45,7 @@ class TestGrammarServiceClient : public GrammarServiceClient {
                         const std::u16string& text,
                         TextCheckCompleteCallback callback) override {
     std::vector<ui::GrammarFragment> grammar_results;
-    for (int i = 0; i < text.size(); i++) {
+    for (size_t i = 0; i < text.size(); i++) {
       if (text.substr(i, 5) == u"error") {
         grammar_results.emplace_back(gfx::Range(i, i + 5), "correct");
       }
@@ -110,7 +110,6 @@ class GrammarManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
-    ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetInputContextHandler(
         &mock_ime_input_context_handler_);
     chromeos::machine_learning::ServiceConnection::

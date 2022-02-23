@@ -85,7 +85,7 @@ ChildAccountService::~ChildAccountService() {}
 bool ChildAccountService::IsChildAccountDetectionEnabled() {
 // Child account detection is always enabled on Android and ChromeOS, and
 // disabled in other platforms.
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;
@@ -354,10 +354,10 @@ void ChildAccountService::ScheduleNextFamilyInfoUpdate(base::TimeDelta delay) {
 void ChildAccountService::PropagateChildStatusToUser(bool is_child) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   if (user && is_child != (user->GetType() == user_manager::USER_TYPE_CHILD))
     LOG(FATAL) << "User child flag has changed: " << is_child;
-  if (!user && chromeos::ProfileHelper::IsRegularProfile(profile_))
+  if (!user && ash::ProfileHelper::IsRegularProfile(profile_))
     LOG(DFATAL) << "User instance not found while setting child account flag.";
 #endif
 }

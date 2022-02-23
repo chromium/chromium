@@ -356,7 +356,7 @@ ShareOperation::ShareOperation(const std::string& title,
                                const GURL& url,
                                std::vector<blink::mojom::SharedFilePtr> files,
                                content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       title_(std::move(title)),
       text_(std::move(text)),
       url_(std::move(url)),
@@ -384,7 +384,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
 
   // If the corresponding web_contents have already been cleaned up, cancel
   // the operation.
-  if (!web_contents()) {
+  if (!web_contents_) {
     Complete(blink::mojom::ShareError::CANCELED);
     return;
   }
@@ -394,7 +394,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
     // If the source cannot be determined, does not appear to be valid,
     // or is longer than the max length supported by the IAttachmentExecute
     // service, use a generic value that reliably maps to the Internet zone.
-    GURL source_url = web_contents()->GetLastCommittedURL();
+    GURL source_url = web_contents_->GetLastCommittedURL();
     std::wstring source = (source_url.is_valid() &&
                            source_url.spec().size() <= INTERNET_MAX_URL_LENGTH)
                               ? base::UTF8ToWide(source_url.spec())
@@ -434,7 +434,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   // with the WebContents.
   HWND hwnd = nullptr;
   content::RenderWidgetHostView* host_view =
-      web_contents()->GetRenderWidgetHostView();
+      web_contents_->GetRenderWidgetHostView();
   if (host_view) {
     ui::AXPlatformNode* platform_node =
         ui::AXPlatformNode::FromNativeViewAccessible(
@@ -451,8 +451,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   // position as nicely. This is unexpected in most cases, but can happen if,
   // for example, Windows has explicitly destroyed said HWND.
   if (!hwnd) {
-    hwnd =
-        views::HWNDForNativeWindow(web_contents()->GetTopLevelNativeWindow());
+    hwnd = views::HWNDForNativeWindow(web_contents_->GetTopLevelNativeWindow());
   }
 
   show_share_ui_for_window_operation_ =
@@ -465,7 +464,7 @@ void ShareOperation::OnDataRequested(IDataRequestedEventArgs* event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   blink::mojom::ShareError share_result;
-  if (!web_contents()) {
+  if (!web_contents_) {
     share_result = blink::mojom::ShareError::CANCELED;
   } else if (PutShareContentInEventArgs(event_args)) {
     share_result = blink::mojom::ShareError::OK;
@@ -572,7 +571,7 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
       // target app has finished fully processing the shared content this could
       // be updated to be owned/maintained by this ShareOperation instance.
       auto operation = base::MakeRefCounted<OutputStreamWriteOperation>(
-          web_contents()->GetBrowserContext()->GetBlobStorageContext(),
+          web_contents_->GetBrowserContext()->GetBlobStorageContext(),
           file_bytes_shared, file->blob->uuid);
       auto name_h = base::win::ScopedHString::Create(file->name);
       auto raw_data_requested_callback =

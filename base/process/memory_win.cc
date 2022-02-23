@@ -68,4 +68,8 @@ bool UncheckedMalloc(size_t size, void** result) {
   return *result != NULL;
 }
 
+void UncheckedFree(void* ptr) {
+  free(ptr);
+}
+
 }  // namespace base

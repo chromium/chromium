@@ -13,7 +13,6 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -182,9 +181,9 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
     ASSERT_EQ(event.event_name,
               extensions::api::app_runtime::OnLaunched::kEventName);
     ASSERT_TRUE(event.event_args);
-    ASSERT_EQ(1u, event.event_args->GetList().size());
+    ASSERT_EQ(1u, event.event_args->GetListDeprecated().size());
 
-    const base::Value& launch_data = event.event_args->GetList()[0];
+    const base::Value& launch_data = event.event_args->GetListDeprecated()[0];
     const base::Value* is_kiosk_session =
         launch_data.FindKeyOfType("isKioskSession", base::Value::Type::BOOLEAN);
     ASSERT_TRUE(is_kiosk_session);
@@ -426,15 +425,14 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     startup_launch_delegate_.ClearLaunchStateChanges();
   }
 
-  AssertionResult DownloadPrimaryApp(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(
+      const TestKioskExtensionBuilder& app_builder) {
     return DownloadPrimaryApp(app_builder.extension_id(),
                               app_builder.version());
   }
 
-  AssertionResult DownloadPrimaryApp(const std::string& app_id,
-                                     const std::string& version)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(const std::string& app_id,
+                                                   const std::string& version) {
     if (!external_cache_)
       return AssertionFailure() << "External cache not initialized";
 
@@ -449,8 +447,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult FinishPrimaryAppInstall(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult FinishPrimaryAppInstall(
+      const TestKioskExtensionBuilder& app_builder) {
     const std::string& id = app_builder.extension_id();
     if (!external_apps_loader_handler_->pending_crx_files().count(id))
       return AssertionFailure() << "App install not peding: " << id;
@@ -465,8 +463,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult DownloadAndInstallPrimaryApp(
-      const TestKioskExtensionBuilder& app_builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult DownloadAndInstallPrimaryApp(
+      const TestKioskExtensionBuilder& app_builder) {
     AssertionResult download_result = DownloadPrimaryApp(app_builder);
     if (!download_result)
       return download_result;
@@ -478,8 +476,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return AssertionSuccess();
   }
 
-  AssertionResult FinishSecondaryExtensionInstall(
-      const TestKioskExtensionBuilder& builder) WARN_UNUSED_RESULT {
+  [[nodiscard]] AssertionResult FinishSecondaryExtensionInstall(
+      const TestKioskExtensionBuilder& builder) {
     const std::string& id = builder.extension_id();
     if (!external_apps_loader_handler_->pending_update_urls().count(id)) {
       return AssertionFailure()
@@ -641,7 +639,8 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 
@@ -683,7 +682,8 @@ TEST_F(StartupAppLauncherTest,
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 
@@ -813,12 +813,6 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  // Installing primary app with a non-installed secondary app should notify
-  // delegate about pending app installation - in this case for secondary app.
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
-
   TestKioskExtensionBuilder secondary_app_builder(Manifest::TYPE_PLATFORM_APP,
                                                   kSecondaryAppId);
   secondary_app_builder.set_kiosk_enabled(false);
@@ -873,12 +867,6 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  // Installing primary app with a non-installed secondary app should notify
-  // delegate about pending app installation - in this case for secondary app.
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
-
   TestKioskExtensionBuilder secondary_extension_builder(
       Manifest::TYPE_EXTENSION, kSecondaryAppId);
   secondary_extension_builder.set_kiosk_enabled(false);
@@ -923,7 +911,8 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 

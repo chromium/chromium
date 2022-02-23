@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_BASE_H_
 
+#include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace gfx {
 class Image;
@@ -102,7 +105,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   std::vector<Source> sources_;
 
   // The observer passed to StartUpdating().
-  DesktopMediaListObserver* observer_ = nullptr;
+  raw_ptr<DesktopMediaListObserver> observer_ = nullptr;
 
   // Called when a refresh operation completes.
   RefreshCallback refresh_callback_;

@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "ui/gfx/platform_font.h"
 
+#ifndef NDEBUG
+#include <ostream>
+#endif
+
 namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +30,7 @@ Font& Font::operator=(const Font& other) {
   return *this;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 Font::Font(NativeFont native_font)
     : platform_font_(PlatformFont::CreateFromNativeFont(native_font)) {
 }
@@ -90,7 +94,7 @@ const FontRenderParams& Font::GetFontRenderParams() const {
   return platform_font_->GetFontRenderParams();
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 NativeFont Font::GetNativeFont() const {
   return platform_font_->GetNativeFont();
 }

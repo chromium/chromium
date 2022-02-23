@@ -4,7 +4,8 @@
 
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 
-#include "content/browser/renderer_host/commit_deferring_condition.h"
+#include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/mock_commit_deferring_condition.h"
 
@@ -45,6 +46,19 @@ class CommitDeferringConditionRunnerTest
   bool was_delegate_notified_ = false;
 };
 
+// CommitDeferringCondition always need a NavigationHandle. Since we don't have
+// a navigation here, this class is just used to provide it with a
+// MockNavigationHandle.
+class MockHandleConditionWrapper : public MockCommitDeferringConditionWrapper {
+ public:
+  explicit MockHandleConditionWrapper(bool is_ready_to_commit)
+      : MockCommitDeferringConditionWrapper(navigation_handle_,
+                                            is_ready_to_commit) {}
+
+ private:
+  MockNavigationHandle navigation_handle_;
+};
+
 // Check that the runner notifies the delegate synchronously when there are no
 // conditions registered.
 TEST_F(CommitDeferringConditionRunnerTest, NoRegisteredConditions) {
@@ -56,7 +70,7 @@ TEST_F(CommitDeferringConditionRunnerTest, NoRegisteredConditions) {
 // Test that when a condition defers asynchronously, the delegate isn't
 // notified until the condition signals completion.
 TEST_F(CommitDeferringConditionRunnerTest, BasicAsync) {
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/false);
+  MockHandleConditionWrapper condition(/*is_ready_to_commit=*/false);
   runner()->AddConditionForTesting(condition.PassToDelegate());
   runner()->ProcessChecks();
   EXPECT_FALSE(was_delegate_notified());
@@ -69,7 +83,7 @@ TEST_F(CommitDeferringConditionRunnerTest, BasicAsync) {
 // Test that if a condition is already satisfied when ProcessChecks is
 // called, the delegate is notified synchronously.
 TEST_F(CommitDeferringConditionRunnerTest, BasicSync) {
-  MockCommitDeferringConditionWrapper condition(/*is_ready_to_commit=*/true);
+  MockHandleConditionWrapper condition(/*is_ready_to_commit=*/true);
   runner()->AddConditionForTesting(condition.PassToDelegate());
   runner()->ProcessChecks();
   EXPECT_TRUE(was_delegate_notified());
@@ -83,16 +97,16 @@ TEST_F(CommitDeferringConditionRunnerTest, MultipleConditionsLastAsync) {
   // Add conditions, alternating between those that are already satisfied at
   // ProcessChecks time and those that complete asynchronously.
   // Complete -> Async -> Complete -> Async
-  MockCommitDeferringConditionWrapper condition1(/*is_ready_to_commit=*/true);
+  MockHandleConditionWrapper condition1(/*is_ready_to_commit=*/true);
   runner()->AddConditionForTesting(condition1.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/false);
+  MockHandleConditionWrapper condition2(/*is_ready_to_commit=*/false);
   runner()->AddConditionForTesting(condition2.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition3(/*is_ready_to_commit=*/true);
+  MockHandleConditionWrapper condition3(/*is_ready_to_commit=*/true);
   runner()->AddConditionForTesting(condition3.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition4(/*is_ready_to_commit=*/false);
+  MockHandleConditionWrapper condition4(/*is_ready_to_commit=*/false);
   runner()->AddConditionForTesting(condition4.PassToDelegate());
 
   runner()->ProcessChecks();
@@ -127,16 +141,16 @@ TEST_F(CommitDeferringConditionRunnerTest, MultipleConditionsLastSync) {
   // Add conditions, alternating between those that are already satisfied at
   // ProcessChecks time and those that complete asynchronously.
   // Async -> Complete -> Async -> Complete
-  MockCommitDeferringConditionWrapper condition1(/*is_ready_to_commit=*/false);
+  MockHandleConditionWrapper condition1(/*is_ready_to_commit=*/false);
   runner()->AddConditionForTesting(condition1.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition2(/*is_ready_to_commit=*/true);
+  MockHandleConditionWrapper condition2(/*is_ready_to_commit=*/true);
   runner()->AddConditionForTesting(condition2.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition3(/*is_ready_to_commit=*/false);
+  MockHandleConditionWrapper condition3(/*is_ready_to_commit=*/false);
   runner()->AddConditionForTesting(condition3.PassToDelegate());
 
-  MockCommitDeferringConditionWrapper condition4(/*is_ready_to_commit=*/true);
+  MockHandleConditionWrapper condition4(/*is_ready_to_commit=*/true);
   runner()->AddConditionForTesting(condition4.PassToDelegate());
 
   runner()->ProcessChecks();

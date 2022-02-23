@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -40,6 +39,8 @@ class DomTracker : public DevToolsEventListener {
  private:
   bool ProcessNodeList(const base::Value& nodes);
   bool ProcessNode(const base::Value& node);
+  void ProcessFencedFrameShadowDom(const base::Value& node);
+  Status RebuildMapping(DevToolsClient* client);
 
   std::map<int, std::string> node_to_frame_map_;
 };

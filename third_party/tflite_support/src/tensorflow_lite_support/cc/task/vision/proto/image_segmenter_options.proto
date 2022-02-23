@@ -17,12 +17,18 @@ syntax = "proto2";
 
 package tflite.task.vision;
 
+import "tensorflow/lite/experimental/acceleration/configuration/configuration.proto";
+import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
 import "tensorflow_lite_support/cc/task/core/proto/external_file.proto";
 
 // Options for setting up an ImageSegmenter.
-// Next Id: 8
+// Next Id: 9
 message ImageSegmenterOptions {
-  // The external model file, as a single standalone TFLite file. If it is
+  // Base options for configuring Task library, such as specifying the TfLite
+  // model file with metadata, accelerator options, etc.
+  optional tflite.task.core.BaseOptions base_options = 8;
+
+  // Legacy method for specifying the TfLite model file. If it is
   // packed with TFLite Model Metadata [1], those are used to populate label
   // map. Models without any such metadata or partial metadata are supported,
   // but may result in the segmenter providing degraded functionality;
@@ -30,6 +36,9 @@ message ImageSegmenterOptions {
   // return any class or display names.
   //
   // [1]: https://www.tensorflow.org/lite/convert/metadata
+  //
+  // Deprecated: prefer using `base_options.model_file`, which is mutually
+  // exclusive with this field.
   optional core.ExternalFile model_file_with_metadata = 5;
 
   // The locale to use for display names specified through the TFLite Model
@@ -50,12 +59,35 @@ message ImageSegmenterOptions {
   // Optional output mask type.
   optional OutputType output_type = 3 [default = CATEGORY_MASK];
 
-  // The number of threads to be used for TFLite ops that support
-  // multi-threading when running inference with CPU.
+  // Legacy method for specifying the number of threads to be used for TFLite
+  // ops that support multi-threading when running inference with CPU.
   // num_threads should be greater than 0 or equal to -1. Setting num_threads to
   // -1 has the effect to let TFLite runtime set the value.
+  //
+  // Deprecated: only works with `model_file_with_metadata`. Prefer using
+  // `base_options` to specifying the TFLite model and using
+  // `base_options.compute_settings.tflite_settings.cpu_settings.num_threads`,
+  // to configure the number of threads.
   optional int32 num_threads = 7 [default = -1];
 
+  // Legacy method for specifying how to accelerate the model
+  // inference using dedicated delegates. Supported delegate type includes:
+  // NONE, NNAPI, GPU, HEXAGON, XNNPACK, EDGETPU (Google internal),
+  // and EDGETPU_CORAL.
+  //
+  // IMPORTANT: in order to use a delegate, the appropriate delegate plugin
+  // needs to be linked at build time. See comment above the "image_segmenter"
+  // target at:
+  // https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/vision/BUILD
+  //
+  // See settings definition at:
+  // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/experimental/acceleration/configuration/configuration.proto
+  //
+  // Deprecated: only works with `model_file_with_metadata`. Prefer using
+  // `base_options` to specifying the TFLite model and use
+  // `base_options.compute_settings` to configure acceleration options.
+  optional tflite.proto.ComputeSettings compute_settings = 4;
+
   // Reserved tags.
-  reserved 1, 2, 4;
+  reserved 1, 2;
 }

@@ -16,7 +16,7 @@ const char kOperationAlreadyInProgress[] = "Operation already in progress.";
 const char kReadDevice[] = "Failed to read device.";
 const char kReadImage[] = "Failed to read image.";
 const char kWriteImage[] = "Writing image to device failed.";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kUnmountVolumes[] = "Unable to unmount the device.";
 #endif
 const char kVerificationFailed[] = "Verification failed.";

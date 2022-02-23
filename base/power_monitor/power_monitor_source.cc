@@ -18,18 +18,18 @@ PowerMonitorSource::GetCurrentThermalState() {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
-int PowerMonitorSource::GetCurrentSpeedLimit() {
+int PowerMonitorSource::GetInitialSpeedLimit() {
   return PowerThermalObserver::kSpeedLimitMax;
 }
 
 void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int PowerMonitorSource::GetRemainingBatteryCapacity() {
   return 0;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {

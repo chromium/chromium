@@ -35,7 +35,7 @@ GinJavaMethodInvocationHelper::GinJavaMethodInvocationHelper(
     const base::ListValue& arguments)
     : object_(std::move(object)),
       method_name_(method_name),
-      arguments_(arguments.CreateDeepCopy()),
+      arguments_(arguments.Clone()),
       invocation_error_(kGinJavaBridgeNoError) {}
 
 GinJavaMethodInvocationHelper::~GinJavaMethodInvocationHelper() {}
@@ -44,7 +44,7 @@ void GinJavaMethodInvocationHelper::Init(DispatcherDelegate* dispatcher) {
   // Build on the UI thread a map of object_id -> WeakRef for Java objects from
   // |arguments_|.  Then we can use this map on the background thread without
   // accessing |dispatcher|.
-  BuildObjectRefsFromListValue(dispatcher, *arguments_);
+  BuildObjectRefsFromListValue(dispatcher, arguments_);
 }
 
 // As V8ValueConverter has finite recursion depth when serializing
@@ -53,9 +53,7 @@ void GinJavaMethodInvocationHelper::BuildObjectRefsFromListValue(
     DispatcherDelegate* dispatcher,
     const base::Value& list_value) {
   DCHECK(list_value.is_list());
-  const base::ListValue* list;
-  list_value.GetAsList(&list);
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list_value.GetListDeprecated()) {
     if (AppendObjectRef(dispatcher, entry))
       continue;
     if (entry.is_list()) {
@@ -111,7 +109,7 @@ bool GinJavaMethodInvocationHelper::AppendObjectRef(
 void GinJavaMethodInvocationHelper::Invoke() {
   JNIEnv* env = AttachCurrentThread();
   const JavaMethod* method =
-      object_->FindMethod(method_name_, arguments_->GetList().size());
+      object_->FindMethod(method_name_, arguments_.GetListDeprecated().size());
   if (!method) {
     SetInvocationError(kGinJavaBridgeMethodNotFound);
     return;
@@ -139,14 +137,10 @@ void GinJavaMethodInvocationHelper::Invoke() {
   GinJavaBridgeError coercion_error = kGinJavaBridgeNoError;
   std::vector<jvalue> parameters(method->num_parameters());
   for (size_t i = 0; i < method->num_parameters(); ++i) {
-    const base::Value* argument;
-    arguments_->Get(i, &argument);
-    parameters[i] = CoerceJavaScriptValueToJavaValue(env,
-                                                     argument,
-                                                     method->parameter_type(i),
-                                                     true,
-                                                     object_refs_,
-                                                     &coercion_error);
+    const base::Value& argument = arguments_.GetListDeprecated()[i];
+    parameters[i] = CoerceJavaScriptValueToJavaValue(
+        env, &argument, method->parameter_type(i), true, object_refs_,
+        &coercion_error);
   }
 
   if (coercion_error == kGinJavaBridgeNoError) {
@@ -178,7 +172,8 @@ void GinJavaMethodInvocationHelper::SetInvocationError(
 void GinJavaMethodInvocationHelper::SetPrimitiveResult(
     const base::ListValue& result_wrapper) {
   holds_primitive_result_ = true;
-  primitive_result_ = result_wrapper.CreateDeepCopy();
+  primitive_result_ = base::ListValue::From(
+      base::Value::ToUniquePtrValue(result_wrapper.Clone()));
 }
 
 void GinJavaMethodInvocationHelper::SetObjectResult(

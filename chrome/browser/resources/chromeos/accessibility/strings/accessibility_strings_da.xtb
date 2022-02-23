@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Øveområde: Rullelister</translation>
 <translation id="1195238899008218998">Efterskrift</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1198865190323699001">Berøringsbevægelser</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Der er ikke flere niveau 4-overskrifter</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{højre kantet parentes}one{# højre kantede parenteser}other{# højre kantede parenteser}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{spørgsmålstegn}one{# spørgsmålstegn}other{# spørgsmålstegn}}</translation>
+<translation id="3505359110822747654">Skjul ChromeVox-menuer</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{tekstmarkør}one{ # tekstmarkør}other{# tekstmarkører}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{hvidt punkttegn}one{# hvidt punkttegn}other{# hvide punkttegn}}</translation>
 <translation id="352577523970648069">Et justerbart tekstfelt</translation>
 <translation id="3538907380453898475">bskrvlst</translation>
 <translation id="3549141990712742152">klip <ph name="TEXT" />.</translation>
@@ -624,7 +627,7 @@
 <translation id="5302089807023311274">Reference i bibliografi</translation>
 <translation id="530391007967514163">Prøv at hoppe efter overskrift for at navigere i teksten nedenfor.</translation>
 <translation id="5304943142864553931">fanen <ph name="TITLE" /></translation>
-<translation id="5308380583665731573">Få forbindelse</translation>
+<translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5310788376443009632">fjernet:</translation>
 <translation id="5316825363044614340">gå til næste linje</translation>
 <translation id="5320727453979144100">Sticky-tilstand er aktiveret</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Den hurtige orientering er fuldført.</translation>
 <translation id="5534303576632885660">si.ho</translation>
 <translation id="5539820223028224601">Lysegrå</translation>
+<translation id="554893713779400387">Slå diktering til/fra</translation>
 <translation id="5549179427201066174">Slå lydfeedback (lydikoner) til eller fra.</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5561345396546889625">Næste liste</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Næste afkrydsningsfelt</translation>
 <translation id="5598905979683743333">Alternativknappen <ph name="NAME" /> er ikke valgt</translation>
 <translation id="5601172225407283979">Udfør standardhandling</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{kvadratisk punkttegn}one{# kvadratisk punkttegn}other{# kvadratiske punkttegn}}</translation>
 <translation id="5608798115546226984">Autofuldførelse på linjen</translation>
 <translation id="5616029807486814372">Næste lektion</translation>
 <translation id="561939826962581046">tidspunkt</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">Rullelister</translation>
 <translation id="8666733765751421568">Slutningen af <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Overskrift 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{indrykningsniveau #}other{indrykningsniveau #}}</translation>
 <translation id="8693391540059827073">Min foretrukne årstid</translation>
 <translation id="8696284982970258155">Honningmelon</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{streg}one{# lodrette streger}other{# lodrette streger}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">Mørkerød</translation>
 <translation id="923331726185079994">ChromeVox blev opdateret</translation>
 <translation id="93384979447910801">Mørk havgrøn</translation>
+<translation id="937605981140327129">TalkBack er ikke installeret i øjeblikket. Installer Android AccessibilitySuite via Play Store, og prøv igen.</translation>
 <translation id="948171205378458592">Skru ned for talehastighed</translation>
 <translation id="957570623732056069">Stryg til venstre eller højre med én finger for at navigere rundt i lektionen</translation>
 <translation id="958854023026327378">Stryg nedad med én finger</translation>

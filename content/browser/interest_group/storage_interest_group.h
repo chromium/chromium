@@ -12,7 +12,9 @@
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -22,8 +24,6 @@ namespace content {
 // process.
 struct CONTENT_EXPORT StorageInterestGroup {
   StorageInterestGroup();
-  explicit StorageInterestGroup(
-      auction_worklet::mojom::BiddingInterestGroupPtr group);
   StorageInterestGroup(StorageInterestGroup&&);
   StorageInterestGroup& operator=(StorageInterestGroup&&) = default;
   ~StorageInterestGroup();
@@ -48,10 +48,13 @@ struct CONTENT_EXPORT StorageInterestGroup {
     base::Time last_updated;
   };
 
-  auction_worklet::mojom::BiddingInterestGroupPtr bidding_group;
+  blink::InterestGroup interest_group;
+  auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
   absl::optional<KAnonymityData> name_kanon;
   absl::optional<KAnonymityData> update_url_kanon;
   std::vector<KAnonymityData> ads_kanon;
+  // Top level page origin from when the interest group was joined.
+  url::Origin joining_origin;
 };
 
 // Stream operator so KAnonymityData can be used in assertion statements.

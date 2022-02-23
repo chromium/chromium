@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -186,10 +187,11 @@ class CartService : public history::HistoryServiceObserver,
                             const cart_db::ChromeCartContentProto& cart_proto,
                             const GURL& discount_url);
 
-  // A callback to decide if there are partner carts.
-  void HasPartnerCarts(base::OnceCallback<void(bool)> callback,
-                       bool success,
-                       std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to decide whether to show discount consent or not.
+  void ShouldShowDiscountConsentCallback(
+      base::OnceCallback<void(bool)> callback,
+      bool success,
+      std::vector<CartDB::KeyAndValue> proto_pairs);
   // Set discount_link_fetcher_ for testing purpose.
   void SetCartDiscountLinkFetcherForTesting(
       std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher);
@@ -209,7 +211,7 @@ class CartService : public history::HistoryServiceObserver,
   // Get if cart and discount feature are both enabled.
   bool IsCartAndDiscountEnabled();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<CartDB> cart_db_;
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
@@ -218,10 +220,11 @@ class CartService : public history::HistoryServiceObserver,
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_;
   std::unique_ptr<FetchDiscountWorker> fetch_discount_worker_for_testing_;
   std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher_;
-  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
   std::unique_ptr<CartMetricsTracker> metrics_tracker_;
   std::unique_ptr<DiscountURLLoader> discount_url_loader_;
-  CouponService* coupon_service_;
+  raw_ptr<CouponService> coupon_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };

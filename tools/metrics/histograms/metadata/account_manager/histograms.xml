@@ -1,0 +1,141 @@
+<!--
+Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms owned
+by the Commercial Identity team along with a detailed description for
+each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="AccountManager.AccountAdditionResultStatus"
+    enum="AccountManagerAccountAdditionResultStatus" expires_after="2022-04-24">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Records the result of in-session account addition (or re-authentication)
+    triggers on Chrome OS. This is recorded whenever an in-session account
+    addition (or re-authentication) is triggered and user finishes or cancels
+    the flow.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.AccountAdditionSource"
+    enum="AccountManagerAccountAdditionSource" expires_after="2022-04-24">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Records the source of in-session account addition (or re-authentication)
+    triggers on Chrome OS. This is recorded whenever an in-session account
+    addition (or re-authentication) is triggered - either explicitely by the
+    user, or automatically by Gaia (for accounts requiring immediate
+    re-authentication).
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.EduCoexistence.FetchAccessTokenResult"
+    enum="GoogleServiceAuthError" expires_after="2022-04-10">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    The result of fetching an access token for the child with |accounts.reauth|
+    scope in secondary EDU account addition flow. Recorded after parent enters
+    their password. This metric covers both v1 and v2 of EduCoexistence.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.EduCoexistenceV2.InSessionFlowResult"
+    enum="EduCoexistenceFlowV2Result" expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the last completed step in the EDU account addition flow. Allows to
+    track the drop rate by important states during the in session flow.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.EduCoexistenceV2.OnboardingFlowResult"
+    enum="EduCoexistenceFlowV2Result" expires_after="2023-01-20">
+  <owner>agawronska@chromium.org</owner>
+  <owner>danan@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records the last completed step in the EDU account addition flow. Allows to
+    track the drop rate by important states during onboarding.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.FacadeGetAccountsMojoStatus"
+    enum="AccountManagerFacadeMojoStatus" expires_after="2023-01-25">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the status of the mojo connection between the Ash account manager
+    and the Lacros account manager facade, when
+    `AccountManagerFacade::GetAccounts()` is called. See
+    https://crbug.com/1287297
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.InitializationTime" units="microseconds"
+    expires_after="2022-05-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Measures the time taken to fully initialize Chrome OS Account Manager. This
+    is recorded once per user session, at login time. This metric only reports
+    from Chrome OS, which has a high resolution clock.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.ManageAccountsServiceType"
+    enum="GaiaServiceType" expires_after="2022-05-01">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Tracks the service type received with the mirror response header.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.NumAccounts" units="count"
+    expires_after="2022-04-10">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Tracks the number of accounts stored in Chrome OS Account Manager by a given
+    user. This is recorded only once per session, at login time.
+  </summary>
+</histogram>
+
+<histogram name="AccountManager.TokenLoadStatus"
+    enum="AccountManagerTokenLoadStatus" expires_after="2023-02-06">
+  <owner>sinhak@chromium.org</owner>
+  <owner>anastasiian@chromium.org</owner>
+  <summary>
+    Tracks the status of token loads from disk by Chrome OS Account Manager, for
+    a given user. This is recorded only once per session, at login time.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

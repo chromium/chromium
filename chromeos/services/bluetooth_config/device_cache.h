@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace chromeos {

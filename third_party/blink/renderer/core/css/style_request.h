@@ -64,7 +64,10 @@ class StyleRequest {
       : parent_override(parent_override),
         layout_parent_override(parent_override),
         pseudo_id(pseudo_id),
-        pseudo_argument(pseudo_argument) {}
+        pseudo_argument(pseudo_argument) {
+    DCHECK(!IsTransitionPseudoElement(pseudo_id) ||
+           pseudo_id == kPseudoIdPageTransition || pseudo_argument);
+  }
 
   StyleRequest(PseudoId pseudo_id,
                CustomScrollbar* scrollbar,
@@ -77,10 +80,7 @@ class StyleRequest {
         scrollbar(scrollbar) {}
 
   StyleRequest(PseudoId pseudo_id, RequestType request_type)
-      : pseudo_id(pseudo_id),
-        type(request_type),
-        scrollbar_part(kNoPart),
-        scrollbar(nullptr) {}
+      : pseudo_id(pseudo_id), type(request_type) {}
 };
 
 }  // namespace blink

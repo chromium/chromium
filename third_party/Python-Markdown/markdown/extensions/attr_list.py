@@ -6,43 +6,34 @@ Adds attribute list syntax. Inspired by
 [maruku](http://maruku.rubyforge.org/proposal.html#attribute_lists)'s
 feature of the same name.
 
-See <https://pythonhosted.org/Markdown/extensions/attr_list.html>
+See <https://Python-Markdown.github.io/extensions/attr_list>
 for documentation.
 
 Original code Copyright 2011 [Waylan Limberg](http://achinghead.com/).
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
-from ..util import isBlockLevel
 import re
-
-try:
-    Scanner = re.Scanner
-except AttributeError:  # pragma: no cover
-    # must be on Python 2.4
-    from sre import Scanner
 
 
 def _handle_double_quote(s, t):
-    k, v = t.split('=')
+    k, v = t.split('=', 1)
     return k, v.strip('"')
 
 
 def _handle_single_quote(s, t):
-    k, v = t.split('=')
+    k, v = t.split('=', 1)
     return k, v.strip("'")
 
 
 def _handle_key_value(s, t):
-    return t.split('=')
+    return t.split('=', 1)
 
 
 def _handle_word(s, t):
@@ -52,10 +43,11 @@ def _handle_word(s, t):
         return 'id', t[1:]
     return t, t
 
-_scanner = Scanner([
-    (r'[^ ]+=".*?"', _handle_double_quote),
-    (r"[^ ]+='.*?'", _handle_single_quote),
-    (r'[^ ]+=[^ =]+', _handle_key_value),
+
+_scanner = re.Scanner([
+    (r'[^ =]+=".*?"', _handle_double_quote),
+    (r"[^ =]+='.*?'", _handle_single_quote),
+    (r'[^ =]+=[^ =]+', _handle_key_value),
     (r'[^ =]+', _handle_word),
     (r' ', None)
 ])
@@ -72,10 +64,10 @@ def isheader(elem):
 
 class AttrListTreeprocessor(Treeprocessor):
 
-    BASE_RE = r'\{\:?([^\}]*)\}'
-    HEADER_RE = re.compile(r'[ ]+%s[ ]*$' % BASE_RE)
-    BLOCK_RE = re.compile(r'\n[ ]*%s[ ]*$' % BASE_RE)
-    INLINE_RE = re.compile(r'^%s' % BASE_RE)
+    BASE_RE = r'\{\:?[ ]*([^\}\n ][^\}\n]*)[ ]*\}'
+    HEADER_RE = re.compile(r'[ ]+{}[ ]*$'.format(BASE_RE))
+    BLOCK_RE = re.compile(r'\n[ ]*{}[ ]*$'.format(BASE_RE))
+    INLINE_RE = re.compile(r'^{}'.format(BASE_RE))
     NAME_RE = re.compile(r'[^A-Z_a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u02ff'
                          r'\u0370-\u037d\u037f-\u1fff\u200c-\u200d'
                          r'\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff'
@@ -83,12 +75,12 @@ class AttrListTreeprocessor(Treeprocessor):
                          r'\:\-\.0-9\u00b7\u0300-\u036f\u203f-\u2040]+')
 
     def run(self, doc):
-        for elem in doc.getiterator():
-            if isBlockLevel(elem.tag):
+        for elem in doc.iter():
+            if self.md.is_block_level(elem.tag):
                 # Block level: check for attrs on last line of text
                 RE = self.BLOCK_RE
-                if isheader(elem) or elem.tag == 'dt':
-                    # header or def-term: check for attrs at end of line
+                if isheader(elem) or elem.tag in ['dt', 'td', 'th']:
+                    # header, def-term, or table cell: check for attrs at end of element
                     RE = self.HEADER_RE
                 if len(elem) and elem.tag == 'li':
                     # special case list items. children may include a ul or ol.
@@ -128,8 +120,6 @@ class AttrListTreeprocessor(Treeprocessor):
                 elif elem.text:
                     # no children. Get from text.
                     m = RE.search(elem.text)
-                    if not m and elem.tag == 'td':
-                        m = re.search(self.BASE_RE, elem.text)
                     if m:
                         self.assign_attrs(elem, m.group(1))
                         elem.text = elem.text[:m.start()]
@@ -151,7 +141,7 @@ class AttrListTreeprocessor(Treeprocessor):
                 # add to class
                 cls = elem.get('class')
                 if cls:
-                    elem.set('class', '%s %s' % (cls, v))
+                    elem.set('class', '{} {}'.format(cls, v))
                 else:
                     elem.set('class', v)
             else:
@@ -161,17 +151,16 @@ class AttrListTreeprocessor(Treeprocessor):
     def sanitize_name(self, name):
         """
         Sanitize name as 'an XML Name, minus the ":"'.
-        See http://www.w3.org/TR/REC-xml-names/#NT-NCName
+        See https://www.w3.org/TR/REC-xml-names/#NT-NCName
         """
         return self.NAME_RE.sub('_', name)
 
 
 class AttrListExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add(
-            'attr_list', AttrListTreeprocessor(md), '>prettify'
-        )
+    def extendMarkdown(self, md):
+        md.treeprocessors.register(AttrListTreeprocessor(md), 'attr_list', 8)
+        md.registerExtension(self)
 
 
-def makeExtension(*args, **kwargs):
-    return AttrListExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AttrListExtension(**kwargs)

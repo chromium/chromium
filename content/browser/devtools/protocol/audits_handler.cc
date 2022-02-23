@@ -8,6 +8,7 @@
 #include "content/browser/devtools/devtools_issue_storage.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {

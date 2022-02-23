@@ -54,7 +54,7 @@ def pre_cell(data, html_class='center'):
   }
 
 
-class LinkTarget(object):
+class LinkTarget:
   # Opens the linked document in a new window or tab.
   NEW_TAB = '_blank'
   # Opens the linked document in the same frame as it was clicked.
@@ -127,8 +127,7 @@ def logs_cell(result, test_name, suite_name):
         target=LinkTarget.NEW_TAB))
   if link_list:
     return links_cell(link_list)
-  else:
-    return cell('(no logs)')
+  return cell('(no logs)')
 
 
 def code_search(test, cs_base_url):
@@ -217,31 +216,25 @@ def create_suite_table(results_dict):
     cell(data=0),  # elapsed_time_ms
   ]
 
-  suite_row_dict = {}
+  suite_row_dict = collections.defaultdict(lambda: [
+      # Note: |suite_name| will be given in the following for loop.
+      # It is not assigned yet here.
+      action_cell('showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
+                  suite_name, 'left'),  # suite_name
+      cell(data=0),  # number_success_tests
+      cell(data=0),  # number_fail_tests
+      cell(data=0),  # all_tests
+      cell(data=0),  # elapsed_time_ms
+  ])
   for test_name, test_results in results_dict.items():
     # TODO(mikecase): This logic doesn't work if there are multiple test runs.
     # That is, if 'per_iteration_data' has multiple entries.
     # Since we only care about the result of the last test run.
     result = test_results[-1]
 
-    suite_name = (test_name.split('#')[0] if '#' in test_name
-                  else test_name.split('.')[0])
-    if suite_name in suite_row_dict:
-      suite_row = suite_row_dict[suite_name]
-    else:
-      suite_row = [
-        action_cell(
-          'showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
-          suite_name,
-          'left'
-        ),             # suite_name
-        cell(data=0),  # number_success_tests
-        cell(data=0),  # number_fail_tests
-        cell(data=0),  # all_tests
-        cell(data=0),  # elapsed_time_ms
-      ]
-
-    suite_row_dict[suite_name] = suite_row
+    suite_name = (test_name.split('#')[0]
+                  if '#' in test_name else test_name.split('.')[0])
+    suite_row = suite_row_dict[suite_name]
 
     suite_row[ALL_COUNT_INDEX]['data'] += 1
     footer_row[ALL_COUNT_INDEX]['data'] += 1
@@ -275,7 +268,6 @@ def create_suite_table(results_dict):
 
 
 def feedback_url(result_details_link):
-  # pylint: disable=redefined-variable-type
   url_args = [
       ('labels', 'Pri-2,Type-Bug,Restrict-View-Google'),
       ('summary', 'Result Details Feedback:'),
@@ -284,7 +276,6 @@ def feedback_url(result_details_link):
   if result_details_link:
     url_args.append(('comment', 'Please check out: %s' % result_details_link))
   url_args = urlencode(url_args)
-  # pylint: enable=redefined-variable-type
   return 'https://bugs.chromium.org/p/chromium/issues/entry?%s' % url_args
 
 
@@ -324,17 +315,16 @@ def results_to_html(results_dict, cs_base_url, bucket, test_name,
           'feedback_url': feedback_url(None),
         })
     return (html_render, None, None)
-  else:
-    dest = google_storage_helper.unique_name(
-        '%s_%s_%s' % (test_name, builder_name, build_number))
-    result_details_link = google_storage_helper.get_url_link(
-        dest, '%s/html' % bucket)
-    html_render = main_template.render(  #  pylint: disable=no-member
-        {
-          'tb_values': [suite_table_values, test_table_values],
-          'feedback_url': feedback_url(result_details_link),
-        })
-    return (html_render, dest, result_details_link)
+  dest = google_storage_helper.unique_name(
+      '%s_%s_%s' % (test_name, builder_name, build_number))
+  result_details_link = google_storage_helper.get_url_link(
+      dest, '%s/html' % bucket)
+  html_render = main_template.render(  #  pylint: disable=no-member
+      {
+        'tb_values': [suite_table_values, test_table_values],
+        'feedback_url': feedback_url(result_details_link),
+      })
+  return (html_render, dest, result_details_link)
 
 
 def result_details(json_path, test_name, cs_base_url, bucket=None,
@@ -473,7 +463,7 @@ def main():
       with open(args.output_json, 'w') as f:
         json.dump({}, f)
     return
-  elif len(args.positional) != 0 and args.json_file:
+  if len(args.positional) != 0 and args.json_file:
     raise parser.error('Exactly one of args.positional and '
                        'args.json_file should be given.')
 

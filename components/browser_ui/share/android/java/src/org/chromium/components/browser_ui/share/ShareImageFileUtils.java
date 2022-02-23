@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -18,6 +17,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -266,7 +266,7 @@ public class ShareImageFileUtils {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static boolean isHardwareBitmap(Bitmap bitmap) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return bitmap.getConfig() == Bitmap.Config.HARDWARE;
@@ -474,7 +474,7 @@ public class ShareImageFileUtils {
                 title, title, getImageMimeType(file), path, length, null, null);
     }
 
-    @TargetApi(29)
+    @RequiresApi(29)
     public static Uri addToMediaStore(File file) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 

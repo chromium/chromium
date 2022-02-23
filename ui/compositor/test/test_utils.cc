@@ -16,14 +16,14 @@
 
 namespace ui {
 
-//TODO(avallee): Make this into a predicate and add some matrix pretty printing.
+// TODO(avallee): Use macros in ui/gfx/geometry/test/geometry_util.h.
 void CheckApproximatelyEqual(const gfx::Transform& lhs,
                              const gfx::Transform& rhs) {
   unsigned int errors = 0;
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      EXPECT_FLOAT_EQ(lhs.matrix().get(i, j), rhs.matrix().get(i, j))
-        << "(i, j) = (" << i << ", " << j << "), error count: " << ++errors;
+      EXPECT_FLOAT_EQ(lhs.matrix().rc(i, j), rhs.matrix().rc(i, j))
+          << "(i, j) = (" << i << ", " << j << "), error count: " << ++errors;
     }
   }
 

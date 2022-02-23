@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/strings/string_piece.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope_deletion_mode.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
@@ -17,7 +18,6 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 
 using base::StringPiece;
@@ -418,7 +418,8 @@ Status ReadMetadataForDatabaseNameInternal(
     const std::u16string& name,
     IndexedDBDatabaseMetadata* metadata,
     bool* found) {
-  IDB_TRACE("IndexedDBMetadataCoding::ReadMetadataForDatabaseName");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBMetadataCoding::ReadMetadataForDatabaseName");
   const std::string key = DatabaseNameKey::Encode(origin_identifier, name);
   *found = false;
 

@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace gfx {
 
@@ -86,6 +88,10 @@ struct PresentationFeedback {
   // The time when write operations have completed, corresponding to the time
   // when rendering on the GPU finished.
   base::TimeTicks writes_done_timestamp;
+
+#if BUILDFLAG(IS_MAC)
+  gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
+#endif
 };
 
 inline bool operator==(const PresentationFeedback& lhs,
@@ -95,6 +101,9 @@ inline bool operator==(const PresentationFeedback& lhs,
          lhs.available_timestamp == rhs.available_timestamp &&
          lhs.ready_timestamp == rhs.ready_timestamp &&
          lhs.latch_timestamp == rhs.latch_timestamp &&
+#if BUILDFLAG(IS_MAC)
+         lhs.ca_layer_error_code == rhs.ca_layer_error_code &&
+#endif
          lhs.writes_done_timestamp == rhs.writes_done_timestamp;
 }
 

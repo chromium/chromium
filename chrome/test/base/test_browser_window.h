@@ -18,10 +18,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/common/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#endif  //  !defined(OS_ANDROID)
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
 class FeaturePromoController;
 class LocationBarTesting;
@@ -73,6 +74,9 @@ class TestBrowserWindow : public BrowserWindow {
   bool DoBrowserControlsShrinkRendererSize(
       const content::WebContents* contents) const override;
   ui::NativeTheme* GetNativeTheme() override;
+  const ui::ThemeProvider* GetThemeProvider() const override;
+  const ui::ColorProvider* GetColorProvider() const override;
+  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   StatusBubble* GetStatusBubble() override;
@@ -105,6 +109,8 @@ class TestBrowserWindow : public BrowserWindow {
   bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
   bool IsFullscreenBubbleVisible() const override;
+  bool IsForceFullscreen() const override;
+  void SetForceFullscreen(bool force_fullscreen) override {}
   LocationBar* GetLocationBar() const override;
   void UpdatePageActionIcon(PageActionIconType type) override {}
   autofill::AutofillBubbleHandler* GetAutofillBubbleHandler() override;
@@ -144,7 +150,7 @@ class TestBrowserWindow : public BrowserWindow {
       qrcode_generator::QRCodeGeneratorBubbleController* controller,
       const GURL& url,
       bool show_back_button) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
       content::WebContents* contents,
       const gfx::Image& image,
@@ -153,7 +159,7 @@ class TestBrowserWindow : public BrowserWindow {
       std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
-      PageActionIconType icon_type,
+      apps::IntentPickerBubbleType bubble_type,
       const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) override {}
 #endif  //  !define(OS_ANDROID)
@@ -198,8 +204,8 @@ class TestBrowserWindow : public BrowserWindow {
       bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
 
-#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_WIN) || \
-    defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
   void ShowHatsDialog(
       const std::string& site_id,
       base::OnceClosure success_callback,
@@ -227,7 +233,25 @@ class TestBrowserWindow : public BrowserWindow {
   void CreateTabSearchBubble() override {}
   void CloseTabSearchBubble() override {}
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  bool IsSideSearchPanelVisible() const override;
+  void MaybeRestoreSideSearchStatePerWindow(
+      const std::map<std::string, std::string>& extra_data) override;
+#endif
+
   FeaturePromoController* GetFeaturePromoController() override;
+  bool IsFeaturePromoActive(
+      const base::Feature& iph_feature,
+      bool include_continued_promos = false) const override;
+  bool MaybeShowFeaturePromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      FeaturePromoController::BubbleCloseCallback close_callback =
+          base::DoNothing()) override;
+  bool CloseFeaturePromo(const base::Feature& iph_feature) override;
+  FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) override;
+  void NotifyFeatureEngagementEvent(const char* event_name) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.

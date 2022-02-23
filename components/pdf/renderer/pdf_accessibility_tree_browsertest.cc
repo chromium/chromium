@@ -15,7 +15,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_action_handler.h"
 #include "pdf/pdf_features.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -114,7 +114,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     content::RenderViewTest::SetUp();
 
     base::FilePath pak_dir;
-    base::PathService::Get(base::DIR_MODULE, &pak_dir);
+    base::PathService::Get(base::DIR_ASSETS, &pak_dir);
     base::FilePath pak_file =
         pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

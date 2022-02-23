@@ -160,11 +160,6 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
       generation_element_id, password);
 }
 
-void ContentPasswordManagerDriver::TouchToFillClosed(
-    ShowVirtualKeyboard show_virtual_keyboard) {
-  GetPasswordAutofillAgent()->TouchToFillClosed(show_virtual_keyboard.value());
-}
-
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
@@ -176,6 +171,17 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
     const std::u16string& credential) {
   GetPasswordAutofillAgent()->FillIntoFocusedField(is_password, credential);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void ContentPasswordManagerDriver::TouchToFillClosed(
+    ShowVirtualKeyboard show_virtual_keyboard) {
+  GetPasswordAutofillAgent()->TouchToFillClosed(show_virtual_keyboard.value());
+}
+
+void ContentPasswordManagerDriver::TriggerFormSubmission() {
+  GetPasswordAutofillAgent()->TriggerFormSubmission();
+}
+#endif
 
 void ContentPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
@@ -402,11 +408,6 @@ void ContentPasswordManagerDriver::CheckSafeBrowsingReputation(
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
           render_frame_host_))
     return;
-  // Despite the name, this method is only called on password fields.
-  // (See PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation())
-  if (client_->GetMetricsRecorder()) {
-    client_->GetMetricsRecorder()->RecordUserFocusedPasswordField();
-  }
 #if defined(ON_FOCUS_PING_ENABLED)
   client_->CheckSafeBrowsingReputation(form_action, frame_url);
 #endif

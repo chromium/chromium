@@ -1,0 +1,49 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="variant" content="?">
+<meta name="variant" content="?currentchange">
+
+<script type="module">
+import { Recorder, hasVariant } from "./resources/helpers.mjs";
+
+promise_test(async t => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+
+  const from = appHistory.current;
+  const expectedError = new Error("boo");
+
+  const recorder = new Recorder({
+    skipCurrentChange: !hasVariant("currentchange"),
+    finalExpectedEvent: "transition.finished rejected"
+  });
+
+  recorder.setUpAppHistoryListeners();
+
+  appHistory.addEventListener("navigate", e => {
+    e.transitionWhile(Promise.reject(expectedError));
+  });
+
+  const result = appHistory.reload();
+  recorder.setUpResultListeners(result);
+
+  Promise.resolve().then(() => recorder.record("promise microtask"));
+
+  await recorder.readyToAssert;
+
+  recorder.assert([
+    /* event name, location.hash value, appHistory.transition properties */
+    ["navigate", "", null],
+    ["currentchange", "", { from, navigationType: "reload" }],
+    ["committed fulfilled", "", { from, navigationType: "reload" }],
+    ["promise microtask", "", { from, navigationType: "reload" }],
+    ["navigateerror", "", { from, navigationType: "reload" }],
+    ["finished rejected", "", null],
+    ["transition.finished rejected", "", null],
+  ]);
+
+  recorder.assertErrorsAre(expectedError);
+}, "event and promise ordering for appHistory.reload() intercepted by transitionWhile()");
+</script>

@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 TEST(PhoneStatusModelTest, NormalCase) {
@@ -85,4 +85,4 @@ TEST(PhoneStatusModelTest, ReceptionWithNoMetdata) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

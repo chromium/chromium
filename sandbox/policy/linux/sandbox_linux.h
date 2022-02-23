@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/posix/global_descriptors.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"

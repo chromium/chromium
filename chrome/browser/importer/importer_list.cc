@@ -19,18 +19,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "chrome/common/importer/safari_importer_utils.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/common/importer/edge_importer_utils_win.h"
 #endif
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void DetectIEProfiles(std::vector<importer::SourceProfile>* profiles) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -39,9 +39,8 @@ void DetectIEProfiles(std::vector<importer::SourceProfile>* profiles) {
   importer::SourceProfile ie;
   ie.importer_name = l10n_util::GetStringUTF16(IDS_IMPORT_FROM_IE);
   ie.importer_type = importer::TYPE_IE;
-  ie.services_supported = importer::HISTORY | importer::FAVORITES |
-                          importer::COOKIES | importer::PASSWORDS |
-                          importer::SEARCH_ENGINES;
+  ie.services_supported =
+      importer::HISTORY | importer::FAVORITES | importer::SEARCH_ENGINES;
   profiles->push_back(ie);
 }
 
@@ -67,9 +66,9 @@ void DetectBuiltinWindowsProfiles(
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void DetectSafariProfiles(std::vector<importer::SourceProfile>* profiles) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -84,7 +83,7 @@ void DetectSafariProfiles(std::vector<importer::SourceProfile>* profiles) {
   safari.services_supported = items;
   profiles->push_back(safari);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // |locale|: The application locale used for lookups in Firefox's
 // locale-specific search engines feature (see firefox_importer.cc for
@@ -93,12 +92,12 @@ void DetectFirefoxProfiles(const std::string locale,
                            std::vector<importer::SourceProfile>* profiles) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::string firefox_install_id =
       shell_integration::GetFirefoxProgIdSuffix();
 #else
   const std::string firefox_install_id;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   std::vector<FirefoxDetail> details = GetFirefoxDetails(firefox_install_id);
   if (details.empty())
     return;
@@ -109,7 +108,7 @@ void DetectFirefoxProfiles(const std::string locale,
       continue;
 
     int version = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     version = GetCurrentFirefoxMajorVersionFromRegistry();
 #endif
 
@@ -133,14 +132,14 @@ void DetectFirefoxProfiles(const std::string locale,
     firefox.profile = detail.name;
     firefox.importer_type = importer::TYPE_FIREFOX;
     firefox.source_path = detail.path;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     firefox.app_path = GetFirefoxInstallPathFromRegistry();
 #endif
     if (firefox.app_path.empty())
       firefox.app_path = app_path;
     firefox.services_supported =
         importer::HISTORY | importer::FAVORITES | importer::AUTOFILL_FORM_DATA;
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Passwords are imported by loading the NSS DLLs into the Chromium process.
     // Restrictive code signing prevents that from ever working again in modern
     // macOSes, so don't promise an import service that can't be delivered.
@@ -161,7 +160,7 @@ std::vector<importer::SourceProfile> DetectSourceProfilesWorker(
 
   // The first run import will automatically take settings from the first
   // profile detected, which should be the user's current default.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (shell_integration::IsFirefoxDefaultBrowser()) {
     DetectFirefoxProfiles(locale, &profiles);
     DetectBuiltinWindowsProfiles(&profiles);
@@ -169,7 +168,7 @@ std::vector<importer::SourceProfile> DetectSourceProfilesWorker(
     DetectBuiltinWindowsProfiles(&profiles);
     DetectFirefoxProfiles(locale, &profiles);
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   if (shell_integration::IsFirefoxDefaultBrowser()) {
     DetectFirefoxProfiles(locale, &profiles);
     DetectSafariProfiles(&profiles);

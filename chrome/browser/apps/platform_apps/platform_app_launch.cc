@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/platform_apps/platform_app_launch.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
@@ -17,13 +18,13 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/webui_url_constants.h"
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace apps {
 
@@ -35,7 +36,7 @@ namespace {
 bool GetAppLaunchContainer(Profile* profile,
                            const std::string& app_id,
                            const extensions::Extension** out_app,
-                           extensions::LaunchContainer* out_launch_container) {
+                           apps::mojom::LaunchContainer* out_launch_container) {
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           app_id);
@@ -49,8 +50,9 @@ bool GetAppLaunchContainer(Profile* profile,
 
   // Look at preferences to find the right launch container. If no
   // preference is set, launch as a window.
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), app);
+  apps::mojom::LaunchContainer launch_container =
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
+                                     app);
 
   *out_app = app;
   *out_launch_container = launch_container;
@@ -76,15 +78,12 @@ bool OpenExtensionApplicationWindow(Profile* profile,
                                     const std::string& app_id,
                                     const base::CommandLine& command_line,
                                     const base::FilePath& current_directory) {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   const extensions::Extension* app;
   if (!GetAppLaunchContainer(profile, app_id, &app, &launch_container))
     return false;
 
-  if (launch_container == extensions::LaunchContainer::kLaunchContainerTab)
-    return false;
-
-  if (app->from_bookmark())
+  if (launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab)
     return false;
 
   RecordCmdLineAppHistogram(app->GetType());
@@ -103,26 +102,26 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 }
 
 bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id) {
-  extensions::LaunchContainer launch_container;
+  apps::mojom::LaunchContainer launch_container;
   const extensions::Extension* app;
   if (!GetAppLaunchContainer(profile, app_id, &app, &launch_container))
     return false;
 
   // If the user doesn't want to open a tab, fail.
-  if (launch_container != extensions::LaunchContainer::kLaunchContainerTab)
+  if (launch_container != apps::mojom::LaunchContainer::kLaunchContainerTab)
     return false;
 
   RecordCmdLineAppHistogram(app->GetType());
 
   content::WebContents* app_tab = ::OpenApplication(
       profile, apps::AppLaunchParams(
-                   app_id, extensions::LaunchContainer::kLaunchContainerTab,
+                   app_id, apps::mojom::LaunchContainer::kLaunchContainerTab,
                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
                    apps::mojom::LaunchSource::kFromCommandLine));
   return app_tab != nullptr;
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool OpenDeprecatedApplicationPrompt(Profile* profile,
                                      const std::string& app_id) {
   if (!extensions::IsExtensionUnsupportedDeprecatedApp(profile, app_id))
@@ -142,7 +141,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   // TODO(crbug.com/1225779): Show the deprecated apps dialog.
   return true;
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool OpenExtensionApplicationWithReenablePrompt(
     Profile* profile,
@@ -154,7 +153,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
 
   RecordCmdLineAppHistogram(extensions::Manifest::TYPE_PLATFORM_APP);
   apps::AppLaunchParams params(
-      app_id, extensions::LaunchContainer::kLaunchContainerNone,
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW,
       apps::mojom::LaunchSource::kFromCommandLine);
   params.command_line = command_line;

@@ -258,7 +258,7 @@ void getExpectedColorAndMask(GLenum src_internal_format,
 
       setColor(adjusted_color[0], adjusted_color[1], adjusted_color[2],
                alpha_value, expected_color);
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // The alpha channel values for LUMINANCE_ALPHA source don't work OK
       // on Mac or Linux, so skip comparison of those, see crbug.com/926579
       setColor(1, 1, 1, src_internal_format != GL_LUMINANCE_ALPHA,
@@ -471,7 +471,7 @@ class GLCopyTextureCHROMIUMTest
     glBindTexture(source_target, textures_[0]);
     glTexParameteri(source_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(source_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(qiankun.miao@intel.com): Remove this workaround for Mac OSX, once
     // integer texture rendering bug is fixed on Mac OSX: crbug.com/679639.
     glTexImage2D(source_target, 0, src_format_type.internal_format,
@@ -502,7 +502,7 @@ class GLCopyTextureCHROMIUMTest
                        dest_format_type.type, nullptr);
         }
       }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // TODO(qiankun.miao@intel.com): Remove this workaround for Mac OSX, once
       // framebuffer complete bug is fixed on Mac OSX: crbug.com/678526.
       glTexImage2D(dest_target, 0, dest_format_type.internal_format,
@@ -637,8 +637,8 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
 
   bool ShouldSkipNorm16() const {
     DCHECK(!ShouldSkipTest());
-#if (defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
-     defined(OS_CHROMEOS)) &&                                   \
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+     BUILDFLAG(IS_CHROMEOS)) &&                                       \
     (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
     // Make sure it's tested; it is safe to assume that the flag is always true
     // on desktop.
@@ -650,7 +650,7 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
 
   bool ShouldSkipRGBA16ToRGB10A2() const {
     DCHECK(!ShouldSkipTest());
-#if (defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (defined(ARCH_CPU_X86) || defined(ARCH_CPU_X86_64))
     // // TODO(crbug.com/1046873): Fails on mac and linux intel.
     return true;
@@ -675,7 +675,7 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
 
   bool IsMacArm64() const {
     DCHECK(!ShouldSkipTest());
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
     return true;
 #else
     return false;
@@ -683,7 +683,7 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
   }
 
   bool IsMac() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     return true;
 #else
     return false;
@@ -1111,7 +1111,7 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, CopyTextureLevel) {
   for (GLint source_level = 0; source_level < 3; source_level++) {
     for (GLint dest_level = 0; dest_level < 3; dest_level++) {
       for (auto dest_format_type : dest_format_types) {
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
         // TODO(qiankun.miao@intel.com): source_level > 0 or dest_level > 0
         // isn't available due to renderinig bug for non-zero base level in
         // NVIDIA Windows: crbug.com/679639 and Android: crbug.com/680460.
@@ -1872,90 +1872,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopyTextureBetweenTexture2DAndRectangleArb) {
       glDeleteFramebuffers(1, &framebuffer_id_);
     }
   }
-}
-
-TEST_F(GLCopyTextureCHROMIUMTest, UnpremultiplyAndDitherCopy) {
-  if (gl_.gpu_preferences().use_passthrough_cmd_decoder) {
-    // UnpremultiplyAndDitherCopyCHROMIUM is not supported on passthrough.
-    return;
-  }
-
-  uint8_t premul_undithered_rgba_pixels[4 * 4] = {
-      64u, 0u, 0u,  128u, 0u, 128u, 0u, 255u,
-      0u,  0u, 64u, 255u, 0u, 0u,   0u, 128u};
-  CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, textures_[0]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               premul_undithered_rgba_pixels);
-
-  uint16_t transparent_pixels[4] = {0u, 0u, 0u, 0u};
-  glBindTexture(GL_TEXTURE_2D, textures_[1]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA,
-               GL_UNSIGNED_SHORT_4_4_4_4, transparent_pixels);
-
-  glUnpremultiplyAndDitherCopyCHROMIUM(textures_[0], textures_[1], 0, 0, 2, 2);
-  EXPECT_TRUE(glGetError() == GL_NO_ERROR);
-
-  uint8_t pixel_0_0[4] = {135u, 8u, 8u, 136u};
-  GLTestHelper::CheckPixels(0, 0, 1, 1, 17, pixel_0_0, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_1_0[4] = {0u, 127u, 0u, 255u};
-  GLTestHelper::CheckPixels(1, 0, 1, 1, 17, pixel_1_0, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_0_1[4] = {4u, 4u, 68u, 255u};
-  GLTestHelper::CheckPixels(0, 1, 1, 1, 17, pixel_0_1, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_1_1[4] = {0u, 0u, 0u, 123u};
-  GLTestHelper::CheckPixels(1, 1, 1, 1, 17, pixel_1_1, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  glDeleteTextures(2, textures_);
-  glDeleteFramebuffers(1, &framebuffer_id_);
-}
-
-TEST_F(GLCopyTextureCHROMIUMTest, UnpremultiplyAndDitherCopySubrect) {
-  if (gl_.gpu_preferences().use_passthrough_cmd_decoder) {
-    // UnpremultiplyAndDitherCopyCHROMIUM is not supported on passthrough.
-    return;
-  }
-
-  uint8_t premul_undithered_rgba_pixels[4 * 4] = {
-      64u, 0u, 0u,  128u, 0u, 128u, 0u, 255u,
-      0u,  0u, 64u, 255u, 0u, 0u,   0u, 128u};
-  CreateAndBindDestinationTextureAndFBO(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, textures_[0]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               premul_undithered_rgba_pixels);
-
-  uint16_t transparent_pixels[4] = {0u, 0u, 0u, 0u};
-  glBindTexture(GL_TEXTURE_2D, textures_[1]);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA,
-               GL_UNSIGNED_SHORT_4_4_4_4, transparent_pixels);
-
-  glUnpremultiplyAndDitherCopyCHROMIUM(textures_[0], textures_[1], 1, 0, 1, 2);
-  EXPECT_TRUE(glGetError() == GL_NO_ERROR);
-
-  uint8_t pixel_0_0[4] = {0u, 0u, 0u, 0u};
-  GLTestHelper::CheckPixels(0, 0, 1, 1, 0, pixel_0_0, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_1_0[4] = {0u, 127u, 0u, 255u};
-  GLTestHelper::CheckPixels(1, 0, 1, 1, 17, pixel_1_0, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_0_1[4] = {0u, 0u, 0u, 0u};
-  GLTestHelper::CheckPixels(0, 1, 1, 1, 0, pixel_0_1, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  uint8_t pixel_1_1[4] = {0u, 0u, 0u, 123u};
-  GLTestHelper::CheckPixels(1, 1, 1, 1, 17, pixel_1_1, nullptr);
-  EXPECT_TRUE(GL_NO_ERROR == glGetError());
-
-  glDeleteTextures(2, textures_);
-  glDeleteFramebuffers(1, &framebuffer_id_);
 }
 
 }  // namespace gpu

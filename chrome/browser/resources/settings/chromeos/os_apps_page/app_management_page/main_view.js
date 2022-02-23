@@ -10,6 +10,7 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {Route, Router} from '../../../router.js';
 import {routes} from '../../os_route.m.js';
@@ -17,7 +18,6 @@ import {RouteObserverBehavior} from '../../route_observer_behavior.js';
 
 import {AppManagementStore} from './store.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {alphabeticalSort} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

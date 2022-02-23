@@ -12,7 +12,7 @@ package web_app;
 message SystemWebAppDataProto {
   enum SystemAppType {
     FILE_MANAGER = 1;
-    TELEMETRY = 2;
+    // TELEMETRY_DEPRECATED = 2;
     SAMPLE = 3;
     SETTINGS = 4;
     CAMERA = 5;

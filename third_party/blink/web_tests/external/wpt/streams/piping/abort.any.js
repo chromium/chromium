@@ -61,8 +61,8 @@ for (const reason of [null, undefined, error1]) {
     const signal = abortController.signal;
     abortController.abort(reason);
     const pipeToPromise = rs.pipeTo(ws, { signal });
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }
@@ -131,8 +131,8 @@ for (const reason of [null, undefined, error1]) {
       }
     });
     const pipeToPromise = rs.pipeTo(ws, { signal });
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }
@@ -170,8 +170,8 @@ for (const reason of [null, undefined, error1]) {
     await abortController.abort(reason);
     await readController.close(); // Make sure the test terminates when signal is not implemented.
     await resolveWrite();
-    if (reason === error1) {
-      await promise_rejects_exactly(t, error1, pipeToPromise, 'pipeTo rejects with abort reason');
+    if (reason !== undefined) {
+      await promise_rejects_exactly(t, reason, pipeToPromise, 'pipeTo rejects with abort reason');
     } else {
       await promise_rejects_dom(t, 'AbortError', pipeToPromise, 'pipeTo rejects with AbortError');
     }

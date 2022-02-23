@@ -68,8 +68,11 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
     return gfx::RectF();
 
   gfx::RectF visual_rect = object.VisualRectInLocalSVGCoordinates();
-  if (int outset = OutlinePainter::OutlineOutsetExtent(object.StyleRef()))
+  if (int outset = OutlinePainter::OutlineOutsetExtent(
+          object.StyleRef(),
+          LayoutObject::OutlineInfo::GetUnzoomedFromStyle(object.StyleRef()))) {
     visual_rect.Outset(outset);
+  }
   return visual_rect;
 }
 
@@ -93,7 +96,7 @@ static gfx::RectF MapToSVGRootIncludingFilter(
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     const ComputedStyle& style = parent->StyleRef();
     if (style.HasFilter())
-      visual_rect = ToGfxRectF(style.Filter().MapRect(FloatRect(visual_rect)));
+      visual_rect = style.Filter().MapRect(visual_rect);
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
@@ -139,7 +142,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   if (adjusted_rect.IsEmpty()) {
     result_rect = PhysicalRect();
   } else {
-    // Use EnclosingIntRect because we cannot properly apply subpixel offset of
+    // Use ToEnclosingRect because we cannot properly apply subpixel offset of
     // the SVGRoot since we don't know the desired subpixel accumulation at this
     // point.
     result_rect = PhysicalRect(gfx::ToEnclosingRect(adjusted_rect));
@@ -252,8 +255,7 @@ void SVGLayoutSupport::AdjustWithClipPathAndMask(
     visual_rect.Intersect(clipper->ResourceBoundingBox(object_bounding_box));
   if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
           *client, style.MaskerResource())) {
-    visual_rect.Intersect(
-        ToGfxRectF(masker->ResourceBoundingBox(object_bounding_box, 1)));
+    visual_rect.Intersect(masker->ResourceBoundingBox(object_bounding_box, 1));
   }
 }
 
@@ -279,10 +281,10 @@ gfx::RectF SVGLayoutSupport::ComputeVisualRectForText(
     const gfx::RectF& text_bounds) {
   DCHECK(layout_object.IsSVGText() || layout_object.IsNGSVGText() ||
          layout_object.IsSVGInline());
-  FloatRect visual_rect(ExtendTextBBoxWithStroke(layout_object, text_bounds));
+  gfx::RectF visual_rect = ExtendTextBBoxWithStroke(layout_object, text_bounds);
   if (const ShadowList* text_shadow = layout_object.StyleRef().TextShadow())
     text_shadow->AdjustRectForShadow(visual_rect);
-  return ToGfxRectF(visual_rect);
+  return visual_rect;
 }
 
 bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
@@ -291,13 +293,13 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
   ClipPathOperation* clip_path_operation = object.StyleRef().ClipPath();
   if (!clip_path_operation)
     return true;
-  if (clip_path_operation->GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path_operation->GetType() == ClipPathOperation::kShape) {
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
-    return clip_path.GetPath(FloatRect(reference_box), 1)
-        .Contains(ToGfxPointF(location.TransformedPoint()));
+    return clip_path.GetPath(reference_box, 1)
+        .Contains(location.TransformedPoint());
   }
-  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   SVGResourceClient* client = SVGResources::GetClient(object);
   auto* clipper = GetSVGResourceAsType(
       *client, To<ReferenceClipPathOperation>(*clip_path_operation));
@@ -399,22 +401,10 @@ AffineTransform SVGLayoutSupport::DeprecatedCalculateTransformToLayer(
   }
 
   // Continue walking up the layer tree, accumulating CSS transforms.
-  // FIXME: this queries layer compositing state - which is not
-  // supported during layout. Hence, the result may not include all CSS
-  // transforms.
   PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
-  while (layer && layer->IsAllowedToQueryCompositingState()) {
-    // We can stop at compositing layers, to match the backing resolution.
-    // FIXME: should we be computing the transform to the nearest composited
-    // layer, or the nearest composited layer that does not paint into its
-    // ancestor? I think this is the nearest composited ancestor since we will
-    // inherit its transforms in the composited layer tree.
-    if (layer->GetCompositingState() != kNotComposited)
-      break;
-
+  while (layer) {
     if (TransformationMatrix* layer_transform = layer->Transform())
       transform = layer_transform->ToAffineTransform() * transform;
-
     layer = layer->Parent();
   }
 
@@ -518,17 +508,6 @@ LayoutObject* SVGLayoutSupport::FindClosestLayoutSVGText(
     const gfx::PointF& point) {
   return SearchTreeForFindClosestLayoutSVGText(layout_object, point)
       .layout_object;
-}
-
-void SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(
-    const LayoutObject* object) {
-  for (auto* ancestor = object->Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (ancestor->IsSVGRoot()) {
-      To<LayoutSVGRoot>(ancestor)->NotifyDescendantCompositingReasonsChanged();
-      break;
-    }
-  }
 }
 
 }  // namespace blink

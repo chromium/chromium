@@ -12,8 +12,13 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+
+// Double free detection comes with expensive cmpxchg (with the loop around it).
+// We currently disable it to improve the runtime.
+#define PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED 0
 
 namespace base {
 
@@ -92,11 +97,10 @@ class BASE_EXPORT PCScan final {
 
   // Registers a newly allocated super page for |root|.
   static void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
-  static void RegisterNewSuperPage(PartitionRoot<NotThreadSafe>* root,
-                                   uintptr_t super_page_base) {}
 
-  ALWAYS_INLINE static void MoveToQuarantine(void* ptr,
+  ALWAYS_INLINE static void MoveToQuarantine(void* object,
                                              size_t usable_size,
+                                             uintptr_t slot_start,
                                              size_t slot_size);
 
   // Performs scanning unconditionally.
@@ -104,7 +108,7 @@ class BASE_EXPORT PCScan final {
   // Performs scanning only if a certain quarantine threshold was reached.
   static void PerformScanIfNeeded(InvocationMode invocation_mode);
   // Performs scanning with specified delay.
-  static void PerformDelayedScan(TimeDelta delay);
+  static void PerformDelayedScan(int64_t delay_in_microseconds);
 
   // Enables safepoints in mutator threads.
   static void EnableSafepoints();
@@ -142,7 +146,7 @@ class BASE_EXPORT PCScan final {
  private:
   class PCScanThread;
   friend class PCScanTask;
-  friend class PartitionAllocPCScanTest;
+  friend class PartitionAllocPCScanTestBase;
   friend class PCScanInternal;
 
   enum class State : uint8_t {
@@ -227,10 +231,10 @@ ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
     instance.JoinScan();
 }
 
-ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
+ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
                                             size_t usable_size,
+                                            uintptr_t slot_start,
                                             size_t slot_size) {
-  PA_DCHECK(ptr == memory::UnmaskPtr(ptr));
   PCScan& instance = Instance();
   if (instance.clear_type_ == ClearType::kEager) {
     // We need to distinguish between usable_size and slot_size in this context:
@@ -239,17 +243,24 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
     // TODO(bikineev): If we start protecting quarantine memory, we can lose
     // double-free coverage (the check below). Consider performing the
     // double-free check before protecting if eager clearing becomes default.
-    SecureMemset(ptr, 0, usable_size);
+    SecureMemset(object, 0, usable_size);
   }
 
-  auto* state_bitmap = StateBitmapFromPointer(ptr);
+  // TODO(bartekn): Remove MTE untagging, once its done in the caller.
+  uintptr_t unmasked_slot_start =
+      ::partition_alloc::internal::UnmaskPtr(slot_start);
+  auto* state_bitmap = StateBitmapFromAddr(unmasked_slot_start);
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after
   // the clearing to avoid racing with *Scan Sweeper.
-  const bool succeeded = state_bitmap->Quarantine(
-      reinterpret_cast<uintptr_t>(ptr), instance.epoch());
+  [[maybe_unused]] const bool succeeded =
+      state_bitmap->Quarantine(unmasked_slot_start, instance.epoch());
+#if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
   if (UNLIKELY(!succeeded))
     DoubleFreeAttempt();
+#else
+  // The compiler is able to optimize cmpxchg to a lock-prefixed and.
+#endif
 
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);
   if (UNLIKELY(is_limit_reached)) {

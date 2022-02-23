@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Layers after update in Layers3DView\n`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
 
   await TestRunner.loadHTML(`
       <style>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="3240426699337459095">Link copied</translation>
-<translation id="5264323282659631142">Remove '<ph name="CHIP_LABEL" />'</translation>
 <translation id="6315516427814392808">Unable to complete previous operation due to low memory</translation>
 <translation id="6555463879959038093">Failed to copy to the clipboard</translation>
 <translation id="793640675459356075">Failed to open selected file</translation>

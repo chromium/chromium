@@ -22,6 +22,7 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
+import {getTemplate} from './startup_urls_page.html.js';
 import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 
@@ -39,7 +40,7 @@ export class SettingsStartupUrlsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

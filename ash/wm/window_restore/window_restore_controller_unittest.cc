@@ -25,9 +25,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -255,9 +253,6 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
-
     AshTestBase::SetUp();
 
     WindowRestoreController::Get()->SetSaveWindowCallbackForTesting(
@@ -294,12 +289,6 @@ class WindowRestoreControllerTest : public AshTestBase,
         ++restore_window_id;
       window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     }
-
-    // WindowRestoreController relies on getting OnWindowInitialized events from
-    // aura::Env via full_restore::FullRestoreInfo. That object does not exist
-    // for ash unit tests, so we will observe aura::Env ourselves and forward
-    // the event to WindowRestoreController.
-    WindowRestoreController::Get()->OnWindowInitialized(window);
   }
 
  private:
@@ -322,23 +311,6 @@ class WindowRestoreControllerTest : public AshTestBase,
                    fake_window_restore_file_[restore_window_id].info.get());
   }
 
-  // Callback function that is run when WindowRestoreController tries to read
-  // window data from the file. Immediately reads from our fake file
-  // `fake_window_restore_file_`.
-  std::unique_ptr<app_restore::WindowInfo> OnGetWindowInfo(
-      aura::Window* window) {
-    DCHECK(window);
-    const int32_t restore_window_id =
-        window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!fake_window_restore_file_.contains(restore_window_id))
-      return nullptr;
-
-    auto window_info = std::make_unique<app_restore::WindowInfo>();
-    CopyWindowInfo(*fake_window_restore_file_[restore_window_id].info,
-                   window_info.get());
-    return window_info;
-  }
-
   // Copies the info from `src` to `out_dst` since `fullrestore::WindowInfo`
   // copy constructor is deleted.
   void CopyWindowInfo(const app_restore::WindowInfo& src,
@@ -355,8 +327,6 @@ class WindowRestoreControllerTest : public AshTestBase,
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests window save with setting on or off.
@@ -1081,7 +1051,7 @@ TEST_F(WindowRestoreControllerTest, ArcAppWindowCreatedWithoutTask) {
 
   // Simulate having the task ready. Our `restored_window` should now be
   // parented to the desk associated with desk 3, which is desk D.
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window);
   EXPECT_EQ(Shell::GetContainer(root_window, kShellWindowId_DeskContainerD),
             restored_window->parent());
@@ -1126,7 +1096,7 @@ TEST_F(WindowRestoreControllerTest,
   EXPECT_EQ(Shell::GetContainer(secondary_root_window,
                                 kShellWindowId_UnparentedContainer),
             restored_window1->parent());
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window1);
   EXPECT_EQ(
       Shell::GetContainer(secondary_root_window, kShellWindowId_DeskContainerD),
@@ -1148,7 +1118,7 @@ TEST_F(WindowRestoreControllerTest,
   display_info_list.push_back(primary_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
+  WindowRestoreController::Get()->OnParentWindowToValidContainer(
       restored_window2);
   EXPECT_EQ(
       Shell::GetContainer(primary_root_window, kShellWindowId_DeskContainerD),

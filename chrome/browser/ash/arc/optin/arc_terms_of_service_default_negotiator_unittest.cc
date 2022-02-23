@@ -8,6 +8,7 @@
 #include <ostream>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/hash/sha1.h"
 #include "base/run_loop.h"
@@ -23,7 +24,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"

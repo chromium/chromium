@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
-#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -121,52 +120,6 @@ void AccountManagerPolicyController::OnChildAccountTypeChanged(
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountManagerPolicyController::RemoveSecondaryAccounts,
                      weak_factory_.GetWeakPtr()));
-}
-
-void AccountManagerPolicyController::
-    CheckEduCoexistenceSecondaryAccountsInvalidationVersion() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_->IsChild());
-
-  const std::string stored_version = profile_->GetPrefs()->GetString(
-      chromeos::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion);
-  const std::string current_version =
-      SecondaryAccountConsentLogger::GetSecondaryAccountsInvalidationVersion();
-
-  if (stored_version == current_version)
-    return;
-
-  account_manager_facade_->GetAccounts(
-      base::BindOnce(&AccountManagerPolicyController::
-                         InvalidateSecondaryAccountsOnEduConsentChange,
-                     weak_factory_.GetWeakPtr(), current_version));
-}
-
-void AccountManagerPolicyController::
-    InvalidateSecondaryAccountsOnEduConsentChange(
-        const std::string& new_invalidation_version,
-        const std::vector<::account_manager::Account>& accounts) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  for (const auto& account : accounts) {
-    if (account.key.account_type() != account_manager::AccountType::kGaia) {
-      continue;
-    }
-
-    if (device_account_id_.GetAccountType() == AccountType::GOOGLE &&
-        account.key.id() == device_account_id_.GetGaiaId()) {
-      // Do not invalidate the Device Account.
-      continue;
-    }
-
-    // This account is a Secondary Gaia account. Invalidate it.
-    account_manager_->UpdateToken(
-        account.key, account_manager::AccountManager::kInvalidToken);
-  }
-
-  profile_->GetPrefs()->SetString(
-      chromeos::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
-      new_invalidation_version);
 }
 
 void AccountManagerPolicyController::Shutdown() {

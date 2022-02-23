@@ -10,6 +10,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 
@@ -114,8 +115,12 @@ void SecurityInterstitialControllerClient::LaunchDateAndTimeSettings() {
 
 bool SecurityInterstitialControllerClient::CanGoBackBeforeNavigation() {
   // If checking before navigating to the interstitial, back to safety is
-  // possible if there is already at least one prior entry.
-  return web_contents_->GetController().GetEntryCount() > 0;
+  // possible if there is already at least one prior entry that is not the
+  // initial entry. This preserves old behavior to when we return nullptr
+  // instead of the initial entry when no navigation has committed.
+  content::NavigationEntry* current_entry =
+      web_contents_->GetController().GetLastCommittedEntry();
+  return current_entry && !current_entry->IsInitialEntry();
 }
 
 }  // namespace security_interstitials

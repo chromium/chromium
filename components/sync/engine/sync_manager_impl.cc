@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -113,7 +113,7 @@ void SyncManagerImpl::ConfigureSyncer(ConfigureReason reason,
 
   DVLOG(1) << "Configuring -"
            << "\n\t"
-           << "types to download: " << ModelTypeSetToString(to_download);
+           << "types to download: " << ModelTypeSetToDebugString(to_download);
 
   scheduler_->Start(SyncScheduler::CONFIGURATION_MODE, base::Time());
   scheduler_->ScheduleConfiguration(GetOriginFromReason(reason), to_download,
@@ -219,11 +219,6 @@ void SyncManagerImpl::OnTrustedVaultKeyRequired() {
 }
 
 void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
-  // Does nothing.
-}
-
-void SyncManagerImpl::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {
   // Does nothing.
 }
 
@@ -339,20 +334,20 @@ void SyncManagerImpl::OnServerConnectionEvent(
     const ServerConnectionEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (event.connection_code == HttpResponse::SERVER_CONNECTION_OK) {
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_OK);
     }
   }
 
   if (event.connection_code == HttpResponse::SYNC_AUTH_ERROR) {
     observing_network_connectivity_changes_ = false;
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_AUTH_ERROR);
     }
   }
 
   if (event.connection_code == HttpResponse::SYNC_SERVER_ERROR) {
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnConnectionStatusChange(CONNECTION_SERVER_ERROR);
     }
   }
@@ -370,7 +365,7 @@ void SyncManagerImpl::NudgeForCommit(ModelType type) {
 }
 
 void SyncManagerImpl::NotifySyncStatusChanged(const SyncStatus& status) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnSyncStatusChanged(status);
   }
 }
@@ -392,14 +387,14 @@ void SyncManagerImpl::OnSyncCycleEvent(const SyncCycleEvent& event) {
     }
 
     DVLOG(1) << "Sending OnSyncCycleCompleted";
-    for (auto& observer : observers_) {
+    for (SyncManager::Observer& observer : observers_) {
       observer.OnSyncCycleCompleted(event.snapshot);
     }
   }
 }
 
 void SyncManagerImpl::OnActionableError(const SyncProtocolError& error) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnActionableError(error);
   }
 }
@@ -411,14 +406,14 @@ void SyncManagerImpl::OnThrottledTypesChanged(ModelTypeSet) {}
 void SyncManagerImpl::OnBackedOffTypesChanged(ModelTypeSet) {}
 
 void SyncManagerImpl::OnMigrationRequested(ModelTypeSet types) {
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnMigrationRequested(types);
   }
 }
 
 void SyncManagerImpl::OnProtocolEvent(const ProtocolEvent& event) {
   protocol_event_buffer_.RecordProtocolEvent(event);
-  for (auto& observer : observers_) {
+  for (SyncManager::Observer& observer : observers_) {
     observer.OnProtocolEvent(event);
   }
 }
@@ -433,7 +428,7 @@ void SyncManagerImpl::SetInvalidatorEnabled(bool invalidator_enabled) {
 
 void SyncManagerImpl::OnIncomingInvalidation(
     ModelType type,
-    std::unique_ptr<InvalidationInterface> invalidation) {
+    std::unique_ptr<SyncInvalidation> invalidation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sync_status_tracker_->IncrementNotificationsReceived();
@@ -446,7 +441,7 @@ void SyncManagerImpl::RefreshTypes(ModelTypeSet types) {
   const ModelTypeSet types_to_refresh =
       Intersection(types, model_type_registry_->GetConnectedTypes());
 
-  if (!types.Empty()) {
+  if (!types_to_refresh.Empty()) {
     scheduler_->ScheduleLocalRefreshRequest(types_to_refresh);
   }
 }

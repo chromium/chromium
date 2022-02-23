@@ -58,7 +58,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
     locale = es_locale;
     is_ui = ConvertToActualUILocale(&locale);
     EXPECT_TRUE(is_ui) << es_locale;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // iOS uses a different name for es-419 (es-MX).
     EXPECT_EQ("es-MX", locale) << es_locale;
 #else
@@ -70,7 +70,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "en";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On Apple platforms, "en" is used instead of "en-US".
   EXPECT_EQ("en", locale);
 #else
@@ -89,7 +89,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "pt";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On iOS, "pt" is used instead of "pt-BR".
   EXPECT_EQ("pt", locale);
 #else
@@ -121,12 +121,8 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
 //---------------------------------------------------------------------------
 // This only matters for ChromeOS and Windows, as they are the only systems
 // where users can set the display UI.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   locale = "sd";  // Sindhi
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
-  locale = "af";  // Afrikaans
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 
@@ -135,10 +131,6 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   EXPECT_FALSE(is_ui);
 
   locale = "ky";  // Kyrgyz
-  is_ui = ConvertToActualUILocale(&locale);
-  EXPECT_FALSE(is_ui);
-
-  locale = "zu";  // Zulu
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_FALSE(is_ui);
 #endif

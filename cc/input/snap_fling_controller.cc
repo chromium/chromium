@@ -4,6 +4,7 @@
 
 #include "cc/input/snap_fling_controller.h"
 
+#include <utility>
 #include "cc/input/snap_fling_curve.h"
 
 namespace cc {
@@ -49,7 +50,7 @@ bool SnapFlingController::HandleGestureScrollUpdate(
   gfx::Vector2dF ending_displacement =
       SnapFlingCurve::EstimateDisplacement(info.delta);
 
-  gfx::Vector2dF target_offset, start_offset;
+  gfx::PointF target_offset, start_offset;
   if (!client_->GetSnapFlingInfoAndSetAnimatingSnapTarget(
           ending_displacement, &start_offset, &target_offset)) {
     state_ = State::kIgnored;
@@ -78,7 +79,7 @@ void SnapFlingController::Animate(base::TimeTicks time) {
     return;
   }
   gfx::Vector2dF snapped_delta = curve_->GetScrollDelta(time);
-  gfx::Vector2dF current_offset = client_->ScrollByForSnapFling(snapped_delta);
+  gfx::PointF current_offset = client_->ScrollByForSnapFling(snapped_delta);
   curve_->UpdateCurrentOffset(current_offset);
   client_->RequestAnimationForSnapFling();
 }

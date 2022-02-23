@@ -134,6 +134,7 @@ class WebUILoginView : public views::View,
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from content::NotificationObserver.
   void Observe(int type,

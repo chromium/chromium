@@ -15,32 +15,59 @@ limitations under the License.
 #include <iostream>
 #include <limits>
 
-#include "absl/flags/flag.h"
-#include "absl/flags/parse.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
+#include "absl/flags/flag.h"          // from @com_google_absl
+#include "absl/flags/parse.h"         // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/category.h"
-#include "tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
+#include "tensorflow_lite_support/cc/task/text/bert_nl_classifier.h"
 
 ABSL_FLAG(std::string,
           model_path,
           "",
           "Absolute path to the '.tflite' bert classification model.");
 ABSL_FLAG(std::string, text, "", "Text to classify.");
+ABSL_FLAG(bool,
+          use_coral,
+          false,
+          "If true, inference will be delegated to a connected Coral Edge TPU "
+          "device.");
 
 namespace tflite {
 namespace task {
 namespace text {
-namespace nlclassifier {
+
+namespace {
+using std::chrono::microseconds;
+using std::chrono::steady_clock;
+}  // namespace
 
 absl::Status Classify() {
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<BertNLClassifier> classifier,
-      BertNLClassifier::CreateFromFile(absl::GetFlag(FLAGS_model_path)));
+  BertNLClassifierOptions options;
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
+      absl::GetFlag(FLAGS_model_path));
+  if (absl::GetFlag(FLAGS_use_coral)) {
+    options.mutable_base_options()
+        ->mutable_compute_settings()
+        ->mutable_tflite_settings()
+        ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
+  }
 
+  ASSIGN_OR_RETURN(std::unique_ptr<BertNLClassifier> classifier,
+                   BertNLClassifier::CreateFromOptions(options));
+
+  auto start_classify = steady_clock::now();
   std::vector<core::Category> categories =
       classifier->Classify(absl::GetFlag(FLAGS_text));
+  auto end_classify = steady_clock::now();
+  std::string delegate =
+      absl::GetFlag(FLAGS_use_coral) ? "Coral Edge TPU" : "CPU";
+  std::cout << "Time cost to classify the input text on " << delegate << ": "
+            << std::chrono::duration<float, std::milli>(end_classify -
+                                                        start_classify)
+                   .count()
+            << " ms" << std::endl;
 
   for (int i = 0; i < categories.size(); ++i) {
     const core::Category& category = categories[i];
@@ -51,7 +78,6 @@ absl::Status Classify() {
   return absl::OkStatus();
 }
 
-}  // namespace nlclassifier
 }  // namespace text
 }  // namespace task
 }  // namespace tflite
@@ -69,7 +95,7 @@ int main(int argc, char** argv) {
   }
 
   // Run classification.
-  absl::Status status = tflite::task::text::nlclassifier::Classify();
+  absl::Status status = tflite::task::text::Classify();
   if (status.ok()) {
     return 0;
   } else {

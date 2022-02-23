@@ -204,12 +204,12 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
                      stderr=subprocess.STDOUT)
     forward_signals([process])
     while process.poll() is None:
-      sys.stdout.write(reader.read())
+      sys.stdout.write(reader.read().decode('utf-8'))
       # This sleep is needed for signal propagation. See the
       # wait_with_signals() docstring.
       time.sleep(0.1)
     # Read the remaining.
-    sys.stdout.write(reader.read())
+    sys.stdout.write(reader.read().decode('utf-8'))
     print('Command %r returned exit code %d' % (argv, process.returncode))
     return process.returncode
 
@@ -228,7 +228,8 @@ def run_command(argv, env=None, cwd=None, log=True):
   process = _popen(argv, env=env, cwd=cwd, stderr=subprocess.STDOUT)
   forward_signals([process])
   exit_code = wait_with_signals(process)
-  print('Command returned exit code %d' % exit_code)
+  if log:
+    print('Command returned exit code %d' % exit_code)
   return exit_code
 
 
@@ -290,6 +291,7 @@ def forward_signals(procs):
       if sys.platform == 'win32' and sig == signal.SIGBREAK:
         p.send_signal(signal.CTRL_BREAK_EVENT)
       else:
+        print("Forwarding signal(%d) to process %d" % (sig, p.pid))
         p.send_signal(sig)
   if sys.platform == 'win32':
     signal.signal(signal.SIGBREAK, _sig_handler)

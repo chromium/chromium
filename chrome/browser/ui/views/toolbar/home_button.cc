@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -58,7 +59,7 @@ class HomePageUndoBubble : public views::BubbleDialogDelegateView {
 
   static HomePageUndoBubble* home_page_undo_bubble_;
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   bool undo_value_is_ntp_;
   GURL undo_url_;
 };
@@ -176,14 +177,6 @@ bool HomeButton::CanDrop(const OSExchangeData& data) {
 
 int HomeButton::OnDragUpdated(const ui::DropTargetEvent& event) {
   return event.source_operations();
-}
-
-ui::mojom::DragOperation HomeButton::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  auto cb = GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
-  return output_drag_op;
 }
 
 views::View::DropCallback HomeButton::GetDropCallback(

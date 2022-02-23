@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <map>
 #include <memory>
 #include <tuple>
@@ -106,6 +105,12 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // Resolution of input stream. Set once in initialization and not allowed to
   // change after.
   gfx::Size frame_size_;
+
+  // Y and UV plane strides in the encoder's input buffer
+  int input_buffer_stride_ = 0;
+
+  // Y-plane height in the encoder's input
+  int input_buffer_yplane_height_ = 0;
 
   uint32_t last_set_bitrate_;  // In bps.
 

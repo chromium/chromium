@@ -469,8 +469,9 @@ class Status final {
 
   // Status::ok()
   //
-  // Returns `true` if `this->ok()`. Prefer checking for an OK status using this
-  // member function.
+  // Returns `true` if `this->code()` == `absl::StatusCode::kOk`,
+  // indicating the absence of an error.
+  // Prefer checking for an OK status using this member function.
   ABSL_MUST_USE_RESULT bool ok() const;
 
   // Status::code()
@@ -532,7 +533,7 @@ class Status final {
   //----------------------------------------------------------------------------
 
   // A payload may be attached to a status to provide additional context to an
-  // error that may not be satisifed by an existing `absl::StatusCode`.
+  // error that may not be satisfied by an existing `absl::StatusCode`.
   // Typically, this payload serves one of several purposes:
   //
   //   * It may provide more fine-grained semantic information about the error

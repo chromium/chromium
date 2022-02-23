@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
@@ -125,10 +124,10 @@ void AppServer::MaybeUninstall() {
   if (!prefs_)
     return;
 
-  if (ShouldUninstall(
-          base::MakeRefCounted<PersistedData>(prefs_->GetPrefService())
-              ->GetAppIds(),
-          server_starts_)) {
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(prefs_->GetPrefService());
+  if (ShouldUninstall(persisted_data->GetAppIds(), server_starts_,
+                      persisted_data->GetHadApps())) {
     base::CommandLine command_line(
         base::CommandLine::ForCurrentProcess()->GetProgram());
     command_line.AppendSwitch(kUninstallIfUnusedSwitch);
@@ -155,12 +154,16 @@ void AppServer::FirstTaskRun() {
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {
   global_prefs->SetSwapping(true);
   PrefsCommitPendingWrites(global_prefs->GetPrefService());
-  if (!SwapRPCInterfaces())
+  if (!SwapInNewVersion())
     return false;
-  if (!ConvertLegacyUpdaters(base::BindRepeating(
-          &PersistedData::RegisterApp, base::MakeRefCounted<PersistedData>(
-                                           global_prefs->GetPrefService())))) {
-    return false;
+  if (!global_prefs->GetMigratedLegacyUpdaters()) {
+    if (!MigrateLegacyUpdaters(
+            base::BindRepeating(&PersistedData::RegisterApp,
+                                base::MakeRefCounted<PersistedData>(
+                                    global_prefs->GetPrefService())))) {
+      return false;
+    }
+    global_prefs->SetMigratedLegacyUpdaters();
   }
   global_prefs->SetActiveVersion(kUpdaterVersion);
   global_prefs->SetSwapping(false);

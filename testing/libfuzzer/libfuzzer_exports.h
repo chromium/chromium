@@ -13,7 +13,7 @@
 // this header in the fuzzer's implementation file will ensure that all the
 // symbols are kept and exported.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define EXPORT_FUZZER_FUNCTION \
   __attribute__((used)) __attribute__((visibility("default")))
 #else

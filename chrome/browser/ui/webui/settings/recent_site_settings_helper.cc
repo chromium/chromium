@@ -68,7 +68,7 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
           GURL(e.primary_pattern.ToString()).DeprecatedGetOriginAsURL();
       results[origin].emplace_back(
           last_modified, content_type,
-          content_settings::ValueToContentSetting(&e.setting_value),
+          content_settings::ValueToContentSetting(e.setting_value),
           site_settings::SiteSettingSource::kPreference);
     }
 

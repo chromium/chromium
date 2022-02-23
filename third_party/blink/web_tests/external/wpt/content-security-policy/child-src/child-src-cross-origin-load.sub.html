@@ -55,8 +55,6 @@ child-src 'self' http://www1.{{host}}:{{ports[http][0]}}; script-src 'self' 'uns
         function loadEvent() {
             loads++;
             log("PASS " + "IFrame #" + loads + " generated a load event.");
-            if (loads == 3)
-                log("TEST COMPLETE");
         }
 
     </script>

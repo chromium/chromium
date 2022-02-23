@@ -13,12 +13,14 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -101,6 +103,7 @@ enum class TransportAvailabilityParam {
   kHasWinNativeAuthenticator,
   kHasCableV1Extension,
   kHasCableV2Extension,
+  kPreferNativeAPI,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -114,6 +117,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kHasCableV1Extension";
     case TransportAvailabilityParam::kHasCableV2Extension:
       return "kHasCableV2Extension";
+    case TransportAvailabilityParam::kPreferNativeAPI:
+      return "kPreferNativeAPI";
   }
 }
 
@@ -154,10 +159,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto has_winapi =
       TransportAvailabilityParam::kHasWinNativeAuthenticator;
   const auto has_plat = TransportAvailabilityParam::kHasPlatformCredential;
+  const auto native = TransportAvailabilityParam::kPreferNativeAPI;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
   const auto winapi =
       AuthenticatorRequestDialogModel::Mechanism::WindowsAPI(true);
+  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone(false);
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
@@ -186,8 +193,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
       {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
       // ... even if, somehow, there's another transport.
-      {mc, {usb}, {has_winapi}, {}, {t(usb), winapi}, plat_ui},
-      {ga, {usb}, {has_winapi}, {}, {t(usb), winapi}, plat_ui},
+      {mc, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
+      {ga, {usb}, {has_winapi}, {}, {winapi, t(usb)}, plat_ui},
 
       // A caBLEv1 extension should cause us to go directly to caBLE.
       {ga, {usb, cable}, {v1}, {}, {t(usb), t(cable)}, cable_ui},
@@ -197,12 +204,42 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // If there are linked phones then AOA doesn't show up, but the phones do,
       // and sorted. The selection sheet should show.
-      {mc, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, mss},
-      {ga, {usb, aoa, cable}, {}, {"b", "a"}, {t(usb), p("a"), p("b")}, mss},
+      {mc,
+       {usb, aoa, cable},
+       {},
+       {"a", "b"},
+       {add, t(usb), p("a"), p("b")},
+       mss},
+      {ga,
+       {usb, aoa, cable},
+       {},
+       {"a", "b"},
+       {add, t(usb), p("a"), p("b")},
+       mss},
 
       // On Windows, if there are linked phones we'll show a selection sheet.
-      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
+      {mc, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
+      // ... unless the `prefer_native_api` flag is set because Chrome
+      // remembered that the last successful security key operation was via the
+      // Windows API. In that case we'll still jump directly to the native UI.
+      {mc,
+       {cable},
+       {has_winapi, native},
+       {"a"},
+       {winapi, add, p("a")},
+       plat_ui},
+      {ga,
+       {cable},
+       {has_winapi, native},
+       {"a"},
+       {winapi, add, p("a")},
+       plat_ui},
+      // Even without `prefer_native_api`, if there aren't any linked phones
+      // we'll still jump directly to the native UI, at least until we enable
+      // the "Add phone" option.
+      {mc, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
+      {ga, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
   };
 
   unsigned test_num = 0;
@@ -257,8 +294,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
                                      base::DoNothing(), absl::nullopt);
     }
 
-    model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
+    model.StartFlow(
+        std::move(transports_info),
+        /*use_location_bar_bubble=*/false,
+        /*prefer_native_api=*/
+        base::Contains(test.params,
+                       TransportAvailabilityParam::kPreferNativeAPI));
     EXPECT_EQ(test.expected_first_step, model.current_step());
 
     std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
@@ -277,6 +318,46 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
+  // Simulate the user canceling the Windows native UI, both with and without
+  // that UI being immediately triggered. If it was immediately triggered then
+  // canceling it should show the mechanism selection UI.
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthPhoneSupport};
+
+  for (const bool prefer_native_api : {false, true}) {
+    SCOPED_TRACE(prefer_native_api);
+
+    AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+    tai.has_win_native_api_authenticator = true;
+    tai.win_native_api_authenticator_id = "ID";
+    tai.available_transports.insert(
+        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+
+    AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+    model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
+                                   "fido:/1234");
+
+    model.StartFlow(std::move(tai),
+                    /*use_location_bar_bubble=*/false, prefer_native_api);
+
+    if (prefer_native_api) {
+      // The Windows native UI should have been triggered.
+      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+      // Canceling the Windows native UI should be handled.
+      EXPECT_TRUE(model.OnWinUserCancelled());
+    }
+
+    // The mechanism selection sheet should now be showing.
+    EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+    // Canceling the Windows UI ends the request because the user must have
+    // selected the Windows option first.
+    EXPECT_FALSE(model.OnWinUserCancelled());
+  }
+}
+#endif
+
 TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
   AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
@@ -284,7 +365,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(TransportAvailabilityInfo(),
-                  /*use_location_bar_bubble=*/false);
+                  /*use_location_bar_bubble=*/false,
+                  /*prefer_native_api=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -316,6 +398,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
   const auto off = BLEPower::OFF;
   const auto normal = Profile::NORMAL;
   const auto otr___ = Profile::INCOGNITO;
+  const auto mss = Step::kMechanismSelection;
   const auto activate = Step::kCableActivate;
   const auto interstitial = Step::kOffTheRecordInterstitial;
   const auto power = Step::kBlePowerOnAutomatic;
@@ -327,14 +410,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     std::vector<Step> steps;
   } kTests[] = {
       //               | Expected UI steps in order.
-      {mc, on_, normal, {activate}},
-      {mc, on_, otr___, {interstitial, activate}},
-      {mc, off, normal, {power, activate}},
-      {mc, off, otr___, {interstitial, power, activate}},
-      {ga, on_, normal, {activate}},
-      {ga, on_, otr___, {activate}},
-      {ga, off, normal, {power, activate}},
-      {ga, off, otr___, {power, activate}},
+      {mc, on_, normal, {mss, activate}},
+      {mc, on_, otr___, {mss, interstitial, activate}},
+      {mc, off, normal, {mss, power, activate}},
+      {mc, off, otr___, {mss, interstitial, power, activate}},
+      {ga, on_, normal, {mss, activate}},
+      {ga, on_, otr___, {mss, activate}},
+      {ga, off, normal, {mss, power, activate}},
+      {ga, off, otr___, {mss, power, activate}},
   };
 
   unsigned test_num = 0;
@@ -360,8 +443,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
                                    absl::nullopt);
 
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
-    ASSERT_EQ(model.mechanisms().size(), 1u);
+                    /*use_location_bar_bubble=*/false,
+                    /*prefer_native_api=*/false);
+    ASSERT_EQ(model.mechanisms().size(), 2u);
 
     for (const auto step : test.steps) {
       ASSERT_EQ(step, model.current_step())
@@ -369,6 +453,18 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
           << " != " << static_cast<int>(model.current_step());
 
       switch (step) {
+        case Step::kMechanismSelection:
+          // Click the first (and only) phone.
+          for (const auto& mechanism : model.mechanisms()) {
+            if (absl::holds_alternative<
+                    AuthenticatorRequestDialogModel::Mechanism::Phone>(
+                    mechanism.type)) {
+              mechanism.callback.Run();
+              break;
+            }
+          }
+          break;
+
         case Step::kBlePowerOnAutomatic:
           model.OnBluetoothPoweredStateChanged(/*powered=*/true);
           break;
@@ -409,7 +505,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
+                    /*use_location_bar_bubble=*/false,
+                    /*prefer_native_api=*/false);
     EXPECT_EQ(Step::kMechanismSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -449,7 +546,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
+                    /*use_location_bar_bubble=*/false,
+                    /*prefer_native_api=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
     EXPECT_FALSE(power_receiver.was_called());
@@ -479,7 +577,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
+                    /*use_location_bar_bubble=*/false,
+                    /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
     EXPECT_FALSE(model.ble_adapter_is_powered());
@@ -520,7 +619,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
-                    /*use_location_bar_bubble=*/false);
+                    /*use_location_bar_bubble=*/false,
+                    /*prefer_native_api=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
 
@@ -554,7 +654,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false);
+                  /*use_location_bar_bubble=*/false,
+                  /*prefer_native_api=*/false);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kMechanismSelection,
             model.current_step());
   EXPECT_EQ(0, num_called);
@@ -596,7 +697,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       &dispatched_authenticator_ids));
 
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/false);
+                  /*use_location_bar_bubble=*/false,
+                  /*prefer_native_api=*/false);
 
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -621,7 +723,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.available_transports = kAllTransports;
   transports_info.has_recognized_platform_authenticator_credential = true;
   model.StartFlow(std::move(transports_info),
-                  /*use_location_bar_bubble=*/true);
+                  /*use_location_bar_bubble=*/true,
+                  /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
   EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);
@@ -650,7 +753,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.recognized_platform_authenticator_credentials = {user_1,
                                                                    user_2};
   model.StartFlow(std::move(transports_info),
-                  /*is_location_bar_bubble_ui==*/true);
+                  /*is_location_bar_bubble_ui==*/true,
+                  /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
   EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);

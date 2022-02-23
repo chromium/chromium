@@ -8,6 +8,7 @@ import os
 
 from flake_suppressor import data_types
 from flake_suppressor import expectations
+from flake_suppressor import tag_utils
 
 from typ import expectations_parser
 
@@ -53,11 +54,9 @@ def _ConvertJsonResultsToResultObjects(results):
   """
   object_results = []
   for r in results:
-    _, suite, __, test_name = r['name'].split('.', 3)
+    suite, test_name = GetTestSuiteAndNameFromResultDbName(r['name'])
     build_id = r['id'].split('-')[-1]
-    typ_tags = r['typ_tags']
-    typ_tags.sort()
-    typ_tags = tuple(typ_tags)
+    typ_tags = tuple(tag_utils.RemoveMostIgnoredTags(r['typ_tags']))
     object_results.append(
         data_types.Result(suite, test_name, typ_tags, build_id))
   return object_results
@@ -98,3 +97,8 @@ def _FilterOutSuppressedResults(results):
       kept_results.append(r)
 
   return kept_results
+
+
+def GetTestSuiteAndNameFromResultDbName(result_db_name):
+  _, suite, __, test_name = result_db_name.split('.', 3)
+  return suite, test_name

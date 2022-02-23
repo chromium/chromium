@@ -184,9 +184,9 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   webview.PrintLibraryCompression()
 
   # AndroidGo size exists only for webview & library.
-  go_install_size = (
-      trichrome_chrome.GetApkSize() + trichrome_webview.GetAndroidGoSize() +
-      trichrome_library.GetAndroidGoSize())
+  go_install_size = (trichrome_chrome.GetAndroidGoSize() +
+                     trichrome_webview.GetAndroidGoSize() +
+                     trichrome_library.GetAndroidGoSize())
   metrics['Android Go (TriChrome) Install Size'] = go_install_size
 
   system_apks_size = sum(x.GetCompressedSize() for x in trichrome_system_apks)

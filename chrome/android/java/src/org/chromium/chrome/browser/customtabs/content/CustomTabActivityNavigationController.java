@@ -110,6 +110,8 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
 
     private boolean mIsHandlingUserNavigation;
 
+    private @FinishReason int mFinishReason;
+
     private final CustomTabActivityTabProvider.Observer mTabObserver =
             new CustomTabActivityTabProvider.Observer() {
 
@@ -306,6 +308,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     public void finish(@FinishReason int reason) {
         if (mIsFinishing) return;
         mIsFinishing = true;
+        mFinishReason = reason;
 
         if (reason != REPARENTING) {
             // Closing the activity destroys the renderer as well. Re-create a spare renderer some
@@ -320,6 +323,10 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         if (mFinishHandler != null) {
             mFinishHandler.onFinish(reason);
         }
+    }
+
+    public @FinishReason int getFinishReason() {
+        return mFinishReason;
     }
 
     /**

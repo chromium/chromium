@@ -6,12 +6,12 @@
 
 #include <string.h>
 
+#include <cstdint>
 #include <memory>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
@@ -93,26 +93,20 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-  partition_root_.ConfigureLazyCommit(opts.lazy_commit ==
-                                      PartitionOptions::LazyCommit::kEnabled);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
-template PartitionAllocator<internal::NotThreadSafe>::~PartitionAllocator();
-template void PartitionAllocator<internal::NotThreadSafe>::init(
-    PartitionOptions);
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-void CheckThatSlotOffsetIsZero(void* ptr) {
+void CheckThatSlotOffsetIsZero(uintptr_t address) {
   // Add kPartitionPastAllocationAdjustment, because
   // PartitionAllocGetSlotStartInBRPPool will subtract it.
   PA_CHECK(PartitionAllocGetSlotStartInBRPPool(
-               reinterpret_cast<char*>(ptr) +
-               kPartitionPastAllocationAdjustment) == ptr);
+               address + kPartitionPastAllocationAdjustment) == address);
 }
 #endif
 

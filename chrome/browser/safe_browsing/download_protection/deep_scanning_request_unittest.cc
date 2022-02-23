@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -241,7 +242,7 @@ class DeepScanningRequestTest : public testing::Test {
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     EXPECT_CALL(item_, GetReceivedBytes()).WillRepeatedly(Return(0));
     EXPECT_CALL(item_, HasUserGesture()).WillRepeatedly(Return(false));
-    content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
     SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
@@ -311,7 +312,7 @@ class DeepScanningRequestTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
   FakeDownloadProtectionService download_protection_service_;
   download::MockDownloadItem item_;
@@ -1607,7 +1608,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
-  content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
   EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(download_url_));
 
   // Without the malware policy list set, the item should be uploaded.
@@ -1641,7 +1642,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
-  content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(&item_, profile_, nullptr);
 
   // Even if the policy indicates scanning should occur, file:/// URLs should
   // never return settings.

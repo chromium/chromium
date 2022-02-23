@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
+#include "components/breadcrumbs/core/breadcrumb_manager_browser_agent.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -43,31 +44,16 @@ extern const char kBreadcrumbOverlayJsConfirm[];
 // Appended to |kBreadcrumbOverlay| event if overlay is JavaScript prompt.
 extern const char kBreadcrumbOverlayJsPrompt[];
 
-// Logs activity for the associated Browser's underlying WebStateList based on
-// callbacks from various observers. Event logs are sent to the BrowserState's
-// BreadcrumbManagerKeyedService.
-// For example:
-//   Browser1 Insert active WebState2 at 0
-// which indicates that a WebState with identifier 2 (from
-// BreadcrumbManagerTabHelper) was inserted into the Browser with identifier 1
-// (from BreadcrumbManagerBrowserAgent)
 class BreadcrumbManagerBrowserAgent
-    : BrowserObserver,
+    : public breadcrumbs::BreadcrumbManagerBrowserAgent,
+      BrowserObserver,
       public OverlayPresenterObserver,
       public BrowserUserData<BreadcrumbManagerBrowserAgent>,
       WebStateListObserver {
  public:
-  // Gets and Sets whether or not logging is enabled. Disabling logging be used
-  // to prevent the over-collection of breadcrumb events during known states
-  // such as a clean shutdown.
-  // |IsLoggingEnabled()| defaults to true on initialization.
-  bool IsLoggingEnabled();
-  void SetLoggingEnabled(bool enabled);
-
   BreadcrumbManagerBrowserAgent(const BreadcrumbManagerBrowserAgent&) = delete;
   BreadcrumbManagerBrowserAgent& operator=(
       const BreadcrumbManagerBrowserAgent&) = delete;
-
   ~BreadcrumbManagerBrowserAgent() override;
 
  private:
@@ -75,15 +61,13 @@ class BreadcrumbManagerBrowserAgent
   friend class BrowserUserData<BreadcrumbManagerBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
 
-  // Logs a breadcrumb event with message data |event| associated with
-  // |browser_|. NOTE: |event| must not include newline characters as newlines
-  // are used by BreadcrumbPersistentStore as a deliminator.
-  void LogEvent(const std::string& event);
+  // breadcrumbs::BreadcrumbManagerBrowserAgent:
+  void PlatformLogEvent(const std::string& event) override;
 
-  // BrowserObserver
+  // BrowserObserver:
   void BrowserDestroyed(Browser* browser) override;
 
-  // WebStateListObserver overrides
+  // WebStateListObserver:
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
@@ -108,18 +92,12 @@ class BreadcrumbManagerBrowserAgent
   void WillBeginBatchOperation(WebStateList* web_state_list) override;
   void BatchOperationEnded(WebStateList* web_state_list) override;
 
-  // OverlayPresenterObservers overrides
+  // OverlayPresenterObserver:
   void WillShowOverlay(OverlayPresenter* presenter,
                        OverlayRequest* request,
                        bool initial_presentation) override;
   void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
-  // Unique (across this application run only) identifier for logs associated
-  // with |browser_| instance. Used to differentiate logs associated with the
-  // same underlying BrowserState.
-  int unique_id_ = -1;
-  // Whether or not events will be logged.
-  bool logging_enabled_ = true;
   Browser* browser_ = nullptr;
 
   // Keeps track of WebState mutation count to avoid logging every event.

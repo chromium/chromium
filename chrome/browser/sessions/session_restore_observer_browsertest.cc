@@ -10,9 +10,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -176,7 +176,7 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
   MockSessionRestoreObserver mock_observer_;
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SingleTabSessionRestore DISABLED_SingleTabSessionRestore
 #else
 #define MAYBE_SingleTabSessionRestore SingleTabSessionRestore

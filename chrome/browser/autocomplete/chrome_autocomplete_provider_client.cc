@@ -74,7 +74,8 @@
 #include "chrome/browser/autocomplete/keyword_extensions_delegate_impl.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -84,7 +85,7 @@
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This list should be kept in sync with chrome/common/webui_url_constants.h.
 // Only include useful sub-pages, confirmation alerts are not useful.
 const char* const kChromeSettingsSubPages[] = {
@@ -98,7 +99,7 @@ const char* const kChromeSettingsSubPages[] = {
     chrome::kManageProfileSubPage,    chrome::kPeopleSubPage,
 #endif
 };
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -113,10 +114,8 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
-#if !defined(OS_ANDROID)
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
       *this, GetPedalImplementations(IsOffTheRecord(), false));
-#endif
 }
 
 ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() = default;
@@ -256,7 +255,7 @@ std::vector<std::u16string> ChromeAutocompleteProviderClient::GetBuiltinURLs() {
   for (auto i(chrome_builtins.begin()); i != chrome_builtins.end(); ++i)
     builtins.push_back(base::ASCIIToUTF16(*i));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::u16string settings(base::ASCIIToUTF16(chrome::kChromeUISettingsHost) +
                           u"/");
   for (size_t i = 0; i < base::size(kChromeSettingsSubPages); i++) {
@@ -273,7 +272,7 @@ ChromeAutocompleteProviderClient::GetBuiltinsToProvideAsUserTypes() {
   std::vector<std::u16string> builtins_to_provide;
   builtins_to_provide.push_back(
       base::ASCIIToUTF16(chrome::kChromeUIChromeURLsURL));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   builtins_to_provide.push_back(
       base::ASCIIToUTF16(chrome::kChromeUISettingsURL));
 #endif
@@ -358,11 +357,11 @@ void ChromeAutocompleteProviderClient::DeleteMatchingURLsForKeywordFromHistory(
 void ChromeAutocompleteProviderClient::PrefetchImage(const GURL& url) {
   // Note: Android uses different image fetching mechanism to avoid
   // penalty of copying byte buffers from C++ to Java.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BitmapFetcherService* bitmap_fetcher_service =
       BitmapFetcherServiceFactory::GetForBrowserContext(profile_);
   bitmap_fetcher_service->Prefetch(url);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutocompleteProviderClient::StartServiceWorker(
@@ -393,26 +392,20 @@ const TabMatcher& ChromeAutocompleteProviderClient::GetTabMatcher() const {
 }
 
 bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
-  if (profile_->IsGuestSession()) {
-    return false;
-  }
-  return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
-         IncognitoModePrefs::Availability::kDisabled;
+  return IncognitoModePrefs::IsIncognitoAllowed(profile_);
 }
 
 bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {
-#if !defined(OS_ANDROID)
-  // This logic is gated only to avoid requiring chrome/browser/ui/browser.h
-  // (see includes at top, some also gated on !defined(OS_ANDROID)) for
-  // a feature that is currently only for desktop platforms. If pedals are
-  // implemented on Android, or if browser.h gets included for some other
-  // reason, we can use this implementation without the #if directive.
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    return browser->command_controller()->IsCommandEnabled(IDC_SHARING_HUB);
-  }
-#endif  // !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+  return sharing_hub::SharingHubOmniboxEnabled(profile_);
+#else
   return false;
+#endif
+}
+
+base::WeakPtr<AutocompleteProviderClient>
+ChromeAutocompleteProviderClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
@@ -440,45 +433,40 @@ bool ChromeAutocompleteProviderClient::StrippedURLsAreEqual(
 }
 
 void ChromeAutocompleteProviderClient::OpenSharingHub() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (browser) {
     browser->command_controller()->ExecuteCommand(IDC_SHARING_HUB);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutocompleteProviderClient::NewIncognitoWindow() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   chrome::NewIncognitoWindow(profile_);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutocompleteProviderClient::OpenIncognitoClearBrowsingDataDialog() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (browser) {
-    if (!base::FeatureList::IsEnabled(
-            features::kIncognitoClearBrowsingDataDialogForDesktop)) {
-      chrome::ShowClearBrowsingDataDialog(browser);
-    } else {
-      chrome::ShowIncognitoClearBrowsingDataDialog(browser);
-    }
+    chrome::ShowIncognitoClearBrowsingDataDialog(browser);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (profile_->IsIncognitoProfile()) {
     BrowserList::CloseAllBrowsersWithIncognitoProfile(
         profile_, base::DoNothing(), base::DoNothing(), true);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* contents = nullptr;
   if (browser)
@@ -492,5 +480,5 @@ void ChromeAutocompleteProviderClient::PromptPageTranslation() {
           /*auto_translate=*/true, /*triggered_from_menu=*/true);
     }
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }

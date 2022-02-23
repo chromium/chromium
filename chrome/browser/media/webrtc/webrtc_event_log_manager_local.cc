@@ -6,12 +6,13 @@
 
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define NumberToStringType base::NumberToString16
 #else
 #define NumberToStringType base::NumberToString
@@ -19,7 +20,7 @@
 
 namespace webrtc_event_logging {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const size_t kDefaultMaxLocalLogFileSizeBytes = 10000000;
 const size_t kMaxNumberLocalWebRtcEventLogFiles = 3;
 #else

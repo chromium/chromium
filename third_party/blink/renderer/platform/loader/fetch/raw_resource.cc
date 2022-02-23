@@ -357,8 +357,7 @@ Resource::MatchStatus RawResource::CanReuse(
 void RawResourceClient::DidDownloadToBlob(Resource*,
                                           scoped_refptr<BlobDataHandle>) {}
 
-RawResourceClientStateChecker::RawResourceClientStateChecker()
-    : state_(kNotAddedAsClient) {}
+RawResourceClientStateChecker::RawResourceClientStateChecker() = default;
 
 NOINLINE void RawResourceClientStateChecker::WillAddClient() {
   SECURITY_CHECK(state_ == kNotAddedAsClient);
@@ -367,7 +366,8 @@ NOINLINE void RawResourceClientStateChecker::WillAddClient() {
 
 NOINLINE void RawResourceClientStateChecker::WillRemoveClient() {
   SECURITY_CHECK(state_ != kNotAddedAsClient);
-  state_ = kNotAddedAsClient;
+  SECURITY_CHECK(state_ != kDetached);
+  state_ = kDetached;
 }
 
 NOINLINE void RawResourceClientStateChecker::RedirectReceived() {
@@ -389,8 +389,9 @@ NOINLINE void RawResourceClientStateChecker::ResponseReceived() {
 }
 
 NOINLINE void RawResourceClientStateChecker::SetSerializedCachedMetadata() {
-  SECURITY_CHECK(state_ == kResponseReceived ||
-                 state_ == kDataReceivedAsBytesConsumer);
+  SECURITY_CHECK(state_ == kStarted || state_ == kResponseReceived ||
+                 state_ == kDataReceivedAsBytesConsumer ||
+                 state_ == kDataReceived);
 }
 
 NOINLINE void RawResourceClientStateChecker::ResponseBodyReceived() {
@@ -420,6 +421,7 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
     Resource* resource) {
   // TODO(https://crbug.com/1158346): Remove these once the investigation is
   // done.
+  std::string url_string = resource->Url().StrippedForUseAsHref().Utf8();
   const int32_t destination =
       static_cast<int32_t>(
           resource->GetResourceRequest().GetRequestDestination()) +
@@ -428,10 +430,11 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
       static_cast<int32_t>(resource->GetResourceRequest().GetRequestContext()) +
       0x800;
   const int32_t mark1 = 0xabababab;
-  char url[80] = {};
-  std::string url_string =
-      resource->Url().UrlStrippedForUseAsReferrer().GetString().Utf8();
-  base::strlcpy(url, url_string.c_str(), sizeof(url));
+  char url[128];
+  memset(url, 0x7e, sizeof(url));
+  // We keep the first and last four bytes to make it easy to search for the
+  // url in the memory dump.
+  base::strlcpy(url + 4, url_string.c_str(), sizeof(url) - 8);
   const int32_t mark2 = 0xcdcdcdcd;
   base::debug::Alias(&destination);
   base::debug::Alias(&context);
@@ -440,6 +443,7 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
   base::debug::Alias(&mark2);
 
   SECURITY_CHECK(state_ != kNotAddedAsClient);
+  SECURITY_CHECK(state_ != kDetached);
   SECURITY_CHECK(state_ != kNotifyFinished);
 
   // TODO(https://crbug.com/1158346): Remove these CHECKs once the investigation

@@ -72,7 +72,7 @@
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler_chromeos.h"
 #endif
 
@@ -91,9 +91,9 @@ namespace printing {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char16_t kBasicPrintShortcut[] = u"\u0028\u21e7\u2318\u0050\u0029";
-#elif !defined(OS_CHROMEOS)
+#elif !BUILDFLAG(IS_CHROMEOS)
 const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 #endif
 
@@ -274,7 +274,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printButton", IDS_PRINT_PREVIEW_PRINT_BUTTON},
     {"printDestinationsTitle", IDS_PRINT_PREVIEW_PRINT_DESTINATIONS_TITLE},
     {"printPagesLabel", IDS_PRINT_PREVIEW_PRINT_PAGES_LABEL},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"printToGoogleDrive", IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE},
 #endif
     {"printToPDF", IDS_PRINT_PREVIEW_PRINT_TO_PDF},
@@ -299,14 +299,14 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"selectButton", IDS_PRINT_PREVIEW_BUTTON_SELECT},
     {"seeMore", IDS_PRINT_PREVIEW_SEE_MORE},
     {"seeMoreDestinationsLabel", IDS_PRINT_PREVIEW_SEE_MORE_DESTINATIONS_LABEL},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"serverSearchBoxPlaceholder",
      IDS_PRINT_PREVIEW_SERVER_SEARCH_BOX_PLACEHOLDER},
 #endif
     {"title", IDS_PRINT_PREVIEW_TITLE},
     {"top", IDS_PRINT_PREVIEW_TOP_MARGIN_LABEL},
     {"unsupportedCloudPrinter", IDS_PRINT_PREVIEW_UNSUPPORTED_CLOUD_PRINTER},
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {"configuringFailedText", IDS_PRINT_CONFIGURING_FAILED_TEXT},
     {"configuringInProgressText", IDS_PRINT_CONFIGURING_IN_PROGRESS_TEXT},
     {"optionPin", IDS_PRINT_PREVIEW_OPTION_PIN},
@@ -331,7 +331,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
     {"printerStatusStopped", IDS_PRINT_PREVIEW_PRINTER_STATUS_STOPPED},
     {"printerStatusTrayMissing", IDS_PRINT_PREVIEW_PRINTER_STATUS_TRAY_MISSING},
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {"openPdfInPreviewOption", IDS_PRINT_PREVIEW_OPEN_PDF_IN_PREVIEW_APP},
     {"openingPDFInPreview", IDS_PRINT_PREVIEW_OPENING_PDF_IN_PREVIEW_APP},
 #endif
@@ -341,7 +341,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   source->AddString("gcpCertificateErrorLearnMoreURL",
                     chrome::kCloudPrintCertificateErrorLearnMoreURL);
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   const std::u16string shortcut_text(kBasicPrintShortcut);
   source->AddString("systemDialogOption",
                     l10n_util::GetStringFUTF16(
@@ -358,7 +358,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 }
 
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("useSystemDefaultPrinter", false);
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
@@ -398,7 +398,7 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
 PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
   auto handler = std::make_unique<PrintPreviewHandler>();
   PrintPreviewHandler* handler_ptr = handler.get();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui->AddMessageHandler(std::make_unique<PrintPreviewHandlerChromeOS>());
 #endif
   web_ui->AddMessageHandler(std::move(handler));
@@ -410,7 +410,7 @@ PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
       "printPreviewPageSummaryLabel", IDS_PRINT_PREVIEW_PAGE_SUMMARY_LABEL);
   plural_string_handler->AddLocalizedString(
       "printPreviewSheetSummaryLabel", IDS_PRINT_PREVIEW_SHEET_SUMMARY_LABEL);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   plural_string_handler->AddLocalizedString(
       "sheetsLimitErrorMessage", IDS_PRINT_PREVIEW_SHEETS_LIMIT_ERROR_MESSAGE);
 #endif
@@ -870,12 +870,12 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
                       page_layout_in_points->content_width);
   layout.SetDoubleKey(kSettingContentHeight,
                       page_layout_in_points->content_height);
-  layout.SetInteger(kSettingPrintableAreaX, printable_area_in_points.x());
-  layout.SetInteger(kSettingPrintableAreaY, printable_area_in_points.y());
-  layout.SetInteger(kSettingPrintableAreaWidth,
-                    printable_area_in_points.width());
-  layout.SetInteger(kSettingPrintableAreaHeight,
-                    printable_area_in_points.height());
+  layout.SetIntKey(kSettingPrintableAreaX, printable_area_in_points.x());
+  layout.SetIntKey(kSettingPrintableAreaY, printable_area_in_points.y());
+  layout.SetIntKey(kSettingPrintableAreaWidth,
+                   printable_area_in_points.width());
+  layout.SetIntKey(kSettingPrintableAreaHeight,
+                   printable_area_in_points.height());
   handler_->SendPageLayoutReady(layout, has_custom_page_size_style, request_id);
 }
 

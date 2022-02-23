@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -145,7 +146,7 @@ double GetFrameDeviceScaleFactor(const content::ToRenderFrameHost& adapter) {
 }
 
 // Flaky on Windows 10. http://crbug.com/700150
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InterstitialLoadsWithCorrectDeviceScaleFactor \
   DISABLED_InterstitialLoadsWithCorrectDeviceScaleFactor
 #else
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
 
   // Ctrl-click the anchor/link in the page.
   content::WebContentsAddedObserver new_tab_observer;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string new_tab_click_script = "simulateClick({ metaKey: true });";
 #else
   std::string new_tab_click_script = "simulateClick({ ctrlKey: true });";
@@ -387,7 +388,7 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
   }
 
   guest_view::TestGuestViewManagerFactory factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
@@ -478,7 +479,7 @@ class MailtoExternalProtocolHandlerDelegate
  private:
   bool has_triggered_external_protocol_ = false;
   GURL external_protocol_url_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -1414,9 +1415,17 @@ class ChromeSitePerProcessTestWithVerifiedUserActivation
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1290823): Test failed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  DISABLED_UserActivationBrowserVerificationSameOriginSite
+#else
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  UserActivationBrowserVerificationSameOriginSite
+#endif
 // Test mouse down activation notification with browser verification.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
-                       UserActivationBrowserVerificationSameOriginSite) {
+                       MAYBE_UserActivationBrowserVerificationSameOriginSite) {
   // Start on a page a.com with same-origin iframe on a.com and cross-origin
   // iframe b.com.
   GURL main_url(embedded_test_server()->GetURL(

@@ -70,13 +70,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // Stop/resume delivering video frames to clients, based on flag |suspend|.
   void SuspendCapture(bool suspend);
 
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  void Crop(const base::Token& crop_id,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
-
   // Start capturing using the provided parameters.
   // |client_id| must be unique to this object in the render process. It is
   // used later to stop receiving video frames.
@@ -118,7 +111,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support);
 
   // media::mojom::VideoCaptureObserver implementation.
-  void OnStateChanged(media::mojom::VideoCaptureState state) override;
+  void OnStateChanged(
+      media::mojom::blink::VideoCaptureResultPtr result) override;
   void OnNewBuffer(
       int32_t buffer_id,
       media::mojom::blink::VideoBufferHandlePtr buffer_handle) override;
@@ -216,10 +210,6 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnDeviceFormatsInUse(
       VideoCaptureDeviceFormatsCallback callback,
       const Vector<media::VideoCaptureFormat>& formats_in_use);
-
-  void OnCropResult(
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
-      media::mojom::CropRequestResult result);
 
   // Tries to remove |client_id| from |clients|, returning false if not found.
   bool RemoveClient(int client_id, ClientInfoMap* clients);

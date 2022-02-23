@@ -41,9 +41,7 @@
 
 namespace {
 
-#if !defined(OS_NACL_NONSFI)
 base::debug::CrashKeyString* seccomp_crash_key = nullptr;
-#endif
 
 inline bool IsArchitectureX86_64() {
 #if defined(__x86_64__)
@@ -151,7 +149,6 @@ class NumberToHex {
 // Records the syscall number and first four arguments in a crash key, to help
 // debug the failure.
 void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
-#if !defined(OS_NACL_NONSFI)
   NumberToHex<int> nr(args.nr);
   NumberToHex<uint64_t> arg1(args.args[0]);
   NumberToHex<uint64_t> arg2(args.args[1]);
@@ -196,7 +193,6 @@ void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
   }
 
   base::debug::SetCrashKeyString(seccomp_crash_key, crash_key);
-#endif
 }
 
 }  // namespace
@@ -413,13 +409,11 @@ bpf_dsl::ResultExpr RewriteFstatatSIGSYS(int fs_denied_errno) {
 }
 
 void AllocateCrashKeys() {
-#if !defined(OS_NACL_NONSFI)
   if (seccomp_crash_key)
     return;
 
   seccomp_crash_key = base::debug::AllocateCrashKeyString(
       "seccomp-sigsys", base::debug::CrashKeySize::Size256);
-#endif
 }
 
 const char* GetErrorMessageContentForTests() {

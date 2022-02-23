@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,10 +153,11 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
 
 void AddIssueToForm(PasswordForm* form,
                     InsecureType type,
-                    base::TimeDelta time_since_creation = base::TimeDelta()) {
+                    base::TimeDelta time_since_creation = base::TimeDelta(),
+                    const bool is_muted = false) {
   form->password_issues.insert_or_assign(
       type, InsecurityMetadata(base::Time::Now() - time_since_creation,
-                               IsMuted(false)));
+                               IsMuted(is_muted)));
 }
 
 std::string MakeAndroidRealm(base::StringPiece package_name) {
@@ -249,11 +251,11 @@ class PasswordCheckDelegateTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   TestingProfile profile_;
-  EventRouter* event_router_ = CreateAndUseEventRouter(&profile_);
-  PasswordsPrivateEventRouter* password_router_ =
+  raw_ptr<EventRouter> event_router_ = CreateAndUseEventRouter(&profile_);
+  raw_ptr<PasswordsPrivateEventRouter> password_router_ =
       CreateAndUsePasswordsPrivateEventRouter(&profile_);
   TestEventRouterObserver event_router_observer_{event_router_};
-  BulkLeakCheckService* bulk_leak_check_service_ =
+  raw_ptr<BulkLeakCheckService> bulk_leak_check_service_ =
       CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
                                        &profile_);
   scoped_refptr<TestPasswordStore> store_ =
@@ -750,6 +752,112 @@ TEST_F(PasswordCheckDelegateTest, RemoveInsecureCredentialSuccess) {
   EXPECT_FALSE(delegate().RemoveInsecureCredential(credential));
 }
 
+// Test that muting a insecure password succeeds.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialSuccess) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_TRUE(delegate().MuteInsecureCredential(credential));
+  RunUntilIdle();
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kLeaked)
+                  .is_muted.value());
+
+  // Expect another mute of the same credential to fail.
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
+// Test that muting a insecure password fails if the underlying insecure
+// credential no longer exists.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialStaleData) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  store().RemoveLogin(form);
+  RunUntilIdle();
+
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
+// Test that muting a insecure password fails if the ids don't match.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialIdMismatch) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_EQ(0, credential.id);
+  credential.id = 1;
+
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
+// Test that unmuting a muted insecure password succeeds.
+TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialSuccess) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta(), true);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_TRUE(delegate().UnmuteInsecureCredential(credential));
+  RunUntilIdle();
+  EXPECT_FALSE(store()
+                   .stored_passwords()
+                   .at(kExampleCom)
+                   .back()
+                   .password_issues.at(InsecureType::kLeaked)
+                   .is_muted.value());
+
+  // Expect another unmute of the same credential to fail.
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+}
+
+// Test that unmuting a insecure password fails if the underlying insecure
+// credential no longer exists.
+TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialStaleData) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta(), true);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  store().RemoveLogin(form);
+  RunUntilIdle();
+
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+}
+
+// Test that unmuting a insecure password fails if the ids don't match.
+TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialIdMismatch) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked, base::TimeDelta(), true);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_EQ(0, credential.id);
+  credential.id = 1;
+
+  EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
+}
+
 // Tests that we don't create an entry in the database if there is no matching
 // saved password.
 TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
@@ -1046,7 +1154,7 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   EXPECT_EQ(events::PASSWORDS_PRIVATE_ON_PASSWORD_CHECK_STATUS_CHANGED,
             event_iter->second->histogram_value);
   auto status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetList().front());
+      event_iter->second->event_args->GetListDeprecated().front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(0, *status->already_processed);
@@ -1056,7 +1164,7 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
 
   status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetList().front());
+      event_iter->second->event_args->GetListDeprecated().front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(2, *status->already_processed);
@@ -1066,7 +1174,7 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
       LeakCheckCredential(kUsername2, kPassword2), IsLeaked(false));
 
   status = PasswordCheckStatus::FromValue(
-      event_iter->second->event_args->GetList().front());
+      event_iter->second->event_args->GetListDeprecated().front());
   EXPECT_EQ(api::passwords_private::PASSWORD_CHECK_STATE_RUNNING,
             status->state);
   EXPECT_EQ(4, *status->already_processed);

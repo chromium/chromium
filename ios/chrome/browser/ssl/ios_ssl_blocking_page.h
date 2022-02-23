@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #include "net/ssl/ssl_info.h"

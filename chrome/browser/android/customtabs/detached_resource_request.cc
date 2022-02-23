@@ -199,29 +199,13 @@ void DetachedResourceRequest::OnResponseCallback(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int net_error = url_loader_->NetError();
   net_error = std::abs(net_error);
-  auto duration = base::TimeTicks::Now() - start_time_;
 
-  switch (motivation_) {
-    case Motivation::kParallelRequest: {
-      RecordParallelRequestHistograms("", redirects_, duration, net_error);
-      if (is_from_aga_) {
-        RecordParallelRequestHistograms(".FromAga", redirects_, duration,
-                                        net_error);
-      }
-      break;
-    }
-    case Motivation::kResourcePrefetch: {
-      if (net_error == net::OK) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "CustomTabs.ResourcePrefetch.Duration.Success", duration);
-      } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "CustomTabs.ResourcePrefetch.Duration.Failure", duration);
-      }
-
-      base::UmaHistogramSparse("CustomTabs.ResourcePrefetch.FinalStatus",
-                               net_error);
-      break;
+  if (motivation_ == Motivation::kParallelRequest) {
+    auto duration = base::TimeTicks::Now() - start_time_;
+    RecordParallelRequestHistograms("", redirects_, duration, net_error);
+    if (is_from_aga_) {
+      RecordParallelRequestHistograms(".FromAga", redirects_, duration,
+                                      net_error);
     }
   }
 

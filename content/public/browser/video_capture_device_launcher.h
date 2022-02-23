@@ -73,6 +73,7 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
   virtual void ResumeDevice() = 0;
   virtual void Crop(
       const base::Token& crop_id,
+      uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback) = 0;
   virtual void RequestRefreshFrame() = 0;
 

@@ -21,6 +21,7 @@
 #include "base/containers/stack_container.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -40,7 +41,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gl/trace_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "ui/gfx/mac/io_surface.h"
 #endif
@@ -49,7 +50,7 @@ namespace media {
 
 const base::Feature kMultiPlaneSoftwareVideoSharedImages {
   "MultiPlaneSoftwareVideoSharedImages",
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -247,7 +248,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   // Interface to GPU related operations.
-  GpuVideoAcceleratorFactories* const gpu_factories_;
+  const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Pool of resources.
   std::list<FrameResources*> resources_pool_;
@@ -255,7 +256,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   GpuVideoAcceleratorFactories::OutputFormat output_format_;
 
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Queued up video frames for copies. The front is the currently
   // in-flight copy, new copies are added at the end.
@@ -719,12 +720,12 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
   }
 
   bool is_software_backed_video_frame = !video_frame->HasTextures();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   is_software_backed_video_frame &= !video_frame->HasDmaBufs();
 #endif
 
   bool passthrough = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!IOSurfaceCanSetColorSpace(video_frame->ColorSpace()))
     passthrough = true;
 #endif
@@ -1161,7 +1162,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   frame->set_color_space(color_space);
 
   bool allow_overlay = false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows direct composition path only supports dual GMB NV12 video overlays.
   allow_overlay = (output_format_ ==
                    GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB);
@@ -1181,7 +1182,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       // TODO(mcasas): Enable this for ChromeOS https://crbug.com/776093.
       allow_overlay = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       allow_overlay = IOSurfaceCanSetColorSpace(color_space);
 #endif
       // We've converted the YUV to RGB, fix the color space.
@@ -1197,7 +1198,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
       break;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   frame->metadata().allow_overlay = allow_overlay;
   frame->metadata().read_lock_fences_enabled = true;
   return frame;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_WEBAUDIO_AUDIO_CONTEXT_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_WEBAUDIO_AUDIO_CONTEXT_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -52,7 +53,7 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   // Send measured audible duration to UKM database.
   void RecordAudibleTime(base::TimeDelta);
 
-  RenderFrameHostImpl* const render_frame_host_impl_;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_impl_;
 
   // To track pending audible time. Stores ID of AudioContext (int32_t) and
   // the start time of audible period (base::TimeTicks).
@@ -61,7 +62,7 @@ class CONTENT_EXPORT AudioContextManagerImpl final
   // Clock used to calculate time between start and stop event. Can be override
   // by tests.
   // It is not owned by the implementation.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 };
 
 }  // namespace content

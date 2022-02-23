@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/global_file_system_access.h"
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -130,8 +131,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationRequiredOtherwiseDenied) {
       [](MockFileSystemAccessManager::ChooseEntriesCallback callback) {
         FAIL();
       }));
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("window.showOpenFilePicker();"))
+  ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
       ->RunScript(GetFrame().DomWindow());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(frame->HasStickyUserActivation());
@@ -156,7 +156,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
 
         mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
             pending_remote;
-        ignore_result(pending_remote.InitWithNewPipeAndPassReceiver());
+        std::ignore = pending_remote.InitWithNewPipeAndPassReceiver();
         auto handle = mojom::blink::FileSystemAccessHandle::NewFile(
             std::move(pending_remote));
         auto entry = mojom::blink::FileSystemAccessEntry::New(std::move(handle),
@@ -166,8 +166,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesSuccessful) {
 
         std::move(callback).Run(std::move(error), std::move(entries));
       }));
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode("window.showOpenFilePicker();"))
+  ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
       ->RunScript(GetFrame().DomWindow());
   manager_run_loop.Run();
 
@@ -216,8 +215,7 @@ TEST_F(GlobalFileSystemAccessTest, UserActivationChooseEntriesErrors) {
           std::move(callback).Run(std::move(error), std::move(entries));
         },
         status));
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode("window.showOpenFilePicker();"))
+    ClassicScript::CreateUnspecifiedScript("window.showOpenFilePicker();")
         ->RunScript(GetFrame().DomWindow());
     manager_run_loop.Run();
 

@@ -6,7 +6,10 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/utility/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
+#include "ui/events/event.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 
@@ -37,6 +40,12 @@ void TrayToggleButton::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kSwitchTrackColorInactive));
   views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
+}
+
+void TrayToggleButton::NotifyClick(const ui::Event& event) {
+  haptics_util::PlayHapticToggleEffect(
+      !GetIsOn(), ui::HapticTouchpadEffectStrength::kMedium);
+  views::ToggleButton::NotifyClick(event);
 }
 
 }  // namespace ash

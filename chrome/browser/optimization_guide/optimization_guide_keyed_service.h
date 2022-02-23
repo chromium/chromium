@@ -8,11 +8,17 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/bookmarks/bookmark_bridge.h"
+#endif
 
 namespace content {
 class BrowserContext;
@@ -36,6 +42,7 @@ class TopHostProvider;
 }  // namespace optimization_guide
 
 class GURL;
+class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 class Profile;
 
@@ -103,7 +110,17 @@ class OptimizationGuideKeyedService
   static std::unique_ptr<optimization_guide::PushNotificationManager>
   MaybeCreatePushNotificationManager(Profile* profile);
 
+  OptimizationGuideLogger* GetOptimizationGuideLogger() {
+    return optimization_guide_logger_.get();
+  }
+
  private:
+  // BookmarkBridge is a friend class since it is a consumer of the
+  // CanApplyOptimizationOnDemand API.
+#if BUILDFLAG(IS_ANDROID)
+  friend class BookmarkBridge;
+#endif
+
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
   friend class OptimizationGuideKeyedServiceBrowserTest;
@@ -144,7 +161,16 @@ class OptimizationGuideKeyedService
   // KeyedService implementation:
   void Shutdown() override;
 
-  content::BrowserContext* browser_context_;
+  // optimization_guide::OptimizationGuideDecider implementation:
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) override;
+
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
@@ -168,6 +194,10 @@ class OptimizationGuideKeyedService
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page.
+  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
 #endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_KEYED_SERVICE_H_

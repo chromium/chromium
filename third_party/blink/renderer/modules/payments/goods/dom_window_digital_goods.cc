@@ -53,36 +53,32 @@ DOMWindowDigitalGoods::DOMWindowDigitalGoods() : Supplement(nullptr) {}
 ScriptPromise DOMWindowDigitalGoods::getDigitalGoodsService(
     ScriptState* script_state,
     LocalDOMWindow& window,
-    const String& payment_method) {
-  return FromState(&window)->GetDigitalGoodsService(script_state, window,
-                                                    payment_method);
+    const String& payment_method,
+    ExceptionState& exception_state) {
+  return FromState(&window)->GetDigitalGoodsService(
+      script_state, window, payment_method, exception_state);
 }
 
 ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     ScriptState* script_state,
     LocalDOMWindow& window,
-    const String& payment_method) {
+    const String& payment_method,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return ScriptPromise();
+  }
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto promise = resolver->Promise();
-
-  if (payment_method.IsEmpty()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Empty payment method"));
-    return promise;
-  }
-
-  if (!script_state->ContextIsValid()) {
-    resolver->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError));
-    return promise;
-  }
-
   auto* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
 
   if (execution_context->IsContextDestroyed()) {
-    resolver->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The execution context is destroyed."));
     return promise;
   }
 
@@ -100,6 +96,12 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "Payment permissions policy not granted"));
+    return promise;
+  }
+
+  if (payment_method.IsEmpty()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(), "Empty payment method"));
     return promise;
   }
 

@@ -22,8 +22,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Test for {@link ConfirmManagedSyncDataDialog}
@@ -31,7 +31,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
-public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiActivityTestCase {
+public class ConfirmManagedSyncDataDialogIntegrationTest extends BlankUiTestActivityTestCase {
     private static final String TEST_DOMAIN = "test.domain.example.com";
 
     @Rule
@@ -48,7 +48,7 @@ public class ConfirmManagedSyncDataDialogIntegrationTest extends DummyUiActivity
         dialog.show(getActivity().getSupportFragmentManager(), null);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue("The dialog should be visible!", dialog.getDialog().isShowing());
-        DummyUiActivity activity = ApplicationTestUtils.recreateActivity(getActivity());
+        BlankUiTestActivity activity = ApplicationTestUtils.recreateActivity(getActivity());
         Assert.assertNull("The dialog should be dismissed!", dialog.getDialog());
         ApplicationTestUtils.finishActivity(activity);
     }

@@ -30,7 +30,7 @@ const GURL& GetActiveUrl(Browser* browser) {
 using ExtensionTabUtilBrowserTest = ExtensionBrowserTest;
 
 // Times out on Win debug. https://crbug.com/811471
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_OpenExtensionsOptionsPage DISABLED_OpenExtensionsOptionsPage
 #else
 #define MAYBE_OpenExtensionsOptionsPage OpenExtensionsOptionsPage
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 }
 
 // Flaky on Windows: http://crbug.com/745729
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OpenSplitModeExtensionOptionsPageIncognito \
   DISABLED_OpenSplitModeExtensionOptionsPageIncognito
 #else

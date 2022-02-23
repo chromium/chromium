@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -25,15 +26,15 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace device {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class WinWebAuthnApi;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // FidoDiscoveryFactory offers methods to construct instances of
 // FidoDiscoveryBase for a given |transport| protocol.
@@ -83,15 +84,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
   void set_mac_touch_id_info(
       absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config) {
     mac_touch_id_config_ = std::move(mac_touch_id_config);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Instantiates a FidoDiscovery for the native Windows WebAuthn API where
   // available. Returns nullptr otherwise.
   std::unique_ptr<FidoDiscoveryBase> MaybeCreateWinWebAuthnApiDiscovery();
@@ -101,7 +102,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // MaybeCreateWinWebAuthnApiDiscovery() returns nullptr.
   void set_win_webauthn_api(WinWebAuthnApi* api);
   WinWebAuthnApi* win_webauthn_api() const;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sets a callback to generate an identifier when making DBUS requests to
@@ -125,17 +126,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       std::unique_ptr<FidoDiscoveryBase> discovery);
 
  private:
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<FidoDiscoveryBase> MaybeCreatePlatformDiscovery() const;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   absl::optional<mojo::Remote<device::mojom::UsbDeviceManager>>
       usb_device_manager_;
   std::string aoa_request_description_;
-  network::mojom::NetworkContext* network_context_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   absl::optional<std::vector<CableDiscoveryData>> cable_data_;
   absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   absl::optional<FidoRequestType> request_type_;
@@ -144,9 +145,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       contact_device_stream_;
   absl::optional<base::RepeatingCallback<void(cablev2::PairingEvent)>>
       cable_pairing_callback_;
-#if defined(OS_WIN)
-  WinWebAuthnApi* win_webauthn_api_ = nullptr;
-#endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
+#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::RepeatingCallback<uint32_t()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;

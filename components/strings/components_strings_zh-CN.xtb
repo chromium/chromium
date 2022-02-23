@@ -14,12 +14,18 @@
 <translation id="1028781062521375153">查看详情</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 想在您的设备上永久存储大量数据</translation>
 <translation id="1032854598605920125">顺时针旋转</translation>
+<translation id="1033329911862281889">无痕模式无法让您在网上处于隐身状态：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />网站及其使用的服务可以看到用户访问记录<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />雇主或学校可以跟踪浏览活动<ph name="END_LIST_ITEM" />
+          <ph name="LIST_ITEM" />互联网服务提供商可能会监控网络流量<ph name="END_LIST_ITEM" />
+        <ph name="END_LIST" /></translation>
 <translation id="1036348656032585052">关闭</translation>
+<translation id="1036982837258183574">按 |<ph name="ACCELERATOR" />| 即可退出全屏模式</translation>
 <translation id="1038106730571050514">显示搜索建议</translation>
 <translation id="1038842779957582377">未知名称</translation>
 <translation id="1041998700806130099">工作表消息</translation>
 <translation id="1048785276086539861">当您修改注释时，此文档会恢复为单页视图</translation>
-<translation id="1049743911850919806">无痕</translation>
 <translation id="1050038467049342496">关闭其他应用</translation>
 <translation id="1055184225775184556">撤消添加(&amp;U)</translation>
 <translation id="1056898198331236512">警告</translation>
@@ -47,6 +53,7 @@
 <translation id="112840717907525620">策略缓存良好</translation>
 <translation id="1130564665089811311">“翻译网页”按钮，按 Enter 键即可使用“Google 翻译”服务来翻译此页面</translation>
 <translation id="1131264053432022307">您复制的图片</translation>
+<translation id="1142846828089312304">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="1150979032973867961">此服务器无法证明它是<ph name="DOMAIN" />；您计算机的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1151972924205500581">需要密码</translation>
 <translation id="1156303062776767266">您正在查看一个本地文件或共享文件</translation>
@@ -63,7 +70,6 @@
 <translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1186201132766001848">检查密码</translation>
-<translation id="1195210374336998651">转到应用设置</translation>
 <translation id="1195558154361252544">除您允许的网站外，已自动阻止所有其他网站显示通知</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -110,7 +116,7 @@
 <translation id="1307966114820526988">已被弃用的功能</translation>
 <translation id="1308113895091915999">有优惠可用</translation>
 <translation id="1312803275555673949">有何证据能证明这项信息属实？</translation>
-<translation id="131405271941274527"><ph name="URL" /> 想在您的手机与 NFC 设备触碰时发送和接收信息</translation>
+<translation id="1314311879718644478">查看增强现实内容</translation>
 <translation id="1314509827145471431">装订（右侧）</translation>
 <translation id="1318023360584041678">已保存在标签页组中</translation>
 <translation id="1319245136674974084">对于此应用不再询问</translation>
@@ -160,6 +166,7 @@
 <translation id="142858679511221695">云端用户</translation>
 <translation id="1428729058023778569">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1436185428532214179">可以询问能否修改您设备上的文件和文件夹</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
@@ -175,10 +182,17 @@
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
+<translation id="1475299637784133125">想要查看浏览器版本？请访问</translation>
 <translation id="1476595624592550506">更改您的密码</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484290072879560759">选择送货地址</translation>
 <translation id="1492194039220927094">政策推送：</translation>
+<translation id="149293076951187737">当您关闭 Chrome 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />浏览活动<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜索记录<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表单中填写的信息<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1501859676467574491">显示您的 Google 帐号中保存的支付卡</translation>
 <translation id="1507202001669085618">&lt;p&gt;如果您使用的 Wi-Fi 门户网站必须登录才能连接网络，您就会看到这条错误消息。&lt;/p&gt;
@@ -206,6 +220,8 @@
 <translation id="1559572115229829303">&lt;p&gt;您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。&lt;/p&gt;
 
       &lt;p&gt;请在&lt;strong&gt;设置&lt;/strong&gt;应用的&lt;strong&gt;通用&lt;/strong&gt;部分调整日期和时间。&lt;/p&gt;</translation>
+<translation id="1559839503761818503">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 重启您的设备</translation>
+<translation id="156703335097561114">网络信息，例如地址、接口配置和连接质量</translation>
 <translation id="1567040042588613346">此政策正在正常运作，但与别处设置的值相同且已覆盖该值。</translation>
 <translation id="1569487616857761740">输入失效日期</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -213,6 +229,7 @@
 <translation id="1583429793053364125">显示此网页时出了点问题。</translation>
 <translation id="1586541204584340881">您已安装的扩展程序</translation>
 <translation id="1588438908519853928">正常</translation>
+<translation id="1589050138437146318">安装 ARCore？</translation>
 <translation id="1592005682883173041">本地数据访问权限</translation>
 <translation id="1594030484168838125">选择</translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
@@ -269,6 +286,7 @@
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
 <translation id="1745880797583122200">您的浏览器受管理</translation>
 <translation id="1746113442205726301">图片沿 Y 轴位移</translation>
+<translation id="1747819498338037826">Chrome 自动更改</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
 <translation id="1752021286346845558">信箱 8</translation>
 <translation id="1753706481035618306">页码</translation>
@@ -276,6 +294,7 @@
 <translation id="1763864636252898013">此服务器无法证明它是<ph name="DOMAIN" />；您设备的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="1772163372082567643">您要访问的服务器 <ph name="ORIGIN" /> 已设定标头，其中要求收到的所有请求都应用一项来源政策。但该标头的格式不正确，导致浏览器无法实现您对 <ph name="SITE" /> 的访问请求。网站运营商可以使用来源政策为网站配置安全属性及其他属性。</translation>
+<translation id="1774592222195216949"><ph name="BEGIN_LINK" />详细了解 Chromium 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">您打开的标签页会显示在此处</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
@@ -398,10 +417,12 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="2187317261103489799">检测（默认）</translation>
 <translation id="2188375229972301266">多孔（底部）</translation>
+<translation id="2188852899391513400">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您立即更改此密码并检查已保存的所有密码。</translation>
 <translation id="2202020181578195191">请输入有效的失效年份</translation>
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2212735316055980242">找不到策略</translation>
 <translation id="2213606439339815911">正在获取条目…</translation>
+<translation id="2213612003795704869">页面已打印</translation>
 <translation id="2215727959747642672">文件修改</translation>
 <translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的现有攻击者可能会安装危险应用来损害您的设备、给您的手机帐单增添隐含费用或窃取您的个人信息。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
@@ -410,8 +431,8 @@
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2248949050832152960">使用 WebAuthn</translation>
 <translation id="2250931979407627383">边缘装订（左侧）</translation>
-<translation id="2251943122176102076">管理员不建议截屏/录屏，因为当前的截图/录像中有机密内容：</translation>
 <translation id="225207911366869382">适用于该政策的此值已弃用。</translation>
+<translation id="2256115617011615191">立即重新启动</translation>
 <translation id="2258928405015593961">失效日期必须是未来的日期。请重新输入，再试一次</translation>
 <translation id="225943865679747347">错误代码：<ph name="ERROR_CODE" /></translation>
 <translation id="2262243747453050782">HTTP 错误</translation>
@@ -439,6 +460,7 @@
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
+<translation id="2350796302381711542">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接（而非<ph name="REPLACED_HANDLER_TITLE" />）？</translation>
 <translation id="2354001756790975382">其他书签</translation>
 <translation id="2354430244986887761">Google 安全浏览功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />发现了有害应用<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
@@ -464,6 +486,7 @@
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2430968933669123598">“管理 Google 帐号”，按 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
+<translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
 <translation id="2450021089947420533">历程</translation>
 <translation id="2463739503403862330">填充</translation>
@@ -471,6 +494,7 @@
 <translation id="2465655957518002998">选择速递方式</translation>
 <translation id="2465688316154986572">订书钉</translation>
 <translation id="2465914000209955735">管理您已在 Chrome 中下载的文件</translation>
+<translation id="2466004615675155314">显示来自网络的信息</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />运行网络诊断<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">从 1 到 N 的顺序</translation>
 <translation id="2470767536994572628">当您修改注释时，此文档会恢复为单页视图和原始方向</translation>
@@ -491,6 +515,7 @@
 <translation id="2523886232349826891">仅会保存在此设备上</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
+<translation id="2535585790302968248">打开新的无痕式标签页即可进行无痕浏览</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{以及另外 1 个网域}other{以及另外 # 个网域}}</translation>
 <translation id="2536110899380797252">添加地址</translation>
 <translation id="2539524384386349900">检测</translation>
@@ -516,7 +541,14 @@
 <translation id="2597378329261239068">本文档设置了密码保护，请输入密码。</translation>
 <translation id="2609632851001447353">其他变体</translation>
 <translation id="2610561535971892504">点击复制</translation>
+<translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的浏览记录
+            <ph name="LIST_ITEM" />Cookie 和网站数据
+            <ph name="LIST_ITEM" />在表单中填写的信息
+          <ph name="END_LIST" /></translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
+<translation id="2623663032199728144">可以询问能否使用您的屏幕的相关信息</translation>
 <translation id="2625385379895617796">您的时钟快了</translation>
 <translation id="262745152991669301">可以询问能否连接到 USB 设备</translation>
 <translation id="2629325967560697240">如果您想获得 Chrome 最高级别的安全保护，请<ph name="BEGIN_ENHANCED_PROTECTION_LINK" />开启增强型保护<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
@@ -550,6 +582,7 @@
 <translation id="2709516037105925701">自动填充</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
+<translation id="271663710482723385">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可退出全屏模式</translation>
 <translation id="2721148159707890343">请求成功</translation>
 <translation id="2723669454293168317">从 Chrome 设置中运行安全检查</translation>
 <translation id="2726001110728089263">侧面纸匣</translation>
@@ -580,6 +613,7 @@
 <translation id="2850739647070081192">Invite (Envelope)</translation>
 <translation id="2856444702002559011">攻击者可能会试图从 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 窃取您的信息（例如：密码、通讯内容或信用卡信息）。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
+<translation id="286512204874376891">虚拟卡会伪装成实体卡，从而保护您免遭欺诈。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="287596039013813457">友好</translation>
 <translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
@@ -604,6 +638,7 @@
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2941952326391522266">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书来自<ph name="DOMAIN2" />。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2943895734390379394">上传时间：</translation>
 <translation id="2948083400971632585">您可以在设置页面中停用任何针对某个连接配置的代理。</translation>
@@ -636,6 +671,7 @@
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3044034790304486808">继续您的研究</translation>
+<translation id="305162504811187366">Chrome 远程桌面历史记录，包括时间戳、主机和客户端会话 ID</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">修补服务</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
@@ -644,6 +680,7 @@
 <translation id="3087734570205094154">底部</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">添加取货地址</translation>
+<translation id="3098513225387949945">被忽略了，因为“disable”列表包含等效于“*”的模式，这相当于停用此政策。</translation>
 <translation id="3105172416063519923">资产 ID：</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />检查安全 DNS 配置<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">中间纸匣</translation>
@@ -673,12 +710,14 @@
 <translation id="3197136577151645743">可以询问您何时在使用此设备</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="320323717674993345">取消付款</translation>
+<translation id="3203366800380907218">来自网络</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3209034400446768650">此网页可能会收取费用</translation>
 <translation id="3212581601480735796">您在 <ph name="HOSTNAME" /> 上的活动正被监控</translation>
 <translation id="3215092763954878852">无法使用 WebAuthn</translation>
 <translation id="3218181027817787318">相对</translation>
 <translation id="3223287115535306850">“应用正在启动”图标</translation>
+<translation id="3225347164936328585">鼓掌</translation>
 <translation id="3225919329040284222">服务器提供的证书与内置预期证书不匹配。这些预期证书是针对某些高安全性网站提供的，以便为您提供保护。</translation>
 <translation id="3226128629678568754">按“重新加载”按钮，重新提交加载该网页所需的数据。</translation>
 <translation id="3226387218769101247">缩略图</translation>
@@ -688,10 +727,12 @@
 <translation id="3234666976984236645">始终检测此网站上的重要内容</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />”链接已被禁用</translation>
 <translation id="3249845759089040423">时髦</translation>
 <translation id="3252266817569339921">法语</translation>
 <translation id="3257954757204451555">这项信息是谁提供的？</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 日历中快速创建新活动</translation>
+<translation id="3261488570342242926">了解虚拟卡</translation>
 <translation id="3264837738038045344">“管理 Chrome 设置”按钮，按 Enter 键即可访问您的 Chrome 设置</translation>
 <translation id="3266793032086590337">值（冲突）</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
@@ -715,14 +756,9 @@
 <translation id="3333762389743153920">无法用作虚拟卡</translation>
 <translation id="3338095232262050444">安全</translation>
 <translation id="3339446062576134663">云端 (Ash)</translation>
+<translation id="3345782426586609320">眼睛</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您的浏览记录
-          <ph name="LIST_ITEM" />Cookie 和网站数据
-          <ph name="LIST_ITEM" />在表单中填写的信息
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">此政策的值是系统从已弃用的 <ph name="OLD_POLICY" /> 政策中自动复制而来的。您应改用此政策。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> 想使用您的虚拟实境设备和数据</translation>
 <translation id="3366477098757335611">查看您的卡</translation>
@@ -804,7 +840,6 @@
 <translation id="3587738293690942763">中间</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}=1{您可以随时重置自己所属的群组。大约需要 1 天的时间才能加入新群组。}other{您可以随时重置自己所属的群组。大约需要 {NUM_DAYS} 天的时间才能加入新群组。}}</translation>
-<translation id="3596012367874587041">应用设置</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
 <translation id="3608932978122581043">送纸方向</translation>
@@ -818,6 +853,8 @@
 <translation id="3630155396527302611">如果它已在可访问网络的程序列表中，请尝试将它从该列表中移除，然后重新添加到其中。</translation>
 <translation id="3630699740441428070">此设备的管理员已经配置了您的网络连接，这项连接可能会允许他们查看您的网络流量（包括您访问的网站）。</translation>
 <translation id="3631244953324577188">生物识别</translation>
+<translation id="3632503704576938756">屏幕共享已恢复</translation>
+<translation id="3632892046558972264">屏幕共享已暂停</translation>
 <translation id="3633738897356909127">“更新 Chrome”按钮，按 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
@@ -844,6 +881,7 @@
 <translation id="370972442370243704">开启“历程”功能</translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712624925041724820">许可已用尽</translation>
+<translation id="3714633008798122362">网络日历</translation>
 <translation id="3714780639079136834">开启移动数据网络或 WLAN</translation>
 <translation id="3715597595485130451">连接到 Wi-Fi 网络</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和 DNS 配置<ph name="END_LINK" /></translation>
@@ -861,7 +899,6 @@
 <translation id="3760561303380396507">要改用 Windows Hello 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3761171036307311438">持卡人姓名：</translation>
 <translation id="3761718714832595332">隐藏状态</translation>
-<translation id="3765032636089507299">安全浏览页面正在构建中。</translation>
 <translation id="3765588406864124894">信箱 9</translation>
 <translation id="3767485424735936570">管理员政策不建议将此内容复制并粘贴到 <ph name="VM_NAME" /></translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google Keep 中快速创建新记事</translation>
@@ -885,6 +922,7 @@
 <translation id="3827112369919217609">绝对</translation>
 <translation id="3827475930221174051">基于与“<ph name="SEARCH_TERM" />”相关的活动记录</translation>
 <translation id="3828924085048779000">密码输入字段不能留空。</translation>
+<translation id="3831065134033923230">检查已保存的所有密码</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="3832522519263485449">多孔（左侧）</translation>
 <translation id="3835233591525155343">您的设备使用情况</translation>
@@ -905,6 +943,7 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想播放受保护内容。Google 将会验证您的设备身份，而且此网站可能会查看您的设备身份。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">拒绝</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3946209740501886391">在该网站上一律询问</translation>
 <translation id="3947595700203588284">可以询问能否连接到 MIDI 设备</translation>
@@ -925,6 +964,7 @@
 <translation id="3987940399970879459">小于 1 MB</translation>
 <translation id="3990250421422698716">撞页偏移</translation>
 <translation id="3996311196211510766">网站 <ph name="ORIGIN" /> 已要求收到的所有请求都应用一项来源政策，但此政策目前无法应用。</translation>
+<translation id="4009243425692662128">您打印的页面内容会被发送到 Google Cloud 或第三方进行分析。例如，这类内容可能会被扫描，以确定其中是否包含敏感数据。</translation>
 <translation id="4010758435855888356">允许使用存储空间？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
@@ -1015,6 +1055,7 @@
 <translation id="4250680216510889253">否</translation>
 <translation id="4253168017788158739">备注</translation>
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
+<translation id="425869179292622354">利用虚拟卡增强它的安全性？</translation>
 <translation id="4258748452823770588">签名无效</translation>
 <translation id="4261046003697461417">无法为受保护的文档添加注释</translation>
 <translation id="4265872034478892965">您的管理员允许</translation>
@@ -1048,6 +1089,7 @@
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">与 <ph name="SITE" /> 的连接不安全</translation>
+<translation id="4349365535725594680">无法共享机密内容</translation>
 <translation id="4350629523305688469">多功能纸匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
 <translation id="4351175281479794167">输入验证码</translation>
@@ -1064,6 +1106,7 @@
 <translation id="4390472908992056574">帽檐式</translation>
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4406896451731180161">搜索结果</translation>
+<translation id="4407755609041463909">火焰</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" />Cookie</translation>
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415426530740016218">取货地址</translation>
@@ -1075,16 +1118,17 @@
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">已停用代理，但是指定了明确的代理配置。</translation>
+<translation id="4441832193888514600">被忽略了，因为此政策只能设为云端用户政策。</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
+<translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您检查已保存的所有密码。</translation>
+<translation id="4455222631300069614">请立即更改密码</translation>
 <translation id="4460315069258617173">可以使用，直到您关闭在此网站上打开的所有标签页</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
-<translation id="4465818729556336129">此文档含有机密内容，您的管理员不建议打印这类文档。</translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />。<ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">此表单不安全。因此，系统已关闭自动填充功能。</translation>
 <translation id="4477350412780666475">下一曲</translation>
 <translation id="4481251927743463293">无痕模式会做什么</translation>
-<translation id="4481394504112738036">机密文件</translation>
 <translation id="4482953324121162758">系统不会翻译此网站。</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">使用您的 Google 帐号加密已同步的密码</translation>
@@ -1130,6 +1174,7 @@
 <translation id="4628948037717959914">照片</translation>
 <translation id="4631649115723685955">已关联返现</translation>
 <translation id="4636930964841734540">信息</translation>
+<translation id="4638670630777875591">Chromium 中的无痕模式</translation>
 <translation id="464342062220857295">搜索功能</translation>
 <translation id="4644670975240021822">逆转顺序，正面朝下</translation>
 <translation id="4646534391647090355">立即前往</translation>
@@ -1150,6 +1195,7 @@
 <translation id="4708268264240856090">您的连接已中断</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />运行 Windows 网络诊断<ph name="END_LINK" /></translation>
+<translation id="4722735765955348426"><ph name="USERNAME" /> 的密码</translation>
 <translation id="4724144314178270921">可以询问能否查看您剪贴板中的文字和图片</translation>
 <translation id="4726672564094551039">重新加载政策</translation>
 <translation id="4728558894243024398">平台</translation>
@@ -1171,6 +1217,7 @@
 <translation id="4757993714154412917">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chromium 建议检查您已保存的密码。</translation>
 <translation id="4758311279753947758">添加联系信息</translation>
 <translation id="4761104368405085019">使用您的麦克风</translation>
+<translation id="4761869838909035636">运行 Chrome 安全检查</translation>
 <translation id="4764776831041365478">网址为 <ph name="URL" /> 的网页可能暂时无法连接，或者它已永久性地移动到了新网址。</translation>
 <translation id="4766713847338118463">双钉（底部）</translation>
 <translation id="4771973620359291008">发生未知错误。</translation>
@@ -1191,14 +1238,7 @@
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4825507807291741242">强大</translation>
-<translation id="4827402517081186284">无痕模式无法让您在网上处于隐身状态：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />网站会知道您何时访问了它们<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />雇主或学校可以跟踪浏览活动<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />互联网服务提供商可能会监控网络流量<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="483241715238664915">开启警告</translation>
-<translation id="4834718916855725099">管理员不建议截屏/录屏，因为屏幕上有机密内容：</translation>
 <translation id="4838327282952368871">梦幻</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
 <translation id="484462545196658690">自动</translation>
@@ -1209,12 +1249,12 @@
 <translation id="4854362297993841467">该递送方式不可用。请另选一种方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
+<translation id="4866506163384898554">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 可显示鼠标光标</translation>
 <translation id="4876188919622883022">简化版视图</translation>
 <translation id="4876305945144899064">无用户名</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{无}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">搜索<ph name="TEXT" /></translation>
 <translation id="4879491255372875719">自动（默认）</translation>
-<translation id="4879725228911483934">在您的屏幕上打开和放置窗口</translation>
 <translation id="4880827082731008257">搜索历史记录</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4885256590493466218">结帐时使用 <ph name="CARD_DETAIL" /> 付款</translation>
@@ -1231,6 +1271,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Tab 键再按 Enter 键可进行搜索</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4940163644868678279">Chrome 中的无痕模式</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4950898438188848926">标签页切换按钮，按 Enter 键可切换到打开的标签页，<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">操作</translation>
@@ -1240,6 +1281,7 @@
 <translation id="4968522289500246572">此应用是专为移动设备设计的，可能无法妥当地调整大小。此应用可能会出现问题或重启。</translation>
 <translation id="4969341057194253438">删除录屏</translation>
 <translation id="4973922308112707173">双孔（顶部）</translation>
+<translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4984088539114770594">使用麦克风？</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">查看全部</translation>
@@ -1301,6 +1343,7 @@
 <translation id="5138227688689900538">收起</translation>
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 网站上的通知已被屏蔽</translation>
+<translation id="514704532284964975"><ph name="URL" /> 想在您点按手机时查看和更改 NFC 设备上的信息</translation>
 <translation id="5148809049217731050">正面朝上</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">封面</translation>
@@ -1318,12 +1361,14 @@
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下载多个文件</translation>
 <translation id="519422657042045905">注释不可用</translation>
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
+<translation id="5204468114771111727">Chrome 发现您刚才使用的密码已遭遇数据泄露。您的 Google 助理可以自动更改您的密码。</translation>
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5209518306177824490">SHA-1 指纹</translation>
 <translation id="5209670883520018268">纸匣 20</translation>
 <translation id="5215116848420601511">Google Pay 中存储的付款方式和地址信息</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">纸匣 13</translation>
+<translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5222812217790122047">需要提供电子邮件地址</translation>
 <translation id="5230733896359313003">送货地址</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1344,7 +1389,6 @@
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
-<translation id="5284909709419567258">网络地址</translation>
 <translation id="5285570108065881030">显示所有已保存的密码</translation>
 <translation id="5287240709317226393">显示 Cookie</translation>
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
@@ -1367,11 +1411,13 @@
 <translation id="5333022057423422993">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您检查您保存的密码。</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
+<translation id="5335920952954443287">跳动的心</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
 <translation id="5347645913823149105">“自定义 Chrome 中的字体”按钮，按 Enter 键即可自定义 Chrome 中的字号和字型</translation>
 <translation id="5355557959165512791">您目前无法访问 <ph name="SITE" />，因为此证书已被撤消。网络错误和攻击行为通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
+<translation id="5356837363448394805">脸红</translation>
 <translation id="536296301121032821">无法存储策略设置</translation>
 <translation id="5363309033720083897">您的管理员允许使用的串行端口</translation>
 <translation id="5371425731340848620">更新信用卡</translation>
@@ -1426,6 +1472,7 @@
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5560088892362098740">到期日期</translation>
 <translation id="55635442646131152">文档大纲</translation>
+<translation id="5565613213060953222">打开无痕式标签页</translation>
 <translation id="5565735124758917034">主动</translation>
 <translation id="5570825185877910964">保护帐号</translation>
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
@@ -1488,7 +1535,6 @@
 <translation id="5786044859038896871">要填充您的信用卡信息吗？</translation>
 <translation id="578633867165174378">Chrome 发现您刚才使用的密码已遭遇数据泄露。建议您立即更改此密码。</translation>
 <translation id="5789643057113097023">.</translation>
-<translation id="5797429178165847917">截取机密内容</translation>
 <translation id="5803412860119678065">要填充您的“<ph name="CARD_DETAIL" />”吗？</translation>
 <translation id="5804241973901381774">权限</translation>
 <translation id="5810442152076338065">您与 <ph name="DOMAIN" /> 之间的连接采用过时的加密套件进行了加密。</translation>
@@ -1509,13 +1555,13 @@
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5873013647450402046">银行需要确认您的身份。</translation>
 <translation id="5887400589839399685">已保存卡片</translation>
+<translation id="5887687176710214216">上次访问时间：昨天</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895187275912066135">颁发日期</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903264686717710770">标题：</translation>
 <translation id="5905445707201418379">已根据 <ph name="ORIGIN" /> 的来源政策而屏蔽。</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" />（已同步）</translation>
-<translation id="5913377024445952699">屏幕截取功能已暂停</translation>
 <translation id="59174027418879706">已启用</translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5920262536204764679">{NUM_COOKIES,plural, =1{正在使用 1 个}other{正在使用 # 个}}</translation>
@@ -1523,6 +1569,7 @@
 <translation id="5921639886840618607">将银行卡信息保存到 Google 帐号中？</translation>
 <translation id="5922853866070715753">即将完成</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
+<translation id="5938153366081463283">添加虚拟卡</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">正在打开 <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">无法通过消费者帐号注册（有封装的许可）。</translation>
@@ -1544,6 +1591,7 @@
 <translation id="6008122969617370890">从 N 到 1 的顺序</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">检查您的密码</translation>
+<translation id="6014851866995737824">被忽略了，因为缺少“enable”或“disable”列表。</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6017514345406065928">绿色</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻击者可能会安装欺骗性应用来冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1567,6 +1615,7 @@
 <translation id="6051221802930200923">您目前无法访问 <ph name="SITE" />，因为此网站使用了证书锁定。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="6051898664905071243">页数：</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">您刚才使用的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
 <translation id="6055888660316801977">“无匹配的安全付款凭据”表单</translation>
 <translation id="6058977677006700226">在您的所有设备上使用您的卡？</translation>
 <translation id="6059925163896151826">USB 设备</translation>
@@ -1585,6 +1634,7 @@
 <translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6124432979022149706">Chrome 企业版连接器</translation>
 <translation id="6127379762771434464">该项已移除</translation>
+<translation id="6132161237766805930"><ph name="BEGIN_LINK" />详细了解 Chrome 中的无痕模式<ph name="END_LINK" /></translation>
 <translation id="6146055958333702838">请检查所有网线是否都已连好，然后重新启动您可能正在使用的任何路由器、调制解调器或其他网络设备。</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
 <translation id="6150036310511284407">三孔（左侧）</translation>
@@ -1596,13 +1646,13 @@
 <translation id="6169916984152623906">现在，您便可进行私密浏览了。共用此设备的其他用户将不会看到您的活动，但您下载的内容和添加的书签仍会保存在设备上。</translation>
 <translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
 <translation id="6180316780098470077">重试间隔</translation>
-<translation id="619448280891863779">可以询问能否在您的屏幕上打开和放置窗口</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
+<translation id="6233160458685643793">咧嘴笑</translation>
 <translation id="6234122620015464377">完成每份文档后裁切</translation>
 <translation id="6240447795304464094">Google Pay 徽标</translation>
 <translation id="6241121617266208201">隐藏建议</translation>
@@ -1618,7 +1668,7 @@
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6276112860590028508">您的阅读清单中的网页会显示在此处</translation>
 <translation id="627746635834430766">若想在下次购物时更快捷地付款，请将您的付款卡信息和帐单邮寄地址保存到您的 Google 帐号中。</translation>
-<translation id="6279098320682980337">未填充虚拟卡号？点击“信用卡详细信息”即可复制</translation>
+<translation id="6279183038361895380">按 |<ph name="ACCELERATOR" />| 可显示鼠标光标</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6282194474023008486">邮政编码</translation>
 <translation id="6285507000506177184">“管理 Chrome 中的下载内容”按钮，按 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
@@ -1637,6 +1687,7 @@
 <translation id="6328786501058569169">此网站是欺骗性网站</translation>
 <translation id="6337133576188860026">释放不到 <ph name="SIZE" /> 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="6337534724793800597">按名称过滤政策</translation>
+<translation id="6340739886198108203">管理员政策不建议在屏幕显示机密内容时截屏/录屏：</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
 <translation id="6355392890578844978">此浏览器并未由某个公司或其他组织管理。此设备上的活动可能在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1654,6 +1705,7 @@
 <translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">“无匹配的安全付款凭据”表单已关闭</translation>
 <translation id="6393956493820063117">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容粘贴到此处</translation>
+<translation id="6398277657359595425">嚎啕大哭</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
 <translation id="6401136357288658127">此政策已被弃用。您应改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">修改书签</translation>
@@ -1667,6 +1719,7 @@
 <translation id="643051589346665201">更改 Google 密码</translation>
 <translation id="6433490469411711332">修改联系信息</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 拒绝了我们的连接请求。</translation>
+<translation id="6438025220577812695">我自行更改</translation>
 <translation id="6440503408713884761">已忽略</translation>
 <translation id="6443406338865242315">您已安装的扩展程序和插件</translation>
 <translation id="6446163441502663861">Kahu (Envelope)</translation>
@@ -1696,6 +1749,7 @@
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
+<translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6556866813142980365">重做</translation>
 <translation id="6569060085658103619">您正在查看扩展程序页面</translation>
 <translation id="6573200754375280815">双孔（右侧）</translation>
@@ -1710,7 +1764,6 @@
 <translation id="6596325263575161958">加密选项</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6615297766614333076">堆叠出纸器 2</translation>
-<translation id="6623589891453322342">文件处理程序</translation>
 <translation id="6624427990725312378">联系信息</translation>
 <translation id="6626291197371920147">添加有效的卡号</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 搜索</translation>
@@ -1728,6 +1781,7 @@
 <translation id="6660413144148052430">位置权限</translation>
 <translation id="6662457027866368246">第 1 卷</translation>
 <translation id="666259744093848177">（经过翻译的 x86_64）</translation>
+<translation id="6663846344464066639">双手合十</translation>
 <translation id="6665553082534466207">三孔（右侧）</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6685834062052613830">请退出并完成设置</translation>
@@ -1756,7 +1810,6 @@
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6767985426384634228">更新地址？</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />无痕模式</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786747875388722282">扩展程序</translation>
@@ -1796,12 +1849,12 @@
 <translation id="6934672428414710184">此名称来自您的 Google 帐号</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="6945221475159498467">选择</translation>
+<translation id="6946722113367118030">做思考状</translation>
 <translation id="6948051842255602737">游戏结束，您的得分是 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">要查看取货方式和要求，请选择相应地址</translation>
 <translation id="6949872517221025916">重置密码</translation>
 <translation id="6950684638814147129">解析 JSON 值时出错：<ph name="ERROR" /></translation>
 <translation id="695140971690006676">全部重置</translation>
-<translation id="6954341342296443517">可以询问能否打开各类文件</translation>
 <translation id="6957887021205513506">该服务器的证书似乎是伪造的。</translation>
 <translation id="6958564499836457428">在您的 Google 帐号中管理 Google 隐私设置</translation>
 <translation id="6961844873822989059">可以询问能否使用您设备上安装的字体</translation>
@@ -1816,6 +1869,7 @@
 <translation id="6972629891077993081">HID 设备</translation>
 <translation id="6973656660372572881">固定代理服务器和 .pac 脚本网址均已指定。</translation>
 <translation id="6973932557599545801">抱歉，我已是爱莫能助，请您自行继续操作。</translation>
+<translation id="6978236010531171013">仍然共享</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6979440798594660689">静音（默认）</translation>
 <translation id="6979983982287291980">系统会将您下载的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描，以确定其中是否包含敏感数据或恶意软件。</translation>
@@ -1827,7 +1881,6 @@
 <translation id="7012363358306927923">中国银联</translation>
 <translation id="7014741021609395734">缩放级别</translation>
 <translation id="7016992613359344582">这些费用可能只收取一次，也可能会周期性收取，而且可能不易察觉。</translation>
-<translation id="7024588353896425985">文件处理程序</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030436163253143341">证书无效</translation>
 <translation id="7031646650991750659">您已安装的 Google Play 应用</translation>
@@ -1840,7 +1893,6 @@
 <translation id="706295145388601875">在 Chrome 设置中添加和管理地址</translation>
 <translation id="7064851114919012435">联系信息</translation>
 <translation id="7068733155164172741">输入 <ph name="OTP_LENGTH" /> 位数的动态密码</translation>
-<translation id="7070090581017165256">关于此网站</translation>
 <translation id="70705239631109039">您的连接存在安全隐患</translation>
 <translation id="7075452647191940183">请求过大</translation>
 <translation id="7079718277001814089">此网站包含恶意软件</translation>
@@ -1857,7 +1909,14 @@
 <translation id="7111012039238467737">（有效）</translation>
 <translation id="7118618213916969306">搜索剪贴板上的网址：<ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">关闭其他标签页或程序</translation>
+<translation id="7129355289156517987">当您关闭 Chromium 中的所有无痕式标签页后，系统会从此设备上清除您在这些标签页中的活动记录：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />浏览活动<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />搜索记录<ph name="END_LIST_ITEM" />
+            <ph name="LIST_ITEM" />在表单中填写的信息<ph name="END_LIST_ITEM" />
+          <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
+<translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
 <translation id="7135130955892390533">显示状态</translation>
 <translation id="7138472120740807366">递送方式</translation>
 <translation id="7139724024395191329">酋长国</translation>
@@ -1868,7 +1927,6 @@
 <translation id="7153618581592392745">薰衣草色</translation>
 <translation id="7156870133441232244">服务器应该升级到 TLS 1.2 或更高版本。</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
-<translation id="7173920250514487165">截取/录制屏幕上的机密内容</translation>
 <translation id="7174545416324379297">已合并</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}}</translation>
 <translation id="7179323680825933600">保存并填写付款方式</translation>
@@ -1879,6 +1937,7 @@
 <translation id="7192203810768312527">释放了 <ph name="SIZE" />。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">您的管理员可以查看：</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合相关安全标准。</translation>
 <translation id="7210993021468939304">可查看该容器内的 Linux 活动，并可在该容器内安装和运行 Linux 应用</translation>
@@ -1910,6 +1969,7 @@
 <translation id="7304562222803846232">管理 Google 帐号隐私设置</translation>
 <translation id="7305756307268530424">启用慢速模式</translation>
 <translation id="7308436126008021607">后台同步</translation>
+<translation id="7310392214323165548">设备很快就会重启</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">与连接相关的帮助</translation>
 <translation id="7323804146520582233">隐藏“<ph name="SECTION" />”部分</translation>
@@ -1917,6 +1977,7 @@
 <translation id="7334320624316649418">恢复顺序调整(&amp;R)</translation>
 <translation id="7335157162773372339">可以询问能否使用您的摄像头</translation>
 <translation id="7337248890521463931">显示更多行</translation>
+<translation id="7337418456231055214">未填充虚拟卡号？点击“信用卡详细信息”即可复制。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">在您的平台上不可用。</translation>
 <translation id="733923710415886693">该服务器的证书未通过证书透明度政策进行披露。</translation>
 <translation id="734600844861828519">11x15</translation>
@@ -1975,6 +2036,12 @@
 <translation id="7485870689360869515">找不到数据。</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="7497998058912824456">“创建文档”按钮，按 Enter 键即可快速创建新的 Google 文档</translation>
+<translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
+          <ph name="BEGIN_LIST" />
+            <ph name="LIST_ITEM" />您的浏览记录
+            <ph name="LIST_ITEM" />Cookie 和网站数据
+            <ph name="LIST_ITEM" />在表单中填写的信息
+          <ph name="END_LIST" /></translation>
 <translation id="7508255263130623398">返回的政策设备 ID 为空，或与当前的设备 ID 不一致</translation>
 <translation id="7508870219247277067">黄绿色</translation>
 <translation id="7511955381719512146">您要使用的 Wi-Fi 网络可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
@@ -2007,6 +2074,7 @@
 <translation id="7578104083680115302">通过各种设备在网站和应用中购物时，您都可以使用 Google 为您保存的银行卡信息快速付款。</translation>
 <translation id="7581199239021537589">侧边 2，图片沿 Y 轴位移</translation>
 <translation id="7582602800368606489">在 Google 日历中快速创建新活动</translation>
+<translation id="7591288787774558753">共享机密内容？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> 想使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和网站数据</translation>
 <translation id="7592362899630581445">服务器的证书违反了域名限制。</translation>
 <translation id="7598391785903975535">少于 <ph name="UPPER_ESTIMATE" /></translation>
@@ -2017,6 +2085,7 @@
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="7616645509853975347">您的管理员已在您的浏览器中启用了 Chrome 企业版接口。这些接口可以访问您的部分数据。</translation>
 <translation id="7619838219691048931">结尾工作表</translation>
+<translation id="7625242817712715120">管理员政策不建议打印此内容</translation>
 <translation id="762844065391966283">一次一个</translation>
 <translation id="7633909222644580952">性能数据和崩溃报告</translation>
 <translation id="7637571805876720304">要从 Chromium 中移除信用卡吗？</translation>
@@ -2029,6 +2098,7 @@
 <translation id="7654909834015434372">当您修改注释时，此文档会恢复为原始方向</translation>
 <translation id="765676359832457558">隐藏高级设置...</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7659878911471462949">喜极而泣</translation>
 <translation id="7662298039739062396">设置由某款扩展程序控制</translation>
 <translation id="7663736086183791259">证书<ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">不得在无痕模式下使用</translation>
@@ -2085,7 +2155,6 @@
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
 <translation id="781440967107097262">分享剪贴板？</translation>
 <translation id="7815407501681723534">找到了 <ph name="NUMBER_OF_RESULTS" /> 个与“<ph name="SEARCH_STRING" />”相符的<ph name="SEARCH_RESULTS" /></translation>
-<translation id="782125616001965242">显示此网站的相关信息</translation>
 <translation id="782886543891417279">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问其登录页面。</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{无}=1{1 个应用（<ph name="EXAMPLE_APP_1" />）}=2{2 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 个应用（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
@@ -2102,7 +2171,6 @@
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
-<translation id="7931318309563332511">未知</translation>
 <translation id="793209273132572360">更新地址？</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
@@ -2127,13 +2195,14 @@
 <translation id="7976214039405368314">请求次数过多</translation>
 <translation id="7977538094055660992">输出设备</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">已经关联到</translation>
 <translation id="798134797138789862">可以询问能否使用虚拟实境设备和数据</translation>
 <translation id="7984945080620862648">您目前无法访问<ph name="SITE" />，因为此网站发送了Chrome无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
-<translation id="79859296434321399">要查看增强现实内容，请安装 ARCore</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">装订</translation>
 <translation id="7992044431894087211">已继续与<ph name="APPLICATION_TITLE" />共享屏幕</translation>
 <translation id="7995512525968007366">未指定</translation>
+<translation id="7998269595945679889">“打开无痕式标签页”按钮，按一下 Enter 键即可打开新的无痕式标签页进行无痕浏览</translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{这张卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这张卡。}other{这些卡及其帐单邮寄地址将被保存。登录 <ph name="USER_EMAIL" /> 后即可使用这些卡。}}</translation>
@@ -2170,6 +2239,7 @@
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">无效的卡已被移除</translation>
 <translation id="8103161714697287722">付款方式</translation>
+<translation id="8103643211515685474">仍然打印</translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="810875025413331850">未找到附近的设备。</translation>
 <translation id="8116925261070264013">已静音</translation>
@@ -2192,6 +2262,7 @@
 <translation id="8202370299023114387">冲突</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
 <translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8217240300496046857">网站无法使用 Cookie 来跟踪您在网上的活动。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="8218327578424803826">分配的位置：</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
 <translation id="8225771182978767009">设置此计算机的用户已选择屏蔽此网站。</translation>
@@ -2232,14 +2303,9 @@
 <translation id="830498451218851433">对折</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">已安装的应用及其使用频率</translation>
+<translation id="8317207217658302555">更新 ARCore？</translation>
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321476692217554900">通知</translation>
-<translation id="8328484624016508118">关闭所有无痕式标签页之后，Chrome 会清除：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您在这部设备上的浏览活动记录<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您在这部设备上的搜索记录<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />您在表单中填写过的信息<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">访问 <ph name="HOST_NAME" /> 的请求遭到拒绝</translation>
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>
@@ -2274,6 +2340,7 @@
 <translation id="8438476240229491014">记住此设置</translation>
 <translation id="8438786541497918448">使用摄像头和麦克风？</translation>
 <translation id="8446884382197647889">了解详情</translation>
+<translation id="8449836157089738489">在新标签页组中打开全部网址</translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8461694314515752532">使用您自己的同步密码加密已同步的数据</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
@@ -2301,7 +2368,6 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置这项权限}other{重置这些权限}}</translation>
 <translation id="8555010941760982128">结账时请使用此促销代码</translation>
 <translation id="8557066899867184262">银行卡验证码 (CVC) 位于银行卡背面。</translation>
-<translation id="8558485628462305855">要查看增强现实内容，请更新 ARCore</translation>
 <translation id="8559762987265718583">您设备的日期和时间（<ph name="DATE_AND_TIME" />）不正确，因此无法与 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 建立私密连接。</translation>
 <translation id="8564182942834072828">单独的文档/非逐份打印的副本</translation>
 <translation id="8564985650692024650">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chromium 建议您重置该密码。</translation>
@@ -2318,10 +2384,10 @@
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">没有匹配的密码。显示所有已保存的密码。</translation>
 <translation id="8625384913736129811">将此卡的信息保存到该设备</translation>
-<translation id="8627040765059109009">屏幕截取功能已恢复</translation>
 <translation id="865032292777205197">移动传感器</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
 <translation id="8666678546361132282">英语</translation>
+<translation id="8669306706049782872">使用您的屏幕的相关信息打开并放置窗口</translation>
 <translation id="867224526087042813">签名</translation>
 <translation id="8676424191133491403">无延迟</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案，<ph name="ANSWER" /></translation>
@@ -2348,6 +2414,7 @@
 <translation id="8731544501227493793">“管理密码”按钮，按 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开一个新的无痕式窗口以私密浏览网页</translation>
+<translation id="8737685506611670901">打开<ph name="PROTOCOL" />链接而非“<ph name="REPLACED_HANDLER_TITLE" />”</translation>
 <translation id="8738058698779197622">要建立安全连接，您的时钟设置必须正确。这是因为，网站用于证明身份的证书仅在特定时间段有效。由于您设备的时钟不正确，因此 Chromium 无法验证这些证书。</translation>
 <translation id="8740359287975076522">无法找到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;DNS 地址&lt;/abbr&gt;。正在诊断该问题。</translation>
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
@@ -2375,6 +2442,7 @@
 <translation id="883848425547221593">其他书签</translation>
 <translation id="884264119367021077">送货地址</translation>
 <translation id="884923133447025588">未找到任何吊销机制。</translation>
+<translation id="8849262850971482943">使用您的虚拟卡提升安全性</translation>
 <translation id="885730110891505394">与 Google 分享</translation>
 <translation id="8858065207712248076">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chrome 建议您重置该密码。</translation>
 <translation id="885906927438988819">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
@@ -2383,6 +2451,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">最近关闭的标签页</translation>
 <translation id="8870494189203302833">顺序不变，正面朝下</translation>
+<translation id="8870700989640064057">打印机密文件？</translation>
 <translation id="8871553383647848643">自定义您的浏览器外观</translation>
 <translation id="8874824191258364635">请输入有效的信用卡号</translation>
 <translation id="8884537526797090108">无法录制机密内容</translation>
@@ -2414,6 +2483,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可查看您在 Chrome 中的浏览记录</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
+<translation id="8992061558343343009">想要查看系统版本？请访问</translation>
 <translation id="899688752321268742"><ph name="URL" /> 想了解您何时在主动使用此设备</translation>
 <translation id="8996941253935762404">您要访问的网站包含有害程序</translation>
 <translation id="8997023839087525404">该服务器提供了一个未通过证书透明度政策公开披露的证书。某些证书必须通过证书透明度政策进行公开披露，以确保它们值得信任且能保护用户免遭攻击。</translation>
@@ -2422,6 +2492,7 @@
 <translation id="9004367719664099443">VR 会话正在进行中</translation>
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
 <translation id="9008201768610948239">忽略</translation>
+<translation id="901834265349196618">电子邮件</translation>
 <translation id="9020200922353704812">必须输入信用卡帐单邮寄地址</translation>
 <translation id="9020542370529661692">已将此网页内容翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
@@ -2461,6 +2532,7 @@
 <translation id="9119042192571987207">已上传</translation>
 <translation id="9128016270925453879">政策已加载完毕</translation>
 <translation id="9128870381267983090">连接到网络</translation>
+<translation id="9131119348384879525">截取机密内容？</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9141013498910525015">管理地址</translation>
 <translation id="9144951720726881238">截止日期：</translation>
@@ -2469,6 +2541,7 @@
 <translation id="9150045010208374699">使用您的摄像头</translation>
 <translation id="9150685862434908345">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">已更新</translation>
+<translation id="9155211586651734179">已连接音频外围设备</translation>
 <translation id="9157595877708044936">正在设置...</translation>
 <translation id="9158625974267017556">C6 (Envelope)</translation>
 <translation id="9164029392738894042">准确度检查</translation>

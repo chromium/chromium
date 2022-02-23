@@ -327,6 +327,15 @@ typedef void (GL_APIENTRYP PFNGLBLITFRAMEBUFFERCHROMIUMPROC) (GLint srcX0, GLint
 #endif
 #endif /* GL_ANGLE_texture_compression_dxt5 */
 
+/* GL_ANGLE_rgbx_internal_format */
+#ifndef GL_ANGLE_rgbx_internal_format
+#define GL_ANGLE_rgbx_internal_format 1
+
+#ifndef GL_RGBX8_ANGLE
+#define GL_RGBX8_ANGLE 0x96BA
+#endif
+#endif /* GL_ANGLE_rgbx_internal_format */
+
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
 #define GL_CHROMIUM_async_pixel_transfers 1
@@ -452,15 +461,6 @@ typedef GLboolean (GL_APIENTRYP PFNGLENABLEFEATURECHROMIUMPROC) (
 #define GL_LATENCY_QUERY_CHROMIUM 0x6007
 #endif
 #endif  /* GL_CHROMIUM_command_buffer_latency_query */
-
-/* GL_CHROMIUM_screen_space_antialiasing */
-#ifndef GL_CHROMIUM_screen_space_antialiasing
-#define GL_CHROMIUM_screen_space_antialiasing 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glApplyScreenSpaceAntialiasingCHROMIUM();
-#endif
-typedef void(GL_APIENTRYP PFNGLAPPLYSCREENSPACEANTIALIASINGCHROMIUMPROC)();
-#endif /* GL_CHROMIUM_screen_space_antialiasing */
 
 /* GL_ARB_robustness */
 #ifndef GL_ARB_robustness
@@ -901,28 +901,6 @@ typedef void(GL_APIENTRYP PFNGLSETCOLORSPACEMETADATACHROMIUM)(
     GLuint texture_id,
     GLcolorSpace color_space);
 #endif /* GL_CHROMIUM_color_space_metadata */
-
-/* GL_CHROMIUM_dither_and_premultiply_copy */
-#ifndef GL_CHROMIUM_unpremultiply_and_dither_copy
-#define GL_CHROMIUM_unpremultiply_and_dither_copy 1
-
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY
-glUnpremultiplyAndDitherCopyCHROMIUM(GLenum source_id,
-                                     GLenum dest_id,
-                                     GLint x,
-                                     GLint y,
-                                     GLsizei width,
-                                     GLsizei height);
-#endif
-typedef void(GL_APIENTRYP PFNGLUNPREMULTIPLYANDDITHERCOPYCHROMIUMPROC)(
-    GLenum source_id,
-    GLenum dest_id,
-    GLint x,
-    GLint y,
-    GLsizei width,
-    GLsizei height);
-#endif /* GL_CHROMIUM_unpremultiply_and_dither_copy */
 
 #ifndef GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT
 #define GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT 0x8868

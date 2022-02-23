@@ -84,6 +84,9 @@
     <output filename="values-zh-rHK/autofill_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/autofill_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/autofill_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/autofill_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/autofill_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/autofill_strings_af.xtb" lang="af" />

@@ -17,6 +17,7 @@
 #include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell_observer.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
@@ -45,6 +46,7 @@ class EventHandler;
 class LocatedEvent;
 class MouseEvent;
 class MouseWheelEvent;
+class PresentationTimeRecorder;
 }  // namespace ui
 
 namespace ash {
@@ -54,7 +56,6 @@ class DragWindowFromShelfController;
 class HomeToOverviewNudgeController;
 class InAppToHomeNudgeController;
 class PanelLayoutManagerTest;
-class PresentationTimeRecorder;
 class ScopedDragDropObserver;
 class Shelf;
 class ShelfLayoutManagerObserver;
@@ -68,21 +69,20 @@ class SwipeHomeToOverviewController;
 // layout to the status area.
 // To respond to bounds changes in the status area StatusAreaLayoutManager works
 // closely with ShelfLayoutManager.
-// On mus, widget bounds management is handled by the window manager.
-class ASH_EXPORT ShelfLayoutManager
-    : public AppListControllerObserver,
-      public ShellObserver,
-      public SplitViewObserver,
-      public OverviewObserver,
-      public ::wm::ActivationChangeObserver,
-      public LockStateObserver,
-      public WmDefaultLayoutManager,
-      public display::DisplayObserver,
-      public SessionObserver,
-      public WallpaperControllerObserver,
-      public LocaleChangeObserver,
-      public DesksController::Observer,
-      public ShelfConfig::Observer {
+class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
+                                      public ShelfObserver,
+                                      public ShellObserver,
+                                      public SplitViewObserver,
+                                      public OverviewObserver,
+                                      public ::wm::ActivationChangeObserver,
+                                      public LockStateObserver,
+                                      public WmDefaultLayoutManager,
+                                      public display::DisplayObserver,
+                                      public SessionObserver,
+                                      public WallpaperControllerObserver,
+                                      public LocaleChangeObserver,
+                                      public DesksController::Observer,
+                                      public ShelfConfig::Observer {
  public:
   // Suspend work area updates within its scope. Note that relevant
   // ShelfLayoutManager must outlive this class.
@@ -222,8 +222,10 @@ class ASH_EXPORT ShelfLayoutManager
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override;
 
+  // ShelfObserver:
+  void OnShelfAutoHideBehaviorChanged() override;
+
   // ShellObserver:
-  void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) override;
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
@@ -288,9 +290,9 @@ class ASH_EXPORT ShelfLayoutManager
 
   bool is_shelf_auto_hidden() const { return state_.IsShelfAutoHidden(); }
 
-  void LockAutoHideState(bool lock_auto_hide_state) {
-    is_auto_hide_state_locked_ = lock_auto_hide_state;
-  }
+  // Locks or unlocks the state of shelf auto-hide. On unlock, the auto-hide
+  // state will be recomputed.
+  void LockAutoHideState(bool lock_auto_hide_state);
 
   ShelfAutoHideBehavior auto_hide_behavior() const {
     return shelf_->auto_hide_behavior();
@@ -730,7 +732,8 @@ class ASH_EXPORT ShelfLayoutManager
   base::CancelableOnceClosure visibility_update_for_tray_callback_;
 
   // Records the presentation time for hotseat dragging.
-  std::unique_ptr<PresentationTimeRecorder> hotseat_presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder>
+      hotseat_presentation_time_recorder_;
 
   base::WeakPtrFactory<ShelfLayoutManager> weak_factory_{this};
 };

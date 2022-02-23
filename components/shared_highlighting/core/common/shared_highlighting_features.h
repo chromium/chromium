@@ -18,18 +18,14 @@ extern const base::Feature kPreemptiveLinkToTextGeneration;
 // Sets the timeout length for pre-emptive link generation.
 extern const base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs;
 
-// If enabled, a blocklist will disable link generation on certain pages where
-// the feature is unlikely to work correctly.
-extern const base::Feature kSharedHighlightingUseBlocklist;
-
 // Enables the new UI features for highlighted text.
 extern const base::Feature kSharedHighlightingV2;
 
 // Enables shared highlighting for AMP viewers pages.
 extern const base::Feature kSharedHighlightingAmp;
 
-// Enable the fix for layout object crash in shared highlighting generator.
-extern const base::Feature kSharedHighlightingLayoutObjectFix;
+// Feature flag that enable Shared Highlighting V2 in iOS.
+extern const base::Feature kIOSSharedHighlightingV2;
 
 // Returns the pre-emptive link generation timeout length.
 int GetPreemptiveLinkGenTimeoutLengthMs();

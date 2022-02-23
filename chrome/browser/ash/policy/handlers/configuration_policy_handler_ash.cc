@@ -23,10 +23,10 @@
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
+#include "chromeos/components/onc/onc_validator.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/onc/onc_validator.h"
 #include "components/crx_file/id_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
@@ -343,7 +343,7 @@ void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value filtered_list,
                                                 PrefValueMap* prefs) {
   DCHECK(filtered_list.is_list());
   std::vector<base::Value> pinned_apps_list;
-  for (const base::Value& entry : filtered_list.GetList()) {
+  for (const base::Value& entry : filtered_list.GetListDeprecated()) {
     base::Value app_dict(base::Value::Type::DICTIONARY);
     app_dict.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, entry.Clone());
     pinned_apps_list.push_back(std::move(app_dict));

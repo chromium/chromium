@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -32,6 +33,13 @@ namespace chromeos {
 namespace {
 
 const char kStubWiFi1[] = "stub_wifi1";
+const char kEnableWifiResultHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Enable.Result";
+const char kDisableWiFiResultHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Disable.Result";
+
+const char kEnableEthernetResultHistogram[] =
+    "Network.Ash.Ethernet.EnabledState.Enable.Result";
 
 void ErrorCallbackFunction(const std::string& error_name,
                            const std::string& error_message) {
@@ -43,9 +51,9 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   TestListener() : technology_list_updates_(0), errors_(0) {}
 
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::ListValue& entries) override {
+                         const base::Value& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
-            << "]: " << entries.GetList().size();
+            << "]: " << entries.GetListDeprecated().size();
     UpdateEntries(GetTypeString(type), entries);
   }
 
@@ -60,7 +68,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     if (!profile_list.is_list()) {
       return;
     }
-    profile_list_size_ = profile_list.GetList().size();
+    profile_list_size_ = profile_list.GetListDeprecated().size();
   }
 
   void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -133,11 +141,11 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     return std::string();
   }
 
-  void UpdateEntries(const std::string& type, const base::ListValue& entries) {
+  void UpdateEntries(const std::string& type, const base::Value& entries) {
     if (type.empty())
       return;
     entries_[type].clear();
-    for (const auto& entry : entries.GetList()) {
+    for (const auto& entry : entries.GetListDeprecated()) {
       if (entry.is_string())
         entries_[type].push_back(entry.GetString());
     }
@@ -198,6 +206,7 @@ class ShillPropertyHandlerTest : public testing::Test {
     ASSERT_TRUE(profile_test_);
     SetupShillPropertyHandler();
     base::RunLoop().RunUntilIdle();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -241,7 +250,6 @@ class ShillPropertyHandlerTest : public testing::Test {
     std::vector<std::string> profiles;
     profile_test_->GetProfilePaths(&profiles);
     ASSERT_TRUE(profiles.size() > 0);
-    base::DictionaryValue properties;  // Empty entry
     profile_test_->AddService(profiles[0], id);
   }
 
@@ -280,6 +288,7 @@ class ShillPropertyHandlerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TestListener> listener_;
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   ShillManagerClient::TestInterface* manager_test_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
@@ -376,6 +385,8 @@ TEST_F(ShillPropertyHandlerTest,
       shill::kTypeWifi, /*enabled=*/false, base::DoNothing());
   EXPECT_TRUE(shill_property_handler_->IsTechnologyDisabling(shill::kTypeWifi));
   base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(kDisableWiFiResultHistogram, 1);
+  histogram_tester_->ExpectBucketCount(kDisableWiFiResultHistogram, true, 1);
   EXPECT_EQ(1, listener_->technology_list_updates());
   EXPECT_FALSE(
       shill_property_handler_->IsTechnologyDisabling(shill::kTypeWifi));
@@ -389,10 +400,11 @@ TEST_F(ShillPropertyHandlerTest,
   EXPECT_FALSE(
       shill_property_handler_->IsTechnologyDisabling(shill::kTypeWifi));
   base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(kEnableWifiResultHistogram, 1);
+  histogram_tester_->ExpectBucketCount(kEnableWifiResultHistogram, true, 1);
   EXPECT_EQ(1, listener_->technology_list_updates());
   EXPECT_TRUE(shill_property_handler_->IsTechnologyEnabled(shill::kTypeWifi));
   EXPECT_FALSE(shill_property_handler_->IsTechnologyEnabling(shill::kTypeWifi));
-
   EXPECT_EQ(0, listener_->errors());
 }
 
@@ -477,7 +489,7 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
-  base::ListValue dns_servers;
+  base::Value dns_servers(base::Value::Type::LIST);
   dns_servers.Append("192.168.1.100");
   dns_servers.Append("192.168.1.101");
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
@@ -567,6 +579,9 @@ TEST_F(ShillPropertyHandlerTest, ProhibitedTechnologies) {
   shill_property_handler_->SetTechnologyEnabled(
       shill::kTypeEthernet, true, network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(kEnableEthernetResultHistogram, 1);
+  histogram_tester_->ExpectBucketCount(kEnableEthernetResultHistogram, false,
+                                       1);
   EXPECT_FALSE(
       shill_property_handler_->IsTechnologyEnabled(shill::kTypeEthernet));
 
@@ -576,6 +591,8 @@ TEST_F(ShillPropertyHandlerTest, ProhibitedTechnologies) {
   shill_property_handler_->SetTechnologyEnabled(
       shill::kTypeEthernet, true, network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(kEnableEthernetResultHistogram, 2);
+  histogram_tester_->ExpectBucketCount(kEnableEthernetResultHistogram, true, 1);
   EXPECT_TRUE(
       shill_property_handler_->IsTechnologyEnabled(shill::kTypeEthernet));
 }

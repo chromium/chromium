@@ -9,7 +9,6 @@
 
 #include "chromecast/browser/mojom/cast_web_contents.mojom.h"
 #include "chromecast/browser/web_types.h"
-#include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,11 +52,8 @@ class CastWebContentsObserver : public mojom::CastWebContentsObserver {
 
   // A new RenderFrame was created for the WebContents. |settings_manager| is
   // provided by the frame.
-  void RenderFrameCreated(int render_process_id,
-                          int render_frame_id,
-                          mojo::PendingAssociatedRemote<
-                              chromecast::mojom::IdentificationSettingsManager>
-                              settings_manager) override {}
+  void RenderFrameCreated(int render_process_id, int render_frame_id) override {
+  }
 
   // A navigation has finished in the WebContents' main frame.
   void MainFrameFinishedNavigation() override {}

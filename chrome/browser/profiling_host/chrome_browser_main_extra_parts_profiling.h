@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PROFILING_HOST_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILING_H_
 #define CHROME_BROWSER_PROFILING_HOST_CHROME_BROWSER_MAIN_EXTRA_PARTS_PROFILING_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
 class ChromeBrowserMainExtraPartsProfiling

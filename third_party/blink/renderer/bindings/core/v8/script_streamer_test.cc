@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
@@ -30,7 +29,8 @@
 #include "third_party/blink/renderer/core/script/mock_script_element_base.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -168,19 +168,22 @@ class ScriptStreamingTest : public testing::Test {
         std::move(consumer_handle_));
   }
 
-  ScriptSourceCode GetScriptSourceCode() const {
+  ClassicScript* CreateClassicScript() const {
     ScriptStreamer* streamer = resource_->TakeStreamer();
     ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
     if (streamer) {
       if (streamer->IsStreamingSuppressed()) {
-        return ScriptSourceCode(nullptr, cache_consumer, resource_,
-                                streamer->StreamingSuppressedReason());
+        return ClassicScript::CreateFromResource(
+            resource_, KURL(), ScriptFetchOptions(), nullptr,
+            streamer->StreamingSuppressedReason(), cache_consumer);
       }
-      return ScriptSourceCode(streamer, cache_consumer, resource_,
-                              ScriptStreamer::NotStreamingReason::kInvalid);
+      return ClassicScript::CreateFromResource(
+          resource_, KURL(), ScriptFetchOptions(), streamer,
+          ScriptStreamer::NotStreamingReason::kInvalid, cache_consumer);
     }
-    return ScriptSourceCode(nullptr, cache_consumer, resource_,
-                            resource_->NoStreamerReason());
+    return ClassicScript::CreateFromResource(
+        resource_, KURL(), ScriptFetchOptions(), nullptr,
+        resource_->NoStreamerReason(), cache_consumer);
   }
 
   Settings* GetSettings() const {
@@ -256,8 +259,8 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   // has finished loading.
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -266,10 +269,9 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
+                  scope.GetScriptState(), *classic_script, compile_options,
                   no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
@@ -292,8 +294,8 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   // has finished loading.
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -302,10 +304,9 @@ TEST_F(ScriptStreamingTest, CompilingStreamedScriptWithParseError) {
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_FALSE(V8ScriptRunner::CompileScript(
-                   scope.GetScriptState(), source_code,
-                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
+                   scope.GetScriptState(), *classic_script, compile_options,
                    no_cache_reason, host_defined_options)
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
@@ -385,11 +386,11 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  // ScriptSourceCode doesn't refer to the streamer, since we have suppressed
+  ClassicScript* classic_script = CreateClassicScript();
+  // ClassicScript doesn't refer to the streamer, since we have suppressed
   // the streaming and resumed the non-streaming code path for script
   // compilation.
-  EXPECT_FALSE(source_code.Streamer());
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, EmptyScripts) {
@@ -403,8 +404,8 @@ TEST_F(ScriptStreamingTest, EmptyScripts) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_FALSE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, SmallScripts) {
@@ -421,8 +422,8 @@ TEST_F(ScriptStreamingTest, SmallScripts) {
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
 
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_FALSE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_FALSE(classic_script->Streamer());
 }
 
 TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
@@ -445,8 +446,8 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   Finish();
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -455,10 +456,9 @@ TEST_F(ScriptStreamingTest, ScriptsWithSmallFirstChunk) {
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
+                  scope.GetScriptState(), *classic_script, compile_options,
                   no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
@@ -480,8 +480,8 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
 
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -490,10 +490,9 @@ TEST_F(ScriptStreamingTest, EncodingChanges) {
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
+                  scope.GetScriptState(), *classic_script, compile_options,
                   no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
@@ -516,8 +515,8 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   Finish();
   RunUntilResourceLoaded();
   EXPECT_TRUE(resource_client_->Finished());
-  ScriptSourceCode source_code = GetScriptSourceCode();
-  EXPECT_TRUE(source_code.Streamer());
+  ClassicScript* classic_script = CreateClassicScript();
+  EXPECT_TRUE(classic_script->Streamer());
   v8::TryCatch try_catch(scope.GetIsolate());
   v8::Local<v8::Script> script;
   v8::Local<v8::Data> host_defined_options;
@@ -526,10 +525,9 @@ TEST_F(ScriptStreamingTest, EncodingFromBOM) {
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
   std::tie(compile_options, produce_cache_options, no_cache_reason) =
       V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     source_code);
+                                     *classic_script);
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
-                  scope.GetScriptState(), source_code,
-                  SanitizeScriptErrors::kDoNotSanitize, compile_options,
+                  scope.GetScriptState(), *classic_script, compile_options,
                   no_cache_reason, host_defined_options)
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());

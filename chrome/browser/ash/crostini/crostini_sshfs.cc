@@ -139,8 +139,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
   }
 
   // Add ourselves as an observer so we can continue once the path is mounted.
-  auto* dmgr = chromeos::disks::DiskMountManager::GetInstance();
-  disk_mount_observer_.Observe(dmgr);
+  auto* dmgr = ash::disks::DiskMountManager::GetInstance();
 
   // Call to sshfs to mount.
   in_progress_mount_->source_path = base::StringPrintf(
@@ -152,22 +151,15 @@ void CrostiniSshfs::OnGetContainerSshKeys(
                   file_manager::util::GetCrostiniMountOptions(
                       hostname, host_private_key, container_public_key),
                   chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                  base::BindOnce(&CrostiniSshfs::OnMountEvent,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniSshfs::OnMountEvent(
-    chromeos::disks::DiskMountManager::MountEvent event,
     chromeos::MountError error_code,
-    const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
+    const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Ignore any other mount/unmount events.
-  if (event != chromeos::disks::DiskMountManager::MountEvent::MOUNTING ||
-      mount_info.source_path != in_progress_mount_->source_path) {
-    return;
-  }
-
-  // Got our mount event, so stop listening for more.
-  disk_mount_observer_.Reset();
 
   if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code

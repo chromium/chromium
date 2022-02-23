@@ -574,6 +574,7 @@ interface IronListElement extends Templatizer, IronResizableBehavior, IronScroll
   readonly _estRowsInView: any;
   readonly _physicalRows: any;
   readonly _scrollOffset: any;
+  preserveFocus: boolean;
   attached(): void;
   detached(): void;
 

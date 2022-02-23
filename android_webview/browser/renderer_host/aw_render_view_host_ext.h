@@ -5,11 +5,11 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 #define ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -106,7 +106,7 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   mojom::LocalMainFrame* GetLocalMainFrameRemote();
 
-  AwRenderViewHostExtClient* client_;
+  raw_ptr<AwRenderViewHostExtClient> client_;
 
   // Authoritative copy of hit test data on the browser side. This is updated
   // as a result of DoHitTest called explicitly or when the FocusedNodeChanged

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "device/gamepad/gamepad_consumer.h"
@@ -115,8 +116,8 @@ class GamepadServiceTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockGamepadDataFetcher* fetcher_;
-  GamepadService* service_;
+  raw_ptr<MockGamepadDataFetcher> fetcher_;
+  raw_ptr<GamepadService> service_;
   std::vector<std::unique_ptr<ConnectionListener>> consumers_;
   Gamepads test_data_;
 };

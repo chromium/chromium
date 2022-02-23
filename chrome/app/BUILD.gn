@@ -10,6 +10,7 @@ import("//chrome/common/features.gni")
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
+import("//crypto/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -175,6 +176,7 @@ static_library("test_support") {
     "//components/startup_metric_utils/browser",
     "//content/public/app",
     "//content/public/common",
+    "//extensions/buildflags",
     "//pdf:pdf_ppapi",
     "//ppapi/buildflags",
     "//printing/buildflags",
@@ -190,6 +192,10 @@ static_library("test_support") {
       "//components/crash/core/app",
       "//components/crash/core/app:test_support",
     ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/crash/android:crash_android" ]
   }
 
   if (is_mac) {
@@ -225,6 +231,7 @@ static_library("test_support") {
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/lacros/dbus",
     ]
   }
 
@@ -279,9 +286,8 @@ if (is_fuchsia) {
     executable = rebase_path("//build/fuchsia/run_ffx_command.py")
     executable_args = [
       "--command",
-      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx",
-
-      # TODO(bugs.fuchsia.dev/85949): Pass runtime arguments using %args%.
+      "session add fuchsia-pkg://fuchsia.com/chrome#meta/chrome_v1.cmx -- " +
+          "%args%",
     ]
     include_fuchsia_build_dir = true
   }

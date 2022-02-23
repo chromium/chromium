@@ -257,7 +257,7 @@ class RendererPerfTest : public VizPerfTest {
     else
       printf("Using GLRenderer\n");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     renderer_settings_.color_space = gfx::ColorSpace::CreateSRGB();
     renderer_settings_.initial_screen_size = kSurfaceSize;
 #endif
@@ -371,7 +371,8 @@ class RendererPerfTest : public VizPerfTest {
                                 .Build();
     support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
                                     std::move(frame));
-    ASSERT_TRUE(display_->DrawAndSwap(base::TimeTicks::Now()));
+    ASSERT_TRUE(
+        display_->DrawAndSwap(base::TimeTicks::Now(), base::TimeTicks::Now()));
   }
 
   ResourceId MapResourceId(base::flat_map<ResourceId, ResourceId>* resource_map,

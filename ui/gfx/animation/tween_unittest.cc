@@ -9,10 +9,15 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/test/sk_color_eq.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <float.h>
 #endif
 
@@ -20,7 +25,7 @@ namespace gfx {
 namespace {
 
 double next_double(double d) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return _nextafter(d, d + 1);
 #else
   // Step two units of least precision towards positive infinity. On some 32

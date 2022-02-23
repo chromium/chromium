@@ -104,7 +104,6 @@ class FakePageTimingSender : public PageTimingSender {
         const std::vector<mojom::ResourceDataUpdatePtr>& resources,
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
-        const mojom::DeferredResourceCountsPtr& new_deferred_resource_data,
         const mojom::InputTimingPtr& input_timing,
         const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 
@@ -138,7 +137,6 @@ class FakePageTimingSender : public PageTimingSender {
                   std::vector<mojom::ResourceDataUpdatePtr> resources,
                   const mojom::FrameRenderDataUpdate& render_data,
                   const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::DeferredResourceCountsPtr new_deferred_resource_data,
                   mojom::InputTimingPtr new_input_timing,
                   const absl::optional<blink::MobileFriendliness>&
                       mobile_friendliness) override;

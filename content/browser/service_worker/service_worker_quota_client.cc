@@ -10,28 +10,27 @@
 
 #include "base/bind.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
-using ::blink::StorageKey;
 using ::blink::mojom::StorageType;
 using ::storage::mojom::QuotaClient;
 
 namespace content {
 namespace {
-void ReportToQuotaStatus(QuotaClient::DeleteStorageKeyDataCallback callback,
+void ReportToQuotaStatus(QuotaClient::DeleteBucketDataCallback callback,
                          blink::ServiceWorkerStatusCode status) {
   std::move(callback).Run((status == blink::ServiceWorkerStatusCode::kOk)
                               ? blink::mojom::QuotaStatusCode::kOk
                               : blink::mojom::QuotaStatusCode::kUnknown);
 }
 
-void FindUsageForStorageKey(QuotaClient::GetStorageKeyUsageCallback callback,
+void FindUsageForStorageKey(QuotaClient::GetBucketUsageCallback callback,
                             blink::ServiceWorkerStatusCode status,
                             int64_t usage) {
   std::move(callback).Run(usage);
@@ -46,14 +45,21 @@ ServiceWorkerQuotaClient::~ServiceWorkerQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ServiceWorkerQuotaClient::GetStorageKeyUsage(
-    const blink::StorageKey& storage_key,
-    StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void ServiceWorkerQuotaClient::GetBucketUsage(
+    const storage::BucketLocator& bucket,
+    GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
+
+  // Skip non-default buckets until Storage Buckets are supported for
+  // ServiceWorkers.
+  // TODO(crbug.com/1293510): Integrate ServiceWorkers with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
   context_->registry()->GetStorageUsageForStorageKey(
-      storage_key,
+      bucket.storage_key,
       base::BindOnce(&FindUsageForStorageKey, std::move(callback)));
 }
 
@@ -65,34 +71,22 @@ void ServiceWorkerQuotaClient::GetStorageKeysForType(
   context_->registry()->GetRegisteredStorageKeys(std::move(callback));
 }
 
-void ServiceWorkerQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void ServiceWorkerQuotaClient::DeleteBucketData(
+    const storage::BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
-  context_->registry()->GetRegisteredStorageKeys(base::BindOnce(
-      [](const std::string& host, GetStorageKeysForTypeCallback callback,
-         const std::vector<blink::StorageKey>& all_storage_keys) {
-        std::vector<blink::StorageKey> host_storage_keys;
-        for (auto& storage_key : all_storage_keys) {
-          if (host != storage_key.origin().host())
-            continue;
-          host_storage_keys.push_back(storage_key);
-        }
-        std::move(callback).Run(host_storage_keys);
-      },
-      host, std::move(callback)));
-}
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
-void ServiceWorkerQuotaClient::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  // Skip non-default buckets until Storage Buckets are supported for
+  // ServiceWorkers.
+  // TODO(crbug.com/1293510): Integrate ServiceWorkers with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
   context_->DeleteForStorageKey(
-      storage_key, base::BindOnce(&ReportToQuotaStatus, std::move(callback)));
+      bucket.storage_key,
+      base::BindOnce(&ReportToQuotaStatus, std::move(callback)));
 }
 
 void ServiceWorkerQuotaClient::PerformStorageCleanup(

@@ -73,12 +73,16 @@ class Browser;
 // |shouldCloseTabGrid| is only used for the thumb strip, where the
 // tab container view controller is never dismissed.
 - (void)showTabViewController:(UIViewController*)viewController
+                    incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion;
 
 // Sets the |page| as the active (visible) one. The active page must not be the
 // remote tabs.
 - (void)setActivePage:(TabGridPage)page;
+
+// Sets the |mode| as the active one.
+- (void)setActiveMode:(TabGridMode)mode;
 
 @end
 

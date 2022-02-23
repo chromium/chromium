@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webdatabase/change_version_data.h"
 #include "third_party/blink/renderer/modules/webdatabase/change_version_wrapper.h"
@@ -53,7 +52,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_transaction.h"
 #include "third_party/blink/renderer/modules/webdatabase/storage_log.h"
 #include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
@@ -249,7 +248,6 @@ Database::Database(DatabaseContext* database_context,
       transaction_in_progress_(false),
       is_transaction_queue_enabled_(true),
       did_try_to_count_transaction_(false),
-      did_try_to_count_third_party_transaction_(false),
       feature_handle_for_scheduler_(
           database_context->GetExecutionContext()
               ->GetScheduler()
@@ -316,15 +314,14 @@ bool Database::OpenAndVerifyVersion(bool set_version_in_new_database,
     if (success && IsNew()) {
       STORAGE_DVLOG(1)
           << "Scheduling DatabaseCreationCallbackTask for database " << this;
-      auto task_id = std::make_unique<probe::AsyncTaskId>();
-      probe::AsyncTaskScheduled(GetExecutionContext(), "openDatabase",
-                                task_id.get());
+      auto async_task_context = std::make_unique<probe::AsyncTaskContext>();
+      async_task_context->Schedule(GetExecutionContext(), "openDatabase");
       GetExecutionContext()
           ->GetTaskRunner(TaskType::kDatabaseAccess)
-          ->PostTask(
-              FROM_HERE,
-              WTF::Bind(&Database::RunCreationCallback, WrapPersistent(this),
-                        WrapPersistent(creation_callback), std::move(task_id)));
+          ->PostTask(FROM_HERE, WTF::Bind(&Database::RunCreationCallback,
+                                          WrapPersistent(this),
+                                          WrapPersistent(creation_callback),
+                                          std::move(async_task_context)));
     }
   }
 
@@ -333,8 +330,8 @@ bool Database::OpenAndVerifyVersion(bool set_version_in_new_database,
 
 void Database::RunCreationCallback(
     V8DatabaseCallback* creation_callback,
-    std::unique_ptr<probe::AsyncTaskId> task_id) {
-  probe::AsyncTask async_task(GetExecutionContext(), task_id.get());
+    std::unique_ptr<probe::AsyncTaskContext> async_task_context) {
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context.get());
   creation_callback->InvokeAndReportException(nullptr, this);
 }
 
@@ -841,11 +838,6 @@ void Database::RunTransaction(
   if (!did_try_to_count_transaction_) {
     GetExecutionContext()->CountUse(WebFeature::kReadOrWriteWebDatabase);
     did_try_to_count_transaction_ = true;
-  }
-  if (!did_try_to_count_third_party_transaction_) {
-    GetExecutionContext()->CountUseOnlyInCrossSiteIframe(
-        WebFeature::kReadOrWriteWebDatabaseThirdPartyContext);
-    did_try_to_count_third_party_transaction_ = true;
   }
 
 // FIXME: Rather than passing errorCallback to SQLTransaction and then

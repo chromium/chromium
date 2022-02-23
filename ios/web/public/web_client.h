@@ -143,12 +143,6 @@ class WebClient {
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) {}
 
-  // Allows the embedder to specify legacy TLS enforcement on a per-host basis,
-  // for example to allow users to bypass interstitial warnings on affected
-  // hosts.
-  virtual bool IsLegacyTLSAllowedForHost(WebState* web_state,
-                                         const std::string& hostname);
-
   // Calls the given |callback| with the contents of an error page to display
   // when a navigation error occurs. |error| is always a valid pointer. The
   // string passed to |callback| will be nil if no error page should be
@@ -178,8 +172,8 @@ class WebClient {
   virtual bool EnableLongPressUIContextMenu() const;
 
   // Returns the UserAgentType that should be used by default for the web
-  // content, based on the size class of |web_view| and the |url|.
-  virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
+  // content, based on the |web_state|.
+  virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                             const GURL& url);
 
   // Returns true if URL was restored via session restoration cache.

@@ -4,7 +4,6 @@
 
 #include "components/services/patch/content/patch_service.h"
 
-#include "base/no_destructor.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"

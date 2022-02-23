@@ -831,18 +831,11 @@ testcase.driveWelcomeBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
-  const isBannersFrameworkEnabled =
-      (await sendTestMessage({name: 'isBannersFrameworkEnabled'})) === 'true';
-
-  let driveWelcomeBannerQuery = '.drive-welcome-wrapper';
-  let driveWelcomeBannerDismissButtonQuery = ['cr-button.banner-close'];
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
-    driveWelcomeBannerQuery = '#banners > drive-welcome-banner';
-    driveWelcomeBannerDismissButtonQuery = [
-      '#banners > drive-welcome-banner', 'educational-banner', '#dismiss-button'
-    ];
-  }
+  await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
+  const driveWelcomeBannerQuery = '#banners > drive-welcome-banner';
+  const driveWelcomeBannerDismissButtonQuery = [
+    '#banners > drive-welcome-banner', 'educational-banner', '#dismiss-button'
+  ];
 
   // Open the Drive volume in the files-list.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -855,22 +848,8 @@ testcase.driveWelcomeBanner = async () => {
   await remoteCall.waitAndClickElement(
       appId, driveWelcomeBannerDismissButtonQuery);
 
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.waitForElement(
-        appId, '#banners > drive-welcome-banner[hidden]');
-    return;
-  }
-
-  // Check: the Drive banner should close.
-  const caller = getCaller();
-  await repeatUntil(async () => {
-    const banner = await remoteCall.waitForElementStyles(
-        appId, '.drive-welcome', ['visibility']);
-
-    if (banner.styles.visibility !== 'hidden') {
-      return pending(caller, 'Welcome banner is still visible.');
-    }
-  });
+  await remoteCall.waitForElement(
+      appId, '#banners > drive-welcome-banner[hidden]');
 };
 
 /**
@@ -881,20 +860,14 @@ testcase.driveOfflineInfoBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
-  let driveOfflineBannerShownQuery = '#offline-info-banner:not([hidden])';
-  let driveOfflineBannerHiddenQuery = '#offline-info-banner[hidden]';
-  let driveOfflineLearnMoreLinkQuery = '#offline-learn-more';
-
-  if ((await sendTestMessage({name: 'isBannersFrameworkEnabled'})) === 'true') {
-    await remoteCall.isolateBannerForTesting(
-        appId, 'drive-offline-pinning-banner');
-    driveOfflineBannerShownQuery =
-        '#banners > drive-offline-pinning-banner:not([hidden])';
-    driveOfflineBannerHiddenQuery =
-        '#banners > drive-offline-pinning-banner[hidden]';
-    driveOfflineLearnMoreLinkQuery =
-        ['#banners > drive-offline-pinning-banner', '[slot="extra-button"]'];
-  }
+  await remoteCall.isolateBannerForTesting(
+      appId, 'drive-offline-pinning-banner');
+  const driveOfflineBannerShownQuery =
+      '#banners > drive-offline-pinning-banner:not([hidden])';
+  const driveOfflineBannerHiddenQuery =
+      '#banners > drive-offline-pinning-banner[hidden]';
+  const driveOfflineLearnMoreLinkQuery =
+      ['#banners > drive-offline-pinning-banner', '[slot="extra-button"]'];
 
   // Check: the Drive Offline info banner should appear.
   await remoteCall.waitForElement(appId, driveOfflineBannerShownQuery);
@@ -920,13 +893,10 @@ testcase.driveOfflineInfoBannerWithoutFlag = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
-  let driveOfflineInfoBannerHiddenQuery = '#offline-info-banner:not([hidden])';
-  if ((await sendTestMessage({name: 'isBannersFrameworkEnabled'})) === 'true') {
-    await remoteCall.isolateBannerForTesting(
-        appId, 'drive-offline-pinning-banner');
-    driveOfflineInfoBannerHiddenQuery =
-        '#banners > drive-offline-pinning-banner';
-  }
+  await remoteCall.isolateBannerForTesting(
+      appId, 'drive-offline-pinning-banner');
+  const driveOfflineInfoBannerHiddenQuery =
+      '#banners > drive-offline-pinning-banner';
 
   // Check: the Drive Offline info banner should not appear.
   await remoteCall.waitForElementLost(appId, driveOfflineInfoBannerHiddenQuery);

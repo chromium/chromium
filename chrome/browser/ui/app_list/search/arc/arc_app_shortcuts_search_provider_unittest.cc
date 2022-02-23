@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -16,13 +17,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
@@ -57,13 +57,13 @@ class ArcAppShortcutsSearchProviderTest
     AppListTestBase::TearDown();
   }
 
-  arc::mojom::AppInfo CreateAppInfo(const std::string& name,
-                                    const std::string& activity,
-                                    const std::string& package_name) {
-    arc::mojom::AppInfo appinfo;
-    appinfo.name = name;
-    appinfo.package_name = package_name;
-    appinfo.activity = activity;
+  arc::mojom::AppInfoPtr CreateAppInfo(const std::string& name,
+                                       const std::string& activity,
+                                       const std::string& package_name) {
+    auto appinfo = arc::mojom::AppInfo::New();
+    appinfo->name = name;
+    appinfo->package_name = package_name;
+    appinfo->activity = activity;
     return appinfo;
   }
 
@@ -76,7 +76,7 @@ class ArcAppShortcutsSearchProviderTest
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
         false /* sticky */, true /* notifications_enabled */,
         true /* app_ready */, false /* suspended */, false /* shortcut */,
-        launchable);
+        launchable, ArcAppListPrefs::WindowLayout());
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));
@@ -93,7 +93,7 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   const bool launchable = GetParam();
 
   const std::string app_id = AddArcAppAndShortcut(
-      CreateAppInfo("FakeName", "FakeActivity", kFakeAppPackageName),
+      *CreateAppInfo("FakeName", "FakeActivity", kFakeAppPackageName),
       launchable);
 
   const size_t kMaxResults = launchable ? 4 : 0;

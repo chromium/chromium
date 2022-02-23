@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void OnCaretBoundsChanged(const TextInputClient* client) override;
   void CancelComposition(const TextInputClient* client) override;
   bool IsCandidatePopupOpen() const override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 
   // Overriden from ui::LinuxInputMethodContextDelegate
   void OnCommit(const std::u16string& text) override;
@@ -74,8 +75,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void ConfirmCompositionText();
   bool HasInputMethodResult();
   bool NeedInsertChar(const std::u16string& result_text) const;
-  ui::EventDispatchDetails SendFakeProcessKeyEvent(ui::KeyEvent* event) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ui::EventDispatchDetails SendFakeProcessKeyEvent(
+      ui::KeyEvent* event) const;
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;

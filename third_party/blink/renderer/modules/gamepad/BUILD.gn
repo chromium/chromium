@@ -22,8 +22,6 @@ blink_modules_sources("gamepad") {
     "gamepad_event.h",
     "gamepad_haptic_actuator.cc",
     "gamepad_haptic_actuator.h",
-    "gamepad_list.cc",
-    "gamepad_list.h",
     "gamepad_listener.h",
     "gamepad_shared_memory_reader.cc",
     "gamepad_shared_memory_reader.h",

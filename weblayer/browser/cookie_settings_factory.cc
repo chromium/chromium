@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/cookie_settings_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

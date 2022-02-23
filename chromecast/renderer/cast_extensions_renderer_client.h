@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 
 namespace extensions {

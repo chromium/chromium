@@ -90,7 +90,8 @@ class MediaCodecLoopTest : public testing::Test {
     mock_task_runner_->FastForwardBy(base::Seconds(30));
   }
 
-  void ConstructCodecLoop(int sdk_int = base::android::SDK_VERSION_LOLLIPOP) {
+  void ConstructCodecLoop() {
+    int sdk_int = base::android::SDK_VERSION_MARSHMALLOW;
     std::unique_ptr<MediaCodecBridge> codec(new MockMediaCodecBridge());
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
@@ -198,7 +199,7 @@ class MediaCodecLoopTest : public testing::Test {
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
-  const int sdk_int = base::android::SDK_VERSION_LOLLIPOP;
+  const int sdk_int = base::android::SDK_VERSION_MARSHMALLOW;
   codec_loop_ = std::make_unique<MediaCodecLoop>(
       sdk_int, client_.get(), std::move(codec),
       scoped_refptr<base::SingleThreadTaskRunner>());

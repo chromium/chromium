@@ -19,27 +19,34 @@ ChromeWebTest::~ChromeWebTest() {}
 
 ChromeWebTest::ChromeWebTest(std::unique_ptr<web::WebClient> web_client,
                              web::WebTaskEnvironment::Options options)
-    : web::WebTestWithWebState(std::move(web_client), options),
-      chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
+    : web::WebTestWithWebState(std::move(web_client), options) {}
 
 ChromeWebTest::ChromeWebTest(web::WebTaskEnvironment::Options options)
-    : web::WebTestWithWebState(options),
-      chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
-
-void ChromeWebTest::SetUp() {
-  web::WebTestWithWebState::SetUp();
-  IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
-      chrome_browser_state_.get(),
-      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                          web::BrowserState,
-                          password_manager::MockPasswordStoreInterface>));
-}
+    : web::WebTestWithWebState(options) {}
 
 void ChromeWebTest::TearDown() {
   WaitForBackgroundTasks();
   web::WebTestWithWebState::TearDown();
 }
 
-web::BrowserState* ChromeWebTest::GetBrowserState() {
-  return chrome_browser_state_.get();
+std::unique_ptr<web::BrowserState> ChromeWebTest::CreateBrowserState() {
+  TestChromeBrowserState::Builder test_cbs_builder;
+  test_cbs_builder.AddTestingFactory(
+      IOSChromePasswordStoreFactory::GetInstance(),
+      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                          web::BrowserState,
+                          password_manager::MockPasswordStoreInterface>));
+  for (auto& pair : GetTestingFactories()) {
+    test_cbs_builder.AddTestingFactory(pair.first, pair.second);
+  }
+  return test_cbs_builder.Build();
+}
+
+TestChromeBrowserState::TestingFactories ChromeWebTest::GetTestingFactories() {
+  return {};
+}
+
+TestChromeBrowserState* ChromeWebTest::GetBrowserState() {
+  return static_cast<TestChromeBrowserState*>(
+      web::WebTestWithWebState::GetBrowserState());
 }

@@ -60,14 +60,14 @@ void ActiveDirectoryLoginScreenHandler::Show() {
   }
 
   base::DictionaryValue screen_data;
-  screen_data.SetString("realm", g_browser_process->platform_part()
-                                     ->browser_policy_connector_ash()
-                                     ->GetRealm());
+  screen_data.SetStringKey("realm", g_browser_process->platform_part()
+                                        ->browser_policy_connector_ash()
+                                        ->GetRealm());
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
       !email_domain.empty()) {
-    screen_data.SetString("emailDomain", email_domain);
+    screen_data.SetStringKey("emailDomain", email_domain);
   }
 
   ShowScreenWithData(kScreenId, &screen_data);

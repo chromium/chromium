@@ -214,10 +214,9 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   // and only add back sessions that are still current.
   DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
                                    prefs::kNtpCollapsedForeignSessions);
-  base::DictionaryValue* pref_collapsed_sessions = pref_update.Get();
-  std::unique_ptr<base::DictionaryValue> collapsed_sessions(
-      pref_collapsed_sessions->DeepCopy());
-  pref_collapsed_sessions->Clear();
+  base::Value* pref_collapsed_sessions = pref_update.Get();
+  base::Value collapsed_sessions(pref_collapsed_sessions->Clone());
+  pref_collapsed_sessions->DictClear();
 
   ScopedJavaLocalRef<jobject> last_pushed_session;
 
@@ -227,10 +226,11 @@ jboolean ForeignSessionHelper::GetForeignSessions(
     if (ShouldSkipSession(session))
       continue;
 
-    const bool is_collapsed = collapsed_sessions->HasKey(session.session_tag);
+    const bool is_collapsed =
+        (collapsed_sessions.FindKey(session.session_tag) != nullptr);
 
     if (is_collapsed)
-      pref_collapsed_sessions->SetBoolean(session.session_tag, true);
+      pref_collapsed_sessions->SetBoolKey(session.session_tag, true);
 
     last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
         env, result, ConvertUTF8ToJavaString(env, session.session_tag),

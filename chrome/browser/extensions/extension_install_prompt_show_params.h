@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class NativeWindowTracker;
@@ -54,8 +55,8 @@ class ExtensionInstallPromptShowParams {
  private:
   void WebContentsDestroyed();
 
-  Profile* profile_;
-  content::WebContents* parent_web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> parent_web_contents_;
   bool parent_web_contents_destroyed_;
   gfx::NativeWindow parent_window_;
 

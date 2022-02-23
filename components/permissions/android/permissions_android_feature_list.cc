@@ -4,6 +4,7 @@
 
 #include "components/permissions/android/permissions_android_feature_list.h"
 #include "base/android/jni_string.h"
+#include "base/notreached.h"
 #include "components/permissions/android/jni_headers/PermissionsAndroidFeatureList_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;

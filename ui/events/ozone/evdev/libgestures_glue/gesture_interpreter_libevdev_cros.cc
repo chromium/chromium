@@ -29,6 +29,10 @@
 #define REL_WHEEL_HI_RES 0x0b
 #endif
 
+#ifndef INPUT_PROP_HAPTICPAD
+#define INPUT_PROP_HAPTICPAD 0x07
+#endif
+
 namespace ui {
 
 namespace {
@@ -72,6 +76,8 @@ HardwareProperties GestureHardwareProperties(
   hwprops.support_semi_mt = Event_Get_Semi_MT(evdev);
   /* buttonpad means a physical button under the touch surface */
   hwprops.is_button_pad = Event_Get_Button_Pad(evdev);
+  hwprops.is_haptic_pad =
+      EvdevBitIsSet(evdev->info.prop_bitmask, INPUT_PROP_HAPTICPAD);
   hwprops.has_wheel = EvdevBitIsSet(evdev->info.rel_bitmask, REL_WHEEL) ||
                       EvdevBitIsSet(evdev->info.rel_bitmask, REL_HWHEEL);
   hwprops.wheel_is_hi_res =
@@ -243,6 +249,15 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosStopped(
   ReleaseMouseButtons(timestamp);
 }
 
+void GestureInterpreterLibevdevCros::SetupHapticButtonGeneration(
+    const base::RepeatingCallback<void(bool)>& callback) {
+  click_callback_ = callback;
+
+  GesturesProp* property =
+      property_provider_->GetProperty(id_, "Enable Haptic Button Generation");
+  property->SetBoolValue(std::vector<bool>(1, true));
+}
+
 void GestureInterpreterLibevdevCros::OnGestureReady(const Gesture* gesture) {
   switch (gesture->type) {
     case kGestureTypeMove:
@@ -358,6 +373,10 @@ void GestureInterpreterLibevdevCros::OnGestureButtonsChange(
 
   if (!cursor_)
     return;  // No cursor!
+
+  if (!buttons->is_tap && click_callback_) {
+    click_callback_.Run(buttons->down);
+  }
 
   DispatchChangedMouseButtons(buttons->down, true, gesture->end_time);
   DispatchChangedMouseButtons(buttons->up, false, gesture->end_time);

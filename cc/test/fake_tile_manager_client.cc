@@ -4,7 +4,7 @@
 
 #include "cc/test/fake_tile_manager_client.h"
 
-#include <vector>
+#include "cc/tiles/tiles_with_resource_iterator.h"
 
 namespace cc {
 
@@ -23,13 +23,18 @@ FakeTileManagerClient::BuildEvictionQueue(TreePriority tree_priority) {
   return nullptr;
 }
 
-gfx::ColorSpace FakeTileManagerClient::GetRasterColorSpace(
-    gfx::ContentColorUsage /*content_color_usage*/) const {
-  return color_space_;
+std::unique_ptr<TilesWithResourceIterator>
+FakeTileManagerClient::CreateTilesWithResourceIterator() {
+  return nullptr;
 }
 
-float FakeTileManagerClient::GetSDRWhiteLevel() const {
-  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
+TargetColorParams FakeTileManagerClient::GetTargetColorParams(
+    gfx::ContentColorUsage /*content_color_usage*/) const {
+  TargetColorParams result;
+  result.color_space = color_space_;
+  result.sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  result.hdr_max_luminance_relative = 1.f;
+  return result;
 }
 
 size_t FakeTileManagerClient::GetFrameIndexForImage(

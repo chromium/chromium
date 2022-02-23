@@ -114,29 +114,22 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   DCHECK(!base::Contains(worker_process_map_, embedded_worker_id))
       << embedded_worker_id << " already has a process allocated";
 
-  // Create a SiteInstance to get the renderer process from. Use the site URL
-  // from the StoragePartition in case this StoragePartition is for guests
-  // (e.g., <webview>).
+  // Create a SiteInstance to get the renderer process from.
+  //
+  // TODO(alexmos): Support CrossOriginIsolated for guests.
   DCHECK(storage_partition_);
-  const bool is_guest =
-      storage_partition_ &&
-      !storage_partition_->site_for_guest_service_worker_or_shared_worker()
-           .is_empty();
-  const GURL service_worker_url =
-      is_guest
-          ? storage_partition_->site_for_guest_service_worker_or_shared_worker()
-          : script_url;
+  const bool is_guest = storage_partition_->is_guest();
   const bool is_coop_coep_cross_origin_isolated =
       !is_guest && cross_origin_embedder_policy.has_value() &&
       network::CompatibleWithCrossOriginIsolated(
           cross_origin_embedder_policy->value);
   UrlInfo url_info(
-      UrlInfoInit(service_worker_url)
+      UrlInfoInit(script_url)
           .WithStoragePartitionConfig(storage_partition_->GetConfig())
           .WithWebExposedIsolationInfo(
               is_coop_coep_cross_origin_isolated
                   ? WebExposedIsolationInfo::CreateIsolated(
-                        url::Origin::Create(service_worker_url))
+                        url::Origin::Create(script_url))
                   : WebExposedIsolationInfo::CreateNonIsolated()));
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForServiceWorker(

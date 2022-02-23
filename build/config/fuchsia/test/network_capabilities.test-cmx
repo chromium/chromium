@@ -2,9 +2,9 @@
   "facets": {
     "fuchsia.test": {
       "injected-services": {
-        "fuchsia.net.interfaces.State": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
-        "fuchsia.net.name.Lookup": "fuchsia-pkg://fuchsia.com/dns-resolver#meta/dns-resolver.cmx",
-        "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
+        "fuchsia.net.interfaces.State": "fuchsia-pkg://fuchsia.com/network-legacy-deprecated#meta/netstack.cmx",
+        "fuchsia.net.name.Lookup": "fuchsia-pkg://fuchsia.com/network-legacy-deprecated#meta/dns-resolver.cmx",
+        "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/network-legacy-deprecated#meta/netstack.cmx",
         "fuchsia.stash.SecureStore": "fuchsia-pkg://fuchsia.com/stash#meta/stash_secure.cmx"
       },
       "system-services": [

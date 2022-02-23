@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 class PolicyWatcherBrowserAgent;

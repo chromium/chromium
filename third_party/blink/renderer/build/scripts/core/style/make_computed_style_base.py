@@ -30,12 +30,11 @@ ALIGNMENT_ORDER = [
     'RotateTransformOperation',
     'TranslateTransformOperation',
     'GridTrackList',
-    'Vector<GridTrackSize, 1>',
-    'absl::optional<IntSize>',
+    'ComputedGridTrackList',
+    'absl::optional<gfx::Size>',
     'double',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
-    'OrderedNamedGridLines',
     'NamedGridAreaMap',
     'TransformOperations',
     'Vector<CSSPropertyID>',
@@ -62,7 +61,7 @@ ALIGNMENT_ORDER = [
     'ScrollMargin',
     'LengthBox',
     'LengthSize',
-    'FloatSize',
+    'gfx::SizeF',
     'LengthPoint',
     'Length',
     'UnzoomedLength',
@@ -151,7 +150,16 @@ def _create_groups(properties):
                 current_group_dict[group_name] = current_group_dict.get(
                     group_name, {None: []})
                 current_group_dict = current_group_dict[group_name]
-        current_group_dict[None].extend(_create_fields(property_))
+        field, flag_field = _create_fields(property_)
+        if field is not None:
+            current_group_dict[None].append(field)
+
+        # The flag field for this property, if any, should not be part of
+        # the same group as the property; since it is not inherited
+        # (you cannot inherit the inherit flag), that would always preclude
+        # copy-on-write for the group in InheritFrom().
+        if flag_field is not None:
+            root_group_dict[None].append(flag_field)
 
     return _dict_to_group(None, root_group_dict)
 
@@ -220,12 +228,18 @@ def _create_enums(properties):
     for property_ in properties:
         # Only generate enums for keyword properties that do not
         # require includes.
-        if (property_['field_template'] in ('keyword', 'multi_keyword')
+        if (property_['field_template'] in ('keyword', 'multi_keyword',
+                                            'bitset_keyword')
                 and len(property_['include_paths']) == 0):
-            enum = Enum(
-                property_['type_name'],
-                property_['keywords'],
-                is_set=(property_['field_template'] == 'multi_keyword'))
+            if property_['field_template'] == 'multi_keyword':
+                set_type = 'multi'
+            elif property_['field_template'] == 'bitset_keyword':
+                set_type = 'bitset'
+            else:
+                set_type = None
+            enum = Enum(property_['type_name'],
+                        property_['keywords'],
+                        set_type=set_type)
             if property_['field_template'] == 'multi_keyword':
                 assert property_['keywords'][0] == 'none', \
                     "First keyword in a 'multi_keyword' field must be " \
@@ -265,6 +279,8 @@ def _create_property_field(property_):
         size = int(math.ceil(math.log(len(property_['keywords']), 2)))
     elif property_['field_template'] == 'multi_keyword':
         size = len(property_['keywords']) - 1  # Subtract 1 for 'none' keyword
+    elif property_['field_template'] == 'bitset_keyword':
+        size = len(property_['keywords'])
     elif property_['field_template'] == 'external':
         size = None
     elif property_['field_template'] == 'primitive':
@@ -331,19 +347,25 @@ def _create_inherited_flag_field(property_):
 
 def _create_fields(property_):
     """
-    Create ComputedStyle fields from a property and return a list of Fields.
+    Create ComputedStyle fields from a property and return two Fields
+    (of which the last, or both, may be None). The first Field is for
+    the property itself. The second Field is a special boolean for
+    independent properties that stores whether the property was set
+    to the “inherit” value or not; it is returned separately because
+    you may want to put it on the top level, not in a group.
     """
-    fields = []
+    field = None
+    flag_field = None
     # Only generate properties that have a field template
     if property_['field_template'] is not None:
         # If the property is independent, add the single-bit sized isInherited
         # flag to the list of Fields as well.
         if property_['independent']:
-            fields.append(_create_inherited_flag_field(property_))
+            flag_field = _create_inherited_flag_field(property_)
 
-        fields.append(_create_property_field(property_))
+        field = _create_property_field(property_)
 
-    return fields
+    return field, flag_field
 
 
 def _reorder_bit_fields(bit_fields):

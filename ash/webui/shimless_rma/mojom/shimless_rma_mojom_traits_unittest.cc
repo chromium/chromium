@@ -63,46 +63,43 @@ class ShimlessRmaMojoToProtoTest : public testing::Test {
 };
 
 TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
-  constexpr auto enums = base::MakeFixedFlatMap<mojom::RmaState,
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::State,
                                                 rmad::RmadState::StateCase>(
-      {{mojom::RmaState::kWelcomeScreen, rmad::RmadState::kWelcome},
-       {mojom::RmaState::kSelectComponents, rmad::RmadState::kComponentsRepair},
-       {mojom::RmaState::kChooseDestination,
-        rmad::RmadState::kDeviceDestination},
-       {mojom::RmaState::kChooseWriteProtectDisableMethod,
+      {{mojom::State::kWelcomeScreen, rmad::RmadState::kWelcome},
+       {mojom::State::kSelectComponents, rmad::RmadState::kComponentsRepair},
+       {mojom::State::kChooseDestination, rmad::RmadState::kDeviceDestination},
+       {mojom::State::kChooseWipeDevice, rmad::RmadState::kWipeSelection},
+       {mojom::State::kChooseWriteProtectDisableMethod,
         rmad::RmadState::kWpDisableMethod},
-       {mojom::RmaState::kEnterRSUWPDisableCode,
-        rmad::RmadState::kWpDisableRsu},
-       {mojom::RmaState::kWaitForManualWPDisable,
+       {mojom::State::kEnterRSUWPDisableCode, rmad::RmadState::kWpDisableRsu},
+       {mojom::State::kWaitForManualWPDisable,
         rmad::RmadState::kWpDisablePhysical},
-       {mojom::RmaState::kWPDisableComplete,
-        rmad::RmadState::kWpDisableComplete},
-       {mojom::RmaState::kChooseFirmwareReimageMethod,
-        rmad::RmadState::kUpdateRoFirmware},
-       {mojom::RmaState::kRestock, rmad::RmadState::kRestock},
-       {mojom::RmaState::kUpdateDeviceInformation,
+       {mojom::State::kWPDisableComplete, rmad::RmadState::kWpDisableComplete},
+       {mojom::State::kUpdateRoFirmware, rmad::RmadState::kUpdateRoFirmware},
+       {mojom::State::kRestock, rmad::RmadState::kRestock},
+       {mojom::State::kUpdateDeviceInformation,
         rmad::RmadState::kUpdateDeviceInfo},
-       {mojom::RmaState::kCheckCalibration, rmad::RmadState::kCheckCalibration},
-       {mojom::RmaState::kSetupCalibration, rmad::RmadState::kSetupCalibration},
-       {mojom::RmaState::kRunCalibration, rmad::RmadState::kRunCalibration},
-       {mojom::RmaState::kProvisionDevice, rmad::RmadState::kProvisionDevice},
-       {mojom::RmaState::kWaitForManualWPEnable,
+       {mojom::State::kCheckCalibration, rmad::RmadState::kCheckCalibration},
+       {mojom::State::kSetupCalibration, rmad::RmadState::kSetupCalibration},
+       {mojom::State::kRunCalibration, rmad::RmadState::kRunCalibration},
+       {mojom::State::kProvisionDevice, rmad::RmadState::kProvisionDevice},
+       {mojom::State::kWaitForManualWPEnable,
         rmad::RmadState::kWpEnablePhysical},
-       {mojom::RmaState::kFinalize, rmad::RmadState::kFinalize},
-       {mojom::RmaState::kRepairComplete, rmad::RmadState::kRepairComplete}});
+       {mojom::State::kFinalize, rmad::RmadState::kFinalize},
+       {mojom::State::kRepairComplete, rmad::RmadState::kRepairComplete}});
 
   // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
   // toMojo conversion is reachable, unlike most other enums.
-  EXPECT_EQ(static_cast<int32_t>(mojom::RmaState::kUnknown), 0);
+  EXPECT_EQ(static_cast<int32_t>(mojom::State::kUnknown), 0);
   EXPECT_EQ(static_cast<int32_t>(rmad::RmadState::STATE_NOT_SET), 0);
   // This test hits a NOTREACHED so it is a release mode only test.
   EXPECT_EQ(
-      (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
+      (mojo::EnumTraits<mojom::State, rmad::RmadState::StateCase>::ToMojom(
           rmad::RmadState::STATE_NOT_SET)),
-      mojom::RmaState::kUnknown);
+      mojom::State::kUnknown);
   for (auto enum_pair : enums) {
     EXPECT_EQ(
-        (mojo::EnumTraits<mojom::RmaState, rmad::RmadState::StateCase>::ToMojom(
+        (mojo::EnumTraits<mojom::State, rmad::RmadState::StateCase>::ToMojom(
             enum_pair.second)),
         enum_pair.first)
         << "enum " << enum_pair.first << " != " << enum_pair.second;
@@ -188,7 +185,11 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
        {mojom::RmadErrorCode::kCannotCancelRma,
         rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA},
        {mojom::RmadErrorCode::kCannotGetLog,
-        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG}});
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG},
+       {mojom::RmadErrorCode::kDaemonInitializationFailed,
+        rmad::RmadErrorCode::RMAD_ERROR_DAEMON_INITIALIZATION_FAILED},
+       {mojom::RmadErrorCode::kUpdateRoFirmwareFailed,
+        rmad::RmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
@@ -268,6 +269,44 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
       static_cast<int32_t>(rmad::ComponentsRepairState::ComponentRepairStatus::
                                RMAD_REPAIR_STATUS_UNKNOWN),
       0);
+
+  TestProtoToMojo(enums);
+  TestMojoToProto(enums);
+}
+
+TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<mojom::WriteProtectDisableCompleteAction,
+                             rmad::WriteProtectDisableCompleteState::Action>(
+          {{mojom::WriteProtectDisableCompleteAction::kSkippedAssembleDevice,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_SKIPPED_ASSEMBLE_DEVICE},
+           {mojom::WriteProtectDisableCompleteAction::kCompleteAssembleDevice,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_COMPLETE_ASSEMBLE_DEVICE},
+           {mojom::WriteProtectDisableCompleteAction::kCompleteKeepDeviceOpen,
+            rmad::WriteProtectDisableCompleteState::
+                RMAD_WP_DISABLE_COMPLETE_KEEP_DEVICE_OPEN}});
+
+  TestProtoToMojo(enums);
+  TestMojoToProto(enums);
+}
+
+TEST_F(ShimlessRmaMojoToProtoTest, UpdateRoFirmwareStatusMatch) {
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::UpdateRoFirmwareStatus,
+                                                rmad::UpdateRoFirmwareStatus>(
+      {{mojom::UpdateRoFirmwareStatus::kWaitUsb,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_WAIT_USB},
+       {mojom::UpdateRoFirmwareStatus::kFileNotFound,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_FILE_NOT_FOUND},
+       {mojom::UpdateRoFirmwareStatus::kDownloading,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING},
+       {mojom::UpdateRoFirmwareStatus::kUpdating,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING},
+       {mojom::UpdateRoFirmwareStatus::kRebooting,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING},
+       {mojom::UpdateRoFirmwareStatus::kComplete,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_COMPLETE}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

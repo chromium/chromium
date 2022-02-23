@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,17 +32,17 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -62,9 +62,9 @@ namespace {
 constexpr SquareSizePx kDefaultImageSize = 100;
 constexpr char kIconUrl[] = "https://example.com/app.ico";
 
-std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
+std::unique_ptr<WebAppInstallInfo> ConvertWebAppToRendererWebAppInstallInfo(
     const WebApp& app) {
-  auto web_application_info = std::make_unique<WebApplicationInfo>();
+  auto web_application_info = std::make_unique<WebAppInstallInfo>();
   // Most fields are expected to be populated by a manifest data in a subsequent
   // override install process data flow. TODO(loyso): Make it more robust.
   web_application_info->description = base::UTF8ToUTF16(app.description());
@@ -119,8 +119,8 @@ std::unique_ptr<WebAppDataRetriever> ConvertWebAppToDataRetriever(
     const WebApp& app) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
 
-  data_retriever->SetRendererWebApplicationInfo(
-      ConvertWebAppToRendererWebApplicationInfo(app));
+  data_retriever->SetRendererWebAppInstallInfo(
+      ConvertWebAppToRendererWebAppInstallInfo(app));
   data_retriever->SetManifest(ConvertWebAppToManifest(app),
                               /*is_installable=*/true);
   data_retriever->SetIcons(ConvertWebAppIconsToIconsMap(app));
@@ -136,7 +136,7 @@ std::unique_ptr<WebAppDataRetriever> CreateEmptyDataRetriever() {
 std::unique_ptr<WebAppInstallTask> CreateDummyTask() {
   return std::make_unique<WebAppInstallTask>(
       /*profile=*/nullptr,
-      /*os_integration_manager=*/nullptr,
+      /*install_manager=*/nullptr,
       /*install_finalizer=*/nullptr,
       /*data_retriever=*/nullptr,
       /*registrar=*/nullptr);
@@ -170,10 +170,6 @@ class WebAppInstallManagerTest
   void SetUp() override {
     WebAppTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
 
@@ -182,13 +178,12 @@ class WebAppInstallManagerTest
     fake_registry_controller_->SetUp(profile());
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
-                                                        file_utils_);
+    icon_manager_ = std::make_unique<WebAppIconManager>(
+        profile(), registrar(), install_manager(), file_utils_);
 
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
-    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-        profile(), icon_manager_.get(), policy_manager_.get());
+    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
 
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     install_manager_->SetSubsystems(&registrar(),
@@ -203,9 +198,11 @@ class WebAppInstallManagerTest
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     install_finalizer_->SetSubsystems(
-        &registrar(), ui_manager_.get(),
+        &install_manager(), &registrar(), ui_manager_.get(),
         &fake_registry_controller_->sync_bridge(),
-        &fake_registry_controller_->os_integration_manager());
+        &fake_registry_controller_->os_integration_manager(),
+        icon_manager_.get(), policy_manager_.get(),
+        &fake_registry_controller_->translation_manager());
   }
 
   void TearDown() override {
@@ -285,7 +282,7 @@ class WebAppInstallManagerTest
 
   struct InstallResult {
     AppId app_id;
-    InstallResultCode code;
+    webapps::InstallResultCode code;
   };
 
   InstallResult InstallWebAppFromManifestWithFallback() {
@@ -295,12 +292,33 @@ class WebAppInstallManagerTest
         web_contents(), /*force_shortcut_app=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  InstallResult InstallSubApp(const AppId& parent_app_id,
+                              const GURL& install_url) {
+    UseDefaultDataRetriever(install_url);
+    url_loader().AddPrepareForLoadResults(
+        {WebAppUrlLoader::Result::kUrlLoaded});
+    url_loader().SetNextLoadUrlResult(install_url,
+                                      WebAppUrlLoader::Result::kUrlLoaded);
+    InstallResult result;
+    base::RunLoop run_loop;
+    install_manager().InstallSubApp(
+        parent_app_id, install_url,
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -311,7 +329,7 @@ class WebAppInstallManagerTest
     install_manager().InstallWebAppsAfterSync(
         std::move(web_apps),
         base::BindLambdaForTesting(
-            [&](const AppId& app_id, InstallResultCode code) {
+            [&](const AppId& app_id, webapps::InstallResultCode code) {
               result.app_id = app_id;
               result.code = code;
               run_loop.Quit();
@@ -321,7 +339,7 @@ class WebAppInstallManagerTest
   }
 
   InstallResult InstallWebAppFromInfo(
-      std::unique_ptr<WebApplicationInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_application_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_source) {
     InstallResult result;
@@ -329,12 +347,12 @@ class WebAppInstallManagerTest
     install_manager().InstallWebAppFromInfo(
         std::move(web_application_info), overwrite_existing_manifest_fields,
         ForInstallableSite::kYes, install_source,
-        base::BindLambdaForTesting(
-            [&](const AppId& installed_app_id, InstallResultCode code) {
-              result.app_id = installed_app_id;
-              result.code = code;
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                       webapps::InstallResultCode code) {
+          result.app_id = installed_app_id;
+          result.code = code;
+          run_loop.Quit();
+        }));
     run_loop.Run();
     return result;
   }
@@ -358,8 +376,8 @@ class WebAppInstallManagerTest
   int GetNumFullyInstalledApps() const {
     int num_apps = 0;
 
-    for (const WebApp& app : fake_registry_controller_->registrar().GetApps()) {
-      ALLOW_UNUSED_LOCAL(app);
+    for ([[maybe_unused]] const WebApp& app :
+         fake_registry_controller_->registrar().GetApps()) {
       ++num_apps;
     }
 
@@ -408,12 +426,12 @@ class WebAppInstallManagerTest
   void DestroyManagers() {
     // The reverse order of creation:
     ui_manager_.reset();
-    install_manager_.reset();
-    install_finalizer_.reset();
     policy_manager_.reset();
     icon_manager_.reset();
     fake_registry_controller_.reset();
     externally_installed_app_prefs_.reset();
+    install_finalizer_.reset();
+    install_manager_.reset();
 
     test_url_loader_ = nullptr;
     file_utils_ = nullptr;
@@ -442,7 +460,7 @@ class WebAppInstallManagerTest
       externally_installed_app_prefs_;
 
   // A weak ptr. The original is owned by install_manager_.
-  TestWebAppUrlLoader* test_url_loader_ = nullptr;
+  raw_ptr<TestWebAppUrlLoader> test_url_loader_ = nullptr;
   scoped_refptr<TestFileUtils> file_utils_;
 };
 
@@ -549,13 +567,14 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   // Enqueue a request to install the 1st app.
   install_manager().InstallWebAppsAfterSync(
-      {web_app1}, base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                                 InstallResultCode code) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-        EXPECT_EQ(app1_id, installed_app_id);
-        event_order.push_back(Event::App1_CallbackCalled);
-        app1_installed_run_loop.Quit();
-      }));
+      {web_app1},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app1_id, installed_app_id);
+            event_order.push_back(Event::App1_CallbackCalled);
+            app1_installed_run_loop.Quit();
+          }));
 
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
   EXPECT_EQ(0, GetNumFullyInstalledApps());
@@ -564,13 +583,14 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   // Immediately enqueue a request to install the 2nd app, WebContents is not
   // ready.
   install_manager().InstallWebAppsAfterSync(
-      {web_app2}, base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                                 InstallResultCode code) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
-        EXPECT_EQ(app2_id, installed_app_id);
-        event_order.push_back(Event::App2_CallbackCalled);
-        app2_installed_run_loop.Quit();
-      }));
+      {web_app2},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app2_id, installed_app_id);
+            event_order.push_back(Event::App2_CallbackCalled);
+            app2_installed_run_loop.Quit();
+          }));
 
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
   EXPECT_EQ(2u, task_data_retrievers.size());
@@ -642,9 +662,11 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   bool callback_called = false;
   install_manager().InstallWebAppsAfterSync(
-      {web_app}, base::BindLambdaForTesting(
-                     [&](const AppId& installed_app_id,
-                         InstallResultCode code) { callback_called = true; }));
+      {web_app},
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            callback_called = true;
+          }));
   EXPECT_TRUE(install_manager().has_web_contents_for_testing());
 
   // Wait for the task to start.
@@ -669,6 +691,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   expected_app->SetScope(url);
   expected_app->SetName("Name");
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
+  expected_app->SetInstallSourceForMetrics(webapps::WebappInstallSource::SYNC);
   expected_app->SetDescription("Description");
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
@@ -718,7 +741,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
       }));
 
   InstallResult result = InstallWebAppsAfterSync({app});
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app->app_id(), result.app_id);
 
   EXPECT_EQ(1u, registrar().GetAppIds().size());
@@ -744,6 +767,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
   expected_app->SetUserDisplayMode(DisplayMode::kBrowser);
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
+  expected_app->SetInstallSourceForMetrics(webapps::WebappInstallSource::SYNC);
   expected_app->SetThemeColor(SK_ColorRED);
   // |scope| and |description| are empty here. |display_mode| is |kUndefined|.
 
@@ -799,7 +823,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
       }));
 
   InstallResult result = InstallWebAppsAfterSync({app});
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app->app_id(), result.app_id);
 
   EXPECT_EQ(1u, registrar().GetAppIds().size());
@@ -831,7 +855,73 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   };
   std::vector<Event> event_order;
 
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
+  observer.SetWebAppWillBeUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
+        EXPECT_EQ(uninstalled_app_id, app_id);
+        event_order.push_back(Event::kObserver_OnWebAppWillBeUninstalled);
+      }));
+  observer.SetWebAppUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
+        EXPECT_EQ(uninstalled_app_id, app_id);
+        event_order.push_back(Event::kObserver_OnWebAppUninstalled);
+      }));
+
+  base::RunLoop run_loop;
+  controller().SetUninstallWithoutRegistryUpdateFromSyncDelegate(
+      base::BindLambdaForTesting(
+          [&](const std::vector<AppId>& apps_to_uninstall,
+              SyncInstallDelegate::RepeatingUninstallCallback callback) {
+            ASSERT_FALSE(apps_to_uninstall.empty());
+            EXPECT_EQ(apps_to_uninstall[0], app_id);
+            event_order.push_back(
+                Event::kUninstallWithoutRegistryUpdateFromSync);
+            install_manager().UninstallWithoutRegistryUpdateFromSync(
+                std::move(apps_to_uninstall),
+                base::BindLambdaForTesting([&, callback](
+                                               const AppId& uninstalled_app_id,
+                                               bool uninstalled) {
+                  EXPECT_EQ(uninstalled_app_id, app_id);
+                  EXPECT_TRUE(uninstalled);
+                  event_order.push_back(
+                      Event::kUninstallWithoutRegistryUpdateFromSync_Callback);
+                  run_loop.Quit();
+                  callback.Run(uninstalled_app_id, uninstalled);
+                }));
+          }));
+
+  // The sync server sends a change to delete the app.
+  sync_bridge_test_utils::DeleteApps(controller().sync_bridge(), {app_id});
+  run_loop.Run();
+
+  const std::vector<Event> expected_event_order{
+      Event::kUninstallWithoutRegistryUpdateFromSync,
+      Event::kObserver_OnWebAppWillBeUninstalled,
+      Event::kObserver_OnWebAppUninstalled,
+      Event::kUninstallWithoutRegistryUpdateFromSync_Callback};
+  EXPECT_EQ(expected_event_order, event_order);
+}
+
+TEST_P(WebAppInstallManagerTest_SyncOnly,
+       UninstallFromSyncAfterRegistryUpdateInstallManagerObserver) {
+  std::unique_ptr<WebApp> app =
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  app->SetUserDisplayMode(DisplayMode::kStandalone);
+
+  const AppId app_id = app->app_id();
+  InitRegistrarWithApp(std::move(app));
+
+  file_utils().SetNextDeleteFileRecursivelyResult(true);
+
+  enum Event {
+    kUninstallWithoutRegistryUpdateFromSync,
+    kObserver_OnWebAppWillBeUninstalled,
+    kObserver_OnWebAppUninstalled,
+    kUninstallWithoutRegistryUpdateFromSync_Callback
+  };
+  std::vector<Event> event_order;
+
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
   observer.SetWebAppWillBeUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         EXPECT_EQ(uninstalled_app_id, app_id);
@@ -895,7 +985,44 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
+  observer.SetWebAppUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
+        observer_uninstall_called = true;
+      }));
+
+  // Unknown url fails.
+  EXPECT_FALSE(UninstallExternalWebAppByUrl(
+      GURL("https://example.org/"), ExternalInstallSource::kExternalPolicy));
+
+  // Uninstall policy app first.
+  EXPECT_TRUE(UninstallExternalWebAppByUrl(
+      external_app_url, ExternalInstallSource::kExternalPolicy));
+
+  EXPECT_TRUE(registrar().GetAppById(app_id));
+  EXPECT_FALSE(observer_uninstall_called);
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
+}
+
+TEST_P(WebAppInstallManagerTest_SyncOnly,
+       PolicyAndUser_UninstallExternalWebAppInstallManagerObserver) {
+  std::unique_ptr<WebApp> policy_and_user_app =
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  policy_and_user_app->AddSource(Source::kPolicy);
+  policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+
+  const AppId app_id = policy_and_user_app->app_id();
+  const GURL external_app_url("https://example.com/path/policy");
+
+  externally_installed_app_prefs().Insert(
+      external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
+  InitRegistrarWithApp(std::move(policy_and_user_app));
+
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+
+  bool observer_uninstall_called = false;
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
         observer_uninstall_called = true;
@@ -931,7 +1058,44 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
   EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
-  WebAppTestRegistryObserverAdapter observer(&registrar());
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
+
+  bool observer_uninstalled_called = false;
+
+  observer.SetWebAppUninstalledDelegate(
+      base::BindLambdaForTesting([&](const AppId& uninstalled_app_id) {
+        EXPECT_EQ(app_id, uninstalled_app_id);
+        observer_uninstalled_called = true;
+      }));
+
+  file_utils().SetNextDeleteFileRecursivelyResult(true);
+
+  EXPECT_TRUE(UninstallWebApp(app_id));
+
+  EXPECT_FALSE(registrar().GetAppById(app_id));
+  EXPECT_TRUE(observer_uninstalled_called);
+  EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+}
+
+TEST_P(WebAppInstallManagerTest_SyncOnly,
+       DefaultAndUser_UninstallWebAppInstallManagerObserver) {
+  std::unique_ptr<WebApp> default_and_user_app =
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  default_and_user_app->AddSource(Source::kDefault);
+  default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
+
+  const AppId app_id = default_and_user_app->app_id();
+  const GURL external_app_url("https://example.com/path/default");
+
+  externally_installed_app_prefs().Insert(
+      external_app_url, app_id, ExternalInstallSource::kExternalDefault);
+  InitRegistrarWithApp(std::move(default_and_user_app));
+
+  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+
+  WebAppInstallManagerObserverAdapter observer(&install_manager());
 
   bool observer_uninstalled_called = false;
 
@@ -958,7 +1122,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   const AppId expected_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
-  auto server_web_app_info = std::make_unique<WebApplicationInfo>();
+  auto server_web_app_info = std::make_unique<WebAppInstallInfo>();
   server_web_app_info->start_url = url;
   server_web_app_info->scope = url;
   server_web_app_info->title = u"Test web app";
@@ -971,7 +1135,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   InstallResult result = InstallWebAppFromInfo(
       std::move(server_web_app_info),
       /*overwrite_existing_manifest_fields=*/false, install_source);
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(expected_app_id, result.app_id);
 
   const WebApp* web_app = registrar().GetAppById(expected_app_id);
@@ -1011,7 +1175,7 @@ TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   url_loader().SetPrepareForLoadResultLoaded();
   install_manager().OnQueuedTaskCompleted(
       task_a_ptr, base::DoNothing(), AppId(),
-      InstallResultCode::kSuccessNewInstall);
+      webapps::InstallResultCode::kSuccessNewInstall);
 
   // Task B needs to wait for WebContents to return ready.
   EXPECT_FALSE(task_b_started);
@@ -1051,7 +1215,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   UseDefaultDataRetriever(start_url);
 
   InstallResult result = InstallWebAppFromManifestWithFallback();
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 
   EXPECT_TRUE(registrar().IsInstalled(app_id));
@@ -1070,7 +1234,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   // Reproduces `ApkWebAppInstaller` install parameters.
-  auto apk_web_application_info = std::make_unique<WebApplicationInfo>();
+  auto apk_web_application_info = std::make_unique<WebAppInstallInfo>();
   apk_web_application_info->start_url = start_url;
   apk_web_application_info->scope = GURL("https://example.com/apk_scope");
   apk_web_application_info->title = u"Name from APK";
@@ -1085,7 +1249,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
                             /*overwrite_existing_manifest_fields=*/false,
                             webapps::WebappInstallSource::ARC);
 
-  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(app_id, result.app_id);
 
   const WebApp* web_app = registrar().GetAppById(app_id);
@@ -1179,6 +1343,55 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   EXPECT_EQ(SK_ColorYELLOW, IconManagerReadAppIconPixel(icon_manager(), app_id,
                                                         icon_size::k128));
+}
+
+TEST_P(WebAppInstallManagerTest_SyncOnly, InstallSubApp) {
+  const GURL parent_url{"https://example.com/parent"};
+  const AppId parent_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, parent_url);
+  const GURL install_url{"https://example.com/sub/app"};
+  const AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
+  const GURL second_install_url{"https://example.com/sub/second_app"};
+  const AppId second_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, second_install_url);
+
+  InitEmptyRegistrar();
+
+  // Install a sub-app and verify a bunch of things.
+  InstallResult result = InstallSubApp(parent_app_id, install_url);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(app_id, result.app_id);
+
+  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
+  EXPECT_EQ(DisplayMode::kStandalone,
+            registrar().GetAppEffectiveDisplayMode(app_id));
+
+  const WebApp* app = registrar().GetAppById(app_id);
+  EXPECT_EQ(parent_app_id, app->parent_app_id());
+  EXPECT_TRUE(app->IsSubAppInstalledApp());
+  EXPECT_TRUE(app->CanUserUninstallWebApp());
+
+  // One sub-app.
+  EXPECT_EQ(1ul, registrar().GetAllSubAppIds(parent_app_id).size());
+
+  // Check that we get |kSuccessAlreadyInstalled| if we try installing the same
+  // app again.
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            InstallSubApp(parent_app_id, install_url).code);
+
+  // Still one sub-app.
+  EXPECT_EQ(1ul, registrar().GetAllSubAppIds(parent_app_id).size());
+
+  // Install a different sub-app and verify count equals 2.
+  result = InstallSubApp(parent_app_id, second_install_url);
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(second_app_id, result.app_id);
+
+  // Two sub-apps.
+  EXPECT_EQ(2ul, registrar().GetAllSubAppIds(parent_app_id).size());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

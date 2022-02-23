@@ -20,8 +20,9 @@ class MethodCall;
 namespace ash {
 
 // This class exports a D-Bus service that platform daemons / userspace interact
-// with to understand the current privacy screen setting.
-class PrivacyScreenServiceProvider
+// with to understand the current privacy screen setting. Unit test is in
+// ash/display/privacy_screen_controller_unittest.cc file.
+class ASH_EXPORT PrivacyScreenServiceProvider
     : public chromeos::CrosDBusService::ServiceProviderInterface,
       public PrivacyScreenController::Observer {
  public:

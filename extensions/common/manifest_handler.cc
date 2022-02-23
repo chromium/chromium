@@ -135,7 +135,7 @@ bool ManifestHandlerRegistry::ParseExtension(Extension* extension,
   for (ManifestHandlerMap::iterator iter = handlers_.begin();
        iter != handlers_.end(); ++iter) {
     ManifestHandler* handler = iter->second;
-    if (extension->manifest()->HasPath(iter->first) ||
+    if (extension->manifest()->FindPath(iter->first) ||
         handler->AlwaysParseForType(extension->GetType())) {
       handlers_by_priority[priority_map_[handler]] = handler;
     }
@@ -156,7 +156,7 @@ bool ManifestHandlerRegistry::ValidateExtension(
   for (ManifestHandlerMap::iterator iter = handlers_.begin();
        iter != handlers_.end(); ++iter) {
     ManifestHandler* handler = iter->second;
-    if (extension->manifest()->HasPath(iter->first) ||
+    if (extension->manifest()->FindPath(iter->first) ||
         handler->AlwaysValidateForType(extension->GetType())) {
       handlers.insert(handler);
     }

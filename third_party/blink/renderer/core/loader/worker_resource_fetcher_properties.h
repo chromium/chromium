@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WORKER_RESOURCE_FETCHER_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WORKER_RESOURCE_FETCHER_PROPERTIES_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
 namespace blink {
@@ -52,10 +52,6 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
   }
   const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override;
-  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
-      const override {
-    return nullptr;
-  }
 
  private:
   const Member<WorkerOrWorkletGlobalScope> global_scope_;

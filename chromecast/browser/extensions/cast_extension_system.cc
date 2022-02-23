@@ -251,8 +251,7 @@ void CastExtensionSystem::RegisterExtensionWithRequestContexts(
 }
 
 void CastExtensionSystem::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id,
-    const UnloadedExtensionReason reason) {}
+    const std::string& extension_id) {}
 
 const base::OneShotEvent& CastExtensionSystem::ready() const {
   return ready_;

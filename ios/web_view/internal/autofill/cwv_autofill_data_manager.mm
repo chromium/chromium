@@ -89,6 +89,7 @@ class WebViewPasswordStoreConsumer
  public:
   explicit WebViewPasswordStoreConsumer(CWVAutofillDataManager* data_manager)
       : data_manager_(data_manager) {}
+
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override {
@@ -100,8 +101,13 @@ class WebViewPasswordStoreConsumer
     [data_manager_ handlePasswordStoreResults:passwords];
   }
 
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   __weak CWVAutofillDataManager* data_manager_;
+  base::WeakPtrFactory<WebViewPasswordStoreConsumer> weak_ptr_factory_{this};
 };
 
 // C++ to ObjC bridge for PasswordStoreInterface::Observer.
@@ -263,11 +269,55 @@ class WebViewPasswordStoreObserver
 
   _passwordStoreConsumer.reset(
       new ios_web_view::WebViewPasswordStoreConsumer(self));
-  _passwordStore->GetAllLogins(_passwordStoreConsumer.get());
+  _passwordStore->GetAllLogins(_passwordStoreConsumer->GetWeakPtr());
+}
+
+- (void)updatePassword:(CWVPassword*)password
+           newUsername:(nullable NSString*)newUsername
+           newPassword:(nullable NSString*)newPassword {
+  password_manager::PasswordForm* passwordForm =
+      [password internalPasswordForm];
+
+  // Only change the password if it actually changed and not empty.
+  if (newPassword && newPassword.length > 0 &&
+      ![newPassword isEqualToString:password.password]) {
+    passwordForm->password_value = base::SysNSStringToUTF16(newPassword);
+  }
+
+  // Because a password's primary key depends on its username, changing the
+  // username requires that |UpdateLoginWithPrimaryKey| is called instead.
+  if (newUsername && newUsername.length > 0 &&
+      ![newUsername isEqualToString:password.username]) {
+    // Make a local copy of the old password before updating it.
+    auto oldPasswordForm = *passwordForm;
+    passwordForm->username_value = base::SysNSStringToUTF16(newUsername);
+    auto newPasswordForm = *passwordForm;
+    _passwordStore->UpdateLoginWithPrimaryKey(newPasswordForm, oldPasswordForm);
+  } else {
+    _passwordStore->UpdateLogin(*passwordForm);
+  }
 }
 
 - (void)deletePassword:(CWVPassword*)password {
   _passwordStore->RemoveLogin(*[password internalPasswordForm]);
+}
+
+- (void)addNewPasswordForUsername:(NSString*)username
+                         password:(NSString*)password
+                             site:(NSString*)site {
+  password_manager::PasswordForm form;
+
+  DCHECK_GT(username.length, 0ul);
+  DCHECK_GT(password.length, 0ul);
+  GURL url(base::SysNSStringToUTF8(site));
+  DCHECK(url.is_valid());
+
+  form.url = password_manager_util::StripAuthAndParams(url);
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+  form.username_value = base::SysNSStringToUTF16(username);
+  form.password_value = base::SysNSStringToUTF16(password);
+
+  _passwordStore->AddLogin(form);
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username

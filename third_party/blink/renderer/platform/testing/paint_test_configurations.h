@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_PAINT_TEST_CONFIGURATIONS_H_
 
 #include <gtest/gtest.h>
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -22,6 +24,11 @@ class PaintTestConfigurations
             GetParam() & kUnderInvalidationChecking) {}
   ~PaintTestConfigurations() {
     // Must destruct all objects before toggling back feature flags.
+    std::unique_ptr<base::test::TaskEnvironment> task_environment;
+    if (!base::ThreadPoolInstance::Get()) {
+      // Create a TaskEnvironment for the garbage collection below.
+      task_environment = std::make_unique<base::test::TaskEnvironment>();
+    }
     WebHeap::CollectAllGarbageForTesting();
   }
 };

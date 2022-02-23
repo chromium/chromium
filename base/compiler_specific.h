@@ -31,23 +31,6 @@
 #define HAS_BUILTIN(x) 0
 #endif
 
-// Annotate a variable indicating it's ok if the variable is not used.
-// (Typically used to silence a compiler warning when the assignment
-// is important for some other reason.)
-// Use like:
-//   int x = ...;
-//   ALLOW_UNUSED_LOCAL(x);
-#define ALLOW_UNUSED_LOCAL(x) (void)x
-
-// Annotate a typedef or function indicating it's ok if it's not used.
-// Use like:
-//   typedef Foo Bar ALLOW_UNUSED_TYPE;
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define ALLOW_UNUSED_TYPE __attribute__((unused))
-#else
-#define ALLOW_UNUSED_TYPE
-#endif
-
 // Annotate a function indicating it should not be inlined.
 // Use like:
 //   NOINLINE void DoStuff() { ... }
@@ -108,17 +91,6 @@
 #define ALIGNAS(byte_alignment) __attribute__((aligned(byte_alignment)))
 #endif
 
-// Annotate a function indicating the caller must examine the return value.
-// Use like:
-//   int foo() WARN_UNUSED_RESULT;
-// To explicitly ignore a result, see |ignore_result()| in base/macros.h.
-#undef WARN_UNUSED_RESULT
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define WARN_UNUSED_RESULT __attribute__((warn_unused_result))
-#else
-#define WARN_UNUSED_RESULT
-#endif
-
 // In case the compiler supports it NO_UNIQUE_ADDRESS evaluates to the C++20
 // attribute [[no_unique_address]]. This allows annotating data members so that
 // they need not have an address distinct from all other non-static data members
@@ -164,7 +136,7 @@
 #endif
 
 // MemorySanitizer annotations.
-#if defined(MEMORY_SANITIZER) && !defined(OS_NACL)
+#if defined(MEMORY_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include <sanitizer/msan_interface.h>
 
 // Mark a memory region fully initialized.
@@ -194,7 +166,7 @@
 
 // DISABLE_CFI_ICALL -- Disable Control Flow Integrity indirect call checks.
 #if !defined(DISABLE_CFI_ICALL)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows also needs __declspec(guard(nocf)).
 #define DISABLE_CFI_ICALL NO_SANITIZE("cfi-icall") __declspec(guard(nocf))
 #else
@@ -207,11 +179,11 @@
 
 // Macro useful for writing cross-platform function pointers.
 #if !defined(CDECL)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define CDECL __cdecl
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
 #define CDECL
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // !defined(CDECL)
 
 // Macro for hinting that an expression is likely to be false.
@@ -237,13 +209,6 @@
 #define HAS_FEATURE(FEATURE) __has_feature(FEATURE)
 #else
 #define HAS_FEATURE(FEATURE) 0
-#endif
-
-// Macro for telling -Wimplicit-fallthrough that a fallthrough is intentional.
-#if defined(__clang__)
-#define FALLTHROUGH [[clang::fallthrough]]
-#else
-#define FALLTHROUGH
 #endif
 
 #if defined(COMPILER_GCC)
@@ -354,13 +319,11 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 #define ANALYZER_ASSUME_TRUE(arg) ::AnalyzerAssumeTrue(!!(arg))
 #define ANALYZER_SKIP_THIS_PATH() static_cast<void>(::AnalyzerNoReturn())
-#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 #else  // !defined(__clang_analyzer__)
 
 #define ANALYZER_ASSUME_TRUE(arg) (arg)
 #define ANALYZER_SKIP_THIS_PATH()
-#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 #endif  // defined(__clang_analyzer__)
 
@@ -417,6 +380,14 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #endif
 #if !defined(CONSTINIT)
 #define CONSTINIT
+#endif
+
+#if defined(__clang__)
+#define GSL_OWNER [[gsl::Owner]]
+#define GSL_POINTER [[gsl::Pointer]]
+#else
+#define GSL_OWNER
+#define GSL_POINTER
 #endif
 
 #endif  // BASE_COMPILER_SPECIFIC_H_

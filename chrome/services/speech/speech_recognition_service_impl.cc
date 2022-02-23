@@ -22,35 +22,11 @@ void SpeechRecognitionServiceImpl::BindContext(
   speech_recognition_contexts_.Add(this, std::move(context));
 }
 
-void SpeechRecognitionServiceImpl::SetUrlLoaderFactory(
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = mojo::Remote<network::mojom::URLLoaderFactory>(
-      std::move(url_loader_factory));
-  url_loader_factory_.set_disconnect_handler(
-      base::BindOnce(&SpeechRecognitionServiceImpl::DisconnectHandler,
-                     base::Unretained(this)));
-}
-
 void SpeechRecognitionServiceImpl::SetSodaPath(
     const base::FilePath& binary_path,
     const base::FilePath& config_path) {
   binary_path_ = binary_path;
   config_path_ = config_path;
-}
-
-void SpeechRecognitionServiceImpl::BindSpeechRecognitionServiceClient(
-    mojo::PendingRemote<media::mojom::SpeechRecognitionServiceClient> client) {
-  client_ = mojo::Remote<media::mojom::SpeechRecognitionServiceClient>(
-      std::move(client));
-}
-
-mojo::PendingRemote<network::mojom::URLLoaderFactory>
-SpeechRecognitionServiceImpl::GetUrlLoaderFactory() {
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory_remote;
-  url_loader_factory_->Clone(
-      pending_factory_remote.InitWithNewPipeAndPassReceiver());
-
-  return pending_factory_remote;
 }
 
 void SpeechRecognitionServiceImpl::BindRecognizer(
@@ -60,8 +36,7 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
     BindRecognizerCallback callback) {
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      (!base::PathExists(binary_path_) || !base::PathExists(config_path_))) {
+  if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
     speech_recognition_contexts_.Clear();
     receiver_.reset();
     return;
@@ -81,8 +56,7 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     BindRecognizerCallback callback) {
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      (!base::PathExists(binary_path_) || !base::PathExists(config_path_))) {
+  if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
     speech_recognition_contexts_.Clear();
     receiver_.reset();
     return;
@@ -94,11 +68,6 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
           binary_path_, config_path_));
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
-}
-
-void SpeechRecognitionServiceImpl::DisconnectHandler() {
-  if (client_.is_bound())
-    client_->OnNetworkServiceDisconnect();
 }
 
 }  // namespace speech

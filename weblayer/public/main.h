@@ -9,9 +9,10 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -30,7 +31,7 @@ struct MainParams {
   MainParams(const MainParams& other);
   ~MainParams();
 
-  MainDelegate* delegate;
+  raw_ptr<MainDelegate> delegate;
 
   // If set, logging will redirect to this file.
   base::FilePath log_filename;
@@ -40,7 +41,7 @@ struct MainParams {
 };
 
 int Main(MainParams params
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if !defined(WIN_CONSOLE_APP)
          ,
          HINSTANCE instance

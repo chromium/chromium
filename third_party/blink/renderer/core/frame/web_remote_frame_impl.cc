@@ -35,11 +35,10 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -139,9 +138,9 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
       To<HTMLFrameOwnerElement>(element);
   LocalFrame* host_frame = frame_owner_element->GetDocument().GetFrame();
   frame->InitializeCoreFrame(
-      *host_frame->GetPage(), frame_owner_element, nullptr, nullptr,
-      FrameInsertType::kInsertInConstructor, g_null_atom,
-      &host_frame->window_agent_factory(), devtools_frame_token);
+      *host_frame->GetPage(), frame_owner_element, /*parent=*/nullptr,
+      /*previous_sibling=*/nullptr, FrameInsertType::kInsertInConstructor,
+      g_null_atom, &host_frame->window_agent_factory(), devtools_frame_token);
 
   return frame;
 }
@@ -398,7 +397,7 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
 }
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {
-  return ToGfxRect(GetFrame()->View()->GetCompositingRect());
+  return GetFrame()->View()->GetCompositingRect();
 }
 
 WebString WebRemoteFrameImpl::UniqueName() const {

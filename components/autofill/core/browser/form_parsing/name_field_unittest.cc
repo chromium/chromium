@@ -69,6 +69,28 @@ TEST_F(NameFieldTest, FirstLast) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+TEST_F(NameFieldTest, NameSurname) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNameSurenameParsing);
+
+  AddTextFormFieldData("name", "name", NAME_FIRST);
+  AddTextFormFieldData("surename", "surname", NAME_LAST);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+TEST_F(NameFieldTest, NameSurname_DE) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableNameSurenameParsing);
+
+  AddTextFormFieldData("name", "name", NAME_FIRST);
+  AddTextFormFieldData("nachname", "nachname", NAME_LAST);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
 TEST_F(NameFieldTest, FirstLast2) {
   AddTextFormFieldData("first_name", "Name", NAME_FIRST);
   AddTextFormFieldData("last_name", "Name", NAME_LAST);

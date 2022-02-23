@@ -5,7 +5,9 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_IMPL_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_CONTROLLER_IMPL_H_
 
+#include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -14,9 +16,12 @@
 #include "ash/clipboard/clipboard_history_resource_manager.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 
 namespace aura {
@@ -71,6 +76,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Returns bounds for the contextual menu in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
+  void GetHistoryValuesForTest(GetHistoryValuesCallback callback) const;
+
   // Whether the ClipboardHistory has items.
   bool IsEmpty() const;
 
@@ -101,6 +108,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     confirmed_operation_callback_for_test_ = new_callback;
   }
 
+  void set_new_bitmap_to_write_while_encoding_for_test(const SkBitmap& bitmap) {
+    new_bitmap_to_write_while_encoding_for_test_ = bitmap;
+  }
+
  private:
   class AcceleratorTarget;
   class MenuDelegate;
@@ -111,8 +122,8 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   void MarkNewFeatureBadgeShown() override;
   void OnScreenshotNotificationCreated() override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
-  base::Value GetHistoryValues(
-      const std::set<std::string>& item_id_filter) const override;
+  void GetHistoryValues(const std::set<std::string>& item_id_filter,
+                        GetHistoryValuesCallback callback) const override;
   std::vector<std::string> GetHistoryItemIds() const override;
   bool PasteClipboardItemById(const std::string& item_id) override;
   bool DeleteClipboardItemById(const std::string& item_id) override;
@@ -127,6 +138,16 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // ClipboardHistoryResourceManager:
   void OnCachedImageModelUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
+
+  // Invoked by GetHistoryValues once all clipboard instances with images have
+  // been encoded into PNGs. Returns the history which tracks what is being
+  // copied to the clipboard. Only the items listed in `item_id_filter` are
+  // returned. If `item_id_filter` is empty, then all items in the history are
+  // returned.
+  void GetHistoryValuesWithEncodedPNGs(
+      const std::set<std::string>& item_id_filter,
+      GetHistoryValuesCallback callback,
+      std::map<base::UnguessableToken, std::vector<uint8_t>> encoded_pngs);
 
   void ExecuteSelectedMenuItem(int event_flags);
 
@@ -199,6 +220,12 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when the controller is notified of the confirmed clipboard data
   // operation.
   base::RepeatingClosure confirmed_operation_callback_for_test_;
+
+  // A new bitmap to be written to the clipboard while existing images are being
+  // encoded during `GetHistoryValues()`, which will force `GetHistoryValues()`
+  // to re-run in order to encode this new bitmap. This member is marked mutable
+  // so it can be cleared once it has been written to the clipboard.
+  mutable SkBitmap new_bitmap_to_write_while_encoding_for_test_;
 
   base::WeakPtrFactory<ClipboardHistoryControllerImpl> weak_ptr_factory_{this};
 };

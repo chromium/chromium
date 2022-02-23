@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,6 +7,7 @@ when parsing a newly given variations seed.
 """
 
 import argparse
+import http
 import json
 import logging
 import os
@@ -14,16 +15,17 @@ import shutil
 import sys
 import tempfile
 import time
-import six.moves.urllib.error
+from functools import partial
+from http.server import SimpleHTTPRequestHandler
+from threading import Thread
 
 import common
 import variations_seed_access_helper as seed_helper
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
-_WEBDRIVER_PATH = os.path.join(_SRC_DIR, 'third_party', 'webdriver', 'pylib')
+_VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
 
-sys.path.insert(0, _WEBDRIVER_PATH)
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
@@ -42,13 +44,24 @@ _TEST_CASES = [
         'expected_text': 'Success',
     },
     {
-        # TODO(crbug.com/1234165): Make tests hermetic by using a test http
-        # server or WPR.
-        'url': 'https://chromium.org/',
+        'url': 'http://localhost:8000',
         'expected_id': 'sites-chrome-userheader-title',
         'expected_text': 'The Chromium Projects',
     },
 ]
+
+
+def _get_httpd():
+  """Returns a HTTPServer instance."""
+  hostname = "localhost"
+  port = 8000
+  directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, "http_server")
+  httpd = None
+  handler = partial(SimpleHTTPRequestHandler, directory=directory)
+  httpd = http.server.HTTPServer((hostname, port), handler)
+  httpd.timeout = 0.5
+  httpd.allow_reuse_address = True
+  return httpd
 
 
 def _get_platform():
@@ -128,8 +141,11 @@ def _confirm_new_seed_downloaded(user_data_dir,
   return False
 
 
-def _run_tests():
+def _run_tests(*args):
   """Runs the smoke tests.
+
+  Args:
+    args: Arguments to be passed to the chrome binary.
 
   Returns:
     0 if tests passed, otherwise 1.
@@ -144,6 +160,8 @@ def _run_tests():
   chrome_options.binary_location = path_chrome
   chrome_options.add_argument('user-data-dir=' + user_data_dir)
   chrome_options.add_argument('log-file=' + log_file)
+  for arg in args:
+    chrome_options.add_argument(arg)
 
   # By default, ChromeDriver passes in --disable-backgroud-networking, however,
   # fetching variations seeds requires network connection, so override it.
@@ -161,7 +179,7 @@ def _run_tests():
     # Inject the test seed.
     # This is a path as fallback when |seed_helper.load_test_seed_from_file()|
     # can't find one under src root.
-    hardcoded_seed_path = os.path.join(_THIS_DIR, 'variations_smoke_test_data',
+    hardcoded_seed_path = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA,
                              'variations_seed_beta_%s.json' % _get_platform())
     seed, signature = seed_helper.load_test_seed_from_file(hardcoded_seed_path)
     if not seed or not signature:
@@ -218,13 +236,25 @@ def _run_tests():
 
     shutil.rmtree(log_file, ignore_errors=True)
     if driver:
-      try:
-        driver.quit()
-      except six.moves.urllib.error.URLError:
-        # Ignore the error as ChromeDriver may have already exited.
-        pass
+      driver.quit()
 
   return 0
+
+
+def _start_local_http_server():
+  """Starts a local http server.
+
+  Returns:
+    A local http.server.HTTPServer.
+  """
+  httpd = _get_httpd()
+  thread = None
+  address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
+  logging.info("%s is used as local http server.", address)
+  thread = Thread(target=httpd.serve_forever)
+  thread.setDaemon(True)
+  thread.start()
+  return httpd
 
 
 def main_run(args):
@@ -232,12 +262,17 @@ def main_run(args):
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
-  args, _ = parser.parse_known_args()
-  rc = _run_tests()
-  if args.isolated_script_test_output:
-    with open(args.isolated_script_test_output, 'w') as f:
-      common.record_local_script_results('run_variations_smoke_tests', f, [],
-                                         rc == 0)
+  args, rest = parser.parse_known_args()
+
+  httpd = _start_local_http_server()
+  try:
+    rc = _run_tests(*rest)
+    if args.isolated_script_test_output:
+      with open(args.isolated_script_test_output, 'w') as f:
+        common.record_local_script_results('run_variations_smoke_tests', f, [],
+                                           rc == 0)
+  finally:
+    httpd.shutdown()
 
   return rc
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -113,7 +114,7 @@ class ANIMATION_EXPORT AnimationContainer
       AnimationRunner::CreateDefaultAnimationRunner();
   bool has_custom_animation_runner_ = false;
 
-  AnimationContainerObserver* observer_ = nullptr;
+  raw_ptr<AnimationContainerObserver> observer_ = nullptr;
 };
 
 }  // namespace gfx

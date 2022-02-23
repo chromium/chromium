@@ -14,7 +14,7 @@ class WasmPsPdfKitStory(press_story.PressStory):
 
   def ParseTestResults(self, action_runner):
     self.AddJavaScriptMeasurement(
-        'Total', 'score', """
+        'Total', 'ms', """
         parseInt(document.querySelector(
           '#root > div > div:nth-child(10) > div.Result >' +
           'div.Result-score > div > div.Score-value'

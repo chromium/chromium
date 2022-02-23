@@ -22,12 +22,12 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
-#include "absl/time/clock.h"
-#include "absl/time/time.h"
-#include "absl/types/optional.h"
+#include "absl/memory/memory.h"    // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
+#include "absl/time/clock.h"       // from @com_google_absl
+#include "absl/time/time.h"        // from @com_google_absl
+#include "absl/types/optional.h"   // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 
@@ -74,7 +74,16 @@ namespace vision {
 class FrameBuffer {
  public:
   // Colorspace formats.
-  enum class Format { kRGBA, kRGB, kNV12, kNV21, kYV12, kYV21, kGRAY };
+  enum class Format {
+    kRGBA,
+    kRGB,
+    kNV12,
+    kNV21,
+    kYV12,
+    kYV21,
+    kGRAY,
+    kUNKNOWN
+  };
 
   // Stride information.
   struct Stride {
@@ -85,6 +94,13 @@ class FrameBuffer {
     // pixels in bytes. It may be larger than the size of a single pixel to
     // account for interleaved image data or padded formats.
     int pixel_stride_bytes;
+
+    bool operator==(const Stride& other) const {
+      return row_stride_bytes == other.row_stride_bytes &&
+             pixel_stride_bytes == other.pixel_stride_bytes;
+    }
+
+    bool operator!=(const Stride& other) const { return !operator==(other); }
   };
 
   // YUV data structure.

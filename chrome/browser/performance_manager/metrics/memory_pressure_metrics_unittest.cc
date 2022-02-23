@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -47,12 +48,12 @@ class MemoryPressureMetricsTest : public GraphTestHarness {
   MemoryPressureMetrics* metrics() { return metrics_; }
 
  private:
-  MemoryPressureMetrics* metrics_;
+  raw_ptr<MemoryPressureMetrics> metrics_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Very flaky on Android. http://crbug.com/1069043.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestHistograms DISABLED_TestHistograms
 #else
 #define MAYBE_TestHistograms TestHistograms

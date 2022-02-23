@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 

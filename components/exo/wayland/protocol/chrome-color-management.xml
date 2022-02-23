@@ -65,6 +65,7 @@
       <entry name="srgb" value="2" summary="sRGB transfer function"/>
       <entry name="bt2087" value="3" summary="BT.2087 transfer function"/>
       <entry name="adobergb" value="4" summary="AdobeRGB transfer function"/>
+      <entry name="pq" value="5" summary="Perceptual quantizer / SMPTEST2084"/>
     </enum>
 
     <enum name="chromaticity_names">

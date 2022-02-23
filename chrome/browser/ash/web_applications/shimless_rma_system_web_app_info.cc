@@ -7,17 +7,17 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_shimless_rma_resources.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/grit/ash_shimless_rma_resources.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForShimlessRMASystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIShimlessRMAUrl);
   info->scope = GURL(ash::kChromeUIShimlessRMAUrl);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_SHIMLESS_RMA_APP_TITLE);
@@ -39,8 +39,8 @@ ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
                                     GURL(ash::kChromeUIShimlessRMAUrl),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
-ShimlessRMASystemAppDelegate::GetWebAppInfo() const {
+std::unique_ptr<WebAppInstallInfo> ShimlessRMASystemAppDelegate::GetWebAppInfo()
+    const {
   return CreateWebAppInfoForShimlessRMASystemWebApp();
 }
 

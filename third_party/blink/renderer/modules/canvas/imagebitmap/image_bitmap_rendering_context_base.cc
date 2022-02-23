@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/image_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -39,16 +40,22 @@ void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();
 }
 
+void ImageBitmapRenderingContextBase::Dispose() {
+  Stop();
+  CanvasRenderingContext::Dispose();
+}
+
 void ImageBitmapRenderingContextBase::ResetInternalBitmapToBlackTransparent(
     int width,
     int height) {
   SkBitmap black_bitmap;
-  black_bitmap.allocN32Pixels(width, height);
-  black_bitmap.eraseARGB(0, 0, 0, 0);
-  auto image = SkImage::MakeFromBitmap(black_bitmap);
-  if (image) {
-    image_layer_bridge_->SetImage(
-        UnacceleratedStaticBitmapImage::Create(image));
+  if (black_bitmap.tryAllocN32Pixels(width, height)) {
+    black_bitmap.eraseARGB(0, 0, 0, 0);
+    auto image = SkImage::MakeFromBitmap(black_bitmap);
+    if (image) {
+      image_layer_bridge_->SetImage(
+          UnacceleratedStaticBitmapImage::Create(image));
+    }
   }
 }
 
@@ -84,8 +91,8 @@ ImageBitmapRenderingContextBase::GetImageAndResetInternal() {
   return copy_image;
 }
 
-void ImageBitmapRenderingContextBase::SetUV(const FloatPoint& left_top,
-                                            const FloatPoint& right_bottom) {
+void ImageBitmapRenderingContextBase::SetUV(const gfx::PointF& left_top,
+                                            const gfx::PointF& right_bottom) {
   image_layer_bridge_->SetUV(left_top, right_bottom);
 }
 

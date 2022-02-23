@@ -10,9 +10,25 @@
 
 #include "base/check.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/ui_util.h"
 
 namespace updater {
 namespace ui {
+
+// Returns the system color corresponding to `high_contrast_color_index` if the
+// system is in high contrast mode. Otherwise, it returns `normal_color`.
+COLORREF GetColor(COLORREF normal_color, int high_contrast_color_index) {
+  return IsHighContrastOn() ? ::GetSysColor(high_contrast_color_index)
+                            : normal_color;
+}
+
+// Returns the system color brush corresponding to `high_contrast_color_index`
+// if the system is in high contrast mode. Otherwise, it returns `normal_brush`.
+HBRUSH GetColorBrush(const WTL::CBrush& normal_brush,
+                     int high_contrast_color_index) {
+  return IsHighContrastOn() ? ::GetSysColorBrush(high_contrast_color_index)
+                            : HBRUSH{normal_brush};
+}
 
 CaptionButton::CaptionButton() = default;
 CaptionButton::~CaptionButton() = default;
@@ -101,7 +117,9 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   CRect button_rect;
   GetClientRect(&button_rect);
 
-  COLORREF bk_color(is_mouse_hovering_ ? kCaptionBkHover : bk_color_);
+  COLORREF bk_color(is_mouse_hovering_
+                        ? GetColor(kCaptionBkHover, COLOR_HIGHLIGHT)
+                        : GetColor(bk_color_, COLOR_WINDOW));
   dc.FillSolidRect(&button_rect, bk_color);
 
   int rgn_width = button_rect.Width() * 12 / 31;
@@ -112,7 +130,9 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   rgn.OffsetRgn((button_rect.Width() - rgn_width) / 2,
                 (button_rect.Height() - rgn_height) / 2);
 
-  dc.FillRgn(rgn, foreground_brush_);
+  dc.FillRgn(rgn, GetColorBrush(foreground_brush_, is_mouse_hovering_
+                                                       ? COLOR_HIGHLIGHTTEXT
+                                                       : COLOR_BTNTEXT));
 
   const UINT button_state = draw_item_struct->itemState;
   if (button_state & ODS_FOCUS && button_state & ODS_SELECTED)
@@ -274,7 +294,7 @@ LRESULT OwnerDrawTitleBarWindow::OnEraseBkgnd(UINT,
   CRect rect;
   GetClientRect(&rect);
 
-  dc.FillSolidRect(&rect, bk_color_);
+  dc.FillSolidRect(&rect, GetColor(bk_color_, COLOR_WINDOW));
   return 1;
 }
 
@@ -452,10 +472,10 @@ LRESULT CustomDlgColors::OnCtrlColor(UINT,
   handled = true;
 
   WTL::CDCHandle dc(reinterpret_cast<HDC>(wparam));
-  SetBkColor(dc, bk_color_);
-  SetTextColor(dc, text_color_);
+  SetBkColor(dc, GetColor(bk_color_, COLOR_WINDOW));
+  SetTextColor(dc, GetColor(text_color_, COLOR_WINDOWTEXT));
 
-  return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(bk_brush_));
+  return reinterpret_cast<LRESULT>(GetColorBrush(bk_brush_, COLOR_WINDOW));
 }
 
 CustomProgressBarCtrl::CustomProgressBarCtrl()
@@ -546,7 +566,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
 
       dc.FrameRect(r, empty_frame_brush_);
       r.DeflateRect(1, 1);
-      dc.FillSolidRect(r, empty_fill_color_);
+      dc.FillSolidRect(r, GetColor(empty_fill_color_, COLOR_WINDOWTEXT));
     }
   }
 
@@ -575,7 +595,8 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
                kProgressInnerFrameDark);
 
   progress_bar_rect.DeflateRect(1, 1);
-  GradientFill(dc, progress_bar_rect, bar_color_light_, bar_color_dark_);
+  GradientFill(dc, progress_bar_rect, GetColor(bar_color_light_, COLOR_WINDOW),
+               GetColor(bar_color_dark_, COLOR_WINDOW));
 
   return 0;
 }

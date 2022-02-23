@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -79,7 +78,7 @@ class HistoryStateOperationsTest : public web::WebIntTest {
   const GURL& state_operations_url() { return state_operations_url_; }
 
   // Reloads the page and waits for the load to finish.
-  bool Reload() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool Reload() {
     return ExecuteBlockAndWaitForLoad(GetLastCommittedItem()->GetURL(), ^{
       // TODO(crbug.com/677364): Use NavigationManager::Reload() once it no
       // longer requires a web delegate.

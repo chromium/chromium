@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_COMMON_MEDIA_CAST_MEDIA_DRM_BRIDGE_CLIENT_H_
 #define CHROMECAST_COMMON_MEDIA_CAST_MEDIA_DRM_BRIDGE_CLIENT_H_
 
-#include "base/macros.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/media/cdm/playready_drm_delegate_android.h"
 #include "components/cdm/common/widevine_drm_delegate_android.h"

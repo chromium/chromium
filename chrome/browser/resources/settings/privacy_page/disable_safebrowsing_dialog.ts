@@ -11,7 +11,8 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './disable_safebrowsing_dialog.html.js';
 
 export interface SettingsDisableSafebrowsingDialogElement {
   $: {
@@ -27,7 +28,7 @@ export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   connectedCallback() {

@@ -10,7 +10,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -72,4 +72,4 @@ TEST_P(LayerTreeHostMirrorPixelTest, MirrorLayer) {
 }  // namespace
 }  // namespace cc
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

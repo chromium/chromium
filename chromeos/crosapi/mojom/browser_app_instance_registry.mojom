@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module crosapi.mojom;
 
@@ -19,6 +19,16 @@ struct BrowserWindowInstanceUpdate {
 
   // Browser window is currently activated.
   bool is_active@2;
+
+  // Unique session id for the browser's window from the current browser
+  // session.
+  [MinVersion=2]
+  uint32 browser_session_id@3;
+
+  // Unique restored session id for the browser's window from the restored
+  // browser session.
+  [MinVersion=2]
+  uint32 restored_browser_session_id@4;
 };
 
 [Stable, Extensible]
@@ -54,6 +64,16 @@ struct BrowserAppInstanceUpdate {
   // May change for apps of type kAppTab, stays the same (true) for instances
   // of type kAppWindow.
   bool is_web_contents_active@6;
+
+  // Unique session id for the browser's window from the current browser
+  // session.
+  [MinVersion=2]
+  uint32 browser_session_id@7;
+
+  // Unique restored session id for the browser's window from the restored
+  // browser session.
+  [MinVersion=2]
+  uint32 restored_browser_session_id@8;
 };
 
 // Implemented in ash-chrome, and is used to receive browser app instance

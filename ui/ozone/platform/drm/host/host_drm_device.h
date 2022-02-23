@@ -18,9 +18,9 @@
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
 #include "ui/ozone/platform/drm/host/gpu_thread_adapter.h"
+#include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/device_cursor.mojom.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 
 namespace ui {
 class DrmDisplayHostManager;
@@ -78,7 +78,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
-  bool GpuSetPrivacyScreen(int64_t display_id, bool enabled) override;
+  void GpuSetPrivacyScreen(int64_t display_id,
+                           bool enabled,
+                           display::SetPrivacyScreenCallback callback) override;
 
   // Services needed by DrmWindowHost
   bool GpuDestroyWindow(gfx::AcceleratedWidget widget) override;

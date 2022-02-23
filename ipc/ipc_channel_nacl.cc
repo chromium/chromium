@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"

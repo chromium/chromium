@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_H_
 
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -20,7 +20,7 @@ class TutorialService;
 // interactions with tracked elements.
 //
 // Each tutorial consists of a list of InteractionSequence steps which, in the
-// default case, create a TutorialBubble which is implementation specific to
+// default case, create a HelpBubble which is implementation specific to
 // the platform the tutorial is written for. It is possible to create custom
 // InteractionSequenceSteps when using the traditional constructor and not
 // using the TutorialStepBuilder.
@@ -59,33 +59,40 @@ class Tutorial {
     // TutorialDescriptionStep. This method is used by
     // Tutorial::Builder::BuildFromDescription to create tutorials.
     static std::unique_ptr<ui::InteractionSequence::Step>
-    BuildFromDescriptionStep(
-        const TutorialDescription::Step& step,
-        absl::optional<std::pair<int, int>> progress,
-        bool is_last_step,
-        TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+    BuildFromDescriptionStep(const TutorialDescription::Step& step,
+                             absl::optional<std::pair<int, int>> progress,
+                             bool is_last_step,
+                             TutorialService* tutorial_service);
 
-    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_);
+    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
+    StepBuilder& SetAnchorElementName(std::string anchor_element_name);
     StepBuilder& SetTitleText(absl::optional<std::u16string> title_text_);
-    StepBuilder& SetBodyText(absl::optional<std::u16string> body_text_);
-    StepBuilder& SetStepType(ui::InteractionSequence::StepType step_type_);
-    StepBuilder& SetArrow(TutorialDescription::Step::Arrow arrow_);
+    StepBuilder& SetBodyText(std::u16string body_text_);
+    // Sets the step type; `event_type_` should be set only for custom events.
+    StepBuilder& SetStepType(
+        ui::InteractionSequence::StepType step_type_,
+        ui::CustomElementEventType event_type_ = ui::CustomElementEventType());
+    StepBuilder& SetArrow(HelpBubbleArrow arrow_);
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);
     StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
+    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event_);
+    StepBuilder& SetNameElementsCallback(
+        TutorialDescription::NameElementsCallback name_elements_callback_);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
-        TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+        TutorialService* tutorial_service);
 
    private:
     absl::optional<std::pair<int, int>> progress;
     bool is_last_step = false;
 
-    ui::InteractionSequence::StepStartCallback BuildShowBubbleCallback(
-        TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+    ui::InteractionSequence::StepStartCallback BuildStartCallback(
+        TutorialService* tutorial_service);
+
+    ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
+        TutorialService* tutorial_service);
+
     ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
     TutorialDescription::Step step_;
@@ -97,9 +104,8 @@ class Tutorial {
     ~Builder();
 
     static std::unique_ptr<Tutorial> BuildFromDescription(
-        TutorialDescription description,
+        const TutorialDescription& description,
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry,
         ui::ElementContext context);
 
     Builder(const Builder& other) = delete;

@@ -9,13 +9,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -24,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
@@ -98,10 +96,6 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSendWebUIJavaScriptErrorReports,
-        {{features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-          "true"}});
     site_instance_ = SiteInstance::Create(browser_context());
     SetContents(TestWebContents::Create(browser_context(), site_instance_));
     // Since we just created the web_contents() pointer with
@@ -159,7 +153,6 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<SiteInstance> site_instance_;
   std::unique_ptr<WebUIImpl> web_ui_;
   scoped_refptr<FakeJsErrorReportProcessor> processor_;
@@ -241,18 +234,6 @@ TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceURL16, kStackTrace16);
   task_environment()->RunUntilIdle();
-}
-
-TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kSendWebUIJavaScriptErrorReports);
-  NavigateToPage();
-  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
-                               blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceURL16, kStackTrace16);
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(processor_->error_report_count(), 0);
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
@@ -363,4 +344,4 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedForNonChromeURLs) {
 
 }  // namespace content
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

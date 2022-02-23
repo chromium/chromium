@@ -23,6 +23,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
+#include "net/socket/client_socket_factory.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -171,5 +172,10 @@ void URLRequestContextStorage::set_network_error_logging_service(
   network_error_logging_service_ = std::move(network_error_logging_service);
 }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+void URLRequestContextStorage::set_client_socket_factory(
+    std::unique_ptr<ClientSocketFactory> client_socket_factory) {
+  client_socket_factory_ = std::move(client_socket_factory);
+}
 
 }  // namespace net

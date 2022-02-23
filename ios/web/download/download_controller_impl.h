@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #import "ios/web/download/download_task_impl.h"
@@ -40,6 +39,17 @@ class DownloadControllerImpl : public DownloadController,
                           const std::string& content_disposition,
                           int64_t total_bytes,
                           const std::string& mime_type) override;
+
+  void CreateNativeDownloadTask(WebState* web_state,
+                                NSString* identifier,
+                                const GURL& original_url,
+                                NSString* http_method,
+                                const std::string& content_disposition,
+                                int64_t total_bytes,
+                                const std::string& mime_type,
+                                DownloadNativeTaskBridge* download) override
+      API_AVAILABLE(ios(15));
+
   void SetDelegate(DownloadControllerDelegate* delegate) override;
   DownloadControllerDelegate* GetDelegate() const override;
 

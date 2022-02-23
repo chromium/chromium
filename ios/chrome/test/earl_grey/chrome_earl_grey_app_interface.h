@@ -16,6 +16,17 @@
 @class FakeChromeIdentity;
 @class NamedGuide;
 
+@interface JavaScriptExecutionResult : NSObject
+@property(readonly, nonatomic) BOOL success;
+@property(readonly, nonatomic) NSString* result;
+
+- (instancetype)initWithResult:(NSString*)result
+           successfulExecution:(BOOL)outcome;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
 // ChromeEarlGreyAppInterface contains the app-side implementation for helpers
 // that primarily work via direct model access. These helpers are compiled into
 // the app binary and can be called from either app or test code.
@@ -85,16 +96,16 @@
 + (void)closeTabAtIndex:(NSUInteger)index;
 
 // Returns YES if the browser is in incognito mode, and NO otherwise.
-+ (BOOL)isIncognitoMode WARN_UNUSED_RESULT;
++ (BOOL)isIncognitoMode [[nodiscard]];
 
 // Returns the number of open non-incognito tabs.
-+ (NSUInteger)mainTabCount WARN_UNUSED_RESULT;
++ (NSUInteger)mainTabCount [[nodiscard]];
 
 // Returns the number of open incognito tabs.
-+ (NSUInteger)incognitoTabCount WARN_UNUSED_RESULT;
++ (NSUInteger)incognitoTabCount [[nodiscard]];
 
 // Returns the number of open browsers.
-+ (NSUInteger)browserCount WARN_UNUSED_RESULT;
++ (NSUInteger)browserCount [[nodiscard]];
 
 // Simulates a backgrounding.
 // If not succeed returns an NSError indicating  why the
@@ -105,7 +116,7 @@
 + (void)saveSessionImmediately;
 
 // Returns the number of main (non-incognito) tabs currently evicted.
-+ (NSUInteger)evictedMainTabCount WARN_UNUSED_RESULT;
++ (NSUInteger)evictedMainTabCount [[nodiscard]];
 
 // Evicts the tabs associated with the non-current browser mode.
 + (void)evictOtherBrowserTabs;
@@ -126,6 +137,9 @@
 // Simulates opening http://www.example.com/ from another application.
 // Returns the opened URL.
 + (NSURL*)simulateExternalAppURLOpening;
+
+// Simulates opening a custom |URL| from another application.
++ (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;
 
 // Simulates opening the add account sign-in flow from the web.
 + (void)simulateAddAccountFromWeb;
@@ -182,10 +196,10 @@
 
 // Returns the number of windows, including background and disconnected or
 // archived windows.
-+ (NSUInteger)windowCount WARN_UNUSED_RESULT;
++ (NSUInteger)windowCount [[nodiscard]];
 
 // Returns the number of foreground (visible on screen) windows.
-+ (NSUInteger)foregroundWindowCount WARN_UNUSED_RESULT;
++ (NSUInteger)foregroundWindowCount [[nodiscard]];
 
 // Closes all but one window, including all non-foreground windows.
 + (void)closeAllExtraWindows;
@@ -210,7 +224,7 @@
 + (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber;
 
 // Returns YES if the current WebState in window with given number is loading.
-+ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
++ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber [[nodiscard]];
 
 // If the current WebState in window with given number is HTML content, will
 // wait until the window ID is injected. Returns YES if the injection is
@@ -246,6 +260,10 @@
 // otherwise nil.
 + (NSError*)waitForWebStateContainingElement:(ElementSelector*)selector;
 
+// Waits for the current web state to no longer contain an element matching
+// |selector|. On failure, returns an NSError, otherwise nil.
++ (NSError*)waitForWebStateNotContainingElement:(ElementSelector*)selector;
+
 // Waits for the current web state's frames to contain |text|.
 // If not succeed returns an NSError indicating  why the operation failed,
 // otherwise nil.
@@ -278,9 +296,6 @@
 // 0.05) of the expected scale. Returns nil if the condition is met within a
 // timeout, or else an NSError indicating why the operation failed.
 + (NSError*)waitForWebStateZoomScale:(CGFloat)scale;
-
-// Sets value for content setting.
-+ (void)setContentSettings:(ContentSetting)setting;
 
 // Signs the user out from Chrome and then starts clearing the identities.
 //
@@ -455,6 +470,12 @@
 // otherwise returns object representing execution result.
 + (id)executeJavaScript:(NSString*)javaScript error:(NSError**)error;
 
+// Executes JavaScript through the WebState's WebFrame and waits for either the
+// completion or timeout. If execution does not complete within a timeout or
+// JavaScript exception is thrown, |success| is NO.
+// otherwise returns object representing execution result.
++ (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript;
+
 // Returns the user agent that should be used for the mobile version.
 + (NSString*)mobileUserAgentString;
 
@@ -462,7 +483,7 @@
 
 // Verifies that all interactive elements on screen (or at least one of their
 // descendants) are accessible.
-+ (NSError*)verifyAccessibilityForCurrentScreen WARN_UNUSED_RESULT;
++ (NSError*)verifyAccessibilityForCurrentScreen [[nodiscard]];
 
 #pragma mark - Check features (EG2)
 
@@ -471,7 +492,7 @@
 // must query Chrome for the state.
 
 // Returns YES if BlockNewTabPagePendingLoad feature is enabled.
-+ (BOOL)isBlockNewTabPagePendingLoadEnabled WARN_UNUSED_RESULT;
++ (BOOL)isBlockNewTabPagePendingLoadEnabled [[nodiscard]];
 
 // Returns YES if |variationID| is enabled.
 + (BOOL)isVariationEnabled:(int)variationID;
@@ -479,14 +500,20 @@
 // Returns YES if a variation triggering server-side behavior is enabled.
 + (BOOL)isTriggerVariationEnabled:(int)variationID;
 
+// Returns YES if |kSupportForAddPasswordsInSettings| is enabled.
++ (BOOL)isAddCredentialsInSettingsEnabled;
+
 // Returns YES if UKM feature is enabled.
-+ (BOOL)isUKMEnabled WARN_UNUSED_RESULT;
++ (BOOL)isUKMEnabled [[nodiscard]];
+
+// Returns YES if kSynthesizedRestoreSessionEnabled feature is enabled.
++ (BOOL)isSynthesizedRestoreSessionEnabled [[nodiscard]];
 
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 
 // Returns YES if DemographicMetricsReporting feature is enabled.
-+ (BOOL)isDemographicMetricsReportingEnabled WARN_UNUSED_RESULT;
++ (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
 
 // Returns YES if the |launchSwitch| is found in host app launch switches.
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch;
@@ -494,22 +521,26 @@
 // Returns YES if custom WebKit frameworks were properly loaded, rather than
 // system frameworks. Always returns YES if the app was not requested to run
 // with custom WebKit frameworks.
-+ (BOOL)isCustomWebKitLoadedIfRequested WARN_UNUSED_RESULT;
++ (BOOL)isCustomWebKitLoadedIfRequested [[nodiscard]];
 
 // Returns whether the mobile version of the websites are requested by default.
-+ (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
++ (BOOL)isMobileModeByDefault [[nodiscard]];
 
 // Returns whether the app is configured to, and running in an environment which
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the ContextMenuActionsRefresh feature is enabled.
-+ (BOOL)isContextMenuActionsRefreshEnabled;
+// Returns whether the new ContextMenu for web content feature is enabled.
++ (BOOL)isContextMenuInWebViewEnabled;
 
-// Returns whether the TabGridBulkActions feature is enabled.
-+ (BOOL)isTabGridBulkActionsEnabled;
+// Returns whether the NewOverflowMenu feature is enabled.
++ (BOOL)isNewOverflowMenuEnabled;
 
-#pragma mark - Popup Blocking
+// Returns whether the Thumbstrip feature is enabled for window with given
+// number.
++ (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;
+
+#pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the
 // original browser state.
@@ -518,6 +549,9 @@
 // Sets the popup content setting preference to the given value for the original
 // browser state.
 + (void)setPopupPrefValue:(ContentSetting)value;
+
+// Resets the desktop content setting to its default value.
++ (void)resetDesktopContentSetting;
 
 #pragma mark - Pref Utilities (EG2)
 
@@ -587,7 +621,7 @@
 + (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
                           timeout:(NSTimeInterval)timeout;
 
-// Returns YES is the button with given (accessibility) |label| was observed at
+// Returns YES if the button with given (accessibility) |label| was observed at
 // some point since |watchForButtonsWithLabels:timeout:| was called.
 + (BOOL)watcherDetectedButtonWithLabel:(NSString*)label;
 

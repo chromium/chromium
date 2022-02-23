@@ -253,11 +253,12 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Notifies session_manager that Chrome has hidden the lock screen.
   virtual void NotifyLockScreenDismissed() = 0;
 
-  // Tells session_manager to restart ash-chrome to carry out browser data
-  // migration.
-  virtual void RequestBrowserDataMigration(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      VoidDBusMethodCallback callback) = 0;
+  // Makes session_manager add some flags to carry out browser data migration
+  // upon next ash-chrome restart. The method returns true if the DBus call was
+  // successful. The callback is passed true if the DBus call is successful and
+  // false otherwise.
+  virtual bool RequestBrowserDataMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) = 0;
 
   // Map that is used to describe the set of active user sessions where |key|
   // is cryptohome id and |value| is user_id_hash.
@@ -418,6 +419,18 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // is invoked with an empty state key vector in case of errors. If the time
   // sync fails or there's no network, the callback is never invoked.
   virtual void GetServerBackedStateKeys(StateKeysCallback callback) = 0;
+
+  using PsmDeviceActiveSecretCallback =
+      base::OnceCallback<void(const std::string& psm_device_active_secret)>;
+
+  // Get a derivative of the stable_device_secret_DO_NOT_SHARE vpd field.
+  // Derivative of this field is used to prevent privacy complications in the
+  // case of a Chrome data leak.
+  //
+  // The string is returned asynchronously via |callback|. The callback is
+  // invoked with an empty string in case of errors.
+  virtual void GetPsmDeviceActiveSecret(
+      PsmDeviceActiveSecretCallback callback) = 0;
 
   // StartArcMiniContainer starts a container with only a handful of ARC
   // processes for Chrome OS login screen.

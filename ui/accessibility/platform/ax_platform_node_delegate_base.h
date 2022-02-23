@@ -13,8 +13,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
 namespace ui {
@@ -81,6 +84,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       ax::mojom::StringListAttribute attribute) const override;
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const override;
+  bool HasHtmlAttribute(const char* attribute) const override;
   const base::StringPairs& GetHtmlAttributes() const override;
   bool GetHtmlAttribute(const char* attribute,
                         std::string* value) const override;
@@ -92,7 +96,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   bool HasAction(ax::mojom::Action action) const override;
   bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
   ax::mojom::NameFrom GetNameFrom() const override;
-  std::u16string GetInnerText() const override;
+  std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
   const AXTree::Selection GetUnignoredSelection() const override;
 
@@ -149,10 +153,10 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
     ~ChildIteratorBase() override = default;
     bool operator==(const ChildIterator& rhs) const override;
     bool operator!=(const ChildIterator& rhs) const override;
-    void operator++() override;
-    void operator++(int) override;
-    void operator--() override;
-    void operator--(int) override;
+    ChildIteratorBase& operator++() override;
+    ChildIteratorBase& operator++(int) override;
+    ChildIteratorBase& operator--() override;
+    ChildIteratorBase& operator--(int) override;
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
     int GetIndexInParent() const override;
     AXPlatformNodeDelegate& operator*() const override;
@@ -160,7 +164,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
 
    private:
     int index_;
-    AXPlatformNodeDelegateBase* parent_;
+    raw_ptr<AXPlatformNodeDelegateBase> parent_;
   };
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenBegin()
       override;
@@ -192,12 +196,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       const AXCoordinateSystem coordinate_system,
       const AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) const override;
-
-  // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
-  gfx::Rect GetClippedScreenBoundsRect(
-      AXOffscreenResult* offscreen_result = nullptr) const override;
-  gfx::Rect GetUnclippedScreenBoundsRect(
-      AXOffscreenResult* offscreen_result = nullptr) const;
 
   // Do a *synchronous* hit test of the given location in global screen physical
   // pixel coordinates, and the node within this node's subtree (inclusive)
@@ -273,12 +271,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   std::u16string GetAuthorUniqueId() const override;
 
   const AXUniqueId& GetUniqueId() const override;
-
-  absl::optional<int> FindTextBoundary(
-      ax::mojom::TextBoundary boundary,
-      int offset,
-      ax::mojom::MoveDirection direction,
-      ax::mojom::TextAffinity affinity) const override;
 
   const std::vector<gfx::NativeViewAccessible> GetUIADirectChildrenInRange(
       ui::AXPlatformNodeDelegate* start,

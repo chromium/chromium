@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
@@ -75,8 +76,8 @@ gfx::Insets GetTrayBubbleInsets() {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   gfx::Insets insets = gfx::Insets(
-      kUnifiedMenuPadding, kUnifiedMenuPadding, kUnifiedMenuPadding - 1,
-      kUnifiedMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
+      kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding - 1,
+      kBubbleMenuPadding - (base::i18n::IsRTL() ? 0 : 1));
 
   // The work area in tablet mode always uses the in-app shelf height, which is
   // shorter than the standard shelf height. In this state, we need to add back
@@ -127,13 +128,13 @@ gfx::Insets GetSecondaryBubbleInsets() {
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      insets.set_bottom(kUnifiedMenuPadding);
+      insets.set_bottom(kBubbleMenuPadding);
       break;
     case ShelfAlignment::kLeft:
-      insets.set_left(kUnifiedMenuPadding);
+      insets.set_left(kBubbleMenuPadding);
       break;
     case ShelfAlignment::kRight:
-      insets.set_right(kUnifiedMenuPadding);
+      insets.set_right(kBubbleMenuPadding);
       break;
   }
   return insets;

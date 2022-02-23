@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
@@ -89,13 +90,13 @@ std::string ParamsToString(const base::ListValue& parameters) {
 void InitializeTestMetaData(base::ListValue* parameters) {
   std::unique_ptr<base::DictionaryValue> meta_data_entry(
       new base::DictionaryValue());
-  meta_data_entry->SetString("key", kTestLoggingSessionIdKey);
-  meta_data_entry->SetString("value", kTestLoggingSessionIdValue);
+  meta_data_entry->SetStringKey("key", kTestLoggingSessionIdKey);
+  meta_data_entry->SetStringKey("value", kTestLoggingSessionIdValue);
   std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
   meta_data->Append(std::move(meta_data_entry));
   meta_data_entry = std::make_unique<base::DictionaryValue>();
-  meta_data_entry->SetString("key", "url");
-  meta_data_entry->SetString("value", kTestLoggingUrl);
+  meta_data_entry->SetStringKey("key", "url");
+  meta_data_entry->SetStringKey("value", kTestLoggingUrl);
   meta_data->Append(std::move(meta_data_entry));
   parameters->Append(std::move(meta_data));
 }
@@ -149,7 +150,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   void AppendTabIdAndUrl(base::ListValue* parameters) {
     std::unique_ptr<base::DictionaryValue> request_info(
         new base::DictionaryValue());
-    request_info->SetInteger(
+    request_info->SetIntKey(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
     parameters->Append(web_contents()
@@ -672,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest,
   ASSERT_TRUE(StartAudioDebugRecordings(1));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Fixture for various tests over StartEventLogging. Intended to be sub-classed
 // to test different scenarios.
@@ -995,7 +996,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestInIncognitoMode
   bool WebRtcEventLogCollectionPolicy() const override { return true; }
 
  private:
-  Browser* browser_{nullptr};  // Does not own the object.
+  raw_ptr<Browser> browser_{nullptr};  // Does not own the object.
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -1010,4 +1011,4 @@ IN_PROC_BROWSER_TEST_F(
                     error_message);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

@@ -271,12 +271,12 @@ cc_library(
         "internal/cord_rep_btree.cc",
         "internal/cord_rep_btree_navigator.cc",
         "internal/cord_rep_btree_reader.cc",
-        "internal/cord_rep_concat.cc",
         "internal/cord_rep_consume.cc",
         "internal/cord_rep_crc.cc",
         "internal/cord_rep_ring.cc",
     ],
     hdrs = [
+        "internal/cord_data_edge.h",
         "internal/cord_internal.h",
         "internal/cord_rep_btree.h",
         "internal/cord_rep_btree_navigator.h",
@@ -309,14 +309,15 @@ cc_library(
 )
 
 cc_test(
-    name = "cord_rep_concat_test",
+    name = "cord_data_edge_test",
     size = "small",
-    srcs = ["internal/cord_rep_concat_test.cc"],
+    srcs = ["internal/cord_data_edge_test.cc"],
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
         ":cord_internal",
         ":cord_rep_test_util",
+        ":strings",
         "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
@@ -412,6 +413,8 @@ cc_library(
     name = "cord",
     srcs = [
         "cord.cc",
+        "cord_analysis.cc",
+        "cord_analysis.h",
     ],
     hdrs = [
         "cord.h",
@@ -436,7 +439,9 @@ cc_library(
         "//absl/container:inlined_vector",
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
+        "//absl/numeric:bits",
         "//absl/types:optional",
+        "//absl/types:span",
     ],
 )
 
@@ -750,22 +755,6 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "cord_rep_consume_test",
-    size = "medium",
-    srcs = ["internal/cord_rep_consume_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    visibility = ["//visibility:private"],
-    deps = [
-        ":cord_internal",
-        ":strings",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/debugging:leak_check",
         "@com_google_googletest//:gtest_main",
     ],
 )

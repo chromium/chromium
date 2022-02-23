@@ -22,6 +22,25 @@
 
 namespace ios {
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  std::unique_ptr<history::HistoryService> history_service(
+      new history::HistoryService(
+          std::make_unique<HistoryClientImpl>(
+              ios::BookmarkModelFactory::GetForBrowserState(browser_state)),
+          nullptr));
+  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
+          browser_state->GetStatePath()))) {
+    return nullptr;
+  }
+  return history_service;
+}
+
+}  // namespace
+
 // static
 history::HistoryService* HistoryServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
@@ -58,6 +77,12 @@ HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+HistoryServiceFactory::TestingFactory
+HistoryServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildHistoryService);
+}
+
 HistoryServiceFactory::HistoryServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "HistoryService",
@@ -70,18 +95,7 @@ HistoryServiceFactory::~HistoryServiceFactory() {
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(
-          std::make_unique<HistoryClientImpl>(
-              ios::BookmarkModelFactory::GetForBrowserState(browser_state)),
-          nullptr));
-  if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          browser_state->GetStatePath()))) {
-    return nullptr;
-  }
-  return history_service;
+  return BuildHistoryService(context);
 }
 
 web::BrowserState* HistoryServiceFactory::GetBrowserStateToUse(

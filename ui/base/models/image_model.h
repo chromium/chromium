@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -98,6 +99,8 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
                                    const gfx::VectorIcon* badge_icon = nullptr);
   static ImageModel FromImage(const gfx::Image& image);
   static ImageModel FromImageSkia(const gfx::ImageSkia& image_skia);
+  // |FromResourceId| does not support color theming. To create an |ImageModel|
+  // with color theming, use |ResourceBundle::GetThemedLottieImageNamed|.
   static ImageModel FromResourceId(int resource_id);
   // `size` must be the size of the image the `generator` returns.
   // NOTE: If this proves onerous, we could allow autodetection, at the cost of

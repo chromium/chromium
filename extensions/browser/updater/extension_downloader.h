@@ -14,7 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
@@ -62,6 +62,64 @@ class ExtensionCache;
 class ExtensionDownloaderTestDelegate;
 class ExtensionUpdaterTest;
 
+// A structwhich wraps parameters for a single extension update request.
+struct ExtensionDownloaderTask {
+  ExtensionDownloaderTask(const ExtensionDownloaderTask&) = delete;
+  ExtensionDownloaderTask& operator=(const ExtensionDownloaderTask&) = delete;
+
+  ExtensionDownloaderTask(std::string id,
+                          GURL update_url,
+                          mojom::ManifestLocation install_location,
+                          bool is_corrupt_reinstall,
+                          int request_id,
+                          ManifestFetchData::FetchPriority fetch_priority,
+                          base::Version version,
+                          Manifest::Type type,
+                          std::string update_url_data);
+  ExtensionDownloaderTask(std::string id,
+                          GURL update_url,
+                          mojom::ManifestLocation install_location,
+                          bool is_corrupt_reinstall,
+                          int request_id,
+                          ManifestFetchData::FetchPriority fetch_priority);
+
+  ExtensionDownloaderTask(ExtensionDownloaderTask&&);
+  ExtensionDownloaderTask& operator=(ExtensionDownloaderTask&&);
+
+  ~ExtensionDownloaderTask();
+
+  std::string id;
+  GURL update_url;
+  mojom::ManifestLocation install_location;
+
+  // Indicates that we detected corruption in the local copy of the extension
+  // and we want to perform a reinstall of it.
+  bool is_corrupt_reinstall{false};
+
+  // Passed on as is to the various `delegate_` callbacks. This is used for
+  // example by clients (e.g. ExtensionUpdater) to keep track of when
+  // potentially concurrent update checks complete.
+  int request_id;
+
+  // Notifies the downloader the priority of this extension update (either
+  // foreground or background).
+  ManifestFetchData::FetchPriority fetch_priority{
+      ManifestFetchData::BACKGROUND};
+
+  // Specifies the version of the already downloaded crx file, equals
+  // to 0.0.0.0 if there is no crx file or for a pending extension so it will
+  // always be updated, and thus installed (assuming all extensions have
+  // non-zero versions).
+  base::Version version{"0.0.0.0"};
+
+  // Used for metrics only and can be TYPE_UNKNOWN if e.g. the extension is
+  // not yet installed.
+  Manifest::Type type{Manifest::TYPE_UNKNOWN};
+
+  // May be used to pass some additional data to the update server.
+  std::string update_url_data;
+};
+
 // A class that checks for updates of a given list of extensions, and downloads
 // the crx file when updates are found. It uses a |ExtensionDownloaderDelegate|
 // that takes ownership of the downloaded crx files, and handles events during
@@ -86,39 +144,12 @@ class ExtensionDownloader {
 
   ~ExtensionDownloader();
 
-  // Check AddPendingExtensionWithVersion with the version set as "0.0.0.0".
-  bool AddPendingExtension(const std::string& id,
-                           const GURL& update_url,
-                           mojom::ManifestLocation install_source,
-                           bool is_corrupt_reinstall,
-                           int request_id,
-                           ManifestFetchData::FetchPriority fetch_priority);
-
-  // Adds extension |id| to the list of extensions to check for updates.
-  // Returns false if the |id| can't be updated due to invalid details.
-  // In that case, no callbacks will be performed on the |delegate_|.
-  // The |request_id| is passed on as is to the various |delegate_| callbacks.
-  // This is used for example by ExtensionUpdater to keep track of when
-  // potentially concurrent update checks complete. The |is_corrupt_reinstall|
-  // parameter is used to indicate in the request that we detected corruption in
-  // the local copy of the extension and we want to perform a reinstall of it.
-  // |fetch_priority| parameter notifies the downloader the priority of this
-  // extension update (either foreground or background). The |version|
-  // parameter specifies the version of the downloaded crx file,
-  // equals to 0.0.0.0 if there is no crx file. The |type| parameter is used for
-  // metrics only and can be TYPE_UNKNOWN if e.g. the extension is not yet
-  // installed. The |update_url_data| paramater may be used to pass some
-  // additional data to the update server.
-  bool AddPendingExtensionWithVersion(
-      const std::string& id,
-      const GURL& update_url,
-      mojom::ManifestLocation install_source,
-      bool is_corrupt_reinstall,
-      int request_id,
-      ManifestFetchData::FetchPriority fetch_priority,
-      base::Version version,
-      Manifest::Type type,
-      const std::string& update_url_data);
+  // Adds extension to the list of extensions to check for updates.
+  // Returns false if the extension can't be updated due to invalid details.
+  // In that case, no callbacks will be performed on the |delegate_|. See
+  // ExtensionDownloaderTask's description for more details and available
+  // parameter.
+  bool AddPendingExtension(ExtensionDownloaderTask task);
 
   // Schedules a fetch of the manifest of all the extensions added with
   // AddExtension() and AddPendingExtension().
@@ -222,17 +253,6 @@ class ExtensionDownloader {
     int oauth2_attempt_count;
   };
 
-  // Parameters for special cases that aren't used for most requests.
-  struct ExtraParams {
-    // Additional data to be passed up in the update request.
-    std::string update_url_data;
-
-    // Indicates whether this extension is being reinstalled due to corruption.
-    bool is_corrupt_reinstall;
-
-    ExtraParams();
-  };
-
   // We limit the number of extensions grouped together in one batch to avoid
   // running into the limits on the length of http GET requests, this represents
   // the key for grouping these extensions.
@@ -261,15 +281,11 @@ class ExtensionDownloader {
     kBadUpdateSpecification,
   };
 
+  // Updates |url_stats_| for a single extension download requests.
+  void UpdateURLStats(const GURL& update_url, Manifest::Type extension_type);
+
   // Helper for AddExtension() and AddPendingExtension().
-  bool AddExtensionData(const std::string& id,
-                        const base::Version& version,
-                        Manifest::Type extension_type,
-                        mojom::ManifestLocation extension_location,
-                        const GURL& extension_update_url,
-                        const ExtraParams& extra,
-                        int request_id,
-                        ManifestFetchData::FetchPriority fetch_priority);
+  bool AddExtensionData(const ExtensionDownloaderTask& task);
 
   // Adds all recorded stats taken so far to histogram counts.
   void ReportStats() const;
@@ -434,7 +450,7 @@ class ExtensionDownloader {
 
   // The delegate that receives the crx files downloaded by the
   // ExtensionDownloader, and that fills in optional ping and update url data.
-  ExtensionDownloaderDelegate* delegate_;
+  raw_ptr<ExtensionDownloaderDelegate> delegate_;
 
   // The URL loader factory to use for the SimpleURLLoaders.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -468,11 +484,11 @@ class ExtensionDownloader {
   std::map<ExtensionId, ExtensionDownloaderDelegate::PingResult> ping_results_;
 
   // Cache for .crx files.
-  ExtensionCache* extension_cache_;
+  raw_ptr<ExtensionCache> extension_cache_;
 
   // May be used to fetch access tokens for protected download requests. May be
   // null. If non-null, guaranteed to outlive this object.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // A Webstore download-scoped access token for the |identity_provider_|'s
   // active account, if any.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/observer_list.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"

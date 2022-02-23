@@ -4,6 +4,7 @@
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -19,9 +20,10 @@ namespace content {
 
 FileChooserImpl::FileSelectListenerImpl::~FileSelectListenerImpl() {
 #if DCHECK_IS_ON()
-  DCHECK(was_file_select_listener_function_called_)
-      << "Must call either FileSelectListener::FileSelected() or "
-         "FileSelectListener::FileSelectionCanceled()";
+  if (!was_file_select_listener_function_called_) {
+    LOG(ERROR) << "Must call either FileSelectListener::FileSelected() or "
+                  "FileSelectListener::FileSelectionCanceled()";
+  }
   // TODO(avi): Turn on the DCHECK on the following line. This cannot yet be
   // done because I can't say for sure that I know who all the callers who bind
   // blink::mojom::FileChooser are. https://crbug.com/1054811

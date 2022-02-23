@@ -63,6 +63,9 @@ import "services/network/public/mojom/p2p.mojom";
 [EnableIf=is_p2p_enabled]
 import "services/network/public/mojom/p2p_trusted.mojom";
 
+[EnableIf=is_win]
+import "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom";
+
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
 // cookies.
@@ -134,7 +137,7 @@ interface CustomProxyConfigClient {
   ClearBadProxiesCache();
 };
 
-[EnableIf=is_chromeos_ash]
+[EnableIf=is_chromeos]
 struct AdditionalCertificates {
   // List of all additional certificates.
   array<X509Certificate> all_certificates;
@@ -250,6 +253,11 @@ struct NetworkContextFilePaths {
   // flag is false.
   mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
 
+  // The name of the file to store pending SCT auditing reports inside
+  // `data_path`. If empty, or `data_path` is empty, or the file can't be
+  // opened, pending reports will instead be stored in-memory only.
+  mojo_base.mojom.FilePath? sct_auditing_pending_reports_file_name;
+
   // Specifies whether or not a migration of existing data should occur from
   // `unsandboxed_data_path` to `data_path`. It is not valid to set this to true
   // if an `unsandboxed_data_path` is not specified.
@@ -297,6 +305,13 @@ struct NetworkContextParams {
   // available on Windows and Mac).
   pending_remote<proxy_resolver.mojom.ProxyResolverFactory>?
       proxy_resolver_factory;
+
+  // Handles all proxy resolution logic if the current proxy config comes from
+  // the operating system. Otherwise, or if this is not populated, proxy
+  // resolution is handled by Chrome as normal.
+  [EnableIf=is_win]
+  pending_remote<proxy_resolver_win.mojom.WindowsSystemProxyResolver>?
+      windows_system_proxy_resolver;
 
   // Retrieves the PAC script URL set via DHCP from the browser process. Only
   // used if |proxy_resolver_factory| is set. Note: optional because some tests
@@ -404,13 +419,11 @@ struct NetworkContextParams {
   [EnableIf=is_ct_supported]
   bool enable_expect_ct_reporting = false;
 
-  // Enables SCT auditing, which sends reports for SCTs found in connections
-  // made by this network context. Can also be dynamically configured via
-  // NetworkContext::SetSCTAuditingEnabled(). This must be set to true and
-  // auditing must be enabled and configured globally via
-  // NetworkService::ConfigureSCTAuditing().
+  // The SCT auditing mode. SCT auditing sends reports for SCTs found in
+  // connections made by this network context. Can also be dynamically
+  // configured via NetworkContext::SetSCTAuditingMode().
   [EnableIf=is_ct_supported]
-  bool enable_sct_auditing = false;
+  SCTAuditingMode sct_auditing_mode = SCTAuditingMode.kDisabled;
 
   // The initial CT policy to be used for requests. See
   // NetworkContext.SetCTPolicy() for more.
@@ -422,7 +435,7 @@ struct NetworkContextParams {
 
   // Initial additional certificates that will be used for certificate
   // validation.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   AdditionalCertificates? initial_additional_certificates;
 
   // Parameters for constructing the cookie manager.
@@ -498,6 +511,9 @@ struct NetworkContextParams {
   // disabled. See the above definition of each inner field for details of these
   // behaviors.
   NetworkContextFilePaths? file_paths;
+
+  // Is true, Trust Token operations should be blocked.
+  bool block_trust_tokens;
 };
 
 struct NetworkConditions {
@@ -585,6 +601,20 @@ struct URLLoaderFactoryOverride {
 enum TrustTokenRedemptionPolicy {
   kForbid,
   kPotentiallyPermit,
+};
+
+[EnableIf=is_ct_supported]
+enum SCTAuditingMode {
+  // SCT auditing is completely disabled.
+  kDisabled,
+
+  // The user has opted-in to ESBR, so sampled SCTs are sent to Google.
+  kEnhancedSafeBrowsingReporting,
+
+  // The user is not opted-in to ESBR, and hashdance auditing is enabled.
+  // Perform a k-anonymous prefix query for sampled SCTs, and upload only if the
+  // SCT is not present in a log.
+  kHashdance,
 };
 
 struct URLLoaderFactoryParams {
@@ -754,7 +784,7 @@ interface NetworkContextClient {
                                    (int32 result, string auth_token);
 
   // Notification that a trust anchor was used for the given user.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   OnTrustAnchorUsed();
 
   // If it's supported by the implementation, attempts to provide a response to
@@ -851,6 +881,9 @@ interface NetworkContext {
   DeleteStoredTrustTokens(url.mojom.Origin issuer)
       => (DeleteStoredTrustTokensStatus status);
 
+  // Set Trust Token blocking to |block|.
+  SetBlockTrustTokens(bool block);
+
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
   // retained. Only applies to network objects without more specific methods
@@ -910,22 +943,22 @@ interface NetworkContext {
   ClearHttpAuthCache(mojo_base.mojom.Time start_time,
                      mojo_base.mojom.Time end_time) => ();
 
-  // Clears all report entries from the reporting cache. Should not be called if
+  // Clears all report entries from the reporting cache. This has no effect if
   // the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
   ClearReportingCacheReports(ClearDataFilter? filter) => ();
 
-  // Clears all client entries from the reporting cache. Should not be called if
+  // Clears all client entries from the reporting cache. This has no effect if
   // the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
   ClearReportingCacheClients(ClearDataFilter? filter) => ();
 
-  // Clears policy entries from the NetworkErrorLoggingService. Should not be
-  // called if the ENABLE_REPORTING build flag is false.
+  // Clears policy entries from the NetworkErrorLoggingService. This has no
+  // effect if the ENABLE_REPORTING build flag is false.
   //
   // If a non-null |filter| is specified, will clear only entries matching the
   // filter.
@@ -1027,7 +1060,7 @@ interface NetworkContext {
   SetEnableReferrers(bool enable_referrers);
 
   // Updates the additional trust anchors for certificate verification.
-  [EnableIf=is_chromeos_ash]
+  [EnableIf=is_chromeos]
   UpdateAdditionalCertificates(AdditionalCertificates? additional_certificates);
 
   // Updates the CT policy to be used for requests. Only applies if the
@@ -1284,7 +1317,9 @@ interface NetworkContext {
                               NetworkIsolationKey network_isolation_key,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
-                                                   CertVerifyResult cv_result);
+                                                   CertVerifyResult cv_result,
+                                                   bool pkp_bypassed,
+                                                   string pinning_failure_log);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.
@@ -1378,7 +1413,6 @@ interface NetworkContext {
   // Enables the checking of static PKP records.
   EnableStaticKeyPinningForTesting() => ();
 
-  [Sync]
   // Verifies the given certificate using the context's CertVerifier.
   VerifyCertificateForTesting(X509Certificate certificate,
                               string hostname,
@@ -1399,9 +1433,9 @@ interface NetworkContext {
   GetOriginPolicyManager(
       pending_receiver<OriginPolicyManager> origin_policy_manager);
 
-  // Set whether SCT auditing is enabled for this NetworkContext.
+  // Set the SCT auditing mode for this NetworkContext.
   [EnableIf=is_ct_supported]
-  SetSCTAuditingEnabled(bool enabled);
+  SetSCTAuditingMode(SCTAuditingMode mode);
 
   // Adds an observer that will receive Reporting Service callbacks. Generates
   // events for Reporting API reports currently stored in the reporting service.

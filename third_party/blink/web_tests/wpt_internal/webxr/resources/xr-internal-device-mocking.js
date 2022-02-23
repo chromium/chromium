@@ -13,6 +13,23 @@ MockRuntime.prototype.getMissingFrameCount = function() {
   return this.presentation_provider_.missing_frame_count_;
 };
 
+
+
+// Note that if getEnvironmentProvider hasn't finished running yet this will be
+// undefined. It's recommended that you allow a successful task to post first
+// before attempting to close.
+MockRuntime.prototype.closeEnvironmentIntegrationProvider = function() {
+  if (this.environmentProviderReceiver_) {
+    this.environmentProviderReceiver_.$.close();
+  }
+};
+
+MockRuntime.prototype.closeDataProvider = function() {
+  this.closeEnvironmentIntegrationProvider();
+  this.dataProviderReceiver_.$.close();
+  this.sessionOptions_ = null;
+};
+
 MockRuntime.prototype._injectAdditionalFrameData_preLightEstimation = MockRuntime.prototype._injectAdditionalFrameData;
 MockRuntime.prototype._injectAdditionalFrameData = function(options, frameData) {
   this._injectAdditionalFrameData_preLightEstimation(options, frameData);

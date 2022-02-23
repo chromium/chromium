@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -25,17 +25,6 @@ namespace content {
 // Per-StoragePartition manager of auction bidder and seller worklet processes.
 // Limits the total number of worklet process at once. Processes for the same
 // origin will be vended to multiple consumers.
-//
-// Deadlock concerns:  If all consumers are waiting on a process before they're
-// able to release a process, consumers will end up deadlock. Once AuctionRunner
-// has started scoring bids, it will always keep the seller worklet and top
-// bidder worklet alive until all bidder worklets have had a chance to load and
-// score a worklet. Because of this behavior, to avoid deadlock,
-// AuctionProcessManager limits the maximum number of seller *worklets*, and the
-// maximum number bidder processes, with a maximum number of bidder processes
-// that is greater than the maximum number of seller worklets. Each
-// AuctionRunner must wait to receive a seller process for its single seller
-// worklet before requesting any bidder processes.
 class CONTENT_EXPORT AuctionProcessManager {
  public:
   // The maximum number of bidder processes. Once this number is reached, no
@@ -43,14 +32,14 @@ class CONTENT_EXPORT AuctionProcessManager {
   // requests can receive pre-existing processes.
   static const size_t kMaxBidderProcesses;
 
-  // The maximum number of active seller worklets (not processes) / auctions.
-  // This is a cap on total number of active seller worklets, since each active
-  // seller worklet will keep both a seller and the winning bidder process alive
-  // until the action completes. This needs to be strictly less than
-  // kMaxBidderProcesses to avoid deadlock. The greater the difference, the more
-  // bidder processes can be scoring bids at once, rather than being locked up
-  // as idle top scoring worklets waiting to report a result.
-  static const size_t kMaxActiveSellerWorklets;
+  // The maximum number of seller processes. Once this number is reached, no
+  // processes will be created for seller worklets, though new seller worklet
+  // requests can receive pre-existing processes. Distinct from
+  // kMaxBidderProcesses because sellers behave a bit differently - they're
+  // alive for the length of the auction. Also, if a putative entire shared
+  // process limit were consumed by seller worklets, no more auctions could run,
+  // since bidder worklets couldn't load to make bids.
+  static const size_t kMaxSellerProcesses;
 
   // The two worklet types. Sellers and bidders never share processes, primarily
   // to make accounting simpler. They also currently issue requests with
@@ -98,7 +87,13 @@ class CONTENT_EXPORT AuctionProcessManager {
     base::OnceClosure callback_;
     url::Origin origin_;
     WorkletType worklet_type_;
-    AuctionProcessManager* manager_ = nullptr;
+
+    // Associated AuctionProcessManager. Set when a process is requested,
+    // cleared once a process is assigned (synchronously or asynchronously),
+    // since the AuctionProcessManager doesn't track Handles after they've been
+    // assigned processes - it tracks processes instead, at that point.
+    raw_ptr<AuctionProcessManager> manager_ = nullptr;
+
     scoped_refptr<WorkletProcess> worklet_process_;
 
     // Entry in the corresponding PendingRequestQueue if the handle has yet to
@@ -131,16 +126,22 @@ class CONTENT_EXPORT AuctionProcessManager {
   // AuctionProcessManager to request more WorkletServices, or even to delete
   // the AuctionProcessManager, since nothing but the callback invocation is on
   // the call stack.
-  bool RequestWorkletService(WorkletType worklet_type,
-                             const url::Origin& origin,
-                             ProcessHandle* process_handle,
-                             base::OnceClosure callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool RequestWorkletService(WorkletType worklet_type,
+                                           const url::Origin& origin,
+                                           ProcessHandle* process_handle,
+                                           base::OnceClosure callback);
 
   size_t GetPendingBidderRequestsForTesting() const {
     return pending_bidder_request_queue_.size();
   }
   size_t GetPendingSellerRequestsForTesting() const {
     return pending_seller_request_queue_.size();
+  }
+  size_t GetBidderProcessCountForTesting() const {
+    return bidder_processes_.size();
+  }
+  size_t GetSellerProcessCountForTesting() const {
+    return seller_processes_.size();
   }
 
  protected:
@@ -166,13 +167,12 @@ class CONTENT_EXPORT AuctionProcessManager {
   // need to keep their processes alive.
   using PendingRequestQueue = std::list<ProcessHandle*>;
 
-  // Contains ProcessHandles for bidder requests which have not yet been
-  // assigned processes, indexed by origin. When the first bidder in the
-  // PendingRequestQueue is assigned a process, all bidders that can use the
+  // Contains ProcessHandles for bidder or seller requests which have not yet
+  // been assigned processes, indexed by origin. When the request in the
+  // PendingRequestQueue is assigned a process, all requests that can use the
   // same process are assigned the same process. This map is used to manage that
   // without searching through the entire queue.
-  using PendingBidderRequestMap =
-      std::map<url::Origin, std::set<ProcessHandle*>>;
+  using PendingRequestMap = std::map<url::Origin, std::set<ProcessHandle*>>;
 
   // Contains running processes. Worklet processes are refcounted, and
   // automatically remove themselves from this list when destroyed.
@@ -196,24 +196,22 @@ class CONTENT_EXPORT AuctionProcessManager {
   // ProcessMap, and checks if a new bidder process should be started.
   void OnWorkletProcessDestroyed(WorkletProcess* worklet_process);
 
-  void OnSellerWorkletSlotFreed();
-  void OnBidderProcessDestroyed();
-
   // Helpers to access the maps of the corresponding worklet type.
   PendingRequestQueue* GetPendingRequestQueue(WorkletType worklet_type);
+  PendingRequestMap* GetPendingRequestMap(WorkletType worklet_type);
   ProcessMap* Processes(WorkletType worklet_type);
+
+  // Returns true if there's an available slot of the specified worklet type.
+  bool HasAvailableProcessSlot(WorkletType worklet_type) const;
 
   PendingRequestQueue pending_bidder_request_queue_;
   PendingRequestQueue pending_seller_request_queue_;
 
-  PendingBidderRequestMap pending_bidder_requests_;
+  PendingRequestMap pending_bidder_requests_;
+  PendingRequestMap pending_seller_requests_;
 
   ProcessMap bidder_processes_;
   ProcessMap seller_processes_;
-
-  // Track the number of active seller limits, in order to enforce
-  // kMaxActiveSellerWorklets.
-  size_t num_active_seller_worklets_ = 0;
 
   base::WeakPtrFactory<AuctionProcessManager> weak_ptr_factory_{this};
 };

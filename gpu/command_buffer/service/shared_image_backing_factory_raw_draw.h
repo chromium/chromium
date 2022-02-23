@@ -8,13 +8,10 @@
 #include <memory>
 
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
-#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
-namespace raster {
 
-class GPU_GLES2_EXPORT SharedImageBackingFactoryRawDraw
-    : public gpu::SharedImageBackingFactory {
+class SharedImageBackingFactoryRawDraw : public SharedImageBackingFactory {
  public:
   SharedImageBackingFactoryRawDraw();
   ~SharedImageBackingFactoryRawDraw() override;
@@ -64,7 +61,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryRawDraw
                             GrContextType gr_context_type) const;
 };
 
-}  // namespace raster
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_RAW_DRAW_H_

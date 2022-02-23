@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(MouseLockControllerTest, MouseLockOnFileURL) {
   GURL file_url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kEmptyFile)));
-  AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, file_url, PAGE_TRANSITION_TYPED));
   RequestToLockMouse(true, false);
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }

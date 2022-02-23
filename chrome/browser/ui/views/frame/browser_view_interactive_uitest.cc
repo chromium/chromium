@@ -19,7 +19,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/test/ax_event_counter.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #endif
@@ -36,7 +36,7 @@ class BrowserViewTest : public InProcessBrowserTest {
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
 
   void SetUpOnMainThread() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Set the preference to true so we expect to see the top view in
     // fullscreen mode.
     PrefService* prefs = browser()->profile()->GetPrefs();
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   bool top_view_in_browser_fullscreen = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The top view should show up by default.
   EXPECT_TRUE(browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be enabled.
@@ -187,12 +187,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   // its state.
   if (!browser_view->IsBookmarkBarVisible())
     chrome::ToggleBookmarkBar(browser());
-#if defined(OS_MAC)
-  // Disable showing toolbar in fullscreen mode to make its bahavior similar to
+#if BUILDFLAG(IS_MAC)
+  // Disable showing toolbar in fullscreen mode to make its behavior similar to
   // other platforms.
   chrome::ToggleFullscreenToolbar(browser());
 #endif
-  AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
   // Now the bookmark bar should show up in regular mode.
   EXPECT_FALSE(browser_view->IsFullscreen());
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   else
     EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Test toggling toolbar state in fullscreen mode would also affect bookmark
   // bar state.
   chrome::ToggleFullscreenToolbar(browser());

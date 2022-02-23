@@ -128,7 +128,7 @@ class SymbolFetcherTestBase(unittest.TestCase):
 
 class MacAndLinuxTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super(MacAndLinuxTestCase, self).setUp()
+    super().setUp()
 
     cloud_storage.Get = mock.Mock()
     # Default: Cloud storage has |gcs_file|.zip file. We use |side_effect|
@@ -257,7 +257,7 @@ class MacAndLinuxTestCase(SymbolFetcherTestBase):
 
 class AndroidTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super(AndroidTestCase, self).setUp()
+    super().setUp()
 
     # Base directories for Android symbols.
     self.out = tempfile.mkdtemp(dir=self.breakpad_output_dir)
@@ -539,7 +539,7 @@ class AndroidTestCase(SymbolFetcherTestBase):
 
     gcs_folder = ('android-B0urB0N/' + metadata.version_number + '/' +
                   match_arch_folder)
-    exception_msg = 'No symbol files could be found on GCS:' + gcs_folder
+    exception_msg = 'No symbol files could be found on GCS: ' + gcs_folder
     with self.assertRaises(Exception) as e:
       symbol_fetcher.GetTraceBreakpadSymbols(self.cloud_storage_bucket,
                                              metadata, self.breakpad_output_dir,

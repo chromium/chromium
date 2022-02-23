@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.contains;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -39,6 +38,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.metrics.AndroidMetricsServiceClient;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
+import org.chromium.components.metrics.InstallerPackageType;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
@@ -149,10 +149,8 @@ public class AwMetricsIntegrationTest {
         Assert.assertTrue(
                 "Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Assert.assertEquals(
-                    ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
-        }
+        Assert.assertEquals(
+                ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
         Assert.assertTrue(
                 "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
         Assert.assertTrue(
@@ -385,7 +383,8 @@ public class AwMetricsIntegrationTest {
 
         mRule.runOnUiThread(() -> {
             AwBrowserProcess.setWebViewPackageName(appPackageName);
-            AndroidMetricsServiceClient.setCanRecordPackageNameForAppTypeForTesting(true);
+            AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
+                    InstallerPackageType.GOOGLE_PLAY_STORE);
             // A valid version string and non expired date means the app package name should be
             // recorded.
             AwMetricsServiceClient.setAppPackageNameLoggingRuleForTesting(

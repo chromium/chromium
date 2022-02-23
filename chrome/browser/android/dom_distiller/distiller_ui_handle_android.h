@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_DOM_DISTILLER_DISTILLER_UI_HANDLE_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_DOM_DISTILLER_DISTILLER_UI_HANDLE_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
 
 namespace content {
@@ -30,7 +31,7 @@ class DistillerUIHandleAndroid : public DistillerUIHandle {
   void OpenSettings() override;
 
  private:
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
 };
 
 }  // namespace android

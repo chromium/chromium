@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -95,6 +96,8 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
   report->set_download_verdict(download_verdict);
   report->set_url(download.GetURL().spec());
   report->set_did_proceed(did_proceed);
+  *report->mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile);
   std::string token =
       safe_browsing::DownloadProtectionService::GetDownloadPingToken(&download);
   if (!token.empty())

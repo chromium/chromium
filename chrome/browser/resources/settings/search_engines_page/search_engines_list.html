@@ -33,6 +33,11 @@
         margin-inline-start: var(--cr-icon-button-margin-start);
         width: var(--cr-icon-ripple-size);
       }
+
+      .cr-row {
+        padding-inline-end: 7px;
+        padding-inline-start: 0;
+      }
     </style>
     <div id="outer" class="list-frame" role="table">
       <div role="rowgroup">
@@ -49,7 +54,8 @@
               hidden="[[isActiveSearchEnginesFlagEnabled]]">
             $i18n{searchEnginesQueryURL}
           </span>
-          <span class="url" role="columnheader" hidden="[[!showQueryUrl]]">
+          <span class="url-padded" role="columnheader"
+                hidden="[[!showQueryUrl]]">
             $i18n{searchEnginesQueryURL}
           </span>
           <span class="icon-placeholder"></span>

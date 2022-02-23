@@ -156,7 +156,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(ext_texture_filter_anisotropic_);
   RegisterExtension(ext_texture_norm16_);
   RegisterExtension(khr_parallel_shader_compile_);
-  RegisterExtension(oes_draw_buffers_indexed_, kDraftExtension);
+  RegisterExtension(oes_draw_buffers_indexed_);
   RegisterExtension(oes_texture_float_linear_);
   RegisterExtension(webgl_compressed_texture_astc_);
   RegisterExtension(webgl_compressed_texture_etc_);

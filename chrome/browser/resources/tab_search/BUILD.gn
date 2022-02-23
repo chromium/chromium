@@ -4,26 +4,25 @@
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("./tab_search.gni")
+
+assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
-preprocess_fuse_manifest = "preprocessed_fuse_manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
-preprocess_mojo_tab_groups_manifest = "preprocess_mojo_tab_groups.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
     host = "tab-search.top-chrome"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     js_out_files = [ "tab_search.rollup.js" ]
     js_module_in_files = [ "tab_search.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
@@ -38,10 +37,7 @@ if (optimize_webui) {
     ]
 
     deps = [
-      ":preprocess",
-      ":preprocess_mojo",
-      ":preprocess_mojo_tab_groups",
-      ":preprocess_web_components",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
   }
@@ -50,81 +46,80 @@ if (optimize_webui) {
 generate_grd("build_grd") {
   grd_prefix = "tab_search"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "tab_search.html" ]
+  input_files = [
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "tab_search.html",
+  ]
   input_files_base_dir = rebase_path(".", "//")
-  resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
+
+  deps = [ ":build_fuse_grdp" ]
+  grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
 
   if (optimize_webui) {
-    deps = [
-      ":build",
-      ":preprocess_fuse",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_fuse_manifest",
-      "$target_gen_dir/$build_manifest",
-    ]
-    resource_path_rewrites += [ "tab_search.rollup.js|tab_search.js" ]
+    deps += [ ":build" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "tab_search.rollup.js|tab_search.js" ]
   } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_fuse",
-      ":preprocess_mojo",
-      ":preprocess_mojo_tab_groups",
-      ":preprocess_web_components",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_fuse_manifest",
-      "$target_gen_dir/$preprocess_mojo_manifest",
-      "$target_gen_dir/$preprocess_mojo_tab_groups_manifest",
-      "$target_gen_dir/$preprocess_web_components_manifest",
-    ]
+    deps += [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "bimap.js",
-    "fuzzy_search.js",
-    "tab_data.js",
-    "tab_group_color_helper.js",
-    "tab_search.js",
-    "tab_search_api_proxy.js",
-    "tab_search_utils.js",
-    "title_item.js",
-  ]
+generate_grd("build_fuse_grdp") {
+  grd_prefix = "tab_search"
+  out_grd = "$target_gen_dir/fuse_resources.grdp"
+  input_files = [ "fuse.js" ]
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+  deps = [ ":copy_fuse_dts" ]
 }
 
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+preprocess_if_expr("preprocess_tabs") {
+  deps = [ "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "tabs.mojom-webui.js" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
-  in_files = [
-    "app.js",
-    "infinite_list.js",
-    "tab_group_shared_vars.js",
-    "tab_search_item.js",
-    "tab_search_group_item.js",
-    "tab_search_search_field.js",
-  ]
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
-preprocess_if_expr("preprocess_fuse") {
-  in_folder = "../../../../third_party/fusejs/dist/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_fuse_manifest"
-  in_files = [ "fuse.basic.esm.min.js" ]
+copy("copy_fuse") {
+  sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/fuse.js" ]
+}
+
+copy("copy_fuse_dts") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
+# Work-around for https://github.com/microsoft/TypeScript/issues/47035, so
+# that the manually provided fuse.d.ts file prevails.
+copy("copy_fuse_dts_tsc") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$target_gen_dir/tsc/{{source_file_part}}" ]
 }
 
 preprocess_if_expr("preprocess_mojo_tab_groups") {
   deps = [ "//components/tab_groups/public/mojom:mojo_bindings_webui_js" ]
   in_folder = "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom/"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_tab_groups_manifest"
   in_files = [ "tab_group_types.mojom-webui.js" ]
 }
 
@@ -132,7 +127,6 @@ preprocess_if_expr("preprocess_mojo") {
   deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js" ]
   in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [ "tab_search.mojom-webui.js" ]
 }
 
@@ -153,133 +147,38 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
-                root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom",
-                root_build_dir),
-      ]
-  deps = [
-    ":app",
-    ":bimap",
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search",
-    ":tab_search_api_proxy",
-    ":tab_search_group_item",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + css_wrapper_files + html_wrapper_files + mojo_js_files
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "$target_gen_dir/$preprocess_folder/fuse.d.ts",
   ]
-}
 
-js_library("app") {
   deps = [
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search_api_proxy",
-    ":tab_search_group_item",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("bimap") {
-  deps = []
-}
-
-js_library("fuzzy_search") {
-  deps = [
-    ":tab_data",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("infinite_list") {
-  deps = [
-    ":bimap",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("tab_data") {
-  deps = []
-}
-
-js_library("tab_group_color_helper") {
-  deps = [ "//components/tab_groups/public/mojom:mojo_bindings_webui_js" ]
-}
-
-js_library("tab_search") {
-  deps = [ ":app" ]
-}
-
-js_library("tab_search_api_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("tab_search_item") {
-  deps = [
-    ":tab_data",
-    ":tab_group_color_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_search_group_item") {
-  deps = [
-    ":tab_group_color_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_search_search_field") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
-  ]
-}
-
-js_library("title_item") {
-  deps = []
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "app.js",
-    "infinite_list.js",
-    "tab_group_shared_vars.js",
-    "tab_search_item.js",
-    "tab_search_group_item.js",
-    "tab_search_search_field.js",
+  extra_deps = [
+    ":copy_fuse",
+    ":copy_fuse_dts",
+    ":copy_fuse_dts_tsc",
+    ":preprocess",
+    ":preprocess_generated",
+    ":preprocess_mojo",
+    ":preprocess_mojo_tab_groups",
+    ":preprocess_tabs",
   ]
 }

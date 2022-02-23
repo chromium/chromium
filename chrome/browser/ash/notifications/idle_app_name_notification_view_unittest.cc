@@ -43,20 +43,20 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     base::DictionaryValue manifest;
-    manifest.SetString(extensions::manifest_keys::kName, "Test");
-    manifest.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-    manifest.SetString(extensions::manifest_keys::kDescription, "Test app");
-    manifest.SetString("author.email", "Someone");
+    manifest.SetStringKey(extensions::manifest_keys::kName, "Test");
+    manifest.SetStringKey(extensions::manifest_keys::kVersion, "1");
+    manifest.SetIntKey(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.SetStringKey(extensions::manifest_keys::kDescription, "Test app");
+    manifest.SetStringPath("author.email", "Someone");
 
     std::string error;
     correct_extension_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
         manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);
     base::DictionaryValue manifest2;
-    manifest2.SetString(extensions::manifest_keys::kName, "Test");
-    manifest2.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest2.SetString(extensions::manifest_keys::kDescription, "Test app");
+    manifest2.SetStringKey(extensions::manifest_keys::kName, "Test");
+    manifest2.SetStringKey(extensions::manifest_keys::kVersion, "1");
+    manifest2.SetStringKey(extensions::manifest_keys::kDescription, "Test app");
 
     incorrect_extension_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,

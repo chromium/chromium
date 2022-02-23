@@ -19,7 +19,7 @@ import android.content.Context;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.common.SupportPreconditions;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.nio.ByteBuffer;

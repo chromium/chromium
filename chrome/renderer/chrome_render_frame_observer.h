@@ -56,7 +56,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
     return &associated_interfaces_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is called on the main thread for subresources or worker threads for
   // dedicated workers.
   static std::string GetCCTClientHeader(int render_frame_id);
@@ -92,7 +92,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       chrome::mojom::ImageFormat image_format,
       RequestImageForContextNodeCallback callback) override;
   void RequestReloadImageForContextNode() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetCCTClientHeader(const std::string& header) override;
 #endif
   void GetMediaFeedURL(GetMediaFeedURLCallback callback) override;
@@ -142,7 +142,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   // Owned by ChromeContentRendererClient and outlive us.
   web_cache::WebCacheImpl* web_cache_impl_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<std::u16string> webui_javascript_;
 #endif

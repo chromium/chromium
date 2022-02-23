@@ -12,10 +12,11 @@
 
 #include "base/bind_internal.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
+#if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 #include "base/mac/scoped_block.h"
 #endif
 
@@ -136,6 +137,11 @@ BindFailedCheckPreviousErrors BindRepeating(...);
 // to compile because Foo does not support the AddRef() and Release() methods.
 template <typename T>
 inline internal::UnretainedWrapper<T> Unretained(T* o) {
+  return internal::UnretainedWrapper<T>(o);
+}
+
+template <typename T>
+inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T>& o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
@@ -267,7 +273,7 @@ internal::OwnedRefWrapper<std::decay_t<T>> OwnedRef(T&& t) {
 // Both versions of Passed() prevent T from being an lvalue reference. The first
 // via use of enable_if, and the second takes a T* which will not bind to T&.
 template <typename T,
-          std::enable_if_t<!std::is_lvalue_reference<T>::value>* = nullptr>
+          std::enable_if_t<!std::is_lvalue_reference_v<T>>* = nullptr>
 inline internal::PassedWrapper<T> Passed(T&& scoper) {
   return internal::PassedWrapper<T>(std::move(scoper));
 }
@@ -296,7 +302,7 @@ inline internal::IgnoreResultHelper<T> IgnoreResult(T data) {
   return internal::IgnoreResultHelper<T>(std::move(data));
 }
 
-#if defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
+#if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 
 // RetainBlock() is used to adapt an Objective-C block when Automated Reference
 // Counting (ARC) is disabled. This is unnecessary when ARC is enabled, as the
@@ -314,7 +320,7 @@ base::mac::ScopedBlock<R (^)(Args...)> RetainBlock(R (^block)(Args...)) {
                                                 base::scoped_policy::RETAIN);
 }
 
-#endif  // defined(OS_APPLE) && !HAS_FEATURE(objc_arc)
+#endif  // BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 
 }  // namespace base
 

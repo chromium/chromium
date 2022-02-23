@@ -8,6 +8,43 @@
 
 namespace blink {
 
+namespace {
+
+bool PathContainsDisallowedCharacter(const GURL& url) {
+  std::string path = url.path();
+  DCHECK(base::IsStringUTF8(path));
+
+  // We should avoid these escaped characters in the path component because
+  // these can be handled differently depending on server implementation.
+  if (path.find("%2f") != std::string::npos ||
+      path.find("%2F") != std::string::npos) {
+    return true;
+  }
+  if (path.find("%5c") != std::string::npos ||
+      path.find("%5C") != std::string::npos) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+bool ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
+    const GURL& scope,
+    const GURL& script_url,
+    std::string* error_message) {
+  if (PathContainsDisallowedCharacter(scope) ||
+      PathContainsDisallowedCharacter(script_url)) {
+    *error_message = "The provided scope ('";
+    error_message->append(scope.spec());
+    error_message->append("') or scriptURL ('");
+    error_message->append(script_url.spec());
+    error_message->append("') includes a disallowed escape character.");
+    return true;
+  }
+  return false;
+}
+
 bool ServiceWorkerScopeMatches(const GURL& scope, const GURL& url) {
   DCHECK(!scope.has_ref());
   return base::StartsWith(url.spec(), scope.spec(),

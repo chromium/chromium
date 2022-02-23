@@ -21,10 +21,10 @@ namespace ash {
 // calls the ObserverStateChangedCallback when there is a change.
 class ThrottleObserver {
  public:
-  using ObserverStateChangedCallback = base::RepeatingCallback<void()>;
-  enum class PriorityLevel { UNKNOWN, LOW, NORMAL, IMPORTANT, CRITICAL };
+  using ObserverStateChangedCallback =
+      base::RepeatingCallback<void(const ThrottleObserver*)>;
 
-  ThrottleObserver(PriorityLevel level, const std::string& name);
+  explicit ThrottleObserver(const std::string& name);
 
   ThrottleObserver(const ThrottleObserver&) = delete;
   ThrottleObserver& operator=(const ThrottleObserver&) = delete;
@@ -41,30 +41,34 @@ class ThrottleObserver {
   // used.
   virtual void StopObserving();
 
-  // Sets the observer to active, and runs ObserverStateChanged callback if
-  // there was a change in state.
+  // Sets the `active_` variable to `active` and runs
+  // ObserverStateChangedCallback. When `active` is true, the target is
+  // unthrottled. When it is false, the target is throttled as long as all other
+  // observers are also inactive.
   void SetActive(bool active);
 
-  std::string GetDebugDescription() const;
+  // Sets the `enforced_` variable to `enforced` and runs the callback. When
+  // the observer is enforced, that observer always controls the target's
+  // throttling state. If the observer is active, the target is unthrottled.
+  // When it is inactive, the target is throttled ignoring other observers'
+  // states. Only one observer at most should be in the enforcing mode.
+  void SetEnforced(bool enforced);
 
-  PriorityLevel level() const { return level_; }
-  const std::string& name() const { return name_; }
   bool active() const { return active_; }
+  bool enforced() const { return enforced_; }
+  const std::string& name() const { return name_; }
 
  protected:
   content::BrowserContext* context() { return context_; }
 
-  const PriorityLevel level_{PriorityLevel::UNKNOWN};
   bool active_ = false;
+  bool enforced_ = false;
   const std::string name_;  // For logging purposes
   ObserverStateChangedCallback callback_;
 
  private:
   content::BrowserContext* context_;
 };
-
-std::ostream& operator<<(std::ostream& os,
-                         const ThrottleObserver::PriorityLevel& level);
 
 }  // namespace ash
 

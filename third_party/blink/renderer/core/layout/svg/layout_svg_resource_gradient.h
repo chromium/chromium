@@ -43,7 +43,8 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
   bool ApplyShader(const SVGResourceClient&,
                    const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
-                   PaintFlags&) final;
+                   const AutoDarkMode& auto_dark_mode,
+                   cc::PaintFlags&) final;
 
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const final;
 

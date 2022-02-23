@@ -4,13 +4,13 @@
 
 package org.chromium.components.browser_ui.notifications;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -130,31 +130,31 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
     // have compatibility issues (NotificationChannel is new in O), and we currently don't need them
     // where the MockNotificationManagerProxy is used in tests.
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannel(NotificationChannel channel) {}
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {}
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public List<NotificationChannel> getNotificationChannels() {
         return null;
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public List<NotificationChannelGroup> getNotificationChannelGroups() {
         return null;
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannel(String id) {}
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public NotificationChannel getNotificationChannel(String channelId) {
         return null;

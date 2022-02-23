@@ -231,20 +231,19 @@
           {
             "type": "any",
             "name": "request"
-          },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the specified tab, the callback is called with no arguments and $(ref:runtime.lastError) is set to the error message."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the specified tab, the callback is called with no arguments and $(ref:runtime.lastError) is set to the error message."
+            }
+          ]
+        }
       },
       {
         "name": "sendMessage",
@@ -274,20 +273,19 @@
               }
             },
             "optional": true
-          },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The JSON response object sent by the handler of the message. If an error occurs while connecting to the specified tab, the callback is called with no arguments and $(ref:runtime.lastError) is set to the error message."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The JSON response object sent by the handler of the message. If an error occurs while connecting to the specified tab, the callback is called with no arguments and $(ref:runtime.lastError) is set to the error message."
+            }
+          ]
+        }
       },
       {
         "name": "getSelected",

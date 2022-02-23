@@ -11,7 +11,7 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/system_network_context_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/version_info/android/channel_getter.h"
 #endif
 
@@ -42,7 +42,7 @@ WebLayerVariationsServiceClient::GetNetworkTimeTracker() {
 }
 
 Channel WebLayerVariationsServiceClient::GetChannel() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return version_info::android::GetChannel();
 #else
   return version_info::Channel::UNKNOWN;

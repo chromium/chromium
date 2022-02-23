@@ -20,6 +20,8 @@ const char kLastUploadVersion[] = "enterprise_reporting.last_upload_version";
 const char kCloudExtensionRequestUploadedIds[] =
     "enterprise_reporting.extension_request.pending.ids";
 
+const base::TimeDelta kDefaultReportFrequency = base::Hours(24);
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // This is also registered as a Profile pref which will be removed after
   // the migration.
@@ -27,14 +29,24 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
   registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterStringPref(kLastUploadVersion, std::string());
+  registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
+                                  kDefaultReportFrequency);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-#if !defined(OS_ANDROID)
+  registry->RegisterBooleanPref(kCloudProfileReportingEnabled, false);
+  registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
+  registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
+  registry->RegisterStringPref(kLastUploadVersion, std::string());
+  // TODO(crbug.com/1298258): We reuse the report frequency pref for profile
+  // reporting for now. This might need to be changed in the future.
+  registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
+                                  kDefaultReportFrequency);
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
   registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace enterprise_reporting

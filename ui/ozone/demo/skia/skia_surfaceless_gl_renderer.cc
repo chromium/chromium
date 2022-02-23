@@ -253,7 +253,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         buffers_[back_buffer_]->image(), /* gpu_fence */ nullptr,
         gfx::OverlayPlaneData(
-            0, gfx::OVERLAY_TRANSFORM_NONE, primary_plane_rect_, unity_rect,
+            0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
+            unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
             /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
             /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
@@ -264,7 +265,8 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         overlay_buffer_[back_buffer_]->image(), /* gpu_fence */ nullptr,
         gfx::OverlayPlaneData(
-            1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect, unity_rect,
+            1, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(overlay_rect),
+            unity_rect,
             /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
             /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone,
             /* rounded_corners */ gfx::RRectF(), gfx::ColorSpace::CreateSRGB(),
@@ -288,7 +290,7 @@ void SurfacelessSkiaGlRenderer::PostRenderFrameTask(
                                      primary_plane_rect_.size()))
           LOG(FATAL) << "Failed to recreate buffer";
       }
-      FALLTHROUGH;  // We want to render a new frame anyways.
+      [[fallthrough]];  // We want to render a new frame anyways.
     case gfx::SwapResult::SWAP_ACK:
       SkiaGlRenderer::PostRenderFrameTask(std::move(result));
       break;

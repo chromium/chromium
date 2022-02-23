@@ -26,7 +26,7 @@ namespace {
 absl::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
     const webrtc::SdpVideoFormat& sdp) {
   if (sdp.name == "H264") {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Enable H264 HW encode for WebRTC when SW fallback is available, which is
     // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
     // removed when SW implementation is fully enabled.
@@ -62,7 +62,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
   }
   if (profile.profile >= media::H264PROFILE_MIN &&
       profile.profile <= media::H264PROFILE_MAX) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Enable H264 HW encode for WebRTC when SW fallback is available, which is
     // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
     // removed when SW implementation is fully enabled.
@@ -78,7 +78,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     webrtc::H264Profile h264_profile;
     switch (profile.profile) {
       case media::H264PROFILE_BASELINE:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         // Force HW H264 on Android to be CBP for most compatibility, since:
         // - Only HW H264 is available on Android at present.
         // - MediaCodec only advise BP, which works same as CBP in most cases.
@@ -86,7 +86,7 @@ absl::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         h264_profile = webrtc::H264Profile::kProfileConstrainedBaseline;
 #else
         h264_profile = webrtc::H264Profile::kProfileBaseline;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
         break;
       case media::H264PROFILE_MAIN:
         h264_profile = webrtc::H264Profile::kProfileMain;

@@ -4,6 +4,8 @@
 
 #include "remoting/client/display/gl_cursor_feedback_texture.h"
 
+#include <cmath>
+
 #include "base/notreached.h"
 #include "remoting/client/display/gl_render_layer.h"
 

@@ -47,10 +47,12 @@ void AddStringResources(content::WebUIDataSource* source) {
 
       {"promptTitle", IDS_CROSTINI_UPGRADER_TITLE},
       {"backingUpTitle", IDS_CROSTINI_UPGRADER_BACKING_UP_TITLE},
+      {"backupErrorTitle", IDS_CROSTINI_UPGRADER_BACKUP_ERROR_TITLE},
       {"backupSucceededTitle", IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_TITLE},
       {"prechecksFailedTitle", IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_TITLE},
       {"upgradingTitle", IDS_CROSTINI_UPGRADER_UPGRADING_TITLE},
       {"restoreTitle", IDS_CROSTINI_UPGRADER_RESTORE_TITLE},
+      {"restoreErrorTitle", IDS_CROSTINI_UPGRADER_RESTORE_ERROR_TITLE},
       {"restoreSucceededTitle", IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_TITLE},
       {"succeededTitle", IDS_CROSTINI_UPGRADER_SUCCEEDED_TITLE},
       {"cancelingTitle", IDS_CROSTINI_UPGRADER_CANCELING_TITLE},
@@ -61,15 +63,18 @@ void AddStringResources(content::WebUIDataSource* source) {
 
       {"promptMessage", IDS_CROSTINI_UPGRADER_BODY},
       {"backingUpMessage", IDS_CROSTINI_UPGRADER_BACKING_UP_MESSAGE},
+      {"backupErrorMessage", IDS_CROSTINI_UPGRADER_BACKUP_ERROR_MESSAGE},
       {"backupSucceededMessage",
        IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_MESSAGE},
       {"upgradingMessage", IDS_CROSTINI_UPGRADER_UPGRADING},
       {"succeededMessage", IDS_CROSTINI_UPGRADER_SUCCEEDED},
       {"cancelingMessage", IDS_CROSTINI_UPGRADER_CANCELING},
-      {"offerRestoreMessage", IDS_CROSTINI_UPGRADER_OFFER_RESTORE_MESSAGE},
       {"restoreMessage", IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE},
+      {"restoreErrorMessage", IDS_CROSTINI_UPGRADER_RESTORE_ERROR_MESSAGE},
       {"restoreSucceededMessage",
        IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_MESSAGE},
+      {"logFileMessageError", IDS_CROSTINI_UPGRADER_LOG_FILE_ERROR},
+      {"logFileMessageSuccess", IDS_CROSTINI_UPGRADER_LOG_FILE_SUCCESS},
 
       {"backupCheckboxMessage", IDS_CROSTINI_UPGRADER_BACKUP_CHECKBOX_MESSAGE},
       {"backupChangeLocation", IDS_CROSTINI_UPGRADER_BACKUP_CHANGE_LOCATION},
@@ -83,12 +88,6 @@ void AddStringResources(content::WebUIDataSource* source) {
   source->AddString("offlineError",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_OFFLINE_ERROR, device_name));
-  source->AddString("precheckNoSpace",
-                    l10n_util::GetStringFUTF8(
-                        IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_SPACE,
-                        ui::FormatBytesWithUnits(
-                            crostini::CrostiniUpgrader::kDiskRequired,
-                            ui::DATA_UNITS_GIBIBYTE, /*show_units=*/true)));
 }
 
 CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
@@ -109,6 +108,7 @@ CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
                           IDR_CROSTINI_UPGRADER_BROWSER_PROXY_JS);
   source->AddResourcePath("crostini_upgrader.mojom-lite.js",
                           IDR_CROSTINI_UPGRADER_MOJO_LITE_JS);
+  source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
   source->SetDefaultResource(IDR_CROSTINI_UPGRADER_INDEX_HTML);
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

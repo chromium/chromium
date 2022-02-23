@@ -118,6 +118,58 @@ TEST(VlogTest, VmoduleDirs) {
   EXPECT_EQ(4, vlog_info.GetVlogLevel("foo/bar/baz/blah-inl.h"));
 }
 
+TEST(VlogTest, VmoduleDuplicateName) {
+  // When filename rules are duplicated, the first one is effective.
+  const char kVModuleSwitch[] = "foo=2,foo=1";
+  int min_log_level = 0;
+  VlogInfo vlog_info(std::string(), kVModuleSwitch, &min_log_level);
+  EXPECT_EQ(2, vlog_info.GetVlogLevel("foo.cc"));
+}
+
+TEST(VlogTest, VmoduleDuplicatePattern) {
+  // When pattern rules are duplicated, the first one is effective.
+  const char kVModuleSwitch[] = "foo*=3,foo*=4";
+  int min_log_level = 0;
+  VlogInfo vlog_info(std::string(), kVModuleSwitch, &min_log_level);
+  EXPECT_EQ(3, vlog_info.GetVlogLevel("foobar.cc"));
+}
+
+TEST(VlogTest, VmoduleOrderFirstMatchIsName) {
+  // When rules overlap, the first matching rule is effective.
+  // This is a filename before pattern case.
+  const char kVModuleSwitch[] = "foo=2,bar/*=1";
+  int min_log_level = 0;
+  VlogInfo vlog_info(std::string(), kVModuleSwitch, &min_log_level);
+  EXPECT_EQ(1, vlog_info.GetVlogLevel("bar/a.cc"));
+  EXPECT_EQ(2, vlog_info.GetVlogLevel("bar/foo.cc"));
+}
+
+TEST(VlogTest, VmoduleOrderFirstMatchIsPattern) {
+  // When rules overlap, the first matching rule is effective.
+  // This is a pattern before filename case.
+  const char kVModuleSwitch[] = "bar/*=1,foo=2";
+  int min_log_level = 0;
+  VlogInfo vlog_info(std::string(), kVModuleSwitch, &min_log_level);
+  EXPECT_EQ(1, vlog_info.GetVlogLevel("bar/foo.cc"));
+  EXPECT_EQ(1, vlog_info.GetVlogLevel("bar/a.cc"));
+  EXPECT_EQ(2, vlog_info.GetVlogLevel("foo.cc"));
+}
+
+TEST(VlogTest, VmoduleOrderSample) {
+  // logging.h --vmodule example, with some overlapping cases checked.
+  const char kVModuleSwitch[] =
+      "profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4";
+  int min_log_level = 0;
+  VlogInfo vlog_info(std::string(), kVModuleSwitch, &min_log_level);
+  EXPECT_EQ(4, vlog_info.GetVlogLevel("foo/chromeos/bar.cc"));
+  EXPECT_EQ(3, vlog_info.GetVlogLevel("browser_foo.cc"));
+  EXPECT_EQ(3, vlog_info.GetVlogLevel("foo/chromeos/browser_bar.cc"));
+  EXPECT_EQ(1, vlog_info.GetVlogLevel("icon_loader.cc"));
+  EXPECT_EQ(2, vlog_info.GetVlogLevel("foo/profile.cc"));
+  EXPECT_EQ(2, vlog_info.GetVlogLevel("foo/chromeos/profile.cc"));
+  EXPECT_EQ(0, vlog_info.GetVlogLevel("foo.cc"));
+}
+
 }  // namespace
 
 }  // namespace logging

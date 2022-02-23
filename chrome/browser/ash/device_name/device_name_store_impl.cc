@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/device_name/device_name_store_impl.h"
 
+#include "base/logging.h"
 #include "chrome/browser/ash/device_name/device_name_applier_impl.h"
 #include "chrome/browser/ash/device_name/device_name_validator.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -93,14 +94,14 @@ bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() const {
   switch (handler_->GetDeviceNamePolicy()) {
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable:
-      FALLTHROUGH;
+      [[fallthrough]];
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameChosenByAdmin:
       return true;
 
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameConfigurableByManagedUser:
-      FALLTHROUGH;
+      [[fallthrough]];
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
       return false;
   }

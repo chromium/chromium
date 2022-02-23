@@ -79,8 +79,8 @@ Status ConsoleLogger::OnLogEntryAdded(const base::DictionaryValue& params) {
     origin = source;
 
   std::string line_number;
-  int line = -1;
-  if (entry->GetInteger("lineNumber", &line)) {
+  int line = entry->FindIntKey("lineNumber").value_or(-1);
+  if (line >= 0) {
     line_number = base::StringPrintf("%d", line);
   } else {
     // No line number, but print anyway, just to maintain the number of fields
@@ -115,7 +115,7 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     const base::ListValue* call_frames = nullptr;
     if (!stack_trace->GetList("callFrames", &call_frames))
       return Status(kUnknownError, "missing or invalid callFrames");
-    const base::Value& call_frame_value = call_frames->GetList()[0];
+    const base::Value& call_frame_value = call_frames->GetListDeprecated()[0];
     if (call_frame_value.is_dict()) {
       const base::DictionaryValue& call_frame =
           base::Value::AsDictionaryValue(call_frame_value);
@@ -124,11 +124,11 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
         return Status(kUnknownError, "missing or invalid url");
       if (!url.empty())
         origin = url;
-      int line = -1;
-      if (!call_frame.GetInteger("lineNumber", &line))
+      int line = call_frame.FindIntKey("lineNumber").value_or(-1);
+      if (line < 0)
         return Status(kUnknownError, "missing or invalid lineNumber");
-      int column = -1;
-      if (!call_frame.GetInteger("columnNumber", &column))
+      int column = call_frame.FindIntKey("columnNumber").value_or(-1);
+      if (column < 0)
         return Status(kUnknownError, "missing or invalid columnNumber");
       line_column = base::StringPrintf("%d:%d", line, column);
     }
@@ -137,13 +137,13 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   std::string text;
   const base::ListValue* args = nullptr;
 
-  if (!params.GetList("args", &args) || args->GetList().size() < 1) {
+  if (!params.GetList("args", &args) || args->GetListDeprecated().size() < 1) {
     return Status(kUnknownError, "missing or invalid args");
   }
 
-  int arg_count = args->GetList().size();
+  int arg_count = args->GetListDeprecated().size();
   for (int i = 0; i < arg_count; i++) {
-    const base::Value& current_arg_value = args->GetList()[i];
+    const base::Value& current_arg_value = args->GetListDeprecated()[i];
     if (!current_arg_value.is_dict()) {
       std::string error_message = base::StringPrintf("Argument %d is missing or invalid", i);
       return Status(kUnknownError, error_message );
@@ -155,8 +155,8 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     if (current_arg.GetString("type", &arg_type) && arg_type == "undefined") {
       temp_text = "undefined";
     } else if (!current_arg.GetString("description", &temp_text)) {
-      const base::Value* value = nullptr;
-      if (!current_arg.Get("value", &value)) {
+      const base::Value* value = current_arg.FindKey("value");
+      if (value == nullptr) {
         return Status(kUnknownError, "missing or invalid arg value");
       }
       if (!base::JSONWriter::Write(*value, &temp_text)) {
@@ -187,11 +187,11 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
   if (!exception_details->GetString("url", &origin))
     origin = "javascript";
 
-  int line = -1;
-  if (!exception_details->GetInteger("lineNumber", &line))
+  int line = exception_details->FindIntKey("lineNumber").value_or(-1);
+  if (line < 0)
     return Status(kUnknownError, "missing or invalid lineNumber");
-  int column = -1;
-  if (!exception_details->GetInteger("columnNumber", &column))
+  int column = exception_details->FindIntKey("columnNumber").value_or(-1);
+  if (column < 0)
     return Status(kUnknownError, "missing or invalid columnNumber");
   std::string line_column = base::StringPrintf("%d:%d", line, column);
 
@@ -204,7 +204,7 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
       preview->GetList("properties", &properties)) {
     // If the event contains an object which is an instance of the JS Error
     // class, attempt to get the message property for the exception.
-    for (const base::Value& property_value : properties->GetList()) {
+    for (const base::Value& property_value : properties->GetListDeprecated()) {
       if (property_value.is_dict()) {
         const base::DictionaryValue& property =
             base::Value::AsDictionaryValue(property_value);

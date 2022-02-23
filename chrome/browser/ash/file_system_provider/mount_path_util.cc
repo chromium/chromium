@@ -65,8 +65,8 @@ base::FilePath GetMountPath(Profile* profile,
 }
 
 bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
-  std::vector<base::FilePath::StringType> components;
-  local_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      local_path.GetComponents();
 
   if (components.size() < 3)
     return false;
@@ -117,8 +117,8 @@ bool FileSystemURLParser::Parse() {
     // Strip the mount path name from the local path, to extract the file path
     // within the provided file system.
     file_system_ = file_system;
-    std::vector<base::FilePath::StringType> components;
-    url_.path().GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        url_.path().GetComponents();
     if (components.size() < 3)
       return false;
 
@@ -149,8 +149,8 @@ bool LocalPathParser::Parse() {
   if (!IsFileSystemProviderLocalPath(local_path_))
     return false;
 
-  std::vector<base::FilePath::StringType> components;
-  local_path_.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      local_path_.GetComponents();
 
   if (components.size() < 3)
     return false;

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Отворите нови прозор у режиму без архивирања</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, па <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Идите на радне површине од 1 до 8</translation>
 <translation id="1652741121070700329">Померите на почетак претходне речи</translation>
 <translation id="1679841710523778799">Повећајте осветљеност</translation>
 <translation id="168356808214100546">Притисните и задржите <ph name="ALT" />, додирујте <ph name="TAB" /> док не дођете до прозора који желите да отворите, па отпустите.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Притисните <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и кликните на линк</translation>
 <translation id="561814908794220892">Отворите веб-страницу на новој картици</translation>
 <translation id="5620219513321115856">Преместите активни прозор на радну површину на десној страни</translation>
+<translation id="5699366815052349604">Доделите активни прозор свим радним површинама</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Отворите линк на картици</translation>
 <translation id="5757474750054631686">Смањите осветљеност тастатуре (само за тастатуре са позадинским осветљењем)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Прикажите скривене датотеке у апликацији Датотеке</translation>
 <translation id="8717459106217102612">Изаберите претходну реч или слово</translation>
 <translation id="8727232706774971183">Прегледајте обавештења</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> од 1 до 8</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
 <translation id="8881584919399569791">Преместите активни прозор на радну површину на левој страни</translation>
 <translation id="88986195241502842">Страница надоле</translation>

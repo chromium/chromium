@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"

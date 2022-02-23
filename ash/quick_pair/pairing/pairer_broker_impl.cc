@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
+
 #include <memory>
 
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer.h"
+#include "ash/quick_pair/pairing/fast_pair/fast_pair_pairer_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_unpair_handler.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -18,6 +22,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+
+namespace {
+
+constexpr int kMaxFailureRetryCount = 3;
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -59,10 +69,13 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
     return;
   }
 
+  if (!base::Contains(pair_failure_counts_, device->ble_address))
+    pair_failure_counts_[device->ble_address] = 0;
+
   QP_LOG(INFO) << __func__ << ": " << device;
 
   DCHECK(adapter_);
-  fast_pair_pairers_[device->ble_address] = std::make_unique<FastPairPairer>(
+  fast_pair_pairers_[device->ble_address] = FastPairPairerImpl::Factory::Create(
       adapter_, device,
       base::BindOnce(&PairerBrokerImpl::OnFastPairDevicePaired,
                      weak_pointer_factory_.GetWeakPtr()),
@@ -80,26 +93,50 @@ void PairerBrokerImpl::OnFastPairDevicePaired(scoped_refptr<Device> device) {
   for (auto& observer : observers_) {
     observer.OnDevicePaired(device);
   }
+
+  RecordPairFailureRetry(
+      /*num_retries=*/pair_failure_counts_[device->ble_address]);
+  pair_failure_counts_.erase(device->ble_address);
 }
 
 void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
                                                 PairFailure failure) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure;
+  ++pair_failure_counts_[device->ble_address];
+  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure
+               << ", Failure Count = "
+               << pair_failure_counts_[device->ble_address];
 
-  for (auto& observer : observers_) {
-    observer.OnPairFailure(device, failure);
+  if (pair_failure_counts_[device->ble_address] == kMaxFailureRetryCount) {
+    QP_LOG(INFO) << __func__
+                 << ": Reached max failure count. Notifying observers.";
+    for (auto& observer : observers_) {
+      observer.OnPairFailure(device, failure);
+    }
+
+    FastPairHandshakeLookup::GetInstance()->Erase(device);
+    pair_failure_counts_.erase(device->ble_address);
+    fast_pair_pairers_.erase(device->ble_address);
+    return;
   }
+
+  fast_pair_pairers_.erase(device->ble_address);
+  PairFastPairDevice(device);
 }
 
 void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
                                            AccountKeyFailure failure) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure;
+
+  for (auto& observer : observers_) {
+    observer.OnAccountKeyWrite(device, failure);
+  }
 }
 
 void PairerBrokerImpl::OnFastPairProcedureComplete(
     scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
   fast_pair_pairers_.erase(device->ble_address);
+  FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
 }  // namespace quick_pair

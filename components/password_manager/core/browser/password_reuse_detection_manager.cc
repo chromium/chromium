@@ -45,7 +45,7 @@ void PasswordReuseDetectionManager::OnKeyPressedCommitted(
   OnKeyPressed(text, /*is_committed*/ true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PasswordReuseDetectionManager::OnKeyPressedUncommitted(
     const std::u16string& text) {
   OnKeyPressed(text, /*is_committed*/ false);

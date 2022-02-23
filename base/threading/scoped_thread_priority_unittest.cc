@@ -30,7 +30,7 @@ class ScopedThreadPriorityTest : public testing::Test {
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void FunctionThatBoostsPriorityOnFirstInvoke(ThreadPriority expected_priority) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
   EXPECT_EQ(expected_priority, PlatformThread::GetCurrentThreadPriority());
@@ -42,7 +42,7 @@ void FunctionThatBoostsPriorityOnEveryInvoke() {
             PlatformThread::GetCurrentThreadPriority());
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -58,7 +58,7 @@ TEST_F(ScopedThreadPriorityTest, WithoutPriorityBoost) {
   EXPECT_EQ(ThreadPriority::NORMAL, PlatformThread::GetCurrentThreadPriority());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
   ASSERT_RUNS_ONCE();
 
@@ -76,9 +76,9 @@ TEST_F(ScopedThreadPriorityTest, WithPriorityBoost) {
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(ScopedThreadPriorityTest, NestedScope) {
   ASSERT_RUNS_ONCE();
 
@@ -103,9 +103,9 @@ TEST_F(ScopedThreadPriorityTest, NestedScope) {
   // Put back the default thread priority.
   PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnFirstInvoke) {
   ASSERT_RUNS_ONCE();
 
@@ -128,6 +128,6 @@ TEST_F(ScopedThreadPriorityTest, FunctionThatBoostsPriorityOnEveryInvoke) {
   PlatformThread::SetCurrentThreadPriority(ThreadPriority::NORMAL);
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base

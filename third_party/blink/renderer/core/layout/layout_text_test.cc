@@ -221,7 +221,7 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(LayoutTextTest, PrewarmFamily) {
   base::test::ScopedFeatureList features(kAsyncFontAccess);
   test::ScopedTestFontPrewarmer prewarmer;
@@ -1049,10 +1049,11 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuads) {
     <div>012<span id=target>345 67</span></div>
   )HTML");
   LayoutText* layout_text = GetLayoutTextById("target");
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_text->AbsoluteQuads(quads);
-  EXPECT_THAT(quads, testing::ElementsAre(FloatRect(30, 0, 30, 10),
-                                          FloatRect(0, 10, 20, 10)));
+  EXPECT_THAT(quads,
+              testing::ElementsAre(gfx::QuadF(gfx::RectF(30, 0, 30, 10)),
+                                   gfx::QuadF(gfx::RectF(0, 10, 20, 10))));
 }
 
 TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
@@ -1070,10 +1071,11 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
     <div>012<span id=target>345 67</span></div>
   )HTML");
   LayoutText* layout_text = GetLayoutTextById("target");
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_text->AbsoluteQuads(quads);
-  EXPECT_THAT(quads, testing::ElementsAre(FloatRect(90, 30, 10, 30),
-                                          FloatRect(80, 0, 10, 20)));
+  EXPECT_THAT(quads,
+              testing::ElementsAre(gfx::QuadF(gfx::RectF(90, 30, 10, 30)),
+                                   gfx::QuadF(gfx::RectF(80, 0, 10, 20))));
 }
 
 TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {

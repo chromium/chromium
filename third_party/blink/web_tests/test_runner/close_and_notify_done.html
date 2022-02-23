@@ -1,0 +1,19 @@
+<script>
+  // Calling window.close() should, in general, cause the window to
+  // close and the test to fail, and then move on to the next test.
+  // This test checks that if we call testRunner.notifyDone() after
+  // calling window.close(), we discard the additional request to finish
+  // the test, rather than trying to finish the test twice and report an
+  // extra test result.
+
+  // notify_done_and_defered_close_dump_text.html tests the opposite
+  // sequence of calls.
+
+  if (testRunner) {
+    testRunner.waitUntilDone();
+    setTimeout(() => {
+      close();
+      testRunner.notifyDone();
+    }, 50)
+  }
+</script>

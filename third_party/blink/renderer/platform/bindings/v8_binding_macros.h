@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_MACROS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_MACROS_H_
 
+#include "build/build_config.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if !defined(alloca)
 // Windows uses _alloca instead of alloca, but only #define's alloca to _alloca
 // in malloc.h if _CRT_INTERNAL_NONSTDC_NAMES is defined. If that doesn't happen

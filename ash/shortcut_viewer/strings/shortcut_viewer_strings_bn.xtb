@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ছদ্মবেশী মোডে একটি নতুন উইন্ডো খুলুন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, তারপর <ph name="ESC" /></translation>
+<translation id="1586324912145647027">১ থেকে ৮ নম্বর ডেস্কে যান</translation>
 <translation id="1652741121070700329">আগের শব্দের শুরুতে নিয়ে যান</translation>
 <translation id="1679841710523778799">উজ্জ্বলতা বাড়ান</translation>
 <translation id="168356808214100546"><ph name="ALT" /> বোতাম টিপে ধরে রেখে যে উইন্ডোটি খুলতে চান সেটি বেছে নেওয়ার জন্য <ph name="TAB" /> বোতাামটি বারবার টিপুন এবং তারপর উইন্ডোটি বেছে নেওয়া হয়ে গেলে আঙুল তুলে নিন।</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> টিপুন এবং একটি লিঙ্ক ক্লিক করুন</translation>
 <translation id="561814908794220892">একটি নতুন ট্যাবে ওয়েবপৃষ্ঠা খুলুন</translation>
 <translation id="5620219513321115856">চালু উইন্ডোকে ডানদিকের ডেস্কে সরান</translation>
+<translation id="5699366815052349604">সব ডেস্কে অ্যাক্টিভ উইন্ডো অ্যাসাইন করুন</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> অথবা <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ট্যাবে লিঙ্কটি খুলুন</translation>
 <translation id="5757474750054631686">কীবোর্ডের আলো কম করুন (শুধুমাত্র ব্যাকলিট কীবোর্ডের জন্য)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">ফাইল অ্যাপে লুকিয়ে থাকা ফাইলগুলি ডিসপ্লে করুন</translation>
 <translation id="8717459106217102612">আগের শব্দ অথবা অক্ষরটি বেছে নিন</translation>
 <translation id="8727232706774971183">আপনার বিজ্ঞপ্তিগুলি দেখুন</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> ১ থেকে ৮ পর্যন্ত</translation>
 <translation id="8855885154700222542">ফুলস্ক্রিন করার বোতাম</translation>
 <translation id="8881584919399569791">চালু উইন্ডোকে বাঁদিকের ডেস্কে সরান</translation>
 <translation id="88986195241502842">পৃষ্ঠায় নীচের দিকে যান</translation>

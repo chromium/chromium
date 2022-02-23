@@ -95,6 +95,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)tag
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
@@ -109,6 +110,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
       registerForUpdatesWithAppId:appId
                         brandCode:brandCode
+                        brandPath:brandPath
                               tag:tag
                           version:version
              existenceCheckerPath:existenceCheckerPath
@@ -130,6 +132,8 @@ NSString* GetAppIdForUpdaterAsNSString() {
 // updates of progress and returns the result in the reply block.
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(CRUUpdateStateObserver* _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
   auto errorHandler = ^(NSError* xpcError) {
@@ -142,6 +146,7 @@ NSString* GetAppIdForUpdaterAsNSString() {
   [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
       checkForUpdateWithAppID:appID
                      priority:priority
+      policySameVersionUpdate:policySameVersionUpdate
                   updateState:updateState
                         reply:reply];
 }
@@ -151,6 +156,12 @@ NSString* GetAppIdForUpdaterAsNSString() {
 - (void)runPeriodicTasksWithReply:(void (^_Nullable)(void))reply {
   // This method does not need to be implemented in the RPC on-demand update
   // call from the browser to the updater.
+  NOTIMPLEMENTED();
+}
+
+// Gets states of all registered apps.
+- (void)getAppStatesWithReply:
+    (void (^_Nonnull)(CRUAppStatesWrapper* _Nullable apps))reply {
   NOTIMPLEMENTED();
 }
 
@@ -201,6 +212,7 @@ void BrowserUpdaterClientMac::BeginRegister(
 
   [client_ registerForUpdatesWithAppId:GetAppIdForUpdaterAsNSString()
                              brandCode:base::SysUTF8ToNSString(brand_code)
+                             brandPath:@""
                                    tag:base::SysUTF8ToNSString(tag)
                                version:base::SysUTF8ToNSString(version)
                   existenceCheckerPath:base::mac::FilePathToNSString(
@@ -227,9 +239,13 @@ void BrowserUpdaterClientMac::BeginUpdateCheck(
   base::scoped_nsprotocol<id<CRUUpdateStateObserving>> state_observer(
       [[CRUUpdateStateObserver alloc] initWithRepeatingCallback:state_update
                                                  callbackRunner:task_runner()]);
-
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      policySameVersionUpdateWrapper([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:
+              updater::UpdateService::PolicySameVersionUpdate::kNotAllowed]);
   [client_ checkForUpdateWithAppID:GetAppIdForUpdaterAsNSString()
                           priority:priority_wrapper.get()
+           policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:state_observer.get()
                              reply:reply];
 }

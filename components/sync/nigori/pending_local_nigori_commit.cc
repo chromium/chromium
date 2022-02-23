@@ -5,6 +5,7 @@
 #include "components/sync/nigori/pending_local_nigori_commit.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -21,10 +22,11 @@ using sync_pb::NigoriSpecifics;
 
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
-  explicit CustomPassphraseSetter(const std::string& passphrase)
+  explicit CustomPassphraseSetter(
+      const std::string& passphrase,
+      const KeyDerivationParams& key_derivation_params)
       : passphrase_(passphrase),
-        key_derivation_params_(KeyDerivationParams::CreateForScrypt(
-            Nigori::GenerateScryptSalt())) {}
+        key_derivation_params_(key_derivation_params) {}
 
   CustomPassphraseSetter(const CustomPassphraseSetter&) = delete;
   CustomPassphraseSetter& operator=(const CustomPassphraseSetter&) = delete;
@@ -168,8 +170,10 @@ class KeystoreReencryptor : public PendingLocalNigoriCommit {
 // static
 std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForSetCustomPassphrase(
-    const std::string& passphrase) {
-  return std::make_unique<CustomPassphraseSetter>(passphrase);
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
+  return std::make_unique<CustomPassphraseSetter>(passphrase,
+                                                  key_derivation_params);
 }
 
 // static

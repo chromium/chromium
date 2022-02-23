@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -23,7 +24,7 @@ namespace android {
 class FeedStream : public ::feed::FeedStreamSurface {
  public:
   explicit FeedStream(const base::android::JavaRef<jobject>& j_this,
-                      jboolean is_for_you_stream,
+                      jint stream_kind,
                       FeedReliabilityLoggingBridge* reliability_logging_bridge);
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
@@ -51,7 +52,8 @@ class FeedStream : public ::feed::FeedStreamSurface {
   void ProcessThereAndBackAgain(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jbyteArray>& data);
+      const base::android::JavaParamRef<jbyteArray>& data,
+      const base::android::JavaParamRef<jbyteArray>& logging_parameters);
 
   int ExecuteEphemeralChange(
       JNIEnv* env,
@@ -71,11 +73,6 @@ class FeedStream : public ::feed::FeedStreamSurface {
 
   void SurfaceClosed(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
-
-  // Is activity logging enabled (ephemeral).
-  bool IsActivityLoggingEnabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
 
   // Event reporting functions. See |FeedApi| for definitions.
   void ReportSliceViewed(JNIEnv* env,
@@ -131,9 +128,9 @@ class FeedStream : public ::feed::FeedStreamSurface {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-  FeedApi* feed_stream_api_;
+  raw_ptr<FeedApi> feed_stream_api_;
   bool attached_ = false;
-  FeedReliabilityLoggingBridge* reliability_logging_bridge_ = nullptr;
+  raw_ptr<FeedReliabilityLoggingBridge> reliability_logging_bridge_ = nullptr;
 };
 
 }  // namespace android

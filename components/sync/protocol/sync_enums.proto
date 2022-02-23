@@ -49,7 +49,7 @@ message SyncEnums {
     // configuration and is once again syncing with the server.
     CONFIGURE_COMPLETE = 12;
     // A new cryptographer bootstrap token was generated.
-    BOOTSTRAP_TOKEN_UPDATED = 13;
+    DEPRECATED_BOOTSTRAP_TOKEN_UPDATED = 13;
     // Cryptographer needs trusted vault decryption keys.
     TRUSTED_VAULT_KEY_REQUIRED = 14;
     // Cryptographer no longer needs trusted vault decryption keys.

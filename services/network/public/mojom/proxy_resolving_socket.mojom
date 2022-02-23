@@ -43,7 +43,7 @@ struct ProxyResolvingSocketOptions {
 
   // Tries to do a fake TLS handshake on the connection.
   // This is sometimes used with XMPP to pass through proxies.
-  // See jingle_glue::FakeSSLClientSocket for more details.
+  // See webrtc::FakeSSLClientSocket for more details.
   // Should not be used with |use_tls| set to true.
   bool fake_tls_handshake = false;
 };

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -35,10 +33,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCallback {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_bobpay_and_cards_test.html", this);
@@ -67,6 +61,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testNoAppsInFastBobPayFactory() throws TimeoutException {
         runTest(AppPresence.NO_APPS, FactorySpeed.FAST_FACTORY);
     }
@@ -78,6 +73,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testNoAppsInSlowBobPayFactory() throws TimeoutException {
         runTest(AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
     }
@@ -89,6 +85,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testHaveAppsInFastBobPayFactory() throws TimeoutException {
         runTest(AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
@@ -100,6 +97,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testHaveAppsInSlowBobPayFactory() throws TimeoutException {
         runTest(AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY);
     }
@@ -108,6 +106,7 @@ public class PaymentRequestPaymentAppAndCardsTest implements MainActivityStartCa
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testEditPaymentMethodAndCancelEditorShouldKeepCardSelected()
             throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());

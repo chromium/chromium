@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,12 +49,13 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #endif
 
@@ -105,9 +107,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
 
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
-  ExtensionService* service_;
-  ExtensionRegistry* registry_;
-  Profile* profile_;
+  raw_ptr<ExtensionService> service_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<Profile> profile_;
   std::string extension_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
@@ -163,10 +165,10 @@ GURL UrlForExtension(const extensions::Extension* extension,
 
 ui::WindowShowState DetermineWindowShowState(
     Profile* profile,
-    extensions::LaunchContainer container,
+    apps::mojom::LaunchContainer container,
     const Extension* extension) {
   if (!extension ||
-      container != extensions::LaunchContainer::kLaunchContainerWindow)
+      container != apps::mojom::LaunchContainer::kLaunchContainerWindow)
     return ui::SHOW_STATE_DEFAULT;
 
   if (chrome::IsRunningInForcedAppMode())
@@ -291,10 +293,17 @@ WebContents* OpenEnabledApplication(Profile* profile,
     // LaunchPlatformAppWithCommandLineAndLaunchId should be called to handle
     // the command line. If |launch_files| is set without |command_line|, that
     // means launching the app with files, so call
-    // LaunchPlatformAppWithFilePaths to forward |launch_files| to the app.
+    // LaunchPlatformAppWithFile{Handler,Paths} to forward |launch_files| to the
+    // app.
     if (params.command_line.GetArgs().empty() && !params.launch_files.empty()) {
-      apps::LaunchPlatformAppWithFilePaths(profile, extension,
-                                           params.launch_files);
+      if (params.intent && params.intent->activity_name) {
+        apps::LaunchPlatformAppWithFileHandler(
+            profile, extension, params.intent->activity_name.value(),
+            params.launch_files);
+      } else {
+        apps::LaunchPlatformAppWithFilePaths(profile, extension,
+                                             params.launch_files);
+      }
       return nullptr;
     }
 
@@ -315,16 +324,16 @@ WebContents* OpenEnabledApplication(Profile* profile,
   prefs->SetLastLaunchTime(extension->id(), base::Time::Now());
 
   switch (params.container) {
-    case extensions::LaunchContainer::kLaunchContainerNone: {
+    case apps::mojom::LaunchContainer::kLaunchContainerNone: {
       NOTREACHED();
       break;
     }
     // Panels are deprecated. Launch a normal window instead.
-    case extensions::LaunchContainer::kLaunchContainerPanelDeprecated:
-    case extensions::LaunchContainer::kLaunchContainerWindow:
+    case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
+    case apps::mojom::LaunchContainer::kLaunchContainerWindow:
       tab = OpenApplicationWindow(profile, params, url);
       break;
-    case extensions::LaunchContainer::kLaunchContainerTab: {
+    case apps::mojom::LaunchContainer::kLaunchContainerTab: {
       tab = OpenApplicationTab(profile, params, url);
       break;
     }
@@ -456,7 +465,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
 WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {
   apps::AppLaunchParams launch_params(
       std::string(),  // this is a URL app. No app id.
-      extensions::LaunchContainer::kLaunchContainerWindow,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW,
       apps::mojom::LaunchSource::kFromCommandLine);
   launch_params.override_url = url;

@@ -17,6 +17,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -201,9 +202,9 @@ class ObfuscatedFileEnumerator final
     }
   }
 
-  SandboxDirectoryDatabase* db_;
-  FileSystemOperationContext* context_;
-  ObfuscatedFileUtil* obfuscated_file_util_;
+  raw_ptr<SandboxDirectoryDatabase> db_;
+  raw_ptr<FileSystemOperationContext> context_;
+  raw_ptr<ObfuscatedFileUtil> obfuscated_file_util_;
   FileSystemURL root_url_;
   bool recursive_;
 
@@ -1367,10 +1368,10 @@ base::File ObfuscatedFileUtil::CreateOrOpenInternal(
     const FileSystemURL& url,
     int file_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(
-      !(file_flags &
-        (base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_HIDDEN |
-         base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE)));
+  DCHECK(!(file_flags &
+           (base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WIN_HIDDEN |
+            base::File::FLAG_WIN_EXCLUSIVE_READ |
+            base::File::FLAG_WIN_EXCLUSIVE_WRITE)));
   SandboxDirectoryDatabase* db = GetDirectoryDatabase(url, true);
   if (!db)
     return base::File(base::File::FILE_ERROR_FAILED);

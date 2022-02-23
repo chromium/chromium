@@ -253,12 +253,6 @@ TEST_F(GLES2DecoderPassthroughTest,
               0),
           &memory_tracker);
 
-  auto& cmd = *GetImmediateAs<
-      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
-  cmd.Init(kNewClientId, GL_NONE, mailbox.name);
-  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-
   // Backing should be initially uncleared.
   EXPECT_FALSE(shared_image->IsCleared());
 
@@ -276,7 +270,14 @@ TEST_F(GLES2DecoderPassthroughTest,
   glBindTexture(GL_TEXTURE_2D, dummy_texture);
   glEnable(GL_SCISSOR_TEST);
 
-  // Begin access. We should clear the backing.
+  // Create the texture from the SharedImage and Begin access. We should clear
+  // the backing.
+  auto& cmd = *GetImmediateAs<
+      cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate>();
+  cmd.Init(kNewClientId, GL_NONE, mailbox.name);
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailbox.name)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
   {
     cmds::BeginSharedImageAccessDirectCHROMIUM read_access_cmd;
     read_access_cmd.Init(kNewClientId,

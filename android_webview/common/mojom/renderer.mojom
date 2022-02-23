@@ -13,12 +13,4 @@ interface Renderer {
 
   // Adjusts the javascript 'online' property value.
   SetJsOnlineProperty(bool network_up);
-
-  // Set renderer process CPU affinity to little cores. Temporarily added for an
-  // experiment; to be deleted after its conclusion (https://crbug.com/1111789).
-  SetCpuAffinityToLittleCores();
-
-  // Enable idle throttling in the renderer. Temporarily added for an
-  // experiment; to be deleted after its conclusion (https://crbug.com/1166695).
-  EnableIdleThrottling(int32 policy, int32 min_time_ms, float min_cputime_ratio);
 };

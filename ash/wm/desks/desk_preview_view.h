@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/style/system_shadow.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/button.h"
@@ -68,9 +69,16 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
 
   ~DeskPreviewView() override;
 
+  static constexpr SystemShadow::Type kDefaultShadowType =
+      SystemShadow::Type::kElevation4;
+  static constexpr SystemShadow::Type kDraggedShadowType =
+      SystemShadow::Type::kElevation12;
+
   // Returns the height of the DeskPreviewView, which is a function of the
   // |root| window's height.
   static int GetHeight(aura::Window* root);
+
+  SystemShadow* shadow() const { return shadow_.get(); }
 
   void SetBorderColor(SkColor color);
 
@@ -91,8 +99,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:
-  class ShadowRenderer;
-
   DeskMiniView* const mini_view_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
@@ -121,8 +127,7 @@ class ASH_EXPORT DeskPreviewView : public views::Button {
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_occlusion_tracker_visible_;
 
-  ui::Layer shadow_layer_;
-  std::unique_ptr<ShadowRenderer> shadow_delegate_;
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

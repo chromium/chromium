@@ -33,7 +33,7 @@ import org.chromium.url.GURL;
  * that represent the cached title textures.
  */
 @JNINamespace("android")
-public class LayerTitleCache implements TitleCache {
+public class LayerTitleCache {
     private static int sNextResourceId = 1;
 
     private final Context mContext;
@@ -102,7 +102,6 @@ public class LayerTitleCache implements TitleCache {
         getUpdatedTitle(tab, "");
     }
 
-    @Override
     public String getUpdatedTitle(Tab tab, String defaultTitle) {
         // If content view core is null, tab does not have direct access to the favicon, and we
         // will initially show default favicon. But favicons are stored in the history database, so
@@ -199,7 +198,6 @@ public class LayerTitleCache implements TitleCache {
         }
     }
 
-    @Override
     public void remove(int tabId) {
         Title title = mTitles.get(tabId);
         if (title == null) return;
@@ -210,7 +208,6 @@ public class LayerTitleCache implements TitleCache {
                 mNativeLayerTitleCache, LayerTitleCache.this, tabId, -1, -1, false, false);
     }
 
-    @Override
     public void clearExcept(int exceptId) {
         Title title = mTitles.get(exceptId);
         for (int i = 0; i < mTitles.size(); i++) {

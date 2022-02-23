@@ -186,7 +186,7 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
 
   std::set<url::Origin> current_origins;
 
-  for (const auto& entry : managed_configurations->GetList()) {
+  for (const auto& entry : managed_configurations->GetListDeprecated()) {
     const std::string* url = entry.FindStringKey(kOriginKey);
     if (!url)
       continue;
@@ -325,7 +325,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);
-    result_dict.SetString(item.first, result);
+    result_dict.SetStringPath(item.first, result);
   }
 
   PostStoreConfiguration(origin, std::move(result_dict));

@@ -8,7 +8,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #include <cmath>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"

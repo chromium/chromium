@@ -183,15 +183,17 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Create a fenced frame.
-  const GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
-  EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
-
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            fenced_frame_url);
-  // Fenced frame should keep the unbound state.
+  base::RunLoop run_loop;
+  if (test_browser_client.WaitForBinding(fenced_frame_host,
+                                         run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+  // Fenced frame should not be bound.
   EXPECT_FALSE(test_browser_client.IsBound(fenced_frame_host));
 
   content::SetBrowserClientForTesting(old_browser_client);

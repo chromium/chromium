@@ -232,7 +232,7 @@
 			</array>
 			<key>Titles</key>
 			<array>
-			    <string>Default</string>
+				<string>Default</string>
 				<string>Disable browser sign-in</string>
 				<string>Enable browser sign-in</string>
 				<string>Force browser sign-in</string>
@@ -257,6 +257,18 @@
 			<string>Restrict accounts to pattern</string>
 			<key>Key</key>
 			<string>RestrictAccountsToPatterns</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>NTP Location</string>
+			<key>Key</key>
+			<string>NTPLocation</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>AutocorrectionType</key>

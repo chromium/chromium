@@ -8,7 +8,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
@@ -55,11 +54,19 @@ class MockCachedMetadataSender : public CachedMetadataSender {
   bool IsServedFromCacheStorage() override { return false; }
 };
 
+ClassicScript* CreateClassicScript(const String& source_text,
+                                   SingleCachedMetadataHandler* cache_handler) {
+  return ClassicScript::Create(source_text, KURL(), KURL(),
+                               ScriptFetchOptions(),
+                               ScriptSourceLocationType::kInternal,
+                               SanitizeScriptErrors::kSanitize, cache_handler);
+}
+
 static const int kScriptRepeatLength = 500;
 
 }  // namespace
 
-class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
+class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
  protected:
   static String LargeSourceText(const char* suffix = nullptr) {
     StringBuilder builder;
@@ -98,14 +105,13 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
   // test.
   static void TestFoo(V8TestingScope& scope) {
     v8::Local<v8::Value> value =
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode("window.foo"))
+        ClassicScript::CreateUnspecifiedScript("window.foo")
             ->RunScriptAndReturnValue(&scope.GetWindow());
     EXPECT_TRUE(value->IsNumber());
     EXPECT_EQ(kScriptRepeatLength,
               value->NumberValue(scope.GetContext()).ToChecked());
 
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode("window.foo = undefined;"))
+    ClassicScript::CreateUnspecifiedScript("window.foo = undefined;")
         ->RunScript(&scope.GetWindow());
   }
 
@@ -123,11 +129,11 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
     return handler->cached_metadata_discarded_;
   }
 
-  void SetUp() override { ParametrizedModuleTest::SetUp(); }
+  void SetUp() override { ModuleTestBase::SetUp(); }
 
   void TearDown() override {
     feature_list_.Reset();
-    ParametrizedModuleTest::TearDown();
+    ModuleTestBase::TearDown();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -136,7 +142,7 @@ class ModuleScriptTest : public ::testing::Test, public ParametrizedModuleTest {
 // Test expectations depends on heuristics in V8CodeCache and therefore these
 // tests should be updated if necessary when V8CodeCache is modified. The
 // version without code cache discarding.
-TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   feature_list_.InitAndDisableFeature(
       blink::features::kDiscardCodeCacheAfterFirstUse);
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
@@ -239,13 +245,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
   EXPECT_CALL(*sender_ptr, Send(_, _, _));
   EXPECT_CALL(checkpoint, Call(4));
 
-  // In actual cases CachedMetadataHandler and its code cache data are passed
-  // via ScriptSourceCode+ScriptResource, but here they are passed via
-  // ScriptSourceCode constructor for inline scripts. So far, this is sufficient
-  // for unit testing.
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
-                       cache_handler))
+  CreateClassicScript(LargeSourceText(), cache_handler)
       ->RunScript(&scope.GetWindow());
 
   checkpoint.Call(4);
@@ -260,7 +260,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
 // Test expectations depends on heuristics in V8CodeCache and therefore these
 // tests should be updated if necessary when V8CodeCache is modified. The
 // version with code cache discarding.
-TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   feature_list_.InitAndEnableFeature(
       blink::features::kDiscardCodeCacheAfterFirstUse);
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
@@ -378,13 +378,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   // CachedMetadata after it has been cleared.
   EXPECT_CALL(checkpoint, Call(4));
 
-  // In actual cases CachedMetadataHandler and its code cache data are passed
-  // via ScriptSourceCode+ScriptResource, but here they are passed via
-  // ScriptSourceCode constructor for inline scripts. So far, this is sufficient
-  // for unit testing.
-  ClassicScript::CreateUnspecifiedScript(
-      ScriptSourceCode(LargeSourceText(), ScriptSourceLocationType::kInternal,
-                       cache_handler))
+  CreateClassicScript(LargeSourceText(), cache_handler)
       ->RunScript(&scope.GetWindow());
   checkpoint.Call(4);
 
@@ -395,7 +389,7 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithDiscarding) {
   EXPECT_FALSE(cache_handler->GetCachedMetadata(kCodeTag));
 }
 
-TEST_P(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
+TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   V8TestingScope scope;
   v8::Local<v8::Value> local_value(v8::Number::New(scope.GetIsolate(), 1234));
   Modulator* modulator =
@@ -405,7 +399,7 @@ TEST_P(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   ASSERT_FALSE(module_script->V8Module().IsEmpty());
 }
 
-TEST_P(ModuleScriptTest, V8CodeCacheWithHashChecking) {
+TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
   // The order of steps below is chosen so that only the last step's behavior
   // differs based on this flag. The important tests that verify rejection of
   // cache data on content mismatches occur before that point.
@@ -573,11 +567,5 @@ TEST_P(ModuleScriptTest, V8CodeCacheWithHashChecking) {
     }
   }
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleScriptTestGroup,
-                         ModuleScriptTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

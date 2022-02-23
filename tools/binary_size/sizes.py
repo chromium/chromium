@@ -78,9 +78,8 @@ def get_linux_stripped_size(filename):
 
 
 def run_process(result, command):
-  # TODO: When converting to Python 3, pass param encoding='ascii'.
   p = subprocess.Popen(command, stdout=subprocess.PIPE)
-  stdout = p.communicate()[0]
+  stdout = p.communicate()[0].decode()
   if p.returncode != 0:
     print('ERROR from command "%s": %d' % (' '.join(command), p.returncode))
     if result == 0:
@@ -399,7 +398,7 @@ def format_for_histograms_conversion(data):
   # 1. Add a top-level "benchmark_name" key.
   # 2. Pull out the "identifier" value to be the story name.
   formatted_data = {}
-  for metric, metric_data in data.iteritems():
+  for metric, metric_data in data.items():
     story = metric_data['identifier']
     formatted_data[metric] = {story: metric_data.copy()}
     del formatted_data[metric][story]['identifier']
@@ -411,7 +410,7 @@ def main():
     default_platform = 'win'
   elif sys.platform.startswith('darwin'):
     default_platform = 'mac'
-  elif sys.platform == 'linux2':
+  elif sys.platform.startswith('linux'):
     default_platform = 'linux'
   else:
     default_platform = None
@@ -501,7 +500,7 @@ def main():
             'chartjson conversion failed: %s\n' % histogram_result.stdout)
         rc = rc or histogram_result.returncode
       else:
-        with open(histogram_path, 'w') as f:
+        with open(histogram_path, 'wb') as f:
           f.write(histogram_result.stdout)
     if result_sink_client:
       status = result_types.PASS

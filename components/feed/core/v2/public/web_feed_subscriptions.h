@@ -26,14 +26,18 @@ class WebFeedSubscriptions {
   };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered
-  // followed.
+  // followed. This always creates a non-durable request.
   virtual void FollowWebFeed(
       const WebFeedPageInformation& page_info,
       base::OnceCallback<void(FollowWebFeedResult)> callback) = 0;
 
   // Follow a web feed given a web feed ID.
+  // If `is_durable_request` is true, the request to follow will be persisted
+  // and retried later if necessary. `callback` provides the result of the
+  // initial Follow request, but not any later retries.
   virtual void FollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
       base::OnceCallback<void(FollowWebFeedResult)> callback) = 0;
 
   struct UnfollowWebFeedResult {
@@ -45,8 +49,12 @@ class WebFeedSubscriptions {
 
   // Follow a web feed given a URL. Calls `callback` when complete. The callback
   // parameter reports whether the url is now considered followed.
+  // If `is_durable_request` is true, the request to follow will be persisted
+  // and retried later if necessary. `callback` provides the result of the
+  // initial Follow request, but not any later retries.
   virtual void UnfollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback) = 0;
 
   // Web Feed lookup for pages. These functions fetch `WebFeedMetadata` for any
@@ -79,7 +87,8 @@ class WebFeedSubscriptions {
       base::OnceCallback<void(RefreshResult)> callback) = 0;
 
   // Force a refresh of the server-recommended web feeds.
-  virtual void RefreshRecommendedFeeds() = 0;
+  virtual void RefreshRecommendedFeeds(
+      base::OnceCallback<void(RefreshResult)> callback) = 0;
 
   // Whether the user has subscribed to at least one web feed. May require
   // fetching data from the server if cached data is not fresh. If fetching

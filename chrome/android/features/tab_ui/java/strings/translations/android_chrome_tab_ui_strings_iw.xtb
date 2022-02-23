@@ -6,6 +6,9 @@
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1302104331113804646">הגדרות של מעקב אחר מחירים</translation>
 <translation id="1378979118429748177">קבלת הודעות כשיזוהו הנחות</translation>
+<translation id="1403228085774130835">‏ניתן לאתר את הכרטיסיות הסגורות ב'כרטיסיות אחרונות' שבתפריט הראשי של Chrome.</translation>
+<translation id="1455506303394048917">הפעילות שלך בכרטיסיות הפרטיות האלה תימחק מהמכשיר הזה</translation>
+<translation id="1499635324672558517">לסגור את כל הכרטיסיות הפרטיות?</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}many{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
 <translation id="2118649612461486615">פרטי החנות</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}many{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
+<translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
 <translation id="492284538114688557">זוהתה הנחה במחיר</translation>
 <translation id="5007392906805964215">עיון</translation>
 <translation id="5073204694187207510">הסתרת רשת מסך מלא</translation>
+<translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
 <translation id="5490235265819901748">קבוצת כרטיסיות הורחבה</translation>
 <translation id="5533021382642990449">אני רוצה לראות את זה מאוחר יותר</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">מדיניות החזרת המוצרים ומידע נוסף</translation>
 <translation id="7352298686197644113">הצגת הפריטים שמופיעים עם מחיר נמוך יותר בכרטיסיות הפתוחות שלך</translation>
 <translation id="753732157349120914">מחליף הכרטיסיות</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{‏ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />) מ-Google}two{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}many{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}}</translation>
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
 <translation id="7792771145871471484">עיון בהצעות.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{קיבוץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}two{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}many{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>

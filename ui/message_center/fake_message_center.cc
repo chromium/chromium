@@ -91,6 +91,12 @@ FakeMessageCenter::GetPopupNotifications() {
   return NotificationList::PopupNotifications();
 }
 
+NotificationList::PopupNotifications
+FakeMessageCenter::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlocker& blocker) const {
+  return NotificationList::PopupNotifications();
+}
+
 void FakeMessageCenter::AddNotification(
     std::unique_ptr<Notification> notification) {
   std::string id = notification->id();
@@ -196,6 +202,9 @@ const std::u16string& FakeMessageCenter::GetSystemNotificationAppName() const {
 
 void FakeMessageCenter::SetSystemNotificationAppName(
     const std::u16string& product_os_name) {}
+
+void FakeMessageCenter::OnMessageViewHovered(
+    const std::string& notification_id) {}
 
 void FakeMessageCenter::DisableTimersForTest() {}
 

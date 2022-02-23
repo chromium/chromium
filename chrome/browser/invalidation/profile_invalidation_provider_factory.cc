@@ -77,7 +77,7 @@ ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
   // when this method is called during the creation of the sign-in profile
   // itself. Using ProfileHelper::GetSigninProfileDir() is safe because it does
   // not try to access the sign-in profile.
-  if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+  if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA

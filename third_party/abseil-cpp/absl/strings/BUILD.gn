@@ -123,12 +123,12 @@ absl_source_set("cord_internal") {
     "internal/cord_rep_btree.cc",
     "internal/cord_rep_btree_navigator.cc",
     "internal/cord_rep_btree_reader.cc",
-    "internal/cord_rep_concat.cc",
     "internal/cord_rep_consume.cc",
     "internal/cord_rep_crc.cc",
     "internal/cord_rep_ring.cc",
   ]
   public = [
+    "internal/cord_data_edge.h",
     "internal/cord_internal.h",
     "internal/cord_rep_btree.h",
     "internal/cord_rep_btree_navigator.h",
@@ -157,12 +157,13 @@ absl_source_set("cord_internal") {
   ]
 }
 
-absl_source_set("cord_rep_concat_test") {
+absl_source_set("cord_data_edge_test") {
   testonly = true
-  sources = [ "internal/cord_rep_concat_test.cc" ]
+  sources = [ "internal/cord_data_edge_test.cc" ]
   deps = [
     ":cord_internal",
     ":cord_rep_test_util",
+    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
@@ -231,7 +232,11 @@ absl_source_set("cordz_update_tracker_test") {
 }
 
 absl_source_set("cord") {
-  sources = [ "cord.cc" ]
+  sources = [
+    "cord.cc",
+    "cord_analysis.cc",
+    "cord_analysis.h",
+  ]
   public = [ "cord.h" ]
   deps = [
     ":cord_internal",
@@ -252,7 +257,9 @@ absl_source_set("cord") {
     "//third_party/abseil-cpp/absl/container:inlined_vector",
     "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/types:optional",
+    "//third_party/abseil-cpp/absl/types:span",
   ]
 }
 
@@ -516,20 +523,6 @@ absl_source_set("cordz_test") {
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-    "//third_party/googletest:gmock",
-    "//third_party/googletest:gtest",
-  ]
-}
-
-absl_source_set("cord_rep_consume_test") {
-  testonly = true
-  sources = [ "internal/cord_rep_consume_test.cc" ]
-  deps = [
-    ":cord_internal",
-    ":strings",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/debugging:leak_check",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]

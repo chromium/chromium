@@ -43,7 +43,11 @@ class AutoReset {
   }
 
  private:
+  // `scoped_variable_` is not a raw_ptr<T> for performance reasons: Large
+  // number of non-PartitionAlloc pointees + AutoReset is typically short-lived
+  // (e.g. allocated on the stack).
   T* scoped_variable_;
+
   T original_value_;
 };
 

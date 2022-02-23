@@ -51,7 +51,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
 
   const ComputedStyle& style = text_combine.Parent()->StyleRef();
   const bool has_text_decoration =
-      style.TextDecorationsInEffect() != TextDecoration::kNone;
+      style.TextDecorationsInEffect() != TextDecorationLine::kNone;
   const bool has_emphasis_mark =
       style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
   DCHECK(has_text_decoration | has_emphasis_mark);
@@ -82,7 +82,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
 bool NGTextCombinePainter::ShouldPaint(
     const LayoutNGTextCombine& text_combine) {
   const auto& style = text_combine.Parent()->StyleRef();
-  return style.TextDecorationsInEffect() != TextDecoration::kNone ||
+  return style.TextDecorationsInEffect() != TextDecorationLine::kNone ||
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
 }
 
@@ -126,7 +126,7 @@ void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
                   style_.GetTextEmphasisPosition());
   PaintEmphasisMarkForCombinedText(
       text_style, emphasis_mark_font,
-      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kForeground));
 }
 
 }  // namespace blink

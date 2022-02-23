@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace content {
@@ -35,15 +36,18 @@ class LensSidePanelView : public views::FlexLayoutView {
   // views::FlexLayoutView:
   void OnThemeChanged() override;
 
+  void SetContentVisible(bool visible);
+
  private:
   void CreateAndInstallHeader(base::RepeatingClosure close_callback,
                               base::RepeatingClosure launch_callback);
 
-  views::ImageView* branding_;
-  views::Separator* separator_;
-  views::WebView* web_view_;
-  views::ImageButton* close_button_;
-  views::ImageButton* launch_button_;
+  raw_ptr<views::ImageView> branding_;
+  raw_ptr<views::Separator> separator_;
+  raw_ptr<views::WebView> loading_indicator_web_view_;
+  raw_ptr<views::WebView> web_view_;
+  raw_ptr<views::ImageButton> close_button_;
+  raw_ptr<views::ImageButton> launch_button_;
 };
 
 }  // namespace lens

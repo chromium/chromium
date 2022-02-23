@@ -26,6 +26,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.IconType;
@@ -47,19 +48,23 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         mModel = model;
         mModel.set(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, this);
 
-        if (params.isImage()) {
-            final Resources res = mContext.getResources();
-            final int imageMaxSize =
-                    res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
-            nativeDelegate.retrieveImageForContextMenu(
-                    imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
-        } else if (!params.isImage() && !params.isVideo()) {
-            LargeIconBridge iconBridge = new LargeIconBridge(profile);
-            iconBridge.getLargeIconForUrl(mPlainUrl,
-                    context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
-                    this::onFaviconAvailable);
-        } else if (params.isVideo()) {
-            setVideoIcon();
+        // Skip setting up the image header if context menu is in pop up style.
+        if (!model.get(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE)) {
+            if (params.isImage()) {
+                final Resources res = mContext.getResources();
+                final int imageMaxSize =
+                        res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
+                nativeDelegate.retrieveImageForContextMenu(
+                        imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
+            } else if (!params.isImage() && !params.isVideo()) {
+                LargeIconBridge iconBridge = new LargeIconBridge(profile);
+                iconBridge.getLargeIconForUrl(mPlainUrl,
+                        context.getResources().getDimensionPixelSize(
+                                R.dimen.default_favicon_min_size),
+                        this::onFaviconAvailable);
+            } else if (params.isVideo()) {
+                setVideoIcon();
+            }
         }
         if (PerformanceHintsObserver.isContextMenuPerformanceInfoEnabled() && params.isAnchor()) {
             mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS, performanceClass);
@@ -94,8 +99,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             }
         }
 
-        final int size = mContext.getResources().getDimensionPixelSize(
-                R.dimen.context_menu_header_monogram_size);
+        final int size = mModel.get(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL);
 
         icon = Bitmap.createScaledBitmap(icon, size, size, true);
 
@@ -165,8 +169,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         Drawable drawable = ApiCompatibilityUtils.getDrawable(
                 mContext.getResources(), R.drawable.gm_filled_videocam_24);
         drawable.setColorFilter(
-                ApiCompatibilityUtils.getColor(mContext.getResources(), R.color.default_icon_color),
-                PorterDuff.Mode.SRC_IN);
+                SemanticColorUtils.getDefaultIconColor(mContext), PorterDuff.Mode.SRC_IN);
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
                 drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -110,7 +111,7 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
             std::abs(rect.height() - initial_bounds_.height()) >= resize_by_);
   }
 
-  views::Widget* const widget_;
+  const raw_ptr<views::Widget> widget_;
   const int move_by_, resize_by_;
   const gfx::Rect initial_bounds_;
   base::RunLoop run_loop_;
@@ -160,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {
 
 // Ensure popups cannot be moved beyond the available display space by script.
 // TODO(crbug.com/1228795): Flaking on Linux Ozone
-#if defined(OS_LINUX) && defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) && defined(USE_OZONE)
 #define Maybe_MoveClampedToCurrentDisplay DISABLED_MoveClampedToCurrentDisplay
 #else
 #define Maybe_MoveClampedToCurrentDisplay MoveClampedToCurrentDisplay

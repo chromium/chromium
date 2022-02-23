@@ -4,6 +4,8 @@
 
 """Presubmit for android_webview/tools."""
 
+USE_PYTHON3 = True
+
 
 def _GetPythonUnitTests(input_api, output_api):
   return input_api.canned_checks.GetUnitTestsRecursively(
@@ -25,11 +27,8 @@ def CommonChecks(input_api, output_api):
           input_api,
           output_api,
           pylintrc='pylintrc',
-          # Temporarily disabled until pylint-2.6
           disabled_warnings=[
-              'import-error',
-              'no-member',
-              'wrong-import-order',
+              'R0801',  # suppress pylint duplicate code false positive
           ],
           # Allows pylint to find dependencies imported by scripts in this
           # directory.
@@ -40,7 +39,8 @@ def CommonChecks(input_api, output_api):
                                      'common', 'py_utils'),
               input_api.os_path.join(src_root, 'third_party', 'catapult',
                                      'devil'),
-          ]))
+          ],
+          version='2.7'))
   checks.extend(_GetPythonUnitTests(input_api, output_api))
   return input_api.RunTests(checks, False)
 

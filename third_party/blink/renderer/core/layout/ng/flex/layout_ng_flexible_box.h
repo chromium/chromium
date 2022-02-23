@@ -35,9 +35,18 @@ class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  bool IsFlexibleBoxIncludingDeprecatedAndNG() const final { return true; }
-  bool IsFlexibleBoxIncludingNG() const final { return true; }
-  const char* GetName() const override { return "LayoutNGFlexibleBox"; }
+  bool IsFlexibleBoxIncludingDeprecatedAndNG() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+  bool IsFlexibleBoxIncludingNG() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGFlexibleBox";
+  }
 
   DevtoolsFlexInfo LayoutForDevtools();
 
@@ -47,6 +56,7 @@ class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
   void RemoveChild(LayoutObject*) override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectNGFlexibleBox ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Tests mouse drag selection while page is scaled.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/blink-coordinates-util.js"></script>
+<style>
+html { overflow:scroll; }
+body { margin: 0 }
+.appearance {
+  width: 100px;
+  height: 500px;
+  border: 1px solid black;
+}
+#standard {
+  position: absolute;
+  top: 100px;
+  left: 0px;
+}
+</style>
+
+<div id="standard" class="appearance">
+123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789
+</div>
+<script>
+window.onload = () => {
+  const PAGE_SCALE_FACTOR = 2;
+  internals.setPageScaleFactor(PAGE_SCALE_FACTOR);
+  const VISUAL_VIEWPORT_Y_OFFSET = 50;
+  internals.setVisualViewportOffset(0, VISUAL_VIEWPORT_Y_OFFSET);
+
+  let platform = navigator.userAgent.includes("Linux") ? "linux" :
+                 navigator.userAgent.includes("Windows") ? "win" :
+                 navigator.userAgent.includes("Mac OS X") ? "mac" :
+                 (() => { throw "Platform unsupported"; })();
+
+  promise_test (async (test) => {
+    const standardDiv = document.getElementById("standard");
+    const boundingRect = standardDiv.getBoundingClientRect();
+    let {x, y} = scaleCssToDIPixels({x: boundingRect.left, y: boundingRect.top})
+
+    const EXPECTED_SELECTION = {linux: 74, win: 74, mac: 84}[platform];
+
+    await mouseMoveTo(x + 10, y + 10);
+    await mouseDownAt(x + 10, y + 10);
+    await mouseMoveTo(x + 50, y + 200, Buttons.LEFT);
+    await mouseUpAt(x + 50, y + 200);
+    assert_equals(window.getSelection().focusNode.parentElement, standardDiv);
+    assert_equals(window.getSelection().focusOffset, EXPECTED_SELECTION, "Did not select expected amount of text");
+  }, "Test selection via mouse drag, while page is scaled.");
+}
+</script>

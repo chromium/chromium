@@ -9,6 +9,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantChip_jni.h"
@@ -20,8 +21,11 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoPopup_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantValue_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDependencyInjector_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillCreditCard_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillProfile_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
-#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
+#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
@@ -32,6 +36,12 @@
 namespace autofill_assistant {
 namespace ui_controller_android_utils {
 namespace {
+
+using ::base::android::ConvertJavaStringToUTF16;
+using ::base::android::ConvertJavaStringToUTF8;
+using ::base::android::ConvertUTF16ToJavaString;
+using ::base::android::ConvertUTF8ToJavaString;
+using ::base::android::JavaRef;
 
 DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
   switch (icon) {
@@ -70,6 +80,23 @@ DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
   }
 }
 
+void MaybeSetInfo(autofill::AutofillProfile* profile,
+                  autofill::ServerFieldType type,
+                  const JavaRef<jstring>& value,
+                  const std::string& locale) {
+  if (value) {
+    profile->SetInfo(type, ConvertJavaStringToUTF16(value), locale);
+  }
+}
+
+void MaybeSetRawInfo(autofill::AutofillProfile* profile,
+                     autofill::ServerFieldType type,
+                     const JavaRef<jstring>& value) {
+  if (value) {
+    profile->SetRawInfo(type, ConvertJavaStringToUTF16(value));
+  }
+}
+
 }  // namespace
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
@@ -89,7 +116,7 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const JavaRef<jobject>& jcontext,
     const ColorProto& proto) {
   switch (proto.color_case()) {
     case ColorProto::kResourceIdentifier:
@@ -112,10 +139,9 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
   }
 }
 
-absl::optional<int> GetPixelSize(
-    JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const ClientDimensionProto& proto) {
+absl::optional<int> GetPixelSize(JNIEnv* env,
+                                 const JavaRef<jobject>& jcontext,
+                                 const ClientDimensionProto& proto) {
   switch (proto.size_case()) {
     case ClientDimensionProto::kDp:
       return Java_AssistantDimension_getPixelSizeDp(env, jcontext, proto.dp());
@@ -132,11 +158,10 @@ absl::optional<int> GetPixelSize(
   }
 }
 
-int GetPixelSizeOrDefault(
-    JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const ClientDimensionProto& proto,
-    int default_value) {
+int GetPixelSizeOrDefault(JNIEnv* env,
+                          const JavaRef<jobject>& jcontext,
+                          const ClientDimensionProto& proto,
+                          int default_value) {
   auto size = GetPixelSize(env, jcontext, proto);
   if (size) {
     return *size;
@@ -146,7 +171,8 @@ int GetPixelSizeOrDefault(
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const JavaRef<jobject>& jcontext,
+    const Dependencies& dependencies,
     const DrawableProto& proto,
     const UserModel* user_model) {
   switch (proto.drawable_case()) {
@@ -168,7 +194,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       int height_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
           env, jcontext, proto.bitmap().height(), 0);
       return Java_AssistantDrawable_createFromUrl(
-          env,
+          env, dependencies.CreateImageFetcher(),
           base::android::ConvertUTF8ToJavaString(env, proto.bitmap().url()),
           width_pixels, height_pixels);
     }
@@ -197,9 +223,18 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       return Java_AssistantDrawable_createFromIcon(
           env, static_cast<int>(MapDrawableIcon(proto.icon())));
     }
-    case DrawableProto::kBase64: {
+    case DrawableProto::kImageData: {
       return Java_AssistantDrawable_createFromBase64(
-          env, base::android::ToJavaByteArray(env, proto.base64()));
+          env, base::android::ToJavaByteArray(env, proto.image_data()));
+    }
+    case DrawableProto::kImageDataBase64: {
+      std::string image_data;
+      if (!base::Base64Decode(proto.image_data_base64(), &image_data)) {
+        VLOG(1) << "Invalid Base64 image data.";
+        return nullptr;
+      }
+      return Java_AssistantDrawable_createFromBase64(
+          env, base::android::ToJavaByteArray(env, image_data));
     }
     case DrawableProto::kFavicon: {
       if (!user_model) {
@@ -213,8 +248,9 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
                      ? GURL(proto.favicon().website_url())
                      : user_model->GetCurrentURL();
       return Java_AssistantDrawable_createFromFavicon(
-          env, url::GURLAndroid::FromNativeGURL(env, url),
-          diameter_size_in_pixel, proto.favicon().force_monogram());
+          env, dependencies.CreateIconBridge(),
+          url::GURLAndroid::FromNativeGURL(env, url), diameter_size_in_pixel,
+          proto.favicon().force_monogram());
     }
     case DrawableProto::DRAWABLE_NOT_SET:
       return nullptr;
@@ -335,7 +371,8 @@ ValueProto ToNativeValue(JNIEnv* env,
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
     JNIEnv* env,
-    const InfoPopupProto_DialogButton& button_proto) {
+    const InfoPopupProto_DialogButton& button_proto,
+    const JavaRef<jobject>& jinfo_page_util) {
   base::android::ScopedJavaLocalRef<jstring> jurl = nullptr;
 
   switch (button_proto.click_action_case()) {
@@ -350,13 +387,14 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
       break;
   }
   return Java_AssistantDialogButton_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, button_proto.label()),
-      jurl);
+      env, jinfo_page_util,
+      base::android::ConvertUTF8ToJavaString(env, button_proto.label()), jurl);
 }
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& info_popup_proto,
+    const JavaRef<jobject>& jinfo_page_util,
     const std::string& close_display_str) {
   base::android::ScopedJavaLocalRef<jobject> jpositive_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jnegative_button = nullptr;
@@ -366,21 +404,22 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
       info_popup_proto.has_negative_button() ||
       info_popup_proto.has_neutral_button()) {
     if (info_popup_proto.has_positive_button()) {
-      jpositive_button =
-          CreateJavaDialogButton(env, info_popup_proto.positive_button());
+      jpositive_button = CreateJavaDialogButton(
+          env, info_popup_proto.positive_button(), jinfo_page_util);
     }
     if (info_popup_proto.has_negative_button()) {
-      jnegative_button =
-          CreateJavaDialogButton(env, info_popup_proto.negative_button());
+      jnegative_button = CreateJavaDialogButton(
+          env, info_popup_proto.negative_button(), jinfo_page_util);
     }
     if (info_popup_proto.has_neutral_button()) {
-      jneutral_button =
-          CreateJavaDialogButton(env, info_popup_proto.neutral_button());
+      jneutral_button = CreateJavaDialogButton(
+          env, info_popup_proto.neutral_button(), jinfo_page_util);
     }
   } else {
     // If no button is set in the proto, we add a Close button
     jpositive_button = Java_AssistantDialogButton_Constructor(
-        env, base::android::ConvertUTF8ToJavaString(env, close_display_str),
+        env, jinfo_page_util,
+        base::android::ConvertUTF8ToJavaString(env, close_display_str),
         nullptr);
   }
 
@@ -392,8 +431,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
 }
 
 void ShowJavaInfoPopup(JNIEnv* env,
-                       base::android::ScopedJavaLocalRef<jobject> jinfo_popup,
-                       base::android::ScopedJavaLocalRef<jobject> jcontext) {
+                       const JavaRef<jobject>& jinfo_popup,
+                       const JavaRef<jobject>& jcontext) {
   Java_AssistantInfoPopup_show(env, jinfo_popup, jcontext);
 }
 
@@ -491,8 +530,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
 
 base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& names,
-    const base::android::JavaRef<jobjectArray>& values) {
+    const JavaRef<jobjectArray>& names,
+    const JavaRef<jobjectArray>& values) {
   std::vector<std::string> names_vector;
   base::android::AppendJavaStringArrayToStringVector(env, names, &names_vector);
   std::vector<std::string> values_vector;
@@ -509,33 +548,25 @@ base::flat_map<std::string, std::string> CreateStringMapFromJava(
 std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const base::android::JavaRef<jstring>& jexperiment_ids,
-    const base::android::JavaRef<jobjectArray>& jparameter_names,
-    const base::android::JavaRef<jobjectArray>& jparameter_values,
-    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
-    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
+    const JavaRef<jstring>& jexperiment_ids,
+    const JavaRef<jobjectArray>& jparameter_names,
+    const JavaRef<jobjectArray>& jparameter_values,
+    const JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const JavaRef<jobjectArray>& jdevice_only_parameter_values,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaRef<jstring>& jinitial_url) {
+    const JavaRef<jstring>& jinitial_url,
+    const bool is_custom_tab) {
   auto script_parameters = std::make_unique<ScriptParameters>(
       CreateStringMapFromJava(env, jparameter_names, jparameter_values));
   script_parameters->UpdateDeviceOnlyParameters(CreateStringMapFromJava(
       env, jdevice_only_parameter_names, jdevice_only_parameter_values));
   return std::make_unique<TriggerContext>(
       std::move(script_parameters),
-      SafeConvertJavaStringToNative(env, jexperiment_ids),
-      IsCustomTab(web_contents), onboarding_shown, is_direct_action,
+      SafeConvertJavaStringToNative(env, jexperiment_ids), is_custom_tab,
+      onboarding_shown, is_direct_action,
       SafeConvertJavaStringToNative(env, jinitial_url),
       /* is_in_chrome_triggered = */ false);
-}
-
-bool IsCustomTab(content::WebContents* web_contents) {
-  auto* tab_android = TabAndroid::FromWebContents(web_contents);
-  if (!tab_android) {
-    return false;
-  }
-
-  return tab_android->IsCustomTab();
 }
 
 std::unique_ptr<Service> GetServiceToInject(JNIEnv* env,
@@ -574,6 +605,189 @@ std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
         reinterpret_cast<void*>(jtest_tts_controller_to_inject)));
   }
   return test_tts_controller;
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillProfile(
+    JNIEnv* env,
+    const autofill::AutofillProfile& profile,
+    const std::string& locale) {
+  return Java_AssistantAutofillProfile_Constructor(
+      env, ConvertUTF8ToJavaString(env, profile.guid()),
+      ConvertUTF8ToJavaString(env, profile.origin()),
+      profile.record_type() == autofill::AutofillProfile::LOCAL_PROFILE,
+      ConvertUTF16ToJavaString(
+          env, profile.GetInfo(autofill::NAME_HONORIFIC_PREFIX, locale)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetInfo(autofill::NAME_FULL, locale)),
+      ConvertUTF16ToJavaString(env, profile.GetRawInfo(autofill::COMPANY_NAME)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_STATE)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::ADDRESS_HOME_CITY)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_SORTING_CODE)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::EMAIL_ADDRESS)),
+      ConvertUTF8ToJavaString(env, profile.language_code()));
+}
+
+void PopulateAutofillProfileFromJava(
+    const base::android::JavaParamRef<jobject>& jprofile,
+    JNIEnv* env,
+    autofill::AutofillProfile* profile,
+    const std::string& locale) {
+  // Only set the guid if it is an existing profile (Java guid not empty).
+  // Otherwise, keep the generated one.
+  std::string guid = ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getGUID(env, jprofile));
+  if (!guid.empty()) {
+    profile->set_guid(guid);
+  }
+
+  profile->set_origin(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getOrigin(env, jprofile)));
+  MaybeSetInfo(profile, autofill::NAME_FULL,
+               Java_AssistantAutofillProfile_getFullName(env, jprofile),
+               locale);
+  MaybeSetRawInfo(
+      profile, autofill::NAME_HONORIFIC_PREFIX,
+      Java_AssistantAutofillProfile_getHonorificPrefix(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::COMPANY_NAME,
+                  Java_AssistantAutofillProfile_getCompanyName(env, jprofile));
+  MaybeSetRawInfo(
+      profile, autofill::ADDRESS_HOME_STREET_ADDRESS,
+      Java_AssistantAutofillProfile_getStreetAddress(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_STATE,
+                  Java_AssistantAutofillProfile_getRegion(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_CITY,
+                  Java_AssistantAutofillProfile_getLocality(env, jprofile));
+  MaybeSetRawInfo(
+      profile, autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+      Java_AssistantAutofillProfile_getDependentLocality(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_ZIP,
+                  Java_AssistantAutofillProfile_getPostalCode(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_SORTING_CODE,
+                  Java_AssistantAutofillProfile_getSortingCode(env, jprofile));
+  MaybeSetInfo(profile, autofill::ADDRESS_HOME_COUNTRY,
+               Java_AssistantAutofillProfile_getCountryCode(env, jprofile),
+               locale);
+  MaybeSetRawInfo(profile, autofill::PHONE_HOME_WHOLE_NUMBER,
+                  Java_AssistantAutofillProfile_getPhoneNumber(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::EMAIL_ADDRESS,
+                  Java_AssistantAutofillProfile_getEmailAddress(env, jprofile));
+  profile->set_language_code(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getLanguageCode(env, jprofile)));
+  profile->FinalizeAfterImport();
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillCreditCard(
+    JNIEnv* env,
+    const autofill::CreditCard& credit_card,
+    const std::string& locale) {
+  const autofill::data_util::PaymentRequestData& payment_request_data =
+      autofill::data_util::GetPaymentRequestData(credit_card.network());
+  return Java_AssistantAutofillCreditCard_Constructor(
+      env, ConvertUTF8ToJavaString(env, credit_card.guid()),
+      ConvertUTF8ToJavaString(env, credit_card.origin()),
+      credit_card.record_type() == autofill::CreditCard::LOCAL_CARD,
+      credit_card.record_type() == autofill::CreditCard::FULL_SERVER_CARD,
+      ConvertUTF16ToJavaString(
+          env, credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL)),
+      ConvertUTF16ToJavaString(
+          env, credit_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER)),
+      ConvertUTF16ToJavaString(env, credit_card.NetworkAndLastFourDigits()),
+      ConvertUTF16ToJavaString(
+          env, credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH)),
+      ConvertUTF16ToJavaString(
+          env, credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)),
+      ConvertUTF8ToJavaString(env,
+                              payment_request_data.basic_card_issuer_network),
+      Java_AssistantAutofillCreditCard_getIssuerIconDrawableId(
+          env, ConvertUTF8ToJavaString(
+                   env, credit_card.CardIconStringForAutofillSuggestion())),
+      ConvertUTF8ToJavaString(env, credit_card.billing_address_id()),
+      ConvertUTF8ToJavaString(env, credit_card.server_id()),
+      credit_card.instrument_id(),
+      ConvertUTF16ToJavaString(env, credit_card.nickname()),
+      url::GURLAndroid::FromNativeGURL(env, credit_card.card_art_url()),
+      static_cast<jint>(credit_card.virtual_card_enrollment_state()));
+}
+
+void PopulateAutofillCreditCardFromJava(
+    const base::android::JavaParamRef<jobject>& jcredit_card,
+    JNIEnv* env,
+    autofill::CreditCard* credit_card,
+    const std::string& locale) {
+  // Only set the guid if it is an existing card (java guid not empty).
+  // Otherwise, keep the generated one.
+  std::string guid = ConvertJavaStringToUTF8(
+      Java_AssistantAutofillCreditCard_getGUID(env, jcredit_card));
+  if (!guid.empty()) {
+    credit_card->set_guid(guid);
+  }
+
+  if (Java_AssistantAutofillCreditCard_getIsLocal(env, jcredit_card)) {
+    credit_card->set_record_type(autofill::CreditCard::LOCAL_CARD);
+  } else {
+    if (Java_AssistantAutofillCreditCard_getIsCached(env, jcredit_card)) {
+      credit_card->set_record_type(autofill::CreditCard::FULL_SERVER_CARD);
+    } else {
+      credit_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+      credit_card->SetNetworkForMaskedCard(
+          autofill::data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
+              ConvertJavaStringToUTF8(
+                  env,
+                  Java_AssistantAutofillCreditCard_getBasicCardIssuerNetwork(
+                      env, jcredit_card))));
+    }
+  }
+
+  credit_card->set_origin(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillCreditCard_getOrigin(env, jcredit_card)));
+  credit_card->SetRawInfo(
+      autofill::CREDIT_CARD_NAME_FULL,
+      ConvertJavaStringToUTF16(
+          Java_AssistantAutofillCreditCard_getName(env, jcredit_card)));
+  credit_card->SetRawInfo(
+      autofill::CREDIT_CARD_NUMBER,
+      ConvertJavaStringToUTF16(
+          Java_AssistantAutofillCreditCard_getNumber(env, jcredit_card)));
+  credit_card->SetRawInfo(
+      autofill::CREDIT_CARD_EXP_MONTH,
+      ConvertJavaStringToUTF16(
+          Java_AssistantAutofillCreditCard_getMonth(env, jcredit_card)));
+  credit_card->SetRawInfo(
+      autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+      ConvertJavaStringToUTF16(
+          Java_AssistantAutofillCreditCard_getYear(env, jcredit_card)));
+  credit_card->set_billing_address_id(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillCreditCard_getBillingAddressId(env, jcredit_card)));
+  credit_card->set_server_id(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillCreditCard_getServerId(env, jcredit_card)));
+  credit_card->set_instrument_id(
+      Java_AssistantAutofillCreditCard_getInstrumentId(env, jcredit_card));
+  credit_card->SetNickname(ConvertJavaStringToUTF16(
+      Java_AssistantAutofillCreditCard_getNickname(env, jcredit_card)));
+  base::android::ScopedJavaLocalRef<jobject> jcard_art_url =
+      Java_AssistantAutofillCreditCard_getCardArtUrl(env, jcredit_card);
+  if (!jcard_art_url.is_null()) {
+    credit_card->set_card_art_url(
+        *url::GURLAndroid::ToNativeGURL(env, jcard_art_url));
+  }
+  credit_card->set_virtual_card_enrollment_state(
+      static_cast<autofill::CreditCard::VirtualCardEnrollmentState>(
+          Java_AssistantAutofillCreditCard_getVirtualCardEnrollmentState(
+              env, jcredit_card)));
 }
 
 }  // namespace ui_controller_android_utils

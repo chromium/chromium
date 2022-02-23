@@ -15,10 +15,10 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   [RaisesException, Measure]
   constructor(optional URLPatternInput input = {}, optional USVString baseURL);
 
-  [RaisesException, Measure]
+  [RaisesException, CallWith=ScriptState, Measure]
   boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
-  [RaisesException, Measure]
+  [RaisesException, CallWith=ScriptState, Measure]
   URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   readonly attribute USVString protocol;

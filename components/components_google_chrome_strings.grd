@@ -36,8 +36,10 @@
       <output filename="components_google_chrome_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_google_chrome_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="components_google_chrome_strings_af.pak" type="data_package" lang="af" />
       <output filename="components_google_chrome_strings_is.pak" type="data_package" lang="is" />
+      <output filename="components_google_chrome_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="components_google_chrome_strings_am.pak" type="data_package" lang="am" />
     <output filename="components_google_chrome_strings_ar.pak" type="data_package" lang="ar" />
@@ -216,9 +218,16 @@
       <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT" desc="Summary in the error page when a request is blocked by the browser.">
         This page has been blocked by Chrome
       </message>
-      <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
-        Chrome OS hasn’t completed its initial setup.
-      </message>
+      <if expr="reven">
+        <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
+          CloudReady 2.0 hasn’t completed its initial setup.
+        </message>
+      </if>
+      <if expr="not reven">
+        <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
+          Chrome OS hasn’t completed its initial setup.
+        </message>
+      </if>
       <if expr="is_macosx">
         <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="Mac OSX instructions for disabling use of a proxy server.">
           Go to

@@ -31,7 +31,8 @@
       </cr-expand-button>
       <template is="dom-if" if="[[addConnectionExpanded_]]">
         <div class="list-frame vertical-list">
-          <template is="dom-if" if="[[wifiIsEnabled_(deviceStates)]]">
+          <template is="dom-if" if="[[shouldShowAddWiFiRow_(globalPolicy_,
+              managedNetworkAvailable, deviceStates)]]">
             <div actionable class="list-item" on-click="onAddWiFiTap_">
               <div class="start settings-box-text"
                   id="add-wifi-label" aria-hidden="true">

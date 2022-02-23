@@ -256,7 +256,7 @@ TEST_F(PromoServiceTest, BlocklistPromo) {
 
   const auto* blocklist = prefs()->GetDictionary(prefs::kNtpPromoBlocklist);
   ASSERT_EQ(1u, blocklist->DictSize());
-  ASSERT_TRUE(blocklist->HasKey("42"));
+  ASSERT_TRUE(blocklist->FindKey("42"));
 }
 
 TEST_F(PromoServiceTest, BlocklistExpiration) {

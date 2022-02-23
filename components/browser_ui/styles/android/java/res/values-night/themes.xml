@@ -10,6 +10,8 @@
         <item name="colorOnPrimary">@color/baseline_primary_800</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="android:colorBackground">@color/baseline_neutral_900</item>
         <item name="colorOnBackground">@color/baseline_neutral_100</item>
         <item name="colorSurface">@color/baseline_neutral_900</item>
@@ -22,27 +24,5 @@
 
         <!-- Elevation overlays -->
         <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
-
-        <!-- Custom roles -->
-        <!-- Dynamic roles -->
-        <item name="colorSwitchThumbNormal">?attr/colorOnSurface</item>
-        <item name="colorSwitchThumbDisabled">?attr/colorFixedOnSurfaceAlpha38OverSurface</item>
-        <item name="colorSwitchTrackNormal">?attr/colorOutline</item>
-        <!-- Non-dynamic roles for switches -->
-        <item name="colorFixedOnSurfaceAlpha38OverSurface">@color/baseline_neutral_900_with_neutral_100_alpha_38</item>
-        <!-- Splintered SwitchMaterial roles to roll back dynamic colors. -->
-        <item name="colorPrimaryNonDynamic">@color/baseline_primary_200</item>
-        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
-        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
-        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_900_with_neutral_100_alpha_38</item>
-        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
-
-        <!-- Custom semantic names -->
-        <!-- Common icon colors for drawables. -->
-        <item name="default_icon_color">@color/default_icon_color_light</item>
-        <item name="default_icon_color_inverse">@color/default_icon_color_dark</item>
-        <item name="default_icon_color_secondary">@color/default_icon_color_secondary_light</item>
-        <item name="default_icon_color_disabled">@color/default_icon_color_disabled_light</item>
-        <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_dark</item>
     </style>
 </resources>

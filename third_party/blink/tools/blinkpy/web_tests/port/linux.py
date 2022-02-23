@@ -47,7 +47,7 @@ class LinuxPort(base.Port):
     FALLBACK_PATHS['trusty'] = (
         ['linux'] + win.WinPort.latest_platform_fallback_path())
 
-    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md'
+    BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
 
     XVFB_START_STOP_TIMEOUT = 5.0  # Wait up to 5 seconds for Xvfb to start or stop.
 
@@ -90,7 +90,7 @@ class LinuxPort(base.Port):
             _log.error('For complete Linux build requirements, please see:')
             _log.error('')
             _log.error(
-                '    https://chromium.googlesource.com/chromium/src/+/master/docs/linux/build_instructions.md'
+                '    https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md'
             )
         return result
 

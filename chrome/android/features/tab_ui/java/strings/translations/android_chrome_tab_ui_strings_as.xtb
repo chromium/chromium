@@ -6,6 +6,9 @@
 <translation id="125153950246128346">অন্য এটা টেব চাবলৈ টিপক</translation>
 <translation id="1302104331113804646">মূল্য ট্ৰেক কৰাৰ ছেটিং</translation>
 <translation id="1378979118429748177">মূল্য কমিলে জাননী পাওক</translation>
+<translation id="1403228085774130835">আপুনি Chromeৰ মুখ্য মেনুখনৰ তলত থকা শেহতীয়া টেবত আপোনাৰ বন্ধ কৰা টেব বিচাৰিব পাৰে</translation>
+<translation id="1455506303394048917">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা মচা হ’ব</translation>
+<translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
 <translation id="2118649612461486615">ষ্ট’ৰৰ তথ্য</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">আপোনাৰ টেবসমূহ ইয়াত একগোট কৰা হৈছে</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা)}one{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}other{(<ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা)}}</translation>
 <translation id="4850886885716139402">চাওক</translation>
+<translation id="4870911314065352661">আটাইবোৰ টেব বন্ধ কৰিবনে?</translation>
 <translation id="492284538114688557">মূল্য কমা বুলি ধৰা পৰিছে</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
 <translation id="5073204694187207510">সম্পূৰ্ণ স্ক্রীণৰ গ্ৰিড লুকুৱাওক</translation>
+<translation id="5076161749301278626">ষ্ট'ৰৰ পর্যালোচনা চাবনে?</translation>
 <translation id="5082793167783849073">এটা গোট বনাই পৃষ্ঠাসমূহ দ্ৰুতভাৱে তুলনা কৰক। আৰম্ভ কৰিবলৈ এটা লিংকত স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
 <translation id="5490235265819901748">টেবৰ গোটটো বিস্তাৰ কৰা হৈছে</translation>
 <translation id="5533021382642990449">পাছত দেখুৱাওক</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">উভতাই দিয়াৰ নীতি আৰু অন্য বহুতো চাওক</translation>
 <translation id="7352298686197644113">আপোনাৰ খোলা থকা টেবসমূহত কোনটো বস্তুৰ মূল্য কম সেয়া চাওক</translation>
 <translation id="753732157349120914">টেব সলনি কৰোঁতা</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Googleৰ পৰা <ph name="REVIEWS_COUNT_ONE" /> টা পর্যালোচনা}one{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}other{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}}</translation>
 <translation id="7559245342362162951">গোটৰ টেব সম্পূৰ্ণ স্ক্রীণৰ গ্রিডত দেখুৱাওক</translation>
 <translation id="7792771145871471484">পৰামৰ্শসমূহ পৰ্যালোচনা কৰক।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেবৰ গোট বনাওক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেবৰ গোট বনাওক}}</translation>

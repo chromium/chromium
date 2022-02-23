@@ -7,8 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -30,6 +30,16 @@
 #include "components/prefs/pref_service.h"
 
 namespace policy {
+
+namespace {
+
+std::string GetString(const base::Value& dict, base::StringPiece key) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  return value ? *value : std::string();
+}
+
+}  // namespace
 
 DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     PrefService* local_state,
@@ -137,7 +147,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   // signal present that indicates the device should enroll.
 
   // Gather enrollment signals from various sources.
-  const base::DictionaryValue* device_state =
+  const base::Value* device_state =
       local_state_->GetDictionary(prefs::kServerBackedDeviceState);
   std::string device_state_mode;
   std::string device_state_management_domain;
@@ -145,12 +155,12 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   std::string license_type;
 
   if (device_state) {
-    device_state->GetString(kDeviceStateMode, &device_state_mode);
-    device_state->GetString(kDeviceStateManagementDomain,
-                            &device_state_management_domain);
+    device_state_mode = GetString(*device_state, kDeviceStateMode);
+    device_state_management_domain =
+        GetString(*device_state, kDeviceStateManagementDomain);
     is_license_packaged_with_device =
         device_state->FindBoolPath(kDeviceStatePackagedLicense);
-    device_state->GetString(kDeviceStateLicenseType, &license_type);
+    license_type = GetString(*device_state, kDeviceStateLicenseType);
   }
 
   if (is_license_packaged_with_device) {
@@ -249,10 +259,15 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
+  // Currently reven devices don't support sever-backed state keys, but they
+  // also don't support FRE/AutoRE so don't block initialization of device
+  // policy on state keys being available on reven.
+  // TODO(b/208705225): Remove this special case when reven supports state keys.
+  const bool allow_init_without_state_keys = ash::switches::IsRevenBranding();
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we could drop the `state_keys_broker_->available()` requirement.
   if (policy_store_->is_initialized() && policy_store_->has_policy() &&
-      state_keys_broker_->available()) {
+      (allow_init_without_state_keys || state_keys_broker_->available())) {
     StartConnection(CreateClient(enterprise_service_));
   }
 }

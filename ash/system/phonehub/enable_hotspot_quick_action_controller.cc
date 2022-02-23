@@ -13,12 +13,12 @@
 
 namespace ash {
 
-using Status = chromeos::phonehub::TetherController::Status;
+using Status = phonehub::TetherController::Status;
 using phone_hub_metrics::LogQuickActionClick;
 using phone_hub_metrics::QuickAction;
 
 EnableHotspotQuickActionController::EnableHotspotQuickActionController(
-    chromeos::phonehub::TetherController* tether_controller)
+    phonehub::TetherController* tether_controller)
     : tether_controller_(tether_controller) {
   DCHECK(tether_controller_);
   tether_controller_->AddObserver(this);
@@ -31,8 +31,7 @@ EnableHotspotQuickActionController::~EnableHotspotQuickActionController() {
 QuickActionItem* EnableHotspotQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE,
-                              kPhoneHubEnableHotspotOnIcon,
-                              kPhoneHubEnableHotspotOffIcon);
+                              kPhoneHubEnableHotspotIcon);
   OnTetherStatusChanged();
   return item_;
 }
@@ -51,7 +50,7 @@ void EnableHotspotQuickActionController::OnTetherStatusChanged() {
       item_->SetVisible(false);
       return;
     case Status::kConnectionUnavailable:
-      FALLTHROUGH;
+      [[fallthrough]];
     case Status::kConnectionAvailable:
       SetState(ActionState::kOff);
       break;
@@ -118,11 +117,11 @@ void EnableHotspotQuickActionController::SetState(ActionState state) {
   item_->SetSubLabelColor(sub_label_color);
 
   if (state == ActionState::kNoReception) {
-    item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
+    item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
   } else {
     std::u16string tooltip_state =
         l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-    item_->SetIconTooltip(l10n_util::GetStringFUTF16(
+    item_->SetTooltip(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
         tooltip_state));
   }

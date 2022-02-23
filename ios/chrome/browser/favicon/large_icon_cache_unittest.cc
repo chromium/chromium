@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
 
-#include "base/macros.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "skia/ext/skia_utils_ios.h"

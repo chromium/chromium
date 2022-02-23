@@ -25,11 +25,11 @@ namespace crashpad {
 namespace test {
 
 bool FileExists(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   struct stat st;
   int rv = lstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "lstat";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   struct _stat st;
   int rv = _wstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "_wstat";
@@ -45,11 +45,11 @@ bool FileExists(const base::FilePath& path) {
 }
 
 FileOffset FileSize(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   struct stat st;
   int rv = lstat(path.value().c_str(), &st);
   static constexpr char stat_function[] = "lstat";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   struct _stati64 st;
   int rv = _wstati64(path.value().c_str(), &st);
   static constexpr char stat_function[] = "_wstati64";

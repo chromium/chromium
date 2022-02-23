@@ -25,8 +25,8 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
@@ -64,7 +64,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "services/network/public/cpp/features.h"
@@ -77,9 +76,9 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/scoped_cocoa_disable_screen_updates.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -152,12 +151,13 @@ bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
   return current_partition_config != dest_partition_config;
 }
 
-bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
-                                                bool is_main_frame,
-                                                bool is_failure) {
+bool IsSiteInstanceCompatibleWithErrorIsolation(
+    SiteInstance* site_instance,
+    const FrameTreeNode& frame_tree_node,
+    bool is_failure) {
   // With no error isolation all SiteInstances are compatible with any
   // |is_failure|.
-  if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame))
+  if (!frame_tree_node.IsErrorPageIsolationEnabled())
     return true;
 
   // When error page isolation is enabled, don't reuse |site_instance| if it's
@@ -172,37 +172,17 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
   return is_site_instance_for_failures == is_failure;
 }
 
+// Simple wrapper around WebExposedIsolationInfo::AreCompatible for easier use
+// within the process model.
 bool IsSiteInstanceCompatibleWithWebExposedIsolation(
     SiteInstance* site_instance,
-    bool is_main_frame,
-    const UrlInfo& url_info,
-    bool is_speculative) {
-  // We do not want cross-origin-isolated have any impact on SiteInstances until
-  // we get an actual COOP value in a redirect or a final response.
-  if (is_speculative)
-    return true;
-
-  // Note: The about blank case is to accommodate web tests that use COOP. They
-  // expect an about:blank page to stay in process, and hang otherwise. In
-  // general, it is safe to allow about:blank pages to stay in process, since
-  // scriptability is limited to the BrowsingInstance and all pages with the
-  // same web-exposed isolation level are trusted.
-  if (url_info.url.IsAboutBlank())
-    return true;
-
+    const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info) {
   SiteInstanceImpl* site_instance_impl =
       static_cast<SiteInstanceImpl*>(site_instance);
 
-  if (is_main_frame) {
-    return site_instance_impl->GetWebExposedIsolationInfo() ==
-           url_info.web_exposed_isolation_info;
-  }
-  // Subframes cannot swap BrowsingInstances, as a result they should either not
-  // load, for instance blocked by COEP, or inherit a compatible cross-origin
-  // isolated state.
-  DCHECK_EQ(site_instance_impl->IsCrossOriginIsolated(),
-            url_info.web_exposed_isolation_info.is_isolated());
-  return true;
+  return WebExposedIsolationInfo::AreCompatible(
+      site_instance_impl->GetWebExposedIsolationInfo(),
+      web_exposed_isolation_info);
 }
 
 // Helper for appending more information to the optional |reason| parameter
@@ -273,6 +253,9 @@ ShouldSwapBrowsingInstanceToProto(ShouldSwapBrowsingInstance result) {
         kNo_UnloadHandlerExistsOnSameSiteNavigation:
       return ProtoLevel::
           SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION;
+    case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
+      return ProtoLevel::
+          SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME;
   }
 }
 
@@ -291,9 +274,30 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
 
 }  // namespace
 
-RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
-                                               Delegate* delegate)
-    : frame_tree_node_(frame_tree_node), delegate_(delegate) {
+RenderFrameHostManager::RenderFrameHostManager(
+    FrameTreeNode* frame_tree_node,
+    Delegate* delegate,
+    const std::string& name,
+    const std::string& unique_name,
+    const blink::FramePolicy& frame_policy)
+    : frame_tree_node_(frame_tree_node),
+      delegate_(delegate),
+      browsing_context_state_(base::MakeRefCounted<BrowsingContextState>(
+          blink::mojom::FrameReplicationState::New(
+              url::Origin(),
+              name,
+              unique_name,
+              blink::ParsedPermissionsPolicy(),
+              network::mojom::WebSandboxFlags::kNone,
+              frame_policy,
+              // should enforce strict mixed content checking
+              blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
+              // hashes of hosts for insecure request upgrades
+              std::vector<uint32_t>(),
+              false /* has_potentially_trustworthy_unique_origin */,
+              false /* has_active_user_gesture */,
+              false /* has_received_user_gesture_before_nav */,
+              false /* is_ad_subframe */))) {
   DCHECK(frame_tree_node_);
 }
 
@@ -311,13 +315,18 @@ RenderFrameHostManager::~RenderFrameHostManager() {
   SetRenderFrameHost(nullptr);
 }
 
-void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
-                                      bool renderer_initiated_creation) {
+void RenderFrameHostManager::InitRoot(
+    SiteInstance* site_instance,
+    bool renderer_initiated_creation,
+    blink::FramePolicy initial_main_frame_policy) {
+  // TODO(crbug.com/1270671) - replication state and frame policy will need
+  // to both be updated here.
+  browsing_context_state_->CommitFramePolicy(initial_main_frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
-      renderer_initiated_creation));
+      renderer_initiated_creation, browsing_context_state_));
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
   // delegate about this.
@@ -329,11 +338,13 @@ void RenderFrameHostManager::InitChild(
     SiteInstance* site_instance,
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-    const blink::LocalFrameToken& frame_token) {
+    const blink::LocalFrameToken& frame_token,
+    blink::FramePolicy frame_policy) {
+  browsing_context_state_->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token,
-      /*renderer_initiated_creation=*/false));
+      /*renderer_initiated_creation=*/false, browsing_context_state_));
 }
 
 RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
@@ -364,8 +375,9 @@ RenderFrameProxyHost* RenderFrameHostManager::GetProxyToParent() {
   if (frame_tree_node_->IsMainFrame())
     return nullptr;
 
-  return GetRenderFrameProxyHost(
-      frame_tree_node_->parent()->GetSiteInstance()->group());
+  return frame_tree_node_->GetBrowsingContextStateForSubframe()
+      ->GetRenderFrameProxyHost(
+          frame_tree_node_->parent()->GetSiteInstance()->group());
 }
 
 RenderFrameProxyHost* RenderFrameHostManager::GetProxyToOuterDelegate() {
@@ -382,7 +394,11 @@ RenderFrameProxyHost* RenderFrameHostManager::GetProxyToOuterDelegate() {
     return nullptr;
   }
 
-  return GetRenderFrameProxyHost(
+  // We will create an outer delegate proxy in each BrowsingContextState in this
+  // frame so it doesn't matter which BCS is used here.
+  // TODO(crbug.com/1270671): implement outer delegate proxy storage in all
+  // BrowsingContextStates.
+  return render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
       outer_contents_frame_tree_node->parent()->GetSiteInstance()->group());
 }
 
@@ -461,8 +477,29 @@ void RenderFrameHostManager::DidNavigateFrame(
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
   // happen for cross-document navigations.
-  if (!is_same_document_navigation)
-    CommitFramePolicy(frame_policy);
+  if (!is_same_document_navigation) {
+    if (!render_frame_host->browsing_context_state()->CommitFramePolicy(
+            frame_policy)) {
+      // The frame policy didn't change, no need to send updates to proxies.
+      return;
+    }
+
+    // There should be no children of this frame; any policy changes should only
+    // happen on navigation commit which will delete any child frames.
+    DCHECK(!frame_tree_node_->child_count());
+
+    if (!frame_tree_node_->parent()) {
+      // Policy updates for root node happens only when the frame is a fenced
+      // frame root.
+      // Note: SendFramePolicyUpdatesToProxies doesn't need to be invoked for
+      // MPArch fenced frames, because the root fenced frame must use a static
+      // policy not to introduce a communication channel.
+      CHECK(frame_tree_node_->IsFencedFrameRoot());
+    } else {
+      browsing_context_state_->SendFramePolicyUpdatesToProxies(
+          frame_tree_node_->parent()->GetSiteInstance(), frame_policy);
+    }
+  }
 }
 
 void RenderFrameHostManager::CommitPendingIfNecessary(
@@ -536,7 +573,7 @@ void RenderFrameHostManager::DidChangeOpener(
 
   frame_tree_node_->SetOpener(opener);
 
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     if (pair.second->GetSiteInstance() == source_site_instance)
       continue;
     pair.second->UpdateOpener();
@@ -554,40 +591,6 @@ void RenderFrameHostManager::DidChangeOpener(
   }
 }
 
-void RenderFrameHostManager::CommitFramePolicy(
-    const blink::FramePolicy& frame_policy) {
-  // Return early if there were no updates to sandbox flags or container policy.
-  if (!frame_tree_node_->CommitFramePolicy(frame_policy))
-    return;
-
-  // Policy updates can only happen when the frame has a parent.
-  CHECK(frame_tree_node_->parent());
-
-  // There should be no children of this frame; any policy changes should only
-  // happen on navigation commit.
-  DCHECK(!frame_tree_node_->child_count());
-
-  // Notify all of the frame's proxies about updated policies, excluding
-  // the parent process since it already knows the latest state.
-  SiteInstance* parent_site_instance =
-      frame_tree_node_->parent()->GetSiteInstance();
-  for (const auto& pair : proxy_hosts_) {
-    if (pair.second->GetSiteInstance() != parent_site_instance) {
-      pair.second->GetAssociatedRemoteFrame()->DidUpdateFramePolicy(
-          frame_policy);
-    }
-  }
-}
-
-void RenderFrameHostManager::OnDidSetFramePolicyHeaders() {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->DidSetFramePolicyHeaders(
-        frame_tree_node_->active_sandbox_flags(),
-        frame_tree_node_->current_replication_state()
-            .permissions_policy_header);
-  }
-}
-
 std::unique_ptr<StoredPage> RenderFrameHostManager::TakePrerenderedPage() {
   DCHECK(frame_tree_node_->IsMainFrame());
   auto main_render_frame_host = SetRenderFrameHost(nullptr);
@@ -597,12 +600,22 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::TakePrerenderedPage() {
 void RenderFrameHostManager::PrepareForCollectingPage(
     RenderFrameHostImpl* main_render_frame_host,
     std::set<RenderViewHostImpl*>* render_view_hosts,
-    RenderFrameProxyHostMap* proxy_hosts) {
+    BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts) {
   // Prepare the main frame.
   (*render_view_hosts).insert(main_render_frame_host->render_view_host());
   // Prepare the proxies.
   SiteInstance* instance = main_render_frame_host->GetSiteInstance();
-  for (auto& it : proxy_hosts_) {
+
+  // When BrowsingContextState is decoupled from the FrameTreeNode and
+  // RenderFrameHostManager (legacy mode is disabled), proxies and replication
+  // state will be transferred with the RenderFrameHost instead and therefore
+  // will not need to be collected.
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kSwapForCrossBrowsingInstanceNavigations) {
+    return;
+  }
+  for (auto& it : browsing_context_state_->proxy_hosts()) {
     // This avoids including the proxy created when starting a
     // new cross-process, cross-BrowsingInstance navigation, as well as any
     // restored proxies which are also in a different BrowsingInstance.
@@ -611,11 +624,12 @@ void RenderFrameHostManager::PrepareForCollectingPage(
       (*proxy_hosts)[it.first] = std::move(it.second);
     }
   }
-  // Remove the previously extracted proxies from the
-  // RenderFrameHostManager, which also removes their respective
-  // SiteInstanceImpl::Observer.
-  for (auto& it : *proxy_hosts)
-    DeleteRenderFrameProxyHost(it.second->GetSiteInstance());
+  // Remove the previously extracted proxies from the RenderFrameHostManager,
+  // which also removes their respective SiteInstanceGroup::Observer.
+  for (auto& it : *proxy_hosts) {
+    browsing_context_state_->DeleteRenderFrameProxyHost(
+        it.second->site_instance_group());
+  }
 }
 
 std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
@@ -623,7 +637,7 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
   DCHECK(main_render_frame_host->is_main_frame());
 
   std::set<RenderViewHostImpl*> render_view_hosts;
-  RenderFrameProxyHostMap proxy_hosts;
+  BrowsingContextState::RenderFrameProxyHostMap proxy_hosts;
 
   PrepareForCollectingPage(main_render_frame_host.get(), &render_view_hosts,
                            &proxy_hosts);
@@ -693,11 +707,11 @@ void RenderFrameHostManager::UnloadOldFrame(
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
 
-    auto can_store =
+    BackForwardCacheCanStoreDocumentResultWithTree can_store =
         back_forward_cache.CanStorePageNow(old_render_frame_host.get());
     TRACE_EVENT("navigation", "BackForwardCache_MaybeStorePage",
                 "old_render_frame_host", old_render_frame_host, "can_store",
-                can_store.ToString());
+                can_store.flattened_reasons.ToString());
     if (can_store) {
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
@@ -710,8 +724,10 @@ void RenderFrameHostManager::UnloadOldFrame(
       return;
     }
 
-    if (old_page_back_forward_cache_metrics)
-      old_page_back_forward_cache_metrics->MarkNotRestoredWithReason(can_store);
+    if (old_page_back_forward_cache_metrics) {
+      old_page_back_forward_cache_metrics->FinalizeNotRestoredReasons(
+          can_store.flattened_reasons, std::move(can_store.tree_reasons));
+    }
   }
 
   // Create a replacement proxy for the old RenderFrameHost when we're switching
@@ -722,8 +738,10 @@ void RenderFrameHostManager::UnloadOldFrame(
   if (render_frame_host_->GetSiteInstance() !=
       old_render_frame_host->GetSiteInstance()) {
     proxy =
-        CreateRenderFrameProxyHost(old_render_frame_host->GetSiteInstance(),
-                                   old_render_frame_host->render_view_host());
+        old_render_frame_host->browsing_context_state()
+            ->CreateRenderFrameProxyHost(
+                old_render_frame_host->GetSiteInstance(),
+                old_render_frame_host->render_view_host(), frame_tree_node_);
   }
 
   // |old_render_frame_host| will be deleted when its unload ACK is received,
@@ -747,18 +765,21 @@ void RenderFrameHostManager::DiscardUnusedFrame(
   // TODO(carlosk): this code is very similar to what can be found in
   // UnloadOldFrame and we should see that these are unified at some point.
 
-  // If the SiteInstance for the pending RFH is being used by others, ensure
-  // that it is replaced by a RenderFrameProxyHost to allow other frames to
-  // communicate to this frame.
+  // If the SiteInstanceGroup for the pending RFH is being used by others,
+  // ensure that the pending RenderFrameHost is replaced by a
+  // RenderFrameProxyHost to allow other frames to communicate to this frame.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   RenderFrameProxyHost* proxy = nullptr;
-  if (site_instance->HasSite() && site_instance->active_frame_count() > 1) {
+  if (site_instance->HasSite() &&
+      site_instance->group()->active_frame_count() > 1) {
     // A proxy already exists for the SiteInstanceGroup that |site_instance|
     // belongs to, so just reuse it. There is no need to call Unload() on the
     // |render_frame_host|, as this method is only called to discard a pending
     // or speculative RenderFrameHost, i.e. one that has never hosted an actual
     // document.
-    proxy = GetRenderFrameProxyHost(site_instance->group());
+    proxy =
+        render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+            site_instance->group());
     CHECK(proxy);
   }
 
@@ -827,12 +848,16 @@ void RenderFrameHostManager::RestorePage(
   stored_page_to_restore_ = std::move(stored_page);
 }
 
+// TODO(crbug.com/1270671): When this method is migrated to BrowsingContextState
+// we need to determine where/when we need to reset proxy hosts. In particular
+// we should consider how pending-delete RenderFrameHosts are handled after
+// cross-BCG navigations.
 void RenderFrameHostManager::ResetProxyHosts() {
-  for (const auto& pair : proxy_hosts_) {
-    static_cast<SiteInstanceImpl*>(pair.second->GetSiteInstance())
-        ->RemoveObserver(this);
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
+    pair.second->site_instance_group()->RemoveObserver(
+        browsing_context_state_.get());
   }
-  proxy_hosts_.clear();
+  browsing_context_state_->proxy_hosts().clear();
 }
 
 void RenderFrameHostManager::ClearRFHsPendingShutdown() {
@@ -1102,7 +1127,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       // corresponding proxy. See https://crbug.com/487872.
       // TODO(https://crbug.com/1072817): Make this logic more robust to
       // consider the case for failed navigations after CommitPending.
-      if (GetRenderFrameProxyHost(
+      if (navigation_rfh->browsing_context_state()->GetRenderFrameProxyHost(
               static_cast<SiteInstanceImpl*>(dest_site_instance.get())
                   ->group())) {
         navigation_rfh->SwapIn();
@@ -1174,8 +1199,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // TODO(creis): Remove this check after we've gathered enough information to
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  const ProcessLock process_lock =
-      navigation_rfh->GetSiteInstance()->GetProcessLock();
+  const auto process_lock = navigation_rfh->GetProcess()->GetProcessLock();
   if (!process_lock.is_error_page() &&
       request->common_params().url.IsStandard() &&
       // TODO(https://crbug.com/888079): Replace `common_params().url` with
@@ -1195,7 +1219,9 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
                           use_current_rfh);
     NOTREACHED() << "Picked an incompatible process for URL: "
                  << process_lock.ToString() << " lock vs "
-                 << request->common_params().url.DeprecatedGetOriginAsURL();
+                 << request->common_params().url.DeprecatedGetOriginAsURL()
+                 << ", request_is_sandboxed = "
+                 << request->GetUrlInfo().is_sandboxed;
     base::debug::DumpWithoutCrashing();
   }
 
@@ -1273,8 +1299,10 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
 
     // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
     // `RenderFrameProxyHost` should still be alive. Reuse it.
-    RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-        speculative_render_frame_host_->GetSiteInstance()->group());
+    RenderFrameProxyHost* proxy =
+        speculative_render_frame_host_->browsing_context_state()
+            ->GetRenderFrameProxyHost(
+                speculative_render_frame_host_->GetSiteInstance()->group());
     DCHECK(proxy);
     speculative_render_frame_host_->UndoCommitNavigation(
         *proxy, frame_tree_node_->IsLoading());
@@ -1318,36 +1346,20 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
 }
 
 void RenderFrameHostManager::OnDidStartLoading() {
-  for (const auto& pair : proxy_hosts_)
+  for (const auto& pair : browsing_context_state_->proxy_hosts())
     pair.second->GetAssociatedRemoteFrame()->DidStartLoading();
 }
 
 void RenderFrameHostManager::OnDidStopLoading() {
-  for (const auto& pair : proxy_hosts_)
+  for (const auto& pair : browsing_context_state_->proxy_hosts())
     pair.second->GetAssociatedRemoteFrame()->DidStopLoading();
 }
 
 void RenderFrameHostManager::OnDidUpdateName(const std::string& name,
                                              const std::string& unique_name) {
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     pair.second->GetAssociatedRemoteFrame()->SetReplicatedName(name,
                                                                unique_name);
-  }
-}
-
-void RenderFrameHostManager::OnEnforceInsecureRequestPolicy(
-    blink::mojom::InsecureRequestPolicy policy) {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureRequestPolicy(
-        policy);
-  }
-}
-
-void RenderFrameHostManager::OnEnforceInsecureNavigationsSet(
-    const std::vector<uint32_t>& insecure_navigations_set) {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->EnforceInsecureNavigationsSet(
-        insecure_navigations_set);
   }
 }
 
@@ -1365,7 +1377,8 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
     current_frame_host()->GetAssociatedLocalFrame()->Collapse(collapsed);
   } else {
     RenderFrameProxyHost* proxy_to_parent =
-        GetRenderFrameProxyHost(parent_site_instance->group());
+        frame_tree_node_->GetBrowsingContextStateForSubframe()
+            ->GetRenderFrameProxyHost(parent_site_instance->group());
     proxy_to_parent->GetAssociatedRemoteFrame()->Collapse(collapsed);
   }
 }
@@ -1391,7 +1404,7 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
   //
   // TODO(alexmos): It would be sufficient to only send this update to proxies
   // in the current FrameTree.
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     if (pair.second->site_instance_group() != parent_instance->group()) {
       auto properties_for_remote_frame = properties.Clone();
       RenderFrameProxyHost* proxy = pair.second.get();
@@ -1401,34 +1414,12 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
   }
 }
 
-void RenderFrameHostManager::OnDidUpdateOrigin(
-    const url::Origin& origin,
-    bool is_potentially_trustworthy_unique_origin) {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedOrigin(
-        origin, is_potentially_trustworthy_unique_origin);
-  }
-}
-
-void RenderFrameHostManager::OnDidSetIsAdSubframe(bool is_ad_subframe) {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedIsAdSubframe(
-        is_ad_subframe);
-  }
-}
-
 RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
     UrlInfo dest_url_info,
     SiteInstanceRelation relation_to_current)
     : existing_site_instance(nullptr),
       dest_url_info(dest_url_info),
       relation(relation_to_current) {}
-
-void RenderFrameHostManager::RenderProcessGone(
-    SiteInstanceImpl* instance,
-    const ChildProcessTerminationInfo& info) {
-  GetRenderFrameProxyHost(instance->group())->SetRenderFrameProxyCreated(false);
-}
 
 void RenderFrameHostManager::CancelPendingIfNecessary(
     RenderFrameHostImpl* render_frame_host) {
@@ -1451,7 +1442,7 @@ void RenderFrameHostManager::CancelPendingIfNecessary(
 void RenderFrameHostManager::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     RenderFrameProxyHost* proxy = pair.second.get();
     proxy->GetAssociatedRemoteFrame()->UpdateUserActivationState(
         update_type, notification_type);
@@ -1478,49 +1469,6 @@ void RenderFrameHostManager::UpdateUserActivationState(
   }
 }
 
-void RenderFrameHostManager::OnSetHadStickyUserActivationBeforeNavigation(
-    bool value) {
-  for (const auto& pair : proxy_hosts_) {
-    pair.second->GetAssociatedRemoteFrame()
-        ->SetHadStickyUserActivationBeforeNavigation(value);
-  }
-}
-
-void RenderFrameHostManager::ActiveFrameCountIsZero(
-    SiteInstanceImpl* site_instance) {
-  // |site_instance| no longer contains any active RenderFrameHosts, so we don't
-  // need to maintain a proxy there anymore.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance->group());
-  CHECK(proxy);
-
-  DeleteRenderFrameProxyHost(site_instance);
-}
-
-RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
-    SiteInstance* site_instance,
-    scoped_refptr<RenderViewHostImpl> rvh) {
-  auto site_instance_group_id =
-      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId();
-  CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
-      << "A proxy already existed for this SiteInstanceGroup.";
-  RenderFrameProxyHost* proxy_host =
-      new RenderFrameProxyHost(site_instance, std::move(rvh), frame_tree_node_);
-  proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
-  static_cast<SiteInstanceImpl*>(site_instance)->AddObserver(this);
-
-  TRACE_EVENT_INSTANT("navigation",
-                      "RenderFrameHostManager::CreateRenderFrameProxyHost",
-                      ChromeTrackEvent::kRenderFrameProxyHost, *proxy_host);
-  return proxy_host;
-}
-
-void RenderFrameHostManager::DeleteRenderFrameProxyHost(
-    SiteInstance* site_instance) {
-  static_cast<SiteInstanceImpl*>(site_instance)->RemoveObserver(this);
-  proxy_hosts_.erase(
-      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId());
-}
-
 ShouldSwapBrowsingInstance
 RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     const GURL& current_effective_url,
@@ -1536,8 +1484,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     bool is_same_document,
     bool cross_origin_opener_policy_mismatch,
     bool was_server_redirect,
-    bool should_replace_current_entry,
-    bool is_speculative) {
+    bool should_replace_current_entry) {
   const GURL& destination_url = destination_url_info.url;
   // A subframe must stay in the same BrowsingInstance as its parent.
   bool is_main_frame = frame_tree_node_->IsMainFrame();
@@ -1671,14 +1618,12 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // relationship for it (for isolated error pages).
   // See https://crbug.com/803367.
   bool is_for_isolated_error_page =
-      is_failure &&
-      SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame);
+      is_failure && frame_tree_node_->IsErrorPageIsolationEnabled();
 
   if (current_instance->HasSite() &&
       !render_frame_host_->IsNavigationSameSite(destination_url_info) &&
       !CanUseSourceSiteInstance(destination_url_info, source_instance,
-                                was_server_redirect, is_failure,
-                                is_speculative) &&
+                                was_server_redirect, is_failure) &&
       !is_for_isolated_error_page &&
       IsBrowsingInstanceSwapAllowedForPageTransition(transition,
                                                      destination_url) &&
@@ -1723,9 +1668,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
       !IsBackForwardCacheEnabled())
     return ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled;
 
-  // Only main frames are eligible to swap BrowsingInstances.
-  if (!frame_tree_node_->IsMainFrame())
-    return ShouldSwapBrowsingInstance::kNo_NotMainFrame;
+  // Only primary main frames are eligible to swap BrowsingInstances.
+  if (frame_tree_node_->GetFrameType() != FrameType::kPrimaryMainFrame)
+    return ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame;
 
   // If the frame has not committed any navigation yet, we should not try to do
   // a proactive swap.
@@ -1853,7 +1798,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool was_server_redirect,
     bool cross_origin_opener_policy_mismatch,
     bool should_replace_current_entry,
-    bool is_speculative,
     std::string* reason) {
   // On renderer-initiated navigations, when the frame initiating the navigation
   // and the frame being navigated differ, |source_instance| is set to the
@@ -1863,8 +1807,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
 
   SiteInstance* current_instance = render_frame_host_->GetSiteInstance();
 
-  // We do not currently swap processes for navigations in webview tag guests.
-  if (current_instance->IsGuest()) {
+  // Do not currently swap processes for navigations in webview tag guests,
+  // unless site isolation is enabled for them.
+  if (current_instance->IsGuest() &&
+      !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
     AppendReason(reason,
                  "GetSiteInstanceForNavigation => current_instance (IsGuest)");
     return current_instance;
@@ -1900,9 +1846,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // https://crbug.com/766630.
   NavigationEntry* current_entry =
       GetNavigationController().GetLastCommittedEntry();
-  bool current_is_view_source_mode = current_entry
-                                         ? current_entry->IsViewSourceMode()
-                                         : dest_is_view_source_mode;
+  bool current_is_view_source_mode =
+      (current_entry && !current_entry->IsInitialEntry())
+          ? current_entry->IsViewSourceMode()
+          : dest_is_view_source_mode;
 
   SiteInstanceImpl* current_instance_impl =
       static_cast<SiteInstanceImpl*>(current_instance);
@@ -1912,7 +1859,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
           current_instance_impl, dest_instance, dest_url_info,
           dest_is_view_source_mode, transition, is_failure, is_reload,
           is_same_document, cross_origin_opener_policy_mismatch,
-          was_server_redirect, should_replace_current_entry, is_speculative);
+          was_server_redirect, should_replace_current_entry);
 
   TraceShouldSwapBrowsingInstanceResult(frame_tree_node_->frame_tree_node_id(),
                                         should_swap_result);
@@ -1936,15 +1883,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   SiteInstanceDescriptor new_instance_descriptor = DetermineSiteInstanceForURL(
       dest_url_info, source_instance, current_instance, dest_instance,
       transition, is_failure, dest_is_restore, dest_is_view_source_mode,
-      should_swap, was_server_redirect, is_speculative, reason);
+      should_swap, was_server_redirect, reason);
 
-  scoped_refptr<SiteInstance> new_instance = ConvertToSiteInstance(
-      new_instance_descriptor, candidate_instance, is_speculative);
+  scoped_refptr<SiteInstance> new_instance =
+      ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
   SiteInstanceImpl* new_instance_impl =
       static_cast<SiteInstanceImpl*>(new_instance.get());
   DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
-      new_instance_impl, frame_tree_node_->IsMainFrame(), dest_url_info,
-      is_speculative));
+      new_instance_impl, dest_url_info.web_exposed_isolation_info));
 
   // If |should_swap| is true, we must use a different SiteInstance than the
   // current one. If we didn't, we would have two RenderFrameHosts in the same
@@ -1956,16 +1902,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (new_instance == current_instance) {
     // If we're navigating to the same site instance, we won't need to use the
     // current spare RenderProcessHost.
-#if defined(OS_ANDROID)
-    // If we're in the experiment to always create a spare renderer on Android
-    // don't start it right away on since the system is busy; this will happen
-    // when the page stops loading.
-    if (!base::FeatureList::IsEnabled(features::kSpareRenderer))
-#endif
-    {
-      RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-          browser_context);
-    }
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
+        browser_context);
   }
 
   // Double-check that the new SiteInstance is associated with the right
@@ -2108,7 +2046,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     bool dest_is_view_source_mode,
     bool force_browsing_instance_swap,
     bool was_server_redirect,
-    bool is_speculative,
     std::string* reason) {
   // Note that this function should return SiteInstance with
   // SiteInstanceRelation::UNRELATED relation to `current_instance` iff
@@ -2126,10 +2063,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // error page navigations, so we cannot rely on it to return correct value
     // when error pages are involved.
     if (IsSiteInstanceCompatibleWithErrorIsolation(
-            dest_instance, frame_tree_node_->IsMainFrame(), is_failure)) {
+            dest_instance, *frame_tree_node_, is_failure)) {
       if (IsSiteInstanceCompatibleWithWebExposedIsolation(
-              dest_instance, frame_tree_node_->IsMainFrame(), dest_url_info,
-              is_speculative)) {
+              dest_instance, dest_url_info.web_exposed_isolation_info)) {
         // TODO(nasko,creis): The check whether data: or about: URLs are allowed
         // to commit in the current process should be in IsSuitableForUrlInfo.
         // However, making this change has further implications and needs more
@@ -2137,7 +2073,12 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
         // approach and explicitly check before calling IsSuitableForUrlInfo.
         SiteInstanceImpl* dest_instance_impl =
             static_cast<SiteInstanceImpl*>(dest_instance);
-        if (IsDataOrAbout(dest_url_info.url) ||
+        // Make sure that if the destination frame is sandboxed that we don't
+        // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
+        // have a sandboxed parent but unsandboxed child.
+        bool is_data_or_about_and_not_sandboxed =
+            IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+        if (is_data_or_about_and_not_sandboxed ||
             dest_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
           // If we are forcing a swap, this should be in a different
           // BrowsingInstance.
@@ -2154,8 +2095,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If error page navigations should be isolated, ensure a dedicated
   // SiteInstance is used for them.
-  if (is_failure && SiteIsolationPolicy::IsErrorPageIsolationEnabled(
-                        frame_tree_node_->IsMainFrame())) {
+  if (is_failure && frame_tree_node_->IsErrorPageIsolationEnabled()) {
     // If the target URL requires a BrowsingInstance swap, put the error page
     // in a new BrowsingInstance, since the scripting relationships would
     // have been broken anyway if there were no error. Otherwise, we keep it
@@ -2174,9 +2114,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If a swap is required, we need to force the SiteInstance AND
   // BrowsingInstance to be different ones, using CreateForURL.
-  bool can_use_source_instance =
-      CanUseSourceSiteInstance(dest_url_info, source_instance,
-                               was_server_redirect, is_failure, is_speculative);
+  bool can_use_source_instance = CanUseSourceSiteInstance(
+      dest_url_info, source_instance, was_server_redirect, is_failure);
   if (force_browsing_instance_swap) {
     // In rare cases, `source_instance` maybe be already in another
     // BrowsingInstance from `current_instance` (e.g. see how the
@@ -2210,7 +2149,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     if (GetContentClient()->browser()->ShouldStayInParentProcessForNTP(
             dest_url_info.url, parent_site_instance)) {
       // NTP is considered non-isolated.
-      DCHECK(!dest_url_info.web_exposed_isolation_info.is_isolated());
+      DCHECK(!dest_url_info.IsIsolated());
       AppendReason(reason,
                    "DetermineSiteInstanceForURL => parent_site_instance");
       return SiteInstanceDescriptor(parent_site_instance);
@@ -2232,8 +2171,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // restored or it's a Web UI as described below.
   // TODO(ahemery): In theory we should be able to go for an unused SiteInstance
   // with the same web exposed isolation status.
-  if (!current_instance_impl->HasSite() &&
-      !dest_url_info.web_exposed_isolation_info.is_isolated() &&
+  if (!current_instance_impl->HasSite() && !dest_url_info.IsIsolated() &&
       !current_instance_impl->IsCrossOriginIsolated()) {
     // If we've already created a SiteInstance for our destination, we don't
     // want to use this unused SiteInstance; use the existing one.  (We don't
@@ -2303,10 +2241,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   }
 
   // Use the current SiteInstance for same site navigations.
-  if (render_frame_host_->IsNavigationSameSite(dest_url_info) &&
-      IsSiteInstanceCompatibleWithWebExposedIsolation(
-          render_frame_host_->GetSiteInstance(),
-          frame_tree_node_->IsMainFrame(), dest_url_info, is_speculative)) {
+  if (render_frame_host_->IsNavigationSameSite(dest_url_info)) {
     AppendReason(reason, "DetermineSiteInstanceForURL / same-site-navigation");
     return SiteInstanceDescriptor(render_frame_host_->GetSiteInstance());
   }
@@ -2389,7 +2324,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // cannot be hosted by it.
   if (IsSiteInstanceCompatibleWithWebExposedIsolation(
           render_frame_host_->GetSiteInstance(),
-          frame_tree_node_->IsMainFrame(), dest_url_info, is_speculative)) {
+          dest_url_info.web_exposed_isolation_info)) {
     AppendReason(reason,
                  "DetermineSiteInstanceForURL / fallback / coop-compatible");
     return SiteInstanceDescriptor(dest_url_info, SiteInstanceRelation::RELATED);
@@ -2440,24 +2375,21 @@ bool RenderFrameHostManager::IsBrowsingInstanceSwapAllowedForPageTransition(
 
 scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
     const SiteInstanceDescriptor& descriptor,
-    SiteInstanceImpl* candidate_instance,
-    bool is_speculative) {
+    SiteInstanceImpl* candidate_instance) {
   SiteInstanceImpl* current_instance = render_frame_host_->GetSiteInstance();
 
   // If we are asked to return a related SiteInstance but the BrowsingInstance
   // has a different cross_origin_isolated state, something went wrong.
-  // This can be wrong for speculative frames, as the COOP mismatch mechanic has
-  // not yet been invoked.
-  CHECK(is_speculative ||
-        descriptor.relation != SiteInstanceRelation::RELATED ||
-        current_instance->IsCrossOriginIsolated() ==
-            descriptor.dest_url_info.web_exposed_isolation_info.is_isolated());
+  CHECK(descriptor.relation != SiteInstanceRelation::RELATED ||
+        WebExposedIsolationInfo::AreCompatible(
+            current_instance->GetWebExposedIsolationInfo(),
+            descriptor.dest_url_info.web_exposed_isolation_info));
 
   // Note: If the `candidate_instance` matches the descriptor, it will already
   // be set to `descriptor.existing_site_instance`.
   if (descriptor.existing_site_instance) {
     DCHECK_EQ(descriptor.relation, SiteInstanceRelation::PREEXISTING);
-    return descriptor.existing_site_instance;
+    return descriptor.existing_site_instance.get();
   } else {
     DCHECK_NE(descriptor.relation, SiteInstanceRelation::PREEXISTING);
   }
@@ -2475,25 +2407,34 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
   // At this point we know an unrelated site instance must be returned. First
   // check if the candidate matches.
   if (candidate_instance &&
-      IsSiteInstanceCompatibleWithWebExposedIsolation(
-          candidate_instance, frame_tree_node_->IsMainFrame(),
-          descriptor.dest_url_info, is_speculative) &&
       !current_instance->IsRelatedSiteInstance(candidate_instance) &&
       candidate_instance->DoesSiteInfoForURLMatch(descriptor.dest_url_info)) {
     return candidate_instance;
   }
 
-  // Otherwise return a newly created one.
+  // Otherwise return a new SiteInstance in a new BrowsingInstance.
+  UrlInfo dest_url_info = descriptor.dest_url_info;
+  if (current_instance->IsGuest()) {
+    // If the current SiteInstance is for a guest, the new unrelated
+    // SiteInstance must also be for a guest and must stay in the same
+    // StoragePartition.  Note that we should only attempt BrowsingInstance
+    // swaps in guests when site isolation for guests is enabled.
+    DCHECK(SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled());
+    dest_url_info = UrlInfo(
+        UrlInfoInit(descriptor.dest_url_info)
+            .WithStoragePartitionConfig(
+                current_instance->GetSiteInfo().storage_partition_config()));
+  }
   return SiteInstanceImpl::CreateForUrlInfo(
-      GetNavigationController().GetBrowserContext(), descriptor.dest_url_info);
+      GetNavigationController().GetBrowserContext(), dest_url_info,
+      current_instance->IsGuest());
 }
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(
     const UrlInfo& dest_url_info,
     SiteInstance* source_instance,
     bool was_server_redirect,
-    bool is_failure,
-    bool is_speculative) {
+    bool is_failure) {
   if (!source_instance)
     return false;
 
@@ -2502,6 +2443,16 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // by the initiator and therefore needs to stay in the `source_instance`.
   if (!IsDataOrAbout(dest_url_info.url))
     return false;
+
+  // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
+  // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
+  // it's possible (e.g. a sandboxed child frame in a sandboxed parent frame).
+  if (dest_url_info.is_sandboxed !=
+      static_cast<SiteInstanceImpl*>(source_instance)
+          ->GetSiteInfo()
+          .is_sandboxed()) {
+    return false;
+  }
 
   // One exception (where data URLs, about:srcdoc or about:blank pages are *not*
   // controlled by the initiator) is when these URLs are reached via a server
@@ -2521,13 +2472,12 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // Make sure that error isolation is taken into account.  See also
   // ChromeNavigationBrowserTest.RedirectErrorPageReloadToAboutBlank.
   if (!IsSiteInstanceCompatibleWithErrorIsolation(
-          source_instance, frame_tree_node_->IsMainFrame(), is_failure)) {
+          source_instance, *frame_tree_node_, is_failure)) {
     return false;
   }
 
   if (!IsSiteInstanceCompatibleWithWebExposedIsolation(
-          source_instance, frame_tree_node_->IsMainFrame(), dest_url_info,
-          is_speculative)) {
+          source_instance, dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
 
@@ -2547,8 +2497,9 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
                                                  const UrlInfo& dest_url_info) {
   DCHECK_EQ(GetNavigationController().GetBrowserContext(),
             candidate->GetSiteInstance()->GetBrowserContext());
-  if (candidate->GetSiteInstance()->GetWebExposedIsolationInfo() !=
-      dest_url_info.web_exposed_isolation_info) {
+  if (!WebExposedIsolationInfo::AreCompatible(
+          candidate->GetSiteInstance()->GetWebExposedIsolationInfo(),
+          dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
 
@@ -2564,10 +2515,11 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
 void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     SiteInstance* old_instance,
     SiteInstance* new_instance,
-    bool recovering_without_early_commit) {
+    bool recovering_without_early_commit,
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
   // Only create opener proxies if they are in the same BrowsingInstance.
   if (new_instance->IsRelatedSiteInstance(old_instance)) {
-    CreateOpenerProxies(new_instance, frame_tree_node_);
+    CreateOpenerProxies(new_instance, frame_tree_node_, browsing_context_state);
   } else {
     // Ensure that the frame tree has RenderFrameProxyHosts for the
     // new SiteInstance in all necessary nodes.  We do this for all frames in
@@ -2577,7 +2529,7 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
     // here.  We will still check whether two frames are in the same
     // BrowsingInstance before we allow them to interact (e.g., postMessage).
     frame_tree_node_->frame_tree()->CreateProxiesForSiteInstance(
-        frame_tree_node_, new_instance);
+        frame_tree_node_, new_instance, browsing_context_state);
   }
 
   // When navigating same-site and recovering from a crash, create a proxy
@@ -2591,18 +2543,25 @@ void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(
           ->GetRenderViewHost(new_instance)
           ->SetMainFrameRoutingId(MSG_ROUTING_NONE);
     }
-    CreateRenderFrameProxy(new_instance);
+
+    // As there is an explicit check for |render_frame_host_|'s SiteInstance
+    // being the same as the "new" RenderFrameHost,
+    // |render_frame_host_->browsing_context_state()| is the right
+    // BrowsingContextState to use.
+    CreateRenderFrameProxy(new_instance,
+                           render_frame_host_->browsing_context_state());
   }
 }
 
-void RenderFrameHostManager::CreateProxiesForNewNamedFrame() {
+void RenderFrameHostManager::CreateProxiesForNewNamedFrame(
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
   DCHECK(!frame_tree_node_->frame_name().empty());
 
   // If this is a top-level frame, create proxies for this node in the
   // SiteInstances of its opener's ancestors, which are allowed to discover
   // this frame by name (see https://crbug.com/511474 and part 4 of
-  // https://html.spec.whatwg.org/#the-rules-for-choosing-a-browsing-context-
-  // given-a-browsing-context-name).
+  // https://html.spec.whatwg.org/C/#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
+  // ).
   FrameTreeNode* opener = frame_tree_node_->opener();
   if (!opener || !frame_tree_node_->IsMainFrame())
     return;
@@ -2615,7 +2574,8 @@ void RenderFrameHostManager::CreateProxiesForNewNamedFrame() {
   for (RenderFrameHost* ancestor = opener->parent(); ancestor;
        ancestor = ancestor->GetParent()) {
     if (ancestor->GetSiteInstance() != current_instance)
-      CreateRenderFrameProxy(ancestor->GetSiteInstance());
+      CreateRenderFrameProxy(ancestor->GetSiteInstance(),
+                             browsing_context_state);
   }
 }
 
@@ -2626,7 +2586,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
-    bool renderer_initiated_creation) {
+    bool renderer_initiated_creation,
+    scoped_refptr<BrowsingContextState> browsing_context_state) {
   FrameTree* frame_tree = frame_tree_node_->frame_tree();
 
   // Only the kInitChild case passes in a frame routing id.
@@ -2696,7 +2657,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
       site_instance, std::move(render_view_host),
       frame_tree->render_frame_delegate(), frame_tree, frame_tree_node_,
       frame_routing_id, std::move(frame_remote), frame_token,
-      renderer_initiated_creation, lifecycle_state);
+      renderer_initiated_creation, lifecycle_state,
+      std::move(browsing_context_state));
 }
 
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
@@ -2726,18 +2688,42 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
   if (!new_instance->GetProcess()->Init())
     return false;
 
+  scoped_refptr<BrowsingContextState> browsing_context_state;
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kLegacyOneToOneWithFrameTreeNode) {
+    browsing_context_state = browsing_context_state_;
+  } else {
+    // For speculative frame hosts, we will need to create a new
+    // BrowsingContextState when we have a cross-BrowsingInstance navigation,
+    // as the browsing context + BrowsingInstance combination changes.
+    // TODO(crbug.com/1179502): FrameReplicationState is a mix of things that
+    // are per-frame, per-browsing context and per-document. Currently, we pass
+    // the entire FrameReplicationState to match the old behaviour of storing
+    // FrameReplicationState on FrameTreeNode. We should consider splitting
+    // FrameReplicationState into multiple structs with different lifetimes.
+    browsing_context_state =
+        render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
+            new_instance)
+            ? render_frame_host_->browsing_context_state()
+            : base::MakeRefCounted<BrowsingContextState>(
+                  browsing_context_state_->current_replication_state().Clone());
+  }
+
   CreateProxiesForNewRenderFrameHost(old_instance, new_instance,
-                                     recovering_without_early_commit);
+                                     recovering_without_early_commit,
+                                     browsing_context_state);
 
   speculative_render_frame_host_ = CreateSpeculativeRenderFrame(
-      new_instance, recovering_without_early_commit);
+      new_instance, recovering_without_early_commit, browsing_context_state);
   return !!speculative_render_frame_host_;
 }
 
 std::unique_ptr<RenderFrameHostImpl>
 RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstance* instance,
-    bool recovering_without_early_commit) {
+    bool recovering_without_early_commit,
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::CreateSpeculativeRenderFrame",
               ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
@@ -2763,7 +2749,8 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
                             /*frame_routing_id=*/MSG_ROUTING_NONE,
                             mojo::PendingAssociatedRemote<mojom::Frame>(),
                             blink::LocalFrameToken(),
-                            /*renderer_initiated_creation=*/false);
+                            /*renderer_initiated_creation=*/false,
+                            browsing_context_state);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);
 
   // Prevent the process from exiting while we're trying to navigate in it.
@@ -2785,7 +2772,8 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstanceGroup* site_instance_group =
         static_cast<SiteInstanceImpl*>(instance)->group();
     if (!InitRenderView(instance, render_view_host,
-                        GetRenderFrameProxyHost(site_instance_group))) {
+                        browsing_context_state->GetRenderFrameProxyHost(
+                            site_instance_group))) {
       return nullptr;
     }
 
@@ -2821,7 +2809,9 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
   return new_render_frame_host;
 }
 
-void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
+void RenderFrameHostManager::CreateRenderFrameProxy(
+    SiteInstance* instance,
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
   CHECK(instance);
   TRACE_EVENT_INSTANT("navigation",
                       "RenderFrameHostManager::CreateRenderFrameProxy",
@@ -2844,8 +2834,9 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
   }
 
   // If a proxy already exists and is alive, nothing needs to be done.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(instance)->group());
   if (proxy && proxy->is_render_frame_proxy_live())
     return;
 
@@ -2869,7 +2860,9 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
                           "RenderFrameHostManager::CreateRenderFrameProxy_RVH",
                           ChromeTrackEvent::kRenderViewHost, *render_view_host);
     }
-    proxy = CreateRenderFrameProxyHost(instance, std::move(render_view_host));
+
+    proxy = browsing_context_state->CreateRenderFrameProxyHost(
+        instance, std::move(render_view_host), frame_tree_node_);
   }
 
   // Make sure that the RenderFrameProxy is present in the renderer.
@@ -2889,7 +2882,7 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
       ChromeTrackEvent::kFrameTreeNodeInfo, *child);
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     TRACE_EVENT_INSTANT(
         "navigation",
         "RenderFrameHostManager::CreateProxiesForChildFrame_ProxyHost",
@@ -2919,7 +2912,8 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
     }
 
     child->render_manager()->CreateRenderFrameProxy(
-        pair.second->GetSiteInstance());
+        pair.second->GetSiteInstance(),
+        child->current_frame_host()->browsing_context_state());
   }
 }
 
@@ -2933,8 +2927,9 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
 
   // If the proxy in |instance| doesn't exist, this RenderView is not swapped
   // out and shouldn't be reinitialized here.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(instance)->group());
   if (!proxy)
     return;
 
@@ -2944,12 +2939,15 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
 RenderFrameProxyHost* RenderFrameHostManager::CreateOuterDelegateProxy(
     SiteInstance* outer_contents_site_instance) {
   // We only get here when Delegate for this manager is an inner delegate.
-  return CreateRenderFrameProxyHost(outer_contents_site_instance, nullptr);
+  return render_frame_host_->browsing_context_state()
+      ->CreateRenderFrameProxyHost(outer_contents_site_instance, nullptr,
+                                   frame_tree_node_);
 }
 
 void RenderFrameHostManager::DeleteOuterDelegateProxy(
     SiteInstance* outer_contents_site_instance) {
-  DeleteRenderFrameProxyHost(outer_contents_site_instance);
+  render_frame_host_->browsing_context_state()->DeleteRenderFrameProxyHost(
+      static_cast<SiteInstanceImpl*>(outer_contents_site_instance)->group());
 }
 
 void RenderFrameHostManager::SwapOuterDelegateFrame(
@@ -2989,7 +2987,8 @@ bool RenderFrameHostManager::InitRenderView(
   if (render_view_host->IsRenderViewLive())
     return true;
 
-  auto opener_frame_token = GetOpenerFrameToken(site_instance);
+  auto opener_frame_token = GetOpenerFrameToken(
+      static_cast<SiteInstanceImpl*>(site_instance)->group());
 
   bool created = delegate_->CreateRenderViewForRenderManager(
       render_view_host, opener_frame_token, proxy);
@@ -3022,12 +3021,34 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
     return base::WrapRefCounted(current_site_instance);
   }
 
-  // Srcdoc documents are always in the same SiteInstance as their parent. They
-  // load their content from the "srcdoc" iframe attribute which lives in the
-  // parent's process. Using `GetParent()` is correct here because we never
-  // share BrowsingInstance / SiteInstance across inner and outer frame tree.
+  // Srcdoc documents are only in the same SiteInstance as their parent if they
+  // both have the same value for is_sandboxed(). They load their content from
+  // the "srcdoc" iframe attribute which lives in the parent's process. Using
+  // `GetParent()` is correct here because we never share BrowsingInstance /
+  // SiteInstance across inner and outer frame tree.
   RenderFrameHostImpl* parent = render_frame_host_->GetParent();
   if (parent && request->common_params().url.IsAboutSrcdoc()) {
+    const UrlInfo& url_info = request->GetUrlInfo();
+    if (url_info.is_sandboxed &&
+        !parent->GetSiteInstance()->GetSiteInfo().is_sandboxed()) {
+      // TODO(wjmaclean); For now, SiteInfo::is_sandboxed() and
+      // UrlInfo::is_sandboxed both mean "origin-restricted sandbox", so this
+      // simple comparison suffices. But when we extend sandbox isolation to
+      // depend on other sandbox flags as well, we may want to do a more
+      // detailed comparison to make sure everything is compatible. E.g. if both
+      // the parent and child are sandboxed, but with different flags, then we
+      // may need separate SiteInstances, but that will be left for future CL.
+      AppendReason(reason,
+                   "GetSiteInstanceForNavigationRequest => compatible "
+                   "sandboxed instance (IsAboutSrcdoc)");
+      // In all the non-srcdoc cases we have a value for src and hence a UrlInfo
+      // from which to build a SiteInfo for the sandboxed frame. But in the case
+      // of a srcdoc iframe, we're basically picking a SiteInstance that is the
+      // same as the parent frame, but with the `is_sandbox` flag set. srcdoc
+      // iframes are normally considered to have the same origin as their
+      // parents, so this seems reasonable.
+      return parent->GetSiteInstance()->GetCompatibleSandboxedSiteInstance();
+    }
     AppendReason(reason,
                  "GetSiteInstanceForNavigationRequest => parent-instance"
                  " (IsAboutSrcdoc)");
@@ -3057,10 +3078,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->GetRestoreType() == RestoreType::kRestored,
       request->commit_params().is_view_source, request->WasServerRedirect(),
       request->coop_status().require_browsing_instance_swap(),
-      request->common_params().should_replace_current_entry,
-      request->state() < NavigationRequest::NavigationState::
-                             WILL_REDIRECT_REQUEST /* is_speculative */,
-      reason);
+      request->common_params().should_replace_current_entry, reason);
 
   TRACE_EVENT_INSTANT(
       "navigation",
@@ -3095,8 +3113,10 @@ bool RenderFrameHostManager::InitRenderFrame(
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
 
   absl::optional<blink::FrameToken> opener_frame_token;
-  if (frame_tree_node_->opener())
-    opener_frame_token = GetOpenerFrameToken(site_instance);
+  if (frame_tree_node_->opener()) {
+    opener_frame_token = GetOpenerFrameToken(
+        static_cast<SiteInstanceImpl*>(site_instance)->group());
+  }
 
   int parent_routing_id = MSG_ROUTING_NONE;
   if (frame_tree_node_->parent()) {
@@ -3122,8 +3142,9 @@ bool RenderFrameHostManager::InitRenderFrame(
     CHECK_NE(previous_sibling_routing_id, MSG_ROUTING_NONE);
   }
 
-  RenderFrameProxyHost* existing_proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* existing_proxy =
+      render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
   if (existing_proxy && !existing_proxy->is_render_frame_proxy_live())
     existing_proxy->InitRenderFrameProxy();
 
@@ -3189,12 +3210,13 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
   DCHECK(!render_frame_host->must_be_replaced());
 
   // Recreate the opener chain.
-  CreateOpenerProxies(render_frame_host->GetSiteInstance(), frame_tree_node_);
+  CreateOpenerProxies(render_frame_host->GetSiteInstance(), frame_tree_node_,
+                      browsing_context_state_);
 
   // Main frames need both the RenderView and RenderFrame reinitialized, so
   // use InitRenderView.
-  DCHECK(
-      !GetRenderFrameProxyHost(render_frame_host->GetSiteInstance()->group()));
+  DCHECK(!render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+      render_frame_host->GetSiteInstance()->group()));
   if (!InitRenderView(render_frame_host->GetSiteInstance(),
                       render_frame_host->render_view_host(), nullptr))
     return false;
@@ -3220,8 +3242,9 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstance(
   if (render_frame_host_->GetSiteInstance() == site_instance)
     return render_frame_host_->GetRoutingID();
 
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
   if (proxy)
     return proxy->GetRoutingID();
 
@@ -3229,13 +3252,14 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstance(
 }
 
 absl::optional<blink::FrameToken>
-RenderFrameHostManager::GetFrameTokenForSiteInstance(
-    SiteInstance* site_instance) {
-  if (render_frame_host_->GetSiteInstance() == site_instance)
+RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
+    SiteInstanceGroup* site_instance_group) {
+  if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetFrameToken();
 
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          site_instance_group);
   if (proxy)
     return proxy->GetFrameToken();
 
@@ -3265,7 +3289,7 @@ void RenderFrameHostManager::CommitPending(
   DCHECK(!pending_stored_page || IsBackForwardCacheEnabled() ||
          blink::features::IsPrerender2Enabled());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
   // RenderWidgetHostView takes its contents. Ensure that Cocoa sees this as
   // a single transaction.
@@ -3274,7 +3298,7 @@ void RenderFrameHostManager::CommitPending(
   // the same ui::Compositor as MacViews.
   // https://crbug.com/331669
   gfx::ScopedCocoaDisableScreenUpdates disabler;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   RenderWidgetHostView* old_view = render_frame_host_->GetView();
   bool is_main_frame = frame_tree_node_->IsMainFrame();
@@ -3324,19 +3348,27 @@ void RenderFrameHostManager::CommitPending(
   // If a document is being restored from the BackForwardCache or is being
   // activated from Prerendering, restore all cached state now.
   if (pending_stored_page) {
-    RenderFrameProxyHostMap proxy_hosts_to_restore =
-        std::move(pending_stored_page->proxy_hosts);
-    for (auto& proxy : proxy_hosts_to_restore) {
-      // We only cache pages when swapping BrowsingInstance, so we should never
-      // be reusing SiteInstanceGroups.
-      CHECK(!base::Contains(proxy_hosts_,
-                            proxy.second->site_instance_group()->GetId()));
-      static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
-          ->AddObserver(this);
-      TRACE_EVENT_INSTANT(
-          "navigation", "RenderFrameHostManager::CommitPending_RestoreProxy",
-          ChromeTrackEvent::kRenderFrameProxyHost, *proxy.second);
-      proxy_hosts_.insert(std::move(proxy));
+    // This is only implemented for the legacy mode of BrowsingContextState
+    // because in the new implementation, proxies will be swapped/restored
+    // whenever the RenderFrameHost (and internal BrowsingContextState) is
+    // restored.
+    if (features::GetBrowsingContextMode() ==
+        features::BrowsingContextStateImplementationType::
+            kLegacyOneToOneWithFrameTreeNode) {
+      BrowsingContextState::RenderFrameProxyHostMap proxy_hosts_to_restore =
+          std::move(pending_stored_page->proxy_hosts);
+      for (auto& proxy : proxy_hosts_to_restore) {
+        // We only cache pages when swapping BrowsingInstance, so we should
+        // never be reusing SiteInstanceGroups.
+        CHECK(!base::Contains(browsing_context_state_->proxy_hosts(),
+                              proxy.second->site_instance_group()->GetId()));
+        proxy.second->site_instance_group()->AddObserver(
+            browsing_context_state_.get());
+        TRACE_EVENT_INSTANT(
+            "navigation", "RenderFrameHostManager::CommitPending_RestoreProxy",
+            ChromeTrackEvent::kRenderFrameProxyHost, *proxy.second);
+        browsing_context_state_->proxy_hosts().insert(std::move(proxy));
+      }
     }
 
     std::set<RenderViewHostImpl*> render_view_hosts_to_restore =
@@ -3426,7 +3458,7 @@ void RenderFrameHostManager::CommitPending(
       if (focused_frame && !focused_frame->IsMainFrame() &&
           focused_frame->current_frame_host()->GetSiteInstance() !=
               render_frame_host_->GetSiteInstance()) {
-        focused_frame->render_manager()
+        focused_frame->GetBrowsingContextStateForSubframe()
             ->GetRenderFrameProxyHost(
                 render_frame_host_->GetSiteInstance()->group())
             ->SetFocusedFrame();
@@ -3434,6 +3466,19 @@ void RenderFrameHostManager::CommitPending(
       frame_tree_node_->frame_tree()->SetPageFocus(
           render_frame_host_->GetSiteInstance(), true);
     }
+  }
+
+  // Notify that we have no `old_view` from which to TakeFallbackContentFrom.
+  // This will clear the current Fallback Surface, which would be from a
+  // previous Navigation. This way we do not display old content if this new
+  // PendingCommit does not lead to a successful Navigation. This must be called
+  // before NotifySwappedFromRenderManager, which will allocate a new
+  // viz::LocalSurfaceId, which will allow the Renderer to submit new content.
+  // TODO(crbug.com/1072817): Remove this once CommitPending has more explicit
+  // shutdown, both for successful and failed navigations.
+  if (!old_view) {
+    delegate_->NotifySwappedFromRenderManagerWithoutFallbackContent(
+        render_frame_host_.get());
   }
 
   // Notify that we've swapped RenderFrameHosts. We do this before shutting down
@@ -3473,6 +3518,11 @@ void RenderFrameHostManager::CommitPending(
   // to initialize the child RWHV.
   absl::optional<gfx::Size> old_size = old_render_frame_host->frame_size();
 
+  // Store the old_render_frame_host's BrowsingContextState so that it can be
+  // used to update/delete proxies.
+  scoped_refptr<BrowsingContextState> old_browsing_context_state =
+      old_render_frame_host->browsing_context_state();
+
   // Unload the old frame now that the new one is visible.
   // This will unload it and schedule it for deletion when the unload ack
   // arrives (or immediately if the process isn't live).
@@ -3480,11 +3530,14 @@ void RenderFrameHostManager::CommitPending(
 
   // Since the new RenderFrameHost is now committed, there must be no proxies
   // for its SiteInstance. Delete any existing ones.
-  DeleteRenderFrameProxyHost(render_frame_host_->GetSiteInstance());
+  old_browsing_context_state->DeleteRenderFrameProxyHost(
+      render_frame_host_->GetSiteInstance()->group());
 
   // If this is a top-level frame, and COOP triggered a BrowsingInstance swap,
   // make sure all relationships with the previous BrowsingInstance are severed
   // by removing the opener and proxies with unrelated SiteInstances.
+  // TODO(crbug.com/1270671): Make this a no-op for the non-legacy
+  // implementation of BrowsingContextState.
   if (clear_proxies_on_commit) {
     DCHECK(frame_tree_node_->IsMainFrame());
     if (frame_tree_node_->opener() &&
@@ -3499,23 +3552,29 @@ void RenderFrameHostManager::CommitPending(
     }
 
     std::vector<RenderFrameProxyHost*> removed_proxies;
-    for (auto& it : proxy_hosts_) {
+    for (auto& it : browsing_context_state_->proxy_hosts()) {
       const auto& proxy = it.second;
+      // The outer delegate proxy is *always* cross-browsing context group, but
+      // it is the only proxy we must preserve.
       if (!render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
-              proxy->GetSiteInstance())) {
+              proxy->GetSiteInstance()) &&
+          proxy.get() != GetProxyToOuterDelegate()) {
         removed_proxies.push_back(proxy.get());
       }
     }
 
-    for (auto* proxy : removed_proxies)
-      DeleteRenderFrameProxyHost(proxy->GetSiteInstance());
+    for (auto* proxy : removed_proxies) {
+      old_browsing_context_state->DeleteRenderFrameProxyHost(
+          proxy->site_instance_group());
+    }
   }
 
   // If this is a subframe or inner frame tree, it should have a
   // CrossProcessFrameConnector created already.  Use it to link the new RFH's
   // view to the proxy that belongs to the parent frame's SiteInstance. If this
   // navigation causes an out-of-process frame to return to the same process as
-  // its parent, the proxy would have been removed from proxy_hosts_ above.
+  // its parent, the proxy would have been removed from
+  // browsing_context_state_->proxy_hosts() above.
   // Note: We do this after unloading the old RFH because that may create
   // the proxy we're looking for.
   RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
@@ -3538,8 +3597,8 @@ void RenderFrameHostManager::CommitPending(
 
   // After all is done, there must never be a proxy in the list which has the
   // same SiteInstanceGroup as the current RenderFrameHost.
-  CHECK(
-      !GetRenderFrameProxyHost(render_frame_host_->GetSiteInstance()->group()));
+  CHECK(!render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+      render_frame_host_->GetSiteInstance()->group()));
 }
 
 std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
@@ -3616,18 +3675,6 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   return old_render_frame_host;
 }
 
-RenderFrameProxyHost* RenderFrameHostManager::GetRenderFrameProxyHost(
-    SiteInstanceGroup* site_instance_group) const {
-  auto it = proxy_hosts_.find(site_instance_group->GetId());
-  if (it != proxy_hosts_.end())
-    return it->second.get();
-  return nullptr;
-}
-
-size_t RenderFrameHostManager::GetProxyCount() {
-  return proxy_hosts_.size();
-}
-
 void RenderFrameHostManager::CollectOpenerFrameTrees(
     std::vector<FrameTree*>* opener_frame_trees,
     std::unordered_set<FrameTreeNode*>* nodes_with_back_links) {
@@ -3672,7 +3719,12 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
 
 void RenderFrameHostManager::CreateOpenerProxies(
     SiteInstance* instance,
-    FrameTreeNode* skip_this_node) {
+    FrameTreeNode* skip_this_node,
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+  // TODO(crbug.com/1270671): Add a DCHECK verifying that |instance
+  // is a related site instance to the site instance in |render_frame_host_|. At
+  // the moment, this DCHECK fails due to a bug in choosing SiteInstance in
+  // web_contents_impl.cc.
   std::vector<FrameTree*> opener_frame_trees;
   std::unordered_set<FrameTreeNode*> nodes_with_back_links;
 
@@ -3684,7 +3736,7 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // nodes need to reference them.
   for (FrameTree* tree : base::Reversed(opener_frame_trees)) {
     tree->root()->render_manager()->CreateOpenerProxiesForFrameTree(
-        instance, skip_this_node);
+        instance, skip_this_node, browsing_context_state);
   }
 
   // Set openers for nodes in |nodes_with_back_links| in a second pass.
@@ -3695,16 +3747,19 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // creation.
   for (auto* node : nodes_with_back_links) {
     RenderFrameProxyHost* proxy =
-        node->render_manager()->GetRenderFrameProxyHost(
-            static_cast<SiteInstanceImpl*>(instance)->group());
+        node->render_manager()
+            ->current_frame_host()
+            ->browsing_context_state()
+            ->GetRenderFrameProxyHost(
+                static_cast<SiteInstanceImpl*>(instance)->group());
     // If there is no proxy, the cycle may involve nodes in the same process,
     // or, if this is a subframe, --site-per-process may be off.  Either way,
     // there's nothing more to do.
     if (!proxy)
       continue;
 
-    auto opener_frame_token =
-        node->render_manager()->GetOpenerFrameToken(instance);
+    auto opener_frame_token = node->render_manager()->GetOpenerFrameToken(
+        static_cast<SiteInstanceImpl*>(instance)->group());
     DCHECK(opener_frame_token);
     proxy->GetAssociatedRemoteFrame()->UpdateOpener(opener_frame_token);
   }
@@ -3712,7 +3767,8 @@ void RenderFrameHostManager::CreateOpenerProxies(
 
 void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
     SiteInstance* instance,
-    FrameTreeNode* skip_this_node) {
+    FrameTreeNode* skip_this_node,
+    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
   // Currently, this function is only called on main frames.  It should
   // actually work correctly for subframes as well, so if that need ever
   // arises, it should be sufficient to remove this DCHECK.
@@ -3725,17 +3781,18 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
   // be skipped if it's in the same FrameTree.
   if (skip_this_node && skip_this_node->frame_tree() != frame_tree)
     skip_this_node = nullptr;
-  frame_tree->CreateProxiesForSiteInstance(skip_this_node, instance);
+  frame_tree->CreateProxiesForSiteInstance(skip_this_node, instance,
+                                           browsing_context_state);
 }
 
 absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
-    SiteInstance* instance) {
+    SiteInstanceGroup* group) {
   if (!frame_tree_node_->opener())
     return absl::nullopt;
 
   return frame_tree_node_->opener()
       ->render_manager()
-      ->GetFrameTokenForSiteInstance(instance);
+      ->GetFrameTokenForSiteInstanceGroup(group);
 }
 
 void RenderFrameHostManager::ExecutePageBroadcastMethod(
@@ -3749,7 +3806,7 @@ void RenderFrameHostManager::ExecutePageBroadcastMethod(
   // want to also call it for the outer WebContent's frame as well.
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     if (outer_delegate_proxy == pair.second.get())
       continue;
     if (pair.second->GetSiteInstance() == instance_to_skip)
@@ -3777,7 +3834,7 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
   // frame as well.
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
-  for (const auto& pair : proxy_hosts_) {
+  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     if (outer_delegate_proxy == pair.second.get())
       continue;
     if (pair.second->GetSiteInstance() == instance_to_skip)

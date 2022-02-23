@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/tracing/perfetto_task_runner.h"
@@ -99,7 +100,7 @@ class TestTraceWriter : public perfetto::TraceWriter {
   TestTraceWriter& operator=(TestTraceWriter&&) = delete;
 
  private:
-  TestProducerClient* producer_client_;
+  raw_ptr<TestProducerClient> producer_client_;
 };
 
 // Wrapper class around TestProducerClient useful for testing a trace data
@@ -141,7 +142,7 @@ class DataSourceTester {
       finalized_packets_;
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   std::unique_ptr<tracing::TestProducerClient> producer_;
-  tracing::PerfettoTracedProcess::DataSourceBase* data_source_;
+  raw_ptr<tracing::PerfettoTracedProcess::DataSourceBase> data_source_;
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 };
 

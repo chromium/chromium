@@ -8,7 +8,7 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 #define NET_QUIC_QUIC_CHROMIUM_ALARM_FACTORY_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quic/core/quic_alarm_factory.h"
 #include "net/third_party/quiche/src/quic/core/quic_clock.h"
@@ -39,8 +39,8 @@ class NET_EXPORT_PRIVATE QuicChromiumAlarmFactory
       quic::QuicConnectionArena* arena) override;
 
  private:
-  base::SequencedTaskRunner* task_runner_;
-  const quic::QuicClock* const clock_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  const raw_ptr<const quic::QuicClock> clock_;
 };
 
 }  // namespace net

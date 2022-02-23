@@ -20,7 +20,7 @@ IN_PROC_BROWSER_TEST_F(WebLayerWebUIBrowserTest, WebUI) {
                     true /* use_separate_isolate */)
           .GetBool();
   // The remote debug checkbox should only be visible on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(result);
 #else
   EXPECT_TRUE(result);

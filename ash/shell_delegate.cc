@@ -30,8 +30,9 @@ int ShellDelegate::GetUiDevToolsPort() const {
   return -1;
 }
 
-desks_storage::DeskModel* ShellDelegate::GetDeskModel() {
-  return nullptr;
+const GURL& ShellDelegate::GetLastCommittedURLForWindowIfAny(
+    aura::Window* window) {
+  return GURL::EmptyGURL();
 }
 
 }  // namespace ash

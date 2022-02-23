@@ -92,12 +92,13 @@ public class WebFeedBridge {
      * subscribed, recently subscribed, or recommended Web Feed.
      * @param tab The tab showing the page.
      * @param url The URL for which the status is being requested.
+     * @param reason The reason why the information is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
-    public static void getWebFeedMetadataForPage(
-            Tab tab, GURL url, Callback<WebFeedMetadata> callback) {
+    public static void getWebFeedMetadataForPage(Tab tab, GURL url,
+            @WebFeedPageInformationRequestReason int reason, Callback<WebFeedMetadata> callback) {
         WebFeedBridgeJni.get().findWebFeedInfoForPage(
-                new WebFeedPageInformation(url, tab), callback);
+                new WebFeedPageInformation(url, tab), reason, callback);
     }
 
     /**
@@ -130,6 +131,14 @@ public class WebFeedBridge {
      */
     public static void refreshFollowedWebFeeds(Callback<Boolean> callback) {
         WebFeedBridgeJni.get().refreshSubscriptions(callback);
+    }
+
+    /**
+     * Refreshes the list of recommended web feeds from the server. See
+     * `WebFeedSubscriptions.RefreshRecommendedFeeds`.
+     */
+    public static void refreshRecommendedFeeds(Callback<Boolean> callback) {
+        WebFeedBridgeJni.get().refreshRecommendedFeeds(callback);
     }
 
     /** Container for results from a follow request. */
@@ -228,11 +237,13 @@ public class WebFeedBridge {
         void followWebFeed(WebFeedPageInformation pageInfo, Callback<FollowResults> callback);
         void followWebFeedById(byte[] webFeedId, Callback<FollowResults> callback);
         void unfollowWebFeed(byte[] webFeedId, Callback<UnfollowResults> callback);
-        void findWebFeedInfoForPage(
-                WebFeedPageInformation pageInfo, Callback<WebFeedMetadata> callback);
+        void findWebFeedInfoForPage(WebFeedPageInformation pageInfo,
+                @WebFeedPageInformationRequestReason int reason,
+                Callback<WebFeedMetadata> callback);
         void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
         void getAllSubscriptions(Callback<Object[]> callback);
         void refreshSubscriptions(Callback<Boolean> callback);
+        void refreshRecommendedFeeds(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
     }
 }

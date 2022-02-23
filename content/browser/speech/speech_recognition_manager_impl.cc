@@ -42,7 +42,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/speech/speech_recognizer_impl_android.h"
 #endif
 
@@ -181,7 +181,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
   session->config = config;
   session->context = config.initial_context;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // A SpeechRecognitionEngine (and corresponding Config) is required only
   // when using SpeechRecognizerImpl, which performs the audio capture and
   // endpointing in the browser. This is not the case of Android where, not

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.screenshot;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -13,9 +14,9 @@ import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.modules.ModuleInstallUi;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Handles the screenshot action in the Sharing Hub and launches the screenshot editor.
@@ -26,6 +27,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
     static final int MAX_INSTALL_ATTEMPTS = 5;
     private static int sInstallAttempts;
 
+    private final WindowAndroid mWindowAndroid;
     private final ScreenshotShareSheetDialog mDialog;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
 
@@ -33,17 +35,18 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * Constructs a new ScreenshotCoordinator which may launch the editor, or a fallback.
      *
      * @param activity The parent activity.
-     * @param tab The Tab which contains the content to share.
+     * @param windowAndroid The {@link WindowAndroid} which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
-    public ScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
+    public ScreenshotCoordinator(Activity activity, WindowAndroid windowAndroid, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        super(activity, shareUrl, chromeOptionShareCallback, sheetController);
+        mWindowAndroid = windowAndroid;
         mDialog = new ScreenshotShareSheetDialog();
         mImageEditorModuleProvider = imageEditorModuleProvider;
     }
@@ -52,7 +55,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * Constructor for testing.
      *
      * @param activity The parent activity.
-     * @param tab The Tab which contains the content to share.
+     * @param windowAndroid The WindowAndroid which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param screenshotSource The screenshot source.
      * @param dialog The Share Sheet dialog to use as fallback.
@@ -61,13 +64,13 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
     @VisibleForTesting
-    ScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
+    ScreenshotCoordinator(Activity activity, WindowAndroid windowAndroid, String shareUrl,
             EditorScreenshotSource screenshotSource, ScreenshotShareSheetDialog dialog,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController,
-                screenshotSource);
+        super(activity, shareUrl, chromeOptionShareCallback, sheetController, screenshotSource);
+        mWindowAndroid = windowAndroid;
         mDialog = dialog;
         mImageEditorModuleProvider = imageEditorModuleProvider;
     }
@@ -104,7 +107,8 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
         assert mImageEditorModuleProvider != null;
         ImageEditorDialogCoordinator editor =
                 mImageEditorModuleProvider.getImageEditorDialogCoordinator();
-        editor.launchEditor(mActivity, mScreenshot, mTab, mShareUrl, mChromeOptionShareCallback);
+        editor.launchEditor(
+                mActivity, mScreenshot, mWindowAndroid, mShareUrl, mChromeOptionShareCallback);
         mScreenshot = null;
     }
 
@@ -113,8 +117,9 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      */
     protected void launchSharesheet() {
         ScreenshotShareSheetDialogCoordinator shareSheet =
-                new ScreenshotShareSheetDialogCoordinator(mActivity, mDialog, mScreenshot, mTab,
-                        mShareUrl, mChromeOptionShareCallback, this::retryInstallEditor);
+                new ScreenshotShareSheetDialogCoordinator(mActivity, mDialog, mScreenshot,
+                        mWindowAndroid, mShareUrl, mChromeOptionShareCallback,
+                        this::retryInstallEditor);
         shareSheet.showShareSheet();
         mScreenshot = null;
     }
@@ -139,12 +144,23 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * Installs the DFM and shows UI (i.e. toasts and a retry dialog) informing the
      * user of the installation status.
      * @param showFallback The fallback will be shown on a unsuccessful installation.
-     * @param onSuccessRunnable the runnable to run on a succesfful install.
+     * @param onSuccessRunnable the runnable to run on a successful install.
      */
     private void installEditor(boolean showFallback, Runnable onSuccessRunnable) {
         assert mImageEditorModuleProvider != null;
-        final ModuleInstallUi ui = new ModuleInstallUi(
-                mTab, R.string.image_editor_module_title, new ModuleInstallUi.FailureUiListener() {
+        ModuleInstallUi.Delegate moduleInstallUiDelegate = new ModuleInstallUi.Delegate() {
+            @Override
+            public WindowAndroid getWindowAndroid() {
+                return mWindowAndroid;
+            }
+
+            @Override
+            public Context getContext() {
+                return mWindowAndroid != null ? mWindowAndroid.getActivity().get() : null;
+            }
+        };
+        final ModuleInstallUi ui = new ModuleInstallUi(moduleInstallUiDelegate,
+                R.string.image_editor_module_title, new ModuleInstallUi.FailureUiListener() {
                     @Override
                     public void onFailureUiResponse(boolean retry) {
                         if (retry) {

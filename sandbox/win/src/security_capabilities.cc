@@ -4,14 +4,16 @@
 
 #include "sandbox/win/src/security_capabilities.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/win/security_util.h"
 
 namespace sandbox {
 
-SecurityCapabilities::SecurityCapabilities(const Sid& package_sid,
-                                           const std::vector<Sid>& capabilities)
+SecurityCapabilities::SecurityCapabilities(
+    const base::win::Sid& package_sid,
+    const std::vector<base::win::Sid>& capabilities)
     : SECURITY_CAPABILITIES(),
-      capabilities_(capabilities),
-      package_sid_(package_sid) {
+      capabilities_(base::win::CloneSidVector(capabilities)),
+      package_sid_(package_sid.Clone()) {
   AppContainerSid = package_sid_.GetPSID();
   if (capabilities_.empty())
     return;
@@ -25,8 +27,8 @@ SecurityCapabilities::SecurityCapabilities(const Sid& package_sid,
   Capabilities = capability_sids_.data();
 }
 
-SecurityCapabilities::SecurityCapabilities(const Sid& package_sid)
-    : SecurityCapabilities(package_sid, std::vector<Sid>()) {}
+SecurityCapabilities::SecurityCapabilities(const base::win::Sid& package_sid)
+    : SecurityCapabilities(package_sid, std::vector<base::win::Sid>()) {}
 
 SecurityCapabilities::~SecurityCapabilities() {}
 

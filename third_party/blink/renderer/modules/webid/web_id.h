@@ -9,14 +9,11 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
-class WebIdLogoutRequest;
-class WebIdRequestOptions;
-class ExceptionState;
 class ExecutionContext;
 class ScriptPromise;
 class ScriptState;
@@ -28,11 +25,7 @@ class WebId final : public ScriptWrappable, public ExecutionContextClient {
   explicit WebId(ExecutionContext&);
 
   // WebID IDL interface.
-  ScriptPromise get(ScriptState*, const WebIdRequestOptions*, ExceptionState&);
   ScriptPromise provide(ScriptState*, String id_token);
-  ScriptPromise logout(ScriptState*,
-                       const HeapVector<Member<WebIdLogoutRequest>>&,
-                       ExceptionState&);
 
   void Trace(blink::Visitor*) const override;
 
@@ -41,7 +34,6 @@ class WebId final : public ScriptWrappable, public ExecutionContextClient {
   void BindRemote(HeapMojoRemote<Interface>& remote);
   void OnConnectionError();
 
-  HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request_;
   HeapMojoRemote<mojom::blink::FederatedAuthResponse> auth_response_;
 };
 

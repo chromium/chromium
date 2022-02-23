@@ -123,7 +123,7 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
   return memory_instrumentation::mojom::OSMemDump(
       resident_set_kb, /*peak_resident_set_kb=*/resident_set_kb,
       /*is_peak_rss_resettable=*/true, private_footprint_kb, shared_footprint_kb
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       ,
       0
 #endif
@@ -131,7 +131,7 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
 }
 
 // crbug.com/1242040: flaky on linux, chromeos
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled \
   DISABLED_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled
 #else

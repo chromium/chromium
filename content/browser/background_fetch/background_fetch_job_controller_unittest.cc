@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/background_fetch/background_fetch_constants.h"
@@ -218,7 +219,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
   base::RepeatingClosure job_progress_closure_;
 
   std::unique_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
-  BackgroundFetchDelegate* delegate_;
+  raw_ptr<BackgroundFetchDelegate> delegate_;
 
   BackgroundFetchScheduler* scheduler() { return context_->scheduler_.get(); }
 

@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 #include "base/values.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -369,4 +370,109 @@ TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
 
   ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter2,
                                              glob_pattern_filter));
+}
+
+TEST_F(IntentFilterUtilTest, IntentFiltersConvert) {
+  base::flat_map<std::string, std::vector<apps::IntentFilterPtr>> filters;
+
+  auto intent_filter1 = std::make_unique<apps::IntentFilter>();
+  apps_util::AddSingleValueCondition(apps::ConditionType::kScheme, "1",
+                                     apps::PatternMatchType::kNone,
+                                     intent_filter1);
+  filters["1"].push_back(std::move(intent_filter1));
+
+  auto intent_filter2 = std::make_unique<apps::IntentFilter>();
+  apps_util::AddSingleValueCondition(apps::ConditionType::kHost, "2",
+                                     apps::PatternMatchType::kLiteral,
+                                     intent_filter2);
+  apps_util::AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+                                     apps::PatternMatchType::kPrefix,
+                                     intent_filter2);
+  filters["1"].push_back(std::move(intent_filter2));
+
+  apps::IntentFilters intent_filters2;
+  auto intent_filter3 = std::make_unique<apps::IntentFilter>();
+  apps_util::AddSingleValueCondition(apps::ConditionType::kAction, "4",
+                                     apps::PatternMatchType::kGlob,
+                                     intent_filter3);
+  apps_util::AddSingleValueCondition(apps::ConditionType::kMimeType, "5",
+                                     apps::PatternMatchType::kMimeType,
+                                     intent_filter3);
+  filters["2"].push_back(std::move(intent_filter3));
+
+  auto intent_filter4 = std::make_unique<apps::IntentFilter>();
+  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "6",
+                                     apps::PatternMatchType::kMimeType,
+                                     intent_filter4);
+  apps_util::AddSingleValueCondition(apps::ConditionType::kFile, "7",
+                                     apps::PatternMatchType::kFileExtension,
+                                     intent_filter4);
+  filters["2"].push_back(std::move(intent_filter4));
+
+  auto output = apps::ConvertMojomIntentFiltersToIntentFilters(
+      apps::ConvertIntentFiltersToMojomIntentFilters(filters));
+
+  ASSERT_EQ(output.size(), 2U);
+  EXPECT_EQ(*filters["1"][0], *output["1"][0]);
+  EXPECT_EQ(*filters["1"][1], *output["1"][1]);
+
+  EXPECT_EQ(*filters["2"][0], *output["2"][0]);
+  EXPECT_EQ(*filters["2"][1], *output["2"][1]);
+
+  {
+    auto& condition = output["1"][0]->conditions[0];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kScheme);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kNone);
+    EXPECT_EQ(condition->condition_values[0]->value, "1");
+  }
+  {
+    auto& condition = output["1"][1]->conditions[0];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kHost);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kLiteral);
+    EXPECT_EQ(condition->condition_values[0]->value, "2");
+  }
+  {
+    auto& condition = output["1"][1]->conditions[1];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kPattern);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kPrefix);
+    EXPECT_EQ(condition->condition_values[0]->value, "3");
+  }
+  {
+    auto& condition = output["2"][0]->conditions[0];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kAction);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kGlob);
+    EXPECT_EQ(condition->condition_values[0]->value, "4");
+  }
+  {
+    auto& condition = output["2"][0]->conditions[1];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kMimeType);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kMimeType);
+    EXPECT_EQ(condition->condition_values[0]->value, "5");
+  }
+  {
+    auto& condition = output["2"][1]->conditions[0];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kFile);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kMimeType);
+    EXPECT_EQ(condition->condition_values[0]->value, "6");
+  }
+  {
+    auto& condition = output["2"][1]->conditions[1];
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kFile);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              apps::PatternMatchType::kFileExtension);
+    EXPECT_EQ(condition->condition_values[0]->value, "7");
+  }
 }

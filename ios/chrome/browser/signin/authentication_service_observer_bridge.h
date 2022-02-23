@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
@@ -16,6 +15,7 @@
 @protocol AuthenticationServiceObserving <NSObject>
 @optional
 - (void)onPrimaryAccountRestricted;
+- (void)onServiceStatusChanged;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -29,6 +29,7 @@ class AuthenticationServiceObserverBridge
 
   // AuthenticationServiceObserver implementation.
   void OnPrimaryAccountRestricted() override;
+  void OnServiceStatusChanged() override;
 
  private:
   __weak id<AuthenticationServiceObserving> observer_ = nil;

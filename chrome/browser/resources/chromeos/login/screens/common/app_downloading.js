@@ -51,14 +51,14 @@ class AppDownloading extends AppDownloadingBase {
   /** Called when dialog is shown */
   onBeforeShow() {
     if (this.$.downloadingApps) {
-      this.$.downloadingApps.setPlay(true);
+      this.$.downloadingApps.playing = true;
     }
   }
 
   /** Called when dialog is hidden */
   onBeforeHide() {
     if (this.$.downloadingApps) {
-      this.$.downloadingApps.setPlay(false);
+      this.$.downloadingApps.playing = false;
     }
   }
 

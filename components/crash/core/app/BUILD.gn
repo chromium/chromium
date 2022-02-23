@@ -127,6 +127,7 @@ static_library("app") {
 
   if (is_ios) {
     sources += [ "crashpad_ios.mm" ]
+    deps += [ "//third_party/crashpad/crashpad/minidump" ]
   }
 }
 
@@ -290,6 +291,17 @@ source_set("unit_tests") {
       "//third_party/crashpad/crashpad/client:client",
       "//third_party/crashpad/crashpad/snapshot:snapshot",
       "//third_party/crashpad/crashpad/util",
+    ]
+  }
+  if (is_ios) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+
+    sources += [ "crashpad_ios_unittest.mm" ]
+    deps += [
+      ":app",
+      "//components/crash/core/common:reporter_running_ios",
+      "//third_party/crashpad/crashpad/client:common",
+      "//third_party/crashpad/crashpad/test",
     ]
   }
 }

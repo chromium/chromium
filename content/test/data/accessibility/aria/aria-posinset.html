@@ -43,7 +43,8 @@
 </form>
 <div role="treegrid">
   <!--aria-posinset and aria-setsize supported on treegrid row-->
-  <div role="row" aria-posinset="2" aria-setsize="100">
+  <!--Per specs, treegrid rows needs to be focusable-->
+  <div role="row" aria-posinset="2" aria-setsize="100" tabindex="-1">
       <div role="gridcell">content</div>
     </div>
 </div>

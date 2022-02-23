@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/observer_list.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/account_info_utils.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"

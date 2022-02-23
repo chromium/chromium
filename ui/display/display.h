@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_export.h"

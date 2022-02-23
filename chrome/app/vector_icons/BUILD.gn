@@ -24,6 +24,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "autofill/webauthn_dialog_header.icon",
     "autofill/webauthn_dialog_header_dark.icon",
     "back_arrow_touch.icon",
+    "backspace.icon",
     "blocked_redirect.icon",
     "bookmarkbar_touch_overflow.icon",
     "browser_tools.icon",
@@ -42,6 +43,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "credit_card.icon",
     "default_touch_favicon.icon",
     "default_touch_favicon_mask.icon",
+    "download_in_progress.icon",
+    "download_toolbar_button.icon",
     "eol.icon",
     "extension_crashed.icon",
     "eye.icon",
@@ -97,6 +100,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "remove_box.icon",
     "resize_handle.icon",
     "sad_tab.icon",
+    "safety_check.icon",
     "save_group.icon",
     "save_page.icon",
     "scrolling_tabstrip_leading.icon",
@@ -111,6 +115,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "smartphone.icon",
     "speaker.icon",
     "speaker_group.icon",
+    "submit_feedback.icon",
     "supervisor_account.icon",
     "supervisor_account_circle.icon",
     "sync_circle.icon",
@@ -191,6 +196,14 @@ aggregate_vector_icons("chrome_vector_icons") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "crostini_mascot.icon",
+      "notification_download.icon",
+      "terminal_ssh.icon",
+    ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "autocorrect_undo.icon",
@@ -198,7 +211,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_battery.icon",
       "notification_captive_portal.icon",
       "notification_cellular_alert.icon",
-      "notification_download.icon",
       "notification_end_of_support.icon",
       "notification_family_link.icon",
       "notification_google.icon",
@@ -239,10 +251,15 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_chrome_branded) {
     sources += [
+      "google_chrome/google_calendar.icon",
       "google_chrome/google_g_logo.icon",
       "google_chrome/google_g_logo_monochrome.icon",
+      "google_chrome/google_keep_note.icon",
       "google_chrome/google_lens_full_logo.icon",
+      "google_chrome/google_lens_full_logo_dark.icon",
       "google_chrome/google_pay_logo.icon",
+      "google_chrome/google_sites.icon",
+      "google_chrome/google_super_g.icon",
     ]
   }
 

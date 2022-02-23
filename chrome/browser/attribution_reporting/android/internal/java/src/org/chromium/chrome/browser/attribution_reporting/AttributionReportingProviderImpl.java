@@ -140,6 +140,8 @@ public class AttributionReportingProviderImpl extends AttributionReportingProvid
     }
 
     private Uri insertOnUiThread(final AttributionParameters parameters) {
+        AttributionMetrics.recordAttributionEvent(
+                AttributionMetrics.AttributionEvent.RECEIVED_WITH_NATIVE, 1);
         AttributionReporter.getInstance().reportAppImpression(Profile.getLastUsedRegularProfile(),
                 parameters.getSourcePackageName(), parameters.getSourceEventId(),
                 parameters.getDestination(), parameters.getReportTo(), parameters.getExpiry(),

@@ -11,16 +11,6 @@
 
 namespace net {
 
-namespace {
-
-enum AltSvcFormat { GOOGLE_FORMAT = 0, IETF_FORMAT = 1, ALTSVC_FORMAT_MAX };
-
-void RecordAltSvcFormat(AltSvcFormat format) {
-  UMA_HISTOGRAM_ENUMERATION("Net.QuicAltSvcFormat", format, ALTSVC_FORMAT_MAX);
-}
-
-}  // namespace
-
 spdy::SpdyPriority ConvertRequestPriorityToQuicPriority(
     const RequestPriority priority) {
   DCHECK_GE(priority, MINIMUM_PRIORITY);
@@ -54,26 +44,6 @@ base::Value QuicResponseNetLogParams(quic::QuicStreamId stream_id,
   dict.SetIntKey("quic_stream_id", static_cast<int>(stream_id));
   dict.SetBoolKey("fin", fin_received);
   return dict;
-}
-
-quic::ParsedQuicVersionVector FilterSupportedAltSvcVersions(
-    const spdy::SpdyAltSvcWireFormat::AlternativeService& quic_alt_svc,
-    const quic::ParsedQuicVersionVector& supported_versions) {
-  quic::ParsedQuicVersionVector supported_alt_svc_versions;
-  DCHECK("quic" == quic_alt_svc.protocol_id || "hq" == quic_alt_svc.protocol_id)
-      << quic_alt_svc.protocol_id;
-
-  for (uint32_t quic_version : quic_alt_svc.version) {
-    for (const quic::ParsedQuicVersion& supported : supported_versions) {
-      if (supported.UsesQuicCrypto() &&
-          supported.SupportsGoogleAltSvcFormat() &&
-          static_cast<uint32_t>(supported.transport_version) == quic_version) {
-        supported_alt_svc_versions.push_back(supported);
-        RecordAltSvcFormat(GOOGLE_FORMAT);
-      }
-    }
-  }
-  return supported_alt_svc_versions;
 }
 
 }  // namespace net

@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
@@ -98,6 +99,10 @@ public class AttributionReportingProviderImplTest {
                 .reportAppImpression(any(),
                         eq(ContextUtils.getApplicationContext().getPackageName()), eq(EVENT_ID),
                         eq(CONVERSION_URL), eq(REPORT_TO_URL), eq(EXPIRY), eq(0L));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.RECEIVED_WITH_NATIVE));
     }
 
     @Test

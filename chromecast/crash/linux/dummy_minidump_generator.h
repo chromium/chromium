@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/crash/linux/minidump_generator.h"
 
 namespace chromecast {

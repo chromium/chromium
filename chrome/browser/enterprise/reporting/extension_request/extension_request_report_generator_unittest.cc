@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/pref_names.h"
@@ -105,6 +106,7 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 #else
     EXPECT_EQ(ExtensionsWorkflowEvent::BROWSER_DEVICE,
               actual_report->client_type());
+    EXPECT_EQ(policy::GetMachineName(), actual_report->device_name());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

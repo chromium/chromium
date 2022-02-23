@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -31,62 +31,29 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
+// Carries out basic checks for the web-exposed APIs, to make sure the minimum
+// requirements for them to be served are met. Returns true if any conditions
+// fail to be met, generating an appropriate exception as well. Otherwise,
+// returns false to indicate the call should be allowed.
+bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
+                               ExceptionState& exception_state) {
+  if (!window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kContextGone);
+  } else if (!window->IsFeatureEnabled(
+                 mojom::blink::PermissionsPolicyFeature::kHid,
+                 ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  }
+
+  return exception_state.HadException();
+}
+
 void RejectWithTypeError(const String& message,
                          ScriptPromiseResolver* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
   resolver->Reject(V8ThrowException::CreateTypeError(isolate, message));
-}
-
-// Converts a HID device |filter| into the equivalent Mojo type and returns it.
-// If the filter is invalid, nullptr is returned and |resolver| rejects the
-// promise with a TypeError.
-mojom::blink::HidDeviceFilterPtr ConvertDeviceFilter(
-    const HIDDeviceFilter& filter,
-    ScriptPromiseResolver* resolver) {
-  if (!filter.hasVendorId() && !filter.hasProductId() &&
-      !filter.hasUsagePage() && !filter.hasUsage()) {
-    RejectWithTypeError("A filter must provide a property to filter by.",
-                        resolver);
-    return nullptr;
-  }
-
-  if (filter.hasProductId() && !filter.hasVendorId()) {
-    RejectWithTypeError(
-        "A filter containing a productId must also contain a vendorId.",
-        resolver);
-    return nullptr;
-  }
-
-  if (filter.hasUsage() && !filter.hasUsagePage()) {
-    RejectWithTypeError(
-        "A filter containing a usage must also contain a usagePage.", resolver);
-    return nullptr;
-  }
-
-  auto mojo_filter = mojom::blink::HidDeviceFilter::New();
-  if (filter.hasVendorId()) {
-    if (filter.hasProductId()) {
-      mojo_filter->device_ids =
-          mojom::blink::DeviceIdFilter::NewVendorAndProduct(
-              mojom::blink::VendorAndProduct::New(filter.vendorId(),
-                                                  filter.productId()));
-    } else {
-      mojo_filter->device_ids =
-          mojom::blink::DeviceIdFilter::NewVendor(filter.vendorId());
-    }
-  }
-  if (filter.hasUsagePage()) {
-    if (filter.hasUsage()) {
-      mojo_filter->usage = mojom::blink::UsageFilter::NewUsageAndPage(
-          device::mojom::blink::HidUsageAndPage::New(filter.usage(),
-                                                     filter.usagePage()));
-    } else {
-      mojo_filter->usage =
-          mojom::blink::UsageFilter::NewPage(filter.usagePage());
-    }
-  }
-  return mojo_filter;
 }
 
 }  // namespace
@@ -178,16 +145,8 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
                               ExceptionState& exception_state) {
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-  }
-
-  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
-                                 ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                exception_state)) {
     return ScriptPromise();
   }
 
@@ -203,16 +162,8 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
 ScriptPromise HID::requestDevice(ScriptState* script_state,
                                  const HIDDeviceRequestOptions* options,
                                  ExceptionState& exception_state) {
-  if (!GetExecutionContext()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-  }
-
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kHid,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                exception_state)) {
     return ScriptPromise();
   }
 
@@ -231,10 +182,12 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
   if (options->hasFilters()) {
     mojo_filters.ReserveCapacity(options->filters().size());
     for (const auto& filter : options->filters()) {
-      auto mojo_filter = ConvertDeviceFilter(*filter, resolver);
-      if (!mojo_filter)
+      absl::optional<String> error_message = CheckDeviceFilterValidity(*filter);
+      if (error_message) {
+        RejectWithTypeError(error_message.value(), resolver);
         return promise;
-      mojo_filters.push_back(std::move(mojo_filter));
+      }
+      mojo_filters.push_back(ConvertDeviceFilter(*filter));
     }
   }
   DCHECK_EQ(options->filters().size(), mojo_filters.size());
@@ -253,6 +206,12 @@ void HID::Connect(
     device::mojom::blink::HidManager::ConnectCallback callback) {
   EnsureServiceConnection();
   service_->Connect(device_guid, std::move(client), std::move(callback));
+}
+
+void HID::Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
+                 mojom::blink::HidService::ForgetCallback callback) {
+  EnsureServiceConnection();
+  service_->Forget(std::move(device_info), std::move(callback));
 }
 
 HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
@@ -325,6 +284,53 @@ void HID::CloseServiceConnection() {
   request_device_promises_.swap(request_device_promises);
   for (ScriptPromiseResolver* resolver : request_device_promises)
     resolver->Resolve(HeapVector<Member<HIDDevice>>());
+}
+
+mojom::blink::HidDeviceFilterPtr HID::ConvertDeviceFilter(
+    const HIDDeviceFilter& filter) {
+  DCHECK(!CheckDeviceFilterValidity(filter).has_value());
+
+  auto mojo_filter = mojom::blink::HidDeviceFilter::New();
+  if (filter.hasVendorId()) {
+    if (filter.hasProductId()) {
+      mojo_filter->device_ids =
+          mojom::blink::DeviceIdFilter::NewVendorAndProduct(
+              mojom::blink::VendorAndProduct::New(filter.vendorId(),
+                                                  filter.productId()));
+    } else {
+      mojo_filter->device_ids =
+          mojom::blink::DeviceIdFilter::NewVendor(filter.vendorId());
+    }
+  }
+  if (filter.hasUsagePage()) {
+    if (filter.hasUsage()) {
+      mojo_filter->usage = mojom::blink::UsageFilter::NewUsageAndPage(
+          device::mojom::blink::HidUsageAndPage::New(filter.usage(),
+                                                     filter.usagePage()));
+    } else {
+      mojo_filter->usage =
+          mojom::blink::UsageFilter::NewPage(filter.usagePage());
+    }
+  }
+  return mojo_filter;
+}
+
+absl::optional<String> HID::CheckDeviceFilterValidity(
+    const HIDDeviceFilter& filter) {
+  if (!filter.hasVendorId() && !filter.hasProductId() &&
+      !filter.hasUsagePage() && !filter.hasUsage()) {
+    return "A filter must provide a property to filter by.";
+  }
+
+  if (filter.hasProductId() && !filter.hasVendorId()) {
+    return "A filter containing a productId must also contain a vendorId.";
+  }
+
+  if (filter.hasUsage() && !filter.hasUsagePage()) {
+    return "A filter containing a usage must also contain a usagePage.";
+  }
+
+  return absl::nullopt;
 }
 
 void HID::Trace(Visitor* visitor) const {

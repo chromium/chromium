@@ -229,18 +229,6 @@ export class FileTasks {
   }
 
   /**
-   * Records UMA statistics for file types being shared in Share action.
-   * @param {!Array<!FileEntry>} entries File entries to be shared.
-   */
-  static recordSharingFileTypesUMA_(entries) {
-    for (const entry of entries) {
-      metrics.recordEnum(
-          'Share.FileType', FileTasks.getViewFileType(entry),
-          FileTasks.UMA_INDEX_KNOWN_EXTENSIONS);
-    }
-  }
-
-  /**
    * Records trial of opening file grouped by extensions.
    *
    * @param {!VolumeManager} volumeManager
@@ -367,10 +355,6 @@ export class FileTasks {
         } else if (parsedActionId === 'import-crostini-image') {
           task.iconType = 'tini';
           task.title = loadTimeData.getString('TASK_IMPORT_CROSTINI_IMAGE');
-          task.verb = undefined;
-        } else if (parsedActionId === 'view-swf') {
-          task.iconType = 'generic';
-          task.title = loadTimeData.getString('TASK_VIEW');
           task.verb = undefined;
         } else if (parsedActionId === 'view-pdf') {
           task.iconType = 'pdf';
@@ -939,6 +923,12 @@ export class FileTasks {
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
     try {
+      this.entries_.forEach(entry => entry.getMetadata(metadata => {
+        const extension = entry.name.split('.').pop().toLowerCase();
+        metrics.recordSmallCount(
+            `ArchiveSize.${extension}`,
+            Math.ceil(metadata.size / 104857600));  // Each unit = 100MiB
+      }));
       // TODO(mtomasz): Move conversion from entry to url to custom bindings.
       // crbug.com/345527.
       const urls = util.entriesToURLs(this.entries_);

@@ -8,8 +8,6 @@ from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
 from .composition_parts import WithIdentifier
-from .idl_type import IdlType
-from .typedef import Typedef
 
 
 class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
@@ -153,9 +151,6 @@ class Union(WithIdentifier, WithCodeGeneratorInfo, WithComponent,
             sorted(ir.typedefs, key=sort_key_identifier))
 
         ir.public_object = self
-
-        for idl_type in self._idl_types:
-            idl_type.set_union_definition_object(self)
 
     @property
     def idl_types(self):

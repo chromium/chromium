@@ -31,7 +31,7 @@
     margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
-  #welcome {
+  #welcome, #arcAccountPicker, #signinBlockedByPolicy {
     margin-top: calc(64px - var(--dialog-top-border-size));
   }
 </if>
@@ -69,8 +69,19 @@
          available in ARC. -->
     <if expr="chromeos">
       <div id="[[View.welcome]]" slot="view">
-        <welcome-page-app on-opened-new-window="closeDialog_">
+        <welcome-page-app is-available-in-arc="{{isAvailableInArc_}}"
+            on-opened-new-window="closeDialog_">
         </welcome-page-app>
+      </div>
+      <div id="[[View.arcAccountPicker]]" slot="view">
+        <arc-account-picker-app on-opened-new-window="closeDialog_"
+            on-add-account="goToWelcomeScreen_"
+            accounts="[[arcPickerAccounts_]]">
+        </arc-account-picker-app>
+      </div>
+      <div id="[[View.signinBlockedByPolicy]]" slot="view">
+        <signin-blocked-by-policy-page email="[[email_]]" hosted-domain="[[hostedDomain_]]">
+        </signin-blocked-by-policy-page>
       </div>
     </if>
 
@@ -104,10 +115,10 @@
     </div>
 
     <cr-button class="next-button action-button"
-        aria-label="$i18n{ok}"
+        aria-label="[[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]"
         on-tap="onOkButtonClick_"
         hidden$="[[!shouldShowOkButton_(currentView_)]]">
-      $i18n{ok}
+      [[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]
     </cr-button>
   </div>
 </if>

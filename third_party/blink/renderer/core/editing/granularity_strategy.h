@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/selection_strategy.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace gfx {
 class Point;
@@ -124,7 +124,7 @@ class DirectionGranularityStrategy final : public GranularityStrategy {
   // This defines location of the offset-adjusted extent point (from the
   // latest updateExtent call) relative to the location of extent's
   // VisiblePosition. It is used to detect sub-position extent movement.
-  IntSize diff_extent_point_from_extent_position_;
+  gfx::Vector2d diff_extent_point_from_extent_position_;
 };
 
 }  // namespace blink

@@ -13,11 +13,11 @@
 class Profile;
 
 namespace ash {
-class LocalPolicyTestServerMixin;
-}
+class EmbeddedPolicyTestServerMixin;
+}  // namespace ash
 
-namespace base {
-class Value;
+namespace enterprise_management {
+class CloudPolicySettings;
 }
 
 namespace policy {
@@ -26,15 +26,16 @@ namespace policy {
 // BrowserTest.
 class UserPolicyTestHelper {
  public:
-  UserPolicyTestHelper(const std::string& account_id,
-                       ash::LocalPolicyTestServerMixin* local_policy_server);
+  UserPolicyTestHelper(
+      const std::string& account_id,
+      ash::EmbeddedPolicyTestServerMixin* embedded_policy_server);
 
   UserPolicyTestHelper(const UserPolicyTestHelper&) = delete;
   UserPolicyTestHelper& operator=(const UserPolicyTestHelper&) = delete;
 
   virtual ~UserPolicyTestHelper();
 
-  void SetPolicy(const base::Value& mandatory, const base::Value& recommended);
+  void SetPolicy(const enterprise_management::CloudPolicySettings& policy);
 
   // Can be optionally used to wait for the initial policy to be applied to the
   // profile. Alternatively, a login can be simulated, which makes it
@@ -43,16 +44,16 @@ class UserPolicyTestHelper {
 
   // Updates the policy test server with the given policy. Then calls
   // RefreshPolicyAndWait().
-  void SetPolicyAndWait(const base::Value& mandatory_policy,
-                        const base::Value& recommended_policy,
-                        Profile* profile);
+  void SetPolicyAndWait(
+      const enterprise_management::CloudPolicySettings& policy,
+      Profile* profile);
 
   // Refreshes and waits for the new policy being applied to |profile|.
   void RefreshPolicyAndWait(Profile* profile);
 
  private:
   const std::string account_id_;
-  ash::LocalPolicyTestServerMixin* local_policy_server_;
+  ash::EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
 };
 
 }  // namespace policy

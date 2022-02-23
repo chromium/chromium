@@ -8,10 +8,13 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -42,9 +45,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/origin.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
+using testing::AllOf;
 using testing::Eq;
+using testing::Contains;
+using testing::Not;
 
 namespace {
 
@@ -67,10 +74,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
   const base::Value* security_state_issue_ids =
       params.FindListPath("visibleSecurityState.securityStateIssueIds");
-  ASSERT_TRUE(std::find(security_state_issue_ids->GetList().begin(),
-                        security_state_issue_ids->GetList().end(),
+  ASSERT_TRUE(std::find(security_state_issue_ids->GetListDeprecated().begin(),
+                        security_state_issue_ids->GetListDeprecated().end(),
                         base::Value("scheme-is-not-cryptographic")) !=
-              security_state_issue_ids->GetList().end());
+              security_state_issue_ids->GetListDeprecated().end());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateDeleteContext) {
@@ -110,6 +117,167 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
 
   // Should not crash by this point.
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       InputDispatchEventsToCorrectTarget) {
+  Attach();
+
+  std::string setup_logging = R"(
+      window.logs = [];
+      ['dragenter', 'keydown', 'mousedown', 'mouseenter', 'mouseleave',
+       'mousemove', 'mouseout', 'mouseover', 'mouseup', 'click', 'touchcancel',
+       'touchend', 'touchmove', 'touchstart',
+      ].forEach((event) =>
+        window.addEventListener(event, (e) => logs.push(e.type)));)";
+  content::WebContents* target_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* other_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      content::EvalJs(target_web_contents, setup_logging).error.empty());
+  EXPECT_TRUE(content::EvalJs(other_web_contents, setup_logging).error.empty());
+
+  base::DictionaryValue params;
+  params.SetStringKey("button", "left");
+  params.SetIntKey("clickCount", 1);
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  params.SetIntKey("clickCount", 1);
+
+  params.SetStringKey("type", "mousePressed");
+  SendCommandSync("Input.dispatchMouseEvent", params.Clone());
+
+  params.SetStringKey("type", "mouseMoved");
+  params.SetIntKey("y", 270);
+  SendCommandSync("Input.dispatchMouseEvent", params.Clone());
+
+  params.SetStringKey("type", "mouseReleased");
+  SendCommandSync("Input.dispatchMouseEvent", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  params.SetStringPath("type", "dragEnter");
+  params.SetIntPath("data.dragOperationsMask", 1);
+  params.SetPath("data.items", base::ListValue());
+  SendCommandSync("Input.dispatchDragEvent", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  SendCommandSync("Input.synthesizeTapGesture", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetStringKey("type", "keyDown");
+  params.SetStringKey("key", "a");
+  SendCommandSync("Input.dispatchKeyEvent", std::move(params));
+
+  content::EvalJsResult main_target_events =
+      content::EvalJs(target_web_contents, "logs.join(' ')");
+  content::EvalJsResult other_target_events =
+      content::EvalJs(other_web_contents, "logs.join(' ')");
+  // mouse events might happen in the other_target if the real mouse pointer
+  // happens to be over the browser window
+  EXPECT_THAT(base::SplitString(main_target_events.ExtractString(), " ",
+                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
+              AllOf(Contains("mouseover"), Contains("mousedown"), Contains("mousemove"),
+                    Contains("mouseup"), Contains("click"), Contains("dragenter"),
+                    Contains("keydown")));
+  EXPECT_THAT(base::SplitString(other_target_events.ExtractString(), " ",
+                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
+              AllOf(Not(Contains("click")), Not(Contains("dragenter")),
+                    Not(Contains("keydown"))));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoInputEventsSentToBrowserWhenDisallowed) {
+  may_send_input_event_to_browser_ = false;
+  Attach();
+
+  base::DictionaryValue params;
+  params.SetStringKey("type", "rawKeyDown");
+  params.SetStringKey("key", "F12");
+  params.SetIntKey("windowsVirtualKeyCode", 123);
+  params.SetIntKey("nativeVirtualKeyCode", 123);
+  SendCommandSync("Input.dispatchKeyEvent", std::move(params));
+
+  EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest,
+    NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
+  GURL url("invalid.scheme:for-sure");
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+
+  content::WebContents* web_contents =
+      browser()->OpenURL(content::OpenURLParams(
+          url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_TYPED, false));
+  tab_added_waiter.Wait();
+  // WaitForLoadStop() checks for the existence of the last committed
+  // NavigationEntry, which will only be there if we have initial
+  // NavigationEntries.
+  ASSERT_EQ(WaitForLoadStop(web_contents),
+            blink::features::IsInitialNavigationEntryEnabled());
+  content::NavigationController& navigation_controller =
+      web_contents->GetController();
+  content::NavigationEntry* pending_entry =
+      navigation_controller.GetPendingEntry();
+  ASSERT_NE(nullptr, pending_entry);
+  EXPECT_EQ(url, pending_entry->GetURL());
+
+  EXPECT_EQ(pending_entry, navigation_controller.GetVisibleEntry());
+  agent_host_ = content::DevToolsAgentHost::GetOrCreateFor(web_contents);
+  agent_host_->AttachClient(this);
+  SendCommandSync("Page.enable");
+
+  // Ensure that a failed pending entry is cleared when the DevTools protocol
+  // attaches, so that any modified page content is not attributed to the failed
+  // URL. (crbug/1192417)
+  EXPECT_EQ(nullptr, navigation_controller.GetPendingEntry());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(GURL(""), navigation_controller.GetVisibleEntry()->GetURL());
+  } else {
+    EXPECT_EQ(nullptr, navigation_controller.GetVisibleEntry());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoPendingUrlShownForPageNavigateFromChromeExtension) {
+  GURL url("https://example.com");
+  // DevTools protocol use cases that have an initiator origin (e.g., for
+  // extensions) should use renderer-initiated navigations and be subject to URL
+  // spoof defenses.
+  navigation_initiator_origin_ =
+      url::Origin::Create(GURL("chrome-extension://abc123/"));
+
+  // Attach DevTools and start a navigation but don't wait for it to finish.
+  Attach();
+  SendCommandSync("Page.enable");
+  base::DictionaryValue params;
+  params.SetStringKey("url", url.spec());
+  SendCommand("Page.navigate", std::move(params), false);
+  content::NavigationController& navigation_controller =
+      web_contents()->GetController();
+  content::NavigationEntry* pending_entry =
+      navigation_controller.GetPendingEntry();
+  ASSERT_NE(nullptr, pending_entry);
+  EXPECT_EQ(url, pending_entry->GetURL());
+
+  // Attaching the DevTools protocol to the initial empty document of a new tab
+  // should prevent the pending URL from being visible, since the protocol
+  // allows modifying the initial empty document in a way that could be useful
+  // for URL spoofs.
+  EXPECT_NE(pending_entry, navigation_controller.GetVisibleEntry());
+  EXPECT_NE(nullptr, navigation_controller.GetPendingEntry());
+  EXPECT_EQ(GURL("about:blank"),
+            navigation_controller.GetVisibleEntry()->GetURL());
 }
 
 class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
@@ -337,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   const base::Value* certificate_value =
       certificate_security_state->FindListPath("certificate");
   std::vector<std::string> der_certs;
-  for (const auto& cert : certificate_value->GetList()) {
+  for (const auto& cert : certificate_value->GetListDeprecated()) {
     std::string decoded;
     ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
     der_certs.push_back(decoded);
@@ -357,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
             certificate->CalculateChainFingerprint256());
   const base::Value* security_state_issue_ids =
       params.FindListPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_EQ(security_state_issue_ids->GetList().size(), 0u);
+  EXPECT_EQ(security_state_issue_ids->GetListDeprecated().size(), 0u);
 
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
 }
@@ -461,8 +629,8 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   const base::Value* sans =
       response.FindListPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(1u, sans->GetList().size());
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[0]);
+  ASSERT_EQ(1u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[0]);
 
   absl::optional<double> valid_from =
       response.FindDoublePath("response.securityDetails.validFrom");
@@ -587,13 +755,13 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsSAN) {
   const base::Value* sans =
       response.FindListPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(6u, sans->GetList().size());
-  EXPECT_EQ(base::Value("a.example"), sans->GetList()[0]);
-  EXPECT_EQ(base::Value("b.example"), sans->GetList()[1]);
-  EXPECT_EQ(base::Value("*.c.example"), sans->GetList()[2]);
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[3]);
-  EXPECT_EQ(base::Value("::1"), sans->GetList()[4]);
-  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetList()[5]);
+  ASSERT_EQ(6u, sans->GetListDeprecated().size());
+  EXPECT_EQ(base::Value("a.example"), sans->GetListDeprecated()[0]);
+  EXPECT_EQ(base::Value("b.example"), sans->GetListDeprecated()[1]);
+  EXPECT_EQ(base::Value("*.c.example"), sans->GetListDeprecated()[2]);
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[3]);
+  EXPECT_EQ(base::Value("::1"), sans->GetListDeprecated()[4]);
+  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetListDeprecated()[5]);
 }
 
 class ExtensionProtocolTest : public DevToolsProtocolTest {
@@ -688,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest, ReloadServiceWorkerExtension) {
 
   std::string target_id;
   base::Value ext_target;
-  for (auto& target : result_.FindListKey("targetInfos")->GetList()) {
+  for (auto& target : result_.FindListKey("targetInfos")->GetListDeprecated()) {
     if (*target.FindStringKey("type") == "service_worker") {
       ext_target = target.Clone();
       break;

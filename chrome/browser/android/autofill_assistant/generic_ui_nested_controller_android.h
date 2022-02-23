@@ -10,6 +10,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
@@ -28,6 +30,8 @@ class GenericUiNestedControllerAndroid {
   static std::unique_ptr<GenericUiNestedControllerAndroid> CreateFromProto(
       const GenericUserInterfaceProto& proto,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
+      base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+      const Dependencies& dependencies,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate,
       EventHandler* event_handler,
       UserModel* user_model,
@@ -54,7 +58,7 @@ class GenericUiNestedControllerAndroid {
   base::android::ScopedJavaGlobalRef<jobject> jroot_view_;
   std::unique_ptr<ViewHandlerAndroid> view_handler_;
   std::unique_ptr<InteractionHandlerAndroid> interaction_handler_;
-  RadioButtonController* radio_button_controller_ = nullptr;
+  raw_ptr<RadioButtonController> radio_button_controller_ = nullptr;
   std::vector<std::pair<std::string, std::string>> radio_buttons_;
 };
 

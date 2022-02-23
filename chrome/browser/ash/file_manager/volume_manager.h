@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -64,6 +64,8 @@ enum VolumeType {
   VOLUME_TYPE_ANDROID_FILES,
   VOLUME_TYPE_DOCUMENTS_PROVIDER,
   VOLUME_TYPE_SMB,
+  VOLUME_TYPE_SYSTEM_INTERNAL,  // Internal volume which is never exposed to
+                                // users.
   // The enum values must be kept in sync with FileManagerVolumeType in
   // tools/metrics/histograms/enums.xml. Since enums for histograms are
   // append-only (for keeping the number consistent across versions), new values
@@ -99,8 +101,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForDownloads(
       const base::FilePath& downloads_path);
   static std::unique_ptr<Volume> CreateForRemovable(
-      const chromeos::disks::DiskMountManager::MountPointInfo& mount_point,
-      const chromeos::disks::Disk* disk);
+      const ash::disks::DiskMountManager::MountPointInfo& mount_point,
+      const ash::disks::Disk* disk);
   static std::unique_ptr<Volume> CreateForProvidedFileSystem(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       MountContext mount_context);
@@ -127,6 +129,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       bool read_only);
   static std::unique_ptr<Volume> CreateForSmb(const base::FilePath& mount_point,
                                               const std::string display_name);
+  static std::unique_ptr<Volume> CreateForShareCache(
+      const base::FilePath& mount_path);
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& path,
       VolumeType volume_type,
@@ -134,7 +138,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       bool read_only,
       const base::FilePath& device_path,
       const std::string& drive_label,
-      const std::string& file_system_type = "");
+      const std::string& file_system_type = "",
+      bool hidden = false);
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& device_path,
       const base::FilePath& mount_path);
@@ -151,7 +156,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   const base::FilePath& source_path() const { return source_path_; }
   const base::FilePath& mount_path() const { return mount_path_; }
   const base::FilePath& remote_mount_path() const { return remote_mount_path_; }
-  chromeos::disks::MountCondition mount_condition() const {
+  ash::disks::MountCondition mount_condition() const {
     return mount_condition_;
   }
   MountContext mount_context() const { return mount_context_; }
@@ -180,6 +185,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   const ash::file_system_provider::IconSet& icon_set() const {
     return icon_set_;
   }
+  bool hidden() const { return hidden_; }
 
  private:
   Volume();
@@ -221,7 +227,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   base::FilePath remote_mount_path_;
 
   // The mounting condition. See the enum for the details.
-  chromeos::disks::MountCondition mount_condition_;
+  ash::disks::MountCondition mount_condition_;
 
   // The context of the mount. Whether mounting was performed due to a user
   // interaction or not.
@@ -264,6 +270,10 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   // Device label of a physical removable device. Removable partitions
   // belonging to the same device share the same device label.
   std::string drive_label_;
+
+  // True if the volume is hidden and never shown to the user through File
+  // Manager.
+  bool hidden_;
 };
 
 // Manages Volumes for file manager. Example of Volumes:
@@ -278,7 +288,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
 class VolumeManager : public KeyedService,
                       public arc::ArcSessionManagerObserver,
                       public drive::DriveIntegrationServiceObserver,
-                      public chromeos::disks::DiskMountManager::Observer,
+                      public ash::disks::DiskMountManager::Observer,
                       public ash::file_system_provider::Observer,
                       public storage_monitor::RemovableStorageObserver,
                       public DocumentsProviderRootManager::Observer {
@@ -296,7 +306,7 @@ class VolumeManager : public KeyedService,
       Profile* profile,
       drive::DriveIntegrationService* drive_integration_service,
       chromeos::PowerManagerClient* power_manager_client,
-      chromeos::disks::DiskMountManager* disk_mount_manager,
+      ash::disks::DiskMountManager* disk_mount_manager,
       ash::file_system_provider::Service* file_system_provider_service,
       GetMtpStorageInfoCallback get_mtp_storage_info_callback);
 
@@ -328,6 +338,10 @@ class VolumeManager : public KeyedService,
   // pointer is valid. It is invalidated as soon as the volume is removed from
   // the volume manager.
   base::WeakPtr<Volume> FindVolumeById(const std::string& volume_id);
+
+  // Returns the volume on which an entry, identified by its local (cracked)
+  // path, is located. Returns nullptr if no volume is found.
+  base::WeakPtr<Volume> FindVolumeFromPath(const base::FilePath& path);
 
   // Add sshfs crostini volume mounted at specified path.
   void AddSshfsCrostiniVolume(const base::FilePath& sshfs_mount_path,
@@ -370,7 +384,8 @@ class VolumeManager : public KeyedService,
                            bool read_only,
                            const base::FilePath& device_path = base::FilePath(),
                            const std::string& drive_label = "",
-                           const std::string& file_system_type = "");
+                           const std::string& file_system_type = "",
+                           bool hidden = false);
 
   // For testing purposes, adds the volume info to the volume manager.
   void AddVolumeForTesting(std::unique_ptr<Volume> volume);
@@ -388,25 +403,24 @@ class VolumeManager : public KeyedService,
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
 
-  // chromeos::disks::DiskMountManager::Observer overrides.
-  void OnAutoMountableDiskEvent(
-      chromeos::disks::DiskMountManager::DiskEvent event,
-      const chromeos::disks::Disk& disk) override;
-  void OnDeviceEvent(chromeos::disks::DiskMountManager::DeviceEvent event,
+  // ash::disks::DiskMountManager::Observer overrides.
+  void OnAutoMountableDiskEvent(ash::disks::DiskMountManager::DiskEvent event,
+                                const ash::disks::Disk& disk) override;
+  void OnDeviceEvent(ash::disks::DiskMountManager::DeviceEvent event,
                      const std::string& device_path) override;
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
-  void OnFormatEvent(chromeos::disks::DiskMountManager::FormatEvent event,
+  void OnMountEvent(
+      ash::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
+  void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
                      chromeos::FormatError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
-  void OnPartitionEvent(chromeos::disks::DiskMountManager::PartitionEvent event,
+  void OnPartitionEvent(ash::disks::DiskMountManager::PartitionEvent event,
                         chromeos::PartitionError error_code,
                         const std::string& device_path,
                         const std::string& device_label) override;
-  void OnRenameEvent(chromeos::disks::DiskMountManager::RenameEvent event,
+  void OnRenameEvent(ash::disks::DiskMountManager::RenameEvent event,
                      chromeos::RenameError error_code,
                      const std::string& device_path,
                      const std::string& device_label) override;
@@ -482,7 +496,7 @@ class VolumeManager : public KeyedService,
 
   Profile* profile_;
   drive::DriveIntegrationService* drive_integration_service_;  // Not owned.
-  chromeos::disks::DiskMountManager* disk_mount_manager_;      // Not owned.
+  ash::disks::DiskMountManager* disk_mount_manager_;           // Not owned.
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<VolumeManagerObserver>::Unchecked observers_;
   ash::file_system_provider::Service*

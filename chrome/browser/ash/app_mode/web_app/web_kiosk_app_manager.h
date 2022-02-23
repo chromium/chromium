@@ -15,7 +15,7 @@
 class Browser;
 class PrefRegistrySimple;
 class Profile;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace ash {
 
@@ -54,7 +54,7 @@ class WebKioskAppManager : public KioskAppManagerBase {
 
   // Updates app by the data obtained during installation.
   void UpdateAppByAccountId(const AccountId& account_id,
-                            std::unique_ptr<WebApplicationInfo> app_info);
+                            std::unique_ptr<WebAppInstallInfo> app_info);
 
   // Adds fake apps in tests.
   void AddAppForTesting(const AccountId& account_id, const GURL& install_url);

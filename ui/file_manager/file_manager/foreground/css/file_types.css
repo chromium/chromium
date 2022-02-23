@@ -7,52 +7,69 @@
  is no real need for the root/volume icon distinction for the directory tree
  noting that file-type-icon is also used in lists and menus ;) */
 
+ /* We are mixing background-image and -webkit-mask-image here for different
+  SVGs.
+   * For Microsoft office icons SVGs (e.g. word/ppt/excel), we need to use
+   background-image to keep the original color.
+   * For other icon SVGs , we need to use -webkit-mask-image together with
+   background-color to customize the color.
+   * By default -webkit-mask-image is used because the default SVG is
+   filetype_generic.svg. In order to use background-image to override,
+   we need to reset both -webkit-mask-image and background-color. */
+
 /* Small icons for file types, used in lists and menus. */
 [file-type-icon] {
+  -webkit-mask-image: url(../images/filetype/filetype_generic.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-image: url(../images/filetype/filetype_generic.svg);
+  background-color: var(--cros-icon-color-primary);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 20px 20px;
 }
 
-body.files-ng [file-type-icon='archive'] {
-  background-image: url(../images/filetype/filetype_archive.svg);
+[file-type-icon='archive'] {
+  -webkit-mask-image: url(../images/filetype/filetype_archive.svg);
 }
 
-body.files-ng [file-type-icon='audio'] {
-  background-image: url(../images/filetype/filetype_audio.svg);
+[file-type-icon='audio'] {
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
 }
 
-body.files-ng [file-type-icon='excel'] {
+[file-type-icon='excel'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_excel.svg);
 }
 
-body.files-ng [file-type-icon='folder'] {
+[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/filetype/filetype_folder.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
-body.check-select.files-ng #list-container li[selected] [file-type-icon] {
+
+/* File type icon's background-image/mask-image needs to be reset to none:
+ *  * For [selected], checkmark icon will be displayed.
+ *  * For .has-thumbnail, thumbnail background image will be set.
+ */
+body.check-select #list-container li[selected] [file-type-icon],
+#list-container li [file-type-icon].has-thumbnail {
   -webkit-mask-image: none;
   background: none;
 }
 
-body.files-ng .computers-root[file-type-icon='folder'] {
+.computers-root[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/volumes/computer.svg);
 }
 
-body.files-ng .external-media-root[file-type-icon='folder'] {
+.external-media-root[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/volumes/usb.svg);
 }
 
-body.files-ng .shared[file-type-icon='folder'] {
+.shared[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/filetype/filetype_folder_shared.svg);
 }
 
-body.files-ng .team-drive-root[file-type-icon='folder'] {
+.team-drive-root[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/volumes/hard_drive.svg);
 }
 
@@ -69,194 +86,245 @@ body.files-ng .team-drive-root[file-type-icon='folder'] {
   -webkit-mask-image: url(../images/filetype/filetype_team_drive.svg);
 }
 
-body.files-ng [file-type-icon='gdoc'] {
-  background-image: url(../images/filetype/filetype_gdoc.svg);
+[file-type-icon='gdoc'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gdoc.svg);
 }
 
-body.files-ng [file-type-icon='gdraw'] {
-  background-image: url(../images/filetype/filetype_gdraw.svg);
+[file-type-icon='gdraw'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gdraw.svg);
 }
 
-body.files-ng [file-type-icon='glink'] {
-  background-image: url(../images/filetype/filetype_generic.svg);
+[file-type-icon='glink'] {
+  -webkit-mask-image: url(../images/filetype/filetype_generic.svg);
 }
 
-body.files-ng [file-type-icon='gsheet'] {
-  background-image: url(../images/filetype/filetype_gsheet.svg);
+[file-type-icon='gsheet'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gsheet.svg);
 }
 
-body.files-ng [file-type-icon='gslides'] {
-  background-image: url(../images/filetype/filetype_gslides.svg);
+[file-type-icon='gslides'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gslides.svg);
 }
 
-body.files-ng [file-type-icon='gtable'] {
-  background-image: url(../images/filetype/filetype_gtable.svg);
+[file-type-icon='gtable'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gtable.svg);
 }
 
-body.files-ng [file-type-icon='gform'] {
-  background-image: url(../images/filetype/filetype_gform.svg);
+[file-type-icon='gform'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gform.svg);
 }
 
-body.files-ng [file-type-icon='gmap'] {
-  background-image: url(../images/filetype/filetype_gmap.svg);
+[file-type-icon='gmap'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
-body.files-ng [file-type-icon='gsite'] {
-  background-image: url(../images/filetype/filetype_gsite.svg);
+[file-type-icon='gsite'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
-body.files-ng [file-type-icon='image'] {
-  background-image: url(../images/filetype/filetype_image.svg);
+[file-type-icon='image'] {
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
 }
 
-body.files-ng [file-type-icon='pdf'] {
-  background-image: url(../images/filetype/filetype_pdf.svg);
+[file-type-icon='pdf'] {
+  -webkit-mask-image: url(../images/filetype/filetype_pdf.svg);
 }
 
-body.files-ng [file-type-icon='ppt'] {
+[file-type-icon='ppt'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_ppt.svg);
 }
 
-body.files-ng [file-type-icon='script'] {
-  background-image: url(../images/filetype/filetype_script.svg);
+[file-type-icon='script'] {
+  -webkit-mask-image: url(../images/filetype/filetype_script.svg);
 }
 
-body.files-ng [file-type-icon='sites'] {
-  background-image: url(../images/filetype/filetype_sites.svg);
+[file-type-icon='sites'] {
+  -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
 }
 
-body.files-ng [file-type-icon='tini'] {
-  background-image: url(../images/filetype/filetype_tini.svg);
+[file-type-icon='smb'] {
+  -webkit-mask-image: url(../images/volumes/smb.svg);
 }
 
-body.files-ng [file-type-icon='video'] {
-  background-image: url(../images/filetype/filetype_video.svg);
+[file-type-icon='tini'] {
+  -webkit-mask-image: url(../images/filetype/filetype_tini.svg);
 }
 
-body.files-ng [file-type-icon='word'] {
+[file-type-icon='video'] {
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
+}
+
+[file-type-icon='word'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_word.svg);
 }
 
 /* Large generic thumbnails, used when a file does not have a thumbnail. */
-[generic-thumbnail] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_generic.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_generic.png) 2x);
-  background-position: center 50px;
-  background-repeat: no-repeat;
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail] {
+.no-thumbnail[generic-thumbnail] {
+  -webkit-mask-image: url(../images/files/ui/filetype_placeholder_generic.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 48px;
-  background-color: transparent;
-  background-image: url(../images/files/ui/filetype_placeholder_generic.svg);
+  background-color: var(--cros-icon-color-primary);
   background-position: center;
+  background-repeat: no-repeat;
   background-size: 48px;
 }
 
-[generic-thumbnail='audio'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_audio.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_audio.png) 2x);
+.no-thumbnail[generic-thumbnail='audio'] {
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='audio'] {
-  background-image: url(../images/filetype/filetype_audio.svg);
+.no-thumbnail[generic-thumbnail='image'],
+.no-thumbnail[generic-thumbnail='raw'] {
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
 }
 
-[generic-thumbnail='image'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_image.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_image.png) 2x);
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail='image'],
-body.files-ng .no-thumbnail[generic-thumbnail='raw'] {
-  background-image: url(../images/filetype/filetype_image.svg);
-}
-
-[generic-thumbnail='video'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_video.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_video.png) 2x);
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail='video'] {
-  background-image: url(../images/filetype/filetype_video.svg);
+.no-thumbnail[generic-thumbnail='video'] {
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
 }
 
 /* grid view large icons for known types. */
-body.files-ng .no-thumbnail[generic-thumbnail='archive'] {
+.no-thumbnail[generic-thumbnail='archive'] {
   -webkit-mask-image: url(../images/filetype/filetype_archive.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='tini'] {
-  background-image: url(../images/filetype/filetype_tini.svg);
+.no-thumbnail[generic-thumbnail='tini'] {
+  -webkit-mask-image: url(../images/filetype/filetype_tini.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='excel'] {
+.no-thumbnail[generic-thumbnail='excel'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_excel.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gdoc'] {
-  background-image: url(../images/filetype/filetype_gdoc.svg);
+.no-thumbnail[generic-thumbnail='gdoc'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gdoc.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gdraw'] {
-  background-image: url(../images/filetype/filetype_gdraw.svg);
+.no-thumbnail[generic-thumbnail='gdraw'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gdraw.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gsheet'] {
-  background-image: url(../images/filetype/filetype_gsheet.svg);
+.no-thumbnail[generic-thumbnail='gsheet'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gsheet.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gslides'] {
-  background-image: url(../images/filetype/filetype_gslides.svg);
+.no-thumbnail[generic-thumbnail='gslides'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gslides.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gtable'] {
-  background-image: url(../images/filetype/filetype_gtable.svg);
+.no-thumbnail[generic-thumbnail='gtable'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gtable.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gform'] {
-  background-image: url(../images/filetype/filetype_gform.svg);
+.no-thumbnail[generic-thumbnail='gform'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gform.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gmap'] {
-  background-image: url(../images/filetype/filetype_gmap.svg);
+.no-thumbnail[generic-thumbnail='gmap'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gmap.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='gsite'] {
-  background-image: url(../images/filetype/filetype_gsite.svg);
+.no-thumbnail[generic-thumbnail='gsite'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='pdf'] {
-  background-image: url(../images/filetype/filetype_pdf.svg);
+.no-thumbnail[generic-thumbnail='pdf'] {
+  -webkit-mask-image: url(../images/filetype/filetype_pdf.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='ppt'] {
+.no-thumbnail[generic-thumbnail='ppt'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_ppt.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='script'] {
-  background-image: url(../images/filetype/filetype_script.svg);
+.no-thumbnail[generic-thumbnail='script'] {
+  -webkit-mask-image: url(../images/filetype/filetype_script.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='sites'] {
-  background-image: url(../images/filetype/filetype_sites.svg);
+.no-thumbnail[generic-thumbnail='sites'] {
+  -webkit-mask-image: url(../images/filetype/filetype_sites.svg);
 }
 
-body.files-ng .no-thumbnail[generic-thumbnail='word'] {
+.no-thumbnail[generic-thumbnail='word'] {
+  -webkit-mask-image: none;
+  background-color: transparent;
   background-image: url(../images/filetype/filetype_word.svg);
+}
+
+/* File type icon and thumbnail colors. */
+[file-type-icon='gdoc'],
+[file-type-icon='script'],
+[file-type-icon='tini'],
+.no-thumbnail[generic-thumbnail='gdoc'],
+.no-thumbnail[generic-thumbnail='script'],
+.no-thumbnail[generic-thumbnail='tini'] {
+  background-color: var(--cros-icon-color-blue);
+}
+
+[file-type-icon='audio'],
+[file-type-icon='gdraw'],
+[file-type-icon='image'],
+[file-type-icon='gmap'],
+[file-type-icon='pdf'],
+[file-type-icon='video'],
+.no-thumbnail[generic-thumbnail='audio'],
+.no-thumbnail[generic-thumbnail='gdraw'],
+.no-thumbnail[generic-thumbnail='image'],
+.no-thumbnail[generic-thumbnail='gmap'],
+.no-thumbnail[generic-thumbnail='pdf'],
+.no-thumbnail[generic-thumbnail='raw'],
+.no-thumbnail[generic-thumbnail='video'] {
+  background-color: var(--cros-icon-color-red);
+}
+
+[file-type-icon='gsheet'],
+[file-type-icon='gtable'],
+.no-thumbnail[generic-thumbnail='gsheet'],
+.no-thumbnail[generic-thumbnail='gtable'] {
+  background-color: var(--cros-icon-color-green);
+}
+
+[file-type-icon='gslides'],
+.no-thumbnail[generic-thumbnail='gslides'] {
+  background-color: var(--cros-icon-color-yellow);
+}
+
+/* The following 4 colors are one off colors, not in the existing palette. */
+[file-type-icon='gform'],
+.no-thumbnail[generic-thumbnail='gform'] {
+  background-color: rgb(114, 72, 185);
+}
+
+[file-type-icon='gsite'],
+[file-type-icon='sites'],
+.no-thumbnail[generic-thumbnail='gsite'],
+.no-thumbnail[generic-thumbnail='sites'] {
+  background-color: rgb(121, 110, 238);
+}
+
+@media (prefers-color-theme: dark) {
+  [file-type-icon='gform'],
+  .no-thumbnail[generic-thumbnail='gform'] {
+    background-color: rgb(180, 140, 255);
+  }
+
+  [file-type-icon='gsite'],
+  [file-type-icon='sites'],
+  .no-thumbnail[generic-thumbnail='gsite'],
+  .no-thumbnail[generic-thumbnail='sites'] {
+    background-color: rgb(140, 158, 255);
+  }
 }
 
 /* Icons for volume types. A ".tree-row > .file-row" component in any rules
    means the rule only matches in files-ng. */
-
 .tree-row > .file-row > [volume-type-icon='archive'] {
   -webkit-mask-image: url(../images/volumes/archive.svg);
 }
@@ -270,16 +338,12 @@ body.files-ng .no-thumbnail[generic-thumbnail='word'] {
   -webkit-mask-image: url(../images/volumes/downloads.svg);
 }
 
-body.files-ng [file-type-icon='downloads'] {
+[file-type-icon='downloads'] {
   -webkit-mask-image: url(../images/volumes/downloads.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
-body.files-ng [file-type-icon='camera-folder'] {
+[file-type-icon='camera-folder'] {
   -webkit-mask-image: url(../images/volumes/camera.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
 .tree-row > .file-row > [volume-type-icon='drive'] {
@@ -359,10 +423,8 @@ body.files-ng [file-type-icon='camera-folder'] {
   -webkit-mask-image: url(../images/volumes/phone.svg);
 }
 
-body.files-ng [file-type-icon='removable'] {
+[file-type-icon='removable'] {
   -webkit-mask-image: url(../images/volumes/hard_drive.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
 .tree-row > .file-row > [volume-type-icon='removable'][volume-subtype='unknown'],
@@ -374,8 +436,8 @@ body.files-ng [file-type-icon='removable'] {
   -webkit-mask-image: url(../images/volumes/recent.svg);
 }
 
-body.files-ng [file-type-icon='crostini'] {
-  background-image: url(../images/volumes/linux_files.svg);
+[file-type-icon='crostini'] {
+  -webkit-mask-image: url(../images/volumes/linux_files.svg);
 }
 
 .tree-row > .file-row > [root-type-icon='crostini'],
@@ -383,20 +445,16 @@ body.files-ng [file-type-icon='crostini'] {
   -webkit-mask-image: url(../images/volumes/linux_files.svg);
 }
 
-body.files-ng [file-type-icon='android_files'] {
+[file-type-icon='android_files'] {
   -webkit-mask-image: url(../images/volumes/android.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
 .tree-row > .file-row > [volume-type-icon='android_files'] {
   -webkit-mask-image: url(../images/volumes/android.svg);
 }
 
-body.files-ng [file-type-icon='plugin_vm'] {
+[file-type-icon='plugin_vm'] {
   -webkit-mask-image: url(../images/volumes/plugin_vm_ng.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
 .tree-row > .file-row > [file-type-icon='plugin_vm'] {
@@ -407,15 +465,11 @@ body.files-ng [file-type-icon='plugin_vm'] {
   -webkit-mask-image: url(../images/volumes/smb.svg);
 }
 
-body.files-ng [file-type-icon='trash'] {
+[file-type-icon='trash'] {
   -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
-  background-color: currentColor;
-  background-image: none;
 }
 
 .tree-row > .file-row > [root-type-icon='trash'],
 .tree-row > .file-row > [volume-type-icon='trash'] {
   -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
 }
-
-

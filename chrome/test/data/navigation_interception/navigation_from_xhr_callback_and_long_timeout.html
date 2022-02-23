@@ -8,18 +8,8 @@ found in the LICENSE file.
 
 -->
 <head>
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-  <style>
-    #first {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      top: 0px;
-      left: 0px;
-      background-color: green;
-      transform: translate3d(0, 0, 0);
-    }
-  </style>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <script>
     var xmlhttp = new XMLHttpRequest();
 
@@ -33,20 +23,14 @@ found in the LICENSE file.
       }
     };
 
-    function xhrAndOpenHello(e) {
+    function xhrAndOpenHello() {
       xmlhttp.onreadystatechange = xhrOnReadyStateChange;
       xmlhttp.open("GET", 'hello.html' , true);
       xmlhttp.send();
-
-      e.preventDefault();
-    };
-
-    function setup() {
-      first.ontouchend = xhrAndOpenHello;
     };
   </script>
 </head>
-<body onload='setup();'>
-  <div id='first'>Some text so the document is ready for input.</div>
+<body style='height:10000px;' onclick='xhrAndOpenHello();'>
+  Click page.
 </body>
 </html>

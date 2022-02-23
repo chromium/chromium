@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -216,6 +216,60 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
             kHTMLStandardMode, SecureContextMode::kInsecureContext),
         nullptr);
     EXPECT_FALSE(list.IsValid());
+  }
+}
+
+TEST(CSSSelectorParserTest, TransitionPseudoStyles) {
+  struct TestCase {
+    const char* selector;
+    bool valid;
+    const char* argument;
+    CSSSelector::PseudoType type;
+  };
+
+  TestCase test_cases[] = {
+      {"html::page-transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"html::page-transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"html::page-transition-image-wrapper(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionImageWrapper},
+      {"html::page-transition-outgoing-image(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionOutgoingImage},
+      {"html::page-transition-incoming-image(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionIncomingImage},
+      {"::page-transition-container(foo)", true, "foo",
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"div::page-transition-container(*)", true, nullptr,
+       CSSSelector::kPseudoPageTransitionContainer},
+      {"::page-transition-container(*)::before", false, nullptr,
+       CSSSelector::kPseudoUnknown},
+      {"::page-transition-container(*):hover", false, nullptr,
+       CSSSelector::kPseudoUnknown},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.selector);
+    CSSTokenizer tokenizer(test_case.selector);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    CSSSelectorList list = CSSSelectorParser::ParseSelector(
+        range,
+        MakeGarbageCollected<CSSParserContext>(
+            kHTMLStandardMode, SecureContextMode::kInsecureContext),
+        nullptr);
+    EXPECT_EQ(list.IsValid(), test_case.valid);
+    if (!test_case.valid)
+      continue;
+
+    ASSERT_TRUE(list.HasOneSelector());
+
+    auto* selector = list.First();
+    while (selector->TagHistory())
+      selector = selector->TagHistory();
+
+    EXPECT_EQ(selector->GetPseudoType(), test_case.type);
+    EXPECT_EQ(selector->Argument(), test_case.argument);
   }
 }
 
@@ -626,7 +680,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
 static bool IsCounted(const char* selector,
                       CSSParserMode mode,
                       WebFeature feature) {
-  auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(

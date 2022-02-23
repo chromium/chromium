@@ -45,7 +45,6 @@
 #include "net/cookies/canonical_cookie.h"
 
 #include <limits>
-#include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -327,6 +326,12 @@ void RecordSameSiteNoneWriteContextMetric(SameSiteNonePartyContextType type) {
   UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteNone.PartyContext.Write", type);
 }
 
+// Converts CookieSameSite to CookieSameSiteForMetrics by adding 1 to it.
+CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
+    CookieSameSite enum_in) {
+  return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -480,6 +485,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
+  // Record warning for non-ASCII octecs in the Domain attribute.
+  // This should lead to rejection of the cookie in the future.
+  UMA_HISTOGRAM_BOOLEAN("Cookie.DomainHasNonASCII",
+                        parsed_cookie.HasDomain() &&
+                            !base::IsStringASCII(parsed_cookie.Domain()));
+
   std::string cookie_domain;
   if (!GetCookieDomain(url, parsed_cookie, &cookie_domain)) {
     DVLOG(net::cookie_util::kVlogSetCookies)
@@ -515,19 +526,21 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   // Collect metrics on whether usage of SameParty attribute is correct.
   if (parsed_cookie.IsSameParty())
-    base::UmaHistogramBoolean("Cookie.IsSamePartyValid", is_same_party_valid);
+    UMA_HISTOGRAM_BOOLEAN("Cookie.IsSamePartyValid", is_same_party_valid);
 
-  bool is_partitioned_valid = IsCookiePartitionedValid(parsed_cookie);
+  bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
+  bool is_partitioned_valid =
+      IsCookiePartitionedValid(parsed_cookie, partition_has_nonce);
   if (!is_partitioned_valid) {
     status->AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
   }
 
   // Collect metrics on whether usage of the Partitioned attribute is correct.
+  // Do not include implicit nonce-based partitioned cookies in these metrics.
   if (parsed_cookie.IsPartitioned()) {
-    base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
-                              is_partitioned_valid);
-  } else {
+    UMA_HISTOGRAM_BOOLEAN("Cookie.IsPartitionedValid", is_partitioned_valid);
+  } else if (!partition_has_nonce) {
     cookie_partition_key = absl::nullopt;
   }
 
@@ -543,8 +556,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   // Get the port, this will get a default value if a port isn't provided.
   int source_port = url.EffectiveIntPort();
 
-  // TODO(crbug.com/987177) Add partition key if Partitioned is present in the
-  // cookie line.
   std::unique_ptr<CanonicalCookie> cc = base::WrapUnique(new CanonicalCookie(
       parsed_cookie.Name(), parsed_cookie.Value(), cookie_domain, cookie_path,
       creation_time, cookie_expires, creation_time, parsed_cookie.IsSecure(),
@@ -714,8 +725,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
-  if (!IsCookiePartitionedValid(partition_key.has_value(), prefix,
-                                same_party)) {
+  if (!IsCookiePartitionedValid(partition_key.has_value(), prefix, same_party,
+                                CookiePartitionKey::HasNonce(partition_key))) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
   }
@@ -981,7 +992,7 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       DCHECK(IsSameParty());
       status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       status.AddWarningReason(CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY);
       // Remove any SameSite exclusion reasons, since SameParty overrides
@@ -1077,11 +1088,24 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     }
   }
 
+  using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
+      ContextMetadata::ContextRedirectTypeBug1221316;
+
+  ContextRedirectTypeBug1221316 redirect_type_for_metrics =
+      options.same_site_cookie_context()
+          .GetMetadataForCurrentSchemefulMode()
+          .redirect_type_bug_1221316;
+  if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
+    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Read",
+                              redirect_type_for_metrics);
+  }
+
   if (status.HasWarningReason(
           CookieInclusionStatus::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Read", SameSite());
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
+        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 
   return CookieAccessResult(effective_same_site, status,
@@ -1093,8 +1117,13 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     const GURL& source_url,
     const CookieOptions& options,
     const CookieAccessParams& params,
-    const std::vector<std::string>& cookieable_schemes) const {
+    const std::vector<std::string>& cookieable_schemes,
+    const CookieAccessResult* cookie_access_result) const {
   CookieAccessResult access_result;
+  if (cookie_access_result) {
+    access_result = *cookie_access_result;
+  }
+
   if (!base::Contains(cookieable_schemes, source_url.scheme())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_NONCOOKIEABLE_SCHEME);
@@ -1203,7 +1232,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       DCHECK(IsSameParty());
       access_result.status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       DCHECK(IsSameParty());
       access_result.status.AddWarningReason(
@@ -1297,11 +1326,24 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     }
   }
 
+  using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
+      ContextMetadata::ContextRedirectTypeBug1221316;
+
+  ContextRedirectTypeBug1221316 redirect_type_for_metrics =
+      options.same_site_cookie_context()
+          .GetMetadataForCurrentSchemefulMode()
+          .redirect_type_bug_1221316;
+  if (redirect_type_for_metrics != ContextRedirectTypeBug1221316::kUnset) {
+    UMA_HISTOGRAM_ENUMERATION("Cookie.CrossSiteRedirectType.Write",
+                              redirect_type_for_metrics);
+  }
+
   if (access_result.status.HasWarningReason(
           CookieInclusionStatus::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Write", SameSite());
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write",
+        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 
   return access_result;
@@ -1384,7 +1426,8 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   if (!IsCookieSamePartyValid(same_party_, secure_, same_site_))
     return false;
 
-  return IsCookiePartitionedValid(IsPartitioned(), prefix, same_party_);
+  return IsCookiePartitionedValid(IsPartitioned(), prefix, same_party_,
+                                  CookiePartitionKey::HasNonce(partition_key_));
 }
 
 bool CanonicalCookie::IsEffectivelySameSiteNone(
@@ -1435,13 +1478,8 @@ void CanonicalCookie::RecordCookiePrefixMetrics(
     CanonicalCookie::CookiePrefix prefix,
     bool is_cookie_valid) {
   const char kCookiePrefixHistogram[] = "Cookie.CookiePrefix";
-  const char kCookiePrefixBlockedHistogram[] = "Cookie.CookiePrefixBlocked";
   UMA_HISTOGRAM_ENUMERATION(kCookiePrefixHistogram, prefix,
                             CanonicalCookie::COOKIE_PREFIX_LAST);
-  if (!is_cookie_valid) {
-    UMA_HISTOGRAM_ENUMERATION(kCookiePrefixBlockedHistogram, prefix,
-                              CanonicalCookie::COOKIE_PREFIX_LAST);
-  }
 }
 
 // Returns true if the cookie does not violate any constraints imposed
@@ -1526,20 +1564,27 @@ bool CanonicalCookie::IsCookieSamePartyValid(bool is_same_party,
 
 // static
 bool CanonicalCookie::IsCookiePartitionedValid(
-    const ParsedCookie& parsed_cookie) {
-  return IsCookiePartitionedValid(parsed_cookie.IsPartitioned(),
-                                  GetCookiePrefix(parsed_cookie.Name()),
-                                  parsed_cookie.IsSameParty());
+    const ParsedCookie& parsed_cookie,
+    bool partition_has_nonce) {
+  return IsCookiePartitionedValid(
+      parsed_cookie.IsPartitioned(), GetCookiePrefix(parsed_cookie.Name()),
+      parsed_cookie.IsSameParty(), partition_has_nonce);
 }
 
 // static
 bool CanonicalCookie::IsCookiePartitionedValid(
     bool is_partitioned,
     CanonicalCookie::CookiePrefix prefix,
-    bool is_same_party) {
+    bool is_same_party,
+    bool partition_has_nonce) {
   if (!is_partitioned)
     return true;
-  return prefix == CookiePrefix::COOKIE_PREFIX_HOST && !is_same_party;
+  if (partition_has_nonce)
+    return true;
+  bool result = prefix == CookiePrefix::COOKIE_PREFIX_HOST && !is_same_party;
+  DLOG_IF(WARNING, !result)
+      << "CanonicalCookie has invalid Partitioned attribute";
+  return result;
 }
 
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult() = default;

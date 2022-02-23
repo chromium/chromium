@@ -244,6 +244,18 @@ export interface PasswordManagerProxy {
       insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
 
   /**
+   * Dismisses / mutes the |insecureCredential| in the passwords store.
+   */
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.InsecureCredential): void;
+
+  /**
+   * Restores / unmutes the |insecureCredential| in the passwords store.
+   */
+  unmuteInsecureCredential(
+      insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
+
+  /**
    * Add an observer to the compromised passwords change.
    */
   addCompromisedCredentialsListener(listener: CredentialsChangedListener): void;
@@ -324,8 +336,10 @@ export enum PasswordCheckInteraction {
   EDIT_PASSWORD = 4,
   REMOVE_PASSWORD = 5,
   SHOW_PASSWORD = 6,
+  MUTE_PASSWORD = 7,
+  UNMUTE_PASSWORD = 8,
   // Must be last.
-  COUNT = 7,
+  COUNT = 9,
 }
 
 /**
@@ -540,6 +554,16 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   removeInsecureCredential(insecureCredential:
                                chrome.passwordsPrivate.InsecureCredential) {
     chrome.passwordsPrivate.removeInsecureCredential(insecureCredential);
+  }
+
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.InsecureCredential) {
+    chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
+  }
+
+  unmuteInsecureCredential(insecureCredential:
+                               chrome.passwordsPrivate.InsecureCredential) {
+    chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
   }
 
   addCompromisedCredentialsListener(listener: CredentialsChangedListener) {

@@ -7,6 +7,10 @@
 #include <iterator>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/audio/arc_audio_bridge.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/json/json_writer.h"
@@ -16,13 +20,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/audio/arc_audio_bridge.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,10 +114,6 @@ bool CanOpenWebAppForUrl(const GURL& url) {
 }  // namespace
 
 // static
-const char ArcIntentHelperBridge::kArcIntentHelperPackageName[] =
-    "org.chromium.arc.intent_helper";
-
-// static
 ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcIntentHelperBridgeFactory::GetForBrowserContext(context);
@@ -167,9 +164,16 @@ ArcIntentHelperBridge::~ArcIntentHelperBridge() {
   arc_bridge_service_->intent_helper()->SetHost(nullptr);
 }
 
+void ArcIntentHelperBridge::Shutdown() {
+  for (auto& observer : observer_list_)
+    observer.OnArcIntentHelperBridgeShutdown();
+}
+
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   icon_loader_.InvalidateIcons(package_name);
+  for (auto& observer : observer_list_)
+    observer.OnIconInvalidated(package_name);
 }
 
 void ArcIntentHelperBridge::OnIntentFiltersUpdated(
@@ -317,20 +321,13 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
   std::move(callback).Run(false);
 }
 
-void ArcIntentHelperBridge::OnPreferredAppsChangedDeprecated(
-    std::vector<IntentFilter> added,
-    std::vector<IntentFilter> deleted) {
-  added_preferred_apps_ = std::move(added);
-  deleted_preferred_apps_ = std::move(deleted);
-  for (auto& observer : observer_list_)
-    observer.OnPreferredAppsChanged();
-}
-
 void ArcIntentHelperBridge::OnSupportedLinksChanged(
     std::vector<arc::mojom::SupportedLinksPtr> added_packages,
-    std::vector<arc::mojom::SupportedLinksPtr> removed_packages) {
+    std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
+    arc::mojom::SupportedLinkChangeSource source) {
   for (auto& observer : observer_list_)
-    observer.OnArcSupportedLinksChanged(added_packages, removed_packages);
+    observer.OnArcSupportedLinksChanged(added_packages, removed_packages,
+                                        source);
 }
 
 void ArcIntentHelperBridge::OnDownloadAdded(
@@ -368,27 +365,6 @@ ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(
     OnIconsReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return icon_loader_.GetActivityIcons(activities, std::move(callback));
-}
-
-bool ArcIntentHelperBridge::ShouldChromeHandleUrl(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    // Chrome will handle everything that is not http and https.
-    return true;
-  }
-
-  for (auto& package_filters : intent_filters_) {
-    // The intent helper package is used by ARC to send URLs to Chrome, so it
-    // does not count as a candidate.
-    if (IsIntentHelperPackage(package_filters.first))
-      continue;
-    for (auto& filter : package_filters.second) {
-      if (filter.Match(url))
-        return false;
-    }
-  }
-
-  // Didn't find any matches for Android so let Chrome handle it.
-  return true;
 }
 
 void ArcIntentHelperBridge::SetAdaptiveIconDelegate(
@@ -458,18 +434,12 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
 }
 
 // static
-bool ArcIntentHelperBridge::IsIntentHelperPackage(
-    const std::string& package_name) {
-  return package_name == kArcIntentHelperPackageName;
-}
-
-// static
 std::vector<mojom::IntentHandlerInfoPtr>
 ArcIntentHelperBridge::FilterOutIntentHelper(
     std::vector<mojom::IntentHandlerInfoPtr> handlers) {
   std::vector<mojom::IntentHandlerInfoPtr> handlers_filtered;
   for (auto& handler : handlers) {
-    if (IsIntentHelperPackage(handler->package_name))
+    if (handler->package_name == kArcIntentHelperPackageName)
       continue;
     handlers_filtered.push_back(std::move(handler));
   }
@@ -480,16 +450,6 @@ const std::vector<IntentFilter>&
 ArcIntentHelperBridge::GetIntentFilterForPackage(
     const std::string& package_name) {
   return intent_filters_[package_name];
-}
-
-const std::vector<IntentFilter>&
-ArcIntentHelperBridge::GetAddedPreferredApps() {
-  return added_preferred_apps_;
-}
-
-const std::vector<IntentFilter>&
-ArcIntentHelperBridge::GetDeletedPreferredApps() {
-  return deleted_preferred_apps_;
 }
 
 }  // namespace arc

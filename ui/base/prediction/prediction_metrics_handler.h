@@ -78,11 +78,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // an indicator of smoothness.
   double ComputePredictionJitterMetric();
 
-  // Compute the WrongDirectionMetric score.
-  // The score is a boolean (as double) indicating whether the prediction is
-  // in the same direction as the real trajectory..
-  bool ComputeWrongDirectionMetric();
-
   // Compute the VisualJitterMetric score.
   // The score is the euclidean distance between 2 successive variation of
   // prediction and the corresponding real events at frame time. It is

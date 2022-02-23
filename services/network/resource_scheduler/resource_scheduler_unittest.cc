@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -34,6 +35,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -141,7 +144,7 @@ class TestRequest {
   std::unique_ptr<net::URLRequest> url_request_;
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       scheduled_request_;
-  ResourceScheduler* scheduler_;
+  raw_ptr<ResourceScheduler> scheduler_;
 };
 
 class CancelingTestRequest : public TestRequest {
@@ -176,9 +179,9 @@ class ResourceSchedulerTest : public testing::Test {
         net::features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
     // This has to be done after initializing the feature list, since the value
     // of the feature is cached.
-    context_ = std::make_unique<net::TestURLRequestContext>(true);
-    context_->set_network_quality_estimator(&network_quality_estimator_);
-    context_->Init();
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_network_quality_estimator(&network_quality_estimator_);
+    context_ = context_builder->Build();
 
     InitializeScheduler();
   }
@@ -551,7 +554,7 @@ class ResourceSchedulerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ResourceScheduler> scheduler_;
   net::TestNetworkQualityEstimator network_quality_estimator_;
-  std::unique_ptr<net::TestURLRequestContext> context_;
+  std::unique_ptr<net::URLRequestContext> context_;
   ResourceSchedulerParamsManager resource_scheduler_params_manager_;
   base::SimpleTestTickClock tick_clock_;
 };

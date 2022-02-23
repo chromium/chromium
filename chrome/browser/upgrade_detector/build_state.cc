@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/observer_list.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 
 BuildState::BuildState() = default;

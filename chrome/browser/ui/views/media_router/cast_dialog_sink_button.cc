@@ -136,6 +136,7 @@ void CastDialogSinkButton::OverrideStatusText(
       saved_status_text_ = subtitle()->GetText();
     subtitle()->SetText(status_text);
   }
+  SetTooltipAndAccessibleName();
 }
 
 void CastDialogSinkButton::RestoreStatusText() {
@@ -144,6 +145,7 @@ void CastDialogSinkButton::RestoreStatusText() {
       subtitle()->SetText(*saved_status_text_);
     saved_status_text_.reset();
   }
+  SetTooltipAndAccessibleName();
 }
 
 bool CastDialogSinkButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -202,7 +204,7 @@ void CastDialogSinkButton::RequestFocus() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static bool requesting_focus = false;
   if (requesting_focus) {
-    // TODO(jrw): Figure out why this happens.
+    // TODO(crbug.com/1291739): Figure out why this happens.
     DLOG(ERROR) << "Recursive call to RequestFocus\n"
                 << base::debug::StackTrace();
     return;
@@ -219,11 +221,13 @@ void CastDialogSinkButton::RequestFocus() {
 }
 
 void CastDialogSinkButton::OnFocus() {
-  HoverButton::OnFocus();
+  // Update the status text before calling |OnFocus()| so that the screen reader
+  // can use the updated text.
   if (sink_.state == UIMediaSinkState::CONNECTED) {
     OverrideStatusText(
         l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STOP_CASTING));
   }
+  HoverButton::OnFocus();
 }
 
 void CastDialogSinkButton::OnBlur() {

@@ -268,11 +268,11 @@ void SurfacelessGlRenderer::RenderFrame() {
     gl_surface_->ScheduleOverlayPlane(
         buffers_[back_buffer_]->image(),
         gl_fence ? gl_fence->GetGpuFence() : nullptr,
-        gfx::OverlayPlaneData(0, gfx::OVERLAY_TRANSFORM_NONE,
-                              primary_plane_rect_, unity_rect, false,
-                              gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
-                              gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
-                              gfx::ColorSpace::CreateSRGB(), absl::nullopt));
+        gfx::OverlayPlaneData(
+            0, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(primary_plane_rect_),
+            unity_rect, false, gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
+            gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
+            gfx::ColorSpace::CreateSRGB(), absl::nullopt));
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
@@ -280,8 +280,9 @@ void SurfacelessGlRenderer::RenderFrame() {
       gl_surface_->ScheduleOverlayPlane(
           overlay_buffers_[i][back_buffer_]->image(), /* gpu_fence */ nullptr,
           gfx::OverlayPlaneData(
-              1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect[i], unity_rect,
-              false, gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
+              1, gfx::OVERLAY_TRANSFORM_NONE, gfx::RectF(overlay_rect[i]),
+              unity_rect, false,
+              gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
               gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
               gfx::ColorSpace::CreateSRGB(), absl::nullopt));
     }
@@ -306,7 +307,7 @@ void SurfacelessGlRenderer::PostRenderFrameTask(
         if (!buffers_[i]->Initialize(widget_, primary_plane_rect_.size()))
           LOG(FATAL) << "Failed to recreate buffer";
       }
-      FALLTHROUGH;  // We want to render a new frame anyways.
+      [[fallthrough]];  // We want to render a new frame anyways.
     case gfx::SwapResult::SWAP_ACK:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&SurfacelessGlRenderer::RenderFrame,

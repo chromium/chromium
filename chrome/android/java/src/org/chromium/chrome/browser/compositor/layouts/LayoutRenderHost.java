@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import android.content.res.Resources;
 import android.graphics.Rect;
 
 import org.chromium.ui.resources.ResourceManager;
@@ -57,11 +56,6 @@ public interface LayoutRenderHost {
      * Loads the persistent textures if they are not loaded already.
      */
     void loadPersitentTextureDataIfNeeded();
-
-    /**
-     * @return The background color of the toolbar.
-     */
-    int getBrowserControlsBackgroundColor(Resources resources);
 
     /**
      * @return The {@link ResourceManager}.

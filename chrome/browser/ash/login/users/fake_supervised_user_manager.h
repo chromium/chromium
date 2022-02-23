@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_SUPERVISED_USER_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_FAKE_SUPERVISED_USER_MANAGER_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/login/users/supervised_user_manager.h"
 
 namespace ash {

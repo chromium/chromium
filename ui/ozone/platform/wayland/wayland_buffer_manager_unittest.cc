@@ -15,21 +15,24 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritized_surface.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_buffer_params.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
-#include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
 
 using testing::_;
 using testing::Truly;
@@ -108,7 +111,8 @@ class WaylandBufferManagerTest : public WaylandTest {
     auto interface_ptr = manager_host_->BindInterface();
     buffer_manager_gpu_->Initialize(
         std::move(interface_ptr), {}, false, true, false,
-        /*supports_non_backed_solid_color_buffers*/ false);
+        /*supports_non_backed_solid_color_buffers*/ false,
+        /*supports_subpixel_accurate_position*/ false);
 
     window_->set_update_visual_size_immediately(false);
     window_->set_apply_pending_state_on_update_visual_size(false);
@@ -130,6 +134,8 @@ class WaylandBufferManagerTest : public WaylandTest {
   void SetTerminateCallbackExpectationAndDestroyChannel(
       MockTerminateGpuCallback* callback,
       bool fail) {
+    channel_destroyed_error_message_.clear();
+
     if (!fail) {
       // To avoid warning messages as "Expected to be never called, but has 0
       // WillOnce()s", split the expecations based on the expected call times.
@@ -137,7 +143,10 @@ class WaylandBufferManagerTest : public WaylandTest {
     } else {
       EXPECT_CALL(*callback, Run(_))
           .Times(1)
-          .WillRepeatedly(::testing::Invoke([this, callback](std::string) {
+          .WillRepeatedly(::testing::Invoke([this, callback](
+                                                std::string error_string) {
+            channel_destroyed_error_message_ = error_string;
+
             manager_host_->OnChannelDestroyed();
 
             manager_host_->SetTerminateGpuCallback(callback->Get());
@@ -148,7 +157,8 @@ class WaylandBufferManagerTest : public WaylandTest {
             buffer_manager_gpu_ = std::make_unique<WaylandBufferManagerGpu>();
             buffer_manager_gpu_->Initialize(
                 std::move(interface_ptr), {}, false, true, false,
-                /*supports_non_backed_solid_color_buffers*/ false);
+                /*supports_non_backed_solid_color_buffers*/ false,
+                /*supports_subpixel_accurate_position*/ false);
           }));
     }
   }
@@ -235,6 +245,8 @@ class WaylandBufferManagerTest : public WaylandTest {
 
   MockTerminateGpuCallback callback_;
   WaylandBufferManagerHost* manager_host_;
+  // Error message that is received when the manager_host destroys the channel.
+  std::string channel_destroyed_error_message_;
 };
 
 TEST_P(WaylandBufferManagerTest, CreateDmabufBasedBuffers) {
@@ -461,16 +473,16 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
-      kDefaultScale, window_->GetBounds(), gfx::RectF(), window_->GetBounds(),
-      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      kDefaultScale, gfx::RectF(window_->GetBounds()), gfx::RectF(),
+      window_->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+      gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
   // Non-existing buffer id
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
-      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
+      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+      gfx::RRectF()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
@@ -488,14 +500,14 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
-      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
+      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+      gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
-      window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
+      false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+      gfx::RRectF()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
@@ -526,6 +538,41 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
                                     window_->GetBounds());
 
   Sync();
+}
+
+// Tests that committing overlays with bounds_rect containing NaN or infinity
+// values is illegal - the host terminates the gpu process.
+TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
+  const std::vector<gfx::RectF> bounds_rect_test_data = {
+      gfx::RectF(std::nanf(""), window_->GetBounds().y(), std::nanf(""),
+                 window_->GetBounds().height()),
+      gfx::RectF(window_->GetBounds().x(),
+                 std::numeric_limits<float>::infinity(),
+                 window_->GetBounds().width(),
+                 std::numeric_limits<float>::infinity())};
+
+  for (const auto& bounds_rect : bounds_rect_test_data) {
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
+    ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                                 false /* fail */);
+
+    // Can't commit for bounds rect containing NaN
+    SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+
+    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        1u, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
+        bounds_rect, gfx::RectF(), window_->GetBounds(), false, 1.0f,
+        gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                        std::move(overlay_configs));
+
+    Sync();
+
+    EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
+              channel_destroyed_error_message_);
+  }
 }
 
 TEST_P(WaylandBufferManagerTest, EnsureCorrectOrderOfCallbacks) {
@@ -1740,19 +1787,16 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
-      kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
   Sync();
@@ -1764,7 +1808,7 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
       linux_dmabuf->buffer_params()[0]->resource(),
       linux_dmabuf->buffer_params()[0]->buffer_resource());
   EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
-  EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   Sync();
@@ -1898,8 +1942,8 @@ TEST_P(WaylandBufferManagerTest,
                                     bounds);
   Sync();
 
-  // Null buffer shall be attached when channel is destroyed.
-  EXPECT_CALL(*mock_surface, Attach(nullptr, _, _)).Times(1);
+  // The root surface shouldn't get null buffer attached.
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(0);
   EXPECT_CALL(*mock_surface, Commit()).Times(1);
 
   mock_surface->SendFrameCallback();
@@ -1913,10 +1957,20 @@ TEST_P(WaylandBufferManagerTest,
 
   Sync();
 
+  // The surface must has the buffer detached and all the buffers are destroyed.
+  // Release the fence as there is no further need to hold that as the client
+  // no longer expects that. Moreover, its next attach may result in a DCHECK,
+  // as the next buffer resource can be allocated on the same memory address
+  // resulting in a DCHECK when set_linux_buffer_release is called. The reason
+  // is that wl_resource_create calls internally calls malloc, which may reuse
+  // that memory.
+  mock_surface->ClearBufferReleases();
+
   auto interface_ptr = manager_host_->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
-      /*supports_non_backed_solid_color_buffers*/ false);
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
 
   EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
@@ -1941,6 +1995,125 @@ TEST_P(WaylandBufferManagerTest,
   Sync();
 
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+}
+
+// Tests that destroying a channel results in attaching null buffers to the root
+// surface, and hiding primary subsurface and overlay surfaces. This is required
+// to make it possible for a GPU service to switch from hw acceleration to sw
+// compositing. Otherwise, there will be frozen graphics represented by a
+// primary subsurface as sw compositing uses the root surface to draw new
+// frames. Verifies the fix for https://crbug.com/1201314
+TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+  constexpr uint32_t kBufferId3 = 3;
+
+  const gfx::Rect bounds = window_->GetBounds();
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(3);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId3);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(3u /* expected size */,
+                                               false /* fail */);
+
+  // Prepare a frame with one background buffer, one primary plane and one
+  // additional overlay plane. This will simulate hw accelerated compositing.
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+  buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                      std::move(overlay_configs));
+  Sync();
+
+  // 3 surfaces must exist - root surface, the primary subsurface and one
+  // additional overlay surface. All of them must have buffers attached.
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  auto* mock_surface_primary_subsurface = server_.GetObject<wl::MockSurface>(
+      window_->primary_subsurface()->wayland_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface_primary_subsurface->attached_buffer());
+
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  auto* mock_surface_overlay_subsurface =
+      server_.GetObject<wl::MockSurface>(window_->wayland_subsurfaces()
+                                             .begin()
+                                             ->get()
+                                             ->wayland_surface()
+                                             ->GetSurfaceId());
+  EXPECT_TRUE(mock_surface_overlay_subsurface->attached_buffer());
+
+  Sync();
+
+  // Pretend that the channel gets destroyed because of some internal reason.
+  manager_host_->OnChannelDestroyed();
+  manager_host_ = connection_->buffer_manager_host();
+
+  Sync();
+
+  // The root surface should still have the buffer attached....
+  EXPECT_TRUE(mock_surface->attached_buffer());
+  // ... and the primary and secondary subsurfaces must be hidden.
+  EXPECT_FALSE(window_->primary_subsurface()->IsVisible());
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
+
+  mock_surface->ClearBufferReleases();
+
+  auto interface_ptr = manager_host_->BindInterface();
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {}, false, true, false,
+      /*supports_non_backed_solid_color_buffers*/ false, false);
+
+  // Now, create only one buffer and attach that to the root surface. The
+  // primary subsurface and secondary subsurface must remain invisible.
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs2;
+  overlay_configs2.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+      INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
+      kDefaultScale, gfx::RectF(bounds), gfx::RectF(), bounds, false, 1.0f,
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+  buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                      std::move(overlay_configs2));
+
+  Sync();
+
+  mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  // The root surface should have the buffer detached.
+  EXPECT_TRUE(mock_surface->attached_buffer());
+
+  // The primary and secondary subsurfaces must remain hidden.
+  EXPECT_FALSE(window_->primary_subsurface()->IsVisible());
+  EXPECT_EQ(1u, window_->wayland_subsurfaces().size());
+  EXPECT_FALSE(window_->wayland_subsurfaces().begin()->get()->IsVisible());
 }
 
 TEST_P(WaylandBufferManagerTest,
@@ -2004,8 +2177,8 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
       overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
           id == 1 ? INT32_MIN : id,
           gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
-          window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-          gfx::GpuFenceHandle(), priority.first, std::vector<float>()));
+          gfx::RectF(window_->GetBounds()), gfx::RectF(), window_->GetBounds(),
+          false, 1.0f, gfx::GpuFenceHandle(), priority.first, gfx::RRectF()));
     }
 
     buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
@@ -2029,10 +2202,13 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
 }
 
 TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
+  InitializeSurfaceAugmenter();
   EXPECT_TRUE(connection_->surface_augmenter());
 }
 
 TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
+  InitializeSurfaceAugmenter();
+
   auto* mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
 
@@ -2057,52 +2233,327 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
 
   Sync();
 
-  std::vector<std::vector<float>> rounded_corners_vec = {
-      {1, 1, 1, 1},  {0, 1, 0, 1}, {1, 0, 1, 0}, {5, 10, 0, 1},
-      {0, 2, 20, 3}, {2, 3, 4, 5}, {0, 0, 0, 0},
+  std::vector<gfx::RRectF> rounded_corners_vec = {
+      {{10, 10, 200, 200}, {1, 1, 1, 1}},  {{10, 10, 200, 200}, {0, 1, 0, 1}},
+      {{10, 10, 200, 200}, {1, 0, 1, 0}},  {{10, 10, 200, 200}, {5, 10, 0, 1}},
+      {{10, 10, 200, 200}, {0, 2, 20, 3}}, {{10, 10, 200, 200}, {2, 3, 4, 5}},
+      {{10, 10, 200, 200}, {0, 0, 0, 0}},
   };
 
-  for (const auto& rounded_corners : rounded_corners_vec) {
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    for (auto id : kBufferIds) {
-      overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-          id == 1 ? INT32_MIN : id,
-          gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
-          window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-          gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-          rounded_corners));
+  // Use different scale factors to verify Ozone/Wayland translates the corners
+  // from px to dip.
+  std::vector<float> scale_factors = {1, 1.2, 1.5, 2};
+
+  // Exo may allow to submit values in px.
+  std::vector<bool> in_pixels = {true, false};
+
+  for (auto is_in_px : in_pixels) {
+    connection_->set_surface_submission_in_pixel_coordinates(is_in_px);
+    for (auto scale_factor : scale_factors) {
+      for (const auto& rounded_corners : rounded_corners_vec) {
+        std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+        for (auto id : kBufferIds) {
+          overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+              id == 1 ? INT32_MIN : id,
+              gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, scale_factor,
+              gfx::RectF(window_->GetBounds()), gfx::RectF(),
+              window_->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+              gfx::OverlayPriorityHint::kNone, rounded_corners));
+        }
+
+        buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                            std::move(overlay_configs));
+
+        Sync();
+
+        for (auto& subsurface : window_->wayland_subsurfaces_) {
+          auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+              subsurface->wayland_surface()->GetSurfaceId());
+          EXPECT_TRUE(mock_surface_of_subsurface);
+
+          gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
+          // If submission in px is allowed, there is no need to convert px to
+          // dip.
+          if (!is_in_px) {
+            gfx::Transform scale_transform;
+            // Ozone/Wayland applies ceiled scale factor if it's fractional.
+            scale_transform.Scale(1.f / std::ceil(scale_factor),
+                                  1.f / std::ceil(scale_factor));
+            scale_transform.TransformRRectF(&rounded_clip_bounds_dip);
+          }
+
+          EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                        ->rounded_clip_bounds(),
+                    rounded_clip_bounds_dip);
+          mock_surface_of_subsurface->SendFrameCallback();
+        }
+
+        mock_surface->SendFrameCallback();
+      }
+    }
+  }
+}
+
+// Verifies that there are no more than certain number of submitted frames that
+// wait presentation feedbacks. If the number of pending frames hit the
+// threshold, the feedbacks are marked as failed and discarded. See the comments
+// below in the test.
+TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
+  auto* mock_wp_presentation = server_.EnsureWpPresentation();
+  ASSERT_TRUE(mock_wp_presentation);
+
+  // 2 buffers are enough.
+  constexpr uint32_t kBufferId1 = 1;
+  constexpr uint32_t kBufferId2 = 2;
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
+  window_->SetBounds(bounds);
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(2);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId2);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
+                                               false /* fail */);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // There will be 235 frames/commits.
+  constexpr uint32_t kNumberOfCommits = 235u;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_wp_presentation, Feedback(_, _, _, _))
+      .Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
+  // The presentation feedbacks should fail after first 20 commits (that's the
+  // threshold that WaylandFrameManager maintains). Next, the presentation
+  // feedbacks will fail every consequent 17 commits as 3 frames out of 20
+  // previous frames that WaylandFrameManager stores are always preserved in
+  // case if the client restores the behavior (which is very unlikely).
+  uint32_t expect_presentation_failure_on_commit_seq = 20u;
+  // Chooses the next buffer id that should be committed.
+  uint32_t next_buffer_id_commit = 0;
+  // Specifies the expected number of failing feedbacks if the client
+  // misbehaves.
+  constexpr uint32_t kExpectedFailedFeedbacks = 17u;
+  for (auto commit_seq = 1u; commit_seq <= kNumberOfCommits; commit_seq++) {
+    // All the other expectations must come in order.
+    if (next_buffer_id_commit == kBufferId1)
+      next_buffer_id_commit = kBufferId2;
+    else
+      next_buffer_id_commit = kBufferId1;
+
+    EXPECT_CALL(mock_surface_gpu, OnSubmission(next_buffer_id_commit,
+                                               gfx::SwapResult::SWAP_ACK, _))
+        .Times(1);
+
+    if (commit_seq % expect_presentation_failure_on_commit_seq == 0) {
+      EXPECT_CALL(mock_surface_gpu,
+                  OnPresentation(_, gfx::PresentationFeedback::Failure()))
+          .Times(kExpectedFailedFeedbacks);
+      // See comment near |expect_presentation_failure_on_commit_seq|.
+      expect_presentation_failure_on_commit_seq += kExpectedFailedFeedbacks;
+    } else {
+      // The client misbehaves and doesn't send presentation feedbacks. The
+      // frame manager doesn't mark the feedbacks as failed until the threshold
+      // is hit.
+      EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
     }
 
-    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+    buffer_manager_gpu_->CommitBuffer(widget, next_buffer_id_commit, bounds,
+                                      kDefaultScale, bounds);
+
+    Sync();
+
+    if (auto* buffer = mock_surface->prev_attached_buffer())
+      mock_surface->ReleaseBuffer(buffer);
+
+    wl_resource_destroy(mock_wp_presentation->ReleasePresentationCallback());
+
+    mock_surface->SendFrameCallback();
+
+    Sync();
+
+    testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+  }
+
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
+}
+
+TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
+  // Unbind the pipe.
+  manager_host_->OnChannelDestroyed();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(buffer_manager_gpu_->remote_host_);
+  EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
+
+  constexpr uint32_t kDmabufBufferId = 1;
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                    kDmabufBufferId);
+  buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), kDmabufBufferId,
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
+  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                          kDmabufBufferId, false /*fail*/);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, buffer_manager_gpu_->pending_tasks_.size());
+
+  auto interface_ptr = manager_host_->BindInterface();
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {}, false, true, false,
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
+}
+
+class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
+ public:
+  WaylandBufferManagerViewportTest() = default;
+  ~WaylandBufferManagerViewportTest() override = default;
+
+ protected:
+  void ViewportDestinationTestHelper(const gfx::RectF& bounds_rect,
+                                     const gfx::RectF& expected_bounds_rect) {
+    auto temp_window = CreateWindow();
+    temp_window->Show(false);
+
+    Sync();
+
+    auto* mock_surface = server_.GetObject<wl::MockSurface>(
+        temp_window->root_surface()->GetSurfaceId());
+    ASSERT_TRUE(mock_surface);
+
+    ActivateSurface(mock_surface->xdg_surface());
+
+    Sync();
+
+    constexpr uint32_t kBufferId1 = 1;
+    constexpr uint32_t kBufferId2 = 2;
+
+    MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
+                                    temp_window->GetWidget());
+
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId1);
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId2);
+
+    Sync();
+
+    ProcessCreatedBufferResourcesWithExpectation(2u /* expected size */,
+                                                 false /* fail */);
+
+    Sync();
+
+    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        gfx::RectF(temp_window->GetBounds()), gfx::RectF(),
+        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+        gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        gfx::RectF(window_->GetBounds()), gfx::RectF(),
+        temp_window->GetBounds(), false, 1.0f, gfx::GpuFenceHandle(),
+        gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+        1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1, 1,
+        bounds_rect, gfx::RectF(), temp_window->GetBounds(), false, 1.0f,
+        gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+
+    buffer_manager_gpu_->CommitOverlays(temp_window->GetWidget(),
                                         std::move(overlay_configs));
 
     Sync();
 
-    for (auto& subsurface : window_->wayland_subsurfaces_) {
-      auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-          subsurface->wayland_surface()->GetSurfaceId());
-      EXPECT_TRUE(mock_surface_of_subsurface);
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .upper_left(),
-                rounded_corners.at(0));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .upper_right(),
-                rounded_corners.at(1));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .lower_right(),
-                rounded_corners.at(2));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .lower_left(),
-                rounded_corners.at(3));
-
-      mock_surface_of_subsurface->SendFrameCallback();
+    // Creates a handle for a subsurface.
+    auto params_vector = server_.zwp_linux_dmabuf_v1()->buffer_params();
+    for (auto* mock_params : params_vector) {
+      zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
+                                              mock_params->buffer_resource());
     }
 
+    Sync();
+
+    EXPECT_EQ(temp_window->wayland_subsurfaces_.size(), 1u);
+    WaylandSubsurface* subsurface =
+        temp_window->wayland_subsurfaces_.begin()->get();
+    DCHECK(subsurface);
+    auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+        subsurface->wayland_surface()->GetSurfaceId());
+    DCHECK(mock_surface_of_subsurface);
+
+    auto* test_vp = mock_surface_of_subsurface->viewport();
+
+    // The conversion from double to fixed and back is necessary because it
+    // happens during the roundtrip, and it creates significant error.
+    gfx::SizeF expected_size(wl_fixed_to_double(wl_fixed_from_double(
+                                 expected_bounds_rect.size().width())),
+                             wl_fixed_to_double(wl_fixed_from_double(
+                                 expected_bounds_rect.size().height())));
+    EXPECT_EQ(expected_size, test_vp->destination_size());
+
+    mock_surface_of_subsurface->SendFrameCallback();
     mock_surface->SendFrameCallback();
+
+    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                            kBufferId1, false);
+    DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                            kBufferId2, false);
+  }
+};
+
+// Tests viewport destination is set correctly when the augmenter subsurface
+// protocol is not available and then becomes available.
+TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({21, 18}, {7, 11}), gfx::RectF({21, 18}, {7, 11})},
+      {gfx::RectF({7, 8}, {43, 63}), gfx::RectF({7, 8}, {43, 63})}};
+
+  for (const auto& data : test_data) {
+    ViewportDestinationTestHelper(data[0] /* display_rect */,
+                                  data[1] /* expected_rect */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  }
+}
+
+// Tests viewport destination is set correctly when the augmenter subsurface
+// protocol is not available (the destination is rounded), and the protocol is
+// available (the destination is set with floating point precision).
+TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {8, 12})},
+      {gfx::RectF({7, 8}, {43.562, 63.76}),
+       gfx::RectF({7, 8}, {43.562, 63.76})}};
+
+  for (const auto& data : test_data) {
+    ViewportDestinationTestHelper(data[0] /* display_rect */,
+                                  data[1] /* expected_rect */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
   }
 }
 
@@ -2112,6 +2563,15 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                              .shell_version = wl::ShellVersion::kStable}));
 INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandBufferManagerTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandBufferManagerViewportTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandBufferManagerViewportTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
 

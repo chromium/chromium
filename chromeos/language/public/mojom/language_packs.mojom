@@ -9,6 +9,10 @@
 module chromeos.language.mojom;
 
 // ID of the Feature using LanguagePacks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. When adding new enumerations to this
+// enum, you must add those to the LanguagePackMojoFeatureId definition in
+// tools/metrics/histograms/enums.xml to keep them in sync.
 enum FeatureId {
   // Unknown feature, not supported.
   UNSUPPORTED_UNKNOWN = 0,
@@ -18,6 +22,10 @@ enum FeatureId {
 
 // Current state of Pack on disk.
 // INSTALLED means that it's mounted and can be used.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.  When adding new enumerations to this
+// enum, you must add those to the LanguagePackMojoPackState definition in
+// tools/metrics/histograms/enums.xml to keep them in sync.
 enum PackState {
   ERROR = 0,
   NOT_INSTALLED = 1,

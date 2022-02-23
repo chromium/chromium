@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
@@ -76,7 +77,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   ~PassThroughDelegate() override = default;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   message_center::Notification notification_;
   NotificationHandler::Type notification_type_;
 };

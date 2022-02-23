@@ -6,7 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/mac/bridging.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -108,7 +108,7 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
         net::x509_util::CreateSecCertificateArrayForX509Certificate(
             cert.get()));
     ASSERT_TRUE(chain);
-    trust_ = CreateServerTrustFromChain(base::mac::CFToNSCast(chain.get()),
+    trust_ = CreateServerTrustFromChain(base::mac::CFToNSPtrCast(chain.get()),
                                         kHostName);
   }
 

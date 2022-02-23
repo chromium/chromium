@@ -57,7 +57,9 @@ IsolateHolder::IsolateHolder(
     IsolateType isolate_type,
     IsolateCreationMode isolate_creation_mode,
     v8::CreateHistogramCallback create_histogram_callback,
-    v8::AddHistogramSampleCallback add_histogram_sample_callback)
+    v8::AddHistogramSampleCallback add_histogram_sample_callback,
+    v8::FatalErrorCallback fatal_error_callback,
+    v8::OOMErrorCallback oom_error_callback)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
   CHECK(Initialized())
       << "You need to invoke gin::IsolateHolder::Initialize first";
@@ -92,6 +94,8 @@ IsolateHolder::IsolateHolder(
     params.embedder_wrapper_object_index = kEncodedValueIndex;
     params.create_histogram_callback = create_histogram_callback;
     params.add_histogram_sample_callback = add_histogram_sample_callback;
+    params.fatal_error_callback = fatal_error_callback;
+    params.oom_error_callback = oom_error_callback;
 
     v8::Isolate::Initialize(isolate_, params);
   }
@@ -106,8 +110,10 @@ IsolateHolder::IsolateHolder(
 
 IsolateHolder::~IsolateHolder() {
   isolate_memory_dump_provider_.reset();
-  isolate_data_.reset();
+  // Calling Isolate::Dispose makes sure all threads which might access
+  // PerIsolateData are finished.
   isolate_->Dispose();
+  isolate_data_.reset();
   isolate_ = nullptr;
 }
 

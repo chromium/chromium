@@ -7,9 +7,9 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
-#include "chromeos/chromeos_export.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 
 namespace chromeos {
@@ -18,11 +18,11 @@ namespace chromeos {
 // can return multiple error reasons so CupsPrinterStatus contains multiple
 // CupsPrinterStatusReasons. |timestamp| is set at the time of CupsPrinterStatus
 // creation.
-class CHROMEOS_EXPORT CupsPrinterStatus {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatus {
  public:
   // A combination of a reason, which describes the state of a printer, and a
   // severity, which is the level of seriousness of that state.
-  class CHROMEOS_EXPORT CupsPrinterStatusReason {
+  class COMPONENT_EXPORT(CHROMEOS_PRINTING) CupsPrinterStatusReason {
    public:
     using Reason = crosapi::mojom::StatusReason::Reason;
     using Severity = crosapi::mojom::StatusReason::Severity;

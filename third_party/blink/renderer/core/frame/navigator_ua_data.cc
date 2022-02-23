@@ -104,6 +104,10 @@ void NavigatorUAData::SetBitness(const String& bitness) {
   bitness_ = bitness;
 }
 
+void NavigatorUAData::SetWoW64(bool wow64) {
+  is_wow64_ = wow64;
+}
+
 bool NavigatorUAData::mobile() const {
   if (GetExecutionContext()) {
     return is_mobile_;
@@ -139,14 +143,22 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
       IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
+  // According to
+  // https://wicg.github.io/ua-client-hints/#getHighEntropyValues, brands,
+  // mobile and platform should be included regardless of whether they were
+  // asked for.
+
+  // TODO: It'd be faster to compare hint when turning |hints| into an
+  // AtomicString vector and turning the const string literals |hint| into
+  // AtomicStrings as well.
   for (const String& hint : hints) {
     values->setBrands(brand_set_);
     values->setMobile(is_mobile_);
-    if (hint == "platform") {
-      values->setPlatform(platform_);
-      MaybeRecordMetric(record_identifiability, hint, platform_,
-                        execution_context);
-    } else if (hint == "platformVersion") {
+    values->setPlatform(platform_);
+    MaybeRecordMetric(record_identifiability, hint, platform_,
+                      execution_context);
+
+    if (hint == "platformVersion") {
       values->setPlatformVersion(platform_version_);
       MaybeRecordMetric(record_identifiability, hint, platform_version_,
                         execution_context);
@@ -168,6 +180,10 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
                         execution_context);
     } else if (hint == "fullVersionList") {
       values->setFullVersionList(full_version_list_);
+    } else if (hint == "wow64") {
+      values->setWow64(is_wow64_);
+      MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
+                        execution_context);
     }
   }
 

@@ -39,10 +39,6 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
-#if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck
-#endif
-
 namespace blink {
 
 class WindowPerformance;
@@ -112,6 +108,8 @@ class WebPerformance {
   BLINK_EXPORT double FirstImagePaint() const;
   BLINK_EXPORT double FirstContentfulPaint() const;
   BLINK_EXPORT base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
+  BLINK_EXPORT base::TimeTicks
+  FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime() const;
   BLINK_EXPORT double FirstMeaningfulPaint() const;
   BLINK_EXPORT double FirstMeaningfulPaintCandidate() const;
   BLINK_EXPORT double LargestImagePaint() const;
@@ -123,6 +121,7 @@ class WebPerformance {
   BLINK_EXPORT uint64_t ExperimentalLargestImagePaintSize() const;
   BLINK_EXPORT LargestContentfulPaintTypeMask
   LargestContentfulPaintType() const;
+  BLINK_EXPORT double LargestContentfulPaintImageBPP() const;
   BLINK_EXPORT double ExperimentalLargestTextPaint() const;
   BLINK_EXPORT uint64_t ExperimentalLargestTextPaintSize() const;
   BLINK_EXPORT double FirstEligibleToPaint() const;

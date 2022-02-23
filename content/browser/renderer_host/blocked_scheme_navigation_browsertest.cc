@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -150,7 +151,7 @@ class ScopedPluginRegister {
   }
 
  private:
-  content::PluginService* plugin_service_;
+  raw_ptr<content::PluginService> plugin_service_;
 };
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -453,8 +454,9 @@ class BlockedSchemeNavigationBrowserTest
     EXPECT_TRUE(
         new_shell->web_contents()->GetLastCommittedURL().spec().empty());
     // No navigation should commit.
-    EXPECT_FALSE(
-        new_shell->web_contents()->GetController().GetLastCommittedEntry());
+    NavigationEntry* current_entry =
+        new_shell->web_contents()->GetController().GetLastCommittedEntry();
+    EXPECT_TRUE(!current_entry || current_entry->IsInitialEntry());
     // Original page shouldn't navigate away.
     EXPECT_EQ(original_url, shell()->web_contents()->GetLastCommittedURL());
   }
@@ -847,7 +849,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on android: https://crbug.com/734563
 #define MAYBE_DataUrl_OctetStream_WindowOpen \
   DISABLED_DataUrl_OctetStream_WindowOpen
@@ -976,7 +978,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on android: https://crbug.com/734563
 #define MAYBE_UnknownMimeType_WindowOpen DISABLED_UnknownMimeType_WindowOpen
 #else
@@ -1095,7 +1097,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   const GURL kPDFUrl(CreateURLWithBlockedScheme(
       "test.pdf", IsDataURLTest() ? pdf_base64 : kPDF, "application/pdf"));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestNavigationObserver observer(shell()->web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), kPDFUrl));
   EXPECT_EQ(kPDFUrl, observer.last_navigation_url());
@@ -1113,7 +1115,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_WindowOpen_Block) {
   Navigate(GetTestURL());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ExecuteScriptAndCheckWindowOpen(
       shell()->web_contents()->GetMainFrame(), GetParam(),
       "document.getElementById('window-open-pdf').click()", NAVIGATION_BLOCKED);
@@ -1139,7 +1141,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
                        PDF_Navigation_Block) {
   Navigate(GetTestURL());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ExecuteScriptAndCheckPDFNavigation(
       shell()->web_contents()->GetMainFrame(), GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1165,7 +1167,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest, PDF_FormPost_Block) {
   Navigate(GetTestURL());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ExecuteScriptAndCheckPDFNavigation(
       shell()->web_contents()->GetMainFrame(), GetParam(),
       "document.getElementById('form-post-to-pdf').click()",
@@ -1197,7 +1199,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
       embedded_test_server()->GetURL(
           "b.com", base::StringPrintf("/%s_url_navigations.html", GetParam())));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestPDFNavigationFromFrame(
       GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1233,7 +1235,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
             embedded_test_server()->GetURL(
                 base::StringPrintf("/%s_url_navigations.html", GetParam())));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestWindowOpenFromFrame(GetParam(),
                           "document.getElementById('window-open-pdf').click()",
                           NAVIGATION_BLOCKED);
@@ -1265,7 +1267,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetMainFrame(), GetTestURL());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestPDFNavigationFromFrame(
       GetParam(),
       "document.getElementById('navigate-top-frame-to-pdf').click()",
@@ -1298,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetMainFrame(), GetTestURL());
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TestWindowOpenFromFrame(GetParam(),
                           "document.getElementById('window-open-pdf').click()",
                           NAVIGATION_BLOCKED);

@@ -23,7 +23,7 @@ class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   ~OsUrlHandlerSystemWebAppDelegate() override;
 
   // web_app::SystemWebAppDelegate:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
   // TODO(crbug/1260386) - Add override for GetAdditionalSearchTerms() to allow
   // capturing the os:// search tearms to be used.
@@ -31,6 +31,11 @@ class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
+  bool ShouldReuseExistingWindow() const override;
+  bool IsUrlInSystemAppScope(const GURL& url) const override;
+
+  // Can be called by a test to enforce the app to be enabled.
+  static void EnableDelegateForTesting(bool enable);
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_URL_HANDLER_SYSTEM_WEB_APP_INFO_H_

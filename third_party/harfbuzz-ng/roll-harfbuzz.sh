@@ -53,7 +53,7 @@ check_all_files_are_categorized() {
     CDPATH= && cd -- "$(dirname -- "$0")" &&
 
     HB_SOURCE_MISSING=false &&
-    find src/src/ -type f \( -name "hb-*.cc" -o -name "hb-*.h" -o -name "hb-*.hh" \) | while read HB_SOURCE
+    find src/src -type f \( -name "hb-*.cc" -o -name "hb-*.h" -o -name "hb-*.hh" \) | while read HB_SOURCE
     do
       if ! grep -qF "$HB_SOURCE" BUILD.gn; then
         if ! ${HB_SOURCE_MISSING}; then

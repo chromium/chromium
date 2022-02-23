@@ -24,6 +24,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
@@ -46,6 +47,7 @@ namespace ash {
 class LockScreenMediaControlsView;
 class LoginAuthUserView;
 class LoginBigUserView;
+class LoginCameraTimeoutView;
 class LoginDetachableBaseModel;
 class LoginExpandedPublicAccountView;
 class LoginUserView;
@@ -275,6 +277,8 @@ class ASH_EXPORT LockContentsView
     size_t autosubmit_pin_length = 0;
     absl::optional<EasyUnlockIconInfo> easy_unlock_icon_info = absl::nullopt;
     FingerprintState fingerprint_state;
+    SmartLockState smart_lock_state;
+    bool auth_factor_is_hiding_password = false;
     // When present, indicates that the TPM is locked.
     absl::optional<base::TimeDelta> time_until_tpm_unlock = absl::nullopt;
   };
@@ -385,6 +389,11 @@ class ASH_EXPORT LockContentsView
   // Called when the easy unlock icon is tapped.
   void OnEasyUnlockIconTapped();
 
+  // Called when LoginAuthFactorsView enters/exits a state where an auth
+  // factor wants to hide the password and pin fields.
+  void OnAuthFactorIsHidingPasswordChanged(const AccountId& account_id,
+                                           bool auth_factor_is_hiding_password);
+
   // Called when parent access validation finished for the user with
   // |account_id|.
   void OnParentAccessValidationFinished(const AccountId& account_id,
@@ -442,6 +451,9 @@ class ASH_EXPORT LockContentsView
   // "device is managed" type message.
   void OnBottomStatusIndicatorTapped();
 
+  // Shows GAIA sign-in page.
+  void OnBackToSigninButtonTapped();
+
   const LockScreen::ScreenType screen_type_;
 
   std::vector<UserState> users_;
@@ -493,6 +505,9 @@ class ASH_EXPORT LockContentsView
   views::View* user_adding_screen_indicator_ = nullptr;
   // Bubble for displaying warning banner message.
   LoginErrorBubble* warning_banner_bubble_;
+
+  // View that is shown on login timeout with camera usage.
+  base::raw_ptr<LoginCameraTimeoutView> login_camera_timeout_view_ = nullptr;
 
   // Bottom status indicator displaying entreprise domain or ADB enabled alert
   BottomStatusIndicator* bottom_status_indicator_;

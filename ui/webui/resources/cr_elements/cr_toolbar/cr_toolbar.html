@@ -2,15 +2,9 @@
       :host {
         align-items: center;
         background-color: var(--cr-toolbar-background-color);
-        color: #fff;
+        color: var(--google-grey-900);
         display: flex;
         height: var(--cr-toolbar-height);
-      }
-
-      @media (prefers-color-scheme: light) {
-        :host-context([enable-branding-update]):host {
-          color: var(--google-grey-900);
-        }
       }
 
       @media (prefers-color-scheme: dark) {
@@ -23,17 +17,12 @@
 
       h1 {
         flex: 1;
-        font-size: 123%;
-        font-weight: var(--cr-toolbar-header-font-weight, 400);
+        font-size: 170%;
+        font-weight: var(--cr-toolbar-header-font-weight, 500);
         letter-spacing: .25px;
         line-height: normal;
         margin-inline-start: 6px;
         padding-inline-end: 12px;
-      }
-
-      :host-context([enable-branding-update]):host h1 {
-        font-size: 170%;
-        font-weight: 500;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -64,7 +53,7 @@
       @media (prefers-color-scheme: light) {
         cr-icon-button {
           --cr-icon-button-fill-color: currentColor;
-          --cr-icon-button-focus-outline-color: white;
+          --cr-icon-button-focus-outline-color: var(--cr-focus-outline-color);
         }
       }
 
@@ -100,37 +89,46 @@
         flex-basis: var(--cr-toolbar-center-basis, 0);
       }
 
+      :host(:not([narrow])[disable-right-content-grow]) #centeredContent {
+        justify-content: start;
+        padding-inline-start: 12px;
+      }
+
       :host(:not([narrow])) #rightContent {
         flex: 1 1 0;
         text-align: end;
+      }
+
+      :host(:not([narrow])[disable-right-content-grow]) #rightContent {
+        flex: 0 1 0;
       }
 
       picture {
         display: none;
       }
 
-      :host-context([enable-branding-update]) #menuButton {
+      #menuButton {
         margin-inline-end: 9px;
       }
 
-      :host-context([enable-branding-update]) #menuButton ~ h1 {
+      #menuButton ~ h1 {
         margin-inline-start: 0;
       }
 
-      :host-context([enable-branding-update]):host([always-show-logo]) picture,
-      :host-context([enable-branding-update]):host(:not([narrow])) picture {
+      :host([always-show-logo]) picture,
+      :host(:not([narrow])) picture {
         display: initial;
         margin-inline-end: 16px;
       }
 
-      :host-context([enable-branding-update]):host([always-show-logo]) #leftSpacer,
-      :host-context([enable-branding-update]):host(:not([narrow])) #leftSpacer {
+      :host([always-show-logo]) #leftSpacer,
+      :host(:not([narrow])) #leftSpacer {
         /* 12px to match #rightSpacer + 9px to align with icons in menus. */
         padding-inline-start: calc(12px + 9px);
       }
 
-      :host-context([enable-branding-update]):host([always-show-logo]) :is(picture, #product-logo),
-      :host-context([enable-branding-update]):host(:not([narrow])) :is(picture, #product-logo) {
+      :host([always-show-logo]) :is(picture, #product-logo),
+      :host(:not([narrow])) :is(picture, #product-logo) {
         height: 24px;
         width: 24px;
       }

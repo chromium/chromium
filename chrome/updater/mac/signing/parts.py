@@ -26,9 +26,18 @@ def get_parts(config):
     ks_bundle = (
         '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.
         format(config))
+    ks_agent_app = (
+        ks_bundle +
+        '/Contents/Resources/{0.keystone_app_name}Agent.app'.format(config))
 
     # Innermost parts come first.
     return [
+        CodeSignedProduct(  # Keystone Agent app bundle
+            ks_agent_app,
+            config.keystone_app_name + 'Agent',
+            identifier_requirement=False,
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
         CodeSignedProduct(  # Keystone's ksadmin
             ks_bundle + '/Contents/Helpers/ksadmin',
             'ksadmin',

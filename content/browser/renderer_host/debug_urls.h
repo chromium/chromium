@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DEBUG_URLS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DEBUG_URLS_H_
 
-#include "content/common/content_export.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;

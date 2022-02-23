@@ -5,9 +5,10 @@
 import("//components/variations/service/generate_ui_string_overrider.gni")
 
 source_set("variations") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_variations_service_client.cc",
     "ios_chrome_variations_service_client.h",
+    "ios_chrome_variations_service_client.mm",
   ]
   deps = [
     "//base",
@@ -75,7 +76,10 @@ source_set("eg_test_support+eg2") {
     "variations_app_interface.h",
     "variations_app_interface_stub.mm",
   ]
-  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  deps = [
+    "//base",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }
 
 source_set("eg2_tests") {
@@ -84,11 +88,20 @@ source_set("eg2_tests") {
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [ "variations_safe_mode_egtest.mm" ]
+  sources = [
+    "variations_safe_mode_egtest.mm",
+    "variations_safe_mode_end_to_end_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/metrics:metrics",
+    "//components/prefs:prefs",
+    "//components/variations:test_support",
+    "//components/variations:variations",
+    "//components/variations/service:constants",
+    "//components/variations/service:service",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

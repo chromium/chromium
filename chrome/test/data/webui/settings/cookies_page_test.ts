@@ -26,6 +26,11 @@ suite('CrSettingsCookiesPageTest', function() {
     loadTimeData.overrideValues({
       consolidatedSiteStorageControlsEnabled: false,
     });
+    const routes: any = Router.getInstance().getRoutes();
+    routes.SITE_SETTINGS_SITE_DATA = routes.COOKIES.createChild('/siteData');
+    routes.SITE_SETTINGS_DATA_DETAILS =
+        routes.SITE_SETTINGS_SITE_DATA.createChild('/cookies/detail');
+    Router.resetInstanceForTesting(new Router(routes));
   });
 
   setup(function() {

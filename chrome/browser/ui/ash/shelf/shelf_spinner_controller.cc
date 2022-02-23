@@ -234,8 +234,7 @@ bool ShelfSpinnerController::RemoveSpinnerFromControllerMap(
 void ShelfSpinnerController::CloseCrostiniSpinners() {
   std::vector<std::string> app_ids_to_close;
   const Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-          current_account_id_);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(current_account_id_);
   for (const auto& app_id_controller_pair : app_controller_map_) {
     if (crostini::IsCrostiniShelfAppId(profile, app_id_controller_pair.first))
       app_ids_to_close.push_back(app_id_controller_pair.first);

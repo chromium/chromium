@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,12 +19,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/network/onc/onc_test_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -196,7 +196,7 @@ class UserCloudPolicyStoreAshTest : public testing::Test {
     const PolicyMap::Entry* entry =
         store_->policy_map().Get(key::kHomepageLocation);
     ASSERT_TRUE(entry);
-    EXPECT_TRUE(base::Value(expected_value).Equals(entry->value()));
+    EXPECT_EQ(base::Value(expected_value), *entry->value());
   }
 
   // Stores the current |policy_| and verifies that it is published.

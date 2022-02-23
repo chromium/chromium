@@ -5,9 +5,10 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -31,7 +32,7 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 // When possible, provides a clip rect that limits the visibility.
 absl::optional<gfx::RectF> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
-    return ToGfxRectF(state.Clip().PaintClipRect().Rect());
+    return state.Clip().PaintClipRect().Rect();
   if (const auto* scroll = state.Transform().ScrollNode())
     return gfx::RectF(scroll->ContentsRect());
   return absl::nullopt;
@@ -70,10 +71,6 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 }  // anonymous namespace
 
-void PreCompositedLayerInfo::Trace(Visitor* visitor) const {
-  visitor->Trace(graphics_layer);
-}
-
 PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
                            const PaintChunkIterator& first_chunk)
     : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}
@@ -84,6 +81,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
     : bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
       has_text_(first_chunk.has_text),
+      draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
           first_chunk.text_known_to_be_on_opaque_background),
       chunks_(&chunks.GetPaintArtifact(), first_chunk_index_in_paint_artifact),
@@ -109,17 +107,6 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
     else if (IsCompositedScrollbar(first_display_item))
       compositing_type_ = kScrollbarLayer;
   }
-}
-
-PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
-    : chunks_(pre_composited_layer.chunks),
-      property_tree_state_(
-          pre_composited_layer.graphics_layer->GetPropertyTreeState()
-              .Unalias()),
-      graphics_layer_(pre_composited_layer.graphics_layer),
-      compositing_type_(kPreCompositedLayer) {
-  DCHECK(graphics_layer_);
-  DCHECK(!graphics_layer_->ShouldCreateLayersAfterPaint());
 }
 
 gfx::Vector2dF PendingLayer::LayerOffset() const {
@@ -212,10 +199,6 @@ const DisplayItem& PendingLayer::FirstDisplayItem() const {
   return *chunks_.begin().DisplayItems().begin();
 }
 
-bool PendingLayer::MayDrawContent() const {
-  return Chunks().size() > 1 || FirstPaintChunk().size() > 0;
-}
-
 // We will only allow merging if
 // merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
 static constexpr float kMergeSparsityAreaTolerance = 10000;
@@ -249,6 +232,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
       rect_known_to_be_opaque_.Contains(bounds_)) {
     if (!dry_run) {
       chunks_.Merge(guest.Chunks());
+      draws_content_ |= guest.draws_content_;
       text_known_to_be_on_opaque_background_ = true;
       has_text_ |= guest.has_text_;
       change_of_decomposited_transforms_ =
@@ -303,6 +287,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     chunks_.Merge(guest.Chunks());
     bounds_ = merged_bounds;
     property_tree_state_ = *merged_state;
+    draws_content_ |= guest.draws_content_;
     rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
     text_known_to_be_on_opaque_background_ =
         merged_text_known_to_be_on_opaque_background;
@@ -437,8 +422,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
       mark_not_decompositable(node->LocalTransformSpace().Unalias());
     }
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        pending_layer.GetCompositingType() == kScrollHitTestLayer) {
+    if (pending_layer.GetCompositingType() == kScrollHitTestLayer) {
       // The scroll translation node of a scroll hit test layer may not be
       // referenced by any pending layer's property tree state. Disallow
       // decomposition of it (and its ancestors).

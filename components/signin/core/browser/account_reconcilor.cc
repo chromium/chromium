@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -22,12 +23,12 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -35,6 +36,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/signin/core/browser/consistency_cookie_manager.h"
+#endif
 
 using signin::AccountReconcilorDelegate;
 using signin::ConsentLevel;
@@ -225,7 +230,7 @@ void AccountReconcilor::EnableReconcile() {
 
 void AccountReconcilor::DisableReconcile(bool logout_all_accounts) {
   AbortReconcile();
-  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+  SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
   UnregisterWithAllDependencies();
 
   if (logout_all_accounts)
@@ -284,7 +289,7 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   registered_with_identity_manager_ = false;
 }
 
-AccountReconcilorState AccountReconcilor::GetState() {
+AccountReconcilorState AccountReconcilor::GetState() const {
   return state_;
 }
 
@@ -389,7 +394,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
   CHECK(client_);
   if (!delegate_->IsReconcileEnabled() || !client_->AreSigninCookiesAllowed()) {
     VLOG(1) << "AccountReconcilor::StartReconcile: !enabled or no cookies";
-    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_OK);
+    SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE);
     return;
   }
 
@@ -663,13 +668,13 @@ AccountReconcilor::LoadValidAccountsFromTokenService() const {
 
 void AccountReconcilor::OnReceivedManageAccountsResponse(
     signin::GAIAServiceType service_type) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // TODO(https://crbug.com/1224872): check if it's still required on Android
   // and iOS.
   if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION) {
     identity_manager_->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void AccountReconcilor::AbortReconcile() {
@@ -796,6 +801,21 @@ bool AccountReconcilor::IsReconcileBlocked() const {
   DCHECK_GE(account_reconcilor_lock_count_, 0);
   return account_reconcilor_lock_count_ > 0;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+signin::ConsistencyCookieManager*
+AccountReconcilor::GetConsistencyCookieManager() {
+  if (base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles) &&
+      !consistency_cookie_manager_) {
+    // TODO(https://crbug.com/1260291): Instantiate the ConsistencyCookieManager
+    // at creation of the AccountReconcilor, once the cookie can be cleared
+    // correctly.
+    consistency_cookie_manager_ =
+        std::make_unique<signin::ConsistencyCookieManager>(client_, this);
+  }
+  return consistency_cookie_manager_.get();
+}
+#endif
 
 void AccountReconcilor::BlockReconcile() {
   DCHECK(IsReconcileBlocked());

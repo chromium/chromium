@@ -1,0 +1,101 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<link rel="import" href="./oobe_icons.html">
+<link rel="import" href="./common_styles/common_styles.html">
+
+<!--
+  A simple notification card with a button, link (optional) and icon (optional).
+  Example:
+    <notification-card button-label="OK" link-label="What?" type="success">
+      Great success!
+    </notification-card>
+
+  Attributes:
+   'button-label' - label displayed on the button. If empty or not set, the
+                   button is hidden.
+   'link-label' - text of the link. If empty or not set, the link is hidden.
+   'type' - icon type. Can be either 'success' or 'fail'. If not set, no icon
+            is displayed.
+
+  Events:
+    'buttonclick' - fired on button click.
+    'linkclick' - fired on link click.
+
+-->
+<dom-module id="notification-card">
+  <template>
+    <style include="oobe-common-styles">
+      #container {
+        padding: 40px;
+      }
+
+      #icon-container {
+        margin-bottom: 14px;
+      }
+
+      :host iron-icon {
+        height: 28px;
+        width: 28px;
+      }
+
+      iron-icon[icon='cr:warning'] {
+        color: var(--google-yellow-500);
+      }
+
+      iron-icon[icon='notification-card:done'] {
+        color: var(--google-green-500);
+      }
+
+      #text-container {
+        color: grey;
+        line-height: 130%;
+        max-width: 240px;
+        text-align: center;
+      }
+
+      a {
+        color: rgb(17, 85, 204); /* #1155CC */
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      a:focus {
+        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        transition: outline-color 200ms;
+      }
+    </style>
+    <div id="container" class="vertical layout center fit">
+      <div class="flex vertical layout center center-justified">
+        <template is="dom-if" if="[[type]]">
+          <div id="icon-container" class="vertical layout center">
+            <iron-icon icon$="[[iconNameByType_(type)]]">
+            </iron-icon>
+          </div>
+        </template>
+        <div id="text-container">
+          <slot></slot>
+        </div>
+      </div>
+      <div class="self-stretch horizontal-reverse layout justified center">
+        <gaia-button id="submitButton" on-click="buttonClicked_"
+            hidden$="[[!buttonLabel]]">
+          <span>[[buttonLabel]]</span>
+        </gaia-button>
+        <a on-click="linkClicked_" hidden$="{{!linkLabel}}" is="action-link"
+            class="oobe-local-link">
+          <span>[[linkLabel]]</span>
+        </a>
+      </div>
+    </div>
+  </template>
+  <script src="notification_card.js"></script>
+</dom-module>

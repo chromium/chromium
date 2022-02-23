@@ -87,7 +87,7 @@ bool HasIsolatedStorage(const std::string& extension_id,
   const bool is_policy_extension =
       extension && Manifest::IsPolicyLocation(extension->location());
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile && chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (profile && ash::ProfileHelper::IsSigninProfile(profile) &&
       is_policy_extension) {
     return true;
   }
@@ -258,14 +258,14 @@ std::unique_ptr<base::DictionaryValue> GetExtensionInfo(
   DCHECK(extension);
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
 
-  dict->SetString("id", extension->id());
-  dict->SetString("name", extension->name());
+  dict->SetStringKey("id", extension->id());
+  dict->SetStringKey("name", extension->name());
 
   GURL icon = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_SMALLISH,
       ExtensionIconSet::MATCH_BIGGER,
       false);  // Not grayscale.
-  dict->SetString("icon", icon.spec());
+  dict->SetStringKey("icon", icon.spec());
 
   return dict;
 }

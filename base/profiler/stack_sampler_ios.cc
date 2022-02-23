@@ -9,7 +9,7 @@
 #if defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_X86_64)
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/profiler/native_unwinder_ios.h"
+#include "base/profiler/native_unwinder_apple.h"
 #include "base/profiler/stack_copier_suspend.h"
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/suspendable_thread_delegate_mac.h"
@@ -22,7 +22,9 @@ namespace {
 
 std::vector<std::unique_ptr<Unwinder>> CreateUnwinders() {
   std::vector<std::unique_ptr<Unwinder>> unwinders;
-  unwinders.push_back(std::make_unique<NativeUnwinderIOS>());
+  if (__builtin_available(iOS 12.0, *)) {
+    unwinders.push_back(std::make_unique<NativeUnwinderApple>());
+  }
   return unwinders;
 }
 

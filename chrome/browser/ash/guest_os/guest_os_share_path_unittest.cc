@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -35,11 +39,7 @@
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -58,7 +58,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
       Profile::FromBrowserContext(context),
       nullptr /* drive_integration_service */,
       nullptr /* power_manager_client */,
-      chromeos::disks::DiskMountManager::GetInstance(),
+      ash::disks::DiskMountManager::GetInstance(),
       nullptr /* file_system_provider_service */,
       file_manager::VolumeManager::GetMtpStorageInfoCallback());
 }
@@ -87,17 +87,23 @@ class GuestOsSharePathTest : public testing::Test {
       const base::FilePath& container_path,
       bool success,
       const std::string& failure_reason) {
-    const base::DictionaryValue* prefs =
+    const base::Value* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     EXPECT_NE(prefs->FindKey(shared_path_.value()), nullptr);
-    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList().size(), 1U);
-    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList()[0].GetString(),
+    EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetListDeprecated().size(),
+              1U);
+    EXPECT_EQ(prefs->FindKey(shared_path_.value())
+                  ->GetListDeprecated()[0]
+                  .GetString(),
               crostini::kCrostiniDefaultVmName);
     if (expected_persist == Persist::YES) {
       EXPECT_EQ(prefs->DictSize(), 2U);
       EXPECT_NE(prefs->FindKey(share_path_.value()), nullptr);
-      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList().size(), 1U);
-      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetList()[0].GetString(),
+      EXPECT_EQ(prefs->FindKey(share_path_.value())->GetListDeprecated().size(),
+                1U);
+      EXPECT_EQ(prefs->FindKey(share_path_.value())
+                    ->GetListDeprecated()[0]
+                    .GetString(),
                 expected_vm_name);
     } else {
       EXPECT_EQ(prefs->DictSize(), 1U);
@@ -172,7 +178,7 @@ class GuestOsSharePathTest : public testing::Test {
       const std::string& expected_failure_reason,
       bool success,
       const std::string& failure_reason) {
-    const base::DictionaryValue* prefs =
+    const base::Value* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     if (expected_persist == Persist::YES) {
       EXPECT_NE(prefs->FindKey(path.value()), nullptr);
@@ -237,7 +243,7 @@ class GuestOsSharePathTest : public testing::Test {
   void SetUpVolume() {
     // Setup Downloads and path to share, which depend on MyFilesVolume flag,
     // thus can't be on SetUp.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildVolumeManager));
@@ -249,7 +255,7 @@ class GuestOsSharePathTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(shared_path_));
     DictionaryPrefUpdate update(profile()->GetPrefs(),
                                 prefs::kGuestOSPathsSharedToVms);
-    base::DictionaryValue* shared_paths = update.Get();
+    base::Value* shared_paths = update.Get();
     base::Value termina(base::Value::Type::LIST);
     termina.Append(base::Value(crostini::kCrostiniDefaultVmName));
     shared_paths->SetKey(shared_path_.value(), std::move(termina));
@@ -309,6 +315,7 @@ class GuestOsSharePathTest : public testing::Test {
     run_loop_.reset();
     scoped_user_manager_.reset();
     profile_.reset();
+    ash::disks::DiskMountManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
@@ -717,24 +724,24 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
   profile()->GetPrefs()->Set(prefs::kGuestOSPathsSharedToVms, shared_paths);
 
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/a"));
-  const base::DictionaryValue* prefs =
+  const base::Value* prefs =
       profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding the same path again for same VM should not cause any changes.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/a"));
   prefs = profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
 
   // Adding the same path for a new VM adds to the vm list.
   guest_os_share_path_->RegisterPersistedPath("v2", base::FilePath("/a/a/a"));
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v1");
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[1].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[1].GetString(), "v2");
 
   // Add more paths.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/b"));
@@ -742,52 +749,52 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/b/a"));
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/b/a/a"));
   EXPECT_EQ(prefs->DictSize(), 5U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/b")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/c")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/a/a/b")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/c")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
 
   // Adding /a/a should remove /a/a/a, /a/a/b, /a/a/c.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a"));
   EXPECT_EQ(prefs->DictSize(), 4U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/a/b/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding /a should remove /a/a, /a/b/a.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a"));
   EXPECT_EQ(prefs->DictSize(), 3U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/b/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a")->GetListDeprecated()[0].GetString(), "v1");
 
   // Adding / should remove all others.
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/"));
   EXPECT_EQ(prefs->DictSize(), 2U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList()[0].GetString(), "v2");
-  EXPECT_EQ(prefs->FindKey("/")->GetList().size(), 1U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/a/a/a")->GetListDeprecated()[0].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated().size(), 1U);
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[0].GetString(), "v1");
 
   // Add / for v2.
   guest_os_share_path_->RegisterPersistedPath("v2", base::FilePath("/"));
   EXPECT_EQ(prefs->DictSize(), 1U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList().size(), 2U);
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[0].GetString(), "v1");
-  EXPECT_EQ(prefs->FindKey("/")->GetList()[1].GetString(), "v2");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated().size(), 2U);
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[0].GetString(), "v1");
+  EXPECT_EQ(prefs->FindKey("/")->GetListDeprecated()[1].GetString(), "v2");
 }
 
 TEST_F(GuestOsSharePathTest, UnsharePathSuccess) {
   SetUpVolume();
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-running"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -814,7 +821,7 @@ TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
   SetUpVolume();
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-not-running"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -831,7 +838,7 @@ TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
   SetUpVolume();
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("PvmDefault"));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));
@@ -849,7 +856,7 @@ TEST_F(GuestOsSharePathTest, UnsharePathArcvmNotRunning) {
   SetUpVolume();
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kGuestOSPathsSharedToVms);
-  base::DictionaryValue* shared_paths = update.Get();
+  base::Value* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value(arc::kArcVmName));
   shared_paths->SetKey(shared_path_.value(), std::move(vms));

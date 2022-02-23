@@ -7,7 +7,9 @@
 
 #include <vector>
 
-#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -16,25 +18,37 @@ class GURL;
 namespace net {
 
 class IPEndPoint;
+struct TransportInfo;
 
 }  // namespace net
 
 namespace network {
 
-// Returns the IPAddressSpace to which `endpoint` belongs.
+// Returns a human-readable string representing `space`, suitable for logging.
+base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
+    IPAddressSpaceToStringPiece(mojom::IPAddressSpace space);
+
+// Returns the `IPAddressSpace` to which the endpoint of `transport` belongs.
 //
-// Returns `kUnknown` for invalid IP addresses. Otherwise, takes into account
-// the `--ip-address-space-overrides` command-line switch.
+// When the transport is a proxied connection, returns `kUnknown`. See
+// https://github.com/WICG/private-network-access/issues/62 for more details on
+// the reasoning there.
 //
-// `endpoint`'s port is only used for matching to command-line overrides. It is
-// ignored otherwise. In particular, if no overrides are specified on the
+// When the transport is a direct connection, returns the IP address space of
+// `info.endpoint`. This returns `kUnknown` for invalid IP addresses. Otherwise,
+// takes into account the `--ip-address-space-overrides` command-line switch. If
+// no override applies, then follows this algorithm:
+// https://wicg.github.io/private-network-access/#determine-the-ip-address-space
+//
+// `info.endpoint`'s port is only used for matching to command-line overrides.
+// It is ignored otherwise. In particular, if no overrides are specified on the
 // command-line, then this function ignores the port entirely.
 //
 // WARNING: This can only be used as-is for subresource requests loaded over the
 // network. Special URL schemes and resource headers must also be taken into
 // account at higher layers.
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
-    IPEndPointToIPAddressSpace(const net::IPEndPoint& endpoint);
+    TransportInfoToIPAddressSpace(const net::TransportInfo& info);
 
 // Returns whether `lhs` is less public than `rhs`.
 //

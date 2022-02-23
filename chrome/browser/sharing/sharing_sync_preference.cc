@@ -259,7 +259,7 @@ SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
     return absl::nullopt;
 
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
-  for (auto& value : enabled_features_value->GetList()) {
+  for (auto& value : enabled_features_value->GetListDeprecated()) {
     DCHECK(value.is_int());
     int feature_value = value.GetInt();
     // Filter invalid enums from other browser versions.

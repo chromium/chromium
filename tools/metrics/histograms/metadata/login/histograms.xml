@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Login.ArcBugReportBackupTime" units="ms"
-    expires_after="2022-03-30">
+    expires_after="2022-06-30">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -32,19 +32,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Login.ArcContinueBootImpulseStatus"
+    enum="ArcContinueBootImpulseStatus" expires_after="2022-06-30">
+  <owner>vsomani@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records the status of Arc continue boot impulse. This is emitted every time
+    we upgrade from a mini to full container.
+  </summary>
+</histogram>
+
 <histogram name="Login.ArcContinueBootImpulseTime" units="ms"
     expires_after="2022-03-30">
+  <obsolete>
+    Removed 2022/02, replaced with ArcContinueBootImpulseTime2.
+  </obsolete>
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
     Tracks the time to execute arc-boot-continue impulse. This is emitted when
-    we upgrade the ARC container from mini to full.
+    we successfully upgrade the ARC container from mini to full.
+  </summary>
+</histogram>
+
+<histogram name="Login.ArcContinueBootImpulseTime2" units="ms"
+    expires_after="2022-06-30">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the time to execute arc-boot-continue impulse. This is emitted when
+    we successfully upgrade the ARC container from mini to full. This metrics
+    increases the number of buckets to 50 and a maximum duration of 60 seconds.
   </summary>
 </histogram>
 
 <histogram name="Login.BrowserShutdownTime" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2023-02-22">
   <owner>xiyuan@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Tracks the browser process shutdown time from when SIGTERM is sent to the
     browser process to when the browser process group exits (or gets killed by
@@ -78,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>achuith@chromium.org</owner>
   <summary>Chrome OS login failure reason.</summary>
 </histogram>
@@ -86,7 +111,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Login.InvalidCombinationsOfAllowedUsersPolicies"
     enum="AllowedUsersPoliciesInvalidState" expires_after="2022-04-17">
   <owner>emaamari@google.com</owner>
-  <owner>src/chromeos/policy/OWNERS</owner>
+  <owner>src/ash/components/policy/OWNERS</owner>
   <summary>
     Chrome OS histogram that keeps track of cases where devices have an invalid
     combination of allow_new_users and user_allowlist policies. This is emitted
@@ -100,19 +125,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Chrome OS histogram that keeps track of the days since the least frequently
     used account signed in. Reported on every boot and once a day after that.
-  </summary>
-</histogram>
-
-<histogram name="Login.MountNamespaceCreationSuccess" enum="Boolean"
-    expires_after="2021-10-10">
-  <obsolete>
-    Removed in M97.
-  </obsolete>
-  <owner>betuls@chromium.org</owner>
-  <owner>jorgelo@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
-  <summary>
-    Mount Namespace creation success status. Reported every time user signs in.
   </summary>
 </histogram>
 
@@ -131,15 +143,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.OfflineFailure.IsKnownUser" enum="LoginIsKnownUser"
-    expires_after="2020-10-14">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+<histogram name="Login.NumberOfUsersOnLoginScreen" units="units"
+    expires_after="M105">
+  <owner>mslus@chromium.org</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
-    On offline login failure, records whether it is for an existing user.
+    Records the number of users the login screen was initialized with. It is
+    emitted on processing the user list before displaying the screen. The count
+    includes all Regular, Child and Active Directory users.
   </summary>
 </histogram>
 
@@ -162,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PageLoad.DetectionType" enum="LoginDetectionType"
-    expires_after="2021-11-30">
+    expires_after="2022-11-30">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -181,18 +192,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.PasswordChangeFlow" enum="LoginPasswordChangeFlow"
-    expires_after="2021-10-10">
-  <obsolete>
-    Removed in M96.
-  </obsolete>
-  <owner>xiyuan@chromium.org</owner>
-  <owner>omrilio@chromium.org</owner>
-  <summary>
-    Records the UI flow after a possible password change is detected.
-  </summary>
-</histogram>
-
 <histogram name="Login.PasswordNotChanged.ReauthReason"
     enum="LoginReauthReasons" expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
@@ -204,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PasswordStoreSites.InitializedBeforeQuery"
-    enum="Boolean" expires_after="2022-04-03">
+    enum="Boolean" expires_after="2022-11-30">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -243,8 +242,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Login.ReauthToken.FetchDuration.{Result}" units="ms"
+    expires_after="2022-06-01">
+  <owner>yunkez@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Records the fetch duration of the reauth request token from the recovery
+    service when it {Result}. This is recorded on the GAIA reauth screen when
+    Cryptohome recovery is deemed to be needed in high probablity.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fails to fetch"/>
+    <variant name="Success" summary="successfully fetches"/>
+  </token>
+</histogram>
+
 <histogram name="Login.SessionExitType" enum="LoginSessionExitType"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>iby@chromium.org</owner>
   <summary>
     Tracks whether a ChromeOS user was logged out because Chrome repeatedly

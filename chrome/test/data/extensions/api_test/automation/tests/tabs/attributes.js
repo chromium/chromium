@@ -60,10 +60,12 @@ var disabledTests = [
 var allTests = [
   function testActiveDescendant() {
     let combobox = rootNode.find({ role: 'textFieldWithComboBox' });
+    assertTrue(combobox.isComboBox);
     combobox.addEventListener(EventType.FOCUS, () => {
       assertTrue('activeDescendant' in combobox,
                  'combobox button should have an activedescendant attribute');
       let listbox = rootNode.find({ role: 'listBox' });
+      assertFalse(listbox.isComboBox);
       let opt6 = listbox.children[5];
       assertEq(opt6, combobox.activeDescendant);
       chrome.test.succeed();
@@ -305,6 +307,7 @@ var allTests = [
   function testCheckedAttribute() {
     // Checkbox can use all 3 checked attribute values: true|false|mixed
     var checkTest1 = rootNode.find({ attributes: { name: 'check-test-1' } });
+    assertTrue(checkTest1.isCheckBox);
     assertTrue(Boolean(checkTest1));
     assertEq(checkTest1.checked, 'true');
 
@@ -338,6 +341,14 @@ var allTests = [
     var figure = rootNode.find({ attributes: { htmlTag: 'figure' } });
     assertTrue(Boolean(figure));
     assertEq(figure.htmlTag, 'figure');
+
+    chrome.test.succeed();
+  },
+
+  function testIsImageAttribute() {
+    var img = rootNode.find({ role: 'image'});
+    assertTrue(Boolean(img));
+    assertTrue(img.isImage);
 
     chrome.test.succeed();
   }

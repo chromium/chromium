@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_change_notifier.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -51,9 +52,7 @@ class MockManifestChangeNotifier : public ManifestChangeNotifier {
 class ManifestManagerTest : public PageTestBase {
  protected:
   ManifestManagerTest() : base_url_("http://internal.test/") {}
-  void SetUp() override {
-    PageTestBase::SetUp(IntSize());
-  }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   void TearDown() override {
     ThreadState::Current()->CollectAllGarbageForTesting();

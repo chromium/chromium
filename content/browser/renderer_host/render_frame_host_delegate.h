@@ -48,11 +48,11 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/window_open_disposition.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/native_widget_types.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #endif
@@ -293,14 +293,16 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Gets the GeolocationContext associated with this delegate.
   virtual device::mojom::GeolocationContext* GetGeolocationContext();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Gets an NFC implementation within the context of this delegate.
   virtual void GetNFC(RenderFrameHost* render_frame_host,
                       mojo::PendingReceiver<device::mojom::NFC> receiver);
 #endif
 
   // Returns whether entering fullscreen with EnterFullscreenMode() is allowed.
-  virtual bool CanEnterFullscreenMode();
+  virtual bool CanEnterFullscreenMode(
+      RenderFrameHostImpl* requesting_frame,
+      const blink::mojom::FullscreenOptions& options);
 
   // Notification that the frame with the given host wants to enter fullscreen
   // mode. Must only be called if CanEnterFullscreenMode returns true.
@@ -319,14 +321,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options);
-
-#if defined(OS_ANDROID)
-  // Updates information to determine whether a user gesture should carryover to
-  // future navigations. This is needed so navigations within a certain
-  // timeframe of a request initiated by a gesture will be treated as if they
-  // were initiated by a gesture too, otherwise the navigation may be blocked.
-  virtual void UpdateUserGestureCarryoverInfo() {}
-#endif
 
   // Let the delegate decide whether postMessage should be delivered to
   // |target_rfh| from a source frame in the given SiteInstance.  This defaults
@@ -354,6 +348,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // The frame called |window.focus()|.
   virtual void DidCallFocus() {}
+
+  // Returns whether this delegate is an inner WebContents for a guest.
+  // TODO(https://crbug.com/1295431): Remove in favor of tracking pending guest
+  // initializations instead.
+  virtual bool IsInnerWebContentsForGuest();
 
   // Searches the WebContents for a focused frame, potentially in an inner
   // WebContents. If this WebContents has no focused frame, returns |nullptr|.
@@ -426,8 +425,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // The main frame document element is ready. This happens when the document
   // has finished parsing.
-  virtual void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  virtual void PrimaryMainDocumentElementAvailable() {}
 
   // Reports that passive mixed content was found at the specified url.
   virtual void PassiveInsecureContentFound(const GURL& resource_url) {}
@@ -440,13 +438,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Opens a new view-source tab for the last committed document in |frame|.
   virtual void ViewSource(RenderFrameHostImpl* frame) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetJavaRenderFrameHostDelegate();
 #endif
-
-  // Notified that the render frame started loading a subresource.
-  virtual void SubresourceResponseStarted() {}
 
   // Notified that the render finished loading a subresource for the frame
   // associated with |render_frame_host|.
@@ -603,7 +598,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called when the renderer sends a response via DomAutomationController.
   // For example, `window.domAutomationController.send(foo())` sends the result
   // of foo() here.
-  virtual void DomOperationResponse(const std::string& json_string) {}
+  virtual void DomOperationResponse(RenderFrameHost* render_frame_host,
+                                    const std::string& json_string) {}
 
   virtual void OnCookiesAccessed(RenderFrameHostImpl* render_frame_host,
                                  const CookieAccessDetails& details) {}

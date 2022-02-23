@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -82,6 +83,9 @@ public class ModalDialogProperties {
     /** The title of the dialog. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
+    /** The maximum number of lines that the title can take. */
+    public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
+
     /** The title icon of the dialog. */
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
             new WritableObjectPropertyKey<>();
@@ -97,6 +101,14 @@ public class ModalDialogProperties {
     /** The text on the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
+
+    /**
+     * The icon on the positive button.
+     * Note: Not intended for general usage; please seek Chrome UX approval for
+     * an exception.
+     */
+    public static final WritableObjectPropertyKey<Drawable> POSITIVE_BUTTON_ICON =
+            new WritableObjectPropertyKey();
 
     /** Content description for the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_CONTENT_DESCRIPTION =
@@ -144,15 +156,26 @@ public class ModalDialogProperties {
     public static final ReadableIntPropertyKey BUTTON_STYLES = new ReadableIntPropertyKey();
 
     /**
-     * Whether the dialog is of fullscreen style.
+     * Whether the dialog is of fullscreen style. Both {@code FULLSCREEN_DIALOG} and
+     * {@code DIALOG_WHEN_LARGE} cannot be set to true.
      */
     public static final ReadableBooleanPropertyKey FULLSCREEN_DIALOG =
             new ReadableBooleanPropertyKey();
 
+    /**
+     * Whether the dialog is of DialogWhenLarge style i.e. fullscreen on phone, and dialog on large
+     * screen. Both {@code FULLSCREEN_DIALOG} and {@code DIALOG_WHEN_LARGE} cannot be set to true.
+     */
+    public static final ReadableBooleanPropertyKey DIALOG_WHEN_LARGE =
+            new ReadableBooleanPropertyKey();
+
+    /** Whether the dialog should be focused for accessibility. */
+    public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
-            TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
-            POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
-            NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
-            FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
-            FULLSCREEN_DIALOG};
+            TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
+            POSITIVE_BUTTON_ICON, POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED,
+            NEGATIVE_BUTTON_TEXT, NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED,
+            CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
+            TITLE_SCROLLABLE, BUTTON_STYLES, FULLSCREEN_DIALOG, DIALOG_WHEN_LARGE, FOCUS_DIALOG};
 }

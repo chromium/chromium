@@ -45,7 +45,7 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithBadLocale) {
             base::WriteFile(messages_file, data.c_str(), data.length()));
 
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en");
+  manifest.SetStringKey(keys::kDefaultLocale, "en");
   std::string error;
   EXPECT_FALSE(extension_l10n_util::ValidateExtensionLocales(
       temp.GetPath(), &manifest, &error));
@@ -362,7 +362,7 @@ TEST(ExtensionL10nUtil, LocalizeEmptyManifest) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithoutNameMsgAndEmptyDescription) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "no __MSG");
+  manifest.SetStringKey(keys::kName, "no __MSG");
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
 
@@ -373,14 +373,14 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithoutNameMsgAndEmptyDescription) {
   ASSERT_TRUE(manifest.GetString(keys::kName, &result));
   EXPECT_EQ("no __MSG", result);
 
-  EXPECT_FALSE(manifest.HasKey(keys::kDescription));
+  EXPECT_FALSE(manifest.FindKey(keys::kDescription));
 
   EXPECT_TRUE(error.empty());
 }
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithNameMsgAndEmptyDescription) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
 
@@ -391,15 +391,15 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameMsgAndEmptyDescription) {
   ASSERT_TRUE(manifest.GetString(keys::kName, &result));
   EXPECT_EQ("name", result);
 
-  EXPECT_FALSE(manifest.HasKey(keys::kDescription));
+  EXPECT_FALSE(manifest.FindKey(keys::kDescription));
 
   EXPECT_TRUE(error.empty());
 }
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithLocalLaunchURL) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "name");
-  manifest.SetString(keys::kLaunchLocalPath, "__MSG_launch_local_path__");
+  manifest.SetStringKey(keys::kName, "name");
+  manifest.SetStringPath(keys::kLaunchLocalPath, "__MSG_launch_local_path__");
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
 
@@ -415,8 +415,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithLocalLaunchURL) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithHostedLaunchURL) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "name");
-  manifest.SetString(keys::kLaunchWebURL, "__MSG_launch_web_url__");
+  manifest.SetStringPath(keys::kName, "name");
+  manifest.SetStringPath(keys::kLaunchWebURL, "__MSG_launch_web_url__");
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
 
@@ -432,8 +432,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithHostedLaunchURL) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithBadNameMsg) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name_is_bad__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
+  manifest.SetStringKey(keys::kName, "__MSG_name_is_bad__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
 
@@ -452,12 +452,12 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithBadNameMsg) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionDefaultTitleMsgs) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
   std::string action_title(keys::kBrowserAction);
   action_title.append(".");
   action_title.append(keys::kActionDefaultTitle);
-  manifest.SetString(action_title, "__MSG_title__");
+  manifest.SetStringPath(action_title, "__MSG_title__");
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -480,9 +480,9 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionDefaultTitleMsgs) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionOmniboxMsgs) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
-  manifest.SetString(keys::kOmniboxKeyword, "__MSG_omnibox_keyword__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
+  manifest.SetStringPath(keys::kOmniboxKeyword, "__MSG_omnibox_keyword__");
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -505,11 +505,11 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionOmniboxMsgs) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
 
   base::DictionaryValue handler;
-  handler.SetString(keys::kActionDefaultTitle, "__MSG_file_handler_title__");
+  handler.SetStringKey(keys::kActionDefaultTitle, "__MSG_file_handler_title__");
   base::Value handlers(base::Value::Type::LIST);
   handlers.Append(std::move(handler));
   manifest.SetKey(keys::kFileBrowserHandlers, std::move(handlers));
@@ -530,7 +530,7 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
   base::ListValue* handlers_raw = nullptr;
   manifest.GetList(keys::kFileBrowserHandlers, &handlers_raw);
   base::DictionaryValue* handler_raw = nullptr;
-  handlers_raw->GetList()[0].GetAsDictionary(&handler_raw);
+  handlers_raw->GetListDeprecated()[0].GetAsDictionary(&handler_raw);
   ASSERT_TRUE(handler_raw->GetString(keys::kActionDefaultTitle, &result));
   EXPECT_EQ("file handler title", result);
 
@@ -539,8 +539,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionFileHandlerTitle) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionCommandDescription) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
   base::Value commands(base::Value::Type::DICTIONARY);
   std::string commands_title(keys::kCommands);
 
@@ -581,8 +581,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithNameDescriptionCommandDescription) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithShortName) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "extension name");
-  manifest.SetString(keys::kShortName, "__MSG_short_name__");
+  manifest.SetStringKey(keys::kName, "extension name");
+  manifest.SetStringKey(keys::kShortName, "__MSG_short_name__");
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -598,8 +598,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithShortName) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithBadShortName) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "extension name");
-  manifest.SetString(keys::kShortName, "__MSG_short_name_bad__");
+  manifest.SetStringKey(keys::kName, "extension name");
+  manifest.SetStringKey(keys::kShortName, "__MSG_short_name_bad__");
 
   std::string error;
   std::unique_ptr<MessageBundle> messages(CreateManifestBundle());
@@ -615,8 +615,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithBadShortName) {
 
 TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "__MSG_name__");
-  manifest.SetString(keys::kDescription, "__MSG_description__");
+  manifest.SetStringKey(keys::kName, "__MSG_name__");
+  manifest.SetStringKey(keys::kDescription, "__MSG_description__");
 
   base::Value search_provider(base::Value::Type::DICTIONARY);
   search_provider.SetStringKey("name", "__MSG_country__");
@@ -626,7 +626,8 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
   search_provider.SetStringKey("suggest_url", "http://www.foo.__MSG_country__");
   manifest.SetPath(keys::kOverrideSearchProvider, std::move(search_provider));
 
-  manifest.SetString(keys::kOverrideHomepage, "http://www.foo.__MSG_country__");
+  manifest.SetStringPath(keys::kOverrideHomepage,
+                         "http://www.foo.__MSG_country__");
 
   base::Value startup_pages(base::Value::Type::LIST);
   startup_pages.Append("http://www.foo.__MSG_country__");
@@ -667,8 +668,11 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
 
   base::ListValue* startup_pages_raw = nullptr;
   ASSERT_TRUE(manifest.GetList(keys::kOverrideStartupPage, &startup_pages_raw));
-  ASSERT_TRUE(startup_pages_raw->GetString(0, &result));
-  EXPECT_EQ("http://www.foo.de", result);
+  base::Value::ConstListView startup_pages_raw_list =
+      startup_pages_raw->GetListDeprecated();
+  ASSERT_GT(startup_pages_raw_list.size(), 0u);
+  ASSERT_TRUE(startup_pages_raw_list[0].is_string());
+  EXPECT_EQ("http://www.foo.de", startup_pages_raw_list[0].GetString());
 
   EXPECT_TRUE(error.empty());
 }
@@ -687,7 +691,7 @@ TEST(ExtensionL10nUtil, ShouldRelocalizeManifestEmptyManifest) {
 // Tests that we relocalize without a current locale.
 TEST(ExtensionL10nUtil, ShouldRelocalizeManifestWithDefaultLocale) {
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en_US");
+  manifest.SetStringKey(keys::kDefaultLocale, "en_US");
   EXPECT_TRUE(extension_l10n_util::ShouldRelocalizeManifest(&manifest));
 }
 
@@ -695,7 +699,7 @@ TEST(ExtensionL10nUtil, ShouldRelocalizeManifestWithDefaultLocale) {
 TEST(ExtensionL10nUtil, ShouldRelocalizeManifestWithCurrentLocale) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-US");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kCurrentLocale, "en_US");
+  manifest.SetStringKey(keys::kCurrentLocale, "en_US");
   EXPECT_FALSE(extension_l10n_util::ShouldRelocalizeManifest(&manifest));
 }
 
@@ -703,8 +707,8 @@ TEST(ExtensionL10nUtil, ShouldRelocalizeManifestWithCurrentLocale) {
 TEST(ExtensionL10nUtil, ShouldRelocalizeManifestSameCurrentLocale) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-US");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en_US");
-  manifest.SetString(keys::kCurrentLocale, "en_US");
+  manifest.SetStringKey(keys::kDefaultLocale, "en_US");
+  manifest.SetStringKey(keys::kCurrentLocale, "en_US");
   EXPECT_FALSE(extension_l10n_util::ShouldRelocalizeManifest(&manifest));
 }
 
@@ -712,8 +716,8 @@ TEST(ExtensionL10nUtil, ShouldRelocalizeManifestSameCurrentLocale) {
 TEST(ExtensionL10nUtil, ShouldRelocalizeManifestDifferentCurrentLocale) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-US");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en_US");
-  manifest.SetString(keys::kCurrentLocale, "sr");
+  manifest.SetStringKey(keys::kDefaultLocale, "en_US");
+  manifest.SetStringKey(keys::kCurrentLocale, "sr");
   EXPECT_TRUE(extension_l10n_util::ShouldRelocalizeManifest(&manifest));
 }
 
@@ -722,8 +726,8 @@ TEST(ExtensionL10nUtil, ShouldRelocalizeManifestDifferentCurrentLocale) {
 TEST(ExtensionL10nUtil, ShouldRelocalizeManifestSameCurrentLocaleAsPreferred) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-GB", "en-CA");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en_US");
-  manifest.SetString(keys::kCurrentLocale, "en_CA");
+  manifest.SetStringKey(keys::kDefaultLocale, "en_US");
+  manifest.SetStringKey(keys::kCurrentLocale, "en_CA");
 
   // Preferred and current locale are both en_CA.
   EXPECT_FALSE(extension_l10n_util::ShouldRelocalizeManifest(&manifest));
@@ -735,8 +739,8 @@ TEST(ExtensionL10nUtil,
      ShouldRelocalizeManifestDifferentCurrentLocaleThanPreferred) {
   extension_l10n_util::ScopedLocaleForTest scoped_locale("en-GB", "en-CA");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kDefaultLocale, "en_US");
-  manifest.SetString(keys::kCurrentLocale, "en_GB");
+  manifest.SetStringKey(keys::kDefaultLocale, "en_US");
+  manifest.SetStringKey(keys::kCurrentLocale, "en_GB");
 
   // Requires relocalization as the preferred (en_CA) differs from current
   // (en_GB).

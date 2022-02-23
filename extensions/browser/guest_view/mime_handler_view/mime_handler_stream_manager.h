@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -20,7 +19,7 @@ namespace content {
 class BrowserContext;
 }
 
-FORWARD_DECLARE_TEST(MimeHandlerViewTest, Basic);
+FORWARD_DECLARE_TEST(ChromeMimeHandlerViewTest, Basic);
 
 namespace extensions {
 class Extension;
@@ -61,7 +60,7 @@ class MimeHandlerStreamManager : public KeyedService,
                            UnloadedExtensionReason reason) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(::MimeHandlerViewTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(::ChromeMimeHandlerViewTest, Basic);
 
   class EmbedderObserver;
 

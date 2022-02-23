@@ -44,7 +44,13 @@ class CopyOrMoveIOTask : public IOTask {
 
   void Cancel() override;
 
+  bool IsCrossFileSystemForTesting(
+      const storage::FileSystemURL& source_url,
+      const storage::FileSystemURL& destination_url);
+
  private:
+  bool IsCrossFileSystem(const storage::FileSystemURL& source_url,
+                         const storage::FileSystemURL& destination_url);
   void Complete(State state);
   void GetFileSize(size_t idx);
   void GotFileSize(size_t idx,

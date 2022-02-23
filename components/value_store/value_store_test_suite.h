@@ -9,8 +9,8 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "components/value_store/value_store.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace value_store {
@@ -65,7 +65,7 @@ class ValueStoreTestSuite : public testing::TestWithParam<ValueStoreTestParam> {
  private:
   base::ScopedTempDir temp_dir_;
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace value_store

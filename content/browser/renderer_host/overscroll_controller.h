@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "content/common/content_export.h"

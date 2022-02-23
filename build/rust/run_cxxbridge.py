@@ -19,7 +19,7 @@ import subprocess
 
 
 def run(exe, args, output, is_header):
-  cmdargs = [exe]
+  cmdargs = [os.path.abspath(exe)]
   cmdargs.extend(args)
   if is_header:
     cmdargs.extend(["--header"])

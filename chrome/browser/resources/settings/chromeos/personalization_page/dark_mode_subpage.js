@@ -7,11 +7,26 @@
  *  dark mode settings to switch between dark and light mode, theming,
  *  and a scheduler.
  */
+import '../../controls/settings_radio_group.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-dark-mode-subpage',
 
   behaviors: [
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
@@ -39,13 +54,13 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (route !== settings.routes.DARK_MODE) {
+    if (route !== routes.DARK_MODE) {
       return;
     }
     this.attemptDeepLink();

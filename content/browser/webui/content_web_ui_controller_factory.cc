@@ -13,6 +13,7 @@
 #include "content/browser/net/network_errors_listing_ui.h"
 #include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals_ui.h"
+#include "content/browser/quota/quota_internals_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"
 #include "content/browser/tracing/tracing_ui.h"
 #include "content/browser/ukm_internals_ui.h"
@@ -33,7 +34,7 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
     return WebUI::kNoWebUI;
 
   if (url.host_piece() == kChromeUIWebRTCInternalsHost ||
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       url.host_piece() == kChromeUITracingHost ||
 #endif
       url.host_piece() == kChromeUIGpuHost ||
@@ -45,6 +46,7 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
       url.host_piece() == kChromeUIPrerenderInternalsHost ||
       url.host_piece() == kChromeUIProcessInternalsHost ||
       url.host_piece() == kChromeUIAttributionInternalsHost ||
+      url.host_piece() == kChromeUIQuotaInternalsHost ||
       url.host_piece() == kChromeUIUkmHost) {
     return const_cast<ContentWebUIControllerFactory*>(this);
   }
@@ -62,7 +64,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                            const GURL& url) {
   if (!url.SchemeIs(kChromeUIScheme))
     return nullptr;
-
   if (url.host_piece() == kChromeUIGpuHost)
     return std::make_unique<GpuInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIHistogramHost)
@@ -73,7 +74,7 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<ServiceWorkerInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUINetworkErrorsListingHost)
     return std::make_unique<NetworkErrorsListingUI>(web_ui);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (url.host_piece() == kChromeUITracingHost)
     return std::make_unique<TracingUI>(web_ui);
 #endif
@@ -85,6 +86,8 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<ProcessInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIAttributionInternalsHost)
     return std::make_unique<AttributionInternalsUI>(web_ui);
+  if (url.host_piece() == kChromeUIQuotaInternalsHost)
+    return std::make_unique<QuotaInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIMediaInternalsHost) {

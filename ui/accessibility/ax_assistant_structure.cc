@@ -78,9 +78,9 @@ std::u16string GetInnerText(const AXNode* node) {
     return node->GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
   std::u16string text;
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
-    text += GetInnerText(child);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
+    text += GetInnerText(iter.get());
   }
   return text;
 }
@@ -160,9 +160,9 @@ std::u16string GetText(const AXNode* node) {
   }
 
   if (text.empty() && IsLeaf(node)) {
-    for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-      AXNode* child = node->GetUnignoredChildAtIndex(i);
-      text += GetText(child);
+    for (auto iter = node->UnignoredChildrenBegin();
+         iter != node->UnignoredChildrenEnd(); ++iter) {
+      text += GetInnerText(iter.get());
     }
   }
 
@@ -245,18 +245,14 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   result->text_size = -1.0;
   result->bgcolor = 0;
   result->color = 0;
-  result->bold = 0;
-  result->italic = 0;
-  result->line_through = 0;
-  result->underline = 0;
+  result->bold = false;
+  result->italic = false;
+  result->line_through = false;
+  result->underline = false;
 
   if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
-    gfx::RectF text_size_rect(
-        0, 0, 1, node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize));
-    gfx::Rect scaled_text_size_rect =
-        gfx::ToEnclosingRect(tree->RelativeToTreeBounds(node, text_size_rect));
-    result->text_size = scaled_text_size_rect.height();
-
+    result->text_size =
+        node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
     result->color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
     result->bgcolor =
         node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
@@ -310,11 +306,11 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   if (!class_name.empty())
     result->html_attributes.push_back({"class", class_name});
 
-  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
-    AXNode* child = node->GetUnignoredChildAtIndex(i);
+  for (auto iter = node->UnignoredChildrenBegin();
+       iter != node->UnignoredChildrenEnd(); ++iter) {
     auto* n = AddChild(assistant_tree);
     result->children_indices.push_back(assistant_tree->nodes.size() - 1);
-    WalkAXTreeDepthFirst(child, absolute_rect, update, tree, config,
+    WalkAXTreeDepthFirst(iter.get(), absolute_rect, update, tree, config,
                          assistant_tree, n);
   }
 }
@@ -388,6 +384,8 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
       return kAXCheckBoxClassname;
     case ax::mojom::Role::kRadioButton:
       return kAXRadioButtonClassname;
+    case ax::mojom::Role::kRadioGroup:
+      return kAXRadioGroupClassname;
     case ax::mojom::Role::kSwitch:
     case ax::mojom::Role::kToggleButton:
       return kAXToggleButtonClassname;

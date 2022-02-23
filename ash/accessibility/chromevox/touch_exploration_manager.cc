@@ -255,7 +255,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
 
 bool TouchExplorationManager::VolumeAdjustSoundEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kDisableVolumeAdjustSound);
+      switches::kDisableVolumeAdjustSound);
 }
 
 }  // namespace ash

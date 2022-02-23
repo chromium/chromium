@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -581,7 +582,7 @@ TEST_F(TransportClientSocketPoolTest, InitHostResolutionFailure) {
 
 TEST_F(TransportClientSocketPoolTest, InitConnectionFailure) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kFailing);
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   EXPECT_EQ(
@@ -755,7 +756,7 @@ TEST_F(TransportClientSocketPoolTest, TwoRequestsCancelOne) {
 
 TEST_F(TransportClientSocketPoolTest, ConnectCancelConnect) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(
@@ -898,8 +899,8 @@ class RequestSocketCallback : public TestCompletionCallbackBase {
 
   const ClientSocketPool::GroupId group_id_;
   scoped_refptr<ClientSocketPool::SocketParams> socket_params_;
-  ClientSocketHandle* const handle_;
-  TransportClientSocketPool* const pool_;
+  const raw_ptr<ClientSocketHandle> handle_;
+  const raw_ptr<TransportClientSocketPool> pool_;
   bool within_callback_;
 };
 
@@ -926,7 +927,7 @@ TEST_F(TransportClientSocketPoolTest, RequestTwice) {
 // cancelled.
 TEST_F(TransportClientSocketPoolTest, CancelActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
 
   // Queue up all the requests
   EXPECT_THAT(StartRequest("a", kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -956,7 +957,7 @@ TEST_F(TransportClientSocketPoolTest, CancelActiveRequestWithPendingRequests) {
 // Make sure that pending requests get serviced after active requests fail.
 TEST_F(TransportClientSocketPoolTest, FailingActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPendingFailing);
 
   const int kNumRequests = 2 * kMaxSocketsPerGroup + 1;
   ASSERT_LE(kNumRequests, kMaxSockets);  // Otherwise the test will hang.
@@ -1034,6 +1035,63 @@ TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnIPAddressChange) {
   EXPECT_EQ(0, pool_->IdleSocketCount());
 }
 
+TEST(TransportClientSocketPoolStandaloneTest, DontCleanupOnIPAddressChange) {
+  // This test manually sets things up in the same way
+  // TransportClientSocketPoolTest does, but it creates a
+  // TransportClientSocketPool with cleanup_on_ip_address_changed = false. Since
+  // this is the only test doing this, it's not worth extending
+  // TransportClientSocketPoolTest to support this scenario.
+  base::test::SingleThreadTaskEnvironment task_environment;
+  std::unique_ptr<MockCertVerifier> cert_verifier =
+      std::make_unique<MockCertVerifier>();
+  SpdySessionDependencies session_deps;
+  session_deps.cert_verifier = std::move(cert_verifier);
+  std::unique_ptr<HttpNetworkSession> http_network_session =
+      SpdySessionDependencies::SpdyCreateSession(&session_deps);
+  auto common_connect_job_params = std::make_unique<CommonConnectJobParams>(
+      http_network_session->CreateCommonConnectJobParams());
+  MockTransportClientSocketFactory client_socket_factory(NetLog::Get());
+  common_connect_job_params->client_socket_factory = &client_socket_factory;
+
+  scoped_refptr<ClientSocketPool::SocketParams> params(
+      ClientSocketPool::SocketParams::CreateForHttpForTesting());
+  auto pool = std::make_unique<TransportClientSocketPool>(
+      kMaxSockets, kMaxSocketsPerGroup, kUnusedIdleSocketTimeout,
+      ProxyServer::Direct(), false /* is_for_websockets */,
+      common_connect_job_params.get(),
+      false /* cleanup_on_ip_address_change */);
+  const ClientSocketPool::GroupId group_id(
+      url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      SecureDnsPolicy::kAllow);
+  TestCompletionCallback callback;
+  ClientSocketHandle handle;
+  int rv =
+      handle.Init(group_id, params, absl::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  pool.get(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(handle.is_initialized());
+  EXPECT_FALSE(handle.socket());
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(handle.is_initialized());
+  EXPECT_TRUE(handle.socket());
+
+  handle.Reset();
+  // Need to run all pending to release the socket back to the pool.
+  base::RunLoop().RunUntilIdle();
+  // Now we should have 1 idle socket.
+  EXPECT_EQ(1, pool->IdleSocketCount());
+
+  // Since we set cleanup_on_ip_address_change = false, we should still have 1
+  // idle socket after an IP address change.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  base::RunLoop().RunUntilIdle();  // Notification happens async.
+  EXPECT_EQ(1, pool->IdleSocketCount());
+}
+
 TEST_F(TransportClientSocketPoolTest, SSLCertError) {
   StaticSocketDataProvider data;
   tagging_client_socket_factory_.AddSocketDataProvider(&data);
@@ -1042,11 +1100,13 @@ TEST_F(TransportClientSocketPoolTest, SSLCertError) {
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "ssl.server.test",
                                       443);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
 
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   ClientSocketHandle handle;
   TestCompletionCallback callback;
@@ -1099,30 +1159,32 @@ TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnSSLConfigChange) {
 
 TEST_F(TransportClientSocketPoolTest, BackupSocketConnect) {
   // Case 1 tests the first socket stalling, and the backup connecting.
-  MockTransportClientSocketFactory::ClientSocketType case1_types[] = {
-    // The first socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
-    // The second socket will connect more quickly.
-    MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules1[] = {
+      // The first socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
+      // The second socket will connect more quickly.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous),
   };
 
   // Case 2 tests the first socket being slow, so that we start the
   // second connect, but the second connect stalls, and we still
   // complete the first.
-  MockTransportClientSocketFactory::ClientSocketType case2_types[] = {
-    // The first socket will connect, although delayed.
-    MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
-    // The second socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules2[] = {
+      // The first socket will connect, although delayed.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed),
+      // The second socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
   };
 
-  MockTransportClientSocketFactory::ClientSocketType* cases[2] = {
-    case1_types,
-    case2_types
-  };
+  base::span<const MockTransportClientSocketFactory::Rule> cases[2] = {rules1,
+                                                                       rules2};
 
-  for (size_t index = 0; index < base::size(cases); ++index) {
-    client_socket_factory_.set_client_socket_types(cases[index], 2);
+  for (auto rules : cases) {
+    client_socket_factory_.SetRules(rules);
 
     EXPECT_EQ(0, pool_->IdleSocketCount());
 
@@ -1164,7 +1226,7 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketConnect) {
 // of the backup socket, but then we cancelled the request after that.
 TEST_F(TransportClientSocketPoolTest, BackupSocketCancel) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kStalled);
 
   enum { CANCEL_BEFORE_WAIT, CANCEL_AFTER_WAIT };
 
@@ -1209,14 +1271,16 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketCancel) {
 // of the backup socket and never completes, and then the backup
 // connection fails.
 TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterStall) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-    // The first socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
-    // The second socket will fail immediately.
-    MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // The first socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
+      // The second socket will fail immediately.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
   };
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
 
   EXPECT_EQ(0, pool_->IdleSocketCount());
 
@@ -1259,14 +1323,16 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterStall) {
 // of the backup socket and eventually completes, but the backup socket
 // fails.
 TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterDelay) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-    // The first socket will connect, although delayed.
-    MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
-    // The second socket will not connect.
-    MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // The first socket will connect, although delayed.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed),
+      // The second socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
   };
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
   client_socket_factory_.set_delay(base::Seconds(5));
 
   EXPECT_EQ(0, pool_->IdleSocketCount());
@@ -1670,13 +1736,15 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
       url::SchemeHostPort(url::kHttpsScheme, kHost, 443),
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
       handle.Init(group_id,
                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
-                      std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-                      nullptr /* ssl_config_for_proxy */),
+                      std::move(ssl_config_for_origin),
+                      /*ssl_config_for_proxy=*/nullptr),
                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
                   ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
                   ClientSocketPool::ProxyAuthCallback(), pool_.get(),
@@ -1999,7 +2067,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to
 // returned sockets.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TransportClientSocketPoolTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
@@ -2244,10 +2312,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirect) {
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
 
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test socket is tagged before connected.
   uint64_t old_traffic = GetTaggedBytes(tag_val1);
@@ -2314,10 +2384,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSockets) {
       url::SchemeHostPort(test_server.base_url()),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test connect jobs that are orphaned and then adopted, appropriately apply
   // new tag. Request socket with |tag1|.
@@ -2378,10 +2450,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSocketsFullPool) {
       url::SchemeHostPort(test_server.base_url()),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test that sockets paused by a full underlying socket pool are properly
   // connected and tagged when underlying pool is freed up.
@@ -2532,10 +2606,12 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
       kDestination, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
 
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Verify requested socket is tagged properly.
   ClientSocketHandle handle;
@@ -2569,7 +2645,7 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
   handle.Reset();
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Class that enables tests to set mock time.
 class TransportClientSocketPoolMockNowSourceTest

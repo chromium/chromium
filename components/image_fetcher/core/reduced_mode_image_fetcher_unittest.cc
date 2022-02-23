@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -154,7 +155,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
   base::SimpleTestClock clock_;
   TestingPrefServiceSimple test_prefs_;
   base::ScopedTempDir data_dir_;
-  FakeDB<CachedImageMetadataProto>* db_;
+  raw_ptr<FakeDB<CachedImageMetadataProto>> db_;
   std::map<std::string, CachedImageMetadataProto> metadata_store_;
 
   base::test::TaskEnvironment task_environment_;

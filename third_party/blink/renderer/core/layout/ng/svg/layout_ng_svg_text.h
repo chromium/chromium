@@ -34,12 +34,14 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
+  void InsertedIntoTree() override;
+  void WillBeRemovedFromTree() override;
   gfx::RectF ObjectBoundingBox() const override;
   gfx::RectF StrokeBoundingBox() const override;
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
-  void AbsoluteQuads(Vector<FloatQuad>& quads,
+  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode) const override;
-  FloatRect LocalBoundingBoxRectForAccessibility() const override;
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
   bool NodeAtPoint(HitTestResult& result,

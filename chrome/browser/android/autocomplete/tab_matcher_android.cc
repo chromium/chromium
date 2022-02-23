@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/autocomplete/tab_matcher_android.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -49,7 +50,7 @@ class AutocompleteClientTabAndroidUserData
   }
   friend class TabAndroidUserData<AutocompleteClientTabAndroidUserData>;
 
-  TabAndroid* tab_;
+  raw_ptr<TabAndroid> tab_;
   bool initialized_ = false;
   GURL stripped_url_;
 

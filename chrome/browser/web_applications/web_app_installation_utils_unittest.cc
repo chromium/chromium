@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,7 +32,7 @@ GURL StartUrl() {
 }  // namespace
 
 TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
-  WebApplicationInfo web_app_info;
+  WebAppInstallInfo web_app_info;
   web_app_info.start_url = GURL("https://www.chromium.org/index.html");
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
   web_app_info.title = u"App Name";
@@ -71,7 +71,7 @@ TEST(WebAppInstallationUtils, SetWebAppManifestFields_Summary) {
 }
 
 TEST(WebAppInstallationUtils, SetWebAppManifestFields_ShareTarget) {
-  WebApplicationInfo web_app_info;
+  WebAppInstallInfo web_app_info;
   web_app_info.start_url = StartUrl();
   web_app_info.scope = web_app_info.start_url.GetWithoutFilename();
   web_app_info.title = u"App Name";

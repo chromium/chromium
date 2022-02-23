@@ -9,7 +9,11 @@ namespace extensions {
 namespace web_navigation_api_constants {
 
 const char kErrorKey[] = "error";
+const char kDocumentIdKey[] = "documentId";
+const char kDocumentLifecycleKey[] = "documentLifecycle";
 const char kFrameIdKey[] = "frameId";
+const char kFrameTypeKey[] = "frameType";
+const char kParentDocumentIdKey[] = "parentDocumentId";
 const char kParentFrameIdKey[] = "parentFrameId";
 const char kProcessIdKey[] = "processId";
 const char kReplacedTabIdKey[] = "replacedTabId";

@@ -136,6 +136,31 @@ TEST(FontDescriptionTest, VariationSettingsDifferent) {
   ASSERT_NE(second_cache_key_a, second_cache_key_b);
 }
 
+TEST(FontDescriptionTest, PaletteDifferent) {
+  FontDescription a;
+  FontDescription b(a);
+
+  scoped_refptr<FontPalette> palette_a =
+      FontPalette::Create(FontPalette::kLightPalette);
+
+  scoped_refptr<FontPalette> palette_b =
+      FontPalette::Create(FontPalette::kDarkPalette);
+
+  ASSERT_NE(*palette_a, *palette_b);
+
+  a.SetFontPalette(palette_a);
+  b.SetFontPalette(palette_b);
+
+  ASSERT_NE(a, b);
+
+  FontFaceCreationParams test_creation_params;
+
+  FontCacheKey cache_key_a = a.CacheKey(test_creation_params, false);
+  FontCacheKey cache_key_b = b.CacheKey(test_creation_params, false);
+
+  ASSERT_NE(cache_key_a, cache_key_b);
+}
+
 TEST(FontDescriptionTest, ToString) {
   FontDescription description;
 

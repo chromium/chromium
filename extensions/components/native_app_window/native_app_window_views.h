@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -153,9 +153,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool GetCanMaximizeWindow() const;
   bool GetCanResizeWindow() const;
 
-  extensions::AppWindow* app_window_ = nullptr;  // Not owned.
-  views::WebView* web_view_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<extensions::AppWindow> app_window_ = nullptr;  // Not owned.
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   std::unique_ptr<SkRegion> draggable_region_;
 

@@ -99,7 +99,6 @@ class COMPONENT_EXPORT(X11) Damage {
   struct NotifyEvent {
     static constexpr int type_id = 1;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     ReportLevel level{};
     uint16_t sequence{};
     Drawable drawable{};

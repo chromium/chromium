@@ -4,10 +4,8 @@
 
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 
-#include "ios/chrome/browser/infobars/infobar_badge_model.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/ui/badges/badge_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,11 +15,6 @@ namespace {
 // Returns |infobar|'s InfobarType.
 InfobarType GetInfobarType(infobars::InfoBar* infobar) {
   return static_cast<InfoBarIOS*>(infobar)->infobar_type();
-}
-// Returns whether |infobar| supports badges.
-bool SupportsBadges(infobars::InfoBar* infobar) {
-  return BadgeTypeForInfobarType(GetInfobarType(infobar)) !=
-         BadgeType::kBadgeTypeNone;
 }
 }  // namespace
 
@@ -53,57 +46,59 @@ void InfobarBadgeTabHelper::UpdateBadgeForInfobarReverted(
   OnInfobarAcceptanceStateChanged(infobar_type, /*accepted=*/false);
 }
 
+void InfobarBadgeTabHelper::UpdateBadgeForInfobarRead(
+    InfobarType infobar_type) {
+  if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
+    return;
+  infobar_badge_states_[infobar_type] |= BadgeStateRead;
+}
+
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerPresented(
     InfobarType infobar_type) {
-  infobar_badge_models_[infobar_type].badgeState |= BadgeStatePresented;
-  [delegate_ updateInfobarBadge:infobar_badge_models_[infobar_type]
-                    forWebState:web_state_];
+  if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
+    return;
+  infobar_badge_states_[infobar_type] |= BadgeStatePresented;
+  [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
 void InfobarBadgeTabHelper::UpdateBadgeForInfobarBannerDismissed(
     InfobarType infobar_type) {
-  infobar_badge_models_[infobar_type].badgeState &= ~BadgeStatePresented;
-  [delegate_ updateInfobarBadge:infobar_badge_models_[infobar_type]
-                    forWebState:web_state_];
+  if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
+    return;
+  infobar_badge_states_[infobar_type] &= ~BadgeStatePresented;
+  [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
-NSArray<id<BadgeItem>>* InfobarBadgeTabHelper::GetInfobarBadgeItems() {
-  NSMutableArray* badge_items = [NSMutableArray array];
-  for (auto& infobar_type_badge_model_pair : infobar_badge_models_) {
-    id<BadgeItem> badge = infobar_type_badge_model_pair.second;
-    if (badge)
-      [badge_items addObject:badge];
-  }
-  return badge_items;
+std::map<InfobarType, BadgeState> InfobarBadgeTabHelper::GetInfobarBadgeStates()
+    const {
+  return infobar_badge_states_;
 }
 
 #pragma mark Private
 
 void InfobarBadgeTabHelper::ResetStateForAddedInfobar(
     InfobarType infobar_type) {
-  InfobarBadgeModel* new_badge =
-      [[InfobarBadgeModel alloc] initWithInfobarType:infobar_type];
-  infobar_badge_models_[infobar_type] = new_badge;
-  [delegate_ addInfobarBadge:new_badge forWebState:web_state_];
+  infobar_badge_states_[infobar_type] = BadgeStateNone;
+  [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
 void InfobarBadgeTabHelper::ResetStateForRemovedInfobar(
     InfobarType infobar_type) {
-  InfobarBadgeModel* removed_badge = infobar_badge_models_[infobar_type];
-  infobar_badge_models_[infobar_type] = nil;
-  [delegate_ removeInfobarBadge:removed_badge forWebState:web_state_];
+  infobar_badge_states_.erase(infobar_type);
+  [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
 void InfobarBadgeTabHelper::OnInfobarAcceptanceStateChanged(
     InfobarType infobar_type,
     bool accepted) {
-  id<BadgeItem> item = infobar_badge_models_[infobar_type];
+  if (infobar_badge_states_.find(infobar_type) == infobar_badge_states_.end())
+    return;
   if (accepted) {
-    item.badgeState |= BadgeStateAccepted | BadgeStateRead;
+    infobar_badge_states_[infobar_type] |= BadgeStateAccepted | BadgeStateRead;
   } else {
-    item.badgeState &= ~BadgeStateAccepted;
+    infobar_badge_states_[infobar_type] &= ~BadgeStateAccepted;
   }
-  [delegate_ updateInfobarBadge:item forWebState:web_state_];
+  [delegate_ updateBadgesShownForWebState:web_state_];
 }
 
 #pragma mark - InfobarBadgeTabHelper::InfobarAcceptanceObserver
@@ -146,7 +141,8 @@ InfobarBadgeTabHelper::InfobarManagerObserver::~InfobarManagerObserver() =
 
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
-  if (SupportsBadges(infobar)) {
+  if ([tab_helper_->delegate_
+          badgeSupportedForInfobarType:GetInfobarType(infobar)]) {
     tab_helper_->ResetStateForAddedInfobar(GetInfobarType(infobar));
     infobar_accept_observer_->scoped_observations().AddObservation(
         static_cast<InfoBarIOS*>(infobar));
@@ -156,7 +152,8 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarRemoved(
     infobars::InfoBar* infobar,
     bool animate) {
-  if (SupportsBadges(infobar)) {
+  if ([tab_helper_->delegate_
+          badgeSupportedForInfobarType:GetInfobarType(infobar)]) {
     tab_helper_->ResetStateForRemovedInfobar(GetInfobarType(infobar));
     infobar_accept_observer_->scoped_observations().RemoveObservation(
         static_cast<InfoBarIOS*>(infobar));

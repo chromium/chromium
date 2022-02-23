@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/query_tiles/internal/image_loader.h"
 #include "components/query_tiles/internal/tile_group.h"
@@ -101,7 +102,7 @@ class ImagePrefetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  MockImageLoader* image_loader_;
+  raw_ptr<MockImageLoader> image_loader_;
   std::unique_ptr<ImagePrefetcher> image_prefetcher_;
 };
 

@@ -16,4 +16,7 @@ message CTConfig {
   bool disable_ct_enforcement = 1;
   // Logs Chrome should recognize.
   CTLogList log_list = 2;
+  // A list of the leaf hashes for the most popular SCTs encountered in Chrome
+  // recently. Sorted lexicographically.
+  repeated bytes popular_scts = 3;
 }

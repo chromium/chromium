@@ -22,7 +22,6 @@ DefaultSupportedQuicVersions() {
   // an addQuicHint() API which uses the first version from this list until
   // it receives Alt-Svc from the server.
   return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::RFCv1(),
-                                       quic::ParsedQuicVersion::Draft29(),
                                        quic::ParsedQuicVersion::Q050()};
 }
 
@@ -31,7 +30,8 @@ DefaultSupportedQuicVersions() {
 // should only use versions at least as recent as the oldest default version.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
   return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q043(),
-                                       quic::ParsedQuicVersion::Q046()};
+                                       quic::ParsedQuicVersion::Q046(),
+                                       quic::ParsedQuicVersion::Draft29()};
 }
 
 // When a connection is idle for 30 seconds it will be closed.

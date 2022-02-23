@@ -33,15 +33,16 @@ CSSNumericLiteralValue* Create(UnitValue v) {
 }
 
 CSSPrimitiveValue* CreateAddition(UnitValue a, UnitValue b) {
-  return CSSMathFunctionValue::Create(CSSMathExpressionBinaryOperation::Create(
-      CSSMathExpressionNumericLiteral::Create(Create(a)),
-      CSSMathExpressionNumericLiteral::Create(Create(b)),
-      CSSMathOperator::kAdd));
+  return CSSMathFunctionValue::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionNumericLiteral::Create(Create(a)),
+          CSSMathExpressionNumericLiteral::Create(Create(b)),
+          CSSMathOperator::kAdd));
 }
 
 CSSPrimitiveValue* CreateNonNegativeSubtraction(UnitValue a, UnitValue b) {
   return CSSMathFunctionValue::Create(
-      CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
           CSSMathExpressionNumericLiteral::Create(Create(a)),
           CSSMathExpressionNumericLiteral::Create(Create(b)),
           CSSMathOperator::kSubtract),

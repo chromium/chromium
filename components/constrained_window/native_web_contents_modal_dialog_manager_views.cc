@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/auto_reset.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -43,9 +42,6 @@ NativeWebContentsModalDialogManagerViews::
 
 NativeWebContentsModalDialogManagerViews::
     ~NativeWebContentsModalDialogManagerViews() {
-  // Temporary, for debugging https://crbug.com/1207814.
-  CHECK(!within_show_);
-
   if (host_)
     host_->RemoveObserver(this);
 
@@ -72,7 +68,7 @@ void NativeWebContentsModalDialogManagerViews::ManageDialog() {
   wm::SetChildWindowVisibilityChangesAnimated(parent);
   // No animations should get performed on the window since that will re-order
   // the window stack which will then cause many problems.
-  if (parent && parent->parent()) {
+  if (parent->parent()) {
     parent->parent()->SetProperty(aura::client::kAnimationsDisabledKey, true);
   }
 
@@ -98,12 +94,7 @@ void NativeWebContentsModalDialogManagerViews::Show() {
         widget->GetNativeWindow()->parent());
   }
 #endif
-
-  // `host_` should not be null. If you can reproduce this, please comment on
-  // https://crbug.com/1207814.
   CHECK(host_);
-  // Temporary, for debugging https://crbug.com/1207814.
-  base::AutoReset<bool> within_show(&within_show_, true);
 
   constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
   if (host_->ShouldActivateDialog()) {

@@ -10,7 +10,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
+namespace partition_alloc {
 
 // PartitionAlloc supports setting hooks to observe allocations/frees as they
 // occur as well as 'override' hooks that allow overriding those operations.
@@ -79,6 +79,14 @@ class BASE_EXPORT PartitionAllocHooks {
   static std::atomic<FreeOverrideHook*> free_override_hook_;
   static std::atomic<ReallocOverrideHook*> realloc_override_hook_;
 };
+
+}  // namespace partition_alloc
+
+namespace base {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::PartitionAllocHooks;
 
 }  // namespace base
 

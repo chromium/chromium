@@ -40,6 +40,7 @@ final class BookmarkListEntry {
         int SECTION_HEADER = 6;
         int SHOPPING_POWER_BOOKMARK = 7;
         int TAG_CHIP_LIST = 8;
+        int SHOPPING_FILTER = 9;
     }
 
     /**
@@ -102,6 +103,14 @@ final class BookmarkListEntry {
     static BookmarkListEntry createDivider() {
         return new BookmarkListEntry(
                 ViewType.DIVIDER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);
+    }
+
+    /**
+     * Creates a price-tracking filter.
+     */
+    static BookmarkListEntry createShoppingFilter() {
+        return new BookmarkListEntry(
+                ViewType.SHOPPING_FILTER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null);
     }
 
     /**

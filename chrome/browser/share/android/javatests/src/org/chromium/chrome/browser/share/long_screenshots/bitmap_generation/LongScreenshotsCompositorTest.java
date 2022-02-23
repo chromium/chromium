@@ -22,8 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
@@ -34,7 +32,6 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
 public class LongScreenshotsCompositorTest {
     private TestPlayerCompositorDelegate mCompositorDelegate;
     private Bitmap mTestBitmap = Bitmap.createBitmap(512, 1024, Bitmap.Config.ARGB_8888);
@@ -171,7 +168,7 @@ public class LongScreenshotsCompositorTest {
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(
-                null, null, new int[] {1, 2}, new int[] {3, 4}, null, null, null, 0);
+                null, null, new int[] {1, 2}, new int[] {3, 4}, null, null, null, 0f, 0);
         Assert.assertEquals(1, compositor.getContentSize().getWidth());
         Assert.assertEquals(2, compositor.getContentSize().getHeight());
         Assert.assertEquals(3, compositor.getScrollOffset().x);
@@ -210,7 +207,7 @@ public class LongScreenshotsCompositorTest {
                 mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        compositor.onCompositorReady(null, null, null, null, null, null, null, 0f, 0);
         Assert.assertEquals(0, compositor.getContentSize().getWidth());
 
         // RequestBitmap in mCompositorDelegate should match

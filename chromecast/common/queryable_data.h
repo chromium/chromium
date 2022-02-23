@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"

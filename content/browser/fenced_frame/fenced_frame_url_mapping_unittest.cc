@@ -4,7 +4,9 @@
 
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -45,11 +47,12 @@ void ValidatePendingAdComponentsMap(
 
     // The URNs should not yet be in `fenced_frame_url_mapping`, so they can
     // safely be added to it.
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        nested_ad_components;
-    EXPECT_FALSE(fenced_frame_url_mapping->ConvertFencedFrameURNToURL(
-        ad_component_urns[i], nested_ad_components));
-    EXPECT_FALSE(nested_ad_components);
+    TestFencedFrameURLMappingResultObserver observer;
+    fenced_frame_url_mapping->ConvertFencedFrameURNToURL(ad_component_urns[i],
+                                                         &observer);
+    EXPECT_TRUE(observer.mapping_complete_observed());
+    EXPECT_FALSE(observer.mapped_url());
+    EXPECT_FALSE(observer.pending_ad_components_map());
   }
 
   // Add the `pending_ad_components` to a mapping. If `add_to_new_map` is true,
@@ -66,35 +69,35 @@ void ValidatePendingAdComponentsMap(
   for (size_t i = 0; i < ad_component_urns.size(); ++i) {
     // The URNs should now be in `fenced_frame_url_mapping`. Look up the
     // corresponding URL, and make sure it's mapped to the correct URL.
-    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        nested_pending_ad_components;
-    absl::optional<GURL> mapped_url =
-        fenced_frame_url_mapping->ConvertFencedFrameURNToURL(
-            ad_component_urns[i], nested_pending_ad_components);
-    ASSERT_TRUE(mapped_url);
+    TestFencedFrameURLMappingResultObserver observer;
+    fenced_frame_url_mapping->ConvertFencedFrameURNToURL(ad_component_urns[i],
+                                                         &observer);
+    EXPECT_TRUE(observer.mapping_complete_observed());
+
     if (i < expected_mapped_urls.size()) {
-      EXPECT_EQ(expected_mapped_urls[i], mapped_url);
+      EXPECT_EQ(expected_mapped_urls[i], observer.mapped_url());
     } else {
-      EXPECT_EQ(GURL(url::kAboutBlankURL), mapped_url);
+      EXPECT_EQ(GURL(url::kAboutBlankURL), observer.mapped_url());
     }
 
     // Each added URN should also have a populated
-    // `nested_pending_ad_components` structure, to prevent ads from knowing if
-    // they were loaded in a fenced frame as an ad component or as the main ad.
-    // Any information passed to ads violates the k-anonymity requirement.
-    ASSERT_TRUE(nested_pending_ad_components);
+    // `observer.pending_ad_components_map()` structure, to prevent ads from
+    // knowing if they were loaded in a fenced frame as an ad component or as
+    // the main ad. Any information passed to ads violates the k-anonymity
+    // requirement.
+    EXPECT_TRUE(observer.pending_ad_components_map());
 
     // If this it not an about:blank URL, then when loaded in a fenced frame, it
     // can recursively access its own nested ad components array, so recursively
     // check those as well.
-    if (*mapped_url != GURL(url::kAboutBlankURL)) {
+    if (*observer.mapped_url() != GURL(url::kAboutBlankURL)) {
       // Nested URL maps map everything to "about:blank". They exist solely so
       // that top-level and nested component ads can't tell which one they are,
       // to prevent smuggling data based on whether an ad is loaded in a
       // top-level ad URL or a component ad URL.
       ValidatePendingAdComponentsMap(
           fenced_frame_url_mapping, add_to_new_map,
-          *nested_pending_ad_components,
+          *observer.pending_ad_components_map(),
           /*expected_mapped_urls=*/std::vector<GURL>());
     }
   }
@@ -106,22 +109,93 @@ TEST(FencedFrameURLMappingTest, AddAndConvert) {
   FencedFrameURLMapping fenced_frame_url_mapping;
   GURL test_url("https://foo.test");
   GURL urn_uuid = fenced_frame_url_mapping.AddFencedFrameURL(test_url);
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ad_components;
-  EXPECT_EQ(test_url, fenced_frame_url_mapping
-                          .ConvertFencedFrameURNToURL(urn_uuid, ad_components)
-                          .value());
-  EXPECT_EQ(absl::nullopt, ad_components);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(test_url, observer.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
 }
 
 TEST(FencedFrameURLMappingTest, NonExistentUUID) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-  GURL urn_uuid("urn:uuid:C36973B5E5D9DE59E4C4364F137B3C7A");
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ad_components;
-  absl::optional<GURL> result =
-      fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid,
-                                                          ad_components);
-  EXPECT_EQ(absl::nullopt, result);
-  EXPECT_EQ(absl::nullopt, ad_components);
+  GURL urn_uuid("urn:uuid:c36973b5-e5d9-de59-e4c4-364f137b3c7a");
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(absl::nullopt, observer.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
+}
+
+TEST(FencedFrameURLMappingTest, PendingMappedUUID_MappingSuccess) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_FALSE(observer.mapping_complete_observed());
+
+  fenced_frame_url_mapping.OnURNMappingResultDetermined(
+      urn_uuid, GURL("https://foo.com"));
+
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(GURL("https://foo.com"), observer.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
+}
+
+TEST(FencedFrameURLMappingTest, PendingMappedUUID_MappingFailure) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_FALSE(observer.mapping_complete_observed());
+
+  fenced_frame_url_mapping.OnURNMappingResultDetermined(urn_uuid,
+                                                        absl::nullopt);
+
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(absl::nullopt, observer.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer.pending_ad_components_map());
+}
+
+TEST(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_FALSE(observer.mapping_complete_observed());
+
+  fenced_frame_url_mapping.RemoveObserverForURN(urn_uuid, &observer);
+  fenced_frame_url_mapping.OnURNMappingResultDetermined(
+      urn_uuid, GURL("https://foo.com"));
+
+  EXPECT_FALSE(observer.mapping_complete_observed());
+}
+
+TEST(FencedFrameURLMappingTest, RegisterTwoObservers) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  const GURL urn_uuid = fenced_frame_url_mapping.GeneratePendingMappedURN();
+
+  TestFencedFrameURLMappingResultObserver observer1;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer1);
+  EXPECT_FALSE(observer1.mapping_complete_observed());
+
+  TestFencedFrameURLMappingResultObserver observer2;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer2);
+  EXPECT_FALSE(observer2.mapping_complete_observed());
+
+  fenced_frame_url_mapping.OnURNMappingResultDetermined(
+      urn_uuid, GURL("https://foo.com"));
+
+  EXPECT_TRUE(observer1.mapping_complete_observed());
+  EXPECT_EQ(GURL("https://foo.com"), observer1.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer1.pending_ad_components_map());
+  EXPECT_TRUE(observer2.mapping_complete_observed());
+  EXPECT_EQ(GURL("https://foo.com"), observer2.mapped_url());
+  EXPECT_EQ(absl::nullopt, observer2.pending_ad_components_map());
 }
 
 // Test the case `ad_component_urls` is empty. In this case, it should be filled
@@ -135,21 +209,22 @@ TEST(FencedFrameURLMappingTest,
   GURL urn_uuid = fenced_frame_url_mapping
                       .AddFencedFrameURLWithInterestGroupAdComponentUrls(
                           top_level_url, ad_component_urls);
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-      pending_ad_components;
-  EXPECT_EQ(top_level_url, fenced_frame_url_mapping.ConvertFencedFrameURNToURL(
-                               urn_uuid, pending_ad_components));
-  ASSERT_TRUE(pending_ad_components);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
   // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
-                                 *pending_ad_components,
+                                 *observer.pending_ad_components_map(),
                                  /*expected_mapped_urls=*/{});
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
-                                 *pending_ad_components,
+                                 *observer.pending_ad_components_map(),
                                  /*expected_mapped_urls=*/{});
 }
 
@@ -163,20 +238,23 @@ TEST(FencedFrameURLMappingTest,
   GURL urn_uuid = fenced_frame_url_mapping
                       .AddFencedFrameURLWithInterestGroupAdComponentUrls(
                           top_level_url, ad_component_urls);
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-      pending_ad_components;
-  EXPECT_EQ(top_level_url, fenced_frame_url_mapping.ConvertFencedFrameURNToURL(
-                               urn_uuid, pending_ad_components));
-  ASSERT_TRUE(pending_ad_components);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
   // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
-                                 *pending_ad_components, ad_component_urls);
+                                 *observer.pending_ad_components_map(),
+                                 ad_component_urls);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
-                                 *pending_ad_components, ad_component_urls);
+                                 *observer.pending_ad_components_map(),
+                                 ad_component_urls);
 }
 
 // Test the case `ad_component_urls` has the maximum number of allowed ad
@@ -194,20 +272,23 @@ TEST(FencedFrameURLMappingTest,
   GURL urn_uuid = fenced_frame_url_mapping
                       .AddFencedFrameURLWithInterestGroupAdComponentUrls(
                           top_level_url, ad_component_urls);
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-      pending_ad_components;
-  EXPECT_EQ(top_level_url, fenced_frame_url_mapping.ConvertFencedFrameURNToURL(
-                               urn_uuid, pending_ad_components));
-  ASSERT_TRUE(pending_ad_components);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
   // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
-                                 *pending_ad_components, ad_component_urls);
+                                 *observer.pending_ad_components_map(),
+                                 ad_component_urls);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
-                                 *pending_ad_components, ad_component_urls);
+                                 *observer.pending_ad_components_map(),
+                                 ad_component_urls);
 }
 
 // Test the case `ad_component_urls` has the maximum number of allowed ad
@@ -224,22 +305,42 @@ TEST(
   GURL urn_uuid = fenced_frame_url_mapping
                       .AddFencedFrameURLWithInterestGroupAdComponentUrls(
                           top_level_url, ad_component_urls);
-  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-      pending_ad_components;
-  EXPECT_EQ(top_level_url, fenced_frame_url_mapping.ConvertFencedFrameURNToURL(
-                               urn_uuid, pending_ad_components));
-  ASSERT_TRUE(pending_ad_components);
+
+  TestFencedFrameURLMappingResultObserver observer;
+  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
+  EXPECT_TRUE(observer.mapping_complete_observed());
+  EXPECT_EQ(top_level_url, observer.mapped_url());
+  EXPECT_TRUE(observer.pending_ad_components_map());
 
   // Call with `add_to_new_map` set to false and true, to simulate ShadowDOM
   // and MPArch behavior, respectively.
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/true,
-                                 *pending_ad_components,
+                                 *observer.pending_ad_components_map(),
                                  /*expected_mapped_urls=*/ad_component_urls);
   ValidatePendingAdComponentsMap(&fenced_frame_url_mapping,
                                  /*add_to_new_map=*/false,
-                                 *pending_ad_components,
+                                 *observer.pending_ad_components_map(),
                                  /*expected_mapped_urls=*/ad_component_urls);
+}
+
+// Test the correctness of the URN format. The URN is expected to be in the
+// format "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
+TEST(FencedFrameURLMappingTest, HasCorrectFormat) {
+  FencedFrameURLMapping fenced_frame_url_mapping;
+  GURL test_url("https://foo.test");
+  GURL urn_uuid = fenced_frame_url_mapping.AddFencedFrameURL(test_url);
+  std::string spec = urn_uuid.spec();
+
+  ASSERT_TRUE(base::StartsWith(
+      spec, "urn:uuid:", base::CompareCase::INSENSITIVE_ASCII));
+
+  EXPECT_EQ(spec.at(17), '-');
+  EXPECT_EQ(spec.at(22), '-');
+  EXPECT_EQ(spec.at(27), '-');
+  EXPECT_EQ(spec.at(32), '-');
+
+  EXPECT_TRUE(fenced_frame_url_mapping.IsValidUrnUuidURL(urn_uuid));
 }
 
 }  // namespace content

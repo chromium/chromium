@@ -11,7 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_internal_dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 // No gtest tests; only static_assert checks.
 

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
@@ -212,6 +213,12 @@ bool MatchedPropertiesCache::IsStyleCacheable(const ComputedStyle& style) {
     return false;
   if (style.HasContainerRelativeUnits())
     return false;
+  // Avoiding cache for ::highlight styles, and the originating styles they are
+  // associated with, because the style depends on the highlight names involved
+  // and they're not cached.
+  if (style.HasPseudoElementStyle(kPseudoIdHighlight) ||
+      style.StyleType() == kPseudoIdHighlight)
+    return false;
   return true;
 }
 
@@ -227,6 +234,18 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // SetChildHasExplicitInheritance on the parent style.
   if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
     return false;
+
+  // Do not cache computed styles for shadow root children which have a
+  // different UserModify value than its shadow host.
+  //
+  // UserModify is modified to not inherit from the shadow host for shadow root
+  // children. That means that if we get a MatchedPropertiesCache match for a
+  // style stored for a shadow root child against a non shadow root child, we
+  // would end up with an incorrect match.
+  if (IsAtShadowBoundary(&state.GetElement()) &&
+      style.UserModify() != parent_style.UserModify()) {
+    return false;
+  }
 
   return true;
 }

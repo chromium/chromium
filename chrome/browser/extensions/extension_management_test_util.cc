@@ -324,7 +324,8 @@ void ExtensionManagementPrefUpdaterBase::AddStringToList(
     list_value_weak = list_value.get();
     pref_->Set(path, std::move(list_value));
   }
-  CHECK(!base::Contains(list_value_weak->GetList(), base::Value(str)));
+  CHECK(
+      !base::Contains(list_value_weak->GetListDeprecated(), base::Value(str)));
   list_value_weak->Append(str);
 }
 

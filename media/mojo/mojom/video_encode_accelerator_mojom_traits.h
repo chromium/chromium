@@ -67,7 +67,7 @@ template <>
 class StructTraits<media::mojom::VideoBitrateAllocationDataView,
                    media::VideoBitrateAllocation> {
  public:
-  static std::vector<int32_t> bitrates(
+  static std::vector<uint32_t> bitrates(
       const media::VideoBitrateAllocation& bitrate_allocation);
 
   static bool Read(media::mojom::VideoBitrateAllocationDataView data,
@@ -85,19 +85,22 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
       return media::mojom::CodecMetadataDataView::Tag::VP8;
     } else if (metadata.vp9) {
       return media::mojom::CodecMetadataDataView::Tag::VP9;
+    } else if (metadata.av1) {
+      return media::mojom::CodecMetadataDataView::Tag::AV1;
     }
     NOTREACHED();
     return media::mojom::CodecMetadataDataView::Tag::VP8;
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.h264 && !metadata.vp8 && !metadata.vp9;
+    return !metadata.h264 && !metadata.vp8 && !metadata.vp9 && !metadata.av1;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
     metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
+    metadata->av1.reset();
   }
 
   static const media::H264Metadata& h264(
@@ -113,6 +116,11 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
   static const media::Vp9Metadata& vp9(
       const media::BitstreamBufferMetadata& metadata) {
     return *metadata.vp9;
+  }
+
+  static const media::Av1Metadata& av1(
+      const media::BitstreamBufferMetadata& metadata) {
+    return *metadata.av1;
   }
 
   static bool Read(media::mojom::CodecMetadataDataView data,
@@ -131,6 +139,9 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   }
   static base::TimeDelta timestamp(const media::BitstreamBufferMetadata& bbm) {
     return bbm.timestamp;
+  }
+  static int32_t qp(const media::BitstreamBufferMetadata& bbm) {
+    return bbm.qp;
   }
   static const media::BitstreamBufferMetadata& codec_metadata(
       const media::BitstreamBufferMetadata& bbm) {
@@ -210,6 +221,36 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 
   static bool Read(media::mojom::Vp9MetadataDataView data,
                    media::Vp9Metadata* out_metadata);
+};
+
+template <>
+class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
+ public:
+  static bool inter_pic_predicted(const media::Av1Metadata& av1) {
+    return av1.inter_pic_predicted;
+  }
+  static bool switch_frame(const media::Av1Metadata& av1) {
+    return av1.switch_frame;
+  }
+  static bool end_of_picture(const media::Av1Metadata& av1) {
+    return av1.end_of_picture;
+  }
+  static uint8_t temporal_idx(const media::Av1Metadata& av1) {
+    return av1.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::Av1Metadata& av1) {
+    return av1.spatial_idx;
+  }
+  static const std::vector<gfx::Size>& spatial_layer_resolutions(
+      const media::Av1Metadata& av1) {
+    return av1.spatial_layer_resolutions;
+  }
+  static const std::vector<uint8_t>& f_diffs(const media::Av1Metadata& av1) {
+    return av1.f_diffs;
+  }
+
+  static bool Read(media::mojom::Av1MetadataDataView data,
+                   media::Av1Metadata* out_metadata);
 };
 
 template <>

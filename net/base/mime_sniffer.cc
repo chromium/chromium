@@ -656,13 +656,11 @@ static bool SniffCRX(base::StringPiece content,
 }
 
 bool ShouldSniffMimeType(const GURL& url, base::StringPiece mime_type) {
-  bool sniffable_scheme = url.is_empty() ||
-                          url.SchemeIsHTTPOrHTTPS() ||
-#if defined(OS_ANDROID)
+  bool sniffable_scheme = url.is_empty() || url.SchemeIsHTTPOrHTTPS() ||
+#if BUILDFLAG(IS_ANDROID)
                           url.SchemeIs("content") ||
 #endif
-                          url.SchemeIsFile() ||
-                          url.SchemeIsFileSystem();
+                          url.SchemeIsFile() || url.SchemeIsFileSystem();
   if (!sniffable_scheme)
     return false;
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

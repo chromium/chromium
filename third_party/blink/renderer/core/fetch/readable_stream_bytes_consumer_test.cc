@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -152,11 +152,17 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
     chunk3->Data()[2] = 0x49;
     chunk3->Data()[3] = 0x4a;
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk1, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)
+                        .ToLocalChecked()));
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk2, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)
+                        .ToLocalChecked()));
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk3, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)
+                        .ToLocalChecked()));
     underlying_source->Close();
   }
 
@@ -253,8 +259,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(
-      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Enqueue(ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -304,8 +311,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(
-      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Enqueue(ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -458,6 +466,29 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
   checkpoint.Call(4);
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
   EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
+}
+
+TEST(ReadableStreamBytesConsumerTest, Cancel) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+  underlying_source->Enqueue(ScriptValue(script_state->GetIsolate(),
+                                         v8::Null(script_state->GetIsolate())));
+  underlying_source->Close();
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
+  consumer->SetClient(client);
+
+  consumer->Cancel();
+
+  EXPECT_TRUE(underlying_source->IsCancelled());
+  EXPECT_TRUE(underlying_source->IsCancelledWithUndefined());
 }
 
 }  // namespace

@@ -5,8 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_CONTROLLER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/touchpad_tap_suppression_controller.h"
 #include "content/browser/renderer_host/input/touchscreen_tap_suppression_controller.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/fling_booster.h"
 
@@ -159,9 +161,9 @@ class CONTENT_EXPORT FlingController {
     return !last_progress_time_.is_null();
   }
 
-  FlingControllerEventSenderClient* event_sender_client_;
+  raw_ptr<FlingControllerEventSenderClient> event_sender_client_;
 
-  FlingControllerSchedulerClient* scheduler_client_;
+  raw_ptr<FlingControllerSchedulerClient> scheduler_client_;
 
   // An object tracking the state of touchpad on the delivery of mouse events to
   // the renderer to filter mouse immediately after a touchpad fling canceling
@@ -183,7 +185,7 @@ class CONTENT_EXPORT FlingController {
   base::TimeTicks last_progress_time_;
 
   // The clock used; overridable for tests.
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // Time of the last seen scroll update that wasn't filtered. Used to know the
   // starting time for a possible fling gesture curve.

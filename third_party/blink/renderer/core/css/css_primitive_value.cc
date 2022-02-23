@@ -359,8 +359,11 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
     case UnitType::kPixels:
     case UnitType::kUserUnits:
     case UnitType::kDegrees:
-    case UnitType::kMilliseconds:
+    case UnitType::kSeconds:
     case UnitType::kHertz:
+      break;
+    case UnitType::kMilliseconds:
+      factor = 0.001;
       break;
     case UnitType::kCentimeters:
       factor = kCssPixelsPerCentimeter;
@@ -395,7 +398,6 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
     case UnitType::kTurns:
       factor = 360;
       break;
-    case UnitType::kSeconds:
     case UnitType::kKilohertz:
       factor = 1000;
       break;
@@ -451,7 +453,7 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(
     case kUPercent:
       return UnitType::kUnknown;  // Cannot convert between numbers and percent.
     case kUTime:
-      return UnitType::kMilliseconds;
+      return UnitType::kSeconds;
     case kUAngle:
       return UnitType::kDegrees;
     case kUFrequency:
@@ -498,11 +500,71 @@ bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
     case CSSPrimitiveValue::UnitType::kViewportHeight:
       length_type = kUnitTypeViewportHeight;
       return true;
+    case CSSPrimitiveValue::UnitType::kViewportInlineSize:
+      length_type = kUnitTypeViewportInlineSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kViewportBlockSize:
+      length_type = kUnitTypeViewportBlockSize;
+      return true;
     case CSSPrimitiveValue::UnitType::kViewportMin:
       length_type = kUnitTypeViewportMin;
       return true;
     case CSSPrimitiveValue::UnitType::kViewportMax:
       length_type = kUnitTypeViewportMax;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
+      length_type = kUnitTypeSmallViewportWidth;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportHeight:
+      length_type = kUnitTypeSmallViewportHeight;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportInlineSize:
+      length_type = kUnitTypeSmallViewportInlineSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportBlockSize:
+      length_type = kUnitTypeSmallViewportBlockSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportMin:
+      length_type = kUnitTypeSmallViewportMin;
+      return true;
+    case CSSPrimitiveValue::UnitType::kSmallViewportMax:
+      length_type = kUnitTypeSmallViewportMax;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportWidth:
+      length_type = kUnitTypeLargeViewportWidth;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportHeight:
+      length_type = kUnitTypeLargeViewportHeight;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportInlineSize:
+      length_type = kUnitTypeLargeViewportInlineSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportBlockSize:
+      length_type = kUnitTypeLargeViewportBlockSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportMin:
+      length_type = kUnitTypeLargeViewportMin;
+      return true;
+    case CSSPrimitiveValue::UnitType::kLargeViewportMax:
+      length_type = kUnitTypeLargeViewportMax;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
+      length_type = kUnitTypeDynamicViewportWidth;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
+      length_type = kUnitTypeDynamicViewportHeight;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
+      length_type = kUnitTypeDynamicViewportInlineSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
+      length_type = kUnitTypeDynamicViewportBlockSize;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
+      length_type = kUnitTypeDynamicViewportMin;
+      return true;
+    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
+      length_type = kUnitTypeDynamicViewportMax;
       return true;
     case CSSPrimitiveValue::UnitType::kContainerWidth:
       length_type = kUnitTypeContainerWidth;
@@ -546,10 +608,50 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
       return CSSPrimitiveValue::UnitType::kViewportWidth;
     case kUnitTypeViewportHeight:
       return CSSPrimitiveValue::UnitType::kViewportHeight;
+    case kUnitTypeViewportInlineSize:
+      return CSSPrimitiveValue::UnitType::kViewportInlineSize;
+    case kUnitTypeViewportBlockSize:
+      return CSSPrimitiveValue::UnitType::kViewportBlockSize;
     case kUnitTypeViewportMin:
       return CSSPrimitiveValue::UnitType::kViewportMin;
     case kUnitTypeViewportMax:
       return CSSPrimitiveValue::UnitType::kViewportMax;
+    case kUnitTypeSmallViewportWidth:
+      return CSSPrimitiveValue::UnitType::kSmallViewportWidth;
+    case kUnitTypeSmallViewportHeight:
+      return CSSPrimitiveValue::UnitType::kSmallViewportHeight;
+    case kUnitTypeSmallViewportInlineSize:
+      return CSSPrimitiveValue::UnitType::kSmallViewportInlineSize;
+    case kUnitTypeSmallViewportBlockSize:
+      return CSSPrimitiveValue::UnitType::kSmallViewportBlockSize;
+    case kUnitTypeSmallViewportMin:
+      return CSSPrimitiveValue::UnitType::kSmallViewportMin;
+    case kUnitTypeSmallViewportMax:
+      return CSSPrimitiveValue::UnitType::kSmallViewportMax;
+    case kUnitTypeLargeViewportWidth:
+      return CSSPrimitiveValue::UnitType::kLargeViewportWidth;
+    case kUnitTypeLargeViewportHeight:
+      return CSSPrimitiveValue::UnitType::kLargeViewportHeight;
+    case kUnitTypeLargeViewportInlineSize:
+      return CSSPrimitiveValue::UnitType::kLargeViewportInlineSize;
+    case kUnitTypeLargeViewportBlockSize:
+      return CSSPrimitiveValue::UnitType::kLargeViewportBlockSize;
+    case kUnitTypeLargeViewportMin:
+      return CSSPrimitiveValue::UnitType::kLargeViewportMin;
+    case kUnitTypeLargeViewportMax:
+      return CSSPrimitiveValue::UnitType::kLargeViewportMax;
+    case kUnitTypeDynamicViewportWidth:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportWidth;
+    case kUnitTypeDynamicViewportHeight:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportHeight;
+    case kUnitTypeDynamicViewportInlineSize:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize;
+    case kUnitTypeDynamicViewportBlockSize:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize;
+    case kUnitTypeDynamicViewportMin:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportMin;
+    case kUnitTypeDynamicViewportMax:
+      return CSSPrimitiveValue::UnitType::kDynamicViewportMax;
     case kUnitTypeContainerWidth:
       return CSSPrimitiveValue::UnitType::kContainerWidth;
     case kUnitTypeContainerHeight:
@@ -628,10 +730,50 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
       return "vw";
     case UnitType::kViewportHeight:
       return "vh";
+    case UnitType::kViewportInlineSize:
+      return "vi";
+    case UnitType::kViewportBlockSize:
+      return "vb";
     case UnitType::kViewportMin:
       return "vmin";
     case UnitType::kViewportMax:
       return "vmax";
+    case UnitType::kSmallViewportWidth:
+      return "svw";
+    case UnitType::kSmallViewportHeight:
+      return "svh";
+    case UnitType::kSmallViewportInlineSize:
+      return "svi";
+    case UnitType::kSmallViewportBlockSize:
+      return "svb";
+    case UnitType::kSmallViewportMin:
+      return "svmin";
+    case UnitType::kSmallViewportMax:
+      return "svmax";
+    case UnitType::kLargeViewportWidth:
+      return "lvw";
+    case UnitType::kLargeViewportHeight:
+      return "lvh";
+    case UnitType::kLargeViewportInlineSize:
+      return "lvi";
+    case UnitType::kLargeViewportBlockSize:
+      return "lvb";
+    case UnitType::kLargeViewportMin:
+      return "lvmin";
+    case UnitType::kLargeViewportMax:
+      return "lvmax";
+    case UnitType::kDynamicViewportWidth:
+      return "dvw";
+    case UnitType::kDynamicViewportHeight:
+      return "dvh";
+    case UnitType::kDynamicViewportInlineSize:
+      return "dvi";
+    case UnitType::kDynamicViewportBlockSize:
+      return "dvb";
+    case UnitType::kDynamicViewportMin:
+      return "dvmin";
+    case UnitType::kDynamicViewportMax:
+      return "dvmax";
     case UnitType::kContainerWidth:
       return "qw";
     case UnitType::kContainerHeight:

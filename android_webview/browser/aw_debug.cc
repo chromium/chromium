@@ -9,77 +9,10 @@
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
 #include "components/crash/core/common/crash_key.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_process_host_creation_observer.h"
 
 using content::RenderProcessHost;
 
 namespace android_webview {
-
-class AwDebugCpuAffinity : public content::RenderProcessHostCreationObserver {
- public:
-  AwDebugCpuAffinity(bool enable_idle_throttling,
-                     int32_t policy,
-                     int32_t min_time_ms,
-                     float min_cputime_ratio)
-      : enable_idle_throttling_(enable_idle_throttling),
-        policy_(policy),
-        min_time_ms_(min_time_ms),
-        min_cputime_ratio_(min_cputime_ratio) {
-    for (RenderProcessHost::iterator i(RenderProcessHost::AllHostsIterator());
-         !i.IsAtEnd(); i.Advance()) {
-      RenderProcessHost* process_host = i.GetCurrentValue();
-      if (process_host) {
-        if (enable_idle_throttling_)
-          EnableIdleThrottling(process_host);
-        else
-          SetAffinityForProcessHost(process_host);
-      }
-    }
-  }
-
-  // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(RenderProcessHost* process_host) override {
-    if (enable_idle_throttling_)
-      EnableIdleThrottling(process_host);
-    else
-      SetAffinityForProcessHost(process_host);
-  }
-
- private:
-  void SetAffinityForProcessHost(RenderProcessHost* process_host) {
-    process_host->PostTaskWhenProcessIsReady(base::BindOnce(
-        &AwRenderProcess::SetCpuAffinityToLittleCores,
-        base::Unretained(
-            AwRenderProcess::GetInstanceForRenderProcessHost(process_host))));
-  }
-
-  void EnableIdleThrottling(RenderProcessHost* process_host) {
-    process_host->PostTaskWhenProcessIsReady(base::BindOnce(
-        &AwRenderProcess::EnableIdleThrottling,
-        base::Unretained(
-            AwRenderProcess::GetInstanceForRenderProcessHost(process_host)),
-        policy_, min_time_ms_, min_cputime_ratio_));
-  }
-
-  bool enable_idle_throttling_{false};
-  int32_t policy_;
-  int32_t min_time_ms_;
-  float min_cputime_ratio_;
-};
-
-static void JNI_AwDebug_SetCpuAffinityToLittleCores(JNIEnv* env) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(false, 1,
-                                                                      0, 0);
-}
-
-static void JNI_AwDebug_EnableIdleThrottling(JNIEnv* env,
-                                             int policy,
-                                             int min_time_ms,
-                                             float min_cputime_ratio) {
-  static base::NoDestructor<AwDebugCpuAffinity> aw_debug_cpu_affinity(
-      true, policy, min_time_ms, min_cputime_ratio);
-}
 
 static void JNI_AwDebug_SetSupportLibraryWebkitVersionCrashKey(
     JNIEnv* env,

@@ -16,7 +16,7 @@
   `);
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   BindingsTestRunner.addFooJSFile(fs);
 
   TestRunner.runTestSuite([

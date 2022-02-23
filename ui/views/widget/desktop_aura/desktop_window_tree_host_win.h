@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
@@ -157,6 +158,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool ShouldUpdateWindowTransparency() const override;
   bool ShouldUseDesktopNativeCursorManager() const override;
   bool ShouldCreateVisibilityController() const override;
+  DesktopNativeCursorManager* GetSingletonDesktopNativeCursorManager() override;
 
   // Overridden from aura::WindowTreeHost:
   ui::EventSource* GetEventSource() override;
@@ -285,12 +287,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // TODO(beng): Consider providing an interface to DesktopNativeWidgetAura
   //             instead of providing this route back to Widget.
-  internal::NativeWidgetDelegate* native_widget_delegate_;
+  raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
 
-  DesktopNativeWidgetAura* desktop_native_widget_aura_;
+  raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   // Owned by DesktopNativeWidgetAura.
-  DesktopDragDropClientWin* drag_drop_client_;
+  raw_ptr<DesktopDragDropClientWin> drag_drop_client_;
 
   // When certain windows are being shown, we augment the window size
   // temporarily for animation. The following two members contain the top left
@@ -323,7 +325,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // Owned by TooltipController, but we need to forward events to it so we keep
   // a reference.
-  corewm::TooltipWin* tooltip_;
+  raw_ptr<corewm::TooltipWin> tooltip_;
 
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this
@@ -339,11 +341,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Indicates if current window will receive mouse events when should not
   // become activated.
   bool wants_mouse_events_when_inactive_ = false;
-
-  // The location of the most recent mouse event on an occluded window. This is
-  // used to generate the OccludedWindowMouseEvents stat and can be removed
-  // when that stat is no longer tracked.
-  gfx::Point occluded_window_mouse_event_loc_;
 
   // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
   // drop and false when it finishes. While in touch drag, if touch move events

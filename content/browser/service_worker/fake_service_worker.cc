@@ -50,8 +50,6 @@ void FakeServiceWorker::InitializeGlobalScope(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
     blink::mojom::FetchHandlerExistence fetch_handler_existence,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         reporting_observer_receiver) {
   host_.Bind(std::move(service_worker_host));
@@ -240,6 +238,13 @@ void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
 void FakeServiceWorker::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
+  NOTIMPLEMENTED();
+}
+
+void FakeServiceWorker::ExecuteScriptForTest(
+    const std::u16string& script,
+    bool wants_result,
+    ExecuteScriptForTestCallback callback) {
   NOTIMPLEMENTED();
 }
 

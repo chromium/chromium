@@ -23,6 +23,7 @@ class StableVideoDecoderFactoryService;
 
 namespace crosapi {
 
+class ArcAsh;
 class AuthenticationAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
@@ -34,6 +35,7 @@ class ClipboardHistoryAsh;
 class ContentProtectionAsh;
 class DeviceAttributesAsh;
 class DeviceSettingsAsh;
+class DlpAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
 class FeedbackAsh;
@@ -47,6 +49,8 @@ class ImageWriterAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
+class LoginAsh;
+class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
@@ -58,10 +62,13 @@ class PrefsAsh;
 class RemotingAsh;
 class ResourceManagerAsh;
 class ScreenManagerAsh;
+class SearchProviderAsh;
 class SelectFileAsh;
+class SharesheetAsh;
 class StructuredMetricsServiceAsh;
 class SystemDisplayAsh;
 class TaskManagerAsh;
+class TimeZoneServiceAsh;
 class TtsAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
@@ -89,6 +96,7 @@ class CrosapiAsh : public mojom::Crosapi {
                     base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
+  void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAuthentication(
       mojo::PendingReceiver<mojom::Authentication> receiver) override;
   void BindAutomationDeprecated(
@@ -122,6 +130,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceSettingsService(
       mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
+  void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
   void BindHoldingSpaceService(
       mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindDownloadController(
@@ -148,6 +157,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
+  void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
+  void BindLoginScreenStorage(
+      mojo::PendingReceiver<mojom::LoginScreenStorage> receiver) override;
   void BindLoginState(
       mojo::PendingReceiver<mojom::LoginState> receiver) override;
   void BindMessageCenter(
@@ -167,11 +179,15 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ResourceManager> receiver) override;
   void BindScreenManager(
       mojo::PendingReceiver<mojom::ScreenManager> receiver) override;
+  void BindSearchControllerRegistry(
+      mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) override;
   void BindSelectFile(
       mojo::PendingReceiver<mojom::SelectFile> receiver) override;
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
+  void BindSharesheet(
+      mojo::PendingReceiver<mojom::Sharesheet> receiver) override;
   void BindStableVideoDecoderFactory(
       mojo::GenericPendingReceiver receiver) override;
   void BindHidManager(
@@ -187,6 +203,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindMediaSessionAudioFocusDebug(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
           receiver) override;
+  void BindSyncService(
+      mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindSystemDisplay(
       mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
   void BindWebPageInfoFactory(
@@ -195,6 +213,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
+  void BindTimeZoneService(
+      mojo::PendingReceiver<mojom::TimeZoneService> receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
@@ -232,6 +252,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return kiosk_session_service_ash_.get();
   }
 
+  SearchProviderAsh* search_provider_ash() {
+    return search_provider_ash_.get();
+  }
+
   WebPageInfoFactoryAsh* web_page_info_factory_ash() {
     return web_page_info_factory_ash_.get();
   }
@@ -252,7 +276,15 @@ class CrosapiAsh : public mojom::Crosapi {
     return keystore_service_ash_.get();
   }
 
+  LoginAsh* login_ash() { return login_ash_.get(); }
+
+  LoginScreenStorageAsh* login_screen_storage_ash() {
+    return login_screen_storage_ash_.get();
+  }
+
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
+
+  SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
 
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
     return structured_metrics_service_ash_.get();
@@ -265,6 +297,7 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
+  std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AuthenticationAsh> authentication_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
@@ -276,6 +309,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
+  std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
@@ -289,6 +323,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
+  std::unique_ptr<LoginAsh> login_ash_;
+  std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;
@@ -301,13 +337,16 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<RemotingAsh> remoting_ash_;
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
+  std::unique_ptr<SearchProviderAsh> search_provider_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
+  std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<media::StableVideoDecoderFactoryService>
       stable_video_decoder_factory_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
+  std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>

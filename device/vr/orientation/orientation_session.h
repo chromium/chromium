@@ -6,7 +6,7 @@
 #define DEVICE_VR_ORIENTATION_ORIENTATION_SESSION_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationSession
 
   mojo::Receiver<mojom::XRFrameDataProvider> magic_window_receiver_;
   mojo::Receiver<mojom::XRSessionController> session_controller_receiver_;
-  device::VROrientationDevice* device_;
+  raw_ptr<device::VROrientationDevice> device_;
   bool restrict_frame_data_ = true;
 
   // This must be the last member

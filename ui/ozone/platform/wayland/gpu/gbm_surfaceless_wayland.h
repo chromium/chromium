@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_SURFACELESS_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_SURFACELESS_WAYLAND_H_
 
+#include <map>
 #include <memory>
 
 #include "base/containers/small_map.h"
@@ -126,6 +127,10 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   void OnPresentation(BufferId buffer_id,
                       const gfx::PresentationFeedback& feedback) override;
 
+  // PendingFrame here is a post-SkiaRenderer struct that contains overlays +
+  // primary plane informations. It is a "compositor frame" on AcceleratedWidget
+  // level. This information gets into browser process and overlays are
+  // translated to be attached to WaylandSurfaces of the AcceleratedWidget.
   struct PendingFrame {
     PendingFrame();
     ~PendingFrame();
@@ -136,11 +141,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
     bool ready = false;
 
-    // A region of the updated content in a corresponding frame. It's used to
-    // advise Wayland which part of a buffer is going to be updated. The absence
-    // of a value results in a whole buffer update on the Wayland compositor
-    // side.
-    absl::optional<gfx::Rect> damage_region_;
     // TODO(fangzhoug): This should be changed to support Vulkan.
     std::vector<gl::GLSurfaceOverlay> overlays;
     std::vector<gfx::OverlayPlaneData> non_backed_overlays;
@@ -148,15 +148,12 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     PresentationCallback presentation_callback;
     // Merged release fence fd. This is taken as the union of all release
     // fences for a particular OnSubmission.
-    base::ScopedFD merged_release_fence_fd;
     bool schedule_planes_succeeded = false;
 
-    // Maps |buffer_id| to an OverlayPlane, used for committing overlays and
-    // wait for OnSubmission's.
-    base::small_map<std::map<BufferId, OverlayPlane>> planes;
-    base::flat_set<BufferId> pending_presentation_buffers;
-    gfx::SwapResult swap_result = gfx::SwapResult::SWAP_ACK;
-    gfx::PresentationFeedback feedback;
+    // Maps |buffer_id| to one or more OverlayPlanes, used for committing
+    // overlays and wait for OnSubmission's.
+    std::multimap<BufferId, OverlayPlane> planes;
+    BufferId pending_presentation_buffer;
   };
 
   void MaybeSubmitFrames();
@@ -177,8 +174,16 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
   // The native surface. Deleting this is allowed to free the EGLNativeWindow.
   gfx::AcceleratedWidget widget_;
+
+  // PendingFrames that are waiting to be submitted. They can be either ready,
+  // waiting for gpu fences, or still scheduling overlays.
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
+
+  // PendingFrames that are submitted, pending OnSubmission() calls.
   std::vector<std::unique_ptr<PendingFrame>> submitted_frames_;
+
+  // PendingFrames that have received OnSubmission(), pending OnPresentation()
+  // calls.
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
   bool has_implicit_external_sync_;
   bool last_swap_buffers_result_ = true;

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">已新增 <ph name="SITE_NAME" /> 網站</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
+<translation id="1409426117486808224">使用簡易檢視模式查看開啟的分頁</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1446450296470737166">允許完整控制 MIDI 裝置</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">允許 Cookie</translation>
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2241634353105152135">只有這一次</translation>
+<translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">當網站要搜尋附近的藍牙裝置時，必須先詢問你 (建議)</translation>
 <translation id="2315043854645842844">作業系統不允許您在用戶端選取憑證。</translation>
+<translation id="2321958826496381788">拖曳滑桿，將文字調整到適當的字體大小。當你輕觸兩下文字段落時，瀏覽器至少應呈現這樣的字體大小。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2379925928934107488">當 Chrome 採用深色主題時，盡可能對網站套用深色主題</translation>
+<translation id="2387895666653383613">文字大小</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">顯示資訊</translation>
 <translation id="3123473560110926937">在某些網站上設定封鎖</translation>
 <translation id="3198916472715691905">儲存了 <ph name="STORAGE_AMOUNT" /> 的資料</translation>
+<translation id="3203366800380907218">來自網路</translation>
 <translation id="321187648315454507">如要允許 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
@@ -110,14 +115,18 @@
 <translation id="3835233591525155343">你的裝置使用狀態</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">快轉到特定的播放時間點</translation>
+<translation id="3895926599014793903">強制啟用縮放功能</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站的 Cookie。</translation>
+<translation id="4040330681741629921">在網站能以簡易檢視模式顯示時通知我</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
+<translation id="4149994727733219643">使用簡易檢視模式查看網頁</translation>
 <translation id="4165986682804962316">網站設定</translation>
+<translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
@@ -126,6 +135,7 @@
 <translation id="42981349822642051">展開</translation>
 <translation id="4336434711095810371">清除所有資料</translation>
 <translation id="4402755511846832236">禁止網站取得這部裝置的使用狀態</translation>
+<translation id="4428065317363009941">廣告個人化</translation>
 <translation id="4434045419905280838">彈出式視窗與重新導向</translation>
 <translation id="445467742685312942">允許網站播放受保護的內容</translation>
 <translation id="4468959413250150279">將特定網站設為靜音。</translation>
@@ -156,6 +166,7 @@
 <translation id="5186036860380548585">選項位於畫面頂端</translation>
 <translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次造訪日期：今天</translation>
+<translation id="5264323282659631142">移除「<ph name="CHIP_LABEL" />」</translation>
 <translation id="528192093759286357">從頂端拖曳並輕觸返回按鈕即可結束全螢幕模式。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
@@ -166,6 +177,7 @@
 <translation id="5354152178998424783">這會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
+<translation id="5412236728747081950">這個網站會取得你在 Chrome 設定的興趣喜好，為你顯示更貼近需求的廣告</translation>
 <translation id="5438097262470833822">這會重設 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5489227211564503167">經過時間：<ph name="ELAPSED_TIME" />，影片總長：<ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">封鎖干擾性或誤導性的網站廣告</translation>
@@ -177,10 +189,10 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5649053991847567735">自動下載</translation>
+<translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">已關閉 Android 設定中的攝影機</translation>
-<translation id="5710871682236653961">系統必須先詢問你，才能允許網站在你輕觸 NFC 裝置時傳送及接收資訊 (建議設定)</translation>
 <translation id="5719847187258001597">這會清除 <ph name="ORIGIN" /> 或該網站在主畫面上的應用程式所儲存的所有資料和 Cookie。</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -230,16 +242,16 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>
 <translation id="6864395892908308021">這部裝置無法讀取 NFC</translation>
-<translation id="6910211073230771657">已刪除</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿中的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6981982820502123353">無障礙設定</translation>
 <translation id="6992289844737586249">允許網站使用你的麥克風前，必須先詢問你 (建議)</translation>
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
 <translation id="7016516562562142042">允許目前的搜尋引擎存取位置資訊</translation>
+<translation id="702463548815491781">建議在 TalkBack 或切換控制功能開啟時使用</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
-<translation id="7070090581017165256">關於這個網站</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -254,8 +266,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">有網站正在使用你的麥克風</translation>
 <translation id="7561196759112975576">一律使用</translation>
-<translation id="7572498721684305250">禁止網站在你輕觸 NFC 裝置時傳送及接收資訊</translation>
 <translation id="757524316907819857">禁止網站播放受保護的內容</translation>
+<translation id="7577900504646297215">管理興趣喜好</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7781829728241885113">昨天</translation>
@@ -288,6 +300,7 @@
 <translation id="8211406090763984747">已建立安全連線</translation>
 <translation id="8249310407154411074">移至頂端</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由應用程式管理</translation>
 <translation id="8324158725704657629">不要再詢問</translation>
 <translation id="8372893542064058268">允許特定網站執行背景同步處理作業。</translation>
@@ -321,6 +334,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">這部裝置的 NFC 功能已關閉。請前往 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />開啟這項功能。</translation>
+<translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資訊</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">封鎖特定網站的 Cookie。</translation>
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>

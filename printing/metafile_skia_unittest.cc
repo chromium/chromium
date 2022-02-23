@@ -97,7 +97,7 @@ TEST(MetafileSkiaTest, TestMultiPictureDocumentTypefaces) {
 
   // The typefaces which will be reused across the multiple (duplicate) pages.
   constexpr char kTypefaceName1[] = "sans-serif";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kTypefaceName2[] = "Courier New";
 #else
   constexpr char kTypefaceName2[] = "monospace";

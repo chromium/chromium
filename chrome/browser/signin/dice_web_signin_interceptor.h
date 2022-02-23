@@ -11,12 +11,12 @@
 #include "base/cancelable_callback.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -147,7 +147,6 @@ bool SigninInterceptionHeuristicOutcomeIsSuccess(
 //   - The interception bubble is closed by deleting the handle,
 //   - The profile customization bubble is shown.
 class DiceWebSigninInterceptor : public KeyedService,
-                                 public content::WebContentsObserver,
                                  public signin::IdentityManager::Observer {
  public:
   enum class SigninInterceptionType {
@@ -189,8 +188,12 @@ class DiceWebSigninInterceptor : public KeyedService,
         const BubbleParameters& bubble_parameters,
         base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
 
-    // Shows the profile customization bubble.
-    virtual void ShowProfileCustomizationBubble(Browser* browser) = 0;
+    // Shows the first run experience for `account_id` in `browser` opened for
+    // a newly created profile.
+    virtual void ShowFirstRunExperienceInNewProfile(
+        Browser* browser,
+        const CoreAccountId& account_id,
+        SigninInterceptionType interception_type) = 0;
   };
 
   DiceWebSigninInterceptor(Profile* profile,
@@ -228,7 +231,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       content::WebContents* intercepted_contents,
       std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
           bubble_handle,
-      bool is_new_profile);
+      bool is_new_profile,
+      SigninInterceptionType interception_type);
 
   // Returns the outcome of the interception heuristic.
   // If the outcome is kInterceptProfileSwitch, the target profile is returned
@@ -268,20 +272,20 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowMultiUserBubble);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, PersistentHash);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparation);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationWithoutUPA);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            EnforceManagedAccountAsPrimary);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorEnterpriseBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ForcedEnterpriseInterceptionTestAccountLevelPolicy);
   FRIEND_TEST_ALL_PREFIXES(
-      DiceWebSigninInterceptorEnterpriseBrowserTest,
+      DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
 
   // Cancels any current signin interception and resets the interceptor to its
@@ -298,6 +302,11 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
+
+  // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
+  void ShowSigninInterceptionBubble(
+      const Delegate::BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   void OnInterceptionReadyToBeProcessed(const AccountInfo& info);
 
@@ -363,18 +372,20 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& account_info,
       const std::string& signin_restriction);
 
-  Profile* const profile_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<Delegate> delegate_;
 
   // Used in the profile that was created after the interception succeeded.
   std::unique_ptr<DiceInterceptedSessionStartupHelper> session_startup_helper_;
 
   // Members below are related to the interception in progress.
+  base::WeakPtr<content::WebContents> web_contents_;
   bool is_interception_in_progress_ = false;
   CoreAccountId account_id_;
   bool new_account_interception_ = false;
   bool intercepted_account_management_accepted_ = false;
+  absl::optional<SigninInterceptionType> interception_type_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};

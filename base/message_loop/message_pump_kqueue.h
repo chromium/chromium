@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"

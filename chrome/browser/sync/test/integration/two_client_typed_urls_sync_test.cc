@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -827,8 +828,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTestWithoutLacrosSupport,
   size_t count_for_dummy = 0;
   const syncer::ClientTagHash kClientTagHash =
       syncer::ClientTagHash::FromUnhashed(syncer::TYPED_URLS, kDummyUrl);
-  for (const auto& kv : metadata_map) {
-    if (kv.second->client_tag_hash() == kClientTagHash.value()) {
+  for (const auto& [storage_key, metadata] : metadata_map) {
+    if (metadata->client_tag_hash() == kClientTagHash.value()) {
       ++count_for_dummy;
     }
   }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +69,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
       bool (*should_stop)(base::StringPiece)) const override {
     EXPECT_EQ(BeginPoint::kParentFrame, begin_point);
     std::vector<std::string> result;
-    for (auto* adapter = parent_; adapter; adapter = adapter->parent_) {
+    for (auto* adapter = parent_.get(); adapter; adapter = adapter->parent_) {
       result.push_back(adapter->GetNameForCurrentMode());
       if (should_stop(result.back()))
         break;
@@ -150,7 +151,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
     return true;
   }
 
-  TestFrameAdapter* const parent_;
+  const raw_ptr<TestFrameAdapter> parent_;
   std::vector<TestFrameAdapter*> children_;
   const int virtual_index_in_parent_;
   UniqueNameHelper unique_name_helper_;

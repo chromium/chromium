@@ -9,6 +9,14 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -53,13 +61,6 @@
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -223,6 +224,21 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible) {
 // is not available.
 TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible_NoOp) {
   EXPECT_FALSE(arc_session());
+
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  EXPECT_FALSE(arc_session());
+  EXPECT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
+            arc_session_manager()->state());
+}
+
+// We expect mini instance is not started in manual mode.
+TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisibleManualStart) {
+  EXPECT_FALSE(arc_session());
+
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
+                                                          "manual");
 
   chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
   EXPECT_FALSE(arc_session());
@@ -990,7 +1006,7 @@ TEST_F(ArcSessionManagerTest, IsDirectlyStartedOnInternalRestart) {
 TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDataCleanupOnStart);
+      ash::switches::kArcDataCleanupOnStart);
 
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -1024,7 +1040,7 @@ TEST_F(ArcSessionManagerTest, DataCleanUpOnFirstStart) {
 TEST_F(ArcSessionManagerTest, DataCleanUpOnNextStart) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
-      chromeos::switches::kArcDataCleanupOnStart);
+      ash::switches::kArcDataCleanupOnStart);
 
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -1556,7 +1572,17 @@ class ArcSessionOobeOptInNegotiatorTest
       public chromeos::ArcTermsOfServiceScreenView,
       public testing::WithParamInterface<bool> {
  public:
-  ArcSessionOobeOptInNegotiatorTest() = default;
+  ArcSessionOobeOptInNegotiatorTest() {
+    // This test only works with the ARC ToS screen, which would be replaced
+    // by the Consolidated Consent screen when the feature
+    // OobeConsolidatedConsent is enabled. Make sure that the
+    // OobeConsolidatedConsent feature is disabled before running these tests.
+    // TODO(crbug,com/1297250): Implement similar tests to test the interaction
+    // between the ArcSessionOobeOptInNegotiatorTest and the Consolidated
+    // Consent screen.
+    feature_list_.InitAndDisableFeature(
+        ash::features::kOobeConsolidatedConsent);
+  }
 
   ArcSessionOobeOptInNegotiatorTest(const ArcSessionOobeOptInNegotiatorTest&) =
       delete;
@@ -1660,6 +1686,7 @@ class ArcSessionOobeOptInNegotiatorTest
       observer_list_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   TestingPrefServiceSimple pref_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

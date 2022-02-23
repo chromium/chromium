@@ -8,6 +8,7 @@
 
 #include "base/enterprise_util.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -28,7 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -37,16 +38,6 @@
 // network service, rather than just testing StubResolverConfigReader output.
 
 namespace {
-
-// A custom matcher to validate a DnsOverHttpsServerConfig instance.
-MATCHER_P2(DnsOverHttpsServerConfigMatcher, server_template, use_post, "") {
-  return testing::ExplainMatchResult(
-      testing::AllOf(
-          testing::Field(&net::DnsOverHttpsServerConfig::server_template,
-                         server_template),
-          testing::Field(&net::DnsOverHttpsServerConfig::use_post, use_post)),
-      arg, result_listener);
-}
 
 class StubResolverConfigReaderBrowsertest
     : public InProcessBrowserTest,
@@ -111,7 +102,7 @@ class StubResolverConfigReaderBrowsertest
   policy::PolicyMap policy_map_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
-  StubResolverConfigReader* config_reader_;
+  raw_ptr<StubResolverConfigReader> config_reader_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -122,7 +113,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   bool async_dns_feature_enabled = GetParam();
 
   // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
@@ -144,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_post_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
@@ -152,10 +143,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kSecure, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
-              }));
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_post_template),
+            secure_dns_config.doh_servers());
 
   local_state->SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -165,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_then_bad_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
@@ -173,10 +162,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-              }));
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_get_template),
+            secure_dns_config.doh_servers());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates, bad_then_good_template);
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
@@ -184,10 +171,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-              }));
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(good_get_template),
+            secure_dns_config.doh_servers());
 
   local_state->SetString(prefs::kDnsOverHttpsTemplates,
                          multiple_good_templates);
@@ -196,11 +181,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAreArray({
-                  DnsOverHttpsServerConfigMatcher(good_get_template, false),
-                  DnsOverHttpsServerConfigMatcher(good_post_template, true),
-              }));
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(multiple_good_templates),
+            secure_dns_config.doh_servers());
 
   local_state->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
   local_state->SetString(prefs::kDnsOverHttpsTemplates, good_get_template);
@@ -209,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   local_state->SetString(prefs::kDnsOverHttpsMode, "no_match");
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
@@ -217,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // Test case with policy BuiltInDnsClientEnabled enabled. The DoH fields
   // should be unaffected.
@@ -228,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPrefs) {
   EXPECT_EQ(!async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
   EXPECT_EQ(net::SecureDnsMode::kOff, secure_dns_config.mode());
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
 
 // Set various policies and ensure the correct prefs.
@@ -236,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   bool async_dns_feature_enabled = GetParam();
 
 // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
@@ -251,12 +233,12 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   } else {
     EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
   }
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // ChromeOS includes its own special functionality to set default policies if
   // any policies are set.  This function is not declared and cannot be invoked
   // in non-CrOS builds. Expect these enterprise user defaults to disable DoH.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Applies the special ChromeOS defaults to `policy_map_`.
   policy::SetEnterpriseUsersDefaults(&policy_map_);
   // Send the PolicyMap to the mock policy provider.
@@ -264,8 +246,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
-#endif  // defined(OS_CHROMEOS)
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Disable DoH by policy
   ClearPolicies();
@@ -273,14 +255,14 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // Automatic mode by policy
   SetSecureDnsModePolicy("automatic");
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // Secure mode by policy
   SetSecureDnsModePolicy("secure");
@@ -288,9 +270,8 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
-  EXPECT_THAT(secure_dns_config.servers(),
-              testing::ElementsAre(DnsOverHttpsServerConfigMatcher(
-                  "https://doh.test/", /*use_post=*/true)));
+  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString("https://doh.test/"),
+            secure_dns_config.doh_servers());
 
   // Invalid template policy
   SetSecureDnsModePolicy("secure");
@@ -298,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kSecure);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // Invalid mode policy
   SetSecureDnsModePolicy("invalid");
@@ -307,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
   // Expect empty templates if mode policy is invalid.
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
 
 // Test that parental controls detection interacts correctly with prefs and
@@ -315,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest, ConfigFromPolicy) {
 IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
                        ConfigFromParentalControls) {
 // Mark as not enterprise managed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedDomainStateForTesting scoped_domain(false);
   EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
@@ -330,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/true);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   // Policy takes precedence over parental controls.
   SetSecureDnsModePolicy("automatic");
@@ -338,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
   secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/true);
   EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
-  EXPECT_THAT(secure_dns_config.servers(), testing::IsEmpty());
+  EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 
 class ToolbarActionViewController;
 class ToolbarActionsBarBubbleDelegate;
@@ -56,17 +57,14 @@ class ExtensionsContainer {
   virtual bool CloseOverflowMenuIfOpen() = 0;
 
   // Pops out a given |action|, ensuring it is visible.
-  // |is_sticky| refers to whether or not the action will stay popped out if
-  // the overflow menu is opened.
   // |closure| will be called once any animation is complete.
   virtual void PopOutAction(ToolbarActionViewController* action,
-                            bool is_sticky,
                             base::OnceClosure closure) = 0;
 
   // Shows the popup for the action with |id| as the result of an API call,
-  // returning true if a popup is shown.
-  virtual bool ShowToolbarActionPopupForAPICall(
-      const std::string& action_id) = 0;
+  // returning true if a popup is shown and invoking |callback| upon completion.
+  virtual bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
+                                                ShowPopupCallback callback) = 0;
 
   // Displays the given |bubble| once the toolbar is no longer animating.
   virtual void ShowToolbarActionBubble(

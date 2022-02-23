@@ -296,16 +296,6 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
             result.failed_constraint_name());
 }
 
-TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, OverconstrainedOnVideoKind) {
-  constraint_factory_.Reset();
-  // No device in |capabilities_| has video kind infrared.
-  constraint_factory_.basic().video_kind.SetExact("infrared");
-  auto result = SelectSettings();
-  EXPECT_FALSE(result.HasValue());
-  EXPECT_EQ(constraint_factory_.basic().video_kind.GetName(),
-            result.failed_constraint_name());
-}
-
 TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, OverconstrainedOnHeight) {
   constraint_factory_.Reset();
   constraint_factory_.basic().height.SetExact(123467890);
@@ -522,22 +512,6 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryFacingMode) {
   EXPECT_EQ(high_res_device_->device_id.Utf8(), result.device_id());
   EXPECT_EQ(mojom::blink::FacingMode::USER, high_res_device_->facing_mode);
   EXPECT_EQ(*high_res_closest_format_, result.Format());
-  CheckTrackAdapterSettingsEqualsFormat(result);
-}
-
-TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryVideoKind) {
-  constraint_factory_.Reset();
-  constraint_factory_.basic().video_kind.SetExact("depth");
-  auto result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(kDeviceID4, result.device_id());
-  EXPECT_EQ(media::PIXEL_FORMAT_Y16, result.Format().pixel_format);
-  CheckTrackAdapterSettingsEqualsFormat(result);
-
-  constraint_factory_.basic().video_kind.SetExact("color");
-  result = SelectSettings();
-  EXPECT_TRUE(result.HasValue());
-  EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
   CheckTrackAdapterSettingsEqualsFormat(result);
 }
 

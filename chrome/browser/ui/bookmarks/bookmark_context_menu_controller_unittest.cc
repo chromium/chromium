@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -106,7 +107,7 @@ class BookmarkContextMenuControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
   TestingPageNavigator navigator_;
 };
 

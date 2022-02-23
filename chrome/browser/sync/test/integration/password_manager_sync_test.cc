@@ -17,6 +17,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -34,7 +35,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -141,7 +141,8 @@ class PasswordManagerSyncTest : public SyncTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Whitelist all certs for the HTTPS server.
-    auto cert = https_test_server()->GetCertificate();
+    scoped_refptr<net::X509Certificate> cert =
+        https_test_server()->GetCertificate();
     net::CertVerifyResult verify_result;
     verify_result.cert_status = 0;
     verify_result.verified_cert = cert;
@@ -262,7 +263,8 @@ class PasswordManagerSyncTest : public SyncTest {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetProfilePasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
-    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
+    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+        syncer.GetWeakPtr());
     return syncer.WaitForResults();
   }
 
@@ -273,7 +275,8 @@ class PasswordManagerSyncTest : public SyncTest {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetAccountPasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
-    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
+    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+        syncer.GetWeakPtr());
     return syncer.WaitForResults();
   }
 
@@ -294,7 +297,7 @@ class PasswordManagerSyncTest : public SyncTest {
   void FillAndSubmitPasswordForm(content::WebContents* web_contents,
                                  const std::string& username,
                                  const std::string& password) {
-    NavigationObserver observer(web_contents);
+    PasswordsNavigationObserver observer(web_contents);
     std::string fill_and_submit = base::StringPrintf(
         "document.getElementById('username_field').value = '%s';"
         "document.getElementById('password_field').value = '%s';"
@@ -310,7 +313,7 @@ class PasswordManagerSyncTest : public SyncTest {
   void NavigateToFileImpl(content::WebContents* web_contents, const GURL& url) {
     ASSERT_EQ(web_contents,
               GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
-    NavigationObserver observer(web_contents);
+    PasswordsNavigationObserver observer(web_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), url));
     observer.Wait();
     // After navigation, the password manager retrieves any matching credentials
@@ -803,7 +806,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   AddCredentialToFakeServer(CreateTestPasswordForm("user", "pass"));
 
   SetupSyncTransportWithPasswordAccountStorage();
-  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
 
   // Make sure the password show up in the account store and on the server.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
@@ -846,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   // This simulates the case (for the following test) where the user revoked
   // their opt-in, but the account store was *not* cleared correctly, e.g. due
   // to a poorly-timed crash.
-  auto* account_store = passwords_helper::GetAccountPasswordStoreInterface(0);
+  password_manager::PasswordStoreInterface* account_store =
+      passwords_helper::GetAccountPasswordStoreInterface(0);
   account_store->AddLogin(CreateTestPasswordForm("accountuser", "accountpass"));
 
   // Also add a credential to the profile store.

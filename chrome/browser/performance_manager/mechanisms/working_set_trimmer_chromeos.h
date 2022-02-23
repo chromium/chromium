@@ -23,6 +23,12 @@ class WorkingSetTrimmerPolicyChromeOS;
 
 namespace mechanism {
 
+enum class ArcVmReclaimType {
+  kReclaimNone = 0,
+  kReclaimGuestPageCaches,
+  kReclaimAll,  // both guest page caches and shmem
+};
+
 // WorkingSetTrimmerChromeOS is the platform specific implementation of a
 // working set trimmer for ChromeOS. This class should not be used directly it
 // should be used via the WorkingSetTrimmer::GetInstance() method.
@@ -54,8 +60,11 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
 
   // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
   // The function must be called on the UI thread.
-  void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback);
-  void OnDropArcVmCaches(TrimArcVmWorkingSetCallback callback, bool result);
+  void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback,
+                           ArcVmReclaimType reclaim_type);
+  void OnDropArcVmCaches(TrimArcVmWorkingSetCallback callback,
+                         ArcVmReclaimType reclaim_type,
+                         bool result);
 
   // The constructor is made private to prevent instantiation of this class
   // directly, it should always be retrieved via

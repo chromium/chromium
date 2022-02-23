@@ -28,7 +28,7 @@ class WebviewInputMethodObserver : public ui::InputMethodObserver {
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
-  void OnShowVirtualKeyboardIfEnabled() override;
+  void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) override;
 
  private:
   chromecast::WebContentController* controller_;

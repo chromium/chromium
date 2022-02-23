@@ -11,12 +11,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 namespace bookmarks {
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 namespace {
 constexpr size_t kMaxVectorPreallocateSize = 10000;
 }  // namespace
@@ -46,7 +47,7 @@ BookmarkNodeData::Element::Element(const Element& other) = default;
 BookmarkNodeData::Element::~Element() {
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 void BookmarkNodeData::Element::WriteToPickle(base::Pickle* pickle) const {
   pickle->WriteBool(is_url);
   pickle->WriteString(url.spec());
@@ -135,7 +136,7 @@ BookmarkNodeData::BookmarkNodeData(
 BookmarkNodeData::~BookmarkNodeData() {
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
@@ -176,11 +177,11 @@ bool BookmarkNodeData::ReadFromTuple(const GURL& url,
   return true;
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 void BookmarkNodeData::WriteToClipboard() {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const std::u16string kEOL(u"\r\n");
 #else
   const std::u16string kEOL = u"\n";
@@ -286,7 +287,7 @@ bool BookmarkNodeData::ReadFromPickle(base::Pickle* pickle) {
   return true;
 }
 
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 std::vector<const BookmarkNode*> BookmarkNodeData::GetNodes(
     BookmarkModel* model,

@@ -16,12 +16,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -127,11 +129,12 @@ PasswordForm MakeSavedPassword(
 
 void AddIssueToForm(PasswordForm* form,
                     InsecureType type = InsecureType::kLeaked,
-                    base::TimeDelta time_since_creation = base::TimeDelta()) {
+                    base::TimeDelta time_since_creation = base::TimeDelta(),
+                    bool is_muted = false) {
   form->password_issues.insert_or_assign(
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
-                password_manager::IsMuted(false)));
+                password_manager::IsMuted(is_muted)));
 }
 
 // Creates matcher for a given compromised credential
@@ -192,15 +195,15 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
 };
 }  // namespace
 
-// Sets up the password store with a password and compromised
+// Sets up the password store with a password and unmuted compromised
 // credential. Verifies that the result is matching expectation.
-TEST_F(IOSChromePasswordCheckManagerTest, GetCompromisedCredentials) {
+TEST_F(IOSChromePasswordCheckManagerTest, GetUnmutedCompromisedCredentials) {
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername116);
   AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().AddLogin(form);
   RunUntilIdle();
 
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
                   kExampleCom, kUsername116, kPassword116, base::Minutes(1),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
@@ -217,7 +220,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, NoLeakedFound) {
                          IsLeaked(false));
   RunUntilIdle();
 
-  EXPECT_THAT(manager().GetCompromisedCredentials(), IsEmpty());
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(), IsEmpty());
 }
 
 // Test that a found leak creates a compromised credential in the password
@@ -231,7 +234,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, OnLeakFoundCreatesCredential) {
                          IsLeaked(true));
   RunUntilIdle();
 
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
                   kExampleCom, kUsername116, kPassword116, base::Minutes(0),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
@@ -331,7 +334,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, DeletePassword) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  EXPECT_THAT(manager().GetCompromisedCredentials(),
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(),
               ElementsAre(ExpectCompromisedCredential(
                   kExampleCom, kUsername116, kPassword116, base::Minutes(1),
                   InsecureCredentialTypeFlags::kCredentialLeaked)));
@@ -339,7 +342,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, DeletePassword) {
   manager().DeleteCompromisedPasswordForm(form);
   RunUntilIdle();
 
-  EXPECT_THAT(manager().GetCompromisedCredentials(), IsEmpty());
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(), IsEmpty());
 }
 
 // Tests duplicated passwords deleted.
@@ -441,4 +444,32 @@ TEST_F(IOSChromePasswordCheckManagerTest, CheckFinishedWithDelay) {
       .Times(1);
   FastForwardBy(base::Seconds(1));
   manager().RemoveObserver(&observer);
+}
+
+// Tests that that the correct number of compromised credentials is returned.
+TEST_F(IOSChromePasswordCheckManagerTest, CheckCompromisedCredentialsCount) {
+  // Enable unmuted compromised credential feature.
+  base::test::ScopedFeatureList featureList;
+  featureList.InitAndEnableFeature(
+      password_manager::features::kMuteCompromisedPasswords);
+
+  // Add a muted password.
+  PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername216);
+  AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1), true);
+  store().AddLogin(form1);
+  RunUntilIdle();
+  // Should return an empty list because the compromised credential is muted.
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(), IsEmpty());
+
+  // Add an unmuted password.
+  PasswordForm form2 = MakeSavedPassword(kExampleCom, kUsername116);
+  AddIssueToForm(&form2, InsecureType::kLeaked, base::Minutes(1), false);
+  store().AddLogin(form2);
+  RunUntilIdle();
+
+  // Should return only the unmuted compromised credentials.
+  EXPECT_THAT(manager().GetUnmutedCompromisedCredentials(),
+              ElementsAre(ExpectCompromisedCredential(
+                  kExampleCom, kUsername116, kPassword116, base::Minutes(1),
+                  InsecureCredentialTypeFlags::kCredentialLeaked)));
 }

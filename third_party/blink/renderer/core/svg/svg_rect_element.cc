@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -97,7 +97,7 @@ Path SVGRectElement::AsPath() const {
 
   gfx::Vector2dF origin =
       length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  FloatRect rect(origin.x(), origin.y(), size.x(), size.y());
+  gfx::RectF rect(origin.x(), origin.y(), size.x(), size.y());
 
   gfx::Vector2dF radii =
       length_context.ResolveLengthPair(style.Rx(), style.Ry(), style);

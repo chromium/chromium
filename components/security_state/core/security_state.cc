@@ -160,7 +160,7 @@ SecurityLevel GetSecurityLevel(
     if (!visible_security_state.is_error_page &&
         !network::IsUrlPotentiallyTrustworthy(url) &&
         (url.IsStandard() || url.SchemeIs(url::kBlobScheme))) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       // On Desktop, Reader Mode pages have their own visible security state in
       // the omnibox. Display ReaderMode pages as neutral even if the original
       // URL was secure, because Chrome has modified the content so we don't
@@ -172,7 +172,7 @@ SecurityLevel GetSecurityLevel(
       if (visible_security_state.is_reader_mode) {
         return NONE;
       }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
       return WARNING;
     }
     return NONE;

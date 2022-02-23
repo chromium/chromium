@@ -19,8 +19,9 @@
 #include "chromeos/system/statistics_provider.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||           \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     !BUILDFLAG(IS_ANDROID))
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif
@@ -67,7 +68,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
 #endif
 
   std::string os_version("-");
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
@@ -97,8 +98,9 @@ DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() const {
 std::string
 DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
     content::BrowserContext* context) const {
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||           \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     !BUILDFLAG(IS_ANDROID))
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           context);

@@ -159,6 +159,13 @@ bool ValidateConnection(const HttpResponseHeaders* headers,
   return true;
 }
 
+base::Value NetLogFailureParam(int net_error, const std::string& message) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("net_error", net_error);
+  dict.SetStringKey("message", message);
+  return dict;
+}
+
 }  // namespace
 
 WebSocketBasicHandshakeStream::WebSocketBasicHandshakeStream(
@@ -199,6 +206,7 @@ int WebSocketBasicHandshakeStream::InitializeStream(
     CompletionOnceCallback callback) {
   DCHECK(request_info->traffic_annotation.is_valid());
   url_ = request_info->url;
+  net_log_ = net_log;
   // The WebSocket may receive a socket in the early data state from
   // HttpNetworkTransaction, which means it must call ConfirmHandshake() for
   // requests that need replay protection. However, the first request on any
@@ -389,7 +397,7 @@ HttpStream* WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   return handshake_stream.release();
 }
 
-const std::vector<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
+const std::set<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
     const {
   return state_.GetDnsAliases();
 }
@@ -408,7 +416,7 @@ std::unique_ptr<WebSocketStream> WebSocketBasicHandshakeStream::Upgrade() {
       std::make_unique<WebSocketBasicStream>(
           std::make_unique<WebSocketClientSocketHandleAdapter>(
               state_.ReleaseConnection()),
-          state_.read_buf(), sub_protocol_, extensions_);
+          state_.read_buf(), sub_protocol_, extensions_, net_log_);
   DCHECK(extension_params_.get());
   if (extension_params_->deflate_enabled) {
     return std::make_unique<WebSocketDeflateStream>(
@@ -529,6 +537,8 @@ void WebSocketBasicHandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
     absl::optional<int> response_code) {
+  net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_UPGRADE_FAILURE,
+                    [&] { return NetLogFailureParam(net_error, message); });
   // Avoid connection reuse if auth did not happen.
   state_.connection()->socket()->Disconnect();
   stream_request_->OnFailure(message, net_error, response_code);

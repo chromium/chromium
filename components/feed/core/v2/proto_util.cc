@@ -27,7 +27,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -91,7 +91,7 @@ feedwire::Version GetPlatformVersionMessage() {
   result.set_major(major);
   result.set_minor(minor);
   result.set_revision(revision);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
 #endif
   return result;
@@ -110,7 +110,7 @@ feedwire::Version GetAppVersionMessage(const ChromeInfo& chrome_info) {
     result.set_revision(static_cast<int32_t>(numbers[3]));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   result.set_api_version(base::android::BuildInfo::GetInstance()->sdk_int());
 #endif
   return result;
@@ -276,9 +276,9 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
 
   client_info.set_locale(request_metadata.language_tag);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   client_info.set_platform_type(feedwire::ClientInfo::ANDROID_ID);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   client_info.set_platform_type(feedwire::ClientInfo::IOS);
 #endif
   client_info.set_app_type(feedwire::ClientInfo::CHROME_ANDROID);

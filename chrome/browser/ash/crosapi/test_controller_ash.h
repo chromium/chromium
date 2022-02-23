@@ -57,12 +57,28 @@ class TestControllerAsh : public mojom::TestController,
                       uint8_t pointer_id,
                       const gfx::PointF& location_in_window,
                       SendTouchEventCallback cb) override;
+  void GetOpenAshBrowserWindows(
+      GetOpenAshBrowserWindowsCallback callback) override;
+  void CloseAllBrowserWindows(CloseAllBrowserWindowsCallback callback) override;
+  void RegisterStandaloneBrowserTestController(
+      mojo::PendingRemote<mojom::StandaloneBrowserTestController>) override;
+  void TriggerTabScrubbing(float x_offset,
+                           TriggerTabScrubbingCallback callback) override;
+
+  mojo::Remote<mojom::StandaloneBrowserTestController>&
+  GetStandaloneBrowserTestController() {
+    DCHECK(standalone_browser_test_controller_.is_bound());
+    return standalone_browser_test_controller_;
+  }
 
  private:
   class OverviewWaiter;
 
   // Called when a waiter has finished waiting for its event.
   void WaiterFinished(OverviewWaiter* waiter);
+
+  // Called when the lacros test controller was disconnected.
+  void OnControllerDisconnected();
 
   // Called when a ShelfItemDelegate returns its context menu.
   static void OnGetContextMenuForShelfItem(
@@ -77,6 +93,10 @@ class TestControllerAsh : public mojom::TestController,
   // This class supports any number of connections. This allows multiple
   // crosapi clients.
   mojo::ReceiverSet<mojom::TestController> receivers_;
+
+  // Controller to send commands to the connected lacros crosapi client.
+  mojo::Remote<mojom::StandaloneBrowserTestController>
+      standalone_browser_test_controller_;
 };
 
 }  // namespace crosapi

@@ -2,6 +2,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<include srd="assistant_common_styles.html">
 <include src="assistant_loading.html">
 <include src="assistant_related_info.html">
 <include src="assistant_value_prop.html">
@@ -17,10 +18,8 @@
 
 <dom-module id="assistant-optin-flow-element">
   <template>
-    <style include="oobe-common-styles"></style>
+    <style include="oobe-common-styles assistant-common-styles"></style>
     <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
-    <link rel="stylesheet" href="assistant_shared_styles.css">
-    <link rel="stylesheet" href="assistant_value_prop.css">
     <assistant-loading id="loading" for-step="loading">
     </assistant-loading>
     <assistant-value-prop id="valueProp" for-step="value-prop">

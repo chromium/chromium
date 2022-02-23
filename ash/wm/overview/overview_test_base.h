@@ -16,12 +16,12 @@
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 namespace views {
-class ImageButton;
 class Label;
 }  // namespace views
 
 namespace ash {
 
+class CloseButton;
 class OverviewController;
 class OverviewGrid;
 class OverviewItem;
@@ -67,7 +67,7 @@ class OverviewTestBase : public AshTestBase {
 
   OverviewItem* GetDropTarget(int grid_index);
 
-  views::ImageButton* GetCloseButton(OverviewItem* item);
+  CloseButton* GetCloseButton(OverviewItem* item);
 
   views::Label* GetLabelView(OverviewItem* item);
 
@@ -102,6 +102,13 @@ class OverviewTestBase : public AshTestBase {
 
  protected:
   void CheckForDuplicateTraceName(const std::string& trace);
+
+  // Takes in a current widget and checks if the accessibility next
+  // and previous focus widgets match the given.
+  void CheckA11yOverrides(const std::string& trace,
+                          views::Widget* widget,
+                          views::Widget* expected_previous,
+                          views::Widget* expected_next);
 
   base::HistogramTester histograms_;
 

@@ -8,10 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace settings {
 
 class BrowserLifetimeHandler : public SettingsPageUIHandler {
@@ -29,12 +25,19 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleRestart(const base::ListValue* /*args*/);
-  void HandleRelaunch(const base::ListValue* /*args*/);
+  void HandleRestart(base::Value::ConstListView args);
+  void HandleRelaunch(base::Value::ConstListView args);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleSignOutAndRestart(const base::ListValue* /*args*/);
-  void HandleFactoryReset(const base::ListValue* /*args*/);
+  void HandleSignOutAndRestart(base::Value::ConstListView args);
+  void HandleFactoryReset(base::Value::ConstListView args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  void HandleGetRelaunchConfirmationDialogDescription(
+      base::Value::ConstListView args);
+  void HandleShouldShowRelaunchConfirmationDialog(
+      base::Value::ConstListView args);
+#endif
 };
 
 }  // namespace settings

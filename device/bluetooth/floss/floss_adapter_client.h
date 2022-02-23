@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "dbus/exported_object.h"
@@ -126,14 +125,26 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void CancelDiscovery(ResponseCallback<Void> callback);
 
   // Create a bond with the given device and transport.
-  virtual void CreateBond(ResponseCallback<Void> callback,
+  virtual void CreateBond(ResponseCallback<bool> callback,
                           FlossDeviceId device,
                           BluetoothTransport transport);
+
+  // Cancel a bond process.
+  virtual void CancelBondProcess(ResponseCallback<bool> callback,
+                                 FlossDeviceId device);
+
+  // Removes bonding.
+  virtual void RemoveBond(ResponseCallback<bool> callback,
+                          FlossDeviceId device);
 
   // Get connection state of a device.
   // TODO(b/202334519): Change return type to enum instead of u32
   virtual void GetConnectionState(ResponseCallback<uint32_t> callback,
                                   const FlossDeviceId& device);
+
+  // Get bonding state of a device.
+  virtual void GetBondState(ResponseCallback<uint32_t> callback,
+                            const FlossDeviceId& device);
 
   // Connect to all enabled profiles.
   virtual void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
@@ -145,11 +156,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                                       const FlossDeviceId& device,
                                       bool accept);
 
+  // Indicates whether the user approves the pairing with the given pin.
+  virtual void SetPin(ResponseCallback<Void> callback,
+                      const FlossDeviceId& device,
+                      bool accept,
+                      const std::vector<uint8_t>& pin);
+
   // Indicates whether the user approves the pairing with the given passkey.
   virtual void SetPasskey(ResponseCallback<Void> callback,
                           const FlossDeviceId& device,
                           bool accept,
                           const std::vector<uint8_t>& passkey);
+
+  // Returns bonded devices.
+  virtual void GetBondedDevices(
+      ResponseCallback<std::vector<FlossDeviceId>> callback);
 
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }

@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,19 +32,19 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,8 +93,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
  public:
   explicit TestExternallyManagedAppInstallFinalizer(
       WebAppRegistrarMutable* registrar)
-      : WebAppInstallFinalizer(nullptr, nullptr, nullptr),
-        registrar_(registrar) {}
+      : WebAppInstallFinalizer(nullptr), registrar_(registrar) {}
   TestExternallyManagedAppInstallFinalizer(
       const TestExternallyManagedAppInstallFinalizer&) = delete;
   TestExternallyManagedAppInstallFinalizer& operator=(
@@ -117,11 +117,12 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     registrar_->registry().erase(it);
   }
 
-  void SetNextFinalizeInstallResult(const GURL& url, InstallResultCode code) {
+  void SetNextFinalizeInstallResult(const GURL& url,
+                                    webapps::InstallResultCode code) {
     DCHECK(!base::Contains(next_finalize_install_results_, url));
 
     AppId app_id;
-    if (code == InstallResultCode::kSuccessNewInstall) {
+    if (code == webapps::InstallResultCode::kSuccessNewInstall) {
       app_id = GetAppIdForUrl(url);
     }
     next_finalize_install_results_[url] = {app_id, code};
@@ -135,7 +136,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         GetAppIdForUrl(app_url), uninstalled};
   }
 
-  const std::vector<WebApplicationInfo>& web_app_info_list() {
+  const std::vector<WebAppInstallInfo>& web_app_info_list() {
     return web_app_info_list_;
   }
 
@@ -150,7 +151,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
   size_t num_reparent_tab_calls() { return num_reparent_tab_calls_; }
 
   // WebAppInstallFinalizer
-  void FinalizeInstall(const WebApplicationInfo& web_app_info,
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override {
     DCHECK(
@@ -160,7 +161,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     finalize_options_list_.push_back(options);
 
     AppId app_id;
-    InstallResultCode code;
+    webapps::InstallResultCode code;
     std::tie(app_id, code) =
         next_finalize_install_results_[web_app_info.start_url];
     next_finalize_install_results_.erase(web_app_info.start_url);
@@ -172,7 +173,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
             [&, app_id, url, code, callback = std::move(callback)]() mutable {
               auto web_app = test::CreateWebApp(url, Source::kPolicy);
               RegisterApp(std::move(web_app));
-              std::move(callback).Run(app_id, code);
+              std::move(callback).Run(app_id, code, OsHooksErrors());
             }));
   }
 
@@ -182,7 +183,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     NOTREACHED();
   }
 
-  void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+  void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override {
     NOTREACHED();
   }
@@ -258,15 +259,15 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
   }
 
  private:
-  WebAppRegistrarMutable* registrar_ = nullptr;
+  raw_ptr<WebAppRegistrarMutable> registrar_ = nullptr;
 
-  std::vector<WebApplicationInfo> web_app_info_list_;
+  std::vector<WebAppInstallInfo> web_app_info_list_;
   std::vector<FinalizeOptions> finalize_options_list_;
   std::vector<GURL> uninstall_external_web_app_urls_;
 
   size_t num_reparent_tab_calls_ = 0;
 
-  std::map<GURL, std::pair<AppId, InstallResultCode>>
+  std::map<GURL, std::pair<AppId, webapps::InstallResultCode>>
       next_finalize_install_results_;
 
   // Maps app URLs to the id of the app that would have been installed for that
@@ -290,10 +291,6 @@ class ExternallyManagedAppInstallTaskTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile()->SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     url_loader_ = std::make_unique<TestWebAppUrlLoader>();
 
     auto* provider = FakeWebAppProvider::Get(profile());
@@ -314,12 +311,15 @@ class ExternallyManagedAppInstallTaskTest
         /*file_handler_manager=*/nullptr,
         /*protocol_handler_manager=*/nullptr,
         /*url_handler_manager*/ nullptr);
-    os_integration_manager_ = os_integration_manager.get();
 
     auto ui_manager = std::make_unique<FakeWebAppUiManager>();
     ui_manager_ = ui_manager.get();
 
+    auto sync_bridge = std::make_unique<WebAppSyncBridge>(
+        &provider->GetDatabaseFactory(), registrar.get(), install_manager_);
+
     provider->SetRegistrar(std::move(registrar));
+    provider->SetSyncBridge(std::move(sync_bridge));
     provider->SetInstallManager(std::move(install_manager));
     provider->SetInstallFinalizer(std::move(install_finalizer));
     provider->SetWebAppUiManager(std::move(ui_manager));
@@ -339,13 +339,10 @@ class ExternallyManagedAppInstallTaskTest
     return install_finalizer_;
   }
   WebAppInstallManager* install_manager() { return install_manager_; }
-  FakeOsIntegrationManager* os_integration_manager() {
-    return os_integration_manager_;
-  }
 
   FakeDataRetriever* data_retriever() { return data_retriever_; }
 
-  const WebApplicationInfo& web_app_info() {
+  const WebAppInstallInfo& web_app_info() {
     DCHECK_EQ(1u, install_finalizer_->web_app_info_list().size());
     return install_finalizer_->web_app_info_list().at(0);
   }
@@ -366,33 +363,30 @@ class ExternallyManagedAppInstallTaskTest
     manifest->start_url = options.install_url;
     manifest->name = u"Manifest Name";
 
-    data_retriever_->SetRendererWebApplicationInfo(
-        std::make_unique<WebApplicationInfo>());
+    data_retriever_->SetRendererWebAppInstallInfo(
+        std::make_unique<WebAppInstallInfo>());
 
     data_retriever_->SetManifest(std::move(manifest), /*is_installable=*/true);
 
     data_retriever_->SetIcons(IconsMap{});
 
     install_finalizer_->SetNextFinalizeInstallResult(
-        options.install_url, InstallResultCode::kSuccessNewInstall);
-
-    os_integration_manager_->SetNextCreateShortcutsResult(
-        install_finalizer_->GetAppIdForUrl(options.install_url), true);
+        options.install_url, webapps::InstallResultCode::kSuccessNewInstall);
 
     auto task = std::make_unique<ExternallyManagedAppInstallTask>(
-        profile(), url_loader_.get(), registrar_, os_integration_manager_,
-        ui_manager_, install_finalizer_, install_manager_, std::move(options));
+        profile(), url_loader_.get(), registrar_, ui_manager_,
+        install_finalizer_, install_manager_, std::move(options));
     return task;
   }
 
  private:
   std::unique_ptr<TestWebAppUrlLoader> url_loader_;
-  WebAppInstallManager* install_manager_ = nullptr;
-  WebAppRegistrar* registrar_ = nullptr;
-  FakeDataRetriever* data_retriever_ = nullptr;
-  TestExternallyManagedAppInstallFinalizer* install_finalizer_ = nullptr;
-  FakeWebAppUiManager* ui_manager_ = nullptr;
-  FakeOsIntegrationManager* os_integration_manager_ = nullptr;
+  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<FakeDataRetriever> data_retriever_ = nullptr;
+  raw_ptr<TestExternallyManagedAppInstallFinalizer> install_finalizer_ =
+      nullptr;
+  raw_ptr<FakeWebAppUiManager> ui_manager_ = nullptr;
 };
 
 class ExternallyManagedAppInstallTaskWithRunOnOsLoginTest
@@ -422,25 +416,19 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
+          [&](ExternallyManagedAppManager::InstallResult result) {
             absl::optional<AppId> id =
                 ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                     .LookupAppId(kWebAppUrl);
 
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
+            EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
-            EXPECT_EQ(app_id.value(), id.value());
+            EXPECT_EQ(result.app_id.value(), id.value());
 
-            EXPECT_EQ(1u,
-                      os_integration_manager()->num_create_shortcuts_calls());
-            EXPECT_TRUE(os_integration_manager()->did_add_to_desktop().value());
-
-            EXPECT_EQ(1u, os_integration_manager()
-                              ->num_add_app_to_quick_launch_bar_calls());
             EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
 
             EXPECT_EQ(web_app_info().user_display_mode, DisplayMode::kBrowser);
@@ -458,7 +446,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
   auto task = GetInstallationTaskWithTestMocks(
       {kWebAppUrl, DisplayMode::kStandalone,
        ExternalInstallSource::kInternalDefault});
-  data_retriever()->SetRendererWebApplicationInfo(nullptr);
+  data_retriever()->SetRendererWebAppInstallInfo(nullptr);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
@@ -467,125 +455,20 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
 
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](absl::optional<AppId> app_id,
-                        ExternallyManagedAppManager::InstallResult result) {
+                    [&](ExternallyManagedAppManager::InstallResult result) {
                       absl::optional<AppId> id =
                           ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                               .LookupAppId(kWebAppUrl);
 
-                      EXPECT_EQ(InstallResultCode::kGetWebApplicationInfoFailed,
+                      EXPECT_EQ(webapps::InstallResultCode::
+                                    kGetWebAppInstallInfoFailed,
                                 result.code);
-                      EXPECT_FALSE(app_id.has_value());
+                      EXPECT_FALSE(result.app_id.has_value());
 
                       EXPECT_FALSE(id.has_value());
 
                       run_loop.Quit();
                     }));
-
-  run_loop.Run();
-}
-
-TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoDesktopShortcut) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions install_options(
-      kWebAppUrl, DisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
-  install_options.add_to_desktop = false;
-  auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop run_loop;
-
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
-                                     ExternallyManagedAppManager::InstallResult
-                                         result) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-        EXPECT_TRUE(app_id.has_value());
-
-        EXPECT_EQ(1u, os_integration_manager()->num_create_shortcuts_calls());
-        EXPECT_FALSE(os_integration_manager()->did_add_to_desktop().value());
-
-        EXPECT_EQ(
-            1u,
-            os_integration_manager()->num_add_app_to_quick_launch_bar_calls());
-        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
-
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-}
-
-TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions install_options(
-      kWebAppUrl, DisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
-  install_options.add_to_quick_launch_bar = false;
-  auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop run_loop;
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
-
-            EXPECT_EQ(1u,
-                      os_integration_manager()->num_create_shortcuts_calls());
-            EXPECT_TRUE(os_integration_manager()->did_add_to_desktop().value());
-
-            EXPECT_EQ(0u, os_integration_manager()
-                              ->num_add_app_to_quick_launch_bar_calls());
-            EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
-
-            run_loop.Quit();
-          }));
-
-  run_loop.Run();
-}
-
-TEST_F(ExternallyManagedAppInstallTaskTest,
-       InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions install_options(
-      kWebAppUrl, DisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
-  install_options.add_to_desktop = false;
-  install_options.add_to_quick_launch_bar = false;
-  auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop run_loop;
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
-                                     ExternallyManagedAppManager::InstallResult
-                                         result) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-        EXPECT_TRUE(app_id.has_value());
-
-        EXPECT_EQ(1u, os_integration_manager()->num_create_shortcuts_calls());
-        EXPECT_FALSE(os_integration_manager()->did_add_to_desktop().value());
-
-        EXPECT_EQ(
-            0u,
-            os_integration_manager()->num_add_app_to_quick_launch_bar_calls());
-        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
-
-        run_loop.Quit();
-      }));
 
   run_loop.Run();
 }
@@ -603,11 +486,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](absl::optional<AppId> app_id,
-                        ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
-                      EXPECT_TRUE(app_id.has_value());
+                      EXPECT_TRUE(result.app_id.has_value());
                       EXPECT_EQ(web_app_info().user_display_mode,
                                 DisplayMode::kStandalone);
                       run_loop.Quit();
@@ -629,11 +511,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](absl::optional<AppId> app_id,
-                        ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
-                      EXPECT_TRUE(app_id.has_value());
+                      EXPECT_TRUE(result.app_id.has_value());
                       EXPECT_EQ(web_app_info().user_display_mode,
                                 DisplayMode::kBrowser);
                       run_loop.Quit();
@@ -655,11 +536,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](absl::optional<AppId> app_id,
-                        ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
-                      EXPECT_TRUE(app_id.has_value());
+                      EXPECT_TRUE(result.app_id.has_value());
 
                       EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
                                 finalize_options().install_source);
@@ -682,11 +562,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   base::RunLoop run_loop;
   task->Install(web_contents(),
                 base::BindLambdaForTesting(
-                    [&](absl::optional<AppId> app_id,
-                        ExternallyManagedAppManager::InstallResult result) {
-                      EXPECT_EQ(InstallResultCode::kSuccessNewInstall,
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
                                 result.code);
-                      EXPECT_TRUE(app_id.has_value());
+                      EXPECT_TRUE(result.app_id.has_value());
 
                       EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
                                 finalize_options().install_source);
@@ -710,19 +589,17 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
+            EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
-            EXPECT_EQ(1u,
-                      os_integration_manager()->num_create_shortcuts_calls());
             EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
             EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
                       finalize_options().install_source);
-            const WebApplicationInfo& web_app_info =
+            const WebAppInstallInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
@@ -750,63 +627,17 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderDefaultSource) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
+            EXPECT_TRUE(result.app_id.has_value());
 
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
-            EXPECT_EQ(1u,
-                      os_integration_manager()->num_create_shortcuts_calls());
             EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
             EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_DEFAULT,
                       finalize_options().install_source);
-            const WebApplicationInfo& web_app_info =
-                finalizer()->web_app_info_list().at(0);
-
-            EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
-            EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
-            EXPECT_EQ(web_app_info.user_display_mode, DisplayMode::kStandalone);
-            EXPECT_TRUE(web_app_info.manifest_icons.empty());
-            EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
-
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-}
-
-// Tests that palceholders are correctly installed when the platform doesn't
-// support os shortcuts.
-TEST_F(ExternallyManagedAppInstallTaskTest,
-       InstallPlaceholderNoCreateOsShorcuts) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
-                                 ExternalInstallSource::kExternalPolicy);
-  options.install_placeholder = true;
-  auto task = GetInstallationTaskWithTestMocks(std::move(options));
-  os_integration_manager()->set_can_create_shortcuts(false);
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(
-      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
-
-  base::RunLoop run_loop;
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
-
-            EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
-
-            EXPECT_EQ(0u,
-                      os_integration_manager()->num_create_shortcuts_calls());
-            EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
-            EXPECT_EQ(webapps::WebappInstallSource::EXTERNAL_POLICY,
-                      finalize_options().install_source);
-            const WebApplicationInfo& web_app_info =
+            const WebAppInstallInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
@@ -838,10 +669,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> app_id,
-                ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-              placeholder_app_id = app_id.value();
+            [&](ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
+              placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
               run_loop.Quit();
@@ -856,19 +687,19 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
       kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
   base::RunLoop run_loop;
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_EQ(placeholder_app_id, app_id.value());
+  task->Install(web_contents(),
+                base::BindLambdaForTesting(
+                    [&](ExternallyManagedAppManager::InstallResult result) {
+                      EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                                result.code);
+                      EXPECT_EQ(placeholder_app_id, result.app_id.value());
 
-            // There shouldn't be a second call to the finalizer.
-            EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
+                      // There shouldn't be a second call to the finalizer.
+                      EXPECT_EQ(1u,
+                                finalizer()->finalize_options_list().size());
 
-            run_loop.Quit();
-          }));
+                      run_loop.Quit();
+                    }));
   run_loop.Run();
 }
 
@@ -890,10 +721,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> app_id,
-                ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-              placeholder_app_id = app_id.value();
+            [&](ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
+              placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
               run_loop.Quit();
@@ -913,10 +744,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-            EXPECT_TRUE(app_id.has_value());
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
+            EXPECT_TRUE(result.app_id.has_value());
             EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(1u,
@@ -947,10 +778,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> app_id,
-                ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-              placeholder_app_id = app_id.value();
+            [&](ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
+              placeholder_app_id = result.app_id.value();
 
               EXPECT_EQ(1u, finalizer()->finalize_options_list().size());
 
@@ -972,11 +803,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   task->Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId> app_id,
-              ExternallyManagedAppManager::InstallResult result) {
-            EXPECT_EQ(InstallResultCode::kFailedPlaceholderUninstall,
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(webapps::InstallResultCode::kFailedPlaceholderUninstall,
                       result.code);
-            EXPECT_FALSE(app_id.has_value());
+            EXPECT_FALSE(result.app_id.has_value());
             EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(1u,
@@ -991,6 +821,38 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
           }));
   run_loop.Run();
 }
+
+#if defined(CHROMEOS)
+TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
+  const GURL kWebAppUrl("https://foo.example");
+  const std::string kCustomName("Custom äpp näme");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
+                                 ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.override_name = kCustomName;
+  auto task = GetInstallationTaskWithTestMocks(std::move(options));
+  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().SetNextLoadUrlResult(
+      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+
+  base::RunLoop run_loop;
+  task->Install(
+      web_contents(),
+      base::BindLambdaForTesting(
+          [&](ExternallyManagedAppManager::InstallResult result) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                      result.code);
+
+            const WebAppInstallInfo& web_app_info =
+                finalizer()->web_app_info_list().at(0);
+
+            EXPECT_EQ(base::UTF8ToUTF16(kCustomName), web_app_info.title);
+
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+#endif  // defined(CHROMEOS)
 
 TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
   const GURL kWebAppUrl("https://foo.example");
@@ -1010,12 +872,12 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> installed_app_id,
-                ExternallyManagedAppManager::InstallResult result) {
-              app_id = *installed_app_id;
+            [&](ExternallyManagedAppManager::InstallResult result) {
+              app_id = result.app_id.value();
 
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-              EXPECT_EQ(app_id,
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
+              EXPECT_EQ(result.app_id,
                         *ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                              .LookupAppId(kWebAppUrl));
 
@@ -1039,10 +901,10 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     task->Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> installed_app_id,
-                ExternallyManagedAppManager::InstallResult result) {
-              EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-              EXPECT_EQ(app_id, *installed_app_id);
+            [&](ExternallyManagedAppManager::InstallResult result) {
+              EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+                        result.code);
+              EXPECT_EQ(app_id, result.app_id.value());
 
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app3", app_id));
 
@@ -1055,13 +917,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
   struct ResultPair {
     WebAppUrlLoader::Result loader_result;
-    InstallResultCode install_result;
+    webapps::InstallResultCode install_result;
   } result_pairs[] = {{WebAppUrlLoader::Result::kRedirectedUrlLoaded,
-                       InstallResultCode::kInstallURLRedirected},
+                       webapps::InstallResultCode::kInstallURLRedirected},
                       {WebAppUrlLoader::Result::kFailedUnknownReason,
-                       InstallResultCode::kInstallURLLoadFailed},
+                       webapps::InstallResultCode::kInstallURLLoadFailed},
                       {WebAppUrlLoader::Result::kFailedPageTookTooLong,
-                       InstallResultCode::kInstallURLLoadTimeOut}};
+                       webapps::InstallResultCode::kInstallURLLoadTimeOut}};
 
   for (const auto& result_pair : result_pairs) {
     base::RunLoop run_loop;
@@ -1070,16 +932,15 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallURLLoadFailed) {
         GURL(), DisplayMode::kStandalone,
         ExternalInstallSource::kInternalDefault);
     ExternallyManagedAppInstallTask install_task(
-        profile(), &url_loader(), registrar(), os_integration_manager(),
-        ui_manager(), finalizer(), install_manager(), install_options);
+        profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
+        install_manager(), install_options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(GURL(), result_pair.loader_result);
 
     install_task.Install(
         web_contents(),
         base::BindLambdaForTesting(
-            [&](absl::optional<AppId> app_id,
-                ExternallyManagedAppManager::InstallResult result) {
+            [&](ExternallyManagedAppManager::InstallResult result) {
               EXPECT_EQ(result.code, result_pair.install_result);
               run_loop.Quit();
             }));
@@ -1093,8 +954,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
       GURL(), DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   ExternallyManagedAppInstallTask install_task(
-      profile(), &url_loader(), registrar(), os_integration_manager(),
-      ui_manager(), finalizer(), install_manager(), install_options);
+      profile(), &url_loader(), registrar(), ui_manager(), finalizer(),
+      install_manager(), install_options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
       GURL(), WebAppUrlLoader::Result::kFailedWebContentsDestroyed);
@@ -1102,8 +963,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
   install_task.Install(
       web_contents(),
       base::BindLambdaForTesting(
-          [&](absl::optional<AppId>,
-              ExternallyManagedAppManager::InstallResult) { NOTREACHED(); }));
+          [&](ExternallyManagedAppManager::InstallResult) { NOTREACHED(); }));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -1114,40 +974,35 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(
-      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
-      ui_manager(), finalizer(), install_manager(), std::move(options));
+  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
+                                       registrar(), ui_manager(), finalizer(),
+                                       install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      kWebAppUrl, InstallResultCode::kSuccessNewInstall);
+      kWebAppUrl, webapps::InstallResultCode::kSuccessNewInstall);
 
   base::RunLoop run_loop;
   task.Install(
       /*web_contents=*/nullptr,
-      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
-                                     ExternallyManagedAppManager::InstallResult
+      base::BindLambdaForTesting([&](ExternallyManagedAppManager::InstallResult
                                          result) {
         absl::optional<AppId> id =
             ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                 .LookupAppId(kWebAppUrl);
-        EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
-        EXPECT_TRUE(app_id.has_value());
+        EXPECT_EQ(webapps::InstallResultCode::kSuccessOfflineOnlyInstall,
+                  result.code);
+        EXPECT_TRUE(result.app_id.has_value());
 
         EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
-        EXPECT_EQ(app_id.value(), id.value());
-
-        // Installing with an App Info doesn't call into OS Integration Manager.
-        // This might be an issue for default apps.
-        EXPECT_FALSE(
-            os_integration_manager()->get_last_install_options().has_value());
+        EXPECT_EQ(result.app_id.value(), id.value());
 
         EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
 
@@ -1166,117 +1021,37 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;
   });
 
-  ExternallyManagedAppInstallTask task(
-      profile(), /*url_loader=*/nullptr, registrar(), os_integration_manager(),
-      ui_manager(), finalizer(), install_manager(), std::move(options));
+  ExternallyManagedAppInstallTask task(profile(), /*url_loader=*/nullptr,
+                                       registrar(), ui_manager(), finalizer(),
+                                       install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      kWebAppUrl, InstallResultCode::kWriteDataFailed);
+      kWebAppUrl, webapps::InstallResultCode::kWriteDataFailed);
 
   base::RunLoop run_loop;
 
   task.Install(web_contents(),
                base::BindLambdaForTesting(
-                   [&](absl::optional<AppId> app_id,
-                       ExternallyManagedAppManager::InstallResult result) {
+                   [&](ExternallyManagedAppManager::InstallResult result) {
                      absl::optional<AppId> id =
                          ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                              .LookupAppId(kWebAppUrl);
 
-                     EXPECT_EQ(InstallResultCode::kWriteDataFailed,
+                     EXPECT_EQ(webapps::InstallResultCode::kWriteDataFailed,
                                result.code);
-                     EXPECT_FALSE(app_id.has_value());
+                     EXPECT_FALSE(result.app_id.has_value());
 
                      EXPECT_FALSE(id.has_value());
 
                      run_loop.Quit();
                    }));
-
-  run_loop.Run();
-}
-
-TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
-       InstallRunOnOsLogin) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions install_options(
-      kWebAppUrl, DisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
-  install_options.run_on_os_login = true;
-
-  auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop run_loop;
-
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
-                                     ExternallyManagedAppManager::InstallResult
-                                         result) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-        EXPECT_TRUE(app_id.has_value());
-
-        EXPECT_EQ(1u, os_integration_manager()->num_create_shortcuts_calls());
-        EXPECT_TRUE(os_integration_manager()->did_add_to_desktop().value());
-
-        EXPECT_EQ(
-            1u, os_integration_manager()->num_register_run_on_os_login_calls());
-
-        EXPECT_EQ(
-            1u,
-            os_integration_manager()->num_add_app_to_quick_launch_bar_calls());
-        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
-
-        run_loop.Quit();
-      }));
-
-  run_loop.Run();
-}
-
-TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
-       InstallNoRunOnOsLogin) {
-  const GURL kWebAppUrl("https://foo.example");
-  ExternalInstallOptions install_options(
-      kWebAppUrl, DisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
-  install_options.run_on_os_login = false;
-  auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(kWebAppUrl,
-                                    WebAppUrlLoader::Result::kUrlLoaded);
-
-  base::RunLoop run_loop;
-
-  task->Install(
-      web_contents(),
-      base::BindLambdaForTesting([&](absl::optional<AppId> app_id,
-                                     ExternallyManagedAppManager::InstallResult
-                                         result) {
-        EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
-        EXPECT_TRUE(app_id.has_value());
-
-        EXPECT_EQ(1u, os_integration_manager()->num_create_shortcuts_calls());
-        EXPECT_TRUE(os_integration_manager()->did_add_to_desktop().value());
-
-        EXPECT_EQ(
-            0u, os_integration_manager()->num_register_run_on_os_login_calls());
-
-        EXPECT_EQ(
-            1u,
-            os_integration_manager()->num_add_app_to_quick_launch_bar_calls());
-        EXPECT_EQ(0u, finalizer()->num_reparent_tab_calls());
-
-        run_loop.Quit();
-      }));
 
   run_loop.Run();
 }

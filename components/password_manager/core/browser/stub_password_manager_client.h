@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_CLIENT_H_
 
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
+#include "components/password_manager/core/browser/mock_password_change_success_tracker.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -63,6 +64,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;
   PasswordScriptsFetcher* GetPasswordScriptsFetcher() override;
+  MockPasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
   const CredentialsFilter* GetStoreResultFilter() const override;
@@ -70,6 +72,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
   bool IsAutofillAssistantUIVisible() const override;
+  version_info::Channel GetChannel() const override;
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;
@@ -102,6 +105,8 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
   absl::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
+  testing::NiceMock<MockPasswordChangeSuccessTracker>
+      password_change_success_tracker_;
 };
 
 }  // namespace password_manager

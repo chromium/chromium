@@ -180,12 +180,13 @@ void DeviceDisablingManagerOOBETest::CheckWhetherDeviceDisabledDuringOOBE() {
 void DeviceDisablingManagerOOBETest::SetDeviceDisabled(bool disabled) {
   DictionaryPrefUpdate dict(&local_state_, prefs::kServerBackedDeviceState);
   if (disabled) {
-    dict->SetString(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
+    dict->SetStringKey(policy::kDeviceStateMode,
+                       policy::kDeviceStateModeDisabled);
   } else {
     dict->RemoveKey(policy::kDeviceStateMode);
   }
-  dict->SetString(policy::kDeviceStateManagementDomain, kEnrollmentDomain);
-  dict->SetString(policy::kDeviceStateDisabledMessage, kDisabledMessage1);
+  dict->SetStringKey(policy::kDeviceStateManagementDomain, kEnrollmentDomain);
+  dict->SetStringKey(policy::kDeviceStateDisabledMessage, kDisabledMessage1);
 }
 
 void DeviceDisablingManagerOOBETest::OnDeviceDisabledChecked(

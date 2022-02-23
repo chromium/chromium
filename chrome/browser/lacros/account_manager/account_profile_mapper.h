@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/lacros/account_manager/account_cache.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -26,9 +26,13 @@ struct Account;
 class AccountKey;
 }  // namespace account_manager
 
+namespace base {
+class FilePath;
+}
+
 class AddAccountHelper;
-class ProfileAttributesStorage;
 class ProfileAttributesEntry;
+class PrefService;
 
 // `AccountProfileMapper` is the main class maintaining the mapping between
 // accounts and profiles. There is only one global `AccountProfileMapper` (it is
@@ -50,7 +54,8 @@ class ProfileAttributesEntry;
 //   system accounts with the storage accounts. Then, it updates the storage
 //   accordingly, and notifies the observers.
 class AccountProfileMapper
-    : public account_manager::AccountManagerFacade::Observer {
+    : public account_manager::AccountManagerFacade::Observer,
+      public ProfileAttributesStorage::Observer {
  public:
   // Result type for `ShowAddAccountDialog()`.
   // If the account was added to the system, but could not be added to the
@@ -77,7 +82,8 @@ class AccountProfileMapper
   };
 
   AccountProfileMapper(account_manager::AccountManagerFacade* facade,
-                       ProfileAttributesStorage* storage);
+                       ProfileAttributesStorage* storage,
+                       PrefService* local_state);
   ~AccountProfileMapper() override;
 
   AccountProfileMapper(const AccountProfileMapper& other) = delete;
@@ -138,6 +144,9 @@ class AccountProfileMapper
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
+  // ProfileAttributesStorage::Observer:
+  void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;
+
   // Adds or updates an account programmatically without user interaction
   // Should only be used in tests.
   void UpsertAccountForTesting(const base::FilePath& profile_path,
@@ -164,7 +173,7 @@ class AccountProfileMapper
       AddAccountCallback callback);
 
   // Callback for `AddAccountHelper`, end of the flow starting with
-  // `AddAccounInternal()`.
+  // `AddAccountInternal()`.
   void OnAddAccountCompleted(AddAccountHelper* helper,
                              AddAccountCallback callback,
                              const absl::optional<AddAccountResult>& result);
@@ -179,6 +188,7 @@ class AccountProfileMapper
   // the accounts are left unassigned.
   std::vector<const account_manager::Account*> AddNewGaiaAccounts(
       const std::vector<account_manager::Account>& system_accounts,
+      AccountCache::AccountIdSet lacros_account_ids,
       ProfileAttributesEntry* entry_for_new_accounts);
 
   // Update the `ProfileAttributesStorage` to match the system accounts.
@@ -187,6 +197,9 @@ class AccountProfileMapper
   // Returns whether the profile at `profile_path` contains `account`.
   bool ProfileContainsAccount(const base::FilePath& profile_path,
                               const account_manager::AccountKey& account) const;
+
+  // Returns whether the `account_cache_` contains `account`.
+  bool IsAccountInCache(const account_manager::Account& account);
 
   // If there is only a single profile in Lacros, new accounts are added there
   // by default and this returns the corresponding entry. Otherwise, new
@@ -217,9 +230,11 @@ class AccountProfileMapper
   base::ScopedObservation<account_manager::AccountManagerFacade,
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_storage_observation_{this};
 
-  // Map of account_manager::Account keyed by GaiaID.
-  base::flat_map<std::string, account_manager::Account> account_cache_;
+  AccountCache account_cache_;
 
   base::WeakPtrFactory<AccountProfileMapper> weak_factory_{this};
 };

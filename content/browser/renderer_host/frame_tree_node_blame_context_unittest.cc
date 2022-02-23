@@ -47,26 +47,24 @@ void ExpectFrameTreeNodeSnapshot(const trace_analyzer::TraceEvent* event) {
 
 std::string GetParentNodeID(const trace_analyzer::TraceEvent* event) {
   const base::Value& arg_snapshot = event->arg_values.at("snapshot");
-  const base::DictionaryValue* snapshot;
-  EXPECT_TRUE(arg_snapshot.GetAsDictionary(&snapshot));
-  if (!snapshot->HasKey("parent"))
+  EXPECT_TRUE(arg_snapshot.is_dict());
+  const base::Value* parent = arg_snapshot.FindKey("parent");
+  if (!parent)
     return std::string();
-  const base::DictionaryValue* parent;
-  EXPECT_TRUE(snapshot->GetDictionary("parent", &parent));
-  std::string parent_id;
-  EXPECT_TRUE(parent->GetString("id_ref", &parent_id));
-  return parent_id;
+  EXPECT_TRUE(parent->is_dict());
+  const std::string* parent_id = parent->FindStringKey("id_ref");
+  EXPECT_TRUE(parent_id);
+  return *parent_id;
 }
 
 std::string GetSnapshotURL(const trace_analyzer::TraceEvent* event) {
   const base::Value& arg_snapshot = event->arg_values.at("snapshot");
-  const base::DictionaryValue* snapshot;
-  EXPECT_TRUE(arg_snapshot.GetAsDictionary(&snapshot));
-  if (!snapshot->HasKey("url"))
+  EXPECT_TRUE(arg_snapshot.is_dict());
+  const base::Value* url = arg_snapshot.FindKey("url");
+  if (!url)
     return std::string();
-  std::string url;
-  EXPECT_TRUE(snapshot->GetString("url", &url));
-  return url;
+  EXPECT_TRUE(url->is_string());
+  return url->GetString();
 }
 
 }  // namespace

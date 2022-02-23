@@ -11,8 +11,10 @@
 -keep class junit.** { *; }
 -keep class * extends junit.** { *; }
 
-# Keep all junit4 classes and tests
+# Keep all junit4 and hamcrest classes and tests
+-keep class org.hamcrest.** { *; }
 -keep class org.junit.** { *; }
+-keep class * extends org.hamcrest.** { *; }
 -keep class * extends org.junit.** { *; }
 -keep @**.RunWith class * { *; }
 

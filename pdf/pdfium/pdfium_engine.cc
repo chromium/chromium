@@ -84,12 +84,12 @@
 #include "gin/public/cppgc.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "pdf/pdfium/pdfium_font_linux.h"
 #endif
 
 using printing::ConvertUnit;
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
 
@@ -111,7 +111,7 @@ constexpr int kMaxPasswordTries = 3;
 constexpr base::TimeDelta kTouchLongPressTimeout = base::Milliseconds(300);
 
 // Windows has native panning capabilities. No need to use our own.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr bool kViewerImplementedPanning = false;
 #else
 constexpr bool kViewerImplementedPanning = true;
@@ -206,11 +206,11 @@ void FormatStringWithHyphens(std::u16string* text) {
 
 // Replace CR/LF with just LF on POSIX.
 void FormatStringForOS(std::u16string* text) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   static constexpr char16_t kCr[] = {L'\r', L'\0'};
   static constexpr char16_t kBlank[] = {L'\0'};
   base::ReplaceChars(*text, kCr, kBlank, text);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Do nothing
 #else
   NOTIMPLEMENTED();
@@ -312,7 +312,7 @@ bool IsLinkArea(PDFiumPage::Area area) {
 // the ctrl + left button down events into a right button down event.
 blink::WebMouseEvent NormalizeMouseEvent(const blink::WebMouseEvent& event) {
   blink::WebMouseEvent normalized_event = event;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if ((event.GetModifiers() & blink::WebInputEvent::Modifiers::kControlKey) &&
       event.button == blink::WebPointerProperties::Button::kLeft &&
       event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
@@ -519,7 +519,7 @@ void InitializeSDK(bool enable_v8, FontMappingMode font_mapping_mode) {
 
   FPDF_InitLibraryWithConfig(&config);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   g_font_mapping_mode = font_mapping_mode;
   InitializeLinuxFontMapper();
 #endif
@@ -1690,7 +1690,7 @@ bool PDFiumEngine::OnKeyDown(const blink::WebKeyboardEvent& event) {
     OnChar(synthesized);
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // macOS doesn't have keyboard-triggered context menus.
   // Scroll focused annotation into view when context menu is invoked through
   // keyboard <Shift-F10>.
@@ -1777,7 +1777,7 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
     // Don't use PDFium to search for now, since it doesn't support unicode
     // text. Leave the code for now to avoid bit-rot, in case it's fixed later.
     // The extra parens suppress a -Wunreachable-code warning.
-    if ((0)) {
+    if ((false)) {
       SearchUsingPDFium(str, case_sensitive, first_search,
                         character_to_start_searching_from, current_page);
     } else {
@@ -2184,12 +2184,14 @@ std::string PDFiumEngine::GetSelectedText() {
 
   std::u16string result;
   for (size_t i = 0; i < selection_.size(); ++i) {
-    static constexpr char16_t kNewLineChar = L'\n';
     std::u16string current_selection_text = selection_[i].GetText();
     if (i != 0) {
       if (selection_[i - 1].page_index() > selection_[i].page_index())
         std::swap(current_selection_text, result);
-      result.push_back(kNewLineChar);
+#if BUILDFLAG(IS_WIN)
+      result.push_back(L'\r');
+#endif
+      result.push_back(L'\n');
     }
     result.append(current_selection_text);
   }
@@ -2678,10 +2680,10 @@ void PDFiumEngine::AppendBlankPages(size_t num_pages) {
 
   // Create blank pages with the same size as the first page.
   gfx::Size page_0_size = GetPageSize(0);
-  double page_0_width_in_points =
-      ConvertUnitDouble(page_0_size.width(), kPixelsPerInch, kPointsPerInch);
-  double page_0_height_in_points =
-      ConvertUnitDouble(page_0_size.height(), kPixelsPerInch, kPointsPerInch);
+  float page_0_width_in_points =
+      ConvertUnitFloat(page_0_size.width(), kPixelsPerInch, kPointsPerInch);
+  float page_0_height_in_points =
+      ConvertUnitFloat(page_0_size.height(), kPixelsPerInch, kPointsPerInch);
 
   for (size_t i = 1; i < num_pages; ++i) {
     {
@@ -3060,9 +3062,9 @@ gfx::Size PDFiumEngine::GetPageSizeForLayout(
     return gfx::Size();
 
   int width_in_pixels = static_cast<int>(
-      ConvertUnitDouble(size_in_points.width, kPointsPerInch, kPixelsPerInch));
+      ConvertUnitFloat(size_in_points.width, kPointsPerInch, kPixelsPerInch));
   int height_in_pixels = static_cast<int>(
-      ConvertUnitDouble(size_in_points.height, kPointsPerInch, kPixelsPerInch));
+      ConvertUnitFloat(size_in_points.height, kPointsPerInch, kPixelsPerInch));
 
   switch (layout_options.default_page_orientation()) {
     case PageOrientation::kOriginal:
@@ -3164,7 +3166,8 @@ bool PDFiumEngine::ContinuePaint(int progressive_index, SkBitmap& image_data) {
     gfx::Rect dirty = progressive_paints_[progressive_index].rect();
     GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
 
-    ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, image_data);
+    bool has_alpha = !!FPDFPage_HasTransparency(page);
+    ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
     FPDFBitmap_FillRect(new_bitmap.get(), start_x, start_y, size_x, size_y,
                         0xFFFFFFFF);
     rv = FPDF_RenderPageBitmap_Start(
@@ -3358,7 +3361,7 @@ void PDFiumEngine::PaintUnavailablePage(int page_index,
   int size_x;
   int size_y;
   GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
-  ScopedFPDFBitmap bitmap(CreateBitmap(dirty, image_data));
+  ScopedFPDFBitmap bitmap(CreateBitmap(dirty, /*has_alpha=*/false, image_data));
   FPDFBitmap_FillRect(bitmap.get(), start_x, start_y, size_x, size_y,
                       kPendingPageColor);
 
@@ -3377,14 +3380,16 @@ int PDFiumEngine::GetProgressiveIndex(int page_index) const {
 }
 
 ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
+                                            bool has_alpha,
                                             SkBitmap& image_data) const {
   void* region;
   int stride;
   GetRegion(rect.origin(), image_data, region, stride);
   if (!region)
     return nullptr;
-  return ScopedFPDFBitmap(FPDFBitmap_CreateEx(rect.width(), rect.height(),
-                                              FPDFBitmap_BGRx, region, stride));
+  int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
+  return ScopedFPDFBitmap(
+      FPDFBitmap_CreateEx(rect.width(), rect.height(), format, region, stride));
 }
 
 void PDFiumEngine::GetPDFiumRect(int page_index,
@@ -4277,7 +4282,7 @@ void PDFiumEngine::SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot,
 void PDFiumEngine::RequestThumbnail(int page_index,
                                     float device_pixel_ratio,
                                     SendThumbnailCallback send_callback) {
-  DCHECK(PageIndexInBounds(page_index));
+  CHECK(PageIndexInBounds(page_index));
 
   // Thumbnails cannot be generated in the middle of a progressive paint of a
   // page. Generate the thumbnail immediately only if the page is not currently

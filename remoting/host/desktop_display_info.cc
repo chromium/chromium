@@ -16,19 +16,19 @@ DesktopDisplayInfo& DesktopDisplayInfo::operator=(DesktopDisplayInfo&&) =
     default;
 DesktopDisplayInfo::~DesktopDisplayInfo() = default;
 
-bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
+bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) const {
   if (other.displays_.size() == displays_.size()) {
     for (size_t display = 0; display < displays_.size(); display++) {
-      const DisplayGeometry* this_display = displays_[display].get();
-      const DisplayGeometry* other_display = other.displays_[display].get();
-      if (this_display->id != other_display->id ||
-          this_display->x != other_display->x ||
-          this_display->y != other_display->y ||
-          this_display->width != other_display->width ||
-          this_display->height != other_display->height ||
-          this_display->dpi != other_display->dpi ||
-          this_display->bpp != other_display->bpp ||
-          this_display->is_default != other_display->is_default) {
+      const DisplayGeometry& this_display = displays_[display];
+      const DisplayGeometry& other_display = other.displays_[display];
+      if (this_display.id != other_display.id ||
+          this_display.x != other_display.x ||
+          this_display.y != other_display.y ||
+          this_display.width != other_display.width ||
+          this_display.height != other_display.height ||
+          this_display.dpi != other_display.dpi ||
+          this_display.bpp != other_display.bpp ||
+          this_display.is_default != other_display.is_default) {
         return false;
       }
     }
@@ -37,7 +37,7 @@ bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
   return false;
 }
 
-bool DesktopDisplayInfo::operator!=(const DesktopDisplayInfo& other) {
+bool DesktopDisplayInfo::operator!=(const DesktopDisplayInfo& other) const {
   return !(*this == other);
 }
 
@@ -61,20 +61,22 @@ void DesktopDisplayInfo::Reset() {
   displays_.clear();
 }
 
-int DesktopDisplayInfo::NumDisplays() {
+int DesktopDisplayInfo::NumDisplays() const {
   return displays_.size();
 }
 
-const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
+const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(
+    unsigned int id) const {
   if (id < 0 || id >= displays_.size())
     return nullptr;
-  return displays_[id].get();
+  return &displays_[id];
 }
 
 // Calculate the offset from the origin of the desktop to the origin of the
 // specified display.
 //
-// For Mac, the origin of the desktop is the origin of the default display.
+// For Mac and ChromeOS, the origin of the desktop is the origin of the default
+// display.
 //
 // For Windows/Linux, the origin of the desktop is the upper-left of the
 // entire desktop region.
@@ -93,19 +95,19 @@ const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
 // x = upper left of desktop
 // a,b,c = origin of display A,B,C
 webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
-    webrtc::ScreenId disp_id) {
+    webrtc::ScreenId disp_id) const {
   bool full_desktop = (disp_id == webrtc::kFullDesktopScreenId);
   unsigned int disp_index = disp_id;
 
   if (full_desktop) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // For Mac, we need to calculate the offset relative to the default
     // display.
     disp_index = 0;
 #else
     // For other platforms, the origin for full desktop is 0,0.
     return webrtc::DesktopVector();
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
   }
 
   if (displays_.size() == 0) {
@@ -117,22 +119,21 @@ webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
     return webrtc::DesktopVector();
   }
 
-  const DisplayGeometry* disp_info = displays_[disp_index].get();
-  webrtc::DesktopVector origin(disp_info->x, disp_info->y);
+  const DisplayGeometry& disp_info = displays_[disp_index];
+  webrtc::DesktopVector origin(disp_info.x, disp_info.y);
 
   // Find topleft-most display coordinate. This is the topleft of the desktop.
   int dx = 0;
   int dy = 0;
-  for (auto& display : displays_) {
-    const DisplayGeometry* disp = display.get();
-    if (disp->x < dx)
-      dx = disp->x;
-    if (disp->y < dy)
-      dy = disp->y;
+  for (const auto& display : displays_) {
+    if (display.x < dx)
+      dx = display.x;
+    if (display.y < dy)
+      dy = display.y;
   }
   webrtc::DesktopVector topleft(dx, dy);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac display offsets need to be relative to the main display's origin.
   if (full_desktop) {
     // For full desktop, this is the offset to the topleft display coord.
@@ -142,26 +143,39 @@ webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
     // x,y values.
     return origin;
   }
+#elif BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS display offsets need to be relative to the main display's origin,
+  // which is stored in the DisplayGeometry x,y values.
+  return origin;
 #else
   // Return offset to this screen, relative to topleft.
   return origin.subtract(topleft);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
-void DesktopDisplayInfo::AddDisplay(std::unique_ptr<DisplayGeometry> display) {
-  displays_.push_back(std::move(display));
+void DesktopDisplayInfo::AddDisplay(const DisplayGeometry& display) {
+  displays_.push_back(display);
 }
 
-void DesktopDisplayInfo::AddDisplayFrom(protocol::VideoTrackLayout track) {
-  std::unique_ptr<DisplayGeometry> display(new DisplayGeometry());
-  display->x = track.position_x();
-  display->y = track.position_y();
-  display->width = track.width();
-  display->height = track.height();
-  display->dpi = track.x_dpi();
-  display->bpp = 24;
-  display->is_default = false;
-  displays_.push_back(std::move(display));
+void DesktopDisplayInfo::AddDisplayFrom(
+    const protocol::VideoTrackLayout& track) {
+  DisplayGeometry display;
+  display.id = track.id();
+  display.x = track.position_x();
+  display.y = track.position_y();
+  display.width = track.width();
+  display.height = track.height();
+  display.dpi = track.x_dpi();
+  display.bpp = 24;
+  display.is_default = false;
+  displays_.push_back(display);
+}
+
+std::ostream& operator<<(std::ostream& out, const DisplayGeometry& geo) {
+  out << "Display " << geo.id << (geo.is_default ? " (primary)" : "") << ": "
+      << geo.x << "+" << geo.y << "-" << geo.width << "x" << geo.height << " @ "
+      << geo.dpi;
+  return out;
 }
 
 }  // namespace remoting

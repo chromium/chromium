@@ -726,7 +726,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Disabled due to flakiness https://crbug.com/1229601
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
   DISABLED_CreativeOriginStatusWithThrottlingNestedThrottled
 #else
@@ -864,7 +865,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // TODO(https://crbug.com/1234339): Test is flaky.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
 #else
 #define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
@@ -881,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   content::DOMMessageQueue msg_queue;
 
@@ -1690,7 +1691,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verifies that reports are sent to all children.
 // crbug.com/1189635: flaky on win and linux.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
   DISABLED_HeavyAdInterventionFired_ReportsToAllChildren
 #else

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/base64.h"
 #include "base/bind.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -171,8 +173,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
+  search_box->ntp_bg =
+      theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
   search_box->bg =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->bg_hovered =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
+                      OmniboxPartState::HOVERED);
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(
       theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);
@@ -278,7 +285,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
     auto* parts = middle_slot.value().FindListPath("part");
     if (parts) {
       std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
-      for (const base::Value& part : parts->GetList()) {
+      for (const base::Value& part : parts->GetListDeprecated()) {
         if (part.FindKey("image")) {
           auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
           auto* image_url = part.FindStringPath("image.image_url");
@@ -348,35 +355,35 @@ NewTabPageHandler::NewTabPageHandler(
     NtpCustomBackgroundService* ntp_custom_background_service,
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
-    const ui::ThemeProvider* theme_provider,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
-      theme_provider_(theme_provider),
+      theme_provider_(webui::GetThemeProvider(web_contents)),
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
-      logger_(profile, GURL(chrome::kChromeUINewTabPageURL)),
+      logger_(profile,
+              GURL(chrome::kChromeUINewTabPageURL),
+              ntp_navigation_start_time),
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(ntp_background_service_);
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
-  CHECK(theme_provider_);
   CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);
   ntp_background_service_->AddObserver(this);
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-  theme_service_observation_.Observe(theme_service_);
+  theme_service_observation_.Observe(theme_service_.get());
   ntp_custom_background_service_observation_.Observe(
-      ntp_custom_background_service_);
-  promo_service_observation_.Observe(promo_service_);
+      ntp_custom_background_service_.get());
+  promo_service_observation_.Observe(promo_service_.get());
   page_->SetTheme(MakeTheme(theme_provider_, theme_service_,
                             ntp_custom_background_service_));
 }
@@ -581,7 +588,7 @@ void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
   ListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
   base::Value module_id_value(module_id);
   if (disabled) {
-    if (!base::Contains(update->GetList(), module_id_value))
+    if (!base::Contains(update->GetListDeprecated(), module_id_value))
       update->Append(std::move(module_id_value));
   } else {
     update->EraseListValue(module_id_value);
@@ -596,7 +603,7 @@ void NewTabPageHandler::UpdateDisabledModules() {
   if (!profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
     const auto* module_ids_value =
         profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
-    for (const auto& id : module_ids_value->GetList()) {
+    for (const auto& id : module_ids_value->GetListDeprecated()) {
       module_ids.push_back(id.GetString());
     }
   }
@@ -624,11 +631,25 @@ void NewTabPageHandler::SetModulesOrder(
 
 void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::vector<std::string> module_ids;
-  const auto* module_ids_value =
-      profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
-  for (const auto& id : module_ids_value->GetList()) {
-    module_ids.push_back(id.GetString());
+
+  // First, apply order as set by the last drag&drop interaction.
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesDragAndDrop)) {
+    const auto* module_ids_value =
+        profile_->GetPrefs()->GetList(prefs::kNtpModulesOrder);
+    for (const auto& id : module_ids_value->GetListDeprecated()) {
+      module_ids.push_back(id.GetString());
+    }
   }
+
+  // Second, append Finch order for modules _not_ ordered by drag&drop.
+  std::vector<std::string> finch_module_ids = ntp_features::GetModulesOrder();
+  std::copy_if(finch_module_ids.begin(), finch_module_ids.end(),
+               std::back_inserter(module_ids),
+               [&module_ids](const std::string& id) {
+                 return std::find(module_ids.begin(), module_ids.end(), id) ==
+                        module_ids.end();
+               });
+
   std::move(callback).Run(std::move(module_ids));
 }
 
@@ -1041,8 +1062,7 @@ void NewTabPageHandler::Fetch(const GURL& url,
             }
           }
         })");
-  auto url_loader_factory = profile_->GetDefaultStoragePartition()
-                                ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile_->GetURLLoaderFactory();
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   auto loader =

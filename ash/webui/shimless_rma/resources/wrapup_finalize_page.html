@@ -2,13 +2,25 @@
 </style>
 
 <base-page>
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Finalizing repair.</h1>
-  </div>
-  <div slot="body">
-    <p id="finalizationMessage">
+  <div slot="left-pane">
+    <h1>[[i18n('finalizePageTitleText')]]</h1>
+    <div id="finalizationMessage" class="instructions">
       [[finalizationMessage_]]
-    </p>
+    </div>
+    <div>
+      <cr-button id="retryFinalizationButton" class="cancel-button"
+          on-click="onRetryFinalizationButtonClicked_"
+          hidden$="[[!shouldShowRetryButton_]]"
+          disabled="[[allButtonsDisabled]]">
+        [[i18n('finalizePageFailedRetryButtonLabel')]]
+      </cr-button>
+    </div>
+  </div>
+  <div slot="right-pane">
+    <div class="illustration-wrapper">
+      <paper-spinner-lite active hidden$="[[!shouldShowSpinner_]]"
+          class="large-spinner">
+      </paper-spinner-lite>
+    </div>
   </div>
 </base-page>

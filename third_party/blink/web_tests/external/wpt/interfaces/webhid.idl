@@ -37,6 +37,7 @@ interface HIDDevice : EventTarget {
     readonly attribute FrozenArray<HIDCollectionInfo> collections;
     Promise<undefined> open();
     Promise<undefined> close();
+    Promise<undefined> forget();
     Promise<undefined> sendReport([EnforceRange] octet reportId, BufferSource data);
     Promise<undefined> sendFeatureReport(
         [EnforceRange] octet reportId,

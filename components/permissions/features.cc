@@ -67,17 +67,9 @@ const base::Feature kPermissionPredictionServiceUseUrlOverride{
     "kPermissionPredictionServiceUseUrlOverride",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, permission verification and requesting is done on
-// RFH->GetLastCommittedOrigin() instead of RFH->GetLastCommittedURL().
-const base::Feature kRevisedOriginHandling{"PermissionsRevisedOriginHandling",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
-#if defined(OS_ANDROID)
-// When enabled, the Default Search Engine does not automatically receive the
-// "geolocation" and "notifications" permissions. DSE only applies to Android.
-const base::Feature kRevertDSEAutomaticPermissions{
-    "RevertDSEAutomaticPermissions", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_ANDROID)
+const base::Feature kPermissionOnDeviceNotificationPredictions{
+    "PermissionOnDeviceNotificationPredictions",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 namespace feature_params {
@@ -94,6 +86,12 @@ const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
 const base::FeatureParam<bool> kPermissionPredictionServiceUseJson{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_use_json", false};
+
+const base::FeatureParam<double>
+    kPermissionOnDeviceNotificationPredictionsHoldbackChance(
+        &features::kPermissionOnDeviceNotificationPredictions,
+        "holdback_chance",
+        0.0);
 
 }  // namespace feature_params
 }  // namespace permissions

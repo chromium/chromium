@@ -38,6 +38,7 @@ backgroundRepeat
 backgroundRepeatX
 backgroundRepeatY
 backgroundSize
+basePalette
 baselineShift
 blockSize
 border
@@ -135,6 +136,9 @@ containIntrinsicHeight
 containIntrinsicInlineSize
 containIntrinsicSize
 containIntrinsicWidth
+container
+containerName
+containerType
 content
 contentVisibility
 counterIncrement
@@ -173,6 +177,7 @@ fontFamily
 fontFeatureSettings
 fontKerning
 fontOpticalSizing
+fontPalette
 fontSize
 fontSizeAdjust
 fontStretch
@@ -298,6 +303,7 @@ overflowInline
 overflowWrap
 overflowX
 overflowY
+overrideColors
 overscrollBehavior
 overscrollBehaviorBlock
 overscrollBehaviorInline
@@ -408,6 +414,10 @@ textDecorationLine
 textDecorationSkipInk
 textDecorationStyle
 textDecorationThickness
+textEmphasis
+textEmphasisColor
+textEmphasisPosition
+textEmphasisStyle
 textIndent
 textJustify
 textOrientation

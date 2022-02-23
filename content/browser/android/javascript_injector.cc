@@ -21,7 +21,8 @@ JavascriptInjector::JavascriptInjector(
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& retained_objects,
     WebContents* web_contents)
-    : java_ref_(env, obj) {
+    : WebContentsUserData<JavascriptInjector>(*web_contents),
+      java_ref_(env, obj) {
   java_bridge_dispatcher_host_ =
       new GinJavaBridgeDispatcherHost(web_contents, retained_objects);
   web_contents->SetUserData(UserDataKey(), base::WrapUnique(this));

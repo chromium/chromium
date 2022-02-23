@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_
 #define CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

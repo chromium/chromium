@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
@@ -101,8 +102,8 @@ class CustomFakeGCMDriver : public FakeGCMDriver {
   bool connected_;
   std::vector<GCMClient::AccountTokenInfo> accounts_;
   bool update_accounts_called_;
-  GCMConnectionObserver* last_connection_observer_;
-  GCMConnectionObserver* removed_connection_observer_;
+  raw_ptr<GCMConnectionObserver> last_connection_observer_;
+  raw_ptr<GCMConnectionObserver> removed_connection_observer_;
   net::IPEndPoint ip_endpoint_;
   base::Time last_token_fetch_time_;
 };

@@ -55,7 +55,7 @@ using ::testing::ReturnArg;
 namespace ntp_tiles {
 namespace {
 
-const int kTestDipForServerRequests = 24;
+const int kTestDipForServerRequests = 32;
 const favicon_base::IconType kTestIconTypeForServerRequests =
     favicon_base::IconType::kTouchIcon;
 const char kTestGoogleServerClientParam[] = "test_chrome";
@@ -169,10 +169,10 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
       ui::ResourceBundle::CleanupSharedInstance();
     }
     base::FilePath pak_path;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
-    base::PathService::Get(base::DIR_MODULE, &pak_path);
+    base::PathService::Get(base::DIR_ASSETS, &pak_path);
 #endif
 
     base::FilePath ui_test_pak_path;

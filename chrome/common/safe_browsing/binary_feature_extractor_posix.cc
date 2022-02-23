@@ -17,7 +17,7 @@ void BinaryFeatureExtractor::CheckSignature(
     const base::FilePath& file_path,
     ClientDownloadRequest_SignatureInfo* signature_info) {}
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
     const uint8_t* data, size_t data_size,
     ExtractHeadersOption options,

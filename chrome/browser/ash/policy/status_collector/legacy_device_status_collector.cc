@@ -17,7 +17,11 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
@@ -73,7 +77,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_handler.h"
@@ -82,9 +85,6 @@
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/mojom/enterprise_reporting.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -696,7 +696,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       mount_points.push_back(info.path.value());
 
     for (const auto& mount_info :
-         chromeos::disks::DiskMountManager::GetInstance()->mount_points()) {
+         ash::disks::DiskMountManager::GetInstance()->mount_points()) {
       // Extract a list of mount points to populate.
       mount_points.push_back(mount_info.first);
     }
@@ -1408,7 +1408,6 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       return;
     em::StatefulPartitionInfo* stateful_partition_info =
         response_params_.device_status->mutable_stateful_partition_info();
-    DCHECK_GE(hdsi.available_space(), 0);
     DCHECK_GE(hdsi.total_space(), hdsi.available_space());
     stateful_partition_info->CopyFrom(hdsi);
   }
@@ -2084,7 +2083,7 @@ bool LegacyDeviceStatusCollector::ShouldFetchCrosHealthdData() const {
 void LegacyDeviceStatusCollector::ReportingUsersChanged() {
   std::vector<std::string> reporting_users;
   for (auto& value :
-       pref_service_->GetList(prefs::kReportingUsers)->GetList()) {
+       pref_service_->GetList(prefs::kReportingUsers)->GetListDeprecated()) {
     if (value.is_string())
       reporting_users.push_back(value.GetString());
   }
@@ -2659,8 +2658,7 @@ bool LegacyDeviceStatusCollector::GetSessionStatusForUser(
     scoped_refptr<DeviceStatusCollectorState> state,
     em::SessionStatusReportRequest* status,
     const user_manager::User* user) {
-  Profile* const profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return false;
 
@@ -2787,7 +2785,7 @@ bool LegacyDeviceStatusCollector::GetCrostiniUsage(
 
 std::string LegacyDeviceStatusCollector::GetAppVersion(
     const std::string& kiosk_app_id) {
-  Profile* const profile = chromeos::ProfileHelper::Get()->GetProfileByUser(
+  Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
   // TODO(b/191334671): Replace with DCHECK once we no longer hit this timing
   // issue.

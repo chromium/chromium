@@ -22,7 +22,7 @@ void DetermineGrCacheLimitsFromAvailableMemory(
   *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes;
 
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // The limit of the bytes allocated toward GPU resources in the GrContext's
   // GPU cache.
   constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;

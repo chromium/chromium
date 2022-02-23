@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service_factory.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/user_manager/user_manager.h"
 
 namespace arc {

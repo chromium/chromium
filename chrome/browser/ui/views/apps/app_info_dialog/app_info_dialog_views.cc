@@ -28,10 +28,10 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_constants/constants.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -62,7 +62,7 @@ constexpr gfx::Size kDialogSize = gfx::Size(380, 490);
 }  // namespace
 
 bool CanPlatformShowAppInfoDialog() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return false;
 #else
   return true;
@@ -114,6 +114,11 @@ void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
   }
 }
 
+base::WeakPtr<AppInfoDialog>& AppInfoDialog::GetLastDialogForTesting() {
+  static base::NoDestructor<base::WeakPtr<AppInfoDialog>> last_dialog;
+  return *last_dialog;
+}
+
 AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
     : profile_(profile), app_id_(app->id()) {
   views::BoxLayout* layout =
@@ -138,7 +143,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When Google Play Store is enabled and the Settings app is available, show
   // the "Manage supported links" link for Chrome.
-  if (app->id() == extension_misc::kChromeAppId &&
+  if (app->id() == app_constants::kChromeAppId &&
       arc::IsArcPlayStoreEnabledForProfile(profile)) {
     const ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
     if (arc_app_list_prefs &&
@@ -174,8 +179,11 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
     dialog_footer_ = AddChildView(std::move(dialog_footer));
   }
 
-  // Close the dialog if the app is uninstalled, or if the profile is destroyed.
+  // Close the dialog if the app is uninstalled, unloaded, or if the profile is
+  // destroyed.
   StartObservingExtensionRegistry();
+
+  GetLastDialogForTesting() = AsWeakPtr();
 }
 
 AppInfoDialog::~AppInfoDialog() {
@@ -197,6 +205,16 @@ void AppInfoDialog::StopObservingExtensionRegistry() {
   if (extension_registry_)
     extension_registry_->RemoveObserver(this);
   extension_registry_ = nullptr;
+}
+
+void AppInfoDialog::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  if (extension->id() != app_id_)
+    return;
+
+  Close();
 }
 
 void AppInfoDialog::OnExtensionUninstalled(

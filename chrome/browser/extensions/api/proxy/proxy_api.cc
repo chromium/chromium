@@ -39,10 +39,10 @@ void ProxyEventRouter::OnProxyError(
     int error_code) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetBoolean(proxy_api_constants::kProxyEventFatal, true);
-  dict->SetString(proxy_api_constants::kProxyEventError,
-                  net::ErrorToString(error_code));
-  dict->SetString(proxy_api_constants::kProxyEventDetails, std::string());
+  dict->SetBoolKey(proxy_api_constants::kProxyEventFatal, true);
+  dict->SetStringKey(proxy_api_constants::kProxyEventError,
+                     net::ErrorToString(error_code));
+  dict->SetStringKey(proxy_api_constants::kProxyEventDetails, std::string());
   args->Append(std::move(dict));
 
   if (profile) {
@@ -64,9 +64,9 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
                                         const std::u16string& error) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetBoolean(proxy_api_constants::kProxyEventFatal, false);
-  dict->SetString(proxy_api_constants::kProxyEventError,
-                  net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
+  dict->SetBoolKey(proxy_api_constants::kProxyEventFatal, false);
+  dict->SetStringKey(proxy_api_constants::kProxyEventError,
+                     net::ErrorToString(net::ERR_PAC_SCRIPT_FAILED));
   std::string error_msg;
   if (line_number != -1) {
     base::SStringPrintf(&error_msg,
@@ -75,7 +75,7 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
   } else {
     error_msg = base::UTF16ToUTF8(error);
   }
-  dict->SetString(proxy_api_constants::kProxyEventDetails, error_msg);
+  dict->SetStringKey(proxy_api_constants::kProxyEventDetails, error_msg);
   args->Append(std::move(dict));
 
   if (profile) {
@@ -158,8 +158,8 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
   std::unique_ptr<base::DictionaryValue> extension_pref(
       new base::DictionaryValue);
 
-  extension_pref->SetString(proxy_api_constants::kProxyConfigMode,
-                            ProxyPrefs::ProxyModeToString(mode));
+  extension_pref->SetStringKey(proxy_api_constants::kProxyConfigMode,
+                               ProxyPrefs::ProxyModeToString(mode));
 
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT:

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/trace_event_analyzer.h"
@@ -132,7 +132,7 @@ std::vector<double> ParseGoogMaxDecodeFromWebrtcInternalsTab(
   base::DictionaryValue* dictionary = nullptr;
   if (!parsed_json.get() || !parsed_json->GetAsDictionary(&dictionary))
     return goog_decode_ms;
-  ignore_result(parsed_json.release());
+  std::ignore = parsed_json.release();
 
   // |dictionary| should have exactly two entries, one per ssrc.
   if (!dictionary || dictionary->DictSize() != 2u)

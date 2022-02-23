@@ -86,9 +86,10 @@ protocol::Response PageHandler::SetSPCTransactionMode(
     return protocol::Response::ServerError("Unrecognized mode value");
   }
 
-  payments::PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-      web_contents_.get())
-      ->SetSPCTransactionMode(spc_mode);
+  auto* payment_request_manager =
+      payments::PaymentRequestWebContentsManager::GetOrCreateForWebContents(
+          *web_contents_);
+  payment_request_manager->SetSPCTransactionMode(spc_mode);
   return protocol::Response::Success();
 }
 

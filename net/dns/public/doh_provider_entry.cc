@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/util.h"
 
 namespace net {
@@ -23,6 +24,13 @@ std::set<IPAddress> ParseIPs(const std::set<base::StringPiece>& ip_strs) {
     ip_addresses.insert(std::move(ip_address));
   }
   return ip_addresses;
+}
+
+DnsOverHttpsServerConfig ParseValidDohTemplate(std::string server_template) {
+  auto parsed_template =
+      DnsOverHttpsServerConfig::FromString(std::move(server_template));
+  DCHECK(parsed_template.has_value());  // Template must be valid.
+  return std::move(*parsed_template);
 }
 
 }  // namespace
@@ -266,16 +274,13 @@ DohProviderEntry::DohProviderEntry(
       provider_id_for_histogram(std::move(provider_id_for_histogram)),
       ip_addresses(ParseIPs(ip_strs)),
       dns_over_tls_hostnames(std::move(dns_over_tls_hostnames)),
-      dns_over_https_template(std::move(dns_over_https_template)),
+      doh_server_config(
+          ParseValidDohTemplate(std::move(dns_over_https_template))),
       ui_name(std::move(ui_name)),
       privacy_policy(std::move(privacy_policy)),
       display_globally(display_globally),
       display_countries(std::move(display_countries)),
       logging_level(logging_level) {
-  DCHECK(!this->dns_over_https_template.empty());
-  DCHECK(dns_util::IsValidDohTemplate(this->dns_over_https_template,
-                                      nullptr /* server_method */));
-
   DCHECK(!display_globally || this->display_countries.empty());
   if (display_globally || !this->display_countries.empty()) {
     DCHECK(!this->ui_name.empty());

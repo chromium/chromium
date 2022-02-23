@@ -95,7 +95,7 @@
       case net::REMOVED_MEDIA_CACHE:                                 \
       default:                                                       \
         NOTREACHED();                                                \
-        FALLTHROUGH;                                                 \
+        [[fallthrough]];                                                 \
       case net::DISK_CACHE:                                          \
       case net::APP_CACHE:                                           \
       case net::SHADER_CACHE:                                        \

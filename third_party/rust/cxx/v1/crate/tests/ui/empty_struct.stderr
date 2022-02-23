@@ -1,5 +1,5 @@
 error: structs without any fields are not supported
- --> $DIR/empty_struct.rs:3:5
+ --> tests/ui/empty_struct.rs:3:5
   |
 3 |     struct Empty {}
   |     ^^^^^^^^^^^^^^^

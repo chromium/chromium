@@ -248,8 +248,6 @@ struct MediaTrackConstraintSetPlatform {
   DoubleConstraint tilt;
   DoubleConstraint zoom;
   StringConstraint group_id;
-  // https://w3c.github.io/mediacapture-depth/#mediatrackconstraints
-  StringConstraint video_kind;
   // Constraints not exposed in Blink at the moment, only through
   // the legacy name interface.
   StringConstraint media_stream_source;  // tab, screen, desktop, system
@@ -269,6 +267,7 @@ struct MediaTrackConstraintSetPlatform {
   BooleanConstraint voice_activity_detection;
   BooleanConstraint ice_restart;
   BooleanConstraint goog_use_rtp_mux;
+  BooleanConstraint enable_dtls_srtp;
   BooleanConstraint enable_rtp_data_channels;
   BooleanConstraint enable_dscp;
   BooleanConstraint enable_i_pv6;

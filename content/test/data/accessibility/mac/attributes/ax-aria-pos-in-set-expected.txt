@@ -1,0 +1,6 @@
+item_numeric.accessibilityAttributeNames.has(AXARIAPosInSet)='yes'
+item_numeric.accessibilityAttributeValue(AXARIAPosInSet)=1
+item_null.accessibilityAttributeNames.has(AXARIAPosInSet)='yes'
+item_null.accessibilityAttributeValue(AXARIAPosInSet)=NULL
+not_applicable.accessibilityAttributeNames.has(AXARIAPosInSet)='no'
+not_applicable.accessibilityAttributeValue(AXARIAPosInSet)=NULL

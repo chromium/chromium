@@ -18,8 +18,8 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/status/status.h"
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
@@ -64,20 +64,6 @@ class ExternalFileHandler {
 
   // Reference to the input ExternalFile.
   const ExternalFile& external_file_;
-
-  // Points to the memory buffer mapped from the file descriptor of the
-  // ExternalFile, if provided by path or file descriptor.
-  void* buffer_{};
-
-  // The mapped memory buffer offset, if any.
-  int64 buffer_offset_{};
-  // The size in bytes of the mapped memory buffer, if any.
-  int64 buffer_size_{};
-
-  // As mmap(2) requires the offset to be a multiple of sysconf(_SC_PAGE_SIZE):
-
-  // The aligned mapped memory buffer offset, if any.
-  int64 buffer_aligned_offset_{};
 };
 
 }  // namespace core

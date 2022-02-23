@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 
-#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 WebAppInfoImageSource::WebAppInfoImageSource(
     int dip_size,

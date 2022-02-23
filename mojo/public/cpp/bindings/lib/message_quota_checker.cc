@@ -12,7 +12,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"

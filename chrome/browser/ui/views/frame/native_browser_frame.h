@@ -59,7 +59,7 @@ class NativeBrowserFrame {
   // Called when the tab drag kind for this frame changes.
   virtual void TabDraggingKindChanged(TabDragKind tab_drag_kind) {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Causes the screen reader to announce |text| against the remote window. If
   // the current user is not using a screen reader or if there is no remote
   // window, has no effect. This enables screen reader announcements for

@@ -18,7 +18,9 @@ def _compose_simulator_name(platform, version):
 
 def get_simulator_list():
   """Gets list of available simulator as a dictionary."""
-  return json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', '-j']))
+  return json.loads(
+      subprocess.check_output(['xcrun', 'simctl', 'list',
+                               '-j']).decode('utf-8'))
 
 
 def get_simulator(platform, version):
@@ -127,7 +129,8 @@ def create_device_by_platform_and_version(platform, version):
   runtime = get_simulator_runtime_by_version(simulators, version)
   try:
     udid = subprocess.check_output(
-        ['xcrun', 'simctl', 'create', name, device_type, runtime]).rstrip()
+        ['xcrun', 'simctl', 'create', name, device_type,
+         runtime]).decode('utf-8').rstrip()
     LOGGER.info('Created simulator in first attempt with UDID: %s', udid)
     # Sometimes above command fails to create a simulator. Verify it and retry
     # once if first attempt failed.
@@ -135,7 +138,8 @@ def create_device_by_platform_and_version(platform, version):
       # Try to delete once to avoid duplicate in case of race condition.
       delete_simulator_by_udid(udid)
       udid = subprocess.check_output(
-          ['xcrun', 'simctl', 'create', name, device_type, runtime]).rstrip()
+          ['xcrun', 'simctl', 'create', name, device_type,
+           runtime]).decode('utf-8').rstrip()
       LOGGER.info('Created simulator in second attempt with UDID: %s', udid)
     return udid
   except subprocess.CalledProcessError as e:
@@ -152,7 +156,7 @@ def delete_simulator_by_udid(udid):
   LOGGER.info('Deleting simulator %s', udid)
   try:
     subprocess.check_output(['xcrun', 'simctl', 'delete', udid],
-                            stderr=subprocess.STDOUT)
+                            stderr=subprocess.STDOUT).decode('utf-8')
   except subprocess.CalledProcessError as e:
     # Logging error instead of throwing so we don't cause failures in case
     # this was indeed failing to clean up.
@@ -188,7 +192,7 @@ def get_home_directory(platform, version):
   """
   return subprocess.check_output(
       ['xcrun', 'simctl', 'getenv',
-       get_simulator(platform, version), 'HOME']).rstrip()
+       get_simulator(platform, version), 'HOME']).decode('utf-8').rstrip()
 
 
 def boot_simulator_if_not_booted(sim_udid):
@@ -207,7 +211,8 @@ def boot_simulator_if_not_booted(sim_udid):
         continue
       if device['state'] == 'Booted':
         return
-      subprocess.check_output(['xcrun', 'simctl', 'boot', sim_udid])
+      subprocess.check_output(['xcrun', 'simctl', 'boot',
+                               sim_udid]).decode('utf-8')
       return
   raise test_runner.SimulatorNotFoundError(
       'Not found simulator with "%s" UDID in devices %s' %
@@ -223,7 +228,7 @@ def get_app_data_directory(app_bundle_id, sim_udid):
   """
   return subprocess.check_output(
       ['xcrun', 'simctl', 'get_app_container', sim_udid, app_bundle_id,
-       'data']).rstrip()
+       'data']).decode('utf-8').rstrip()
 
 
 def is_device_with_udid_simulator(device_udid):

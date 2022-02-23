@@ -100,8 +100,9 @@ void SaveDevicePermissionEntry(BrowserContext* context,
 
   base::Value device_entry(entry->ToValue());
   // TODO(crbug.com/1187106): Use base::Contains once |devices| not a ListValue.
-  DCHECK(std::find(devices->GetList().begin(), devices->GetList().end(),
-                   device_entry) == devices->GetList().end());
+  DCHECK(std::find(devices->GetListDeprecated().begin(),
+                   devices->GetListDeprecated().end(),
+                   device_entry) == devices->GetListDeprecated().end());
   devices->Append(std::move(device_entry));
 }
 
@@ -139,8 +140,8 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
     return;
   }
 
-  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
-       ++it) {
+  for (auto it = devices->GetListDeprecated().begin();
+       it != devices->GetListDeprecated().end(); ++it) {
     base::DictionaryValue* dict_value;
     if (!it->GetAsDictionary(&dict_value)) {
       continue;
@@ -165,8 +166,8 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
     return;
   }
 
-  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
-       ++it) {
+  for (auto it = devices->GetListDeprecated().begin();
+       it != devices->GetListDeprecated().end(); ++it) {
     base::DictionaryValue* dict_value;
     if (!it->GetAsDictionary(&dict_value)) {
       continue;
@@ -254,7 +255,7 @@ std::set<scoped_refptr<DevicePermissionEntry>> GetDevicePermissionEntries(
     return result;
   }
 
-  for (const auto& entry : devices->GetList()) {
+  for (const auto& entry : devices->GetListDeprecated()) {
     const base::DictionaryValue* entry_dict;
     if (entry.GetAsDictionary(&entry_dict)) {
       scoped_refptr<DevicePermissionEntry> device_entry =

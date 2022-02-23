@@ -18,7 +18,7 @@ namespace gl {
 class GLSurface;
 
 // Encapsulates a CGL OpenGL context.
-class GL_EXPORT GLContextCGL : public GLContextReal {
+class GL_EXPORT GLContextCGL final : public GLContextReal {
  public:
   explicit GLContextCGL(GLShareGroup* share_group);
 

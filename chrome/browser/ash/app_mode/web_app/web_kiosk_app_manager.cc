@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -93,7 +93,7 @@ const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
 
 void WebKioskAppManager::UpdateAppByAccountId(
     const AccountId& account_id,
-    std::unique_ptr<WebApplicationInfo> app_info) {
+    std::unique_ptr<WebAppInstallInfo> app_info) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
       web_app->UpdateFromWebAppInfo(std::move(app_info));

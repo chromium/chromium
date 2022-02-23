@@ -15,8 +15,10 @@
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/extension_statuses_handler.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 
 using sync_file_system::RemoteFileSyncService;
@@ -43,8 +45,8 @@ void FileMetadataHandler::RegisterMessages() {
 
 void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string extension_id = args->GetList()[1].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string extension_id = args->GetListDeprecated()[1].GetString();
   if (extension_id.empty()) {
     LOG(WARNING) << "GetFileMetadata() Extension ID wasn't given";
     return;
@@ -60,9 +62,18 @@ void FileMetadataHandler::HandleGetFileMetadata(const base::ListValue* args) {
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   if (!sync_service)
     return;
+
+  content::StoragePartitionConfig storage_partition_config =
+      extensions::util::GetStoragePartitionConfigForExtensionId(extension_id,
+                                                                profile_);
+  content::StoragePartition* storage_partition =
+      profile_->GetStoragePartition(storage_partition_config);
+  CHECK(storage_partition);
+
   sync_service->DumpFiles(
-      origin, base::BindOnce(&FileMetadataHandler::DidGetFileMetadata,
-                             weak_factory_.GetWeakPtr(), callback_id));
+      storage_partition, origin,
+      base::BindOnce(&FileMetadataHandler::DidGetFileMetadata,
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
@@ -70,9 +81,9 @@ void FileMetadataHandler::HandleGetExtensions(const base::ListValue* args) {
   DCHECK(args);
   ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
       profile_,
-      base::BindOnce(&FileMetadataHandler::DidGetExtensions,
-                     weak_factory_.GetWeakPtr(),
-                     args->GetList()[0].GetString() /* callback_id */));
+      base::BindOnce(
+          &FileMetadataHandler::DidGetExtensions, weak_factory_.GetWeakPtr(),
+          args->GetListDeprecated()[0].GetString() /* callback_id */));
 }
 
 void FileMetadataHandler::DidGetExtensions(std::string callback_id,

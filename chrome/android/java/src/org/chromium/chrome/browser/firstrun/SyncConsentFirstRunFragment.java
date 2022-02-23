@@ -10,12 +10,12 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
@@ -26,8 +26,8 @@ import java.util.List;
 public class SyncConsentFirstRunFragment
         extends SyncConsentFragmentBase implements FirstRunFragment {
     // Per-page parameters:
-    // TODO(crbug/1168516): Remove CHILD_ACCOUNT_STATUS
-    public static final String CHILD_ACCOUNT_STATUS = "ChildAccountStatus";
+    // TODO(crbug/1168516): Remove IS_CHILD_ACCOUNT
+    public static final String IS_CHILD_ACCOUNT = "IsChildAccount";
 
     // Do not remove. Empty fragment constructor is required for re-creating the fragment from a
     // saved state bundle. See crbug.com/1225102
@@ -38,15 +38,15 @@ public class SyncConsentFirstRunFragment
         super.onAttach(context);
         final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
                 AccountManagerFacadeProvider.getInstance().getAccounts());
-        final @ChildAccountStatus.Status int childAccountStatus =
-                getPageDelegate().getProperties().getInt(CHILD_ACCOUNT_STATUS);
+        boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
         setArguments(createArguments(SigninAccessPoint.START_PAGE,
-                accounts.isEmpty() ? null : accounts.get(0).name, childAccountStatus));
+                accounts.isEmpty() ? null : accounts.get(0).name, isChild));
     }
 
     @Override
     protected void onSyncRefused() {
-        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS)
+                && mIsChild) {
             // Somehow the child account disappeared while we were in the FRE.
             // The user would have to go through the FRE again.
             getPageDelegate().abortFirstRunExperience();

@@ -17,11 +17,14 @@ using MojoRoutineStatus = ::ash::health::mojom::DiagnosticRoutineStatusEnum;
 using MojoRoutineType = ::ash::health::mojom::DiagnosticRoutineEnum;
 using MojoRoutineUserMessageType =
     ash::health::mojom::DiagnosticRoutineUserMessageEnum;
+using MojoDiskReadRoutineType = ash::health::mojom::DiskReadRoutineTypeEnum;
 
 using RoutineCommandType = ::chromeos::api::os_diagnostics::RoutineCommandType;
 using RoutineStatus = ::chromeos::api::os_diagnostics::RoutineStatus;
 using RoutineType = ::chromeos::api::os_diagnostics::RoutineType;
 using RoutineUserMessageType = ::chromeos::api::os_diagnostics::UserMessageType;
+using RoutineDiskReadRoutineType =
+    ::chromeos::api::os_diagnostics::DiskReadRoutineType;
 
 }  // namespace
 
@@ -58,13 +61,39 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out;
+    EXPECT_TRUE(
+        ConvertMojoRoutine(MojoRoutineType::kFloatingPointAccuracy, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_FLOATING_POINT_ACCURACY);
+  }
+  {
+    RoutineType out;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kPrimeSearch, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_PRIME_SEARCH);
+  }
+  {
+    RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kCpuStress, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_CPU_STRESS);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kDiskRead, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_DISK_READ);
   }
   {
     RoutineType out;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kMemory, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_MEMORY);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kNvmeWearLevel, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NVME_WEAR_LEVEL);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }
 
   // Tests for unsupported routines.
@@ -72,38 +101,12 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   // should be changed.
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kAcPower, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
   }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(
-        ConvertMojoRoutine(MojoRoutineType::kFloatingPointAccuracy, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kNvmeWearLevel, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kNvmeSelfTest, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kDiskRead, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kPrimeSearch, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
   }
 }
@@ -159,6 +162,16 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   EXPECT_EQ(
       ConvertRoutineUserMessage(MojoRoutineUserMessageType::kPlugInACPower),
       RoutineUserMessageType::USER_MESSAGE_TYPE_PLUG_IN_AC_POWER);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertDiskReadRoutineType) {
+  EXPECT_EQ(ConvertDiskReadRoutineType(
+                RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_LINEAR),
+            MojoDiskReadRoutineType::kLinearRead);
+  EXPECT_EQ(ConvertDiskReadRoutineType(
+                RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_RANDOM),
+            MojoDiskReadRoutineType::kRandomRead);
 }
 
 }  // namespace converters

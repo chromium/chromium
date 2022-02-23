@@ -10,17 +10,18 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {getTemplate} from './edit_exception_dialog.html.js';
 import {SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SettingsEditExceptionDialogElement {
   $: {
     dialog: CrDialogElement,
+    actionButton: CrButtonElement,
   };
 }
 
@@ -30,7 +31,7 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -108,6 +109,12 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     if (!this.model) {
       this.$.dialog.cancel();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-edit-exception-dialog': SettingsEditExceptionDialogElement;
   }
 }
 

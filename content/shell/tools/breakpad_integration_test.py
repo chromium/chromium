@@ -102,7 +102,7 @@ def get_android_dump(options, crash_dir, symbols_dir):
       cmd = [minidump_stackwalk, minidump, symbols_dir]
       proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE)
-      stack = proc.communicate()[0]
+      stack = proc.communicate()[0].decode('utf-8')
       print(stack)
 
       device.RunShellCommand(['rm', os.path.join(pending, dump)],
@@ -171,7 +171,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     dmp_dir = crash_dir
     # TODO(crbug.com/782923): This test should not reach directly into the
     # Crashpad database, but instead should use crashpad_database_util.
-    if platform == 'darwin' or platform == 'linux2':
+    if platform == 'darwin' or platform.startswith('linux'):
       dmp_dir = os.path.join(dmp_dir, 'pending')
     elif platform == 'win32':
       dmp_dir = os.path.join(dmp_dir, 'reports')
@@ -192,7 +192,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     failure = 'Failed to run cdb.exe.'
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
-    stack = proc.communicate()[0]
+    stack = proc.communicate()[0].decode('utf-8')
   else:
     minidump_stackwalk = os.path.join(options.build_dir, 'minidump_stackwalk')
     cmd = [minidump_stackwalk, minidump, symbols_dir]
@@ -201,7 +201,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     failure = 'Failed to run minidump_stackwalk.'
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
-    stack = proc.communicate()[0]
+    stack = proc.communicate()[0].decode('utf-8')
 
   # Check whether the stack contains a CrashIntentionally symbol.
   found_symbol = 'CrashIntentionally' in stack

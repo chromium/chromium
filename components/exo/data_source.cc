@@ -35,6 +35,7 @@ constexpr char kTextHTML[] = "text/html";
 constexpr char kTextUriList[] = "text/uri-list";
 constexpr char kApplicationOctetStream[] = "application/octet-stream";
 constexpr char kWebCustomData[] = "chromium/x-web-custom-data";
+constexpr char kDataTransferEndpoint[] = "chromium/x-data-transfer-endpoint";
 
 constexpr char kUtfPrefix[] = "UTF";
 constexpr char kEncoding16[] = "16";
@@ -95,12 +96,13 @@ int GetCharsetRank(const std::string& charset_input) {
 // considered to have any greater meaning. In particular, these are not expected
 // to remain stable over time.
 int GetImageTypeRank(const std::string& mime_type) {
-  // Prefer bitmaps most of all to avoid needing to decode the image, followed
-  // by other lossless formats, followed by any other format we support.
-  if (net::MatchesMimeType(std::string(kImageBitmap), mime_type))
-    return 0;
+  // Prefer PNG most of all because this format preserves the alpha channel and
+  // is lossless, followed by BMP for being lossless and fast to decode (but
+  // doesn't preserve alpha), followed by everything else.
   if (net::MatchesMimeType(std::string(kImagePNG), mime_type) ||
       net::MatchesMimeType(std::string(kImageAPNG), mime_type))
+    return 0;
+  if (net::MatchesMimeType(std::string(kImageBitmap), mime_type))
     return 1;
   return 2;
 }
@@ -251,6 +253,16 @@ void DataSource::OnDataRead(ReadDataCallback callback,
     return;
   }
   std::move(callback).Run(mime_type, *data);
+}
+
+void DataSource::ReadDataTransferEndpoint(
+    ReadTextDataCallback dte_reader,
+    base::RepeatingClosure failure_callback) {
+  ReadData(kDataTransferEndpoint,
+           base::BindOnce(&DataSource::OnTextRead,
+                          read_data_weak_ptr_factory_.GetWeakPtr(),
+                          std::move(dte_reader)),
+           failure_callback);
 }
 
 void DataSource::GetDataForPreferredMimeTypes(

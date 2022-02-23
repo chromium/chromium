@@ -6,11 +6,12 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/browser/logger_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,18 +22,6 @@ using ::testing::IsEmpty;
 using ::testing::Return;
 
 namespace media_router {
-
-class TestDialRegistry : public DialRegistry {
- public:
-  TestDialRegistry() {}
-  ~TestDialRegistry() override {}
-
-  MOCK_METHOD1(RegisterObserver, void(DialRegistry::Observer* observer));
-  MOCK_METHOD1(UnregisterObserver, void(DialRegistry::Observer* observer));
-
-  MOCK_METHOD0(OnListenerAdded, void());
-  MOCK_METHOD0(OnListenerRemoved, void());
-};
 
 class MockDeviceDescriptionService : public DeviceDescriptionService {
  public:
@@ -53,13 +42,7 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
             mock_sink_discovered_cb_.Get(),
             base::SequencedTaskRunnerHandle::Get())) {}
 
-  DialMediaSinkServiceImplTest(const DialMediaSinkServiceImplTest&) = delete;
-  DialMediaSinkServiceImplTest& operator=(const DialMediaSinkServiceImplTest&) =
-      delete;
-
   void SetUp() override {
-    media_sink_service_->SetDialRegistryForTest(&test_dial_registry_);
-
     auto mock_description_service =
         std::make_unique<MockDeviceDescriptionService>(mock_success_cb_.Get(),
                                                        mock_error_cb_.Get());
@@ -68,7 +51,7 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
         std::move(mock_description_service));
 
     mock_timer_ = new base::MockOneShotTimer();
-    media_sink_service_->SetTimerForTest(base::WrapUnique(mock_timer_));
+    media_sink_service_->SetTimerForTest(base::WrapUnique(mock_timer_.get()));
 
     auto mock_app_discovery_service =
         std::make_unique<MockDialAppDiscoveryService>();
@@ -113,10 +96,9 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
       MockDeviceDescriptionService::DeviceDescriptionParseErrorCallback>
       mock_error_cb_;
 
-  TestDialRegistry test_dial_registry_;
-  MockDeviceDescriptionService* mock_description_service_;
-  MockDialAppDiscoveryService* mock_app_discovery_service_;
-  base::MockOneShotTimer* mock_timer_;
+  raw_ptr<MockDeviceDescriptionService> mock_description_service_;
+  raw_ptr<MockDialAppDiscoveryService> mock_app_discovery_service_;
+  raw_ptr<base::MockOneShotTimer> mock_timer_;
 
   std::unique_ptr<DialMediaSinkServiceImpl> media_sink_service_;
 
@@ -140,7 +122,7 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionAvailable) {
   std::vector<DialDeviceData> device_list = {device_data};
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
 
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
   EXPECT_TRUE(mock_timer_->IsRunning());
@@ -161,7 +143,7 @@ TEST_F(DialMediaSinkServiceImplTest,
 
   std::vector<DialDeviceData> device_list = {device_data};
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
 
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
@@ -199,7 +181,7 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionRestartsTimer) {
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
 
   EXPECT_FALSE(mock_timer_->IsRunning());
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
   EXPECT_TRUE(mock_timer_->IsRunning());
@@ -214,16 +196,16 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionRestartsTimer) {
   EXPECT_TRUE(mock_timer_->IsRunning());
 }
 
-TEST_F(DialMediaSinkServiceImplTest, OnDialDeviceEventRestartsTimer) {
+TEST_F(DialMediaSinkServiceImplTest, OnDialDeviceListRestartsTimer) {
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(IsEmpty()));
-  media_sink_service_->OnDialDeviceEvent(std::vector<DialDeviceData>());
+  media_sink_service_->OnDialDeviceList(std::vector<DialDeviceData>());
   EXPECT_TRUE(mock_timer_->IsRunning());
 
   EXPECT_CALL(mock_sink_discovered_cb_, Run(_)).Times(0);
   mock_timer_->Fire();
 
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(IsEmpty()));
-  media_sink_service_->OnDialDeviceEvent(std::vector<DialDeviceData>());
+  media_sink_service_->OnDialDeviceList(std::vector<DialDeviceData>());
   EXPECT_TRUE(mock_timer_->IsRunning());
 
   EXPECT_CALL(mock_sink_discovered_cb_, Run(_)).Times(0);
@@ -385,6 +367,27 @@ TEST_F(DialMediaSinkServiceImplTest, FetchDialAppInfoWithDiscoveryOnlySink) {
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
   base::CallbackListSubscription subscription1 =
       StartMonitoringAvailableSinksForApp("YouTube");
+}
+
+TEST_F(DialMediaSinkServiceImplTest, BindLogger) {
+  std::unique_ptr<LoggerImpl> logger_1 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_1;
+  logger_1->BindReceiver(pending_remote_1.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_1));
+
+  // Trying to bind another pending remote no-ops instead of causing
+  // a DCHECK failure from binding to a remote that's already bound.
+  std::unique_ptr<LoggerImpl> logger_2 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_2;
+  logger_2->BindReceiver(pending_remote_2.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_2));
+
+  // Trying to bind a disconnected receiver should work.
+  logger_1.reset();
+  std::unique_ptr<LoggerImpl> logger_3 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_3;
+  logger_3->BindReceiver(pending_remote_3.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_3));
 }
 
 }  // namespace media_router

@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -43,11 +44,11 @@ class FakeDevToolsClient : public StubDevToolsClient {
   // Overridden from DevToolsClient:
   Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     sent_command_queue_.push(method);
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
 
@@ -61,7 +62,8 @@ class FakeDevToolsClient : public StubDevToolsClient {
  private:
   const std::string id_;  // WebView id.
   base::queue<std::string> sent_command_queue_;  // Commands that were sent.
-  DevToolsEventListener* listener_;  // The fake allows only one event listener.
+  raw_ptr<DevToolsEventListener>
+      listener_;  // The fake allows only one event listener.
 };
 
 struct LogEntry {

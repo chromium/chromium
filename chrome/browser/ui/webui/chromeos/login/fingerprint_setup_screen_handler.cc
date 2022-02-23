@@ -139,7 +139,7 @@ void FingerprintSetupScreenHandler::Bind(FingerprintSetupScreen* screen) {
 void FingerprintSetupScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
   base::DictionaryValue data;
-  data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
+  data.SetBoolKey("isChildAccount", user_manager->IsLoggedInAsChildUser());
   ShowScreenWithData(kScreenId, &data);
 }
 

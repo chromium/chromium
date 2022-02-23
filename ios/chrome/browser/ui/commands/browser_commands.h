@@ -36,6 +36,8 @@ class GURL;
                            DefaultPromoCommands>
 
 // Closes the current tab.
+// TODO(crbug.com/1272498): Refactor this command away; call sites should close
+// via the WebStateList.
 - (void)closeCurrentTab;
 
 // Bookmarks the current page.
@@ -43,11 +45,16 @@ class GURL;
 - (void)bookmarkCurrentPage;
 
 // Adds a page to the reading list using data in |command|.
+// TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 
 // Shows an IPH pointing to where the Reading List entry point is, if
 // applicable.
 - (void)showReadingListIPH;
+
+// Shows an IPH to explain to the user how to change the default site view, if
+// applicable.
+- (void)showDefaultSiteViewIPH;
 
 // Preloads voice search on the current BVC.
 - (void)preloadVoiceSearch;
@@ -68,6 +75,8 @@ class GURL;
 - (void)showSendTabToSelfUI;
 
 // Requests the "desktop" version of the current page in the active tab.
+// TODO(crbug.com/1272497): Move requestDesktopSite and requestMobileSite to the
+// WebNavigationBrowserAgent, eliminating them as commands.
 - (void)requestDesktopSite;
 
 // Requests the "mobile" version of the current page in the active tab.
@@ -82,10 +91,6 @@ class GURL;
 
 // Search for an image with Lens, using |command| parameters.
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command;
-
-// Shows/Hides the activity indicator overlay that appears over the view to
-// prevent interaction with the web page.
-- (void)showActivityOverlay:(BOOL)show;
 
 @end
 

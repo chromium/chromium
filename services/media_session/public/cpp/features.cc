@@ -15,7 +15,7 @@ namespace features {
 // changes to behavior. It is enabled by default on all platforms except Android.
 const base::Feature kMediaSessionService {
   "MediaSessionService",
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

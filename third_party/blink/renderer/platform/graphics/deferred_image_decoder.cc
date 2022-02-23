@@ -127,7 +127,7 @@ struct DeferredFrameData {
   DeferredFrameData& operator=(const DeferredFrameData&) = delete;
 
   ImageOrientation orientation_;
-  IntSize density_corrected_size_;
+  gfx::Size density_corrected_size_;
   base::TimeDelta duration_;
   bool is_received_;
 };
@@ -300,11 +300,11 @@ bool DeferredImageDecoder::HasEmbeddedColorProfile() const {
                            : has_embedded_color_profile_;
 }
 
-IntSize DeferredImageDecoder::Size() const {
+gfx::Size DeferredImageDecoder::Size() const {
   return metadata_decoder_ ? metadata_decoder_->Size() : size_;
 }
 
-IntSize DeferredImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
+gfx::Size DeferredImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
   // FIXME: LocalFrame size is assumed to be uniform. This might not be true for
   // future supported codecs.
   return metadata_decoder_ ? metadata_decoder_->FrameSizeAtIndex(index) : size_;
@@ -369,7 +369,7 @@ ImageOrientation DeferredImageDecoder::OrientationAtIndex(
   return ImageOrientationEnum::kDefault;
 }
 
-IntSize DeferredImageDecoder::DensityCorrectedSizeAtIndex(
+gfx::Size DeferredImageDecoder::DensityCorrectedSizeAtIndex(
     wtf_size_t index) const {
   if (metadata_decoder_)
     return metadata_decoder_->DensityCorrectedSize();

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/test/data/webui/ntp4_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -91,7 +92,7 @@ NTP4LoggedInWebUITest.prototype = {
 };
 
 // The following test is irrelevant to Chrome on Chrome OS.
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 
 TEST_F(
     'NTP4LoggedInWebUITest', 'DISABLED_NTPHasLoginNameWhenSignedIn',

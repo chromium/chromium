@@ -1,0 +1,14 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^infobar_badge_tab_helper.h": [
+    "+ios/chrome/browser/ui/badges/badge_item.h",
+  ],
+  "^infobar_metrics_recorder.h": [
+    "+ios/chrome/browser/ui/default_promo/default_browser_utils.h",
+  ],
+  "^infobar_metrics_recorder.mm": [
+    "+ios/chrome/browser/ui/default_promo/default_browser_utils.h",
+  ],
+
+}
+

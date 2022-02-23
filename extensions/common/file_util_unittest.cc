@@ -36,12 +36,12 @@ namespace extensions {
 
 namespace {
 
-const char manifest_content[] =
-    "{\n"
-    "  \"name\": \"Underscore folder test\",\n"
-    "  \"version\": \"1.0\",\n"
-    "  \"manifest_version\": 2\n"
-    "}\n";
+constexpr char kManifestContent[] =
+    R"({
+         "name": "Underscore folder test",
+         "version": "1.0",
+         "manifest_version": 3
+       })";
 
 const char kCustomManifest[] = "custom_manifest.json";
 const base::FilePath::CharType kCustomManifestFilename[] =
@@ -85,9 +85,8 @@ void RunUnderscoreDirectoriesTest(
   for (const auto& dir : underscore_directories)
     ASSERT_TRUE(base::CreateDirectory(ext_path.AppendASCII(dir)));
 
-  ASSERT_EQ(static_cast<int>(strlen(manifest_content)),
-            base::WriteFile(ext_path.AppendASCII("manifest.json"),
-                            manifest_content, strlen(manifest_content)));
+  ASSERT_TRUE(
+      base::WriteFile(ext_path.AppendASCII("manifest.json"), kManifestContent));
 
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
@@ -286,7 +285,7 @@ TEST_F(FileUtilTest, CheckIllegalFilenamesReservedAndIllegal) {
 // These tests do not work on Windows, because it is illegal to create a
 // file/directory with a Windows reserved name. Because we cannot create a
 // file that will cause the test to fail, let's skip the test.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(FileUtilTest, CheckIllegalFilenamesDirectoryWindowsReserved) {
   base::ScopedTempDir temp;
   ASSERT_TRUE(temp.CreateUniqueTempDir());
@@ -379,9 +378,9 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
   ASSERT_TRUE(temp.CreateUniqueTempDir());
 
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString("name", "test");
-  value->SetString("version", "1");
-  value->SetInteger("manifest_version", 2);
+  value->SetStringKey("name", "test");
+  value->SetStringKey("version", "1");
+  value->SetIntKey("manifest_version", 2);
 
   base::ListValue* scripts =
       value->SetList("background.scripts", std::make_unique<base::ListValue>());
@@ -620,7 +619,7 @@ TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
     {URL_PREFIX "%C3%9Cber.html",
      "\xC3\x9C"
      "ber.html"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {URL_PREFIX "C%3A/simple.html", ""},
 #endif
     {URL_PREFIX "////simple.html", "simple.html"},

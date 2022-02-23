@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/message_pump_type.h"
@@ -19,11 +20,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include "base/message_loop/message_pump_libevent.h"
 #endif
 
@@ -60,7 +61,7 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
  protected:
   void AddPreDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (GetParam() == MessagePumpType::UI) {
       // The Windows MessagePumpForUI may do native work from ::PeekMessage()
       // and labels itself as such.
@@ -73,12 +74,12 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
       EXPECT_CALL(delegate, OnBeginWorkItem).Times(AtMost(1));
       EXPECT_CALL(delegate, OnEndWorkItem).Times(AtMost(1));
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   void AddPostDoWorkExpectations(
       testing::StrictMock<MockMessagePumpDelegate>& delegate) {
-#if defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
     if ((GetParam() == MessagePumpType::UI &&
          std::is_same<MessagePumpForUI, MessagePumpLibevent>::value) ||
         (GetParam() == MessagePumpType::IO &&
@@ -88,7 +89,7 @@ class MessagePumpTest : public ::testing::TestWithParam<MessagePumpType> {
       EXPECT_CALL(delegate, OnBeginWorkItem);
       EXPECT_CALL(delegate, OnEndWorkItem);
     }
-#endif  // defined(OS_POSIX) && !defined(OS_NACL_SFI)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
   }
 
   std::unique_ptr<MessagePump> message_pump_;
@@ -237,7 +238,7 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     QUIT,
   };
 
-  MessagePump* const message_pump_;
+  const raw_ptr<MessagePump> message_pump_;
   std::atomic<Action> action_;
 };
 
@@ -280,7 +281,7 @@ TEST_P(MessagePumpTest, RunWithoutScheduleWorkInvokesDoWork) {
     message_pump_->Quit();
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   EXPECT_CALL(delegate, DoIdleWork).Times(AnyNumber());
 #endif
   message_pump_->Run(&delegate);
@@ -306,7 +307,7 @@ TEST_P(MessagePumpTest, NestedRunWithoutScheduleWorkInvokesDoWork) {
     return MessagePump::Delegate::NextWorkInfo{TimeTicks::Max()};
   }));
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   EXPECT_CALL(nested_delegate, DoIdleWork).Times(AnyNumber());
   EXPECT_CALL(delegate, DoIdleWork).Times(AnyNumber());
 #endif
@@ -320,7 +321,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            MessagePumpType::UI,
                                            MessagePumpType::IO));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(MessagePumpTestWin, WmQuitIsNotIgnoredWithEnableWmQuit) {
   SingleThreadTaskExecutor task_executor(
@@ -345,6 +346,6 @@ TEST(MessagePumpTestWin, WmQuitIsNotIgnoredWithEnableWmQuit) {
   run_loop.Run();
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base

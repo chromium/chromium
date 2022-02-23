@@ -84,7 +84,7 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const GURL& first_party_url) const {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // IOS uses this method with an empty |first_party_url| but we don't have
   // content settings on IOS, so it does not matter.
   DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;

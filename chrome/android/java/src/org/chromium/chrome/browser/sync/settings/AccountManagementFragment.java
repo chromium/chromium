@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutDialogFragment.SignOutDialog
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -106,10 +107,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         SigninMetricsUtils.logProfileAccountManagementMenu(
                 ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
 
-        mProfileDataCache = mProfile.isChild()
-                ? ProfileDataCache.createWithDefaultImageSize(
-                        requireContext(), R.drawable.ic_account_child_20dp)
-                : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
     }
 
     @Override
@@ -176,6 +174,14 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         configureChildAccountPreferences();
 
         AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
+    }
+
+    /**
+     * The ProfileDataCache object needs to be accessible in some tests, for example in order to
+     * await the completion of async population of the cache.
+     */
+    public ProfileDataCache getProfileDataCacheForTesting() {
+        return mProfileDataCache;
     }
 
     private boolean canAddAccounts() {
@@ -260,8 +266,7 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             Drawable newIcon = ApiCompatibilityUtils.getDrawable(
                     getResources(), R.drawable.ic_drive_site_white_24dp);
             newIcon.mutate().setColorFilter(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color),
-                    PorterDuff.Mode.SRC_IN);
+                    SemanticColorUtils.getDefaultIconColor(getContext()), PorterDuff.Mode.SRC_IN);
             childContent.setIcon(newIcon);
         } else {
             PreferenceScreen prefScreen = getPreferenceScreen();
@@ -272,6 +277,12 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     }
 
     private void updateAccountsList(List<Account> accounts) {
+        // This method is called asynchronously on accounts fetched from AccountManagerFacade.
+        // Make sure the fragment is alive before updating preferences.
+        if (!isResumed()) return;
+
+        setAccountBadges(accounts);
+
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
         if (accountsCategory == null) {
             // This pref is dynamically added/removed many times, so it might not be present by now.
@@ -368,6 +379,18 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
 
     private Context getStyledContext() {
         return getPreferenceManager().getContext();
+    }
+
+    private void setAccountBadges(List<Account> accounts) {
+        for (Account account : accounts) {
+            AccountManagerFacadeProvider.getInstance().checkChildAccountStatus(
+                    account, (isChild, childAccount) -> {
+                        if (isChild) {
+                            mProfileDataCache.setBadge(
+                                    childAccount, R.drawable.ic_account_child_20dp);
+                        }
+                    });
+        }
     }
 
     // ProfileDataCache.Observer implementation:

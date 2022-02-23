@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -88,20 +89,29 @@ NSImage* CreateNSImageFromIcon(const gfx::VectorIcon& icon,
       base::mac::GetSRGBColorSpace());
 }
 
-// Creates a NSButton for the touch bar.
+// Creates an NSButton for the touch bar using an existing NSImage.
+API_AVAILABLE(macos(10.12.2))
+NSButton* CreateTouchBarButtonWithImage(NSImage* image,
+                                        BrowserWindowDefaultTouchBar* owner,
+                                        int command,
+                                        int tooltip_id) {
+  NSButton* button = [NSButton buttonWithImage:image
+                                        target:owner
+                                        action:@selector(executeCommand:)];
+  button.tag = command;
+  button.accessibilityTitle = l10n_util::GetNSString(tooltip_id);
+  return [button retain];
+}
+
+// Creates an NSButton for the touch bar using a vector icon.
 API_AVAILABLE(macos(10.12.2))
 NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
                                BrowserWindowDefaultTouchBar* owner,
                                int command,
                                int tooltip_id,
                                SkColor color = kTouchBarDefaultIconColor) {
-  NSButton* button =
-      [NSButton buttonWithImage:CreateNSImageFromIcon(icon, color)
-                         target:owner
-                         action:@selector(executeCommand:)];
-  button.tag = command;
-  button.accessibilityTitle = l10n_util::GetNSString(tooltip_id);
-  return button;
+  return CreateTouchBarButtonWithImage(CreateNSImageFromIcon(icon, color),
+                                       owner, command, tooltip_id);
 }
 
 ui::TouchBarAction TouchBarActionFromCommand(int command) {
@@ -283,6 +293,9 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
 // Updates the starred button in the touch bar.
 - (void)updateStarredButton;
+
+// Updates the reload / stop button in the touch bar.
+- (void)updateReloadStopButton;
 
 // Creates and returns the search button.
 - (NSView*)searchTouchBarView;
@@ -478,19 +491,44 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 }
 
 - (void)updateStarredButton {
-  const gfx::VectorIcon& icon =
-      _isStarred ? omnibox::kStarActiveIcon : omnibox::kStarIcon;
-  SkColor iconColor =
-      _isStarred ? kTouchBarStarActiveColor : kTouchBarDefaultIconColor;
+  NSImage* image = _isStarred ? [BrowserWindowDefaultTouchBar starActiveIcon]
+                              : [BrowserWindowDefaultTouchBar starDefaultIcon];
   int tooltipId = _isStarred ? IDS_TOOLTIP_STARRED : IDS_TOOLTIP_STAR;
+
   if (!_starredButton) {
-    _starredButton.reset([CreateTouchBarButton(
-        icon, self, IDC_BOOKMARK_THIS_TAB, tooltipId, iconColor) retain]);
+    _starredButton.reset(CreateTouchBarButtonWithImage(
+        image, self, IDC_BOOKMARK_THIS_TAB, tooltipId));
     return;
   }
 
-  [_starredButton setImage:CreateNSImageFromIcon(icon, iconColor)];
+  if ([_starredButton image] == image) {
+    return;
+  }
+
+  [_starredButton setImage:image];
   [_starredButton setAccessibilityLabel:l10n_util::GetNSString(tooltipId)];
+}
+
+- (void)updateReloadStopButton {
+  NSImage* image = _isPageLoading
+                       ? [BrowserWindowDefaultTouchBar navigateStopIcon]
+                       : [BrowserWindowDefaultTouchBar reloadIcon];
+  int commandId = _isPageLoading ? IDC_STOP : IDC_RELOAD;
+  int tooltipId = _isPageLoading ? IDS_TOOLTIP_STOP : IDS_TOOLTIP_RELOAD;
+
+  if (!_reloadStopButton) {
+    _reloadStopButton.reset(
+        CreateTouchBarButtonWithImage(image, self, commandId, tooltipId));
+    return;
+  }
+
+  if ([_reloadStopButton tag] == commandId) {
+    return;
+  }
+
+  [_reloadStopButton setImage:image];
+  [_reloadStopButton setTag:commandId];
+  [_reloadStopButton setAccessibilityLabel:l10n_util::GetNSString(tooltipId)];
 }
 
 - (NSView*)searchTouchBarView {
@@ -567,6 +605,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   return ui::GetTouchBarItemId(kBrowserWindowTouchBarId, kReloadOrStopTouchId);
 }
 
++ (NSString*)bookmarkStarItemIdentifier {
+  return ui::GetTouchBarItemId(kBrowserWindowTouchBarId, kStarTouchId);
+}
+
 + (NSString*)backItemIdentifier {
   return ui::GetTouchBarItemId(kBrowserWindowTouchBarId, kBackTouchId);
 }
@@ -580,29 +622,37 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
                                kFullscreenOriginLabelTouchId);
 }
 
-- (void)updateReloadStopButton {
-  const gfx::VectorIcon& icon =
-      _isPageLoading ? kNavigateStopIcon : vector_icons::kReloadIcon;
-  int commandId = _isPageLoading ? IDC_STOP : IDC_RELOAD;
-  int tooltipId = _isPageLoading ? IDS_TOOLTIP_STOP : IDS_TOOLTIP_RELOAD;
-
-  if (!_reloadStopButton) {
-    _reloadStopButton.reset(
-        [CreateTouchBarButton(icon, self, commandId, tooltipId) retain]);
-    return;
-  }
-
-  [_reloadStopButton
-      setImage:CreateNSImageFromIcon(icon, kTouchBarDefaultIconColor)];
-  [_reloadStopButton setTag:commandId];
-  [_reloadStopButton setAccessibilityLabel:l10n_util::GetNSString(tooltipId)];
++ (NSImage*)starDefaultIcon {
+  static const base::NoDestructor<base::scoped_nsobject<NSImage>>
+      _starDefaultIcon([]() {
+        return [CreateNSImageFromIcon(omnibox::kStarIcon,
+                                      kTouchBarDefaultIconColor) retain];
+      }());
+  return _starDefaultIcon->get();
 }
 
-- (NSButton*)reloadStopButton {
-  if (!_reloadStopButton)
-    [self updateReloadStopButton];
++ (NSImage*)starActiveIcon {
+  static const base::NoDestructor<base::scoped_nsobject<NSImage>>
+      _starActiveIcon([]() {
+        return [CreateNSImageFromIcon(omnibox::kStarActiveIcon,
+                                      kTouchBarStarActiveColor) retain];
+      }());
+  return _starActiveIcon->get();
+}
 
-  return _reloadStopButton.get();
++ (NSImage*)navigateStopIcon {
+  static const base::NoDestructor<base::scoped_nsobject<NSImage>>
+      _navigateStopIcon(
+          []() { return [CreateNSImageFromIcon(kNavigateStopIcon) retain]; }());
+  return _navigateStopIcon->get();
+}
+
++ (NSImage*)reloadIcon {
+  static const base::NoDestructor<base::scoped_nsobject<NSImage>> _reloadIcon(
+      []() {
+        return [CreateNSImageFromIcon(vector_icons::kReloadIcon) retain];
+      }());
+  return _reloadIcon->get();
 }
 
 - (BookmarkTabHelperObserver*)bookmarkTabObserver {

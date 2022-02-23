@@ -1,0 +1,25 @@
+From cac2f5a3f6f1447f4847c51fd1c0b69c960e6aef Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Thu, 20 Jan 2022 16:29:40 -0500
+Subject: [PATCH 3/3] Disable line number optimization
+
+---
+ src/main/java/com/android/tools/r8/R8Command.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/main/java/com/android/tools/r8/R8Command.java b/src/main/java/com/android/tools/r8/R8Command.java
+index b51ee2e8f..cfb2af7de 100644
+--- a/src/main/java/com/android/tools/r8/R8Command.java
++++ b/src/main/java/com/android/tools/r8/R8Command.java
+@@ -907,6 +907,8 @@ public final class R8Command extends BaseCompilerCommand {
+     internal.mainDexKeptGraphConsumer = mainDexKeptGraphConsumer;
+ 
+     internal.dataResourceConsumer = internal.programConsumer.getDataResourceConsumer();
++    // Added where it hopefully won't have merge conflicts.
++    internal.lineNumberOptimization = LineNumberOptimization.OFF;
+ 
+     internal.featureSplitConfiguration = featureSplitConfiguration;
+ 
+-- 
+2.35.0.rc0.227.g00780c9af4-goog
+

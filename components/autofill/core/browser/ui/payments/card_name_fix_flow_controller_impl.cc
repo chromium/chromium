@@ -111,7 +111,7 @@ std::u16string CardNameFixFlowControllerImpl::GetInputPlaceholderText() const {
 }
 
 std::u16string CardNameFixFlowControllerImpl::GetSaveButtonLabel() const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return l10n_util::GetStringUTF16(IDS_SAVE);
 #else
   return l10n_util::GetStringUTF16(

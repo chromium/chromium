@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -30,11 +31,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <io.h>
 #include <shlobj.h>
 #include <windows.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserThread;
 
@@ -203,7 +204,7 @@ class VisitedLinkWriter::TableBuilder
   void OnCompleteMainThread();
 
   // Owner of this object. MAY ONLY BE ACCESSED ON THE MAIN THREAD!
-  VisitedLinkWriter* writer_;
+  raw_ptr<VisitedLinkWriter> writer_;
 
   // Indicates whether the operation has failed or not.
   bool success_;

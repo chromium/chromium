@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,10 +30,9 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "net/base/url_util.h"
@@ -119,6 +120,22 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   return status;
 }
 
+// static
+bool ShelfControllerHelper::IsAppHiddenFromShelf(Profile* profile,
+                                                 const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return false;
+
+  bool hidden = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&hidden](const apps::AppUpdate& update) {
+        hidden = update.ShowInShelf() == apps::mojom::OptionalBool::kFalse;
+      });
+
+  return hidden;
+}
+
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
   return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());
@@ -191,7 +208,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
   params.launch_id = id.launch_id;
 
-  proxy->BrowserAppLauncher()->LaunchAppWithParams(std::move(params));
+  ::OpenApplication(profile_, std::move(params));
 }
 
 ArcAppListPrefs* ShelfControllerHelper::GetArcAppListPrefs() const {

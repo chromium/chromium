@@ -435,49 +435,6 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_IO) {
   ExpectTwoStoredPerfProfiles<SampledProfile::JANKY_TASK>(stored_profiles);
 }
 
-TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
-  content::BrowserTaskEnvironment task_environment;
-
-  // Enable the jankiness profiler feature.
-  const base::Feature kBrowserJankinessProfiling{
-      "BrowserJankinessProfiling", base::FEATURE_DISABLED_BY_DEFAULT};
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kBrowserJankinessProfiling);
-
-  chromeos::PowerManagerClient::InitializeFake();
-  chromeos::LoginState::Initialize();
-
-  std::unique_ptr<TestProfileProvider> profile_provider =
-      std::make_unique<TestProfileProvider>();
-  profile_provider->Init();
-
-  // Get default minimum interval is expected to be 30 minutes.
-  EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::Minutes(30));
-
-  profile_provider.reset();
-
-  scoped_feature_list.Reset();
-
-  // Init the feature with non-default feature param value.
-  std::map<std::string, std::string> params;
-  params.insert(std::make_pair("JankinessCollectionMinIntervalSec", "180"));
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kBrowserJankinessProfiling, params);
-
-  // Init an instance of TestProfileProvider and check that the feature param
-  // value takes effect.
-  profile_provider = std::make_unique<TestProfileProvider>();
-  profile_provider->Init();
-  EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::Seconds(180));
-
-  profile_provider.reset();
-
-  chromeos::LoginState::Shutdown();
-  chromeos::PowerManagerClient::Shutdown();
-}
-
 namespace {
 
 class TestStockProfileProvider : public ProfileProvider {

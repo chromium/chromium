@@ -9,6 +9,7 @@
 #include <atspi/atspi.h>
 
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
@@ -61,8 +62,8 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager), pid_(pid), selector_(selector) {
+    const ui::AXTreeSelector& selector)
+    : manager_(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -97,6 +98,7 @@ void AccessibilityEventRecorderAuraLinux::AddATKEventListeners() {
   g_object_unref(atk_no_op_object_new(gobject));
   g_object_unref(gobject);
 
+  AddATKEventListener("ATK:AtkDocument:load-complete");
   AddATKEventListener("ATK:AtkObject:state-change");
   AddATKEventListener("ATK:AtkObject:focus-event");
   AddATKEventListener("ATK:AtkObject:property-change");
@@ -232,6 +234,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
 // in the libatspi documentation at:
 // https://developer.gnome.org/libatspi/stable/AtspiEventListener.html#atspi-event-listener-register
 const char* const kEventNames[] = {
+    "document:load-complete",
     "object:active-descendant-changed",
     "object:children-changed",
     "object:column-deleted",

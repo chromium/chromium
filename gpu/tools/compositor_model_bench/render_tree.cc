@@ -146,7 +146,7 @@ bool VerifyListEntry(const base::Value& list,
                      const char* listName = nullptr) {
   // Assume the index is valid (since we'll be able to generate a better
   // error message for this elsewhere.)
-  if (list.GetList()[index].type() != type) {
+  if (list.GetListDeprecated()[index].type() != type) {
     LOG(ERROR) << (listName ? listName : "List") << "element " << index
                << " did not have the expected type (expected "
                << base::Value::GetTypeName(type) << ")\n";
@@ -173,7 +173,7 @@ bool InterpretCommonContents(const base::Value& node, RenderNode* c) {
   c->set_targetSurface(node.FindIntKey("targetSurfaceID").value());
 
   const Value* transform = node.FindKey("transform");
-  if (transform->GetList().size() != 16) {
+  if (transform->GetListDeprecated().size() != 16) {
     LOG(ERROR) << "4x4 transform matrix did not have 16 elements";
     return false;
   }
@@ -181,7 +181,7 @@ bool InterpretCommonContents(const base::Value& node, RenderNode* c) {
   for (int i = 0; i < 16; ++i) {
     if (!VerifyListEntry(*transform, i, Value::Type::DOUBLE, "Transform"))
       return false;
-    transform_mat[i] = transform->GetList()[i].GetDouble();
+    transform_mat[i] = transform->GetListDeprecated()[i].GetDouble();
   }
   c->set_transform(transform_mat);
 
@@ -198,16 +198,16 @@ bool InterpretCommonContents(const base::Value& node, RenderNode* c) {
       !VerifyListEntry(*dim, 1, Value::Type::INTEGER, "Tile dimension")) {
     return false;
   }
-  c->set_tile_width(dim->GetList()[0].GetInt());
-  c->set_tile_height(dim->GetList()[1].GetInt());
+  c->set_tile_width(dim->GetListDeprecated()[0].GetInt());
+  c->set_tile_height(dim->GetListDeprecated()[1].GetInt());
 
   if (!VerifyDictionaryEntry(*tiles_dict, "info", Value::Type::LIST))
     return false;
   const Value* tiles = tiles_dict->FindKey("info");
-  for (unsigned int i = 0; i < tiles->GetList().size(); ++i) {
+  for (unsigned int i = 0; i < tiles->GetListDeprecated().size(); ++i) {
     if (!VerifyListEntry(*tiles, i, Value::Type::DICTIONARY, "Tile info"))
       return false;
-    const Value& tdict = tiles->GetList()[i];
+    const Value& tdict = tiles->GetListDeprecated()[i];
 
     if (!VerifyDictionaryEntry(tdict, "x", Value::Type::INTEGER) ||
         !VerifyDictionaryEntry(tdict, "y", Value::Type::INTEGER)) {
@@ -242,10 +242,10 @@ bool InterpretCCData(const base::Value& node, CCNode* c) {
   c->set_fragment_shader(ShaderIDFromString(fragment_shader_name));
 
   const Value* textures = node.FindKey("textures");
-  for (unsigned int i = 0; i < textures->GetList().size(); ++i) {
+  for (unsigned int i = 0; i < textures->GetListDeprecated().size(); ++i) {
     if (!VerifyListEntry(*textures, i, Value::Type::DICTIONARY, "Tex list"))
       return false;
-    const Value& tex = textures->GetList()[i];
+    const Value& tex = textures->GetListDeprecated()[i];
 
     if (!VerifyDictionaryEntry(tex, "texID", Value::Type::INTEGER) ||
         !VerifyDictionaryEntry(tex, "height", Value::Type::INTEGER) ||
@@ -265,7 +265,7 @@ bool InterpretCCData(const base::Value& node, CCNode* c) {
                  << " (format: " << *format_name
                  << ")\n"
                     "The layer had "
-                 << textures->GetList().size() << " children.";
+                 << textures->GetListDeprecated().size() << " children.";
       return false;
     }
 
@@ -303,8 +303,8 @@ std::unique_ptr<RenderNode> InterpretContentLayer(const base::Value& node) {
   n->set_skipsDraw(node.FindBoolKey("skipsDraw").value());
 
   const Value* children = node.FindKey("children");
-  for (unsigned int i = 0; i < children->GetList().size(); ++i) {
-    const Value& child_node = children->GetList()[i];
+  for (unsigned int i = 0; i < children->GetListDeprecated().size(); ++i) {
+    const Value& child_node = children->GetListDeprecated()[i];
     if (!child_node.is_dict())
       continue;
     std::unique_ptr<RenderNode> child = InterpretNode(child_node);

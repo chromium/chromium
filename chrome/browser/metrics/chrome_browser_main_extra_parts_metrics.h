@@ -9,14 +9,12 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
-class UsageScenarioTracker;
 class PowerMetricsReporter;
 
 namespace chrome {
@@ -46,10 +44,10 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreMainMessageLoopRun() override;
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Records Mac specific metrics.
   void RecordMacMetrics();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -69,19 +67,10 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_MAC) || defined(OS_WIN)
-  // Tracks coarse usage scenarios that affect performance during a given
-  // interval of time (e.g. navigating to a new page, watching a video). The
-  // data tracked by this is used by other classes (see below) to report metrics
-  // that correlate performance with usage scenarios, which is necessary to
-  // optimize the performance of specific scenarios.
-  std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
-
-  // Reports power metrics coupled with the data tracked by
-  // |usage_scenario_tracker_|, used to analyze the correlation between usage
-  // scenarios and power consumption.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Reports power metrics.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
-#endif  // defined(OS_MAC) || defined (OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || defined (OS_WIN)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

@@ -16,7 +16,6 @@
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_util.h"
 #include "ppapi/c/pp_bool.h"

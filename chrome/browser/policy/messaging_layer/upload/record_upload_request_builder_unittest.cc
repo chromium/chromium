@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +60,26 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     return record;
   }
 
+  static std::vector<EncryptedRecord> GetRecordListWithCorruptionAtIndex(
+      size_t num_records,
+      size_t corrupted_record_index) {
+    DCHECK(corrupted_record_index < num_records)
+        << "Corrupted record index greater than or equal to record count";
+
+    std::vector<EncryptedRecord> records;
+    records.reserve(num_records);
+    for (size_t counter = 0; counter < num_records; ++counter) {
+      records.push_back(GenerateEncryptedRecord(
+          base::StrCat({"TEST_INFO_", base::NumberToString(counter)})));
+    }
+    // Corrupt one record.
+    records[corrupted_record_index]
+        .mutable_sequence_information()
+        ->clear_generation_id();
+
+    return records;
+  }
+
   static int64_t GetNextSequencingId() {
     static int64_t sequencing_id = 0;
     return sequencing_id++;
@@ -83,40 +104,28 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   }
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
-  ASSERT_TRUE(request_payload.value().is_dict());
-  const auto attach_encryption_settings = request_payload.value().FindBoolKey(
-      UploadEncryptedReportingRequestBuilder::
-          GetAttachEncryptionSettingsPath());
+  const auto attach_encryption_settings =
+      request_payload->FindBool(UploadEncryptedReportingRequestBuilder::
+                                    GetAttachEncryptionSettingsPath());
   EXPECT_EQ(need_encryption_key(), attach_encryption_settings.has_value());
-  base::Value* const record_list = request_payload.value().FindListKey(
+  base::Value::List* const record_list = request_payload->FindList(
       UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath());
   ASSERT_TRUE(record_list);
-  ASSERT_TRUE(record_list->is_list());
-  EXPECT_EQ(record_list->GetList().size(), records.size());
+  EXPECT_EQ(record_list->size(), records.size());
 
   size_t counter = 0;
   for (auto record : records) {
     auto record_value_result =
         EncryptedRecordDictionaryBuilder(std::move(record)).Build();
     ASSERT_TRUE(record_value_result.has_value());
-    EXPECT_EQ(record_list->GetList()[counter++], record_value_result.value());
+    EXPECT_EQ((*record_list)[counter++].GetDict(), record_value_result.value());
   }
 }
 
 TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   static constexpr size_t kNumRecords = 10;
-
-  std::vector<EncryptedRecord> records;
-  records.reserve(kNumRecords);
-  for (size_t counter = 0; counter < kNumRecords; ++counter) {
-    records.push_back(GenerateEncryptedRecord(
-        base::StrCat({"TEST_INFO_", base::NumberToString(counter)})));
-  }
-  // Corrupt one record.
-  records[kNumRecords - 2]
-      .mutable_sequence_information()
-      ->clear_generation_id();
-
+  const auto records = GetRecordListWithCorruptionAtIndex(
+      kNumRecords, /*corrupted_record_index=*/kNumRecords - 2);
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
   for (auto record : records) {
     builder.AddRecord((std::move(record)));
@@ -131,19 +140,18 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Reject encrypted_wrapped_record without sequencing information.
+  // Reject encrypted_wrapped_record without sequence information.
   record.set_encrypted_wrapped_record("Enterprise");
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Reject incorrectly set sequencing information by only setting sequencing
-  // id.
+  // Reject incorrectly set sequence information by only setting sequencing id.
   auto* sequence_information = record.mutable_sequence_information();
   sequence_information->set_sequencing_id(1701);
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
-  // Finish correctly setting sequencing information but incorrectly set
+  // Finish correctly setting sequence information but incorrectly set
   // encryption info.
   sequence_information->set_generation_id(12345678);
   sequence_information->set_priority(IMMEDIATE);
@@ -159,28 +167,57 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   EXPECT_TRUE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 }
 
+TEST_P(RecordUploadRequestBuilderTest, AcceptRequestId) {
+  const auto request_id = base::Token::CreateRandom().ToString();
+  UploadEncryptedReportingRequestBuilder builder;
+  builder.SetRequestId(request_id);
+
+  const auto request_payload = builder.Build();
+  ASSERT_TRUE(request_payload.has_value());
+
+  auto* payload_request_id = request_payload->FindString(
+      UploadEncryptedReportingRequestBuilder::kRequestId);
+  EXPECT_THAT(*payload_request_id, ::testing::StrEq(request_id));
+}
+
+TEST_P(RecordUploadRequestBuilderTest, DenyRequestIdWhenBadRecordSet) {
+  static constexpr size_t kNumRecords = 5;
+  const auto records = GetRecordListWithCorruptionAtIndex(
+      kNumRecords, /*corrupted_record_index=*/kNumRecords - 2);
+  UploadEncryptedReportingRequestBuilder builder;
+  for (auto record : records) {
+    builder.AddRecord((std::move(record)));
+  }
+
+  const auto request_id = base::Token::CreateRandom().ToString();
+  builder.SetRequestId(request_id);
+
+  const auto request_payload = builder.Build();
+  ASSERT_FALSE(request_payload.has_value());
+}
+
 TEST_P(RecordUploadRequestBuilderTest,
        DontBuildCompressionRequestIfNoInformation) {
   EncryptedRecord compressionless_record = GenerateEncryptedRecord("TEST_INFO");
   EXPECT_FALSE(compressionless_record.has_compression_information());
 
-  absl::optional<base::Value> compressionless_payload =
+  absl::optional<base::Value::Dict> compressionless_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressionless_record))
           .Build();
   DCHECK(compressionless_payload.has_value());
 
-  EXPECT_FALSE(compressionless_payload.value().FindKey(
+  EXPECT_FALSE(compressionless_payload.value().Find(
       EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 
   EncryptedRecord compressed_record =
       GenerateEncryptedRecord("TEST_INFO", true);
   EXPECT_TRUE(compressed_record.has_compression_information());
 
-  absl::optional<base::Value> compressed_record_payload =
+  absl::optional<base::Value::Dict> compressed_record_payload =
       EncryptedRecordDictionaryBuilder(std::move(compressed_record)).Build();
   DCHECK(compressed_record_payload.has_value());
 
-  EXPECT_TRUE(compressed_record_payload.value().FindKey(
+  EXPECT_TRUE(compressed_record_payload.value().Find(
       EncryptedRecordDictionaryBuilder::GetCompressionInformationPath()));
 }
 

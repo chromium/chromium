@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_MOJO_SOCKET_TEST_UTIL_H_
 #define SERVICES_NETWORK_MOJO_SOCKET_TEST_UTIL_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

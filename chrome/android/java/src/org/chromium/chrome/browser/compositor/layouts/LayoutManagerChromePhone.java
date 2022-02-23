@@ -11,10 +11,10 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -40,19 +40,16 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
      * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             StartSurface startSurface,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
         super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
-                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
-                jankTracker);
+                overviewModeBehaviorSupplier, topUiThemeColorProvider, jankTracker);
     }
 
     @Override
@@ -71,6 +68,14 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         TabContentManager tabContentManager = mTabContentManagerSupplier.get();
         assert tabContentManager != null;
         mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
+    }
+
+    @Override
+    protected Layout getLayoutForType(int layoutType) {
+        if (layoutType == LayoutType.SIMPLE_ANIMATION) {
+            return mSimpleAnimationLayout;
+        }
+        return super.getLayoutForType(layoutType);
     }
 
     @Override
@@ -95,12 +100,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         };
     }
 
-    @Override
-    protected void emptyCachesExcept(int tabId) {
-        super.emptyCachesExcept(tabId);
-        if (mTitleCache != null) mTitleCache.clearExcept(tabId);
-    }
-
     private void tabClosing(int id) {
         Tab closedTab = getTabById(id);
         if (closedTab == null) return;
@@ -109,7 +108,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // The user is currently interacting with the {@code LayoutHost}.
             // Allow the foreground layout to animate the tab closing.
             getActiveLayout().onTabClosing(time(), id);
-        } else if (animationsEnabled()) {
+        } else if (animationsEnabled() && !hasExplicitNextLayout()) {
             startShowing(mSimpleAnimationLayout, false);
             getActiveLayout().onTabClosing(time(), id);
         }
@@ -124,14 +123,14 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         if (getActiveLayout() != overviewLayout && showOverview) {
             // Since there will be no 'next' tab to display, switch to
             // overview mode when the animation is finished.
-            setNextLayout(overviewLayout);
+            setNextLayout(overviewLayout, true);
         }
         getActiveLayout().onTabClosed(time(), id, nextId, incognito);
         Tab nextTab = getTabById(nextId);
         if (nextTab != null && nextTab.getView() != null) nextTab.getView().requestFocus();
         boolean animate = !tabRemoved && animationsEnabled();
         if (getActiveLayout() != overviewLayout && showOverview && !animate) {
-            showOverview(false);
+            showLayout(LayoutType.TAB_SWITCHER, false);
         }
     }
 
@@ -146,7 +145,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         } else if (animationsEnabled()) {
             if (!overviewVisible()) {
                 if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
-                    setNextLayout(mSimpleAnimationLayout);
+                    setNextLayout(mSimpleAnimationLayout, true);
                     // The method Layout#doneHiding() will automatically show the next layout.
                     getActiveLayout().doneHiding();
                 } else {
@@ -187,11 +186,5 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             Tab newTab = TabModelUtils.getTabById(getTabModelSelector().getModel(isIncognito), id);
             if (newTab != null && newTab.getView() != null) newTab.getView().requestFocus();
         }
-    }
-
-    @Override
-    public void releaseTabLayout(int id) {
-        mTitleCache.remove(id);
-        super.releaseTabLayout(id);
     }
 }

@@ -44,10 +44,18 @@ class SigninDataCounter : public PasswordsCounter {
   ~SigninDataCounter() override;
 
  private:
-  int CountWebAuthnCredentials();
+  void OnCountWebAuthnCredentialsFinished(size_t num_credentials);
+  void CountWebAuthnCredentials(base::Time start, base::Time end);
+  void Count() override;
+  void OnPasswordsFetchDone() override;
   std::unique_ptr<PasswordsResult> MakeResult() override;
 
   std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store_;
+  bool passwords_counter_fetch_done_ = false;
+  bool webauthn_credentials_fetch_done_ = false;
+  int num_webauthn_credentials_ = 0;
+
+  base::WeakPtrFactory<SigninDataCounter> weak_factory_{this};
 };
 
 }  // namespace browsing_data

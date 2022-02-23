@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -245,9 +245,9 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
   void UploadDeviceLocalAccountPolicy() {
     BuildDeviceLocalAccountPolicy();
-    ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
+    policy_test_server_mixin_.UpdateExternalPolicy(
         policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId1,
-        device_local_account_policy_.payload().SerializeAsString()));
+        device_local_account_policy_.payload().SerializeAsString());
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -274,7 +274,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, username);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   void SetManagedSessionsEnabled(bool managed_sessions_enabled) {
@@ -323,8 +323,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
     auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
-    chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                       account_id_1_);
+    ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                  account_id_1_);
     user_context.SetPublicSessionLocale(std::string());
     user_context.SetPublicSessionInputMethod(std::string());
     controller->Login(user_context, ash::SigninSpecifics());
@@ -378,12 +378,12 @@ class UserTypeByDeviceTypeMetricsProviderTest
       embedded_test_server(), this,
       /*should_launch_browser=*/true, GetPrimaryAccountId(),
       /*include_initial_user=*/true,
-      // Don't use LocalPolicyTestServer because it does not support customizing
-      // PolicyData.
-      // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
-      /*use_local_policy_server=*/false};
+      // Don't use EmbeddedPolicyTestServer because it does not support
+      // customizing PolicyData.
+      // TODO(crbug/1112885): Use EmbeddedPolicyTestServer when this is fixed.
+      /*use_embedded_policy_server=*/false};
   policy::UserPolicyBuilder device_local_account_policy_;
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
@@ -400,7 +400,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
 };
 
 // Flacky on CrOS (http://crbug.com/1248669).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Uma DISABLED_Uma
 #else
 #define MAYBE_Uma Uma

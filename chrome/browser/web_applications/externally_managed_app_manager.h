@@ -12,17 +12,19 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/gurl.h"
 
+namespace webapps {
+enum class InstallResultCode;
+}
+
 namespace web_app {
 
-enum class InstallResultCode;
-
 class WebAppRegistrar;
-class OsIntegrationManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
@@ -52,9 +54,18 @@ enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 class ExternallyManagedAppManager {
  public:
   struct InstallResult {
-    InstallResultCode code;
-    bool did_uninstall_and_replace = false;
+    InstallResult();
+    explicit InstallResult(webapps::InstallResultCode code,
+                           absl::optional<AppId> app_id = absl::nullopt,
+                           bool did_uninstall_and_replace = false);
+    InstallResult(const InstallResult&);
+    ~InstallResult();
+
     bool operator==(const InstallResult& other) const;
+
+    webapps::InstallResultCode code;
+    absl::optional<AppId> app_id;
+    bool did_uninstall_and_replace = false;
   };
 
   using OnceInstallCallback =
@@ -77,7 +88,6 @@ class ExternallyManagedAppManager {
   virtual ~ExternallyManagedAppManager();
 
   void SetSubsystems(WebAppRegistrar* registrar,
-                     OsIntegrationManager* os_integration_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* finalizer,
                      WebAppInstallManager* install_manager);
@@ -147,9 +157,6 @@ class ExternallyManagedAppManager {
 
  protected:
   WebAppRegistrar* registrar() { return registrar_; }
-  OsIntegrationManager* os_integration_manager() {
-    return os_integration_manager_;
-  }
   WebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppInstallFinalizer* finalizer() { return finalizer_; }
   WebAppInstallManager* install_manager() { return install_manager_; }
@@ -188,11 +195,10 @@ class ExternallyManagedAppManager {
                                        bool succeeded);
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
-  WebAppRegistrar* registrar_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
-  WebAppInstallFinalizer* finalizer_ = nullptr;
-  WebAppInstallManager* install_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
+  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
 
   base::flat_map<ExternalInstallSource, SynchronizeRequest>
       synchronize_requests_;

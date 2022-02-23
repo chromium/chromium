@@ -77,7 +77,7 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),
       content_rule_list_provider_(
-          std::make_unique<WKContentRuleListProvider>(browser_state)) {}
+          std::make_unique<WKContentRuleListProvider>()) {}
 
 WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() = default;
 
@@ -123,6 +123,14 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   // only works for devices in certain locales. Disable this feature since
   // Chrome uses Google-provided Safe Browsing.
   [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
+
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+  if (@available(iOS 15.4, *)) {
+    if (base::FeatureList::IsEnabled(features::kEnableFullscreenAPI)) {
+      [[configuration_ preferences] setElementFullscreenEnabled:YES];
+    }
+  }
+#endif  // defined(__IPHONE15_4)
 
   [configuration_ setAllowsInlineMediaPlayback:YES];
   // setJavaScriptCanOpenWindowsAutomatically is required to support popups.

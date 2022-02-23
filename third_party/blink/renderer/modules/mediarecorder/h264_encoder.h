@@ -45,7 +45,7 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   void EncodeOnEncodingTaskRunner(scoped_refptr<media::VideoFrame> frame,
                                   base::TimeTicks capture_timestamp) override;
 
-  WARN_UNUSED_RESULT bool ConfigureEncoderOnEncodingTaskRunner(
+  [[nodiscard]] bool ConfigureEncoderOnEncodingTaskRunner(
       const gfx::Size& size);
 
   SEncParamExt GetEncoderOptionForTesting();

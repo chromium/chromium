@@ -37,7 +37,7 @@ bool PathExists(const base::FilePath& path);
 //! \return `true` on success. Otherwise `false` with a message logged.
 bool SetFileModificationTime(const base::FilePath& path, const timespec& mtime);
 
-#if !defined(OS_FUCHSIA) || DOXYGEN
+#if !BUILDFLAG(IS_FUCHSIA) || DOXYGEN
 // There are no symbolic links on Fuchsia. Don’t bother declaring or defining
 // symbolic link-related functions at all, because it’s an error to even pretend
 // that symbolic links might be available on Fuchsia.
@@ -67,7 +67,7 @@ bool CanCreateSymbolicLinks();
 bool CreateSymbolicLink(const base::FilePath& target_path,
                         const base::FilePath& symlink_path);
 
-#endif  // !OS_FUCHSIA || DOXYGEN
+#endif  // !BUILDFLAG(IS_FUCHSIA) || DOXYGEN
 
 }  // namespace test
 }  // namespace crashpad

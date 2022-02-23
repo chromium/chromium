@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
@@ -108,7 +109,7 @@ class DevToolsHttpClient {
   Status CloseFrontends(const std::string& for_client_id);
   virtual bool FetchUrlAndLog(const std::string& url, std::string* response);
 
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   SyncWebSocketFactory socket_factory_;
   DevToolsEndpoint endpoint_;
   BrowserInfo browser_info_;

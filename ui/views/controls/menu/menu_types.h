@@ -8,7 +8,7 @@
 namespace views {
 
 // Where a popup menu should be anchored to for non-RTL languages. The opposite
-// position will be used if base::i18n:IsRTL() is true. The Bubble flags are
+// position will be used if base::i18n::IsRTL() is true. The Bubble flags are
 // used when the menu should get enclosed by a bubble.
 enum class MenuAnchorPosition {
   kTopLeft,

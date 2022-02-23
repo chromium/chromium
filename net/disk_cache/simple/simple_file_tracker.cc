@@ -286,7 +286,7 @@ void SimpleFileTracker::ReopenFile(TrackedFiles* owners_files,
   int file_index = static_cast<int>(subfile);
   DCHECK(owners_files->files[file_index] == nullptr);
   int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_WRITE | base::File::FLAG_SHARE_DELETE;
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   base::FilePath file_path =
       owners_files->owner->GetFilenameForSubfile(subfile);
   owners_files->files[file_index] =

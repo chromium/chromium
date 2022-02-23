@@ -23,7 +23,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /** Tests for {@link OmniboxResourceProvider}. */
@@ -35,7 +37,6 @@ public class OmniboxResourceProviderTest {
     private Activity mActivity;
 
     private @ColorInt int mDefaultColor;
-    private @ColorInt int mDefaultIncognitoColor;
 
     @Before
     public void setUp() {
@@ -43,43 +44,35 @@ public class OmniboxResourceProviderTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mDefaultColor = ChromeColors.getDefaultThemeColor(mActivity, false);
-        mDefaultIncognitoColor = ChromeColors.getDefaultThemeColor(mActivity, true);
-    }
-
-    @Test
-    public void isDarkMode() {
-        Assert.assertTrue(OmniboxResourceProvider.isDarkMode(OmniboxTheme.DARK_THEME));
-        Assert.assertTrue(OmniboxResourceProvider.isDarkMode(OmniboxTheme.INCOGNITO));
-        Assert.assertFalse(OmniboxResourceProvider.isDarkMode(OmniboxTheme.LIGHT_THEME));
     }
 
     @Test
     public void resolveAttributeToDrawable() {
         Drawable drawableLight = OmniboxResourceProvider.resolveAttributeToDrawable(
-                mActivity, OmniboxTheme.LIGHT_THEME, R.attr.selectableItemBackground);
+                mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME, R.attr.selectableItemBackground);
         Assert.assertNotNull(drawableLight);
 
         Drawable drawableDark = OmniboxResourceProvider.resolveAttributeToDrawable(
-                mActivity, OmniboxTheme.DARK_THEME, R.attr.selectableItemBackground);
+                mActivity, BrandedColorScheme.DARK_BRANDED_THEME, R.attr.selectableItemBackground);
         Assert.assertNotNull(drawableDark);
     }
 
     @Test
-    public void getOmniboxTheme_incognito() {
-        assertEquals("Omnibox theme should be INCOGNITO.", OmniboxTheme.INCOGNITO,
-                OmniboxResourceProvider.getOmniboxTheme(mActivity, true, mDefaultColor));
-        assertEquals("Omnibox theme should be INCOGNITO.", OmniboxTheme.INCOGNITO,
-                OmniboxResourceProvider.getOmniboxTheme(mActivity, true, Color.RED));
+    public void getColorScheme_incognito() {
+        assertEquals("Color scheme should be INCOGNITO.", BrandedColorScheme.INCOGNITO,
+                OmniboxResourceProvider.getBrandedColorScheme(mActivity, true, mDefaultColor));
+        assertEquals("Color scheme should be INCOGNITO.", BrandedColorScheme.INCOGNITO,
+                OmniboxResourceProvider.getBrandedColorScheme(mActivity, true, Color.RED));
     }
 
     @Test
-    public void getOmniboxTheme_nonIncognito() {
-        assertEquals("Omnibox theme should be DEFAULT.", OmniboxTheme.DEFAULT,
-                OmniboxResourceProvider.getOmniboxTheme(mActivity, false, mDefaultColor));
-        assertEquals("Omnibox theme should be DARK_THEME.", OmniboxTheme.DARK_THEME,
-                OmniboxResourceProvider.getOmniboxTheme(mActivity, false, Color.BLACK));
-        assertEquals("Omnibox theme should be LIGHT_THEME.", OmniboxTheme.LIGHT_THEME,
-                OmniboxResourceProvider.getOmniboxTheme(
+    public void getColorScheme_nonIncognito() {
+        assertEquals("Color scheme should be DEFAULT.", BrandedColorScheme.APP_DEFAULT,
+                OmniboxResourceProvider.getBrandedColorScheme(mActivity, false, mDefaultColor));
+        assertEquals("Color scheme should be DARK_THEME.", BrandedColorScheme.DARK_BRANDED_THEME,
+                OmniboxResourceProvider.getBrandedColorScheme(mActivity, false, Color.BLACK));
+        assertEquals("Color scheme should be LIGHT_THEME.", BrandedColorScheme.LIGHT_BRANDED_THEME,
+                OmniboxResourceProvider.getBrandedColorScheme(
                         mActivity, false, Color.parseColor("#eaecf0" /*Light grey color*/)));
     }
 
@@ -93,15 +86,16 @@ public class OmniboxResourceProviderTest {
 
         assertEquals("Wrong url bar primary text color for LIGHT_THEME.", darkTextColor,
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(
-                        mActivity, OmniboxTheme.LIGHT_THEME));
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Wrong url bar primary text color for DARK_THEME.", lightTextColor,
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(
-                        mActivity, OmniboxTheme.DARK_THEME));
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Wrong url bar primary text color for INCOGNITO.", incognitoColor,
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(
-                        mActivity, OmniboxTheme.INCOGNITO));
+                        mActivity, BrandedColorScheme.INCOGNITO));
         assertEquals("Wrong url bar primary text color for DEFAULT.", defaultColor,
-                OmniboxResourceProvider.getUrlBarPrimaryTextColor(mActivity, OmniboxTheme.DEFAULT));
+                OmniboxResourceProvider.getUrlBarPrimaryTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
     }
 
     @Test
@@ -115,16 +109,16 @@ public class OmniboxResourceProviderTest {
 
         assertEquals("Wrong url bar secondary text color for LIGHT_THEME.", darkTextColor,
                 OmniboxResourceProvider.getUrlBarSecondaryTextColor(
-                        mActivity, OmniboxTheme.LIGHT_THEME));
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Wrong url bar secondary text color for DARK_THEME.", lightTextColor,
                 OmniboxResourceProvider.getUrlBarSecondaryTextColor(
-                        mActivity, OmniboxTheme.DARK_THEME));
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Wrong url bar secondary text color for INCOGNITO.", incognitoColor,
                 OmniboxResourceProvider.getUrlBarSecondaryTextColor(
-                        mActivity, OmniboxTheme.INCOGNITO));
+                        mActivity, BrandedColorScheme.INCOGNITO));
         assertEquals("Wrong url bar secondary text color for DEFAULT.", defaultColor,
                 OmniboxResourceProvider.getUrlBarSecondaryTextColor(
-                        mActivity, OmniboxTheme.DEFAULT));
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
     }
 
     @Test
@@ -134,14 +128,18 @@ public class OmniboxResourceProviderTest {
         final int redOnLight = resources.getColor(R.color.default_red_dark);
 
         assertEquals("Danger color for DARK_THEME should be the lighter red.", redOnDark,
-                OmniboxResourceProvider.getUrlBarDangerColor(mActivity, OmniboxTheme.DARK_THEME));
+                OmniboxResourceProvider.getUrlBarDangerColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Danger color for LIGHT_THEME should be the darker red.", redOnLight,
-                OmniboxResourceProvider.getUrlBarDangerColor(mActivity, OmniboxTheme.LIGHT_THEME));
+                OmniboxResourceProvider.getUrlBarDangerColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Danger color for DEFAULT should be the darker red when we're in light theme.",
                 redOnLight,
-                OmniboxResourceProvider.getUrlBarDangerColor(mActivity, OmniboxTheme.DEFAULT));
+                OmniboxResourceProvider.getUrlBarDangerColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
         assertEquals("Danger color for INCOGNITO should be the lighter red.", redOnDark,
-                OmniboxResourceProvider.getUrlBarDangerColor(mActivity, OmniboxTheme.INCOGNITO));
+                OmniboxResourceProvider.getUrlBarDangerColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
     }
 
     @Test
@@ -151,15 +149,19 @@ public class OmniboxResourceProviderTest {
         final int greenOnLight = resources.getColor(R.color.default_green_dark);
 
         assertEquals("Secure color for DARK_THEME should be the lighter green.", greenOnDark,
-                OmniboxResourceProvider.getUrlBarSecureColor(mActivity, OmniboxTheme.DARK_THEME));
+                OmniboxResourceProvider.getUrlBarSecureColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Secure color for LIGHT_THEME should be the darker green.", greenOnLight,
-                OmniboxResourceProvider.getUrlBarSecureColor(mActivity, OmniboxTheme.LIGHT_THEME));
+                OmniboxResourceProvider.getUrlBarSecureColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals(
                 "Secure color for DEFAULT should be the darker green when we're in light theme.",
                 greenOnLight,
-                OmniboxResourceProvider.getUrlBarSecureColor(mActivity, OmniboxTheme.DEFAULT));
+                OmniboxResourceProvider.getUrlBarSecureColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
         assertEquals("Secure color for INCOGNITO should be the lighter green.", greenOnDark,
-                OmniboxResourceProvider.getUrlBarSecureColor(mActivity, OmniboxTheme.INCOGNITO));
+                OmniboxResourceProvider.getUrlBarSecureColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
     }
 
     @Test
@@ -170,16 +172,16 @@ public class OmniboxResourceProviderTest {
 
         assertEquals("Wrong suggestion primary text color for LIGHT_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mActivity, OmniboxTheme.LIGHT_THEME));
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Wrong suggestion primary text color for DARK_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mActivity, OmniboxTheme.DARK_THEME));
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Wrong suggestion primary text color for INCOGNITO.", incognitoColor,
                 OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mActivity, OmniboxTheme.INCOGNITO));
+                        mActivity, BrandedColorScheme.INCOGNITO));
         assertEquals("Wrong suggestion primary text color for DEFAULT.", defaultColor,
                 OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                        mActivity, OmniboxTheme.DEFAULT));
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
     }
 
     @Test
@@ -191,34 +193,105 @@ public class OmniboxResourceProviderTest {
 
         assertEquals("Wrong suggestion secondary text color for LIGHT_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mActivity, OmniboxTheme.LIGHT_THEME));
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Wrong suggestion secondary text color for DARK_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mActivity, OmniboxTheme.DARK_THEME));
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Wrong suggestion secondary text color for INCOGNITO.", incognitoColor,
                 OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mActivity, OmniboxTheme.INCOGNITO));
+                        mActivity, BrandedColorScheme.INCOGNITO));
         assertEquals("Wrong suggestion secondary text color for DEFAULT.", defaultColor,
                 OmniboxResourceProvider.getSuggestionSecondaryTextColor(
-                        mActivity, OmniboxTheme.DEFAULT));
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
     }
 
     @Test
     public void getSuggestionUrlTextColor() {
         final Resources resources = mActivity.getResources();
         final int incognitoColor = resources.getColor(R.color.suggestion_url_color_incognito);
-        final int defaultColor = resources.getColor(R.color.suggestion_url_color);
+        final int defaultColor = SemanticColorUtils.getDefaultTextColorLink(mActivity);
 
         assertEquals("Wrong suggestion url text color for LIGHT_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mActivity, OmniboxTheme.LIGHT_THEME));
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
         assertEquals("Wrong suggestion url text color for DARK_THEME.", defaultColor,
                 OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mActivity, OmniboxTheme.DARK_THEME));
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
         assertEquals("Wrong suggestion url text color for INCOGNITO.", incognitoColor,
                 OmniboxResourceProvider.getSuggestionUrlTextColor(
-                        mActivity, OmniboxTheme.INCOGNITO));
+                        mActivity, BrandedColorScheme.INCOGNITO));
         assertEquals("Wrong suggestion url text color for DEFAULT.", defaultColor,
-                OmniboxResourceProvider.getSuggestionUrlTextColor(mActivity, OmniboxTheme.DEFAULT));
+                OmniboxResourceProvider.getSuggestionUrlTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void getStatusSeparatorColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_separator_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_separator_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_separator_color_incognito);
+        final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOutline, TAG);
+
+        assertEquals("Wrong status separator color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status separator color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status separator color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status separator color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void getStatusPreviewTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_preview_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_preview_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_preview_color_incognito);
+        final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorPrimary, TAG);
+
+        assertEquals("Wrong status preview text color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status preview text color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status preview text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status preview text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void getStatusOfflineTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_offline_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_offline_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_offline_color_incognito);
+        final int defaultColor =
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
+
+        assertEquals("Wrong status offline text color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status offline text color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status offline text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status offline text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
     }
 }

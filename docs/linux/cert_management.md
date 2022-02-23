@@ -1,6 +1,6 @@
 # Linux Cert Management
 
-The easy way to manage certificates is navigate to chrome://settings/search#ssl.
+The easy way to manage certificates is navigate to chrome://settings/certificates.
 Then click on the "Manage Certificates" button. This will load a built-in
 interface for managing certificates.
 

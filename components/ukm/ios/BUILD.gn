@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",

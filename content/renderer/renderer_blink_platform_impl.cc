@@ -98,7 +98,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -106,17 +106,17 @@
 #include "ui/gl/buildflags.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/child/child_process_sandbox_support_impl_mac.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "content/child/child_process_sandbox_support_impl_linux.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -140,7 +140,7 @@ media::AudioParameters GetAudioHardwareParams() {
   if (!render_frame)
     return media::AudioParameters::UnavailableDeviceParams();
 
-  return blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
+  return blink::AudioDeviceFactory::GetOutputDeviceInfo(
              render_frame->GetWebFrame()->GetLocalFrameToken(),
              media::AudioSinkParameters())
       .output_params();
@@ -177,7 +177,7 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
       main_thread_scheduler_(main_thread_scheduler) {
   // RenderThread may not exist in some tests.
   if (RenderThreadImpl::current()) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     mojo::PendingRemote<font_service::mojom::FontService> font_service;
     RenderThreadImpl::current()->BindHostReceiver(
         font_service.InitWithNewPipeAndPassReceiver());
@@ -187,9 +187,9 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 #endif
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   if (sandboxEnabled()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     sandbox_support_ = std::make_unique<WebSandboxSupportMac>();
 #else
     sandbox_support_ = std::make_unique<WebSandboxSupportLinux>(font_loader_);
@@ -261,7 +261,7 @@ RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
       /*terminate_sync_load_event=*/nullptr);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void RendererBlinkPlatformImpl::SetDisplayThreadPriority(
     base::PlatformThreadId thread_id) {
   if (RenderThreadImpl* render_thread = RenderThreadImpl::current()) {
@@ -276,7 +276,7 @@ blink::BlameContext* RendererBlinkPlatformImpl::GetTopLevelBlameContext() {
 }
 
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   return sandbox_support_.get();
 #else
   // These platforms do not require sandbox support.
@@ -311,6 +311,14 @@ blink::WebString RendererBlinkPlatformImpl::UserAgent() {
   if (!render_thread)
     return WebString();
   return render_thread->GetUserAgent();
+}
+
+blink::WebString RendererBlinkPlatformImpl::FullUserAgent() {
+  auto* render_thread = RenderThreadImpl::current();
+  // RenderThreadImpl is null in some tests.
+  if (!render_thread)
+    return WebString();
+  return render_thread->GetFullUserAgent();
 }
 
 blink::WebString RendererBlinkPlatformImpl::ReducedUserAgent() {
@@ -478,7 +486,7 @@ bool RendererBlinkPlatformImpl::IsGpuCompositingDisabled() const {
   return !thread || thread->IsGpuCompositingDisabled();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool RendererBlinkPlatformImpl::
     IsSynchronousCompositingEnabledForAndroidWebView() {
   return GetContentClient()->UsingSynchronousCompositing();
@@ -519,17 +527,6 @@ bool RendererBlinkPlatformImpl::IsScrollAnimatorEnabled() {
 cc::TaskGraphRunner* RendererBlinkPlatformImpl::GetTaskGraphRunner() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
   return thread ? thread->GetTaskGraphRunner() : nullptr;
-}
-
-gfx::RenderingPipeline* RendererBlinkPlatformImpl::GetMainThreadPipeline() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetMainThreadPipeline() : nullptr;
-}
-
-gfx::RenderingPipeline*
-RendererBlinkPlatformImpl::GetCompositorThreadPipeline() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetCompositorThreadPipeline() : nullptr;
 }
 
 bool RendererBlinkPlatformImpl::IsThreadedAnimationEnabled() {
@@ -585,7 +582,7 @@ scoped_refptr<media::AudioCapturerSource>
 RendererBlinkPlatformImpl::NewAudioCapturerSource(
     blink::WebLocalFrame* web_frame,
     const media::AudioSourceParameters& params) {
-  return blink::WebAudioDeviceFactory::NewAudioCapturerSource(
+  return blink::AudioDeviceFactory::NewAudioCapturerSource(
       web_frame->GetLocalFrameToken(), params);
 }
 
@@ -596,8 +593,7 @@ RendererBlinkPlatformImpl::SharedMainThreadContextProvider() {
 
 scoped_refptr<viz::RasterContextProvider>
 RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider() {
-  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider(
-      /*try_gpu_rasterization=*/true);
+  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider();
 }
 
 scoped_refptr<gpu::GpuChannelHost>
@@ -630,14 +626,14 @@ RendererBlinkPlatformImpl::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     blink::WebLocalFrame* web_frame,
     const media::AudioSinkParameters& params) {
-  return blink::WebAudioDeviceFactory::NewAudioRendererSink(
+  return blink::AudioDeviceFactory::NewAudioRendererSink(
       source_type, web_frame->GetLocalFrameToken(), params);
 }
 
 media::AudioLatency::LatencyType
 RendererBlinkPlatformImpl::GetAudioSourceLatencyType(
     blink::WebAudioDeviceSourceType source_type) {
-  return blink::WebAudioDeviceFactory::GetSourceLatencyType(source_type);
+  return blink::AudioDeviceFactory::GetSourceLatencyType(source_type);
 }
 
 bool RendererBlinkPlatformImpl::ShouldEnforceWebRTCRoutingPreferences() {
@@ -701,7 +697,7 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(
     webrtc::VideoCodecType video_codec_type) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Do not use hardware decoding for H.264 on Win7, due to high latency.
   // See https://crbug.com/webrtc/5717.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -711,7 +707,7 @@ bool RendererBlinkPlatformImpl::IsWebRtcHWH264DecodingEnabled(
     DVLOG(1) << "H.264 HW decoding is not supported on Win7";
     return false;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return true;
 }
 
@@ -1117,6 +1113,12 @@ void RendererBlinkPlatformImpl::AppendContentSecurityPolicy(
     const blink::WebURL& url,
     blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {
   GetContentClient()->renderer()->AppendContentSecurityPolicy(url, csp);
+}
+
+base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
+  return RenderThreadImpl::current()
+             ? RenderThreadImpl::current()->GetIOPlatformThreadId()
+             : base::kInvalidThreadId;
 }
 
 }  // namespace content

@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_CMA_BASE_CODED_FRAME_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace media {

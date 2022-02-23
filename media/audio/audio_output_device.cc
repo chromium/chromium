@@ -383,7 +383,7 @@ void AudioOutputDevice::OnStreamCreated(
 
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());

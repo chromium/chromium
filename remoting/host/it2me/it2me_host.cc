@@ -27,6 +27,7 @@
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/ftl_signaling_connector.h"
 #include "remoting/host/host_event_logger.h"
+#include "remoting/host/host_event_reporter.h"
 #include "remoting/host/host_secret.h"
 #include "remoting/host/host_status_logger.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -274,6 +275,9 @@ void It2MeHost::ConnectOnNetworkThread(
   // Create event logger.
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_ = HostEventReporter::Create(host_->status_monitor());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Connect signaling and start the host.
   signal_strategy_->Connect();
@@ -283,13 +287,13 @@ void It2MeHost::ConnectOnNetworkThread(
   return;
 }
 
-void It2MeHost::OnAccessDenied(const std::string& jid) {
+void It2MeHost::OnClientAccessDenied(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   ++failed_login_attempts_;
   if (failed_login_attempts_ == kMaxLoginAttempts) {
     DisconnectOnNetworkThread();
-  } else if (connecting_jid_ == NormalizeSignalingId(jid)) {
+  } else if (connecting_jid_ == NormalizeSignalingId(signaling_id)) {
     DCHECK_EQ(state_, It2MeHostState::kConnecting);
     connecting_jid_.clear();
     confirmation_dialog_proxy_.reset();
@@ -297,7 +301,7 @@ void It2MeHost::OnAccessDenied(const std::string& jid) {
   }
 }
 
-void It2MeHost::OnClientConnected(const std::string& jid) {
+void It2MeHost::OnClientConnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   // ChromotingHost doesn't allow concurrent connections and the host is
@@ -305,9 +309,11 @@ void It2MeHost::OnClientConnected(const std::string& jid) {
   CHECK_NE(state_, It2MeHostState::kConnected);
 
   std::string client_username;
-  if (!SplitSignalingIdResource(jid, &client_username, /*resource=*/nullptr)) {
-    LOG(WARNING) << "Incorrectly formatted JID received: " << jid;
-    client_username = jid;
+  if (!SplitSignalingIdResource(signaling_id, &client_username,
+                                /*resource=*/nullptr)) {
+    LOG(WARNING) << "Incorrectly formatted signaling ID received: "
+                 << signaling_id;
+    client_username = signaling_id;
   }
 
   HOST_LOG << "Client " << client_username << " connected.";
@@ -320,7 +326,7 @@ void It2MeHost::OnClientConnected(const std::string& jid) {
   SetState(It2MeHostState::kConnected, ErrorCode::OK);
 }
 
-void It2MeHost::OnClientDisconnected(const std::string& jid) {
+void It2MeHost::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
 
   DisconnectOnNetworkThread();
@@ -372,7 +378,7 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetList(policy::key::kRemoteAccessHostDomainList,
                         &host_domain_list)) {
     std::vector<std::string> host_domain_list_vector;
-    for (const auto& value : host_domain_list->GetList()) {
+    for (const auto& value : host_domain_list->GetListDeprecated()) {
       host_domain_list_vector.push_back(value.GetString());
     }
     UpdateHostDomainListPolicy(std::move(host_domain_list_vector));
@@ -382,23 +388,23 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetList(policy::key::kRemoteAccessHostClientDomainList,
                         &client_domain_list)) {
     std::vector<std::string> client_domain_list_vector;
-    for (const auto& value : client_domain_list->GetList()) {
+    for (const auto& value : client_domain_list->GetListDeprecated()) {
       client_domain_list_vector.push_back(value.GetString());
     }
     UpdateClientDomainListPolicy(std::move(client_domain_list_vector));
   }
 
-  std::string port_range_string;
-  if (policies->GetString(policy::key::kRemoteAccessHostUdpPortRange,
-                          &port_range_string)) {
-    UpdateHostUdpPortRangePolicy(port_range_string);
+  const std::string* port_range_string =
+      policies->FindStringKey(policy::key::kRemoteAccessHostUdpPortRange);
+  if (port_range_string) {
+    UpdateHostUdpPortRangePolicy(*port_range_string);
   }
 
-  int max_clipboard_size;
-  if (policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
-                           &max_clipboard_size)) {
-    if (max_clipboard_size >= 0) {
-      max_clipboard_size_ = max_clipboard_size;
+  absl::optional<int> max_clipboard_size =
+      policies->FindIntKey(policy::key::kRemoteAccessHostClipboardSizeBytes);
+  if (max_clipboard_size.has_value()) {
+    if (max_clipboard_size.value() >= 0) {
+      max_clipboard_size_ = max_clipboard_size.value();
     }
   }
 }
@@ -611,6 +617,9 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
         kDestroySignalingDelay);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   host_event_logger_ = nullptr;
 
   // Post tasks to delete UI objects on the UI thread.

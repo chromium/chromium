@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 
@@ -42,14 +39,6 @@ public final class SuggestionsConfig {
             "https://www.google.com/";
 
     private SuggestionsConfig() {}
-
-    /**
-     * @param resources The resources to fetch the color from.
-     * @return The background color for the suggestions sheet content.
-     */
-    public static int getBackgroundColor(Resources resources) {
-        return ApiCompatibilityUtils.getColor(resources, R.color.suggestions_modern_bg);
-    }
 
     /**
      * Returns the current tile style, that depends on the enabled features and the screen size.

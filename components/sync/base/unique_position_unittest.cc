@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -386,7 +387,7 @@ TEST_P(PositionInsertTest, StressRightInsertBetween) {
 class SuffixGenerator {
  public:
   explicit SuffixGenerator(const std::string& cache_guid)
-      : cache_guid_(cache_guid), next_id_(-65535) {}
+      : cache_guid_(cache_guid) {}
 
   std::string NextSuffix() {
     // This is not entirely realistic, but that should be OK.  The current
@@ -400,7 +401,7 @@ class SuffixGenerator {
 
  private:
   const std::string cache_guid_;
-  int64_t next_id_;
+  int64_t next_id_ = -65535;
 };
 
 // Cache guids generated in the same style as real clients.
@@ -585,7 +586,7 @@ class IndexedLessThan {
   }
 
  private:
-  const T* values_;
+  raw_ptr<const T> values_;
   LessThan less_than_;
 };
 

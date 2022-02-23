@@ -10,13 +10,12 @@ import os
 import sys
 
 import fuchsia_util
-from gpu_tests import path_util
+import gpu_path_util
 
 
 def main():
   gpu_script = [
-      os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test', 'gpu',
-                   'run_gpu_integration_test.py')
+      os.path.join(gpu_path_util.GPU_DIR, 'run_gpu_integration_test.py')
   ]
   return fuchsia_util.RunTestOnFuchsiaDevice(gpu_script)
 

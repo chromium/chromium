@@ -60,6 +60,7 @@ class TestOptions(object):
     self.enable_tracing = False
     self.use_proxy_hash = False
     self.always_mangle = False
+    self.unchecked_exceptions = False
     self.split_name = None
 
 
@@ -891,11 +892,14 @@ public abstract class java.util.HashSet<T> extends java.util.AbstractSet<E>
       Signature: ()V
     public java.lang.Class<?> getClass();
       Signature: ()Ljava/lang/Class<*>;
+    public static void overloadWithVarargs(java.lang.String...);
+      Signature: ([Ljava/lang/String;)V
+    public static void overloadWithVarargs(android.icu.text.DisplayContext...);
+      Signature: ([Landroid/icu/text/DisplayContext;)V
 }
 """
     jni_from_javap = jni_generator.JNIFromJavaP(
         contents.split('\n'), TestOptions())
-    self.assertEqual(2, len(jni_from_javap.called_by_natives))
     self.AssertGoldenTextEquals(jni_from_javap.GetContent())
 
   def testSnippnetJavap6_7_8(self):

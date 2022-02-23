@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -21,7 +22,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -149,142 +149,6 @@ class DemoSetupControllerTest : public testing::Test {
   system::ScopedFakeStatisticsProvider statistics_provider_;
 };
 
-TEST_F(DemoSetupControllerTest, OfflineSuccess) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(SetupDummyOfflinePolicyDir("test", &temp_dir));
-  SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
-  policy::MockCloudPolicyStore mock_store;
-  EXPECT_CALL(mock_store, Store(_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          &mock_store, &policy::MockCloudPolicyStore::NotifyStoreLoaded));
-  tested_controller_->SetDeviceLocalAccountPolicyStoreForTest(&mock_store);
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOffline);
-  tested_controller_->SetPreinstalledOfflineResourcesPathForTesting(
-      temp_dir.GetPath());
-  tested_controller_->TryMountPreinstalledDemoResources(base::DoNothing());
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(
-      helper_->WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
-  EXPECT_EQ("", GetDeviceRequisition());
-}
-
-TEST_F(DemoSetupControllerTest, OfflineDeviceLocalAccountPolicyStoreFailed) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(SetupDummyOfflinePolicyDir("test", &temp_dir));
-  SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
-
-  policy::MockCloudPolicyStore mock_store;
-  EXPECT_CALL(mock_store, Store(_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          &mock_store, &policy::MockCloudPolicyStore::NotifyStoreError));
-  tested_controller_->SetDeviceLocalAccountPolicyStoreForTest(&mock_store);
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOffline);
-  tested_controller_->SetPreinstalledOfflineResourcesPathForTesting(
-      temp_dir.GetPath());
-  tested_controller_->TryMountPreinstalledDemoResources(base::DoNothing());
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(helper_->WaitResult(
-      false, DemoSetupController::DemoSetupStep::kDownloadResources));
-  EXPECT_TRUE(helper_->RequiresPowerwash());
-  EXPECT_EQ("", GetDeviceRequisition());
-}
-
-TEST_F(DemoSetupControllerTest, OfflineInvalidDeviceLocalAccountPolicyBlob) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(SetupDummyOfflinePolicyDir("", &temp_dir));
-  SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOffline);
-  tested_controller_->SetPreinstalledOfflineResourcesPathForTesting(
-      temp_dir.GetPath());
-  tested_controller_->TryMountPreinstalledDemoResources(base::DoNothing());
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(helper_->WaitResult(
-      false, DemoSetupController::DemoSetupStep::kDownloadResources));
-  EXPECT_TRUE(helper_->RequiresPowerwash());
-  EXPECT_EQ("", GetDeviceRequisition());
-}
-
-TEST_F(DemoSetupControllerTest, OfflineErrorDefault) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(SetupDummyOfflinePolicyDir("test", &temp_dir));
-
-  SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult::ERROR_DEFAULT);
-
-  policy::MockCloudPolicyStore mock_store;
-  EXPECT_CALL(mock_store, Store(_)).Times(0);
-  tested_controller_->SetDeviceLocalAccountPolicyStoreForTest(&mock_store);
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOffline);
-  tested_controller_->SetPreinstalledOfflineResourcesPathForTesting(
-      temp_dir.GetPath());
-  tested_controller_->TryMountPreinstalledDemoResources(base::DoNothing());
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(helper_->WaitResult(
-      false, DemoSetupController::DemoSetupStep::kDownloadResources));
-  EXPECT_FALSE(helper_->RequiresPowerwash());
-  EXPECT_EQ("", GetDeviceRequisition());
-}
-
-TEST_F(DemoSetupControllerTest, OfflineErrorPowerwashRequired) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(SetupDummyOfflinePolicyDir("test", &temp_dir));
-
-  SetupMockDemoModeOfflineEnrollmentHelper(
-      DemoModeSetupResult::ERROR_POWERWASH_REQUIRED);
-
-  policy::MockCloudPolicyStore mock_store;
-  EXPECT_CALL(mock_store, Store(_)).Times(0);
-  tested_controller_->SetDeviceLocalAccountPolicyStoreForTest(&mock_store);
-
-  tested_controller_->set_demo_config(DemoSession::DemoModeConfig::kOffline);
-  tested_controller_->SetPreinstalledOfflineResourcesPathForTesting(
-      temp_dir.GetPath());
-  tested_controller_->TryMountPreinstalledDemoResources(base::DoNothing());
-  tested_controller_->Enroll(
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupSuccess,
-                     base::Unretained(helper_.get())),
-      base::BindOnce(&DemoSetupControllerTestHelper::OnSetupError,
-                     base::Unretained(helper_.get())),
-      base::BindRepeating(&DemoSetupControllerTestHelper::SetCurrentSetupStep,
-                          base::Unretained(helper_.get())));
-
-  EXPECT_TRUE(helper_->WaitResult(
-      false, DemoSetupController::DemoSetupStep::kDownloadResources));
-  EXPECT_TRUE(helper_->RequiresPowerwash());
-  EXPECT_EQ("", GetDeviceRequisition());
-}
-
 TEST_F(DemoSetupControllerTest, OnlineSuccess) {
   SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult::SUCCESS);
 
@@ -399,27 +263,62 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
   std::string email = DemoSetupController::GetSubOrganizationEmail();
 
-  // kDemoModeCountry defaults to "us" which is the root organisation.
-  EXPECT_EQ(email, "");
+  // kDemoModeCountry defaults to "US".
+  EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
 
   // Test other supported countries.
-  const std::string testing_supported_countries[] = {"be", "de", "es", "fr",
-                                                     "ie", "jp", "nl", "se"};
+  const std::string testing_supported_countries[] = {
+      "US", "BE", "CA", "DK", "FI", "FR", "DE", "IE",
+      "IT", "JP", "LU", "NL", "NO", "ES", "SE", "GB"};
 
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                 country);
     email = DemoSetupController::GetSubOrganizationEmail();
-    EXPECT_EQ(email, "admin-" + country + "@" + policy::kDemoModeDomain);
+
+    std::string country_lowercase = base::ToLowerASCII(country);
+    EXPECT_EQ(email,
+              "admin-" + country_lowercase + "@" + policy::kDemoModeDomain);
   }
 
   // Test unsupported country string.
-  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "kr");
+  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "KR");
+  email = DemoSetupController::GetSubOrganizationEmail();
+  EXPECT_EQ(email, "");
+
+  // Test unsupported region string.
+  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                              "NORDIC");
   email = DemoSetupController::GetSubOrganizationEmail();
   EXPECT_EQ(email, "");
 
   // Test random string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "foo");
+  email = DemoSetupController::GetSubOrganizationEmail();
+  EXPECT_EQ(email, "");
+}
+
+TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailWithLowercase) {
+  std::string email = DemoSetupController::GetSubOrganizationEmail();
+
+  // kDemoModeCountry defaults to "US".
+  EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
+
+  // Test other supported countries.
+  const std::string testing_supported_countries[] = {
+      "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
+      "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
+
+  for (auto country : testing_supported_countries) {
+    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                country);
+    email = DemoSetupController::GetSubOrganizationEmail();
+
+    EXPECT_EQ(email, "admin-" + country + "@" + policy::kDemoModeDomain);
+  }
+
+  // Test unsupported country string.
+  g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "kr");
   email = DemoSetupController::GetSubOrganizationEmail();
   EXPECT_EQ(email, "");
 }

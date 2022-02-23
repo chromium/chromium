@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -164,36 +165,23 @@ const ManifestFetchData::PingData kNeverPingedData(
     true,
     0);
 
-const int kNotificationsObserved[] = {
-    extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
-    extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-};
-
 // A class that observes the notifications sent by the ExtensionUpdater and
 // the ExtensionDownloader.
 class NotificationsObserver : public content::NotificationObserver {
  public:
   NotificationsObserver() {
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      count_[i] = 0;
-      registrar_.Add(this,
-                     kNotificationsObserved[i],
-                     content::NotificationService::AllSources());
-    }
+    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
+                   content::NotificationService::AllSources());
   }
   NotificationsObserver(const NotificationsObserver&) = delete;
   NotificationsObserver& operator=(const NotificationsObserver&) = delete;
 
   ~NotificationsObserver() override {
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      registrar_.Remove(this,
-                        kNotificationsObserved[i],
-                        content::NotificationService::AllSources());
-    }
+    registrar_.Remove(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
+                      content::NotificationService::AllSources());
   }
 
-  size_t StartedCount() { return count_[0]; }
-  size_t UpdatedCount() { return count_[1]; }
+  size_t UpdatedCount() { return updated_count_; }
 
   bool Updated(const std::string& id) {
     return updated_.find(id) != updated_.end();
@@ -212,21 +200,13 @@ class NotificationsObserver : public content::NotificationObserver {
                const content::NotificationDetails& details) override {
     if (!quit_closure_.is_null())
       std::move(quit_closure_).Run();
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      if (kNotificationsObserved[i] == type) {
-        count_[i]++;
-        if (type == extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND) {
-          updated_.insert(
-              content::Details<UpdateDetails>(details)->id);
-        }
-        return;
-      }
-    }
-    NOTREACHED();
+    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND, type);
+    ++updated_count_;
+    updated_.insert(content::Details<UpdateDetails>(details)->id);
   }
 
   content::NotificationRegistrar registrar_;
-  size_t count_[base::size(kNotificationsObserved)];
+  size_t updated_count_ = 0;
   std::set<std::string> updated_;
   base::OnceClosure quit_closure_;
 };
@@ -294,6 +274,7 @@ class MockService : public TestExtensionService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : prefs_(prefs),
         pending_extension_manager_(prefs->profile()),
+        corrupted_extension_reinstaller_(prefs->profile()),
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
 
@@ -318,6 +299,10 @@ class MockService : public TestExtensionService {
     return identity_test_env_.get();
   }
 
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
+    return &corrupted_extension_reinstaller_;
+  }
+
   const CoreAccountId& account_id() { return account_info_.account_id; }
 
   // Creates test extensions and inserts them into list. The name and
@@ -332,13 +317,13 @@ class MockService : public TestExtensionService {
                             ManifestLocation location) {
     for (int i = 1; i <= count; i++) {
       base::DictionaryValue manifest;
-      manifest.SetString(manifest_keys::kVersion,
-                         base::StringPrintf("%d.0.0.0", i));
-      manifest.SetString(manifest_keys::kName,
-                         base::StringPrintf("Extension %d.%d", id, i));
-      manifest.SetInteger(manifest_keys::kManifestVersion, 2);
+      manifest.SetStringPath(manifest_keys::kVersion,
+                             base::StringPrintf("%d.0.0.0", i));
+      manifest.SetStringPath(manifest_keys::kName,
+                             base::StringPrintf("Extension %d.%d", id, i));
+      manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
       if (update_url)
-        manifest.SetString(manifest_keys::kUpdateURL, *update_url);
+        manifest.SetStringPath(manifest_keys::kUpdateURL, *update_url);
       scoped_refptr<Extension> e =
           prefs_->AddExtensionWithManifest(manifest, location);
       ASSERT_TRUE(e.get() != NULL);
@@ -362,8 +347,9 @@ class MockService : public TestExtensionService {
   }
 
  protected:
-  TestExtensionPrefs* const prefs_;
+  const raw_ptr<TestExtensionPrefs> prefs_;
   PendingExtensionManager pending_extension_manager_;
+  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
 
  private:
   std::unique_ptr<ExtensionDownloader> CreateExtensionDownloader(
@@ -371,7 +357,7 @@ class MockService : public TestExtensionService {
     std::unique_ptr<ExtensionDownloader> downloader =
         ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
             test_shared_url_loader_factory_,
-            downloader_delegate_override_ ? downloader_delegate_override_
+            downloader_delegate_override_ ? downloader_delegate_override_.get()
                                           : delegate,
             GetTestVerifierFormat());
     return downloader;
@@ -392,7 +378,7 @@ class MockService : public TestExtensionService {
   AccountInfo account_info_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  ExtensionDownloaderDelegate* downloader_delegate_override_;
+  raw_ptr<ExtensionDownloaderDelegate> downloader_delegate_override_;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -476,7 +462,7 @@ class ServiceForManifestTests : public MockService {
   }
 
  private:
-  ExtensionRegistry* registry_;
+  raw_ptr<ExtensionRegistry> registry_;
 };
 
 class ServiceForDownloadTests : public MockService {
@@ -508,6 +494,10 @@ class ServiceForDownloadTests : public MockService {
 
   PendingExtensionManager* pending_extension_manager() override {
     return &pending_extension_manager_;
+  }
+
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
+    return &corrupted_extension_reinstaller_;
   }
 
   const std::string& extension_id() const { return extension_id_; }
@@ -706,9 +696,7 @@ class ExtensionUpdaterTest : public testing::Test {
     updater.Start();
 
     // Tell the update that it's time to do update checks.
-    EXPECT_EQ(0u, observer.StartedCount());
     SimulateTimerFired(&updater);
-    EXPECT_EQ(1u, observer.StartedCount());
 
     // Get the url our loader was asked to fetch.
     const ManifestFetchData& fetch =
@@ -808,10 +796,10 @@ class ExtensionUpdaterTest : public testing::Test {
       const std::string& id = extensions[i]->id();
       EXPECT_CALL(helper.delegate(), GetPingDataForExtension(id, _));
 
-      helper.downloader().AddPendingExtensionWithVersion(
+      helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
           id, ManifestURL::GetUpdateURL(extensions[i].get()),
           extensions[i]->location(), false, 0, fetch_priority,
-          extensions[i]->version(), extensions[i]->GetType(), std::string());
+          extensions[i]->version(), extensions[i]->GetType(), std::string()));
     }
 
     // Get the headers our loader was asked to fetch.
@@ -1336,7 +1324,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestRetryDownloading() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
@@ -1417,7 +1404,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestCredentialsNonWebstore() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
 
@@ -1446,7 +1432,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestCredentialsWebstore() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
 
@@ -2709,26 +2694,26 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtension(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
-      0, ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      0, ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtension(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       std::string(), GURL(), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // TODO(akalin): Test that extensions with empty update URLs
@@ -2744,9 +2729,9 @@ TEST_F(ExtensionUpdaterTest, TestManifestFetchesBuilderAddExtension) {
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
   EXPECT_TRUE(helper->downloader().AddPendingExtension(
-      id, GURL(), ManifestLocation::kInternal, false, 0,
-      ManifestFetchData::FetchPriority::BACKGROUND));
-  helper->downloader().StartAllPending(NULL);
+      ExtensionDownloaderTask(id, GURL(), ManifestLocation::kInternal, false, 0,
+                              ManifestFetchData::FetchPriority::BACKGROUND)));
+  helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   RunUntilIdle();
@@ -2765,28 +2750,28 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   std::string id = crx_file::id_util::GenerateId("foo");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http://example.com/update"), ManifestLocation::kInternal, false,
       0, ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   Mock::VerifyAndClearExpectations(&helper->delegate());
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with invalid update URLs should be rejected.
   id = crx_file::id_util::GenerateId("foo2");
-  EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL("http:google.com:foo"), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
   // Extensions with empty IDs should be rejected.
-  EXPECT_FALSE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_FALSE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       std::string(), GURL(), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 
@@ -2799,10 +2784,10 @@ TEST_F(ExtensionUpdaterTest, TestAddPendingExtensionWithVersion) {
   id = crx_file::id_util::GenerateId("foo3");
   EXPECT_CALL(helper->delegate(), GetPingDataForExtension(id, _))
       .WillOnce(Return(false));
-  EXPECT_TRUE(helper->downloader().AddPendingExtensionWithVersion(
+  EXPECT_TRUE(helper->downloader().AddPendingExtension(ExtensionDownloaderTask(
       id, GURL(), ManifestLocation::kInternal, false, 0,
       ManifestFetchData::FetchPriority::BACKGROUND, base::Version(kVersion),
-      Manifest::TYPE_UNKNOWN, std::string()));
+      Manifest::TYPE_UNKNOWN, std::string())));
   helper->downloader().StartAllPending(nullptr);
   EXPECT_EQ(1u, ManifestFetchersCount(&helper->downloader()));
 

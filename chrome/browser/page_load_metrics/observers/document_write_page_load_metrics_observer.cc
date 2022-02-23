@@ -5,8 +5,6 @@
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 namespace internal {
@@ -18,33 +16,10 @@ const char kHistogramDocWriteBlockParseStartToFirstContentfulPaint[] =
     "ParseStartToFirstContentfulPaint";
 const char kHistogramDocWriteBlockParseBlockedOnScriptLoad[] =
     "PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad";
-const char kHistogramDocWriteBlockParseBlockedOnScriptLoadDocumentWrite[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming."
-    "ParseBlockedOnScriptLoadFromDocumentWrite";
-const char kHistogramDocWriteBlockParseBlockedOnScriptExecution[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptExecution";
-const char kHistogramDocWriteBlockParseBlockedOnScriptExecutionDocumentWrite[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming."
-    "ParseBlockedOnScriptExecutionFromDocumentWrite";
-const char kHistogramDocWriteBlockParseDuration[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming.ParseDuration";
 
 const char kBackgroundHistogramDocWriteBlockParseBlockedOnScriptLoad[] =
     "PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad."
     "Background";
-const char kBackgroundDocWriteBlockParseBlockedOnScriptLoadDocumentWrite[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming."
-    "ParseBlockedOnScriptLoadFromDocumentWrite.Background";
-const char kBackgroundHistogramDocWriteBlockParseDuration[] =
-    "PageLoad.Clients.DocWrite.Block.ParseTiming.ParseDuration.Background";
-
-const char kHistogramDocWriteBlockCount[] =
-    "PageLoad.Clients.DocWrite.Block.Count";
-const char kHistogramDocWriteBlockReloadCount[] =
-    "PageLoad.Clients.DocWrite.Block.ReloadCount";
-const char kHistogramDocWriteBlockLoadingBehavior[] =
-    "PageLoad.Clients.DocWrite.Block.DocumentWriteLoadingBehavior";
-
 }  // namespace internal
 
 void DocumentWritePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
@@ -69,56 +44,6 @@ void DocumentWritePageLoadMetricsObserver::OnParseStop(
   if (GetDelegate().GetMainFrameMetadata().behavior_flags &
       blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) {
     LogDocumentWriteBlockParseStop(timing);
-  }
-}
-
-// static
-void DocumentWritePageLoadMetricsObserver::LogLoadingBehaviorMetrics(
-    DocumentWritePageLoadMetricsObserver::DocumentWriteLoadingBehavior behavior,
-    ukm::SourceId source_id) {
-  UMA_HISTOGRAM_ENUMERATION(
-      internal::kHistogramDocWriteBlockLoadingBehavior, behavior,
-      DocumentWritePageLoadMetricsObserver::LOADING_BEHAVIOR_MAX);
-
-  // We only log the block and reload behaviors in UKM.
-  if (behavior != LOADING_BEHAVIOR_BLOCK &&
-      behavior != LOADING_BEHAVIOR_RELOAD) {
-    return;
-  }
-  ukm::builders::Intervention_DocumentWrite_ScriptBlock builder(source_id);
-  if (behavior == LOADING_BEHAVIOR_RELOAD)
-    builder.SetDisabled_Reload(true);
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
-void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
-    content::RenderFrameHost* rfh,
-    int behavior_flags) {
-  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
-       blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlockReload) &&
-      !doc_write_block_reload_observed_) {
-    DCHECK(!(GetDelegate().GetMainFrameMetadata().behavior_flags &
-             blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock));
-    UMA_HISTOGRAM_COUNTS_1M(internal::kHistogramDocWriteBlockReloadCount, 1);
-    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_RELOAD,
-                              GetDelegate().GetPageUkmSourceId());
-    doc_write_block_reload_observed_ = true;
-  }
-  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
-       blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) &&
-      !doc_write_block_observed_) {
-    UMA_HISTOGRAM_BOOLEAN(internal::kHistogramDocWriteBlockCount, true);
-    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_BLOCK,
-                              GetDelegate().GetPageUkmSourceId());
-    doc_write_block_observed_ = true;
-  }
-  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
-       blink::LoadingBehaviorFlag::
-           kLoadingBehaviorDocumentWriteBlockDifferentScheme) &&
-      !doc_write_same_site_diff_scheme_) {
-    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_SAME_SITE_DIFF_SCHEME,
-                              GetDelegate().GetPageUkmSourceId());
-    doc_write_same_site_diff_scheme_ = true;
   }
 }
 
@@ -157,53 +82,14 @@ void DocumentWritePageLoadMetricsObserver::
 
 void DocumentWritePageLoadMetricsObserver::LogDocumentWriteBlockParseStop(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::TimeDelta parse_duration = timing.parse_timing->parse_stop.value() -
-                                   timing.parse_timing->parse_start.value();
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.parse_timing->parse_stop, GetDelegate())) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramDocWriteBlockParseDuration,
-                        parse_duration);
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramDocWriteBlockParseBlockedOnScriptLoad,
         timing.parse_timing->parse_blocked_on_script_load_duration.value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramDocWriteBlockParseBlockedOnScriptLoadDocumentWrite,
-        timing.parse_timing
-            ->parse_blocked_on_script_load_from_document_write_duration
-            .value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramDocWriteBlockParseBlockedOnScriptExecution,
-        timing.parse_timing->parse_blocked_on_script_execution_duration
-            .value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::
-            kHistogramDocWriteBlockParseBlockedOnScriptExecutionDocumentWrite,
-        timing.parse_timing
-            ->parse_blocked_on_script_execution_from_document_write_duration
-            .value());
-
-    ukm::builders::Intervention_DocumentWrite_ScriptBlock(
-        GetDelegate().GetPageUkmSourceId())
-        .SetParseTiming_ParseBlockedOnScriptLoadFromDocumentWrite(
-            timing.parse_timing
-                ->parse_blocked_on_script_load_from_document_write_duration
-                ->InMilliseconds())
-        .SetParseTiming_ParseBlockedOnScriptExecutionFromDocumentWrite(
-            timing.parse_timing
-                ->parse_blocked_on_script_execution_from_document_write_duration
-                ->InMilliseconds())
-        .Record(ukm::UkmRecorder::Get());
   } else {
-    PAGE_LOAD_HISTOGRAM(
-        internal::kBackgroundHistogramDocWriteBlockParseDuration,
-        parse_duration);
     PAGE_LOAD_HISTOGRAM(
         internal::kBackgroundHistogramDocWriteBlockParseBlockedOnScriptLoad,
         timing.parse_timing->parse_blocked_on_script_load_duration.value());
-    PAGE_LOAD_HISTOGRAM(
-        internal::kBackgroundDocWriteBlockParseBlockedOnScriptLoadDocumentWrite,
-        timing.parse_timing
-            ->parse_blocked_on_script_load_from_document_write_duration
-            .value());
   }
 }

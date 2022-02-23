@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -70,7 +71,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
     NO_SHADOW,
     SHADOW_COUNT,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, the native window server should provide its own shadow for
     // windows that could overlap the browser window.
     DIALOG_SHADOW = NO_SHADOW,
@@ -230,7 +231,10 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   //
   // If |move_bubble_to_add_arrow| is true, the |bubble_bounds| are displaced to
   // account for the size of the arrow.
-  void AddArrowToBubbleCornerAndPointTowardsAnchor(
+  //
+  // Returns false if the arrow cannot be added due to missing space on the
+  // bubble border.
+  bool AddArrowToBubbleCornerAndPointTowardsAnchor(
       const gfx::Rect& anchor_rect,
       bool move_bubble_to_add_arrow,
       gfx::Rect& bubble_bounds);
@@ -316,7 +320,7 @@ class VIEWS_EXPORT BubbleBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override;
 
  private:
-  BubbleBorder* border_;
+  raw_ptr<BubbleBorder> border_;
 };
 
 }  // namespace views

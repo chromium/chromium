@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -148,7 +149,11 @@ class RenderFrameHostAdapter
 
   std::unique_ptr<FrameAdapter> GetLocalParentOrOpener() const override {
     content::RenderFrameHost* parent_or_opener = frame_->GetParent();
-    if (!parent_or_opener) {
+    // Non primary pages(e.g. fenced frame, prerendered page, bfcache, and
+    // portals) can't look at the opener, and WebContents::GetOpener returns the
+    // opener on the primary frame tree. Thus, GetOpener should be called when
+    // |frame_| is a primary main frame.
+    if (!parent_or_opener && frame_->IsInPrimaryMainFrame()) {
       parent_or_opener =
           content::WebContents::FromRenderFrameHost(frame_)->GetOpener();
     }
@@ -167,7 +172,15 @@ class RenderFrameHostAdapter
     return std::make_unique<RenderFrameHostAdapter>(parent_or_opener);
   }
 
-  GURL GetUrl() const override { return frame_->GetLastCommittedURL(); }
+  GURL GetUrl() const override {
+    if (frame_->GetLastCommittedURL().is_empty()) {
+      // It's possible for URL to be empty when `frame_` is on the initial empty
+      // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
+      // document's URL about:blank instead of empty in that case.
+      return GURL(url::kAboutBlankURL);
+    }
+    return frame_->GetLastCommittedURL();
+  }
 
   url::Origin GetOrigin() const override {
     return frame_->GetLastCommittedOrigin();
@@ -190,7 +203,7 @@ class RenderFrameHostAdapter
   uintptr_t GetId() const override { return frame_->GetRoutingID(); }
 
  private:
-  content::RenderFrameHost* const frame_;
+  const raw_ptr<content::RenderFrameHost> frame_;
 };
 
 // This function approximates ScriptContext::GetEffectiveDocumentURLForInjection
@@ -334,7 +347,7 @@ bool DoContentScriptsMatch(const Extension& extension,
       if (!script_ids.empty()) {
         TRACE_EVENT_INSTANT(
             "extensions",
-            "ContentScriptTracker/DoesContentScriptMatch=true(guest)",
+            "ContentScriptTracker/DoContentScriptsMatch=true(guest)",
             ChromeTrackEvent::kRenderProcessHost, process,
             ChromeTrackEvent::kChromeExtensionId,
             ExtensionIdForTracing(extension.id()));
@@ -351,7 +364,7 @@ bool DoContentScriptsMatch(const Extension& extension,
     if (DoContentScriptsMatch(manifest_scripts, frame, url)) {
       TRACE_EVENT_INSTANT(
           "extensions",
-          "ContentScriptTracker/DoesContentScriptMatch=true(manifest)",
+          "ContentScriptTracker/DoContentScriptsMatch=true(manifest)",
           ChromeTrackEvent::kRenderProcessHost, process,
           ChromeTrackEvent::kChromeExtensionId,
           ExtensionIdForTracing(extension.id()));
@@ -370,7 +383,7 @@ bool DoContentScriptsMatch(const Extension& extension,
       if (DoContentScriptsMatch(dynamic_scripts, frame, url)) {
         TRACE_EVENT_INSTANT(
             "extensions",
-            "ContentScriptTracker/DoesContentScriptMatch=true(dynamic)",
+            "ContentScriptTracker/DoContentScriptsMatch=true(dynamic)",
             ChromeTrackEvent::kRenderProcessHost, process,
             ChromeTrackEvent::kChromeExtensionId,
             ExtensionIdForTracing(extension.id()));
@@ -381,7 +394,7 @@ bool DoContentScriptsMatch(const Extension& extension,
 
   // Otherwise, no content script from `extension` can run in `frame` at `url`.
   TRACE_EVENT_INSTANT("extensions",
-                      "ContentScriptTracker/DoesContentScriptMatch=false",
+                      "ContentScriptTracker/DoContentScriptsMatch=false",
                       ChromeTrackEvent::kRenderProcessHost, process,
                       ChromeTrackEvent::kChromeExtensionId,
                       ExtensionIdForTracing(extension.id()));

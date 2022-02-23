@@ -33,6 +33,8 @@ void WaitForEulaScreen();
 void TapEulaAccept();
 void WaitForSyncConsentScreen();
 void ExitScreenSyncConsent();
+void WaitForConsolidatedConsentScreen();
+void TapConsolidatedConsentAccept();
 
 void ClickSignInFatalScreenActionButton();
 

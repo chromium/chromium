@@ -93,7 +93,7 @@ const dataConversionConfig = {
 
 // The object contains the stats names that should not be added to the graph,
 // even if they are numbers.
-const statsNameBlackList = {
+const statsNameBlockList = {
   'ssrc': true,
   'googTrackId': true,
   'googComponent': true,
@@ -139,7 +139,7 @@ function readReportStat(report, stat) {
 
 function isStandardStatBlocklisted(report, statName) {
   // The datachannelid is an identifier, but because it is a number it shows up
-  // as a graph if we don't blacklist it.
+  // as a graph if we don't blocklist it.
   if (report.type === 'data-channel' && statName === 'datachannelid') {
     return true;
   }
@@ -155,9 +155,9 @@ const graphViews = {};
 window.graphViews = graphViews;
 const graphElementsByPeerConnectionId = new Map();
 
-// Returns number parsed from |value|, or NaN if the stats name is black-listed.
+// Returns number parsed from |value|, or NaN if the stats name is blocklisted.
 function getNumberFromValue(name, value) {
-  if (statsNameBlackList[name]) {
+  if (statsNameBlockList[name]) {
     return NaN;
   }
   if (isNaN(value)) {

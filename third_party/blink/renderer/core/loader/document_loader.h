@@ -40,7 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
@@ -140,7 +140,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const AtomicString& MimeType() const;
 
-  const Referrer& OriginalReferrer() const;
+  const AtomicString& OriginalReferrer() const;
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
@@ -156,7 +156,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const KURL& UrlForHistory() const;
   const AtomicString& HttpMethod() const;
-  const Referrer& GetReferrer() const;
+  const AtomicString& GetReferrer() const;
   const SecurityOrigin* GetRequestorOrigin() const;
   const KURL& UnreachableURL() const;
   const absl::optional<blink::mojom::FetchCacheMode>& ForceFetchCacheMode()
@@ -243,8 +243,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void SetDefersLoading(LoaderFreezeMode);
 
   DocumentLoadTiming& GetTiming() { return document_load_timing_; }
-
-  PreviewsState GetPreviewsState() const { return previews_state_; }
 
   struct InitialScrollState {
     DISALLOW_NEW();
@@ -435,6 +433,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void StartLoadingInternal();
   void StartLoadingResponse();
+  void StartLoadingBodyWithCodeCache();
   void FinishedLoading(base::TimeTicks finish_time);
   void CancelLoadAfterCSPDenied(const ResourceResponse&);
 
@@ -501,10 +500,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // These fields are copied from WebNavigationParams, see there for definition.
   KURL url_;
   AtomicString http_method_;
-  Referrer referrer_;
+  // The referrer on the final request for this document.
+  AtomicString referrer_;
   scoped_refptr<EncodedFormData> http_body_;
   AtomicString http_content_type_;
-  PreviewsState previews_state_;
   absl::optional<WebOriginPolicy> origin_policy_;
   const scoped_refptr<const SecurityOrigin> requestor_origin_;
   const KURL unreachable_url_;
@@ -525,7 +524,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   Member<SubresourceFilter> subresource_filter_;
 
-  const Referrer original_referrer_;
+  const AtomicString original_referrer_;
 
   ResourceResponse response_;
 
@@ -604,6 +603,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool loading_main_document_from_mhtml_archive_ = false;
   const bool loading_srcdoc_ = false;
   const bool loading_url_as_empty_document_ = false;
+  const bool is_static_data_ = false;
   CommitReason commit_reason_ = CommitReason::kRegular;
   uint64_t main_resource_identifier_ = 0;
   scoped_refptr<ResourceTimingInfo> navigation_timing_info_;
@@ -634,6 +634,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool navigation_scroll_allowed_ = true;
 
   bool origin_agent_cluster_ = false;
+  bool origin_agent_cluster_left_as_default_ = true;
 
   // Whether this load request is from a cross-site navigation that swaps
   // BrowsingContextGroup.
@@ -652,6 +653,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // contains URNs to the ad components returned by the winning bid. Null,
   // otherwise.
   absl::optional<Vector<KURL>> ad_auction_components_;
+
+  // Whether the document should be anonymous or not.
+  const bool anonymous_ = false;
+
+  // Both of these bits must be true to commit preloaded data to the parser when
+  // features::kEarlyBodyLoad is enabled.
+  bool waiting_for_document_loader_ = false;
+  bool waiting_for_code_cache_ = false;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

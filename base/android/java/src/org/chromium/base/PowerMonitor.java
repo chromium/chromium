@@ -4,17 +4,18 @@
 
 package org.chromium.base;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.PowerManager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForQ;
 
 /**
  * Integrates native PowerMonitor with the java side.
@@ -62,6 +63,11 @@ public class PowerMonitor {
                         intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED));
             }
         }, powerConnectedFilter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            PowerMonitorForQ.addThermalStatusListener(
+                    (PowerManager) context.getSystemService(Context.POWER_SERVICE));
+        }
     }
 
     private PowerMonitor() {
@@ -96,15 +102,30 @@ public class PowerMonitor {
         return getRemainingBatteryCapacityImpl();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static int getRemainingBatteryCapacityImpl() {
         return ((BatteryManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.BATTERY_SERVICE))
                 .getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
     }
 
+    @CalledByNative
+    private static int getCurrentThermalStatus() {
+        // Return invalid code that will get mapped to unknown in the native library.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return -1;
+
+        // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
+        // battery power is requested prior to the browser triggering the creation, force it to be
+        // created now.
+        if (sInstance == null) create();
+
+        return ApiHelperForQ.getCurrentThermalStatus(
+                (PowerManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.POWER_SERVICE));
+    }
+
     @NativeMethods
     interface Natives {
         void onBatteryChargingChanged();
+        void onThermalStatusChanged(int thermalStatus);
     }
 }

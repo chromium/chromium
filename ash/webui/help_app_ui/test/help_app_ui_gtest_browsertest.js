@@ -10,6 +10,8 @@
 GEN('#include "ash/webui/help_app_ui/test/help_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "ash/public/cpp/style/color_provider.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://help-app';
@@ -45,6 +47,42 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
   /** @override */
   get runAccessibilityChecks() {
     return false;
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var HelpAppUIWithDarkLightModeGtestBrowserTest =
+    class extends HelpAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        ...super.featureList.enabled,
+        'chromeos::features::kDarkLightMode',
+      ]
+    };
+  }
+
+  /** @override */
+  get testGenPreamble() {
+    return () => {
+      // Switch to dark mode.
+      GEN('ash::ColorProvider::Get()->SetDarkModeEnabledForTest(true);');
+    };
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var HelpAppUIWithoutDarkLightModeGtestBrowserTest =
+    class extends HelpAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled,
+      disabled: ['chromeos::features::kDarkLightMode'],
+    };
   }
 };
 
@@ -99,9 +137,16 @@ function runHelpAppTestInGuest(name) {
 // Ensure every test body has a `TEST_F` call in this file.
 TEST_F('HelpAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
   const HelpAppUIBrowserTest = await GetTestHarness();
-  const bodies =
-      /** @type {{testCaseBodies: Object}} */ (HelpAppUIGtestBrowserTest)
-          .testCaseBodies;
+  const bodies = {
+    ...(/** @type {{testCaseBodies: Object}} */ (HelpAppUIGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
+            HelpAppUIWithDarkLightModeGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
+            HelpAppUIWithoutDarkLightModeGtestBrowserTest))
+        .testCaseBodies,
+  };
   for (const f in HelpAppUIBrowserTest) {
     if (f === 'runTestInGuest') {
       continue;
@@ -121,6 +166,18 @@ TEST_F('HelpAppUIGtestBrowserTest', 'HasChromeSchemeURL', () => {
 TEST_F('HelpAppUIGtestBrowserTest', 'HasTitleAndLang', () => {
   runHelpAppTest('HasTitleAndLang');
 });
+
+TEST_F(
+    'HelpAppUIWithDarkLightModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorWithDarkLight', () => {
+      runHelpAppTest('BodyHasCorrectBackgroundColorWithDarkLight');
+    });
+
+TEST_F(
+    'HelpAppUIWithoutDarkLightModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorWithoutDarkLight', () => {
+      runHelpAppTest('BodyHasCorrectBackgroundColorWithoutDarkLight');
+    });
 
 // Test cases injected into the guest context.
 // See implementations in `help_app_guest_ui_browsertest.js`.

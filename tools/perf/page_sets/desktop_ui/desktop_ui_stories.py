@@ -101,7 +101,11 @@ class DesktopUIStorySet(story.StorySet):
       self.AddStory(
           cls(self, [
               '--enable-features=NtpModules,\
-              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake'
+              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake,\
+              NtpChromeCartModule:NtpChromeCartModuleDataParam/fake,\
+              NtpDriveModule:NtpDriveModuleDataParam/fake,\
+              NtpPhotosModule:NtpPhotosModuleDataParam/1',
+              '--signed-out-ntp-modules',
           ]))
 
     for cls in self.SIDE_SEARCH_STORIES:

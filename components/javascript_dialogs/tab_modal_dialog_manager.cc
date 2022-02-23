@@ -215,7 +215,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
       }
       case content::JAVASCRIPT_DIALOG_TYPE_CONFIRM: {
         *did_suppress_message = true;
-        alerting_web_contents->GetMainFrame()->AddMessageToConsole(
+        render_frame_host->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "confirm",
                                "5140698722467840"));
@@ -223,7 +223,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
       }
       case content::JAVASCRIPT_DIALOG_TYPE_PROMPT: {
         *did_suppress_message = true;
-        alerting_web_contents->GetMainFrame()->AddMessageToConsole(
+        render_frame_host->AddMessageToConsole(
             blink::mojom::ConsoleMessageLevel::kWarning,
             base::StringPrintf(kDialogSuppressedConsoleMessageFormat, "prompt",
                                "5637107137642496"));
@@ -365,6 +365,7 @@ TabModalDialogManager::TabModalDialogManager(
     content::WebContents* web_contents,
     std::unique_ptr<TabModalDialogManagerDelegate> delegate)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TabModalDialogManager>(*web_contents),
       delegate_(std::move(delegate)) {}
 
 void TabModalDialogManager::LogDialogDismissalCause(DismissalCause cause) {

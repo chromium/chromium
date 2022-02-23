@@ -51,6 +51,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "url/android/gurl_android.h"
 #include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -172,7 +173,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       env, ConvertUTF8ToJavaString(env, item->GetGuid()),
       ConvertUTF8ToJavaString(env, item->GetFileNameToReportUser().value()),
       ConvertUTF8ToJavaString(env, item->GetTargetFilePath().value()),
-      ConvertUTF8ToJavaString(env, item->GetURL().spec()),
+      url::GURLAndroid::FromNativeGURL(env, item->GetURL()),
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
       item->GetReceivedBytes(), item->GetTotalBytes(), otr_profile_id,
       item->GetState(), item->PercentComplete(), item->IsPaused(),
@@ -247,10 +248,8 @@ void DownloadManagerService::OnOffTheRecordProfileCreated(
   InitializeForProfile(off_the_record->GetProfileKey());
 }
 
-void DownloadManagerService::OpenDownload(
-    download::DownloadItem* download,
-    int source,
-    const JavaParamRef<jobject>& j_context) {
+void DownloadManagerService::OpenDownload(download::DownloadItem* download,
+                                          int source) {
   if (java_ref_.is_null())
     return;
 
@@ -258,8 +257,7 @@ void DownloadManagerService::OpenDownload(
   ScopedJavaLocalRef<jobject> j_item =
       JNI_DownloadManagerService_CreateJavaDownloadItem(env, download);
 
-  Java_DownloadManagerService_openDownloadItem(env, java_ref_, j_item, source,
-                                               j_context);
+  Java_DownloadManagerService_openDownloadItem(env, java_ref_, j_item, source);
 }
 
 void DownloadManagerService::HandleOMADownload(download::DownloadItem* download,
@@ -280,8 +278,7 @@ void DownloadManagerService::OpenDownload(
     jobject obj,
     const JavaParamRef<jstring>& jdownload_guid,
     const JavaParamRef<jobject>& j_profile_key,
-    jint source,
-    const JavaParamRef<jobject>& j_context) {
+    jint source) {
   if (!is_manager_initialized_)
     return;
 
@@ -291,7 +288,25 @@ void DownloadManagerService::OpenDownload(
   if (!item)
     return;
 
-  OpenDownload(item, source, j_context);
+  OpenDownload(item, source);
+}
+
+void DownloadManagerService::OpenDownloadsPage(
+    Profile* profile,
+    DownloadOpenSource download_open_source) {
+  if (java_ref_.is_null() || !profile)
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (profile->IsIncognitoProfile()) {
+    profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
+  }
+  Java_DownloadManagerService_openDownloadsPage(
+      env,
+      profile->IsIncognitoProfile()
+          ? profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env)
+          : nullptr,
+      static_cast<int>(download_open_source));
 }
 
 void DownloadManagerService::ResumeDownload(
@@ -832,7 +847,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
       std::make_unique<download::DownloadItemImpl>(
           in_progress_manager, ConvertJavaStringToUTF8(env, jdownload_guid), 1,
           target_path.AddExtension("crdownload"), target_path, url_chain,
-          GURL(), GURL(), GURL(), GURL(), url::Origin(), "", "", base::Time(),
+          GURL(), "", GURL(), GURL(), url::Origin(), "", "", base::Time(),
           base::Time(), "", "", 0, -1, 0, "",
           download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -840,7 +855,8 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
           download::DownloadItemRerouteInfo(),
-          absl::nullopt /*download_schedule*/, nullptr));
+          absl::nullopt /*download_schedule*/, download::kInvalidRange,
+          download::kInvalidRange, nullptr));
 }
 
 void DownloadManagerService::InitializeForProfile(ProfileKey* profile_key) {

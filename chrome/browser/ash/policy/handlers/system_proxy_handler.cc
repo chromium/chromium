@@ -61,7 +61,7 @@ void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
 
   std::vector<std::string> system_services_auth_schemes;
   if (auth_schemes) {
-    for (const auto& auth_scheme : auth_schemes->GetList())
+    for (const auto& auth_scheme : auth_schemes->GetListDeprecated())
       system_services_auth_schemes.push_back(auth_scheme.GetString());
   }
 

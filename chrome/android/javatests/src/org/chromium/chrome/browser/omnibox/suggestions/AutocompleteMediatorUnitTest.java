@@ -42,7 +42,6 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -50,13 +49,10 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.Edit
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
@@ -65,7 +61,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -118,11 +113,6 @@ public class AutocompleteMediatorUnitTest {
 
         @Override
         public boolean isUrlBarFocused() {
-            return false;
-        }
-
-        @Override
-        public boolean didFocusUrlFromQueryTiles() {
             return false;
         }
     }
@@ -196,6 +186,9 @@ public class AutocompleteMediatorUnitTest {
     @Mock
     Profile mProfile;
 
+    @Mock
+    OmniboxPedalDelegate mPedalDelegate;
+
     private ImmediatePostingHandler mHandler;
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -222,7 +215,7 @@ public class AutocompleteMediatorUnitTest {
                     mAutocompleteDelegate, mTextStateProvider, mListModel,
                     mHandler, () -> mModalDialogManager, null, null,
                     mLocationBarDataProvider, tab -> {}, null, url -> false, new DummyJankTracker(),
-                    (pixelSize, callback) -> {});
+                    (pixelSize, callback) -> {}, mPedalDelegate);
             mMediator.setAutocompleteProfile(mProfile);
         });
         // clang-format on
@@ -248,6 +241,8 @@ public class AutocompleteMediatorUnitTest {
 
         mSuggestionsList = buildDummySuggestionsList(10, "Suggestion");
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
+        setUpLocationBarDataProvider(
+                "chrome-native://newtab", "New Tab Page", PageClassification.NTP_VALUE);
     }
 
     /**
@@ -303,23 +298,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    public void updateSuggestionsList_notEffectiveWhenDisabled() {
-        mMediator.onNativeInitialized();
-
-        final int maximumListHeight = SUGGESTION_MIN_HEIGHT * 2;
-
-        mMediator.onSuggestionDropdownHeightChanged(maximumListHeight);
-        mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), "");
-
-        Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
-        Assert.assertTrue(mListModel.get(SuggestionListProperties.VISIBLE));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_worksWithNullList() {
         mMediator.onNativeInitialized();
 
@@ -335,7 +313,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_worksWithEmptyList() {
         mMediator.onNativeInitialized();
 
@@ -351,7 +328,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_scrolEventsWithConcealedItemsTogglesKeyboardVisibility() {
         mMediator.onNativeInitialized();
 
@@ -380,7 +356,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_updateHeightWhenHardwareKeyboardIsConnected() {
         // Simulates behavior of physical keyboard being attached to the device.
         // In this scenario, requesting keyboard to come up will not result with an actual
@@ -423,7 +398,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void updateSuggestionsList_rejectsHeightUpdatesWhenKeyboardIsHidden() {
         // Simulates scenario where we receive dropdown height update after software keyboard is
         // explicitly hidden. In this scenario the updates should be rejected when estimating
@@ -453,7 +427,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_emptyTextTriggersZeroSuggest() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -473,7 +446,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         String url = "http://www.example.com";
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -486,14 +458,12 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", "testing");
         mHandler.runQueuedTasks();
-        verify(mAutocompleteController)
-                .start(url, pageClassification, "test", 4, false, null, false);
+        verify(mAutocompleteController).start(url, pageClassification, "test", 4, false);
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_cancelsPendingRequests() {
         String url = "http://www.example.com";
         int pageClassification = PageClassification.BLANK_VALUE;
@@ -508,15 +478,14 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("nottest", "nottesting");
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, times(1))
-                .start(url, pageClassification, "nottest", 4, false, null, false);
+                .start(url, pageClassification, "nottest", 4, false);
         verify(mAutocompleteController, times(1))
-                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_onlyOneZeroSuggestRequestIsInvoked() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -545,7 +514,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_preventsZeroSuggestRequestOnFocusLost() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -572,7 +540,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_textChangeCancelsOustandingZeroSuggestRequest() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -592,22 +559,20 @@ public class AutocompleteMediatorUnitTest {
 
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
+        verify(mAutocompleteController, times(1)).start(url, pageClassification, "A", 0, true);
         verify(mAutocompleteController, times(1))
-                .start(url, pageClassification, "A", 0, true, null, false);
-        verify(mAutocompleteController, times(1))
-                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_textChangeCancelsIntermediateZeroSuggestRequests() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -625,20 +590,19 @@ public class AutocompleteMediatorUnitTest {
 
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any(), any(), anyInt(), any());
 
         mMediator.onNativeInitialized();
         mHandler.runQueuedTasks();
         verify(mAutocompleteController, never())
-                .start(any(), anyInt(), any(), anyInt(), anyBoolean(), any(), anyBoolean());
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, times(1)).startZeroSuggest(any(), any(), anyInt(), any());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionsReceived(
@@ -654,7 +618,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -672,7 +635,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void setLayoutDirection_afterInitialization() {
         mMediator.onNativeInitialized();
         mMediator.onSuggestionDropdownHeightChanged(Integer.MAX_VALUE);
@@ -699,7 +661,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_triggersZeroSuggest_nativeInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -720,7 +681,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onUrlFocusChange_triggersZeroSuggest_nativeNotInitialized() {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
@@ -746,34 +706,6 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
-    public void onQueryTilesSelected_thenTextChanged_editSessionActivatedByQueryTile() {
-        mMediator.onNativeInitialized();
-        QueryTile childTile = new QueryTile("sports", "sports", "sports", "sports",
-                new String[] {"http://foo/sports.jpg"}, null /* searchParams */,
-                null /* children */);
-        QueryTile tile =
-                new QueryTile("news", "news", "news", "news", new String[] {"http://foo/news.jpg"},
-                        null /* searchParams */, Arrays.asList(childTile));
-        mMediator.onUrlFocusChange(true);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
-
-        mMediator.onQueryTileSelected(tile);
-        Assert.assertEquals(
-                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_QUERY_TILE);
-        verify(mAutocompleteDelegate).setOmniboxEditingText("news ");
-        mMediator.onTextChanged("news s", "news sports");
-        Assert.assertEquals(
-                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_QUERY_TILE);
-
-        mMediator.onUrlFocusChange(false);
-        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
     public void onTextChanged_editSessionActivatedByUserInput() {
         mMediator.onNativeInitialized();
         mMediator.onUrlFocusChange(true);

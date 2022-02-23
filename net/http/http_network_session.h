@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -135,8 +136,6 @@ struct NET_EXPORT HttpNetworkSessionParams {
   SpdySessionPool::TimeFunc time_func;
   // Whether to enable HTTP/2 Alt-Svc entries.
   bool enable_http2_alternative_service;
-  // Whether to enable Websocket over HTTP/2.
-  bool enable_websocket_over_http2;
 
   // Enables 0-RTT support.
   bool enable_early_data;
@@ -161,6 +160,15 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // has zero 0, but continue and also stop sending HTTP/2-style priority
   // information in HEADERS frames and PRIORITY frames if it has value 1.
   bool enable_priority_update;
+
+  // If true, objects used by a HttpNetworkTransaction are asked not to perform
+  // disruptive work after there has been an IP address change (which usually
+  // means that the "default network" has possibly changed).
+  // This is currently used by HttpNetworkSessions that are bound to a specific
+  // network: for these, the underlying network does never change, even if the
+  // default network does (hence underlying objects should not drop their
+  // state).
+  bool ignore_ip_address_changes;
 };
 
   // Structure with pointers to the dependencies of the HttpNetworkSession.
@@ -170,29 +178,29 @@ struct NET_EXPORT HttpNetworkSessionContext {
   HttpNetworkSessionContext(const HttpNetworkSessionContext& other);
   ~HttpNetworkSessionContext();
 
-  ClientSocketFactory* client_socket_factory;
-  HostResolver* host_resolver;
-  CertVerifier* cert_verifier;
-  TransportSecurityState* transport_security_state;
-  CTPolicyEnforcer* ct_policy_enforcer;
-  SCTAuditingDelegate* sct_auditing_delegate;
-  ProxyResolutionService* proxy_resolution_service;
-  ProxyDelegate* proxy_delegate;
-  const HttpUserAgentSettings* http_user_agent_settings;
-  SSLConfigService* ssl_config_service;
-  HttpAuthHandlerFactory* http_auth_handler_factory;
-  HttpServerProperties* http_server_properties;
-  NetLog* net_log;
-  SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
-  NetworkQualityEstimator* network_quality_estimator;
-  QuicContext* quic_context;
+  raw_ptr<ClientSocketFactory> client_socket_factory;
+  raw_ptr<HostResolver> host_resolver;
+  raw_ptr<CertVerifier> cert_verifier;
+  raw_ptr<TransportSecurityState> transport_security_state;
+  raw_ptr<CTPolicyEnforcer> ct_policy_enforcer;
+  raw_ptr<SCTAuditingDelegate> sct_auditing_delegate;
+  raw_ptr<ProxyResolutionService> proxy_resolution_service;
+  raw_ptr<ProxyDelegate> proxy_delegate;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings;
+  raw_ptr<SSLConfigService> ssl_config_service;
+  raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
+  raw_ptr<HttpServerProperties> http_server_properties;
+  raw_ptr<NetLog> net_log;
+  raw_ptr<SocketPerformanceWatcherFactory> socket_performance_watcher_factory;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator;
+  raw_ptr<QuicContext> quic_context;
 #if BUILDFLAG(ENABLE_REPORTING)
-    ReportingService* reporting_service;
-    NetworkErrorLoggingService* network_error_logging_service;
+  raw_ptr<ReportingService> reporting_service;
+  raw_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
 
     // Optional factory to use for creating QuicCryptoClientStreams.
-    QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory;
+  raw_ptr<QuicCryptoClientStreamFactory> quic_crypto_client_stream_factory;
 };
 
 // This class holds session objects used by HttpNetworkTransaction objects.
@@ -281,9 +289,6 @@ class NET_EXPORT HttpNetworkSession {
     return application_settings_;
   }
 
-  // Populates |server_config| and |proxy_config| based on this session.
-  void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
-
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;
 
@@ -309,18 +314,18 @@ class NET_EXPORT HttpNetworkSession {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  NetLog* const net_log_;
-  HttpServerProperties* const http_server_properties_;
-  CertVerifier* const cert_verifier_;
-  HttpAuthHandlerFactory* const http_auth_handler_factory_;
-  HostResolver* const host_resolver_;
+  const raw_ptr<NetLog> net_log_;
+  const raw_ptr<HttpServerProperties> http_server_properties_;
+  const raw_ptr<CertVerifier> cert_verifier_;
+  const raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  const raw_ptr<HostResolver> host_resolver_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
-  ReportingService* const reporting_service_;
-  NetworkErrorLoggingService* const network_error_logging_service_;
+  const raw_ptr<ReportingService> reporting_service_;
+  const raw_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif
-  ProxyResolutionService* const proxy_resolution_service_;
-  SSLConfigService* const ssl_config_service_;
+  const raw_ptr<ProxyResolutionService> proxy_resolution_service_;
+  const raw_ptr<SSLConfigService> ssl_config_service_;
 
   HttpAuthCache http_auth_cache_;
   SSLClientSessionCache ssl_client_session_cache_;

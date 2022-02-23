@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
@@ -33,10 +34,6 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   HungRendererInfoBarDelegate& operator=(const HungRendererInfoBarDelegate&) =
       delete;
 
-  // Called if the renderer regains responsiveness before the infobar is
-  // dismissed.
-  void OnRendererResponsive();
-
  private:
   // Keep these values in alignment with their histograms.xml counterparts.
   enum Event {
@@ -54,7 +51,6 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  void InfoBarDismissed() override;
   HungRendererInfoBarDelegate* AsHungRendererInfoBarDelegate() override;
   int GetIconId() const override;
   std::u16string GetMessageText() const override;
@@ -62,12 +58,8 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
   bool Cancel() override;
 
-  void LogEvent(Event event);
-
   // Used to terminate the renderer process if the user clicks the kill button.
-  content::RenderProcessHost* render_process_host_;
-
-  bool terminal_event_logged_for_uma_;
+  raw_ptr<content::RenderProcessHost> render_process_host_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_

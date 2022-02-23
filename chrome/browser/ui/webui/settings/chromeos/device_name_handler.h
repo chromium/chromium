@@ -9,10 +9,6 @@
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace chromeos {
 namespace settings {
 
@@ -34,8 +30,8 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  protected:
-  void HandleAttemptSetDeviceName(const base::ListValue* args);
-  void HandleNotifyReadyForDeviceName(const base::ListValue* args);
+  void HandleAttemptSetDeviceName(base::Value::ConstListView args);
+  void HandleNotifyReadyForDeviceName(base::Value::ConstListView args);
 
  private:
   friend class TestDeviceNameHandler;

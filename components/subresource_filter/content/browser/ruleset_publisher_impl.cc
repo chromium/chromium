@@ -21,9 +21,6 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace subresource_filter {
@@ -37,12 +34,6 @@ RulesetPublisherImpl::RulesetPublisherImpl(
   best_effort_task_runner_ =
       content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
   DCHECK(best_effort_task_runner_->BelongsToCurrentThread());
-  // Must rely on notifications as RenderProcessHostObserver::RenderProcessReady
-  // would only be called after queued IPC messages (potentially triggering a
-  // navigation) had already been sent to the new renderer.
-  notification_registrar_.Add(
-      this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-      content::NotificationService::AllBrowserContextsAndSources());
 }
 
 RulesetPublisherImpl::~RulesetPublisherImpl() = default;
@@ -100,16 +91,11 @@ void RulesetPublisherImpl::IndexAndStoreAndPublishRulesetIfNeeded(
       unindexed_ruleset_info);
 }
 
-void RulesetPublisherImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, content::NOTIFICATION_RENDERER_PROCESS_CREATED);
+void RulesetPublisherImpl::OnRenderProcessHostCreated(
+    content::RenderProcessHost* rph) {
   if (!ruleset_data_ || !ruleset_data_->IsValid())
     return;
-  SendRulesetToRenderProcess(
-      ruleset_data_.get(),
-      content::Source<content::RenderProcessHost>(source).ptr());
+  SendRulesetToRenderProcess(ruleset_data_.get(), rph);
 }
 
 void RulesetPublisherImpl::SendRulesetToRenderProcess(

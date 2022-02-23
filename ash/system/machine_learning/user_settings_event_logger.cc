@@ -5,12 +5,14 @@
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/power/power_status.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -104,6 +106,8 @@ void UserSettingsEventLogger::LogNetworkUkmEvent(
 
 void UserSettingsEventLogger::LogBluetoothUkmEvent(
     const BluetoothAddress& device_address) {
+  DCHECK(!ash::features::IsBluetoothRevampEnabled());
+
   UserSettingsEvent settings_event;
   auto* const event = settings_event.mutable_event();
 

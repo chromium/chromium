@@ -19,13 +19,14 @@ using ui::AXPropertyFilter;
 using ui::AXScriptInstruction;
 using ui::AXTreeFormatter;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 constexpr const char kMacAction[]{"mac/action"};
 constexpr const char kMacAttributes[]{"mac/attributes"};
 constexpr const char kMacSelection[]{"mac/selection"};
 constexpr const char kMacTextMarker[]{"mac/textmarker"};
 constexpr const char kMacMethods[]{"mac/methods"};
+constexpr const char kRegression[]{"mac/regression"};
 
 #endif
 
@@ -134,16 +135,12 @@ struct TestPassToString {
 // Scripting supported on Mac only.
 //
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DumpAccessibilityScriptTest,
                          ::testing::Values(ui::AXApiType::kMac),
                          TestPassToString());
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
-  RunTypedTest<kMacAction>("ax-press-button.html");
-}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAccessKey) {
   RunTypedTest<kMacAttributes>("ax-access-key.html");
@@ -157,6 +154,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIABusy) {
   RunTypedTest<kMacAttributes>("ax-aria-busy.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAColumnCount) {
+  RunTypedTest<kMacAttributes>("ax-aria-column-count.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAColumnIndex) {
+  RunTypedTest<kMacAttributes>("ax-aria-column-index.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIACurrent) {
   RunTypedTest<kMacAttributes>("ax-aria-current.html");
 }
@@ -165,12 +170,32 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
   RunTypedTest<kMacAttributes>("ax-aria-live.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIASetSize) {
+  RunTypedTest<kMacAttributes>("ax-aria-set-size.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAPosInSet) {
+  RunTypedTest<kMacAttributes>("ax-aria-pos-in-set.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
   RunTypedTest<kMacAttributes>("ax-aria-relevant.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARowCount) {
+  RunTypedTest<kMacAttributes>("ax-aria-row-count.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARowIndex) {
+  RunTypedTest<kMacAttributes>("ax-aria-row-index.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
   RunTypedTest<kMacAttributes>("ax-autocomplete-value.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXBlockQuoteLevel) {
+  RunTypedTest<kMacAttributes>("ax-block-quote-level.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXColumnHeaderUIElements) {
@@ -181,8 +206,52 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDetailsElements) {
   RunTypedTest<kMacAttributes>("ax-details-elements.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDOMClassList) {
+  RunTypedTest<kMacAttributes>("ax-dom-class-list.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDOMIdentifier) {
+  RunTypedTest<kMacAttributes>("ax-dom-identifier.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXEditableAncestor) {
+  RunTypedTest<kMacAttributes>("ax-editable-ancestor.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDropEffects) {
+  RunTypedTest<kMacAttributes>("ax-drop-effects.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXElementBusy) {
+  RunTypedTest<kMacAttributes>("ax-element-busy.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXFocusableAncestor) {
+  RunTypedTest<kMacAttributes>("ax-focusable-ancestor.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXGrabbed) {
+  RunTypedTest<kMacAttributes>("ax-grabbed.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHasPopup) {
+  RunTypedTest<kMacAttributes>("ax-has-popup.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
+  RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXIsMultiSelectable) {
+  RunTypedTest<kMacAttributes>("ax-is-multi-selectable.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXKeyShortcutsValue) {
+  RunTypedTest<kMacAttributes>("ax-key-shortcuts-value.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
@@ -229,6 +298,34 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathUnder) {
   RunTypedTest<kMacAttributes>("ax-math-under.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXOwns) {
+  RunTypedTest<kMacAttributes>("ax-owns.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPopupValue) {
+  RunTypedTest<kMacAttributes>("ax-popup-value.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
+  RunTypedTest<kMacAction>("ax-press-button.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRequired) {
+  RunTypedTest<kMacAttributes>("ax-required.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXURL) {
+  RunTypedTest<kMacAttributes>("ax-url.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXVisited) {
+  RunTypedTest<kMacAttributes>("ax-visited.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
+  RunTypedTest<kMacAttributes>("chrome-ax-node-id.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
   RunTypedTest<kMacSelection>("selectall-textarea.html");
 }
@@ -273,13 +370,36 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   RunTypedTest<kMacMethods>("accessibility-column-header-ui-elements.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityIsIgnored) {
+  RunTypedTest<kMacMethods>("accessibility-is-ignored.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
   RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityRoleDescription) {
+  RunTypedTest<kMacMethods>("accessibility-role-description.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
   RunTypedTest<kMacMethods>("accessibility-title.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityURL) {
+  RunTypedTest<kMacMethods>("accessibility-url.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, IsAccessibilityElement) {
+  RunTypedTest<kMacMethods>("is-accessibility-element.html");
+}
+
+// Regression tests
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectedChildren) {
+  RunTypedTest<kRegression>("ax-selected-children.html");
 }
 
 #endif

@@ -85,6 +85,16 @@ void SegmentationPlatformServiceAndroid::GetSelectedSegment(
 }
 
 ScopedJavaLocalRef<jobject>
+SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jstring>& j_segmentation_key) {
+  return CreateJavaSegmentSelectionResult(
+      env, segmentation_platform_service_->GetCachedSegmentResult(
+               ConvertJavaStringToUTF8(env, j_segmentation_key)));
+}
+
+ScopedJavaLocalRef<jobject>
 SegmentationPlatformServiceAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }

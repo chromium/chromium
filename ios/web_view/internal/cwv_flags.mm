@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -21,8 +20,7 @@
 #include "components/flags_ui/flags_ui_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "ios/web_view/internal/app/application_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,7 +48,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {kUseSyncSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",
      flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(
-         switches::kSyncServiceURL,
+         syncer::kSyncServiceURL,
          "https://chrome-sync.sandbox.google.com/chrome-sync/alpha")},
     // Controls if wallet connects to the sandbox server instead of production.
     {kUseWalletSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",
@@ -138,7 +136,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
       const base::Value* options = supportedFeature.FindListKey("options");
       DCHECK(options);
 
-      for (const base::Value& option : options->GetList()) {
+      for (const base::Value& option : options->GetListDeprecated()) {
         DCHECK(option.is_dict());
 
         const std::string* internalName = option.FindStringKey("internal_name");

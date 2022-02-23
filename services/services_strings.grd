@@ -40,8 +40,10 @@ This file contains strings for code in //services.
       <output filename="services_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="services_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="services_strings_af.pak" type="data_package" lang="af" />
       <output filename="services_strings_is.pak" type="data_package" lang="is" />
+      <output filename="services_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="services_strings_am.pak" type="data_package" lang="am" />
     <output filename="services_strings_ar.pak" type="data_package" lang="ar" />
@@ -190,6 +192,9 @@ This file contains strings for code in //services.
     <messages fallback_to_english="true">
       <message name="IDS_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process V8 proxy resolution.">
         V8 Proxy Resolver
+      </message>
+      <message name="IDS_WINDOWS_SYSTEM_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process WinHttp proxy resolution.">
+        WinHttp Proxy Resolver
       </message>
     </messages>
   </release>

@@ -31,8 +31,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -306,8 +304,8 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     widget->HandleInputEvent(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -100));
     EXPECT_FLOAT_EQ(100, container->scrollTop());
-    EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
+    EXPECT_FLOAT_EQ(0,
+                    MainFrameView()->LayoutViewport()->GetScrollOffset().y());
   }
 
   {
@@ -320,8 +318,8 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     widget->HandleInputEvent(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -500));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
-    EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
+    EXPECT_FLOAT_EQ(0,
+                    MainFrameView()->LayoutViewport()->GetScrollOffset().y());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -336,8 +334,8 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     widget->HandleInputEvent(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -20));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
-    EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
+    EXPECT_FLOAT_EQ(0,
+                    MainFrameView()->LayoutViewport()->GetScrollOffset().y());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -359,8 +357,8 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     widget->HandleInputEvent(GenerateTouchGestureEvent(
         WebInputEvent::Type::kGestureScrollUpdate, 0, -30));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
-    EXPECT_FLOAT_EQ(
-        0, MainFrameView()->LayoutViewport()->GetScrollOffset().height());
+    EXPECT_FLOAT_EQ(0,
+                    MainFrameView()->LayoutViewport()->GetScrollOffset().y());
     RunPendingTasks();
     Mock::VerifyAndClearExpectations(
         &widget->GetOverscrollWidgetInputHandlerHost());
@@ -603,8 +601,8 @@ TEST_F(RootScrollerTest, UseVisualViewportScrollbars) {
   ScrollableArea* container_scroller = GetScrollableArea(*container);
   EXPECT_FALSE(container_scroller->HorizontalScrollbar());
   EXPECT_FALSE(container_scroller->VerticalScrollbar());
-  EXPECT_GT(container_scroller->MaximumScrollOffset().width(), 0);
-  EXPECT_GT(container_scroller->MaximumScrollOffset().height(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().x(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().y(), 0);
 }
 
 // On Android, the main scrollbars are owned by the visual viewport and the
@@ -624,8 +622,8 @@ TEST_F(RootScrollerTest, UseVisualViewportScrollbarsIframe) {
 
   EXPECT_FALSE(container_scroller->HorizontalScrollbar());
   EXPECT_FALSE(container_scroller->VerticalScrollbar());
-  EXPECT_GT(container_scroller->MaximumScrollOffset().width(), 0);
-  EXPECT_GT(container_scroller->MaximumScrollOffset().height(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().x(), 0);
+  EXPECT_GT(container_scroller->MaximumScrollOffset().y(), 0);
 }
 
 TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
@@ -663,7 +661,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   // change in maximum scroll offset due to the top controls hiding. That is,
   // since the controls are hidden, the "content area" is taller so the maximum
   // scroll offset should shrink.
-  ASSERT_EQ(1000 - 400, container_scroller->MaximumScrollOffset().height());
+  ASSERT_EQ(1000 - 400, container_scroller->MaximumScrollOffset().y());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollBegin));
@@ -674,16 +672,16 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
                                 -GetBrowserControls().TopHeight()));
   ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
   ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().height());
+  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
       WebInputEvent::Type::kGestureScrollUpdate, 0, -3000));
-  EXPECT_EQ(1000 - 450, container_scroller->GetScrollOffset().height());
+  EXPECT_EQ(1000 - 450, container_scroller->GetScrollOffset().y());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::Type::kGestureScrollEnd));
   GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
-  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().height());
+  EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().y());
 }
 
 TEST_F(RootScrollerTest, RotationAnchoring) {
@@ -721,12 +719,12 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
 
     // The visual viewport should be 1.5 screens scrolled so that the target
     // occupies the bottom quadrant of the layout viewport.
-    ASSERT_EQ((250 * 3) / 2, container_scroller->GetScrollOffset().width());
-    ASSERT_EQ((1000 * 3) / 2, container_scroller->GetScrollOffset().height());
+    ASSERT_EQ((250 * 3) / 2, container_scroller->GetScrollOffset().x());
+    ASSERT_EQ((1000 * 3) / 2, container_scroller->GetScrollOffset().y());
 
     // The visual viewport should have scrolled the last half layout viewport.
-    ASSERT_EQ((250) / 2, GetVisualViewport().GetScrollOffset().width());
-    ASSERT_EQ((1000) / 2, GetVisualViewport().GetScrollOffset().height());
+    ASSERT_EQ((250) / 2, GetVisualViewport().GetScrollOffset().x());
+    ASSERT_EQ((1000) / 2, GetVisualViewport().GetScrollOffset().y());
   }
 
   // Now do a rotation resize.
@@ -735,8 +733,8 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
 
   // The visual viewport should remain fully filled by the target.
   DOMRect* rect = target->getBoundingClientRect();
-  EXPECT_EQ(rect->left(), GetVisualViewport().GetScrollOffset().width());
-  EXPECT_EQ(rect->top(), GetVisualViewport().GetScrollOffset().height());
+  EXPECT_EQ(rect->left(), GetVisualViewport().GetScrollOffset().x());
+  EXPECT_EQ(rect->top(), GetVisualViewport().GetScrollOffset().y());
 }
 
 // Tests that we don't crash if the default documentElement isn't a valid root
@@ -771,16 +769,16 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
       MainFrame()->GetDocument()->getElementById("iframe"));
   auto* iframe_view = To<LocalFrame>(iframe->ContentFrame())->View();
 
-  ASSERT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-  ASSERT_EQ(IntSize(400, 400), iframe_view->Size());
+  ASSERT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+  ASSERT_EQ(gfx::Size(400, 400), iframe_view->Size());
 
   // Make the iframe the rootscroller. This should cause the iframe's layout
   // size to be manually controlled.
   {
     ASSERT_EQ(iframe, EffectiveRootScroller(MainFrame()->GetDocument()));
     EXPECT_FALSE(iframe_view->LayoutSizeFixedToFrameSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 
   // Hide the URL bar, the iframe's frame rect should expand but the layout
@@ -788,16 +786,16 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 450), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 450), iframe_view->Size());
   }
 
   // Simulate a rotation. This time the layout size should reflect the resize.
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(450, 400), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(450, 350), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(450, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(450, 350), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(450, 400), iframe_view->Size());
 
     // "Un-rotate" for following tests.
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
@@ -808,8 +806,8 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 0, true);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 
   // Hide the URL bar and reset the rootScroller. The iframe should go back to
@@ -817,14 +815,14 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 450), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 450), iframe_view->Size());
     ExecuteScript("document.querySelector('#iframe').style.opacity = '0.5'");
     ASSERT_EQ(MainFrame()->GetDocument(),
               EffectiveRootScroller(MainFrame()->GetDocument()));
     EXPECT_TRUE(iframe_view->LayoutSizeFixedToFrameSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 }
 
@@ -1097,7 +1095,7 @@ TEST_F(ImplicitRootScrollerSimTest, RootScrollerDoesntAffectVisualViewport) {
 
   GetDocument().GetPage()->GetVisualViewport().SetScale(2);
   GetDocument().GetPage()->GetVisualViewport().SetLocation(
-      FloatPoint(100, 120));
+      gfx::PointF(100, 120));
 
   auto* frame = To<LocalFrame>(GetDocument().GetPage()->MainFrame());
   EXPECT_EQ(100, frame->DomWindow()->visualViewport()->pageLeft());
@@ -1153,7 +1151,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
   Element* container = GetDocument().getElementById("container");
   ASSERT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
-  ASSERT_EQ(IntSize(800, 600), GetDocument().View()->Size());
+  ASSERT_EQ(gfx::Size(800, 600), GetDocument().View()->Size());
 
   request.Write(R"HTML(
           <div style="width:2000px;height:1000px"></div>
@@ -1161,7 +1159,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
   request.Finish();
   Compositor().BeginFrame();
 
-  ASSERT_EQ(IntSize(2000, 1500), GetDocument().View()->Size());
+  ASSERT_EQ(gfx::Size(2000, 1500), GetDocument().View()->Size());
 }
 
 // Tests basic implicit root scroller mode with a <div>.
@@ -2846,7 +2844,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
                          .GlobalRootScroller();
     ScrollableArea* scrollable_area =
         To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
-    scrollable_area->DidCompositorScroll(FloatPoint(0, 100000));
+    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000));
 
     WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
 

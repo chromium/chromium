@@ -355,4 +355,63 @@ TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
       special_storage_policy.get()));
 }
 
+TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
+  BrowserContext* browser_context = GetBrowserContext();
+  network::mojom::CookieManager* cookie_manager =
+      GetCookieManager(browser_context);
+  SameSiteRemoverTestStoragePartition storage_partition;
+  storage_partition.set_cookie_manager_for_browser_process(cookie_manager);
+  GetSameSiteDataRemoverImpl()->OverrideStoragePartitionForTesting(
+      &storage_partition);
+
+  // Set an unpartitioned cookie.
+  CreateCookieForTest(
+      "unpartitioned", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+      /*is_cookie_secure=*/true, browser_context);
+
+  // Set a partitioned cookie.
+  base::RunLoop run_loop;
+  net::CookieOptions options;
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE));
+  bool result_out;
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "__Host-partitioned", "1", "www.partitioned.com", "/", base::Time(),
+      base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+      net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_LOW,
+      /*same_party=*/false,
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevel.site")));
+  cookie_manager->SetCanonicalCookie(
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+      options, base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+        result_out = result.status.IsInclude();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(result_out);
+
+  DeleteSameSiteNoneCookies();
+  ClearStoragePartitionData();
+  StoragePartitionSameSiteRemovalData removal_data =
+      storage_partition.GetStoragePartitionRemovalData();
+
+  const std::vector<net::CanonicalCookie>& cookies =
+      GetAllCookies(browser_context);
+  ASSERT_EQ(1u, cookies.size());
+  ASSERT_EQ(cookies[0].Name(), "__Host-partitioned");
+
+  auto storage_policy =
+      base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
+  EXPECT_TRUE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("https://www.google.com")),
+      storage_policy.get()));
+  EXPECT_FALSE(removal_data.origin_matcher.Run(
+      url::Origin::Create(GURL("https://www.partitioned.com")),
+      storage_policy.get()));
+}
+
 }  // namespace content

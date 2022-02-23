@@ -14,12 +14,16 @@ Create the venv. Only needs to be done once.
 ```
 python3 -m venv ./env
 ```
+Or using a specific python binary, e.g. from depot_tools
+```
+~/src/chromium/depot_tools/python-bin/python3 -m venv ./env
+```
 Activate the venv.
 ```
 source ./env/bin/activate
 ```
 Once the venv is activated, `python` refers to python3.
-Upgrade pip and install all python dependencies. 
+Upgrade pip and install all python dependencies.
 ```
 python -m pip install -U pip
 python -m pip install -r requirements.txt
@@ -52,6 +56,12 @@ root ALL = (ALL) ALL
 <user> ALL = (ALL) NOPASSWD:ALL
 ```
 
+## power_sampler
+
+A compiled binary of power_sampler is required to run power measurements. It can be compiled using this command:
+`autoninja -C out/Release tools/mac/power:power_sampler`
+
+
 ## DTrace
 
 Running benchmark.py in profile mode uses `dtrace` to analyse the chromium processes. By default `dtrace` does not work well with [SIP](https://support.apple.com/en-us/HT204899). Disabling SIP as a whole is not recommended and instead should be done only for dtrace using these steps:
@@ -69,25 +79,25 @@ A tool that allow you to run different browsers under specific usage scenarios a
 * Profile the code that runs and/or is causing wake-ups. (chromium only)
 
 ```
-./benchmark.py ./results --measure 
-./benchmark.py ./profile --profile_mode cpu_time
+./benchmark.py --scenarios idle_on_wiki:chrome idle_on_wiki:safari
+./benchmark.py --profile_mode cpu_time --scenarios idle_on_wiki:chromium
 ```
 
-## collapse_profile.py
+## export_dtrace.py
 
-A tool that converts the DTrace results created by benchmark.py into a format suitable for 
-FlameGraph generation and analysis. It also applies some Chromium specific filtering and enhancements.
+A tool that converts the DTrace results created by benchmark.py into a format
+suitable for FlameGraph generation and analysis.
 
 ```
-./collapse_profile.py ./profile --profile_mode cpu_time
+./export_dtrace.py --stack_dir ./output/idle_on_wiki_chromium_dtraces_cpu_time --output ./output/idle_on_wiki_cpu_profile.pb
 ```
 
-This command will produce a file at `./samples/samples.collapsed.cpu_time`.
+This command will produce a file at `./output/idle_on_wiki_cpu_profile.pb`.
 
-This file can be used with tools such as:
-
-* [FlameGraph](https://github.com/brendangregg/FlameGraph)
-* [SpeedScope](https://www.speedscope.app/)
+The script can produce a pprof profile that can be used with
+[pprof](https://github.com/google/pprof) or a collapsed profile that can be used
+with tools such as [FlameGraph](https://github.com/brendangregg/FlameGraph) and
+[SpeedScope](https://www.speedscope.app/)
 
 ## Usage scenario scripts
 
@@ -106,30 +116,6 @@ For example:
 
 It's interesting to gather power metrics, profiles and traces for specific
 scenarios to understand their performance characteristics.
-
-### Usage
-
-First `generate_scripts.py` needs to be used to convert the templates in `driver_script_templates/` into
-working AppleScript. The templating allows for the generation of scripts that work with many different
-browsers in the same way without having to modify each file by hand which is error
-prone.
-
-Once generated the driver scripts are found in `driver_scripts/` and can be invoked directly like this:
-```
-osascript ./driver_scripts/chrome_navigation.scpt
-```
-
-Once the scenario has run its course the script will exit. If the desired the
-browser can be opened by hand before running the scenario to modify the starting
-state.
-
-# Formats
-
-Files in `driver_script_templates/` directory that do not end in .scpt are
-jinja2 templates that need to be rendered into usable Applescript.
-
-Files in `driver_script_templates/` that end in .scpt are already working
-Applescript and will be copied as is to `driver_script/`.
 
 # Tests
 

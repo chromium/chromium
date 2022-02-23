@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -25,7 +26,7 @@
 #include "rlz/lib/string_utils.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "rlz/lib/machine_deal_win.h"
 #endif
 
@@ -586,7 +587,7 @@ bool ParsePingResponse(Product product, const char* response) {
     }
   } while (line_end_index >= 0);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Update the DCC in registry if needed.
   SetMachineDealCodeFromPingResponse(response);
 #endif
@@ -636,7 +637,7 @@ bool GetPingParams(Product product, const AccessPoint* access_points,
       }
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Report the DCC too if not empty. DCCs are windows-only.
     char dcc[kMaxDccLength + 1];
     dcc[0] = 0;

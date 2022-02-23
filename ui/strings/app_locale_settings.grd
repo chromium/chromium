@@ -34,8 +34,10 @@
       <output filename="app_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="app_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="app_locale_settings_af.pak" type="data_package" lang="af" />
       <output filename="app_locale_settings_is.pak" type="data_package" lang="is" />
+      <output filename="app_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="app_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="app_locale_settings_ar.pak" type="data_package" lang="ar" />
@@ -223,7 +225,7 @@
           75%
         </message>
       </if>
-      <if expr="(is_linux or is_android or is_bsd or is_fuchsia) and not (chromeos or lacros)">
+      <if expr="(is_linux or is_android or is_bsd or is_fuchsia) and not (chromeos_ash or chromeos_lacros)">
         <!-- The font used in Web UI (e.g. History). Note that these are only
              backups. We try to use the system font if possible. -->
         <message name="IDS_WEB_FONT_FAMILY" use_name_for_id="true">
@@ -236,7 +238,7 @@
         </message>
       </if>
       <!-- For Chrome OS -->
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <!-- The font name like: 'Font Name, 12px' -->
         <message name="IDS_UI_FONT_FAMILY_CROS" use_name_for_id="true">
           Roboto, 12px

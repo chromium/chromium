@@ -31,8 +31,7 @@ aura::Window* GetPipContainer() {
 }  // namespace
 
 ArcPipWindowThrottleObserver::ArcPipWindowThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::IMPORTANT,
-                       "ArcPipWindowIsVisible") {}
+    : ThrottleObserver("ArcPipWindowIsVisible") {}
 
 void ArcPipWindowThrottleObserver::StartObserving(
     content::BrowserContext* context,

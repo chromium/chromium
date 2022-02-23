@@ -54,6 +54,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
   void OnPause();
   void OnPlayPause();
   void OnStop();
+  void OnSeek(const base::TimeDelta& time);
   void OnSeekTo(const base::TimeDelta& time);
 
   void FlushForTesting();

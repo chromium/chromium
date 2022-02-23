@@ -38,7 +38,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 }
 
-// Tests the URLBlocklist and URLWhitelist enterprise policies.
+// Tests the URLBlocklist and URLAllowlist enterprise policies.
 @interface PolicyURLBlockingTestCase : ChromeTestCase
 @end
 
@@ -53,8 +53,6 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
                                    switches::kEnableEnterprisePolicy);
   config.additional_args.push_back(std::string("--") +
                                    switches::kInstallURLBlocklistHandlers);
-  config.additional_args.push_back(
-      std::string("--enable-features=URLBlocklistIOS"));
   config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }

@@ -125,7 +125,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTreePath) {
                                      ->ScrollNode()
                                      ->ToTreeString();
   EXPECT_THAT(scroll_path_as_string.Ascii().c_str(),
-              testing::MatchesRegex("root .* \\{\\}.*"
+              testing::MatchesRegex("root .*"
                                     "  .*\"parent\".*"));
 }
 

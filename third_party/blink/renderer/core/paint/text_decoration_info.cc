@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -54,8 +55,10 @@ static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
 static float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
     float computed_font_size,
+    float minimum_thickness,
     const SimpleFontData* font_data) {
-  float auto_underline_thickness = std::max(1.f, computed_font_size / 10.f);
+  float auto_underline_thickness =
+      std::max(minimum_thickness, computed_font_size / 10.f);
 
   if (text_decoration_thickness.IsAuto())
     return auto_underline_thickness;
@@ -74,7 +77,7 @@ static float ComputeDecorationThickness(
     if (!font_underline_thickness)
       return auto_underline_thickness;
 
-    return std::max(1.f, font_underline_thickness.value());
+    return std::max(minimum_thickness, font_underline_thickness.value());
   }
 
   DCHECK(!text_decoration_thickness.IsFromFont());
@@ -84,7 +87,7 @@ static float ComputeDecorationThickness(
   float text_decoration_thickness_pixels =
       FloatValueForLength(thickness_length, font_size);
 
-  return std::max(1.f, text_decoration_thickness_pixels);
+  return std::max(minimum_thickness, text_decoration_thickness_pixels);
 }
 
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
@@ -111,20 +114,6 @@ static enum StrokeStyle TextDecorationStyleToStrokeStyle(
   return stroke_style;
 }
 
-static int TextDecorationToLineDataIndex(TextDecoration line) {
-  switch (line) {
-    case TextDecoration::kUnderline:
-      return 0;
-    case TextDecoration::kOverline:
-      return 1;
-    case TextDecoration::kLineThrough:
-      return 2;
-    default:
-      NOTREACHED();
-      return 0;
-  }
-}
-
 }  // anonymous namespace
 
 TextDecorationInfo::TextDecorationInfo(
@@ -135,6 +124,7 @@ TextDecorationInfo::TextDecorationInfo(
     const Font& scaled_font,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style,
+    MinimumThickness1 minimum_thickness1,
     float scaling_factor)
     : style_(style),
       selection_text_decoration_(selection_text_decoration),
@@ -145,15 +135,26 @@ TextDecorationInfo::TextDecorationInfo(
       computed_font_size_(scaled_font.GetFontDescription().ComputedSize()),
       scaling_factor_(scaling_factor),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
-      local_origin_(FloatPoint(local_origin)),
+      local_origin_(gfx::PointF(local_origin)),
+      minimum_thickness_is_one_(minimum_thickness1),
       antialias_(ShouldSetDecorationAntialias(style)),
       decoration_index_(kUndefinedDecorationIndex) {
   DCHECK(font_data_);
 
   for (const AppliedTextDecoration& decoration :
        style_.AppliedTextDecorations()) {
-    applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
-        decoration.Thickness(), decorating_box_style));
+    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
+        EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
+      // Spelling and grammar error thickness doesn't depend on the font size.
+#if BUILDFLAG(IS_MAC)
+      applied_decorations_thickness_.push_back(2.f);
+#else
+      applied_decorations_thickness_.push_back(1.f);
+#endif
+    } else {
+      applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
+          decoration.Thickness(), decorating_box_style));
+    }
   }
   DCHECK_EQ(style_.AppliedTextDecorations().size(),
             applied_decorations_thickness_.size());
@@ -165,24 +166,23 @@ void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
   decoration_index_ = decoration_index;
 }
 
-void TextDecorationInfo::SetPerLineData(TextDecoration line,
-                                        float line_offset) {
-  int index = TextDecorationToLineDataIndex(line);
-  line_data_[index].line_offset = line_offset;
-
+void TextDecorationInfo::SetLineData(TextDecorationLine line,
+                                     float line_offset) {
   const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
   float double_offset;
   int wavy_offset_factor;
   switch (line) {
-    case TextDecoration::kUnderline:
+    case TextDecorationLine::kUnderline:
+    case TextDecorationLine::kSpellingError:
+    case TextDecorationLine::kGrammarError:
       double_offset = double_offset_from_thickness;
       wavy_offset_factor = 1;
       break;
-    case TextDecoration::kOverline:
+    case TextDecorationLine::kOverline:
       double_offset = -double_offset_from_thickness;
       wavy_offset_factor = 1;
       break;
-    case TextDecoration::kLineThrough:
+    case TextDecorationLine::kLineThrough:
       // Floor double_offset in order to avoid double-line gap to appear
       // of different size depending on position where the double line
       // is drawn because of rounding downstream in
@@ -196,16 +196,44 @@ void TextDecorationInfo::SetPerLineData(TextDecoration line,
       NOTREACHED();
   }
 
-  line_data_[index].double_offset = double_offset;
-  line_data_[index].wavy_offset_factor = wavy_offset_factor;
-  line_data_[index].stroke_path.reset();
+  line_data_.line = line;
+  line_data_.line_offset = line_offset;
+  line_data_.double_offset = double_offset;
+  line_data_.wavy_offset_factor = wavy_offset_factor;
+
+  switch (DecorationStyle()) {
+    case ETextDecorationStyle::kDotted:
+    case ETextDecorationStyle::kDashed:
+      line_data_.stroke_path = PrepareDottedOrDashedStrokePath();
+      break;
+    case ETextDecorationStyle::kWavy:
+      line_data_.stroke_path = PrepareWavyStrokePath();
+      break;
+    default:
+      line_data_.stroke_path.reset();
+  }
 }
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
+  if (IsSpellingOrGrammarError()) {
+#if BUILDFLAG(IS_MAC)
+    return ETextDecorationStyle::kDotted;
+#else
+    return ETextDecorationStyle::kWavy;
+#endif
+  }
+
   return style_.AppliedTextDecorations()[decoration_index_].Style();
 }
 
 Color TextDecorationInfo::LineColor() const {
+  // TODO(rego): Allow customize the spelling and grammar error color with
+  // text-decoration-color property.
+  if (line_data_.line == TextDecorationLine::kSpellingError)
+    return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
+  if (line_data_.line == TextDecorationLine::kGrammarError)
+    return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
+
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
   if (selection_text_decoration_ &&
@@ -217,13 +245,11 @@ Color TextDecorationInfo::LineColor() const {
   return style_.AppliedTextDecorations()[decoration_index_].GetColor();
 }
 
-FloatPoint TextDecorationInfo::StartPoint(TextDecoration line) const {
-  return local_origin_ +
-         FloatPoint(
-             0, line_data_[TextDecorationToLineDataIndex(line)].line_offset);
+gfx::PointF TextDecorationInfo::StartPoint() const {
+  return local_origin_ + gfx::Vector2dF(0, line_data_.line_offset);
 }
-float TextDecorationInfo::DoubleOffset(TextDecoration line) const {
-  return line_data_[TextDecorationToLineDataIndex(line)].double_offset;
+float TextDecorationInfo::DoubleOffset() const {
+  return line_data_.double_offset;
 }
 
 enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
@@ -233,13 +259,15 @@ enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
 float TextDecorationInfo::ComputeUnderlineThickness(
     const TextDecorationThickness& applied_decoration_thickness,
     const ComputedStyle* decorating_box_style) {
+  const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   float thickness = 0;
   if ((underline_position_ ==
        ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto) ||
       underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_, font_data_);
+                                           computed_font_size_,
+                                           minimum_thickness, font_data_);
   } else {
     // Compute decorating box. Position and thickness are computed from the
     // decorating box.
@@ -248,71 +276,61 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     if (decorating_box_style) {
       thickness = ComputeDecorationThickness(
           applied_decoration_thickness,
-          decorating_box_style->ComputedFontSize(),
+          decorating_box_style->ComputedFontSize(), minimum_thickness,
           decorating_box_style->GetFont().PrimaryFont());
     } else {
       thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                             computed_font_size_, font_data_);
+                                             computed_font_size_,
+                                             minimum_thickness, font_data_);
     }
   }
   return thickness;
 }
 
-FloatRect TextDecorationInfo::BoundsForLine(TextDecoration line) const {
-  FloatPoint start_point = StartPoint(line);
+gfx::RectF TextDecorationInfo::Bounds() const {
+  gfx::PointF start_point = StartPoint();
   switch (DecorationStyle()) {
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
-      return BoundsForDottedOrDashed(line);
+      return BoundsForDottedOrDashed();
     case ETextDecorationStyle::kWavy:
-      return BoundsForWavy(line);
+      return BoundsForWavy();
     case ETextDecorationStyle::kDouble:
-      if (DoubleOffset(line) > 0) {
-        return FloatRect(start_point.x(), start_point.y(), width_,
-                         DoubleOffset(line) + ResolvedThickness());
+      if (DoubleOffset() > 0) {
+        return gfx::RectF(start_point.x(), start_point.y(), width_,
+                          DoubleOffset() + ResolvedThickness());
       }
-      return FloatRect(start_point.x(), start_point.y() + DoubleOffset(line),
-                       width_, -DoubleOffset(line) + ResolvedThickness());
+      return gfx::RectF(start_point.x(), start_point.y() + DoubleOffset(),
+                        width_, -DoubleOffset() + ResolvedThickness());
     case ETextDecorationStyle::kSolid:
-      return FloatRect(start_point.x(), start_point.y(), width_,
-                       ResolvedThickness());
+      return gfx::RectF(start_point.x(), start_point.y(), width_,
+                        ResolvedThickness());
     default:
       break;
   }
   NOTREACHED();
-  return FloatRect();
+  return gfx::RectF();
 }
 
-FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
-    TextDecoration line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
-  if (!line_data_[line_data_index].stroke_path) {
-    // These coordinate transforms need to match what's happening in
-    // GraphicsContext's drawLineForText and drawLine.
-    FloatPoint start_point = StartPoint(line);
-    line_data_[TextDecorationToLineDataIndex(line)].stroke_path =
-        GraphicsContext::GetPathForTextLine(
-            start_point, width_, ResolvedThickness(),
-            TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  }
-
+gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
   StrokeData stroke_data;
   stroke_data.SetThickness(roundf(ResolvedThickness()));
   stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return FloatRect(
-      line_data_[line_data_index].stroke_path.value().StrokeBoundingRect(
-          stroke_data));
+  return line_data_.stroke_path.value().StrokeBoundingRect(stroke_data);
 }
 
-FloatRect TextDecorationInfo::BoundsForWavy(TextDecoration line) const {
+gfx::RectF TextDecorationInfo::BoundsForWavy() const {
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
-  auto bounding_rect =
-      FloatRect(PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
+  auto bounding_rect = line_data_.stroke_path->StrokeBoundingRect(stroke_data);
 
-  bounding_rect.set_x(StartPoint(line).x());
+  bounding_rect.set_x(StartPoint().x());
   bounding_rect.set_width(width_);
   return bounding_rect;
+}
+
+absl::optional<Path> TextDecorationInfo::StrokePath() const {
+  return line_data_.stroke_path;
 }
 
 float TextDecorationInfo::WavyDecorationSizing() const {
@@ -325,6 +343,9 @@ float TextDecorationInfo::ControlPointDistanceFromResolvedThickness() const {
   // Distance between decoration's axis and Bezier curve's control points. The
   // height of the curve is based on this distance. Increases the curve's height
   // as strokeThickness increases to make the curve look better.
+  if (IsSpellingOrGrammarError())
+    return 5;
+
   return 3.5 * WavyDecorationSizing();
 }
 
@@ -332,7 +353,19 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
   // Increment used to form the diamond shape between start point (p1), control
   // points and end point (p2) along the axis of the decoration. Makes the curve
   // wider as strokeThickness increases to make the curve look better.
+  if (IsSpellingOrGrammarError())
+    return 3;
+
   return 2.5 * WavyDecorationSizing();
+}
+
+Path TextDecorationInfo::PrepareDottedOrDashedStrokePath() const {
+  // These coordinate transforms need to match what's happening in
+  // GraphicsContext's drawLineForText and drawLine.
+  gfx::PointF start_point = StartPoint();
+  return GraphicsContext::GetPathForTextLine(
+      start_point, width_, ResolvedThickness(),
+      TextDecorationStyleToStrokeStyle(DecorationStyle()));
 }
 
 /*
@@ -362,34 +395,36 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
  *             |-----------|
  *                 step
  */
-absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
-    TextDecoration line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
-  if (line_data_[line_data_index].stroke_path)
-    return line_data_[line_data_index].stroke_path;
-
-  FloatPoint start_point = StartPoint(line);
-  float wave_offset =
-      DoubleOffset(line) *
-      line_data_[TextDecorationToLineDataIndex(line)].wavy_offset_factor;
+Path TextDecorationInfo::PrepareWavyStrokePath() const {
+  float wave_offset = DoubleOffset() * line_data_.wavy_offset_factor;
 
   float control_point_distance = ControlPointDistanceFromResolvedThickness();
+  // For spelling and grammar errors we invert the control_point_distance to get
+  // a result closer to Microsoft Word circa 2021.
+  if (IsSpellingOrGrammarError())
+    control_point_distance = -control_point_distance;
   float step = StepFromResolvedThickness();
 
+  gfx::PointF start_point = StartPoint();
   // We paint the wave before and after the text line (to cover the whole length
   // of the line) and then we clip it at
   // AppliedDecorationPainter::StrokeWavyTextDecoration().
   // Offset the start point, so the beizer curve starts before the current line,
   // that way we can clip it exactly the same way in both ends.
-  FloatPoint p1(start_point + FloatPoint(-2 * step, wave_offset));
+  // For spelling and grammar errors we offset an extra half step, to get a
+  // result closer to Microsoft Word circa 2021.
+  float start_offset = (IsSpellingOrGrammarError() ? -2.5 : -2) * step;
+  gfx::PointF p1(start_point + gfx::Vector2dF(start_offset, wave_offset));
   // Increase the width including the previous offset, plus an extra wave to be
   // painted after the line.
-  FloatPoint p2(start_point + FloatPoint(width_ + 4 * step, wave_offset));
+  float extra_width = (IsSpellingOrGrammarError() ? 4.5 : 4) * step;
+  gfx::PointF p2(start_point +
+                 gfx::Vector2dF(width_ + extra_width, wave_offset));
 
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
-  Path& path = line_data_[line_data_index].stroke_path.emplace();
-  path.MoveTo(ToGfxPointF(p1));
+  Path path;
+  path.MoveTo(p1);
 
   bool is_vertical_line = (p1.x() == p2.x());
 
@@ -444,7 +479,7 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
                             gfx::PointF(x, y_axis));
     }
   }
-  return line_data_[line_data_index].stroke_path;
+  return path;
 }
 
 }  // namespace blink

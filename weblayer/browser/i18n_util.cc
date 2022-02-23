@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "net/http/http_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
 #include "base/task/post_task.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -35,7 +35,7 @@ std::string GetApplicationLocale() {
 }
 
 std::string GetAcceptLangs() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string locale_list = base::android::GetDefaultLocaleListString();
 #else
   std::string locale_list = GetApplicationLocale();
@@ -48,7 +48,7 @@ base::CallbackListSubscription RegisterLocaleChangeCallback(
   return GetLocaleChangeClosures().Add(locale_changed);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static void JNI_LocaleChangedBroadcastReceiver_LocaleChanged(JNIEnv* env) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

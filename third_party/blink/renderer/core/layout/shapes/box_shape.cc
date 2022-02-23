@@ -34,10 +34,10 @@
 namespace blink {
 
 LayoutRect BoxShape::ShapeMarginLogicalBoundingBox() const {
-  FloatRect margin_bounds(bounds_.Rect());
+  gfx::RectF margin_bounds = bounds_.Rect();
   if (ShapeMargin() > 0)
     margin_bounds.Outset(ShapeMargin());
-  return static_cast<LayoutRect>(margin_bounds);
+  return EnclosingLayoutRect(margin_bounds);
 }
 
 FloatRoundedRect BoxShape::ShapeMarginBounds() const {
@@ -58,7 +58,7 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 
   float y1 = logical_top.ToFloat();
   float y2 = (logical_top + logical_height).ToFloat();
-  const FloatRect& rect = margin_bounds.Rect();
+  const gfx::RectF& rect = margin_bounds.Rect();
 
   if (!margin_bounds.IsRounded())
     return LineSegment(margin_bounds.Rect().x(), margin_bounds.Rect().right());

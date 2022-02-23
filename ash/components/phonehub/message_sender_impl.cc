@@ -7,13 +7,14 @@
 #include <netinet/in.h>
 
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
 std::string SerializeMessage(proto::MessageType message_type,
@@ -139,4 +140,4 @@ void MessageSenderImpl::SendMessage(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -11,26 +11,29 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {ResetBrowserProxyImpl} from './reset_browser_proxy.js';
+import {getTemplate} from './reset_profile_banner.html.js';
 
-interface SettingsResetProfileBannerElement {
+export interface SettingsResetProfileBannerElement {
   $: {
     dialog: CrDialogElement,
+    ok: HTMLElement,
+    reset: HTMLElement,
   };
 }
 
-class SettingsResetProfileBannerElement extends PolymerElement {
+export class SettingsResetProfileBannerElement extends PolymerElement {
   static get is() {
     return 'settings-reset-profile-banner';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   connectedCallback() {
@@ -50,6 +53,12 @@ class SettingsResetProfileBannerElement extends PolymerElement {
   private onResetTap_() {
     this.$.dialog.close();
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-reset-profile-banner': SettingsResetProfileBannerElement;
   }
 }
 

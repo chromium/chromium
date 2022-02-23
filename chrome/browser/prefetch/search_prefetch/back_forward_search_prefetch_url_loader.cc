@@ -122,7 +122,8 @@ void BackForwardSearchPrefetchURLLoader::OnReceiveEarlyHints(
 }
 
 void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(forwarding_client_);
   if (can_fallback_) {
     if (!head->headers) {
@@ -147,7 +148,7 @@ void BackForwardSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   can_fallback_ = false;
-  forwarding_client_->OnReceiveResponse(std::move(head));
+  forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
 }
 
 void BackForwardSearchPrefetchURLLoader::OnReceiveRedirect(

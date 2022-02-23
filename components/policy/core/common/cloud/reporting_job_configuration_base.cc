@@ -45,16 +45,16 @@ const char ReportingJobConfigurationBase::DeviceDictionaryBuilder::kName[] =
     "name";
 
 // static
-base::Value
+base::Value::Dict
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceDictionary(
     const std::string& dm_token,
     const std::string& client_id) {
-  base::Value device_dictionary{base::Value::Type::DICTIONARY};
-  device_dictionary.SetStringKey(kDMToken, dm_token);
-  device_dictionary.SetStringKey(kClientId, client_id);
-  device_dictionary.SetStringKey(kOSVersion, GetOSVersion());
-  device_dictionary.SetStringKey(kOSPlatform, GetOSPlatform());
-  device_dictionary.SetStringKey(kName, GetDeviceName());
+  base::Value::Dict device_dictionary;
+  device_dictionary.Set(kDMToken, dm_token);
+  device_dictionary.Set(kClientId, client_id);
+  device_dictionary.Set(kOSVersion, GetOSVersion());
+  device_dictionary.Set(kOSPlatform, GetOSPlatform());
+  device_dictionary.Set(kName, GetDeviceName());
   return device_dictionary;
 }
 
@@ -165,7 +165,7 @@ ReportingJobConfigurationBase::BrowserDictionaryBuilder::GetStringPath(
 std::string ReportingJobConfigurationBase::GetPayload() {
   // Move context keys to the payload.
   if (context_.has_value()) {
-    payload_.MergeDictionary(&context_.value());
+    payload_.Merge(*context_);
     context_.reset();
   }
 
@@ -275,7 +275,6 @@ ReportingJobConfigurationBase::ReportingJobConfigurationBase(
                            DMAuth::FromDMToken(client->dm_token()),
                            /*oauth_token=*/absl::nullopt,
                            factory),
-      payload_(base::Value::Type::DICTIONARY),
       callback_(std::move(callback)),
       server_url_(server_url) {
   DCHECK(GetAuth().has_dm_token());
@@ -290,11 +289,11 @@ void ReportingJobConfigurationBase::InitializePayload(
   AddParameter("key", google_apis::GetAPIKey());
 
   if (include_device_info) {
-    payload_.SetKey(DeviceDictionaryBuilder::kDeviceKey,
-                    DeviceDictionaryBuilder::BuildDeviceDictionary(
-                        client->dm_token(), client->client_id()));
+    payload_.Set(DeviceDictionaryBuilder::kDeviceKey,
+                 DeviceDictionaryBuilder::BuildDeviceDictionary(
+                     client->dm_token(), client->client_id()));
   }
-  payload_.SetKey(
+  payload_.Set(
       BrowserDictionaryBuilder::kBrowserKey,
       BrowserDictionaryBuilder::BuildBrowserDictionary(include_device_info));
 }

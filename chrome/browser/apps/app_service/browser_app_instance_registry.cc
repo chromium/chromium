@@ -138,7 +138,10 @@ void BrowserAppInstanceRegistry::NotifyExistingInstances(
   for (const auto& pair : ash_instance_tracker_.window_instances_) {
     observer->OnBrowserWindowAdded(*pair.second);
   }
-  for (const auto& pair : ash_instance_tracker_.app_instances_) {
+  for (const auto& pair : ash_instance_tracker_.app_tab_instances_) {
+    observer->OnBrowserAppAdded(*pair.second);
+  }
+  for (const auto& pair : ash_instance_tracker_.app_window_instances_) {
     observer->OnBrowserAppAdded(*pair.second);
   }
   for (const auto& pair : lacros_window_instances_) {
@@ -385,7 +388,9 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceUpdated(
   BrowserAppInstance* instance = GetInstance(lacros_app_instances_, update.id);
   DCHECK(instance);
   if (instance->MaybeUpdate(window, update.title, update.is_browser_active,
-                            update.is_web_contents_active)) {
+                            update.is_web_contents_active,
+                            update.browser_session_id,
+                            update.restored_browser_session_id)) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppUpdated(*instance);
     }

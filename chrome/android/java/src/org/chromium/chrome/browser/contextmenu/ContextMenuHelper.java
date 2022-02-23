@@ -16,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A helper class that handles generating context menus for {@link WebContents}s.
+ * A helper class that handles generating and dismissing context menus for {@link WebContents}.
  */
 public class ContextMenuHelper {
     private static Callback<ContextMenuCoordinator> sMenuShownCallbackForTests;
@@ -63,10 +62,7 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void destroy() {
-        if (mCurrentContextMenu != null) {
-            mCurrentContextMenu.dismiss();
-            mCurrentContextMenu = null;
-        }
+        dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
         mNativeContextMenuHelper = 0;
@@ -74,10 +70,7 @@ public class ContextMenuHelper {
 
     @CalledByNative
     private void setPopulatorFactory(ContextMenuPopulatorFactory populatorFactory) {
-        if (mCurrentContextMenu != null) {
-            mCurrentContextMenu.dismiss();
-            mCurrentContextMenu = null;
-        }
+        dismissContextMenu();
         if (mCurrentNativeDelegate != null) mCurrentNativeDelegate.destroy();
         mCurrentPopulator = null;
         if (mPopulatorFactory != null) mPopulatorFactory.onDestroy();
@@ -124,10 +117,6 @@ public class ContextMenuHelper {
                     TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
             RecordHistogram.recordBooleanHistogram("ContextMenu.Shown", mWebContents != null);
             recordContextMenuShownType(params);
-            if (LensUtils.isInShoppingAllowlist(mCurrentContextMenuParams.getPageUrl())) {
-                RecordHistogram.recordBooleanHistogram(
-                        "ContextMenu.Shown.ShoppingDomain", mWebContents != null);
-            }
             if (sMenuShownCallbackForTests != null) {
                 sMenuShownCallbackForTests.onResult((ContextMenuCoordinator) mCurrentContextMenu);
             }
@@ -154,6 +143,14 @@ public class ContextMenuHelper {
         };
 
         displayContextMenu(topContentOffsetPx);
+    }
+
+    @CalledByNative
+    private void dismissContextMenu() {
+        if (mCurrentContextMenu != null) {
+            mCurrentContextMenu.dismiss();
+            mCurrentContextMenu = null;
+        }
     }
 
     /**

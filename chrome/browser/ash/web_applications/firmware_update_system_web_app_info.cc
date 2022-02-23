@@ -7,20 +7,28 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_firmware_update_app_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
+#include "ash/webui/grit/ash_firmware_update_app_resources.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
 
-// TODO(michaelcheco): Update to correct icon and app sizes.
-std::unique_ptr<WebApplicationInfo>
+namespace {
+// The Firmware Update SWA window will be a fixed 600px * 640px portal per
+// the specification.
+constexpr int kFirmwareUpdateAppDefaultWidth = 600;
+constexpr int kFirmwareUpdateAppDefaultHeight = 640;
+}  // namespace
+
+// TODO(michaelcheco): Update to correct icon.
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->scope = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_FIRMWARE_UPDATE_APP_TITLE);
@@ -34,6 +42,14 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   return info;
 }
 
+gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*) {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(
+      {kFirmwareUpdateAppDefaultWidth, kFirmwareUpdateAppDefaultHeight});
+  return bounds;
+}
+
 FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
     Profile* profile)
     : web_app::SystemWebAppDelegate(web_app::SystemAppType::FIRMWARE_UPDATE,
@@ -41,7 +57,7 @@ FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
                                     GURL(ash::kChromeUIFirmwareUpdateAppURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 }
@@ -50,6 +66,23 @@ bool FirmwareUpdateSystemAppDelegate::IsAppEnabled() const {
   return ash::features::IsFirmwareUpdaterAppEnabled();
 }
 
-gfx::Size FirmwareUpdateSystemAppDelegate::GetMinimumWindowSize() const {
-  return {600, 600};
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowMaximize() const {
+  return false;
+}
+
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowResize() const {
+  return false;
+}
+
+bool FirmwareUpdateSystemAppDelegate::ShouldShowInLauncher() const {
+  return false;
+}
+
+bool FirmwareUpdateSystemAppDelegate::ShouldShowInSearch() const {
+  return false;
+}
+
+gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(
+    Browser* browser) const {
+  return GetDefaultBoundsForFirmwareUpdateApp(browser);
 }

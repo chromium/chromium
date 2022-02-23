@@ -51,7 +51,7 @@ ActivityLogDatabasePolicy::ActivityLogDatabasePolicy(
 
 void ActivityLogDatabasePolicy::Init() {
   LOG(WARNING) << "Scheduling init";
-  ScheduleAndForget(db_, &ActivityDatabase::Init, database_path_);
+  ScheduleAndForget(db_.get(), &ActivityDatabase::Init, database_path_);
 }
 
 void ActivityLogDatabasePolicy::Flush() {
@@ -109,7 +109,7 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
     if (action->mutable_other()->GetDictionary(constants::kActionWebRequest,
                                                &details)) {
       for (auto detail : details->DictItems()) {
-        details->SetBoolean(detail.first, true);
+        details->SetBoolPath(detail.first, true);
       }
     }
   }

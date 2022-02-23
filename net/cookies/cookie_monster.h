@@ -14,19 +14,19 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
@@ -155,13 +155,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // monster's existence. If |store| is NULL, then no backing store will be
   // updated. |net_log| must outlive the CookieMonster and can be null.
   CookieMonster(scoped_refptr<PersistentCookieStore> store,
-                NetLog* net_log);
+                NetLog* net_log,
+                bool first_party_sets_enabled);
 
   // Only used during unit testing.
   // |net_log| must outlive the CookieMonster.
   CookieMonster(scoped_refptr<PersistentCookieStore> store,
                 base::TimeDelta last_access_threshold,
-                NetLog* net_log);
+                NetLog* net_log,
+                bool first_party_sets_enabled);
 
   CookieMonster(const CookieMonster&) = delete;
   CookieMonster& operator=(const CookieMonster&) = delete;
@@ -177,13 +179,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void SetAllCookiesAsync(const CookieList& list, SetCookiesCallback callback);
 
   // CookieStore implementation.
-  void SetCanonicalCookieAsync(std::unique_ptr<CanonicalCookie> cookie,
-                               const GURL& source_url,
-                               const CookieOptions& options,
-                               SetCookiesCallback callback) override;
+  void SetCanonicalCookieAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      const GURL& source_url,
+      const CookieOptions& options,
+      SetCookiesCallback callback,
+      const CookieAccessResult* cookie_access_result = nullptr) override;
   void GetCookieListWithOptionsAsync(const GURL& url,
                                      const CookieOptions& options,
-                                     const CookiePartitionKeychain& s,
+                                     const CookiePartitionKeyCollection& s,
                                      GetCookieListCallback callback) override;
   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
   void GetAllCookiesWithAccessSemanticsAsync(
@@ -226,6 +230,21 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Triggers immediate recording of stats that are typically reported
   // periodically.
   bool DoRecordPeriodicStatsForTesting() { return DoRecordPeriodicStats(); }
+
+  // Will convert a site's partitioned cookies into unpartitioned cookies. This
+  // may result in multiple cookies which have the same (partition_key, name,
+  // host_key, path), which violates the database's unique constraint. The
+  // algorithm we use to coalesce the cookies into a single unpartitioned cookie
+  // is the following:
+  //
+  // 1.  If one of the cookies has no partition key (i.e. it is unpartitioned)
+  //     choose this cookie.
+  //
+  // 2.  Choose the partitioned cookie with the most recent last_access_time.
+  //
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
+  // Trial ends.
+  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
 
  private:
   // For garbage collection constants.
@@ -368,10 +387,16 @@ class NET_EXPORT CookieMonster : public CookieStore {
   //
   // |options| indicates if this setting operation is allowed
   // to affect http_only or same-site cookies.
-  void SetCanonicalCookie(std::unique_ptr<CanonicalCookie> cookie,
-                          const GURL& source_url,
-                          const CookieOptions& options,
-                          SetCookiesCallback callback);
+  //
+  // |cookie_access_result| is an optional input status, to allow for status
+  // chaining from callers. It helps callers provide the status of a
+  // canonical cookie that may have warnings associated with it.
+  void SetCanonicalCookie(
+      std::unique_ptr<CanonicalCookie> cookie,
+      const GURL& source_url,
+      const CookieOptions& options,
+      SetCookiesCallback callback,
+      const CookieAccessResult* cookie_access_result = nullptr);
 
   void GetAllCookies(GetAllCookiesCallback callback);
 
@@ -382,7 +407,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   void GetCookieListWithOptions(
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback);
 
   void DeleteAllCreatedInTimeRange(
@@ -657,6 +682,15 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // cookies. Returns whether stats were recorded.
   bool DoRecordPeriodicStats();
 
+  // Records periodic stats related to First-Party Sets usage. Note that since
+  // First-Party Sets presents a potentially asynchronous interface, these stats
+  // may be collected asynchronously w.r.t. the rest of the stats collected by
+  // `RecordPeriodicStats`.
+  // TODO(https://crbug.com/1266014): don't assume that the sets can all fit in
+  // memory at once.
+  void RecordPeriodicFirstPartySetsStats(
+      base::flat_map<SchemefulSite, std::set<SchemefulSite>> sets) const;
+
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.
   void DoCookieCallback(base::OnceClosure callback);
@@ -680,6 +714,12 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& destination,
       int source_port,
       CookieSourceScheme source_scheme);
+
+  // TODO(crbug.com/1296161): Delete this when the partitioned cookies Origin
+  // Trial ends.
+  void OnConvertPartitionedCookiesToUnpartitioned(const GURL& url);
+  void ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
+                                const GURL& url);
 
   // Set of keys (eTLD+1's) for which non-expired cookies have
   // been evicted for hitting the per-domain max. The size of this set is
@@ -752,6 +792,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::Time last_statistic_record_time_;
 
   bool persist_session_cookies_;
+
+  bool first_party_sets_enabled_;
 
   base::ThreadChecker thread_checker_;
 

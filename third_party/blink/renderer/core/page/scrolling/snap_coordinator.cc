@@ -263,10 +263,9 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // to keep the area data up to date. So just update the type and skip updating
   // areas as an optimization.
   if (!snap_container_data.scroll_snap_type().is_none) {
-    FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+    gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
-    snap_container_data.set_max_position(
-        gfx::Vector2dF(max_position.x(), max_position.y()));
+    snap_container_data.set_max_position(max_position);
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.
@@ -302,13 +301,13 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         MinimumValueForLength(container_style->ScrollPaddingLeft(),
                               container_rect.Width()));
     container_rect.Contract(container_padding);
-    snap_container_data.set_rect(ToGfxRectF(FloatRect(container_rect)));
+    snap_container_data.set_rect(gfx::RectF(container_rect));
 
     if (snap_container_data.scroll_snap_type().strictness ==
         cc::SnapStrictness::kProximity) {
       PhysicalSize size = container_rect.size;
       size.Scale(kProximityRatio);
-      gfx::Vector2dF range(size.width.ToFloat(), size.height.ToFloat());
+      gfx::PointF range(size.width.ToFloat(), size.height.ToFloat());
       snap_container_data.set_proximity_range(range);
     }
 
@@ -414,7 +413,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);
-  snap_area_data.rect = ToGfxRectF(FloatRect(area_rect));
+  snap_area_data.rect = gfx::RectF(area_rect);
 
   PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
 

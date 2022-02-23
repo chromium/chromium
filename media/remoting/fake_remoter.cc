@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
-#include "media/remoting/proto_utils.h"  // nogncheck
+#include "components/cast_streaming/public/remoting_proto_utils.h"  // nogncheck
 #endif
 
 namespace media {
@@ -52,7 +52,8 @@ bool FakeRemotingDataStreamSender::ValidateFrameBuffer(size_t index,
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)
   const std::vector<uint8_t>& data = received_frame_list[index];
   scoped_refptr<DecoderBuffer> media_buffer =
-      ByteArrayToDecoderBuffer(data.data(), data.size());
+      cast_streaming::remoting::ByteArrayToDecoderBuffer(data.data(),
+                                                         data.size());
 
   // Checks if pts is correct or not
   if (media_buffer->timestamp().InMilliseconds() != pts_ms) {

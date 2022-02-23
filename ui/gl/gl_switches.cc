@@ -7,7 +7,7 @@
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -136,10 +136,6 @@ const char kDisableGLDrawingForTests[] = "disable-gl-drawing-for-tests";
 const char kOverrideUseSoftwareGLForTests[] =
     "override-use-software-gl-for-tests";
 
-// Forces the use of software GL instead of hardware gpu for headless.
-const char kOverrideUseSoftwareGLForHeadless[] =
-    "override-use-software-gl-for-headless";
-
 // Disables specified comma separated GL Extensions if found.
 const char kDisableGLExtensions[] = "disable-gl-extensions";
 
@@ -250,13 +246,13 @@ const base::Feature kVulkanFromANGLE{"VulkanFromANGLE",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsDefaultANGLEVulkan() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // No support for devices before Q -- exit before checking feature flags
   // so that devices are not counted in finch trials.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
       base::android::SDK_VERSION_Q)
     return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
 }
 

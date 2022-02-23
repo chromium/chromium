@@ -186,7 +186,7 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
         if (token.FunctionId() != CSSValueID::kCalc)
           return false;
         // "calc(" is the same as "("
-        FALLTHROUGH;
+        [[fallthrough]];
       case kLeftParenthesisToken:
         // If the token is a left parenthesis, then push it onto the stack.
         stack.push_back(token);
@@ -204,7 +204,7 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
         break;
       case kCommentToken:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case kCDOToken:
       case kCDCToken:
       case kAtKeywordToken:

@@ -161,7 +161,7 @@ enum class TaskType : unsigned char {
   // https://w3c.github.io/ServiceWorker/#dfn-client-message-queue
   kServiceWorkerClientMessage = 60,
 
-  // https://wicg.github.io/web-locks/#web-locks-tasks-source
+  // https://w3c.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
   // Task type used for the Prioritized Task Scheduling API

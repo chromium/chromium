@@ -160,7 +160,7 @@ void PolicyOAuth2TokenFetcherImpl::StartWithRefreshToken(
 void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
   // Don't fetch tokens for test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kDisableGaiaServices)) {
+          ash::switches::kDisableGaiaServices)) {
     failed_ = true;
     ForwardPolicyToken(
         std::string(),

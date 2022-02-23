@@ -397,58 +397,115 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  // Whether we expect the port to be open or closed at the end of the call.
-  enum PortStatus {
-    CLOSED,
-    OPEN,
-  };
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0,
+                           "runtime");
 
-  int next_context_port_id = 0;
-  auto send_native_message = [this, context, &next_context_port_id](
-                                 const char* args,
-                                 const std::string& expected_message,
-                                 const std::string& expected_application_name,
-                                 PortStatus expected_port_status) {
-    // sendNativeMessage() doesn't name channels.
-    const std::string kEmptyExpectedChannel;
-
-    SCOPED_TRACE(base::StringPrintf("Args: '%s'", args));
-    constexpr char kSendMessageTemplate[] =
-        "(function() { chrome.runtime.sendNativeMessage(%s); })";
-
-    PortId expected_port_id(script_context()->context_id(),
-                            next_context_port_id++, true,
-                            SerializationFormat::kJson);
-    MessageTarget expected_target(
-        MessageTarget::ForNativeApp(expected_application_name));
-    EXPECT_CALL(*ipc_message_sender(),
-                SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, kEmptyExpectedChannel));
-    Message message(expected_message, SerializationFormat::kJson, false);
-    EXPECT_CALL(*ipc_message_sender(),
-                SendPostMessageToPort(expected_port_id, message));
-    // Note: we don't close native message ports immediately. See comment in
-    // OneTimeMessageSender.
-    // if (expected_port_status == CLOSED) {
-    //   EXPECT_CALL(
-    //       *ipc_message_sender(),
-    //       SendCloseMessagePort(expected_port_id, true));
-    // }
-    v8::Local<v8::Function> send_message = FunctionFromString(
-        context, base::StringPrintf(kSendMessageTemplate, args));
-    RunFunction(send_message, context, 0, nullptr);
-    ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
-  };
-
-  send_native_message("'native_app', {hi:'bye'}", R"({"hi":"bye"})",
-                      "native_app", CLOSED);
-  send_native_message("'another_native_app', {alpha: 2}, function() {}",
-                      R"({"alpha":2})", "another_native_app", OPEN);
+  tester.TestSendNativeMessage("'native_app', {hi:'bye'}", R"({"hi":"bye"})",
+                               "native_app");
+  tester.TestSendNativeMessage(
+      "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
+      "another_native_app");
 
   auto send_native_message_error = [context](base::StringPiece args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
   };
 
+  send_native_message_error("{data: 'hi'}, function() {}");
+  send_native_message_error(
+      "'native_app', 'some message', {includeTlsChannelId: true}");
+}
+
+class RuntimeHooksDelegateMV3Test : public RuntimeHooksDelegateTest {
+ public:
+  RuntimeHooksDelegateMV3Test() = default;
+  ~RuntimeHooksDelegateMV3Test() override = default;
+
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetManifestKey("manifest_version", 3)
+        .Build();
+  }
+};
+
+TEST_F(RuntimeHooksDelegateMV3Test, SendMessageUsingPromise) {
+  v8::HandleScope handle_scope(isolate());
+
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0,
+                           "runtime");
+
+  // The port remains open here after the call because in MV3 we return a
+  // promise if the callback parameter is omitted, so we can't use the presence/
+  // lack of the callback to determine if the caller is/isn't going to handle
+  // the response.
+  MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
+  tester.TestSendMessage("''", R"("")", self_target, SendMessageTester::OPEN);
+
+  constexpr char kStandardMessage[] = R"({"data":"hello"})";
+  {
+    // Calling sendMessage with a callback should result in no value returned.
+    v8::Local<v8::Value> result = tester.TestSendMessage(
+        "{data: 'hello'}, function() {}", kStandardMessage, self_target,
+        SendMessageTester::OPEN);
+    EXPECT_TRUE(result->IsUndefined());
+  }
+
+  {
+    // Calling sendMessage without the callback should result in a promise
+    // returned.
+    v8::Local<v8::Value> result =
+        tester.TestSendMessage("{data: 'hello'}", kStandardMessage, self_target,
+                               SendMessageTester::OPEN);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+  }
+}
+
+class RuntimeHooksDelegateNativeMessagingMV3Test
+    : public RuntimeHooksDelegateTest {
+ public:
+  RuntimeHooksDelegateNativeMessagingMV3Test() = default;
+  ~RuntimeHooksDelegateNativeMessagingMV3Test() override = default;
+
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetManifestKey("manifest_version", 3)
+        .AddPermission("nativeMessaging")
+        .Build();
+  }
+};
+
+TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0,
+                           "runtime");
+
+  {
+    // Calling sendNativeMessage without the callback should result in a promise
+    // returned.
+    v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+        "'native_app', {hi:'bye'}", R"({"hi":"bye"})", "native_app");
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+  }
+
+  {
+    // Calling sendNativeMessage with a callback should result in no value
+    // returned.
+    v8::Local<v8::Value> result = tester.TestSendNativeMessage(
+        "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
+        "another_native_app");
+    EXPECT_TRUE(result->IsUndefined());
+  }
+
+  auto send_native_message_error = [context](base::StringPiece args) {
+    CallAPIAndExpectError(context, "sendNativeMessage", args);
+  };
+
+  // Invoking the API with incorrect parameters should emit errors.
   send_native_message_error("{data: 'hi'}, function() {}");
   send_native_message_error(
       "'native_app', 'some message', {includeTlsChannelId: true}");

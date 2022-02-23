@@ -26,7 +26,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -37,7 +37,8 @@ constexpr base::FilePath::CharType kDatabasePath[] =
 
 // Version number of the database.
 //
-// Version 1 - 2021/07/16 - https://crrev.com/c/3038364
+// Version 1 - https://crrev.com/c/3038364
+//             https://crrev.com/c/3462368
 constexpr int kCurrentVersionNumber = 1;
 
 // Earliest version which can use a `kCurrentVersionNumber` database
@@ -45,11 +46,8 @@ constexpr int kCurrentVersionNumber = 1;
 constexpr int kCompatibleVersionNumber = 1;
 
 // Latest version of the database that cannot be upgraded to
-// `kCurrentVersionNumber` without razing the database. No versions are
-// currently deprecated.
+// `kCurrentVersionNumber` without razing the database.
 constexpr int kDeprecatedVersionNumber = 0;
-
-constexpr size_t kDeleteStepSize = 100;
 
 bool UpgradeAggregationServiceStorageSqlSchema(sql::Database& db,
                                                sql::MetaTable& meta_table) {
@@ -96,30 +94,30 @@ AggregationServiceStorageSql::~AggregationServiceStorageSql() {
 }
 
 std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
-    const url::Origin& origin) {
+    const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK(network::IsUrlPotentiallyTrustworthy(url));
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return {};
 
-  static constexpr char kGetOriginIdSql[] =
-      "SELECT origin_id FROM origins WHERE origin = ? AND expiry_time > ?";
-  sql::Statement get_origin_id_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kGetOriginIdSql));
-  get_origin_id_statement.BindString(0, origin.Serialize());
-  get_origin_id_statement.BindTime(1, clock_.Now());
-  if (!get_origin_id_statement.Step())
+  static constexpr char kGetUrlIdSql[] =
+      "SELECT url_id FROM urls WHERE url = ? AND expiry_time > ?";
+  sql::Statement get_url_id_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kGetUrlIdSql));
+  get_url_id_statement.BindString(0, url.spec());
+  get_url_id_statement.BindTime(1, clock_.Now());
+  if (!get_url_id_statement.Step())
     return {};
 
-  int64_t origin_id = get_origin_id_statement.ColumnInt64(0);
+  int64_t url_id = get_url_id_statement.ColumnInt64(0);
 
   static constexpr char kGetKeysSql[] =
-      "SELECT key_id, key FROM keys WHERE origin_id = ? ORDER BY key_id";
+      "SELECT key_id, key FROM keys WHERE url_id = ? ORDER BY url_id";
 
   sql::Statement get_keys_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetKeysSql));
-  get_keys_statement.BindInt64(0, origin_id);
+  get_keys_statement.BindInt64(0, url_id);
 
   // Partial results are not returned in case of any error.
   std::vector<PublicKey> result;
@@ -146,14 +144,14 @@ std::vector<PublicKey> AggregationServiceStorageSql::GetPublicKeys(
   return result;
 }
 
-void AggregationServiceStorageSql::SetPublicKeys(const url::Origin& origin,
+void AggregationServiceStorageSql::SetPublicKeys(const GURL& url,
                                                  const PublicKeyset& keyset) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK(network::IsUrlPotentiallyTrustworthy(url));
   DCHECK_LE(keyset.keys.size(), PublicKeyset::kMaxNumberKeys);
 
-  // TODO(crbug.com/1231703): Add an allowlist for helper server origins and
-  // validate the origin.
+  // TODO(crbug.com/1231703): Add an allowlist for helper server urls and
+  // validate the url.
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the public keys.
@@ -164,20 +162,20 @@ void AggregationServiceStorageSql::SetPublicKeys(const url::Origin& origin,
   if (!transaction.Begin())
     return;
 
-  // Replace the public keys for the origin. Deleting the existing rows and
+  // Replace the public keys for the url. Deleting the existing rows and
   // inserting new ones to reduce the complexity.
-  if (!ClearPublicKeysImpl(origin))
+  if (!ClearPublicKeysImpl(url))
     return;
 
-  if (!InsertPublicKeysImpl(origin, keyset))
+  if (!InsertPublicKeysImpl(url, keyset))
     return;
 
   transaction.Commit();
 }
 
-void AggregationServiceStorageSql::ClearPublicKeys(const url::Origin& origin) {
+void AggregationServiceStorageSql::ClearPublicKeys(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
+  DCHECK(network::IsUrlPotentiallyTrustworthy(url));
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return;
@@ -186,7 +184,7 @@ void AggregationServiceStorageSql::ClearPublicKeys(const url::Origin& origin) {
   if (!transaction.Begin())
     return;
 
-  ClearPublicKeysImpl(origin);
+  ClearPublicKeysImpl(url);
 
   transaction.Commit();
 }
@@ -216,33 +214,22 @@ void AggregationServiceStorageSql::ClearPublicKeysFetchedBetween(
   if (!transaction.Begin())
     return;
 
-  static constexpr char kSelectOriginRangeSql[] =
-      "SELECT origin_id FROM origins WHERE fetch_time BETWEEN ? AND ? "
-      "    ORDER by fetch_time, origin_id";
-  sql::Statement select_origins_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginRangeSql));
-  select_origins_statement.BindTime(0, delete_begin);
-  select_origins_statement.BindTime(1, delete_end);
+  static constexpr char kDeleteCandidateData[] =
+      "DELETE FROM urls WHERE fetch_time BETWEEN ? AND ? "
+      "RETURNING url_id";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteCandidateData));
+  statement.BindTime(0, delete_begin);
+  statement.BindTime(1, delete_end);
 
-  while (true) {  // Delete at most kDeleteStepSize origins at a time.
-    std::vector<int64_t> origin_ids_to_delete;
-    while (origin_ids_to_delete.size() < kDeleteStepSize &&
-           select_origins_statement.Step()) {
-      int64_t origin_id = select_origins_statement.ColumnInt64(0);
-      origin_ids_to_delete.push_back(origin_id);
-    }
-
-    // Don't proceed to delete partial results if one of the statements fails.
-    if (!select_origins_statement.Succeeded())
+  while (statement.Step()) {
+    if (!ClearPublicKeysByUrlId(/*url_id=*/statement.ColumnInt64(0))) {
       return;
-
-    ClearPublicKeysByOriginIds(origin_ids_to_delete);
-
-    if (origin_ids_to_delete.size() < kDeleteStepSize)
-      break;
-
-    select_origins_statement.Reset(/*clear_bound_vars = */ false);
+    }
   }
+
+  if (!statement.Succeeded())
+    return;
 
   transaction.Commit();
 }
@@ -259,59 +246,49 @@ void AggregationServiceStorageSql::ClearPublicKeysExpiredBy(
   if (!transaction.Begin())
     return;
 
-  static constexpr char kSelectOriginRangeSql[] =
-      "SELECT origin_id FROM origins WHERE expiry_time <= ? "
-      "    ORDER BY expiry_time, origin_id";
-  sql::Statement select_origins_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginRangeSql));
-  select_origins_statement.BindTime(0, delete_end);
+  static constexpr char kDeleteUrlRangeSql[] =
+      "DELETE FROM urls WHERE expiry_time <= ? "
+      "RETURNING url_id";
+  sql::Statement delete_urls_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteUrlRangeSql));
+  delete_urls_statement.BindTime(0, delete_end);
 
-  while (true) {  // Delete at most kDeleteStepSize origins at a time.
-    std::vector<int64_t> origin_ids_to_delete;
-    while (origin_ids_to_delete.size() < kDeleteStepSize &&
-           select_origins_statement.Step()) {
-      int64_t origin_id = select_origins_statement.ColumnInt64(0);
-      origin_ids_to_delete.push_back(origin_id);
-    }
-
-    // Don't proceed to delete partial results if one of the statements fails.
-    if (!select_origins_statement.Succeeded())
+  while (delete_urls_statement.Step()) {
+    if (!ClearPublicKeysByUrlId(
+            /*url_id=*/delete_urls_statement.ColumnInt64(0))) {
       return;
-
-    ClearPublicKeysByOriginIds(origin_ids_to_delete);
-
-    if (origin_ids_to_delete.size() < kDeleteStepSize)
-      break;
-
-    select_origins_statement.Reset(/*clear_bound_vars=*/false);
+    }
   }
+
+  if (!delete_urls_statement.Succeeded())
+    return;
 
   transaction.Commit();
 }
 
 bool AggregationServiceStorageSql::InsertPublicKeysImpl(
-    const url::Origin& origin,
+    const GURL& url,
     const PublicKeyset& keyset) {
   DCHECK(!keyset.fetch_time.is_null());
   DCHECK(!keyset.expiry_time.is_null());
   DCHECK(db_.HasActiveTransactions());
 
-  static constexpr char kInsertOriginSql[] =
-      "INSERT INTO origins(origin, fetch_time, expiry_time) VALUES (?,?,?)";
+  static constexpr char kInsertUrlSql[] =
+      "INSERT INTO urls(url, fetch_time, expiry_time) VALUES (?,?,?)";
 
-  sql::Statement insert_origin_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kInsertOriginSql));
-  insert_origin_statement.BindString(0, origin.Serialize());
-  insert_origin_statement.BindTime(1, keyset.fetch_time);
-  insert_origin_statement.BindTime(2, keyset.expiry_time);
+  sql::Statement insert_url_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kInsertUrlSql));
+  insert_url_statement.BindString(0, url.spec());
+  insert_url_statement.BindTime(1, keyset.fetch_time);
+  insert_url_statement.BindTime(2, keyset.expiry_time);
 
-  if (!insert_origin_statement.Run())
+  if (!insert_url_statement.Run())
     return false;
 
-  int64_t origin_id = db_.GetLastInsertRowId();
+  int64_t url_id = db_.GetLastInsertRowId();
 
   static constexpr char kInsertKeySql[] =
-      "INSERT INTO keys(origin_id, key_id, key) VALUES (?,?,?)";
+      "INSERT INTO keys(url_id, key_id, key) VALUES (?,?,?)";
   sql::Statement insert_key_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertKeySql));
 
@@ -320,7 +297,7 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
     DCHECK_EQ(key.key.size(), PublicKey::kKeyByteLength);
 
     insert_key_statement.Reset(/*clear_bound_vars=*/true);
-    insert_key_statement.BindInt64(0, origin_id);
+    insert_key_statement.BindInt64(0, url_id);
     insert_key_statement.BindString(1, key.id);
     insert_key_statement.BindBlob(2, key.key);
 
@@ -331,57 +308,36 @@ bool AggregationServiceStorageSql::InsertPublicKeysImpl(
   return true;
 }
 
-bool AggregationServiceStorageSql::ClearPublicKeysImpl(
-    const url::Origin& origin) {
+bool AggregationServiceStorageSql::ClearPublicKeysImpl(const GURL& url) {
   DCHECK(db_.HasActiveTransactions());
 
-  static constexpr char kSelectOriginSql[] =
-      "SELECT origin_id FROM origins WHERE origin = ? ORDER BY origin_id";
-  sql::Statement select_origin_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginSql));
-  select_origin_statement.BindString(0, origin.Serialize());
+  static constexpr char kDeleteUrlSql[] =
+      "DELETE FROM urls WHERE url = ? "
+      "RETURNING url_id";
+  sql::Statement delete_url_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteUrlSql));
+  delete_url_statement.BindString(0, url.spec());
 
-  bool has_matched_origin = select_origin_statement.Step();
+  bool has_matched_url = delete_url_statement.Step();
 
-  if (!select_origin_statement.Succeeded())
+  if (!delete_url_statement.Succeeded())
     return false;
 
-  if (!has_matched_origin)
+  if (!has_matched_url)
     return true;
 
-  int64_t origin_id = select_origin_statement.ColumnInt64(0);
-  return ClearPublicKeysByOriginIds({origin_id});
+  return ClearPublicKeysByUrlId(
+      /*url_id=*/delete_url_statement.ColumnInt64(0));
 }
 
-bool AggregationServiceStorageSql::ClearPublicKeysByOriginIds(
-    const std::vector<int64_t>& origin_ids) {
+bool AggregationServiceStorageSql::ClearPublicKeysByUrlId(int64_t url_id) {
   DCHECK(db_.HasActiveTransactions());
 
-  static constexpr char kDeleteOriginSql[] =
-      "DELETE FROM origins WHERE origin_id = ?";
-  sql::Statement delete_origin_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteOriginSql));
-
-  for (int64_t origin_id : origin_ids) {
-    delete_origin_statement.Reset(/*clear_bound_vars=*/true);
-    delete_origin_statement.BindInt64(0, origin_id);
-    if (!delete_origin_statement.Run())
-      return false;
-  }
-
-  static constexpr char kDeleteKeysSql[] =
-      "DELETE FROM keys WHERE origin_id = ?";
+  static constexpr char kDeleteKeysSql[] = "DELETE FROM keys WHERE url_id = ?";
   sql::Statement delete_keys_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteKeysSql));
-
-  for (int64_t origin_id : origin_ids) {
-    delete_keys_statement.Reset(/*clear_bound_vars=*/true);
-    delete_keys_statement.BindInt64(0, origin_id);
-    if (!delete_keys_statement.Run())
-      return false;
-  }
-
-  return true;
+  delete_keys_statement.BindInt64(0, url_id);
+  return delete_keys_statement.Run();
 }
 
 void AggregationServiceStorageSql::ClearAllPublicKeys() {
@@ -389,10 +345,10 @@ void AggregationServiceStorageSql::ClearAllPublicKeys() {
   if (!transaction.Begin())
     return;
 
-  static constexpr char kDeleteAllOriginsSql[] = "DELETE FROM origins";
-  sql::Statement delete_all_origins_statement(
-      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllOriginsSql));
-  if (!delete_all_origins_statement.Run())
+  static constexpr char kDeleteAllUrlsSql[] = "DELETE FROM urls";
+  sql::Statement delete_all_urls_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteAllUrlsSql));
+  if (!delete_all_urls_statement.Run())
     return;
 
   static constexpr char kDeleteAllKeysSql[] = "DELETE FROM keys";
@@ -501,52 +457,52 @@ bool AggregationServiceStorageSql::InitializeSchema(bool db_empty) {
 
 bool AggregationServiceStorageSql::CreateSchema() {
   // All of the columns in this table are designed to be "const".
-  // `origin` is the origin of the helper server.
+  // `url` is the helper server url.
   // `fetch_time` is when the key is fetched and inserted into database, and
   // will be used for data deletion.
   // `expiry_time` is when the key becomes invalid and will be used for data
   // pruning.
-  static constexpr char kOriginsTableSql[] =
-      "CREATE TABLE IF NOT EXISTS origins("
-      "    origin_id INTEGER PRIMARY KEY NOT NULL,"
-      "    origin TEXT NOT NULL,"
+  static constexpr char kUrlsTableSql[] =
+      "CREATE TABLE IF NOT EXISTS urls("
+      "    url_id INTEGER PRIMARY KEY NOT NULL,"
+      "    url TEXT NOT NULL,"
       "    fetch_time INTEGER NOT NULL,"
       "    expiry_time INTEGER NOT NULL)";
-  if (!db_.Execute(kOriginsTableSql))
+  if (!db_.Execute(kUrlsTableSql))
     return false;
 
-  static constexpr char kOriginsByOriginIndexSql[] =
-      "CREATE UNIQUE INDEX IF NOT EXISTS origins_by_origin_idx "
-      "    ON origins(origin)";
-  if (!db_.Execute(kOriginsByOriginIndexSql))
+  static constexpr char kUrlsByUrlIndexSql[] =
+      "CREATE UNIQUE INDEX IF NOT EXISTS urls_by_url_idx "
+      "    ON urls(url)";
+  if (!db_.Execute(kUrlsByUrlIndexSql))
     return false;
 
   // Will be used to optimize key lookup by fetch time for data clearing (see
   // crbug.com/1231689).
   static constexpr char kFetchTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS fetch_time_idx ON origins(fetch_time)";
+      "CREATE INDEX IF NOT EXISTS fetch_time_idx ON urls(fetch_time)";
   if (!db_.Execute(kFetchTimeIndexSql))
     return false;
 
   // Will be used to optimize key lookup by expiry time for data pruning (see
   // crbug.com/1231696).
   static constexpr char kExpiryTimeIndexSql[] =
-      "CREATE INDEX IF NOT EXISTS expiry_time_idx ON origins(expiry_time)";
+      "CREATE INDEX IF NOT EXISTS expiry_time_idx ON urls(expiry_time)";
   if (!db_.Execute(kExpiryTimeIndexSql))
     return false;
 
   // All of the columns in this table are designed to be "const".
-  // `origin_id` is the primary key of a row in the `origins` table.
+  // `url_id` is the primary key of a row in the `urls` table.
   // `key_id` is an arbitrary string identifying the key which is set by helper
   // servers and not required to be unique, but is required to be unique per
-  // origin.
+  // url.
   // `key` is the public key as a sequence of bytes.
   static constexpr char kKeysTableSql[] =
       "CREATE TABLE IF NOT EXISTS keys("
-      "    origin_id INTEGER NOT NULL,"
+      "    url_id INTEGER NOT NULL,"
       "    key_id TEXT NOT NULL,"
       "    key BLOB NOT NULL,"
-      "    PRIMARY KEY(origin_id, key_id)) WITHOUT ROWID";
+      "    PRIMARY KEY(url_id, key_id)) WITHOUT ROWID";
   if (!db_.Execute(kKeysTableSql))
     return false;
 

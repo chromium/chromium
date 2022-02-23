@@ -4,19 +4,25 @@
 
 #include <stdint.h>
 
+#include <cstdint>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
+#include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/usage_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,17 +36,6 @@ namespace storage {
 
 namespace {
 
-void DidGetGlobalUsage(bool* done,
-                       int64_t* usage_out,
-                       int64_t* unlimited_usage_out,
-                       int64_t usage,
-                       int64_t unlimited_usage) {
-  EXPECT_FALSE(*done);
-  *done = true;
-  *usage_out = usage;
-  *unlimited_usage_out = unlimited_usage;
-}
-
 class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
@@ -49,11 +44,10 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
   UsageTrackerTestQuotaClient& operator=(const UsageTrackerTestQuotaClient&) =
       delete;
 
-  void GetStorageKeyUsage(const StorageKey& storage_key,
-                          StorageType type,
-                          GetStorageKeyUsageCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    int64_t usage = GetUsage(storage_key);
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override {
+    EXPECT_EQ(StorageType::kTemporary, bucket.type);
+    int64_t usage = GetUsage(bucket);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
@@ -61,33 +55,19 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
   void GetStorageKeysForType(StorageType type,
                              GetStorageKeysForTypeCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<StorageKey> storage_keys;
-    for (const auto& storage_key_usage_pair : storage_key_usage_map_)
-      storage_keys.push_back(storage_key_usage_pair.first);
+    std::set<StorageKey> storage_keys;
+    for (const auto& bucket_usage_pair : bucket_usage_map_)
+      storage_keys.emplace(bucket_usage_pair.first.storage_key);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(storage_keys)));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<StorageKey>(storage_keys.begin(),
+                                                          storage_keys.end())));
   }
 
-  void GetStorageKeysForHost(StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<StorageKey> storage_keys;
-    for (const auto& storage_key_usage_pair : storage_key_usage_map_) {
-      if (storage_key_usage_pair.first.origin().host() == host)
-        storage_keys.push_back(storage_key_usage_pair.first);
-    }
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(storage_keys)));
-  }
-
-  void DeleteStorageKeyData(const StorageKey& storage_key,
-                            StorageType type,
-                            DeleteStorageKeyDataCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    storage_key_usage_map_.erase(storage_key);
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override {
+    EXPECT_EQ(StorageType::kTemporary, bucket.type);
+    bucket_usage_map_.erase(bucket);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
@@ -97,23 +77,19 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
     std::move(callback).Run();
   }
 
-  int64_t GetUsage(const StorageKey& storage_key) {
-    auto it = storage_key_usage_map_.find(storage_key);
-    if (it == storage_key_usage_map_.end())
+  int64_t GetUsage(const BucketLocator& bucket) {
+    auto it = bucket_usage_map_.find(bucket);
+    if (it == bucket_usage_map_.end())
       return 0;
     return it->second;
   }
 
-  void SetUsage(const StorageKey& storage_key, int64_t usage) {
-    storage_key_usage_map_[storage_key] = usage;
-  }
-
-  int64_t UpdateUsage(const StorageKey& storage_key, int64_t delta) {
-    return storage_key_usage_map_[storage_key] += delta;
+  int64_t UpdateUsage(const BucketLocator& bucket, int64_t delta) {
+    return bucket_usage_map_[bucket] += delta;
   }
 
  private:
-  std::map<StorageKey, int64_t> storage_key_usage_map_;
+  std::map<BucketLocator, int64_t> bucket_usage_map_;
 };
 
 }  // namespace
@@ -122,65 +98,47 @@ class UsageTrackerTest : public testing::Test {
  public:
   UsageTrackerTest()
       : storage_policy_(base::MakeRefCounted<MockSpecialStoragePolicy>()),
-        quota_client_(std::make_unique<UsageTrackerTestQuotaClient>()),
-        usage_tracker_(GetQuotaClientMap(),
-                       StorageType::kTemporary,
-                       storage_policy_.get()) {}
+        quota_client_(std::make_unique<UsageTrackerTestQuotaClient>()) {
+    EXPECT_TRUE(base_.CreateUniqueTempDir());
+    quota_manager_ = base::MakeRefCounted<QuotaManagerImpl>(
+        /*is_incognito=*/false, base_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        /*quota_change_callback=*/base::DoNothing(), storage_policy_.get(),
+        GetQuotaSettingsFunc());
+    usage_tracker_ = std::make_unique<UsageTracker>(
+        quota_manager_.get(), GetQuotaClientMap(), StorageType::kTemporary,
+        storage_policy_.get());
+  }
 
   UsageTrackerTest(const UsageTrackerTest&) = delete;
   UsageTrackerTest& operator=(const UsageTrackerTest&) = delete;
 
   ~UsageTrackerTest() override = default;
 
-  UsageTracker* usage_tracker() {
-    return &usage_tracker_;
-  }
-
-  static void DidGetUsageBreakdown(
-      bool* done,
-      int64_t* usage_out,
-      blink::mojom::UsageBreakdownPtr* usage_breakdown_out,
-      int64_t usage,
-      blink::mojom::UsageBreakdownPtr usage_breakdown) {
-    EXPECT_FALSE(*done);
-    *usage_out = usage;
-    *usage_breakdown_out = std::move(usage_breakdown);
-    *done = true;
-  }
-
-  void UpdateUsage(const StorageKey& storage_key, int64_t delta) {
-    quota_client_->UpdateUsage(storage_key, delta);
-    usage_tracker_.UpdateUsageCache(QuotaClientType::kFileSystem, storage_key,
-                                    delta);
+  void UpdateUsage(const BucketInfo& bucket, int64_t delta) {
+    quota_client_->UpdateUsage(bucket.ToBucketLocator(), delta);
+    usage_tracker_->UpdateBucketUsageCache(QuotaClientType::kFileSystem,
+                                           bucket.ToBucketLocator(), delta);
     base::RunLoop().RunUntilIdle();
   }
 
-  void UpdateUsageWithoutNotification(const StorageKey& storage_key,
-                                      int64_t delta) {
-    quota_client_->UpdateUsage(storage_key, delta);
+  void UpdateUsageWithoutNotification(const BucketInfo& bucket, int64_t delta) {
+    quota_client_->UpdateUsage(bucket.ToBucketLocator(), delta);
   }
 
   void GetGlobalUsage(int64_t* usage, int64_t* unlimited_usage) {
-    bool done = false;
-    usage_tracker_.GetGlobalUsage(
-        base::BindOnce(&DidGetGlobalUsage, &done, usage, unlimited_usage));
-    base::RunLoop().RunUntilIdle();
-
-    EXPECT_TRUE(done);
+    base::test::TestFuture<int64_t, int64_t> future;
+    usage_tracker_->GetGlobalUsage(future.GetCallback());
+    *usage = future.Get<0>();
+    *unlimited_usage = future.Get<1>();
   }
 
   std::pair<int64_t, blink::mojom::UsageBreakdownPtr> GetHostUsageWithBreakdown(
       const std::string& host) {
-    int64_t usage;
-    blink::mojom::UsageBreakdownPtr usage_breakdown;
-    bool done = false;
-
-    usage_tracker_.GetHostUsageWithBreakdown(
-        host, base::BindOnce(&UsageTrackerTest::DidGetUsageBreakdown, &done,
-                             &usage, &usage_breakdown));
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(done);
-    return std::make_pair(usage, std::move(usage_breakdown));
+    base::test::TestFuture<int64_t, blink::mojom::UsageBreakdownPtr> future;
+    usage_tracker_->GetHostUsageWithBreakdown(host, future.GetCallback());
+    return std::make_pair(future.Get<0>(),
+                          std::move(std::get<1>(future.Take())));
   }
 
   void GrantUnlimitedStoragePolicy(const StorageKey& storage_key) {
@@ -200,8 +158,29 @@ class UsageTrackerTest : public testing::Test {
   }
 
   void SetUsageCacheEnabled(const StorageKey& storage_key, bool enabled) {
-    usage_tracker_.SetUsageCacheEnabled(QuotaClientType::kFileSystem,
-                                        storage_key, enabled);
+    usage_tracker_->SetUsageCacheEnabled(QuotaClientType::kFileSystem,
+                                         storage_key, enabled);
+  }
+
+  BucketInfo CreateBucket(const StorageKey& storage_key,
+                          const std::string& bucket_name) {
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
+    quota_manager_->CreateBucketForTesting(storage_key, bucket_name,
+                                           StorageType::kTemporary,
+                                           future.GetCallback());
+    QuotaErrorOr<BucketInfo> bucket_result = future.Take();
+    DCHECK(bucket_result.ok());
+    return bucket_result.value();
+  }
+
+  void OpenDatabase() { quota_manager_->EnsureDatabaseOpened(); }
+
+  void disable_quota_database(bool disable) {
+    quota_manager_->database_->SetDisabledForTesting(disable);
+  }
+
+  void disable_database_bootstrap(bool disable) {
+    quota_manager_->SetBootstrapDisabledForTesting(disable);
   }
 
  private:
@@ -216,7 +195,10 @@ class UsageTrackerTest : public testing::Test {
 
   scoped_refptr<MockSpecialStoragePolicy> storage_policy_;
   std::unique_ptr<UsageTrackerTestQuotaClient> quota_client_;
-  UsageTracker usage_tracker_;
+
+  scoped_refptr<QuotaManagerImpl> quota_manager_;
+  std::unique_ptr<UsageTracker> usage_tracker_;
+  base::ScopedTempDir base_;
 };
 
 TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
@@ -232,7 +214,9 @@ TEST_F(UsageTrackerTest, GrantAndRevokeUnlimitedStorage) {
       StorageKey::CreateFromStringForTesting("http://example.com");
   const std::string& host = storage_key.origin().host();
 
-  UpdateUsage(storage_key, 100);
+  BucketInfo bucket = CreateBucket(storage_key, kDefaultBucketName);
+
+  UpdateUsage(bucket, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -269,7 +253,9 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
       StorageKey::CreateFromStringForTesting("http://example.com");
   const std::string& host = storage_key.origin().host();
 
-  UpdateUsage(storage_key, 100);
+  BucketInfo bucket = CreateBucket(storage_key, kDefaultBucketName);
+
+  UpdateUsage(bucket, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -279,7 +265,7 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(100, host_usage_breakdown.first);
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
-  UpdateUsageWithoutNotification(storage_key, 100);
+  UpdateUsageWithoutNotification(bucket, 100);
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(100, usage);
   EXPECT_EQ(0, unlimited_usage);
@@ -288,9 +274,9 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
   GrantUnlimitedStoragePolicy(storage_key);
-  UpdateUsageWithoutNotification(storage_key, 100);
+  UpdateUsageWithoutNotification(bucket, 100);
   SetUsageCacheEnabled(storage_key, false);
-  UpdateUsageWithoutNotification(storage_key, 100);
+  UpdateUsageWithoutNotification(bucket, 100);
 
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(400, usage);
@@ -309,7 +295,7 @@ TEST_F(UsageTrackerTest, CacheDisabledClientTest) {
   EXPECT_EQ(host_usage_breakdown_expected, host_usage_breakdown.second);
 
   SetUsageCacheEnabled(storage_key, true);
-  UpdateUsage(storage_key, 100);
+  UpdateUsage(bucket, 100);
 
   GetGlobalUsage(&usage, &unlimited_usage);
   EXPECT_EQ(500, usage);
@@ -330,16 +316,22 @@ TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
   const StorageKey kNonCachedUnlimited =
       StorageKey::CreateFromStringForTesting("http://non_cached-unlimited");
 
+  BucketInfo bucket_normal = CreateBucket(kNormal, kDefaultBucketName);
+  BucketInfo bucket_unlimited = CreateBucket(kUnlimited, kDefaultBucketName);
+  BucketInfo bucket_noncached = CreateBucket(kNonCached, kDefaultBucketName);
+  BucketInfo bucket_noncached_unlimited =
+      CreateBucket(kNonCachedUnlimited, kDefaultBucketName);
+
   GrantUnlimitedStoragePolicy(kUnlimited);
   GrantUnlimitedStoragePolicy(kNonCachedUnlimited);
 
   SetUsageCacheEnabled(kNonCached, false);
   SetUsageCacheEnabled(kNonCachedUnlimited, false);
 
-  UpdateUsageWithoutNotification(kNormal, 1);
-  UpdateUsageWithoutNotification(kUnlimited, 2);
-  UpdateUsageWithoutNotification(kNonCached, 4);
-  UpdateUsageWithoutNotification(kNonCachedUnlimited, 8);
+  UpdateUsageWithoutNotification(bucket_normal, 1);
+  UpdateUsageWithoutNotification(bucket_unlimited, 2);
+  UpdateUsageWithoutNotification(bucket_noncached, 4);
+  UpdateUsageWithoutNotification(bucket_noncached_unlimited, 8);
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
@@ -348,8 +340,8 @@ TEST_F(UsageTrackerTest, GlobalUsageUnlimitedUncached) {
   EXPECT_EQ(1 + 2 + 4 + 8, total_usage);
   EXPECT_EQ(2 + 8, unlimited_usage);
 
-  UpdateUsageWithoutNotification(kNonCached, 16 - 4);
-  UpdateUsageWithoutNotification(kNonCachedUnlimited, 32 - 8);
+  UpdateUsageWithoutNotification(bucket_noncached, 16 - 4);
+  UpdateUsageWithoutNotification(bucket_noncached_unlimited, 32 - 8);
 
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(1 + 2 + 16 + 32, total_usage);
@@ -364,8 +356,11 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedInit) {
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two storage keys have the same host";
 
-  UpdateUsageWithoutNotification(kStorageKey1, 100);
-  UpdateUsageWithoutNotification(kStorageKey2, 200);
+  BucketInfo bucket1 = CreateBucket(kStorageKey1, kDefaultBucketName);
+  BucketInfo bucket2 = CreateBucket(kStorageKey2, kDefaultBucketName);
+
+  UpdateUsageWithoutNotification(bucket1, 100);
+  UpdateUsageWithoutNotification(bucket2, 200);
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
@@ -385,6 +380,9 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedUpdate) {
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two storage keys have the same host";
 
+  BucketInfo bucket1 = CreateBucket(kStorageKey1, kDefaultBucketName);
+  BucketInfo bucket2 = CreateBucket(kStorageKey2, kDefaultBucketName);
+
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
@@ -394,8 +392,8 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostCachedUpdate) {
   EXPECT_EQ(0, total_usage);
   EXPECT_EQ(0, unlimited_usage);
 
-  UpdateUsage(kStorageKey1, 100);
-  UpdateUsage(kStorageKey2, 200);
+  UpdateUsage(bucket1, 100);
+  UpdateUsage(bucket2, 200);
 
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);
@@ -410,11 +408,14 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostUncachedInit) {
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two storage keys have the same host";
 
+  BucketInfo bucket1 = CreateBucket(kStorageKey1, kDefaultBucketName);
+  BucketInfo bucket2 = CreateBucket(kStorageKey2, kDefaultBucketName);
+
   SetUsageCacheEnabled(kStorageKey1, false);
   SetUsageCacheEnabled(kStorageKey2, false);
 
-  UpdateUsageWithoutNotification(kStorageKey1, 100);
-  UpdateUsageWithoutNotification(kStorageKey2, 200);
+  UpdateUsageWithoutNotification(bucket1, 100);
+  UpdateUsageWithoutNotification(bucket2, 200);
 
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
@@ -434,6 +435,9 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostUncachedUpdate) {
   ASSERT_EQ(kStorageKey1.origin().host(), kStorageKey2.origin().host())
       << "The test assumes that the two storage keys have the same host";
 
+  BucketInfo bucket1 = CreateBucket(kStorageKey1, kDefaultBucketName);
+  BucketInfo bucket2 = CreateBucket(kStorageKey2, kDefaultBucketName);
+
   int64_t total_usage = 0;
   int64_t unlimited_usage = 0;
   // GetGlobalUsage() takes different code paths on the first call and on
@@ -446,12 +450,32 @@ TEST_F(UsageTrackerTest, GlobalUsageMultipleStorageKeysPerHostUncachedUpdate) {
   SetUsageCacheEnabled(kStorageKey1, false);
   SetUsageCacheEnabled(kStorageKey2, false);
 
-  UpdateUsageWithoutNotification(kStorageKey1, 100);
-  UpdateUsageWithoutNotification(kStorageKey2, 200);
+  UpdateUsageWithoutNotification(bucket1, 100);
+  UpdateUsageWithoutNotification(bucket2, 200);
 
   GetGlobalUsage(&total_usage, &unlimited_usage);
   EXPECT_EQ(100 + 200, total_usage);
   EXPECT_EQ(0, unlimited_usage);
+}
+
+TEST_F(UsageTrackerTest, QuotaDatabaseDisabled) {
+  disable_database_bootstrap(true);
+  OpenDatabase();
+
+  disable_quota_database(true);
+
+  int64_t total_usage = 0;
+  int64_t unlimited_usage = 0;
+  GetGlobalUsage(&total_usage, &unlimited_usage);
+  EXPECT_EQ(total_usage, -1);
+  EXPECT_EQ(unlimited_usage, -1);
+
+  const StorageKey kStorageKey =
+      StorageKey::CreateFromStringForTesting("http://example.com");
+  std::pair<int64_t, blink::mojom::UsageBreakdownPtr> host_usage_breakdown =
+      GetHostUsageWithBreakdown(kStorageKey.origin().host());
+  EXPECT_EQ(host_usage_breakdown.first, -1);
+  EXPECT_EQ(host_usage_breakdown.second, blink::mojom::UsageBreakdown::New());
 }
 
 }  // namespace storage

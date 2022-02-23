@@ -25,7 +25,8 @@ class MockURLLoaderClient : public network::mojom::URLLoaderClient {
               (override));
   MOCK_METHOD(void,
               OnReceiveResponse,
-              (network::mojom::URLResponseHeadPtr head),
+              (network::mojom::URLResponseHeadPtr head,
+               mojo::ScopedDataPipeConsumerHandle body),
               (override));
   MOCK_METHOD(void,
               OnReceiveRedirect,

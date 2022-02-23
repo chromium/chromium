@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
@@ -88,10 +89,10 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   // The controller provides data for this view and owns it.
-  ManualFillingController* controller_;
+  raw_ptr<ManualFillingController> controller_;
 
   // WebContents object that the controller and the bridge correspond to.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;

@@ -57,9 +57,9 @@ bool DeviceInfo::IsAsyncApiSupported() {
   return SdkVersion() >= base::android::SDK_VERSION_NOUGAT;
 }
 
-bool DeviceInfo::AddSupportedCodecProfileLevels(
+void DeviceInfo::AddSupportedCodecProfileLevels(
     std::vector<CodecProfileLevel>* result) {
-  return MediaCodecUtil::AddSupportedCodecProfileLevels(result);
+  MediaCodecUtil::AddSupportedCodecProfileLevels(result);
 }
 
 }  // namespace media

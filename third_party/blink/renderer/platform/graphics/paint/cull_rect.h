@@ -32,13 +32,9 @@ class PLATFORM_EXPORT CullRect {
   CullRect() = default;
   explicit CullRect(const gfx::Rect& rect) : rect_(rect) {}
 
-  static CullRect Infinite() {
-    return CullRect(ToGfxRect(LayoutRect::InfiniteIntRect()));
-  }
+  static CullRect Infinite() { return CullRect(LayoutRect::InfiniteIntRect()); }
 
-  bool IsInfinite() const {
-    return rect_ == ToGfxRect(LayoutRect::InfiniteIntRect());
-  }
+  bool IsInfinite() const { return rect_ == LayoutRect::InfiniteIntRect(); }
 
   bool Intersects(const gfx::Rect&) const;
   bool IntersectsTransformed(const AffineTransform&, const gfx::RectF&) const;
@@ -51,11 +47,10 @@ class PLATFORM_EXPORT CullRect {
   // the cull rect is in the space of the parent the transform node.
   void ApplyTransform(const TransformPaintPropertyNode&);
 
-  // For CullRectUpdate only. Similar to the above but also applies clips and
-  // expands for all directly composited transforms (including scrolling and
-  // non-scrolling ones). |root| is used to calculate the expansion distance in
-  // the local space, to make the expansion distance approximately the same in
-  // the root space.
+  // Similar to the above but also applies clips and expands for all directly
+  // composited transforms (including scrolling and non-scrolling ones).
+  // |root| is used to calculate the expansion distance in the local space,
+  // to make the expansion distance approximately the same in the root space.
   // Returns whether the cull rect has been expanded.
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,
@@ -69,20 +64,8 @@ class PLATFORM_EXPORT CullRect {
  private:
   friend class CullRectTest;
 
-  enum ApplyTransformResult {
-    // The cull rect is transformed into the target transform space (by mapping
-    // the cull rect with the inverse of the transform) without expansion.
-    // In SlimmingPaintV1, the functions always return this value.
-    kNotExpanded,
-    // The cull rect is converted by a scroll translation (in the steps
-    // described in ApplyTransform(), and the result covers the whole scrolling
-    // contents.
-    kExpandedForWholeScrollingContents,
-    // The cull rect is converted by a scroll translation, and the result
-    // doesn't cover the whole scrolling contents.
-    kExpandedForPartialScrollingContents,
-  };
-  ApplyTransformResult ApplyScrollTranslation(
+  // Returns whether the cull rect is expanded.
+  bool ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation);
 

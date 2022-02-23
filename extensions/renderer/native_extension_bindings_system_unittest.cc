@@ -5,7 +5,6 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -116,8 +115,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_TRUE(
-      last_params().arguments.Equals(ListValueFromString("[30]").get()));
+  EXPECT_EQ(last_params().arguments, *ListValueFromString("[30]"));
 
   // Respond and validate.
   bindings_system()->HandleResponse(last_params().request_id, true,
@@ -355,8 +353,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestBridgingToJSCustomBindings) {
   EXPECT_EQ("idle.setDetectionInterval", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_FALSE(last_params().has_callback);
-  EXPECT_TRUE(
-      last_params().arguments.Equals(ListValueFromString("[50]").get()));
+  EXPECT_EQ(last_params().arguments, *ListValueFromString("[50]"));
 }
 
 TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
@@ -399,8 +396,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestSendRequestHook) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_EQ(extension->url(), last_params().source_url);
   EXPECT_TRUE(last_params().has_callback);
-  EXPECT_TRUE(
-      last_params().arguments.Equals(ListValueFromString("[30]").get()));
+  EXPECT_EQ(last_params().arguments, *ListValueFromString("[30]"));
 }
 
 // Tests that we can notify the browser as event listeners are added or removed.
@@ -764,7 +760,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_a);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_a, fake_chrome->CreationContext());
+    EXPECT_EQ(context_a, fake_chrome->GetCreationContextChecked());
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -777,7 +773,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   {
     v8::Context::Scope scope(context_b);
     v8::Local<v8::Object> fake_chrome = v8::Object::New(isolate());
-    EXPECT_EQ(context_b, fake_chrome->CreationContext());
+    EXPECT_EQ(context_b, fake_chrome->GetCreationContextChecked());
     context_b->Global()
         ->Set(context_b, gin::StringToSymbol(isolate(), "chrome"), fake_chrome)
         .ToChecked();
@@ -1137,7 +1133,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
           ->Get(context, gin::StringToV8(isolate(), "apiBridge"))
           .ToLocalChecked();
   ASSERT_TRUE(api_bridge->IsObject());
-  EXPECT_EQ(context, api_bridge.As<v8::Object>()->CreationContext());
+  EXPECT_EQ(context, api_bridge.As<v8::Object>()->GetCreationContextChecked());
 }
 
 class ResponseValidationNativeExtensionBindingsSystemUnittest

@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/null_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -43,7 +44,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
@@ -107,13 +108,16 @@ namespace content {
 
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif
+
+  // Test shell always exposes the GC.
+  std::string v8_flags("--expose-gc");
 
   blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
@@ -131,17 +135,22 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     dummy_task_runner = base::MakeRefCounted<base::NullTaskRunner>();
     dummy_task_runner_handle =
         std::make_unique<base::ThreadTaskRunnerHandle>(dummy_task_runner);
+    // Force V8 to run single threaded.
+    v8_flags += " --single-threaded";
   } else {
     DCHECK_EQ(scheduler_type, SchedulerType::kRealScheduler);
     main_thread_scheduler_ =
         blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-        "BlinkTestSupport");
+    base::test::TaskEnvironment::CreateThreadPool();
+    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
   }
 
   // Initialize mojo firstly to enable Blink initialization to use it.
   InitializeMojo();
+
+  // Set V8 flags.
+  v8::V8::SetFlagsFromString(v8_flags.c_str(), v8_flags.size());
 
   mojo::BinderMap binders;
   blink::Initialize(this, &binders, main_thread_scheduler_.get());
@@ -158,10 +167,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
 
   // Initialize libraries for media.
   media::InitializeMediaLibrary();
-
-  // Test shell always exposes the GC.
-  std::string flags("--expose-gc");
-  v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
 }
 
 TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
@@ -171,6 +176,10 @@ TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
 }
 
 blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
+  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
+}
+
+blink::WebString TestBlinkWebUnitTestSupport::FullUserAgent() {
   return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 

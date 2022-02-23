@@ -8,13 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/stub_authenticator_builder.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
@@ -27,6 +25,9 @@ constexpr char kTestEmail[] = "test_user@gmail.com";
 constexpr char kTestGaiaId[] = "111111111";
 
 }  // namespace test
+
+class CryptohomeMixin;
+class StubAuthenticatorBuilder;
 
 // Mixin browser tests can use for setting up test login manager environment.
 // It sets up command line so test starts on the login screen UI, and
@@ -76,6 +77,15 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                     const UserList& initial_users,
                     FakeGaiaMixin* gaia_mixin);
+  // When LoginManagerMixin is provided a handle to CryptohomeMixin,
+  // all users added to LoginManagerMixin through
+  // |LoginManagerMixin::AppendRegularUsers| and
+  // |LoginManagerMixin::AppendManagedUsers| will also be forwarded to
+  // CryptohomeMixin.
+  LoginManagerMixin(InProcessBrowserTestMixinHost* host,
+                    const UserList& initial_users,
+                    FakeGaiaMixin* gaia_mixin,
+                    CryptohomeMixin* cryptohome_mixin);
 
   LoginManagerMixin(const LoginManagerMixin&) = delete;
   LoginManagerMixin& operator=(const LoginManagerMixin&) = delete;
@@ -161,6 +171,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   LocalStateMixin local_state_mixin_;
   FakeGaiaMixin* fake_gaia_mixin_;
+  CryptohomeMixin* cryptohome_mixin_;
 };
 
 }  // namespace ash

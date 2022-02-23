@@ -25,27 +25,15 @@ void HungRendererInfoBarDelegate::Create(
           new HungRendererInfoBarDelegate(render_process_host))));
 }
 
-void HungRendererInfoBarDelegate::OnRendererResponsive() {
-  LogEvent(RENDERER_BECAME_RESPONSIVE);
-}
-
 HungRendererInfoBarDelegate::HungRendererInfoBarDelegate(
     content::RenderProcessHost* render_process_host)
-    : render_process_host_(render_process_host),
-      terminal_event_logged_for_uma_(false) {}
+    : render_process_host_(render_process_host) {}
 
-HungRendererInfoBarDelegate::~HungRendererInfoBarDelegate() {
-  if (!terminal_event_logged_for_uma_)
-    LogEvent(TAB_CLOSED);
-}
+HungRendererInfoBarDelegate::~HungRendererInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 HungRendererInfoBarDelegate::GetIdentifier() const {
   return HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID;
-}
-
-void HungRendererInfoBarDelegate::InfoBarDismissed() {
-  LogEvent(CLOSE_CLICKED);
 }
 
 HungRendererInfoBarDelegate*
@@ -69,19 +57,10 @@ std::u16string HungRendererInfoBarDelegate::GetButtonLabel(
 }
 
 bool HungRendererInfoBarDelegate::Accept() {
-  LogEvent(KILL_CLICKED);
   render_process_host_->Shutdown(content::RESULT_CODE_HUNG);
   return true;
 }
 
 bool HungRendererInfoBarDelegate::Cancel() {
-  LogEvent(WAIT_CLICKED);
   return true;
-}
-
-void HungRendererInfoBarDelegate::LogEvent(Event event) {
-  DCHECK(!terminal_event_logged_for_uma_);
-  terminal_event_logged_for_uma_ = true;
-  UMA_HISTOGRAM_ENUMERATION("Renderer.Hung.MobileInfoBar.UserEvent", event,
-                            EVENT_COUNT);
 }

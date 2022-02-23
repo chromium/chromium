@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 
 namespace ui {
@@ -26,7 +27,8 @@ class WaylandBufferHandle {
     DCHECK(created_callback_.is_null());
     created_callback_ = std::move(callback);
   }
-  void set_buffer_released_callback(base::OnceClosure callback) {
+  void set_buffer_released_callback(
+      base::OnceCallback<void(struct wl_buffer*)> callback) {
     released_callback_ = std::move(callback);
   }
 
@@ -39,17 +41,16 @@ class WaylandBufferHandle {
   struct wl_buffer* wl_buffer() const {
     return wl_buffer_.get();
   }
-  bool released() const { return released_; }
 
-  // Call when this buffer is ready to be re-used (i.e. giving back to viz).
-  // N.B. This moves the release fence, so it is not idempotent.
-  gfx::GpuFenceHandle TakeReleaseFence() { return std::move(release_fence_); }
+  // The existence of |released_callback_| is an indicator of whether the
+  // wl_buffer is released, when deciding whether wl_surface should explicitly
+  // call wl_surface.attach w/ the wl_bufffer.
+  bool released() const { return released_callback_.is_null(); }
 
-  // Call when this buffer is attached to a surface.
-  void Attached();
-
-  // Call when this buffer is unattached from a surface.
-  void Release(gfx::GpuFenceHandle release_fence);
+  // Called when the wl_surface this buffer is attached to becomes hidden, or
+  // when linux_explicit_synchronization extension is enabled to replace
+  // wl_buffer.release events.
+  void OnExplicitRelease();
 
  private:
   // Called when wl_buffer object is created.
@@ -67,13 +68,14 @@ class WaylandBufferHandle {
 
   // A callback that runs when the wl_buffer is created.
   base::OnceClosure created_callback_;
-  // A callback that runs when the wl_buffer is released by the Wayland
-  // compositor.
-  base::OnceClosure released_callback_;
 
-  // Tells that the buffer has already been released aka not busy, and the
-  // surface can tell the gpu about a successful swap.
-  bool released_ = true;
+  // A callback that binds WaylandFrameManager::OnWlBufferRelease() function,
+  // which erases a pending release buffer entry from the
+  // WaylandFrame::submitted_buffers, when wl_buffer.release event is signalled
+  // from the wl_compositor.
+  // When linux explicit synchronization is adopted, buffer_listener is unset
+  // and this callback should be reset by OnExplicitRelease() instead.
+  base::OnceCallback<void(struct wl_buffer*)> released_callback_;
 
   // Optional release fence. This may be set if the buffer is released
   // via the explicit synchronization Wayland protocol.

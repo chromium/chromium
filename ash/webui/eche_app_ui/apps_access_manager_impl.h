@@ -69,11 +69,4 @@ class AppsAccessManagerImpl : public AppsAccessManager,
 }  // namespace eche_app
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace eche_app {
-using ::ash::eche_app::AppsAccessManagerImpl;
-}  // namespace eche_app
-}  // namespace chromeos
-
 #endif  // ASH_WEBUI_ECHE_APP_UI_APPS_ACCESS_MANAGER_IMPL_H_

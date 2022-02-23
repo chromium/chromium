@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -329,7 +330,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
   }
 
-  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
+  footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kChromeUIManagementURL)] ];
   return footer;
 }
 
@@ -338,7 +339,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeRestrictedAccountsFooter];
   footer.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES);
-  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
+  footer.urls = @[ [[CrURL alloc] initWithGURL:GURL(kChromeUIManagementURL)] ];
   return footer;
 }
 
@@ -595,12 +596,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             view:itemView];
   __weak AccountsTableViewController* weakSelf = self;
   self.signoutCoordinator.completion = ^(BOOL success) {
-    if (success) {
-      // Allow user interaction only didn't cancel the dialog.
-      // if -[<SignoutActionSheetCoordinatorDelegate>
-      // didSelectSignoutDataRetentionStrategy] has been called.
-      [weakSelf allowUserInteraction];
-    }
     [weakSelf.signoutCoordinator stop];
     weakSelf.signoutCoordinator = nil;
     if (success) {
@@ -764,17 +759,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate
 
-- (void)didSelectSignoutDataRetentionStrategy {
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
   _authenticationOperationInProgress = YES;
   [self preventUserInteraction];
 }
 
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self allowUserInteraction];
+}
+
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
   DCHECK(self.dispatcher);
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
   [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 

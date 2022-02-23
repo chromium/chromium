@@ -56,6 +56,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kFeatureGuide:
+      return "FeatureGuide";
   }
 }
 
@@ -281,7 +283,7 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
                               false /*update_db*/);
         break;
       case UserFeedback::kNoFeedback:
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         // The user didn't interact with the notification yet.
         continue;
@@ -414,7 +416,7 @@ void ImpressionHistoryTrackerImpl::ApplyPositiveImpression(
 
   // Increase |current_max_daily_show| by 1.
   client_state->current_max_daily_show =
-      base::clamp(++client_state->current_max_daily_show, 0,
+      base::clamp(client_state->current_max_daily_show + 1, 0,
                   config_.max_daily_shown_per_type);
 }
 

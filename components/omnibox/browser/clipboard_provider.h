@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_CLIPBOARD_PROVIDER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 
@@ -179,12 +180,12 @@ class ClipboardProvider : public AutocompleteProvider {
   bool UpdateClipboardTextContent(const std::u16string& text,
                                   AutocompleteMatch* match);
 
-  AutocompleteProviderClient* client_;
-  AutocompleteProviderListener* listener_;
-  ClipboardRecentContent* clipboard_content_;
+  raw_ptr<AutocompleteProviderClient> client_;
+  raw_ptr<AutocompleteProviderListener> listener_;
+  raw_ptr<ClipboardRecentContent> clipboard_content_;
 
   // Used for efficiency when creating the verbatim match.  Can be NULL.
-  HistoryURLProvider* history_url_provider_;
+  raw_ptr<HistoryURLProvider> history_url_provider_;
 
   // The current URL suggested and the number of times it has been offered.
   // Used for recording metrics.

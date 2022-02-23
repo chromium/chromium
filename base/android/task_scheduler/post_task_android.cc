@@ -7,7 +7,6 @@
 #include "base/android/jni_string.h"
 #include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/base_jni_headers/PostTask_jni.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"

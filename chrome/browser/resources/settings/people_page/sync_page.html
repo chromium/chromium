@@ -83,7 +83,7 @@
       </div>
     </div>
 
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
     <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
       rollout stage. -->
     <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
@@ -145,6 +145,7 @@
 
           <cr-link-row class="hr"
               label="$i18n{personalizeGoogleServicesTitle}"
+              hidden="[[!showActivityControls_()]]"
               on-click="onActivityControlsClick_" external></cr-link-row>
 
           <cr-link-row id="syncDashboardLink" class="hr"
@@ -191,7 +192,7 @@
         page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
           ignore-popstate>

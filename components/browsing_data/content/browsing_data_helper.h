@@ -77,6 +77,19 @@ void RemoveSiteSettingsData(const base::Time& delete_begin,
                             const base::Time& delete_end,
                             HostContentSettingsMap* host_content_settings_map);
 
+// Remove site settings data related to federated sign in.
+// This clears:
+// - Consent for identity provider to share identity information with
+//   relying party.
+// - Permission for relying party to silently obtain id token from identity
+//   provider via the FedCM JavaScript API.
+// - The FedCM auto-sign-in permission.
+// - The FedCM front channel logout permission.
+void RemoveFederatedSiteSettingsData(
+    const base::Time& delete_begin,
+    const base::Time& delete_end,
+    HostContentSettingsMap* host_content_settings_map);
+
 }  // namespace browsing_data
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_HELPER_H_

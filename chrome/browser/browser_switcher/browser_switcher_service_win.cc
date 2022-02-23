@@ -58,6 +58,7 @@ MergedRuleSet GetRules(const BrowserSwitcherPrefs& prefs,
       &prefs.GetRules(),
       sitelist->GetIeemSitelist(),
       sitelist->GetExternalSitelist(),
+      sitelist->GetExternalGreylist(),
   };
   MergedRuleSet rules;
   for (const RuleSet* source : source_rulesets) {
@@ -195,8 +196,7 @@ void BrowserSwitcherServiceWin::Init() {
 void BrowserSwitcherServiceWin::LoadRulesFromPrefs() {
   BrowserSwitcherService::LoadRulesFromPrefs();
   if (prefs().UseIeSitelist())
-    sitelist()->SetIeemSitelist(
-        ParsedXml(prefs().GetCachedIeemSitelist(), absl::nullopt));
+    sitelist()->SetIeemSitelist(prefs().GetCachedIeemSitelist());
 }
 
 base::FilePath BrowserSwitcherServiceWin::GetCacheDir() {
@@ -251,7 +251,7 @@ void BrowserSwitcherServiceWin::OnIeemSitelistParsed(ParsedXml xml) {
     if (prefs().UseIeSitelist())
       prefs().SetCachedIeemSitelist(xml.rules);
 
-    sitelist()->SetIeemSitelist(std::move(xml));
+    sitelist()->SetIeemSitelist(std::move(xml.rules));
   }
 }
 

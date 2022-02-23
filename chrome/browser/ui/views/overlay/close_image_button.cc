@@ -20,12 +20,8 @@ constexpr int kCloseButtonSize = 16;
 
 }  // namespace
 
-namespace views {
-
 CloseImageButton::CloseImageButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(views::kIcCloseIcon, kCloseButtonSize,
@@ -36,7 +32,6 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_CLOSE_CONTROL_TEXT));
   SetAccessibleName(close_button_label);
   SetTooltipText(close_button_label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 void CloseImageButton::SetPosition(
@@ -44,18 +39,16 @@ void CloseImageButton::SetPosition(
     OverlayWindowViews::WindowQuadrant quadrant) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (quadrant == OverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    ImageButton::SetPosition(
+    views::ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
     return;
   }
 #endif
 
-  ImageButton::SetPosition(
+  views::ImageButton::SetPosition(
       gfx::Point(size.width() - kCloseButtonSize - kCloseButtonMargin,
                  kCloseButtonMargin));
 }
 
-BEGIN_METADATA(CloseImageButton, views::ImageButton)
+BEGIN_METADATA(CloseImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views

@@ -109,12 +109,6 @@ const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 const char kStabilityBrowserLastLiveTimeStamp[] =
     "user_experience_metrics.stability.browser_last_live_timestamp";
 
-// Total number of child process crashes (other than renderer / extension
-// renderer ones, and plugin children, which are counted separately) since the
-// last report.
-const char kStabilityChildProcessCrashCount[] =
-    "user_experience_metrics.stability.child_process_crash_count";
-
 // Number of times the application exited uncleanly since the last report.
 // On Android this does not count the ones due to Gms Core updates (below).
 const char kStabilityCrashCount[] =
@@ -163,10 +157,6 @@ const char kStabilityGmsCoreVersion[] =
 const char kStabilityGpuCrashCount[] =
     "user_experience_metrics.stability.gpu_crash_count";
 
-// Number of times the session end did not complete.
-const char kStabilityIncompleteSessionEndCount[] =
-    "user_experience_metrics.stability.incomplete_session_end_count";
-
 // Number of times the application was launched since last report.
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
@@ -183,11 +173,6 @@ const char kStabilityRendererCrashCount[] =
 const char kStabilityRendererFailedLaunchCount[] =
     "user_experience_metrics.stability.renderer_failed_launch_count";
 
-// Number of times the renderer has become non-responsive since the last
-// report.
-const char kStabilityRendererHangCount[] =
-    "user_experience_metrics.stability.renderer_hang_count";
-
 // Number of times a renderer process successfully launched since the last
 // report.
 const char kStabilityRendererLaunchCount[] =
@@ -200,11 +185,6 @@ const char kStabilitySavedSystemProfile[] =
 // SHA-1 hash of the serialized UMA system profile proto (hex encoded).
 const char kStabilitySavedSystemProfileHash[] =
     "user_experience_metrics.stability.saved_system_profile_hash";
-
-// False if we received a session end and either we crashed during processing
-// the session end or ran out of time and windows terminated us.
-const char kStabilitySessionEndCompleted[] =
-    "user_experience_metrics.stability.session_end_completed";
 
 // Build time, in seconds since an epoch, which is used to assure that stability
 // metrics reported reflect stability of the same build.

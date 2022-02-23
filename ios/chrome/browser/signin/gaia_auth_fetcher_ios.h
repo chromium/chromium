@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
 #include "net/base/net_errors.h"

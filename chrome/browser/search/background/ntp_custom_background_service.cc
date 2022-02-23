@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/observer_list.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -127,7 +128,7 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       background_updated_timestamp_(base::TimeTicks::Now()) {
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
   if (background_service_)
-    background_service_observation_.Observe(background_service_);
+    background_service_observation_.Observe(background_service_.get());
 
   // Update theme info when the pref is changed via Sync.
   pref_change_registrar_.Init(pref_service_);
@@ -255,7 +256,7 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
 
 void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* background_info =
+  const base::Value* background_info =
       profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
   int64_t refresh_timestamp = 0;
   const base::Value* timestamp_value =
@@ -295,7 +296,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
   // Attempt to get custom background URL from preferences.
   if (IsCustomBackgroundPrefValid()) {
     auto custom_background = absl::make_optional<CustomBackground>();
-    const base::DictionaryValue* background_info =
+    const base::Value* background_info =
         pref_service_->GetDictionary(prefs::kNtpCustomBackgroundDict);
     GURL custom_background_url(
         background_info->FindKey(kNtpCustomBackgroundURL)->GetString());
@@ -400,7 +401,7 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResource() {
 
 bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* background_info =
+  const base::Value* background_info =
       profile_->GetPrefs()->GetDictionary(prefs::kNtpCustomBackgroundDict);
   if (!background_info)
     return false;

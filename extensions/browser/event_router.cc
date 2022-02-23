@@ -29,10 +29,12 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
@@ -41,6 +43,7 @@
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using base::DictionaryValue;
@@ -149,7 +152,7 @@ const char EventRouter::kRegisteredServiceWorkerEvents[] =
 
 // static
 void EventRouter::DispatchExtensionMessage(
-    IPC::Sender* ipc_sender,
+    content::RenderProcessHost* rph,
     int worker_thread_id,
     content::BrowserContext* browser_context,
     const std::string& extension_id,
@@ -157,7 +160,7 @@ void EventRouter::DispatchExtensionMessage(
     const std::string& event_name,
     ListValue* event_args,
     UserGestureState user_gesture,
-    const EventFilteringInfo& info) {
+    mojom::EventFilteringInfoPtr info) {
   NotifyEventDispatched(browser_context, extension_id, event_name, *event_args);
   mojom::DispatchEventParams params;
   params.worker_thread_id = worker_thread_id;
@@ -165,9 +168,31 @@ void EventRouter::DispatchExtensionMessage(
   params.event_name = event_name;
   params.event_id = event_id;
   params.is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
-  params.filtering_info = info;
+  params.filtering_info = info->To<EventFilteringInfo>();
 
-  ipc_sender->Send(new ExtensionMsg_DispatchEvent(params, *event_args));
+  // TODO(crbug/1222550): Remove IPC->Send call after worker_thread_dispatcher
+  // is also mojofied.
+  if (worker_thread_id == kMainThreadId) {
+    Get(browser_context)->RouteDispatchEvent(rph, params.Clone(), *event_args);
+  } else {
+    rph->Send(new ExtensionMsg_DispatchEvent(params, *event_args));
+  }
+}
+
+void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
+                                     const mojom::DispatchEventParamsPtr params,
+                                     const ListValue& event_args) {
+  mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
+      rph_dispatcher_map_[rph];
+  if (!dispatcher.is_bound()) {
+    IPC::ChannelProxy* channel = rph->GetChannel();
+    if (!channel) {
+      return;
+    }
+    channel->GetRemoteAssociatedInterface(
+        dispatcher.BindNewEndpointAndPassReceiver());
+  }
+  dispatcher->DispatchEvent(params.Clone(), event_args.Clone());
 }
 
 // static
@@ -183,7 +208,7 @@ std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
 
 // static
 void EventRouter::DispatchEventToSender(
-    IPC::Sender* ipc_sender,
+    content::RenderProcessHost* rph,
     content::BrowserContext* browser_context,
     const std::string& extension_id,
     events::HistogramValue histogram_value,
@@ -192,7 +217,7 @@ void EventRouter::DispatchEventToSender(
     int worker_thread_id,
     int64_t service_worker_version_id,
     std::unique_ptr<ListValue> event_args,
-    const EventFilteringInfo& info) {
+    mojom::EventFilteringInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int event_id = g_extension_event_id.GetNext();
 
@@ -200,9 +225,10 @@ void EventRouter::DispatchEventToSender(
       browser_context, extension_id, event_id, render_process_id,
       service_worker_version_id, histogram_value, event_name);
 
-  DispatchExtensionMessage(ipc_sender, worker_thread_id, browser_context,
-                           extension_id, event_id, event_name, event_args.get(),
-                           UserGestureState::USER_GESTURE_UNKNOWN, info);
+  DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
+                           event_id, event_name, event_args.get(),
+                           UserGestureState::USER_GESTURE_UNKNOWN,
+                           std::move(info));
 }
 
 // static.
@@ -567,6 +593,7 @@ void EventRouter::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   listeners_.RemoveListenersForProcess(host);
   observed_process_set_.erase(host);
+  rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
 }
 
@@ -706,10 +733,10 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     return events;
   }
 
-  for (size_t i = 0; i < events_value->GetList().size(); ++i) {
-    std::string event;
-    if (events_value->GetString(i, &event))
-      events.insert(event);
+  for (const base::Value& event_val : events_value->GetListDeprecated()) {
+    const std::string* event = event_val.GetIfString();
+    if (event)
+      events.insert(*event);
   }
   return events;
 }
@@ -756,7 +783,7 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
     return;
   }
   filter_list->EraseListIter(
-      base::ranges::find(filter_list->GetList(), *filter));
+      base::ranges::find(filter_list->GetListDeprecated(), *filter));
 }
 
 const DictionaryValue* EventRouter::GetFilteredEvents(
@@ -934,7 +961,8 @@ void EventRouter::DispatchEventToProcess(
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           event->event_name, extension, target_context, listener_url,
-          CheckAliasStatus::ALLOWED);
+          CheckAliasStatus::ALLOWED,
+          util::GetBrowserContextId(browser_context_));
   if (!availability.is_available()) {
     // It shouldn't be possible to reach here, because access is checked on
     // registration. However, for paranoia, check on dispatch as well.
@@ -954,7 +982,7 @@ void EventRouter::DispatchEventToProcess(
   DispatchExtensionMessage(process, worker_thread_id, listener_context,
                            extension_id, event_id, event->event_name,
                            event->event_args.get(), event->user_gesture,
-                           event->filter_info);
+                           event->filter_info.Clone());
 
   for (TestObserver& observer : test_observers_)
     observer.OnDidDispatchEventToProcess(*event);
@@ -1231,7 +1259,7 @@ Event::Event(events::HistogramValue histogram_value,
             restrict_to_browser_context,
             GURL(),
             EventRouter::USER_GESTURE_UNKNOWN,
-            EventFilteringInfo()) {}
+            mojom::EventFilteringInfo::New()) {}
 
 Event::Event(events::HistogramValue histogram_value,
              const std::string& event_name,
@@ -1239,14 +1267,14 @@ Event::Event(events::HistogramValue histogram_value,
              content::BrowserContext* restrict_to_browser_context,
              const GURL& event_url,
              EventRouter::UserGestureState user_gesture,
-             const EventFilteringInfo& info)
+             mojom::EventFilteringInfoPtr info)
     : histogram_value(histogram_value),
       event_name(event_name),
       event_args(std::make_unique<base::ListValue>(std::move(event_args_tmp))),
       restrict_to_browser_context(restrict_to_browser_context),
       event_url(event_url),
       user_gesture(user_gesture),
-      filter_info(info) {
+      filter_info(std::move(info)) {
   DCHECK(event_args);
   DCHECK_NE(events::UNKNOWN, histogram_value)
       << "events::UNKNOWN cannot be used as a histogram value.\n"
@@ -1259,9 +1287,10 @@ Event::Event(events::HistogramValue histogram_value,
 Event::~Event() = default;
 
 std::unique_ptr<Event> Event::DeepCopy() const {
-  auto copy = std::make_unique<Event>(
-      histogram_value, event_name, event_args->Clone().TakeList(),
-      restrict_to_browser_context, event_url, user_gesture, filter_info);
+  auto copy = std::make_unique<Event>(histogram_value, event_name,
+                                      event_args->Clone().TakeListDeprecated(),
+                                      restrict_to_browser_context, event_url,
+                                      user_gesture, filter_info.Clone());
   copy->will_dispatch_callback = will_dispatch_callback;
   return copy;
 }

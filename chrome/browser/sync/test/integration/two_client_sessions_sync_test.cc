@@ -218,6 +218,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
           .Wait());
   ASSERT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
       "passphrase"));
+  // Make sure that re-encryption happens before opening the tab (otherwise race
+  // condition may occur when second client attempts to re-encrypt data, while
+  // first client attempts to commit local changes).
+  ASSERT_TRUE(AwaitQuiescence());
 
   EXPECT_TRUE(OpenTab(0, GURL(kURL1)));
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
@@ -258,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithoutDestroyProfileSyncTest,
       WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class TwoClientSessionsWithDestroyProfileSyncTest
     : public TwoClientSessionsSyncTest {
  public:
@@ -308,6 +312,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithDestroyProfileSyncTest,
   ASSERT_TRUE(
       WindowsMatch(local_map_before_closing, sessions.front()->windows));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

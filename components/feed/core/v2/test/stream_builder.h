@@ -14,6 +14,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/types.h"
 
 // Functions that help build a feedstore::StreamStructure for testing.
@@ -23,6 +24,7 @@ struct StreamModelUpdateRequest;
 extern base::Time kTestTimeEpoch;
 constexpr int64_t kFollowerCount = 123;
 
+AccountInfo TestAccountInfo();
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
                         int id_number);
@@ -33,6 +35,7 @@ ContentId MakeNoticeCardContentContentId(int id_number);
 ContentId MakeSharedStateContentId(int id_number);
 ContentId MakeRootId(int id_number = 0);
 ContentId MakeSharedStateId(int id_number = 0);
+std::string MakeRootEventId(int id_number = 123);
 feedstore::StreamStructure MakeStream(int id_number = 0);
 feedstore::StreamStructure MakeCluster(int id_number, ContentId parent);
 feedstore::StreamStructure MakeNoticeCardCluster(ContentId parent);
@@ -58,8 +61,10 @@ feedstore::Record MakeRecord(feedstore::StreamData stream_data);
 struct StreamModelUpdateRequestGenerator {
   base::Time last_added_time = kTestTimeEpoch;
   bool signed_in = true;
+  AccountInfo account_info = TestAccountInfo();
   bool logging_enabled = true;
   bool privacy_notice_fulfilled = false;
+  int event_id_number = 123;
 
   StreamModelUpdateRequestGenerator();
   ~StreamModelUpdateRequestGenerator();

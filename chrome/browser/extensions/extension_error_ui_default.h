@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 
@@ -36,10 +37,10 @@ class ExtensionErrorUIDefault : public ExtensionErrorUI {
 
  private:
   // The profile associated with this error.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The browser the bubble view was shown into.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   std::unique_ptr<ExtensionGlobalError> global_error_;
 };

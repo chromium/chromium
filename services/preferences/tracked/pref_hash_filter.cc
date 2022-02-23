@@ -150,8 +150,7 @@ void PrefHashFilter::Initialize(base::DictionaryValue* pref_store_contents) {
   for (auto it = tracked_paths_.begin(); it != tracked_paths_.end(); ++it) {
     const std::string& initialized_path = it->first;
     const TrackedPreference* initialized_preference = it->second.get();
-    const base::Value* value = nullptr;
-    pref_store_contents->Get(initialized_path, &value);
+    const base::Value* value = pref_store_contents->FindPath(initialized_path);
     initialized_preference->OnNewValue(value, hash_store_transaction.get());
   }
 }
@@ -192,8 +191,7 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
            it != changed_paths_.end(); ++it) {
         const std::string& changed_path = it->first;
         const TrackedPreference* changed_preference = it->second;
-        const base::Value* value = nullptr;
-        pref_store_contents->Get(changed_path, &value);
+        const base::Value* value = pref_store_contents->FindPath(changed_path);
         changed_preference->OnNewValue(value, hash_store_transaction.get());
       }
       changed_paths_.clear();
@@ -332,8 +330,8 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
 
     switch (changed_preference->GetType()) {
       case TrackedPreferenceType::ATOMIC: {
-        const base::Value* new_value = nullptr;
-        pref_store_contents->Get(changed_path, &new_value);
+        const base::Value* new_value =
+            pref_store_contents->FindPath(changed_path);
         changed_paths_macs->SetKey(
             changed_path,
             base::Value(external_validation_hash_store_pair_->first->ComputeMac(

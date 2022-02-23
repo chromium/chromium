@@ -34,7 +34,9 @@ const char kReleaseVersionKey[] = "release_version";
 const char kBuildNumberKey[] = "build_number";
 const char kReasonKey[] = "reason";
 const char kStadiaSessionIdKey[] = "stadia_session_id";
+const char kCrashProductNameKey[] = "crash_product_name";
 const char kExecNameKey[] = "exec_name";
+const char kSignatureKey[] = "signature";
 const char kExtraInfoKey[] = "extra_info";
 
 }  // namespace
@@ -90,7 +92,9 @@ std::unique_ptr<base::Value> DumpInfo::GetAsValue() const {
   entry->SetString(kReasonKey, params_.reason);
   entry->SetString(kStadiaSessionIdKey, params_.stadia_session_id);
   entry->SetString(kExecNameKey, params_.exec_name);
+  entry->SetString(kSignatureKey, params_.signature);
   entry->SetString(kExtraInfoKey, params_.extra_info);
+  entry->SetString(kCrashProductNameKey, params_.crash_product_name);
 
   return result;
 }
@@ -131,7 +135,7 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
   const base::ListValue* attachments_list;
   if (dict->GetList(kAttachmentsKey, &attachments_list)) {
     ++num_params;
-    for (const auto& attachment : attachments_list->GetList()) {
+    for (const auto& attachment : attachments_list->GetListDeprecated()) {
       attachments_.push_back(attachment.GetString());
     }
   }
@@ -157,7 +161,11 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
     ++num_params;
   if (dict->GetString(kExecNameKey, &params_.exec_name))
     ++num_params;
+  if (dict->GetString(kSignatureKey, &params_.signature))
+    ++num_params;
   if (dict->GetString(kExtraInfoKey, &params_.extra_info))
+    ++num_params;
+  if (dict->GetString(kCrashProductNameKey, &params_.crash_product_name))
     ++num_params;
 
   // Disallow extraneous params

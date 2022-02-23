@@ -38,13 +38,12 @@
   // [1]: https://html.spec.whatwg.org/C/#hh-replace
 
   // See documentation in the outer page.
-  const fenced_navigation_complete_key = KEYS["fenced_navigation_complete"];
-  const outer_page_ready_for_next_fenced_navigation_key =
-      KEYS["outer_page_ready_for_next_fenced_navigation"];
+  const [fenced_navigation_complete_key,
+         outer_page_ready_for_next_fenced_navigation_key,
+         level] = parseKeylist();
 
   const url = new URL(location.href);
-  const is_top_level_fenced_frame =
-      (url.searchParams.get("level") == "top-level-fenced-frame");
+  const is_top_level_fenced_frame = (level == "top-level-fenced-frame");
 
   ////////////// Navigation code that may impact `history.length` should go here
   // The code in this block performs navigations that will run inside:
@@ -77,30 +76,39 @@
   // the results back to the outermost page.
   if (history.length == 1) {
     writeValueToServer(fenced_navigation_complete_key, "PASS > " +
-                       url.searchParams.get('level'));
+        level);
   } else {
     writeValueToServer(fenced_navigation_complete_key,
-        "FAIL > " + url.searchParams.get('level') + " history.length: " +
+        "FAIL > " + level + " history.length: " +
         history.length);
   }
 
   // We're only testing fenced frames, nested fenced frames, and iframes nested
   // within fenced frames. The below code adds a nested fenced frame and a
   // nested iframe, so it should only be reached by the top-level fenced frame.
-  if (!is_top_level_fenced_frame)
+  if (level != "top-level-fenced-frame")
     return;
 
   // Only top-level fenced frames will attach a nested fenced frame and run the
   // same tests there.
   await nextValueFromServer(outer_page_ready_for_next_fenced_navigation_key);
-  attachFencedFrame("history-length-fenced-navigations-replace-do-not-" +
-                    "contribute-to-joint-inner.html?level=nested-fenced-frame");
+  const nested_fenced_frame_level = "nested-fenced-frame";
+  attachFencedFrame(generateURL(
+      "history-length-fenced-navigations-replace-do-not-" +
+      "contribute-to-joint-inner.html",
+      [fenced_navigation_complete_key,
+      outer_page_ready_for_next_fenced_navigation_key,
+      nested_fenced_frame_level]));
 
   await nextValueFromServer(outer_page_ready_for_next_fenced_navigation_key);
   const iframe = document.createElement('iframe');
-  iframe.src =
+  const nested_iframe_level = "nested-iframe";
+  iframe.src = generateURL(
       "history-length-fenced-navigations-replace-do-not-contribute-to-joint-" +
-      "inner.html?level=nested-iframe";
+      "inner.html",
+      [fenced_navigation_complete_key,
+      outer_page_ready_for_next_fenced_navigation_key,
+      nested_iframe_level]);
   document.body.append(iframe);
 })();
 </script>

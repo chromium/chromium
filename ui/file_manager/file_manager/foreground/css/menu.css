@@ -46,19 +46,23 @@ html[dir='rtl'] cr-menu > [shortcutText]::after {
 }
 
 cr-menu > [sub-menu]::after {
-  color: var(--cros-menu-shortcut-color);
-  content: '▶' / '';
+  -webkit-mask-image: url(../images/files/ui/arrow_right.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
+  content: '';
   float: right;
-  font-size: 0.7em;
+  height: 32px;
+  width: 20px;
 }
 
 html[dir='rtl'] cr-menu > [sub-menu]::after {
-  content: '◀' / '';
   float: left;
+  transform: scaleX(-1);
 }
 
 cr-menu > [sub-menu][disabled]::after {
-  color: var(--cros-text-color-disabled);
+  background-color: var(--cros-text-color-disabled);
 }
 
 /* Keeps menu visibile while animating. Fade out animation is performed by
@@ -69,24 +73,38 @@ cr-menu[hidden].files-menu.animating {
 }
 
 cr-menu.files-menu > cr-menu-item {
-  background-size: 16px 16px;
   position: relative;
 }
 
 /* Icon on the left of the item label for cr.ui.FilesMenuItem.
    TODO(mtomasz): Upstream to cr.ui.MenuItem. */
-cr-menu.files-menu.has-icon-start cr-menu-item .icon.start {
+cr-menu.files-menu cr-menu-item .icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
   background-position: center;
   background-repeat: no-repeat;
-  display: inline-block;
-  height: 16px;
-  margin-inline-end: 8px;
+  background-size: 16px 16px;
+  height: 32px;
   vertical-align: middle;
   width: 16px;
 }
 
+cr-menu.files-menu cr-menu-item .icon.start {
+  display: inline-block;
+  margin-inline-end: 8px;
+}
+
 cr-menu.files-menu:not(.has-icon-start) cr-menu-item .icon.start {
   display: none;
+}
+
+cr-menu.files-menu cr-menu-item .icon.end {
+  float: right;
+}
+
+html[dir='rtl'] cr-menu.files-menu cr-menu-item .icon.end {
+  float: left;
 }
 
 cr-menu.files-menu > cr-menu-item > .icon {
@@ -117,7 +135,8 @@ html.files-ng.pointer-active cr-menu-item > paper-ripple {
   color: var(--cros-ripple-color);
 }
 
-html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected] {
+html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled])[selected],
+html.files-ng cr-menu.files-menu > cr-menu-item:not([disabled]):active {
   background-color: var(--cros-menu-item-background-hover);
 }
 

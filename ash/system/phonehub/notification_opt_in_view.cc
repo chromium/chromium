@@ -11,7 +11,6 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -31,7 +30,7 @@ constexpr char kMultideviceSettingsUrl[] =
 }  // namespace
 
 NotificationOptInView::NotificationOptInView(
-    chromeos::phonehub::NotificationAccessManager* notification_access_manager)
+    phonehub::NotificationAccessManager* notification_access_manager)
     : SubFeatureOptInView(PhoneHubViewID::kNotificationOptInView,
                           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION,
                           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
@@ -50,8 +49,10 @@ NotificationOptInView::~NotificationOptInView() = default;
 void NotificationOptInView::SetUpButtonPressed() {
   // Opens the notification set up dialog in settings to start the opt in flow.
   LogNotificationOptInEvent(InterstitialScreenEvent::kConfirm);
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kMultideviceSettingsUrl),
-                                            /*from_user_interaction=*/true);
+  // This intentionally uses GetInstance() to open an OS Settings page in ash.
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kMultideviceSettingsUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 void NotificationOptInView::DismissButtonPressed() {
@@ -70,8 +71,8 @@ void NotificationOptInView::UpdateVisibility() {
 
   // Can only request access if it is available but has not yet been granted.
   bool can_request_access = notification_access_manager_->GetAccessStatus() ==
-                            chromeos::phonehub::NotificationAccessManager::
-                                AccessStatus::kAvailableButNotGranted;
+                            phonehub::NotificationAccessManager::AccessStatus::
+                                kAvailableButNotGranted;
   const bool should_show =
       can_request_access &&
       !notification_access_manager_->HasNotificationSetupUiBeenDismissed();

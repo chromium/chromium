@@ -302,6 +302,9 @@ void ReadableByteStreamController::Enqueue(
   // 7. Let transferredBuffer be ? TransferArrayBuffer(buffer).
   DOMArrayBuffer* const transferred_buffer =
       TransferArrayBuffer(script_state, buffer, exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
 
   // 8. If controller.[[pendingPullIntos]] is not empty,
   if (!controller->pending_pull_intos_.IsEmpty()) {
@@ -464,11 +467,11 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   class ResolveFunction final : public PromiseHandler {
    public:
-    ResolveFunction(ScriptState* script_state,
-                    ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit ResolveFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value>) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
       // 7. Upon fulfillment of pullPromise,
       //   a. Set controller.[[pulling]] to false.
       controller_->pulling_ = false;
@@ -478,7 +481,7 @@ void ReadableByteStreamController::CallPullIfNeeded(
         controller_->pull_again_ = false;
         //     ii. Perform !
         //     ReadableByteStreamControllerCallPullIfNeeded(controller).
-        CallPullIfNeeded(GetScriptState(), controller_);
+        CallPullIfNeeded(script_state, controller_);
       }
     }
 
@@ -493,14 +496,14 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   class RejectFunction final : public PromiseHandler {
    public:
-    RejectFunction(ScriptState* script_state,
-                   ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit RejectFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value> e) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> e) override {
       // 8. Upon rejection of pullPromise with reason e,
       //   a. Perform ! ReadableByteStreamControllerError(controller, e).
-      Error(GetScriptState(), controller_, e);
+      Error(script_state, controller_, e);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -514,8 +517,10 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   StreamThenPromise(
       script_state->GetContext(), pull_promise,
-      MakeGarbageCollected<ResolveFunction>(script_state, controller),
-      MakeGarbageCollected<RejectFunction>(script_state, controller));
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<RejectFunction>(controller)));
 }
 
 ReadableByteStreamController::PullIntoDescriptor*
@@ -735,11 +740,11 @@ void ReadableByteStreamController::SetUp(
 
   class ResolveFunction final : public PromiseHandler {
    public:
-    ResolveFunction(ScriptState* script_state,
-                    ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit ResolveFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value>) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
       // 16. Upon fulfillment of startPromise,
       //   a. Set controller.[[started]] to true.
       controller_->started_ = true;
@@ -749,7 +754,7 @@ void ReadableByteStreamController::SetUp(
       DCHECK(!controller_->pull_again_);
       //   d. Perform !
       //   ReadableByteStreamControllerCallPullIfNeeded(controller).
-      CallPullIfNeeded(GetScriptState(), controller_);
+      CallPullIfNeeded(script_state, controller_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -763,14 +768,14 @@ void ReadableByteStreamController::SetUp(
 
   class RejectFunction final : public PromiseHandler {
    public:
-    RejectFunction(ScriptState* script_state,
-                   ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit RejectFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value> r) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> r) override {
       // 17. Upon rejection of startPromise with reason r,
       //   a. Perform ! ReadableByteStreamControllerError(controller, r).
-      Error(GetScriptState(), controller_, r);
+      Error(script_state, controller_, r);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -784,8 +789,10 @@ void ReadableByteStreamController::SetUp(
 
   StreamThenPromise(
       script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ResolveFunction>(script_state, controller),
-      MakeGarbageCollected<RejectFunction>(script_state, controller));
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
+      MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<RejectFunction>(controller)));
 }
 
 void ReadableByteStreamController::SetUpFromUnderlyingSource(
@@ -1063,16 +1070,18 @@ void ReadableByteStreamController::PullInto(
   const size_t byte_offset = view->byteOffset();
   // 6. Let byteLength be view.[[ByteLength]].
   const size_t byte_length = view->byteLength();
-  // 7. Let bufferResult be ! TransferArrayBuffer(view.[[ViewedArrayBuffer]]).
-  // 8. If bufferResult is an abrupt completion,
-  //  a. Perform readIntoRequest's error steps, given bufferResult.[[Value]].
-  //  b. Return.
-  // This is not needed as TransferArrayBuffer calls DOMArrayBuffer::Create(),
-  // which is designed to crash if it cannot allocate the memory.
-  // 9. Let buffer be bufferResult.[[Value]].
+  // 7. Let bufferResult be TransferArrayBuffer(view.[[ViewedArrayBuffer]]).
   DOMArrayBuffer* buffer =
       TransferArrayBuffer(script_state, view->buffer(), exception_state);
-  DCHECK(!exception_state.HadException());
+  // 8. If bufferResult is an abrupt completion,
+  if (exception_state.HadException()) {
+    //  a. Perform readIntoRequest's error steps, given bufferResult.[[Value]].
+    read_into_request->ErrorSteps(script_state, exception_state.GetException());
+    //  b. Return.
+    exception_state.ClearException();
+    return;
+  }
+  // 9. Let buffer be bufferResult.[[Value]].
 
   // 10. Let pullIntoDescriptor be a new pull-into descriptor with buffer
   // buffer, buffer byte length buffer.[[ArrayBufferByteLength]], byte offset
@@ -1416,6 +1425,9 @@ void ReadableByteStreamController::RespondWithNewView(
   // view.[[ViewedArrayBuffer]]).
   first_descriptor->buffer =
       TransferArrayBuffer(script_state, view->buffer(), exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
   // 12. Perform ? ReadableByteStreamControllerRespondInternal(controller,
   // viewByteLength).
   RespondInternal(script_state, controller, view_byte_length, exception_state);

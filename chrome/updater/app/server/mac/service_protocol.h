@@ -13,6 +13,8 @@
 @class CRUUpdateStateObserver;
 @class CRUUpdateStateWrapper;
 @class CRUPriorityWrapper;
+@class CRUPolicySameVersionUpdateWrapper;
+@class CRUAppStatesWrapper;
 
 // Protocol which observes the state of the XPC update checking service.
 @protocol CRUUpdateStateObserving <NSObject>
@@ -42,16 +44,23 @@
 // updates of progress and returns the result in the reply block.
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(CRUUpdateStateObserver* _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply;
 
 // Registers app and returns the result in the reply block.
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
                               reply:(void (^_Nonnull)(int rc))reply;
+
+// Gets states of all registered apps.
+- (void)getAppStatesWithReply:
+    (void (^_Nonnull)(CRUAppStatesWrapper* _Nullable apps))reply;
 
 @end
 

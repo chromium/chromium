@@ -166,6 +166,7 @@ static const MimeInfo kPrimaryMappings[] = {
     {"image/jxl", "jxl"},
     {"image/png", "png"},
     {"image/apng", "png"},
+    {"image/svg+xml", "svg,svgz"},
     {"image/webp", "webp"},
     {"multipart/related", "mht,mhtml"},
     {"text/css", "css"},
@@ -174,6 +175,12 @@ static const MimeInfo kPrimaryMappings[] = {
     {"text/xml", "xml"},
     {"video/mp4", "mp4,m4v"},
     {"video/ogg", "ogv,ogm"},
+
+    // This is a primary mapping (overrides the platform) rather than secondary
+    // to work around an issue when Excel is installed on Windows. Excel
+    // registers csv as application/vnd.ms-excel instead of text/csv from RFC
+    // 4180. See https://crbug.com/139105.
+    {"text/csv", "csv"},
 };
 
 // See comments above for details on how this list is used.
@@ -209,14 +216,12 @@ static const MimeInfo kSecondaryMappings[] = {
     {"audio/webm", "weba"},
     {"image/bmp", "bmp"},
     {"image/jpeg", "jfif,pjpeg,pjp"},
-    {"image/svg+xml", "svg,svgz"},
     {"image/tiff", "tiff,tif"},
     {"image/vnd.microsoft.icon", "ico"},
     {"image/x-png", "png"},
     {"image/x-xbitmap", "xbm"},
     {"message/rfc822", "eml"},
     {"text/calendar", "ics"},
-    {"text/csv", "csv"},
     {"text/html", "ehtml"},
     {"text/plain", "txt,text"},
     {"text/x-sh", "sh"},
@@ -250,7 +255,7 @@ static const char* FindMimeType(const MimeInfo (&mappings)[num_mappings],
 
 static base::FilePath::StringType StringToFilePathStringType(
     const base::StringPiece& string_piece) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(string_piece);
 #else
   return std::string(string_piece);

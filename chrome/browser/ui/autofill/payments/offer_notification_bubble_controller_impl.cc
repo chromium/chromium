@@ -6,8 +6,6 @@
 
 #include <string>
 
-#include "chrome/browser/commerce/commerce_feature_list.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -18,6 +16,10 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,8 +52,15 @@ OfferNotificationBubbleController* OfferNotificationBubbleController::Get(
 OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<OfferNotificationBubbleControllerImpl>(
+          *web_contents),
       coupon_service_(CouponServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+  // TODO(crbug.com/1187190): Explore if there is a way to move CouponService
+  // out of this file.
+  if (coupon_service_)
+    coupon_service_observation_.Observe(coupon_service_);
+}
 
 std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   switch (offer_->GetOfferType()) {
@@ -100,7 +109,7 @@ const AutofillOfferData* OfferNotificationBubbleControllerImpl::GetOffer()
 }
 
 bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
-  return !origins_to_display_bubble_.empty();
+  return bubble_state_ != BubbleState::kHidden;
 }
 
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
@@ -145,17 +154,23 @@ void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     const AutofillOfferData* offer,
-    const CreditCard* card) {
+    const CreditCard* card,
+    bool should_show_icon_only) {
   DCHECK(offer);
-  offer_ = offer;
-  // If icon/bubble is already visible, that means we have already shown a
-  // notification for this page.
-  if (IsIconVisible() || bubble_view())
-    return;
 
-  origins_to_display_bubble_.clear();
-  for (auto merchant_origin : offer_->merchant_origins)
-    origins_to_display_bubble_.emplace_back(merchant_origin);
+  // If offer to be shown has not changed and it has not been shown for more
+  // than kAutofillBubbleSurviveNavigationTime, do not dismiss the bubble.
+  if (offer_ == offer && bubble_shown_timestamp_.has_value() &&
+      AutofillClock::Now() - *bubble_shown_timestamp_ <
+          kAutofillBubbleSurviveNavigationTime) {
+    return;
+  }
+
+  offer_ = offer;
+
+  // Hides the old bubble. Sets bubble_state_ to show icon here since we are
+  // going to show another bubble anyway.
+  HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
 
   if (card)
     card_ = *card;
@@ -167,6 +182,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     if (!last_display_time.is_null() &&
         (base::Time::Now() - last_display_time) <
             commerce::kCouponDisplayInterval.Get()) {
+      bubble_state_ = BubbleState::kShowingIcon;
       UpdatePageActionIcon();
       AutofillMetrics::LogOfferNotificationBubbleSuppressed(
           AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
@@ -178,7 +194,11 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
   }
 
   is_user_gesture_ = false;
-  Show();
+
+  if (should_show_icon_only)
+    HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
+  else
+    Show();
 }
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {
@@ -187,25 +207,29 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
     return;
 
   is_user_gesture_ = true;
+
   Show();
 }
 
-void OfferNotificationBubbleControllerImpl::PrimaryPageChanged(
-    content::Page& page) {
-  // Don't do anything if user is still on an eligible origin for this offer.
-  if (base::ranges::count(origins_to_display_bubble_,
-                          page.GetMainDocument()
-                              .GetLastCommittedURL()
-                              .DeprecatedGetOriginAsURL())) {
+void OfferNotificationBubbleControllerImpl::DismissNotification() {
+  HideBubbleAndClearTimestamp(/*should_show_icon=*/false);
+}
+
+void OfferNotificationBubbleControllerImpl::OnCouponInvalidated(
+    const autofill::AutofillOfferData& offer_data) {
+  if (!offer_ || *offer_ != offer_data)
     return;
+  DismissNotification();
+}
+
+void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
+      bubble_state_ == BubbleState::kShowingIconAndBubble) {
+    Show();
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubbleAndClearTimestamp(bubble_state_ == BubbleState::kShowingIcon);
   }
-
-  // Reset variables.
-  origins_to_display_bubble_.clear();
-  UpdatePageActionIcon();
-
-  // Hide the bubble.
-  HideBubble();
 }
 
 PageActionIconType
@@ -214,8 +238,9 @@ OfferNotificationBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void OfferNotificationBubbleControllerImpl::DoShowBubble() {
-  // TODO(crbug.com/1187190): Add cross-tab status tracking for bubble so we
-  // show bubble only once per merchant.
+  bubble_state_ = BubbleState::kShowingIconAndBubble;
+  // Don't show bubble yet if web content is not active (bubble will instead be
+  // shown when web content become visible and active).
   if (!IsWebContentsActive())
     return;
 
@@ -225,6 +250,14 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
                       ->ShowOfferNotificationBubble(web_contents(), this,
                                                     is_user_gesture_));
   DCHECK(bubble_view());
+
+  // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
+  // we display the bubble if the the state is kShowingIconAndBubble. Once we
+  // open the bubble here once, we set |bubble_state_| to kShowingIcon to make
+  // sure further OnVisibilityChanged() don't trigger opening the bubble because
+  // we don't want to re-show it every time the web contents become visible.
+  bubble_state_ = BubbleState::kShowingIcon;
+  bubble_shown_timestamp_ = AutofillClock::Now();
 
   if (observer_for_testing_)
     observer_for_testing_->OnBubbleShown();
@@ -240,6 +273,15 @@ bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
 
   return active_browser->tab_strip_model()->GetActiveWebContents() ==
          web_contents();
+}
+
+void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
+    bool should_show_icon) {
+  bubble_state_ =
+      should_show_icon ? BubbleState::kShowingIcon : BubbleState::kHidden;
+  UpdatePageActionIcon();
+  HideBubble();
+  bubble_shown_timestamp_ = absl::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl);

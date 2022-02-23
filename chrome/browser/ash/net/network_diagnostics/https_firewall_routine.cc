@@ -19,6 +19,9 @@ namespace ash {
 namespace network_diagnostics {
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 // Https port number.
 constexpr int kHttpsPort = 443;
 // Https scheme.

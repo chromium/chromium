@@ -204,7 +204,7 @@ void U2fRegisterOperation::OnRegisterResponseReceived(
 
 const std::vector<uint8_t>& U2fRegisterOperation::excluded_key_handle() const {
   DCHECK_LT(current_key_handle_index_, request().exclude_list.size());
-  return request().exclude_list[current_key_handle_index_].id();
+  return request().exclude_list[current_key_handle_index_].id;
 }
 
 }  // namespace device

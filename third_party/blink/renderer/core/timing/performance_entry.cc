@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 
 namespace blink {
@@ -44,19 +45,23 @@ static base::AtomicSequenceNumber index_seq;
 
 PerformanceEntry::PerformanceEntry(const AtomicString& name,
                                    double start_time,
-                                   double finish_time)
+                                   double finish_time,
+                                   uint32_t navigation_count)
     : duration_(finish_time - start_time),
       name_(name),
       start_time_(start_time),
-      index_(index_seq.GetNext()) {}
+      index_(index_seq.GetNext()),
+      navigation_count_(navigation_count) {}
 
 PerformanceEntry::PerformanceEntry(double duration,
                                    const AtomicString& name,
-                                   double start_time)
+                                   double start_time,
+                                   uint32_t navigation_count)
     : duration_(duration),
       name_(name),
       start_time_(start_time),
-      index_(index_seq.GetNext()) {
+      index_(index_seq.GetNext()),
+      navigation_count_(navigation_count) {
   DCHECK_GE(duration_, 0.0);
 }
 
@@ -68,6 +73,10 @@ DOMHighResTimeStamp PerformanceEntry::startTime() const {
 
 DOMHighResTimeStamp PerformanceEntry::duration() const {
   return duration_;
+}
+
+uint32_t PerformanceEntry::navigationCount() const {
+  return navigation_count_;
 }
 
 mojom::blink::PerformanceMarkOrMeasurePtr
@@ -117,6 +126,14 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
   return kInvalid;
 }
 
+uint32_t PerformanceEntry::GetNavigationCounter(ScriptState* script_state) {
+  const auto* local_dom_window = LocalDOMWindow::From(script_state);
+  if (!local_dom_window || !local_dom_window->GetFrame()) {
+    return 0;
+  }
+  return local_dom_window->GetFrame()->GetNavigationCounter();
+}
+
 ScriptValue PerformanceEntry::toJSONForBinding(
     ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
@@ -129,6 +146,9 @@ void PerformanceEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("entryType", entryType());
   builder.AddNumber("startTime", startTime());
   builder.AddNumber("duration", duration());
+  if (RuntimeEnabledFeatures::NavigationCounterEnabled()) {
+    builder.AddNumber("navigationCount", navigationCount());
+  }
 }
 
 }  // namespace blink

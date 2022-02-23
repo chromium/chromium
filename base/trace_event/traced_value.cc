@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
+#include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -345,7 +346,7 @@ class PickleWriter final : public TracedValue::Writer {
             cur_list->Append(std::move(new_dict));
             // |new_dict| is invalidated at this point, so |cur_dict| needs to
             // be reset.
-            cur_dict = &cur_list->GetList().back();
+            cur_dict = &cur_list->GetListDeprecated().back();
             stack.push_back(cur_list);
             cur_list = nullptr;
           }
@@ -374,7 +375,7 @@ class PickleWriter final : public TracedValue::Writer {
             stack.push_back(cur_list);
             // |cur_list| is invalidated at this point by the Append, so it
             // needs to be reset.
-            cur_list = &cur_list->GetList().back();
+            cur_list = &cur_list->GetListDeprecated().back();
           }
         } break;
 

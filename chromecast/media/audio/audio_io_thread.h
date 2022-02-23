@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_AUDIO_AUDIO_IO_THREAD_H_
 #define CHROMECAST_MEDIA_AUDIO_AUDIO_IO_THREAD_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 

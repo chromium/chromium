@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,6 +29,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -66,7 +68,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data_.SetPrefService(autofill_client_.GetPrefs());
-    personal_data_.SetSyncServiceForTest(&sync_service_);
+    personal_data_.OnSyncServiceInitialized(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
@@ -323,13 +325,13 @@ class LocalCardMigrationManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  TestStrikeDatabase* strike_database_;
+  raw_ptr<TestStrikeDatabase> strike_database_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  TestCreditCardSaveManager* credit_card_save_manager_;
+  raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  TestLocalCardMigrationManager* local_card_migration_manager_;
+  raw_ptr<TestLocalCardMigrationManager> local_card_migration_manager_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:
-  payments::TestPaymentsClient* payments_client_;
+  raw_ptr<payments::TestPaymentsClient> payments_client_;
 };
 
 // Having one local card on file and using it will not trigger migration.
@@ -602,6 +604,21 @@ TEST_F(LocalCardMigrationManagerTest,
   // kMigrateCardsBillableServiceNumber in the request.
   EXPECT_EQ(payments::kMigrateCardsBillableServiceNumber,
             payments_client_->billable_service_number_in_request());
+}
+
+TEST_F(LocalCardMigrationManagerTest,
+       MigrateCreditCard_ShouldAddMigrateCardsBillingCustomerNumberInRequest) {
+  // Set the billing_customer_number to designate existence of a Payments
+  // account.
+  personal_data_.SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
+
+  // Use one local card with more valid local cards available.
+  UseLocalCardWithOtherLocalCardsOnFile();
+
+  // Confirm that the preflight request contained
+  // billing customer number in the request.
+  EXPECT_EQ(123456L, payments_client_->billing_customer_number_in_request());
 }
 
 TEST_F(LocalCardMigrationManagerTest,

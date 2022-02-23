@@ -84,7 +84,7 @@ class FakeUsbDeviceManager : public mojom::UsbDeviceManager {
       mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
       mojo::PendingRemote<mojom::UsbDeviceClient> device_client) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RefreshDeviceInfo(const std::string& guid,
                          RefreshDeviceInfoCallback callback) override;
 #endif

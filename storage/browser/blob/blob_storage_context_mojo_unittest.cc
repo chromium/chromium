@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
 #include <memory>
@@ -46,7 +47,7 @@ class DataPipeReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override { std::move(done_callback_).Run(); }
 
  private:
-  std::string* data_out_;
+  raw_ptr<std::string> data_out_;
   base::OnceClosure done_callback_;
 };
 

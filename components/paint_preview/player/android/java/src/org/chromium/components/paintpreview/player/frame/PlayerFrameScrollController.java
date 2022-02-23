@@ -110,6 +110,8 @@ public class PlayerFrameScrollController {
      * Ensures that the given {@link Rect} is visible by scrolling the viewport to include it.
      */
     void scrollToMakeRectVisibleForAccessibility(Rect rect) {
+        if (rect == null) return;
+
         float scaleFactor = mViewport.getScale();
         Rect targetRect = new Rect((int) (rect.left * scaleFactor), (int) (rect.top * scaleFactor),
                 (int) (rect.right * scaleFactor), (int) (rect.bottom * scaleFactor));
@@ -140,7 +142,7 @@ public class PlayerFrameScrollController {
     }
 
     private boolean maybeHandleOverscroll(float distanceY) {
-        if (mOverscrollHandler == null || mViewport.getTransY() != 0f) return false;
+        if (mOverscrollHandler == null || mViewport.getTransY() >= 1f) return false;
 
         // Ignore if there is no active overscroll and the direction is down.
         if (!mIsOverscrolling && distanceY <= 0) return false;

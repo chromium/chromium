@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
@@ -19,11 +20,8 @@
 #include "chrome/utility/services.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/content_switches.h"
-#include "sandbox/policy/switches.h"
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-#include "chrome/utility/printing_handler.h"
-#endif
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
 
 namespace {
 
@@ -32,18 +30,17 @@ base::LazyInstance<ChromeContentUtilityClient::NetworkBinderCreationCallback>::
 
 }  // namespace
 
-ChromeContentUtilityClient::ChromeContentUtilityClient()
-    : utility_process_running_elevated_(false) {
-}
+ChromeContentUtilityClient::ChromeContentUtilityClient() = default;
 
 ChromeContentUtilityClient::~ChromeContentUtilityClient() = default;
 
 void ChromeContentUtilityClient::ExposeInterfacesToBrowser(
     mojo::BinderMap* binders) {
-#if defined(OS_WIN)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  utility_process_running_elevated_ = command_line->HasSwitch(
-      sandbox::policy::switches::kNoSandboxAndElevatedPrivileges);
+#if BUILDFLAG(IS_WIN)
+  auto& cmd_line = *base::CommandLine::ForCurrentProcess();
+  auto sandbox_type = sandbox::policy::SandboxTypeFromCommandLine(cmd_line);
+  utility_process_running_elevated_ =
+      sandbox_type == sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges;
 #endif
 
   // If our process runs with elevated privileges, only add elevated Mojo

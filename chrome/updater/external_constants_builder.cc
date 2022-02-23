@@ -12,6 +12,7 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -69,6 +70,18 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::SetServerKeepAliveSeconds(
 ExternalConstantsBuilder&
 ExternalConstantsBuilder::ClearServerKeepAliveSeconds() {
   overrides_.RemoveKey(kDevOverrideKeyServerKeepAliveSeconds);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetCrxVerifierFormat(
+    crx_file::VerifierFormat crx_verifier_format) {
+  overrides_.SetIntKey(kDevOverrideKeyCrxVerifierFormat,
+                       static_cast<int>(crx_verifier_format));
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxVerifierFormat() {
+  overrides_.RemoveKey(kDevOverrideKeyCrxVerifierFormat);
   return *this;
 }
 

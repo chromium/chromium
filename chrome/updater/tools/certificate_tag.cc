@@ -362,14 +362,16 @@ absl::optional<std::vector<uint8_t>> Binary::SetTag(
     return absl::nullopt;
   }
 
-  // Copy the CBB result into a std::vector.
+  // Copy the CBB result into a std::vector, padding to 8-byte alignment.
   std::vector<uint8_t> ret;
-  ret.reserve(cbb_len);
+  const size_t padding = (8 - cbb_len % 8) % 8;
+  ret.reserve(cbb_len + padding);
   ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len);
+  ret.insert(ret.end(), padding, 0);
   OPENSSL_free(cbb_data);
 
   // Inject the updated length in a couple of places:
-  const uint32_t certs_size = cbb_len - attr_cert_offset_;
+  const uint32_t certs_size = cbb_len + padding - attr_cert_offset_;
   //   1) The |IMAGE_DATA_DIRECTORY| structure that delineates the
   //      |WIN_CERTIFICATE| structure.
   memcpy(&ret[certs_size_offset_], &certs_size, sizeof(certs_size));

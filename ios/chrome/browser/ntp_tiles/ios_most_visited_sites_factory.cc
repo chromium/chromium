@@ -33,5 +33,5 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
           std::make_unique<image_fetcher::ImageFetcherImpl>(
               image_fetcher::CreateIOSImageDecoder(),
               browser_state->GetSharedURLLoaderFactory())),
-      nil);
+      nil, false);
 }

@@ -101,11 +101,9 @@ AppContextMenu.prototype = {
     this.options_ = this.appendMenuItem_('appoptions');
     this.uninstall_ = this.appendMenuItem_('appuninstall');
 
-    if (loadTimeData.getBoolean('canShowAppInfoDialog')) {
-      this.appinfo_ = this.appendMenuItem_('appinfodialog');
-      this.appinfo_.addEventListener(
-          'activate', this.onShowAppInfo_.bind(this));
-    } else {
+    this.appinfo_ = this.appendMenuItem_('appinfodialog');
+    this.appinfo_.addEventListener('activate', this.onShowAppInfo_.bind(this));
+    if (!loadTimeData.getBoolean('canShowAppInfoDialog')) {
       this.details_ = this.appendMenuItem_('appdetails');
       this.details_.addEventListener(
           'activate', this.onShowDetails_.bind(this));
@@ -197,12 +195,21 @@ AppContextMenu.prototype = {
         !app.appData.mayChangeLaunchType || !hasLaunchType;
 
     this.options_.disabled = !app.appData.optionsUrl || !app.appData.enabled;
-    if (this.details_) {
-      this.details_.disabled = !app.appData.detailsUrl;
-    }
+
     this.uninstall_.disabled = !app.appData.mayDisable;
-    if (this.appinfo_) {
-      this.appinfo_.hidden = !app.appData.isLocallyInstalled;
+
+    this.appinfo_.textContent = '';
+    if (app.appData.settingsMenuItemOverrideText) {
+      this.appinfo_.textContent = app.appData.settingsMenuItemOverrideText;
+    } else if (
+        loadTimeData.getBoolean('canShowAppInfoDialog') &&
+        app.appData.isLocallyInstalled) {
+      this.appinfo_.textContent = loadTimeData.getString('appinfodialog');
+    }
+    this.appinfo_.hidden = !this.appinfo_.textContent;
+    if (this.details_) {
+      this.details_.hidden = !this.appinfo_.hidden;
+      this.details_.disabled = !app.appData.detailsUrl;
     }
 
     this.createShortcutSeparator_.hidden = this.createShortcut_.hidden =
@@ -215,6 +222,8 @@ AppContextMenu.prototype = {
     this.runOnOsLogin_.disabled = !app.appData.mayToggleRunOnOsLoginMode;
     this.runOnOsLogin_.checked =
         app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
+
+
   },
 
   /** @private */
@@ -287,10 +296,6 @@ AppContextMenu.prototype = {
     }
 
     chrome.send('runOnOsLogin', [app.appData.id, mode]);
-
-    // Manually update the launch type. We will only get
-    // appsPrefChangeCallback calls after changes to other NTP instances.
-    app.appData.runOnOsLoginMode = mode;
   }
 };
 

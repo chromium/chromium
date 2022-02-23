@@ -7,7 +7,6 @@
 
 #include <mach/mach.h>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "ipc/ipc_message_support_export.h"
 #include "ipc/ipc_param_traits.h"

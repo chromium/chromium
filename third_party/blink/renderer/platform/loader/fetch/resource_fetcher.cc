@@ -51,7 +51,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -137,7 +137,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       return ResourceLoadPriority::kVeryHigh;
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kRaw:
     case ResourceType::kScript:
       // Also visible resources/images (set explicitly in loadPriority)
@@ -295,7 +295,7 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
   switch (type) {
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kCSSStyleSheet:
       return mojom::blink::RequestContextType::STYLE;
     case ResourceType::kScript:
@@ -332,7 +332,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
   switch (type) {
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kCSSStyleSheet:
       return network::mojom::RequestDestination::kStyle;
     case ResourceType::kScript:
@@ -539,19 +539,6 @@ ResourceFetcher::IsControlledByServiceWorker() const {
   return properties_->GetControllerServiceWorkerMode();
 }
 
-namespace {
-
-bool ShouldDeferFontLoad(const FetchParameters& params) {
-  if (params.IsLinkPreload())
-    return false;
-  if (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
-      params.Url().ProtocolIsData())
-    return false;
-  return true;
-}
-
-}  // namespace
-
 bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
                                         const FetchParameters& params,
                                         RevalidationPolicy policy) {
@@ -561,8 +548,8 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
     return false;
 
   // Defer a font load until it is actually needed unless this is a link
-  // preload or a data url font (that doesn't consume network resources).
-  if (resource->GetType() == ResourceType::kFont && ShouldDeferFontLoad(params))
+  // preload.
+  if (resource->GetType() == ResourceType::kFont && !params.IsLinkPreload())
     return false;
 
   // Defer loading images either when:
@@ -781,10 +768,7 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   DCHECK(options.synchronous_policy == kRequestAsynchronously ||
          resource_type == ResourceType::kRaw ||
-         resource_type == ResourceType::kXSLStyleSheet ||
-         (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
-          resource_type == ResourceType::kFont &&
-          params.Url().ProtocolIsData()));
+         resource_type == ResourceType::kXSLStyleSheet);
 
   KURL bundle_url_for_uuid_resources;
   if (resource_request.GetWebBundleTokenParams()) {
@@ -905,9 +889,6 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
                                          !params.IsStaleRevalidation());
 
   SetReferrer(resource_request, properties_->GetFetchClientSettingsObject());
-
-  resource_request.SetExternalRequestStateFromRequestorAddressSpace(
-      properties_->GetFetchClientSettingsObject().GetAddressSpace());
 
   Context().AddAdditionalRequestHeaders(resource_request);
 
@@ -1089,7 +1070,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   switch (policy) {
     case RevalidationPolicy::kReload:
       GetMemoryCache()->Remove(resource);
-      FALLTHROUGH;
+      [[fallthrough]];
     case RevalidationPolicy::kLoad:
       resource = CreateResourceForLoading(params, factory);
       break;
@@ -1339,7 +1320,7 @@ Resource* ResourceFetcher::MatchPreload(const FetchParameters& params,
 
   if (resource->MustRefetchDueToIntegrityMetadata(params)) {
     if (!params.IsSpeculativePreload() && !params.IsLinkPreload())
-      PrintPreloadWarning(resource, Resource::MatchStatus::kIntegrityMismatch);
+      PrintPreloadMismatch(resource, Resource::MatchStatus::kIntegrityMismatch);
     return nullptr;
   }
 
@@ -1352,18 +1333,19 @@ Resource* ResourceFetcher::MatchPreload(const FetchParameters& params,
 
   const ResourceRequest& request = params.GetResourceRequest();
   if (request.DownloadToBlob()) {
-    PrintPreloadWarning(resource, Resource::MatchStatus::kBlobRequest);
+    PrintPreloadMismatch(resource, Resource::MatchStatus::kBlobRequest);
     return nullptr;
   }
 
   if (IsImageResourceDisallowedToBeReused(*resource)) {
-    PrintPreloadWarning(resource, Resource::MatchStatus::kImageLoadingDisabled);
+    PrintPreloadMismatch(resource,
+                         Resource::MatchStatus::kImageLoadingDisabled);
     return nullptr;
   }
 
   const Resource::MatchStatus match_status = resource->CanReuse(params);
   if (match_status != Resource::MatchStatus::kOk) {
-    PrintPreloadWarning(resource, match_status);
+    PrintPreloadMismatch(resource, match_status);
     return nullptr;
   }
 
@@ -1373,8 +1355,8 @@ Resource* ResourceFetcher::MatchPreload(const FetchParameters& params,
   return resource;
 }
 
-void ResourceFetcher::PrintPreloadWarning(Resource* resource,
-                                          Resource::MatchStatus status) {
+void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
+                                           Resource::MatchStatus status) {
   if (!resource->IsLinkPreload())
     return;
 
@@ -1426,6 +1408,9 @@ void ResourceFetcher::PrintPreloadWarning(Resource* resource,
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,
                                      builder.ToString());
+  TRACE_EVENT2("blink,blink.resource", "ResourceFetcher::PrintPreloadMismatch",
+               "url", resource->Url().ElidedString().Utf8(), "MatchStatus",
+               status);
 }
 
 void ResourceFetcher::InsertAsPreloadIfNecessary(Resource* resource,
@@ -1849,6 +1834,8 @@ void ResourceFetcher::WarnUnusedPreloads() {
     console_logger_->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kWarning, message);
+    TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::WarnUnusedPreloads",
+                 "url", resource->Url().ElidedString().Utf8());
   }
 }
 
@@ -1889,6 +1876,19 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
+
+  // A response should not serve partial content if it was not requested via a
+  // Range header: https://fetch.spec.whatwg.org/#main-fetch so keep it out
+  // of the preload cache in case of a non-206 response (which generates an
+  // error).
+  if (resource->GetResponse().GetType() ==
+          network::mojom::FetchResponseType::kOpaque &&
+      resource->GetResponse().HasRangeRequested() &&
+      !resource->GetResourceRequest().HttpHeaderFields().Contains(
+          net::HttpRequestHeaders::kRange)) {
+    RemovePreload(resource);
+  }
+
   if (type == kDidFinishLoading) {
     resource->Finish(response_end, freezable_task_runner_.get());
 
@@ -1932,7 +1932,9 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
-  if (error.IsCancellation())
+  // If the preload was cancelled due to an HTTP error, we don't want to request
+  // the resource a second time.
+  if (error.IsCancellation() && !error.IsCancelledFromHttpError())
     RemovePreload(resource);
   if (network_utils::IsCertificateTransparencyRequiredError(
           error.ErrorCode())) {

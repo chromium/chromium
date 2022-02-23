@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.HashMap;
 import java.util.Iterator;

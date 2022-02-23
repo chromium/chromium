@@ -17,17 +17,12 @@ class Origin;
 
 namespace device {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Controls whether on Windows, U2F/CTAP2 requests are forwarded to the
 // native WebAuthentication API, where available.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthUseNativeWinApi;
-#endif  // defined(OS_WIN)
-
-// Support a special caBLEv2 mode where the server provides the linking
-// information.
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const base::Feature kWebAuthCableServerLink;
+#endif  // BUILDFLAG(IS_WIN)
 
 // Enable synced Android devices to be a 2nd-factor security key.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -41,6 +36,10 @@ extern const base::Feature kWebAuthPhoneSupport;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableExtensionAnywhere;
 
+// Enable discoverable credentials on caBLE authenticators.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthCableDisco;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -49,6 +48,11 @@ extern const base::Feature kWebAuthCrosPlatformAuthenticator;
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kU2fPermissionPrompt;
+
+// Feature flag for the Google-internal
+// `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege;
 
 }  // namespace device
 

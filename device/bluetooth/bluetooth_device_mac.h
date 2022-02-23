@@ -5,7 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_DEVICE_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_DEVICE_MAC_H_
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 

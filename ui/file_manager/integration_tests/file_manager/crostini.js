@@ -45,20 +45,14 @@ testcase.sharePathWithCrostini = async () => {
       '[command="#share-with-linux"]:not([hidden]):not([disabled])';
   const menuNoShareWithLinux = '#file-context-menu:not([hidden]) ' +
       '[command="#share-with-linux"][hidden][disabled="disabled"]';
-  const shareMessageHidden = '#files-message[hidden]';
-  let shareMessageShown = '#files-message:not([hidden])';
+  const shareMessageShown =
+      '#banners > shared-with-crostini-pluginvm-banner:not([hidden])';
 
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(
-        appId, 'shared-with-crostini-pluginvm-banner');
-    shareMessageShown =
-        '#banners > shared-with-crostini-pluginvm-banner:not([hidden])';
-  }
+  await remoteCall.isolateBannerForTesting(
+      appId, 'shared-with-crostini-pluginvm-banner');
 
   // Ensure fake Linux files root is shown.
   await remoteCall.waitForElement(appId, FAKE_LINUX_FILES);
@@ -87,12 +81,8 @@ testcase.sharePathWithCrostini = async () => {
   await remoteCall.waitForElement(appId, menuNoShareWithLinux);
 
   // Click 'photos' to go in photos directory, ensure share message is shown.
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.waitForElementLost(
-        appId, '#banners > shared-with-crostini-pluginvm-banner');
-  } else {
-    await remoteCall.waitForElement(appId, shareMessageHidden);
-  }
+  await remoteCall.waitForElementLost(
+      appId, '#banners > shared-with-crostini-pluginvm-banner');
   remoteCall.callRemoteTestUtil('fakeMouseDoubleClick', appId, [photos]);
   await remoteCall.waitForElement(appId, shareMessageShown);
 };

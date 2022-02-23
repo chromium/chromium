@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -46,7 +47,7 @@ class TestingTemplateURLServiceClient : public ChromeTemplateURLServiceClient {
   }
 
  private:
-  std::u16string* search_term_;
+  raw_ptr<std::u16string> search_term_;
 };
 
 }  // namespace

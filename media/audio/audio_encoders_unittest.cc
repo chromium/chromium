@@ -25,6 +25,7 @@ namespace media {
 namespace {
 
 constexpr int kAudioSampleRate = 48000;
+constexpr int kAudioSampleRateWithDelay = 647744;
 
 // This is the preferred opus buffer duration (60 ms), which corresponds to a
 // value of 2880 frames per buffer (|kOpusFramesPerBuffer|).
@@ -51,6 +52,7 @@ constexpr TestAudioParams kTestAudioParams[] = {
     {2, 96000},
     {1, kAudioSampleRate},
     {2, kAudioSampleRate},
+    {2, kAudioSampleRateWithDelay},
 };
 
 }  // namespace
@@ -61,6 +63,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       : audio_source_(GetParam().channels,
                       /*freq=*/440,
                       GetParam().sample_rate) {
+    options_.codec = AudioCodec::kOpus;
     options_.sample_rate = GetParam().sample_rate;
     options_.channels = GetParam().channels;
   }
@@ -72,12 +75,16 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
   AudioEncoder* encoder() const { return encoder_.get(); }
 
+  bool EncoderHasDelay() const {
+    return options_.sample_rate == kAudioSampleRateWithDelay;
+  }
+
   void SetupEncoder(AudioEncoder::OutputCB output_cb) {
     encoder_ = std::make_unique<AudioOpusEncoder>();
 
     bool called_done = false;
-    AudioEncoder::StatusCB done_cb =
-        base::BindLambdaForTesting([&](Status error) {
+    AudioEncoder::EncoderStatusCB done_cb =
+        base::BindLambdaForTesting([&](EncoderStatus error) {
           if (!error.is_ok())
             FAIL() << error.message();
           called_done = true;
@@ -100,7 +107,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, audio_bus.get());
 
     bool called_done = false;
-    auto done_cb = base::BindLambdaForTesting([&](Status error) {
+    auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
       called_done = true;
@@ -155,7 +162,7 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
     }
 
     bool flush_done = false;
-    auto done_cb = base::BindLambdaForTesting([&](Status error) {
+    auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
       flush_done = true;
@@ -175,6 +182,9 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
 }
 
 TEST_P(AudioEncodersTest, OpusExtraData) {
+  if (EncoderHasDelay())
+    return;
+
   std::vector<uint8_t> extra;
   auto output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output, MaybeDesc desc) {
@@ -214,6 +224,9 @@ TEST_P(AudioEncodersTest, OpusExtraData) {
 //   1. timestamp of the first encoded buffer
 //   2. timestamps of buffers coming immediately after Flush() calls.
 TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
+  if (EncoderHasDelay())
+    return;
+
   base::TimeTicks current_timestamp = base::TimeTicks::Now();
   base::TimeDelta gap = base::Microseconds(1500);
   buffer_duration_ = kOpusBufferDuration;
@@ -248,7 +261,7 @@ TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
   EXPECT_EQ(3u, timestamps.size());
   EXPECT_EQ(ts2, timestamps[2]);
 
-  encoder()->Flush(base::BindOnce([](Status error) {
+  encoder()->Flush(base::BindOnce([](EncoderStatus error) {
     if (!error.is_ok())
       FAIL() << error.message();
   }));
@@ -298,13 +311,17 @@ TEST_P(AudioEncodersTest, FullCycleEncodeDecode) {
     time += buffer_duration_;
   }
 
-  EXPECT_EQ(1, encode_callback_count);
-
   // If there are remaining frames in the opus encoder FIFO, we need to flush
-  // them before we destroy the encoder. Flushing should trigger the encode
-  // callback and we should be able to decode the resulting encoded frames.
-  if (total_frames > frames_in_60_ms) {
-    encoder()->Flush(base::BindOnce([](Status error) {
+  // them before we destroy the encoder. Also flush any encoders with delays.
+  bool needs_flushing = total_frames > frames_in_60_ms || EncoderHasDelay();
+
+  if (!EncoderHasDelay())
+    EXPECT_EQ(1, encode_callback_count);
+
+  // Flushing should trigger the encode callback and we should be able to decode
+  // the resulting encoded frames.
+  if (needs_flushing) {
+    encoder()->Flush(base::BindOnce([](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
     }));

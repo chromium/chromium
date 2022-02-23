@@ -5,7 +5,6 @@
 #ifndef REMOTING_IOS_PERSISTENCE_REMOTING_KEYCHAIN_H_
 #define REMOTING_IOS_PERSISTENCE_REMOTING_KEYCHAIN_H_
 
-#include "base/macros.h"
 #include "remoting/ios/persistence/keychain.h"
 
 namespace remoting {

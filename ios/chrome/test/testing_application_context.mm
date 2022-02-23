@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
+#include "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -214,4 +215,12 @@ breadcrumbs::BreadcrumbPersistentStorageManager*
 TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return nullptr;
+}
+
+id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
+  if (!single_sign_on_service_) {
+    single_sign_on_service_ = ios::provider::CreateSSOService();
+    DCHECK(single_sign_on_service_);
+  }
+  return single_sign_on_service_;
 }

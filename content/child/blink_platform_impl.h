@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -32,7 +31,6 @@ class CONTENT_EXPORT BlinkPlatformImpl : public blink::Platform {
   ~BlinkPlatformImpl() override;
 
   // blink::Platform implementation.
-  bool IsURLSupportedForAppCache(const blink::WebURL& url) override;
   bool IsURLSavableForSavableResource(const blink::WebURL& url) override;
   size_t MaxDecodedImageBytes() override;
   bool IsLowEndDevice() override;

@@ -112,8 +112,7 @@ class DevicePolicyCloudExternalDataManagerTest
 
   int64_t ComputeExternalDataCacheDirectorySize() {
     const base::FilePath device_policy_external_data_path =
-        base::PathService::CheckedGet(
-            chromeos::DIR_DEVICE_POLICY_EXTERNAL_DATA);
+        base::PathService::CheckedGet(ash::DIR_DEVICE_POLICY_EXTERNAL_DATA);
     base::ScopedAllowBlockingForTesting allow_blocking;
     return base::ComputeDirectorySize(device_policy_external_data_path);
   }

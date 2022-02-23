@@ -7,11 +7,13 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_caret.h"
+#include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -66,6 +69,30 @@ class FrameSelectionTest : public EditingTestBase {
   // Returns if a word is is selected.
   bool SelectWordAroundPosition(const Position&);
 
+  // Returns whether the selection was accomplished.
+  bool SelectWordAroundCaret();
+
+  // Returns whether the selection was accomplished.
+  bool SelectSentenceAroundCaret();
+
+  // Places the caret on the |text| at |selection_index|.
+  void ResetAndPlaceCaret(Text* text, size_t selection_index) {
+    ASSERT_LE(selection_index,
+              static_cast<size_t>(std::numeric_limits<int>::max()));
+    Selection().SetSelectionAndEndTyping(
+        SelectionInDOMTree::Builder()
+            .Collapse(Position(text, static_cast<int>(selection_index)))
+            .Build());
+  }
+
+  // Returns whether a context menu is being displayed.
+  bool HasContextMenu() {
+    return GetDocument()
+        .GetPage()
+        ->GetContextMenuController()
+        .ContextMenuNodeForFrame(GetDocument().GetFrame());
+  }
+
   void MoveRangeSelectionInternal(const Position& base,
                                   const Position& extent,
                                   TextGranularity granularity) {
@@ -88,6 +115,18 @@ bool FrameSelectionTest::SelectWordAroundPosition(const Position& position) {
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(position).Build());
   return Selection().SelectWordAroundCaret();
+}
+
+bool FrameSelectionTest::SelectWordAroundCaret() {
+  return Selection().SelectAroundCaret(TextGranularity::kWord,
+                                       HandleVisibility::kNotVisible,
+                                       ContextMenuVisibility::kNotVisible);
+}
+
+bool FrameSelectionTest::SelectSentenceAroundCaret() {
+  return Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                       HandleVisibility::kNotVisible,
+                                       ContextMenuVisibility::kNotVisible);
 }
 
 TEST_F(FrameSelectionTest, FirstEphemeralRangeOf) {
@@ -139,7 +178,7 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
   {
     // To force layout in next updateLayout calling, widen view.
     LocalFrameView& frame_view = GetDummyPageHolder().GetFrameView();
-    IntRect frame_rect = frame_view.FrameRect();
+    gfx::Rect frame_rect = frame_view.FrameRect();
     frame_rect.set_width(frame_rect.width() + 1);
     frame_rect.set_height(frame_rect.height() + 1);
     GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
@@ -187,6 +226,296 @@ TEST_F(FrameSelectionTest, SelectWordAroundCaret2) {
   Node* const baz = GetDocument().body()->firstChild()->lastChild();
   EXPECT_TRUE(SelectWordAroundPosition(Position(baz, 2)));
   EXPECT_EQ_SELECTED_TEXT("baz");
+}
+
+TEST_F(FrameSelectionTest, SelectAroundCaret_Word) {
+  Text* text = AppendTextNode("This is a sentence.");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Beginning of text: |This is a sentence.
+  ResetAndPlaceCaret(text, strlen(""));
+  EXPECT_TRUE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("This");
+
+  // Beginning of a word: This |is a sentence.
+  ResetAndPlaceCaret(text, strlen("This "));
+  EXPECT_TRUE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("is");
+
+  // Somewhere in a word: This is a s|entence.
+  ResetAndPlaceCaret(text, strlen("This is a s"));
+  EXPECT_TRUE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("sentence");
+
+  // End a word: This| is a sentence.
+  ResetAndPlaceCaret(text, strlen("This"));
+  EXPECT_TRUE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("This");
+
+  // End a word with punctuation: This is a sentence|.
+  ResetAndPlaceCaret(text, strlen("This is a sentence"));
+  EXPECT_TRUE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("sentence");
+
+  // End a word after punctuation: This is a sentence.|
+  ResetAndPlaceCaret(text, strlen("This is a sentence."));
+  EXPECT_FALSE(SelectWordAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("");
+}
+
+TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
+  Text* text = AppendTextNode(
+      "This is the first sentence. This is the second sentence. This is the "
+      "last sentence.");
+  UpdateAllLifecyclePhasesForTest();
+
+  // This is the first sentence. Th|is is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence. Th"));
+  EXPECT_TRUE(SelectSentenceAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence.");
+
+  // This is the first sentence|. This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence"));
+  EXPECT_TRUE(SelectSentenceAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("This is the first sentence.");
+
+  // This is the first sentence.| This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence."));
+  EXPECT_TRUE(SelectSentenceAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT(
+      "This is the first sentence. This is the second sentence.");
+
+  // This is the first sentence. |This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence. "));
+  EXPECT_TRUE(SelectSentenceAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT(
+      "This is the first sentence. This is the second sentence.");
+
+  // This is the first sentence. T|his is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence. T"));
+  EXPECT_TRUE(SelectSentenceAroundCaret());
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence.");
+}
+
+TEST_F(FrameSelectionTest, SelectAroundCaret_ShouldShowHandle) {
+  Text* text = AppendTextNode("This is a sentence.");
+  int selection_index = 12;  // This is a se|ntence.
+  UpdateAllLifecyclePhasesForTest();
+
+  // Test that handles are never visible if the the handle_visibility param is
+  // set to not visible, regardless of the other params.
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kSentence, HandleVisibility::kNotVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kWord, HandleVisibility::kNotVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kWord,
+                                            HandleVisibility::kNotVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  // Make sure handles are always visible when the handle_visiblity param is
+  // set to visible, regardless of the other parameters.
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kSentence, HandleVisibility::kVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_TRUE(Selection().IsHandleVisible());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kWord, HandleVisibility::kVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_TRUE(Selection().IsHandleVisible());
+}
+
+TEST_F(FrameSelectionTest, SelectAroundCaret_ShouldShowContextMenu) {
+  Text* text = AppendTextNode("This is a sentence.");
+  int selection_index = 12;  // This is a se|ntence.
+  UpdateAllLifecyclePhasesForTest();
+
+  // Test that the context menu is never visible if the context_menu_visibility
+  // param is set to not visible, regardless of the other params.
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kSentence, HandleVisibility::kNotVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kSentence, HandleVisibility::kVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kWord, HandleVisibility::kNotVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(
+      TextGranularity::kWord, HandleVisibility::kVisible,
+      ContextMenuVisibility::kNotVisible));
+  EXPECT_FALSE(HasContextMenu());
+
+  // Make sure the context menu is always visible when the
+  // context_menu_visibility param is set to visible, regardless of the other
+  // parameters.
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_TRUE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_TRUE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kWord,
+                                            HandleVisibility::kNotVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_TRUE(HasContextMenu());
+
+  ResetAndPlaceCaret(text, selection_index);
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kWord,
+                                            HandleVisibility::kVisible,
+                                            ContextMenuVisibility::kVisible));
+  EXPECT_TRUE(HasContextMenu());
+}
+
+TEST_F(FrameSelectionTest, GetSelectionRangeAroundCaret_Word) {
+  Text* text = AppendTextNode("This is a sentence.");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Beginning of a text: |This is a sentence.
+  ResetAndPlaceCaret(text, strlen(""));
+  EphemeralRange range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("This", PlainText(range));
+
+  // Beginning of a word: This |is a sentence.
+  ResetAndPlaceCaret(text, strlen("This "));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("is", PlainText(range));
+
+  // Somewhere in a word: This is a s|entence.
+  ResetAndPlaceCaret(text, strlen("This is a s"));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("sentence", PlainText(range));
+
+  // End a word: This| is a sentence.
+  ResetAndPlaceCaret(text, strlen("This"));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("This", PlainText(range));
+
+  // End a word before punctuation: This is a sentence|.
+  ResetAndPlaceCaret(text, strlen("This is a sentence"));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("sentence", PlainText(range));
+
+  // End of text after punctuation (no selection): This is a sentence.|
+  ResetAndPlaceCaret(text, strlen("This is a sentence."));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("", PlainText(range));
+
+  // End of text without punctuation: This is a sentence|
+  ResetAndPlaceCaret(text, strlen("This is a sentence"));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("sentence", PlainText(range));
+
+  // After punctuation before whitespace (no selection): A word.| Another.
+  text = AppendTextNode("A word. Another.");
+  UpdateAllLifecyclePhasesForTest();
+  ResetAndPlaceCaret(text, strlen("A word."));
+  range = Selection().GetWordSelectionRangeAroundCaret();
+  EXPECT_EQ("", PlainText(range));
+}
+
+TEST_F(FrameSelectionTest, GetSelectionRangeAroundCaret_Sentence) {
+  Text* text = AppendTextNode(
+      "This is the first sentence. This is the second sentence. This is the "
+      "last sentence.");
+  UpdateAllLifecyclePhasesForTest();
+
+  // |This is the first sentence. This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen(""));
+  EphemeralRange range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the first sentence.", PlainText(range));
+
+  // This is the first sentence|. This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence"));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the first sentence.", PlainText(range));
+
+  // TODO(crbug.com/1273856): This should only select one sentence.
+  // This is the first sentence.| This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence."));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the first sentence. This is the second sentence.",
+            PlainText(range));
+
+  // TODO(crbug.com/1273856): This should only select one sentence.
+  // This is the first sentence. |This is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence. "));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the first sentence. This is the second sentence.",
+            PlainText(range));
+
+  // This is the first sentence. Th|is is the second sentence. This is the last
+  // sentence.
+  ResetAndPlaceCaret(text, strlen("This is the first sentence. Th"));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the second sentence.", PlainText(range));
+
+  // This is the first sentence. This is the second sentence. This is the last
+  // sentence|.
+  ResetAndPlaceCaret(text,
+                     strlen("This is the first sentence. This is the second "
+                            "sentence. This is the last sentence"));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the last sentence.", PlainText(range));
+
+  // This is the first sentence. This is the second sentence. This is the last
+  // sentence.|
+  ResetAndPlaceCaret(text,
+                     strlen("This is the first sentence. This is the second "
+                            "sentence. This is the last sentence."));
+  range = Selection().GetSelectionRangeAroundCaretForTesting(
+      TextGranularity::kSentence);
+  EXPECT_EQ("This is the last sentence.", PlainText(range));
 }
 
 TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
@@ -608,7 +937,7 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   // We use a double click to create the selection [Berlin].
   // FrameSelection::SelectAll (= textarea.select() in JavaScript) would have
   // been shorter, but currently that doesn't work on a *disabled* text control.
-  const IntRect elem_bounds = textarea->BoundsInViewport();
+  const gfx::Rect elem_bounds = textarea->BoundsInViewport();
   WebMouseEvent double_click(WebMouseEvent::Type::kMouseDown, 0,
                              WebInputEvent::GetStaticTimeStampForTests());
   double_click.SetPositionInWidget(elem_bounds.x(), elem_bounds.y());

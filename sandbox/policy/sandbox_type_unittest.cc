@@ -23,15 +23,6 @@ TEST(SandboxTypeTest, Empty) {
   command_line.AppendSwitchASCII(switches::kServiceSandboxType, "network");
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 
-#if defined(OS_WIN)
-  EXPECT_FALSE(
-      command_line.HasSwitch(switches::kNoSandboxAndElevatedPrivileges));
-  SetCommandLineFlagsForSandboxType(&command_line,
-                                    Sandbox::kNoSandboxAndElevatedPrivileges);
-  EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges,
-            SandboxTypeFromCommandLine(command_line));
-#endif
-
   EXPECT_FALSE(command_line.HasSwitch(switches::kNoSandbox));
   SetCommandLineFlagsForSandboxType(&command_line, Sandbox::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
@@ -95,11 +86,17 @@ TEST(SandboxTypeTest, Utility) {
   EXPECT_EQ(Sandbox::kSpeechRecognition,
             SandboxTypeFromCommandLine(command_line9));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine command_line10(command_line);
   SetCommandLineFlagsForSandboxType(&command_line10, Sandbox::kXrCompositing);
   EXPECT_EQ(Sandbox::kXrCompositing,
             SandboxTypeFromCommandLine(command_line10));
+
+  base::CommandLine command_line11(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line11,
+                                    Sandbox::kNoSandboxAndElevatedPrivileges);
+  EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges,
+            SandboxTypeFromCommandLine(command_line11));
 
   base::CommandLine command_line12(command_line);
   SetCommandLineFlagsForSandboxType(&command_line12, Sandbox::kPdfConversion);
@@ -117,6 +114,11 @@ TEST(SandboxTypeTest, Utility) {
   command_line14.AppendSwitchASCII(switches::kServiceSandboxType,
                                    switches::kNoneSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line14));
+
+  base::CommandLine command_line15(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line15, Sandbox::kServiceWithJit);
+  EXPECT_EQ(Sandbox::kServiceWithJit,
+            SandboxTypeFromCommandLine(command_line15));
 
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
@@ -186,7 +188,7 @@ TEST(SandboxTypeTest, ElevatedPrivileges) {
   // specific default to no sandbox on non Windows platforms.
   Sandbox elevated_type =
       UtilitySandboxTypeFromString(switches::kNoneSandboxAndElevatedPrivileges);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges, elevated_type);
 #else
   EXPECT_EQ(Sandbox::kNoSandbox, elevated_type);

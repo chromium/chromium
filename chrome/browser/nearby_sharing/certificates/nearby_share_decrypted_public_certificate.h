@@ -49,6 +49,7 @@ class NearbyShareDecryptedPublicCertificate {
   const nearbyshare::proto::EncryptedMetadata& unencrypted_metadata() const {
     return unencrypted_metadata_;
   }
+  bool for_self_share() const { return for_self_share_; }
 
   // Verifies the |signature| of the signed |payload| using |public_key_|.
   // Returns true if verification was successful.
@@ -68,7 +69,8 @@ class NearbyShareDecryptedPublicCertificate {
       std::unique_ptr<crypto::SymmetricKey> secret_key,
       std::vector<uint8_t> public_key,
       std::vector<uint8_t> id,
-      nearbyshare::proto::EncryptedMetadata unencrypted_metadata);
+      nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+      bool for_self_share);
 
   // The begin/end times of the certificate's validity period. To avoid issues
   // with clock skew, these time might be offset compared to the corresponding
@@ -90,6 +92,10 @@ class NearbyShareDecryptedPublicCertificate {
   // Unencrypted device metadata. The proto name is misleading; it holds data
   // that was previously serialized and encrypted.
   nearbyshare::proto::EncryptedMetadata unencrypted_metadata_;
+
+  // Indicates if this public certificate is from another device owned by the
+  // same user.
+  bool for_self_share_ = false;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_DECRYPTED_PUBLIC_CERTIFICATE_H_

@@ -20,6 +20,8 @@
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/ac3/ac3_util.h"
+#include "media/formats/dts/dts_util.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -46,7 +48,7 @@ MediaCodecAudioDecoder::~MediaCodecAudioDecoder() {
   if (media_crypto_context_)
     media_crypto_context_->SetMediaCryptoReadyCB(base::NullCallback());
 
-  ClearInputQueue(DecodeStatus::ABORTED);
+  ClearInputQueue(DecoderStatus::Codes::kAborted);
 }
 
 AudioDecoderType MediaCodecAudioDecoder::GetDecoderType() const {
@@ -66,7 +68,7 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // Initialization and reinitialization should not be called during pending
   // decode.
   DCHECK(input_queue_.empty());
-  ClearInputQueue(DecodeStatus::ABORTED);
+  ClearInputQueue(DecoderStatus::Codes::kAborted);
 
   is_passthrough_ = MediaCodecUtil::IsPassthroughAudioFormat(config.codec());
   sample_format_ = kSampleFormatS16;
@@ -77,11 +79,14 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
     sample_format_ = kSampleFormatEac3;
   else if (config.codec() == AudioCodec::kMpegHAudio)
     sample_format_ = kSampleFormatMpegHAudio;
+  else if (config.codec() == AudioCodec::kDTS)
+    sample_format_ = kSampleFormatDts;
+  else if (config.codec() == AudioCodec::kDTSXP2)
+    sample_format_ = kSampleFormatDtsxP2;
 
   if (state_ == STATE_ERROR) {
     DVLOG(1) << "Decoder is in error state.";
-    BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderFailedInitialization);
+    BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -96,7 +101,7 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   if (!is_codec_supported) {
     DVLOG(1) << "Unsuported codec " << GetCodecName(config.codec());
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderUnsupportedCodec);
+        .Run(DecoderStatus::Codes::kUnsupportedCodec);
     return;
   }
 
@@ -114,7 +119,7 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
                     "MediaCryptoContext is not supported";
       SetState(STATE_ERROR);
       BindToCurrentLoop(std::move(init_cb))
-          .Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+          .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
 
@@ -126,13 +131,12 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   }
 
   if (!CreateMediaCodecLoop()) {
-    BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderFailedInitialization);
+    BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   SetState(STATE_READY);
-  BindToCurrentLoop(std::move(init_cb)).Run(OkStatus());
+  BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 }
 
 bool MediaCodecAudioDecoder::CreateMediaCodecLoop() {
@@ -171,7 +175,7 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (!buffer->end_of_stream() && buffer->timestamp() == kNoTimestamp) {
     DVLOG(2) << __func__ << " " << buffer->AsHumanReadableString()
              << ": no timestamp, skipping this buffer";
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -180,8 +184,8 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     // We get here if an error happens in DequeueOutput() or Reset().
     DVLOG(2) << __func__ << " " << buffer->AsHumanReadableString()
              << ": Error state, returning decode error for all buffers";
-    ClearInputQueue(DecodeStatus::DECODE_ERROR);
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    ClearInputQueue(DecoderStatus::Codes::kFailed);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -204,7 +208,7 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 void MediaCodecAudioDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
 
-  ClearInputQueue(DecodeStatus::ABORTED);
+  ClearInputQueue(DecoderStatus::Codes::kAborted);
 
   // Flush if we can, otherwise completely recreate and reconfigure the codec.
   bool success = codec_loop_->TryFlush();
@@ -267,7 +271,7 @@ void MediaCodecAudioDecoder::OnMediaCryptoReady(
   if (media_crypto->is_null()) {
     LOG(ERROR) << "MediaCrypto is not available, can't play encrypted stream.";
     SetState(STATE_UNINITIALIZED);
-    std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -280,12 +284,12 @@ void MediaCodecAudioDecoder::OnMediaCryptoReady(
   // After receiving |media_crypto_| we can configure MediaCodec.
   if (!CreateMediaCodecLoop()) {
     SetState(STATE_UNINITIALIZED);
-    std::move(init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   SetState(STATE_READY);
-  std::move(init_cb).Run(OkStatus());
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 bool MediaCodecAudioDecoder::IsAnyInputPending() const {
@@ -332,11 +336,11 @@ void MediaCodecAudioDecoder::OnInputDataQueued(bool success) {
     return;
 
   std::move(input_queue_.front().second)
-      .Run(success ? DecodeStatus::OK : DecodeStatus::DECODE_ERROR);
+      .Run(success ? DecoderStatus::Codes::kOk : DecoderStatus::Codes::kFailed);
   input_queue_.pop_front();
 }
 
-void MediaCodecAudioDecoder::ClearInputQueue(DecodeStatus decode_status) {
+void MediaCodecAudioDecoder::ClearInputQueue(DecoderStatus decode_status) {
   DVLOG(2) << __func__;
 
   for (auto& entry : input_queue_)
@@ -354,7 +358,7 @@ void MediaCodecAudioDecoder::SetState(State new_state) {
 void MediaCodecAudioDecoder::OnCodecLoopError() {
   // If the codec transitions into the error state, then so should we.
   SetState(STATE_ERROR);
-  ClearInputQueue(DecodeStatus::DECODE_ERROR);
+  ClearInputQueue(DecoderStatus::Codes::kFailed);
 }
 
 bool MediaCodecAudioDecoder::OnDecodedEos(
@@ -376,7 +380,7 @@ bool MediaCodecAudioDecoder::OnDecodedEos(
   // So, we shouldn't be in that state.  So, just DCHECK here.
   DCHECK_NE(state_, STATE_ERROR);
 
-  std::move(input_queue_.front()).second.Run(DecodeStatus::OK);
+  std::move(input_queue_.front()).second.Run(DecoderStatus::Codes::kOk);
   input_queue_.pop_front();
 
   return true;
@@ -418,6 +422,10 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
     } else if (config_.codec() == AudioCodec::kEAC3) {
       frame_count = Ac3Util::ParseTotalEac3SampleCount(
           audio_buffer->channel_data()[0], out.size);
+    } else if (config_.codec() == AudioCodec::kDTS) {
+      frame_count = media::dts::ParseTotalSampleCount(
+          audio_buffer->channel_data()[0], out.size, AudioCodec::kDTS);
+      DVLOG(2) << ": DTS Frame Count = " << frame_count;
     } else {
       NOTREACHED() << "Unsupported passthrough format.";
     }

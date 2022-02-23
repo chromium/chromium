@@ -62,7 +62,7 @@ Timing::FillMode Timing::ResolvedFillMode(bool is_keyframe_effect) const {
   if (fill_mode != Timing::FillMode::AUTO)
     return fill_mode;
 
-  // https://drafts.csswg.org/web-animations/#the-effecttiming-dictionaries
+  // https://w3.org/TR/web-animations-1/#the-effecttiming-dictionaries
   if (is_keyframe_effect)
     return Timing::FillMode::NONE;
   return Timing::FillMode::BOTH;
@@ -140,7 +140,7 @@ ComputedEffectTiming* Timing::getComputedTiming(
   // For the EffectTiming members, getComputedTiming is equivalent to getTiming
   // except that the fill and duration must be resolved.
   //
-  // https://drafts.csswg.org/web-animations-1/#dom-animationeffect-getcomputedtiming
+  // https://w3.org/TR/web-animations-1/#dom-animationeffect-getcomputedtiming
 
   // TODO(crbug.com/1216527): Animation effect timing members start_delay and
   // end_delay should be CSSNumberish
@@ -244,7 +244,7 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   DCHECK(!calculated.is_in_effect ||
          (current_iteration.has_value() && progress.has_value()));
   calculated.is_in_play = calculated.phase == Timing::kPhaseActive;
-  // https://drafts.csswg.org/web-animations-1/#current
+  // https://w3.org/TR/web-animations-1/#current
   calculated.is_current = calculated.is_in_play ||
                           (playback_rate.has_value() && playback_rate > 0 &&
                            calculated.phase == Timing::kPhaseBefore) ||

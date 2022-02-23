@@ -14,8 +14,8 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
 using jingle_xmpp::QName;
@@ -87,7 +87,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
             signal_strategy_->GetLocalAddress().id(), message->from.id());
 
     JingleSession* session = new JingleSession(this);
-    session->InitializeIncomingConnection(stanza->Attr(jingle_xmpp::QN_ID), *message,
+    session->InitializeIncomingConnection(stanza->Attr(kQNameId), *message,
                                           std::move(authenticator));
     sessions_[session->session_id_] = session;
 
@@ -135,7 +135,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingStanza(
   }
 
   it->second->OnIncomingMessage(
-      stanza->Attr(jingle_xmpp::QN_ID), std::move(message),
+      stanza->Attr(kQNameId), std::move(message),
       base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this),
                      std::move(stanza_copy)));
   return true;

@@ -26,8 +26,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // Icon, text, and background colors that should be used for different types
   // of Chip.
   enum class Theme {
-    kBlue,
-    kGray,
+    kNormalVisibility,
+    kLowVisibility,
   };
 
   void AnimateCollapse();
@@ -46,6 +46,7 @@ class OmniboxChipButton : public views::MdTextButton {
   // views::MdTextButton:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
+  void UpdateBackgroundColor() override;
 
   // Set the button theme.
   void SetTheme(Theme theme);
@@ -62,26 +63,14 @@ class OmniboxChipButton : public views::MdTextButton {
   // the theme.
   void UpdateIconAndColors();
 
-  // Returns the primary theme color.
-  SkColor GetMainColor();
+  SkColor GetTextAndIconColor();
 
-  // Returns the color that is used for the prominent button's text and icon, or
-  // the non-prominent button's background. The return color matches the toolbar
-  // color.
-  SkColor GetNeutralColor();
-
-  // Get the color for the text and icon.
-  SkColor GetForegroundColor();
-
-  // If button is prominent, the background will be filled in theme color,
-  // otherwise the background will have the neutral color with a theme-colored
-  // border stroke.
   SkColor GetBackgroundColor();
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
-  Theme theme_ = Theme::kBlue;
+  Theme theme_ = Theme::kNormalVisibility;
 
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.

@@ -49,6 +49,9 @@ String StringForBoxType(const NGPhysicalFragment& fragment) {
     case NGPhysicalFragment::NGBoxType::kColumnBox:
       result.Append("column");
       break;
+    case NGPhysicalFragment::NGBoxType::kPageBox:
+      result.Append("page");
+      break;
     case NGPhysicalFragment::NGBoxType::kAtomicInline:
       result.Append("atomic-inline");
       break;
@@ -480,18 +483,22 @@ bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
   const LayoutBlock* container = layout_object_->ContainingBlock();
   if (!container)
     return false;
-  return container->IsLayoutNGMixin();
+  return container->IsLayoutNGObject();
 }
 
-const NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData()
-    const {
+NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   if (!has_fragmented_out_of_flow_data_)
     return nullptr;
-  const auto* oof_data =
-      reinterpret_cast<const NGFragmentedOutOfFlowData*>(oof_data_.get());
+  auto* oof_data =
+      reinterpret_cast<NGFragmentedOutOfFlowData*>(oof_data_.get());
   DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
   return oof_data;
+}
+
+bool NGPhysicalFragment::HasNestedMulticolsWithOOFs() const {
+  const NGFragmentedOutOfFlowData* oof_data = FragmentedOutOfFlowData();
+  return oof_data && !oof_data->multicols_with_pending_oofs.IsEmpty();
 }
 
 bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
@@ -547,10 +554,11 @@ void NGPhysicalFragment::CheckType() const {
       } else {
         DCHECK(layout_object_->IsBox());
       }
-      if (IsColumnBox()) {
-        // Column fragments are associated with the same layout object as their
-        // multicol container. The fragments themselves are regular in-flow
-        // block container fragments for most purposes.
+      if (IsFragmentainerBox()) {
+        // Fragmentainers are associated with the same layout object as their
+        // multicol container (or the LayoutView, in case of printing). The
+        // fragments themselves are regular in-flow block container fragments
+        // for most purposes.
         DCHECK(layout_object_->IsLayoutBlockFlow());
         DCHECK(IsBox());
         DCHECK(!IsFloating());
@@ -631,7 +639,7 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
     layout_object->GetTransformFromContainer(container_layout_object,
                                              PhysicalOffset(), transform);
     *overflow =
-        PhysicalRect::EnclosingRect(transform.MapRect(FloatRect(*overflow)));
+        PhysicalRect::EnclosingRect(transform.MapRect(gfx::RectF(*overflow)));
   }
 }
 
@@ -639,7 +647,7 @@ const HeapVector<NGInlineItem>&
 NGPhysicalFragment::InlineItemsOfContainingBlock() const {
   DCHECK(IsInline());
   DCHECK(GetLayoutObject());
-  LayoutBlockFlow* block_flow = GetLayoutObject()->ContainingNGBlockFlow();
+  LayoutBlockFlow* block_flow = GetLayoutObject()->FragmentItemsContainer();
   // TODO(xiaochengh): Code below is copied from ng_offset_mapping.cc with
   // modification. Unify them.
   DCHECK(block_flow);
@@ -978,7 +986,8 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
 
     if (!descendant_box->IsInlineBox()) {
       descendant_box->AddSelfOutlineRects(
-          additional_offset + descendant.Offset(), outline_type, outline_rects);
+          additional_offset + descendant.Offset(), outline_type, outline_rects,
+          nullptr);
       return;
     }
 

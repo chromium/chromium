@@ -32,31 +32,15 @@ void ReportResult(Result result) {
   UMA_HISTOGRAM_ENUMERATION(kAttestationBrowserResultHistogram, result);
 }
 
-// Gets the URL associated with the web contents for the purpose of platform
-// verification.
-GURL GetURL(content::WebContents* web_contents) {
-  // TODO(xhwang): Using GetLastCommittedURL() here is not right. The platform
-  // verification may be requested by a frame from a different origin.
-  // https://crbug.com/1223920.
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (!url.is_valid())
-    return web_contents->GetVisibleURL();
-  return url;
-}
-
 // Whether platform verification is permitted by the user-configurable content
 // setting.
-bool IsPermittedByContentSettings(content::WebContents* web_contents) {
-  const GURL& requesting_origin =
-      GetURL(web_contents).DeprecatedGetOriginAsURL();
-
-  GURL embedding_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
+bool IsPermittedByContentSettings(content::RenderFrameHost* render_frame_host) {
   ContentSetting content_setting =
       PermissionManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-          ->GetPermissionStatus(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-                                requesting_origin, embedding_origin)
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+              render_frame_host)
           .content_setting;
 
   return content_setting == CONTENT_SETTING_ALLOW;
@@ -64,27 +48,28 @@ bool IsPermittedByContentSettings(content::WebContents* web_contents) {
 
 // Whether platform verification is permitted by the profile type. Currently
 // platform verification is disabled for incognito and guest profiles.
-bool IsPermittedByProfileType(content::WebContents* web_contents) {
+bool IsPermittedByProfileType(content::RenderFrameHost* render_frame_host) {
   Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   return !profile->IsOffTheRecord() && !profile->IsGuestSession();
 }
 
 }  // namespace
 
-bool PerformBrowserChecks(content::WebContents* web_contents) {
-  GURL url = GetURL(web_contents);
+bool PerformBrowserChecks(content::RenderFrameHost* render_frame_host) {
+  GURL url = render_frame_host->GetLastCommittedOrigin().GetURL();
+
   if (!url.is_valid()) {
     ReportResult(Result::kInvalidURL);
     return false;
   }
 
-  if (!IsPermittedByProfileType(web_contents)) {
+  if (!IsPermittedByProfileType(render_frame_host)) {
     ReportResult(Result::kUnsupportedProfile);
     return false;
   }
 
-  if (!IsPermittedByContentSettings(web_contents)) {
+  if (!IsPermittedByContentSettings(render_frame_host)) {
     ReportResult(Result::kUserRejected);
     return false;
   }

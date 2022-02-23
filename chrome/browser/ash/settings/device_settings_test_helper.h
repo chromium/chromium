@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"

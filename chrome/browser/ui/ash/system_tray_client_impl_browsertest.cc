@@ -9,8 +9,12 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -21,14 +25,17 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -38,7 +45,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 
-using chromeos::ProfileHelper;
+using ::ash::ProfileHelper;
 using user_manager::UserManager;
 
 using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;
@@ -171,13 +178,13 @@ class SystemTrayClientClockUnknownPrefTest
   }
   // ash::localStateMixin::Delegate:
   void SetUpLocalState() override {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     // First user does not have a preference.
-    ASSERT_FALSE(user_manager::known_user::GetBooleanPref(
-        account_id1_, ::prefs::kUse24HourClock, nullptr));
+    ASSERT_FALSE(known_user.FindBoolPath(account_id1_, ::prefs::kUse24HourClock)
+                     .has_value());
 
     // Set preference for the second user only.
-    user_manager::known_user::SetBooleanPref(account_id2_,
-                                             ::prefs::kUse24HourClock, false);
+    known_user.SetBooleanPref(account_id2_, ::prefs::kUse24HourClock, false);
   }
 
  protected:
@@ -307,4 +314,126 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
                                             true /* open_tray */));
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, kManager16),
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_TRAY_ENTERPRISE));
+}
+
+class SystemTrayClientShowCalendarTest : public ash::LoginManagerTest {
+ public:
+  SystemTrayClientShowCalendarTest() {
+    login_mixin_.AppendRegularUsers(1);
+    account_id_ = login_mixin_.users()[0].account_id;
+  }
+
+  SystemTrayClientShowCalendarTest(const SystemTrayClientShowCalendarTest&) =
+      delete;
+  SystemTrayClientShowCalendarTest& operator=(
+      const SystemTrayClientShowCalendarTest&) = delete;
+
+  ~SystemTrayClientShowCalendarTest() override = default;
+
+  apps::mojom::AppPtr MakeApp(const char* app_id, const char* name) {
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_id = app_id;
+    app->name = name;
+    app->short_name = name;
+    return app;
+  }
+
+  void InstallApp(const char* app_id, const char* name) {
+    const user_manager::User* user = UserManager::Get()->FindUser(account_id_);
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+    apps::AppServiceProxyAsh* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+
+    std::vector<apps::mojom::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakeApp(app_id, name));
+    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
+                                     apps::mojom::AppType::kUnknown,
+                                     /*should_notify_initialized=*/false);
+  }
+
+ protected:
+  AccountId account_id_;
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+
+  // Login a user.
+  LoginUser(account_id_);
+
+  // Show the calendar, no URL and no PWA installed.
+  const char kOfficialCalendarUrlPrefix[] =
+      "https://calendar.google.com/calendar/";
+  GURL final_url;
+  bool opened_pwa = false;
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      absl::nullopt, opened_pwa, final_url);
+  EXPECT_FALSE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarUrlPrefix).spec());
+
+  // Now install the calendar PWA.
+  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  opened_pwa = false;
+  final_url = GURL();
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      absl::nullopt, opened_pwa, final_url);
+  EXPECT_TRUE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarUrlPrefix).spec());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+
+  LoginUser(account_id_);
+
+  // Show the calendar, with an event URL that has the "official" prefix, no PWA
+  // installed.
+  const char kOfficialCalendarEventUrl[] =
+      "https://calendar.google.com/calendar/event?eid=m00n";
+  GURL event_url(kOfficialCalendarEventUrl);
+  GURL final_url;
+  bool opened_pwa = false;
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      event_url, opened_pwa, final_url);
+  EXPECT_FALSE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), event_url.spec());
+
+  // Install the calendar PWA.
+  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  opened_pwa = false;
+  final_url = GURL();
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      event_url, opened_pwa, final_url);
+  EXPECT_TRUE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), event_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
+  auto tray_test_api = ash::SystemTrayTestApi::Create();
+
+  LoginUser(account_id_);
+
+  // Show the calendar, with an event URL that does not have the "official"
+  // prefix, no PWA installed.
+  const char kOfficialCalendarEventUrl[] =
+      "https://calendar.google.com/calendar/event?eid=m00n";
+  const char kUnofficialCalendarEventUrl[] =
+      "https://www.google.com/calendar/event?eid=m00n";
+  GURL event_url(kUnofficialCalendarEventUrl);
+  GURL final_url;
+  bool opened_pwa = false;
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      event_url, opened_pwa, final_url);
+  EXPECT_FALSE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
+
+  // Install the calendar PWA.
+  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  opened_pwa = false;
+  final_url = GURL();
+  ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      event_url, opened_pwa, final_url);
+  EXPECT_TRUE(opened_pwa);
+  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 }

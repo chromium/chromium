@@ -39,24 +39,24 @@ struct GenerateFilenameCase {
 // TODO(https://crbug.com/911896): Make these char16_t once std::u16string is
 // std::u16string.
 std::wstring FilePathAsWString(const base::FilePath& path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return path.value();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::UTF8ToWide(path.value());
 #endif
 }
 base::FilePath WStringAsFilePath(const std::wstring& str) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(str);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(base::WideToUTF8(str));
 #endif
 }
 
 std::string GetLocaleWarningString() {
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   return "";
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // The generate filename tests can fail on certain OS_POSIX platforms when
   // LC_CTYPE is not "utf8" or "utf-8" because some of the string conversions
   // fail.
@@ -111,7 +111,7 @@ constexpr const base::FilePath::CharType* kUnsafePortableBasenames[] = {
     FILE_PATH_LITERAL(" Computer"),
     FILE_PATH_LITERAL("My Computer.{a}"),
     FILE_PATH_LITERAL("My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}"),
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     FILE_PATH_LITERAL("a\\a"),
 #endif
 };
@@ -123,7 +123,7 @@ constexpr const base::FilePath::CharType* kUnsafePortableBasenamesForWin[] = {
 
 constexpr const base::FilePath::CharType* kSafePortableRelativePaths[] = {
     FILE_PATH_LITERAL("a/a"),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FILE_PATH_LITERAL("a\\a"),
 #endif
 };
@@ -173,7 +173,7 @@ TEST(FilenameUtilTest, IsSafePortableRelativePath) {
 TEST(FilenameUtilTest, FileURLConversion) {
   // a list of test file names and the corresponding URLs
   const FileCase round_trip_cases[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {L"C:\\foo\\bar.txt", "file:///C:/foo/bar.txt"},
     {L"\\\\some computer\\foo\\bar.txt",
      "file://some%20computer/foo/bar.txt"},  // UNC
@@ -196,7 +196,7 @@ TEST(FilenameUtilTest, FileURLConversion) {
      "file:///C:/foo/%F0%9F%94%92.txt"},                         // Blocked.
     {L"C:\\foo\\\u2001.txt", "file:///C:/foo/%E2%80%81.txt"},    // Blocked.
     {L"C:\\foo\\\a\tbar\n ", "file:///C:/foo/%07%09bar%0A%20"},  // Blocked.
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     {L"/foo/bar.txt", "file:///foo/bar.txt"},
     {L"/foo/BAR.txt", "file:///foo/BAR.txt"},
     {L"/C:/foo/bar.txt", "file:///C:/foo/bar.txt"},
@@ -238,7 +238,7 @@ TEST(FilenameUtilTest, FileURLConversion) {
     {nullptr, "http://foo/bar.txt"},
     {nullptr, "http://localhost/foo/bar.txt"},
     {nullptr, "https://localhost/foo/bar.txt"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {L"C:\\foo\\bar.txt", "file:c|/foo\\bar.txt"},
     {L"C:\\foo\\bar.txt", "file:/c:/foo/bar.txt"},
     {L"\\\\foo\\bar.txt", "file://foo\\bar.txt"},
@@ -264,7 +264,7 @@ TEST(FilenameUtilTest, FileURLConversion) {
     // SAMBA share case.
     {L"\\\\computername\\ShareName\\Path\\Foo.txt",
      "file://computername/ShareName/Path/Foo.txt"},
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     {L"/c:/foo/bar.txt", "file:/c:/foo/bar.txt"},
     {L"/c:/foo/bar.txt", "file:///c:/foo/bar.txt"},
     {L"/foo/bar.txt", "file:/foo/bar.txt"},
@@ -321,13 +321,13 @@ TEST(FilenameUtilTest, FileURLConversion) {
   {
     const char invalid_utf8[] = "file:///d:/Blah/\x85\x99.doc";
     EXPECT_TRUE(FileURLToFilePath(GURL(invalid_utf8), &output));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, invalid UTF-8 bytes are interpreted using the default ANSI
     // code page. This defaults to Windows-1252 (which we assume here).
     const base::FilePath::CharType expected_output[] =
         FILE_PATH_LITERAL("D:\\Blah\\\u2026\u2122.doc");
     EXPECT_EQ(expected_output, output.value());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     // No conversion should happen, and the invalid UTF-8 should be preserved.
     const char expected_output[] = "/d:/Blah/\x85\x99.doc";
     EXPECT_EQ(expected_output, output.value());
@@ -338,13 +338,13 @@ TEST(FilenameUtilTest, FileURLConversion) {
   {
     const char invalid_utf8[] = "file:///d:/Blah/%85%99.doc";
     EXPECT_TRUE(FileURLToFilePath(GURL(invalid_utf8), &output));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, invalid UTF-8 bytes are interpreted using the default ANSI
     // code page. This defaults to Windows-1252 (which we assume here).
     const base::FilePath::CharType expected_output[] =
         FILE_PATH_LITERAL("D:\\Blah\\\u2026\u2122.doc");
     EXPECT_EQ(expected_output, output.value());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     // No conversion should happen, and the invalid UTF-8 should be preserved.
     const char expected_output[] = "/d:/Blah/\x85\x99.doc";
     EXPECT_EQ(expected_output, output.value());
@@ -373,7 +373,7 @@ TEST(FilenameUtilTest, GenerateSafeFileName) {
     {__LINE__, "image/jpeg", "bar.jpg", "bar.jpg"},
     {__LINE__, "image/jpeg", "bar.jpeg", "bar.jpeg"},
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Device names
     {__LINE__, "text/html", "con.htm", "_con.htm"},
     {__LINE__, "text/html", "lpt1.htm", "_lpt1.htm"},
@@ -387,7 +387,7 @@ TEST(FilenameUtilTest, GenerateSafeFileName) {
     // Dangerous extensions
     {__LINE__, "text/html", "harmless.local", "harmless.download"},
     {__LINE__, "text/html", "harmless.lnk", "harmless.download"},
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // On Posix, none of the above set is particularly dangerous.
     {__LINE__, "text/html", "con.htm", "con.htm"},
     {__LINE__, "text/html", "lpt1.htm", "lpt1.htm"},
@@ -397,12 +397,12 @@ TEST(FilenameUtilTest, GenerateSafeFileName) {
     {__LINE__, "text/html", "harmless.{mismatched-", "harmless.{mismatched-"},
     {__LINE__, "text/html", "harmless.local", "harmless.local"},
     {__LINE__, "text/html", "harmless.lnk", "harmless.lnk"},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath base_path(FILE_PATH_LITERAL("C:\\foo"));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath base_path("/foo");
 #endif
 
@@ -612,7 +612,7 @@ TEST(FilenameUtilTest, GenerateFileName) {
     {// Known MIME type.
      __LINE__, "", "filename=my-cat.jpg", "", "", "text/plain", L"download",
      L"my-cat.jpg"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Test truncation of trailing dots and spaces (Windows)
     {__LINE__, "", "filename=evil.exe ", "", "", "binary/octet-stream",
      L"download", L"evil.exe"},
@@ -624,7 +624,7 @@ TEST(FilenameUtilTest, GenerateFileName) {
      L"evil_"},
     {__LINE__, "", "filename=. . . . .", "", "", "binary/octet-stream",
      L"download", L"download"},
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // Test truncation of trailing dots and spaces (non-Windows)
     {__LINE__, "", "filename=evil.exe ", "", "", "binary/octet-stream",
      L"download", L"evil.exe"},
@@ -648,28 +648,28 @@ TEST(FilenameUtilTest, GenerateFileName) {
      L"download"},
     // Reserved words on Windows
     {__LINE__, "", "filename=COM1", "", "", "application/foo-bar", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_COM1"
 #else
      L"COM1"
 #endif
     },
     {__LINE__, "", "filename=COM4.txt", "", "", "text/plain", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_COM4.txt"
 #else
      L"COM4.txt"
 #endif
     },
     {__LINE__, "", "filename=lpt1.TXT", "", "", "text/plain", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_lpt1.TXT"
 #else
      L"lpt1.TXT"
 #endif
     },
     {__LINE__, "", "filename=clock$.txt", "", "", "text/plain", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_clock$.txt"
 #else
      L"clock$.txt"
@@ -677,7 +677,7 @@ TEST(FilenameUtilTest, GenerateFileName) {
     },
     {// Validation should also apply to sugested name
      __LINE__, "", "", "", "clock$.txt", "text/plain", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_clock$.txt"
 #else
      L"clock$.txt"
@@ -687,35 +687,35 @@ TEST(FilenameUtilTest, GenerateFileName) {
      __LINE__, "", "filename=mycom1.foo", "", "", "", L"download",
      L"mycom1.foo"},
     {__LINE__, "", "filename=Setup.exe.local", "", "", "", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"Setup.exe.download"
 #else
      L"Setup.exe.local"
 #endif
     },
     {__LINE__, "", "filename=Setup.exe.local.local", "", "", "", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"Setup.exe.local.download"
 #else
      L"Setup.exe.local.local"
 #endif
     },
     {__LINE__, "", "filename=Setup.exe.lnk", "", "", "", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"Setup.exe.download"
 #else
      L"Setup.exe.lnk"
 #endif
     },
     {__LINE__, "", "filename=Desktop.ini", "", "", "", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_Desktop.ini"
 #else
      L"Desktop.ini"
 #endif
     },
     {__LINE__, "", "filename=Thumbs.db", "", "", "", L"download",
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
      L"_Thumbs.db"
 #else
      L"Thumbs.db"

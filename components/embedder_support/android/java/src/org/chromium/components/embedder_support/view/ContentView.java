@@ -14,6 +14,7 @@ import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnDragListener;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.view.ViewStructure;
@@ -47,7 +48,7 @@ import org.chromium.ui.base.EventOffsetHandler;
  */
 public class ContentView extends FrameLayout
         implements ViewEventSink.InternalAccessDelegate, SmartClipProvider,
-                   OnHierarchyChangeListener, OnSystemUiVisibilityChangeListener {
+                   OnHierarchyChangeListener, OnSystemUiVisibilityChangeListener, OnDragListener {
     private static final String TAG = "ContentView";
 
     // Default value to signal that the ContentView's size need not be overridden.
@@ -61,6 +62,7 @@ public class ContentView extends FrameLayout
             new ObserverList<>();
     private final ObserverList<OnSystemUiVisibilityChangeListener> mSystemUiChangeListeners =
             new ObserverList<>();
+    private final ObserverList<OnDragListener> mOnDragListeners = new ObserverList<>();
     private ViewEventSink mViewEventSink;
 
     /**
@@ -114,10 +116,11 @@ public class ContentView extends FrameLayout
 
         setOnHierarchyChangeListener(this);
         setOnSystemUiVisibilityChangeListener(this);
+        setOnDragListener(this);
     }
 
     protected WebContentsAccessibility getWebContentsAccessibility() {
-        return hasValidWebContents() ? WebContentsAccessibility.fromWebContents(mWebContents)
+        return webContentsAttached() ? WebContentsAccessibility.fromWebContents(mWebContents)
                                      : null;
     }
 
@@ -216,6 +219,28 @@ public class ContentView extends FrameLayout
         mSystemUiChangeListeners.removeObserver(listener);
     }
 
+    /**
+     * Registers the given listener to receive DragEvent updates on this view.
+     * @param listener Listener to receive DragEvent updates.
+     */
+    public void addOnDragListener(OnDragListener listener) {
+        mOnDragListeners.addObserver(listener);
+    }
+
+    /**
+     * Unregisters the given listener to receive DragEvent updates on this view.
+     * @param listener Listener that doesn't want to receive DragEvent updates anymore.
+     */
+    public void removeOnDragListener(OnDragListener listener) {
+        mOnDragListeners.removeObserver(listener);
+    }
+
+    @Override
+    public void setOnDragListener(OnDragListener listener) {
+        assert listener == this : "Use add/removeOnDragListener instead.";
+        super.setOnDragListener(listener);
+    }
+
     // View.OnHierarchyChangeListener implementation
 
     @Override
@@ -239,6 +264,17 @@ public class ContentView extends FrameLayout
         for (OnSystemUiVisibilityChangeListener listener : mSystemUiChangeListeners) {
             listener.onSystemUiVisibilityChange(visibility);
         }
+    }
+
+    // View.OnDragListener implementation
+
+    @Override
+    public boolean onDrag(View view, DragEvent event) {
+        for (OnDragListener listener : mOnDragListeners) {
+            listener.onDrag(view, event);
+        }
+        // Do not consume the drag event to allow #onDragEvent to be called.
+        return false;
     }
 
     @Override

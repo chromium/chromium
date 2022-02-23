@@ -26,10 +26,10 @@ void ScopedKeyRotationCommandFactory::SetMock(
 
 std::unique_ptr<KeyRotationCommand>
 ScopedKeyRotationCommandFactory::CreateCommand() {
-  DCHECK(mock_key_rotation_command_);
-  auto temp = std::move(mock_key_rotation_command_);
-  mock_key_rotation_command_ = nullptr;
-  return temp;
+  if (mock_key_rotation_command_) {
+    return std::move(mock_key_rotation_command_);
+  }
+  return std::make_unique<testing::StrictMock<test::MockKeyRotationCommand>>();
 }
 
 }  // namespace enterprise_connectors

@@ -4,15 +4,17 @@
 
 #include "sandbox/win/src/window.h"
 
+#include <windows.h>
+
 #include <aclapi.h>
 
 #include <memory>
 
 #include "base/notreached.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
-#include "sandbox/win/src/sid.h"
 
 namespace {
 
@@ -135,12 +137,13 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
       // to everyone, so the desktop remains accessible when we further modify
       // the DACL. Also need WinBuiltinAnyPackageSid for AppContainer processes.
       if (base::win::GetVersion() >= base::win::Version::WIN8) {
-        AddKnownSidToObject(*desktop, SE_WINDOW_OBJECT,
-                            Sid(WinBuiltinAnyPackageSid), GRANT_ACCESS,
-                            GENERIC_ALL);
+        AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                            base::win::WellKnownSid::kAllApplicationPackages,
+                            SecurityAccessMode::kGrant, GENERIC_ALL);
       }
-      AddKnownSidToObject(*desktop, SE_WINDOW_OBJECT, Sid(WinWorldSid),
-                          GRANT_ACCESS, GENERIC_ALL);
+      AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                          base::win::WellKnownSid::kWorld,
+                          SecurityAccessMode::kGrant, GENERIC_ALL);
     }
 
     // Replace the DACL on the new Desktop with a reduced privilege version.
@@ -149,8 +152,9 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
         WRITE_DAC | WRITE_OWNER | DELETE | DESKTOP_CREATEMENU |
         DESKTOP_CREATEWINDOW | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK |
         DESKTOP_JOURNALRECORD | DESKTOP_SWITCHDESKTOP;
-    AddKnownSidToObject(*desktop, SE_WINDOW_OBJECT, Sid(WinRestrictedCodeSid),
-                        DENY_ACCESS, kDesktopDenyMask);
+    AddKnownSidToObject(*desktop, SecurityObjectType::kWindow,
+                        base::win::WellKnownSid::kRestricted,
+                        SecurityAccessMode::kDeny, kDesktopDenyMask);
     return SBOX_ALL_OK;
   }
 

@@ -36,15 +36,17 @@ class AshAttestationService : public AttestationService {
       AttestationCallback callback) override;
 
  private:
-  // Run the callback that may resume the navigation with the challenge
-  // response. In case the challenge response was not successfully built. An
-  // empty challenge response will be used.
-  void ReturnResult(AttestationCallback callback,
-                    const ash::attestation::TpmChallengeKeyResult& result);
+  // Runs the `callback` which resumes the navigation with the `result`
+  // challenge response. In case the challenge response was not successfully
+  // built. An empty challenge response will be used. `tpm_key_challenger` is
+  // also forwarded to ensure the instance lives as long as the callback runs.
+  void ReturnResult(
+      std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
+          tpm_key_challenger,
+      AttestationCallback callback,
+      const ash::attestation::TpmChallengeKeyResult& result);
 
   Profile* const profile_;
-  std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
-      tpm_key_challenger_;
 
   base::WeakPtrFactory<AshAttestationService> weak_factory_{this};
 };

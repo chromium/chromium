@@ -80,12 +80,14 @@ using shared_highlighting::LinkGenerationError;
 
 - (void)shareLinkToText:(LinkToTextPayload*)payload {
   DCHECK(payload);
-  shared_highlighting::LogLinkGenerationStatus(true);
+  shared_highlighting::LogLinkGenerationStatus(
+      shared_highlighting::LinkGenerationStatus::kSuccess);
   [self.consumer generatedPayload:payload];
 }
 
 - (void)linkGenerationFailedWithError:(LinkGenerationError)error {
-  shared_highlighting::LogLinkGenerationStatus(false);
+  shared_highlighting::LogLinkGenerationStatus(
+      shared_highlighting::LinkGenerationStatus::kFailure);
   shared_highlighting::LogLinkGenerationErrorReason(error);
   [self.consumer linkGenerationFailed];
 }

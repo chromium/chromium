@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_VIDEO_DECODER_H_
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -90,12 +91,12 @@ class MojoVideoDecoder final : public VideoDecoder,
   }
 
  private:
-  void FailInit(InitCB init_cb, Status err);
-  void OnInitializeDone(const Status& status,
+  void FailInit(InitCB init_cb, DecoderStatus err);
+  void OnInitializeDone(const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
                         VideoDecoderType decoder_type);
-  void OnDecodeDone(uint64_t decode_id, const Status& status);
+  void OnDecodeDone(uint64_t decode_id, const DecoderStatus& status);
   void OnResetDone();
 
   void InitAndBindRemoteDecoder(base::OnceClosure complete_cb);
@@ -128,11 +129,11 @@ class MojoVideoDecoder final : public VideoDecoder,
   // Manages VideoFrame destruction callbacks.
   scoped_refptr<MojoVideoFrameHandleReleaser> mojo_video_frame_handle_releaser_;
 
-  GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
+  raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_ = nullptr;
 
   // Raw pointer is safe since both `this` and the `media_log` are owned by
   // WebMediaPlayerImpl with the correct declaration order.
-  MediaLog* media_log_ = nullptr;
+  raw_ptr<MediaLog> media_log_ = nullptr;
 
   InitCB init_cb_;
   OutputCB output_cb_;

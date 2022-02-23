@@ -37,6 +37,7 @@ android_resources("weblayer_resources") {
   deps = [
     ":weblayer_strings_grd",
     "//components/blocked_content/android:java_resources",
+    "//components/browser_ui/accessibility/android:java_resources",
     "//components/browser_ui/contacts_picker/android:java_resources",
     "//components/browser_ui/http_auth/android:java_resources",
     "//components/browser_ui/media/android:java_resources",
@@ -191,6 +192,7 @@ android_library("java") {
     "org/chromium/weblayer_private/permissions/PermissionRequestUtils.java",
     "org/chromium/weblayer_private/resources/ResourceMapper.java",
     "org/chromium/weblayer_private/settings/SettingsFragmentImpl.java",
+    "org/chromium/weblayer_private/settings/WebLayerAccessibilitySettingsDelegate.java",
     "org/chromium/weblayer_private/settings/WebLayerSiteSettingsDelegate.java",
     _bundle_utils_output,
   ]
@@ -206,6 +208,7 @@ android_library("java") {
     "//base:base_java",
     "//cc:cc_java",
     "//components/android_autofill/browser:java",
+    "//components/browser_ui/accessibility/android:java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -365,6 +368,7 @@ android_library("test_java") {
     "//base:base_java",
     "//components/android_autofill/browser:java",
     "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
+    "//components/browser_ui/accessibility/android:java",
     "//components/content_capture/android:java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",

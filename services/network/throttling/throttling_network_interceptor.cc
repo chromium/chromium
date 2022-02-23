@@ -287,4 +287,15 @@ void ThrottlingNetworkInterceptor::SetSuspendWhenOffline(bool suspend) {
   suspend_when_offline_ = suspend;
 }
 
+int ThrottlingNetworkInterceptor::GetReadBufLen(int buf_len) const {
+  constexpr int kPacketSize = 1500;
+
+  // Do not reduce read buffer length if download throttling is disabled because
+  // it will slow down the download.
+  if (!conditions_->download_throughput()) {
+    return buf_len;
+  }
+  return std::min(buf_len, kPacketSize);
+}
+
 }  // namespace network

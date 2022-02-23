@@ -107,6 +107,8 @@ class FakeNfcService : public device::mojom::blink::NFC {
     std::move(callback).Run(nullptr);
   }
   void CancelPush() override {}
+  void MakeReadOnly(MakeReadOnlyCallback callback) override {}
+  void CancelMakeReadOnly() override {}
   void Watch(uint32_t id, WatchCallback callback) override {
     if (watch_error_) {
       std::move(callback).Run(watch_error_.Clone());
@@ -135,7 +137,7 @@ class NFCProxyTest : public PageTestBase {
   NFCProxyTest() { nfc_service_ = std::make_unique<FakeNfcService>(); }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         device::mojom::blink::NFC::Name_,
         WTF::BindRepeating(&FakeNfcService::BindRequest,

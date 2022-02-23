@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;
 using base::UTF16ToUTF8;
@@ -103,10 +103,6 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_use_date(entry.use_date().ToTimeT());
   specifics->set_address_home_language_code(
       TruncateUTF8(entry.language_code()));
-  specifics->set_validity_state_bitfield(
-      entry.GetClientValidityBitfieldValue());
-  specifics->set_is_client_validity_states_updated(
-      entry.is_client_validity_states_updated());
 
   // Set name-related values.
   specifics->add_name_honorific(
@@ -255,8 +251,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   profile->set_use_count(specifics.use_count());
   profile->set_use_date(base::Time::FromTimeT(specifics.use_date()));
   profile->set_language_code(specifics.address_home_language_code());
-  profile->SetClientValidityFromBitfieldValue(
-      specifics.validity_state_bitfield());
 
   // Set the profile label if it exists.
   if (specifics.has_profile_label())
@@ -462,10 +456,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       UTF8ToUTF16(specifics.address_home_subpremise_name()),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_subpremise_name_status()));
-
-  // This has to be the last one, otherwise setting the raw info may change it.
-  profile->set_is_client_validity_states_updated(
-      specifics.is_client_validity_states_updated());
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|
   // * The profile is migrated if the name structure is in legacy state.

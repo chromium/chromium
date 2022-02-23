@@ -15,7 +15,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -54,7 +53,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge final
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager,
       FrameWindowTreeHost* window_tree_host,
       content::WebContents* web_contents,
-      base::OnceCallback<void(zx_status_t)> on_error_callback,
+      base::OnceCallback<bool(zx_status_t)> on_error_callback,
       inspect::Node inspect_node);
   ~AccessibilityBridge() override;
 
@@ -247,7 +246,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge final
 
   // Run in the case of an internal error that cannot be recovered from. This
   // will cause the frame |this| is owned by to be torn down.
-  base::OnceCallback<void(zx_status_t)> on_error_callback_;
+  base::OnceCallback<bool(zx_status_t)> on_error_callback_;
 
   // The root id of the AXTree of the main frame.
   int32_t root_id_ = 0;

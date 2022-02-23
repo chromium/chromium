@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -70,6 +71,11 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenFeedbackForm:
       can_execute = true;
       break;
+    case Command::kOpenPrivacyGuide:
+      can_execute = base::FeatureList::IsEnabled(features::kPrivacyGuide) &&
+                    !chrome::enterprise_util::IsBrowserManaged(profile_) &&
+                    !profile_->IsChild();
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << command_id;
       break;
@@ -119,6 +125,12 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kOpenFeedbackForm:
       OpenFeedbackForm();
+      break;
+    case Command::kOpenPrivacyGuide:
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPrivacyGuideSubPage)),
+                    disposition);
+      base::RecordAction(
+          base::UserMetricsAction("NewTabPage_Promos_PrivacyGuide"));
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;

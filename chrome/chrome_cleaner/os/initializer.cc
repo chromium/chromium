@@ -5,6 +5,7 @@
 #include "chrome/chrome_cleaner/os/initializer.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -58,7 +59,7 @@ bool InitializeOSUtils() {
 
   // Call into the random number generator to initialize it. This must be done
   // once before lowering the token in the sandbox target process.
-  ANALYZER_ALLOW_UNUSED(base::RandUint64());
+  std::ignore = base::RandUint64();
 
   return true;
 }

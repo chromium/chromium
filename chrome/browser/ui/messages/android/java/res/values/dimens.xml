@@ -10,4 +10,5 @@
     <dimen name="snackbar_margin_tablet">24dp</dimen>
     <dimen name="snackbar_shadow_height">8dp</dimen>
     <dimen name="snackbar_text_view_margin">24dp</dimen>
+    <dimen name="snackbar_background_tablet_elev">@dimen/default_elevation_0</dimen>
 </resources>

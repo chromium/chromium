@@ -17,21 +17,15 @@ limitations under the License.
 
 #include <functional>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
+#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "lib/zip.h"                  // from @org_libzip
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"
-
-#if TFLITE_USE_C_API
-#include "tensorflow/lite/c/c_api.h"
-#else
-#include "tensorflow/lite/model_builder.h"
-#endif
 
 namespace tflite {
 namespace metadata {

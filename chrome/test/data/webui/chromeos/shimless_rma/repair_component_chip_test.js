@@ -22,14 +22,16 @@ export function repairComponentChipElementTest() {
 
   /**
    * @param {string} componentName
+   * @param {string} componentIdentifier
    * @return {!Promise}
    */
-  function initializeRepairComponentChip(componentName) {
+  function initializeRepairComponentChip(componentName, componentIdentifier) {
     assertFalse(!!component);
 
     component = /** @type {!RepairComponentChipElement} */ (
         document.createElement('repair-component-chip'));
     component.componentName = componentName;
+    component.componentIdentifier = componentIdentifier;
     assertTrue(!!component);
     document.body.appendChild(component);
 
@@ -41,27 +43,33 @@ export function repairComponentChipElementTest() {
    */
   function clickChip() {
     assertTrue(!!component);
-
-    const button = component.shadowRoot.querySelector('#containerButton');
-    button.click();
+    component.shadowRoot.querySelector('#componentButton').click();
     return flushTasks();
   }
 
   test('ComponentRenders', async () => {
-    await initializeRepairComponentChip('cpu');
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
     assertTrue(!!component);
     assertFalse(component.checked);
 
-    const componentNameSpanElement =
-        component.shadowRoot.querySelector('#componentName');
-    assertTrue(!!componentNameSpanElement);
-    assertEquals(componentNameSpanElement.textContent, 'cpu');
+    const nameElement = component.shadowRoot.querySelector('#componentName');
+    assertTrue(!!nameElement);
+    assertEquals(nameElement.textContent, name);
+
+    const identifierElement =
+        component.shadowRoot.querySelector('#componentIdentifier');
+    assertTrue(!!identifierElement);
+    assertEquals(identifierElement.textContent, identifier);
   });
 
-  test('ComponentToggleChecked', async () => {
-    await initializeRepairComponentChip('cpu');
+  test('ComponentToggleCheckedOnClick', async () => {
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
 
-    const checkIcon = component.shadowRoot.querySelector('#checkedIcon');
+    const checkIcon = component.shadowRoot.querySelector('#checkIcon');
 
     await clickChip();
     assertTrue(component.checked);
@@ -73,15 +81,21 @@ export function repairComponentChipElementTest() {
   });
 
   test('ComponentNoToggleOnDisabled', async () => {
-    await initializeRepairComponentChip('cpu');
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
     component.disabled = true;
     await flushTasks();
 
-    const infoIcon = component.shadowRoot.querySelector('#infoIcon');
-    assertTrue(isVisible(infoIcon));
+    const checkIcon = component.shadowRoot.querySelector('#checkIcon');
+
+    assertFalse(component.checked);
+    assertFalse(isVisible(checkIcon));
 
     await clickChip();
 
+    // Confirm the state does not change after the attempted click.
     assertFalse(component.checked);
+    assertFalse(isVisible(checkIcon));
   });
 }

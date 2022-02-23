@@ -33,11 +33,11 @@ DefaultBrowserHandler::DefaultBrowserHandler() = default;
 DefaultBrowserHandler::~DefaultBrowserHandler() = default;
 
 void DefaultBrowserHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestDefaultBrowserState",
       base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setAsDefaultBrowser",
       base::BindRepeating(&DefaultBrowserHandler::SetAsDefaultBrowser,
                           base::Unretained(this)));
@@ -49,7 +49,8 @@ void DefaultBrowserHandler::OnJavascriptAllowed() {
   local_state_pref_registrar_.Add(
       prefs::kDefaultBrowserSettingEnabled,
       base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
-                          base::Unretained(this), nullptr));
+                          base::Unretained(this),
+                          base::Value::ConstListView()));
   default_browser_worker_ = new shell_integration::DefaultBrowserWorker();
 }
 
@@ -60,18 +61,19 @@ void DefaultBrowserHandler::OnJavascriptDisallowed() {
 }
 
 void DefaultBrowserHandler::RequestDefaultBrowserState(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(args->GetList().size(), 1U);
-  check_default_callback_id_ = args->GetList()[0].GetString();
+  CHECK_EQ(args.size(), 1U);
+  check_default_callback_id_ = args[0].GetString();
 
   default_browser_worker_->StartCheckIsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DefaultBrowserHandler::SetAsDefaultBrowser(const base::ListValue* args) {
+void DefaultBrowserHandler::SetAsDefaultBrowser(
+    base::Value::ConstListView args) {
   CHECK(!DefaultBrowserIsDisabledByPolicy());
   AllowJavascript();
   RecordSetAsDefaultUMA();
@@ -99,12 +101,11 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
   }
 
   base::DictionaryValue dict;
-  dict.SetBoolean("isDefault", state == shell_integration::IS_DEFAULT);
-  dict.SetBoolean("canBeDefault",
-      shell_integration::CanSetAsDefaultBrowser());
-  dict.SetBoolean("isUnknownError",
-      state == shell_integration::UNKNOWN_DEFAULT);
-  dict.SetBoolean("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
+  dict.SetBoolKey("isDefault", state == shell_integration::IS_DEFAULT);
+  dict.SetBoolKey("canBeDefault", shell_integration::CanSetAsDefaultBrowser());
+  dict.SetBoolKey("isUnknownError",
+                  state == shell_integration::UNKNOWN_DEFAULT);
+  dict.SetBoolKey("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
 
   if (!check_default_callback_id_.empty()) {
     ResolveJavascriptCallback(base::Value(check_default_callback_id_), dict);

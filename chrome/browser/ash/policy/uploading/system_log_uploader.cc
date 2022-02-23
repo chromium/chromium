@@ -524,12 +524,12 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   const base::Time now = base::Time::NowFromSystemTime();
   PrefService* local_state = g_browser_process->local_state();
 
-  const base::ListValue* prev_log_uploads =
+  const base::Value* prev_log_uploads =
       local_state->GetList(policy::prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
 
-  for (const base::Value& item : prev_log_uploads->GetList()) {
+  for (const base::Value& item : prev_log_uploads->GetListDeprecated()) {
     // ListValue stores Value type and Value does not support base::Time,
     // so we store double and convert to base::Time here.
     const base::Time current_item_time =
@@ -585,7 +585,7 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
               ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
-              ->GetList()
+              ->GetListDeprecated()
               .size() >= kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -

@@ -7,6 +7,7 @@ include_rules = [
   "+cc/output",
   "+cc/resources",
   "+cc/scheduler",
+  "+components/viz/service/performance_hint",
   "+components/viz/service/surfaces",
   "+components/viz/service/display_embedder/overlay_candidate_validator_android.h",
   "+components/viz/service/display_embedder/overlay_candidate_validator_mac.h",

@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -39,6 +39,7 @@ namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  os_hooks_suppress_.emplace();
   scoped_feature_list_.InitWithFeatures({}, {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
@@ -60,7 +61,7 @@ Profile* WebAppControllerBrowserTest::profile() {
 }
 
 AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode = DisplayMode::kStandalone;
@@ -69,8 +70,12 @@ AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
 }
 
 AppId WebAppControllerBrowserTest::InstallWebApp(
-    std::unique_ptr<WebApplicationInfo> web_app_info) {
+    std::unique_ptr<WebAppInstallInfo> web_app_info) {
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+}
+
+void WebAppControllerBrowserTest::UninstallWebApp(const AppId& app_id) {
+  web_app::test::UninstallWebApp(profile(), app_id);
 }
 
 Browser* WebAppControllerBrowserTest::LaunchWebAppBrowser(const AppId& app_id) {
@@ -117,13 +122,14 @@ content::WebContents* WebAppControllerBrowserTest::OpenWindow(
   return new_contents;
 }
 
-void WebAppControllerBrowserTest::NavigateInRenderer(
+bool WebAppControllerBrowserTest::NavigateInRenderer(
     content::WebContents* contents,
     const GURL& url) {
   EXPECT_TRUE(content::ExecuteScript(
       contents, "window.location = '" + url.spec() + "';"));
-  content::WaitForLoadStop(contents);
+  bool success = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return success;
 }
 
 // static
@@ -163,7 +169,7 @@ content::WebContents* WebAppControllerBrowserTest::OpenApplication(
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   url_observer.Wait();
   return contents;
 }
@@ -208,8 +214,6 @@ void WebAppControllerBrowserTest::SetUpOnMainThread() {
 
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-
-  os_hooks_suppress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
 
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));

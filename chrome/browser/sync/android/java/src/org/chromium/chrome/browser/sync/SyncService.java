@@ -98,6 +98,18 @@ public abstract class SyncService {
     public abstract boolean canSyncFeatureStart();
 
     /**
+     * Returns whether all conditions are satisfied for Sync-the-feature to start.
+     * This means that there is a Sync-consented account, no disable reasons, and
+     * first-time Sync setup has been completed by the user.
+     *
+     * Note: This does not imply that Sync is actually running. Check
+     * IsSyncFeatureActive or GetTransportState to get the current state.
+     *
+     * @return true if the sync feature is enabled.
+     */
+    public abstract boolean isSyncFeatureEnabled();
+
+    /**
      * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
      * active even if this is false.
      *
@@ -118,10 +130,6 @@ public abstract class SyncService {
     public abstract boolean hasUnrecoverableError();
 
     public abstract boolean requiresClientUpgrade();
-
-    public abstract void setDecoupledFromAndroidMasterSync();
-
-    public abstract boolean getDecoupledFromAndroidMasterSync();
 
     public abstract @Nullable CoreAccountInfo getAccountInfo();
 
@@ -201,10 +209,6 @@ public abstract class SyncService {
     public abstract void addSyncStateChangedListener(SyncStateChangedListener listener);
 
     public abstract void removeSyncStateChangedListener(SyncStateChangedListener listener);
-
-    public abstract boolean isSyncAllowedByPlatform();
-
-    public abstract void setSyncAllowedByPlatform(boolean allowed);
 
     /**
      * Returns the actual passphrase type being used for encryption. The sync engine must be

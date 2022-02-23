@@ -12,7 +12,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -40,7 +42,9 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
       BasicInteractions* basic_interactions,
       ViewHandlerAndroid* view_handler,
       RadioButtonController* radio_button_controller,
+      const Dependencies* dependencies,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
+      base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate);
 
   InteractionHandlerAndroid(const InteractionHandlerAndroid&) = delete;
@@ -99,12 +103,14 @@ class InteractionHandlerAndroid : public EventHandler::Observer {
   std::map<EventHandler::EventKey, std::vector<InteractionCallback>>
       interactions_;
 
-  EventHandler* event_handler_ = nullptr;
-  UserModel* user_model_ = nullptr;
-  BasicInteractions* basic_interactions_ = nullptr;
-  ViewHandlerAndroid* view_handler_ = nullptr;
-  RadioButtonController* radio_button_controller_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
+  raw_ptr<UserModel> user_model_ = nullptr;
+  raw_ptr<BasicInteractions> basic_interactions_ = nullptr;
+  raw_ptr<ViewHandlerAndroid> view_handler_ = nullptr;
+  raw_ptr<RadioButtonController> radio_button_controller_ = nullptr;
+  raw_ptr<const Dependencies> dependencies_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jcontext_ = nullptr;
+  base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> jdelegate_ = nullptr;
   bool is_listening_ = false;
 

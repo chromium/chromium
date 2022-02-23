@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -132,8 +133,10 @@ public class FileUtil {
 
     /**
      * Loads vocabulary from an input stream of an opened vocabulary file (which is a single-column
-     * text file). See details for vocabulary files in {@link FileUtil#loadVocabularyFile(Context,
-     * String)}.
+     * text file).
+     *
+     * <p>A vocabulary file is a single-column plain text file whose contents are split into lines,
+     * and each line is an individual value. The file should be in assets of the context.
      *
      * @param inputStream the input stream of an opened vocabulary file.
      * @return a list of vocabulary words.

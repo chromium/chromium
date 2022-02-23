@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,25 +14,26 @@ import sys
 TAG_HEADER = """\
 # OS
 # tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-pie android-r
+#             android-pie android-r android-s
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave mountainlion
-#             sierra
+#         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
+#             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
-#             android-pixel-4 android-shield-android-tv
+#             android-pixel-4 android-pixel-6 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#         fuchsia-board-astro fuchsia-board-qemu-x64 ]
+#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
 # Browser
 # tags: [ android-chromium android-webview-instrumentation
 #         debug debug-x64
-#         release release-x64 ]
+#         release release-x64
+#         fuchsia-chrome web-engine-shell ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
@@ -59,11 +60,7 @@ TAG_HEADER = """\
 # SwiftShader
 # tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
-# tags: [ intel_lt_25.20.100.6444 intel_lt_25.20.100.6577
-#             intel_lt_26.20.100.7000 intel_lt_26.20.100.7870
-#             intel_lt_26.20.100.7323 intel_lt_26.20.100.8141
-#             intel_lt_27.20.100.8280
-#         mesa_lt_19.1 mesa_ge_20.1 ]
+# tags: [ mesa_lt_19.1 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -83,7 +80,7 @@ EXPECTATION_DIR = os.path.join(os.path.dirname(__file__), 'gpu_tests',
 
 def Validate():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     with open(os.path.join(EXPECTATION_DIR, f)) as infile:
       content = infile.read()
       start_index = content.find(TAG_HEADER_BEGIN)
@@ -104,7 +101,7 @@ def Validate():
 
 def Apply():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     filepath = os.path.join(EXPECTATION_DIR, f)
     with open(filepath) as infile:
       content = infile.read()
@@ -140,8 +137,7 @@ def main():
   args = parser.parse_args()
   if args.function == 'apply':
     return Apply()
-  else:
-    return Validate()
+  return Validate()
 
 
 if __name__ == '__main__':

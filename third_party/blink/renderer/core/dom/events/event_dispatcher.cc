@@ -29,6 +29,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -42,11 +43,13 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/simulated_event_util.h"
+#include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -55,6 +58,8 @@
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace blink {
 
@@ -145,6 +150,27 @@ void EventDispatcher::DispatchSimulatedClick(
   nodes_dispatching_simulated_clicks->erase(&node);
 }
 
+void EventDispatcher::DispatchSimulatedEnterEvent(
+    HTMLInputElement& input_element) {
+  LocalDOMWindow* local_dom_window = input_element.GetDocument().domWindow();
+  for (auto type : {WebInputEvent::Type::kRawKeyDown,
+                    WebInputEvent::Type::kChar, WebInputEvent::Type::kKeyUp}) {
+    WebKeyboardEvent enter{type, WebInputEvent::kNoModifiers,
+                           base::TimeTicks::Now()};
+    enter.dom_key = ui::DomKey::ENTER;
+    enter.dom_code = static_cast<int>(ui::DomKey::ENTER);
+    enter.native_key_code = blink::VKEY_RETURN;
+    enter.windows_key_code = blink::VKEY_RETURN;
+    enter.text[0] = blink::VKEY_RETURN;
+    enter.unmodified_text[0] = blink::VKEY_RETURN;
+
+    KeyboardEvent* event =
+        blink::KeyboardEvent::Create(enter, local_dom_window, true);
+    event->SetTrusted(true);
+    DispatchScopedEvent(input_element, *event);
+  }
+}
+
 // https://dom.spec.whatwg.org/#dispatching-events
 DispatchEventResult EventDispatcher::Dispatch() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
@@ -163,8 +189,6 @@ DispatchEventResult EventDispatcher::Dispatch() {
   LocalFrame* frame = node_->GetDocument().GetFrame();
   if (frame && frame->DomWindow()) {
     eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
-    if (!base::FeatureList::IsEnabled(kFirstInputDelayWithoutEventListener))
-      EventTiming::HandleInputDelay(frame->DomWindow(), *event_);
   }
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
@@ -379,13 +403,13 @@ inline void EventDispatcher::DispatchEventPostProcess(
       }
     }
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // If a keypress event is prevented, the cursor position may be out of
     // sync as RenderWidgetHostViewCocoa::insertText assumes that the text
     // has been accepted. See https://crbug.com/1204523 for details.
     if (event_->type() == event_type_names::kKeypress && view_)
       view_->GetFrame().GetEditor().SyncSelection(SyncCondition::kForced);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event_);

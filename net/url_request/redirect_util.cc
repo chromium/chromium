@@ -76,8 +76,7 @@ void RedirectUtil::UpdateHttpRequest(
   //
   // TODO(jww): This is a layering violation and should be refactored somewhere
   // up into //net's embedder. https://crbug.com/471397
-  if (!url::Origin::Create(redirect_info.new_url)
-           .IsSameOriginWith(url::Origin::Create(original_url)) &&
+  if (!url::IsSameOriginWith(redirect_info.new_url, original_url) &&
       request_headers->HasHeader(HttpRequestHeaders::kOrigin)) {
     request_headers->SetHeader(HttpRequestHeaders::kOrigin,
                                url::Origin().Serialize());
@@ -109,6 +108,7 @@ scoped_refptr<HttpResponseHeaders> RedirectUtil::SynthesizeRedirectHeaders(
   std::string header_string = base::StringPrintf(
       "HTTP/1.1 %i Internal Redirect\n"
       "Location: %s\n"
+      "Cross-Origin-Resource-Policy: Cross-Origin\n"
       "Non-Authoritative-Reason: %s",
       response_code, redirect_destination.spec().c_str(),
       redirect_reason.c_str());

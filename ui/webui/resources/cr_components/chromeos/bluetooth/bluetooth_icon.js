@@ -63,6 +63,27 @@ export class SettingsBluetoothIconElement extends PolymerElement {
         return 'default';
     }
   }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  hasDefaultImage_() {
+    return !!this.device && !!this.device.imageInfo &&
+        !!this.device.imageInfo.defaultImageUrl &&
+        !!this.device.imageInfo.defaultImageUrl.url;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getDefaultImageSrc_() {
+    if (!this.hasDefaultImage_()) {
+      return '';
+    }
+    return this.device.imageInfo.defaultImageUrl.url;
+  }
 }
 customElements.define(
     SettingsBluetoothIconElement.is, SettingsBluetoothIconElement);

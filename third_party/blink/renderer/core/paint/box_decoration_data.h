@@ -40,7 +40,7 @@ class BoxDecorationData {
       : BoxDecorationData(paint_info, fragment, fragment.Style()) {}
 
   bool IsPaintingBackgroundInContentsSpace() const {
-    return is_painting_background_in_contents_space_;
+    return paint_info_.IsPaintingBackgroundInContentsSpace();
   }
   bool HasAppearance() const { return has_appearance_; }
   bool ShouldPaintBackground() const { return should_paint_background_; }
@@ -63,16 +63,6 @@ class BoxDecorationData {
     return style_.VisitedDependentColor(GetCSSPropertyBackgroundColor());
   }
 
-  static bool IsPaintingBackgroundInContentsSpace(const PaintInfo& paint_info,
-                                                  const LayoutBox& layout_box) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return paint_info.IsPaintingBackgroundInContentsSpace();
-    return (paint_info.PaintFlags() & kPaintLayerPaintingOverflowContents) &&
-           !(paint_info.PaintFlags() &
-             kPaintLayerPaintingCompositingBackgroundPhase) &&
-           layout_box == paint_info.PaintContainer();
-  }
-
  private:
   BoxDecorationData(const PaintInfo& paint_info,
                     const LayoutBox& layout_box,
@@ -81,8 +71,6 @@ class BoxDecorationData {
       : paint_info_(paint_info),
         layout_box_(layout_box),
         style_(style),
-        is_painting_background_in_contents_space_(
-            IsPaintingBackgroundInContentsSpace(paint_info, layout_box)),
         has_appearance_(style.HasEffectiveAppearance()),
         should_paint_background_(ComputeShouldPaintBackground()),
         should_paint_border_(
@@ -90,25 +78,20 @@ class BoxDecorationData {
         should_paint_shadow_(ComputeShouldPaintShadow()) {}
 
   bool ComputeShouldPaintBackground() const {
-    if (!style_.HasBackground())
-      return false;
-    if (layout_box_.BackgroundTransfersToView())
-      return false;
-    if (paint_info_.SkipRootBackground() &&
-        paint_info_.PaintContainer() == &layout_box_)
-      return false;
-    return true;
+    return style_.HasBackground() && !layout_box_.BackgroundTransfersToView() &&
+           !paint_info_.ShouldSkipBackground();
   }
 
   bool ComputeShouldPaintBorder(
       bool has_non_collapsed_border_decoration) const {
-    if (is_painting_background_in_contents_space_)
+    if (paint_info_.IsPaintingBackgroundInContentsSpace())
       return false;
     return has_non_collapsed_border_decoration;
   }
 
   bool ComputeShouldPaintShadow() const {
-    return !is_painting_background_in_contents_space_ && style_.BoxShadow();
+    return !paint_info_.IsPaintingBackgroundInContentsSpace() &&
+           style_.BoxShadow();
   }
 
   bool BorderObscuresBackgroundEdge() const;
@@ -120,10 +103,6 @@ class BoxDecorationData {
   const ComputedStyle& style_;
 
   // Outputs that are initialized in the constructor.
-
-  // True if painting the background in the coordinate space of
-  // FragmentData::ContentsProperties().
-  const bool is_painting_background_in_contents_space_;
   const bool has_appearance_;
   const bool should_paint_background_;
   const bool should_paint_border_;

@@ -68,7 +68,7 @@ void ReportLoadResult(LoadResult load_result) {
 void ReportLoadErrorCode(const base::NativeLibraryLoadError* error) {
 // Only report load error code on Windows because that's the only platform that
 // has a numerical error value.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::UmaHistogramSparse("Media.EME.CdmLoadErrorCode", error->code);
 #endif
 }
@@ -176,11 +176,11 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
   static crash_reporter::CrashKeyString<32> cdm_version_key("cdm-version");
   cdm_version_key.Set(cdm_version);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Load DXVA before sandbox lockdown to give CDM access to Output Protection
   // Manager (OPM).
   LoadLibraryA("dxva2.dll");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   if (base::FeatureList::IsEnabled(media::kCdmHostVerification))

@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 
 namespace base {

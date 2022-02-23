@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 
 import java.lang.annotation.Retention;
@@ -31,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 
 /**
  * An {@link Adapter} that works with a {@link RecyclerView}. It sorts the given {@link List} of
@@ -43,6 +43,10 @@ import java.util.concurrent.ExecutionException;
  * insert the headers automatically.
  */
 public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder> {
+    static {
+        CalendarFactory.warmUp();
+    }
+
     /**
      * Interface that the {@link Adapter} uses to interact with the items it manages.
      */
@@ -373,10 +377,6 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             return ItemViewType.FOOTER;
         }
     }
-
-    // Cached async tasks to get the two Calendar objects, which are used when comparing dates.
-    private static final AsyncTask<Calendar> sCal1 = createCalendar();
-    private static final AsyncTask<Calendar> sCal2 = createCalendar();
 
     /**
      * Specifies various view types of the list items for the purpose of recycling.
@@ -788,8 +788,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      *         next 16 bits over.
      */
     private static long getStableIdFromDate(Date date) {
-        Pair<Calendar, Calendar> pair = getCachedCalendars();
-        Calendar calendar = pair.first;
+        Calendar calendar = CalendarFactory.get();
         calendar.setTime(date);
         long dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
         long year = calendar.get(Calendar.YEAR);
@@ -802,9 +801,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      * @return 0 if date1 and date2 are in the same day; 1 if date1 is before date2; -1 otherwise.
      */
     protected static int compareDate(Date date1, Date date2) {
-        Pair<Calendar, Calendar> pair = getCachedCalendars();
-        Calendar cal1 = pair.first;
-        Calendar cal2 = pair.second;
+        Calendar cal1 = CalendarFactory.get();
+        Calendar cal2 = CalendarFactory.get();
         cal1.setTime(date1);
         cal2.setTime(date2);
         return compareCalendar(cal1, cal2);
@@ -823,23 +821,6 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         } else {
             return -1;
         }
-    }
-
-    /**
-     * Convenient getter for {@link #sCal1} and {@link #sCal2}.
-     */
-    private static Pair<Calendar, Calendar> getCachedCalendars() {
-        Calendar cal1;
-        Calendar cal2;
-        try {
-            cal1 = sCal1.get();
-            cal2 = sCal2.get();
-        } catch (InterruptedException | ExecutionException e) {
-            // We've tried our best. If AsyncTask really does not work, we give up. :(
-            cal1 = Calendar.getInstance();
-            cal2 = Calendar.getInstance();
-        }
-        return new Pair<>(cal1, cal2);
     }
 
     /**

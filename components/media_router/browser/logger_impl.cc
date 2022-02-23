@@ -96,7 +96,7 @@ void LoggerImpl::LogError(mojom::LogCategory category,
       sink_id, media_source, session_id);
 }
 
-void LoggerImpl::Bind(mojo::PendingReceiver<mojom::Logger> receiver) {
+void LoggerImpl::BindReceiver(mojo::PendingReceiver<mojom::Logger> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 

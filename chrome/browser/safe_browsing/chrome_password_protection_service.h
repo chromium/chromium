@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -55,7 +56,7 @@ using StringProvider = base::RepeatingCallback<std::string()>;
 using password_manager::metrics_util::PasswordType;
 using url::Origin;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Shows the desktop platforms specific password reuse modal dialog.
 // Implemented in password_reuse_modal_warning_dialog.
 void ShowPasswordReuseModalWarningDialog(
@@ -66,9 +67,10 @@ void ShowPasswordReuseModalWarningDialog(
 #endif
 
 // Called by ChromeContentBrowserClient to create a
-// PasswordProtectionNavigationThrottle if appropriate.
-std::unique_ptr<PasswordProtectionNavigationThrottle>
-MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
+// PasswordProtectionCommitDeferringCondition if appropriate.
+std::unique_ptr<PasswordProtectionCommitDeferringCondition>
+MaybeCreateCommitDeferringCondition(
+    content::NavigationHandle& navigation_handle);
 
 // ChromePasswordProtectionService extends PasswordProtectionService by adding
 // access to SafeBrowsingNaivigationObserverManager and Profile.
@@ -186,7 +188,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If the browser is not incognito and the user is reusing their enterprise
   // password or is a GSuite user, triggers
   // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
@@ -239,7 +241,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
@@ -396,8 +398,14 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Unit tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForPasswordOnFocusPing);
-  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
-                           VerifyUserPopulationForSyncPasswordEntryPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+      VerifyUserPopulationForSyncPasswordEntryPing);
+#if BUILDFLAG(IS_ANDROID)
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
+      VerifyUserPopulationForSyncPasswordEntryPing);
+#endif
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyUserPopulationForSavedPasswordEntryPing);
   FRIEND_TEST_ALL_PREFIXES(
@@ -424,6 +432,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       VerifyUnhandledSyncPasswordReuseUponClearHistoryDeletion);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyCanShowInterstitial);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
+      VerifyCanShowInterstitial);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifySendsPingForAboutBlank);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
@@ -440,8 +451,12 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyPersistPhishedSavedPasswordCredential);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetPingNotSentReason);
-  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
-                           VerifyPageLoadToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithSBPageLoadTokenEnabledTest,
+      VerifyPageLoadToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromePasswordProtectionServiceWithSBPageLoadTokenDisabledTest,
+      VerifyPageLoadToken);
   // Browser tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceBrowserTest,
                            VerifyCheckGaiaPasswordChange);
@@ -552,9 +567,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const password_manager::MatchingReusedCredential& reused_credential);
 
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-  TriggerManager* trigger_manager_;
+  raw_ptr<TriggerManager> trigger_manager_;
   // Profile associated with this instance.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // Current sync password hash.
   std::string sync_password_hash_;
   base::ObserverList<Observer>::Unchecked observer_list_;
@@ -567,7 +582,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   base::CallbackListSubscription hash_password_manager_subscription_;
 
   // Reference to the current profile's VerdictCacheManager. This is unowned.
-  VerdictCacheManager* cache_manager_;
+  raw_ptr<VerdictCacheManager> cache_manager_;
 
   // Schedules the next time to log the PasswordCaptured event.
   base::OneShotTimer log_password_capture_timer_;
@@ -584,7 +599,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   bool bypass_probability_for_tests_ = false;
 
   // Can be set for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Used to inject a different password hash, for testing. It's done as a
   // member callback rather than a virtual function because it's needed in the

@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
@@ -555,6 +554,9 @@ class MessagePumpGLibFdWatchTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Wait for the IO thread to exit before closing FDs which may have been
+    // passed to it.
+    io_thread_.Stop();
     if (IGNORE_EINTR(close(pipefds_[0])) < 0)
       PLOG(ERROR) << "close";
     if (IGNORE_EINTR(close(pipefds_[1])) < 0)

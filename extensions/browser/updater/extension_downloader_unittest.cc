@@ -12,6 +12,7 @@
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 
 using testing::_;
 using testing::AnyNumber;
@@ -25,11 +26,15 @@ namespace extensions {
 namespace {
 
 const char kTestExtensionId[] = "test_app";
+const char kTestExtensionId2[] = "test_app2";
+const char kTestExtensionId3[] = "test_app3";
 
 }  // namespace
 
 class ExtensionDownloaderTest : public ExtensionsTest {
  protected:
+  using URLStats = ExtensionDownloader::URLStats;
+
   ExtensionDownloaderTest() = default;
 
   std::unique_ptr<ManifestFetchData> CreateManifestFetchData(
@@ -54,6 +59,10 @@ class ExtensionDownloaderTest : public ExtensionsTest {
   void AddFetchDataToDownloader(ExtensionDownloaderTestHelper* helper,
                                 std::unique_ptr<ManifestFetchData> fetch) {
     helper->downloader().StartUpdateCheck(std::move(fetch));
+  }
+
+  const URLStats& GetDownloaderURLStats(ExtensionDownloaderTestHelper* helper) {
+    return helper->downloader().url_stats_;
   }
 
   std::string CreateUpdateManifest(const std::string& extension_id,
@@ -402,6 +411,31 @@ TEST_F(ExtensionDownloaderTest, TestCacheStatusHit) {
   content::RunAllTasksUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// Tests that stats for UMA is collected correctly.
+TEST_F(ExtensionDownloaderTest, TestURLStats) {
+  ExtensionDownloaderTestHelper helper;
+  GURL kUpdateUrl("http://localhost/manifest1");
+  const URLStats& stats = GetDownloaderURLStats(&helper);
+
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl(),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  EXPECT_EQ(1, stats.google_url_count);
+
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId2, GURL() /* update_url */,
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  EXPECT_EQ(1, stats.no_url_count);
+
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId3, kUpdateUrl, mojom::ManifestLocation::kInternal,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      ManifestFetchData::FetchPriority::BACKGROUND));
+  EXPECT_EQ(1, stats.other_url_count);
 }
 
 }  // namespace extensions

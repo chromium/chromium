@@ -31,6 +31,7 @@
 #include <wrl/client.h>
 #include <wrl/wrappers/corewrappers.h>
 
+#include <limits>
 #include <memory>
 
 #include "base/base_switches.h"
@@ -44,6 +45,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/win/access_token.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/propvarutil.h"
 #include "base/win/registry.h"
@@ -53,6 +55,7 @@
 #include "base/win/scoped_propvariant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_version.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -198,9 +201,25 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
 // It looks like the API implementation is buggy at least on Surface 4 causing
 // it to always return UserInteractionMode_Touch which as per documentation
 // indicates tablet mode.
-bool IsWindows10TabletMode(HWND hwnd) {
-  if (GetVersion() < Version::WIN10)
-    return false;
+bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
+  if (GetVersion() >= Version::WIN11) {
+    // Only Win10 supports explicit tablet mode. On Win11,
+    // get_UserInteractionMode always returns UserInteractionMode_Mouse, so
+    // instead we check if we're in slate mode or not - 0 value means slate
+    // mode. See
+    // https://docs.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-gpiobuttons-convertibleslatemode
+    base::win::RegKey registry_key(
+        HKEY_LOCAL_MACHINE,
+        L"System\\CurrentControlSet\\Control\\PriorityControl", KEY_READ);
+    DWORD slate_mode = 0;
+    bool value_exists = registry_key.ReadValueDW(L"ConvertibleSlateMode",
+                                                 &slate_mode) == ERROR_SUCCESS;
+    DCHECK(value_exists) << "ConvertibleSlateMode value not in registry";
+    // Some devices don't set the reg key to 0 for non touch devices, so also
+    // check if the device is used as a tablet.
+    return value_exists && slate_mode == 0 &&
+           IsDeviceUsedAsATablet(/*reason=*/nullptr);
+  }
 
   if (!ResolveCoreWinRTDelayload() ||
       !ScopedHString::ResolveCoreWinRTStringDelayload()) {
@@ -360,31 +379,13 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
 static bool g_crash_on_process_detach = false;
 
 bool GetUserSidString(std::wstring* user_sid) {
-  // Get the current token.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
+  absl::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  if (!token)
     return false;
-  ScopedHandle token_scoped(token);
-
-  DWORD size = sizeof(TOKEN_USER) + SECURITY_MAX_SID_SIZE;
-  std::unique_ptr<BYTE[]> user_bytes(new BYTE[size]);
-  TOKEN_USER* user = reinterpret_cast<TOKEN_USER*>(user_bytes.get());
-
-  if (!::GetTokenInformation(token, TokenUser, user, size, &size))
+  absl::optional<std::wstring> sid_string = token->User().ToSddlString();
+  if (!sid_string)
     return false;
-
-  if (!user->User.Sid)
-    return false;
-
-  // Convert the data to a string.
-  wchar_t* sid_string;
-  if (!::ConvertSidToStringSid(user->User.Sid, &sid_string))
-    return false;
-
-  *user_sid = sid_string;
-
-  ::LocalFree(sid_string);
-
+  *user_sid = *sid_string;
   return true;
 }
 
@@ -509,7 +510,7 @@ bool IsTabletDevice(std::string* reason, HWND hwnd) {
     return false;
   }
 
-  if (IsWindows10TabletMode(hwnd))
+  if (IsWindows10OrGreaterTabletMode(hwnd))
     return true;
 
   return IsDeviceUsedAsATablet(reason);
@@ -521,6 +522,11 @@ bool IsTabletDevice(std::string* reason, HWND hwnd) {
 // input configuration of the device and can be manually triggered by the user
 // independently from the hardware state.
 bool IsDeviceUsedAsATablet(std::string* reason) {
+  // Once this is set, it shouldn't be overridden, and it should be the ultimate
+  // return value, so that this method returns the same result whether or not
+  // reason is NULL.
+  absl::optional<bool> ret;
+
   if (GetVersion() < Version::WIN8) {
     if (reason)
       *reason = "Tablet device detection not supported below Windows 8\n";
@@ -530,6 +536,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
     if (reason) {
       *reason += "Device does not support touch.\n";
+      ret = false;
     } else {
       return false;
     }
@@ -539,6 +546,8 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (GetSystemMetrics(SM_SYSTEMDOCKED) != 0) {
     if (reason) {
       *reason += "SM_SYSTEMDOCKED\n";
+      if (!ret.has_value())
+        ret = false;
     } else {
       return false;
     }
@@ -556,7 +565,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     AR_STATE rotation_state = AR_ENABLED;
     if (get_auto_rotation_state_func(&rotation_state) &&
         (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0)
-      return false;
+      return ret.has_value() ? ret.value() : false;
   }
 
   // PlatformRoleSlate was added in Windows 8+.
@@ -567,20 +576,19 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     if (!is_tablet) {
       if (reason) {
         *reason += "Not in slate mode.\n";
+        if (!ret.has_value())
+          ret = false;
       } else {
         return false;
       }
-    } else {
-      if (reason) {
-        *reason += (role == PlatformRoleMobile) ? "PlatformRoleMobile\n"
-                                                : "PlatformRoleSlate\n";
-      }
+    } else if (reason) {
+      *reason += (role == PlatformRoleMobile) ? "PlatformRoleMobile\n"
+                                              : "PlatformRoleSlate\n";
     }
-  } else {
-    if (reason)
-      *reason += "Device role is not mobile or slate.\n";
+  } else if (reason) {
+    *reason += "Device role is not mobile or slate.\n";
   }
-  return is_tablet;
+  return ret.has_value() ? ret.value() : is_tablet;
 }
 
 bool IsEnrolledToDomain() {

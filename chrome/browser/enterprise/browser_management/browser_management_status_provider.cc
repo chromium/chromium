@@ -12,9 +12,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user_manager.h"
 #endif
+
+namespace {
+
+bool IsProfileManaged(Profile* profile) {
+  return profile && profile->GetProfilePolicyConnector() &&
+         profile->GetProfilePolicyConnector()->IsManaged();
+}
+
+}  // namespace
 
 BrowserCloudManagementStatusProvider::BrowserCloudManagementStatusProvider() =
     default;
@@ -23,7 +35,7 @@ BrowserCloudManagementStatusProvider::~BrowserCloudManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-BrowserCloudManagementStatusProvider::GetAuthority() {
+BrowserCloudManagementStatusProvider::FetchAuthority() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return EnterpriseManagementAuthority::NONE;
 #else
@@ -44,18 +56,23 @@ LocalBrowserManagementStatusProvider::~LocalBrowserManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-LocalBrowserManagementStatusProvider::GetAuthority() {
-  EnterpriseManagementAuthority result = EnterpriseManagementAuthority::NONE;
-#if defined(OS_WIN)
-  if (!g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
-    return result;
-  if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain()) {
-    result = policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain()
-                 ? EnterpriseManagementAuthority::DOMAIN_LOCAL
-                 : EnterpriseManagementAuthority::COMPUTER_LOCAL;
-  }
-#endif
+LocalBrowserManagementStatusProvider::FetchAuthority() {
+  auto result = EnterpriseManagementAuthority::NONE;
+// BrowserPolicyConnector::HasMachineLevelPolicies is not supported on Chrome
+// OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return result;
+#else
+  if (g_browser_process->browser_policy_connector()
+          ->HasMachineLevelPolicies()) {
+    result = EnterpriseManagementAuthority::COMPUTER_LOCAL;
+#if BUILDFLAG(IS_WIN)
+    if (policy::DomainEnrollmentStatusProvider::IsEnrolledToDomain())
+      result = EnterpriseManagementAuthority::DOMAIN_LOCAL;
+#endif  // BUILDFLAG(IS_WIN)
+  }
+  return result;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ProfileCloudManagementStatusProvider::ProfileCloudManagementStatusProvider(
@@ -66,9 +83,33 @@ ProfileCloudManagementStatusProvider::~ProfileCloudManagementStatusProvider() =
     default;
 
 EnterpriseManagementAuthority
-ProfileCloudManagementStatusProvider::GetAuthority() {
-  return profile_ && profile_->GetProfilePolicyConnector() &&
-                 profile_->GetProfilePolicyConnector()->IsManaged()
-             ? EnterpriseManagementAuthority::CLOUD
+ProfileCloudManagementStatusProvider::FetchAuthority() {
+  if (IsProfileManaged(profile_))
+    return EnterpriseManagementAuthority::CLOUD;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This session's primary user may also have policies, and those policies may
+  // not have per-profile support.
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (primary_user &&
+      IsProfileManaged(
+          ash::ProfileHelper::Get()->GetProfileByUser(primary_user))) {
+    return EnterpriseManagementAuthority::CLOUD;
+  }
+#endif
+  return EnterpriseManagementAuthority::NONE;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DeviceManagementStatusProvider::DeviceManagementStatusProvider(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector)
+    : browser_policy_connector_(browser_policy_connector) {}
+
+DeviceManagementStatusProvider::~DeviceManagementStatusProvider() = default;
+
+EnterpriseManagementAuthority DeviceManagementStatusProvider::FetchAuthority() {
+  return browser_policy_connector_ &&
+                 browser_policy_connector_->IsDeviceEnterpriseManaged()
+             ? EnterpriseManagementAuthority::CLOUD_DOMAIN
              : EnterpriseManagementAuthority::NONE;
 }
+#endif

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -66,7 +67,7 @@ class SyncEngineContext {
   std::unique_ptr<drive::DriveServiceInterface> drive_service_;
   std::unique_ptr<drive::DriveUploaderInterface> drive_uploader_;
   base::WeakPtr<TaskLogger> task_logger_;
-  RemoteChangeProcessor* remote_change_processor_;  // Not owned.
+  raw_ptr<RemoteChangeProcessor> remote_change_processor_;  // Not owned.
 
   std::unique_ptr<MetadataDatabase> metadata_database_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;

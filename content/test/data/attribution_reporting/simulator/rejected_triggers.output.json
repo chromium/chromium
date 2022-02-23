@@ -1,0 +1,82 @@
+{
+  "rejected_triggers": [
+    {
+      "reason": "noMatchingSources",
+      "trigger": {
+        "trigger_time": 1643235572,
+        "reporting_origin": "https://r.test",
+        "destination": "https://d.test",
+        "registration_config": {
+          "trigger_data": "1"
+        }
+      }
+    },
+    {
+      "reason": "deduplicated",
+      "trigger": {
+        "trigger_time": 1643235575,
+        "reporting_origin": "https://r.test",
+        "destination": "https://d.test",
+        "registration_config": {
+          "trigger_data": "3",
+          "dedup_key": "22"
+        }
+      }
+    },
+    {
+      "reason": "priorityTooLow",
+      "trigger": {
+        "trigger_time": 1643235578,
+        "reporting_origin": "https://r.test",
+        "destination": "https://d.test",
+        "registration_config": {
+          "trigger_data": "6"
+        }
+      }
+    }
+  ],
+  "reports": [
+    {
+     "report": {
+         "attribution_destination": "https://d.test",
+         "randomized_trigger_rate": 0.0024,
+         "source_event_id": "123",
+         "source_type": "navigation",
+         "trigger_data": "2"
+      },
+      "report_time": 1643408373,
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    },
+    {
+     "report": {
+         "attribution_destination": "https://d.test",
+         "randomized_trigger_rate": 0.0024,
+         "source_event_id": "123",
+         "source_type": "navigation",
+         "trigger_data": "4"
+      },
+      "report_time": 1643408373,
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    },
+    {
+     "report": {
+         "attribution_destination": "https://d.test",
+         "randomized_trigger_rate": 0.0024,
+         "source_event_id": "123",
+         "source_type": "navigation",
+         "trigger_data": "5"
+      },
+      "report_time": 1643408373,
+      "report_url": "https://r.test/.well-known/attribution-reporting/report-attribution",
+      "test_info": {
+         "randomized_trigger": false
+      }
+    }
+  ]
+}

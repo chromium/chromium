@@ -5,7 +5,7 @@
 #include "components/sync_sessions/test_matchers.h"
 
 #include "components/sessions/core/session_id.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/synced_session.h"
 
@@ -164,15 +164,14 @@ class MatchesSyncedSessionMatcher
     }
 
     std::map<int, std::vector<int>> actual_window_id_to_tabs;
-    for (const auto& id_and_window : actual->windows) {
-      const SessionID actual_window_id = id_and_window.first;
-      if (actual_window_id != id_and_window.second->wrapped_window.window_id) {
+    for (const auto& [actual_window_id, actual_window] : actual->windows) {
+      if (actual_window_id != actual_window->wrapped_window.window_id) {
         *listener << " which has an inconsistent window representation";
         return false;
       }
       actual_window_id_to_tabs.emplace(actual_window_id.id(),
                                        std::vector<int>());
-      for (const auto& tab : id_and_window.second->wrapped_window.tabs) {
+      for (const auto& tab : actual_window->wrapped_window.tabs) {
         actual_window_id_to_tabs[actual_window_id.id()].push_back(
             tab->tab_id.id());
       }

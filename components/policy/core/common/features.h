@@ -16,6 +16,9 @@ namespace features {
 // Enable chrome://management page on Android.
 POLICY_EXPORT extern const base::Feature kChromeManagementPageAndroid;
 
+// Enable force installed Chrome apps policy migration.
+POLICY_EXPORT extern const base::Feature kDefaultChromeAppsMigration;
+
 // PolicyBlocklistThrottle defers navigations until policies are loaded.
 POLICY_EXPORT extern const base::Feature
     kPolicyBlocklistThrottleRequiresPoliciesLoaded;
@@ -39,6 +42,14 @@ POLICY_EXPORT extern const base::Feature kPasswordBreachEventReporting;
 // ManagedAccountsSigninRestriction policy for a dasher account.
 POLICY_EXPORT extern const base::Feature
     kEnableUserCloudSigninRestrictionPolicyFetcher;
+
+// Enable MetricsReportingEnabled policy to alter MetricsReportingState on
+// Android.
+POLICY_EXPORT extern const base::Feature
+    kActivateMetricsReportingEnabledPolicyAndroid;
+
+// Enable caching the value of the ManagementStatus.
+POLICY_EXPORT extern const base::Feature kEnableCachedManagementStatus;
 
 }  // namespace features
 }  // namespace policy

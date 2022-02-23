@@ -22,11 +22,11 @@ QuickUnlockHandler::QuickUnlockHandler(Profile* profile,
 QuickUnlockHandler::~QuickUnlockHandler() = default;
 
 void QuickUnlockHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "RequestPinLoginState",
       base::BindRepeating(&QuickUnlockHandler::HandleRequestPinLoginState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "RequestQuickUnlockDisabledByPolicy",
       base::BindRepeating(
           &QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy,
@@ -40,6 +40,11 @@ void QuickUnlockHandler::OnJavascriptAllowed() {
       base::BindRepeating(
           &QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy,
           weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      prefs::kWebAuthnFactors,
+      base::BindRepeating(
+          &QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void QuickUnlockHandler::OnJavascriptDisallowed() {
@@ -47,7 +52,7 @@ void QuickUnlockHandler::OnJavascriptDisallowed() {
 }
 
 void QuickUnlockHandler::HandleRequestPinLoginState(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
       base::BindOnce(&QuickUnlockHandler::OnPinLoginAvailable,
@@ -55,9 +60,9 @@ void QuickUnlockHandler::HandleRequestPinLoginState(
 }
 
 void QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  CHECK_EQ(0U, args->GetList().size());
+  CHECK_EQ(0U, args.size());
 
   UpdateQuickUnlockDisabledByPolicy();
 }
@@ -67,9 +72,9 @@ void QuickUnlockHandler::OnPinLoginAvailable(bool is_available) {
 }
 
 void QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy() {
-  FireWebUIListener(
-      "quick-unlock-disabled-by-policy-changed",
-      base::Value(quick_unlock::IsPinDisabledByPolicy(pref_service_)));
+  FireWebUIListener("quick-unlock-disabled-by-policy-changed",
+                    base::Value(quick_unlock::IsPinDisabledByPolicy(
+                        pref_service_, quick_unlock::Purpose::kAny)));
 }
 
 }  // namespace settings

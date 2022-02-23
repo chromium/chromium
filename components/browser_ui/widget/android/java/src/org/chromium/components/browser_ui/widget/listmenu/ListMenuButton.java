@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ObserverList;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -29,11 +30,12 @@ import org.chromium.ui.widget.ChromeImageButton;
 public class ListMenuButton
         extends ChromeImageButton implements AnchoredPopupWindow.LayoutObserver {
     /**
-     * A listener that is notified when the popup menu is shown.
+     * A listener that is notified when the popup menu is shown or dismissed.
      */
     @FunctionalInterface
     public interface PopupMenuShownListener {
         void onPopupMenuShown();
+        default void onPopupMenuDismissed() {}
     }
 
     private final int mMenuMaxWidth;
@@ -44,6 +46,7 @@ public class ListMenuButton
     private ListMenuButtonDelegate mDelegate;
     private ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
+    private boolean mPositionedAtEnd;
 
     /**
      * Creates a new {@link ListMenuButton}.
@@ -61,6 +64,7 @@ public class ListMenuButton
                 a.getBoolean(R.styleable.ListMenuButton_menuHorizontalOverlapAnchor, true);
         mMenuVerticalOverlapAnchor =
                 a.getBoolean(R.styleable.ListMenuButton_menuVerticalOverlapAnchor, true);
+        mPositionedAtEnd = a.getBoolean(R.styleable.ListMenuButton_menuPositionedAtEnd, true);
 
         a.recycle();
     }
@@ -72,8 +76,10 @@ public class ListMenuButton
      * @param context The string representation of the list item this button represents.
      */
     public void setContentDescriptionContext(String context) {
-        if (context == null) {
-            context = "";
+        if (TextUtils.isEmpty(context)) {
+            setContentDescription(
+                    getContext().getResources().getString(R.string.accessibility_toolbar_btn_menu));
+            return;
         }
         setContentDescription(getContext().getResources().getString(
                 R.string.accessibility_list_menu_button, context));
@@ -106,7 +112,7 @@ public class ListMenuButton
     public void showMenu() {
         initPopupWindow();
         mPopupMenu.show();
-        notifyPopupListeners();
+        notifyPopupListeners(true);
     }
 
     /**
@@ -131,7 +137,10 @@ public class ListMenuButton
         }
         mPopupMenu.setFocusable(true);
         mPopupMenu.setLayoutObserver(this);
-        mPopupMenu.addOnDismissListener(() -> { mPopupMenu = null; });
+        mPopupMenu.addOnDismissListener(() -> {
+            mPopupMenu = null;
+            notifyPopupListeners(false);
+        });
         // This should be called explicitly since it is not a default behavior on Android S
         // in split-screen mode. See crbug.com/1246956.
         mPopupMenu.setOutsideTouchable(true);
@@ -159,8 +168,14 @@ public class ListMenuButton
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
-        mPopupMenu.setAnimationStyle(
-                positionBelow ? R.style.OverflowMenuAnim : R.style.OverflowMenuAnimBottom);
+        if (mPositionedAtEnd) {
+            mPopupMenu.setAnimationStyle(
+                    positionBelow ? R.style.EndIconMenuAnim : R.style.EndIconMenuAnimBottom);
+
+        } else {
+            mPopupMenu.setAnimationStyle(
+                    positionBelow ? R.style.StartIconMenuAnim : R.style.StartIconMenuAnimBottom);
+        }
     }
 
     /**
@@ -193,10 +208,15 @@ public class ListMenuButton
 
     /**
      * Notify all of the PopupMenuShownListeners of a popup menu action.
+     * @param shown Whether the popup menu was shown or dismissed.
      */
-    private void notifyPopupListeners() {
-        for (PopupMenuShownListener l : mPopupListeners) {
-            l.onPopupMenuShown();
-        }
+    private void notifyPopupListeners(boolean shown) {
+        CollectionUtil.forEach(mPopupListeners.mObservers, l -> {
+            if (shown) {
+                l.onPopupMenuShown();
+            } else {
+                l.onPopupMenuDismissed();
+            }
+        });
     }
 }

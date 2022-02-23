@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -107,9 +109,10 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     RTCEncodedVideoFrame* frame =
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame)
+            .ToLocalChecked());
   }
 
  protected:

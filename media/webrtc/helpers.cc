@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/webrtc/webrtc_features.h"
@@ -19,11 +20,11 @@ namespace media {
 namespace {
 
 // The analog gain controller is not supported on mobile - i.e., Android, iOS.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr bool kAnalogAgcSupported = false;
 #else
 constexpr bool kAnalogAgcSupported = true;
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // The analog gain controller can only be disabled on Chromecast.
 #if BUILDFLAG(IS_CHROMECAST)
@@ -35,7 +36,7 @@ constexpr bool kAllowToDisableAnalogAgc = false;
 // AGC1 mode.
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
 // TODO(bugs.webrtc.org/7909): Maybe set mode to kFixedDigital also for IOS.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr Agc1Mode kAgc1Mode = Agc1Mode::kFixedDigital;
 #else
 constexpr Agc1Mode kAgc1Mode = Agc1Mode::kAdaptiveAnalog;
@@ -203,14 +204,8 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters) {
     channels = std::min(parameters.channels(), 2);
   }
   const int rate = parameters.sample_rate();
-  const bool has_keyboard =
-      parameters.channel_layout() == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC;
 
-  // webrtc::StreamConfig requires that the keyboard mic channel is not included
-  // in the channel count. It may still be used.
-  if (has_keyboard)
-    channels -= 1;
-  return webrtc::StreamConfig(rate, channels, has_keyboard);
+  return webrtc::StreamConfig(rate, channels);
 }
 
 bool LeftAndRightChannelsAreSymmetric(const AudioBus& audio) {
@@ -247,6 +242,9 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 
 rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings) {
+  if (!settings.NeedWebrtcAudioProcessing())
+    return nullptr;
+
   webrtc::AudioProcessingBuilder ap_builder;
   if (settings.echo_cancellation) {
     ap_builder.SetEchoControlFactory(
@@ -262,14 +260,14 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.noise_suppression.level =
       webrtc::AudioProcessing::Config::NoiseSuppression::Level::kHigh;
   apm_config.echo_canceller.enabled = settings.echo_cancellation;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   apm_config.echo_canceller.mobile_mode = true;
 #else
   apm_config.echo_canceller.mobile_mode = false;
 #endif
   apm_config.residual_echo_detector.enabled = false;
 
-#if !(defined(OS_ANDROID) || defined(OS_IOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   apm_config.transient_suppression.enabled =
       settings.transient_noise_suppression;
 #endif

@@ -5,20 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_
 
-#include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
+#include <string>
+
 #include "base/feature_list.h"
-#include "base/token.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class AccountId;
 class PrefRegistrySimple;
 class PrefService;
-class Profile;
-class AccountId;
 
 namespace aura {
 class Window;
@@ -26,12 +20,9 @@ class Window;
 
 namespace base {
 class FilePath;
+class Value;
 class Version;
 }  // namespace base
-
-namespace mojo {
-class PlatformChannelEndpoint;
-}  // namespace mojo
 
 namespace version_info {
 enum class Channel;
@@ -48,6 +39,22 @@ class User;
 // These methods are used by ash-chrome.
 namespace crosapi {
 namespace browser_util {
+
+// Indicates how the decision for the usage of Lacros has been made.
+enum class LacrosLaunchSwitchSource {
+  // It is unknown yet if and how Lacros will be used.
+  kUnknown = 0,
+  // Either there were no policies, or the system had a special condition in
+  // which the policy got ignored and the user could have set the mode.
+  kPossiblySetByUser = 1,
+  // The Lacros usage was enforced by the user via #lacros-availability-ignore
+  // flag override.
+  kForcedByUser = 2,
+  // The Lacros usage was enforced using the policy. Note that in this case
+  // the policy might still not be used, but it is programmatically overridden
+  // and not by the user (e.g. special Googler user case).
+  kForcedByPolicy = 3
+};
 
 // Represents different options for how to launch Lacros browser. The values
 // shall be consistent with the controlling policy.
@@ -87,7 +94,6 @@ extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
 
-extern const base::Feature kLacrosAllowOnStableChannel;
 extern const base::Feature kLacrosGooglePolicyRollout;
 
 // The default update channel to leverage for Lacros when the channel is
@@ -107,6 +113,15 @@ extern const char kLacrosStabilityChannelStable[];
 extern const char kLacrosSelectionSwitch[];
 extern const char kLacrosSelectionRootfs[];
 extern const char kLacrosSelectionStateful[];
+
+// A command-line switch that is converted and set via the feature flag.
+extern const char kLacrosAvailabilityPolicyInternalName[];
+extern const char kLacrosAvailabilityPolicySwitch[];
+extern const char kLacrosAvailabilityPolicyUserChoice[];
+extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
+extern const char kLacrosAvailabilityPolicySideBySide[];
+extern const char kLacrosAvailabilityPolicyLacrosPrimary[];
+extern const char kLacrosAvailabilityPolicyLacrosOnly[];
 
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
@@ -135,13 +150,17 @@ base::FilePath GetUserDataDir();
 
 // Returns true if the Lacros feature is allowed to be enabled for primary user.
 // This checks user type, chrome channel and enterprise policy.
-bool IsLacrosAllowedToBeEnabled(version_info::Channel channel);
+bool IsLacrosAllowedToBeEnabled();
 
 // Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
 
-// As above, but takes a channel. Exposed for testing.
-bool IsLacrosEnabled(version_info::Channel channel);
+// Represents whether the function is being called before the Policy is
+// initialized or not.
+enum class PolicyInitState {
+  kBeforeInit,
+  kAfterInit,
+};
 
 // Similar to `IsLacrosEnabled()` but does not check if profile migration has
 // been completed. This is to be used inside `BrowserDataMigrator`. Unlike
@@ -149,10 +168,11 @@ bool IsLacrosEnabled(version_info::Channel channel);
 // created.
 // TODO(crbug.com/1265800): Refactor `IsLacrosEnabled()` and
 // `IsLacrosEnabledForMigration()` to reduce duplicated code.
-bool IsLacrosEnabledForMigration(const user_manager::User* user);
+bool IsLacrosEnabledForMigration(const user_manager::User* user,
+                                 PolicyInitState policy_init_state);
 
 // Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
-bool IsLacrosSupportFlagAllowed(version_info::Channel channel);
+bool IsLacrosSupportFlagAllowed();
 
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
@@ -161,14 +181,8 @@ void SetLacrosEnabledForTest(bool force_enabled);
 // enabled and is the only browser.
 bool IsAshWebBrowserEnabled();
 
-// As above, but takes a channel. Exposed for testing.
-bool IsAshWebBrowserEnabled(version_info::Channel channel);
-
 // Returns true if the lacros should be used as a primary browser.
 bool IsLacrosPrimaryBrowser();
-
-// As above, but takes a channel. Exposed for testing.
-bool IsLacrosPrimaryBrowser(version_info::Channel channel);
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Passing absl::nullopt will reset the state.
@@ -178,10 +192,17 @@ void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 // for the current session.
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
-bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+bool IsLacrosPrimaryBrowserAllowed();
 
 // Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
-bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel);
+bool IsLacrosPrimaryFlagAllowed();
+
+// Returns true if the lacros can be used as a only browser
+// for the current session.
+bool IsLacrosOnlyBrowserAllowed();
+
+// Returns true if |chromeos::features::kLacrosOnly| flag is allowed.
+bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if Lacros is allowed to launch and show a window. This can
 // return false if the user is using multi-signin, which is mutually exclusive
@@ -202,54 +223,6 @@ bool IsLacrosWindow(const aura::Window* window);
 // version, and that lacros versions supports the new backwards-incompatible
 // account_manager logic.
 bool DoesMetadataSupportNewAccountManager(base::Value* metadata);
-
-// Checks for the given profile if the user is affiliated or belongs to the
-// sign-in profile.
-bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
-
-// Returns the UUID and version for all tracked interfaces. Exposed for testing.
-base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
-
-// Represents how to launch Lacros Chrome.
-struct InitialBrowserAction {
-  explicit InitialBrowserAction(crosapi::mojom::InitialBrowserAction action);
-  InitialBrowserAction(crosapi::mojom::InitialBrowserAction action,
-                       std::vector<GURL> urls);
-  InitialBrowserAction(InitialBrowserAction&&);
-  InitialBrowserAction& operator=(InitialBrowserAction&&);
-  ~InitialBrowserAction();
-
-  // Mode how to launch Lacros chrome.
-  crosapi::mojom::InitialBrowserAction action;
-
-  // If action is kOpenWindowWithUrls, URLs here is passed to Lacros Chrome,
-  // and they will be opened.
-  std::vector<GURL> urls;
-};
-
-// Returns the initial parameter to be passed to Crosapi client,
-// such as lacros-chrome.
-mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
-
-// Invite the lacros-chrome to the mojo universe.
-// Queue messages to establish the mojo connection, so that the passed IPC is
-// available already when lacros-chrome accepts the invitation.
-mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
-    ::crosapi::EnvironmentProvider* environment_provider,
-    mojo::PlatformChannelEndpoint local_endpoint,
-    base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
-        crosapi_callback);
-
-// Creates a memory backed file containing the serialized |params|,
-// and returns its FD.
-base::ScopedFD CreateStartupData(
-    ::crosapi::EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action,
-    bool is_keep_alive_enabled);
 
 // Reads `kDataVerPref` and gets corresponding data version for `user_id_hash`.
 // If no such version is registered yet, returns `Version` that is invalid.
@@ -289,9 +262,6 @@ ComponentInfo GetLacrosComponentInfo();
 version_info::Channel GetLacrosSelectionUpdateChannel(
     LacrosSelection selection);
 
-// Returns the device settings needed for Lacros.
-mojom::DeviceSettingsPtr GetDeviceSettings();
-
 // Exposed for testing. Returns the lacros integration suggested by the policy
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosLaunchSwitch GetLaunchSwitchForTesting();
@@ -321,6 +291,13 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 // completed by getting user_id_hash of the logged in user and updating
 // g_browser_process->local_state() etc.
 void SetProfileMigrationCompletedForTest(bool is_completed);
+
+// Returns who decided how Lacros should be used - or not: The User, the policy
+// or another edge case.
+LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
+
+// Returns the policy value name from the given value.
+base::StringPiece GetLacrosAvailabilityPolicyName(LacrosLaunchSwitch value);
 
 }  // namespace browser_util
 }  // namespace crosapi

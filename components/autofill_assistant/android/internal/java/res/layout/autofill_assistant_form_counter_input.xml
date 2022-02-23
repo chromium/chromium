@@ -34,12 +34,12 @@
             android:id="@+id/expand_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1"/>
         <TextView
             android:id="@+id/minimize_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Accent1"/>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/chevron"
             android:layout_width="16dp"

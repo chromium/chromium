@@ -19,22 +19,41 @@
 #endif
 
 namespace tab_util {
+namespace {
 
-NSString* GetTabTitle(web::WebState* web_state) {
-  std::u16string title;
-  web::NavigationManager* navigationManager = web_state->GetNavigationManager();
-  DownloadManagerTabHelper* downloadTabHelper =
+// Returns whether `web_state` only has a download in-progress.
+bool WebStateHasDownloadInProgress(const web::WebState* web_state) {
+  if (!web_state->IsRealized())
+    return false;
+
+  const web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  if (!navigation_manager)
+    return false;
+
+  if (navigation_manager->GetVisibleItem())
+    return false;
+
+  const DownloadManagerTabHelper* download_tab_helper =
       DownloadManagerTabHelper::FromWebState(web_state);
-  if (navigationManager && downloadTabHelper &&
-      !navigationManager->GetVisibleItem() &&
-      downloadTabHelper->has_download_task()) {
-    title = l10n_util::GetStringUTF16(IDS_DOWNLOAD_TAB_TITLE);
-  } else {
-    title = web_state->GetTitle();
-    if (title.empty())
-      title = l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
+  if (!download_tab_helper)
+    return false;
+
+  return download_tab_helper->has_download_task();
+}
+
+}
+
+NSString* GetTabTitle(const web::WebState* web_state) {
+  if (WebStateHasDownloadInProgress(web_state)) {
+    return l10n_util::GetNSString(IDS_DOWNLOAD_TAB_TITLE);
   }
-  return base::SysUTF16ToNSString(title);
+
+  const std::u16string& title = web_state->GetTitle();
+  if (!title.empty())
+    return base::SysUTF16ToNSString(title);
+
+  return l10n_util::GetNSString(IDS_DEFAULT_TAB_TITLE);
 }
 
 }  // namespace tab_util

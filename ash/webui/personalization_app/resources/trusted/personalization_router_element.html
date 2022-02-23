@@ -1,40 +1,22 @@
 <style>
   #container {
+    display: flex;
+    flex-flow: column nowrap;
     height: 100%;
     position: relative;
     width: 100%;
   }
-  #wallpaperContainer {
+  #breadcrumbArea {
     display: grid;
     grid-template-areas:
-      '. leftspacer breadcrumb rightspacer .'
-      '. leftspacer selected   rightspacer .'
-      '. leftspacer .          rightspacer .'
-      '. leftspacer imagegrid  rightspacer .'
-      '. leftspacer .          rightspacer .';
+      '. . breadcrumb . .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: 56px 172px 12px 1fr 12px;
-    height: 100%;
+    grid-template-rows: 56px;
     position: relative;
     width: 100%;
   }
-  #leftspacer {
-    grid-area: leftspacer;
-  }
-  #rightspacer {
-    grid-area: rightspacer;
-  }
-  wallpaper-breadcrumb {
+  personalization-breadcrumb {
     grid-area: breadcrumb;
-  }
-  wallpaper-selected {
-    grid-area: selected;
-  }
-  wallpaper-collections,
-  wallpaper-images,
-  google-photos,
-  local-images {
-    grid-area: imagegrid;
   }
   personalization-toast {
     bottom: 16px;
@@ -50,6 +32,10 @@
     position: absolute;
     width: 100%;
   }
+  wallpaper-subpage {
+    flex-grow: 1;
+    overflow: hidden;
+  }
 </style>
 <div id="container">
   <!-- dwell-time is set to 200ms to populate history state more quickly while
@@ -59,36 +45,26 @@
   <iron-query-params params-object="{{queryParams_}}"
     params-string="{{query_}}">
   </iron-query-params>
+  <template is="dom-if" if="[[shouldShowBreadcrumb_(path_)]]">
+    <div id="breadcrumbArea">
+      <personalization-breadcrumb path="[[path_]]"
+          collection-id="[[queryParams_.id]]"
+          google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]">
+      </personalization-breadcrumb>
+    </div>
+  </template>
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
-    <!-- TODO(b/202734180) replace this with real content -->
-    <h1>Personalization</h1>
+    <personalization-main></personalization-main>
+  </template>
+  <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]">
+    <ambient-subpage></ambient-subpage>
+  </template>
+  <template is="dom-if" if="[[shouldShowUserSubpage_(path_)]]">
+    <user-subpage></user-subpage>
   </template>
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
-    <div id="wallpaperContainer">
-      <!-- Prevent left margin from collapsing on narrow window in RTL -->
-      <div id="leftspacer"></div>
-      <wallpaper-breadcrumb path="[[path_]]"
-          collection-id="[[queryParams_.id]]">
-      </wallpaper-breadcrumb>
-      <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
-      </wallpaper-selected>
-      <!-- do not use hidden$ here - need to listen on property change in
-          these elements. -->
-      <wallpaper-collections hidden="[[!shouldShowCollections_(path_)]]">
-      </wallpaper-collections>
-      <wallpaper-images collection-id="[[queryParams_.id]]"
-        hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
-      <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
-        <google-photos hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
-        </google-photos>
-      </template>
-      <local-images hidden="[[!shouldShowLocalCollection_(path_)]]">
-      </local-images>
-      <!-- Prevent the right margin from collapsing when window gets very
-           narrow -->
-      <div id="rightspacer"></div>
-      <wallpaper-fullscreen></wallpaper-fullscreen>
-    </div>
+    <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">
+    </wallpaper-subpage>
   </template>
   <personalization-toast></personalization-toast>
 </div>

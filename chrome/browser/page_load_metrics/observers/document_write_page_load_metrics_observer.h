@@ -12,8 +12,6 @@ namespace internal {
 // Expose metrics for tests.
 extern const char kHistogramDocWriteParseStartToFirstContentfulPaint[];
 extern const char kHistogramDocWriteBlockParseStartToFirstContentfulPaint[];
-extern const char kHistogramDocWriteBlockCount[];
-extern const char kHistogramDocWriteBlockReloadCount[];
 
 }  // namespace internal
 
@@ -37,9 +35,6 @@ class DocumentWritePageLoadMetricsObserver
   void OnParseStop(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
-                                 int behavior_flags) override;
-
   enum DocumentWriteLoadingBehavior {
     LOADING_BEHAVIOR_BLOCK,
     LOADING_BEHAVIOR_RELOAD,
@@ -48,9 +43,6 @@ class DocumentWritePageLoadMetricsObserver
   };
 
  private:
-  static void LogLoadingBehaviorMetrics(DocumentWriteLoadingBehavior behavior,
-                                        ukm::SourceId source_id);
-
   void LogDocumentWriteBlockFirstContentfulPaint(
       const page_load_metrics::mojom::PageLoadTiming& timing);
 
@@ -59,10 +51,6 @@ class DocumentWritePageLoadMetricsObserver
 
   void LogDocumentWriteBlockFirstMeaningfulPaint(
       const page_load_metrics::mojom::PageLoadTiming& timing);
-
-  bool doc_write_same_site_diff_scheme_ = false;
-  bool doc_write_block_observed_ = false;
-  bool doc_write_block_reload_observed_ = false;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_

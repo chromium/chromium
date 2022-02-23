@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -40,7 +41,8 @@ std::vector<CompositorFrameTransitionDirective> CreateSaveDirectiveAsVector(
         CompositorFrameTransitionDirective::Effect::kCoverDown) {
   std::vector<CompositorFrameTransitionDirective> result;
   result.emplace_back(sequence_id,
-                      CompositorFrameTransitionDirective::Type::kSave, effect);
+                      CompositorFrameTransitionDirective::Type::kSave, false,
+                      effect);
   return result;
 }
 
@@ -124,8 +126,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    if (storage())
-      storage()->ExpireForTesting();
+    storage()->ExpireForTesting();
     manager_.reset();
   }
 
@@ -134,15 +135,15 @@ class SurfaceAnimationManagerTest : public testing::Test {
     return current_time_;
   }
 
-  Surface* surface() const {
+  Surface* surface() {
     Surface* surface = surface_manager_->GetSurfaceForId(surface_id_);
     // Can't ASSERT in a non-void function, so just CHECK instead.
     CHECK(surface);
     return surface;
   }
 
-  SurfaceSavedFrameStorage* storage() const {
-    return surface()->GetSurfaceSavedFrameStorage();
+  SurfaceSavedFrameStorage* storage() {
+    return manager().GetSurfaceSavedFrameStorageForTesting();
   }
 
   void ValidateStartState(CompositorFrameTransitionDirective::Effect effect) {
@@ -269,7 +270,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl frame_sink_manager_{
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
-  SurfaceManager* surface_manager_;
+  raw_ptr<SurfaceManager> surface_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
 
@@ -279,7 +280,7 @@ class SurfaceAnimationManagerTest : public testing::Test {
 TEST_F(SurfaceAnimationManagerTest, DefaultState) {
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
-  manager().ProcessTransitionDirectives({}, storage());
+  manager().ProcessTransitionDirectives({}, surface());
 
   EXPECT_FALSE(manager().NeedsBeginFrame());
 }
@@ -288,12 +289,12 @@ TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
   manager().ProcessTransitionDirectives(CreateSaveDirectiveAsVector(1),
-                                        storage());
+                                        surface());
 
   storage()->CompleteForTesting();
 
   manager().ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
-                                        storage());
+                                        surface());
 
   // Tick curves to set start time.
   manager().UpdateFrameTime(AdvanceTime(base::TimeDelta()));
@@ -319,7 +320,7 @@ TEST_F(SurfaceAnimationManagerTest, AnimateWithoutSaveIsNoop) {
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
   manager().ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(1),
-                                        storage());
+                                        surface());
   EXPECT_FALSE(manager().NeedsBeginFrame());
 }
 
@@ -327,14 +328,14 @@ TEST_F(SurfaceAnimationManagerTest, SaveTimesOut) {
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
   manager().ProcessTransitionDirectives(CreateSaveDirectiveAsVector(1),
-                                        storage());
+                                        surface());
   EXPECT_FALSE(manager().NeedsBeginFrame());
 
   storage()->ExpireForTesting();
 
   AdvanceTime(base::Seconds(6));
   manager().ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
-                                        storage());
+                                        surface());
   EXPECT_FALSE(manager().NeedsBeginFrame());
 }
 
@@ -344,7 +345,7 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   uint32_t sequence_id = 1;
   for (int i = 0; i < 200; ++i) {
     manager().ProcessTransitionDirectives(
-        CreateSaveDirectiveAsVector(sequence_id), storage());
+        CreateSaveDirectiveAsVector(sequence_id), surface());
 
     EXPECT_FALSE(manager().NeedsBeginFrame());
 
@@ -355,7 +356,7 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   storage()->CompleteForTesting();
 
   manager().ProcessTransitionDirectives(
-      CreateAnimateDirectiveAsVector(sequence_id), storage());
+      CreateAnimateDirectiveAsVector(sequence_id), surface());
 
   // Tick curves to set start time.
   manager().UpdateFrameTime(AdvanceTime(base::TimeDelta()));
@@ -394,12 +395,12 @@ TEST_F(SurfaceAnimationManagerTest, CheckStartEndStates) {
   uint32_t sequence_id = 1;
   for (auto effect : effects) {
     manager().ProcessTransitionDirectives(
-        CreateSaveDirectiveAsVector(sequence_id++, effect), storage());
+        CreateSaveDirectiveAsVector(sequence_id++, effect), surface());
 
     storage()->CompleteForTesting();
 
     manager().ProcessTransitionDirectives(
-        CreateAnimateDirectiveAsVector(sequence_id++), storage());
+        CreateAnimateDirectiveAsVector(sequence_id++), surface());
 
     // Tick curves to set start time.
     manager().UpdateFrameTime(AdvanceTime(base::TimeDelta()));
@@ -434,14 +435,14 @@ TEST_F(SurfaceAnimationManagerTest, ConfigWithAllZeroDurations) {
   CompositorFrameTransitionDirective::TransitionConfig zero_config;
   zero_config.duration = zero_config.delay = base::TimeDelta();
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       /*root_config=*/zero_config,
       /*shared_elements=*/
       CreateSharedElements(frame.render_pass_list, {zero_config}));
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/
@@ -450,11 +451,11 @@ TEST_F(SurfaceAnimationManagerTest, ConfigWithAllZeroDurations) {
   support_->SubmitCompositorFrame(surface_id_.local_surface_id(),
                                   std::move(frame));
 
-  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, storage()));
+  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, surface()));
 
   storage()->CompleteForTesting();
 
-  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, storage()));
+  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, surface()));
 
   // We jump directly to the last frame but we should need a BeginFrame to tick
   // the last frame.
@@ -475,20 +476,20 @@ TEST_F(SurfaceAnimationManagerTest, CustomRootConfig) {
   root_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kExplode,
       /*root_config=*/root_config,
       /*shared_elements=*/{});
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/root_config,
       /*shared_elements=*/{});
 
-  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, storage()));
+  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, surface()));
   storage()->CompleteForTesting();
-  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, storage()));
+  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, surface()));
 
   // Need the first frame which starts the animation.
   EXPECT_TRUE(manager().NeedsBeginFrame());
@@ -573,7 +574,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
   shared_config.delay = base::Seconds(1);
 
   CompositorFrameTransitionDirective save(
-      1, CompositorFrameTransitionDirective::Type::kSave,
+      1, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/
@@ -581,7 +582,7 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
 
   support_->SubmitCompositorFrame(surface_id_.local_surface_id(),
                                   std::move(old_frame));
-  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, storage()));
+  ASSERT_FALSE(manager().ProcessTransitionDirectives({save}, surface()));
 
   // Dispatch copy request results. We're not using the test function here to
   // ensure valid result for shared elements.
@@ -604,14 +605,14 @@ TEST_F(SurfaceAnimationManagerTest, CustomSharedConfig) {
                                                 new_transform, new_opacity);
 
   CompositorFrameTransitionDirective animate(
-      2, CompositorFrameTransitionDirective::Type::kAnimate,
+      2, CompositorFrameTransitionDirective::Type::kAnimate, false,
       CompositorFrameTransitionDirective::Effect::kNone,
       /*root_config=*/zero_config,
       /*shared_elements=*/
       CreateSharedElements(new_frame.render_pass_list, {shared_config}));
   support_->SubmitCompositorFrame(surface_id_.local_surface_id(),
                                   std::move(new_frame));
-  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, storage()));
+  ASSERT_TRUE(manager().ProcessTransitionDirectives({animate}, surface()));
 
   // Need the first frame which starts the animation.
   EXPECT_TRUE(manager().NeedsBeginFrame());

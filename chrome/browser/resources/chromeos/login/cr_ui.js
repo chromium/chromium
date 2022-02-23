@@ -9,6 +9,7 @@
  */
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 // #import {$} from 'chrome://resources/js/util.m.js';
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
@@ -122,44 +123,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Shows signin UI.
-     * @param {string} opt_email An optional email for signin UI.
-     */
-    static showSigninUI(opt_email) {
-      Oobe.getInstance().showSigninUI(opt_email);
-    }
-
-    /**
-     * Resets sign-in input fields.
-     * @param {boolean} forceOnline Whether online sign-in should be forced.
-     * If |forceOnline| is false previously used sign-in type will be used.
-     */
-    static resetSigninUI(forceOnline) {
-      Oobe.getInstance().resetSigninUI(forceOnline);
-    }
-
-    /**
-     * Show user-pods.
-     */
-    static showUserPods() {
-      if (Oobe.getInstance().showingViewsLogin) {
-        chrome.send('hideOobeDialog');
-        return;
-      }
-      this.showSigninUI("");
-      this.resetSigninUI(true);
-    }
-
-    /**
-     * Sets the current size of the client area (display size).
-     * @param {number} width client area width
-     * @param {number} height client area height
-     */
-    static setClientAreaSize(width, height) {
-      Oobe.getInstance().setClientAreaSize(width, height);
-    }
-
-    /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */
@@ -178,14 +141,6 @@ cr.define('cr.ui', function() {
      */
     static setDialogSize(width, height) {
       Oobe.getInstance().setDialogSize(width, height);
-    }
-
-    /**
-     * Sets the hint for calculating OOBE dialog margins.
-     * @param {OobeTypes.DialogPaddingMode} mode
-     */
-    static setDialogPaddingMode(mode) {
-      Oobe.getInstance().setDialogPaddingMode(mode);
     }
 
     /**
@@ -294,29 +249,23 @@ cr.define('cr.ui', function() {
      * Returns true if enrollment was successful. Dismisses the enrollment
      * attribute screen if it's present.
      *
-     *  TODO(crbug.com/1111387) - Remove inline values from
-     *  ENROLLMENT_STEP once fully migrated to JS modules.
-     *
      * @suppress {missingProperties}
      * $('enterprise-enrollment').uiStep
      * TODO(crbug.com/1229130) - Remove this suppression.
      */
     static isEnrollmentSuccessfulForTest() {
       const step = $('enterprise-enrollment').uiStep;
-      // See [ENROLLMENT_STEP.ATTRIBUTE_PROMPT]
-      // from c/b/r/chromeos/login/enterprise_enrollment.js
-      if (step === 'attribute-prompt') {
+      // TODO(crbug.com/1229130) - Improve this check.
+      if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
         chrome.send('oauthEnrollAttributes', ['', '']);
         return true;
       }
 
-      // See [ENROLLMENT_STEP.SUCCESS]
-      // from c/b/r/chromeos/login/enterprise_enrollment.js
-      return step === 'success';
+      return step === OobeTypes.EnrollmentStep.SUCCESS;
     }
 
     /**
-     * Starts online demo mode setup for telemetry.
+     * Starts online demo mode setup for telemetry. Is used in autotests.
      */
     static setUpOnlineDemoModeForTesting() {
       DemoModeTestHelper.setUp('online');
@@ -366,7 +315,7 @@ cr.define('cr.ui', function() {
     static reloadContent(data) {
       // Reload global local strings, process DOM tree again.
       loadTimeData.overrideValues(data);
-      /* #ignore */ i18nTemplate.process(document, loadTimeData);
+      i18nTemplate.process(document, loadTimeData);
 
       // Update localized content of the screens.
       Oobe.getInstance().updateLocalizedContent_();
@@ -408,4 +357,3 @@ cr.define('cr.ui', function() {
   // Export
   return {Oobe: Oobe};
 });
-

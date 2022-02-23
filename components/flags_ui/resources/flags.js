@@ -28,6 +28,33 @@ window.experimentalFeaturesReadyForTest = new Promise(resolve => {
   experimentalFeaturesResolver = resolve;
 });
 
+/** @const {!Array<!Object<string, !HTMLElement>>} */
+const tabs = [
+  {
+    tabEl: document.querySelector('#tab-available'),
+    panelEl: document.querySelector('#tab-content-available'),
+  },
+  // <if expr="not is_ios">
+  {
+    tabEl: document.querySelector('#tab-unavailable'),
+    panelEl: document.querySelector('#tab-content-unavailable'),
+  },
+  // </if>
+];
+
+/**
+ * Toggles necessary attributes to display selected tab.
+ * @param {!HTMLElement} selectedTabEl
+ */
+function selectTab(selectedTabEl) {
+  for (const tab of tabs) {
+    const isSelectedTab = tab.tabEl === selectedTabEl;
+    tab.tabEl.parentNode.classList.toggle('selected', isSelectedTab);
+    tab.tabEl.setAttribute('aria-selected', isSelectedTab);
+    tab.panelEl.classList.toggle('selected', isSelectedTab);
+  }
+}
+
 /**
  * This variable structure is here to document the structure that the template
  * expects to correctly populate the page.
@@ -104,21 +131,16 @@ function renderTemplate(experimentalFeaturesData) {
   }
 
   // Tab panel selection.
-  const tabEls = document.getElementsByClassName('tab');
-  for (let i = 0; i < tabEls.length; ++i) {
-    tabEls[i].addEventListener('click', function(e) {
+  for (const tab of tabs) {
+    tab.tabEl.addEventListener('click', e => {
       e.preventDefault();
-      for (let j = 0; j < tabEls.length; ++j) {
-        tabEls[j].parentNode.classList.toggle('selected', tabEls[j] === this);
-        tabEls[j].setAttribute('aria-selected', tabEls[j] === this);
-      }
-      FlagSearch.getInstance().announceSearchResults();
+      selectTab(tab.tabEl);
     });
   }
 
   const smallScreenCheck = window.matchMedia('(max-width: 480px)');
   // Toggling of experiment description overflow content on smaller screens.
-  if(smallScreenCheck.matches){
+  if (smallScreenCheck.matches) {
     elements = document.querySelectorAll('.experiment .flex:first-child');
     for (const element of elements) {
       element.onclick = () => element.classList.toggle('expand');
@@ -172,13 +194,12 @@ function highlightReferencedFlag() {
       // Highlight the referenced element.
       el.classList.add('referenced');
 
+      // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
       if ($('tab-content-unavailable').contains(el)) {
-        $('tab-available').parentNode.classList.remove('selected');
-        $('tab-available').setAttribute('aria-selected', 'false');
-        $('tab-unavailable').parentNode.classList.add('selected');
-        $('tab-unavailable').setAttribute('aria-selected', 'true');
+        selectTab(/** @type {!HTMLElement} */ ($('tab-unavailable')));
       }
+      // </if>
       el.scrollIntoView();
     }
   }
@@ -201,7 +222,7 @@ function restartBrowser() {
 /**
  * Cause a text string to be announced by screen readers
  * @param {string} text The text that should be announced.
-*/
+ */
 function announceStatus(text) {
   $('screen-reader-status-message').textContent = '';
   setTimeout(function() {
@@ -230,10 +251,10 @@ function showRestartToast(show) {
   $('needs-restart').classList.toggle('show', show);
   const restartButton = $('experiment-restart-button');
   if (restartButton) {
-    restartButton.setAttribute("tabindex", show ? '9' : '-1');
+    restartButton.setAttribute('tabindex', show ? '9' : '-1');
   }
   if (show) {
-    $('needs-restart').setAttribute("role", "alert");
+    $('needs-restart').setAttribute('role', 'alert');
   }
 }
 
@@ -640,16 +661,10 @@ FlagSearch.prototype = {
       return;
     }
 
-    let tabAvailable = true;
-    const tabEls = document.getElementsByClassName('tab');
-    for (let i = 0; i < tabEls.length; ++i) {
-      if (tabEls[i].parentNode.classList.contains('selected')) {
-        tabAvailable = tabEls[i].id === 'tab-available';
-      }
-    }
-    const seletedTabId =
-        tabAvailable ? '#tab-content-available' : '#tab-content-unavailable';
-    const queryString = seletedTabId + ' .experiment:not(.hidden)';
+    const selectedTab =
+        tabs.find(tab => tab.panelEl.classList.contains('selected'));
+    const selectedTabId = selectedTab.panelEl.id;
+    const queryString = `#${selectedTabId} .experiment:not(.hidden)`;
     const total = document.querySelectorAll(queryString).length;
     if (total) {
       announceStatus(

@@ -26,7 +26,7 @@
 #include <memory>
 #include <utility>
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
 #include <windows.h>
 
@@ -53,7 +53,7 @@ static_assert(base::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
 
 constexpr char kSodaManifestName[] = "SODA Library";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 constexpr base::FilePath::CharType kSodaIndicatorFile[] =
 #if defined(ARCH_CPU_X86)
@@ -102,7 +102,7 @@ void SodaComponentInstallerPolicy::UpdateSodaComponentOnDemand() {
 update_client::CrxInstaller::Result
 SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
     const base::FilePath& install_dir) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const absl::optional<base::win::Sid> users_sid =
       base::win::Sid::FromKnownSid(base::win::WellKnownSid::kBuiltinUsers);
   if (!users_sid) {
@@ -164,7 +164,7 @@ void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 bool SodaComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool missing_indicator_file =
       !base::PathExists(install_dir.Append(kSodaIndicatorFile));
 
@@ -213,7 +213,7 @@ SodaComponentInstallerPolicy::GetInstallerAttributes() const {
 
 void UpdateSodaInstallDirPref(PrefService* prefs,
                               const base::FilePath& install_dir) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs->SetFilePath(prefs::kSodaBinaryPath,
                      install_dir.Append(speech::kSodaBinaryRelativePath));
 #endif
@@ -225,8 +225,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
                            base::OnceClosure on_registered_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      media::IsLiveCaptionFeatureEnabled()) {
+  if (media::IsLiveCaptionFeatureEnabled()) {
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<SodaComponentInstallerPolicy>(
             base::BindRepeating(
@@ -252,8 +251,7 @@ void RegisterSodaLanguageComponent(
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-      media::IsLiveCaptionFeatureEnabled()) {
+  if (media::IsLiveCaptionFeatureEnabled()) {
     absl::optional<speech::SodaLanguagePackComponentConfig> config =
         speech::GetLanguageComponentConfig(language);
     if (config) {

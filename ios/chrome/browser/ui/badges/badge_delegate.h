@@ -22,6 +22,9 @@
 // Action when a Translate badge is tapped.
 - (void)translateBadgeButtonTapped:(id)sender;
 
+// Action when the Permissions badge is tapped.
+- (void)permissionsBadgeButtonTapped:(id)sender;
+
 // Action when the overflow badge is tapped.
 - (void)overflowBadgeButtonTapped:(id)sender;
 @end

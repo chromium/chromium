@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/database/database_tracker.h"
@@ -42,17 +43,22 @@ DatabaseQuotaClient::~DatabaseQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DatabaseQuotaClient::GetStorageKeyUsage(
-    const StorageKey& storage_key,
-    StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void DatabaseQuotaClient::GetBucketUsage(const BucketLocator& bucket,
+                                         GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
+
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by WebSQL.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
 
   OriginInfo info;
-  if (db_tracker_.GetOriginInfo(GetIdentifierFromOrigin(storage_key.origin()),
-                                &info)) {
+  if (db_tracker_.GetOriginInfo(
+          GetIdentifierFromOrigin(bucket.storage_key.origin()), &info)) {
     std::move(callback).Run(info.TotalSize());
   } else {
     std::move(callback).Run(0);
@@ -77,42 +83,23 @@ void DatabaseQuotaClient::GetStorageKeysForType(
   std::move(callback).Run(all_storage_keys);
 }
 
-void DatabaseQuotaClient::GetStorageKeysForHost(
-    StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void DatabaseQuotaClient::DeleteBucketData(const BucketLocator& bucket,
+                                           DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
-  std::vector<StorageKey> host_storage_keys;
-  // In the vast majority of cases, this vector will end up with exactly one
-  // storage key. The storage key will be https://host or http://host.
-  host_storage_keys.reserve(1);
-
-  std::vector<std::string> origin_identifiers;
-  if (db_tracker_.GetAllOriginIdentifiers(&origin_identifiers)) {
-    for (const auto& identifier : origin_identifiers) {
-      StorageKey storage_key = StorageKey(GetOriginFromIdentifier(identifier));
-      if (host == storage_key.origin().host())
-        host_storage_keys.push_back(std::move(storage_key));
-    }
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by WebSQL.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
   }
-  std::move(callback).Run(host_storage_keys);
-}
-
-void DatabaseQuotaClient::DeleteStorageKeyData(
-    const StorageKey& storage_key,
-    StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
 
   db_tracker_.DeleteDataForOrigin(
-      storage_key.origin(),
+      bucket.storage_key.origin(),
       base::BindOnce(
-          [](DeleteStorageKeyDataCallback callback, int result) {
+          [](DeleteBucketDataCallback callback, int result) {
             std::move(callback).Run(
                 (result == net::OK) ? blink::mojom::QuotaStatusCode::kOk
                                     : blink::mojom::QuotaStatusCode::kUnknown);

@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
@@ -75,7 +74,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
 #endif
 
@@ -510,7 +509,7 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
-  const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRectSafe(
+  const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRect(
       RectFromPPRect(view.GetRect()), view.GetDeviceScale());
   UpdateGeometryOnPluginRectChanged(new_plugin_rect, view.GetDeviceScale());
 }
@@ -526,32 +525,18 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
 }
 
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
-  pp::Point new_position(position.x(), position.y());
-  ScalePoint(device_scale(), &new_position);
-  new_position.set_x(new_position.x() - available_area().x());
-  engine()->SetCaretPosition(PointFromPPPoint(new_position));
+  PdfViewPluginBase::SetCaretPosition(PointFFromPPFloatPoint(position));
 }
 
 void OutOfProcessInstance::MoveRangeSelectionExtent(
     const pp::FloatPoint& extent) {
-  pp::Point new_extent(extent.x(), extent.y());
-  ScalePoint(device_scale(), &new_extent);
-  new_extent.set_x(new_extent.x() - available_area().x());
-  engine()->MoveRangeSelectionExtent(PointFromPPPoint(new_extent));
+  PdfViewPluginBase::MoveRangeSelectionExtent(PointFFromPPFloatPoint(extent));
 }
 
 void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
                                               const pp::FloatPoint& extent) {
-  pp::Point new_base_point(base.x(), base.y());
-  ScalePoint(device_scale(), &new_base_point);
-  new_base_point.set_x(new_base_point.x() - available_area().x());
-
-  pp::Point new_extent_point(extent.x(), extent.y());
-  ScalePoint(device_scale(), &new_extent_point);
-  new_extent_point.set_x(new_extent_point.x() - available_area().x());
-
-  engine()->SetSelectionBounds(PointFromPPPoint(new_base_point),
-                               PointFromPPPoint(new_extent_point));
+  PdfViewPluginBase::SetSelectionBounds(PointFFromPPFloatPoint(base),
+                                        PointFFromPPFloatPoint(extent));
 }
 
 pp::Var OutOfProcessInstance::GetLinkAtPosition(const pp::Point& point) {
@@ -749,7 +734,7 @@ void OutOfProcessInstance::RotateCounterclockwise() {
 }
 
 void OutOfProcessInstance::SetLastPluginInstance() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   SetLastPepperInstance(this);
 #endif
 }
@@ -759,7 +744,7 @@ Image OutOfProcessInstance::GetPluginImageData() const {
 }
 
 void OutOfProcessInstance::SetAccessibilityDocInfo(
-    const AccessibilityDocInfo& doc_info) {
+    AccessibilityDocInfo doc_info) {
   PP_PrivateAccessibilityDocInfo pp_doc_info = {
       doc_info.page_count, PP_FromBool(doc_info.text_accessible),
       PP_FromBool(doc_info.text_copyable)};
@@ -784,7 +769,7 @@ void OutOfProcessInstance::SetAccessibilityPageInfo(
 }
 
 void OutOfProcessInstance::SetAccessibilityViewportInfo(
-    const AccessibilityViewportInfo& viewport_info) {
+    AccessibilityViewportInfo viewport_info) {
   PP_PrivateAccessibilityViewportInfo pp_viewport_info = {
       viewport_info.zoom,
       viewport_info.scale,

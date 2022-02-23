@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -24,7 +25,7 @@ namespace {
 const test::TaskEnvironment::MainThreadType testing_main_threads[] = {
     test::TaskEnvironment::MainThreadType::DEFAULT,
     test::TaskEnvironment::MainThreadType::IO,
-#if !defined(OS_IOS)  // iOS does not allow direct running of the UI loop.
+#if !BUILDFLAG(IS_IOS)  // iOS does not allow direct running of the UI loop.
     test::TaskEnvironment::MainThreadType::UI,
 #endif
 };
@@ -42,7 +43,7 @@ class DecrementCountContainer {
   }
 
  private:
-  int* counter_;
+  raw_ptr<int> counter_;
 };
 
 }  // namespace
@@ -304,9 +305,7 @@ class WaitableEventWatcherDeletionTest
           std::tuple<test::TaskEnvironment::MainThreadType, bool>> {};
 
 TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   // Delete the WaitableEvent out from under the Watcher. This is explictly
   // allowed by the interface.
@@ -336,9 +335,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
 }
 
 TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   // Signal and immediately delete the WaitableEvent out from under the Watcher.
 
@@ -373,9 +370,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
 // Tests deleting the WaitableEventWatcher between signaling the event and
 // when the callback should be run.
 TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   test::TaskEnvironment task_environment(main_thread_type);
   scoped_refptr<SingleThreadTaskRunner> task_runner =

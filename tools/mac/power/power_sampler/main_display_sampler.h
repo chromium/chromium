@@ -22,6 +22,8 @@ namespace power_sampler {
 // reflect this.
 class MainDisplaySampler : public Sampler {
  public:
+  static constexpr char kSamplerName[] = "main_display";
+
   ~MainDisplaySampler() override;
 
   // Creates and initializes a new sampler, if possible.

@@ -81,7 +81,7 @@ CreateSslSystemTrustStoreChromeRoot();
 // store integration is not supported.)
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Initializes trust cache on a worker thread.
 NET_EXPORT void InitializeTrustStoreMacCache();
 #endif

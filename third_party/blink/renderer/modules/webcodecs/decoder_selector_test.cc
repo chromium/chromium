@@ -69,8 +69,8 @@ class AudioDecoderSelectorTestParam {
                             const media::WaitingCB&) {
           EXPECT_TRUE(config.Matches(expected_config));
           std::move(init_cb).Run(capability == kSucceed
-                                     ? media::OkStatus()
-                                     : media::StatusCode::kCodeOnlyForTesting);
+                                     ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed);
         });
   }
 };
@@ -108,8 +108,8 @@ class VideoDecoderSelectorTestParam {
                             const media::WaitingCB&) {
           EXPECT_TRUE(config.Matches(expected_config));
           std::move(init_cb).Run(capability == kSucceed
-                                     ? media::OkStatus()
-                                     : media::StatusCode::kCodeOnlyForTesting);
+                                     ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed);
         });
   }
 };

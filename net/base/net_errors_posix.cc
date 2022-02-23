@@ -113,13 +113,13 @@ Error MapSystemError(logging::SystemErrorCode os_error) {
       return ERR_INSUFFICIENT_RESOURCES;
     case ENOPROTOOPT:  // Protocol option not supported.
       return ERR_NOT_IMPLEMENTED;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     case EIO:
       // FDIO maps all unrecognized errors to EIO. If you see this message then
       // consider adding custom error in FDIO for the corresponding error.
       DLOG(FATAL) << "EIO was returned by FDIO.";
       return ERR_FAILED;
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
     case 0:
       return OK;

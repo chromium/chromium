@@ -38,6 +38,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (use_ozone) {
-    deps += [ "//ui/ozone" ]
+    deps += [
+      "//ui/events:test_support",
+      "//ui/events/ozone/layout:layout",
+      "//ui/ozone",
+    ]
   }
 }

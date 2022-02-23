@@ -10,6 +10,9 @@
 class Profile;
 
 namespace ash {
+
+struct ToastData;
+
 namespace sharesheet {
 
 class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
@@ -27,10 +30,14 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
   void OnClosing(::sharesheet::SharesheetController* controller) override;
+  bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
+                        bool contains_hosted_document) override;
 
  private:
+  // Virtual so that it can be overridden in testing.
+  virtual void ShowToast(const ash::ToastData& toast_data);
+
   Profile* profile_;
-  ::sharesheet::SharesheetController* controller_ = nullptr;
 };
 
 }  // namespace sharesheet

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 
 namespace ui {
 
@@ -24,6 +25,10 @@ class WaylandConnectionTestApi {
 
   void SetZcrCursorShapes(std::unique_ptr<WaylandZcrCursorShapes> obj) {
     impl_->zcr_cursor_shapes_ = std::move(obj);
+  }
+
+  void SetRoundtripClosure(base::RepeatingClosure closure) {
+    impl_->roundtrip_closure_for_testing_ = closure;
   }
 
  private:

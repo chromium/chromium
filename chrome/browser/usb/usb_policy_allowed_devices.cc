@@ -83,14 +83,14 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetList()) {
+  for (const auto& item : pref_value->GetListDeprecated()) {
     const base::Value* urls_list = item.FindKey(kPrefUrlsKey);
     std::set<url::Origin> parsed_set;
 
     // A urls item can contain a pair of URLs that are delimited by a comma. If
     // it does not contain a second URL, set the embedding URL to an empty GURL
     // to signify a wildcard embedded URL.
-    for (const auto& urls_value : urls_list->GetList()) {
+    for (const auto& urls_value : urls_list->GetListDeprecated()) {
       std::vector<std::string> urls =
           base::SplitString(urls_value.GetString(), ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL);
@@ -122,7 +122,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
     // For each device entry in the map, create or update its respective URL
     // set.
     const base::Value* devices = item.FindKey(kPrefDevicesKey);
-    for (const auto& device : devices->GetList()) {
+    for (const auto& device : devices->GetListDeprecated()) {
       // A missing ID signifies a wildcard for that ID, so a sentinel value of
       // -1 is assigned.
       const base::Value* vendor_id_value = device.FindKey(kPrefVendorIdKey);

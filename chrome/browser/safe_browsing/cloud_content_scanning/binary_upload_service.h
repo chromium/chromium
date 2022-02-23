@@ -16,6 +16,8 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -43,7 +45,7 @@ class BinaryUploadService : public KeyedService {
   explicit BinaryUploadService(Profile* profile);
 
   // This constructor is useful in tests, if you want to keep a reference to the
-  // service's |binary_fcm_service_|.
+  // service's `binary_fcm_service_`.
   BinaryUploadService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
@@ -95,11 +97,11 @@ class BinaryUploadService : public KeyedService {
 
   // A class to encapsulate the a request for upload. This class will provide
   // all the functionality needed to generate a ContentAnalysisRequest, and
-  // subclasses will provide different sources of data to upload (e.g. file or
-  // string).
+  // subclasses will provide different sources of data to upload (e.g. file,
+  // page or string).
   class Request {
    public:
-    // |callback| will run on the UI thread.
+    // `callback` will run on the UI thread.
     Request(ContentAnalysisCallback, GURL url);
     virtual ~Request();
     Request(const Request&) = delete;
@@ -110,7 +112,10 @@ class BinaryUploadService : public KeyedService {
     // Structure of data returned in the callback to GetRequestData().
     struct Data {
       Data();
-      Data(const Data&);
+      Data(Data&&);
+      Data& operator=(Data&&);
+      Data(const Data&) = delete;
+      Data& operator=(const Data&) = delete;
       ~Data();
 
       // The data content. Only populated for string requests.
@@ -122,24 +127,22 @@ class BinaryUploadService : public KeyedService {
       // The SHA256 of the data.
       std::string hash;
 
-      // The size of the data. This can differ from |contents.size()| when the
+      // The size of the data. This can differ from `contents.size()` when the
       // file is too large for deep scanning. This field will contain the true
       // size.
       uint64_t size = 0;
 
       // The mime type of the data. Only populated for file requests.
       std::string mime_type;
+
+      // The page's content. Only populated for page requests.
+      base::ReadOnlySharedMemoryRegion page;
     };
 
-    // Asynchronously returns the file contents to upload.
-    // TODO(drubery): This could allocate up to kMaxUploadSizeBytes of memory
-    // for a large file upload. We should see how often that causes errors,
-    // and possibly implement some sort of streaming interface so we don't use
-    // so much memory.
-    //
-    // |result| is set to SUCCESS if getting the request data succeeded or
+    // Aynchronously returns the data required to make a MultipartUploadRequest.
+    // `result` is set to SUCCESS if getting the request data succeeded or
     // some value describing the error.
-    using DataCallback = base::OnceCallback<void(Result, const Data&)>;
+    using DataCallback = base::OnceCallback<void(Result, Data)>;
     virtual void GetRequestData(DataCallback callback) = 0;
 
     // Returns the URL to send the request to.
@@ -182,13 +185,17 @@ class BinaryUploadService : public KeyedService {
     const std::string& digest() const;
     const std::string& content_type() const;
 
-    // Finish the request, with the given |result| and |response| from the
+    // Finish the request, with the given `result` and `response` from the
     // server.
     void FinishRequest(Result result,
                        enterprise_connectors::ContentAnalysisResponse response);
 
     // Calls SerializeToString on the appropriate proto request.
     void SerializeToString(std::string* destination) const;
+
+    // Method used to identify authentication requests. This is used for
+    // optimizations such as omitting FCM code paths for auth requests.
+    virtual bool IsAuthRequest() const;
 
    private:
     enterprise_connectors::ContentAnalysisRequest content_analysis_request_;
@@ -216,18 +223,18 @@ class BinaryUploadService : public KeyedService {
                     const std::string& dm_token,
                     enterprise_connectors::AnalysisConnector connector);
 
-  // Run every matching callback in |authorization_callbacks_| and remove them.
+  // Run every matching callback in `authorization_callbacks_` and remove them.
   void RunAuthorizationCallbacks(
       const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector);
 
-  // Resets |can_upload_data_|. Called every 24 hour by |timer_|.
+  // Resets `can_upload_data_`. Called every 24 hour by `timer_`.
   void ResetAuthorizationData(const GURL& url);
 
   // Performs cleanup needed at shutdown.
   void Shutdown() override;
 
-  // Sets |can_upload_data_| for tests.
+  // Sets `can_upload_data_` for tests.
   void SetAuthForTesting(const std::string& dm_token, bool authorized);
 
   // Returns the URL that requests are uploaded to. Scans for enterprise go to a
@@ -250,15 +257,13 @@ class BinaryUploadService : public KeyedService {
   void QueueForDeepScanning(std::unique_ptr<Request> request);
 
   // Upload the given file contents for deep scanning. The results will be
-  // returned asynchronously by calling |request|'s |callback|. This must be
+  // returned asynchronously by calling `request`'s `callback`. This must be
   // called on the UI thread.
   virtual void UploadForDeepScanning(std::unique_ptr<Request> request);
 
   void OnGetInstanceID(Request* request, const std::string& token);
 
-  void OnGetRequestData(Request* request,
-                        Result result,
-                        const Request::Data& data);
+  void OnGetRequestData(Request* request, Result result, Request::Data data);
 
   void OnUploadComplete(Request* request,
                         bool success,
@@ -299,16 +304,16 @@ class BinaryUploadService : public KeyedService {
   // Called at the end of the FinishRequest method.
   void FinishRequestCleanup(Request* request, const std::string& instance_id);
 
-  // Tries to start uploads from |request_queue_| depending on the number of
+  // Tries to start uploads from `request_queue_` depending on the number of
   // currently active requests. This should be called whenever
-  // |active_requests_| shrinks so queued requests are started as soon as
+  // `active_requests_` shrinks so queued requests are started as soon as
   // possible.
   void PopRequestQueue();
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<BinaryFCMService> binary_fcm_service_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Request queued for upload.
   std::queue<std::unique_ptr<Request>> request_queue_;

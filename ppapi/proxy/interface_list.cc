@@ -178,7 +178,7 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_DEV;
     #include "ppapi/thunk/interfaces_ppb_public_dev.h"
   }
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   {
     Permission current_required_permission = PERMISSION_PRIVATE;
     #include "ppapi/thunk/interfaces_ppb_private.h"
@@ -191,7 +191,7 @@ InterfaceList::InterfaceList() {
     Permission current_required_permission = PERMISSION_PDF;
     #include "ppapi/thunk/interfaces_ppb_private_pdf.h"
   }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
   {
     Permission current_required_permission = PERMISSION_DEV_CHANNEL;
     #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
@@ -249,7 +249,7 @@ InterfaceList::InterfaceList() {
   AddPPB(PPB_VAR_INTERFACE_1_0,
          PPB_Var_Shared::GetVarInterface1_0(), PERMISSION_NONE);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // PPB (browser) interfaces.
   // Do not add more stuff here, they should be added to interface_list*.h
   // TODO(brettw) remove these.
@@ -272,7 +272,7 @@ InterfaceList::InterfaceList() {
   AddProxy(API_ID_PPP_INPUT_EVENT, &ProxyFactory<PPP_InputEvent_Proxy>);
   AddPPP(PPP_INPUT_EVENT_INTERFACE, PPP_InputEvent_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_INSTANCE, &ProxyFactory<PPP_Instance_Proxy>);
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   AddPPP(PPP_INSTANCE_INTERFACE_1_1,
          PPP_Instance_Proxy::GetInstanceInterface());
   AddProxy(API_ID_PPP_INSTANCE_PRIVATE,
@@ -287,7 +287,7 @@ InterfaceList::InterfaceList() {
   AddPPP(PPP_PRINTING_DEV_INTERFACE, PPP_Printing_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_TEXT_INPUT, &ProxyFactory<PPP_TextInput_Proxy>);
   AddPPP(PPP_TEXTINPUT_DEV_INTERFACE, PPP_TextInput_Proxy::GetProxyInterface());
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   AddProxy(API_ID_PPP_PDF, &ProxyFactory<PPP_Pdf_Proxy>);
   AddPPP(PPP_PDF_INTERFACE, PPP_Pdf_Proxy::GetProxyInterface());
   AddProxy(API_ID_PPP_FIND_PRIVATE, &ProxyFactory<PPP_Find_Proxy>);

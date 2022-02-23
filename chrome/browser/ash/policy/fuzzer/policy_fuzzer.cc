@@ -77,7 +77,7 @@ struct Environment {
         base::PathService::CheckedGet(ui::UI_TEST_PAK);
     ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
 
-    base::FilePath pak_path = base::PathService::CheckedGet(base::DIR_MODULE);
+    base::FilePath pak_path = base::PathService::CheckedGet(base::DIR_ASSETS);
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
         ui::kScaleFactorNone);

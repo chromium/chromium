@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_ZYGOTE_ZYGOTE_HANDLE_IMPL_LINUX_H_
 #define CONTENT_COMMON_ZYGOTE_ZYGOTE_HANDLE_IMPL_LINUX_H_
 
+#include "content/common/content_export.h"
 #include "content/public/common/zygote/zygote_handle.h"
 
 namespace content {

@@ -1,0 +1,21 @@
+{ "GUID": "guid",
+  "Type": "VPN",
+  "Name": "MyIKEv2VPN",
+  "VPN": {
+    "Type": "IPsec",
+    "Host": "some.host.org",
+    "IPsec": {
+      "AuthenticationType": "EAP",
+      "IKEVersion": 2,
+      "LocalIdentity": "local-id",
+      "RemoteIdentity": "remote-id",
+      "SaveCredentials": true,
+      "ServerCAPEMs": ["1234"],
+      "EAP": {
+        "Outer": "MSCHAPv2",
+        "Identity": "my_identity",
+        "Password": "my_password",
+      },
+    },
+  }
+}

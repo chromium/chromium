@@ -1,0 +1,19 @@
+<head>
+  <title>Web app banner isolated service worker test page</title>
+  <link rel="manifest" href="/banners/manifest_isolated.json">
+  <script src="../../result_queue.js"></script>
+  <script src="../../push_messaging/push_constants.js"></script>
+  <script src="../../push_messaging/push_test.js"></script>
+  <script>
+    navigator.serviceWorker.register(
+      '/banners/isolated/service_worker.js',
+      // Match the scope defined in manifest_isolated.json. To be able to
+      // register the worker for this scope, the 'Service-Worker-Allowed' header
+      // must be set to '/' on the service worker script.
+      { scope: '/' }
+    );
+  </script>
+</head>
+<body>
+  Isolated Service Worker Test Page.
+</body>

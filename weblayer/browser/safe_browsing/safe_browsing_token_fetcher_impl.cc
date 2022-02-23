@@ -25,13 +25,14 @@ void SafeBrowsingTokenFetcherImpl::Start(Callback callback) {
     return;
   }
 
-  // NOTE: base::Unretained() is safe below as this object owns
-  // |token_fetch_tracker_|, and the callback will not be invoked after
-  // |token_fetch_tracker_| is destroyed.
+  // NOTE: When a token fetch timeout occurs |token_fetch_tracker_| will invoke
+  // the client callback, which may end up synchronously destroying this object
+  // before this object's own callback is invoked. Hence we bind our own
+  // callback via a WeakPtr.
   const int request_id = token_fetch_tracker_.StartTrackingTokenFetch(
       std::move(callback),
       base::BindOnce(&SafeBrowsingTokenFetcherImpl::OnTokenTimeout,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
   request_ids_.insert(request_id);
 
   // In contrast, this object does *not* have a determined lifetime relationship
@@ -64,9 +65,14 @@ void SafeBrowsingTokenFetcherImpl::OnTokenFetched(
   request_ids_.erase(request_id);
 
   token_fetch_tracker_.OnTokenFetchComplete(request_id, access_token);
+
+  // NOTE: Calling SafeBrowsingTokenFetchTracker::OnTokenFetchComplete might
+  // have resulted in the synchronous destruction of this object, so there is
+  // nothing safe to do here but return.
 }
 
 void SafeBrowsingTokenFetcherImpl::OnTokenTimeout(int request_id) {
+  DCHECK(request_ids_.count(request_id));
   request_ids_.erase(request_id);
 }
 

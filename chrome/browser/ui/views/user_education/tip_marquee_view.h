@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/canvas.h"
@@ -81,10 +82,10 @@ class TipMarqueeView : public views::View, public views::WidgetObserver {
   void ToggleOverflowWidget();
 
   std::u16string tip_text_;
-  views::StyledLabel* tip_text_label_ = nullptr;
+  raw_ptr<views::StyledLabel> tip_text_label_ = nullptr;
   LearnMoreLinkClickedCallback learn_more_link_clicked_callback_;
   bool collapsed_ = false;
-  views::Widget* show_tip_widget_ = nullptr;
+  raw_ptr<views::Widget> show_tip_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observer_{this};
 };

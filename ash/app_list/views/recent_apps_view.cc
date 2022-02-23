@@ -18,11 +18,14 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
@@ -58,23 +61,11 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   return app_id;
 }
 
-// Returns true if `type` is an application result.
-bool IsAppType(AppListSearchResultType type) {
-  return type == AppListSearchResultType::kInstalledApp ||
-         type == AppListSearchResultType::kPlayStoreApp ||
-         type == AppListSearchResultType::kInstantApp ||
-         type == AppListSearchResultType::kInternalApp;
-}
-
-// Returns a list of recent apps by filtering suggestion chip data.
-// TODO(crbug.com/1216662): Replace with a real implementation after the ML team
-// gives us a way to query directly for recent apps.
-std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
-    SearchModel* search_model) {
+// Returns a list of recent apps by filtering zero-state suggestion data.
+std::vector<SearchResult*> GetRecentApps(SearchModel* search_model) {
   SearchModel::SearchResults* results = search_model->results();
   auto is_app_suggestion = [](const SearchResult& r) -> bool {
-    return IsAppType(r.result_type()) &&
-           r.display_type() == SearchResultDisplayType::kList;
+    return r.display_type() == SearchResultDisplayType::kRecentApps;
   };
   std::vector<SearchResult*> app_suggestion_results =
       SearchModel::FilterSearchResultsByFunction(
@@ -83,11 +74,7 @@ std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
 
   std::sort(app_suggestion_results.begin(), app_suggestion_results.end(),
             CompareByDisplayIndexAndPositionPriority());
-
-  std::vector<std::string> app_ids;
-  for (SearchResult* result : app_suggestion_results)
-    app_ids.push_back(result->id());
-  return app_ids;
+  return app_suggestion_results;
 }
 
 }  // namespace
@@ -134,14 +121,13 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   void EndDrag(bool cancel) override {}
   void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                   const ui::Event& event) override {
-    // TODO(crbug.com/1216594): Add a new launch type for "recent apps".
     // NOTE: Avoid using |item->id()| as the parameter. In some rare situations,
     // activating the item may destruct it. Using the reference to an object
     // which may be destroyed during the procedure as the function parameter
     // may bring the crash like https://crbug.com/990282.
     const std::string id = pressed_item_view->item()->id();
-    view_delegate_->ActivateItem(
-        id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
+    view_delegate_->ActivateItem(id, event.flags(),
+                                 AppListLaunchedFrom::kLaunchedFromRecentApps);
     // `this` may be deleted.
   }
 
@@ -162,10 +148,33 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  // TODO(https://crbug.com/1298211): This needs a designated string resource.
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE));
   SetVisible(false);
 }
 
-RecentAppsView::~RecentAppsView() = default;
+RecentAppsView::~RecentAppsView() {
+  if (model_)
+    model_->RemoveObserver(this);
+}
+
+void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
+  std::vector<AppListItemView*> views_to_delete;
+
+  for (AppListItemView* view : item_views_) {
+    if (!view->item() || view->item() == item)
+      views_to_delete.push_back(view);
+  }
+
+  for (AppListItemView* view : views_to_delete) {
+    RemoveChildViewT(view);
+    base::Erase(item_views_, view);
+  }
+
+  SetVisible(item_views_.size() >= kMinRecommendedApps);
+}
 
 void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
   app_list_config_ = app_list_config;
@@ -180,12 +189,19 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
   item_views_.clear();
   RemoveAllChildViews();
 
-  std::vector<std::string> app_ids =
-      GetRecentAppIdsFromSuggestionChips(search_model);
+  if (model_ != model) {
+    if (model_)
+      model_->RemoveObserver(this);
+    model_ = model;
+    if (model_)
+      model_->AddObserver(this);
+  }
+
+  std::vector<SearchResult*> apps = GetRecentApps(search_model);
   std::vector<AppListItem*> items;
 
-  for (const std::string& app_id : app_ids) {
-    std::string item_id = ItemIdFromAppId(app_id);
+  for (SearchResult* app : apps) {
+    std::string item_id = ItemIdFromAppId(app->id());
     AppListItem* item = model->FindItem(item_id);
     if (item)
       items.push_back(item);
@@ -194,6 +210,14 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
   if (items.size() < kMinRecommendedApps) {
     SetVisible(false);
     return;
+  }
+
+  if (auto* notifier = view_delegate_->GetNotifier()) {
+    std::vector<AppListNotifier::Result> notifier_results;
+    for (const SearchResult* app : apps)
+      notifier_results.emplace_back(app->id(), app->metrics_type());
+    notifier->NotifyResultsUpdated(SearchResultDisplayType::kRecentApps,
+                                   notifier_results);
   }
 
   SetVisible(true);

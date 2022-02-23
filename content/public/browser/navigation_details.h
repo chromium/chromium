@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_DETAILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_type.h"
 #include "url/gurl.h"
@@ -23,16 +24,16 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   LoadCommittedDetails& operator=(const LoadCommittedDetails&);
 
   // The committed entry. This will be the active entry in the controller.
-  NavigationEntry* entry;
+  raw_ptr<NavigationEntry> entry = nullptr;
 
   // The type of navigation that just occurred. Note that not all types of
   // navigations in the enum are valid here, since some of them don't actually
   // cause a "commit" and won't generate this notification.
-  content::NavigationType type;
+  content::NavigationType type = content::NAVIGATION_TYPE_UNKNOWN;
 
   // The index of the previously committed navigation entry. This will be -1
   // if there are no previous entries.
-  int previous_entry_index;
+  int previous_entry_index = -1;
 
   // The previous main frame URL that the user was on. This may be empty if
   // there was no last committed entry.
@@ -41,18 +42,19 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   // True if the committed entry has replaced the existing one. Note that in
   // case of subrames, the NavigationEntry and FrameNavigationEntry objects
   // don't actually get replaced - they're reused, but with updated attributes.
-  bool did_replace_entry;
+  bool did_replace_entry = false;
 
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:
   // * reference fragment navigations
   // * pushState/replaceState
   // * same page history navigation
-  bool is_same_document;
+  bool is_same_document = false;
 
   // True when the main frame was navigated. False means the navigation was a
-  // sub-frame.
-  bool is_main_frame;
+  // sub-frame. Note that the main frame here means any main frame (including
+  // fenced frames, main frames in BFCache or prerendering).
+  bool is_main_frame = true;
 
   // True when the navigation triggered a prerender activation.
   bool is_prerender_activation = false;
@@ -65,13 +67,21 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   }
 
   // The HTTP status code for this entry..
-  int http_status_code;
+  int http_status_code = 0;
+
+  // True if the NavigationEntry that we're about to create/update for this
+  // navigation should still be marked as the "initial NavigationEntry". This is
+  // needed to ensure that subframe navigations etc on the initial
+  // NavigationEntry won't append new NavigationEntries, and will always get
+  // replaced on the next navigation.
+  // See also https://crbug.com/1277414.
+  bool should_stay_as_initial_entry = false;
 };
 
 // Provides the details for a NOTIFICATION_NAV_ENTRY_CHANGED notification.
 struct EntryChangedDetails {
   // The changed navigation entry after it has been updated.
-  NavigationEntry* changed_entry;
+  raw_ptr<NavigationEntry> changed_entry;
 
   // Indicates the current index in the back/forward list of the entry.
   int index;

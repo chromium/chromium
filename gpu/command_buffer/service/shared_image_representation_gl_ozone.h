@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_GL_OZONE_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -29,7 +28,9 @@ class SharedImageRepresentationGLOzoneShared {
       GLenum target);
   static scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat buffer_format);
+      gfx::BufferFormat buffer_format,
+      gfx::BufferPlane plane,
+      gfx::Size size);
 };
 
 // Representation of an Ozone-backed SharedImage that can be accessed as a
@@ -44,7 +45,8 @@ class SharedImageRepresentationGLTextureOzone
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       scoped_refptr<gfx::NativePixmap> pixmap,
-      viz::ResourceFormat format);
+      viz::ResourceFormat format,
+      gfx::BufferPlane plane);
 
   ~SharedImageRepresentationGLTextureOzone() override;
 
@@ -80,7 +82,8 @@ class SharedImageRepresentationGLTexturePassthroughOzone
          SharedImageBacking* backing,
          MemoryTypeTracker* tracker,
          scoped_refptr<gfx::NativePixmap> pixmap,
-         viz::ResourceFormat format);
+         viz::ResourceFormat format,
+         gfx::BufferPlane plane);
 
   ~SharedImageRepresentationGLTexturePassthroughOzone() override;
 

@@ -21,17 +21,5 @@
         <item name="elevationOverlayAccentColor">?attr/colorPrimary</item>
         <item name="elevationOverlayColor">@color/baseline_neutral_200</item>
         <item name="elevationOverlayEnabled">true</item>
-
-        <item name="colorSwitchThumbNormal">?attr/colorOnSurface</item>
-        <item name="colorSwitchThumbDisabled">?attr/colorFixedOnSurfaceAlpha38OverSurface</item>
-        <item name="colorSwitchTrackNormal">?attr/colorOutline</item>
-        <item name="colorFixedOnSurfaceAlpha38OverSurface">@color/baseline_neutral_900_with_neutral_100_alpha_38</item>
-
-        <!-- Splintered SwitchMaterial roles to roll back dynamic colors. -->
-        <item name="colorPrimaryNonDynamic">@color/baseline_primary_200</item>
-        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
-        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
-        <item name="colorSwitchThumbDisabledNonDynamic">@color/baseline_neutral_900_with_neutral_100_alpha_38</item>
-        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
     </style>
 </resources>

@@ -4,8 +4,8 @@
 
 function animationPolicyChanged() {
   if (this.checked) {
-    var type = this.id;
-    var setting = this.value;
+    const type = this.id;
+    const setting = this.value;
     console.log('set policy '+': '+setting);
     chrome.accessibilityFeatures.animationPolicy.set(
         {'value': setting}, function (callback) {});
@@ -17,10 +17,10 @@ function listener(data) {
 }
 
 function init() {
-  var i18nElements = document.querySelectorAll('*[i18n-content]');
-  for (var i = 0; i < i18nElements.length; i++) {
-    var elem = i18nElements[i];
-    var msg = elem.getAttribute('i18n-content');
+  const i18nElements = document.querySelectorAll('*[i18n-content]');
+  for (let i = 0; i < i18nElements.length; i++) {
+    const elem = i18nElements[i];
+    const msg = elem.getAttribute('i18n-content');
     elem.innerHTML = chrome.i18n.getMessage(msg);
   }
 
@@ -28,15 +28,15 @@ function init() {
   chrome.accessibilityFeatures.animationPolicy.get(
         {'incognito': false}, function (policy) {
                   console.log('get policy '+': '+policy.value);
-      var selects = document.querySelectorAll('input');
-      for (var i = 0; i < selects.length; i++) {
+      const selects = document.querySelectorAll('input');
+      for (let i = 0; i < selects.length; i++) {
         if (selects[i].value == policy.value)
           selects[i].checked = true;
       }
     });
 
-  var selects = document.querySelectorAll('input');
-  for (var i = 0; i < selects.length; i++) {
+  const selects = document.querySelectorAll('input');
+  for (let i = 0; i < selects.length; i++) {
     selects[i].addEventListener('change', animationPolicyChanged);
   }
 }

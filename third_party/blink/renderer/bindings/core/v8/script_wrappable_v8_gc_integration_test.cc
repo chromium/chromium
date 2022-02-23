@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/testing/death_aware_script_wrappable.h"
 #include "third_party/blink/renderer/core/testing/gc_object_liveness_observer.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -35,8 +35,9 @@ TEST_F(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
     auto* object = MakeGarbageCollected<DeathAwareScriptWrappable>();
     observer.Observe(object);
 
-    holder.Reset(GetIsolate(),
-                 ToV8(object, scope.GetContext()->Global(), GetIsolate()));
+    holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
+                                   scope.GetScriptState(), object)
+                                   .ToLocalChecked());
   }
 
   RunV8MinorGC();
@@ -58,8 +59,9 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    holder.Reset(GetIsolate(),
-                 ToV8(object, scope.GetContext()->Global(), GetIsolate()));
+    holder.Reset(GetIsolate(), ToV8Traits<DeathAwareScriptWrappable>::ToV8(
+                                   scope.GetScriptState(), object)
+                                   .ToLocalChecked());
   }
 
   RunV8MinorGC();
@@ -82,7 +84,8 @@ TEST_F(ScriptWrappableV8GCIntegrationTest,
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    ToV8(object, scope.GetContext()->Global(), GetIsolate());
+    ToV8Traits<DeathAwareScriptWrappable>::ToV8(scope.GetScriptState(), object)
+        .ToLocalChecked();
   }
 
   RunV8MinorGC();

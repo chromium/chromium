@@ -11,9 +11,9 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -87,7 +87,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
     return;
   ScrollableArea* scrollable_area = frame_view.GetScrollableArea();
   DCHECK(scrollable_area);
-  gfx::Rect viewport_rect = ToGfxRect(scrollable_area->VisibleContentRect());
+  gfx::Rect viewport_rect = scrollable_area->VisibleContentRect();
 
   FloatClipRect float_clip_visual_rect((gfx::RectF(viewport_rect)));
   gfx::RectF float_visual_rect =

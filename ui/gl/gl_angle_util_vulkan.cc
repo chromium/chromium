@@ -178,4 +178,19 @@ const VkPhysicalDeviceFeatures2KHR* QueryVkEnabledDeviceFeaturesFromANGLE() {
   return reinterpret_cast<const VkPhysicalDeviceFeatures2KHR*>(features);
 }
 
+PFN_vkGetInstanceProcAddr QueryVkGetInstanceProcAddrFromANGLE() {
+  EGLDeviceEXT egl_device = GetEGLDeviceFromANGLE();
+  if (!egl_device)
+    return nullptr;
+
+  intptr_t proc = 0;
+  if (!eglQueryDeviceAttribEXT(egl_device, EGL_VULKAN_GET_INSTANCE_PROC_ADDR,
+                               &proc)) {
+    LOG(ERROR) << "Failed to retrieve vkGetInstanceProcAddr";
+    return nullptr;
+  }
+
+  return reinterpret_cast<PFN_vkGetInstanceProcAddr>(proc);
+}
+
 }  // namespace gl

@@ -10,7 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -55,6 +58,9 @@ absl::optional<TopicData> FindAnyDuplicatedTopic(
 
 }  // namespace
 
+const base::Feature kRestoreInterestingTopicsFeature{
+    "InvalidatorRestoreInterestingTopics", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // static
 void InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -70,6 +76,44 @@ void InvalidatorRegistrarWithMemory::RegisterPrefs(
   RegisterProfilePrefs(registry);
 }
 
+// static
+void InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
+    PrefService* prefs) {
+  // Go through all senders and their topics. Find topics with deprecated owner
+  // name and mark them for cleanup.
+  DictionaryPrefUpdate update(prefs, kTopicsToHandler);
+  for (auto sender_to_topics : update.Get()->DictItems()) {
+    const std::string& sender_id = sender_to_topics.first;
+
+    base::flat_set<std::string> topics_to_cleanup;
+    for (auto topic_to_handler : sender_to_topics.second.DictItems()) {
+      const std::string& topic_name = topic_to_handler.first;
+      std::string handler_name;
+
+      if (topic_to_handler.second.is_dict()) {
+        const std::string* handler_name_ptr =
+            topic_to_handler.second.FindStringKey(kHandler);
+        if (handler_name_ptr)
+          handler_name = *handler_name_ptr;
+      } else if (topic_to_handler.second.is_string()) {
+        handler_name = topic_to_handler.second.GetString();
+      }
+
+      // "Cloud" owner name used to be non unique and shared between all
+      // instances of |CloudPolicyInvalidator|.
+      // "RemoteCommand" owner name used to be non unique and shared between all
+      // instances of |RemoteCommandsInvalidator|.
+      if (handler_name == "Cloud" || handler_name == "RemoteCommand") {
+        topics_to_cleanup.insert(topic_name);
+      }
+    }
+    base::Value* topics_data = update->FindDictKey(sender_id);
+    for (const std::string& topic_name : topics_to_cleanup) {
+      topics_data->RemoveKey(topic_name);
+    }
+  }
+}
+
 InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     PrefService* prefs,
     const std::string& sender_id,
@@ -83,20 +127,22 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
       prefs_->Get(kTopicsToHandler)->FindDictKey(sender_id_);
   if (!pref_data) {
     DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
-    update->SetKey(sender_id_, base::DictionaryValue());
+    update->SetKey(sender_id_, base::Value(base::Value::Type::DICTIONARY));
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
+  if (!base::FeatureList::IsEnabled(kRestoreInterestingTopicsFeature))
+    return;
   for (auto it : pref_data->DictItems()) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
-      const base::Value* handler = it.second.FindDictKey(kHandler);
-      const base::Value* is_public = it.second.FindDictKey(kIsPublic);
+      const std::string* handler = it.second.FindStringKey(kHandler);
+      const absl::optional<bool> is_public = it.second.FindBoolKey(kIsPublic);
       if (!handler || !is_public) {
         continue;
       }
-      handler_name_to_subscribed_topics_map_[handler->GetString()].insert(
-          TopicData(topic_name, is_public->GetBool()));
+      handler_name_to_subscribed_topics_map_[*handler].insert(
+          TopicData(topic_name, *is_public));
     } else if (it.second.is_string()) {
       handler_name_to_subscribed_topics_map_[it.second.GetString()].insert(
           TopicData(topic_name, false));
@@ -270,13 +316,13 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
 
 base::DictionaryValue InvalidatorRegistrarWithMemory::CollectDebugData() const {
   base::DictionaryValue return_value;
-  return_value.SetInteger("InvalidatorRegistrarWithMemory.Handlers",
+  return_value.SetIntPath("InvalidatorRegistrarWithMemory.Handlers",
                           handler_name_to_subscribed_topics_map_.size());
   for (const auto& handler_to_topics : handler_name_to_subscribed_topics_map_) {
     const std::string& handler = handler_to_topics.first;
     for (const auto& topic : handler_to_topics.second) {
-      return_value.SetString("InvalidatorRegistrarWithMemory." + topic.name,
-                             handler);
+      return_value.SetStringPath("InvalidatorRegistrarWithMemory." + topic.name,
+                                 handler);
     }
   }
   return return_value;

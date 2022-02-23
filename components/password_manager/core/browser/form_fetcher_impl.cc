@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -119,20 +120,22 @@ void FormFetcherImpl::Fetch() {
     wait_counter_++;
 
   state_ = State::WAITING;
-  profile_password_store->GetLogins(form_digest_, this);
+  profile_password_store->GetLogins(form_digest_,
+                                    weak_ptr_factory_.GetWeakPtr());
   if (account_password_store)
-    account_password_store->GetLogins(form_digest_, this);
+    account_password_store->GetLogins(form_digest_,
+                                      weak_ptr_factory_.GetWeakPtr());
 
 // The statistics isn't needed on mobile, only on desktop. Let's save some
 // processor cycles.
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // The statistics is needed for the "Save password?" bubble.
   password_manager::SmartBubbleStatsStore* stats_store =
       profile_password_store->GetSmartBubbleStatsStore();
   // `stats_store` can be null in tests.
   if (stats_store)
     stats_store->GetSiteStats(form_digest_.url.DeprecatedGetOriginAsURL(),
-                              this);
+                              weak_ptr_factory_.GetWeakPtr());
 #endif
 }
 

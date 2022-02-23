@@ -19,7 +19,8 @@ void LogWriteResult(connections::mojom::Medium medium, bool success) {
           "Nearby.Connections.Bluetooth.Socket.Write.Result", success);
       break;
     case connections::mojom::Medium::kWifiLan:
-      // TODO(https://crbug.com/1261238): Record metric.
+      base::UmaHistogramBoolean(
+          "Nearby.Connections.WifiLan.Socket.Write.Result", success);
       break;
     case connections::mojom::Medium::kUnknown:
     case connections::mojom::Medium::kMdns:

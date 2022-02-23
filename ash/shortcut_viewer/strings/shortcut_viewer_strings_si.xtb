@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">අප්‍රසිද්ධ ප්‍රකාරයේ නව කවුළුවක් විවෘත කරන්න</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, අනතුරුව <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 සිට 8 දක්වා මේස වෙත යන්න</translation>
 <translation id="1652741121070700329">පෙර වචනයේ ආරම්භයට යන්න</translation>
 <translation id="1679841710523778799">දීප්තිය වැඩි කරන්න</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ඔබාගෙන සිට, ඔබට විවෘත කිරීමට අවශ්‍ය කවුළුව වෙත පැමිණෙන තෙක් <ph name="TAB" /> තට්ටු කර, අනතුරුව මුදා හරින්න.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ඔබා සබැඳියක් ක්ලික් කරන්න</translation>
 <translation id="561814908794220892">නව පටිත්තක වෙබ් පිටුව විවෘත කරන්න</translation>
 <translation id="5620219513321115856">ක්‍රියාකාරී කවුණු දකුණේ ඇති මේසයට ගෙන යන්න</translation>
+<translation id="5699366815052349604">සියලු මේසවලට සක්‍රිය කවුළුව පවරන්න</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> හෝ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">පටිත්තෙහි සබැඳිය විවෘත කරන්න</translation>
 <translation id="5757474750054631686">යතුරු පුවරුව අඳුරු කරන්න (පසු ආලෝකන යතුරු පුවරු සඳහා පමණි)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">ගොනු යෙදුමෙහි සැඟවුණු ගොනු පෙන්වන්න</translation>
 <translation id="8717459106217102612">පෙර වචනය හෝ අකුර තෝරන්න</translation>
 <translation id="8727232706774971183">ඔබේ දැනුම්දීම් බලන්න</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 සිට 8</translation>
 <translation id="8855885154700222542">සම්පූර්ණ තිරයේ යතුර</translation>
 <translation id="8881584919399569791">ක්‍රියාකාරී කවුණු වමේ ඇති මේසයට ගෙන යන්න</translation>
 <translation id="88986195241502842">පිටුව පහළට</translation>

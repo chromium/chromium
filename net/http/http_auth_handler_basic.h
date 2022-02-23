@@ -27,7 +27,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerBasic : public HttpAuthHandler {
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int digest_nonce_count,
                           const NetLogWithSource& net_log,

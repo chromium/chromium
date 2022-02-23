@@ -4,19 +4,17 @@ Sane List Extension for Python-Markdown
 
 Modify the behavior of Lists in Python-Markdown to act in a sane manor.
 
-See <https://pythonhosted.org/Markdown/extensions/sane_lists.html>
+See <https://Python-Markdown.github.io/extensions/sane_lists>
 for documentation.
 
 Original code Copyright 2011 [Waylan Limberg](http://achinghead.com)
 
 All changes Copyright 2011-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..blockprocessors import OListProcessor, UListProcessor
 import re
@@ -24,24 +22,33 @@ import re
 
 class SaneOListProcessor(OListProcessor):
 
-    CHILD_RE = re.compile(r'^[ ]{0,3}((\d+\.))[ ]+(.*)')
     SIBLING_TAGS = ['ol']
+    LAZY_OL = False
+
+    def __init__(self, parser):
+        super().__init__(parser)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%d}((\d+\.))[ ]+(.*)' %
+                                   (self.tab_length - 1))
 
 
 class SaneUListProcessor(UListProcessor):
 
-    CHILD_RE = re.compile(r'^[ ]{0,3}(([*+-]))[ ]+(.*)')
     SIBLING_TAGS = ['ul']
+
+    def __init__(self, parser):
+        super().__init__(parser)
+        self.CHILD_RE = re.compile(r'^[ ]{0,%d}(([*+-]))[ ]+(.*)' %
+                                   (self.tab_length - 1))
 
 
 class SaneListExtension(Extension):
     """ Add sane lists to Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Override existing Processors. """
-        md.parser.blockprocessors['olist'] = SaneOListProcessor(md.parser)
-        md.parser.blockprocessors['ulist'] = SaneUListProcessor(md.parser)
+        md.parser.blockprocessors.register(SaneOListProcessor(md.parser), 'olist', 40)
+        md.parser.blockprocessors.register(SaneUListProcessor(md.parser), 'ulist', 30)
 
 
-def makeExtension(*args, **kwargs):
-    return SaneListExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return SaneListExtension(**kwargs)

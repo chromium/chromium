@@ -75,6 +75,16 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
   assertEquals('-1,123.58 dollar', preprocess('-$1,123.58'));
   assertEquals('-1,123,581.3 dollar', preprocess('-$1,123,581.3'));
   assertEquals('-1,123.58 pound sterling', preprocess('-£1,123.58'));
+
+  // Bullets
+  assertEquals('bullet', preprocess('\u2022'));
+  assertEquals('3 bullets', preprocess('\u2022\u2022\u2022'));
+  assertEquals('white bullet', preprocess('\u25e6'));
+  assertEquals('3 white bullets', preprocess('\u25e6\u25e6\u25e6'));
+  assertEquals('square bullet', preprocess('\u25a0'));
+  assertEquals('3 square bullets', preprocess('\u25a0\u25a0\u25a0'));
+
+  assertEquals('space', preprocess('\u00a0'));
 });
 
 TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
@@ -523,4 +533,20 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   // Make assertions.
   assertEquals(null, tts.currentUtterance_);
   this.expectUtteranceQueueIsLike([]);
+});
+
+TEST_F('ChromeVoxTtsBackgroundTest', 'ResetTtsSettingsClearsVoice', function() {
+  this.newCallback(async () => {
+    ChromeVox.tts.ttsEngines_[0].currentVoice = '';
+    CommandHandler.onCommand('resetTextToSpeechSettings');
+    await new Promise(r => {
+      ChromeVox.tts.speak = textString => {
+        if (textString === 'Reset text to speech settings to default values') {
+          r();
+        }
+      };
+    });
+    assertEquals(
+        constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
+  })();
 });

@@ -157,10 +157,6 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
     timing_info->allow_redirect_details = timing_info->allow_timing_details;
     timing_info->last_redirect_end_time =
         commit_params.redirect_response.back()->load_timing.receive_headers_end;
-
-    if (!timing_info->allow_redirect_details) {
-      timing_info->start_time = response_head.load_timing.request_start;
-    }
   } else {
     timing_info->allow_redirect_details = false;
     timing_info->last_redirect_end_time = base::TimeTicks();
@@ -297,7 +293,8 @@ void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr) {
+    network::mojom::URLResponseHeadPtr,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // Should have already happened.
   NOTREACHED();
 }

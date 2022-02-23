@@ -7,7 +7,6 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/macros.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"

@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "url/gurl.h"
@@ -332,6 +333,20 @@ int ExtensionAction::GetIconWidth(int tab_id) const {
   // If no icon has been set and there is no default icon, we need favicon
   // width.
   return FallbackIcon().Width();
+}
+
+bool ExtensionAction::GetIsVisibleInternal(int tab_id,
+                                           bool include_declarative) const {
+  if (const bool* tab_is_visible = FindOrNull(&is_visible_, tab_id))
+    return *tab_is_visible;
+
+  if (include_declarative && base::Contains(declarative_show_count_, tab_id))
+    return true;
+
+  if (const bool* default_is_visible = FindOrNull(&is_visible_, kDefaultTabId))
+    return *default_is_visible;
+
+  return false;
 }
 
 }  // namespace extensions

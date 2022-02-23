@@ -116,20 +116,15 @@ void AddRAILModeToProto(perfetto::protos::pbzero::TrackEvent* event,
   event->set_chrome_renderer_scheduler_state()->set_rail_mode(proto_mode);
 }
 
-const char* BackgroundStateToString(bool is_backgrounded) {
-  if (is_backgrounded) {
-    return "renderer_backgrounded";
-  } else {
-    return "renderer_foregrounded";
-  }
+void AddBackgroundedToProto(perfetto::protos::pbzero::TrackEvent* event,
+                            bool is_backgrounded) {
+  event->set_chrome_renderer_scheduler_state()->set_is_backgrounded(
+      is_backgrounded);
 }
 
-const char* HiddenStateToString(bool is_hidden) {
-  if (is_hidden) {
-    return "hidden";
-  } else {
-    return "visible";
-  }
+void AddHiddenToProto(perfetto::protos::pbzero::TrackEvent* event,
+                      bool is_hidden) {
+  event->set_chrome_renderer_scheduler_state()->set_is_hidden(is_hidden);
 }
 
 const char* AudioPlayingStateToString(bool is_audio_playing) {
@@ -210,8 +205,7 @@ bool IsBlockingEvent(const blink::WebInputEvent& web_input_event) {
 }  // namespace
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
-    std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager,
-    absl::optional<base::Time> initial_virtual_time)
+    std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
     : sequence_manager_(std::move(sequence_manager)),
       helper_(sequence_manager_.get(), this),
       idle_helper_queue_(helper_.NewTaskQueue(
@@ -258,9 +252,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Compositor task queue and default task queue should be managed by
   // WebThreadScheduler. Control task queue should not.
   task_runners_.emplace(helper_.DefaultMainThreadTaskQueue(), nullptr);
-  task_runners_.emplace(
-      compositor_task_queue_,
-      compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter());
+  task_runners_.emplace(compositor_task_queue_,
+                        compositor_task_queue_->CreateQueueEnabledVoter());
   main_thread_only().idle_time_estimator.AddCompositorTaskQueue(
       compositor_task_queue_);
 
@@ -305,17 +298,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   }
 
   internal::ProcessState::Get()->is_process_backgrounded =
-      main_thread_only().renderer_backgrounded;
-
-  if (initial_virtual_time) {
-    main_thread_only().initial_virtual_time = *initial_virtual_time;
-    // The real uptime of the machine is irrelevant if we're using virtual time
-    // we choose an arbitrary initial offset.
-    main_thread_only().initial_virtual_time_ticks =
-        base::TimeTicks() + base::Seconds(10);
-    EnableVirtualTime();
-    SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-  }
+      main_thread_only().renderer_backgrounded.get();
 
   main_thread_only().current_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
@@ -384,11 +367,11 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       renderer_hidden(false,
                       "RendererVisibility",
                       &main_thread_scheduler_impl->tracing_controller_,
-                      HiddenStateToString),
+                      &AddHiddenToProto),
       renderer_backgrounded(kLaunchingProcessIsBackgrounded,
                             "RendererPriority",
                             &main_thread_scheduler_impl->tracing_controller_,
-                            BackgroundStateToString),
+                            &AddBackgroundedToProto),
       blocking_input_expected_soon(
           false,
           "Scheduler.BlockingInputExpectedSoon",
@@ -440,7 +423,7 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           main_thread_scheduler_impl,
           main_thread_scheduler_impl->helper_.HasCPUTimingForEachTask(),
           now,
-          renderer_backgrounded),
+          renderer_backgrounded.get()),
       process_type(WebRendererProcessType::kRenderer,
                    "RendererProcessType",
                    &main_thread_scheduler_impl->tracing_controller_,
@@ -727,13 +710,13 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter;
   if (params.queue_traits.can_be_deferred ||
       params.queue_traits.can_be_paused || params.queue_traits.can_be_frozen) {
-    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+    voter = task_queue->CreateQueueEnabledVoter();
   }
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
     DCHECK(!voter);
-    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+    voter = task_queue->CreateQueueEnabledVoter();
     main_thread_only().idle_time_estimator.AddCompositorTaskQueue(task_queue);
   }
 
@@ -987,8 +970,10 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
 
   helper_.CheckOnValidThread();
 
-  if (helper_.IsShutdown() || main_thread_only().renderer_hidden == hidden)
+  if (helper_.IsShutdown() ||
+      main_thread_only().renderer_hidden.get() == hidden) {
     return;
+  }
 
   end_renderer_hidden_idle_period_closure_.Cancel();
 
@@ -1051,7 +1036,7 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   helper_.SetTimerSlack(timer_slack);
 
   if (helper_.IsShutdown() ||
-      main_thread_only().renderer_backgrounded == backgrounded)
+      main_thread_only().renderer_backgrounded.get() == backgrounded)
     return;
   if (backgrounded) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
@@ -1083,7 +1068,7 @@ void MainThreadSchedulerImpl::OnMainFrameRequestedForInput() {
       scheduling_settings().prioritize_compositing_after_input);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MainThreadSchedulerImpl::PauseTimersForAndroidWebView() {
   main_thread_only().pause_timers_for_webview = true;
   UpdatePolicy();
@@ -1418,8 +1403,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
         if (pair.first->GetPrioritisationType() ==
                 MainThreadTaskQueue::QueueTraits::PrioritisationType::
                     kCompositor &&
-            pair.first->GetTaskQueue()
-                ->HasTaskToRunImmediatelyOrReadyDelayedTask())
+            pair.first->HasTaskToRunImmediatelyOrReadyDelayedTask())
           return true;
       }
       return main_thread_only().blocking_input_expected_soon;
@@ -1586,7 +1570,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   }
 
   // TODO(skyostil): Add an idle state for foreground tabs too.
-  if (main_thread_only().renderer_hidden)
+  if (main_thread_only().renderer_hidden.get())
     new_policy.rail_mode() = RAILMode::kIdle;
 
   if (main_thread_only().renderer_pause_count != 0) {
@@ -1595,10 +1579,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
   if (main_thread_only().pause_timers_for_webview) {
     new_policy.should_pause_task_queues_for_android_webview() = true;
-  }
-
-  if (main_thread_only().use_virtual_time) {
-    new_policy.use_virtual_time() = true;
   }
 
   if (scheduling_settings_
@@ -1793,15 +1773,16 @@ IdleTimeEstimator* MainThreadSchedulerImpl::GetIdleTimeEstimatorForTesting() {
   return &main_thread_only().idle_time_estimator;
 }
 
-base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
+base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
+    base::Time initial_time) {
   if (main_thread_only().use_virtual_time)
     return main_thread_only().initial_virtual_time_ticks;
   main_thread_only().use_virtual_time = true;
+  main_thread_only().initial_virtual_time =
+      initial_time.is_null() ? base::Time::Now() : initial_time;
+  DCHECK(main_thread_only().initial_virtual_time_ticks.is_null());
+  main_thread_only().initial_virtual_time_ticks = NowTicks();
   DCHECK(!virtual_time_domain_);
-  if (main_thread_only().initial_virtual_time.is_null())
-    main_thread_only().initial_virtual_time = base::Time::Now();
-  if (main_thread_only().initial_virtual_time_ticks.is_null())
-    main_thread_only().initial_virtual_time_ticks = NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       main_thread_only().initial_virtual_time,
       main_thread_only().initial_virtual_time_ticks, &helper_);
@@ -1921,12 +1902,9 @@ void MainThreadSchedulerImpl::MaybeAdvanceVirtualTime(
 }
 
 void MainThreadSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
+  DCHECK(main_thread_only().use_virtual_time);
   main_thread_only().virtual_time_policy = policy;
   ApplyVirtualTimePolicy();
-}
-
-void MainThreadSchedulerImpl::SetInitialVirtualTime(base::Time time) {
-  main_thread_only().initial_virtual_time = time;
 }
 
 void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
@@ -1968,6 +1946,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
 
 void MainThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
     int max_task_starvation_count) {
+  DCHECK(main_thread_only().use_virtual_time);
   main_thread_only().max_virtual_time_task_starvation_count =
       max_task_starvation_count;
   ApplyVirtualTimePolicy();
@@ -2010,7 +1989,7 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
            main_thread_only().blocking_input_expected_soon);
   dict.Add("idle_period_state", IdleHelper::IdlePeriodStateToString(
                                     idle_helper_.SchedulerIdlePeriodState()));
-  dict.Add("renderer_hidden", main_thread_only().renderer_hidden);
+  dict.Add("renderer_hidden", main_thread_only().renderer_hidden.get());
   dict.Add("waiting_for_any_main_frame_contentful_paint",
            any_thread().waiting_for_any_main_frame_contentful_paint);
   dict.Add("waiting_for_any_main_frame_meaningful_paint",
@@ -2023,7 +2002,8 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add(
       "have_reported_blocking_intervention_since_navigation",
       main_thread_only().have_reported_blocking_intervention_since_navigation);
-  dict.Add("renderer_backgrounded", main_thread_only().renderer_backgrounded);
+  dict.Add("renderer_backgrounded",
+           main_thread_only().renderer_backgrounded.get());
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
   dict.Add(
       "fling_compositor_escalation_deadline",
@@ -2093,7 +2073,6 @@ void MainThreadSchedulerImpl::Policy::WriteIntoTrace(
   dict.Add("should_pause_task_queues", should_pause_task_queues());
   dict.Add("should_pause_task_queues_for_android_webview",
            should_pause_task_queues_for_android_webview());
-  dict.Add("use_virtual_time", use_virtual_time());
 }
 
 void MainThreadSchedulerImpl::OnIdlePeriodStarted() {
@@ -2229,11 +2208,11 @@ void MainThreadSchedulerImpl::SetTopLevelBlameContext(
   //
   // TODO(altimin): automatically enter top-level for all task queues associated
   // with renderer scheduler which do not have a corresponding frame.
-  control_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
-  DefaultTaskQueue()->GetTaskQueue()->SetBlameContext(blame_context);
-  compositor_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
+  control_task_queue_->SetBlameContext(blame_context);
+  DefaultTaskQueue()->SetBlameContext(blame_context);
+  compositor_task_queue_->SetBlameContext(blame_context);
   idle_helper_.IdleTaskRunner()->SetBlameContext(blame_context);
-  v8_task_queue_->GetTaskQueue()->SetBlameContext(blame_context);
+  v8_task_queue_->SetBlameContext(blame_context);
 }
 
 void MainThreadSchedulerImpl::AddRAILModeObserver(RAILModeObserver* observer) {
@@ -2624,8 +2603,9 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetVersion(kUkmMetricVersion);
   builder.SetPageSchedulers(main_thread_only().page_schedulers.size());
 
-  builder.SetRendererBackgrounded(main_thread_only().renderer_backgrounded);
-  builder.SetRendererHidden(main_thread_only().renderer_hidden);
+  builder.SetRendererBackgrounded(
+      main_thread_only().renderer_backgrounded.get());
+  builder.SetRendererHidden(main_thread_only().renderer_hidden.get());
   builder.SetRendererAudible(main_thread_only().is_audio_playing);
   builder.SetUseCase(
       static_cast<int>(main_thread_only().current_use_case.get()));
@@ -2637,7 +2617,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetTaskDuration(task_timing.wall_duration().InMicroseconds());
   builder.SetIsOOPIF(!frame_scheduler->GetPageScheduler()->IsMainFrameLocal());
 
-  if (main_thread_only().renderer_backgrounded) {
+  if (main_thread_only().renderer_backgrounded.get()) {
     base::TimeDelta time_since_backgrounded =
         (task_timing.end_time() -
          main_thread_only().background_status_changed_at);

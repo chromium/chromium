@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 
+#include <queue>
 #include <utility>
 
 #include "base/callback.h"
@@ -28,7 +29,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"

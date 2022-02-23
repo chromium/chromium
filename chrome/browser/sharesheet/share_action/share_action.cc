@@ -12,6 +12,10 @@
 
 namespace sharesheet {
 
+bool ShareAction::HasActionView() {
+  return false;
+}
+
 bool ShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
                                    bool contains_hosted_document) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

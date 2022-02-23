@@ -13,9 +13,19 @@ FakeBluetoothDeviceStatusNotifier::FakeBluetoothDeviceStatusNotifier() =
 FakeBluetoothDeviceStatusNotifier::~FakeBluetoothDeviceStatusNotifier() =
     default;
 
-void FakeBluetoothDeviceStatusNotifier::SetNewlyPairedDevices(
-    std::vector<mojom::PairedBluetoothDevicePropertiesPtr>& devices) {
-  NotifyDevicesNewlyPaired(devices);
+void FakeBluetoothDeviceStatusNotifier::SetNewlyPairedDevice(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  NotifyDeviceNewlyPaired(device);
+}
+
+void FakeBluetoothDeviceStatusNotifier::SetConnectedDevice(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  NotifyDeviceNewlyConnected(device);
+}
+
+void FakeBluetoothDeviceStatusNotifier::SetDisconnectedDevice(
+    const mojom::PairedBluetoothDevicePropertiesPtr& device) {
+  NotifyDeviceNewlyDisconnected(device);
 }
 
 }  // namespace bluetooth_config

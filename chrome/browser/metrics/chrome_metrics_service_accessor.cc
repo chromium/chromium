@@ -7,13 +7,18 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+// nogncheck needed for Lacros builds since header checker does not understand
+// preprocessor.
 #include "components/metrics/structured/neutrino_logging.h"  // nogncheck
 #endif
 
@@ -68,9 +73,11 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
 // static
 bool ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
     base::StringPiece trial_name,
-    base::StringPiece group_name) {
+    base::StringPiece group_name,
+    variations::SyntheticTrialAnnotationMode annotation_mode) {
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      g_browser_process->metrics_service(), trial_name, group_name);
+      g_browser_process->metrics_service(), trial_name, group_name,
+      annotation_mode);
 }
 
 void ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -29,8 +31,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,8 +127,8 @@ class CrostiniInstallerTest : public testing::Test {
 
     chromeos::SeneschalClient::InitializeFake();
 
-    disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager;
+    ash::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_mock_);
 
     profile_ = std::make_unique<TestingProfile>();
@@ -153,7 +153,7 @@ class CrostiniInstallerTest : public testing::Test {
     crostini_test_helper_.reset();
     profile_.reset();
 
-    chromeos::disks::MockDiskMountManager::Shutdown();
+    ash::disks::MockDiskMountManager::Shutdown();
     chromeos::SeneschalClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::CiceroneClient::Shutdown();
@@ -188,7 +188,7 @@ class CrostiniInstallerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   // Owned by DiskMountManager
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_ = nullptr;
 
   WaitingFakeConciergeClient* waiting_fake_concierge_client_ = nullptr;
 

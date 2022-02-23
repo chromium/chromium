@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"
@@ -49,7 +50,7 @@
 #include "weblayer/grit/weblayer_resources.h"
 #include "weblayer/public/main.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/command_line.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/content/browser/child_process_crash_observer_android.h"
@@ -77,7 +78,7 @@
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
@@ -126,7 +127,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NoStatePrefetchLinkManagerFactory::GetInstance();
   NoStatePrefetchManagerFactory::GetInstance();
   SubresourceFilterProfileContextFactory::GetInstance();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SafeBrowsingMetricsCollectorFactory::GetInstance();
   SafeBrowsingNavigationObserverManagerFactory::GetInstance();
   if (MediaRouterFactory::IsFeatureEnabled()) {
@@ -161,7 +162,7 @@ BrowserMainPartsImpl::~BrowserMainPartsImpl() = default;
 int BrowserMainPartsImpl::PreCreateThreads() {
   // Make sure permissions client has been set.
   WebLayerPermissionsClient::GetInstance();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The ChildExitObserver needs to be created before any child process is
   // created because it needs to be notified during process creation.
   crash_reporter::ChildExitObserver::Create();
@@ -195,10 +196,10 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   ui::InitializeInputMethodForTesting();
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   net::NetworkChangeNotifier::SetFactory(
       new net::NetworkChangeNotifierFactoryAndroid());
 
@@ -251,18 +252,18 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
           FROM_HERE,
           base::BindOnce(&PublishSubresourceFilterRulesetFromResourceBundle));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, retrieve the application start time from Java and record it. On
   // other platforms, the application start time was already recorded in the
   // constructor of ContentMainDelegateImpl.
   startup_metric_utils::RecordApplicationStartTime(GetApplicationStartTime());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   // Record the time at which the main message loop starts. Must be recorded
   // after application start time (see startup_metric_utils.h).
   startup_metric_utils::RecordBrowserMainMessageLoopStart(
       base::TimeTicks::Now(), /* is_first_run */ false);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   memory_metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
 
   // Set the global singleton app modal dialog factory.

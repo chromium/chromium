@@ -49,7 +49,8 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 // Shows the list of saved passwords in the settings.
 - (void)showSavedPasswordsSettingsFromViewController:
-    (UIViewController*)baseViewController;
+            (UIViewController*)baseViewController
+                                    showCancelButton:(BOOL)showCancelButton;
 
 // Shows the list of saved passwords in the settings. Automatically starts
 // password check.

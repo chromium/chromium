@@ -84,7 +84,7 @@ apps::mojom::ConditionPtr ParseValueToCondition(const base::Value& value) {
              << apps::kConditionValuesKey << "\" key with list value.";
     return nullptr;
   }
-  for (auto& condition_value : condition_values->GetList()) {
+  for (auto& condition_value : condition_values->GetListDeprecated()) {
     auto parsed_condition_value = ParseValueToConditionValue(condition_value);
     if (!parsed_condition_value) {
       DVLOG(0) << "Fail to parse condition. Cannot parse condition values";
@@ -102,7 +102,7 @@ apps::mojom::IntentFilterPtr ParseValueToIntentFilter(
     return nullptr;
   }
   auto intent_filter = apps::mojom::IntentFilter::New();
-  for (auto& condition : value->GetList()) {
+  for (auto& condition : value->GetListDeprecated()) {
     auto parsed_condition = ParseValueToCondition(condition);
     if (!parsed_condition) {
       DVLOG(0) << "Fail to parse intent filter. Cannot parse conditions.";
@@ -160,7 +160,7 @@ PreferredAppsList::PreferredApps ParseValueToPreferredApps(
   }
 
   PreferredAppsList::PreferredApps preferred_apps;
-  for (auto& entry : preferred_apps_list->GetList()) {
+  for (auto& entry : preferred_apps_list->GetListDeprecated()) {
     auto* app_id = entry.FindStringKey(kAppIdKey);
     if (!app_id) {
       DVLOG(0) << "Fail to parse condition value. Cannot find \""

@@ -14,6 +14,7 @@ from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import data_types
 from blinkpy.web_tests.stale_expectation_removal import queries
 from blinkpy.web_tests.stale_expectation_removal import unittest_utils as wt_uu
+from unexpected_passes_common import constants as common_constants
 from unexpected_passes_common import data_types as common_data_types
 
 
@@ -89,7 +90,8 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
     def testNoLargeQueryMode(self):
         """Tests that the expected clause is returned in normal mode."""
         querier = wt_uu.CreateGenericWebTestQuerier()
-        query_generator = querier._GetQueryGeneratorForBuilder('', '')
+        query_generator = querier._GetQueryGeneratorForBuilder(
+            common_data_types.BuilderEntry('builder', 'builder_type', False))
         self.assertEqual(len(query_generator.GetClauses()), 1)
         self.assertEqual(query_generator.GetClauses()[0], '')
         self.assertIsInstance(query_generator,
@@ -100,7 +102,10 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
         """Tests that a special value is returned if no tests are found."""
         querier = wt_uu.CreateGenericWebTestQuerier(large_query_mode=True)
         self._query_mock.return_value = []
-        query_generator = querier._GetQueryGeneratorForBuilder('', '')
+        query_generator = querier._GetQueryGeneratorForBuilder(
+            common_data_types.BuilderEntry('builder',
+                                           common_constants.BuilderTypes.CI,
+                                           False))
         self.assertIsNone(query_generator)
         self._query_mock.assert_called_once()
 
@@ -115,11 +120,460 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
                 'test_id': 'bar_test',
             },
         ]
-        query_generator = querier._GetQueryGeneratorForBuilder('', '')
+        query_generator = querier._GetQueryGeneratorForBuilder(
+            common_data_types.BuilderEntry('builder',
+                                           common_constants.BuilderTypes.CI,
+                                           False))
         self.assertEqual(query_generator.GetClauses(),
                          ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
         self.assertIsInstance(query_generator,
                               queries.WebTestSplitQueryGenerator)
+
+
+@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+class GetActiveBuilderQueryUnittest(unittest.TestCase):
+    def setUp(self):
+        self.querier = wt_uu.CreateGenericWebTestQuerier()
+
+    def testPublicCi(self):
+        """Tests that the active query for public CI is as expected."""
+        expected_query = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+        self.assertEqual(
+            self.querier._GetActiveBuilderQuery(
+                common_constants.BuilderTypes.CI, False), expected_query)
+
+    def testInternalCi(self):
+        """Tests that the active query for internal CI is as expected."""
+        expected_query = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+    UNION ALL
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_ci_test_results` tr
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+        self.assertEqual(
+            self.querier._GetActiveBuilderQuery(
+                common_constants.BuilderTypes.CI, True), expected_query)
+
+    def testPublicTry(self):
+        """Tests that the active query for public try is as expected."""
+        expected_query = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr
+
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+        self.assertEqual(
+            self.querier._GetActiveBuilderQuery(
+                common_constants.BuilderTypes.TRY, False), expected_query)
+
+    def testInternalTry(self):
+        """Tests that the active query for internal try is as expected."""
+        expected_query = """\
+WITH
+  builders AS (
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr
+    UNION ALL
+    SELECT
+      (
+        SELECT value
+        FROM tr.variant
+        WHERE key = "builder") as builder_name
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_try_test_results` tr
+  )
+SELECT DISTINCT builder_name
+FROM builders
+"""
+        self.assertEqual(
+            self.querier._GetActiveBuilderQuery(
+                common_constants.BuilderTypes.TRY, True), expected_query)
+
+
+@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+class GeneratedQueryUnittest(unittest.TestCase):
+    maxDiff = None
+
+    def testPublicCi(self):
+        """Tests that the generated public CI query is as expected."""
+        expected_query = """\
+WITH
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
+    WHERE
+      exported.realm = "chromium:ci"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.CI_BQ_QUERY_TEMPLATE.format(builder_project='chromium',
+                                                test_filter_clause='tfc'),
+            expected_query)
+
+    def testInternalCi(self):
+        """Tests that the generated internal CI query is as expected."""
+        expected_query = """\
+WITH
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_ci_test_results` tr
+    WHERE
+      exported.realm = "chrome:ci"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_ci_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.CI_BQ_QUERY_TEMPLATE.format(builder_project='chrome',
+                                                test_filter_clause='tfc'),
+            expected_query)
+
+    def testPublicTry(self):
+        """Tests that the generated public try query is as expected."""
+        expected_query = """\
+WITH
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
+      submitted_builds sb
+    WHERE
+      exported.realm = "chromium:try"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+      AND exported.id = sb.id
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.TRY_BQ_QUERY_TEMPLATE.format(builder_project='chromium',
+                                                 test_filter_clause='tfc'),
+            expected_query)
+
+    def testInternalTry(self):
+        """Tests that the generated internal try query is as expected."""
+        expected_query = """\
+WITH
+  submitted_builds AS (
+    SELECT
+      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
+    FROM
+      `commit-queue.chromium.attempts`,
+      UNNEST(builds) as unnested_builds,
+      UNNEST(gerrit_changes) as unnested_changes
+    WHERE
+      unnested_builds.host = "cr-buildbucket.appspot.com"
+      AND unnested_changes.submit_status = "SUCCESS"
+      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
+                                     INTERVAL 30 DAY)
+  ),
+  builds AS (
+    SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_try_test_results` tr,
+      submitted_builds sb
+    WHERE
+      exported.realm = "chrome:try"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+      AND exported.id = sb.id
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
+      exported.id,
+      test_id,
+      status,
+      duration,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_base_timeout") as timeout,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "web_tests_used_expectations_file") as expectation_files
+    FROM
+      `chrome-luci-data.chrome.blink_web_tests_try_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      tfc
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "Crash" IN UNNEST(typ_expectations)
+  OR "Timeout" IN UNNEST(typ_expectations)
+"""
+        self.assertEqual(
+            queries.TRY_BQ_QUERY_TEMPLATE.format(builder_project='chrome',
+                                                 test_filter_clause='tfc'),
+            expected_query)
+
+
+@unittest.skipIf(six.PY2, 'Script and unittest are Python 3-only')
+class QueryGeneratorImplUnittest(unittest.TestCase):
+    def testPublicCi(self):
+        """Tests that public CI builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_data_types.BuilderEntry(
+                                           'builder',
+                                           common_constants.BuilderTypes.CI,
+                                           False))
+        self.assertEqual(len(q), 1)
+        expected_query = queries.CI_BQ_QUERY_TEMPLATE.format(
+            builder_project='chromium', test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testInternalCi(self):
+        """Tests that internal CI builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_data_types.BuilderEntry(
+                                           'builder',
+                                           common_constants.BuilderTypes.CI,
+                                           True))
+        self.assertEqual(len(q), 1)
+        expected_query = queries.CI_BQ_QUERY_TEMPLATE.format(
+            builder_project='chrome', test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testPublicTry(self):
+        """Tests that public try builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_data_types.BuilderEntry(
+                                           'builder',
+                                           common_constants.BuilderTypes.TRY,
+                                           False))
+        self.assertEqual(len(q), 1)
+        expected_query = queries.TRY_BQ_QUERY_TEMPLATE.format(
+            builder_project='chromium', test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testInternalTry(self):
+        """Tests that internal try builders use the correct query."""
+        q = queries.QueryGeneratorImpl(['tfc'],
+                                       common_data_types.BuilderEntry(
+                                           'builder',
+                                           common_constants.BuilderTypes.TRY,
+                                           True))
+        self.assertEqual(len(q), 1)
+        expected_query = queries.TRY_BQ_QUERY_TEMPLATE.format(
+            builder_project='chrome', test_filter_clause='tfc')
+        self.assertEqual(q[0], expected_query)
+
+    def testUnknownBuilderType(self):
+        """Tests that an exception is raised for unknown builder types."""
+        with self.assertRaises(RuntimeError):
+            queries.QueryGeneratorImpl(['tfc'],
+                                       common_data_types.BuilderEntry(
+                                           'unknown_builder', 'unknown_type',
+                                           False))
 
 
 class StripPrefixFromTestIdUnittest(unittest.TestCase):

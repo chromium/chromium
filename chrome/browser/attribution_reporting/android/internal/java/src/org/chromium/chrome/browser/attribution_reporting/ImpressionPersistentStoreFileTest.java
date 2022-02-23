@@ -14,8 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -49,10 +51,21 @@ public class ImpressionPersistentStoreFileTest {
 
     private ImpressionPersistentStore<DataOutputStream, DataInputStream> mImpressionStore;
 
+    private int mPreTestTotalHistogramCount;
+    private int mPreTestCachedHistogramCount;
+
     @Before
     public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+
         mFileManager = new ImpressionPersistentStoreFileManagerImpl();
         mImpressionStore = new ImpressionPersistentStore<>(mFileManager);
+
+        mPreTestTotalHistogramCount = RecordHistogram.getHistogramTotalCountForTesting(
+                AttributionMetrics.ATTRIBUTION_EVENTS_NAME);
+        mPreTestCachedHistogramCount = RecordHistogram.getHistogramValueCountForTesting(
+                AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE);
     }
 
     @After
@@ -94,6 +107,13 @@ public class ImpressionPersistentStoreFileTest {
         // Check that attributions were cleared.
         params = mImpressionStore.getAndClearStoredImpressions();
         Assert.assertTrue(params.isEmpty());
+        Assert.assertEquals(2 + mPreTestCachedHistogramCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
+        Assert.assertEquals(2 + mPreTestTotalHistogramCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME));
     }
 
     @Test
@@ -120,5 +140,53 @@ public class ImpressionPersistentStoreFileTest {
         // Check that attributions were cleared.
         params = mImpressionStore.getAndClearStoredImpressions();
         Assert.assertTrue(params.isEmpty());
+        Assert.assertEquals(2 + mPreTestCachedHistogramCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
+        Assert.assertEquals(2 + mPreTestTotalHistogramCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME));
+    }
+
+    @Test
+    @SmallTest
+    public void testStoreImpressions_NoFilesWithMetrics() throws Exception {
+        int writeFailedCount = RecordHistogram.getHistogramValueCountForTesting(
+                AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED);
+        int storageFullCount = RecordHistogram.getHistogramValueCountForTesting(
+                AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL);
+        long before = System.currentTimeMillis();
+
+        mImpressionStore.cacheAttributionEvent(
+                AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED);
+        mImpressionStore.cacheAttributionEvent(
+                AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL);
+        mImpressionStore.cacheAttributionEvent(
+                AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL);
+
+        List<AttributionParameters> params = mImpressionStore.getAndClearStoredImpressions();
+        Assert.assertTrue(params.isEmpty());
+
+        Assert.assertEquals(3 + mPreTestTotalHistogramCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME));
+
+        Assert.assertEquals(1 + writeFailedCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED));
+
+        Assert.assertEquals(2 + storageFullCount,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL));
+        // Check that metrics were cleared.
+        params = mImpressionStore.getAndClearStoredImpressions();
+        Assert.assertEquals(3 + mPreTestTotalHistogramCount,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME));
     }
 }

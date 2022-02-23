@@ -22,7 +22,8 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -287,7 +288,7 @@ bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
                                  mojom::blink::ColorScheme color_scheme) {
   CSSValueID id = CssValueKeywordID(color_string);
-  if (!StyleColor::IsSystemColor(id))
+  if (!StyleColor::IsSystemColorIncludingDeprecated(id))
     return false;
 
   color = LayoutTheme::GetTheme().SystemColor(id, color_scheme);

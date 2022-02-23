@@ -18,7 +18,7 @@ namespace {
 
 void ExpectTranslateX(SkScalar translate_x,
                       const gfx::TransformOperations& operations) {
-  EXPECT_FLOAT_EQ(translate_x, operations.Apply().matrix().get(0, 3));
+  EXPECT_FLOAT_EQ(translate_x, operations.Apply().matrix().rc(0, 3));
 }
 
 // Tests that a color animation with one keyframe works as expected.
@@ -265,8 +265,8 @@ TEST(KeyframedAnimationCurveTest, RepeatedTransformKeyTimes) {
 
   // There is a discontinuity at 1. Any value between 4 and 6 is valid.
   gfx::Transform value = curve->GetValue(base::Seconds(1.f)).Apply();
-  EXPECT_GE(value.matrix().get(0, 3), 4.f);
-  EXPECT_LE(value.matrix().get(0, 3), 6.f);
+  EXPECT_GE(value.matrix().rc(0, 3), 4.f);
+  EXPECT_LE(value.matrix().rc(0, 3), 6.f);
 
   ExpectTranslateX(6.f, curve->GetValue(base::Seconds(1.5f)));
   ExpectTranslateX(6.f, curve->GetValue(base::Seconds(2.f)));

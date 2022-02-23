@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TestUtil = TestUtil || {};
 
-TestUtil.assertCloseTo = function(value, equ, delta, optMessage) {
+export function assertCloseTo(value, equ, delta, optMessage) {
   chai.assert.closeTo(value, equ, delta, optMessage);
-};
+}
 
-TestUtil.MEMORY_UNITS = {
+export const MEMORY_UNITS = {
   B: 1,
   KB: Math.pow(1024, 1),
   MB: Math.pow(1024, 2),
@@ -17,9 +16,9 @@ TestUtil.MEMORY_UNITS = {
   PB: Math.pow(1024, 5),
 };
 
-TestUtil.getTestData = function(cpuData) {
-  const GB = TestUtil.MEMORY_UNITS.GB;
-  const TB = TestUtil.MEMORY_UNITS.TB;
+export function getTestData(cpuData) {
+  const GB = MEMORY_UNITS.GB;
+  const TB = MEMORY_UNITS.TB;
   return {
     const : {counterMax: 2147483647},
     cpus: cpuData,
@@ -39,4 +38,4 @@ TestUtil.getTestData = function(cpuData) {
       origDataSize: 200 * GB,
     },
   };
-};
+}

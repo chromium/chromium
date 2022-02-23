@@ -11,7 +11,7 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -57,14 +57,14 @@ IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_VideoOnly_WebM) {
 // TODO(servolk): Android is supposed to support AAC in ADTS container with
 // 'audio/aac' mime type, but for some reason playback fails on trybots due to
 // some issue in OMX AAC decoder (crbug.com/528361)
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_AAC_ADTS) {
   TestSimplePlayback("sfx.adts", media::kEndedTitle);
 }
 #endif
 
 // Opus is not supported in Android as of now.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_Opus_WebM) {
   TestSimplePlayback("bear-opus.webm", media::kEndedTitle);
 }

@@ -176,14 +176,14 @@ void CameraAppDeviceImpl::SetCameraDeviceContext(
 void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
     std::unique_ptr<gpu::GpuMemoryBufferImpl> gmb,
     VideoRotation rotation) {
-  {
-    base::AutoLock lock(capture_intent_lock_);
-    if (capture_intent_ != cros::mojom::CaptureIntent::DOCUMENT) {
-      return;
-    }
-  }
   if (!ash::DocumentScannerServiceClient::IsSupported()) {
     return;
+  }
+  {
+    base::AutoLock lock(document_corners_observers_lock_);
+    if (document_corners_observers_.empty()) {
+      return;
+    }
   }
   mojo_task_runner_->PostTask(
       FROM_HERE,
@@ -345,6 +345,7 @@ void CameraAppDeviceImpl::RegisterDocumentCornersObserver(
     RegisterDocumentCornersObserverCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
+  base::AutoLock lock(document_corners_observers_lock_);
   document_corners_observers_.Add(std::move(observer));
   std::move(callback).Run();
 }
@@ -458,6 +459,7 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
     rotated_corners.push_back(rotate_corner(corner));
   }
 
+  base::AutoLock lock(document_corners_observers_lock_);
   for (auto& observer : document_corners_observers_) {
     observer->OnDocumentCornersUpdated(rotated_corners);
   }

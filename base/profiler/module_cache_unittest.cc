@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "base/debug/proc_maps_linux.h"
 #endif
 
@@ -93,8 +93,8 @@ const ModuleCache::Module* AddNonNativeModule(
   return module_ptr;
 }
 
-#if (defined(OS_POSIX) && !defined(OS_IOS) && !defined(ARCH_CPU_ARM64)) || \
-    (defined(OS_FUCHSIA) && !defined(ARCH_CPU_ARM64)) || defined(OS_WIN)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS) && !defined(ARCH_CPU_ARM64)) || \
+    (BUILDFLAG(IS_FUCHSIA) && !defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_WIN)
 #define MAYBE_TEST(TestSuite, TestName) TEST(TestSuite, TestName)
 #else
 #define MAYBE_TEST(TestSuite, TestName) TEST(TestSuite, DISABLED_##TestName)
@@ -105,7 +105,7 @@ MAYBE_TEST(ModuleCacheTest, GetDebugBasename) {
   const ModuleCache::Module* module =
       cache.GetModuleForAddress(reinterpret_cast<uintptr_t>(&AFunctionForTest));
   ASSERT_NE(nullptr, module);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("libbase_unittests__library",
             // Different build configurations varyingly use .so vs. .cr.so for
             // the module extension. Remove all the extensions in both cases.
@@ -113,9 +113,9 @@ MAYBE_TEST(ModuleCacheTest, GetDebugBasename) {
                 .RemoveFinalExtension()
                 .RemoveFinalExtension()
                 .value());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   EXPECT_EQ("base_unittests", module->GetDebugBasename().value());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_EQ(L"base_unittests.exe.pdb", module->GetDebugBasename().value());
 #endif
 }
@@ -332,8 +332,8 @@ MAYBE_TEST(ModuleCacheTest, InvalidModule) {
 }
 
 // arm64 module support is not implemented.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    (defined(OS_ANDROID) && !defined(ARCH_CPU_ARM64))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_ARM64))
 // Validates that, for the memory regions listed in /proc/self/maps, the modules
 // found via ModuleCache are consistent with those regions' extents.
 TEST(ModuleCacheTest, CheckAgainstProcMaps) {

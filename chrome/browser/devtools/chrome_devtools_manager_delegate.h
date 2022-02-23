@@ -10,9 +10,7 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -83,7 +81,6 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
       content::DevToolsAgentHostClientChannel* channel) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url) override;
-  std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
 
   void DevicesAvailable(

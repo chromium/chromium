@@ -101,9 +101,10 @@ class FileSystemHelper : public base::RefCountedThreadSafe<FileSystemHelper> {
   // task runner.
   void FetchFileSystemInfoInFileThread(FetchCallback callback);
 
-  // Deletes all file systems associated with |origin|. This must be called on
-  // the file task runner.
-  void DeleteFileSystemOriginInFileThread(const url::Origin& origin);
+  // Deletes all file systems associated with `storage_key`. This must be called
+  // on the file task runner.
+  void DeleteFileSystemForStorageKeyInFileThread(
+      const blink::StorageKey& storage_key);
 
   // Called when FetchFileSystemInfoInFileThread completes and starts fetching
   // the NativeIOData.

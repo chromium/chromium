@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
@@ -144,6 +145,9 @@ class AuthenticatorRequestDialogModel {
     // Called when the user cancelled WebAuthN request by clicking the
     // "cancel" button or the back arrow in the UI dialog.
     virtual void OnCancelRequest() {}
+
+    // Called when the user clicks “Manage Devices” to manage their phones.
+    virtual void OnManageDevicesClicked() {}
   };
 
   // A Mechanism is a user-visable method of authenticating. It might be a
@@ -151,15 +155,15 @@ class AuthenticatorRequestDialogModel {
   // delegation to a platform API. Mechanisms are listed in the UI for the
   // user to select between.
   struct Mechanism {
-    // These types describe the type of Mechanism, but this is only for testing.
+    // These types describe the type of Mechanism.
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
                                          bool /* unused, but cannot be void */>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using OtherPhone = base::StrongAlias<class OtherPhoneTag,
-                                         bool /* unused, but cannot be void */>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone, OtherPhone>;
+    using AddPhone = base::StrongAlias<class AddPhoneTag,
+                                       bool /* unused, but cannot be void */>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -172,16 +176,14 @@ class AuthenticatorRequestDialogModel {
     Mechanism(const Mechanism&) = delete;
     Mechanism& operator=(const Mechanism&) = delete;
 
+    const Type type;
     const std::u16string name;
     const std::u16string short_name;
-    const gfx::VectorIcon* const icon;
+    const raw_ptr<const gfx::VectorIcon> icon;
     const base::RepeatingClosure callback;
     // priority is true if this mechanism should be activated immediately.
     // Only a single Mechanism in a list should have priority.
     const bool priority;
-
-    // type should only be accessed by tests.
-    const Type type;
   };
 
   // PairedPhone represents a paired caBLEv2 device.
@@ -268,10 +270,15 @@ class AuthenticatorRequestDialogModel {
   // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
   // on the location bar instead of the full-blown page-modal UI.
   //
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
+  //
   // Valid action when at step: kNotStarted.
-  void StartFlow(
-      TransportAvailabilityInfo transport_availability,
-      bool use_location_bar_bubble);
+  void StartFlow(TransportAvailabilityInfo transport_availability,
+                 bool use_location_bar_bubble,
+                 bool prefer_native_api);
 
   // Restarts the UX flow.
   void StartOver();
@@ -345,6 +352,9 @@ class AuthenticatorRequestDialogModel {
   //
   // Valid action at all steps.
   void Cancel();
+
+  // Opens a tab to the settings page for managing phones as security keys.
+  void ManageDevices();
 
   // Called by the AuthenticatorRequestSheetModel subclasses when their state
   // changes, which will trigger notifying observers of OnSheetModelChanged.
@@ -576,7 +586,7 @@ class AuthenticatorRequestDialogModel {
                                    size_t mechanism_index);
 
   // Starts the flow for adding an unlisted phone by showing a QR code.
-  void StartGuidedFlowForOtherPhone(size_t mechanism_index);
+  void StartGuidedFlowForAddPhone(size_t mechanism_index);
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
@@ -585,6 +595,7 @@ class AuthenticatorRequestDialogModel {
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
+  void ContactPhoneAfterBleIsPowered(std::string name);
 
   void StartLocationBarBubbleRequest();
 
@@ -592,7 +603,14 @@ class AuthenticatorRequestDialogModel {
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
-  void PopulateMechanisms();
+
+  // PopulateMechanisms fills in |mechanisms_|.
+  //
+  // |prefer_native_api| indicates that the UI should jump directly to the
+  // system WebAuthn UI if there's no better option. This is currently only
+  // meaningful on Windows, but the parameter exists on all platforms to avoid
+  // too much #ifdef soup.
+  void PopulateMechanisms(bool prefer_native_api);
 
   // Proceeds straight to the platform authenticator prompt.
   //
@@ -615,15 +633,14 @@ class AuthenticatorRequestDialogModel {
   // may request, e.g., PIN entry prior to that.
   absl::optional<Step> pending_step_;
 
-  // Determines which step to continue with once the Blueooth adapter is
-  // powered. Only set while the |current_step_| is either kBlePowerOnManual,
-  // kBlePowerOnAutomatic.
-  absl::optional<Step> next_step_once_ble_powered_;
-
   // after_off_the_record_interstitial_ contains the closure to run if the user
   // accepts the interstitial that warns that platform/caBLE authenticators may
   // record information even in incognito mode.
   base::OnceClosure after_off_the_record_interstitial_;
+
+  // after_ble_adapter_powered_ contains the closure to run if the user
+  // accepts the interstitial that requests to turn on the BLE adapter.
+  base::OnceClosure after_ble_adapter_powered_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -661,6 +678,11 @@ class AuthenticatorRequestDialogModel {
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
   bool cable_extension_provided_ = false;
+
+  // have_restarted_due_to_windows_cancel_ is set to true if the request was
+  // restarted because the UI jumped directly to the Windows UI but the user
+  // hit cancel.
+  bool have_restarted_due_to_windows_cancel_ = false;
 
   // mechanisms contains the entries that appear in the "transport" selection
   // sheet and the drop-down menu.

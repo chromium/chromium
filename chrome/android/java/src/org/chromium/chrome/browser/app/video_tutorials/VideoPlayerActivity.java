@@ -12,6 +12,7 @@ import android.util.Pair;
 import android.view.WindowManager;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -58,6 +59,7 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
         int featureType =
                 IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, FeatureType.INVALID);
         videoTutorialService.getTutorial(featureType, mCoordinator::playVideoTutorial);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed);
     }
 
     private Pair<WebContents, ContentView> createWebContents() {
@@ -69,12 +71,6 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
                 ViewAndroidDelegate.createBasicDelegate(contentView), contentView, mWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
         return Pair.create(webContents, contentView);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mCoordinator.onBackPressed()) return;
-        super.onBackPressed();
     }
 
     @Override

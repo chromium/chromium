@@ -22,10 +22,10 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/status/status.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include "absl/container/flat_hash_map.h"  // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
+#include "absl/types/optional.h"           // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/label_map_item.h"
 #include "tensorflow_lite_support/metadata/metadata_schema_generated.h"

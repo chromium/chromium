@@ -24,15 +24,12 @@
 
   await dp.Emulation.setDocumentCookieDisabled({disabled: true});
 
-  await virtualTimeController.grantInitialTime(5000, 1000,
-    null,
-    async () => {
-      const cookieIndex =
-          await session.evaluate(`document.cookie.indexOf('SessionID')`);
-      testRunner.log(cookieIndex < 0 ? 'pass' : 'FAIL');
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://www.example.com/');
+  await virtualTimeController.grantTime(5000);
+
+  const cookieIndex =
+      await session.evaluate(`document.cookie.indexOf('SessionID')`);
+  testRunner.log(cookieIndex < 0 ? 'pass' : 'FAIL');
+  testRunner.completeTest();
 })

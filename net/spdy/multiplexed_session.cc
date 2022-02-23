@@ -33,9 +33,9 @@ void MultiplexedSessionHandle::SaveSSLInfo() {
   has_ssl_info_ = session_->GetSSLInfo(&ssl_info_);
 }
 
-base::StringPiece MultiplexedSessionHandle::GetAcceptChViaAlpsForOrigin(
-    const url::Origin& origin) const {
-  return session_ ? session_->GetAcceptChViaAlpsForOrigin(origin)
+base::StringPiece MultiplexedSessionHandle::GetAcceptChViaAlps(
+    const url::SchemeHostPort& scheme_host_port) const {
+  return session_ ? session_->GetAcceptChViaAlps(scheme_host_port)
                   : base::StringPiece();
 }
 

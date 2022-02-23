@@ -36,6 +36,16 @@ constexpr char kPwaHtml[] =
 <html>
 <head>
   <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      background-color: white;
+    }
+    @media(prefers-color-scheme: dark) {
+      body {
+        background-color: black;
+      }
+    }
+  </style>
   <script>
     navigator.serviceWorker.register('sw.js');
   </script>

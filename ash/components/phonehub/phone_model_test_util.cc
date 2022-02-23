@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 const char16_t kFakeMobileProviderName[] = u"Fake Mobile Provider";
@@ -98,4 +98,4 @@ const Notification& CreateFakeNotification() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

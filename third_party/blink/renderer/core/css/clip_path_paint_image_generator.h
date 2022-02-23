@@ -7,14 +7,16 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+
+namespace gfx {
+class RectF;
+}
 
 namespace blink {
 
 class Image;
 class LocalFrame;
 class Node;
-class FloatRect;
 
 class CORE_EXPORT ClipPathPaintImageGenerator
     : public NativePaintImageGenerator {
@@ -28,7 +30,7 @@ class CORE_EXPORT ClipPathPaintImageGenerator
   static void Init(ClipPathPaintImageGeneratorCreateFunction* create_function);
 
   virtual scoped_refptr<Image> Paint(float zoom,
-                                     const FloatRect& reference_box,
+                                     const gfx::RectF& reference_box,
                                      const Node&) = 0;
 };
 

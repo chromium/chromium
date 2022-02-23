@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -75,7 +76,8 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
 
   ~FakeDisplaySchedulerClient() override {}
 
-  bool DrawAndSwap(base::TimeTicks expected_display_time) override {
+  bool DrawAndSwap(base::TimeTicks frame_time,
+                   base::TimeTicks expected_display_time) override {
     draw_and_swap_count_++;
 
     bool success = !next_draw_and_swap_fails_;
@@ -110,7 +112,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   }
 
  protected:
-  TestDisplayDamageTracker* damage_tracker_ = nullptr;
+  raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;
@@ -127,15 +129,17 @@ class TestDisplayScheduler : public DisplayScheduler {
                        bool wait_for_all_surfaces_before_draw)
       : DisplayScheduler(begin_frame_source,
                          task_runner,
-                         max_pending_swaps,
-                         max_pending_swaps,
+                         PendingSwapParams(max_pending_swaps),
+                         /*hint_session_factory=*/nullptr,
                          wait_for_all_surfaces_before_draw),
         scheduler_begin_frame_deadline_count_(0) {
     SetDamageTracker(damage_tracker);
   }
 
   base::TimeTicks DesiredBeginFrameDeadlineTimeForTest() {
-    return DesiredBeginFrameDeadlineTime();
+    BeginFrameDeadlineMode deadline_mode = AdjustedBeginFrameDeadlineMode();
+    return DesiredBeginFrameDeadlineTime(deadline_mode,
+                                         current_begin_frame_args_);
   }
 
   void BeginFrameDeadlineForTest() {
@@ -166,7 +170,7 @@ class TestDisplayScheduler : public DisplayScheduler {
   bool has_pending_surfaces() { return has_pending_surfaces_; }
 
   bool is_swap_throttled() const {
-    return pending_swaps_ >= max_pending_swaps_;
+    return pending_swaps_ >= pending_swap_params_.max_pending_swaps;
   }
 
  protected:

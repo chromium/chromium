@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -140,7 +141,7 @@ class SupervisedUserServiceTest : public ::testing::Test {
       identity_test_environment_adaptor_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  SupervisedUserService* supervised_user_service_;
+  raw_ptr<SupervisedUserService> supervised_user_service_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -180,9 +181,9 @@ class SupervisedUserServiceExtensionTestBase
  protected:
   scoped_refptr<const extensions::Extension> MakeThemeExtension() {
     std::unique_ptr<base::DictionaryValue> source(new base::DictionaryValue());
-    source->SetString(extensions::manifest_keys::kName, "Theme");
+    source->SetStringKey(extensions::manifest_keys::kName, "Theme");
     source->SetKey(extensions::manifest_keys::kTheme, base::DictionaryValue());
-    source->SetString(extensions::manifest_keys::kVersion, "1.0");
+    source->SetStringKey(extensions::manifest_keys::kVersion, "1.0");
     extensions::ExtensionBuilder builder;
     scoped_refptr<const extensions::Extension> extension =
         builder.SetManifest(std::move(source)).Build();
@@ -222,7 +223,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
   EXPECT_FALSE(supervised_user_service
                    ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // Check that a supervised user can install and uninstall a theme even if
   // they are not allowed to install extensions.
@@ -275,7 +276,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
   EXPECT_TRUE(supervised_user_service
                   ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // The supervised user should be able to load and uninstall the extensions
   // they install.

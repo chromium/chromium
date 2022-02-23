@@ -42,7 +42,8 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
   int mirrored_layer_id() const { return mirrored_layer_id_; }
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void PushPropertiesTo(LayerImpl* layer) override;

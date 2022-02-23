@@ -7,18 +7,24 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/threading/sequence_bound.h"
+#include "base/threading/thread.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/external_mojo/external_service_support/process_setup.h"
 #include "chromecast/external_mojo/external_service_support/service_process.h"
 #include "chromecast/external_mojo/external_service_support/tracing_client.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
+#include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 // Simple process entrypoint for standalone Mojo services.
 
@@ -61,9 +67,32 @@ int main(int argc, char** argv) {
       "StandaloneService");
 
   GlobalState state;
-  chromecast::external_service_support::ExternalConnector::Connect(
-      chromecast::external_mojo::GetBrokerPath(),
-      base::BindOnce(&OnConnected, &state));
+  // State for in-process Mojo broker.
+  auto broker_thread = std::make_unique<base::Thread>("external_mojo");
+  base::SequenceBound<chromecast::external_mojo::ExternalMojoBroker> broker;
+
+  if (chromecast::GetSwitchValueBoolean(switches::kInProcessBroker, false)) {
+    // Set up the external Mojo Broker.
+    broker_thread->StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0));
+    broker = base::SequenceBound<chromecast::external_mojo::ExternalMojoBroker>(
+        broker_thread->task_runner(),
+        chromecast::external_mojo::GetBrokerPath());
+    mojo::PendingRemote<chromecast::external_mojo::mojom::ExternalConnector>
+        connector_remote;
+    broker
+        .AsyncCall(
+            &chromecast::external_mojo::ExternalMojoBroker::BindConnector)
+        .WithArgs(connector_remote.InitWithNewPipeAndPassReceiver());
+    OnConnected(&state,
+                chromecast::external_service_support::ExternalConnector::Create(
+                    std::move(connector_remote)));
+  } else {
+    // Connect to existing Mojo broker.
+    chromecast::external_service_support::ExternalConnector::Connect(
+        chromecast::external_mojo::GetBrokerPath(),
+        base::BindOnce(&OnConnected, &state));
+  }
 
   run_loop.Run();
   base::ThreadPoolInstance::Get()->Shutdown();

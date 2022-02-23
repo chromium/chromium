@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * View responsible for showing CSN result items.

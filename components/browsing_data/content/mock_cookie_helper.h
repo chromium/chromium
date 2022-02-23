@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_BROWSING_DATA_CONTENT_MOCK_COOKIE_HELPER_H_
 #define COMPONENTS_BROWSING_DATA_CONTENT_MOCK_COOKIE_HELPER_H_
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
+#include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -30,7 +31,10 @@ class MockCookieHelper : public CookieHelper {
   void DeleteCookie(const net::CanonicalCookie& cookie) override;
 
   // Adds some cookie samples.
-  void AddCookieSamples(const GURL& url, const std::string& cookie_line);
+  void AddCookieSamples(const GURL& url,
+                        const std::string& cookie_line,
+                        absl::optional<net::CookiePartitionKey>
+                            cookie_partition_key = absl::nullopt);
 
   // Notifies the callback.
   void Notify();
@@ -50,7 +54,11 @@ class MockCookieHelper : public CookieHelper {
   net::CookieList cookie_list_;
 
   // Stores which cookies exist.
-  std::map<const std::string, bool> cookies_;
+  std::unordered_map<net::CanonicalCookie,
+                     bool,
+                     canonical_cookie::CanonicalCookieHasher,
+                     canonical_cookie::CanonicalCookieComparer>
+      cookies_;
 };
 
 }  // namespace browsing_data

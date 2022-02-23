@@ -67,6 +67,11 @@ class CORE_EXPORT TextIteratorBehavior final {
   }
 
   bool IgnoresDisplayLock() const { return values_.bits.ignores_display_lock; }
+
+  bool EmitsPunctuationForReplacedElements() const {
+    return values_.bits.emits_punctuation_for_replaced_elements;
+  }
+
   static TextIteratorBehavior EmitsObjectReplacementCharacterBehavior();
   static TextIteratorBehavior IgnoresStyleVisibilityBehavior();
   static TextIteratorBehavior DefaultRangeLengthBehavior();
@@ -95,6 +100,7 @@ class CORE_EXPORT TextIteratorBehavior final {
       bool skips_unselectable_content : 1;
       bool suppresses_newline_emission : 1;
       bool ignores_display_lock : 1;
+      bool emits_punctuation_for_replaced_elements : 1;
     } bits;
   } values_;
 };
@@ -129,6 +135,7 @@ class CORE_EXPORT TextIteratorBehavior::Builder final {
   Builder& SetSkipsUnselectableContent(bool);
   Builder& SetSuppressesExtraNewlineEmission(bool);
   Builder& SetIgnoresDisplayLock(bool);
+  Builder& SetEmitsPunctuationForReplacedElements(bool);
 
  private:
   TextIteratorBehavior behavior_;

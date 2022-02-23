@@ -5,12 +5,12 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {WrapupWaitForManualWpEnablePageElement} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
+import {WrapupWaitForManualWpEnablePage} from 'chrome://shimless-rma/wrapup_wait_for_manual_wp_enable_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function wrapupWaitForManualWpEnablePageTest() {
-  /** @type {?WrapupWaitForManualWpEnablePageElement} */
+  /** @type {?WrapupWaitForManualWpEnablePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -37,7 +37,7 @@ export function wrapupWaitForManualWpEnablePageTest() {
   function initializeWaitForManualWpEnablePage() {
     assertFalse(!!component);
 
-    component = /** @type {!WrapupWaitForManualWpEnablePageElement} */ (
+    component = /** @type {!WrapupWaitForManualWpEnablePage} */ (
         document.createElement('wrapup-wait-for-manual-wp-enable-page'));
     assertTrue(!!component);
     document.body.appendChild(component);

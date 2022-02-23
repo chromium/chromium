@@ -7,6 +7,8 @@
 #include <numeric>
 #include <string>
 
+#include "base/containers/adapters.h"
+#include "base/no_destructor.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -91,9 +93,8 @@ void CrashReporterBreadcrumbObserver::UpdateBreadcrumbEventsCrashKey() {
 
   // Concatenate breadcrumbs backwards, putting new breadcrumbs at the front, so
   // that the most relevant (i.e., newest) breadcrumbs are at the top in Crash.
-  for (auto it = breadcrumbs_.rbegin(), end_it = breadcrumbs_.rend();
-       it != end_it; ++it) {
-    breadcrumbs_string += *it;
+  for (const std::string& breadcrumb : base::Reversed(breadcrumbs_)) {
+    breadcrumbs_string += breadcrumb;
     breadcrumbs_string += kEventSeparator;
   }
   DCHECK(breadcrumbs_string.length() == breadcrumbs_string_length);

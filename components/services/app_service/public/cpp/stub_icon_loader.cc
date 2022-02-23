@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -15,13 +16,34 @@ StubIconLoader::StubIconLoader() = default;
 
 StubIconLoader::~StubIconLoader() = default;
 
-apps::mojom::IconKeyPtr StubIconLoader::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> StubIconLoader::GetIconKey(const std::string& app_id) {
   uint64_t timeline = 0;
   auto iter = timelines_by_app_id_.find(app_id);
   if (iter != timelines_by_app_id_.end()) {
     timeline = iter->second;
   }
-  return apps::mojom::IconKey::New(timeline, 0, 0);
+  return absl::make_optional<IconKey>(timeline, 0, 0);
+}
+
+std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
+    AppType app_type,
+    const std::string& app_id,
+    const IconKey& icon_key,
+    IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    apps::LoadIconCallback callback) {
+  num_load_calls_++;
+  if (base::Contains(timelines_by_app_id_, app_id)) {
+    auto icon_value = std::make_unique<IconValue>();
+    icon_value->icon_type = icon_type;
+    icon_value->uncompressed =
+        gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
+    std::move(callback).Run(std::move(icon_value));
+  } else {
+    std::move(callback).Run(std::make_unique<IconValue>());
+  }
+  return nullptr;
 }
 
 std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(

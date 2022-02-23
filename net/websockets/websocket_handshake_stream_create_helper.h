@@ -6,10 +6,11 @@
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_STREAM_CREATE_HELPER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
@@ -54,12 +55,12 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
   // Creates a WebSocketHttp2HandshakeStream over an HTTP/2 connection.
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::vector<std::string> dns_aliases) override;
+      std::set<std::string> dns_aliases) override;
 
  private:
-  WebSocketStream::ConnectDelegate* const connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
   const std::vector<std::string> requested_subprotocols_;
-  WebSocketStreamRequestAPI* const request_;
+  const raw_ptr<WebSocketStreamRequestAPI> request_;
 };
 
 }  // namespace net

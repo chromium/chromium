@@ -46,6 +46,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -728,4 +729,103 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::
               kSafeBrowsingTriggeredPopupBlocker)));
+}
+
+class SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest
+    : public SafeBrowsingTriggeredPopupBlockerBrowserTest {
+ public:
+  SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest::
+                web_contents,
+            base::Unretained(this))) {}
+
+  ~SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest() override =
+      default;
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that the console logs for SafeBrowsingTriggeredPopupBlocker are from
+// correct source frames.
+IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
+                       ConsoleLogWithSourceFrame) {
+  // Load a primary page.
+  {
+    GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
+    ConfigureAsAbusiveWarn(initial_url);
+    content::WebContentsConsoleObserver console_observer(web_contents());
+
+    // Navigate to initial_url, should log a warning and not trigger the popup
+    // blocker.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+    RoundTripAndVerifyLogMessages(console_observer, web_contents(),
+                                  {blocked_content::kAbusiveWarnMessage},
+                                  {blocked_content::kAbusiveEnforceMessage});
+    EXPECT_GE(console_observer.messages().size(), 1u);
+    for (auto& message : console_observer.messages())
+      EXPECT_EQ(message.source_frame, web_contents()->GetMainFrame());
+  }
+
+  // Load prerendering and ensure that the source frame for console logs in
+  // prerendering is a prerendered frame.
+  GURL prerendering_url(embedded_test_server()->GetURL("/simple.html"));
+  {
+    ConfigureAsAbusiveWarn(prerendering_url);
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    int host_id = prerender_helper_.AddPrerender(prerendering_url);
+    content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                       host_id);
+    auto* prerendered_frame_host =
+        prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+    RoundTripAndVerifyLogMessages(console_observer, web_contents(),
+                                  {blocked_content::kAbusiveWarnMessage},
+                                  {blocked_content::kAbusiveEnforceMessage});
+    EXPECT_GE(console_observer.messages().size(), 1u);
+    for (auto& message : console_observer.messages())
+      EXPECT_EQ(message.source_frame, prerendered_frame_host);
+  }
+  // When prerendering activation, OnSafeBrowsingChecksComplete() is not called.
+  // So SubresourceFilterLevel is not set on DidFinishNavigation() and the
+  // navigation doesn't add a console message.
+  {
+    content::WebContentsConsoleObserver console_observer(web_contents());
+    prerender_helper_.NavigatePrimaryPage(prerendering_url);
+    EXPECT_EQ(console_observer.messages().size(), 0u);
+  }
+}
+
+// Tests that a prerendered page doesn't create a window and if it's activated
+// creating a window triggers the popup blocker.
+IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
+                       PopupBlockedAfterActivation) {
+  GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
+  GURL prerendering_url(embedded_test_server()->GetURL(kWindowOpenPath));
+  ConfigureAsAbusive(prerendering_url);
+
+  // Loads a page in the prerender.
+  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  auto* prerendered_frame_host =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+  // openWindow() is ignored in prerendering and the popup UI is not shown since
+  // RenderFrameHostImpl::CreateNewWindow() works only in an active document.
+  EXPECT_EQ(false, content::EvalJs(prerendered_frame_host, "openWindow()",
+                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  // Make sure the popup UI was not shown in prerendering.
+  EXPECT_FALSE(PageSpecificContentSettings::GetForFrame(prerendered_frame_host)
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
+
+  // Activate prerendering, should trigger the popup blocker.
+  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  EXPECT_EQ(false,
+            content::EvalJs(web_contents()->GetMainFrame(), "openWindow()",
+                            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  // Make sure the popup UI was shown in an activated document.
+  EXPECT_TRUE(
+      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame())
+          ->IsContentBlocked(ContentSettingsType::POPUPS));
 }

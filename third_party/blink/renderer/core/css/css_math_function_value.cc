@@ -67,10 +67,7 @@ double CSSMathFunctionValue::DoubleValue() const {
 
 double CSSMathFunctionValue::ComputeSeconds() const {
   DCHECK_EQ(kCalcTime, expression_->Category());
-  // TODO(crbug.com/984372): We currently use 'ms' as the canonical unit of
-  // <time>. Switch to 's' to follow the spec.
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit() /
-                               1000);
+  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
 double CSSMathFunctionValue::ComputeDegrees() const {
@@ -118,13 +115,15 @@ String CSSMathFunctionValue::CustomCSSText() const {
 }
 
 bool CSSMathFunctionValue::Equals(const CSSMathFunctionValue& other) const {
-  return DataEquivalent(expression_, other.expression_);
+  return base::ValuesEquivalent(expression_, other.expression_);
 }
 
 double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
   switch (PermittedValueRange()) {
     case CSSPrimitiveValue::ValueRange::kInteger:
       return RoundHalfTowardsPositiveInfinity(value);
+    case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
+      return RoundHalfTowardsPositiveInfinity(std::max(value, 0.0));
     case CSSPrimitiveValue::ValueRange::kPositiveInteger:
       return RoundHalfTowardsPositiveInfinity(std::max(value, 1.0));
     case CSSPrimitiveValue::ValueRange::kNonNegative:
@@ -154,6 +153,8 @@ scoped_refptr<const CalculationValue> CSSMathFunctionValue::ToCalcValue(
     const CSSToLengthConversionData& conversion_data) const {
   DCHECK_NE(value_range_in_target_context_,
             CSSPrimitiveValue::ValueRange::kInteger);
+  DCHECK_NE(value_range_in_target_context_,
+            CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
   DCHECK_NE(value_range_in_target_context_,
             CSSPrimitiveValue::ValueRange::kPositiveInteger);
   return expression_->ToCalcValue(

@@ -274,7 +274,7 @@ Response* Response::Create(ScriptState* script_state,
     r->response_->HeaderList()->ClearList();
     // "2. Fill |r|'s Headers object with |init|'s headers member. Rethrow
     // any exceptions."
-    r->headers_->FillWith(init->headers(), exception_state);
+    r->headers_->FillWith(script_state, init->headers(), exception_state);
     if (exception_state.HadException())
       return nullptr;
   }

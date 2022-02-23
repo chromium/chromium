@@ -12,11 +12,13 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
@@ -27,7 +29,6 @@
 class PrefRegistrySimple;
 
 namespace base {
-class ListValue;
 class SingleThreadTaskRunner;
 }
 
@@ -157,7 +158,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Helper function that converts users from |users_list| to |users_vector| and
   // |users_set|. Duplicates and users already present in |existing_users| are
   // skipped.
-  void ParseUserList(const base::ListValue& users_list,
+  void ParseUserList(const base::Value::ConstListView& users_list,
                      const std::set<AccountId>& existing_users,
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
@@ -286,11 +287,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // NULL until a user has logged in, then points to one
   // of the User instances in |users_|, the |guest_user_| instance or an
   // ephemeral user instance.
-  User* active_user_ = nullptr;
+  raw_ptr<User> active_user_ = nullptr;
 
   // The primary user of the current session. It is recorded for the first
   // signed-in user and does not change thereafter.
-  User* primary_user_ = nullptr;
+  raw_ptr<User> primary_user_ = nullptr;
 
   // List of all known users. User instances are owned by |this|. Regular users
   // are removed by |RemoveUserFromList|, device local accounts by

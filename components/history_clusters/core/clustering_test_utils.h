@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_CLUSTERING_TEST_UTILS_H_
 
+#include <ostream>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace history_clusters {
@@ -18,33 +20,44 @@ class VisitResult {
  public:
   VisitResult(int visit_id,
               float score,
-              const std::vector<history::VisitID>& duplicate_visit_ids = {});
+              const std::vector<VisitResult>& duplicate_visits = {},
+              std::u16string search_terms = u"");
   explicit VisitResult(const history::ClusterVisit& visit);
   VisitResult(const VisitResult& other);
   ~VisitResult();
 
   bool operator==(const VisitResult& rhs) const;
 
+  std::string ToString() const;
+
  private:
+  friend std::ostream& operator<<(std::ostream& os, const VisitResult& dt);
+
   const int visit_id_;
   const float score_;
-  const std::vector<history::VisitID> duplicate_visit_ids_;
+  std::vector<VisitResult> duplicate_visits_;
+  const std::u16string search_terms_;
 };
+
+std::ostream& operator<<(std::ostream& os, const VisitResult& dt);
 
 // Converts |clusters| to VisitResults which are easier to test equality for.
 std::vector<std::vector<testing::VisitResult>> ToVisitResults(
     const std::vector<history::Cluster>& clusters);
 
 // Creates a default AnnotatedVisit that has the minimal set of fields required.
-history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,
-                                                    const GURL& url);
+history::AnnotatedVisit CreateDefaultAnnotatedVisit(
+    int visit_id,
+    const GURL& url,
+    base::Time visit_time = base::Time());
 
 // Creates a ClusterVisit from |annotated_visit|. Will populate the returned
 // ClusterVisit's normalized_url with |normalized_url| if present but otherwise
 // will use the URL contained in the AnnotatedVisit.
 history::ClusterVisit CreateClusterVisit(
     const history::AnnotatedVisit& annotated_visit,
-    absl::optional<GURL> normalized_url = absl::nullopt);
+    absl::optional<GURL> normalized_url = absl::nullopt,
+    float score = 1.0);
 
 }  // namespace testing
 }  // namespace history_clusters

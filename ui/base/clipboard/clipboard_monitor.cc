@@ -4,6 +4,7 @@
 
 #include "ui/base/clipboard/clipboard_monitor.h"
 
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 

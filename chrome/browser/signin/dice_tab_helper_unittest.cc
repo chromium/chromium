@@ -77,7 +77,7 @@ TEST_F(DiceTabHelperTest, SigninPageStatus) {
   // be recreated after navigation (which resets the signin page state). Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   DiceTabHelper::CreateForWebContents(web_contents());
   DiceTabHelper* dice_tab_helper =
       DiceTabHelper::FromWebContents(web_contents());

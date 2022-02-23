@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
@@ -81,6 +82,33 @@ void LayoutNGSVGText::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   SubtreeStructureChanged(layout_invalidation_reason::kChildChanged);
   LayoutSVGBlock::RemoveChild(child);
+}
+
+void LayoutNGSVGText::InsertedIntoTree() {
+  NOT_DESTROYED();
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
+  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
+    cb->AddSvgTextDescendant(*this);
+
+  for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
+    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+      root->AddSvgTextDescendant(*this);
+      break;
+    }
+  }
+}
+
+void LayoutNGSVGText::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
+    cb->RemoveSvgTextDescendant(*this);
+  for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
+    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+      root->RemoveSvgTextDescendant(*this);
+      break;
+    }
+  }
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
 }
 
 void LayoutNGSVGText::SubtreeStructureChanged(
@@ -182,6 +210,13 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
 
   gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
+  if (bounds_changed) {
+    // Invalidate all resources of this client if our reference box changed.
+    SVGResourceInvalidator resource_invalidator(*this);
+    resource_invalidator.InvalidateEffects();
+    resource_invalidator.InvalidatePaints();
+  }
+
   // If our bounds changed, notify the parents.
   if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
     SetNeedsBoundariesUpdate();
@@ -239,15 +274,15 @@ gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
-void LayoutNGSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutNGSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
+  quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(StrokeBoundingBox()), mode));
 }
 
-FloatRect LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return FloatRect(StrokeBoundingBox());
+  return StrokeBoundingBox();
 }
 
 bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
@@ -264,7 +299,7 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
 PositionWithAffinity LayoutNGSVGText::PositionForPoint(
     const PhysicalOffset& point_in_contents) const {
   NOT_DESTROYED();
-  FloatPoint point(point_in_contents.left, point_in_contents.top);
+  gfx::PointF point(point_in_contents.left, point_in_contents.top);
   float min_distance = std::numeric_limits<float>::max();
   const LayoutSVGInlineText* closest_inline_text = nullptr;
   for (const LayoutObject* descendant = FirstChild(); descendant;
@@ -273,7 +308,8 @@ PositionWithAffinity LayoutNGSVGText::PositionForPoint(
     if (!text)
       continue;
     float distance =
-        FloatRect(descendant->ObjectBoundingBox()).SquaredDistanceTo(point);
+        (descendant->ObjectBoundingBox().ClosestPoint(point) - point)
+            .LengthSquared();
     if (distance >= min_distance)
       continue;
     min_distance = distance;

@@ -83,8 +83,9 @@ bool WaitForOmniboxURLString(std::string URL, bool exact_match = true) {
 
   NSString* userAgent = [ChromeEarlGrey mobileUserAgentString];
   // Verify that JavaScript navigator.userAgent returns the mobile User Agent.
-  id result = [ChromeEarlGrey executeJavaScript:@"navigator.userAgent"];
-  NSString* navigatorUserAgent = base::mac::ObjCCast<NSString>(result);
+  auto result = [ChromeEarlGrey evaluateJavaScript:@"navigator.userAgent"];
+  GREYAssertTrue(result.is_string(), @"Result is not a string.");
+  NSString* navigatorUserAgent = base::SysUTF8ToNSString(result.GetString());
   GREYAssertEqualObjects(userAgent, navigatorUserAgent,
                          @"User-Agent strings did not match");
 }

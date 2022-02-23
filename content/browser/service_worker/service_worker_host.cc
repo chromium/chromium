@@ -10,9 +10,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -155,10 +155,11 @@ void ServiceWorkerHost::CreateBroadcastChannelProvider(
     return;
   }
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<BroadcastChannelProvider>(
-          storage_partition_impl->GetBroadcastChannelService(),
-          version()->key()),
+  auto* broadcast_channel_service =
+      storage_partition_impl->GetBroadcastChannelService();
+  broadcast_channel_service->AddReceiver(
+      std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
+                                                 version()->key()),
       std::move(receiver));
 }
 

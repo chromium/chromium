@@ -11,9 +11,9 @@
   await TestRunner.showPanel('resources');
 
   TestRunner.deprecatedRunAfterPendingDispatches(function() {
-    const localStorageTree = Resources.ResourcesPanel._instance()._sidebar.localStorageListTreeElement;
+    const localStorageTree = Resources.ResourcesPanel.instance().sidebar.localStorageListTreeElement;
     localStorageTree.expandRecursively(1000);
-    const sessionStorageTree = Resources.ResourcesPanel._instance()._sidebar.sessionStorageListTreeElement;
+    const sessionStorageTree = Resources.ResourcesPanel.instance().sidebar.sessionStorageListTreeElement;
     sessionStorageTree.expandRecursively(1000);
 
     TestRunner.addResult('Local Storage:');

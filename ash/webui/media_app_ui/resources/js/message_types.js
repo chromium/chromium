@@ -26,6 +26,8 @@ export const Message = {
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',
   OPEN_ALLOWED_FILE: 'open-allowed-file',
+  TOGGLE_BROWSER_FULLSCREEN_MODE: 'toggle-browser-fullscreen-mode',
+  OPEN_IN_SANDBOXED_VIEWER: 'open-in-sandboxed-viewer',
 };
 
 /**
@@ -173,6 +175,14 @@ export let RequestSaveFileResponse;
  * @typedef {{blob: !Blob, oldFileToken: ?number, pickedFileToken: number}}
  */
 export let SaveAsMessage;
+
+/**
+ * Message sent from the app to open a sandboxed viewer for a Blob in a popup.
+ * `title` is the window title for the popup and `blobUuid` is the UUID of the
+ * blob which will be reconstructed as a blob URL in the sandbox.
+ * @typedef {{title: string, blobUuid: string}}
+ */
+export let OpenInSandboxedViewerMessage;
 
 /**
  * Response message sent by the privileged context with the name of the new

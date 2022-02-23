@@ -1816,7 +1816,7 @@ void DrawPath(GraphicsContext& context,
   builder.lineTo(100, 0);
   builder.close();
   SkPath path = builder.detach();
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)
     context.DrawPath(path, flags, AutoDarkMode::Disabled());
@@ -2032,7 +2032,7 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
 }
 
 // Death tests don't work properly on Android.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   static const auto kCropId = RegionCaptureCropId(base::Token{});
@@ -2144,6 +2144,6 @@ TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
   }
 }
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

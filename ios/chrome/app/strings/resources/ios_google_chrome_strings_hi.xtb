@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1096883626080133124">आसान, सुरक्षित, और अब तक के सबसे तेज़ Google Chrome की मदद से, पहले से ज़्यादा काम करें</translation>
+<translation id="1143896152279775643"><ph name="EMAIL" /> के लिए आपके पासवर्ड को Google पासवर्ड मैनेजर में सेव किया जाएगा.</translation>
 <translation id="1282031177488366470">Chrome की सुविधाओं और प्रदर्शन को बेहतर बनाने में मदद करें</translation>
-<translation id="1314663809820920746">आप अब भी इस डिवाइस पर अपने सभी बुकमार्क, इतिहास, पासवर्ड, और अन्य सेटिंग देख सकते हैं. अगर आप इनमें कोई बदलाव करेंगे, तो उसे आपके Google खाते में सिंक नहीं किया जाएगा.</translation>
 <translation id="1479202195792305274">जब आप Google खाते से साइन इन करते हैं, तब Chrome आपके पासवर्ड की जांच कर सकता है.</translation>
 <translation id="1493827051843127077">अपने सभी डिवाइसों पर टैब, पासवर्ड, और पैसे चुकाने से जुड़ी जानकारी सिंक करने के लिए, Chrome को डिफ़ॉल्ट के रूप में सेट करें</translation>
 <translation id="1504372625950710826">Chrome अपडेट की जांच नहीं कर सका. देखें कि आप इंटरनेट से कनेक्ट हैं या नहीं.</translation>
@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome ने सत्‍यापित किया है कि वेबसाइट का यह प्रमाणपत्र <ph name="ISSUER" /> ने जारी किया है.</translation>
 <translation id="2199719347983604670">Chrome सिंक का डेटा</translation>
 <translation id="2313070403598893276">Google Chrome अब पहले से ज़्यादा आसान, सुरक्षित, और तेज़ है</translation>
+<translation id="2339201583852607431">आपका पासवर्ड, आपके Google खाते (<ph name="EMAIL" />) में सेव किया जाएगा.</translation>
 <translation id="2342919707875585281">Chrome उन साइटों के साथ आपकी जगह की जानकारी शेयर करता है जिन्हें आप अनुमति देते हैं.</translation>
 <translation id="2347208864470321755">जब यह सुविधा चालू होती है, तो Chrome अन्य भाषा में लिखे पृष्ठों को Google अनुवाद का उपयोग करके अनुवाद करने के लिए ऑफ़र करेगा. <ph name="BEGIN_LINK" />और जानें<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome में ऐसी सुविधाएं हैं जो आपके इंटरनेट डेटा को मैनेज करने और वेबपेजों को तेज़ी से लोड करने में आपकी मदद करती हैं.
@@ -24,6 +25,7 @@
 <translation id="2574249610672786438">आप जिन डिवाइस पर Chrome का इस्तेमाल करते हैं उन सभी पर खोले गए टैब देखने के लिए, अपने सभी डिवाइस पर साइन इन करें</translation>
 <translation id="2576431527583832481">Chrome अब बेहतर हो गया है! एक नया वर्शन उपलब्ध है.</translation>
 <translation id="257708665678654955">क्या आप चाहते हैं कि Google Chrome अगली बार इस साइट के <ph name="LANGUAGE_NAME" /> पेजों का अनुवाद करने का ऑफ़र दे?</translation>
+<translation id="2671426118752779020">Google पासवर्ड मैनेजर में सेव किए गए पासवर्ड का इस्तेमाल, iPhone में मौजूद दूसरे ऐप्लिकेशन के लिए किया जा सकता है.</translation>
 <translation id="2695886661449553974">Chrome अपडेट की जांच नहीं कर सका. कुछ देर बाद कोशिश करें.</translation>
 <translation id="2732745070297234559">Chrome सभी पासवर्ड की जांच नहीं कर सका. कल कोशिश करें.</translation>
 <translation id="2869959624320573933">Chrome में साइन इन करें</translation>
@@ -38,6 +40,7 @@
 <translation id="3522659714780527202">आप जिन डिवाइस पर Chrome का इस्तेमाल करते हैं, उन सभी पर खोले गए टैब देखने के लिए, सिंक करने की सुविधा चालू करें</translation>
 <translation id="3533694711092285624">सेव किया हुआ कोई भी पासवर्ड नहीं है. Chrome आपके पासवर्ड की जांच तब कर सकता है, जब आप उन्हें सेव करें.</translation>
 <translation id="3634910711516114487">Chrome का ज़्यादा से ज़्यादा फ़ायदा पाने के लिए, अपने Google खाते से Chrome में साइन इन करें</translation>
+<translation id="3655656110921623717">इसका मतलब है कि Chrome हर बार, साइट के मोबाइल वर्शन का अनुरोध करेगा.</translation>
 <translation id="3706101708757577809">अब आप मैसेज, दस्तावेज़ों, और दूसरे ऐप्लिकेशन में मिले लिंक पर टैप करके, किसी भी समय Chrome का इस्तेमाल कर सकते हैं.</translation>
 <translation id="3720541637541300822">Chrome बंद करने पर अपने गुप्त टैब लॉक करें</translation>
 <translation id="384394811301901750">Google Chrome इस समय आपके कैमरे का उपयोग नहीं कर सकता</translation>
@@ -54,8 +57,10 @@
 <translation id="4698415050768537821">Chrome सभी पासवर्ड की जांच नहीं कर सका. कल कोशिश करें या <ph name="BEGIN_LINK" />अपने Google खाते में सेव किए गए पासवर्ड की जांच करें.<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">यह सुविधा Chrome के बीटा वर्शन पर काम नहीं करती</translation>
 <translation id="5030102366287574140">Chrome आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रखने में मदद कर सकता है.</translation>
+<translation id="5119391094379141756">Chrome चुनें</translation>
 <translation id="5162467219239570114">Chrome का यह वर्शन पुराना हो गया है. अगर <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> में कोई अपडेट उपलब्ध नहीं है, तो हो सकता है कि आपका डिवाइस अब Chrome के नए वर्शन के साथ काम नहीं करता.</translation>
 <translation id="5389212809648216794">Google Chrome आपके कैमरे का उपयोग नहीं कर सकता क्योंकि दूसरा ऐप्लिकेशन उसका उपयोग कर रहा है</translation>
+<translation id="5460571915754665838">4. Chrome चुनें</translation>
 <translation id="5639704535586432836">सेटिंग &gt; निजता &gt; कैमरा &gt; Google Chrome खोलें और कैमरा चालू करें.</translation>
 <translation id="5642200033778930880">Google Chrome स्प्लिट व्यू मोड में आपके कैमरे का इस्तेमाल नहीं कर सकता</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -67,11 +72,13 @@
 <translation id="6063091872902370735">Chrome में साइन-इन करने की अनुमति दें</translation>
 <translation id="6181930887571472871">Chrome पर स्विच करें</translation>
 <translation id="6238746320622508509">Chrome को आपके गुप्त टैब लॉक करने दें.</translation>
+<translation id="6387994324662817823">पासवर्ड, सिर्फ़ इस डिवाइस में Google पासवर्ड मैनेजर में सेव हैं.</translation>
 <translation id="6427126399757991875">आपका संगठन Chrome सेट अप कर रहा है...</translation>
 <translation id="6600954340915313787">Chrome पर कॉपी किया गया</translation>
 <translation id="6634107063912726160">साइन आउट करने पर, Chrome आपके Google खाते में नए डेटा को सिंक नहीं करेगा. पहले सिंक किया गया डेटा, खाते में सेव रहेगा.</translation>
 <translation id="6648150602980899529">आप <ph name="DOMAIN" /> से प्रबंधित खाते में साइन इन कर रहे हैं और उसके एडमिन को अपने Chrome डेटा पर नियंत्रण दे रहे हैं. आपका डेटा इस खाते से स्थायी रूप से जुड़ जाएगा. Chrome से साइन आउट करने से आपका डेटा इस डिवाइस से मिट जाएगा, लेकिन वह आपके Google खाते में बना रहेगा.</translation>
 <translation id="6676840375528380067">इस डिवाइस से अपना Chrome डेटा हटाएं?</translation>
+<translation id="6709398533399187136">डेटा के गलत इस्तेमाल की वजह से, आपका पासवर्ड लीक हो चुका है. Google का पासवर्ड मैनेजर, इसे तुरंत बदलने का सुझाव देता है.</translation>
 <translation id="6822673484890854830">Chrome सभी पासवर्ड की जांच नहीं कर सका. कुछ देर बाद कोशिश करें.</translation>
 <translation id="6964931465519938134">अब आप मैसेज, दस्तावेज़ों, और दूसरे ऐप्लिकेशन में मिले लिंक पर टैप करके, किसी भी समय Chrome का इस्तेमाल कर सकते हैं.</translation>
 <translation id="7059914902409643750">Chrome को पसंद के मुताबिक बनाएं</translation>
@@ -80,6 +87,7 @@
 <translation id="7165736900384873061">Google Chrome QR स्कैनर उपयोग शुरू करें</translation>
 <translation id="7172660552945675509">सलाह: <ph name="BEGIN_LINK" />Chrome को अपने डॉक में ले जाएं<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">आपके पासवर्ड का अधिकृत ऐक्सेस पक्का करने के लिए, Chrome 'फ़ेस आईडी' यानी चेहरा पहचान का इस्तेमाल करता है.</translation>
+<translation id="72119412072970160">Google पासवर्ड मैनेजर में सेव किए गए पासवर्ड का इस्तेमाल, iPad में मौजूद दूसरे ऐप्लिकेशन के लिए किया जा सकता है.</translation>
 <translation id="7261678641327190792">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
 <translation id="7272930098487145294">इमेज को सेव करने के लिए, सेटिंग पर टैप करके Chrome को आपके फ़ोटो सेक्शन में इमेज जोड़ने की अनुमति दें</translation>
 <translation id="7275945473750112644">आपके खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है, इसलिए इस डिवाइस से आपका Chrome डेटा मिटा दिया जाएगा</translation>
@@ -107,5 +115,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome की मदद से सुरक्षित रहें</translation>
 <translation id="8772179140489533211">Chrome में साइन इन करने के निर्देश दिखाता है.</translation>
+<translation id="8788269841521769222">आपको यह पासवर्ड याद रखने की ज़रूरत नहीं पड़ेगी. इसे <ph name="EMAIL" /> के लिए, Google पासवर्ड मैनेजर में सेव किया जाएगा</translation>
 <translation id="9112744793181547300">Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करना चाहते हैं?</translation>
+<translation id="9122931302567044771">इसका मतलब है कि Chrome हर बार, साइट के डेस्कटॉप वर्शन का अनुरोध करेगा.</translation>
 </translationbundle>

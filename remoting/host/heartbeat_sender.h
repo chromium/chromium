@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
@@ -141,12 +141,12 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   // Helper methods used by DoSendStanza() to generate heartbeat stanzas.
   std::unique_ptr<apis::v1::HeartbeatRequest> CreateHeartbeatRequest();
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::string host_id_;
-  SignalStrategy* const signal_strategy_;
+  const raw_ptr<SignalStrategy> signal_strategy_;
   std::unique_ptr<HeartbeatClient> client_;
-  OAuthTokenGetter* const oauth_token_getter_;
-  Observer* observer_;
+  const raw_ptr<OAuthTokenGetter> oauth_token_getter_;
+  raw_ptr<Observer> observer_;
 
   base::OneShotTimer heartbeat_timer_;
 

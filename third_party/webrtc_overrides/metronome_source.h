@@ -13,25 +13,25 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/webrtc/api/metronome/metronome.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace blink {
 
-// The MetronomeSource posts tasks every metronome tick to its listeners.
-// When coelescing a large number of wakeup sources onto the metronome this can
-// greatly reduce the number of Idle Wake Ups, but it must be used with caution:
-// when initiating a MetronomeSource we pay the wakeup cost up-front, regardless
-// of the number of listeners.
+// The MetronomeSource ticks at a constant frequency, scheduling to wake up on
+// ticks where listeners have work to do, and not scheduling to wake up on ticks
+// where there is no work to do.
 //
-// This class is thread safe. Listeners can be added and removed from any
-// thread, but a listener cannot remove itself from within its own callback.
+// When coalescing a large number of wakeup sources onto the MetronomeSource,
+// this should reduce package Idle Wake Ups with potential to improve
+// performance.
 //
-// The MetronomeSource is active while it has listeners. Removing all listeners
-// deactivates it. Forgetting to remove a listener is a memory leak and leaves
-// it running indefinitely.
+// The public API of this class is thread-safe and can be called from any
+// sequence.
 //
 // |webrtc_component| does not have a test binary. See
 // /third_party/blink/renderer/platform/peerconnection/metronome_source_test.cc
@@ -43,7 +43,8 @@ class RTC_EXPORT MetronomeSource final
   class RTC_EXPORT ListenerHandle
       : public base::RefCountedThreadSafe<ListenerHandle> {
    public:
-    ListenerHandle(scoped_refptr<base::SequencedTaskRunner> task_runner,
+    ListenerHandle(scoped_refptr<MetronomeSource> metronome_source,
+                   scoped_refptr<base::SequencedTaskRunner> task_runner,
                    base::RepeatingCallback<void()> callback,
                    base::TimeTicks wakeup_time);
 
@@ -59,23 +60,33 @@ class RTC_EXPORT MetronomeSource final
 
     ~ListenerHandle();
 
-    void OnMetronomeTick();
-    void MaybeRunCallbackOnTaskRunner();
-
+    void SetWakeUpTimeOnMetronomeTaskRunner(base::TimeTicks wakeup_time);
+    void OnMetronomeTickOnMetronomeTaskRunner(base::TimeTicks now);
+    void MaybeRunCallback();
     void Inactivate();
 
+    const scoped_refptr<MetronomeSource> metronome_source_;
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     const base::RepeatingCallback<void()> callback_;
     base::Lock is_active_lock_;
     bool is_active_ GUARDED_BY(is_active_lock_) = true;
-    base::Lock wakeup_time_lock_;
-    // The earliest time that the metronome may invoke the listener's callback.
-    base::TimeTicks wakeup_time_ GUARDED_BY(wakeup_time_lock_);
+    // The earliest time to fire |callback_|. base::TimeTicks::Min() means to
+    // fire on every tick, base::TimeTicks::Max() means never to fire.
+    // Only touched on |metronome_source_->metronome_task_runner_|.
+    base::TimeTicks wakeup_time_;
   };
 
-  explicit MetronomeSource(base::TimeDelta metronome_tick);
+  MetronomeSource(base::TimeTicks metronome_phase,
+                  base::TimeDelta metronome_tick);
   MetronomeSource(const MetronomeSource&) = delete;
   MetronomeSource& operator=(const MetronomeSource&) = delete;
+
+  // The tick phase.
+  base::TimeTicks metronome_phase() const { return metronome_phase_; }
+  // The tick frequency.
+  base::TimeDelta metronome_tick() const { return metronome_tick_; }
+  // The next metronome tick that is at or after |time|.
+  base::TimeTicks GetTimeSnappedToNextMetronomeTick(base::TimeTicks time) const;
 
   // Creates a new listener whose |callback| will be invoked on |task_runner|.
   // If |wakeup_time| is set to base::TimeTicks::Min() then the listener will be
@@ -92,30 +103,42 @@ class RTC_EXPORT MetronomeSource final
   // the listener cannot remove itself from within its own callback.
   void RemoveListener(scoped_refptr<ListenerHandle> listener_handle);
 
-  // The source is active as long as it has listeners. The source stays alive
-  // until it has been deactivated by removing all listeners.
-  bool IsActive();
+  // Creates a webrtc::Metronome which is backed by this metronome.
+  std::unique_ptr<webrtc::Metronome> CreateWebRtcMetronome();
+
+  bool HasListenersForTesting();
 
  private:
   friend class base::RefCountedThreadSafe<MetronomeSource>;
+  friend class ListenerHandle;
 
   ~MetronomeSource();
 
-  void StartTimer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void StopTimer() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void AddListenerOnMetronomeTaskRunner(
+      scoped_refptr<ListenerHandle> listener_handle);
+  void RemoveListenerOnMetronomeTaskRunner(
+      scoped_refptr<ListenerHandle> listener_handle);
+  // Ensures the "next tick" is scheduled. The next tick is the next metronome
+  // tick where we have work to do. If there is no work between now and
+  // |wakeup_time| we will reschedule such that the next tick happens at or
+  // after |wakeup_time|, but if there is already a tick scheduled earlier than
+  // |wakeup_time| this is a NO-OP and more ticks may be needed before
+  // |wakeup_time| is reached.
+  void EnsureNextTickIsScheduled(base::TimeTicks wakeup_time);
 
-  void OnMetronomeTick();
+  // |now_tick| is the time that this tick was scheduled to run, so it should be
+  // very close to base::TimeTicks::Now() but is guaranteed to be aligned with
+  // the current metronome tick.
+  void OnMetronomeTick(base::TimeTicks now_tick);
 
+  // All non-const members are only accessed on |metronome_task_runner_|.
   const scoped_refptr<base::SequencedTaskRunner> metronome_task_runner_;
+  const base::TimeTicks metronome_phase_;
   const base::TimeDelta metronome_tick_;
-  base::Lock lock_;
-  // Set to true in StartTimer() and false in StopTimer() but the creation or
-  // destruction of the timer happens asynchronously (e.g. we can be active but
-  // not yet have a timer).
-  bool is_active_ GUARDED_BY(lock_) = false;
-  // Only accessed on |metronome_task_runner_|.
-  std::unique_ptr<base::RepeatingTimer> timer_;
-  std::set<scoped_refptr<ListenerHandle>> listeners_ GUARDED_BY(lock_);
+  std::set<scoped_refptr<ListenerHandle>> listeners_;
+  base::DelayedTaskHandle next_tick_handle_;
+  base::TimeTicks next_tick_ = base::TimeTicks::Min();
+  base::TimeTicks prev_tick_;
 };
 
 }  // namespace blink

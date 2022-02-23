@@ -7,12 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service_impl.h"

@@ -620,27 +620,28 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetList().size());
+  ASSERT_EQ(2u, list->GetListDeprecated().size());
 
-  base::DictionaryValue* info;
-  ASSERT_TRUE(list->GetDictionary(0, &info));
+  const base::Value& info = list->GetListDeprecated()[0];
+  ASSERT_TRUE(info.is_dict());
 
-  ASSERT_EQ(id.uid, info->FindIntKey("menuItemId"));
-  ASSERT_EQ(parent_id.uid, info->FindIntKey("parentMenuItemId"));
+  ASSERT_EQ(id.uid, info.FindIntKey("menuItemId"));
+  ASSERT_EQ(parent_id.uid, info.FindIntKey("parentMenuItemId"));
 
-  std::string tmp;
-  ASSERT_TRUE(info->GetString("mediaType", &tmp));
-  ASSERT_EQ("image", tmp);
-  ASSERT_TRUE(info->GetString("srcUrl", &tmp));
-  ASSERT_EQ(params.src_url.spec(), tmp);
-  ASSERT_TRUE(info->GetString("pageUrl", &tmp));
-  ASSERT_EQ(params.page_url.spec(), tmp);
+  const std::string* tmp = info.FindStringKey("mediaType");
+  ASSERT_TRUE(tmp);
+  ASSERT_EQ("image", *tmp);
+  tmp = info.FindStringKey("srcUrl");
+  ASSERT_TRUE(tmp);
+  ASSERT_EQ(params.src_url.spec(), *tmp);
+  tmp = info.FindStringKey("pageUrl");
+  ASSERT_TRUE(tmp);
+  ASSERT_EQ(params.page_url.spec(), *tmp);
+  tmp = info.FindStringKey("selectionText");
+  ASSERT_TRUE(tmp);
+  ASSERT_EQ(params.selection_text, base::UTF8ToUTF16(*tmp));
 
-  std::u16string tmp16;
-  ASSERT_TRUE(info->GetString("selectionText", &tmp16));
-  ASSERT_EQ(params.selection_text, tmp16);
-
-  absl::optional<bool> editable = info->FindBoolKey("editable");
+  absl::optional<bool> editable = info.FindBoolKey("editable");
   ASSERT_TRUE(editable.has_value());
   ASSERT_EQ(params.is_editable, editable.value());
 

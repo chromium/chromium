@@ -190,7 +190,7 @@ mojom::TtsResponsePtr GetResultOnError(
 mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
                                          const int start_index,
                                          const bool is_last_request) {
-  base::Value::ConstListView list_data = json_data.GetList();
+  base::Value::ConstListView list_data = json_data.GetListDeprecated();
 
   // Depending on the size of input text (n), the list size should be 1 + 2n.
   // The first item in the list is "metadata", then each input text has one
@@ -225,7 +225,8 @@ mojom::TtsResponsePtr UnpackJsonResponse(const base::Value& json_data,
     return GetResultOnError(mojom::TtsRequestError::kReceivedUnexpectedData);
   }
 
-  base::Value::ConstListView timing_info_list = timing_info_ptr->GetList();
+  base::Value::ConstListView timing_info_list =
+      timing_info_ptr->GetListDeprecated();
   for (size_t i = 0; i < timing_info_list.size(); ++i) {
     const base::Value& timing_info = timing_info_list[i];
     const std::string* timing_info_text_ptr = timing_info.FindStringKey("text");

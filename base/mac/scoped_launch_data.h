@@ -14,8 +14,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace internal {
 
@@ -30,8 +29,7 @@ struct ScopedLaunchDataTraits {
 using ScopedLaunchData =
     ScopedGeneric<launch_data_t, internal::ScopedLaunchDataTraits>;
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #pragma clang diagnostic pop  // -Wdeprecated-declarations
 

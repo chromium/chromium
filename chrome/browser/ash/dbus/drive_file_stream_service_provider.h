@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"

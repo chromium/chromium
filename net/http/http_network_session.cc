@@ -91,21 +91,21 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
 // attempt to preserve active streams by marking all sessions as going
 // away, rather than explicitly closing them. Streams may still fail due
 // to a generated TCP reset.
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
       spdy_go_away_on_ip_change(true),
 #else
       spdy_go_away_on_ip_change(false),
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
       enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
-      enable_websocket_over_http2(true),
       enable_quic(true),
       enable_quic_proxies_for_https_urls(false),
       disable_idle_sockets_close_on_memory_pressure(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false) {
+      enable_priority_update(false),
+      ignore_ip_address_changes(false) {
   enable_early_data =
       base::FeatureList::IsEnabled(features::kEnableTLS13EarlyData);
 }
@@ -172,7 +172,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                            context.host_resolver,
                            context.ssl_config_service,
                            context.client_socket_factory
-                               ? context.client_socket_factory
+                               ? context.client_socket_factory.get()
                                : ClientSocketFactory::GetDefaultFactory(),
                            context.http_server_properties,
                            context.cert_verifier,
@@ -199,7 +199,9 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                          params.enable_priority_update,
                          params.spdy_go_away_on_ip_change,
                          params.time_func,
-                         context.network_quality_estimator),
+                         context.network_quality_estimator,
+                         // cleanup_sessions_on_ip_address_changed
+                         !params.ignore_ip_address_changes),
       http_stream_factory_(std::make_unique<HttpStreamFactory>(this)),
       params_(params),
       context_(context) {
@@ -210,12 +212,16 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
   normal_socket_pool_manager_ = std::make_unique<ClientSocketPoolManagerImpl>(
       CreateCommonConnectJobParams(false /* for_websockets */),
       CreateCommonConnectJobParams(true /* for_websockets */),
-      NORMAL_SOCKET_POOL);
+      NORMAL_SOCKET_POOL,
+      // cleanup_on_ip_address_change
+      !params.ignore_ip_address_changes);
   websocket_socket_pool_manager_ =
       std::make_unique<ClientSocketPoolManagerImpl>(
           CreateCommonConnectJobParams(false /* for_websockets */),
           CreateCommonConnectJobParams(true /* for_websockets */),
-          WEBSOCKET_SOCKET_POOL);
+          WEBSOCKET_SOCKET_POOL,
+          // cleanup_on_ip_address_change
+          !params.ignore_ip_address_changes);
 
   if (params_.enable_http2) {
     next_protos_.push_back(kProtoHTTP2);
@@ -375,15 +381,6 @@ void HttpNetworkSession::SetServerPushDelegate(
   quic_stream_factory_.set_server_push_delegate(push_delegate_.get());
 }
 
-void HttpNetworkSession::GetSSLConfig(SSLConfig* server_config,
-                                      SSLConfig* proxy_config) const {
-  server_config->alpn_protos = GetAlpnProtos();
-  server_config->application_settings = GetApplicationSettings();
-  server_config->ignore_certificate_errors = params_.ignore_certificate_errors;
-  *proxy_config = *server_config;
-  server_config->early_data_enabled = params_.enable_early_data;
-}
-
 bool HttpNetworkSession::IsQuicEnabled() const {
   return params_.enable_quic;
 }
@@ -401,7 +398,7 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
   // Use null websocket_endpoint_lock_manager, which is only set for WebSockets,
   // and only when not using a proxy.
   return CommonConnectJobParams(
-      context_.client_socket_factory ? context_.client_socket_factory
+      context_.client_socket_factory ? context_.client_socket_factory.get()
                                      : ClientSocketFactory::GetDefaultFactory(),
       context_.host_resolver, &http_auth_cache_,
       context_.http_auth_handler_factory, &spdy_session_pool_,

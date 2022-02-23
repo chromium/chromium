@@ -14,22 +14,37 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
+import {getTemplate} from './system_page.html.js';
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 
 
-class SettingsSystemPageElement extends PolymerElement {
+export interface SettingsSystemPageElement {
+  $: {
+    proxy: HTMLElement,
+    hardwareAcceleration: SettingsToggleButtonElement,
+  };
+}
+
+const SettingsSystemPageElementBase = RelaunchMixin(PolymerElement);
+
+export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
   static get is() {
     return 'settings-system-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -41,6 +56,9 @@ class SettingsSystemPageElement extends PolymerElement {
 
       isProxyEnforcedByPolicy_: Boolean,
       isProxyDefault_: Boolean,
+      // <if expr="chromeos_lacros">
+      isSecondaryUser_: Boolean,
+      // </if>
     };
   }
 
@@ -50,9 +68,19 @@ class SettingsSystemPageElement extends PolymerElement {
     ];
   }
 
+  constructor() {
+    super();
+    // <if expr="chromeos_lacros">
+    this.isSecondaryUser_ = loadTimeData.getBoolean('isSecondaryUser');
+    // </if>
+  }
+
   prefs: {proxy: chrome.settingsPrivate.PrefObject};
   private isProxyEnforcedByPolicy_: boolean;
   private isProxyDefault_: boolean;
+  // <if expr="chromeos_lacros">
+  private isSecondaryUser_: boolean;
+  // </if>
 
   private observeProxyPrefChanged_() {
     const pref = this.prefs.proxy;
@@ -82,8 +110,7 @@ class SettingsSystemPageElement extends PolymerElement {
   private onRestartTap_(e: Event) {
     // Prevent event from bubbling up to the toggle button.
     e.stopPropagation();
-    // TODO(dbeam): we should prompt before restarting the browser.
-    LifetimeBrowserProxyImpl.getInstance().restart();
+    this.performRestart(RestartType.RESTART);
   }
 
   /**
@@ -92,6 +119,12 @@ class SettingsSystemPageElement extends PolymerElement {
   private shouldShowRestart_(enabled: boolean): boolean {
     const proxy = SystemPageBrowserProxyImpl.getInstance();
     return enabled !== proxy.wasHardwareAccelerationEnabledAtStartup();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-system-page': SettingsSystemPageElement;
   }
 }
 

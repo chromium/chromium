@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -598,7 +599,7 @@ class GLPixelBufferRGBAResult final : public CopyOutputResult {
  private:
   const gfx::ColorSpace color_space_;
   base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-  ContextProvider* context_provider_;
+  raw_ptr<ContextProvider> context_provider_;
   mutable GLuint transfer_buffer_;
   const bool is_upside_down_;
   const bool swap_red_and_blue_;
@@ -732,7 +733,7 @@ void GLRendererCopier::RenderAndSendTextureResult(
   // capture services provided by VIZ.
   CopyOutputResult::ReleaseCallbacks release_callbacks;
   release_callbacks.push_back(
-      texture_deleter_->GetReleaseCallback(context_provider_, mailbox));
+      texture_deleter_->GetReleaseCallback(context_provider_.get(), mailbox));
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
       CopyOutputResult::Format::RGBA, result_rect,
@@ -820,9 +821,9 @@ class GLPixelBufferI420Result final : public CopyOutputResult {
  private:
   const gfx::Rect aligned_rect_;
   base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-  ContextProvider* const context_provider_;
+  const raw_ptr<ContextProvider> context_provider_;
   const GLuint transfer_buffer_;
-  uint8_t* pixels_;
+  raw_ptr<uint8_t> pixels_;
 };
 
 // Specialization of CopyOutputResult which reads NV12 plane data from a GL
@@ -898,9 +899,9 @@ class GLPixelBufferNV12Result final : public CopyOutputResult {
  private:
   const gfx::Rect aligned_rect_;
   base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
-  ContextProvider* const context_provider_;
+  const raw_ptr<ContextProvider> context_provider_;
   const GLuint transfer_buffer_;
-  uint8_t* pixels_ = nullptr;
+  raw_ptr<uint8_t> pixels_ = nullptr;
 };
 
 }  // namespace

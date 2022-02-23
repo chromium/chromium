@@ -214,7 +214,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
         switch (GetParam()) {
           case RecordingPersistence::kFileSystem: {
             base::ScopedAllowBlockingForTesting scope;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
             base::FilePath path = base::FilePath(
                 base::UTF8ToWide(result->proto.root_frame().file_path()));
 #else

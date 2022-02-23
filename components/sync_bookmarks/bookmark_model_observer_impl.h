@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
@@ -83,7 +84,7 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   // Process a modification of a local node and updates |bookmark_tracker_|
   // accordingly. No-op if the commit can be optimized away, i.e. if |specifics|
   // are identical to the previously-known specifics (in hashed form).
-  void ProcessUpdate(const SyncedBookmarkTracker::Entity* entity,
+  void ProcessUpdate(const SyncedBookmarkTrackerEntity* entity,
                      const sync_pb::EntitySpecifics& specifics);
 
   // Processes the deletion of a bookmake node and updates the
@@ -95,7 +96,7 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
 
   // Points to the tracker owned by the processor. It keeps the mapping between
   // bookmark nodes and corresponding sync server entities.
-  SyncedBookmarkTracker* const bookmark_tracker_;
+  const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
 
   // The callback used to inform the sync engine that there are local changes to
   // be committed.

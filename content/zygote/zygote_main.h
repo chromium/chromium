@@ -8,15 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "build/build_config.h"
-#include "content/common/content_export.h"
-
 namespace content {
 
 class ZygoteForkDelegate;
 
 // |delegate| must outlive this call.
-CONTENT_EXPORT bool ZygoteMain(
+bool ZygoteMain(
     std::vector<std::unique_ptr<ZygoteForkDelegate>> fork_delegates);
 
 }  // namespace content

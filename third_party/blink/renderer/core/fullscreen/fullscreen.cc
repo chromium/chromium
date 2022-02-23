@@ -55,8 +55,9 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -101,11 +102,14 @@ void FullscreenElementChanged(Document& document,
         true);
   }
 
-  if (document.GetFrame()) {
-    // SetIsInert recurses through subframes to propagate the inert bit as
-    // needed.
-    document.GetFrame()->SetIsInert(document.LocalOwner() &&
-                                    document.LocalOwner()->IsInert());
+  // Update IsInert() flags.
+  const StyleChangeReasonForTracing& reason =
+      StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen);
+  if (old_element && new_element) {
+    old_element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
+    new_element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
+  } else if (Element* root = document.documentElement()) {
+    root->SetNeedsStyleRecalc(kLocalStyleChange, reason);
   }
 
   // Any element not contained by the fullscreen element is inert (see
@@ -324,7 +328,9 @@ bool AllowedToRequestFullscreen(Document& document) {
 
   // The algorithm is triggered by another event with transient affordances,
   // e.g. permission-gated events for user-generated screens changes.
-  if (document.GetFrame()->IsTransientAllowFullscreenActive()) {
+  if (RuntimeEnabledFeatures::WindowPlacementV2Enabled(
+          document.GetExecutionContext()) &&
+      document.GetFrame()->IsTransientAllowFullscreenActive()) {
     UseCounter::Count(document, WebFeature::kFullscreenAllowedByScreensChange);
     return true;
   }

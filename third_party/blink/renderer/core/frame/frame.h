@@ -52,7 +52,7 @@
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -200,6 +200,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return window_proxy_manager_;
   }
   WindowProxy* GetWindowProxy(DOMWrapperWorld&);
+  WindowProxy* GetWindowProxyMaybeUninitialized(DOMWrapperWorld&);
 
   virtual void DidChangeVisibilityState();
 
@@ -331,7 +332,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Called when the focus controller changes the focus to this frame.
   virtual void DidFocus() = 0;
 
-  virtual IntSize GetMainFrameViewportSize() const = 0;
+  virtual gfx::Size GetMainFrameViewportSize() const = 0;
   virtual gfx::Point GetMainFrameScrollOffset() const = 0;
 
   // Sets this frame's opener to another frame, or disowned the opener
@@ -344,21 +345,31 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* Opener() const { return opener_; }
 
   // Returns the parent frame or null if this is the top-most frame.
+  // When `frame_tree_boundary` is `kFenced`, returns null if this is a fenced
+  // frame root.
   Frame* Parent(FrameTreeBoundary frame_tree_boundary =
                     FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
+  // When `frame_tree_boundary` is `kFenced`, does not traverse out of fenced
+  // frame root nodes.
   Frame* Top(
       FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
 
   // Returns the first child frame.
-  Frame* FirstChild() const { return first_child_; }
+  // When `frame_tree_boundary` is `kFenced`, skips over children that are
+  // fenced frame roots.
+  Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
+                        FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the previous sibling frame.
   Frame* PreviousSibling() const { return previous_sibling_; }
 
   // Returns the next sibling frame.
-  Frame* NextSibling() const { return next_sibling_; }
+  // When `frame_tree_boundary` is `kFenced`, skips over siblings that are
+  // fenced frame roots.
+  Frame* NextSibling(FrameTreeBoundary frame_tree_boundary =
+                         FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the last child frame.
   Frame* LastChild() const { return last_child_; }
@@ -381,6 +392,14 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     DCHECK_NE(!!provisional_frame, !!provisional_frame_);
     provisional_frame_ = provisional_frame;
   }
+
+  // Returns false if fenced frames are disabled. Returns true if the
+  // feature is enabled and if |this| or any of its ancestor nodes is a
+  // fenced frame. For MPArch based fenced frames returns the value of
+  // Page::IsMainFrameFencedFrameRoot and for shadowDOM based fenced frames
+  // returns true, if the FrameTree that this frame is in is not the outermost
+  // FrameTree.
+  bool IsInFencedFrameTree() const;
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
@@ -425,13 +444,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   void RenderFallbackContentWithResourceTiming(
       mojom::blink::ResourceTimingInfoPtr timing,
       const String& server_timing_values);
-
-  // Returns false if fenced frames are disabled. Returns true if the
-  // feature is enabled and if |this| or any of its ancestor nodes is a
-  // fenced frame. For MPArch returns the value of
-  // Page::IsMainFrameFencedFrameRoot and for shadowDOM returns true, if
-  // the FrameTree that this frame is in is not the outermost FrameTree.
-  bool IsInFencedFrameTree() const;
 
   mutable FrameTree tree_node_;
 

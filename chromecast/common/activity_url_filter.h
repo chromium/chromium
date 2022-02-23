@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 

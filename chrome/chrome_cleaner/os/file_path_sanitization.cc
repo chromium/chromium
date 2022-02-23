@@ -177,7 +177,7 @@ bool OffsetCSIDLToPath(int csidl_with_offset, base::FilePath* path) {
 
 void InitializeFilePathSanitization() {
   // Only do this once.
-  static bool init_once = []() -> bool {
+  [[maybe_unused]] static bool init_once = []() -> bool {
     // Setup PathService to use OffsetCSIDLToPath so that SanitizePath can
     // benefit from the caching provided in PathService.
     base::PathService::RegisterProvider(&OffsetCSIDLToPath,
@@ -194,7 +194,6 @@ void InitializeFilePathSanitization() {
     sanitization_internal::initialize_file_path_sanitization_called = true;
     return true;
   }();
-  ANALYZER_ALLOW_UNUSED(init_once);
 }
 
 std::vector<base::FilePath> GetRewrittenPaths() {

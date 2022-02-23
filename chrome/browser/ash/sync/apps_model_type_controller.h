@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/sync/os_sync_model_type_controller.h"
+#include "components/sync/driver/model_type_controller.h"
 #include "components/sync/model/model_type_store.h"
 
 class Profile;
@@ -17,18 +17,17 @@ class Profile;
 namespace syncer {
 class ModelTypeSyncBridge;
 class SyncableService;
-class SyncService;
 }  // namespace syncer
 
-// Controller for sync of ModelType APPS on Chrome OS. Runs in sync transport
-// mode. Starts the extensions machinery when sync is starting.
-class AppsModelTypeController : public OsSyncModelTypeController {
+// Controller for sync of ModelType APPS on Chrome OS. Starts the extensions
+// machinery when sync is starting.
+// TODO(https://crbug.com/1274802): Replace with ExtensionModelTypeController.
+class AppsModelTypeController : public syncer::ModelTypeController {
  public:
   static std::unique_ptr<AppsModelTypeController> Create(
       syncer::OnceModelTypeStoreFactory store_factory,
       base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
-      syncer::SyncService* sync_service,
       Profile* profile);
   ~AppsModelTypeController() override;
 
@@ -39,9 +38,6 @@ class AppsModelTypeController : public OsSyncModelTypeController {
   AppsModelTypeController(std::unique_ptr<syncer::ModelTypeSyncBridge> bridge,
                           std::unique_ptr<syncer::ModelTypeControllerDelegate>
                               delegate_for_full_sync_mode,
-                          std::unique_ptr<syncer::ModelTypeControllerDelegate>
-                              delegate_for_transport_mode,
-                          syncer::SyncService* sync_service,
                           Profile* profile);
 
   // DataTypeController:

@@ -40,11 +40,6 @@ LayoutHTMLCanvas::LayoutHTMLCanvas(HTMLCanvasElement* element)
   View()->GetFrameView()->SetIsVisuallyNonEmpty();
 }
 
-PaintLayerType LayoutHTMLCanvas::LayerTypeRequired() const {
-  NOT_DESTROYED();
-  return kNormalPaintLayer;
-}
-
 void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
@@ -53,7 +48,7 @@ void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutHTMLCanvas::CanvasSizeChanged() {
   NOT_DESTROYED();
-  IntSize canvas_size = To<HTMLCanvasElement>(GetNode())->Size();
+  gfx::Size canvas_size = To<HTMLCanvasElement>(GetNode())->Size();
   LayoutSize zoomed_size(canvas_size.width() * StyleRef().EffectiveZoom(),
                          canvas_size.height() * StyleRef().EffectiveZoom());
 
@@ -83,7 +78,7 @@ bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
     return true;
   // Simple background that is contained within the contents rect.
   return ReplacedContentRect().Contains(
-      PhysicalBackgroundRect(kBackgroundClipRect));
+      PhysicalBackgroundRect(kBackgroundPaintedExtent));
 }
 
 void LayoutHTMLCanvas::InvalidatePaint(
@@ -94,13 +89,6 @@ void LayoutHTMLCanvas::InvalidatePaint(
     element->DoDeferredPaintInvalidation();
 
   LayoutReplaced::InvalidatePaint(context);
-}
-
-CompositingReasons LayoutHTMLCanvas::AdditionalCompositingReasons() const {
-  NOT_DESTROYED();
-  if (To<HTMLCanvasElement>(GetNode())->ShouldBeDirectComposited())
-    return CompositingReason::kCanvas;
-  return CompositingReason::kNone;
 }
 
 void LayoutHTMLCanvas::StyleDidChange(StyleDifference diff,

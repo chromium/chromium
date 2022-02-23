@@ -7,6 +7,7 @@
 
 #include <list>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registry.h"
@@ -81,7 +82,7 @@ class SharedModuleService : public ExtensionRegistryObserver,
       extension_registry_observation_{this};
 
   // The context associated with this SharedModuleService.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

@@ -19,12 +19,39 @@ class MockUserImageManager : public UserImageManager {
   explicit MockUserImageManager(const AccountId& account_id);
   virtual ~MockUserImageManager();
 
-  MOCK_METHOD1(SaveUserDefaultImageIndex, void(int));
-  void SaveUserImage(std::unique_ptr<user_manager::UserImage>) {}
-  MOCK_METHOD1(SaveUserImageFromFile, void(const base::FilePath&));
-  MOCK_METHOD0(SaveUserImageFromProfileImage, void());
-  MOCK_METHOD0(DownloadProfileImage, void());
-  MOCK_CONST_METHOD0(DownloadedProfileImage, const gfx::ImageSkia&(void));
+  MOCK_METHOD(void, LoadUserImage, (), (override));
+  MOCK_METHOD(void,
+              UserLoggedIn,
+              (bool user_is_new, bool user_is_local),
+              (override));
+  MOCK_METHOD(void, UserProfileCreated, (), (override));
+  MOCK_METHOD(void, SaveUserDefaultImageIndex, (int image_index), (override));
+  MOCK_METHOD(void,
+              SaveUserImage,
+              (std::unique_ptr<user_manager::UserImage> user_image),
+              (override));
+  MOCK_METHOD(void,
+              SaveUserImageFromFile,
+              (const base::FilePath& path),
+              (override));
+  MOCK_METHOD(void, SaveUserImageFromProfileImage, (), (override));
+  MOCK_METHOD(void, DeleteUserImage, (), (override));
+  MOCK_METHOD(void, DownloadProfileImage, (), (override));
+  MOCK_METHOD(const gfx::ImageSkia&,
+              DownloadedProfileImage,
+              (),
+              (const, override));
+  MOCK_METHOD(UserImageSyncObserver*, GetSyncObserver, (), (const, override));
+  MOCK_METHOD(void, Shutdown, (), (override));
+  MOCK_METHOD(void, OnExternalDataSet, (const std::string& policy), (override));
+  MOCK_METHOD(void,
+              OnExternalDataCleared,
+              (const std::string& policy),
+              (override));
+  MOCK_METHOD(void,
+              OnExternalDataFetched,
+              (const std::string& policy, std::unique_ptr<std::string> data),
+              (override));
 };
 
 }  // namespace ash

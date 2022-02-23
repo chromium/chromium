@@ -6,7 +6,9 @@
 
 #include <string>
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <commdlg.h>
 #endif
@@ -30,7 +32,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "net/base/filename_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #endif
@@ -162,7 +164,7 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
     return;
 
   base::FilePath result;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring file_part = base::FilePath(suggested_path).BaseName().value();
   wchar_t file_name[MAX_PATH];
   base::wcslcpy(file_name, file_part.c_str(), base::size(file_name));

@@ -13,9 +13,6 @@ from pylib.base import output_manager
 
 class NoopOutputManager(output_manager.OutputManager):
 
-  def __init__(self):
-    super(NoopOutputManager, self).__init__()
-
   #override
   def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
     del out_filename, out_subdir, datatype
@@ -25,7 +22,7 @@ class NoopOutputManager(output_manager.OutputManager):
 class NoopArchivedFile(output_manager.ArchivedFile):
 
   def __init__(self):
-    super(NoopArchivedFile, self).__init__(None, None, None)
+    super().__init__(None, None, None)
 
   def Link(self):
     """NoopArchivedFiles are not retained."""
@@ -36,7 +33,6 @@ class NoopArchivedFile(output_manager.ArchivedFile):
 
   def Archive(self):
     """NoopArchivedFiles are not retained."""
-    pass
 
   def _Archive(self):
     pass

@@ -6,9 +6,11 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("bookmarks.gni")
 
 preprocess_folder = "preprocessed"
 tsc_folder = "tsc"
@@ -51,57 +53,27 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "actions.ts",
-    "api_listener.ts",
-    "bookmarks.ts",
-    "browser_proxy.ts",
-    "constants.ts",
-    "debouncer.ts",
-    "dialog_focus_manager.ts",
-    "dnd_manager.ts",
-    "mouse_focus_behavior.ts",
-    "reducers.ts",
-    "store_client_mixin.ts",
-    "store.ts",
-    "types.ts",
-    "util.ts",
-  ]
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "app.ts",
-    "command_manager.ts",
-    "edit_dialog.ts",
-    "folder_node.ts",
-    "item.ts",
-    "list.ts",
-    "router.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "toolbar.ts",
-  ]
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "app.ts",
-    "command_manager.ts",
-    "edit_dialog.ts",
-    "folder_node.ts",
-    "item.ts",
-    "list.ts",
-    "router.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "toolbar.ts",
-  ]
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 grit("resources") {
@@ -126,38 +98,14 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/$tsc_folder"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "actions.ts",
-    "api_listener.ts",
-    "app.ts",
-    "bookmarks.ts",
-    "browser_proxy.ts",
-    "command_manager.ts",
-    "constants.ts",
-    "debouncer.ts",
-    "dialog_focus_manager.ts",
-    "dnd_manager.ts",
-    "edit_dialog.ts",
-    "folder_node.ts",
-    "item.ts",
-    "list.ts",
-    "mouse_focus_behavior.ts",
-    "reducers.ts",
-    "router.ts",
-    "shared_vars.ts",
-    "shared_style.ts",
-    "store.ts",
-    "store_client_mixin.ts",
-    "toolbar.ts",
-    "types.ts",
-    "util.ts",
-  ]
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]

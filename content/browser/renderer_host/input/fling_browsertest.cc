@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -103,7 +105,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
     SynchronizeThreads();
   }
 
@@ -250,7 +252,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   void WaitForScroll() {
     RenderFrameSubmissionObserver observer(
         GetWidgetHost()->render_frame_metadata_provider());
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     // scrollTop > 0 is not enough since the first progressFling is called from
     // FlingController::ProcessGestureFlingStart. Wait for scrollTop to exceed
     // 100 pixels to make sure that ProgressFling has been called through
@@ -300,14 +302,14 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  RenderWidgetHostViewBase* child_view_ = nullptr;
-  RenderWidgetHostViewBase* root_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> child_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> root_view_ = nullptr;
 };
 
 // On Mac we don't have any touchscreen/touchpad fling events (GFS/GFC).
 // Instead, the OS keeps sending wheel events when the user lifts their fingers
 // from touchpad.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest, TouchscreenFling) {
   LoadURL(kBrowserFlingDataURL);
   SimulateTouchscreenFling(GetWidgetHost());
@@ -543,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   EXPECT_EQ(
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 class PhysicsBasedFlingCurveBrowserTest : public BrowserSideFlingBrowserTest {
  public:

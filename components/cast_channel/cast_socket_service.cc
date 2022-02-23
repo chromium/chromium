@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/libcast_socket_service.h"
 #include "components/cast_channel/logger.h"
@@ -69,6 +70,15 @@ std::unique_ptr<CastSocket> CastSocketServiceImpl::RemoveSocket(
     sockets_.erase(socket_it);
   }
   return socket;
+}
+
+void CastSocketService::CloseSocket(int channel_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  auto* socket = GetSocket(channel_id);
+  if (socket) {
+    socket->Close(base::BindOnce([](int x) {}));
+    RemoveSocket(socket->id());
+  }
 }
 
 CastSocket* CastSocketServiceImpl::GetSocket(int channel_id) const {

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect.h"
@@ -184,16 +184,16 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 // 3. |dst_frame|'s coded size (both width and height) should be larger than or
 // equal to the visible size, since the visible region in both frames should be
 // identical.
-MEDIA_EXPORT bool I420CopyWithPadding(const VideoFrame& src_frame,
-                                      VideoFrame* dst_frame) WARN_UNUSED_RESULT;
+[[nodiscard]] MEDIA_EXPORT bool I420CopyWithPadding(const VideoFrame& src_frame,
+                                                    VideoFrame* dst_frame);
 
 // Copy pixel data from |src_frame| to |dst_frame| applying scaling and pixel
 // format conversion as needed. Both frames need to be mappabale and have either
 // I420 or NV12 pixel format.
-MEDIA_EXPORT Status ConvertAndScaleFrame(const VideoFrame& src_frame,
-                                         VideoFrame& dst_frame,
-                                         std::vector<uint8_t>& tmp_buf)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] MEDIA_EXPORT EncoderStatus
+ConvertAndScaleFrame(const VideoFrame& src_frame,
+                     VideoFrame& dst_frame,
+                     std::vector<uint8_t>& tmp_buf);
 
 // Converts kRGBA_8888_SkColorType and kBGRA_8888_SkColorType to the appropriate
 // ARGB, XRGB, ABGR, or XBGR format.

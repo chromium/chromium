@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 304 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 305 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS <input type="hidden"> - letter-spacing
 PASS <input type="hidden"> - word-spacing
 PASS <input type="hidden"> - line-height
@@ -274,7 +274,7 @@ PASS <table><tbody><tr><td> - text-indent
 PASS <table><tbody><tr><td> - text-shadow
 PASS <table><tbody><tr><td> - text-align
 PASS <table><tbody><tr><td> - display
-FAIL <table><tbody><tr><td> - box-sizing assert_equals: expected "content-box" but got "border-box"
+PASS <table><tbody><tr><td> - box-sizing
 PASS <tbody><tr><td> (in <table>) - letter-spacing
 PASS <tbody><tr><td> (in <table>) - word-spacing
 PASS <tbody><tr><td> (in <table>) - line-height

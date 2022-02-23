@@ -20,7 +20,7 @@ using views::Widget;
 typedef ChromeViewsTestBase ConfirmBubbleViewsTest;
 
 // TODO(crbug.com/1004633) Disabled on windows due to flake
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CreateAndClose DISABLED_CreateAndClose
 #else
 #define MAYBE_CreateAndClose CreateAndClose

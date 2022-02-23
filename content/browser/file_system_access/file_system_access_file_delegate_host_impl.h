@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_DELEGATE_HOST_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_DELEGATE_HOST_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -17,7 +18,7 @@ namespace content {
 // interface. Instances of this class are owned by the
 // FileSystemAccessAccessHandleHostImpl instance of the associated URL, which
 // constructs it.
-class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
+class FileSystemAccessFileDelegateHostImpl
     : public blink::mojom::FileSystemAccessFileDelegateHost {
  public:
   FileSystemAccessFileDelegateHostImpl(
@@ -61,7 +62,7 @@ class CONTENT_EXPORT FileSystemAccessFileDelegateHostImpl
 
   // This is safe, since the manager owns the
   // FileSystemAccessAccessHandleHostImpl which owns this class.
-  FileSystemAccessManagerImpl* const manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_;
   const storage::FileSystemURL url_;
 
   mojo::Receiver<blink::mojom::FileSystemAccessFileDelegateHost> receiver_;

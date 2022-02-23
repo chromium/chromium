@@ -95,8 +95,9 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
     // For the last stage, it's possible that stageOffset is such that we're
     // straddling the end of the impulse response buffer (if we use stageSize),
     // so reduce the last stage's length...
-    if (stage_size + stage_offset > total_response_length)
+    if (stage_size + stage_offset > total_response_length) {
       stage_size = total_response_length - stage_offset;
+    }
 
     // This "staggers" the time when each FFT happens so they don't all happen
     // at the same time
@@ -128,10 +129,12 @@ ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
     }
 
     if (use_background_threads && !is_background_stage &&
-        fft_size > max_realtime_fft_size_)
+        fft_size > max_realtime_fft_size_) {
       fft_size = max_realtime_fft_size_;
-    if (fft_size > max_fft_size_)
+    }
+    if (fft_size > max_fft_size_) {
       fft_size = max_fft_size_;
+    }
   }
 
   // Start up background thread
@@ -163,8 +166,9 @@ void ReverbConvolver::ProcessInBackground() {
     const int kSliceSize = kMinFFTSize / 2;
 
     // Accumulate contributions from each stage
-    for (wtf_size_t i = 0; i < background_stages_.size(); ++i)
-      background_stages_[i]->ProcessInBackground(this, kSliceSize);
+    for (auto& background_stage : background_stages_) {
+      background_stage->ProcessInBackground(this, kSliceSize);
+    }
   }
 }
 
@@ -185,8 +189,9 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
   input_buffer_.Write(source, frames_to_process);
 
   // Accumulate contributions from each stage
-  for (wtf_size_t i = 0; i < stages_.size(); ++i)
-    stages_[i]->Process(source, frames_to_process);
+  for (auto& stage : stages_) {
+    stage->Process(source, frames_to_process);
+  }
 
   // Finally read from accumulation buffer
   accumulation_buffer_.ReadAndClear(destination, frames_to_process);
@@ -202,11 +207,13 @@ void ReverbConvolver::Process(const AudioChannel* source_channel,
 }
 
 void ReverbConvolver::Reset() {
-  for (wtf_size_t i = 0; i < stages_.size(); ++i)
-    stages_[i]->Reset();
+  for (auto& stage : stages_) {
+    stage->Reset();
+  }
 
-  for (wtf_size_t i = 0; i < background_stages_.size(); ++i)
-    background_stages_[i]->Reset();
+  for (auto& background_stage : background_stages_) {
+    background_stage->Reset();
+  }
 
   accumulation_buffer_.Reset();
   input_buffer_.Reset();

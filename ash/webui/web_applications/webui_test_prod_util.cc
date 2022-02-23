@@ -8,48 +8,78 @@
 #include "base/no_destructor.h"
 #include "content/public/common/content_switches.h"
 
+using content::WebUIDataSource;
+
 namespace {
 
-content::WebUIDataSource::ShouldHandleRequestCallback&
-GetTestShouldHandleRequest() {
-  static base::NoDestructor<
-      content::WebUIDataSource::ShouldHandleRequestCallback>
+WebUIDataSource::ShouldHandleRequestCallback& GetTestShouldHandleRequest() {
+  static base::NoDestructor<WebUIDataSource::ShouldHandleRequestCallback>
       callback;
   return *callback;
 }
 
-content::WebUIDataSource::HandleRequestCallback& GetTestRequestFilterHandler() {
-  static base::NoDestructor<content::WebUIDataSource::HandleRequestCallback>
-      callback;
+WebUIDataSource::HandleRequestCallback& GetTestRequestFilterHandler() {
+  static base::NoDestructor<WebUIDataSource::HandleRequestCallback> callback;
   return *callback;
 }
 
-bool InvokeTestShouldHandleRequestCallback(const std::string& path) {
-  const auto& callback = GetTestShouldHandleRequest();
-  return callback ? callback.Run(path) : false;
+bool InvokeTestShouldHandleRequestCallback(
+    const WebUIDataSource::ShouldHandleRequestCallback&
+        real_should_handle_request_callback,
+    const std::string& path) {
+  const auto& test_callback = GetTestShouldHandleRequest();
+  if (test_callback && test_callback.Run(path)) {
+    return true;
+  }
+  return real_should_handle_request_callback &&
+         real_should_handle_request_callback.Run(path);
 }
 
 void InvokeTestFileRequestFilterCallback(
+    const WebUIDataSource::HandleRequestCallback& real_handle_request_callback,
     const std::string& path,
-    content::WebUIDataSource::GotDataCallback callback) {
-  return GetTestRequestFilterHandler().Run(path, std::move(callback));
+    WebUIDataSource::GotDataCallback callback) {
+  // First, check whether this was request for a test-only resource. This
+  // requires the test handler to be installed by
+  // SetTestableDataSourceRequestHandlerForTesting() and for it to have returned
+  // true. Otherwise assume, that since the request was directed to the filter,
+  // that it is a request for the "real" filter installed by
+  // MaybeConfigureTestableDataSource().
+  const auto& test_callback = GetTestShouldHandleRequest();
+  if (test_callback && test_callback.Run(path)) {
+    GetTestRequestFilterHandler().Run(path, std::move(callback));
+  } else {
+    DCHECK(!real_handle_request_callback.is_null());
+    real_handle_request_callback.Run(path, std::move(callback));
+  }
 }
 
 }  // namespace
 
-bool MaybeConfigureTestableDataSource(content::WebUIDataSource* host_source) {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
+bool MaybeConfigureTestableDataSource(
+    WebUIDataSource* host_source,
+    const WebUIDataSource::ShouldHandleRequestCallback&
+        real_should_handle_request_callback,
+    const WebUIDataSource::HandleRequestCallback&
+        real_handle_request_callback) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
+    host_source->SetRequestFilter(real_should_handle_request_callback,
+                                  real_handle_request_callback);
     return false;
+  }
 
   host_source->SetRequestFilter(
-      base::BindRepeating(&InvokeTestShouldHandleRequestCallback),
-      base::BindRepeating(&InvokeTestFileRequestFilterCallback));
+      base::BindRepeating(&InvokeTestShouldHandleRequestCallback,
+                          real_should_handle_request_callback),
+      base::BindRepeating(&InvokeTestFileRequestFilterCallback,
+                          real_handle_request_callback));
   return true;
 }
 
 void SetTestableDataSourceRequestHandlerForTesting(  // IN-TEST
-    content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
-    content::WebUIDataSource::HandleRequestCallback handler) {
+    WebUIDataSource::ShouldHandleRequestCallback should_handle,
+    WebUIDataSource::HandleRequestCallback handler) {
   GetTestShouldHandleRequest() = std::move(should_handle);
   GetTestRequestFilterHandler() = std::move(handler);
 }

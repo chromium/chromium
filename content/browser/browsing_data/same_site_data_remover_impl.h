@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -54,8 +56,8 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);
 
  private:
-  BrowserContext* browser_context_;
-  StoragePartition* storage_partition_;
+  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<StoragePartition> storage_partition_;
   std::set<std::string> same_site_none_domains_;
 };
 

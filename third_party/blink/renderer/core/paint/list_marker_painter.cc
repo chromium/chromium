@@ -98,14 +98,14 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeColor(color);
   context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeThickness(1.0f);
-  IntRect snapped_rect = PixelSnappedIntRect(marker);
+  gfx::Rect snapped_rect = ToPixelSnappedRect(marker);
   const AtomicString& type = style.ListStyleType()->GetCounterStyleName();
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kListSymbol));
   if (type == "disc") {
-    context.FillEllipse(FloatRect(snapped_rect), auto_dark_mode);
+    context.FillEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == "circle") {
-    context.StrokeEllipse(FloatRect(snapped_rect), auto_dark_mode);
+    context.StrokeEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == "square") {
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == "disclosure-open" || type == "disclosure-closed") {
@@ -158,9 +158,10 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     context.DrawImage(
         layout_list_marker_.GetImage()
             ->GetImage(layout_list_marker_, layout_list_marker_.GetDocument(),
-                       layout_list_marker_.StyleRef(), FloatSize(marker.Size()))
+                       layout_list_marker_.StyleRef(),
+                       gfx::SizeF(marker.Size()))
             .get(),
-        Image::kSyncDecode, auto_dark_mode, FloatRect(marker));
+        Image::kSyncDecode, auto_dark_mode, gfx::RectF(marker));
     return;
   }
 
@@ -196,8 +197,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     marker.MoveBy(-box_origin);
     marker = marker.TransposedRect();
     marker.MoveBy(
-        gfx::Point(RoundToInt(box.X()),
-                   RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
+        LayoutPoint(RoundToInt(box.X()),
+                    RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
     state_saver.Save();
     context.Translate(marker.X(), marker.MaxY());
     context.Rotate(Deg2rad(90.0f));
@@ -207,10 +208,10 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   TextRunPaintInfo text_run_paint_info(text_run);
   const SimpleFontData* font_data =
       layout_list_marker_.StyleRef().GetFont().PrimaryFont();
-  FloatPoint text_origin =
-      FloatPoint(marker.X().Round(),
-                 marker.Y().Round() +
-                     (font_data ? font_data->GetFontMetrics().Ascent() : 0));
+  gfx::PointF text_origin =
+      gfx::PointF(marker.X().Round(),
+                  marker.Y().Round() +
+                      (font_data ? font_data->GetFontMetrics().Ascent() : 0));
 
   // Text is not arbitrary. We can judge whether it's RTL from the first
   // character, and we only need to handle the direction RightToLeft for now.
@@ -252,20 +253,19 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   if (layout_list_marker_.StyleRef().IsLeftToRightDirection()) {
     context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(prefix_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(prefix_run), 0);
     context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(text_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(text_run), 0);
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
   } else {
-    // Is the truncation to IntSize below meaningful or a bug?
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(suffix_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(suffix_run), 0);
     context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(text_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(text_run), 0);
     context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
   }

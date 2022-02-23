@@ -95,7 +95,7 @@ void TestBackgroundSyncManager::DispatchPeriodicSyncEvent(
 }
 
 void TestBackgroundSyncManager::HasMainFrameWindowClient(
-    const url::Origin& origin,
+    const blink::StorageKey& key,
     BoolCallback callback) {
   std::move(callback).Run(has_main_frame_window_client_);
 }

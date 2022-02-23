@@ -1,19 +1,20 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './icons.js';
-import './more_permissions_item.js';
-import './permission_item.js';
+import './app_details_item.js';
 import './pin_to_shelf_item.js';
-import './shared_style.js';
 import './supported_links_item.js';
+import './shared_style.js';
+import '//resources/cr_components/app_management/icons.js';
+import '//resources/cr_components/app_management/more_permissions_item.js';
+import '//resources/cr_components/app_management/permission_item.js';
 import '//resources/cr_elements/icons.m.js';
 
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {getAppIcon, getSelectedApp} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

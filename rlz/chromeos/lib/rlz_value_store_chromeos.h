@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "rlz/lib/rlz_value_store.h"

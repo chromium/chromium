@@ -46,9 +46,6 @@ ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
                                            base::SPLIT_WANT_NONEMPTY);
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Net.URLRequest.ReferrerPolicyHeaderPresentOnRedirect",
-                        !policy_tokens.empty());
-
   // Per https://w3c.github.io/webappsec-referrer-policy/#unknown-policy-values,
   // use the last recognized policy value, and ignore unknown policies.
   for (const auto& token : policy_tokens) {
@@ -141,8 +138,7 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     GURL::Replacements replacements;
     // Reference the |ref| directly out of the original URL to avoid a
     // malloc.
-    replacements.SetRef(original_url.spec().data(),
-                        original_url.parsed_for_possibly_invalid_spec().ref);
+    replacements.SetRefStr(original_url.ref_piece());
     redirect_info.new_url = new_location.ReplaceComponents(replacements);
   } else {
     redirect_info.new_url = new_location;

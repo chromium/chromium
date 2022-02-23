@@ -26,13 +26,33 @@ class MEDIA_EXPORT Bitrate {
   constexpr Bitrate(const Bitrate& other) = default;
   constexpr Bitrate& operator=(const Bitrate& other) = default;
 
+  // Do not use int or uint64_t variations of these. If you have a signed
+  // or 64-bit value you want to use as input, you must explicitly convert to
+  // uint32_t before calling. This is intended to prevent implicit and unsafe
+  // type conversion.
   static constexpr Bitrate ConstantBitrate(uint32_t target_bitrate) {
-    return Bitrate(Mode::kConstant, target_bitrate, 0u);
+    return Bitrate(Mode::kConstant, target_bitrate, 0);
   }
-  static constexpr Bitrate VariableBitrate(uint32_t target_bitrate,
-                                           uint32_t peak_bitrate) {
-    return Bitrate(Mode::kVariable, target_bitrate, peak_bitrate);
-  }
+  static Bitrate VariableBitrate(uint32_t target_bitrate,
+                                 uint32_t peak_bitrate);
+
+  // Deleted variants: you must SAFELY convert to uint32_t before calling.
+  // See base/numerics/safe_conversions.h for functions to safely convert
+  // between types.
+  static Bitrate ConstantBitrate(int target_bitrate) = delete;
+  static Bitrate VariableBitrate(int target_bitrate, int peak_bitrate) = delete;
+  static Bitrate VariableBitrate(int target_bitrate,
+                                 uint32_t peak_bitrate) = delete;
+  static Bitrate VariableBitrate(uint32_t target_bitrate,
+                                 int peak_bitrate) = delete;
+  static Bitrate ConstantBitrate(uint64_t target_bitrate) = delete;
+  static Bitrate VariableBitrate(uint64_t target_bitrate,
+                                 uint64_t peak_bitrate) = delete;
+  static Bitrate VariableBitrate(uint64_t target_bitrate,
+                                 uint32_t peak_bitrate) = delete;
+  static Bitrate VariableBitrate(uint32_t target_bitrate,
+                                 uint64_t peak_bitrate) = delete;
+
   bool operator==(const Bitrate& right) const;
   bool operator!=(const Bitrate& right) const;
 

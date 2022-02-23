@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,7 +70,7 @@ class RLZTracker {
 
   // For the point parameter of RecordProductEvent.
   static rlz_lib::AccessPoint ChromeOmnibox();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   static rlz_lib::AccessPoint ChromeHomePage();
   static rlz_lib::AccessPoint ChromeAppList();
 #endif
@@ -102,7 +103,7 @@ class RLZTracker {
   // Enables zero delay for InitRlzDelayed. For testing only.
   static void EnableZeroDelayForTesting();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Records that the app list search has been used.
   static void RecordAppListSearch();
 #endif
@@ -220,7 +221,8 @@ class RLZTracker {
   // The cache must be protected by a lock since it may be accessed from
   // the UI thread for reading and the IO thread for reading and/or writing.
   base::Lock cache_lock_;
-  std::map<rlz_lib::AccessPoint, std::u16string> rlz_cache_;
+  std::map<rlz_lib::AccessPoint, std::u16string> rlz_cache_
+      GUARDED_BY(cache_lock_);
 
   // Keeps track of whether the omnibox, home page or app list have been used.
   bool omnibox_used_;

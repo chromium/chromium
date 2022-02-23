@@ -46,6 +46,7 @@ suite('NearbyShare', function() {
     dialog.settings = {
       enabled: enabled,
       isOnboardingComplete: isOnboardingComplete,
+      visibility: nearbyShare.mojom.Visibility.kUnknown,
     };
     dialog.isSettingsRetreived = true;
     document.body.appendChild(dialog);
@@ -223,6 +224,55 @@ suite('NearbyShare', function() {
       // This should close the dialog.
       fakeContactManager.completeDownload();
       selectAllContacts();
+      getButton('nearby-visibility-page', '#actionButton').click();
+
+      assertTrue(dialog.closing_);
+
+      await test_util.waitAfterNextRender(dialog);
+
+      assertFalse(dialog.$$('#dialog').open);
+    });
+
+    test('when disabled, one-page onboarding is shown first', async function() {
+      loadTimeData.overrideValues({
+        'isOnePageOnboardingEnabled': true,
+      });
+      dialog.showHighVisibilityPage();
+      await test_util.waitAfterNextRender(dialog);
+
+      assertTrue(isVisible('nearby-onboarding-one-page'));
+      // Finish onboarding
+      getButton('nearby-onboarding-one-page', '#actionButton').click();
+
+      await test_util.waitAfterNextRender(dialog);
+
+      assertTrue(dialog.settings.enabled);
+      assertEquals(
+          nearbyShare.mojom.Visibility.kAllContacts,
+          dialog.settings.visibility);
+      assertTrue(isVisible('nearby-share-high-visibility-page'));
+    });
+
+    test('when showing onboarding, close when complete.', async function() {
+      loadTimeData.overrideValues({
+        'isOnePageOnboardingEnabled': true,
+      });
+      dialog.showOnboarding();
+      await test_util.waitAfterNextRender(dialog);
+
+      assertTrue(isVisible('nearby-onboarding-one-page'));
+      // Select visibility button and advance to the next page.
+      dialog.$$('nearby-onboarding-one-page').$$('#visibilityButton').click();
+
+      await test_util.waitAfterNextRender(dialog);
+
+      assertTrue(isVisible('nearby-visibility-page'));
+      // All contacts should be selected and confirm should close the dialog.
+      fakeContactManager.completeDownload();
+      assertTrue(dialog.$$('nearby-visibility-page')
+                     .$$('nearby-contact-visibility')
+                     .$$('#allContacts')
+                     .checked);
       getButton('nearby-visibility-page', '#actionButton').click();
 
       assertTrue(dialog.closing_);

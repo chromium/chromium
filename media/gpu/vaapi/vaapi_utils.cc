@@ -39,8 +39,7 @@ ScopedVABufferMapping::ScopedVABufferMapping(
     VABufferID buffer_id,
     base::OnceCallback<void(VABufferID)> release_callback)
     : lock_(lock), va_display_(va_display), buffer_id_(buffer_id) {
-  DCHECK(lock_);
-  lock_->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock_);
   DCHECK_NE(buffer_id, VA_INVALID_ID);
 
   const VAStatus result =
@@ -55,14 +54,16 @@ ScopedVABufferMapping::ScopedVABufferMapping(
 }
 
 ScopedVABufferMapping::~ScopedVABufferMapping() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (va_buffer_data_) {
-    lock_->AssertAcquired();
+    MAYBE_ASSERT_ACQUIRED(lock_);
     Unmap();
   }
 }
 
 VAStatus ScopedVABufferMapping::Unmap() {
-  lock_->AssertAcquired();
+  CHECK(sequence_checker_.CalledOnValidSequence());
+  MAYBE_ASSERT_ACQUIRED(lock_);
   const VAStatus result = vaUnmapBuffer(va_display_, buffer_id_);
   if (result == VA_STATUS_SUCCESS)
     va_buffer_data_ = nullptr;
@@ -78,12 +79,11 @@ std::unique_ptr<ScopedVABuffer> ScopedVABuffer::Create(
     VAContextID va_context_id,
     VABufferType va_buffer_type,
     size_t size) {
-  DCHECK(lock);
   DCHECK(va_display);
   DCHECK_NE(va_context_id, VA_INVALID_ID);
   DCHECK(IsValidVABufferType(va_buffer_type));
   DCHECK_NE(size, 0u);
-  lock->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock);
   unsigned int va_buffer_size;
   if (!base::CheckedNumeric<size_t>(size).AssignIfValid(&va_buffer_size)) {
     LOG(ERROR) << "Invalid size, " << size;
@@ -124,10 +124,10 @@ ScopedVABuffer::ScopedVABuffer(base::Lock* lock,
 
 ScopedVABuffer::~ScopedVABuffer() {
   DCHECK_NE(va_buffer_id_, VA_INVALID_ID);
-  if (!lock_)
+  if (!va_display_)
     return;  // Don't call VA-API function in test.
 
-  base::AutoLock auto_lock(*lock_);
+  base::AutoLockMaybe auto_lock(lock_);
   VAStatus va_res = vaDestroyBuffer(va_display_, va_buffer_id_);
   LOG_IF(ERROR, va_res != VA_STATUS_SUCCESS)
       << "Failed to destroy a VA buffer: " << vaErrorStr(va_res);
@@ -139,8 +139,7 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
                              VAImageFormat* format,
                              const gfx::Size& size)
     : lock_(lock), va_display_(va_display), image_(new VAImage{}) {
-  DCHECK(lock_);
-  lock_->AssertAcquired();
+  MAYBE_ASSERT_ACQUIRED(lock_);
   VAStatus result = vaCreateImage(va_display_, format, size.width(),
                                   size.height(), image_.get());
   if (result != VA_STATUS_SUCCESS) {
@@ -162,8 +161,9 @@ ScopedVAImage::ScopedVAImage(base::Lock* lock,
 }
 
 ScopedVAImage::~ScopedVAImage() {
+  CHECK(sequence_checker_.CalledOnValidSequence());
   if (image_->image_id != VA_INVALID_ID) {
-    base::AutoLock auto_lock(*lock_);
+    base::AutoLockMaybe auto_lock(lock_);
 
     // |va_buffer_| has to be deleted before vaDestroyImage().
     va_buffer_.reset();

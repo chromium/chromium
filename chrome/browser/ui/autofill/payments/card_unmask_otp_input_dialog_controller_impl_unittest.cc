@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -17,6 +16,16 @@
 namespace autofill {
 
 namespace {
+
+class TestCardUnmaskOtpInputDialogView : public CardUnmaskOtpInputDialogView {
+ public:
+  TestCardUnmaskOtpInputDialogView() = default;
+  ~TestCardUnmaskOtpInputDialogView() override = default;
+  void ShowPendingState() override {}
+  void ShowInvalidState(const std::u16string& invalid_label_text) override {}
+  void Dismiss(bool show_confirmation_before_closing,
+               bool user_closed_dialog) override {}
+};
 
 class TestCardUnmaskOtpInputDialogControllerImpl
     : public CardUnmaskOtpInputDialogControllerImpl {
@@ -31,6 +40,10 @@ class TestCardUnmaskOtpInputDialogControllerImpl
   explicit TestCardUnmaskOtpInputDialogControllerImpl(
       content::WebContents* web_contents)
       : CardUnmaskOtpInputDialogControllerImpl(web_contents) {}
+
+  void ShowDialog(TestCardUnmaskOtpInputDialogView* dialog_view) {
+    dialog_view_ = dialog_view;
+  }
 };
 
 }  // namespace
@@ -55,6 +68,12 @@ class CardUnmaskOtpInputDialogControllerImplTest
         TestCardUnmaskOtpInputDialogControllerImpl::FromWebContents(
             web_contents()));
   }
+
+  TestCardUnmaskOtpInputDialogView* test_dialog() { return test_dialog_.get(); }
+
+ private:
+  std::unique_ptr<TestCardUnmaskOtpInputDialogView> test_dialog_ =
+      std::make_unique<TestCardUnmaskOtpInputDialogView>();
 };
 
 TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
@@ -82,6 +101,7 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
   base::HistogramTester histogram_tester;
 
   DCHECK(controller());
+  controller()->ShowDialog(test_dialog());
   controller()->OnOtpVerificationResult(OtpUnmaskResult::kOtpMismatch);
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,
                                /*server_request_succeeded=*/false);
@@ -106,6 +126,7 @@ TEST_F(CardUnmaskOtpInputDialogControllerImplTest,
   base::HistogramTester histogram_tester;
 
   DCHECK(controller());
+  controller()->ShowDialog(test_dialog());
   controller()->OnOkButtonClicked(/*otp=*/u"123456");
   controller()->OnOtpVerificationResult(OtpUnmaskResult::kOtpExpired);
   controller()->OnDialogClosed(/*user_closed_dialog=*/true,

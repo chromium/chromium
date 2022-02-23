@@ -12,13 +12,13 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"
 #else
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/web_usb_chooser_desktop.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using content::RenderFrameHost;
 using content::WebContents;
@@ -43,11 +43,11 @@ FrameUsbServices::~FrameUsbServices() = default;
 
 void FrameUsbServices::InitializeWebUsbChooser() {
   if (!usb_chooser_) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     usb_chooser_ = std::make_unique<WebUsbChooserAndroid>(&render_frame_host());
 #else
     usb_chooser_ = std::make_unique<WebUsbChooserDesktop>(&render_frame_host());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

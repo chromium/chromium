@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
 #define CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -53,19 +54,30 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
 
     // Called when finalization progress is updated.
     virtual void FinalizationProgress(const rmad::FinalizeStatus& status) {}
+
+    // Called when overall calibration progress is updated.
+    virtual void RoFirmwareUpdateProgress(rmad::UpdateRoFirmwareStatus status) {
+    }
   };
 
   // Creates and initializes a global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
-
-  // Creates and initializes a fake global instance if not already created.
-  static void InitializeFake();
 
   // Destroys the global instance.
   static void Shutdown();
 
   // Returns the global instance which may be null if not initialized.
   static RmadClient* Get();
+
+  // Returns true if RMA is supported and the RMA state files were detected.
+  virtual bool WasRmaStateDetected() = 0;
+
+  // Called by ChromeSessionManager, this returns true if RMA state is detected.
+  // Otherwise, return false meanings either RMA not required, or RMA check is
+  // pending. `session_manager_callback` is invoked when the pending RMA check
+  // is finished and RMA is required.
+  virtual bool WasRmaStateDetectedForSessionManager(
+      base::OnceClosure session_manager_callback) = 0;
 
   // Asynchronously gets the current RMA state.
   // The response contains an error code and the current state of the RMA
@@ -91,13 +103,15 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   virtual void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) = 0;
 
   // Request the RMA process logs.
-  // Returns the logs on success or an empty string.
-  virtual void GetLog(DBusMethodCallback<std::string> callback) = 0;
+  virtual void GetLog(DBusMethodCallback<rmad::GetLogReply> callback) = 0;
 
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
   virtual bool HasObserver(const Observer* observer) const = 0;
+
+  // Creates and initializes a fake global instance if not already created.
+  static void InitializeFake();
 
  protected:
   // Initialize/Shutdown should be used instead.

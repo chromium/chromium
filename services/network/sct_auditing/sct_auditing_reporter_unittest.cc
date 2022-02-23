@@ -1,0 +1,442 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/network/sct_auditing/sct_auditing_reporter.h"
+
+#include "base/base64.h"
+#include "base/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/clock.h"
+#include "base/time/time.h"
+#include "base/time/time_to_iso8601.h"
+#include "net/base/hash_value.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/proto/sct_audit_report.pb.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace network {
+
+namespace {
+
+constexpr char kLeafHashBase64[] = "bGVhZl9oYXNo";
+// 42 seconds after the UNIX epoch.
+constexpr char kIssuedSerialized[] = "11644473642000000";
+constexpr char kLogIdBase64[] = "bG9nX2lk";
+// 42 seconds.
+constexpr char kLogMMDSerialized[] = "42000000";
+// 10 seconds after the UNIX epoch.
+constexpr char kCertExpirySerialized[] = "11644473610000000";
+
+constexpr char kTestReportURL[] = "https://report.com/";
+constexpr char kTestLookupURL[] = "https://lookup-uri.com/length/$1/prefix/$2/";
+constexpr char kTestLookupDomain[] = "lookup-uri.com";
+
+constexpr base::TimeDelta kExpectedIngestionDelay = base::Hours(1);
+constexpr base::TimeDelta kMaxIngestionRandomDelay = base::TimeDelta();
+
+std::string ExtractRESTURLParameter(std::string url, std::string param) {
+  size_t length_start = url.find(param) + param.size() + 1;
+  size_t length_end = url.find('/', length_start);
+  return url.substr(length_start, length_end - length_start);
+}
+
+}  // namespace
+
+class SCTAuditingReporterTest : public testing::Test {
+ protected:
+  struct Response {
+    std::string status = "OK";
+    std::string hash_suffix = "some-arbitrary-sct";
+    std::string log_id = "log_id";
+    base::Time ingested_until;
+    base::Time now;
+  };
+
+  SCTAuditingReporterTest() {
+    SCTAuditingReporter::SetRetryDelayForTesting(base::TimeDelta());
+
+    reporter_metadata_.issued = base::Time::Now() - base::Days(30);
+    reporter_metadata_.certificate_expiry = base::Time::Now() + base::Days(30);
+    reporter_metadata_.log_id = "log_id";
+    bool ok =
+        base::HexStringToString("112233445566", &reporter_metadata_.leaf_hash);
+    CHECK(ok);
+
+    response_.ingested_until = base::Time::Now();
+    response_.now = base::Time::Now();
+  }
+
+  // Creates a reporter.
+  // By default, this function sets:
+  //   * The SCT issued date is set to 30 days ago.
+  //   * The certificate expiry is set for the next 30 days.
+  //   * The log ID "log_id".
+  //   * The leaf hash 0x112233445566.
+  // This allows easily making a reporter that will immediately report an SCT
+  // not returned by the lookup query. The parameters can be configured by
+  // modifying the template |reporter_metadata_| object.
+  SCTAuditingReporter MakeReporter() {
+    auto report = std::make_unique<sct_auditing::SCTClientReport>();
+    // Clone the metadata.
+    SCTAuditingReporter::SCTHashdanceMetadata metadata =
+        *SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
+            reporter_metadata_.ToValue());
+    return SCTAuditingReporter(
+        net::HashValue(), std::move(report),
+        /*is_hashdance=*/true, std::move(metadata), &url_loader_factory_,
+        kExpectedIngestionDelay, kMaxIngestionRandomDelay, GURL(kTestReportURL),
+        GURL(kTestLookupURL),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        base::DoNothing(), base::DoNothing(), /*backoff_entry=*/nullptr);
+  }
+
+  // Simulates a response for a pending request with the values from the
+  // |response_| template object.
+  void SimulateResponse() {
+    std::string leaf_hash_base64;
+    base::Base64Encode(response_.hash_suffix, &leaf_hash_base64);
+    std::string log_id_base64;
+    base::Base64Encode(response_.log_id, &log_id_base64);
+    url_loader_factory_.SimulateResponseForPendingRequest(
+        url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+        base::ReplaceStringPlaceholders(
+            R"(
+          {
+            "responseStatus": "$1",
+            "hashSuffix": [
+              "$2"
+            ],
+            "logStatus": [{
+              "logId": "$3",
+              "ingestedUntil": "$4"
+            }],
+            "now": "$5"
+          }
+        )",
+            {
+                response_.status,
+                leaf_hash_base64,
+                log_id_base64,
+                base::TimeToISO8601(response_.ingested_until),
+                base::TimeToISO8601(response_.now),
+            },
+            nullptr));
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME,
+  };
+
+  TestURLLoaderFactory url_loader_factory_;
+
+  // Metadata used when creating a repoter.
+  SCTAuditingReporter::SCTHashdanceMetadata reporter_metadata_;
+
+  Response response_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSCTAuditingRetryReports,
+  };
+};
+
+TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataFromValue) {
+  base::DictionaryValue valid_value;
+  valid_value.SetStringKey("leaf_hash", kLeafHashBase64);
+  valid_value.SetStringKey("issued", kIssuedSerialized);
+  valid_value.SetStringKey("log_id", kLogIdBase64);
+  valid_value.SetStringKey("log_mmd", kLogMMDSerialized);
+  valid_value.SetStringKey("cert_expiry", kCertExpirySerialized);
+
+  auto metadata =
+      SCTAuditingReporter::SCTHashdanceMetadata::FromValue(valid_value);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->leaf_hash, "leaf_hash");
+  EXPECT_EQ(metadata->issued, base::Time::UnixEpoch() + base::Seconds(42));
+  EXPECT_EQ(metadata->log_id, "log_id");
+  EXPECT_EQ(metadata->log_mmd, base::Seconds(42));
+  EXPECT_EQ(metadata->certificate_expiry,
+            base::Time::UnixEpoch() + base::Seconds(10));
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.RemoveKey("leaf_hash");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.RemoveKey("issued");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.RemoveKey("log_id");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.RemoveKey("log_mmd");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.SetStringKey("leaf_hash", "invalid base64");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.SetStringKey("log_id", "invalid base64");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    base::Value invalid_value = valid_value.Clone();
+    invalid_value.RemoveKey("cert_expiry");
+    EXPECT_FALSE(
+        SCTAuditingReporter::SCTHashdanceMetadata::FromValue(invalid_value));
+  }
+  {
+    EXPECT_FALSE(SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
+        base::Value("not a dict")));
+  }
+}
+
+TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataToValue) {
+  SCTAuditingReporter::SCTHashdanceMetadata metadata;
+  metadata.leaf_hash = "leaf_hash";
+  metadata.issued = base::Time::UnixEpoch() + base::Seconds(42);
+  metadata.log_id = "log_id";
+  metadata.log_mmd = base::Seconds(42);
+  metadata.certificate_expiry = base::Time::UnixEpoch() + base::Seconds(10);
+  base::Value value = metadata.ToValue();
+  ASSERT_TRUE(value.is_dict());
+  EXPECT_EQ(*value.FindStringKey("leaf_hash"), kLeafHashBase64);
+  EXPECT_EQ(*value.FindStringKey("issued"), kIssuedSerialized);
+  EXPECT_EQ(*value.FindStringKey("log_id"), kLogIdBase64);
+  EXPECT_EQ(*value.FindStringKey("log_mmd"), kLogMMDSerialized);
+  EXPECT_EQ(*value.FindStringKey("cert_expiry"), kCertExpirySerialized);
+}
+
+// Tests that a hashdance lookup that does not find the SCT reports it.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupNotFound) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+  std::string length =
+      ExtractRESTURLParameter(pending_request->request.url.spec(), "length");
+  EXPECT_EQ(length, "20");
+  std::string prefix =
+      ExtractRESTURLParameter(pending_request->request.url.spec(), "prefix");
+  EXPECT_EQ(prefix, "112230");
+
+  // Respond to the lookup request.
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+// Tests that a hashdance lookup that finds the SCT does not report it.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupFound) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with the same hash suffix.
+  response_.hash_suffix = "";
+  bool ok = base::HexStringToString("33445566", &response_.hash_suffix);
+  CHECK(ok);
+  SimulateResponse();
+
+  // SCT should not be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+}
+
+// Tests that a hashdance lookup with a server error retries.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupServerError) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with an error.
+  response_.status = "ERROR";
+  SimulateResponse();
+
+  // A retry should be rescheduled.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with success.
+  response_.status = "OK";
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+// Tests that a hashdance lookup with an HTTP server error retries.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupHTTPError) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with an error.
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), /*content=*/"",
+      net::HTTP_TOO_MANY_REQUESTS);
+
+  // A retry should be rescheduled.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with success.
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+// Tests that a hashdance lookup with a server "now" timestamp past the expiry
+// date does not get reported.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupCertificateExpired) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with a timestamp past the cert expiry.
+  response_.now = reporter_metadata_.certificate_expiry + base::Seconds(1);
+  SimulateResponse();
+
+  // SCT should not be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+}
+
+// Tests that a hashdance lookup that does not return the SCT Log ID gets
+// rescheduled.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupUnknownLog) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with a different log id.
+  response_.log_id = "some_other_log";
+  SimulateResponse();
+
+  // A retry should be rescheduled.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with success.
+  response_.log_id = "log_id";
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+// Tests that a hashdance lookup indicating the log has not yet been ingested is
+// rescheduled.
+TEST_F(SCTAuditingReporterTest, HashdanceLookupLogNotIngested) {
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with a too early `ingested_until`.
+  response_.ingested_until = reporter_metadata_.issued - base::Seconds(1);
+  SimulateResponse();
+
+  // A retry should be rescheduled.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request with success.
+  response_.ingested_until = reporter_metadata_.issued + base::Seconds(1);
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+// Tests that if chrome thinks the SCT may not have been ingested by Google, it
+// will be scheduled for after some reasonable delay.
+TEST_F(SCTAuditingReporterTest, HashdanceSCTSuspectedNotYetIngested) {
+  reporter_metadata_.issued = base::Time::Now();
+  SCTAuditingReporter reporter = MakeReporter();
+  reporter.Start();
+
+  // No request should be made. Instead, it should have been scheduled for
+  // kExpectedIngestionDelay + (0..kMaxIngestionRandomDelay).
+  // For this test, kMaxIngestionRandomDelay is zero.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+  task_environment_.FastForwardBy(kExpectedIngestionDelay);
+
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      url_loader_factory_.GetPendingRequest(0);
+  EXPECT_TRUE(pending_request->request.url.DomainIs(kTestLookupDomain));
+
+  // Respond to the lookup request.
+  response_.now = base::Time::Now();
+  response_.ingested_until = base::Time::Now();
+  SimulateResponse();
+
+  // SCT should be reported.
+  EXPECT_EQ(url_loader_factory_.NumPending(), 1);
+  pending_request = url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+}
+
+}  // namespace network

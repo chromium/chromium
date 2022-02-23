@@ -477,7 +477,8 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(kSuccessHeader));
   head->headers->GetMimeType(&head->mime_type);
-  client->OnReceiveResponse(std::move(head));
+  client->OnReceiveResponse(std::move(head),
+                            mojo::ScopedDataPipeConsumerHandle());
 
   // Simulate sending the response body. The buffer size for the data pipe
   // should be larger than the body to send the whole body in one chunk.
@@ -777,7 +778,8 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(kSuccessHeader));
     head->headers->GetMimeType(&head->mime_type);
-    request->client->OnReceiveResponse(std::move(head));
+    request->client->OnReceiveResponse(std::move(head),
+                                       mojo::ScopedDataPipeConsumerHandle());
 
     MojoCreateDataPipeOptions options;
     options.struct_size = sizeof(MojoCreateDataPipeOptions);

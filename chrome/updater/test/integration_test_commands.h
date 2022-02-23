@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/update_service.h"
 
 class GURL;
 
@@ -36,6 +37,7 @@ class IntegrationTestCommands
   virtual void ExpectActiveUpdater() const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
+  virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
   virtual void ExpectUpdateSequence(ScopedServer* test_server,
                                     const std::string& app_id,
                                     const base::Version& from_version,
@@ -47,6 +49,7 @@ class IntegrationTestCommands
   virtual void CopyLog() const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
+  virtual void SetupRealUpdaterLowerVersion() const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
@@ -55,20 +58,34 @@ class IntegrationTestCommands
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
+  virtual void RunWakeActive(int exit_code) const = 0;
   virtual void Update(const std::string& app_id) const = 0;
   virtual void UpdateAll() const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
-  virtual void WaitForServerExit() const = 0;
-#if defined(OS_WIN)
+  virtual void WaitForUpdaterExit() const = 0;
+#if BUILDFLAG(IS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
-      const std::string& app_id) const = 0;
+      const std::string& app_id,
+      int expected_final_state,
+      int expected_error_code) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
+  virtual void RunUninstallCmdLine() const = 0;
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   virtual void StressUpdateService() const = 0;
+  virtual void CallServiceUpdate(const std::string& app_id,
+                                 UpdateService::PolicySameVersionUpdate
+                                     policy_same_version_update) const = 0;
+
+  virtual void SetupFakeLegacyUpdaterData() const = 0;
+  virtual void ExpectLegacyUpdaterDataMigrated() const = 0;
+  virtual void RunRecoveryComponent(const std::string& app_id,
+                                    const base::Version& version) const = 0;
+  virtual void ExpectLastChecked() const = 0;
+  virtual void ExpectLastStarted() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

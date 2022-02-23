@@ -47,6 +47,10 @@ class POLICY_EXPORT PolicyLoaderLacros
   // that is returned.
   std::unique_ptr<PolicyBundle> Load() override;
 
+  // Return the policy data object as received from Ash. Returns nullptr if
+  // initial load was not done yet.
+  enterprise_management::PolicyData* GetPolicyData();
+
   // LacrosChromeServiceDelegateImpl::Observer implementation.
   // Update and reload the policy with new data.
   void OnPolicyUpdated(
@@ -67,14 +71,14 @@ class POLICY_EXPORT PolicyLoaderLacros
       const enterprise_management::PolicyData& policy_data);
 
  private:
-  // Task runner for running background jobs.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // The filter for policy data to install.
   const PolicyPerProfileFilter per_profile_;
 
   // Serialized blob of PolicyFetchResponse object received from the server.
   absl::optional<std::vector<uint8_t>> policy_fetch_response_;
+
+  // The parsed policy objects received from Ash.
+  std::unique_ptr<enterprise_management::PolicyData> policy_data_;
 
   // Checks that the method is called on the right sequence.
   SEQUENCE_CHECKER(sequence_checker_);

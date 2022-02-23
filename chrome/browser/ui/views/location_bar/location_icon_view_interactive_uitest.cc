@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
             PageInfoBubbleView::GetShownBubbleType());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(jongkwon.lee): https://crbug.com/825834 NativeWidgetMac::Deactivate is
 // not implemented on Mac.
 #define MAYBE_ActivateFirstInactiveBubbleForAccessibility \

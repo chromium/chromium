@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/message_tracker.h"
 #include "remoting/signaling/messaging_client.h"
@@ -101,7 +101,7 @@ class FtlMessagingClient final : public MessagingClient {
   void OnMessageReceived(const ftl::InboxMessage& message);
 
   std::unique_ptr<ProtobufHttpClient> client_;
-  RegistrationManager* registration_manager_;
+  raw_ptr<RegistrationManager> registration_manager_;
   std::unique_ptr<MessageReceptionChannel> reception_channel_;
   MessageCallbackList callback_list_;
   MessageTracker message_tracker_;

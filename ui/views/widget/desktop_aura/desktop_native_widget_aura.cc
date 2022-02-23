@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -50,7 +51,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_position_client.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
-#include "ui/views/widget/drop_helper.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/root_view.h"
@@ -72,8 +73,9 @@
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
+#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 #endif
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
@@ -109,7 +111,7 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     init_params.type = full_screen ? Widget::InitParams::TYPE_WINDOW
                                    : is_menu ? Widget::InitParams::TYPE_MENU
                                              : Widget::InitParams::TYPE_POPUP;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // For menus, on Windows versions that support drop shadow remove
     // the standard frame in order to keep just the shadow.
     if (init_params.type == Widget::InitParams::TYPE_MENU)
@@ -200,8 +202,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
 
   ~DesktopNativeWidgetTopLevelHandler() override = default;
 
-  Widget* top_level_widget_ = nullptr;
-  aura::Window* child_window_ = nullptr;
+  raw_ptr<Widget> top_level_widget_ = nullptr;
+  raw_ptr<aura::Window> child_window_ = nullptr;
 };
 
 class DesktopNativeWidgetAuraWindowParentingClient
@@ -227,7 +229,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
                                  const gfx::Rect& bounds) override {
     // TODO(crbug.com/1236997): Re-enable this logic once Fuchsia's windowing
     // APIs provide the required functionality.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
                          ui::SHOW_STATE_FULLSCREEN;
     bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
@@ -243,12 +245,12 @@ class DesktopNativeWidgetAuraWindowParentingClient
           window, root_window_ /* context */, bounds, is_fullscreen, is_menu,
           root_z_order);
     }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
     return root_window_;
   }
 
  private:
-  aura::Window* root_window_;
+  raw_ptr<aura::Window> root_window_;
 };
 
 }  // namespace
@@ -272,7 +274,7 @@ class RootWindowDestructionObserver : public aura::WindowObserver {
     delete this;
   }
 
-  DesktopNativeWidgetAura* parent_;
+  raw_ptr<DesktopNativeWidgetAura> parent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -404,12 +406,23 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
-  if (!native_widget_delegate_->OnNativeWidgetActivationChanged(active))
+  if (!native_widget_delegate_->ShouldHandleNativeWidgetActivationChanged(
+          active)) {
     return;
+  }
   wm::ActivationClient* activation_client =
       wm::GetActivationClient(host_->window());
   if (!activation_client)
     return;
+
+  // Update `should_activate_` with the new activation state of this widget
+  // while handling this change. We do this to ensure that the activation client
+  // sees the correct activation state for this widget when handling the
+  // activation change event. This is needed since the activation client may
+  // check whether this widget can receive activation when deciding which window
+  // should receive activation next.
+  base::AutoReset<bool> resetter(&should_activate_, active);
+
   if (active) {
     // TODO(nektar): We need to harmonize the firing of accessibility
     // events between platforms.
@@ -472,6 +485,10 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
       GetInputMethod()->OnBlur();
     }
   }
+
+  // At this point the FocusController's state should have been appropriately
+  // updated, propagate the NativeWidget activation notification.
+  native_widget_delegate_->OnNativeWidgetActivationChanged(active);
 }
 
 void DesktopNativeWidgetAura::OnHostWillClose() {
@@ -510,6 +527,7 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
 void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   ownership_ = params.ownership;
   widget_type_ = params.type;
+  headless_mode_ = params.headless_mode;
   name_ = params.name;
 
   content_window_->AcquireAllPropertiesFrom(
@@ -560,8 +578,11 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     // The host's dispatcher must be added to |native_cursor_manager_| before
     // OnNativeWidgetCreated() is called.
     cursor_reference_count_++;
-    if (!native_cursor_manager_)
-      native_cursor_manager_ = new DesktopNativeCursorManager();
+    if (!native_cursor_manager_) {
+      native_cursor_manager_ =
+          desktop_window_tree_host_->GetSingletonDesktopNativeCursorManager();
+    }
+
     native_cursor_manager_->AddHost(host());
 
     if (!cursor_manager_) {
@@ -570,6 +591,9 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       cursor_manager_->SetDisplay(
           display::Screen::GetScreen()->GetDisplayNearestWindow(
               host_->window()));
+      if (features::IsSystemCursorSizeSupported()) {
+        native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
+      }
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
   }
@@ -597,7 +621,6 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     aura::client::SetDragDropClient(host_->window(), drag_drop_client_.get());
 
   wm::SetActivationDelegate(content_window_, this);
-  aura::client::GetFocusClient(content_window_)->FocusWindow(content_window_);
 
   OnHostResized(host());
 
@@ -854,7 +877,10 @@ void DesktopNativeWidgetAura::Show(ui::WindowShowState show_state,
                                    const gfx::Rect& restore_bounds) {
   if (!content_window_)
     return;
-  desktop_window_tree_host_->Show(show_state, restore_bounds);
+  // Avoid changing desktop window visibility state when browser is running in
+  // headless mode, see https://crbug.com/1237546.
+  if (!headless_mode_)
+    desktop_window_tree_host_->Show(show_state, restore_bounds);
 }
 
 void DesktopNativeWidgetAura::Hide() {
@@ -1034,6 +1060,12 @@ gfx::Rect DesktopNativeWidgetAura::GetWorkAreaBoundsInScreen() const {
   return desktop_window_tree_host_
              ? desktop_window_tree_host_->GetWorkAreaBoundsInScreen()
              : gfx::Rect();
+}
+
+bool DesktopNativeWidgetAura::IsMoveLoopSupported() const {
+  return desktop_window_tree_host_
+             ? desktop_window_tree_host_->IsMoveLoopSupported()
+             : true;
 }
 
 Widget::MoveLoopResult DesktopNativeWidgetAura::RunMoveLoop(
@@ -1236,7 +1268,7 @@ base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
 // DesktopNativeWidgetAura, wm::ActivationDelegate implementation:
 
 bool DesktopNativeWidgetAura::ShouldActivate() const {
-  return native_widget_delegate_->CanActivate();
+  return should_activate_ && native_widget_delegate_->CanActivate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1261,9 +1293,27 @@ void DesktopNativeWidgetAura::OnWindowActivated(
     GetWidget()->GetFocusManager()->StoreFocusedView(false);
   }
 
+  // This widget is considered active when both its window tree host and its
+  // content window are active. When the window tree host gains and looses
+  // activation, the window tree host calls into HandleActivationChanged() which
+  // notifies delegates of the activation change.
+  // However the widget's content window can still be deactivated while the
+  // window tree host remains active. This is the case if a chid widget is
+  // spawned (e.g. a bubble) and the child's content window is activated. This
+  // is a valid state since the window tree host should remain active while
+  // the child is active.
+  // In this case this widget would no longer be considered active but since the
+  // window tree host has not deactivated delegates are not notified in
+  // HandleActivationChanged(). To ensure activation updates are propagated
+  // correctly we must notify delegates here.
+  const bool content_window_activated = content_window_ == gained_active;
+  if (desktop_window_tree_host_->IsActive() && !content_window_activated) {
+    native_widget_delegate_->OnNativeWidgetActivationChanged(
+        content_window_activated);
+  }
+
   // Give the native widget a chance to handle any specific changes it needs.
-  desktop_window_tree_host_->OnActiveWindowChanged(content_window_ ==
-                                                   gained_active);
+  desktop_window_tree_host_->OnActiveWindowChanged(content_window_activated);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1303,24 +1353,14 @@ void DesktopNativeWidgetAura::OnDragExited() {
   drop_helper_->OnDragExit();
 }
 
-ui::mojom::DragOperation DesktopNativeWidgetAura::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  DCHECK(drop_helper_.get() != nullptr);
-  if (ShouldActivate())
-    Activate();
-  return drop_helper_->OnDrop(event.data(), event.location(),
-                              last_drop_operation_);
-}
-
 aura::client::DragDropDelegate::DropCallback
 DesktopNativeWidgetAura::GetDropCallback(const ui::DropTargetEvent& event) {
   DCHECK(drop_helper_);
-  if (ShouldActivate())
-    Activate();
-
-  return drop_helper_->GetDropCallback(event.data(), event.location(),
-                                       last_drop_operation_);
+  auto drop_helper_cb = drop_helper_->GetDropCallback(
+      event.data(), event.location(), last_drop_operation_);
+  return base::BindOnce(&DesktopNativeWidgetAura::PerformDrop,
+                        weak_ptr_factory_.GetWeakPtr(),
+                        std::move(drop_helper_cb));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1368,6 +1408,17 @@ void DesktopNativeWidgetAura::RootWindowDestroyed() {
     native_cursor_manager_ = nullptr;
     cursor_manager_ = nullptr;
   }
+}
+
+void DesktopNativeWidgetAura::PerformDrop(
+    views::DropHelper::DropCallback drop_cb,
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op) {
+  if (ShouldActivate())
+    Activate();
+
+  if (drop_cb)
+    std::move(drop_cb).Run(std::move(data), output_drag_op);
 }
 
 }  // namespace views

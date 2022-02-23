@@ -51,10 +51,6 @@ constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
 
-void SetBoolean(bool* value) {
-  *value = true;
-}
-
 class DemoSessionTest : public testing::Test {
  public:
   DemoSessionTest()
@@ -134,7 +130,6 @@ class DemoSessionTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
-        std::string() /* supervised_user_id */,
         TestingProfile::TestingFactories());
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
@@ -164,22 +159,6 @@ TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
   EXPECT_EQ(demo_session, DemoSession::Get());
 }
 
-TEST_F(DemoSessionTest, StartInitiatesOfflineResourcesLoad) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
 TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
   EXPECT_FALSE(DemoSession::Get());
@@ -190,226 +169,11 @@ TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
       cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
 }
 
-TEST_F(DemoSessionTest, StartIfInOfflineEnrolledDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOffline);
-
-  EXPECT_FALSE(DemoSession::Get());
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->offline_enrolled());
-  EXPECT_EQ(demo_session, DemoSession::Get());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfInDemoMode) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_FALSE(demo_session->offline_enrolled());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfNotInDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  EXPECT_FALSE(DemoSession::Get());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, PreloadOfflineResourcesIfInOfflineDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOffline);
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-  EXPECT_FALSE(demo_session->started());
-  EXPECT_TRUE(demo_session->offline_enrolled());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
 TEST_F(DemoSessionTest, ShutdownResetsInstance) {
   ASSERT_TRUE(DemoSession::StartIfInDemoMode());
   EXPECT_TRUE(DemoSession::Get());
   DemoSession::ShutDownIfInitialized();
   EXPECT_FALSE(DemoSession::Get());
-}
-
-TEST_F(DemoSessionTest, ShutdownAfterPreload) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  EXPECT_TRUE(DemoSession::Get());
-  DemoSession::ShutDownIfInitialized();
-  EXPECT_FALSE(DemoSession::Get());
-}
-
-TEST_F(DemoSessionTest, StartDemoSessionWhilePreloadingResources) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-
-  ASSERT_TRUE(demo_session);
-  EXPECT_TRUE(demo_session->started());
-
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, StartDemoSessionAfterPreloadingResources) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  EXPECT_TRUE(demo_session->started());
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterStart) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-
-  EXPECT_FALSE(callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterOfflineResourceLoad) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, EnsureOfflineResourcesLoadedAfterPreload) {
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
-
-  DemoSession* demo_session = DemoSession::Get();
-  ASSERT_TRUE(demo_session);
-
-  bool callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &callback_called));
-
-  EXPECT_FALSE(callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
-}
-
-TEST_F(DemoSessionTest, MultipleEnsureOfflineResourcesLoaded) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
-  ASSERT_TRUE(demo_session);
-
-  bool first_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &first_callback_called));
-
-  bool second_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &second_callback_called));
-
-  bool third_callback_called = false;
-  demo_session->EnsureOfflineResourcesLoaded(
-      base::BindOnce(&SetBoolean, &third_callback_called));
-
-  EXPECT_FALSE(first_callback_called);
-  EXPECT_FALSE(second_callback_called);
-  EXPECT_FALSE(third_callback_called);
-  EXPECT_FALSE(demo_session->resources()->loaded());
-
-  const base::FilePath component_mount_point =
-      base::FilePath(kTestDemoModeResourcesMountPoint);
-  ASSERT_TRUE(FinishResourcesComponentLoad(component_mount_point));
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  EXPECT_TRUE(first_callback_called);
-  EXPECT_TRUE(second_callback_called);
-  EXPECT_TRUE(third_callback_called);
-  EXPECT_TRUE(demo_session->resources()->loaded());
-  EXPECT_EQ(
-      component_mount_point.AppendASCII("foo.txt"),
-      demo_session->resources()->GetAbsolutePath(base::FilePath("foo.txt")));
 }
 
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {

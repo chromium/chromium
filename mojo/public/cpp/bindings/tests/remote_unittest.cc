@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -11,8 +12,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -509,7 +510,7 @@ class StrongMathCalculatorImpl : public math::Calculator {
 
  private:
   double total_ = 0.0;
-  bool* destroyed_;
+  raw_ptr<bool> destroyed_;
 };
 
 TEST(StrongConnectorTest, Math) {
@@ -582,7 +583,7 @@ class WeakMathCalculatorImpl : public math::Calculator {
 
  private:
   double total_ = 0.0;
-  bool* destroyed_;
+  raw_ptr<bool> destroyed_;
   base::OnceClosure closure_;
 
   Receiver<math::Calculator> receiver_;
@@ -636,7 +637,7 @@ class CImpl : public C {
   }
 
   Receiver<C> receiver_{this};
-  bool* d_called_;
+  raw_ptr<bool> d_called_;
   base::OnceClosure closure_;
 };
 
@@ -779,7 +780,7 @@ TEST_P(RemoteTest, FlushAsyncForTesting) {
 
 TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
-  ignore_result(calc.BindNewPipeAndPassReceiver());
+  std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
   calc.set_disconnect_handler(
       base::BindLambdaForTesting([&] { called = true; }));
@@ -790,7 +791,7 @@ TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
 
 TEST_P(RemoteTest, FlushAsyncForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
-  ignore_result(calc.BindNewPipeAndPassReceiver());
+  std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
   calc.set_disconnect_handler(
       base::BindLambdaForTesting([&] { called = true; }));

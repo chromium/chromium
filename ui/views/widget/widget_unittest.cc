@@ -5,15 +5,22 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -22,8 +29,10 @@
 #include "ui/events/event_observer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
@@ -46,7 +55,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/native_frame_view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/view_prop.h"
@@ -56,7 +65,7 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -251,6 +260,139 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
             widget->native_widget_private()->GetName());
   EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
+  struct SkottieColors {
+    bool operator==(const SkottieColors& other) const {
+      return color1 == other.color1 && color1_shade1 == other.color1_shade1 &&
+             color1_shade2 == other.color1_shade2 && color2 == other.color2 &&
+             color3 == other.color3 && color4 == other.color4 &&
+             color5 == other.color5 && color6 == other.color6 &&
+             base_color == other.base_color &&
+             secondary_color == other.secondary_color;
+    }
+    bool operator!=(const SkottieColors& other) const {
+      return !operator==(other);
+    }
+
+    SkColor color1, color1_shade1, color1_shade2, color2, color3, color4,
+        color5, color6, base_color, secondary_color;
+  };
+
+  class ViewObservingSkottieColors : public View {
+   public:
+    void OnThemeChanged() override {
+      View::OnThemeChanged();
+      const ui::ColorProvider* provider = GetColorProvider();
+      history.push_back({provider->GetColor(ui::kColorNativeColor1),
+                         provider->GetColor(ui::kColorNativeColor1Shade1),
+                         provider->GetColor(ui::kColorNativeColor1Shade2),
+                         provider->GetColor(ui::kColorNativeColor2),
+                         provider->GetColor(ui::kColorNativeColor3),
+                         provider->GetColor(ui::kColorNativeColor4),
+                         provider->GetColor(ui::kColorNativeColor5),
+                         provider->GetColor(ui::kColorNativeColor6),
+                         provider->GetColor(ui::kColorNativeBaseColor),
+                         provider->GetColor(ui::kColorNativeSecondaryColor)});
+    }
+
+    std::vector<SkottieColors> history;
+  };
+
+  // |widget1| has low background elevation and is created in light mode.
+  ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->set_use_dark_colors(false);
+  WidgetDelegate delegate1;
+  ViewObservingSkottieColors* contents1 =
+      delegate1.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate1;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kLow;
+  }));
+  std::unique_ptr<Widget> widget1 = CreateTestWidget();
+  ASSERT_EQ(1u, contents1->history.size());
+
+  // |widget2| has high background elevation and is created in light mode.
+  WidgetDelegate delegate2;
+  ViewObservingSkottieColors* contents2 =
+      delegate2.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate2;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kHigh;
+  }));
+  std::unique_ptr<Widget> widget2 = CreateTestWidget();
+  ASSERT_EQ(1u, contents2->history.size());
+  // Check that |contents1| and |contents2| have the same Skottie colors.
+  // Background elevation should not affect Skottie colors in light mode.
+  EXPECT_EQ(contents1->history[0u], contents2->history[0u]);
+
+  // Switch to dark mode.
+  theme->set_use_dark_colors(true);
+  theme->NotifyOnNativeThemeUpdated();
+  // Check that |contents1| and |contents2| were notified of the theme update.
+  ASSERT_EQ(2u, contents1->history.size());
+  ASSERT_EQ(2u, contents2->history.size());
+  // Check that the Skottie colors were actually changed with the notification.
+  EXPECT_NE(contents1->history[0u], contents1->history[1u]);
+  EXPECT_NE(contents2->history[0u], contents2->history[1u]);
+  // Check that |contents1| and |contents2| have different Skottie colors.
+  // Background elevation should affect Skottie colors in dark mode.
+  EXPECT_NE(contents1->history[1u], contents2->history[1u]);
+
+  // |widget3| has low background elevation and is created in dark mode.
+  WidgetDelegate delegate3;
+  ViewObservingSkottieColors* contents3 =
+      delegate3.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate3;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kLow;
+  }));
+  std::unique_ptr<Widget> widget3 = CreateTestWidget();
+  ASSERT_EQ(1u, contents3->history.size());
+  // Check that |contents3| has the same Skottie colors as |contents1|. It
+  // should not matter whether a widget was created before or after dark mode
+  // was toggled.
+  EXPECT_EQ(contents1->history[1u], contents3->history[0u]);
+
+  // |widget4| has high background elevation and is created in dark mode.
+  WidgetDelegate delegate4;
+  ViewObservingSkottieColors* contents4 =
+      delegate4.SetContentsView(std::make_unique<ViewObservingSkottieColors>());
+  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
+    params->delegate = &delegate4;
+    params->background_elevation =
+        ui::ColorProviderManager::ElevationMode::kHigh;
+  }));
+  std::unique_ptr<Widget> widget4 = CreateTestWidget();
+  ASSERT_EQ(1u, contents4->history.size());
+  // Check that |contents4| has the same Skottie colors as |contents2|. It
+  // should not matter whether a widget was created before or after dark mode
+  // was toggled.
+  EXPECT_EQ(contents2->history[1u], contents4->history[0u]);
+
+  // Switch to light mode.
+  theme->set_use_dark_colors(false);
+  theme->NotifyOnNativeThemeUpdated();
+  // Check that all four contents views were notified of the theme update.
+  ASSERT_EQ(3u, contents1->history.size());
+  ASSERT_EQ(3u, contents2->history.size());
+  ASSERT_EQ(2u, contents3->history.size());
+  ASSERT_EQ(2u, contents4->history.size());
+  // Check that |contents1| and |contents2| are back to the Skottie colors they
+  // started with. It should not matter if dark mode is toggled on and back off.
+  EXPECT_EQ(contents1->history[0u], contents1->history[2u]);
+  EXPECT_EQ(contents2->history[0u], contents2->history[2u]);
+  // Check that |contents3| and |contents4| still have the same Skottie colors
+  // as |contents1| and |contents2|, respectively. It should not matter when a
+  // widget was created.
+  EXPECT_EQ(contents1->history[2u], contents3->history[1u]);
+  EXPECT_EQ(contents2->history[2u], contents4->history[1u]);
+}
+#endif
 
 TEST_F(WidgetTest, NativeWindowProperty) {
   const char* key = "foo";
@@ -464,7 +606,7 @@ TEST_F(WidgetTest, ChangeActivation) {
 
 // Tests visibility of child widgets.
 TEST_F(WidgetTest, Visibility) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS11()) {
     GTEST_SKIP() << "Window visibility notifications aren't delivered on "
                     "macOS 11. See https://crbug.com/1114243.";
@@ -549,7 +691,7 @@ class WidgetOwnershipTest : public WidgetTest {
   }
 
  private:
-  Widget* desktop_widget_;
+  raw_ptr<Widget> desktop_widget_;
 };
 
 // A bag of state to monitor destructions.
@@ -571,7 +713,7 @@ class OwnershipTestWidget : public Widget {
   ~OwnershipTestWidget() override { state_->widget_deleted = true; }
 
  private:
-  OwnershipTestState* state_;
+  raw_ptr<OwnershipTestState> state_;
 };
 
 // TODO(sky): add coverage of ownership for the desktop variants.
@@ -898,20 +1040,20 @@ class WidgetObserverTest : public WidgetTest, public WidgetObserver {
   const Widget* widget_bounds_changed() const { return widget_bounds_changed_; }
 
  private:
-  Widget* active_ = nullptr;
+  raw_ptr<Widget> active_ = nullptr;
 
-  Widget* widget_closed_ = nullptr;
-  Widget* widget_activated_ = nullptr;
-  Widget* widget_deactivated_ = nullptr;
-  Widget* widget_shown_ = nullptr;
-  Widget* widget_hidden_ = nullptr;
-  Widget* widget_bounds_changed_ = nullptr;
+  raw_ptr<Widget> widget_closed_ = nullptr;
+  raw_ptr<Widget> widget_activated_ = nullptr;
+  raw_ptr<Widget> widget_deactivated_ = nullptr;
+  raw_ptr<Widget> widget_shown_ = nullptr;
+  raw_ptr<Widget> widget_hidden_ = nullptr;
+  raw_ptr<Widget> widget_bounds_changed_ = nullptr;
 
-  Widget* widget_to_close_on_hide_ = nullptr;
+  raw_ptr<Widget> widget_to_close_on_hide_ = nullptr;
 };
 
 // This test appears to be flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ActivationChange DISABLED_ActivationChange
 #else
 #define MAYBE_ActivationChange ActivationChange
@@ -965,7 +1107,7 @@ class WidgetActivationForwarder : public TestWidgetObserver {
       widget->Close();
   }
 
-  Widget* widget_to_activate_;
+  raw_ptr<Widget> widget_to_activate_;
 };
 
 // This class observes a widget and counts the number of times OnWidgetClosing
@@ -1198,7 +1340,7 @@ TEST_F(DesktopWidgetObserverTest, OnWidgetMovedWhenOriginChangesNative) {
 // Test correct behavior when widgets close themselves in response to visibility
 // changes.
 TEST_F(WidgetObserverTest, ClosingOnHiddenParent) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS11()) {
     GTEST_SKIP() << "Window visibility notifications aren't delivered on "
                     "macOS 11. See https://crbug.com/1114243.";
@@ -1227,7 +1369,7 @@ TEST_F(WidgetObserverTest, ClosingOnHiddenParent) {
 }
 
 // Test behavior of NativeWidget*::GetWindowPlacement on the native desktop.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // On desktop-Linux cheat and use non-desktop widgets. On X11, minimize is
 // asynchronous. Also (harder) showing a window doesn't activate it without
 // user interaction (or extra steps only done for interactive ui tests).
@@ -1253,7 +1395,7 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
 
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Non-desktop/Ash widgets start off in "default" until a Restore().
   EXPECT_EQ(ui::SHOW_STATE_DEFAULT, show_state);
   widget->Restore();
@@ -1280,7 +1422,7 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   widget->SetFullscreen(true);
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Desktop Aura widgets on Windows currently don't update show_state when
   // going fullscreen, and report restored_bounds as the full screen size.
   // See http://crbug.com/475813.
@@ -1400,7 +1542,7 @@ TEST_F(WidgetTest, GetWindowBoundsInScreen) {
 // Chrome OS widgets need the shell to maximize/fullscreen window.
 // Disable on desktop Linux because windows restore to the wrong bounds.
 // See http://crbug.com/515369.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_GetRestoredBounds DISABLED_GetRestoredBounds
 #else
 #define MAYBE_GetRestoredBounds GetRestoredBounds
@@ -1420,7 +1562,7 @@ TEST_F(DesktopWidgetTest, MAYBE_GetRestoredBounds) {
 
   toplevel->Maximize();
   RunPendingMessages();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Current expectation on Mac is to do nothing on Maximize.
   EXPECT_EQ(toplevel->GetWindowBoundsInScreen(), toplevel->GetRestoredBounds());
 #else
@@ -1483,7 +1625,7 @@ TEST_F(WidgetTest, BubbleControlsResetOnInit) {
   anchor->Hide();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Test to ensure that after minimize, view width is set to zero. This is only
 // the case for desktop widgets on Windows. Other platforms retain the window
 // size while minimized.
@@ -1591,7 +1733,7 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
     }
   };
 
-  DesktopAuraTestValidPaintWidget* paint_widget_ = nullptr;
+  raw_ptr<DesktopAuraTestValidPaintWidget> paint_widget_ = nullptr;
 };
 
 TEST_F(DesktopAuraPaintWidgetTest, DesktopNativeWidgetNoPaintAfterCloseTest) {
@@ -1872,7 +2014,7 @@ class MousePressEventConsumer : public ui::EventHandler {
 }  // namespace
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Test that mouse presses and mouse releases are dispatched normally when a
 // touch is down.
@@ -1900,7 +2042,7 @@ TEST_F(WidgetTest, MouseEventDispatchWhileTouchIsDown) {
   widget->CloseNow();
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // Tests that when there is no active capture, that a mouse press causes capture
 // to be set.
@@ -1957,13 +2099,13 @@ class CaptureEventConsumer : public ui::EventHandler {
       widget_->SetSize(gfx::Size(200, 200));
 
       event_count_view_->SetBounds(0, 0, 200, 200);
-      widget_->GetRootView()->AddChildView(event_count_view_);
+      widget_->GetRootView()->AddChildView(event_count_view_.get());
       widget_->SetCapture(event_count_view_);
     }
   }
 
-  EventCountView* event_count_view_;
-  Widget* widget_;
+  raw_ptr<EventCountView> event_count_view_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace
@@ -2022,7 +2164,7 @@ class ClosingEventObserver : public ui::EventObserver {
   }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 class ClosingView : public View {
@@ -2043,7 +2185,7 @@ class ClosingView : public View {
   }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 // Ensures that when multiple objects are intercepting OS-level events, that one
@@ -2368,7 +2510,7 @@ TEST_F(WidgetTest, WidgetDeleted_InOnMousePressed) {
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_MAC) || defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 TEST_F(WidgetTest, WidgetDeleted_InDispatchGestureEvent) {
   Widget* widget = new Widget;
@@ -2392,7 +2534,7 @@ TEST_F(WidgetTest, WidgetDeleted_InDispatchGestureEvent) {
   // Yay we did not crash!
 }
 
-#endif  // !defined(OS_MAC) || defined(USE_AURA)
+#endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)
 
 // See description of RunGetNativeThemeFromDestructor() for details.
 class GetNativeThemeFromDestructorView : public WidgetDelegateView {
@@ -2458,7 +2600,7 @@ class CloseDestroysWidget : public Widget {
   void Detach() { destroyed_ = nullptr; }
 
  private:
-  bool* destroyed_;
+  raw_ptr<bool> destroyed_;
   base::OnceClosure quit_closure_;
 };
 
@@ -2558,7 +2700,7 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
 // Test Widget::CloseAllSecondaryWidgets works as expected across platforms.
 // ChromeOS doesn't implement or need CloseAllSecondaryWidgets() since
 // everything is under a single root window.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 TEST_F(DesktopWidgetTest, CloseAllSecondaryWidgets) {
   Widget* widget1 = CreateTopLevelNativeWidget();
   Widget* widget2 = CreateTopLevelNativeWidget();
@@ -2599,7 +2741,7 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromClose) {
 // Broken on Linux. See http://crbug.com/515379.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   EXPECT_EQ(screen_rect, observer.bounds());
 #endif
 }
@@ -2625,7 +2767,7 @@ TEST_F(WidgetTest, NoCrashOnWidgetDeleteWithPendingEvents) {
   generator->MoveMouseTo(10, 10);
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   generator->ClickLeftButton();
 #else
   generator->PressTouch();
@@ -2649,7 +2791,7 @@ class RootViewTestView : public View {
 
 // Checks if RootView::*_handler_ fields are unset when widget is hidden.
 // Fails on chromium.webkit Windows bot, see crbug.com/264872.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DisableTestRootViewHandlersWhenHidden \
   DISABLED_TestRootViewHandlersWhenHidden
 #else
@@ -3325,7 +3467,7 @@ class DestroyedTrackingView : public View {
 
  private:
   const std::string name_;
-  std::vector<std::string>* add_to_;
+  raw_ptr<std::vector<std::string>> add_to_;
 };
 
 class WidgetChildDestructionTest : public DesktopWidgetTest {
@@ -3484,7 +3626,7 @@ class FullscreenAwareFrame : public views::NonClientFrameView {
   bool fullscreen_layout_called() const { return fullscreen_layout_called_; }
 
  private:
-  views::Widget* widget_;
+  raw_ptr<views::Widget> widget_;
   bool fullscreen_layout_called_;
 };
 
@@ -3652,7 +3794,7 @@ TEST_F(WidgetTest, NonClientWindowValidAfterInit) {
   EXPECT_EQ(test_rect, root_view->bounds());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Provides functionality to subclass a window and keep track of messages
 // received.
 class SubclassWindowHelper {
@@ -4020,7 +4162,7 @@ class WidgetShadowTest : public WidgetTest {
   bool force_child_ = false;
 
  private:
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
   void InitControllers() {}
 #else
   class TestFocusRules : public wm::BaseFocusRules {
@@ -4044,11 +4186,11 @@ class WidgetShadowTest : public WidgetTest {
 
   std::unique_ptr<wm::FocusController> focus_controller_;
   std::unique_ptr<wm::ShadowController> shadow_controller_;
-#endif  // !BUILDFLAG(ENABLE_DESKTOP_AURA) && !defined(OS_MAC)
+#endif  // !BUILDFLAG(ENABLE_DESKTOP_AURA) && !BUILDFLAG(IS_MAC)
 };
 
 // Disabled on Mac: All drop shadows are managed out of process for now.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ShadowsInRootWindow DISABLED_ShadowsInRootWindow
 #else
 #define MAYBE_ShadowsInRootWindow ShadowsInRootWindow
@@ -4126,7 +4268,7 @@ TEST_F(WidgetShadowTest, MAYBE_ShadowsInRootWindow) {
   other_top_level->Close();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Tests the case where an intervening owner popup window is destroyed out from
 // under the currently active modal top-level window. In this instance, the
@@ -4177,9 +4319,9 @@ TEST_F(DesktopWidgetTest, WindowModalOwnerDestroyedEnabledTest) {
   top_level_widget->CloseNow();
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -4232,11 +4374,11 @@ class CompositingWidgetTest : public DesktopWidgetTest {
       const Widget::InitParams::WindowOpacity opacity) {
     opacity_ = opacity;
     for (const auto& widget_type : widget_types_) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // Tooltips are native on Mac. See NativeWidgetNSWindowBridge::Init.
       if (widget_type == Widget::InitParams::TYPE_TOOLTIP)
         continue;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       // Other widget types would require to create a parent window and the
       // the purpose of this test is mainly X11 in the first place.
       if (widget_type != Widget::InitParams::TYPE_WINDOW)
@@ -4249,7 +4391,7 @@ class CompositingWidgetTest : public DesktopWidgetTest {
           widget_type == Widget::InitParams::TYPE_CONTROL)
         continue;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // Mac always always has a compositing window manager, but doesn't have
       // transparent titlebars which is what ShouldWindowContentsBeTransparent()
       // is currently used for. Asking for transparency should get it. Note that
@@ -4291,7 +4433,7 @@ TEST_F(CompositingWidgetTest, Transparency_DesktopWidgetTranslucent) {
   CheckAllWidgetsForOpacity(Widget::InitParams::WindowOpacity::kTranslucent);
 }
 
-#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
 }  // namespace test
 }  // namespace views

@@ -4,11 +4,13 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/language/language_packs/language_packs_impl.h"
+
+#include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 
 using ::chromeos::language::mojom::FeatureId;
 using ::chromeos::language::mojom::LanguagePackInfo;
@@ -50,6 +52,10 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
       info->pack_state = PackState::ERROR;
       break;
   }
+
+  base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.Mojo.PackStateResponse",
+                                info->pack_state);
+
   std::move(mojo_callback).Run(std::move(info));
 }
 
@@ -72,6 +78,9 @@ void LanguagePacksImpl::BindReceiver(
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
                                     const std::string& language,
                                     GetPackInfoCallback mojo_callback) {
+  base::UmaHistogramEnumeration(
+      "ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature", feature_id);
+
   LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
@@ -90,6 +99,9 @@ void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
 void LanguagePacksImpl::InstallPack(FeatureId feature_id,
                                     const std::string& language,
                                     InstallPackCallback mojo_callback) {
+  base::UmaHistogramEnumeration(
+      "ChromeOS.LanguagePacks.Mojo.InstallPack.Feature", feature_id);
+
   LanguagePackManager* lp = LanguagePackManager::GetInstance();
   const absl::optional<std::string> pack_id =
       ConvertMojoFeatureToPackId(feature_id);
@@ -105,5 +117,4 @@ void LanguagePacksImpl::InstallPack(FeatureId feature_id,
   }
 }
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs

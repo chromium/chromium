@@ -304,7 +304,8 @@ void APIBindingJSUtil::AddCustomSignature(
   type_refs_->AddCustomSignature(
       custom_signature_name,
       APISignature::CreateFromValues(*base_signature, nullptr /*returns_async*/,
-                                     nullptr /*access_checker*/));
+                                     nullptr /*access_checker*/,
+                                     custom_signature_name));
 }
 
 void APIBindingJSUtil::ValidateCustomSignature(

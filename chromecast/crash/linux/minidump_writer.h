@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chromecast/crash/linux/minidump_params.h"
 #include "chromecast/crash/linux/synchronized_minidump_manager.h"
 

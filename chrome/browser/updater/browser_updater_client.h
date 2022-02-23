@@ -42,10 +42,10 @@ class BrowserUpdaterClient
   virtual void GetUpdaterVersion(
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Resets the XPC Connection with the given scope.
   virtual void ResetConnection(updater::UpdaterScope scope) = 0;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
@@ -77,7 +77,7 @@ class BrowserUpdaterClient
   void HandleStatusUpdate(
       base::RepeatingCallback<void(updater::UpdateService::UpdateState)>
           callback,
-      updater::UpdateService::UpdateState update_state);
+      const updater::UpdateService::UpdateState& update_state);
 
   // Handles status update from Chromium updater when registration is completed.
   void RegistrationCompleted(updater::UpdateService::Result result);

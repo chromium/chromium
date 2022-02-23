@@ -8,14 +8,14 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class SelectorFilterParentScopeTest : public testing::Test {
  protected:
   void SetUp() override {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
   }
 

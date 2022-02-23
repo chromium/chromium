@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -35,6 +34,8 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -67,17 +68,25 @@ bool IsBrowserSigninAllowed() {
 }
 
 std::string GetManagedDeviceDisclaimer() {
-  absl::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
-  if (!device_manager)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> manager = chrome::GetSessionManagerIdentity();
+  int managed_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION;
+  int managed_by_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION;
+#else
+  absl::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
+  int managed_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION;
+  int managed_by_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION;
+#endif
+  if (!manager)
     return std::string();
-  if (device_manager->empty()) {
-    return l10n_util::GetStringUTF8(
-        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION);
+  if (manager->empty()) {
+    return l10n_util::GetStringUTF8(managed_id);
   }
-  return l10n_util::GetStringFUTF8(
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION,
-      base::UTF8ToUTF16(*device_manager));
+  return l10n_util::GetStringFUTF8(managed_by_id, base::UTF8ToUTF16(*manager));
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
@@ -101,14 +110,15 @@ void AddStrings(content::WebUIDataSource* html_source) {
     {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
     {"profileMenuCustomizeText",
      IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
-    {"removeWarningLocalProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
     {"removeWarningLocalProfileTitle",
      IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
-    {"removeWarningSignedInProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
     {"removeWarningSignedInProfileTitle",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE},
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS
+#else
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE
+#endif
+    },
     {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
     {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
     {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
@@ -122,13 +132,6 @@ void AddStrings(content::WebUIDataSource* html_source) {
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_LACROS
 #else
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE
-#endif
-    },
-    {"signInButtonLabel",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS
-#else
-     IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL
 #endif
     },
     {"notNowButtonLabel",
@@ -168,6 +171,17 @@ void AddStrings(content::WebUIDataSource* html_source) {
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_SUBTITLE},
     {"accountSelectionLacrosOtherAccountButtonLabel",
      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_ACCOUNT_SELECTION_LACROS_OTHER_ACCOUNT_BUTTON_LABEL},
+    {"lacrosPrimaryProfileDeletionWarningTitle",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_TITLE},
+    {"lacrosPrimaryProfileDeletionWarning",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
+    {"lacrosPrimaryProfileDeletionWarningConfirmation",
+     IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
+#else
+    {"removeWarningLocalProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
+    {"removeWarningSignedInProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -181,6 +195,16 @@ void AddStrings(content::WebUIDataSource* html_source) {
 #endif
   html_source->AddLocalizedString("mainViewTitle", main_view_title_id);
 
+  int sign_in_button_label_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles)) {
+    sign_in_button_label_id =
+        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL_LACROS;
+  }
+#endif
+  html_source->AddLocalizedString("signInButtonLabel", sign_in_button_label_id);
+
   ProfilePicker::AvailabilityOnStartup availability_on_startup =
       static_cast<ProfilePicker::AvailabilityOnStartup>(
           g_browser_process->local_state()->GetInteger(
@@ -191,7 +215,18 @@ void AddStrings(content::WebUIDataSource* html_source) {
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
+#else
+                          true);
+#endif
+  html_source->AddBoolean(
+      "localProfileCreationFlowSupported",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FeatureList::IsEnabled(switches::kLacrosNonSyncingProfiles));
+#else
+      true);
+#endif
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));
@@ -203,9 +238,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
                          GetManagedDeviceDisclaimer());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean(
-      "isMultiProfileAccountConsistentcyLacrosEnabled",
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+  std::string remove_warning_profile = l10n_util::GetStringFUTF8(
+      IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
+      l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
+  html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
 #endif
 
   // Add policies.
@@ -234,7 +271,9 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   profile_picker_handler_ = handler.get();
   web_ui->AddMessageHandler(std::move(handler));
 
-  if (web_ui->GetWebContents()->GetURL().query() ==
+  // GetVisibleURL is used here because a WebUIController is created before the
+  // navigation commits.
+  if (web_ui->GetWebContents()->GetVisibleURL().query() ==
       chrome::kChromeUIProfilePickerStartupQuery) {
     profile_picker_handler_->EnableStartupMetrics();
   }

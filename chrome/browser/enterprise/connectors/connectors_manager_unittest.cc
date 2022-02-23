@@ -7,6 +7,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -30,7 +31,7 @@ namespace {
 
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
     AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
-    AnalysisConnector::BULK_DATA_ENTRY};
+    AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT};
 
 constexpr ReportingConnector kAllReportingConnectors[] = {
     ReportingConnector::SECURITY_EVENT};
@@ -145,7 +146,7 @@ class ConnectorsManagerTest : public testing::Test {
     ~ScopedConnectorPref() { pref_service_->ClearPref(pref_); }
 
    private:
-    PrefService* pref_service_;
+    raw_ptr<PrefService> pref_service_;
     const char* pref_;
   };
 
@@ -153,7 +154,7 @@ class ConnectorsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   GURL url_ = GURL("https://google.com");
 
   // Set to the default value of their legacy policy.
@@ -261,7 +262,7 @@ TEST_P(ConnectorsManagerConnectorPoliciesTest, EmptyPref) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ConnectorsManagerConnectorPoliciesTest,
     ConnectorsManagerConnectorPoliciesTest,
     testing::Combine(testing::ValuesIn(kAllAnalysisConnectors),
@@ -320,9 +321,9 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerAnalysisConnectorsTest,
-                        ConnectorsManagerAnalysisConnectorsTest,
-                        testing::ValuesIn(kAllAnalysisConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerAnalysisConnectorsTest,
+                         ConnectorsManagerAnalysisConnectorsTest,
+                         testing::ValuesIn(kAllAnalysisConnectors));
 
 class ConnectorsManagerReportingTest
     : public ConnectorsManagerTest,
@@ -364,9 +365,9 @@ TEST_P(ConnectorsManagerReportingTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerReportingTest,
-                        ConnectorsManagerReportingTest,
-                        testing::ValuesIn(kAllReportingConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerReportingTest,
+                         ConnectorsManagerReportingTest,
+                         testing::ValuesIn(kAllReportingConnectors));
 
 class ConnectorsManagerFileSystemTest
     : public ConnectorsManagerTest,
@@ -412,8 +413,8 @@ TEST_P(ConnectorsManagerFileSystemTest, DynamicPolicies) {
   ASSERT_TRUE(manager.GetAnalysisConnectorsSettingsForTesting().empty());
 }
 
-INSTANTIATE_TEST_CASE_P(ConnectorsManagerFileSystemTest,
-                        ConnectorsManagerFileSystemTest,
-                        testing::ValuesIn(kAllFileSystemConnectors));
+INSTANTIATE_TEST_SUITE_P(ConnectorsManagerFileSystemTest,
+                         ConnectorsManagerFileSystemTest,
+                         testing::ValuesIn(kAllFileSystemConnectors));
 
 }  // namespace enterprise_connectors

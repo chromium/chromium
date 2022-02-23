@@ -8,6 +8,6 @@ package org.chromium.chrome.browser.password_manager;
  * Instantiable version of {@link CredentialManagerLauncherFactory}, don't add anything to this
  * class. Downstream provides an actual implementation. In the build files, we specify that
  * {@link CredentialManagerLauncherFactory} is compiled separately from its implementation; other
- * projects may specify a different PasswordStoreAndroidBackendFactory via GN.
+ * projects may specify a different CredentialManagerLauncherFactoryImpl via GN.
  */
 class CredentialManagerLauncherFactoryImpl extends CredentialManagerLauncherFactory {}

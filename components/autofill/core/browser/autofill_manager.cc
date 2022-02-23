@@ -141,8 +141,7 @@ AutofillManager::~AutofillManager() {
 
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDetection)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     return;
   }
   for (auto& p : form_structures_) {

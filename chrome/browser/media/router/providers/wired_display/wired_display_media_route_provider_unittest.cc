@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver_factory.h"
@@ -107,7 +108,7 @@ class MockReceiverCreator {
 
   // Retains a reference to |unique_receiver_| even after |this| loses its
   // ownership.
-  MockPresentationReceiver* const receiver_;
+  const raw_ptr<MockPresentationReceiver> receiver_;
 };
 
 const char kPresentationSource[] = "https://www.example.com/presentation";
@@ -307,7 +308,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
   MockCallback callback;
 
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   // Create a route for |presentation_id|.
@@ -319,8 +320,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
             EXPECT_EQ(route->media_route_id(), presentation_id);
             EXPECT_EQ(route->description(), "Presenting (www.example.com)");
           })));
-  EXPECT_CALL(router_,
-              OnRoutesUpdated(kProviderId, _, kPresentationSource, IsEmpty()))
+  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, _))
       .WillOnce(WithArg<1>(
           Invoke([&presentation_id](const std::vector<MediaRoute>& routes) {
             EXPECT_EQ(routes.size(), 1u);
@@ -351,8 +351,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, CreateAndTerminateRoute) {
 
   // The presentation should not be removed until the receiver's termination
   // callback is called.
-  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, IsEmpty(),
-                                       kPresentationSource, IsEmpty()));
+  EXPECT_CALL(router_, OnRoutesUpdated(kProviderId, IsEmpty()));
   receiver_creator_.receiver()->RunTerminationCallback();
 }
 
@@ -362,7 +361,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
   NiceMock<MockCallback> callback;
 
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   // Create a route for |presentation_id|.
@@ -392,7 +391,7 @@ TEST_F(WiredDisplayMediaRouteProviderTest, SendMediaStatusUpdate) {
 TEST_F(WiredDisplayMediaRouteProviderTest, ExitFullscreenOnDisplayRemoved) {
   NiceMock<MockCallback> callback;
   provider_->set_all_displays({secondary_display1_, primary_display_});
-  provider_remote_->StartObservingMediaRoutes(kPresentationSource);
+  provider_remote_->StartObservingMediaRoutes();
   base::RunLoop().RunUntilIdle();
 
   provider_remote_->CreateRoute(

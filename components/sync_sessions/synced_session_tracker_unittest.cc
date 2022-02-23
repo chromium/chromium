@@ -8,7 +8,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -95,9 +94,9 @@ class SyncedSessionTrackerTest : public testing::Test {
     // Now traverse the SyncedSession tree to verify the mapped tabs all match
     // up.
     int mapped_tab_count = 0;
-    for (auto& window_pair : session->synced_session.windows) {
-      mapped_tab_count += window_pair.second->wrapped_window.tabs.size();
-      for (auto& tab : window_pair.second->wrapped_window.tabs) {
+    for (auto& [window_id, window] : session->synced_session.windows) {
+      mapped_tab_count += window->wrapped_window.tabs.size();
+      for (auto& tab : window->wrapped_window.tabs) {
         const auto tab_map_it = session->synced_tab_map.find(tab->tab_id);
         if (tab_map_it == session->synced_tab_map.end()) {
           return AssertionFailure() << "Tab ID " << tab->tab_id.id()
@@ -113,21 +112,19 @@ class SyncedSessionTrackerTest : public testing::Test {
 
     // Wrap up by verifying all unmapped tabs are tracked.
     int unmapped_tab_count = session->unmapped_tabs.size();
-    for (const auto& tab_pair : session->unmapped_tabs) {
-      if (tab_pair.first != tab_pair.second->tab_id) {
-        return AssertionFailure()
-               << "Unmapped tab " << tab_pair.second->tab_id.id()
-               << " associated with wrong tab " << tab_pair.first;
+    for (const auto& [id, tab] : session->unmapped_tabs) {
+      if (id != tab->tab_id) {
+        return AssertionFailure() << "Unmapped tab " << tab->tab_id.id()
+                                  << " associated with wrong tab " << id;
       }
-      const auto tab_map_it =
-          session->synced_tab_map.find(tab_pair.second->tab_id);
+      const auto tab_map_it = session->synced_tab_map.find(tab->tab_id);
       if (tab_map_it == session->synced_tab_map.end()) {
-        return AssertionFailure() << "Unmapped tab " << tab_pair.second->tab_id
+        return AssertionFailure() << "Unmapped tab " << tab->tab_id
                                   << " has no corresponding synced tab entry";
       }
-      if (tab_map_it->second != tab_pair.second.get()) {
+      if (tab_map_it->second != tab.get()) {
         return AssertionFailure()
-               << "Unmapped tab " << tab_pair.second->tab_id.id()
+               << "Unmapped tab " << tab->tab_id.id()
                << " does not match synced tab map " << tab_map_it->second;
       }
     }
@@ -487,59 +484,7 @@ TEST_F(SyncedSessionTrackerTest, DeleteForeignTab) {
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
 }
 
-TEST_F(SyncedSessionTrackerTest, CleanupLocalTabsWithoutDeferredRecycling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
-                             kTabNodePoolImmediateDeletion});
-
-  tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
-
-  // Start with two restored tab nodes.
-  tracker_.ReassociateLocalTab(kTabNode1, kTab1);
-  tracker_.ReassociateLocalTab(kTabNode2, kTab2);
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
-
-  // Associate with no tabs. The tab pool should now be full.
-  tracker_.ResetSessionTracking(kTag);
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
-
-  // Associate with only 1 tab open. A tab node should be reused.
-  tracker_.ResetSessionTracking(kTag);
-  tracker_.PutWindowInSession(kTag, kWindow1);
-  tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
-  EXPECT_EQ(kTabNode1, tracker_.AssociateLocalTabWithFreeTabNode(kTab1));
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
-
-  // Simulate a tab opening, which should use the last free tab node.
-  EXPECT_EQ(kTabNode2, tracker_.AssociateLocalTabWithFreeTabNode(kTab2));
-  EXPECT_EQ(kTabNode2, tracker_.LookupTabNodeFromTabId(kTag, kTab2));
-
-  // Simulate another tab opening, which should create a new associated tab
-  // node.
-  EXPECT_EQ(kTabNode3, tracker_.AssociateLocalTabWithFreeTabNode(kTab3));
-  EXPECT_EQ(kTabNode3, tracker_.LookupTabNodeFromTabId(kTag, kTab3));
-
-  // Previous tabs should still be associated.
-  EXPECT_EQ(kTabNode1, tracker_.LookupTabNodeFromTabId(kTag, kTab1));
-  EXPECT_EQ(kTabNode2, tracker_.LookupTabNodeFromTabId(kTag, kTab2));
-
-  // Associate with no tabs. All tabs should be freed again, and the pool
-  // should now be full.
-  tracker_.ResetSessionTracking(kTag);
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
-  ASSERT_TRUE(VerifyTabIntegrity(kTag));
-}
-
 TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDeferRecyclingOfSyncTabNodesIfUnsynced);
-
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
 
   // Start with four restored tab nodes, one of which is mapped (|kTab1|).

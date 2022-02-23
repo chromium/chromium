@@ -31,7 +31,11 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/extensions/extension_installed_notification.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #else
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/notification_service.h"
@@ -54,6 +58,17 @@ Browser* FindOrCreateVisibleBrowser(Profile* profile) {
     chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Toast id and duration for extension install success.
+constexpr char kExtensionInstallSuccessToastId[] = "extension_install_success";
+
+void ShowToast(const std::string& id,
+               ash::ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, text));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -89,11 +104,17 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
       return;
     }
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/1286603): Show Toast for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ExtensionInstalledNotification::Show(extension.get(), current_profile);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    OpenAppInstalledUI(extension->id());
+    ShowToast(kExtensionInstallSuccessToastId,
+              ash::ToastCatalogName::kExtensionInstallSuccess,
+              l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
+                                         base::UTF8ToUTF16(extension->name())));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
+    OpenAppInstalledUI(extension->id());
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return;
   }
 
@@ -118,9 +139,9 @@ void ExtensionInstallUIDefault::OnInstallFailure(
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Notification always enabled on ChromeOS, so always handled in
-  // OnInstallSuccess.
+#if BUILDFLAG(IS_CHROMEOS)
+  // chrome://apps/ is not available on ChromeOS.
+  // Toast is shown for Ash (not yet Lacros: crbug.com/1286603).
   NOTREACHED();
 #else
   Profile* current_profile = profile_->GetOriginalProfile();

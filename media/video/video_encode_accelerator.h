@@ -87,11 +87,36 @@ struct MEDIA_EXPORT Vp9Metadata final {
   std::vector<uint8_t> p_diffs;
 };
 
+// Metadata for an AV1 bitstream buffer.
+struct MEDIA_EXPORT Av1Metadata final {
+  Av1Metadata();
+  ~Av1Metadata();
+  Av1Metadata(const Av1Metadata&);
+
+  // True iff this layer frame is dependent on previously coded frame(s).
+  bool inter_pic_predicted = false;
+  // True iff this frame is a switch point between sequences.
+  bool switch_frame = false;
+  // True iff frame is last layer frame of picture.
+  bool end_of_picture = true;
+  // The temporal index for this frame.
+  uint8_t temporal_idx = 0;
+  // The spatial index for this frame.
+  uint8_t spatial_idx = 0;
+  // The resolutions of active spatial layers, filled if and only if keyframe or
+  // the number of active spatial layers is changed.
+  std::vector<gfx::Size> spatial_layer_resolutions;
+  // The differences between the frame number of this frame and frame number
+  // of referenced frames, only be to filled for non key frames.
+  std::vector<uint8_t> f_diffs;
+};
+
 //  Metadata associated with a bitstream buffer.
 //  |payload_size| is the byte size of the used portion of the buffer.
 //  |key_frame| is true if this delivered frame is a keyframe.
 //  |timestamp| is the same timestamp as in VideoFrame passed to Encode().
-//  |vp8|, if set, contains metadata specific to VP8. See above.
+//  |qp| is the quantizer value, default invalid qp value is -1 following
+//  webrtc::EncodedImage.
 struct MEDIA_EXPORT BitstreamBufferMetadata final {
   BitstreamBufferMetadata();
   BitstreamBufferMetadata(const BitstreamBufferMetadata& other);
@@ -105,12 +130,14 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   size_t payload_size_bytes;
   bool key_frame;
   base::TimeDelta timestamp;
+  int32_t qp = -1;
 
   // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
   // it's also possible for none of them to be set.
   absl::optional<H264Metadata> h264;
   absl::optional<Vp8Metadata> vp8;
   absl::optional<Vp9Metadata> vp9;
+  absl::optional<Av1Metadata> av1;
 };
 
 // Video encoder interface.

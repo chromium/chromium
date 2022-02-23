@@ -18,7 +18,7 @@ namespace {
 
 // PATH env variable is not set on Fuchsia by default, while PWD is not set on
 // Windows.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 constexpr char kValidEnvironmentVariable[] = "PWD";
 #else
 constexpr char kValidEnvironmentVariable[] = "PATH";

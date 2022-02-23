@@ -21,6 +21,7 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content.browser.sms.Wrappers.WebOTPServiceContext;
@@ -66,7 +67,12 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         IntentFilter filter = new IntentFilter();
         filter.addAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
 
-        mContext.registerReceiver(this, filter);
+        // The SEND_PERMISSION permission is not documented to held by the sender of this broadcast,
+        // but it's coming from the same place the UserConsent (SmsRetriever.SMS_RETRIEVED_ACTION)
+        // broadcast is coming from, so the sender will be holding this permission. This prevents
+        // other apps from spoofing verification codes.
+        ContextUtils.registerExportedBroadcastReceiver(
+                mContext, this, filter, SmsRetriever.SEND_PERMISSION);
     }
 
     public SmsCodeBrowserClient createClient() {

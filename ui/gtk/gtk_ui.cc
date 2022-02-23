@@ -47,23 +47,26 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_platform.h"
+#include "ui/gtk/gtk_ui_platform_stub.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
 #include "ui/gtk/native_theme_gtk.h"
 #include "ui/gtk/nav_button_provider_gtk.h"
 #include "ui/gtk/printing/print_dialog_gtk.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
-#include "ui/gtk/select_file_dialog_impl.h"
+#include "ui/gtk/select_file_dialog_linux_gtk.h"
 #include "ui/gtk/settings_provider_gtk.h"
 #include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -79,7 +82,7 @@
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
 #define USE_WAYLAND
 #endif
-#if BUILDFLAG(OZONE_PLATFORM_X11) && !defined(USE_X11)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
 #define USE_X11
 #endif
 
@@ -210,7 +213,8 @@ class GtkButtonPainter : public views::Painter {
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
   void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
     gfx::ImageSkia image(
-        std::make_unique<GtkButtonImageSource>(focus_, button_state_, size), 1);
+        std::make_unique<GtkButtonImageSource>(focus_, button_state_, size),
+        1.f);
     canvas->DrawImageInt(image, 0, 0);
   }
 
@@ -303,6 +307,8 @@ views::LinuxUI::WindowFrameAction GetDefaultMiddleClickAction() {
 
 std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   switch (backend) {
+    case ui::LinuxUiBackend::kStub:
+      return std::make_unique<GtkUiPlatformStub>();
 #if defined(USE_X11)
     case ui::LinuxUiBackend::kX11:
       return std::make_unique<GtkUiPlatformX11>();
@@ -319,7 +325,7 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
 
 }  // namespace
 
-GtkUi::GtkUi() {
+GtkUi::GtkUi() : window_frame_actions_() {
   using Action = views::LinuxUI::WindowFrameAction;
   using ActionSource = views::LinuxUI::WindowFrameActionSource;
 
@@ -341,7 +347,7 @@ GtkUi::GtkUi() {
 
   // This creates an extra thread that may race against GtkInitFromCommandLine,
   // so this must be done after to avoid the race condition.
-  SelectFileDialogImpl::Initialize();
+  ShellDialogLinux::Initialize();
 
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
@@ -352,8 +358,6 @@ GtkUi::GtkUi() {
 GtkUi::~GtkUi() {
   DCHECK_EQ(g_gtk_ui, this);
   g_gtk_ui = nullptr;
-
-  SelectFileDialogImpl::Shutdown();
 }
 
 // static
@@ -530,9 +534,24 @@ bool GtkUi::GetDefaultUsesSystemTheme() const {
 }
 
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
-                                        int size) const {
+                                        int dip_size,
+                                        float scale) const {
   // This call doesn't take a reference.
   GtkIconTheme* theme = GetDefaultIconTheme();
+
+  // GTK expects an integral scale. If `scale` is integral, pass it to GTK;
+  // otherwise pretend the scale is 1 and manually recalculate `size`.
+  int size;
+  int scale_int;
+  int scale_floor = base::ClampFloor(scale);
+  int scale_ceil = base::ClampCeil(scale);
+  if (scale_floor == scale_ceil) {
+    scale_int = scale_floor;
+    size = dip_size;
+  } else {
+    scale_int = 1;
+    size = scale * dip_size;
+  }
 
   std::string content_types[] = {content_type, kUnknownContentType};
 
@@ -541,7 +560,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
     SkBitmap bitmap;
     if (GtkCheckVersion(4)) {
       auto icon_paintable = Gtk4IconThemeLookupByGicon(
-          theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
+          theme, icon.get(), size, scale_int, GTK_TEXT_DIR_NONE,
           static_cast<GtkIconLookupFlags>(0));
       if (!icon_paintable)
         continue;
@@ -560,8 +579,8 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
       gsk_render_node_unref(node);
     } else {
-      auto icon_info = Gtk3IconThemeLookupByGicon(
-          theme, icon.get(), size,
+      auto icon_info = Gtk3IconThemeLookupByGiconForScale(
+          theme, icon.get(), size, scale_int,
           static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE));
       if (!icon_info)
         continue;
@@ -587,7 +606,8 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
         continue;
       }
     }
-    gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    gfx::ImageSkia image_skia =
+        gfx::ImageSkia::CreateFromBitmap(bitmap, scale_int);
     image_skia.MakeThreadSafe();
     return gfx::Image(image_skia);
   }
@@ -689,7 +709,7 @@ void GtkUi::GetDefaultFontDescription(std::string* family_out,
 ui::SelectFileDialog* GtkUi::CreateSelectFileDialog(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) const {
-  return SelectFileDialogImpl::Create(listener, std::move(policy));
+  return new SelectFileDialogLinuxGtk(listener, std::move(policy));
 }
 
 views::LinuxUI::WindowFrameAction GtkUi::GetWindowFrameAction(
@@ -933,11 +953,7 @@ void GtkUi::UpdateColors() {
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED] = tab_text_color;
-  colors_[ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE] =
-      tab_text_color;
-  colors_[ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE] =
-      tab_text_color;
-  colors_[ThemeProperties::COLOR_BOOKMARK_TEXT] = tab_text_color;
+  colors_[ThemeProperties::COLOR_TOOLBAR_TEXT] = tab_text_color;
 
   colors_[ThemeProperties::COLOR_NTP_LINK] =
       color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
@@ -952,11 +968,6 @@ void GtkUi::UpdateColors() {
       color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
   active_selection_fg_color_ =
       color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
-
-  colors_[ThemeProperties::COLOR_TAB_THROBBER_SPINNING] =
-      color_provider->GetColor(ui::kColorThrobber);
-  colors_[ThemeProperties::COLOR_TAB_THROBBER_WAITING] =
-      color_provider->GetColor(ui::kColorThrobberPreconnect);
 
   // Generate colors that depend on whether or not a custom window frame is
   // used.  These colors belong in |color_map| below, not |colors_|.

@@ -10,8 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 @class IOBluetoothDevice;
 
 namespace device {

@@ -26,16 +26,16 @@ import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resource
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {getTemplate} from './app.html.js';
+import {BrowserService, BrowserServiceImpl} from './browser_service.js';
 import {HistoryPageViewHistogram} from './constants.js';
 import {ForeignSession, QueryResult, QueryState} from './externs.js';
 import {HistoryListElement} from './history_list.js';
 import {HistoryToolbarElement} from './history_toolbar.js';
-import {HistoryQueryManagerElement} from './query_manager.js';
 import {Page, TABBED_PAGES} from './router.js';
-import {FooterInfo} from './side_bar.js';
+import {FooterInfo, HistorySideBarElement} from './side_bar.js';
 
 let lazyLoadPromise: Promise<void>|null = null;
 export function ensureLazyLoaded(): Promise<void> {
@@ -101,7 +101,7 @@ export function listenForPrivilegedLinkClicks() {
 
       if ((anchor.protocol === 'file:' || anchor.protocol === 'about:') &&
           (e.button === 0 || e.button === 1)) {
-        BrowserService.getInstance().navigateToUrl(
+        BrowserServiceImpl.getInstance().navigateToUrl(
             anchor.href, anchor.target, e);
         e.preventDefault();
       }
@@ -119,6 +119,7 @@ declare global {
 export interface HistoryAppElement {
   $: {
     'content': IronPagesElement,
+    'content-side-bar': HistorySideBarElement,
     'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
     'tabs-container': Element,
@@ -138,6 +139,10 @@ const HistoryAppElementBase =
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
     return 'history-app';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -266,7 +271,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         'foreign-sessions-changed',
         (sessionList: Array<ForeignSession>) =>
             this.setForeignSessions_(sessionList));
-    this.browserService_ = BrowserService.getInstance();
+    this.browserService_ = BrowserServiceImpl.getInstance();
     this.shadowRoot!.querySelector('history-query-manager')!.initialize();
     this.browserService_!.getForeignSessions().then(
         sessionList => this.setForeignSessions_(sessionList));
@@ -563,8 +568,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
     return this.$.toolbar.searchField.isSearchFocused();
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  setHasDrawerForTesting(enabled: boolean) {
+    this.hasDrawer_ = enabled;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-app': HistoryAppElement;
   }
 }
 

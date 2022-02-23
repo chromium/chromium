@@ -11,24 +11,23 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
-#include "remoting/host/screen_resolution.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
@@ -83,13 +82,15 @@ class DesktopSessionProxy
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
       public IpcFileOperations::RequestHandler,
-      public mojom::DesktopSessionEventHandler {
+      public mojom::DesktopSessionEventHandler,
+      public mojom::DesktopSessionStateHandler {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
       const DesktopEnvironmentOptions& options);
 
@@ -119,14 +120,12 @@ class DesktopSessionProxy
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // Connects to the desktop session agent.
-  bool AttachToDesktop(const IPC::ChannelHandle& desktop_pipe, int session_id);
+  bool AttachToDesktop(mojo::ScopedMessagePipeHandle desktop_pipe,
+                       int session_id);
 
   // Closes the connection to the desktop session agent and cleans up
   // the associated resources.
   void DetachFromDesktop();
-
-  // Disconnects the client session that owns |this|.
-  void DisconnectSession(protocol::ErrorCode error);
 
   // Stores |audio_capturer| to be used to post captured audio packets. Called
   // on the |audio_capture_task_runner_| thread.
@@ -182,6 +181,10 @@ class DesktopSessionProxy
   // mojom::DesktopSessionEventHandler implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
   void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
+  void OnAudioPacket(std::unique_ptr<AudioPacket> audio_packet) override;
+
+  // mojom::DesktopSessionStateHandler implementation.
+  void DisconnectSession(protocol::ErrorCode error) override;
 
   // API used to implement the UrlForwarderConfigurator interface.
   void IsUrlForwarderSetUp(
@@ -204,8 +207,11 @@ class DesktopSessionProxy
   // Returns a shared buffer from the list of known buffers.
   scoped_refptr<IpcSharedBufferCore> GetSharedBufferCore(int id);
 
-  // Handles AudioPacket notification from the desktop session agent.
-  void OnAudioPacket(const std::string& serialized_packet);
+  // Called when the desktop agent has started and provides the remote used to
+  // inject input events and control A/V capture.
+  void OnDesktopSessionAgentStarted(
+      mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+          pending_remote);
 
   // Registers a new shared buffer created by the desktop process.
   void OnCreateSharedBuffer(int id,
@@ -251,6 +257,9 @@ class DesktopSessionProxy
   // Used to disconnect the client session.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
+  // Used to trigger events on the client session.
+  base::WeakPtr<ClientSessionEvents> client_session_events_;
+
   // Used to create a desktop session and receive notifications every time
   // the desktop process is replaced.
   base::WeakPtr<DesktopSessionConnector> desktop_session_connector_;
@@ -292,14 +301,21 @@ class DesktopSessionProxy
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
 
+  // |desktop_session_agent_| is only valid when |desktop_channel_| is
+  // connected.
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_;
+
   // |desktop_session_control_| is only valid when |desktop_channel_| is
   // connected. The desktop process can be detached and reattached several times
   // during a session (e.g. transitioning between the login screen and user
   // desktop) so the validity of this remote must be checked before calling a
   // method on it.
   mojo::AssociatedRemote<mojom::DesktopSessionControl> desktop_session_control_;
+
   mojo::AssociatedReceiver<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_{this};
+  mojo::AssociatedReceiver<mojom::DesktopSessionStateHandler>
+      desktop_session_state_handler_{this};
 
   UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
       is_url_forwarder_set_up_callback_;

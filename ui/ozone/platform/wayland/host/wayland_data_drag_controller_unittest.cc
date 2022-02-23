@@ -78,6 +78,15 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
       base::RefCountedBytes::TakeVector(&result));
 }
 
+void SendMotionEvent(wl::TestDataDevice* data_device,
+                     const gfx::Point motion_point) {
+  int64_t time =
+      (EventTimeForNow() - base::TimeTicks()).InMilliseconds() & UINT32_MAX;
+
+  data_device->OnMotion(time, wl_fixed_from_int(motion_point.x()),
+                        wl_fixed_from_int(motion_point.y()));
+}
+
 }  // namespace
 
 class MockDragHandlerDelegate : public WmDragHandler::Delegate {
@@ -148,6 +157,8 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   ~WaylandDataDragControllerTest() override = default;
 
   void SetUp() override {
+    // Set output dimensions at some offset.
+    server_.output()->SetRect({20, 30, 800, 600});
     WaylandDragDropTest::SetUp();
 
     drag_handler_delegate_ = std::make_unique<MockDragHandlerDelegate>();
@@ -401,11 +412,26 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
   window_->SetPointerFocus(restored_focus);
 }
 
+MATCHER_P(PointFNear, n, "") {
+  return arg.IsWithinDistance(n, 0.01f);
+}
+
 TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
+  // HiDPI
+  server_.output()->SetScale(2);
+  server_.output()->Flush();
+
+  // Place the window onto the output.
+  wl_surface_send_enter(surface_->resource(), server_.output()->resource());
+
   auto* data_offer =
       data_device_manager_->data_device()->CreateAndSendDataOffer();
   data_offer->OnOffer(kMimeTypeText,
                       ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+
+  // Consume the move event from pointer enter.
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(20, 20)), _, _));
 
   gfx::Point entered_point(10, 10);
   // The server sends an enter event.
@@ -415,15 +441,13 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
 
   Sync();
 
-  int64_t time =
-      (EventTimeForNow() - base::TimeTicks()).InMilliseconds() & UINT32_MAX;
-  gfx::Point motion_point(11, 11);
+  // In 2x window scale, we expect received coordinates to be multiplied.
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(60, 60)), _, _));
 
-  // The server sends an motion event.
-  data_device_manager_->data_device()->OnMotion(
-      time, wl_fixed_from_int(motion_point.x()),
-      wl_fixed_from_int(motion_point.y()));
-
+  // The server sends an motion event in DP.
+  gfx::Point motion_point(30, 30);
+  SendMotionEvent(data_device_manager_->data_device(), motion_point);
   Sync();
 
   auto callback = base::BindOnce([](PlatformClipboard::Data contents) {
@@ -439,6 +463,59 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
   Sync();
 
   data_device_manager_->data_device()->OnLeave();
+}
+
+TEST_P(WaylandDataDragControllerTest, ReceiveDragPixelSurface) {
+  wl::TestOutput* output = server_.output();
+  // Place the window onto the output.
+  wl_surface_send_enter(surface_->resource(), output->resource());
+  // Set connection to use pixel coordinates.
+  connection_->set_surface_submission_in_pixel_coordinates(true);
+
+  // Change the scale of the output.  Windows looking into that output must get
+  // the new scale and update scale of their buffers.  The default UI scale
+  // equals the output scale.
+  const int32_t kTripleScale = 3;
+  output->SetScale(kTripleScale);
+  output->Flush();
+
+  Sync();
+
+  EXPECT_EQ(window_->window_scale(), kTripleScale);
+
+  auto* data_offer =
+      data_device_manager_->data_device()->CreateAndSendDataOffer();
+  data_offer->OnOffer(kMimeTypeText,
+                      ToClipboardData(std::string(kSampleTextForDragAndDrop)));
+
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(800, 600)), _, _));
+
+  // The server sends an enter event at the bottom right corner of the window.
+  gfx::Point entered_point(800, 600);
+  data_device_manager_->data_device()->OnEnter(
+      1002, surface_->resource(), wl_fixed_from_int(entered_point.x()),
+      wl_fixed_from_int(entered_point.y()), data_offer);
+
+  Sync();
+
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(400, 300)), _, _))
+      .Times(::testing::AtLeast(1));
+
+  // The server sends a motion event through the center of the output.
+  gfx::Point center(400, 300);
+  SendMotionEvent(data_device_manager_->data_device(), center);
+  Sync();
+
+  EXPECT_CALL(*drop_handler_,
+              MockDragMotion(PointFNear(gfx::PointF(0, 0)), _, _))
+      .Times(::testing::AtLeast(1));
+
+  // The server sends a motion event to the top-left corner.
+  gfx::Point top_left(0, 0);
+  SendMotionEvent(data_device_manager_->data_device(), top_left);
+  Sync();
 }
 
 TEST_P(WaylandDataDragControllerTest, DropSeveralMimeTypes) {

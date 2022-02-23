@@ -32,13 +32,11 @@ class UnzipperImpl : public mojom::Unzipper {
   void Unzip(
       base::File zip_file,
       mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
+      mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
       UnzipCallback callback) override;
 
-  void UnzipWithFilter(
-      base::File zip_file,
-      mojo::PendingRemote<filesystem::mojom::Directory> output_dir_remote,
-      mojo::PendingRemote<mojom::UnzipFilter> filter_remote,
-      UnzipWithFilterCallback callback) override;
+  void DetectEncoding(base::File zip_file,
+                      DetectEncodingCallback callback) override;
 
   mojo::Receiver<mojom::Unzipper> receiver_{this};
 };

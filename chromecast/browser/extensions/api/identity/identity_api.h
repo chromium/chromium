@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_API_H_
 
-#include "base/macros.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
 #include <memory>
@@ -292,7 +293,7 @@ class ScopedUnpackStateButAlignmentReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLint skip_pixels_ = 0;
   GLint skip_rows_ = 0;
   GLint skip_images_ = 0;
@@ -318,7 +319,7 @@ class ScopedPackStateRowLengthReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLint row_length_ = 0;
 };
 
@@ -4864,7 +4865,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
           image, std::move(gpu_fence),
           gfx::OverlayPlaneData(
               plane_z_order, transform,
-              gfx::Rect(bounds_x, bounds_y, bounds_width, bounds_height),
+              gfx::RectF(bounds_x, bounds_y, bounds_width, bounds_height),
               gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
               /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f,
               gfx::OverlayPriorityHint::kNone,
@@ -5266,17 +5267,6 @@ error::Error GLES2DecoderPassthroughImpl::DoDestroyGpuFenceCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoUnpremultiplyAndDitherCopyCHROMIUM(
-    GLuint src_texture,
-    GLuint dst_texture,
-    GLint x,
-    GLint y,
-    GLsizei width,
-    GLsizei height) {
-  NOTIMPLEMENTED();
-  return error::kNoError;
-}
-
 error::Error
 GLES2DecoderPassthroughImpl::DoSetReadbackBufferShadowAllocationINTERNAL(
     GLuint buffer_id,
@@ -5395,7 +5385,7 @@ GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
   resources_->texture_object_map.RemoveClientID(texture_client_id);
   resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
   resources_->texture_shared_image_map[texture_client_id] =
-      PassthroughResources::SharedImageData(std::move(shared_image));
+      PassthroughResources::SharedImageData(std::move(shared_image), api());
 
   return error::kNoError;
 }

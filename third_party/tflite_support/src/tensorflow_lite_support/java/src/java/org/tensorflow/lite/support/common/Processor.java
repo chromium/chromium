@@ -15,9 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.support.common;
 
-/**
- * Processes T object with prepared {@link Operator<T>}.
- */
+/** Processes T object with prepared {@code Operator<T>}. */
 public interface Processor<T> {
     T process(T input);
 }

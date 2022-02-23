@@ -58,19 +58,14 @@ void FaviconJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::ListValue* favicons;
-  if (!message.body()->GetAsList(&favicons)) {
-    return;
-  }
-
   const GURL url = message.request_url().value();
 
   std::vector<FaviconURL> urls;
-  if (!ExtractFaviconURL(favicons, url, &urls))
+  if (!ExtractFaviconURL(message.body()->GetListDeprecated(), url, &urls))
     return;
 
   if (!urls.empty())
     static_cast<WebStateImpl*>(web_state)->OnFaviconUrlUpdated(urls);
 }
 
-}  // namspace web
+}  // namespace web

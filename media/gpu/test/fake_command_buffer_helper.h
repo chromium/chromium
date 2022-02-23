@@ -43,7 +43,7 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // CommandBufferHelper implementation.
   gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
 #endif
   bool HasStub() override;

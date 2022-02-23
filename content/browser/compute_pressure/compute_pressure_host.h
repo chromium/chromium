@@ -131,7 +131,7 @@ class CONTENT_EXPORT ComputePressureHost
   // Stored to avoid sending updates when the underlying compute pressure state
   // changes, but quantization produces the same values that were reported in
   // the last update.
-  ComputePressureSample last_report_sample_
+  blink::mojom::ComputePressureState last_report_state_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The last time the origin's observers received an update.

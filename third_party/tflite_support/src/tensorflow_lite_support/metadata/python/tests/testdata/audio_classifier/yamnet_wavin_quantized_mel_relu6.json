@@ -1,0 +1,63 @@
+{
+  "name": "AudioClassifier",
+  "description": "Identify the most prominent type in the audio clip from a known set of categories.",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "audio_clip",
+          "description": "Input audio clip to be classified.",
+          "content": {
+            "content_properties_type": "AudioProperties",
+            "content_properties": {
+              "sample_rate": 2,
+              "channels": 1
+            }
+          },
+          "stats": {
+          }
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "probability",
+          "description": "Scores of the labels respectively.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "process_units": [
+            {
+              "options_type": "ScoreCalibrationOptions",
+              "options": {
+                "score_transformation": "LOG",
+                "default_score": 0.2
+              }
+            }
+          ],
+          "stats": {
+            "max": [
+              1.0
+            ],
+            "min": [
+              0.0
+            ]
+          },
+          "associated_files": [
+            {
+              "name": "yamnet_521_labels.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            },
+            {
+              "name": "score_calibration.txt",
+              "description": "Contains sigmoid-based score calibration parameters. The main purposes of score calibration is to make scores across classes comparable, so that a common threshold can be used for all output classes.",
+              "type": "TENSOR_AXIS_SCORE_CALIBRATION"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -33,6 +33,7 @@ extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
 extern const char kPrintingEnabled[];
 extern const char kSearchSuggestEnabled[];
+extern const char kTrackPricesOnTabsEnabled[];
 
 extern const char kNetworkPredictionSetting[];
 
@@ -49,6 +50,8 @@ extern const char kIosUserZoomMultipliers[];
 extern const char kIncognitoAuthenticationSetting[];
 
 extern const char kBrowserSigninPolicy[];
+
+extern const char kNewTabPageLocationOverride[];
 
 }  // namespace prefs
 

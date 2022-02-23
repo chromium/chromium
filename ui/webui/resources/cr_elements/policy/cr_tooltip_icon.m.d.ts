@@ -5,9 +5,12 @@
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 interface CrTooltipIconElement extends LegacyElementMixin, HTMLElement {
+  $: {
+    indicator: HTMLElement,
+  };
   iconAriaLabel: string;
   iconClass: string;
-  tooltipTex: string;
+  tooltipText: string;
   tooltipPosition: string;
   getFocusableElement(): Element;
 }

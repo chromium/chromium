@@ -9,10 +9,10 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 
 namespace base {
+class Value;
 class DictionaryValue;
 }
 
@@ -42,15 +42,13 @@ class StubDevToolsClient : public DevToolsClient {
   Status SendAsyncCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override;
-  Status SendCommandAndGetResultWithTimeout(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      const Timeout* timeout,
-      std::unique_ptr<base::DictionaryValue>* result) override;
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override;
+  Status SendCommandAndGetResultWithTimeout(const std::string& method,
+                                            const base::DictionaryValue& params,
+                                            const Timeout* timeout,
+                                            base::Value* result) override;
   Status SendCommandAndIgnoreResponse(
       const std::string& method,
       const base::DictionaryValue& params) override;

@@ -132,7 +132,7 @@ TEST(BindObjcBlockTestARC, TestBlockDeallocation) {
   EXPECT_TRUE(invoked_block);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 
 TEST(BindObjcBlockTestARC, TestBlockReleased) {
   __weak NSObject* weak_nsobject;

@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_mixer.h"
-#include "ui/color/color_set.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
@@ -44,7 +43,7 @@ TEST(ColorRecipeTest, ChainedTransforms) {
                        BlendForMinContrast(FromTransformInput(), kColorTest0);
   constexpr SkColor kBackground = SK_ColorWHITE;
   ColorMixer mixer;
-  mixer.AddSet({kColorSetTest0, {{kColorTest0, kBackground}}});
+  mixer[kColorTest0] = {kBackground};
   const auto verify_chain = [&](SkColor input) {
     const SkColor color = recipe.GenerateResult(input, mixer);
     // The DeriveDefaultIconColor transform should change the output color even

@@ -26,7 +26,6 @@
 <translation id="225614027745146050">خوش آمدید</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
 <translation id="2329392777730037872">کلائنٹ پر <ph name="URL" /> کو کھولنے سے قاصر۔</translation>
-<translation id="2333212046079545895">‏Copyright 2021 Google LLC.‎ جملہ حقوق محفوظ ہیں۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2366718077645204424">میزبان تک پہنچنے سے قاصر۔ یہ شاید نیٹ ورک کے اس کنفیگریشن کی وجہ سے ہے جو آپ استعمال کر رہے ہیں۔</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> آخری بار <ph name="RELATIVE_TIMESTAMP" /> آن لائن دیکھا گیا۔</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">‏یہ سروس Chrome ریموٹ ڈیسک ٹاپ کلائنٹس سے موصول ہونے والے کنکشنز کو فعال کرتی ہے۔</translation>
 <translation id="2647232381348739934">‏Chromoting سروس</translation>
 <translation id="2676780859508944670">کام جاری ہے…</translation>
+<translation id="2692522824157224199">‏Copyright 2022 Google LLC.‎ جملہ حقوق محفوظ۔</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">توثیق کرتے وقت ایک خرابی پیش آ گئی، براہ کرم دوبارہ لاگ ان کریں۔</translation>
 <translation id="2803375539583399270">‏PIN درج کریں</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833">‏<ph name="PRODUCT_NAME" /> URL فارورڈر</translation>
 <translation id="4277736576214464567">رسائی کوڈ غلط ہے۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
+<translation id="4372650392690220936">‏کاپی رائٹ 2022 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="4405930547258349619">بنیادی لائبریری</translation>
 <translation id="443560535555262820">ایکسیسبیلٹی کی ترجیحات کھولیں</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
-<translation id="4512952200932940229">‏کاپی رائٹ 2021 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4563926062592110512">کلائنٹ منقطع ہوگیا: <ph name="CLIENT_USERNAME" />۔</translation>
 <translation id="4618411825115957973">‏<ph name="URL_FORWARDER_NAME" /> کو صحیح طریقے سے کنفیگر نہیں کیا گیا۔ براہ کرم ایک مختلف ڈیفالٹ ویب براؤزر منتخب کریں اور پھر URL کو دوبارہ فارورڈ کرنے کی سہولت فعال کریں۔</translation>

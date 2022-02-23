@@ -175,7 +175,8 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   // buffer. If we have constructed the query from data or the query is already
   // parsed after constructed from a raw buffer, |header_| is not null.
   DCHECK(header_ == nullptr);
-  base::BigEndianReader reader(io_buffer_->data(), valid_bytes);
+  base::BigEndianReader reader(
+      reinterpret_cast<const uint8_t*>(io_buffer_->data()), valid_bytes);
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -215,8 +216,9 @@ base::StringPiece DnsQuery::qname() const {
 
 uint16_t DnsQuery::qtype() const {
   uint16_t type;
-  base::ReadBigEndian<uint16_t>(io_buffer_->data() + kHeaderSize + qname_size_,
-                                &type);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
+                          io_buffer_->data() + kHeaderSize + qname_size_),
+                      &type);
   return type;
 }
 

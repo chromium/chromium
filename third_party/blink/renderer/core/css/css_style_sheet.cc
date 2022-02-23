@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -301,13 +301,20 @@ void CSSStyleSheet::SetMediaQueries(
 bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
   viewport_dependent_media_query_results_.clear();
   device_dependent_media_query_results_.clear();
+  media_query_unit_flags_ = 0;
 
   if (!media_queries_)
     return true;
   return evaluator.Eval(
       *media_queries_,
       MediaQueryEvaluator::Results{&viewport_dependent_media_query_results_,
-                                   &device_dependent_media_query_results_});
+                                   &device_dependent_media_query_results_,
+                                   &media_query_unit_flags_});
+}
+
+bool CSSStyleSheet::HasDynamicViewportDependentMediaQueries() const {
+  return media_query_unit_flags_ &
+         MediaQueryExpValue::UnitFlags::kDynamicViewport;
 }
 
 unsigned CSSStyleSheet::length() const {

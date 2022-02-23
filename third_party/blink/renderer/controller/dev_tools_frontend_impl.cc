@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
@@ -99,7 +100,7 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
   }
 
   if (!api_script_.IsEmpty()) {
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(api_script_))
+    ClassicScript::CreateUnspecifiedScript(api_script_)
         ->RunScript(GetSupplementable()->DomWindow());
   }
 }
@@ -111,6 +112,7 @@ void DevToolsFrontendImpl::SetupDevToolsFrontend(
   DCHECK(frame->IsMainFrame());
   frame->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
       cc::LayerTreeDebugState());
+  frame->GetPage()->GetSettings().SetForceDarkModeEnabled(false);
   api_script_ = api_script;
   host_.Bind(std::move(host),
              GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));

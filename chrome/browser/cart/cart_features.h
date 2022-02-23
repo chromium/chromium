@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CART_CART_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/search/ntp_features.h"
 #include "url/gurl.h"
 
@@ -26,6 +27,9 @@ bool IsPartnerMerchant(const GURL& url);
 
 // Check if the variation with fake data is enabled.
 bool IsFakeDataEnabled();
+
+// Check if cart discount feature is enabled.
+bool IsCartDiscountFeatureEnabled();
 }  // namespace cart_features
 
 #endif  // CHROME_BROWSER_CART_CART_FEATURES_H_

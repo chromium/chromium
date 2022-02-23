@@ -36,16 +36,12 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
 }
 
-namespace task_queue_throttler_unittest {
-class TaskQueueThrottlerTest;
-}
-
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
 class WakeUpBudgetPool;
 
-// TODO(kdillon): Remove ref-counting of MainThreadTaskQueues as it's no longer
-// needed.
+// TODO(crbug.com/1143007): Remove ref-counting of MainThreadTaskQueues as it's
+// no longer needed.
 class PLATFORM_EXPORT MainThreadTaskQueue
     : public base::RefCountedThreadSafe<MainThreadTaskQueue> {
  public:
@@ -453,7 +449,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   void OnWebSchedulingTaskQueueDestroyed();
 
-  // TODO(kdillon): Improve MTTQ API surface so that we no longer
+  // TODO(crbug.com/1143007): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
   TaskQueue* GetTaskQueue() { return task_queue_.get(); }
 
@@ -490,6 +486,32 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return task_queue_->GetQueuePriority();
   }
 
+  bool IsQueueEnabled() const { return task_queue_->IsQueueEnabled(); }
+  bool IsEmpty() const { return task_queue_->IsEmpty(); }
+
+  bool HasTaskToRunImmediatelyOrReadyDelayedTask() const {
+    return task_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask();
+  }
+
+  void SetBlameContext(base::trace_event::BlameContext* blame_context) {
+    task_queue_->SetBlameContext(blame_context);
+  }
+
+  void SetShouldReportPostedTasksWhenDisabled(bool should_report) {
+    task_queue_->SetShouldReportPostedTasksWhenDisabled(should_report);
+  }
+
+  std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter() {
+    return task_queue_->CreateQueueEnabledVoter();
+  }
+
+  void AddTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->AddTaskObserver(task_observer);
+  }
+  void RemoveTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->RemoveTaskObserver(task_observer);
+  }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -499,13 +521,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
 
-  // Returns the underlying task queue. Only to be used for tests that need to
-  // test functionality of the task queue specifically without the wrapping
-  // MainThreadTaskQueue (ex TaskQueueThrottlerTest).
-  TaskQueue* GetTaskQueueForTest() { return task_queue_.get(); }
-
-  // TODO(kdillon): Remove references to TaskQueueImpl once TaskQueueImpl
-  // inherits from TaskQueue.
+  // TODO(crbug.com/1143007): Remove references to TaskQueueImpl once
+  // TaskQueueImpl inherits from TaskQueue.
   MainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const TaskQueue::Spec& spec,
@@ -522,8 +539,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
-  friend class blink::scheduler::task_queue_throttler_unittest::
-      TaskQueueThrottlerTest;
 
   // Clear references to main thread scheduler and frame scheduler and dispatch
   // appropriate notifications. This is the common part of ShutdownTaskQueue and
@@ -559,6 +574,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   // The WakeUpBudgetPool for this TaskQueue, if any.
   WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
+
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+      on_ipc_task_posted_callback_handle_;
 
   base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
 };

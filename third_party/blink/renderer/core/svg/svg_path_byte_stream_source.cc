@@ -32,11 +32,11 @@ PathSegmentData SVGPathByteStreamSource::ParseSegment() {
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
       segment.point1 = ReadPoint();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
       segment.point2 = ReadPoint();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:

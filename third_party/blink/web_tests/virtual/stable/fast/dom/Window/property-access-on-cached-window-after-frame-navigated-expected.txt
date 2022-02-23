@@ -96,7 +96,9 @@ PASS oldChildWindow.oncanplaythrough is newChildWindow.oncanplaythrough
 PASS oldChildWindow.onchange is newChildWindow.onchange
 PASS oldChildWindow.onclick is newChildWindow.onclick
 PASS oldChildWindow.onclose is newChildWindow.onclose
+PASS oldChildWindow.oncontextlost is newChildWindow.oncontextlost
 PASS oldChildWindow.oncontextmenu is newChildWindow.oncontextmenu
+PASS oldChildWindow.oncontextrestored is newChildWindow.oncontextrestored
 PASS oldChildWindow.oncuechange is newChildWindow.oncuechange
 PASS oldChildWindow.ondblclick is newChildWindow.ondblclick
 PASS oldChildWindow.ondevicemotion is newChildWindow.ondevicemotion

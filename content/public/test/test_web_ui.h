@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -47,7 +48,7 @@ class TestWebUI : public WebUI {
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               MessageCallback callback) override;
+                               DeprecatedMessageCallback2 callback) override;
   void RegisterDeprecatedMessageCallback(
       base::StringPiece message,
       const DeprecatedMessageCallback& callback) override;
@@ -121,14 +122,15 @@ class TestWebUI : public WebUI {
  private:
   void OnJavascriptCall(const CallData& call_data);
 
-  base::flat_map<std::string, std::vector<MessageCallback>> message_callbacks_;
+  base::flat_map<std::string, std::vector<DeprecatedMessageCallback2>>
+      deprecated_message_callbacks_2_;
   base::flat_map<std::string, std::vector<DeprecatedMessageCallback>>
       deprecated_message_callbacks_;
   std::vector<std::unique_ptr<CallData>> call_data_;
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;
   std::u16string temp_string_;
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   std::unique_ptr<WebUIController> controller_;
 
   // Observers to be notified on all javascript calls.

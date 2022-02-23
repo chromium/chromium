@@ -4,8 +4,10 @@
 
 #include "weblayer/browser/webui/net_export_ui.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_export_ui_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -17,7 +19,7 @@
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/grit/weblayer_resources.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/browser_ui/share/android/intent_helper.h"
 #endif
 
@@ -64,13 +66,13 @@ class NetExportMessageHandler
   void OnEnableNotifyUIWithState(const base::ListValue* list) {
     AllowJavascript();
     if (!state_observation_manager_.IsObserving()) {
-      state_observation_manager_.Observe(file_writer_);
+      state_observation_manager_.Observe(file_writer_.get());
     }
     NotifyUIWithState(file_writer_->GetState());
   }
 
   void OnStartNetLog(const base::ListValue* list) {
-    base::Value::ConstListView params = list->GetList();
+    base::Value::ConstListView params = list->GetListDeprecated();
 
     // Determine the capture mode.
     if (!params.empty() && params[0].is_string()) {
@@ -102,7 +104,7 @@ class NetExportMessageHandler
  private:
   // Send NetLog data via email.
   static void SendEmail(const base::FilePath& file_to_send) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (file_to_send.empty())
       return;
     std::string email;
@@ -137,7 +139,7 @@ class NetExportMessageHandler
   }
 
   // Cached pointer to SystemNetworkContextManager's NetExportFileWriter.
-  net_log::NetExportFileWriter* file_writer_;
+  raw_ptr<net_log::NetExportFileWriter> file_writer_;
 
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>

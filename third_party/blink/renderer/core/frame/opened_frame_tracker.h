@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OPENED_FRAME_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_OPENED_FRAME_TRACKER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -34,8 +34,13 @@ class OpenedFrameTracker {
   // opener for opened frames to point to the new frame being swapped in.
   void TransferTo(Frame*) const;
 
+  // Explicitly break opener references from opened frames when removing
+  // a frame from the DOM, rather than relying on weak fields + GC to
+  // non-deterministically clear them later.
+  void Dispose();
+
  private:
-  HeapHashSet<WeakMember<Frame>> opened_frames_;
+  HeapHashSet<Member<Frame>> opened_frames_;
 };
 
 }  // namespace blink

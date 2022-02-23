@@ -27,6 +27,7 @@ enum LargestContentfulPaintType : uint32_t {
   kLCPTypeGIF = 1 << 9,
   kLCPTypeAVIF = 1 << 10,
   kLCPTypeFullViewport = 1 << 11,
+  kLCPTypeAfterMouseover = 1 << 12,
 };
 
 using LargestContentfulPaintTypeMask = uint32_t;

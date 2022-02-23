@@ -110,16 +110,16 @@ void AppWindowGeometryCache::SyncToStorage() {
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
       DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
-      value->SetInteger("x", bounds.x());
-      value->SetInteger("y", bounds.y());
-      value->SetInteger("w", bounds.width());
-      value->SetInteger("h", bounds.height());
-      value->SetInteger("screen_bounds_x", screen_bounds.x());
-      value->SetInteger("screen_bounds_y", screen_bounds.y());
-      value->SetInteger("screen_bounds_w", screen_bounds.width());
-      value->SetInteger("screen_bounds_h", screen_bounds.height());
-      value->SetInteger("state", data_it->second.window_state);
-      value->SetString(
+      value->SetIntKey("x", bounds.x());
+      value->SetIntKey("y", bounds.y());
+      value->SetIntKey("w", bounds.width());
+      value->SetIntKey("h", bounds.height());
+      value->SetIntKey("screen_bounds_x", screen_bounds.x());
+      value->SetIntKey("screen_bounds_y", screen_bounds.y());
+      value->SetIntKey("screen_bounds_w", screen_bounds.width());
+      value->SetIntKey("screen_bounds_h", screen_bounds.height());
+      value->SetIntKey("state", data_it->second.window_state);
+      value->SetStringKey(
           "ts",
           base::NumberToString(data_it->second.last_change.ToInternalValue()));
       dict->SetKey(data_it->first,
@@ -245,10 +245,10 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
         if (absl::optional<int> i = stored_window->FindIntKey("state")) {
           window_data.window_state = static_cast<ui::WindowShowState>(*i);
         }
-        std::string ts_as_string;
-        if (stored_window->GetString("ts", &ts_as_string)) {
+        if (const std::string* ts_as_string =
+                stored_window->FindStringKey("ts")) {
           int64_t ts;
-          if (base::StringToInt64(ts_as_string, &ts)) {
+          if (base::StringToInt64(*ts_as_string, &ts)) {
             window_data.last_change = base::Time::FromInternalValue(ts);
           }
         }

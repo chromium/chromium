@@ -31,11 +31,40 @@ source_set("config_conversions") {
   ]
 }
 
+source_set("remoting_utils") {
+  sources = [
+    "remoting_message_factories.cc",
+    "remoting_message_factories.h",
+    "remoting_proto_enum_utils.cc",
+    "remoting_proto_enum_utils.h",
+    "remoting_proto_utils.cc",
+    "remoting_proto_utils.h",
+    "rpc_call_message_handler.cc",
+    "rpc_call_message_handler.h",
+  ]
+
+  public_configs =
+      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
+
+  deps = [
+    "//components/openscreen_platform:openscreen_platform",
+    "//components/openscreen_platform:openscreen_platform_network_service",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media",
+    "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:remoting_proto",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":config_conversions",
     ":public",
+    ":remoting_utils",
     "//base/test:test_support",
     "//media:test_support",
     "//media/mojo:test_support",
@@ -43,5 +72,10 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/openscreen/src/cast/streaming:streaming_configs",
   ]
-  sources = [ "config_conversions_unittest.cc" ]
+  sources = [
+    "config_conversions_unittest.cc",
+    "remoting_message_factories_unittest.cc",
+    "remoting_proto_utils_unittest.cc",
+    "rpc_call_message_handler_unittest.cc",
+  ]
 }

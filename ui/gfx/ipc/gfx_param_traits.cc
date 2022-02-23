@@ -10,10 +10,11 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/range/range.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ipc/mach_port_mac.h"
 #endif
 
@@ -39,7 +40,7 @@ void ParamTraits<gfx::Range>::Log(const gfx::Range& r, std::string* l) {
   l->append(base::StringPrintf("(%d, %d)", r.start(), r.end()));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Write(
     base::Pickle* m,
     const param_type p) {
@@ -97,7 +98,7 @@ void ParamTraits<gfx::ScopedIOSurface>::Log(const param_type& p,
   }
   l->append(")");
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void ParamTraits<gfx::SelectionBound>::Write(base::Pickle* m,
                                              const param_type& p) {

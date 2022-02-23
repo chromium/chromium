@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
@@ -15,9 +15,11 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "components/app_constants/constants.h"
 #include "ui/aura/window.h"
 
 namespace {
@@ -25,9 +27,20 @@ namespace {
 void MaybeUpdateStringProperty(aura::Window* window,
                                const ui::ClassProperty<std::string*>* property,
                                const std::string& value) {
-  std::string* old_value = window->GetProperty(ash::kAppIDKey);
+  std::string* old_value = window->GetProperty(property);
   if (!old_value || *old_value != value) {
     window->SetProperty(property, value);
+  }
+}
+
+// TODO(crbug.com/1267769): sometimes browser window instance lookup fails when
+// it should be present. Remove when we know the root cause.
+void BrowserWindowMustBeValid(
+    const apps::BrowserWindowInstance* browser_window) {
+  if (!browser_window) {
+    base::debug::DumpWithoutCrashing();
+  } else if (!browser_window->window) {
+    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -46,6 +59,7 @@ BrowserAppShelfController::BrowserAppShelfController(
           *apps::AppServiceProxyFactory::GetForProfile(profile)
                ->BrowserAppInstanceRegistry()) {
   registry_observation_.Observe(&browser_app_instance_registry_);
+  shelf_model_observation_.Observe(&model);
 }
 
 BrowserAppShelfController::~BrowserAppShelfController() = default;
@@ -54,7 +68,7 @@ void BrowserAppShelfController::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
   ash::ShelfID id(instance.GetAppId());
   CreateOrUpdateShelfItem(id, ash::STATUS_RUNNING);
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserWindowRemoved(
@@ -85,13 +99,13 @@ void BrowserAppShelfController::OnBrowserAppAdded(
       }
       break;
   }
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserAppUpdated(
     const apps::BrowserAppInstance& instance) {
   // Active tab may have changed.
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserAppRemoved(
@@ -99,12 +113,26 @@ void BrowserAppShelfController::OnBrowserAppRemoved(
   if (instance.type == apps::BrowserAppInstance::Type::kAppTab) {
     // If a tab is closed, browser window may still remain, so it needs its
     // properties updated.
-    MaybeUpdateBrowserWindowProperties(instance.window);
+    MaybeUpdateWindowProperties(instance.window);
   }
   if (!browser_app_instance_registry_.IsAppRunning(instance.app_id)) {
     ash::ShelfID id(instance.app_id);
     SetShelfItemClosed(id);
   }
+}
+
+void BrowserAppShelfController::ShelfItemAdded(int index) {
+  const ash::ShelfItem& item = model_.items()[index];
+  const std::string& app_id = item.id.app_id;
+  if (!BrowserAppShelfControllerShouldHandleApp(app_id, profile_)) {
+    return;
+  }
+  bool running = (app_id == app_constants::kLacrosAppId)
+                     ? browser_app_instance_registry_.IsLacrosBrowserRunning()
+                     : browser_app_instance_registry_.IsAppRunning(app_id);
+  UpdateShelfItemStatus(item,
+                        running ? ash::STATUS_RUNNING : ash::STATUS_CLOSED);
+  MaybeUpdateWindowPropertiesForApp(app_id);
 }
 
 void BrowserAppShelfController::UpdateShelfItemStatus(
@@ -149,7 +177,7 @@ void BrowserAppShelfController::SetShelfItemClosed(const ash::ShelfID& id) {
   }
 }
 
-void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
+void BrowserAppShelfController::MaybeUpdateWindowProperties(
     aura::Window* window) {
   const apps::BrowserAppInstance* active_instance =
       browser_app_instance_registry_.FindAppInstanceIf(
@@ -161,6 +189,9 @@ void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
           [window](const apps::BrowserWindowInstance& instance) {
             return instance.window == window;
           });
+  const char* browser_app_id = crosapi::browser_util::IsLacrosWindow(window)
+                                   ? app_constants::kLacrosAppId
+                                   : app_constants::kChromeAppId;
   // App ID of the window is set to the app ID of the active tab. If the active
   // tab has no app, app ID of the window is set to the browser's ID.
   // Shelf ID of the window is set to the app's item on the shelf, if the item
@@ -177,17 +208,34 @@ void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
       // There is no shelf item for unpinned apps running in a browser tab, so
       // they get mapped to the browser's shelf item (app ID and shelf ID are
       // different at this point).
-      DCHECK(browser_window);
-      shelf_id = ash::ShelfID(browser_window->GetAppId());
+      shelf_id = ash::ShelfID(browser_app_id);
+      DCHECK(model_.ItemByID(shelf_id));
+      BrowserWindowMustBeValid(browser_window);
     }
   } else {
     // No active app for that window: it's mapped to the browser's shelf item,
     // which must be present.
-    DCHECK(browser_window);
-    app_id = browser_window->GetAppId();
-    shelf_id = ash::ShelfID(app_id);
+    app_id = browser_app_id;
+    shelf_id = ash::ShelfID(browser_app_id);
     DCHECK(model_.ItemByID(shelf_id));
+    BrowserWindowMustBeValid(browser_window);
   }
   MaybeUpdateStringProperty(window, ash::kAppIDKey, app_id);
   MaybeUpdateStringProperty(window, ash::kShelfIDKey, shelf_id.Serialize());
+}
+
+void BrowserAppShelfController::MaybeUpdateWindowPropertiesForApp(
+    const std::string& app_id) {
+  std::set<const apps::BrowserAppInstance*> instances =
+      browser_app_instance_registry_.SelectAppInstances(
+          [&app_id](const apps::BrowserAppInstance& instance) {
+            return instance.app_id == app_id;
+          });
+  std::set<aura::Window*> windows;
+  for (const auto* instance : instances) {
+    windows.insert(instance->window);
+  }
+  for (auto* window : windows) {
+    MaybeUpdateWindowProperties(window);
+  }
 }

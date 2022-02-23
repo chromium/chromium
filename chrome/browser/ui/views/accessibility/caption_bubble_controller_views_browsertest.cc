@@ -60,7 +60,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   CaptionBubble* GetBubble() {
-    return controller_ ? controller_->caption_bubble_ : nullptr;
+    return controller_ ? controller_->caption_bubble_.get() : nullptr;
   }
 
   views::Label* GetLabel() {
@@ -69,7 +69,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Label* GetTitle() {
-    return controller_ ? controller_->caption_bubble_->title_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->title_.get() : nullptr;
   }
 
   std::string GetAccessibleWindowTitle() {
@@ -80,33 +80,38 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Button* GetBackToTabButton() {
-    return controller_ ? controller_->caption_bubble_->back_to_tab_button_
+    return controller_ ? controller_->caption_bubble_->back_to_tab_button_.get()
                        : nullptr;
   }
 
   views::Button* GetCloseButton() {
-    return controller_ ? controller_->caption_bubble_->close_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->close_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetExpandButton() {
-    return controller_ ? controller_->caption_bubble_->expand_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->expand_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetCollapseButton() {
-    return controller_ ? controller_->caption_bubble_->collapse_button_
+    return controller_ ? controller_->caption_bubble_->collapse_button_.get()
                        : nullptr;
   }
 
   views::View* GetErrorMessage() {
-    return controller_ ? controller_->caption_bubble_->error_message_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_message_.get()
+                       : nullptr;
   }
 
   views::Label* GetErrorText() {
-    return controller_ ? controller_->caption_bubble_->error_text_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_text_.get()
+                       : nullptr;
   }
 
   views::ImageView* GetErrorIcon() {
-    return controller_ ? controller_->caption_bubble_->error_icon_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->error_icon_.get()
+                       : nullptr;
   }
 
   std::string GetLabelText() {
@@ -118,7 +123,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Widget* GetCaptionWidget() {
-    return controller_ ? controller_->caption_widget_ : nullptr;
+    return controller_ ? controller_->caption_widget_.get() : nullptr;
   }
 
   bool IsWidgetVisible() {
@@ -410,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
       false));
   EXPECT_TRUE(GetExpandButton()->HasFocus());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Pressing enter should turn the expand button into a collapse button.
   // Focus should remain on the collapse button.
   // TODO(crbug.com/1055150): Fix this for Mac.
@@ -514,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleFontFamily) {
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   std::string default_font = "Roboto";
 #else
   // Testing framework doesn't load all fonts, so Roboto is mapped to sans.
@@ -595,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
   // workaround.
   int a;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   a = 230;
 #else
   a = 128;
@@ -642,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
   // workaround.
   int a;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   a = 230;
 #else
   a = 128;
@@ -743,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   OnFinalTranscription("");
   EXPECT_FALSE(IsWidgetVisible());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Set some text, and ensure it stays visible when the window changes size.
   OnPartialTranscription("Newborn opossums are about 1cm long");
   EXPECT_TRUE(IsWidgetVisible());
@@ -978,7 +983,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   // When screen reader mode turns on on Windows, the label is focusable. It
   // remains unfocusable on other OS's.
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !defined(OS_MAC)
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GetLabel()->IsFocusable());
 #else
   EXPECT_FALSE(GetLabel()->IsFocusable());

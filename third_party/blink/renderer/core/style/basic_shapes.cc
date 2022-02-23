@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -44,7 +44,7 @@ bool BasicShapeCircle::operator==(const BasicShape& o) const {
          radius_ == other.radius_;
 }
 
-float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
+float BasicShapeCircle::FloatValueForRadiusInBox(gfx::SizeF box_size) const {
   if (radius_.GetType() == BasicShapeRadius::kValue) {
     return FloatValueForLength(
         radius_.Value(),
@@ -66,13 +66,13 @@ float BasicShapeCircle::FloatValueForRadiusInBox(FloatSize box_size) const {
 }
 
 void BasicShapeCircle::GetPath(Path& path,
-                               const FloatRect& bounding_box,
+                               const gfx::RectF& bounding_box,
                                float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
       PointForCenterCoordinate(center_x_, center_y_, bounding_box.size());
   float radius = FloatValueForRadiusInBox(bounding_box.size());
-  path.AddEllipse(center, radius, radius);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
 }
 
 bool BasicShapeEllipse::operator==(const BasicShape& o) const {
@@ -99,7 +99,7 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
 }
 
 void BasicShapeEllipse::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   gfx::PointF center =
@@ -108,11 +108,11 @@ void BasicShapeEllipse::GetPath(Path& path,
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
   float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
-  path.AddEllipse(center, radius_x, radius_y);
+  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius_x, radius_y);
 }
 
 void BasicShapePolygon::GetPath(Path& path,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 float) {
   DCHECK(path.IsEmpty());
   DCHECK(!(values_.size() % 2));
@@ -144,12 +144,12 @@ bool BasicShapePolygon::operator==(const BasicShape& o) const {
 }
 
 void BasicShapeInset::GetPath(Path& path,
-                              const FloatRect& bounding_box,
+                              const gfx::RectF& bounding_box,
                               float) {
   DCHECK(path.IsEmpty());
   float left = FloatValueForLength(left_, bounding_box.width());
   float top = FloatValueForLength(top_, bounding_box.height());
-  FloatRect rect(
+  gfx::RectF rect(
       left + bounding_box.x(), top + bounding_box.y(),
       std::max<float>(bounding_box.width() - left -
                           FloatValueForLength(right_, bounding_box.width()),
@@ -157,12 +157,12 @@ void BasicShapeInset::GetPath(Path& path,
       std::max<float>(bounding_box.height() - top -
                           FloatValueForLength(bottom_, bounding_box.height()),
                       0));
-  const FloatSize& box_size = bounding_box.size();
+  gfx::SizeF box_size = bounding_box.size();
   auto radii = FloatRoundedRect::Radii(
-      FloatSizeForLengthSize(top_left_radius_, box_size),
-      FloatSizeForLengthSize(top_right_radius_, box_size),
-      FloatSizeForLengthSize(bottom_left_radius_, box_size),
-      FloatSizeForLengthSize(bottom_right_radius_, box_size));
+      SizeForLengthSize(top_left_radius_, box_size),
+      SizeForLengthSize(top_right_radius_, box_size),
+      SizeForLengthSize(bottom_left_radius_, box_size),
+      SizeForLengthSize(bottom_right_radius_, box_size));
 
   FloatRoundedRect final_rect(rect, radii);
   final_rect.ConstrainRadii();

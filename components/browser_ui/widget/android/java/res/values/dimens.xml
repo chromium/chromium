@@ -10,6 +10,8 @@
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="card_rounded_corner_radius">16dp</dimen>
+    <dimen name="dialog_corner_radius">24dp</dimen>
+    <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>
@@ -138,6 +140,44 @@
     <dimen name="tile_view_padding_landscape">16dp</dimen>
     <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
 
+    <!-- Chips default measures -->
+    <item name="chip_outline_alpha" format="float" type="dimen">0.8</item>
+    <item name="chip_outline_disabled_alpha" format="float" type="dimen">0.12</item>
+    <item name="chip_outline_focused_alpha" format="float" type="dimen">1</item>
+
+    <item name="chip_state_layer_hover_alpha_light" format="float" type="dimen">0.08</item>
+    <item name="chip_state_layer_hover_alpha_dark" format="float" type="dimen">0.16</item>
+    <item name="chip_state_layer_hover_alpha" format="float" type="dimen">@dimen/chip_state_layer_hover_alpha_light</item>
+    <item name="chip_state_layer_focused_alpha_light" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_focused_alpha_dark" format="float" type="dimen">0.24</item>
+    <item name="chip_state_layer_focused_alpha" format="float" type="dimen">@dimen/chip_state_layer_focused_alpha_light</item>
+    <item name="chip_state_layer_pressed_alpha_light" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_pressed_alpha_dark" format="float" type="dimen">0.20</item>
+    <item name="chip_state_layer_pressed_alpha" format="float" type="dimen">@dimen/chip_state_layer_pressed_alpha_light</item>
+    <item name="chip_state_layer_selected_hover_alpha" format="float" type="dimen">0.08</item>
+    <item name="chip_state_layer_selected_focused_alpha" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_selected_pressed_alpha" format="float" type="dimen">0.12</item>
+
+    <dimen name="chip_solid_border_width">0dp</dimen>
+    <dimen name="chip_border_width">1dp</dimen>
+    <dimen name="chip_corner_radius">8dp</dimen>
+    <dimen name="chip_default_height">32dp</dimen>
+    <dimen name="chip_end_padding">16dp</dimen>
+    <dimen name="chip_reduced_end_padding">12dp</dimen>
+    <dimen name="chip_element_leading_padding">8dp</dimen>
+    <dimen name="chip_element_extended_leading_padding">16dp</dimen>
+    <dimen name="chip_bg_vertical_inset">8dp</dimen>
+    <dimen name="chip_icon_size">20dp</dimen>
+    <dimen name="chip_loading_view_size">12dp</dimen>
+    <dimen name="chip_end_icon_margin_start">8dp</dimen>
+    <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>
+    <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
+    <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
+    <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
+    <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
+    <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
+    <dimen name="menu_chip_vertical_inset">10dp</dimen>
+
     <!-- Chips layout dimensions -->
     <dimen name="chip_list_chip_spacing">2.5dp</dimen>
     <dimen name="chip_list_side_padding">16dp</dimen>
@@ -146,4 +186,8 @@
     <dimen name="app_menu_corner_size">8dp</dimen>
     <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
     <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
+
+    <!-- Surface color elevations -->
+    <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
 </resources>

@@ -56,6 +56,9 @@ class AttributeCollectionGeneric {
     return begin()[index];
   }
 
+  ValueType* data() { return attributes_.data(); }
+  const ValueType* data() const { return attributes_.data(); }
+
   iterator begin() const { return attributes_.data(); }
   iterator end() const { return begin() + size(); }
 

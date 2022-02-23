@@ -180,7 +180,7 @@ void MimeHandlerViewEmbedder::CreateMimeHandlerViewGuest(
             browser_context));
   }
   base::DictionaryValue create_params;
-  create_params.SetString(mime_handler_view::kViewId, stream_id_);
+  create_params.SetStringKey(mime_handler_view::kViewId, stream_id_);
   manager->CreateGuest(
       MimeHandlerViewGuest::Type, web_contents(), create_params,
       base::BindOnce(&MimeHandlerViewEmbedder::DidCreateMimeHandlerViewGuest,

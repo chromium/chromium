@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "crypto/sha2.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ev_root_ca_metadata.h"
@@ -89,6 +90,25 @@ bool CertHasMultipleEVPoliciesAndOneMatchesRoot(const X509Certificate* cert) {
   return false;
 }
 
+SHA256HashValue GetRootHash(const X509Certificate* cert) {
+  SHA256HashValue sha256;
+  if (cert->intermediate_buffers().empty()) {
+    return sha256;
+  }
+  CRYPTO_BUFFER* root = cert->intermediate_buffers().back().get();
+  return X509Certificate::CalculateFingerprint256(root);
+}
+
+const SHA256HashValue lets_encrypt_dst_x3_sha256_fingerprint = {
+    {0x06, 0x87, 0x26, 0x03, 0x31, 0xA7, 0x24, 0x03, 0xD9, 0x09, 0xF1,
+     0x05, 0xE6, 0x9B, 0xCF, 0x0D, 0x32, 0xE1, 0xBD, 0x24, 0x93, 0xFF,
+     0xC6, 0xD9, 0x20, 0x6D, 0x11, 0xBC, 0xD6, 0x77, 0x07, 0x39}};
+
+const SHA256HashValue lets_encrypt_isrg_x1_sha256_fingerprint = {
+    {0x96, 0xBC, 0xEC, 0x06, 0x26, 0x49, 0x76, 0xF3, 0x74, 0x60, 0x77,
+     0x9A, 0xCF, 0x28, 0xC5, 0xA7, 0xCF, 0xE8, 0xA3, 0xC0, 0xAA, 0xE1,
+     0x1A, 0x8F, 0xFC, 0xEE, 0x05, 0xC0, 0xBD, 0xDF, 0x08, 0xC6}};
+
 }  // namespace
 
 // Note: This ignores the result of stapled OCSP (which is the same for both
@@ -152,7 +172,7 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
     return TrialComparisonResult::kIgnoredSHA1SignaturePresent;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // cert_verify_proc_win has some oddities around revocation checking
   // and EV certs; if the only difference is the primary windows verifier
   // had CERT_STATUS_REV_CHECKING_ENABLED in addition then we can ignore.
@@ -189,6 +209,25 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
       (primary_result.cert_status & CERT_STATUS_SYMANTEC_LEGACY)) {
     return TrialComparisonResult::
         kIgnoredBuiltinAuthorityInvalidPlatformSymantec;
+  }
+
+  // There is a fairly prevalant false positive where Windows users are getting
+  // errors because the chain that is built goes to Lets Encrypt's old root
+  // (https://crt.sh/?id=8395) due to the windows machine having an out of date
+  // auth root, whereas CCV builds to Let's Encrypt's new root
+  // (https://crt.sh/?id=9314791). This manifests itself as CCV saying OK
+  // whereas platform reports DATE_INVALID. If we detect this case, ignore it.
+  if (primary_error == ERR_CERT_DATE_INVALID && trial_error == OK &&
+      (primary_result.cert_status & CERT_STATUS_ALL_ERRORS) ==
+          CERT_STATUS_DATE_INVALID) {
+    SHA256HashValue primary_root_hash =
+        GetRootHash(primary_result.verified_cert.get());
+    SHA256HashValue trial_root_hash =
+        GetRootHash(trial_result.verified_cert.get());
+    if (primary_root_hash == lets_encrypt_dst_x3_sha256_fingerprint &&
+        trial_root_hash == lets_encrypt_isrg_x1_sha256_fingerprint) {
+      return TrialComparisonResult::kIgnoredLetsEncryptExpiredRoot;
+    }
   }
 
   return TrialComparisonResult::kInvalid;

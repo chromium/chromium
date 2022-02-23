@@ -175,7 +175,8 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
 
   EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 
-  NavigateInRenderer(incognito_tab, GURL("http://test_split/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_split/")));
   if (mode == SPLIT) {
     EXPECT_EQ(is_enabled_in_incognito,
               incognito_action->GetIsVisible(incognito_tab_id));
@@ -183,7 +184,7 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
     EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
   }
 
-  NavigateInRenderer(incognito_tab, GURL("http://test_normal/"));
+  EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_normal/")));
   if (mode != SPLIT) {
     EXPECT_EQ(is_enabled_in_incognito,
               incognito_action->GetIsVisible(incognito_tab_id));
@@ -201,10 +202,10 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
 
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test_normal/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_normal/")));
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test_split/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_split/")));
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
@@ -223,7 +224,8 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
           ->GetExtensionAction(*extension);
   ASSERT_TRUE(action);
 
-  NavigateInRenderer(tab, GURL("http://test1/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
   static const char kSetIsBookmarkedRule[] =
@@ -252,10 +254,10 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
   bookmark_model->AddURL(bookmark_model->other_node(), 0, u"title",
                          GURL("http://test2/"));
 
-  NavigateInRenderer(tab, GURL("http://test2/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test2/")));
   EXPECT_EQ(match_is_bookmarked, action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test3/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test3/")));
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 }
 
@@ -301,14 +303,15 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, Overview) {
   // actual update to the page action.
   ChromeExtensionTestNotificationObserver test_observer(browser());
 
-  NavigateInRenderer(tab, GURL("http://test1/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
   // The declarative API should show the page action instantly, rather
   // than waiting for the extension to run.
   test_observer.WaitForPageActionVisibilityChangeTo(1);
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
   // Make sure leaving a matching page unshows the page action.
-  NavigateInRenderer(tab, GURL("http://not_checked/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://not_checked/")));
   test_observer.WaitForPageActionVisibilityChangeTo(0);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
@@ -379,7 +382,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, ReusedActionInstance) {
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
   // This navigation matches both rules.
-  NavigateInRenderer(tab, GURL("http://test1/"));
+  // TODO(https://crbug.com/1204390): Understand why this is EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
 
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 }
@@ -399,7 +403,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, RulesEvaluatedOnAddRemove) {
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  NavigateInRenderer(tab, GURL("http://test1/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
 
   const std::string kAddTestRules =
       "addRules([{\n"
@@ -424,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, RulesEvaluatedOnAddRemove) {
 
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test2/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test2/")));
 
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
@@ -517,7 +522,8 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
   // browser actions, both of these should pass.
   EXPECT_THAT(result, testing::HasSubstr(kSuccessStr));
 
-  NavigateInRenderer(tab, GURL("http://test/"));
+  // TODO(https://crbug.com/1204390): Understand why this is EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
 
   const int tab_id = sessions::SessionTabHelper::IdForTab(tab).id();
   EXPECT_TRUE(action->GetIsVisible(tab_id));
@@ -585,11 +591,12 @@ IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  NavigateInRenderer(tab, GURL("http://blank/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://blank/")));
   EXPECT_FALSE(action->GetIsVisible(tab_id));
-  NavigateInRenderer(tab, GURL("http://test1/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test1/")));
   EXPECT_TRUE(action->GetIsVisible(tab_id));
-  NavigateInRenderer(tab, GURL("http://test2/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test2/")));
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 }
 
@@ -634,7 +641,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       incognito_browser->tab_strip_model()->GetWebContentsAt(0);
   const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
 
-  NavigateInRenderer(incognito_tab, GURL("http://test_normal/"));
+  // TODO(https://crbug.com/1204390): Understand why this is EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_normal/")));
 
   ext_dir_.WriteManifest(kDeclarativeContentManifest);
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
@@ -658,7 +666,7 @@ constexpr char kRulesExtensionName[] =
     "Declarative content persistence apitest";
 
 // TODO(crbug.com/512431): Flaky on Windows release builds.
-#if defined(OS_WIN) && defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
 #else
 #define MAYBE_PRE_RulesPersistence PRE_RulesPersistence
@@ -682,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_PRE_RulesPersistence) {
 }
 
 // TODO(crbug.com/512431): Flaky on Windows release builds.
-#if defined(OS_WIN) && defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_RulesPersistence DISABLED_RulesPersistence
 #else
 #define MAYBE_RulesPersistence RulesPersistence
@@ -710,11 +718,12 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_RulesPersistence) {
   ASSERT_TRUE(action);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test_normal/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_normal/")));
   test_observer.WaitForPageActionVisibilityChangeTo(1);
   EXPECT_TRUE(action->GetIsVisible(tab_id));
 
-  NavigateInRenderer(tab, GURL("http://test_split/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test_split/")));
   test_observer.WaitForPageActionVisibilityChangeTo(0);
   EXPECT_FALSE(action->GetIsVisible(tab_id));
 
@@ -735,11 +744,11 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_RulesPersistence) {
           ->GetExtensionAction(*extension);
   ASSERT_TRUE(incognito_action);
 
-  NavigateInRenderer(incognito_tab, GURL("http://test_split/"));
+  EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_split/")));
   incognito_test_observer.WaitForPageActionVisibilityChangeTo(1);
   EXPECT_TRUE(incognito_action->GetIsVisible(incognito_tab_id));
 
-  NavigateInRenderer(incognito_tab, GURL("http://test_normal/"));
+  EXPECT_FALSE(NavigateInRenderer(incognito_tab, GURL("http://test_normal/")));
   incognito_test_observer.WaitForPageActionVisibilityChangeTo(0);
   EXPECT_FALSE(incognito_action->GetIsVisible(incognito_tab_id));
 }
@@ -775,7 +784,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
       browser()->tab_strip_model()->GetWebContentsAt(0);
   const int tab_id = ExtensionTabUtil::GetTabId(tab);
 
-  NavigateInRenderer(tab, GURL("http://test/"));
+  // TODO(https://crbug.com/1204390): Understand why these are EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
 
   EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(1));
@@ -790,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
             ExecuteScriptInBackgroundPage(extension_id, kTestRule));
   // TODO(jyasskin): Apply new rules to existing tabs, without waiting for a
   // navigation.
-  NavigateInRenderer(tab, GURL("http://test/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(1));
   EXPECT_EQ(1u, extension_action_test_util::GetVisiblePageActionCount(tab));
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
@@ -798,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   UnloadExtension(extension_id);
   // Wait for declarative rules to be removed.
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  NavigateInRenderer(tab, GURL("http://test/"));
+  EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(0));
   EXPECT_EQ(0u, extension_action_test_util::GetVisiblePageActionCount(tab));
   EXPECT_EQ(0u, extension_action_test_util::GetTotalPageActionCount(tab));
@@ -960,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   content::WebContents* const tab1 =
       browser()->tab_strip_model()->GetWebContentsAt(0);
 
-  AddTabAtIndex(1, GURL("http://test2/"), ui::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(
+      AddTabAtIndex(1, GURL("http://test2/"), ui::PAGE_TRANSITION_LINK));
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetWebContentsAt(1);
 
@@ -990,7 +1001,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   // tab.
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(tab2));
-  NavigateInRenderer(tab1, GURL("http://test1/"));
+  // TODO(https://crbug.com/1204390): Understand why this is EXPECT_FALSE.
+  EXPECT_FALSE(NavigateInRenderer(tab1, GURL("http://test1/")));
   EXPECT_TRUE(action->GetIsVisible(ExtensionTabUtil::GetTabId(tab1)));
 }
 

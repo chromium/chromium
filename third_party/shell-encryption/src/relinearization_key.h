@@ -22,6 +22,8 @@
 #include "sample_error.h"
 #include "statusor.h"
 #include "symmetric_encryption.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
+#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
 
 namespace rlwe {
 // Represents a RelinearizationKey constructed from a symmetric-key. Applying a
@@ -57,7 +59,7 @@ namespace rlwe {
 // length (k - 1), where k is the number of parts of the ciphertext it applies
 // to.
 template <typename ModularInt>
-class RelinearizationKey {
+class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey {
   using ModularIntParams = typename ModularInt::Params;
 
  public:
@@ -73,7 +75,7 @@ class RelinearizationKey {
   // with (1, s^k). In that case, we would use a relinearization key with
   // substition_power = k to return the ciphertext to be encrypted with (1,s).
   // See GaloisKey for an explicit wrapper around RelinearizationKey.
-  static rlwe::StatusOr<RelinearizationKey> Create(
+  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<RelinearizationKey> Create(
       const SymmetricRlweKey<ModularInt>& key, absl::string_view prng_seed,
       ssize_t num_parts, Uint64 log_decomposition_modulus,
       Uint64 substitution_power = 1);
@@ -192,6 +194,13 @@ class RelinearizationKey {
   std::string prng_seed_;
 };
 
+// Instantiations of RelinearizationKey with specific MontgomeryInt classes.
+// If any new types are added, montgomery.h should be updated accordingly (such
+// as ensuring BigInt is correctly specialized, etc.).
+extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint16>>;
+extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint32>>;
+extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint64>>;
+extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<absl::uint128>>;
 }  // namespace rlwe
 
 #endif  // RLWE_RELINEARIZATION_KEY_H_

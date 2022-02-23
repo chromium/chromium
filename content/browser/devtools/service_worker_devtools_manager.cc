@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 
+#include "base/no_destructor.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/page_handler.h"

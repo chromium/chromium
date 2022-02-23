@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_CHROMEOS_H_
 #define CHROME_BROWSER_UPGRADE_DETECTOR_UPGRADE_DETECTOR_CHROMEOS_H_
 
-#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

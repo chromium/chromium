@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_element_based_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
@@ -224,7 +224,7 @@ V8ScrollTimelineOffset* ScrollTimelineOffset::ToV8ScrollTimelineOffset() const {
 }
 
 bool ScrollTimelineOffset::operator==(const ScrollTimelineOffset& o) const {
-  return DataEquivalent(length_based_offset_, o.length_based_offset_) &&
+  return base::ValuesEquivalent(length_based_offset_, o.length_based_offset_) &&
          ElementBasedOffsetsEqual(element_based_offset_,
                                   o.element_based_offset_);
 }

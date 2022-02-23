@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/port.h"

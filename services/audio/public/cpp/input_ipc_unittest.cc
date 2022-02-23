@@ -51,7 +51,8 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
-      CreateInputStreamCallback created_callback) {
+      media::mojom::AudioProcessingConfigPtr processing_config,
+      CreateInputStreamCallback created_callback) override {
     if (should_fail_) {
       std::move(created_callback).Run(nullptr, initially_muted_, absl::nullopt);
       return;

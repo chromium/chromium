@@ -29,7 +29,7 @@ class AudioFocusWebContentsObserver
   explicit AudioFocusWebContentsObserver(content::WebContents*);
 
   // content::WebContentsObserver overrides.
-  void DidFinishNavigation(content::NavigationHandle*) override;
+  void PrimaryPageChanged(content::Page&) override;
 
   // The audio focus group id is used to group media sessions together for apps.
   base::UnguessableToken audio_focus_group_id_ = base::UnguessableToken::Null();

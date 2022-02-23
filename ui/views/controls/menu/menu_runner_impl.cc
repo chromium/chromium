@@ -18,7 +18,7 @@
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/win/system_event_state_lookup.h"
 #endif
 
@@ -61,7 +61,7 @@ bool IsAltPressed() {
 
 namespace internal {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
     ui::MenuModel* menu_model,
     int32_t run_types,
@@ -174,8 +174,8 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
     controller->set_combobox_type(ComboboxType::kNone);
   controller->set_send_gesture_events_to_owner(
       (run_types & MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER) != 0);
-  controller->set_use_touchable_layout(
-      (run_types & MenuRunner::USE_TOUCHABLE_LAYOUT) != 0);
+  controller->set_use_ash_system_ui_layout(
+      (run_types & MenuRunner::USE_ASH_SYS_UI_LAYOUT) != 0);
   controller_ = controller->AsWeakPtr();
   menu_->set_controller(controller_.get());
   menu_->PrepareForRun(owns_controller_, has_mnemonics,
@@ -254,11 +254,11 @@ MenuRunnerImpl::~MenuRunnerImpl() {
 bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
   bool show_mnemonics = run_types & MenuRunner::SHOULD_SHOW_MNEMONICS;
   // Show mnemonics if the button has focus or alt is pressed.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   show_mnemonics |= ui::win::IsAltPressed();
 #elif defined(USE_OZONE)
   show_mnemonics |= IsAltPressed();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   show_mnemonics = false;
 #endif
   return show_mnemonics;

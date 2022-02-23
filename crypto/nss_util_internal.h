@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
@@ -70,6 +68,11 @@ CRYPTO_EXPORT void PrepareSystemSlotForTesting(ScopedPK11Slot slot);
 // initialization that depended on this previously-configured system slot.
 CRYPTO_EXPORT void ResetSystemSlotForTesting();
 
+// Reset the global ChromeOSTokenManager. This is used between tests, so
+// tests that run in the same process won't hit DCHECKS because they have
+// different BrowserIO threads.
+CRYPTO_EXPORT void ResetTokenManagerForTesting();
+
 // Prepare per-user NSS slot mapping. It is safe to call this function multiple
 // times. Returns true if the user was added, or false if it already existed.
 CRYPTO_EXPORT bool InitializeNSSForChromeOSUser(
@@ -80,8 +83,8 @@ CRYPTO_EXPORT bool InitializeNSSForChromeOSUser(
 // true is returned, the caller can proceed to initialize TPM slot for the
 // user, but should call |WillInitializeTPMForChromeOSUser| first.
 // |InitializeNSSForChromeOSUser| must have been called first.
-CRYPTO_EXPORT bool ShouldInitializeTPMForChromeOSUser(
-    const std::string& username_hash) WARN_UNUSED_RESULT;
+[[nodiscard]] CRYPTO_EXPORT bool ShouldInitializeTPMForChromeOSUser(
+    const std::string& username_hash);
 
 // Makes |ShouldInitializeTPMForChromeOSUser| start returning false.
 // Should be called before starting TPM initialization for the user.
@@ -101,15 +104,15 @@ CRYPTO_EXPORT void InitializePrivateSoftwareSlotForChromeOSUser(
     const std::string& username_hash);
 
 // Returns a reference to the public slot for user.
-CRYPTO_EXPORT ScopedPK11Slot GetPublicSlotForChromeOSUser(
-    const std::string& username_hash) WARN_UNUSED_RESULT;
+[[nodiscard]] CRYPTO_EXPORT ScopedPK11Slot
+GetPublicSlotForChromeOSUser(const std::string& username_hash);
 
 // Returns the private slot for |username_hash| if it is loaded. If it is not
 // loaded and |callback| is non-null, the |callback| will be run once the slot
 // is loaded.
-CRYPTO_EXPORT ScopedPK11Slot GetPrivateSlotForChromeOSUser(
+[[nodiscard]] CRYPTO_EXPORT ScopedPK11Slot GetPrivateSlotForChromeOSUser(
     const std::string& username_hash,
-    base::OnceCallback<void(ScopedPK11Slot)> callback) WARN_UNUSED_RESULT;
+    base::OnceCallback<void(ScopedPK11Slot)> callback);
 
 // Closes the NSS DB for |username_hash| that was previously opened by the
 // *Initialize*ForChromeOSUser functions.

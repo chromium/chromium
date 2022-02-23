@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/scrollable_shelf_constants.h"
@@ -17,6 +16,7 @@
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
@@ -25,12 +25,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -347,7 +347,8 @@ void ScrollableShelfView::Init() {
       ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), GetShelf(),
       this));
 
-  gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+  gradient_layer_delegate_ =
+      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
   layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
   focus_search_ = std::make_unique<ScrollableShelfFocusSearch>(this);
@@ -426,6 +427,15 @@ bool ScrollableShelfView::NeedUpdateToTargetBounds() const {
 
 gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
     const ShelfID& id) const {
+  const int item_index_in_model = shelf_view_->model()->ItemIndexByID(id);
+
+  // Return a dummy value if the item specified by `id` does not exist in the
+  // shelf model.
+  // TODO(https://crbug.com/1270498): it is a quick fixing. We should
+  // investigate the root cause.
+  if (item_index_in_model < 0)
+    return gfx::Rect();
+
   // Calculates the available space for child views based on the target bounds.
   // To ease coding, we use the variables before mirroring in computation.
   const gfx::Insets target_edge_padding_RTL_mirrored =
@@ -441,8 +451,8 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
   const gfx::Insets current_edge_padding_before_RTL_mirror =
       ShouldAdaptToRTL() ? GetMirroredInsets(current_edge_padding_RTL_mirrored)
                          : current_edge_padding_RTL_mirrored;
-  gfx::Rect icon_bounds = shelf_view_->view_model()->ideal_bounds(
-      shelf_view_->model()->ItemIndexByID(id));
+  gfx::Rect icon_bounds =
+      shelf_view_->view_model()->ideal_bounds(item_index_in_model);
   icon_bounds.Offset(target_edge_padding_before_RTL_mirror.left() -
                          current_edge_padding_before_RTL_mirror.left(),
                      0);
@@ -784,6 +794,7 @@ void ScrollableShelfView::Layout() {
 void ScrollableShelfView::ChildPreferredSizeChanged(views::View* child) {
   // Add/remove a shelf icon may change the layout strategy.
   UpdateAvailableSpaceAndScroll();
+  shelf_container_view_->TranslateShelfView(scroll_offset_);
   Layout();
 }
 

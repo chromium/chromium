@@ -153,8 +153,8 @@ TestBookmarkPositions PositionsFromAutocompleteMatch(
   return positions;
 }
 
-// Convience function to make comparing test expectations structure against the
-// actual ACMatchClassifications easier.
+// Convenience function to make comparing test expectations structure against
+// the actual ACMatchClassifications easier.
 TestBookmarkPositions PositionsFromExpectations(
     const size_t expectations[9][2]) {
   TestBookmarkPositions positions;

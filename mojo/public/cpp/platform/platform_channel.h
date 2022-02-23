@@ -7,7 +7,6 @@
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -37,13 +36,13 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
 
 // Unfortunately base process support code has no unified handle-passing
 // data pipe, so we have this.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using HandlePassingInfo = base::HandlesToInheritVector;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   using HandlePassingInfo = base::HandlesToTransferVector;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   using HandlePassingInfo = base::MachPortsForRendezvous;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   using HandlePassingInfo = base::FileHandleMappingVector;
 #else
 #error "Unsupported platform."
@@ -66,11 +65,11 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
     return remote_endpoint_;
   }
 
-  PlatformChannelEndpoint TakeLocalEndpoint() WARN_UNUSED_RESULT {
+  [[nodiscard]] PlatformChannelEndpoint TakeLocalEndpoint() {
     return std::move(local_endpoint_);
   }
 
-  PlatformChannelEndpoint TakeRemoteEndpoint() WARN_UNUSED_RESULT {
+  [[nodiscard]] PlatformChannelEndpoint TakeRemoteEndpoint() {
     return std::move(remote_endpoint_);
   }
 
@@ -103,13 +102,13 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   // Recovers an endpoint handle which was passed to the calling process by
   // its creator. |value| is a string returned by
   // |PrepareToPassRemoteEndpoint()| in the creator's process.
-  static PlatformChannelEndpoint RecoverPassedEndpointFromString(
-      base::StringPiece value) WARN_UNUSED_RESULT;
+  [[nodiscard]] static PlatformChannelEndpoint RecoverPassedEndpointFromString(
+      base::StringPiece value);
 
   // Like above but extracts the input string from |command_line| via the
   // |kHandleSwitch| flag.
-  static PlatformChannelEndpoint RecoverPassedEndpointFromCommandLine(
-      const base::CommandLine& command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] static PlatformChannelEndpoint
+  RecoverPassedEndpointFromCommandLine(const base::CommandLine& command_line);
 
   // Indicates whether |RecoverPassedEndpointFromCommandLine()| would succeed.
   static bool CommandLineHasPassedEndpoint(

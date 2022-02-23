@@ -47,7 +47,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/zlib.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Used by PerfettoSystemBackgroundScenario, nogncheck is required because this
 // is only included and used on Android.
 #include "services/tracing/perfetto/system_test_utils.h"  // nogncheck
@@ -112,7 +112,7 @@ std::unique_ptr<tracing::MockConsumer> CreateDefaultConsumer(
 }
 }  // namespace
 }  // namespace content
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 using base::trace_event::TraceLog;
 
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 // for the whole IPC sequence to enable tracing coming back from the tracing
 // service). Temporarily disabled startup tracing on Android to be able to
 // unblock Perfetto-based background tracing: https://crbug.com/941318
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EarlyTraceEventsInTrace DISABLED_EarlyTraceEventsInTrace
 #else
 #define MAYBE_EarlyTraceEventsInTrace EarlyTraceEventsInTrace
@@ -1080,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // TODO(crbug.com/1227164): Test is flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CustomConfig DISABLED_CustomConfig
 #else
 #define MAYBE_CustomConfig CustomConfig
@@ -1714,7 +1714,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
   BackgroundStartupTracingObserver::GetInstance()
-      ->SetPreferenceManagerForTesting(std::move(preferences_moved));
+      .SetPreferenceManagerForTesting(std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(false);
 
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -1763,7 +1763,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
       new TestStartupPreferenceManagerImpl);
   TestStartupPreferenceManagerImpl* preferences = preferences_moved.get();
   BackgroundStartupTracingObserver::GetInstance()
-      ->SetPreferenceManagerForTesting(std::move(preferences_moved));
+      .SetPreferenceManagerForTesting(std::move(preferences_moved));
   preferences->SetBackgroundStartupTracingEnabled(true);
 
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -1940,7 +1940,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   EXPECT_FALSE(checker.stats().has_interned_log_messages);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        PerfettoSystemBackgroundScenarioDefaultName) {
   // This test will ensure that a BackgroundTracing scenario set to SYSTEM mode
@@ -2078,6 +2078,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   // received we won't see any packets and |received_packets()| will be 0.
   EXPECT_LT(0u, system_consumer->received_packets());
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace content

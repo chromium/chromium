@@ -14,8 +14,8 @@ limitations under the License.
 ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/text/nlclassifier/Sources/TFLNLClassifier.h"
 #import "GTMDefines.h"
-#include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier_c_api.h"
-#include "tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier_c_api_common.h"
+#include "tensorflow_lite_support/c/task/text/nl_classifier.h"
+#include "tensorflow_lite_support/c/task/text/nl_classifier_common.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,31 +30,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLNLClassifier ()
 /** NLClassifier backed by C API */
-@property(nonatomic) NLClassifier* nlClassifier;
+@property(nonatomic) TfLiteNLClassifier *nlClassifier;
 @end
 
 @implementation TFLNLClassifier
 
 - (void)dealloc {
-  NLClassifierDelete(_nlClassifier);
+  TfLiteNLClassifierDelete(_nlClassifier);
 }
 
-+ (instancetype)nlClassifierWithModelPath:(NSString*)modelPath
-                                  options:(TFLNLClassifierOptions*)options {
-  struct NLClassifierOptions cOptions = {
++ (instancetype)nlClassifierWithModelPath:(NSString *)modelPath
+                                  options:(TFLNLClassifierOptions *)options {
+  TfLiteNLClassifierOptions cOptions = {
       .input_tensor_index = options.inputTensorIndex,
       .output_score_tensor_index = options.outputScoreTensorIndex,
       .output_label_tensor_index = options.outputLabelTensorIndex,
       .input_tensor_name = options.inputTensorName.UTF8String,
       .output_score_tensor_name = options.outputScoreTensorName.UTF8String,
       .output_label_tensor_name = options.outputLabelTensorName.UTF8String};
-  NLClassifier* classifier =
-      NLClassifierFromFileAndOptions(modelPath.UTF8String, &cOptions);
+  TfLiteNLClassifier *classifier =
+      TfLiteNLClassifierCreateFromOptions(modelPath.UTF8String, &cOptions);
   _GTMDevAssert(classifier, @"Failed to create NLClassifier");
   return [[TFLNLClassifier alloc] initWithNLClassifier:classifier];
 }
 
-- (instancetype)initWithNLClassifier:(NLClassifier*)nlClassifier {
+- (instancetype)initWithNLClassifier:(TfLiteNLClassifier *)nlClassifier {
   self = [super init];
   if (self) {
     _nlClassifier = nlClassifier;
@@ -62,13 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (NSDictionary<NSString*, NSNumber*>*)classifyWithText:(NSString*)text {
-  struct Categories* cCategories =
-      NLClassifierClassify(_nlClassifier, text.UTF8String);
-  NSMutableDictionary<NSString*, NSNumber*>* ret =
-      [NSMutableDictionary dictionary];
+- (NSDictionary<NSString *, NSNumber *> *)classifyWithText:(NSString *)text {
+  Categories *cCategories = TfLiteNLClassifierClassify(_nlClassifier, text.UTF8String);
+  NSMutableDictionary<NSString *, NSNumber *> *ret = [NSMutableDictionary dictionary];
   for (int i = 0; i < cCategories->size; i++) {
-    struct Category cCategory = cCategories->categories[i];
+    Category cCategory = cCategories->categories[i];
     [ret setValue:[NSNumber numberWithDouble:cCategory.score]
            forKey:[NSString stringWithUTF8String:cCategory.text]];
   }

@@ -1,0 +1,14 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Before.'
+++++++++++UNKNOWN label='Before.'
+++++++UNKNOWN label='Dividing line' actions='{SET_VALUE}'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Middle.'
+++++++++++UNKNOWN label='Middle.'
+++++++UNKNOWN actions='{SET_VALUE}'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='After.'
+++++++++++UNKNOWN label='After.'

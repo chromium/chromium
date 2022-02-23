@@ -204,6 +204,17 @@ class SetUserVerifiedAction(object):
             "Setting user verified flag on authenticator %s to %s" % (authenticator_id, uv["isUserVerified"]))
         return self.protocol.virtual_authenticator.set_user_verified(authenticator_id, uv)
 
+class SetSPCTransactionModeAction(object):
+    name = "set_spc_transaction_mode"
+
+    def __init__(self, logger, protocol):
+        self.logger = logger
+        self.protocol = protocol
+
+    def __call__(self, payload):
+        mode = payload["mode"]
+        self.logger.debug("Setting SPC transaction mode to %s" % mode)
+        return self.protocol.spc_transactions.set_spc_transaction_mode(mode)
 
 actions = [ClickAction,
            DeleteAllCookiesAction,
@@ -219,4 +230,5 @@ actions = [ClickAction,
            GetCredentialsAction,
            RemoveCredentialAction,
            RemoveAllCredentialsAction,
-           SetUserVerifiedAction]
+           SetUserVerifiedAction,
+           SetSPCTransactionModeAction]

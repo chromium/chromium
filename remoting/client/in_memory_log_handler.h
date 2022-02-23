@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Class for capturing logs in memory before printing out.

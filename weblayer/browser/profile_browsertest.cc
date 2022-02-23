@@ -23,7 +23,7 @@ namespace weblayer {
 using ProfileBrowserTest = WebLayerBrowserTest;
 
 // TODO(crbug.com/654704): Android does not support PRE_ tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // UKM enabling via Profile persists across restarts.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PRE_PersistUKM) {
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PersistNetworkPrediction) {
       GetProfile()->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, GetCachedFaviconForPageUrl) {
   // Navigation to a page with a favicon.
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
 
 // This test creates a Browser and Tab, which doesn't work well with Java when
 // driven from native code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class BrowserListObserverImpl : public BrowserListObserver {
  public:

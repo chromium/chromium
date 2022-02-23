@@ -20,7 +20,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/url_util.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
@@ -29,7 +29,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Fuchsia doesn't support stdin stream for packaged apps. This means that when
 // running content_shell on Fuchsia it's not possible to use stdin to pass list
 // of tests. To workaround this issue for web tests we redirect stdin stream
@@ -64,7 +64,7 @@ void ConnectStdinSocket(const std::string& host_and_port) {
   PCHECK(close(fd) == 0);
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
     const std::string& test_name,
@@ -82,7 +82,7 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
   if (!(test_url.is_valid() && test_url.has_scheme())) {
     // We're outside of the message loop here, and this is a test.
     base::ScopedAllowBlockingForTesting allow_blocking;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath::StringType wide_path_or_url =
         base::SysNativeMBToWide(path_or_url);
     base::FilePath local_file(wide_path_or_url);
@@ -128,10 +128,10 @@ TestInfo::~TestInfo() {}
 
 TestInfoExtractor::TestInfoExtractor(const base::CommandLine& cmd_line)
     : cmdline_args_(cmd_line.GetArgs()), cmdline_position_(0) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   if (cmd_line.HasSwitch(kStdinRedirectSwitch))
     ConnectStdinSocket(cmd_line.GetSwitchValueASCII(kStdinRedirectSwitch));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 TestInfoExtractor::~TestInfoExtractor() {}
@@ -150,7 +150,7 @@ std::unique_ptr<TestInfo> TestInfoExtractor::GetNextTest() {
     } while (test_string.empty());
     protocol_mode = true;
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     test_string = base::WideToUTF8(cmdline_args_[cmdline_position_++]);
 #else
     test_string = cmdline_args_[cmdline_position_++];

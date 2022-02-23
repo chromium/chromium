@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -77,7 +77,7 @@ class FakeUdpSocket : public rtc::AsyncPacketSocket {
   void SetError(int error) override;
 
  private:
-  FakePacketSocketFactory* factory_;
+  raw_ptr<FakePacketSocketFactory> factory_;
   scoped_refptr<FakeNetworkDispatcher> dispatcher_;
   rtc::SocketAddress local_address_;
   State state_;

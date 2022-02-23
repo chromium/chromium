@@ -8,7 +8,6 @@
 #include <string.h>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_resizer.h"

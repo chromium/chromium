@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "extensions/browser/extension_function.h"
 
 // API function that enables or disables web content accessibility support.
@@ -66,6 +67,9 @@ class AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction
   ~AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction()
       override {}
   ResponseAction Run() override;
+  void OnResponse(
+      extensions::api::accessibility_private::SetNativeChromeVoxResponse
+          response);
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp",
       ACCESSIBILITY_PRIVATE_SETNATIVECHROMEVOXARCSUPPORTFORCURRENTAPP)
@@ -80,7 +84,7 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT)
 };
 
-// API function that enables or disables mouse events in ChromeVox.
+// API function that enables or disables mouse events in ChromeVox / Magnifier.
 class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
   ~AccessibilityPrivateEnableMouseEventsFunction() override {}
   ResponseAction Run() override;
@@ -243,6 +247,15 @@ class AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction
   DECLARE_EXTENSION_FUNCTION(
       "accessibilityPrivate.getLocalizedDomKeyStringForKeyCode",
       ACCESSIBILITY_PRIVATE_GETLOCALIZEDDOMKEYSTRINGFORKEYCODE)
+};
+
+// API function that updates the Dictation bubble UI.
+class AccessibilityPrivateUpdateDictationBubbleFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateUpdateDictationBubbleFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateDictationBubble",
+                             ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_CHROMEOS_H_

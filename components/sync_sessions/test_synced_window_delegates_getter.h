@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/local_session_event_router.h"
@@ -49,8 +50,6 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   bool IsInitialBlankNavigation() const override;
   int GetCurrentEntryIndex() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
@@ -60,8 +59,8 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   SessionID GetSessionId() const override;
   bool IsBeingDestroyed() const override;
   std::string GetExtensionAppId() const override;
-  bool ProfileIsSupervised() const override;
-  void set_is_supervised(bool is_supervised);
+  bool ProfileHasChildAccount() const override;
+  void set_has_child_account(bool has_child_account);
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool IsPlaceholderTab() const override;
@@ -76,7 +75,7 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   const base::RepeatingCallback<void(SyncedTabDelegate*)> notify_cb_;
 
   int current_entry_index_ = -1;
-  bool is_supervised_ = false;
+  bool has_child_account_ = false;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
@@ -108,13 +107,11 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   int GetCurrentEntryIndex() const override;
   int GetEntryCount() const override;
   GURL GetVirtualURLAtIndex(int i) const override;
-  GURL GetFaviconURLAtIndex(int i) const override;
-  ui::PageTransition GetTransitionAtIndex(int i) const override;
   std::string GetPageLanguageAtIndex(int i) const override;
   void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const override;
-  bool ProfileIsSupervised() const override;
+  bool ProfileHasChildAccount() const override;
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
   GetBlockedNavigations() const override;
   bool ShouldSync(SyncSessionsClient* sessions_client) override;
@@ -190,7 +187,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
 
   // SyncedWindowDelegatesGetter overrides.
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
-  const SyncedWindowDelegate* FindById(SessionID id) override;
+  const SyncedWindowDelegate* FindById(SessionID session_id) override;
 
  private:
   class DummyRouter : public LocalSessionEventRouter {
@@ -203,7 +200,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
     void NotifySessionRestoreComplete();
 
    private:
-    LocalSessionEventHandler* handler_ = nullptr;
+    raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
   };
 
   SyncedWindowDelegateMap delegates_;

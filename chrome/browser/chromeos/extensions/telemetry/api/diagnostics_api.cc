@@ -236,6 +236,54 @@ void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
       params->request.length_seconds, std::move(cb));
 }
 
+// OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction ---------------------
+
+OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::
+    OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() = default;
+OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::
+    ~OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() = default;
+
+void OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<
+      api::os_diagnostics::RunCpuFloatingPointAccuracyRoutine::Params>
+      params(api::os_diagnostics::RunCpuFloatingPointAccuracyRoutine::Params::
+                 Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunFloatingPointAccuracyRoutine(
+      params->request.length_seconds, std::move(cb));
+}
+
+// OsDiagnosticsRunCpuPrimeSearchRoutineFunction -------------------------------
+
+OsDiagnosticsRunCpuPrimeSearchRoutineFunction::
+    OsDiagnosticsRunCpuPrimeSearchRoutineFunction() = default;
+OsDiagnosticsRunCpuPrimeSearchRoutineFunction::
+    ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() = default;
+
+void OsDiagnosticsRunCpuPrimeSearchRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunCpuPrimeSearchRoutine::Params> params(
+      api::os_diagnostics::RunCpuPrimeSearchRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunPrimeSearchRoutine(
+      params->request.length_seconds, std::move(cb));
+}
+
 // OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
 
 OsDiagnosticsRunCpuStressRoutineFunction::
@@ -259,6 +307,31 @@ void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
       params->request.length_seconds, std::move(cb));
 }
 
+// OsDiagnosticsRunDiskReadRoutineFunction -------------------------------------
+
+OsDiagnosticsRunDiskReadRoutineFunction::
+    OsDiagnosticsRunDiskReadRoutineFunction() = default;
+OsDiagnosticsRunDiskReadRoutineFunction::
+    ~OsDiagnosticsRunDiskReadRoutineFunction() = default;
+
+void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunDiskReadRoutine::Params> params(
+      api::os_diagnostics::RunDiskReadRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunDiskReadRoutine(
+      converters::ConvertDiskReadRoutineType(params->request.type),
+      params->request.length_seconds, params->request.file_size_mb,
+      std::move(cb));
+}
+
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
 
 OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =
@@ -271,6 +344,43 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunMemoryRoutine(std::move(cb));
+}
+
+// OsDiagnosticsRunNvmeWearLevelRoutineFunction --------------------------------
+
+OsDiagnosticsRunNvmeWearLevelRoutineFunction::
+    OsDiagnosticsRunNvmeWearLevelRoutineFunction() = default;
+OsDiagnosticsRunNvmeWearLevelRoutineFunction::
+    ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() = default;
+
+void OsDiagnosticsRunNvmeWearLevelRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunNvmeWearLevelRoutine::Params> params(
+      api::os_diagnostics::RunNvmeWearLevelRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunNvmeWearLevelRoutine(
+      params->request.wear_level_threshold, std::move(cb));
+}
+
+// OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
+
+OsDiagnosticsRunSmartctlCheckRoutineFunction::
+    OsDiagnosticsRunSmartctlCheckRoutineFunction() = default;
+OsDiagnosticsRunSmartctlCheckRoutineFunction::
+    ~OsDiagnosticsRunSmartctlCheckRoutineFunction() = default;
+
+void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunSmartctlCheckRoutine(std::move(cb));
 }
 
 }  // namespace chromeos

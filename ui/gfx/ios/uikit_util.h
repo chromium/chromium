@@ -7,19 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/compiler_specific.h"
-
 // UI Util containing functions that require UIKit.
 
 namespace ui {
 
 // Returns the closest pixel-aligned value higher than |value|, taking the scale
 // factor into account. At a scale of 1, equivalent to ceil().
-CGFloat AlignValueToUpperPixel(CGFloat value) WARN_UNUSED_RESULT;
+[[nodiscard]] CGFloat AlignValueToUpperPixel(CGFloat value);
 
 // Returns the size resulting from applying AlignToUpperPixel to both
 // components.
-CGSize AlignSizeToUpperPixel(CGSize size) WARN_UNUSED_RESULT;
+[[nodiscard]] CGSize AlignSizeToUpperPixel(CGSize size);
 
 } // namespace ui
 

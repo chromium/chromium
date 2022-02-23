@@ -12,7 +12,6 @@ import android.graphics.RectF;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -156,8 +155,7 @@ public class SimpleAnimationLayout extends Layout {
         // Just draw the source tab on the screen.
         TabModel sourceModel = mTabModelSelector.getModelForTabId(sourceTabId);
         if (sourceModel == null) return;
-        LayoutTab sourceLayoutTab =
-                createLayoutTab(sourceTabId, sourceModel.isIncognito(), NO_CLOSE_BUTTON, NO_TITLE);
+        LayoutTab sourceLayoutTab = createLayoutTab(sourceTabId, sourceModel.isIncognito());
         sourceLayoutTab.setBorderAlpha(0.0f);
 
         mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
@@ -187,7 +185,7 @@ public class SimpleAnimationLayout extends Layout {
      */
     private void tabCreatedInForeground(
             int id, int sourceId, boolean newIsIncognito, float originX, float originY) {
-        LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito, NO_CLOSE_BUTTON, NO_TITLE);
+        LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito);
         if (mLayoutTabs == null || mLayoutTabs.length == 0) {
             mLayoutTabs = new LayoutTab[] {newLayoutTab};
         } else {
@@ -235,7 +233,7 @@ public class SimpleAnimationLayout extends Layout {
      */
     private void tabCreatedInBackground(
             int id, int sourceId, boolean newIsIncognito, float originX, float originY) {
-        LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito, NO_CLOSE_BUTTON, NEED_TITLE);
+        LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito);
         // mLayoutTabs should already have the source tab from tabCreating().
         assert mLayoutTabs.length == 1;
         LayoutTab sourceLayoutTab = mLayoutTabs[0];
@@ -358,7 +356,7 @@ public class SimpleAnimationLayout extends Layout {
         // Create the {@link LayoutTab} for the tab before it is destroyed.
         TabModel model = mTabModelSelector.getModelForTabId(id);
         if (model != null) {
-            mClosedTab = createLayoutTab(id, model.isIncognito(), NO_CLOSE_BUTTON, NO_TITLE);
+            mClosedTab = createLayoutTab(id, model.isIncognito());
             mClosedTab.setBorderAlpha(0.0f);
             mLayoutTabs = new LayoutTab[] {mClosedTab};
             updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(id)));
@@ -380,8 +378,7 @@ public class SimpleAnimationLayout extends Layout {
         if (mClosedTab != null) {
             TabModel nextModel = mTabModelSelector.getModelForTabId(nextId);
             if (nextModel != null) {
-                LayoutTab nextLayoutTab =
-                        createLayoutTab(nextId, nextModel.isIncognito(), NO_CLOSE_BUTTON, NO_TITLE);
+                LayoutTab nextLayoutTab = createLayoutTab(nextId, nextModel.isIncognito());
                 nextLayoutTab.setDrawDecoration(false);
 
                 mLayoutTabs = new LayoutTab[] {nextLayoutTab, mClosedTab};
@@ -494,15 +491,15 @@ public class SimpleAnimationLayout extends Layout {
 
     @Override
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        super.updateSceneLayer(
+                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
         assert mSceneLayer != null;
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
-                layerTitleCache, tabContentManager, resourceManager, browserControls,
-                SceneLayer.INVALID_RESOURCE_ID, 0, 0);
+                tabContentManager, resourceManager, browserControls, SceneLayer.INVALID_RESOURCE_ID,
+                0, 0);
     }
 
     @Override

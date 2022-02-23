@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/devtools/devtools/domains/dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/input.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/network.h"
+#include "components/autofill_assistant/browser/devtools/devtools/domains/page.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/target.h"
 #include "components/autofill_assistant/browser/devtools/message_dispatcher.h"
@@ -43,6 +44,7 @@ class DevtoolsClient : public MessageDispatcher,
   dom::Domain* GetDOM();
   runtime::Domain* GetRuntime();
   target::ExperimentalDomain* GetTarget();
+  page::ExperimentalDomain* GetPage();
 
   // MessageDispatcher implementation:
   void SendMessage(
@@ -158,6 +160,7 @@ class DevtoolsClient : public MessageDispatcher,
   dom::ExperimentalDomain dom_domain_;
   runtime::ExperimentalDomain runtime_domain_;
   target::ExperimentalDomain target_domain_;
+  page::ExperimentalDomain page_domain_;
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
   int next_message_id_;

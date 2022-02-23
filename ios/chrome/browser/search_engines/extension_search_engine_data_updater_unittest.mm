@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
 
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"

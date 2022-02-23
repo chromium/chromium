@@ -966,7 +966,7 @@
     "after",
     "before",
 
-    // -webkit-text-emphasis-position
+    // text-emphasis-position
     "over",
     "under",
     //right
@@ -1078,6 +1078,7 @@
 
     // grid-template-{columns|rows}
     "minmax",
+    "subgrid",
 
     // text-indent
     "each-line",
@@ -1329,6 +1330,10 @@
     "size",
     "block-size",
     "inline-size",
+
+    // @container
+    "name",
+    "type",
 
     // grid auto-repeat
     "auto-fill",

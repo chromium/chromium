@@ -36,11 +36,12 @@ const char* kAllowedDomainsForEmojiSuggester[] = {
     "voice.google.com",
 };
 
+// TODO(b/3339115): Add web.skype.com back to the list after compatibility
+//    issues are solved.
 const char* kAllowedDomainsForMultiWordSuggester[] = {
-    "discord.com",      "messenger.com",       "web.whatsapp.com",
-    "web.skype.com",    "duo.google.com",      "hangouts.google.com",
-    "chat.google.com",  "messages.google.com", "web.telegram.org",
-    "voice.google.com",
+    "discord.com",         "messenger.com",       "web.whatsapp.com",
+    "duo.google.com",      "hangouts.google.com", "chat.google.com",
+    "messages.google.com", "web.telegram.org",    "voice.google.com",
 };
 
 const char* kTestUrls[] = {

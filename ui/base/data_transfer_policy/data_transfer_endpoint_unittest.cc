@@ -30,7 +30,7 @@ TEST(DataTransferEndpointTest, Clone) {
   DataTransferEndpoint clone2(original2);
 
   EXPECT_EQ(original2.type(), clone2.type());
-  EXPECT_TRUE(clone2.origin()->IsSameOriginWith(*original2.origin()));
+  EXPECT_TRUE(clone2.GetOrigin()->IsSameOriginWith(*original2.GetOrigin()));
   EXPECT_EQ(original2.notify_if_restricted(), clone2.notify_if_restricted());
 }
 

@@ -2,7 +2,7 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Helper for adding an include to a source file in the "right" place.
+"""Helper for adding or removing an include to/from source file(s).
 
 clang-format already provides header sorting functionality; however, the
 functionality is limited to sorting headers within a block of headers surrounded
@@ -20,8 +20,11 @@ This script implements additional logic to:
 As a bonus, it does *also* sort the includes, though any sorting disagreements
 with clang-format should be resolved in favor of clang-format.
 
+It also supports removing a header with option `--remove`.
+
 Usage:
 tools/add_header.py --header '<utility>' foo/bar.cc foo/baz.cc foo/baz.h
+tools/add_header.py --header '<vector>' --remove foo/bar.cc foo/baz.cc foo/baz.h
 """
 
 import argparse
@@ -264,11 +267,19 @@ def MarkPrimaryInclude(includes, filename):
   if filename.endswith('.h'):
     return
 
+  # First pass. Looking for exact match primary header.
+  exact_match_primary_header = f'{os.path.splitext(filename)[0]}.h'
+  for include in includes:
+    if IsUserHeader(include.decorated_name) and UndecoratedName(
+        include.decorated_name) == exact_match_primary_header:
+      include.is_primary_header = True
+      return
+
   basis = _DecomposePath(filename)
 
-  # The list of includes is searched in reverse order of length. Even though
-  # matching is fuzzy, moo_posix.h should take precedence over moo.h when
-  # considering moo_posix.cc.
+  # Second pass. The list of includes is searched in reverse order of length.
+  # Even though matching is fuzzy, moo_posix.h should take precedence over moo.h
+  # when considering moo_posix.cc.
   includes.sort(key=lambda i: -len(i.decorated_name))
   for include in includes:
     if include.header_type != _HEADER_TYPE_USER:
@@ -343,16 +354,17 @@ def SerializeIncludes(includes):
   return source
 
 
-def InsertHeaderIntoSource(filename, source, decorated_name):
-  """Inserts the specified header into some source text, if needed.
+def AddHeaderToSource(filename, source, decorated_name, remove=False):
+  """Adds or removes the specified header into/from the source text, if needed.
 
   Args:
     filename: The name of the source file.
     source: A string containing the contents of the source file.
-    decorated_name: The decorated name of the header to insert.
+    decorated_name: The decorated name of the header to add or remove.
+    remove: If true, remove instead of adding.
 
   Returns:
-    None on failure or the modified source text on success.
+    None if no changes are needed or the modified source text otherwise.
   """
   lines = source.splitlines()
   begin, end = FindIncludes(lines)
@@ -368,12 +380,24 @@ def InsertHeaderIntoSource(filename, source, decorated_name):
   if not includes:
     print(f'Skipping {filename}: unable to parse includes!')
     return None
-  if decorated_name in [i.decorated_name for i in includes]:
-    # Nothing to do.
-    print(f'Skipping {filename}: no changes required!')
-    return source
+
+  if remove:
+    for i in includes:
+      if decorated_name == i.decorated_name:
+        includes.remove(i)
+        break
+    else:
+      print(f'Skipping {filename}: unable to find {decorated_name}')
+      return None
+  else:
+    if decorated_name in [i.decorated_name for i in includes]:
+      # Nothing to do.
+      print(f'Skipping {filename}: no changes required!')
+      return None
+    else:
+      includes.append(Include(decorated_name, 'include', [], None))
+
   MarkPrimaryInclude(includes, filename)
-  includes.append(Include(decorated_name, 'include', [], None))
 
   # TODO(dcheng): It may be worth considering adding special sorting heuristics
   # for windows.h, et cetera.
@@ -389,11 +413,14 @@ def InsertHeaderIntoSource(filename, source, decorated_name):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Mass insert a new header into a bunch of files.')
+      description='Mass add (or remove) a new header into a bunch of files.')
   parser.add_argument(
       '--header',
       help='The decorated filename of the header to insert (e.g. "a" or <a>)',
       required=True)
+  parser.add_argument('--remove',
+                      help='Remove the header file instead of adding it',
+                      action='store_true')
   parser.add_argument('files', nargs='+')
   args = parser.parse_args()
   if ClassifyHeader(args.header) == _HEADER_TYPE_INVALID:
@@ -402,14 +429,15 @@ def main():
     print('or')
     print('  --header \'"moo.h"\'')
     return 1
-  print(f'Inserting #include {args.header}...')
+  operation = 'Removing' if args.remove else 'Inserting'
+  print(f'{operation} #include {args.header}...')
   for filename in args.files:
     with open(filename, 'r') as f:
-      new_source = InsertHeaderIntoSource(os.path.normpath(filename), f.read(),
-                                          args.header)
+      new_source = AddHeaderToSource(os.path.normpath(filename), f.read(),
+                                     args.header, args.remove)
     if not new_source:
       continue
-    with open(filename, 'w') as f:
+    with open(filename, 'w', newline='\n') as f:
       f.write(new_source)
 
 

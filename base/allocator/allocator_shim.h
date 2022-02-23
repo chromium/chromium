@@ -44,14 +44,14 @@ namespace allocator {
 //   consists of a single AllocatorDispatch element, herein called
 //   the "default dispatch", which is statically defined at build time and
 //   ultimately routes the calls to the actual allocator defined by the build
-//   config (tcmalloc, glibc, ...).
+//   config (glibc, ...).
 //
 // It is possible to dynamically insert further AllocatorDispatch stages
 // to the front of the chain, for debugging / profiling purposes.
 //
 // All the functions must be thread safe. The shim does not enforce any
-// serialization. This is to route to thread-aware allocators (e.g, tcmalloc)
-// wihout introducing unnecessary perf hits.
+// serialization. This is to route to thread-aware allocators without
+// introducing unnecessary perf hits.
 
 struct AllocatorDispatch {
   using AllocFn = void*(const AllocatorDispatch* self,
@@ -140,6 +140,9 @@ BASE_EXPORT void SetCallNewHandlerOnMallocFailure(bool value);
 // regardless of SetCallNewHandlerOnMallocFailure().
 BASE_EXPORT void* UncheckedAlloc(size_t size);
 
+// Frees memory allocated with UncheckedAlloc().
+BASE_EXPORT void UncheckedFree(void* ptr);
+
 // Inserts |dispatch| in front of the allocator chain. This method is
 // thread-safe w.r.t concurrent invocations of InsertAllocatorDispatch().
 // The callers have responsibility for inserting a single dispatch no more
@@ -151,34 +154,40 @@ BASE_EXPORT void InsertAllocatorDispatch(AllocatorDispatch* dispatch);
 // in malloc(), which we really don't want.
 BASE_EXPORT void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch);
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_WIN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_WIN)
 // Configures the allocator for the caller's allocation domain. Allocations that
 // take place prior to this configuration step will succeed, but will not
 // benefit from its one-time mitigations. As such, this function must be called
 // as early as possible during startup.
 BASE_EXPORT void ConfigurePartitionAlloc();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void InitializeDefaultAllocatorPartitionRoot();
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // On macOS, the allocator shim needs to be turned on during runtime.
 BASE_EXPORT void InitializeAllocatorShim();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
-BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
-
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
-using ForceSplitPartitions =
-    base::StrongAlias<class ForceSplitPartitionsTag, bool>;
+using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
+using UseDedicatedAlignedPartition =
+    base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
+using AlternateBucketDistribution =
+    base::StrongAlias<class AlternateBucketDistributionTag, bool>;
 
+// If |thread_cache_on_non_quarantinable_partition| is specified, the
+// thread-cache will be enabled on the non-quarantinable partition. The
+// thread-cache on the main (malloc) partition will be disabled.
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
-    ForceSplitPartitions force_split_partitions);
+    SplitMainPartition split_main_partition,
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    AlternateBucketDistribution use_alternate_bucket_distribution);
 
 #if defined(PA_ALLOW_PCSCAN)
 BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);

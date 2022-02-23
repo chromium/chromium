@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_dialog.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_drive.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_file_system.h"
+#include "chrome/browser/chromeos/extensions/file_manager/private_api_guest_os.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_holding_space.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_media_parser.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_misc.h"

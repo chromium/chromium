@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DUPLICATE_DOWNLOAD_DIALOG_BRIDGE_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DUPLICATE_DOWNLOAD_DIALOG_BRIDGE_H_
 
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
 
@@ -44,6 +43,8 @@ class DuplicateDownloadDialogBridge : public download::DownloadItem::Observer {
   void OnConfirmed(JNIEnv* env, jlong callback_id, jboolean accepted);
 
  private:
+  // Validator for all JNI callbacks.
+  DownloadCallbackValidator validator_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };

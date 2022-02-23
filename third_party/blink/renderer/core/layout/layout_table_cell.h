@@ -158,7 +158,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
     return Row()->RowIndex();
   }
 
-  Length StyleOrColLogicalWidth() const final {
+  Length StyleOrColLogicalWidth() const {
     NOT_DESTROYED();
     const Length& style_width = StyleRef().LogicalWidth();
     if (!style_width.IsAuto())
@@ -236,11 +236,11 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
     SetIntrinsicPadding(0, 0);
   }
 
-  int IntrinsicPaddingBefore() const final {
+  int IntrinsicPaddingBefore() const {
     NOT_DESTROYED();
     return intrinsic_padding_before_;
   }
-  int IntrinsicPaddingAfter() const final {
+  int IntrinsicPaddingAfter() const {
     NOT_DESTROYED();
     return intrinsic_padding_after_;
   }
@@ -402,10 +402,6 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   // LayoutNGTableCellInterface implementation start.
 
   const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-  const LayoutTableCell* ToLayoutTableCell() const final {
     NOT_DESTROYED();
     return this;
   }

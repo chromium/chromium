@@ -6,12 +6,12 @@
 
 #include "base/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -33,13 +33,14 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
   RasterInvalidator invalidator_;
 };
 
-class RasterInvalidationCycleScope : public PaintController::CycleScope {
+class RasterInvalidationCycleScope : public PaintControllerCycleScope {
  public:
   RasterInvalidationCycleScope(PaintController& controller,
                                RasterInvalidator& invalidator)
-      : PaintController::CycleScope(controller, true),
+      : PaintControllerCycleScope(controller, true),
         invalidator_(invalidator) {}
   ~RasterInvalidationCycleScope() {
+    ++sequence_number_;
     for (auto* controller : controllers_) {
       controller->CommitNewDisplayItems();
       invalidator_.Generate(
@@ -49,13 +50,16 @@ class RasterInvalidationCycleScope : public PaintController::CycleScope {
           // invalidation rects in the tests.
           gfx::Vector2dF(), gfx::Size(20000, 20000), PropertyTreeState::Root());
       for (auto& chunk : controller->PaintChunks())
-        chunk.properties.ClearChangedTo(PropertyTreeState::Root());
+        chunk.properties.ClearChangedToRoot(sequence_number_);
     }
   }
 
  private:
   RasterInvalidator& invalidator_;
+  static int sequence_number_;
 };
+
+int RasterInvalidationCycleScope::sequence_number_ = 1;
 
 INSTANTIATE_PAINT_TEST_SUITE_P(DisplayItemRasterInvalidatorTest);
 

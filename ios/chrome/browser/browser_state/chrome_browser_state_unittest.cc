@@ -6,19 +6,20 @@
 
 #include "components/variations/net/variations_http_headers.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/web/public/test/web_test.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 
 namespace ios {
 namespace {
 
-using ChromeBrowserStateTest = web::WebTest;
+using ChromeBrowserStateTest = PlatformTest;
 
 // Tests that ChromeBrowserState implements UpdateCorsExemptHeader correctly.
 TEST_F(ChromeBrowserStateTest, CorsExemptHeader) {
-  TestChromeBrowserState::Builder builder;
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
-  ASSERT_TRUE(browser_state);
+  web::WebTaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
 
   network::mojom::NetworkContextParamsPtr expected_params =
       network::mojom::NetworkContextParams::New();
@@ -26,7 +27,7 @@ TEST_F(ChromeBrowserStateTest, CorsExemptHeader) {
 
   network::mojom::NetworkContextParamsPtr actual_params =
       network::mojom::NetworkContextParams::New();
-  browser_state->UpdateCorsExemptHeader(actual_params.get());
+  browser_state.get()->UpdateCorsExemptHeader(actual_params.get());
 
   ASSERT_EQ(expected_params->cors_exempt_header_list.size(),
             actual_params->cors_exempt_header_list.size());

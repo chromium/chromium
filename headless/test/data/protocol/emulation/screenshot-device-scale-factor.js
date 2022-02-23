@@ -43,13 +43,10 @@
       </html>
   `);
 
-  let ctx = await new Promise(async fulfill => {
-    await virtualTimeController.grantInitialTime(500, 100,
-        null,
-        async () => fulfill(await virtualTimeController.captureScreenshot())
-    );
-    frameNavigationHelper.navigate('http://example.com/');
-  });
+  await virtualTimeController.initialize(100);
+  await frameNavigationHelper.navigate('http://example.com/');
+  await virtualTimeController.grantTime(500);
+  const ctx = await virtualTimeController.captureScreenshot();
   // We use a screen and viewport of 100x100 DIP, which is 200 physical pixels
   // due to deviceScaleFactor of 2. Make sure the screenshot is not clipped.
   let rgba = ctx.getImageData(175, 175, 1, 1).data;

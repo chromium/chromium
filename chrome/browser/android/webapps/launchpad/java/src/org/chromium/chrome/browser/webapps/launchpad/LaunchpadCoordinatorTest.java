@@ -34,7 +34,6 @@ import java.util.List;
 /**
  * Tests for {@link LaunchpadCoordinator}.
  *
- * EnhancedProtectionPromoCard does not need to be disabled. Its value just need to be set.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)

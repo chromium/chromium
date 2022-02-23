@@ -5,6 +5,7 @@
 #ifndef UI_GL_SHARED_GL_FENCE_EGL_H_
 #define UI_GL_SHARED_GL_FENCE_EGL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -46,7 +47,7 @@ class GL_EXPORT SharedGLFenceEGL
   base::Lock lock_;
 
   // GLApi on which all the consumers for this object should be on.
-  gl::GLApi* gl_api_ = nullptr;
+  raw_ptr<gl::GLApi> gl_api_ = nullptr;
 };
 
 }  // namespace gl

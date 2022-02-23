@@ -66,6 +66,9 @@ class ScriptInjector {
   // Returns true if the script expects results.
   virtual bool ExpectsResults() const = 0;
 
+  // Whether to wait for a promise result to resolve.
+  virtual bool ShouldWaitForPromise() const = 0;
+
   // Returns true if the script should inject JS source at the given
   // |run_location|.
   virtual bool ShouldInjectJs(

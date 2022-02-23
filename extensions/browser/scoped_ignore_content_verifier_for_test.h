@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_SCOPED_IGNORE_CONTENT_VERIFIER_FOR_TEST_H_
 #define EXTENSIONS_BROWSER_SCOPED_IGNORE_CONTENT_VERIFIER_FOR_TEST_H_
 
-#include "base/macros.h"
-
 namespace extensions {
 
 // A class for use in tests to make content verification failures be ignored

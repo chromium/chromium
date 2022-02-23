@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_HISTORY_OBSERVER_H_
 #define CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_HISTORY_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -45,7 +46,7 @@ class SubresourceFilterHistoryObserver
       history_observation_{this};
 
   // Outlives this object.
-  subresource_filter::SubresourceFilterContentSettingsManager*
+  raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager>
       settings_manager_;
 };
 

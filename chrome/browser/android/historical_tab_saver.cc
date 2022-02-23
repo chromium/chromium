@@ -26,7 +26,7 @@ void CreateHistoricalTab(content::WebContents* web_contents) {
     return;
 
   // Exclude internal pages from being marked as recent when they are closed.
-  const GURL& tab_url = web_contents->GetURL();
+  const GURL& tab_url = web_contents->GetLastCommittedURL();
   if (tab_url.SchemeIs(content::kChromeUIScheme) ||
       tab_url.SchemeIs(chrome::kChromeNativeScheme) ||
       tab_url.SchemeIs(url::kAboutScheme)) {

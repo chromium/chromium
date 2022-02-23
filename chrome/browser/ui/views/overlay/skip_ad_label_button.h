@@ -9,8 +9,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
-namespace views {
-
 // A label button representing a skip-ad button.
 class SkipAdLabelButton : public views::LabelButton {
  public:
@@ -27,7 +25,5 @@ class SkipAdLabelButton : public views::LabelButton {
   // Overridden from views::View.
   void SetVisible(bool is_visible) override;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_SKIP_AD_LABEL_BUTTON_H_

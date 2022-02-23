@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -29,7 +28,7 @@ class TestLauncherDelegate {
   // data directory.
   virtual std::string GetUserDataDirectoryCommandLineSwitch();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Android browser tests set the ContentMainDelegate itself for the test
   // harness to use, and do not go through ContentMain() in TestLauncher.
   virtual ContentMainDelegate* CreateContentMainDelegate() = 0;
@@ -65,16 +64,16 @@ class TestLauncherDelegate {
 
 // Launches tests using |launcher_delegate|. |parallel_jobs| is the number
 // of test jobs to be run in parallel.
-int LaunchTests(TestLauncherDelegate* launcher_delegate,
-                size_t parallel_jobs,
-                int argc,
-                char** argv) WARN_UNUSED_RESULT;
+[[nodiscard]] int LaunchTests(TestLauncherDelegate* launcher_delegate,
+                              size_t parallel_jobs,
+                              int argc,
+                              char** argv);
 
 TestLauncherDelegate* GetCurrentTestLauncherDelegate();
 
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns a copy of the ContentMainParams initialized before launching tests.
 ContentMainParams CopyContentMainParams();
 #endif

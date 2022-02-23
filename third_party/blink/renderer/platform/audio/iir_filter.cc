@@ -44,8 +44,9 @@ static std::complex<double> EvaluatePolynomial(const double* coef,
   // 0, order);
   std::complex<double> result = 0;
 
-  for (int k = order; k >= 0; --k)
+  for (int k = order; k >= 0; --k) {
     result = result * z + std::complex<double>(coef[k]);
+  }
 
   return result;
 }
@@ -93,12 +94,14 @@ void IIRFilter::Process(const float* source_p,
     }
 
     // Handle any remaining feedforward or feedback terms.
-    for (int k = min_length; k < feedforward_length; ++k)
+    for (int k = min_length; k < feedforward_length; ++k) {
       yn +=
           feedforward[k] * x_buffer[(buffer_index_ - k) & (kBufferLength - 1)];
+    }
 
-    for (int k = min_length; k < feedback_length; ++k)
+    for (int k = min_length; k < feedback_length; ++k) {
       yn -= feedback[k] * y_buffer[(buffer_index_ - k) & (kBufferLength - 1)];
+    }
 
     // Save the current input and output values in the memory buffers for the
     // next output.

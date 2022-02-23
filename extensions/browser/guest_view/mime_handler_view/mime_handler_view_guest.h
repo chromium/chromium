@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/global_routing_id.h"
@@ -93,7 +92,7 @@ class MimeHandlerViewGuest
   static const char Type[];
 
   // GuestViewBase overrides.
-  bool CanBeEmbeddedInsideCrossProcessFrames() override;
+  bool CanBeEmbeddedInsideCrossProcessFrames() const override;
   content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
   content::SiteInstance* GetOwnerSiteInstance() override;
 
@@ -181,7 +180,7 @@ class MimeHandlerViewGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override;
 
   // Updates the fullscreen state for the guest. Returns whether the change
@@ -189,8 +188,7 @@ class MimeHandlerViewGuest
   bool SetFullscreenState(bool is_fullscreen);
 
   // content::WebContentsObserver implementation.
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) final;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;

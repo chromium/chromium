@@ -13,9 +13,17 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/cellular_connection_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/managed_network_configuration_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_observer.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/network/network_state_handler.h"
 
 namespace chromeos {
 
@@ -37,16 +45,12 @@ namespace chromeos {
 
 enum class ConnectCallbackMode { ON_STARTED, ON_COMPLETED };
 
-class CellularConnectionHandler;
-class NetworkStateHandler;
-class NetworkConfigurationHandler;
-class ManagedNetworkConfigurationHandler;
-
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
  public:
   // Constants for |error_name| from |error_callback| for Connect. Whenever a
   // new error name associated to cellular connections is added,
-  // CellularMetricsLogger should be updated as well.
+  // ConnectionInfoMetricsLogger and CellularMetricsLogger should be updated as
+  // well.
 
   //  No network matching |service_path| is found (hidden networks must be
   //  configured before connecting).
@@ -256,6 +260,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 using ::chromeos::ConnectCallbackMode;
+using ::chromeos::NetworkConnectionHandler;
 }
 
 #endif  // CHROMEOS_NETWORK_NETWORK_CONNECTION_HANDLER_H_

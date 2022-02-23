@@ -15,7 +15,7 @@
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
@@ -114,8 +114,7 @@ void IpcNetworkManager::OnNetworkListChanged(
   // interfaces discovered.
   std::vector<rtc::Network*> networks;
   for (auto it = list.begin(); it != list.end(); it++) {
-    rtc::IPAddress ip_address =
-        jingle_glue::NetIPAddressToRtcIPAddress(it->address);
+    rtc::IPAddress ip_address = webrtc::NetIPAddressToRtcIPAddress(it->address);
     DCHECK(!ip_address.IsNil());
 
     rtc::IPAddress prefix = rtc::TruncateIP(ip_address, it->prefix_length);
@@ -158,11 +157,11 @@ void IpcNetworkManager::OnNetworkListChanged(
   rtc::IPAddress ipv6_default;
   if (use_default_ipv4_address) {
     ipv4_default =
-        jingle_glue::NetIPAddressToRtcIPAddress(default_ipv4_local_address);
+        webrtc::NetIPAddressToRtcIPAddress(default_ipv4_local_address);
   }
   if (use_default_ipv6_address) {
     ipv6_default =
-        jingle_glue::NetIPAddressToRtcIPAddress(default_ipv6_local_address);
+        webrtc::NetIPAddressToRtcIPAddress(default_ipv6_local_address);
   }
   set_default_local_addresses(ipv4_default, ipv6_default);
 

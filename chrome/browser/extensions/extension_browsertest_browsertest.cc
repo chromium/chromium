@@ -87,11 +87,10 @@ IN_PROC_BROWSER_TEST_P(MultiBackgroundExtensionBrowserTestBrowserTest,
   ExtensionHostQueue::GetInstance().SetCustomDelayForTesting(base::Seconds(0));
 }
 
-// TODO(devlin): Add support for ServiceWorker-based extensions here as well.
-// Currently, we have no good way to wait for the ServiceWorker to be ready.
 INSTANTIATE_TEST_SUITE_P(All,
                          MultiBackgroundExtensionBrowserTestBrowserTest,
                          testing::Values(BackgroundType::kPersistentPage,
-                                         BackgroundType::kLazyPage));
+                                         BackgroundType::kLazyPage,
+                                         BackgroundType::kWorker));
 
 }  // namespace extensions

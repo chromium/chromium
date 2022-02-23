@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/test/test_api_observer.h"
@@ -115,7 +115,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   // extension_id_for_message() accessors can be used.
   // Returns false if the wait is interrupted and we still haven't gotten the
   // message, or if the message was equal to |failure_message_|.
-  bool WaitUntilSatisfied() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitUntilSatisfied();
 
   // Send the given message as a reply. It is only valid to call this after
   // WaitUntilSatisfied has returned true, and if will_reply is true.
@@ -193,7 +193,7 @@ class ExtensionTestMessageListener : public extensions::TestApiObserver {
   std::string extension_id_;
 
   // If non-null, we listen to messages only from this BrowserContext.
-  const content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<const content::BrowserContext> browser_context_ = nullptr;
 
   // The message that signals failure.
   absl::optional<std::string> failure_message_;

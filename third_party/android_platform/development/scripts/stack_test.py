@@ -56,7 +56,7 @@ class FakeSymbolizer:
   def __init__(self, directory):
     self._lib_directory = directory
 
-  def GetSymbolInformation(self, library, address_string):
+  def GetSymbolInformation(self, library, address):
     basename = os.path.basename(library)
     local_file = os.path.join(self._lib_directory, basename)
 
@@ -67,7 +67,6 @@ class FakeSymbolizer:
 
     # If the address isn't in the library, LLVM symbolizer yields ??.
     lib_size = os.stat(local_file).st_size
-    address = int(address_string, 16)
     if address >= lib_size:
       return [('??', '??:0:0')]
 

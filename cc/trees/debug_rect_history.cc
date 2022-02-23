@@ -90,7 +90,7 @@ void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
   // list.
   for (auto* layer : *tree_impl) {
     Region invalidation_region = layer->GetInvalidationRegionForDebugging();
-    if (invalidation_region.IsEmpty() || !layer->DrawsContent())
+    if (invalidation_region.IsEmpty() || !layer->draws_content())
       continue;
 
     for (gfx::Rect rect : invalidation_region) {
@@ -211,7 +211,7 @@ void DebugRectHistory::SaveNonFastScrollableRectsCallback(LayerImpl* layer) {
 
 void DebugRectHistory::SaveMainThreadScrollingReasonRects(
     LayerTreeImpl* tree_impl) {
-  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree;
+  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree();
   for (auto* layer : *tree_impl) {
     if (const auto* scroll_node =
             scroll_tree.FindNodeFromElementId(layer->element_id())) {

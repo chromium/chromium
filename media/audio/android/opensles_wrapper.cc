@@ -19,6 +19,8 @@
 // untouched.
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
+
 #define const
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
@@ -60,7 +62,7 @@ base::NativeLibrary IntializeLibraryHandle() {
   // Attach the symbol name to the proxy address.
   struct SymbolDefinition {
     const char* name;
-    SLInterfaceID* sl_iid;
+    raw_ptr<SLInterfaceID> sl_iid;
   };
 
   // The list of defined symbols.

@@ -258,9 +258,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   // Read through the bytes consumer passed back from the ResourceLoader.
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
-  Vector<char> body;
-  BytesConsumer::Result result;
-  std::tie(result, body) = test_reader->Run(task_runner);
+  auto [result, body] = test_reader->Run(task_runner);
   EXPECT_EQ(result, BytesConsumer::Result::kDone);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   EXPECT_EQ(std::string(body.data(), body.size()), "Hello World!");

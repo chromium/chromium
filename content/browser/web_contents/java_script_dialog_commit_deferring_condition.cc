@@ -43,14 +43,13 @@ JavaScriptDialogCommitDeferringCondition::MaybeCreate(
   if (user_navigation || navigation_request.IsDownload())
     return nullptr;
 
-  return base::WrapUnique(new JavaScriptDialogCommitDeferringCondition(
-      navigation_request, web_contents));
+  return base::WrapUnique(
+      new JavaScriptDialogCommitDeferringCondition(navigation_request));
 }
 
 JavaScriptDialogCommitDeferringCondition::
-    JavaScriptDialogCommitDeferringCondition(NavigationRequest& request,
-                                             WebContentsImpl& web_contents)
-    : web_contents_(web_contents) {}
+    JavaScriptDialogCommitDeferringCondition(NavigationRequest& request)
+    : CommitDeferringCondition(request) {}
 
 JavaScriptDialogCommitDeferringCondition::
     ~JavaScriptDialogCommitDeferringCondition() = default;
@@ -58,13 +57,17 @@ JavaScriptDialogCommitDeferringCondition::
 CommitDeferringCondition::Result
 JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
+  auto* web_contents =
+      static_cast<WebContentsImpl*>(GetNavigationHandle().GetWebContents());
+  DCHECK(web_contents);
+
   // It's possible that, depending on the order deferrals are run, the dialog
   // may have been dismissed by the time we run this check. If that's the
   // case, move on synchronously to the next deferral.
-  if (!web_contents_.JavaScriptDialogDefersNavigations())
+  if (!web_contents->JavaScriptDialogDefersNavigations())
     return Result::kProceed;
 
-  web_contents_.NotifyOnJavaScriptDialogDismiss(std::move(resume));
+  web_contents->NotifyOnJavaScriptDialogDismiss(std::move(resume));
   return Result::kDefer;
 }
 

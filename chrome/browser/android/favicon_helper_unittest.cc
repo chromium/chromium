@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -66,7 +67,7 @@ class FaviconHelperTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   favicon::MockFaviconService mock_favicon_service_;
-  FaviconHelper* favicon_helper_ = new FaviconHelper();
+  raw_ptr<FaviconHelper> favicon_helper_ = new FaviconHelper();
   std::vector<favicon_base::FaviconRawBitmapResult> raw_bitmap_results_;
   favicon_base::FaviconResultsCallback
       get_composed_favicon_raw_results_callback_;

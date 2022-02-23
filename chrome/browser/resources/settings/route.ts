@@ -16,8 +16,10 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
-  if (loadTimeData.getBoolean('privacyReviewEnabled')) {
-    r.PRIVACY_REVIEW = r.PRIVACY.createChild('review');
+  r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
+
+  if (loadTimeData.getBoolean('privacyGuideEnabled')) {
+    r.PRIVACY_GUIDE = r.PRIVACY.createChild('guide');
   }
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
@@ -29,6 +31,14 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
+    if (loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage')) {
+      r.SECURITY_KEYS_PHONES =
+          r.SECURITY_KEYS.createChild('/securityKeys/phones');
+    }
+    // <if expr="is_win">
+  } else if (loadTimeData.getBoolean('enableSecurityKeysPhonesSubpage')) {
+    r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
+    // </if>
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');
@@ -87,7 +97,6 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
       r.SITE_SETTINGS.createChild('windowPlacement');
   r.SITE_SETTINGS_FILE_SYSTEM_WRITE = r.SITE_SETTINGS.createChild('filesystem');
   r.SITE_SETTINGS_FONT_ACCESS = r.SITE_SETTINGS.createChild('fontAccess');
-  r.SITE_SETTINGS_FILE_HANDLING = r.SITE_SETTINGS.createChild('fileHandlers');
 }
 
 /**
@@ -141,12 +150,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.privacy !== false) {
     r.PRIVACY = r.BASIC.createSection('/privacy', 'privacy');
     addPrivacyChildRoutes(r);
-
-    if (loadTimeData.getBoolean('enableLandingPageRedesign')) {
-      r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
-    } else {
-      r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
-    }
   }
 
   // <if expr="not chromeos and not lacros">
@@ -192,7 +195,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     }
     // </if>
 
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos">
     r.SYSTEM = r.ADVANCED.createSection('/system', 'system');
     // </if>
 

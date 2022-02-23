@@ -5,8 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_BASE_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_BASE_H_
 
-#include "base/macros.h"
-
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "services/device/generic_sensor/platform_sensor.h"

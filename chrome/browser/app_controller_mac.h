@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
@@ -33,6 +33,10 @@ class QuitWithAppsController;
 class ScopedKeepAlive;
 @class ShareMenuController;
 class TabMenuBridge;
+
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
 
 // The application controller object, created by loading the MainMenu nib.
 // This handles things like responding to menus when there are no windows
@@ -193,12 +197,26 @@ class TabMenuBridge;
 // the original or the incognito profile.
 - (void)setLastProfile:(Profile*)profile;
 
+// Returns the last active ThemeProvider. It is only valid to call this with a
+// last available profile.
+- (const ui::ThemeProvider&)lastActiveThemeProvider;
+
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:
 //   * In menuNeedsUpdate:, which is called prior to showing the NSMenu.
 //   * In CommandDispatcher, which independently searches for a matching
 //     keyEquivalent.
 - (void)updateMenuItemKeyEquivalents;
+
+// Returns YES if `window` is a normal, tabbed, non-app browser window.
+// Serves as a swizzle point for unit tests to avoid creating Browser
+// instances.
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window;
+
+// Testing API.
+- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setLastProfileForTesting:(Profile*)profile;
 
 @end
 

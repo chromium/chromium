@@ -46,10 +46,6 @@ CHROMEDRIVER_BINARY = os.path.join(OUT_DIR, "chromedriver")
 
 MOJO_JS_PATH = os.path.join(OUT_DIR, "gen")
 
-TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, "external", "wpt")
-
-WPT_BINARY = os.path.join(SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
-
 class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
     @property
@@ -69,7 +65,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
-            WPT_BINARY,
+            self.wpt_binary,
             "--venv=" + SRC_DIR,
             "--skip-venv-setup",
             "run",
@@ -113,7 +109,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # from multiprocessing.cpu_count()
             "--processes=" + self.options.child_processes,
             "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
-            "--tests=" + TESTS_ROOT_DIR,
+            "--tests=" + wpt_common.TESTS_ROOT_DIR,
         ])
         return rest_args
 

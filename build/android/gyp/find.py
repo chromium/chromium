@@ -27,6 +27,7 @@ def main(argv):
     for root, _, filenames in os.walk(d):
       for f in fnmatch.filter(filenames, options.pattern):
         print(os.path.join(root, f))
+  return 0
 
 
 if __name__ == '__main__':

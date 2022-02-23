@@ -14,6 +14,10 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace network {
 
 using ClientHintToNameMap =
@@ -32,14 +36,24 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>>
     COMPONENT_EXPORT(NETWORK_CPP)
         ParseClientHintsHeader(const std::string& header);
 
-// Tries to parse Accept-CH-Lifetime. Returns base::TimeDelta() if unsuccessful.
-base::TimeDelta COMPONENT_EXPORT(NETWORK_CPP)
-    ParseAcceptCHLifetime(const std::string& header);
+struct COMPONENT_EXPORT(NETWORK_CPP) ClientHintToDelegatedThirdPartiesHeader {
+  ClientHintToDelegatedThirdPartiesHeader();
+  ~ClientHintToDelegatedThirdPartiesHeader();
+  ClientHintToDelegatedThirdPartiesHeader(
+      const ClientHintToDelegatedThirdPartiesHeader&);
 
-// Suggest the alternate client hint to use if the checked one is deprecated.
-absl::optional<network::mojom::WebClientHintsType> COMPONENT_EXPORT(NETWORK_CPP)
-    SuggestAlternateClientHintIfDeprecated(
-        const network::mojom::WebClientHintsType type);
+  base::flat_map<network::mojom::WebClientHintsType, std::vector<url::Origin>>
+      map;
+  bool had_invalid_origins{false};
+};
+
+// Tries to parse an Accept-CH header w/ third-party delegation ability (i.e. a
+// named meta tag). Returns absl::nullopt if parsing failed and the header
+// should be ignored; otherwise returns a (possibly empty) map of hints to
+// delegated third-parties.
+absl::optional<const ClientHintToDelegatedThirdPartiesHeader> COMPONENT_EXPORT(
+    NETWORK_CPP)
+    ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header);
 
 }  // namespace network
 

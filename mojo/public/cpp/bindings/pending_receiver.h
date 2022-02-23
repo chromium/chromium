@@ -8,13 +8,17 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/disconnect_reason.h"
+#include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/pending_receiver_state.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -54,19 +58,12 @@ class PendingReceiver {
   PendingReceiver() = default;
   PendingReceiver(PendingReceiver&&) noexcept = default;
 
-  // Temporary implicit move constructor to aid in converting from use of
-  // InterfaceRequest<Interface> to PendingReceiver.
-  PendingReceiver(InterfaceRequest<Interface>&& request)
-      : PendingReceiver(request.PassMessagePipe()) {
-    set_connection_group(request.PassConnectionGroupRef());
-  }
-
   // Constructs a valid PendingReceiver from a valid raw message pipe handle.
   explicit PendingReceiver(ScopedMessagePipeHandle pipe)
       : state_(std::move(pipe)) {}
 
   // Disabled on NaCl since it crashes old version of clang.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom receiver types. Only participates in
   // overload resolution if a typesafe conversion is supported.
   template <
@@ -78,7 +75,7 @@ class PendingReceiver {
   PendingReceiver(T&& other)
       : PendingReceiver(PendingReceiverConverter<T>::template To<Interface>(
             std::forward<T>(other))) {}
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   PendingReceiver(const PendingReceiver&) = delete;
   PendingReceiver& operator=(const PendingReceiver&) = delete;
@@ -86,14 +83,6 @@ class PendingReceiver {
   ~PendingReceiver() = default;
 
   PendingReceiver& operator=(PendingReceiver&&) noexcept = default;
-
-  // Temporary implicit conversion operator to InterfaceRequest<Interface> to
-  // aid in converting usage to PendingReceiver.
-  operator InterfaceRequest<Interface>() && {
-    InterfaceRequest<Interface> request(PassPipe());
-    request.set_connection_group(PassConnectionGroupRef());
-    return request;
-  }
 
   // Indicates whether the PendingReceiver is valid, meaning it can be used to
   // bind a Receiver that wants to begin dispatching method calls made by the
@@ -109,14 +98,25 @@ class PendingReceiver {
 
   // Like above but provides a reason for the disconnection.
   void ResetWithReason(uint32_t reason, const std::string& description) {
-    InterfaceRequest<Interface>(PassPipe())
-        .ResetWithReason(reason, description);
+    if (!is_valid()) {
+      return;
+    }
+
+    Message message =
+        PipeControlMessageProxy::ConstructPeerEndpointClosedMessage(
+            kPrimaryInterfaceId, DisconnectReason(reason, description));
+    MojoResult result =
+        WriteMessageNew(state_.pipe.get(), message.TakeMojoMessage(),
+                        MOJO_WRITE_MESSAGE_FLAG_NONE);
+    DCHECK_EQ(MOJO_RESULT_OK, result);
+
+    reset();
   }
 
   // Passes ownership of this PendingReceiver's message pipe handle. After this
   // call, the PendingReceiver is no longer in a valid state and can no longer
   // be used to bind a Receiver.
-  ScopedMessagePipeHandle PassPipe() WARN_UNUSED_RESULT {
+  [[nodiscard]] ScopedMessagePipeHandle PassPipe() {
     return std::move(state_.pipe);
   }
 
@@ -139,8 +139,8 @@ class PendingReceiver {
   // Creates a new message pipe, retaining one end in the PendingReceiver
   // (making it valid) and returning the other end as its entangled
   // PendingRemote. May only be called on an invalid PendingReceiver.
-  REINITIALIZES_AFTER_MOVE PendingRemote<Interface>
-  InitWithNewPipeAndPassRemote() WARN_UNUSED_RESULT;
+  [[nodiscard]] REINITIALIZES_AFTER_MOVE PendingRemote<Interface>
+  InitWithNewPipeAndPassRemote();
 
   // For internal Mojo use only.
   internal::PendingReceiverState* internal_state() { return &state_; }

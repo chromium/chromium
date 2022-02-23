@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant.generic_ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -20,14 +21,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawableIcon;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
 /** Represents a view background. */
@@ -48,8 +46,8 @@ public abstract class AssistantDrawable {
 
     @CalledByNative
     public static AssistantDrawable createFromUrl(
-            String url, int widthInPixels, int heightInPixels) {
-        return new AssistantBitmapDrawable(url, widthInPixels, heightInPixels);
+            ImageFetcher imageFetcher, String url, int widthInPixels, int heightInPixels) {
+        return new AssistantBitmapDrawable(imageFetcher, url, widthInPixels, heightInPixels);
     }
 
     /** Returns whether {@code resourceId} is a valid resource identifier. */
@@ -80,8 +78,8 @@ public abstract class AssistantDrawable {
 
     @CalledByNative
     public static AssistantDrawable createFromFavicon(
-            GURL url, int diameterSizeInPixel, boolean forceMonogram) {
-        return new AssistantFaviconDrawable(url, diameterSizeInPixel, forceMonogram);
+            LargeIconBridge iconBridge, GURL url, int diameterSizeInPixel, boolean forceMonogram) {
+        return new AssistantFaviconDrawable(iconBridge, url, diameterSizeInPixel, forceMonogram);
     }
 
     private static class AssistantRectangleDrawable extends AssistantDrawable {
@@ -115,14 +113,13 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantBitmapDrawable extends AssistantDrawable {
-        private final ImageFetcher mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
-                        AutofillAssistantUiController.getProfile().getProfileKey());
+        private final ImageFetcher mImageFetcher;
         private final String mUrl;
         private final int mWidthInPixels;
         private final int mHeightInPixels;
 
-        AssistantBitmapDrawable(String url, int width, int height) {
+        AssistantBitmapDrawable(ImageFetcher imageFetcher, String url, int width, int height) {
+            mImageFetcher = imageFetcher;
             mUrl = url;
             mWidthInPixels = width;
             mHeightInPixels = height;
@@ -232,11 +229,14 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantFaviconDrawable extends AssistantDrawable {
+        private final LargeIconBridge mIconBridge;
         private final GURL mUrl;
         private final int mDiameterSizeInPixel;
         private final Boolean mForceMonogram;
 
-        AssistantFaviconDrawable(GURL url, int diameterSizeInPixel, boolean forceMonogram) {
+        AssistantFaviconDrawable(LargeIconBridge iconBridge, GURL url, int diameterSizeInPixel,
+                boolean forceMonogram) {
+            mIconBridge = iconBridge;
             mUrl = url;
             mDiameterSizeInPixel = diameterSizeInPixel;
             mForceMonogram = forceMonogram;
@@ -244,23 +244,35 @@ public abstract class AssistantDrawable {
 
         @Override
         public void getDrawable(Context context, Callback<Drawable> callback) {
-            final LargeIconBridge iconBridge =
-                    new LargeIconBridge(AutofillAssistantUiController.getProfile());
-            iconBridge.getLargeIconForUrl(mUrl, mDiameterSizeInPixel,
-                    (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
+            mIconBridge.getLargeIconForUrl(mUrl, mDiameterSizeInPixel,
+                    (@Nullable Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                             int iconType) -> {
-                        float fontSize = mDiameterSizeInPixel * 7f / 10f;
-                        RoundedIconGenerator roundedIconGenerator =
-                                new RoundedIconGenerator(mDiameterSizeInPixel, mDiameterSizeInPixel,
-                                        mDiameterSizeInPixel / 2,
-                                        ApiCompatibilityUtils.getColor(context.getResources(),
-                                                R.color.default_favicon_background_color),
-                                        fontSize);
-                        Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(
-                                mForceMonogram ? null : icon, mUrl, fallbackColor,
-                                roundedIconGenerator, context.getResources(), mDiameterSizeInPixel);
+                        Resources resources = context.getResources();
+                        boolean useMonogram = mForceMonogram || icon == null;
+
+                        Drawable drawable = useMonogram
+                                ? getMonogramDrawable(mUrl, fallbackColor, resources)
+                                : getDrawableFromFavicon(icon, resources, mDiameterSizeInPixel);
                         callback.onResult(drawable);
                     });
+        }
+
+        private Drawable getMonogramDrawable(GURL url, int fallbackColor, Resources resources) {
+            float fontSize = mDiameterSizeInPixel * 7f / 10f;
+            RoundedIconGenerator roundedIconGenerator = new RoundedIconGenerator(
+                    mDiameterSizeInPixel, mDiameterSizeInPixel, mDiameterSizeInPixel / 2,
+                    ApiCompatibilityUtils.getColor(
+                            resources, R.color.default_favicon_background_color),
+                    fontSize);
+            roundedIconGenerator.setBackgroundColor(fallbackColor);
+            Bitmap icon = roundedIconGenerator.generateIconForUrl(url);
+            return new BitmapDrawable(resources, icon);
+        }
+
+        private Drawable getDrawableFromFavicon(Bitmap icon, Resources resources, int iconSize) {
+            return ViewUtils.createRoundedBitmapDrawable(resources,
+                    Bitmap.createScaledBitmap(icon, iconSize, iconSize, false),
+                    resources.getDimensionPixelSize(R.dimen.default_favicon_corner_radius));
         }
     }
 }

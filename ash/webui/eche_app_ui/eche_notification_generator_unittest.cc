@@ -29,7 +29,6 @@ class MockLaunchAppHelper : public LaunchAppHelper {
   MockLaunchAppHelper& operator=(const MockLaunchAppHelper&) = delete;
 
   // LaunchAppHelper:
-  MOCK_METHOD(bool, IsAppLaunchAllowed, (), (const, override));
   MOCK_METHOD(void,
               ShowNotification,
               (const absl::optional<std::u16string>& title,

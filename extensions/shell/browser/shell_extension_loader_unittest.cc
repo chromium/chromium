@@ -8,7 +8,7 @@
 #include <string>
 
 #include "apps/app_lifetime_monitor_factory.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -139,7 +139,7 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
  private:
   MockExtensionSystemFactory<TestExtensionSystem> factory_;
 
-  TestEventRouter* event_router_ = nullptr;  // Created in SetUp().
+  raw_ptr<TestEventRouter> event_router_ = nullptr;  // Created in SetUp().
 };
 
 // Tests with a non-existent directory.
@@ -314,7 +314,8 @@ TEST_F(ShellExtensionLoaderTestAura, AppLaunchAndReload) {
 }
 
 // Tests failing to reload an app.
-TEST_F(ShellExtensionLoaderTestAura, ReloadFailure) {
+// TODO(crbug.com/1166675): Flaky on Linux, Lacros, ChromeOS, and similar.
+TEST_F(ShellExtensionLoaderTestAura, DISABLED_ReloadFailure) {
   ShellExtensionLoader loader(browser_context());
   ExtensionId extension_id;
 

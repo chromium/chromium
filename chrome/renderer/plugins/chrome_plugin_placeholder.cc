@@ -135,9 +135,9 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
           IDR_BLOCKED_PLUGIN_HTML);
 
   base::DictionaryValue values;
-  values.SetString("name", "");
-  values.SetString("message",
-                   l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
+  values.SetStringKey("name", "");
+  values.SetStringKey("message",
+                      l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
   std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
 
@@ -156,10 +156,10 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     int template_id,
     const std::u16string& message) {
   base::DictionaryValue values;
-  values.SetString("message", message);
-  values.SetString("name", name);
-  values.SetString("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
-  values.SetString(
+  values.SetStringKey("message", message);
+  values.SetStringKey("name", name);
+  values.SetStringKey("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));
+  values.SetStringKey(
       "pluginType",
       render_frame->IsMainFrame() &&
               render_frame->GetWebFrame()->GetDocument().IsPluginDocument()
@@ -228,7 +228,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   std::string mime_type(GetPluginParams().mime_type.Utf8());
 
   ChromeContentRendererClient::GetPluginInfoHost()->GetPluginInfo(
-      routing_id(), GURL(GetPluginParams().url),
+      GetPluginParams().url,
       render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
       &plugin_info);
   if (plugin_info->status == status_)
@@ -238,7 +238,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   ReplacePlugin(new_plugin);
   if (!new_plugin) {
     PluginUMAReporter::GetInstance()->ReportPluginMissing(
-        GetPluginParams().mime_type.Utf8(), GURL(GetPluginParams().url));
+        GetPluginParams().mime_type.Utf8(), GetPluginParams().url);
   }
 }
 

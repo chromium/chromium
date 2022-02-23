@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -68,7 +69,7 @@ class StringDataPipeReader : public mojo::DataPipeDrainer::Client {
   void OnDataComplete() override { std::move(done_callback_).Run(); }
 
  private:
-  std::string* data_out_;
+  raw_ptr<std::string> data_out_;
   base::OnceClosure done_callback_;
 };
 
@@ -373,7 +374,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
 
   testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;

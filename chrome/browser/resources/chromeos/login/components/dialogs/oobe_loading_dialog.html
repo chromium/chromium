@@ -6,11 +6,11 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 
 <link rel="import" href="../behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../oobe_cr_lottie.html">
 <link rel="import" href="../behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="../buttons/oobe_text_button.html">
 <link rel="import" href="../common_styles/common_styles.html">
@@ -33,7 +33,8 @@
       </h1>
       <div slot="subtitle">[[localizeSubtitle_(locale, subtitleKey)]]</div>
       <div slot="content" class="flex layout vertical center center-justified">
-        <cr-lottie id="spinner" animation-url="spinner.json"></cr-lottie>
+        <oobe-cr-lottie id="spinner" animation-url="spinner.json">
+        </oobe-cr-lottie>
       </div>
       <!-- Cancel button -->
       <div slot="bottom-buttons" hidden="[[!canCancel]]"

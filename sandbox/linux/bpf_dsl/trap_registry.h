@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/sandbox_export.h"
 

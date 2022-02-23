@@ -59,5 +59,7 @@ executable("updater_test_process") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_header",
   ]
 }

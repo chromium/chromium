@@ -5,26 +5,19 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 
-#include <windows.h>
-
 #include <vector>
 
 #include <string>
 #include <tuple>
 
-#include "base/macros.h"
+#include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
+#include "base/win/windows_types.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
-#include "sandbox/win/src/sid.h"
-
-// Flags present in the Group SID list. These 2 flags are new in Windows Vista
-#ifndef SE_GROUP_INTEGRITY
-#define SE_GROUP_INTEGRITY (0x00000020L)
-#endif
-#ifndef SE_GROUP_INTEGRITY_ENABLED
-#define SE_GROUP_INTEGRITY_ENABLED (0x00000040L)
-#endif
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -87,21 +80,28 @@ class RestrictedToken {
   // the error.
   //
   // Sample usage:
-  //    std::vector<Sid> sid_exceptions;
-  //    sid_exceptions.push_back(ATL::Sids::Users().GetPSID());
-  //    sid_exceptions.push_back(ATL::Sids::World().GetPSID());
-  //    restricted_token.AddAllSidsForDenyOnly(&sid_exceptions);
+  //    std::vector<base::win::Sid> sid_exceptions;
+  //    sid_exceptions.push_back(*base::win::Sid::FromPSID(psid));
+  //    restricted_token.AddAllSidsForDenyOnly(sid_exceptions);
   // Note: A Sid marked for Deny Only in a token cannot be used to grant
   // access to any resource. It can only be used to deny access.
-  DWORD AddAllSidsForDenyOnly(std::vector<Sid>* exceptions);
+  DWORD AddAllSidsForDenyOnly(const std::vector<base::win::Sid>& exceptions);
 
   // Adds a user or group SID for Deny Only in the restricted token.
   // Parameter: sid is the SID to add in the Deny Only list.
   // The return value is always ERROR_SUCCESS.
   //
   // Sample Usage:
-  //    restricted_token.AddSidForDenyOnly(ATL::Sids::Admins().GetPSID());
-  DWORD AddSidForDenyOnly(const Sid& sid);
+  //    restricted_token.AddSidForDenyOnly(sid);
+  DWORD AddSidForDenyOnly(const base::win::Sid& sid);
+
+  // Adds a known SID for Deny Only in the restricted token.
+  // Parameter: known_sid is the SID to add in the Deny Only list.
+  // The return value is always ERROR_SUCCESS.
+  //
+  // Sample Usage:
+  //    restricted_token.AddSidForDenyOnly(base::win::WellKnownSid::kWorld);
+  DWORD AddSidForDenyOnly(base::win::WellKnownSid known_sid);
 
   // Adds the user sid of the token for Deny Only in the restricted token.
   // If the function succeeds, the return value is ERROR_SUCCESS. If the
@@ -109,32 +109,14 @@ class RestrictedToken {
   // the error.
   DWORD AddUserSidForDenyOnly();
 
-  // Lists all privileges in the token and add them to the list of privileges
-  // to remove except for those present in the exceptions parameter. If
-  // there is no exception needed, the caller can pass an empty list or nullptr
-  // for the exceptions parameter.
+  // Specify to remove all privileges in the restricted token. By default this
+  // will not remove SeChangeNotifyPrivilege, however you can specify true for
+  // |remove_traversal_privilege| to remove that privilege as well.
   //
   // If the function succeeds, the return value is ERROR_SUCCESS. If the
   // function fails, the return value is the win32 error code corresponding to
   // the error.
-  //
-  // Sample usage:
-  //    std::vector<std::wstring> privilege_exceptions;
-  //    privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-  //    restricted_token.DeleteAllPrivileges(&privilege_exceptions);
-  DWORD DeleteAllPrivileges(const std::vector<std::wstring>* exceptions);
-
-  // Adds a privilege to the list of privileges to remove in the restricted
-  // token.
-  // Parameter: privilege is the privilege name to remove. This is the string
-  // representing the privilege. (e.g. "SeChangeNotifyPrivilege").
-  // If the function succeeds, the return value is ERROR_SUCCESS. If the
-  // function fails, the return value is the win32 error code corresponding to
-  // the error.
-  //
-  // Sample usage:
-  //    restricted_token.DeletePrivilege(SE_LOAD_DRIVER_NAME);
-  DWORD DeletePrivilege(const wchar_t* privilege);
+  DWORD DeleteAllPrivileges(bool remove_traversal_privilege);
 
   // Adds a SID to the list of restricting sids in the restricted token.
   // Parameter: sid is the sid to add to the list restricting sids.
@@ -146,7 +128,19 @@ class RestrictedToken {
   // access checks twice. The first time using your user SID and your groups,
   // and the second time using your list of restricting sids. The access has
   // to be granted in both places to get access to the resource requested.
-  DWORD AddRestrictingSid(const Sid& sid);
+  DWORD AddRestrictingSid(const base::win::Sid& sid);
+
+  // Adds a known SID to the list of restricting sids in the restricted token.
+  // Parameter: known_sid is the sid to add to the list restricting sids.
+  // The return value is always ERROR_SUCCESS.
+  //
+  // Sample usage:
+  //    restricted_token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  // Note: The list of restricting is used to force Windows to perform all
+  // access checks twice. The first time using your user SID and your groups,
+  // and the second time using your list of restricting sids. The access has
+  // to be granted in both places to get access to the resource requested.
+  DWORD AddRestrictingSid(base::win::WellKnownSid known_sid);
 
   // Adds the logon sid of the token in the list of restricting sids for the
   // restricted token.
@@ -171,8 +165,8 @@ class RestrictedToken {
   // the error.
   DWORD AddRestrictingSidAllSids();
 
-  // Sets the token integrity level. This is only valid on Vista. The integrity
-  // level cannot be higher than your current integrity level.
+  // Sets the token integrity level. The integrity level cannot be higher than
+  // your current integrity level.
   DWORD SetIntegrityLevel(IntegrityLevel integrity_level);
 
   // Set a flag which indicates the created token should have a locked down
@@ -181,27 +175,38 @@ class RestrictedToken {
 
   // Add a SID to the default DACL. These SIDs are added regardless of the
   // SetLockdownDefaultDacl state.
-  DWORD AddDefaultDaclSid(const Sid& sid,
-                          ACCESS_MODE access_mode,
+  DWORD AddDefaultDaclSid(const base::win::Sid& sid,
+                          SecurityAccessMode access_mode,
+                          ACCESS_MASK access);
+
+  // Add a SID to the default DACL. These SIDs are added regardless of the
+  // SetLockdownDefaultDacl state.
+  DWORD AddDefaultDaclSid(base::win::WellKnownSid known_sid,
+                          SecurityAccessMode access_mode,
                           ACCESS_MASK access);
 
  private:
   // The list of restricting sids in the restricted token.
-  std::vector<Sid> sids_to_restrict_;
-  // The list of privileges to remove in the restricted token.
-  std::vector<LUID> privileges_to_disable_;
+  std::vector<base::win::Sid> sids_to_restrict_;
   // The list of sids to mark as Deny Only in the restricted token.
-  std::vector<Sid> sids_for_deny_only_;
+  std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
-  std::vector<std::tuple<Sid, ACCESS_MODE, ACCESS_MASK>> sids_for_default_dacl_;
+  std::vector<std::tuple<base::win::Sid, SecurityAccessMode, ACCESS_MASK>>
+      sids_for_default_dacl_;
   // The token to restrict. Can only be set in a constructor.
   base::win::ScopedHandle effective_token_;
-  // The token integrity level. Only valid on Vista.
+  // The token in a form for querying.
+  absl::optional<base::win::AccessToken> query_token_;
+  // The token integrity level.
   IntegrityLevel integrity_level_;
   // Tells if the object is initialized or not (if Init() has been called)
   bool init_;
   // Lockdown the default DACL when creating new tokens.
   bool lockdown_default_dacl_;
+  // Delete all privileges except for SeChangeNotifyPrivilege.
+  bool delete_all_privileges_;
+  // Also delete SeChangeNotifyPrivilege if delete_all_privileges_ is true.
+  bool remove_traversal_privilege_;
 };
 
 }  // namespace sandbox

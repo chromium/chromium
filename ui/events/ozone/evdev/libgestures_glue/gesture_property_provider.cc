@@ -405,6 +405,7 @@ const char kConfigurationFilePath[] = "/etc/gesture";
 const char* kSupportedMatchTypes[] = {"MatchProduct",
                                       "MatchDevicePath",
                                       "MatchUSBID",
+                                      "MatchDMIProduct",
                                       "MatchIsPointer",
                                       "MatchIsTouchpad",
                                       "MatchIsTouchscreen"};
@@ -655,6 +656,23 @@ class MatchUSBID : public MatchCriteria {
   std::vector<std::string> pid_patterns_;
 };
 
+// Match a device based on the system's DMI Product Name. Useful for internal
+// devices that don't report a very unique vendor and product ID.
+class MatchDmiProduct : public MatchCriteria {
+ public:
+  // Setting load_error to true indicates that the product name couldn't be
+  // loaded, producing a matcher that will never match.
+  explicit MatchDmiProduct(const std::string& dmi_product_name,
+                           const std::string& arg,
+                           bool load_error = false);
+  ~MatchDmiProduct() override {}
+  bool Match(const DevicePtr device) override;
+
+ private:
+  std::string dmi_product_name_;
+  bool load_error_;
+};
+
 // Generic base class for device type math criteria.
 class MatchDeviceType : public MatchCriteria {
  public:
@@ -783,6 +801,28 @@ bool MatchUSBID::IsValidPattern(const std::string& pattern) {
       ++number_of_colons, pos_of_colon = i;
   return (number_of_colons == 1) && (pos_of_colon != 0) &&
          (pos_of_colon != pattern.size() - 1);
+}
+
+MatchDmiProduct::MatchDmiProduct(const std::string& dmi_product_name,
+                                 const std::string& arg,
+                                 bool load_error)
+    : MatchCriteria(arg),
+      dmi_product_name_(dmi_product_name),
+      load_error_(load_error) {}
+
+bool MatchDmiProduct::Match(const DevicePtr device) {
+  // Default value of a match criteria is true.
+  if (args_.empty())
+    return true;
+
+  if (load_error_)
+    return false;
+
+  for (size_t i = 0; i < args_.size(); ++i) {
+    if (dmi_product_name_ == args_[i])
+      return true;
+  }
+  return false;
 }
 
 MatchDeviceType::MatchDeviceType(const std::string& arg)
@@ -1181,6 +1221,14 @@ GesturePropertyProvider::CreateMatchCriteria(const std::string& match_type,
     return std::make_unique<internal::MatchDevicePath>(arg);
   if (match_type == "MatchUSBID")
     return std::make_unique<internal::MatchUSBID>(arg);
+  if (match_type == "MatchDMIProduct") {
+    if (!dmi_product_name_loaded_ && !LoadDmiProductName()) {
+      // Avoid matching all MatchDMIProduct configs on machines with bad DMI
+      // info, by returning a matcher that will never match.
+      return std::make_unique<internal::MatchDmiProduct>("", arg, true);
+    }
+    return std::make_unique<internal::MatchDmiProduct>(dmi_product_name_, arg);
+  }
   if (match_type == "MatchIsPointer")
     return std::make_unique<internal::MatchIsPointer>(arg);
   if (match_type == "MatchIsTouchpad")
@@ -1189,6 +1237,20 @@ GesturePropertyProvider::CreateMatchCriteria(const std::string& match_type,
     return std::make_unique<internal::MatchIsTouchscreen>(arg);
   NOTREACHED();
   return NULL;
+}
+
+bool GesturePropertyProvider::LoadDmiProductName() {
+  const auto path = base::FilePath("/sys/class/dmi/id/product_name");
+
+  if (!base::ReadFileToString(path, &dmi_product_name_)) {
+    LOG(WARNING) << "Unable to read the DMI product_name.";
+    return false;
+  }
+
+  base::TrimWhitespaceASCII(dmi_product_name_, base::TRIM_ALL,
+                            &dmi_product_name_);
+  dmi_product_name_loaded_ = true;
+  return true;
 }
 
 std::unique_ptr<GesturesProp> GesturePropertyProvider::CreateDefaultProperty(

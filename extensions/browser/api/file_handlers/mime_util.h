@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -72,7 +72,7 @@ class MimeTypeCollector {
   // Called, when the |index|-th input file (or URL) got processed.
   void OnMimeTypeCollected(size_t index, const std::string& mime_type);
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   std::unique_ptr<std::vector<std::string>> result_;
   size_t left_;
   CompletionCallback callback_;

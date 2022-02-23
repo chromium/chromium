@@ -25,16 +25,8 @@
     padding-top: 16px;
   }
 
-  :host(:not([files-ng])) .category {
-    color: #E6E6E6;
-    font-size: 108%;
-    font-weight: 500;
-    margin: 12px 32px;
-    vertical-align: bottom;
-  }
-
-  :host([files-ng]) .category {
-    color: var(--google-grey-200);
+  .category {
+    color: var(--cros-text-color-primary);
     font-family: 'Roboto Medium';
     font-size: 14px;
     line-height: 56px;
@@ -42,13 +34,7 @@
   }
 
   hr {
-    border-color: white;
-    margin-top: 31px;
-    opacity: 0.24;
-  }
-
-  :host([files-ng]) hr {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--cros-separator-color);
     border-top-width: 1px !important;
     border-width: 0;
     margin-bottom: 8px;

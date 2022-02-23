@@ -23,7 +23,6 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "base/trace_event/log_message.h"
 #include "base/trace_event/thread_instruction_count.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_category.h"

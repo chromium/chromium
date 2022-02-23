@@ -10,8 +10,10 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -25,6 +27,7 @@ namespace ash {
 class AppListBubbleEventFilter;
 class AppListBubbleView;
 class AppListControllerImpl;
+enum class AppListSortOrder;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI, as well as bounds computations. Only one bubble
@@ -39,7 +42,14 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubblePresenter& operator=(const AppListBubblePresenter&) = delete;
   ~AppListBubblePresenter() override;
 
-  // Shows the bubble on the display with `display_id`.
+  // Closes the bubble if it is open and prepares for shutdown.
+  void Shutdown();
+
+  // Shows the bubble on the display with `display_id`. The bubble is shown
+  // asynchronously (after a delay) because the continue suggestions need to be
+  // refreshed before the bubble views can be created and animated. This delay
+  // is skipped in unit tests (see TestAppListClient) for convenience. Larger
+  // tests (e.g. browser_tests) may need to wait for the window to open.
   void Show(int64_t display_id);
 
   // Shows or hides the bubble on the display with `display_id`. Returns the
@@ -61,6 +71,13 @@ class ASH_EXPORT AppListBubblePresenter
   // Switches to the assistant page. Requires the bubble to be open.
   void ShowEmbeddedAssistantUI();
 
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // bubble launcher.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
@@ -76,6 +93,10 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
  private:
+  // Callback for zero state search update. Builds the bubble widget and views
+  // on display `display_id` and triggers the show animation.
+  void OnZeroStateSearchDone(int64_t display_id);
+
   // Callback for AppListBubbleEventFilter, used to notify this of presses
   // outside the bubble.
   void OnPressOutsideBubble();
@@ -89,14 +110,18 @@ class ASH_EXPORT AppListBubblePresenter
 
   AppListControllerImpl* const controller_;
 
+  // Whether the view is showing or animating to shown. If true,
+  // `bubble_widget_` is not null.
+  bool is_target_visibility_show_ = false;
+
   // Owned by native widget.
   views::Widget* bubble_widget_ = nullptr;
 
   // Owned by views.
   AppListBubbleView* bubble_view_ = nullptr;
 
-  // Whether the bubble hide animation is playing.
-  bool in_hide_animation_ = false;
+  // The page to show after the views are constructed.
+  AppListBubblePage target_page_ = AppListBubblePage::kApps;
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;

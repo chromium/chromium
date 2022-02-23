@@ -120,7 +120,7 @@ interface Client {
 
 [Exposed=ServiceWorker]
 interface WindowClient : Client {
-  readonly attribute VisibilityState visibilityState;
+  readonly attribute DocumentVisibilityState visibilityState;
   readonly attribute boolean focused;
   [SameObject] readonly attribute FrozenArray<USVString> ancestorOrigins;
   [NewObject] Promise<WindowClient> focus();

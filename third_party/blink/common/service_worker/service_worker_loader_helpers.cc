@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_util.h"
@@ -20,13 +21,15 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "ui/base/page_transition_types.h"
 
 namespace blink {
 namespace {
 
 // Calls |callback| when Blob reading is complete.
-class BlobCompleteCaller : public blink::mojom::BlobReaderClient {
+class BlobCompleteCaller : public mojom::BlobReaderClient {
  public:
   using BlobCompleteCallback = base::OnceCallback<void(int net_error)>;
 
@@ -44,7 +47,7 @@ class BlobCompleteCaller : public blink::mojom::BlobReaderClient {
   BlobCompleteCallback callback_;
 };
 
-void SaveResponseHeaders(const blink::mojom::FetchAPIResponse& response,
+void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
                          network::mojom::URLResponseHead* out_head) {
   // Build a string instead of using HttpResponseHeaders::AddHeader on
   // each header, since AddHeader has O(n^2) performance.
@@ -87,7 +90,7 @@ void SaveResponseHeaders(const blink::mojom::FetchAPIResponse& response,
 
 // static
 void ServiceWorkerLoaderHelpers::SaveResponseInfo(
-    const blink::mojom::FetchAPIResponse& response,
+    const mojom::FetchAPIResponse& response,
     network::mojom::URLResponseHead* out_head) {
   out_head->was_fetched_via_service_worker = true;
   out_head->url_list_via_service_worker = response.url_list;
@@ -147,7 +150,7 @@ ServiceWorkerLoaderHelpers::ComputeRedirectInfo(
 }
 
 int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
-    mojo::Remote<blink::mojom::Blob>* blob,
+    mojo::Remote<mojom::Blob>* blob,
     uint64_t blob_size,
     base::OnceCallback<void(int)> on_blob_read_complete,
     mojo::ScopedDataPipeConsumerHandle* handle_out) {
@@ -155,20 +158,49 @@ int ServiceWorkerLoaderHelpers::ReadBlobResponseBody(
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = blink::BlobUtils::GetDataPipeCapacity(blob_size);
+  options.capacity_num_bytes = BlobUtils::GetDataPipeCapacity(blob_size);
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   MojoResult rv = mojo::CreateDataPipe(&options, producer_handle, *handle_out);
   if (rv != MOJO_RESULT_OK)
     return net::ERR_FAILED;
 
-  mojo::PendingRemote<blink::mojom::BlobReaderClient> blob_reader_client;
+  mojo::PendingRemote<mojom::BlobReaderClient> blob_reader_client;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<BlobCompleteCaller>(std::move(on_blob_read_complete)),
       blob_reader_client.InitWithNewPipeAndPassReceiver());
 
   (*blob)->ReadAll(std::move(producer_handle), std::move(blob_reader_client));
   return net::OK;
+}
+
+// static
+bool ServiceWorkerLoaderHelpers::IsMainRequestDestination(
+    network::mojom::RequestDestination destination) {
+  // When PlzDedicatedWorker is enabled, a dedicated worker script is considered
+  // to be a main resource.
+  if (destination == network::mojom::RequestDestination::kWorker)
+    return base::FeatureList::IsEnabled(features::kPlzDedicatedWorker);
+  return IsRequestDestinationFrame(destination) ||
+         destination == network::mojom::RequestDestination::kSharedWorker;
+}
+
+// static
+const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+    network::mojom::FetchResponseSource source) {
+  // Don't change these returned strings. They are used for recording UMAs.
+  switch (source) {
+    case network::mojom::FetchResponseSource::kUnspecified:
+      return ".Unspecified";
+    case network::mojom::FetchResponseSource::kNetwork:
+      return ".Network";
+    case network::mojom::FetchResponseSource::kHttpCache:
+      return ".HttpCache";
+    case network::mojom::FetchResponseSource::kCacheStorage:
+      return ".CacheStorage";
+  }
+  NOTREACHED();
+  return ".Unknown";
 }
 
 }  // namespace blink

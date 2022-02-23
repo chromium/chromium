@@ -169,16 +169,16 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
 bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
     void* src_data,
     size_t num_elements,
-    CanvasColorSpace src_color_space,
+    PredefinedColorSpace src_color_space,
     ImageDataStorageFormat src_storage_format,
-    CanvasColorSpace dst_color_space,
+    PredefinedColorSpace dst_color_space,
     CanvasPixelFormat dst_canvas_pixel_format,
     std::unique_ptr<uint8_t[]>& converted_pixels,
     PixelFormat pixel_format_for_f16_canvas) {
   skcms_PixelFormat src_pixel_format = skcms_PixelFormat_RGBA_8888;
-  if (src_storage_format == kUint16ArrayStorageFormat) {
+  if (src_storage_format == ImageDataStorageFormat::kUint16) {
     src_pixel_format = skcms_PixelFormat_RGBA_16161616LE;
-  } else if (src_storage_format == kFloat32ArrayStorageFormat) {
+  } else if (src_storage_format == ImageDataStorageFormat::kFloat32) {
     src_pixel_format = skcms_PixelFormat_RGBA_ffff;
   }
 
@@ -192,7 +192,7 @@ bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
   sk_sp<SkColorSpace> src_sk_color_space = nullptr;
   src_sk_color_space =
       CanvasColorParams(src_color_space,
-                        (src_storage_format == kUint8ClampedArrayStorageFormat)
+                        (src_storage_format == ImageDataStorageFormat::kUint8)
                             ? CanvasPixelFormat::kUint8
                             : CanvasPixelFormat::kF16,
                         kNonOpaque)

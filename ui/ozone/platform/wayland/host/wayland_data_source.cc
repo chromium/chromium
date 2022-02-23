@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 
@@ -33,12 +34,33 @@ void DataSource<T>::HandleFinishEvent(bool completed) {
   delegate_->OnDataSourceFinish(completed);
 }
 
+// Writes |data_str| to file descriptor |fd| assuming it is flagged as
+// O_NONBLOCK, which implies in handling EAGAIN, besides EINTR. Returns true
+// iff data is fully written to the given file descriptor. See the link below
+// for more details about non-blocking behavior for 'write' syscall.
+// https://pubs.opengroup.org/onlinepubs/007904975/functions/write.html
+bool WriteDataNonBlocking(int fd, const std::string& data_str) {
+  const char* data = data_str.data();
+  const ssize_t size = base::checked_cast<ssize_t>(data_str.size());
+  ssize_t written = 0;
+  while (written < size) {
+    ssize_t result = write(fd, data + written, size - written);
+    if (result == -1) {
+      if (errno == EINTR || errno == EAGAIN)
+        continue;
+      return false;
+    }
+    written += result;
+  }
+  return true;
+}
+
 template <typename T>
 void DataSource<T>::HandleSendEvent(const std::string& mime_type, int32_t fd) {
   std::string contents;
   delegate_->OnDataSourceSend(mime_type, &contents);
-  bool done = base::WriteFileDescriptor(fd, contents);
-  DCHECK(done);
+  bool done = WriteDataNonBlocking(fd, contents);
+  VPLOG_IF(1, !done) << "Failed to write";
   close(fd);
 }
 

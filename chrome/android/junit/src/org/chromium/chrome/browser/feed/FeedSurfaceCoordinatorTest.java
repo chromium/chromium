@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -43,7 +44,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.feed.hooks.FeedHooks;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -64,11 +64,11 @@ import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -77,13 +77,12 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Tests for {@link FeedSurfaceCoordinator}.
  *
- * EnhancedProtectionPromoCard does not need to be disabled. Its value just need to be set.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-        ChromeFeatureList.WEB_FEED, ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY,
-        ChromeFeatureList.FEED_INTERACTIVE_REFRESH, ChromeFeatureList.FEED_BACK_TO_TOP})
+@Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.WEB_FEED_SORT,
+        ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY, ChromeFeatureList.FEED_INTERACTIVE_REFRESH,
+        ChromeFeatureList.FEED_BACK_TO_TOP})
 @Features.EnableFeatures({ChromeFeatureList.FEED_RELIABILITY_LOGGING})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;
@@ -160,8 +159,6 @@ public class FeedSurfaceCoordinatorTest {
 
     // Mocked xSurface setup.
     @Mock
-    private FeedHooks mFeedHooks;
-    @Mock
     private ProcessScope mProcessScope;
     @Mock
     private SurfaceScope mSurfaceScope;
@@ -234,10 +231,8 @@ public class FeedSurfaceCoordinatorTest {
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
 
-        // XSurface setup.
-        when(mFeedHooks.createProcessScope(any(ProcessScopeDependencyProvider.class)))
-                .thenReturn(mProcessScope);
-        when(mFeedHooks.isEnabled()).thenReturn(true);
+        FeedServiceBridge.setProcessScopeForTesting(mProcessScope);
+
         when(mProcessScope.obtainSurfaceScope(any(SurfaceScopeDependencyProvider.class)))
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideListRenderer()).thenReturn(mRenderer);
@@ -260,6 +255,7 @@ public class FeedSurfaceCoordinatorTest {
         FeedFeatures.setFakePrefsForTest(null);
         FeedSurfaceMediator.setPrefForTest(null, null);
         TemplateUrlServiceFactory.setInstanceForTesting(null);
+        FeedServiceBridge.setProcessScopeForTesting(null);
     }
 
     @Test
@@ -342,6 +338,61 @@ public class FeedSurfaceCoordinatorTest {
                 .logUiStarting(SURFACE_TYPE, SURFACE_CREATION_TIME_NS);
     }
 
+    @Test
+    public void testActivityPaused() {
+        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
+        mCoordinator.onActivityPaused();
+        verify(mLaunchReliabilityLogger, times(1))
+                .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.FRAGMENT_PAUSED.getNumber()));
+    }
+
+    @Test
+    public void testActivityResumed() {
+        mCoordinator.onActivityResumed();
+        verify(mLaunchReliabilityLogger, times(1)).cancelPendingFinished();
+    }
+
+    @Test
+    public void testOmniboxFocused() {
+        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
+        mCoordinator.onOmniboxFocused();
+        verify(mLaunchReliabilityLogger, times(1))
+                .pendingFinished(anyLong(), eq(DiscoverLaunchResult.SEARCH_BOX_TAPPED.getNumber()));
+    }
+
+    @Test
+    public void testVoiceSearch() {
+        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
+        mCoordinator.onVoiceSearch();
+        verify(mLaunchReliabilityLogger, times(1))
+                .pendingFinished(
+                        anyLong(), eq(DiscoverLaunchResult.VOICE_SEARCH_TAPPED.getNumber()));
+    }
+
+    @Test
+    public void testUrlFocusChange() {
+        when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(true);
+        mCoordinator.onUrlFocusChange(/*hasFocus=*/true);
+        verify(mLaunchReliabilityLogger, never()).cancelPendingFinished();
+
+        mCoordinator.onUrlFocusChange(/*hasFocus=*/false);
+        verify(mLaunchReliabilityLogger, times(1)).cancelPendingFinished();
+    }
+
+    @Test
+    public void testSetupHeaders_feedOn() {
+        mCoordinator.setupHeaders(true);
+        // Item count contains: feed header only
+        assertEquals(1, mContentManagerCaptor.getValue().getItemCount());
+    }
+
+    @Test
+    public void testSetupHeaders_feedOff() {
+        mCoordinator.setupHeaders(false);
+        // Item count contains: nothing, since ntp header is null
+        assertEquals(0, mContentManagerCaptor.getValue().getItemCount());
+    }
+
     private boolean hasStreamBound() {
         if (mCoordinator.getMediatorForTesting().getCurrentStreamForTesting() == null) {
             return false;
@@ -359,6 +410,6 @@ public class FeedSurfaceCoordinatorTest {
                         -> { return null; },
                 new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS), null,
                 false, /*viewportView=*/null, mFeedActionDelegate,
-                /*helpAndFeedbackLauncher=*/null, mFeedHooks);
+                /*helpAndFeedbackLauncher=*/null);
     }
 }

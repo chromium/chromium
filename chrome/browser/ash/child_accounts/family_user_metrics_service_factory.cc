@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"

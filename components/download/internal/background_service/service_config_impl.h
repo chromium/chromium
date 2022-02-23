@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SERVICE_CONFIG_IMPL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_SERVICE_CONFIG_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/service_config.h"
 
 namespace download {
@@ -26,7 +27,7 @@ class ServiceConfigImpl : public ServiceConfig {
   const base::TimeDelta& GetFileKeepAliveTime() const override;
 
  private:
-  struct Configuration* config_;
+  raw_ptr<struct Configuration> config_;
 };
 
 }  // namespace download

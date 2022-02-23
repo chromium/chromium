@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -32,8 +33,8 @@ class GetAllUrlsFromHistoryTask : public history::HistoryDBTask {
   ~GetAllUrlsFromHistoryTask() override {}
 
  private:
-  std::vector<std::string>* urls_;
-  base::WaitableEvent* wait_event_;
+  raw_ptr<std::vector<std::string>> urls_;
+  raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 }  // namespace history_report

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_cancel_handler.h"
 

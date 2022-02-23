@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_event.h"
@@ -110,7 +111,7 @@
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -497,6 +498,37 @@ RTCOfferOptionsPlatform* ParseOfferOptions(const Dictionary& options,
   return rtc_offer_options;
 }
 
+bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
+  // Look for an attribute that is present in both old and new SDP
+  // and is modified which is not allowed.
+  String attribute_with_prefix = "\na=" + attribute + ":";
+  const wtf_size_t new_attribute_pos = new_sdp.Find(attribute_with_prefix);
+  if (new_attribute_pos == kNotFound) {
+    return true;
+  }
+  const wtf_size_t old_attribute_pos = old_sdp.Find(attribute_with_prefix);
+  if (old_attribute_pos == kNotFound) {
+    return true;
+  }
+  wtf_size_t old_attribute_end = old_sdp.Find("\r\n", old_attribute_pos + 1);
+  if (old_attribute_end == kNotFound) {
+    old_attribute_end = old_sdp.Find("\n", old_attribute_pos + 1);
+  }
+  wtf_size_t new_attribute_end = new_sdp.Find("\r\n", new_attribute_pos + 1);
+  if (new_attribute_end == kNotFound) {
+    new_attribute_end = new_sdp.Find("\n", new_attribute_pos + 1);
+  }
+  return old_sdp.Substring(old_attribute_pos,
+                           old_attribute_end - old_attribute_pos) !=
+         new_sdp.Substring(new_attribute_pos,
+                           new_attribute_end - new_attribute_pos);
+}
+
+bool IceUfragPwdMismatch(String old_sdp, String new_sdp) {
+  return SdpMismatch(old_sdp, new_sdp, "ice-ufrag") ||
+         SdpMismatch(old_sdp, new_sdp, "ice-pwd");
+}
+
 bool FingerprintMismatch(String old_sdp, String new_sdp) {
   // Check special case of externally generated SDP without fingerprints.
   // It's impossible to generate a valid fingerprint without createOffer
@@ -515,12 +547,12 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
   // line endings ('\r\n' vs, '\n' when looking for the end of the fingerprint).
   wtf_size_t old_fingerprint_end =
       old_sdp.Find("\r\n", old_fingerprint_pos + 1);
-  if (old_fingerprint_end == WTF::kNotFound) {
+  if (old_fingerprint_end == kNotFound) {
     old_fingerprint_end = old_sdp.Find("\n", old_fingerprint_pos + 1);
   }
   wtf_size_t new_fingerprint_end =
       new_sdp.Find("\r\n", new_fingerprint_pos + 1);
-  if (new_fingerprint_end == WTF::kNotFound) {
+  if (new_fingerprint_end == kNotFound) {
     new_fingerprint_end = new_sdp.Find("\n", new_fingerprint_pos + 1);
   }
   return old_sdp.Substring(old_fingerprint_pos,
@@ -1123,6 +1155,10 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationSimulcast);
         }
+        if (IceUfragPwdMismatch(last_offer_, parsed_sdp.sdp())) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationIceUfragPwd);
+        }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
       }
@@ -1137,6 +1173,10 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
         if (ContainsLegacySimulcast(parsed_sdp.sdp())) {
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationSimulcast);
+        }
+        if (IceUfragPwdMismatch(last_answer_, parsed_sdp.sdp())) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationIceUfragPwd);
         }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
@@ -2030,86 +2070,29 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
 }
 
 String RTCPeerConnection::signalingState() const {
-  switch (signaling_state_) {
-    case webrtc::PeerConnectionInterface::SignalingState::kStable:
-      return "stable";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalOffer:
-      return "have-local-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemoteOffer:
-      return "have-remote-offer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveLocalPrAnswer:
-      return "have-local-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kHaveRemotePrAnswer:
-      return "have-remote-pranswer";
-    case webrtc::PeerConnectionInterface::SignalingState::kClosed:
-      return "closed";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(signaling_state_).data());
 }
 
 String RTCPeerConnection::iceGatheringState() const {
-  switch (ice_gathering_state_) {
-    case webrtc::PeerConnectionInterface::kIceGatheringNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceGatheringGathering:
-      return "gathering";
-    case webrtc::PeerConnectionInterface::kIceGatheringComplete:
-      return "complete";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(ice_gathering_state_).data());
 }
 
 String RTCPeerConnection::iceConnectionState() const {
   if (closed_) {
     return "closed";
   }
-  switch (ice_connection_state_) {
-    case webrtc::PeerConnectionInterface::kIceConnectionNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::kIceConnectionChecking:
-      return "checking";
-    case webrtc::PeerConnectionInterface::kIceConnectionConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::kIceConnectionCompleted:
-      return "completed";
-    case webrtc::PeerConnectionInterface::kIceConnectionFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::kIceConnectionDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::kIceConnectionClosed:
-      return "closed";
-    case webrtc::PeerConnectionInterface::kIceConnectionMax:
-      NOTREACHED();
-  }
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(ice_connection_state_).data());
 }
 
 String RTCPeerConnection::connectionState() const {
   if (closed_) {
     return "closed";
   }
-  switch (peer_connection_state_) {
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kNew:
-      return "new";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting:
-      return "connecting";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kConnected:
-      return "connected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected:
-      return "disconnected";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kFailed:
-      return "failed";
-    case webrtc::PeerConnectionInterface::PeerConnectionState::kClosed:
-      return "closed";
-  }
-
-  NOTREACHED();
-  return String();
+  return String(
+      webrtc::PeerConnectionInterface::AsString(peer_connection_state_).data());
 }
 
 absl::optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {

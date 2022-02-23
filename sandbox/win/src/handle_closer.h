@@ -12,7 +12,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/target_process.h"
@@ -72,9 +71,6 @@ class HandleCloser {
 
   HandleMap handles_to_close_;
 };
-
-// Returns the object manager's name associated with a handle
-bool GetHandleName(HANDLE handle, std::wstring* handle_name);
 
 }  // namespace sandbox
 

@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,23 +70,26 @@ bool ParsePrinterId(const std::string& printer_id,
 
 void UpdatePrinterWithExtensionInfo(base::DictionaryValue* printer,
                                     const Extension* extension) {
-  std::string internal_printer_id;
-  CHECK(printer->GetString("id", &internal_printer_id));
-  printer->SetString("id",
-                     GeneratePrinterId(extension->id(), internal_printer_id));
-  printer->SetString("extensionId", extension->id());
-  printer->SetString("extensionName", extension->name());
+  std::string* internal_printer_id = printer->FindStringKey("id");
+  CHECK(internal_printer_id);
+  printer->SetStringKey(
+      "id", GeneratePrinterId(extension->id(), *internal_printer_id));
+  printer->SetStringKey("extensionId", extension->id());
+  printer->SetStringKey("extensionName", extension->name());
 
-  std::u16string printer_name;
-  if (printer->GetString("name", &printer_name) &&
-      base::i18n::AdjustStringForLocaleDirection(&printer_name)) {
-    printer->SetString("name", printer_name);
+  std::string* printer_name = printer->FindStringKey("name");
+  if (printer_name) {
+    std::u16string u16_printer_name = base::UTF8ToUTF16(*printer_name);
+    if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_name))
+      printer->SetStringKey("name", u16_printer_name);
   }
 
-  std::u16string printer_description;
-  if (printer->GetString("description", &printer_description) &&
-      base::i18n::AdjustStringForLocaleDirection(&printer_description)) {
-    printer->SetString("description", printer_description);
+  std::string* printer_description = printer->FindStringKey("description");
+  if (printer_description) {
+    std::u16string u16_printer_description =
+        base::UTF8ToUTF16(*printer_description);
+    if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_description))
+      printer->SetStringKey("description", u16_printer_description);
   }
 }
 
@@ -301,7 +304,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
                            Event* event,
                            const base::DictionaryValue* listener_filter);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   PendingGetPrintersRequests pending_get_printers_requests_;
 

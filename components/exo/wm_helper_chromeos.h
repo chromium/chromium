@@ -93,6 +93,7 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   aura::Window* GetFocusedWindow() const override;
   aura::Window* GetRootWindowForNewWindows() const override;
   aura::client::CursorClient* GetCursorClient() override;
+  aura::client::DragDropClient* GetDragDropClient() override;
   void AddPreTargetHandler(ui::EventHandler* handler) override;
   void PrependPreTargetHandler(ui::EventHandler* handler) override;
   void RemovePreTargetHandler(ui::EventHandler* handler) override;
@@ -125,7 +126,6 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
  private:
   void PerformDrop(
       std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-      const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data,
       ui::mojom::DragOperation& output_drag_op);
 

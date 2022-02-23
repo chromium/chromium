@@ -15,12 +15,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -262,7 +262,7 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
     const GURL& install_url,
     web_app::ExternallyManagedAppManager::InstallResult result) {
   UMA_HISTOGRAM_ENUMERATION("AndroidSms.PWAInstallationResult", result.code);
-  const bool install_succeeded = web_app::IsSuccess(result.code);
+  const bool install_succeeded = webapps::IsSuccess(result.code);
 
   if (!install_succeeded && num_attempts_so_far < kMaxInstallRetryCount) {
     base::TimeDelta retry_delay =
@@ -298,9 +298,9 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
                              num_attempts_so_far + 1, kMaxInstallRetryCount);
 
   // Grant notification permission for the PWA.
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
+  host_content_settings_map_->SetContentSettingDefaultScope(
       app_url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      ContentSetting::CONTENT_SETTING_ALLOW);
 
   std::move(callback).Run(true /* success */);
 }

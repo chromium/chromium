@@ -44,6 +44,7 @@ void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
 // close_display_str is used to show a button, if not specified in proto.
 void ShowInfoPopup(const InfoPopupProto& proto,
                    base::android::ScopedJavaGlobalRef<jobject> jcontext,
+                   base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
                    const std::string& close_display_str);
 
 // Displays a list popup on the screen.

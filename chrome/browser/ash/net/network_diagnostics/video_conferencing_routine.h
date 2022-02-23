@@ -55,7 +55,7 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
   ~VideoConferencingRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -123,7 +123,8 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
     return weak_factory_.GetWeakPtr();
   }
 
-  std::vector<mojom::VideoConferencingProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::VideoConferencingProblem>
+      problems_;
   std::string stun_server_hostname_;
   bool open_udp_port_found_ = false;
   bool open_tcp_port_found_ = false;

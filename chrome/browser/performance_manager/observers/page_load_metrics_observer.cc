@@ -23,7 +23,7 @@
 #include "extensions/browser/process_manager.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #else
 #include "chrome/browser/devtools/devtools_window.h"
@@ -113,7 +113,9 @@ class PageLoadMetricsWebContentsObserver
 
 PageLoadMetricsWebContentsObserver::PageLoadMetricsWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PageLoadMetricsWebContentsObserver>(
+          *web_contents) {
   visible_loads_.fill(0);
   hidden_loads_.fill(0);
 }
@@ -144,7 +146,7 @@ WebContentsType PageLoadMetricsWebContentsObserver::GetWebContentsType() {
 }
 
 bool PageLoadMetricsWebContentsObserver::IsTab() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return !!TabAndroid::FromWebContents(web_contents());
 #else
   return !!chrome::FindBrowserWithWebContents(web_contents());
@@ -166,11 +168,11 @@ bool PageLoadMetricsWebContentsObserver::IsPrerender() const {
           web_contents()->GetBrowserContext());
   if (!no_state_prefetch_manager)
     return false;
-  return no_state_prefetch_manager->IsWebContentsPrerendering(web_contents());
+  return no_state_prefetch_manager->IsWebContentsPrefetching(web_contents());
 }
 
 bool PageLoadMetricsWebContentsObserver::IsDevTools() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return DevToolsWindow::IsDevToolsWindow(web_contents());

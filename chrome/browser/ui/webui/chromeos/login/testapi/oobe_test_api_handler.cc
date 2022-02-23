@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/testapi/oobe_test_api_handler.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -33,15 +39,29 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::AdvanceToScreen);
   AddCallback("OobeTestApi.skipPostLoginScreens",
               &OobeTestAPIHandler::SkipPostLoginScreens);
+  AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
 }
 
 void OobeTestAPIHandler::Initialize() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetBoolean(
+  login::NetworkStateHelper helper_;
+  dict->SetBoolKey(
+      "testapi_shouldSkipNetworkFirstShow",
+      features::IsOobeNetworkScreenSkipEnabled() &&
+          !ash::switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+          helper_.IsConnectedToEthernet());
+  dict->SetBoolKey(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
-          StartupUtils::IsEulaAccepted() || !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+          StartupUtils::IsEulaAccepted() ||
+          features::IsOobeConsolidatedConsentEnabled() ||
+          !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+
+  dict->SetBoolKey("testapi_shouldSkipGuestTos",
+                   StartupUtils::IsEulaAccepted() ||
+                       !features::IsOobeConsolidatedConsentEnabled() ||
+                       !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
@@ -59,6 +79,15 @@ void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
 
 void OobeTestAPIHandler::SkipPostLoginScreens() {
   ash::WizardController::SkipPostLoginScreensForTesting();
+}
+
+void OobeTestAPIHandler::LoginAsGuest() {
+  ash::WizardController::default_controller()
+      ->SkipToLoginForTesting();  // IN-TEST
+  CHECK(ash::ExistingUserController::current_controller());
+  UserContext context(user_manager::USER_TYPE_GUEST, EmptyAccountId());
+  ash::ExistingUserController::current_controller()->Login(context,
+                                                           SigninSpecifics());
 }
 
 }  // namespace chromeos

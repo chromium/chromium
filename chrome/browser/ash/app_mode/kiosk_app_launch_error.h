@@ -7,11 +7,9 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): forward declare AuthFailure when migrated
-// to ash/components/.
-#include "chromeos/login/auth/auth_status_consumer.h"
-
 namespace ash {
+
+class AuthFailure;
 
 class KioskAppLaunchError {
  public:

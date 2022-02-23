@@ -1,0 +1,10 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+test(function(t) {
+  var path2D = new Path2D();
+  path2D.roundRect(0, 0, 10, 10, [10]);
+}, "path2D does not crash with roundRect. crbug.com/1273971");
+</script>
+</body>

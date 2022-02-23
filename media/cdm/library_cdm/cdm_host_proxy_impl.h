@@ -5,6 +5,7 @@
 #ifndef MEDIA_CDM_LIBRARY_CDM_CDM_HOST_PROXY_IMPL_H_
 #define MEDIA_CDM_LIBRARY_CDM_CDM_HOST_PROXY_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
 namespace media {
@@ -116,7 +117,7 @@ class CdmHostProxyImpl : public CdmHostProxy {
   }
 
  private:
-  HostInterface* const host_ = nullptr;
+  const raw_ptr<HostInterface> host_ = nullptr;
 };
 
 }  // namespace media

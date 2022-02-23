@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -145,9 +146,8 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   }
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   properties.enable_keyboard = true;
-  properties.enable_virtual_keyboard = true;
 #endif
 
   return properties;
@@ -584,6 +584,10 @@ void DesktopWindowTreeHostPlatform::ClearNativeFocus() {
   }
 }
 
+bool DesktopWindowTreeHostPlatform::IsMoveLoopSupported() const {
+  return platform_window()->IsClientControlledWindowMovementSupported();
+}
+
 Widget::MoveLoopResult DesktopWindowTreeHostPlatform::RunMoveLoop(
     const gfx::Vector2d& drag_offset,
     Widget::MoveLoopSource source,
@@ -911,7 +915,7 @@ display::Display DesktopWindowTreeHostPlatform::GetDisplayNearestRootWindow()
 // DesktopWindowTreeHost:
 
 // Linux subclasses this host and adds some Linux specific bits.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 // static
 DesktopWindowTreeHost* DesktopWindowTreeHost::Create(
     internal::NativeWidgetDelegate* native_widget_delegate,

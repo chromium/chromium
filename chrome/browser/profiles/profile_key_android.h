@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 
 class ProfileKey;
 
@@ -36,7 +36,7 @@ class ProfileKeyAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
-  ProfileKey* key_;
+  raw_ptr<ProfileKey> key_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 };
 

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/nine_image_painter_factory.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -68,7 +69,7 @@ class FakeRealTimeUploader : public RealTimeUploader {
  private:
   reporting::error::Code code_ = reporting::error::OK;
   std::unique_ptr<reporting::MockReportQueue> mock_report_queue_;
-  reporting::MockReportQueue* mock_report_queue_ptr_;
+  raw_ptr<reporting::MockReportQueue> mock_report_queue_ptr_;
 };
 }  // namespace
 

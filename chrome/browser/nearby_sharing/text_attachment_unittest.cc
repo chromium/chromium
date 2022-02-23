@@ -73,6 +73,6 @@ TEST_P(TextAttachmentTextTitleTest, TextTitleMatches) {
   EXPECT_EQ(GetParam().expected_text_title, attachment.text_title());
 }
 
-INSTANTIATE_TEST_CASE_P(TextAttachmentTextTitleTest,
-                        TextAttachmentTextTitleTest,
-                        testing::ValuesIn(kTextAttachmentTextTitleTestData));
+INSTANTIATE_TEST_SUITE_P(TextAttachmentTextTitleTest,
+                         TextAttachmentTextTitleTest,
+                         testing::ValuesIn(kTextAttachmentTextTitleTestData));

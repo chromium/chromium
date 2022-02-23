@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">A(z) <ph name="SITE_NAME" /> webhely hozzáadva</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1384959399684842514">A letöltés szünetel</translation>
+<translation id="1409426117486808224">A megnyitott lapok egyszerűsített nézete</translation>
 <translation id="1415402041810619267">URL csonkolva</translation>
 <translation id="1446450296470737166">MIDI-eszközök teljes vezérlése</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">Cookie-k engedélyezése</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> eltávolítása</translation>
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
+<translation id="2321958826496381788">Húzza a csúszkát, amíg kényelmesen nem tudja olvasni a szöveget. A szövegnek legalább ekkorának kell lennie, miután duplán koppint egy bekezdésre.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2379925928934107488">A sötét téma alkalmazása a webhelyekre (amikor lehetséges), ha a Chrome-ban sötét téma van beállítva</translation>
+<translation id="2387895666653383613">Szöveg nagyítása</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> engedélyezve}}</translation>
 <translation id="2434158240863470628">Letöltés befejezve <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Mindig az asztali webhely kérése</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2485422356828889247">Eltávolítás</translation>
 <translation id="2490684707762498678">Kezelő: <ph name="APP_NAME" /></translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">Információk megjelenítése</translation>
 <translation id="3123473560110926937">Letiltva egyes webhelyeken</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tárolt adat</translation>
+<translation id="3203366800380907218">Az internetről</translation>
 <translation id="321187648315454507">Ahhoz, hogy a(z) <ph name="APP_NAME" /> értesítéseket küldhessen, az értesítéseket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Az érzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
@@ -109,14 +115,18 @@
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3859306556332390985">Ugrás előre</translation>
+<translation id="3895926599014793903">A nagyítás mindig engedélyezett</translation>
 <translation id="3955193568934677022">Engedélyezi a webhelyek számára a védett tartalmak lejátszását (ajánlott)</translation>
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3991845972263764475">? / <ph name="BYTES_DOWNLOADED_WITH_UNITS" /></translation>
 <translation id="4002066346123236978">Cím</translation>
 <translation id="4008040567710660924">Adott webhely cookie-jainak engedélyezése.</translation>
+<translation id="4040330681741629921">Értesítés megjelenítése, ha az adott webhely megjeleníthető egyszerűsített négyzetben</translation>
 <translation id="4046123991198612571">Következő szám</translation>
+<translation id="4149994727733219643">Weboldalak egyszerűsített nézete</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
+<translation id="4194328954146351878">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az NFC-eszközökön található információk megtekintését és az ilyen eszközökkel való információcserét (ajánlott)</translation>
 <translation id="4200726100658658164">Helybeállítások megnyitása</translation>
 <translation id="4226663524361240545">Az értesítések miatt rezeghet az eszköz</translation>
 <translation id="4259722352634471385">Le van tiltva az ide vezető navigáció: <ph name="URL" /></translation>
@@ -125,6 +135,7 @@
 <translation id="42981349822642051">Kibontás</translation>
 <translation id="4336434711095810371">Az összes adat törlése</translation>
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
+<translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="445467742685312942">Védett tartalmak lejátszásának engedélyezése a webhelyek számára</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
@@ -148,11 +159,14 @@
 <translation id="5048398596102334565">A mozgásérzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="5050380848339752099">A webhely adatokat kíván megosztani az inkognitó módon kívüli alkalmazással.</translation>
 <translation id="5063480226653192405">Használat</translation>
+<translation id="509133520954049755">Asztali nézet kérelmezése</translation>
 <translation id="5100237604440890931">Összecsukva – kattintson a kibontáshoz.</translation>
 <translation id="5123685120097942451">Inkognitó lap</translation>
+<translation id="5134599672855298214">Mobilos nézet kérelmezése (ajánlott)</translation>
 <translation id="5186036860380548585">A lehetőség a képernyő tetején található</translation>
 <translation id="5197729504361054390">A kiválasztott névjegyeket megosztjuk a következő webhellyel: <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Utolsó látogatás: ma</translation>
+<translation id="5264323282659631142">„<ph name="CHIP_LABEL" />“ eltávolítása</translation>
 <translation id="528192093759286357">A teljes képernyős megjelenítésből való kilépéshez húzza le felülről, majd koppintson a vissza gombra.</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5301954838959518834">Rendben, értem</translation>
@@ -163,6 +177,7 @@
 <translation id="5354152178998424783">Ezzel <ph name="DATASIZE" />-nyi, webhelyek által tárolt adatot és cookie-t töröl.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
 <translation id="5403592356182871684">Nevek</translation>
+<translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
 <translation id="5438097262470833822">Ezzel visszaállítja a(z) <ph name="WEBSITE" /> webhelyhez tartozó engedélyeket.</translation>
 <translation id="5489227211564503167">Eltelt idő: <ph name="ELAPSED_TIME" />, ennyiből: <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Hirdetések letiltása a tolakodó és félrevezető hirdetéseket megjelenítő webhelyeken</translation>
@@ -174,10 +189,10 @@
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
+<translation id="5668404140385795438">Felülbírálja a webhely kérelmét, mely megakadályozná a nagyítást</translation>
 <translation id="5677928146339483299">Letiltva</translation>
 <translation id="5689516760719285838">Tartózkodási hely</translation>
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
-<translation id="5710871682236653961">Kérdezzen rá, mielőtt engedélyezi a webhelyek számára az adatok küldését és fogadását, amikor NFC-eszközökre koppint (javasolt)</translation>
 <translation id="5719847187258001597">Ezzel törli a(z) <ph name="ORIGIN" /> vagy az alkalmazása által tárolt összes adatot és cookie-t a kezdőképernyőn.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> letiltva</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -227,16 +242,16 @@
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
-<translation id="6910211073230771657">Törölve</translation>
 <translation id="6912998170423641340">A vágólapon található szövegek és képek megtekintésének letiltása a webhelyek számára</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6992289844737586249">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a mikrofon használatát (ajánlott)</translation>
 <translation id="7000754031042624318">Kikapcsolva az Android beállításaiban</translation>
 <translation id="7016516562562142042">Engedélyezett a jelenlegi keresőmotor számára</translation>
+<translation id="702463548815491781">Ajánlott, amikor a TalkBack vagy a Kapcsolóalapú hozzáférés be van kapcsolva</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elem kijelölve}other{# elem kijelölve}}</translation>
-<translation id="7070090581017165256">A webhelyről</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elem kiválasztva. A lehetőségek a képernyő tetején találhatók.</translation>
 <translation id="7141896414559753902">Előugró ablakok és átirányítások letiltása a webhelyeken (ajánlott)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
@@ -251,8 +266,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>
 <translation id="7561196759112975576">Mindig</translation>
-<translation id="7572498721684305250">Adatok küldésének és fogadásának letiltása a webhelyek számára, amikor NFC-eszközökre koppint</translation>
 <translation id="757524316907819857">Védett tartalom lejátszásának letiltása a webhelyeken</translation>
+<translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7781829728241885113">Tegnap</translation>
@@ -285,6 +300,7 @@
 <translation id="8211406090763984747">A kapcsolat biztonságos</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
+<translation id="8284326494547611709">Feliratok</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
 <translation id="8324158725704657629">Ne jelenjen meg többé</translation>
 <translation id="8372893542064058268">Háttérben történő szinkronizálás engedélyezése adott webhely esetében.</translation>
@@ -298,6 +314,7 @@
 <translation id="8447861592752582886">Eszközengedély visszavonása</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie van használatban}other{# cookie van használatban}}</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
+<translation id="848952951823693243">Mindig a mobilwebhely kérése</translation>
 <translation id="851751545965956758">Az eszközökhöz való csatlakozás megtiltása a webhelyeknek</translation>
 <translation id="8525306231823319788">Teljes képernyő</translation>
 <translation id="857943718398505171">Engedélyezve (ajánlott)</translation>
@@ -317,6 +334,7 @@
 <translation id="8903921497873541725">Nagyítás</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Az NFC ki van kapcsolva ezen az eszközön. Kapcsolja be az <ph name="BEGIN_LINK" />Android Beállítások alkalmazásában<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">NFC-eszközökön található információk megtekintésének és az ilyen eszközökkel való információcserének a tiltása a webhelyek számára</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Adott webhely cookie-jainak letiltása.</translation>
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>

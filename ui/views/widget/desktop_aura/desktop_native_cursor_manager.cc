@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/cursor/cursor_loader.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace views {
@@ -87,6 +87,11 @@ void DesktopNativeCursorManager::SetMouseEventsEnabled(
 
   for (auto* host : hosts_)
     host->dispatcher()->OnMouseEventsEnableStateChanged(enabled);
+}
+
+void DesktopNativeCursorManager::InitCursorSizeObserver(
+    wm::NativeCursorManagerDelegate* delegate) {
+  NOTREACHED();
 }
 
 }  // namespace views

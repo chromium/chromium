@@ -6,14 +6,33 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "url/url_constants.h"
 
 namespace {
+
+// Various schemes which we use and which are not defined anywhere.
+const char kChromeScheme[] = "chrome";
+const char kChromeUrlPrefix[] = "chrome://";
+const char kChromeUntrustedScheme[] = "chrome-untrusted";
+
+const char kFileManagerHost[] = "file-manager";
+
+// Checks if a given URL is a valid file manager URL (trusted or untrusted).
+bool IsFileManagerUrl(const GURL& url) {
+  return url.has_host() && url.host() == kFileManagerHost && url.has_scheme() &&
+         (url.scheme() == kChromeScheme ||
+          url.scheme() == kChromeUntrustedScheme);
+}
 
 // Show a chrome:// (os://) app for a given URL.
 void ShowOsAppForProfile(Profile* profile,
@@ -28,6 +47,14 @@ void ShowOsAppForProfile(Profile* profile,
   // screen profile) then bail out.
   if (Browser::GetCreationStatusForProfile(profile) !=
       Browser::CreationStatus::kOk) {
+    return;
+  }
+
+  Browser* browser = web_app::FindSystemWebAppBrowser(profile, app_type,
+                                                      Browser::TYPE_APP, gurl);
+  if (browser) {
+    // If there is a matching browser we simply activate it and be done!
+    browser->window()->Activate();
     return;
   }
 
@@ -52,47 +79,54 @@ void UrlHandlerAsh::BindReceiver(
 }
 
 void UrlHandlerAsh::OpenUrl(const GURL& url) {
+  OpenUrlInternal(url);
+}
+
+bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
+  GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+  GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
+      url, /*include_path=*/false);
   // Settings will be handled.
-  if (url.DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUIOSSettingsURL).DeprecatedGetOriginAsURL()) {
+  if (short_target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
     chrome::SettingsWindowManager* settings_window_manager =
         chrome::SettingsWindowManager::GetInstance();
     settings_window_manager->ShowChromePageForProfile(
-        ProfileManager::GetPrimaryUserProfile(), url,
+        ProfileManager::GetPrimaryUserProfile(), target_url,
         display::kInvalidDisplayId);
-    return;
+    return true;
   }
 
-  // The following two handlers are mapping to system OS URls which have their
-  // own favicon and with it their own place in the shelf.
+  web_app::SystemAppType app_id;
 
-  // Handle the os://flags and/or chrome://flags url as an app in Ash using a
-  // special icon and shelf seat.
-  if (url.DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUIFlagsURL).DeprecatedGetOriginAsURL()) {
-    ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), url,
-                        web_app::SystemAppType::OS_FLAGS);
-    return;
+  // As there are different apps which need to be driven by some URLs, the
+  // following code does pick the proper app for a given URL.
+  // TODO: As Chrome_web_ui_controller_factory gets refactored, this function
+  // should get refactored as well to improve long term stability.
+  if (target_url == GURL(chrome::kChromeUIFlagsURL) ||
+      target_url == GURL(chrome::kOsUIFlagsURL)) {
+    app_id = web_app::SystemAppType::OS_FLAGS;
+    target_url = GURL(chrome::kChromeUIFlagsURL);
+  } else if (target_url == GURL(chrome::kChromeUIUntrustedCroshURL)) {
+    app_id = web_app::SystemAppType::CROSH;
+  } else if (IsFileManagerUrl(target_url)) {
+    app_id = web_app::SystemAppType::FILE_MANAGER;
+  } else if (target_url == GURL(chrome::kChromeUIScanningAppURL)) {
+    app_id = web_app::SystemAppType::SCANNING;
+  } else if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+                 target_url)) {
+    app_id = web_app::SystemAppType::OS_URL_HANDLER;
+    if (crosapi::gurl_os_handler_utils::IsAshOsUrl(target_url)) {
+      target_url =
+          GURL(kChromeUrlPrefix +
+               crosapi::gurl_os_handler_utils::AshOsUrlHost(target_url));
+    }
+  } else {
+    LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl:" << url;
+    return false;
   }
-
-  // Handle the os://crosh and/or chrome-untrusted://crosh url as an app.
-  if (url.DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUIOsCroshAppURL).DeprecatedGetOriginAsURL()) {
-    ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(),
-                        GURL(chrome::kChromeUIUntrustedCroshURL),
-                        web_app::SystemAppType::CROSH);
-    return;
-  }
-
-  // Handle a list of os://<url> and/or chrome://<url> url's, combined in one
-  // icon and shelf seat.
-  // TODO(crbug/1256481): Only accept URL's from the Ash supplied allow list.
-  if (url.DeprecatedGetOriginAsURL() ==
-      GURL(chrome::kChromeUIVersionURL).DeprecatedGetOriginAsURL()) {
-    ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), url,
-                        web_app::SystemAppType::OS_URL_HANDLER);
-    return;
-  }
+  ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), target_url,
+                      app_id);
+  return true;
 }
 
 }  // namespace crosapi

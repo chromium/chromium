@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -129,7 +130,40 @@ public class ThemeUtils {
         // Light toolbar theme colors may be used in night mode, so use toolbar_icon_tint_dark which
         // is not overridden in night- resources.
         return useLight ? R.color.default_icon_color_light_tint_list
-                        : R.color.toolbar_icon_tint_dark;
+                        : R.color.default_icon_color_dark_tint_list;
+    }
+
+    /**
+     * Returns the themed toolbar icon tint list.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return Primary icon tint list.
+     */
+    public static ColorStateList getThemedToolbarIconTint(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        return AppCompatResources.getColorStateList(
+                context, getThemedToolbarIconTintRes(brandedColorScheme));
+    }
+
+    /**
+     * Returns the themed toolbar icon tint resource.
+     *
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return Primary icon tint resource.
+     */
+    public static @ColorRes int getThemedToolbarIconTintRes(
+            @BrandedColorScheme int brandedColorScheme) {
+        @ColorRes
+        int colorId = R.color.default_icon_color_tint_list;
+        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
+            colorId = R.color.default_icon_color_light_tint_list;
+        } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
+            colorId = R.color.default_icon_color_dark_tint_list;
+        } else if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
+            colorId = R.color.default_icon_color_white_tint_list;
+        }
+        return colorId;
     }
 
     /**

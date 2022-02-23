@@ -7,9 +7,11 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/chromeos/eche_app/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -102,13 +105,14 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const char* kNoPinAppIds[] = {
       file_manager::kAudioPlayerAppId,
       extension_misc::kFeedbackExtensionId,
-      chromeos::eche_app::kEcheAppId,
+      ash::eche_app::kEcheAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
 
   const std::string policy_value_for_id =
       GetPolicyValueFromAppId(app_id, profile);
+  const GURL policy_value_gurl(policy_value_for_id);
 
   if (ash::DemoSession::Get() &&
       !ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
@@ -116,12 +120,13 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     return AppListControllerDelegate::PIN_EDITABLE;
   }
 
-  const base::ListValue* policy_apps =
+  const base::Value* policy_apps =
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
   if (!policy_apps)
     return AppListControllerDelegate::PIN_EDITABLE;
 
-  for (const base::Value& policy_dict_entry : policy_apps->GetList()) {
+  for (const base::Value& policy_dict_entry :
+       policy_apps->GetListDeprecated()) {
     if (!policy_dict_entry.is_dict())
       return AppListControllerDelegate::PIN_EDITABLE;
 
@@ -132,6 +137,14 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 
     if (policy_value_for_id == *policy_entry)
       return AppListControllerDelegate::PIN_FIXED;
+
+    // For web apps, the string equality might not be perfect since
+    // policy_value_for_id was stored as GURL and converted back.
+    // For example, example.org vs. example.org/
+    if (policy_value_gurl.is_valid() &&
+        policy_value_gurl.EqualsIgnoringRef(GURL(*policy_entry))) {
+      return AppListControllerDelegate::PIN_FIXED;
+    }
   }
 
   return AppListControllerDelegate::PIN_EDITABLE;
@@ -158,22 +171,18 @@ void PinAppWithIDToShelf(const std::string& app_id) {
   auto* shelf_model = shelf_controller->shelf_model();
   if (shelf_model->ItemIndexByAppID(app_id) >= 0) {
     shelf_model->PinExistingItemWithID(app_id);
-    return;
-  }
-
-  ash::ShelfItem item;
-  std::unique_ptr<ash::ShelfItemDelegate> delegate;
-  bool result = shelf_controller->shelf_item_factory()->CreateShelfItemForAppId(
-      app_id, &item, &delegate);
-  if (result) {
-    item.type = ash::TYPE_PINNED_APP;
-    shelf_model->Add(item, std::move(delegate));
+  } else {
+    shelf_model->AddAndPinAppWithFactoryConstructedDelegate(app_id);
   }
 }
 
 void UnpinAppWithIDFromShelf(const std::string& app_id) {
   auto* shelf_controller = ChromeShelfController::instance();
   shelf_controller->shelf_model()->UnpinAppWithID(app_id);
+}
+
+bool IsAppWithIDPinnedToShelf(const std::string& app_id) {
+  return ChromeShelfController::instance()->shelf_model()->IsAppPinned(app_id);
 }
 
 apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
@@ -191,5 +200,23 @@ apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
       return apps::mojom::LaunchSource::kFromAppListRecommendation;
     case ash::LAUNCH_FROM_SHELF:
       return apps::mojom::LaunchSource::kFromShelf;
+  }
+}
+
+bool BrowserAppShelfControllerShouldHandleApp(const std::string& app_id,
+                                              Profile* profile) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetInstance()->GetForProfile(profile);
+  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  switch (app_type) {
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return true;
+    default:
+      return false;
   }
 }

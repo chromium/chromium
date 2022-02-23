@@ -5,7 +5,7 @@
 #ifndef WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_H_
 #define WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
@@ -42,7 +42,7 @@ class WebLayerBrowserTest : public content::BrowserTestBase {
   content::BrowserContext* GetBrowserContext();
 
  private:
-  Shell* shell_ = nullptr;
+  raw_ptr<Shell> shell_ = nullptr;
   bool start_in_incognito_mode_ = false;
 };
 

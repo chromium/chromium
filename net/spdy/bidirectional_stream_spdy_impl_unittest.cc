@@ -260,6 +260,13 @@ class BidirectionalStreamSpdyImplTest : public testing::TestWithParam<bool>,
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
   }
 
+  bool IsBrokenConnectionDetectionEnabled() const {
+    if (!session_)
+      return false;
+
+    return session_->IsBrokenConnectionDetectionEnabled();
+  }
+
  protected:
   void TearDown() override {
     if (sequenced_data_) {
@@ -537,6 +544,70 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   EXPECT_THAT(delegate->error(), IsError(ERR_UNEXPECTED));
   EXPECT_TRUE(delegate->on_failed_called());
   EXPECT_EQ(is_test_sendv ? 2 : 4, delegate->on_data_sent_count());
+}
+
+TEST_F(BidirectionalStreamSpdyImplTest, RequestDetectBrokenConnection) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
+      kDefaultUrl, 1, kBodyDataSize, LOW, nullptr, 0));
+  spdy::SpdySerializedFrame data_frame(spdy_util_.ConstructSpdyDataFrame(
+      1, base::StringPiece(kBodyData, kBodyDataSize), /*fin=*/true));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+      CreateMockWrite(data_frame, 3),
+  };
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
+  spdy::SpdySerializedFrame response_body_frame(
+      spdy_util_.ConstructSpdyDataFrame(1, /*fin=*/true));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1),
+      MockRead(ASYNC, ERR_IO_PENDING, 2),  // Force a pause.
+      CreateMockRead(response_body_frame, 4),
+      MockRead(ASYNC, 0, 5),
+  };
+  InitSession(reads, writes);
+  EXPECT_FALSE(IsBrokenConnectionDetectionEnabled());
+
+  BidirectionalStreamRequestInfo request_info;
+  request_info.method = "POST";
+  request_info.url = default_url_;
+  request_info.extra_headers.SetHeader(net::HttpRequestHeaders::kContentLength,
+                                       base::NumberToString(kBodyDataSize));
+  request_info.detect_broken_connection = true;
+  request_info.heartbeat_interval = base::Seconds(1);
+
+  scoped_refptr<IOBuffer> read_buffer =
+      base::MakeRefCounted<IOBuffer>(kReadBufferSize);
+  auto delegate = std::make_unique<TestDelegateBase>(
+      session_, read_buffer.get(), kReadBufferSize);
+  delegate->SetRunUntilCompletion(true);
+  delegate->Start(&request_info, net_log_with_source_);
+  sequenced_data_->RunUntilPaused();
+
+  // Since we set request_info.detect_broken_connection to true, this should be
+  // enabled for the bidi stream lifetime.
+  EXPECT_TRUE(IsBrokenConnectionDetectionEnabled());
+
+  scoped_refptr<StringIOBuffer> write_buffer =
+      base::MakeRefCounted<StringIOBuffer>(
+          std::string(kBodyData, kBodyDataSize));
+  delegate->SendData(write_buffer.get(), write_buffer->size(), true);
+  sequenced_data_->Resume();
+  base::RunLoop().RunUntilIdle();
+  delegate->WaitUntilCompletion();
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(delegate->GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info);
+
+  EXPECT_EQ(1, delegate->on_data_read_count());
+  EXPECT_EQ(1, delegate->on_data_sent_count());
+  EXPECT_EQ(kProtoHTTP2, delegate->GetProtocol());
+  EXPECT_EQ(CountWriteBytes(writes), delegate->GetTotalSentBytes());
+  EXPECT_EQ(CountReadBytes(reads), delegate->GetTotalReceivedBytes());
+
+  delegate.reset();
+  // Once the bidi stream has been destroyed this should go back to being
+  // disabled.
+  EXPECT_FALSE(IsBrokenConnectionDetectionEnabled());
 }
 
 }  // namespace net

@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/android/locale_utils.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -26,7 +26,7 @@ TestContentClient::TestContentClient() {
   // content_shell.pak is not built on iOS as it is not required.
   base::FilePath content_shell_pack_path;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // on Android all pak files are inside the paks folder.
   CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA,
                                &content_shell_pack_path));
@@ -34,14 +34,14 @@ TestContentClient::TestContentClient() {
       FILE_PATH_LITERAL("paks"));
 #else
   CHECK(base::PathService::Get(base::DIR_ASSETS, &content_shell_pack_path));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Add the content_shell main pak file.
   content_shell_pack_path =
       content_shell_pack_path.Append(FILE_PATH_LITERAL("content_shell.pak"));
 
   if (!ui::ResourceBundle::HasSharedInstance()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         base::android::GetDefaultLocaleString(), NULL,
         ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);

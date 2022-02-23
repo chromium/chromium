@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -18,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -29,7 +31,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_util.h"
 #include "content/public/common/drop_data.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -334,6 +335,9 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
 
   if (borealis::BorealisWindowManager::IsBorealisWindow(top_level_window))
     return ui::EndpointType::kBorealis;
+
+  if (crosapi::browser_util::IsLacrosWindow(top_level_window))
+    return ui::EndpointType::kLacros;
 
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;

@@ -21,7 +21,7 @@ std::string NormalizeSignalingId(const std::string& id);
 //   * changing to lowercase
 //   * removing all dots if this is a gmail.com or googlemail.com domain
 //   * normalize email domain googlemail.com to gmail.com
-std::string GetCanonicalEmail(std::string email);
+std::string GetCanonicalEmail(const std::string& email);
 
 // Splits a signaling ID into a the email and a resource suffix.  Either
 // |full_id|, |resource|, or both may be null.  If |full_id| is already an email

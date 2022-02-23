@@ -126,44 +126,21 @@ void AllocateExtraSpace(std::vector<gfx::Rect>* bounds,
   }
 }
 
-TabWidthOverride CalculateTabWidthOverride(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& tabs,
-    int width) {
-  TabSizer tab_sizer =
-      CalculateSpaceFractionAvailable(layout_constants, tabs, width);
-
-  int next_leading_x = 0;
-  std::vector<gfx::Rect> bounds;
-  for (const TabWidthConstraints& tab : tabs) {
-    const int tab_width = tab_sizer.CalculateTabWidth(tab);
-    next_leading_x += tab_width - layout_constants.tab_overlap;
-  }
-
-  const int trailing_x = next_leading_x + layout_constants.tab_overlap;
-
-  return TabWidthOverride{tab_sizer, width - trailing_x};
-}
-
 std::vector<gfx::Rect> CalculateTabBounds(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
-    absl::optional<int> width,
-    absl::optional<TabWidthOverride> tab_width_override) {
+    absl::optional<int> width) {
   if (tabs.empty())
     return std::vector<gfx::Rect>();
 
   TabSizer tab_sizer =
-      tab_width_override.has_value()
-          ? tab_width_override->sizer
-          : CalculateSpaceFractionAvailable(layout_constants, tabs, width);
+      CalculateSpaceFractionAvailable(layout_constants, tabs, width);
 
   int next_x = 0;
   std::vector<gfx::Rect> bounds;
   for (const TabWidthConstraints& tab : tabs) {
     const int tab_width = tab_sizer.CalculateTabWidth(tab);
-    bounds.push_back(
-        gfx::Rect(next_x, 0, tab_width, layout_constants.tab_height));
+    bounds.emplace_back(next_x, 0, tab_width, layout_constants.tab_height);
     next_x += tab_width - layout_constants.tab_overlap;
   }
 
@@ -171,9 +148,7 @@ std::vector<gfx::Rect> CalculateTabBounds(
       width.has_value()
           ? absl::make_optional(width.value() - bounds.back().right())
           : absl::nullopt;
-  const absl::optional<int> extra_space = tab_width_override.has_value()
-                                              ? tab_width_override->extra_space
-                                              : calculated_extra_space;
+  const absl::optional<int> extra_space = calculated_extra_space;
   AllocateExtraSpace(&bounds, tabs, extra_space, tab_sizer);
 
   return bounds;

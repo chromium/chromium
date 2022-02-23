@@ -19,7 +19,7 @@
 
 namespace gpu {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace {
 
 // clang-format off
@@ -176,6 +176,6 @@ TEST_P(GLCopyTexImage2DWorkaroundTest, UseIntermediaryTexture) {
   }
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace gpu

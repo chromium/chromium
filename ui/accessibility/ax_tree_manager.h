@@ -20,6 +20,7 @@ class AX_EXPORT AXTreeManager {
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
   // own tree. Returns nullptr if |tree_id| or |node_id| is not found.
+  // TODO(kschmi): Remove |tree_id| parameter, as it's unnecessary.
   virtual AXNode* GetNodeFromTree(const AXTreeID tree_id,
                                   const AXNodeID node_id) const = 0;
 

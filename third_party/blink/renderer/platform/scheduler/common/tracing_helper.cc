@@ -11,26 +11,6 @@ namespace scheduler {
 
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
-constexpr const char TracingCategoryName::kTopLevel[];
-constexpr const char TracingCategoryName::kDefault[];
-constexpr const char TracingCategoryName::kInfo[];
-constexpr const char TracingCategoryName::kDebug[];
-
-namespace internal {
-
-void ValidateTracingCategory(const char* category) {
-  // Category must be a constant defined in tracing helper because there's no
-  // portable way to use string literals as a template argument.
-  // Unfortunately, static_assert won't work with templates either because
-  // inequality (!=) of linker symbols is undefined in compile-time.
-  DCHECK(category == TracingCategoryName::kTopLevel ||
-         category == TracingCategoryName::kDefault ||
-         category == TracingCategoryName::kInfo ||
-         category == TracingCategoryName::kDebug);
-}
-
-}  // namespace internal
-
 double TimeDeltaToMilliseconds(const base::TimeDelta& value) {
   return value.InMillisecondsF();
 }

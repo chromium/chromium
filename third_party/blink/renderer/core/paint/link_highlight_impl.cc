@@ -32,7 +32,6 @@
 #include "base/memory/ptr_util.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -47,7 +46,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -55,7 +54,6 @@
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
@@ -165,8 +163,8 @@ LinkHighlightImpl::LinkHighlightFragment::PaintContentsToDisplayList() {
   cc::PaintCanvas* canvas =
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
 
-  PaintFlags flags;
-  flags.setStyle(PaintFlags::kFill_Style);
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
   flags.setColor(color_.Rgb());
   canvas->drawPath(path_.GetSkPath(), flags);
@@ -282,11 +280,11 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
                            !object->FirstFragment().NextFragment();
 
   wtf_size_t index = 0;
-  for (const auto* fragment = &object->FirstFragment(); fragment;
-       fragment = fragment->NextFragment(), ++index) {
-    ScopedDisplayItemFragment scoped_fragment(context, index);
-    auto rects = object->OutlineRects(
-        fragment->PaintOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  for (FragmentDataIterator iterator(*object); !iterator.IsDone(); index++) {
+    const auto* fragment = iterator.GetFragmentData();
+    ScopedDisplayItemFragment scoped_fragment(context, fragment->FragmentID());
+    Vector<PhysicalRect> rects = object->CollectOutlineRectsAndAdvance(
+        NGOutlineType::kIncludeBlockVisualOverflow, iterator);
     if (rects.size() > 1)
       use_rounded_rects = false;
 
@@ -306,7 +304,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
 
     Path new_path;
     for (auto& rect : rects) {
-      FloatRect snapped_rect(PixelSnappedIntRect(rect));
+      gfx::RectF snapped_rect(ToPixelSnappedRect(rect));
       if (use_rounded_rects) {
         constexpr float kRadius = 3;
         new_path.AddRoundedRect(FloatRoundedRect(snapped_rect, kRadius));

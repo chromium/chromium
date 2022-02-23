@@ -4,21 +4,53 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-ContainerQuery::ContainerQuery(const AtomicString& name,
-                               scoped_refptr<MediaQuerySet> media_queries)
-    : name_(name),
-      media_queries_(media_queries),
-      queried_axes_(media_queries->QueriedAxes()) {}
+String ContainerSelector::ToString() const {
+  StringBuilder builder;
+
+  if (!name_.IsNull()) {
+    if (type_)
+      builder.Append("name(");
+    builder.Append(name_);
+    if (type_)
+      builder.Append(") ");
+  }
+
+  if (type_) {
+    DCHECK_NE(type_ & kContainerTypeSize, kContainerTypeBlockSize);
+
+    builder.Append("type(");
+    if ((type_ & kContainerTypeSize) == kContainerTypeSize) {
+      builder.Append("size");
+    } else if (type_ & kContainerTypeInlineSize) {
+      builder.Append("inline-size");
+    }
+    builder.Append(")");
+  }
+
+  return builder.ReleaseString();
+}
+
+ContainerQuery::ContainerQuery(const ContainerSelector& selector,
+                               std::unique_ptr<MediaQueryExpNode> query)
+    : selector_(selector), query_(std::move(query)) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
-    : media_queries_(other.media_queries_->Copy()),
-      queried_axes_(other.queried_axes_) {}
+    : selector_(other.selector_), query_(other.query_->Copy()) {}
 
 String ContainerQuery::ToString() const {
-  return media_queries_->MediaText();
+  return query_->Serialize();
+}
+
+ContainerQuery* ContainerQuery::CopyWithParent(
+    const ContainerQuery* parent) const {
+  ContainerQuery* copy = MakeGarbageCollected<ContainerQuery>(*this);
+  copy->parent_ = parent;
+  return copy;
 }
 
 }  // namespace blink

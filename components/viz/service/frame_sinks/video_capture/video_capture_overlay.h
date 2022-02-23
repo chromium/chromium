@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -45,7 +46,7 @@ namespace viz {
 // future, unaffected by later image, size, or color space settings changes.
 //
 // The blit algorithm uses naive linear blending. Thus, the use of non-linear
-// color spaces will cause loses in color accuracy.
+// color spaces will cause losses in color accuracy.
 class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
     : public mojom::FrameSinkVideoCaptureOverlay {
  public:
@@ -91,12 +92,30 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   void SetImageAndBounds(const SkBitmap& image, const gfx::RectF& bounds) final;
   void SetBounds(const gfx::RectF& bounds) final;
 
+  struct CapturedFrameProperties {
+    // The entire size of the compositor frame on the surface. This should be
+    // the maximum possible capturable surface size.
+    gfx::Rect compositor_region;
+
+    // The sub region of the compositor frame selected for capture. Should be in
+    // the same coordinate system as |compositor_region| as a subset of pixels.
+    // If sub_region == compositor_region, then the entire frame surface is
+    // being captured.
+    gfx::Rect sub_region;
+
+    // Ultimately the overlay gets outputted onto a video frame with a region
+    // of |content_region|.
+    gfx::Rect content_region;
+
+    // The frame's pixel format.
+    media::VideoPixelFormat format;
+  };
+
   // Returns a OnceCallback that, when run, renders this VideoCaptureOverlay on
   // a VideoFrame. The overlay's position and size are computed based on the
   // given content |region_in_frame|. Returns a null OnceCallback if there is
   // nothing to render at this time.
-  OnceRenderer MakeRenderer(const gfx::Rect& region_in_frame,
-                            const media::VideoPixelFormat frame_format);
+  OnceRenderer MakeRenderer(const CapturedFrameProperties& properties);
 
   // Returns a OnceCallback that renders all of the given |overlays| in
   // order. The remaining arguments are the same as in MakeRenderer(). This is a
@@ -105,8 +124,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   // nothing to render at this time.
   static OnceRenderer MakeCombinedRenderer(
       const std::vector<VideoCaptureOverlay*>& overlays,
-      const gfx::Rect& region_in_frame,
-      const media::VideoPixelFormat frame_format);
+      const CapturedFrameProperties& properties);
 
  private:
   // Transforms the overlay SkBitmap image by scaling and converting its color
@@ -162,7 +180,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   // re-rendering the overlay.
   gfx::Rect ComputeSourceMutationRect() const;
 
-  FrameSource* const frame_source_;
+  const raw_ptr<FrameSource> frame_source_;
 
   mojo::Receiver<mojom::FrameSinkVideoCaptureOverlay> receiver_;
 

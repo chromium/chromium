@@ -26,7 +26,7 @@ is used by default when clang is used.
 
 If you're working on the plugin, you can build it locally like so:
 
-1.  Run `./tools/clang/scripts/build.py --without-android`
+1.  Run `./tools/clang/scripts/build.py --without-android --without-fuchsia`
     to build the plugin.
 1.  Run `ninja -C third_party/llvm-build/Release+Asserts/` to build incrementally.
 1.  Build with clang like described above, but, if you use goma, disable it.
@@ -34,8 +34,7 @@ If you're working on the plugin, you can build it locally like so:
 To test the FindBadConstructs plugin, run:
 
     (cd tools/clang/plugins/tests && \
-     ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang \
-               ../../../../third_party/llvm-build/Release+Asserts/lib/libFindBadConstructs.so)
+     ./test.py ../../../../third_party/llvm-build/Release+Asserts/bin/clang)
 
 Since the plugin is rolled with clang changes, behavior changes to the plugin
 should be guarded by flags to make it easy to roll clang. A general outline:
@@ -100,3 +99,6 @@ trying to build with is closer to clang trunk than to Chromium's pinned clang
 
 * [Clang Sheriffing](clang_sheriffing.md) contains instructions for how to debug
   compiler bugs, for clang sheriffs.
+
+* [Clang Tool Refactoring](clang_tool_refactoring.md) has notes on how to build
+  and run refactoring tools based on clang's libraries.

@@ -10,7 +10,7 @@ from pylib.utils import test_filter
 class JunitTestInstance(test_instance.TestInstance):
 
   def __init__(self, args, _):
-    super(JunitTestInstance, self).__init__()
+    super().__init__()
 
     self._coverage_dir = args.coverage_dir
     self._debug_socket = args.debug_socket

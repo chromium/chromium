@@ -106,14 +106,17 @@ if you call IAccessible::get_accRole, it returns ROLE_SYSTEM_DOCUMENT,
 and if you call IAccessible::get_accName, it returns "How old are you?".
 Other methods let you walk the tree.
 
+The Linux accessibility API, [ATK](https://gnome.pages.gitlab.gnome.org/atk/),
+is similar to [IAccessible2](https://wiki.linuxfoundation.org/accessibility/iaccessible2/start),
+aka IA2. Historical note: IA2 was developed to extend MSAA/IAccessible to add
+richer document support, in a way that was harmonious with ATK, in order to
+simplify implementing them both within the same product. Both APIs are
+maintained by the Linux Foundation.
+
 On macOS, the root node implements the NSAccessibility protocol and
 if you call [NSAccessibility accessibilityRole], it returns @"AXWebArea",
 and if you call [NSAccessibility accessibilityLabel], it returns
 "How old are you?".
-
-The Linux accessibility API, ATK, is more similar to the Windows APIs;
-they were developed together. (Chrome's support for desktop Linux
-accessibility is unfinished.)
 
 The Android accessibility API is of course based on Java. The main
 data structure is AccessibilityNodeInfo. It doesn't have a role, but
@@ -205,10 +208,13 @@ Developers can inspect the accessibility tree in several ways:
 and inspecting a tree directly. Note that you may want to enable the
 'Internal' option. Click 'show accessibility tree' for a particular tab,
 then click again to refresh that tree.
-* Using the [https://developer.chrome.com/extensions/automation](
-Automation API).
-* Installing the [https://github.com/google/automation-inspector](
-Automation Inspector Chrome extension).
+* Using the [Automation API](
+https://developer.chrome.com/extensions/automation).
+* Installing the [Automation Inspector Chrome extension](
+https://github.com/google/automation-inspector).
+* Building and using [ax_dump_tree or ax_dump_events](tools/accessibility/inspect/README.md).
+These can be used to view accessibility trees and events from any application on
+Windows, Mac or Linux.
 * Or by using native tools:
 
   - Android: UIAutomatorViewer
@@ -522,7 +528,7 @@ is defined by [automation.idl], which must be kept synchronized with
 
 For more detail on Chrome web contents and platform accessibility, read [How Chrome Accessibility Works](browser/how_a11y_works.md).
 
-# TODO(accessibility): write os equiavlent how does Chrome os a11y work.
+For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Works](os/how_a11y_works.md).
 
 [ax.mojom.AXActionData]: https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/mojom/ax_action_data.mojom;l=13
 [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=47

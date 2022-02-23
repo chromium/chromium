@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
@@ -30,7 +31,10 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
     kIncomplete = 1,
     // Compositor reported a failure after a tab switch.
     kPresentationFailure = 2,
-    kMaxValue = kPresentationFailure,
+    // TabWasShown called twice for a frame without TabWasHidden between. Treat
+    // the first TabWasShown as an incomplete tab switch.
+    kMissedTabHide = 3,
+    kMaxValue = kMissedTabHide,
   };
 
   ContentToVisibleTimeReporter();
@@ -43,8 +47,7 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // callback to invoke the next time a frame is presented for this tab.
   base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
       bool has_saved_frames,
-      mojom::RecordContentToVisibleTimeRequestPtr start_state,
-      base::TimeTicks widget_visibility_request_timestamp);
+      mojom::RecordContentToVisibleTimeRequestPtr start_state);
 
   base::OnceCallback<void(const gfx::PresentationFeedback&)> TabWasShown(
       bool has_saved_frames,
@@ -52,17 +55,20 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       bool destination_is_loaded,
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
-      bool show_reason_bfcache_restore,
-      base::TimeTicks widget_visibility_request_timestamp);
+      bool show_reason_bfcache_restore);
 
   // Indicates that the tab associated with this recorder was hidden. If no
   // frame was presented since the last tab switch, failure is reported to UMA.
   void TabWasHidden();
 
  private:
-  // Records histograms and trace events for the current tab switch.
+  bool IsTabSwitchMetric2FeatureEnabled();
+
+  // Records histograms and trace events for the current tab switch. If
+  // `tab_switch_result` is kSuccess but `feedback` contains a failure flag, the
+  // result will be overridden with kPresentationFailure.
   void RecordHistogramsAndTraceEvents(
-      bool is_incomplete,
+      TabSwitchResult tab_switch_result,
       bool show_reason_tab_switching,
       bool show_reason_unoccluded,
       bool show_reason_bfcache_restore,
@@ -75,12 +81,8 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // no incomplete tab switch.
   mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
 
-  // The widget visibility request timestamp for the last tab switch, or null
-  // if there is no incomplete tab switch.
-  base::TimeTicks widget_visibility_request_timestamp_;
-
   // Cache the feature value for faster lookups.
-  bool is_tab_switch_metric2_feature_enabled_;
+  absl::optional<bool> is_tab_switch_metric2_feature_enabled_;
 
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
 };

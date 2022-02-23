@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -128,7 +127,7 @@ class SysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
 
   // |scenic_overlay_view_| view should be used and deleted on the same thread
   // as creation.

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "ui/gfx/geometry/size.h"
 

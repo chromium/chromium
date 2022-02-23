@@ -67,7 +67,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // the TaskQueue already had a pending immediate task.
     // The implementation may use this to:
     // - Restrict task execution by inserting/updating a fence.
-    // - Update the TaskQueue's next delayed wake up via UpdateDelayedWakeUp().
+    // - Update the TaskQueue's next delayed wake up via UpdateWakeUp().
     //   This allows the Throttler to perform additional operations later from
     //   OnWakeUp().
     // This is always called on the thread this TaskQueue is associated with.
@@ -82,9 +82,9 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // tasks or ripe delayed tasks. The implementation should return the next
     // allowed wake up, or nullopt if no future wake-up is necessary.
     // This is always called on the thread this TaskQueue is associated with.
-    virtual absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+    virtual absl::optional<WakeUp> GetNextAllowedWakeUp(
         LazyNow* lazy_now,
-        absl::optional<DelayedWakeUp> next_desired_wake_up,
+        absl::optional<WakeUp> next_desired_wake_up,
         bool has_ready_task) = 0;
 
    protected:
@@ -280,7 +280,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // such tasks (immediate tasks don't count) or the queue is disabled it
   // returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
+  absl::optional<WakeUp> GetNextDesiredWakeUp();
 
   // Can be called on any thread.
   virtual const char* GetName() const;
@@ -356,7 +356,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Updates the task queue's next wake up time in its time domain, taking into
   // account the desired run time of queued tasks and policies enforced by the
   // throttler if any.
-  void UpdateDelayedWakeUp(LazyNow* lazy_now);
+  void UpdateWakeUp(LazyNow* lazy_now);
 
   // Controls whether or not the queue will emit traces events when tasks are
   // posted to it while disabled. This only applies for the current or next
@@ -378,8 +378,8 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   }
 
   // Checks whether or not this TaskQueue has a TaskQueueImpl.
-  // TODO(kdillon): Remove this method when TaskQueueImpl inherits from
-  // TaskQueue and TaskQueue no longer owns an Impl.
+  // TODO(crbug.com/1143007): Remove this method when TaskQueueImpl inherits
+  // from TaskQueue and TaskQueue no longer owns an Impl.
   bool HasImpl() { return !!impl_; }
 
   using OnTaskStartedHandler =
@@ -401,12 +401,29 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // finalize the task, and use the resulting timing.
   void SetOnTaskCompletedHandler(OnTaskCompletedHandler handler);
 
-  // Set a callback for adding custom functionality for processing posted task.
+  // RAII handle associated with an OnTaskPostedHandler. Unregisters the handler
+  // upon destruction.
+  class OnTaskPostedCallbackHandle {
+   public:
+    OnTaskPostedCallbackHandle(const OnTaskPostedCallbackHandle&) = delete;
+    OnTaskPostedCallbackHandle& operator=(const OnTaskPostedCallbackHandle&) =
+        delete;
+    virtual ~OnTaskPostedCallbackHandle() = default;
+
+   protected:
+    OnTaskPostedCallbackHandle() = default;
+  };
+
+  // Add a callback for adding custom functionality for processing posted task.
   // Callback will be dispatched while holding a scheduler lock. As a result,
   // callback should not call scheduler APIs directly, as this can lead to
   // deadlocks. For example, PostTask should not be called directly and
-  // ScopedDeferTaskPosting::PostOrDefer should be used instead.
-  void SetOnTaskPostedHandler(OnTaskPostedHandler handler);
+  // ScopedDeferTaskPosting::PostOrDefer should be used instead. `handler` must
+  // not be a null callback. Must be called on the thread this task queue is
+  // associated with, and the handle returned must be destroyed on the same
+  // thread.
+  [[nodiscard]] std::unique_ptr<OnTaskPostedCallbackHandle>
+  AddOnTaskPostedHandler(OnTaskPostedHandler handler);
 
   // Set a callback to fill trace event arguments associated with the task
   // execution.

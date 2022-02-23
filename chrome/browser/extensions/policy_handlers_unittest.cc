@@ -23,7 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -48,14 +48,28 @@ const char kTestManagementPolicy2[] =
     "    \"installation_mode\": \"blocked\","
     "  },"
     "}";
-#if defined(OS_WIN)
-const char kSanitizedTestManagementPolicy2[] =
+
+const char kSensitiveTestManagementPolicy[] = R"({
+  "[BLOCKED]abcdefghijklmnopabcdefghijklmnop": {
+    "installation_mode": "force_installed",
+    "update_url": "https://example.com/app",
+  },
+  "[BLOCKED]abcdefghijklmnopabcdefghijklmnpo,
+    abcdefghijklmnopabcdefghijklmopn": {
+      "installation_mode": "normal_installed",
+      "update_url": "https://example.com/app",
+  },
+  "*": {
+    "installation_mode": "blocked",
+  },
+})";
+
+const char kSanitizedTestManagementPolicy[] =
     "{"
     "  \"*\": {"
     "    \"installation_mode\": \"blocked\","
     "  },"
     "}";
-#endif  // defined(OS_WIN)
 
 const char kTestManagementPolicy3[] =
     "{"
@@ -86,6 +100,9 @@ const char kSanitizedTestManagementPolicy5[] =
     "    \"toolbar_pin\": \"force_pinned\""
     "  },"
     "}";
+
+constexpr int kJsonParseOptions =
+    base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS;
 
 TEST(ExtensionListPolicyHandlerTest, CheckPolicySettings) {
   base::ListValue list;
@@ -142,8 +159,8 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsURL) {
   auto url_parses_successfully = [](const char* policy_template,
                                     const std::string& url) {
     std::string policy = base::StringPrintf(policy_template, url.c_str());
-    absl::optional<base::Value> policy_value = base::JSONReader::Read(
-        policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    absl::optional<base::Value> policy_value =
+        base::JSONReader::Read(policy, kJsonParseOptions);
     if (!policy_value)
       return false;
 
@@ -381,9 +398,8 @@ TEST(ExtensionURLPatternListPolicyHandlerTest, ApplyPolicySettings) {
 
 TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettings) {
   base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kTestManagementPolicy1,
-          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy1,
+                                                    kJsonParseOptions);
   ASSERT_TRUE(policy_result.value) << policy_result.error_message;
 
   policy::Schema chrome_schema =
@@ -427,8 +443,8 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
       base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
 
   std::string error;
-  auto policy_value = base::JSONReader::ReadAndReturnValueWithError(
-      policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  auto policy_value =
+      base::JSONReader::ReadAndReturnValueWithError(policy, kJsonParseOptions);
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
   policy::PolicyMap policy_map;
@@ -455,15 +471,10 @@ TEST(ExtensionSettingsPolicyHandlerTest, CheckPolicySettingsTooManyHosts) {
 }
 
 TEST(ExtensionSettingsPolicyHandlerTest, ApplyPolicySettings) {
-// Mark as enterprise managed.
-#if defined(OS_WIN)
-  base::win::ScopedDomainStateForTesting scoped_domain(true);
-#endif
-
+  // Mark as enterprise managed.
   base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kTestManagementPolicy2,
-          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy2,
+                                                    kJsonParseOptions);
   ASSERT_TRUE(policy_result.value) << policy_result.error_message;
 
   policy::Schema chrome_schema =
@@ -489,15 +500,13 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
   // the settings apply correctly.
 
   base::JSONReader::ValueWithError policy_result =
-      base::JSONReader::ReadAndReturnValueWithError(
-          kTestManagementPolicy5,
-          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      base::JSONReader::ReadAndReturnValueWithError(kTestManagementPolicy5,
+                                                    kJsonParseOptions);
   ASSERT_TRUE(policy_result.value) << policy_result.error_message;
 
   base::JSONReader::ValueWithError stripped_policy_result =
       base::JSONReader::ReadAndReturnValueWithError(
-          kSanitizedTestManagementPolicy5,
-          base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+          kSanitizedTestManagementPolicy5, kJsonParseOptions);
   ASSERT_TRUE(stripped_policy_result.value)
       << stripped_policy_result.error_message;
 
@@ -526,19 +535,14 @@ TEST(ExtensionSettingsPolicyHandlerTest, DropInvalidKeys) {
 
 // Only enterprise managed machines can auto install extensions from a location
 // other than the webstore https://crbug.com/809004.
-#if defined(OS_WIN)
 TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   // Mark as not enterprise managed.
-  base::win::ScopedDomainStateForTesting scoped_domain(false);
-
   auto policy_result = base::JSONReader::ReadAndReturnValueWithError(
-      kTestManagementPolicy2,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      kSensitiveTestManagementPolicy, kJsonParseOptions);
   ASSERT_TRUE(policy_result.value) << policy_result.error_message;
 
   auto sanitized_policy_result = base::JSONReader::ReadAndReturnValueWithError(
-      kSanitizedTestManagementPolicy2,
-      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      kSanitizedTestManagementPolicy, kJsonParseOptions);
   ASSERT_TRUE(sanitized_policy_result.value)
       << sanitized_policy_result.error_message;
 
@@ -561,6 +565,5 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   ASSERT_TRUE(prefs.GetValue(pref_names::kExtensionManagement, &value));
   EXPECT_EQ(*sanitized_policy_result.value, *value);
 }
-#endif
 
 }  // namespace extensions

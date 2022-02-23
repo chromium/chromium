@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/attestation/attestation_flow_utils.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -132,7 +132,7 @@ class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
   ~OobeConfigurationEnrollmentTest() override = default;
 
  protected:
-  LocalPolicyTestServerMixin policy_server_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
   // We need fake gaia to fetch device local account tokens.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
@@ -168,13 +168,13 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
 // Check that configuration lets correctly select a network by GUID.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
 }
 
 // Check that configuration would proceed if there is a connected network.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectConnectedNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
 }
 
 // Check that configuration would not proceed with connected network if
@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestAcceptEula) {
 // beginning.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDeviceRequisition) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
+
   EXPECT_EQ(policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
             "some_requisition");
 }

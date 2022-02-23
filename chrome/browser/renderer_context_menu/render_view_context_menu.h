@@ -12,14 +12,14 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/share/share_submenu_model.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -43,6 +43,7 @@
 #endif
 
 class AccessibilityLabelsMenuObserver;
+class Browser;
 class ClickToCallContextMenuObserver;
 class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
@@ -86,8 +87,9 @@ class DlpRulesManager;
 }  // namespace policy
 #endif
 
-class RenderViewContextMenu : public RenderViewContextMenuBase,
-                              public ProtocolHandlerRegistry::Observer {
+class RenderViewContextMenu
+    : public RenderViewContextMenuBase,
+      public custom_handlers::ProtocolHandlerRegistry::Observer {
  public:
   using ExecutePluginActionCallback =
       base::OnceCallback<void(content::RenderFrameHost*,
@@ -231,7 +233,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   void AppendPasswordItems();
   void AppendPictureInPictureItem();
   void AppendSharingItems();
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
 #endif
   void AppendSharedClipboardItem();
@@ -300,10 +302,16 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
 
   // Returns a list of registered ProtocolHandlers that can handle the clicked
   // on URL.
-  ProtocolHandlerRegistry::ProtocolHandlerList GetHandlersForLinkUrl();
+  custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
+  GetHandlersForLinkUrl();
 
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override;
+
+  // Cleans |link_to_text_menu_observer_|. It is useful to clean unused
+  // resources as |RenderViewContextMenu| gets destroyed only with next context
+  // menu is opened.
+  void OnLinkToTextMenuCompleted();
 
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
@@ -317,10 +325,10 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // - The submenu containing the installed protocol handlers.
   ui::SimpleMenuModel protocol_handler_submenu_model_;
   // - The registry with the protocols.
-  ProtocolHandlerRegistry* protocol_handler_registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> protocol_handler_registry_;
   // - The observation of the registry.
-  base::ScopedObservation<ProtocolHandlerRegistry,
-                          ProtocolHandlerRegistry::Observer>
+  base::ScopedObservation<custom_handlers::ProtocolHandlerRegistry,
+                          custom_handlers::ProtocolHandlerRegistry::Observer>
       protocol_handler_registry_observation_{this};
   // - Whether or not the registered protocols have changed since the menu was
   //   built.
@@ -335,19 +343,22 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This
   // submenu lets users select the spelling language, for example.
   std::unique_ptr<SpellingOptionsSubMenuObserver>
       spelling_options_submenu_observer_;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // An observer that handles "Open with <app>" items.
   std::unique_ptr<RenderViewContextMenuObserver> open_with_menu_observer_;
   // An observer that handles smart text selection action items.
   std::unique_ptr<RenderViewContextMenuObserver>
       start_smart_selection_action_menu_observer_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<QuickAnswersMenuObserver> quick_answers_menu_observer_;
 #endif
 
@@ -361,7 +372,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
   // |source_web_contents_|.
-  content::WebContents* const embedder_web_contents_;
+  const raw_ptr<content::WebContents> embedder_web_contents_;
 
   // Send tab to self submenu.
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
@@ -379,7 +390,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
       shared_clipboard_context_menu_observer_;
 
   // The system app (if any) associated with the WebContents we're in.
-  const web_app::SystemWebAppDelegate* system_app_ = nullptr;
+  raw_ptr<const web_app::SystemWebAppDelegate> system_app_ = nullptr;
 
   // A one-time callback that will be called the next time a plugin action is
   // executed from a given render frame.
@@ -395,6 +406,8 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
 #endif
+
+  base::WeakPtrFactory<RenderViewContextMenu> weak_pointer_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_H_

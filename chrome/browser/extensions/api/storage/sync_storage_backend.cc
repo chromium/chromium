@@ -177,7 +177,7 @@ absl::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     base::DictionaryValue*& settings = grouped_sync_data[data.extension_id()];
     if (!settings)
       settings = new base::DictionaryValue();
-    DCHECK(!settings->HasKey(data.key()))
+    DCHECK(!settings->FindKey(data.key()))
         << "Duplicate settings for " << data.extension_id() << "/"
         << data.key();
     settings->SetKey(data.key(),

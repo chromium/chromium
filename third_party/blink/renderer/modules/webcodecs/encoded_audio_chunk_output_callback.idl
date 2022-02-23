@@ -6,4 +6,4 @@
 
 [RuntimeEnabled=WebCodecs]
 callback EncodedAudioChunkOutputCallback =
-  void(EncodedAudioChunk output, EncodedAudioChunkMetadata metadata);
+  void(EncodedAudioChunk output, optional EncodedAudioChunkMetadata metadata = {});

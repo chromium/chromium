@@ -116,7 +116,7 @@ class AccountsCookieMutator {
   // know that the contents of the Gaia cookie might have changed.
   virtual void TriggerCookieJarUpdate() = 0;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Forces the processing of GaiaCookieManagerService::OnCookieChange. On
   // iOS, it's necessary to force-trigger the processing of cookie changes
   // from the client as the normal mechanism for internally observing them

@@ -171,8 +171,9 @@ AutomationHandler::AutomationHandler() = default;
 AutomationHandler::~AutomationHandler() = default;
 
 bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
-  const base::Value* automation = nullptr;
-  CHECK(extension->manifest()->Get(keys::kAutomation, &automation));
+  const base::Value* automation =
+      extension->manifest()->FindPath(keys::kAutomation);
+  CHECK(automation != nullptr);
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<AutomationInfo> info =
       AutomationInfo::FromValue(*automation, &install_warnings, error);

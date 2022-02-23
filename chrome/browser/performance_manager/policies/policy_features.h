@@ -18,10 +18,10 @@
 namespace performance_manager {
 namespace features {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The EmptyWorkingSet feature as used on Windows.
 extern const base::Feature kEmptyWorkingSet;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -98,6 +98,12 @@ extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
 extern const base::FeatureParam<bool>
     kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot;
 
+// If true then we will drop ARCVM guest's page caches when the trimmer does
+// kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot. If false (default), it also
+// trims ARCVM's shared memory.
+extern const base::FeatureParam<bool>
+    kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot;
+
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
   TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams&);
@@ -124,21 +130,8 @@ struct TrimOnMemoryPressureParams {
   base::TimeDelta arcvm_trim_backoff_time;
   bool trim_arcvm_on_critical_pressure = false;
   bool trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
+  bool only_drop_caches_on_first_memory_pressure_after_arcvm_boot = false;
 };
-
-#if BUILDFLAG(USE_TCMALLOC)
-
-// If enabled then tcmalloc will be tuned dynamically based on system memory
-// pressure.
-extern const base::Feature kDynamicTcmallocTuning;
-
-// The time in seconds between trying to tune renderers tcmalloc params.
-extern const base::FeatureParam<int> kDynamicTuningTimeSec;
-
-// The time in seconds a frame needs to be invisible before being further scaled
-// down, -1 will disable this.
-extern const base::FeatureParam<int> kDynamicTuningScaleInvisibleTimeSec;
-#endif  // BUILDFLAG(USE_TCMALLOC)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

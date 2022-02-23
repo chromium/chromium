@@ -35,7 +35,7 @@ class ConsolidatedConsentScreenView {
 
     bool is_arc_enabled = true;
     bool is_demo = false;
-    bool is_arc_managed = false;
+    bool is_enterprise_managed_account = false;
     bool is_child_account = false;
     std::string country_code = "us";
 
@@ -62,6 +62,7 @@ class ConsolidatedConsentScreenView {
   virtual void SetUsageMode(bool enabled, bool managed) = 0;
   virtual void SetBackupMode(bool enabled, bool managed) = 0;
   virtual void SetLocationMode(bool enabled, bool managed) = 0;
+  virtual void SetIsDeviceOwner(bool is_owner) = 0;
 };
 
 class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
@@ -87,6 +88,7 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
   void SetUsageMode(bool enabled, bool managed) override;
   void SetBackupMode(bool enabled, bool managed) override;
   void SetLocationMode(bool enabled, bool managed) override;
+  void SetIsDeviceOwner(bool is_owner) override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
@@ -92,20 +93,18 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   WebUIBubbleManagerT(views::View* anchor_view,
                       Profile* profile,
                       const GURL& webui_url,
-                      int task_manager_string_id,
-                      bool enable_extension_apis = false)
+                      int task_manager_string_id)
       : anchor_view_(anchor_view),
         profile_(profile),
         webui_url_(webui_url),
-        task_manager_string_id_(task_manager_string_id),
-        enable_extension_apis_(enable_extension_apis) {
+        task_manager_string_id_(task_manager_string_id) {
     if (base::FeatureList::IsEnabled(
             features::kWebUIBubblePerProfilePersistence)) {
       auto* service =
           BubbleContentsWrapperServiceFactory::GetForProfile(profile_, true);
       if (service && !service->GetBubbleContentsWrapperFromURL(webui_url_)) {
-        service->template InitBubbleContentsWrapper<T>(
-            webui_url_, task_manager_string_id_, enable_extension_apis_);
+        service->template InitBubbleContentsWrapper<T>(webui_url_,
+                                                       task_manager_string_id_);
       }
     }
   }
@@ -143,8 +142,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
 
       if (!cached_contents_wrapper()) {
         set_cached_contents_wrapper(std::make_unique<BubbleContentsWrapperT<T>>(
-            webui_url_, profile_, task_manager_string_id_,
-            enable_extension_apis_));
+            webui_url_, profile_, task_manager_string_id_));
         cached_contents_wrapper()->ReloadWebContents();
       }
 
@@ -159,11 +157,10 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
   }
 
  private:
-  views::View* const anchor_view_;
-  Profile* const profile_;
+  const raw_ptr<views::View> anchor_view_;
+  const raw_ptr<Profile> profile_;
   const GURL webui_url_;
   const int task_manager_string_id_;
-  const bool enable_extension_apis_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_MANAGER_H_

@@ -84,12 +84,9 @@ class WindowPlacementTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/1183791): Disabled on non-ChromeOS because of races with
 // SetScreenInstance and observers not being notified.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_OnScreensChangeEvent DISABLED_OnScreensChangeEvent
-#else
-#define MAYBE_OnScreensChangeEvent OnScreensChangeEvent
-#endif
-IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
+// TODO(crbug.com/1297812): Completely disabled as this test is also flaky on
+// the CrOS bot.
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, DISABLED_OnScreensChangeEvent) {
   // Updates the display configuration to add a secondary display.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())

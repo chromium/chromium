@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -199,8 +201,8 @@ class MemoryProgramCacheTest : public GpuServiceTest, public DecoderClient {
   GpuProcessActivityFlags activity_flags_;
   std::unique_ptr<MemoryProgramCache> cache_;
   ShaderManager shader_manager_;
-  Shader* vertex_shader_;
-  Shader* fragment_shader_;
+  raw_ptr<Shader> vertex_shader_;
+  raw_ptr<Shader> fragment_shader_;
   int32_t shader_cache_count_;
   std::string shader_cache_shader_;
   std::vector<std::string> varyings_;
@@ -303,7 +305,7 @@ TEST_F(MemoryProgramCacheTest, CacheLoadMatchesSave) {
 
   // apparently the hash_map implementation on android doesn't have the
   // equality operator
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(vertex_attrib_map, vertex_shader_->attrib_map());
   EXPECT_EQ(vertex_uniform_map, vertex_shader_->uniform_map());
   EXPECT_EQ(vertex_varying_map, vertex_shader_->varying_map());
@@ -365,7 +367,7 @@ TEST_F(MemoryProgramCacheTest, LoadProgramMatchesSave) {
 
   // apparently the hash_map implementation on android doesn't have the
   // equality operator
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(vertex_attrib_map, vertex_shader_->attrib_map());
   EXPECT_EQ(vertex_uniform_map, vertex_shader_->uniform_map());
   EXPECT_EQ(vertex_varying_map, vertex_shader_->varying_map());

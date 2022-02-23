@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/drive/drive_api_util.h"
 #include "google_apis/common/auth_service.h"

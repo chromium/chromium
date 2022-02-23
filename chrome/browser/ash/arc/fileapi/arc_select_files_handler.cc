@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "components/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/url_constants.h"
@@ -82,7 +82,7 @@ void ConvertToElementVector(
   if (!list_value || !list_value->is_list())
     return;
 
-  for (const base::Value& value : list_value->GetList()) {
+  for (const base::Value& value : list_value->GetListDeprecated()) {
     mojom::FileSelectorElementPtr element = mojom::FileSelectorElement::New();
     element->name = value.GetString();
     elements->push_back(std::move(element));

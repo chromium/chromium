@@ -11,12 +11,13 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -32,24 +33,25 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/session/connection_holder.h"
 #endif
 
 using apps::mojom::OptionalBool;
 
 namespace {
 
-constexpr char const* kAppIdsWithHiddenMoreSettings[] = {
+const char* kAppIdsWithHiddenMoreSettings[] = {
     extensions::kWebStoreAppId,
     extension_misc::kFilesManagerAppId,
 };
 
-constexpr char const* kAppIdsWithHiddenPinToShelf[] = {
-    extension_misc::kChromeAppId,
-    extension_misc::kLacrosAppId,
+const char* kAppIdsWithHiddenPinToShelf[] = {
+    app_constants::kChromeAppId,
+    app_constants::kLacrosAppId,
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -125,15 +127,15 @@ std::vector<std::string> GetSupportedLinks(Profile* profile,
 AppManagementPageHandler::AppManagementPageHandler(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
-    Profile* profile)
+    Profile* profile,
+    Delegate& delegate)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      profile_(profile)
+      profile_(profile),
+      delegate_(delegate),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      ,
-      shelf_delegate_(this, profile)
+      shelf_delegate_(this, profile),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      ,
       preferred_apps_list_handle_(
           apps::AppServiceProxyFactory::GetForProfile(profile)
               ->PreferredApps()) {
@@ -177,6 +179,20 @@ void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
       });
 
   std::move(callback).Run(std::move(apps));
+}
+
+void AppManagementPageHandler::GetApp(const std::string& app_id,
+                                      GetAppCallback callback) {
+  app_management::mojom::AppPtr app;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady)
+          app = CreateUIAppPtr(update);
+      });
+
+  std::move(callback).Run(std::move(app));
 }
 
 void AppManagementPageHandler::GetExtensionAppPermissionMessages(
@@ -227,7 +243,7 @@ void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
 void AppManagementPageHandler::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
       app_id, apps::mojom::UninstallSource::kAppManagement,
-      nullptr /* parent_window */);
+      delegate_.GetUninstallAnchorWindow());
 }
 
 void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
@@ -260,6 +276,30 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
   // apps that overlap.
   app_ids.erase(apps::kUseBrowserForLink);
   std::move(callback).Run(std::move(app_ids).extract());
+}
+
+void AppManagementPageHandler::SetWindowMode(
+    const std::string& app_id,
+    apps::mojom::WindowMode window_mode) {
+  // On ChromeOS, apps should always open in a new window,
+  // hence window mode changes are not allowed.
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+      app_id, window_mode);
+#endif
+}
+
+void AppManagementPageHandler::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#else
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
+      app_id, run_on_os_login_mode);
+#endif
 }
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
@@ -305,6 +345,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
   app->supported_links = GetSupportedLinks(profile_, app->id);
+  app->run_on_os_login = update.RunOnOsLogin();
 
   return app;
 }

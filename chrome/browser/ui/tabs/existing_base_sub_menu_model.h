@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -115,9 +116,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   int GetContextIndex() const;
 
  private:
-  ui::SimpleMenuModel::Delegate* const parent_delegate_;
-  TabStripModel* const model_;
-  const content::WebContents* const context_contents_;
+  const raw_ptr<ui::SimpleMenuModel::Delegate> parent_delegate_;
+  const raw_ptr<TabStripModel> model_;
+  const raw_ptr<const content::WebContents> context_contents_;
   const int min_command_id_;
 
   // Stores a mapping from a menu item's command id to its target index (e.g.

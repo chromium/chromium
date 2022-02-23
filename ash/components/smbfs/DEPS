@@ -1,8 +1,5 @@
 include_rules = [
   "+chromeos/components/mojo_bootstrap",
-
-  # TODO(https://crbug.com/1164001) : Remove when chromeos/disks moved to ash.
-  "+chromeos/disks",
 ]
 
 specific_include_rules = {

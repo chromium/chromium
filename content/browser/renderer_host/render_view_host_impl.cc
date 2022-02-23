@@ -103,13 +103,13 @@
 #include "ui/native_theme/native_theme_features.h"
 #include "url/url_constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/system_fonts_win.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/host_zoom_map_impl.h"
 #endif
 
@@ -133,7 +133,7 @@ using RoutingIDViewMap =
 base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
     LAZY_INSTANCE_INITIALIZER;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Fetches the name and font size of a particular Windows system font.
 void GetFontInfo(gfx::win::SystemFont system_font,
                  std::u16string* name,
@@ -142,7 +142,7 @@ void GetFontInfo(gfx::win::SystemFont system_font,
   *name = base::UTF8ToUTF16(font.GetFontName());
   *size = font.GetFontSize();
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Set of RenderViewHostImpl* that can be attached as UserData to a
 // RenderProcessHost. Used to keep track of whether any RenderViewHostImpl
@@ -183,7 +183,7 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
  private:
   static const void* UserDataKey() { return &kUserDataKey; }
 
-  static constexpr int kUserDataKey = 0;
+  static const int kUserDataKey = 0;
 
   std::unordered_set<const RenderViewHostImpl*> render_view_host_instances_;
 };
@@ -235,7 +235,7 @@ RenderViewHostImpl* RenderViewHostImpl::From(RenderWidgetHost* rwh) {
 // static
 void RenderViewHostImpl::GetPlatformSpecificPrefs(
     blink::RendererPreferences* prefs) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Note that what is called "height" in this struct is actually the font size;
   // font "height" typically includes ascender, descender, and padding and is
   // often a third or so larger than the given font size.
@@ -259,9 +259,9 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYVSCROLL);
   prefs->arrow_bitmap_width_horizontal_scroll_bar_in_dips =
       display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXHSCROLL);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   prefs->system_font_family_name = gfx::Font().GetFontName();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Make Blink's "focus ring" invisible. The focus ring is a hairline border
   // that's rendered around clickable targets.
   // TODO(crbug.com/1066605): Consider exposing this as a FIDL parameter.
@@ -294,8 +294,7 @@ RenderViewHostImpl::RenderViewHostImpl(
       delegate_(delegate),
       render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(
           static_cast<SiteInstanceImpl*>(instance)->group())),
-      site_info_(static_cast<SiteInstanceImpl*>(instance)
-                     ->GetSiteInfoForRenderViewHost()),
+      storage_partition_config_(instance->GetStoragePartitionConfig()),
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
       frame_tree_(frame_tree) {
@@ -345,6 +344,19 @@ RenderViewHostImpl::RenderViewHostImpl(
 RenderViewHostImpl::~RenderViewHostImpl() {
   TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
                       ChromeTrackEvent::kRenderViewHost, *this);
+  // TODO(https://crbug.com/1234634): Remove this.
+  // If the view is destroyed while we were are still waiting for an ack,
+  // then log how long we have been waiting.
+  if (page_lifecycle_state_manager_->persisted_pageshow_timestamp_bug_1234634()
+          .has_value()) {
+    base::TimeDelta delta =
+        base::Time::Now() - page_lifecycle_state_manager_
+                                ->persisted_pageshow_timestamp_bug_1234634()
+                                .value();
+    base::UmaHistogramMediumTimes("Event.PageShow.Persisted.ViewDestroyed.Time",
+                                  delta);
+  }
+
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
   // Destroy the RenderWidgetHost.
@@ -466,14 +478,16 @@ bool RenderViewHostImpl::CreateRenderView(
   }
 
   params->session_storage_namespace_id =
-      frame_tree_->controller().GetSessionStorageNamespace(site_info_)->id();
+      frame_tree_->controller()
+          .GetSessionStorageNamespace(storage_partition_config_)
+          ->id();
   params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_opened_by_another_window =
       window_was_opened_by_another_window;
   params->base_background_color = delegate_->GetBaseBackgroundColor();
 
-  bool is_portal = delegate_->IsPortal();
+  bool is_portal = frame_tree_->delegate()->IsPortal();
   bool is_guest_view = delegate_->IsGuest();
   bool is_fenced_frame = frame_tree_->type() == FrameTree::Type::kFencedFrame;
 
@@ -678,10 +692,6 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
 }
 
 void RenderViewHostImpl::ClosePage() {
-  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-  VLOG(1) << "RenderViewHostImpl::ClosePage() IsRenderViewLive() = "
-          << IsRenderViewLive()
-          << ", SuddenTerminationAllowed() = " << SuddenTerminationAllowed();
   is_waiting_for_page_close_completion_ = true;
 
   if (IsRenderViewLive() && !SuddenTerminationAllowed()) {
@@ -689,7 +699,7 @@ void RenderViewHostImpl::ClosePage() {
 
     // TODO(creis): Should this be moved to Shutdown?  It may not be called for
     // RenderViewHosts that have been swapped out.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     static_cast<HostZoomMapImpl*>(
         HostZoomMap::Get(GetMainRenderFrameHost()->GetSiteInstance()))
         ->WillCloseRenderView(GetProcess()->GetID(), GetRoutingID());
@@ -721,6 +731,30 @@ void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
 void RenderViewHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
+  // TODO(https://crbug.com/1234634): Remove this.
+  // If the renderer has exited while we were are still waiting for a ack,
+  // then log information about the exit.
+  if (page_lifecycle_state_manager_->persisted_pageshow_timestamp_bug_1234634()
+          .has_value()) {
+    base::TimeDelta delta =
+        base::Time::Now() - page_lifecycle_state_manager_
+                                ->persisted_pageshow_timestamp_bug_1234634()
+                                .value();
+    // We want to understand if we are losing pageshows because renderers are
+    // exiting soon after restoring from BFCache. We keep the normal exits
+    // separate from the unexpected.
+    const char* histogram =
+        info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION
+            ? "Event.PageShow.Persisted.Termination.Normal.Time"
+            : "Event.PageShow.Persisted.Termination.Unexpected.Time";
+    base::UmaHistogramMediumTimes(histogram, delta);
+    // We don't record this as an enum because the enum is platform dependent.
+    // Since this is temporary debugging, 20 seems a safe upper limit for the
+    // number of elements.
+    base::UmaHistogramExactLinear("Event.PageShow.Persisted.Termination.Status",
+                                  static_cast<int>(info.status), 20);
+  }
+
   renderer_view_created_ = false;
   GetWidget()->RendererExited();
   delegate_->RenderViewTerminated(this, info.status, info.exit_code);
@@ -780,6 +814,10 @@ bool RenderViewHostImpl::SuddenTerminationAllowed() {
 
 bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   return false;
+}
+
+std::string RenderViewHostImpl::ToDebugString() {
+  return "RVHI:" + delegate_->GetCreatorLocation().ToString();
 }
 
 void RenderViewHostImpl::OnTakeFocus(bool reverse) {

@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace {
@@ -23,7 +25,7 @@ bool Accepts(apps::mojom::AppType app_type) {
          app_type == apps::mojom::AppType::kArc ||
          app_type == apps::mojom::AppType::kWeb ||
          app_type == apps::mojom::AppType::kSystemWeb ||
-         app_type == apps::mojom::AppType::kStandaloneBrowserExtension;
+         app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp;
 }
 
 bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {
@@ -60,7 +62,14 @@ void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType app_type,
                                bool should_notify_initialized) {
   if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
-    subscriber_->OnApps(std::move(deltas), app_type, should_notify_initialized);
+    std::vector<AppPtr> apps;
+    for (const auto& mojom_app : deltas) {
+      if (mojom_app) {
+        apps.push_back(ConvertMojomAppToApp(mojom_app));
+      }
+    }
+    subscriber_->OnApps(std::move(apps), ConvertMojomAppTypToAppType(app_type),
+                        should_notify_initialized);
   }
 }
 
@@ -117,29 +126,35 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
 
 void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-
-  if (launch_params->intent) {
-    proxy->LaunchAppWithIntent(launch_params->app_id, ui::EF_NONE,
-                               apps_util::ConvertCrosapiToAppServiceIntent(
-                                   launch_params->intent, profile_),
-                               launch_params->launch_source, nullptr);
-  } else {
-    proxy->Launch(launch_params->app_id, ui::EF_NONE,
-                  launch_params->launch_source, nullptr);
-  }
+  // TODO(crbug.com/1244506): Link up the return callback.
+  proxy->LaunchAppWithParams(
+      ConvertCrosapiToLaunchParams(launch_params, profile_), base::DoNothing());
 }
 
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
-                                 apps::mojom::IconKeyPtr icon_key,
+                                 IconKeyPtr icon_key,
                                  IconType icon_type,
                                  int32_t size_hint_in_dip,
                                  apps::LoadIconCallback callback) {
+  if (!icon_key) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->LoadIconFromIconKey(
-      proxy->AppRegistryCache().GetAppType(app_id), app_id, std::move(icon_key),
-      ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
-      /*allow_placeholder_icon=*/false,
-      MojomIconValueToIconValueCallback(std::move(callback)));
+  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    proxy->LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), app_id,
+                               *icon_key, icon_type, size_hint_in_dip,
+                               /*allow_placeholder_icon=*/false,
+                               std::move(callback));
+  } else {
+    proxy->LoadIconFromIconKey(
+        app_type, app_id, ConvertIconKeyToMojomIconKey(*icon_key),
+        ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
+        /*allow_placeholder_icon=*/false,
+        MojomIconValueToIconValueCallback(std::move(callback)));
+  }
 }
 
 void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,

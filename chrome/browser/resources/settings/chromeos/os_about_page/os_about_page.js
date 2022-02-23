@@ -24,6 +24,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
@@ -55,6 +56,15 @@ Polymer({
   ],
 
   properties: {
+    /**
+     * Whether the about page is being rendered in dark mode.
+     * @private
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private {?UpdateStatusChangedEvent} */
     currentUpdateStatusEvent_: {
       type: Object,
@@ -76,6 +86,17 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('isManaged');
+      },
+    },
+
+    /**
+     * The domain of the organization managing the device.
+     * @private
+     */
+    deviceManager_: {
+      type: String,
+      value() {
+        return loadTimeData.getString('deviceManager');
       },
     },
 
@@ -158,6 +179,12 @@ Polymer({
       }
     },
 
+    /** @protected */
+    showFirmwareUpdatesApp_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('isFirmwareUpdaterAppEnabled'),
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -212,6 +239,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kReportAnIssue,
         chromeos.settings.mojom.Setting.kTermsOfService,
         chromeos.settings.mojom.Setting.kDiagnostics,
+        chromeos.settings.mojom.Setting.kFirmwareUpdates,
       ]),
     },
   },
@@ -345,6 +373,13 @@ Polymer({
   },
 
   /** @private */
+  onFirmwareUpdatesClick_() {
+    assert(this.showFirmwareUpdatesApp_);
+    this.aboutBrowserProxy_.openFirmwareUpdatesPage();
+    recordSettingChange(chromeos.settings.mojom.Setting.kFirmwareUpdates);
+  },
+
+  /** @private */
   onRelaunchClick_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().relaunch();
@@ -425,7 +460,9 @@ Polymer({
           return this.i18nAdvanced('aboutUpgradeSuccessChannelSwitch');
         }
         if (this.currentUpdateStatusEvent_.rollback) {
-          return this.i18nAdvanced('aboutRollbackSuccess');
+          return this.i18nAdvanced('aboutRollbackSuccess', {
+            substitutions: [this.deviceManager_],
+          });
         }
         return this.i18nAdvanced('aboutUpgradeRelaunch');
       case UpdateStatus.UPDATED:
@@ -445,7 +482,7 @@ Polymer({
         }
         if (this.currentUpdateStatusEvent_.rollback) {
           return this.i18nAdvanced('aboutRollbackInProgress', {
-            substitutions: [progressPercent],
+            substitutions: [this.deviceManager_, progressPercent],
           });
         }
         if (this.currentUpdateStatusEvent_.progress > 0) {
@@ -522,7 +559,9 @@ Polymer({
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
-        return 'chrome://resources/images/throbber_small.svg';
+        return this.isDarkModeActive_ ?
+            'chrome://resources/images/throbber_small_dark.svg' :
+            'chrome://resources/images/throbber_small.svg';
       default:
         return null;
     }

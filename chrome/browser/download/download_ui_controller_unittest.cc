@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/download_row.h"
@@ -153,7 +153,7 @@ class DownloadUIControllerTest : public ChromeRenderViewHostTestHarness {
   download::DownloadItem* notified_item_;
   base::WeakPtrFactory<download::DownloadItem*> notified_item_receiver_factory_;
 
-  HistoryAdapter* history_adapter_;
+  raw_ptr<HistoryAdapter> history_adapter_;
 };
 
 // static
@@ -225,7 +225,11 @@ DownloadUIControllerTest::CreateMockInProgressDownload() {
   EXPECT_CALL(*item, GetUrlChain())
       .WillRepeatedly(ReturnRefOfCopy(std::vector<GURL>()));
   EXPECT_CALL(*item, GetReferrerUrl()).WillRepeatedly(ReturnRefOfCopy(GURL()));
-  EXPECT_CALL(*item, GetSiteUrl()).WillRepeatedly(ReturnRefOfCopy(GURL()));
+  EXPECT_CALL(*item, GetSerializedEmbedderDownloadData())
+      .WillRepeatedly(ReturnRefOfCopy(
+          manager_->StoragePartitionConfigToSerializedEmbedderDownloadData(
+              content::StoragePartitionConfig::CreateDefault(
+                  browser_context()))));
   EXPECT_CALL(*item, GetTabUrl()).WillRepeatedly(ReturnRefOfCopy(GURL()));
   EXPECT_CALL(*item, GetTabReferrerUrl())
       .WillRepeatedly(ReturnRefOfCopy(GURL()));
@@ -257,8 +261,8 @@ DownloadUIControllerTest::CreateMockInProgressDownload() {
   EXPECT_CALL(*item, IsSavePackageDownload()).WillRepeatedly(Return(false));
   EXPECT_CALL(*item, GetOriginalMimeType())
       .WillRepeatedly(Return(std::string()));
-  content::DownloadItemUtils::AttachInfo(item.get(), browser_context(),
-                                         nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(item.get(),
+                                                   browser_context(), nullptr);
 
   return item;
 }
@@ -374,6 +378,9 @@ TEST_F(DownloadUIControllerTest, DownloadUIController_HistoryDownload) {
       *manager(),
       PostInitialization(content::DownloadManager::
                              DOWNLOAD_INITIALIZATION_DEPENDENCY_HISTORY_DB));
+  EXPECT_CALL(*manager(), GetStoragePartitionConfigForSiteUrl(_))
+      .WillRepeatedly(Return(
+          content::StoragePartitionConfig::CreateDefault(browser_context())));
 
   {
     testing::InSequence s;

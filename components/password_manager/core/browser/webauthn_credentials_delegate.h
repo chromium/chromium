@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace password_manager {
@@ -27,7 +28,13 @@ class WebAuthnCredentialsDelegate {
 
   // Returns the list of eligible WebAuthn credentials to fulfill an ongoing
   // WebAuthn request.
-  virtual std::vector<autofill::Suggestion> GetWebAuthnSuggestions() const = 0;
+  virtual const std::vector<autofill::Suggestion>& GetWebAuthnSuggestions()
+      const = 0;
+
+  // Initiates retrieval of discoverable WebAuthn credentials from the platform
+  // authenticator. |callback| is invoked upon completion.
+  virtual void RetrieveWebAuthnSuggestions(
+      base::OnceCallback<void()> callback) = 0;
 };
 
 }  // namespace password_manager

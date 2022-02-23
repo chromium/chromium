@@ -37,7 +37,6 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUIDomainReliabilityInternalsHost ||
          host == chrome::kChromeUIDownloadInternalsHost ||
          host == chrome::kChromeUIFamilyLinkUserInternalsHost ||
-         host == chrome::kChromeUIFlocInternalsHost ||
          host == chrome::kChromeUIGCMInternalsHost ||
          host == chrome::kChromeUIInternalsHost ||
          host == chrome::kChromeUIInterstitialHost ||
@@ -52,7 +51,6 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUIPasswordManagerInternalsHost ||
          host == chrome::kChromeUIPolicyHost ||
          host == chrome::kChromeUIPredictorsHost ||
-         host == chrome::kChromeUIQuotaInternalsHost ||
          host == chrome::kChromeUISandboxHost ||
          host == chrome::kChromeUISignInInternalsHost ||
          host == chrome::kChromeUISiteEngagementHost ||
@@ -71,6 +69,7 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == content::kChromeUIMediaInternalsHost ||
          host == content::kChromeUINetworkErrorsListingHost ||
          host == content::kChromeUIProcessInternalsHost ||
+         host == content::kChromeUIQuotaInternalsHost ||
          host == content::kChromeUIServiceWorkerInternalsHost ||
          host == content::kChromeUIUkmHost ||
          host == content::kChromeUIWebRTCInternalsHost;

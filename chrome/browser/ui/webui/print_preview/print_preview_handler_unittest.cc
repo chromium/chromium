@@ -15,12 +15,14 @@
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -39,13 +41,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
@@ -134,15 +137,14 @@ base::Value GetPrintPreviewTicket() {
   return print_ticket;
 }
 
-std::unique_ptr<base::ListValue> ConstructPreviewArgs(
-    base::StringPiece callback_id,
-    const base::Value& print_ticket) {
+base::Value ConstructPreviewArgs(base::StringPiece callback_id,
+                                 const base::Value& print_ticket) {
   base::Value args(base::Value::Type::LIST);
   args.Append(callback_id);
   std::string json;
   base::JSONWriter::Write(print_ticket, &json);
   args.Append(json);
-  return base::ListValue::From(base::Value::ToUniquePtrValue(std::move(args)));
+  return args;
 }
 
 UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
@@ -205,7 +207,7 @@ class TestPrinterHandler : public PrinterHandler {
 
   void StartGetPrinters(AddedPrintersCallback added_printers_callback,
                         GetPrintersDoneCallback done_callback) override {
-    if (!printers_.GetList().empty())
+    if (!printers_.GetListDeprecated().empty())
       added_printers_callback.Run(printers_);
     std::move(done_callback).Run();
   }
@@ -365,7 +367,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages_;
   base::flat_set<mojom::PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
-  content::WebContents* const initiator_;
+  const raw_ptr<content::WebContents> initiator_;
 };
 
 }  // namespace
@@ -399,6 +401,10 @@ class PrintPreviewHandlerTest : public testing::Test {
     initiator_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     content::WebContents* initiator = initiator_web_contents_.get();
+    // Ensure the initiator has a RenderFrameHost with a live RenderFrame, as
+    // the print code will not bother to send IPCs to a non-live RenderFrame.
+    content::NavigationSimulator::NavigateAndCommitFromDocument(
+        GURL("about:blank"), initiator->GetMainFrame());
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     PrintViewManager::CreateForWebContents(initiator);
@@ -437,7 +443,7 @@ class PrintPreviewHandlerTest : public testing::Test {
         ->PrintPreviewDone();
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void DisableAshChrome() { handler_->local_printer_ = nullptr; }
 #endif
 
@@ -453,8 +459,6 @@ class PrintPreviewHandlerTest : public testing::Test {
     // before any other messages are sent.
     base::Value args(base::Value::Type::LIST);
     args.Append("test-callback-id-0");
-    std::unique_ptr<base::ListValue> list_args =
-        base::ListValue::From(base::Value::ToUniquePtrValue(std::move(args)));
 
     auto* browser_process = TestingBrowserProcess::GetGlobal();
     std::string original_locale = browser_process->GetApplicationLocale();
@@ -465,7 +469,7 @@ class PrintPreviewHandlerTest : public testing::Test {
       browser_process->SetApplicationLocale(locale);
       base::test::ScopedRestoreICUDefaultLocale scoped_locale(locale);
       base::ResetFormattersForTesting();
-      handler()->HandleGetInitialSettings(list_args.get());
+      handler()->HandleGetInitialSettings(args.GetListDeprecated());
     }
     // Reset again now that |scoped_locale| has been destroyed.
     browser_process->SetApplicationLocale(original_locale);
@@ -625,7 +629,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     base::Value args(base::Value::Type::LIST);
     args.Append(callback_id_in);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinters(&base::Value::AsListValue(args));
+    handler()->HandleGetPrinters(args.GetListDeprecated());
   }
 
   // Validates that the printers-added Web UI event has been fired for
@@ -641,7 +645,8 @@ class PrintPreviewHandlerTest : public testing::Test {
         static_cast<mojom::PrinterType>(add_data.arg2()->GetInt());
     EXPECT_EQ(expected_type, type);
     ASSERT_TRUE(add_data.arg3());
-    base::Value::ConstListView printer_list = add_data.arg3()->GetList();
+    base::Value::ConstListView printer_list =
+        add_data.arg3()->GetListDeprecated();
     ASSERT_EQ(printer_list.size(), 1u);
     EXPECT_TRUE(printer_list[0].FindKeyOfType("printer_name",
                                               base::Value::Type::STRING));
@@ -656,7 +661,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     args.Append(callback_id_in);
     args.Append(printer_name);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinterCapabilities(&base::Value::AsListValue(args));
+    handler()->HandleGetPrinterCapabilities(args.GetListDeprecated());
   }
 
   // Validates that a printer capabilities promise was resolved/rejected.
@@ -691,14 +696,14 @@ class PrintPreviewHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::WebContents> initiator_web_contents_;
   std::vector<PrinterInfo> printers_;
-  TestPrinterHandler* printer_handler_;
-  TestPrintPreviewHandler* handler_;
+  raw_ptr<TestPrinterHandler> printer_handler_;
+  raw_ptr<TestPrintPreviewHandler> handler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestLocalPrinterAsh> local_printer_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
@@ -747,7 +752,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsNoPolicies) {
                                      absl::nullopt);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrintPreviewHandlerTest, InitialSettingsNoAsh) {
   DisableAshChrome();
   Initialize();
@@ -970,7 +975,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
       std::move(expected_initial_settings_policy));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   crosapi::mojom::Policies policies;
@@ -1069,7 +1074,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "pin", absl::nullopt, base::Value(2));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrintPreviewHandlerTest, GetPrinters) {
   Initialize();
@@ -1232,9 +1237,9 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     preview_ticket.SetIntKey(kPreviewRequestID, i);
     std::string preview_callback_id =
         "test-callback-id-" + base::NumberToString(2 * i + 1);
-    std::unique_ptr<base::ListValue> preview_list_args =
+    base::Value preview_list_args =
         ConstructPreviewArgs(preview_callback_id, preview_ticket);
-    handler()->HandleGetPreview(preview_list_args.get());
+    handler()->HandleGetPreview(preview_list_args.GetListDeprecated());
 
     // Send printing request.
     mojom::PrinterType type = kAllTypes[i];
@@ -1246,9 +1251,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
-    std::unique_ptr<base::ListValue> print_list_args = base::ListValue::From(
-        base::Value::ToUniquePtrValue(std::move(print_args)));
-    handler()->HandlePrint(print_list_args.get());
+    handler()->HandlePrint(print_args.GetListDeprecated());
 
     CheckHistograms(histograms, type);
 
@@ -1283,9 +1286,9 @@ TEST_F(PrintPreviewHandlerTest, GetPreview) {
   print_render_frame.SetCompletionClosure(run_loop.QuitClosure());
 
   base::Value print_ticket = GetPrintPreviewTicket();
-  std::unique_ptr<base::ListValue> list_args =
+  base::Value list_args =
       ConstructPreviewArgs("test-callback-id-1", print_ticket);
-  handler()->HandleGetPreview(list_args.get());
+  handler()->HandleGetPreview(list_args.GetListDeprecated());
   run_loop.Run();
 
   // Verify that the preview was requested from the renderer with the
@@ -1314,9 +1317,8 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
 
   const char callback_id_in[] = "test-callback-id-1";
   base::Value print_ticket = GetPrintPreviewTicket();
-  std::unique_ptr<base::ListValue> list_args =
-      ConstructPreviewArgs(callback_id_in, print_ticket);
-  handler()->HandleGetPreview(list_args.get());
+  base::Value list_args = ConstructPreviewArgs(callback_id_in, print_ticket);
+  handler()->HandleGetPreview(list_args.GetListDeprecated());
   run_loop.Run();
   const base::Value& preview_params = print_render_frame.GetSettings();
 
@@ -1434,9 +1436,7 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
     args.Append(callback_id_in);
     args.Append(kDummyPrinterName);
     args.Append(static_cast<int>(type));
-    std::unique_ptr<base::ListValue> list_args =
-        base::ListValue::From(base::Value::ToUniquePtrValue(std::move(args)));
-    handler()->HandleGetPrinterCapabilities(list_args.get());
+    handler()->HandleGetPrinterCapabilities(args.GetListDeprecated());
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings, then add 1 more for each loop

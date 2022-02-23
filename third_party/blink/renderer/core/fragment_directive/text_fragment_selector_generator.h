@@ -33,7 +33,8 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
       public TextFragmentFinder::Client {
   using GenerateCallback =
-      base::OnceCallback<void(const TextFragmentSelector&)>;
+      base::OnceCallback<void(const TextFragmentSelector&,
+                              shared_highlighting::LinkGenerationError)>;
 
  public:
   explicit TextFragmentSelectorGenerator(LocalFrame* main_frame);
@@ -68,12 +69,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void RecordSelectorStateUma() const;
 
   LocalFrame* GetFrame() { return frame_; }
-
-  // If generation fails, returns the reason that generation failed. If
-  // generation hasn't finished, or was successful, returns an empty optional.
-  absl::optional<shared_highlighting::LinkGenerationError> GetError() {
-    return error_;
-  }
 
  private:
   // Used for determining the next step of selector generation.
@@ -152,7 +147,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;
 
-  absl::optional<shared_highlighting::LinkGenerationError> error_;
+  shared_highlighting::LinkGenerationError error_;
 
   // Fields used for keeping track of context.
 

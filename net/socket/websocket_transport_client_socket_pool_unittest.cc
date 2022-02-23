@@ -215,7 +215,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
 
 TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kFailing);
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   EXPECT_EQ(
@@ -348,7 +348,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, TwoRequestsCancelOne) {
 
 TEST_F(WebSocketTransportClientSocketPoolTest, ConnectCancelConnect) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(
@@ -472,7 +472,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, RequestTwice) {
 TEST_F(WebSocketTransportClientSocketPoolTest,
        CancelActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
 
   // Queue up all the requests
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -503,7 +503,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 TEST_F(WebSocketTransportClientSocketPoolTest,
        FailingActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPendingFailing);
 
   const int kNumRequests = 2 * kMaxSocketsPerGroup + 1;
   ASSERT_LE(kNumRequests, kMaxSockets);  // Otherwise the test will hang.
@@ -564,12 +564,13 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // connections.
 TEST_F(WebSocketTransportClientSocketPoolTest,
        CancelDuringConnectionReleasesLock) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET};
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPending)};
 
-  client_socket_factory_.set_client_socket_types(case_types,
-                                                 base::size(case_types));
+  client_socket_factory_.SetRules(rules);
 
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -583,13 +584,15 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // socket which finishes first.
 TEST_F(WebSocketTransportClientSocketPoolTest,
        IPv6FallbackSocketIPv4FinishesFirst) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
+  MockTransportClientSocketFactory::Rule rules[] = {
       // This is the IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
       // This is the IPv4 socket.
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET};
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPending)};
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with an IPv6 address first and then an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -620,13 +623,15 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // finish first.
 TEST_F(WebSocketTransportClientSocketPoolTest,
        IPv6FallbackSocketIPv6FinishesFirst) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
+  MockTransportClientSocketFactory::Rule rules[] = {
       // This is the IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed),
       // This is the IPv4 socket.
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET};
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled)};
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
   client_socket_factory_.set_delay(
       base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
 
@@ -657,7 +662,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 TEST_F(WebSocketTransportClientSocketPoolTest,
        IPv6NoIPv4AddressesToFallbackTo) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayed);
 
   // Resolve an AddressList with only IPv6 addresses.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -685,7 +690,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
 TEST_F(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayed);
 
   // Resolve an AddressList with only IPv4 addresses.
   host_resolver_->rules()->AddIPLiteralRule("*", "1.1.1.1", std::string());
@@ -713,16 +718,18 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
 // If all IPv6 addresses fail to connect synchronously, then IPv4 connections
 // proceeed immediately.
 TEST_F(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
+  MockTransportClientSocketFactory::Rule rules[] = {
       // First IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
       // Second IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
       // This is the IPv4 socket.
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET};
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous)};
 
-  client_socket_factory_.set_client_socket_types(case_types,
-                                                 base::size(case_types));
+  client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with two IPv6 addresses and then an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -746,16 +753,18 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
 // If all IPv6 addresses fail before the IPv4 fallback timeout, then the IPv4
 // connections proceed immediately.
 TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
+  MockTransportClientSocketFactory::Rule rules[] = {
       // First IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_PENDING_FAILING_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPendingFailing),
       // Second IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_PENDING_FAILING_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPendingFailing),
       // This is the IPv4 socket.
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET};
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous)};
 
-  client_socket_factory_.set_client_socket_types(case_types,
-                                                 base::size(case_types));
+  client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with two IPv6 addresses and then an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -787,7 +796,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
 // type do not race).
 TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_TRIGGERABLE_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kTriggerable);
 
   // Resolve an AddressList with an IPv6 addresses and an IPv4 address.
   host_resolver_->rules()->AddIPLiteralRule(
@@ -822,7 +831,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 // We should not report failure until all connections have failed.
 TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayedFailing);
   base::TimeDelta delay =
       base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs / 3);
   client_socket_factory_.set_delay(delay);
@@ -864,7 +873,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, DISABLED_OverallTimeoutApplies) {
       TransportConnectJob::ConnectionTimeout();
 
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayedFailing);
   client_socket_factory_.set_delay(base::Seconds(1) + connect_job_timeout / 6);
 
   // Resolve an AddressList with 6 IPv6 addresses and 6 IPv4 addresses.
@@ -1003,15 +1012,15 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 TEST_F(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorDoesNotCauseSuccessfulConnections) {
   host_resolver_->set_synchronous_mode(true);
-  MockTransportClientSocketFactory::ClientSocketType first_type[] = {
-    // First socket
-    MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule first_rule[] = {
+      // First socket
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPending),
   };
-  client_socket_factory_.set_client_socket_types(first_type,
-                                                 base::size(first_type));
+  client_socket_factory_.SetRules(first_rule);
   // The rest of the sockets will connect synchronously.
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
   for (int i = 0; i < kMaxSockets; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   }
@@ -1033,14 +1042,13 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   host_resolver_->set_synchronous_mode(true);
   // The first |kMaxSockets| sockets to connect will be IPv6. Then we will have
   // one IPv4.
-  std::vector<MockTransportClientSocketFactory::ClientSocketType> socket_types(
-      kMaxSockets + 1,
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET);
-  client_socket_factory_.set_client_socket_types(&socket_types[0],
-                                                 socket_types.size());
+  std::vector<MockTransportClientSocketFactory::Rule> rules(
+      kMaxSockets + 1, MockTransportClientSocketFactory::Rule(
+                           MockTransportClientSocketFactory::Type::kStalled));
+  client_socket_factory_.SetRules(rules);
   // The rest of the sockets will connect synchronously.
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
   for (int i = 0; i < kMaxSockets; ++i) {
     host_resolver_->rules()->ClearRules();
     // Each connect job has a different IPv6 address but the same IPv4 address.
@@ -1071,11 +1079,12 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 TEST_F(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorDoesNotAffectHandedOutSockets) {
   host_resolver_->set_synchronous_mode(true);
-  MockTransportClientSocketFactory::ClientSocketType socket_types[] = {
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET,
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET};
-  client_socket_factory_.set_client_socket_types(socket_types,
-                                                 base::size(socket_types));
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled)};
+  client_socket_factory_.SetRules(rules);
   EXPECT_THAT(StartRequest(kDefaultPriority), IsOk());
   // Socket has been "handed out".
   EXPECT_TRUE(request(0)->handle()->socket());
@@ -1094,12 +1103,13 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // SetSocket() being called on the ClientSocketHandle and InvokeUserCallback().
 TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequestReclaimsSockets) {
   host_resolver_->set_synchronous_mode(true);
-  MockTransportClientSocketFactory::ClientSocketType socket_types[] = {
-      MockTransportClientSocketFactory::MOCK_TRIGGERABLE_CLIENT_SOCKET,
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET};
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kTriggerable),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous)};
 
-  client_socket_factory_.set_client_socket_types(socket_types,
-                                                 base::size(socket_types));
+  client_socket_factory_.SetRules(rules);
 
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
 
@@ -1175,7 +1185,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
        WebSocketTransportConnectJobWithDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
 
   // Resolve an AddressList with DNS aliases.
   std::string kHostName("host");
@@ -1187,7 +1197,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          /*supported_alpns=*/base::flat_set<std::string>());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
@@ -1206,7 +1217,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
        WebSocketTransportConnectJobWithNoAdditionalDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
 
   // Resolve an AddressList without additional DNS aliases. (The parameter
   // is an empty vector.)
@@ -1219,7 +1230,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          /*supported_alpns=*/base::flat_set<std::string>());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,

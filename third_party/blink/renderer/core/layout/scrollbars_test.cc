@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -115,14 +114,16 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
   }
 
   void TearDown() override {
-    ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(
-        original_overlay_scrollbars_enabled_);
+    SetOverlayScrollbarsEnabled(original_overlay_scrollbars_enabled_);
     mock_overlay_scrollbars_.reset();
     SimTest::TearDown();
   }
 
-  void SetOverlayScrollbarsEnabled(bool b) {
-    ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(b);
+  void SetOverlayScrollbarsEnabled(bool enabled) {
+    if (enabled != ScrollbarThemeSettings::OverlayScrollbarsEnabled()) {
+      ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(enabled);
+      Page::UsesOverlayScrollbarsChanged();
+    }
   }
 
   HitTestResult HitTest(int x, int y) {
@@ -241,11 +242,11 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     event.SetPositionInWidget(gfx::PointF(position.x(), position.y()));
 
     if (type == WebInputEvent::Type::kGestureScrollUpdate) {
-      event.data.scroll_update.delta_x = offset.width();
-      event.data.scroll_update.delta_y = offset.height();
+      event.data.scroll_update.delta_x = offset.x();
+      event.data.scroll_update.delta_y = offset.y();
     } else if (type == WebInputEvent::Type::kGestureScrollBegin) {
-      event.data.scroll_begin.delta_x_hint = offset.width();
-      event.data.scroll_begin.delta_y_hint = offset.height();
+      event.data.scroll_begin.delta_x_hint = offset.x();
+      event.data.scroll_begin.delta_y_hint = offset.y();
     }
     return WebCoalescedInputEvent(event, ui::LatencyInfo());
   }
@@ -262,7 +263,7 @@ class ScrollbarsTestWithVirtualTimer : public ScrollbarsTest {
  public:
   void SetUp() override {
     ScrollbarsTest::SetUp();
-    WebView().Scheduler()->EnableVirtualTime();
+    WebView().Scheduler()->EnableVirtualTime(base::Time());
   }
 
   void TearDown() override {
@@ -328,6 +329,25 @@ TEST_P(ScrollbarsTest, DocumentStyleRecalcPreservesScrollbars) {
   Compositor().BeginFrame();
   ASSERT_TRUE(layout_viewport->VerticalScrollbar() &&
               layout_viewport->HorizontalScrollbar());
+}
+
+TEST_P(ScrollbarsTest, ScrollbarsUpdatedOnOverlaySettingsChange) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style> body { height: 3000px; } </style>)HTML");
+
+  Compositor().BeginFrame();
+  auto* layout_viewport = GetDocument().View()->LayoutViewport();
+  EXPECT_TRUE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
+
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  Compositor().BeginFrame();
+  EXPECT_FALSE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
 }
 
 TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
@@ -1471,7 +1491,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarWhenStyleOwnerChange) {
 // a huge fadeout delay.
 // Disable on Android since VirtualTime not work for Android.
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarsTestWithVirtualTimer,
        DISABLED_TestNonCompositedOverlayScrollbarsFade) {
 #else
@@ -1581,7 +1601,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Make sure native scrollbar can change by Emulator.
 // Disable on Android since Android always enable OverlayScrollbar.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarAppearanceTest,
        DISABLED_NativeScrollbarChangeToMobileByEmulator) {
 #else
@@ -1674,7 +1694,7 @@ TEST_P(ScrollbarAppearanceTest, NativeScrollbarChangeToMobileByEmulator) {
   EXPECT_FALSE(div_scrollable->VerticalScrollbar()->GetTheme().IsMockTheme());
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Ensure that the minimum length for a scrollbar thumb comes from the
 // WebThemeEngine. Note, Mac scrollbars differ from all other platforms so this
 // test doesn't apply there. https://crbug.com/682209.
@@ -1724,7 +1744,7 @@ TEST_P(ScrollbarAppearanceTest, HugeScrollingThumbPosition) {
 
   Compositor().BeginFrame();
 
-  int scroll_y = scrollable_area->GetScrollOffset().height();
+  int scroll_y = scrollable_area->GetScrollOffset().y();
   ASSERT_EQ(9999000, scroll_y);
 
   Scrollbar* scrollbar = scrollable_area->VerticalScrollbar();
@@ -2179,7 +2199,7 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <style>
-    /* transform keeps the graphics layer */
+    /* transform keeps the composited layer */
     #div { width: 100px; height: 100px; will-change: transform; }
     .scroller{ overflow: scroll; }
     .big{ height: 2000px; }
@@ -2765,7 +2785,7 @@ TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {
 // press on scrollbar button should keep scrolling after content loaded.
 // Disable on Android since VirtualTime not work for Android.
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollbarsTestWithVirtualTimer,
        DISABLED_PressScrollbarButtonOnInfiniteScrolling) {
 #else
@@ -2819,7 +2839,7 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 400),
                                    mojom::blink::ScrollType::kProgrammatic,
                                    mojom::blink::ScrollBehavior::kInstant);
-  EXPECT_EQ(scrollable_area->ScrollOffsetInt(), IntSize(0, 200));
+  EXPECT_EQ(scrollable_area->ScrollOffsetInt(), gfx::Vector2d(0, 200));
 
   HandleMouseMoveEvent(195, 195);
   HandleMousePressEvent(195, 195);
@@ -2936,7 +2956,7 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
                          ScrollbarColorSchemeTest,
                          testing::Values(false));
 
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 // Not able to paint non-overlay scrollbars through ThemeEngine on Android or
 // Mac.
 #define MAYBE_ThemeEnginePaint DISABLED_ThemeEnginePaint

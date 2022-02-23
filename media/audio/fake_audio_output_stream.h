@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
@@ -45,9 +46,9 @@ class MEDIA_EXPORT FakeAudioOutputStream : public MuteableAudioOutputStream {
   // Task that periodically calls OnMoreData() to consume audio data.
   void CallOnMoreData(base::TimeTicks ideal_time, base::TimeTicks now);
 
-  AudioManagerBase* const audio_manager_;
+  const raw_ptr<AudioManagerBase> audio_manager_;
   const base::TimeDelta fixed_data_delay_;
-  AudioSourceCallback* callback_;
+  raw_ptr<AudioSourceCallback> callback_;
   FakeAudioWorker fake_worker_;
   const std::unique_ptr<AudioBus> audio_bus_;
 };

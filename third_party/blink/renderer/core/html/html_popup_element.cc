@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -14,10 +15,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -284,7 +285,11 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
 }
 
 void HTMLPopupElement::HandleLightDismiss(const Event& event) {
-  auto* target_node = event.target()->ToNode();
+  if (event.GetEventPath().IsEmpty())
+    return;
+  // Ensure that shadow DOM event retargeting is considered when computing
+  // the event target node.
+  auto* target_node = event.GetEventPath()[0].Target()->ToNode();
   if (!target_node)
     return;
   auto& document = target_node->GetDocument();
@@ -355,7 +360,7 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   if (!window)
     return;
 
-  FloatRect anchor_rect_in_screen =
+  gfx::RectF anchor_rect_in_screen =
       owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate();
   const float anchor_zoom = owner_select_menu_element_->GetLayoutObject()
                                 ? owner_select_menu_element_->GetLayoutObject()
@@ -367,7 +372,7 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   // trigger a re-entrant style and layout update.
   int avail_width = GetDocument().View()->Size().width();
   int avail_height = GetDocument().View()->Size().height();
-  IntRect avail_rect = IntRect(0, 0, avail_width, avail_height);
+  gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
 
   // Position the listbox part where is more space available.
   const float available_space_above =

@@ -34,7 +34,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -60,16 +59,20 @@ class CORE_EXPORT MediaQuery {
   MediaQuery(const MediaQuery&);
   ~MediaQuery();
 
-  RestrictorType Restrictor() const { return restrictor_; }
-  PhysicalAxes QueriedAxes() const;
-  const MediaQueryExpNode* ExpNode() const { return exp_node_.get(); }
-  const String& MediaType() const { return media_type_; }
+  bool HasUnknown() const { return has_unknown_; }
+  RestrictorType Restrictor() const;
+  const MediaQueryExpNode* ExpNode() const;
+  const String& MediaType() const;
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
 
   std::unique_ptr<MediaQuery> Copy() const {
     return std::make_unique<MediaQuery>(*this);
   }
+
+  // This provides a way to bypass the behavior that MediaQuery objects
+  // with "unknown" values behave as "not all".
+  std::unique_ptr<MediaQuery> CopyIgnoringUnknownForTest() const;
 
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
@@ -78,6 +81,10 @@ class CORE_EXPORT MediaQuery {
   String media_type_;
   std::unique_ptr<MediaQueryExpNode> exp_node_;
   String serialization_cache_;
+
+  // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.
+  // This will cause the MediaQuery to appear as a "not all" query.
+  bool has_unknown_;
 
   String Serialize() const;
 };

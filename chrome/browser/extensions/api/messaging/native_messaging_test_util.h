@@ -10,7 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #else
 #include "base/test/scoped_path_override.h"
@@ -47,7 +47,7 @@ class ScopedTestNativeMessagingHost {
  private:
   base::ScopedTempDir temp_dir_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager registry_override_;
 #else
   std::unique_ptr<base::ScopedPathOverride> path_override_;

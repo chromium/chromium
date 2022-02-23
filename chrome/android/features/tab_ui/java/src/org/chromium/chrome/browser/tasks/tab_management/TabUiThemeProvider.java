@@ -23,6 +23,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Utility class that provides theme related attributes for Tab UI.
@@ -173,8 +174,8 @@ public class TabUiThemeProvider {
                 colorRes = isIncognito ? R.color.tab_grid_card_selected_color_incognito
                                        : R.color.tab_grid_card_selected_color;
             } else {
-                colorRes =
-                        isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color;
+                colorRes = isIncognito ? R.color.default_icon_color_light
+                                       : R.color.default_icon_color_baseline;
             }
             return AppCompatResources.getColorStateList(context, colorRes);
         }
@@ -191,11 +192,6 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getToggleActionButtonCheckedDrawableTintList(
             Context context, boolean isIncognito) {
-        if (!themeRefactorEnabled()) {
-            return AppCompatResources.getColorStateList(context,
-                    isIncognito ? R.color.default_icon_color_dark
-                                : R.color.default_icon_color_inverse);
-        }
         if (isIncognito) {
             return AppCompatResources.getColorStateList(
                     context, R.color.incognito_tab_bg_selected_color);
@@ -226,9 +222,9 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getDividerColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_grid_card_divider_tint_color_incognito
-                            : R.color.tab_grid_card_divider_tint_color);
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
     /**
@@ -302,9 +298,9 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getColor(context.getResources(),
-                isIncognito ? R.color.tab_grid_card_divider_tint_color_incognito
-                            : R.color.tab_grid_card_divider_tint_color);
+        return isIncognito ? ApiCompatibilityUtils.getColor(
+                       context.getResources(), R.color.tab_grid_card_divider_tint_color_incognito)
+                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
     }
 
     /**
@@ -334,7 +330,8 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isTabSelected) {
         if (!themeRefactorEnabled()) {
             return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+                    isIncognito ? R.color.default_icon_color_light
+                                : R.color.default_icon_color_baseline);
         }
         return getTitleTextColor(context, isIncognito, isTabSelected);
     }
@@ -522,7 +519,7 @@ public class TabUiThemeProvider {
         if (!themeRefactorEnabled()) {
             return ApiCompatibilityUtils.getColor(context.getResources(),
                     isIncognito ? R.color.default_control_color_active_dark
-                                : R.color.default_control_color_active);
+                                : R.color.default_control_color_active_baseline);
         } else {
             if (isIncognito) {
                 return ApiCompatibilityUtils.getColor(context.getResources(),
@@ -597,7 +594,8 @@ public class TabUiThemeProvider {
     public static ColorStateList getMessageCardCloseButtonTintList(
             Context context, boolean isIncognito) {
         return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
+                isIncognito ? R.color.default_icon_color_light
+                            : R.color.default_icon_color_tint_list);
     }
 
     /**

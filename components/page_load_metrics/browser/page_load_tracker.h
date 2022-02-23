@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -51,11 +52,6 @@ enum class PageLoadPrerenderEvent {
 };
 
 extern const char kErrorEvents[];
-extern const char kAbortChainSizeReload[];
-extern const char kAbortChainSizeForwardBack[];
-extern const char kAbortChainSizeNewNavigation[];
-extern const char kAbortChainSizeNoCommit[];
-extern const char kAbortChainSizeSameURL[];
 extern const char kPageLoadCompletedAfterAppBackground[];
 extern const char kPageLoadStartedInForeground[];
 extern const char kPageLoadPrerender2Event[];
@@ -165,7 +161,6 @@ enum InternalErrorLoadEvent {
 // to access them.
 void RecordInternalError(InternalErrorLoadEvent event);
 PageEndReason EndReasonForPageTransition(ui::PageTransition transition);
-void LogAbortChainSameURLHistogram(int aborted_chain_size_same_url);
 bool IsNavigationUserInitiated(content::NavigationHandle* handle);
 
 // This class tracks a given page load, starting from navigation start /
@@ -184,9 +179,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                   const GURL& currently_committed_url,
                   bool is_first_navigation_in_web_contents,
                   content::NavigationHandle* navigation_handle,
-                  UserInitiatedInfo user_initiated_info,
-                  int aborted_chain_size,
-                  int aborted_chain_size_same_url);
+                  UserInitiatedInfo user_initiated_info);
 
   PageLoadTracker(const PageLoadTracker&) = delete;
   PageLoadTracker& operator=(const PageLoadTracker&) = delete;
@@ -214,8 +207,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void UpdateResourceDataUse(
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;
-  void OnNewDeferredResourceCounts(
-      const mojom::DeferredResourceCounts& new_deferred_resource_data) override;
   void UpdateFrameCpuTiming(content::RenderFrameHost* rfh,
                             const mojom::CpuTiming& timing) override;
   void OnFrameIntersectionUpdate(
@@ -292,8 +283,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
     visibility_tracker_ = tracker;
   }
 
-  void NotifyClientRedirectTo(content::NavigationHandle* destination);
-
   void OnLoadedResource(
       const ExtraRequestCompleteInfo& extra_request_complete_info);
 
@@ -323,11 +312,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // tracking metrics in DidFinishNavigation.
   void StopTracking();
 
-  int aborted_chain_size() const { return aborted_chain_size_; }
-  int aborted_chain_size_same_url() const {
-    return aborted_chain_size_same_url_;
-  }
-
   PageEndReason page_end_reason() const { return page_end_reason_; }
   base::TimeTicks page_end_time() const { return page_end_time_; }
 
@@ -355,8 +339,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // aborted with END_OTHER. While this heuristic is coarse, it works better
   // and is simpler than other feasible methods. See https://goo.gl/WKRG98.
   bool IsLikelyProvisionalAbort(base::TimeTicks abort_cause_time) const;
-
-  bool MatchesOriginalNavigation(content::NavigationHandle* navigation_handle);
 
   bool did_commit() const { return did_commit_; }
   const GURL& url() const { return url_; }
@@ -411,10 +393,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                              UserInitiatedInfo user_initiated_info,
                              base::TimeTicks timestamp,
                              bool is_certainly_browser_timestamp);
-  // If |final_navigation| is null, then this is an "unparented" abort chain,
-  // and represents a sequence of provisional aborts that never ends with a
-  // committed load.
-  void LogAbortChainHistograms(content::NavigationHandle* final_navigation);
 
   // Given a |time|, returns the duration between |navigation_start_| and
   // |time|. |time| must be greater than or equal to |navigation_start_|.
@@ -481,23 +459,11 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Whether this page load was user initiated.
   UserInitiatedInfo user_initiated_info_;
 
-  // This is a subtle member. If a provisional load A gets aborted by
-  // provisional load B, which gets aborted by C that eventually commits, then
-  // there exists an abort chain of length 2, starting at A's navigation_start.
-  // This is useful because it allows histograming abort chain lengths based on
-  // what the last load's transition type is. i.e. holding down F-5 to spam
-  // reload will produce a long chain with the RELOAD transition.
-  const int aborted_chain_size_;
-
-  // This member counts consecutive provisional aborts that share a url. It will
-  // always be less than or equal to |aborted_chain_size_|.
-  const int aborted_chain_size_same_url_;
-
   // Keeps track of actively loading resources on the page.
   ResourceTracker resource_tracker_;
 
   // Interface to chrome features. Must outlive the class.
-  PageLoadMetricsEmbedderInterface* const embedder_interface_;
+  const raw_ptr<PageLoadMetricsEmbedderInterface> embedder_interface_;
 
   std::vector<std::unique_ptr<PageLoadMetricsObserver>> observers_;
 
@@ -505,7 +471,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
 
   const bool is_first_navigation_in_web_contents_;
 

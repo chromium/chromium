@@ -25,7 +25,7 @@ VideoEncoderFallback::~VideoEncoderFallback() = default;
 void VideoEncoderFallback::Initialize(VideoCodecProfile profile,
                                       const Options& options,
                                       OutputCB output_cb,
-                                      StatusCB done_cb) {
+                                      EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   init_done_cb_ = std::move(done_cb);
@@ -33,7 +33,7 @@ void VideoEncoderFallback::Initialize(VideoCodecProfile profile,
   profile_ = profile;
   options_ = options;
   auto done_callback = [](base::WeakPtr<VideoEncoderFallback> self,
-                          Status status) {
+                          EncoderStatus status) {
     if (!self)
       return;
     if (status.is_ok()) {
@@ -53,7 +53,7 @@ void VideoEncoderFallback::Initialize(VideoCodecProfile profile,
 VideoEncoder::PendingEncode VideoEncoderFallback::MakePendingEncode(
     scoped_refptr<VideoFrame> frame,
     bool key_frame,
-    StatusCB done_cb) {
+    EncoderStatusCB done_cb) {
   PendingEncode result;
   result.done_callback = std::move(done_cb);
   result.frame = std::move(frame);
@@ -63,7 +63,7 @@ VideoEncoder::PendingEncode VideoEncoderFallback::MakePendingEncode(
 
 void VideoEncoderFallback::Encode(scoped_refptr<VideoFrame> frame,
                                   bool key_frame,
-                                  StatusCB done_cb) {
+                                  EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (use_fallback_) {
@@ -77,7 +77,7 @@ void VideoEncoderFallback::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   auto done_callback = [](base::WeakPtr<VideoEncoderFallback> self,
-                          PendingEncode args, Status status) {
+                          PendingEncode args, EncoderStatus status) {
     if (!self)
       return;
     DCHECK(self->encoder_);
@@ -96,20 +96,20 @@ void VideoEncoderFallback::Encode(scoped_refptr<VideoFrame> frame,
 
 void VideoEncoderFallback::ChangeOptions(const Options& options,
                                          OutputCB output_cb,
-                                         StatusCB done_cb) {
+                                         EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   options_ = options;
   if (encoder_)
     encoder_->ChangeOptions(options, std::move(output_cb), std::move(done_cb));
 }
 
-void VideoEncoderFallback::Flush(StatusCB done_cb) {
+void VideoEncoderFallback::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (encoder_)
     encoder_->Flush(std::move(done_cb));
 }
 
-void VideoEncoderFallback::FallbackInitCompleted(Status status) {
+void VideoEncoderFallback::FallbackInitCompleted(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(encoder_);
   if (init_done_cb_)
@@ -133,8 +133,9 @@ void VideoEncoderFallback::FallbackInitialize() {
   use_fallback_ = true;
   encoder_ = std::move(create_fallback_cb_).Run();
   if (!encoder_) {
-    std::move(init_done_cb_).Run(StatusCode::kEncoderInitializationError);
-    FallbackInitCompleted(StatusCode::kEncoderInitializationError);
+    std::move(init_done_cb_)
+        .Run(EncoderStatus::Codes::kEncoderInitializationError);
+    FallbackInitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
 
@@ -153,7 +154,7 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args) {
     encoder_ = std::move(create_fallback_cb_).Run();
     if (!encoder_) {
       std::move(args.done_callback)
-          .Run(StatusCode::kEncoderInitializationError);
+          .Run(EncoderStatus::Codes::kEncoderInitializationError);
       return;
     }
 

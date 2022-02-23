@@ -28,6 +28,8 @@ void WebContentsViewDelegate::ShowContextMenu(
     RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {}
 
+void WebContentsViewDelegate::DismissContextMenu() {}
+
 void WebContentsViewDelegate::ExecuteCommandForTesting(int command_id,
                                                        int event_flags) {
   NOTREACHED();

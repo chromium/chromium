@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chromecast/public/media/decoder_config.h"
 

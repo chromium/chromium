@@ -110,81 +110,72 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
 
 TEST_F(SideSearchTabContentsHelperTest, LastSearchURLUpdatesCorrectly) {
   // When a tab is first opened there should be no last encountered Google SRP.
-  EXPECT_FALSE(helper()->last_search_url_for_testing().has_value());
-  EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
+  EXPECT_FALSE(helper()->last_search_url().has_value());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
 
   // Navigating to a Google SRP should update the `last_search_url`.
   LoadURL(kGoogleSearchURL1);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Navigating to a non-Google SRP URL should not change the `last_search_url`.
   LoadURL(kNonGoogleURL);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Navigating again to a Google SRP should update the `last_search_url`.
   LoadURL(kGoogleSearchURL2);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Going backwards to the non-Google SRP URL should not update the last search
   // url.
   GoBack();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Going back to the original Google SRP should update the `last_search_url`
   // to that Google SRP URL.
   GoBack();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Going forward to the non-Google URL shouldn't change the `last_search_url`.
   GoForward();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Going forward to the Google SRP URL should update the `last_search_url` to
   // that Google SRP URL.
   GoForward();
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 }
 
 TEST_F(SideSearchTabContentsHelperTest, LastSearchURLIgnoresGoogleHomePage) {
-  EXPECT_FALSE(helper()->last_search_url_for_testing().has_value());
+  EXPECT_FALSE(helper()->last_search_url().has_value());
 
   LoadURL(kGoogleSearchURL1);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   // Navigating to the Google home page should not update the `last_search_url`.
   LoadURL(kGoogleSearchHomePageURL);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL1,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 
   LoadURL(kGoogleSearchURL2);
-  EXPECT_TRUE(
-      DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url_for_testing()));
+  EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2, helper()->last_search_url()));
   EXPECT_TRUE(DoesURLMatch(kGoogleSearchURL2,
                            GetLastCommittedSideContentsEntry()->GetURL()));
 }

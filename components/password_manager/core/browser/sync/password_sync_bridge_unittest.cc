@@ -11,15 +11,17 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
@@ -215,8 +217,8 @@ class FakeDatabase {
 
   FormRetrievalResult ReadAllLogins(PrimaryKeyToFormMap* map) {
     map->clear();
-    for (const auto& pair : data_) {
-      map->emplace(pair.first, std::make_unique<PasswordForm>(*pair.second));
+    for (const auto& [primary_key, form] : data_) {
+      map->emplace(primary_key, std::make_unique<PasswordForm>(*form));
     }
     return FormRetrievalResult::kSuccess;
   }
@@ -275,9 +277,9 @@ class FakeDatabase {
 
  private:
   FormPrimaryKey GetPrimaryKey(const PasswordForm& form) const {
-    for (const auto& pair : data_) {
-      if (ArePasswordFormUniqueKeysEqual(*pair.second, form)) {
-        return pair.first;
+    for (const auto& [primary_key, other_form] : data_) {
+      if (ArePasswordFormUniqueKeysEqual(*other_form, form)) {
+        return primary_key;
       }
     }
     return FormPrimaryKey(-1);
@@ -419,10 +421,10 @@ class PasswordSyncBridgeTest : public testing::Test {
     if (!batch || !batch->HasNext()) {
       return absl::nullopt;
     }
-    const syncer::KeyAndData& data_pair = batch->Next();
-    EXPECT_THAT(data_pair.first, Eq(storage_key));
+    auto [other_storage_key, entity_data] = batch->Next();
+    EXPECT_THAT(other_storage_key, Eq(storage_key));
     EXPECT_FALSE(batch->HasNext());
-    return data_pair.second->specifics.password();
+    return entity_data->specifics.password();
   }
 
   FakeDatabase* fake_db() { return &fake_db_; }
@@ -855,6 +857,54 @@ TEST_F(PasswordSyncBridgeTest,
   EXPECT_TRUE(error);
 }
 
+#if BUILDFLAG(IS_LINUX)
+TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          features::kForceInitialSyncWhenDecryptionFails,
+          features::kSyncUndecryptablePasswordsLinux,
+      },
+      {});
+  ON_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillByDefault(
+          testing::Return(FormRetrievalResult::kEncryptionServiceFailure));
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata());
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillOnce(Return(FormRetrievalResult::kEncryptionServiceFailure));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata());
+
+  auto bridge =
+      PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                         mock_password_store_sync(), base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.SyncMetadataReadError",
+                                      3, 1);
+}
+
+TEST_F(PasswordSyncBridgeTest,
+       ShouldNotRemoveSyncMetadataWhenReadAllLoginsSucceeds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          features::kForceInitialSyncWhenDecryptionFails,
+          features::kSyncUndecryptablePasswordsLinux,
+      },
+      {});
+
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), GetAllSyncMetadata());
+  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+      .WillOnce(Return(FormRetrievalResult::kSuccess));
+  EXPECT_CALL(*mock_sync_metadata_store_sync(), DeleteAllSyncMetadata())
+      .Times(0);
+
+  PasswordSyncBridge(mock_processor().CreateForwardingProcessor(),
+                     mock_password_store_sync(), base::DoNothing());
+}
+#endif
+
 // This tests that if adding logins to the store fails,
 // ShouldMergeSync() would return an error without crashing.
 TEST_F(PasswordSyncBridgeTest,
@@ -933,8 +983,8 @@ TEST_F(PasswordSyncBridgeTest,
   ASSERT_THAT(batch, NotNull());
   EXPECT_TRUE(batch->HasNext());
   while (batch->HasNext()) {
-    const syncer::KeyAndData& data_pair = batch->Next();
-    EXPECT_EQ("<redacted>", data_pair.second->specifics.password()
+    auto [key, data] = batch->Next();
+    EXPECT_EQ("<redacted>", data->specifics.password()
                                 .client_only_encrypted_data()
                                 .password_value());
   }
@@ -961,24 +1011,48 @@ TEST_F(PasswordSyncBridgeTest,
                             mock_password_store_sync(), base::DoNothing());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that in case ReadAllLogins() during initial merge returns encryption
 // service failure, the bridge would try to do a DB clean up.
-TEST_F(PasswordSyncBridgeTest, ShouldDeleteUndecryptableLoginsDuringMerge) {
-  ON_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins())
-      .WillByDefault(Return(DatabaseCleanupResult::kSuccess));
+class PasswordSyncBridgeMergeTest
+    : public PasswordSyncBridgeTest,
+      public testing::WithParamInterface<FormRetrievalResult> {
+ protected:
+  void ShouldDeleteUndecryptableLoginsDuringMerge() {
+#if BUILDFLAG(IS_LINUX)
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kSyncUndecryptablePasswordsLinux);
+#endif
+    ON_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins())
+        .WillByDefault(Return(DatabaseCleanupResult::kSuccess));
 
-  // We should try to read first, and simulate an encryption failure. Then,
-  // cleanup the database and try to read again which should be successful now.
-  EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
-      .WillOnce(Return(FormRetrievalResult::kEncrytionServiceFailure))
-      .WillOnce(Return(FormRetrievalResult::kSuccess));
-  EXPECT_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins());
+    // We should try to read first, and simulate an encryption failure. Then,
+    // cleanup the database and try to read again which should be successful
+    // now.
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+        .WillOnce(Return(GetParam()));
+    EXPECT_CALL(*mock_password_store_sync(), DeleteUndecryptableLogins());
+    EXPECT_CALL(*mock_password_store_sync(), ReadAllLogins)
+        .WillOnce(Return(FormRetrievalResult::kSuccess));
 
-  absl::optional<syncer::ModelError> error =
-      bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(), {});
-  EXPECT_FALSE(error);
+    absl::optional<syncer::ModelError> error =
+        bridge()->MergeSyncData(bridge()->CreateMetadataChangeList(), {});
+    EXPECT_FALSE(error);
+  }
+};
+
+TEST_P(PasswordSyncBridgeMergeTest, ShouldFixWhenDatabaseEncryptionFails) {
+  ShouldDeleteUndecryptableLoginsDuringMerge();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    PasswordSyncBridgeTest,
+    PasswordSyncBridgeMergeTest,
+    testing::Values(
+        FormRetrievalResult::kEncryptionServiceFailure,
+        FormRetrievalResult::kEncryptionServiceFailureWithPartialData));
 #endif
 
 TEST_F(PasswordSyncBridgeTest,
@@ -1036,13 +1110,11 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfAccountStore) {
   bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
-TEST_F(PasswordSyncBridgeTest, ShouldNotNotifyOnSyncDisableIfProfileStore) {
+TEST_F(PasswordSyncBridgeTest, ShouldNotifyOnSyncDisableIfProfileStore) {
   ON_CALL(*mock_password_store_sync(), IsAccountStore())
       .WillByDefault(Return(false));
 
-  // The profile password store does *not* get cleared when sync is disabled, so
-  // this should *not* trigger the callback.
-  EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run()).Times(0);
+  EXPECT_CALL(*mock_sync_enabled_or_disabled_cb(), Run());
 
   bridge()->ApplyStopSyncChanges(bridge()->CreateMetadataChangeList());
 }

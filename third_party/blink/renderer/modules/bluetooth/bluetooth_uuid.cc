@@ -328,7 +328,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothuuid-getcharacteristic
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothuuid-getdescriptor
 
-  // If name is an unsigned long, return BluetoothUUID.cannonicalUUI(name) and
+  // If name is an unsigned long, return BluetoothUUID.canonicalUUID(name) and
   // abort this steps.
   if (name->IsUnsignedLong())
     return BluetoothUUID::canonicalUUID(name->GetAsUnsignedLong());
@@ -340,7 +340,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
     return name_str;
 
   // If name is in the corresponding attribute map return
-  // BluetoothUUID.cannonicalUUID(alias).
+  // BluetoothUUID.canonicalUUID(alias).
   NameToAssignedNumberMap* map = nullptr;
   const char* attribute_type = nullptr;
   switch (attribute) {

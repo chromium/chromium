@@ -617,7 +617,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckUser() {
     }
 
     if (expected != actual) {
-      LOG(ERROR) << "Invalid user name " << policy_data_->username();
+      LOG(ERROR) << "Invalid user name " << actual << ", expected " << expected;
       UMA_HISTOGRAM_ENUMERATION(kMetricPolicyUserVerification,
                                 MetricPolicyUserVerification::kUsernameFailed);
       return VALIDATION_BAD_USER;
@@ -653,7 +653,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDomain() {
 
 template class CloudPolicyValidator<em::CloudPolicySettings>;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 template class CloudPolicyValidator<em::ExternalPolicyData>;
 #endif
 

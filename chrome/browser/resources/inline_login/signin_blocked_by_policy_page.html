@@ -1,0 +1,30 @@
+<style include="shared-css">
+  .image-container {
+    margin-top: 20px;
+    height: 350px;
+  }
+
+  .signin-blocked-by-policy-image {
+    width: auto;
+  }
+
+  .secondary {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .business-logo {
+    fill: var(--google-blue-600);
+    width: 48px;
+    height: 48px;
+  }
+</style>
+
+<div class="main-container">
+  <iron-icon class="business-logo" icon="cr:domain" alt="Business building logo" aria-hidden="true"></iron-icon>
+  <h1>$i18nRaw{accountManagerDialogSigninBlockedByPolicyTitle}</h1>
+  <p class="secondary">[[getBodyText_(email, hostedDomain)]]</p>
+  <div class="image-container" aria-hidden="true">
+    <img class="signin-blocked-by-policy-image" alt="$i18n{accountManagerDialogSigninBlockedByPolicyImageAlt}"
+      src="account_manager_signin_blocked_by_policy.svg">
+  </div>
+</div>

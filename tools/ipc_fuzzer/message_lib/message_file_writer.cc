@@ -9,7 +9,6 @@
 
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
 #include "tools/ipc_fuzzer/message_lib/message_file_format.h"
 #include "tools/ipc_fuzzer/message_lib/message_names.h"

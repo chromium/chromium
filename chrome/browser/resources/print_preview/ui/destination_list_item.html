@@ -38,7 +38,7 @@
 
   @media (prefers-color-scheme: dark) {
     iron-icon {
-      fill: var(--google-grey-refresh-500);
+      fill: var(--google-grey-500);
     }
   }
 
@@ -73,12 +73,17 @@
     opacity: 0.4;
   }
 
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
   :host([is-destination-cros-local_]) .connection-status {
     color: var(--google-red-600);
   }
 </if>
 </style>
+<if expr="chromeos_ash or chromeos_lacros">
+  <iron-media-query query="(prefers-color-scheme: dark)"
+      query-matches="{{isDarkModeActive_}}">
+  </iron-media-query>
+</if>
 <iron-icon icon="[[destinationIcon_]]"></iron-icon>
 <span class="name searchable">[[destination.displayName]]</span>
 <span class="search-hint searchable" hidden="[[!searchHint_]]">
@@ -100,7 +105,7 @@
   <span class="extension-icon" role="button" tabindex="0"
       title="[[getExtensionPrinterTooltip_(destination)]]"></span>
 </span>
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
 <span class="configuring-in-progress-text"
   hidden$="[[!checkConfigurationStatus_(statusEnum_.IN_PROGRESS,
                                         configurationStatus_)]]">

@@ -5,10 +5,11 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
-import {Debouncer, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {selectFolder, setSearchTerm} from './actions.js';
 import {BOOKMARKS_BAR_ID} from './constants.js';
+import {getTemplate} from './router.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 
 const BookmarksRouterElementBase = StoreClientMixin(PolymerElement);
@@ -24,7 +25,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

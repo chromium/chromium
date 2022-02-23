@@ -19,6 +19,8 @@ option optimize_for = LITE_RUNTIME;
 
 package rlwe;
 
+option go_package = "github.com/google/shell-encryption";
+
 // NTT Polynomial
 message SerializedNttPolynomial {
   // Coefficients of the polynomial

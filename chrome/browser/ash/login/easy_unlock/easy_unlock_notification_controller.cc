@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -12,7 +13,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"

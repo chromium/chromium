@@ -62,7 +62,7 @@ const int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
 const int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
-    defined(COMPILER_GCC) && !defined(OS_NACL) && __OPTIMIZE__
+    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
 inline int GetMaxSaturatedSetResultForTesting() {
   // For ARM Asm version the set function maxes out to the biggest
   // possible integer part with the fractional part zero'd out.
@@ -89,24 +89,13 @@ ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
 class PLATFORM_EXPORT LayoutUnit;
 constexpr bool operator<(const LayoutUnit&, const LayoutUnit&);
 
-// kIndefiniteSize is a special value used within layout code. It is typical
-// within layout to have sizes which are only allowed to be non-negative or
-// "indefinite". We use the value of "-1" to represent these indefinite values.
-//
-// It is common to clamp these indefinite values to zero.
-// |LayoutUnit::ClampIndefiniteToZero| provides this functionality, and
-// additionally DCHECKs that it isn't some other negative value.
-//
-// TODO(wangxianzhu): Make it a constexpr when LayoutUnit allows it.
-#define kIndefiniteSize LayoutUnit(-1)
-
 class LayoutUnit {
   DISALLOW_NEW();
 
  public:
   constexpr LayoutUnit() : value_(0) {}
   template <typename IntegerType>
-  constexpr explicit LayoutUnit(IntegerType value) {
+  constexpr explicit LayoutUnit(IntegerType value) : value_(0) {
     if (std::is_signed<IntegerType>::value)
       SaturatedSet(static_cast<int>(value));
     else
@@ -246,7 +235,7 @@ class LayoutUnit {
            RawValue() == std::numeric_limits<int>::min();
   }
 
-  static float Epsilon() { return 1.0f / kFixedPointDenominator; }
+  static constexpr float Epsilon() { return 1.0f / kFixedPointDenominator; }
 
   LayoutUnit AddEpsilon() const {
     LayoutUnit return_value;
@@ -268,12 +257,12 @@ class LayoutUnit {
 
   // Versions of max/min that are slightly smaller/larger than max/min() to
   // allow for roinding without overflowing.
-  static const LayoutUnit NearlyMax() {
+  static constexpr LayoutUnit NearlyMax() {
     LayoutUnit m;
     m.value_ = std::numeric_limits<int>::max() - kFixedPointDenominator / 2;
     return m;
   }
-  static const LayoutUnit NearlyMin() {
+  static constexpr LayoutUnit NearlyMin() {
     LayoutUnit m;
     m.value_ = std::numeric_limits<int>::min() + kFixedPointDenominator / 2;
     return m;
@@ -303,10 +292,17 @@ class LayoutUnit {
   }
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
-    defined(COMPILER_GCC) && !defined(OS_NACL) && __OPTIMIZE__
+    defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL) && __OPTIMIZE__
   // If we're building ARM 32-bit on GCC we replace the C++ versions with some
   // native ARM assembly for speed.
-  inline void SaturatedSet(int value) {
+  constexpr inline void SaturatedSet(int value) {
+    if (IsConstantEvaluated())
+      SaturatedSetNonAsm(value);
+    else
+      SaturatedSetAsm(value);
+  }
+
+  inline void SaturatedSetAsm(int value) {
     // Figure out how many bits are left for storing the integer part of
     // the fixed point number, and saturate our input to that
     enum { Saturate = 32 - kLayoutUnitFractionalBits };
@@ -331,7 +327,14 @@ class LayoutUnit {
     value_ = result;
   }
 
-  inline void SaturatedSet(unsigned value) {
+  constexpr inline void SaturatedSet(unsigned value) {
+    if (IsConstantEvaluated())
+      SaturatedSetNonAsm(value);
+    else
+      SaturatedSetAsm(value);
+  }
+
+  inline void SaturatedSetAsm(unsigned value) {
     // Here we are being passed an unsigned value to saturate,
     // even though the result is returned as a signed integer. The ARM
     // instruction for unsigned saturation therefore needs to be given one
@@ -357,8 +360,17 @@ class LayoutUnit {
 
     value_ = result;
   }
-#else
-  ALWAYS_INLINE void SaturatedSet(int value) {
+#else  // end of 32-bit ARM GCC
+  constexpr ALWAYS_INLINE void SaturatedSet(int value) {
+    SaturatedSetNonAsm(value);
+  }
+
+  constexpr ALWAYS_INLINE void SaturatedSet(unsigned value) {
+    SaturatedSetNonAsm(value);
+  }
+#endif
+
+  constexpr ALWAYS_INLINE void SaturatedSetNonAsm(int value) {
     if (value > kIntMaxForLayoutUnit)
       value_ = std::numeric_limits<int>::max();
     else if (value < kIntMinForLayoutUnit)
@@ -367,16 +379,24 @@ class LayoutUnit {
       value_ = static_cast<unsigned>(value) << kLayoutUnitFractionalBits;
   }
 
-  ALWAYS_INLINE void SaturatedSet(unsigned value) {
-    if (value >= (unsigned)kIntMaxForLayoutUnit)
+  constexpr ALWAYS_INLINE void SaturatedSetNonAsm(unsigned value) {
+    if (value >= static_cast<unsigned>(kIntMaxForLayoutUnit))
       value_ = std::numeric_limits<int>::max();
     else
       value_ = value << kLayoutUnitFractionalBits;
   }
-#endif  // CPU(ARM) && COMPILER(GCC)
 
   int value_;
 };
+
+// kIndefiniteSize is a special value used within layout code. It is typical
+// within layout to have sizes which are only allowed to be non-negative or
+// "indefinite". We use the value of "-1" to represent these indefinite values.
+//
+// It is common to clamp these indefinite values to zero.
+// |LayoutUnit::ClampIndefiniteToZero| provides this functionality, and
+// additionally DCHECKs that it isn't some other negative value.
+constexpr LayoutUnit kIndefiniteSize(-1);
 
 constexpr bool operator<=(const LayoutUnit& a, const LayoutUnit& b) {
   return a.RawValue() <= b.RawValue();

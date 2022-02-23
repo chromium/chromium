@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,6 +44,25 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   return hosts;
 }
 
+// A version of WebTransportFingerprintProofVerifier that enforces
+// Chromium-specific policies.
+class ChromiumWebTransportFingerprintProofVerifier
+    : public quic::WebTransportFingerprintProofVerifier {
+ public:
+  using WebTransportFingerprintProofVerifier::
+      WebTransportFingerprintProofVerifier;
+
+ protected:
+  bool IsKeyTypeAllowedByPolicy(
+      const quic::CertificateView& certificate) override {
+    if (certificate.public_key_type() == quic::PublicKeyType::kRsa) {
+      return false;
+    }
+    return WebTransportFingerprintProofVerifier::IsKeyTypeAllowedByPolicy(
+        certificate);
+  }
+};
+
 std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     const NetworkIsolationKey& isolation_key,
     URLRequestContext* context,
@@ -56,8 +76,9 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
         isolation_key);
   }
 
-  auto verifier = std::make_unique<quic::WebTransportFingerprintProofVerifier>(
-      context->quic_context()->clock(), kCustomCertificateMaxValidityDays);
+  auto verifier =
+      std::make_unique<ChromiumWebTransportFingerprintProofVerifier>(
+          context->quic_context()->clock(), kCustomCertificateMaxValidityDays);
   for (const quic::CertificateFingerprint& fingerprint :
        parameters.server_certificate_fingerprints) {
     bool success = verifier->AddFingerprint(fingerprint);
@@ -129,7 +150,7 @@ class ConnectStream : public quic::QuicSpdyClientStream {
   }
 
  private:
-  DedicatedWebTransportHttp3Client* client_;
+  raw_ptr<DedicatedWebTransportHttp3Client> client_;
 };
 
 class DedicatedWebTransportHttp3ClientSession
@@ -191,7 +212,7 @@ class DedicatedWebTransportHttp3ClientSession
   }
 
  private:
-  DedicatedWebTransportHttp3Client* client_;
+  raw_ptr<DedicatedWebTransportHttp3Client> client_;
 };
 
 class WebTransportVisitorProxy : public quic::WebTransportVisitor {
@@ -223,7 +244,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   }
 
  private:
-  quic::WebTransportVisitor* visitor_;
+  raw_ptr<quic::WebTransportVisitor> visitor_;
 };
 
 bool IsTerminalState(WebTransportState state) {

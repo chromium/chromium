@@ -10,10 +10,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -90,21 +90,21 @@ void ChromeViewsDelegate::SaveWindowPlacement(const views::Widget* window,
 
   std::unique_ptr<DictionaryPrefUpdate> pref_update =
       chrome::GetWindowPlacementDictionaryReadWrite(window_name, prefs);
-  base::DictionaryValue* window_preferences = pref_update->Get();
-  window_preferences->SetInteger("left", bounds.x());
-  window_preferences->SetInteger("top", bounds.y());
-  window_preferences->SetInteger("right", bounds.right());
-  window_preferences->SetInteger("bottom", bounds.bottom());
-  window_preferences->SetBoolean("maximized",
+  base::Value* window_preferences = pref_update->Get();
+  window_preferences->SetIntKey("left", bounds.x());
+  window_preferences->SetIntKey("top", bounds.y());
+  window_preferences->SetIntKey("right", bounds.right());
+  window_preferences->SetIntKey("bottom", bounds.bottom());
+  window_preferences->SetBoolKey("maximized",
                                  show_state == ui::SHOW_STATE_MAXIMIZED);
 
   gfx::Rect work_area(display::Screen::GetScreen()
                           ->GetDisplayNearestView(window->GetNativeView())
                           .work_area());
-  window_preferences->SetInteger("work_area_left", work_area.x());
-  window_preferences->SetInteger("work_area_top", work_area.y());
-  window_preferences->SetInteger("work_area_right", work_area.right());
-  window_preferences->SetInteger("work_area_bottom", work_area.bottom());
+  window_preferences->SetIntKey("work_area_left", work_area.x());
+  window_preferences->SetIntKey("work_area_top", work_area.y());
+  window_preferences->SetIntKey("work_area_right", work_area.right());
+  window_preferences->SetIntKey("work_area_bottom", work_area.bottom());
 }
 
 bool ChromeViewsDelegate::GetSavedWindowPlacement(
@@ -117,7 +117,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
     return false;
 
   DCHECK(prefs->FindPreference(window_name));
-  const base::DictionaryValue* dictionary = prefs->GetDictionary(window_name);
+  const base::Value* dictionary = prefs->GetDictionary(window_name);
   if (!dictionary)
     return false;
   absl::optional<int> left = dictionary->FindIntKey("left");
@@ -129,9 +129,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
 
   bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
-  bool maximized = false;
-  if (dictionary)
-    dictionary->GetBoolean("maximized", &maximized);
+  const bool maximized = dictionary->FindBoolKey("maximized").value_or(false);
   *show_state = maximized ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -39,5 +39,11 @@ specific_include_rules = {
   "startup_browser_creator_browsertest.cc": [
     "+chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
     "+chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h",
-  ]
+  ],
+  "hid_chooser_controller_unittest\.cc": [
+    "+services/device/hid",
+  ],
+  "signin_intercept_first_run_experience_dialog_browsertest.cc": [
+    "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
+  ],
 }

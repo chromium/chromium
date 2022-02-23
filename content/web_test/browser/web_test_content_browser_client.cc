@@ -18,6 +18,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -72,7 +73,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -92,7 +93,7 @@ void BindWebTestHelper(
 
 // An OverlayWindow that returns the last given video natural size as the
 // window's bounds.
-class BoundsMatchVideoSizeOverlayWindow : public OverlayWindow {
+class BoundsMatchVideoSizeOverlayWindow : public VideoOverlayWindow {
  public:
   BoundsMatchVideoSizeOverlayWindow() = default;
   ~BoundsMatchVideoSizeOverlayWindow() override = default;
@@ -109,7 +110,7 @@ class BoundsMatchVideoSizeOverlayWindow : public OverlayWindow {
   bool IsVisible() override { return false; }
   bool IsAlwaysOnTop() override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
-  void UpdateVideoSize(const gfx::Size& natural_size) override {
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
   }
   void SetPlaybackState(PlaybackState playback_state) override {}
@@ -344,7 +345,7 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
     switches::kEnableFontAntialiasing,
     switches::kAlwaysUseComplexText,
     switches::kStableReleaseMode,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     switches::kRegisterFontFiles,
 #endif
   };
@@ -365,9 +366,9 @@ WebTestContentBrowserClient::CreateBrowserMainParts(
   return browser_main_parts;
 }
 
-std::unique_ptr<OverlayWindow>
-WebTestContentBrowserClient::CreateWindowForPictureInPicture(
-    PictureInPictureWindowController* controller) {
+std::unique_ptr<VideoOverlayWindow>
+WebTestContentBrowserClient::CreateWindowForVideoPictureInPicture(
+    VideoPictureInPictureWindowController* controller) {
   return std::make_unique<BoundsMatchVideoSizeOverlayWindow>();
 }
 
@@ -544,7 +545,6 @@ void WebTestContentBrowserClient::ConfigureNetworkContextParamsForShell(
   ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
       context, context_params, cert_verifier_creation_params);
 
-#if BUILDFLAG(ENABLE_REPORTING)
   // Configure the Reporting service in a manner expected by certain Web
   // Platform Tests (network-error-logging and reporting-api).
   //
@@ -553,7 +553,6 @@ void WebTestContentBrowserClient::ConfigureNetworkContextParamsForShell(
   context_params->reporting_delivery_interval =
       kReportingDeliveryIntervalTimeForWebTests;
   context_params->skip_reporting_send_permission_check = true;
-#endif
 }
 
 void WebTestContentBrowserClient::CreateFakeBluetoothChooserFactory(
@@ -571,7 +570,7 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
         render_process_id, std::move(receiver));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
     sandbox::mojom::Sandbox sandbox_type,
@@ -589,7 +588,7 @@ bool WebTestContentBrowserClient::PreSpawnChild(
   }
   return true;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string WebTestContentBrowserClient::GetAcceptLangs(
     BrowserContext* context) {
@@ -597,9 +596,10 @@ std::string WebTestContentBrowserClient::GetAcceptLangs(
 }
 
 bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
-    content::BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
+    InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,
-    const GURL& api_url) {
+    const url::Origin& api_origin) {
   return true;
 }
 

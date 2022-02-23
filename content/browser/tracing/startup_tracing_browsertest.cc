@@ -236,7 +236,7 @@ class StartupTracingTest
       case OutputType::kJSON:
         return "json";
       case OutputType::kProto:
-        return "proto";
+        return "pftrace";
     }
   }
 
@@ -265,11 +265,11 @@ class StartupTracingTest
   }
 
   static void CheckOutput(base::FilePath path, OutputType output_type) {
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
     // Skip checks because the thread sanitizer is often too slow to flush trace
     // data correctly within the timeouts. We still run the tests on TSAN to
     // catch general threading issues.
-#else // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#else   // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
     std::string trace;
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::ReadFileToString(path, &trace))
@@ -283,7 +283,7 @@ class StartupTracingTest
     // as a substring.
     EXPECT_TRUE(trace.find("StartupTracingController::Start") !=
                 std::string::npos);
-#endif // !(defined(OS_LINUX) && defined(THREAD_SANITIZER))
+#endif  // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
   }
 
   void Wait() {

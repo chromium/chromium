@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -107,7 +108,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
  private:
   const std::string extension_id_;
   const bool is_anonymous_;
-  TabCaptureRegistry* const registry_;
+  const raw_ptr<TabCaptureRegistry> registry_;
   TabCaptureState capture_state_;
   bool is_verified_;
   bool is_fullscreened_;
@@ -295,10 +296,10 @@ void TabCaptureRegistry::DispatchStatusChangeEvent(
   tab_capture::CaptureInfo info;
   request->GetCaptureInfo(&info);
   args->Append(info.ToValue());
-  auto event =
-      std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
-                              tab_capture::OnStatusChanged::kEventName,
-                              std::move(*args).TakeList(), browser_context_);
+  auto event = std::make_unique<Event>(events::TAB_CAPTURE_ON_STATUS_CHANGED,
+                                       tab_capture::OnStatusChanged::kEventName,
+                                       std::move(*args).TakeListDeprecated(),
+                                       browser_context_);
 
   router->DispatchEventToExtension(request->extension_id(), std::move(event));
 }

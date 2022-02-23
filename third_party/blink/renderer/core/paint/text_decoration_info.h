@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -12,12 +13,12 @@
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 namespace blink {
 
 class ComputedStyle;
@@ -30,6 +31,8 @@ enum class ResolvedUnderlinePosition {
   kUnder,
   kOver
 };
+
+using MinimumThickness1 = base::StrongAlias<class MinimumThickness1Tag, bool>;
 
 // Container for computing and storing information for text decoration
 // invalidation and painting. See also
@@ -46,6 +49,7 @@ class CORE_EXPORT TextDecorationInfo {
       const Font& scaled_font,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
       const ComputedStyle* decorating_box_style,
+      MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
       float scaling_factor = 1.0f);
 
   // Set the decoration to use when painting and returning values.
@@ -60,7 +64,7 @@ class CORE_EXPORT TextDecorationInfo {
   // Set data for one of the text decoration lines: over, under or
   // through. Must be called before trying to paint or compute bounds
   // for a line.
-  void SetPerLineData(TextDecoration line, float line_offset);
+  void SetLineData(TextDecorationLine line, float line_offset);
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }
@@ -88,28 +92,32 @@ class CORE_EXPORT TextDecorationInfo {
   }
   enum StrokeStyle StrokeStyle() const;
 
-  // SetPerLineData must be called with the line argument before using
-  // the remaining methods.
-  FloatPoint StartPoint(TextDecoration line) const;
-  float DoubleOffset(TextDecoration line) const;
+  // SetLineData must be called before using the remaining methods.
+  gfx::PointF StartPoint() const;
+  float DoubleOffset() const;
 
   // Compute bounds for the given line and the current decoration.
-  FloatRect BoundsForLine(TextDecoration line) const;
+  gfx::RectF Bounds() const;
 
-  // Return a path for a wavy line at the given position, for the
-  // current decoration.
-  absl::optional<Path> PrepareWavyStrokePath(TextDecoration line) const;
+  // Return a path for current decoration.
+  absl::optional<Path> StrokePath() const;
 
  private:
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style);
 
-  FloatRect BoundsForDottedOrDashed(TextDecoration line) const;
-  FloatRect BoundsForWavy(TextDecoration line) const;
+  gfx::RectF BoundsForDottedOrDashed() const;
+  gfx::RectF BoundsForWavy() const;
   float WavyDecorationSizing() const;
   float ControlPointDistanceFromResolvedThickness() const;
   float StepFromResolvedThickness() const;
+  Path PrepareDottedOrDashedStrokePath() const;
+  Path PrepareWavyStrokePath() const;
+  bool IsSpellingOrGrammarError() const {
+    return line_data_.line == TextDecorationLine::kSpellingError ||
+           line_data_.line == TextDecorationLine::kGrammarError;
+  }
 
   const ComputedStyle& style_;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
@@ -120,24 +128,20 @@ class CORE_EXPORT TextDecorationInfo {
   const float computed_font_size_;
   const float scaling_factor_;
   ResolvedUnderlinePosition underline_position_;
-  FloatPoint local_origin_;
+  gfx::PointF local_origin_;
+  const bool minimum_thickness_is_one_;
   bool antialias_;
   Vector<float> applied_decorations_thickness_;
-
   int decoration_index_;
 
-  /* We need to store data for up to 3 lines: Underline, Overline and
-     LineThrough. Unfortunately the enum for these are bitfield indices, not
-     directly useful as indexes. So explicitly convert in place
-     when necessary.
-  */
-  struct PerLineData {
+  struct LineData {
+    TextDecorationLine line;
     float line_offset;
     float double_offset;
     int wavy_offset_factor;
-    mutable absl::optional<Path> stroke_path;
+    absl::optional<Path> stroke_path;
   };
-  PerLineData line_data_[3];
+  LineData line_data_;
 };
 
 }  // namespace blink

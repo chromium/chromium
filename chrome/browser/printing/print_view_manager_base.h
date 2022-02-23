@@ -9,19 +9,19 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "components/prefs/pref_member.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
@@ -34,14 +34,11 @@ class RefCountedMemory;
 
 namespace printing {
 
-class JobEventDetails;
-class PrintJob;
 class PrintQueriesQueue;
 class PrinterQuery;
 
 // Base class for managing the print commands for a WebContents.
-class PrintViewManagerBase : public content::NotificationObserver,
-                             public PrintManager {
+class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
  public:
   // An observer interface implemented by classes which are interested
   // in `PrintViewManagerBase` events.
@@ -64,9 +61,9 @@ class PrintViewManagerBase : public content::NotificationObserver,
   virtual bool PrintNow(content::RenderFrameHost* rfh);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  // Prints the document in |print_data| with settings specified in
-  // |job_settings|. Runs |callback| with an error string on failure and with an
-  // empty string if the print job is started successfully. |rfh| is the render
+  // Prints the document in `print_data` with settings specified in
+  // `job_settings`. Runs `callback` with an error string on failure and with an
+  // empty string if the print job is started successfully. `rfh` is the render
   // frame host for the preview initiator contents respectively.
   void PrintForPrintPreview(base::Value job_settings,
                             scoped_refptr<base::RefCountedMemory> print_data,
@@ -79,7 +76,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
 // Notifies the print view manager that the system dialog has been cancelled
 // after being opened from Print Preview.
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void SystemDialogCancelled();
 #endif
 
@@ -122,10 +119,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // Helper method for checking whether the WebContents is crashed.
   bool IsCrashed();
 
-  // Helper method for Print*Now().
-  bool PrintNowInternal(content::RenderFrameHost* rfh,
-                        std::unique_ptr<IPC::Message> message);
-
   void SetPrintingRFH(content::RenderFrameHost* rfh);
 
   // content::WebContentsObserver implementation.
@@ -143,6 +136,11 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // returns.
   void DisconnectFromCurrentPrintJob();
 
+  // PrintJob::Observer overrides:
+  void OnDocDone(int job_id, PrintedDocument* document) override;
+  void OnJobDone() override;
+  void OnFailed() override;
+
   base::ObserverList<Observer>& GetObservers() { return observers_; }
 
   // Manages the low-level talk to the printer.
@@ -150,11 +148,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
  private:
   friend class TestPrintViewManager;
-
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // content::WebContentsObserver implementation.
   void RenderFrameHostStateChanged(
@@ -202,20 +195,17 @@ class PrintViewManagerBase : public content::NotificationObserver,
                           int process_id,
                           mojom::PrintPagesParamsPtr params);
 
-  // Processes a NOTIFY_PRINT_JOB_EVENT notification.
-  void OnNotifyPrintJobEvent(const JobEventDetails& event_details);
-
   // Requests the RenderView to render all the missing pages for the print job.
   // No-op if no print job is pending. Returns true if at least one page has
   // been requested to the renderer.
   // WARNING: `this` may not be alive after RenderAllMissingPagesNow() returns.
   bool RenderAllMissingPagesNow();
 
-  // Checks that synchronization is correct with |print_job_| based on |cookie|.
+  // Checks that synchronization is correct with `print_job_` based on `cookie`.
   bool PrintJobHasDocument(int cookie);
 
-  // Starts printing the |document| in |print_job_| with the given |print_data|.
-  // This method assumes PrintJobHasDocument() has been called, and |print_data|
+  // Starts printing the `document` in `print_job_` with the given `print_data`.
+  // This method assumes PrintJobHasDocument() has been called, and `print_data`
   // contains valid data.
   void PrintDocument(scoped_refptr<base::RefCountedMemory> print_data,
                      const gfx::Size& page_size,
@@ -229,7 +219,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void ShouldQuitFromInnerMessageLoop();
 
   // Terminates the print job. No-op if no print job has been created. If
-  // |cancel| is true, cancel it instead of waiting for the job to finish. Will
+  // `cancel` is true, cancel it instead of waiting for the job to finish. Will
   // call ReleasePrintJob().
   void TerminatePrintJob(bool cancel);
 
@@ -249,16 +239,14 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // print_job_ is initialized.
   bool OpportunisticallyCreatePrintJob(int cookie);
 
-  // Release the PrinterQuery associated with our |cookie_|.
+  // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
 
   // Notifies `rfh` about whether printing is `enabled`.
   void SendPrintingEnabled(bool enabled, content::RenderFrameHost* rfh);
 
-  content::NotificationRegistrar registrar_;
-
   // The current RFH that is printing with a system printing dialog.
-  content::RenderFrameHost* printing_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
 
   // Indication of success of the print job.
   bool printing_succeeded_ = false;

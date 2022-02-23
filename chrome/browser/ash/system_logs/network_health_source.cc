@@ -22,7 +22,8 @@ constexpr char kNetworkHealthSnapshotEntry[] = "network-health-snapshot";
 constexpr char kNetworkDiagnosticsEntry[] = "network-diagnostics";
 
 std::string FormatNetworkHealth(
-    const ash::network_health::mojom::NetworkHealthStatePtr& network_health,
+    const chromeos::network_health::mojom::NetworkHealthStatePtr&
+        network_health,
     bool scrub) {
   std::ostringstream output;
 
@@ -50,7 +51,7 @@ std::string FormatNetworkHealth(
              << "\n";
       output << "Signal Strength (Samples): [";
       auto& samples = net->signal_strength_stats->samples;
-      for (int i = 0; i < samples.size(); i++) {
+      for (uint16_t i = 0; i < samples.size(); i++) {
         output << base::NumberToString(samples[i]);
         if (i < samples.size() - 1)
           output << ",";
@@ -83,7 +84,7 @@ std::string ProblemsToStr(T problems) {
   }
 
   std::ostringstream output;
-  for (int i = 0; i < problems.size(); i++) {
+  for (uint16_t i = 0; i < problems.size(); i++) {
     output << problems[i];
     if (i != problems.size() - 1)
       output << ", ";
@@ -92,8 +93,8 @@ std::string ProblemsToStr(T problems) {
 }
 
 std::string GetProblemsString(
-    const ash::network_diagnostics::mojom::RoutineProblemsPtr& problems) {
-  using ::ash::network_diagnostics::mojom::RoutineProblems;
+    const chromeos::network_diagnostics::mojom::RoutineProblemsPtr& problems) {
+  using chromeos::network_diagnostics::mojom::RoutineProblems;
   std::string problemsStr;
   switch (problems->which()) {
     case RoutineProblems::Tag::LAN_CONNECTIVITY_PROBLEMS:
@@ -151,9 +152,9 @@ std::string GetProblemsString(
 }  // namespace
 
 std::string FormatNetworkDiagnosticResults(
-    const base::flat_map<ash::network_diagnostics::mojom::RoutineType,
-                         ash::network_diagnostics::mojom::RoutineResultPtr>&
-        results,
+    const base::flat_map<
+        chromeos::network_diagnostics::mojom::RoutineType,
+        chromeos::network_diagnostics::mojom::RoutineResultPtr>& results,
     bool scrub) {
   std::ostringstream output;
 
@@ -195,14 +196,15 @@ void NetworkHealthSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void NetworkHealthSource::OnNetworkHealthReceived(
-    ash::network_health::mojom::NetworkHealthStatePtr network_health) {
+    chromeos::network_health::mojom::NetworkHealthStatePtr network_health) {
   network_health_response_ = FormatNetworkHealth(network_health, scrub_);
   CheckIfDone();
 }
 
 void NetworkHealthSource::OnNetworkDiagnosticResultsReceived(
-    base::flat_map<ash::network_diagnostics::mojom::RoutineType,
-                   ash::network_diagnostics::mojom::RoutineResultPtr> results) {
+    base::flat_map<chromeos::network_diagnostics::mojom::RoutineType,
+                   chromeos::network_diagnostics::mojom::RoutineResultPtr>
+        results) {
   network_diagnostics_response_ =
       FormatNetworkDiagnosticResults(results, scrub_);
   CheckIfDone();

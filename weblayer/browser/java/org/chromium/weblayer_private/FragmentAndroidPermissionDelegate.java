@@ -5,7 +5,7 @@
 package org.chromium.weblayer_private;
 
 import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.ui.base.AndroidPermissionDelegateWithRequester;
+import org.chromium.ui.permissions.AndroidPermissionDelegateWithRequester;
 
 /**
  * AndroidPermissionDelegate implementation for BrowserFragment.
@@ -18,7 +18,7 @@ public class FragmentAndroidPermissionDelegate extends AndroidPermissionDelegate
     }
 
     @Override
-    protected final boolean shouldShowRequestPermissionRationale(String permission) {
+    public final boolean shouldShowRequestPermissionRationale(String permission) {
         if (mFragment.getActivity() == null) return false;
         return mFragment.shouldShowRequestPermissionRationale(permission);
     }

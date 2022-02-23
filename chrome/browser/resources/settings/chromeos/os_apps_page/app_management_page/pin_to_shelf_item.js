@@ -1,16 +1,16 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './toggle_row.js';
+import '//resources/cr_components/app_management/toggle_row.js';
 
+import {AppManagementUserAction, OptionalBool} from '//resources/cr_components/app_management/constants.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementUserAction, OptionalBool} from './constants.js';
-import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -87,7 +87,10 @@ Polymer({
   toggleSetting_() {
     const newState = assert(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
-    assert(newStateBool === this.$['toggle-row'].isChecked());
+    assert(
+        newStateBool ===
+        (/** @type {AppManagementToggleRowElement} */ (this.$['toggle-row']))
+            .isChecked());
     BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,

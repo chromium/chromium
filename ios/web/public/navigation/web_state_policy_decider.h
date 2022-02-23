@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 

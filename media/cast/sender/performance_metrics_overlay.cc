@@ -180,7 +180,7 @@ void RenderLineOfText(const std::string& line, int top, VideoFrame* frame) {
       case '+':
         DivergePixels(gfx::Rect(1, 1, 1, 1), p_ul, stride);
         DivergePixels(gfx::Rect(1, 3, 1, 1), p_ul, stride);
-        FALLTHROUGH;
+        [[fallthrough]];
       case '-':
         DivergePixels(gfx::Rect(0, 2, 3, 1), p_ul, stride);
         break;

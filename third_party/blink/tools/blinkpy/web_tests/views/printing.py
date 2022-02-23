@@ -116,7 +116,7 @@ class Printer(object):
         self._print_default('Using %s build' % self._options.configuration)
         self._print_default(
             'Regular timeout: %s, slow test timeout: %s' %
-            (self._options.time_out_ms, self._options.slow_time_out_ms))
+            (self._options.timeout_ms, self._options.slow_timeout_ms))
 
         self._print_default('Command line: ' +
                             ' '.join(port.driver_cmd_line()))

@@ -261,7 +261,7 @@ namespace developerPrivate {
     boolean inDeveloperMode;
     boolean isDeveloperModeControlledByPolicy;
     boolean isIncognitoAvailable;
-    boolean isSupervised;
+    boolean isChildAccount;
   };
 
   // DEPRECATED: Prefer ExtensionInfo.
@@ -355,6 +355,27 @@ namespace developerPrivate {
     // of the page. notifyDragInstallInProgress() needs to be called prior to
     // this being used. This cannot be used with |retryGuid|.
     boolean? useDraggedPath;
+  };
+
+  enum UserSiteSet {
+    PERMITTED,
+    RESTRICTED
+  };
+
+  dictionary UserSiteSettingsOptions {
+    // Specifies which set of user specified sites that the host will be added
+    // to or removed from.
+    UserSiteSet siteList;
+    // The site to add/remove.
+    DOMString host;
+  };
+
+  dictionary UserSiteSettings {
+    // The list of origins where the user has allowed all extensions to run on.
+    DOMString[] permittedSites;
+    // The list of origins where the user has blocked all extensions from
+    // running on.
+    DOMString[] restrictedSites;
   };
 
   enum PackStatus {
@@ -534,6 +555,7 @@ namespace developerPrivate {
       void (RequestFileSourceResponse response);
   callback LoadErrorCallback = void (optional LoadError error);
   callback DragInstallInProgressCallback = void (DOMString loadGuid);
+  callback UserSiteSettingsCallback = void (UserSiteSettings settings);
 
   interface Functions {
     // Runs auto update for extensions and apps immediately.
@@ -707,6 +729,24 @@ namespace developerPrivate {
         DOMString host,
         optional VoidCallback callback);
 
+    // Returns the user specified site settings (which origins can extensions
+    // always/never run on) for the current profile.
+    [supportsPromises] static void getUserSiteSettings(
+        optional UserSiteSettingsCallback callback);
+
+    // Adds a host to the set of user permitted or restricted sites. If the host
+    // in the other set than what's specified in `options`, then it is removed
+    // from that set.
+    [supportsPromises] static void addUserSpecifiedSite(
+        UserSiteSettingsOptions options,
+        optional VoidCallback callback);
+
+    // Removes a host from the specified set of user permitted or restricted
+    // sites.
+    [supportsPromises] static void removeUserSpecifiedSite(
+        UserSiteSettingsOptions options,
+        optional VoidCallback callback);
+
     [nocompile, deprecated="Use management.setEnabled"]
         static void enable(DOMString id,
                            boolean enabled,
@@ -730,6 +770,9 @@ namespace developerPrivate {
 
     // Fired when the profile's state has changed.
     static void onProfileStateChanged(ProfileInfo info);
+
+    // Fired when the lists of sites in the user's site settings have changed.
+    static void onUserSiteSettingsChanged(UserSiteSettings settings);
   };
 
 };

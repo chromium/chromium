@@ -11,34 +11,4 @@
     android:layout_height="wrap_content">
 
     <include layout="@layout/instance_switcher_list"/>
-
-    <RelativeLayout
-        android:id="@+id/close_confirm"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginVertical="16dp"
-            android:layout_alignParentTop="true"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-        <CheckBox
-            android:id="@+id/no_more_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="18dp"
-            android:layout_marginBottom="12dp"
-            android:layout_below="@id/message" />
-        <TextView
-            android:id="@+id/no_more"
-            android:text="@string/dont_ask_again"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/no_more_check"
-            android:layout_alignBaseline="@id/no_more_check"
-            android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
-    </RelativeLayout>
 </FrameLayout>

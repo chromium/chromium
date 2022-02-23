@@ -41,6 +41,11 @@ public class SuggestionsUiDelegateImpl implements SuggestionsUiDelegate {
     }
 
     @Override
+    public NativePageHost getNativePageHost() {
+        return mHost;
+    }
+
+    @Override
     public SnackbarManager getSnackbarManager() {
         return mSnackbarManager;
     }

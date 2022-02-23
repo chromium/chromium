@@ -52,7 +52,7 @@ bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
   DCHECK(layout_object);
   if (layout_object->IsInline())
-    return layout_object->ContainingNGBlockFlow();
+    return layout_object->IsInLayoutNGInlineFormattingContext();
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object))
     return NGBlockNode::CanUseNewLayout(*block_flow);
   return false;
@@ -122,7 +122,7 @@ enum class SelectionMode {
 void LayoutSelection::AssertIsValid() const {
   const Document& document = frame_selection_->GetDocument();
   DCHECK_GE(document.Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
-  DCHECK(!document.IsSlotAssignmentOrLegacyDistributionDirty());
+  DCHECK(!document.IsSlotAssignmentDirty());
   DCHECK(!has_pending_selection_);
 }
 
@@ -364,7 +364,7 @@ static void VisitSelectedInclusiveDescendantsOfInternal(const Node& node,
 }
 
 static inline bool IsFlatTreeClean(const Node& node) {
-  return !node.GetDocument().IsSlotAssignmentOrLegacyDistributionDirty();
+  return !node.GetDocument().IsSlotAssignmentDirty();
 }
 
 template <typename Visitor>
@@ -923,10 +923,10 @@ static void VisitLayoutObjectsOf(const Node& node, Visitor* visitor) {
   visitor->Visit(layout_object);
 }
 
-IntRect LayoutSelection::AbsoluteSelectionBounds() {
+gfx::Rect LayoutSelection::AbsoluteSelectionBounds() {
   Commit();
   if (paint_range_->IsNull())
-    return IntRect();
+    return gfx::Rect();
 
   // Create a single bounding box rect that encloses the whole selection.
   class SelectionBoundsVisitor {
@@ -941,7 +941,7 @@ IntRect LayoutSelection::AbsoluteSelectionBounds() {
   } visitor;
   VisitSelectedInclusiveDescendantsOf(frame_selection_->GetDocument(),
                                       &visitor);
-  return PixelSnappedIntRect(visitor.selected_rect);
+  return ToPixelSnappedRect(visitor.selected_rect);
 }
 
 void LayoutSelection::InvalidatePaintForSelection() {

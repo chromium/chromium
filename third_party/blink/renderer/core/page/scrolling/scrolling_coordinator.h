@@ -33,7 +33,8 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace cc {
 class AnimationHost;
@@ -45,7 +46,6 @@ class CompositorAnimationTimeline;
 class LocalFrame;
 class LocalFrameView;
 class Page;
-class PaintLayerScrollableArea;
 class ScrollableArea;
 
 using MainThreadScrollingReasons = uint32_t;
@@ -89,18 +89,6 @@ class CORE_EXPORT ScrollingCoordinator final
   // Returns whether the update is successful.
   bool UpdateCompositorScrollOffset(const LocalFrame&, const ScrollableArea&);
 
-  // Updates composited layers after changes to scrollable area  properties
-  // like content and container sizes, scrollbar existence, scrollability, etc.
-  // Scroll offset changes are updated by UpdateCompositedScrollOffset.
-  // TODO(pdr): Factor the container bounds change out of this function. The
-  // compositor tracks scroll container bounds on the scroll layer whereas
-  // blink uses a separate layer. To ensure the compositor scroll layer has the
-  // updated scroll container bounds, this needs to be called when the scrolling
-  // contents layer is resized.
-  void ScrollableAreaScrollLayerDidChange(PaintLayerScrollableArea*);
-  void ScrollableAreaScrollbarLayerDidChange(PaintLayerScrollableArea*,
-                                             ScrollbarOrientation);
-
   cc::AnimationHost* GetCompositorAnimationHost() { return animation_host_; }
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() {
     return programmatic_scroll_animator_timeline_.get();
@@ -115,7 +103,7 @@ class CORE_EXPORT ScrollingCoordinator final
   // ScrollCallbacks implementation
   void DidCompositorScroll(
       CompositorElementId,
-      const gfx::Vector2dF&,
+      const gfx::PointF&,
       const absl::optional<cc::TargetSnapAreaElementIds>&) override;
   void DidChangeScrollbarsHidden(CompositorElementId, bool hidden) override;
 
@@ -129,8 +117,6 @@ class CORE_EXPORT ScrollingCoordinator final
   void Reset(LocalFrame*);
 
  protected:
-  bool IsForMainFrame(ScrollableArea*) const;
-
   Member<Page> page_;
 
  private:

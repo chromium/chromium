@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -40,6 +41,7 @@ class InstallableAmbientBadgeMessageController {
   void EnqueueMessage(content::WebContents* web_contents,
                       const std::u16string& app_name,
                       const SkBitmap& icon,
+                      const bool is_primary_icon_maskable,
                       const GURL& start_url);
 
   // Dismisses displayed message. This method is safe to call  when there is no
@@ -50,7 +52,7 @@ class InstallableAmbientBadgeMessageController {
   void HandleInstallButtonClicked();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
-  InstallableAmbientBadgeClient* client_;
+  raw_ptr<InstallableAmbientBadgeClient> client_;
   std::unique_ptr<messages::MessageWrapper> message_;
 };
 

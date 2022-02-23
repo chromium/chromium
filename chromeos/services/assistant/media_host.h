@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_MEDIA_HOST_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/libassistant/public/mojom/media_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/receiver.h"

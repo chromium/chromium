@@ -1,0 +1,46 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<meta name="variant" content="?">
+<meta name="variant" content="?currentchange">
+
+<script type="module">
+import { Recorder, hasVariant } from "./resources/helpers.mjs";
+
+promise_test(async t => {
+  // Wait for after the load event so that the navigation doesn't get converted
+  // into a replace navigation.
+  await new Promise(resolve => window.onload = () => t.step_timeout(resolve, 0));
+
+  const from = appHistory.current;
+
+  const recorder = new Recorder({
+    skipCurrentChange: !hasVariant("currentchange"),
+    finalExpectedEvent: "transition.finished fulfilled"
+  });
+
+  recorder.setUpAppHistoryListeners();
+
+  appHistory.addEventListener("navigate", e => {
+    e.transitionWhile(Promise.resolve());
+  });
+
+  const result = appHistory.navigate("#1");
+  recorder.setUpResultListeners(result);
+
+  Promise.resolve().then(() => recorder.record("promise microtask"));
+
+  await recorder.readyToAssert;
+
+  recorder.assert([
+    /* event name, location.hash value, appHistory.transition properties */
+    ["navigate", "", null],
+    ["currentchange", "#1", { from, navigationType: "push" }],
+    ["committed fulfilled", "#1", { from, navigationType: "push" }],
+    ["promise microtask", "#1", { from, navigationType: "push" }],
+    ["navigatesuccess", "#1", { from, navigationType: "push" }],
+    ["finished fulfilled", "#1", null],
+    ["transition.finished fulfilled", "#1", null],
+  ]);
+}, "event and promise ordering for same-document appHistory.navigate() intercepted by transitionWhile()");
+</script>

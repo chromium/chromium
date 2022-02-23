@@ -14,7 +14,8 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "media/base/decode_status.h"
+#include "build/build_config.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
 #include "media/base/status.h"
@@ -64,7 +65,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
  public:
   // Minimum resolution that we'll consider "not low resolution" for the purpose
   // of falling back to software.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Effectively opt-out CrOS, since it may cause tests to fail (b/179724180).
   static constexpr gfx::Size kMinResolution{2, 2};
 #else
@@ -187,7 +188,11 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // we allow it.
   //
   // Called on decoder thread, with `lock_` held.
-  int32_t FallBackToSoftwareLocked();
+  int32_t FallBackToSoftware_Locked();
+
+  // Returns true if we believe that decoding is paused pending decoder
+  // selection or reset.
+  bool IsDecodingPaused_Locked() const;
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
@@ -209,6 +214,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // Decoding thread members.
   bool key_frame_required_ = true;
+  int buffers_since_last_keyframe_ = 0;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
 
   // Shared members.
@@ -249,14 +255,13 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool prefer_software_decoders_ GUARDED_BY(lock_) = false;
   // Have we incremented the decoder count?
   bool contributes_to_decoder_count_ GUARDED_BY(lock_) = false;
+  // Do we have an in-flight `DecoderStream::Reset()`, or is a call to start
+  // one pending via a call to the media thread?
+  bool pending_reset_ GUARDED_BY(lock_) = false;
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.
   bool pending_read_ = false;
-
-  // Do we have an in-flight `DecoderStream::Reset()`?
-  // Media thread only.
-  bool pending_reset_ = false;
 
   // Media thread only.
   std::unique_ptr<InternalDemuxerStream> demuxer_stream_;

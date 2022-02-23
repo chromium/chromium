@@ -17,7 +17,7 @@
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -25,6 +25,7 @@
 #include "content/public/browser/android/synchronous_compositor_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -75,7 +76,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // state of this frame. |scroll| is the view's current scroll offset.
   // |global_visible_rect| is the intersection of the view size and the window
   // in window coordinates.
-  void PrepareToDraw(const gfx::Vector2d& scroll,
+  void PrepareToDraw(const gfx::Point& scroll,
                      const gfx::Rect& global_visible_rect);
 
   // Main handlers for view drawing. A false return value indicates no new
@@ -110,10 +111,10 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   // Set the root layer scroll offset to |new_value|. The |new_value| here is in
   // physical pixel.
-  void ScrollTo(const gfx::Vector2d& new_value);
+  void ScrollTo(const gfx::Point& new_value);
 
   // Set root layer scroll offset on the next scroll state update.
-  void RestoreScrollAfterTransition(const gfx::Vector2d& new_value);
+  void RestoreScrollAfterTransition(const gfx::Point& new_value);
 
   // Android views hierarchy gluing.
   bool IsVisible() const;
@@ -140,8 +141,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // in DIP scale when --use-zoom-for-dsf is disabled. Otherwise, they are in
   // physical pixel scale.
   void UpdateRootLayerState(content::SynchronousCompositor* compositor,
-                            const gfx::Vector2dF& total_scroll_offset,
-                            const gfx::Vector2dF& total_max_scroll_offset,
+                            const gfx::PointF& total_scroll_offset,
+                            const gfx::PointF& total_max_scroll_offset,
                             const gfx::SizeF& scrollable_size,
                             float page_scale_factor,
                             float min_page_scale_factor,
@@ -188,11 +189,11 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
  private:
   void SetActiveCompositor(content::SynchronousCompositor* compositor);
-  void SetTotalRootLayerScrollOffset(const gfx::Vector2dF& new_value_dip);
+  void SetTotalRootLayerScrollOffset(const gfx::PointF& new_value_dip);
   bool CanOnDraw();
   bool CompositeSW(SkCanvas* canvas, bool software_canvas);
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-  RootLayerStateAsValue(const gfx::Vector2dF& total_scroll_offset_dip,
+  RootLayerStateAsValue(const gfx::PointF& total_scroll_offset_dip,
                         const gfx::SizeF& scrollable_size_dip);
 
   void ReturnUncommittedFrames(ChildFrameQueue frame);
@@ -203,7 +204,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   bool DoUpdateParentDrawData();
   void UpdateBeginFrameSource();
 
-  gfx::Vector2d max_scroll_offset() const;
+  gfx::Point max_scroll_offset() const;
 
   // Return the tile rect in view space.
   gfx::Rect ComputeTileRectAndUpdateMemoryPolicy();
@@ -214,13 +215,13 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   // view renderer's state.
   std::string ToString() const;
 
-  BrowserViewRendererClient* const client_;
+  const raw_ptr<BrowserViewRendererClient> client_;
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  CompositorFrameConsumer* current_compositor_frame_consumer_;
+  raw_ptr<CompositorFrameConsumer> current_compositor_frame_consumer_;
   std::unique_ptr<RootFrameSinkProxy> root_frame_sink_proxy_;
 
   // The current compositor that's owned by the current RVH.
-  content::SynchronousCompositor* compositor_;
+  raw_ptr<content::SynchronousCompositor> compositor_;
   // The id of the most recent RVH according to RVHChanged.
   viz::FrameSinkId frame_sink_id_;
   // A map from compositor's per-WebView unique ID to the compositor's raw
@@ -252,7 +253,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   CopyOutputRequestQueue copy_requests_;
 
-  gfx::Vector2d last_on_draw_scroll_offset_;
+  gfx::Point last_on_draw_scroll_offset_;
   gfx::Rect last_on_draw_global_visible_rect_;
 
   gfx::Size size_;
@@ -261,8 +262,8 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   // When zoom-for-dsf enabled |max_scroll_offset_unscaled_| and
   // |scroll_offset_unscaled_| is in physical pixel; otherwise, they are in dip
-  gfx::Vector2dF scroll_offset_unscaled_;
-  gfx::Vector2dF max_scroll_offset_unscaled_;
+  gfx::PointF scroll_offset_unscaled_;
+  gfx::PointF max_scroll_offset_unscaled_;
 
   // Used to prevent rounding errors from accumulating enough to generate
   // visible skew (especially noticeable when scrolling up and down in the same
@@ -270,7 +271,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
   gfx::Vector2dF overscroll_rounding_error_;
 
   // The scroll to apply after the next scroll state update.
-  absl::optional<gfx::Vector2d> scroll_on_scroll_state_update_;
+  absl::optional<gfx::Point> scroll_on_scroll_state_update_;
 
   ParentCompositorDrawConstraints external_draw_constraints_;
 

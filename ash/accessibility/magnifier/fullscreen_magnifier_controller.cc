@@ -481,6 +481,11 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
   return SendEvent(continuation, &event);
 }
 
+const std::string& FullscreenMagnifierController::GetName() const {
+  static const std::string name("FullscreenMagnifierController");
+  return name;
+}
+
 bool FullscreenMagnifierController::Redraw(
     const gfx::PointF& position_in_physical_pixels,
     float scale,

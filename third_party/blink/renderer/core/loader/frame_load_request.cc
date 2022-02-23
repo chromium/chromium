@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -85,6 +86,10 @@ bool FrameLoadRequest::CanDisplay(const KURL& url) const {
   DCHECK(!origin_window_ || origin_window_->GetSecurityOrigin() ==
                                 resource_request_.RequestorOrigin());
   return resource_request_.CanDisplay(url);
+}
+
+const LocalFrameToken* FrameLoadRequest::GetInitiatorFrameToken() const {
+  return base::OptionalOrNullptr(initiator_frame_token_);
 }
 
 }  // namespace blink

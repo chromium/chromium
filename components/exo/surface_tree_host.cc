@@ -4,6 +4,7 @@
 
 #include "components/exo/surface_tree_host.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -16,9 +17,11 @@
 #include "components/exo/wm_helper.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/aura_constants.h"
@@ -34,8 +37,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace exo {
@@ -276,7 +283,8 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
   }
 
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
-      root_surface_origin_, host_window()->layer()->device_scale_factor(),
+      gfx::PointF(root_surface_origin_),
+      host_window()->layer()->device_scale_factor(),
       layer_tree_frame_sink_holder_->resource_manager(), &frame);
 
   std::vector<GLbyte*> sync_tokens;
@@ -284,6 +292,13 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
   gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
   gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+
+  frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
+  for (auto& resource : frame.resource_list) {
+    frame.metadata.content_color_usage =
+        std::max(frame.metadata.content_color_usage,
+                 resource.color_space.GetContentColorUsage());
+  }
 
   layer_tree_frame_sink_holder_->SubmitCompositorFrame(std::move(frame));
 }
@@ -316,9 +331,10 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
   // applied.
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
 
-  gfx::Rect bounds = root_surface_->surface_hierarchy_content_bounds();
-  host_window_->SetBounds(
-      gfx::Rect(host_window_->bounds().origin(), bounds.size()));
+  const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
+  if (bounds != host_window_->bounds())
+    host_window_->SetBounds({host_window_->bounds().origin(), bounds.size()});
+
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
   // scale factor the buffer is created for to set the transform for
   // synchronization.
@@ -326,16 +342,20 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
     gfx::Transform tr;
     float scale = host_window_->layer()->device_scale_factor();
     tr.Scale(1.0f / scale, 1.0f / scale);
-    host_window_->SetTransform(tr);
+    if (host_window_->transform() != tr)
+      host_window_->SetTransform(tr);
   }
   const bool fills_bounds_opaquely =
-      bounds.size() == root_surface_->content_size() &&
+      gfx::SizeF(bounds.size()) == root_surface_->content_size() &&
       root_surface_->FillsBoundsOpaquely();
   host_window_->SetTransparent(!fills_bounds_opaquely);
 
   root_surface_origin_ = gfx::Point() - bounds.OffsetFromOrigin();
-  root_surface_->window()->SetBounds(gfx::Rect(
-      root_surface_origin_, root_surface_->window()->bounds().size()));
+  const gfx::Rect& window_bounds = root_surface_->window()->bounds();
+  if (root_surface_origin_ != window_bounds.origin()) {
+    gfx::Rect updated_bounds(root_surface_origin_, window_bounds.size());
+    root_surface_->window()->SetBounds(updated_bounds);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

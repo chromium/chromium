@@ -70,7 +70,7 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
       base::BindOnce(&WriteToState, buffer.get(), shared_state_.get()));
 
   CommandBuffer::State last_state;
-  while (1) {
+  while (true) {
     CommandBuffer::State state = last_state;
 
     shared_state_->Read(&state);

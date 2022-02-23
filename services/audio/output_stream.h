@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
@@ -48,10 +48,14 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   using DeleteCallback = base::OnceCallback<void(OutputStream*)>;
   using CreatedCallback =
       base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
+  using ManagedDeviceOutputStreamCreateCallback =
+      OutputController::ManagedDeviceOutputStreamCreateCallback;
 
   OutputStream(
       CreatedCallback created_callback,
       DeleteCallback delete_callback,
+      ManagedDeviceOutputStreamCreateCallback
+          managed_device_output_stream_create_callback,
       mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
       mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
           observer,
@@ -101,7 +105,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   mojo::Receiver<AudioOutputStream> receiver_;
   mojo::AssociatedRemote<media::mojom::AudioOutputStreamObserver> observer_;
   const mojo::SharedRemote<media::mojom::AudioLog> log_;
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
 
   SyncReader reader_;
   OutputController controller_;

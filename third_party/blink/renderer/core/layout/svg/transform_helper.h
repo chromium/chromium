@@ -9,9 +9,12 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
-class FloatRect;
 class LayoutObject;
 
 class TransformHelper {
@@ -24,14 +27,14 @@ class TransformHelper {
 
   // Computes the reference box for the LayoutObject based on the
   // 'transform-box'. Applies zoom if needed.
-  static FloatRect ComputeReferenceBox(const LayoutObject&);
+  static gfx::RectF ComputeReferenceBox(const LayoutObject&);
 
   // Compute the transform for the LayoutObject based on the various
   // 'transform*' properties.
   static AffineTransform ComputeTransform(const LayoutObject&,
                                           ComputedStyle::ApplyTransformOrigin);
 
-  static FloatPoint ComputeTransformOrigin(const LayoutObject&);
+  static gfx::PointF ComputeTransformOrigin(const LayoutObject&);
 };
 
 // The following enumeration is used to optimize cases where the scale is known

@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -217,7 +218,7 @@ TEST_F(NetworkConnectTest, ConfigureAndConnectToNetwork_NoConfiguration) {
               ShowNetworkConnectError(NetworkConnectionHandler::kErrorNotFound,
                                       "bad guid"));
 
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
   NetworkConnect::Get()->ConfigureNetworkIdAndConnect("bad guid", properties,
                                                       true);
 }
@@ -228,7 +229,7 @@ TEST_F(NetworkConnectTest,
               ShowNetworkConnectError(
                   NetworkConnectionHandler::kErrorConfigureFailed, kWiFi1Guid));
 
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
   NetworkConnect::Get()->ConfigureNetworkIdAndConnect(kWiFi1Guid, properties,
                                                       false);
 }

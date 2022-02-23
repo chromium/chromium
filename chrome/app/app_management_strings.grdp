@@ -28,6 +28,9 @@
   <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES" desc="Label for the preset window sizes toggle in the app settings page.">
     Preset window sizes
   </message>
+  <message name="IDS_APP_MANAGEMENT_WINDOW" desc="Label for changing window mode.">
+    Open as window
+  </message>
   <message name="IDS_APP_MANAGEMENT_PRESET_WINDOW_SIZES_TEXT" desc="Label for the description of the window preset toggle in the app settings page.">
     Use presets for phone, tablet, or resizable windows to prevent app from misbehaving
   </message>
@@ -45,6 +48,9 @@
   </message>
   <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
     Storage
+  </message>
+  <message name="IDS_APP_MANAGEMENT_RUN_ON_OS_LOGIN" desc="Label for toggling running on OS Login mode.">
+    Start app when you sign in
   </message>
   <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
     This app has been installed by your administrator.
@@ -84,5 +90,23 @@
   </message>
   <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more preferred apps will be replaced, and the text states the first 3 apps that will be replaced.">
     Other apps are set to open the same links as <ph name="APP_NAME">$1<ex>Gmail</ex></ph>. This will disable <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph>, <ph name="APP_NAME_4">$4<ex>Photos</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$5<ex>2</ex></ph> other apps from opening supported links.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_1_APP" desc="Text to explain to the user that an overlapping app will still open some supported links, and the text states which app will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_2_APPS" desc="Text to explain to the user that 2 overlapping apps will still open some supported links, and the text states which apps will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph> or  <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_3_APPS" desc="Text to explain to the user that 3 overlapping apps will still open some supported links, and the text states which apps will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph> or <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_4_APPS" desc="Text to explain to the user that 4 overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and 1 other app.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_5_OR_MORE_APPS" desc="Text to explain to the user that 5 or more overlapping apps will still open some supported links, and the text states the first 3 apps that will open links.">
+    Some supported links will still open in <ph name="APP_NAME">$1<ex>Gmail</ex></ph>, <ph name="APP_NAME_2">$2<ex>EmailReader</ex></ph>, <ph name="APP_NAME_3">$3<ex>PDFViewer</ex></ph> and <ph name="NUMBER_OF_OTHER_APPS">$4<ex>2</ex></ph> other apps.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
+    App details
   </message>
 </grit-part>

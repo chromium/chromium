@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"

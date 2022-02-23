@@ -189,8 +189,6 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
     // new bounds for the next layout, we must abort the ongoing animation so
     // |this| will set the previous bounds of the widget and clear the clip
     // rect.
-    // TODO(chinsenj): We may not want to abort the animation and rather just
-    // animate from the current position.
     layer_animator->AbortAllAnimations();
   }
 
@@ -432,8 +430,7 @@ gfx::Size WindowCycleView::CalculatePreferredSize() const {
   // screen, but the window cycle view with a bandshield, cropping the
   // overflow window list, should remain within the specified horizontal
   // insets of the screen width.
-  const int max_width = root_window_->GetBoundsInScreen().size().width() -
-                        2 * kBackgroundHorizontalInsetDp;
+  const int max_width = CalculateMaxWidth();
   size.set_width(std::min(size.width(), max_width));
   if (Shell::Get()
           ->window_cycle_controller()
@@ -597,6 +594,11 @@ bool WindowCycleView::IsEventInTabSliderContainer(
     const gfx::Point& screen_point) {
   return tab_slider_container_ &&
          tab_slider_container_->GetBoundsInScreen().Contains(screen_point);
+}
+
+int WindowCycleView::CalculateMaxWidth() const {
+  return root_window_->GetBoundsInScreen().size().width() -
+         2 * kBackgroundHorizontalInsetDp;
 }
 
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {

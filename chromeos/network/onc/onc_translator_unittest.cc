@@ -4,13 +4,12 @@
 
 #include "chromeos/network/onc/onc_translator.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_test_utils.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,17 +24,16 @@ class ONCTranslatorOncToShillTest
 // Test the translation from ONC to Shill json.
 TEST_P(ONCTranslatorOncToShillTest, Translate) {
   std::string source_onc_filename = GetParam().first;
-  std::unique_ptr<const base::DictionaryValue> onc_network(
-      test_utils::ReadTestDictionary(source_onc_filename));
+  base::Value onc_network =
+      test_utils::ReadTestDictionaryValue(source_onc_filename);
   std::string result_shill_filename = GetParam().second;
-  std::unique_ptr<const base::DictionaryValue> expected_shill_network(
-      test_utils::ReadTestDictionary(result_shill_filename));
+  base::Value expected_shill_network =
+      test_utils::ReadTestDictionaryValue(result_shill_filename);
 
-  std::unique_ptr<base::DictionaryValue> translation(
-      TranslateONCObjectToShill(&kNetworkConfigurationSignature, *onc_network));
+  base::Value translation =
+      TranslateONCObjectToShill(&kNetworkConfigurationSignature, onc_network);
 
-  EXPECT_TRUE(test_utils::Equals(expected_shill_network.get(),
-                                 translation.get()));
+  EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
 }
 
 // Test different network types, such that each ONC object type is tested at
@@ -54,11 +52,16 @@ INSTANTIATE_TEST_SUITE_P(
                        "shill_wifi_wep_8021x_clientcert.json"),
         std::make_pair("valid_wifi_clientref.onc", "shill_wifi_clientref.json"),
         std::make_pair("valid_l2tpipsec.onc", "shill_l2tpipsec.json"),
+        std::make_pair("l2tpipsec_with_password_variable.onc",
+                       "shill_l2tpipsec_with_password_variable.json"),
         std::make_pair("wifi_dhcp.onc", "shill_wifi_dhcp.json"),
         std::make_pair("wifi_eap_tls.onc", "shill_wifi_eap_tls.json"),
         std::make_pair("wifi_eap_ttls.onc", "shill_wifi_eap_ttls.json"),
         std::make_pair("wifi_proxy.onc", "shill_wifi_proxy.json"),
         std::make_pair("wifi_proxy_pac.onc", "shill_wifi_proxy_pac.json"),
+        std::make_pair("ikev2_cert.onc", "shill_ikev2_cert.json"),
+        std::make_pair("ikev2_eap.onc", "shill_ikev2_eap.json"),
+        std::make_pair("ikev2_psk.onc", "shill_ikev2_psk.json"),
         std::make_pair("l2tpipsec_clientcert_with_cert_pems.onc",
                        "shill_l2tpipsec_clientcert.json"),
         std::make_pair("valid_openvpn_with_cert_pems.onc",
@@ -75,8 +78,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("vpn_ipsec_clientcert_pkcs11.onc",
                        "shill_vpn_ipsec_clientcert_pkcs11.json"),
         std::make_pair("cellular.onc", "shill_cellular.json"),
-        std::make_pair("cellular.per_network_roaming.onc",
-                       "shill_cellular.per_network_roaming.json"),
         // WiMAX is deprecated, but we need to ensure older ONC configurations
         // are handled gracefully.
         std::make_pair("wimax.onc", "shill_wimax.json"),
@@ -97,20 +98,18 @@ class ONCTranslatorShillToOncTest
 
 TEST_P(ONCTranslatorShillToOncTest, Translate) {
   std::string source_shill_filename = GetParam().first;
-  std::unique_ptr<const base::DictionaryValue> shill_network(
-      test_utils::ReadTestDictionary(source_shill_filename));
+  base::Value shill_network =
+      test_utils::ReadTestDictionaryValue(source_shill_filename);
 
   std::string result_onc_filename = GetParam().second;
-  std::unique_ptr<base::DictionaryValue> expected_onc_network(
-      test_utils::ReadTestDictionary(result_onc_filename));
+  base::Value expected_onc_network =
+      test_utils::ReadTestDictionaryValue(result_onc_filename);
 
-  std::unique_ptr<base::DictionaryValue> translation(
-      TranslateShillServiceToONCPart(*shill_network, ::onc::ONC_SOURCE_NONE,
-                                     &kNetworkWithStateSignature,
-                                     nullptr /* network_state */));
+  base::Value translation = TranslateShillServiceToONCPart(
+      shill_network, ::onc::ONC_SOURCE_NONE, &kNetworkWithStateSignature,
+      nullptr /* network_state */);
 
-  EXPECT_TRUE(test_utils::Equals(expected_onc_network.get(),
-                                 translation.get()));
+  EXPECT_TRUE(test_utils::Equals(&expected_onc_network, &translation));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -129,8 +128,17 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_non_utf8_ssid.onc"),
         std::make_pair("shill_wifi_wep_8021x_clientcert.json",
                        "translation_of_shill_wifi_wep_8021x_clientcert.onc"),
+        std::make_pair("shill_output_ikev2_cert.json",
+                       "translation_of_shill_ikev2_cert.onc"),
+        std::make_pair("shill_output_ikev2_eap.json",
+                       "translation_of_shill_ikev2_eap.onc"),
+        std::make_pair("shill_output_ikev2_psk.json",
+                       "translation_of_shill_ikev2_psk.onc"),
         std::make_pair("shill_output_l2tpipsec.json",
                        "translation_of_shill_l2tpipsec.onc"),
+        std::make_pair(
+            "shill_output_l2tpipsec_with_password_variable.json",
+            "translation_of_shill_l2tpipsec_with_password_variable.onc"),
         std::make_pair("shill_output_wireguard.json",
                        "translation_of_shill_wireguard.onc"),
         std::make_pair("shill_output_openvpn.json",
@@ -157,9 +165,6 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_proxy_pac.onc"),
         std::make_pair("shill_cellular_with_state.json",
                        "translation_of_shill_cellular_with_state.onc"),
-        std::make_pair(
-            "shill_cellular_with_state.per_network_roaming.json",
-            "translation_of_shill_cellular_with_state.per_network_roaming.onc"),
         std::make_pair("shill_output_third_party_vpn.json",
                        "translation_of_shill_output_third_party_vpn.onc"),
         std::make_pair(

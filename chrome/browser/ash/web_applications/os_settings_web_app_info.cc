@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
@@ -30,10 +30,9 @@ SkColor GetBgColor(bool use_dark_mode) {
 
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForOSSettingsSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSSettingsSystemWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIOSSettingsURL);
   info->scope = GURL(chrome::kChromeUIOSSettingsURL);
   info->title = l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS);
@@ -59,7 +58,7 @@ OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
                                     GURL(chrome::kChromeUISettingsURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForOSSettingsSystemWebApp();
 }
@@ -75,4 +74,12 @@ gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
 std::vector<web_app::AppId>
 OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
   return {web_app::kSettingsAppId, ash::kInternalAppIdSettings};
+}
+
+bool OSSettingsSystemAppDelegate::PreferManifestBackgroundColor() const {
+  return true;
+}
+
+bool OSSettingsSystemAppDelegate::ShouldAnimateThemeChanges() const {
+  return ash::features::IsSettingsAppThemeChangeAnimationEnabled();
 }

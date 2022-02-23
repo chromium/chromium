@@ -40,7 +40,7 @@
 
 namespace blink {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 CORE_EXPORT void ReplaceNewlinesWithWindowsStyleNewlines(String&);
 #endif
 CORE_EXPORT void ReplaceNBSPWithSpace(String&);

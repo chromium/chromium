@@ -9,10 +9,6 @@
 
 namespace ntp_header {
 
-// The minimum height of the new tab page header view when the new tab page is
-// scrolled up.
-extern const CGFloat kMinHeaderHeight;
-
 // The scroll distance within which to animate the search field from its
 // initial frame to its final full bleed frame.
 extern const CGFloat kAnimationDistance;

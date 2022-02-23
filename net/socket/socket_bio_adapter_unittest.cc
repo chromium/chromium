@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"
@@ -154,7 +154,7 @@ class SocketBIOAdapterTest : public testing::TestWithParam<ReadIfReadySupport>,
   bool expect_read_ready_ = false;
   bool expect_write_ready_ = false;
   MockClientSocketFactory factory_;
-  std::unique_ptr<SocketBIOAdapter>* reset_on_write_ready_ = nullptr;
+  raw_ptr<std::unique_ptr<SocketBIOAdapter>> reset_on_write_ready_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

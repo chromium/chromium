@@ -14,10 +14,11 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Certain platforms provide their own storage of protobuf-serialized prune
 // state. On platforms where it is not supported, Load() and Store() are noops.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Store the state in the registry on Windows.
 #define USE_PLATFORM_STATE_STORE
 #endif
@@ -26,15 +27,16 @@ class Profile;
 
 namespace base {
 class DictionaryValue;
+class Value;
 }
 
 namespace safe_browsing {
 namespace platform_state_store {
 
-// Loads the platform-specific storage for |profile|. Returns null if there is
-// no such storage for the current platform or in case of error; otherwise, a
-// (possibly empty) dictionary.
-std::unique_ptr<base::DictionaryValue> Load(Profile* profile);
+// Loads the platform-specific storage for |profile|. Returns absl::nullopt if
+// there is no such storage for the current platform or in case of error;
+// otherwise, a (possibly empty) dictionary.
+absl::optional<base::Value> Load(Profile* profile);
 
 // Stores the state for |profile| in |incidents_sent| into platform-specific
 // storage if there is such for the current platform.
@@ -74,9 +76,8 @@ void SerializeIncidentsSent(const base::DictionaryValue* incidents_sent,
 
 // Deserializes |data| into |value_dict|. Returns SUCCESS if |data| is empty or
 // fully processed. Exposed for testing.
-PlatformStateStoreLoadResult DeserializeIncidentsSent(
-    const std::string& data,
-    base::DictionaryValue* value_dict);
+PlatformStateStoreLoadResult DeserializeIncidentsSent(const std::string& data,
+                                                      base::Value* value_dict);
 
 #endif  // USE_PLATFORM_STATE_STORE
 

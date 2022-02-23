@@ -753,7 +753,7 @@ void ShelfAppButton::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_TAP:
-      FALLTHROUGH;  // Ensure tapped items are not enlarged for drag.
+      [[fallthrough]];  // Ensure tapped items are not enlarged for drag.
     case ui::ET_GESTURE_END:
       // If the button is being dragged, or there is an active context menu,
       // for this ShelfAppButton, don't deactivate the ink drop.

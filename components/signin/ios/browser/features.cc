@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/ios/browser/features.h"
+
 #include "components/signin/public/base/signin_switches.h"
 
 namespace signin {
@@ -21,5 +22,11 @@ const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
 
 const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
     "wait-threshold-milliseconds-for-capabilities-api";
+
+const base::Feature kFREMobileIdentityConsistency{
+    "FREMobileIdentityConsistency", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableUnicornAccountSupport{
+    "EnableUnicornAccountSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace signin

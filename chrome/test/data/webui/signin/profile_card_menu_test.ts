@@ -8,6 +8,9 @@ import {ManageProfilesBrowserProxyImpl, ProfileCardMenuElement, ProfileState, St
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+// <if expr="lacros">
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+// </if>
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
@@ -194,7 +197,7 @@ suite('ProfileCardMenuLacrosTest', function() {
   let secondaryProfileCardMenuElement: ProfileCardMenuElement;
   let browserProxy: TestManageProfilesBrowserProxy;
 
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
@@ -212,7 +215,7 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: true,
     };
     primaryProfileCardMenuElement.profileState = testPrimaryProfileState;
-    waitBeforeNextRender(primaryProfileCardMenuElement);
+    await waitAfterNextRender(primaryProfileCardMenuElement);
     secondaryProfileCardMenuElement =
         document.createElement('profile-card-menu');
     document.body.appendChild(secondaryProfileCardMenuElement);
@@ -228,17 +231,25 @@ suite('ProfileCardMenuLacrosTest', function() {
       isPrimaryLacrosProfile: false,
     };
     secondaryProfileCardMenuElement.profileState = testSecondaryProfileState;
-    return waitBeforeNextRender(secondaryProfileCardMenuElement);
+    return waitAfterNextRender(secondaryProfileCardMenuElement);
   });
 
   // The primary profile cannot be deleted in Lacros. The delete button should
-  // be disabled.
+  // just open a notification about that.
   test('PrimaryProfileCannotBeDeleted', async function() {
     primaryProfileCardMenuElement.$.moreActionsButton.click();
     const menuButtons = primaryProfileCardMenuElement.shadowRoot!
                             .querySelectorAll<HTMLButtonElement>(
                                 '#actionMenu > .dropdown-item');
-    assertTrue(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    assertFalse(menuButtons[MenuButtonIndex.DELETE]!.disabled);
+    menuButtons[MenuButtonIndex.DELETE]!.click();
+    assertFalse(primaryProfileCardMenuElement.$.actionMenu.open);
+    const dialog =
+        primaryProfileCardMenuElement.$.removePrimaryLacrosProfileDialog;
+    assertTrue(dialog.open);
+    dialog.querySelector<HTMLElement>('.action-button')!.click();
+    waitBeforeNextRender(primaryProfileCardMenuElement);
+    assertFalse(dialog.open);
   });
 
   // All other profiles can be deleted as normal.
@@ -252,5 +263,18 @@ suite('ProfileCardMenuLacrosTest', function() {
     assertFalse(secondaryProfileCardMenuElement.$.actionMenu.open);
     assertTrue(secondaryProfileCardMenuElement.$.removeConfirmationDialog.open);
   });
+
+  // Check that the confirmation dialog has a clickable link.
+  test('RemoveConfirmationDialogLink', async function() {
+    const dialog = secondaryProfileCardMenuElement.$.removeConfirmationDialog;
+    dialog.showModal();
+    assertTrue(dialog.open);
+
+    const settingsLink = dialog.querySelector<HTMLElement>(
+        '#removeWarningHeader a[is="action-link"]');
+    settingsLink!.click();
+    await browserProxy.whenCalled('openAshAccountSettingsPage');
+  });
+
 });
 // </if>

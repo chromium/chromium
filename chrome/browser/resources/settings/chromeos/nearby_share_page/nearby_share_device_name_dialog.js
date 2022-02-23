@@ -7,7 +7,19 @@
  * 'nearby-share-device-name-dialog' allows editing of the device display name
  * when using Nearby Share.
  */
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getNearbyShareSettings} from '../../shared/nearby_share_settings.m.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-device-name-dialog',
 
   behaviors: [
@@ -15,7 +27,7 @@ Polymer({
   ],
 
   properties: {
-    /** @type {nearby_share.NearbySettings} */
+    /** @type {NearbySettings} */
     settings: {
       type: Object,
     },
@@ -47,7 +59,7 @@ Polymer({
 
   /** @private */
   onDeviceNameInput_() {
-    nearby_share.getNearbyShareSettings()
+    getNearbyShareSettings()
         .validateDeviceName(this.getEditInputValue_())
         .then((result) => {
           this.updateErrorMessage_(result.result);
@@ -61,7 +73,7 @@ Polymer({
 
   /** @private */
   onSaveClick_() {
-    nearby_share.getNearbyShareSettings()
+    getNearbyShareSettings()
         .setDeviceName(this.getEditInputValue_())
         .then((result) => {
           this.updateErrorMessage_(result.result);

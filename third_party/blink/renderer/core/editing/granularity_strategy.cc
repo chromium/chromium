@@ -101,7 +101,7 @@ void DirectionGranularityStrategy::Clear() {
   state_ = StrategyState::kCleared;
   granularity_ = TextGranularity::kCharacter;
   offset_ = 0;
-  diff_extent_point_from_extent_position_ = IntSize();
+  diff_extent_point_from_extent_position_ = gfx::Vector2d();
 }
 
 SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
@@ -117,8 +117,7 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
   gfx::Point old_extent_location = PositionLocation(old_offset_extent_position);
 
   gfx::Point old_offset_extent_point =
-      old_extent_location +
-      ToGfxVector2d(diff_extent_point_from_extent_position_);
+      old_extent_location + diff_extent_point_from_extent_position_;
   gfx::Point old_extent_point = gfx::Point(
       old_offset_extent_point.x() - offset_, old_offset_extent_point.y());
 
@@ -290,8 +289,8 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
                                         : StrategyState::kExpanding;
 
   diff_extent_point_from_extent_position_ =
-      IntSize(extent_point + gfx::Vector2d(offset_, 0) -
-              PositionLocation(new_selection_extent));
+      extent_point + gfx::Vector2d(offset_, 0) -
+      PositionLocation(new_selection_extent);
   return SelectionInDOMTree::Builder(selection.AsSelection())
       .Collapse(selection.Base())
       .Extend(new_selection_extent.DeepEquivalent())

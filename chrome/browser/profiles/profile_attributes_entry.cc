@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -19,10 +18,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -43,7 +40,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
 #endif
 
@@ -345,15 +342,15 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
       return *image;
   }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1100835): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar);
   }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
   // need the high resolution version so no need to fetch it.
   if (use_high_res_file) {
@@ -364,7 +361,7 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
 #endif
 
   const int icon_index = GetAvatarIconIndex();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!profiles::IsModernAvatarIconIndex(icon_index)) {
     // Return the 2x version of the old avatar, defined specifically for
     // Windows. No special treatment is needed for modern avatars as they
@@ -478,8 +475,7 @@ bool ProfileAttributesEntry::CanBeManaged() const {
     case SigninState::kSignedInWithConsentedPrimaryAccount:
       return true;
     case SigninState::kSignedInWithUnconsentedPrimaryAccount:
-      return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-             GetBool(kUserAcceptedAccountManagement);
+      return GetBool(kUserAcceptedAccountManagement);
     case SigninState::kNotSignedIn:
       return false;
   }
@@ -528,7 +524,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
 }
 
 ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
   NOTREACHED();
   return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
@@ -779,7 +775,7 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
   {
     // Bundle the changes in a single update.
     DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-    base::DictionaryValue* attributes_dict = update.Get();
+    base::Value* attributes_dict = update.Get();
     base::Value* entry = attributes_dict->FindDictKey(storage_key_);
     if (!entry) {
       entry = attributes_dict->SetKey(
@@ -902,7 +898,7 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
 }
 
 const base::Value* ProfileAttributesEntry::GetEntryData() const {
-  const base::DictionaryValue* attributes =
+  const base::Value* attributes =
       prefs_->GetDictionary(prefs::kProfileAttributes);
   return attributes->FindDictKey(storage_key_);
 }
@@ -991,7 +987,7 @@ bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
     return false;
 
   DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes_dict = update.Get();
+  base::Value* attributes_dict = update.Get();
   base::Value* entry = attributes_dict->FindDictKey(storage_key_);
   if (!entry) {
     entry = attributes_dict->SetKey(storage_key_,
@@ -1007,7 +1003,7 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
     return false;
 
   DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::DictionaryValue* attributes_dict = update.Get();
+  base::Value* attributes_dict = update.Get();
   base::Value* entry = attributes_dict->FindDictKey(storage_key_);
   DCHECK(entry);
   entry->RemoveKey(key);

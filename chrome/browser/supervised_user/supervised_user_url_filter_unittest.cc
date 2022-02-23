@@ -248,29 +248,20 @@ TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
   EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/foo/?bar=baz#ref"));
 }
 
-TEST_F(SupervisedUserURLFilterTest, HasFilteredScheme) {
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("http://example.com")));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("https://example.com")));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("ftp://example.com")));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("ws://example.com")));
-  EXPECT_TRUE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("wss://example.com")));
+TEST_F(SupervisedUserURLFilterTest, UrlWithNonStandardUrlSchemeAllowed) {
+  // Non-standard url scheme.
+  EXPECT_TRUE(IsURLAllowlisted("file://example.com"));
+  EXPECT_TRUE(IsURLAllowlisted("filesystem://80cols.com"));
+  EXPECT_TRUE(IsURLAllowlisted("chrome://example.com"));
+  EXPECT_TRUE(IsURLAllowlisted("wtf://example.com"));
+  EXPECT_TRUE(IsURLAllowlisted("gopher://example.com"));
 
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("file://example.com")));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HasFilteredScheme(
-          GURL("filesystem://80cols.com")));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("chrome://example.com")));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("wtf://example.com")));
-  EXPECT_FALSE(
-      SupervisedUserURLFilter::HasFilteredScheme(GURL("gopher://example.com")));
+  // Standard url scheme.
+  EXPECT_FALSE(IsURLAllowlisted(("http://example.com")));
+  EXPECT_FALSE(IsURLAllowlisted("https://example.com"));
+  EXPECT_FALSE(IsURLAllowlisted("ftp://example.com"));
+  EXPECT_FALSE(IsURLAllowlisted("ws://example.com"));
+  EXPECT_FALSE(IsURLAllowlisted("wss://example.com"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, HostMatchesPattern) {
@@ -387,21 +378,21 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
   // The third rule is redundant with the first, but it's not a conflict
   // since they have the same value (allow).
   hosts["*.google.com"] = true;
-  hosts["accounts.google.com"] = false;
+  hosts["calendar.google.com"] = false;
   hosts["mail.google.com"] = true;
 
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
 
   EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
+  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
 
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
 
   EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
+  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
   EXPECT_TRUE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
 }
@@ -414,7 +405,7 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   // The fourth rule conflicts with the first for "www.google.com" host.
   // Blocking then takes precedence.
   hosts["*.google.com"] = true;
-  hosts["accounts.google.com"] = false;
+  hosts["calendar.google.com"] = false;
   hosts["mail.google.com"] = true;
   hosts["www.google.*"] = false;
 
@@ -426,7 +417,7 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 1);
   // Match with conflicting first and second rule.
-  EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
+  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
   histogram_tester.ExpectBucketCount(
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       1, 2);
@@ -446,7 +437,7 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
 
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
-  EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
+  EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
   histogram_tester.ExpectBucketCount(
@@ -541,14 +532,16 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
 }
 #endif
 
-TEST_F(SupervisedUserURLFilterTest, GoogleFamiliesAlwaysAllowed) {
+TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/something"));
   EXPECT_TRUE(IsURLAllowlisted("http://families.google.com/"));
-  EXPECT_FALSE(IsURLAllowlisted("https://families.google.com:8080/"));
   EXPECT_FALSE(IsURLAllowlisted("https://subdomain.families.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://myaccount.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://accounts.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://familylink.google.com/"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {

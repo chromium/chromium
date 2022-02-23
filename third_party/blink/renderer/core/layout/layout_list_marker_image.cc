@@ -26,14 +26,14 @@ bool LayoutListMarkerImage::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectListMarkerImage || LayoutImage::IsOfType(type);
 }
 
-FloatSize LayoutListMarkerImage::DefaultSize() const {
+gfx::SizeF LayoutListMarkerImage::DefaultSize() const {
   NOT_DESTROYED();
   const SimpleFontData* font_data = Style()->GetFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return FloatSize(kDefaultWidth, kDefaultHeight);
+    return gfx::SizeF(kDefaultWidth, kDefaultHeight);
   float bullet_width = font_data->GetFontMetrics().Ascent() / 2.f;
-  return FloatSize(bullet_width, bullet_width);
+  return gfx::SizeF(bullet_width, bullet_width);
 }
 
 // Because ImageResource() is always LayoutImageResourceStyleImage. So we could
@@ -42,7 +42,7 @@ FloatSize LayoutListMarkerImage::DefaultSize() const {
 void LayoutListMarkerImage::ComputeIntrinsicSizingInfoByDefaultSize(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
-  FloatSize concrete_size = ImageResource()->ImageSizeWithDefaultSize(
+  gfx::SizeF concrete_size = ImageResource()->ImageSizeWithDefaultSize(
       Style()->EffectiveZoom(), DefaultSize());
   concrete_size.Scale(ImageDevicePixelRatio());
   LayoutSize image_size(RoundedLayoutSize(concrete_size));

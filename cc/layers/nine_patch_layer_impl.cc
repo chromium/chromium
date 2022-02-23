@@ -4,6 +4,9 @@
 
 #include "cc/layers/nine_patch_layer_impl.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -20,7 +23,7 @@ NinePatchLayerImpl::NinePatchLayerImpl(LayerTreeImpl* tree_impl, int id)
 NinePatchLayerImpl::~NinePatchLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> NinePatchLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return NinePatchLayerImpl::Create(tree_impl, id());
 }
 

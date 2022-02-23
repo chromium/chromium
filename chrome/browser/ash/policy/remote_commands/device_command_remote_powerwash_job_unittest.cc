@@ -69,8 +69,7 @@ std::unique_ptr<policy::RemoteCommandJob> CreateRemotePowerwashJob(
   auto job = std::make_unique<policy::DeviceCommandRemotePowerwashJob>(service);
 
   enterprise_management::SignedData signed_command;
-  EXPECT_TRUE(
-      job->Init(base::TimeTicks::Now(), command_proto, &signed_command));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, signed_command));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
 
@@ -100,8 +99,7 @@ DeviceCommandRemotePowerwashJobTest::DeviceCommandRemotePowerwashJobTest()
     : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
           base::TestMockTimeTaskRunner::Type::kBoundToThread)),
       client_(std::make_unique<MockCloudPolicyClient>()),
-      service_(std::make_unique<TestingRemoteCommandsService>(client_.get())) {
-}
+      service_(std::make_unique<TestingRemoteCommandsService>(client_.get())) {}
 
 DeviceCommandRemotePowerwashJobTest::~DeviceCommandRemotePowerwashJobTest() =
     default;

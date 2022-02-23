@@ -131,9 +131,15 @@ bool ExceptionSnapshotIOSIntermediateDump::InitializeFromSignal(
 #endif
   }
 
-  GetDataValueFromMap(exception_data, Key::kSignalNumber, &exception_);
-  GetDataValueFromMap(exception_data, Key::kSignalCode, &exception_info_);
+  exception_ = EXC_SOFT_SIGNAL;
+  GetDataValueFromMap(exception_data, Key::kSignalNumber, &exception_info_);
   GetDataValueFromMap(exception_data, Key::kSignalAddress, &exception_address_);
+
+  codes_.push_back(exception_);
+  codes_.push_back(exception_info_);
+  uint32_t code;
+  GetDataValueFromMap(exception_data, Key::kSignalCode, &code);
+  codes_.push_back(code);
 
   INITIALIZATION_STATE_SET_VALID(initialized_);
   return true;
@@ -293,36 +299,40 @@ void ExceptionSnapshotIOSIntermediateDump::LoadContextFromThread(
     const IOSIntermediateDumpData* state_dump =
         GetDataFromMap(exception_data, Key::kState);
     if (state_dump) {
-      const std::vector<uint8_t>& bytes = state_dump->bytes();
+      std::vector<uint8_t> bytes = state_dump->bytes();
       size_t actual_length = bytes.size();
       size_t expected_length = ThreadStateLengthForFlavor(flavor);
-      // TODO(justincohen): Consider zero-ing out bytes if actual_length is
-      // shorter than expected_length, and tolerating actual_length longer than
-      // expected_length.
-      if (expected_length == actual_length) {
-        const ConstThreadState state =
-            reinterpret_cast<const ConstThreadState>(bytes.data());
-        mach_msg_type_number_t state_count = bytes.size() / sizeof(uint32_t);
+      if (actual_length < expected_length) {
+        // Zero out bytes if actual_length is shorter than expected_length.
+        bytes.resize(expected_length, 0);
+        actual_length = bytes.size();
+        LOG(WARNING) << "Exception context length " << actual_length
+                     << " shorter than expected length " << expected_length;
+      }
+      const ConstThreadState state =
+          reinterpret_cast<const ConstThreadState>(bytes.data());
+      // Tolerating actual_length longer than expected_length by setting
+      // state_count based on expected_length, not bytes.size().
+      mach_msg_type_number_t state_count = expected_length / sizeof(uint32_t);
 #if defined(ARCH_CPU_X86_64)
-        InitializeCPUContextX86_64(&context_x86_64_,
-                                   flavor,
-                                   state,
-                                   state_count,
-                                   &thread_state,
-                                   &float_state,
-                                   &debug_state);
+      InitializeCPUContextX86_64(&context_x86_64_,
+                                 flavor,
+                                 state,
+                                 state_count,
+                                 &thread_state,
+                                 &float_state,
+                                 &debug_state);
 #elif defined(ARCH_CPU_ARM64)
-        InitializeCPUContextARM64(&context_arm64_,
-                                  flavor,
-                                  state,
-                                  state_count,
-                                  &thread_state,
-                                  &float_state,
-                                  &debug_state);
+      InitializeCPUContextARM64(&context_arm64_,
+                                flavor,
+                                state,
+                                state_count,
+                                &thread_state,
+                                &float_state,
+                                &debug_state);
 #else
 #error Port to your CPU architecture
 #endif
-      }
     }
   }
 

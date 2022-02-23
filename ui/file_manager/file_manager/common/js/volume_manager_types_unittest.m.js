@@ -19,6 +19,11 @@ export function testRootTypeFromVolumeTypeBijection() {
       return;
     }
 
+    // System Internal volumes do not have a corresponding root.
+    if (volumeType == VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL) {
+      return;
+    }
+
     const rootType = VolumeManagerCommon.getRootTypeFromVolumeType(volumeType);
     assertTrue(
         volumeType == VolumeManagerCommon.getVolumeTypeFromRootType(rootType));

@@ -13,6 +13,7 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/data_operation.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,6 +81,9 @@ struct RefreshResponseData {
   // each other but not to client timestamps.
   int64_t server_request_received_timestamp_ns;
   int64_t server_response_sent_timestamp_ns;
+
+  bool web_and_app_activity_enabled = false;
+  bool discover_personalization_enabled = false;
 };
 
 absl::optional<feedstore::DataOperation> TranslateDataOperation(
@@ -89,7 +93,7 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time);
 
 std::vector<feedstore::DataOperation> TranslateDismissData(

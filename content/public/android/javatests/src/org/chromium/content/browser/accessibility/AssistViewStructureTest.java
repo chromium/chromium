@@ -4,11 +4,11 @@
 
 package org.chromium.content.browser.accessibility;
 
-import android.annotation.TargetApi;
 import android.app.assist.AssistStructure.ViewNode;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -21,14 +21,11 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.UseZoomForDSFPolicy;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -75,22 +72,6 @@ public class AssistViewStructureTest {
         return getViewStructureFromHtml(htmlContent, null);
     }
 
-    private double cssToPixel(double css) {
-        boolean use_zoom_for_dsf = UseZoomForDSFPolicy.isUseZoomForDSFEnabled();
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Coordinates coord = Coordinates.createFor(mActivityTestRule.getWebContents());
-                double result = css;
-                if (use_zoom_for_dsf) result *= coord.getDeviceScaleFactor();
-                result = coord.fromLocalCssToPix((float) result);
-                return result;
-            });
-        } catch (ExecutionException ex) {
-            Assert.fail("Unexpected ExecutionException");
-            return 0.0;
-        }
-    }
-
     private String getSelectionScript(String node1, int start, String node2, int end) {
         return "var element1 = document.getElementById('" + node1 + "');"
                 + "var node1 = element1.childNodes.item(0);"
@@ -110,7 +91,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testSimpleParagraph() throws Throwable {
         TestViewStructureInterface testViewStructure =
                 getViewStructureFromHtml("<p>Hello World</p>");
@@ -127,7 +108,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testStaticList() throws Throwable {
         TestViewStructureInterface testViewStructure = getViewStructureFromHtml("<ol>"
                 + "  <li>Kirk</li>"
@@ -155,7 +136,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testUrl() throws Throwable {
         TestViewStructureInterface root = getViewStructureFromHtml("<p>Hello World</p>");
         Assert.assertEquals(1, root.getChildCount());
@@ -184,7 +165,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testAccessibleLabelsAugmentInnerText() throws Throwable {
         TestViewStructureInterface testViewStructure =
                 getViewStructureFromHtml("<a href='#'>Link</a>"
@@ -211,7 +192,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlTagNames() throws Throwable {
         TestViewStructureInterface testViewStructure = getViewStructureFromHtml("<h1>Heading</h1>"
                 + "  <p>Paragraph</p>"
@@ -235,7 +216,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlAttributes() throws Throwable {
         TestViewStructureInterface node =
                 getViewStructureFromHtml("<button id='a' class='b' aria-label='c'>D</button>");
@@ -260,7 +241,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testHtmlMetadata() throws Throwable {
         TestViewStructureInterface root = getViewStructureFromHtml("<head>"
                 + "  <title>Hello World</title>"
@@ -288,7 +269,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testButton() throws Throwable {
         final String data = "<button>Click</button>";
         TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
@@ -311,7 +292,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testColors() throws Throwable {
         final String data = "<p style=\"color:#123456;background:#abcdef\">color</p>";
         TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
@@ -331,7 +312,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1224422")
     public void testFontSize() throws Throwable {
         final String data = "<html><head><style> "
@@ -345,9 +326,8 @@ public class AssistViewStructureTest {
         TestViewStructureInterface paraText = para.getChild(0);
         Assert.assertEquals("foo", paraText.getText());
 
-        // The font size should take the scale into account.
-        double expected = cssToPixel(32.0);
-        Assert.assertEquals(expected, para.getTextSize(), 1.0);
+        // The font size should not be affected by page zoom or CSS transform.
+        Assert.assertEquals(16, para.getTextSize(), 0.01);
     }
 
     /**
@@ -356,7 +336,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testTextStyles() throws Throwable {
         final String data = "<html><head><style> "
                 + "    body { font: italic bold 12px Courier; }"
@@ -382,7 +362,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testStrongStyle() throws Throwable {
         final String data = "<html><body><p>foo</p><p><strong>bar</strong></p></body></html>";
         TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
@@ -407,7 +387,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testItalicStyle() throws Throwable {
         final String data = "<html><body><i>foo</i></body></html>";
         TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
@@ -426,7 +406,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testBoldStyle() throws Throwable {
         final String data = "<html><body><b>foo</b></body></html>";
         TestViewStructureInterface root = getViewStructureFromHtml(data).getChild(0);
@@ -445,7 +425,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testOneCharacterSelection() throws Throwable {
         final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
         final String js = getSelectionScript("node", 0, "node", 1);
@@ -466,7 +446,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testOneNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node' role='none'>foo</b></body></html>";
         final String js = getSelectionScript("node", 0, "node", 3);
@@ -487,7 +467,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testSubsequentNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node1' role='none'>foo</b>"
                 + "<b id='node2' role='none'>bar</b></body></html>";
@@ -513,7 +493,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testMultiNodeSelection() throws Throwable {
         final String data = "<html><body><b id='node1' role='none'>foo</b><b>middle</b>"
                 + "<b id='node2' role='none'>bar</b></body></html>";
@@ -543,7 +523,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testRequestAccessibilitySnapshotInputSelection() throws Throwable {
         final String data = "<html><body><input id='input' value='Hello, world'></body></html>";
         final String js = "var input = document.getElementById('input');"
@@ -568,7 +548,7 @@ public class AssistViewStructureTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void testRequestAccessibilitySnapshotPasswordField() throws Throwable {
         final String data =
                 "<html><body><input id='input' type='password' value='foo'></body></html>";

@@ -6,13 +6,35 @@
  * 'settings-personalization-page' is the settings page containing
  * personalization settings.
  */
+import '../ambient_mode_page/ambient_mode_page.js';
+import '../ambient_mode_page/ambient_mode_photos_page.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import './change_picture.js';
+import './dark_mode_subpage.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
+import {WallpaperBrowserProxy, WallpaperBrowserProxyImpl} from './wallpaper_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-personalization-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -45,15 +67,24 @@ Polymer({
       readOnly: true,
     },
 
+    /** @private */
+    isPersonalizationHubEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isPersonalizationHubEnabled');
+      },
+      readOnly: true,
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.CHANGE_PICTURE) {
-          map.set(settings.routes.CHANGE_PICTURE.path, '#changePictureRow');
-        } else if (settings.routes.AMBIENT_MODE) {
-          map.set(settings.routes.AMBIENT_MODE.path, '#ambientModeRow');
+        if (routes.CHANGE_PICTURE) {
+          map.set(routes.CHANGE_PICTURE.path, '#changePictureRow');
+        } else if (routes.AMBIENT_MODE) {
+          map.set(routes.AMBIENT_MODE.path, '#ambientModeRow');
         }
 
         return map;
@@ -70,33 +101,38 @@ Polymer({
     },
   },
 
-  /** @private {?settings.WallpaperBrowserProxy} */
-  browserProxy_: null,
+  /** @private {?PersonalizationHubBrowserProxy} */
+  personalizationHubBrowserProxy_: null,
+
+  /** @private {?WallpaperBrowserProxy} */
+  wallpaperBrowserProxy_: null,
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.WallpaperBrowserProxyImpl.getInstance();
+    this.wallpaperBrowserProxy_ = WallpaperBrowserProxyImpl.getInstance();
+    this.personalizationHubBrowserProxy_ =
+        PersonalizationHubBrowserProxyImpl.getInstance();
   },
 
   /** @override */
   ready() {
-    this.browserProxy_.isWallpaperSettingVisible().then(
+    this.wallpaperBrowserProxy_.isWallpaperSettingVisible().then(
         isWallpaperSettingVisible => {
           this.showWallpaperRow_ = isWallpaperSettingVisible;
         });
-    this.browserProxy_.isWallpaperPolicyControlled().then(
+    this.wallpaperBrowserProxy_.isWallpaperPolicyControlled().then(
         isPolicyControlled => {
           this.isWallpaperPolicyControlled_ = isPolicyControlled;
         });
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.PERSONALIZATION) {
+    if (route !== routes.PERSONALIZATION) {
       return;
     }
 
@@ -107,22 +143,27 @@ Polymer({
    * @private
    */
   openWallpaperManager_() {
-    this.browserProxy_.openWallpaperManager();
+    this.wallpaperBrowserProxy_.openWallpaperManager();
+  },
+
+  /** @private */
+  openPersonalizationHub_() {
+    this.personalizationHubBrowserProxy_.openPersonalizationHub();
   },
 
   /** @private */
   navigateToChangePicture_() {
-    settings.Router.getInstance().navigateTo(settings.routes.CHANGE_PICTURE);
+    Router.getInstance().navigateTo(routes.CHANGE_PICTURE);
   },
 
   /** @private */
   navigateToAmbientMode_() {
-    settings.Router.getInstance().navigateTo(settings.routes.AMBIENT_MODE);
+    Router.getInstance().navigateTo(routes.AMBIENT_MODE);
   },
 
   /** @private */
   navigateToDarkMode_() {
-    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE);
+    Router.getInstance().navigateTo(routes.DARK_MODE);
   },
 
   /**

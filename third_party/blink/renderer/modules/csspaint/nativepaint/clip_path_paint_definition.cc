@@ -18,9 +18,9 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -31,7 +31,7 @@ namespace {
 class ClipPathPaintWorkletInput : public PaintWorkletInput {
  public:
   ClipPathPaintWorkletInput(
-      const FloatRect& container_rect,
+      const gfx::RectF& container_rect,
       int worklet_id,
       float zoom,
       const Vector<scoped_refptr<BasicShape>>& animated_shapes,
@@ -75,7 +75,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
     if (basic_shape.GetType() == BasicShape::kStylePathType) {
       return PathInterpolationFunctions::ConvertValue(
           To<StylePath>(&basic_shape),
-          PathInterpolationFunctions::ForceAbsolute);
+          PathInterpolationFunctions::kForceAbsolute);
     }
     return basic_shape_interpolation_functions::MaybeConvertBasicShape(
         &basic_shape, zoom_);
@@ -201,7 +201,7 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
         animated_property_values) {
   const ClipPathPaintWorkletInput* input =
       To<ClipPathPaintWorkletInput>(compositor_input);
-  FloatSize container_size = input->ContainerSize();
+  gfx::SizeF container_size = input->ContainerSize();
 
   const Vector<InterpolationValue>& interpolation_values =
       input->InterpolationValues();
@@ -269,14 +269,13 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   scoped_refptr<ShapeClipPathOperation> current_shape =
       ShapeClipPathOperation::Create(result_shape);
 
-  Path path = current_shape->GetPath(
-      FloatRect(FloatPoint(0.0, 0.0), container_size), input->Zoom());
+  Path path = current_shape->GetPath(gfx::RectF(container_size), input->Zoom());
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      RoundedIntSize(container_size), context_settings, 1, 1);
+      gfx::ToRoundedSize(container_size), context_settings, 1, 1);
 
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   rendering_context->GetPaintCanvas()->drawPath(path.GetSkPath(), flags);
 
@@ -285,7 +284,7 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
 
 scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     float zoom,
-    const FloatRect& reference_box,
+    const gfx::RectF& reference_box,
     const Node& node) {
   DCHECK(node.IsElementNode());
   const Element* element = static_cast<Element*>(const_cast<Node*>(&node));

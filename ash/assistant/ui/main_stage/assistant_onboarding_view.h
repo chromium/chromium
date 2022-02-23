@@ -17,6 +17,7 @@
 
 namespace views {
 class Label;
+class TableLayoutView;
 }  // namespace views
 
 namespace ash {
@@ -59,10 +60,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   void UpdateGreeting();
   void UpdateSuggestions();
 
-  AssistantViewDelegate* const delegate_;  // Owned by AssistantController.
-  views::Label* greeting_ = nullptr;       // Owned by view hierarchy.
-  views::Label* intro_ = nullptr;          // Owned by view hierarchy.
-  views::View* grid_ = nullptr;            // Owned by view hierarchy.
+  AssistantViewDelegate* const delegate_;    // Owned by AssistantController.
+  views::Label* greeting_ = nullptr;         // Owned by view hierarchy.
+  views::Label* intro_ = nullptr;            // Owned by view hierarchy.
+  views::TableLayoutView* table_ = nullptr;  // Owned by view hierarchy.
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

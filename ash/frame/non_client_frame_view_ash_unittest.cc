@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -863,6 +864,36 @@ TEST_P(NonClientFrameViewAshFrameColorTest, KFrameInactiveColor) {
   EXPECT_EQ(active_color, new_color);
   EXPECT_EQ(new_color,
             delegate->non_client_frame_view()->GetInactiveFrameColorForTest());
+}
+
+// Verify that NonClientFrameViewAsh updates the active and inactive colors at
+// construction.
+TEST_P(NonClientFrameViewAshFrameColorTest, KFrameColorCtor) {
+  TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
+  // Build the window, this implicit constructs the NonClientFrameView.
+  constexpr SkColor non_default_color = SK_ColorWHITE;
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder()
+          .SetDelegate(delegate)
+          .SetBounds(gfx::Rect())
+          .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
+              desks_util::GetActiveDeskContainerId()))
+          .SetShow(true)
+          .SetWindowProperty(kFrameActiveColorKey, non_default_color)
+          .SetWindowProperty(kFrameInactiveColorKey, non_default_color)
+          .BuildOwnsNativeWidget();
+
+  // Check that the default color is different from the one used in the  test.
+  SkColor inactive_color =
+      widget->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
+  SkColor active_color =
+      widget->GetNativeWindow()->GetProperty(kFrameActiveColorKey);
+  EXPECT_EQ(active_color, non_default_color);
+  EXPECT_EQ(inactive_color, non_default_color);
+  EXPECT_EQ(delegate->non_client_frame_view()->GetInactiveFrameColorForTest(),
+            non_default_color);
+  EXPECT_EQ(delegate->non_client_frame_view()->GetActiveFrameColorForTest(),
+            non_default_color);
 }
 
 // Verify that NonClientFrameViewAsh updates the active color based on the

@@ -191,7 +191,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
 
     // Package |last_received_io_surface_| as a GpuMemoryBuffer.
     gfx::GpuMemoryBufferHandle handle;
-    handle.id.id = -1;
+    handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
     handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
     handle.io_surface.reset(last_received_io_surface_,
                             base::scoped_policy::RETAIN);
@@ -202,7 +202,7 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
 
     client_->OnIncomingCapturedExternalBuffer(
         media::CapturedExternalVideoBuffer(std::move(handle), requested_format_,
-                                           gfx::ColorSpace::CreateSRGB()),
+                                           gfx::ColorSpace::CreateREC709()),
         {}, now, now - first_frame_time_);
 
     // Reset |min_frame_rate_enforcement_timer_|.

@@ -244,6 +244,10 @@ ContentDecryptionModuleAdapter::GetCdmContextRef() {
   return std::make_unique<media::CdmContextRefImpl>(base::WrapRefCounted(this));
 }
 
+bool ContentDecryptionModuleAdapter::UsingArcCdm() const {
+  return false;
+}
+
 void ContentDecryptionModuleAdapter::OnSessionMessage(
     const std::string& session_id,
     media::CdmMessageType message_type,

@@ -14,11 +14,13 @@
 #include <linux/videodev2.h>
 
 #include "base/containers/queue.h"
+#include "base/containers/small_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/decoder_status.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
@@ -47,7 +49,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       size_t num_buffers,
       const PortConfig& input_config,
       const PortConfig& output_config,
-      const std::vector<OutputMode>& preferred_output_modes,
+      OutputMode output_mode,
       VideoRotation relative_rotation,
       ErrorCB error_cb,
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
@@ -186,6 +188,9 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // Sequence and its checker used to poll the V4L2 for events only.
   scoped_refptr<base::SingleThreadTaskRunner> poll_task_runner_;
   SEQUENCE_CHECKER(poll_sequence_checker_);
+
+  base::small_map<std::map<base::TimeDelta, std::unique_ptr<ScopedDecodeTrace>>>
+      buffer_tracers_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 
   // WeakPtr bound to |backend_task_runner_|.
   base::WeakPtr<V4L2ImageProcessorBackend> backend_weak_this_;

@@ -335,7 +335,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
   }
 
   uint16_t first_size;
-  base::ReadBigEndian(ptr, &first_size);
+  base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr), &first_size);
 
   if (first_size < kMax2ByteSize) {
     data_offset = sizeof(uint16_t);
@@ -345,7 +345,8 @@ bool SmallMessageSocket::ReadSize(char* ptr,
       return false;
     }
     uint32_t real_size;
-    base::ReadBigEndian(ptr + sizeof(uint16_t), &real_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr) + sizeof(uint16_t),
+                        &real_size);
     data_offset = sizeof(uint16_t) + sizeof(uint32_t);
     message_size = real_size;
   }

@@ -34,83 +34,85 @@ void SetFieldLabels(AutofillField* field, const std::u16string& label) {
 }  // namespace
 
 TEST(FormFieldTest, Match) {
+  constexpr MatchParams kMatchLabel{{MatchAttribute::kLabel}, {}};
+
   AutofillField field;
 
   // Empty strings match.
-  EXPECT_TRUE(FormField::Match(&field, std::u16string(), MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, std::u16string(), kMatchLabel));
 
   // Empty pattern matches non-empty string.
   SetFieldLabels(&field, u"a");
-  EXPECT_TRUE(FormField::Match(&field, std::u16string(), MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, std::u16string(), kMatchLabel));
 
   // Strictly empty pattern matches empty string.
   SetFieldLabels(&field, u"");
-  EXPECT_TRUE(FormField::Match(&field, u"^$", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"^$", kMatchLabel));
 
   // Strictly empty pattern does not match non-empty string.
   SetFieldLabels(&field, u"a");
-  EXPECT_FALSE(FormField::Match(&field, u"^$", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"^$", kMatchLabel));
 
   // Non-empty pattern doesn't match empty string.
   SetFieldLabels(&field, u"");
-  EXPECT_FALSE(FormField::Match(&field, u"a", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"a", kMatchLabel));
 
   // Beginning of line.
   SetFieldLabels(&field, u"head_tail");
-  EXPECT_TRUE(FormField::Match(&field, u"^head", MATCH_LABEL));
-  EXPECT_FALSE(FormField::Match(&field, u"^tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"^head", kMatchLabel));
+  EXPECT_FALSE(FormField::Match(&field, u"^tail", kMatchLabel));
 
   // End of line.
   SetFieldLabels(&field, u"head_tail");
-  EXPECT_FALSE(FormField::Match(&field, u"head$", MATCH_LABEL));
-  EXPECT_TRUE(FormField::Match(&field, u"tail$", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"head$", kMatchLabel));
+  EXPECT_TRUE(FormField::Match(&field, u"tail$", kMatchLabel));
 
   // Exact.
   SetFieldLabels(&field, u"head_tail");
-  EXPECT_FALSE(FormField::Match(&field, u"^head$", MATCH_LABEL));
-  EXPECT_FALSE(FormField::Match(&field, u"^tail$", MATCH_LABEL));
-  EXPECT_TRUE(FormField::Match(&field, u"^head_tail$", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"^head$", kMatchLabel));
+  EXPECT_FALSE(FormField::Match(&field, u"^tail$", kMatchLabel));
+  EXPECT_TRUE(FormField::Match(&field, u"^head_tail$", kMatchLabel));
 
   // Escaped dots.
   SetFieldLabels(&field, u"m.i.");
   // Note: This pattern is misleading as the "." characters are wild cards.
-  EXPECT_TRUE(FormField::Match(&field, u"m.i.", MATCH_LABEL));
-  EXPECT_TRUE(FormField::Match(&field, u"m\\.i\\.", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"m.i.", kMatchLabel));
+  EXPECT_TRUE(FormField::Match(&field, u"m\\.i\\.", kMatchLabel));
   SetFieldLabels(&field, u"mXiX");
-  EXPECT_TRUE(FormField::Match(&field, u"m.i.", MATCH_LABEL));
-  EXPECT_FALSE(FormField::Match(&field, u"m\\.i\\.", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"m.i.", kMatchLabel));
+  EXPECT_FALSE(FormField::Match(&field, u"m\\.i\\.", kMatchLabel));
 
   // Repetition.
   SetFieldLabels(&field, u"headtail");
-  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", kMatchLabel));
   SetFieldLabels(&field, u"headXtail");
-  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", kMatchLabel));
   SetFieldLabels(&field, u"headXXXtail");
-  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head.*tail", kMatchLabel));
   SetFieldLabels(&field, u"headtail");
-  EXPECT_FALSE(FormField::Match(&field, u"head.+tail", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"head.+tail", kMatchLabel));
   SetFieldLabels(&field, u"headXtail");
-  EXPECT_TRUE(FormField::Match(&field, u"head.+tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head.+tail", kMatchLabel));
   SetFieldLabels(&field, u"headXXXtail");
-  EXPECT_TRUE(FormField::Match(&field, u"head.+tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head.+tail", kMatchLabel));
 
   // Alternation.
   SetFieldLabels(&field, u"head_tail");
-  EXPECT_TRUE(FormField::Match(&field, u"head|other", MATCH_LABEL));
-  EXPECT_TRUE(FormField::Match(&field, u"tail|other", MATCH_LABEL));
-  EXPECT_FALSE(FormField::Match(&field, u"bad|good", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head|other", kMatchLabel));
+  EXPECT_TRUE(FormField::Match(&field, u"tail|other", kMatchLabel));
+  EXPECT_FALSE(FormField::Match(&field, u"bad|good", kMatchLabel));
 
   // Case sensitivity.
   SetFieldLabels(&field, u"xxxHeAd_tAiLxxx");
-  EXPECT_TRUE(FormField::Match(&field, u"head_tail", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"head_tail", kMatchLabel));
 
   // Word boundaries.
   SetFieldLabels(&field, u"contains word:");
-  EXPECT_TRUE(FormField::Match(&field, u"\\bword\\b", MATCH_LABEL));
-  EXPECT_FALSE(FormField::Match(&field, u"\\bcon\\b", MATCH_LABEL));
+  EXPECT_TRUE(FormField::Match(&field, u"\\bword\\b", kMatchLabel));
+  EXPECT_FALSE(FormField::Match(&field, u"\\bcon\\b", kMatchLabel));
   // Make sure the circumflex in 'crêpe' is not treated as a word boundary.
   field.label = u"crêpe";
-  EXPECT_FALSE(FormField::Match(&field, u"\\bcr\\b", MATCH_LABEL));
+  EXPECT_FALSE(FormField::Match(&field, u"\\bcr\\b", kMatchLabel));
 }
 
 // Test that we ignore checkable elements.
@@ -214,15 +216,15 @@ TEST(FormFieldTest, TestParseableLabels) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_TRUE(
-        FormField::Match(autofill_field.get(), u"First Name", MATCH_LABEL));
+    EXPECT_TRUE(FormField::Match(autofill_field.get(), u"First Name",
+                                 MatchParams({MatchAttribute::kLabel}, {})));
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_FALSE(
-        FormField::Match(autofill_field.get(), u"First Name", MATCH_LABEL));
+    EXPECT_FALSE(FormField::Match(autofill_field.get(), u"First Name",
+                                  MatchParams({MatchAttribute::kLabel}, {})));
   }
 }
 

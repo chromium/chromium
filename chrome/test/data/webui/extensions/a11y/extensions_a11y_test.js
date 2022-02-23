@@ -8,6 +8,7 @@ GEN_INCLUDE([
   '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -224,7 +225,7 @@ CrExtensionsErrorConsoleA11yTest =
   /** @override */
   testGenPreamble() {
     // (crbug.com/1199580): Disabled tests from Mac and Win failures
-    GEN('#if defined(OS_MAC) || defined(OS_WIN)');
+    GEN('#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)');
     GEN('#define DISABLED_All');
     GEN('#endif');
     GEN('  SetDevModeEnabled(true);');

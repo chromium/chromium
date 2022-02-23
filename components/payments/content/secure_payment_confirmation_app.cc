@@ -218,8 +218,7 @@ SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
   response->secure_payment_confirmation =
       mojom::SecurePaymentConfirmationResponse::New(
           response_->info.Clone(), response_->signature,
-          response_->has_transport, response_->transport,
-          response_->user_handle);
+          response_->authenticator_attachment, response_->user_handle);
   return response;
 }
 
@@ -235,7 +234,8 @@ void SecurePaymentConfirmationApp::RenderFrameDeleted(
 void SecurePaymentConfirmationApp::OnGetAssertion(
     base::WeakPtr<Delegate> delegate,
     blink::mojom::AuthenticatorStatus status,
-    blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
+    blink::mojom::GetAssertionAuthenticatorResponsePtr response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   if (!delegate)
     return;
 

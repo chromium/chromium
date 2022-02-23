@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -182,7 +182,8 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
 }
 
 void FocusWebContents(Browser* browser) {
-  auto* const contents = browser->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* const contents =
+      browser->tab_strip_model()->GetActiveWebContents();
   if (contents)
     contents->Focus();
 }
@@ -195,20 +196,6 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   // Allow the window to close itself.
   params.opened_by_another_window = true;
   Navigate(&params);
-}
-
-// Returns true if the user has consented to browser sync-the-feature or
-// Chrome OS sync.
-bool HasUserOptedInToSync(const syncer::SyncUserSettings* settings) {
-  if (settings->IsFirstSetupComplete())
-    return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncConsentOptionalEnabled() &&
-      settings->IsOsSyncFeatureEnabled()) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
 }
 
 absl::optional<AvatarSyncErrorType> GetTrustedVaultError(
@@ -278,7 +265,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   if (!service->HasSyncConsent()) {
     // Only trusted vault errors can be shown if the account isn't a consented
     // primary account.
-    // Note the condition checked is not HasUserOptedInToSync(), because the
+    // Note the condition checked is not IsFirstSetupComplete(), because the
     // setup incomplete case is treated separately below. See the comment in
     // ShouldRequestSyncConfirmation() about dashboard resets.
     return GetTrustedVaultError(service, profile->GetPrefs());
@@ -367,7 +354,7 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
 
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
-  return HasUserOptedInToSync(settings) &&
+  return settings->IsFirstSetupComplete() &&
          settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
@@ -378,13 +365,13 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
     return false;
   }
 
-  if (HasUserOptedInToSync(settings)) {
+  if (settings->IsFirstSetupComplete()) {
     return true;
   }
 
   // Guard under the main feature toggle for trusted vault changes.
   if (!base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery)) {
+          syncer::kSyncTrustedVaultPassphraseRecovery)) {
     return false;
   }
 
@@ -413,12 +400,12 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
     return false;
   }
 
-  if (HasUserOptedInToSync(settings)) {
+  if (settings->IsFirstSetupComplete()) {
     return true;
   }
 
   DCHECK(base::FeatureList::IsEnabled(
-      switches::kSyncTrustedVaultPassphraseRecovery));
+      syncer::kSyncTrustedVaultPassphraseRecovery));
 
   // In transport-only mode, IsTrustedVaultRecoverabilityDegraded() returns true
   // even if the user isn't trying to sync any of the encrypted types. The check

@@ -4,6 +4,8 @@
 
 package org.chromium.components.messages;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
@@ -12,8 +14,10 @@ import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 
@@ -79,22 +83,30 @@ class ScopeChangeController {
             super(scopeKey.webContents);
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            mDelegate.onScopeChange(new MessageScopeChange(mScopeKey.scopeType, scopeKey,
-                    scopeKey.webContents.getVisibility() == Visibility.VISIBLE
-                            ? ChangeType.ACTIVE
-                            : ChangeType.INACTIVE));
+            int changeType = ChangeType.INACTIVE;
+            WebContents webContents = scopeKey.webContents;
+            if (webContents != null && webContents.getViewAndroidDelegate() != null
+                    && webContents.getVisibility() == Visibility.VISIBLE) {
+                ViewAndroidDelegate viewAndroidDelegate = webContents.getViewAndroidDelegate();
+                if (viewAndroidDelegate.getContainerView() != null
+                        && viewAndroidDelegate.getContainerView().getVisibility() == View.VISIBLE) {
+                    changeType = ChangeType.ACTIVE;
+                } else {
+                    changeType = ChangeType.INACTIVE;
+                }
+            }
+            mDelegate.onScopeChange(
+                    new MessageScopeChange(mScopeKey.scopeType, scopeKey, changeType));
         }
 
         @Override
-        public void wasShown() {
-            super.wasShown();
+        public void onWebContentsFocused() {
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.ACTIVE));
         }
 
         @Override
-        public void wasHidden() {
-            super.wasHidden();
+        public void onWebContentsLostFocus() {
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.INACTIVE));
         }

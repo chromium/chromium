@@ -34,4 +34,8 @@ mojo::ReceiverId FakeIpcServer::current_receiver() const {
   return test_state_->current_receiver;
 }
 
+base::ProcessId FakeIpcServer::current_peer_pid() const {
+  return test_state_->current_peer_pid;
+}
+
 }  // namespace remoting

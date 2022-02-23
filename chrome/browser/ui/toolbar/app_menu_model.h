@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -120,7 +122,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
                      public TabStripModelObserver,
                      public content::WebContentsObserver {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
 
   // First command ID to use for the recent tabs menu. This is one higher than
   // the first command id used for the bookmarks menus, as the command ids for
@@ -212,11 +214,11 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // took to select the command.
   void LogMenuMetrics(int command_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Disables/Enables the settings item based on kSystemFeaturesDisableList
   // pref.
   void UpdateSettingsItemState();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Time menu has been open. Used by LogMenuMetrics() to record the time
   // to action when the user selects a menu item.
@@ -240,10 +242,10 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Other submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> sub_menus_;
 
-  ui::AcceleratorProvider* provider_;  // weak
+  raw_ptr<ui::AcceleratorProvider> provider_;  // weak
 
-  Browser* const browser_;  // weak
-  AppMenuIconController* const app_menu_icon_controller_;
+  const raw_ptr<Browser> browser_;  // weak
+  const raw_ptr<AppMenuIconController> app_menu_icon_controller_;
 
   base::CallbackListSubscription browser_zoom_subscription_;
 

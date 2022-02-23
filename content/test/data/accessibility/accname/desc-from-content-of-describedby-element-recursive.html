@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<body>
+<label for="test">Label text</label>
+<input id="test" type="text" aria-describedby="desc2">
+<div id="desc2">
+  <!-- role=status normally doesn't support name-from-contents, but when
+       performing name-from-contents on behalf of aria-describedby, it should
+       contribute its text. -->
+  <div role="status">
+  Description text
+  </div>
+</div>

@@ -16,7 +16,7 @@ the differentiation can be done programmatically.
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 
-def ChromeOSTelemetryRemote(test_config):
+def ChromeOSTelemetryRemote(test_config, _):
   """Substitutes the correct CrOS remote Telemetry arguments.
 
   VMs use a hard-coded remote address and port, while physical hardware use
@@ -59,7 +59,7 @@ def ChromeOSTelemetryRemote(test_config):
   raise RuntimeError('Unknown CrOS pool %s' % pool)
 
 
-def GPUExpectedDeviceId(test_config):
+def GPUExpectedDeviceId(test_config, _):
   """Substitutes the correct expected GPU(s) for certain GPU tests.
 
   Most configurations only need one expected GPU, but heterogeneous pools (e.g.
@@ -94,6 +94,6 @@ def GPUExpectedDeviceId(test_config):
   return retval
 
 
-def TestOnlySubstitution(_):
+def TestOnlySubstitution(_, __):
   """Magic substitution used for unittests."""
   return ['--magic-substitution-success']

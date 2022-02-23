@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +43,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.DoNotInline;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForO;
@@ -102,6 +104,7 @@ import org.chromium.weblayer_private.settings.SettingsFragmentImpl;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,6 +139,9 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     // resources. If this value changes make sure to change _SHARED_LIBRARY_HARDCODED_ID in
     // //build/android/gyp/util/protoresources.py and WebViewChromiumFactoryProvider.java.
     private static final int REQUIRED_PACKAGE_IDENTIFIER = 36;
+
+    // 0 results in using the default value.
+    private static int sMaxNavigationsForInstanceState = 0;
 
     private final ProfileManager mProfileManager = new ProfileManager();
 
@@ -546,6 +552,16 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         return ObjectWrapper.wrap(ContextUtils.getApplicationContext());
     }
 
+    public static int getMaxNavigationsPerTabForInstanceState() {
+        try {
+            return (WebLayerFactoryImpl.getClientMajorVersion() >= 98)
+                    ? sClient.getMaxNavigationsPerTabForInstanceState()
+                    : 0;
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     public static Intent createIntent() {
         if (sClient == null) {
             throw new IllegalStateException("WebLayer should have been initialized already.");
@@ -921,10 +937,22 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         }
     }
 
+    @SuppressLint("DiscouragedPrivateApi")
     private static Context createContextForMode(Context remoteContext, int uiMode) {
         Configuration configuration = new Configuration();
         configuration.uiMode = uiMode;
-        return remoteContext.createConfigurationContext(configuration);
+        Context context = remoteContext.createConfigurationContext(configuration);
+        // DrawableInflater uses the ClassLoader from the Resources object. We need to make sure
+        // this ClassLoader is correct. See crbug.com/1287000 and crbug.com/1293849 for more
+        // details.
+        try {
+            Field classLoaderField = Resources.class.getDeclaredField("mClassLoader");
+            classLoaderField.setAccessible(true);
+            classLoaderField.set(context.getResources(), WebLayerImpl.class.getClassLoader());
+        } catch (ReflectiveOperationException e) {
+            Log.e(TAG, "Error setting Resources ClassLoader.", e);
+        }
+        return context;
     }
 
     @CalledByNative
@@ -983,9 +1011,24 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             return;
         }
         final Intent intent = new Intent();
-        intent.setClassName(WebViewFactory.getLoadedPackageInfo().packageName,
+        intent.setClassName(getWebViewFactoryPackageName(),
                 EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
         new EmbeddedComponentLoader(Arrays.asList(componentPolicies)).connect(intent);
+    }
+
+    /**
+     * WebViewFactory is not a public android API so R8 is unable to compute its
+     * API level. This causes R8 to not be able to inline WebLayerImplJni#get
+     * into WebLayerImpl#loadComponents.
+
+     * References to WebViewFactory are in a separate method to avoid this issue
+     * and allow WebLayerImplJni#get to be inlined into WebLayerImpl#loadComponents.
+     * @DoNotInline is to avoid any similar inlining issues whenever this method
+     * is referenced.
+     */
+    @DoNotInline
+    private static String getWebViewFactoryPackageName() {
+        return WebViewFactory.getLoadedPackageInfo().packageName;
     }
 
     @NativeMethods

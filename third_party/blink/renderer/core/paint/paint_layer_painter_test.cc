@@ -6,7 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -23,17 +22,8 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
   USING_FAST_MALLOC(PaintLayerPainterTest);
 
  public:
-  PaintController& MainGraphicsLayerPaintController() {
-    return GetLayoutView()
-        .Layer()
-        ->GraphicsLayerBacking(&GetLayoutView())
-        ->GetPaintController();
-  }
-
   CullRect GetCullRect(const PaintLayer& layer) {
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
-      return layer.GetLayoutObject().FirstFragment().GetCullRect();
-    return layer.PreviousCullRect();
+    return layer.GetLayoutObject().FirstFragment().GetCullRect();
   }
 };
 
@@ -147,9 +137,6 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0 }
@@ -444,20 +431,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                           IsSameId(content1->Id(), kBackgroundType)));
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   auto chunks = ContentPaintChunks();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
-  } else {
-    EXPECT_THAT(ContentDisplayItems(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1->Id(), kBackgroundType)));
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 2)));
-  }
+  // |target| still created subsequence (cached).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
 
   // Change something that triggers a repaint but |target| should use cached
   // subsequence.
@@ -478,34 +455,21 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(gfx::Rect(0, 0, 800, 4600)), GetCullRect(*target_layer));
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(ContentDisplayItems(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1->Id(), kBackgroundType)));
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
-  } else {
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 2)));
-  }
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(content1->Id(), kBackgroundType)));
+  // |target| still created subsequence (cached).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
 
   // Scroll the view so that both |content1| and |content2| are in the interest
   // rect.
   GetLayoutView().GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesExceptPaint();
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    // The layer needs repaint when its contents cull rect changes.
-    EXPECT_TRUE(target_layer->SelfNeedsRepaint());
-  } else {
-    // Scrolling doesn't set SelfNeedsRepaint flag. Change of paint dirty rect
-    // of a partially painted layer will trigger repaint.
-    EXPECT_FALSE(target_layer->SelfNeedsRepaint());
-  }
+  // The layer needs repaint when its contents cull rect changes.
+  EXPECT_TRUE(target_layer->SelfNeedsRepaint());
 
   counter.Reset();
   UpdateAllLifecyclePhasesForTest();
@@ -522,17 +486,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 7600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(gfx::Rect(0, 0, 800, 7600)), GetCullRect(*target_layer));
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // |target| still created subsequence (repainted).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 3)));
-  } else {
-    // |target| still created subsequence (repainted).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 3)));
-  }
+  // |target| still created subsequence (repainted).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 3)));
 }
 
 TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
@@ -1212,35 +1169,28 @@ class PaintLayerPainterPaintedOutputInvisibleTest
     EXPECT_EQ(gfx::Size(200, 100), cc_layer->bounds());
 
     auto chunks = ContentPaintChunks();
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      EXPECT_THAT(
-          chunks,
-          ElementsAre(
-              VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(parent_layer->Id(), DisplayItem::kLayerChunk),
-                  parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 10, 10)),
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(target_layer->Id(), DisplayItem::kLayerChunk),
-                  target->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 100, 100)),
-              IsPaintChunk(
-                  1, 1,
-                  PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
-                  child->FirstFragment().LocalBorderBoxProperties(), nullptr,
-                  gfx::Rect(0, 0, 200, 50))));
-      EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
-      EXPECT_EQ(expected_invisible_,
-                (chunks.begin() + 2)->effectively_invisible);
-      EXPECT_EQ(expected_invisible_,
-                (chunks.begin() + 3)->effectively_invisible);
-    } else {
-      EXPECT_EQ(expected_paints_with_transparency_,
-                target_layer->PaintsWithTransparency(kGlobalPaintNormalPhase));
-    }
+    EXPECT_THAT(
+        chunks,
+        ElementsAre(
+            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(parent_layer->Id(), DisplayItem::kLayerChunk),
+                parent->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 10, 10)),
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(target_layer->Id(), DisplayItem::kLayerChunk),
+                target->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 100, 100)),
+            IsPaintChunk(
+                1, 1,
+                PaintChunk::Id(child_layer->Id(), DisplayItem::kLayerChunk),
+                child->FirstFragment().LocalBorderBoxProperties(), nullptr,
+                gfx::Rect(0, 0, 200, 50))));
+    EXPECT_FALSE((chunks.begin() + 1)->effectively_invisible);
+    EXPECT_EQ(expected_invisible_, (chunks.begin() + 2)->effectively_invisible);
+    EXPECT_EQ(expected_invisible_, (chunks.begin() + 3)->effectively_invisible);
   }
 
   String additional_style_;

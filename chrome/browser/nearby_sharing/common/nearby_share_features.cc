@@ -28,8 +28,24 @@ const base::Feature kNearbySharingChildAccounts{
 const base::Feature kNearbySharingDeviceContacts{
     "NearbySharingDeviceContacts", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables new one-page onboarding workflow for Nearby Share.
+const base::Feature kNearbySharingOnePageOnboarding{
+    "NearbySharingOnePageOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables receiving WiFi networks using Nearby Share.
+const base::Feature kNearbySharingReceiveWifiCredentials{
+    "NearbySharingReceiveWifiCredentials", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables seamless sharing between a user's own devices.
+const base::Feature kNearbySharingSelfShare{"NearbySharingSelfShare",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables use of WebRTC in Nearby Share.
 const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables use of WifiLan in Nearby Share.
+const base::Feature kNearbySharingWifiLan{"NearbySharingWifiLan",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

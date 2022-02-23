@@ -8,7 +8,7 @@
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -17,10 +17,6 @@ namespace blink {
 
 class LocalFrameView;
 class LayoutObject;
-
-namespace mobile_metrics_test_helpers {
-struct MobileFriendlinessTree;
-}  // namespace mobile_metrics_test_helpers
 
 struct ViewportDescription;
 
@@ -41,9 +37,6 @@ class CORE_EXPORT MobileFriendlinessChecker
   void WillBeRemovedFromFrame();
   void NotifyViewportUpdated(const ViewportDescription&);
   void NotifyInvalidatePaint(const LayoutObject& object);
-  const blink::MobileFriendliness& GetMobileFriendliness() const {
-    return mobile_friendliness_;
-  }
 
   void Trace(Visitor* visitor) const override;
   struct TextAreaWithFontSize {
@@ -55,8 +48,6 @@ class CORE_EXPORT MobileFriendlinessChecker
  private:
   void Activate(TimerBase*);
 
-  void ComputeSmallTextRatio(const LayoutObject& object);
-
   // Returns the percentage of the width of the content that overflows the
   // viewport.
   // Returns 0 if all content fits in the viewport.
@@ -67,15 +58,14 @@ class CORE_EXPORT MobileFriendlinessChecker
   int ComputeBadTapTargetsRatio();
 
  private:
-  friend struct mobile_metrics_test_helpers::MobileFriendlinessTree;
-
-  TextAreaWithFontSize text_area_sizes_;
   Member<LocalFrameView> frame_view_;
-  MobileFriendliness mobile_friendliness_;
-  bool enabled_;
-  float viewport_scalar_;
   HeapTaskRunnerTimer<MobileFriendlinessChecker> timer_;
   base::TimeTicks last_evaluated_;
+  TextAreaWithFontSize text_area_sizes_;
+  bool viewport_device_width_ = false;
+  bool allow_user_zoom_ = -1;
+  int viewport_initial_scale_x10_ = -1;
+  int viewport_hardcoded_width_ = -1;
 };
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h"
@@ -13,6 +14,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
@@ -112,25 +115,17 @@ DOMException* DOMExceptionFromReceiveError(SerialReceiveError error) {
 }
 
 // A ScriptFunction that calls ContinueClose() on the provided SerialPort.
-class ContinueCloseFunction : public ScriptFunction {
+class ContinueCloseFunction : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        SerialPort* port) {
-    auto* self =
-        MakeGarbageCollected<ContinueCloseFunction>(script_state, port);
-    return self->BindToV8Function();
-  }
+  explicit ContinueCloseFunction(SerialPort* port) : port_(port) {}
 
-  ContinueCloseFunction(ScriptState* script_state, SerialPort* port)
-      : ScriptFunction(script_state), port_(port) {}
-
-  ScriptValue Call(ScriptValue) override {
-    return port_->ContinueClose(GetScriptState()).AsScriptValue();
+  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+    return port_->ContinueClose(script_state).AsScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -138,25 +133,18 @@ class ContinueCloseFunction : public ScriptFunction {
 };
 
 // A ScriptFunction that calls AbortClose() on the provided SerialPort.
-class AbortCloseFunction : public ScriptFunction {
+class AbortCloseFunction : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        SerialPort* port) {
-    auto* self = MakeGarbageCollected<AbortCloseFunction>(script_state, port);
-    return self->BindToV8Function();
-  }
+  explicit AbortCloseFunction(SerialPort* port) : port_(port) {}
 
-  AbortCloseFunction(ScriptState* script_state, SerialPort* port)
-      : ScriptFunction(script_state), port_(port) {}
-
-  ScriptValue Call(ScriptValue) override {
+  ScriptValue Call(ScriptState*, ScriptValue) override {
     port_->AbortClose();
     return ScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(port_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -264,8 +252,9 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   }
   buffer_size_ = options->bufferSize();
 
+  hardware_flow_control_ = options->flowControl() == "hardware";
   mojo_options->has_cts_flow_control = true;
-  mojo_options->cts_flow_control = options->flowControl() == "hardware";
+  mojo_options->cts_flow_control = hardware_flow_control_;
 
   mojo::PendingRemote<device::mojom::blink::SerialPortClient> client;
   open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -358,6 +347,13 @@ ScriptPromise SerialPort::getSignals(ScriptState* script_state,
 ScriptPromise SerialPort::setSignals(ScriptState* script_state,
                                      const SerialOutputSignals* signals,
                                      ExceptionState& exception_state) {
+  ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Script context has shut down.");
+    return ScriptPromise();
+  }
+
   if (!port_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kPortClosed);
@@ -378,6 +374,17 @@ ScriptPromise SerialPort::setSignals(ScriptState* script_state,
   if (signals->hasRequestToSend()) {
     mojo_signals->has_rts = true;
     mojo_signals->rts = signals->requestToSend();
+
+    if (hardware_flow_control_) {
+      // This combination may be deprecated in the future but generate a console
+      // warning for now: https://github.com/WICG/serial/issues/158
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRecommendation,
+          mojom::blink::ConsoleMessageLevel::kInfo,
+          "The RTS (request to send) signal should not be configured manually "
+          "when using hardware flow control. This combination may not be "
+          "supported on all platforms."));
+    }
   }
   if (signals->hasBrk()) {
     mojo_signals->has_brk = true;
@@ -431,8 +438,11 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
   }
 
   return ScriptPromise::All(script_state, promises)
-      .Then(ContinueCloseFunction::Create(script_state, this),
-            AbortCloseFunction::Create(script_state, this));
+      .Then(
+          MakeGarbageCollected<ScriptFunction>(
+              script_state, MakeGarbageCollected<ContinueCloseFunction>(this)),
+          MakeGarbageCollected<ScriptFunction>(
+              script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
 }
 
 ScriptPromise SerialPort::ContinueClose(ScriptState* script_state) {

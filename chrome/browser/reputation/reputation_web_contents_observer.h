@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_REPUTATION_REPUTATION_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/reputation/reputation_service.h"
@@ -21,7 +22,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/reputation/safety_tip_message_delegate.h"
 #endif
 
@@ -97,7 +98,7 @@ class ReputationWebContentsObserver
                                           ukm::SourceId navigation_source_id,
                                           bool validation_succeeded);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used to cache the last safety tip info (and associated navigation entry ID)
   // so that Page Info can fetch this information without performing a
@@ -118,7 +119,7 @@ class ReputationWebContentsObserver
 
   base::OnceClosure safety_tip_close_callback_for_testing_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SafetyTipMessageDelegate delegate_;
 #endif
 

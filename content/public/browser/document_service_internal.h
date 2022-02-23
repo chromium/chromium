@@ -5,11 +5,13 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_SERVICE_INTERNAL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 class RenderFrameHost;
+enum class DocumentServiceDestructionReason : int;
 
 namespace internal {
 
@@ -22,13 +24,19 @@ class CONTENT_EXPORT DocumentServiceBase {
 
   virtual ~DocumentServiceBase();
 
+  // To be called just before the destructor, when the object does not
+  // self-destroy (via `delete this`). It reports the reason that the object is
+  // being destroyed via DocumentServiceDestructionReason, which gives the
+  // subclass a chance to react in a specific way.
+  virtual void WillBeDestroyed(DocumentServiceDestructionReason) {}
+
  protected:
   explicit DocumentServiceBase(RenderFrameHost* render_frame_host);
 
   RenderFrameHost* render_frame_host() const { return render_frame_host_; }
 
  private:
-  RenderFrameHost* const render_frame_host_ = nullptr;
+  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
 };
 
 }  // namespace internal

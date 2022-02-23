@@ -4,8 +4,6 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
-#include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/lookalikes/core/features.h"
@@ -17,12 +15,14 @@
 
 namespace lookalikes {
 
-class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {};
+class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      lookalikes::features::kLookalikeInterstitialForPunycode};
+};
 
 // Tests that spoofy hostnames are properly handled in the throttle.
 TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
-  base::HistogramTester test;
-
   reputation::InitializeSafetyTipConfig();
 
   const struct TestCase {
@@ -65,10 +65,6 @@ TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
       {"xn--sparkasse-gieen-2ib.de", false,
        url_formatter::IDNSpoofChecker::Result::kDeviationCharacters},
   };
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      lookalikes::features::kLookalikeInterstitialForPunycode);
 
   for (const TestCase& test_case : kTestCases) {
     url_formatter::IDNConversionResult idn_result =

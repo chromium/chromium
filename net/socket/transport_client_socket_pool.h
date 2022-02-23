@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -51,8 +51,8 @@ struct NetworkTrafficAnnotationTag;
 // TransportClientSocketPool establishes network connections through using
 // ConnectJobs, and maintains a list of idle persistent sockets available for
 // reuse. It restricts the number of sockets open at a time, both globally, and
-// for each unique GroupId, which rougly corresponds to origin and privacy mode
-// setting. TransportClientSocketPools is designed to work with HTTP reuse
+// for each unique GroupId, which roughly corresponds to origin and privacy mode
+// setting. TransportClientSocketPool is designed to work with HTTP reuse
 // semantics, handling each request serially, before reusable sockets are
 // returned to the socket pool.
 //
@@ -133,7 +133,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     ConnectJob* ReleaseJob();
 
    private:
-    ClientSocketHandle* const handle_;
+    const raw_ptr<ClientSocketHandle> handle_;
     CompletionOnceCallback callback_;
     const ProxyAuthCallback proxy_auth_callback_;
     RequestPriority priority_;
@@ -143,7 +143,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const absl::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
-    ConnectJob* job_;
+    raw_ptr<ConnectJob> job_;
   };
 
   TransportClientSocketPool(
@@ -152,7 +152,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       base::TimeDelta unused_idle_socket_timeout,
       const ProxyServer& proxy_server,
       bool is_for_websockets,
-      const CommonConnectJobParams* common_connect_job_params);
+      const CommonConnectJobParams* common_connect_job_params,
+      bool cleanup_on_ip_address_change = true);
 
   TransportClientSocketPool(const TransportClientSocketPool&) = delete;
   TransportClientSocketPool& operator=(const TransportClientSocketPool&) =
@@ -537,7 +538,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     void SanityCheck() const;
 
     const GroupId group_id_;
-    TransportClientSocketPool* const client_socket_pool_;
+    const raw_ptr<TransportClientSocketPool> client_socket_pool_;
 
     // Total number of ConnectJobs that have never been assigned to a Request.
     // Since jobs use late binding to requests, which ConnectJobs have or have
@@ -596,6 +597,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       const ProxyServer& proxy_server,
       bool is_for_websockets,
       const CommonConnectJobParams* common_connect_job_params,
+      bool cleanup_on_ip_address_change,
       std::unique_ptr<ConnectJobFactory> connect_job_factory,
       SSLClientContext* ssl_client_context,
       bool connect_backup_jobs_enabled);
@@ -699,6 +701,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // |request|.
   int RequestSocketInternal(const GroupId& group_id, const Request& request);
 
+  // Wrapper around RequestSocketInternal that adds a reentrancy guard.
+  int CheckedRequestSocketInternal(const GroupId& group_id,
+                                   const Request& request);
+
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.
   bool AssignIdleSocketToRequest(const Request& request, Group* group);
@@ -787,6 +793,8 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   const ProxyServer proxy_server_;
 
+  const bool cleanup_on_ip_address_change_;
+
   // TODO(vandebo) Remove when backup jobs move to TransportClientSocketPool
   bool connect_backup_jobs_enabled_;
 
@@ -794,7 +802,12 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // their idle sockets when it stalls.  Must be empty on destruction.
   std::set<HigherLayeredPool*> higher_pools_;
 
-  SSLClientContext* const ssl_client_context_;
+  const raw_ptr<SSLClientContext> ssl_client_context_;
+
+#if DCHECK_IS_ON()
+  // Reentrancy guard for RequestSocketInternal().
+  bool request_in_process_ = false;
+#endif  // DCHECK_IS_ON()
 
   base::WeakPtrFactory<TransportClientSocketPool> weak_factory_{this};
 };

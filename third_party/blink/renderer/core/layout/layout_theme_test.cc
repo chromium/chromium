@@ -76,7 +76,7 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
 
 // The expectations in the tests below are relying on LayoutThemeDefault.
 // LayoutThemeMac doesn't inherit from that class.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -133,6 +133,6 @@ TEST_F(LayoutThemeTest, SetSelectionColors) {
             LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
                 mojom::blink::ColorScheme::kLight));
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace blink

@@ -7,15 +7,20 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 class GURL;
 class HostContentSettingsMap;
+class PrefService;
+
+namespace blink {
+struct UserAgentMetadata;
+class EnabledClientHints;
+}  // namespace blink
 
 namespace client_hints {
 
@@ -26,7 +31,7 @@ class ClientHints : public KeyedService,
               network::NetworkQualityTracker* network_quality_tracker,
               HostContentSettingsMap* settings_map,
               scoped_refptr<content_settings::CookieSettings> cookie_settings,
-              const blink::UserAgentMetadata& user_agent_metadata);
+              PrefService* pref_service);
 
   ClientHints(const ClientHints&) = delete;
   ClientHints& operator=(const ClientHints&) = delete;
@@ -46,10 +51,9 @@ class ClientHints : public KeyedService,
 
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
-  void PersistClientHints(
-      const url::Origin& primary_origin,
-      const std::vector<network::mojom::WebClientHintsType>& client_hints,
-      base::TimeDelta expiration_duration) override;
+  void PersistClientHints(const url::Origin& primary_origin,
+                          const std::vector<network::mojom::WebClientHintsType>&
+                              client_hints) override;
 
   void SetAdditionalClientHints(
       const std::vector<network::mojom::WebClientHintsType>&) override;
@@ -57,12 +61,12 @@ class ClientHints : public KeyedService,
   void ClearAdditionalClientHints() override;
 
  private:
-  content::BrowserContext* context_ = nullptr;
-  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-  HostContentSettingsMap* settings_map_ = nullptr;
+  raw_ptr<content::BrowserContext> context_ = nullptr;
+  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace client_hints

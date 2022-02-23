@@ -6,8 +6,9 @@
  * @fileoverview Polymer element for OS install screen.
  */
 
-(function() {
-const UIState = {
+/* #js_imports_placeholder */
+
+const OsInstallScreenState = {
   INTRO: 'intro',
   IN_PROGRESS: 'in-progress',
   FAILED: 'failed',
@@ -15,46 +16,69 @@ const UIState = {
   SUCCESS: 'success',
 };
 
-Polymer({
-  is: 'os-install-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const OsInstallScreenElementBase = Polymer.mixinBehaviors(
+    [
+      OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior,
+      MultiStepBehavior
+    ],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @polymer
+ */
+class OsInstall extends OsInstallScreenElementBase {
+  static get is() {
+    return 'os-install-element';
+  }
 
-  EXTERNAL_API: [
-    'showStep',
-    'setServiceLogs',
-    'updateCountdownString',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
-    /**
-     * Success step subtitile message.
-     */
-    osInstallDialogSuccessSubtitile_: {
-      type: String,
-      value: '',
-    },
-  },
+  static get properties() {
+    return {
+      /**
+       * Success step subtitile message.
+       */
+      osInstallDialogSuccessSubtitile_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  UI_STEPS: UIState,
+  constructor() {
+    super();
+  }
 
-  /**
-   * @return {string}
-   */
+  get EXTERNAL_API() {
+    return [
+      'showStep',
+      'setServiceLogs',
+      'updateCountdownString',
+    ];
+  }
+
   defaultUIStep() {
-    return UIState.INTRO;
-  },
+    return OsInstallScreenState.INTRO;
+  }
 
+  get UI_STEPS() {
+    return OsInstallScreenState;
+  }
+
+  /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('OsInstallScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /**
    * Set and show screen step.
@@ -62,7 +86,7 @@ Polymer({
    */
   showStep(step) {
     this.setUIStep(step);
-  },
+  }
 
   /**
    * This is the 'on-click' event handler for the 'back' button.
@@ -70,34 +94,34 @@ Polymer({
    */
   onBack_() {
     this.userActed('os-install-exit');
-  },
+  }
 
   onIntroNextButtonPressed_() {
     this.$.osInstallDialogConfirm.showDialog();
     this.$.closeConfirmDialogButton.focus();
-  },
+  }
 
   onConfirmNextButtonPressed_() {
     this.$.osInstallDialogConfirm.hideDialog();
     this.userActed('os-install-confirm-next');
-  },
+  }
 
   onErrorSendFeedbackButtonPressed_() {
     this.userActed('os-install-error-send-feedback');
-  },
+  }
 
   onErrorShutdownButtonPressed_() {
     this.userActed('os-install-error-shutdown');
-  },
+  }
 
   onSuccessRestartButtonPressed_() {
     this.userActed('os-install-success-restart');
-  },
+  }
 
   onCloseConfirmDialogButtonPressed_() {
     this.$.osInstallDialogConfirm.hideDialog();
     this.$.osInstallIntroNextButton.focus();
-  },
+  }
 
   /**
    * @param {string} locale
@@ -106,7 +130,7 @@ Polymer({
    */
   getConfirmBodyHtml_(locale) {
     return this.i18nAdvanced('osInstallDialogConfirmBody');
-  },
+  }
 
   /**
    * @param {string} locale
@@ -116,7 +140,7 @@ Polymer({
   getErrorNoDestContentHtml_(locale) {
     return this.i18nAdvanced(
         'osInstallDialogErrorNoDestContent', {tags: ['p', 'ul', 'li']});
-  },
+  }
 
   /**
    * @param {string} locale
@@ -126,7 +150,7 @@ Polymer({
   getErrorFailedSubtitleHtml_(locale) {
     return this.i18nAdvanced(
         'osInstallDialogErrorFailedSubtitle', {tags: ['p']});
-  },
+  }
 
   /**
    * Shows service logs.
@@ -135,7 +159,7 @@ Polymer({
   onServiceLogsLinkClicked_() {
     this.$.serviceLogsDialog.showDialog();
     this.$.closeServiceLogsDialog.focus();
-  },
+  }
 
   /**
    * On-click event handler for close button of the service logs dialog.
@@ -144,20 +168,20 @@ Polymer({
   hideServiceLogsDialog_() {
     this.$.serviceLogsDialog.hideDialog();
     this.focusLogsLink_();
-  },
+  }
 
   /**
    * @private
    */
   focusLogsLink_() {
-    if (this.uiStep == UIState.NO_DESTINATION_DEVICE_FOUND) {
+    if (this.uiStep == OsInstallScreenState.NO_DESTINATION_DEVICE_FOUND) {
       Polymer.RenderStatus.afterNextRender(
           this, () => this.$.noDestLogsLink.focus());
-    } else if (this.uiStep == UIState.FAILED) {
+    } else if (this.uiStep == OsInstallScreenState.FAILED) {
       Polymer.RenderStatus.afterNextRender(
           this, () => this.$.serviceLogsLink.focus());
     }
-  },
+  }
 
   /**
    * @param {string} serviceLogs Logs to show as plain text.
@@ -186,13 +210,14 @@ Polymer({
                            '<body><div id="logsContainer">' + serviceLogs +
                            '</div>' +
                            '</body>');
-  },
+  }
 
   /**
    * @param {string} timeLeftMessage Countdown message on success step.
    */
   updateCountdownString(timeLeftMessage) {
     this.osInstallDialogSuccessSubtitile_ = timeLeftMessage;
-  },
-});
-})();
+  }
+}
+
+customElements.define(OsInstall.is, OsInstall);

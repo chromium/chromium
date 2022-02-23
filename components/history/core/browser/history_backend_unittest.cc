@@ -21,6 +21,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -149,11 +150,14 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                                       KeywordID keyword_id,
                                       const std::u16string& term) override;
   void NotifyKeywordSearchTermDeleted(URLID url_id) override;
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) override;
   void DBLoaded() override;
 
  private:
   // Not owned by us.
-  HistoryBackendTestBase* test_;
+  raw_ptr<HistoryBackendTestBase> test_;
 };
 
 // Exposes some of `HistoryBackend`'s private methods.
@@ -217,12 +221,18 @@ class HistoryBackendTestBase : public testing::Test {
     return urls_deleted_notifications_;
   }
 
+  const std::vector<VisitContentModelAnnotations>
+  modified_content_model_annotations() const {
+    return modified_content_model_annotations_;
+  }
+
   void ClearBroadcastedNotifications() {
     url_visited_notifications_.clear();
     urls_modified_notifications_.clear();
     urls_deleted_notifications_.clear();
     favicon_changed_notifications_page_urls_.clear();
     favicon_changed_notifications_icon_urls_.clear();
+    modified_content_model_annotations_.clear();
   }
 
   base::FilePath test_dir() { return test_dir_; }
@@ -267,6 +277,12 @@ class HistoryBackendTestBase : public testing::Test {
     mem_backend_->OnKeywordSearchTermDeleted(nullptr, url_id);
   }
 
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) {
+    modified_content_model_annotations_.push_back(model_annotations);
+  }
+
   base::test::TaskEnvironment task_environment_;
   HistoryClientFakeBookmarks history_client_;
   scoped_refptr<TestHistoryBackend> backend_;  // Will be NULL on init failure.
@@ -308,6 +324,7 @@ class HistoryBackendTestBase : public testing::Test {
   URLVisitedList url_visited_notifications_;
   URLsModifiedList urls_modified_notifications_;
   URLsDeletedList urls_deleted_notifications_;
+  std::vector<VisitContentModelAnnotations> modified_content_model_annotations_;
 
   base::FilePath test_dir_;
 };
@@ -348,6 +365,12 @@ void HistoryBackendTestDelegate::NotifyKeywordSearchTermUpdated(
 
 void HistoryBackendTestDelegate::NotifyKeywordSearchTermDeleted(URLID url_id) {
   test_->NotifyKeywordSearchTermDeleted(url_id);
+}
+
+void HistoryBackendTestDelegate::NotifyContentModelAnnotationModified(
+    const URLRow& row,
+    const VisitContentModelAnnotations& model_annotations) {
+  test_->NotifyContentModelAnnotationModified(row, model_annotations);
 }
 
 void HistoryBackendTestDelegate::DBLoaded() {
@@ -605,11 +628,11 @@ const char16_t InMemoryHistoryBackendTest::kTestSearchTerm1[] = u"banana";
 const char16_t InMemoryHistoryBackendTest::kTestSearchTerm2[] = u"orange";
 
 // http://crbug.com/114287
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Loaded DISABLED_Loaded
 #else
 #define MAYBE_Loaded Loaded
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 TEST_F(HistoryBackendTest, MAYBE_Loaded) {
   ASSERT_TRUE(backend_.get());
   ASSERT_TRUE(loaded_);
@@ -1274,7 +1297,7 @@ TEST_F(HistoryBackendTest, SetPageTitleFiresNotificationWithCorrectDetails) {
 }
 
 // There's no importer on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(HistoryBackendTest, ImportedFaviconsTest) {
   // Setup test data - two Urls in the history, one with favicon assigned and
   // one without.
@@ -1348,7 +1371,7 @@ TEST_F(HistoryBackendTest, ImportedFaviconsTest) {
   EXPECT_NE(0, backend_->db_->GetRowForURL(url3, &url_row3));
   EXPECT_EQ(0, url_row3.visit_count());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryBackendTest, StripUsernamePasswordTest) {
   ASSERT_TRUE(backend_.get());
@@ -1639,6 +1662,7 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotationsWithNoEntryInVisitTable) {
   VisitContentAnnotations got_content_annotations;
   ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
+  ASSERT_TRUE(modified_content_model_annotations().empty());
 }
 
 TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
@@ -1674,7 +1698,40 @@ TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
       visit_id, &got_content_annotations));
 }
 
-TEST_F(HistoryBackendTest, SetFlocAllowed) {
+TEST_F(HistoryBackendTest, AddSearchMetadataWithNoEntryInVisitTable) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com?q=search");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  // Delete the visit.
+  backend_->DeleteURL(url);
+
+  // Try adding the search metadata. It should be a no-op as there's no
+  // matching entry in the visits table.
+  backend_->AddSearchMetadataForVisit(
+      visit_id, GURL("http://pagewithvisit.com?q=search"), u"search");
+
+  // The content_annotations table should have no entries.
+  VisitContentAnnotations got_content_annotations;
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+}
+
+TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
   ASSERT_TRUE(backend_.get());
 
   GURL url("http://test-set-floc-allowed.com");
@@ -1693,13 +1750,13 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
 
   VisitContentAnnotations got_content_annotations;
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(-1, got_content_annotations.model_annotations.visibility_score);
   EXPECT_TRUE(got_content_annotations.model_annotations.categories.empty());
@@ -1711,7 +1768,7 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       -1, results[0].content_annotations().model_annotations.visibility_score);
@@ -1741,17 +1798,32 @@ TEST_F(HistoryBackendTest, AddContentModelAnnotations) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  VisitContentModelAnnotations model_annotations = {
-      0.5f,
-      {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}},
-      123,
+  VisitContentModelAnnotations model_annotations_without_entities = {
+      0.5f, {{/*id=*/"1", /*weight=*/1}, {/*id=*/"2", /*weight=*/1}}, 123, {}};
+  backend_->AddContentModelAnnotationsForVisit(
+      visit_id, model_annotations_without_entities);
+  std::vector<VisitContentModelAnnotations> annotations =
+      modified_content_model_annotations();
+  ASSERT_EQ(annotations.size(), 1u);
+  ASSERT_EQ(annotations.at(0).visibility_score, 0.5f);
+  ASSERT_EQ(annotations.at(0).categories.size(), 2u);
+  VisitContentModelAnnotations model_annotations_only_entities = {
+      -1.0f,
+      {},
+      -1,
       {{/*id=*/"entity1", /*weight=*/1}, {/*id=*/"entity2", /*weight=*/1}}};
-  backend_->AddContentModelAnnotationsForVisit(visit_id, model_annotations);
+  backend_->AddContentModelAnnotationsForVisit(visit_id,
+                                               model_annotations_only_entities);
 
   VisitContentAnnotations got_content_annotations;
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
+  annotations = modified_content_model_annotations();
+  ASSERT_EQ(annotations.size(), 2u);
+  ASSERT_EQ(annotations.at(1).visibility_score, -1.0f);
+  ASSERT_EQ(annotations.at(1).categories.size(), 0u);
 
+  // Model annotations should be merged from both calls.
   EXPECT_EQ(VisitContentAnnotationFlag::kNone,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
@@ -1857,6 +1929,69 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
       visit_id, &got_content_annotations));
 }
 
+TEST_F(HistoryBackendTest, AddSearchMetadata) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com?q=search#garbage");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  backend_->AddSearchMetadataForVisit(
+      visit_id, GURL("http://pagewithvisit.com?q=search"), u"search");
+
+  VisitContentAnnotations got_content_annotations;
+  ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
+  ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
+  EXPECT_EQ(
+      -1, got_content_annotations.model_annotations.page_topics_model_version);
+  ASSERT_TRUE(got_content_annotations.model_annotations.entities.empty());
+  ASSERT_TRUE(got_content_annotations.related_searches.empty());
+  EXPECT_EQ(got_content_annotations.search_normalized_url,
+            GURL("http://pagewithvisit.com?q=search"));
+  EXPECT_EQ(got_content_annotations.search_terms, u"search");
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            results[0].content_annotations().annotation_flags);
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
+  ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
+  EXPECT_EQ(
+      -1, got_content_annotations.model_annotations.page_topics_model_version);
+  ASSERT_TRUE(got_content_annotations.model_annotations.entities.empty());
+  EXPECT_TRUE(got_content_annotations.related_searches.empty());
+  EXPECT_EQ(got_content_annotations.search_normalized_url,
+            GURL("http://pagewithvisit.com?q=search"));
+  EXPECT_EQ(got_content_annotations.search_terms, u"search");
+
+  // Now, delete the URL. Content Annotations should be deleted.
+  backend_->DeleteURL(url);
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+}
+
 TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_TRUE(backend_.get());
 
@@ -1876,7 +2011,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_EQ(1U, visits.size());
   VisitID visit_id = visits[0].visit_id;
 
-  backend_->SetFlocAllowed(context_id, nav_entry_id, url);
+  backend_->SetBrowsingTopicsAllowed(context_id, nav_entry_id, url);
 
   VisitContentModelAnnotations model_annotations = {
       0.5f,
@@ -1889,7 +2024,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
 
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             got_content_annotations.annotation_flags);
   EXPECT_EQ(0.5f, got_content_annotations.model_annotations.visibility_score);
   EXPECT_THAT(
@@ -1910,7 +2045,7 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
 
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(VisitContentAnnotationFlag::kFlocEligibleRelaxed,
+  EXPECT_EQ(VisitContentAnnotationFlag::kBrowsingTopicsEligible,
             results[0].content_annotations().annotation_flags);
   EXPECT_EQ(
       0.5f,
@@ -2891,7 +3026,7 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
             base::WriteFile(db1_wal, data, data_len));
   ASSERT_EQ(static_cast<int>(data_len),
             base::WriteFile(db2_actual, data, data_len));
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_TRUE(base::CreateSymbolicLink(db2_actual, db2_symlink));
 #endif
 

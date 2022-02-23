@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "components/prefs/pref_service.h"

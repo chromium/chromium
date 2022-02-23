@@ -65,7 +65,7 @@ void WebContentsDisplayObserverView::OnBrowserSetLastActive(Browser* browser) {
   }
 }
 
-void WebContentsDisplayObserverView::OnWidgetClosing(views::Widget* widget) {
+void WebContentsDisplayObserverView::OnWidgetDestroying(views::Widget* widget) {
   if (widget_)
     widget_->RemoveObserver(this);
   widget_ = nullptr;

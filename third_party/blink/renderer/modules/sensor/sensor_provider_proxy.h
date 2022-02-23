@@ -5,12 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_PROVIDER_PROXY_H_
 
-#include "base/macros.h"
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -21,9 +19,8 @@ class SensorProxy;
 
 // This class wraps 'SensorProvider' mojo interface and it manages
 // 'SensorProxy' instances.
-class MODULES_EXPORT SensorProviderProxy final
-    : public GarbageCollected<SensorProviderProxy>,
-      public Supplement<LocalDOMWindow> {
+class SensorProviderProxy final : public GarbageCollected<SensorProviderProxy>,
+                                  public Supplement<LocalDOMWindow> {
  public:
   static const char kSupplementName[];
 

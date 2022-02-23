@@ -4,11 +4,15 @@
 
 #include "extensions/test/extension_background_page_waiter.h"
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -35,13 +39,6 @@ ExtensionBackgroundPageWaiter::ExtensionBackgroundPageWaiter(
 // static
 bool ExtensionBackgroundPageWaiter::CanWaitFor(const Extension& extension,
                                                std::string& reason_out) {
-  if (BackgroundInfo::IsServiceWorkerBased(&extension)) {
-    reason_out =
-        "ExtensionBackgroundPageWaiter does not currently support "
-        "Service Worker-based extensions.";
-    return false;
-  }
-
   if (extension.is_hosted_app()) {
     // Little known fact: hosted apps can have background pages. They are
     // handled separately in BackgroundContents[Service], and don't use the
@@ -53,8 +50,9 @@ bool ExtensionBackgroundPageWaiter::CanWaitFor(const Extension& extension,
     return false;
   }
 
-  if (!BackgroundInfo::HasBackgroundPage(&extension)) {
-    reason_out = "Extension has no background page.";
+  if (!BackgroundInfo::HasBackgroundPage(&extension) &&
+      !BackgroundInfo::IsServiceWorkerBased(&extension)) {
+    reason_out = "Extension has no background context.";
     return false;
   }
 
@@ -64,6 +62,35 @@ bool ExtensionBackgroundPageWaiter::CanWaitFor(const Extension& extension,
 ExtensionBackgroundPageWaiter::~ExtensionBackgroundPageWaiter() = default;
 
 void ExtensionBackgroundPageWaiter::WaitForBackgroundInitialized() {
+  if (BackgroundInfo::IsServiceWorkerBased(extension_.get())) {
+    WaitForBackgroundWorkerInitialized();
+    return;
+  }
+
+  DCHECK(BackgroundInfo::HasBackgroundPage(extension_.get()));
+  WaitForBackgroundPageInitialized();
+}
+
+void ExtensionBackgroundPageWaiter::WaitForBackgroundWorkerInitialized() {
+  // TODO(https://crbug.com/1284799): Currently, we request the content layer
+  // start the worker each time an event comes in (even if the worker is
+  // already running), and don't check first if it's active / ready. As a
+  // result, we have no good way of *just* checking if it's ready (because
+  // ServiceWorkerTaskQueue resets state right after tasks run). Instead, we
+  // just have to queue up a task. Luckily, it's easy.
+  base::RunLoop run_loop;
+  auto quit_loop_adapter =
+      [&run_loop](std::unique_ptr<LazyContextTaskQueue::ContextInfo>) {
+        run_loop.QuitWhenIdle();
+      };
+  ServiceWorkerTaskQueue::Get(browser_context_)
+      ->AddPendingTask(
+          LazyContextId(browser_context_, extension_->id(), extension_->url()),
+          base::BindLambdaForTesting(quit_loop_adapter));
+  run_loop.Run();
+}
+
+void ExtensionBackgroundPageWaiter::WaitForBackgroundPageInitialized() {
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
   ExtensionHost* extension_host =
       process_manager->GetBackgroundHostForExtension(extension_->id());

@@ -215,9 +215,9 @@ void CronetEnvironment::StopNetLogOnNetworkThread(
 
 base::Value CronetEnvironment::GetNetLogInfo() const {
   base::Value net_info = net::GetNetInfo(main_context_.get());
-  if (effective_experimental_options_) {
+  if (!effective_experimental_options_.DictEmpty()) {
     net_info.SetKey("cronetExperimentalParams",
-                    effective_experimental_options_->Clone());
+                    effective_experimental_options_.Clone());
   }
   return net_info;
 }
@@ -360,7 +360,7 @@ void CronetEnvironment::InitializeOnNetworkThread() {
   config->ConfigureURLRequestContextBuilder(&context_builder);
 
   effective_experimental_options_ =
-      std::move(config->effective_experimental_options);
+      base::Value(config->effective_experimental_options);
 
   // TODO(crbug.com/934402): Use a shared HostResolverManager instead of a
   // global HostResolver.

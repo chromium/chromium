@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.settings;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
@@ -119,7 +118,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String PREF_ENCRYPTION = "encryption";
     @VisibleForTesting
-    public static final String PREF_SYNC_MANAGE_DATA = "sync_manage_data";
+    public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
     @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
 
@@ -149,7 +148,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private Preference mTurnOffSync;
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
-    private Preference mManageSyncData;
+    private Preference mReviewSyncData;
 
     private PreferenceCategory mSearchAndBrowseCategory;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
@@ -173,13 +172,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
         getActivity().setTitle(R.string.sync_category_title);
         setHasOptionsMenu(true);
-        if (mIsFromSigninScreen) {
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            assert actionBar != null;
-            actionBar.setHomeActionContentDescription(
-                    R.string.prefs_manage_sync_settings_content_description);
-            RecordUserAction.record("Signin_Signin_ShowAdvancedSyncSettings");
-        }
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
 
@@ -229,8 +221,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
-        mManageSyncData = findPreference(PREF_SYNC_MANAGE_DATA);
-        mManageSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
+        mReviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
+        mReviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
         mSyncTypePreferences =
@@ -272,6 +264,13 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
         help.setIcon(R.drawable.ic_help_and_feedback);
+        if (mIsFromSigninScreen) {
+            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setHomeActionContentDescription(
+                    R.string.prefs_manage_sync_settings_content_description);
+            RecordUserAction.record("Signin_Signin_ShowAdvancedSyncSettings");
+        }
     }
 
     @Override
@@ -670,10 +669,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         assert primaryAccountInfo != null;
 
         switch (syncError) {
-            case SyncError.ANDROID_SYNC_DISABLED:
-                IntentUtils.safeStartActivity(
-                        getActivity(), new Intent(Settings.ACTION_SYNC_SETTINGS));
-                return;
             case SyncError.AUTH_ERROR:
                 AccountManagerFacadeProvider.getInstance().updateCredentials(
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), getActivity(),

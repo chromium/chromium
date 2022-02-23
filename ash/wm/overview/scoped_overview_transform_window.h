@@ -94,11 +94,13 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // ancestors, in which case returns 0.
   int GetTopInset() const;
 
-  // Restores and animates the managed window to its non overview mode state.
+  // Restores and animates the managed window to its non overview mode state. If
+  // `animate_back` is false, the window will just be restored and not animated.
   // If |reset_transform| equals false, the window's transform will not be reset
   // to identity transform when exiting the overview mode. See
   // OverviewItem::RestoreWindow() for details why we need this.
-  void RestoreWindow(bool reset_transform);
+  void RestoreWindow(bool reset_transform,
+                     bool was_desk_templates_grid_showing);
 
   // Prepares for overview mode by doing any necessary actions before entering.
   void PrepareForOverview();
@@ -203,6 +205,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // The original clipping on the layer of the window before entering overview
   // mode.
   gfx::Rect original_clip_rect_;
+
+  // Removes clipping on `window_` during destruction in the case it was not
+  // removed in `RestoreWindw()`. See destructor for more information.
+  bool reset_clip_on_shutdown_ = true;
 
   std::unique_ptr<ScopedOverviewHideWindows> hidden_transient_children_;
 

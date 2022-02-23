@@ -80,7 +80,7 @@ RankerModelStatus ValidateModel(const RankerModel& model) {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kDefaultTranslateRankerModelURL[] =
     "https://www.gstatic.com/chrome/intelligence/assist/ranker/models/"
     "translate/android/translate_ranker_model_android_20170918.pb.bin";

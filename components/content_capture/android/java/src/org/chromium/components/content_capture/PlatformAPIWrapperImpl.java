@@ -4,7 +4,6 @@
 
 package org.chromium.components.content_capture;
 
-import android.annotation.TargetApi;
 import android.content.LocusId;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,13 +12,15 @@ import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureContext;
 import android.view.contentcapture.ContentCaptureSession;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.annotations.VerifiesOnQ;
 
 /**
  * The implementation of PlatformAPIWrapper.
  */
 @VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     @Override
     public ContentCaptureSession createContentCaptureSession(

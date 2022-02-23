@@ -4,12 +4,13 @@
 
 #include "components/reporting/client/report_queue_factory.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/util/backoff_settings.h"
@@ -90,7 +91,8 @@ ReportQueueFactory::CreateSpeculativeReportQueue(
       ::reporting::ReportQueueProvider::CreateSpeculativeQueue(
           std::move(config_result.ValueOrDie()));
   if (!speculative_queue_result.ok()) {
-    DVLOG(1) << "Failed to create speculative queue";
+    DVLOG(1) << "Failed to create speculative queue: "
+             << speculative_queue_result.status();
     return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr,
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
@@ -122,7 +124,8 @@ ReportQueueFactory::CreateSpeculativeReportQueue(EventType event_type,
       ::reporting::ReportQueueProvider::CreateSpeculativeQueue(
           std::move(config_result.ValueOrDie()));
   if (!speculative_queue_result.ok()) {
-    DVLOG(1) << "Failed to create speculative queue";
+    DVLOG(1) << "Failed to create speculative queue: "
+             << speculative_queue_result.status();
     return std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
         nullptr,
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));

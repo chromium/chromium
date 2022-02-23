@@ -44,6 +44,9 @@ void BreadcrumbManagerKeyedService::StartPersisting(
     StopPersisting();
   }
 
+  CHECK(breadcrumb_manager_);
+  CHECK(!breadcrumb_manager_->HasObserver(persistent_storage_manager));
+
   persistent_storage_manager_ = persistent_storage_manager;
   persistent_storage_manager_->MonitorBreadcrumbManagerService(this);
 }

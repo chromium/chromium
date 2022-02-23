@@ -4,6 +4,7 @@
 
 #include "net/http/http_basic_stream.h"
 
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -196,7 +197,7 @@ void HttpBasicStream::SetRequestHeadersCallback(
   request_headers_callback_ = std::move(callback);
 }
 
-const std::vector<std::string>& HttpBasicStream::GetDnsAliases() const {
+const std::set<std::string>& HttpBasicStream::GetDnsAliases() const {
   return state_.GetDnsAliases();
 }
 

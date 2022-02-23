@@ -16,6 +16,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/highlight_border.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -23,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -48,12 +50,10 @@ constexpr gfx::Insets kInteriorMarginTablet(13, 16, 13, 20);
 
 constexpr int kViewCornerRadiusClamshell = 8;
 constexpr int kViewCornerRadiusTablet = 20;
+constexpr int kTaskMinWidth = 204;
+constexpr int kTaskMaxWidth = 264;
 
 gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
-  // The icon with circular background should only be styled when dark light
-  // mode is enabled. Otherwise, use the default chip icon.
-  if (!features::IsDarkLightModeEnabled())
-    return icon;
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kCircleRadius,
       ColorProvider::Get()->GetControlsLayerColor(
@@ -69,7 +69,10 @@ int GetCornerRadius(bool tablet_mode) {
 
 ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                                    bool tablet_mode)
-    : view_delegate_(view_delegate) {
+    : view_delegate_(view_delegate), is_tablet_mode_(tablet_mode) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
@@ -88,21 +91,17 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
+  SetShowInkDropWhenHotTracked(false);
 
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
-  if (tablet_mode) {
-    SetBackground(views::CreateRoundedRectBackground(
-        ColorProvider::Get()->GetBaseLayerColor(
-            ColorProvider::BaseLayerType::kTransparent80),
-        GetCornerRadius(/*tablet_mode=*/true)));
-  }
 
-  views::BoxLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          tablet_mode ? kInteriorMarginTablet : kInteriorMarginClamshell,
-          kBetweenChildPadding));
+  UpdateStyleForTabletMode();
+
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      tablet_mode ? kInteriorMarginTablet : kInteriorMarginClamshell,
+      kBetweenChildPadding));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -120,11 +119,15 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
       std::make_unique<views::Label>(std::u16string()));
   title_->SetAccessibleName(std::u16string());
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
   subtitle_ = label_container->AddChildView(
       std::make_unique<views::Label>(std::u16string()));
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  UpdateResult();
+  subtitle_->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
 
+  layout_manager->SetFlexForView(label_container, 1);
+
+  UpdateResult();
   set_context_menu_controller(this);
 }
 ContinueTaskView::~ContinueTaskView() {}
@@ -133,9 +136,26 @@ void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
   bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
   bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
+  UpdateStyleForTabletMode();
+}
+
+gfx::Size ContinueTaskView::GetMaximumSize() const {
+  return gfx::Size(kTaskMaxWidth,
+                   GetLayoutManager()->GetPreferredSize(this).height());
+}
+
+gfx::Size ContinueTaskView::GetMinimumSize() const {
+  return gfx::Size(kTaskMinWidth,
+                   GetLayoutManager()->GetPreferredSize(this).height());
+}
+
+gfx::Size ContinueTaskView::CalculatePreferredSize() const {
+  return GetMinimumSize();
 }
 
 void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::ACTION_TRIGGERED);
   OpenResult(event.flags());
 }
 
@@ -157,12 +177,15 @@ void ContinueTaskView::OnMetadataChanged() {
 
 void ContinueTaskView::UpdateResult() {
   SetVisible(!!result());
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::HIDDEN);
+  CloseContextMenu();
+
   if (!result()) {
     SetIcon(gfx::ImageSkia());
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
     GetViewAccessibility().OverrideName(std::u16string());
-    CloseContextMenu();
     return;
   }
 
@@ -179,23 +202,27 @@ void ContinueTaskView::OnResultDestroying() {
 }
 
 void ContinueTaskView::SetResult(SearchResult* result) {
+  if (result_ == result)
+    return;
+
   search_result_observation_.Reset();
 
   result_ = result;
-  if (result_)
+  if (result_) {
     search_result_observation_.Observe(result_);
-
-  UpdateResult();
+    UpdateResult();
+  }
 }
 
 void ContinueTaskView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
+  // May be null if the result got reset, and the task view is animating out.
   if (!result())
     return;
 
-  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
 
@@ -206,6 +233,8 @@ void ContinueTaskView::ShowContextMenuForViewImpl(
       source->GetWidget(), nullptr /*button_controller*/,
       source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleTopRight,
       source_type);
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::ACTIVATED);
 }
 
 void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
@@ -214,7 +243,7 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
       OpenResult(event_flags);
       break;
     case ContinueTaskCommandId::kRemoveResult:
-      // TODO(anasalar): Implement Remove Suggestion.
+      RemoveResult();
       break;
     default:
       NOTREACHED();
@@ -227,20 +256,47 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
       ContinueTaskCommandId::kOpenResult,
       l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN),
-      ui::ImageModel::FromVectorIcon(kLaunchIcon));
+      ui::ImageModel::FromVectorIcon(kLaunchIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
-  // TODO(crbug.com/1264530): Add context menu option for removing a suggestion.
+  context_menu_model_->AddItemWithIcon(
+      ContinueTaskCommandId::kRemoveResult,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
+      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon,
+                                     ui::kColorAshSystemUIMenuIcon));
 
   return context_menu_model_.get();
 }
 
+void ContinueTaskView::MenuClosed(ui::SimpleMenuModel* menu) {
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+      views::InkDropState::HIDDEN);
+}
+
 void ContinueTaskView::OpenResult(int event_flags) {
-  DCHECK(result());
+  // May be null if the result got reset, and the task view is animating out.
+  if (!result())
+    return;
+
   view_delegate_->OpenSearchResult(
-      result()->id(), result()->result_type(), event_flags,
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      AppListLaunchType::kAppSearchResult, index_in_container(),
+      result()->id(), event_flags,
+      AppListLaunchedFrom::kLaunchedFromContinueTask,
+      AppListLaunchType::kSearchResult, index_in_container(),
       false /* launch_as_default */);
+}
+
+void ContinueTaskView::RemoveResult() {
+  // May be null if the result got reset, and the task view is animating out.
+  if (!result())
+    return;
+
+  LogMetricsOnResultRemoved();
+
+  // TODO(crbug.com/1264530): The ML service may change the way Search Results
+  // are removed.
+  view_delegate_->InvokeSearchResultAction(result()->id(),
+                                           SearchResultActionType::kRemove);
 }
 
 bool ContinueTaskView::IsMenuShowing() const {
@@ -251,6 +307,37 @@ void ContinueTaskView::CloseContextMenu() {
   if (!IsMenuShowing())
     return;
   context_menu_runner_->Cancel();
+}
+
+void ContinueTaskView::UpdateStyleForTabletMode() {
+  // Do nothing if the view is not in tablet mode.
+  if (!is_tablet_mode_)
+    return;
+
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius(/*tablet_mode=*/true)));
+
+  SetBackground(
+      views::CreateSolidBackground(ColorProvider::Get()->GetBaseLayerColor(
+          ColorProvider::BaseLayerType::kTransparent60)));
+  SetBorder(std::make_unique<HighlightBorder>(
+      GetCornerRadius(/*tablet_mode=*/true),
+      HighlightBorder::Type::kHighlightBorder2,
+      /*use_light_colors=*/false));
+}
+
+void ContinueTaskView::LogMetricsOnResultRemoved() {
+  if (result()->result_type() == AppListSearchResultType::kFileChip) {
+    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
+                                  TaskResultType::kLocalFile,
+                                  TaskResultType::kMaxValue);
+  } else if (result()->result_type() == AppListSearchResultType::kFileChip) {
+    base::UmaHistogramEnumeration("Apps.AppList.ContinueResultRemoved",
+                                  TaskResultType::kDriveFile,
+                                  TaskResultType::kMaxValue);
+  }
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)

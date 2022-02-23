@@ -72,15 +72,14 @@ _BUNDLE_DURATION_ID = 'duration_ms'
 
 class MissingSizeAnnotationError(test_exception.TestException):
   def __init__(self, class_name):
-    super(MissingSizeAnnotationError, self).__init__(class_name +
+    super().__init__(
+        class_name +
         ': Test method is missing required size annotation. Add one of: ' +
         ', '.join('@' + a for a in _VALID_ANNOTATIONS))
 
 
 class CommandLineParameterizationException(test_exception.TestException):
-
-  def __init__(self, msg):
-    super(CommandLineParameterizationException, self).__init__(msg)
+  pass
 
 
 class TestListPickleException(test_exception.TestException):
@@ -404,15 +403,14 @@ def FilterTests(tests, filter_str=None, annotations=None,
   def annotation_value_matches(filter_av, av):
     if filter_av is None:
       return True
-    elif isinstance(av, dict):
+    if isinstance(av, dict):
       tav_from_dict = av['value']
       # If tav_from_dict is an int, the 'in' operator breaks, so convert
       # filter_av and manually compare. See https://crbug.com/1019707
       if isinstance(tav_from_dict, int):
         return int(filter_av) == tav_from_dict
-      else:
-        return filter_av in tav_from_dict
-    elif isinstance(av, list):
+      return filter_av in tav_from_dict
+    if isinstance(av, list):
       return filter_av in av
     return filter_av == av
 
@@ -459,7 +457,7 @@ def GetTestsFromPickle(pickle_path, test_mtime):
   if os.path.getmtime(pickle_path) <= test_mtime:
     raise TestListPickleException('File is stale: %s' % pickle_path)
 
-  with open(pickle_path, 'r') as f:
+  with open(pickle_path, 'rb') as f:
     pickle_data = pickle.load(f)
   if pickle_data['VERSION'] != _PICKLE_FORMAT_VERSION:
     raise TestListPickleException('PICKLE_FORMAT_VERSION has changed.')
@@ -537,7 +535,7 @@ class MissingJUnit4RunnerException(test_exception.TestException):
   """Raised when JUnit4 runner is not provided or specified in apk manifest"""
 
   def __init__(self):
-    super(MissingJUnit4RunnerException, self).__init__(
+    super().__init__(
         'JUnit4 runner is not provided or specified in test apk manifest.')
 
 
@@ -609,7 +607,7 @@ def GetUniqueTestName(test, sep='#'):
 class InstrumentationTestInstance(test_instance.TestInstance):
 
   def __init__(self, args, data_deps_delegate, error_func):
-    super(InstrumentationTestInstance, self).__init__()
+    super().__init__()
 
     self._additional_apks = []
     self._apk_under_test = None
@@ -654,7 +652,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._store_tombstones = False
     self._symbolizer = None
     self._enable_breakpad_dump = False
-    self._enable_java_deobfuscation = False
+    self._proguard_mapping_path = None
     self._deobfuscator = None
     self._initializeLogAttributes(args)
 
@@ -779,10 +777,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
           self._package_info = package_info
           break
     if not self._package_info:
-      logging.warning(("Unable to find package info for %s. " +
-                       "(This may just mean that the test package is " +
-                       "currently being installed.)"),
-                       self._test_package)
+      logging.warning(
+          'Unable to find package info for %s. '
+          '(This may just mean that the test package is '
+          'currently being installed.)', self._test_package)
 
     for apk in args.additional_apks:
       if not os.path.exists(apk):
@@ -851,7 +849,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def _initializeLogAttributes(self, args):
     self._enable_breakpad_dump = args.enable_breakpad_dump
-    self._enable_java_deobfuscation = args.enable_java_deobfuscation
+    self._proguard_mapping_path = args.proguard_mapping_path
     self._store_tombstones = args.store_tombstones
     self._symbolizer = stack_symbolizer.Symbolizer(
         self.apk_under_test.path if self.apk_under_test else None)
@@ -1054,9 +1052,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def SetUp(self):
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
-    if self._enable_java_deobfuscation:
+    if self._proguard_mapping_path:
       self._deobfuscator = deobfuscator.DeobfuscatorPool(
-          self.test_apk.path + '.mapping')
+          self._proguard_mapping_path)
 
   def GetDataDependencies(self):
     return self._data_deps
@@ -1122,14 +1120,13 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     def _annotationToSwitches(clazz, methods):
       if clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS_SWITCHES:
         return [methods['value']]
-      elif clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS:
+      if clazz == _PARAMETERIZED_COMMAND_LINE_FLAGS:
         list_of_switches = []
         for annotation in methods['value']:
-          for clazz, methods in six.iteritems(annotation):
-            list_of_switches += _annotationToSwitches(clazz, methods)
+          for c, m in six.iteritems(annotation):
+            list_of_switches += _annotationToSwitches(c, m)
         return list_of_switches
-      else:
-        return []
+      return []
 
     def _setTestFlags(test, flags):
       if flags:

@@ -1,0 +1,71 @@
+From e6b63be52481f473a90f1990971e848072c178f3 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 8 Dec 2021 10:46:20 -0800
+Subject: [PATCH 3/5] use re2 StringPiece instead of string_view in regex split
+
+---
+ .../core/kernels/regex_split.cc               | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
+index aa17d772dcfc3..c6486f3effb8f 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
+@@ -28,14 +28,14 @@ void RegexSplitImpl(absl::string_view input,
+                     std::vector<absl::string_view>* tokens,
+                     std::vector<T>* begin_offsets,
+                     std::vector<T>* end_offsets) {
+-  absl::string_view leftover(input.data());
+-  absl::string_view last_end = leftover;
++  re2::StringPiece leftover(input.data());
++  re2::StringPiece last_end = leftover;
+ 
+   // Keep looking for split points until we have reached the end of the input.
+-  absl::string_view extracted_delim_token;
++  re2::StringPiece extracted_delim_token;
+   while (RE2::FindAndConsume(&leftover, re2, &extracted_delim_token)) {
+-    absl::string_view token(last_end.data(),
+-                            extracted_delim_token.data() - last_end.data());
++    re2::StringPiece token(last_end.data(),
++                           extracted_delim_token.data() - last_end.data());
+     bool has_non_empty_token = token.length() > 0;
+     bool should_include_delim =
+         include_delimiter && include_delim_regex.FullMatch(
+@@ -44,7 +44,7 @@ void RegexSplitImpl(absl::string_view input,
+ 
+     // Mark the end of the previous token, only if there was something.
+     if (has_non_empty_token) {
+-      tokens->push_back(token);
++      tokens->push_back(absl::string_view(token.data(), token.size()));
+       // Mark the end of the last token
+       begin_offsets->push_back(token.data() - input.data());
+       end_offsets->push_back(token.data() + token.length() - input.begin());
+@@ -52,7 +52,8 @@ void RegexSplitImpl(absl::string_view input,
+ 
+     if (should_include_delim) {
+       // If desired, include the deliminator as a token.
+-      tokens->push_back(extracted_delim_token);
++      tokens->push_back(absl::string_view(extracted_delim_token.data(),
++                                          extracted_delim_token.size()));
+       // Mark the end of the token at the end of the beginning of the delimiter.
+       begin_offsets->push_back(extracted_delim_token.data() - input.begin());
+       end_offsets->push_back(extracted_delim_token.data() +
+@@ -62,7 +63,7 @@ void RegexSplitImpl(absl::string_view input,
+ 
+   // Close the last token.
+   if (!leftover.empty()) {
+-    tokens->push_back(leftover);
++    tokens->push_back(absl::string_view(leftover.data(), leftover.size()));
+     begin_offsets->push_back(leftover.data() - input.begin());
+     end_offsets->push_back(leftover.data() + leftover.length() - input.begin());
+   }
+@@ -93,4 +94,4 @@ void RegexSplit(absl::string_view input,
+ }
+ 
+ }  // namespace text
+-}  // namespace tensorflow
++}  // namespace tensorflow
+\ No newline at end of file
+-- 
+2.34.1.400.ga245620fadb-goog
+

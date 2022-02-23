@@ -86,7 +86,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcWithoutUserSlots(
 scoped_refptr<net::CertVerifyProc> CreateOldDefaultWithoutCaching(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
   scoped_refptr<net::CertVerifyProc> verify_proc;
-#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   verify_proc =
       net::CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
 #else
@@ -104,7 +104,7 @@ scoped_refptr<net::CertVerifyProc> CreateNewDefaultWithoutCaching(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher) {
   scoped_refptr<net::CertVerifyProc> verify_proc;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) && \
-    (defined(OS_LINUX) || defined(OS_WIN))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN))
   verify_proc = net::CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), net::CreateSslSystemTrustStoreChromeRoot());
 #elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
@@ -119,9 +119,9 @@ scoped_refptr<net::CertVerifyProc> CreateNewDefaultWithoutCaching(
 }  // namespace
 
 bool IsUsingCertNetFetcher() {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_CHROMEOS) || \
-    defined(OS_LINUX) ||                                                  \
-    BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) ||                \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||      \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||       \
+    BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) || \
     BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   return true;
 #else

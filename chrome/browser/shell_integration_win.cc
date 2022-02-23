@@ -44,8 +44,8 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_shortcut_win.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
@@ -977,7 +977,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
     if (updated_properties.options &&
         base::win::CreateOrUpdateShortcutLink(
             shortcut, updated_properties,
-            base::win::SHORTCUT_UPDATE_EXISTING)) {
+            base::win::ShortcutOperation::kUpdateExisting)) {
       ++shortcuts_migrated;
     }
   }

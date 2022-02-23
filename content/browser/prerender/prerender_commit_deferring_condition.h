@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "content/browser/renderer_host/commit_deferring_condition.h"
+#include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {

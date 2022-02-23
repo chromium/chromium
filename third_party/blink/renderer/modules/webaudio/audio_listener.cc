@@ -268,9 +268,9 @@ void AudioListener::UpdateState() {
 
   MutexTryLocker try_locker(listener_lock_);
   if (try_locker.Locked()) {
-    FloatPoint3D current_position = GetPosition();
-    FloatPoint3D current_forward = Orientation();
-    FloatPoint3D current_up = UpVector();
+    gfx::Point3F current_position = GetPosition();
+    gfx::Vector3dF current_forward = Orientation();
+    gfx::Vector3dF current_up = UpVector();
 
     is_listener_dirty_ = current_position != last_position_ ||
                          current_forward != last_forward_ ||
@@ -292,9 +292,10 @@ void AudioListener::UpdateState() {
 void AudioListener::CreateAndLoadHRTFDatabaseLoader(float sample_rate) {
   DCHECK(IsMainThread());
 
-  if (!hrtf_database_loader_)
+  if (!hrtf_database_loader_) {
     hrtf_database_loader_ =
         HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(sample_rate);
+  }
 }
 
 bool AudioListener::IsHRTFDatabaseLoaded() {
@@ -302,17 +303,19 @@ bool AudioListener::IsHRTFDatabaseLoaded() {
 }
 
 void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
-  if (hrtf_database_loader_)
+  if (hrtf_database_loader_) {
     hrtf_database_loader_->WaitForLoaderThreadCompletion();
+  }
 }
 
 void AudioListener::MarkPannersAsDirty(unsigned type) {
   DCHECK(IsMainThread());
-  for (PannerHandler* panner : panners_)
+  for (PannerHandler* panner : panners_) {
     panner->MarkPannerAsDirty(type);
+  }
 }
 
-void AudioListener::setPosition(const FloatPoint3D& position,
+void AudioListener::setPosition(const gfx::Point3F& position,
                                 ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
@@ -329,7 +332,7 @@ void AudioListener::setPosition(const FloatPoint3D& position,
                      PannerHandler::kDistanceConeGainDirty);
 }
 
-void AudioListener::setOrientation(const FloatPoint3D& orientation,
+void AudioListener::setOrientation(const gfx::Vector3dF& orientation,
                                    ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
@@ -345,7 +348,7 @@ void AudioListener::setOrientation(const FloatPoint3D& orientation,
   MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty);
 }
 
-void AudioListener::SetUpVector(const FloatPoint3D& up_vector,
+void AudioListener::SetUpVector(const gfx::Vector3dF& up_vector,
                                 ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 

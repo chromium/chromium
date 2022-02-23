@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+async_test((t) => {
+    const params = new URLSearchParams(window.location.search);
+    const preloads = params.getAll("preloads");
+    assert_equals(preloads.length, 1);
+    const preload = JSON.parse(preloads[0]);
+
+    const el = document.createElement("script");
+    el.src = preload.url;
+    el.onload = t.step_func_done(() => {
+        const name = new URL(preload.url, window.location);
+        const entries = performance.getEntriesByName(name);
+        assert_equals(entries.length, 1);
+        assert_equals(entries[0].initiatorType, "early-hints");
+    });
+    document.body.appendChild(el);
+}, "Ensure initiatorType is set to 'early-hints'");
+</script>
+</body>

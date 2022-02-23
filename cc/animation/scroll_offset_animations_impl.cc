@@ -39,8 +39,8 @@ ScrollOffsetAnimationsImpl::~ScrollOffsetAnimationsImpl() {
 
 void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
     ElementId element_id,
-    const gfx::Vector2dF& target_offset,
-    const gfx::Vector2dF& current_offset,
+    const gfx::PointF& target_offset,
+    const gfx::PointF& current_offset,
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
@@ -55,8 +55,8 @@ void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
 
 void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
     ElementId element_id,
-    const gfx::Vector2dF& target_offset,
-    const gfx::Vector2dF& current_offset,
+    const gfx::PointF& target_offset,
+    const gfx::PointF& current_offset,
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve =
@@ -92,7 +92,7 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
 
 bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
-    const gfx::Vector2dF& max_scroll_offset,
+    const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
     base::TimeDelta delayed_by) {
   DCHECK(scroll_offset_animation_);
@@ -117,8 +117,8 @@ bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
       ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
           keyframe_model->curve());
 
-  gfx::Vector2dF new_target = curve->target_value() + scroll_delta;
-  new_target.SetToMax(gfx::Vector2dF());
+  gfx::PointF new_target = curve->target_value() + scroll_delta;
+  new_target.SetToMax(gfx::PointF());
   new_target.SetToMin(max_scroll_offset);
 
   // TODO(ymalik): KeyframeModel::TrimTimeToCurrentIteration should probably

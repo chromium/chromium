@@ -350,7 +350,7 @@
   "fileBrowserHandler": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "fileManagerPrivate": {
     "channel": "stable",
@@ -430,11 +430,22 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component"
   }],
-  "languageSettingsPrivate": {
-    "channel": "trunk",
-    "extension_types": ["extension", "platform_app"],
-    "location": "component"
-  },
+  "languageSettingsPrivate": [
+    {
+      "channel": "trunk",
+      "extension_types": ["extension", "platform_app"],
+      "location": "component"
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "location": "component",
+      "platforms": ["chromeos"],
+      "allowlist": [
+        "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
+      ]
+    }
+  ],
   "lockWindowFullscreenPrivate": {
     "channel": "stable",
     "component_extensions_auto_granted": false,
@@ -455,12 +466,12 @@
   "dependencies": ["behavior:imprivata_extension"],
   "extension_types": ["extension","login_screen_extension"],
   "location": "policy",
-  "platforms": ["chromeos"]
+  "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
@@ -471,12 +482,12 @@
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "canary",
     "extension_types": ["extension","login_screen_extension"],
     "location": "policy",
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-sesesion test extension
@@ -801,8 +812,9 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
   "speechRecognitionPrivate": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
+    "location": "component",
     "platforms": ["chromeos"],
     "allowlist": [
       "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
@@ -970,7 +982,8 @@
       // Extension id hash for API test.
       "74801F84D31D23D08BEA48AB82C6A6120EDB4D45",
       "6A4D7AEC6414492BD25219C7A479265BF1177D42",  // http://crbug.com/1206836
-      "F80B163C896D50A685E0B683BEEEA94217F253D6"   // http://crbug.com/1206836
+      "F80B163C896D50A685E0B683BEEEA94217F253D6",  // http://crbug.com/1206836
+      "454738352012A22901C55B348E5E530BDE1AF2B0"   // http://crbug.com/1259253
     ]
   }
 }

@@ -31,13 +31,13 @@ const base::Feature kBetterTelemetryAcrossReports{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionDocumentScanning{
-    "ClientSideDetectionDocumentScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClientSideDetectionDocumentScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionForAndroid{
     "ClientSideDetectionModelOnAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable only for Android
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kClientSideDetectionModelIsFlatBuffer{
     "ClientSideDetectionModelIsFlatBuffer", base::FEATURE_ENABLED_BY_DEFAULT};
 #else
@@ -57,11 +57,10 @@ extern const base::Feature kClientSideDetectionModelHighMemoryTag{
 const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kFileAnalysisMimeTypeSniff{
-    "FileAnalysisMimeTypeSniff", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+// TODO(b/197749390): Add tests for this feature being enabled when it's
+// finalized.
+const base::Feature kConnectorsScanningReportOnlyUI{
+    "ConnectorsScanningReportOnlyUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -73,6 +72,28 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
+const base::Feature kDownloadBubble{"DownloadBubble",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnhancedProtection {
+  "SafeBrowsingEnhancedProtection",
+#if BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
+
+const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds{
+    &kExtensionTelemetry, "UploadIntervalSeconds",
+    /*default_value=*/3600};
+
+const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kSimplifiedUrlDisplay{"SimplifiedUrlDisplay",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -81,19 +102,17 @@ const base::Feature kTailoredSecurityIntegration{
 
 const base::Feature kOmitNonUserGesturesFromReferrerChain{
     "SafeBrowsingOmitNonUserGesturesFromReferrerChain",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPasswordProtectionForSignedInUsers {
-  "SafeBrowsingPasswordProtectionForSignedInUsers",
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kPasswordProtectionForSignedInUsers{
+    "SafeBrowsingPasswordProtectionForSignedInUsers",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPromptEsbForDeepScanning{
     "SafeBrowsingPromptEsbForDeepScanning", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSafeBrowsingCsbrrWithToken{
+    "SafeBrowsingCsbrrWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingCTDownloadWarning{
     "SafeBrowsingCTDownloadWarning", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -105,12 +124,8 @@ const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
     "SafeBrowsingDisableConsumerCsdForEnterprise",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise{
-    "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingPageLoadToken{
-    "SafeBrowsingPageLoadToken", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SafeBrowsingPageLoadToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
@@ -119,6 +134,10 @@ const base::Feature
 
 const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
     "SafeBrowsingRemoveCookiesInAuthRequests",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
+    "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 constexpr base::FeatureParam<bool> kShouldFillOldPhishGuardProto{
@@ -159,14 +178,19 @@ constexpr struct {
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
+    {&kConnectorsScanningReportOnlyUI, true},
     {&kDelayedWarnings, true},
+    {&kDownloadBubble, true},
+    {&kEnhancedProtection, true},
+    {&kExtensionTelemetry, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
-    {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
+    {&kSafeBrowsingCsbrrWithToken, true},
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
+    {&kSendSampledPingsForProtegoAllowlistDomains, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kTriggerThrottlerDailyQuotaFeature, false},
@@ -237,12 +261,13 @@ std::string GetClientSideDetectionTag() {
 }
 
 std::string GetFileTypePoliciesTag() {
-  if (base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
-    return variations::GetVariationParamValueByFeature(
-        kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
+  if (!base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
+    return "default";
   }
+  std::string tag_value = variations::GetVariationParamValueByFeature(
+      kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
 
-  return "default";
+  return tag_value.empty() ? "default" : tag_value;
 }
 
 }  // namespace safe_browsing

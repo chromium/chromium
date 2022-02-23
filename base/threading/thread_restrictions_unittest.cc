@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/stack_trace.h"
-#include "base/macros.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,7 +177,7 @@ TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
 }
 
 // thread_restriction_checks_and_has_death_tests
-#if !defined(OS_NACL) && !defined(OS_ANDROID) && DCHECK_IS_ON() && \
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID) && DCHECK_IS_ON() && \
     defined(GTEST_HAS_DEATH_TEST)
 
 TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {

@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #define CONVERT_IF_NEEDED(x) base::UTF8ToWide((x))
 #else

@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -83,15 +84,19 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/grit/chromium_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
+#endif
 
 namespace {
 
@@ -104,12 +109,7 @@ network::mojom::HttpAuthStaticParamsPtr CreateHttpAuthStaticParams(
   network::mojom::HttpAuthStaticParamsPtr auth_static_params =
       network::mojom::HttpAuthStaticParams::New();
 
-  // TODO(https://crbug/549273): Allow this to change after startup.
-  auth_static_params->supported_schemes =
-      base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   auth_static_params->gssapi_library_name =
       local_state->GetString(prefs::kGSSAPILibraryName);
 #endif
@@ -123,6 +123,16 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
   network::mojom::HttpAuthDynamicParamsPtr auth_dynamic_params =
       network::mojom::HttpAuthDynamicParams::New();
 
+  auth_dynamic_params->allowed_schemes =
+      base::SplitString(local_state->GetString(prefs::kAuthSchemes), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const base::Value& item :
+       local_state->GetList(prefs::kAllHttpAuthSchemesAllowedForOrigins)
+           ->GetListDeprecated()) {
+    auth_dynamic_params->patterns_allowed_to_use_all_schemes.push_back(
+        item.GetString());
+  }
   auth_dynamic_params->server_allowlist =
       local_state->GetString(prefs::kAuthServerAllowlist);
   auth_dynamic_params->delegate_allowlist =
@@ -134,20 +144,20 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
   auth_dynamic_params->basic_over_http_enabled =
       local_state->GetBoolean(prefs::kBasicAuthOverHttpEnabled);
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   auth_dynamic_params->delegate_by_kdc_policy =
       local_state->GetBoolean(prefs::kAuthNegotiateDelegateByKdcPolicy);
-#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   auth_dynamic_params->ntlm_v2_enabled =
       local_state->GetBoolean(prefs::kNtlmV2Enabled);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auth_dynamic_params->android_negotiate_account_type =
       local_state->GetString(prefs::kAuthAndroidNegotiateAccountType);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO: Use KerberosCredentialsManager to determine whether Kerberos is
@@ -252,7 +262,7 @@ class SystemNetworkContextManager::URLLoaderFactoryForSystem
   ~URLLoaderFactoryForSystem() override = default;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  SystemNetworkContextManager* manager_;
+  raw_ptr<SystemNetworkContextManager> manager_;
 };
 
 network::mojom::NetworkContext* SystemNetworkContextManager::GetContext() {
@@ -334,11 +344,10 @@ void SystemNetworkContextManager::DeleteInstance() {
 SystemNetworkContextManager::SystemNetworkContextManager(
     PrefService* local_state)
     : local_state_(local_state),
-      ssl_config_service_manager_(
-          SSLConfigServiceManager::CreateDefaultManager(local_state_)),
+      ssl_config_service_manager_(local_state_),
       proxy_config_monitor_(local_state_),
       stub_resolver_config_reader_(local_state_) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // QuicAllowed was not part of Android policy.
   const base::Value* value =
       g_browser_process->policy_service()
@@ -355,6 +364,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
   PrefChangeRegistrar::NamedChangeCallback auth_pref_callback =
       base::BindRepeating(&OnAuthPrefsChanged, base::Unretained(local_state_));
 
+  pref_change_registrar_.Add(prefs::kAuthSchemes, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthServerAllowlist, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateAllowlist,
                              auth_pref_callback);
@@ -364,20 +374,22 @@ SystemNetworkContextManager::SystemNetworkContextManager(
                              auth_pref_callback);
   pref_change_registrar_.Add(prefs::kBasicAuthOverHttpEnabled,
                              auth_pref_callback);
+  pref_change_registrar_.Add(prefs::kAllHttpAuthSchemesAllowedForOrigins,
+                             auth_pref_callback);
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(prefs::kAuthNegotiateDelegateByKdcPolicy,
                              auth_pref_callback);
-#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   pref_change_registrar_.Add(prefs::kNtlmV2Enabled, auth_pref_callback);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Add(prefs::kAuthAndroidNegotiateAccountType,
                              auth_pref_callback);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO: Use KerberosCredentialsManager::Observer to be notified of when the
@@ -411,32 +423,34 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // Static auth params
   registry->RegisterStringPref(prefs::kAuthSchemes,
                                "basic,digest,ntlm,negotiate");
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(prefs::kGSSAPILibraryName, std::string());
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID) &&
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Dynamic auth params.
+  registry->RegisterListPref(prefs::kAllHttpAuthSchemesAllowedForOrigins,
+                             base::Value(base::Value::Type::LIST));
   registry->RegisterBooleanPref(prefs::kDisableAuthNegotiateCnameLookup, false);
   registry->RegisterBooleanPref(prefs::kEnableAuthNegotiatePort, false);
   registry->RegisterBooleanPref(prefs::kBasicAuthOverHttpEnabled, true);
   registry->RegisterStringPref(prefs::kAuthServerAllowlist, std::string());
   registry->RegisterStringPref(prefs::kAuthNegotiateDelegateAllowlist,
                                std::string());
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kAuthNegotiateDelegateByKdcPolicy,
                                 false);
-#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   registry->RegisterBooleanPref(
       prefs::kNtlmV2Enabled,
       base::FeatureList::IsEnabled(features::kNtlmV2Enabled));
-#endif  // defined(OS_POSIX)
-#if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kAuthAndroidNegotiateAccountType,
                                std::string());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Per-NetworkContext pref. The pref value from |local_state_| is used for
   // the system NetworkContext, and the per-profile pref values are used for
@@ -456,11 +470,11 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterListPref(prefs::kExplicitlyAllowedNetworkPorts);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(
       prefs::kNetworkServiceSandboxEnabled,
       sandbox::policy::features::IsNetworkSandboxEnabled());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // static
@@ -510,26 +524,38 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   if (IsCertificateTransparencyEnabled()) {
     std::vector<std::string> operated_by_google_logs =
         certificate_transparency::GetLogsOperatedByGoogle();
-    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
+    std::vector<std::pair<std::string, base::Time>> disqualified_logs =
         certificate_transparency::GetDisqualifiedLogs();
     std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
     for (const auto& ct_log : certificate_transparency::GetKnownLogs()) {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
       log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
+      log_info->id = crypto::SHA256HashString(log_info->public_key);
       log_info->name = ct_log.log_name;
+      log_info->current_operator = ct_log.current_operator;
 
-      std::string log_id = crypto::SHA256HashString(log_info->public_key);
       log_info->operated_by_google =
           std::binary_search(std::begin(operated_by_google_logs),
-                             std::end(operated_by_google_logs), log_id);
+                             std::end(operated_by_google_logs), log_info->id);
       auto it = std::lower_bound(
-          std::begin(disqualified_logs), std::end(disqualified_logs), log_id,
+          std::begin(disqualified_logs), std::end(disqualified_logs),
+          log_info->id,
           [](const auto& disqualified_log, const std::string& log_id) {
             return disqualified_log.first < log_id;
           });
-      if (it != std::end(disqualified_logs) && it->first == log_id) {
+      if (it != std::end(disqualified_logs) && it->first == log_info->id) {
         log_info->disqualified_at = it->second;
       }
+
+      for (size_t i = 0; i < ct_log.previous_operators_length; i++) {
+        const auto& op = ct_log.previous_operators[i];
+        network::mojom::PreviousOperatorEntryPtr previous_operator =
+            network::mojom::PreviousOperatorEntry::New();
+        previous_operator->name = op.name;
+        previous_operator->end_time = op.end_time;
+        log_info->previous_operators.push_back(std::move(previous_operator));
+      }
+
       log_list_mojo.push_back(std::move(log_info));
     }
     network_service->UpdateCtLogList(
@@ -557,29 +583,11 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Set up crypt config. This should be kept in sync with the OSCrypt parts of
-  // ChromeBrowserMainPartsLinux::PreProfileInit.
-  network::mojom::CryptConfigPtr config = network::mojom::CryptConfig::New();
-  config->store = command_line.GetSwitchValueASCII(switches::kPasswordStore);
-  config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
-  config->should_use_preference =
-      command_line.HasSwitch(switches::kEnableEncryptionSelection);
-  chrome::GetDefaultUserDataDirectory(&config->user_data_path);
-  network_service->SetCryptConfig(std::move(config));
-#endif
-#if defined(OS_WIN) || defined(OS_MAC)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
-#endif
 
   // Asynchronously reapply the most recently received CRLSet (if any).
   component_updater::CRLSetPolicy::ReconfigureAfterNetworkRestart();
@@ -588,16 +596,15 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   SCTReportingService::ReconfigureAfterNetworkRestart();
 
   component_updater::FirstPartySetsComponentInstallerPolicy::
-      ReconfigureAfterNetworkRestart(
-          base::BindRepeating([](const std::string& raw_sets) {
-            // We use a fresh pointer here (instead of using `network_service`
-            // from the enclosing scope) to avoid use-after-free bugs, since
-            // `network_service` is not guaranteed to live until the
-            // invocation of this callback.
-            network::mojom::NetworkService* network_service =
-                content::GetNetworkService();
-            network_service->SetFirstPartySets(raw_sets);
-          }));
+      ReconfigureAfterNetworkRestart(base::BindOnce([](base::File sets_file) {
+        // We use a fresh pointer here (instead of using `network_service`
+        // from the enclosing scope) to avoid use-after-free bugs, since
+        // `network_service` is not guaranteed to live until the
+        // invocation of this callback.
+        network::mojom::NetworkService* network_service =
+            content::GetNetworkService();
+        network_service->SetFirstPartySets(std::move(sets_file));
+      }));
 
   UpdateExplicitlyAllowedNetworkPorts();
 }
@@ -613,8 +620,7 @@ void SystemNetworkContextManager::DisableQuic() {
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
-  ssl_config_service_manager_->AddToNetworkContextParams(
-      network_context_params);
+  ssl_config_service_manager_.AddToNetworkContextParams(network_context_params);
 }
 
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
@@ -672,6 +678,13 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     }
   }
 
+#if BUILDFLAG(IS_WIN)
+  if (command_line.HasSwitch(switches::kUseSystemProxyResolver)) {
+    network_context_params->windows_system_proxy_resolver =
+        ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver();
+  }
+#endif
+
   network_context_params->pac_quick_check_enabled =
       local_state_->GetBoolean(prefs::kQuickCheckEnabled);
 
@@ -728,19 +741,21 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 
 // static
 bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+    return false;
   auto* local_state = g_browser_process->local_state();
   if (local_state &&
       local_state->HasPrefPath(prefs::kNetworkServiceSandboxEnabled)) {
     return local_state->GetBoolean(prefs::kNetworkServiceSandboxEnabled);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   // If no policy is specified, then delegate to global sandbox configuration.
   return sandbox::policy::features::IsNetworkSandboxEnabled();
 }
 
 void SystemNetworkContextManager::FlushSSLConfigManagerForTesting() {
-  ssl_config_service_manager_->FlushForTesting();
+  ssl_config_service_manager_.FlushForTesting();
 }
 
 void SystemNetworkContextManager::FlushProxyConfigMonitorForTesting() {
@@ -779,7 +794,7 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
 //    Certificate Transparency is only enabled if:
 //   - base::GetBuildTime() is deterministic to the source (OFFICIAL_BUILD)
 //   - The build in reliably updatable (GOOGLE_CHROME_BRANDING)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, enforcement is currently controlled via a feature flag.
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAndroid);

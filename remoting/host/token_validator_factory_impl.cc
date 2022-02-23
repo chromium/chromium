@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/task/single_thread_task_runner.h"

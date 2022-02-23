@@ -19,6 +19,14 @@ source_set("download") {
   sources = [
     "download_controller_impl.h",
     "download_controller_impl.mm",
+    "download_native_task_bridge.h",
+    "download_native_task_bridge.mm",
+    "download_native_task_impl.h",
+    "download_native_task_impl.mm",
+    "download_result.h",
+    "download_result.mm",
+    "download_session_task_impl.h",
+    "download_session_task_impl.mm",
     "download_task_impl.h",
     "download_task_impl.mm",
   ]
@@ -59,6 +67,8 @@ source_set("download_unittests") {
     "//ios/web/net/cookies",
     "//ios/web/public/download",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
     "//net",
@@ -68,7 +78,9 @@ source_set("download_unittests") {
 
   sources = [
     "download_controller_impl_unittest.mm",
+    "download_native_task_impl_unittest.mm",
     "download_session_cookie_storage_unittest.mm",
+    "download_session_task_impl_unittest.mm",
     "download_task_impl_unittest.mm",
   ]
 }
@@ -81,6 +93,7 @@ source_set("download_inttests") {
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//net:test_support",
   ]

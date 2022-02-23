@@ -4,8 +4,6 @@
 
 package org.chromium.printing;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -31,7 +29,6 @@ import java.util.Iterator;
  * the print button. The singleton object lives in UI thread. Interaction with the native side is
  * carried through PrintingContext class.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class PrintingControllerImpl implements PrintingController, PdfGenerator {
     private static final String TAG = "printing";
 

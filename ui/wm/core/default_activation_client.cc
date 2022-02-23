@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/default_activation_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
@@ -33,8 +34,8 @@ class DefaultActivationClient::Deleter : public aura::WindowObserver {
     delete this;
   }
 
-  DefaultActivationClient* client_;
-  aura::Window* root_window_;
+  raw_ptr<DefaultActivationClient> client_;
+  raw_ptr<aura::Window> root_window_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,21 +75,28 @@ void DefaultActivationClient::ActivateWindowImpl(
     observer.OnWindowActivating(reason, window, last_active);
 
   last_active_ = last_active;
-  RemoveActiveWindow(window);
-  active_windows_.push_back(window);
-  window->parent()->StackChildAtTop(window);
-  window->AddObserver(this);
+  if (window) {
+    RemoveActiveWindow(window);
+    active_windows_.push_back(window);
+    window->parent()->StackChildAtTop(window);
+    window->AddObserver(this);
+  } else {
+    ClearActiveWindows();
+  }
 
   for (auto& observer : observers_)
     observer.OnWindowActivated(reason, window, last_active);
 
-  ActivationChangeObserver* observer = GetActivationChangeObserver(last_active);
-  if (observer) {
-    observer->OnWindowActivated(reason, window, last_active);
-  }
-  observer = GetActivationChangeObserver(window);
-  if (observer) {
-    observer->OnWindowActivated(reason, window, last_active);
+  if (window) {
+    ActivationChangeObserver* observer =
+        GetActivationChangeObserver(last_active);
+    if (observer) {
+      observer->OnWindowActivated(reason, window, last_active);
+    }
+    observer = GetActivationChangeObserver(window);
+    if (observer) {
+      observer->OnWindowActivated(reason, window, last_active);
+    }
   }
 }
 
@@ -150,9 +158,7 @@ void DefaultActivationClient::OnWindowDestroyed(aura::Window* window) {
 // DefaultActivationClient, private:
 
 DefaultActivationClient::~DefaultActivationClient() {
-  for (unsigned int i = 0; i < active_windows_.size(); ++i) {
-    active_windows_[i]->RemoveObserver(this);
-  }
+  ClearActiveWindows();
 }
 
 void DefaultActivationClient::RemoveActiveWindow(aura::Window* window) {
@@ -163,6 +169,12 @@ void DefaultActivationClient::RemoveActiveWindow(aura::Window* window) {
       return;
     }
   }
+}
+
+void DefaultActivationClient::ClearActiveWindows() {
+  for (aura::Window* window : active_windows_)
+    window->RemoveObserver(this);
+  active_windows_.clear();
 }
 
 }  // namespace wm

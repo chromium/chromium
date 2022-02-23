@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

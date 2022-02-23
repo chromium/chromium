@@ -38,29 +38,17 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
 class ExceptionState;
 class ImageBitmapOptions;
-
-constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
-constexpr const char* kUint16ArrayStorageFormatName = "uint16";
-constexpr const char* kFloat32ArrayStorageFormatName = "float32";
-
-// Convert a string to an ImageDataStorageFormat. On unrecognized strings this
-// will return kUint8ClampedArrayStorageFormat.
-ImageDataStorageFormat CORE_EXPORT
-ImageDataStorageFormatFromName(const String& string);
-String CORE_EXPORT
-ImageDataStorageFormatToName(ImageDataStorageFormat storage_format);
 
 class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     public ImageBitmapSource {
@@ -175,7 +163,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
     bool zero_initialize = true;
     // If no color space is specified, then use this value for the resulting
     // ImageData.
-    CanvasColorSpace default_color_space = CanvasColorSpace::kSRGB;
+    PredefinedColorSpace default_color_space = PredefinedColorSpace::kSRGB;
   };
   static ImageData* ValidateAndCreate(
       unsigned width,
@@ -187,23 +175,18 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() { return settings_; }
 
-  static ImageData* CreateForTest(const IntSize&);
-  static ImageData* CreateForTest(const IntSize&,
+  static ImageData* CreateForTest(const gfx::Size&);
+  static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
-                                  CanvasColorSpace,
+                                  PredefinedColorSpace,
                                   ImageDataStorageFormat);
 
-  ImageData(const IntSize&,
+  ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
-            CanvasColorSpace,
+            PredefinedColorSpace,
             ImageDataStorageFormat);
 
-  static String CanvasColorSpaceName(CanvasColorSpace);
-  static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
-  static unsigned StorageFormatBytesPerPixel(const String&);
-  static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
-
-  IntSize Size() const { return size_; }
+  gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
   String colorSpace() const;
@@ -215,36 +198,36 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   const V8ImageDataArray* data() const { return data_; }
 
   bool IsBufferBaseDetached() const;
-  CanvasColorSpace GetCanvasColorSpace() const;
+  PredefinedColorSpace GetPredefinedColorSpace() const;
   ImageDataStorageFormat GetImageDataStorageFormat() const;
 
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override { return size_; }
+  gfx::Size BitmapSourceSize() const override { return size_; }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Object> wrapper) override;
 
  private:
-  IntSize size_;
+  gfx::Size size_;
   // TODO(https://crbug.com/1198606): Remove this.
   Member<ImageDataSettings> settings_;
   Member<V8ImageDataArray> data_;
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
-  CanvasColorSpace color_space_ = CanvasColorSpace::kSRGB;
-  ImageDataStorageFormat storage_format_ = kUint8ClampedArrayStorageFormat;
+  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
+  ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,

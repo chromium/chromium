@@ -234,13 +234,15 @@ def _ExecuteTool(toolname, tool_args, build_directory, compdb_entry):
       del args[i:i+2]
       break
 
-  # shlex.split escapes double qoutes in non-Posix mode, so we need to strip
+  # shlex.split escapes double quotes in non-Posix mode, so we need to strip
   # them back.
   if sys.platform == 'win32':
     args = [a.replace('\\"', '"') for a in args]
   command = subprocess.Popen(
       args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=build_directory)
   stdout_text, stderr_text = command.communicate()
+  stdout_text = stdout_text.decode('utf-8')
+  stderr_text = stderr_text.decode('utf-8')
   stderr_text = re.sub(
       r"^warning: .*'linker' input unused \[-Wunused-command-line-argument\]\n",
       "", stderr_text, flags=re.MULTILINE)

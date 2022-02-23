@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,10 +20,9 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -49,14 +49,14 @@
 #include "ui/views/view_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -164,9 +164,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-
     pwa_install_view_ =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->toolbar_button_provider()
@@ -196,8 +193,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   struct OpenTabResult {
-    content::WebContents* web_contents;
-    webapps::TestAppBannerManagerDesktop* app_banner_manager;
+    raw_ptr<content::WebContents> web_contents;
+    raw_ptr<webapps::TestAppBannerManagerDesktop> app_banner_manager;
     bool installable;
   };
 
@@ -241,7 +238,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     base::RunLoop run_loop;
     web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
         [&app_id, &run_loop](const web_app::AppId& installed_app_id,
-                             web_app::InstallResultCode code) {
+                             webapps::InstallResultCode code) {
           app_id = installed_app_id;
           run_loop.Quit();
         }));
@@ -297,12 +294,12 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
   std::string intercept_request_path_;
   std::string intercept_request_response_;
 
-  PageActionIconView* pwa_install_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  webapps::TestAppBannerManagerDesktop* app_banner_manager_ = nullptr;
+  raw_ptr<PageActionIconView> pwa_install_view_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<webapps::TestAppBannerManagerDesktop> app_banner_manager_ = nullptr;
 
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::test::ScopedFeatureList features_;
 };
 
@@ -676,17 +673,17 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, DISABLED_PwaIntallIphSiteEngag
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the site is not highly engaged.
-  EXPECT_FALSE(controller->BubbleIsShowing(
+  EXPECT_FALSE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 
   // Manually set engagement score to be above IPH triggering threshold.
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   OpenTab(app_url);
-  EXPECT_TRUE(controller->BubbleIsShowing(
+  EXPECT_TRUE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
@@ -704,10 +701,10 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the IPH is ignored recently.
-  EXPECT_FALSE(controller->BubbleIsShowing(
+  EXPECT_FALSE(controller->IsPromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 

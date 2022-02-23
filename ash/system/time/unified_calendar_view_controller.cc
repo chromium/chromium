@@ -30,7 +30,7 @@ views::View* UnifiedCalendarViewController::CreateView() {
 std::u16string UnifiedCalendarViewController::GetAccessibleName() const {
   // Shows `Now()` as the initial time if calendar view is not created yet.
   base::Time current_time =
-      view_ ? view_->calendar_view_controller()->current_date()
+      view_ ? view_->calendar_view_controller()->currently_shown_date()
             : base::Time::Now();
   return l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,

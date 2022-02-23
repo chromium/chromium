@@ -128,7 +128,7 @@ void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
               ->component_loader()
               ->Exists(kFileManagerAppId));
     CHECK(!extensions::ExtensionSystem::Get(
-               chromeos::ProfileHelper::GetSigninProfile())
+               ash::ProfileHelper::GetSigninProfile())
                ->extension_service()
                ->component_loader()
                ->Exists(kFileManagerAppId));

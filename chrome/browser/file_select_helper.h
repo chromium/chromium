@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
@@ -89,6 +89,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
                            ContentAnalysisCompletionCallback_OKBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
 
   explicit FileSelectHelper(Profile* profile);
   ~FileSelectHelper() override;
@@ -159,7 +160,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // callback is received from the enumeration code.
   void EnumerateDirectoryEnd();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Must be called from a MayBlock() task. Each selected file that is a package
   // will be zipped, and the zip will be passed to the render view host in place
   // of the package.
@@ -175,7 +176,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // temporary destination, if the zip was successful. Otherwise returns an
   // empty path.
   static base::FilePath ZipPackage(const base::FilePath& path);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // This function is the start of a call chain that may or may not be async
   // depending on the platform and features enabled.  The call to this method
@@ -272,12 +273,12 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& suggested_path);
 
   // Profile used to set/retrieve the last used directory.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The RenderFrameHost and WebContents for the page showing a file dialog
   // (may only be one such dialog).
-  content::RenderFrameHost* render_frame_host_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // |listener_| receives the result of the FileSelectHelper.
   scoped_refptr<content::FileSelectListener> listener_;

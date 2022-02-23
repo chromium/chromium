@@ -18,12 +18,12 @@
 
 namespace {
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 bool HasFontWithName(const base::ListValue& list,
                      base::StringPiece expected_font_id,
                      base::StringPiece expected_display_name) {
-  for (const auto& font : list.GetList()) {
-    const auto& font_names = font.GetList();
+  for (const auto& font : list.GetListDeprecated()) {
+    const auto& font_names = font.GetListDeprecated();
     std::string font_id = font_names[0].GetString();
     std::string display_name = font_names[1].GetString();
     if (font_id == expected_font_id && display_name == expected_display_name)
@@ -32,11 +32,11 @@ bool HasFontWithName(const base::ListValue& list,
 
   return false;
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSI
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 // GetFontList is not implemented on Android and Fuchsia.
 TEST(FontList, GetFontList) {
   base::test::TaskEnvironment task_environment;
@@ -47,11 +47,11 @@ TEST(FontList, GetFontList) {
             content::GetFontList_SlowBlocking();
         ASSERT_TRUE(fonts);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         EXPECT_TRUE(HasFontWithName(*fonts, "MS Gothic", "MS Gothic"));
         EXPECT_TRUE(HasFontWithName(*fonts, "Segoe UI", "Segoe UI"));
         EXPECT_TRUE(HasFontWithName(*fonts, "Verdana", "Verdana"));
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         EXPECT_TRUE(HasFontWithName(*fonts, "Arimo", "Arimo"));
 #else
         EXPECT_TRUE(HasFontWithName(*fonts, "Arial", "Arial"));
@@ -59,9 +59,9 @@ TEST(FontList, GetFontList) {
       }));
   task_environment.RunUntilIdle();
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(FontList, GetFontListLocalized) {
   base::i18n::SetICUDefaultLocale("ja-JP");
   std::unique_ptr<base::ListValue> ja_fonts =
@@ -75,17 +75,17 @@ TEST(FontList, GetFontListLocalized) {
   ASSERT_TRUE(ko_fonts);
   EXPECT_TRUE(HasFontWithName(*ko_fonts, "Malgun Gothic", "맑은 고딕"));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // On some macOS versions, CTFontManager returns LastResort and/or hidden fonts.
 // Ensure that someone (CTFontManager or our FontList code) filters these fonts
 // on all OS versions that we support.
 TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
   std::unique_ptr<base::ListValue> fonts = content::GetFontList_SlowBlocking();
 
-  for (const auto& font : fonts->GetList()) {
-    const auto& font_names = font.GetList();
+  for (const auto& font : fonts->GetListDeprecated()) {
+    const auto& font_names = font.GetListDeprecated();
     const std::string& font_id = font_names[0].GetString();
 
     // The checks are inspired by Gecko's gfxMacPlatformFontList::AddFamily.
@@ -95,4 +95,4 @@ TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
         << font_id << " seems like a hidden font, which should be filtered";
   }
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)

@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -16,8 +18,13 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -25,13 +32,15 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #endif
 
@@ -40,6 +49,15 @@ namespace {
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
+// TODO(https://crbug.com/1215089): Enable on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// The captured tab is identified by its title.
+static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
+static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
+static const std::u16string kShareThisTabInsteadMessage =
+    u"Share this tab instead";
+static const std::u16string kViewTabMessagePrefix = u"View tab:";
+#endif
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
@@ -82,7 +100,7 @@ void RunGetDisplayMedia(content::WebContents* tab,
                         const std::string& constraints,
                         bool is_fake_ui,
                         bool expect_success,
-                        bool is_capturing_screen) {
+                        bool is_tab_capture) {
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetMainFrame(),
@@ -90,13 +108,12 @@ void RunGetDisplayMedia(content::WebContents* tab,
                          constraints.c_str()),
       &result));
 
-#if defined(OS_MAC)
-  // Starting from macOS 10.15, screen capture requires system permissions
-  // that are disabled by default. The permission is reported as granted
-  // if the fake UI is used, and is unnecessary if we're not capturing the
-  // screen.
-  expect_success =
-      base::mac::IsAtMostOS10_14() || is_fake_ui || !is_capturing_screen;
+#if BUILDFLAG(IS_MAC)
+  if (!is_fake_ui && !is_tab_capture &&
+      system_media_permissions::CheckSystemScreenCapturePermission() !=
+          system_media_permissions::SystemPermission::kAllowed) {
+    expect_success = false;
+  }
 #endif
 
   EXPECT_EQ(result, expect_success ? "capture-success" : "capture-failure");
@@ -118,6 +135,30 @@ GURL GetFileURL(const char* filename) {
   CHECK(base::PathExists(path));
   return net::FilePathToFileURL(path);
 }
+
+// TODO(https://crbug.com/1215089): Enable on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+infobars::ContentInfoBarManager* GetInfoBarManager(
+    content::WebContents* web_contents) {
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
+}
+
+ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents) {
+  return static_cast<ConfirmInfoBarDelegate*>(
+      GetInfoBarManager(web_contents)->infobar_at(0)->delegate());
+}
+
+bool HasSecondaryButton(content::WebContents* web_contents) {
+  return GetDelegate(web_contents)->GetButtons() &
+         ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+}
+
+std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
+  DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
+  return GetDelegate(web_contents)
+      ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+}
+#endif
 
 }  // namespace
 
@@ -173,11 +214,11 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 };
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -185,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -197,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 
   if (!test_config_.accept_this_tab_capture) {
     // This test is not relevant for this parameterized test case because it
@@ -231,18 +272,19 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
-#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(NDEBUG))
+#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+       !defined(NDEBUG))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#elif ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
        defined(ADDRESS_SANITIZER))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideoAndAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -250,7 +292,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false, test_config_.accept_this_tab_capture,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -297,7 +339,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/false),
                      /*is_fake_ui=*/true, /*expect_success=*/true,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -320,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
   RunGetDisplayMedia(tab, GetConstraints(/*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/true, /*expect_success=*/true,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -343,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
       test_config_.should_prefer_current_tab_ ? "true" : "false");
   RunGetDisplayMedia(tab, constraints,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
-                     /*is_capturing_screen=*/!PreferCurrentTab());
+                     /*is_tab_capture=*/PreferCurrentTab());
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
@@ -411,7 +453,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    /*allowlisted_by_policy=*/true)));
 
 // Flaky on Win bots http://crbug.com/1264805
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenShareFromEmbedded DISABLED_ScreenShareFromEmbedded
 #else
 #define MAYBE_ScreenShareFromEmbedded ScreenShareFromEmbedded
@@ -500,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAppWindowCaptureBrowserTestWithPicker,
 
   RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
                      /*expect_success=*/true,
-                     /*is_capturing_screen=*/false);
+                     /*is_tab_capture=*/true);
   CloseAppWindow(app_window);
 }
 
@@ -554,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   RunGetDisplayMedia(capturing_tab,
                      GetConstraints(/*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false, /*expect_success=*/true,
-                     /*is_capturing_screen=*/false);
+                     /*is_tab_capture=*/true);
 
   // Though the target tab should've been focused as a result of starting the
   // capture, we don't want to take a dependency on that behavior. Ensure that
@@ -593,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   RunGetDisplayMedia(capturing_tab,
                      GetConstraints(/*video=*/true, /*audio=*/true),
                      /*is_fake_ui=*/false, /*expect_success=*/true,
-                     /*is_capturing_screen=*/false);
+                     /*is_tab_capture=*/true);
 
   // Though the target tab should've been focused as a result of starting the
   // capture, we don't want to take a dependency on that behavior. Ensure that
@@ -740,7 +782,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   const DisplaySurfaceType display_surface_type_;
 
  private:
-  content::WebContents* tab_ = nullptr;
+  raw_ptr<content::WebContents> tab_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -783,3 +825,147 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
     EXPECT_EQ(GetAudioTrackType(), "MediaStreamTrack");
   }
 }
+
+// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(
+        switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+                     /*expect_success=*/true,
+                     /*is_tab_capture=*/true);
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+
+  // Click the secondary button, i.e., the "Share this tab instead" button
+  GetDelegate(other_tab)->Cancel();
+
+  // Wait until the capture of the other tab has started.
+  while (!other_tab->IsBeingCaptured()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_FALSE(captured_tab->IsBeingCaptured());
+  EXPECT_TRUE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    other_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
+                       ChangeSourceReject) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+                     /*expect_success=*/true,
+                     /*is_tab_capture=*/true);
+  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
+  while (browser()->tab_strip_model()->GetActiveWebContents() != other_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
+                                               false);
+
+  // Click the secondary button, i.e., the "Share this tab instead" button. This
+  // is rejected since screen capture is not allowed by the above policy.
+  GetDelegate(other_tab)->Cancel();
+
+  // When "Share this tab instead" fails for other_tab, the focus goes back to
+  // the captured tab. Wait until that happens:
+  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+
+#endif

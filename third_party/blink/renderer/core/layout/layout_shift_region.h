@@ -16,8 +16,8 @@ namespace blink {
 //
 // This class uses a sweep line algorithm to compute the area in O(n log n) time
 // where n is the number of rects recorded by AddRect. For complex layout shift
-// regions, this is more efficient than using blink::Region, which is worst-case
-// O(n^2) from the repeated calls to Region::Unite.
+// regions, this is more efficient than using cc::Region, which is worst-case
+// O(n^2) from the repeated calls to cc::Region::Union.
 //
 // The high-level approach is described here:
 // http://jeffe.cs.illinois.edu/open/klee.html

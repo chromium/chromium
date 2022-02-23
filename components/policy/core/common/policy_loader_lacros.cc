@@ -26,12 +26,17 @@ namespace {
 
 // Remembers if the main user is managed or not.
 // Note: This is a pessimistic default (no policies read - false) and
-// once the profile is loaded, the value is set and will never change.
+// once the profile is loaded, the value is set and will never change in
+// production. The value changes in tests whenever policy data gets overridden.
 bool g_is_main_user_managed_ = false;
 
 enterprise_management::PolicyData* MainUserPolicyDataStorage() {
   static enterprise_management::PolicyData policy_data;
   return &policy_data;
+}
+
+bool IsManaged(const enterprise_management::PolicyData& policy_data) {
+  return policy_data.state() == enterprise_management::PolicyData::ACTIVE;
 }
 
 }  // namespace
@@ -42,7 +47,6 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     PolicyPerProfileFilter per_profile)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
-      task_runner_(task_runner),
       per_profile_(per_profile) {
   auto* lacros_service = chromeos::LacrosService::Get();
   const crosapi::mojom::BrowserInitParams* init_params =
@@ -67,7 +71,7 @@ PolicyLoaderLacros::~PolicyLoaderLacros() {
 }
 
 void PolicyLoaderLacros::InitOnBackgroundThread() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // We add this as observer on background thread to avoid a situation when
   // notification comes after the object is destroyed, but not removed from the
@@ -117,12 +121,12 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
       .MergeFrom(policy_map);
 
   // Remember if the policy is managed or not.
-  g_is_main_user_managed_ = validator.policy_data()->state() ==
-                            enterprise_management::PolicyData::ACTIVE;
+  g_is_main_user_managed_ = IsManaged(*validator.policy_data());
   if (g_is_main_user_managed_ &&
       per_profile_ == PolicyPerProfileFilter::kFalse) {
     *MainUserPolicyDataStorage() = *validator.policy_data();
   }
+  policy_data_ = std::move(validator.policy_data());
 
   return bundle;
 }
@@ -132,6 +136,13 @@ void PolicyLoaderLacros::OnPolicyUpdated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy_fetch_response_ = policy_fetch_response;
   Reload(true);
+}
+
+enterprise_management::PolicyData* PolicyLoaderLacros::GetPolicyData() {
+  if (!policy_fetch_response_ || !policy_data_)
+    return nullptr;
+
+  return policy_data_.get();
 }
 
 // static
@@ -167,6 +178,7 @@ PolicyLoaderLacros::main_user_policy_data() {
 void PolicyLoaderLacros::set_main_user_policy_data_for_testing(
     const enterprise_management::PolicyData& policy_data) {
   *MainUserPolicyDataStorage() = policy_data;
+  g_is_main_user_managed_ = IsManaged(policy_data);
 }
 
 }  // namespace policy

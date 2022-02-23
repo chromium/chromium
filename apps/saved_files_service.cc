@@ -14,6 +14,7 @@
 
 #include "apps/saved_files_service_factory.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
@@ -128,8 +129,8 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
         base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
-    bool is_directory = false;
-    file_entry->GetBoolean(kFileEntryIsDirectory, &is_directory);
+    bool is_directory =
+        file_entry->FindBoolPath(kFileEntryIsDirectory).value_or(false);
     int sequence_number = 0;
     if (!file_entry->GetInteger(kFileEntrySequenceNumber, &sequence_number))
       continue;
@@ -166,7 +167,7 @@ class SavedFilesService::SavedFiles {
 
   void LoadSavedFileEntriesFromPreferences();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   const std::string extension_id_;
 
   // Contains all file entries that have been registered, keyed by ID.

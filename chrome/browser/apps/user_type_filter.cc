@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/user_type_filter.h"
 
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,7 +59,7 @@ bool UserTypeMatchesJsonUserType(const std::string& user_type,
   }
 
   bool user_type_match = false;
-  for (const auto& it : value->GetList()) {
+  for (const auto& it : value->GetListDeprecated()) {
     if (!it.is_string()) {
       LOG(ERROR) << "Invalid user type value for " << app_id << ".";
       return false;

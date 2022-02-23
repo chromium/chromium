@@ -104,7 +104,8 @@ void PrefetchProxyFromStringURLLoader::BindAndStart(
     return;
   }
 
-  client_->OnReceiveResponse(std::move(head_));
+  client_->OnReceiveResponse(std::move(head_),
+                             mojo::ScopedDataPipeConsumerHandle());
   client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   producer_handle_ = std::move(producer_handle);

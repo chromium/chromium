@@ -7,6 +7,9 @@
 
 #include "chromeos/network/network_test_helper_base.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace chromeos {
 
 // Helper class for tests that uses network handler classes. This class
@@ -21,6 +24,13 @@ class NetworkHandlerTestHelper : public NetworkTestHelperBase {
  public:
   explicit NetworkHandlerTestHelper();
   ~NetworkHandlerTestHelper();
+
+  // Registers any prefs required by NetworkHandler.
+  void RegisterPrefs(PrefRegistrySimple* user_registry,
+                     PrefRegistrySimple* device_registry);
+
+  // Calls NetworkHandler::InitializePrefServices.
+  void InitializePrefs(PrefService* user_prefs, PrefService* device_prefs);
 
  private:
   bool network_handler_initialized_ = false;

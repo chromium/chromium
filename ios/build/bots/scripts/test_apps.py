@@ -18,24 +18,33 @@ import xcode_util
 OUTPUT_DISABLED_TESTS_TEST_ARG = '--write-compiled-tests-json-to-writable-path'
 
 
-def get_gtest_filter(tests, invert=False):
+def get_gtest_filter(included, excluded):
   """Returns the GTest filter to filter the given test cases.
 
+  If only included or excluded is provided, uses GTest filter inclusion or
+  exclusion syntax for the given list. If both are provided, uses included list
+  minus any tests in excluded list as tests to be included.
+
   Args:
-    tests: List of test cases to filter.
-    invert: Whether to invert the filter or not. Inverted, the filter will match
-      everything except the given test cases.
+    included: List of test cases to be included.
+    excluded: List of test cases to be excluded.
 
   Returns:
     A string which can be supplied to --gtest_filter.
   """
+  assert included or excluded, 'One of included or excluded list should exist.'
+  if included and excluded:
+    included = list(set(included) - set(excluded))
+    excluded = []
   # A colon-separated list of tests cases.
   # e.g. a:b:c matches a, b, c.
   # e.g. -a:b:c matches everything except a, b, c.
-  test_filter = ':'.join(test for test in tests)
-  if invert:
-    return '-%s' % test_filter
-  return test_filter
+  test_filter = ':'.join(test for test in sorted(included + excluded))
+
+  # This means all tests in |included| are in |excluded|.
+  if not test_filter:
+    return '-*'
+  return '-%s' % test_filter if excluded else test_filter
 
 
 def get_bundle_id(app_path):
@@ -49,7 +58,7 @@ def get_bundle_id(app_path):
       '-c',
       'Print:CFBundleIdentifier',
       os.path.join(app_path, 'Info.plist'),
-  ]).rstrip().decode("utf-8")
+  ]).decode("utf-8").rstrip()
 
 
 def is_running_rosetta():
@@ -185,12 +194,8 @@ class GTestsApp(object):
     xctestrun_data = {module: module_data}
     gtest_filter = []
 
-    if self.included_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, invert=False)
-    elif self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.excluded_tests, invert=True)
-
-    if gtest_filter:
+    if self.included_tests or self.excluded_tests:
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [el for el in self.test_args
                         if not el.startswith('--gtest_filter=')]
@@ -483,17 +488,16 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
       self.xctestrun_data['TestTargetName'].update(
           {'EnvironmentVariables': self.env_vars})
 
-    gtest_filter = []
-    if self.included_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, invert=False)
-    elif self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.excluded_tests, invert=True)
-    if gtest_filter:
+    if self.included_tests or self.excluded_tests:
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
+
+    if self.repeat_count > 1:
+      self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
 
     self.test_args.append('--gmock_verbose=error')
 
@@ -595,17 +599,16 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
       self.xctestrun_data['TestTargetName'].update(
           {'EnvironmentVariables': self.env_vars})
 
-    gtest_filter = []
-    if self.included_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, invert=False)
-    elif self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.excluded_tests, invert=True)
-    if gtest_filter:
+    if self.included_tests or self.excluded_tests:
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')
       ]
       self.test_args.append('--gtest_filter=%s' % gtest_filter)
+
+    if self.repeat_count > 1:
+      self.test_args.append('--gtest_repeat=%s' % self.repeat_count)
 
     self.test_args.append('--gmock_verbose=error')
 

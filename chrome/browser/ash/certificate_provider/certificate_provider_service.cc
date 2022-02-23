@@ -280,6 +280,7 @@ bool CertificateProviderService::ReplyToSignRequest(
                                     &callback)) {
     return false;
   }
+  pin_dialog_manager_.RemoveSignRequest(extension_id, sign_request_id);
 
   const net::Error error_code = signature.empty() ? net::ERR_FAILED : net::OK;
   std::move(callback).Run(error_code, signature);
@@ -393,7 +394,7 @@ void CertificateProviderService::AbortSignatureRequestsForAuthenticatingUser(
     LOG(WARNING) << "Aborting user login signature request from extension "
                  << extension_id << " id " << sign_request_id;
 
-    pin_dialog_manager_.AbortSignRequest(extension_id, sign_request_id);
+    pin_dialog_manager_.RemoveSignRequest(extension_id, sign_request_id);
 
     scoped_refptr<net::X509Certificate> certificate;
     net::SSLPrivateKey::SignCallback sign_callback;
@@ -484,6 +485,7 @@ void CertificateProviderService::RequestSignatureFromExtension(
     scoped_refptr<net::X509Certificate> local_certificate;
     sign_requests_.RemoveRequest(extension_id, sign_request_id,
                                  &local_certificate, &callback);
+    pin_dialog_manager_.RemoveSignRequest(extension_id, sign_request_id);
     std::move(callback).Run(net::ERR_FAILED, std::vector<uint8_t>());
   }
 }

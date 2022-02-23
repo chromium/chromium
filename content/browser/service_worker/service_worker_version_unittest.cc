@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
+#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -29,7 +30,6 @@
 #include "content/browser/service_worker/service_worker_ping_controller.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -206,8 +206,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     container_host->UpdateUrls(
         registration_->scope(),
         net::SiteForCookies::FromUrl(registration_->scope()),
-        url::Origin::Create(registration_->scope()),
-        blink::StorageKey(url::Origin::Create(registration_->scope())));
+        registration_->key().origin(), registration_->key());
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
@@ -373,8 +372,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   helper_->context()->registry()->DeleteRegistration(
-      registration_,
-      blink::StorageKey(url::Origin::Create(registration_->scope())),
+      registration_, registration_->key(),
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   run_loop.Run();
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
@@ -464,8 +462,7 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()),
-      blink::StorageKey(url::Origin::Create(registration_->scope())));
+      registration_->key().origin(), registration_->key());
   container_host->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(container_host->controller());
@@ -1260,8 +1257,7 @@ TEST_F(ServiceWorkerVersionTest,
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()),
-      blink::StorageKey(url::Origin::Create(registration_->scope())));
+      registration_->key().origin(), registration_->key());
   container_host->SetControllerRegistration(
       registration_, false /* notify_controllerchange */);
   EXPECT_TRUE(version_->HasControllee());
@@ -1599,6 +1595,116 @@ TEST_F(ServiceWorkerVersionTest, WriteMetadata_MultipleWrites) {
 
   ASSERT_EQ(completion1.WaitForResult(), static_cast<int>(kMetadata.size()));
   ASSERT_EQ(completion2.WaitForResult(), static_cast<int>(kMetadata.size()));
+}
+
+// Tests that adding pending external requests with different
+// ServiceWorkerExternalRequestTimeoutType is handled correctly within
+// ServiceWorkerVersion::pending_external_requests_.
+TEST_F(ServiceWorkerVersionTest, PendingExternalRequest) {
+  using TimeoutType = ServiceWorkerExternalRequestTimeoutType;
+  using Result = ServiceWorkerExternalRequestResult;
+  auto get_pending_request_size = [&]() -> size_t {
+    return version_->pending_external_requests_.size();
+  };
+
+  absl::optional<blink::ServiceWorkerStatusCode> status;
+  base::RunLoop run_loop;
+  version_->StartWorker(
+      ServiceWorkerMetrics::EventType::UNKNOWN,
+      ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+  ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
+
+  std::string uuid1 = base::GenerateGUID();
+  std::string uuid2 = base::GenerateGUID();
+
+  // Test adding request with |uuid1| and different TimeoutType-s.
+  EXPECT_EQ(Result::kOk,
+            version_->StartExternalRequest(uuid1, TimeoutType::kDefault));
+  EXPECT_EQ(1u, get_pending_request_size());
+  // |uuid1| already exists, with same or different TimeoutType.
+  EXPECT_EQ(Result::kBadRequestId, version_->StartExternalRequest(
+                                       uuid1, TimeoutType::kDoesNotTimeout));
+  EXPECT_EQ(Result::kBadRequestId,
+            version_->StartExternalRequest(uuid1, TimeoutType::kDefault));
+  EXPECT_EQ(1u, get_pending_request_size());
+  // |uuid2| does not exist yet.
+  EXPECT_EQ(Result::kBadRequestId, version_->FinishExternalRequest(uuid2));
+
+  // Test adding request with |uuid2|.
+  EXPECT_EQ(Result::kOk, version_->StartExternalRequest(
+                             uuid2, TimeoutType::kDoesNotTimeout));
+  EXPECT_EQ(2u, get_pending_request_size());
+  EXPECT_EQ(Result::kOk, version_->FinishExternalRequest(uuid1));
+  EXPECT_EQ(Result::kBadRequestId, version_->FinishExternalRequest(uuid1));
+
+  run_loop.Run();
+}
+
+// Tests worker lifetime with ServiceWorkerVersion::StartExternalRequest.
+TEST_F(ServiceWorkerVersionTest, WorkerLifetimeWithExternalRequest) {
+  constexpr base::TimeDelta kTestTimeout =
+      // Value of kRequestTimeout in service_worker_version.cc
+      base::Minutes(5) +
+      // A little past that.
+      base::Minutes(1);
+
+  base::SimpleTestTickClock tick_clock;
+  SetTickClockForTesting(&tick_clock);
+  absl::optional<blink::ServiceWorkerStatusCode> status;
+
+  auto start_external_request_test =
+      [&](ServiceWorkerExternalRequestTimeoutType timeout_type,
+          bool expect_running) {
+        SCOPED_TRACE(testing::Message()
+                     << std::boolalpha << "expect_running: " << expect_running);
+        {
+          // Start worker.
+          base::RunLoop run_loop;
+          version_->StartWorker(
+              ServiceWorkerMetrics::EventType::UNKNOWN,
+              ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+          ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
+
+          // Add an external request.
+          EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
+                    version_->StartExternalRequest(base::GenerateGUID(),
+                                                   timeout_type));
+          run_loop.Run();
+          EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
+          EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
+        }
+
+        // Now advance time to check worker's running state.
+        tick_clock.Advance(kTestTimeout);
+        version_->timeout_timer_.user_task().Run();
+        base::RunLoop().RunUntilIdle();
+
+        EXPECT_EQ(expect_running, version_->timeout_timer_.IsRunning());
+        EXPECT_EQ(!expect_running,
+                  version_->running_status() == EmbeddedWorkerStatus::STOPPED);
+
+        // Ensure the worker is stopped, so that start_external_request_test()
+        // works next time.
+        {
+          bool has_stopped = false;
+          base::RunLoop run_loop;
+          version_->StopWorker(
+              VerifyCalled(&has_stopped, run_loop.QuitClosure()));
+          run_loop.Run();
+          EXPECT_TRUE(has_stopped);
+          EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version_->running_status());
+        }
+      };
+
+  start_external_request_test(ServiceWorkerExternalRequestTimeoutType::kDefault,
+                              // External request with kDefault timeout stops
+                              // the worker after default timeout.
+                              false /* expect_running */);
+  start_external_request_test(
+      ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
+      // External request with kDoesNotTimeout timeout keeps the worker running
+      // beyond the default timeout.
+      true /* expect_running */);
 }
 
 class ServiceWorkerVersionTerminationOnNoControlleeTest

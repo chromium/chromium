@@ -4,6 +4,8 @@
 
 #include "content/public/common/process_type.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "content/public/common/content_client.h"
 

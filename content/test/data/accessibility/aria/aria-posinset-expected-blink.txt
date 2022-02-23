@@ -64,7 +64,7 @@ rootWebArea
 ++++++++++++radioButton name='blue' setSize=1 posInSet=1 checkedState=false
 ++++++++++++staticText ignored name='blue'
 ++++++treeGrid
-++++++++row setSize=100 posInSet=2
+++++++++row name='content' setSize=100 posInSet=2
 ++++++++++cell name='content'
 ++++++++++++staticText name='content'
 ++++++++++++++inlineTextBox name='content'

@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BASE_CAST_RESOURCE_H_
 #define CHROMECAST_BASE_CAST_RESOURCE_H_
 
-#include "base/macros.h"
-
 namespace chromecast {
 
 // A CastResource is a user of 1 or more Resources (primary screen, audio,

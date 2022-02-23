@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//extensions/buildflags/buildflags.gni")
-
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -44,14 +42,9 @@ if (!is_ios) {
       "//base",
       "//base/third_party/dynamic_annotations",
       "//content/public/common",
-      "//extensions/buildflags",
       "//ui/base",
       "//url",
     ]
-
-    if (enable_extensions) {
-      deps += [ "//extensions/common" ]
-    }
   }
 } else {
   source_set("sessions") {
@@ -235,7 +228,10 @@ source_set("unit_tests") {
       "//content/test:test_support",
     ]
   } else {
-    deps += [ "//ios/web/public/test" ]
+    deps += [
+      "//ios/web/public/test",
+      "//ios/web/public/test:test_fixture",
+    ]
   }
 }
 

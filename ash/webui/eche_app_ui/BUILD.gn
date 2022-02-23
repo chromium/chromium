@@ -8,7 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos, "Eche App is Chrome OS only")
+assert(is_chromeos_ash, "Eche App is ash-chrome only")
 
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_folder = "preprocessed"
@@ -69,6 +69,9 @@ static_library("eche_app_ui") {
     "//ash/components/phonehub",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp:cpp",
+    "//ash/services/secure_channel/public/cpp/client",
+    "//ash/services/secure_channel/public/cpp/shared",
     "//ash/webui/eche_app_ui/mojom",
     "//ash/webui/eche_app_ui/proto",
     "//ash/webui/resources:eche_app_resources",
@@ -76,9 +79,6 @@ static_library("eche_app_ui") {
     "//chromeos/components/multidevice:multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/services/device_sync/public/cpp:cpp",
-    "//chromeos/services/multidevice_setup/public/cpp:cpp",
-    "//chromeos/services/secure_channel/public/cpp/client",
-    "//chromeos/services/secure_channel/public/cpp/shared",
     "//components/prefs",
     "//content/public/browser",
     "//mojo/public/js:resources",
@@ -98,6 +98,8 @@ static_library("test_support") {
     "fake_eche_message_receiver.h",
     "fake_feature_status_provider.cc",
     "fake_feature_status_provider.h",
+    "fake_launch_app_helper.cc",
+    "fake_launch_app_helper.h",
   ]
 
   public_deps = [ ":eche_app_ui" ]
@@ -110,20 +112,30 @@ source_set("unit_tests") {
   sources = [
     "apps_access_manager_impl_unittest.cc",
     "apps_access_setup_operation_unittest.cc",
+    "eche_app_manager_unittest.cc",
+    "eche_connector_impl_unittest.cc",
     "eche_feature_status_provider_unittest.cc",
     "eche_message_receiver_impl_unittest.cc",
     "eche_notification_click_handler_unittest.cc",
     "eche_notification_generator_unittest.cc",
     "eche_recent_app_click_handler_unittest.cc",
+    "eche_signaler_unittest.cc",
     "eche_uid_provider_unittest.cc",
+    "launch_app_helper_unittest.cc",
     "system_info_provider_unittest.cc",
   ]
   deps = [
     ":eche_app_ui",
     ":test_support",
+    "//ash:test_support",
     "//ash/components/phonehub",
     "//ash/components/phonehub:debug",
     "//ash/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp:test_support",
+    "//ash/services/secure_channel/public/cpp/client:client",
+    "//ash/services/secure_channel/public/cpp/client:test_support",
+    "//ash/services/secure_channel/public/cpp/shared:shared",
     "//ash/webui/eche_app_ui/proto",
     "//base",
     "//base/test:test_support",
@@ -131,10 +143,10 @@ source_set("unit_tests") {
     "//chromeos/components/multidevice:test_support",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/cpp:test_support",
-    "//chromeos/services/multidevice_setup/public/cpp",
-    "//chromeos/services/multidevice_setup/public/cpp:test_support",
-    "//chromeos/services/secure_channel/public/cpp/client:test_support",
     "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//dbus",
+    "//device/bluetooth:bluetooth",
     "//testing/gtest",
   ]
 }

@@ -11,6 +11,7 @@ import './pack_dialog_alert.js';
 import './strings.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export interface PackDialogDelegate {
@@ -34,13 +35,17 @@ export interface PackDialogDelegate {
       void;
 }
 
-interface ExtensionsPackDialogElement {
+export interface ExtensionsPackDialogElement {
   $: {
     dialog: CrDialogElement,
+    keyFileBrowse: HTMLElement,
+    keyFile: CrInputElement,
+    rootDirBrowse: HTMLElement,
+    rootDir: CrInputElement,
   };
 }
 
-class ExtensionsPackDialogElement extends PolymerElement {
+export class ExtensionsPackDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-pack-dialog';
   }
@@ -131,6 +136,12 @@ class ExtensionsPackDialogElement extends PolymerElement {
     }
 
     this.lastResponse_ = null;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-pack-dialog': ExtensionsPackDialogElement;
   }
 }
 

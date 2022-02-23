@@ -8,7 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -25,11 +25,11 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
       base::Time::kMicrosecondsPerSecond / kDefaultPumpFrequencyHz;
 
   // The pump is a tri-state automaton with allowed transitions as follows:
-  // STOPPED -> PENDING_START
-  // PENDING_START -> RUNNING
-  // PENDING_START -> STOPPED
-  // RUNNING -> STOPPED
-  enum class PumpState { STOPPED, RUNNING, PENDING_START };
+  // kStopped -> kPendingStart
+  // kPendingStart -> kRunning
+  // kPendingStart -> kStopped
+  // kRunning -> kStopped
+  enum class PumpState { kStopped, kRunning, kPendingStart };
 
   void HandleSensorProviderError();
 

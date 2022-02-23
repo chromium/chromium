@@ -50,8 +50,7 @@ class CORE_EXPORT ViewportStyleResolver final
   explicit ViewportStyleResolver(Document&);
 
   void InitialStyleChanged();
-  void InitialViewportChanged();
-  void SetNeedsCollectRules();
+  void SetNeedsUpdate();
   bool NeedsUpdate() const { return needs_update_; }
   void UpdateViewport(DocumentStyleSheetCollection&);
 
@@ -62,8 +61,6 @@ class CORE_EXPORT ViewportStyleResolver final
  private:
   void Reset();
   void Resolve();
-
-  enum UpdateType { kNoUpdate, kResolve, kCollectRules };
 
   void CollectViewportRulesFromUASheets();
   void CollectViewportRules(const HeapVector<Member<StyleRuleBase>>&);
@@ -76,8 +73,7 @@ class CORE_EXPORT ViewportStyleResolver final
   Member<Document> document_;
   Member<MutableCSSPropertyValueSet> property_set_;
   scoped_refptr<ComputedStyle> initial_style_;
-  bool has_viewport_units_ = false;
-  UpdateType needs_update_ = kCollectRules;
+  bool needs_update_ = true;
 };
 
 }  // namespace blink

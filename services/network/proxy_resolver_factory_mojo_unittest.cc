@@ -8,13 +8,14 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -287,7 +288,7 @@ void MockMojoProxyResolver::GetProxyForUrl(
     case GetProxyForUrlAction::MAKE_DNS_REQUEST: {
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           dns_client;
-      ignore_result(dns_client.InitWithNewPipeAndPassReceiver());
+      std::ignore = dns_client.InitWithNewPipeAndPassReceiver();
       client->ResolveDns(url.host(),
                          net::ProxyResolveDnsOperation::DNS_RESOLVE_EX,
                          network_isolation_key, std::move(dns_client));
@@ -314,7 +315,7 @@ class Request {
   const net::TestCompletionCallback& callback() const { return callback_; }
 
  private:
-  net::ProxyResolver* resolver_;
+  raw_ptr<net::ProxyResolver> resolver_;
   const GURL url_;
   const net::NetworkIsolationKey network_isolation_key_;
   net::ProxyInfo results_;
@@ -377,7 +378,7 @@ class MockMojoProxyResolverFactory
 
   void WakeWaiter();
 
-  MockMojoProxyResolver* resolver_;
+  raw_ptr<MockMojoProxyResolver> resolver_;
   base::queue<CreateProxyResolverAction> create_resolver_actions_;
 
   base::OnceClosure quit_closure_;
@@ -473,7 +474,7 @@ void MockMojoProxyResolverFactory::CreateResolver(
     case CreateProxyResolverAction::MAKE_DNS_REQUEST: {
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           dns_client;
-      ignore_result(dns_client.InitWithNewPipeAndPassReceiver());
+      std::ignore = dns_client.InitWithNewPipeAndPassReceiver();
       client->ResolveDns(pac_script,
                          net::ProxyResolveDnsOperation::DNS_RESOLVE_EX,
                          net::NetworkIsolationKey(), std::move(dns_client));

@@ -21,12 +21,12 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <variant name="NavigationComplete" summary="completes a navigation."/>
 </variants>
 
+<variants name="ManagementTypes">
+  <variant name="ChromeManaged" summary="chrome-managed price tracking."/>
+  <variant name="UserManaged" summary="user-managed price tracking."/>
+</variants>
+
 <variants name="TabUsageStatuses">
-  <variant name="">
-    <obsolete>
-      Previous histogram didn't differentiate between Stale and Active Tab.
-    </obsolete>
-  </variant>
   <variant name="ActiveTab"
       summary="Tabs between 0 and 1 day since last usage."/>
   <variant name="StaleTab"
@@ -94,7 +94,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.FormSubmitIsTransaction"
-    units="BooleanIsTransaction" expires_after="2022-06-01">
+    units="BooleanIsTransaction" expires_after="2022-07-31">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -105,7 +105,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Carts.XHRIsAddToCart" units="BooleanIsAddToCart"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -115,9 +115,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
+    expires_after="2023-02-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether a navigation is to a product details page and then whether
+    the information we retrieved about the page contains a product cluster ID.
+  </summary>
+</histogram>
+
 <histogram
     name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
-    enum="ShoppingDataProviderFallback" expires_after="2022-05-01">
+    enum="ShoppingDataProviderFallback" expires_after="2022-07-17">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -129,7 +140,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed"
-    enum="Boolean" expires_after="2022-05-01">
+    enum="Boolean" expires_after="2022-07-17">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -140,7 +151,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PowerBookmarks.ShoppingDataProvider.IsProductPage"
-    enum="Boolean" expires_after="2022-04-24">
+    enum="Boolean" expires_after="2022-06-26">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -150,35 +161,96 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
+<histogram name="Commerce.PowerBookmarks.SubscriptionValidationResult"
+    enum="CommerceSubscriptionValidationResult" expires_after="2022-08-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the result of validation of a user's subscribed products between the
+    bookmarks system and the subscriptions backend. This will tell us if a user
+    has a subscription that isn't backed by bookmark locally and if the client
+    has a bookmark that claims to be tracked but has no subscription on the
+    backend. This metric is recorded when the browser starts and whenever the
+    user enters the bookmark manager (each time validation occurs).
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceDrop.AnnotationsEnabled" enum="Boolean"
     expires_after="2022-06-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the price drop annotation is enabled. Recorded when user
+    enters the grid tab switcher. The record frequency is controlled by a
+    feature parameter and by default it is recorded at most once every day.
+    Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the price drop notification channel is blocked by users.
-    Recorded when we try to initialize commerce subscriptions. Implemented for
-    Android.
+    Recorded when we initialize commerce subscriptions (For eligible users, we
+    initialize subscriptions when Chrome becomes foreground app but at most once
+    in a one-day moving window). Implemented for Android.
   </summary>
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the price drop notification channel is created. Recorded
-    when we try to initialize commerce subscriptions. Implemented for Android.
+    when we initialize commerce subscriptions (For eligible users, we initialize
+    subscriptions when Chrome becomes foreground app but at most once in a
+    one-day moving window). Implemented for Android.
   </summary>
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records whether the system notification is enabled by users. Recorded when
-    we try to initialize commerce subscriptions. Implemented for Android.
+    we initialize commerce subscriptions (For eligible users, we initialize
+    subscriptions when Chrome becomes foreground app but at most once in a
+    one-day moving window). Implemented for Android.
   </summary>
+</histogram>
+
+<histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
+    units="notifications" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    The number of price drop notifications shown in the given time interval (one
+    day by default) for the specified management type. Emitted for clients in
+    our experiment when Chrome is foregrounded. Recorded at most once in a
+    one-day moving window. Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
+</histogram>
+
+<histogram name="Commerce.PriceDrops.{ManagementType}.NotificationReachedCap"
+    enum="Boolean" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the number of shown notifications in given window (one day
+    by default) has reached the cap limit for specified management type.
+    Recorded when we are trying to show any price drop notifications.
+    Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
 </histogram>
 
 <histogram
@@ -228,6 +300,34 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
   <token key="LocationIdentifier" variants="LocationIdentifiers"/>
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
+</histogram>
+
+<histogram name="Commerce.Subscriptions.TabEligible" enum="Boolean"
+    expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether a tab is eligible for commerce subscriptions. True when the
+    tab has offer and the tab is stale (Last opened time between 1 and 90 days).
+    Recorded when we initialize commerce subscriptions (For eligible users, we
+    initialize subscriptions when Chrome becomes foreground app but at most once
+    in a one-day moving window). Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Subscriptions.{ManagementType}.Count"
+    units="subscriptions" expires_after="2022-06-01">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    The number of price tracking subscriptions stored in local storage for the
+    specified management type. Emitted for clients in our experiment when Chrome
+    is foregrounded. Recorded at most once in a one-day moving window.
+    Implemented for Android.
+  </summary>
+  <token key="ManagementType" variants="ManagementTypes"/>
 </histogram>
 
 </histograms>

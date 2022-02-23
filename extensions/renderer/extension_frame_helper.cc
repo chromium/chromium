@@ -338,6 +338,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   if (!delayed_main_world_script_initialization_)
     return;
 
+  base::AutoReset<bool> auto_reset(&is_initializing_main_world_script_context_,
+                                   true);
   delayed_main_world_script_initialization_ = false;
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Context> context =
@@ -371,6 +373,11 @@ void ExtensionFrameHelper::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
   if (world_id == blink::kMainDOMWorldId) {
+    // Accessing MainWorldScriptContext() in ReadyToCommitNavigation() may
+    // trigger the script context initializing, so we don't want to initialize a
+    // second time here.
+    if (is_initializing_main_world_script_context_)
+      return;
     if (render_frame()->IsBrowserSideNavigationPending()) {
       // Defer initializing the extensions script context now because it depends
       // on having the URL of the provisional load which isn't available at this
@@ -409,8 +416,6 @@ bool ExtensionFrameHelper::OnMessageReceived(const IPC::Message& message) {
     IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnExtensionDeliverMessage)
     IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect,
                         OnExtensionDispatchOnDisconnect)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_UpdateBrowserWindowId,
-                        OnUpdateBrowserWindowId)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -465,10 +470,6 @@ void ExtensionFrameHelper::SetTabId(int32_t tab_id) {
   CHECK_EQ(tab_id_, -1);
   CHECK_GE(tab_id, 0);
   tab_id_ = tab_id;
-}
-
-void ExtensionFrameHelper::OnUpdateBrowserWindowId(int browser_window_id) {
-  browser_window_id_ = browser_window_id;
 }
 
 void ExtensionFrameHelper::NotifyRenderViewType(mojom::ViewType type) {
@@ -560,6 +561,10 @@ void ExtensionFrameHelper::ExecuteDeclarativeScript(
     extension_dispatcher_->ExecuteDeclarativeScript(
         render_frame(), tab_id, extension_id, script_id, url);
   }
+}
+
+void ExtensionFrameHelper::UpdateBrowserWindowId(int32_t window_id) {
+  browser_window_id_ = window_id;
 }
 
 void ExtensionFrameHelper::OnDestruct() {

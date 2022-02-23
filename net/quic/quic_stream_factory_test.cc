@@ -6,11 +6,12 @@
 
 #include <memory>
 #include <ostream>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -264,7 +265,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     FLAGS_quic_reloadable_flag_quic_pass_path_response_to_validator = true;
     FLAGS_quic_reloadable_flag_quic_send_path_response2 = true;
     FLAGS_quic_reloadable_flag_quic_server_reverse_validate_new_path3 = true;
-    FLAGS_quic_reloadable_flag_quic_drop_unsent_path_response = true;
     FLAGS_quic_reloadable_flag_quic_connection_migration_use_new_cid_v2 = true;
     quic_params_->connection_options.push_back(quic::kRVCM);
   }
@@ -312,7 +312,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     if (!session || !session->IsConnected())
       return nullptr;
 
-    std::vector<std::string> dns_aliases =
+    std::set<std::string> dns_aliases =
         session->GetDnsAliasesForSessionKey(request->session_key());
     return std::make_unique<QuicHttpStream>(std::move(session),
                                             std::move(dns_aliases));
@@ -969,7 +969,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   bool failed_on_default_network_;
   NetErrorDetails net_error_details_;
 
-  QuicParams* quic_params_;
+  raw_ptr<QuicParams> quic_params_;
 };
 
 class QuicStreamFactoryTest : public QuicStreamFactoryTestBase,
@@ -13395,7 +13395,7 @@ TEST_P(QuicStreamFactoryTest, ClearCachedStatesInCryptoConfig) {
     }
 
     quic::QuicServerId server_id;
-    quic::QuicCryptoClientConfig::CachedState* state;
+    raw_ptr<quic::QuicCryptoClientConfig::CachedState> state;
   } test_cases[] = {TestCase("www.google.com", 443, privacy_mode_,
                              crypto_config_handle->GetConfig()),
                     TestCase("www.example.com", 443, privacy_mode_,
@@ -15029,7 +15029,7 @@ TEST_P(QuicStreamFactoryTest, Tag) {
     socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
 #else
@@ -15085,7 +15085,7 @@ TEST_P(QuicStreamFactoryTest, Tag) {
       request3.ReleaseSessionHandle();
   EXPECT_TRUE(stream3);
   EXPECT_TRUE(stream3->IsConnected());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(stream3->SharesSameSession(*stream1));
 #else
   // Same tag should reuse session.
@@ -15354,11 +15354,21 @@ struct DnsAliasPoolingTestParams {
   quic::ParsedQuicVersion version;
   bool client_headers_include_h2_stream_dependency;
   bool use_dns_aliases;
-  std::vector<std::string> dns_aliases1;
-  std::vector<std::string> dns_aliases2;
-  std::vector<std::string> expected_dns_aliases1;
-  std::vector<std::string> expected_dns_aliases2;
+  std::set<std::string> dns_aliases1;
+  std::set<std::string> dns_aliases2;
+  std::set<std::string> expected_dns_aliases1;
+  std::set<std::string> expected_dns_aliases2;
 };
+
+std::string PrintToString(const std::set<std::string>& set) {
+  std::string joined;
+  for (const std::string& str : set) {
+    if (!joined.empty())
+      joined += "_";
+    joined += str;
+  }
+  return joined;
+}
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const DnsAliasPoolingTestParams& p) {
@@ -15366,8 +15376,7 @@ std::string PrintToString(const DnsAliasPoolingTestParams& p) {
       {ParsedQuicVersionToString(p.version), "_",
        (p.client_headers_include_h2_stream_dependency ? "" : "No"),
        "Dependency_", (p.use_dns_aliases ? "" : "DoNot"), "UseDnsAliases_1st_",
-       base::JoinString(p.dns_aliases1, "_"), "_2nd_",
-       base::JoinString(p.dns_aliases2, "_")});
+       PrintToString(p.dns_aliases1), "_2nd_", PrintToString(p.dns_aliases2)});
 }
 
 std::vector<DnsAliasPoolingTestParams> GetDnsAliasPoolingTestParams() {
@@ -15462,10 +15471,10 @@ class QuicStreamFactoryDnsAliasPoolingTest
         expected_dns_aliases2_(GetParam().expected_dns_aliases2) {}
 
   const bool use_dns_aliases_;
-  const std::vector<std::string> dns_aliases1_;
-  const std::vector<std::string> dns_aliases2_;
-  const std::vector<std::string> expected_dns_aliases1_;
-  const std::vector<std::string> expected_dns_aliases2_;
+  const std::set<std::string> dns_aliases1_;
+  const std::set<std::string> dns_aliases2_;
+  const std::set<std::string> expected_dns_aliases1_;
+  const std::set<std::string> expected_dns_aliases2_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

@@ -15,13 +15,19 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
@@ -36,7 +42,8 @@ int64_t GetPrimaryDisplayId() {
 
 class AppListPresenterImplTest : public AshTestBase {
  public:
-  AppListPresenterImplTest() = default;
+  AppListPresenterImplTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   AppListPresenterImplTest(const AppListPresenterImplTest&) = delete;
   AppListPresenterImplTest& operator=(const AppListPresenterImplTest&) = delete;
@@ -44,7 +51,20 @@ class AppListPresenterImplTest : public AshTestBase {
   ~AppListPresenterImplTest() override = default;
 
   AppListPresenterImpl* presenter() {
-    return Shell::Get()->app_list_controller()->presenter();
+    return Shell::Get()->app_list_controller()->fullscreen_presenter();
+  }
+
+  // Enables tablet mode and fast-forwards mock time until window occlusion
+  // tracking is enabled. See TabletModeController::SuspendOcclusionTracker().
+  // This is necessary for AppListPresenterImpl::IsAtLeastPartiallyVisible() to
+  // return correct results.
+  void EnableTabletMode() {
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    auto* occlusion_tracker =
+        aura::Env::GetInstance()->GetWindowOcclusionTracker();
+    while (occlusion_tracker->IsPaused()) {
+      task_environment()->FastForwardBy(base::Milliseconds(100));
+    }
   }
 
   // Shows the app list on the primary display.
@@ -63,8 +83,19 @@ class AppListPresenterImplTest : public AshTestBase {
   }
 };
 
+// Tests of clamshell mode. These can be deleted when ProductivityLauncher is
+// the default because AppListPresenterImpl will only be used for tablet mode.
+class AppListPresenterImplClamshellTest : public AppListPresenterImplTest {
+ public:
+  AppListPresenterImplClamshellTest() {
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that app launcher is dismissed when focus moves to another window.
-TEST_F(AppListPresenterImplTest, HideOnFocusOut) {
+TEST_F(AppListPresenterImplClamshellTest, HideOnFocusOut) {
   // Show the app list and focus it.
   ShowAppList();
   aura::client::FocusClient* focus_client =
@@ -81,7 +112,7 @@ TEST_F(AppListPresenterImplTest, HideOnFocusOut) {
 }
 
 // Tests that the app list is dismissed when the app list's widget is destroyed.
-TEST_F(AppListPresenterImplTest, WidgetDestroyed) {
+TEST_F(AppListPresenterImplClamshellTest, WidgetDestroyed) {
   ShowAppList();
   EXPECT_TRUE(presenter()->GetTargetVisibility());
   presenter()->GetView()->GetWidget()->CloseNow();
@@ -89,7 +120,7 @@ TEST_F(AppListPresenterImplTest, WidgetDestroyed) {
 }
 
 // Test that clicking on app list context menus doesn't close the app list.
-TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
+TEST_F(AppListPresenterImplClamshellTest, ClickingContextMenuDoesNotDismiss) {
   // Populate some apps since we will show the context menu over a view.
   AppListModel* model = AppListModelProvider::Get()->model();
   model->AddItem(std::make_unique<AppListItem>("item 1"));
@@ -136,8 +167,9 @@ TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
 TEST_F(AppListPresenterImplTest,
        ShelfBackgroundWithHomeLauncherAndContainerIdsShown) {
   // Enter tablet mode to display the home launcher.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnableTabletMode();
+  ASSERT_TRUE(presenter()->GetTargetVisibility());
+  ASSERT_TRUE(presenter()->IsAtLeastPartiallyVisible());
   ShelfLayoutManager* shelf_layout_manager =
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
           ->shelf_layout_manager();
@@ -145,13 +177,14 @@ TEST_F(AppListPresenterImplTest,
             shelf_layout_manager->GetShelfBackgroundType());
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
-  for (int id : AppListPresenterImpl::kIdsOfContainersThatWontHideAppList) {
+  for (int id : kContainersThatWontHideAppListOnFocus) {
     // Create a widget with a specific container id and make sure that the
     // kHomeLauncher background is still shown.
     std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
 
     EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
-              shelf_layout_manager->GetShelfBackgroundType());
+              shelf_layout_manager->GetShelfBackgroundType())
+        << " container " << id;
     EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   }
 }
@@ -159,8 +192,7 @@ TEST_F(AppListPresenterImplTest,
 // Tests that Assistant UI in tablet mode is closed when open another window.
 TEST_F(AppListPresenterImplTest, HideAssistantUIOnFocusOut) {
   // Enter tablet mode to display the home launcher.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnableTabletMode();
   EXPECT_TRUE(presenter()->IsVisibleDeprecated());
   EXPECT_FALSE(IsShowingAssistantUI());
 
@@ -187,10 +219,8 @@ TEST_F(AppListPresenterImplTest, ClearShelfObserversOnShelfRemoval) {
   // list presenter starts observing the shelf state.
   UpdateDisplay("600x400,600x400");
 
-  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
-
   // Enter tablet mode, so the test can trigger tablet mode exit later on.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnableTabletMode();
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

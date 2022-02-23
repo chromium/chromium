@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/test/video_player/video_player.h"
@@ -43,6 +43,7 @@ struct VideoDecoderClientConfig {
   // without waiting for the result of the previous decode requests.
   size_t max_outstanding_decode_requests = 1;
   DecoderImplementation implementation = DecoderImplementation::kVDA;
+  bool linear_output = false;
 };
 
 // The video decoder client is responsible for the communication between the
@@ -141,18 +142,22 @@ class VideoDecoderClient {
   // The below functions are callbacks provided to the video decoder. They are
   // all executed on the |decoder_client_thread_|.
   // Called by the decoder when initialization has completed.
-  void DecoderInitializedTask(Status status);
+  void DecoderInitializedTask(DecoderStatus status);
   // Called by the decoder when a fragment has been decoded.
-  void DecodeDoneTask(media::Status status);
+  void DecodeDoneTask(DecoderStatus status);
   // Called by the decoder when a video frame is ready.
   void FrameReadyTask(scoped_refptr<VideoFrame> video_frame);
   // Called by the decoder when flushing has completed.
-  void FlushDoneTask(media::Status status);
+  void FlushDoneTask(DecoderStatus status);
   // Called by the decoder when resetting has completed.
   void ResetDoneTask();
+  // Called by the decoder when a resolution change was requested, returns
+  // whether we should continue or abort the resolution change.
+  bool ResolutionChangeTask();
 
-  // Fire the specified event.
-  void FireEvent(VideoPlayerEvent event);
+  // Fire the specified event, and return true if the decoder should continue
+  // the decoding.
+  bool FireEvent(VideoPlayerEvent event);
 
   VideoPlayer::EventCallback event_cb_;
   std::unique_ptr<FrameRenderer> frame_renderer_;

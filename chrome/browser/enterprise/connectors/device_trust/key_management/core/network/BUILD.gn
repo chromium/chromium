@@ -22,6 +22,21 @@ source_set("network") {
       "//url",
     ]
   }
+
+  if (is_linux) {
+    public += [ "linux_key_network_delegate.h" ]
+
+    sources += [ "linux_key_network_delegate.cc" ]
+
+    deps += [
+      "//mojo/core:shared_library",
+      "//mojo/public/cpp/bindings",
+      "//mojo/public/cpp/platform",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//url",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -35,4 +50,23 @@ source_set("test_support") {
     "//testing/gmock",
     "//url",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (is_linux) {
+    sources = [ "linux_key_network_delegate_unittest.cc" ]
+
+    deps = [
+      ":network",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//net",
+      "//services/network:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

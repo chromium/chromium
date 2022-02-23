@@ -23,13 +23,14 @@
 #include "extensions/common/constants.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -287,8 +288,9 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   const gfx::ImageSkia image_before_badging = reference_icon.image_skia();
 
   // Badging should be applied once package is installed.
-  std::vector<arc::mojom::AppInfo> fake_apps = arc_test.fake_apps();
-  fake_apps[0].package_name = arc_test.fake_packages()[0]->package_name;
+  std::vector<arc::mojom::AppInfoPtr> fake_apps =
+      ArcAppTest::CloneApps(arc_test.fake_apps());
+  fake_apps[0]->package_name = arc_test.fake_packages()[0]->package_name;
   arc_test.app_instance()->SendRefreshAppList(fake_apps);
   arc_test.app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(arc_test.fake_packages()));

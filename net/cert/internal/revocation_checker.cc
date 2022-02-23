@@ -154,18 +154,35 @@ bool CheckCertRevocation(const ParsedCertificateList& certs,
 
   // Check CRLs.
   ParsedExtension crl_dp_extension;
-  if (cert->GetExtension(CrlDistributionPointsOid(), &crl_dp_extension)) {
+  if (cert->GetExtension(der::Input(kCrlDistributionPointsOid),
+                         &crl_dp_extension)) {
     std::vector<ParsedDistributionPoint> distribution_points;
     if (ParseCrlDistributionPoints(crl_dp_extension.value,
                                    &distribution_points)) {
       for (const auto& distribution_point : distribution_points) {
-        if (distribution_point.has_crl_issuer) {
+        if (distribution_point.crl_issuer) {
           // Ignore indirect CRLs (CRL where CRLissuer != cert issuer), which
           // are optional according to RFC 5280's profile.
           continue;
         }
 
-        for (const auto& crl_uri : distribution_point.uris) {
+        if (distribution_point.reasons) {
+          // Ignore CRLs that only contain some reasons. RFC 5280's profile
+          // requires that conforming CAs "MUST include at least one
+          // DistributionPoint that points to a CRL that covers the certificate
+          // for all reasons".
+          continue;
+        }
+
+        if (!distribution_point.distribution_point_fullname) {
+          // Only distributionPoints with a fullName containing URIs are
+          // supported.
+          continue;
+        }
+
+        for (const auto& crl_uri :
+             distribution_point.distribution_point_fullname
+                 ->uniform_resource_identifiers) {
           // Only consider http:// URLs (https:// could create a circular
           // dependency).
           GURL parsed_crl_url(crl_uri);

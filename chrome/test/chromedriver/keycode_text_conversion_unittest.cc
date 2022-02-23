@@ -33,7 +33,7 @@ void CheckCharToKeyCode(char character, ui::KeyboardCode key_code,
                        key_code, modifiers);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void CheckCharToKeyCode(wchar_t character, ui::KeyboardCode key_code,
                         int modifiers) {
   CheckCharToKeyCode16(base::WideToUTF16(std::wstring(1, character))[0],
@@ -64,7 +64,7 @@ std::string ConvertKeyCodeToTextNoError(ui::KeyboardCode key_code,
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Fails on bots: crbug.com/174962
 #define MAYBE_KeyCodeToText DISABLED_KeyCodeToText
 #else
@@ -101,7 +101,7 @@ TEST(KeycodeTextConversionTest, MAYBE_KeyCodeToText) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Fails on bots: crbug.com/174962
 #define MAYBE_CharToKeyCode DISABLED_CharToKeyCode
 #else
@@ -127,7 +127,7 @@ TEST(KeycodeTextConversionTest, MAYBE_CharToKeyCode) {
   CheckCantConvertChar(L'\u2159');
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(KeycodeTextConversionTest, NonShiftModifiers) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_GERMAN);
   int ctrl_and_alt = kControlKeyModifierMask | kAltKeyModifierMask;

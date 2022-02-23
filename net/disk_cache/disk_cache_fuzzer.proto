@@ -76,7 +76,6 @@ message FuzzCommand {
     // Not included: GetStats, CalculateSizesOf, GetEntryInMemoryData,
     // SetEntryInMemoryData, CouldBeSparse, ReadyForSparseIO
 
-    // TODO(mpdenton) enable kPrioritizedSimpleCacheTasks?
     // TODO(mpdenton) FlushWorkerPoolForTesting
   }
 }

@@ -68,12 +68,6 @@ void RecordGeolocationResolve(MarketingOptInScreen::GeolocationEvent event) {
                                 event);
 }
 
-void RecordGeolocationResponseLength(int length) {
-  base::UmaHistogramExactLinear(
-      "OOBE.MarketingOptInScreen.GeolocationResolveLength", length,
-      kMaxGeolocationResponseLength);
-}
-
 }  // namespace
 
 // static
@@ -105,8 +99,7 @@ MarketingOptInScreen::~MarketingOptInScreen() {
 bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
   Initialize();
 
-  if (!base::FeatureList::IsEnabled(::features::kOobeMarketingScreen) ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
       IsCurrentUserManaged()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -220,17 +213,16 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
   char region[kMaxGeolocationResponseLength];
   UErrorCode error = U_ZERO_ERROR;
   auto timezone_id_unicode = icu::UnicodeString::fromUTF8(timezone_id);
-  const auto region_length = icu::TimeZone::getRegion(
-      timezone_id_unicode, region, kMaxGeolocationResponseLength, error);
+  icu::TimeZone::getRegion(timezone_id_unicode, region,
+                           kMaxGeolocationResponseLength, error);
   // Track failures.
   if (U_FAILURE(error)) {
     RecordGeolocationResolve(GeolocationEvent::kCouldNotDetermineCountry);
     return;
   }
 
-  // Track whether we could successfully resolve and the length of the code.
+  // Track whether we could successfully resolve.
   RecordGeolocationResolve(GeolocationEvent::kCountrySuccessfullyDetermined);
-  RecordGeolocationResponseLength(region_length);
 
   // Set the country
   country_.clear();

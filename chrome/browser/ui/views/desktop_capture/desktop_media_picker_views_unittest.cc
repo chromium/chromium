@@ -93,7 +93,7 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   ~DesktopMediaPickerViewsTestBase() override = default;
 
   void SetUp() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // These tests create actual child Widgets, which normally have a closure
     // animation on Mac; inhibit it here to avoid the tests flakily hanging.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(

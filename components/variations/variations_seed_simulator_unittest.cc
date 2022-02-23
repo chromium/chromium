@@ -10,6 +10,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/time/time.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations_associated_data.h"

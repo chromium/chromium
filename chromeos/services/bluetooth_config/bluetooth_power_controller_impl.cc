@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/bluetooth_power_controller_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -31,20 +32,30 @@ bool ShouldApplyUserBluetoothSetting(user_manager::UserType user_type) {
 // static
 void BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
-                                /*default_value=*/false);
+  // If this flag is off, this pref is registered by
+  // ash::BluetoothPowerController.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
+                                  /*default_value=*/false);
+  }
 }
 
 // static
 void BluetoothPowerControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
-                                /*default_value=*/false);
+  // If this flag is off, this pref is registered by
+  // ash::BluetoothPowerController.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
+                                  /*default_value=*/false);
+  }
 }
 
 BluetoothPowerControllerImpl::BluetoothPowerControllerImpl(
     AdapterStateController* adapter_state_controller)
-    : adapter_state_controller_(adapter_state_controller) {}
+    : adapter_state_controller_(adapter_state_controller) {
+  adapter_state_controller_observation_.Observe(adapter_state_controller_);
+}
 
 BluetoothPowerControllerImpl::~BluetoothPowerControllerImpl() = default;
 
@@ -74,12 +85,41 @@ void BluetoothPowerControllerImpl::SetPrefs(PrefService* primary_profile_prefs,
   InitPrimaryUserPrefService(primary_profile_prefs);
 }
 
+void BluetoothPowerControllerImpl::OnAdapterStateChanged() {
+  if (!pending_adapter_enabled_state_.has_value())
+    return;
+
+  if (adapter_state_controller_->GetAdapterState() ==
+      mojom::BluetoothSystemState::kUnavailable) {
+    return;
+  }
+
+  // Adapter is now available after being unavailable. Set adapter state to
+  // |pending_adapter_enabled_state_|.
+  bool enabled = pending_adapter_enabled_state_.value();
+  BLUETOOTH_LOG(EVENT) << "Adapter is now available after being unavailable, "
+                       << "setting adapter state to " << enabled;
+
+  pending_adapter_enabled_state_.reset();
+
+  SetAdapterState(enabled);
+}
+
 void BluetoothPowerControllerImpl::InitLocalStatePrefService(
     PrefService* local_state) {
+  BLUETOOTH_LOG(EVENT) << "Initializing local state pref service";
+
   // Return early if |local_state_| has already been initialized or
   // |local_state| is invalid.
-  if (local_state_ || !local_state)
+  if (local_state_) {
+    BLUETOOTH_LOG(EVENT) << "Local state has already be initialized";
     return;
+  }
+
+  if (!local_state) {
+    BLUETOOTH_LOG(EVENT) << "local_state is null, not initializing";
+    return;
+  }
 
   local_state_ = local_state;
 
@@ -92,13 +132,12 @@ void BluetoothPowerControllerImpl::InitLocalStatePrefService(
 void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
   if (local_state_->FindPreference(prefs::kSystemBluetoothAdapterEnabled)
           ->IsDefaultValue()) {
-    // If the device has not had the local state Bluetooth pref, set the pref
-    // according to whatever the current Bluetooth power is.
-    BLUETOOTH_LOG(EVENT) << "Saving current power state of "
-                         << adapter_state_controller_->GetAdapterState()
-                         << " to local state.";
-    SaveCurrentPowerStateToPrefs(local_state_,
-                                 prefs::kSystemBluetoothAdapterEnabled);
+    // If the device has not had the local state Bluetooth pref set, this is a
+    // fresh install. On fresh installs, the Bluetooth adapter defaults to
+    // powered on. Save this state to prefs.
+    BLUETOOTH_LOG(EVENT) << "No local state pref has been set, saving"
+                         << "Bluetooth power state of enabled to local state";
+    local_state_->SetBoolean(ash::prefs::kSystemBluetoothAdapterEnabled, true);
     return;
   }
 
@@ -111,8 +150,11 @@ void BluetoothPowerControllerImpl::ApplyBluetoothLocalStatePref() {
 
 void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
     PrefService* primary_profile_prefs) {
+  BLUETOOTH_LOG(EVENT) << "Initializing primary user pref service";
+
   primary_profile_prefs_ = primary_profile_prefs;
   if (!primary_profile_prefs_) {
+    BLUETOOTH_LOG(EVENT) << "primary_profile_prefs_ is null, not initializing";
     return;
   }
 
@@ -120,6 +162,8 @@ void BluetoothPowerControllerImpl::InitPrimaryUserPrefService(
             user_manager::UserManager::Get()->GetPrimaryUser());
 
   if (!has_attempted_apply_primary_user_pref_) {
+    BLUETOOTH_LOG(EVENT)
+        << "Primary user pref has not been attempted to be applied, applying";
     ApplyBluetoothPrimaryUserPref();
     has_attempted_apply_primary_user_pref_ = true;
   }
@@ -169,6 +213,18 @@ void BluetoothPowerControllerImpl::ApplyBluetoothPrimaryUserPref() {
 void BluetoothPowerControllerImpl::SetAdapterState(bool enabled) {
   BLUETOOTH_LOG(EVENT) << "Setting adapter state to "
                        << (enabled ? "enabled " : "disabled");
+
+  // On device startup, the local prefs may attempted to be applied before the
+  // adapter is available. Cache the value so it can be set once the adapter
+  // is available in OnAdapterStateChanged().
+  if (adapter_state_controller_->GetAdapterState() ==
+      mojom::BluetoothSystemState::kUnavailable) {
+    BLUETOOTH_LOG(EVENT) << "Adapter is currently unavailable, setting "
+                         << "pending_adapter_enabled_state_ to " << enabled;
+    pending_adapter_enabled_state_ = enabled;
+    return;
+  }
+
   adapter_state_controller_->SetBluetoothEnabledState(enabled);
 }
 

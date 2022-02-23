@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
@@ -20,12 +19,24 @@
 #include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace bluez {
 
 namespace {
 
+// TODO(b/213229904): Remove this constant and replace with
+// |bluetooth_device::kDisconnectOld| once it has been uprev'd.
+constexpr char kDisconnectOldPlaceholder[] = "DisconnectOld";
+
 // Value returned for the the RSSI or TX power if it cannot be read.
 const int kUnknownPower = 127;
+
+// TODO(b/213229904): Remove this constant and replace with
+// |bluetooth_device::kConnectClassic| once it has been uprev'd.
+constexpr char kConnectClassicPlaceholder[] = "ConnectClassic";
 
 std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
     dbus::MessageReader* struct_reader) {
@@ -213,8 +224,6 @@ BluetoothDeviceClient::Properties::Properties(
                    &advertising_data_flags);
   RegisterProperty(bluetooth_device::kMTUProperty, &mtu);
   RegisterProperty(bluetooth_device::kEIRProperty, &eir);
-  RegisterProperty(bluetooth_device::kIsBlockedByPolicyProperty,
-                   &is_blocked_by_policy);
 }
 
 BluetoothDeviceClient::Properties::~Properties() = default;
@@ -306,6 +315,30 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   }
 
   // BluetoothDeviceClient override.
+  void ConnectClassic(const dbus::ObjectPath& object_path,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
+                                 kConnectClassicPlaceholder);
+
+    dbus::ObjectProxy* object_proxy =
+        object_manager_->GetObjectProxy(object_path);
+    if (!object_proxy) {
+      std::move(error_callback).Run(kUnknownDeviceError, "");
+      return;
+    }
+
+    // ConnectClassic may take an arbitrary length of time, so use no timeout.
+    object_proxy->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  // BluetoothDeviceClient override.
   void ConnectLE(const dbus::ObjectPath& object_path,
                  base::OnceClosure callback,
                  ErrorCallback error_callback) override {
@@ -333,8 +366,20 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   void Disconnect(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
+// TODO(b/208933029): Only use the new disconnect method, e.g.
+// |bluetooth_device::kDisconnect|, once the Bluetooth revamp is fully launched.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // For the Bluetooth revamp we want to use an updated disconnect mechanism
+    // that does not disable auto-reconnect since we no longer provide a
+    // "connect" button for HID devices.
+    const char* method_name = ash::features::IsBluetoothRevampEnabled()
+                                  ? bluetooth_device::kDisconnect
+                                  : kDisconnectOldPlaceholder;
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    const char* method_name = kDisconnectOldPlaceholder;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
-                                 bluetooth_device::kDisconnect);
+                                 method_name);
 
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(object_path);

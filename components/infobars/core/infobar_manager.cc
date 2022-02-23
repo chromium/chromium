@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "components/infobars/core/infobar.h"
 
 namespace infobars {

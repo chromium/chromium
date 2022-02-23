@@ -1,0 +1,25 @@
+From 5272c338771a1057bc52d830c85ec325cf545b0e Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 7 Feb 2022 12:12:50 -0800
+Subject: [PATCH 05/12] use size_t in for loop
+
+---
+ .../cc/task/text/nlclassifier/nl_classifier.h                   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+index d97b2feb4d915..ab5126348f380 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
+@@ -194,7 +194,7 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
+           metadata_array,
+       const std::string& name, int default_index) {
+     if (metadata_array != nullptr && metadata_array->size() == tensors.size()) {
+-      for (int i = 0; i < metadata_array->size(); i++) {
++      for (size_t i = 0; i < metadata_array->size(); i++) {
+         if (strcmp(name.data(), metadata_array->Get(i)->name()->c_str()) == 0) {
+           return i;
+         }
+-- 
+2.35.0.263.gb82422642f-goog
+

@@ -16,13 +16,12 @@ source_set("media") {
     "key_system_config_selector.h",
     "lru.h",
     "multi_buffer.h",
-    "power_status_helper.h",
     "remote_playback_client_wrapper_impl.h",
     "resource_fetch_context.h",
     "url_index.h",
     "video_frame_compositor.h",
     "web_encrypted_media_client_impl.h",
-    "web_media_player_params.h",
+    "web_media_player_builder.h",
   ]
   public_deps = [
     "//base",
@@ -31,10 +30,8 @@ source_set("media") {
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
-    "//services/device/public/mojom",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:blink_headers",
-    "//ui/gfx/geometry",
     "//url",
   ]
 
@@ -47,11 +44,7 @@ source_set("media") {
       "learning_experiment_helper.h",
       "multi_buffer_data_source.h",
       "smoothness_helper.h",
-      "web_media_player_impl.h",
     ]
-    public_deps += [
-      "//media/learning/common",
-      "//services/media_session/public/cpp:base_cpp",
-    ]
+    public_deps += [ "//media/learning/common" ]
   }
 }

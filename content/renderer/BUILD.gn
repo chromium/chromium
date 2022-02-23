@@ -60,6 +60,8 @@ target(link_target_type, "renderer") {
     "content_security_policy_util.h",
     "discardable_memory_utils.cc",
     "discardable_memory_utils.h",
+    "document_state.cc",
+    "document_state.h",
     "dom_automation_controller.cc",
     "dom_automation_controller.h",
     "effective_connection_type_helper.cc",
@@ -128,12 +130,8 @@ target(link_target_type, "renderer") {
     "service_worker/controller_service_worker_connector.h",
     "service_worker/embedded_worker_instance_client_impl.cc",
     "service_worker/embedded_worker_instance_client_impl.h",
-    "service_worker/navigation_preload_request.cc",
-    "service_worker/navigation_preload_request.h",
     "service_worker/service_worker_context_client.cc",
     "service_worker/service_worker_context_client.h",
-    "service_worker/service_worker_fetch_context_impl.cc",
-    "service_worker/service_worker_fetch_context_impl.h",
     "service_worker/service_worker_network_provider_for_frame.cc",
     "service_worker/service_worker_network_provider_for_frame.h",
     "service_worker/service_worker_provider_context.cc",
@@ -205,7 +203,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "renderer_main_platform_delegate_linux.cc" ]
+    sources += [
+      "accessibility/ax_screen_ai_annotator.cc",
+      "accessibility/ax_screen_ai_annotator.h",
+      "renderer_main_platform_delegate_linux.cc",
+    ]
   }
 
   if (is_mac) {
@@ -241,7 +243,6 @@ target(link_target_type, "renderer") {
     "//base:i18n",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
@@ -310,7 +311,7 @@ target(link_target_type, "renderer") {
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public/common",
     "//third_party/blink/public/platform/media",
-    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/boringssl",
     "//third_party/icu",
     "//third_party/libyuv",
@@ -319,7 +320,6 @@ target(link_target_type, "renderer") {
     "//ui/accessibility",
     "//ui/base",
     "//ui/base/clipboard",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/display",
@@ -338,6 +338,8 @@ target(link_target_type, "renderer") {
 
   if (is_android) {
     deps += [
+      "//components/power_scheduler",
+
       # Used by Android WebView only.
       "//components/viz/service",
       "//third_party/android_ndk:cpu_features",
@@ -347,7 +349,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//components/services/font/public/cpp" ]
+    deps += [
+      "//components/services/font/public/cpp",
+      "//components/services/screen_ai",
+      "//ui/gfx/codec",
+    ]
   }
 
   if (is_fuchsia) {
@@ -386,8 +392,8 @@ target(link_target_type, "renderer") {
   if (enable_cast_streaming_renderer) {
     deps += [
       "//components/cast_streaming/public",
-      "//media/cast/receiver:cast_streaming_renderer",
-      "//media/cast/receiver:cast_streaming_renderer_controller_proxy",
+      "//components/cast_streaming/renderer:playback_command_forwarding_renderer_factory",
+      "//components/cast_streaming/renderer:renderer_controller_proxy",
     ]
   }
 
@@ -529,7 +535,7 @@ target(link_target_type, "renderer") {
       "//printing/mojom",
       "//third_party/libvpx",
       "//third_party/opus",
-      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
     ]
   }
@@ -549,12 +555,11 @@ target(link_target_type, "renderer") {
     deps += [ "//sandbox:sandbox_buildflags" ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//chromeos/system:system" ]
+  }
   if (is_chromeos_ash) {
-    deps += [
-      "//chromeos:chromeos_export",
-      "//chromeos/system:system",
-    ]
-
+    deps += [ "//chromeos:chromeos_export" ]
     if (target_cpu == "x64") {
       deps += [ "//chromeos/memory/userspace_swap" ]
     }

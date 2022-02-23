@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddoublesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -61,13 +62,6 @@ DOMMatrix* DOMMatrix::Create(
 DOMMatrix* DOMMatrix::Create(DOMMatrixReadOnly* other,
                              ExceptionState& exception_state) {
   return MakeGarbageCollected<DOMMatrix>(other->Matrix(), other->is2D());
-}
-
-DOMMatrix* DOMMatrix::Create(const skia::Matrix44& matrix,
-                             ExceptionState& exception_state) {
-  TransformationMatrix transformation_matrix(matrix);
-  return MakeGarbageCollected<DOMMatrix>(transformation_matrix,
-                                         transformation_matrix.IsAffine());
 }
 
 DOMMatrix* DOMMatrix::CreateForSerialization(double sequence[], int size) {

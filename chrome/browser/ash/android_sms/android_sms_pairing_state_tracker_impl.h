@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_PAIRING_STATE_TRACKER_IMPL_H_
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_PAIRING_STATE_TRACKER_IMPL_H_
 
+#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"

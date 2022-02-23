@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/translate_accept_languages_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_param_traits.h"
 #include "mojo/public/cpp/system/message_pipe.h"

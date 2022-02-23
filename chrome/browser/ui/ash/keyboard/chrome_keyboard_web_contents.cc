@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -155,8 +154,6 @@ ChromeKeyboardWebContents::ChromeKeyboardWebContents(
 
   extensions::SetViewType(web_contents_.get(),
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
   Observe(web_contents_.get());
   LoadContents(url);
 

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_PROXY_CHANNEL_DELEGATE_IMPL_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_PROXY_CHANNEL_DELEGATE_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "ppapi/proxy/proxy_channel.h"
 
 namespace content {

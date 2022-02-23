@@ -13,6 +13,13 @@ NSString* const kPasswordsExportConfirmViewId = @"PasswordsExportConfirmViewId";
 NSString* const kPasswordsSearchBarId = @"PasswordsSearchBar";
 NSString* const kPasswordsScrimViewId = @"PasswordsScrimViewId";
 
+NSString* const kOnDeviceEncryptionOptInId = @"OnDeviceEncryptionSuggestion";
+NSString* const kOnDeviceEncryptionLearnMoreId =
+    @"OnDeviceEncryptionLearnMoreId";
+NSString* const kOnDeviceEncryptionSetUpId = @"OnDeviceEncryptionSetUpId";
+NSString* const kOnDeviceEncryptionOptedInTextId =
+    @"OnDeviceEncryptionOptedInTextId";
+
 NSString* const kPasswordDetailsTableViewId = @"PasswordDetailsTableViewId";
 NSString* const kPasswordDetailsDeletionAlertViewId =
     @"PasswordDetailsDeletionAlertViewId";

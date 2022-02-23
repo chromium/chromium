@@ -4,6 +4,8 @@
 
 #include "ui/display/screen_infos.h"
 
+#include "base/ranges/algorithm.h"
+
 namespace display {
 
 ScreenInfos::ScreenInfos() = default;
@@ -14,7 +16,8 @@ ScreenInfos::~ScreenInfos() = default;
 ScreenInfos& ScreenInfos::operator=(const ScreenInfos& other) = default;
 bool ScreenInfos::operator==(const ScreenInfos& other) const {
   return screen_infos == other.screen_infos &&
-         current_display_id == other.current_display_id;
+         current_display_id == other.current_display_id &&
+         system_cursor_size == other.system_cursor_size;
 }
 
 bool ScreenInfos::operator!=(const ScreenInfos& other) const {

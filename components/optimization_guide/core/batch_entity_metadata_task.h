@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/entity_metadata.h"
@@ -48,7 +49,7 @@ class BatchEntityMetadataTask {
       const absl::optional<EntityMetadata>& entity_metadata);
 
   // The provider used to retrieve entity metadata from.
-  optimization_guide::EntityMetadataProvider* entity_metadata_provider_;
+  raw_ptr<optimization_guide::EntityMetadataProvider> entity_metadata_provider_;
   // The entity IDs that metadata will be retrieved for.
   const base::flat_set<std::string> entity_ids_;
   // The state of this task. Mostly used for ensuring proper usage of |this|.

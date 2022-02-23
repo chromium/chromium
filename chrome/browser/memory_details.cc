@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/file_version_info.h"
 #include "base/metrics/histogram_macros.h"
@@ -37,7 +38,7 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
 #endif
 
@@ -224,28 +225,31 @@ std::string MemoryDetails::ToLogString(bool include_tab_title) {
   // Sort by memory consumption, low to high.
   std::sort(processes.begin(), processes.end());
   // Print from high to low.
-  for (auto iter1 = processes.rbegin(); iter1 != processes.rend(); ++iter1) {
+  for (const ProcessMemoryInformation& process_info :
+       base::Reversed(processes)) {
     log += ProcessMemoryInformation::GetFullTypeNameInEnglish(
-            iter1->process_type, iter1->renderer_type);
+        process_info.process_type, process_info.renderer_type);
     // The title of a renderer may contain PII.
-    if ((iter1->process_type != content::PROCESS_TYPE_RENDERER ||
+    if ((process_info.process_type != content::PROCESS_TYPE_RENDERER ||
          include_tab_title) &&
-        !iter1->titles.empty()) {
+        !process_info.titles.empty()) {
       log += " [";
-      for (std::vector<std::u16string>::const_iterator iter2 =
-               iter1->titles.begin();
-           iter2 != iter1->titles.end(); ++iter2) {
-        if (iter2 != iter1->titles.begin())
+      bool first_title = true;
+      for (const std::u16string& title : process_info.titles) {
+        if (!first_title)
           log += "|";
-        log += base::UTF16ToUTF8(*iter2);
+        first_title = false;
+        log += base::UTF16ToUTF8(title);
       }
       log += "]";
     }
     log += StringPrintf(
-        " %d MB", static_cast<int>(iter1->private_memory_footprint_kb) / 1024);
-    if (iter1->num_open_fds != -1 || iter1->open_fds_soft_limit != -1) {
-      log += StringPrintf(", %d FDs open of %d", iter1->num_open_fds,
-                          iter1->open_fds_soft_limit);
+        " %d MB",
+        static_cast<int>(process_info.private_memory_footprint_kb) / 1024);
+    if (process_info.num_open_fds != -1 ||
+        process_info.open_fds_soft_limit != -1) {
+      log += StringPrintf(", %d FDs open of %d", process_info.num_open_fds,
+                          process_info.open_fds_soft_limit);
     }
     log += "\n";
   }
@@ -325,7 +329,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
           std::ref(process)));
     }
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
     if (content::ZygoteHost::GetInstance()->IsZygotePid(process.pid)) {
       process.process_type = content::PROCESS_TYPE_ZYGOTE;
     }

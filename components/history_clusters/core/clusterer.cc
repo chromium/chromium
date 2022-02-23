@@ -4,7 +4,6 @@
 
 #include "components/history_clusters/core/clusterer.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
@@ -12,20 +11,23 @@ namespace history_clusters {
 
 namespace {
 
-void AddKeywordsForVisitToCluster(history::Cluster& cluster,
-                                  const history::ClusterVisit& visit) {
-  base::flat_set<std::u16string> keywords_set(cluster.keywords.begin(),
-                                              cluster.keywords.end());
-  for (const auto& entity :
-       visit.annotated_visit.content_annotations.model_annotations.entities) {
-    keywords_set.insert(base::UTF8ToUTF16(entity.id));
+// Returns whether |visit| should be added to |cluster|.
+bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
+                             const history::Cluster& cluster) {
+  auto last_visit = cluster.visits.back();
+  if ((visit.annotated_visit.visit_row.visit_time -
+       last_visit.annotated_visit.visit_row.visit_time) >
+      features::ClusterNavigationTimeCutoff()) {
+    return false;
   }
-  for (const auto& category :
-       visit.annotated_visit.content_annotations.model_annotations.categories) {
-    keywords_set.insert(base::UTF8ToUTF16(category.id));
+  if (features::ShouldSplitClustersAtSearchVisits() &&
+      !visit.search_terms.empty()) {
+    // If we want to split the clusters at search visits and we are at a search
+    // visit, only add the visit to the cluster if the last visit was also a
+    // search visit with the same terms.
+    return visit.search_terms == last_visit.search_terms;
   }
-  cluster.keywords =
-      std::vector<std::u16string>(keywords_set.begin(), keywords_set.end());
+  return true;
 }
 
 }  // namespace
@@ -69,14 +71,12 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     }
     DCHECK(!cluster_idx || (*cluster_idx < clusters.size()));
 
-    // Even if above conditions were met, add it to a new cluster if the last
-    // visit in the cluster's navigation time exceeds a certain duration.
+    // Even if above conditions were met, see if we should add it to the cluster
+    // based on the characteristics of the in progress cluster and the current
+    // visit we are processing.
     if (cluster_idx) {
       auto in_progress_cluster = clusters[*cluster_idx];
-      auto last_visit_nav_time = in_progress_cluster.visits.back()
-                                     .annotated_visit.visit_row.visit_time;
-      if ((visit.annotated_visit.visit_row.visit_time - last_visit_nav_time) >
-          features::ClusterNavigationTimeCutoff()) {
+      if (!ShouldAddVisitToCluster(visit, in_progress_cluster)) {
         // Erase all visits in the cluster from the maps since we no longer
         // want to consider anything in the cluster as a referrer.
         auto finalized_cluster = clusters[*cluster_idx];
@@ -98,15 +98,12 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     default_scored_visit.score = 1.0;
     if (cluster_idx) {
       clusters[*cluster_idx].visits.push_back(default_scored_visit);
-      AddKeywordsForVisitToCluster(clusters[*cluster_idx],
-                                   default_scored_visit);
     } else {
       // Add to new cluster.
       cluster_idx = clusters.size();
 
       history::Cluster new_cluster;
       new_cluster.visits = {default_scored_visit};
-      AddKeywordsForVisitToCluster(new_cluster, default_scored_visit);
       clusters.push_back(std::move(new_cluster));
     }
     visit_id_to_cluster_map[visit.annotated_visit.visit_row.visit_id] =

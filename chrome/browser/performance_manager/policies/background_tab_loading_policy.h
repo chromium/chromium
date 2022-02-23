@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -24,6 +25,7 @@ class PageLoader;
 FORWARD_DECLARE_TEST(BackgroundTabLoadingBrowserTest,
                      RestoredTabsAreLoadedGradually);
 class BackgroundTabLoadingBrowserTest;
+class SiteDataReader;
 
 namespace policies {
 
@@ -46,7 +48,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // Schedules the PageNodes in |page_nodes| to be loaded when appropriate.
@@ -72,7 +75,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
 
     // Keeps a pointer to the corresponding PageNode.
-    const PageNode* page_node;
+    raw_ptr<const PageNode> page_node;
 
     // A higher value here means the tab has higher priority for restoring.
     float score = 0.0f;
@@ -93,6 +96,10 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // SystemNodeObserver:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override;
+
+  // Returns the SiteDataReader instance for |page_node|, if any. Virtual for
+  // testing.
+  virtual SiteDataReader* GetSiteDataReader(const PageNode* page_node) const;
 
   // Determines whether or not the given PageNode should be loaded. If this
   // returns false, then the policy no longer attempts to load |page_node| and

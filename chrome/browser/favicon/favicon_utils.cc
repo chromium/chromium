@@ -75,7 +75,7 @@ void DrawFallbackIconLetter(const GURL& icon_url,
 
   gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   font_weight = gfx::Font::Weight::SEMIBOLD;
 #endif
 
@@ -149,7 +149,7 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
   gfx::Image favicon = favicon_driver->GetFavicon();
 
   // Desaturate the favicon if the navigation entry contains a network error.
-  if (!contents->IsLoadingToDifferentDocument()) {
+  if (!contents->ShouldShowLoadingUI()) {
     content::NavigationController& controller = contents->GetController();
 
     content::NavigationEntry* entry = controller.GetLastCommittedEntry();
@@ -166,7 +166,7 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 
 gfx::Image GetDefaultFavicon() {
   bool is_dark = false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Android doesn't currently implement NativeTheme::GetInstanceForNativeUi.
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();

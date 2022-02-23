@@ -39,7 +39,9 @@ source_set("security_key") {
     "//mojo/public/cpp/system",
     "//net:net",
     "//net/traffic_annotation:traffic_annotation",
+    "//remoting/base:logging",
     "//remoting/host:host_extension",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -56,11 +58,7 @@ source_set("security_key") {
 }
 
 source_set("main") {
-  defines = [ "HOST_IMPLEMENTATION" ]
-
-  if (is_win) {
-    defines += host_predefines
-  }
+  configs += [ "//remoting/build/config:host_implementation" ]
 
   sources = [ "remote_security_key_main.cc" ]
   deps = [
@@ -68,9 +66,12 @@ source_set("main") {
     ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
-    "//remoting/host:base",
     "//remoting/host:common",
+    "//remoting/host/base",
   ]
+  if (is_win) {
+    deps += [ "//remoting/host/win:acl_util" ]
+  }
 }
 
 if (is_win) {
@@ -121,6 +122,7 @@ source_set("unit_tests") {
     "//remoting:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
+    "//remoting/host/mojom",
     "//remoting/host/setup:common",
     "//remoting/protocol:protocol",
   ]
@@ -152,6 +154,7 @@ static_library("test_support") {
     ":security_key",
     "//ipc",
     "//remoting/host:common",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//testing/gtest",
   ]

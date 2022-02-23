@@ -6,8 +6,7 @@
 
 #include "base/mac/mach_logging.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 namespace internal {
 
 // static
@@ -72,5 +71,4 @@ ScopedMachSendRight RetainMachSendRight(mach_port_t port) {
   return {};
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

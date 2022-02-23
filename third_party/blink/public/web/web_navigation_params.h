@@ -151,10 +151,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // measurement attributes.
   absl::optional<WebImpression> impression;
 
-  // The navigation initiator's address space.
-  network::mojom::IPAddressSpace initiator_address_space =
-      network::mojom::IPAddressSpace::kUnknown;
-
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
   // This attribute is used for the synchronous re-navigation to about:blank
@@ -353,14 +349,10 @@ struct BLINK_EXPORT WebNavigationParams {
   bool is_browser_initiated = false;
   // Whether the document should be able to access local file:// resources.
   bool grant_load_local_resources = false;
-  // The previews state which should be used for this navigation.
-  PreviewsState previews_state = PreviewsTypes::kPreviewsUnspecified;
   // The service worker network provider to be used in the new
   // document.
   std::unique_ptr<blink::WebServiceWorkerNetworkProvider>
       service_worker_network_provider;
-  // The AppCache host id for this navigation.
-  base::UnguessableToken appcache_host_id;
 
   // This is `true` only for commit requests coming from
   // `RenderFrameImpl::SynchronouslyConmmitAboutBlankForBug778318`.
@@ -421,6 +413,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // https://html.spec.whatwg.org/C/#is-origin-keyed
   bool origin_agent_cluster = false;
 
+  // Whether the decision to use origin-keyed or site-keyed agent clustering
+  // (which itself is recorded in origin_agent_cluster, above) has been
+  // made based on absent Origin-Agent-Cluster http header.
+  bool origin_agent_cluster_left_as_default = true;
+
   // List of client hints enabled for top-level frame. These still need to be
   // checked against permissions policy before use.
   WebVector<network::mojom::WebClientHintsType> enabled_client_hints;
@@ -446,6 +443,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // contains URNs mapped to the ad components returned by the winning bid.
   // Null, otherwise.
   absl::optional<WebVector<WebURL>> ad_auction_components;
+
+  // Whether or not this navigation will commit in an anonymous frame.
+  bool anonymous = false;
 };
 
 }  // namespace blink

@@ -33,31 +33,6 @@
     <dimen name="button_min_width">88dp</dimen>
     <dimen name="button_bg_vertical_inset">4dp</dimen>
 
-    <!-- Chips default measures -->
-    <item name="chip_background_selected_alpha_light" format="float" type="dimen">0.06</item>
-    <item name="chip_background_selected_alpha_dark" format="float" type="dimen">1</item>
-
-    <dimen name="chip_solid_border_width">0dp</dimen>
-    <dimen name="chip_border_width">1dp</dimen>
-    <dimen name="chip_corner_radius">8dp</dimen>
-    <dimen name="chip_default_height">32dp</dimen>
-    <dimen name="chip_end_padding">16dp</dimen>
-    <dimen name="chip_reduced_end_padding">12dp</dimen>
-    <dimen name="chip_element_leading_padding">8dp</dimen>
-    <dimen name="chip_element_extended_leading_padding">16dp</dimen>
-    <dimen name="chip_bg_vertical_inset">8dp</dimen>
-    <dimen name="chip_background_selected_alpha">@dimen/chip_background_selected_alpha_light</dimen>
-    <dimen name="chip_icon_size">20dp</dimen>
-    <dimen name="chip_loading_view_size">12dp</dimen>
-    <dimen name="chip_end_icon_margin_start">8dp</dimen>
-    <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>
-    <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
-    <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
-    <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
-    <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
-    <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
-    <dimen name="menu_chip_vertical_inset">10dp</dimen>
-
     <!-- Menu footer chip measures-->
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->
     <dimen name="menu_footer_chip_end_padding">8dp</dimen>
@@ -83,6 +58,9 @@
     <!-- Divider Dimensions -->
     <dimen name="divider_height">1dp</dimen>
 
+    <!-- Drag shadow dimens -->
+    <dimen name="drag_shadow_min_width">48dp</dimen>
+
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
     <dimen name="popup_bg_corner_radius">4dp</dimen>
@@ -102,6 +80,7 @@
     <dimen name="default_elevation_3">6dp</dimen>
     <dimen name="default_elevation_4">8dp</dimen>
     <dimen name="default_elevation_5">12dp</dimen>
+    <dimen name="default_elevation_6">67dp</dimen>
     <!-- TODO(crbug.com/1236215): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
 

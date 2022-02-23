@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
@@ -47,7 +47,7 @@ class VIEWS_EXPORT AXAuraObjWrapper {
  protected:
   // The cache associated with this wrapper. Subclasses should initialize this
   // cache on construction.
-  AXAuraObjCache* aura_obj_cache_ = nullptr;
+  raw_ptr<AXAuraObjCache> aura_obj_cache_ = nullptr;
 };
 
 }  // namespace views

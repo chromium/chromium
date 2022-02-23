@@ -20,6 +20,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
@@ -54,6 +55,7 @@ class Separator;
 }  // namespace views
 
 namespace ash {
+class GhostImageView;
 class ShelfAppButton;
 class ShelfButton;
 class ShelfModel;
@@ -71,11 +73,11 @@ enum ShelfAlignmentUmaEnumValue {
 
 // ShelfView contains the shelf items visible within an active user session.
 // ShelfView and LoginShelfView should never be shown together.
-
 class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfButtonDelegate,
                              public ShelfModelObserver,
                              public ShellObserver,
+                             public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
                              public ApplicationDragAndDropHost,
@@ -165,6 +167,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void OnMouseEvent(ui::MouseEvent* event) override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -317,6 +321,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return shelf_menu_model_adapter_.get();
   }
 
+  int current_ghost_view_index() { return current_ghost_view_index_; }
+
  private:
   friend class ShelfViewTestAPI;
 
@@ -466,11 +472,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ShelfItemStatusChanged(const ShelfID& id) override;
   void ShelfItemRippedOff() override;
   void ShelfItemReturnedFromRipOff(int index) override;
+  void ShelfPartyToggled(bool in_shelf_party) override;
 
   // Overridden from ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
-  void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) override;
+
+  // ShelfObserver:
+  void OnShelfAutoHideBehaviorChanged() override;
 
   // Shows a shelf context menu with the given |model|, or a default menu.
   void ShowShelfContextMenu(const ShelfID& shelf_id,
@@ -535,6 +544,15 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Returns the bounds of the given |child| view taken into account RTL layouts
   // and on-going bounds animations on |child|.
   gfx::Rect GetChildViewTargetMirroredBounds(const views::View* child) const;
+
+  // Calls |UpdateShelfItemViewsVisibility| and updates the shelf for changes in
+  // visibility of items. Used when items may have joined or left shelf party,
+  // because partying items are hidden from the shelf. After the party ends,
+  // this function causes the items that were partying to reappear on the shelf.
+  void HandleShelfParty();
+
+  // Removes and reset |current_ghost_view| and |last_ghost_view|.
+  void RemoveGhostView();
 
   // The model; owned by Launcher.
   ShelfModel* model_;
@@ -691,6 +709,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // The app item icon proxy created for drag operation.
   std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
+
+  // Placeholder ghost icon to show where an app will drop on the shelf.
+  GhostImageView* current_ghost_view_ = nullptr;
+  // The latest ghost icon shown set to be replaced by |current_ghost_view_|.
+  GhostImageView* last_ghost_view_ = nullptr;
+
+  // The index in the shelf app icons where the |current_ghost_view_| will show.
+  int current_ghost_view_index_ = -1;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.

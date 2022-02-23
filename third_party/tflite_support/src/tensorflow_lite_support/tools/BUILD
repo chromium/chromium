@@ -13,8 +13,3 @@ py_binary(
         "@absl_py//absl/flags",
     ],
 )
-
-py_library(
-    name = "expect_flatbuffers_installed",
-    srcs = [],
-)

@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -27,8 +27,8 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
+#if BUILDFLAG(IS_APPLE)
+#include "base/mac/backup_util.h"
 #endif
 
 namespace history {
@@ -38,7 +38,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 51;
+const int kCurrentVersionNumber = 53;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -108,9 +108,9 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
   if (!committer.Begin())
     return LogInitFailure(InitStep::TRANSACTION_BEGIN);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Exclude the history file from backups.
-  base::mac::SetFileBackupExclusion(history_name);
+  base::mac::SetBackupExclusion(history_name);
 #endif
 
   // Prime the cache.
@@ -262,7 +262,7 @@ int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
 
 void HistoryDatabase::BeginExclusiveMode() {
   // We need to use a PRAGMA statement here as the DB has already been created.
-  ignore_result(db_.Execute("PRAGMA locking_mode=EXCLUSIVE"));
+  std::ignore = db_.Execute("PRAGMA locking_mode=EXCLUSIVE");
 }
 
 // static
@@ -315,7 +315,7 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
 void HistoryDatabase::Vacuum() {
   DCHECK_EQ(0, db_.transaction_nesting()) <<
       "Can not have a transaction when vacuuming.";
-  ignore_result(db_.Execute("VACUUM"));
+  std::ignore = db_.Execute("VACUUM");
 }
 
 void HistoryDatabase::TrimMemory() {
@@ -403,7 +403,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   }
 
   if (cur_version == 16) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // In this version we bring the time format on Mac & Linux in sync with the
     // Windows version so that profiles can be moved between computers.
     MigrateTimeEpoch();
@@ -447,7 +447,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 
   if (cur_version == 21) {
     // The android_urls table's data schemal was changed in version 21.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (!MigrateToVersion22())
       return LogMigrationFailure(21);
 #endif
@@ -667,6 +667,20 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
     meta_table_.SetVersionNumber(cur_version);
   }
 
+  if (cur_version == 51) {
+    if (!MigrateEmbedderDownloadData())
+      return LogMigrationFailure(51);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 52) {
+    if (!MigrateContentAnnotationsAddSearchMetadata())
+      return LogMigrationFailure(52);
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
   // =========================       ^^ new migration code goes here ^^
   // ADDING NEW MIGRATION CODE
   // =========================
@@ -691,21 +705,21 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   return sql::INIT_OK;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void HistoryDatabase::MigrateTimeEpoch() {
   // Update all the times in the URLs and visits table in the main database.
-  ignore_result(db_.Execute(
+  std::ignore = db_.Execute(
       "UPDATE urls "
       "SET last_visit_time = last_visit_time + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM urls WHERE last_visit_time > 0);"));
-  ignore_result(db_.Execute(
+      "WHERE id IN (SELECT id FROM urls WHERE last_visit_time > 0);");
+  std::ignore = db_.Execute(
       "UPDATE visits "
       "SET visit_time = visit_time + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM visits WHERE visit_time > 0);"));
-  ignore_result(db_.Execute(
+      "WHERE id IN (SELECT id FROM visits WHERE visit_time > 0);");
+  std::ignore = db_.Execute(
       "UPDATE segment_usage "
       "SET time_slot = time_slot + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM segment_usage WHERE time_slot > 0);"));
+      "WHERE id IN (SELECT id FROM segment_usage WHERE time_slot > 0);");
 }
 #endif
 

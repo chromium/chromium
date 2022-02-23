@@ -63,9 +63,6 @@ class SingleClientVideoCaptureHost final
   void Resume(const base::UnguessableToken& device_id,
               const base::UnguessableToken& session_id,
               const VideoCaptureParams& params) override;
-  void Crop(const base::UnguessableToken& device_id,
-            const base::Token& crop_id,
-            CropCallback callback) override;
   void RequestRefreshFrame(const base::UnguessableToken& device_id) override;
   void ReleaseBuffer(const base::UnguessableToken& device_id,
                      int32_t buffer_id,
@@ -92,6 +89,7 @@ class SingleClientVideoCaptureHost final
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;

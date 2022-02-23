@@ -13,6 +13,7 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -48,6 +49,7 @@ class AuctionWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
   bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
 
   DebuggableAuctionWorklet* worklet_ = nullptr;
+  mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
 };
 
 class AuctionWorkletDevToolsAgentHostManager

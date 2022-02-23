@@ -188,6 +188,13 @@ test(() => {
     control.i.setValidity(flags, m, control);
   }, 'Self');
 
+  let notHTMLElement = document.createElementNS('some-random-namespace', 'foo');
+  control.appendChild(notHTMLElement);
+  assert_throws_js(TypeError, () => {
+    control.i.setValidity(flags, m, notHTMLElement);
+  }, 'Not a HTMLElement');
+  notHTMLElement.remove();
+
   // A descendant
   control.i.setValidity(flags, m, control.querySelector('light-child'));
 
@@ -205,6 +212,11 @@ test(() => {
 }, '"anchor" argument of setValidity()');
 
 test(() => {
+  const element = new NotFormAssociatedElement();
+  assert_throws_dom('NotSupportedError', () => element.i.checkValidity());
+}, "checkValidity() should throw NotSupportedError if the target element is not a form-associated custom element");
+
+test(() => {
   const control = document.createElement('my-control');
   let invalidCount = 0;
   control.addEventListener('invalid', e => {
@@ -220,6 +232,11 @@ test(() => {
   assert_false(control.i.checkValidity());
   assert_equals(invalidCount, 1);
 }, 'checkValidity()');
+
+test(() => {
+  const element = new NotFormAssociatedElement();
+  assert_throws_dom('NotSupportedError', () => element.i.reportValidity());
+}, "reportValidity() should throw NotSupportedError if the target element is not a form-associated custom element");
 
 test(() => {
   const control = document.createElement('my-control');

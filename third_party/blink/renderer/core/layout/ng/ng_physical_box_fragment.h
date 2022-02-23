@@ -239,7 +239,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   const LayoutBox* OwnerLayoutBox() const;
   LayoutBox* MutableOwnerLayoutBox() const;
 
-  // Returns the offset in the |OwnerLayoutBox| coordinate system.
+  // Returns the offset in the |OwnerLayoutBox| coordinate system. This is only
+  // supported for CSS boxes (i.e. not for fragmentainers, for instance).
   PhysicalOffset OffsetFromOwnerLayoutBox() const;
 
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
@@ -315,7 +316,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   // Needed to compensate for LayoutInline Legacy code offsets.
   void AddSelfOutlineRects(const PhysicalOffset& additional_offset,
                            NGOutlineType include_block_overflows,
-                           Vector<PhysicalRect>* outline_rects) const;
+                           Vector<PhysicalRect>* outline_rects,
+                           LayoutObject::OutlineInfo* info) const;
   // Same as |AddSelfOutlineRects|, except when |this.IsInlineBox()|, in which
   // case the coordinate system is relative to the inline formatting context.
   void AddOutlineRects(const PhysicalOffset& additional_offset,
@@ -399,7 +401,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #if DCHECK_IS_ON()
   void InvalidateInkOverflow();
   void AssertFragmentTreeSelf() const;
-  void AssertFragmentTreeChildren(bool allow_destroyed = false) const;
+  void AssertFragmentTreeChildren(bool allow_destroyed_or_moved = false) const;
 #endif
 
  private:

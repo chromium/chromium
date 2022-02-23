@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/android/usage_stats/usage_stats_database.h"
@@ -123,7 +124,7 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
 
   std::unique_ptr<UsageStatsDatabase> usage_stats_database_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
 

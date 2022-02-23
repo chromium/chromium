@@ -8,6 +8,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest_mac.h"
@@ -21,7 +22,10 @@
 
 class ActionSheetCoordinatorTest : public PlatformTest {
  protected:
-  ActionSheetCoordinatorTest() : browser_(std::make_unique<TestBrowser>()) {}
+  ActionSheetCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+  }
 
   void SetUp() override {
     base_view_controller_ = [[UIViewController alloc] init];
@@ -52,6 +56,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   ScopedKeyWindow scoped_key_window_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   UIView* test_view_;

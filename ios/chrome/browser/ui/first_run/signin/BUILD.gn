@@ -22,7 +22,7 @@ source_set("signin") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/authentication/enterprise/user_policy_signout",
+    "//ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt",
     "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
     "//ios/chrome/browser/ui/commands",

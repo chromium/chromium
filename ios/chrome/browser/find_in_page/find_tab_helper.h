@@ -8,7 +8,6 @@
 #include <Foundation/Foundation.h>
 
 #include "base/ios/block_types.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

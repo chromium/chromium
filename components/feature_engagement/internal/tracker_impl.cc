@@ -36,6 +36,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -294,6 +295,46 @@ void TrackerImpl::DismissedWithSnooze(
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {
   return display_lock_controller_->AcquireDisplayLock();
+}
+
+void TrackerImpl::SetPriorityNotification(const base::Feature& feature) {
+  // If the handler hasn't been registered.
+  auto iter = priority_notification_handlers_.find(feature.name);
+  if (iter == priority_notification_handlers_.end()) {
+    condition_validator_->SetPriorityNotification(feature.name);
+    return;
+  }
+
+  // We already have a handler. Serve the request and remove the handler.
+  condition_validator_->SetPriorityNotification(absl::nullopt);
+  std::move(iter->second).Run();
+  priority_notification_handlers_.erase(feature.name);
+}
+
+absl::optional<std::string> TrackerImpl::GetPendingPriorityNotification() {
+  return condition_validator_->GetPendingPriorityNotification();
+}
+
+void TrackerImpl::RegisterPriorityNotificationHandler(
+    const base::Feature& feature,
+    base::OnceClosure callback) {
+  // If we already have a pending notification, handle it right away.
+  auto pending_priority_notification =
+      condition_validator_->GetPendingPriorityNotification();
+  if (pending_priority_notification.has_value() &&
+      pending_priority_notification.value() == feature.name) {
+    std::move(callback).Run();
+    condition_validator_->SetPriorityNotification(absl::nullopt);
+    return;
+  }
+
+  // We don't have the notification yet. Cache the handler.
+  priority_notification_handlers_.emplace(feature.name, std::move(callback));
+}
+
+void TrackerImpl::UnregisterPriorityNotificationHandler(
+    const base::Feature& feature) {
+  priority_notification_handlers_.erase(feature.name);
 }
 
 bool TrackerImpl::IsInitialized() const {

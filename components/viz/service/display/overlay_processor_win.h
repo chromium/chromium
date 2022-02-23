@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -56,7 +57,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
-      const skia::Matrix44& output_color_matrix,
+      const SkM44& output_color_matrix,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
@@ -74,7 +75,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   }
 
  private:
-  OutputSurface* const output_surface_;
+  const raw_ptr<OutputSurface> output_surface_;
   // Whether direct composition layers are being used with SetEnableDCLayers().
   bool using_dc_layers_ = false;
   // Number of frames since the last time direct composition layers were used.

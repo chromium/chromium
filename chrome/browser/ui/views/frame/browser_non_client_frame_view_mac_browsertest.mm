@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -158,7 +158,7 @@ using BrowserNonClientFrameViewMacBrowserTest =
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
 // TODO(crbug.com/1156050): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ToolbarLayoutFullscreenTransition \
   DISABLED_ToolbarLayoutFullscreenTransition
 #else

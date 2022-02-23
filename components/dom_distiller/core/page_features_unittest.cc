@@ -42,13 +42,14 @@ absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
 
   // For every feature name at index 2*N, their value is at 2*N+1. In particular
   // the size must be an even number.
-  size_t size = derived_features_json->GetList().size();
+  size_t size = derived_features_json->GetListDeprecated().size();
   if (size % 2 != 0)
     return absl::nullopt;
 
   std::vector<double> derived_features;
   for (size_t i = 1; i < size; i += 2) {
-    const base::Value& feature_value = derived_features_json->GetList()[i];
+    const base::Value& feature_value =
+        derived_features_json->GetListDeprecated()[i];
     // If the value is a bool, convert it to 1.0 or 0.0.
     double numerical_feature_value;
     if (feature_value.is_double() || feature_value.is_int())
@@ -85,7 +86,7 @@ std::vector<base::Value> ReadJsonListToValues(const std::string& file_name) {
   if (!parsed_content->is_list())
     return {};
 
-  return std::move(*parsed_content).TakeList();
+  return std::move(*parsed_content).TakeListDeprecated();
 }
 
 // This test uses input data of core features and the output of the training

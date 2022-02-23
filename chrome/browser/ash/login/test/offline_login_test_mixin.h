@@ -53,6 +53,8 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
                                   const std::string& password,
                                   bool wait_for_signin);
 
+  void SubmitEmailAndBlockOfflineFlow(const std::string& user_email);
+
  private:
   // Triggers Offline Login screen.
   void StartLoginAuthOffline();

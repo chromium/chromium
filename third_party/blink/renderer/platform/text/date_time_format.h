@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_TIME_FORMAT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_TIME_FORMAT_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

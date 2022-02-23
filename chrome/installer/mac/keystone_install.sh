@@ -851,6 +851,9 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
     note "test mode: not calling Keystone, installed_app is from environment"
     installed_app="${GOOGLE_CHROME_UPDATER_TEST_PATH}"
+  elif [[ -n "${KS_TICKET_XC_PATH}" ]]; then
+    note "installed_app is from KS_TICKET_XC_PATH"
+    installed_app="${KS_TICKET_XC_PATH}"
   elif ! installed_app="$(ksadmin -pP "${product_id}" | sed -Ene \
       "s%^[[:space:]]+xc=<KSPathExistenceChecker:.* path=(/.+)>\$%\\1%p")" ||
       [[ -z "${installed_app}" ]]; then
@@ -1003,8 +1006,7 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     exit 5
   fi
 
-  local new_versioned_dir
-  new_versioned_dir="${installed_versions_dir}/${update_version_app}"
+  local new_versioned_dir="${installed_versions_dir}/${update_version_app}"
   note "new_versioned_dir = ${new_versioned_dir}"
 
   # If there's an entry at ${new_versioned_dir} but it's not a directory
@@ -1216,9 +1218,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     exit 9
   fi
   note "new_version_app = ${new_version_app}"
-
-  local new_versioned_dir="${installed_versions_dir}/${new_version_app}"
-  note "new_versioned_dir = ${new_versioned_dir}"
 
   local new_ks_plist="${installed_app_plist}"
   note "new_ks_plist = ${new_ks_plist}"
@@ -1576,6 +1575,49 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   note "lifting quarantine"
 
   xattr -d -r "${QUARANTINE_ATTR}" "${installed_app}" 2> /dev/null
+
+  # Do Developer ID certificate reauthorization. This involves running a stub
+  # executable within the newly-updated .app bundle. The stub loads the updated
+  # framework and jumps to it to perform the reauthorization. The stub
+  # executable is an unbundled (flat file) executable whose identifier for code
+  # signing purposes matches the main application's bundle identifier, so it's
+  # permitted access to Keychain items in the same manner as the main
+  # application. The stub executable remains signed by the old certificate even
+  # after the rest of Chrome has switched to the new certificate, so it
+  # maintains Chrome's identity and access to the Safe Storage Keychain item
+  # even if that Keychain item's access was locked to the old certificate.
+  #
+  # Doing a reauthorization step at update time reauthorizes Keychain items for
+  # users who never bother restarting Chrome, but it only works for non-system
+  # ticket installations of Chrome, because the updater runs as root when on a
+  # system ticket, and root can't access individual user Keychains. Additional
+  # opportunities for reauthorization exist within the application itself either
+  # by performing the reauthorization directly (if permitted) or by launching
+  # the same stub executable as is used here.
+  #
+  # Even if the reauthorization tool is launched, it doesn't necessarily try
+  # to do anything. It will only attempt to perform a reauthorization if it
+  # determines that no reauthorization has been completed.
+  note "maybe performing Developer ID certificate reauthorization"
+
+  if [[ -z "${system_ticket}" ]]; then
+    local developer_id_certificate_reauthorize_path="\
+${new_versioned_dir}/Helpers/developer_id_certificate_reauthorize"
+    note "developer_id_certificate_reauthorize_path = \
+${developer_id_certificate_reauthorize_path}"
+
+    local new_bundleid_app="$(defaults read "${installed_app_plist}" \
+                                            "${APP_BUNDLEID_KEY}" || true)"
+    note "new_bundleid_app = ${new_bundleid_app}"
+
+    if [[ -x "${developer_id_certificate_reauthorize_path}" ]]; then
+      note "performing Developer ID certificate reauthorization"
+      "${developer_id_certificate_reauthorize_path}" "${new_bundleid_app}"
+    fi
+  else
+    note "system ticket, not performing \
+Developer ID certificate reauthorization"
+  fi
 
   # Great success!
   note "done!"

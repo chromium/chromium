@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -320,8 +321,8 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   std::vector<uint8_t> prefix_;
   mojo::ReceiverSet<blink::mojom::StorageArea> receivers_;
   mojo::RemoteSet<blink::mojom::StorageAreaObserver> observers_;
-  Delegate* delegate_;
-  AsyncDomStorageDatabase* database_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<AsyncDomStorageDatabase> database_;
 
   // For commits to work correctly the map loaded state (keys vs keys & values)
   // must stay consistent for a given commit batch.

@@ -68,7 +68,9 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
                                         startupInformation:nil
                                        applicationDelegate:nil];
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_];
+    scene_state_ =
+        [[FakeSceneState alloc] initWithAppState:app_state_
+                                    browserState:chrome_browser_state_.get()];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
   }
@@ -90,7 +92,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
                                          name:@"myName"];
     AuthenticationServiceFactory::GetForBrowserState(
         chrome_browser_state_.get())
-        ->SignIn(identity);
+        ->SignIn(identity, nil);
   }
 
   PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
@@ -196,7 +198,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandIfSignedIn) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent_->Initialize(mockHandler);
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   // Action: disable browser sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
@@ -230,7 +232,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, NoCommandIfNotActive) {
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kDisabled));
 
-  EXPECT_TRUE(scene_state_.appState.shouldShowPolicySignoutPrompt);
+  EXPECT_TRUE(scene_state_.appState.shouldShowForceSignOutPrompt);
   EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
@@ -264,7 +266,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
                                                startupInformation:nil
                                               applicationDelegate:nil];
   FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
+      [[FakeSceneState alloc] initWithAppState:app_state
+                                  browserState:chrome_browser_state_.get()];
   scene_state.activationLevel = SceneActivationLevelForegroundActive;
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
@@ -273,7 +276,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
       signin::ConsentLevel::kSignin));
 
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
   agent->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
@@ -296,7 +299,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
       [FakeChromeIdentity identityWithEmail:@"email@google.com"
                                      gaiaID:@"gaiaID"
                                        name:@"myName"];
-  authentication_service->SignIn(identity);
+  authentication_service->SignIn(identity, nil);
 
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
@@ -311,7 +314,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
   // update.
   agent_->SignInUIDismissed();
 
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(authentication_service->HasPrimaryIdentity(
@@ -330,14 +333,14 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
 
   // Strict protocol: method calls will fail until the method is stubbed.
   id mockHandler = OCMStrictProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->Initialize(mockHandler);
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
 
   // Reset the expectation for the SignInUIDismissed call.
-  OCMExpect([mockHandler showPolicySignoutPrompt]);
+  OCMExpect([mockHandler showForceSignedOutPrompt]);
 
   agent_->SignInUIDismissed();
 
@@ -366,30 +369,33 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state
+                                    browserState:chrome_browser_state_.get()];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
-  agent->Initialize(mockHandler);
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, true);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, true);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  [[mockHandler reject] showSyncDisabledAlert];
+    [[mockHandler reject] showSyncDisabledPrompt];
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
 }
 
 // Tests that the handler is called and the alert shown at startup as expected.
@@ -414,24 +420,29 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state
+                                    browserState:chrome_browser_state_.get()];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledAlert]);
-  agent->Initialize(mockHandler);
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    base::RunLoop().RunUntilIdle();
 
-  [[mockHandler reject] showSyncDisabledAlert];
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+    [[mockHandler reject] showSyncDisabledPrompt];
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
+
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
 }

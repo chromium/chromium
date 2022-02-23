@@ -14,33 +14,37 @@ import "url/mojom/url.mojom";
 // Manages the auction workflow for one loaded FLEDGE seller worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
-// The SellerWorklet is functionally stateless, so methods are
-// idempotent and can be called multiple times, in any order, for
-// multiple auctions using the same worklet. There is no need to wait
-// for one callback to be invoked before calling another method.
+// The SellerWorklet is functionally stateless, so methods are idempotent
+// and can be called multiple times, in any order, for multiple auctions
+// using the same worklet. There is no need to wait for one callback to be
+// invoked before calling another method. There is no guarantee methods will
+// complete in the order they are invoked.
 interface SellerWorklet {
-  // Calls the Javascript scoreAd() function to evaluate a bid. May only be
-  // called once the worklet has successfully completed loading. No data is
+  // Calls the Javascript scoreAd() function to evaluate a bid. No data is
   // leaked between consecutive invocations of this method, or between
   // invocations of this method and ReportResult().
   //
+  // In the case a worklet needs to fetch trusted scoring signals before
+  // running any Javascript, the method may wait so it can merge several signals
+  // fetched together. See SendPendingSignalsRequests() for more information.
+  //
   // Arguments:
   // `ad_metadata_json` JSON representation of the `ad` value returned by the
-  //  BidWorklet that offered the bid.
+  //  BidderWorklet that offered the bid.
   //
   // `bid` The numeric value of the bid offered by the BidWorklet.
   //
-  // `auction_config` The configuration provided by client JavaScript in the
-  //  renderer in order to initiate the auction.
-  //
-  // `browser_signal_top_window_origin` The top-level origin of the window
-  //  running the auction.
+  // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
+  //  vary between auctions that can share a SellerWorklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the bid.
   //
-  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
-  //  eventually to be replaced with a hash of the ad bundle, per spec.
+  // `browser_signal_render_url` The `renderUrl` returned by the
+  //  BidderWorklet making the bid.
+  //
+  // `browser_signal_ad_component_urls` The `adComponents` array returned by
+  //  the BidderWorklet making the bid.
   //
   // `browser_signal_bidding_duration_msecs` is the duration the BiddingWorklet
   //  took to generate the bid. Taken as milliseconds to reduce granularity of
@@ -51,44 +55,81 @@ interface SellerWorklet {
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
   //
+  // `scoring_signals_data_version` The value of the Data-Version header served
+  //  with the trusted scoring signals.
+  //
+  // `has_scoring_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted scoring signals.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
+  // `debug_loss_report_url` The URL to request if this bid does not win the
+  // auction. It's requested if the auction runs to completion and this is not
+  // the winning bid, including the case that this worklet rejects this bid
+  // outright, giving it a score <= 0. This field has the debug prefix because
+  // it's part of an interim reporting API that will be replaced with
+  // standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
+  // `debug_win_report_url` The URL to request if this bid wins the auction.
+  // This field has the debug prefix because it's part of an interim reporting
+  // API that will be replaced with standardized reporting APIs once available.
+  // It must be a valid HTTPS URL.
+  //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if `score` is positive, nor should it be assumed to be non-empty if
   //  `score` is 0.
   ScoreAd(string ad_metadata_json,
           double bid,
-          blink.mojom.AuctionAdConfig auction_config,
-          url.mojom.Origin browser_signal_top_window_origin,
+          blink.mojom.AuctionAdConfigNonSharedParams
+              auction_ad_config_non_shared_params,
           url.mojom.Origin browser_signal_interest_group_owner,
-          string browser_signal_ad_render_fingerprint,
+          url.mojom.Url browser_signal_render_url,
+          array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs) =>
-              (double score, array<string> errors);
+              (double score,
+              uint32 scoring_signals_data_version,
+              bool has_scoring_signals_data_version,
+              url.mojom.Url? debug_loss_report_url,
+              url.mojom.Url? debug_win_report_url,
+              array<string> errors);
+
+  // Hint to the worklet to send a network request for any needed trusted
+  // signals data now. SellerWorklets normally wait briefy for there to be a
+  // number of ScoreAd() calls before requesting trusted scoring signals so the
+  // request can be batched together. This method can be called once all bids
+  // have been generated to minimize the amount of time an auction spends
+  // waiting on trusted signals data once the final bid has been generated. Does
+  // nothing if no trusted scoring signals need to be fetched.
+  SendPendingSignalsRequests();
 
   // Calls the Javascript reportResult() function to get the information needed
   // to report the result of the auction to the seller. May only be called once
-  // the worklet has successfully completed loading. No data is leaked between
-  // consecutive invocations of this method, or between invocations of this
-  // method and ScoreAd().
+  // ScoreAd() has successfully scored an ad, which will ensure the worklet has
+  // completed loading. It does not make sense to invoke this with a score not
+  // generated by a previous ScoreAd() call, so this should not limit consumers.
+  // No data is leaked between consecutive invocations of this method, or
+  // between invocations of this method and ScoreAd().
   //
   // Arguments:
-  // `auction_config` The configuration provided by client JavaScript in the
-  //  renderer in order to initiate the auction.
-  //
-  // `browser_signal_top_window_origin` The top-level origin of the window
-  //  running the auction.
+  // `auction_ad_config_non_shared_params` Values in an AuctionConfig that can
+  //  vary between auctions that can share a SellerWorklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the winning bid.
   //
   // `browser_signal_render_url` The render URL provided by the winning bid.
   //
-  // `browser_signal_ad_render_fingerprint` The hash of the rendering URL,
-  //  eventually to be replaced with a hash of the ad bundle, per spec.
-  //
   // `browser_signal_bid` The numeric value of the winning bid.
   //
   // `browser_signal_desirability` The score returned by ScoreAd for the
   //  the winning bid.
+  //
+  // `scoring_signals_data_version` The value of the Data-Version header served
+  //  with the trusted scoring signals.
+  //
+  // `has_scoring_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted scoring signals.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
   // Returns:
   // `signals_for_winner` The value to pass to the winning bidder's
@@ -101,17 +142,20 @@ interface SellerWorklet {
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
   //  non-empty if the other values are null.
-  ReportResult(blink.mojom.AuctionAdConfig auction_config,
-               url.mojom.Origin browser_signal_top_window_origin,
-               url.mojom.Origin browser_signal_interest_group_owner,
-               url.mojom.Url browser_signal_render_url,
-               string browser_signal_ad_render_fingerprint,
-               double browser_signal_bid,
-               double browser_signal_desirability) =>
-                   (string? signals_for_winner,
-                    url.mojom.Url? report_url,
-                    array<string> error_msgs);
+  ReportResult(
+      blink.mojom.AuctionAdConfigNonSharedParams
+          auction_ad_config_non_shared_params,
+      url.mojom.Origin browser_signal_interest_group_owner,
+      url.mojom.Url browser_signal_render_url,
+      double browser_signal_bid,
+      double browser_signal_desirability,
+      uint32 scoring_signals_data_version,
+      bool has_scoring_signals_data_version) =>
+          (string? signals_for_winner,
+           url.mojom.Url? report_url,
+           array<string> error_msgs);
 
   // Establishes a debugger connection to the worklet.
-  ConnectDevToolsAgent(pending_receiver<blink.mojom.DevToolsAgent> agent);
+  ConnectDevToolsAgent(
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
 };

@@ -19,12 +19,13 @@ import './avatar_icon.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './password_remove_dialog.html.js';
 
 export type PasswordRemoveDialogPasswordsRemovedEvent =
     CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
@@ -43,7 +44,7 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

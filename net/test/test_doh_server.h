@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -56,19 +55,19 @@ class TestDohServer {
   // call `InitializeAndListen` before `GetTemplate`, followed by
   // `StartAcceptingConnections` when threads are allowed. See
   // `EmbeddedTestServer` for an example.
-  bool Start() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Start();
 
   // Initializes the listening socket for the test server, allocating a
   // listening port, and returns true on success or false on failure. Call
   // `StartAcceptingConnections` to finish initialization.
-  bool InitializeAndListen() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool InitializeAndListen();
 
   // Spawns a background thread and begins accepting connections. This method
   // must be called after `InitializeAndListen`.
   void StartAcceptingConnections();
 
   // Shuts down the server and waits until the shutdown is complete.
-  bool ShutdownAndWaitUntilComplete() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ShutdownAndWaitUntilComplete();
 
   // Returns the number of queries served so far.
   int QueriesServed();

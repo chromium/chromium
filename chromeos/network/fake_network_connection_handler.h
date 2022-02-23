@@ -56,8 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkConnectionHandler
     }
 
     void InvokeSuccessCallback();
-    void InvokeErrorCallback(const std::string& error_name,
-                             std::unique_ptr<base::DictionaryValue> error_data);
+    void InvokeErrorCallback(const std::string& error_name);
 
    private:
     std::string service_path_;

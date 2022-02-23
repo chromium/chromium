@@ -93,32 +93,6 @@ UIImage* NativeReversableImage(int imageID, BOOL reversable);
 // reversable; equivalent to NativeReversableImage(imageID, NO).
 UIImage* NativeImage(int imageID);
 
-// Returns an image resized to |targetSize|. It first calculate the projection
-// by calling CalculateProjection() and then create a new image of the desired
-// size and project the correct subset of the original image onto it.
-// The resulting image will have an alpha channel.
-//
-// Image interpolation level for resizing is set to kCGInterpolationDefault.
-//
-// The resize always preserves the scale of the original image.
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode);
-
-// Returns an image resized to |targetSize|. It first calculate the projection
-// by calling CalculateProjection() and then create a new image of the desired
-// size and project the correct subset of the original image onto it.
-// |opaque| determine whether resulting image should have an alpha channel.
-// Prefer setting |opaque| to YES for better performances.
-//
-// Image interpolation level for resizing is set to kCGInterpolationDefault.
-//
-// The resize always preserves the scale of the original image.
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode,
-                     BOOL opaque);
-
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are
 // ignored. If the color has alpha value of less than one, then the entire

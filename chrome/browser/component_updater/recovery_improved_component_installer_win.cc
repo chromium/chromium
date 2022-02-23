@@ -129,10 +129,7 @@ void RecoveryComponentActionHandlerWin::Elevate(Callback callback) {
 }
 
 void RecoveryComponentActionHandlerWin::RunElevatedInSTA(Callback callback) {
-  bool succeeded = false;
-  int error_code = 0;
-  int extra_code = 0;
-  std::tie(succeeded, error_code, extra_code) = RunRecoveryCRXElevated(
+  auto [succeeded, error_code, extra_code] = RunRecoveryCRXElevated(
       crx_path(), GetBrowserAppId(), GetBrowserVersion(), session_id());
   main_task_runner()->PostTask(
       FROM_HERE,

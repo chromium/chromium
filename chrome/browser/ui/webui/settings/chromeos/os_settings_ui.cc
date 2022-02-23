@@ -17,8 +17,8 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/chromeos/pref_names.h"
@@ -35,6 +35,21 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ui/gfx/native_widget_types.h"
+
+namespace {
+
+class AppManagementDelegate : public AppManagementPageHandler::Delegate {
+ public:
+  AppManagementDelegate() = default;
+  ~AppManagementDelegate() override = default;
+
+  gfx::NativeWindow GetUninstallAnchorWindow() const override {
+    return nullptr;
+  }
+};
+
+}  // namespace
 
 namespace chromeos {
 namespace settings {
@@ -127,9 +142,10 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<app_management::mojom::PageHandlerFactory> receiver) {
   if (!app_management_page_handler_factory_) {
+    auto delegate = std::make_unique<AppManagementDelegate>();
     app_management_page_handler_factory_ =
         std::make_unique<AppManagementPageHandlerFactory>(
-            Profile::FromWebUI(web_ui()));
+            Profile::FromWebUI(web_ui()), std::move(delegate));
   }
   app_management_page_handler_factory_->Bind(std::move(receiver));
 }

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/sequence_checker.h"
@@ -106,11 +106,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
 
   // Initializes, but does not necessarily start, the MetricsService. See the
   // documentation at the top of the file for more details.
-  //
-  // |user_data_dir| is the path to the client's user data directory. If empty,
-  // a separate file will not be used for Variations Safe Mode prefs.
-  void Initialize(const base::FilePath& user_data_dir,
-                  PrefService* pref_service);
+  void Initialize(PrefService* pref_service);
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
@@ -180,6 +176,19 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
     return metrics_state_manager_.get();
   }
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.metrics
+  enum class InstallerPackageType {
+    // App has been initially preinstalled in the system image.
+    SYSTEM_APP,
+    // App has been installed/updated by Google Play Store. Doesn't apply for
+    // apps whose most recent updates are sideloaded, even if the app was
+    // installed via Google Play Store.
+    GOOGLE_PLAY_STORE,
+    // App has been Sideloaded or installed/updated through a 3rd party app
+    // store.
+    OTHER,
+  };
+
   // Returns the embedding application's package name (unconditionally). The
   // value returned by this method shouldn't be logged/stored anywhere, callers
   // should use `GetAppPackageNameIfLoggable`.
@@ -210,6 +219,9 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // indicate reporting is disabled. Sampling is due to storage/bandwidth
   // considerations.
   bool IsInSample() const;
+
+  // Returns the installer type of the app.
+  virtual InstallerPackageType GetInstallerPackageType();
 
   // Determines if the embedder app is the type of app for which we may log the
   // package name. If this returns false, GetAppPackageNameIfLoggable() must
@@ -255,7 +267,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   std::unique_ptr<MetricsService> metrics_service_;
   std::unique_ptr<ukm::UkmService> ukm_service_;
   content::NotificationRegistrar registrar_;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   bool init_finished_ = false;
   bool set_consent_finished_ = false;
   bool user_consent_ = false;

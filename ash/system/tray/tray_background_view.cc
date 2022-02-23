@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
@@ -81,6 +82,16 @@ const float kAnimationBounceScaleFactor = 0.5;
 // can animate sibling views out of the position to be occupied by the
 // TrayBackgroundView.
 const base::TimeDelta kShowAnimationDelayMs = base::Milliseconds(100);
+
+// Number of active requests to disable CloseBubble().
+int g_disable_close_bubble_on_window_activated = 0;
+
+constexpr char kFadeInAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.FadeIn";
+constexpr char kBounceInAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.BounceIn";
+constexpr char kHideAnimationSmoothnessHistogramName[] =
+    "Ash.StatusArea.TrayBackgroundView.Hide";
 
 // Switches left and right insets if RTL mode is active.
 void MirrorInsetsIfNecessary(gfx::Insets* insets) {
@@ -339,6 +350,18 @@ base::ScopedClosureRunner TrayBackgroundView::DisableShowAnimation() {
       weak_factory_.GetWeakPtr()));
 }
 
+base::ScopedClosureRunner
+TrayBackgroundView::DisableCloseBubbleOnWindowActivated() {
+  ++g_disable_close_bubble_on_window_activated;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { --g_disable_close_bubble_on_window_activated; }));
+}
+
+// static
+bool TrayBackgroundView::ShouldCloseBubbleOnWindowActivated() {
+  return g_disable_close_bubble_on_window_activated == 0;
+}
+
 void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
   auto* status_area_widget = shelf_->GetStatusAreaWidget();
   if (status_area_widget) {
@@ -367,7 +390,7 @@ void TrayBackgroundView::ShowContextMenuForViewImpl(
   if (!context_menu_model_)
     return;
 
-  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  const int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                         views::MenuRunner::CONTEXT_MENU |
                         views::MenuRunner::FIXED_ANCHOR;
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -451,8 +474,6 @@ views::Widget* TrayBackgroundView::GetBubbleWidget() const {
   return nullptr;
 }
 
-void TrayBackgroundView::CloseBubble() {}
-
 void TrayBackgroundView::ShowBubble() {}
 
 void TrayBackgroundView::CalculateTargetBounds() {
@@ -500,6 +521,14 @@ void TrayBackgroundView::FadeInAnimation() {
     transform.Translate(width(), 0.0f);
   else
     transform.Translate(0.0f, height());
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kFadeInAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -562,6 +591,14 @@ void TrayBackgroundView::BounceInAnimation() {
   gfx::Transform move_down;
   move_down.Translate(bounce_down_location);
 
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kBounceInAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -602,6 +639,14 @@ void TrayBackgroundView::HideAnimation() {
 
   gfx::Transform scale_about_pivot =
       gfx::TransformAboutPivot(GetLocalBounds().CenterPoint(), scale);
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        DCHECK(0 <= smoothness && smoothness <= 100);
+        base::UmaHistogramPercentage(kHideAnimationSmoothnessHistogramName,
+                                     smoothness);
+      })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(

@@ -31,7 +31,6 @@ enum class ProcessType {
   UNINITIALIZED,
   OTHER_PROCESS,
   BROWSER_PROCESS,
-  CLOUD_PRINT_SERVICE_PROCESS,
 #if BUILDFLAG(ENABLE_NACL)
   NACL_BROKER_PROCESS,
   NACL_LOADER_PROCESS,
@@ -81,7 +80,6 @@ constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 constexpr wchar_t kRegValueUsageStats[] = L"usagestats";
 constexpr wchar_t kMetricsReportingEnabled[] = L"MetricsReportingEnabled";
 
-constexpr wchar_t kCloudPrintServiceProcess[] = L"service";
 #if BUILDFLAG(ENABLE_NACL)
 constexpr wchar_t kNaClBrokerProcess[] = L"nacl-broker";
 constexpr wchar_t kNaClLoaderProcess[] = L"nacl-loader";
@@ -262,8 +260,6 @@ bool GetChromeChannelNameFromString(const wchar_t* channel_test,
 ProcessType GetProcessType(const std::wstring& process_type) {
   if (process_type.empty())
     return ProcessType::BROWSER_PROCESS;
-  if (process_type == kCloudPrintServiceProcess)
-    return ProcessType::CLOUD_PRINT_SERVICE_PROCESS;
 #if BUILDFLAG(ENABLE_NACL)
   if (process_type == kNaClBrokerProcess)
     return ProcessType::NACL_BROKER_PROCESS;
@@ -282,7 +278,6 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   // lies on a network share the sandbox will prevent us from accessing it.
   switch (process_type) {
     case ProcessType::BROWSER_PROCESS:
-    case ProcessType::CLOUD_PRINT_SERVICE_PROCESS:
 #if BUILDFLAG(ENABLE_NACL)
     case ProcessType::NACL_BROKER_PROCESS:
     case ProcessType::NACL_LOADER_PROCESS:
@@ -413,6 +408,21 @@ const wchar_t* GetSandboxSidPrefix() {
 
 std::string GetSafeBrowsingName() {
   return kSafeBrowsingName;
+}
+
+const char* GetDeviceManagementServerHostName() {
+  static constexpr char kNoRestriction[] = "";
+
+  // If this brand doesn't specify a restriction, return an empty string.
+  if (!*kDeviceManagementServerHostName)
+    return kNoRestriction;
+
+  // Stable and extended stable Google Chrome are restricted to one host.
+  if (GetChromeChannel() == version_info::Channel::STABLE)
+    return kDeviceManagementServerHostName;
+
+  // Otherwise, return an empty string to indicate no restriction.
+  return kNoRestriction;
 }
 
 bool GetCollectStatsConsent() {
@@ -899,7 +909,7 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
         return {std::move(channel_from_override), ChannelOrigin::kPolicy,
                 is_extended_stable};
       }
-      FALLTHROUGH;  // Return the default channel name for the mode.
+      [[fallthrough]];  // Return the default channel name for the mode.
     }
     case ChannelStrategy::FIXED:
       return {mode.default_channel_name, ChannelOrigin::kInstallMode,

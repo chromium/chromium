@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -19,11 +20,12 @@ class MenuButtonProperties {
     static class ThemeProperty {
         @NonNull
         public ColorStateList mColorStateList;
-        public boolean mUseLightColors;
+        public @BrandedColorScheme int mBrandedColorScheme;
 
-        public ThemeProperty(@NonNull ColorStateList colorStateList, boolean useLight) {
+        public ThemeProperty(@NonNull ColorStateList colorStateList,
+                @BrandedColorScheme int brandedColorScheme) {
             mColorStateList = colorStateList;
-            mUseLightColors = useLight;
+            mBrandedColorScheme = brandedColorScheme;
         }
     }
 

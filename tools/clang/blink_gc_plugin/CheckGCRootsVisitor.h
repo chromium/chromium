@@ -11,6 +11,8 @@
 #include "Edge.h"
 #include "RecordInfo.h"
 
+struct BlinkGCPluginOptions;
+
 // This visitor checks that the fields of a class and the fields of
 // its part objects don't define GC roots.
 class CheckGCRootsVisitor : public RecursiveEdgeVisitor {
@@ -19,19 +21,22 @@ class CheckGCRootsVisitor : public RecursiveEdgeVisitor {
   typedef std::set<RecordInfo*> VisitingSet;
   typedef std::vector<RootPath> Errors;
 
-  CheckGCRootsVisitor();
+  explicit CheckGCRootsVisitor(const BlinkGCPluginOptions&);
 
   Errors& gc_roots();
 
   bool ContainsGCRoots(RecordInfo* info);
 
   void VisitValue(Value* edge) override;
+  void VisitUniquePtr(UniquePtr*) override;
   void VisitPersistent(Persistent* edge) override;
 
  private:
   RootPath current_;
   VisitingSet visiting_set_;
   Errors gc_roots_;
+
+  bool should_check_unique_ptrs_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_CHECK_GC_ROOTS_VISITOR_H_

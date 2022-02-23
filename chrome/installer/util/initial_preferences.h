@@ -22,7 +22,7 @@ class FilePath;
 
 namespace installer {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // This is the default name for the initial preferences file used to pre-set
 // values in the user profile at first run.
 const char kInitialPrefs[] = "initial_preferences";

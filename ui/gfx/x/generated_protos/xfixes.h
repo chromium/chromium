@@ -133,7 +133,6 @@ class COMPONENT_EXPORT(X11) XFixes {
   struct SelectionNotifyEvent {
     static constexpr int type_id = 18;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     SelectionEvent subtype{};
     uint16_t sequence{};
     Window window{};
@@ -148,7 +147,6 @@ class COMPONENT_EXPORT(X11) XFixes {
   struct CursorNotifyEvent {
     static constexpr int type_id = 19;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     CursorNotify subtype{};
     uint16_t sequence{};
     Window window{};

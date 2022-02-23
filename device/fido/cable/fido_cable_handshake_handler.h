@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableV1HandshakeHandler
   std::vector<uint8_t> GetEncryptionKeyAfterSuccessfulHandshake(
       base::span<const uint8_t, 16> authenticator_random_nonce) const;
 
-  FidoCableDevice* const cable_device_;
+  const raw_ptr<FidoCableDevice> cable_device_;
   std::array<uint8_t, 8> nonce_;
   std::array<uint8_t, 32> session_pre_key_;
   std::array<uint8_t, 16> client_session_random_;

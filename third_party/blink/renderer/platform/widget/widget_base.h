@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_base_input_handler.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace cc {
 class AnimationHost;
@@ -110,6 +111,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
 
+#if BUILDFLAG(IS_MAC)
+  void AddCoreAnimationErrorCodeCallback(
+      uint32_t frame_token,
+      base::OnceCallback<void(gfx::CALayerResult)> callback);
+#endif
+
   // mojom::blink::Widget overrides:
   void ForceRedraw(mojom::blink::Widget::ForceRedrawCallback callback) override;
   void GetWidgetInputHandler(
@@ -121,12 +128,12 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
-  void WasShown(base::TimeTicks show_request_timestamp,
-                bool was_evicted,
+  void WasShown(bool was_evicted,
+                bool in_active_window,
                 mojom::blink::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
+  void OnActiveWindowChanged(bool in_active_window) override;
   void RequestPresentationTimeForNextFrame(
-      base::TimeTicks show_request_timestamp,
       mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelPresentationTimeRequest() override;
@@ -386,6 +393,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // Helper to get the non-emulated device scale factor.
   float GetOriginalDeviceScaleFactor() const;
+
+  // Updates the compositors priority-cutoff based on whether the widget is
+  // contained in an active window.
+  void UpdateCompositorPriorityCutoff(bool in_active_window);
 
   // Indicates that we are never visible, so never produce graphical output.
   const bool never_composited_;

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/payments/merchant_validation_event.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/infobars/core/infobar.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
@@ -19,6 +20,7 @@ using infobars::InfoBar;
 
 namespace {
 // The name of the icon image for the save passwords banner.
+NSString* const kLegacyIconImageName = @"legacy_password_key";
 NSString* const kIconImageName = @"password_key";
 }
 
@@ -35,7 +37,11 @@ SavePasswordInfobarBannerOverlayRequestConfig::
   username_ = delegate->GetUserNameText();
   button_text_ = base::SysUTF16ToNSString(
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
-  icon_image_name_ = kIconImageName;
+  icon_image_name_ =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+          ? kIconImageName
+          : kLegacyIconImageName;
   password_length_ = delegate->GetPasswordText().length;
 }
 

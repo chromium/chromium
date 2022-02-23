@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CERTIFICATE_TRANSPARENCY_PREF_NAMES_H_
 #define COMPONENTS_CERTIFICATE_TRANSPARENCY_PREF_NAMES_H_
 
+#include "base/component_export.h"
+
 class PrefRegistrySimple;
 
 namespace certificate_transparency {
@@ -12,16 +14,17 @@ namespace prefs {
 
 // Registers the preferences related to Certificate Transparency policy
 // in the given pref registry.
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 void RegisterPrefs(PrefRegistrySimple* registry);
 
-// The set of hosts (as URLBlacklist-syntax filters) for which Certificate
+// The set of hosts (as URLBlocklist-syntax filters) for which Certificate
 // Transparency is required to be present.
-extern const char kCTRequiredHosts[];
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTRequiredHosts[];
 
-// The set of hosts (as URLBlacklist-syntax filters) for which Certificate
+// The set of hosts (as URLBlocklist-syntax filters) for which Certificate
 // Transparency information is allowed to be absent, even if it would
 // otherwise be required (e.g. as part of security policy).
-extern const char kCTExcludedHosts[];
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTExcludedHosts[];
 
 // The set of subjectPublicKeyInfo hashes in the form of
 // <hash-name>"/"<base64-hash-value>. If a certificate matches this SPKI, then
@@ -35,7 +38,7 @@ extern const char kCTExcludedHosts[];
 // 2) The matching certificate contains one or more organizationName
 //    attributes in the Subject, and those attributes are identical in
 //    ordering, number of values, and byte-for-byte equality of values.
-extern const char kCTExcludedSPKIs[];
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) extern const char kCTExcludedSPKIs[];
 
 // The set of subjectPublicKeyInfo hashes in the form of
 // <hash-name>"/"<base64-hash-value>. If a certificate matches this SPKI, then
@@ -45,6 +48,7 @@ extern const char kCTExcludedSPKIs[];
 // 2) The SPKI listed is not actively trusted in the current version of the
 //    ChromiumOS or Android root stores.
 //    (see '"legacy": true' in root_stores.json)
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 extern const char kCTExcludedLegacySPKIs[];
 
 }  // namespace prefs

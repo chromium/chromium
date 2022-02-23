@@ -6,20 +6,9 @@
     <include type="BINDATA" name="IDR_OOBE_ARC_APPS_DOWNLOADING_VIDEO" resource_path="res/arc_app_dowsnloading.mp4" file="../../../internal/resources/arc_support/videos/app_downloading.mp4" />
   </if>
 
-  <!-- Gesture Navigation animations. -->
-  <include type="BINDATA" compress="gzip" name="IDR_GESTURE_NAVIGATION_GO_HOME_ANIMATION" resource_path="gesture_go_home.json" file="images/gesture_go_home.json" />
-  <include type="BINDATA" compress="gzip" name="IDR_GESTURE_NAVIGATION_GO_BACK_ANIMATION" resource_path="gesture_go_back.json" file="images/gesture_go_back.json" />
-  <include type="BINDATA" compress="gzip" name="IDR_GESTURE_NAVIGATION_HOTSEAT_OVERVIEW_ANIMATION" resource_path="gesture_hotseat_overview.json" file="images/gesture_hotseat_overview.json" />
-
-  <!-- Marketing Opt In animations. -->
-  <include type="BINDATA" compress="gzip" name="IDR_MARKETING_OPT_IN_ALL_SET_ANIMATION" resource_path="all_set.json" file="images/all_set.json" />
-
   <!-- Multi-device Setup animation. -->
   <include type="BINDATA" compress="gzip" name="IDR_MULTIDEVICE_SETUP_ANIMATION_DARK" resource_path="multidevice_setup_dark.json" file="images/multidevice_setup_dark.json" />
   <include type="BINDATA" compress="gzip" name="IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT" resource_path="multidevice_setup_light.json" file="images/multidevice_setup_light.json" />
-
-  <!-- Apps downloading animation. -->
-  <include type="BINDATA" compress="gzip" name="IDR_APPS_DOWNLOADING_ANIMATION" resource_path="downloading_apps.json" file="images/downloading_apps.json" />
 
   <!-- Loading step animation. -->
   <include type="BINDATA" compress="gzip" name="IDR_LOGIN_SPINNER_ANIMATION" resource_path="spinner.json" file="images/spinner.json" />

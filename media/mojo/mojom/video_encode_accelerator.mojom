@@ -58,7 +58,7 @@ interface VideoEncodeAcceleratorProvider {
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
-  array<int32> bitrates;
+  array<uint32> bitrates;
 };
 
 // This defines a mojo transport format for
@@ -140,7 +140,7 @@ interface VideoEncodeAccelerator {
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
-             pending_remote<VideoEncodeAcceleratorClient> client)
+             pending_associated_remote<VideoEncodeAcceleratorClient> client)
       => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.
@@ -213,17 +213,29 @@ struct Vp9Metadata {
   array<uint8> p_diffs;
 };
 
+struct Av1Metadata {
+  bool inter_pic_predicted;
+  bool switch_frame;
+  bool end_of_picture;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
+  array<uint8> f_diffs;
+};
+
 // Codec specific metadata.
 union CodecMetadata {
   H264Metadata h264;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
+  Av1Metadata av1;
 };
 
 struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
+  int32 qp;
   CodecMetadata? codec_metadata;
 };
 

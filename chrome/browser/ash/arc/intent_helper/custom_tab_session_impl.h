@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

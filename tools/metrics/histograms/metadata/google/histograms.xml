@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="GoogleUpdate.ErrorHresult" enum="Hresult"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
@@ -39,97 +39,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GoogleUpdate.Inline.AppUpdateInfo.InstallStatus"
-    enum="InlineUpdateInstallStatus" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Records the instances where Play update API returned the
-    current install status of inline updates.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.AppUpdateInfo.UpdateAvailability"
-    enum="InlineUpdateAvailability" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Records the instances where Play update API returned the
-    current availability of inline updates.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.CallFailure"
-    enum="InlineUpdateCallFailure" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Records the instances where Play update API calls failed.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.StateChange.Error"
-    enum="InlineUpdateErrorCodes" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-<!-- Name completed by histogram_suffixes name="GoogleUpdate.Inline.InstallStatus" -->
-
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) Records the instances where Play update API notified us of an
-    install error during an update. This is keyed on the specific state so we
-    can tell which states are seeing which errors.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.UI.Install.Source"
-    enum="UpdateInteractionSource" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) The UI component that triggered an inline update to finish
-    and install.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.UI.Retry.Source"
-    enum="UpdateInteractionSource" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) The UI component that triggered an inline update to retry.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.Inline.UI.Start.Source"
-    enum="UpdateInteractionSource" expires_after="2020-10-15">
-  <obsolete>
-    Inline updates are deprecated as of M97.
-  </obsolete>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <summary>
-    (Android-only) The UI component that triggered an inline update to start.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.InstallDetails.UpdateCohort" units="units"
     expires_after="2019-06-01">
   <owner>nikunjb@chromium.org</owner>
@@ -137,22 +46,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Store the hash of update cohort name as reported by Chrome Updater on
     Windows. Recorded at the start of metrics service.
-  </summary>
-</histogram>
-
-<histogram name="GoogleUpdate.InstallerExitCode" enum="InstallStatus"
-    expires_after="M86">
-  <obsolete>
-    Removed in M88.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>ydago@chromium.org</owner>
-  <summary>
-    The exit code from Chrome's installer following a failed on-demand update
-    check. All values reported for this histogram fall in the
-    GOOGLE_UPDATE_ERROR_UPDATING bucket of the GoogleUpdate.UpdateErrorCode
-    histogram and the GOOPDATEINSTALL_E_INSTALLER_FAILED bucket of the
-    GoogleUpdate.ErrorHresult histogram.
   </summary>
 </histogram>
 
@@ -226,27 +119,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GoogleUpdate.UnexpectedState" units="units"
-    expires_after="M85">
-  <obsolete>
-    Removed in M87.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    An unrecognized CurrentState value received from Google Update while polling
-    for the status of an on-demand update check.
-  </summary>
-</histogram>
-
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The error code for a failed on-demand update check.</summary>
 </histogram>
 
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The result of an on-demand update check.</summary>

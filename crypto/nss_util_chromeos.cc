@@ -208,7 +208,7 @@ class ChromeOSTokenManager {
     state_ = (state_ == State::kTpmTokenInitialized) ? State::kTpmTokenEnabled
                                                      : State::kTpmTokenDisabled;
 
-    tpm_ready_callback_list_.Notify();
+    tpm_ready_callback_list_->Notify();
   }
 
   static void InitializeTPMTokenInThreadPool(CK_SLOT_ID token_slot_id,
@@ -262,7 +262,7 @@ class ChromeOSTokenManager {
 
     if (!IsInitializationFinished()) {
       // Call back to this method when initialization is finished.
-      tpm_ready_callback_list_.AddUnsafe(
+      tpm_ready_callback_list_->AddUnsafe(
           base::BindOnce(&ChromeOSTokenManager::IsTPMTokenEnabled,
                          base::Unretained(this) /* singleton is leaky */,
                          std::move(callback)));
@@ -412,7 +412,7 @@ class ChromeOSTokenManager {
 
     if (!IsInitializationFinished()) {
       // Call back to this method when initialization is finished.
-      tpm_ready_callback_list_.AddUnsafe(
+      tpm_ready_callback_list_->AddUnsafe(
           base::BindOnce(&ChromeOSTokenManager::GetSystemNSSKeySlot,
                          base::Unretained(this) /* singleton is leaky */,
                          std::move(callback)));
@@ -428,6 +428,24 @@ class ChromeOSTokenManager {
   }
 
   void ResetSystemSlotForTesting() { system_slot_.reset(); }
+
+  void ResetTokenManagerForTesting() {
+    // Prevent test failures when two tests in the same process use the same
+    // ChromeOSTokenManager from different threads.
+    DETACH_FROM_THREAD(thread_checker_);
+    state_ = State::kInitializationNotStarted;
+
+    // Configuring chaps_module_ here is not supported yet.
+    CHECK(!chaps_module_);
+
+    // Make sure there are no outstanding callbacks between tests.
+    // OnceClosureList doesn't provide a way to clear the callback list.
+    tpm_ready_callback_list_ = std::make_unique<base::OnceClosureList>();
+
+    chromeos_user_map_.clear();
+    ResetSystemSlotForTesting();  // IN-TEST
+    prepared_test_private_slot_.reset();
+  }
 
   void SetPrivateSoftwareSlotForChromeOSUserForTesting(ScopedPK11Slot slot) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -465,7 +483,8 @@ class ChromeOSTokenManager {
   }
 
   State state_ = State::kInitializationNotStarted;
-  base::OnceClosureList tpm_ready_callback_list_;
+  std::unique_ptr<base::OnceClosureList> tpm_ready_callback_list_ =
+      std::make_unique<base::OnceClosureList>();
 
   SECMODModule* chaps_module_ = nullptr;
   ScopedPK11Slot system_slot_;
@@ -503,6 +522,13 @@ void ResetSystemSlotForTesting() {
     g_token_manager.Get().ResetSystemSlotForTesting();  // IN-TEST
   }
   ChromeOSTokenManagerDataForTesting::GetInstance().test_system_slot.reset();
+}
+
+void ResetTokenManagerForTesting() {
+  if (g_token_manager.IsCreated()) {
+    g_token_manager.Get().ResetTokenManagerForTesting();  // IN-TEST
+  }
+  ResetSystemSlotForTesting();  // IN-TEST
 }
 
 void IsTPMTokenEnabled(base::OnceCallback<void(bool)> callback) {

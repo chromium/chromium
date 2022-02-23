@@ -4,11 +4,12 @@
 
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 
+#include <tuple>
+
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -358,7 +359,14 @@ TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
   loop3.Run();
 }
 
-TEST_F(IndexedDBDispatcherHostTest, OpenNewConnectionWhileUpgrading) {
+// TODO(crbug.com/1282613): Test is flaky on Mac in debug.
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
+#define MAYBE_OpenNewConnectionWhileUpgrading \
+  DISABLED_OpenNewConnectionWhileUpgrading
+#else
+#define MAYBE_OpenNewConnectionWhileUpgrading OpenNewConnectionWhileUpgrading
+#endif
+TEST_F(IndexedDBDispatcherHostTest, MAYBE_OpenNewConnectionWhileUpgrading) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
@@ -528,7 +536,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_PutWithInvalidBlob) {
         mojo::PendingRemote<blink::mojom::Blob> blob;
         // Ignore the result of InitWithNewPipeAndPassReceiver, to end up with
         // an invalid blob.
-        ignore_result(blob.InitWithNewPipeAndPassReceiver());
+        std::ignore = blob.InitWithNewPipeAndPassReceiver();
         external_objects.push_back(
             blink::mojom::IDBExternalObject::NewBlobOrFile(
                 blink::mojom::IDBBlobInfo::New(std::move(blob), "fakeUUID",

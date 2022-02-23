@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -119,7 +120,7 @@ class CreditCardEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class.
-    CreditCardEditorViewController* controller_;
+    raw_ptr<CreditCardEditorViewController> controller_;
   };
 
   bool GetSheetId(DialogViewID* sheet_id) override;
@@ -140,7 +141,7 @@ class CreditCardEditorViewController : public EditorViewController {
 
   // If non-nullptr, a pointer to an object to be edited. Must outlive this
   // controller.
-  autofill::CreditCard* credit_card_to_edit_;
+  raw_ptr<autofill::CreditCard> credit_card_to_edit_;
 
   // Keeps track of the card icons currently visible, keyed by basic card
   // network.

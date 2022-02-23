@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "url/url_canon.h"
 
@@ -49,6 +48,8 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(int sz) override;
 
  protected:
+  // `str_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data and tab_search:top100:2020).
   std::string* str_;
 };
 
@@ -82,30 +83,47 @@ class StringPieceReplacements : public Replacements<CharT> {
   void SetUsernameStr(const CharT* str) { SetImpl(&ParentT::SetUsername, str); }
   void SetUsernameStr(StringPieceT str) { SetImpl(&ParentT::SetUsername, str); }
   void SetUsernameStr(const StringT&&) = delete;
+  using ParentT::ClearUsername;
 
   void SetPasswordStr(const CharT* str) { SetImpl(&ParentT::SetPassword, str); }
   void SetPasswordStr(StringPieceT str) { SetImpl(&ParentT::SetPassword, str); }
   void SetPasswordStr(const StringT&&) = delete;
+  using ParentT::ClearPassword;
 
   void SetHostStr(const CharT* str) { SetImpl(&ParentT::SetHost, str); }
   void SetHostStr(StringPieceT str) { SetImpl(&ParentT::SetHost, str); }
   void SetHostStr(const StringT&&) = delete;
+  using ParentT::ClearHost;
 
   void SetPortStr(const CharT* str) { SetImpl(&ParentT::SetPort, str); }
   void SetPortStr(StringPieceT str) { SetImpl(&ParentT::SetPort, str); }
   void SetPortStr(const StringT&&) = delete;
+  using ParentT::ClearPort;
 
   void SetPathStr(const CharT* str) { SetImpl(&ParentT::SetPath, str); }
   void SetPathStr(StringPieceT str) { SetImpl(&ParentT::SetPath, str); }
   void SetPathStr(const StringT&&) = delete;
+  using ParentT::ClearPath;
 
   void SetQueryStr(const CharT* str) { SetImpl(&ParentT::SetQuery, str); }
   void SetQueryStr(StringPieceT str) { SetImpl(&ParentT::SetQuery, str); }
   void SetQueryStr(const StringT&&) = delete;
+  using ParentT::ClearQuery;
 
   void SetRefStr(const CharT* str) { SetImpl(&ParentT::SetRef, str); }
   void SetRefStr(StringPieceT str) { SetImpl(&ParentT::SetRef, str); }
   void SetRefStr(const StringT&&) = delete;
+  using ParentT::ClearRef;
+
+ private:
+  using ParentT::SetHost;
+  using ParentT::SetPassword;
+  using ParentT::SetPath;
+  using ParentT::SetPort;
+  using ParentT::SetQuery;
+  using ParentT::SetRef;
+  using ParentT::SetScheme;
+  using ParentT::SetUsername;
 };
 
 }  // namespace url

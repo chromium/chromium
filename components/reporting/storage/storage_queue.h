@@ -151,7 +151,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     Status Open(bool read_only);  // No-op if already opened.
     void Close();                 // No-op if not opened.
 
-    Status Delete();
+    void DeleteWarnIfFailed();
 
     // Attempts to read |size| bytes from position |pos| and returns
     // reference to the data that were actually read (no more than |size|).
@@ -216,7 +216,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
                scoped_refptr<CompressionModule> compression_module);
 
   // Initializes the object by enumerating files in the assigned directory
-  // and determines the sequencing information of the last record.
+  // and determines the sequence information of the last record.
   // Must be called once and only once after construction.
   // Returns OK or error status, if anything failed to initialize.
   // Called once, during initialization.
@@ -279,9 +279,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Adds used metadata file to the set.
   Status RestoreMetadata(base::flat_set<base::FilePath>* used_files_set);
 
-  // Delete all files except those listed in the set.
+  // Delete all files except those listed in |used_file_set|.
   void DeleteUnusedFiles(
-      const base::flat_set<base::FilePath>& used_files_setused_files_set);
+      const base::flat_set<base::FilePath>& used_files_set) const;
 
   // Helper method for Write(): deletes meta files up to, but not including
   // |sequencing_id_to_keep|. Any errors are ignored.

@@ -124,7 +124,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-    AddChildView(window_title_);
+    AddChildView(window_title_.get());
   }
 
   caption_button_container_ =
@@ -587,7 +587,7 @@ bool GlassBrowserFrameView::ShouldShowWindowTitle(TitlebarType type) const {
 }
 
 SkColor GlassBrowserFrameView::GetTitlebarColor() const {
-  return GetFrameColor();
+  return GetFrameColor(BrowserFrameActiveState::kUseCurrent);
 }
 
 void GlassBrowserFrameView::PaintTitlebar(gfx::Canvas* canvas) const {
@@ -704,7 +704,8 @@ void GlassBrowserFrameView::LayoutTitleBar() {
     next_leading_x = window_icon_bounds.right() + kIconTitleSpacing;
   }
 
-  if (web_app_frame_toolbar()) {
+  if (web_app_frame_toolbar() &&
+      !browser_view()->IsWindowControlsOverlayEnabled()) {
     const int web_app_titlebar_height =
         caption_button_container_->size().height();
     std::pair<int, int> remaining_bounds =

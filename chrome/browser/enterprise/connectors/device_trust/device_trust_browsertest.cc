@@ -8,13 +8,16 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -62,6 +65,21 @@ constexpr char kChallenge[] =
     "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
     "}";
 
+constexpr char kChallengeV1[] =
+    "{\"challenge\": "
+    "{"
+    "\"data\": "
+    "\"ChZFbnRlcnByaXNlS2V5Q2hhbGxlbmdlEiABAZTXEb/mB+E3Ncja9cazVIg3frBMjxpc"
+    "UfyWoC+M6xjOmrvJ0y8=\","
+    "\"signature\": "
+    "\"cEA1rPdSEuBaM/4cWOv8R/OicR5c8IT+anVnVd7ain6ucZuyyy/8sjWYK4JpvVu2Diy6y"
+    "6a77/5mis+QRNsbjVQ1QkEf7TcQOaGitt618jwQyhc54cyGhKUiuCok8Q7jc2gwrN6POKmB"
+    "3Vdx+nrhmmVjzp/QAGgamPoLQmuW5XM+Cq5hSrW/U8bg12KmrZ5OHYdiZLyGGlmgE811kpxq"
+    "dKQSWWB1c2xiu5ALY0q8aa8o/Hrzqko8JJbMXcefwrr9YxcEAoVH524mjtj83Pru55WfPmDL"
+    "2ZgSJhErFEQDvWjyX0cDuFX8fO2i40aAwJsFoX+Z5fHbd3kanTcK+ty56w==\""
+    "}"
+    "}";
+
 constexpr char kFakeCustomerId[] = "fake-customer-id";
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
@@ -77,10 +95,20 @@ constexpr char kVerifiedAccessChallengeHeader[] = "X-Verified-Access-Challenge";
 constexpr char kVerifiedAccessResponseHeader[] =
     "X-Verified-Access-Challenge-Response";
 
+constexpr char kFunnelHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Funnel";
+constexpr char kResultHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Result";
+constexpr char kLatencySuccessHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Success";
+constexpr char kLatencyFailureHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
+
 }  // namespace
 
-class DeviceTrustBrowserTest : public InProcessBrowserTest,
-                               public ::testing::WithParamInterface<bool> {
+class DeviceTrustBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   DeviceTrustBrowserTest() {
     browser_dm_token_storage_ =
@@ -100,6 +128,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUpOnMainThread();
 
     scoped_persistence_delegate_factory_.emplace();
+    scoped_rotation_command_factory_.emplace();
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
 
     auto* browser_policy_manager =
@@ -113,8 +142,13 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     browser_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(browser_policy_data));
 
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &DeviceTrustBrowserTest::HandleRequest, base::Unretained(this)));
+    // Device trust only works with VerfiedAccess v2. However make sure that v1
+    // headers are just treated like "untrusted" and nothing further.
+    const std::string header = use_v2_header() ? kChallenge : kChallengeV1;
+
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&DeviceTrustBrowserTest::HandleRequest,
+                            base::Unretained(this), header));
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
@@ -161,8 +195,13 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
   }
 
+  void ExpectFunnelStep(DTAttestationFunnelStep step) {
+    histogram_tester_.ExpectBucketCount(kFunnelHistogramName, step, 1);
+  }
+
   // This function needs to reflect how IdP are expected to behave.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const std::string& header,
       const net::test_server::HttpRequest& request) {
     auto deviceTrustHeader = request.headers.find(kDeviceTrustHeader);
     if (deviceTrustHeader != request.headers.end()) {
@@ -173,7 +212,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_FOUND);
       response->AddCustomHeader("Location", GetRedirectLocationUrl().spec());
-      response->AddCustomHeader(kVerifiedAccessChallengeHeader, kChallenge);
+      response->AddCustomHeader(kVerifiedAccessChallengeHeader, header);
       return response;
     }
 
@@ -195,12 +234,14 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  bool is_enabled() { return GetParam(); }
+  bool is_enabled() { return std::get<0>(GetParam()); }
+  bool use_v2_header() { return std::get<1>(GetParam()); }
 
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   absl::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
@@ -208,6 +249,8 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
       challenge_response_request_;
   absl::optional<test::ScopedKeyPersistenceDelegateFactory>
       scoped_persistence_delegate_factory_;
+  absl::optional<ScopedKeyRotationCommandFactory>
+      scoped_rotation_command_factory_;
 };
 
 // Tests that the whole attestation flow occurs when navigating to an allowed
@@ -227,12 +270,16 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
     // been triggered (and that is the end of the test);
     EXPECT_FALSE(initial_attestation_request_);
     EXPECT_FALSE(challenge_response_request_);
+
+    histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
     return;
   }
 
   // Attestation flow should be fully done.
   EXPECT_TRUE(initial_attestation_request_);
-  EXPECT_TRUE(challenge_response_request_);
 
   // Validate that the two requests contain expected information. URLs' paths
   // have to be used for comparison due to how the HostResolver is replacing
@@ -243,14 +290,37 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
       initial_attestation_request_->headers.find(kDeviceTrustHeader)->second,
       kDeviceTrustHeaderValue);
 
-  EXPECT_EQ(challenge_response_request_->GetURL().path(),
-            GetRedirectLocationUrl().path());
+  EXPECT_EQ(use_v2_header(), challenge_response_request_.has_value());
 
-  // TODO(crbug.com/1241857): Add challenge-response validation.
-  const std::string& challenge_response =
-      challenge_response_request_->headers.find(kVerifiedAccessResponseHeader)
-          ->second;
-  EXPECT_TRUE(!challenge_response.empty());
+  ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
+  ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
+  ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+
+  if (use_v2_header()) {
+    EXPECT_EQ(challenge_response_request_->GetURL().path(),
+              GetRedirectLocationUrl().path());
+
+    // TODO(crbug.com/1241857): Add challenge-response validation.
+    const std::string& challenge_response =
+        challenge_response_request_->headers
+            .find(kVerifiedAccessResponseHeader)
+            ->second;
+    EXPECT_TRUE(!challenge_response.empty());
+
+    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
+    histogram_tester_.ExpectUniqueSample(kResultHistogramName,
+                                         DTAttestationResult::kSuccess, 1);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 1);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  } else {
+    histogram_tester_.ExpectBucketCount(
+        kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent,
+        0);
+    histogram_tester_.ExpectUniqueSample(
+        kResultHistogramName, DTAttestationResult::kBadChallengeFormat, 1);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 1);
+  }
 }
 
 // Tests that the attestation flow does not get triggered when navigating to a
@@ -268,6 +338,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list is
@@ -285,6 +360,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list
@@ -300,8 +380,15 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, DeviceTrustBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeviceTrustBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

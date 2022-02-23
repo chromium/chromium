@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -19,18 +20,6 @@
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation SigninEarlGreyImpl
-
-- (FakeChromeIdentity*)fakeIdentity1 {
-  return [SigninEarlGreyAppInterface fakeIdentity1];
-}
-
-- (FakeChromeIdentity*)fakeIdentity2 {
-  return [SigninEarlGreyAppInterface fakeIdentity2];
-}
-
-- (FakeChromeIdentity*)fakeManagedIdentity {
-  return [SigninEarlGreyAppInterface fakeManagedIdentity];
-}
 
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
@@ -79,6 +68,34 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [fakeIdentity.gaiaID isEqualToString:primaryAccountGaiaID], errorStr);
 }
 
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
+                              consent:(signin::ConsentLevel)consent {
+  EG_TEST_HELPER_ASSERT_TRUE(expectedEmail.length, @"Need to give an identity");
+
+  // Required to avoid any problem since the following test is not dependant
+  // to UI, and the previous action has to be totally finished before going
+  // through the assert.
+  GREYAssert(WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout,
+                 ^bool {
+                   NSString* primaryAccountEmail = [SigninEarlGreyAppInterface
+                       primaryAccountEmailWithConsent:consent];
+                   return primaryAccountEmail.length > 0;
+                 }),
+             @"Sign in did not complete.");
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  NSString* primaryAccountEmail =
+      [SigninEarlGreyAppInterface primaryAccountEmailWithConsent:consent];
+
+  NSString* errorStr = [NSString
+      stringWithFormat:@"Unexpected email of the signed in user [expected = "
+                       @"\"%@\", actual = \"%@\", consent %d]",
+                       expectedEmail, primaryAccountEmail, consent];
+  EG_TEST_HELPER_ASSERT_TRUE(
+      [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
+}
+
 - (void)verifySignedOut {
   // Required to avoid any problem since the following test is not dependant to
   // UI, and the previous action has to be totally finished before going through
@@ -104,14 +121,25 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       enabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 
-  id<GREYMatcher> GetSettingsGoogleSyncAndServicesCellMatcher =
+  id<GREYMatcher> getSettingsGoogleSyncAndServicesCellMatcher =
       grey_allOf(grey_accessibilityValue(accessibilityString),
                  grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
                  grey_sufficientlyVisible(), nil);
 
   [[EarlGrey
-      selectElementWithMatcher:GetSettingsGoogleSyncAndServicesCellMatcher]
+      selectElementWithMatcher:getSettingsGoogleSyncAndServicesCellMatcher]
       assertWithMatcher:grey_notNil()];
+}
+
+- (void)verifySyncUIIsHidden {
+  id<GREYMatcher> getSettingsGoogleSyncAndServicesCellMatcher = grey_allOf(
+      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_OFF)),
+      grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+      grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey
+      selectElementWithMatcher:getSettingsGoogleSyncAndServicesCellMatcher]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -166,12 +167,13 @@ class ContentAutofillDriver : public AutofillDriver,
   // These events are forwarded to ContentAutofillRouter.
   // Their implementations (*Impl()) call into the renderer via
   // mojom::AutofillAgent.
-  void FillOrPreviewForm(int query_id,
-                         mojom::RendererFormDataAction action,
-                         const FormData& data,
-                         const url::Origin& triggered_origin,
-                         const base::flat_map<FieldGlobalId, ServerFieldType>&
-                             field_type_map) override;
+  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+      int query_id,
+      mojom::RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
+      override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(
@@ -387,17 +389,11 @@ class ContentAutofillDriver : public AutofillDriver,
   // received from the renderer.
   void SetFrameAndFormMetaData(FormData& form,
                                FormFieldData* optional_field) const;
-  FormData GetFormWithFrameAndFormMetaData(FormData form) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.
   bool DocumentUsedWebOTP() const;
-
-  // Show a bubble or infobar indicating that the current page has an eligible
-  // offer or reward, if the bubble/infobar is not currently being visible.
-  void ShowOfferNotificationIfApplicable(
-      content::NavigationHandle* navigation_handle);
 
   // Returns the AutofillRouter and confirms that it may be accessed (we should
   // not be using the router if we're prerendering).
@@ -405,12 +401,12 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
-  content::RenderFrameHost* const render_frame_host_ = nullptr;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
 
   // Weak ref to the AutofillRouter associated with the WebContents. Please
   // access this via GetAutofillRouter() above as it also confirms that the
   // router may be accessed.
-  ContentAutofillRouter* autofill_router_ = nullptr;
+  raw_ptr<ContentAutofillRouter> autofill_router_ = nullptr;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the
@@ -428,14 +424,14 @@ class ContentAutofillDriver : public AutofillDriver,
   // The pointer to autofill_manager_ if it is BrowserAutofillManager instance.
   // TODO: unify autofill_manager_ and browser_autofill_manager_ to a single
   // pointer to a common root.
-  BrowserAutofillManager* browser_autofill_manager_;
+  raw_ptr<BrowserAutofillManager> browser_autofill_manager_;
 
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_impl_;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
-  LogManager* const log_manager_;
+  const raw_ptr<LogManager> log_manager_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

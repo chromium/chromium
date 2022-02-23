@@ -11,12 +11,12 @@
 #include <string>
 
 #include "base/fuchsia/process_lifecycle.h"
-#include "base/macros.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/web_engine_export.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace base {
 class FuchsiaIntlProfileWatcher;
@@ -110,6 +110,12 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
 
   // Used to respond to changes to the system's current locale.
   std::unique_ptr<base::FuchsiaIntlProfileWatcher> intl_profile_watcher_;
+
+  // Used to report networking-related Client Hints.
+  std::unique_ptr<network::NetworkQualityTracker> network_quality_tracker_;
+  std::unique_ptr<
+      network::NetworkQualityTracker::RTTAndThroughputEstimatesObserver>
+      network_quality_observer_;
 
   base::OnceClosure quit_closure_;
 };

@@ -95,11 +95,6 @@ using web::WebFrame;
 
 namespace {
 
-class MockWebState : public web::FakeWebState {
- public:
-  MOCK_CONST_METHOD0(GetBrowserState, web::BrowserState*(void));
-};
-
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext() = default;
@@ -448,7 +443,7 @@ class PasswordControllerTest : public ChromeWebTest {
     ASSERT_TRUE(SetUpUniqueIDs());
   }
 
-  bool LoadHtml(const std::string& html) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool LoadHtml(const std::string& html) {
     bool result = ChromeWebTest::LoadHtml(html);
     if (result) {
       result = SetUpUniqueIDs();
@@ -1247,8 +1242,7 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
   }
 }
 
-// The test case below needs to use MockWebState, thus it needs a different
-// SetUp.
+// The test cases below need a different SetUp.
 class PasswordControllerTestSimple : public PlatformTest {
  public:
   PasswordControllerTestSimple() {}
@@ -1260,9 +1254,6 @@ class PasswordControllerTestSimple : public PlatformTest {
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
-    std::unique_ptr<TestChromeBrowserState> browser_state(builder.Build());
-    ON_CALL(web_state_, GetBrowserState)
-        .WillByDefault(testing::Return(browser_state.get()));
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
     passwordController_ =
@@ -1275,13 +1266,12 @@ class PasswordControllerTestSimple : public PlatformTest {
         .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
   }
 
+  base::test::TaskEnvironment task_environment_;
+
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;
-  MockWebState web_state_;
-  base::test::TaskEnvironment task_environment;
-  TestChromeBrowserState::Builder builder;
-  std::unique_ptr<TestChromeBrowserState> browser_state;
+  web::FakeWebState web_state_;
 };
 
 TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
@@ -1362,8 +1352,9 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   // parser is gone.
   EXPECT_CALL(*store_, GetLogins(expected_form_digest, _))
       .WillRepeatedly(testing::Invoke(
-          [&get_logins_called](const password_manager::PasswordFormDigest&,
-                               password_manager::PasswordStoreConsumer*) {
+          [&get_logins_called](
+              const password_manager::PasswordFormDigest&,
+              base::WeakPtr<password_manager::PasswordStoreConsumer>) {
             get_logins_called = true;
           }));
 

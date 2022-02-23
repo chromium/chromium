@@ -4,6 +4,8 @@
 
 #include "components/query_tiles/internal/tile_iterator.h"
 
+#include <ostream>
+
 #include "components/query_tiles/internal/tile_group.h"
 #include "components/query_tiles/tile.h"
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 
 namespace captive_portal {
@@ -36,7 +37,7 @@ class CaptivePortalLoginDetector {
   void SetIsLoginTab();
 
  private:
-  CaptivePortalService* captive_portal_service_;
+  raw_ptr<CaptivePortalService> captive_portal_service_;
 
   // True if this is a login tab.  Set manually, automatically cleared once
   // login is detected.

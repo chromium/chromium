@@ -14,16 +14,17 @@ import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.js';
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSession, ForeignSessionTab} from './externs.js';
 import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
+import {getTemplate} from './synced_device_manager.html.js';
 
 type ForeignDeviceInternal = {
   device: string,
@@ -45,12 +46,18 @@ declare global {
 export interface HistorySyncedDeviceManagerElement {
   $: {
     'menu': CrLazyRenderElement<CrActionMenuElement>,
+    'no-synced-tabs': HTMLElement,
+    'sign-in-guide': HTMLElement,
   };
 }
 
 export class HistorySyncedDeviceManagerElement extends PolymerElement {
   static get is() {
     return 'history-synced-device-manager';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -112,8 +119,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.focusGrid_ = new FocusGrid();
 
     // Update the sign in state.
-    BrowserService.getInstance().otherDevicesInitialized();
-    BrowserService.getInstance().recordHistogram(
+    BrowserServiceImpl.getInstance().otherDevicesInitialized();
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
   }
@@ -122,6 +129,16 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.focusGrid_!.destroy();
+  }
+
+  configureSignInForTest(data: {
+    signInState: boolean,
+    signInAllowed: boolean,
+    guestSession: boolean
+  }) {
+    this.signInState = data.signInState;
+    this.signInAllowed_ = data.signInAllowed;
+    this.guestSession_ = data.guestSession;
   }
 
   /** @return {HTMLElement} */
@@ -175,27 +192,28 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private onSignInTap_() {
-    BrowserService.getInstance().startSignInFlow();
+    BrowserServiceImpl.getInstance().startSignInFlow();
   }
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
-    this.$['menu'].get().showAt(e.detail.target);
-    BrowserService.getInstance().recordHistogram(
+    this.$.menu.get().showAt(e.detail.target);
+    BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
   }
 
   private onOpenAllTap_() {
-    const menu = assert(this.$['menu'].getIfExists());
-    const browserService = BrowserService.getInstance();
+    const menu = this.$.menu.getIfExists();
+    assert(menu);
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
         SyncedTabsHistogram.LIMIT);
-    browserService.openForeignSessionAllTabs(
-        assert(this.actionMenuModel_) as string);
+    assert(this.actionMenuModel_);
+    browserService.openForeignSessionAllTabs(this.actionMenuModel_);
     this.actionMenuModel_ = null;
-    menu!.close();
+    menu.close();
   }
 
   private updateFocusGrid_() {
@@ -221,15 +239,20 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private onDeleteSessionTap_() {
-    const menu = assert(this.$['menu'].getIfExists()) as CrActionMenuElement;
-    const browserService = BrowserService.getInstance();
+    const menu = this.$.menu.getIfExists();
+    assert(menu);
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HIDE_FOR_NOW,
         SyncedTabsHistogram.LIMIT);
-    browserService.deleteForeignSession(
-        assert(this.actionMenuModel_) as string);
+    assert(this.actionMenuModel_);
+    browserService.deleteForeignSession(this.actionMenuModel_);
     this.actionMenuModel_ = null;
-    menu!.close();
+    menu.close();
+  }
+
+  clearSyncedDevicesForTest() {
+    this.clearDisplayedSyncedDevices_();
   }
 
   private clearDisplayedSyncedDevices_() {
@@ -258,7 +281,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
       signInAllowed: boolean): boolean {
     const show = !signInState && !guestSession && signInAllowed;
     if (show) {
-      BrowserService.getInstance().recordAction(
+      BrowserServiceImpl.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');
     }
 
@@ -293,7 +316,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
 
     if (sessionList.length > 0 && !this.hasSeenForeignData_) {
       this.hasSeenForeignData_ = true;
-      BrowserService.getInstance().recordHistogram(
+      BrowserServiceImpl.getInstance().recordHistogram(
           SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.HAS_FOREIGN_DATA,
           SyncedTabsHistogram.LIMIT);
     }
@@ -336,9 +359,11 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
     this.clearDisplayedSyncedDevices_();
     this.updateSyncedDevices(this.sessionList);
   }
+}
 
-  static get template() {
-    return html`{__html_template__}`;
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-synced-device-manager': HistorySyncedDeviceManagerElement;
   }
 }
 

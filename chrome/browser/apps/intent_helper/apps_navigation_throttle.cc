@@ -241,9 +241,8 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
           apps::mojom::LaunchSource::kFromUrlHandler);
       launch_params.override_url = handle->GetURL();
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(launch_params));
+      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+          std::move(launch_params));
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
   }

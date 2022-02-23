@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,6 +43,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -65,6 +67,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -211,6 +214,23 @@ class SignedExchangeRequestHandlerBrowserTestBase
     sxg_test_helper_.InstallMockCertChainInterceptor();
   }
 
+  // Make the MockCertVerifier treat the signed exchange's certificate
+  // "prime256v1-sha256.public.pem" as valid for "test.example.org", but
+  // issued by a known root.
+  void InstallMockCertByKnownRoot() {
+    scoped_refptr<net::X509Certificate> original_cert =
+        SignedExchangeBrowserTestHelper::LoadCertificate();
+    net::CertVerifyResult dummy_result;
+    dummy_result.verified_cert = original_cert;
+    dummy_result.cert_status = net::OK;
+    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
+    dummy_result.ocsp_result.revocation_status =
+        net::OCSPRevocationStatus::GOOD;
+    dummy_result.is_issued_by_known_root = true;
+    mock_cert_verifier()->AddResultForCertAndHost(
+        original_cert, "test.example.org", dummy_result, net::OK);
+  }
+
   void SetAcceptLangs(const std::string langs) {
     client_.SetAcceptLangs(langs);
     StoragePartitionImpl* partition =
@@ -229,7 +249,7 @@ class SignedExchangeRequestHandlerBrowserTestBase
   MockContentBrowserClient client_;
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
@@ -325,8 +345,7 @@ class SignedExchangeRequestHandlerBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
-                       DISABLED_Simple) {
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
   InstallMockCert();
   InstallMockCertChainInterceptor();
 
@@ -404,8 +423,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
-                       DISABLED_VariantMatch) {
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
   SetAcceptLangs("en-US,fr");
   InstallUrlInterceptor(
       GURL("https://cert.example.org/cert.msg"),
@@ -676,6 +694,93 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, CertNotFound) {
       "SignedExchange.Time.CertificateFetch.Failure", UsePrefetch() ? 2 : 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"https://test.example.org/test/";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  histogram_tester_.ExpectUniqueSample(
+      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
+      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgNotUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallUrlInterceptor(GURL("https://test.example.org/test/"),
+                        "content/test/data/sxg/fallback.html");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  SetCookie(shell()->web_contents()->GetBrowserContext(),
+            GURL("https://test.example.org/test/"), "milk=1");
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"Fallback URL response";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  if (UsePrefetch()) {
+    // kSuccess is recorded for successful prefetch, and
+    // kHadCookieForCookielessOnlySXG is recorded by not being used for actual
+    // navigation.
+    histogram_tester_.ExpectBucketCount(kLoadResultHistogram,
+                                        SignedExchangeLoadResult::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+    histogram_tester_.ExpectTotalCount(kLoadResultHistogram, 2);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeRequestHandlerBrowserTest,
                          ::testing::Combine(::testing::Bool(),
@@ -711,7 +816,7 @@ class SignedExchangeRequestHandlerDownloadBrowserTest
     }
 
    private:
-    DownloadManager* manager_;
+    raw_ptr<DownloadManager> manager_;
     base::RunLoop run_loop_;
     GURL url_;
     std::string content_disposition_;
@@ -825,7 +930,7 @@ class SignedExchangeRequestHandlerRealCertVerifierBrowserTest
 
 // If this fails with ERR_CERT_DATE_INVALID, try to regenerate test data
 // by running generate-test-certs.sh and generate-test-sxgs.sh in
-// src/content/test/data/sxg.
+// src/content/test/data/sxg. See https://crbug.com/1279652.
 IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
                        Basic) {
   InstallUrlInterceptor(
@@ -1394,20 +1499,8 @@ class SignedExchangeExpectCTReportBrowserTest
     mock_cert_verifier()->AddResultForCert(report_server_.GetCertificate(),
                                            ssl_server_result, net::OK);
 
-    // Make the MockCertVerifier treat the signed exchange's certificate
-    // "prime256v1-sha256.public.pem" as valid for "test.example.org", but
-    // issued by a known root, which should cause a CT failure.
-    scoped_refptr<net::X509Certificate> original_cert =
-        SignedExchangeBrowserTestHelper::LoadCertificate();
-    net::CertVerifyResult dummy_result;
-    dummy_result.verified_cert = original_cert;
-    dummy_result.cert_status = net::OK;
-    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
-    dummy_result.ocsp_result.revocation_status =
-        net::OCSPRevocationStatus::GOOD;
-    dummy_result.is_issued_by_known_root = true;
-    mock_cert_verifier()->AddResultForCertAndHost(
-        original_cert, "test.example.org", dummy_result, net::OK);
+    // Use a mock cert issued by a known root, which should cause a CT failure.
+    InstallMockCertByKnownRoot();
     InstallMockCertChainInterceptor();
 
     // Set up server used to serve the signed exchange.
@@ -1547,7 +1640,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeExpectCTReportBrowserTest,
     // ERR_NAME_NOT_RESOLVED.
     NavigationHandleObserver observer(shell()->web_contents(), sxg_url());
     EXPECT_FALSE(NavigateToURL(shell(), sxg_url()));
-    EXPECT_EQ(sxg_validity_url(), shell()->web_contents()->GetURL());
+    EXPECT_EQ(sxg_validity_url(),
+              shell()->web_contents()->GetLastCommittedURL());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
   }
 
@@ -1724,7 +1818,8 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeReportingBrowserTest,
     // ERR_NAME_NOT_RESOLVED.
     NavigationHandleObserver observer(shell()->web_contents(), sxg_url());
     EXPECT_FALSE(NavigateToURL(shell(), sxg_url()));
-    EXPECT_EQ(sxg_validity_url(), shell()->web_contents()->GetURL());
+    EXPECT_EQ(sxg_validity_url(),
+              shell()->web_contents()->GetLastCommittedURL());
     EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
   }
 
@@ -1741,5 +1836,110 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ::testing::Bool()));
 
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+class SignedExchangePKPBrowserTest
+    : public SignedExchangeRequestHandlerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    SignedExchangeRequestHandlerBrowserTest::SetUpOnMainThread();
+
+    // Make all attempts to connect to the domain the SXG is for fail with a DNS
+    // error. Without this, they're fail with ERR_NOT_IMPLEMENTED. Making
+    // requests fail with ERR_NAME_NOT_RESOLVED instead better matches what
+    // happens in production.
+    host_resolver()->AddSimulatedFailure("test.example.org");
+
+    // Use a mock cert issued by a known root, so that PKP violation will not be
+    // bypassed. It also causes a CT failure, but PKP error takes precedence.
+    InstallMockCertByKnownRoot();
+    InstallMockCertChainInterceptor();
+
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    EXPECT_TRUE(embedded_test_server()->Start());
+    EnableStaticPins(embedded_test_server()->port());
+  }
+
+  void TearDownOnMainThread() override {
+    if (IsOutOfProcessNetworkService()) {
+      mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      GetNetworkService()->BindTestInterface(
+          network_service_test.BindNewPipeAndPassReceiver());
+      network_service_test->SetTransportSecurityStateSource(0);
+    } else {
+      RunOnIOThreadBlocking(
+          base::BindOnce(&SignedExchangePKPBrowserTest::CleanUpOnIOThread,
+                         base::Unretained(this)));
+    }
+    SignedExchangeRequestHandlerBrowserTest::TearDownOnMainThread();
+  }
+
+  void EnableStaticPins(int reporting_port) {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
+    partition->FlushNetworkInterfaceForTesting();
+
+    if (IsOutOfProcessNetworkService()) {
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      GetNetworkService()->BindTestInterface(
+          network_service_test.BindNewPipeAndPassReceiver());
+      network_service_test->SetTransportSecurityStateSource(reporting_port);
+    } else {
+      // TODO(https://crbug.com/1008175):  This code is not threadsafe, as the
+      // network stack does not run on the IO thread. Ideally, the
+      // NetworkServiceTest object would be set up in-process on the network
+      // service's thread, and this path would be removed.
+      RunOnIOThreadBlocking(base::BindOnce(
+          &SignedExchangePKPBrowserTest::SetTransportSecurityStateSourceOnIO,
+          base::Unretained(this), reporting_port));
+    }
+  }
+
+ private:
+  void RunOnIOThreadBlocking(base::OnceClosure task) {
+    base::RunLoop run_loop;
+    GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, std::move(task),
+                                                run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SetTransportSecurityStateSourceOnIO(int reporting_port) {
+    transport_security_state_source_ =
+        std::make_unique<net::ScopedTransportSecurityStateSource>(
+            reporting_port);
+  }
+
+  void CleanUpOnIOThread() { transport_security_state_source_.reset(); }
+
+  // Only used when NetworkService is disabled. Accessed on IO thread.
+  std::unique_ptr<net::ScopedTransportSecurityStateSource>
+      transport_security_state_source_;
+};
+
+IN_PROC_BROWSER_TEST_P(SignedExchangePKPBrowserTest, PKPViolation) {
+  GURL sxg_url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
+  GURL fallback_url("https://test.example.org/test/");
+
+  MaybeTriggerPrefetchSXG(sxg_url, false);
+
+  NavigationHandleObserver observer(shell()->web_contents(), sxg_url);
+  EXPECT_FALSE(NavigateToURL(shell(), sxg_url));
+  EXPECT_EQ(fallback_url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, observer.net_error_code());
+  histogram_tester_.ExpectUniqueSample(
+      kLoadResultHistogram, SignedExchangeLoadResult::kPKPViolationError,
+      UsePrefetch() ? 2 : 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SignedExchangePKPBrowserTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 }  // namespace content

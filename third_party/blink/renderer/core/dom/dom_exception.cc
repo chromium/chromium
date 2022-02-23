@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 
+#include "base/notreached.h"
 
 namespace blink {
 

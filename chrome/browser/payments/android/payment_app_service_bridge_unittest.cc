@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
@@ -86,7 +87,7 @@ class PaymentAppServiceBridgeUnitTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile browser_context_;
   content::TestWebContentsFactory test_web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL top_origin_;
   GURL frame_origin_;
   scoped_refptr<PaymentManifestWebDataService> web_data_service_;
@@ -106,6 +107,7 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
           /*number_of_factories=*/3, web_contents_->GetMainFrame(), top_origin_,
           spec.AsWeakPtr(), /*twa_package_name=*/GetParam(), web_data_service_,
           /*may_crawl_for_installable_payment_apps=*/true,
+          /*is_off_the_record=*/false,
           base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
                               base::Unretained(&mock_callback)),
           base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,

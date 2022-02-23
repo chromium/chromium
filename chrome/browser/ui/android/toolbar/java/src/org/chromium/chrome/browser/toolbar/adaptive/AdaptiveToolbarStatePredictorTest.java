@@ -32,7 +32,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.HashMap;
 import java.util.Map;

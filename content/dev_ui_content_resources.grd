@@ -15,9 +15,6 @@ files that belong there instead.
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_APPCACHE_INTERNALS_HTML" file="browser/resources/appcache/appcache_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_APPCACHE_INTERNALS_JS" file="browser/resources/appcache/appcache_internals.js" flattenhtml="false" type="BINDATA" />
-      <include name="IDR_APPCACHE_INTERNALS_CSS" file="browser/resources/appcache/appcache_internals.css" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_HTML" file="browser/resources/attribution_reporting/attribution_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_JS" file="browser/resources/attribution_reporting/attribution_internals.js" type="BINDATA" />
       <include name="IDR_ATTRIBUTION_INTERNALS_CSS" file="browser/resources/attribution_reporting/attribution_internals.css" type="BINDATA" />

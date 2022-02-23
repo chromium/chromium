@@ -182,6 +182,16 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) = 0;
 
+  // Attempts to mute |credential| from the password store. Returns whether
+  // the mute succeeded.
+  virtual bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) = 0;
+
+  // Attempts to unmute |credential| from the password store. Returns whether
+  // the unmute succeeded.
+  virtual bool UnmuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) = 0;
+
   // Requests to start a check for insecure passwords. Invokes |callback|
   // once a check is running or the request was stopped via StopPasswordCheck().
   virtual void StartPasswordCheck(StartPasswordCheckCallback callback) = 0;

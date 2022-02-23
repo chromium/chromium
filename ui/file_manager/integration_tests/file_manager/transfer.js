@@ -1286,3 +1286,38 @@ testcase.transferShowPendingMessageForZeroRemainingTime = async () => {
   // Check secondary text is pending message.
   chrome.test.assertEq('Pending', panel.attributes['secondary-text']);
 };
+
+/**
+ * Tests DLP block toast is shown when a restricted file is copied.
+ */
+testcase.transferShowDlpToast = async () => {
+  const entry = ENTRIES.hello;
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Select the file.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [entry.nameText]));
+
+  // Copy the file.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']));
+
+  // Select USB volume.
+  await navigateWithDirectoryTree(appId, '/fake-usb');
+
+  // Paste the file to begin a copy operation.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
+
+  // Check that a toast is displayed because copy is disallowed.
+  await remoteCall.waitForElement(appId, '#toast');
+};

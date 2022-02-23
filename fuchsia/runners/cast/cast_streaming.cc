@@ -71,7 +71,7 @@ std::string GetMessagePortOriginForAppId(const std::string& app_id) {
     return kCastStreamingMessagePortOrigin;
   }
 
-  for (const base::Value& app_id_value : app_id_list->GetList()) {
+  for (const base::Value& app_id_value : app_id_list->GetListDeprecated()) {
     if (!app_id_value.is_string()) {
       continue;
     }

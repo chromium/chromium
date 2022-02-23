@@ -45,7 +45,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/animation/animation.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
 #endif
 
@@ -129,7 +129,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
                         .spec());
 
   bool is_swipe_tracking_from_scroll_events_enabled = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac OS X 10.7+, horizontal scrolling can be treated as a back or
   // forward gesture. Pass through a flag that indicates whether or not that
   // feature is enabled.
@@ -183,7 +183,7 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
   std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
   PrefService* prefs = GetProfile()->GetPrefs();
-  update->SetBoolean("showWebStoreIcon",
+  update->SetBoolKey("showWebStoreIcon",
                      !prefs->GetBoolean(prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));

@@ -121,11 +121,11 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
       // Both fullscreen and fullscreen + mouselock have the same message (the
       // user does not care about mouse lock when in fullscreen mode). All ways
       // to trigger fullscreen result in the same message.
-      return l10n_util::GetStringFUTF16(
-          IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN, accelerator);
+      return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
+                                        accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
-      return l10n_util::GetStringFUTF16(
-          IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN, accelerator);
+      return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN,
+                                        accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_MOUSELOCK_EXIT_INSTRUCTION:
       return l10n_util::GetStringFUTF16(
           IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_MOUSELOCK, accelerator);

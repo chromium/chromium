@@ -21,6 +21,11 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#include <sys/syscall.h>
+#endif
 
 namespace crashpad {
 
@@ -46,10 +51,10 @@ constexpr int kCrashSignals[] = {
 #if defined(SIGEMT)
     SIGEMT,
 #endif  // defined(SIGEMT)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     SIGXCPU,
     SIGXFSZ,
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
 // These are the non-core-generating but terminating signals.
@@ -82,13 +87,13 @@ constexpr int kTerminateSignals[] = {
 #if defined(SIGSTKFLT)
     SIGSTKFLT,
 #endif  // defined(SIGSTKFLT)
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     SIGXCPU,
     SIGXFSZ,
-#endif  // defined(OS_APPLE)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     SIGIO,
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 
 bool InstallHandlers(const std::vector<int>& signals,
@@ -279,6 +284,32 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
       sigaction(sig, &default_action, nullptr) != 0) {
     _exit(kFailureExitCode);
   }
+
+  // If we can raise a signal with siginfo on this platform, do so. This ensures
+  // that we preserve the siginfo information for asynchronous signals (i.e.
+  // signals that do not re-raise autonomously), such as signals delivered via
+  // kill() and asynchronous hardware faults such as SEGV_MTEAERR, which would
+  // otherwise be lost when re-raising the signal via raise().
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  int retval = syscall(SYS_rt_tgsigqueueinfo,
+                       getpid(),
+                       syscall(SYS_gettid),
+                       siginfo->si_signo,
+                       siginfo);
+  if (retval == 0) {
+    return;
+  }
+
+  // Kernels without commit 66dd34ad31e5 ("signal: allow to send any siginfo to
+  // itself"), which was first released in kernel version 3.9, did not permit a
+  // process to send arbitrary signals to itself, and will reject the
+  // rt_tgsigqueueinfo syscall with EPERM. If that happens, follow the non-Linux
+  // code path. Any other errno is unexpected and will cause us to exit.
+  if (errno != EPERM) {
+    _exit(kFailureExitCode);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   // Explicitly re-raise the signal if it will not re-raise itself. Because
   // signal handlers normally execute with their signal blocked, this raise()

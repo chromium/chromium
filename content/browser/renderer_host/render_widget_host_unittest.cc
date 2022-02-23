@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/data_transfer_util.h"
@@ -71,13 +73,13 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/android/screen_android.h"
 #endif
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #endif
 
@@ -296,7 +298,7 @@ class FakeRenderFrameMetadataObserver
 
   ~FakeRenderFrameMetadataObserver() override {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ReportAllRootScrolls(bool enabled) override {}
 #endif
   void ReportAllFrameSubmissionsForTesting(bool enabled) override {}
@@ -318,7 +320,7 @@ FakeRenderFrameMetadataObserver::FakeRenderFrameMetadataObserver(
 class MockInputEventObserver : public RenderWidgetHost::InputEventObserver {
  public:
   MOCK_METHOD1(OnInputEvent, void(const blink::WebInputEvent&));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnImeTextCommittedEvent, void(const std::u16string& text_str));
   MOCK_METHOD1(OnImeSetComposingTextEvent,
                void(const std::u16string& text_str));
@@ -544,11 +546,11 @@ class RenderWidgetHostTest : public testing::Test {
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_);
     sink_ = &process_->sink();
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // calls display::Screen::SetScreenInstance().
     ui::SetScreenAndroid(false /* use_display_wide_color_gamut */);
 #endif
@@ -616,10 +618,10 @@ class RenderWidgetHostTest : public testing::Test {
     display::Screen::SetScreenInstance(nullptr);
     screen_.reset();
 #endif
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
     ImageTransportFactory::Terminate();
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     display::Screen::SetScreenInstance(nullptr);
 #endif
 
@@ -804,7 +806,7 @@ class RenderWidgetHostTest : public testing::Test {
   bool handle_mouse_event_ = false;
   base::TimeTicks last_simulated_event_time_;
   base::TimeDelta simulated_event_time_delta_;
-  IPC::TestSink* sink_;
+  raw_ptr<IPC::TestSink> sink_;
   std::unique_ptr<FakeRenderFrameMetadataObserver>
       renderer_render_frame_metadata_observer_;
   MockWidget widget_;
@@ -1318,7 +1320,7 @@ TEST_F(RenderWidgetHostTest, ReceiveFrameTokenFromDeletedRenderWidget) {
 }
 
 // Unable to include render_widget_host_view_mac.h and compile.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Tests setting background transparency.
 TEST_F(RenderWidgetHostTest, Background) {
   RenderWidgetHostViewBase* view;
@@ -1326,7 +1328,7 @@ TEST_F(RenderWidgetHostTest, Background) {
   view = new RenderWidgetHostViewAura(host_.get());
   // TODO(derat): Call this on all platforms: http://crbug.com/102450.
   view->InitAsChild(nullptr);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
 #endif
   host_->SetView(view);
@@ -2091,7 +2093,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
           ->GetFileSystemAccessManager();
   blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
-      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      DropDataToDragData(
+          drop_data, file_system_manager, process_->GetID(),
+          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       drag_operation, SkBitmap(), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
@@ -2100,7 +2104,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   host_->RendererExited();
   EXPECT_FALSE(host_->GetView());
   host_->StartDragging(
-      DropDataToDragData(drop_data, file_system_manager, process_->GetID()),
+      DropDataToDragData(
+          drop_data, file_system_manager, process_->GetID(),
+          ChromeBlobStorageContext::GetFor(process_->GetBrowserContext())),
       drag_operation, SkBitmap(), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());
   EXPECT_EQ(delegate_->mock_delegate_view()->start_dragging_count(), 1);
@@ -2295,7 +2301,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RenderWidgetHostTest, AddAndRemoveImeInputEventObserver) {
   MockInputEventObserver observer;
 

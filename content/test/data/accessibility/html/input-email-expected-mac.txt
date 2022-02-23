@@ -1,3 +1,3 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXTextField AXRoleDescription='text field' AXValue='someone@example.com'
+++++AXTextField AXRoleDescription='email' AXValue='someone@example.com'

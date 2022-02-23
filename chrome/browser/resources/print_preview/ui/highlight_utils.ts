@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {createEmptySearchBubble, highlight, Range, stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 
@@ -50,8 +50,10 @@ export function updateHighlights(
           // TODO(crbug.com/1038464): turn on horizontallyCenter when we fix
           // incorrect positioning caused by scrollbar width changing after
           // search finishes.
+          assert(node.parentNode);
+          assert(node.parentNode.parentNode);
           const bubble = createEmptySearchBubble(
-              assert(node.parentNode!.parentNode!),
+              node.parentNode.parentNode,
               /* horizontallyCenter= */ false);
           const numHits = ranges.length + (bubbles.get(bubble) || 0);
           bubbles.set(bubble, numHits);

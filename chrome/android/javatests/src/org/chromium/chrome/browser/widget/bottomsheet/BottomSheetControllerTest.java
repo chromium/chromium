@@ -232,7 +232,7 @@ public class BottomSheetControllerTest {
             assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
                     mSheetController.getSheetState());
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER);
+                    0, TabSelectionType.FROM_USER, false);
         });
 
         setTabSwitcherState(false);
@@ -312,7 +312,7 @@ public class BottomSheetControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
 
         // Request content be shown again.
@@ -597,6 +597,33 @@ public class BottomSheetControllerTest {
                 mSheetController.getCurrentSheetContent());
     }
 
+    @Test
+    @MediumTest
+    public void testOpenTwiceWhileInQueue() {
+        requestContentInSheet(mHighPriorityContent, true);
+        expandSheet();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // While high priority content is visible, request new content to be shown twice.
+            mSheetController.requestShowContent(mLowPriorityContent, false);
+            mSheetController.requestShowContent(mLowPriorityContent, false);
+
+            // Now hide high priority content, this should cause low priority content to be shown.
+            mSheetController.hideContent(mHighPriorityContent, false);
+        });
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
+        assertEquals("The low priority content should be shown.", mLowPriorityContent,
+                mSheetController.getCurrentSheetContent());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetController.hideContent(mLowPriorityContent, false);
+            mTestSupport.endAllAnimations();
+        });
+        assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
+                mSheetController.getSheetState());
+        assertEquals("The bottom sheet is showing incorrect content.", null,
+                mSheetController.getCurrentSheetContent());
+    }
+
     /**
      * Request content be shown in the bottom sheet and end animations.
      * @param content The content to show.
@@ -646,19 +673,12 @@ public class BottomSheetControllerTest {
     /**
      * Set the tab switcher state and wait for that state to be settled.
      * @param shown Whether the tab switcher should be shown.
-     * @throws TimeoutException
      */
-    private void setTabSwitcherState(boolean shown) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (shown) {
-                mActivity.getLayoutManager().showOverview(false);
-            } else {
-                mActivity.getLayoutManager().hideOverview(false);
-            }
-        });
-
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(),
-                shown ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING);
+    private void setTabSwitcherState(boolean shown) {
+        @LayoutType
+        int targetLayout = shown ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivity.getLayoutManager(), targetLayout, false);
         TestThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 

@@ -626,16 +626,14 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
         source_render_frame_host->GetLastCommittedURL());
     nav_event->source_main_frame_url =
         SafeBrowsingNavigationObserverManager::ClearURLRef(
-            source_render_frame_host->GetMainFrame()->GetLastCommittedURL());
+            source_render_frame_host->GetOutermostMainFrame()
+                ->GetLastCommittedURL());
   }
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(source_web_contents);
   nav_event->original_request_url = cleaned_target_url;
   nav_event->target_tab_id =
       sessions::SessionTabHelper::IdForTab(target_web_contents);
-  nav_event->frame_id = source_render_frame_host
-                            ? source_render_frame_host->GetFrameTreeNodeId()
-                            : content::RenderFrameHost::kNoFrameTreeNodeId;
   nav_event->maybe_launched_by_external_application =
       ui::PageTransitionCoreTypeIs(page_transition,
                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StoredEmoji} from './types.js';
+import {StoredItem} from './types.js';
 
-const LOCALSTORAGE_KEY = 'emoji-recently-used';
 const MAX_RECENTS = 18;
 
 /**
- * @return {{history:!Array<StoredEmoji>, preference:Object<string,string>}}
+ * @param {string} keyName Keyname of the object stored in storage
+ * @return {{history:!Array<StoredItem>, preference:Object<string,string>}}
  *     recently used emoji, most recent first.
  */
-function load() {
-  const stored = window.localStorage.getItem(LOCALSTORAGE_KEY);
+function load(keyName) {
+  const stored = window.localStorage.getItem(keyName);
   if (!stored) {
     return {history: [], preference: {}};
   }
@@ -22,16 +22,17 @@ function load() {
 }
 
 /**
- * @param {{history:!Array<StoredEmoji>, preference:Object<string,string>}} data
+ * @param {{history:!Array<StoredItem>, preference:Object<string,string>}} data
  *     recently used emoji, most recent first.
  */
-function save(data) {
-  window.localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(data));
+function save(keyName, data) {
+  window.localStorage.setItem(keyName, JSON.stringify(data));
 }
 
-export class RecentEmojiStore {
-  constructor() {
-    this.data = load();
+export class RecentlyUsedStore {
+  constructor(name) {
+    this.storeName = name;
+    this.data = load(name);
   }
 
   savePreferredVariant(baseEmoji, variant) {
@@ -39,7 +40,7 @@ export class RecentEmojiStore {
       return;
     }
     this.data.preference[baseEmoji] = variant;
-    save(this.data);
+    save(this.storeName, this.data);
   }
 
   getPreferenceMapping() {
@@ -48,29 +49,29 @@ export class RecentEmojiStore {
 
   clearRecents() {
     this.data.history = [];
-    save(this.data);
+    save(this.storeName, this.data);
   }
 
   /**
-   * Moves the given emoji to the front of the MRU list, inserting it if
+   * Moves the given item to the front of the MRU list, inserting it if
    * it did not previously exist.
-   * @param {!StoredEmoji} newEmoji most recently used emoji.
+   * @param {!StoredItem} newItem most recently used item.
    */
-  bumpEmoji(newEmoji) {
-    // Find and remove newEmoji from array if it previously existed.
-    // Note, this explicitly allows for multiple recent emoji entries for the
+  bumpItem(newItem) {
+    // Find and remove newItem from array if it previously existed.
+    // Note, this explicitly allows for multiple recent item entries for the
     // same "base" emoji just with a different variant.
-    const oldIndex = this.data.history.findIndex(x => x.base === newEmoji.base);
+    const oldIndex = this.data.history.findIndex(x => x.base === newItem.base);
     if (oldIndex !== -1) {
       this.data.history.splice(oldIndex, 1);
     }
-    // insert newEmoji to the front of the array.
-    this.data.history.unshift(newEmoji);
+    // insert newItem to the front of the array.
+    this.data.history.unshift(newItem);
     // slice from end of array if it exceeds MAX_RECENTS.
     if (this.data.history.length > MAX_RECENTS) {
       // setting length is sufficient to truncate an array.
       this.data.history.length = MAX_RECENTS;
     }
-    save(this.data);
+    save(this.storeName, this.data);
   }
 }

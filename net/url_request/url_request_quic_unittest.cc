@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"

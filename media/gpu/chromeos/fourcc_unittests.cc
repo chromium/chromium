@@ -30,15 +30,6 @@ TEST(FourccTest, V4L2PixFmtToV4L2PixFmt) {
   // Temporary defined in v4l2/v4l2_device.h
   static constexpr uint32_t V4L2_MM21 = ComposeFourcc('M', 'M', '2', '1');
 
-  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_ABGR32);
-#ifdef V4L2_PIX_FMT_RGBA32
-  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_RGBA32);
-#endif
-  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_XBGR32);
-#ifdef V4L2_PIX_FMT_RGBX32
-  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_RGBX32);
-#endif
-  CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_RGB32);
   CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_YUV420);
   CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_YVU420);
   CheckFromV4L2PixFmtAndBack(V4L2_PIX_FMT_YUV420M);
@@ -79,12 +70,6 @@ TEST(FourccTest, V4L2PixFmtToVideoPixelFormat) {
             Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_YUV422P)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_I422,
             Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_YUV422M)->ToVideoPixelFormat());
-
-  // Noted that previously in V4L2Device::V4L2PixFmtToVideoPixelFormat(),
-  // V4L2_PIX_FMT_RGB32 maps to PIXEL_FORMAT_ARGB. However, the mapping was
-  // wrong. It should be mapped to PIXEL_FORMAT_BGRA.
-  EXPECT_EQ(PIXEL_FORMAT_BGRA,
-            Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_RGB32)->ToVideoPixelFormat());
 
   // Randomly pick an unmapped v4l2 fourcc.
   EXPECT_EQ(absl::nullopt, Fourcc::FromV4L2PixFmt(V4L2_PIX_FMT_Z16));
@@ -138,11 +123,6 @@ TEST(FourccTest, FromVaFourCCAndBack) {
   CheckFromVAFourCCAndBack(VA_FOURCC_NV21);
   CheckFromVAFourCCAndBack(VA_FOURCC_YV12);
   CheckFromVAFourCCAndBack(VA_FOURCC_YUY2);
-  CheckFromVAFourCCAndBack(VA_FOURCC_RGBA);
-  CheckFromVAFourCCAndBack(VA_FOURCC_RGBX);
-  CheckFromVAFourCCAndBack(VA_FOURCC_BGRA);
-  CheckFromVAFourCCAndBack(VA_FOURCC_BGRX);
-  CheckFromVAFourCCAndBack(VA_FOURCC_ARGB);
   CheckFromVAFourCCAndBack(VA_FOURCC_P010);
 }
 
@@ -157,14 +137,6 @@ TEST(FourccTest, VAFourCCToVideoPixelFormat) {
             Fourcc::FromVAFourCC(VA_FOURCC_YV12)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_YUY2,
             Fourcc::FromVAFourCC(VA_FOURCC_YUY2)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_ABGR,
-            Fourcc::FromVAFourCC(VA_FOURCC_RGBA)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_XBGR,
-            Fourcc::FromVAFourCC(VA_FOURCC_RGBX)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_ARGB,
-            Fourcc::FromVAFourCC(VA_FOURCC_BGRA)->ToVideoPixelFormat());
-  EXPECT_EQ(PIXEL_FORMAT_XRGB,
-            Fourcc::FromVAFourCC(VA_FOURCC_BGRX)->ToVideoPixelFormat());
   EXPECT_EQ(PIXEL_FORMAT_P016LE,
             Fourcc::FromVAFourCC(VA_FOURCC_P010)->ToVideoPixelFormat());
 }
@@ -180,25 +152,12 @@ TEST(FourccTest, VideoPixelFormatToVAFourCC) {
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_YV12)->ToVAFourCC());
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_YUY2),
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_YUY2)->ToVAFourCC());
-  EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_RGBA),
-            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_ABGR)->ToVAFourCC());
-  EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_RGBX),
-            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_XBGR)->ToVAFourCC());
-  EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_BGRA),
-            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_ARGB)->ToVAFourCC());
-  EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_BGRX),
-            *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_XRGB)->ToVAFourCC());
   EXPECT_EQ(static_cast<uint32_t>(VA_FOURCC_P010),
             *Fourcc::FromVideoPixelFormat(PIXEL_FORMAT_P016LE)->ToVAFourCC());
 }
 #endif  // BUILDFLAG(USE_VAAPI)
 
 TEST(FourccTest, FourccToSinglePlanar) {
-  EXPECT_EQ(Fourcc(Fourcc::AR24).ToSinglePlanar(), Fourcc(Fourcc::AR24));
-  EXPECT_EQ(Fourcc(Fourcc::AB24).ToSinglePlanar(), Fourcc(Fourcc::AB24));
-  EXPECT_EQ(Fourcc(Fourcc::XR24).ToSinglePlanar(), Fourcc(Fourcc::XR24));
-  EXPECT_EQ(Fourcc(Fourcc::XB24).ToSinglePlanar(), Fourcc(Fourcc::XB24));
-  EXPECT_EQ(Fourcc(Fourcc::RGB4).ToSinglePlanar(), Fourcc(Fourcc::RGB4));
   EXPECT_EQ(Fourcc(Fourcc::YU12).ToSinglePlanar(), Fourcc(Fourcc::YU12));
   EXPECT_EQ(Fourcc(Fourcc::YV12).ToSinglePlanar(), Fourcc(Fourcc::YV12));
   EXPECT_EQ(Fourcc(Fourcc::YUYV).ToSinglePlanar(), Fourcc(Fourcc::YUYV));

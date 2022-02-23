@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -49,7 +50,6 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   void OnFocus() override {}
   void OnBlur() override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
 
@@ -75,7 +75,7 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
 
   gfx::Rect GetCaretBounds(const ui::TextInputClient* client);
 
-  aura::Window* const window_;
+  const raw_ptr<aura::Window> window_;
 
   const bool is_root_window_;
 

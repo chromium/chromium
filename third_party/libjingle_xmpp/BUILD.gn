@@ -5,34 +5,8 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
-group("libjingle_xmpp") {
-  public_deps = [
-    ":rtc_xmllite",
-    ":rtc_xmpp",
-  ]
-}
-
 config("libjingle_xmpp_common_config") {
   defines = [ "EXPAT_RELATIVE_PATH" ]
-}
-
-static_library("rtc_task_runner") {
-  visibility = [
-    ":*",
-    "//jingle:*",
-  ]
-  sources = [
-    "task_runner/task.cc",
-    "task_runner/task.h",
-    "task_runner/taskparent.cc",
-    "task_runner/taskparent.h",
-    "task_runner/taskrunner.cc",
-    "task_runner/taskrunner.h",
-  ]
-  deps = [
-    "//base",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
 }
 
 static_library("rtc_xmllite") {
@@ -62,69 +36,14 @@ static_library("rtc_xmllite") {
   all_dependent_configs = [ ":libjingle_xmpp_common_config" ]
 }
 
-static_library("rtc_xmpp") {
-  visibility = [
-    ":*",
-    "//jingle:jingle_glue",
-    "//remoting/*",
-  ]
-  cflags = []
-  sources = [
-    "xmpp/asyncsocket.h",
-    "xmpp/constants.cc",
-    "xmpp/constants.h",
-    "xmpp/jid.cc",
-    "xmpp/jid.h",
-    "xmpp/plainsaslhandler.h",
-    "xmpp/prexmppauth.h",
-    "xmpp/saslcookiemechanism.h",
-    "xmpp/saslhandler.h",
-    "xmpp/saslmechanism.cc",
-    "xmpp/saslmechanism.h",
-    "xmpp/saslplainmechanism.h",
-    "xmpp/xmppclient.cc",
-    "xmpp/xmppclient.h",
-    "xmpp/xmppclientsettings.h",
-    "xmpp/xmppengine.h",
-    "xmpp/xmppengineimpl.cc",
-    "xmpp/xmppengineimpl.h",
-    "xmpp/xmppengineimpl_iq.cc",
-    "xmpp/xmpplogintask.cc",
-    "xmpp/xmpplogintask.h",
-    "xmpp/xmppstanzaparser.cc",
-    "xmpp/xmppstanzaparser.h",
-    "xmpp/xmpptask.cc",
-    "xmpp/xmpptask.h",
-  ]
-
-  defines = []
-
-  deps = [
-    ":rtc_xmllite",
-    "//base",
-    "//net",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-  public_deps = [
-    ":rtc_task_runner",
-    "//third_party/expat",
-  ]
-  all_dependent_configs = [ ":libjingle_xmpp_common_config" ]
-
-  if (is_nacl) {
-    deps += [ "//native_client_sdk/src/libraries/nacl_io" ]
-  }
-}
-
 fuzzer_test("libjingle_xmpp_xmlparser_fuzzer") {
   sources = [ "xmllite/xmlparser_fuzzer.cc" ]
-  deps = [ ":libjingle_xmpp" ]
+  deps = [ ":rtc_xmllite" ]
 }
 
 test("libjingle_xmpp_unittests") {
   deps = [
-    ":libjingle_xmpp",
-    ":rtc_task_runner",
+    ":rtc_xmllite",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gtest",
@@ -132,19 +51,11 @@ test("libjingle_xmpp_unittests") {
   ]
 
   sources = [
-    "task_runner/task_unittest.cc",
     "xmllite/qname_unittest.cc",
     "xmllite/xmlbuilder_unittest.cc",
     "xmllite/xmlelement_unittest.cc",
     "xmllite/xmlnsstack_unittest.cc",
     "xmllite/xmlparser_unittest.cc",
     "xmllite/xmlprinter_unittest.cc",
-    "xmpp/fakexmppclient.h",
-    "xmpp/jid_unittest.cc",
-    "xmpp/util_unittest.cc",
-    "xmpp/util_unittest.h",
-    "xmpp/xmppengine_unittest.cc",
-    "xmpp/xmpplogintask_unittest.cc",
-    "xmpp/xmppstanzaparser_unittest.cc",
   ]
 }

@@ -38,8 +38,8 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/page_navigator.h"
@@ -637,9 +637,7 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       ServiceWorkerMetrics::EventTypeToString(event_type));
 
   base::TimeTicks expiration_time = tick_clock_->NowTicks() + timeout;
-  bool is_inserted = false;
-  std::set<InflightRequestTimeoutInfo>::iterator iter;
-  std::tie(iter, is_inserted) = request_timeouts_.emplace(
+  auto [iter, is_inserted] = request_timeouts_.emplace(
       request_id, event_type, expiration_time, timeout_behavior);
   DCHECK(is_inserted);
   request_rawptr->timeout_iter = iter;
@@ -655,9 +653,11 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
 }
 
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
-    const std::string& request_uuid) {
+    const std::string& request_uuid,
+    ServiceWorkerExternalRequestTimeoutType timeout_type) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
-    return pending_external_requests_.insert(request_uuid).second
+    return pending_external_requests_.insert({request_uuid, timeout_type})
+                   .second
                ? ServiceWorkerExternalRequestResult::kOk
                : ServiceWorkerExternalRequestResult::kBadRequestId;
   }
@@ -670,10 +670,15 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
   if (base::Contains(external_request_uuid_to_request_id_, request_uuid))
     return ServiceWorkerExternalRequestResult::kBadRequestId;
 
-  int request_id =
-      StartRequest(ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
-                   base::BindOnce(&ServiceWorkerVersion::CleanUpExternalRequest,
-                                  this, request_uuid));
+  base::TimeDelta request_timeout =
+      timeout_type == ServiceWorkerExternalRequestTimeoutType::kDefault
+          ? kRequestTimeout
+          : base::TimeDelta::Max();
+  int request_id = StartRequestWithCustomTimeout(
+      ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
+      base::BindOnce(&ServiceWorkerVersion::CleanUpExternalRequest, this,
+                     request_uuid),
+      request_timeout, KILL_ON_TIMEOUT);
   external_request_uuid_to_request_id_[request_uuid] = request_id;
   return ServiceWorkerExternalRequestResult::kOk;
 }
@@ -707,9 +712,11 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::FinishExternalRequest(
     const std::string& request_uuid) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
-    return pending_external_requests_.erase(request_uuid) > 0u
-               ? ServiceWorkerExternalRequestResult::kOk
-               : ServiceWorkerExternalRequestResult::kBadRequestId;
+    auto iter = pending_external_requests_.find(request_uuid);
+    if (iter == pending_external_requests_.end())
+      return ServiceWorkerExternalRequestResult::kBadRequestId;
+    pending_external_requests_.erase(iter);
+    return ServiceWorkerExternalRequestResult::kOk;
   }
 
   // If it's STOPPED, there is no request to finish. We could just consider this
@@ -1011,32 +1018,7 @@ void ServiceWorkerVersion::Doom() {
   }
 }
 
-void ServiceWorkerVersion::OnMainScriptLoaded() {
-  if (!initialize_global_scope_after_main_script_loaded_)
-    return;
-  initialize_global_scope_after_main_script_loaded_ = false;
-
-  int net_error = script_cache_map()->main_script_net_error();
-  if (net_error != net::OK)
-    return;
-
-  // The subresource loaders need to be updated. Get the factories with the
-  // correct COEP value and pass it to the service worker.
-  //
-  // TODO(https://crbug.com/1039613): Update the loader factories passed to the
-  // script loader factory too.
-  DCHECK_EQ(NEW, status());
-  EmbeddedWorkerInstance::CreateFactoryBundlesResult result =
-      embedded_worker_->CreateFactoryBundles();
-  InitializeGlobalScope(std::move(result.script_bundle),
-                        std::move(result.subresource_bundle));
-}
-
-void ServiceWorkerVersion::InitializeGlobalScope(
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        script_loader_factories,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
-        subresource_loader_factories) {
+void ServiceWorkerVersion::InitializeGlobalScope() {
   receiver_.reset();
   receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
 
@@ -1045,19 +1027,6 @@ void ServiceWorkerVersion::InitializeGlobalScope(
   // The registration must exist since we keep a reference to it during
   // service worker startup.
   DCHECK(registration);
-
-  if (subresource_loader_factories) {
-    // |subresource_loader_factories| is valid only when the service worker is
-    // a new worker.
-    DCHECK_EQ(NEW, status());
-
-    // |script_loader_factories| should be updated too.
-    DCHECK(script_loader_factories);
-    embedded_worker_->UpdateLoaderFactories(
-        std::move(script_loader_factories),
-        /*subresource_loader_factories=*/nullptr);
-  }
-
   DCHECK(worker_host_);
   DCHECK(service_worker_remote_);
   service_worker_remote_->InitializeGlobalScope(
@@ -1065,24 +1034,34 @@ void ServiceWorkerVersion::InitializeGlobalScope(
       worker_host_->container_host()->CreateServiceWorkerRegistrationObjectInfo(
           std::move(registration)),
       worker_host_->container_host()->CreateServiceWorkerObjectInfoToSend(this),
-      fetch_handler_existence_, std::move(subresource_loader_factories),
-      std::move(reporting_observer_receiver_));
+      fetch_handler_existence_, std::move(reporting_observer_receiver_));
 
   is_endpoint_ready_ = true;
 }
 
 bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
   for (const auto& controllee : controllee_map_) {
-    if (controllee.second.get()->GetProcessId() == process_id)
+    if (controllee.second && controllee.second->GetProcessId() == process_id)
       return true;
   }
   return false;
 }
 
+void ServiceWorkerVersion::ExecuteScriptForTest(
+    const std::string& script,
+    ServiceWorkerScriptExecutionCallback callback) {
+  DCHECK(running_status() == EmbeddedWorkerStatus::STARTING ||
+         running_status() == EmbeddedWorkerStatus::RUNNING)
+      << "Cannot execute a script in a non-running worker!";
+  bool wants_result = !callback.is_null();
+  endpoint()->ExecuteScriptForTest(  // IN-TEST
+      base::UTF8ToUTF16(script), wants_result, std::move(callback));
+}
+
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
-  origin_trial_tokens_ = validator_.GetValidTokens(
-      url::Origin::Create(scope()), tokens, clock_->Now());
+  origin_trial_tokens_ =
+      validator_.GetValidTokens(key_.origin(), tokens, clock_->Now());
 }
 
 void ServiceWorkerVersion::SetDevToolsAttached(bool attached) {
@@ -1135,8 +1114,7 @@ void ServiceWorkerVersion::SetMainScriptResponse(
   //     wasn't set in the entry.
   if (!origin_trial_tokens_) {
     origin_trial_tokens_ = validator_.GetValidTokensFromHeaders(
-        url::Origin::Create(scope()), main_script_response_->headers.get(),
-        clock_->Now());
+        key_.origin(), main_script_response_->headers.get(), clock_->Now());
   }
 
   if (context_) {
@@ -1232,10 +1210,11 @@ void ServiceWorkerVersion::OnStarted(
     observer.OnRunningStateChanged(this);
 
   if (!pending_external_requests_.empty()) {
-    std::set<std::string> pending_external_requests;
+    std::map<std::string, ServiceWorkerExternalRequestTimeoutType>
+        pending_external_requests;
     std::swap(pending_external_requests_, pending_external_requests);
-    for (const std::string& request_uuid : pending_external_requests)
-      StartExternalRequest(request_uuid);
+    for (const auto& [uuid, timeout_type] : pending_external_requests)
+      StartExternalRequest(uuid, timeout_type);
   }
 
   MaybeUpdateIdleDelayForTerminationOnNoControllee(
@@ -1431,8 +1410,7 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
     return;
   }
 
-  if (!url.is_valid() ||
-      !url::Origin::Create(url).IsSameOriginWith(key_.origin())) {
+  if (!url.is_valid() || !key_.origin().IsSameOriginWith(url)) {
     mojo::ReportBadMessage(
         "Received PaymentRequestEvent#openWindow() request for a cross-origin "
         "URL.");
@@ -1730,8 +1708,15 @@ void ServiceWorkerVersion::OnSimpleEventFinished(
 void ServiceWorkerVersion::CountFeature(blink::mojom::WebFeature feature) {
   if (!used_features_.insert(feature).second)
     return;
-  for (auto container_host_by_uuid : controllee_map_)
-    container_host_by_uuid.second->CountFeature(feature);
+  for (auto container_host_by_uuid : controllee_map_) {
+    const base::WeakPtr<ServiceWorkerContainerHost>& container_host =
+        container_host_by_uuid.second;
+    // TODO(crbug.com/1253581 crbug.com/1021718): controllee_map_ should be only
+    // containing live container hosts. The below "if" check is a workaround for
+    // unmatched AddControllee / RemoveControllee calls.
+    if (container_host)
+      container_host->CountFeature(feature);
+  }
 }
 
 void ServiceWorkerVersion::set_cross_origin_embedder_policy(
@@ -1911,10 +1896,16 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       outside_fetch_client_settings_object_.Clone();
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  params->user_agent = (origin_trial_tokens_ &&
-                        origin_trial_tokens_->contains("UserAgentReduction"))
-                           ? browser_client->GetReducedUserAgent()
-                           : browser_client->GetUserAgent();
+  if (origin_trial_tokens_ &&
+      origin_trial_tokens_->contains("SendFullUserAgentAfterReduction")) {
+    params->user_agent = browser_client->GetFullUserAgent();
+  } else if (origin_trial_tokens_ &&
+             origin_trial_tokens_->contains("UserAgentReduction")) {
+    params->user_agent = browser_client->GetReducedUserAgent();
+  } else {
+    params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
+        context_->wrapper()->browser_context());
+  }
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
@@ -2160,9 +2151,7 @@ void ServiceWorkerVersion::SetAllRequestExpirations(
     const base::TimeTicks& expiration) {
   std::set<InflightRequestTimeoutInfo> new_timeouts;
   for (const auto& info : request_timeouts_) {
-    bool is_inserted = false;
-    std::set<InflightRequestTimeoutInfo>::iterator iter;
-    std::tie(iter, is_inserted) = new_timeouts.emplace(
+    auto [iter, is_inserted] = new_timeouts.emplace(
         info.id, info.event_type, expiration, info.timeout_behavior);
     DCHECK(is_inserted);
     InflightRequest* request = inflight_requests_.Lookup(info.id);
@@ -2349,7 +2338,7 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
   // Check that the worker is allowed on this origin. It's possible a
   // worker was previously allowed and installed, but later the embedder's
   // policy or binary changed to disallow this origin.
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           {script_url_})) {
     return false;
   }

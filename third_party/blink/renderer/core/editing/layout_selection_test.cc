@@ -37,7 +37,7 @@ class LayoutSelectionTestBase : public EditingTestBase {
                                   const LayoutText& layout_text,
                                   SelectionState state) {
     if (layout_text.IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor(*layout_text.ContainingNGBlockFlow());
+      NGInlineCursor cursor(*layout_text.FragmentItemsContainer());
       cursor.MoveTo(layout_text);
       if (!cursor)
         return;
@@ -1040,7 +1040,7 @@ class NGLayoutSelectionTest
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
       const LayoutObject& layout_object) const {
     DCHECK(layout_object.IsText());
-    NGInlineCursor cursor(*layout_object.ContainingNGBlockFlow());
+    NGInlineCursor cursor(*layout_object.FragmentItemsContainer());
     cursor.MoveTo(layout_object);
     return Selection().ComputeLayoutSelectionStatus(cursor);
   }
@@ -1141,7 +1141,7 @@ TEST_F(NGLayoutSelectionTest, StartAndEndMultilineState) {
   LayoutObject* const div_text =
       GetDocument().body()->firstChild()->firstChild()->GetLayoutObject();
 
-  NGInlineCursor cursor(*(div_text->ContainingNGBlockFlow()));
+  NGInlineCursor cursor(*(div_text->FragmentItemsContainer()));
   cursor.MoveTo(*div_text);
   EXPECT_EQ(LayoutSelectionStatus(1u, 3u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
@@ -1173,7 +1173,7 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
       "style='white-space:pre'>ba|z\nquu</div>");
   LayoutObject* const div_text =
       GetDocument().body()->firstChild()->firstChild()->GetLayoutObject();
-  NGInlineCursor cursor(*(div_text->ContainingNGBlockFlow()));
+  NGInlineCursor cursor(*(div_text->FragmentItemsContainer()));
   cursor.MoveTo(*div_text);
   EXPECT_EQ(LayoutSelectionStatus(3u, 3u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
@@ -1191,7 +1191,7 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
 
   LayoutObject* const second_div_text =
       GetDocument().body()->lastChild()->firstChild()->GetLayoutObject();
-  NGInlineCursor second_cursor(*(second_div_text->ContainingNGBlockFlow()));
+  NGInlineCursor second_cursor(*(second_div_text->FragmentItemsContainer()));
   second_cursor.MoveTo(*second_div_text);
   EXPECT_EQ(LayoutSelectionStatus(0u, 2u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(second_cursor));

@@ -38,9 +38,8 @@ void FakeNetworkConnectionHandler::ConnectionParams::InvokeSuccessCallback() {
 }
 
 void FakeNetworkConnectionHandler::ConnectionParams::InvokeErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::move(error_callback_).Run(error_name, std::move(error_data));
+    const std::string& error_name) {
+  std::move(error_callback_).Run(error_name);
 }
 
 FakeNetworkConnectionHandler::FakeNetworkConnectionHandler() = default;

@@ -20,19 +20,19 @@ bool StructTraits<gpu::mojom::GpuDeviceDataView, gpu::GPUInfo::GPUDevice>::Read(
     gpu::GPUInfo::GPUDevice* out) {
   out->vendor_id = data.vendor_id();
   out->device_id = data.device_id();
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   out->revision = data.revision();
-#endif  // OS_WIN || OS_CHROMEOS
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
   out->sub_sys_id = data.sub_sys_id();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   out->active = data.active();
   out->cuda_compute_capability_major = data.cuda_compute_capability_major();
   return data.ReadVendorString(&out->vendor_string) &&
          data.ReadDeviceString(&out->device_string) &&
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
          data.ReadLuid(&out->luid) &&
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
          data.ReadDriverVendor(&out->driver_vendor) &&
          data.ReadDriverVersion(&out->driver_version);
 }
@@ -323,7 +323,7 @@ bool StructTraits<gpu::mojom::ImageDecodeAcceleratorSupportedProfileDataView,
          data.ReadSubsamplings(&out->subsamplings);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 gpu::mojom::OverlaySupport
 EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport>::ToMojom(
@@ -384,21 +384,20 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->passthrough_cmd_decoder = data.passthrough_cmd_decoder();
   out->can_support_threaded_texture_mailbox =
       data.can_support_threaded_texture_mailbox();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!gpu::ValidateMacOSSpecificTextureTarget(
           data.macos_specific_texture_target())) {
     return false;
   }
   out->macos_specific_texture_target = data.macos_specific_texture_target();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   out->jpeg_decode_accelerator_supported =
       data.jpeg_decode_accelerator_supported();
 
-  out->oop_rasterization_supported = data.oop_rasterization_supported();
   out->subpixel_font_rendering = data.subpixel_font_rendering();
   out->visibility_callback_call_count = data.visibility_callback_call_count();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   out->d3d12_feature_level = data.d3d12_feature_level();
   out->vulkan_version = data.vulkan_version();
 #endif
@@ -419,7 +418,7 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
          data.ReadGlWsVersion(&out->gl_ws_version) &&
          data.ReadGlWsExtensions(&out->gl_ws_extensions) &&
          data.ReadDirectRenderingVersion(&out->direct_rendering_version) &&
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
          data.ReadOverlayInfo(&out->overlay_info) &&
          data.ReadDxDiagnostics(&out->dx_diagnostics) &&
 #endif

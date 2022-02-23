@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/rand_util.h"
@@ -30,6 +31,7 @@
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
+#include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -40,7 +42,6 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/test_root_certs.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/extras/preload_data/decoder.h"
 #include "net/http/http_status_code.h"
@@ -232,8 +233,8 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   GURL report_uri_;
   base::Time expiration_;
   uint32_t num_failures_;
-  const X509Certificate* served_certificate_chain_;
-  const X509Certificate* validated_certificate_chain_;
+  raw_ptr<const X509Certificate> served_certificate_chain_;
+  raw_ptr<const X509Certificate> validated_certificate_chain_;
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;
   NetworkIsolationKey network_isolation_key_;
 };
@@ -253,10 +254,11 @@ void CompareCertificateChainWithList(
   ASSERT_TRUE(cert_list->is_list());
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetList().size());
+  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetListDeprecated().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
-    const std::string& list_cert = cert_list->GetList()[i].GetString();
+    const std::string& list_cert =
+        cert_list->GetListDeprecated()[i].GetString();
     EXPECT_EQ(pem_encoded_chain[i], list_cert);
   }
 }
@@ -1318,7 +1320,8 @@ TEST_F(TransportSecurityStateTest, ExpectCTReporter) {
   EXPECT_EQ(GURL(kExpectCTStaticReportURI), reporter.report_uri());
   EXPECT_EQ(cert1.get(), reporter.served_certificate_chain());
   EXPECT_EQ(cert2.get(), reporter.validated_certificate_chain());
-  EXPECT_EQ(ssl_info.signed_certificate_timestamps.size(),
+  ASSERT_EQ(1u, ssl_info.signed_certificate_timestamps.size());
+  ASSERT_EQ(ssl_info.signed_certificate_timestamps.size(),
             reporter.signed_certificate_timestamps().size());
   EXPECT_EQ(ssl_info.signed_certificate_timestamps[0].status,
             reporter.signed_certificate_timestamps()[0].status);
@@ -2650,47 +2653,6 @@ TEST_F(TransportSecurityStateTest,
             reporter.signed_certificate_timestamps()[0].status);
   EXPECT_EQ(sct_list[0].sct, reporter.signed_certificate_timestamps()[0].sct);
   EXPECT_EQ(network_isolation_key, reporter.network_isolation_key());
-}
-
-// Tests that the dynamic Expect-CT UMA histogram is recorded correctly.
-TEST_F(TransportSecurityStateTest, DynamicExpectCTUMA) {
-  const char kHistogramName[] = "Net.ExpectCTHeader.ParseSuccess";
-  SSLInfo ssl;
-  ssl.is_issued_by_known_root = true;
-  ssl.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
-
-  // Test that the histogram is recorded correctly when the header successfully
-  // parses.
-  {
-    const char kHeader[] = "max-age=123,enforce,report-uri=\"http://foo.test\"";
-    base::HistogramTester histograms;
-    TransportSecurityState state;
-    MockExpectCTReporter reporter;
-    state.SetExpectCTReporter(&reporter);
-    state.ProcessExpectCTHeader(kHeader, HostPortPair("example.test", 443), ssl,
-                                NetworkIsolationKey());
-    histograms.ExpectTotalCount(kHistogramName, 1);
-    histograms.ExpectBucketCount(kHistogramName, true, 1);
-  }
-
-  // Test that the histogram is recorded correctly when the header fails to
-  // parse (due to semi-colons instead of commas).
-  {
-    const char kHeader[] = "max-age=123;enforce;report-uri=\"http://foo.test\"";
-    base::HistogramTester histograms;
-    TransportSecurityState state;
-    MockExpectCTReporter reporter;
-    state.SetExpectCTReporter(&reporter);
-    state.ProcessExpectCTHeader(kHeader, HostPortPair("example.test", 443), ssl,
-                                NetworkIsolationKey());
-    histograms.ExpectTotalCount(kHistogramName, 1);
-    histograms.ExpectBucketCount(kHistogramName, false, 1);
-  }
 }
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)

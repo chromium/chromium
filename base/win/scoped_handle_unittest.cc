@@ -87,7 +87,7 @@ TEST(ScopedHandleTest, HandleVerifierWrongOwner) {
         handle_holder2.handle_ = handle;
       },
       "");
-  ASSERT_TRUE(handle_holder.IsValid());
+  ASSERT_TRUE(handle_holder.is_valid());
   handle_holder.Close();
 }
 

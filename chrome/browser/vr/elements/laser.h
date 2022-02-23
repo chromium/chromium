@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_LASER_H_
 #define CHROME_BROWSER_VR_ELEMENTS_LASER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -52,7 +53,7 @@ class Laser : public UiElement {
   // data binding flow since that would result in a frame of latency. Opacity
   // changes, however, are not latency sensitive and are bound in the usual way
   // (they also do not update due to input).
-  Model* model_;
+  raw_ptr<Model> model_;
 };
 
 }  // namespace vr

@@ -43,4 +43,10 @@
 // Supports APIs used to implement the trusted vault for chrome sync.
 #define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
 
+// Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
+#define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
+
+// Supports -[CWVAutofillDataManager addPasswordWithUsername:password:site:].
+#define IOS_WEB_VIEW_SUPPORTS_ADDING_PASSWORDS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -53,6 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using content::NavigationSimulator;
 using content::RenderFrameHost;
@@ -78,6 +80,7 @@ using LargestContentTextOrImage =
 using PageLoad = ukm::builders::PageLoad;
 using MobileFriendliness = ukm::builders::MobileFriendliness;
 using PageLoad_Internal = ukm::builders::PageLoad_Internal;
+using UserPerceivedPageVisit = ukm::builders::UserPerceivedPageVisit;
 
 const char kTestUrl1[] = "https://www.google.com/";
 const char kTestUrl2[] = "https://www.example.com/";
@@ -153,10 +156,12 @@ class UkmPageLoadMetricsObserverTest
   // Tests that LCP reports the given |value|,
   // and tests that the LCP content type reported is |text_or_image|. If
   // |test_main_frame| is set, also tests that the main frame LCP histograms
-  // also report |value|.
+  // also report |value|. If |text_or_image| is kText, then tests that image
+  // BPP is not reported, and otherwise tests that it matches |bpp_bucket|.
   void TestLCP(int value,
                LargestContentTextOrImage text_or_image,
-               bool test_main_frame) {
+               bool test_main_frame,
+               uint32_t bpp_bucket = 0) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad::kEntryName);
@@ -177,6 +182,15 @@ class UkmPageLoadMetricsObserverTest
     }
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         entry, PageLoad::kPageTiming_ForegroundDurationName));
+
+    if (text_or_image == LargestContentTextOrImage::kText) {
+      EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+          entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName));
+    } else {
+      tester()->test_ukm_recorder().ExpectEntryMetric(
+          entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName,
+          bpp_bucket);
+    }
 
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -232,7 +246,7 @@ class UkmPageLoadMetricsObserverTest
   UkmPageLoadMetricsObserver* observer() const { return observer_; }
 
  private:
-  UkmPageLoadMetricsObserver* observer_;  // Non-owning raw pointer.
+  raw_ptr<UkmPageLoadMetricsObserver> observer_;  // Non-owning raw pointer.
 
   MockNetworkQualityProvider mock_network_quality_provider_;
 };
@@ -309,6 +323,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
             kExperimental_PaintTiming_NavigationToFirstMeaningfulPaintName));
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
         kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
+  }
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> pagevisit_entries =
+      tester()->test_ukm_recorder().GetMergedEntriesByName(
+          ukm::builders::UserPerceivedPageVisit::kEntryName);
+  EXPECT_EQ(1ul, pagevisit_entries.size());
+  for (const auto& kv : pagevisit_entries) {
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(),
+        ukm::builders::UserPerceivedPageVisit::kUserInitiatedName, true);
   }
 }
 
@@ -401,6 +424,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
       base::Milliseconds(600);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
+  timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -410,7 +434,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
+          30 /* image_bpp = "8.0 - 9.0" */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImageLoading) {
@@ -532,7 +557,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, AbortNeverForegrounded) {
       entry, PageLoad::kNavigation_PageTransitionName,
       ui::PAGE_TRANSITION_LINK);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry, PageLoad::kExperimental_TotalForegroundDurationName, 0);
+      entry, PageLoad::kPageTiming_TotalForegroundDurationName, 0);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_DiscardBackgroundResult) {
@@ -629,6 +654,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
+  // TODO(https://crbug.com/1266001): Improve unit tests support for tracing.
+  // In particular, the initialization call below is most likely too narrow /
+  // doesn't take care of everything that is needed.  In the future we might
+  // need to 1) initialize tracing from a better place (maybe
+  // RenderViewHostTestEnabler) and 2) initialize more broadly (maybe via
+  // tracing::PerfettoTracedProcess::SetupForTesting method once it is
+  // reintroduced).
+  perfetto::internal::TrackRegistry::InitializeInstance();
+
   using trace_analyzer::Query;
   trace_analyzer::Start("*");
   {
@@ -657,17 +691,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
   EXPECT_TRUE(events[0]->HasArg("data"));
   base::Value arg;
   EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
-  base::DictionaryValue* arg_dict;
-  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
-  int time;
-  EXPECT_TRUE(arg_dict->GetInteger("durationInMilliseconds", &time));
+  ASSERT_TRUE(arg.is_dict());
+  int time = arg.FindIntKey("durationInMilliseconds").value_or(0);
   EXPECT_EQ(600, time);
-  int size;
-  EXPECT_TRUE(arg_dict->GetInteger("size", &size));
+  int size = arg.FindIntKey("size").value_or(0);
   EXPECT_EQ(1000, size);
-  std::string type;
-  EXPECT_TRUE(arg_dict->GetString("type", &type));
-  EXPECT_EQ("text", type);
+  const std::string* type = arg.FindStringKey("type");
+  ASSERT_TRUE(type);
+  EXPECT_EQ("text", *type);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -1013,45 +1044,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   TestLCP(990, LargestContentTextOrImage::kImage, false /* test_main_frame */);
 }
 
-TEST_F(UkmPageLoadMetricsObserverTest,
-       NormalizedUserInteractionLatenciesWithoutAllLatencies) {
-  NavigateAndCommit(GURL(kTestUrl1));
-
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(120));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(140));
-
-  tester()->SimulateInputTimingUpdate(input_timing);
-  DeleteContents();
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
-      tester()->test_ukm_recorder().GetMergedEntriesByName(
-          PageLoad::kEntryName);
-  EXPECT_EQ(1ul, merged_entries.size());
-
-  for (const auto& kv : merged_entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(kv.second.get(),
-                                                          GURL(kTestUrl1));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
-        120);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        PageLoad::
-            kInteractiveTiming_WorstUserInteractionLatency_TotalEventDurationName,
-        140);
-  }
-}
-
-TEST_F(UkmPageLoadMetricsObserverTest,
-       NormalizedUserInteractionLatenciesWithAllLatencies) {
+TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {
   // Flip the flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1680,15 +1673,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, CpuTimeMetrics) {
 
 TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   NavigateAndCommit(GURL(kTestUrl1));
-  base::TimeTicks time_origin = base::TimeTicks::Now();
+  base::TimeTicks current_time = base::TimeTicks::Now();
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, 0, 0, {});
+                                                              0, {});
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(4000), 0.5));
+          current_time - base::Milliseconds(4000), 0.5));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(3500), 0.5));
+          current_time - base::Milliseconds(3500), 0.5));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -1696,10 +1689,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   web_contents()->WasHidden();
 
   page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, 0, 0,
-                                                                0, 0, 0, 0, {});
+                                                                0, 0, {});
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(2500), 1.5));
+          current_time - base::Milliseconds(2500), 1.5));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab.
@@ -1736,6 +1729,142 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
                   "SessionWindow.Gap1000ms.Max5000ms"),
               testing::ElementsAre(base::Bucket(25, 1)));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       ExperimentalLayoutInstabilityRecordOnHidden) {
+  NavigateAndCommit(GURL(kTestUrl1));
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
+                                                              0, {});
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(4000), 0.5));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3500), 0.5));
+
+  tester()->SimulateRenderDataUpdate(render_data);
+
+  // Simulate hiding the tab (the experimental CLS metrics should include
+  // shifts before the first hide).
+  web_contents()->WasHidden();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+  }
+
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, 0, 0,
+                                                                0, 0, {});
+  render_data_2.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(2500), 1.5));
+  tester()->SimulateRenderDataUpdate(render_data_2);
+
+  // Simulate closing the tab (the CLS metrics should include all the shifts
+  // before the tab closes).
+  DeleteContents();
+
+  const auto& ukm_recorder_2 = tester()->test_ukm_recorder();
+  merged_entries = ukm_recorder_2.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder_2.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry, PageLoad::kLayoutInstability_CumulativeShiftScoreName, 250);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_CumulativeShiftScore_MainFrame_BeforeInputOrScrollName,
+        100);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
+        250);
+    ukm_recorder_2.ExpectEntryMetric(kv.second.get(),
+                                     PageLoad::kNavigation_PageEndReason3Name,
+                                     page_load_metrics::END_CLOSE);
+  }
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.CumulativeShiftScore"),
+              testing::ElementsAre(base::Bucket(25, 1)));
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+                  "SessionWindow.Gap1000ms.Max5000ms"),
+              testing::ElementsAre(base::Bucket(25, 1)));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       ExperimentalLayoutInstabilityRecordOnPageOpenBackground) {
+  // Open the page at the background.
+  web_contents()->WasHidden();
+  NavigateAndCommit(GURL(kTestUrl1));
+  base::TimeTicks current_time = base::TimeTicks::Now();
+
+  // Bring the tab to the foreground and simulate a layout shift.
+  web_contents()->WasShown();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
+                                                              0, {});
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(4000), 0.5));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3500), 0.5));
+
+  tester()->SimulateRenderDataUpdate(render_data);
+
+  // Simulate hiding the tab (the report should include shifts before hide).
+  web_contents()->WasHidden();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+  }
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SiteInstanceRenderProcessAssignment) {
@@ -1778,7 +1907,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstabilitySubframeAggregation) {
 
   // Simulate layout instability in the main frame.
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, 0, 0, {});
+                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   RenderFrameHost* subframe =
@@ -2145,7 +2274,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
 }
 
 // Android does not have NTP Custom Links.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   GURL url(kTestUrl1);
 
@@ -2175,7 +2304,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kIsNTPCustomLinkName, 1);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   // TODO(tommycli): Should we move this test to either HistoryClustersService
@@ -2206,6 +2335,26 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kDurationSinceLastVisitSecondsName,
       base::Days(30).InSeconds());
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest, NavigationTimestamp) {
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  // Verify UKM records for page load timestamp.
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kHourOfDayName, exploded.hour);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kDayOfWeekName, exploded.day_of_week);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -2315,7 +2464,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, CLSNeverForegroundedNoReport) {
   NavigateAndCommit(GURL(kTestUrl1));
 
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
-                                                              0, 0, 0, {});
+                                                              0, {});
   tester()->SimulateRenderDataUpdate(render_data);
 
   // Simulate closing the tab.
@@ -2349,8 +2498,8 @@ class CLSUkmPageLoadMetricsObserverTest
 void CLSUkmPageLoadMetricsObserverTest::SimulateShiftDelta(
     float delta,
     content::RenderFrameHost* frame) {
-  page_load_metrics::mojom::FrameRenderDataUpdate render_data(
-      delta, delta, 0, 0, 0, 0, 0, 0, {});
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(delta, delta, 0,
+                                                              0, 0, 0, {});
   tester()->SimulateRenderDataUpdate(render_data, frame);
 }
 
@@ -2491,4 +2640,86 @@ TEST_F(UkmPageLoadMetricsObserverTest, BucketingViewportHardcodedWidth) {
   TestViewportHardcodedWidth(480, 480);
   TestViewportHardcodedWidth(460, 421);
   TestViewportHardcodedWidth(180, 180);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsBrowserInitiatedNavigationAsUserInitiated) {
+  // Simulate a browser initiated navigation, which is always considered
+  // user initiated.
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  tester()->NavigateWithPageTransitionAndCommit(
+      GURL(kTestUrl1), ui::PageTransition::PAGE_TRANSITION_TYPED);
+  tester()->NavigateToUntrackedUrl();
+
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+  // Check the UserPerceivedPageVisit version of the metrics as well.
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsUserInitiatedRendererNavigationAsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  // Simulate a renderer initiated navigation. The associated navigation input
+  // start time means this will also be considered user initiated.
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl1),
+                                                            main_rfh());
+  navigation->SetNavigationInputStart(base::TimeTicks::Now());
+  navigation->Commit();
+  tester()->NavigateToUntrackedUrl();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsRendererInitiatedRendererNavigationAsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  // Simulate a renderer initiated navigation without an associated
+  // navigation input start time. This will be considered not user
+  // initiated.
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl1),
+                                                            main_rfh());
+  navigation->Commit();
+  tester()->NavigateToUntrackedUrl();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
 }

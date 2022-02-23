@@ -66,7 +66,11 @@ import java.util.List;
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        instrumentedPackages =
+                {
+                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
+                })
 @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
 public class TabGridItemTouchHelperCallbackUnitTest {
     @Rule
@@ -882,7 +886,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                                    .with(TabProperties.TAB_ID, id)
                                    .with(CARD_TYPE, TAB)
                                    .build();
-        doReturn(position).when(viewHolder).getAdapterPosition();
         return viewHolder;
     }
 

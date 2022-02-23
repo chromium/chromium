@@ -97,6 +97,9 @@ apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
 // Returns the browser menu items for the given |menu_type|.
 mojom::MenuItemsPtr CreateBrowserMenuItems(mojom::MenuType menu_type,
                                            const Profile* profile);
+
+ui::ColorId GetColorIdForMenuItemIcon();
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_MENU_UTIL_H_

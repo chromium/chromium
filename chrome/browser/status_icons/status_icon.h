@@ -64,7 +64,7 @@ class StatusIcon {
 
   // Dispatches a click event to the observers.
   void DispatchClickEvent();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DispatchBalloonClickEvent();
 #endif
 

@@ -7,6 +7,15 @@
 
 namespace ash {
 
+// Specifies the camera preview snap position, it can be one of the four corners
+// of the surface being recorded.
+enum class CameraPreviewSnapPosition {
+  kTopLeft = 0,
+  kBottomLeft,
+  kBottomRight,
+  kTopRight,
+};
+
 // Defines the capture type Capture Mode is currently using.
 enum class CaptureModeType {
   kImage,
@@ -24,8 +33,6 @@ enum class CaptureModeSource {
 enum class CaptureAllowance {
   // Capture mode is allowed.
   kAllowed,
-  // Capture mode is blocked due to admin-enforced Data Leak Prevention policy.
-  kDisallowedByDlp,
   // Capture mode is blocked due to admin-enforced device policy.
   kDisallowedByPolicy,
   // Video recording is blocked due to app- or content- enforced content

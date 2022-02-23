@@ -45,7 +45,8 @@ void StartCachedLoad(
     const std::string& data) {
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(pending_client));
-  client->OnReceiveResponse(std::move(response_head));
+  client->OnReceiveResponse(std::move(response_head),
+                            mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;

@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -109,7 +109,7 @@ class NativeIOFile final : public ScriptWrappable {
   void DidSetLengthIo(CrossThreadPersistent<ScriptPromiseResolver> resolver,
                       int64_t actual_length,
                       base::File::Error set_length_result);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Performs the post IPC part of setLength(), on the main thread.
   //
   // `actual_length` is negative if the I/O operation was unsuccessful and the
@@ -118,7 +118,7 @@ class NativeIOFile final : public ScriptWrappable {
                        base::File backing_file,
                        int64_t actual_length,
                        mojom::blink::NativeIOErrorPtr set_length_result);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Performs the file I/O part of read(), off the main thread.
   static void DoRead(CrossThreadPersistent<NativeIOFile> native_io_file,

@@ -14,7 +14,8 @@
 #include "ash/public/cpp/assistant/assistant_setup.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -44,15 +45,14 @@ PrefService* pref_service() {
 
 // Toast -----------------------------------------------------------------------
 
-constexpr int kToastDurationMs = 2500;
-
 constexpr char kStylusPromptToastId[] = "stylus_prompt_for_embedded_ui";
 constexpr char kUnboundServiceToastId[] =
     "assistant_controller_unbound_service";
 
-void ShowToast(const std::string& id, int message_id) {
-  ToastData toast(id, l10n_util::GetStringUTF16(message_id), kToastDurationMs,
-                  absl::nullopt);
+void ShowToast(const std::string& id,
+               ToastCatalogName catalog_name,
+               int message_id) {
+  ToastData toast(id, catalog_name, l10n_util::GetStringUTF16(message_id));
   Shell::Get()->toast_manager()->Show(toast);
 }
 
@@ -115,12 +115,16 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
   // TODO(dmblack): Show a more helpful message to the user.
   if (assistant_state->assistant_status() ==
       chromeos::assistant::AssistantStatus::NOT_READY) {
-    ShowToast(kUnboundServiceToastId, IDS_ASH_ASSISTANT_ERROR_GENERIC);
+    ShowToast(kUnboundServiceToastId,
+              ToastCatalogName::kAssistantUnboundService,
+              IDS_ASH_ASSISTANT_ERROR_GENERIC);
     return;
   }
 
   if (!assistant_) {
-    ShowToast(kUnboundServiceToastId, IDS_ASH_ASSISTANT_ERROR_GENERIC);
+    ShowToast(kUnboundServiceToastId,
+              ToastCatalogName::kAssistantUnboundService,
+              IDS_ASH_ASSISTANT_ERROR_GENERIC);
     return;
   }
 
@@ -258,7 +262,8 @@ void AssistantUiControllerImpl::OnHighlighterEnabledChanged(
   if (state != HighlighterEnabledState::kEnabled)
     return;
 
-  ShowToast(kStylusPromptToastId, IDS_ASH_ASSISTANT_PROMPT_STYLUS);
+  ShowToast(kStylusPromptToastId, ToastCatalogName::kStylusPrompt,
+            IDS_ASH_ASSISTANT_PROMPT_STYLUS);
   CloseUi(AssistantExitPoint::kStylus);
 }
 

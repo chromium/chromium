@@ -294,7 +294,7 @@ TEST(DesktopLauncher, RemoveOldDevToolsActivePortFile_Success) {
   ASSERT_TRUE(base::PathExists(temp_dir.GetPath()));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(DesktopLauncher, RemoveOldDevToolsActivePortFile_Failure) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

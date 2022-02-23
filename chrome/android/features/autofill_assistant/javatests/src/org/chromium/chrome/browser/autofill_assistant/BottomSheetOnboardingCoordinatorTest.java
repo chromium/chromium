@@ -9,15 +9,18 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 
@@ -65,6 +69,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -104,9 +109,17 @@ public class BottomSheetOnboardingCoordinatorTest {
         mScrimCoordinator = mCustomTabActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting()
                                     .getScrimCoordinator();
+
+        AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
+        BrowserContextHandle browserContext =
+                TestThreadUtils.runOnUiThreadBlocking(() -> staticDependencies.getBrowserContext());
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
-                mBottomSheetController, mActivity.getBrowserControlsManager(),
-                mActivity.getCompositorViewHolderForTesting());
+                mBottomSheetController, browserContext,
+                ()
+                        -> new AssistantBrowserControlsChrome(
+                                mActivity.getBrowserControlsManager()),
+                mActivity.getCompositorViewHolderForTesting(),
+                staticDependencies.getAccessibilityUtil(), staticDependencies.createInfoPageUtil());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {
@@ -391,5 +404,170 @@ public class BottomSheetOnboardingCoordinatorTest {
             BaseOnboardingCoordinator coordinator, Callback<Integer> callback) {
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.show(callback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
+    }
+
+    @Test
+    @MediumTest
+    public void testSplitBottomSheetOnboardingVariantA() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        BaseOnboardingCoordinator coordinator = createCoordinator("4702489", parameters);
+
+        String expectedTitle = "Title";
+        String expectedMessage = "Message";
+        String expectedTerms = "Terms <link>Click</link>";
+        String expectedTermsUrl = "https://something.google.com/something";
+        String expectedCloseBottomsheetText = "Not now";
+        String expectedOpenDialogText = "Open dialog";
+        String expectedTermsTitle = "TermsTitle";
+        String expectedConfirmDialogText = "Accept";
+        String expectedCloseDialogText = "Reject";
+
+        // If both are provided, split_onboarding_* should take precedence
+        coordinator.addEntryToStringMap("onboarding_title", "Should be ignored");
+        coordinator.addEntryToStringMap("onboarding_text", "Should be ignored");
+        coordinator.addEntryToStringMap("split_onboarding_title", expectedTitle);
+        coordinator.addEntryToStringMap("split_onboarding_text", expectedMessage);
+
+        coordinator.addEntryToStringMap("terms_and_conditions", expectedTerms);
+        coordinator.addEntryToStringMap("terms_and_conditions_url", expectedTermsUrl);
+        coordinator.addEntryToStringMap(
+                "split_onboarding_close_bottomsheet", expectedCloseBottomsheetText);
+        coordinator.addEntryToStringMap("split_onboarding_show_dialog", expectedOpenDialogText);
+        coordinator.addEntryToStringMap("split_onboarding_terms_title", expectedTermsTitle);
+        coordinator.addEntryToStringMap("split_onboarding_accept", expectedConfirmDialogText);
+        coordinator.addEntryToStringMap("split_onboarding_decline", expectedCloseDialogText);
+
+        showOnboardingAndWait(coordinator, mCallback);
+
+        onView(withId(R.id.onboarding_try_assistant)).check(matches(withText(expectedTitle)));
+        onView(withId(R.id.onboarding_subtitle)).check(matches(withText(expectedMessage)));
+        onView(withId(R.id.google_terms_message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.onboarding_separator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.button_init_ok)).check(matches(withText(expectedOpenDialogText)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withText(expectedCloseBottomsheetText)));
+
+        onView(withText(expectedOpenDialogText)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(allOf(isDisplayed(), withText(expectedTermsTitle))));
+        onView(withId(R.id.onboarding_subtitle))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(not(isDisplayed())));
+        onView(withText(expectedConfirmDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(withText(expectedCloseDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.google_terms_message))
+                .check(matches(allOf(
+                        withText(containsString("Terms")), withText(containsString("Click")))));
+
+        // Dismissing the dialog should not dismiss the bottom sheet, nor should the callback be
+        // called.
+        onView(withText(expectedCloseDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .perform(scrollTo(), click());
+        waitUntilViewAssertionTrue(
+                withText(expectedTermsTitle), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        onView(withText(expectedOpenDialogText)).check(matches(isDisplayed()));
+
+        onView(withText(expectedOpenDialogText)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withText(expectedConfirmDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .perform(scrollTo(), click());
+        verify(mCallback).onResult(AssistantOnboardingResult.ACCEPTED);
+    }
+
+    @Test
+    @MediumTest
+    public void testSplitBottomSheetOnboardingVariantB() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        BaseOnboardingCoordinator coordinator = createCoordinator("4702490", parameters);
+
+        String expectedTitle = "Title";
+        String expectedMessage = "Message";
+        String expectedTerms = "Terms <link>Click</link>";
+        String expectedTermsUrl = "https://something.google.com/something";
+        String expectedCloseBottomsheetText = "Not now";
+        String expectedOpenDialogText = "Open dialog";
+        String expectedTermsTitle = "TermsTitle";
+        String expectedConfirmDialogText = "Accept";
+        String expectedCloseDialogText = "Reject";
+
+        // If both are provided, split_onboarding_* should take precedence
+        coordinator.addEntryToStringMap("onboarding_title", "Should be ignored");
+        coordinator.addEntryToStringMap("onboarding_text", "Should be ignored");
+        coordinator.addEntryToStringMap("split_onboarding_title", expectedTitle);
+        coordinator.addEntryToStringMap("split_onboarding_text", expectedMessage);
+
+        coordinator.addEntryToStringMap("terms_and_conditions", expectedTerms);
+        coordinator.addEntryToStringMap("terms_and_conditions_url", expectedTermsUrl);
+        coordinator.addEntryToStringMap(
+                "split_onboarding_close_bottomsheet", expectedCloseBottomsheetText);
+        coordinator.addEntryToStringMap("split_onboarding_show_dialog", expectedOpenDialogText);
+        coordinator.addEntryToStringMap("split_onboarding_terms_title", expectedTermsTitle);
+        coordinator.addEntryToStringMap("split_onboarding_accept", expectedConfirmDialogText);
+        coordinator.addEntryToStringMap("split_onboarding_decline", expectedCloseDialogText);
+
+        showOnboardingAndWait(coordinator, mCallback);
+
+        // Subtitle is shown in the text bubble, not in the bottom sheet.
+        onView(withId(R.id.onboarding_subtitle)).check(matches(not(isDisplayed())));
+        onView(withText(expectedMessage))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.onboarding_try_assistant)).check(matches(withText(expectedTitle)));
+        onView(withId(R.id.google_terms_message)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.onboarding_separator)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.button_init_ok)).check(matches(withText(expectedOpenDialogText)));
+        onView(withId(R.id.button_init_not_ok))
+                .check(matches(withText(expectedCloseBottomsheetText)));
+
+        onView(withText(expectedOpenDialogText)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withId(R.id.onboarding_try_assistant))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(allOf(isDisplayed(), withText(expectedTermsTitle))));
+        onView(withId(R.id.onboarding_subtitle))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(not(isDisplayed())));
+        onView(withText(expectedConfirmDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(withText(expectedCloseDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.google_terms_message))
+                .check(matches(allOf(
+                        withText(containsString("Terms")), withText(containsString("Click")))));
+
+        // Dismissing the dialog will not bring the text bubble back.
+        onView(withText(expectedCloseDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .perform(scrollTo(), click());
+        waitUntilViewAssertionTrue(
+                withText(expectedTermsTitle), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        onView(withText(expectedOpenDialogText)).check(matches(isDisplayed()));
+        onView(withText(expectedMessage)).check(matches(not(isDisplayed())));
+
+        onView(withText(expectedOpenDialogText)).perform(click());
+        waitUntilViewMatchesCondition(withId(R.id.google_terms_message), isDisplayed());
+
+        onView(withText(expectedConfirmDialogText))
+                .inRoot(withDecorView(not(mActivity.getWindow().getDecorView())))
+                .perform(scrollTo(), click());
+        verify(mCallback).onResult(AssistantOnboardingResult.ACCEPTED);
     }
 }

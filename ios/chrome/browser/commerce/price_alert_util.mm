@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "components/unified_consent/pref_names.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -18,6 +21,7 @@
 namespace {
 const char kPriceTrackingWithOptimizationGuideParam[] =
     "price_tracking_with_optimization_guide";
+const char kPriceTrackingOptOutParam[] = "price_tracking_opt_out";
 }  // namespace
 
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
@@ -28,13 +32,16 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
       ChromeBrowserState::FromBrowserState(browser_state);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForBrowserState(chrome_browser_state);
-  if (!authentication_service || !authentication_service->HasPrimaryIdentity(
-                                     signin::ConsentLevel::kSignin)) {
+  DCHECK(authentication_service);
+  if (!authentication_service->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     return false;
   }
-  const PrefService& prefs = *chrome_browser_state->GetPrefs();
-  if (!prefs.GetBoolean(
-          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
+  PrefService* pref_service = chrome_browser_state->GetPrefs();
+  if (!unified_consent::UrlKeyedDataCollectionConsentHelper::
+           NewAnonymizedDataCollectionConsentHelper(pref_service)
+               ->IsEnabled() ||
+      !pref_service->GetBoolean(prefs::kTrackPricesOnTabsEnabled)) {
     return false;
   }
   return true;
@@ -42,6 +49,14 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
 
 bool IsPriceAlertsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kCommercePriceTracking, kPriceTrackingWithOptimizationGuideParam,
+      commerce::kCommercePriceTracking,
+      kPriceTrackingWithOptimizationGuideParam,
       /** default_value */ false);
+}
+
+bool IsPriceAlertsWithOptOutEnabled() {
+  return IsPriceAlertsEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             commerce::kCommercePriceTracking, kPriceTrackingOptOutParam,
+             /** default_value */ false);
 }

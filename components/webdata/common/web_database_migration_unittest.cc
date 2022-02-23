@@ -125,7 +125,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 98;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 100;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1353,7 +1353,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion73WithTypeColumnToCurrent) {
   }
 }
 
-// Tests adding "validity_bitfield" column for the "autofill_profiles" table.
+// Tests temporarily adding "validity_bitfield" column for the
+// "autofill_profiles" table. Note that the field is deprecated and removed in
+// version 100.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_74.sql")));
 
@@ -1381,7 +1383,8 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
     // Check version.
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
 
-    EXPECT_TRUE(
+    // Note, those fields have been deprecated in version 100.
+    EXPECT_FALSE(
         connection.DoesColumnExist("autofill_profiles", "validity_bitfield"));
 
     // Data should have been preserved. Validity bitfield should have been set
@@ -1389,7 +1392,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
     sql::Statement s_profiles(connection.GetUniqueStatement(
         "SELECT guid, company_name, street_address, dependent_locality,"
         " city, state, zipcode, sorting_code, country_code, date_modified,"
-        " origin, language_code, validity_bitfield "
+        " origin, language_code "
         "FROM autofill_profiles"));
 
     ASSERT_TRUE(s_profiles.Step());
@@ -1407,8 +1410,6 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
     EXPECT_EQ("en", s_profiles.ColumnString(11));
-    // The new validity bitfield should have the default value of 0.
-    EXPECT_EQ(0, s_profiles.ColumnInt(12));
 
     // No more entries expected.
     ASSERT_FALSE(s_profiles.Step());
@@ -1579,6 +1580,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion78ToCurrent) {
 
 // Tests adding "is_client_validity_states_updated" column for the
 // "autofill_profiles" table.
+// Note that the field was deprecated and deleted in version 100.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_79.sql")));
 
@@ -1600,15 +1602,15 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
     ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
     // Check version.
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
-    EXPECT_TRUE(connection.DoesColumnExist(
+    // Note that the field was deprecated and removed in version 100.
+    EXPECT_FALSE(connection.DoesColumnExist(
         "autofill_profiles", "is_client_validity_states_updated"));
     // Data should have been preserved. Validity
     // is_client_validity_states_updated should have been set to false.
     sql::Statement s_profiles(connection.GetUniqueStatement(
         "SELECT guid, company_name, street_address, dependent_locality,"
         " city, state, zipcode, sorting_code, country_code, date_modified,"
-        " origin, language_code, validity_bitfield, "
-        " is_client_validity_states_updated "
+        " origin, language_code "
         " FROM autofill_profiles"));
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
@@ -1625,10 +1627,6 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
     EXPECT_EQ("en", s_profiles.ColumnString(11));
-    EXPECT_EQ(1365, s_profiles.ColumnInt(12));
-    // The new is_client_validity_states_updated should have the default value
-    // of FALSE.
-    EXPECT_FALSE(s_profiles.ColumnBool(13));
 
     // No more entries expected.
     ASSERT_FALSE(s_profiles.Step());
@@ -2220,5 +2218,73 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion97ToCurrent) {
 
     // The status column should not exist.
     EXPECT_FALSE(connection.DoesColumnExist("masked_credit_cards", "status"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion98ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_98.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 98, 98));
+
+    // The autofill_profiles_trash table should exist.
+    EXPECT_TRUE(connection.DoesTableExist("autofill_profiles_trash"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    // The autofill_profiles_trash table should not exist.
+    EXPECT_FALSE(connection.DoesTableExist("autofill_profiles_trash"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion99ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_99.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 99, 99));
+
+    // The validity-related columns should exist.
+    EXPECT_TRUE(
+        connection.DoesColumnExist("autofill_profiles", "validity_bitfield"));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "autofill_profiles", "is_client_validity_states_updated"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_FALSE(
+        connection.DoesColumnExist("autofill_profiles", "validity_bitfield"));
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "autofill_profiles", "is_client_validity_states_updated"));
   }
 }

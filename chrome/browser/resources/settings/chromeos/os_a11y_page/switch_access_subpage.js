@@ -234,9 +234,7 @@ Polymer({
 
   /** @private */
   onSetupGuideRerunClick_() {
-    if (this.showSetupGuide_()) {
-      this.showSwitchAccessSetupGuideWarningDialog_ = true;
-    }
+    this.showSwitchAccessSetupGuideWarningDialog_ = true;
   },
 
   /** @private */
@@ -257,9 +255,7 @@ Polymer({
   /** @private */
   openSetupGuide_() {
     this.showSwitchAccessSetupGuideWarningDialog_ = false;
-    if (this.showSetupGuide_()) {
-      this.showSwitchAccessSetupGuideDialog_ = true;
-    }
+    this.showSwitchAccessSetupGuideDialog_ = true;
   },
 
   /** @private */
@@ -308,8 +304,7 @@ Polymer({
     // Any complete assignment will have at least one switch assigned to SELECT.
     // If this method is called with no SELECT switches, then the page has just
     // loaded, and we should open the setup guide.
-    if (Object.keys(this.selectAssignments_).length === 0 &&
-        this.showSetupGuide_()) {
+    if (Object.keys(this.selectAssignments_).length === 0) {
       this.openSetupGuide_();
     }
   },
@@ -362,15 +357,6 @@ Polymer({
     const autoScanEnabled = /** @type {boolean} */
         (this.getPref(PREFIX + 'auto_scan.enabled').value);
     return improvedTextInputEnabled && autoScanEnabled;
-  },
-
-  /**
-   * @return {boolean} Whether to show the Switch Access setup guide.
-   * @private
-   */
-  showSetupGuide_() {
-    return loadTimeData.getBoolean('showSwitchAccessSetupGuide') &&
-        !this.showSwitchAccessActionAssignmentDialog_;
   },
 
   /**

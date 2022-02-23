@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -26,7 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/memory/oom_memory_details.h"
 #endif
 
@@ -91,18 +90,18 @@ bool SadTab::ShouldShow(base::TerminationStatus status) {
   switch (status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
 #endif
     case base::TERMINATION_STATUS_OOM:
       return true;
     case base::TERMINATION_STATUS_NORMAL_TERMINATION:
     case base::TERMINATION_STATUS_STILL_RUNNING:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
 #endif
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
@@ -117,12 +116,12 @@ int SadTab::GetTitle() {
   if (!is_repeatedly_crashing_)
     return IDS_SAD_TAB_TITLE;
   switch (kind_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return IDS_SAD_TAB_RELOAD_TITLE;
 #endif
     case SAD_TAB_KIND_OOM:
-#if defined(OS_WIN)  // Only Windows has OOM sad tab strings.
+#if BUILDFLAG(IS_WIN)  // Only Windows has OOM sad tab strings.
       return IDS_SAD_TAB_OOM_TITLE;
 #endif
     case SAD_TAB_KIND_CRASHED:
@@ -139,7 +138,7 @@ int SadTab::GetErrorCodeFormatString() {
 
 int SadTab::GetInfoMessage() {
   switch (kind_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return IDS_KILLED_TAB_BY_OOM_MESSAGE;
 #endif
@@ -176,7 +175,7 @@ std::vector<int> SadTab::GetSubMessages() {
     return std::vector<int>();
 
   switch (kind_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       return std::vector<int>();
 #endif
@@ -189,7 +188,7 @@ std::vector<int> SadTab::GetSubMessages() {
       // Only show Incognito suggestion if not already in Incognito mode.
       if (!web_contents_->GetBrowserContext()->IsOffTheRecord())
         message_ids.insert(message_ids.begin(), IDS_SAD_TAB_RELOAD_INCOGNITO);
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // Note: on macOS, Linux and ChromeOS, the first bullet is either one of
       // IDS_SAD_TAB_RELOAD_CLOSE_TABS or IDS_SAD_TAB_RELOAD_CLOSE_NOTABS
       // followed by one of the above suggestions.
@@ -218,10 +217,10 @@ void SadTab::RecordFirstPaint() {
     case SAD_TAB_KIND_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomDisplayed");
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillDisplayed.OOM");
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case SAD_TAB_KIND_KILLED:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillDisplayed");
@@ -280,7 +279,7 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
     case SAD_TAB_KIND_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.OomCreated");
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     case SAD_TAB_KIND_KILLED_BY_OOM:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated.OOM");
       {
@@ -289,7 +288,7 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
         memory::OomMemoryDetails::Log("Tab OOM-Killed Memory details: " + spec +
                                       ", ");
       }
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case SAD_TAB_KIND_KILLED:
       UMA_SAD_TAB_COUNTER("Tabs.SadTab.KillCreated");

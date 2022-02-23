@@ -23,6 +23,8 @@ source_set("safe_browsing") {
     "safe_browsing_blocking_page.mm",
     "safe_browsing_error.h",
     "safe_browsing_error.mm",
+    "safe_browsing_metrics_collector_factory.h",
+    "safe_browsing_metrics_collector_factory.mm",
     "safe_browsing_query_manager.h",
     "safe_browsing_query_manager.mm",
     "safe_browsing_service.h",
@@ -51,6 +53,7 @@ source_set("safe_browsing") {
     "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db",
     "//components/safe_browsing/core/browser/db:database_manager",
@@ -114,7 +117,7 @@ source_set("features") {
 
   deps = [
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -170,7 +173,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings:components_strings_grit",
@@ -240,6 +243,7 @@ source_set("unit_tests") {
     "//components/sync_user_events:test_support",
     "//components/unified_consent",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/prerender",
     "//ios/chrome/browser/prerender:test_support",

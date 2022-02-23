@@ -5,22 +5,12 @@
 // Multiply-included file, hence no include guard.
 
 #include "chrome/common/search/instant_mojom_traits.h"
-#include "services/network/public/cpp/p2p_param_traits.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/common_param_traits_macros.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
-#include "printing/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_PRINTING)
-#undef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
-#include "chrome/common/chrome_utility_printing_param_traits_macros.h"
-#ifndef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
-#error \
-    "Failed to include header chrome/common/chrome_utility_printing_param_traits_macros.h"
-#endif
-#endif
+#include "services/network/public/cpp/p2p_param_traits.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer_param_traits.h"

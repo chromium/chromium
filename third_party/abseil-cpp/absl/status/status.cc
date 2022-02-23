@@ -185,8 +185,11 @@ void Status::ForEachPayload(
 }
 
 const std::string* Status::EmptyString() {
-  static std::string* empty_string = new std::string();
-  return empty_string;
+  static union EmptyString {
+    std::string str;
+    ~EmptyString() {}
+  } empty = {{}};
+  return &empty.str;
 }
 
 constexpr const char Status::kMovedFromString[];

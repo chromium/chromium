@@ -63,17 +63,31 @@ class CrlCheckingPathBuilderDelegate : public SimplePathBuilderDelegate {
       // points, this means a default-initialized ParsedDistributionPoint is
       // sufficient.
       ParsedDistributionPoint fake_cert_dp;
-      ParsedDistributionPoint* cert_dp = &fake_cert_dp;
+      const ParsedDistributionPoint* cert_dp = &fake_cert_dp;
 
       // If the target cert does have a distribution point, use it.
       std::vector<ParsedDistributionPoint> distribution_points;
       ParsedExtension crl_dp_extension;
-      if (certs[i]->GetExtension(CrlDistributionPointsOid(),
+      if (certs[i]->GetExtension(der::Input(kCrlDistributionPointsOid),
                                  &crl_dp_extension)) {
         ASSERT_TRUE(ParseCrlDistributionPoints(crl_dp_extension.value,
                                                &distribution_points));
-        ASSERT_LE(distribution_points.size(), 1U);
-        if (!distribution_points.empty())
+        // TODO(mattm): some test cases (some of the 4.14.* onlySomeReasons
+        // tests)) have two CRLs and two distribution points, one point
+        // corresponding to each CRL.  Should select the matching point for
+        // each CRL.  (Doesn't matter currently since we don't support
+        // reasons.)
+
+        // Look for a DistributionPoint without reasons.
+        for (const auto& dp : distribution_points) {
+          if (!dp.reasons) {
+            cert_dp = &dp;
+            break;
+          }
+        }
+        // If there were only DistributionPoints with reasons, just use the
+        // first one.
+        if (cert_dp == &fake_cert_dp && !distribution_points.empty())
           cert_dp = &distribution_points[0];
       }
 

@@ -1,2 +1,4 @@
-details.AXDetailsElements=[:4, :6]
-none.AXDetailsElements=n/a
+details.accessibilityAttributeNames.has(AXDetailsElements)='yes'
+details.accessibilityAttributeValue(AXDetailsElements)=[:4, :6]
+none.accessibilityAttributeNames.has(AXDetailsElements)='no'
+none.accessibilityAttributeValue(AXDetailsElements)=NULL

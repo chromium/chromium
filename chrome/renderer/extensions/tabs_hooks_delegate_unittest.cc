@@ -173,4 +173,53 @@ TEST_F(TabsHooksDelegateTest, SendRequest) {
   CallAPIAndExpectError(context, "sendRequest", "1, 'hello', {frameId: 10}");
 }
 
+class TabsHooksDelegateMV3Test : public TabsHooksDelegateTest {
+ public:
+  TabsHooksDelegateMV3Test() = default;
+  ~TabsHooksDelegateMV3Test() override = default;
+
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetManifestKey("manifest_version", 3)
+        .Build();
+  }
+};
+
+TEST_F(TabsHooksDelegateMV3Test, SendMessageUsingPromise) {
+  v8::HandleScope handle_scope(isolate());
+
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0, "tabs");
+
+  // The port remains open here after the call because in MV3 we return a
+  // promise if the callback parameter is omitted, so we can't use the presence/
+  // lack of the callback to determine if the caller is/isn't going to handle
+  // the response.
+  MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
+  tester.TestSendMessage("1, ''", R"("")",
+                         MessageTarget::ForTab(1, messaging_util::kNoFrameId),
+                         SendMessageTester::OPEN);
+
+  constexpr char kStandardMessage[] = R"({"data":"hello"})";
+  {
+    // Calling sendMessage with a callback should result in no value returned.
+    v8::Local<v8::Value> result = tester.TestSendMessage(
+        "1, {data: 'hello'}, function() {}", kStandardMessage,
+        MessageTarget::ForTab(1, messaging_util::kNoFrameId),
+        SendMessageTester::OPEN);
+    EXPECT_TRUE(result->IsUndefined());
+  }
+
+  {
+    // Calling sendMessage without a callback should result in a promise
+    // returned.
+    v8::Local<v8::Value> result = tester.TestSendMessage(
+        "1, {data: 'hello'}", kStandardMessage,
+        MessageTarget::ForTab(1, messaging_util::kNoFrameId),
+        SendMessageTester::OPEN);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+  }
+}
+
 }  // namespace extensions

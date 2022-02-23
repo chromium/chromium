@@ -96,7 +96,7 @@ content::BrowserContext* HttpsFirstModeServiceFactory::GetBrowserContextToUse(
     return nullptr;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -110,7 +110,7 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // The context used for making network requests.  Set to nullptr by
   // OnShutdown.
-  URLRequestContext* url_request_context_;
+  raw_ptr<URLRequestContext> url_request_context_;
 
   // Buffer that URLRequest writes into.
   scoped_refptr<IOBuffer> buf_;
@@ -137,7 +137,7 @@ class NET_EXPORT PacFileFetcherImpl : public PacFileFetcher,
 
   // This buffer is owned by the owner of |callback|, and will be filled with
   // UTF16 response on completion.
-  std::u16string* result_text_;
+  raw_ptr<std::u16string> result_text_;
 
   // The maximum number of bytes to allow in responses.
   size_t max_response_bytes_;

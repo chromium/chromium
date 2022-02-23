@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -125,7 +126,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
  private:
   // This raw pointer is safe because all DatabaseImpl instances are owned by
   // an IndexedDBDispatcherHost.
-  IndexedDBDispatcherHost* dispatcher_host_;
+  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
   const blink::StorageKey storage_key_;

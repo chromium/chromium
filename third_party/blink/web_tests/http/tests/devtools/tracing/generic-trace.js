@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Checks DevTools timeline is capable of reading and displaying generic traces.\n`);
   Root.Runtime.experiments.enableForTest('timelineShowAllEvents');
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const rawTraceEvents = [

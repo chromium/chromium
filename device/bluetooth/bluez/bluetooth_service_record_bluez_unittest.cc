@@ -117,10 +117,9 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
 
     BluetoothServiceAttributeValueBlueZ service_class_list =
         records_[0].GetAttributeValue(ids0[1]);
-    std::string str_value;
-    EXPECT_TRUE(
-        service_class_list.sequence()[0].value().GetAsString(&str_value));
-    EXPECT_EQ("1802", str_value);
+    const base::Value& value = service_class_list.sequence()[0].value();
+    EXPECT_TRUE(value.is_string());
+    EXPECT_EQ("1802", value.GetString());
 
     std::vector<uint16_t> ids1 = records_[1].GetAttributeIds();
     EXPECT_EQ(1u, ids1.size());

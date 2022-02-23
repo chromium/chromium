@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -161,9 +162,9 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   std::unique_ptr<base::DictionaryValue> message_dict =
       base::DictionaryValue::From(std::move(message));
 
-  std::string session_id;
-  if (message_dict->GetString("sessionId", &session_id)) {
-    auto it = sessions_.find(session_id);
+  const std::string* session_id = message_dict->FindStringKey("sessionId");
+  if (session_id) {
+    auto it = sessions_.find(*session_id);
     if (it != sessions_.end()) {
       it->second->ReceiveProtocolMessage(json_message, std::move(message_dict));
       return;
@@ -189,7 +190,7 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   }
 
   bool success = false;
-  if (message_dict->HasKey("id"))
+  if (message_dict->FindKey("id"))
     success = DispatchMessageReply(std::move(message), *message_dict);
   else
     success = DispatchEvent(std::move(message), *message_dict);
@@ -521,7 +522,7 @@ HeadlessDevToolsClientImpl::Callback::Callback(
 
 HeadlessDevToolsClientImpl::Callback::~Callback() = default;
 
-HeadlessDevToolsClientImpl::Callback& HeadlessDevToolsClientImpl::Callback::
-operator=(Callback&& other) = default;
+HeadlessDevToolsClientImpl::Callback&
+HeadlessDevToolsClientImpl::Callback::operator=(Callback&& other) = default;
 
 }  // namespace headless

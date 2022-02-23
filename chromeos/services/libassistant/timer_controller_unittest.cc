@@ -5,8 +5,7 @@
 #include "chromeos/services/libassistant/timer_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/internal/buildflags.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
@@ -14,14 +13,6 @@
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
-#include "libassistant/shared/internal_api/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_146S
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
-#include "libassistant/shared/public/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_152S
 
 namespace chromeos {
 namespace libassistant {

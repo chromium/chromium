@@ -38,7 +38,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"  // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/keycodes/platform_key_map_win.h"
 #endif
 
@@ -68,6 +68,7 @@ SourceEventType EventTypeToLatencySourceEventType(EventType type) {
     case ET_GESTURE_PINCH_BEGIN:
     case ET_GESTURE_PINCH_END:
     case ET_GESTURE_PINCH_UPDATE:
+    case ET_GESTURE_SHORT_PRESS:
     case ET_GESTURE_LONG_PRESS:
     case ET_GESTURE_LONG_TAP:
     case ET_GESTURE_SWIPE:
@@ -452,7 +453,7 @@ std::string LocatedEvent::ToString() const {
 MouseEvent::MouseEvent(const PlatformEvent& native_event)
     : LocatedEvent(native_event),
       changed_button_flags_(GetChangedMouseButtonFlagsFromNative(native_event)),
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       movement_(GetMouseMovementFromNative(native_event)),
 #endif
       pointer_details_(GetMousePointerDetailsFromNative(native_event)) {
@@ -699,7 +700,7 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
 
 MouseWheelEvent::~MouseWheelEvent() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This value matches windows WHEEL_DELTA.
 // static
 const int MouseWheelEvent::kWheelDelta = 120;
@@ -769,10 +770,10 @@ void TouchEvent::UpdateForRootTransform(
   // given that we can run this relatively frequently we will inline execute the
   // matrix here.
   const auto& matrix = inverted_root_transform.matrix();
-  const double new_x = fabs(pointer_details_.radius_x * matrix.get(0, 0) +
-                            pointer_details_.radius_y * matrix.get(0, 1));
-  const double new_y = fabs(pointer_details_.radius_x * matrix.get(1, 0) +
-                            pointer_details_.radius_y * matrix.get(1, 1));
+  const double new_x = fabs(pointer_details_.radius_x * matrix.rc(0, 0) +
+                            pointer_details_.radius_y * matrix.rc(0, 1));
+  const double new_y = fabs(pointer_details_.radius_x * matrix.rc(1, 0) +
+                            pointer_details_.radius_y * matrix.rc(1, 1));
   pointer_details_.radius_x = new_x;
   pointer_details_.radius_y = new_y;
 
@@ -783,14 +784,14 @@ void TouchEvent::UpdateForRootTransform(
   // section.
   if (!IsNearZero(pointer_details_.tilt_x) ||
       !IsNearZero(pointer_details_.tilt_y)) {
-    if (IsNearZero(matrix.get(0, 1)) && IsNearZero(matrix.get(1, 0))) {
-      pointer_details_.tilt_x *= std::copysign(1, matrix.get(0, 0));
-      pointer_details_.tilt_y *= std::copysign(1, matrix.get(1, 1));
-    } else if (IsNearZero(matrix.get(0, 0)) && IsNearZero(matrix.get(1, 1))) {
+    if (IsNearZero(matrix.rc(0, 1)) && IsNearZero(matrix.rc(1, 0))) {
+      pointer_details_.tilt_x *= std::copysign(1, matrix.rc(0, 0));
+      pointer_details_.tilt_y *= std::copysign(1, matrix.rc(1, 1));
+    } else if (IsNearZero(matrix.rc(0, 0)) && IsNearZero(matrix.rc(1, 1))) {
       double new_tilt_x =
-          pointer_details_.tilt_y * std::copysign(1, matrix.get(0, 1));
+          pointer_details_.tilt_y * std::copysign(1, matrix.rc(0, 1));
       double new_tilt_y =
-          pointer_details_.tilt_x * std::copysign(1, matrix.get(1, 0));
+          pointer_details_.tilt_x * std::copysign(1, matrix.rc(1, 0));
       pointer_details_.tilt_x = new_tilt_x;
       pointer_details_.tilt_y = new_tilt_y;
     }
@@ -934,9 +935,9 @@ void KeyEvent::InitializeNative() {
   if (synthesize_key_repeat_enabled_ && IsRepeated(GetLastKeyEvent()))
     set_flags(flags() | EF_IS_REPEAT);
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   NormalizeFlags();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Only Windows has native character events.
   if (is_char_) {
     key_ = DomKey::FromCharacter(static_cast<int32_t>(native_event().wParam));
@@ -974,7 +975,7 @@ void KeyEvent::ApplyLayout() const {
   }
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Native Windows character events always have is_char_ == true,
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
@@ -1017,7 +1018,7 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
   DCHECK(last);
   bool is_repeat = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (HasNativeEvent()) {
     // Bit 30 of lParam represents the "previous key state". If set, the key
     // was already down, therefore this is an auto-repeat.
@@ -1109,7 +1110,7 @@ char16_t KeyEvent::GetUnmodifiedText() const {
 }
 
 bool KeyEvent::IsUnicodeKeyCode() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!IsAltDown())
     return false;
   const int key = key_code();

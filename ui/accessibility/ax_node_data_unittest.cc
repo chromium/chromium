@@ -213,8 +213,9 @@ TEST(AXNodeDataTest, IsClickable) {
 
 TEST(AXNodeDataTest, IsInvocable) {
   // Test for iterating through all roles and validate if a role is invocable.
-  // A role is invocable if it is clickable and supports neither expand collpase
-  // nor toggle.
+  // A role is invocable if it is clickable and supports neither expand collapse
+  // nor toggle. A link should always be invocable, regardless of whether it is
+  // clickable or supports expand/collapse or toggle.
   AXNodeData data;
   for (int role_idx = static_cast<int>(ax::mojom::Role::kMinValue);
        role_idx <= static_cast<int>(ax::mojom::Role::kMaxValue); role_idx++) {
@@ -233,11 +234,13 @@ TEST(AXNodeDataTest, IsInvocable) {
                  << ", Actual: isInvocable=" << is_invocable
                  << ", Expected: isInvocable=" << !is_invocable);
 
-    if (is_clickable && !is_activatable && !supports_toggle &&
-        !supports_expand_collapse)
+    if (ui::IsLink(data.role) ||
+        (is_clickable && !is_activatable && !supports_toggle &&
+         !supports_expand_collapse)) {
       EXPECT_TRUE(is_invocable);
-    else
+    } else {
       EXPECT_FALSE(is_invocable);
+    }
   }
 }
 

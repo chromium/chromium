@@ -7,9 +7,9 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#endif  // defined (OS_WIN)
+#endif
 
 namespace content {
 
@@ -18,7 +18,7 @@ class WebThemeEngineImplDefaultBrowserTest : public ContentBrowserTest {
   WebThemeEngineImplDefaultBrowserTest() {}
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
   // The test non-deterministically fails on Windows-2008ServerR2 builders due
   // to a difference in the default theme. As a result, only run the test on
@@ -152,6 +152,6 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                          ids[i] + "')).getPropertyValue('color').toString()"));
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

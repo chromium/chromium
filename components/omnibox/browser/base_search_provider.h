@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -45,6 +46,9 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Returns whether |match| is flagged as a query that should be prefetched.
   static bool ShouldPrefetch(const AutocompleteMatch& match);
+
+  // Returns whether |match| is flagged as a query that should be prerendered.
+  static bool ShouldPrerender(const AutocompleteMatch& match);
 
   // Returns a simpler AutocompleteMatch suitable for persistence like in
   // ShortcutsDatabase.  This wrapper function uses a number of default values
@@ -127,6 +131,10 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   // Indicates whether the server said a match should be prefetched.
   static const char kShouldPrefetchKey[];
+
+  // Indicates whether the server said a match should be prerendered by
+  // Prerender2. See content/browser/prerender/README.md for more information.
+  static const char kShouldPrerenderKey[];
 
   // Used to store metadata from the server response, which is needed for
   // prefetching.
@@ -260,7 +268,7 @@ class BaseSearchProvider : public AutocompleteProvider {
   void OnDeletionComplete(bool success,
                           SuggestionDeletionHandler* handler);
 
-  AutocompleteProviderClient* client_;
+  raw_ptr<AutocompleteProviderClient> client_;
 
   // Whether a field trial, if any, has triggered in the most recent
   // autocomplete query. This field is set to true only if the suggestion

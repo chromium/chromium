@@ -9,6 +9,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -21,6 +22,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "ui/accessibility/ax_event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -161,7 +163,7 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     RecordHistoryNavigationUkm(navigation);
     if (!navigation->IsServedFromBackForwardCache()) {
       devtools_instrumentation::BackForwardCacheNotUsed(
-          navigation, page_store_result_.get());
+          navigation, page_store_result_.get(), page_store_tree_result_.get());
     }
   }
 
@@ -298,6 +300,13 @@ void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
   }
 }
 
+void BackForwardCacheMetrics::FinalizeNotRestoredReasons(
+    const BackForwardCacheCanStoreDocumentResult& can_store_flat,
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree) {
+  page_store_tree_result_ = std::move(can_store_tree);
+  MarkNotRestoredWithReason(can_store_flat);
+}
+
 void BackForwardCacheMetrics::MarkNotRestoredWithReason(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   page_store_result_->AddReasonsFrom(can_store);
@@ -432,6 +441,14 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
         reason);
   }
 
+  for (const ax::mojom::Event event : page_store_result_->ax_events()) {
+    base::UmaHistogramSparse(
+        "BackForwardCache.HistoryNavigationOutcome."
+        "NotRestoredDueToAccessibility."
+        "AXEventType",
+        static_cast<int>(event));
+  }
+
   if (!DidSwapBrowsingInstance()) {
     DCHECK(!navigation->IsServedFromBackForwardCache());
 
@@ -515,6 +532,7 @@ bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {
     case ShouldSwapBrowsingInstance::kNo_HasNotComittedAnyNavigation:
     case ShouldSwapBrowsingInstance::
         kNo_UnloadHandlerExistsOnSameSiteNavigation:
+    case ShouldSwapBrowsingInstance::kNo_NotPrimaryMainFrame:
       return false;
     case ShouldSwapBrowsingInstance::kYes_ForceSwap:
     case ShouldSwapBrowsingInstance::kYes_CrossSiteProactiveSwap:

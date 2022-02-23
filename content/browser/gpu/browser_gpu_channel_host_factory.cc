@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -40,7 +41,7 @@
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
@@ -48,7 +49,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // This is used as the stack frame to group these timeout crashes, so avoid
 // renaming it or moving the LOG(FATAL) call.
@@ -65,7 +66,7 @@ void DumpGpuStackOnProcessThread() {
   TimedOut();
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -138,7 +139,7 @@ BrowserGpuChannelHostFactory::EstablishRequest::EstablishRequest(
       gpu_client_id_(gpu_client_id),
       gpu_client_tracing_id_(gpu_client_tracing_id),
       finished_(false),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       main_task_runner_(ui::WindowResizeHelperMac::Get()->task_runner())
 #else
       main_task_runner_(base::ThreadTaskRunnerHandle::Get())
@@ -304,19 +305,14 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
               gpu_client_id_, cache_dir));
     }
 
-    bool use_gr_shader_cache = base::FeatureList::IsEnabled(
-                                   features::kDefaultEnableOopRasterization) ||
-                               features::IsUsingSkiaRenderer();
-    if (use_gr_shader_cache) {
-      base::FilePath gr_cache_dir =
-          GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
-      if (!gr_cache_dir.empty()) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
-                gr_cache_dir));
-      }
+    base::FilePath gr_cache_dir =
+        GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
+    if (!gr_cache_dir.empty()) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
+              gr_cache_dir));
     }
   }
 }
@@ -342,7 +338,7 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
 // task on the UI thread first, so we cannot block here.)
 scoped_refptr<gpu::GpuChannelHost>
 BrowserGpuChannelHostFactory::EstablishGpuChannelSync() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return nullptr;
 #else
@@ -443,7 +439,7 @@ void BrowserGpuChannelHostFactory::GpuChannelEstablished(
 void BrowserGpuChannelHostFactory::RestartTimeout() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 // Only implement timeout on Android, which does not have a software fallback.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kDisableTimeoutsForProfiling)) {
     return;
@@ -474,7 +470,7 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
 
   timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
                  base::BindOnce(&DumpGpuStackOnProcessThread));
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

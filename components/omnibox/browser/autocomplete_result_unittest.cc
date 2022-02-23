@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -712,7 +713,7 @@ TEST_F(AutocompleteResultTest, SortAndCullEmptyDestinationURLs) {
   EXPECT_EQ(1000, result.match_at(3)->relevance);
 }
 
-#if !(defined(OS_ANDROID) || defined(OS_IOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 // Tests which remove results only work on desktop.
 
 TEST_F(AutocompleteResultTest, SortAndCullTailSuggestions) {
@@ -1315,7 +1316,7 @@ TEST_F(AutocompleteResultTest, DemoteByType) {
   base::FieldTrialList::CreateFieldTrial(
       OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Where Grouping suggestions by Search vs URL kicks in, search gets
   // promoted to the top of the list.
   const std::vector<size_t> expected_natural_order{1, 2, 3, 0};
@@ -1467,7 +1468,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteUnconsecutiveMatches) {
 
 struct EntityTestData {
   AutocompleteMatchType::Type type;
-  FakeAutocompleteProvider* provider;
+  raw_ptr<FakeAutocompleteProvider> provider;
   std::string destination_url;
   int relevance;
   bool allowed_to_be_default_match;
@@ -1668,7 +1669,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
   EXPECT_EQ(900, result.match_at(2)->relevance);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -1813,7 +1814,7 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   // Case 1: Eject URL match for a search.
   // Does not apply to Android which picks top N matches and performs group by
   // search vs URL separately (Adaptive Suggestions).
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   {
     ACMatches matches;
     const AutocompleteMatchTestData data[] = {
@@ -1940,7 +1941,7 @@ TEST_F(AutocompleteResultTest, InlineTailPrefixes) {
                                   "this is a test");
   AutocompleteResult result;
   result.AppendMatches(AutocompleteInput(), matches);
-  result.InlineTailPrefixes();
+  result.SetTailSuggestContentPrefixes();
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(result.match_at(i)->contents,
               base::UTF8ToUTF16(cases[i].after_contents));
@@ -1948,7 +1949,7 @@ TEST_F(AutocompleteResultTest, InlineTailPrefixes) {
                                      cases[i].after_contents_class));
   }
   // Run twice and make sure that it doesn't re-prepend ellipsis.
-  result.InlineTailPrefixes();
+  result.SetTailSuggestContentPrefixes();
   for (size_t i = 0; i < base::size(cases); ++i) {
     EXPECT_EQ(result.match_at(i)->contents,
               base::UTF8ToUTF16(cases[i].after_contents));

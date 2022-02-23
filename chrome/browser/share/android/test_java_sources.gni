@@ -15,10 +15,12 @@ share_test_java_sources = [
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ChromeProvidedSharingOptionsProviderTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContentTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilderTest.java",
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetTest.java",
 ]
 
 share_junit_test_java_sources = [
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinatorTest.java",
+  "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextHelperTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsCoordinatorTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/EntryManagerTest.java",
   "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositorTest.java",
@@ -39,4 +41,5 @@ share_junit_test_java_deps = [
   "//chrome/browser/paint_preview/android:java",
   "//chrome/browser/paint_preview/android:java",
   "//components/paint_preview/player/android:java",
+  "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
 ]

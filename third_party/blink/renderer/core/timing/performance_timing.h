@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
@@ -112,6 +112,13 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   uint64_t FirstPaint() const;
   // The time the first paint operation for image was performed.
   uint64_t FirstImagePaint() const;
+  // The first 'contentful' paint as full-resolution monotonic time. This is
+  // the point at which blink painted the content for FCP; actual FCP is
+  // recorded as the time the generated content makes it to the screen (also
+  // known as presentation time). Intended to be used for correlation with other
+  // events internal to blink.
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+      const;
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
   uint64_t FirstContentfulPaint() const;
@@ -138,6 +145,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize
   // are the time and size of it.
+  double LargestContentfulPaintImageBPP() const;
   uint64_t LargestTextPaint() const;
   uint64_t LargestTextPaintSize() const;
   // Largest Contentful Paint is the either the largest text paint time or the

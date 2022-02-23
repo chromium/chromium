@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -67,11 +68,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
   std::string app_version_;
   std::string app_locale_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace consent_auditor

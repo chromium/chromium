@@ -14,8 +14,10 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -549,11 +551,11 @@ class TabRestoreServiceImpl::PersistenceDelegate
 
  private:
   // The associated client.
-  TabRestoreServiceClient* client_;
+  raw_ptr<TabRestoreServiceClient> client_;
 
   std::unique_ptr<CommandStorageManager> command_storage_manager_;
 
-  TabRestoreServiceHelper* tab_restore_service_helper_;
+  raw_ptr<TabRestoreServiceHelper> tab_restore_service_helper_;
 
   // The number of entries to write.
   int entries_to_write_;
@@ -1279,9 +1281,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::ValidateAndDeleteEmptyEntries(
   std::vector<std::unique_ptr<Entry>> valid_entries;
 
   // Iterate from the back so that we keep the most recently closed entries.
-  for (auto i = entries->rbegin(); i != entries->rend(); ++i) {
-    if (TabRestoreServiceHelper::ValidateEntry(**i))
-      valid_entries.push_back(std::move(*i));
+  for (std::unique_ptr<Entry>& entry : base::Reversed(*entries)) {
+    if (TabRestoreServiceHelper::ValidateEntry(*entry))
+      valid_entries.push_back(std::move(entry));
   }
   // NOTE: at this point the entries are ordered with newest at the front.
   entries->swap(valid_entries);
@@ -1330,6 +1332,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     tab.navigations.swap(i->navigations);
     tab.current_navigation_index = i->current_navigation_index;
     tab.extension_app_id = i->extension_app_id;
+    tab.extra_data = std::move(i->extra_data);
     tab.timestamp = base::Time();
   }
 
@@ -1340,6 +1343,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
   window->selected_tab_index =
       std::min(session_window->selected_tab_index,
                static_cast<int>(window->tabs.size() - 1));
+  window->extra_data = std::move(session_window->extra_data);
   window->timestamp = base::Time();
   window->bounds = session_window->bounds;
   window->show_state = session_window->show_state;

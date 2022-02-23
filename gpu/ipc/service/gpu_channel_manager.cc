@@ -8,6 +8,12 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <dxgi1_3.h>
+#endif
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -34,6 +40,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/memory_stats.h"
@@ -43,7 +50,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 #include "ui/gl/gl_bindings.h"
@@ -56,14 +63,14 @@
 namespace gpu {
 
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Amount of time we expect the GPU to stay powered up without being used.
 const int kMaxGpuIdleTimeMs = 40;
 // Maximum amount of time we keep pinging the GPU waiting for the client to
 // draw.
 const int kMaxKeepAliveTimeMs = 200;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TrimD3DResources() {
   // Graphics drivers periodically allocate internal memory buffers in
   // order to speed up subsequent rendering requests. These memory allocations
@@ -96,7 +103,16 @@ void APIENTRY CrashReportOnGLErrorDebugCallback(GLenum source,
                                                 const GLvoid* user_param) {
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API &&
       user_param) {
-    LOG(ERROR) << gl::GLEnums::GetStringEnum(id) << ": " << message;
+    // Note: log_message cannot contain any user data. The error strings
+    // generated from ANGLE are all static strings and do not contain user
+    // information such as shader source code. Be careful if updating the
+    // contents of this string.
+    std::string log_message = gl::GLEnums::GetStringEnum(id);
+    if (message && length > 0) {
+      log_message += ": " + std::string(message, length);
+    }
+    LOG(ERROR) << log_message;
+    crash_keys::gpu_gl_error_message.Set(log_message);
     int* remaining_reports =
         const_cast<int*>(static_cast<const int*>(user_param));
     if (*remaining_reports > 0) {
@@ -346,7 +362,7 @@ GpuChannelManager::GpuChannelManager(
 
   const bool using_skia_renderer = features::IsUsingSkiaRenderer();
   const bool enable_gr_shader_cache =
-      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
+      (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
        gpu::kGpuFeatureStatusEnabled) ||
       using_skia_renderer;
   const bool disable_disk_cache =
@@ -625,7 +641,7 @@ GpuChannelManager::GetPeakMemoryUsage(uint32_t sequence_num,
   return allocation_per_source;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void GpuChannelManager::DidAccessGpu() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -742,7 +758,7 @@ void GpuChannelManager::HandleMemoryPressure(
 
   if (gr_shader_cache_)
     gr_shader_cache_->PurgeMemory(memory_pressure_level);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   TrimD3DResources();
 #endif
 }
@@ -758,7 +774,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   scoped_refptr<gl::GLSurface> surface = default_offscreen_surface();
   bool use_virtualized_gl_contexts = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
   // http://crbug.com/180463
@@ -799,12 +815,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
     // SwANGLE.
-    // TODO(crbug.com/1116174): Currently disabling robust initialization is
-    // breaking some tests with OOP canvas. Once that's fixed remove check for
-    // kCanvasOopRasterization feature.
     if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
-        features::IsUsingSkiaRenderer() &&
-        !base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
+        features::IsUsingSkiaRenderer()) {
       attribs.robust_resource_initialization = false;
     }
 

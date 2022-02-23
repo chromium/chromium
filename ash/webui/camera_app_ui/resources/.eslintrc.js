@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is also checked by ESLint, and some of the property in the
+// settings doesn't follow naming convention.
+/* eslint-disable @typescript-eslint/naming-convention */
 // From
 // https://github.com/google/eslint-config-google/blob/b8ba12f58a4d71ee1f66b504a59bfe8de381ab4b/index.js#L20
 const googleRules = {
@@ -356,6 +359,7 @@ const googleRules = {
   // 'template-curly-spacing': 'off',
   'yield-star-spacing': ['error', 'after'],
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const typescriptEslintDir =
     '../../../../third_party/node/node_modules/@typescript-eslint';
@@ -372,37 +376,9 @@ module.exports = {
     'ecmaVersion': 2020,
     'sourceType': 'module',
   },
-  'extends': 'eslint:recommended',
-  'globals': {
-    'arc': 'readable',
-    'chromeosCamera': 'readable',
-    'cros': 'readable',
-    'trustedTypes': 'readable',
-    'BarcodeDetector': 'readable',
-    'FileSystemFileHandle': 'readable',
-    'FileSystemDirectoryHandle': 'readable',
-    'IdleDetector': 'readable',
-
-    // TODO(b/172879638): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/171 merged in ESLint and
-    // Chromium.
-    'OffscreenCanvasRenderingContext2D': 'readable',
-
-    // TODO(b/168894537): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/175 merged in ESlint and
-    // Chromium.
-    'OverconstrainedError': 'readable',
-
-    // TODO(b/190689433): Remove this once we have
-    // https://github.com/sindresorhus/globals/pull/178 merged in ESlint and
-    // Chromium.
-    'CSSNumericValue': 'readable',
-    'CSSRotate': 'readable',
-    'CSSScale': 'readable',
-    'CSSTransformValue': 'readable',
-    'CSSTranslate': 'readable',
-    'CSSUnitValue': 'readable',
-  },
+  'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  'parser': `${typescriptEslintDir}/parser`,
+  'plugins': ['@typescript-eslint'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
@@ -416,11 +392,124 @@ module.exports = {
     // code should be formatted properly by clang-format, as we required
     // `git cl format --js` before uploading.
     'indent': 'off',
+
+    // To resolve the conflict with clang-format.
+    'generator-star-spacing': [
+      'error',
+      {
+        named: 'after',
+        anonymous: 'neither',
+        method: 'both',
+      },
+    ],
+
+    // This doesn't work well with TypeScript files. The alternate
+    // @typescript-eslint/no-unused-vars that works with TypeScript files is
+    // enabled in @typescript-eslint/recommended.
+    'no-unused-vars': 'off',
+
+    // TODO(pihsun): We should use eslint-plugin-jsdoc for jsdoc in
+    // TypeScript, since the Google TypeScript style guide states that
+    // redundant type or trivial arguments for params and returns can be
+    // omitted in jsdoc for TypeScript, but eslint builtin valid-jsdoc rule
+    // doesn't have fine-grained control to disable those checks (and is also
+    // deprecated).
+    // (TypeScript doesn't yet support getting types from jsdoc,
+    // https://github.com/microsoft/TypeScript/issues/42048)
+    'valid-jsdoc': 'off',
+
+    // TODO(pihsun): Currently there are many existing js files that have
+    // jsdoc which only contains type information and nothing else, which is
+    // all removed while converting to ts. Disabling the requirement for
+    // jsdoc for now. Note that the style guide suggest to document all
+    // properties and methods whose purpose is not immediately obvious from
+    // their name, which means that we should be able to skip jsdoc for some
+    // of the constructors and trivial structs.
+    'require-jsdoc': 'off',
+
+    // go/tsstyle states that no variable should have _ as prefix/suffix, but
+    // there's no better alternative for unused function parameters. Since the
+    // convention for noUnusedParameters for TypeScript is also leading
+    // underscore, we use the same ignore pattern here.  See b/173108529 and
+    // g/typescript-style/uOfKsoxxWEY/HCgzNfAFAwAJ for other discussions.
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        varsIgnorePattern: '^_',
+        argsIgnorePattern: '^_',
+      },
+    ],
+
+    // Disallow parseInt (go/tsstyle#type-coercion)
+    'no-restricted-syntax': [
+      'error',
+      {
+        'selector': 'CallExpression[callee.name="parseInt"]',
+        'message': 'parseInt are not allowed, use Number() instead. ' +
+            '(go/tsstyle#type-coercion)',
+      },
+    ],
+
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'default',
+        format: ['camelCase'],
+      },
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE'],
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase'],
+      },
+      {
+        selector: 'enumMember',
+        format: ['UPPER_CASE'],
+      },
+      {
+        selector: 'parameter',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'allow',
+      },
+    ],
+
+    // This is covered by @typescript-eslint/naming-convention.
+    'camelcase': 'off',
+
+    // go/tsstyle#arrayt-type
+    '@typescript-eslint/array-type': [
+      'error',
+      {
+        'default': 'array-simple',
+      },
+    ],
+
+    // go/tsstyle#type-assertions-syntax
+    // go/tsstyle#type-assertions-and-object-literals
+    '@typescript-eslint/consistent-type-assertions': [
+      'error',
+      {
+        assertionStyle: 'as',
+        objectLiteralTypeAssertions: 'never',
+      },
+    ],
+
+    // go/tsstyle#interfaces-vs-type-aliases
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
   }),
   'overrides': [{
-    'files': ['**/*.ts'],
-    'plugins': ['@typescript-eslint'],
-    'parser': `${typescriptEslintDir}/parser`,
-    'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+    files: ['**/*.ts'],
+    parserOptions: {
+      // eslint-disable-next-line no-undef
+      tsconfigRootDir: __dirname,
+      project: './tsconfig_base.json',
+    },
+    rules: {
+      // go/tsstyle#use-readonly
+      '@typescript-eslint/prefer-readonly': 'error',
+    },
   }],
 };

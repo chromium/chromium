@@ -6,9 +6,10 @@
 #define UI_VIEWS_INTERACTION_ELEMENT_TRACKER_VIEWS_H_
 
 #include <map>
-#include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_piece_forward.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,10 +34,10 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
   View* view() { return view_; }
   const View* view() const { return view_; }
 
-  DECLARE_ELEMENT_TRACKER_METADATA()
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
  private:
-  View* const view_;
+  const raw_ptr<View> view_;
 };
 
 // Manages TrackedElements associated with View objects.
@@ -100,6 +101,17 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // identifier.
   ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
 
+  // Returns a widget that matches the given context. A valid
+  // TrackedElementViews must exist within the widget.
+  Widget* GetWidgetForContext(ui::ElementContext context);
+
+  // ----------
+  // Notifies listeners that a specific custom event has occurred for the given
+  // view. Calls GetElementForView(view, true) under the hood; returns false if
+  // an element cannot be found or created for the view (e.g. in the case where
+  // it is not visible or associated with a widget).
+  bool NotifyCustomEvent(ui::CustomElementEventType event_type, View* view);
+
   // ----------
   // The following methods are used by View and derived classes to send events
   // to ElementTracker. ElementTrackerViews maintains additional observers and
@@ -135,8 +147,7 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // destroyed).
   void MaybeObserveWidget(Widget* widget);
 
-  std::map<ui::ElementIdentifier, std::unique_ptr<ElementDataViews>>
-      element_data_;
+  std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
   base::ScopedMultiSourceObservation<Widget, WidgetObserver> widget_observer_{
       this};
 };

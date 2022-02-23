@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
@@ -24,6 +25,10 @@
 class Profile;
 
 namespace apps {
+
+class PublisherHost;
+
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Plugin VM apps.
 //
@@ -43,6 +48,10 @@ class PluginVmApps : public apps::PublisherBase,
   PluginVmApps& operator=(const PluginVmApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
+  void Initialize();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
@@ -50,6 +59,8 @@ class PluginVmApps : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -83,7 +94,7 @@ class PluginVmApps : public apps::PublisherBase,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
 
-  std::unique_ptr<App> CreateApp(
+  AppPtr CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
 
@@ -102,7 +113,7 @@ class PluginVmApps : public apps::PublisherBase,
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Whether the Plugin VM app is allowed by policy.
-  bool is_allowed_;
+  bool is_allowed_ = false;
 
   std::unique_ptr<plugin_vm::PluginVmPolicySubscription> policy_subscription_;
   PrefChangeRegistrar pref_registrar_;

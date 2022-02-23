@@ -8,7 +8,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_exception.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

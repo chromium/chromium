@@ -13,79 +13,55 @@
 
 namespace remoting {
 
-IpcHostEventLogger::IpcHostEventLogger(scoped_refptr<HostStatusMonitor> monitor,
-                                       IPC::Sender* daemon_channel)
-    : daemon_channel_(daemon_channel), monitor_(monitor) {
+IpcHostEventLogger::IpcHostEventLogger(
+    scoped_refptr<HostStatusMonitor> monitor,
+    mojo::AssociatedRemote<mojom::HostStatusObserver> remote)
+    : host_status_observer_(std::move(remote)), monitor_(monitor) {
   monitor_->AddStatusObserver(this);
 }
 
 IpcHostEventLogger::~IpcHostEventLogger() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   monitor_->RemoveStatusObserver(this);
 }
 
-void IpcHostEventLogger::OnAccessDenied(const std::string& jid) {
+void IpcHostEventLogger::OnClientAccessDenied(const std::string& signaling_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_AccessDenied(jid));
+  host_status_observer_->OnClientAccessDenied(signaling_id);
 }
 
-void IpcHostEventLogger::OnClientAuthenticated(const std::string& jid) {
+void IpcHostEventLogger::OnClientAuthenticated(
+    const std::string& signaling_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(
-      new ChromotingNetworkDaemonMsg_ClientAuthenticated(jid));
+  host_status_observer_->OnClientAuthenticated(signaling_id);
 }
 
-void IpcHostEventLogger::OnClientConnected(const std::string& jid) {
+void IpcHostEventLogger::OnClientConnected(const std::string& signaling_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_ClientConnected(jid));
+  host_status_observer_->OnClientConnected(signaling_id);
 }
 
-void IpcHostEventLogger::OnClientDisconnected(const std::string& jid) {
+void IpcHostEventLogger::OnClientDisconnected(const std::string& signaling_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_ClientDisconnected(jid));
+  host_status_observer_->OnClientDisconnected(signaling_id);
 }
 
 void IpcHostEventLogger::OnClientRouteChange(
-    const std::string& jid,
+    const std::string& signaling_id,
     const std::string& channel_name,
     const protocol::TransportRoute& route) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  SerializedTransportRoute serialized_route;
-  serialized_route.type = route.type;
-
-  // If the remote (or local) IP address is invalid, send it over IPC as an
-  // empty vector. The receiving process has a CHECK() that the address is
-  // either valid or empty.
-  if (route.remote_address.address().IsValid()) {
-    serialized_route.remote_ip =
-        route.remote_address.address().CopyBytesToVector();
-  }
-  serialized_route.remote_port = route.remote_address.port();
-  if (route.local_address.address().IsValid()) {
-    serialized_route.local_ip =
-        route.local_address.address().CopyBytesToVector();
-  }
-  serialized_route.local_port = route.local_address.port();
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_ClientRouteChange(
-      jid, channel_name, serialized_route));
+  host_status_observer_->OnClientRouteChange(signaling_id, channel_name, route);
 }
 
-void IpcHostEventLogger::OnShutdown() {
+void IpcHostEventLogger::OnHostShutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_HostShutdown());
+  host_status_observer_->OnHostShutdown();
 }
 
-void IpcHostEventLogger::OnStart(const std::string& xmpp_login) {
+void IpcHostEventLogger::OnHostStarted(const std::string& owner_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  daemon_channel_->Send(new ChromotingNetworkDaemonMsg_HostStarted(xmpp_login));
+  host_status_observer_->OnHostStarted(owner_email);
 }
 
 }  // namespace remoting

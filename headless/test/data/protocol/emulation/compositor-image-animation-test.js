@@ -73,14 +73,14 @@
 
   // Grant initial time.
   lastGrantedChunk = 500;
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: lastGrantedChunk, waitForNavigation: true});
 
   // The loaded GIF is 100x100px and has 1 second of blue, 1 second of red and
   // 1 second of yellow.
-  dp.Page.navigate(
+  await dp.Page.navigate(
         {url: testRunner.url('/resources/compositor-image-animation.html')});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: lastGrantedChunk});
 
   async function AdvanceTime() {
     await dp.Emulation.onceVirtualTimeBudgetExpired();

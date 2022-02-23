@@ -23,8 +23,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -44,7 +44,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -101,9 +100,6 @@ class FullRestoreServiceTest : public testing::Test {
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::full_restore::features::kFullRestore);
-
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("user.test@gmail.com");
@@ -115,8 +111,8 @@ class FullRestoreServiceTest : public testing::Test {
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
     const auto* user = GetFakeUserManager()->AddUser(account_id_);
     GetFakeUserManager()->LoginUser(account_id_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
@@ -206,8 +202,6 @@ class FullRestoreServiceTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
@@ -272,8 +266,8 @@ class FullRestoreServiceTestHavingFullRestoreFile
   void CreateRestoreData(Profile* profile) {
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
-        profile->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
-                                extension_misc::kChromeAppId, kWindowId));
+        profile->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
+                                app_constants::kChromeAppId, kWindowId));
 
     ::full_restore::FullRestoreSaveHandler* save_handler =
         ::full_restore::FullRestoreSaveHandler::GetInstance();
@@ -745,8 +739,8 @@ class FullRestoreServiceMultipleUsersTest
         profile2_->GetProfileUserName(), "111111");
     const auto* user = GetFakeUserManager()->AddUser(account_id2_);
     GetFakeUserManager()->LoginUser(account_id2_);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile2_.get());
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                            profile2_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,

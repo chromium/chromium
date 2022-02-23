@@ -27,7 +27,8 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   response_head->mime_type = "text/html";
   mojo::Remote<network::mojom::URLLoaderClient> client_remote(
       std::move(client));
-  client_remote->OnReceiveResponse(std::move(response_head));
+  client_remote->OnReceiveResponse(std::move(response_head),
+                                   mojo::ScopedDataPipeConsumerHandle());
 
   // Create a data pipe for transmitting the empty response. The |producer|
   // doesn't add any data.

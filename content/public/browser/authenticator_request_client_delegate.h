@@ -19,7 +19,11 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
 #endif
 
@@ -43,17 +47,28 @@ class WebContents;
 // (https://www.w3.org/TR/webauthn/) requests.
 //
 // Instances can be obtained via
-// ContentBrowserClient::GetWebAuthenticationDelegate(). They are guaranteed not
-// to outlive the RenderFrameHost with which they are associated.
+// ContentBrowserClient::GetWebAuthenticationDelegate().
 class CONTENT_EXPORT WebAuthenticationDelegate {
  public:
   WebAuthenticationDelegate();
   virtual ~WebAuthenticationDelegate();
 
-  // Permits the embedder to override normal relying party ID processing. Is
-  // given the untrusted, claimed relying party ID from the WebAuthn call, as
-  // well as the origin of the caller, and may return a relying party ID to
-  // override normal validation.
+  // Returns true if `caller_origin` should be able to claim the given Relying
+  // Party ID outside of regular processing. Otherwise, standard WebAuthn RP ID
+  // security checks are performed by `WebAuthRequestSecurityChecker`.
+  // (https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#relying-party-identifier).
+  //
+  // This is an access-control decision: RP IDs are used to control access to
+  // credentials so thought is required before allowing an origin to assert an
+  // RP ID.
+  virtual bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      BrowserContext* browser_context,
+      const url::Origin& caller_origin,
+      const std::string& relying_party_id);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Permits the embedder to override the Relying Party ID for a WebAuthn call,
+  // given the claimed relying party ID and the origin of the caller.
   //
   // This is an access-control decision: RP IDs are used to control access to
   // credentials so thought is required before allowing an origin to assert an
@@ -87,7 +102,29 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // that testing is possible.
   virtual bool IsFocused(WebContents* web_contents);
 
-#if defined(OS_MAC)
+  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
+  // API call originating from |render_frame_host| should be overridden with
+  // that value, or absl::nullopt otherwise.
+  virtual absl::optional<bool>
+  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+      RenderFrameHost* render_frame_host);
+
+  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
+  // any.
+  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
+      BrowserContext* browser_context);
+#endif  // !IS_ANDROID
+
+#if BUILDFLAG(IS_WIN)
+  // OperationSucceeded is called when a registration or assertion operation
+  // succeeded. It communicates whether the Windows API was used or not. The
+  // implementation may wish to use this information to guide the UI for future
+  // operations towards the types of security keys that the user tends to use.
+  virtual void OperationSucceeded(BrowserContext* browser_context,
+                                  bool used_win_api);
+#endif
+
+#if BUILDFLAG(IS_MAC)
   using TouchIdAuthenticatorConfig = device::fido::mac::AuthenticatorConfig;
 
   // Returns configuration data for the built-in Touch ID platform
@@ -96,7 +133,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // unavailable.
   virtual absl::optional<TouchIdAuthenticatorConfig>
   GetTouchIdAuthenticatorConfig(BrowserContext* browser_context);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback that should generate and return a unique request id.
@@ -111,17 +148,26 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
       RenderFrameHost* render_frame_host);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
-  // API call originating from |render_frame_host| should be overridden with
-  // that value, or absl::nullopt otherwise.
-  virtual absl::optional<bool>
-  IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-      RenderFrameHost* render_frame_host);
+#if BUILDFLAG(IS_ANDROID)
+  // GetIntentSender returns a Java object that implements
+  // `WebAuthenticationDelegate.IntentSender` from
+  // WebAuthenticationDelegate.java. See the comments in that file for details.
+  virtual base::android::ScopedJavaLocalRef<jobject> GetIntentSender(
+      WebContents* web_contents);
 
-  // Returns the WebAuthenticationRequestProxy for the |browser_context|, if
-  // any.
-  virtual WebAuthenticationRequestProxy* MaybeGetRequestProxy(
-      BrowserContext* browser_context);
+  // GetSupportLevel returns one of:
+  //   0 -> No WebAuthn support for this `WebContents`.
+  //   1 -> WebAuthn should be implemented like an app.
+  //   2 -> WebAuthn should be implemented like a browser.
+  //
+  // The difference between app and browser is meaningful on Android because
+  // there is a different, privileged interface for browsers.
+  //
+  // The return value is an `int` rather than an enum because it's bounced
+  // access JNI boundaries multiple times and so it's only converted to an
+  // enum at the very end.
+  virtual int GetSupportLevel(WebContents* web_contents);
+#endif
 };
 
 // AuthenticatorRequestClientDelegate is an interface that lets embedders

@@ -154,8 +154,9 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   resource_request->headers.SetHeader("Content-Encoding", "gzip");
   resource_request->headers.SetHeader("Accept-Language", "en-US,en");
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  auto simple_loader = network::SimpleURLLoader::Create(
-      std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->AttachStringForUpload(request_to_send,
                                        "application/octet-stream");
   simple_loader->SetTimeoutDuration(base::Seconds(10));
@@ -245,7 +246,7 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
   signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile_));
 }
-#endif  // !OS_CHROMEOS
+#endif
 
 void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
   DCHECK(service_->IsSyncFeatureActive());

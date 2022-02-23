@@ -13,7 +13,6 @@ import android.widget.Button;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -40,10 +38,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "payment_request_bobpay_and_basic_card_with_modifiers_test.html");
@@ -107,6 +101,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testUpdateTotalAndInstrumentLabelWithVisaModifiers() throws TimeoutException {
         // Credit visa card with complete set of information.
         String guid1 = mHelper.setCreditCard(new CreditCard(/*guid=*/"", "https://example.com",
@@ -143,6 +138,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testUpdateTotalAndInstrumentLabelWithMastercardModifiers() throws TimeoutException {
         // 1st Mastercard card with complete set of information.
         String guid = mHelper.setCreditCard(new CreditCard(/*guid=*/"", "https://example.com",
@@ -194,6 +190,7 @@ public class PaymentRequestPaymentAppAndBasicCardWithModifiersTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testPaymentAppCanPayWithModifiers() throws TimeoutException {
         // Add a credit card to force showing payment sheet UI.
         String billingAddressId = mHelper.setProfile(

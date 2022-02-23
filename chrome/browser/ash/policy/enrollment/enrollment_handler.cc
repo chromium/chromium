@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow.h"
+#include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -23,12 +25,12 @@
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
+#include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -104,37 +106,7 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
   return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
 }
 
-// Returns whether block_devmode is set.
-bool GetBlockdevmodeFromPolicy(
-    const enterprise_management::PolicyFetchResponse* policy) {
-  DCHECK(policy);
-  em::PolicyData policy_data;
-  if (!policy_data.ParseFromString(policy->policy_data())) {
-    LOG(ERROR) << "Failed to parse policy data";
-    return false;
-  }
-
-  em::ChromeDeviceSettingsProto payload;
-  if (!payload.ParseFromString(policy_data.policy_value())) {
-    LOG(ERROR) << "Failed to parse policy value";
-    return false;
-  }
-
-  bool block_devmode = false;
-  if (payload.has_system_settings()) {
-    const em::SystemSettingsProto& container = payload.system_settings();
-    if (container.has_block_devmode()) {
-      block_devmode = container.block_devmode();
-    }
-  }
-
-  VLOG(1) << (block_devmode ? "Blocking" : "Allowing")
-          << " dev mode by device policy";
-
-  return block_devmode;
-}
-
-// A utility funciton of base::ReadFileToString which returns an optional
+// A utility function of base::ReadFileToString which returns an optional
 // string.
 // TODO(mukai): move this to base/files.
 absl::optional<std::string> ReadFileToOptionalString(
@@ -221,7 +193,7 @@ EnrollmentHandler::EnrollmentHandler(
     DeviceCloudPolicyStoreAsh* store,
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
-    chromeos::attestation::AttestationFlow* attestation_flow,
+    ash::attestation::AttestationFlow* attestation_flow,
     std::unique_ptr<SigningService> signing_service,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -287,7 +259,9 @@ void EnrollmentHandler::StartEnrollment() {
   CHECK_EQ(STEP_PENDING, enrollment_step_);
 
   if (enrollment_config_.skip_state_keys_request()) {
-    VLOG(1) << "Skipping state keys request.";
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "Skipping state keys request.";
     SetStep(STEP_LOADING_STORE);
     StartRegistration();
     return;
@@ -308,7 +282,16 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  VLOG(1) << "Requesting state keys.";
+  // Currently reven devices don't support sever-backed state keys, but they
+  // also don't support FRE/AutoRE so don't block enrollment on the
+  // availability of state keys.
+  // TODO(b/208705225): Remove this special case when reven supports state keys.
+  if (ash::switches::IsRevenBranding()) {
+    LOG(WARNING) << "Skipping state keys.";
+    HandleStateKeysResult({});
+    return;
+  }
+  LOG(WARNING) << "Requesting state keys.";
   state_keys_broker_->RequestStateKeys(
       base::BindOnce(&EnrollmentHandler::HandleStateKeysResult,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -356,30 +339,31 @@ void EnrollmentHandler::OnPolicyFetched(CloudPolicyClient* client) {
 void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   DCHECK_EQ(client_.get(), client);
 
-  if (enrollment_step_ == STEP_REGISTRATION && client_->is_registered()) {
-    device_mode_ = client_->device_mode();
-    switch (device_mode_) {
-      case DEVICE_MODE_ENTERPRISE:
-      case DEVICE_MODE_DEMO:
-        // Do nothing.
-        break;
-      case DEVICE_MODE_ENTERPRISE_AD:
-        chromeos::UpstartClient::Get()->StartAuthPolicyService();
-        break;
-      default:
-        LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
-        ReportResult(EnrollmentStatus::ForStatus(
-            EnrollmentStatus::REGISTRATION_BAD_MODE));
-        return;
-    }
-    // Only use DMToken from now on.
-    dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
-    SetStep(STEP_POLICY_FETCH);
-    client_->FetchPolicy();
-  } else {
+  if (enrollment_step_ != STEP_REGISTRATION || !client_->is_registered()) {
     LOG(FATAL) << "Registration state changed to " << client_->is_registered()
                << " in step " << enrollment_step_ << ".";
+    return;
   }
+
+  device_mode_ = client_->device_mode();
+  switch (device_mode_) {
+    case DEVICE_MODE_ENTERPRISE:
+    case DEVICE_MODE_DEMO:
+      // Do nothing.
+      break;
+    case DEVICE_MODE_ENTERPRISE_AD:
+      chromeos::UpstartClient::Get()->StartAuthPolicyService();
+      break;
+    default:
+      LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
+      ReportResult(
+          EnrollmentStatus::ForStatus(EnrollmentStatus::REGISTRATION_BAD_MODE));
+      return;
+  }
+  // Only use DMToken from now on.
+  dm_auth_ = DMAuth::FromDMToken(client_->dm_token());
+  SetStep(STEP_POLICY_FETCH);
+  client_->FetchPolicy();
 }
 
 void EnrollmentHandler::OnClientError(CloudPolicyClient* client) {
@@ -448,7 +432,9 @@ void EnrollmentHandler::HandleStateKeysResult(
     }
   }
 
-  VLOG(1) << "State keys generated.";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "State keys generated, success=" << !state_keys.empty();
   SetStep(STEP_LOADING_STORE);
   StartRegistration();
 }
@@ -460,7 +446,12 @@ void EnrollmentHandler::StartRegistration() {
     // after the CloudPolicyStore has initialized.
     return;
   }
-  VLOG(1) << "Start registration, config mode = " << enrollment_config_.mode;
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Start registration, config mode = "
+               << enrollment_config_.mode;
+
   SetStep(STEP_REGISTRATION);
   if (enrollment_config_.is_mode_attestation()) {
     StartAttestationBasedEnrollmentFlow();
@@ -472,7 +463,7 @@ void EnrollmentHandler::StartRegistration() {
 }
 
 void EnrollmentHandler::StartAttestationBasedEnrollmentFlow() {
-  chromeos::attestation::AttestationFlow::CertificateCallback callback =
+  ash::attestation::AttestationFlow::CertificateCallback callback =
       base::BindOnce(&EnrollmentHandler::HandleRegistrationCertificateResult,
                      weak_ptr_factory_.GetWeakPtr());
   attestation_flow_->GetCertificate(
@@ -485,14 +476,14 @@ void EnrollmentHandler::StartAttestationBasedEnrollmentFlow() {
 void EnrollmentHandler::HandleRegistrationCertificateResult(
     chromeos::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
-  if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
-    client_->RegisterWithCertificate(*register_params_, client_id_,
-                                     dm_auth_.Clone(), pem_certificate_chain,
-                                     sub_organization_, signing_service_.get());
-  } else {
+  if (status != chromeos::attestation::ATTESTATION_SUCCESS) {
     ReportResult(EnrollmentStatus::ForStatus(
         EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
+    return;
   }
+  client_->RegisterWithCertificate(*register_params_, client_id_,
+                                   pem_certificate_chain, sub_organization_,
+                                   signing_service_.get());
 }
 
 void EnrollmentHandler::StartOfflineDemoEnrollmentFlow() {
@@ -584,24 +575,32 @@ std::unique_ptr<DeviceCloudPolicyValidator> EnrollmentHandler::CreateValidator(
 void EnrollmentHandler::HandlePolicyValidationResult(
     DeviceCloudPolicyValidator* validator) {
   DCHECK_EQ(STEP_VALIDATION, enrollment_step_);
-  if (validator->success()) {
-    std::string username = validator->policy_data()->username();
-    device_id_ = validator->policy_data()->device_id();
-    policy_ = std::move(validator->policy());
-    if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-      // Don't use robot account for the Active Directory managed devices.
-      skip_robot_auth_ = true;
-      SetStep(STEP_AD_DOMAIN_JOIN);
-      StartJoinAdDomain();
-    } else {
-      domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
-      SetStep(STEP_ROBOT_AUTH_FETCH);
-      device_account_initializer_ =
-          std::make_unique<DeviceAccountInitializer>(client_.get(), this);
-      device_account_initializer_->FetchToken();
-    }
-  } else {
+  if (!validator->success()) {
     ReportResult(EnrollmentStatus::ForValidationError(validator->status()));
+    return;
+  }
+  std::string username = validator->policy_data()->username();
+  device_id_ = validator->policy_data()->device_id();
+  policy_ = std::move(validator->policy());
+
+  if (GetDeviceBlockDevModePolicyValue(*policy_) &&
+      !IsDeviceBlockDevModePolicyAllowed()) {
+    ReportResult(
+        EnrollmentStatus::ForStatus(EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE));
+    return;
+  }
+
+  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
+    // Don't use robot account for the Active Directory managed devices.
+    skip_robot_auth_ = true;
+    SetStep(STEP_AD_DOMAIN_JOIN);
+    StartJoinAdDomain();
+  } else {
+    domain_ = gaia::ExtractDomainName(gaia::CanonicalizeEmail(username));
+    SetStep(STEP_ROBOT_AUTH_FETCH);
+    device_account_initializer_ =
+        std::make_unique<DeviceAccountInitializer>(client_.get(), this);
+    device_account_initializer_->FetchToken();
   }
 }
 
@@ -649,8 +648,13 @@ void EnrollmentHandler::SetFirmwareManagementParametersData() {
     return;
   }
 
+  const bool block_devmode = GetDeviceBlockDevModePolicyValue(*policy_);
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << (block_devmode ? "Blocking" : "Allowing")
+               << " dev mode by device policy";
   install_attributes_->SetBlockDevmodeInTpm(
-      GetBlockdevmodeFromPolicy(policy_.get()),
+      block_devmode,
       base::BindOnce(&EnrollmentHandler::OnFirmwareManagementParametersDataSet,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -843,7 +847,11 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
 
 void EnrollmentHandler::SetStep(EnrollmentStep step) {
   DCHECK_LE(enrollment_step_, step);
-  VLOG(1) << "Step: " << step;
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Step: " << step;
+
   enrollment_step_ = step;
 }
 

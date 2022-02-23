@@ -44,7 +44,7 @@ void ListenFilteredByPid(SimpleTestLogListener& listener) {
 // Verifies that calling the log macro goes to the Fuchsia system logs, by
 // default.
 TEST(FuchsiaLoggingTest, SystemLogging) {
-  constexpr char kLogMessage[] = "system log!";
+  constexpr char kLogMessage[] = "This is FuchsiaLoggingTest.SystemLogging!";
 
   test::SingleThreadTaskEnvironment task_environment_{
       test::SingleThreadTaskEnvironment::MainThreadType::IO};
@@ -72,7 +72,8 @@ TEST(FuchsiaLoggingTest, SystemLogging) {
 
 // Verifies that configuring a system logger with multiple tags works.
 TEST(FuchsiaLoggingTest, SystemLoggingMultipleTags) {
-  constexpr char kLogMessage[] = "system log!";
+  constexpr char kLogMessage[] =
+      "This is FuchsiaLoggingTest.SystemLoggingMultipleTags!";
   const std::vector<StringPiece> kTags = {"tag1", "tag2"};
 
   test::SingleThreadTaskEnvironment task_environment_{

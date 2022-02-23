@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "content/common/content_export.h"
 
 namespace content {
 

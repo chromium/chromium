@@ -5,8 +5,10 @@
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace mojo {
 
@@ -302,6 +304,65 @@ bool EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
   return false;
 }
 
+network::mojom::ContextRedirectTypeBug1221316
+EnumTraits<network::mojom::ContextRedirectTypeBug1221316,
+           net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+               ContextRedirectTypeBug1221316>::
+    ToMojom(net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                ContextRedirectTypeBug1221316 input) {
+  switch (input) {
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316::kUnset:
+      return network::mojom::ContextRedirectTypeBug1221316::kUnset;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316::kNoRedirect:
+      return network::mojom::ContextRedirectTypeBug1221316::kNoRedirect;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316::kCrossSiteRedirect:
+      return network::mojom::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316::kPartialSameSiteRedirect:
+      return network::mojom::ContextRedirectTypeBug1221316::
+          kPartialSameSiteRedirect;
+    case net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316::kAllSameSiteRedirect:
+      return network::mojom::ContextRedirectTypeBug1221316::
+          kAllSameSiteRedirect;
+  }
+}
+
+bool EnumTraits<network::mojom::ContextRedirectTypeBug1221316,
+                net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                    ContextRedirectTypeBug1221316>::
+    FromMojom(network::mojom::ContextRedirectTypeBug1221316 input,
+              net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                  ContextRedirectTypeBug1221316* output) {
+  switch (input) {
+    case network::mojom::ContextRedirectTypeBug1221316::kUnset:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kUnset;
+      return true;
+    case network::mojom::ContextRedirectTypeBug1221316::kNoRedirect:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kNoRedirect;
+      return true;
+    case network::mojom::ContextRedirectTypeBug1221316::kCrossSiteRedirect:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kCrossSiteRedirect;
+      return true;
+    case network::mojom::ContextRedirectTypeBug1221316::
+        kPartialSameSiteRedirect:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
+      return true;
+    case network::mojom::ContextRedirectTypeBug1221316::kAllSameSiteRedirect:
+      *output = net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kAllSameSiteRedirect;
+      return true;
+  }
+  return false;
+}
+
 network::mojom::CookieChangeCause
 EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
     net::CookieChangeCause input) {
@@ -363,6 +424,8 @@ bool StructTraits<network::mojom::CookieSameSiteContextMetadataDataView,
     Read(network::mojom::CookieSameSiteContextMetadataDataView data,
          net::CookieOptions::SameSiteCookieContext::ContextMetadata* out) {
   if (!data.ReadCrossSiteRedirectDowngrade(&out->cross_site_redirect_downgrade))
+    return false;
+  if (!data.ReadRedirectTypeBug1221316(&out->redirect_type_bug_1221316))
     return false;
 
   return true;
@@ -474,34 +537,39 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site))
     return false;
-  *out = net::CookiePartitionKey::FromWire(site);
+
+  absl::optional<base::UnguessableToken> nonce;
+  if (!partition_key.ReadNonce(&nonce))
+    return false;
+  *out = net::CookiePartitionKey::FromWire(site, nonce);
   return true;
 }
 
-const std::vector<net::CookiePartitionKey> StructTraits<
-    network::mojom::CookiePartitionKeychainDataView,
-    net::CookiePartitionKeychain>::keys(const net::CookiePartitionKeychain&
-                                            keychain) {
+const std::vector<net::CookiePartitionKey>
+StructTraits<network::mojom::CookiePartitionKeyCollectionDataView,
+             net::CookiePartitionKeyCollection>::
+    keys(const net::CookiePartitionKeyCollection& key_collection) {
   std::vector<net::CookiePartitionKey> result;
-  if (keychain.ContainsAllKeys() || keychain.IsEmpty())
+  if (key_collection.ContainsAllKeys() || key_collection.IsEmpty())
     return result;
-  result.insert(result.begin(), keychain.PartitionKeys().begin(),
-                keychain.PartitionKeys().end());
+  result.insert(result.begin(), key_collection.PartitionKeys().begin(),
+                key_collection.PartitionKeys().end());
   return result;
 }
 
-bool StructTraits<network::mojom::CookiePartitionKeychainDataView,
-                  net::CookiePartitionKeychain>::
-    Read(network::mojom::CookiePartitionKeychainDataView keychain,
-         net::CookiePartitionKeychain* out) {
-  if (keychain.contains_all_partitions()) {
-    *out = net::CookiePartitionKeychain::ContainsAll();
+bool StructTraits<network::mojom::CookiePartitionKeyCollectionDataView,
+                  net::CookiePartitionKeyCollection>::
+    Read(network::mojom::CookiePartitionKeyCollectionDataView
+             key_collection_data_view,
+         net::CookiePartitionKeyCollection* out) {
+  if (key_collection_data_view.contains_all_partitions()) {
+    *out = net::CookiePartitionKeyCollection::ContainsAll();
     return true;
   }
   std::vector<net::CookiePartitionKey> keys;
-  if (!keychain.ReadKeys(&keys))
+  if (!key_collection_data_view.ReadKeys(&keys))
     return false;
-  *out = net::CookiePartitionKeychain(keys);
+  *out = net::CookiePartitionKeyCollection(keys);
   return true;
 }
 

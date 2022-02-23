@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 
 namespace content {

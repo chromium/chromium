@@ -7,12 +7,12 @@
 
 namespace sharing {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<std::string> DefaultRankingForLocaleAndType(
     const std::string& locale,
     const std::string& type) {
   return {};
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace sharing

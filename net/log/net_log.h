@@ -12,7 +12,7 @@
 
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -137,7 +137,7 @@ class NET_EXPORT NetLog {
 
     // Both of these values are only modified by the NetLog.
     NetLogCaptureMode capture_mode_;
-    NetLog* net_log_;
+    raw_ptr<NetLog> net_log_;
   };
 
   // An observer that is notified of changes in the capture mode set, and has
@@ -173,7 +173,7 @@ class NET_EXPORT NetLog {
     friend class NetLog;
 
     // This value is only modified by the NetLog.
-    NetLog* net_log_ = nullptr;
+    raw_ptr<NetLog> net_log_ = nullptr;
   };
 
   // Returns the singleton NetLog object, which is never destructed and which

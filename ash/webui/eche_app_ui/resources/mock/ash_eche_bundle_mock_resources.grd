@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/ash_eche_bundle_resources.h" type="rc_header">
+      <emit emit_type="prepend"/>
+    </output>
+    <output filename="grit/ash_eche_bundle_resources_map.cc" type="resource_file_map_source"/>
+    <output filename="grit/ash_eche_bundle_resources_map.h" type="resource_map_header"/>
+    <output filename="ash_eche_bundle_resources.pak" type="data_package"/>
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_ASH_ECHE_UNTRUSTED_INDEX_HTML" file="untrusted_index.html" type="BINDATA" />
+      <include name="IDR_ASH_ECHE_INDEX_HTML" file="index.html" type="BINDATA" />
+      <include name="IDR_ASH_ECHE_APP_BUNDLE_CSS" file="assets/app_bundle.css" type="BINDATA" />
+      <include name="IDR_ASH_ECHE_APP_BUNDLE_JS" file="js/app_bundle.js" type="BINDATA" />
+      <include name="IDR_ASH_ECHE_APP_ICON_256_PNG" file="system_assets/app_icon_256.png" type="BINDATA" />
+      <include name="IDR_ASH_ECHE_APP_ICON_32_PNG" file="system_assets/app_icon_32.png" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

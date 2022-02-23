@@ -83,9 +83,9 @@ action("verify_regenerate_internal_cts_html") {
   script = "scripts/run_regenerate_internal_cts_html.py"
   inputs = [
              "scripts/compile_src.py",
+             "scripts/run_webgpu_cts.py",
              "scripts/tsc_ignore_errors.py",
              "scripts/regenerate_internal_cts_html.py",
-             "scripts/regenerate_internal_cts_html.bat",
              "//third_party/node/node.py",
              "//third_party/blink/web_tests/wpt_internal/webgpu/cts.https.html",
              "//third_party/blink/web_tests/webgpu/ctshtml-template.txt",

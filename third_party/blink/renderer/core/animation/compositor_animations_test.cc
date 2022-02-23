@@ -41,8 +41,11 @@
 #include "cc/trees/transform_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -57,6 +60,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -71,19 +75,20 @@
 #include "third_party/blink/renderer/platform/animation/compositor_float_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_float_keyframe.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 
 using testing::_;
 using testing::NiceMock;
@@ -554,8 +559,8 @@ class LayoutObjectProxy : public LayoutObject {
 
   const char* GetName() const override { return nullptr; }
   void UpdateLayout() override {}
-  FloatRect LocalBoundingBoxRectForAccessibility() const override {
-    return FloatRect();
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override {
+    return gfx::RectF();
   }
 
   void EnsureIdForTestingProxy() {
@@ -1002,6 +1007,85 @@ TEST_P(AnimationCompositorAnimationsTest,
                                               animation, *animation_effect) &
               (CompositorAnimations::kTargetHasInvalidCompositingState |
                CompositorAnimations::kEffectHasUnsupportedTimingParameters));
+}
+
+TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotion) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes slide {
+        0% { transform: translateX(100px); }
+        50% { transform: translateX(200px); }
+        100% { transform: translateX(300px); }
+      }
+      html, body {
+        margin: 0;
+      }
+    </style>
+    <div id='test' style='animation: slide 2s linear'></div>
+  )HTML");
+  element_ = GetDocument().getElementById("test");
+  Animation* animation = element_->getAnimations()[0];
+
+  // The effect should snap between keyframes at the halfway points.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(450),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 100.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(550),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1450),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 200.0, 0.001);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(1550),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 300.0, 0.001);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotionPageSupportsReduce) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  SetBodyInnerHTML(R"HTML(
+    <meta name='supports-reduced-motion' content='reduce'>
+    <style>
+      @keyframes slide {
+        0% { transform: translateX(100px); }
+        100% { transform: translateX(200px); }
+      }
+      html, body {
+        margin: 0;
+      }
+    </style>
+    <div id='test' style='animation: slide 1s linear'></div>
+  )HTML");
+  element_ = GetDocument().getElementById("test");
+  Animation* animation = element_->getAnimations()[0];
+
+  // The effect should snap between keyframes at the halfway points.
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(500),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_NEAR(element_->getBoundingClientRect()->x(), 150.0, 0.001);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, CheckCanStartForceReduceMotion) {
+  ScopedForceReduceMotionForTest force_reduce_motion(true);
+  GetDocument().GetSettings()->SetPrefersReducedMotion(true);
+  StringKeyframeEffectModel* effect = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(100px)"),
+      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(200px)",
+                              1));
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  auto* keyframe_effect =
+      MakeGarbageCollected<KeyframeEffect>(element_, effect, timing);
+  Animation* animation = timeline_->Play(keyframe_effect);
+  // The animation should not run on the compositor since we are forcing reduced
+  // motion.
+  EXPECT_NE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(), animation,
+                                            *effect),
+            CompositorAnimations::kNoFailure);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -2097,9 +2181,9 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   // Make sure the animation state is initialized in paint properties.
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
-  auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index.at(
-          transform->GetCompositorElementId()));
+  const auto* cc_transform =
+      property_trees->transform_tree().FindNodeFromElementId(
+          transform->GetCompositorElementId());
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2127,9 +2211,9 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   // Make sure the animation state is initialized in paint properties.
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
-  auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index.at(
-          transform->GetCompositorElementId()));
+  const auto* cc_transform =
+      property_trees->transform_tree().FindNodeFromElementId(
+          transform->GetCompositorElementId());
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2161,9 +2245,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   // Make sure the animation state is initialized in paint properties.
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
-  auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index.at(
-          transform->GetCompositorElementId()));
+  const auto* cc_transform =
+      property_trees->transform_tree().FindNodeFromElementId(
+          transform->GetCompositorElementId());
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2191,9 +2275,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   // blink pushing new paint properties without animation state change.
   property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
-  cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index.at(
-          transform->GetCompositorElementId()));
+  cc_transform = property_trees->transform_tree().FindNodeFromElementId(
+      transform->GetCompositorElementId());
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2233,6 +2316,25 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_NE(
       CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
       CompositorAnimations::kNoFailure);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
+  LoadTestData("transform-animation.html");
+  Document* document = GetFrame()->GetDocument();
+  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
+
+  Element* target = document->getElementById("target");
+  const Animation& animation =
+      *target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_TRUE(animation.GetCompositorAnimation());
+
+  CompositorAnimationTimeline* compositor_timeline =
+      animation.timeline()->CompositorTimeline();
+  ASSERT_TRUE(compositor_timeline);
+  int id = compositor_timeline->GetAnimationTimeline()->id();
+  ASSERT_TRUE(host->GetTimelineById(id));
+  document->GetDocumentAnimations().DetachCompositorTimelines();
+  ASSERT_FALSE(host->GetTimelineById(id));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -2386,20 +2488,10 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
   Element* target = GetDocument().getElementById("target");
   const Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-      RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
-    EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
-              animation.CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
-  } else {
-    // In pre-CAP + legacy block fragmentation we don't fragment composited
-    // layers.
-    EXPECT_FALSE(target->GetLayoutObject()->FirstFragment().NextFragment());
-    EXPECT_EQ(CompositorAnimations::kNoFailure,
-              animation.CheckCanStartAnimationOnCompositor(
-                  GetDocument().View()->GetPaintArtifactCompositor()));
-  }
+  EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
+  EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
+            animation.CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
 }  // namespace blink

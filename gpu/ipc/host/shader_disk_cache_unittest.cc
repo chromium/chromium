@@ -5,7 +5,6 @@
 #include "gpu/ipc/host/shader_disk_cache.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/test_completion_callback.h"

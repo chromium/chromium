@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
@@ -154,7 +155,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         /*offlinePageLoadUrlDelegate=*/
                         new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
                         /*storeInfoActionHandlerSupplier=*/null,
-                        /*pageInfoOpenedFromStoreIcon=*/false),
-                PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                        ChromePageInfoHighlight.noHighlight()),
+                ChromePageInfoHighlight.noHighlight());
     }
 }

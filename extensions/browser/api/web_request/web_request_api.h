@@ -17,7 +17,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
@@ -278,7 +278,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // permissions.
   int web_request_extension_count_ = 0;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   RequestIDGenerator request_id_generator_;
   std::unique_ptr<ProxySet> proxies_;
@@ -534,25 +534,14 @@ class ExtensionWebRequestEventRouter {
   void DecrementExtraHeadersListenerCount(
       content::BrowserContext* browser_context);
 
+  // Called when a BrowserContext is being destroyed.
+  void OnBrowserContextShutdown(content::BrowserContext* browser_context);
+
  private:
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceRedirect);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceCancel);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           SimulateChancelWhileBlocked);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           MinimalAccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           ProperFilteringInPublicSession);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, NoAccessRequestBodyData);
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AddAndRemoveListeners);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BlockedRequestsAreRemoved);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestHeaderModificationTest,
-                           TestModifications);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
     // TODO(rdevlin.cronin): There are two types of EventListeners - those
@@ -580,7 +569,7 @@ class ExtensionWebRequestEventRouter {
 
       bool operator==(const ID& that) const;
 
-      content::BrowserContext* browser_context;
+      raw_ptr<content::BrowserContext> browser_context;
       std::string extension_id;
       std::string sub_event_name;
       // In the case of a webview, this is the process ID of the embedder.

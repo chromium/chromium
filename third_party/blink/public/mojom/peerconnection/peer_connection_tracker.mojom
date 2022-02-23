@@ -30,7 +30,9 @@ struct PeerConnectionInfo {
 
   // The URL of the blink::WebLocalFrame within which this peer connection
   // lives. Used for debugging purposes (displayed by WebRTC-Internals).
-  string url;
+  // May be null for eg pages with opaque URLs.
+  // TODO(1274640): Use a mojo URL instead of a string.
+  string? url;
 };
 
 // This interface collects data about each peer connection and sends it to the
@@ -86,16 +88,37 @@ interface PeerConnectionTrackerHost {
   OnPeerConnectionSessionIdSet(int32 lid, string session_id);
 
   // Lets WebRTCInternals know that a getUserMedia() call has been made.
-  // |origin| is the security origin of getusermedia call
+  // |request_id| is an id assigned to the getusermedia call and its
+  //   callback/error
   // |audio| is true if audio stream is requested
   // |video| is true if video stream is requested
   // |audio_constraints| is constraints for audio like audio source device id
   // |video_constraints| is constraints for video like audio source device id
   // The constraint strings are for display only and should not be parsed
   // by the browser for security reasons.
-  // TODO(crbug.com/801955) Remove the |origin| parameter.
-  GetUserMedia(string origin, bool audio, bool video, string
-               audio_constraints, string video_constraints);
+  GetUserMedia(int32 request_id, bool audio, bool video,
+               string audio_constraints, string video_constraints);
+
+  // Lets WebRTCInternals know that a getUserMedia() call has resolved.
+  // |request_id| is an id assigned to the getusermedia call and its
+  //   callback/error
+  // |stream_id| is information about the stream such as the stream id.
+  // |audio_track_info| describes the streams audio track (if any).
+  // |video_track_info| describes the streams video track (if any).
+  // The stream_id, audio_track_info and video_track_info strings are
+  // for display only and should not be parsed by the browser for
+  // security reasons.
+  GetUserMediaSuccess(int32 request_id, string stream_id,
+    string audio_track_info, string video_track_info);
+
+  // Lets WebRTCInternals know that a getUserMedia() call has failed.
+  // |request_id| is an id assigned to the getusermedia call and its
+  //   callback/error
+  // |error| the (DOM) error.
+  // |error_message| the error message.
+  // The error and error message strings are for display only and should not
+  // be parsed by the browser for security reasons.
+  GetUserMediaFailure(int32 request_id, string error, string error_message);
 
   // Logs WebRtc log for the connection id.
   WebRtcEventLogWrite(int32 lid, array<uint8> output);

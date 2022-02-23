@@ -73,21 +73,16 @@ gfx::GpuMemoryBuffer* GpuMemoryBufferImageCopy::CopyImage(Image* image) {
   // Bind the read framebuffer to our image.
   StaticBitmapImage* static_image = static_cast<StaticBitmapImage*>(image);
   auto mailbox_holder = static_image->GetMailboxHolder();
+  DCHECK(mailbox_holder.mailbox.IsSharedImage());
 
   // Not strictly necessary since we are on the same context, but keeping
   // for cleanliness and in case we ever move off the same context.
   gl_->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetData());
 
-  GLuint source_texture_id;
-  if (mailbox_holder.mailbox.IsSharedImage()) {
-    source_texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-        mailbox_holder.mailbox.name);
-    gl_->BeginSharedImageAccessDirectCHROMIUM(
-        source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-  } else {
-    source_texture_id =
-        gl_->CreateAndConsumeTextureCHROMIUM(mailbox_holder.mailbox.name);
-  }
+  GLuint source_texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+      mailbox_holder.mailbox.name);
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
+      source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
   gl_->BindTexture(GL_TEXTURE_2D, 0);
 
@@ -97,8 +92,7 @@ gfx::GpuMemoryBuffer* GpuMemoryBufferImageCopy::CopyImage(Image* image) {
 
   // Cleanup the read framebuffer, associated image and texture.
   gl_->BindTexture(GL_TEXTURE_2D, 0);
-  if (mailbox_holder.mailbox.IsSharedImage())
-    gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
+  gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
   gl_->DeleteTextures(1, &source_texture_id);
 
   gpu::SyncToken copy_done_sync_token;

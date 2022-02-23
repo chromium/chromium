@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if !defined(NDEBUG)
@@ -117,7 +117,7 @@ class Buffer {
 // MSVS2013's standard library doesn't mark max() as constexpr yet. cl.exe
 // supports static_cast but doesn't really implement constexpr yet so it doesn't
 // complain, but clang does.
-#if __cplusplus >= 201103 && !(defined(__clang__) && defined(OS_WIN))
+#if __cplusplus >= 201103 && !(defined(__clang__) && BUILDFLAG(IS_WIN))
     static_assert(kSSizeMaxConst ==
                       static_cast<size_t>(std::numeric_limits<ssize_t>::max()),
                   "kSSizeMaxConst should be the max value of an ssize_t");
@@ -263,7 +263,7 @@ class Buffer {
   }
 
   // User-provided buffer that will receive the fully formatted output string.
-  char* buffer_;
+  raw_ptr<char> buffer_;
 
   // Number of bytes that are available in the buffer excluding the trailing
   // NUL byte that will be added by the destructor.

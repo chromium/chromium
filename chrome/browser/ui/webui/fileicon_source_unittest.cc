@@ -73,7 +73,7 @@ const struct FetchFileIconExpectation {
      FILE_PATH_LITERAL("a?iconsize=small"), 1.0f, IconLoader::LARGE},
     {"?path=o%40%23%24%25%26*()%20%2B%3D%3F%2C%3A%3B%22.jpg",
      FILE_PATH_LITERAL("o@#$%&*() +=?,:;\".jpg"), 1.0f, IconLoader::NORMAL},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"?path=c%3A%2Ffoo%2Fbar%2Fbaz", FILE_PATH_LITERAL("c:\\foo\\bar\\baz"),
      1.0f, IconLoader::NORMAL},
     {"?path=%2Ffoo&bar=asdf&asdf", FILE_PATH_LITERAL("\\foo"), 1.0f,

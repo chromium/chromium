@@ -76,7 +76,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
   // The zero time of DocumentTimeline is computed by adding a separate
   // |origin_time_| from DocumentTimelineOptions.
-  // https://drafts.csswg.org/web-animations/#origin-time
+  // https://w3.org/TR/web-animations-1/#origin-time
   // TODO(crbug.com/1162960) Convert DocumentTimeline::zero_time_ from
   // base::TimeTicks to AnimationTimeDelta
   base::TimeTicks CalculateZeroTime();
@@ -104,7 +104,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
  private:
   // Origin time for the timeline relative to the time origin of the document.
   // Provided when the timeline is constructed. See
-  // https://drafts.csswg.org/web-animations/#dom-documenttimelineoptions-origintime.
+  // https://w3.org/TR/web-animations-1/#dom-documenttimelineoptions-origintime.
   base::TimeDelta origin_time_;
   // The origin time. This is computed by adding |origin_time_| to the time
   // origin of the document.

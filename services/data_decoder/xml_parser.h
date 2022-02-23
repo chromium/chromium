@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 namespace data_decoder {
@@ -24,7 +23,9 @@ class XmlParser : public mojom::XmlParser {
 
  private:
   // mojom::XmlParser implementation.
-  void Parse(const std::string& xml, ParseCallback callback) override;
+  void Parse(const std::string& xml,
+             WhitespaceBehavior whitespace_behavior,
+             ParseCallback callback) override;
 };
 
 }  // namespace data_decoder

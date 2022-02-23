@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chromeos/dbus/power/native_timer.h"
-#include "third_party/icu/source/i18n/unicode/calendar.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
@@ -34,14 +34,6 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
   // ScheduledTaskExecutor:
   void Reset() override;
 
- protected:
-  // Calculates the delay from |cur_time| at which |scheduled_task_timer_|
-  // should run next. Returns 0 delay if the calculation failed due to a
-  // concurrent DST or Time Zone change.
-  virtual base::TimeDelta CalculateNextScheduledTaskTimerDelay(
-      base::Time cur_time,
-      ScheduledTaskData* scheduled_task_data);
-
  private:
   // Returns current time.
   virtual base::Time GetCurrentTime();
@@ -58,19 +50,6 @@ class ScheduledTaskExecutorImpl : public ScheduledTaskExecutor {
   // Timer that is scheduled to execute the task.
   std::unique_ptr<chromeos::NativeTimer> scheduled_task_timer_;
 };
-
-namespace scheduled_task_internal {
-// Used as canonical value for timer delay calculations.
-constexpr base::TimeDelta kInvalidDelay = base::TimeDelta();
-
-// Calculates the difference in milliseconds of |a| - |b|. Caller has to ensure
-// |a| >= |b|.
-base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b);
-
-// Converts |cur_time| to ICU time in the time zone |tz|.
-std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
-                                                     const icu::TimeZone& tz);
-}  // namespace scheduled_task_internal
 
 }  // namespace policy
 

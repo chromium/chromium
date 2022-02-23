@@ -127,8 +127,6 @@ void HandleOnPerformDrop(
     data.text.push_back(base::UTF16ToUTF8(*drop_data.text));
   if (drop_data.html)
     data.text.push_back(base::UTF16ToUTF8(*drop_data.html));
-  if (!drop_data.file_contents.empty())
-    data.text.push_back(drop_data.file_contents);
 
   // `callback` should only run asynchronously when scanning is blocking.
   content::WebContentsViewDelegate::DropCompletionCallback scan_callback =

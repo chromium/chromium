@@ -17,7 +17,7 @@ namespace web_app {
 // re-used.
 enum class SystemAppType {
   FILE_MANAGER = 1,
-  TELEMETRY = 2,
+  // TELEMETRY_DEPRECATED = 2,
 
   // A sample System Web App to illustrate SWA development best practices, and
   // various SWA platform features.
@@ -135,7 +135,7 @@ enum class SystemAppType {
   // 6. Update kMaxValue.
   //
   // 7. Have one of System Web App Platform owners review the CL.
-  //    See: //ash/webui/system_apps/PLATFORM_OWNERS
+  //    See: //ash/webui/PLATFORM_OWNERS
   kMaxValue = OS_FLAGS,
 };
 

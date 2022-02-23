@@ -66,11 +66,12 @@ void ArcAppInstallEventLogUploader::PostTaskForStartSerialization() {
 
 void ArcAppInstallEventLogUploader::OnSerialized(
     const em::AppInstallReportRequest* report) {
-  base::Value context = reporting::GetContext(profile_);
-  base::Value event_list = ConvertArcAppProtoToValue(report, context);
+  base::Value::Dict context = reporting::GetContext(profile_);
+  base::Value::List event_list = ConvertArcAppProtoToValue(report, context);
 
-  base::Value value_report = RealtimeReportingJobConfiguration::BuildReport(
-      std::move(event_list), std::move(context));
+  base::Value::Dict value_report =
+      RealtimeReportingJobConfiguration::BuildReport(std::move(event_list),
+                                                     std::move(context));
 
   // base::Unretained() is safe here as the destructor cancels any pending
   // upload, after which the |client_| is guaranteed to not call the callback.

@@ -157,10 +157,25 @@ void FakeContentAnalysisDelegate::Response(
        result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
           ? enterprise_connectors::ContentAnalysisResponse()
           : status_callback_.Run(path);
-  if (path.empty())
+  if (request->IsAuthRequest()) {
     StringRequestCallback(result_, response);
-  else
-    FileRequestCallback(path, result_, response);
+    return;
+  }
+
+  switch (request->analysis_connector()) {
+    case AnalysisConnector::BULK_DATA_ENTRY:
+      StringRequestCallback(result_, response);
+      break;
+    case AnalysisConnector::FILE_ATTACHED:
+    case AnalysisConnector::FILE_DOWNLOADED:
+      FileRequestCallback(path, result_, response);
+      break;
+    case AnalysisConnector::PRINT:
+      PageRequestCallback(result_, response);
+      break;
+    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
+      NOTREACHED();
+  }
 }
 
 void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
@@ -188,6 +203,19 @@ void FakeContentAnalysisDelegate::UploadFileForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), path, std::move(request)),
+      response_delay);
+}
+
+void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+  DCHECK_EQ(dm_token_, request->device_token());
+
+  // Simulate a response.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeContentAnalysisDelegate::Response,
+                     weakptr_factory_.GetWeakPtr(), base::FilePath(),
+                     std::move(request)),
       response_delay);
 }
 

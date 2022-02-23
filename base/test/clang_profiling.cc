@@ -23,9 +23,9 @@ void WriteClangProfilingProfile() {
   base::AutoLock auto_lock(*lock);
 
 // Fuchsia's profile runtime does not handle profile dumping.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   __llvm_profile_dump();
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace base

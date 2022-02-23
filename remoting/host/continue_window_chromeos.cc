@@ -7,7 +7,6 @@
 #include "remoting/host/continue_window.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/message_box.h"
 #include "ui/base/l10n/l10n_util.h"

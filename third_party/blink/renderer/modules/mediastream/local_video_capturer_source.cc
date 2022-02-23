@@ -80,14 +80,6 @@ void LocalVideoCapturerSource::Resume() {
   manager_->Resume(session_id_);
 }
 
-void LocalVideoCapturerSource::Crop(
-    const base::Token& crop_id,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  manager_->Crop(session_id_, crop_id,
-                 base::BindPostTask(task_runner_, std::move(callback)));
-}
-
 void LocalVideoCapturerSource::StopCapture() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Immediately make sure we don't provide more frames.
@@ -112,18 +104,24 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
     OnLog("LocalVideoCapturerSource::OnStateUpdate discarding state update.");
     return;
   }
+  RunState run_state =
+      (state == VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED)
+          ? RunState::kSystemPermissionsError
+          : RunState::kStopped;
+
   auto* frame = LocalFrame::FromFrameToken(frame_token_);
   switch (state) {
     case VIDEO_CAPTURE_STATE_STARTED:
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is now running.");
-      running_callback_.Run(true);
+      running_callback_.Run(RunState::kRunning);
       break;
 
     case VIDEO_CAPTURE_STATE_STOPPING:
     case VIDEO_CAPTURE_STATE_STOPPED:
     case VIDEO_CAPTURE_STATE_ERROR:
+    case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
     case VIDEO_CAPTURE_STATE_ENDED:
       std::move(release_device_cb_).Run();
       release_device_cb_ =
@@ -134,7 +132,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "
           "consumer that source is no longer running.");
-      running_callback_.Run(false);
+      running_callback_.Run(run_state);
       break;
 
     case VIDEO_CAPTURE_STATE_STARTING:

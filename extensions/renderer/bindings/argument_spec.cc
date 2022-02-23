@@ -97,10 +97,10 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   {
     const base::ListValue* choices = nullptr;
     if (dict->GetList("choices", &choices)) {
-      DCHECK(!choices->GetList().empty());
+      DCHECK(!choices->GetListDeprecated().empty());
       type_ = ArgumentType::CHOICES;
-      choices_.reserve(choices->GetList().size());
-      for (const auto& choice : choices->GetList())
+      choices_.reserve(choices->GetListDeprecated().size());
+      for (const auto& choice : choices->GetListDeprecated())
         choices_.push_back(std::make_unique<ArgumentSpec>(choice));
       return;
     }
@@ -176,20 +176,19 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
     // always update this if need be.
     const base::ListValue* enums = nullptr;
     if (dict->GetList("enum", &enums)) {
-      size_t size = enums->GetList().size();
+      size_t size = enums->GetListDeprecated().size();
       CHECK_GT(size, 0u);
       for (size_t i = 0; i < size; ++i) {
-        std::string enum_value;
+        const base::Value& value = enums->GetListDeprecated()[i];
+        const std::string* enum_str = value.GetIfString();
         // Enum entries come in two versions: a list of possible strings, and
         // a dictionary with a field 'name'.
-        if (!enums->GetString(i, &enum_value)) {
-          const base::Value& value = enums->GetList()[i];
+        if (!enum_str) {
           CHECK(value.is_dict());
-          const base::DictionaryValue* enum_value_dictionary =
-              static_cast<const base::DictionaryValue*>(&value);
-          CHECK(enum_value_dictionary->GetString("name", &enum_value));
+          enum_str = value.FindStringKey("name");
+          CHECK(enum_str);
         }
-        enum_values_.insert(std::move(enum_value));
+        enum_values_.insert(*enum_str);
       }
     }
   } else if (type_ == ArgumentType::FUNCTION) {

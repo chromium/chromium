@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_MODEL_FORWARDING_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 #define COMPONENTS_SYNC_MODEL_FORWARDING_MODEL_TYPE_CONTROLLER_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
 namespace syncer {
@@ -39,7 +40,7 @@ class ForwardingModelTypeControllerDelegate
   void RecordMemoryUsageAndCountsHistograms() override;
 
  private:
-  ModelTypeControllerDelegate* const other_;
+  const raw_ptr<ModelTypeControllerDelegate> other_;
 };
 
 }  // namespace syncer

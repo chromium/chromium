@@ -12,14 +12,14 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     AppearanceBrowserProxy {
   private defaultZoom_: number = 1;
-  private isSupervised_: boolean = false;
+  private isChildAccount_: boolean = false;
   private isHomeUrlValid_: boolean = true;
 
   constructor() {
     super([
       'getDefaultZoom',
       'getThemeInfo',
-      'isSupervised',
+      'isChildAccount',
       'useDefaultTheme',
       'useSystemTheme',
       'validateStartupPage',
@@ -49,9 +49,9 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     });
   }
 
-  isSupervised() {
-    this.methodCalled('isSupervised');
-    return this.isSupervised_;
+  isChildAccount() {
+    this.methodCalled('isChildAccount');
+    return this.isChildAccount_;
   }
 
   useDefaultTheme() {
@@ -66,8 +66,8 @@ class TestAppearanceBrowserProxy extends TestBrowserProxy implements
     this.defaultZoom_ = defaultZoom;
   }
 
-  setIsSupervised(isSupervised: boolean) {
-    this.isSupervised_ = isSupervised;
+  setIsChildAccount(isChildAccount: boolean) {
+    this.isChildAccount_ = isChildAccount;
   }
 
   validateStartupPage(url: string) {
@@ -165,10 +165,10 @@ suite('AppearanceHandler', function() {
     // The "USE GTK+" button shouldn't be showing if it's already in use.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
 
-    appearanceBrowserProxy.setIsSupervised(true);
+    appearanceBrowserProxy.setIsChildAccount(true);
     appearancePage.set(USE_SYSTEM_PREF, false);
     flush();
-    // Supervised users have their own theme and can't use GTK+ theme.
+    // Child account users have their own theme and can't use GTK+ theme.
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useSystem'));
     // If there's no "USE" buttons, the container should be hidden.
@@ -176,7 +176,7 @@ suite('AppearanceHandler', function() {
         appearancePage.shadowRoot!
             .querySelector<HTMLElement>('#themesSecondaryActions')!.hidden);
 
-    appearanceBrowserProxy.setIsSupervised(false);
+    appearanceBrowserProxy.setIsChildAccount(false);
     appearancePage.set(THEME_ID_PREF, 'fake theme id');
     flush();
     // If there's "USE" buttons again, the container should be visible.
@@ -194,7 +194,7 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  // <if expr="not is_linux or chromeos or lacros">
+  // <if expr="not is_linux or chromeos_ash or chromeos_lacros">
   test('useDefaultTheme', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));

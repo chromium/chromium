@@ -175,8 +175,8 @@ void AssistantControllerImpl::OpenUrl(const GURL& url,
     // such, the browser will always be instructed to open |url| in a new
     // browser tab and Assistant UI state will be updated downstream to respect
     // |in_background|.
-    NewWindowDelegate::GetInstance()->OpenUrl(url,
-                                              /*from_user_interaction=*/true);
+    NewWindowDelegate::GetPrimary()->OpenUrl(
+        url, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   }
   NotifyUrlOpened(url, from_server);
 }
@@ -233,7 +233,6 @@ void AssistantControllerImpl::OnDeepLinkReceived(
     case DeepLinkType::kQuery:
     case DeepLinkType::kReminders:
     case DeepLinkType::kSettings:
-    case DeepLinkType::kWhatsOnMyScreen:
       // No action needed.
       break;
   }

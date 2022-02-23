@@ -150,7 +150,7 @@ TEST_F(ClipboardProviderTest, EmptyClipboard) {
   EXPECT_TRUE(provider_->matches().empty());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The following tests do not apply to Android.
 // On Android, the Omnibox won't access the content of the system clipboard
 // before users click the reveal button, so the clipboard suggestions will be
@@ -213,7 +213,7 @@ TEST_F(ClipboardProviderTest, MatchesImage) {
   ASSERT_TRUE(matches_image_match_);
   EXPECT_EQ(AutocompleteMatchType::CLIPBOARD_IMAGE, matches_image_match_->type);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ClipboardProviderTest, DeleteMatch) {
   auto template_url_service = std::make_unique<TemplateURLService>(

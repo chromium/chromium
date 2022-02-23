@@ -2,19 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import inspect
 import itertools
 import os
 import re
-import sys
 import unittest
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 import gpu_project_config
 
@@ -80,11 +73,11 @@ _map_specific_to_generic['debug-x64'] = 'debug'
 _map_specific_to_generic['release-x64'] = 'release'
 
 _get_generic = lambda tags: set(
-    [_map_specific_to_generic.get(tag, tag) for tag in tags])
+    _map_specific_to_generic.get(tag, tag) for tag in tags)
 
 ResultType = json_results.ResultType
 
-INTEL_DRIVER_VERSION_SCHEMA = '''
+INTEL_DRIVER_VERSION_SCHEMA = """
 The version format of Intel graphics driver is AA.BB.CC.DDDD (legacy schema)
 and AA.BB.CCC.DDDD (new schema).
 
@@ -95,7 +88,7 @@ CC or CCC: It's meaningful to indicate different branches. Different CC means
 different branch, while all CCCs share the same branch.
 
 DDDD: It's always meaningful.
-'''
+"""
 
 
 def check_intel_driver_version(version):
@@ -137,45 +130,42 @@ def _IsDriverTagDuplicated(driver_tag1, driver_tag2):
   operation2, version2 = tag2[1:]
   if operation1 == 'ne':
     return not (operation2 == 'eq' and version1 == version2)
-  elif operation2 == 'ne':
+  if operation2 == 'ne':
     return not (operation1 == 'eq' and version1 == version2)
-  elif operation1 == 'eq':
+  if operation1 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version1, operation2, version2)
-  elif operation2 == 'eq':
+  if operation2 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version2, operation1, version1)
 
-  if operation1 == 'ge' or operation1 == 'gt':
-    if operation2 == 'ge' or operation2 == 'gt':
-      return True
-  elif operation1 == 'le' or operation1 == 'lt':
-    if operation2 == 'le' or operation2 == 'lt':
-      return True
+  if operation1 in ('ge', 'gt') and operation2 in ('ge', 'gt'):
+    return True
+  if operation1 in ('le', 'lt') and operation2 in ('le', 'lt'):
+    return True
 
   if operation1 == 'ge':
     if operation2 == 'le':
       return not gpu_helper.EvaluateVersionComparison(version1, 'gt', version2)
-    elif operation2 == 'lt':
+    if operation2 == 'lt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'gt':
+  if operation1 == 'gt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'le':
+  if operation1 == 'le':
     if operation2 == 'ge':
       return not gpu_helper.EvaluateVersionComparison(version1, 'lt', version2)
-    elif operation2 == 'gt':
+    if operation2 == 'gt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  elif operation1 == 'lt':
+  if operation1 == 'lt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  else:
-    assert False
+  assert False
+  return False
 # pylint: enable=too-many-return-statements,too-many-branches
 
 
 def _DoTagsConflict(t1, t2):
   if gpu_helper.MatchDriverTag(t1):
     return not _IsDriverTagDuplicated(t1, t2)
-  else:
-    return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
-            and t2 != _map_specific_to_generic.get(t1, t1))
+  return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
+          and t2 != _map_specific_to_generic.get(t1, t1))
 
 
 def _ExtractUnitTestTestExpectations(file_name):
@@ -217,7 +207,7 @@ def CheckTestExpectationsAreForExistingTests(unittest_testcase,
     test_expectations.parse_tagged_list(f.read(), f.name)
     broke_expectations = '\n'.join([
         "\t- {0}:{1}: Expectation with pattern '{2}' does not match"
-        " any tests in the {3} test suite".format(f.name, exp.lineno, exp.test,
+        ' any tests in the {3} test suite'.format(f.name, exp.lineno, exp.test,
                                                   test_class.Name())
         for exp in test_expectations.check_for_broken_expectations(test_names)
     ])
@@ -328,9 +318,9 @@ class GpuTestExpectationsValidation(unittest.TestCase):
 
         broken_expectations = expectations.check_for_broken_expectations(tests)
         msg = ''
-        for ununsed_pattern in set([e.test for e in broken_expectations]):
+        for ununsed_pattern in set(e.test for e in broken_expectations):
           msg += ("Expectations with pattern '{0}' in {1} do not apply to any "
-                  "webgl version {2} extension tests\n".format(
+                  'webgl version {2} extension tests\n'.format(
                       ununsed_pattern, os.path.basename(f.name), webgl_version))
         self.assertEqual(msg, '')
 
@@ -357,7 +347,8 @@ class GpuTestExpectationsValidation(unittest.TestCase):
   def testExpectationBugValidity(self):
     expectation_dir = os.path.join(os.path.dirname(__file__),
                                    'test_expectations')
-    for expectation_file in os.listdir(expectation_dir):
+    for expectation_file in (f for f in os.listdir(expectation_dir)
+                             if f.endswith('.txt')):
       with open(os.path.join(expectation_dir, expectation_file)) as f:
         content = f.read()
       list_parser = expectations_parser.TaggedTestListParser(content)
@@ -420,63 +411,63 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
       self.assertFalse(errors)
 
   def testConflictsBetweenAngleAndNonAngleConfigurations(self):
-    test_expectations = '''
+    test_expectations = """
     # tags: [ android ]
     # tags: [ android-nexus-5x ]
     # tags: [ opengles ]
     # results: [ RetryOnFailure Skip ]
     [ android android-nexus-5x ] a/b/c/d [ RetryOnFailure ]
     [ android opengles ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testConflictBetweenTestExpectationsWithOsNameAndOSVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp ]
+    test_expectations = """# tags: [ mac win linux xp ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel xp ] a/b/c/d [ Failure ]
     [ intel win debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testNoConflictBetweenOsVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel win7 ] a/b/c/d [ Failure ]
     [ intel xp debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
 
   def testConflictBetweenGpuVendorAndGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 ] a/b/c/d [ Failure ]
     [ nvidia debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testNoConflictBetweenGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 win7 ] a/b/c/d [ Failure ]
     [ nvidia-0x02 win7 debug ] a/b/c/d [ Skip ]
     [ nvidia win debug ] a/b/c/* [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
@@ -503,11 +494,11 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
           ' to any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '4: Expectation with pattern \'a/c/*\' does not match'
+          "4: Expectation with pattern 'a/c/*' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '3: Expectation with pattern \'a/b/d\' does not match'
+          "3: Expectation with pattern 'a/b/d' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
 

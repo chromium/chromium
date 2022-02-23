@@ -5,7 +5,6 @@
 #ifndef SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_SETS_H_
 #define SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_SETS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/sandbox_export.h"
 

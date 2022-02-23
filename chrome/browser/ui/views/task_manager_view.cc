@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -47,11 +48,11 @@
 #include "ui/gfx/image/image_skia.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
 #include "ui/base/win/shell.h"
 #include "ui/views/win/hwnd_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace task_manager {
 
@@ -84,7 +85,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   CreateDialogWidget(g_task_manager_view, context, nullptr);
   g_task_manager_view->InitAlwaysOnTopState();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set the app id for the task manager to the app id of its parent browser. If
   // no parent is specified, the app id will default to that of the initial
   // process.
@@ -199,9 +200,8 @@ std::string TaskManagerView::GetWindowName() const {
 bool TaskManagerView::Accept() {
   using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
   SelectedIndices selection(tab_table_->selection_model().selected_indices());
-  for (SelectedIndices::const_reverse_iterator i = selection.rbegin();
-       i != selection.rend(); ++i) {
-    table_model_->KillTask(*i);
+  for (int index : base::Reversed(selection)) {
+    table_model_->KillTask(index);
   }
 
   // Just kill the process, don't close the task manager dialog.
@@ -385,10 +385,11 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::DictionaryValue* dictionary =
-      g_browser_process->local_state()->GetDictionary(GetWindowName());
-  if (dictionary)
-    dictionary->GetBoolean("always_on_top", &is_always_on_top_);
+  if (const base::Value* dictionary =
+          g_browser_process->local_state()->GetDictionary(GetWindowName())) {
+    is_always_on_top_ =
+        dictionary->FindBoolKey("always_on_top").value_or(false);
+  }
 }
 
 BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)
@@ -398,7 +399,7 @@ END_METADATA
 
 namespace chrome {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // These are used by the Mac versions of |ShowTaskManager| and |HideTaskManager|
 // if they decide to show the Views task manager instead of the Cocoa one.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser) {

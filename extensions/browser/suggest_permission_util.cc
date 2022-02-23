@@ -37,11 +37,8 @@ void SuggestAPIPermissionInDevToolsConsole(
       extension->is_platform_app() ?
           kPermissionsHelpURLForApps : kPermissionsHelpURLForExtensions);
 
-  // Only the main frame handles dev tools messages.
-  content::WebContents::FromRenderFrameHost(render_frame_host)
-      ->GetMainFrame()
-      ->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
-                            message);
+  render_frame_host->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kWarning, message);
 }
 
 }  // namespace

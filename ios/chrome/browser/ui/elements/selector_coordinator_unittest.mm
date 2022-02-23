@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/elements/selector_picker_view_controller.h"
 #import "ios/chrome/browser/ui/elements/selector_view_controller_delegate.h"
@@ -35,10 +36,13 @@ TEST_F(SelectorCoordinatorTest, StartAndStop) {
   ScopedKeyWindow scopedKeyWindow;
   UIWindow* keyWindow = scopedKeyWindow.Get();
   UIViewController* rootViewController = keyWindow.rootViewController;
-  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state.get());
   SelectorCoordinator* coordinator =
       [[SelectorCoordinator alloc] initWithBaseViewController:rootViewController
-                                                      browser:browser_.get()];
+                                                      browser:browser.get()];
 
   void (^testSteps)(void) = ^{
     [coordinator start];
@@ -64,10 +68,13 @@ TEST_F(SelectorCoordinatorTest, Delegate) {
   ScopedKeyWindow scopedKeyWindow;
   UIWindow* keyWindow = scopedKeyWindow.Get();
   UIViewController* rootViewController = keyWindow.rootViewController;
-  std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state.get());
   SelectorCoordinator* coordinator =
       [[SelectorCoordinator alloc] initWithBaseViewController:rootViewController
-                                                      browser:browser_.get()];
+                                                      browser:browser.get()];
   id delegate =
       [OCMockObject mockForProtocol:@protocol(SelectorCoordinatorDelegate)];
   coordinator.delegate = delegate;

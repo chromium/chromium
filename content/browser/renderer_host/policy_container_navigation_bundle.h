@@ -84,6 +84,11 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // This must be called before |ComputePolicies()|.
   void SetCrossOriginOpenerPolicy(network::CrossOriginOpenerPolicy coop);
 
+  // Sets the cross origin embedder policy of the new document.
+  //
+  // This must be called before |ComputePolicies()|.
+  void SetCrossOriginEmbedderPolicy(network::CrossOriginEmbedderPolicy coep);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before |ComputePolicies()|.
@@ -116,21 +121,34 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Sets final policies to defaults suitable for error pages, and builds a
   // policy container host.
   //
+  // |is_inside_mhtml| Whether the navigation loads an MHTML document or a
+  // subframe of an MHTML document. This is used by |ComputeSandboxFlags()|.
+  // |frame_sandbox_flags| represents the frame's sandbox flags, these are used
+  // by |ComputeSandboxFlags()|.
+  //
   // This method must only be called once. However it can be called after
   // |ComputePolicies()|.
-  void ComputePoliciesForError();
+  void ComputePoliciesForError(
+      bool is_inside_mhtml,
+      network::mojom::WebSandboxFlags frame_sandbox_flags);
 
   // Sets final policies to their correct values and builds a policy container
   // host.
   //
   // |url| should designate the URL of the document after all redirects have
   // been followed.
+  // |is_inside_mhtml| Whether the navigation loads an MHTML document or a
+  // subframe of an MHTML document. This is used by |ComputeSandboxFlags()|.
+  // |frame_sandbox_flags| The frame's sandbox flags, these are used
+  // by |ComputeSandboxFlags()|.
   //
   // Also sets |DeliveredPolicies().is_web_secure_context| to its final value.
   //
   // This method must only be called once. |ComputePoliciesForError()| may be
   // called later and this override the final policies.
-  void ComputePolicies(const GURL& url);
+  void ComputePolicies(const GURL& url,
+                       bool is_inside_mhtml,
+                       network::mojom::WebSandboxFlags frame_sandbox_flags);
 
   // Returns a reference to the policies of the new document, i.e. the policies
   // in the policy container host to be committed.
@@ -168,6 +186,21 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Helper for |ComputePolicies()|.
   void ComputeIsWebSecureContext();
 
+  // Sets |policies.sandbox_flags| to its final value. This merges the CSP
+  // sandbox flags with the frame's sandbox flag.
+  //
+  // |is_inside_mhtml| Whether the navigation loads an MHTML document or a
+  // subframe of an MHTML document. When true, this forces all sandbox flags on
+  // the document except popups and popups-to-escape-sandbox.
+  // |frame_sandbox_flags| The frame's sandbox flags.
+  // |policies| The policies computed for the document except for the sandbox
+  // flags.
+  //
+  // Helper for |ComputePolicies()| and |ComputePoliciesForError()|.
+  void ComputeSandboxFlags(bool is_inside_mhtml,
+                           network::mojom::WebSandboxFlags frame_sandbox_flags,
+                           PolicyContainerPolicies* policies);
+
   // Sets |host_|.
   void SetFinalPolicies(std::unique_ptr<PolicyContainerPolicies> policies);
 
@@ -185,7 +218,9 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Helper for `FinalizePolicies()`. Returns, depending on `url`, the final
   // policies for the document that is going to be committed.
   std::unique_ptr<PolicyContainerPolicies> ComputeFinalPolicies(
-      const GURL& url);
+      const GURL& url,
+      bool is_inside_mhtml,
+      network::mojom::WebSandboxFlags frame_sandbox_flags);
 
   // The policies of the parent document, if any.
   const std::unique_ptr<PolicyContainerPolicies> parent_policies_;

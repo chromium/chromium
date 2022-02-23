@@ -127,7 +127,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
 
   // Like extension_function_test_utils::RunFunctionAndReturnSingleResult but
   // with an explicit ListValue.
-  base::Value* RunFunctionAndReturnSingleResult(
+  base::Value RunFunctionAndReturnSingleResult(
       ExtensionFunction* function,
       std::unique_ptr<base::ListValue> args,
       Browser* browser) {
@@ -138,12 +138,11 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
                        extensions::api_test_utils::NONE);
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
-    const base::Value* single_result = NULL;
-    if (function->GetResultList() != NULL &&
-        function->GetResultList()->Get(0, &single_result)) {
-      return single_result->DeepCopy();
+    if (function->GetResultList() &&
+        !function->GetResultList()->GetListDeprecated().empty()) {
+      return function->GetResultList()->GetListDeprecated()[0].Clone();
     }
-    return NULL;
+    return base::Value();
   }
 
   scoped_refptr<const extensions::Extension> extension_;
@@ -206,11 +205,11 @@ TEST_F(EPKChallengeMachineKeyTest, Success) {
   allowlist.Append(extension_->id());
   prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
-  std::unique_ptr<base::Value> value(
+  base::Value value(
       RunFunctionAndReturnSingleResult(func_.get(), CreateArgs(), browser()));
 
-  ASSERT_TRUE(value->is_blob());
-  std::string response(value->GetBlob().begin(), value->GetBlob().end());
+  ASSERT_TRUE(value.is_blob());
+  std::string response(value.GetBlob().begin(), value.GetBlob().end());
   EXPECT_EQ("response", response);
 }
 

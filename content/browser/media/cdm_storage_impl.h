@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
@@ -32,13 +33,9 @@ class RenderFrameHost;
 class CONTENT_EXPORT CdmStorageImpl final
     : public content::DocumentService<media::mojom::CdmStorage> {
  public:
-  // Check if |cdm_file_system_id| is valid.
-  static bool IsValidCdmFileSystemId(const std::string& cdm_file_system_id);
-
-  // Create a CdmStorageImpl object for |cdm_file_system_id| and bind it to
-  // |request|.
+  // Create a CdmStorageImpl object for |cdm_type| and bind it to |request|.
   static void Create(RenderFrameHost* render_frame_host,
-                     const std::string& cdm_file_system_id,
+                     const media::CdmType& cdm_type,
                      mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
 
   CdmStorageImpl(const CdmStorageImpl&) = delete;
@@ -48,13 +45,15 @@ class CONTENT_EXPORT CdmStorageImpl final
   void Open(const std::string& file_name, OpenCallback callback) final;
 
  private:
+  // TODO(crbug.com/1231162): Consider reimagining this design once we migrate
+  // off of the PluginPrivateFileSystem.
   // File system should only be opened once, so keep track if it has already
   // been opened (or is in the process of opening). State is kError if an error
   // happens while opening the file system.
   enum class FileSystemState { kUnopened, kOpening, kOpened, kError };
 
   CdmStorageImpl(RenderFrameHost* render_frame_host,
-                 const std::string& cdm_file_system_id,
+                 const media::CdmType& cdm_type,
                  scoped_refptr<storage::FileSystemContext> file_system_context,
                  mojo::PendingReceiver<media::mojom::CdmStorage> receiver);
   ~CdmStorageImpl() final;
@@ -70,11 +69,19 @@ class CONTENT_EXPORT CdmStorageImpl final
                             OpenCallback callback,
                             bool success);
 
-  // Files are stored in the PluginPrivateFileSystem, so keep track of the
-  // CDM file system ID in order to open the files in the correct context.
-  const std::string cdm_file_system_id_;
+  // TODO(crbug.com/1231162): Update this comment once we migrate off of the
+  // PluginPrivateFileSystem. CdmType contains a `legacy_file_system_id` used to
+  // access the PluginPrivateFileSystem, which will be removed once all data has
+  // been migrated.
+  // Files are stored in the PluginPrivateFileSystem, so keep track of the CDM
+  // file system ID in order to open the files in the correct context.
+  const media::CdmType cdm_type_;
+  // TODO(crbug.com/1231162): Remove this once we migrate off of the
+  // PluginPrivateFileSystem.
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
+  // TODO(crbug.com/1231162): Update this comment and consider removing this
+  // member once we migrate off of the PluginPrivateFileSystem.
   // The PluginPrivateFileSystem only needs to be opened once.
   FileSystemState file_system_state_ = FileSystemState::kUnopened;
 
@@ -84,6 +91,8 @@ class CONTENT_EXPORT CdmStorageImpl final
   using PendingOpenData = std::pair<std::string, OpenCallback>;
   std::vector<PendingOpenData> pending_open_calls_;
 
+  // TODO(crbug.com/1231162): Remove this once we migrate off of the
+  // PluginPrivateFileSystem.
   // Once the PluginPrivateFileSystem is opened, keep track of the URI that
   // refers to it.
   std::string file_system_root_uri_;

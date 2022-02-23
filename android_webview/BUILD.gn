@@ -7,6 +7,7 @@ import("//android_webview/system_webview_bundle.gni")
 import("//android_webview/variables.gni")
 import("//android_webview/webview_repack_locales.gni")
 import("//build/android/resource_sizes.gni")
+import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
@@ -457,9 +458,9 @@ java_group("android_webview_no_weblayer_java") {
     "//android_webview/support_library:support_lib_glue_java",
   ]
 
-  # If the S SDK isn't public yet, include the downstream code to support S.
-  if (!public_android_sdk && android_sdk_release == "s") {
-    deps += [ "//clank/android_webview/next:s_sdk_java" ]
+  # If the T SDK isn't public yet, include the downstream code to support T.
+  if (!public_android_sdk && android_sdk_release == "t") {
+    deps += [ "//clank/android_webview/next:t_sdk_java" ]
   }
 }
 
@@ -674,6 +675,7 @@ android_library("browser_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public:blink_headers_java",
+    "//third_party/blink/public/common:common_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -784,6 +786,7 @@ android_library("common_java") {
     "//components/autofill/android:autofill_features_java",
     "//components/feature_engagement/public:public_java",
     "//components/metrics:metrics_java",
+    "//components/network_session_configurator/android:network_session_configurator_java",
     "//components/power_scheduler:power_scheduler_java",
     "//components/viz:viz_java",
     "//content/public/android:content_java",
@@ -792,6 +795,7 @@ android_library("common_java") {
     "//services/network/public:features_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
+    "//third_party/webrtc_overrides:webrtc_overrides_java",
   ]
   srcjar_deps = [
     ":common_java_features_srcjar",
@@ -844,8 +848,8 @@ if (enable_resource_allowlist_generation) {
 }
 
 webview_repack_locales("repack_locales") {
-  input_locales = locales
-  output_locales = locales
+  input_locales = platform_pak_locales
+  output_locales = platform_pak_locales
 
   if (enable_resource_allowlist_generation) {
     repack_allowlist = system_webview_pak_allowlist
@@ -857,7 +861,7 @@ android_assets("locale_pak_assets") {
   disable_compression = true
   renaming_sources = []
   renaming_destinations = []
-  foreach(_locale, locales) {
+  foreach(_locale, platform_pak_locales) {
     renaming_sources += [ "$root_out_dir/android_webview/locales/$_locale.pak" ]
     renaming_destinations += [ "stored-locales/$_locale.pak" ]
   }
@@ -894,6 +898,13 @@ repack("repack_pack") {
   if (webview_includes_weblayer) {
     sources += [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]
     deps += [ "//weblayer:resources" ]
+
+    # These resources are primarily useful for developers. To avoid increasing
+    # the size of WebView they are only included in non-stable channels.
+    if (android_channel != "stable") {
+      sources += [ "$root_gen_dir/content/dev_ui_content_resources.pak" ]
+      deps += [ "//content:dev_ui_content_resources" ]
+    }
   }
 }
 
@@ -942,13 +953,12 @@ if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
     if (use_v8_context_snapshot) {
       renaming_sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
       renaming_destinations += [ "v8_context_snapshot_$arch_suffix.bin" ]
-    }
-    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+    } else {
       _secondary_abi_out_dir =
           get_label_info("//v8($android_secondary_abi_toolchain)",
                          "root_out_dir")
-      renaming_sources += [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
-      renaming_destinations += [ "snapshot_blob_$arch_suffix.bin" ]
+      renaming_sources = [ "$_secondary_abi_out_dir/snapshot_blob.bin" ]
+      renaming_destinations = [ "snapshot_blob_$arch_suffix.bin" ]
     }
     disable_compression = true
     deps = [
@@ -962,8 +972,7 @@ android_assets("webview_primary_abi_assets") {
   deps = []
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  }
-  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+  } else {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }
@@ -972,8 +981,7 @@ android_assets("monochrome_webview_primary_abi_assets") {
   deps = [ "//third_party/icu:icu_assets" ]
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  }
-  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+  } else {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }

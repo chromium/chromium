@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -82,7 +83,7 @@ class MockInputRouterClient : public InputRouterClient,
   bool NeedsBeginFrameForFlingProgress() override;
 
  private:
-  InputRouter* input_router_;
+  raw_ptr<InputRouter> input_router_;
   int in_flight_event_count_;
 
   blink::mojom::InputEventResultState filter_state_;

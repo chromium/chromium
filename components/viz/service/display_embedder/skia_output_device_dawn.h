@@ -10,9 +10,9 @@
 
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
-#include "third_party/dawn/src/include/dawn/dawn_wsi.h"
-#include "third_party/dawn/src/include/dawn/webgpu.h"
-#include "third_party/dawn/src/include/dawn_native/DawnNative.h"
+#include "third_party/dawn/include/dawn/dawn_wsi.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"

@@ -63,6 +63,7 @@ export function setUp() {
     FILES_TRASH_ENABLED: false,
     FILTERS_IN_RECENTS_ENABLED: false,
     UNIFIED_MEDIA_VIEW_ENABLED: false,
+    GUEST_OS: false,
   });
   window.loadTimeData.getString = id => {
     return window.loadTimeData.data_[id] || id;

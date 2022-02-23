@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/scoped_nss_types.h"
 

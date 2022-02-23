@@ -35,7 +35,7 @@ class AddressSanitizerTool(base_tool.BaseTool):
   EXTRA_OPTIONS = 'strict_memcmp=0,use_sigaltstack=1'
 
   def __init__(self, device):
-    super(AddressSanitizerTool, self).__init__()
+    super().__init__()
     self._device = device
 
   @classmethod
@@ -92,10 +92,10 @@ def CreateTool(tool_name, device):
   ctor = TOOL_REGISTRY.get(tool_name)
   if ctor:
     return ctor(device)
-  else:
-    print('Unknown tool %s, available tools: %s' % (tool_name, ', '.join(
-        sorted(TOOL_REGISTRY.keys()))))
-    sys.exit(1)
+  print('Unknown tool %s, available tools: %s' %
+        (tool_name, ', '.join(sorted(TOOL_REGISTRY.keys()))))
+  sys.exit(1)
+
 
 def PushFilesForTool(tool_name, device):
   """Pushes the files required for |tool_name| to |device|.

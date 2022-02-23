@@ -15,6 +15,7 @@ mojom("mojo_bindings") {
     "//services/media_session/public/mojom",
     "//url/mojom:url_mojom_origin",
   ]
+  webui_module_path = "/"
 }
 
 proto_library("media_engagement_preload_proto") {

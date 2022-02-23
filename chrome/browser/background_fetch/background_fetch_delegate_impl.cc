@@ -100,7 +100,7 @@ void BackgroundFetchDelegateImpl::UpdateUI(
   bool should_update_visuals = ui_state.update_delta.has_value()
                                    ? ui_state.update_delta->visuals_changed
                                    : false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   should_update_visuals = false;
 #endif
 
@@ -227,7 +227,7 @@ void BackgroundFetchDelegateImpl::OnJobDetailsCreated(
   offline_items_collection::OfflineItem offline_item(
       offline_items_collection::ContentId(provider_namespace_, job_id));
   offline_item.is_off_the_record = profile_->IsOffTheRecord();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (profile_->IsOffTheRecord())
     offline_item.otr_profile_id = profile_->GetOTRProfileID().Serialize();
 #endif

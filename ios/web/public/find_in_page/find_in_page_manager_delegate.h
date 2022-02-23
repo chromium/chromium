@@ -5,9 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 #define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_DELEGATE_H_
 
-
-#include "base/macros.h"
-
 @class NSString;
 
 namespace web {

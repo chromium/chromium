@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -33,6 +32,8 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
 
@@ -98,7 +99,7 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
   }
 
   cc::TransformNode* GetTransformNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->transform_tree.Node(
+    return GetPropertyTrees()->transform_tree_mutable().Node(
         layer->transform_tree_index());
   }
 
@@ -151,11 +152,11 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   CompositorElementId scroll_element_id = scrollable_area->GetScrollElementId();
   auto* overflow_scroll_layer =
       CcLayerByCcElementId(RootCcLayer(), scroll_element_id);
-  const auto* scroll_node =
-      RootCcLayer()
-          ->layer_tree_host()
-          ->property_trees()
-          ->scroll_tree.FindNodeFromElementId(scroll_element_id);
+  const auto* scroll_node = RootCcLayer()
+                                ->layer_tree_host()
+                                ->property_trees()
+                                ->scroll_tree()
+                                .FindNodeFromElementId(scroll_element_id);
   EXPECT_TRUE(scroll_node->scrollable);
   EXPECT_EQ(scroll_node->container_bounds, gfx::Size(100, 100));
 
@@ -208,11 +209,12 @@ TEST_P(CompositingTest, FrameViewScroll) {
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   EXPECT_NE(nullptr, scrollable_area);
 
-  const auto* scroll_node = RootCcLayer()
-                                ->layer_tree_host()
-                                ->property_trees()
-                                ->scroll_tree.FindNodeFromElementId(
-                                    scrollable_area->GetScrollElementId());
+  const auto* scroll_node =
+      RootCcLayer()
+          ->layer_tree_host()
+          ->property_trees()
+          ->scroll_tree()
+          .FindNodeFromElementId(scrollable_area->GetScrollElementId());
   ASSERT_TRUE(scroll_node);
   EXPECT_TRUE(scroll_node->scrollable);
 
@@ -401,23 +403,23 @@ TEST_P(CompositingTest, PaintPropertiesWhenCompositingSVG) {
   )HTML");
   UpdateAllLifecyclePhases();
   auto* ancestor = CcLayerByDOMElementId("ancestor");
-  auto* ancestor_effect_node =
-      GetPropertyTrees()->effect_tree.Node(ancestor->effect_tree_index());
+  auto* ancestor_effect_node = GetPropertyTrees()->effect_tree_mutable().Node(
+      ancestor->effect_tree_index());
   EXPECT_EQ(ancestor_effect_node->opacity, 0.9f);
 
   auto* svg_root = CcLayerByDOMElementId("svg");
-  auto* svg_root_effect_node =
-      GetPropertyTrees()->effect_tree.Node(svg_root->effect_tree_index());
+  const auto* svg_root_effect_node =
+      GetPropertyTrees()->effect_tree().Node(svg_root->effect_tree_index());
   EXPECT_EQ(svg_root_effect_node->opacity, 0.8f);
   EXPECT_EQ(svg_root_effect_node->parent_id, ancestor_effect_node->id);
 
   auto* rect = CcLayerByDOMElementId("rect");
-  auto* rect_filter_node =
-      GetPropertyTrees()->effect_tree.Node(rect->effect_tree_index());
+  const auto* rect_filter_node =
+      GetPropertyTrees()->effect_tree().Node(rect->effect_tree_index());
   EXPECT_EQ(rect_filter_node->opacity, 1);
 
-  auto* rect_effect_node =
-      GetPropertyTrees()->effect_tree.Node(rect_filter_node->parent_id);
+  const auto* rect_effect_node =
+      GetPropertyTrees()->effect_tree().Node(rect_filter_node->parent_id);
   EXPECT_EQ(rect_effect_node->opacity, 0.7f);
   EXPECT_EQ(rect_effect_node->parent_id, svg_root_effect_node->id);
 }
@@ -553,32 +555,6 @@ TEST_P(CompositingTest, ContainPaintLayerBounds) {
   EXPECT_EQ(gfx::Size(200, 100), layer->bounds());
 }
 
-TEST_P(CompositingTest, SVGForeignObjectDirectlyCompositedContainer) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
-    <!doctype html>
-    <div id="container" style="backface-visibility: hidden">
-      <svg>
-        <foreignObject id="foreign">
-          <div id="child" style="position: relative"></div>
-        </foreignObject>
-      </svg>
-    </body>
-  )HTML");
-  UpdateAllLifecyclePhases();
-
-  // PaintInvalidator should use the same directly_composited_container during
-  // PrePaint and should not fail DCHECK.
-  auto* container = GetLayoutObjectById("container");
-  EXPECT_FALSE(container->IsStackingContext());
-  EXPECT_EQ(container,
-            &GetLayoutObjectById("foreign")->DirectlyCompositableContainer());
-  EXPECT_EQ(container,
-            &GetLayoutObjectById("child")->DirectlyCompositableContainer());
-}
-
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {
  public:
   void InitializeWithHTML(const String& html) {
@@ -626,12 +602,13 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
   }
 
   cc::TransformNode* GetTransformNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->transform_tree.Node(
+    return GetPropertyTrees()->transform_tree_mutable().Node(
         layer->transform_tree_index());
   }
 
   cc::EffectNode* GetEffectNode(const cc::Layer* layer) {
-    return GetPropertyTrees()->effect_tree.Node(layer->effect_tree_index());
+    return GetPropertyTrees()->effect_tree_mutable().Node(
+        layer->effect_tree_index());
   }
 
   PaintArtifactCompositor* paint_artifact_compositor() {
@@ -671,7 +648,7 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateEarlierLayers) {
   auto* b_layer = CcLayerByDOMElementId("b");
 
   // Initially, neither a nor b should have a layer that should push properties.
-  cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
+  const cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(
       host.pending_commit_state()->layers_that_should_push_properties.count(
           a_layer));
@@ -725,7 +702,7 @@ TEST_P(CompositingSimTest, LayerUpdatesDoNotInvalidateLaterLayers) {
   auto* c_layer = CcLayerByDOMElementId("c");
 
   // Initially, no layer should need to push properties.
-  cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
+  const cc::LayerTreeHost& host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(
       host.pending_commit_state()->layers_that_should_push_properties.count(
           a_layer));
@@ -783,7 +760,7 @@ TEST_P(CompositingSimTest,
   // Initially the host should not need to sync.
   cc::LayerTreeHost& layer_tree_host = *Compositor().LayerTreeHost();
   EXPECT_FALSE(layer_tree_host.needs_full_tree_sync());
-  int sequence_number = GetPropertyTrees()->sequence_number;
+  int sequence_number = GetPropertyTrees()->sequence_number();
   EXPECT_GT(sequence_number, 0);
 
   // A no-op update should not cause the host to need a full tree sync.
@@ -791,7 +768,7 @@ TEST_P(CompositingSimTest,
   EXPECT_FALSE(layer_tree_host.needs_full_tree_sync());
   // It should also not cause a property tree update - the sequence number
   // should not change.
-  EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number);
+  EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
 }
 
 // When a property tree change occurs that affects layer transform in the
@@ -861,19 +838,26 @@ TEST_P(CompositingSimTest, LayerSubtreeTransformPropertyChanged) {
 // case (ie before and after transforms both preserve axis alignment), the
 // transforms can be directly updated without explicitly marking layers as
 // damaged. The ensure damage occurs, the transform node should have
-// |transform_changed| set. In non-layer-list mode, this occurs in
-// cc::TransformTree::OnTransformAnimated and cc::Layer::SetTransform.
+// |transform_changed| set.
 TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #outer {
           width: 100px;
           height: 100px;
-          will-change: transform;
-          transform: translate(10px, 10px) scale(1, 2);
           background: lightgreen;
+          animation-name: animateTransformA;
+          animation-duration: 999s;
         }
         #inner {
           width: 100px;
@@ -892,8 +876,8 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
   auto transform_tree_index = outer_element_layer->transform_tree_index();
-  auto* transform_node =
-      GetPropertyTrees()->transform_tree.Node(transform_tree_index);
+  const auto* transform_node =
+      GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
@@ -901,7 +885,7 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdate) {
 
   // Modifying the transform in a simple way allowed for a direct update.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "transform: translate(30px, 20px) scale(5, 5)");
+                              "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -915,33 +899,41 @@ TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
   InitializeWithHTML(R"HTML(
     <!doctype html>
     <style>
-      #willChange {
+      @keyframes animateTransformA {
+        0% { transform: translateX(0px); }
+        100% { transform: translateX(100px); }
+      }
+      @keyframes animateTransformB {
+        0% { transform: translateX(200px); }
+        100% { transform: translateX(300px); }
+      }
+      #willChangeWithAnimation {
         width: 100px;
         height: 100px;
-        will-change: transform;
-        transform: translate(10px, 10px);
+        animation-name: animateTransformA;
+        animation-duration: 999s;
       }
     </style>
     <svg width="200" height="200">
-      <rect id="willChange" fill="blue"></rect>
+      <rect id="willChangeWithAnimation" fill="blue"></rect>
     </svg>
   )HTML");
 
   Compositor().BeginFrame();
 
-  auto* will_change_layer = CcLayerByDOMElementId("willChange");
+  auto* will_change_layer = CcLayerByDOMElementId("willChangeWithAnimation");
   auto transform_tree_index = will_change_layer->transform_tree_index();
-  auto* transform_node =
-      GetPropertyTrees()->transform_tree.Node(transform_tree_index);
+  const auto* transform_node =
+      GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
 
   // Modifying the transform in a simple way allowed for a direct update.
-  auto* will_change_element = GetElementById("willChange");
+  auto* will_change_element = GetElementById("willChangeWithAnimation");
   will_change_element->setAttribute(html_names::kStyleAttr,
-                                    "transform: translate(30px, 20px)");
+                                    "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -959,11 +951,19 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #outer {
           width: 100px;
           height: 100px;
-          will-change: transform;
-          transform: translate(1px, 2px);
+          animation-name: animateTransformA;
+          animation-duration: 999s;
           background: lightgreen;
         }
         #inner {
@@ -984,14 +984,14 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   auto* outer_element = GetElementById("outer");
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
   auto outer_transform_tree_index = outer_element_layer->transform_tree_index();
-  auto* outer_transform_node =
-      GetPropertyTrees()->transform_tree.Node(outer_transform_tree_index);
+  const auto* outer_transform_node =
+      GetPropertyTrees()->transform_tree().Node(outer_transform_tree_index);
 
   auto* inner_element = GetElementById("inner");
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
   auto inner_transform_tree_index = inner_element_layer->transform_tree_index();
-  auto* inner_transform_node =
-      GetPropertyTrees()->transform_tree.Node(inner_transform_tree_index);
+  const auto* inner_transform_node =
+      GetPropertyTrees()->transform_tree().Node(inner_transform_tree_index);
 
   // Initially, the transforms should be unchanged.
   EXPECT_FALSE(outer_transform_node->transform_changed);
@@ -1002,7 +1002,7 @@ TEST_P(CompositingSimTest, DirectTransformPropertyUpdateCausesChange) {
   // update of the outer transform. Modifying the inner transform in a
   // non-simple way should not allow for a direct update of the inner transform.
   outer_element->setAttribute(html_names::kStyleAttr,
-                              "transform: translate(5px, 6px)");
+                              "animation-name: animateTransformB");
   inner_element->setAttribute(html_names::kStyleAttr,
                               "transform: rotate(30deg)");
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1053,8 +1053,8 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    auto* transform_node =
-        GetPropertyTrees()->transform_tree.Node(transform_tree_index);
+    const auto* transform_node =
+        GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
     DCHECK(transform_node);
     EXPECT_TRUE(transform_node->moved_by_outer_viewport_bounds_delta_y);
@@ -1068,8 +1068,8 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
     Compositor().BeginFrame();
 
     auto transform_tree_index = fixed_element_layer->transform_tree_index();
-    auto* transform_node =
-        GetPropertyTrees()->transform_tree.Node(transform_tree_index);
+    const auto* transform_node =
+        GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
     DCHECK(transform_node);
     EXPECT_FALSE(transform_node->moved_by_outer_viewport_bounds_delta_y);
@@ -1079,17 +1079,25 @@ TEST_P(CompositingSimTest, AffectedByOuterViewportBoundsDelta) {
 // When a property tree change occurs that affects layer transform-origin, the
 // transform can be directly updated without explicitly marking the layer as
 // damaged. The ensure damage occurs, the transform node should have
-// |transform_changed| set. In non-layer-list mode, this occurs in
-// cc::Layer::SetTransformOrigin.
+// |transform_changed| set.
 TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
         html { overflow: hidden; }
+        @keyframes animateTransformA {
+          0% { transform: translateX(0px); }
+          100% { transform: translateX(100px); }
+        }
+        @keyframes animateTransformB {
+          0% { transform: translateX(200px); }
+          100% { transform: translateX(300px); }
+        }
         #box {
           width: 100px;
           height: 100px;
-          transform: rotate3d(3, 2, 1, 45deg);
+          animation-name: animateTransformA;
+          animation-duration: 999s;
           transform-origin: 10px 10px 100px;
           background: lightblue;
         }
@@ -1102,8 +1110,8 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
   auto* box_element = GetElementById("box");
   auto* box_element_layer = CcLayerByDOMElementId("box");
   auto transform_tree_index = box_element_layer->transform_tree_index();
-  auto* transform_node =
-      GetPropertyTrees()->transform_tree.Node(transform_tree_index);
+  const auto* transform_node =
+      GetPropertyTrees()->transform_tree().Node(transform_tree_index);
 
   // Initially, transform should be unchanged.
   EXPECT_FALSE(transform_node->transform_changed);
@@ -1111,7 +1119,7 @@ TEST_P(CompositingSimTest, DirectTransformOriginPropertyUpdate) {
 
   // Modifying the transform-origin in a simple way allowed for a direct update.
   box_element->setAttribute(html_names::kStyleAttr,
-                            "transform-origin: -10px -10px -100px");
+                            "animation-name: animateTransformB");
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(transform_node->transform_changed);
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -1493,14 +1501,15 @@ TEST_P(CompositingSimTest, NonDrawableLayersIgnoredForRenderSurfaces) {
   Compositor().BeginFrame();
 
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
-  EXPECT_FALSE(inner_element_layer->DrawsContent());
+  EXPECT_FALSE(inner_element_layer->draws_content());
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
-  EXPECT_TRUE(outer_element_layer->DrawsContent());
+  EXPECT_TRUE(outer_element_layer->draws_content());
 
   // The inner element layer is only needed for hit testing and does not draw
   // content, so it should not cause a render surface.
   auto effect_tree_index = outer_element_layer->effect_tree_index();
-  auto* effect_node = GetPropertyTrees()->effect_tree.Node(effect_tree_index);
+  const auto* effect_node =
+      GetPropertyTrees()->effect_tree().Node(effect_tree_index);
   EXPECT_EQ(effect_node->opacity, 0.5f);
   EXPECT_FALSE(effect_node->HasRenderSurface());
 }
@@ -1532,7 +1541,7 @@ TEST_P(CompositingSimTest, NoRenderSurfaceWithAxisAlignedTransformAnimation) {
   Compositor().BeginFrame();
   // No effect node with kClipAxisAlignment should be created because the
   // animation is axis-aligned.
-  for (const auto& effect_node : GetPropertyTrees()->effect_tree.nodes()) {
+  for (const auto& effect_node : GetPropertyTrees()->effect_tree().nodes()) {
     EXPECT_NE(cc::RenderSurfaceReason::kClipAxisAlignment,
               effect_node.render_surface_reason);
   }
@@ -1543,9 +1552,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframe) {
   Compositor().BeginFrame();
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   auto* layer = CcLayerByOwnerNodeId(owner_node);
   EXPECT_TRUE(layer);
   EXPECT_EQ(layer->bounds(), gfx::Size(300, 150));
@@ -1568,9 +1575,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterLoading) {
 
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 }
 
@@ -1602,9 +1607,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParent) {
   iframe_doc =
       To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
           ->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 }
 
@@ -1627,9 +1630,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
 
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 
   NonThrowableExceptionState exception_state;
@@ -1642,9 +1643,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
 
   iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  owner_node = iframe_doc->documentElement();
   EXPECT_FALSE(CcLayerByOwnerNodeId(owner_node));
 }
 
@@ -1677,9 +1676,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
   iframe_doc =
       To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
           ->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
 
   auto* main_iframe_element =
@@ -1704,9 +1701,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
   iframe_doc =
       To<HTMLFrameOwnerElement>(iframe_doc->getElementById("child_iframe"))
           ->contentDocument();
-  owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  owner_node = iframe_doc->documentElement();
   EXPECT_FALSE(CcLayerByOwnerNodeId(owner_node));
 }
 
@@ -1722,7 +1717,7 @@ TEST_P(CompositingTest, EffectNodesShouldHaveStableIds) {
     </div>
   )HTML");
   auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
-  for (const auto& effect_node : property_trees->effect_tree.nodes()) {
+  for (const auto& effect_node : property_trees->effect_tree().nodes()) {
     if (effect_node.parent_id != -1)
       EXPECT_TRUE(!!effect_node.stable_id);
   }
@@ -1748,9 +1743,10 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
   commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
       element_id, gfx::Vector2dF(0, 10), absl::nullopt));
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
-  EXPECT_EQ(FloatPoint(0, 10), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 10),
-            GetPropertyTrees()->scroll_tree.current_scroll_offset(element_id));
+  EXPECT_EQ(gfx::PointF(0, 10), scrollable_area->ScrollPosition());
+  EXPECT_EQ(
+      gfx::PointF(0, 10),
+      GetPropertyTrees()->scroll_tree().current_scroll_offset(element_id));
 
   // Update just the blink lifecycle because a full frame would clear the bit
   // for whether a commit was requested.
@@ -1758,8 +1754,7 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 
   // A main frame is needed to call UpdateLayers which updates property trees,
   // re-calculating cached to/from-screen transforms.
-  EXPECT_TRUE(
-      Compositor().LayerTreeHost()->RequestedMainFramePendingForTesting());
+  EXPECT_TRUE(Compositor().LayerTreeHost()->RequestedMainFramePending());
 
   // A full commit is not needed.
   EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
@@ -1783,13 +1778,13 @@ TEST_P(CompositingSimTest, FrameAttribution) {
 
   // Iterate the transform tree to gather the parent frame element ID.
   cc::ElementId visible_frame_element_id;
-  auto* current_transform_node = child_transform_node;
+  const auto* current_transform_node = child_transform_node;
   while (current_transform_node) {
     visible_frame_element_id = current_transform_node->visible_frame_element_id;
     if (visible_frame_element_id)
       break;
     current_transform_node =
-        GetPropertyTrees()->transform_tree.parent(current_transform_node);
+        GetPropertyTrees()->transform_tree().parent(current_transform_node);
   }
 
   EXPECT_EQ(visible_frame_element_id,
@@ -1801,9 +1796,7 @@ TEST_P(CompositingSimTest, FrameAttribution) {
   // containing document.
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   auto* iframe_layer = CcLayerByOwnerNodeId(owner_node);
   ASSERT_TRUE(iframe_layer);
   auto* iframe_transform_node = GetTransformNode(iframe_layer);
@@ -1838,9 +1831,7 @@ TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
   // Ensure that the iframe is marked as a visible root.
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    owner_node = iframe_doc->documentElement();
+  Node* owner_node = iframe_doc->documentElement();
   auto* iframe_layer = CcLayerByOwnerNodeId(owner_node);
   ASSERT_TRUE(iframe_layer);
   auto* iframe_transform_node = GetTransformNode(iframe_layer);
@@ -2033,11 +2024,6 @@ TEST_P(CompositingSimTest, SVGColorChangeUsesRepaintUpdate) {
 }
 
 TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
-  // Contents opaque is set in different places in CAP (PAC) vs pre-CAP (CLM)
-  // and we only want to test the PAC update here.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2073,11 +2059,6 @@ TEST_P(CompositingSimTest, ChangingOpaquenessRequiresFullUpdate) {
 }
 
 TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
-  // Contents opaque for text is set in different places in CAP (PAC) vs pre-CAP
-  // (CLM) and we only want to test the PAC update here.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2092,7 +2073,6 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
           padding: 5px;
           background: lightblue;
         }
-      }
       </style>
       <div id="target">
         <div id="textContainer">
@@ -2125,6 +2105,39 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
 }
 
+TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #target {
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+        }
+      </style>
+      <div id="target"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  EXPECT_FALSE(CcLayerByDOMElementId("target")->draws_content());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // A simple repaint change that causes Layer::DrawsContent to change still
+  // needs to cause a full update because it can affect whether mask layers are
+  // created.
+  auto* target = GetElementById("target");
+  target->setAttribute(html_names::kStyleAttr, "background: rgba(0,0,0,0.5)");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+  EXPECT_TRUE(CcLayerByDOMElementId("target")->draws_content());
+}
+
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
@@ -2135,8 +2148,8 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
   )HTML");
   Compositor().BeginFrame();
   auto* cc_layer = CcLayerByDOMElementId("target");
-  // In CompositeAfterPaint, we adjust visual rect of the DrawingDisplayItem
-  // with simple painting to the bounds of the painting.
+  // We adjust visual rect of the DrawingDisplayItem with simple painting to the
+  // bounds of the painting.
   EXPECT_EQ(gfx::Size(101, 10), cc_layer->bounds());
   EXPECT_TRUE(cc_layer->contents_opaque());
   EXPECT_TRUE(cc_layer->contents_opaque_for_text());
@@ -2153,23 +2166,12 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeComplexBg) {
   )HTML");
   Compositor().BeginFrame();
   auto* cc_layer = CcLayerByDOMElementId("target");
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(gfx::Size(105, 15), cc_layer->bounds());
-    EXPECT_FALSE(cc_layer->contents_opaque());
-  } else {
-    // Pre-CAP always pixel-snaps composited layer bounds, which might be
-    // incorrect in some corner cases where we don't pixel-snap painting.
-    EXPECT_EQ(gfx::Size(105, 14), cc_layer->bounds());
-    EXPECT_TRUE(cc_layer->contents_opaque());
-  }
+  EXPECT_EQ(gfx::Size(105, 15), cc_layer->bounds());
+  EXPECT_FALSE(cc_layer->contents_opaque());
   EXPECT_TRUE(cc_layer->contents_opaque_for_text());
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
-  // This test works only with the new text opaque algorithm.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; padding: 10px">
@@ -2183,10 +2185,6 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithBorderRadiusAndPadding) {
-  // This test works only with the new text opaque algorithm.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <div id="target" style="will-change: transform; border-radius: 5px;
@@ -2387,8 +2385,6 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
 }
 
 TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
   SimRequest top_resource("https://example.com/top.html", "text/html");
   SimRequest middle_resource("https://example.com/middle.html", "text/html");
   SimRequest bottom_resource("https://example.com/bottom.html", "text/html");
@@ -2416,12 +2412,13 @@ TEST_P(CompositingSimTest, DecompositeScrollerInHiddenIframe) {
                                           ->getElementById("scroller")
                                           ->GetLayoutObject());
   ASSERT_TRUE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+  EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
 
   // Hide the iframes. Scroller should be decomposited.
   GetDocument().getElementById("middle")->SetInlineStyleProperty(
       CSSPropertyID::kVisibility, CSSValueID::kHidden);
   Compositor().BeginFrame();
-  EXPECT_FALSE(scroller->GetScrollableArea()->NeedsCompositedScrolling());
+  EXPECT_FALSE(CcLayerByDOMElementId("scroller"));
 }
 
 TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
@@ -2497,9 +2494,6 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
 }
 
 TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>
       <style>
@@ -2587,7 +2581,7 @@ TEST_P(CompositingSimTest, CompositorAnimationOfOpacityHasPaintedContent) {
       <div id="animation"></div>
   )HTML");
   Compositor().BeginFrame();
-  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
 }
 
 TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
@@ -2611,7 +2605,82 @@ TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
   )HTML");
   Compositor().BeginFrame();
   EXPECT_TRUE(CcLayerByDOMElementId("animation"));
-  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
+}
+
+TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes anim {
+          0% { transform: rotateX(90deg); }
+          99% { transform: rotateX(90deg); }
+          100% { transform: rotateX(360deg); }
+        }
+        #animation {
+          animation-name: anim;
+          animation-duration: 999s;
+          transform-style: preserve-3d;
+          background: green;
+          width: 100px;
+          height: 100px;
+        }
+        #child {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50px;
+          height: 100px;
+          background: green;
+          will-change: transform;
+          transform: translateZ(16px);
+        }
+      </style>
+      <div id="animation">
+        <div id="child"></div>
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation"));
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
+  // Though #child is not initially visible, it should be painted because it can
+  // animate into view.
+  EXPECT_TRUE(CcLayerByDOMElementId("child"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child")->draws_content());
+}
+
+static String ImageFileAsDataURL(const String& filename) {
+  return "data:image/jpeg;base64," +
+         Base64Encode(test::ReadFromFile(test::CoreTestDataPath(filename))
+                          ->CopyAs<Vector<uint8_t>>());
+}
+
+TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffset) {
+  // The image is 100x50 with normal orientation.
+  InitializeWithHTML("<!DOCTYPE html><img id='image' src='" +
+                     ImageFileAsDataURL("exif-orientation-1-ul.jpg") +
+                     "' style='position: absolute; width: 400px; height: 800px;"
+                     "         top: 10.6px; will-change: top'>");
+  Compositor().BeginFrame();
+  auto* image_layer =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
+  ASSERT_TRUE(image_layer);
+  EXPECT_EQ(gfx::Vector2dF(0.25f, 0.0625f),
+            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
+}
+
+TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
+  // The image is 50x100 after transposed.
+  InitializeWithHTML("<!DOCTYPE html><img id='image' src='" +
+                     ImageFileAsDataURL("exif-orientation-5-lu.jpg") +
+                     "' style='position: absolute; width: 800px; height: 400px;"
+                     "         top: 10.6px; will-change: top'>");
+  Compositor().BeginFrame();
+  auto* image_layer =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
+  ASSERT_TRUE(image_layer);
+  EXPECT_EQ(gfx::Vector2dF(0.0625f, 0.25f),
+            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
 }
 
 }  // namespace blink

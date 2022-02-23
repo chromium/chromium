@@ -6,6 +6,8 @@
 
 #include <ole2.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 
 namespace ui {

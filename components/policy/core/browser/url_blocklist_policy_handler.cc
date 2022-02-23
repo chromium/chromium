@@ -14,12 +14,13 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -39,7 +40,7 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       errors->AddError(key::kDisabledSchemes, IDS_POLICY_TYPE_ERROR,
                        base::Value::GetTypeName(base::Value::Type::LIST));
     } else {
-      disabled_schemes_entries = disabled_schemes->GetList().size();
+      disabled_schemes_entries = disabled_schemes->GetListDeprecated().size();
     }
   }
 
@@ -56,17 +57,17 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (url_blocklist->GetList().size() + disabled_schemes_entries >
-      url_util::GetMaxFiltersPerPolicy()) {
+  if (url_blocklist->GetListDeprecated().size() + disabled_schemes_entries >
+      kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
-                     base::NumberToString(url_util::GetMaxFiltersPerPolicy()));
+                     base::NumberToString(kMaxUrlFiltersPerPolicy));
   }
 
   bool type_error = false;
   std::string policy;
   std::vector<std::string> invalid_policies;
-  for (const auto& policy_iter : url_blocklist->GetList()) {
+  for (const auto& policy_iter : url_blocklist->GetListDeprecated()) {
     if (!policy_iter.is_string()) {
       type_error = true;
       continue;
@@ -93,46 +94,42 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
   const base::Value* url_blocklist_policy = policies.GetValue(policy_name());
-  const base::ListValue* url_blocklist = nullptr;
-  if (url_blocklist_policy) {
-    url_blocklist_policy->GetAsList(&url_blocklist);
-  }
-
   const base::Value* disabled_schemes_policy =
       policies.GetValue(key::kDisabledSchemes);
-  const base::ListValue* disabled_schemes = nullptr;
-  if (disabled_schemes_policy)
-    disabled_schemes_policy->GetAsList(&disabled_schemes);
 
-  std::vector<base::Value> merged_url_blocklist;
+  absl::optional<std::vector<base::Value>> merged_url_blocklist;
 
   // We start with the DisabledSchemes because we have size limit when
   // handling URLBlocklists.
-  if (disabled_schemes) {
-    for (const auto& entry : disabled_schemes->GetList()) {
+  if (disabled_schemes_policy && disabled_schemes_policy->is_list()) {
+    merged_url_blocklist = std::vector<base::Value>();
+    for (const auto& entry : disabled_schemes_policy->GetListDeprecated()) {
       if (entry.is_string()) {
-        merged_url_blocklist.emplace_back(
+        merged_url_blocklist->emplace_back(
             base::StrCat({entry.GetString(), "://*"}));
       }
     }
   }
 
-  if (url_blocklist) {
-    for (const auto& entry : url_blocklist->GetList()) {
+  if (url_blocklist_policy && url_blocklist_policy->is_list()) {
+    if (!merged_url_blocklist)
+      merged_url_blocklist = std::vector<base::Value>();
+
+    for (const auto& entry : url_blocklist_policy->GetListDeprecated()) {
       if (entry.is_string())
-        merged_url_blocklist.push_back(entry.Clone());
+        merged_url_blocklist->push_back(entry.Clone());
     }
   }
 
-  if (disabled_schemes || url_blocklist) {
+  if (merged_url_blocklist) {
     prefs->SetValue(policy_prefs::kUrlBlocklist,
-                    base::Value(std::move(merged_url_blocklist)));
+                    base::Value(std::move(merged_url_blocklist.value())));
   }
 }
 
 bool URLBlocklistPolicyHandler::ValidatePolicy(const std::string& policy) {
-  url_util::FilterComponents components;
-  return url_util::FilterToComponents(
+  url_matcher::util::FilterComponents components;
+  return url_matcher::util::FilterToComponents(
       policy, &components.scheme, &components.host,
       &components.match_subdomains, &components.port, &components.path,
       &components.query);

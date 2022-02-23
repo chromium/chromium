@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -51,13 +52,12 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace offline_pages {
 
@@ -171,9 +171,11 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     observer_->OnReceiveResponse(std::move(response_head));
+    if (body)
+      OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -218,7 +220,7 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
  private:
   void OnMojoDisconnect() {}
 
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::URLLoaderCompletionStatus completion_status_;
@@ -283,7 +285,7 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void ReadBody();
   void ReadCompleted(const ResponseInfo& response);
 
-  OfflinePageRequestHandlerTest* test_;
+  raw_ptr<OfflinePageRequestHandlerTest> test_;
   std::unique_ptr<ChromeNavigationUIData> navigation_ui_data_;
   std::unique_ptr<OfflinePageURLLoader> url_loader_;
   std::unique_ptr<TestURLLoaderClient> client_;
@@ -432,23 +434,23 @@ class OfflinePageRequestHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  OfflinePageTabHelper* offline_page_tab_helper_;  // Not owned.
+  raw_ptr<OfflinePageTabHelper> offline_page_tab_helper_;  // Not owned.
   int64_t last_offline_id_;
   ResponseInfo response_;
   bool is_offline_page_set_in_navigation_data_;
   OfflinePageItem page_;
   OfflinePageHeader offline_page_header_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // OfflinePageTabHelper instantiates PrefetchService which in turn requests a
   // fresh GCM token automatically. This causes the request to be done
   // synchronously instead of with a posted task.
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting
       block_async_;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // These are not thread-safe. But they can be used in the pattern that
   // setting the state is done first from one thread and reading this state

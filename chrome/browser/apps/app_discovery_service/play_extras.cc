@@ -14,7 +14,8 @@ PlayExtras::PlayExtras(const std::string& package_name,
                        const GURL& content_rating_icon_url,
                        const bool has_in_app_purchases,
                        const bool was_previously_installed,
-                       const bool contains_ads)
+                       const bool contains_ads,
+                       const bool optimized_for_chrome)
     : package_name_(package_name),
       icon_url_(icon_url),
       category_(category),
@@ -23,7 +24,8 @@ PlayExtras::PlayExtras(const std::string& package_name,
       content_rating_icon_url_(content_rating_icon_url),
       has_in_app_purchases_(has_in_app_purchases),
       was_previously_installed_(was_previously_installed),
-      contains_ads_(contains_ads) {}
+      contains_ads_(contains_ads),
+      optimized_for_chrome_(optimized_for_chrome) {}
 
 PlayExtras::~PlayExtras() = default;
 
@@ -61,6 +63,10 @@ bool PlayExtras::GetWasPreviouslyInstalled() const {
 
 bool PlayExtras::GetContainsAds() const {
   return contains_ads_;
+}
+
+bool PlayExtras::GetOptimizedForChrome() const {
+  return optimized_for_chrome_;
 }
 
 PlayExtras* PlayExtras::AsPlayExtras() {

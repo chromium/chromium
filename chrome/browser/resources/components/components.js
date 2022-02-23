@@ -30,7 +30,23 @@ function renderTemplate(componentsData) {
   $('component-placeholder').appendChild(output);
   jstProcess(input, output);
   output.removeAttribute('hidden');
+
+  // <if expr="chromeos_ash or chromeos_lacros">
+  const crosUrlRedirectButton = $('os-link-href');
+  if (crosUrlRedirectButton) {
+    crosUrlRedirectButton.onclick = crosUrlComponentRedirect;
+  }
+// </if>
 }
+
+// <if expr="chromeos_ash or chromeos_lacros">
+/**
+ * Called when the user clicks on the os-link-href button.
+ */
+function crosUrlComponentRedirect() {
+  chrome.send('crosUrlComponentsRedirect');
+}
+// </if>
 
 /**
  * Asks the C++ ComponentsDOMHandler to get details about the installed
@@ -45,7 +61,8 @@ function requestComponentsData() {
  * current state of installed components. The componentsData will also be
  * stored in currentComponentsData to be available to JS for testing purposes.
  * @param {{
- *   components: !Array<!{name: string, version: string}>
+ *   components: !Array<!{name: string, version: string}>,
+ *   showOsLink: Boolean
  * }} componentsData Detailed info about installed components. The template
  * expects each component's format to match the following structure to correctly
  *     populate the page:
@@ -89,6 +106,11 @@ function returnComponentsData(componentsData) {
     document.querySelectorAll('[guest-disabled]').forEach(function(element) {
       element.disabled = true;
     });
+  }
+
+  const systemFlagsLinkDiv = $('os-link-container');
+  if (systemFlagsLinkDiv) {
+    systemFlagsLinkDiv.hidden = !componentsData.showOsLink;
   }
 
   bodyContainer.style.visibility = 'visible';

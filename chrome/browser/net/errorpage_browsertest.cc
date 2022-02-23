@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
@@ -99,9 +98,8 @@ namespace {
 // through all ancestors seeing if any of them is of class "hidden". Since it
 // relies on the hidden class used by network error pages, not suitable for
 // general use.
-bool WARN_UNUSED_RESULT
-IsDisplayingText(content::RenderFrameHost* render_frame_host,
-                 const std::string& text) {
+[[nodiscard]] bool IsDisplayingText(content::RenderFrameHost* render_frame_host,
+                                    const std::string& text) {
   // clang-format off
   std::string command = base::StringPrintf(R"(
     function isNodeVisible(node) {
@@ -120,8 +118,7 @@ IsDisplayingText(content::RenderFrameHost* render_frame_host,
   return content::EvalJs(render_frame_host, command).ExtractBool();
 }
 
-bool WARN_UNUSED_RESULT IsDisplayingText(Browser* browser,
-                                         const std::string& text) {
+[[nodiscard]] bool IsDisplayingText(Browser* browser, const std::string& text) {
   return IsDisplayingText(
       browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame(), text);
 }
@@ -134,7 +131,7 @@ void ToggleHelpBox(Browser* browser) {
 }
 
 // Returns true if the diagnostics link suggestion is displayed.
-bool WARN_UNUSED_RESULT IsDisplayingDiagnosticsLink(Browser* browser) {
+[[nodiscard]] bool IsDisplayingDiagnosticsLink(Browser* browser) {
   std::string command = base::StringPrintf(
       "var diagnose_link = document.getElementById('diagnose-link');"
       "diagnose_link != null;");
@@ -143,7 +140,7 @@ bool WARN_UNUSED_RESULT IsDisplayingDiagnosticsLink(Browser* browser) {
       .ExtractBool();
 }
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
 // For ChromeOS, launches appropriate diagnostics app.
 void ClickDiagnosticsLink(Browser* browser) {
   DCHECK(IsDisplayingDiagnosticsLink(browser));
@@ -483,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError) {
 }
 
 // This test fails regularly on win_rel trybots. See crbug.com/121540
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_IFrameDNSError_GoBack DISABLED_IFrameDNSError_GoBack
 #else
 #define MAYBE_IFrameDNSError_GoBack IFrameDNSError_GoBack
@@ -501,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, MAYBE_IFrameDNSError_GoBack) {
 // This test fails regularly on win_rel trybots. See crbug.com/121540
 //
 // This fails on linux_aura bringup: http://crbug.com/163931
-#if defined(OS_WIN) ||                                       \
-    ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#if BUILDFLAG(IS_WIN) ||                                       \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
      defined(USE_AURA))
 #define MAYBE_IFrameDNSError_GoBackAndForward DISABLED_IFrameDNSError_GoBackAndForward
 #else
@@ -668,6 +665,10 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](int32_t requests_to_fail, int32_t* requests, int32_t* failures,
                content::URLLoaderInterceptor::RequestParams* params) {
+              if (params->url_request.url.host().find("googleapis.com") !=
+                  std::string::npos) {
+                return false;
+              }
               if (params->url_request.url.path() == "/searchdomaincheck")
                 return false;
               if (params->url_request.url.path() == "/favicon.ico")
@@ -736,7 +737,7 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
 };
 
 // Fails on official mac_trunk build. See crbug.com/465789.
-#if defined(OFFICIAL_BUILD) && defined(OS_MAC)
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_MAC)
 #define MAYBE_AutoReload DISABLED_AutoReload
 #else
 #define MAYBE_AutoReload AutoReload
@@ -841,7 +842,7 @@ class ErrorPageOfflineTest : public ErrorPageTest {
                      base::Value(value_of_allow_dinosaur_easter_egg_), nullptr);
     }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     SetEnterpriseUsersProfileDefaults(&policy_map);
 #endif
 
@@ -907,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTestWithAllowDinosaurFalse,
   EXPECT_EQ(disabled_text, result);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineTest, CheckEasterEggIsDisabled) {
   std::string result = NavigateToPageAndReadText();
   std::string disabled_text =
@@ -1070,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_RESPONSE);
 }
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS "Running Connectivity Diagnostics" link on error page should
 // launch chrome://diagnostics/?connectivity app by default. Not running test on
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
@@ -1082,14 +1083,8 @@ class ErrorPageOfflineAppLaunchTest
       : web_app::SystemWebAppBrowserTestBase(true) {}
 };
 
-// TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DiagnosticsConnectivity DISABLED_DiagnosticsConnectivity
-#else
-#define MAYBE_DiagnosticsConnectivity DiagnosticsConnectivity
-#endif
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
-                       MAYBE_DiagnosticsConnectivity) {
+                       DISABLED_DiagnosticsConnectivity) {
   WaitForTestSystemAppInstall();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
@@ -1105,6 +1100,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
   EXPECT_EQ(GURL("chrome://diagnostics/?connectivity"),
             contents->GetVisibleURL());
 }
-#endif  // defined(OS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
 
 }  // namespace

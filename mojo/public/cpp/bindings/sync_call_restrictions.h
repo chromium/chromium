@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SYNC_CALL_RESTRICTIONS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
@@ -24,7 +23,7 @@ namespace content {
 class AndroidOverlaySyncHelper;
 class DesktopCapturerLacros;
 class StreamTextureFactory;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class DCOMPTextureFactory;
 #endif
 }  // namespace content
@@ -117,7 +116,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class gpu::GpuChannelHost;
   friend class gpu::CommandBufferProxyImpl;
   friend class content::StreamTextureFactory;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   friend class content::DCOMPTextureFactory;
 #endif
   // END ALLOWED USAGE.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/shell/browser/shell_web_contents_view_delegate.h"
 
 #include <memory>
@@ -53,7 +54,7 @@ class ContextMenuModel : public ui::SimpleMenuModel,
  private:
   enum CommandID { COMMAND_OPEN_DEVTOOLS };
 
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
   ContextMenuParams params_;
 };
 

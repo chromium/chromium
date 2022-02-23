@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -84,7 +84,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWinrt
           write_result);
 
   // Weak. This object is owned by |characteristic_|.
-  BluetoothRemoteGattCharacteristic* characteristic_;
+  raw_ptr<BluetoothRemoteGattCharacteristic> characteristic_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                              GenericAttributeProfile::IGattDescriptor>
       descriptor_;

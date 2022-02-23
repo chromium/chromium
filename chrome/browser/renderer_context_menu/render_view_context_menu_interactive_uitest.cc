@@ -37,7 +37,7 @@ class ContextMenuUiTest : public InProcessBrowserTest {
 // The test is compiled out on Mac, because RenderViewContextMenuMacCocoa::Show
 // requires running a nested message loop - this would undesirably yield control
 // over the next steps to the OS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
                        ContextMenuNavigationToAboutBlankUrlInSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -104,4 +104,4 @@ IN_PROC_BROWSER_TEST_F(ContextMenuUiTest,
   EXPECT_EQ(new_web_contents->GetMainFrame()->GetSiteInstance(),
             subframe->GetSiteInstance());
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

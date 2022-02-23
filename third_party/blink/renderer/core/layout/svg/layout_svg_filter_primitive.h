@@ -64,9 +64,9 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     NOT_DESTROYED();
     return gfx::RectF();
   }
-  FloatRect LocalBoundingBoxRectForAccessibility() const override {
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override {
     NOT_DESTROYED();
-    return FloatRect();
+    return gfx::RectF();
   }
 };
 

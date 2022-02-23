@@ -13,10 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,8 @@ import java.util.List;
  * The contact details section of the Autofill Assistant payment request.
  */
 public class AssistantContactDetailsSection extends AssistantCollectUserDataSection<ContactModel> {
-    private ContactEditor mEditor;
+    @Nullable
+    private AssistantContactEditor mEditor;
     private boolean mIgnoreProfileChangeNotifications;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mSummaryOptions;
     private AssistantCollectUserDataModel.ContactDescriptionOptions mFullOptions;
@@ -39,27 +41,40 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
                 context.getString(R.string.payments_add_contact));
     }
 
-    public void setEditor(ContactEditor editor) {
+    public void setEditor(@Nullable AssistantContactEditor editor) {
         mEditor = editor;
         if (mEditor == null) {
             return;
         }
 
         for (ContactModel item : getItems()) {
-            addAutocompleteInformationToEditor(item.mOption);
+            mEditor.addContactInformationForAutocomplete(item.mOption);
         }
     }
 
     @Override
     protected void createOrEditItem(@Nullable ContactModel oldItem) {
-        if (mEditor != null) {
-            mEditor.edit(oldItem == null ? null : oldItem.mOption, contact -> {
-                assert (contact != null && contact.isComplete());
-                mIgnoreProfileChangeNotifications = true;
-                addOrUpdateItem(new ContactModel(contact), /* select= */ true, /* notify= */ true);
-                mIgnoreProfileChangeNotifications = false;
-            }, cancel -> {});
+        if (mEditor == null) {
+            return;
         }
+
+        Callback<ContactModel> doneCallback = editedItem -> {
+            if (shouldReloadOnChange()) {
+                notifyDataChanged(editedItem,
+                        oldItem == null ? AssistantUserDataEventType.ENTRY_CREATED
+                                        : AssistantUserDataEventType.ENTRY_EDITED);
+                return;
+            }
+
+            mIgnoreProfileChangeNotifications = true;
+            addOrUpdateItem(editedItem,
+                    /* select= */ true, /* notify= */ true);
+            mIgnoreProfileChangeNotifications = false;
+        };
+
+        Callback<ContactModel> cancelCallback = ignoredItem -> {};
+
+        mEditor.createOrEditItem(oldItem, doneCallback, cancelCallback);
     }
 
     @Override
@@ -118,18 +133,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         if (modelA == null || modelB == null) {
             return modelA == modelB;
         }
-        AutofillContact optionA = modelA.mOption;
-        AutofillContact optionB = modelB.mOption;
-        if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
-            return true;
-        }
-        if (optionA.getProfile() == null || optionB.getProfile() == null) {
-            return optionA.getProfile() == optionB.getProfile();
-        }
-        if (TextUtils.equals(optionA.getProfile().getGUID(), optionB.getProfile().getGUID())) {
-            return true;
-        }
-        return optionA.isEqualOrSupersetOf(optionB) && optionB.isEqualOrSupersetOf(optionA);
+        return TextUtils.equals(modelA.mOption.getGUID(), modelB.mOption.getGUID());
     }
 
     /**
@@ -168,16 +172,10 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
     @Override
     protected void addOrUpdateItem(ContactModel model, boolean select, boolean notify) {
         super.addOrUpdateItem(model, select, notify);
-        addAutocompleteInformationToEditor(model.mOption);
-    }
 
-    private void addAutocompleteInformationToEditor(AutofillContact contact) {
-        if (mEditor == null || contact == null) {
-            return;
+        if (mEditor != null) {
+            mEditor.addContactInformationForAutocomplete(model.mOption);
         }
-        mEditor.addEmailAddressIfValid(contact.getPayerEmail());
-        mEditor.addPayerNameIfValid(contact.getPayerName());
-        mEditor.addPhoneNumberIfValid(contact.getPayerPhone());
     }
 
     /**
@@ -185,7 +183,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
      */
     private String createContactDescription(
             AssistantCollectUserDataModel.ContactDescriptionOptions options,
-            AutofillContact contact) {
+            AssistantAutofillProfile contact) {
         List<String> descriptionLines = new ArrayList<>();
         for (int i = 0;
                 i < options.mFields.length && descriptionLines.size() < options.mMaxNumberLines;
@@ -193,13 +191,13 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
             String line = "";
             switch (options.mFields[i]) {
                 case AssistantContactField.NAME_FULL:
-                    line = contact.getPayerName();
+                    line = contact.getFullName();
                     break;
                 case AssistantContactField.EMAIL_ADDRESS:
-                    line = contact.getPayerEmail();
+                    line = contact.getEmailAddress();
                     break;
                 case AssistantContactField.PHONE_HOME_WHOLE_NUMBER:
-                    line = contact.getPayerPhone();
+                    line = contact.getPhoneNumber();
                     break;
                 default:
                     assert false : "profile field not handled";

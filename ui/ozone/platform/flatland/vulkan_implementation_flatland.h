@@ -9,7 +9,7 @@
 
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "ui/ozone/public/mojom/scenic_gpu_host.mojom.h"
+#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
 
 namespace ui {
 

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/dbus/use_real_dbus_clients.gni")
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
@@ -29,12 +29,12 @@ component("drivefs") {
     ]
   }
   deps = [
+    "//ash/components/disks",
     "//ash/components/drivefs/mojom",
     "//ash/constants",
     "//base",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus",
-    "//chromeos/disks",
     "//components/account_id",
     "//components/drive",
     "//components/signin/public/identity_manager",
@@ -80,11 +80,11 @@ source_set("unit_tests") {
   deps = [
     ":drivefs",
     ":test_support",
+    "//ash/components/disks:test_support",
     "//ash/components/drivefs/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/disks:test_support",
     "//components/account_id",
     "//components/drive",
     "//components/invalidation/impl:test_support",

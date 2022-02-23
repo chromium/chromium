@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefRegistrySimple;
@@ -110,7 +111,7 @@ class SafeSeedManager {
 
   // The pref service used to persist the variations seed. Weak reference; must
   // outlive |this| instance.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace variations

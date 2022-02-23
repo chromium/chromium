@@ -112,7 +112,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   // Use |presentation_id| as the route ID. This MRP creates only one route per
   // presentation ID.
   MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
-                   GetRouteDescription(media_source), true, true);
+                   GetRouteDescription(media_source), true);
   route.set_local_presentation(true);
   route.set_off_the_record(profile_->IsOffTheRecord());
   route.set_controller_type(RouteControllerType::kGeneric);
@@ -138,21 +138,6 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
   std::move(callback).Run(
       absl::nullopt, nullptr,
       std::string("Join should be handled by the presentation manager"),
-      RouteRequestResult::UNKNOWN_ERROR);
-}
-
-void WiredDisplayMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool off_the_record,
-    ConnectRouteByRouteIdCallback callback) {
-  std::move(callback).Run(
-      absl::nullopt, nullptr,
-      std::string("Connect should be handled by the presentation manager"),
       RouteRequestResult::UNKNOWN_ERROR);
 }
 
@@ -203,18 +188,12 @@ void WiredDisplayMediaRouteProvider::StopObservingMediaSinks(
   sink_queries_.erase(media_source);
 }
 
-void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.insert(media_source);
+void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  media_router_->OnRoutesUpdated(kProviderId, route_list, media_source, {});
-}
 
-void WiredDisplayMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  route_queries_.erase(media_source);
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::StartListeningForRouteMessages(
@@ -342,8 +321,8 @@ void WiredDisplayMediaRouteProvider::NotifyRouteObservers() const {
   std::vector<MediaRoute> route_list;
   for (const auto& presentation : presentations_)
     route_list.push_back(presentation.second.route());
-  for (const auto& route_query : route_queries_)
-    media_router_->OnRoutesUpdated(kProviderId, route_list, route_query, {});
+
+  media_router_->OnRoutesUpdated(kProviderId, route_list);
 }
 
 void WiredDisplayMediaRouteProvider::NotifySinkObservers() {

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Neues Fenster im Inkognitomodus öffnen</translation>
 <translation id="152892567002884378">Lauter</translation>
 <translation id="1560480564179555003">"<ph name="SHIFT" />" <ph name="SEPARATOR1" /> "<ph name="ALT" />" <ph name="SEPARATOR2" /> "<ph name="L" />", dann "<ph name="ESC" />"</translation>
+<translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
 <translation id="1652741121070700329">Zum Anfang des vorherigen Wortes springen</translation>
 <translation id="1679841710523778799">Helligkeit erhöhen</translation>
 <translation id="168356808214100546">"<ph name="ALT" />" gedrückt halten und "<ph name="TAB" />" drücken, bis das gewünschte Fenster angezeigt wird, dann loslassen.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">"<ph name="CTRL" />" <ph name="SEPARATOR" /> "<ph name="SHIFT" />" gedrückt halten und auf einen Link klicken</translation>
 <translation id="561814908794220892">Webseite in einem neuen Tab öffnen</translation>
 <translation id="5620219513321115856">Aktives Fenster in nächsten Desktop rechts verschieben</translation>
+<translation id="5699366815052349604">Aktives Fenster allen Desktops zuweisen</translation>
 <translation id="5710621673935162997">"<ph name="CTRL" />" <ph name="SEPARATOR1" /> "<ph name="L" />" oder "<ph name="ALT" />" <ph name="SEPARATOR2" /> "<ph name="D" />"</translation>
 <translation id="5757111373163288447">Link in dem Tab öffnen</translation>
 <translation id="5757474750054631686">Tastatur dimmen (nur für beleuchtete Tastaturen)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">Tab zur Ausgangsposition zurückschieben</translation>
 <translation id="6474744297082284761">Herauszoomen (mit angedockter oder Vollbildlupe)</translation>
 <translation id="649811797655257835">Datei auswählen und dann "<ph name="SPACE" />" drücken</translation>
+<translation id="6515089016094047210">Kalender-Widget öffnen oder schließen.</translation>
 <translation id="6551886416582667425">Screenshot/Aufzeichnung eines Bildschirmausschnitts erstellen</translation>
 <translation id="6556040137485212400">Das Fenster öffnen, das am längsten nicht genutzt wurde</translation>
 <translation id="666343722268997814">Kontextmenü für markierte Inhalte öffnen</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">Verborgene Dateien in der App "Dateien" anzeigen</translation>
 <translation id="8717459106217102612">Vorheriges Wort oder vorherigen Buchstaben markieren</translation>
 <translation id="8727232706774971183">Benachrichtigungen ansehen</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 bis 8</translation>
 <translation id="8855885154700222542">Taste für Vollbildmodus</translation>
 <translation id="8881584919399569791">Aktives Fenster in nächsten Desktop links verschieben</translation>
 <translation id="88986195241502842">Bildlauf nach unten</translation>

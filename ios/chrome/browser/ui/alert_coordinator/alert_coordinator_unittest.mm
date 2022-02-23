@@ -8,6 +8,7 @@
 
 #import "base/mac/foundation_util.h"
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #include "testing/platform_test.h"
@@ -26,8 +27,9 @@
 class AlertCoordinatorTest : public PlatformTest {
  protected:
   AlertCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     view_controller_ = [[UIViewController alloc] init];
-    browser_ = std::make_unique<TestBrowser>();
     [scoped_key_window_.Get() setRootViewController:view_controller_];
   }
 
@@ -52,11 +54,11 @@ class AlertCoordinatorTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   AlertCoordinator* alert_coordinator_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
-  std::unique_ptr<Browser> browser_;
 };
 
 #pragma mark - Tests.

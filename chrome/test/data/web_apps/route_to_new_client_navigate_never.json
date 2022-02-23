@@ -1,0 +1,9 @@
+{
+  "name": "route_to: new-client, navigate_existing_client: never",
+  "start_url": "basic.html?route_to=new-client&navigate=never",
+  "display": "standalone",
+  "launch_handler": {
+    "route_to": "new-client",
+    "navigate_existing_client": "never"
+  }
+}

@@ -5,8 +5,7 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 
-#include "base/stl_util.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -21,13 +20,14 @@ enum class EndpointType {
   kUrl = 1,      // Website URL e.g. www.example.com.
   kClipboardHistory = 2,  // Clipboard History UI has privileged access to any
                           // clipboard data.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   kUnknownVm = 3,  // The VM type is not identified.
   kArc = 4,        // ARC.
   kBorealis = 5,   // Borealis OS.
   kCrostini = 6,   // Crostini.
-  kPluginVm = 7    // Plugin VM App.
-#endif             // BUILDFLAG(IS_CHROMEOS_ASH)
+  kPluginVm = 7,   // Plugin VM App.
+  kLacros = 8,     // Lacros browser.
+#endif             // BUILDFLAG(IS_CHROMEOS)
 };
 
 // DataTransferEndpoint represents:
@@ -41,6 +41,8 @@ enum class EndpointType {
 // if the data read is not allowed.)
 class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
  public:
+  // In case DataTransferEndpoint is constructed from a RenderFrameHost object,
+  // please use the origin of its main frame.
   explicit DataTransferEndpoint(const url::Origin& origin,
                                 bool notify_if_restricted = true);
   // This constructor shouldn't be used if |type| == EndpointType::kUrl.
@@ -62,7 +64,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   bool IsUrlType() const { return type_ == EndpointType::kUrl; }
 
-  const url::Origin* origin() const { return base::OptionalOrNullptr(origin_); }
+  const url::Origin* GetOrigin() const;
 
   EndpointType type() const { return type_; }
 

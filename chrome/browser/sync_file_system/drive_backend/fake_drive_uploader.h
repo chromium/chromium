@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
@@ -81,7 +82,7 @@ class FakeDriveUploader : public drive::DriveUploaderInterface {
   void set_make_file_conflict(bool enable) { make_file_conflict_ = enable; }
 
  private:
-  FakeDriveServiceWrapper* fake_drive_service_;
+  raw_ptr<FakeDriveServiceWrapper> fake_drive_service_;
   bool make_file_conflict_;
 };
 

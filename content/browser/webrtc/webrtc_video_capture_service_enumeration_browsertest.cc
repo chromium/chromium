@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoCaptureServiceEnumerationBrowserTest,
 
 // The mediadevices.ondevicechange event is currently not supported on Android.
 // Flaky on ChromeOS.  https://crbug.com/1126373
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange \
   DISABLED_AddingAndRemovingVirtualDeviceTriggersMediaElementOnDeviceChange

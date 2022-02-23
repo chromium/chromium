@@ -23,13 +23,10 @@
   httpInterceptor.addResponse('http://www.example.com/3',
       '<p>Pass</p>');
 
-  await virtualTimeController.grantInitialTime(1000, 1000,
-    null,
-    async () => {
-      testRunner.log(await session.evaluate('document.body.innerHTML'));
-      testRunner.completeTest();
-    }
-  );
-
+  await virtualTimeController.initialize(1000);
   await frameNavigationHelper.navigate('http://www.example.com/');
+  await virtualTimeController.grantTime(1000);
+
+  testRunner.log(await session.evaluate('document.body.innerHTML'));
+  testRunner.completeTest();
 })

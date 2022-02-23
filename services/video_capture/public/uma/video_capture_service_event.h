@@ -29,7 +29,7 @@ enum VideoCaptureServiceEvent {
   NUM_VIDEO_CAPTURE_SERVICE_EVENT
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 enum MacbookRetryGetDeviceInfosEvent {
   PROVIDER_RECEIVED_ZERO_INFOS_STOPPING_SERVICE = 0,
   PROVIDER_SERVICE_STOPPED_ISSUING_RETRY = 1,
@@ -61,7 +61,7 @@ void LogDurationFromLastConnectToConnectionLost(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterEnumerationOnly(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event);
 #endif
 

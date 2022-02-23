@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // The handler that exposes the APIs to interact with Phone Hub Notification.
@@ -37,13 +37,6 @@ class NotificationInteractionHandler {
   base::ObserverList<NotificationClickHandler> handler_list_;
 };
 
-}  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::NotificationInteractionHandler;
 }  // namespace phonehub
 }  // namespace ash
 

@@ -19,15 +19,13 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.app.download.home.DownloadActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.download.DownloadActivity;
 import org.chromium.chrome.browser.download.DownloadManagerService;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,7 +35,6 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.widget.Toast;
 
 /**
  * Serves as an interface between Download Home UI and offline page related items that are to be
@@ -183,15 +180,9 @@ public class OfflinePageDownloadBridge {
      */
     @CalledByNative
     public static void showDownloadingToast() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) {
-            DownloadManagerService.getDownloadManagerService()
-                    .getInfoBarController(/*otrProfileID=*/null)
-                    .onDownloadStarted();
-        } else {
-            Toast.makeText(ContextUtils.getApplicationContext(), R.string.download_started,
-                         Toast.LENGTH_SHORT)
-                    .show();
-        }
+        DownloadManagerService.getDownloadManagerService()
+                .getMessageUiController(/*otrProfileID=*/null)
+                .onDownloadStarted();
     }
 
     /**

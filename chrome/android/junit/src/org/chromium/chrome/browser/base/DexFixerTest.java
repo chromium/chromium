@@ -33,7 +33,6 @@ import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -45,7 +44,7 @@ import java.io.IOException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O_MR1,
-        shadows = {ShadowRecordHistogram.class, DexFixerTest.ShadowOs.class})
+        shadows = {DexFixerTest.ShadowOs.class})
 public class DexFixerTest {
     @Implements(Os.class)
     public static class ShadowOs {
@@ -72,23 +71,7 @@ public class DexFixerTest {
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
         DexFixer.setHasIsolatedSplits(false);
-    }
-
-    private static int getReason() {
-        int ret = -1;
-        for (int i = 0; i < DexFixerReason.COUNT; ++i) {
-            int count =
-                    ShadowRecordHistogram.getHistogramValueCountForTesting("Android.DexFixer", i);
-            if (count > 0) {
-                assertThat(count).isEqualTo(1);
-                assertThat(ret).isEqualTo(-1);
-                ret = i;
-            }
-        }
-        assertThat(ret).isNotEqualTo(-1);
-        return ret;
     }
 
     private void verifyDexOpt() {
@@ -102,30 +85,31 @@ public class DexFixerTest {
 
     @Test
     public void testFixDexIfNecessary_notNeeded() {
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.NOT_NEEDED);
+        @DexFixerReason
+        int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.NOT_NEEDED);
         verifyNoMoreInteractions(mMockRuntime);
     }
 
     @Test
     public void testFixDexIfNecessary_notReadable() {
         ShadowOs.sWorldReadable = false;
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.NOT_READABLE);
+        @DexFixerReason
+        int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.NOT_READABLE);
         verifyDexOpt();
     }
 
     @Test
     public void testFixDexIfNecessary_update() {
         DexFixer.setHasIsolatedSplits(true);
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.O_MR1_AFTER_UPDATE);
+        @DexFixerReason
+        int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.O_MR1_AFTER_UPDATE);
         verifyDexOpt();
 
-        // Second time should be okay.
-        ShadowRecordHistogram.reset();
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.NOT_NEEDED);
+        reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.NOT_NEEDED);
         verifyNoMoreInteractions(mMockRuntime);
     }
 
@@ -140,8 +124,9 @@ public class DexFixerTest {
                 BuildInfo.getInstance().versionCode);
 
         ShadowDexFile.setIsDexOptNeeded(true);
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.O_MR1_CORRUPTED);
+        @DexFixerReason
+        int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.O_MR1_CORRUPTED);
         verifyDexOpt();
     }
 
@@ -155,8 +140,9 @@ public class DexFixerTest {
                 ChromePreferenceKeys.ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 BuildInfo.getInstance().versionCode);
 
-        DexFixer.fixDexIfNecessary(mMockRuntime);
-        assertThat(getReason()).isEqualTo(DexFixerReason.NOT_READABLE);
+        @DexFixerReason
+        int reason = DexFixer.fixDexIfNecessary(mMockRuntime);
+        assertThat(reason).isEqualTo(DexFixerReason.NOT_READABLE);
         verifyDexOpt();
     }
 }

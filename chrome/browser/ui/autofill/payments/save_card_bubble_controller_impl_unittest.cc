@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -106,8 +107,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
       const std::string& message_json,
       AutofillClient::SaveCreditCardOptions options =
           AutofillClient::SaveCreditCardOptions().with_show_prompt()) {
-    std::unique_ptr<base::Value> value(
-        base::JSONReader::ReadDeprecated(message_json));
+    absl::optional<base::Value> value(base::JSONReader::Read(message_json));
     ASSERT_TRUE(value);
     base::DictionaryValue* dictionary;
     ASSERT_TRUE(value->GetAsDictionary(&dictionary));
@@ -166,7 +166,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   TestAutofillClock test_clock_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
  private:
   static void UploadSaveCardCallback(
@@ -275,12 +275,13 @@ struct SaveCardOptionParam {
   bool has_non_focusable_field;
   bool should_request_name_from_user;
   bool should_request_expiration_date_from_user;
+  bool has_multiple_legal_lines;
 };
 
 const SaveCardOptionParam kSaveCardOptionParam[] = {
-    {false, false, false, false}, {true, false, false, false},
-    {false, true, false, false},  {false, false, true, false},
-    {false, false, false, true},
+    {false, false, false, false, false}, {true, false, false, false, false},
+    {false, true, false, false, false},  {false, false, true, false, false},
+    {false, false, false, true, false},  {false, false, false, false, true},
 };
 
 // Param of the SaveCardBubbleSingletonTestData:
@@ -307,8 +308,9 @@ class SaveCardBubbleLoggingTest
             .with_should_request_name_from_user(
                 save_card_option_param.should_request_name_from_user)
             .with_should_request_expiration_date_from_user(
-                save_card_option_param
-                    .should_request_expiration_date_from_user);
+                save_card_option_param.should_request_expiration_date_from_user)
+            .with_has_multiple_legal_lines(
+                save_card_option_param.has_multiple_legal_lines);
   }
 
   ~SaveCardBubbleLoggingTest() override = default;

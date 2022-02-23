@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #import "ios/web/public/web_state_user_data.h"
 

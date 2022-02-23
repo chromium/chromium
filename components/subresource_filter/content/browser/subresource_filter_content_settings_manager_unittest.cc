@@ -213,7 +213,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
 
   // Verify metadata was actually persisted on site activation false.
   auto dict = settings_manager()->GetSiteMetadata(url);
-  EXPECT_TRUE(dict->HasKey(kTestKey));
+  EXPECT_TRUE(dict->FindKey(kTestKey));
 }
 
 // TODO(https://crbug.com/1113967): Remove test once ability to persist metadata
@@ -240,7 +240,7 @@ TEST_F(SubresourceFilterContentSettingsManagerTest,
       SubresourceFilterContentSettingsManager::ActivationSource::kSafeBrowsing);
   EXPECT_FALSE(settings_manager()->GetSiteActivationFromMetadata(url));
   auto dict = settings_manager()->GetSiteMetadata(url);
-  EXPECT_TRUE(dict->HasKey(kTestKey));
+  EXPECT_TRUE(dict->FindKey(kTestKey));
 }
 
 // Verifies that the site activation status is True when there is

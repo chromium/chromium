@@ -16,15 +16,16 @@ class NavigationItemImpl;
 // Class that can serialize and deserialize NavigationItems.
 class NavigationItemStorageBuilder {
  public:
-  // Returns approximate sizes of the given |navigation_item| without building
-  // storage. Only string sizes are added.
-  int ItemStoredSize(const NavigationItemImpl* navigation_item) const;
   // Creates a serialized NavigationItem from |navigation_item|.
-  CRWNavigationItemStorage* BuildStorage(
-      const NavigationItemImpl* navigation_item) const;
+  static CRWNavigationItemStorage* BuildStorage(
+      const NavigationItemImpl& navigation_item);
+
   // Creates a NavigationItem from |navigation_item_storage|.
-  std::unique_ptr<NavigationItemImpl> BuildNavigationItemImpl(
-      CRWNavigationItemStorage* navigation_item_storage) const;
+  static std::unique_ptr<NavigationItemImpl> BuildNavigationItemImpl(
+      CRWNavigationItemStorage* navigation_item_storage);
+
+  NavigationItemStorageBuilder() = delete;
+  ~NavigationItemStorageBuilder() = delete;
 };
 
 }  // namespace web

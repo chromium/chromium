@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -25,7 +27,7 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
     virtual ~PreferenceManager() = default;
   };
 
-  static BackgroundStartupTracingObserver* GetInstance();
+  static BackgroundStartupTracingObserver& GetInstance();
 
   BackgroundStartupTracingObserver(const BackgroundStartupTracingObserver&) =
       delete;
@@ -65,6 +67,9 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
   bool enabled_in_current_session_;
 
   std::unique_ptr<PreferenceManager> preferences_;
+
+  // For `BackgroundStartupTracingObserver::GetInstance`.
+  friend class base::NoDestructor<BackgroundStartupTracingObserver>;
 };
 
 }  // namespace content

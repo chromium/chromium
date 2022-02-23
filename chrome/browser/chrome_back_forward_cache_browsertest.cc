@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
                        DoesNotCacheIfWebShare) {
   // HTTPS needed for WebShare permission.

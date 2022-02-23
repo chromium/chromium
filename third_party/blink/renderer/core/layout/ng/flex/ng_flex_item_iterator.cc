@@ -10,8 +10,11 @@
 namespace blink {
 
 NGFlexItemIterator::NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
-                                       const NGBlockBreakToken* break_token)
-    : flex_lines_(flex_lines), break_token_(break_token) {
+                                       const NGBlockBreakToken* break_token,
+                                       bool is_horizontal_flow)
+    : flex_lines_(flex_lines),
+      break_token_(break_token),
+      is_horizontal_flow_(is_horizontal_flow) {
   if (flex_lines_.size()) {
     DCHECK(flex_lines_[0].line_items.size());
     next_unstarted_item_ =
@@ -37,8 +40,8 @@ NGFlexItemIterator::NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
 NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
   const NGBlockBreakToken* current_child_break_token = nullptr;
   NGFlexItem* current_item = next_unstarted_item_;
-  wtf_size_t current_item_idx = flex_item_idx_ - 1;
-  wtf_size_t current_line_idx = flex_line_idx_;
+  wtf_size_t current_item_idx = 0;
+  wtf_size_t current_line_idx = 0;
 
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume
@@ -50,18 +53,38 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
           To<NGBlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
+      DCHECK(current_child_break_token);
       current_item = FindNextItem(current_child_break_token);
+
+      current_item_idx = flex_item_idx_ - 1;
+      current_line_idx = flex_line_idx_;
 
       if (child_token_idx_ == child_break_tokens.size()) {
         // We reached the last child break token. Prepare for the next unstarted
         // sibling, and forget the parent break token.
-        if (!break_token_->HasSeenAllChildren())
+        if (is_horizontal_flow_ && flex_item_idx_ != 0 &&
+            !current_child_break_token->IsBreakBefore()) {
+          // All flex items in a row are processed before moving to the next
+          // fragmentainer, unless the item broke before. If the current item in
+          // the row has a break token (and did not break before), but the next
+          // item in the row doesn't, that means the next item has already
+          // finished layout. In this case, move to the next row.
+          //
+          // If an item broke before, then that means that the entire row broke
+          // before, so continue processing items in the current row.
+          flex_line_idx_++;
+          flex_item_idx_ = 0;
+          next_unstarted_item_ = FindNextItem();
+        } else if (!break_token_->HasSeenAllChildren())
           next_unstarted_item_ = FindNextItem();
         break_token_ = nullptr;
       }
     }
-  } else if (next_unstarted_item_) {
-    next_unstarted_item_ = FindNextItem();
+  } else {
+    current_item_idx = flex_item_idx_ - 1;
+    current_line_idx = flex_line_idx_;
+    if (next_unstarted_item_)
+      next_unstarted_item_ = FindNextItem();
   }
 
   return Entry(current_item, current_item_idx, current_line_idx,

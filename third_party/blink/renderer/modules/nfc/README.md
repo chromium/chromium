@@ -11,7 +11,7 @@ implementation are located in `services/device/nfc`.
 
 ## Testing
 
-Web NFC is primarily tested in [Web Platform Tests](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/web_tests/external/wpt/web-nfc/).
+Web NFC is primarily tested in [Web Platform Tests](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/web-nfc/).
 
 
 ## Design Documents

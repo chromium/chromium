@@ -31,7 +31,7 @@ import org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator.Layo
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -42,7 +42,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-public class PromoCardViewRenderTest extends DummyUiActivityTestCase {
+public class PromoCardViewRenderTest extends BlankUiTestActivityTestCase {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -51,7 +51,7 @@ public class PromoCardViewRenderTest extends DummyUiActivityTestCase {
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
 
     public PromoCardViewRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 

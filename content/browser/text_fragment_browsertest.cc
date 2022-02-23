@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   // be recreated with did_scroll == false. Disable back/forward cache to ensure
   // that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(
-      main_contents, BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+      main_contents, BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
 
   {
     // The RenderFrameSubmissionObserver destructor expects the RenderFrameHost
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(ForceLoadAtTopBrowserTest, ScrollRestorationDisabled) {
   // so that the document policy to force-load-at-top will run. This will not
   // happen if the document is back-forward cached, so we need to disable it.
   DisableBackForwardCacheForTesting(main_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Scroll down the page a bit
   EXPECT_TRUE(ExecJs(main_contents, "window.scrollTo(0, 1000)"));

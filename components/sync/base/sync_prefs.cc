@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -22,18 +23,17 @@ namespace syncer {
 
 namespace {
 
-// Obsolete pref that used to store whether a platform specific passphrase error
-// prompt has been shown to the user (e.g. an Android system notification).
-const char kObsoleteSyncPassphrasePrompted[] = "sync.passphrase_prompted";
-
-// Obsolete pref that used to store the product version from the last restart of
-// Chrome.
-const char kObsoleteSyncLastRunVersion[] = "sync.last_run_version";
-
 // Obsolete pref that used to store if sync should be prevented from
 // automatically starting up. This is now replaced by its inverse
 // kSyncRequested.
 const char kSyncSuppressStart[] = "sync.suppress_start";
+
+#if BUILDFLAG(IS_ANDROID)
+// Obsolete pref that used to store whether sync should no longer respect the
+// state of the master toggle for this user. This is now always the case.
+const char kObsoleteSyncDecoupledFromAndroidMasterSync[] =
+    "sync.decoupled_from_master_sync";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -77,7 +77,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(prefs::kOsSyncPrefsMigrated, false);
-  registry->RegisterBooleanPref(prefs::kOsSyncFeatureEnabled, false);
   registry->RegisterBooleanPref(prefs::kSyncAllOsTypes, true);
   registry->RegisterBooleanPref(prefs::kSyncOsApps, false);
   registry->RegisterBooleanPref(prefs::kSyncOsPreferences, false);
@@ -93,15 +92,13 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 0);
   registry->RegisterBooleanPref(prefs::kEnableLocalSyncBackend, false);
   registry->RegisterFilePathPref(prefs::kLocalSyncBackendDir, base::FilePath());
-#if defined(OS_ANDROID)
-  registry->RegisterBooleanPref(prefs::kSyncDecoupledFromAndroidMasterSync,
-                                false);
-#endif  // defined(OS_ANDROID)
 
   // Obsolete prefs.
   registry->RegisterBooleanPref(kSyncSuppressStart, false);
-  registry->RegisterBooleanPref(kObsoleteSyncPassphrasePrompted, false);
-  registry->RegisterStringPref(kObsoleteSyncLastRunVersion, std::string());
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kObsoleteSyncDecoupledFromAndroidMasterSync,
+                                false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void SyncPrefs::AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
@@ -231,16 +228,6 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
   }
 }
 
-bool SyncPrefs::IsOsSyncFeatureEnabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::kOsSyncFeatureEnabled);
-}
-
-void SyncPrefs::SetOsSyncFeatureEnabled(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kOsSyncFeatureEnabled, enabled);
-}
-
 // static
 const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
   switch (type) {
@@ -339,18 +326,6 @@ void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
   registry->RegisterBooleanPref(pref_name, false);
 }
 
-#if defined(OS_ANDROID)
-void SyncPrefs::SetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync, true);
-}
-
-bool SyncPrefs::GetDecoupledFromAndroidMasterSync() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::kSyncDecoupledFromAndroidMasterSync);
-}
-#endif  // defined(OS_ANDROID)
-
 bool SyncPrefs::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
 }
@@ -369,10 +344,12 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
   pref_service_->ClearPref(prefs::kSyncPassphrasePromptMutedProductVersion);
 }
 
-void ClearObsoletePassphrasePromptPrefs(PrefService* pref_service) {
-  pref_service->ClearPref(kObsoleteSyncLastRunVersion);
-  pref_service->ClearPref(kObsoleteSyncPassphrasePrompted);
+#if BUILDFLAG(IS_ANDROID)
+void ClearObsoleteSyncDecoupledFromAndroidMasterSync(
+    PrefService* pref_service) {
+  pref_service->ClearPref(kObsoleteSyncDecoupledFromAndroidMasterSync);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void MigrateSyncSuppressedPref(PrefService* pref_service) {
   // If the new kSyncRequested already has a value, there's nothing to be

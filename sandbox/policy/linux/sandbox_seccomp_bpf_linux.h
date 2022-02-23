@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -49,7 +48,6 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
   // Check if the kernel supports seccomp-bpf.
   static bool SupportsSandbox();
 
-#if !defined(OS_NACL_NONSFI)
   // Check if the kernel supports TSYNC (thread synchronization) with seccomp.
   static bool SupportsSandboxWithTsync();
 
@@ -62,7 +60,6 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
   // the process if the sandbox failed to engage.
   static void RunSandboxSanityChecks(sandbox::mojom::Sandbox sandbox_type,
                                      const SandboxSeccompBPF::Options& options);
-#endif  // !defined(OS_NACL_NONSFI)
 
   // This is the API to enable a seccomp-bpf sandbox by using an
   // external policy.

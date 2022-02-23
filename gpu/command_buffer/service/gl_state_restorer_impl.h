@@ -8,7 +8,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GL_STATE_RESTORER_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_state_restorer.h"

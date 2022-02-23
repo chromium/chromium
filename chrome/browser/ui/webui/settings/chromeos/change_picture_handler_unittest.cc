@@ -63,13 +63,11 @@ class ChangePictureHandlerTest : public testing::Test {
     handler_->AllowJavascript();
     handler_->RegisterMessages();
 
-    listener_ = handler_.get();
     request_ = handler_.get();
   }
 
   void TearDown() override {
     request_ = nullptr;
-    listener_ = nullptr;
     handler_.reset();
     web_contents_.reset();
     web_ui_.reset();
@@ -92,7 +90,8 @@ class ChangePictureHandlerTest : public testing::Test {
 
   void SelectNewDefaultImage(int default_image_index) {
     base::ListValue args;
-    args.Append(default_user_image::GetDefaultImageUrl(default_image_index));
+    args.Append(
+        default_user_image::GetDefaultImageUrl(default_image_index).spec());
     args.Append("default");
 
     web_ui_->HandleReceivedMessage("selectImage", &args);
@@ -106,13 +105,11 @@ class ChangePictureHandlerTest : public testing::Test {
     web_ui_->HandleReceivedMessage("selectImage", &args);
   }
 
-  void SelectImageFromFile(const base::FilePath& path,
-                           const int index,
-                           void* params) {
-    listener_->FileSelected(path, index, params);
+  void SelectImageFromFile(const base::FilePath& path) {
+    handler_->FileSelected(path);
   }
 
-  void CancelFileSelection() { listener_->FileSelectionCanceled(nullptr); }
+  void CancelFileSelection() { handler_->FileSelectionCanceled(); }
 
   void OnCameraImageDecoded() {
     SkBitmap bitmap;
@@ -140,7 +137,6 @@ class ChangePictureHandlerTest : public testing::Test {
   TestingProfile* testing_profile_;
   TestingProfileManager profile_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  ui::SelectFileDialog::Listener* listener_;
   ImageDecoder::ImageRequest* request_;
 };
 
@@ -215,9 +211,7 @@ TEST_F(ChangePictureHandlerTest,
   const base::FilePath base_file_path("/this/is/a/test/directory/Base Name");
   const base::FilePath dir_path = base_file_path.AppendASCII("dir1");
   const base::FilePath file_path = dir_path.AppendASCII("file1.txt");
-  const int index = 0;
-  void* params = nullptr;
-  SelectImageFromFile(file_path, index, params);
+  SelectImageFromFile(file_path);
 
   histogram_tester().ExpectBucketCount(
       ChangePictureHandler::kUserImageChangedHistogramName,

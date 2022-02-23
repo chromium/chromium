@@ -6,6 +6,17 @@
 
 namespace media {
 
+bool KeySystemProperties::IsSupportedKeySystem(
+    const std::string& key_system) const {
+  // By default, only support the base key system.
+  return key_system == GetBaseKeySystemName();
+}
+
+bool KeySystemProperties::ShouldUseBaseKeySystemName() const {
+  // By default, use the sub key system names for creating CDMs.
+  return false;
+}
+
 SupportedCodecs KeySystemProperties::GetSupportedHwSecureCodecs() const {
   return EME_CODEC_NONE;
 }

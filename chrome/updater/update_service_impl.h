@@ -24,7 +24,6 @@ class UpdateClient;
 }  // namespace update_client
 
 namespace updater {
-class CheckForUpdatesTask;
 class Configurator;
 class PersistedData;
 struct RegistrationRequest;
@@ -37,14 +36,17 @@ class UpdateServiceImpl : public UpdateService {
 
   // Overrides for updater::UpdateService.
   void GetVersion(
-      base::OnceCallback<void(const base::Version&)> callback) const override;
+      base::OnceCallback<void(const base::Version&)> callback) override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void GetAppStates(
+      base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
 
@@ -56,14 +58,28 @@ class UpdateServiceImpl : public UpdateService {
   // Runs the task at the head of `tasks_`, if any.
   void TaskStart();
 
-  // Run `callback`, pops `tasks_`, and calls TaskStart.
-  void TaskDone(base::OnceClosure callback);
+  // Pops `tasks_`, and calls TaskStart.
+  void TaskDone();
 
-  void OnShouldBlockUpdateForMeteredNetwork(StateChangeCallback state_update,
-                                            Callback callback,
-                                            const std::vector<std::string>& ids,
-                                            Priority priority,
-                                            bool update_blocked);
+  bool IsUpdateDisabledByPolicy(
+      const std::string& app_id,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      int& policy);
+  void HandleUpdateDisabledByPolicy(
+      const std::string& app_id,
+      int policy,
+      PolicySameVersionUpdate policy_same_version_update,
+      StateChangeCallback state_update,
+      Callback callback);
+
+  void OnShouldBlockUpdateForMeteredNetwork(
+      StateChangeCallback state_update,
+      Callback callback,
+      const std::vector<std::string>& ids,
+      Priority priority,
+      PolicySameVersionUpdate policy_same_version_update,
+      bool update_blocked);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -72,9 +88,8 @@ class UpdateServiceImpl : public UpdateService {
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<update_client::UpdateClient> update_client_;
 
-  // The queue prevents multiple Task instances from running simultaneously and
-  // processes them sequentially.
-  base::queue<scoped_refptr<CheckForUpdatesTask>> tasks_;
+  // The queue serializes periodic task execution.
+  base::queue<base::OnceClosure> tasks_;
 };
 
 }  // namespace updater

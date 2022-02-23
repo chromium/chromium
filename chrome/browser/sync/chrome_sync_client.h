@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
@@ -33,7 +34,7 @@ class SyncableService;
 
 namespace browser_sync {
 
-class ProfileSyncComponentsFactoryImpl;
+class SyncApiComponentFactoryImpl;
 
 class ChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
@@ -50,7 +51,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
@@ -62,7 +62,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
   invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
@@ -89,11 +88,10 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
       syncer::SyncService* sync_service);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // The sync api component factory in use by this client.
-  std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
-      component_factory_;
+  std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
   std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 

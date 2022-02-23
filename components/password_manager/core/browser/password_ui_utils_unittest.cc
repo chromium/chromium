@@ -44,9 +44,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_NoAppDisplayName) {
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name.clear();
 
-  std::string shown_origin;
-  GURL link_url;
-  std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(android_form);
+  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(android_form);
 
   EXPECT_EQ("android.example.com", shown_origin);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
@@ -58,9 +56,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromAndroidForm_WithAppDisplayName) {
   android_form.signon_realm = "android://hash@com.example.android";
   android_form.app_display_name = "Example Android App";
 
-  std::string shown_origin;
-  GURL link_url;
-  std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(android_form);
+  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(android_form);
 
   EXPECT_EQ("Example Android App", shown_origin);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
@@ -72,9 +68,7 @@ TEST(GetShownOriginAndLinkUrlTest, OriginFromNonAndroidForm) {
   form.signon_realm = "https://example.com/";
   form.url = GURL("https://example.com/login?ref=1");
 
-  std::string shown_origin;
-  GURL link_url;
-  std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(form);
+  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(form);
 
   EXPECT_EQ("example.com", shown_origin);
   EXPECT_EQ(GURL("https://example.com/login?ref=1"), link_url);

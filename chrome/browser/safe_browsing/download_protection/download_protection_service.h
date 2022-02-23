@@ -19,6 +19,7 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -226,6 +227,10 @@ class DownloadProtectionService {
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
 
+  // Removes all pending download requests that are associated with the
+  // `browser_context`.
+  void RemovePendingDownloadRequests(content::BrowserContext* browser_context);
+
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
@@ -315,15 +320,17 @@ class DownloadProtectionService {
   SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
       content::WebContents* web_contents);
 
-  SafeBrowsingService* sb_service_;
+  raw_ptr<SafeBrowsingService> sb_service_;
   // These pointers may be NULL if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 
   // Set of pending server requests for DownloadManager mediated downloads.
-  base::flat_map<CheckClientDownloadRequestBase*,
-                 std::unique_ptr<CheckClientDownloadRequestBase>>
-      download_requests_;
+  base::flat_map<
+      content::BrowserContext*,
+      base::flat_map<CheckClientDownloadRequestBase*,
+                     std::unique_ptr<CheckClientDownloadRequestBase>>>
+      context_download_requests_;
 
   // Set of pending server requests for PPAPI mediated downloads.
   base::flat_map<PPAPIDownloadRequest*, std::unique_ptr<PPAPIDownloadRequest>>

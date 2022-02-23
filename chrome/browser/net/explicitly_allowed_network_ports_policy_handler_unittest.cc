@@ -71,7 +71,7 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Empty) {
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  EXPECT_TRUE(value->GetList().empty());
+  EXPECT_TRUE(value->GetListDeprecated().empty());
 }
 
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Valid) {
@@ -83,8 +83,8 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Valid) {
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetList().size(), 1u);
-  const auto& element = value->GetList()[0];
+  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
+  const auto& element = value->GetListDeprecated()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);
@@ -108,8 +108,8 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, MixedTypes) {
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetList().size(), 1u);
-  const auto& element = value->GetList()[0];
+  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
+  const auto& element = value->GetListDeprecated()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);
@@ -139,8 +139,8 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, InvalidStrings) {
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetList().size(), 1u);
-  const auto& element = value->GetList()[0];
+  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
+  const auto& element = value->GetListDeprecated()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);

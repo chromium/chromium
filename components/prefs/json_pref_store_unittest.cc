@@ -140,7 +140,7 @@ base::test::TaskEnvironment::ThreadPoolExecutionMode GetExecutionMode(
     CommitPendingWriteMode commit_mode) {
   switch (commit_mode) {
     case CommitPendingWriteMode::WITHOUT_CALLBACK:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CommitPendingWriteMode::WITH_CALLBACK:
       return base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED;
     case CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK:
@@ -388,9 +388,9 @@ TEST_P(JsonPrefStoreTest, PreserveEmptyValues) {
   // Check values.
   const Value* result = nullptr;
   EXPECT_TRUE(pref_store->GetValue("list", &result));
-  EXPECT_TRUE(ListValue().Equals(result));
+  EXPECT_EQ(ListValue(), *result);
   EXPECT_TRUE(pref_store->GetValue("dict", &result));
-  EXPECT_TRUE(DictionaryValue().Equals(result));
+  EXPECT_EQ(DictionaryValue(), *result);
 }
 
 // This test is just documenting some potentially non-obvious behavior. It

@@ -6,12 +6,14 @@
 
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 
@@ -117,6 +119,12 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
   ScheduleAnimationForWebTests();
 }
 
+void WebTestWebFrameWidgetImpl::DisableEndDocumentTransition() {
+  DocumentTransitionSupplement::documentTransition(
+      *LocalRootImpl()->GetFrame()->GetDocument())
+      ->DisableEndTransition();
+}
+
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
@@ -216,6 +224,12 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
 
   if (!LayerTreeHost()->IsVisible())
     return;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoForcedFrameUpdatesForWebTests) &&
+      LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
+    return;
+  }
 
   if (in_synchronous_composite_) {
     // Web tests can use a nested message loop to pump frames while inside a

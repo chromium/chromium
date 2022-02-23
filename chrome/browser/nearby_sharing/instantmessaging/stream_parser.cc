@@ -38,7 +38,8 @@ StreamParser::Append(base::StringPiece data) {
   if (!unparsed_data_buffer_) {
     unparsed_data_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
     unparsed_data_buffer_->SetCapacity(data.size() + kReadBufferSpareCapacity);
-  } else if (unparsed_data_buffer_->RemainingCapacity() < data.size()) {
+  } else if (unparsed_data_buffer_->RemainingCapacity() <
+             static_cast<int>(data.size())) {
     unparsed_data_buffer_->SetCapacity(unparsed_data_buffer_->offset() +
                                        data.size() + kReadBufferSpareCapacity);
   }
@@ -79,7 +80,7 @@ StreamParser::ParseStreamIfAvailable() {
     switch (result) {
       case StreamParser::StreamParsingResult::kSuccessfullyParsedResponse:
         receive_messages_responses.push_back(parsed_response);
-        FALLTHROUGH;
+        [[fallthrough]];
       case StreamParser::StreamParsingResult::kNoop:
         bytes_consumed = input_stream.CurrentPosition();
         continue_parsing = bytes_consumed < unparsed_bytes_available;

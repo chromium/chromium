@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
@@ -48,7 +49,7 @@ class ResizerTest : public testing::Test {
   void CheckScale(float scale) { EXPECT_FLOAT_EQ(scale, ComputeScale()); }
 
  protected:
-  Resizer* resizer_ = nullptr;
+  raw_ptr<Resizer> resizer_ = nullptr;
   UiScene scene_;
 };
 

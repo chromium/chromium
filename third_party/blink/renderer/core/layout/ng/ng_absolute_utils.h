@@ -52,7 +52,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
 
 // If layout was performed to determine the position, this will be returned
 // otherwise it will return nullptr.
-CORE_EXPORT scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
+CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode&,
     const NGConstraintSpace&,
     const NGBoxStrut& border_padding,

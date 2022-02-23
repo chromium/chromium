@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -22,10 +23,7 @@ class Surface;
 // also responsible for expiring saved frames after a set timeout.
 class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
  public:
-  // Each Surface has its own storage, and the storage has a backpointer to the
-  // surface in order to append copy output requests to the active frame.
-  explicit SurfaceSavedFrameStorage(Surface* surface);
-
+  SurfaceSavedFrameStorage();
   ~SurfaceSavedFrameStorage();
 
   // Processes the save directive from a compositor frame. This interfaces with
@@ -45,11 +43,14 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrameStorage {
   void ExpireForTesting();
   void CompleteForTesting();
 
+  bool has_active_surface() const { return !!surface_; }
+  void set_active_surface(Surface* surface) { surface_ = surface; }
+
  private:
   // This expires the saved frame, if any.
   void ExpireSavedFrame();
 
-  Surface* const surface_;
+  raw_ptr<Surface> surface_ = nullptr;
 
   base::CancelableOnceClosure expiry_closure_;
 

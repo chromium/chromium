@@ -17,7 +17,7 @@ namespace base {
 class Value;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace views {
 class WebView;
 }
@@ -142,7 +142,7 @@ class Tab {
   virtual void SetTranslateTargetLanguage(
       const std::string& translate_target_lang) = 0;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO: this isn't a stable API, so use it now for expediency in the C++ API,
   // but if we ever want to have backward or forward compatibility in C++ this
   // will have to be something else.

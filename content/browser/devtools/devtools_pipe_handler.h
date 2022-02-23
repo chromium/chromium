@@ -33,6 +33,7 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   bool UsesBinaryProtocol() override;
   bool AllowUnsafeOperations() override;
+  std::string GetTypeForMetrics() override;
 
   void Shutdown();
 

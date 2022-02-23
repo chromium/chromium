@@ -13,20 +13,25 @@ source_set("test") {
   ]
 
   deps = [
+    ":test_fixture",
     "//base",
     "//base/test:test_support",
-    "//ios/web:web",
+    "//ios/web",
     "//ios/web/common:features",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/deprecated",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
     "//ui/base",
   ]
 
-  allow_circular_includes_from = [ "//ios/web/test:test_support" ]
+  allow_circular_includes_from = [
+    ":test_fixture",
+    "//ios/web/test:test_support",
+  ]
 
   sources = [
     "scoped_testing_web_client.h",
@@ -37,11 +42,53 @@ source_set("test") {
     "web_state_test_util.h",
     "web_state_test_util.mm",
     "web_task_environment.h",
+  ]
+}
+
+# Those fixtures *must* not be used directly from //ios/chrome code as they
+# create web::BrowserState* as the BrowserState which violates one important
+# invariant of //ios/chrome code (the invariant that all BrowserStates are of
+# a sub-class of ChromeBrowserState). This is why the classes are defined in
+# a target that limits its visibility to //ios/web, //components and to the
+# targets in //ios/chrome that safely wraps those fixtures.
+source_set("test_fixture") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  visibility = [
+    "//components/*",
+    "//ios/web/*",
+    "//ios/web_view/*",
+
+    # Do not add new targets from //ios/chrome here. If you want to do it,
+    # please contact sdefresne@ or rohitrao@ to check with them. If you just
+    # want to use WebTest or WebTestWithWebState in //ios/chrome, instead use
+    # ChromeTest or ChromeWebTest respectively.
+    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/test:ios_chrome_unit_test_suite",
+  ]
+
+  sources = [
     "web_test.h",
     "web_test.mm",
     "web_test_suite.h",
     "web_test_with_web_state.h",
     "web_test_with_web_state.mm",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//ios/web",
+    "//ios/web/common:features",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/navigation",
+    "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
+    "//ui/base",
+    "//url",
   ]
 }
 
@@ -72,7 +119,7 @@ source_set("util") {
     "//ios/web/public:public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:ui",
+    "//ios/web/web_state/ui",
     "//ios/web/web_view:util",
     "//net",
     "//testing/gtest",

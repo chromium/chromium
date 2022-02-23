@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_INFO_DATA_WRAPPER_H_
 
-#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 
 #include <string>
 #include <vector>

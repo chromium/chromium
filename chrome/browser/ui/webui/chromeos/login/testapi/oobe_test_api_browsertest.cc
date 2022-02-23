@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
+#include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
@@ -130,15 +134,31 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiRemoraRequisitionTest, SkipsEula) {
   test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");
 }
 
-class OobeTestApiLoginPinTest : public OobeTestApiTest {
+class OobeTestApiLoginPinTest : public OobeTestApiTest,
+                                public testing::WithParamInterface<bool> {
  public:
-  OobeTestApiLoginPinTest() { login_mixin_.AppendRegularUsers(1); }
+  OobeTestApiLoginPinTest() {
+    login_mixin_.AppendRegularUsers(1);
+
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kUseAuthsessionAuthentication);
+    }
+  }
 
  protected:
-  ash::LoginManagerMixin login_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_,
+                                      {},
+                                      nullptr,
+                                      &cryptohome_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_F(OobeTestApiLoginPinTest, Success) {
+IN_PROC_BROWSER_TEST_P(OobeTestApiLoginPinTest, Success) {
   test::OobeJS().CreateWaiter("window.OobeAPI")->Wait();
   const std::string username =
       login_mixin_.users()[0].account_id.GetUserEmail();
@@ -146,6 +166,8 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiLoginPinTest, Success) {
       "OobeAPI.loginWithPin('%s', '123456')", username.c_str()));
   login_mixin_.WaitForActiveSession();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, OobeTestApiLoginPinTest, testing::Bool());
 
 class OobeTestApiWizardControllerTest : public OobeTestApiTest {
  public:
@@ -160,7 +182,11 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, AdvanceToScreen) {
   // skipped.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    ash::OobeScreenWaiter(ash::ConsolidatedConsentScreenView::kScreenId).Wait();
+  else
+    ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
 
   test::OobeJS().ExecuteAsync(
       base::StringPrintf("OobeAPI.advanceToScreen('%s')",
@@ -173,7 +199,11 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiWizardControllerTest, SkipPostLoginScreens) {
   // skipped.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   login_mixin_.LoginAsNewRegularUser();
-  ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    ash::OobeScreenWaiter(ash::ConsolidatedConsentScreenView::kScreenId).Wait();
+  else
+    ash::OobeScreenWaiter(ash::SyncConsentScreenView::kScreenId).Wait();
 
   test::OobeJS().ExecuteAsync("OobeAPI.skipPostLoginScreens()");
   login_mixin_.WaitForActiveSession();

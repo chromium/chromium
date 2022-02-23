@@ -66,14 +66,6 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
 }
 
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
-  // TODO(https://crbug.com/977629): Currently, chrome.test.runWithUserGesture()
-  // doesn't support Service Worker-based extensions, so this is a workaround.
-  using ScopedUserGestureForTests =
-      ExtensionFunction::ScopedUserGestureForTests;
-  std::unique_ptr<ScopedUserGestureForTests> scoped_user_gesture;
-  if (GetParam() == ContextType::kServiceWorker)
-    scoped_user_gesture = std::make_unique<ScopedUserGestureForTests>();
-
   // Auto-confirm the uninstall dialog.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
@@ -159,16 +151,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
-  std::unique_ptr<base::Value> result(
+  base::Value::DictStorage dict = extension_function_test_utils::ToDictionary(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", browser()));
-  ASSERT_TRUE(result);
-  std::unique_ptr<base::DictionaryValue> dict =
-      extension_function_test_utils::ToDictionary(std::move(result));
-  ASSERT_TRUE(dict != nullptr);
-  EXPECT_TRUE(dict->HasKey("os"));
-  EXPECT_TRUE(dict->HasKey("arch"));
-  EXPECT_TRUE(dict->HasKey("nacl_arch"));
+  EXPECT_TRUE(dict.contains("os"));
+  EXPECT_TRUE(dict.contains("arch"));
+  EXPECT_TRUE(dict.contains("nacl_arch"));
 }
 
 // Tests chrome.runtime.getPackageDirectory with an app.
@@ -277,6 +265,95 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
   EXPECT_TRUE(ready_listener_done.WaitUntilSatisfied());
   ready_listener_done.Reply("done");
   EXPECT_TRUE(reload_catcher.GetNextResult());
+}
+
+// Tests sending messages from a webpage in the extension using
+// chrome.runtime.sendMessage and responding to those from the extension's
+// service worker in a chrome.runtime.onMessage listener.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeSendMessage) {
+  ASSERT_TRUE(
+      RunExtensionTest("runtime/send_message", {.page_url = "test.html"}));
+}
+
+// Simple test for chrome.runtime.getBackgroundPage with a persistent background
+// page.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPage) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "getBackgroundPage",
+        "version": "1.0",
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "manifest_version": 2
+      })";
+
+  static constexpr char kBackground[] = "window.backgroundExists = true;";
+  static constexpr char kTestPage[] = R"(<script src="test.js"></script>)";
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      function getBackgroundPage() {
+        chrome.runtime.getBackgroundPage((page) => {
+          chrome.test.assertTrue(page.backgroundExists);
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
+  dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
+                               /*load_options=*/{}));
+}
+
+// Simple test for chrome.runtime.getBackgroundPage with an MV3 service worker
+// extension, which should return an error due to there being no background
+// page.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPageMV3) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "getBackgroundPage",
+        "version": "1.0",
+        "background": {
+          "service_worker": "worker.js"
+        },
+        "manifest_version": 3
+      })";
+
+  static constexpr char kWorker[] = "// We're just expecting an error";
+  static constexpr char kTestPage[] = R"(<script src="test.js"></script>)";
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      function getBackgroundPage() {
+        chrome.runtime.getBackgroundPage((page) => {
+          chrome.test.assertEq(undefined, page);
+          chrome.test.assertLastError('You do not have a background page.');
+          chrome.test.succeed();
+        });
+      },
+
+      async function getBackGroundPagePromise() {
+        await chrome.test.assertPromiseRejects(
+            chrome.runtime.getBackgroundPage(),
+            'Error: You do not have a background page.');
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+  dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
+  dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
+                               /*load_options=*/{}));
 }
 
 // Tests that updating a terminated extension sends runtime.onInstalled event

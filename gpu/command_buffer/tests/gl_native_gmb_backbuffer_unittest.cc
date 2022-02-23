@@ -7,6 +7,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -17,7 +18,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
 #endif
 
@@ -96,7 +97,7 @@ TEST_F(GLNativeGMBTest, TestNativeGMBBackbufferWithDifferentConfigurations) {
     return;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   GpuMemoryBufferFactoryIOSurface image_factory;
 #else
   TextureImageFactory image_factory;

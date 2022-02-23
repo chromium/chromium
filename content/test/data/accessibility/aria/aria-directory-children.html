@@ -1,0 +1,28 @@
+<!--
+@AURALINUX-ALLOW:tag*
+@BLINK-ALLOW:htmlTag*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+  li { list-style-type: none; }
+</style>
+<div role=directory>
+  <div role=listitem>an item in the directory</div>
+  <div role=listitem>an item in the directory</div>
+</div>
+<ul role=directory>
+  <li>an item in the directory, no explicit role</li>
+  <li role=listitem>an item in the directory with role=listitem</li>
+</ul>
+<ol role=directory>
+  <li>an item in the directory, no explicit role</li>
+  <li role=listitem>an item in the directory with role=listitem</li>
+</ol>
+<menu role=directory>
+  <li>an item in the directory, no explicit role</li>
+  <li role=listitem>an item in the directory with role=listitem</li>
+</menu>
+</body>
+</html>

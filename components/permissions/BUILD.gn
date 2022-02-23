@@ -55,6 +55,8 @@ source_set("permissions") {
     "contexts/wake_lock_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
+    "contexts/window_placement_permission_context.cc",
+    "contexts/window_placement_permission_context.h",
     "object_permission_context_base.cc",
     "object_permission_context_base.h",
     "permission_actions_history.cc",
@@ -158,6 +160,7 @@ source_set("permissions") {
       "//components/infobars/core",
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
+      "//components/messages/android:android",
       "//components/permissions/android:jni_headers",
       "//components/permissions/android:native",
       "//components/prefs",
@@ -231,6 +234,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chooser_title_util_unittest.cc",
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
@@ -267,6 +271,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//components/variations",

@@ -4,6 +4,7 @@
 
 #include "net/cookies/site_for_cookies.h"
 
+#include <string>
 #include <vector>
 
 #include "base/strings/strcat.h"

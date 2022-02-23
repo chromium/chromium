@@ -7,6 +7,8 @@ import("//ios/web/js_compile.gni")
 source_set("font_size") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "font_size_java_script_feature.h",
+    "font_size_java_script_feature.mm",
     "font_size_tab_helper.h",
     "font_size_tab_helper.mm",
   ]
@@ -22,10 +24,10 @@ source_set("font_size") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/ui_util",
-    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+  public_deps = [ "//ios/web/public/js_messaging" ]
 }
 
 js_compile_bundle("font_size_js") {
@@ -59,7 +61,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/test/fakes",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//testing/gtest",

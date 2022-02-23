@@ -30,6 +30,7 @@ class MockInputMethodEngine : public ui::IMEEngineHandlerInterface {
   // IMEEngineHandlerInterface overrides.
   void FocusIn(
       const IMEEngineHandlerInterface::InputContext& input_context) override;
+  void OnTouch(ui::EventPointerType pointerType) override;
   void FocusOut() override;
   void Enable(const std::string& component_id) override;
   void Disable() override;

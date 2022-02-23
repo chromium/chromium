@@ -10,7 +10,7 @@ import './code_section.js';
 import './strings.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionsCodeSectionElement} from './code_section.js';
@@ -22,14 +22,14 @@ export interface LoadErrorDelegate {
   retryLoadUnpacked(retryGuid: string): Promise<boolean>;
 }
 
-interface ExtensionsLoadErrorElement {
+export interface ExtensionsLoadErrorElement {
   $: {
     code: ExtensionsCodeSectionElement,
     dialog: CrDialogElement,
   };
 }
 
-class ExtensionsLoadErrorElement extends PolymerElement {
+export class ExtensionsLoadErrorElement extends PolymerElement {
   static get is() {
     return 'extensions-load-error';
   }

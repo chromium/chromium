@@ -197,7 +197,7 @@ void FakeChromeIdentityService::ForgetIdentity(
     ForgetIdentityCallback callback) {
   [identities_ removeObject:identity];
   [capabilitiesByIdentity_ removeObjectForKey:identity.gaiaID];
-  FireIdentityListChanged(/*keychain_reload=*/false);
+  FireIdentityListChanged(/*notify_user=*/false);
   if (callback) {
     // Forgetting an identity is normally an asynchronous operation (that
     // require some network calls), this is replicated here by dispatching
@@ -300,7 +300,7 @@ void FakeChromeIdentityService::SimulateForgetIdentityFromOtherApp(
 }
 
 void FakeChromeIdentityService::FireChromeIdentityReload() {
-  FireIdentityListChanged(/*keychain_reload=*/true);
+  FireIdentityListChanged(/*notify_user=*/true);
 }
 
 void FakeChromeIdentityService::SetUpForIntegrationTests() {}
@@ -330,7 +330,7 @@ void FakeChromeIdentityService::AddIdentity(ChromeIdentity* identity) {
   if (![identities_ containsObject:identity]) {
     [identities_ addObject:identity];
   }
-  FireIdentityListChanged(/*keychain_reload=*/false);
+  FireIdentityListChanged(/*notify_user=*/false);
 }
 
 void FakeChromeIdentityService::SetCapabilities(ChromeIdentity* identity,

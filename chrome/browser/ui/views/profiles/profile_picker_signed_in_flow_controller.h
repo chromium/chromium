@@ -8,10 +8,11 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -115,15 +116,14 @@ class ProfilePickerSignedInFlowController
   // Internal callback to finish the last steps of the signed-in creation
   // flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
-                       Profile* profile,
-                       Profile::CreateStatus profile_create_status);
+                       Profile* profile);
 
   content::WebContents* contents() const { return contents_.get(); }
 
   // The host object, must outlive this object.
-  ProfilePickerWebContentsHost* host_;
+  raw_ptr<ProfilePickerWebContentsHost> host_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
@@ -141,7 +141,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending);
 
   std::set<std::string> pending_in_arc;
-  for (const auto& detail : details->GetList()) {
+  for (const auto& detail : details->GetListDeprecated()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
     if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled) {
@@ -178,7 +178,7 @@ std::set<std::string> ArcAppInstallEventLogger::GetPackagesFromPref(
     const std::string& pref_name) const {
   std::set<std::string> packages;
   for (const auto& package :
-       profile_->GetPrefs()->GetList(pref_name)->GetList()) {
+       profile_->GetPrefs()->GetList(pref_name)->GetListDeprecated()) {
     if (!package.is_string()) {
       continue;
     }

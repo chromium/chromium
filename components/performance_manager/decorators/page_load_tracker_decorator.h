@@ -128,11 +128,14 @@ class PageLoadTrackerDecorator::Data {
     // ignored in this state. Can transition to kLoadedNotIdling and
     // kLoadedAndIdling from here.
     kLoading,
-    // Loading has completed, but the page has not started idling. Can only
-    // transition to kLoadedAndIdling from here.
+    // Loading has completed, but the page has not started idling. Can
+    // transition to kLoadedAndIdling, kLoadedAndIdle or kWaitingForNavigation
+    // from here (the latter occurs when a new load starts before the previous
+    // ends).
     kLoadedNotIdling,
     // Loading has completed, and the page is idling. Can transition to
-    // kLoadedNotIdling or kLoadedAndIdle from here.
+    // kLoadedNotIdling, kLoadedAndIdle or kWaitingForNavigation from here (the
+    // latter occurs when a new load starts before the previous ends).
     kLoadedAndIdling,
     // Loading has completed and the page has been idling for sufficiently long
     // or encountered an error. This is the final state. Once this state has

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
@@ -22,83 +23,105 @@ namespace media {
 // between the two types explicit and easy to spot.
 class DecodeTimestamp {
  public:
-  DecodeTimestamp() {}
-  DecodeTimestamp(const DecodeTimestamp& rhs) : ts_(rhs.ts_) { }
-  DecodeTimestamp& operator=(const DecodeTimestamp& rhs) {
-    if (&rhs != this)
-      ts_ = rhs.ts_;
-    return *this;
-  }
+  constexpr DecodeTimestamp() = default;
 
   // Only operators that are actually used by the code have been defined.
   // Reviewers should pay close attention to the addition of new operators.
-  bool operator<(const DecodeTimestamp& rhs) const { return ts_ < rhs.ts_; }
-  bool operator>(const DecodeTimestamp& rhs) const  { return ts_ > rhs.ts_; }
-  bool operator==(const DecodeTimestamp& rhs) const  { return ts_ == rhs.ts_; }
-  bool operator!=(const DecodeTimestamp& rhs) const  { return ts_ != rhs.ts_; }
-  bool operator>=(const DecodeTimestamp& rhs) const  { return ts_ >= rhs.ts_; }
-  bool operator<=(const DecodeTimestamp& rhs) const  { return ts_ <= rhs.ts_; }
+  constexpr bool operator<(const DecodeTimestamp& rhs) const {
+    return ts_ < rhs.ts_;
+  }
+  constexpr bool operator>(const DecodeTimestamp& rhs) const {
+    return ts_ > rhs.ts_;
+  }
+  constexpr bool operator==(const DecodeTimestamp& rhs) const {
+    return ts_ == rhs.ts_;
+  }
+  constexpr bool operator!=(const DecodeTimestamp& rhs) const {
+    return ts_ != rhs.ts_;
+  }
+  constexpr bool operator>=(const DecodeTimestamp& rhs) const {
+    return ts_ >= rhs.ts_;
+  }
+  constexpr bool operator<=(const DecodeTimestamp& rhs) const {
+    return ts_ <= rhs.ts_;
+  }
 
-  base::TimeDelta operator-(const DecodeTimestamp& rhs) const {
+  constexpr base::TimeDelta operator-(const DecodeTimestamp& rhs) const {
     return ts_ - rhs.ts_;
   }
 
-  DecodeTimestamp& operator+=(base::TimeDelta rhs) {
+  constexpr DecodeTimestamp& operator+=(base::TimeDelta rhs) {
     ts_ += rhs;
     return *this;
   }
 
-  DecodeTimestamp& operator-=(base::TimeDelta rhs) {
+  constexpr DecodeTimestamp& operator-=(base::TimeDelta rhs) {
     ts_ -= rhs;
     return *this;
   }
 
-  DecodeTimestamp operator+(base::TimeDelta rhs) const {
+  constexpr DecodeTimestamp operator+(base::TimeDelta rhs) const {
     return DecodeTimestamp(ts_ + rhs);
   }
 
-  DecodeTimestamp operator-(base::TimeDelta rhs) const {
+  constexpr DecodeTimestamp operator-(base::TimeDelta rhs) const {
     return DecodeTimestamp(ts_ - rhs);
   }
 
-  double operator/(base::TimeDelta rhs) const { return ts_ / rhs; }
-  int64_t IntDiv(base::TimeDelta rhs) const { return ts_.IntDiv(rhs); }
+  constexpr double operator/(base::TimeDelta rhs) const { return ts_ / rhs; }
+  constexpr int64_t IntDiv(base::TimeDelta rhs) const {
+    return ts_.IntDiv(rhs);
+  }
 
-  static DecodeTimestamp FromSecondsD(double seconds) {
+  static constexpr DecodeTimestamp FromSecondsD(double seconds) {
     return DecodeTimestamp(base::Seconds(seconds));
   }
 
-  static DecodeTimestamp FromMilliseconds(int64_t milliseconds) {
+  static constexpr DecodeTimestamp FromMilliseconds(int64_t milliseconds) {
     return DecodeTimestamp(base::Milliseconds(milliseconds));
   }
 
-  static DecodeTimestamp FromMicroseconds(int64_t microseconds) {
+  static constexpr DecodeTimestamp FromMicroseconds(int64_t microseconds) {
     return DecodeTimestamp(base::Microseconds(microseconds));
   }
 
   // This method is used to explicitly call out when presentation timestamps
   // are being converted to a decode timestamp.
-  static DecodeTimestamp FromPresentationTime(base::TimeDelta timestamp) {
+  static constexpr DecodeTimestamp FromPresentationTime(
+      base::TimeDelta timestamp) {
     return DecodeTimestamp(timestamp);
   }
 
-  double InSecondsF() const { return ts_.InSecondsF(); }
+  constexpr double InSecondsF() const { return ts_.InSecondsF(); }
   int64_t InMilliseconds() const { return ts_.InMilliseconds(); }
-  int64_t InMicroseconds() const { return ts_.InMicroseconds(); }
+  constexpr int64_t InMicroseconds() const { return ts_.InMicroseconds(); }
+
+  constexpr bool is_inf() const { return ts_.is_inf(); }
 
   // TODO(acolwell): Remove once all the hacks are gone. This method is called
   // by hacks where a decode time is being used as a presentation time.
-  base::TimeDelta ToPresentationTime() const { return ts_; }
+  constexpr base::TimeDelta ToPresentationTime() const { return ts_; }
 
  private:
-  explicit DecodeTimestamp(base::TimeDelta timestamp) : ts_(timestamp) { }
+  constexpr explicit DecodeTimestamp(base::TimeDelta timestamp)
+      : ts_(timestamp) {}
 
   base::TimeDelta ts_;
 };
 
-MEDIA_EXPORT extern inline DecodeTimestamp kNoDecodeTimestamp() {
-  return DecodeTimestamp::FromPresentationTime(kNoTimestamp);
-}
+// Assert assumptions necessary for DecodeTimestamp analogues of
+// base::TimeDelta::is_inf(), media::kNoTimestamp and media::kInfiniteDuration.
+static_assert(kNoTimestamp.is_min() && kNoTimestamp.is_inf());
+static_assert(kInfiniteDuration.is_max() && kInfiniteDuration.is_inf());
+
+// Indicates an invalid or missing decode timestamp.
+constexpr DecodeTimestamp kNoDecodeTimestamp =
+    DecodeTimestamp::FromPresentationTime(kNoTimestamp);
+
+// Similar to media::kInfiniteDuration, indicates a decode timestamp of positive
+// infinity.
+constexpr DecodeTimestamp kMaxDecodeTimestamp =
+    DecodeTimestamp::FromPresentationTime(kInfiniteDuration);
 
 class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
  public:

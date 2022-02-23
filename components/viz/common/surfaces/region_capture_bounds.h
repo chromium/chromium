@@ -33,9 +33,19 @@ class VIZ_COMMON_EXPORT RegionCaptureBounds {
   RegionCaptureBounds& operator=(const RegionCaptureBounds&);
   ~RegionCaptureBounds();
 
+  // Returns a reference to a global empty RegionCaptureBounds. This should only
+  // be used for functions that need to return a reference to a
+  // RegionCaptureBounds, not instead of the default constructor.
+  static const RegionCaptureBounds& Empty();
+
   // We currently only support a single set of bounds for a given crop id.
   // Multiple calls with the same crop id will update the bounds.
   void Set(const RegionCaptureCropId& crop_id, const gfx::Rect& bounds);
+
+  bool IsEmpty() const { return bounds_.empty(); }
+
+  // Sets the bounds to empty.
+  void Reset();
 
   const base::flat_map<RegionCaptureCropId, gfx::Rect>& bounds() const {
     return bounds_;

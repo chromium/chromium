@@ -439,7 +439,7 @@ NearbyShareCertificateStorageImpl::GetPrivateCertificates() const {
   const base::Value* list =
       pref_service_->Get(prefs::kNearbySharingPrivateCertificateListPrefName);
   std::vector<NearbySharePrivateCertificate> certs;
-  for (const base::Value& cert_dict : list->GetList()) {
+  for (const base::Value& cert_dict : list->GetListDeprecated()) {
     absl::optional<NearbySharePrivateCertificate> cert(
         NearbySharePrivateCertificate::FromDictionary(cert_dict));
     if (!cert)

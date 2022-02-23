@@ -49,6 +49,7 @@ interface SharedWorkerFactory {
       url.mojom.Origin constructor_origin,
 
       string user_agent,
+      string full_user_agent,
       string reduced_user_agent,
       UserAgentMetadata ua_metadata,
       bool pause_on_start,

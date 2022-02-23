@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <iterator>
 #include <memory>
 #include <set>
 #include <string>
@@ -12,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -27,8 +29,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -130,8 +134,13 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   if (!sent_initial_payload_) {
     sent_initial_payload_ = true;
     int tab_count = 0;
-    for (const auto& window : profile_tabs->windows)
+    int media_tab_count = 0;
+    for (const auto& window : profile_tabs->windows) {
       tab_count += window->tabs.size();
+      media_tab_count += base::ranges::count_if(
+          window->tabs.begin(), window->tabs.end(),
+          [](const auto& tab) { return tab->alert_states.size() > 0; });
+    }
     base::UmaHistogramCounts100("Tabs.TabSearch.NumWindowsOnOpen",
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
@@ -143,6 +152,8 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
         "Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen",
         expand_preference ? TabSearchRecentlyClosedToggleAction::kExpand
                           : TabSearchRecentlyClosedToggleAction::kCollapse);
+    base::UmaHistogramCounts10000("Tabs.TabSearch.NumMediaTabsOnOpen",
+                                  media_tab_count);
   }
 
   std::move(callback).Run(std::move(profile_tabs));
@@ -242,20 +253,22 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     }
     profile_data->windows.push_back(std::move(window));
 
-    for (auto tab_group_id : tab_strip_model->group_model()->ListTabGroups()) {
-      const tab_groups::TabGroupVisualData* tab_group_visual_data =
-          tab_strip_model->group_model()
-              ->GetTabGroup(tab_group_id)
-              ->visual_data();
+    if (tab_strip_model->group_model())
+      for (auto tab_group_id :
+           tab_strip_model->group_model()->ListTabGroups()) {
+        const tab_groups::TabGroupVisualData* tab_group_visual_data =
+            tab_strip_model->group_model()
+                ->GetTabGroup(tab_group_id)
+                ->visual_data();
 
-      auto tab_group = tab_search::mojom::TabGroup::New();
-      tab_group->id = tab_group_id.token();
-      tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
-      tab_group->color = tab_group_visual_data->color();
+        auto tab_group = tab_search::mojom::TabGroup::New();
+        tab_group->id = tab_group_id.token();
+        tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
+        tab_group->color = tab_group_visual_data->color();
 
-      tab_group_ids.insert(tab_group_id);
-      profile_data->tab_groups.push_back(std::move(tab_group));
-    }
+        tab_group_ids.insert(tab_group_id);
+        profile_data->tab_groups.push_back(std::move(tab_group));
+      }
   }
 
   AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
@@ -430,6 +443,19 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_data->last_active_time_ticks = last_active_time_ticks;
   tab_data->last_active_elapsed_text =
       GetLastActiveElapsedText(last_active_time_ticks);
+
+  if (base::FeatureList::IsEnabled(features::kTabSearchMediaTabs)) {
+    std::vector<TabAlertState> alert_states =
+        chrome::GetTabAlertStatesForContents(contents);
+    // Currently, we only report media alert states.
+    base::ranges::copy_if(alert_states.begin(), alert_states.end(),
+                          std::back_inserter(tab_data->alert_states),
+                          [](TabAlertState alert) {
+                            return alert == TabAlertState::MEDIA_RECORDING ||
+                                   alert == TabAlertState::AUDIO_PLAYING ||
+                                   alert == TabAlertState::AUDIO_MUTING;
+                          });
+  }
 
   return tab_data;
 }

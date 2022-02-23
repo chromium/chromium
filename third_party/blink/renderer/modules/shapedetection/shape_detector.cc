@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
@@ -56,7 +56,6 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
     case V8ImageBitmapSource::ContentType::kBlob:
     case V8ImageBitmapSource::ContentType::kSVGImageElement:
     case V8ImageBitmapSource::ContentType::kVideoFrame:
-      NOTREACHED() << "Unsupported CanvasImageSource";
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Unsupported source."));
       return promise;
@@ -85,8 +84,8 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
   // there is a local WebCam associated, there might be sophisticated ways to
   // detect faces on it. Until then, treat as a normal <video> element.
 
-  const FloatSize size(
-      canvas_image_source->ElementSize(FloatSize(), kRespectImageOrientation));
+  const gfx::SizeF size =
+      canvas_image_source->ElementSize(gfx::SizeF(), kRespectImageOrientation);
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image =

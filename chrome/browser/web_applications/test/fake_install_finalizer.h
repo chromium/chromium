@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace web_app {
 
@@ -27,10 +27,10 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   ~FakeInstallFinalizer() override;
 
   // WebAppInstallFinalizer:
-  void FinalizeInstall(const WebApplicationInfo& web_app_info,
+  void FinalizeInstall(const WebAppInstallInfo& web_app_info,
                        const FinalizeOptions& options,
                        InstallFinalizedCallback callback) override;
-  void FinalizeUpdate(const WebApplicationInfo& web_app_info,
+  void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                       InstallFinalizedCallback callback) override;
   void UninstallExternalWebApp(
       const AppId& app_id,
@@ -59,7 +59,7 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
       base::RepeatingCallback<void(const AppId&)>) override;
 
   void SetNextFinalizeInstallResult(const AppId& app_id,
-                                    InstallResultCode code);
+                                    webapps::InstallResultCode code);
   void SetNextUninstallExternalWebAppResult(const GURL& app_url,
                                             bool uninstalled);
 
@@ -68,7 +68,7 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   // simulate that the app was uninstalled previously.
   void SimulateExternalAppUninstalledByUser(const AppId& app_id);
 
-  std::unique_ptr<WebApplicationInfo> web_app_info() {
+  std::unique_ptr<WebAppInstallInfo> web_app_info() {
     return std::move(web_app_info_copy_);
   }
 
@@ -83,16 +83,16 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
   int num_reparent_tab_calls() { return num_reparent_tab_calls_; }
 
  private:
-  void Finalize(const WebApplicationInfo& web_app_info,
-                InstallResultCode code,
+  void Finalize(const WebAppInstallInfo& web_app_info,
+                webapps::InstallResultCode code,
                 InstallFinalizedCallback callback);
 
-  std::unique_ptr<WebApplicationInfo> web_app_info_copy_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_copy_;
   std::vector<FinalizeOptions> finalize_options_list_;
   std::vector<GURL> uninstall_external_web_app_urls_;
 
   absl::optional<AppId> next_app_id_;
-  absl::optional<InstallResultCode> next_result_code_;
+  absl::optional<webapps::InstallResultCode> next_result_code_;
   std::map<GURL, bool> next_uninstall_external_web_app_results_;
   std::set<AppId> user_uninstalled_external_apps_;
 

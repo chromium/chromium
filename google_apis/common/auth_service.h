@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -69,7 +69,7 @@ class AuthService : public AuthServiceInterface {
                        ApiErrorCode error,
                        const std::string& access_token);
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<IdentityManagerObserver> identity_manager_observer_;
   CoreAccountId account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

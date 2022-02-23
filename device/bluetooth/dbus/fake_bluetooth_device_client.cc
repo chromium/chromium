@@ -462,6 +462,13 @@ void FakeBluetoothDeviceClient::Connect(const dbus::ObjectPath& object_path,
   AddInputDeviceIfNeeded(object_path, properties);
 }
 
+void FakeBluetoothDeviceClient::ConnectClassic(
+    const dbus::ObjectPath& object_path,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  Connect(object_path, std::move(callback), std::move(error_callback));
+}
+
 void FakeBluetoothDeviceClient::ConnectLE(const dbus::ObjectPath& object_path,
                                           base::OnceClosure callback,
                                           ErrorCallback error_callback) {

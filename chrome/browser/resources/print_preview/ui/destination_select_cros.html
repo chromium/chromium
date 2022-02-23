@@ -1,6 +1,6 @@
 <style include="print-preview-shared throbber destination-select cr-hidden-style">
   :host([is-current-destination-cros-local_]) #statusText {
-    color: var(--google-red-600);
+    color: var(--cros-text-color-alert);
     font-size: calc(10 / 13 * 1em);
     overflow: hidden;
     padding: 0;
@@ -8,6 +8,9 @@
     white-space: nowrap;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <print-preview-settings-section>
   <span slot="title">$i18n{destinationLabel}</span>
   <div slot="controls">

@@ -40,13 +40,7 @@ chromium-metrics-reviews@google.com.
     event to fail dispatching whilst trying to dispatch an event on the active
     Service Worker. {BackgroundFetchEvents}
   </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
 <histogram
@@ -59,13 +53,7 @@ chromium-metrics-reviews@google.com.
     event to fail dispatching whilst trying to find the Service Worker.
     {BackgroundFetchEvents}
   </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
 <histogram
@@ -78,13 +66,7 @@ chromium-metrics-reviews@google.com.
     event to fail dispatching whilst trying to start the active Service Worker.
     {BackgroundFetchEvents}
   </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
 <histogram name="BackgroundFetch.EventDispatchResult{BackgroundFetchEvents}"
@@ -95,13 +77,7 @@ chromium-metrics-reviews@google.com.
     Records the result of dispatching one of the Background Fetch API events to
     the Service Worker associated with the event. {BackgroundFetchEvents}
   </summary>
-  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents"/>
 </histogram>
 
 <histogram name="BackgroundFetch.HasDuplicateRequests" enum="Boolean"
@@ -146,11 +122,6 @@ chromium-metrics-reviews@google.com.
     APIs. {BackgroundFetchManagerAPIsDuration}
   </summary>
   <token key="BackgroundFetchManagerAPIsDuration">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".FetchDuration" summary="Duration of fetch"/>
     <variant name=".GetDuration" summary="Duration of get"/>
     <variant name=".GetIdsDuration" summary="Duration of getIds"/>
@@ -201,11 +172,6 @@ chromium-metrics-reviews@google.com.
     {BackgroundFetchDatabaseStorageErrors}
   </summary>
   <token key="BackgroundFetchDatabaseStorageErrors">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".CleanupTask" summary="CleanupTask"/>
     <variant name=".CreateMetadataTask" summary="CreateMetadata DatabaseTask"/>
     <variant name=".DeleteRegistrationTask"
@@ -314,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2022-05-08">
+    enum="BackgroundSyncResultPattern" expires_after="2022-07-11">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

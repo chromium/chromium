@@ -93,7 +93,7 @@ testcase.searchDownloadsClearSearch = async () => {
   // Click on the clear search button.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
 
-  // Wait for fil list to display all files.
+  // Wait for file list to display all files.
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET));
 
@@ -124,6 +124,14 @@ testcase.searchDownloadsClearSearchKeyDown = async () => {
   const searchInput =
       await remoteCall.waitForElement(appId, '#search-box [type="search"]');
   chrome.test.assertEq('', searchInput.value);
+
+  // Wait for the search wrapper to be collapsed.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
+  // Check the search button is focused.
+  const button =
+      await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
+  chrome.test.assertEq('search-button', button.attributes['id']);
 };
 
 /**

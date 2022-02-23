@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/loader/threaded_icon_loader.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_type_converters.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 

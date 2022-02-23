@@ -93,6 +93,14 @@ class ChromeTrustedVaultService {
   // |callback| is called synchronously.
   virtual void CancelDialog(BOOL animated, void (^callback)(void)) = 0;
 
+  // Clears local data belonging for the security domain and identity, such as
+  // shared keys. Data not specific for a specific domain (e.g. private key) is
+  // not removed. |identity| The identity for which the domain-specific local
+  // data is cleared. |callback| Block called when clearing data is complete.
+  virtual void ClearLocalDataForIdentity(ChromeIdentity* chrome_identity,
+                                         void (^callback)(BOOL success,
+                                                          NSError* error)) = 0;
+
  protected:
   // Functions to notify observers.
   void NotifyKeysChanged();

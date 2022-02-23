@@ -25,7 +25,7 @@
 #include "mojo/core/ports/port_locker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "crypto/random.h"
 #else
 #include "base/rand_util.h"
@@ -58,7 +58,7 @@ class RandomNameGenerator {
   PortName GenerateRandomPortName() {
     base::AutoLock lock(lock_);
     if (cache_index_ == kRandomNameCacheSize) {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
       base::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
 #else
       crypto::RandBytes(cache_, sizeof(PortName) * kRandomNameCacheSize);
@@ -161,7 +161,7 @@ int Node::GetPort(const PortName& port_name, PortRef* port_ref) {
   if (iter == ports_.end())
     return ERROR_PORT_UNKNOWN;
 
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
   // Workaround for https://crbug.com/665869.
   std::atomic_thread_fence(std::memory_order_seq_cst);
 #endif
@@ -185,7 +185,9 @@ int Node::CreateUninitializedPort(PortRef* port_ref) {
 
 int Node::InitializePort(const PortRef& port_ref,
                          const NodeName& peer_node_name,
-                         const PortName& peer_port_name) {
+                         const PortName& peer_port_name,
+                         const NodeName& prev_node_name,
+                         const PortName& prev_port_name) {
   {
     // Must be acquired for UpdatePortPeerAddress below.
     PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -199,6 +201,9 @@ int Node::InitializePort(const PortRef& port_ref,
     port->state = Port::kReceiving;
     UpdatePortPeerAddress(port_ref.name(), port, peer_node_name,
                           peer_port_name);
+
+    port->prev_node_name = prev_node_name;
+    port->prev_port_name = prev_port_name;
   }
 
   delegate_->PortStatusChanged(port_ref);
@@ -217,11 +222,13 @@ int Node::CreatePortPair(PortRef* port0_ref, PortRef* port1_ref) {
   if (rv != OK)
     return rv;
 
-  rv = InitializePort(*port0_ref, name_, port1_ref->name());
+  rv = InitializePort(*port0_ref, name_, port1_ref->name(), name_,
+                      port1_ref->name());
   if (rv != OK)
     return rv;
 
-  rv = InitializePort(*port1_ref, name_, port0_ref->name());
+  rv = InitializePort(*port1_ref, name_, port0_ref->name(), name_,
+                      port0_ref->name());
   if (rv != OK)
     return rv;
 
@@ -256,6 +263,7 @@ int Node::ClosePort(const PortRef& port_ref) {
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
   NodeName peer_node_name;
   PortName peer_port_name;
+  uint64_t sequence_num = 0;
   uint64_t last_sequence_num = 0;
   bool was_initialized = false;
   {
@@ -277,9 +285,12 @@ int Node::ClosePort(const PortRef& port_ref) {
         peer_node_name = port->peer_node_name;
         peer_port_name = port->peer_port_name;
 
+        sequence_num = port->next_control_sequence_num_to_send++;
+
         // If the port being closed still has unread messages, then we need to
         // take care to close those ports so as to avoid leaking memory.
         port->message_queue.TakeAllMessages(&undelivered_messages);
+        port->TakePendingMessages(undelivered_messages);
         break;
 
       default:
@@ -292,9 +303,10 @@ int Node::ClosePort(const PortRef& port_ref) {
   if (was_initialized) {
     DVLOG(2) << "Sending ObserveClosure from " << port_ref.name() << "@"
              << name_ << " to " << peer_port_name << "@" << peer_node_name;
-    delegate_->ForwardEvent(peer_node_name,
-                            std::make_unique<ObserveClosureEvent>(
-                                peer_port_name, last_sequence_num));
+    delegate_->ForwardEvent(
+        peer_node_name,
+        std::make_unique<ObserveClosureEvent>(peer_port_name, port_ref.name(),
+                                              sequence_num, last_sequence_num));
     for (const auto& message : undelivered_messages) {
       for (size_t i = 0; i < message->num_ports(); ++i) {
         PortRef ref;
@@ -312,6 +324,7 @@ int Node::GetStatus(const PortRef& port_ref, PortStatus* port_status) {
   if (port->state != Port::kReceiving)
     return ERROR_PORT_STATE_UNEXPECTED;
 
+  // TODO(sroettger): include messages pending sender verification here?
   port_status->has_messages = port->message_queue.HasNextMessage();
   port_status->receiving_messages = CanAcceptMoreMessages(port);
   port_status->peer_closed = port->peer_closed;
@@ -354,7 +367,13 @@ int Node::GetMessage(const PortRef& port_ref,
         (*message)->sequence_num() == port->sequence_num_to_acknowledge) {
       peer_node_name = port->peer_node_name;
       ack_event = std::make_unique<UserMessageReadAckEvent>(
-          port->peer_port_name, port->sequence_num_to_acknowledge);
+          port->peer_port_name, port_ref.name(),
+          port->next_control_sequence_num_to_send++,
+          port->sequence_num_to_acknowledge);
+    }
+    if (*message) {
+      // Message will be passed to the user, no need to block the queue.
+      port->message_queue.MessageProcessed();
     }
   }
 
@@ -371,7 +390,7 @@ int Node::GetMessage(const PortRef& port_ref,
                         << " does not exist!";
 
       SinglePortLocker locker(&new_port_ref);
-      DCHECK(locker.port()->state == Port::kReceiving);
+      DCHECK_EQ(locker.port()->state, Port::kReceiving);
       locker.port()->message_queue.set_signalable(true);
     }
 
@@ -408,6 +427,7 @@ int Node::SetAcknowledgeRequestInterval(
   NodeName peer_node_name;
   PortName peer_port_name;
   uint64_t sequence_num_to_request_ack = 0;
+  uint64_t sequence_num = 0;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -423,35 +443,154 @@ int Node::SetAcknowledgeRequestInterval(
 
     sequence_num_to_request_ack = port->last_sequence_num_acknowledged +
                                   sequence_num_acknowledge_interval;
+    sequence_num = port->next_control_sequence_num_to_send++;
   }
 
   delegate_->ForwardEvent(peer_node_name,
                           std::make_unique<UserMessageReadAckRequestEvent>(
-                              peer_port_name, sequence_num_to_request_ack));
+                              peer_port_name, port_ref.name(), sequence_num,
+                              sequence_num_to_request_ack));
   return OK;
 }
 
-int Node::AcceptEvent(ScopedEvent event) {
+bool Node::IsEventFromPreviousPeer(const Event& event) {
+  switch (event.type()) {
+    case Event::Type::kUserMessage:
+      return true;
+    case Event::Type::kPortAccepted:
+      // PortAccepted is sent by the next peer
+      return false;
+    case Event::Type::kObserveProxy:
+      // ObserveProxy with an invalid port name is a broadcast event
+      return event.port_name() != kInvalidPortName;
+    case Event::Type::kObserveProxyAck:
+      return true;
+    case Event::Type::kObserveClosure:
+      return true;
+    case Event::Type::kMergePort:
+      // MergePort is not from the previous peer
+      return false;
+    case Event::Type::kUserMessageReadAckRequest:
+      return true;
+    case Event::Type::kUserMessageReadAck:
+      return true;
+    case Event::Type::kUpdatePreviousPeer:
+      return true;
+    default:
+      // No need to check unknown message types since AcceptPeer will return
+      // an error.
+      return false;
+  }
+}
+
+int Node::AcceptEventInternal(const PortRef& port_ref,
+                              const NodeName& from_node,
+                              ScopedEvent event) {
   switch (event->type()) {
     case Event::Type::kUserMessage:
-      return OnUserMessage(Event::Cast<UserMessageEvent>(&event));
+      return OnUserMessage(port_ref, from_node,
+                           Event::Cast<UserMessageEvent>(&event));
     case Event::Type::kPortAccepted:
-      return OnPortAccepted(Event::Cast<PortAcceptedEvent>(&event));
+      return OnPortAccepted(port_ref, Event::Cast<PortAcceptedEvent>(&event));
     case Event::Type::kObserveProxy:
-      return OnObserveProxy(Event::Cast<ObserveProxyEvent>(&event));
+      return OnObserveProxy(port_ref, Event::Cast<ObserveProxyEvent>(&event));
     case Event::Type::kObserveProxyAck:
-      return OnObserveProxyAck(Event::Cast<ObserveProxyAckEvent>(&event));
+      return OnObserveProxyAck(port_ref,
+                               Event::Cast<ObserveProxyAckEvent>(&event));
     case Event::Type::kObserveClosure:
-      return OnObserveClosure(Event::Cast<ObserveClosureEvent>(&event));
+      return OnObserveClosure(port_ref,
+                              Event::Cast<ObserveClosureEvent>(&event));
     case Event::Type::kMergePort:
-      return OnMergePort(Event::Cast<MergePortEvent>(&event));
+      return OnMergePort(port_ref, Event::Cast<MergePortEvent>(&event));
     case Event::Type::kUserMessageReadAckRequest:
       return OnUserMessageReadAckRequest(
-          Event::Cast<UserMessageReadAckRequestEvent>(&event));
+          port_ref, Event::Cast<UserMessageReadAckRequestEvent>(&event));
     case Event::Type::kUserMessageReadAck:
-      return OnUserMessageReadAck(Event::Cast<UserMessageReadAckEvent>(&event));
+      return OnUserMessageReadAck(port_ref,
+                                  Event::Cast<UserMessageReadAckEvent>(&event));
+    case Event::Type::kUpdatePreviousPeer:
+      return OnUpdatePreviousPeer(port_ref,
+                                  Event::Cast<UpdatePreviousPeerEvent>(&event));
   }
   return OOPS(ERROR_NOT_IMPLEMENTED);
+}
+
+int Node::AcceptEvent(const NodeName& from_node, ScopedEvent event) {
+  PortRef port_ref;
+  GetPort(event->port_name(), &port_ref);
+
+#ifndef MOJO_BACKWARDS_COMPAT
+  DVLOG(2) << "AcceptEvent type: " << event->type() << ", "
+           << event->from_port() << "@" << from_node << " => "
+           << port_ref.name() << "@" << name_
+           << " seq nr: " << event->control_sequence_num() << " port valid? "
+           << port_ref.is_valid();
+
+  if (!IsEventFromPreviousPeer(*event)) {
+    DCHECK_EQ(event->control_sequence_num(), kInvalidSequenceNum);
+    // Some events are not coming from the previous peer, e.g. broadcasts or
+    // PortAccepted events. No need to check the sequence number or sender.
+    return AcceptEventInternal(port_ref, from_node, std::move(event));
+  }
+
+  DCHECK_NE(event->control_sequence_num(), kInvalidSequenceNum);
+
+  if (!port_ref.is_valid()) {
+    // If we don't have a valid port, there's nothing for us to check. However,
+    // we pass the ref on to AcceptEventInternal to make sure there's no race
+    // where it becomes valid and we skipped the peer check.
+    return AcceptEventInternal(port_ref, from_node, std::move(event));
+  }
+
+  // Before processing the event, verify the sender and sequence number.
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (!port->IsNextEvent(from_node, *event)) {
+      DVLOG(2) << "Buffering event (type " << event->type()
+               << "): " << event->from_port() << "@" << from_node << " => "
+               << port_ref.name() << "@" << name_
+               << " seq nr: " << event->control_sequence_num() << " / "
+               << port->next_control_sequence_num_to_receive << ", want "
+               << port->prev_port_name << "@" << port->prev_node_name;
+
+      port->BufferEvent(from_node, std::move(event));
+      return OK;
+    }
+  }
+
+  int ret = AcceptEventInternal(port_ref, from_node, std::move(event));
+
+  // More events might have been enqueued during processing.
+  while (true) {
+    ScopedEvent next_event;
+    NodeName next_from_node;
+    {
+      SinglePortLocker locker(&port_ref);
+      auto* port = locker.port();
+      // We always increment the control sequence number after we finished
+      // processing the event. That way we ensure that the events are handled
+      // in order without keeping a lock the whole time.
+      port->next_control_sequence_num_to_receive++;
+      port->NextEvent(&next_from_node, &next_event);
+
+      if (next_event) {
+        DVLOG(2) << "Handling buffered event (type " << next_event->type()
+                 << "): " << next_event->from_port() << "@" << next_from_node
+                 << " => " << port_ref.name() << "@" << name_
+                 << " seq nr: " << next_event->control_sequence_num() << " / "
+                 << port->next_control_sequence_num_to_receive;
+      }
+    }
+    if (!next_event)
+      break;
+    AcceptEventInternal(port_ref, next_from_node, std::move(next_event));
+  }
+
+  return ret;
+#else
+  return AcceptEventInternal(port_ref, from_node, std::move(event));
+#endif
 }
 
 int Node::MergePorts(const PortRef& port_ref,
@@ -459,6 +598,7 @@ int Node::MergePorts(const PortRef& port_ref,
                      const PortName& destination_port_name) {
   PortName new_port_name;
   Event::PortDescriptor new_port_descriptor;
+  PendingUpdatePreviousPeer pending_update_event{.from_port = port_ref.name()};
   {
     // Must be held for ConvertToProxy.
     PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -473,8 +613,17 @@ int Node::MergePorts(const PortRef& port_ref,
     // into the port cycle atomically there.
     new_port_name = port_ref.name();
     ConvertToProxy(locker.port(), destination_node_name, &new_port_name,
-                   &new_port_descriptor);
+                   &new_port_descriptor, &pending_update_event);
   }
+
+#ifndef MOJO_BACKWARDS_COMPAT
+  delegate_->ForwardEvent(
+      pending_update_event.receiver,
+      std::make_unique<UpdatePreviousPeerEvent>(
+          pending_update_event.port, pending_update_event.from_port,
+          pending_update_event.sequence_num, pending_update_event.new_prev_node,
+          pending_update_event.new_prev_port));
+#endif
 
   if (new_port_descriptor.peer_node_name == name_ &&
       destination_node_name != name_) {
@@ -487,7 +636,8 @@ int Node::MergePorts(const PortRef& port_ref,
 
   delegate_->ForwardEvent(
       destination_node_name,
-      std::make_unique<MergePortEvent>(destination_port_name, new_port_name,
+      std::make_unique<MergePortEvent>(destination_port_name, kInvalidPortName,
+                                       kInvalidSequenceNum, new_port_name,
                                        new_port_descriptor));
   return OK;
 }
@@ -510,9 +660,9 @@ int Node::LostConnectionToNode(const NodeName& node_name) {
   return OK;
 }
 
-int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
-  PortName port_name = message->port_name();
-
+int Node::OnUserMessage(const PortRef& port_ref,
+                        const NodeName& from_node,
+                        std::unique_ptr<UserMessageEvent> message) {
 #if DCHECK_IS_ON()
   std::ostringstream ports_buf;
   for (size_t i = 0; i < message->num_ports(); ++i) {
@@ -522,8 +672,8 @@ int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
   }
 
   DVLOG(4) << "OnUserMessage " << message->sequence_num()
-           << " [ports=" << ports_buf.str() << "] at " << port_name << "@"
-           << name_;
+           << " [ports=" << ports_buf.str() << "] at " << message->port_name()
+           << "@" << name_;
 #endif
 
   // Even if this port does not exist, cannot receive anymore messages or is
@@ -531,28 +681,15 @@ int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
   // this node. When the message is forwarded, these ports will get transferred
   // following the usual method. If the message cannot be accepted, then the
   // newly bound ports will simply be closed.
-  for (size_t i = 0; i < message->num_ports(); ++i) {
-    Event::PortDescriptor& descriptor = message->port_descriptors()[i];
-    if (descriptor.referring_node_name == kInvalidNodeName) {
-      // If the referring node name is invalid, this descriptor can be ignored
-      // and the port should already exist locally.
-      PortRef port_ref;
-      if (GetPort(message->ports()[i], &port_ref) != OK)
-        return ERROR_PORT_UNKNOWN;
-    } else {
+  if (from_node != name_) {
+    for (size_t i = 0; i < message->num_ports(); ++i) {
+      Event::PortDescriptor& descriptor = message->port_descriptors()[i];
       int rv = AcceptPort(message->ports()[i], descriptor);
       if (rv != OK)
         return rv;
-
-      // Ensure that the referring node is wiped out of this descriptor. This
-      // allows the event to be forwarded across multiple local hops without
-      // attempting to accept the port more than once.
-      descriptor.referring_node_name = kInvalidNodeName;
     }
   }
 
-  PortRef port_ref;
-  GetPort(port_name, &port_ref);
   bool has_next_message = false;
   bool message_accepted = false;
   bool should_forward_messages = false;
@@ -600,9 +737,9 @@ int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
   return OK;
 }
 
-int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
+int Node::OnPortAccepted(const PortRef& port_ref,
+                         std::unique_ptr<PortAcceptedEvent> event) {
+  if (!port_ref.is_valid())
     return ERROR_PORT_UNKNOWN;
 
 #if DCHECK_IS_ON()
@@ -617,7 +754,8 @@ int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
   return BeginProxying(port_ref);
 }
 
-int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
+int Node::OnObserveProxy(const PortRef& port_ref,
+                         std::unique_ptr<ObserveProxyEvent> event) {
   if (event->port_name() == kInvalidPortName) {
     // An ObserveProxy with an invalid target port name is a broadcast used to
     // inform ports when their peer (which was itself a proxy) has become
@@ -635,8 +773,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
   // The port may have already been closed locally, in which case the
   // ObserveClosure message will contain the last_sequence_num field.
   // We can then silently ignore this message.
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK) {
+  if (!port_ref.is_valid()) {
     DVLOG(1) << "ObserveProxy: " << event->port_name() << "@" << name_
              << " not found";
     return OK;
@@ -662,12 +799,15 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
     if (port->peer_node_name == event->proxy_node_name() &&
         port->peer_port_name == event->proxy_port_name()) {
       if (port->state == Port::kReceiving) {
+        // Updating the port peer will reset the sequence num. Grab it now;
+        uint64_t sequence_num = port->next_control_sequence_num_to_send++;
         UpdatePortPeerAddress(port_ref.name(), port,
                               event->proxy_target_node_name(),
                               event->proxy_target_port_name());
         event_target_node = event->proxy_node_name();
         event_to_forward = std::make_unique<ObserveProxyAckEvent>(
-            event->proxy_port_name(), port->next_sequence_num_to_send - 1);
+            event->proxy_port_name(), port_ref.name(), sequence_num,
+            port->next_sequence_num_to_send - 1);
         peer_changed = true;
         DVLOG(2) << "Forwarding ObserveProxyAck from " << event->port_name()
                  << "@" << name_ << " to " << event->proxy_port_name() << "@"
@@ -689,15 +829,23 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
         port->send_on_proxy_removal =
             std::make_unique<std::pair<NodeName, ScopedEvent>>(
                 event->proxy_node_name(),
-                std::make_unique<ObserveProxyAckEvent>(event->proxy_port_name(),
-                                                       kInvalidSequenceNum));
+                std::make_unique<ObserveProxyAckEvent>(
+                    event->proxy_port_name(), port_ref.name(),
+                    kInvalidSequenceNum, kInvalidSequenceNum));
       }
     } else {
       // Forward this event along to our peer. Eventually, it should find the
       // port referring to the proxy.
       event_target_node = port->peer_node_name;
       event->set_port_name(port->peer_port_name);
-      event_to_forward = std::move(event);
+      event->set_from_port(port_ref.name());
+      event->set_control_sequence_num(
+          port->next_control_sequence_num_to_send++);
+      if (port->state == Port::kBuffering) {
+        port->control_message_queue.push({event_target_node, std::move(event)});
+      } else {
+        event_to_forward = std::move(event);
+      }
     }
   }
 
@@ -716,32 +864,42 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
   return OK;
 }
 
-int Node::OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event) {
+int Node::OnObserveProxyAck(const PortRef& port_ref,
+                            std::unique_ptr<ObserveProxyAckEvent> event) {
   DVLOG(2) << "ObserveProxyAck at " << event->port_name() << "@" << name_
            << " (last_sequence_num=" << event->last_sequence_num() << ")";
 
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
+  if (!port_ref.is_valid())
     return ERROR_PORT_UNKNOWN;  // The port may have observed closure first.
 
   bool try_remove_proxy_immediately;
+  bool erase_port = false;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    if (port->state != Port::kProxying)
-      return OOPS(ERROR_PORT_STATE_UNEXPECTED);
 
-    // If the last sequence number is invalid, this is a signal that we need to
-    // retransmit the ObserveProxy event for this port rather than flagging the
-    // the proxy for removal ASAP.
-    try_remove_proxy_immediately =
-        event->last_sequence_num() != kInvalidSequenceNum;
-    if (try_remove_proxy_immediately) {
-      // We can now remove this port once we have received and forwarded the
-      // last message addressed to this port.
-      port->remove_proxy_on_last_message = true;
-      port->last_sequence_num_to_receive = event->last_sequence_num();
+    if (port->state == Port::kProxying) {
+      // If the last sequence number is invalid, this is a signal that we need
+      // to retransmit the ObserveProxy event for this port rather than flagging
+      // the the proxy for removal ASAP.
+      try_remove_proxy_immediately =
+          event->last_sequence_num() != kInvalidSequenceNum;
+      if (try_remove_proxy_immediately) {
+        // We can now remove this port once we have received and forwarded the
+        // last message addressed to this port.
+        port->remove_proxy_on_last_message = true;
+        port->last_sequence_num_to_receive = event->last_sequence_num();
+      }
+    } else if (port->state == Port::kClosed) {
+      erase_port = true;
+    } else {
+      return OOPS(ERROR_PORT_STATE_UNEXPECTED);
     }
+  }
+
+  if (erase_port) {
+    ErasePort(port_ref.name());
+    return OK;
   }
 
   if (try_remove_proxy_immediately)
@@ -752,10 +910,10 @@ int Node::OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event) {
   return OK;
 }
 
-int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
+int Node::OnObserveClosure(const PortRef& port_ref,
+                           std::unique_ptr<ObserveClosureEvent> event) {
   // OK if the port doesn't exist, as it may have been closed already.
-  PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
+  if (!port_ref.is_valid())
     return OK;
 
   // This message tells the port that it should no longer expect more messages
@@ -765,8 +923,8 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
 
   bool notify_delegate = false;
   NodeName peer_node_name;
-  PortName peer_port_name;
   bool try_remove_proxy = false;
+  bool erase_port = false;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -799,6 +957,10 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
       // read from the other end.
       port->last_sequence_num_acknowledged =
           port->next_sequence_num_to_send - 1;
+    } else if (port->state == Port::kClosed) {
+      // This is the ack for a closed proxy port notification. Now it's fine to
+      // delete the port.
+      erase_port = true;
     } else {
       // We haven't yet reached the receiving peer of the closed port, so we'll
       // forward the message along as-is.
@@ -814,15 +976,24 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
              << port->peer_node_name
              << " (last_sequence_num=" << event->last_sequence_num() << ")";
 
+    event->set_port_name(port->peer_port_name);
+    event->set_from_port(port_ref.name());
+    event->set_control_sequence_num(port->next_control_sequence_num_to_send++);
     peer_node_name = port->peer_node_name;
-    peer_port_name = port->peer_port_name;
+
+    if (port->state == Port::kBuffering) {
+      port->control_message_queue.push({peer_node_name, std::move(event)});
+    }
   }
 
   if (try_remove_proxy)
     TryRemoveProxy(port_ref);
 
-  event->set_port_name(peer_port_name);
-  delegate_->ForwardEvent(peer_node_name, std::move(event));
+  if (erase_port)
+    ErasePort(port_ref.name());
+
+  if (event)
+    delegate_->ForwardEvent(peer_node_name, std::move(event));
 
   if (notify_delegate)
     delegate_->PortStatusChanged(port_ref);
@@ -830,10 +1001,8 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
   return OK;
 }
 
-int Node::OnMergePort(std::unique_ptr<MergePortEvent> event) {
-  PortRef port_ref;
-  GetPort(event->port_name(), &port_ref);
-
+int Node::OnMergePort(const PortRef& port_ref,
+                      std::unique_ptr<MergePortEvent> event) {
   DVLOG(1) << "MergePort at " << port_ref.name() << "@" << name_
            << " merging with proxy " << event->new_port_name() << "@" << name_
            << " pointing to " << event->new_port_descriptor().peer_port_name
@@ -862,15 +1031,30 @@ int Node::OnMergePort(std::unique_ptr<MergePortEvent> event) {
     return ERROR_PORT_UNKNOWN;
   }
 
+  bool peer_allowed = true;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (!port->pending_merge_peer) {
+      LOG(ERROR) << "MergePort called on unexpected port: "
+                 << event->port_name();
+      peer_allowed = false;
+    } else {
+      port->pending_merge_peer = false;
+    }
+  }
+  if (!peer_allowed) {
+    ClosePort(port_ref);
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
   return MergePortsInternal(port_ref, new_port_ref,
                             false /* allow_close_on_bad_state */);
 }
 
 int Node::OnUserMessageReadAckRequest(
+    const PortRef& port_ref,
     std::unique_ptr<UserMessageReadAckRequestEvent> event) {
-  PortRef port_ref;
-  GetPort(event->port_name(), &port_ref);
-
   DVLOG(1) << "AckRequest " << port_ref.name() << "@" << name_ << " sequence "
            << event->sequence_num_to_acknowledge();
 
@@ -887,6 +1071,9 @@ int Node::OnUserMessageReadAckRequest(
     if (port->state == Port::kProxying) {
       // Proxies simply forward the ack request to their peer.
       event->set_port_name(port->peer_port_name);
+      event->set_from_port(port_ref.name());
+      event->set_control_sequence_num(
+          port->next_control_sequence_num_to_send++);
       event_to_send = std::move(event);
     } else {
       uint64_t current_sequence_num =
@@ -897,7 +1084,13 @@ int Node::OnUserMessageReadAckRequest(
         // If the current sequence number to read already exceeds the ack
         // request, send an ack immediately.
         event_to_send = std::make_unique<UserMessageReadAckEvent>(
-            port->peer_port_name, current_sequence_num);
+            port->peer_port_name, port_ref.name(),
+            port->next_control_sequence_num_to_send++, current_sequence_num);
+
+        if (port->state == Port::kBuffering) {
+          port->control_message_queue.push(
+              {peer_node_name, std::move(event_to_send)});
+        }
 
         // This might be a late or duplicate acknowledge request, that's
         // requesting acknowledge for an already read message. There may already
@@ -930,10 +1123,8 @@ int Node::OnUserMessageReadAckRequest(
   return OK;
 }
 
-int Node::OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event) {
-  PortRef port_ref;
-  GetPort(event->port_name(), &port_ref);
-
+int Node::OnUserMessageReadAck(const PortRef& port_ref,
+                               std::unique_ptr<UserMessageReadAckEvent> event) {
   DVLOG(1) << "Acknowledge " << port_ref.name() << "@" << name_ << " sequence "
            << event->sequence_num_acknowledged();
 
@@ -963,8 +1154,11 @@ int Node::OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event) {
     if (port->sequence_num_acknowledge_interval && !port->peer_closed) {
       peer_node_name = port->peer_node_name;
       ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
-          port->peer_port_name, port->last_sequence_num_acknowledged +
-                                    port->sequence_num_acknowledge_interval);
+          port->peer_port_name, port_ref.name(),
+          port->next_control_sequence_num_to_send++,
+          port->last_sequence_num_acknowledged +
+              port->sequence_num_acknowledge_interval);
+      DCHECK_NE(port->state, Port::kBuffering);
     }
   }
   if (ack_request_event)
@@ -972,6 +1166,39 @@ int Node::OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event) {
 
   if (port_ref.is_valid())
     delegate_->PortStatusChanged(port_ref);
+
+  return OK;
+}
+
+int Node::OnUpdatePreviousPeer(const PortRef& port_ref,
+                               std::unique_ptr<UpdatePreviousPeerEvent> event) {
+  DVLOG(1) << "OnUpdatePreviousPeer port: " << event->port_name()
+           << " changing to " << event->new_node_name()
+           << ", port: " << event->from_port() << " => "
+           << event->new_port_name();
+
+  if (!port_ref.is_valid()) {
+    return ERROR_PORT_UNKNOWN;
+  }
+
+  const NodeName& new_node_name = event->new_node_name();
+  const PortName& new_port_name = event->new_port_name();
+  DCHECK_NE(new_node_name, kInvalidNodeName);
+  DCHECK_NE(new_port_name, kInvalidPortName);
+  if (new_node_name == kInvalidNodeName || new_port_name == kInvalidPortName) {
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+
+    port->prev_node_name = new_node_name;
+    port->prev_port_name = new_port_name;
+    // The sequence number will get incremented after this event has been
+    // handled.
+    port->next_control_sequence_num_to_receive = kInitialSequenceNum - 1;
+  }
 
   return OK;
 }
@@ -1017,6 +1244,9 @@ void Node::ErasePort(const PortName& port_name) {
 int Node::SendUserMessageInternal(const PortRef& port_ref,
                                   std::unique_ptr<UserMessageEvent>* message) {
   std::unique_ptr<UserMessageEvent>& m = *message;
+
+  m->set_from_port(port_ref.name());
+
   for (size_t i = 0; i < m->num_ports(); ++i) {
     if (m->ports()[i] == port_ref.name())
       return ERROR_PORT_CANNOT_SEND_SELF;
@@ -1040,7 +1270,7 @@ int Node::SendUserMessageInternal(const PortRef& port_ref,
     return OK;
   }
 
-  int accept_result = AcceptEvent(std::move(m));
+  int accept_result = AcceptEvent(name_, std::move(m));
   if (accept_result != OK) {
     // See comment above for why we don't return an error in this case.
     DVLOG(2) << "AcceptEvent failed: " << accept_result;
@@ -1053,6 +1283,8 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
                              const PortRef& port1_ref,
                              bool allow_close_on_bad_state) {
   const PortRef* port_refs[2] = {&port0_ref, &port1_ref};
+  PendingUpdatePreviousPeer pending_update_events[2];
+  uint64_t original_sequence_number[2];
   {
     // Needed to swap peer map entries below.
     PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -1095,10 +1327,29 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
       return ERROR_PORT_STATE_UNEXPECTED;
     }
 
+    pending_update_events[0] = {
+        .receiver = port0->peer_node_name,
+        .port = port0->peer_port_name,
+        .from_port = port0_ref.name(),
+        .sequence_num = port0->next_control_sequence_num_to_send++,
+        .new_prev_node = name_,
+        .new_prev_port = port1_ref.name()};
+    pending_update_events[1] = {
+        .receiver = port1->peer_node_name,
+        .port = port1->peer_port_name,
+        .from_port = port1_ref.name(),
+        .sequence_num = port1->next_control_sequence_num_to_send++,
+        .new_prev_node = name_,
+        .new_prev_port = port0_ref.name()};
+
     // Swap the ports' peer information and switch them both to proxying mode.
     SwapPortPeers(port0_ref.name(), port0, port1_ref.name(), port1);
     port0->state = Port::kProxying;
     port1->state = Port::kProxying;
+    original_sequence_number[0] = port0->next_control_sequence_num_to_send;
+    original_sequence_number[1] = port1->next_control_sequence_num_to_send;
+    port0->next_control_sequence_num_to_send = kInitialSequenceNum;
+    port1->next_control_sequence_num_to_send = kInitialSequenceNum;
     if (port0->peer_closed)
       port0->remove_proxy_on_last_message = true;
     if (port1->peer_closed)
@@ -1109,27 +1360,44 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
   // the merge by initiating proxy removals.
   if (ForwardUserMessagesFromProxy(port0_ref) == OK &&
       ForwardUserMessagesFromProxy(port1_ref) == OK) {
-    for (size_t i = 0; i < 2; ++i) {
+#ifndef MOJO_BACKWARDS_COMPAT
+    // Send the prev peer updates out after the forwarding the user messages
+    // succeeded. Otherwise, we won't be able to restore the previous state
+    // below.
+    for (const auto& pending_update_event : pending_update_events) {
+      delegate_->ForwardEvent(
+          pending_update_event.receiver,
+          std::make_unique<UpdatePreviousPeerEvent>(
+              pending_update_event.port, pending_update_event.from_port,
+              pending_update_event.sequence_num,
+              pending_update_event.new_prev_node,
+              pending_update_event.new_prev_port));
+    }
+#endif
+
+    for (const auto* const port_ref : port_refs) {
       bool try_remove_proxy_immediately = false;
       ScopedEvent closure_event;
       NodeName closure_event_target_node;
       {
-        SinglePortLocker locker(port_refs[i]);
+        SinglePortLocker locker(port_ref);
         auto* port = locker.port();
-        DCHECK(port->state == Port::kProxying);
+        DCHECK_EQ(port->state, Port::kProxying);
         try_remove_proxy_immediately = port->remove_proxy_on_last_message;
         if (try_remove_proxy_immediately || port->peer_closed) {
           // If either end of the port cycle is closed, we propagate an
           // ObserveClosure event.
           closure_event_target_node = port->peer_node_name;
           closure_event = std::make_unique<ObserveClosureEvent>(
-              port->peer_port_name, port->last_sequence_num_to_receive);
+              port->peer_port_name, port_ref->name(),
+              port->next_control_sequence_num_to_send++,
+              port->last_sequence_num_to_receive);
         }
       }
       if (try_remove_proxy_immediately)
-        TryRemoveProxy(*port_refs[i]);
+        TryRemoveProxy(*port_ref);
       else
-        InitiateProxyRemoval(*port_refs[i]);
+        InitiateProxyRemoval(*port_ref);
 
       if (closure_event) {
         delegate_->ForwardEvent(closure_event_target_node,
@@ -1155,6 +1423,8 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     DCHECK_EQ(Port::kProxying, port1->state);
     port0->state = Port::kReceiving;
     port1->state = Port::kReceiving;
+    port0->next_control_sequence_num_to_send = original_sequence_number[0];
+    port1->next_control_sequence_num_to_send = original_sequence_number[1];
   }
 
   ClosePort(port0_ref);
@@ -1165,16 +1435,23 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
 void Node::ConvertToProxy(Port* port,
                           const NodeName& to_node_name,
                           PortName* port_name,
-                          Event::PortDescriptor* port_descriptor) {
+                          Event::PortDescriptor* port_descriptor,
+                          PendingUpdatePreviousPeer* pending_update) {
   port->AssertLockAcquired();
   PortName local_port_name = *port_name;
 
   PortName new_port_name;
   GenerateRandomPortName(&new_port_name);
 
+  pending_update->receiver = port->peer_node_name;
+  pending_update->port = port->peer_port_name;
+  pending_update->sequence_num = port->next_control_sequence_num_to_send++;
+  pending_update->new_prev_node = to_node_name;
+  pending_update->new_prev_port = new_port_name;
+
   // Make sure we don't send messages to the new peer until after we know it
   // exists. In the meantime, just buffer messages locally.
-  DCHECK(port->state == Port::kReceiving);
+  DCHECK_EQ(port->state, Port::kReceiving);
   port->state = Port::kBuffering;
 
   // If we already know our peer is closed, we already know this proxy can
@@ -1208,6 +1485,10 @@ int Node::AcceptPort(const PortName& port_name,
   port->state = Port::kReceiving;
   port->peer_node_name = port_descriptor.peer_node_name;
   port->peer_port_name = port_descriptor.peer_port_name;
+  port->next_control_sequence_num_to_send = kInitialSequenceNum;
+  port->next_control_sequence_num_to_receive = kInitialSequenceNum;
+  port->prev_node_name = port_descriptor.referring_node_name;
+  port->prev_port_name = port_descriptor.referring_port_name;
   port->last_sequence_num_to_receive =
       port_descriptor.last_sequence_num_to_receive;
   port->peer_closed = port_descriptor.peer_closed;
@@ -1226,9 +1507,10 @@ int Node::AcceptPort(const PortName& port_name,
     return rv;
 
   // Allow referring port to forward messages.
-  delegate_->ForwardEvent(
-      port_descriptor.referring_node_name,
-      std::make_unique<PortAcceptedEvent>(port_descriptor.referring_port_name));
+  delegate_->ForwardEvent(port_descriptor.referring_node_name,
+                          std::make_unique<PortAcceptedEvent>(
+                              port_descriptor.referring_port_name,
+                              kInvalidPortName, kInvalidSequenceNum));
   return OK;
 }
 
@@ -1238,6 +1520,8 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
                                       UserMessageEvent* message,
                                       NodeName* forward_to_node) {
   bool target_is_remote = false;
+  base::queue<PendingUpdatePreviousPeer> peer_update_events;
+
   for (;;) {
     NodeName target_node_name;
     {
@@ -1335,9 +1619,12 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
         // being routed externally.
         Event::PortDescriptor* port_descriptors = message->port_descriptors();
         for (size_t i = 0; i < message->num_ports(); ++i) {
-          ConvertToProxy(locker.GetPort(attached_port_refs[i]),
-                         target_node_name, message->ports() + i,
-                         port_descriptors + i);
+          auto* port = locker.GetPort(attached_port_refs[i]);
+          PendingUpdatePreviousPeer update_event = {
+              .from_port = attached_port_refs[i].name()};
+          ConvertToProxy(port, target_node_name, message->ports() + i,
+                         port_descriptors + i, &update_event);
+          peer_update_events.push(update_event);
         }
       }
     }
@@ -1351,8 +1638,25 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
 
     *forward_to_node = target_node_name;
     message->set_port_name(forwarding_port->peer_port_name);
+    message->set_from_port(forwarding_port_ref.name());
+    message->set_control_sequence_num(
+        forwarding_port->next_control_sequence_num_to_send++);
     break;
   }
+
+#ifndef MOJO_BACKWARDS_COMPAT
+  while (!peer_update_events.empty()) {
+    auto pending_update_event = peer_update_events.front();
+    peer_update_events.pop();
+    delegate_->ForwardEvent(
+        pending_update_event.receiver,
+        std::make_unique<UpdatePreviousPeerEvent>(
+            pending_update_event.port, pending_update_event.from_port,
+            pending_update_event.sequence_num,
+            pending_update_event.new_prev_node,
+            pending_update_event.new_prev_port));
+  }
+#endif
 
   if (target_is_remote) {
     for (size_t i = 0; i < message->num_ports(); ++i) {
@@ -1372,12 +1676,21 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
 }
 
 int Node::BeginProxying(const PortRef& port_ref) {
+  base::queue<std::pair<NodeName, ScopedEvent>> control_message_queue;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
     if (port->state != Port::kBuffering)
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
     port->state = Port::kProxying;
+    std::swap(port->control_message_queue, control_message_queue);
+  }
+
+  while (!control_message_queue.empty()) {
+    auto node_event_pair = std::move(control_message_queue.front());
+    control_message_queue.pop();
+    delegate_->ForwardEvent(node_event_pair.first,
+                            std::move(node_event_pair.second));
   }
 
   int rv = ForwardUserMessagesFromProxy(port_ref);
@@ -1388,8 +1701,6 @@ int Node::BeginProxying(const PortRef& port_ref) {
   MaybeForwardAckRequest(port_ref);
 
   bool try_remove_proxy_immediately;
-  ScopedEvent closure_event;
-  NodeName closure_target_node;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -1397,17 +1708,10 @@ int Node::BeginProxying(const PortRef& port_ref) {
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
 
     try_remove_proxy_immediately = port->remove_proxy_on_last_message;
-    if (try_remove_proxy_immediately) {
-      // Make sure we propagate closure to our current peer.
-      closure_target_node = port->peer_node_name;
-      closure_event = std::make_unique<ObserveClosureEvent>(
-          port->peer_port_name, port->last_sequence_num_to_receive);
-    }
   }
 
   if (try_remove_proxy_immediately) {
     TryRemoveProxy(port_ref);
-    delegate_->ForwardEvent(closure_target_node, std::move(closure_event));
   } else {
     InitiateProxyRemoval(port_ref);
   }
@@ -1433,6 +1737,13 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
     int rv = PrepareToForwardUserMessage(port_ref, Port::kProxying,
                                          true /* ignore_closed_peer */,
                                          message.get(), &target_node);
+    {
+      // Mark the message as processed after we ran PrepareToForwardUserMessage.
+      // This is important to prevent another thread from deleting the port
+      // before we grabbed a sequence number for the message.
+      SinglePortLocker locker(&port_ref);
+      locker.port()->message_queue.MessageProcessed();
+    }
     if (rv != OK)
       return rv;
 
@@ -1444,51 +1755,84 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
 void Node::InitiateProxyRemoval(const PortRef& port_ref) {
   NodeName peer_node_name;
   PortName peer_port_name;
+  uint64_t sequence_num;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
+    if (port->state == Port::kClosed)
+      return;
     peer_node_name = port->peer_node_name;
     peer_port_name = port->peer_port_name;
+    sequence_num = port->next_control_sequence_num_to_send++;
+    DCHECK_EQ(port->state, Port::kProxying);
   }
 
   // To remove this node, we start by notifying the connected graph that we are
   // a proxy. This allows whatever port is referencing this node to skip it.
   // Eventually, this node will receive ObserveProxyAck (or ObserveClosure if
   // the peer was closed in the meantime).
-  delegate_->ForwardEvent(peer_node_name,
-                          std::make_unique<ObserveProxyEvent>(
-                              peer_port_name, name_, port_ref.name(),
-                              peer_node_name, peer_port_name));
+  delegate_->ForwardEvent(
+      peer_node_name, std::make_unique<ObserveProxyEvent>(
+                          peer_port_name, port_ref.name(), sequence_num, name_,
+                          port_ref.name(), peer_node_name, peer_port_name));
 }
 
 void Node::TryRemoveProxy(const PortRef& port_ref) {
   bool should_erase = false;
   NodeName removal_target_node;
   ScopedEvent removal_event;
+  PendingUpdatePreviousPeer pending_update_event;
 
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    DCHECK(port->state == Port::kProxying);
+    if (port->state == Port::kClosed)
+      return;
+    DCHECK_EQ(port->state, Port::kProxying);
 
     // Make sure we have seen ObserveProxyAck before removing the port.
     if (!port->remove_proxy_on_last_message)
       return;
 
     if (!CanAcceptMoreMessages(port)) {
+      DCHECK_EQ(port->message_queue.queued_message_count(), 0lu);
       should_erase = true;
       if (port->send_on_proxy_removal) {
         removal_target_node = port->send_on_proxy_removal->first;
         removal_event = std::move(port->send_on_proxy_removal->second);
+        if (removal_event) {
+          removal_event->set_control_sequence_num(
+              port->next_control_sequence_num_to_send++);
+          DCHECK_EQ(removal_target_node, port->peer_node_name);
+          DCHECK_EQ(removal_event->port_name(), port->peer_port_name);
+        }
       }
+      // Tell the peer_node to accept messages from prev_node from now.
+      pending_update_event = {
+          .receiver = port->peer_node_name,
+          .port = port->peer_port_name,
+          .from_port = port_ref.name(),
+          .sequence_num = port->next_control_sequence_num_to_send++,
+          .new_prev_node = port->prev_node_name,
+          .new_prev_port = port->prev_port_name};
     } else {
       DVLOG(2) << "Cannot remove port " << port_ref.name() << "@" << name_
                << " now; waiting for more messages";
     }
   }
 
-  if (should_erase)
+  if (should_erase) {
+#ifndef MOJO_BACKWARDS_COMPAT
+    delegate_->ForwardEvent(
+        pending_update_event.receiver,
+        std::make_unique<UpdatePreviousPeerEvent>(
+            pending_update_event.port, pending_update_event.from_port,
+            pending_update_event.sequence_num,
+            pending_update_event.new_prev_node,
+            pending_update_event.new_prev_port));
+#endif
     ErasePort(port_ref.name());
+  }
 
   if (removal_event)
     delegate_->ForwardEvent(removal_target_node, std::move(removal_event));
@@ -1503,6 +1847,9 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
   std::vector<PortRef> ports_to_notify;
   std::vector<PortName> dead_proxies_to_broadcast;
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;
+
+  ScopedEvent closure_event;
+  NodeName closure_event_target_node;
 
   {
     PortLocker::AssertNoPortsLockedOnCurrentThread();
@@ -1540,6 +1887,16 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
         SinglePortLocker locker(&local_port_ref);
         auto* port = locker.port();
 
+        if (port_name != kInvalidPortName) {
+          // If this is a targeted observe dead proxy event, send out an
+          // ObserveClosure to acknowledge it.
+          closure_event_target_node = port->peer_node_name;
+          closure_event = std::make_unique<ObserveClosureEvent>(
+              port->peer_port_name, local_port_ref.name(),
+              port->next_control_sequence_num_to_send++,
+              port->last_sequence_num_to_receive);
+        }
+
         if (!port->peer_closed) {
           // Treat this as immediate peer closure. It's an exceptional
           // condition akin to a broken pipe, so we don't care about losing
@@ -1557,10 +1914,12 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
         // procedure of forward-propagating an ObserveProxy. Instead we
         // broadcast our own death so it can be back-propagated. This is
         // inefficient but rare.
-        if (port->state != Port::kReceiving) {
+        if (port->state == Port::kBuffering || port->state == Port::kProxying) {
+          port->state = Port::kClosed;
           dead_proxies_to_broadcast.push_back(local_port_ref.name());
           std::vector<std::unique_ptr<UserMessageEvent>> messages;
           port->message_queue.TakeAllMessages(&messages);
+          port->TakePendingMessages(messages);
           for (auto& message : messages)
             undelivered_messages.emplace_back(std::move(message));
         }
@@ -1568,9 +1927,16 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
     }
   }
 
+#ifdef MOJO_BACKWARDS_COMPAT
   for (const auto& proxy_name : dead_proxies_to_broadcast) {
     ErasePort(proxy_name);
     DVLOG(2) << "Forcibly deleted port " << proxy_name << "@" << name_;
+  }
+#endif
+
+  if (closure_event) {
+    delegate_->ForwardEvent(closure_event_target_node,
+                            std::move(closure_event));
   }
 
   // Wake up any receiving ports who have just observed simulated peer closure.
@@ -1580,8 +1946,8 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
   for (const auto& proxy_name : dead_proxies_to_broadcast) {
     // Broadcast an event signifying that this proxy is no longer functioning.
     delegate_->BroadcastEvent(std::make_unique<ObserveProxyEvent>(
-        kInvalidPortName, name_, proxy_name, kInvalidNodeName,
-        kInvalidPortName));
+        kInvalidPortName, kInvalidPortName, kInvalidSequenceNum, name_,
+        proxy_name, kInvalidNodeName, kInvalidPortName));
 
     // Also process death locally since the port that points this closed one
     // could be on the current node.
@@ -1610,6 +1976,7 @@ void Node::UpdatePortPeerAddress(const PortName& local_port_name,
   RemoveFromPeerPortMap(local_port_name, local_port);
   local_port->peer_node_name = new_peer_node;
   local_port->peer_port_name = new_peer_port;
+  local_port->next_control_sequence_num_to_send = kInitialSequenceNum;
   if (new_peer_port != kInvalidPortName) {
     peer_port_maps_[new_peer_node][new_peer_port].emplace(
         local_port_name,
@@ -1676,8 +2043,10 @@ void Node::MaybeResendAckRequest(const PortRef& port_ref) {
 
     peer_node_name = port->peer_node_name;
     ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
-        port->peer_port_name, port->last_sequence_num_acknowledged +
-                                  port->sequence_num_acknowledge_interval);
+        port->peer_port_name, port_ref.name(),
+        port->next_control_sequence_num_to_send++,
+        port->last_sequence_num_acknowledged +
+            port->sequence_num_acknowledge_interval);
   }
 
   delegate_->ForwardEvent(peer_node_name, std::move(ack_request_event));
@@ -1697,7 +2066,9 @@ void Node::MaybeForwardAckRequest(const PortRef& port_ref) {
 
     peer_node_name = port->peer_node_name;
     ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
-        port->peer_port_name, port->sequence_num_to_acknowledge);
+        port->peer_port_name, port_ref.name(),
+        port->next_control_sequence_num_to_send++,
+        port->sequence_num_to_acknowledge);
 
     port->sequence_num_to_acknowledge = 0;
   }
@@ -1721,7 +2092,8 @@ void Node::MaybeResendAck(const PortRef& port_ref) {
 
     peer_node_name = port->peer_node_name;
     ack_event = std::make_unique<UserMessageReadAckEvent>(
-        port->peer_port_name, last_sequence_num_read);
+        port->peer_port_name, port_ref.name(),
+        port->next_control_sequence_num_to_send++, last_sequence_num_read);
   }
 
   delegate_->ForwardEvent(peer_node_name, std::move(ack_event));

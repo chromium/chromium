@@ -11,7 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/draw_image.h"
@@ -249,6 +253,18 @@ scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json) {
   base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
   return SkottieWrapper::CreateSerializable(
       std::vector<uint8_t>(json_span.begin(), json_span.end()));
+}
+
+scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
+    base::FilePath::StringPieceType animation_file_name) {
+  base::FilePath animation_path;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &animation_path));
+  animation_path = animation_path.AppendASCII("cc/test/data/lottie")
+                       .Append(base::FilePath(animation_file_name));
+  std::string animation_json;
+  CHECK(base::ReadFileToString(animation_path, &animation_json))
+      << animation_path;
+  return CreateSkottieFromString(animation_json);
 }
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {

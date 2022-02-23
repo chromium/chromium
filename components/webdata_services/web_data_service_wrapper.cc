@@ -26,11 +26,10 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_constants.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
@@ -97,7 +96,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->AddTable(std::make_unique<autofill::AutofillTable>());
   profile_database_->AddTable(std::make_unique<KeywordTable>());
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   profile_database_->AddTable(
       std::make_unique<payments::PaymentMethodManifestTable>());
   profile_database_->AddTable(
@@ -121,7 +120,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   token_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_TOKEN));
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   payment_manifest_web_data_ =
       base::MakeRefCounted<payments::PaymentManifestWebDataService>(
           profile_database_, ui_task_runner);
@@ -135,20 +134,18 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
                      profile_autofill_web_data_, application_locale));
-  if (base::FeatureList::IsEnabled(switches::kSyncAutofillWalletOfferData)) {
-    profile_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
-                       profile_autofill_web_data_));
-  }
+  profile_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
+                     profile_autofill_web_data_));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableAccountWalletStorage)) {
     base::FilePath account_storage_path;
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     account_storage_path = context_path.Append(kAccountWebDataFilename);
 #else
     account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
-#endif  // OS_ANDROID || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     account_database_ = base::MakeRefCounted<WebDatabaseService>(
         account_storage_path, ui_task_runner, db_task_runner);
     account_database_->AddTable(std::make_unique<autofill::AutofillTable>());
@@ -174,7 +171,7 @@ void WebDataServiceWrapper::Shutdown() {
   keyword_web_data_->ShutdownOnUISequence();
   token_web_data_->ShutdownOnUISequence();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   payment_manifest_web_data_->ShutdownOnUISequence();
 #endif
 
@@ -202,7 +199,7 @@ scoped_refptr<TokenWebData> WebDataServiceWrapper::GetTokenWebData() {
   return token_web_data_.get();
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 scoped_refptr<payments::PaymentManifestWebDataService>
 WebDataServiceWrapper::GetPaymentManifestWebData() {
   return payment_manifest_web_data_.get();

@@ -21,6 +21,7 @@ class BrowserContext;
 
 namespace web_app {
 
+class AbstractWebAppDatabaseFactory;
 class WebAppRegistrar;
 class OsIntegrationManager;
 class WebAppInstallFinalizer;
@@ -54,6 +55,8 @@ class FakeWebAppProvider : public WebAppProvider {
   // if it's a part of TestingProfile (see BuildDefault() method above).
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
+  // NB: If you replace the Registrar, you also have to replace the SyncBridge
+  // accordingly.
   void SetRegistrar(std::unique_ptr<WebAppRegistrar> registrar);
   void SetSyncBridge(std::unique_ptr<WebAppSyncBridge> sync_bridge);
   void SetOsIntegrationManager(
@@ -70,6 +73,9 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
   void SkipAwaitingExtensionSystem();
+  // Starts this WebAppProvider and its subsystems. It does not wait for systems
+  // to be ready.
+  void StartWithSubsystems();
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See
@@ -78,6 +84,7 @@ class FakeWebAppProvider : public WebAppProvider {
   // A mutable view must be accessible only in tests.
   WebAppRegistrarMutable& GetRegistrarMutable() const;
   WebAppIconManager& GetIconManager() const;
+  AbstractWebAppDatabaseFactory& GetDatabaseFactory() const;
 
  private:
   void CheckNotStarted() const;

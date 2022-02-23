@@ -9,7 +9,10 @@
 #include "components/lookalikes/core/features.h"
 #include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/reputation/core/safety_tips_config.h"
+#include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using version_info::Channel;
 
 std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   switch (type) {
@@ -177,7 +180,39 @@ struct TargetEmbeddingHeuristicTestCase {
   const TargetEmbeddingType expected_type;
 };
 
-TEST(LookalikeUrlUtilTest, TargetEmbedding) {
+TEST(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://example.com"))));
+  // ASCII short eTLD+1:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://e.com"))));
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://subdomain.e.com"))));
+  // Unicode single character e2LD:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.com"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.com"))));
+  // Unicode single character e2LD with a unicode registry.
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.рф"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.рф"))));
+  // Non-unique hostname:
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ"))));
+
+  // Multi character e2LD with disallowed characters:
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.com"))));
+  EXPECT_TRUE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://test.ττ.com"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.рф"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.ττ.рф"))));
+}
+
+TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
       GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
@@ -466,4 +501,89 @@ TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
     EXPECT_EQ(test_case.expected, result)
         << "when comparing " << test_case.str1 << " with " << test_case.str2;
   }
+}
+
+TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
+  reputation::SafetyTipsConfig proto;
+  reputation::HeuristicLaunchConfig* config = proto.add_launch_config();
+  config->set_heuristic(reputation::HeuristicLaunchConfig::
+                            HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES);
+
+  // Minimum rollout percentages to enable a heuristic on each site on Stable
+  // channel:
+  // example1.com: 79%
+  // example2.com: 16%
+  // example3.com: 36%
+
+  // Slowly ramp up the launch and cover more sites on Stable channel.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(25);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(50);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  config->set_launch_percentage(100);
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::STABLE));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::STABLE));
+
+  // On Beta, launch is always at 50%.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example1.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example2.com", Channel::BETA));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto,
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+      "example3.com", Channel::BETA));
 }

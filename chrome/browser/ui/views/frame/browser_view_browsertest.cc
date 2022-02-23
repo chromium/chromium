@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,7 +73,7 @@ class BrowserViewTest : public InProcessBrowserTest {
     DevToolsWindowTesting::Get(devtools_)->SetInspectedPageBounds(bounds);
   }
 
-  DevToolsWindow* devtools_;
+  raw_ptr<DevToolsWindow> devtools_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -100,7 +101,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   }
 
  private:
-  content::WebContents* other_;
+  raw_ptr<content::WebContents> other_;
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
@@ -323,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
 
 // On Mac, voiceover treats tab modal dialogs as native windows, so setting an
 // accessible title for tab-modal dialogs is not necessary.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Open a tab-modal dialog and check that the accessible window title is the
 // title of the dialog.
@@ -354,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
       browser_view()->GetWidget()->GetRootView()->GetNativeViewAccessible());
 // We expect this conversion to be safe on Windows, but can't guarantee that it
 // is safe on other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(ax_node);
 #else
   if (!ax_node)
@@ -380,4 +381,4 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
             nullptr);
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

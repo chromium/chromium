@@ -5,7 +5,6 @@
 #ifndef PPAPI_SHARED_IMPL_RESOURCE_VAR_H_
 #define PPAPI_SHARED_IMPL_RESOURCE_VAR_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"

@@ -141,10 +141,8 @@ bool RecoveredColumnSpec::IsAcceptableValue(ValueType value_type) const {
 RecoveredColumnSpec ParseColumnSpec(const char* sqlite_arg) {
   // The result is invalid until its |name| member is set.
   RecoveredColumnSpec result;
-  base::StringPiece sql(sqlite_arg);
 
-  base::StringPiece column_name;
-  std::tie(column_name, sql) = SplitToken(sql);
+  auto [column_name, sql] = SplitToken(sqlite_arg);
   if (column_name.empty()) {
     // Empty column names are invalid.
     DCHECK(!result.IsValid());

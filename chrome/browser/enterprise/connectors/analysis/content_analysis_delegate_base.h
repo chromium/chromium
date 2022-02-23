@@ -34,7 +34,8 @@ class ContentAnalysisDelegateBase {
   virtual ~ContentAnalysisDelegateBase() = default;
 
   // Called when the user decides to bypass the verdict they obtained from DLP.
-  virtual void BypassWarnings() = 0;
+  virtual void BypassWarnings(
+      absl::optional<std::u16string> user_justification) = 0;
 
   // Called when the user hits "cancel" on the dialog, typically cancelling a
   // pending file transfer.
@@ -47,6 +48,12 @@ class ContentAnalysisDelegateBase {
   // Returns the custom "learn more" URL specified by the admin to display in
   // the dialog, or absl::nullopt if there isn't any.
   virtual absl::optional<GURL> GetCustomLearnMoreUrl() const = 0;
+
+  // Returns true if the final verdict is from a type of analysis that requires
+  // user justification to bypass, as per the connector policy.
+  virtual bool BypassRequiresJustification() const = 0;
+
+  virtual std::u16string GetBypassJustificationLabel() const = 0;
 
   // Returns the text to display on the "cancel" button in the dialog, or
   // absl::nullopt if no text is specified by this delegate. Takes precedence

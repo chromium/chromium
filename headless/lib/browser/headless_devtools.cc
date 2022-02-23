@@ -10,12 +10,12 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/navigation_entry.h"
-#include "headless/grit/headless_lib_resources.h"
 #include "headless/public/headless_browser.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -81,7 +81,7 @@ class TCPEndpointServerSocketFactory : public content::DevToolsSocketFactory {
   net::HostPortPair endpoint_;
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   // Construct a factory to use an already-open, already-listening socket.
@@ -112,7 +112,7 @@ class TCPAdoptServerSocketFactory : public content::DevToolsSocketFactory {
 
   size_t socket_fd_;
 };
-#else   // defined(OS_POSIX)
+#else   // BUILDFLAG(IS_POSIX)
 
 // Placeholder class to use when a socket_fd is passed in on non-Posix.
 class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
@@ -133,7 +133,7 @@ class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
     return nullptr;
   }
 };
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 void PostTaskToCloseBrowser(base::WeakPtr<HeadlessBrowserImpl> browser) {
   content::GetUIThreadTaskRunner({})->PostTask(

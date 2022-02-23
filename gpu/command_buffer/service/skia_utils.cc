@@ -16,12 +16,13 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_version_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/config/gpu_finch_features.h"
 #endif
 
@@ -96,6 +97,9 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableMipmapGeneration);
 
+  // fSupportBilerpFromGlyphAtlas is needed for Raw Draw.
+  options.fSupportBilerpFromGlyphAtlas = features::IsUsingRawDraw();
+
   return options;
 }
 
@@ -105,10 +109,13 @@ GLuint GetGrGLBackendTextureFormat(
     sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
   GLuint internal_format = gl::GetInternalFormat(
-      version_info, viz::TextureStorageFormat(resource_format));
+      version_info,
+      viz::TextureStorageFormat(
+          resource_format,
+          feature_info->feature_flags().angle_rgbx_internal_format));
 
   bool use_version_es2 = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
 #endif
 
@@ -258,7 +265,7 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   image_info.fImage = image->image();
   image_info.fAlloc = alloc;
   image_info.fImageTiling = image->image_tiling();
-  image_info.fImageLayout = image->image_layout();
+  image_info.fImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
   image_info.fFormat = image->format();
   image_info.fImageUsageFlags = image->usage();
   image_info.fSampleCount = 1;
@@ -343,6 +350,44 @@ bool ShouldVulkanSyncCpuForSkiaSubmit(
   }
 #endif
   return false;
+}
+
+uint64_t GrBackendTextureTracingID(const GrBackendTexture& backend_texture) {
+  switch (backend_texture.backend()) {
+    case GrBackendApi::kOpenGL: {
+      GrGLTextureInfo tex_info;
+      if (backend_texture.getGLTextureInfo(&tex_info))
+        return tex_info.fID;
+      break;
+    }
+#if BUILDFLAG(IS_MAC)
+    case GrBackendApi::kMetal: {
+      GrMtlTextureInfo image_info;
+      if (backend_texture.getMtlTextureInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fTexture.get());
+      break;
+    }
+#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+    case GrBackendApi::kVulkan: {
+      GrVkImageInfo image_info;
+      if (backend_texture.getVkImageInfo(&image_info))
+        return reinterpret_cast<uint64_t>(image_info.fImage);
+      break;
+    }
+#endif
+#if BUILDFLAG(SKIA_USE_DAWN)
+    case GrBackendApi::kDawn: {
+      GrDawnTextureInfo tex_info;
+      if (backend_texture.getDawnTextureInfo(&tex_info))
+        return reinterpret_cast<uint64_t>(tex_info.fTexture.Get());
+      break;
+    }
+#endif
+    default:
+      break;
+  }
+  return 0;
 }
 
 }  // namespace gpu

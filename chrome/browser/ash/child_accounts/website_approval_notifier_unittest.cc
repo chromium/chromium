@@ -14,18 +14,38 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
+namespace {
+// A mock implementation of |NewWindowDelegate| for use in tests.
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
+};
+}  // namespace
+
 class WebsiteApprovalNotifierTest : public testing::Test {
  public:
-  WebsiteApprovalNotifierTest() = default;
+  WebsiteApprovalNotifierTest() {
+    auto instance = std::make_unique<MockNewWindowDelegate>();
+    auto primary = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_primary_ = primary.get();
+    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(instance), std::move(primary));
+  }
   WebsiteApprovalNotifierTest(const WebsiteApprovalNotifierTest&) = delete;
   WebsiteApprovalNotifierTest& operator=(const WebsiteApprovalNotifierTest&) =
       delete;
 
   ~WebsiteApprovalNotifierTest() override = default;
+
+  MockNewWindowDelegate& new_window_delegate_primary() {
+    return *new_window_delegate_primary_;
+  }
 
  protected:
   void OnNewWebsiteApproval(const std::string& hostname) {
@@ -45,8 +65,8 @@ class WebsiteApprovalNotifierTest : public testing::Test {
   TestingProfile profile_;
   NotificationDisplayServiceTester notification_tester_{&profile_};
   WebsiteApprovalNotifier notifier_{&profile_};
-  ash::TestNewWindowDelegateProvider new_window_provider_{
-      std::make_unique<ash::TestNewWindowDelegate>()};
+  MockNewWindowDelegate* new_window_delegate_primary_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };
 
 TEST_F(WebsiteApprovalNotifierTest, ShowNotificationsForValidHosts) {
@@ -84,6 +104,21 @@ TEST_F(WebsiteApprovalNotifierTest, MetricRecording) {
                                      /*reply=*/absl::nullopt);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "SupervisedUsers_RemoteWebApproval_NotificationClicked"));
+}
+
+TEST_F(WebsiteApprovalNotifierTest, UrlOpensInPrimaryBrowser) {
+  base::UserActionTester user_action_tester;
+  std::string host = "www.google.com";
+  std::string expected_url = std::string("https://") + host + "/";
+  OnNewWebsiteApproval(host);
+  EXPECT_TRUE(HasApprovalNotification(host));
+  EXPECT_CALL(new_window_delegate_primary(),
+              OpenUrl(GURL(expected_url),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  notification_tester_.SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                     GetNotificationId(host),
+                                     /*action_index=*/absl::nullopt,
+                                     /*reply=*/absl::nullopt);
 }
 
 }  // namespace ash

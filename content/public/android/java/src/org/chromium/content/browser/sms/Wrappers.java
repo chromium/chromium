@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
@@ -78,18 +82,41 @@ class Wrappers {
             return new SmsVerificationReceiver(mSmsProviderGms, this);
         }
 
-        // ---------------------------------------------------------------------
-        // Context overrides:
-
-        @Override
-        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+        private void onRegisterReceiver(BroadcastReceiver receiver, IntentFilter filter) {
             if (filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION)) {
                 mVerificationReceiver = receiver;
             } else {
                 mUserConsentReceiver = receiver;
             }
+        }
 
-            return super.registerReceiver(receiver, filter);
+        // ---------------------------------------------------------------------
+        // Context overrides:
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String permission, Handler handler) {
+            onRegisterReceiver(receiver, filter);
+            return super.registerReceiver(receiver, filter, permission, handler);
+        }
+
+        @Override
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+            throw new RuntimeException(); // Not implemented.
+        }
+
+        @Override
+        @RequiresApi(Build.VERSION_CODES.O)
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
+                String permission, Handler handler, int flags) {
+            onRegisterReceiver(receiver, filter);
+            return super.registerReceiver(receiver, filter, permission, handler);
+        }
+
+        @Override
+        @RequiresApi(Build.VERSION_CODES.O)
+        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, int flags) {
+            throw new RuntimeException(); // Not implemented.
         }
 
         @Override

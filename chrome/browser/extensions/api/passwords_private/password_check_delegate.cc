@@ -237,7 +237,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
           presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()) {
-  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_);
+  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_.get());
   observed_insecure_credentials_manager_.Observe(
       &insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Observe(
@@ -274,6 +274,7 @@ PasswordCheckDelegate::GetCompromisedCredentials() {
     api_credential.compromised_info->elapsed_time_since_compromise =
         FormatElapsedTime(credential.create_time);
     api_credential.compromised_info->compromise_type = credential_and_type.type;
+    api_credential.compromised_info->is_muted = credential.is_muted.value();
     compromised_credentials.push_back(std::move(api_credential));
   }
 
@@ -329,6 +330,28 @@ bool PasswordCheckDelegate::RemoveInsecureCredential(
     return false;
 
   return insecure_credentials_manager_.RemoveCredential(*insecure_credential);
+}
+
+bool PasswordCheckDelegate::MuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  // Try to obtain the original CredentialWithPassword. Return false if fails.
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
+    return false;
+
+  return insecure_credentials_manager_.MuteCredential(*insecure_credential);
+}
+
+bool PasswordCheckDelegate::UnmuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  // Try to obtain the original CredentialWithPassword. Return false if fails.
+  const CredentialWithPassword* insecure_credential =
+      FindMatchingInsecureCredential(credential);
+  if (!insecure_credential)
+    return false;
+
+  return insecure_credentials_manager_.UnmuteCredential(*insecure_credential);
 }
 
 void PasswordCheckDelegate::StartPasswordCheck(

@@ -29,8 +29,8 @@ class PerWebUIBrowserInterfaceBroker
 
   void GetInterface(mojo::GenericPendingReceiver receiver) override;
 
-  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-  BindNewPipeAndPassRemote() WARN_UNUSED_RESULT;
+  [[nodiscard]] mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+  BindNewPipeAndPassRemote();
 
  private:
   WebUIController& controller_;

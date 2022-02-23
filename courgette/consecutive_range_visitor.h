@@ -9,8 +9,6 @@
 
 #include <iterator>
 
-#include "base/macros.h"
-
 namespace courgette {
 
 // Usage note: First check whether std::unique() would suffice.

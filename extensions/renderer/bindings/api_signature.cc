@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -19,18 +20,25 @@ namespace extensions {
 
 namespace {
 
+// A list of API's which have a trailing function parameter that is not actually
+// meant to be treated like a traditional API success callback. For more details
+// see the comment where this is used in APISignature::CreateFromValues.
+constexpr const char* const kNonCallbackTrailingFunctionAPINames[] = {
+    "test.listenForever", "test.listenOnce", "test.callbackPass",
+    "test.callbackFail", "automation.addTreeChangeObserver"};
+
 std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
     const base::Value& specification_list,
     bool uses_returns_async) {
   std::vector<std::unique_ptr<ArgumentSpec>> signature;
-  auto size = specification_list.GetList().size();
+  auto size = specification_list.GetListDeprecated().size();
   // If the API specification uses the returns_async format we will be pushing a
   // callback onto the end of the argument spec list during the call to the ctor
   // later, so we make room for it now when we reserve the size.
   if (uses_returns_async)
     size++;
   signature.reserve(size);
-  for (const auto& value : specification_list.GetList()) {
+  for (const auto& value : specification_list.GetListDeprecated()) {
     CHECK(value.is_dict());
     signature.push_back(std::make_unique<ArgumentSpec>(value));
   }
@@ -489,17 +497,24 @@ APISignature::~APISignature() {}
 std::unique_ptr<APISignature> APISignature::CreateFromValues(
     const base::Value& spec_list,
     const base::Value* returns_async,
-    BindingAccessChecker* access_checker) {
+    BindingAccessChecker* access_checker,
+    const std::string& api_name) {
   bool uses_returns_async = returns_async != nullptr;
   auto argument_specs = ValueListToArgumentSpecs(spec_list, uses_returns_async);
 
   // Asynchronous returns for an API are either defined in the returns_async
   // part of the specification or as a trailing function argument.
+  // TODO(crbug.com/1288583): There are a handful of APIs which have a trailing
+  // function argument that is not a traditional callback. Once we have moved
+  // all the asynchronous API schemas to use the returns_async format it will be
+  // clear when this is the case, but for now we keep a list of the names of
+  // these APIs to ensure we are handling them correctly.
   const base::Value* returns_async_spec = returns_async;
   if (!argument_specs.empty() &&
-      argument_specs.back()->type() == ArgumentType::FUNCTION) {
+      argument_specs.back()->type() == ArgumentType::FUNCTION &&
+      !base::Contains(kNonCallbackTrailingFunctionAPINames, api_name)) {
     DCHECK(!returns_async_spec);
-    returns_async_spec = &spec_list.GetList().back();
+    returns_async_spec = &spec_list.GetListDeprecated().back();
     argument_specs.pop_back();
   }
 

@@ -18,7 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -195,7 +195,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   RequestSet unowned_requests_;
 
   // Guaranteed to be non-null.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Timer to dispatch requests that may have been queued for too long.
   base::OneShotTimer long_queued_requests_dispatch_timer_;

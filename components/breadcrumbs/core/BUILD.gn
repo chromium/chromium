@@ -8,6 +8,8 @@ source_set("core") {
     "application_breadcrumbs_logger.h",
     "breadcrumb_manager.cc",
     "breadcrumb_manager.h",
+    "breadcrumb_manager_browser_agent.cc",
+    "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_keyed_service.cc",
     "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_observer.h",
@@ -58,6 +60,7 @@ source_set("unit_tests") {
     "breadcrumb_manager_keyed_service_unittest.cc",
     "breadcrumb_manager_observer_unittest.cc",
     "breadcrumb_manager_unittest.cc",
+    "breadcrumb_persistent_storage_manager_unittest.cc",
     "breadcrumb_persistent_storage_util_unittest.cc",
   ]
 }

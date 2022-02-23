@@ -16,11 +16,11 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
@@ -105,7 +105,7 @@ void AddVerifyFlagsToReport(
   }
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void AddMacTrustFlagsToReport(
     int mac_trust_flags,
     ::google::protobuf::RepeatedField<int>* report_flags) {
@@ -167,9 +167,9 @@ TrustImplTypeFromMojom(
           MAC_TRUST_IMPL_MRU_CACHE;
   }
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void AddWinPlatformDebugInfoToReport(
     const cert_verifier::mojom::WinPlatformVerifierDebugInfoPtr&
         win_platform_debug_info,
@@ -185,7 +185,7 @@ void AddWinPlatformDebugInfoToReport(
       std::begin(win_platform_debug_info->authroot_sequence_number),
       std::end(win_platform_debug_info->authroot_sequence_number));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
@@ -256,7 +256,7 @@ CertificateErrorReport::CertificateErrorReport(
   if (!sct_list.empty())
     trial_report->set_sct_list(sct_list);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   AddMacPlatformDebugInfoToReport(debug_info->mac_platform_debug_info,
                                   trial_report);
   AddMacTrustFlagsToReport(
@@ -265,7 +265,7 @@ CertificateErrorReport::CertificateErrorReport(
   trial_report->set_mac_trust_impl(
       TrustImplTypeFromMojom(debug_info->mac_trust_impl));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
                                   trial_report);
 #endif
@@ -459,7 +459,7 @@ CertificateErrorReport::CertificateErrorReport(
   AddCertStatusToReportErrors(cert_status, cert_report_->mutable_cert_error());
   AddCertStatusToReportStatus(cert_status, cert_report_->mutable_cert_status());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome_browser_ssl::CertLoggerFeaturesInfo* features_info =
       cert_report_->mutable_features_info();
   features_info->set_android_aia_fetching_status(

@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Zona de pràctiques: llistes desplegables</translation>
 <translation id="1195238899008218998">Cloenda</translation>
 <translation id="1197088940767939838">Taronja</translation>
+<translation id="1198865190323699001">Gestos tàctils</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No hi ha cap encapçalament més de nivell 4</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{claudàtor de tancament}other{# claudàtors de tancament}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{signe d'interrogació}other{# signes d'interrogació}}</translation>
+<translation id="3505359110822747654">Replega els menús de ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{accent circumflex}other{# accents circumflexos}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{pic blanc}other{# pics blancs}}</translation>
 <translation id="352577523970648069">Un camp de text que es pot editar</translation>
 <translation id="3538907380453898475">llistdscrip</translation>
 <translation id="3549141990712742152">retalla <ph name="TEXT" />.</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Orientació ràpida completada!</translation>
 <translation id="5534303576632885660">capçalera</translation>
 <translation id="5539820223028224601">Gris pàl·lid</translation>
+<translation id="554893713779400387">Activa o desactiva el dictat</translation>
 <translation id="5549179427201066174">Activa o desactiva els avisos sonors (icones sonores)</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5561345396546889625">Llista següent</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Casella de selecció següent</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botó d'opció no seleccionat</translation>
 <translation id="5601172225407283979">Duu a terme l'acció predeterminada.</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{pic quadrat}other{# pics quadrats}}</translation>
 <translation id="5608798115546226984">Compleció automàtica en línia</translation>
 <translation id="5616029807486814372">Lliçó següent</translation>
 <translation id="561939826962581046">time</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">Llistes desplegables</translation>
 <translation id="8666733765751421568">Fi de <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Capçalera 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{nivell imbricat #}}</translation>
 <translation id="8693391540059827073">La meva estació preferida</translation>
 <translation id="8696284982970258155">Verd pàl·lid</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{barra}other{# barres verticals}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">Vermell fosc</translation>
 <translation id="923331726185079994">S'ha actualitzat ChromeVox</translation>
 <translation id="93384979447910801">Verd marí fosc</translation>
+<translation id="937605981140327129">TalkBack no està instal·lat actualment. Instal·la AccessibilitySuite d'Android mitjançant Play Store i torna-ho a provar.</translation>
 <translation id="948171205378458592">Disminueix la velocitat de la veu.</translation>
 <translation id="957570623732056069">Fes lliscar un dit cap a l'esquerra o la dreta per navegar per aquesta lliçó</translation>
 <translation id="958854023026327378">Fes lliscar un dit cap avall</translation>

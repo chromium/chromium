@@ -6,6 +6,8 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/message_center/message_center.h"
@@ -29,8 +31,8 @@ namespace ash {
 class UnifiedMessageCenterView;
 class UnifiedSystemTrayModel;
 
-// it's enclosed. This class is used only from UnifiedMessageCenterView.
 // Manages list of notifications. The class doesn't know about the ScrollView
+// it's enclosed. This class is used only from UnifiedMessageCenterView.
 class ASH_EXPORT UnifiedMessageListView
     : public views::View,
       public message_center::MessageCenterObserver,
@@ -40,7 +42,7 @@ class ASH_EXPORT UnifiedMessageListView
  public:
   // |message_center_view| can be null in unit tests.
   UnifiedMessageListView(UnifiedMessageCenterView* message_center_view,
-                         UnifiedSystemTrayModel* model);
+                         scoped_refptr<UnifiedSystemTrayModel> model);
   UnifiedMessageListView(const UnifiedMessageListView& other) = delete;
   UnifiedMessageListView& operator=(const UnifiedMessageListView& other) =
       delete;
@@ -100,6 +102,10 @@ class ASH_EXPORT UnifiedMessageListView
   // Returns true if `animation_` is currently in progress.
   bool IsAnimating() const;
 
+  // Returns whether `message_view_container` is being animated for expand or
+  // collapse.
+  bool IsAnimatingExpandOrCollapseContainer(const views::View* view) const;
+
   // Called when a notification is slid out so we can run the MOVE_DOWN
   // animation.
   void OnNotificationSlidOut();
@@ -157,6 +163,7 @@ class ASH_EXPORT UnifiedMessageListView
  private:
   friend class UnifiedMessageCenterViewTest;
   friend class UnifiedMessageListViewTest;
+  friend class UnifiedMessageCenterBubbleTest;
   class Background;
   class MessageViewContainer;
 
@@ -175,7 +182,11 @@ class ASH_EXPORT UnifiedMessageListView
     CLEAR_ALL_STACKED,
 
     // Part 2 of Clear All animation. Removing all visible notifications.
-    CLEAR_ALL_VISIBLE
+    CLEAR_ALL_VISIBLE,
+
+    // Animating an increase or decrease in height of a notification. Only one
+    // may animate at a time.
+    EXPAND_OR_COLLAPSE
   };
 
   // Syntactic sugar to downcast.
@@ -229,7 +240,11 @@ class ASH_EXPORT UnifiedMessageListView
   void UpdateClearAllAnimation();
 
   UnifiedMessageCenterView* const message_center_view_;
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
+
+  // Non-null during State::EXPAND_OR_COLLAPSE. Keeps track of the
+  // MessageViewContainer that is animating.
+  MessageViewContainer* expand_or_collapsing_container_ = nullptr;
 
   // If true, ChildPreferredSizeChanged() will be ignored. This is used in
   // CollapseAllNotifications() to prevent PreferredSizeChanged() triggered
@@ -255,7 +270,7 @@ class ASH_EXPORT UnifiedMessageListView
 
   // The final height of the UnifiedMessageListView. If not animating, it's same
   // as height().
-  int ideal_height_ = 0;
+  int target_height_ = 0;
 
   // True if the UnifiedMessageListView is currently deleting notifications
   // marked for removal. This check is needed to prevent re-entrancing issues

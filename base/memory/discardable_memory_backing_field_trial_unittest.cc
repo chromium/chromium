@@ -11,11 +11,11 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/memory/madv_free_discardable_memory_posix.h"
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace base {
 
 class DiscardableMemoryBackingFieldTrialTest : public ::testing::Test {
@@ -74,7 +74,7 @@ TEST_F(DiscardableMemoryBackingFieldTrialTest,
   EXPECT_EQ(backing, DiscardableMemoryBacking::kMadvFree);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(DiscardableMemoryBackingFieldTrialTest, AshmemBackingMatchesTrialGroup) {
   std::unique_ptr<test::ScopedFeatureList> scoped_feature =
       GetScopedFeatureListForDiscardableMemoryTrialGroup(
@@ -84,8 +84,9 @@ TEST_F(DiscardableMemoryBackingFieldTrialTest, AshmemBackingMatchesTrialGroup) {
   DiscardableMemoryBacking backing = GetDiscardableMemoryBacking();
   EXPECT_EQ(backing, DiscardableMemoryBacking::kSharedMemory);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base
 
-#endif  // defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)

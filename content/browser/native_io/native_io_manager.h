@@ -51,9 +51,9 @@ class CONTENT_EXPORT NativeIOManager {
   // all the from NativeIOManager to facilitate testing.
   explicit NativeIOManager(
       const base::FilePath& profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       bool allow_set_length_ipc,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
@@ -72,18 +72,12 @@ class CONTENT_EXPORT NativeIOManager {
   // Removes an storage key's data and closes any open files.
   void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback);
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
 
   // Computes all storage keys with data for a given type.
   void GetStorageKeysForType(
       blink::mojom::StorageType type,
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback);
-
-  // Computes all storage keys with data for a given hostname.
-  void GetStorageKeysForHost(
-      blink::mojom::StorageType type,
-      const std::string& host,
-      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback);
 
   // Computes the amount of bytes for the given storage key.
   //
@@ -93,7 +87,7 @@ class CONTENT_EXPORT NativeIOManager {
   void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
-      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback);
+      storage::mojom::QuotaClient::GetBucketUsageCallback callback);
 
   // Computes the amount of bytes for all storage keys.
   //
@@ -153,9 +147,9 @@ class CONTENT_EXPORT NativeIOManager {
   // This path is empty for in-memory (Incognito) profiles.
   const base::FilePath root_path_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool allow_set_length_ipc_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Tracks special rights for apps and extensions, may be null.
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

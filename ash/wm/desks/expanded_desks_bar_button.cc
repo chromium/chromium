@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/wm_highlight_item_border.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -42,7 +43,10 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
                               base::RepeatingClosure callback,
                               const std::u16string& text)
-      : DeskButtonBase(text, kBorderCornerRadius, kCornerRadius),
+      : DeskButtonBase(text,
+                       /*set_text=*/false,
+                       kBorderCornerRadius,
+                       kCornerRadius),
         outer_button_(outer_button),
         button_callback_(callback) {
     paint_contents_only_ = true;
@@ -67,8 +71,6 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     SetButtonState(GetEnabled());
   }
 
-  void OnButtonPressed() override { button_callback_.Run(); }
-
   void SetButtonState(bool enabled) override {
     outer_button_->UpdateLabelColor(enabled);
     // Notify the overview highlight if we are about to be disabled.
@@ -89,6 +91,10 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
         this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
     SchedulePaint();
   }
+
+  void OnButtonPressed() override { button_callback_.Run(); }
+
+  void UpdateBorderState() override { outer_button_->UpdateBorderColor(); }
 
  private:
   ExpandedDesksBarButton* outer_button_;
@@ -146,8 +152,9 @@ bool ExpandedDesksBarButton::IsPointOnButton(
 void ExpandedDesksBarButton::UpdateBorderColor() const {
   DCHECK(inner_button_);
   const bool focused =
-      bar_view_->dragged_item_over_bar() &&
-      IsPointOnButton(bar_view_->last_dragged_item_screen_location());
+      inner_button_->IsViewHighlighted() ||
+      (bar_view_->dragged_item_over_bar() &&
+       IsPointOnButton(bar_view_->last_dragged_item_screen_location()));
   bool should_paint = inner_button_->border_ptr()->SetFocused(focused);
   // Focus takes priority.
   if (!focused) {
@@ -182,7 +189,7 @@ void ExpandedDesksBarButton::Layout() {
       gfx::ELIDE_TAIL));
   const gfx::Size label_size = label_->GetPreferredSize();
   // Set the label to have the same height as the DeskNameView to keep them at
-  // the same horizotal level. Note, don't get the label's width from
+  // the same horizontal level. Note, don't get the label's width from
   // DeskNameView since desk's name is changeable, but this label here is not.
   const int label_height = desk_name_view->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(

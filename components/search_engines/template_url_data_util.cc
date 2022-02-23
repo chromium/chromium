@@ -26,7 +26,7 @@ base::StringPiece ToStringPiece(const char* str) {
 }  // namespace
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
-    const base::DictionaryValue& dict) {
+    const base::Value& dict) {
   const std::string* search_url =
       dict.FindStringKey(DefaultSearchManager::kURL);
   const std::string* keyword =
@@ -144,17 +144,19 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->usage_count = dict.FindIntKey(DefaultSearchManager::kUsageCount)
                             .value_or(result->usage_count);
 
-  const base::ListValue* alternate_urls = nullptr;
-  if (dict.GetList(DefaultSearchManager::kAlternateURLs, &alternate_urls)) {
-    for (const auto& it : alternate_urls->GetList()) {
+  const base::Value* alternate_urls =
+      dict.FindListKey(DefaultSearchManager::kAlternateURLs);
+  if (alternate_urls) {
+    for (const auto& it : alternate_urls->GetListDeprecated()) {
       if (it.is_string())
         result->alternate_urls.push_back(it.GetString());
     }
   }
 
-  const base::ListValue* encodings = nullptr;
-  if (dict.GetList(DefaultSearchManager::kInputEncodings, &encodings)) {
-    for (const auto& it : encodings->GetList()) {
+  const base::Value* encodings =
+      dict.FindListKey(DefaultSearchManager::kInputEncodings);
+  if (encodings) {
+    for (const auto& it : encodings->GetListDeprecated()) {
       std::string encoding;
       if (it.is_string())
         result->input_encodings.push_back(it.GetString());

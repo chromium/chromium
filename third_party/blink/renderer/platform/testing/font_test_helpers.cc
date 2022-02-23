@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -117,7 +118,7 @@ Font CreateTestFont(const AtomicString& family_name,
   return Font(font_description, TestFontSelector::Create(font_path));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void TestFontPrewarmer::PrewarmFamily(const WebString& family_name) {
   family_names_.push_back(family_name);
 }

@@ -14,9 +14,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_paths.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -24,6 +26,13 @@ using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 namespace {
+
+std::string GetNameFromManifest(const base::Value& manifest) {
+  if (!manifest.is_dict())
+    return std::string();
+  const std::string* name = manifest.FindStringKey(manifest_keys::kName);
+  return name ? *name : std::string();
+}
 
 // |manifest_path| is an absolute path to a manifest file.
 base::Value LoadManifestFile(const base::FilePath& manifest_path,
@@ -75,11 +84,14 @@ ManifestTest::ManifestData::ManifestData(base::Value manifest,
     : name_(name), manifest_(std::move(manifest)) {
   CHECK(manifest_.is_dict()) << "Manifest must be a dictionary. " << name_;
 }
+ManifestTest::ManifestData::ManifestData(base::Value manifest)
+    : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {
+  CHECK(manifest_.is_dict()) << "Manifest must be a dictionary.";
+  CHECK(!name_.empty()) << R"("name" must be specified in the manifest.)";
+}
 
 ManifestTest::ManifestData::ManifestData(ManifestData&& other) = default;
-
-ManifestTest::ManifestData::~ManifestData() {
-}
+ManifestTest::ManifestData::~ManifestData() = default;
 
 const base::Value& ManifestTest::ManifestData::GetManifest(
     const base::FilePath& test_data_dir,
@@ -214,12 +226,28 @@ void ManifestTest::LoadAndExpectError(const ManifestData& manifest,
                       expected_error);
 }
 
+void ManifestTest::LoadAndExpectError(const ManifestData& manifest,
+                                      const std::u16string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
+  return LoadAndExpectError(manifest, base::UTF16ToUTF8(expected_error),
+                            location, flags);
+}
+
 void ManifestTest::LoadAndExpectError(char const* manifest_name,
                                       const std::string& expected_error,
                                       ManifestLocation location,
                                       int flags) {
   return LoadAndExpectError(
       ManifestData(manifest_name), expected_error, location, flags);
+}
+
+void ManifestTest::LoadAndExpectError(char const* manifest_name,
+                                      const std::u16string& expected_error,
+                                      ManifestLocation location,
+                                      int flags) {
+  return LoadAndExpectError(ManifestData(manifest_name),
+                            base::UTF16ToUTF8(expected_error), location, flags);
 }
 
 void ManifestTest::AddPattern(extensions::URLPatternSet* extent,
@@ -238,11 +266,24 @@ ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
       flags_(flags) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
+                                 const std::u16string& expected_error,
+                                 ManifestLocation location,
+                                 int flags)
+    : Testcase(manifest_filename,
+               base::UTF16ToUTF8(expected_error),
+               location,
+               flags) {}
+
+ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
                                  const std::string& expected_error)
     : manifest_filename_(manifest_filename),
       expected_error_(expected_error),
       location_(ManifestLocation::kInternal),
       flags_(Extension::NO_FLAGS) {}
+
+ManifestTest::Testcase::Testcase(const std::string& manifest_filename,
+                                 const std::u16string& expected_error)
+    : Testcase(manifest_filename, base::UTF16ToUTF8(expected_error)) {}
 
 ManifestTest::Testcase::Testcase(const std::string& manifest_filename)
     : manifest_filename_(manifest_filename),

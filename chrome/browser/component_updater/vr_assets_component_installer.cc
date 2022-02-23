@@ -24,10 +24,10 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/VrAssetsComponentInstaller_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using component_updater::ComponentUpdateService;
 
@@ -55,12 +55,12 @@ bool VrAssetsComponentInstallerPolicy::ondemand_update_pending_ = false;
 // static
 bool VrAssetsComponentInstallerPolicy::
     ShouldRegisterVrAssetsComponentOnStartup() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return Java_VrAssetsComponentInstaller_shouldRegisterOnStartup(
       base::android::AttachCurrentThread());
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

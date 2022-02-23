@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -193,8 +194,8 @@ class NET_EXPORT_PRIVATE BrokenAlternativeServices {
   void ExpireBrokenAlternateProtocolMappings();
   void ScheduleBrokenAlternateProtocolMappingsExpiration();
 
-  Delegate* delegate_;            // Unowned
-  const base::TickClock* clock_;  // Unowned
+  raw_ptr<Delegate> delegate_;            // Unowned
+  raw_ptr<const base::TickClock> clock_;  // Unowned
 
   // List of <broken alt svc, expiration time> pairs sorted by expiration time.
   BrokenAlternativeServiceList broken_alternative_service_list_;

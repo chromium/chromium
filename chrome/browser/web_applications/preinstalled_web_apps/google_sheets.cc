@@ -8,7 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 
 namespace web_app {
@@ -108,7 +109,7 @@ ExternalInstallOptions GetConfigForGoogleSheets() {
   options.load_and_await_service_worker_registration = false;
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->title =
         base::UTF8ToUTF16(GetTranslatedName("Sheets", kNameTranslations));
 
@@ -120,6 +121,7 @@ ExternalInstallOptions GetConfigForGoogleSheets() {
         {IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG});
     return info;
   });
+  options.expected_app_id = kGoogleSheetsAppId;
 
   return options;
 }

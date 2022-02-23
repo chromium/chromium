@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -25,7 +25,7 @@ WebAppFrameToolbarTestMixin::WebAppFrameToolbarTestMixin() {
 void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
     Browser* browser,
     const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";

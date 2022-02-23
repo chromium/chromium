@@ -12,12 +12,14 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
+#include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/origin.h"
@@ -26,6 +28,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class OptimizationGuideLogger;
 class PrefService;
 class Profile;
 
@@ -34,19 +37,9 @@ namespace optimization_guide {
 enum class OptimizationGuideDecision;
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
-class PredictionModel;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class ModelInfo;
-
-using HostModelFeaturesLRUCache =
-    base::HashingLRUCache<std::string, base::flat_map<std::string, float>>;
-
-using OptimizationTargetDecisionCallback =
-    base::OnceCallback<void(optimization_guide::OptimizationTargetDecision)>;
-
-using PostModelLoadCallback =
-    base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>, bool)>;
 
 // A PredictionManager supported by the optimization guide that makes an
 // OptimizationTargetDecision by evaluating the corresponding prediction model
@@ -54,10 +47,11 @@ using PostModelLoadCallback =
 class PredictionManager : public PredictionModelDownloadObserver {
  public:
   PredictionManager(
-      OptimizationGuideStore* model_and_features_store,
+      base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile);
+      Profile* profile,
+      OptimizationGuideLogger* optimization_guide_logger);
 
   PredictionManager(const PredictionManager&) = delete;
   PredictionManager& operator=(const PredictionManager&) = delete;
@@ -99,7 +93,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
     return prediction_model_download_manager_.get();
   }
 
-  OptimizationGuideStore* model_and_features_store() const {
+  base::WeakPtr<OptimizationGuideStore> model_and_features_store() const {
     return model_and_features_store_;
   }
 
@@ -109,10 +103,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // Override |clock_| for testing.
   void SetClockForTesting(const base::Clock* clock);
-
-  // Clear host model features from the in memory host model features map and
-  // from the models and features store.
-  void ClearHostModelFeatures();
 
   // Override the model file returned to observers for |optimization_target|.
   // Use |TestModelInfoBuilder| to construct the model files. For
@@ -125,34 +115,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void OnModelReady(const proto::PredictionModel& model) override;
 
  protected:
-  // Return the prediction model for the optimization target used by this
-  // PredictionManager for testing.
-  PredictionModel* GetPredictionModelForTesting(
-      proto::OptimizationTarget optimization_target) const;
-
-  // Return the host model features for all hosts used by this
-  // PredictionManager for testing.
-  const HostModelFeaturesLRUCache* GetHostModelFeaturesForTesting() const;
-
-  // Returns the host model features for a host if available.
-  absl::optional<base::flat_map<std::string, float>>
-  GetHostModelFeaturesForHost(const std::string& host) const;
-
-  // Return the set of features that each host in |host_model_features_map_|
-  // contains for testing.
-  base::flat_set<std::string> GetSupportedHostModelFeaturesForTesting() const;
-
-  // Create a PredictionModel, virtual for testing.
-  virtual std::unique_ptr<PredictionModel> CreatePredictionModel(
-      const proto::PredictionModel& model) const;
-
-  // Process |host_model_features| to be stored in memory in the host model
-  // features map for immediate use and asynchronously write them to the model
-  // and features store to be persisted.
-  void UpdateHostModelFeatures(
-      const google::protobuf::RepeatedPtrField<proto::HostModelFeatures>&
-          host_model_features);
-
   // Process |prediction_models| to be stored in the in memory optimization
   // target prediction model map for immediate use and asynchronously write the
   // models to the model and features store to be persisted.
@@ -189,26 +151,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |model_and_features_store_|.
   void OnPredictionModelsStored();
 
-  // Callback run after host model features are stored in
-  // |model_and_features_store_|. |fetch_timer_| is stopped and the timer is
-  // rescheduled based on when models and host model features should be fetched
-  // again.
-  void OnHostModelFeaturesStored();
-
-  // Request the store to load all the host model features it contains. This
-  // must be completed before any prediction models can be loaded from the
-  // store.
-  void LoadHostModelFeatures();
-
-  // Callback run after host model features are loaded from the store and are
-  // ready to be processed and placed in |host_model_features_map_|.
-  // |host_model_features_loaded_| is set to true when called. Prediction models
-  // for all registered optimization targets that are not already loaded are
-  // requested to be loaded.
-  void OnLoadHostModelFeatures(
-      std::unique_ptr<std::vector<proto::HostModelFeatures>>
-          all_host_model_features);
-
   // Load models for every target in |optimization_targets| that have not yet
   // been loaded from the store.
   void LoadPredictionModels(
@@ -235,21 +177,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void StoreLoadedModelInfo(proto::OptimizationTarget optimization_target,
                             std::unique_ptr<ModelInfo> prediction_model_file);
 
-  // Updates the in-memory model for |optimization_target| to
-  // |prediction_model|.
-  void StoreLoadedPredictionModel(
-      proto::OptimizationTarget optimization_target,
-      std::unique_ptr<PredictionModel> prediction_model);
-
   // Post-processing callback invoked after processing |model|.
   void OnProcessLoadedModel(const proto::PredictionModel& model, bool success);
-
-  // Process |host_model_features| from the into host model features
-  // usable by the PredictionManager. The processed host model features are
-  // stored in |host_model_features_map_|. Return true if host model features
-  // can be constructed and successfully stored, otherwise, return false.
-  bool ProcessAndStoreHostModelFeatures(
-      const proto::HostModelFeatures& host_model_features);
 
   // Return the time when a prediction model fetch was last attempted.
   base::Time GetLastFetchAttemptTime() const;
@@ -266,9 +195,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // |last_success_time|.
   void SetLastModelFetchSuccessTime(base::Time last_success_time);
 
-  // Determine whether to schedule fetching new prediction models or fetch
-  // immediately due to override.
-  void MaybeScheduleModelFetch();
+  // Fetch models if enabled for this profile.
+  void MaybeFetchModels();
 
   // Schedule |fetch_timer_| to fire based on:
   // 1. The update time for models in the store and
@@ -279,11 +207,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // updated.
   void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
                                  const ModelInfo& model_info) const;
-
-  // A map of optimization target to the prediction model capable of making
-  // an optimization target decision for it.
-  base::flat_map<proto::OptimizationTarget, std::unique_ptr<PredictionModel>>
-      optimization_target_prediction_model_map_;
 
   // A map of optimization target to the model file containing the model for the
   // target.
@@ -301,9 +224,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
            base::ObserverList<OptimizationTargetModelObserver>>
       registered_observers_for_optimization_targets_;
 
-  // A LRU cache of host to host model features known to the prediction manager.
-  HostModelFeaturesLRUCache host_model_features_cache_;
-
   // The fetcher that handles making requests to update the models and host
   // model features from the remote Optimization Guide Service.
   std::unique_ptr<PredictionModelFetcher> prediction_model_fetcher_;
@@ -316,9 +236,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // TODO(crbug/1183507): Remove host model features store and all relevant
   // code, and deprecate the proto field too.
   // The optimization guide store that contains prediction models and host
-  // model features from the remote Optimization Guide Service. Not owned and
-  // guaranteed to outlive |this|.
-  OptimizationGuideStore* model_and_features_store_ = nullptr;
+  // model features from the remote Optimization Guide Service.
+  base::WeakPtr<OptimizationGuideStore> model_and_features_store_;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
@@ -328,11 +247,16 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // from the remote Optimization Guide Service.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page. Not owned. Guaranteed to outlive |this|, since the logger
+  // and |this| are owned by the optimization guide keyed service.
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
   // A reference to the PrefService for this profile. Not owned.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // A reference to the profile. Not owned.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // The timer used to schedule fetching prediction models and host model
   // features from the remote Optimization Guide Service.
@@ -340,7 +264,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // Whether the |model_and_features_store_| is initialized and ready for use.
   bool store_is_ready_ = false;

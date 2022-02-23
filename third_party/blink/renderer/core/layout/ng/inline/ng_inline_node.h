@@ -35,10 +35,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   }
   NGLayoutInputNode NextSibling() const { return nullptr; }
 
-  scoped_refptr<const NGLayoutResult> Layout(
-      const NGConstraintSpace&,
-      const NGBreakToken*,
-      NGInlineChildLayoutContext* context) const;
+  const NGLayoutResult* Layout(const NGConstraintSpace&,
+                               const NGBreakToken*,
+                               NGInlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break
@@ -159,6 +158,12 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                  const HeapVector<NGInlineItem>* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
+  void ShapeTextIncludingFirstLine(
+      NGInlineNodeData::ShapingState new_state,
+      NGInlineNodeData* data,
+      const String* previous_text,
+      const HeapVector<NGInlineItem>* previous_items) const;
+  void ShapeTextOrDefer(const NGConstraintSpace& space) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
   NGInlineNodeData* MutableData() const {

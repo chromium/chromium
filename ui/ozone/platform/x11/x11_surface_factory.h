@@ -49,6 +49,11 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
                                gfx::BufferFormat format,
                                gfx::BufferUsage usage,
                                NativePixmapCallback callback) override;
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
+      gfx::AcceleratedWidget widget,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::NativePixmapHandle handle) override;
 
  private:
   std::unique_ptr<GLOzone> glx_implementation_;

@@ -32,12 +32,12 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
                           PrintSettingsCallback callback) override;
   mojom::ResultCode UseDefaultSettings() override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  mojom::ResultCode UpdatePrinterSettings(bool external_preview,
-                                          bool show_system_dialog,
-                                          int page_count) override;
+  mojom::ResultCode UpdatePrinterSettings(
+      const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
-  mojom::ResultCode NewPage() override;
-  mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;
@@ -98,6 +98,12 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
   // Sets key-value pair in PMPrintSettings.
   // Returns true is the pair is set.
   bool SetKeyValue(base::StringPiece key, base::StringPiece value);
+
+  // Starts a new page.
+  mojom::ResultCode NewPage();
+
+  // Closes the printed page.
+  mojom::ResultCode PageDone();
 
   // The native print info object.
   base::scoped_nsobject<NSPrintInfo> print_info_;

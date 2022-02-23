@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -30,9 +30,12 @@
 
 class ContentSettingBubbleModelDelegate;
 class Profile;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -81,7 +84,7 @@ class ContentSettingBubbleModel {
              int32_t item_id);
     ListItem(const ListItem& other);
     ListItem& operator=(const ListItem& other);
-    const gfx::VectorIcon* image;
+    raw_ptr<const gfx::VectorIcon> image;
     std::u16string title;
     std::u16string description;
     bool has_link;
@@ -242,6 +245,7 @@ class ContentSettingBubbleModel {
   Profile* GetProfile() const;
   Delegate* delegate() const { return delegate_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
+  content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
   void set_message(const std::u16string& message) {
@@ -286,9 +290,9 @@ class ContentSettingBubbleModel {
   }
 
  private:
-  content::WebContents* web_contents_;
-  Owner* owner_;
-  Delegate* delegate_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Owner> owner_;
+  raw_ptr<Delegate> delegate_;
   BubbleContent bubble_content_;
 };
 
@@ -326,9 +330,10 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
 // RPH stands for Register Protocol Handler.
 class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
  public:
-  ContentSettingRPHBubbleModel(Delegate* delegate,
-                               content::WebContents* web_contents,
-                               ProtocolHandlerRegistry* registry);
+  ContentSettingRPHBubbleModel(
+      Delegate* delegate,
+      content::WebContents* web_contents,
+      custom_handlers::ProtocolHandlerRegistry* registry);
 
   ContentSettingRPHBubbleModel(const ContentSettingRPHBubbleModel&) = delete;
   ContentSettingRPHBubbleModel& operator=(const ContentSettingRPHBubbleModel&) =
@@ -346,7 +351,7 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
   void ClearOrSetPreviousHandler();
   void PerformActionForSelectedItem();
 
-  ProtocolHandlerRegistry* registry_;
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   ProtocolHandler pending_handler_;
   ProtocolHandler previous_handler_;
 };
@@ -395,11 +400,11 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
   // Updates the camera and microphone setting with the passed |setting|.
   void UpdateSettings(ContentSetting setting);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Initialize the bubble with the elements specific to the scenario when
   // camera or mic are disabled in a system (OS) level.
   void InitializeSystemMediaPermissionBubble();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Whether or not to show the bubble UI specific to when media permissions are
   // turned off in a system level.
@@ -573,7 +578,7 @@ class ContentSettingGeolocationBubbleModel
   bool show_system_geolocation_bubble_ = false;
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The model for the blocked Framebust bubble.
 class ContentSettingFramebustBlockBubbleModel
     : public ContentSettingSingleRadioGroup,
@@ -604,6 +609,6 @@ class ContentSettingFramebustBlockBubbleModel
                           blocked_content::UrlListManager::Observer>
       url_list_observation_{this};
 };
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_H_

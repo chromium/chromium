@@ -66,15 +66,15 @@ class MojoAudioDecoder final : public AudioDecoder,
   void OnConnectionError();
 
   // Fail an initialization with a Status.
-  void FailInit(InitCB init_cb, Status err);
+  void FailInit(InitCB init_cb, DecoderStatus err);
 
   // Called when |remote_decoder_| finished initialization.
-  void OnInitialized(const Status& status,
+  void OnInitialized(const DecoderStatus& status,
                      bool needs_bitstream_conversion,
                      AudioDecoderType decoder_type);
 
   // Called when |remote_decoder_| accepted or rejected DecoderBuffer.
-  void OnDecodeStatus(const Status& decode_status);
+  void OnDecodeStatus(const DecoderStatus& decode_status);
 
   // called when |remote_decoder_| finished Reset() sequence.
   void OnResetDone();

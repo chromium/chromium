@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -56,15 +57,15 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
 
     label1_ = new Label(u"Label 1");
     label1_->SetBounds(1, 1, 111, 111);
-    widget_->GetContentsView()->AddChildView(label1_);
+    widget_->GetContentsView()->AddChildView(label1_.get());
 
     label2_ = new Label(u"Label 2");
     label2_->SetBounds(2, 2, 222, 222);
-    widget_->GetContentsView()->AddChildView(label2_);
+    widget_->GetContentsView()->AddChildView(label2_.get());
 
     textfield_ = new Textfield();
     textfield_->SetBounds(222, 2, 20, 200);
-    widget_->GetContentsView()->AddChildView(textfield_);
+    widget_->GetContentsView()->AddChildView(textfield_.get());
   }
 
   void TearDown() override {
@@ -73,9 +74,9 @@ class AXTreeSourceViewsTest : public ViewsTestBase {
   }
 
   std::unique_ptr<Widget> widget_;
-  Label* label1_ = nullptr;         // Owned by views hierarchy.
-  Label* label2_ = nullptr;         // Owned by views hierarchy.
-  Textfield* textfield_ = nullptr;  // Owned by views hierarchy.
+  raw_ptr<Label> label1_ = nullptr;         // Owned by views hierarchy.
+  raw_ptr<Label> label2_ = nullptr;         // Owned by views hierarchy.
+  raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
 };
 
 TEST_F(AXTreeSourceViewsTest, Basics) {

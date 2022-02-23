@@ -34,6 +34,22 @@ component("startup_tracing") {
   deps = [ "//base" ]
 }
 
+component("background_tracing_metrics_provider") {
+  sources = [
+    "common/background_tracing_metrics_provider.cc",
+    "common/background_tracing_metrics_provider.h",
+    "tracing_export.h",
+  ]
+
+  defines = [ "TRACING_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//components/metrics:content",
+    "//content/public/browser",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

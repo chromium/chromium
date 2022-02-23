@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -34,7 +34,7 @@ class IsolationInfo;
 //
 // Each Reporting "endpoint" represents a report collector at some specified
 // URL. Endpoints are organized into named "endpoint groups", each of which
-// additionally specifes some properties such as expiration time.
+// additionally specifies some properties such as expiration time.
 // A "client" represents the entire endpoint configuration set by an origin via
 // a Report-To header, which consists of multiple endpoint groups, each of which
 // consists of multiple endpoints. An endpoint group is keyed by its name.  An
@@ -47,7 +47,7 @@ class IsolationInfo;
 //
 // The cache implementation has the notion of "pending" reports. These are
 // reports that are part of an active delivery attempt, so they won't be
-// actually deallocated. Any attempt to remove a pending report wil mark it
+// actually deallocated. Any attempt to remove a pending report will mark it
 // "doomed", which will cause it to be deallocated once it is no longer pending.
 class NET_EXPORT ReportingCache {
  public:
@@ -254,6 +254,10 @@ class NET_EXPORT ReportingCache {
 
   // Flush the contents of the cache to disk, if applicable.
   virtual void Flush() = 0;
+
+  // Returns all V1 endpoints keyed by origin.
+  virtual base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const = 0;
 
   // Returns the endpoint named |endpoint_name| for the reporting source, if it
   // was configured with the Reporting-Endpoints header, otherwise returns an

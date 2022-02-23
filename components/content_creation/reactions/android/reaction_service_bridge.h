@@ -6,6 +6,7 @@
 #define COMPONENTS_CONTENT_CREATION_REACTIONS_ANDROID_REACTION_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 
 using base::android::JavaParamRef;
@@ -37,7 +38,7 @@ class ReactionServiceBridge : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  ReactionService* reaction_service_;
+  raw_ptr<ReactionService> reaction_service_;
 };
 
 }  // namespace content_creation

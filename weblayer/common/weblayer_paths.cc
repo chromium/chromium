@@ -11,14 +11,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
 #include "base/base_paths_android.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/nix/xdg_util.h"
 #endif
 
@@ -27,16 +27,16 @@ namespace weblayer {
 namespace {
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // No need to append "weblayer" here. It's done in java with
   // PathUtils.setPrivateDataDirectorySuffix.
   return base::PathService::Get(base::DIR_ANDROID_APP_DATA, result);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, result))
     return false;
   *result = result->AppendASCII("weblayer");
   return true;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   base::FilePath config_dir(base::nix::GetXDGDirectory(
       env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir));
@@ -68,7 +68,7 @@ bool PathProvider(int key, base::FilePath* result) {
         WebLayerPathProvider::CreateDir(*result);
       return rv;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case DIR_CRASH_DUMPS:
       if (!base::android::GetCacheDirectory(&cur))
         return false;

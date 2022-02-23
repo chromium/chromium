@@ -113,24 +113,14 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Sets the name of |item| and notifies observers.
   void SetItemName(AppListItem* item, const std::string& name);
 
-  // Sets the name and short name of |item| and notifies observers.
-  void SetItemNameAndShortName(AppListItem* item,
-                               const std::string& name,
-                               const std::string& short_name);
-
   // Deletes the item matching |id| from |top_level_item_list_| or from the
   // appropriate folder.
   void DeleteItem(const std::string& id);
 
-  // Wrapper around DeleteItem() which will also clean up if its parent folder
-  // has a single child left.
-  void DeleteUninstalledItem(const std::string& id);
-
-  // Deletes all items. This is used in profile switches.
-  void DeleteAllItems();
-
   // Creates and adds an empty folder item with the provided ID.
   void AddFolderItemForTest(const std::string& folder_id);
+
+  AppListModelDelegate* delegate() { return delegate_; }
 
   AppListItemList* top_level_item_list() const {
     return top_level_item_list_.get();
@@ -187,15 +177,15 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   std::unique_ptr<AppListItem> RemoveItemFromFolder(AppListFolderItem* folder,
                                                     AppListItem* item);
 
-  // Deletes `folder` if `folder` is empty.
-  void DeleteFolderIfEmpty(AppListFolderItem* folder);
+  // Deletes folder with ID `folder_id` if it's empty.
+  void DeleteFolderIfEmpty(const std::string& folder_id);
 
   // Sets the position of a root item.
   void SetRootItemPosition(AppListItem* item,
                            const syncer::StringOrdinal& new_position);
 
   // Used to initiate updates on app list items from the ash side.
-  AppListModelDelegate* const app_list_model_delegate_;
+  AppListModelDelegate* const delegate_;
 
   std::unique_ptr<AppListItemList> top_level_item_list_;
 

@@ -20,7 +20,6 @@
 #include "ppapi/c/ppb_mouse_lock.h"
 #include "ppapi/proxy/browser_font_singleton_resource.h"
 #include "ppapi/proxy/enter_proxy.h"
-#include "ppapi/proxy/flash_fullscreen_resource.h"
 #include "ppapi/proxy/gamepad_resource.h"
 #include "ppapi/proxy/host_dispatcher.h"
 #include "ppapi/proxy/isolated_file_system_private_resource.h"
@@ -58,7 +57,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 const char kSerializationError[] = "Failed to convert a PostMessage "
     "argument from a PP_Var to a Javascript value. It may have cycles or be of "
     "an unsupported type.";
@@ -100,13 +99,13 @@ bool PPB_Instance_Proxy::OnMessageReceived(const IPC::Message& msg) {
   // This must happen OUTSIDE of ExecuteScript since the SerializedVars use
   // the dispatcher upon return of the function (converting the
   // SerializedVarReturnValue/OutParam to a SerializedVar in the destructor).
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   ScopedModuleReference death_grip(dispatcher());
 #endif
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(PPB_Instance_Proxy, msg)
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     // Plugin -> Host messages.
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_GetWindowObject,
                         OnHostMsgGetWindowObject)
@@ -170,7 +169,7 @@ bool PPB_Instance_Proxy::OnMessageReceived(const IPC::Message& msg) {
                         OnHostMsgGetPluginInstanceURL)
     IPC_MESSAGE_HANDLER(PpapiHostMsg_PPBInstance_GetPluginReferrerURL,
                         OnHostMsgGetPluginReferrerURL)
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
     // Host -> Plugin messages.
     IPC_MESSAGE_HANDLER(PpapiMsg_PPBInstance_MouseLockComplete,
@@ -357,24 +356,23 @@ Resource* PPB_Instance_Proxy::GetSingletonResource(PP_Instance instance,
     case UMA_SINGLETON_ID:
       new_singleton = new UMAPrivateResource(connection, instance);
       break;
+    case FLASH_FULLSCREEN_SINGLETON_ID:
+      NOTREACHED();
+      break;
 // Flash/trusted resources aren't needed for NaCl.
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
     case BROWSER_FONT_SINGLETON_ID:
       new_singleton = new BrowserFontSingletonResource(connection, instance);
-      break;
-    case FLASH_FULLSCREEN_SINGLETON_ID:
-      new_singleton = new FlashFullscreenResource(connection, instance);
       break;
     case PDF_SINGLETON_ID:
       new_singleton = new PDFResource(connection, instance);
       break;
 #else
     case BROWSER_FONT_SINGLETON_ID:
-    case FLASH_FULLSCREEN_SINGLETON_ID:
     case PDF_SINGLETON_ID:
       NOTREACHED();
       break;
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
   }
 
   if (!new_singleton.get()) {
@@ -427,7 +425,7 @@ PP_Var PPB_Instance_Proxy::GetDocumentURL(PP_Instance instance,
   return result.Return(dispatcher());
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Var PPB_Instance_Proxy::ResolveRelativeToDocument(
     PP_Instance instance,
     PP_Var relative,
@@ -481,7 +479,7 @@ PP_Var PPB_Instance_Proxy::GetPluginReferrerURL(
       result.Return(dispatcher()),
       components);
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 void PPB_Instance_Proxy::PostMessage(PP_Instance instance,
                                      PP_Var message) {
@@ -618,7 +616,7 @@ void PPB_Instance_Proxy::UpdateSurroundingText(PP_Instance instance,
       API_ID_PPB_INSTANCE, instance, text, caret, anchor));
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Instance_Proxy::OnHostMsgGetWindowObject(
     PP_Instance instance,
     SerializedVarReturnValue result) {
@@ -941,7 +939,7 @@ void PPB_Instance_Proxy::OnHostMsgUpdateSurroundingText(
                                              anchor);
   }
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 void PPB_Instance_Proxy::OnPluginMsgMouseLockComplete(PP_Instance instance,
                                                       int32_t result) {
@@ -960,13 +958,13 @@ void PPB_Instance_Proxy::OnPluginMsgMouseLockComplete(PP_Instance instance,
   data->mouse_lock_callback->Run(result);
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void PPB_Instance_Proxy::MouseLockCompleteInHost(int32_t result,
                                                  PP_Instance instance) {
   dispatcher()->Send(new PpapiMsg_PPBInstance_MouseLockComplete(
       API_ID_PPB_INSTANCE, instance, result));
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 void PPB_Instance_Proxy::CancelAnyPendingRequestSurroundingText(
     PP_Instance instance) {

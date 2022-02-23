@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("gl") {
@@ -23,7 +24,7 @@ mojom("gl") {
   ]
   if (is_chromeos_ash) {
     public_deps += [
-      "//components/arc/mojom:media",
+      "//ash/components/arc/mojom:media",
       "//components/chromeos_camera/common",
     ]
   }
@@ -39,6 +40,10 @@ mojom("gl") {
 
   if (use_clang_profiling_inside_sandbox) {
     enabled_features += [ "use_clang_profiling_inside_sandbox" ]
+  }
+
+  if (is_chromeos_ash && (use_vaapi || use_v4l2_codec)) {
+    enabled_features += [ "enable_arc_media" ]
   }
 
   cpp_typemaps = [

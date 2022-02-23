@@ -28,7 +28,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
  public:
   ~SandboxedProcessLauncherDelegate() override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // SandboxDelegate:
   bool DisableDefaultPolicy() override;
   bool GetAppContainerId(std::string* appcontainer_id) override;
@@ -40,19 +40,19 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Override to return true if the process should be launched as an elevated
   // process (which implies no sandbox).
   virtual bool ShouldLaunchElevated();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   // Returns the zygote used to launch the process.
   virtual ZygoteHandle GetZygote();
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Override this if the process needs a non-empty environment map.
   virtual base::EnvironmentMap GetEnvironment();
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Whether or not to disclaim TCC responsibility for the process, defaults to
   // false. See base::LaunchOptions::disclaim_responsibility.
   virtual bool DisclaimResponsibility();
@@ -60,7 +60,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Whether or not to enable CPU security mitigations against side-channel
   // attacks. See base::LaunchOptions::enable_cpu_security_mitigations.
   virtual bool EnableCpuSecurityMitigations();
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 }  // namespace content

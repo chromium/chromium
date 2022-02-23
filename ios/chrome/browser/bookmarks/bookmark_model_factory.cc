@@ -23,6 +23,25 @@
 
 namespace ios {
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
+      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
+          browser_state,
+          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
+          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state))));
+  bookmark_model->Load(browser_state->GetPrefs(),
+                       browser_state->GetStatePath());
+  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
+      ->Start(bookmark_model.get());
+  return bookmark_model;
+}
+
+}  // namespace
+
 // static
 bookmarks::BookmarkModel* BookmarkModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
@@ -43,6 +62,11 @@ BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildBookmarkModel);
+}
+
 BookmarkModelFactory::BookmarkModelFactory()
     : BrowserStateKeyedServiceFactory(
           "BookmarkModel",
@@ -60,18 +84,7 @@ void BookmarkModelFactory::RegisterBrowserStatePrefs(
 
 std::unique_ptr<KeyedService> BookmarkModelFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
-          browser_state,
-          ManagedBookmarkServiceFactory::GetForBrowserState(browser_state),
-          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state))));
-  bookmark_model->Load(browser_state->GetPrefs(),
-                       browser_state->GetStatePath());
-  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
-      ->Start(bookmark_model.get());
-  return bookmark_model;
+  return BuildBookmarkModel(context);
 }
 
 web::BrowserState* BookmarkModelFactory::GetBrowserStateToUse(

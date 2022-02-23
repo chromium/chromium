@@ -512,7 +512,13 @@ void Geolocation::OnPositionUpdated(
 }
 
 void Geolocation::PageVisibilityChanged() {
-  UpdateGeolocationConnection(nullptr);
+  for (auto& notifier : *one_shots_)
+    UpdateGeolocationConnection(notifier);
+
+  HeapVector<Member<GeoNotifier>> watchers;
+  watchers_->CopyNotifiersToVector(watchers);
+  for (auto& notifier : watchers)
+    UpdateGeolocationConnection(notifier);
 }
 
 bool Geolocation::HasPendingActivity() const {

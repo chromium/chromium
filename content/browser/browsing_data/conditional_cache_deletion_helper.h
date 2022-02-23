@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
-#include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -22,7 +22,7 @@ class Entry;
 namespace content {
 
 // Helper to remove http/code cache data from a StoragePartition.
-class CONTENT_EXPORT ConditionalCacheDeletionHelper {
+class ConditionalCacheDeletionHelper {
  public:
   // Creates a helper to delete |cache| entries that match the |condition|.
   ConditionalCacheDeletionHelper(
@@ -62,7 +62,7 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
 
   void IterateOverEntries(disk_cache::EntryResult result);
 
-  disk_cache::Backend* cache_;
+  raw_ptr<disk_cache::Backend> cache_;
   const base::RepeatingCallback<bool(const disk_cache::Entry*)> condition_;
 
   net::CompletionOnceCallback completion_callback_;
@@ -70,7 +70,7 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
-  disk_cache::Entry* previous_entry_;
+  raw_ptr<disk_cache::Entry> previous_entry_;
 };
 
 }  // namespace content

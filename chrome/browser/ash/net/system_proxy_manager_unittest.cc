@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,7 +20,6 @@
 #include "chromeos/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
@@ -39,6 +39,8 @@
 #include "services/network/network_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace ash {
 
@@ -244,7 +246,8 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
       ->http_transaction_factory()
       ->GetSession()
       ->http_auth_cache()
-      ->Add(GURL(kProxyAuthEmptyPath), net::HttpAuth::AUTH_PROXY, kRealm,
+      ->Add(url::SchemeHostPort(GURL(kProxyAuthEmptyPath)),
+            net::HttpAuth::AUTH_PROXY, kRealm,
             net::HttpAuth::AUTH_SCHEME_DIGEST, net::NetworkIsolationKey(),
             kProxyAuthChallenge,
             net::AuthCredentials(kBrowserUsername16, kBrowserPassword16),

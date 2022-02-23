@@ -72,6 +72,10 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.texture_origin_is_top_left;
   }
 
+  static uint32_t crop_version(const media::VideoFrameMetadata& input) {
+    return input.crop_version;
+  }
+
   GENERATE_OPT_SERIALIZATION(int, capture_counter, 0)
 
   GENERATE_OPT_SERIALIZATION(
@@ -95,6 +99,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
   static absl::optional<gfx::Rect> capture_update_rect(
       const media::VideoFrameMetadata& input) {
     return input.capture_update_rect;
+  }
+
+  static absl::optional<gfx::Rect> region_capture_rect(
+      const media::VideoFrameMetadata& input) {
+    return input.region_capture_rect;
   }
 
   static absl::optional<base::UnguessableToken> overlay_plane_id(
@@ -150,6 +159,8 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
   static bool Read(media::mojom::VideoFrameMetadataDataView input,
                    media::VideoFrameMetadata* output);
 };
+
+#undef GENERATE_OPT_SERIALIZATION
 
 }  // namespace mojo
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/test/extension_state_tester.h"
 
 // The blocklist tests rely on the safe-browsing database.
@@ -443,6 +444,62 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
 
   // kGood0 should remain enabled.
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
+}
+
+// Regression test for https://crbug.com/1267860. It should not crash if the
+// extension is uninstalled before it is removed from the blocklist.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       ExtensionUninstalledWhenBlocklisted) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_MALWARE, test_blocklist);
+
+  ExtensionStateTester state_tester(profile());
+
+  // kGood0 is blocklisted.
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kGood0));
+
+  // Now uninstall kGood0.
+  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  // kGood0 should be removed from the blocklist.
+  EXPECT_EQ(0u, registry()->blocklisted_extensions().size());
+
+  // Should not crash.
+  SetBlocklistStateForExtension(kGood0, NOT_BLOCKLISTED, test_blocklist);
+}
+
+// Regression test for https://crbug.com/1267860. It should not crash if the
+// extension is uninstalled during blocklist fetching.
+TEST_F(SafeBrowsingVerdictHandlerUnitTest,
+       ExtensionUninstalledWhenBlocklistFetching) {
+  TestBlocklist test_blocklist;
+  // A profile with 3 extensions installed: kGood0, kGood1, and kGood2.
+  InitializeGoodInstalledExtensionService();
+  test_blocklist.Attach(service()->blocklist_);
+  service()->Init();
+
+  SetBlocklistStateForExtension(kGood0, BLOCKLISTED_MALWARE, test_blocklist);
+
+  ExtensionStateTester state_tester(profile());
+
+  // kGood0 is blocklisted.
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kGood0));
+
+  service()->blocklist_->ResetBlocklistStateCacheForTest();
+  // Use TestBlocklist::SetBlocklistState() here instead of
+  // SetBlocklistStateForExtension(). This makes the blocklisting process
+  // asynchronous, so that we can simulate uninstalling the extension
+  // during a blocklist state fetch.
+  test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_MALWARE, true);
+
+  // Uninstalled the extension in the middle of the update.
+  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  // Should not crash when the update finishes.
+  task_environment()->RunUntilIdle();
 }
 
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
@@ -55,11 +55,15 @@ inline void swap(Member<T>& a, Member<T>& b) {
   a.Swap(b);
 }
 
+static constexpr bool kBlinkMemberGCHasDebugChecks =
+    !std::is_same<cppgc::internal::DefaultMemberCheckingPolicy,
+                  cppgc::internal::DisabledCheckingPolicy>::value;
+
 }  // namespace blink
 
 namespace WTF {
 
-// PtrHash is the default hash for hash tables with Member<>-derived elements.
+// Default hash for hash tables with Member<>-derived elements.
 template <typename T>
 struct MemberHash : PtrHash<T> {
   STATIC_ONLY(MemberHash);

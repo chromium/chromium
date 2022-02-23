@@ -10,7 +10,9 @@ namespace content {
 
 MediaPlayerRendererWebContentsObserver::MediaPlayerRendererWebContentsObserver(
     WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      WebContentsUserData<MediaPlayerRendererWebContentsObserver>(
+          *web_contents) {}
 
 MediaPlayerRendererWebContentsObserver::
     ~MediaPlayerRendererWebContentsObserver() = default;

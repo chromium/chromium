@@ -4,6 +4,9 @@
 
 #include "mojo/public/cpp/base/thread_priority_mojom_traits.h"
 
+#include "base/notreached.h"
+#include "base/threading/platform_thread.h"
+
 namespace mojo {
 
 // static

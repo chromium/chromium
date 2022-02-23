@@ -14,6 +14,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -23,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  *  Tests for JankReportingScheduler.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class JankReportingSchedulerTest {
     ShadowLooper mShadowLooper;
 

@@ -40,23 +40,23 @@ const char kDeviceStateLicenseTypeTerminal[] = "terminal";
 const char kDeviceStateModeDisabled[] = "disabled";
 
 DeviceStateMode GetDeviceStateMode() {
-  std::string device_state_mode;
-  g_browser_process->local_state()
-      ->GetDictionary(prefs::kServerBackedDeviceState)
-      ->GetString(kDeviceStateMode, &device_state_mode);
-  if (device_state_mode.empty())
+  const std::string* device_state_mode =
+      g_browser_process->local_state()
+          ->GetDictionary(prefs::kServerBackedDeviceState)
+          ->FindStringKey(kDeviceStateMode);
+  if (!device_state_mode || device_state_mode->empty())
     return RESTORE_MODE_NONE;
-  if (device_state_mode == kDeviceStateRestoreModeReEnrollmentRequested)
+  if (*device_state_mode == kDeviceStateRestoreModeReEnrollmentRequested)
     return RESTORE_MODE_REENROLLMENT_REQUESTED;
-  if (device_state_mode == kDeviceStateRestoreModeReEnrollmentEnforced)
+  if (*device_state_mode == kDeviceStateRestoreModeReEnrollmentEnforced)
     return RESTORE_MODE_REENROLLMENT_ENFORCED;
-  if (device_state_mode == kDeviceStateModeDisabled)
+  if (*device_state_mode == kDeviceStateModeDisabled)
     return RESTORE_MODE_DISABLED;
-  if (device_state_mode == kDeviceStateRestoreModeReEnrollmentZeroTouch)
+  if (*device_state_mode == kDeviceStateRestoreModeReEnrollmentZeroTouch)
     return RESTORE_MODE_REENROLLMENT_ZERO_TOUCH;
-  if (device_state_mode == kDeviceStateInitialModeEnrollmentEnforced)
+  if (*device_state_mode == kDeviceStateInitialModeEnrollmentEnforced)
     return INITIAL_MODE_ENROLLMENT_ENFORCED;
-  if (device_state_mode == kDeviceStateInitialModeEnrollmentZeroTouch)
+  if (*device_state_mode == kDeviceStateInitialModeEnrollmentZeroTouch)
     return INITIAL_MODE_ENROLLMENT_ZERO_TOUCH;
 
   NOTREACHED();

@@ -89,6 +89,11 @@ MOCK_METHOD5(ExportDMABUFImageQueryMESA,
                         int* fourcc,
                         int* num_planes,
                         EGLuint64KHR* modifiers));
+MOCK_METHOD4(ExportVkImageANGLE,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLImageKHR image,
+                        void* vk_image,
+                        void* vk_image_create_info));
 MOCK_METHOD5(GetCompositorTimingANDROID,
              EGLBoolean(EGLDisplay dpy,
                         EGLSurface surface,

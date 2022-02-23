@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/drag_drop/drag_drop_capture_delegate.h"
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -50,10 +51,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   ~DragDropController() override;
 
-  void set_should_block_during_drag_drop(bool should_block_during_drag_drop) {
-    should_block_during_drag_drop_ = should_block_during_drag_drop;
-  }
-
   void set_enabled(bool enabled) { enabled_ = enabled; }
 
   void set_toplevel_window_drag_delegate(ToplevelWindowDragDelegate* delegate) {
@@ -80,10 +77,34 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Overridden from aura::WindowObserver.
-  void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& image_offset);
+
+  ui::mojom::DragEventSource event_source() {
+    return current_drag_event_source_;
+  }
+
+  // Sets the `closure` that will be executed as a replacement of
+  // inner event loop. A test can use this closure to generate events, or
+  // take other actions that should happen during the drag and drop, and
+  // can also check the condition that should be satisfied.
+  // The loop closure is called with a boolean value that indicates
+  // that this is called from the inner loop because the same closure will
+  // often used to generate the event that will eventually enter the drag
+  // and drop inner loop. The `quit_closure` is used for a test
+  // to exit the outer loop in the test.
+  using TestLoopClosure = base::RepeatingCallback<void()>;
+  void SetLoopClosureForTesting(TestLoopClosure closure,
+                                base::OnceClosure quit_closure);
+
+  void SetDisableNestedLoopForTesting(bool disable);
+
+  // Deprecated: Use `SetDisableNestedLoopForTesting`.
+  void set_should_block_during_drag_drop(bool should_block_during_drag_drop) {
+    SetDisableNestedLoopForTesting(!should_block_during_drag_drop);
+  }
 
  protected:
   // Helper method to create a LinearAnimation object that will run the drag
@@ -100,6 +121,9 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   // Actual implementation of |DragCancel()|. protected for testing.
   virtual void DoDragCancel(base::TimeDelta drag_cancel_animation_duration);
+
+  // Exposed for test assertions.
+  DragDropCaptureDelegate* get_capture_delegate() { return capture_delegate_; }
 
  private:
   friend class DragDropControllerTest;
@@ -158,15 +182,18 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Window that started the drag.
   aura::Window* drag_source_window_ = nullptr;
 
-  // Indicates whether the caller should be blocked on a drag/drop session.
-  // Only be used for tests.
-  bool should_block_during_drag_drop_ = true;
+  // A closure that allows a test to implement the actions within
+  // drag and drop event loop.
+  TestLoopClosure test_loop_closure_;
+
+  // True if the nested event loop is disabled.
+  bool nested_loop_disabled_for_testing_ = false;
 
   // Closure for quitting nested run loop.
   base::OnceClosure quit_closure_;
 
-  // Whether a top level drag is active which required a capture window.
-  bool using_drag_capture_ = false;
+  // If non-null, a drag is active which required a capture window.
+  DragDropCaptureDelegate* capture_delegate_;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;

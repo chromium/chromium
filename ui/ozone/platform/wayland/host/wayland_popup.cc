@@ -61,6 +61,11 @@ bool WaylandPopup::CreateShellPopup() {
       params.anchor->anchor_rect.set_size({1, 1});
   }
 
+  // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
+  // buffer attached when xdg-surface role is created.
+  wl_surface_attach(root_surface()->surface(), nullptr, 0, 0);
+  root_surface()->Commit(false);
+
   ShellObjectFactory factory;
   shell_popup_ = factory.CreateShellPopupWrapper(connection(), this, params);
   if (!shell_popup_) {
@@ -128,10 +133,7 @@ void WaylandPopup::Hide() {
     parent_window()->set_child_window(nullptr);
     shell_popup_.reset();
   }
-
-  // Detach buffer from surface in order to completely shutdown popups and
-  // tooltips, and release resources.
-  connection()->buffer_manager_host()->ResetSurfaceContents(root_surface());
+  connection()->ScheduleFlush();
 }
 
 bool WaylandPopup::IsVisible() const {

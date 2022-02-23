@@ -13,8 +13,9 @@ class RenderFrameHost;
 
 namespace permissions {
 
-// Creates a title for a chooser using the origin of the frame. Returns the
-// empty string if |render_frame_host| is null.
+// Creates a title for a chooser using the origin of the main frame
+// containing `render_frame_host`. Returns the empty string if
+// `render_frame_host` is null.
 std::u16string CreateChooserTitle(content::RenderFrameHost* render_frame_host,
                                   int title_string_id_origin);
 

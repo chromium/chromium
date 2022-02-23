@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "base/mac/foundation_util.h"
+#import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/utf_string_conversions.h"
 #import "testing/gtest_mac.h"
@@ -110,10 +111,18 @@ TEST_F(TabbedPaneAccessibilityMacTest, AttributesMatchAppKit) {
   EXPECT_NSEQ(
       GetLegacyA11yAttributeValue(cocoa_tabs[0], NSAccessibilityRoleAttribute),
       A11yElementAtPoint(TabCenterPoint(0)).accessibilityRole);
-  EXPECT_NSEQ(
-      GetLegacyA11yAttributeValue(cocoa_tabs[0],
-                                  NSAccessibilityRoleDescriptionAttribute),
-      A11yElementAtPoint(TabCenterPoint(0)).accessibilityRoleDescription);
+
+  // Older versions of Cocoa expose browser tabs with the accessible role
+  // description of "radio button." We match the user experience of more recent
+  // versions of Cocoa by exposing the role description of "tab" even in older
+  // versions of macOS. Doing so causes a mismatch between native Cocoa and our
+  // tabs.
+  if (base::mac::IsAtLeastOS12()) {
+    EXPECT_NSEQ(
+        GetLegacyA11yAttributeValue(cocoa_tabs[0],
+                                    NSAccessibilityRoleDescriptionAttribute),
+        A11yElementAtPoint(TabCenterPoint(0)).accessibilityRoleDescription);
+  }
   EXPECT_NSEQ(
       GetLegacyA11yAttributeValue(cocoa_tabs[0], NSAccessibilityTitleAttribute),
       A11yElementAtPoint(TabCenterPoint(0)).accessibilityTitle);

@@ -116,6 +116,10 @@ void FidoAuthenticator::DeleteCredential(
   NOTREACHED();
 }
 
+bool FidoAuthenticator::SupportsUpdateUserInformation() const {
+  return false;
+}
+
 void FidoAuthenticator::UpdateUserInformation(
     const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,

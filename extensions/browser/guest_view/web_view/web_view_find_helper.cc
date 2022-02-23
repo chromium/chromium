@@ -39,8 +39,8 @@ void WebViewFindHelper::DispatchFindUpdateEvent(bool canceled,
   DCHECK(find_update_event_.get());
   std::unique_ptr<base::DictionaryValue> args(new base::DictionaryValue());
   find_update_event_->PrepareResults(args.get());
-  args->SetBoolean(webview::kFindCanceled, canceled);
-  args->SetBoolean(webview::kFindFinalUpdate, final_update);
+  args->SetBoolKey(webview::kFindCanceled, canceled);
+  args->SetBoolKey(webview::kFindFinalUpdate, final_update);
   DCHECK(webview_guest_);
   webview_guest_->DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventFindReply, std::move(args)));
@@ -137,7 +137,7 @@ void WebViewFindHelper::Find(
   }
 
   guest_web_contents->Find(current_find_request_id_, search_text,
-                           std::move(full_options));
+                           std::move(full_options), /*skip_delay=*/true);
 }
 
 void WebViewFindHelper::FindReply(int request_id,
@@ -243,7 +243,7 @@ void WebViewFindHelper::FindUpdateEvent::AggregateResults(
 
 void WebViewFindHelper::FindUpdateEvent::PrepareResults(
     base::DictionaryValue* results) {
-  results->SetString(webview::kFindSearchText, search_text_);
+  results->SetStringKey(webview::kFindSearchText, search_text_);
   find_results_.PrepareResults(results);
 }
 
@@ -277,7 +277,7 @@ void WebViewFindHelper::FindInfo::SendResponse(bool canceled) {
   // Prepare the find results to pass to the callback function.
   base::DictionaryValue results;
   find_results_.PrepareResults(&results);
-  results.SetBoolean(webview::kFindCanceled, canceled);
+  results.SetBoolKey(webview::kFindCanceled, canceled);
 
   // Call the callback.
   find_function_->ForwardResponse(results);

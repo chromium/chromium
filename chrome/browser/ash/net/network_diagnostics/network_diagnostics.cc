@@ -30,6 +30,9 @@
 namespace ash {
 namespace network_diagnostics {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 NetworkDiagnostics::NetworkDiagnostics(
     chromeos::DebugDaemonClient* debug_daemon_client) {
   DCHECK(debug_daemon_client);

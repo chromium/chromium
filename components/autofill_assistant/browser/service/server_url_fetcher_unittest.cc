@@ -54,5 +54,17 @@ TEST(ServerUrlFetcherTest, GetTriggerScriptsEndpoint) {
               Eq(GURL("https://www.example.com/v1/triggers")));
 }
 
+TEST(ServerUrlFetcherTest, GetCapabilitiesByHashEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetCapabilitiesByHashEndpoint(),
+              Eq(GURL("https://www.example.com/v1/capabilitiesByHashPrefix2")));
+}
+
+TEST(ServerUrlFetcherTest, GetUserDataEndpoint) {
+  EXPECT_THAT(
+      ServerUrlFetcher(GURL("https://www.example.com")).GetUserDataEndpoint(),
+      Eq(GURL("https://www.example.com/v1/userData")));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

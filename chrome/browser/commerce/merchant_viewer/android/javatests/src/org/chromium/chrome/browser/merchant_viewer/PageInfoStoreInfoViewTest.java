@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -63,7 +64,6 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -82,10 +82,6 @@ public class PageInfoStoreInfoViewTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
@@ -129,7 +125,7 @@ public class PageInfoStoreInfoViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
                     PageInfoController.OpenedFromSource.TOOLBAR, () -> mMockStoreInfoActionHandler)
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, fromStoreIcon);
+                    .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -161,7 +162,9 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
     if (nullptr == auction_result) {
       return false;
     }
-    EXPECT_EQ(render_url(), auction_result);
+    EXPECT_TRUE(base::StartsWith(auction_result.ExtractString(), "urn:uuid:",
+                                 base::CompareCase::INSENSITIVE_ASCII))
+        << auction_result.ExtractString();
     return true;
   }
 

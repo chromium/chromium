@@ -15,7 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -126,7 +126,7 @@ class P2PSocketManager
   void OnConnectionError();
 
   DeleteCallback delete_callback_;
-  net::URLRequestContext* url_request_context_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   std::unique_ptr<ProxyResolvingClientSocketFactory>

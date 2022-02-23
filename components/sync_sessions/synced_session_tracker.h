@@ -13,7 +13,8 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -24,12 +25,6 @@
 namespace sync_sessions {
 
 class SyncSessionsClient;
-
-// TODO(crbug.com/882489): Remove feature toggle during code cleanup when a
-// satisfying solution is found for closed tabs.
-extern const base::Feature kDeferRecyclingOfSyncTabNodesIfUnsynced;
-
-extern const base::Feature kSyncPopulateTabBrowserTypeInGetData;
 
 // Class to manage synced sessions. The tracker will own all SyncedSession
 // and SyncedSessionTab objects it creates, and deletes them appropriately on
@@ -285,7 +280,7 @@ class SyncedSessionTracker {
           is_tab_node_unsynced_cb);
 
   // The client of the sync sessions datatype.
-  SyncSessionsClient* const sessions_client_;
+  const raw_ptr<SyncSessionsClient> sessions_client_;
 
   // Map: session tag -> TrackedSession.
   std::map<std::string, TrackedSession> session_map_;

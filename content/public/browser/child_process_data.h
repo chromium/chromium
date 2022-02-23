@@ -44,10 +44,6 @@ struct CONTENT_EXPORT ChildProcessData {
 
   ChildProcessData(ChildProcessData&& rhs);
 
-  // Copying these objects requires duplicating the handle which is moderately
-  // expensive, so make it an explicit action.
-  ChildProcessData Duplicate() const;
-
  private:
   // May be invalid if the process isn't started or is the current process.
   base::Process process_;

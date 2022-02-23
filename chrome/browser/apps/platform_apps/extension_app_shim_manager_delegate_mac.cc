@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "apps/launcher.h"
+#include "base/containers/adapters.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -26,7 +27,7 @@
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut_mac.h"
-#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -106,9 +107,9 @@ bool ExtensionAppShimManagerDelegate::ShowAppWindows(
     const web_app::AppId& app_id) {
   AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(app_id);
-  for (auto it = windows.rbegin(); it != windows.rend(); ++it) {
-    if (*it)
-      (*it)->GetBaseWindow()->Show();
+  for (extensions::AppWindow* window : base::Reversed(windows)) {
+    if (window)
+      window->GetBaseWindow()->Show();
   }
   return !windows.empty();
 }
@@ -150,10 +151,7 @@ bool ExtensionAppShimManagerDelegate::AppCanCreateHost(
 bool ExtensionAppShimManagerDelegate::AppIsMultiProfile(
     Profile* profile,
     const web_app::AppId& app_id) {
-  const Extension* extension = MaybeGetAppExtension(profile, app_id);
-  if (!profile || !extension)
-    return false;
-  return extension->from_bookmark();
+  return false;
 }
 
 bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
@@ -165,10 +163,8 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
   if (!extension->is_hosted_app())
     return false;
 
-  // The Gmail, Google Drive, and YouTube apps behave like bookmark apps.
   // https://crbug.com/1086824
-  return extension->from_bookmark() ||
-         extension->id() == extension_misc::kYoutubeAppId ||
+  return extension->id() == extension_misc::kYoutubeAppId ||
          extension->id() == extension_misc::kGoogleDriveAppId ||
          extension->id() == extension_misc::kGmailAppId;
 }

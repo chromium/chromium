@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_DELEGATE_H_
 
 class NewTabPageTabHelper;
+namespace web {
+class WebState;
+}
 
 // Protocol defining a delegate for the NTP tab helper.
 @protocol NewTabPageTabHelperDelegate

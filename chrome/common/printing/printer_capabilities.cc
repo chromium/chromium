@@ -27,25 +27,25 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/printing/ipp_l10n.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 #include "chrome/common/printing/print_media_l10n.h"
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "printing/printing_features.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 namespace printing {
@@ -75,7 +75,7 @@ void PopulateAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
 }
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PopulateAdvancedCapsLocalization(
     std::vector<AdvancedCapability>* advanced_capabilities) {
   auto& l10n_map = CapabilityLocalizationMap();
@@ -91,7 +91,7 @@ void PopulateAdvancedCapsLocalization(
     }
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns a dictionary representing printer capabilities as CDD, or
 // a Value of type NONE if no capabilities are provided.
@@ -106,7 +106,7 @@ base::Value AssemblePrinterCapabilities(
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
   bool populate_paper_display_names = true;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Paper display name localization requires standardized vendor ID names
   // populated by CUPS IPP. If the CUPS IPP backend is not enabled, localization
   // will not properly occur.
@@ -119,19 +119,19 @@ base::Value AssemblePrinterCapabilities(
 
   caps->user_defined_papers = std::move(user_defined_papers);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!has_secure_protocol)
     caps->pin_supported = false;
 
   PopulateAdvancedCapsLocalization(&caps->advanced_capabilities);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return cloud_print::PrinterSemanticCapsAndDefaultsToCdd(*caps);
 }
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string GetUserFriendlyName(const std::string& printer_name) {
   // `printer_name` may be a UNC path like \\printserver\printername.
   if (!base::StartsWith(printer_name, "\\\\",
@@ -167,12 +167,12 @@ base::Value AssemblePrinterSettings(
 
   base::Value options(base::Value::Type::DICTIONARY);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   printer_info.SetKey(
       kCUPSEnterprisePrinter,
       base::Value(base::Contains(basic_info.options, kCUPSEnterprisePrinter) &&
                   basic_info.options.at(kCUPSEnterprisePrinter) == kValueTrue));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   printer_info.SetKey(kSettingPrinterOptions, std::move(options));
 

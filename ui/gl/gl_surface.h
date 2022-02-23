@@ -333,6 +333,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // it. Otherwise, return the original input preference.
   static GpuPreference AdjustGpuPreference(GpuPreference gpu_preference);
 
+  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
+
  protected:
   virtual ~GLSurface();
 

@@ -31,13 +31,17 @@ message Segmentation {
   // pixel, the value indicates the prediction confidence usually in the [0, 1]
   // range where higher values represent a stronger confidence. Ultimately this
   // is model specific, and other range of values might be used.
-  message ConfidenceMask { repeated float value = 1 [packed = true]; }
+  message ConfidenceMask {
+    repeated float value = 1 [packed = true];
+  }
 
   // List of confidence masks with respect to the model output depth (this depth
   // represents how many classes are supported). Note: some models have a single
   // class (e.g. a sky segmentation model) which turns into a single confidence
   // mask in this list.
-  message ConfidenceMasks { repeated ConfidenceMask confidence_mask = 1; }
+  message ConfidenceMasks {
+    repeated ConfidenceMask confidence_mask = 1;
+  }
 
   // IMPORTANT: segmentation masks are not direcly suited for display, in
   // particular:

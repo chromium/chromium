@@ -43,7 +43,7 @@ bool ReceiverRtcpSession::IncomingRtcpPacket(const uint8_t* data,
   }
 
   // Parse this packet.
-  base::BigEndianReader reader(reinterpret_cast<const char*>(data), length);
+  base::BigEndianReader reader(data, length);
   if (parser_.Parse(&reader)) {
     if (parser_.has_sender_report()) {
       OnReceivedNtp(parser_.sender_report().ntp_seconds,

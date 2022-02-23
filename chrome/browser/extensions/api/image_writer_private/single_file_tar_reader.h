@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace image_writer {
@@ -63,7 +65,7 @@ class SingleFileTarReader {
 
   bool IsComplete() const;
 
-  uint64_t total_bytes() const { return total_bytes_; }
+  absl::optional<uint64_t> total_bytes() const { return total_bytes_; }
   uint64_t curr_bytes() const { return curr_bytes_; }
 
   const std::string& error_id() const { return error_id_; }
@@ -76,9 +78,11 @@ class SingleFileTarReader {
   // is used. |length| must greater than 8.
   static uint64_t ReadOctalNumber(const char* buffer, size_t length);
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
-  uint64_t total_bytes_ = 0;
+  // Populated once the size has been parsed. The value 0 means the file in
+  // the tar is empty.
+  absl::optional<uint64_t> total_bytes_;
   uint64_t curr_bytes_ = 0;
 
   std::vector<char> buffer_;

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_LOGGED_IN_USER_MIXIN_H_
 
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
@@ -66,8 +66,8 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   // |include_initial_user| if true, then the user already exists on the login
   // screen. Otherwise, the user is newly added to the device and the OOBE Gaia
   // screen will show on start-up.
-  // |use_local_policy_server| determines if the LocalPolicyTestServerMixin
-  // should be passed into the UserPolicyMixin.
+  // |use_embedded_policy_server| determines if the
+  // EmbeddedPolicyTestServerMixin should be passed into the UserPolicyMixin.
   LoggedInUserMixin(InProcessBrowserTestMixinHost* mixin_host,
                     LogInType type,
                     net::EmbeddedTestServer* embedded_test_server,
@@ -76,7 +76,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
                     absl::optional<AccountId> account_id = absl::nullopt,
                     bool include_initial_user = true,
                     // TODO(crbug/1112885): Remove this parameter.
-                    bool use_local_policy_server = true);
+                    bool use_embedded_policy_server = true);
   LoggedInUserMixin(const LoggedInUserMixin&) = delete;
   LoggedInUserMixin& operator=(const LoggedInUserMixin&) = delete;
   ~LoggedInUserMixin() override;
@@ -99,8 +99,8 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
 
   UserPolicyMixin* GetUserPolicyMixin() { return &user_policy_; }
 
-  LocalPolicyTestServerMixin* GetLocalPolicyTestServerMixin() {
-    return &local_policy_server_;
+  EmbeddedPolicyTestServerMixin* GetEmbeddedPolicyTestServerMixin() {
+    return &embedded_policy_server_;
   }
 
   policy::UserPolicyTestHelper* GetUserPolicyTestHelper() {
@@ -115,7 +115,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
   LoginManagerMixin::TestUserInfo user_;
   LoginManagerMixin login_manager_;
 
-  LocalPolicyTestServerMixin local_policy_server_;
+  EmbeddedPolicyTestServerMixin embedded_policy_server_;
   UserPolicyMixin user_policy_;
   policy::UserPolicyTestHelper user_policy_helper_;
 

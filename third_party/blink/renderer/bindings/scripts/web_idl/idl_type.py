@@ -13,6 +13,7 @@ from .extended_attribute import ExtendedAttributes
 from .reference import RefById
 from .reference import RefByIdFactory
 from .typedef import Typedef
+from .union import Union
 from .user_defined_type import UserDefinedType
 
 # The implementation class hierarchy of IdlType
@@ -1242,7 +1243,14 @@ class UnionType(IdlType):
 
     @property
     def type_name_without_extended_attributes(self):
-        return 'Or'.join([member.type_name for member in self.member_types])
+        # The type name of union type is defined as a concatenation of the type
+        # names of each member type, _in order_, putting "Or" in-between each
+        # name.  However, there is (almost) no benefit to follow this exact
+        # definition, or even it's harmful because each instance of UnionType
+        # could have different type names even when the types are
+        # indistinguishable.  Thus, we sort the type names of each member type.
+        return 'Or'.join(
+            sorted(member.type_name for member in self.member_types))
 
     def apply_to_all_composing_elements(self, callback):
         try:
@@ -1291,8 +1299,6 @@ class UnionType(IdlType):
         return self._union_definition_object
 
     def set_union_definition_object(self, union_definition_object):
-        # In Python2, we need to avoid circular imports.
-        from .union import Union
         assert isinstance(union_definition_object, Union)
         assert self._union_definition_object is None
         self._union_definition_object = union_definition_object

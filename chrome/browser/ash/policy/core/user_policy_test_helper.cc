@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -21,6 +21,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -29,15 +30,16 @@ namespace policy {
 
 UserPolicyTestHelper::UserPolicyTestHelper(
     const std::string& account_id,
-    ash::LocalPolicyTestServerMixin* local_policy_server)
-    : account_id_(account_id), local_policy_server_(local_policy_server) {}
+    ash::EmbeddedPolicyTestServerMixin* embedded_policy_server)
+    : account_id_(account_id),
+      embedded_policy_server_(embedded_policy_server) {}
 
 UserPolicyTestHelper::~UserPolicyTestHelper() {}
 
-void UserPolicyTestHelper::SetPolicy(const base::Value& mandatory,
-                                     const base::Value& recommended) {
-  ASSERT_TRUE(local_policy_server_->UpdateUserPolicy(mandatory, recommended,
-                                                     account_id_));
+void UserPolicyTestHelper::SetPolicy(
+    const enterprise_management::CloudPolicySettings& policy) {
+  DCHECK(embedded_policy_server_);
+  embedded_policy_server_->UpdateUserPolicy(policy, account_id_);
 }
 
 void UserPolicyTestHelper::WaitForInitialPolicy(Profile* profile) {
@@ -70,10 +72,9 @@ void UserPolicyTestHelper::WaitForInitialPolicy(Profile* profile) {
 }
 
 void UserPolicyTestHelper::SetPolicyAndWait(
-    const base::Value& mandatory_policy,
-    const base::Value& recommended_policy,
+    const enterprise_management::CloudPolicySettings& policy,
     Profile* profile) {
-  SetPolicy(mandatory_policy, recommended_policy);
+  SetPolicy(policy);
   RefreshPolicyAndWait(profile);
 }
 

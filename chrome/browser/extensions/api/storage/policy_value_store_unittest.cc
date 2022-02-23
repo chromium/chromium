@@ -181,7 +181,7 @@ TEST_F(PolicyValueStoreTest, ReadOnly) {
   EXPECT_FALSE(store_->Set(options, "key", string_value).status().ok());
 
   base::DictionaryValue dict;
-  dict.SetString("key", "value");
+  dict.SetStringKey("key", "value");
   EXPECT_FALSE(store_->Set(options, dict).status().ok());
 
   EXPECT_FALSE(store_->Remove("key").status().ok());

@@ -9,13 +9,6 @@
 namespace mojo {
 
 // static
-bool StructTraits<::blink::mojom::WebBluetoothDeviceIdDataView, WTF::String>::
-    Read(::blink::mojom::WebBluetoothDeviceIdDataView data,
-         WTF::String* output) {
-  return data.ReadDeviceId(output);
-}
-
-// static
 bool StructTraits<bluetooth::mojom::UUIDDataView, WTF::String>::Read(
     bluetooth::mojom::UUIDDataView data,
     WTF::String* output) {

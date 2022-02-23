@@ -18,42 +18,23 @@ class WebApp;
 
 class AppRegistrarObserver : public base::CheckedObserver {
  public:
-  virtual void OnWebAppInstalled(const AppId& app_id) {}
-
-  // Called when OS hooks installation is finished during Web App installation.
-  virtual void OnWebAppInstalledWithOsHooks(const AppId& app_id) {}
-
-  // Called when any field of a web app's local manifest is updated.
-  // Note that |old_name| will always be the same as the current name as we
-  // don't support name updating yet. See TODO(crbug.com/1088338).
-  virtual void OnWebAppManifestUpdated(const AppId& app_id,
-                                       base::StringPiece old_name) {}
-
   // Called before any field of a web app is updated from the sync server.
   // A call site may compare existing WebApp state from the registry against
   // this new WebApp state with sync changes applied.
   virtual void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) {}
 
-  // Called before a web app is uninstalled, before the uninstallation process
-  // begins. |app_id| is still registered in the WebAppRegistrar, and OS hooks
-  // have not yet been uninstalled.
-  virtual void OnWebAppWillBeUninstalled(const AppId& app_id) {}
-
-  // Called after a web app is uninstalled. |app_id| is no longer registered in
-  // the WebAppRegistrar, all OS hooks are uninstalled, and icons have been
-  // deleted.
-  virtual void OnWebAppUninstalled(const AppId& app_id) {}
-
   virtual void OnWebAppProfileWillBeDeleted(const AppId& app_id) {}
-
-  virtual void OnAppRegistrarShutdown() {}
 
   virtual void OnAppRegistrarDestroyed() {}
 
   // Called after remembering the user choice to always launch an app via
   // a given protocol.
   virtual void OnWebAppProtocolSettingsChanged() {}
+
+  // Called after the app's access to the File Handling API has changed, e.g. by
+  // a user selecting "always allow" in the prompt or after a policy update.
+  virtual void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) {}
 
   virtual void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                                     bool is_locally_installed) {
@@ -72,6 +53,14 @@ class AppRegistrarObserver : public base::CheckedObserver {
                                           const base::Time& time) {}
   virtual void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                               DisplayMode user_display_mode) {}
+  virtual void OnWebAppRunOnOsLoginModeChanged(
+      const AppId& app_id,
+      RunOnOsLoginMode run_on_os_login_mode) {}
+
+  // Called after the WebAppSettings policy has been updated. If a policy is set
+  // this event is also fired during browser startup after the policy has been
+  // applied.
+  virtual void OnWebAppSettingsPolicyChanged() {}
 };
 
 }  // namespace web_app

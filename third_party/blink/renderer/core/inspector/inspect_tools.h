@@ -64,7 +64,7 @@ class QuadHighlightTool : public InspectTool {
  public:
   QuadHighlightTool(InspectorOverlayAgent* overlay,
                     OverlayFrontend* frontend,
-                    std::unique_ptr<FloatQuad> quad,
+                    std::unique_ptr<gfx::QuadF> quad,
                     Color color,
                     Color outline_color);
   QuadHighlightTool(const QuadHighlightTool&) = delete;
@@ -75,7 +75,7 @@ class QuadHighlightTool : public InspectTool {
   bool HideOnHideHighlight() override;
   void Draw(float scale) override;
   String GetOverlayName() override;
-  std::unique_ptr<FloatQuad> quad_;
+  std::unique_ptr<gfx::QuadF> quad_;
   Color color_;
   Color outline_color_;
 };

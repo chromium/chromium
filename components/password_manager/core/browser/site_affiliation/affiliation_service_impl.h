@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -99,6 +100,8 @@ class AffiliationServiceImpl : public AffiliationService,
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until) override;
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override;
+  void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris) override;
+  void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
@@ -139,7 +142,7 @@ class AffiliationServiceImpl : public AffiliationService,
   // living on the backend thread. It will be deleted asynchronously during
   // shutdown on the backend thread, so it will outlive |this| along with all
   // its in-flight tasks.
-  AffiliationBackend* backend_;
+  raw_ptr<AffiliationBackend> backend_;
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 

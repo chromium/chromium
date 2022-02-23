@@ -16,8 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace blink {
-namespace vector_math {
+namespace blink::vector_math {
 namespace {
 
 struct MemoryLayout {
@@ -60,8 +59,9 @@ constexpr size_t kVectorSizeCount =
 
 // Compare two floats and consider all NaNs to be equal.
 bool Equal(float a, float b) {
-  if (std::isnan(a))
+  if (std::isnan(a)) {
     return std::isnan(b);
+  }
   return a == b;
 }
 
@@ -245,12 +245,14 @@ class VectorMathTest : public testing::Test {
     std::uniform_int_distribution<size_t> index_distribution(
         0u, kFloatArraySize / 2u - 1u);
     for (size_t i = 0u; i < kSourceCount; ++i) {
-      if (i == kFullyFiniteSource || i == kFullyFiniteSource2)
+      if (i == kFullyFiniteSource || i == kFullyFiniteSource2) {
         continue;
+      }
       sources_[i][index_distribution(generator)] = INFINITY;
       sources_[i][index_distribution(generator)] = -INFINITY;
-      if (i != kFullyNonNanSource)
+      if (i != kFullyNonNanSource) {
         sources_[i][index_distribution(generator)] = NAN;
+      }
     }
   }
 
@@ -264,16 +266,18 @@ float VectorMathTest::sources_[kSourceCount][kFloatArraySize];
 
 TEST_F(VectorMathTest, Conv) {
   for (const auto& source : GetPrimaryVectors(GetSource(kFullyFiniteSource))) {
-    if (source.stride() != 1)
+    if (source.stride() != 1) {
       continue;
+    }
     for (size_t filter_size : {3u, 32u, 64u, 128u}) {
       // The maximum number of frames which could be processed here is
       // |source.size() - filter_size + 1|. However, in order to test
       // optimization paths, |frames_to_process| should be optimal (divisible
       // by a power of 2) whenever |filter_size| is optimal. Therefore, let's
       // process only |source.size() - filter_size| frames here.
-      if (filter_size >= source.size())
+      if (filter_size >= source.size()) {
         break;
+      }
       uint32_t frames_to_process = source.size() - filter_size;
       // The stride of a convolution filter must be -1. Let's first create
       // a reversed filter whose stride is 1.
@@ -286,8 +290,9 @@ TEST_F(VectorMathTest, Conv) {
           GetDestination(0u), source.memory_layout(), frames_to_process);
       for (size_t i = 0u; i < frames_to_process; ++i) {
         expected_dest[i] = 0u;
-        for (size_t j = 0u; j < filter_size; ++j)
+        for (size_t j = 0u; j < filter_size; ++j) {
           expected_dest[i] += source[i + j] * *(filter_p - j);
+        }
       }
       for (auto& dest : GetSecondaryVectors(
                GetDestination(1u), source.memory_layout(), frames_to_process)) {
@@ -308,8 +313,9 @@ TEST_F(VectorMathTest, Vadd) {
   for (const auto& source1 : GetPrimaryVectors(GetSource(0u))) {
     for (const auto& source2 : GetSecondaryVectors(GetSource(1u), source1)) {
       TestVector<float> expected_dest(GetDestination(0u), source1);
-      for (size_t i = 0u; i < source1.size(); ++i)
+      for (size_t i = 0u; i < source1.size(); ++i) {
         expected_dest[i] = source1[i] + source2[i];
+      }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
         Vadd(source1.p(), source1.stride(), source2.p(), source2.stride(),
              dest.p(), dest.stride(), source1.size());
@@ -323,8 +329,9 @@ TEST_F(VectorMathTest, Vsub) {
   for (const auto& source1 : GetPrimaryVectors(GetSource(0u))) {
     for (const auto& source2 : GetSecondaryVectors(GetSource(1u), source1)) {
       TestVector<float> expected_dest(GetDestination(0u), source1);
-      for (size_t i = 0u; i < source1.size(); ++i)
+      for (size_t i = 0u; i < source1.size(); ++i) {
         expected_dest[i] = source1[i] - source2[i];
+      }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
         Vsub(source1.p(), source1.stride(), source2.p(), source2.stride(),
              dest.p(), dest.stride(), source1.size());
@@ -341,8 +348,9 @@ TEST_F(VectorMathTest, Vclip) {
     const float low_threshold = std::min(thresholds[0], thresholds[1]);
     const float high_threshold = std::max(thresholds[0], thresholds[1]);
     TestVector<float> expected_dest(GetDestination(0u), source);
-    for (size_t i = 0u; i < source.size(); ++i)
+    for (size_t i = 0u; i < source.size(); ++i) {
       expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
+    }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       Vclip(source.p(), source.stride(), &low_threshold, &high_threshold,
             dest.p(), dest.stride(), source.size());
@@ -372,8 +380,9 @@ TEST_F(VectorMathTest, Vmul) {
   for (const auto& source1 : GetPrimaryVectors(GetSource(0u))) {
     for (const auto& source2 : GetSecondaryVectors(GetSource(1u), source1)) {
       TestVector<float> expected_dest(GetDestination(0u), source1);
-      for (size_t i = 0u; i < source1.size(); ++i)
+      for (size_t i = 0u; i < source1.size(); ++i) {
         expected_dest[i] = source1[i] * source2[i];
+      }
       for (auto& dest : GetSecondaryVectors(GetDestination(1u), source1)) {
         Vmul(source1.p(), source1.stride(), source2.p(), source2.stride(),
              dest.p(), dest.stride(), source1.size());
@@ -388,8 +397,9 @@ TEST_F(VectorMathTest, Vsma) {
     const float scale = *GetSource(1u);
     const TestVector<const float> dest_source(GetSource(2u), source);
     TestVector<float> expected_dest(GetDestination(0u), source);
-    for (size_t i = 0u; i < source.size(); ++i)
+    for (size_t i = 0u; i < source.size(); ++i) {
       expected_dest[i] = dest_source[i] + scale * source[i];
+    }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       std::copy(dest_source.begin(), dest_source.end(), dest.begin());
       Vsma(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
@@ -399,7 +409,7 @@ TEST_F(VectorMathTest, Vsma) {
       // expect only mostly equal floats.
       for (size_t i = 0u; i < source.size(); ++i) {
         if (std::isfinite(expected_dest[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest[i], dest[i],
@@ -419,8 +429,9 @@ TEST_F(VectorMathTest, Vsmul) {
   for (const auto& source : GetPrimaryVectors(GetSource(0u))) {
     const float scale = *GetSource(1u);
     TestVector<float> expected_dest(GetDestination(0u), source);
-    for (size_t i = 0u; i < source.size(); ++i)
+    for (size_t i = 0u; i < source.size(); ++i) {
       expected_dest[i] = scale * source[i];
+    }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       Vsmul(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
             source.size());
@@ -433,8 +444,9 @@ TEST_F(VectorMathTest, Vsadd) {
   for (const auto& source : GetPrimaryVectors(GetSource(0u))) {
     const float addend = *GetSource(1u);
     TestVector<float> expected_dest(GetDestination(0u), source);
-    for (size_t i = 0u; i < source.size(); ++i)
+    for (size_t i = 0u; i < source.size(); ++i) {
       expected_dest[i] = addend + source[i];
+    }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       Vsadd(source.p(), source.stride(), &addend, dest.p(), dest.stride(),
             source.size());
@@ -473,12 +485,14 @@ TEST_F(VectorMathTest, Zvmul) {
     std::copy_n(GetSource(i), kFloatArraySize, sources[i].begin());
     // Put +FLT_MAX and -FLT_MAX in the middle of the source. Use a different
     // sequence for each source in order to get 16 different combinations.
-    for (size_t j = 0u; j < 16u; ++j)
+    for (size_t j = 0u; j < 16u; ++j) {
       sources[i][kFloatArraySize / 2u + j] = ((j >> i) & 1) ? -kMax : kMax;
+    }
   }
   for (const auto& real1 : GetPrimaryVectors(sources[0u].data())) {
-    if (real1.stride() != 1)
+    if (real1.stride() != 1) {
       continue;
+    }
     const TestVector<const float> imag1(sources[1u].data(), real1);
     const TestVector<const float> real2(sources[2u].data(), real1);
     const TestVector<const float> imag2(sources[3u].data(), real1);
@@ -491,8 +505,8 @@ TEST_F(VectorMathTest, Zvmul) {
           &real1[i] < &sources[0u][kFloatArraySize / 2u] + 16u) {
         // FLT_MAX products should have overflowed.
         EXPECT_TRUE(std::isinf(expected_dest_real[i]) ||
-                    std::isinf(expected_dest_imag[i]));
-        EXPECT_TRUE(std::isnan(expected_dest_real[i]) ||
+                    std::isnan(expected_dest_real[i]));
+        EXPECT_TRUE(std::isinf(expected_dest_imag[i]) ||
                     std::isnan(expected_dest_imag[i]));
       }
     }
@@ -504,7 +518,7 @@ TEST_F(VectorMathTest, Zvmul) {
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
       // expect only mostly equal floats.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_ARM64)
       const float threshold = 1.900e-5;
 #else
@@ -513,7 +527,7 @@ TEST_F(VectorMathTest, Zvmul) {
 #endif
       for (size_t i = 0u; i < real1.size(); ++i) {
         if (std::isfinite(expected_dest_real[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest_real[i], dest_real[i],
@@ -522,7 +536,7 @@ TEST_F(VectorMathTest, Zvmul) {
           EXPECT_FLOAT_EQ(expected_dest_real[i], dest_real[i]);
 #endif
         } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in different NaN handling than functions used on other OSes.
           EXPECT_TRUE(!std::isfinite(dest_real[i]));
@@ -531,7 +545,7 @@ TEST_F(VectorMathTest, Zvmul) {
 #endif
         }
         if (std::isfinite(expected_dest_imag[i])) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in bigger rounding errors than functions used on other OSes.
           EXPECT_NEAR(expected_dest_imag[i], dest_imag[i],
@@ -540,7 +554,7 @@ TEST_F(VectorMathTest, Zvmul) {
           EXPECT_FLOAT_EQ(expected_dest_imag[i], dest_imag[i]);
 #endif
         } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // On Mac, OS provided vectorized functions are used which may result
           // in different NaN handling than functions used on other OSes.
           EXPECT_TRUE(!std::isfinite(dest_imag[i]));
@@ -554,5 +568,4 @@ TEST_F(VectorMathTest, Zvmul) {
 }
 
 }  // namespace
-}  // namespace vector_math
-}  // namespace blink
+}  // namespace blink::vector_math

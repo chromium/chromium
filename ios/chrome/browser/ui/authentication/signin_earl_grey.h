@@ -13,21 +13,16 @@
 @protocol GREYMatcher;
 @class FakeChromeIdentity;
 
+namespace signin {
+enum class ConsentLevel;
+}
+
 #define SigninEarlGrey \
   [SigninEarlGreyImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
 
 // Methods used for the EarlGrey tests.
 // TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
-
-// Returns a fake identity.
-- (FakeChromeIdentity*)fakeIdentity1;
-
-// Returns a second fake identity.
-- (FakeChromeIdentity*)fakeIdentity2;
-
-// Returns a fake managed identity.
-- (FakeChromeIdentity*)fakeManagedIdentity;
 
 // Adds |fakeIdentity| to the fake identity service.
 - (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
@@ -48,6 +43,10 @@
 // profile.
 - (void)verifySignedInWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
 
+// Induces a GREYAssert if the user is not signed in with |expectedEmail|.
+- (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail
+                              consent:(signin::ConsentLevel)consent;
+
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
 
@@ -56,6 +55,9 @@
 
 // Induces a GREYAssert if the Sync state does not match |enabled|.
 - (void)verifySyncUIEnabled:(BOOL)enabled;
+
+// Induces a GREYAssert if the Sync cell is not hidden.
+- (void)verifySyncUIIsHidden;
 
 @end
 

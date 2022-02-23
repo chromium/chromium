@@ -38,7 +38,6 @@ std::string Decompression::DecompressRecord(
   switch (compression_information.compression_algorithm()) {
     case CompressionInformation::COMPRESSION_NONE: {
       // Don't decompress, simply return serialized record
-      LOG(ERROR) << "RETURN RAW RECORD";
       return record;
     }
     case CompressionInformation::COMPRESSION_SNAPPY: {

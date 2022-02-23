@@ -10,6 +10,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/test/test_helper.h"
@@ -40,7 +41,7 @@ class CastAppDiscoveryServiceTest : public testing::Test {
             *CastMediaSource::FromMediaSourceId("cast:AAAAAAAA?clientId=2")),
         source_b_1_(
             *CastMediaSource::FromMediaSourceId("cast:BBBBBBBB?clientId=1")) {
-    ON_CALL(socket_service_, GetSocket(_))
+    ON_CALL(socket_service_, GetSocket(testing::Matcher<int>(_)))
         .WillByDefault(testing::Return(&socket_));
     task_runner_->RunPendingTasks();
   }
@@ -327,4 +328,24 @@ TEST_F(CastAppDiscoveryServiceTest, AvailabilityUnknownOrUnavailable) {
   AddOrUpdateSink(sink1);
 }
 
+TEST_F(CastAppDiscoveryServiceTest, BindLogger) {
+  std::unique_ptr<LoggerImpl> logger_1 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_1;
+  logger_1->BindReceiver(pending_remote_1.InitWithNewPipeAndPassReceiver());
+  app_discovery_service_->BindLogger(std::move(pending_remote_1));
+
+  // Trying to bind another pending remote no-ops instead of causing
+  // a DCHECK failure from binding to a remote that's already bound.
+  std::unique_ptr<LoggerImpl> logger_2 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_2;
+  logger_2->BindReceiver(pending_remote_2.InitWithNewPipeAndPassReceiver());
+  app_discovery_service_->BindLogger(std::move(pending_remote_2));
+
+  // Trying to bind a disconnected receiver should work.
+  logger_1.reset();
+  std::unique_ptr<LoggerImpl> logger_3 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_3;
+  logger_3->BindReceiver(pending_remote_3.InitWithNewPipeAndPassReceiver());
+  app_discovery_service_->BindLogger(std::move(pending_remote_3));
+}
 }  // namespace media_router

@@ -25,6 +25,11 @@ class Notification;
 }  // namespace message_center
 
 namespace ash {
+
+namespace app_restore {
+class LacrosWindowHandler;
+}
+
 namespace full_restore {
 
 class FullRestoreAppLaunchHandler;
@@ -53,6 +58,13 @@ enum class RestoreAction {
   // enumerator value.
   kMaxValue = kCloseNotByUser,
 };
+
+// Returns true if FullRestoreService can be created to restore/launch Lacros
+// during the system startup phase when below conditions are matched:
+// 1. The FullRestoreForLacros flag is enabled.
+// 2. The WebAppsCrosapi or LacrosPrimary flag is enabled.
+// 3. FullRestoreService can be created for the primary profile.
+bool MaybeCreateFullRestoreServiceForLacros();
 
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
@@ -159,6 +171,8 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
 
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
+
+  std::unique_ptr<app_restore::LacrosWindowHandler> lacros_window_handler_;
 
   std::unique_ptr<message_center::Notification> notification_;
 

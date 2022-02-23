@@ -8,23 +8,60 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
-@class BubblePresenter;
+namespace {
+
+using CSCollectionViewModel = CollectionViewModel<CSCollectionViewItem*>;
+
+// Enum defining the type of a ContentSuggestions.
+typedef NS_ENUM(NSInteger, ContentSuggestionType) {
+  // Use this type to pass information about an empty section. Suggestion of
+  // this type are empty and should not be displayed. The information to be
+  // displayed are contained in the SectionInfo.
+  ContentSuggestionTypeEmpty,
+  ContentSuggestionTypeMostVisited,
+  ContentSuggestionTypeReturnToRecentTab,
+  ContentSuggestionTypePromo,
+};
+
+// Enum defining the ItemTypes of this ContentSuggestionsViewController.
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeFooter = kItemTypeEnumZero,
+  ItemTypeHeader,
+  ItemTypeEmpty,
+  ItemTypeMostVisited,
+  ItemTypePromo,
+  ItemTypeReturnToRecentTab,
+  ItemTypeSingleCell,
+  ItemTypeUnknown,
+};
+
+// Enum defining the SectionIdentifiers of this
+// ContentSuggestionsViewController.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  SectionIdentifierMostVisited = kSectionIdentifierEnumZero,
+  SectionIdentifierLogo,
+  SectionIdentifierReturnToRecentTab,
+  SectionIdentifierPromo,
+  SectionIdentifierSingleCell,
+  SectionIdentifierDefault,
+};
+
+}  // namespace
+
 @class ContentSuggestionsSectionInformation;
 @protocol ContentSuggestionsActionHandler;
 @protocol ContentSuggestionsCommands;
-@protocol ContentSuggestionsDataSource;
 @protocol ContentSuggestionsHeaderControlling;
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
-@protocol DiscoverFeedHeaderChanging;
-@protocol DiscoverFeedMenuCommands;
-@protocol SnackbarCommands;
 @protocol SuggestedContent;
-@protocol ThemeChangeDelegate;
 
 // CollectionViewController to display the suggestions items.
-@interface ContentSuggestionsViewController : CollectionViewController
+@interface ContentSuggestionsViewController
+    : CollectionViewController <ContentSuggestionsConsumer>
 
 // Inits view controller with |style|.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
@@ -43,11 +80,6 @@
 @property(nonatomic, readonly)
     CollectionViewModel<CollectionViewItem<SuggestedContent>*>*
         collectionViewModel;
-// Delegate for handling theme changes (dark/light theme).
-@property(nonatomic, weak) id<ThemeChangeDelegate> themeChangeDelegate;
-@property(nonatomic, weak) id<DiscoverFeedMenuCommands> discoverFeedMenuHandler;
-@property(nonatomic, weak, readonly) id<DiscoverFeedHeaderChanging>
-    discoverFeedHeaderDelegate;
 // Whether or not the contents section should be hidden completely.
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Provides information about the content suggestions header. Used to get the
@@ -60,23 +92,8 @@
 @property(nonatomic, weak) id<ContentSuggestionsActionHandler> handler;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
-
-// Bubble presenter for displaying IPH bubbles relating to the NTP.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
-
-- (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
-- (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
-
-// Removes the entry at |indexPath|, from the collection and its model.
-- (void)dismissEntryAtIndexPath:(NSIndexPath*)indexPath;
-// Removes the |section|.
-- (void)dismissSection:(NSInteger)section;
-// Adds the |suggestions| to the collection and its model in the section
-// corresponding to |sectionInfo|.
-- (void)addSuggestions:
-            (NSArray<CollectionViewItem<SuggestedContent>*>*)suggestions
-         toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo;
-
+// Returns the header view containing the logo and omnibox to be displayed.
+- (UIView*)headerViewForWidth:(CGFloat)width;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

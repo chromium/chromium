@@ -11,67 +11,65 @@
 
 // Constants common to peripheral battery listener and notifier tests.
 
-namespace {
-
 // HID device.
-constexpr char kTestBatteryPath[] =
+inline constexpr char kTestBatteryPath[] =
     "/sys/class/power_supply/hid-AA:BB:CC:DD:EE:FF-battery";
-constexpr char kTestBatteryAddress[] = "aa:bb:cc:dd:ee:ff";
-constexpr char kTestDeviceName[] = "test device";
-constexpr char16_t kTestDeviceName16[] = u"test device";
-const auto kTestBatteryStatusIn = power_manager::
+inline constexpr char kTestBatteryAddress[] = "aa:bb:cc:dd:ee:ff";
+inline constexpr char kTestDeviceName[] = "test device";
+inline constexpr char16_t kTestDeviceName16[] = u"test device";
+const inline auto kTestBatteryStatusIn = power_manager::
     PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
-const auto kTestBatteryStatusOut =
+const inline auto kTestBatteryStatusOut =
     ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kDischarging;
-constexpr char kTestBatteryId[] = "battery_bluetooth-aa:bb:cc:dd:ee:ff";
-constexpr char kTestBatteryNotificationId[] =
+inline constexpr char kTestBatteryId[] = "battery_bluetooth-aa:bb:cc:dd:ee:ff";
+inline constexpr char kTestBatteryNotificationId[] =
     "battery_notification-battery_bluetooth-aa:bb:cc:dd:ee:ff";
 
 // Charging device
-constexpr char kTestChargerPath[] = "/sys/class/power_supply/PCHG0";
-constexpr char kTestChargerName[] = "";
-constexpr char kTestChargerId[] = "PCHG0";
-constexpr char kTestOtherChargerPath[] = "/sys/class/power_supply/PCHG1";
-constexpr char kTestOtherChargerName[] = "";
-constexpr char kTestOtherChargerId[] = "PCHG1";
+inline constexpr char kTestChargerPath[] = "/sys/class/power_supply/PCHG0";
+inline constexpr char kTestChargerName[] = "";
+inline constexpr char kTestChargerId[] = "PCHG0";
+inline constexpr char kTestOtherChargerPath[] = "/sys/class/power_supply/PCHG1";
+inline constexpr char kTestOtherChargerName[] = "";
+inline constexpr char kTestOtherChargerId[] = "PCHG1";
 
 // Bluetooth devices.
-constexpr char kBluetoothDeviceAddress1[] = "aa:bb:cc:dd:ee:ff";
-constexpr char kBluetoothDeviceAddress2[] = "11:22:33:44:55:66";
-constexpr char kBluetoothDeviceName1[] = "device_name_1";
-constexpr char16_t kBluetoothDeviceName116[] = u"device_name_1";
-constexpr char kBluetoothDeviceName2[] = "device_name_2";
-constexpr char16_t kBluetoothDeviceName216[] = u"device_name_2";
-constexpr char kBluetoothDeviceId1[] = "battery_bluetooth-aa:bb:cc:dd:ee:ff";
-constexpr char kBluetoothDeviceNotificationId1[] =
+inline constexpr char kBluetoothDeviceAddress1[] = "aa:bb:cc:dd:ee:ff";
+inline constexpr char kBluetoothDeviceAddress2[] = "11:22:33:44:55:66";
+inline constexpr char kBluetoothDeviceName1[] = "device_name_1";
+inline constexpr char16_t kBluetoothDeviceName116[] = u"device_name_1";
+inline constexpr char kBluetoothDeviceName2[] = "device_name_2";
+inline constexpr char16_t kBluetoothDeviceName216[] = u"device_name_2";
+inline constexpr char kBluetoothDeviceId1[] =
+    "battery_bluetooth-aa:bb:cc:dd:ee:ff";
+inline constexpr char kBluetoothDeviceNotificationId1[] =
     "battery_notification-battery_bluetooth-aa:bb:cc:dd:ee:ff";
-constexpr char kBluetoothDeviceId2[] = "battery_bluetooth-11:22:33:44:55:66";
-constexpr char kBluetoothDeviceNotificationId2[] =
+inline constexpr char kBluetoothDeviceId2[] =
+    "battery_bluetooth-11:22:33:44:55:66";
+inline constexpr char kBluetoothDeviceNotificationId2[] =
     "battery_notification-battery_bluetooth-11:22:33:44:55:66";
 
 // Stylus devices.
-const char kTestStylusBatteryPath[] =
+const inline char kTestStylusBatteryPath[] =
     "/sys/class/power_supply/hid-AAAA:BBBB:CCCC.DDDD-battery";
-const char kTestStylusName[] = "test_stylus";
-const auto kTestStylusBatteryStatusDischargingIn = power_manager::
+const inline char kTestStylusName[] = "test_stylus";
+const inline auto kTestStylusBatteryStatusDischargingIn = power_manager::
     PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
-const auto kTestStylusBatteryStatusDischargingOut =
+const inline auto kTestStylusBatteryStatusDischargingOut =
     ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kDischarging;
-const char kStylusEligibleSerialNumbers[][18] = {
+const inline char kStylusEligibleSerialNumbers[][18] = {
     "FABCDE01BCA23633", "019F02212D4F446E",  "154006440FE368C",
     "0190AB234FFE368",  "0154006440FE368C9", "0204009540fE368C9",
     "0347we-$%^$#^#*"};
-const char kStylusIneligibleSerialNumbers[][17] = {
+const inline char kStylusIneligibleSerialNumbers[][17] = {
     "0190AB234FFE368C", "0190AB234fFe368C", "0154006440FE368C",
     "0204009540FE368C", "2011003140FE368C", ""};
 // A period of time less than full garage charge, in seconds
-const int kPartialGarageChargeTime = 3;
+const inline int kPartialGarageChargeTime = 3;
 // A period of time greater than full garage charge, in seconds
-const int kFullGarageChargeTime = 30;
+const inline int kFullGarageChargeTime = 30;
 
-constexpr char kStylusChargerDeviceName[] = "garaged-stylus-charger";
-
-}  // namespace
+inline constexpr char kStylusChargerDeviceName[] = "garaged-stylus-charger";
 
 // Provide pretty-printers in aid of EXPECT_CALL() diagnostics.
 namespace absl {

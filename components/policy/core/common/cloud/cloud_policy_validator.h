@@ -24,7 +24,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif
 
@@ -442,7 +442,7 @@ class POLICY_EXPORT CloudPolicyValidator final
 using UserCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::CloudPolicySettings>;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyValidator =
     CloudPolicyValidator<enterprise_management::ExternalPolicyData>;
 #endif

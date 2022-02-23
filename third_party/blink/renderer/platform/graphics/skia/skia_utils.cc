@@ -33,9 +33,9 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
@@ -119,82 +119,109 @@ SkBlendMode WebCoreBlendModeToSkBlendMode(BlendMode blend_mode) {
       return SkBlendMode::kColor;
     case BlendMode::kLuminosity:
       return SkBlendMode::kLuminosity;
+    case BlendMode::kPlusLighter:
+      return SkBlendMode::kPlus;
   }
 
   NOTREACHED();
   return SkBlendMode::kSrcOver;
 }
 
-CompositeOperator CompositeOperatorFromSkBlendMode(SkBlendMode blend_mode) {
-  switch (blend_mode) {
+std::pair<CompositeOperator, BlendMode> CompositeAndBlendOpsFromSkBlendMode(
+    SkBlendMode sk_blend_mode) {
+  CompositeOperator composite_op = kCompositeSourceOver;
+  BlendMode blend_mode = BlendMode::kNormal;
+  switch (sk_blend_mode) {
+    // The following are SkBlendMode values that map to CompositeOperators.
     case SkBlendMode::kClear:
-      return kCompositeClear;
+      composite_op = kCompositeClear;
+      break;
     case SkBlendMode::kSrc:
-      return kCompositeCopy;
+      composite_op = kCompositeCopy;
+      break;
     case SkBlendMode::kSrcOver:
-      return kCompositeSourceOver;
-    case SkBlendMode::kSrcIn:
-      return kCompositeSourceIn;
-    case SkBlendMode::kSrcOut:
-      return kCompositeSourceOut;
-    case SkBlendMode::kSrcATop:
-      return kCompositeSourceAtop;
+      composite_op = kCompositeSourceOver;
+      break;
     case SkBlendMode::kDstOver:
-      return kCompositeDestinationOver;
+      composite_op = kCompositeDestinationOver;
+      break;
+    case SkBlendMode::kSrcIn:
+      composite_op = kCompositeSourceIn;
+      break;
     case SkBlendMode::kDstIn:
-      return kCompositeDestinationIn;
+      composite_op = kCompositeDestinationIn;
+      break;
+    case SkBlendMode::kSrcOut:
+      composite_op = kCompositeSourceOut;
+      break;
     case SkBlendMode::kDstOut:
-      return kCompositeDestinationOut;
+      composite_op = kCompositeDestinationOut;
+      break;
+    case SkBlendMode::kSrcATop:
+      composite_op = kCompositeSourceAtop;
+      break;
     case SkBlendMode::kDstATop:
-      return kCompositeDestinationAtop;
+      composite_op = kCompositeDestinationAtop;
+      break;
     case SkBlendMode::kXor:
-      return kCompositeXOR;
+      composite_op = kCompositeXOR;
+      break;
     case SkBlendMode::kPlus:
-      return kCompositePlusLighter;
-    default:
+      composite_op = kCompositePlusLighter;
       break;
-  }
-  return kCompositeSourceOver;
-}
 
-BlendMode BlendModeFromSkBlendMode(SkBlendMode blend_mode) {
-  switch (blend_mode) {
-    case SkBlendMode::kSrcOver:
-      return BlendMode::kNormal;
-    case SkBlendMode::kMultiply:
-      return BlendMode::kMultiply;
+    // The following are SkBlendMode values that map to BlendModes.
     case SkBlendMode::kScreen:
-      return BlendMode::kScreen;
+      blend_mode = BlendMode::kScreen;
+      break;
     case SkBlendMode::kOverlay:
-      return BlendMode::kOverlay;
+      blend_mode = BlendMode::kOverlay;
+      break;
     case SkBlendMode::kDarken:
-      return BlendMode::kDarken;
+      blend_mode = BlendMode::kDarken;
+      break;
     case SkBlendMode::kLighten:
-      return BlendMode::kLighten;
+      blend_mode = BlendMode::kLighten;
+      break;
     case SkBlendMode::kColorDodge:
-      return BlendMode::kColorDodge;
+      blend_mode = BlendMode::kColorDodge;
+      break;
     case SkBlendMode::kColorBurn:
-      return BlendMode::kColorBurn;
+      blend_mode = BlendMode::kColorBurn;
+      break;
     case SkBlendMode::kHardLight:
-      return BlendMode::kHardLight;
+      blend_mode = BlendMode::kHardLight;
+      break;
     case SkBlendMode::kSoftLight:
-      return BlendMode::kSoftLight;
+      blend_mode = BlendMode::kSoftLight;
+      break;
     case SkBlendMode::kDifference:
-      return BlendMode::kDifference;
+      blend_mode = BlendMode::kDifference;
+      break;
     case SkBlendMode::kExclusion:
-      return BlendMode::kExclusion;
+      blend_mode = BlendMode::kExclusion;
+      break;
+    case SkBlendMode::kMultiply:
+      blend_mode = BlendMode::kMultiply;
+      break;
     case SkBlendMode::kHue:
-      return BlendMode::kHue;
+      blend_mode = BlendMode::kHue;
+      break;
     case SkBlendMode::kSaturation:
-      return BlendMode::kSaturation;
+      blend_mode = BlendMode::kSaturation;
+      break;
     case SkBlendMode::kColor:
-      return BlendMode::kColor;
+      blend_mode = BlendMode::kColor;
+      break;
     case SkBlendMode::kLuminosity:
-      return BlendMode::kLuminosity;
+      blend_mode = BlendMode::kLuminosity;
+      break;
+
+    // We don't handle other SkBlendModes.
     default:
       break;
   }
-  return BlendMode::kNormal;
+  return std::make_pair(composite_op, blend_mode);
 }
 
 SkMatrix AffineTransformToSkMatrix(const AffineTransform& source) {
@@ -257,11 +284,10 @@ bool NearlyIntegral(float value) {
   return fabs(value - floorf(value)) < std::numeric_limits<float>::epsilon();
 }
 
-bool IsValidImageSize(const IntSize& size) {
+bool IsValidImageSize(const gfx::Size& size) {
   if (size.IsEmpty())
     return false;
-  base::CheckedNumeric<int> area = size.width();
-  area *= size.height();
+  base::CheckedNumeric<int> area = size.GetCheckedArea();
   if (!area.IsValid() || area.ValueOrDie() > kMaxCanvasArea)
     return false;
   if (size.width() > kMaxSkiaDim || size.height() > kMaxSkiaDim)
@@ -381,10 +407,10 @@ SkRect LayoutRectToSkRect(const blink::LayoutRect& rect) {
                           SkFloatToScalar(rect.Height()));
 }
 
-static PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
-  PaintFlags flags;
+static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStyle(PaintFlags::kStroke_Style);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setColor(color);
   flags.setStrokeWidth(width);
   return flags;
@@ -402,7 +428,7 @@ void DrawPlatformFocusRing(const SkPath& path,
                            SkColor color,
                            float width,
                            float corner_radius) {
-  PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
+  cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
   if (corner_radius) {
     path_flags.setPathEffect(
         SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));

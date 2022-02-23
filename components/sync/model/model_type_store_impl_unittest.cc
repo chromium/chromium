@@ -83,7 +83,8 @@ void CaptureErrorRecordsAndIdList(
 void WriteData(ModelTypeStore* store,
                const std::string& key,
                const std::string& data) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->WriteData(key, data);
   absl::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
@@ -95,7 +96,8 @@ void WriteData(ModelTypeStore* store,
 void WriteMetadata(ModelTypeStore* store,
                    const std::string& key,
                    const sync_pb::EntityMetadata& metadata) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateMetadata(key, metadata);
 
   absl::optional<ModelError> error;
@@ -107,7 +109,8 @@ void WriteMetadata(ModelTypeStore* store,
 
 void WriteModelTypeState(ModelTypeStore* store,
                          const sync_pb::ModelTypeState& state) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateModelTypeState(state);
 
   absl::optional<ModelError> error;
@@ -139,10 +142,10 @@ void VerifyMetadata(
   EXPECT_EQ(state.SerializeAsString(),
             batch->GetModelTypeState().SerializeAsString());
   EntityMetadataMap actual_metadata = batch->TakeAllMetadata();
-  for (const auto& kv : expected_metadata) {
-    auto it = actual_metadata.find(kv.first);
+  for (const auto& [storage_key, metadata] : expected_metadata) {
+    auto it = actual_metadata.find(storage_key);
     ASSERT_TRUE(it != actual_metadata.end());
-    EXPECT_EQ(kv.second.SerializeAsString(), it->second->SerializeAsString());
+    EXPECT_EQ(metadata.SerializeAsString(), it->second->SerializeAsString());
     actual_metadata.erase(it);
   }
   EXPECT_EQ(0U, actual_metadata.size());
@@ -214,7 +217,7 @@ TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
               -> absl::optional<ModelError> {
-            for (const auto& record : *record_list) {
+            for (const ModelTypeStore::Record& record : *record_list) {
               preprocessed[std::string("key_") + record.id] =
                   std::string("value_") + record.value;
             }
@@ -280,7 +283,8 @@ TEST_F(ModelTypeStoreImplTest, MissingModelTypeState) {
 
   absl::optional<ModelError> error;
 
-  auto write_batch = store()->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store()->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->ClearModelTypeState();
   store()->CommitWriteBatch(std::move(write_batch),
                             base::BindOnce(&CaptureError, &error));

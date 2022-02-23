@@ -82,9 +82,9 @@ WebFontRenderStyle FontPlatformData::QuerySystemForRenderStyle() {
     return style;
   }
 
-  if (FontCache::GetFontCache()->AntialiasedTextEnabled()) {
+  if (FontCache::Get().AntialiasedTextEnabled()) {
     style.use_anti_alias = 1;
-    if (FontCache::GetFontCache()->LcdTextEnabled())
+    if (FontCache::Get().LcdTextEnabled())
       style.use_subpixel_rendering = 1;
   }
 

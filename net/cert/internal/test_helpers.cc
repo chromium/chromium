@@ -128,7 +128,7 @@ der::Input SequenceValueFromString(const std::string* s) {
 }
 
 VerifyCertChainTest::VerifyCertChainTest()
-    : user_initial_policy_set{AnyPolicy()} {}
+    : user_initial_policy_set{der::Input(kAnyPolicyOid)} {}
 VerifyCertChainTest::~VerifyCertChainTest() = default;
 
 bool VerifyCertChainTest::HasHighSeverityErrors() const {

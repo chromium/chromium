@@ -8,6 +8,7 @@ include_rules = [
   "+components/browser_sync",
   "+components/browsing_data/core",
   "+components/captive_portal",
+  "+components/commerce/core",
   "+components/component_updater",
   "+components/content_settings/core",
   "+components/cookie_config",
@@ -47,7 +48,6 @@ include_rules = [
   "+components/leveldb_proto",
   "+components/lookalikes/core",
   "+components/metrics",
-  "+components/ntp_tiles",
   "+components/user_prefs",
   "+components/metrics_services_manager",
   "+components/navigation_metrics",
@@ -151,6 +151,10 @@ include_rules = [
   "-components/metrics/gpu",
   "-components/sessions/content",
 
+  # ios/chrome/browser should not depend on ios/chrome/browser/ui
+  "-ios/chrome/browser/ui",
+  "-ios/common/ui",
+
   # For tests.
   "+ios/chrome/test",
   "+ios/public/test",
@@ -164,5 +168,23 @@ include_rules = [
 specific_include_rules = {
   ".*test\.mm": [
     "+components/previous_session_info/previous_session_info_private.h",
+    # TODO(crbug.com/1294160): browser should not depend on UI, this is a
+    # blanket exception for tests.
+    "+ios/chrome/browser/ui",
   ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^browser_about_rewriter.cc": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+  "^chrome_root_coordinator.h": [
+    "+ios/chrome/browser/ui/coordinators/chrome_coordinator.h",
+  ],
+  "^ios_chrome_field_trials.mm": [
+    "+ios/chrome/browser/ui/first_run/fre_field_trial.h",
+  ],
+  "^system_flags.mm": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+
 }

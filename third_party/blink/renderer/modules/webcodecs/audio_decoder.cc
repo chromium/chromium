@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -96,8 +97,6 @@ AudioDecoderTraits::CreateDecoder(
 void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
                                           const MediaConfigType& media_config,
                                           media::MediaLog* media_log) {
-  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("AudioDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kAudioDecoderName>(
       decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformAudioDecoder>(
@@ -111,13 +110,13 @@ void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
-media::StatusOr<AudioDecoderTraits::OutputType*> AudioDecoderTraits::MakeOutput(
-    scoped_refptr<MediaOutputType> output,
-    ExecutionContext* context) {
+media::DecoderStatus::Or<AudioDecoderTraits::OutputType*>
+AudioDecoderTraits::MakeOutput(scoped_refptr<MediaOutputType> output,
+                               ExecutionContext* context) {
   if (!blink::audio_utilities::IsValidAudioBufferSampleRate(
           output->sample_rate())) {
-    return media::Status(
-        media::StatusCode::kInvalidArgument,
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
         String::Format("Invalid decoded audio output sample rate. Got %u, "
                        "which is outside [%f, %f]",
                        output->sample_rate(),
@@ -128,12 +127,13 @@ media::StatusOr<AudioDecoderTraits::OutputType*> AudioDecoderTraits::MakeOutput(
 
   if (static_cast<uint32_t>(output->channel_count()) >
       BaseAudioContext::MaxNumberOfChannels()) {
-    return media::Status(media::StatusCode::kInvalidArgument,
-                         String::Format("Invalid decoded audio output channel "
-                                        "count. Got %u, which exceeds %u",
-                                        output->channel_count(),
-                                        BaseAudioContext::MaxNumberOfChannels())
-                             .Ascii());
+    return media::DecoderStatus(
+        media::DecoderStatus::Codes::kInvalidArgument,
+        String::Format("Invalid decoded audio output channel "
+                       "count. Got %u, which exceeds %u",
+                       output->channel_count(),
+                       BaseAudioContext::MaxNumberOfChannels())
+            .Ascii());
   }
 
   return MakeGarbageCollected<AudioDecoderTraits::OutputType>(
@@ -244,11 +244,10 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
                                      *out_console_message);
 }
 
-media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
 AudioDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   if (verify_key_frame && !chunk.buffer()->is_key_frame())
-    return media::Status(media::StatusCode::kKeyFrameRequired);
-
+    return media::DecoderStatus::Codes::kKeyFrameRequired;
   return chunk.buffer();
 }
 

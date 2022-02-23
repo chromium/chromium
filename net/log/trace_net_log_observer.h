@@ -5,7 +5,7 @@
 #ifndef NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 #define NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_log.h"
 #include "net/base/net_export.h"
@@ -44,7 +44,7 @@ class NET_EXPORT TraceNetLogObserver
   void OnTraceLogDisabled() override;
 
  private:
-  NetLog* net_log_to_watch_;
+  raw_ptr<NetLog> net_log_to_watch_;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
 };
 

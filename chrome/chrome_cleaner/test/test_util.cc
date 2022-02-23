@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -365,7 +366,7 @@ ScopedTempDirNoWow64::~ScopedTempDirNoWow64() {
   // Since the temp dir was created with Wow64 disabled, it must be deleted
   // with Wow64 disabled.
   ScopedDisableWow64Redirection disable_wow64_redirection;
-  ANALYZER_ALLOW_UNUSED(Delete());
+  std::ignore = Delete();
 
   // The parent's destructor will call Delete again, without disabling Wow64,
   // which could delete a directory with the same name in SysWOW64. So make

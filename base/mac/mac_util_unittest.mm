@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/mac/mac_util.h"
+
 #import <Cocoa/Cocoa.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "base/mac/mac_util.h"
+#include <sys/xattr.h>
 
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
@@ -19,11 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#include <errno.h>
-#include <sys/xattr.h>
-
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace {
 
@@ -93,42 +91,6 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     EXPECT_STREQ(valid_inputs[i].expected_out,
         out.value().c_str()) << "loop: " << i;
   }
-}
-
-TEST_F(MacUtilTest, TestExcludeFileFromBackups) {
-  // The file must already exist in order to set its exclusion property.
-  ScopedTempDir temp_dir_;
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath dummy_file_path = temp_dir_.GetPath().Append("DummyFile");
-  const char dummy_data[] = "All your base are belong to us!";
-  // Dump something real into the file.
-  ASSERT_EQ(static_cast<int>(base::size(dummy_data)),
-            WriteFile(dummy_file_path, dummy_data, base::size(dummy_data)));
-  // Initial state should be non-excluded.
-  EXPECT_FALSE(GetFileBackupExclusion(dummy_file_path));
-  // Exclude the file.
-  ASSERT_TRUE(SetFileBackupExclusion(dummy_file_path));
-  EXPECT_TRUE(GetFileBackupExclusion(dummy_file_path));
-
-  // Ensure that SetFileBackupExclusion never excludes by path.
-  base::ScopedCFTypeRef<CFURLRef> file_url =
-      base::mac::FilePathToCFURL(dummy_file_path);
-  Boolean excluded_by_path = FALSE;
-  Boolean excluded = CSBackupIsItemExcluded(file_url, &excluded_by_path);
-  EXPECT_TRUE(excluded);
-  EXPECT_FALSE(excluded_by_path);
-}
-
-TEST_F(MacUtilTest, NSObjectRetainRelease) {
-  base::scoped_nsobject<NSArray> array(
-      [[NSArray alloc] initWithObjects:@"foo", nil]);
-  EXPECT_EQ(1U, [array retainCount]);
-
-  NSObjectRetain(array);
-  EXPECT_EQ(2U, [array retainCount]);
-
-  NSObjectRelease(array);
-  EXPECT_EQ(1U, [array retainCount]);
 }
 
 TEST_F(MacUtilTest, IsOSEllipsis) {
@@ -338,5 +300,4 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttributeNonExistentPath) {
 
 }  // namespace
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

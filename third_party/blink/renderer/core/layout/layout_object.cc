@@ -88,7 +88,6 @@
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -101,6 +100,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -110,10 +110,11 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -181,10 +182,18 @@ inline bool MightTraversePhysicalFragments(const LayoutObject& obj) {
   // If this object participates in legacy block fragmentation (but still is a
   // LayoutNG object, which may happen if we're using a layout type not
   // supported in the legacy engine, such as custom layout), do not attempt to
-  // fragment-traverse it.
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled() &&
-      obj.IsInsideFlowThread())
-    return false;
+  // fragment-traverse it. Check whether the nearest parent box can traverse
+  // fragments (but ignore the flow thread, as it's not used by LayoutNG and
+  // therefore never fragment-traversable), and just inherit that.
+  if (obj.IsInsideFlowThread()) {
+    if (const LayoutObject* parent = obj.Parent()) {
+      if (const LayoutObject* nearest_box_ancestor = parent->EnclosingBox()) {
+        if (nearest_box_ancestor->IsLayoutFlowThread())
+          nearest_box_ancestor = nearest_box_ancestor->Parent();
+        return nearest_box_ancestor->CanTraversePhysicalFragments();
+      }
+    }
+  }
   return true;
 }
 
@@ -319,8 +328,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return LayoutObjectFactory::CreateMath(*element, style, legacy);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
-      DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
-      return MakeGarbageCollected<LayoutNGCustom>(element);
+      return LayoutObjectFactory::CreateCustom(*element, style, legacy);
   }
 
   NOTREACHED();
@@ -432,6 +440,13 @@ bool LayoutObject::RequiresAnonymousTableWrappers(
 void LayoutObject::AssertFragmentTree(bool display_locked) const {
   NOT_DESTROYED();
   for (const LayoutObject* layout_object = this; layout_object;) {
+    // |LayoutNGMixin::UpdateInFlowBlockLayout| may |SetNeedsLayout| to its
+    // containing block. Don't check if it will be re-laid out.
+    if (layout_object->NeedsLayout()) {
+      layout_object = layout_object->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+
     // If display-locked, fragments may not be removed from the tree even after
     // the |LayoutObject| was destroyed, but still they should be consistent.
     if (!display_locked && layout_object->ChildLayoutBlockedByDisplayLock()) {
@@ -447,7 +462,7 @@ void LayoutObject::AssertFragmentTree(bool display_locked) const {
       for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments()) {
         DCHECK_EQ(box, fragment.OwnerLayoutBox());
         fragment.AssertFragmentTreeChildren(
-            /* allow_destroyed */ display_locked);
+            /* allow_destroyed_or_moved */ display_locked);
       }
     }
     layout_object = layout_object->NextInPreOrder(this);
@@ -459,25 +474,40 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   if (ChildPrePaintBlockedByDisplayLock())
     return;
 
-  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
-  // are identical. Make an exception for table columns (unless they establish a
-  // layer, which would be dangerous (but hopefully also impossible)), since
-  // they don't produce fragments.
-  //
-  // This was added as part of investigating crbug.com/1244130
-  if (CanTraversePhysicalFragments() && IsBox() &&
-      (!IsLayoutTableCol() || HasLayer())) {
-    wtf_size_t fragment_count = 0;
-    for (const FragmentData* walker = &FirstFragment(); walker;
-         walker = walker->NextFragment())
-      fragment_count++;
-    DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
+  if (PaintInvalidationStateIsDirty()) {
+    ShowLayoutTreeForThis();
+    NOTREACHED();
   }
 
-  if (!PaintInvalidationStateIsDirty())
+  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
+  // are identical. This was added as part of investigating crbug.com/1244130
+
+  // Only LayoutBox has fragments. Bail if it's not a box, or if fragment
+  // traversal isn't supported here.
+  if (!IsBox() || !CanTraversePhysicalFragments())
     return;
-  ShowLayoutTreeForThis();
-  NOTREACHED();
+
+  // Make an exception for table columns (unless they establish a layer, which
+  // would be dangerous (but hopefully also impossible)), since they don't
+  // produce fragments.
+  if (IsLayoutTableCol() && !HasLayer())
+    return;
+
+  // Sometimes we just have a Layout(NG)View with no children, and the view is
+  // not marked for layout, even if it has never been laid out. It seems that we
+  // don't actually paint under such circumstances, which means that it doesn't
+  // matter whether we have fragments or not. See crbug.com/1288742
+  if (IsLayoutView() && !EverHadLayout() && !SlowFirstChild())
+    return;
+
+  wtf_size_t fragment_count = 0;
+  for (const FragmentData* walker = &FirstFragment(); walker;
+       walker = walker->NextFragment())
+    fragment_count++;
+  if (fragment_count != To<LayoutBox>(this)->PhysicalFragmentCount()) {
+    ShowLayoutTreeForThis();
+    DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
+  }
 }
 
 #endif  // DCHECK_IS_ON()
@@ -999,36 +1029,41 @@ LayoutBox* LayoutObject::EnclosingBox() const {
 
 LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
   NOT_DESTROYED();
-  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent))
-      return block_flow;
-  }
-  return nullptr;
+  DCHECK(!IsOutOfFlowPositioned());
+  auto* block_flow = DynamicTo<LayoutBlockFlow>(ContainingNGBlock());
+  if (!block_flow || !block_flow->IsLayoutNGObject())
+    return nullptr;
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // Make sure that we don't skip blocks in the ancestry chain (which might
+  // happen if there are out-of-flow positioned objects, for instance). In this
+  // method we don't want to escape the enclosing inline formatting context.
+  for (const LayoutObject* walker = Parent(); walker != block_flow;
+       walker = walker->Parent())
+    DCHECK(!walker->IsLayoutBlock());
+#endif
+  return block_flow;
 }
 
-LayoutBlockFlow* LayoutObject::ContainingNGBlockFlow() const {
+LayoutBlock* LayoutObject::ContainingNGBlock() const {
   NOT_DESTROYED();
-  DCHECK(IsInline());
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
-  for (LayoutObject* parent = Parent(); parent; parent = parent->Parent()) {
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(parent)) {
-      // Skip |LayoutFlowThread| because it is skipped when finding the first
-      // child in |GetLayoutObjectForFirstChildNode|.
-      if (UNLIKELY(block_flow->IsLayoutFlowThread()))
-        block_flow = DynamicTo<LayoutBlockFlow>(block_flow->Parent());
-      if (!NGBlockNode::CanUseNewLayout(*block_flow))
-        return nullptr;
-      return block_flow;
-    }
-  }
-  return nullptr;
+  LayoutBlock* containing_block = ContainingBlock();
+  if (!containing_block)
+    return nullptr;
+  // Flow threads should be invisible to LayoutNG, so skip to the multicol
+  // container.
+  if (UNLIKELY(containing_block->IsLayoutFlowThread()))
+    containing_block = To<LayoutBlockFlow>(containing_block->Parent());
+  if (!containing_block->IsLayoutNGObject())
+    return nullptr;
+  return containing_block;
 }
 
 bool LayoutObject::IsFirstInlineFragmentSafe() const {
   NOT_DESTROYED();
   DCHECK(IsInline());
-  LayoutBlockFlow* block_flow = ContainingNGBlockFlow();
+  LayoutBlockFlow* block_flow = FragmentItemsContainer();
   return block_flow && !block_flow->NeedsLayout();
 }
 
@@ -1621,43 +1656,44 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
          ComputeIsFixedContainer(style);
 }
 
-FloatRect LayoutObject::AbsoluteBoundingBoxFloatRect(
+gfx::RectF LayoutObject::AbsoluteBoundingBoxRectF(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   DCHECK(!(flags & kIgnoreTransforms));
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   AbsoluteQuads(quads, flags);
 
   wtf_size_t n = quads.size();
   if (n == 0)
-    return FloatRect();
+    return gfx::RectF();
 
-  FloatRect result = quads[0].BoundingBox();
+  gfx::RectF result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
     result.Union(quads[i].BoundingBox());
   return result;
 }
 
-IntRect LayoutObject::AbsoluteBoundingBoxRect(MapCoordinatesFlags flags) const {
+gfx::Rect LayoutObject::AbsoluteBoundingBoxRect(
+    MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   DCHECK(!(flags & kIgnoreTransforms));
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   AbsoluteQuads(quads, flags);
 
   wtf_size_t n = quads.size();
   if (!n)
-    return IntRect();
+    return gfx::Rect();
 
-  IntRect result = quads[0].EnclosingBoundingBox();
-  for (wtf_size_t i = 1; i < n; ++i)
-    result.Union(quads[i].EnclosingBoundingBox());
-  return result;
+  gfx::RectF result;
+  for (auto& quad : quads)
+    result.Union(quad.BoundingBox());
+  return gfx::ToEnclosingRect(result);
 }
 
 PhysicalRect LayoutObject::AbsoluteBoundingBoxRectHandlingEmptyInline(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
-  return PhysicalRect::EnclosingRect(AbsoluteBoundingBoxFloatRect(flags));
+  return PhysicalRect::EnclosingRect(AbsoluteBoundingBoxRectF(flags));
 }
 
 PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
@@ -1680,7 +1716,7 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
   return rect;
 }
 
-void LayoutObject::AddAbsoluteRectForLayer(IntRect& result) {
+void LayoutObject::AddAbsoluteRectForLayer(gfx::Rect& result) {
   NOT_DESTROYED();
   if (HasLayer())
     result.Union(AbsoluteBoundingBoxRect());
@@ -1689,9 +1725,9 @@ void LayoutObject::AddAbsoluteRectForLayer(IntRect& result) {
     current->AddAbsoluteRectForLayer(result);
 }
 
-IntRect LayoutObject::AbsoluteBoundingBoxRectIncludingDescendants() const {
+gfx::Rect LayoutObject::AbsoluteBoundingBoxRectIncludingDescendants() const {
   NOT_DESTROYED();
-  IntRect result = AbsoluteBoundingBoxRect();
+  gfx::Rect result = AbsoluteBoundingBoxRect();
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling())
     current->AddAbsoluteRectForLayer(result);
@@ -1700,44 +1736,6 @@ IntRect LayoutObject::AbsoluteBoundingBoxRectIncludingDescendants() const {
 
 void LayoutObject::Paint(const PaintInfo&) const {
   NOT_DESTROYED();
-}
-
-const LayoutBoxModelObject& LayoutObject::DirectlyCompositableContainer()
-    const {
-  NOT_DESTROYED();
-  CHECK(IsRooted());
-
-  if (const LayoutBoxModelObject* container =
-          EnclosingDirectlyCompositableContainer())
-    return *container;
-
-  // If the current frame is not composited, we send just return the main
-  // frame's LayoutView so that we generate invalidations on the window.
-  const LayoutView* layout_view = View();
-  while (const LayoutObject* owner_object =
-             layout_view->GetFrame()->OwnerLayoutObject())
-    layout_view = owner_object->View();
-
-  DCHECK(layout_view);
-  return *layout_view;
-}
-
-const LayoutBoxModelObject*
-LayoutObject::EnclosingDirectlyCompositableContainer() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  LayoutBoxModelObject* container = nullptr;
-  // FIXME: CompositingState is not necessarily up to date for many callers of
-  // this function.
-  DisableCompositingQueryAsserts disabler;
-
-  if (PaintLayer* painting_layer = PaintingLayer()) {
-    if (PaintLayer* compositing_layer =
-            painting_layer
-                ->EnclosingDirectlyCompositableLayerCrossingFrameBoundaries())
-      container = &compositing_layer->GetLayoutObject();
-  }
-  return container;
 }
 
 RecalcLayoutOverflowResult LayoutObject::RecalcLayoutOverflow() {
@@ -1884,20 +1882,6 @@ DOMNodeId LayoutObject::OwnerNodeId() const {
   return GetNode() ? DOMNodeIds::IdForNode(GetNode()) : kInvalidDOMNodeId;
 }
 
-bool LayoutObject::IsPaintInvalidationContainer() const {
-  NOT_DESTROYED();
-  return HasLayer() && To<LayoutBoxModelObject>(this)
-                           ->Layer()
-                           ->IsPaintInvalidationContainer();
-}
-
-bool LayoutObject::CanBeCompositedForDirectReasons() const {
-  NOT_DESTROYED();
-  return HasLayer() && To<LayoutBoxModelObject>(this)
-                           ->Layer()
-                           ->CanBeCompositedForDirectReasons();
-}
-
 void LayoutObject::InvalidateDisplayItemClients(
     PaintInvalidationReason reason) const {
   NOT_DESTROYED();
@@ -1967,7 +1951,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
   // or property_container->FirstFragment().ContentsProperties().
   rect.Move(FirstFragment().PaintOffset());
   if (property_container != ancestor) {
-    FloatClipRect clip_rect(ToGfxRectF(FloatRect(rect)));
+    FloatClipRect clip_rect((gfx::RectF(rect)));
     intersects = GeometryMapper::LocalToAncestorVisualRect(
         container_properties, ancestor->FirstFragment().ContentsProperties(),
         clip_rect, kIgnoreOverlayScrollbarSize,
@@ -1991,7 +1975,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpace(
     return intersects;
 
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 FloatQuad(FloatRect(rect)));
+                                 gfx::QuadF(gfx::RectF(rect)));
   intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
                                                       visual_rect_flags);
   transform_state.Flatten();
@@ -2203,8 +2187,7 @@ bool LayoutObject::IsSelected() const {
 
 bool LayoutObject::IsSelectable() const {
   NOT_DESTROYED();
-  return !IsInert() && !(StyleRef().UserSelect() == EUserSelect::kNone &&
-                         StyleRef().UserModify() == EUserModify::kReadOnly);
+  return StyleRef().IsSelectable();
 }
 
 const ComputedStyle& LayoutObject::SlowEffectiveStyle(
@@ -2410,6 +2393,15 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
 void LayoutObject::SetNeedsOverflowRecalc(
     OverflowRecalcType overflow_recalc_type) {
   NOT_DESTROYED();
+  if (UNLIKELY(IsLayoutFlowThread())) {
+    // If we're a flow thread inside an NG multicol container, just redirect to
+    // the multicol container, since the overflow recalculation walks down the
+    // NG fragment tree, and the flow thread isn't represented there.
+    if (auto* multicol_container = DynamicTo<LayoutNGBlockFlow>(Parent())) {
+      multicol_container->SetNeedsOverflowRecalc(overflow_recalc_type);
+      return;
+    }
+  }
   bool mark_container_chain_layout_overflow_recalc =
       !SelfNeedsLayoutOverflowRecalc();
 
@@ -2484,31 +2476,27 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
         switch (pseudo) {
           case kPseudoIdTargetText:
             pseudo_old_style = style_->HighlightData()
-                                   ? style_->HighlightData()->TargetText().get()
+                                   ? style_->HighlightData()->TargetText()
                                    : nullptr;
             pseudo_new_style = style->HighlightData()
-                                   ? style->HighlightData()->TargetText().get()
+                                   ? style->HighlightData()->TargetText()
                                    : nullptr;
             break;
           case kPseudoIdSpellingError:
-            pseudo_old_style =
-                style_->HighlightData()
-                    ? style_->HighlightData()->SpellingError().get()
-                    : nullptr;
-            pseudo_new_style =
-                style->HighlightData()
-                    ? style->HighlightData()->SpellingError().get()
-                    : nullptr;
+            pseudo_old_style = style_->HighlightData()
+                                   ? style_->HighlightData()->SpellingError()
+                                   : nullptr;
+            pseudo_new_style = style->HighlightData()
+                                   ? style->HighlightData()->SpellingError()
+                                   : nullptr;
             break;
           case kPseudoIdGrammarError:
-            pseudo_old_style =
-                style_->HighlightData()
-                    ? style_->HighlightData()->GrammarError().get()
-                    : nullptr;
-            pseudo_new_style =
-                style->HighlightData()
-                    ? style->HighlightData()->GrammarError().get()
-                    : nullptr;
+            pseudo_old_style = style_->HighlightData()
+                                   ? style_->HighlightData()->GrammarError()
+                                   : nullptr;
+            pseudo_new_style = style->HighlightData()
+                                   ? style->HighlightData()->GrammarError()
+                                   : nullptr;
             break;
           default:
             NOTREACHED();
@@ -3234,9 +3222,9 @@ PhysicalRect LayoutObject::ViewRect() const {
   return View()->ViewRect();
 }
 
-FloatPoint LayoutObject::AncestorToLocalFloatPoint(
+gfx::PointF LayoutObject::AncestorToLocalPoint(
     const LayoutBoxModelObject* ancestor,
-    const FloatPoint& container_point,
+    const gfx::PointF& container_point,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   TransformState transform_state(
@@ -3247,9 +3235,9 @@ FloatPoint LayoutObject::AncestorToLocalFloatPoint(
   return transform_state.LastPlanarPoint();
 }
 
-FloatQuad LayoutObject::AncestorToLocalQuad(
+gfx::QuadF LayoutObject::AncestorToLocalQuad(
     const LayoutBoxModelObject* ancestor,
-    const FloatQuad& quad,
+    const gfx::QuadF& quad,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   TransformState transform_state(
@@ -3450,7 +3438,7 @@ void LayoutObject::GetTransformFromContainer(
   if (has_perspective) {
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
-    FloatPoint perspective_origin;
+    gfx::PointF perspective_origin;
     if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin(size);
 
@@ -3464,8 +3452,8 @@ void LayoutObject::GetTransformFromContainer(
   }
 }
 
-FloatPoint LayoutObject::LocalToAncestorFloatPoint(
-    const FloatPoint& local_point,
+gfx::PointF LayoutObject::LocalToAncestorPoint(
+    const gfx::PointF& local_point,
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
@@ -3504,14 +3492,14 @@ bool LayoutObject::LocalToAncestorRectFastPath(
   if (!property_container)
     return false;
 
-  FloatRect mapping_rect(rect);
+  gfx::RectF mapping_rect(rect);
 
   // This works because it's not possible to have any intervening clips,
   // effects, transforms between |this| and |property_container|, and therefore
   // FirstFragment().PaintOffset() is relative to the transform space defined by
   // FirstFragment().LocalBorderBoxProperties() (if this == property_container)
   // or property_container->FirstFragment().ContentsProperties().
-  mapping_rect.Offset(FloatSize(FirstFragment().PaintOffset()));
+  mapping_rect.Offset(gfx::Vector2dF(FirstFragment().PaintOffset()));
 
   if (property_container != ancestor) {
     GeometryMapper::SourceToDestinationRect(
@@ -3519,7 +3507,7 @@ bool LayoutObject::LocalToAncestorRectFastPath(
         ancestor->FirstFragment().ContentsProperties().Transform(),
         mapping_rect);
   }
-  mapping_rect.Offset(-FloatSize(ancestor->FirstFragment().PaintOffset()));
+  mapping_rect.Offset(-gfx::Vector2dF(ancestor->FirstFragment().PaintOffset()));
 
   result = PhysicalRect::EnclosingRect(mapping_rect);
   return true;
@@ -3535,11 +3523,12 @@ PhysicalRect LayoutObject::LocalToAncestorRect(
     return result;
 
   return PhysicalRect::EnclosingRect(
-      LocalToAncestorQuad(FloatRect(rect), ancestor, mode).BoundingBox());
+      LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor, mode)
+          .BoundingBox());
 }
 
-FloatQuad LayoutObject::LocalToAncestorQuad(
-    const FloatQuad& local_quad,
+gfx::QuadF LayoutObject::LocalToAncestorQuad(
+    const gfx::QuadF& local_quad,
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
@@ -3565,8 +3554,8 @@ void LayoutObject::LocalToAncestorRects(
   for (wtf_size_t i = 0; i < rects.size(); ++i) {
     PhysicalRect& rect = rects[i];
     rect.Move(pre_offset);
-    FloatQuad container_quad =
-        LocalToAncestorQuad(FloatQuad(FloatRect(rect)), ancestor);
+    gfx::QuadF container_quad =
+        LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor);
     PhysicalRect container_rect =
         PhysicalRect::EnclosingRect(container_quad.BoundingBox());
     if (container_rect.IsEmpty()) {
@@ -4057,8 +4046,9 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
 
 void LayoutObject::Destroy() {
   NOT_DESTROYED();
-  CHECK(g_allow_destroying_layout_object_in_finalizer ||
-        !ThreadState::Current()->InAtomicSweepingPause());
+  DCHECK(
+      g_allow_destroying_layout_object_in_finalizer ||
+      !ThreadState::IsSweepingOnOwningThread(*ThreadStateStorage::Current()));
 
   // Mark as being destroyed to avoid trouble with merges in |RemoveChild()| and
   // other house keepings.
@@ -4078,13 +4068,6 @@ PositionWithAffinity LayoutObject::PositionForPoint(
   DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
                                     DocumentLifecycle::kPrePaintClean);
   return CreatePositionWithAffinity(0);
-}
-
-CompositingState LayoutObject::GetCompositingState() const {
-  NOT_DESTROYED();
-  return HasLayer()
-             ? To<LayoutBoxModelObject>(this)->Layer()->GetCompositingState()
-             : kNotComposited;
 }
 
 bool LayoutObject::CanHaveAdditionalCompositingReasons() const {
@@ -4223,7 +4206,7 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
               first_line_block->GetUncachedPseudoElementStyle(
                   StyleRequest(kPseudoIdFirstLine, Style()))) {
         return StyleRef().AddCachedPseudoElementStyle(
-            std::move(first_line_style));
+            std::move(first_line_style), kPseudoIdFirstLine, g_null_atom);
       }
     }
   } else if (!IsAnonymous() && IsLayoutInline() &&
@@ -4240,7 +4223,8 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
               GetUncachedPseudoElementStyle(StyleRequest(
                   kPseudoIdFirstLineInherited, parent_first_line_style))) {
         return StyleRef().AddCachedPseudoElementStyle(
-            std::move(first_line_style));
+            std::move(first_line_style), kPseudoIdFirstLineInherited,
+            g_null_atom);
       }
     }
   }
@@ -4283,7 +4267,7 @@ scoped_refptr<ComputedStyle> LayoutObject::GetUncachedPseudoElementStyle(
 const ComputedStyle* LayoutObject::GetSelectionStyle() const {
   if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() &&
       StyleRef().HighlightData()) {
-    return StyleRef().HighlightData()->Selection().get();
+    return StyleRef().HighlightData()->Selection();
   }
   return GetCachedPseudoElementStyle(kPseudoIdSelection);
 }
@@ -4349,14 +4333,6 @@ bool LayoutObject::IsOutsideListMarker() const {
   return (IsListMarkerForNormalContent() &&
           !To<LayoutListMarker>(this)->IsInside()) ||
          IsOutsideListMarkerForCustomContent();
-}
-
-bool LayoutObject::IsInert() const {
-  NOT_DESTROYED();
-  const LayoutObject* layout_object = this;
-  while (!layout_object->GetNode())
-    layout_object = layout_object->Parent();
-  return layout_object->GetNode()->IsInert();
 }
 
 void LayoutObject::ImageChanged(ImageResourceContent* image,
@@ -4616,9 +4592,6 @@ static PaintInvalidationReason DocumentLifecycleBasedPaintInvalidationReason(
     case DocumentLifecycle::kInPerformLayout:
     case DocumentLifecycle::kAfterPerformLayout:
       return PaintInvalidationReason::kGeometry;
-    case DocumentLifecycle::kInCompositingAssignmentsUpdate:
-      DCHECK(false);
-      return PaintInvalidationReason::kFull;
     default:
       return PaintInvalidationReason::kFull;
   }
@@ -4963,12 +4936,55 @@ void LayoutObject::InvalidateClipPathCache() {
     fragment->InvalidateClipPathCache();
 }
 
+Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
+    NGOutlineType outline_type,
+    FragmentDataIterator& iterator) const {
+  NOT_DESTROYED();
+  Vector<PhysicalRect> outline_rects;
+  PhysicalOffset paint_offset = iterator.GetFragmentData()->PaintOffset();
+
+  if (iterator.Cursor()) {
+    wtf_size_t fragment_index = iterator.Cursor()->ContainerFragmentIndex();
+    do {
+      const NGFragmentItem* item = iterator.Cursor()->Current().Item();
+      if (!item)
+        continue;
+      if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {
+        box_fragment->AddSelfOutlineRects(
+            paint_offset + item->OffsetInContainerFragment(), outline_type,
+            &outline_rects, nullptr);
+      } else {
+        PhysicalRect rect;
+        rect = item->RectInContainerFragment();
+        rect.Move(paint_offset);
+        outline_rects.push_back(rect);
+      }
+      // Keep going as long as we're within the same container fragment. If
+      // we're block-fragmented, there will be multiple container fragments,
+      // each with their own FragmentData object.
+    } while (iterator.Advance() &&
+             iterator.Cursor()->ContainerFragmentIndex() == fragment_index);
+  } else {
+    if (const NGPhysicalBoxFragment* box_fragment =
+            iterator.GetPhysicalBoxFragment()) {
+      box_fragment->AddSelfOutlineRects(paint_offset, outline_type,
+                                        &outline_rects, nullptr);
+    } else {
+      outline_rects = OutlineRects(nullptr, paint_offset, outline_type);
+    }
+    iterator.Advance();
+  }
+
+  return outline_rects;
+}
+
 Vector<PhysicalRect> LayoutObject::OutlineRects(
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> outline_rects;
-  AddOutlineRects(outline_rects, additional_offset, outline_type);
+  AddOutlineRects(outline_rects, info, additional_offset, outline_type);
   return outline_rects;
 }
 

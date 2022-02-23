@@ -7,8 +7,10 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -24,6 +26,7 @@ namespace cc {
 class DroppedFrameCounter;
 class UkmManager;
 struct BeginMainFrameMetrics;
+struct FrameInfo;
 
 // This is used for managing simultaneous CompositorFrameReporter instances
 // in the case that the compositor has high latency. Calling one of the
@@ -63,6 +66,7 @@ class CC_EXPORT CompositorFrameReportingController {
   virtual void DidActivate();
   virtual void DidSubmitCompositorFrame(
       uint32_t frame_token,
+      base::TimeTicks submit_time,
       const viz::BeginFrameId& current_frame_id,
       const viz::BeginFrameId& last_activated_frame_id,
       EventMetricsSet events_metrics,
@@ -81,10 +85,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void AddActiveTracker(FrameSequenceTrackerType type);
   void RemoveActiveTracker(FrameSequenceTrackerType type);
-  void SetScrollingThread(FrameSequenceMetrics::ThreadType thread);
+  void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
-  void SetThreadAffectsSmoothness(FrameSequenceMetrics::ThreadType thread_type,
-                                  bool affects_smoothness);
+  void SetThreadAffectsSmoothness(
+      FrameInfo::SmoothEffectDrivingThread thread_type,
+      bool affects_smoothness);
   bool is_main_thread_driving_smoothness() const {
     return is_main_thread_driving_smoothness_;
   }
@@ -96,8 +101,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   std::unique_ptr<CompositorFrameReporter>* reporters() { return reporters_; }
 
-  void SetDroppedFrameCounter(DroppedFrameCounter* counter) {
-    global_trackers_.dropped_frame_counter = counter;
+  void SetDroppedFrameCounter(DroppedFrameCounter* counter);
+
+  void SetFrameSequenceTrackerCollection(
+      FrameSequenceTrackerCollection* frame_sequence_trackers) {
+    global_trackers_.frame_sequence_trackers = frame_sequence_trackers;
   }
 
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {
@@ -151,6 +159,12 @@ class CC_EXPORT CompositorFrameReportingController {
   // that reporter is in, its ownership might be pass or not.
   void SetPartialUpdateDeciderWhenWaitingOnMain(
       std::unique_ptr<CompositorFrameReporter>& reporter);
+  void TrackSwapTiming(const viz::FrameTimingDetails& details);
+  void ReportMultipleSwaps(base::TimeTicks begin_frame_time,
+                           base::TimeDelta interval);
+
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
 
   const bool should_report_metrics_;
   const int layer_tree_host_id_;
@@ -159,8 +173,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool next_activate_has_invalidation_ = false;
   ActiveTrackers active_trackers_;
-  FrameSequenceMetrics::ThreadType scrolling_thread_ =
-      FrameSequenceMetrics::ThreadType::kUnknown;
+  FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
+      FrameInfo::SmoothEffectDrivingThread::kUnknown;
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
@@ -184,12 +198,23 @@ class CC_EXPORT CompositorFrameReportingController {
   // must outlive the objects in |submitted_compositor_frames_|.
   base::circular_deque<SubmittedCompositorFrame> submitted_compositor_frames_;
 
-  // The latest frame that was started.
-  viz::BeginFrameArgs previous_frame_;
+  // Contains information about the latest frame that was started, and the state
+  // during that frame. This is used to process skipped frames, as well as
+  // making sure a CompositorFrameReporter object for a delayed main-frame is
+  // created with the correct state.
+  struct {
+    viz::BeginFrameArgs args;
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread =
+        FrameInfo::SmoothEffectDrivingThread::kUnknown;
+    ActiveTrackers active_trackers;
+    CompositorFrameReporter::SmoothThread smooth_thread =
+        CompositorFrameReporter::SmoothThread::kSmoothNone;
+  } last_started_compositor_frame_;
 
   base::TimeTicks begin_main_frame_start_time_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   GlobalMetricsTrackers global_trackers_;
 
@@ -198,7 +223,15 @@ class CC_EXPORT CompositorFrameReportingController {
   // these metrics and report them.
   std::map<viz::BeginFrameId, EventMetrics::List>
       events_metrics_from_dropped_frames_;
+
+  // Tracking the swap times in a queue to measure delta of multiple swaps in
+  // each vsync.
+  std::queue<base::TimeTicks> latest_swap_times_;
+
+  // interval of last begin frame args.
+  base::TimeDelta last_interval_;
 };
+
 }  // namespace cc
 
 #endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_

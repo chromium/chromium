@@ -119,7 +119,7 @@ PipelineIntegrationTestBase::PipelineIntegrationTestBase()
 // Use a UI type message loop on macOS, because it doesn't seem to schedule
 // callbacks with enough precision to drive our fake audio output. See
 // https://crbug.com/1014646 for more details.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
 #endif
       hashing_enabled_(false),
@@ -231,7 +231,7 @@ PipelineStatus PipelineIntegrationTestBase::WaitUntilEndedOrError() {
 }
 
 void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
-  DCHECK_NE(status, PIPELINE_OK);
+  DCHECK(status != PIPELINE_OK);
   pipeline_status_ = status;
   pipeline_->Stop();
   if (on_error_closure_)
@@ -406,7 +406,7 @@ void PipelineIntegrationTestBase::Stop() {
 }
 
 void PipelineIntegrationTestBase::FailTest(PipelineStatus status) {
-  DCHECK_NE(PIPELINE_OK, status);
+  DCHECK(status != PIPELINE_OK);
   OnError(status);
 }
 

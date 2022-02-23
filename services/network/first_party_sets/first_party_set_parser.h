@@ -27,16 +27,6 @@ class FirstPartySetParser {
   FirstPartySetParser(const FirstPartySetParser&) = delete;
   FirstPartySetParser& operator=(const FirstPartySetParser&) = delete;
 
-  // Parses the value in |raw_sets|, which should be the JSON-encoded string
-  // representation of a list of set declarations according to the format
-  // specified in this document: https://github.com/privacycg/first-party-sets.
-  // This function does not check versions or assertions, since it is intended
-  // only for sets received by Component Updater.
-  //
-  // Returns an empty map if parsing or validation of any set failed.
-  static base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  ParseSetsFromComponentUpdater(base::StringPiece raw_sets);
-
   // Parses newline-delimited First-Party sets (as JSON records) from `input`.
   // Each record should follow the format specified in this
   // document:https://github.com/privacycg/first-party-sets. This function does

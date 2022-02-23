@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that LayerTreeModel successfully imports layers from a trace.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`
       <div id="a" style="width: 200px; height: 200px" class="layer">

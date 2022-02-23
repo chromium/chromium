@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_NEARBY_SHARE_NEARBY_SHARE_SESSION_IMPL_H_
 
+#include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "components/arc/mojom/nearby_share.mojom.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -45,8 +46,8 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   NearbyShareSessionImpl& operator=(const NearbyShareSessionImpl&) = delete;
   ~NearbyShareSessionImpl() override;
 
-  // Gets the temporary path to use for file preparation.
-  static base::FilePath GetUserCacheFilePath(const Profile* profile);
+  // Deletes the temporary cache path used for share files preparation.
+  static void DeleteShareCacheFilePaths(Profile* const profile);
 
   // Called when Nearby Share is closed.
   void OnNearbyShareClosed(views::Widget::ClosedReason reason);
@@ -74,9 +75,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called once streaming shared files to local filesystem is started. At this
   // point we show the progress bar UI to the user.
   void OnFileStreamingStarted();
-
-  // Called when Share Intent Info object is converted to Intent mojom object.
-  void OnConvertedShareIntentInfoToIntent(apps::mojom::IntentPtr intent);
 
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.

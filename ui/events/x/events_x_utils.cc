@@ -184,8 +184,8 @@ int GetEventFlagsFromXKeyEvent(const x11::Event& xev) {
       fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
 #endif
 
-  return GetEventFlagsFromXState(state) | (key->send_event ? ui::EF_FINAL : 0) |
-         ime_fabricated_flag;
+  return GetEventFlagsFromXState(state) |
+         (xev.send_event() ? ui::EF_FINAL : 0) | ime_fabricated_flag;
 }
 
 int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
@@ -194,7 +194,7 @@ int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   DCHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
          xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
   return GetEventFlagsFromXState(xievent->mods.effective) |
-         (xievent->send_event ? ui::EF_FINAL : 0);
+         (x11_event.send_event() ? ui::EF_FINAL : 0);
 }
 
 // Get the event flag for the button in XButtonEvent. During a ButtonPress

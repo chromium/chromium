@@ -11,6 +11,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/platform_thread.h"
 #include "chromeos/chromeos_export.h"
 
 struct uffd_msg;

@@ -20,15 +20,13 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
 namespace {
 
-url::Origin GetExampleOrigin() {
-  return url::Origin::Create(GURL("https://example.com"));
-}
+const char kExampleUrl[] =
+    "https://helper.test/.well-known/aggregation-service/keys.json";
 
 const std::vector<PublicKey> kExampleKeys{
     aggregation_service::GenerateKey("dummy_id").public_key};
@@ -85,10 +83,10 @@ TEST_F(AggregationServiceStorageSqlTest,
   base::HistogramTester histograms;
 
   OpenDatabase();
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, keyset);
+  storage_->SetPublicKeys(url, keyset);
   CloseDatabase();
 
   histograms.ExpectUniqueSample(
@@ -101,7 +99,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   OpenDatabase();
   CloseDatabase();
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
 
   // An unused AggregationServiceStorageSql instance should not create the
   // database.
@@ -110,7 +108,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   // Operations which don't need to run on an empty database should not create
   // the database.
   OpenDatabase();
-  EXPECT_TRUE(storage_->GetPublicKeys(origin).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url).empty());
   CloseDatabase();
 
   EXPECT_FALSE(base::PathExists(db_path()));
@@ -119,17 +117,17 @@ TEST_F(AggregationServiceStorageSqlTest,
   OpenDatabase();
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, keyset);
+  storage_->SetPublicKeys(url, keyset);
   CloseDatabase();
 
   {
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [origins], [keys], [meta].
+    // [urls], [keys], [meta].
     EXPECT_EQ(sql::test::CountSQLTables(&raw_db), 3u);
 
-    // [origins_by_origin_idx], [fetch_time_idx], [expiry_time_idx] and meta
+    // [urls_by_url_idx], [fetch_time_idx], [expiry_time_idx] and meta
     // table index.
     EXPECT_EQ(sql::test::CountSQLIndices(&raw_db), 4u);
   }
@@ -138,15 +136,15 @@ TEST_F(AggregationServiceStorageSqlTest,
 TEST_F(AggregationServiceStorageSqlTest, DatabaseReopened_DataPersisted) {
   OpenDatabase();
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, keyset);
-  EXPECT_EQ(storage_->GetPublicKeys(origin).size(), 1u);
+  storage_->SetPublicKeys(url, keyset);
+  EXPECT_EQ(storage_->GetPublicKeys(url).size(), 1u);
   CloseDatabase();
 
   OpenDatabase();
-  EXPECT_EQ(storage_->GetPublicKeys(origin).size(), 1u);
+  EXPECT_EQ(storage_->GetPublicKeys(url).size(), 1u);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, SetPublicKeys_ExpectedResult) {
@@ -156,12 +154,12 @@ TEST_F(AggregationServiceStorageSqlTest, SetPublicKeys_ExpectedResult) {
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("bcde").public_key};
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(expected_keys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
 
-  storage_->SetPublicKeys(origin, keyset);
-  std::vector<PublicKey> actual_keys = storage_->GetPublicKeys(origin);
+  storage_->SetPublicKeys(url, keyset);
+  std::vector<PublicKey> actual_keys = storage_->GetPublicKeys(url);
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(expected_keys, actual_keys));
 
   CloseDatabase();
@@ -175,13 +173,13 @@ TEST_F(AggregationServiceStorageSqlTest, GetPublicKeysExpired_EmptyResult) {
       aggregation_service::GenerateKey("bcde").public_key};
 
   base::Time now = clock_.Now();
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(std::move(keys), /*fetch_time=*/now,
                       /*expiry_time=*/now + base::Days(7));
 
-  storage_->SetPublicKeys(origin, keyset);
+  storage_->SetPublicKeys(url, keyset);
   clock_.Advance(base::Days(8));
-  EXPECT_TRUE(storage_->GetPublicKeys(origin).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url).empty());
 
   CloseDatabase();
 }
@@ -193,14 +191,14 @@ TEST_F(AggregationServiceStorageSqlTest, ClearPublicKeys) {
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("bcde").public_key};
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(std::move(keys), /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
 
-  storage_->SetPublicKeys(origin, keyset);
-  storage_->ClearPublicKeys(origin);
+  storage_->SetPublicKeys(url, keyset);
+  storage_->ClearPublicKeys(url);
 
-  EXPECT_TRUE(storage_->GetPublicKeys(origin).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url).empty());
 
   CloseDatabase();
 }
@@ -208,7 +206,7 @@ TEST_F(AggregationServiceStorageSqlTest, ClearPublicKeys) {
 TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
   OpenDatabase();
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
 
   std::vector<PublicKey> old_keys{
       aggregation_service::GenerateKey("abcd").public_key,
@@ -216,9 +214,9 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
 
   PublicKeyset old_keyset(old_keys, /*fetch_time=*/clock_.Now(),
                           /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, old_keyset);
+  storage_->SetPublicKeys(url, old_keyset);
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      old_keys, storage_->GetPublicKeys(origin)));
+      old_keys, storage_->GetPublicKeys(url)));
 
   std::vector<PublicKey> expected_keys{
       aggregation_service::GenerateKey("efgh").public_key,
@@ -226,9 +224,9 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
 
   PublicKeyset expected_keyset(expected_keys, /*fetch_time=*/clock_.Now(),
                                /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, expected_keyset);
+  storage_->SetPublicKeys(url, expected_keyset);
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      expected_keys, storage_->GetPublicKeys(origin)));
+      expected_keys, storage_->GetPublicKeys(url)));
 
   CloseDatabase();
 }
@@ -237,68 +235,68 @@ TEST_F(AggregationServiceStorageSqlTest,
        ClearPublicKeysFetchedBetween_RangeDeleted) {
   OpenDatabase();
 
-  url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
+  GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("bcde").public_key};
-  storage_->SetPublicKeys(origin_1,
+  storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
   clock_.Advance(base::Days(3));
 
-  url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
+  GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("efgh").public_key};
-  storage_->SetPublicKeys(origin_2,
+  storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_1, storage_->GetPublicKeys(origin_1)));
+      keys_1, storage_->GetPublicKeys(url_1)));
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_2, storage_->GetPublicKeys(origin_2)));
+      keys_2, storage_->GetPublicKeys(url_2)));
 
   base::Time now = clock_.Now();
   storage_->ClearPublicKeysFetchedBetween(now - base::Days(5),
                                           now - base::Days(1));
 
-  EXPECT_TRUE(storage_->GetPublicKeys(origin_1).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_2, storage_->GetPublicKeys(origin_2)));
+      keys_2, storage_->GetPublicKeys(url_2)));
 }
 
 TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
   OpenDatabase();
 
-  url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
+  GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("bcde").public_key};
-  storage_->SetPublicKeys(origin_1,
+  storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
   clock_.Advance(base::Days(1));
 
-  url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
+  GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("efgh").public_key};
-  storage_->SetPublicKeys(origin_2,
+  storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
                                        /*expiry_time=*/base::Time::Max()));
 
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_1, storage_->GetPublicKeys(origin_1)));
+      keys_1, storage_->GetPublicKeys(url_1)));
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_2, storage_->GetPublicKeys(origin_2)));
+      keys_2, storage_->GetPublicKeys(url_2)));
 
   storage_->ClearPublicKeysFetchedBetween(base::Time(), base::Time::Max());
 
-  EXPECT_TRUE(storage_->GetPublicKeys(origin_1).empty());
-  EXPECT_TRUE(storage_->GetPublicKeys(origin_2).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url_2).empty());
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
@@ -307,47 +305,47 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   base::Time now = clock_.Now();
 
-  url::Origin origin_1 = url::Origin::Create(GURL("https://a.com"));
+  GURL url_1("https://a.com/keys");
   std::vector<PublicKey> keys_1{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("bcde").public_key};
-  storage_->SetPublicKeys(origin_1,
+  storage_->SetPublicKeys(url_1,
                           PublicKeyset(keys_1, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(1)));
 
-  url::Origin origin_2 = url::Origin::Create(GURL("https://b.com"));
+  GURL url_2("https://b.com/keys");
   std::vector<PublicKey> keys_2{
       aggregation_service::GenerateKey("abcd").public_key,
       aggregation_service::GenerateKey("efgh").public_key};
-  storage_->SetPublicKeys(origin_2,
+  storage_->SetPublicKeys(url_2,
                           PublicKeyset(keys_2, /*fetch_time=*/now,
                                        /*expiry_time=*/now + base::Days(3)));
 
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_1, storage_->GetPublicKeys(origin_1)));
+      keys_1, storage_->GetPublicKeys(url_1)));
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_2, storage_->GetPublicKeys(origin_2)));
+      keys_2, storage_->GetPublicKeys(url_2)));
 
   storage_->ClearPublicKeysExpiredBy(now + base::Days(1));
 
-  EXPECT_TRUE(storage_->GetPublicKeys(origin_1).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
-      keys_2, storage_->GetPublicKeys(origin_2)));
+      keys_2, storage_->GetPublicKeys(url_2)));
 }
 
 TEST_F(AggregationServiceStorageSqlInMemoryTest,
        DatabaseInMemoryReopened_DataNotPersisted) {
   OpenDatabase();
 
-  url::Origin origin = GetExampleOrigin();
+  GURL url(kExampleUrl);
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
-  storage_->SetPublicKeys(origin, keyset);
-  EXPECT_EQ(storage_->GetPublicKeys(origin).size(), 1u);
+  storage_->SetPublicKeys(url, keyset);
+  EXPECT_EQ(storage_->GetPublicKeys(url).size(), 1u);
   CloseDatabase();
 
   OpenDatabase();
-  EXPECT_TRUE(storage_->GetPublicKeys(origin).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url).empty());
 }
 
 }  // namespace content

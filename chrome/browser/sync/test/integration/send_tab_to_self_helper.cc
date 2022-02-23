@@ -35,7 +35,7 @@ bool SendTabToSelfUrlChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   send_tab_to_self::SendTabToSelfModel* model =
       service_->GetSendTabToSelfModel();
-  for (auto const& guid : model->GetAllGuids()) {
+  for (const std::string& guid : model->GetAllGuids()) {
     if (model->GetEntryByGUID(guid)->GetURL() == url_) {
       return true;
     }
@@ -75,7 +75,7 @@ bool SendTabToSelfUrlOpenedChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   send_tab_to_self::SendTabToSelfModel* model =
       service_->GetSendTabToSelfModel();
-  for (auto const& guid : model->GetAllGuids()) {
+  for (const std::string& guid : model->GetAllGuids()) {
     const send_tab_to_self::SendTabToSelfEntry* entry =
         model->GetEntryByGUID(guid);
     if (entry->GetURL() == url_ && entry->IsOpened()) {
@@ -133,7 +133,7 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
   if (model0->GetAllGuids() != model1->GetAllGuids()) {
     return false;
   }
-  for (auto const& guid : model0->GetAllGuids()) {
+  for (const std::string& guid : model0->GetAllGuids()) {
     const send_tab_to_self::SendTabToSelfEntry* entry0 =
         model0->GetEntryByGUID(guid);
     const send_tab_to_self::SendTabToSelfEntry* entry1 =
@@ -218,8 +218,8 @@ bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
   const std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type =
       tracker_->CountActiveDevicesByType();
   int total = 0;
-  for (const auto& type_and_count : device_count_by_type)
-    total += type_and_count.second;
+  for (const auto& [type, count] : device_count_by_type)
+    total += count;
   return total > 1;
 }
 
@@ -241,7 +241,8 @@ SendTabToSelfDeviceDisabledChecker::~SendTabToSelfDeviceDisabledChecker() {
 bool SendTabToSelfDeviceDisabledChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   *os << "Waiting for device to have send_tab_to_self disabled";
-  auto device_info = tracker_->GetDeviceInfo(device_guid_);
+  std::unique_ptr<syncer::DeviceInfo> device_info =
+      tracker_->GetDeviceInfo(device_guid_);
   return device_info && !device_info->send_tab_to_self_receiving_enabled();
 }
 
@@ -270,7 +271,7 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
   DCHECK(model);
   // Checks each URL in the model and returns passes if URL in question is not
   // found.
-  for (auto const& guid : model->GetAllGuids()) {
+  for (const std::string& guid : model->GetAllGuids()) {
     if (model->GetEntryByGUID(guid)->GetURL() == url_) {
       return false;
     }

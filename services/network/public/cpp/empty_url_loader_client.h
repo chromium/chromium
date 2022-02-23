@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -39,7 +38,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   // mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,

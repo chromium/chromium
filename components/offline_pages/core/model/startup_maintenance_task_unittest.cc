@@ -75,7 +75,7 @@ PagePresence StartupMaintenanceTaskTest::CheckPagePresence(
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestDeletePageInLegacyArchivesDir \
   DISABLED_TestDeletePageInLegacyArchivesDir
 #else
@@ -114,7 +114,7 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeletePageInLegacyArchivesDir) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestDeleteFileWithoutDbEntry DISABLED_TestDeleteFileWithoutDbEntry
 #else
 #define MAYBE_TestDeleteFileWithoutDbEntry TestDeleteFileWithoutDbEntry
@@ -170,7 +170,7 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteFileWithoutDbEntry) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestDeleteDbEntryWithoutFile DISABLED_TestDeleteDbEntryWithoutFile
 #else
 #define MAYBE_TestDeleteDbEntryWithoutFile TestDeleteDbEntryWithoutFile
@@ -222,7 +222,7 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteDbEntryWithoutFile) {
 
 // This test is affected by https://crbug.com/725685, which only affects windows
 // platform.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CombinedTest DISABLED_CombinedTest
 #else
 #define MAYBE_CombinedTest CombinedTest

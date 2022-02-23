@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -15,6 +14,8 @@ import android.os.Build;
 import android.os.Process;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -74,7 +75,7 @@ public class RadioUtils {
      * @return True or false.
      */
     @CalledByNative
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private static boolean isWifiConnected() {
         assert isSupported();
         ConnectivityManager connectivityManager =
@@ -93,7 +94,7 @@ public class RadioUtils {
      * @return Signal level from 0 (no signal) to 4 (good signal) or -1 in case of error.
      */
     @CalledByNative
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private static int getCellSignalLevel() {
         assert isSupported();
         TelephonyManager telephonyManager =
@@ -117,7 +118,7 @@ public class RadioUtils {
      * @return 0 - none, 1 - in, 2 - out, 3 - in/out, 4 - dormant, or -1 in case of error.
      */
     @CalledByNative
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private static int getCellDataActivity() {
         assert isSupported();
         TelephonyManager telephonyManager =

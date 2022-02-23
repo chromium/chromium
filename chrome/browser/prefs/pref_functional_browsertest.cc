@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -211,14 +211,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHomepagePrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  static_assert(chrome_browser_net::NETWORK_PREDICTION_DEFAULT !=
-                    chrome_browser_net::NETWORK_PREDICTION_NEVER,
+  static_assert(prefetch::NetworkPredictionOptions::kDefault !=
+                    prefetch::NetworkPredictionOptions::kDisabled,
                 "PrefsFunctionalTest.TestPrivacySecurityPrefs relies on "
                 "predictive network actions being enabled by default.");
-  EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_DEFAULT,
-            prefs->GetInteger(prefs::kNetworkPredictionOptions));
-  prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                    chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  EXPECT_EQ(prefetch::PreloadPagesState::kStandardPreloading,
+            prefetch::GetPreloadPagesState(*prefs));
+  prefetch::SetPreloadPagesState(prefs,
+                                 prefetch::PreloadPagesState::kNoPreloading);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -234,8 +234,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestPrivacySecurityPrefs) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_NEVER,
-            prefs->GetInteger(prefs::kNetworkPredictionOptions));
+  EXPECT_EQ(prefetch::PreloadPagesState::kNoPreloading,
+            prefetch::GetPreloadPagesState(*prefs));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   EXPECT_FALSE(
       prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));

@@ -10,8 +10,10 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
@@ -113,7 +115,12 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
       SetShelfAlignmentPref(prefs, display_id_, ShelfAlignment::kBottom);
       break;
     case MENU_CHANGE_WALLPAPER:
+      DCHECK(!ash::features::IsPersonalizationHubEnabled());
       shell->wallpaper_controller()->OpenWallpaperPickerIfAllowed();
+      break;
+    case MENU_PERSONALIZATION_HUB:
+      DCHECK(ash::features::IsPersonalizationHubEnabled());
+      NewWindowDelegate::GetPrimary()->OpenPersonalizationHub();
       break;
     default:
       if (delegate_) {
@@ -145,8 +152,9 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
                          : IDS_ASH_SHELF_CONTEXT_MENU_AUTO_HIDE;
     AddItemWithStringIdAndIcon(
         MENU_AUTO_HIDE, string_id,
-        ui::ImageModel::FromVectorIcon(is_autohide_set ? kAlwaysShowShelfIcon
-                                                       : kAutoHideIcon));
+        ui::ImageModel::FromVectorIcon(
+            is_autohide_set ? kAlwaysShowShelfIcon : kAutoHideIcon,
+            ui::kColorAshSystemUIMenuIcon));
   }
 
   // Only allow shelf alignment modifications by the logged in Gaia users
@@ -169,13 +177,20 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
     AddSubMenuWithStringIdAndIcon(
         MENU_ALIGNMENT_MENU, IDS_ASH_SHELF_CONTEXT_MENU_POSITION,
         alignment_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kShelfPositionIcon));
+        ui::ImageModel::FromVectorIcon(kShelfPositionIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 
-  if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
-    AddItemWithStringIdAndIcon(MENU_CHANGE_WALLPAPER,
-                               IDS_AURA_SET_DESKTOP_WALLPAPER,
-                               ui::ImageModel::FromVectorIcon(kWallpaperIcon));
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    AddItemWithStringIdAndIcon(
+        MENU_PERSONALIZATION_HUB, IDS_AURA_OPEN_PERSONALIZATION_HUB,
+        ui::ImageModel::FromVectorIcon(kPaintBrushIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+  } else if (Shell::Get()->wallpaper_controller()->CanOpenWallpaperPicker()) {
+    AddItemWithStringIdAndIcon(
+        MENU_CHANGE_WALLPAPER, IDS_AURA_SET_DESKTOP_WALLPAPER,
+        ui::ImageModel::FromVectorIcon(kWallpaperIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
   }
 }
 

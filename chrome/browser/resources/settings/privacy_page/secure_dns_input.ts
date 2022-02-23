@@ -10,11 +10,12 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
+import {getTemplate} from './secure_dns_input.html.js';
 
 export interface SecureDnsInputElement {
   $: {
@@ -28,7 +29,7 @@ export class SecureDnsInputElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -75,16 +76,9 @@ export class SecureDnsInputElement extends PolymerElement {
   async validate() {
     this.showError_ = false;
     const valueToValidate = this.value;
-    const templates =
-        await this.browserProxy_.parseCustomDnsEntry(valueToValidate);
-    const valid = templates.length > 0;
-    let successfulProbe = false;
-    for (const template of templates) {
-      if (await this.browserProxy_.probeCustomDnsTemplate(template)) {
-        successfulProbe = true;
-        break;
-      }
-    }
+    const valid = await this.browserProxy_.isValidConfig(valueToValidate);
+    const successfulProbe =
+        valid && await this.browserProxy_.probeConfig(valueToValidate);
     // If there was an invalid template or no template can successfully
     // answer a probe query, show an error as long as the input field value
     // hasn't changed and is non-empty.

@@ -7,18 +7,6 @@
 
 namespace extensions_features {
 
-// Controls whether we disable extensions that are marked as policy violation
-// by the Omaha attribute.
-const base::Feature kDisablePolicyViolationExtensionsRemotely{
-    "DisablePolicyViolationExtensionsRemotely",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether we disable extensions that are marked as potentially
-// unwanted by the Omaha attribute.
-const base::Feature kDisablePotentiallyUwsExtensionsRemotely{
-    "DisablePotentiallyUwsExtensionsRemotely",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether we show an install friction dialog when an Enhanced Safe
 // Browsing user tries to install an extension that is not included in the
 // Safe Browsing CRX allowlist. This feature also controls if we show a warning
@@ -46,7 +34,7 @@ const base::Feature kAllowWithholdingExtensionPermissionsOnInstall{
 // Enables support for the "match_origin_as_fallback" property in content
 // scripts.
 const base::Feature kContentScriptsMatchOriginAsFallback{
-    "ContentScriptsMatchOriginAsFallback", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ContentScriptsMatchOriginAsFallback", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether Manifest Version 3-based extensions are supported.
 const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
@@ -55,11 +43,6 @@ const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 const base::Feature kReportKeepaliveUkm{"ReportKeepaliveUkm",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether every extension will require a locked process, preventing
-// process sharing between extensions. See https://crbug.com/1209417.
-const base::Feature kStrictExtensionIsolation{"StrictExtensionIsolation",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether extension contexts can use SharedArrayBuffers unconditionally (i.e.
 // without requiring cross origin isolation).
@@ -88,5 +71,28 @@ const base::Feature kAllowWasmInMV3{"AllowWasmInMV3",
 // communicating with native messaging hosts.
 const base::Feature kStructuredCloningForMV3Messaging{
     "StructuredCloningForMV3Messaging", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, causes extensions to allow access to certain APIs only if the
+// user is in the developer mode.
+const base::Feature kRestrictDeveloperModeAPIs{
+    "RestrictDeveloperModeAPIs", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When enabled, then bad_message::ReceivedBadMessage will be called when
+// browser receives an IPC from a content script and the IPC that unexpectedly
+// claims to act on behalf of a given extension id, (i.e. even if the browser
+// process things that renderer process never run content scripts from the
+// extension).
+const base::Feature kCheckingUnexpectedExtensionIdInContentScriptIpcs{
+    "EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When enabled, then bad_message::ReceivedBadMessage will be called when
+// browser receives an IPC from a content script and the IPC that unexpectedly
+// claims to act on behalf of a given extension id, (i.e. even if the browser
+// process things that renderer process never run content scripts from the
+// extension).
+extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
+    "EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace extensions_features

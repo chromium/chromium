@@ -279,8 +279,8 @@ const base::Value* ProxyPolicyHandler::GetProxyPolicyValue(
   if (!value || !value->GetAsDictionary(&settings))
     return nullptr;
 
-  const base::Value* policy_value = nullptr;
-  if (!settings->Get(policy_name, &policy_value) || policy_value->is_none())
+  const base::Value* policy_value = settings->FindPath(policy_name);
+  if (!policy_value || policy_value->is_none())
     return nullptr;
   const std::string* tmp = policy_value->GetIfString();
   if (tmp && tmp->empty())

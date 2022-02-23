@@ -12,5 +12,4 @@
     RuntimeEnabled=WebScheduler
 ] interface Scheduler {
     [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
-    [CallWith=ScriptState, MeasureAs=SchedulerCurrentTaskSignal, RuntimeEnabled=SchedulerCurrentTaskSignal] readonly attribute TaskSignal currentTaskSignal;
 };

@@ -42,7 +42,7 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
       return style.OutlineColor();
     case CSSPropertyID::kColumnRuleColor:
       return style.ColumnRuleColor();
-    case CSSPropertyID::kWebkitTextEmphasisColor:
+    case CSSPropertyID::kTextEmphasisColor:
       return style.TextEmphasisColor();
     case CSSPropertyID::kWebkitTextFillColor:
       return style.TextFillColor();
@@ -92,7 +92,7 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
       return style.InternalVisitedOutlineColor();
     case CSSPropertyID::kColumnRuleColor:
       return style.InternalVisitedColumnRuleColor();
-    case CSSPropertyID::kWebkitTextEmphasisColor:
+    case CSSPropertyID::kTextEmphasisColor:
       return style.InternalVisitedTextEmphasisColor();
     case CSSPropertyID::kWebkitTextFillColor:
       return style.InternalVisitedTextFillColor();
@@ -158,6 +158,9 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
     case CSSPropertyID::kTextDecorationColor:
       style.SetTextDecorationColor(style_color);
       return;
+    case CSSPropertyID::kTextEmphasisColor:
+      style.SetTextEmphasisColor(style_color);
+      return;
     case CSSPropertyID::kColumnRuleColor:
       style.SetColumnRuleColor(style_color);
       return;
@@ -213,6 +216,9 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       return;
     case CSSPropertyID::kTextDecorationColor:
       style.SetInternalVisitedTextDecorationColor(style_color);
+      return;
+    case CSSPropertyID::kTextEmphasisColor:
+      style.SetInternalVisitedTextEmphasisColor(style_color);
       return;
     case CSSPropertyID::kColumnRuleColor:
       style.SetInternalVisitedColumnRuleColor(style_color);

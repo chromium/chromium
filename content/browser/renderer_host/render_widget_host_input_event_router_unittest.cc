@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -76,47 +77,8 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   }
 
  private:
-  RenderWidgetHostViewBase* parent_view_;
-  RenderWidgetHostViewBase* root_view_;
-};
-
-// Used as a target for the RenderWidgetHostInputEventRouter. We record what
-// events were forwarded to us in order to verify that the events are being
-// routed correctly.
-class TestRenderWidgetHostViewChildFrame
-    : public RenderWidgetHostViewChildFrame {
- public:
-  explicit TestRenderWidgetHostViewChildFrame(RenderWidgetHost* widget)
-      : RenderWidgetHostViewChildFrame(widget, display::ScreenInfos()) {
-    Init();
-  }
-  ~TestRenderWidgetHostViewChildFrame() override = default;
-
-  void ProcessGestureEvent(const blink::WebGestureEvent& event,
-                           const ui::LatencyInfo&) override {
-    last_gesture_seen_ = event.GetType();
-  }
-
-  void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
-      blink::mojom::InputEventResultState ack_result) override {
-    unique_id_for_last_touch_ack_ = touch.event.unique_touch_event_id;
-  }
-
-  blink::WebInputEvent::Type last_gesture_seen() { return last_gesture_seen_; }
-  uint32_t last_id_for_touch_ack() { return unique_id_for_last_touch_ack_; }
-
-  void Reset() { last_gesture_seen_ = blink::WebInputEvent::Type::kUndefined; }
-
-  void SetCompositor(ui::Compositor* compositor) { compositor_ = compositor; }
-  ui::Compositor* GetCompositor() override { return compositor_; }
-
- private:
-  blink::WebInputEvent::Type last_gesture_seen_ =
-      blink::WebInputEvent::Type::kUndefined;
-  uint32_t unique_id_for_last_touch_ack_ = 0;
-
-  ui::Compositor* compositor_;
+  raw_ptr<RenderWidgetHostViewBase> parent_view_;
+  raw_ptr<RenderWidgetHostViewBase> root_view_;
 };
 
 class StubHitTestQuery : public viz::HitTestQuery {
@@ -139,7 +101,7 @@ class StubHitTestQuery : public viz::HitTestQuery {
   }
 
  private:
-  const RenderWidgetHostViewBase* hittest_result_;
+  raw_ptr<const RenderWidgetHostViewBase> hittest_result_;
   const bool query_renderer_;
 };
 
@@ -240,7 +202,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 
 // ImageTransportFactory doesn't exist on Android. This is needed to create
 // a RenderWidgetHostViewChildFrame in the test.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
 #endif
@@ -334,7 +296,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     process_host_root_.reset();
     base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     ImageTransportFactory::Terminate();
 #endif
   }
@@ -1535,7 +1497,12 @@ TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
 
 // This test confirms that points can be forwarded when using delegated ink in
 // a child frame, such as an OOPIF.
-TEST_P(DelegatedInkPointTest, ForwardPointsToChildFrame) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ForwardPointsToChildFrame DISABLED_ForwardPointsToChildFrame
+#else
+#define MAYBE_ForwardPointsToChildFrame ForwardPointsToChildFrame
+#endif
+TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
   // Make the child frame, set the delegated ink flag on it, give it a
   // compositor, and set it as the hit test result so that the input router
   // sends points to it.

@@ -15,8 +15,9 @@ namespace history {
 WebContentsTopSitesObserver::WebContentsTopSitesObserver(
     content::WebContents* web_contents,
     TopSites* top_sites)
-    : content::WebContentsObserver(web_contents), top_sites_(top_sites) {
-}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsTopSitesObserver>(*web_contents),
+      top_sites_(top_sites) {}
 
 WebContentsTopSitesObserver::~WebContentsTopSitesObserver() {
 }
@@ -30,9 +31,9 @@ void WebContentsTopSitesObserver::NavigationEntryCommitted(
   // an existing navigation entry.
   if (top_sites_ && load_details.is_main_frame &&
       (load_details.type ==
-           content::NavigationType::NAVIGATION_TYPE_NEW_ENTRY ||
-       load_details.type ==
-           content::NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY)) {
+           content::NavigationType::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY ||
+       load_details.type == content::NavigationType::
+                                NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY)) {
     // Only report the Virtual URL. The virtual URL, when it differs from the
     // actual URL that is loaded in the renderer, is the one meant to be shown
     // to the user in all UI.

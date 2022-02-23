@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -26,6 +28,12 @@
 #include "url/origin.h"
 
 namespace pdf {
+
+bool IsPdfRenderer() {
+  static const bool has_switch =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kPdfRenderer);
+  return has_switch;
+}
 
 blink::WebPlugin* CreateInternalPlugin(
     const content::WebPluginInfo& info,
@@ -55,6 +63,9 @@ blink::WebPlugin* CreateInternalPlugin(
       !delegate->IsAllowedOrigin(parent_frame->GetSecurityOrigin())) {
     return nullptr;
   }
+
+  // Only create the in-process plugin within a PDF renderer.
+  CHECK(IsPdfRenderer());
 
   // Origins allowed to embed the internal plugin are trusted (the PDF viewer
   // and Print Preview), and should never directly create the in-process plugin.

@@ -82,6 +82,19 @@ bool SurfaceSavedFrame::IsValid() const {
 void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   DCHECK(surface->HasActiveFrame());
 
+  if (directive_.is_renderer_driven_animation()) {
+    // TODO(khushalsagar) : This should be the only mode once renderer based SET
+    // lands.
+    copy_root_render_pass_ = false;
+    CopyUsingOriginalFrame(surface);
+  } else {
+    CopyUsingCleanFrame(surface);
+  }
+
+  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
+}
+
+void SurfaceSavedFrame::CopyUsingCleanFrame(Surface* surface) {
   const auto& root_draw_data = GetRootRenderPassDrawData(surface);
   // Bind kRoot and root geometry information to the callback.
   auto root_request = std::make_unique<CopyOutputRequest>(
@@ -100,20 +113,6 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     return;
   }
 
-  if (surface->GetActiveFrame().metadata.has_shared_element_resources) {
-    // TODO(khushalsagar) : This should be the only mode once renderer based SET
-    // lands.
-    CopyUsingOriginalFrame(surface, std::move(root_request));
-  } else {
-    CopyUsingCleanFrame(surface, std::move(root_request));
-  }
-
-  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
-}
-
-void SurfaceSavedFrame::CopyUsingCleanFrame(
-    Surface* surface,
-    std::unique_ptr<CopyOutputRequest> root_request) {
   // If the directive includes shared elements then we need to create a new
   // CompositorFrame with render passes that remove these elements. The strategy
   // is as follows :
@@ -187,9 +186,7 @@ void SurfaceSavedFrame::CopyUsingCleanFrame(
   clean_surface_.emplace(surface, std::move(clean_frame));
 }
 
-void SurfaceSavedFrame::CopyUsingOriginalFrame(
-    Surface* surface,
-    std::unique_ptr<CopyOutputRequest> root_request) {
+void SurfaceSavedFrame::CopyUsingOriginalFrame(Surface* surface) {
   const auto& active_frame = surface->GetActiveFrame();
   for (const auto& render_pass : active_frame.render_pass_list) {
     if (auto request = CreateCopyRequestIfNeeded(
@@ -199,12 +196,6 @@ void SurfaceSavedFrame::CopyUsingOriginalFrame(
       copy_request_count_++;
     }
   }
-
-  // TODO(khushalsagar) : The root element should be an intermediate render pass
-  // in the renderer's frame. We could optimize it if there are no shared
-  // elements. See crbug.com/1265700.
-  surface->RequestCopyOfOutputOnRootRenderPass(std::move(root_request));
-  copy_request_count_++;
 }
 
 std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
@@ -288,7 +279,7 @@ bool SurfaceSavedFrame::IsSharedElementRenderPass(
 
 size_t SurfaceSavedFrame::ExpectedResultCount() const {
   // Start with 1 for the root render pass.
-  size_t count = 1;
+  size_t count = copy_root_render_pass_ ? 1 : 0;
   for (auto& shared_element : directive_.shared_elements())
     count += !shared_element.render_pass_id.is_null();
   return count;
@@ -308,9 +299,11 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   }
 
   // Return if the result is empty.
-  // TODO(vmpstr): We should log / trace this.
-  if (output_copy->IsEmpty())
+  if (output_copy->IsEmpty()) {
+    LOG(ERROR) << "SurfaceSavedFrame copy output result for shared index "
+               << shared_index << " is empty.";
     return;
+  }
 
   ++valid_result_count_;
   if (!frame_result_) {

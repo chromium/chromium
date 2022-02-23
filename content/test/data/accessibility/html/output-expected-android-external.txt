@@ -1,0 +1,7 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="section"]
+++++EditText clickable editable focusable inputType:2 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
+++++TextView text:" + " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++EditText clickable editable focusable inputType:2 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, SET_PROGRESS, IME_ENTER] bundle:[chromeRole="spinButton", clickableScore="300", roleDescription="spin button"]
+++++TextView text:" =" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="status", roleDescription="status"]

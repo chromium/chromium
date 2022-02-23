@@ -148,8 +148,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        autofill::features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
        autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
-       // TODO(crbug.com/896689): Remove once launched.
-       autofill::features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
        autofill::features::kAutofillUseNewSectioningMethod,
        // TODO(crbug.com/1150890) Remove once launched
@@ -159,7 +157,10 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug/1165780): Remove once shared labels are launched.
        autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
        // TODO(crbug.com/1150895) Remove once launched.
-       autofill::features::kAutofillParsingPatternsLanguageDetection,
+       autofill::features::kAutofillParsingPatternProvider,
+       autofill::features::kAutofillPageLanguageDetection,
+       // TODO(crbug.com/1277480): Remove once launched.
+       autofill::features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
        autofill::features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
@@ -179,9 +180,9 @@ void FormStructureBrowserTest::SetUp() {
   // Initialize it now as it may DCHECK if it is initialized during the test.
   AddressNormalizerFactory::GetInstance();
 
-  autofill_agent_ = [[AutofillAgent alloc]
-      initWithPrefService:chrome_browser_state_->GetPrefs()
-                 webState:web_state()];
+  autofill_agent_ =
+      [[AutofillAgent alloc] initWithPrefService:GetBrowserState()->GetPrefs()
+                                        webState:web_state()];
   suggestion_controller_ =
       [[FormSuggestionController alloc] initWithWebState:web_state()
                                                providers:@[ autofill_agent_ ]];
@@ -190,8 +191,7 @@ void FormStructureBrowserTest::SetUp() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   autofill_client_.reset(new autofill::ChromeAutofillClientIOS(
-      chrome_browser_state_.get(), web_state(), infobar_manager,
-      autofill_agent_,
+      GetBrowserState(), web_state(), infobar_manager, autofill_agent_,
       /*password_generation_manager=*/nullptr));
 
   std::string locale("en");

@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -165,7 +165,7 @@ class CallbackTest {
   }
 
  private:
-  MessageLoopHelper* helper_;
+  raw_ptr<MessageLoopHelper> helper_;
   int reuse_;
   int last_result_;
   disk_cache::EntryResult last_entry_result_;

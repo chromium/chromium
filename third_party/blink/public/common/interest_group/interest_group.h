@@ -58,6 +58,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       url::Origin owner,
       std::string name,
       absl::optional<GURL> bidding_url,
+      absl::optional<GURL> bidding_wasm_helper_url,
       absl::optional<GURL> update_url,
       absl::optional<GURL> trusted_bidding_signals_url,
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
@@ -81,6 +82,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   url::Origin owner;
   std::string name;
   absl::optional<GURL> bidding_url;
+  absl::optional<GURL> bidding_wasm_helper_url;
   absl::optional<GURL> update_url;
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;

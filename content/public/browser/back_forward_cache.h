@@ -24,9 +24,6 @@ class RenderFrameHost;
 // Not all documents can or will be cached. You should not assume a document
 // will be cached.
 //
-// WARNING: This code is still experimental and might completely go away.
-// Please get in touch with bfcache-dev@chromium.org if you intend to use it.
-//
 // All methods of this class should be called from the UI thread.
 class CONTENT_EXPORT BackForwardCache {
  public:
@@ -106,10 +103,14 @@ class CONTENT_EXPORT BackForwardCache {
     // into two tests, one using a cacheable page, and one using an uncacheable
     // page.
     //
-    // Once BackForwardCache is enabled everywhere, any tests still disabled for
-    // this reason should change their expectations to permanently match the
-    // BackForwardCache enabled behavior.
-    TEST_ASSUMES_NO_CACHING,
+    // Even though BackForwardCache is already enabled by default, it is not
+    // guaranteed to preserve and cache the previous document on every
+    // navigation, and even if it does, it is still possible for a cached
+    // document to get discarded without it ever getting restored, so not every
+    // history navigation will restore a document from the back/forward cache.
+    // Thus, testing cases where a document does not get preserved and cached
+    // on navigation or not restored on history navigation is completely valid.
+    TEST_REQUIRES_NO_CACHING,
 
     // Unload events never fire for documents that are put into the
     // BackForwardCache. This is by design, as there is never an appropriate
@@ -141,6 +142,10 @@ class CONTENT_EXPORT BackForwardCache {
 
   // Evict all entries from the BackForwardCache.
   virtual void Flush() = 0;
+
+  // Evict back/forward cache entries from the least recently used ones until
+  // the cache is within the given size limit.
+  virtual void Prune(size_t limit) = 0;
 
   // Disables the BackForwardCache so that no documents will be stored/served.
   // This allows tests to "force" not using the BackForwardCache, this can be

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -53,7 +54,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
 
     routes_ = {MediaRoute("routeId1",
                           MediaSource("urn:x-org.chromium.media:source:tab:*"),
-                          "sinkId1", "description", true, true)};
+                          "sinkId1", "description", true)};
   }
 
   // Returns the dialog controller for the active WebContents.
@@ -69,8 +70,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
   ui::SimpleMenuModel* GetIconContextMenu() {
-    return static_cast<ui::SimpleMenuModel*>(
-        GetCastIcon()->menu_model_for_test());
+    return static_cast<ui::SimpleMenuModel*>(GetCastIcon()->menu_model());
   }
 
   void PressToolbarIcon() {
@@ -96,7 +96,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   // A vector of MediaRoutes that includes a local route.
   std::vector<MediaRoute> routes_;
 
-  MediaRouterActionController* action_controller_ = nullptr;
+  raw_ptr<MediaRouterActionController> action_controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromAppMenu) {
 }
 
 // TODO(crbug.com/1004635) Disabled on Linux due to flakiness.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_EphemeralToolbarIconForDialog \
   DISABLED_EphemeralToolbarIconForDialog
 #else
@@ -200,10 +200,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   action_controller_->OnIssuesCleared();
   EXPECT_FALSE(ToolbarIconExists());
 
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+  action_controller_->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
-                                      std::vector<MediaRoute::Id>());
+  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());
 
   SetAlwaysShowActionPref(true);
@@ -214,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
                        EphemeralToolbarIconWithMultipleWindows) {
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+  action_controller_->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
 
   // Opening and closing a window shouldn't affect the state of the ephemeral
@@ -222,10 +221,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   // also work.
   Browser* browser2 = CreateBrowser(browser()->profile());
   EXPECT_TRUE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>(),
-                                      std::vector<MediaRoute::Id>());
+  action_controller_->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());
-  action_controller_->OnRoutesUpdated(routes_, std::vector<MediaRoute::Id>());
+  action_controller_->OnRoutesUpdated(routes_);
   EXPECT_TRUE(ToolbarIconExists());
   browser2->window()->Close();
   EXPECT_TRUE(ToolbarIconExists());
@@ -233,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
 
 // TODO(https://crbug.com/1124982): Fix flake on linux-lacros-rel and re-enable
 // this test.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OpenDialogWithMediaRouterAction \
   DISABLED_OpenDialogWithMediaRouterAction
 #else

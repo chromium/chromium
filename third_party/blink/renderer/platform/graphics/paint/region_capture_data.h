@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/token.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

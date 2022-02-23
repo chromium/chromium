@@ -11,8 +11,12 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
 
 namespace {
 
@@ -33,8 +37,12 @@ ChromeFaviconClient::~ChromeFaviconClient() {
 }
 
 bool ChromeFaviconClient::IsNativeApplicationURL(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) ||
-         url.SchemeIs(extensions::kExtensionScheme);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (url.SchemeIs(extensions::kExtensionScheme))
+    return true;
+#endif
+
+  return url.SchemeIs(content::kChromeUIScheme);
 }
 
 bool ChromeFaviconClient::IsReaderModeURL(const GURL& url) {

@@ -35,7 +35,7 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
   ~DnsLatencyRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -77,7 +77,8 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
   std::vector<std::string> hostnames_to_query_;
   std::vector<base::TimeDelta> latencies_;
   net::AddressList resolved_addresses_;
-  std::vector<mojom::DnsLatencyProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::DnsLatencyProblem>
+      problems_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
 };

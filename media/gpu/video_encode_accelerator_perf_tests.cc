@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
@@ -33,46 +34,58 @@ namespace {
 // Video encoder perf tests usage message. Make sure to also update the
 // documentation under docs/media/gpu/video_encoder_perf_test_usage.md when
 // making changes here.
-// TODO(dstaessens): Add video_encoder_perf_test_usage.md
+// TODO(b/211783271): Add video_encoder_perf_test_usage.md
 constexpr const char* usage_msg =
-    "usage: video_encode_accelerator_perf_tests\n"
-    "           [--codec=<codec>] [--num_spatial_layers=<number>]\n"
-    "           [--num_temporal_layers=<number>] [--reverse]\n"
-    "           [--bitrate=<bitrate>]\n"
-    "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
-    "           [--gtest_help] [--help]\n"
-    "           [<video path>] [<video metadata path>]\n";
+    R"(usage: video_encode_accelerator_perf_tests
+           [--codec=<codec>] [--num_spatial_layers=<number>]
+           [--num_temporal_layers=<number>] [--reverse]
+           [--bitrate=<bitrate>]
+           [-v=<level>] [--vmodule=<config>] [--output_folder]
+           [--disable_vaapi_lock]
+           [--gtest_help] [--help]
+           [<video path>] [<video metadata path>]
+)";
 
 // Video encoder performance tests help message.
 constexpr const char* help_msg =
-    "Run the video encode accelerator performance tests on the video\n"
-    "specified by <video path>. If no <video path> is given the default\n"
-    "\"bear_320x192_40frames.yuv.webm\" video will be used.\n"
-    "\nThe <video metadata path> should specify the location of a json file\n"
-    "containing the video's metadata. By default <video path>.json will be\n"
-    "used.\n"
-    "\nThe following arguments are supported:\n"
-    "  --codec               codec profile to encode, \"h264 (baseline)\",\n"
-    "                        \"h264main, \"h264high\", \"vp8\" and \"vp9\"\n"
-    "  --num_spatial_layers  the number of spatial layers of the encoded\n"
-    "                        bitstream. A default value is 1. Only affected\n"
-    "                        if --codec=vp9 currently.\n"
-    "  --num_temporal_layers the number of temporal layers of the encoded\n"
-    "                        bitstream. A default value is 1. Only affected\n"
-    "                        if --codec=vp9 currently.\n"
-    "  --reverse             the stream plays backwards if the stream reaches\n"
-    "                        end of stream. So the input stream to be encoded\n"
-    "                        is consecutive. By default this is false.\n"
-    "  --bitrate             bitrate (bits in second) of a produced bitstram.\n"
-    "                        If not specified, a proper value for the video\n"
-    "                        resolution is selected by the test.\n"
-    "   -v                   enable verbose mode, e.g. -v=2.\n"
-    "  --vmodule             enable verbose mode for the specified module,\n"
-    "  --output_folder       overwrite the output folder used to store\n"
-    "                        performance metrics, if not specified results\n"
-    "                        will be stored in the current working directory.\n"
-    "  --gtest_help          display the gtest help and exit.\n"
-    "  --help                display this help and exit.\n";
+    R"""(Run the video encode accelerator performance tests on the video
+specified by <video path>. If no <video path> is given the default
+"bear_320x192_40frames.yuv.webm" video will be used.
+
+The <video metadata path> should specify the location of a json file
+containing the video's metadata. By default <video path>.json will be
+used.
+
+The following arguments are supported:
+   -v                   enable verbose mode, e.g. -v=2.
+  --vmodule             enable verbose mode for the specified module,
+
+  --codec               codec profile to encode, "h264 (baseline)",
+                        "h264main, "h264high", "vp8" and "vp9"
+  --num_spatial_layers  the number of spatial layers of the encoded
+                        bitstream. A default value is 1. Only affected
+                        if --codec=vp9 currently.
+  --num_temporal_layers the number of temporal layers of the encoded
+                        bitstream. A default value is 1.
+  --reverse             the stream plays backwards if the stream reaches
+                        end of stream. So the input stream to be encoded
+                        is consecutive. By default this is false.
+  --bitrate             bitrate (bits in second) of a produced bitstram.
+                        If not specified, a proper value for the video
+                        resolution is selected by the test.
+  --output_folder       overwrite the output folder used to store
+                        performance metrics, if not specified results
+                        will be stored in the current working directory.
+  --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                        i.e., only on devices that use the VA-API with a libva
+                        backend that's known to be thread-safe and only in
+                        portions of the Chrome stack that should be able to
+                        deal with the absence of the lock
+                        (not the VaapiVideoDecodeAccelerator).
+
+  --gtest_help          display the gtest help and exit.
+  --help                display this help and exit.
+)""";
 
 // Default video to be used if no test video was specified.
 constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
@@ -650,6 +663,43 @@ TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
   for (auto& metrics : quality_metrics_)
     metrics.Output();
 }
+
+// TODO(b/211783279) The |performance_evaluator_| only keeps track of the last
+// created encoder. We should instead keep track of multiple evaluators, and
+// then decide how to aggregate/report those metrics.
+TEST_F(VideoEncoderTest,
+       MeasureUncappedPerformance_MultipleConcurrentEncoders) {
+  // Run two encoders for larger resolutions to avoid creating shared memory
+  // buffers during the test on lower end devices.
+  constexpr gfx::Size k1080p(1920, 1080);
+  const size_t kMinSupportedConcurrentEncoders =
+      g_env->Video()->Resolution().GetArea() >= k1080p.GetArea() ? 2 : 3;
+
+  std::vector<std::unique_ptr<VideoEncoder>> encoders(
+      kMinSupportedConcurrentEncoders);
+  for (size_t i = 0; i < kMinSupportedConcurrentEncoders; ++i) {
+    encoders[i] = CreateVideoEncoder(/*encode_rate=*/absl::nullopt,
+                                     /*measure_quality=*/false);
+    encoders[i]->SetEventWaitTimeout(kPerfEventTimeout);
+  }
+
+  performance_evaluator_->StartMeasuring();
+
+  for (auto&& encoder : encoders)
+    encoder->Encode();
+
+  for (auto&& encoder : encoders) {
+    EXPECT_TRUE(encoder->WaitForFlushDone());
+    EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+    EXPECT_EQ(encoder->GetFrameReleasedCount(),
+              kNumFramesToEncodeForPerformance);
+  }
+
+  performance_evaluator_->StopMeasuring();
+  auto metrics = performance_evaluator_->Metrics();
+  metrics.WriteToConsole();
+  metrics.WriteToFile();
+}
 }  // namespace test
 }  // namespace media
 
@@ -679,6 +729,7 @@ int main(int argc, char** argv) {
   size_t num_temporal_layers = 1u;
   bool reverse = false;
   absl::optional<uint32_t> encode_bitrate;
+  std::vector<base::Feature> disabled_features;
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
@@ -725,6 +776,8 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
       }
       encode_bitrate = base::checked_cast<uint32_t>(value);
+    } else if (it->first == "disable_vaapi_lock") {
+      disabled_features.push_back(media::kGlobalVaapiLock);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -739,7 +792,9 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
           codec, num_temporal_layers, num_spatial_layers,
-          false /* output_bitstream */, encode_bitrate, reverse);
+          false /* output_bitstream */, encode_bitrate, reverse,
+          media::test::FrameOutputConfig(),
+          /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 

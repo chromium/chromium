@@ -27,7 +27,7 @@ class NSString;
 class UIFont;
 #endif  // __OBJC__
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CoreText/CoreText.h>
 #else
 #include <ApplicationServices/ApplicationServices.h>
@@ -47,10 +47,10 @@ typedef struct CF_BRIDGED_TYPE(id) __SecKey* SecKeyRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecPolicy* SecPolicyRef;
 
 namespace base {
-
 class FilePath;
+}
 
-namespace mac {
+namespace base::mac {
 
 // Returns true if the application is running from a bundle
 BASE_EXPORT bool AmIBundled();
@@ -138,10 +138,6 @@ TYPE_NAME_FOR_CF_TYPE_DECL(SecPolicy);
 
 #undef TYPE_NAME_FOR_CF_TYPE_DECL
 
-// Retain/release calls for memory management in C++.
-BASE_EXPORT void NSObjectRetain(void* obj);
-BASE_EXPORT void NSObjectRelease(void* obj);
-
 // Returns the base bundle ID, which can be set by SetBaseBundleID but
 // defaults to a reasonable string. This never returns NULL. BaseBundleID
 // returns a pointer to static storage that must not be freed.
@@ -151,8 +147,11 @@ BASE_EXPORT const char* BaseBundleID();
 // make its own copy of new_base_bundle_id.
 BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
+
+// These casting functions cannot be implemented in a way that will work with
+// ARC. Use the casting functions in base/mac/bridging.h instead.
+#if !defined(__has_feature) || !__has_feature(objc_arc)
 
 #if !defined(__OBJC__)
 #define OBJC_CPP_CLASS_DECL(x) class x;
@@ -215,7 +214,7 @@ CF_TO_NS_CAST_DECL(CFWriteStream, NSOutputStream)
 CF_TO_NS_MUTABLE_CAST_DECL(String)
 CF_TO_NS_CAST_DECL(CFURL, NSURL)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 CF_TO_NS_CAST_DECL(CTFont, UIFont)
 #else
 CF_TO_NS_CAST_DECL(CTFont, NSFont)
@@ -225,8 +224,9 @@ CF_TO_NS_CAST_DECL(CTFont, NSFont)
 #undef CF_TO_NS_MUTABLE_CAST_DECL
 #undef OBJC_CPP_CLASS_DECL
 
-namespace base {
-namespace mac {
+#endif  // !defined(__has_feature) || !__has_feature(objc_arc)
+
+namespace base::mac {
 
 // CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
 // specific CoreFoundation type. The compatibility of the passed
@@ -354,6 +354,10 @@ BASE_EXPORT NSString* FilePathToNSString(const FilePath& path);
 // Converts |str| to a FilePath. Returns an empty path if |str| is nil.
 BASE_EXPORT FilePath NSStringToFilePath(NSString* str);
 
+// Converts |url| to a FilePath. Returns an empty path if |url| is nil or if
+// |url| is not of scheme "file".
+BASE_EXPORT FilePath NSURLToFilePath(NSURL* url);
+
 // Converts a non-null |path| to a CFURLRef. |path| must not be empty.
 //
 // This function only uses manually-owned resources, so it does not depend on an
@@ -365,12 +369,11 @@ BASE_EXPORT base::ScopedCFTypeRef<CFURLRef> FilePathToCFURL(
 // Converts |range| to an NSRange, returning the new range in |range_out|.
 // Returns true if conversion was successful, false if the values of |range|
 // could not be converted to NSUIntegers.
-BASE_EXPORT bool CFRangeToNSRange(CFRange range,
-                                  NSRange* range_out) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT bool CFRangeToNSRange(CFRange range,
+                                                NSRange* range_out);
 #endif  // defined(__OBJC__)
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 // Stream operations for CFTypes. They can be used with NSTypes as well
 // by using the NSToCFCast methods above.
@@ -388,7 +391,7 @@ BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, id);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSRange);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, SEL);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSPoint);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSRect);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSSize);

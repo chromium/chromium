@@ -73,6 +73,8 @@ void PageContentAnnotationJobExecutor::OnJobExecutionComplete(
     std::unique_ptr<PageContentAnnotationJob> job) {
   job->OnComplete();
   // Intentionally reset |job| here to make lifetime clearer and less bug-prone.
+  // Note that the job dtor also records some timing metrics which is better to
+  // do now rather than after the following callback.
   job.reset();
 
   std::move(on_job_complete_callback_from_caller).Run();

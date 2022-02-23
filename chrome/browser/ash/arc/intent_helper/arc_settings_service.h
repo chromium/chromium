@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

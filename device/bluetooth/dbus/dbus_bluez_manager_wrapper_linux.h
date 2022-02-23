@@ -5,7 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_DBUS_BLUEZ_MANAGER_WRAPPER_LINUX_H_
 #define DEVICE_BLUETOOTH_DBUS_DBUS_BLUEZ_MANAGER_WRAPPER_LINUX_H_
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace bluez {

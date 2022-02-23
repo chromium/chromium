@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -79,7 +80,7 @@ testing::AssertionResult ValuesEq(
     return testing::AssertionFailure() <<
         "Expected: " << GetJson(*expected) << ", actual NULL";
   }
-  if (!expected->Equals(actual)) {
+  if (*expected != *actual) {
     return testing::AssertionFailure() <<
         "Expected: " << GetJson(*expected) << ", actual: " << GetJson(*actual);
   }
@@ -295,7 +296,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
   std::unique_ptr<MockSyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
       sync_processor_wrapper_;
-  SyncValueStoreCache* sync_cache_;
+  raw_ptr<SyncValueStoreCache> sync_cache_;
 };
 
 // Get a semblance of coverage for both EXTENSION_SETTINGS and APP_SETTINGS
@@ -379,7 +380,7 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
     EXPECT_EQ(1u, sync_processor_->changes().size());
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     GetSyncableService(model_type)->StopSyncing(model_type);
   });
@@ -410,10 +411,10 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
     EXPECT_EQ(2u, sync_processor_->changes().size());
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s2", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     GetSyncableService(model_type)->StopSyncing(model_type);
   });
@@ -577,16 +578,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
     SettingSyncData* change = sync_processor_->GetOnlyChange("s1", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     sync_processor_->GetOnlyChange("s2", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     change = sync_processor_->GetOnlyChange("s3", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s4", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_ADD, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
 
     // Change something locally, storage1/3 the new setting and storage2/4 the
     // initial setting, for all combinations of local vs sync intialisation and
@@ -599,16 +600,16 @@ TEST_F(ExtensionSettingsSyncTest, PushToSync) {
 
     change = sync_processor_->GetOnlyChange("s1", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s2", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
     change = sync_processor_->GetOnlyChange("s3", "bar");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value1.Equals(&change->value()));
+    EXPECT_EQ(value1, change->value());
     change = sync_processor_->GetOnlyChange("s4", "foo");
     EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, change->change_type());
-    EXPECT_TRUE(value2.Equals(&change->value()));
+    EXPECT_EQ(value2, change->value());
 
     // Remove something locally, storage1/3 the new setting and storage2/4 the
     // initial setting, for all combinations of local vs sync intialisation and
@@ -1433,7 +1434,7 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
       EXPECT_EQ(syncer::SyncChange::ACTION_ADD, sync_data->change_type());
       EXPECT_EQ("ext", sync_data->extension_id());
       EXPECT_EQ("key.with.spot", sync_data->key());
-      EXPECT_TRUE(sync_data->value().Equals(string_value.get()));
+      EXPECT_EQ(sync_data->value(), *string_value);
     }
   });
 }

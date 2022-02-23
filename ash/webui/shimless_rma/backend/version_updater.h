@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/callback.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
@@ -25,8 +24,9 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
                                        bool rollback,
                                        bool powerwash,
                                        const std::string& version,
-                                       int64_t update_size)>
-      StatusCallback;
+                                       int64_t update_size,
+                                       update_engine::ErrorCode error_code)>
+      OsUpdateStatusCallback;
 
   VersionUpdater();
   VersionUpdater(const VersionUpdater&) = delete;
@@ -34,19 +34,22 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
 
   ~VersionUpdater() override;
 
-  void SetStatusCallback(StatusCallback status_callback);
-  bool CheckOsUpdateAvailable();
+  void SetOsUpdateStatusCallback(OsUpdateStatusCallback callback);
+  void CheckOsUpdateAvailable();
   bool UpdateOs();
-  bool IsIdle();
+  bool IsUpdateEngineIdle();
+
+  void UpdateStatusChangedForTesting(const update_engine::StatusResult& status);
 
  private:
   // Callback from UpdateEngineClient::RequestUpdateCheck().
-  void OnUpdateProgress(chromeos::UpdateEngineClient::UpdateCheckResult result);
+  void OnRequestUpdateCheck(
+      chromeos::UpdateEngineClient::UpdateCheckResult result);
 
   // UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
-  StatusCallback status_callback_;
+  OsUpdateStatusCallback status_callback_;
   enum CheckUpdateState {
     IDLE,
     CHECKING,

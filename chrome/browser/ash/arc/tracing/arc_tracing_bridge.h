@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/tracing.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "components/arc/mojom/tracing.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/tracing/public/cpp/base_agent.h"
 

@@ -17,6 +17,10 @@ class AccountManager;
 class AccountManagerUI;
 }  // namespace account_manager
 
+namespace crosapi {
+class AccountManagerMojoService;
+}  // namespace crosapi
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Create a new instance of `account_manager::AccountManager` for tests. Should
 // be called before the first call to `GetAccountManagerFacade()`. After this
@@ -54,6 +58,11 @@ account_manager::AccountManager* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 // otherwise return `nullptr`.
 account_manager::AccountManagerUI* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
     MaybeGetAshAccountManagerUIForTests();
+
+// Return a `AccountManagerMojoService` instance if it was created for tests,
+// otherwise return `nullptr`.
+crosapi::AccountManagerMojoService* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+    MaybeGetAshAccountManagerMojoServiceForTests();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_FACADE_FACTORY_H_

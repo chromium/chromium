@@ -126,8 +126,10 @@ base::FilePath GetCacheRootPath() {
 
 AmbientPhotoController::AmbientPhotoController(
     AmbientClient& ambient_client,
-    AmbientAccessTokenController& access_token_controller)
-    : fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
+    AmbientAccessTokenController& access_token_controller,
+    AmbientPhotoConfig photo_config)
+    : ambient_backend_model_(std::move(photo_config)),
+      fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
       photo_cache_(AmbientPhotoCache::Create(
           GetCacheRootPath().Append(
@@ -148,15 +150,22 @@ AmbientPhotoController::AmbientPhotoController(
 AmbientPhotoController::~AmbientPhotoController() = default;
 
 void AmbientPhotoController::Init() {
+  state_ = State::kPreparingInitialTopicSets;
   topic_index_ = 0;
-  image_refresh_started_ = false;
   retries_to_read_from_cache_ = kMaxNumberOfCachedImages;
   backup_retries_to_read_from_cache_ = GetBackupPhotoUrls().size();
+  num_topics_prepared_ = 0;
 }
 
 void AmbientPhotoController::StartScreenUpdate() {
+  if (state_ != State::kInactive) {
+    DVLOG(3) << "AmbientPhotoController is already active. Ignoring "
+                "StartScreenUpdate().";
+    return;
+  }
+
   Init();
-  FetchTopics();
+  FetchTopics(FetchTopicRequestType::kOnDemand);
   FetchWeather();
   weather_refresh_timer_.Start(
       FROM_HERE, kWeatherRefreshInterval,
@@ -171,7 +180,8 @@ void AmbientPhotoController::StartScreenUpdate() {
 }
 
 void AmbientPhotoController::StopScreenUpdate() {
-  photo_refresh_timer_.Stop();
+  state_ = State::kInactive;
+  fetch_topic_timer_.Stop();
   weather_refresh_timer_.Stop();
   fetch_topic_retry_backoff_.Reset();
   resume_fetch_image_backoff_.Reset();
@@ -179,24 +189,66 @@ void AmbientPhotoController::StopScreenUpdate() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void AmbientPhotoController::OnTopicsChanged() {
-  if (ambient_backend_model_.topics().size() < kMaxNumberOfCachedImages)
-    ScheduleFetchTopics(/*backoff=*/false);
+bool AmbientPhotoController::IsScreenUpdateActive() const {
+  return state_ != State::kInactive;
+}
 
-  if (!image_refresh_started_) {
-    image_refresh_started_ = true;
-    ScheduleRefreshImage();
+void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {
+  if (!ambient_backend_model_.photo_config().refresh_topic_markers.contains(
+          marker)) {
+    DVLOG(3) << "UI event " << marker
+             << " does not trigger a topic refresh. Ignoring...";
+    return;
+  }
+
+  DVLOG(3) << "UI event " << marker << " triggering topic refresh";
+  switch (state_) {
+    case State::kInactive:
+    case State::kPreparingInitialTopicSets:
+      // In these states, the UI shouldn't be active, so it it's unexpected for
+      // the controller to receive a UI event.
+      LOG(ERROR) << "Received unexpected UI marker " << marker << " in state "
+                 << state_;
+      break;
+    case State::kWaitingForNextMarker:
+      state_ = State::kPreparingNextTopicSet;
+      num_topics_prepared_ = 0;
+      StartPreparingNextTopic();
+      break;
+    case State::kPreparingNextTopicSet:
+      // The controller is still in the middle of preparing a topic from the
+      // previous set (i.e. waiting on a callback or timer to fire). Resetting
+      // |num_topics_prepared_| to 0 is enough, and the topic currently being
+      // prepared will count towards the next set.
+      num_topics_prepared_ = 0;
+      break;
   }
 }
 
-void AmbientPhotoController::FetchTopics() {
+void AmbientPhotoController::OnTopicsChanged() {
+  DVLOG(3) << __func__;
+  if (!HasModelReachedMaxTopicCapacity())
+    ScheduleFetchTopics(/*backoff=*/false);
+
+  // Only call FetchPhotoRawData() for on-demand fetches. If a scheduled topic
+  // fetch happens to occur during the PREPARING_INITIAL_TOPIC_SETS or
+  // PREPARING_NEXT_TOPIC_SET state and FetchPhotoRawData() is called, not only
+  // is that unnecessary but it could also result in the controller decoding
+  // multiple topics simultaneously, which is currently not supported.
+  if (latest_fetch_topic_request_type_ == FetchTopicRequestType::kOnDemand) {
+    FetchPhotoRawData();
+  }
+}
+
+void AmbientPhotoController::FetchTopics(FetchTopicRequestType request_type) {
+  fetch_topic_timer_.Stop();
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
       ->FetchScreenUpdateInfo(
           kTopicsBatchSize,
           base::BindOnce(&AmbientPhotoController::OnScreenUpdateInfoFetched,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr(), request_type));
 }
 
 void AmbientPhotoController::FetchWeather() {
@@ -220,18 +272,10 @@ void AmbientPhotoController::ScheduleFetchTopics(bool backoff) {
   const base::TimeDelta delay =
       backoff ? fetch_topic_retry_backoff_.GetTimeUntilRelease()
               : kTopicFetchInterval;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&AmbientPhotoController::FetchTopics,
-                     weak_factory_.GetWeakPtr()),
-      delay);
-}
-
-void AmbientPhotoController::ScheduleRefreshImage() {
-  photo_refresh_timer_.Start(
-      FROM_HERE, ambient_backend_model_.GetPhotoRefreshInterval(),
-      base::BindOnce(&AmbientPhotoController::FetchPhotoRawData,
-                     weak_factory_.GetWeakPtr()));
+  fetch_topic_timer_.Start(FROM_HERE, delay,
+                           base::BindOnce(&AmbientPhotoController::FetchTopics,
+                                          weak_factory_.GetWeakPtr(),
+                                          FetchTopicRequestType::kScheduled));
 }
 
 void AmbientPhotoController::ScheduleFetchBackupImages() {
@@ -280,6 +324,7 @@ const AmbientModeTopic* AmbientPhotoController::GetNextTopic() {
 }
 
 void AmbientPhotoController::OnScreenUpdateInfoFetched(
+    FetchTopicRequestType request_type,
     const ash::ScreenUpdate& screen_update) {
   // It is possible that |screen_update| is an empty instance if fatal errors
   // happened during the fetch.
@@ -288,13 +333,13 @@ void AmbientPhotoController::OnScreenUpdateInfoFetched(
 
     fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     ScheduleFetchTopics(/*backoff=*/true);
-    if (!image_refresh_started_) {
-      image_refresh_started_ = true;
-      ScheduleRefreshImage();
-    }
+
+    if (request_type == FetchTopicRequestType::kOnDemand)
+      FetchPhotoRawData();
     return;
   }
   fetch_topic_retry_backoff_.InformOfRequest(/*succeeded=*/true);
+  latest_fetch_topic_request_type_ = request_type;
   ambient_backend_model_.AppendTopics(screen_update.next_topics);
   StartDownloadingWeatherConditionIcon(screen_update.weather_info);
 }
@@ -311,6 +356,7 @@ void AmbientPhotoController::FetchPhotoRawData() {
   ResetImageData();
 
   if (topic) {
+    DVLOG(3) << "Downloading topic photos";
     ambient::Photo* photo = cache_entry_.mutable_primary_photo();
     photo->set_details(topic->details);
     photo->set_is_portrait(topic->is_portrait);
@@ -359,7 +405,6 @@ void AmbientPhotoController::TryReadPhotoRawData() {
       if (ambient_backend_model_.ImageLoadingFailed() ||
           topic_index_ == ambient_backend_model_.topics().size()) {
         LOG(WARNING) << "Not attempting image refresh";
-        image_refresh_started_ = false;
         return;
       }
 
@@ -368,7 +413,7 @@ void AmbientPhotoController::TryReadPhotoRawData() {
           resume_fetch_image_backoff_.GetTimeUntilRelease();
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&AmbientPhotoController::ScheduleRefreshImage,
+          base::BindOnce(&AmbientPhotoController::FetchPhotoRawData,
                          weak_factory_.GetWeakPtr()),
           delay);
       return;
@@ -417,6 +462,7 @@ void AmbientPhotoController::OnPhotoRawDataDownloaded(
 }
 
 void AmbientPhotoController::OnAllPhotoRawDataDownloaded() {
+  DVLOG(3) << __func__;
   OnAllPhotoRawDataAvailable(/*from_downloading=*/true);
 }
 
@@ -497,6 +543,7 @@ void AmbientPhotoController::OnPhotoDecoded(bool from_downloading,
 
 void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
                                                const std::string& hash) {
+  DVLOG(3) << __func__;
   if (image_.isNull()) {
     LOG(WARNING) << "Image decoding failed";
     if (from_downloading)
@@ -528,9 +575,43 @@ void AmbientPhotoController::OnAllPhotoDecoded(bool from_downloading,
 
   ResetImageData();
 
+  // AddNextImage() can call out to observers, who can synchronously interact
+  // with the controller within their observer notification methods. So the
+  // internal |state_| should be updated before calling AddNextImage() so that
+  // it is consistent with the model.
+  State previous_state = state_;
+  size_t target_num_topics_to_prepare = 0;
+  switch (state_) {
+    case State::kInactive:
+    case State::kWaitingForNextMarker:
+      LOG(ERROR) << "Topic prepared when controller should be idle in state "
+                 << state_;
+      return;
+    case State::kPreparingInitialTopicSets:
+      target_num_topics_to_prepare =
+          ambient_backend_model_.photo_config().GetNumDecodedTopicsToBuffer();
+      break;
+    case State::kPreparingNextTopicSet:
+      target_num_topics_to_prepare =
+          ambient_backend_model_.photo_config().topic_set_size;
+      break;
+  }
+
+  ++num_topics_prepared_;
+  if (num_topics_prepared_ == target_num_topics_to_prepare)
+    state_ = State::kWaitingForNextMarker;
+
   ambient_backend_model_.AddNextImage(std::move(detailed_photo));
 
-  ScheduleRefreshImage();
+  if (previous_state == State::kPreparingInitialTopicSets &&
+      state_ == State::kWaitingForNextMarker) {
+    DCHECK(ambient_backend_model_.ImagesReady());
+  }
+
+  if (state_ == State::kPreparingInitialTopicSets ||
+      state_ == State::kPreparingNextTopicSet) {
+    StartPreparingNextTopic();
+  }
 }
 
 void AmbientPhotoController::StartDownloadingWeatherConditionIcon(
@@ -576,7 +657,7 @@ void AmbientPhotoController::OnWeatherConditionIconDownloaded(
 }
 
 void AmbientPhotoController::FetchTopicsForTesting() {
-  FetchTopics();
+  FetchTopics(FetchTopicRequestType::kOnDemand);
 }
 
 void AmbientPhotoController::FetchImageForTesting() {
@@ -585,6 +666,38 @@ void AmbientPhotoController::FetchImageForTesting() {
 
 void AmbientPhotoController::FetchBackupImagesForTesting() {
   FetchBackupImages();
+}
+
+bool AmbientPhotoController::HasModelReachedMaxTopicCapacity() const {
+  return ambient_backend_model_.topics().size() >= kMaxNumberOfCachedImages;
+}
+
+bool AmbientPhotoController::HasExhaustedAllTopicsInModel() const {
+  return topic_index_ == ambient_backend_model_.topics().size();
+}
+
+void AmbientPhotoController::StartPreparingNextTopic() {
+  DCHECK(state_ == State::kPreparingInitialTopicSets ||
+         state_ == State::kPreparingNextTopicSet);
+  if (HasExhaustedAllTopicsInModel() && !HasModelReachedMaxTopicCapacity()) {
+    FetchTopics(FetchTopicRequestType::kOnDemand);
+  } else {
+    FetchPhotoRawData();
+  }
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         AmbientPhotoController::State state) {
+  switch (state) {
+    case AmbientPhotoController::State::kInactive:
+      return os << "INACTIVE";
+    case AmbientPhotoController::State::kPreparingInitialTopicSets:
+      return os << "PREPARING_INITIAL_TOPIC_SETS";
+    case AmbientPhotoController::State::kWaitingForNextMarker:
+      return os << "WAITING_FOR_NEXT_MARKER";
+    case AmbientPhotoController::State::kPreparingNextTopicSet:
+      return os << "PREPARING_NEXT_TOPIC_SET";
+  }
 }
 
 }  // namespace ash

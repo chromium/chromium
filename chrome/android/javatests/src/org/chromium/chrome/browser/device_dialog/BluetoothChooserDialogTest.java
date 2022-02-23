@@ -44,8 +44,8 @@ import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.AndroidPermissionDelegate;
-import org.chromium.ui.base.PermissionCallback;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 import java.util.concurrent.Callable;

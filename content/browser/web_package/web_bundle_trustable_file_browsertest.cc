@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/common/content_client.h"
@@ -43,7 +45,7 @@ class InvalidTrustableWebBundleFileUrlBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   web_bundle_browsertest_utils::TestBrowserClient browser_client_;
 };
 
@@ -129,12 +131,12 @@ class WebBundleTrustableFileBrowserTest
       test_data_url_ = net::FilePathToFileURL(file_path);
       return;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     DCHECK_EQ(web_bundle_browsertest_utils::TestFilePathMode::kContentURI,
               GetParam());
     web_bundle_browsertest_utils::CopyFileAndGetContentUri(
         file_path, &test_data_url_, &test_data_file_path_);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   GURL test_data_url_;
@@ -191,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
       &web_bundle_browsertest_utils::RunSameDocumentNavigationTest);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeNavigation DISABLED_IframeNavigation
 #else
 #define MAYBE_IframeNavigation IframeNavigation
@@ -218,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest,
           RunIframeParentInitiatedOutOfBundleNavigationTest);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_IframeSameDocumentNavigation DISABLED_IframeSameDocumentNavigation
 #else
 #define MAYBE_IframeSameDocumentNavigation IframeSameDocumentNavigation
@@ -289,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleTrustableFileBrowserTest, WindowOpen) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NoPrimaryURLFound DISABLED_NoPrimaryURLFound
 #else
 #define MAYBE_NoPrimaryURLFound NoPrimaryURLFound
@@ -345,7 +347,7 @@ class WebBundleTrustableFileNotFoundBrowserTest
 };
 
 // TODO(https://crbug.com/1227439): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NotFound DISABLED_NotFound
 #else
 #define MAYBE_NotFound NotFound

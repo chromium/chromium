@@ -22,7 +22,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
     return result;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS, the platform TTS definition is provided by the content
   // client.
   //

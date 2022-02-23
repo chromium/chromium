@@ -19,39 +19,40 @@ void WallpaperHandler::OnJavascriptAllowed() {}
 void WallpaperHandler::OnJavascriptDisallowed() {}
 
 void WallpaperHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "openWallpaperManager",
       base::BindRepeating(&WallpaperHandler::HandleOpenWallpaperManager,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "isWallpaperSettingVisible",
       base::BindRepeating(&WallpaperHandler::HandleIsWallpaperSettingVisible,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "isWallpaperPolicyControlled",
       base::BindRepeating(&WallpaperHandler::HandleIsWallpaperPolicyControlled,
                           base::Unretained(this)));
 }
 
 void WallpaperHandler::HandleIsWallpaperSettingVisible(
-    const base::ListValue* args) {
-  CHECK_EQ(args->GetList().size(), 1U);
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 1U);
   ResolveCallback(
-      args->GetList()[0],
+      args[0],
       WallpaperControllerClientImpl::Get()->ShouldShowWallpaperSetting());
 }
 
 void WallpaperHandler::HandleIsWallpaperPolicyControlled(
-    const base::ListValue* args) {
-  CHECK_EQ(args->GetList().size(), 1U);
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 1U);
   bool result = WallpaperControllerClientImpl::Get()
                     ->IsActiveUserWallpaperControlledByPolicy();
-  ResolveCallback(args->GetList()[0], result);
+  ResolveCallback(args[0], result);
 }
 
-void WallpaperHandler::HandleOpenWallpaperManager(const base::ListValue* args) {
+void WallpaperHandler::HandleOpenWallpaperManager(
+    base::Value::ConstListView args) {
   WallpaperControllerClientImpl::Get()->OpenWallpaperPickerIfAllowed();
 }
 

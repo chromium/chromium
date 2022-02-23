@@ -32,13 +32,20 @@ namespace {
 LanguageCode kLanguageDe("de");
 LanguageCode kLanguageEn("en");
 
+base::FieldTrialParams GetFeatureParams(bool language_dependent) {
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillParsingWithLanguageSpecificPatternsParam.name,
+       language_dependent ? "true" : "false"}};
+  return feature_parameters;
+}
+
 MatchingPattern GetCompanyPatternEn() {
   autofill::MatchingPattern m_p;
   m_p.positive_pattern = u"company|business|organization|organisation";
   m_p.positive_score = 1.1;
   m_p.negative_pattern = u"";
-  m_p.match_field_attributes = MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.match_field_attributes = {MatchAttribute::kName};
+  m_p.match_field_input_types = {MatchFieldType::kText};
   m_p.language = kLanguageEn;
   return m_p;
 }
@@ -48,8 +55,8 @@ MatchingPattern GetCompanyPatternDe() {
   m_p.positive_pattern = u"|(?<!con)firma|firmenname";
   m_p.positive_score = 1.1;
   m_p.negative_pattern = u"";
-  m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.match_field_attributes = {MatchAttribute::kLabel, MatchAttribute::kName};
+  m_p.match_field_input_types = {MatchFieldType::kText};
   m_p.language = kLanguageDe;
   return m_p;
 }
@@ -119,8 +126,9 @@ bool operator==(const MatchingPattern& mp1, const MatchingPattern& mp2) {
 
 TEST(AutofillPatternProviderTest, Single_Match) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParsingPatternsLanguageDependent);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillParsingPatternProvider,
+      GetFeatureParams(/*language_dependent=*/true));
 
   UnitTestPatternProvider p;
   EXPECT_THAT(p.GetMatchPatterns("COMPANY_NAME", kLanguageEn),
@@ -164,12 +172,10 @@ TEST(AutofillPatternProviderTest, TestDefaultEqualsJson) {
 
 TEST(AutofillPatternProviderTest, UnknownLanguages) {
   {
-    base::test::ScopedFeatureList feature;
-    feature.InitWithFeatures(
-        // enabled
-        {features::kAutofillParsingPatternsLanguageDependent},
-        // disabled
-        {features::kAutofillParsingPatternsNegativeMatching});
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillParsingPatternProvider,
+        GetFeatureParams(/*language_dependent=*/true));
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns(COMPANY_NAME, LanguageCode("")),
               p.GetAllPatternsByType(COMPANY_NAME));
@@ -178,12 +184,10 @@ TEST(AutofillPatternProviderTest, UnknownLanguages) {
   }
 
   {
-    base::test::ScopedFeatureList feature;
-    feature.InitWithFeatures(
-        // enabled
-        {features::kAutofillParsingPatternsNegativeMatching},
-        // disabled
-        {features::kAutofillParsingPatternsLanguageDependent});
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillParsingPatternProvider,
+        GetFeatureParams(/*language_dependent=*/false));
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns(COMPANY_NAME, LanguageCode("")),
               p.GetAllPatternsByType(COMPANY_NAME));
@@ -194,12 +198,10 @@ TEST(AutofillPatternProviderTest, UnknownLanguages) {
 
 TEST(AutofillPatternProviderTest, EnrichPatternsWithEnVersion) {
   {
-    base::test::ScopedFeatureList feature;
-    feature.InitWithFeatures(
-        // enabled
-        {features::kAutofillParsingPatternsLanguageDependent},
-        // disabled
-        {features::kAutofillParsingPatternsNegativeMatching});
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillParsingPatternProvider,
+        GetFeatureParams(/*language_dependent=*/true));
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns(COMPANY_NAME, kLanguageEn),
               std::vector<MatchingPattern>{GetCompanyPatternEn()});
@@ -209,12 +211,10 @@ TEST(AutofillPatternProviderTest, EnrichPatternsWithEnVersion) {
   }
 
   {
-    base::test::ScopedFeatureList feature;
-    feature.InitWithFeatures(
-        // enabled
-        {features::kAutofillParsingPatternsNegativeMatching},
-        // disabled
-        {features::kAutofillParsingPatternsLanguageDependent});
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAutofillParsingPatternProvider,
+        GetFeatureParams(/*language_dependent=*/false));
     UnitTestPatternProvider p;
     EXPECT_EQ(p.GetMatchPatterns(COMPANY_NAME, kLanguageEn),
               std::vector<MatchingPattern>(
@@ -226,13 +226,10 @@ TEST(AutofillPatternProviderTest, EnrichPatternsWithEnVersion) {
 }
 
 TEST(AutofillPatternProviderTest, SortPatternsByScore) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      // enabled
-      {features::kAutofillParsingPatternsLanguageDependent,
-       features::kAutofillParsingPatternsNegativeMatching},
-      // disabled
-      {});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillParsingPatternProvider,
+      GetFeatureParams(/*language_dependent=*/true));
   std::vector<MatchingPattern> de_input_patterns;
   de_input_patterns.push_back(GetCompanyPatternDe());
   de_input_patterns.push_back(GetCompanyPatternDe());

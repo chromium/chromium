@@ -5,13 +5,14 @@ import './shared_style.js';
 import './shared_vars.js';
 import '//resources/cr_elements/cr_icons_css.m.js';
 
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from '//resources/cr_components/app_management/constants.js';
+import {getAppIcon} from '//resources/cr_components/app_management/util.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {updateSelectedAppId} from './actions.js';
-import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from './constants.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {getAppIcon, openAppDetailPage} from './util.js';
+import {openAppDetailPage} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -53,16 +54,16 @@ Polymer({
   },
 
   /**
-   * @param {AppType} appType
-   * @return {AppManagementEntryPoint}
+   * @param {apps.mojom.AppType} appType
+   * @return {AppManagementEntryPointType}
    */
   getAppManagementEntryPoint_(appType) {
     switch (appType) {
       case AppType.kArc:
         return AppManagementEntryPoint.MainViewArc;
-      case AppType.kExtension:
+      case AppType.kChromeApp:
       case AppType.kStandaloneBrowser:
-      case AppType.kStandaloneBrowserExtension:
+      case AppType.kStandaloneBrowserChromeApp:
         // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
         // Lacros-hosted chrome-apps.
         return AppManagementEntryPoint.MainViewChromeApp;

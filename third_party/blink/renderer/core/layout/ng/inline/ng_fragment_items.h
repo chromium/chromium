@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class LayoutInline;
 class NGFragmentItemsBuilder;
 
 // Represents the inside of an inline formatting context.
@@ -64,7 +65,7 @@ class CORE_EXPORT NGFragmentItems {
   // Associate |NGFragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
   static void FinalizeAfterLayout(
-      const Vector<scoped_refptr<const NGLayoutResult>, 1>& results);
+      const HeapVector<Member<const NGLayoutResult>, 1>& results);
 
   // Disassociate |NGFragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);
@@ -77,6 +78,14 @@ class CORE_EXPORT NGFragmentItems {
   // reusable, it is the first item.
   const NGFragmentItem* EndOfReusableItems(
       const NGPhysicalBoxFragment& container) const;
+
+  // Return true if any items inside the culled inline occur here. In that case,
+  // |is_first_container| and |is_last_container| will also be set to indicate
+  // whether this is the first/last container for the culled inline. If false is
+  // returned, these out-parameters must be ignored.
+  bool IsContainerForCulledInline(const LayoutInline&,
+                                  bool* is_first_container,
+                                  bool* is_last_container) const;
 
   // Mark items dirty when |child| is removed from the tree.
   static void DirtyLinesFromChangedChild(const LayoutObject& child,

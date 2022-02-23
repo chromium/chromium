@@ -41,7 +41,7 @@ apiBridge.registerCustomHook(function(api) {
   };
 
   api.apiFunctions.setCustomCallback('createWindow',
-      function(name, request, callback, windowParams) {
+      function(callback, windowParams) {
     if (!callback) {
       return;
     }

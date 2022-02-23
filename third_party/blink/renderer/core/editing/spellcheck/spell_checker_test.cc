@@ -31,7 +31,7 @@ class SpellCheckerTest : public SpellCheckTestBase {
 
 void SpellCheckerTest::ForceLayout() {
   LocalFrameView& frame_view = Page().GetFrameView();
-  IntRect frame_rect = frame_view.FrameRect();
+  gfx::Rect frame_rect = frame_view.FrameRect();
   frame_rect.set_width(frame_rect.width() + 1);
   frame_rect.set_height(frame_rect.height() + 1);
   Page().GetFrameView().SetFrameRect(frame_rect);

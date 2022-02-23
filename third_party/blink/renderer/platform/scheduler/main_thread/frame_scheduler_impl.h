@@ -327,19 +327,18 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameScheduler::Delegate* delegate_;                    // NOT OWNED
   base::trace_event::BlameContext* blame_context_;        // NOT OWNED
   SchedulingLifecycleState throttling_state_;
-  TraceableState<bool, TracingCategoryName::kInfo> frame_visible_;
-  TraceableState<bool, TracingCategoryName::kInfo> frame_paused_;
-  TraceableState<FrameOriginType, TracingCategoryName::kInfo>
-      frame_origin_type_;
-  TraceableState<bool, TracingCategoryName::kInfo> subresource_loading_paused_;
-  StateTracer<TracingCategoryName::kInfo> url_tracer_;
-  TraceableState<bool, TracingCategoryName::kInfo> task_queues_throttled_;
+  TraceableState<bool, TracingCategory::kInfo> frame_visible_;
+  TraceableState<bool, TracingCategory::kInfo> frame_paused_;
+  TraceableState<FrameOriginType, TracingCategory::kInfo> frame_origin_type_;
+  TraceableState<bool, TracingCategory::kInfo> subresource_loading_paused_;
+  StateTracer<TracingCategory::kInfo> url_tracer_;
+  TraceableState<bool, TracingCategory::kInfo> task_queues_throttled_;
   Vector<MainThreadTaskQueue::ThrottleHandle> throttled_task_queue_handles_;
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       preempted_for_cooperative_scheduling_;
   // TODO(https://crbug.com/827113): Trace the count of opt-outs.
   int aggressive_throttling_opt_out_count_;
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       opted_out_from_aggressive_throttling_;
   size_t subresource_loading_pause_count_;
 
@@ -353,17 +352,14 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // These are the states of the Page.
   // They should be accessed via GetPageScheduler()->SetPageState().
   // they are here because we don't support page-level tracing yet.
-  TraceableState<bool, TracingCategoryName::kInfo> page_frozen_for_tracing_;
-  TraceableState<PageVisibilityState, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo> page_frozen_for_tracing_;
+  TraceableState<PageVisibilityState, TracingCategory::kInfo>
       page_visibility_for_tracing_;
 
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_dom_content_loaded_;
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_contentful_paint_;
-  TraceableState<bool, TracingCategoryName::kInfo>
-      waiting_for_meaningful_paint_;
-  TraceableState<bool, TracingCategoryName::kInfo> waiting_for_load_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_dom_content_loaded_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_contentful_paint_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_meaningful_paint_;
+  TraceableState<bool, TracingCategory::kInfo> waiting_for_load_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> loading_power_mode_voter_;
 

@@ -5,9 +5,11 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -147,6 +149,8 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
     else
       expected_report.set_type(
           ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY);
+    *expected_report.mutable_population() =
+        safe_browsing::GetUserPopulationForProfile(browser()->profile());
     expected_report.set_download_verdict(download_verdict);
     expected_report.set_did_proceed(did_proceed);
     if (!token.empty())
@@ -171,7 +175,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   }
 
   download::MockDownloadItem download_;
-  DownloadDangerPrompt* prompt_;
+  raw_ptr<DownloadDangerPrompt> prompt_;
   DownloadDangerPrompt::Action expected_action_;
   bool did_receive_callback_;
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_safe_browsing_factory_;
@@ -179,7 +183,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
 };
 
 // Disabled for flaky timeouts on Windows. crbug.com/446696
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestAll DISABLED_TestAll
 #else
 #define MAYBE_TestAll TestAll
@@ -189,8 +193,8 @@ IN_PROC_BROWSER_TEST_F(DownloadDangerPromptTest, MAYBE_TestAll) {
   ON_CALL(download(), GetURL()).WillByDefault(ReturnRef(download_url));
   ON_CALL(download(), GetReferrerUrl())
       .WillByDefault(ReturnRef(GURL::EmptyGURL()));
-  content::DownloadItemUtils::AttachInfo(&download(), browser()->profile(),
-                                         nullptr);
+  content::DownloadItemUtils::AttachInfoForTesting(
+      &download(), browser()->profile(), nullptr);
   base::FilePath empty_file_path;
   ON_CALL(download(), GetTargetFilePath())
       .WillByDefault(ReturnRef(empty_file_path));
@@ -321,8 +325,8 @@ class DownloadDangerPromptBrowserTest : public DialogBrowserTest {
 
     // Set up test-specific parameters
     ON_CALL(download_, GetDangerType()).WillByDefault(Return(danger_type_));
-    content::DownloadItemUtils::AttachInfo(&download_, browser()->profile(),
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(
+        &download_, browser()->profile(), nullptr);
     DownloadDangerPrompt::Create(
         &download_, browser()->tab_strip_model()->GetActiveWebContents(),
         invocation_type_ == FROM_DOWNLOAD_API, DownloadDangerPrompt::OnDone());

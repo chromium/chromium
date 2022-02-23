@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,18 +27,20 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 
 namespace {
@@ -67,7 +70,7 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
   }
 
  private:
-  const web_app::SystemWebAppDelegate* system_app_;
+  raw_ptr<const web_app::SystemWebAppDelegate> system_app_;
 };
 
 }  // namespace
@@ -83,7 +86,7 @@ WebAppBrowserController::WebAppBrowserController(
     : AppBrowserController(browser, std::move(app_id), has_tab_strip),
       provider_(provider),
       system_app_(system_app) {
-  registrar_observation_.Observe(&provider_.registrar());
+  install_manager_observation_.Observe(&provider.install_manager());
   PerformDigitalAssetLinkVerification(browser);
 }
 
@@ -178,8 +181,8 @@ void WebAppBrowserController::OnWebAppUninstalled(
     chrome::CloseWindow(browser());
 }
 
-void WebAppBrowserController::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void WebAppBrowserController::SetReadIconCallbackForTesting(
@@ -225,37 +228,26 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   if (web_theme_color)
     return web_theme_color;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ash::ColorProvider::Get()->IsDarkModeEnabled() flips semantics depending on
-  // the status of ash::Features::IsDarkLightModeEnabled(), so we have to check
-  // both.
-  if (ash::features::IsDarkLightModeEnabled()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     absl::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeThemeColor(app_id());
 
-    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+    if (dark_mode_color) {
       return dark_mode_color;
     }
   }
-#endif
 
   return registrar().GetAppThemeColor(app_id());
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  if (auto color = AppBrowserController::GetBackgroundColor())
-    return color;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDarkLightModeEnabled()) {
-    absl::optional<SkColor> dark_mode_color =
-        registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
-      return dark_mode_color;
-    }
-  }
-#endif
-  return registrar().GetAppBackgroundColor(app_id());
+  auto web_contents_color = AppBrowserController::GetBackgroundColor();
+  auto manifest_color = GetResolvedManifestBackgroundColor();
+  auto [preferred_color, fallback_color] =
+      (system_app() && system_app()->PreferManifestBackgroundColor())
+          ? std::tie(manifest_color, web_contents_color)
+          : std::tie(web_contents_color, manifest_color);
+  return preferred_color ? preferred_color : fallback_color;
 }
 
 GURL WebAppBrowserController::GetAppStartUrl() const {
@@ -263,6 +255,9 @@ GURL WebAppBrowserController::GetAppStartUrl() const {
 }
 
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
+  if (system_app() && system_app()->IsUrlInSystemAppScope(url))
+    return true;
+
   GURL app_scope = registrar().GetAppScope(app_id());
   if (!app_scope.is_valid())
     return false;
@@ -345,6 +340,12 @@ bool WebAppBrowserController::IsInstalled() const {
 void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   AppBrowserController::OnTabInserted(contents);
   SetAppPrefsForWebContents(contents);
+
+  // If a `WebContents` is inserted into an app browser (e.g. after
+  // installation), it is "appy". Note that if and when it's moved back into a
+  // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
+  // considered "appy".
+  WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
@@ -356,18 +357,31 @@ const WebAppRegistrar& WebAppBrowserController::registrar() const {
   return provider_.registrar();
 }
 
+const WebAppInstallManager& WebAppBrowserController::install_manager() const {
+  return provider_.install_manager();
+}
+
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
-                  apps::mojom::IconType::kStandard, kWebAppIconSmall,
-                  allow_placeholder_icon,
-                  base::BindOnce(&WebAppBrowserController::OnLoadIcon,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id());
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type), app_id(),
+                    apps::IconType::kStandard, kWebAppIconSmall,
+                    allow_placeholder_icon,
+                    base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                   weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    proxy->LoadIcon(app_type, app_id(), apps::mojom::IconType::kStandard,
+                    kWebAppIconSmall, allow_placeholder_icon,
+                    apps::MojomIconValueToIconValueCallback(
+                        base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                       weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
-void WebAppBrowserController::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  if (icon_value->icon_type != apps::mojom::IconType::kStandard)
+void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
   app_icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);
@@ -426,4 +440,15 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
                      base::Unretained(this)));
 #endif
 }
+
+absl::optional<SkColor>
+WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    auto dark_mode_color = registrar().GetAppDarkModeBackgroundColor(app_id());
+    if (dark_mode_color)
+      return dark_mode_color;
+  }
+  return registrar().GetAppBackgroundColor(app_id());
+}
+
 }  // namespace web_app

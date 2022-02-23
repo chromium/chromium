@@ -128,7 +128,8 @@ TEST_F(SideSearchSideContentsHelperTest, GoogleSearchURLsNavigateSideContents) {
 TEST_F(SideSearchSideContentsHelperTest,
        NonGoogleSearchURLNavigatesTabContents) {
   LoadURL(kNonGoogleURL);
-  EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
   EXPECT_TRUE(delegate().last_search_url().is_empty());
   EXPECT_EQ(GURL(kNonGoogleURL), delegate().tab_contents_url());
   histogram_tester_.ExpectUniqueSample(
@@ -138,7 +139,8 @@ TEST_F(SideSearchSideContentsHelperTest,
 TEST_F(SideSearchSideContentsHelperTest,
        GoogleHomePageURLNavigatesTabContents) {
   LoadURL(kGoogleSearchHomePageURL);
-  EXPECT_EQ(nullptr, GetLastCommittedSideContentsEntry());
+  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
+              GetLastCommittedSideContentsEntry()->IsInitialEntry());
   EXPECT_TRUE(delegate().last_search_url().is_empty());
   EXPECT_EQ(GURL(kGoogleSearchHomePageURL), delegate().tab_contents_url());
   histogram_tester_.ExpectUniqueSample(

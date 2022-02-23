@@ -92,7 +92,7 @@ class IdlTypesTest(unittest.TestCase):
             'ShortOrString',
             factory.union_type([short_type, string_type]).type_name)
         self.assertEqual(
-            'StringOrShort',
+            'ShortOrString',
             factory.union_type([string_type, short_type]).type_name)
         self.assertEqual('ShortPromise',
                          factory.promise_type(short_type).type_name)

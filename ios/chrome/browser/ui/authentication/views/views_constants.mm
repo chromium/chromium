@@ -9,4 +9,6 @@
 #endif
 
 NSString* const kIdentityButtonControlIdentifier =
-    @"kIdentityButtonControlIdentifier";
+    @"IdentityButtonControlIdentifier";
+NSString* const kIdentityPickerAddAccountIdentifier =
+    @"IdentityPickerAddAccountIdentifier";

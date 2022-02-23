@@ -200,18 +200,6 @@ IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest,
   EXPECT_FALSE(IsBoundAndConnected(compositor.get()));
 }
 
-IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest,
-                       KillWithMemoryPressure) {
-  CreateServiceInstance();
-  base::RunLoop disconnect_loop;
-  auto compositor_service =
-      ToCompositorServiceImpl(StartCompositorService(base::DoNothing()));
-  compositor_service->SetDisconnectHandler(disconnect_loop.QuitClosure());
-  compositor_service->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  disconnect_loop.Run();
-}
-
 IN_PROC_BROWSER_TEST_F(PaintPreviewCompositorBrowserTest, PreWarmCompositor) {
   // Start with warm compositor.
   WarmCompositor* warm_compositor = WarmCompositor::GetInstance();

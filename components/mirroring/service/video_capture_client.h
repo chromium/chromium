@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   void RequestRefreshFrame();
 
   // media::mojom::VideoCaptureObserver implementations.
-  void OnStateChanged(media::mojom::VideoCaptureState state) override;
+  void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override;
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnBufferReady(

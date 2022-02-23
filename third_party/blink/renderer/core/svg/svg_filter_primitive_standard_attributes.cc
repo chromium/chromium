@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -118,7 +118,7 @@ void SVGFilterPrimitiveStandardAttributes::ChildrenChanged(
     Invalidate();
 }
 
-static FloatRect DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
+static gfx::RectF DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
   // https://drafts.fxtf.org/filter-effects/#FilterPrimitiveSubRegion
   DCHECK(filter_effect->GetFilter());
 
@@ -132,7 +132,7 @@ static FloatRect DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
 
   // "x, y, width and height default to the union (i.e., tightest fitting
   // bounding box) of the subregions defined for all referenced nodes."
-  FloatRect subregion_union;
+  gfx::RectF subregion_union;
   for (const auto& input_effect : filter_effect->InputEffects()) {
     // "If ... one or more of the referenced nodes is a standard input
     // ... the default subregion is 0%, 0%, 100%, 100%, where as a
@@ -148,11 +148,11 @@ static FloatRect DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
 void SVGFilterPrimitiveStandardAttributes::SetStandardAttributes(
     FilterEffect* filter_effect,
     SVGUnitTypes::SVGUnitType primitive_units,
-    const FloatRect& reference_box) const {
+    const gfx::RectF& reference_box) const {
   DCHECK(filter_effect);
 
-  FloatRect subregion = DefaultFilterPrimitiveSubregion(filter_effect);
-  FloatRect primitive_boundaries =
+  gfx::RectF subregion = DefaultFilterPrimitiveSubregion(filter_effect);
+  gfx::RectF primitive_boundaries =
       SVGLengthContext::ResolveRectangle(this, primitive_units, reference_box);
 
   if (x()->IsSpecified())

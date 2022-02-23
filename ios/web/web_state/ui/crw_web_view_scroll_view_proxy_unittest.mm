@@ -766,7 +766,7 @@ TEST_F(CRWWebViewScrollViewProxyTest,
        RemoveKVObserverWhileDeallocatingObserver) {
   // CRWTestObserver adds itself as a key-value observer of the proxy in its
   // initializer, and removes itself as a observer during its -dealloc.
-  CRWTestObserver* observer __attribute__((unused)) =
+  [[maybe_unused]] CRWTestObserver* observer =
       [[CRWTestObserver alloc] initWithProxy:web_view_scroll_view_proxy_];
 }
 

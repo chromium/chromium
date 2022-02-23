@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
@@ -56,7 +57,8 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-callbacks.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class UnguessableToken;
@@ -65,6 +67,10 @@ class UnguessableToken;
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
+
+namespace v8 {
+class MicrotaskQueue;
+}  // namespace v8
 
 namespace blink {
 
@@ -239,7 +245,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual void RemoveURLFromMemoryCache(const KURL&);
 
-  void SetIsInBackForwardCache(bool);
+  virtual void SetIsInBackForwardCache(bool);
+  bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
+
   void SetLifecycleState(mojom::FrameLifecycleState);
   void NotifyContextDestroyed();
 
@@ -283,7 +291,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   }
   bool IsSecureContext(String& error_message) const;
 
-  virtual bool HasInsecureContextInAncestors() { return false; }
+  virtual bool HasInsecureContextInAncestors() const { return false; }
 
   // Returns a referrer to be used in the "Determine request's Referrer"
   // algorithm defined in the Referrer Policy spec.
@@ -365,7 +373,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
 
-  String addressSpaceForBindings() const;
   network::mojom::IPAddressSpace AddressSpace() const;
   void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 

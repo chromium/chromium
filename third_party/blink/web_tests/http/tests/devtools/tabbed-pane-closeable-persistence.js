@@ -41,6 +41,6 @@
   TestRunner.completeTest();
 
   function logPersistenceSetting() {
-    TestRunner.addResult('Closeable tabs to restore: ' + JSON.stringify(tabbedLocation._closeableTabSetting.get()));
+    TestRunner.addResult('Closeable tabs to restore: ' + JSON.stringify(tabbedLocation.getCloseableTabSetting()));
   }
 })();

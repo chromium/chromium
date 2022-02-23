@@ -23,7 +23,7 @@ struct CONTENT_EXPORT BackgroundSyncParameters {
   // fail.
   bool disable;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // True if we should rely on Android's network detection where possible.
   bool rely_on_android_network_detection;
 #endif

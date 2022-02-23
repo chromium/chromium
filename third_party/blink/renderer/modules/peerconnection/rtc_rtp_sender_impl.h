@@ -64,7 +64,7 @@ class MODULES_EXPORT RtpSenderState {
   RtpSenderState(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-      scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender,
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender,
       std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
           track_ref,
       std::vector<std::string> stream_ids);
@@ -83,7 +83,7 @@ class MODULES_EXPORT RtpSenderState {
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner() const;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner() const;
-  scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender() const;
+  rtc::scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender() const;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> webrtc_dtls_transport()
       const;
   webrtc::DtlsTransportInformation webrtc_dtls_transport_information() const;
@@ -97,7 +97,7 @@ class MODULES_EXPORT RtpSenderState {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;
-  scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender_;
+  rtc::scoped_refptr<webrtc::RtpSenderInterface> webrtc_sender_;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> webrtc_dtls_transport_;
   webrtc::DtlsTransportInformation webrtc_dtls_transport_information_;
   bool is_initialized_;
@@ -160,6 +160,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   // constructed inside of blink.
   void ReplaceTrack(MediaStreamComponent* with_track,
                     base::OnceCallback<void(bool)> callback);
+  // Removes this sender's track from its PeerConnection. Only used in Plan B.
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc);
 
  private:

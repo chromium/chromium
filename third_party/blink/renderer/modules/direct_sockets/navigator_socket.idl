@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md#tcp
-// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md#udp
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#tcp
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#udp
 
 [
   ImplementedAs=NavigatorSocket,
-  RuntimeEnabled=DirectSockets,
   DirectSocketEnabled
 ] partial interface Navigator {
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<TCPSocket> openTCPSocket(optional SocketOptions options = {});
+  Promise<TCPSocket> openTCPSocket(optional TCPSocketOptions options = {});
 
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<UDPSocket> openUDPSocket(optional SocketOptions options = {});
+  Promise<UDPSocket> openUDPSocket(optional UDPSocketOptions options = {});
 };

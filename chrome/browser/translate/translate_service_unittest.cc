@@ -49,7 +49,7 @@ TEST(TranslateServiceTest, CheckTranslatableURL) {
   EXPECT_TRUE(TranslateService::IsTranslatableURL(file_url));
 
   // kContentScheme is only used on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string content = std::string(url::kContentScheme) + "://";
   GURL content_url = GURL(content);
   EXPECT_TRUE(TranslateService::IsTranslatableURL(content_url));

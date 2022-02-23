@@ -25,9 +25,8 @@ def _sign_app(paths, config, dest_dir):
     commands.copy_files(os.path.join(paths.input, config.app_dir), paths.work)
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
-    commands.move_file(
-        os.path.join(paths.work, config.app_dir),
-        os.path.join(dest_dir, config.app_dir))
+    commands.move_file(os.path.join(paths.work, config.app_dir),
+                       os.path.join(dest_dir, config.app_dir))
 
 
 def _package_and_sign_dmg(paths, config):
@@ -41,8 +40,9 @@ def _package_and_sign_dmg(paths, config):
         The path to the signed DMG file.
     """
     dmg_path = _package_dmg(paths, config)
-    product = model.CodeSignedProduct(
-        dmg_path, config.packaging_basename, sign_with_identifier=True)
+    product = model.CodeSignedProduct(dmg_path,
+                                      config.packaging_basename,
+                                      sign_with_identifier=True)
     signing.sign_part(paths, config, product)
     signing.verify_part(paths, product)
     return dmg_path
@@ -80,7 +80,7 @@ def _package_dmg(paths, config):
         '--copy',
         '{}:/'.format(app_path),
         '--copy',
-        '{}/chrome/updater/.install:/'.format(paths.input),
+        '{}/chrome/updater/.install:/.keystone_install'.format(paths.input),
     ]
     commands.run_command(pkg_dmg)
     return dmg_path
@@ -90,7 +90,8 @@ def sign_all(orig_paths,
              config,
              disable_packaging=False,
              do_notarization=True,
-             skip_brands=[]):
+             skip_brands=[],
+             channels=[]):
     """Code signs, packages, and signs the package, placing the result into
     |orig_paths.output|. |orig_paths.input| must contain the products to
     customize and sign.
@@ -104,6 +105,7 @@ def sign_all(orig_paths,
             be stapled. The stapled application will be packaged in the DMG and
             then the DMG itself will be notarized and stapled.
         skip_brands: Ignored.
+        channels: Ignored.
     """
     with commands.WorkDirectory(orig_paths) as notary_paths:
         # First, sign and optionally submit the notarization requests.
@@ -128,7 +130,8 @@ def sign_all(orig_paths,
             for _ in notarize.wait_for_results([uuid], config):
                 pass  # We are only waiting for a single notarization.
             notarize.staple_bundled_parts(
-                parts.get_parts(config),
+                # Only staple to the outermost app.
+                parts.get_parts(config)[-1:],
                 notary_paths.replace_work(
                     os.path.join(notary_paths.work,
                                  config.packaging_basename)))

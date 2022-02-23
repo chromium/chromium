@@ -14,14 +14,17 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
+#include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
@@ -110,8 +113,15 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   void DestroyTransaction();
 
+  // Computes the PrivacyMode that should be associated with this leg of the
+  // request. Must be recomputed on redirects.
+  PrivacyMode DeterminePrivacyMode() const;
+
   void AddExtraHeaders();
   void AddCookieHeaderAndStart();
+  void AnnotateAndMoveUserBlockedCookies(
+      CookieAccessResultList& maybe_included_cookies,
+      CookieAccessResultList& excluded_cookies) const;
   void SaveCookiesAndNotifyHeadersComplete(int result);
 
   // Processes the Strict-Transport-Security header, if one exists.
@@ -206,10 +216,23 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
+  // Called after getting the FirstPartySetMetadata during Start for this job.
+  void OnGotFirstPartySetMetadata(
+      FirstPartySetMetadata first_party_set_metadata);
+
+  // Returns true iff this request leg should include the Cookie header. Note
+  // that cookies may still be eventually blocked by the CookieAccessDelegate
+  // even if this method returns true.
+  bool ShouldAddCookieHeader() const;
+
+  // Returns true if partitioned cookies are enabled and can be accessed and/or
+  // set.
+  bool IsPartitionedCookiesEnabled() const;
+
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;
-  const HttpResponseInfo* response_info_;
+  raw_ptr<const HttpResponseInfo> response_info_;
 
   // Used for any logic, e.g. DNS-based scheme upgrade, that needs to synthesize
   // response info to override the real response info. Transaction should be
@@ -262,7 +285,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // to inform the NetworkDelegate that it may not call back.
   bool awaiting_callback_;
 
-  const HttpUserAgentSettings* http_user_agent_settings_;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
 
   // Keeps track of total received bytes over the network from transactions used
   // by this job that have already been destroyed.
@@ -274,6 +297,22 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // The First-Party Set metadata associated with this job. Set when the job is
+  // started.
+  FirstPartySetMetadata first_party_set_metadata_;
+
+  // The cookie partition key for the request. Partitioned cookies should be set
+  // using this key and only partitioned cookies with this partition key should
+  // be sent. The cookie partition key is optional(nullopt) if cookie
+  // partitioning is not enabled, or if the NIK has no top-frame site.
+  //
+  // Unpartitioned cookies are unaffected by this field.
+  //
+  // The two layers of `optional` are because the `cookie_partition_key_` is
+  // lazily computed, and might be "nothing". We want to be able to distinguish
+  // "uncomputed" from "nothing".
+  absl::optional<absl::optional<CookiePartitionKey>> cookie_partition_key_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

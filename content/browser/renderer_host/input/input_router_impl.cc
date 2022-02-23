@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/gesture_event_queue.h"
 #include "content/browser/renderer_host/input/input_disposition_handler.h"
 #include "content/browser/renderer_host/input/input_router_client.h"
@@ -31,6 +30,7 @@
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/blink_features.h"
+#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -66,16 +66,9 @@ std::unique_ptr<blink::WebCoalescedInputEvent> ScaleEvent(
     const ui::LatencyInfo& latency_info) {
   std::unique_ptr<blink::WebInputEvent> event_in_viewport =
       ui::ScaleWebInputEvent(event, scale);
-  if (event_in_viewport) {
-    return std::make_unique<blink::WebCoalescedInputEvent>(
-        std::move(event_in_viewport),
-        std::vector<std::unique_ptr<WebInputEvent>>(),
-        std::vector<std::unique_ptr<WebInputEvent>>(),
-        latency_info.ScaledBy(scale));
-  }
-
   return std::make_unique<blink::WebCoalescedInputEvent>(
-      event.Clone(), std::vector<std::unique_ptr<WebInputEvent>>(),
+      event_in_viewport ? std::move(event_in_viewport) : event.Clone(),
+      std::vector<std::unique_ptr<WebInputEvent>>(),
       std::vector<std::unique_ptr<WebInputEvent>>(), latency_info);
 }
 

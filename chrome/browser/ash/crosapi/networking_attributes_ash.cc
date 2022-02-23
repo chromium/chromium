@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_PRIVATE_NETWORK_ACCESS_CHECK_RESULT_H_
 
 #include "base/component_export.h"
+#include "base/strings/string_piece_forward.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,6 +54,11 @@ enum class PrivateNetworkAccessCheckResult {
   // Required for UMA histogram logging.
   kMaxValue = kBlockedByPolicyPreflightBlock,
 };
+
+// Returns a human-readable string representing `result`, suitable for logging.
+base::StringPiece COMPONENT_EXPORT(NETWORK_CPP)
+    PrivateNetworkAccessCheckResultToStringPiece(
+        PrivateNetworkAccessCheckResult result);
 
 // If `result` indicates that the request should be blocked, returns the
 // corresponding `CorsError` enum value. Otherwise returns `nullopt`.

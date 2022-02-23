@@ -4,7 +4,7 @@ Abbreviation Extension for Python-Markdown
 
 This extension adds abbreviation handling to Python-Markdown.
 
-See <https://pythonhosted.org/Markdown/extensions/abbreviations.html>
+See <https://Python-Markdown.github.io/extensions/abbreviations>
 for documentation.
 
 Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
@@ -12,50 +12,58 @@ Oringinal code Copyright 2007-2008 [Waylan Limberg](http://achinghead.com/) and
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 '''
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
-from ..preprocessors import Preprocessor
-from ..inlinepatterns import Pattern
-from ..util import etree, AtomicString
+from ..blockprocessors import BlockProcessor
+from ..inlinepatterns import InlineProcessor
+from ..util import AtomicString
 import re
-
-# Global Vars
-ABBR_REF_RE = re.compile(r'[*]\[(?P<abbr>[^\]]*)\][ ]?:\s*(?P<title>.*)')
+import xml.etree.ElementTree as etree
 
 
 class AbbrExtension(Extension):
     """ Abbreviation Extension for Python-Markdown. """
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Insert AbbrPreprocessor before ReferencePreprocessor. """
-        md.preprocessors.add('abbr', AbbrPreprocessor(md), '<reference')
+        md.parser.blockprocessors.register(AbbrPreprocessor(md.parser), 'abbr', 16)
 
 
-class AbbrPreprocessor(Preprocessor):
+class AbbrPreprocessor(BlockProcessor):
     """ Abbreviation Preprocessor - parse text for abbr references. """
 
-    def run(self, lines):
+    RE = re.compile(r'^[*]\[(?P<abbr>[^\]]*)\][ ]?:[ ]*\n?[ ]*(?P<title>.*)$', re.MULTILINE)
+
+    def test(self, parent, block):
+        return True
+
+    def run(self, parent, blocks):
         '''
         Find and remove all Abbreviation references from the text.
         Each reference is set as a new AbbrPattern in the markdown instance.
 
         '''
-        new_text = []
-        for line in lines:
-            m = ABBR_REF_RE.match(line)
-            if m:
-                abbr = m.group('abbr').strip()
-                title = m.group('title').strip()
-                self.markdown.inlinePatterns['abbr-%s' % abbr] = \
-                    AbbrPattern(self._generate_pattern(abbr), title)
-            else:
-                new_text.append(line)
-        return new_text
+        block = blocks.pop(0)
+        m = self.RE.search(block)
+        if m:
+            abbr = m.group('abbr').strip()
+            title = m.group('title').strip()
+            self.parser.md.inlinePatterns.register(
+                AbbrInlineProcessor(self._generate_pattern(abbr), title), 'abbr-%s' % abbr, 2
+            )
+            if block[m.end():].strip():
+                # Add any content after match back to blocks as separate block
+                blocks.insert(0, block[m.end():].lstrip('\n'))
+            if block[:m.start()].strip():
+                # Add any content before match back to blocks as separate block
+                blocks.insert(0, block[:m.start()].rstrip('\n'))
+            return True
+        # No match. Restore block.
+        blocks.insert(0, block)
+        return False
 
     def _generate_pattern(self, text):
         '''
@@ -73,19 +81,19 @@ class AbbrPreprocessor(Preprocessor):
         return r'(?P<abbr>\b%s\b)' % (r''.join(chars))
 
 
-class AbbrPattern(Pattern):
+class AbbrInlineProcessor(InlineProcessor):
     """ Abbreviation inline pattern. """
 
     def __init__(self, pattern, title):
-        super(AbbrPattern, self).__init__(pattern)
+        super().__init__(pattern)
         self.title = title
 
-    def handleMatch(self, m):
+    def handleMatch(self, m, data):
         abbr = etree.Element('abbr')
         abbr.text = AtomicString(m.group('abbr'))
         abbr.set('title', self.title)
-        return abbr
+        return abbr, m.start(0), m.end(0)
 
 
-def makeExtension(*args, **kwargs):
-    return AbbrExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return AbbrExtension(**kwargs)

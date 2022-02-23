@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,11 +111,12 @@ class AutoFetchInternalImplTest : public testing::Test {
  protected:
   // A WebContents* is needed for some |InternalImpl| methods, but nullptr is
   // sufficient because |StubTabFinder| doesn't inspect the value.
-  content::WebContents* const web_contents_ = nullptr;
+  const raw_ptr<content::WebContents> web_contents_ = nullptr;
   MockAutoFetchNotifier notifier_;
   FakeInternalImplDelegate delegate_;
-  StubTabFinder* tab_finder_ = new StubTabFinder;
-  InternalImpl impl_{&notifier_, &delegate_, base::WrapUnique(tab_finder_)};
+  raw_ptr<StubTabFinder> tab_finder_ = new StubTabFinder;
+  InternalImpl impl_{&notifier_, &delegate_,
+                     base::WrapUnique(tab_finder_.get())};
 };
 
 TEST_F(AutoFetchInternalImplTest, NoInitialization) {

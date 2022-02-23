@@ -8,13 +8,18 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion.h"
 #include "printing/printing_context_factory_for_test.h"
 #include "printing/units.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "printing/printing_features.h"
+#endif
 
 namespace printing {
 
@@ -36,11 +41,13 @@ PrintingContext::PrintingContext(Delegate* delegate)
 PrintingContext::~PrintingContext() = default;
 
 // static
-std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
+std::unique_ptr<PrintingContext> PrintingContext::Create(
+    Delegate* delegate,
+    bool skip_system_calls) {
   return g_printing_context_factory_for_test
              ? g_printing_context_factory_for_test->CreatePrintingContext(
-                   delegate)
-             : PrintingContext::CreateImpl(delegate);
+                   delegate, skip_system_calls)
+             : PrintingContext::CreateImpl(delegate, skip_system_calls);
 }
 
 // static
@@ -56,9 +63,6 @@ void PrintingContext::set_margin_type(mojom::MarginType type) {
 
 void PrintingContext::set_is_modifiable(bool is_modifiable) {
   settings_->set_is_modifiable(is_modifiable);
-#if defined(OS_WIN)
-  settings_->set_print_text_with_gdi(is_modifiable);
-#endif
 }
 
 const PrintSettings& PrintingContext::settings() const {
@@ -161,21 +165,26 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
     return mojom::ResultCode::kSuccess;
   }
 
-  return UpdatePrinterSettings(
-      open_in_external_preview,
-      job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false),
-      job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0));
+  PrinterSettings printer_settings {
+#if BUILDFLAG(IS_MAC)
+    .external_preview = open_in_external_preview,
+#endif
+    .show_system_dialog =
+        job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false),
+#if BUILDFLAG(IS_WIN)
+    .page_count = job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0)
+#endif
+  };
+  return UpdatePrinterSettings(printer_settings);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();
   settings_ = std::move(job_settings);
 
-  return UpdatePrinterSettings(false /* external_preview */,
-                               false /* show_system_dialog */,
-                               0 /* page_count is only used on Android */);
+  return UpdatePrinterSettings({.show_system_dialog = false});
 }
 #endif
 

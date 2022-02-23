@@ -15,8 +15,8 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -29,6 +29,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
@@ -49,7 +50,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_server_info.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -97,7 +98,7 @@ int HttpCache::DefaultBackend::CreateBackend(
       hard_reset_ ? disk_cache::ResetHandling::kReset
                   : disk_cache::ResetHandling::kResetOnError;
   UMA_HISTOGRAM_BOOLEAN("HttpCache.HardReset", hard_reset_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (app_status_listener_) {
     return disk_cache::CreateCacheBackend(
         type_, backend_type_, path_, max_bytes_, reset_handling, net_log,
@@ -109,7 +110,7 @@ int HttpCache::DefaultBackend::CreateBackend(
                                         std::move(callback));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void HttpCache::DefaultBackend::SetAppStatusListener(
     base::android::ApplicationStatusListener* app_status_listener) {
   app_status_listener_ = app_status_listener;
@@ -152,7 +153,7 @@ struct HttpCache::PendingOp {
       : entry(nullptr), entry_opened(false), callback_will_delete(false) {}
   ~PendingOp() = default;
 
-  disk_cache::Entry* entry;
+  raw_ptr<disk_cache::Entry> entry;
   bool entry_opened;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -223,10 +224,10 @@ class HttpCache::WorkItem {
 
  private:
   WorkItemOperation operation_;
-  Transaction* transaction_;
-  ActiveEntry** entry_;
+  raw_ptr<Transaction> transaction_;
+  raw_ptr<ActiveEntry*> entry_;
   CompletionOnceCallback callback_;  // User callback.
-  disk_cache::Backend** backend_;
+  raw_ptr<disk_cache::Backend*> backend_;
 };
 
 //-----------------------------------------------------------------------------

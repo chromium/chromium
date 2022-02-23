@@ -64,9 +64,9 @@ class FlatlandSysmemBufferCollection
                   VkDevice vk_device,
                   size_t min_buffer_count);
 
-  // Creates a NativePixmap the buffer with the specified index. Returned
-  // NativePixmap holds a reference to the collection, so the collection is not
-  // deleted until all NativePixmap are destroyed.
+  // Creates a NativePixmap with the specified index. The returned
+  // NativePixmap holds a reference to the collection, so that the collection
+  // is not deleted until all NativePixmaps are destroyed.
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(size_t buffer_index);
 
   // Creates a new Vulkan image for the buffer with the specified index.
@@ -131,7 +131,7 @@ class FlatlandSysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
 
   // Thread checker used to verify that CreateVkImage() is always called from
   // the same thread. It may be unsafe to use vk_buffer_collection_ on different

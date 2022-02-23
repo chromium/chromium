@@ -5,29 +5,26 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_
 
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 
 class PrefService;
 
-namespace chromeos {
-class CupsPrintJobManager;
-}  // namespace chromeos
-
 namespace ash {
+
+class CupsPrintJobManager;
 
 // This service is responsible for maintaining print job history.
 // It observes CupsPrintJobManager events and uses PrintJobDatabase as
 // persistent storage for print job history.
-class PrintJobHistoryServiceImpl
-    : public PrintJobHistoryService,
-      public chromeos::CupsPrintJobManager::Observer {
+class PrintJobHistoryServiceImpl : public PrintJobHistoryService,
+                                   public CupsPrintJobManager::Observer {
  public:
   PrintJobHistoryServiceImpl(
       std::unique_ptr<PrintJobDatabase> print_job_database,
-      chromeos::CupsPrintJobManager* print_job_manager,
+      CupsPrintJobManager* print_job_manager,
       PrefService* pref_service);
 
   PrintJobHistoryServiceImpl(const PrintJobHistoryServiceImpl&) = delete;
@@ -43,17 +40,16 @@ class PrintJobHistoryServiceImpl
 
  private:
   // CupsPrintJobManager::Observer:
-  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<CupsPrintJob> job) override;
 
-  void SavePrintJob(base::WeakPtr<chromeos::CupsPrintJob> job);
+  void SavePrintJob(base::WeakPtr<CupsPrintJob> job);
 
   void OnPrintJobDatabaseInitialized(bool success);
 
-  void OnPrintJobSaved(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info,
-      bool success);
+  void OnPrintJobSaved(const printing::proto::PrintJobInfo& print_job_info,
+                       bool success);
 
   // Helper function to make sure that callback is only called as long as
   // this class instance still lives.
@@ -63,13 +59,12 @@ class PrintJobHistoryServiceImpl
   void OnPrintJobsCleanedUp(PrintJobDatabase::GetPrintJobsCallback callback);
   // Helper function to make sure that callback is only called as long as
   // this class instance still lives.
-  void OnGetPrintJobsDone(
-      PrintJobDatabase::GetPrintJobsCallback callback,
-      bool success,
-      std::vector<chromeos::printing::proto::PrintJobInfo> entries);
+  void OnGetPrintJobsDone(PrintJobDatabase::GetPrintJobsCallback callback,
+                          bool success,
+                          std::vector<printing::proto::PrintJobInfo> entries);
 
   std::unique_ptr<PrintJobDatabase> print_job_database_;
-  chromeos::CupsPrintJobManager* print_job_manager_;
+  CupsPrintJobManager* print_job_manager_;
   PrintJobHistoryCleaner print_job_history_cleaner_;
   // Used for avoiding that callbacks are called after the class was
   // destroyed already.
@@ -77,10 +72,5 @@ class PrintJobHistoryServiceImpl
 };
 
 }  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrintJobHistoryServiceImpl;
-}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_IMPL_H_

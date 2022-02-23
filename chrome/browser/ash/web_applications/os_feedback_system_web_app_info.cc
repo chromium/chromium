@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_os_feedback_resources.h"
+#include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,9 +23,8 @@ constexpr int kFeedbackAppDefaultWidth = 600;
 constexpr int kFeedbackAppDefaultHeight = 640;
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForOSFeedbackSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSFeedbackSystemWebApp() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIOSFeedbackUrl);
   info->scope = GURL(ash::kChromeUIOSFeedbackUrl);
   info->title = l10n_util::GetStringUTF16(IDS_FEEDBACK_REPORT_APP_TITLE);
@@ -56,7 +55,7 @@ OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
                                     GURL(ash::kChromeUIOSFeedbackUrl),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> OSFeedbackAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> OSFeedbackAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }

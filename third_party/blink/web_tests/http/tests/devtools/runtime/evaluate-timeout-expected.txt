@@ -3,28 +3,13 @@ Test frontend's timeout support.
 
 Testing expression while (1){} with timeout: 0
 error: Execution was terminated
-{
-    error : "Execution was terminated"
-}
+Error: Execution was terminated
 
 Testing expression 1 + 1 with timeout: undefined
-{
-    exceptionDetails : undefined
-    object : {
-        classNameInternal : null
-        customPreviewInternal : null
-        descriptionInternal : "2"
-        hasChildrenInternal : false
-        objectIdInternal : undefined
-        previewInternal : undefined
-        runtimeAgent : <object>
-        runtimeModelInternal : <object>
-        subtypeInternal : undefined
-        typeInternal : "number"
-        unserializableValueInternal : undefined
-        valueInternal : 2
-    }
-}
+Result:
+  Description: 2
+  Value:       2
+  Type:        number
 
 Does the runtime also support side effect checks? true
 
@@ -34,28 +19,13 @@ Script execution paused.
 
 Testing expression while (1){} with timeout: 0
 error: Execution was terminated
-{
-    error : "Execution was terminated"
-}
+Error: Execution was terminated
 
 Testing expression 1 + 1 with timeout: undefined
-{
-    exceptionDetails : undefined
-    object : {
-        classNameInternal : null
-        customPreviewInternal : null
-        descriptionInternal : "2"
-        hasChildrenInternal : false
-        objectIdInternal : undefined
-        previewInternal : undefined
-        runtimeAgent : <object>
-        runtimeModelInternal : <object>
-        subtypeInternal : undefined
-        typeInternal : "number"
-        unserializableValueInternal : undefined
-        valueInternal : 2
-    }
-}
+Result:
+  Description: 2
+  Value:       2
+  Type:        number
 Does the runtime also support side effect checks? true
 Script execution resumed.
 

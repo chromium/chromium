@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FAKE_CREDENTIAL} from './onc_mojo.m.js';
+// clang-format on
+
 /**
  * @fileoverview Polymer element for network password input fields.
  */
-
-// Used to indicate a saved but unknown credential value. Will appear as *'s in
-// the credential (passphrase, password, etc.) field by default.
-// See |kFakeCredential| in chromeos/network/policy_util.h.
-/** @type {string} */ const FAKE_CREDENTIAL = 'FAKE_CREDENTIAL_VPaJDV9x';
 
 Polymer({
   is: 'network-password-input',

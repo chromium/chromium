@@ -4,6 +4,7 @@
 
 #include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 
 namespace content {
@@ -35,6 +36,32 @@ DedicatedWorkerHostsForDocument::GetBackForwardCacheDisablingFeatures() const {
     features.PutAll(worker->GetBackForwardCacheDisablingFeatures());
   }
   return features;
+}
+
+void DedicatedWorkerHostsForDocument::OnEnterBackForwardCache() {
+  DCHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled());
+  DCHECK_EQ(render_frame_host().GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  for (auto worker : dedicated_workers_) {
+    if (base::WeakPtr<ServiceWorkerContainerHost> container_host =
+            worker->GetServiceWorkerContainerHost()) {
+      container_host->OnEnterBackForwardCache();
+    }
+  }
+}
+
+void DedicatedWorkerHostsForDocument::OnRestoreFromBackForwardCache() {
+  DCHECK(BackForwardCache::IsBackForwardCacheFeatureEnabled());
+  DCHECK_EQ(render_frame_host().GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  for (auto worker : dedicated_workers_) {
+    if (base::WeakPtr<ServiceWorkerContainerHost> container_host =
+            worker->GetServiceWorkerContainerHost()) {
+      container_host->OnRestoreFromBackForwardCache();
+    }
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(DedicatedWorkerHostsForDocument);

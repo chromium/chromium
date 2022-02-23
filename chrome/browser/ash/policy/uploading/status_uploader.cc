@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/legacy_device_status_collector.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/system/statistics_provider.h"
@@ -132,8 +133,12 @@ void StatusUploader::UpdateStatusCollector() {
 
   if (granular_reporting_enabled) {
     SYSLOG(INFO) << "Enabling granular reporting controls";
+    if (!managed_session_service_) {
+      managed_session_service_ = std::make_unique<ManagedSessionService>();
+    }
     collector_ = std::make_unique<DeviceStatusCollector>(
-        local_state, chromeos::system::StatisticsProvider::GetInstance());
+        local_state, chromeos::system::StatisticsProvider::GetInstance(),
+        managed_session_service_.get());
   } else {
     SYSLOG(INFO) << "Disabling granular reporting controls";
     collector_ = std::make_unique<LegacyDeviceStatusCollector>(

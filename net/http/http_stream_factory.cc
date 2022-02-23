@@ -164,17 +164,13 @@ void HttpStreamFactory::PreconnectStreams(int num_streams,
                                           const HttpRequestInfo& request_info) {
   DCHECK(request_info.url.is_valid());
 
-  SSLConfig server_ssl_config;
-  SSLConfig proxy_ssl_config;
-  session_->GetSSLConfig(&server_ssl_config, &proxy_ssl_config);
-
   auto job_controller = std::make_unique<JobController>(
       this, nullptr, session_, job_factory_.get(), request_info,
-      /* is_preconnect = */ true,
-      /* is_websocket = */ false,
-      /* enable_ip_based_pooling = */ true,
-      /* enable_alternative_services = */ true, server_ssl_config,
-      proxy_ssl_config);
+      /*is_preconnect=*/true,
+      /*is_websocket=*/false,
+      /*enable_ip_based_pooling=*/true,
+      /*enable_alternative_services=*/true, /*server_ssl_config=*/SSLConfig(),
+      /*proxy_ssl_config=*/SSLConfig());
   JobController* job_controller_raw_ptr = job_controller.get();
   job_controller_set_.insert(std::move(job_controller));
   job_controller_raw_ptr->Preconnect(num_streams);

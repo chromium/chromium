@@ -106,8 +106,8 @@ bool LoadFileHandler(const std::string& handler_id,
     }
   }
 
-  if ((!mime_types || mime_types->GetList().empty()) &&
-      (!file_extensions || file_extensions->GetList().empty()) &&
+  if ((!mime_types || mime_types->GetListDeprecated().empty()) &&
+      (!file_extensions || file_extensions->GetListDeprecated().empty()) &&
       !handler.include_directories) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidFileHandlerNoTypeOrExtension,
@@ -116,7 +116,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (mime_types) {
-    base::Value::ConstListView list_storage = mime_types->GetList();
+    base::Value::ConstListView list_storage = mime_types->GetListDeprecated();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -129,7 +129,8 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (file_extensions) {
-    base::Value::ConstListView list_storage = file_extensions->GetList();
+    base::Value::ConstListView list_storage =
+        file_extensions->GetListDeprecated();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -163,14 +164,14 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   const base::Value* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kFileHandlers,
                                             &all_handlers)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
+    *error = errors::kInvalidFileHandlers;
     return false;
   }
 
   std::vector<InstallWarning> install_warnings;
   for (auto entry : all_handlers->DictItems()) {
     if (!entry.second.is_dict()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
+      *error = errors::kInvalidFileHandlers;
       return false;
     }
     if (!LoadFileHandler(entry.first, entry.second, &info->file_handlers, error,
@@ -188,8 +189,7 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   }
 
   if (filter_count > kMaxTypeAndExtensionHandlers) {
-    *error = base::ASCIIToUTF16(
-        errors::kInvalidFileHandlersTooManyTypesAndExtensions);
+    *error = errors::kInvalidFileHandlersTooManyTypesAndExtensions;
     return false;
   }
 

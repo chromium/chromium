@@ -23,8 +23,8 @@ MediaEngagementSession::MediaEngagementSession(MediaEngagementService* service,
     pending_data_to_commit_.visit = false;
 }
 
-bool MediaEngagementSession::IsSameOriginWith(const url::Origin& origin) const {
-  return origin_.IsSameOriginWith(origin);
+bool MediaEngagementSession::IsSameOriginWith(const GURL& url) const {
+  return origin_.IsSameOriginWith(url);
 }
 
 void MediaEngagementSession::RecordSignificantMediaElementPlayback() {

@@ -28,14 +28,14 @@ struct TileComparator {
 
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
                std::map<std::string, TileStats>* tile_stats,
-               std::map<std::string, double>* score_map) {
+               std::map<std::string, double>* score_map,
+               base::Time now_time) {
   if (!tiles || tiles->empty())
     return;
 
   // Some tiles do not have scores, so the first step is to calculate scores
   // for them.
   double last_score = std::numeric_limits<double>::max();
-  base::Time now_time = base::Time::Now();
   TileStats last_tile_stats(now_time, last_score);
   size_t new_tile_index = 0;
   // Find any tiles that don't have scores, and add new entries for them.
@@ -89,7 +89,16 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
   std::sort(tiles->begin(), tiles->end(), TileComparator(score_map));
 
   for (auto& tile : *tiles)
-    SortTiles(&tile->sub_tiles, tile_stats, score_map);
+    SortTiles(&tile->sub_tiles, tile_stats, score_map, now_time);
+}
+
+// Check if a tile's score is expired due to inactivity and should be
+// recalculated.
+int GetDaysPassedSinceLastClick(const TileStats& tile_stats,
+                                base::Time current_time) {
+  if (tile_stats.last_clicked_time >= current_time)
+    return 0;
+  return (current_time - tile_stats.last_clicked_time).InDaysFloored();
 }
 
 }  // namespace
@@ -103,11 +112,14 @@ void SortTilesAndClearUnusedStats(
     std::map<std::string, TileStats>* tile_stats) {
   if (!tiles || tiles->empty())
     return;
+  base::Time now_time = base::Time::Now();
   std::map<std::string, double> score_map;
-  SortTiles(tiles, tile_stats, &score_map);
+  SortTiles(tiles, tile_stats, &score_map, now_time);
   auto iter = tile_stats->begin();
   while (iter != tile_stats->end()) {
-    if (score_map.find(iter->first) == score_map.end()) {
+    if (score_map.find(iter->first) == score_map.end() &&
+        (GetDaysPassedSinceLastClick(iter->second, now_time) >=
+         TileConfig::GetNumDaysToResetTileScore())) {
       iter = tile_stats->erase(iter);
     } else {
       iter++;
@@ -117,11 +129,9 @@ void SortTilesAndClearUnusedStats(
 
 double CalculateTileScore(const TileStats& tile_stats,
                           base::Time current_time) {
-  if (tile_stats.last_clicked_time >= current_time)
-    return tile_stats.score;
   // Reset the score if the tile has not been clicked for a long time.
   int days_passed_since_last_click =
-      (current_time - tile_stats.last_clicked_time).InDaysFloored();
+      GetDaysPassedSinceLastClick(tile_stats, current_time);
   if (days_passed_since_last_click >= TileConfig::GetNumDaysToResetTileScore())
     return 0;
   return tile_stats.score * exp(TileConfig::GetTileScoreDecayLambda() *

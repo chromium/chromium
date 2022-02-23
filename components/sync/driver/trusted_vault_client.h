@@ -90,6 +90,10 @@ class TrustedVaultClient {
                                         const std::vector<uint8_t>& public_key,
                                         int method_type_hint,
                                         base::OnceClosure cb) = 0;
+
+  // Clears all data associated with |account_info|. Doesn't remove account from
+  // storage.
+  virtual void ClearDataForAccount(const CoreAccountInfo& account_info) = 0;
 };
 
 }  // namespace syncer

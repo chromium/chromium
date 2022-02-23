@@ -82,7 +82,7 @@ bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 HICON ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;
 }
@@ -95,7 +95,7 @@ bool ViewsDelegate::IsWindowInMetro(gfx::NativeWindow window) const {
   return false;
 }
 #elif BUILDFLAG(ENABLE_DESKTOP_AURA) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 gfx::ImageSkia* ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;
 }
@@ -122,7 +122,7 @@ bool ViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   return false;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 ui::ContextFactory* ViewsDelegate::GetContextFactory() {
   return nullptr;
 }
@@ -133,7 +133,7 @@ std::string ViewsDelegate::GetApplicationName() {
   return program.BaseName().AsUTF8Unsafe();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int ViewsDelegate::GetAppbarAutohideEdges(HMONITOR monitor,
                                           base::OnceClosure callback) {
   return EDGE_BOTTOM;

@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/infobars/android/confirm_infobar.h"
 #else
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
@@ -15,7 +15,7 @@
 
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate));
 #else
   return std::make_unique<ConfirmInfoBar>(std::move(delegate));

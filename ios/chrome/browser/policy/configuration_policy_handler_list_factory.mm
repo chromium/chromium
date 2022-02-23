@@ -11,10 +11,12 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
@@ -32,7 +34,9 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
+#include "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #include "ios/chrome/browser/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -72,6 +76,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kMetricsReportingEnabled,
     metrics::prefs::kMetricsReportingEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kOptimizationGuideFetchingEnabled,
+    optimization_guide::prefs::kOptimizationGuideFetchingEnabled,
+    base::Value::Type::BOOLEAN },
   { policy::key::kPolicyRefreshRate,
     policy::policy_prefs::kUserPolicyRefreshRate,
     base::Value::Type::INTEGER },
@@ -102,9 +109,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
     unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
     base::Value::Type::BOOLEAN },
-  { policy::key::kRestrictAccountsToPatterns,
-    prefs::kRestrictAccountsToPatterns,
-    base::Value::Type::LIST },
 };
 // clang-format on
 
@@ -140,6 +144,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<policy::RestrictAccountsPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<policy::DefaultSearchPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());
@@ -149,6 +155,11 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<enterprise_reporting::CloudReportingPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_reporting::CloudReportingFrequencyPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<policy::NewTabPageLocationPolicyHandler>());
 
   if (ShouldInstallURLBlocklistPolicyHandlers()) {
     handlers->AddHandler(std::make_unique<policy::URLBlocklistPolicyHandler>(

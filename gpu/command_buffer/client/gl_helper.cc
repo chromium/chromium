@@ -16,7 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/queue.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -46,7 +46,7 @@ class ScopedFlush {
   ~ScopedFlush() { gl_->Flush(); }
 
  private:
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
 };
 
 // Helper class for allocating and holding an RGBA texture of a given
@@ -112,7 +112,7 @@ class I420ConverterImpl : public I420Converter {
                               GLuint u_plane_texture,
                               GLuint v_plane_texture);
 
-  GLES2Interface* const gl_;
+  const raw_ptr<GLES2Interface> gl_;
 
  private:
   // These generate the Y/U/V planes. If MRT is being used, |y_planerizer_|
@@ -205,7 +205,7 @@ class GLHelper::CopyTextureToImpl
     gfx::Size size;
     size_t bytes_per_row;
     size_t row_stride_bytes;
-    unsigned char* pixels;
+    raw_ptr<unsigned char> pixels;
     base::OnceCallback<void(bool)> callback;
     GLuint buffer;
     GLuint query;
@@ -272,8 +272,8 @@ class GLHelper::CopyTextureToImpl
                      base::OnceCallback<void(bool)> callback) override;
 
    private:
-    GLES2Interface* gl_;
-    CopyTextureToImpl* copy_impl_;
+    raw_ptr<GLES2Interface> gl_;
+    raw_ptr<CopyTextureToImpl> copy_impl_;
     ReadbackSwizzle swizzle_;
 
     // May be null if no scaling is required. This can be changed between
@@ -300,9 +300,9 @@ class GLHelper::CopyTextureToImpl
 
   bool IsBGRAReadbackSupported();
 
-  GLES2Interface* gl_;
-  ContextSupport* context_support_;
-  GLHelper* helper_;
+  raw_ptr<GLES2Interface> gl_;
+  raw_ptr<ContextSupport> context_support_;
+  raw_ptr<GLHelper> helper_;
 
   // A scoped flush that will ensure all resource deletions are flushed when
   // this object is destroyed. Must be declared before other Scoped* fields.
@@ -474,7 +474,7 @@ void GLHelper::CopyTextureToImpl::CancelRequests() {
 }
 
 bool GLHelper::CopyTextureToImpl::IsBGRAReadbackSupported() {
-  if (bgra_support_ == BGRA_PREFERENCE_UNKNOWN) {
+  if (bgra_support_ == BGRA_SUPPORT_UNKNOWN) {
     bgra_support_ = BGRA_NOT_SUPPORTED;
     if (auto* extensions = gl_->GetString(GL_EXTENSIONS)) {
       const std::string extensions_string =

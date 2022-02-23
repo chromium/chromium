@@ -43,6 +43,24 @@ VulkanInProcessContextProvider::Create(
   return context_provider;
 }
 
+scoped_refptr<VulkanInProcessContextProvider>
+VulkanInProcessContextProvider::CreateForCompositorGpuThread(
+    gpu::VulkanImplementation* vulkan_implementation,
+    std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue,
+    uint32_t sync_cpu_memory_limit,
+    base::TimeDelta cooldown_duration_at_memory_pressure_critical) {
+  if (!vulkan_implementation)
+    return nullptr;
+
+  scoped_refptr<VulkanInProcessContextProvider> context_provider(
+      new VulkanInProcessContextProvider(
+          vulkan_implementation, /*heap_memory_limit=*/0, sync_cpu_memory_limit,
+          cooldown_duration_at_memory_pressure_critical));
+  context_provider->InitializeForCompositorGpuThread(
+      std::move(vulkan_device_queue));
+  return context_provider;
+}
+
 VulkanInProcessContextProvider::VulkanInProcessContextProvider(
     gpu::VulkanImplementation* vulkan_implementation,
     uint32_t heap_memory_limit,
@@ -89,6 +107,14 @@ bool VulkanInProcessContextProvider::Initialize(
   return true;
 }
 
+void VulkanInProcessContextProvider::InitializeForCompositorGpuThread(
+    std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue) {
+  DCHECK(!device_queue_);
+  DCHECK(vulkan_device_queue);
+
+  device_queue_ = std::move(vulkan_device_queue);
+}
+
 bool VulkanInProcessContextProvider::InitializeGrContext(
     const GrContextOptions& context_options) {
   GrVkBackendContext backend_context;
@@ -106,9 +132,24 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   GrVkGetProc get_proc = [](const char* proc_name, VkInstance instance,
                             VkDevice device) {
     if (device) {
-      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0)
+      // Using vkQueue*Hook for all vkQueue* methods here to make both chrome
+      // side access and skia side access to the same queue thread safe.
+      // vkQueue*Hook routes all skia side access to the same
+      // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
+      // lock.
+      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
+      } else if (std::strcmp("vkQueueSubmit", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueSubmitHook);
+      } else if (std::strcmp("vkQueueWaitIdle", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueueWaitIdleHook);
+      } else if (std::strcmp("vkQueuePresentKHR", proc_name) == 0) {
+        return reinterpret_cast<PFN_vkVoidFunction>(
+            &gpu::VulkanQueuePresentKHRHook);
+      }
       return vkGetDeviceProcAddr(device, proc_name);
     }
     return vkGetInstanceProcAddr(instance, proc_name);

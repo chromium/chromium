@@ -16,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -24,7 +25,7 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CFNetwork/CFProxySupport.h>
 #else
 #include <CoreServices/CoreServices.h>

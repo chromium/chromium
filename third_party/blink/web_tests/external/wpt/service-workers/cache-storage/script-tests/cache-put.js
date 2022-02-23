@@ -343,6 +343,15 @@ cache_test(function(cache, test) {
       'TypeError.');
   }, 'Cache.put with an embedded VARY:* Response');
 
+cache_test(async function(cache, test) {
+    const url = new URL('../resources/vary.py?vary=*',
+        get_host_info().HTTPS_REMOTE_ORIGIN + self.location.pathname);
+    const request = new Request(url, { mode: 'no-cors' });
+    const response = await fetch(request);
+    assert_equals(response.type, 'opaque');
+    await cache.put(request, response);
+  }, 'Cache.put with a VARY:* opaque response should not reject');
+
 cache_test(function(cache) {
     var url = 'foo.html';
     var redirectURL = 'http://example.com/foo-bar.html';

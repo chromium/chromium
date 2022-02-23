@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -48,7 +48,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
  protected:
   ExecutionContext* GetExecutionContext() const {

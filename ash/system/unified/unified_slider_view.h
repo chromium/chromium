@@ -5,15 +5,17 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 
-#include "ash/system/unified/top_shortcut_button.h"
-#include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/button/button.h"
+#include "ash/style/icon_button.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/view.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace views {
 class Label;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -24,39 +26,6 @@ class UnifiedSliderListener : public views::SliderListener {
   virtual views::View* CreateView() = 0;
 
   ~UnifiedSliderListener() override = default;
-};
-
-// A button used in a slider row of UnifiedSystemTray. The button is togglable.
-class UnifiedSliderButton : public views::ImageButton {
- public:
-  UnifiedSliderButton(PressedCallback callback,
-                      const gfx::VectorIcon& icon,
-                      int accessible_name_id);
-
-  UnifiedSliderButton(const UnifiedSliderButton&) = delete;
-  UnifiedSliderButton& operator=(const UnifiedSliderButton&) = delete;
-
-  ~UnifiedSliderButton() override;
-
-  // Set the vector icon shown in a circle.
-  void SetVectorIcon(const gfx::VectorIcon& icon);
-
-  // Change the toggle state.
-  void SetToggled(bool toggled);
-
-  // views::ImageButton:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
-
- private:
-  void UpdateVectorIcon();
-
-  // True if the button is currently toggled.
-  bool toggled_ = false;
-
-  const gfx::VectorIcon* icon_ = nullptr;
 };
 
 // Base view class of a slider row in UnifiedSystemTray. It has a button on the
@@ -75,7 +44,7 @@ class UnifiedSliderView : public views::View {
 
   ~UnifiedSliderView() override;
 
-  UnifiedSliderButton* button() { return button_; }
+  IconButton* button() { return button_; }
   views::Slider* slider() { return slider_; }
   views::Label* toast_label() { return toast_label_; }
 
@@ -92,7 +61,7 @@ class UnifiedSliderView : public views::View {
 
  private:
   // Unowned. Owned by views hierarchy.
-  UnifiedSliderButton* const button_;
+  IconButton* const button_;
   views::Slider* const slider_;
   views::Label* toast_label_ = nullptr;
 };

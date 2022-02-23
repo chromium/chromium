@@ -106,13 +106,17 @@ PositionInFlatTree StartOfSentenceInternal(const PositionInFlatTree& position) {
   return TextSegments::FindBoundaryBackward(position, &finder);
 }
 
-// TODO(yosin) This includes the space after the punctuation that marks the end
-// of the sentence.
-PositionInFlatTree EndOfSentenceInternal(const PositionInFlatTree& position) {
+PositionInFlatTree EndOfSentenceInternal(
+    const PositionInFlatTree& position,
+    SentenceTrailingSpaceBehavior space_behavior =
+        SentenceTrailingSpaceBehavior::kIncludeSpace) {
   class Finder final : public TextSegments::Finder {
     STACK_ALLOCATED();
 
    public:
+    explicit Finder(SentenceTrailingSpaceBehavior space_behavior)
+        : space_behavior_(space_behavior) {}
+
     Position Find(const String text, unsigned passed_offset) final {
       DCHECK_LE(passed_offset, text.length());
       TextBreakIterator* iterator = SentenceBreakIterator(text.Span16());
@@ -127,6 +131,11 @@ PositionInFlatTree EndOfSentenceInternal(const PositionInFlatTree& position) {
         }
         return Position();
       }
+      // If trailing space should be omitted, remove it if present.
+      if (space_behavior_ == SentenceTrailingSpaceBehavior::kOmitSpace &&
+          result != 0 && text[result - 1] == ' ') {
+        return Position::After(result - 2);
+      }
       return result == 0 ? Position::Before(0) : Position::After(result - 1);
     }
 
@@ -139,7 +148,9 @@ PositionInFlatTree EndOfSentenceInternal(const PositionInFlatTree& position) {
       }
       return text.length();
     }
-  } finder;
+
+    const SentenceTrailingSpaceBehavior space_behavior_;
+  } finder(space_behavior);
   return TextSegments::FindBoundaryForward(position, &finder);
 }
 
@@ -190,24 +201,34 @@ PositionInFlatTree NextSentencePositionInternal(
 
 }  // namespace
 
-PositionInFlatTreeWithAffinity EndOfSentence(const PositionInFlatTree& start) {
-  const PositionInFlatTree result = EndOfSentenceInternal(start);
+PositionInFlatTreeWithAffinity EndOfSentence(
+    const PositionInFlatTree& start,
+    SentenceTrailingSpaceBehavior space_behavior) {
+  const PositionInFlatTree result =
+      EndOfSentenceInternal(start, space_behavior);
   return AdjustForwardPositionToAvoidCrossingEditingBoundaries(
       PositionInFlatTreeWithAffinity(result), start);
 }
 
-PositionWithAffinity EndOfSentence(const Position& start) {
+PositionWithAffinity EndOfSentence(
+    const Position& start,
+    SentenceTrailingSpaceBehavior space_behavior) {
   const PositionInFlatTreeWithAffinity result =
-      EndOfSentence(ToPositionInFlatTree(start));
+      EndOfSentence(ToPositionInFlatTree(start), space_behavior);
   return ToPositionInDOMTreeWithAffinity(result);
 }
 
-VisiblePosition EndOfSentence(const VisiblePosition& c) {
-  return CreateVisiblePosition(EndOfSentence(c.DeepEquivalent()));
+VisiblePosition EndOfSentence(const VisiblePosition& c,
+                              SentenceTrailingSpaceBehavior space_behavior) {
+  return CreateVisiblePosition(
+      EndOfSentence(c.DeepEquivalent(), space_behavior));
 }
 
-VisiblePositionInFlatTree EndOfSentence(const VisiblePositionInFlatTree& c) {
-  return CreateVisiblePosition(EndOfSentence(c.DeepEquivalent()));
+VisiblePositionInFlatTree EndOfSentence(
+    const VisiblePositionInFlatTree& c,
+    SentenceTrailingSpaceBehavior space_behavior) {
+  return CreateVisiblePosition(
+      EndOfSentence(c.DeepEquivalent(), space_behavior));
 }
 
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange& range) {

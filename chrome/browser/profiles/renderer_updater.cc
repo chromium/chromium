@@ -40,23 +40,19 @@ void GetGuestViewDefaultContentSettingRules(
     RendererContentSettingRules* rules) {
   rules->image_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
       std::string(), incognito));
   rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
       std::string(), incognito));
   rules->script_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
       std::string(), incognito));
   rules->mixed_content_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_BLOCK),
       std::string(), incognito));
 }
 
@@ -65,7 +61,7 @@ void GetGuestViewDefaultContentSettingRules(
 
 RendererUpdater::RendererUpdater(Profile* profile) : profile_(profile) {
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_ =
       ash::OAuth2LoginManagerFactory::GetForProfile(profile_);
@@ -163,8 +159,7 @@ void RendererUpdater::InitializeRenderer(
       rules.script_rules.emplace_back(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(),
-          base::Value::FromUniquePtrValue(
-              content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
           std::string(), is_incognito_process);
     }
   }

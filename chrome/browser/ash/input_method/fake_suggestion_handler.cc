@@ -28,6 +28,7 @@ bool FakeSuggestionHandler::SetSuggestion(
   context_id_ = context_id;
   suggestion_text_ = details.text;
   confirmed_length_ = details.confirmed_length;
+  last_suggestion_details_ = details;
   return true;
 }
 
@@ -48,6 +49,7 @@ bool FakeSuggestionHandler::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted,
     std::string* error) {
+  highlighted_suggestion_ = highlighted;
   return false;
 }
 

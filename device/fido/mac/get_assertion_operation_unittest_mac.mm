@@ -84,7 +84,7 @@ API_AVAILABLE(macos(10.12.2)) {
   auto opt_response = std::move(std::get<1>(result));
   ASSERT_TRUE(opt_response);
   ASSERT_TRUE(opt_response->credential);
-  EXPECT_FALSE(opt_response->credential->id().empty());
+  EXPECT_FALSE(opt_response->credential->id.empty());
 }
 }  // namespace
 }  // namespace mac

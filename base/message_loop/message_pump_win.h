@@ -8,12 +8,12 @@
 #include <windows.h>
 
 #include <atomic>
-#include <list>
 #include <memory>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -40,7 +40,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-    Delegate* const delegate;
+    const raw_ptr<Delegate> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;
@@ -275,8 +275,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
 
  private:
   struct IOItem {
-    IOHandler* handler;
-    IOContext* context;
+    raw_ptr<IOHandler> handler;
+    raw_ptr<IOContext> context;
     DWORD bytes_transfered;
     DWORD error;
   };

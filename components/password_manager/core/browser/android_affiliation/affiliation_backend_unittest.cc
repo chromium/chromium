@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -380,7 +381,7 @@ class AffiliationBackendTest : public testing::Test {
   MockAffiliationConsumer mock_consumer_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   // Owned by |backend_|.
-  MockAffiliationFetchThrottler* mock_fetch_throttler_ = nullptr;
+  raw_ptr<MockAffiliationFetchThrottler> mock_fetch_throttler_ = nullptr;
 };
 
 TEST_F(AffiliationBackendTest, OnDemandRequestSucceedsWithFetch) {
@@ -892,6 +893,32 @@ TEST_F(AffiliationBackendTest, DeleteCache) {
   ASSERT_TRUE(base::PathExists(db_path()));
   AffiliationBackend::DeleteCache(db_path());
   ASSERT_FALSE(base::PathExists(db_path()));
+}
+
+TEST_F(AffiliationBackendTest, KeepPrefetchForFacets) {
+  // Have {kTestFacetURIAlpha1, kTestFacetURIAlpha1, kTestFacetURIBeta1} as a
+  // list of actively fetching facets.
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max()));
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIBeta1), base::Time::Max()));
+  Prefetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max());
+  EXPECT_EQ(2u, backend_facet_manager_count());
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+
+  AdvanceTime(GetCacheSoftExpiryPeriod() - Epsilon());
+
+  backend()->KeepPrefetchForFacets(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+       FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)});
+  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAndCompleteFetch(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)));
+  EXPECT_EQ(2u, backend_facet_manager_count());
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+
+  consumer_task_runner()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
 }  // namespace password_manager

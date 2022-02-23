@@ -23,9 +23,17 @@
 namespace cc {
 namespace {
 
+class FakeProtectedSequenceSynchronizer : public ProtectedSequenceSynchronizer {
+ public:
+  bool IsOwnerThread() const override { return true; }
+  bool InProtectedSequence() const override { return false; }
+  void WaitForProtectedSequenceCompletion() const override {}
+};
+
 TEST(PropertyTreeTest, ComputeTransformRoot) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = tree.Insert(contents_root, 0);
@@ -46,8 +54,9 @@ TEST(PropertyTreeTest, ComputeTransformRoot) {
 }
 
 TEST(PropertyTreeTest, SetNeedsUpdate) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
 
@@ -60,8 +69,9 @@ TEST(PropertyTreeTest, SetNeedsUpdate) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformChild) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = tree.Insert(contents_root, 0);
@@ -102,8 +112,9 @@ TEST(PropertyTreeTest, ComputeTransformChild) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformSibling) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = tree.Insert(contents_root, 0);
@@ -145,15 +156,16 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
   // transform, we cannot use screen space transforms to compute change of
   // basis
   // transforms between these nodes.
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = tree.Insert(contents_root, 0);
   tree.UpdateTransforms(1);
 
   TransformNode singular;
-  singular.local.matrix().set(2, 2, 0.0);
+  singular.local.matrix().setRC(2, 2, 0.0);
   singular.id = tree.Insert(singular, 1);
 
   TransformNode child;
@@ -184,9 +196,10 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
 }
 
 TEST(PropertyTreeTest, TransformsWithFlattening) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
-  EffectTree& effect_tree = property_trees.effect_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
+  EffectTree& effect_tree = property_trees.effect_tree_mutable();
 
   int grand_parent = tree.Insert(TransformNode(), 0);
   int effect_grand_parent = effect_tree.Insert(EffectNode(), 0);
@@ -259,8 +272,9 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
 }
 
 TEST(PropertyTreeTest, MultiplicationOrder) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
   contents_root.id = tree.Insert(contents_root, 0);
@@ -291,8 +305,9 @@ TEST(PropertyTreeTest, MultiplicationOrder) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
   tree.UpdateTransforms(1);
@@ -319,8 +334,9 @@ TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
   tree.UpdateTransforms(1);
@@ -374,8 +390,9 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
   // This tests that flattening is performed correctly when
   // destination and its ancestors are flat, but there are 3d transforms
   // and flattening between the source and destination.
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
 
   int parent = tree.Insert(TransformNode(), 0);
   tree.Node(parent)->local.Translate(2, 2);
@@ -403,8 +420,9 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
 TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
   // This tests that screen space opacity is updated for the subtree when
   // opacity of a node changes.
-  PropertyTrees property_trees;
-  EffectTree& tree = property_trees.effect_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  EffectTree& tree = property_trees.effect_tree_mutable();
 
   int parent = tree.Insert(EffectNode(), 0);
   int child = tree.Insert(EffectNode(), parent);
@@ -424,9 +442,10 @@ TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
 TEST(PropertyTreeTest, SingularTransformSnapTest) {
   // This tests that to_target transform is not snapped when it has a singular
   // transform.
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
-  EffectTree& effect_tree = property_trees.effect_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  TransformTree& tree = property_trees.transform_tree_mutable();
+  EffectTree& effect_tree = property_trees.effect_tree_mutable();
 
   int parent = tree.Insert(TransformNode(), 0);
   int effect_parent = effect_tree.Insert(EffectNode(), 0);
@@ -472,15 +491,16 @@ TEST(PropertyTreeTest, SingularTransformSnapTest) {
 TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
   using viz::CopyOutputRequest;
 
-  PropertyTrees property_trees;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
 
-  TransformTree& transform_tree = property_trees.transform_tree;
+  TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Scale(2, 2);
   contents_root.id = transform_tree.Insert(contents_root, 0);
   transform_tree.UpdateTransforms(contents_root.id);
 
-  EffectTree& effect_tree = property_trees.effect_tree;
+  EffectTree& effect_tree = property_trees.effect_tree_mutable();
   EffectNode effect_node;
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   effect_node.has_copy_request = true;
@@ -570,15 +590,16 @@ TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
 TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
   using viz::CopyOutputRequest;
 
-  PropertyTrees property_trees;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
 
-  TransformTree& transform_tree = property_trees.transform_tree;
+  TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Scale(1.0f / 1.0e9f, 1.0f / 1.0e9f);
   contents_root.id = transform_tree.Insert(contents_root, 0);
   transform_tree.UpdateTransforms(contents_root.id);
 
-  EffectTree& effect_tree = property_trees.effect_tree;
+  EffectTree& effect_tree = property_trees.effect_tree_mutable();
   EffectNode effect_node;
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   effect_node.has_copy_request = true;
@@ -603,9 +624,10 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
 // scroll offset is near zero that can naively lead to a negative offset being
 // returned which is not desirable.
 TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
-  PropertyTrees property_trees;
-  ScrollTree& scroll_tree = property_trees.scroll_tree;
-  TransformTree& transform_tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
+  TransformTree& transform_tree = property_trees.transform_tree_mutable();
 
   ElementId element_id(5);
   int transform_node_id = transform_tree.Insert(TransformNode(), 0);
@@ -614,18 +636,16 @@ TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
   scroll_tree.Node(scroll_node_id)->element_id = element_id;
 
   // Set a scroll value close to 0.
-  scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 0.1));
+  scroll_tree.SetScrollOffset(element_id, gfx::PointF(0, 0.1));
   transform_tree.Node(transform_node_id)->scrolls = true;
-  transform_tree.Node(transform_node_id)->scroll_offset =
-      gfx::Vector2dF(0, 0.1);
+  transform_tree.Node(transform_node_id)->scroll_offset = gfx::PointF(0, 0.1);
 
   // Pretend that the snap amount was slightly larger than 0.1.
   transform_tree.Node(transform_node_id)->snap_amount = gfx::Vector2dF(0, 0.2);
   transform_tree.Node(transform_node_id)->needs_local_transform_update = false;
 
   // The returned offset should be clamped at a minimum of 0.
-  gfx::Vector2dF offset =
-      scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
+  gfx::PointF offset = scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
   EXPECT_EQ(offset.y(), 0);
 }
 
@@ -635,9 +655,10 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   const bool use_fractional_deltas = false;
 
   // Set up main property trees.
-  PropertyTrees property_trees;
-  ScrollTree& main_scroll_tree = property_trees.scroll_tree;
-  TransformTree& transform_tree = property_trees.transform_tree;
+  FakeProtectedSequenceSynchronizer synchronizer;
+  PropertyTrees property_trees(synchronizer);
+  ScrollTree& main_scroll_tree = property_trees.scroll_tree_mutable();
+  TransformTree& transform_tree = property_trees.transform_tree_mutable();
   ElementId element_id(5);
   int transform_node_id = transform_tree.Insert(TransformNode(), 0);
   int scroll_node_id = main_scroll_tree.Insert(ScrollNode(), 0);
@@ -656,21 +677,22 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   PropertyTrees* pending_property_trees =
       host_impl.pending_tree()->property_trees();
   EXPECT_TRUE(pending_property_trees);
-  ScrollTree& pending_scroll_tree = pending_property_trees->scroll_tree;
+  ScrollTree& pending_scroll_tree =
+      pending_property_trees->scroll_tree_mutable();
   TransformTree& pending_transform_tree =
-      pending_property_trees->transform_tree;
+      pending_property_trees->transform_tree_mutable();
   transform_node_id = pending_transform_tree.Insert(TransformNode(), 0);
   scroll_node_id = pending_scroll_tree.Insert(ScrollNode(), 0);
   pending_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
   pending_scroll_tree.Node(scroll_node_id)->element_id = element_id;
   pending_scroll_tree.Node(scroll_node_id)->is_composited = true;
-  pending_property_trees->element_id_to_scroll_node_index[element_id] =
-      scroll_node_id;
+  pending_property_trees->scroll_tree_mutable().SetElementIdForNodeId(
+      scroll_node_id, element_id);
 
   // Push main scroll to pending.
-  main_scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 1));
+  main_scroll_tree.SetScrollOffset(element_id, gfx::PointF(0, 1));
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+      property_trees, host_impl.pending_tree(), use_fractional_deltas);
   const SyncedScrollOffset* scroll_offset =
       pending_scroll_tree.GetSyncedScrollOffset(element_id);
   EXPECT_TRUE(scroll_offset);
@@ -680,20 +702,20 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   pending_scroll_tree.SetScrollOffsetDeltaForTesting(element_id,
                                                      gfx::Vector2dF(0, 0.25));
   main_scroll_tree.CollectScrollDeltasForTesting(use_fractional_deltas);
-  EXPECT_EQ(gfx::Vector2dF(0, 1),
+  EXPECT_EQ(gfx::PointF(0, 1),
             main_scroll_tree.current_scroll_offset(element_id));
 
   // Rounding logic turned on should not cause property change on push.
-  host_impl.pending_tree()->property_trees()->changed = false;
+  host_impl.pending_tree()->property_trees()->set_changed(false);
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
-  EXPECT_FALSE(host_impl.pending_tree()->property_trees()->changed);
+      property_trees, host_impl.pending_tree(), use_fractional_deltas);
+  EXPECT_FALSE(host_impl.pending_tree()->property_trees()->changed());
 
   // Rounding logic turned off should cause property change on push.
-  host_impl.pending_tree()->property_trees()->changed = false;
+  host_impl.pending_tree()->property_trees()->set_changed(false);
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
-      &property_trees, host_impl.pending_tree(), true);
-  EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed);
+      property_trees, host_impl.pending_tree(), true);
+  EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed());
 }
 
 }  // namespace

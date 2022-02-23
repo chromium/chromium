@@ -24,9 +24,9 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_agent.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -76,7 +76,7 @@ void DesktopProcess::InjectSas() {
 
 void DesktopProcess::LockWorkstation() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->version_type() ==
       base::win::VersionType::SUITE_HOME) {
     return;
@@ -87,7 +87,7 @@ void DesktopProcess::LockWorkstation() {
   }
 #else
   NOTREACHED();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 bool DesktopProcess::OnMessageReceived(const IPC::Message& message) {
@@ -134,25 +134,25 @@ bool DesktopProcess::Start(
 
   // Launch the audio capturing thread.
   scoped_refptr<AutoThreadTaskRunner> audio_task_runner;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows the AudioCapturer requires COM, so we run a single-threaded
   // apartment, which requires a UI thread.
   audio_task_runner = AutoThread::CreateWithLoopAndComInitTypes(
       "ChromotingAudioThread", caller_task_runner_, base::MessagePumpType::UI,
       AutoThread::COM_INIT_STA);
-#else // !defined(OS_WIN)
+#else   // !BUILDFLAG(IS_WIN)
   audio_task_runner = AutoThread::CreateWithType(
       "ChromotingAudioThread", caller_task_runner_, base::MessagePumpType::IO);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // Create a desktop agent.
   desktop_agent_ =
       new DesktopSessionAgent(audio_task_runner, caller_task_runner_,
                               input_task_runner_, io_task_runner_);
 
-  // Start the agent and create an IPC channel to talk to it.
+  // Initialize the agent and create an IPC channel to talk to it.
   mojo::ScopedMessagePipeHandle desktop_pipe =
-      desktop_agent_->Start(weak_factory_.GetWeakPtr());
+      desktop_agent_->Initialize(weak_factory_.GetWeakPtr());
 
   // Connect to the daemon.
   daemon_channel_ = IPC::ChannelProxy::Create(

@@ -143,11 +143,11 @@ bool DesktopWindowTreeHostLinux::ContainsPointInXRegion(
   return GetX11Extension()->ContainsPointInXRegion(point);
 }
 
-void DesktopWindowTreeHostLinux::LowerXWindow() {
-  // TODO(msisov): must be removed as soon as all X11 low-level bits are moved
-  // to Ozone.
-  DCHECK(GetX11Extension());
-  GetX11Extension()->LowerXWindow();
+void DesktopWindowTreeHostLinux::LowerWindow() {
+  if (GetX11Extension())
+    GetX11Extension()->LowerXWindow();
+  else
+    NOTIMPLEMENTED_LOG_ONCE();
 }
 
 base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
@@ -227,8 +227,21 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
     Widget::MoveLoopSource source,
     Widget::MoveLoopEscapeBehavior escape_behavior) {
   GetContentWindow()->SetCapture();
-  return DesktopWindowTreeHostPlatform::RunMoveLoop(drag_offset, source,
-                                                    escape_behavior);
+
+  // DesktopWindowTreeHostLinux::RunMoveLoop() may result in |this| being
+  // deleted. As an extra safity guard, keep track of |this| with a weak
+  // pointer, and only call ReleaseCapture() if it still exists.
+  //
+  // TODO(https://crbug.com/1289682): Consider removing capture set/unset
+  // during window drag 'n drop (detached).
+  auto weak_this = weak_factory_.GetWeakPtr();
+
+  Widget::MoveLoopResult result = DesktopWindowTreeHostPlatform::RunMoveLoop(
+      drag_offset, source, escape_behavior);
+  if (weak_this.get())
+    GetContentWindow()->ReleaseCapture();
+
+  return result;
 }
 
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
@@ -370,8 +383,17 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   properties->wm_class_class = params.wm_class_class;
   properties->wm_role_name = params.wm_role_name;
 
+  properties->wayland_app_id = params.wayland_app_id;
+
   DCHECK(!properties->x11_extension_delegate);
   properties->x11_extension_delegate = this;
+}
+
+base::flat_map<std::string, std::string>
+DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
+  if (auto* linux_ui = LinuxUI::instance())
+    return linux_ui->GetKeyboardLayoutMap();
+  return WindowTreeHostPlatform::GetKeyboardLayoutMap();
 }
 
 void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(

@@ -21,6 +21,7 @@
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -41,17 +42,17 @@ TEST(Clock, ClockMonotonicNanoseconds) {
     EXPECT_GE(now, last);
   }
 
-#if !defined(OS_WIN)  // No SleepNanoseconds implemented on Windows.
+#if !BUILDFLAG(IS_WIN)  // No SleepNanoseconds implemented on Windows.
   // SleepNanoseconds() should sleep for at least the value of the clock’s
   // resolution, so the clock’s value should definitely increase after a sleep.
   // EXPECT_GT can be used instead of EXPECT_GE after the sleep.
   SleepNanoseconds(1);
   now = ClockMonotonicNanoseconds();
   EXPECT_GT(now, start);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
-#if !defined(OS_WIN)  // No SleepNanoseconds implemented on Windows.
+#if !BUILDFLAG(IS_WIN)  // No SleepNanoseconds implemented on Windows.
 
 void TestSleepNanoseconds(uint64_t nanoseconds) {
   uint64_t start = ClockMonotonicNanoseconds();
@@ -91,7 +92,7 @@ TEST(Clock, SleepNanoseconds) {
   }
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace test

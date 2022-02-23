@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -153,10 +154,10 @@ class ROBufferSegmentReader final : public SegmentReader {
 
  private:
   scoped_refptr<ROBuffer> ro_buffer_;
-  mutable Mutex read_mutex_;
+  mutable base::Lock read_lock_;
   // Position of the first char in the current block of iter_.
-  mutable size_t position_of_block_ GUARDED_BY(read_mutex_);
-  mutable ROBuffer::Iter iter_ GUARDED_BY(read_mutex_);
+  mutable size_t position_of_block_ GUARDED_BY(read_lock_);
+  mutable ROBuffer::Iter iter_ GUARDED_BY(read_lock_);
 };
 
 ROBufferSegmentReader::ROBufferSegmentReader(scoped_refptr<ROBuffer> buffer)
@@ -173,7 +174,7 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
   if (!ro_buffer_)
     return 0;
 
-  MutexLocker lock(read_mutex_);
+  base::AutoLock lock(read_lock_);
 
   if (position < position_of_block_) {
     // ROBuffer::Iter only iterates forwards. Start from the beginning.
@@ -246,7 +247,7 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
   if (!parkable_image_)
     return 0;
 
-  MutexLocker lock(parkable_image_->impl_->lock_);
+  base::AutoLock lock(parkable_image_->impl_->lock_);
   DCHECK(parkable_image_->impl_->is_locked());
 
   RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
@@ -259,7 +260,7 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
   if (!parkable_image_)
     return nullptr;
 
-  MutexLocker lock(parkable_image_->impl_->lock_);
+  base::AutoLock lock(parkable_image_->impl_->lock_);
   parkable_image_->impl_->Unpark();
 
   RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
@@ -276,13 +277,13 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
         [](const void* ptr, void* context) -> void {
           auto* parkable_image = static_cast<ParkableImage*>(context);
           {
-            MutexLocker lock(parkable_image->impl_->lock_);
+            base::AutoLock lock(parkable_image->impl_->lock_);
             parkable_image->UnlockData();
           }
           // Don't hold the mutex while we call |Release|, since |Release| can
           // free the ParkableImage, if this is the last reference to it;
           // Freeing the ParkableImage while the mutex is held causes a UAF when
-          // the dtor for MutexLocker is called.
+          // the dtor for base::AutoLock is called.
           parkable_image->Release();
         },
         parkable_image_.get());
@@ -293,14 +294,14 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
 }
 
 void ParkableImageSegmentReader::LockData() {
-  MutexLocker lock(parkable_image_->impl_->lock_);
+  base::AutoLock lock(parkable_image_->impl_->lock_);
   parkable_image_->impl_->Unpark();
 
   parkable_image_->LockData();
 }
 
 void ParkableImageSegmentReader::UnlockData() {
-  MutexLocker lock(parkable_image_->impl_->lock_);
+  base::AutoLock lock(parkable_image_->impl_->lock_);
 
   parkable_image_->UnlockData();
 }

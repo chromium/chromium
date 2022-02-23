@@ -20,7 +20,7 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     ArcWindowHandler* handler,
     int window_id,
     int64_t display_id,
-    gfx::Rect bounds)
+    const gfx::Rect& bounds)
     : window_id_(window_id),
       bounds_(gfx::Rect(bounds)),
       pending_close_(false),
@@ -111,9 +111,7 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
     return;
   }
 
-  gfx::Rect bounds_in_display(bounds_in_screen);
-  bounds_in_display.Offset(-target_display.bounds().OffsetFromOrigin());
-  shell_surface_->SetBounds(display_id, bounds_in_display);
+  shell_surface_->SetBounds(display_id, bounds_in_screen);
 
   if (requested_state != window_state->GetStateType()) {
     DCHECK(requested_state == chromeos::WindowStateType::kPrimarySnapped ||
@@ -126,7 +124,7 @@ void ArcGhostWindowDelegate::OnBoundsChanged(
     // TODO(sstan): Currently the snap state will be ignored. Sync it to ARC.
   }
   shell_surface_->OnSurfaceCommit();
-  bounds_ = gfx::Rect(bounds_in_display);
+  bounds_ = gfx::Rect(bounds_in_screen);
   UpdateWindowInfoToArc();
 }
 

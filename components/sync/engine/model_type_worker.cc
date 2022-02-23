@@ -25,6 +25,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
@@ -35,7 +36,6 @@
 #include "components/sync/engine/commit_contribution_impl.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
@@ -45,10 +45,10 @@ namespace syncer {
 
 namespace {
 
-const char kTimeUntilEncryptionKeyFoundHistogramPrefix[] =
-    "Sync.ModelTypeTimeUntilEncryptionKeyFound2.";
-const char kUndecryptablePendingUpdatesDroppedHistogramPrefix[] =
-    "Sync.ModelTypeUndecryptablePendingUpdatesDropped.";
+const char kTimeUntilEncryptionKeyFoundHistogramName[] =
+    "Sync.ModelTypeTimeUntilEncryptionKeyFound2";
+const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
+    "Sync.ModelTypeUndecryptablePendingUpdatesDropped";
 const char kBlockedByUndecryptableUpdateHistogramName[] =
     "Sync.ModelTypeBlockedDueToUndecryptableUpdate";
 
@@ -78,7 +78,7 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedModelTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
-  if (data->parent_id == "0") {
+  if (data->legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
@@ -184,8 +184,7 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
       model_type_state_(initial_state),
       encryption_enabled_(encryption_enabled),
       passphrase_type_(passphrase_type),
-      min_get_updates_to_ignore_key_(
-          switches::kMinGuResponsesToIgnoreKey.Get()) {
+      min_get_updates_to_ignore_key_(kMinGuResponsesToIgnoreKey.Get()) {
   DCHECK(cryptographer_);
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
@@ -353,6 +352,11 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
           break;
         }
         // Copy the sync entity for later decryption.
+        // TODO(crbug.com/1270734): Any write to |entries_pending_decryption_|
+        // should do like DeduplicatePendingUpdatesBasedOnServerId() and honor
+        // entity version. Additionally, it should look up the same server id
+        // in |pending_updates_| and compare versions. In fact, the 2 containers
+        // should probably be moved to a separate class with unit tests.
         entries_pending_decryption_[server_id] = *update_entity;
         break;
       }
@@ -429,7 +433,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   data.creation_time = ProtoTimeToTime(update_entity.ctime());
   data.modification_time = ProtoTimeToTime(update_entity.mtime());
   data.name = update_entity.name();
-  data.parent_id = update_entity.parent_id_string();
+  data.legacy_parent_id = update_entity.parent_id_string();
   data.server_defined_unique_tag = update_entity.server_defined_unique_tag();
 
   // Populate |originator_cache_guid| and |originator_client_item_id|. This is
@@ -445,6 +449,10 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     AdaptTitleForBookmark(update_entity, &data.specifics,
                           specifics_were_encrypted);
     AdaptGuidForBookmark(update_entity, &data.specifics);
+    // Note that the parent GUID in specifics cannot be adapted/populated here,
+    // because the logic requires access to tracked entities. Hence, it is
+    // done by BookmarkModelTypeProcessor, with logic implemented in
+    // components/sync_bookmarks/parent_guid_preprocessing.cc.
   } else if (model_type == AUTOFILL_WALLET_DATA ||
              model_type == AUTOFILL_WALLET_OFFER) {
     AdaptClientTagForFullUpdateData(model_type, &data);
@@ -464,11 +472,11 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status) {
   if (!entries_pending_decryption_.empty() &&
       (!encryption_enabled_ || cryptographer_->CanEncrypt())) {
     DCHECK(BlockForEncryption());
-    for (auto& key_and_info : unknown_encryption_keys_by_name_) {
-      key_and_info.second.get_updates_while_should_have_been_known++;
+    for (auto& [key, info] : unknown_encryption_keys_by_name_) {
+      info.get_updates_while_should_have_been_known++;
       // If the key is now missing for too long, drop pending updates encrypted
       // with it. This eventually unblocks a worker having undecryptable data.
-      MaybeDropPendingUpdatesEncryptedWith(key_and_info.first);
+      MaybeDropPendingUpdatesEncryptedWith(key);
     }
   }
 
@@ -492,7 +500,7 @@ void ModelTypeWorker::SendPendingUpdatesToProcessorIfReady() {
          !model_type_state_.encryption_key_name().empty());
   DCHECK(entries_pending_decryption_.empty());
 
-  DVLOG(1) << ModelTypeToString(type_) << ": "
+  DVLOG(1) << ModelTypeToDebugString(type_) << ": "
            << base::StringPrintf("Delivering %" PRIuS " applicable updates.",
                                  pending_updates_.size());
 
@@ -585,7 +593,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      encryption_enabled_ ? cryptographer_ : nullptr, passphrase_type_,
+      encryption_enabled_ ? cryptographer_.get() : nullptr, passphrase_type_,
       CommitOnlyTypes().Has(type_));
 }
 
@@ -650,7 +658,7 @@ bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
     if (model_type_state_.encryption_key_name().empty()) {
       return false;
     }
-    DLOG(WARNING) << ModelTypeToString(type_)
+    DLOG(WARNING) << ModelTypeToDebugString(type_)
                   << " : Had encryption disabled but non-empty encryption key "
                   << model_type_state_.encryption_key_name()
                   << ". Setting key to empty.";
@@ -666,7 +674,7 @@ bool ModelTypeWorker::UpdateTypeEncryptionKeyName() {
 
   std::string default_key_name = cryptographer_->GetDefaultEncryptionKeyName();
   DCHECK(!default_key_name.empty());
-  DVLOG(1) << ModelTypeToString(type_) << ": Updating encryption key "
+  DVLOG(1) << ModelTypeToDebugString(type_) << ": Updating encryption key "
            << model_type_state_.encryption_key_name() << " -> "
            << default_key_name;
   model_type_state_.set_encryption_key_name(default_key_name);
@@ -707,7 +715,10 @@ void ModelTypeWorker::DecryptStoredEntities() {
     // while the cryptographer was pending external interaction.
     if (newly_found_key.get_updates_while_should_have_been_known > 0) {
       base::UmaHistogramCounts1000(
-          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramPrefix,
+          kTimeUntilEncryptionKeyFoundHistogramName,
+          newly_found_key.get_updates_while_should_have_been_known);
+      base::UmaHistogramCounts1000(
+          base::StrCat({kTimeUntilEncryptionKeyFoundHistogramName, ".",
                         ModelTypeToHistogramSuffix(type_)}),
           newly_found_key.get_updates_while_should_have_been_known);
     }
@@ -726,16 +737,21 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
     }
     // Try to insert. If we already saw an item with the same server id,
     // this will fail but give us its iterator.
-    auto it_and_success =
+    auto [it, success] =
         id_to_index.emplace(candidate.entity.id, pending_updates_.size());
-    if (it_and_success.second) {
+    if (success) {
       // New server id, append at the end. Note that we already inserted
       // the correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }
@@ -754,16 +770,21 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
     }
     // Try to insert. If we already saw an item with the same client tag hash,
     // this will fail but give us its iterator.
-    auto it_and_success = tag_to_index.emplace(candidate.entity.client_tag_hash,
-                                               pending_updates_.size());
-    if (it_and_success.second) {
+    auto [it, success] = tag_to_index.emplace(candidate.entity.client_tag_hash,
+                                              pending_updates_.size());
+    if (success) {
       // New client tag hash, append at the end. Note that we already inserted
       // the correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }
@@ -785,17 +806,22 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
     }
     // Try to insert. If we already saw an item with the same originator item
     // ID, this will fail but give us its iterator.
-    auto it_and_success = id_to_index.emplace(
+    auto [it, success] = id_to_index.emplace(
         base::ToLowerASCII(candidate.entity.originator_client_item_id),
         pending_updates_.size());
-    if (it_and_success.second) {
+    if (success) {
       // New item ID, append at the end. Note that we already inserted the
       // correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }
@@ -810,8 +836,7 @@ bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
       min_get_updates_to_ignore_key_) {
     return false;
   }
-  return base::FeatureList::IsEnabled(
-      switches::kIgnoreSyncEncryptionKeysLongMissing);
+  return base::FeatureList::IsEnabled(kIgnoreSyncEncryptionKeysLongMissing);
 }
 
 void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
@@ -826,19 +851,23 @@ void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
   });
 
   // If updates were dropped, record how many.
-  if (entries_pending_decryption_.size() < updates_before_dropping) {
+  const size_t dropped_updates =
+      updates_before_dropping - entries_pending_decryption_.size();
+  if (dropped_updates > 0) {
     base::UmaHistogramCounts1000(
-        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramPrefix,
+        kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
+    base::UmaHistogramCounts1000(
+        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
                       ModelTypeToHistogramSuffix(type_)}),
-        updates_before_dropping - entries_pending_decryption_.size());
+        dropped_updates);
   }
 }
 
 std::vector<ModelTypeWorker::UnknownEncryptionKeyInfo>
 ModelTypeWorker::RemoveKeysNoLongerUnknown() {
   std::set<std::string> keys_blocking_updates;
-  for (const auto& id_and_update : entries_pending_decryption_) {
-    const std::string key_name = GetEncryptionKeyName(id_and_update.second);
+  for (const auto& [id, update] : entries_pending_decryption_) {
+    const std::string key_name = GetEncryptionKeyName(update);
     DCHECK(!key_name.empty());
     keys_blocking_updates.insert(key_name);
   }

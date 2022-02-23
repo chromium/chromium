@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/prefs/pref_service.h"
 
 class PrefValueMap;
 class PrefRegistrySimple;
@@ -28,7 +29,8 @@ enum SystemFeature : int {
   kCanvas = 6,                // The canvas web app on Chrome OS.
   kGoogleNewsDeprecated = 7,  // The Google news app is no longer supported.
   kExplore = 8,               // The explore web app on Chrome OS.
-  kMaxValue = kExplore
+  kCrosh = 9,                 // The Chrome OS shell.
+  kMaxValue = kCrosh
 };
 
 // A disabling mode that decides the user experience when a system feature is
@@ -47,6 +49,7 @@ extern const char kScanningFeature[];
 extern const char kWebStoreFeature[];
 extern const char kCanvasFeature[];
 extern const char kExploreFeature[];
+extern const char kCroshFeature[];
 
 extern const char kBlockedDisableMode[];
 extern const char kHiddenDisableMode[];
@@ -61,6 +64,8 @@ class SystemFeaturesDisableListPolicyHandler
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static SystemFeature GetSystemFeatureFromAppId(const std::string& app_id);
+  static bool IsSystemFeatureDisabled(SystemFeature feature,
+                                      PrefService* const pref_service);
 
  protected:
   // ListPolicyHandler:

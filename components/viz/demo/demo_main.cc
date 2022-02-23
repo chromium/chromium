@@ -31,7 +31,7 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/platform_window/win/win_window.h"
 #endif
 
@@ -121,7 +121,7 @@ class DemoWindow : public ui::PlatformWindowDelegate {
 #if defined(USE_OZONE)
       return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
           this, std::move(props));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     return std::make_unique<ui::WinWindow>(this, props.bounds);
 #else
     NOTIMPLEMENTED();

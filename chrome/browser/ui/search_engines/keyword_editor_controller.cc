@@ -68,8 +68,7 @@ bool KeywordEditorController::CanMakeDefault(const TemplateURL* url) const {
 
 bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
   return (url->type() == TemplateURL::NORMAL) &&
-         (url != url_model_->GetDefaultSearchProvider()) &&
-         (url->prepopulate_id() == 0);
+         (url != url_model_->GetDefaultSearchProvider());
 }
 
 bool KeywordEditorController::CanActivate(const TemplateURL* url) const {
@@ -81,6 +80,13 @@ bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
   return (url->is_active() == TemplateURLData::ActiveStatus::kTrue &&
           url != url_model_->GetDefaultSearchProvider() &&
           url->prepopulate_id() == 0);
+}
+
+bool KeywordEditorController::ShouldConfirmDeletion(
+    const TemplateURL* url) const {
+  // Currently, only built-in search engines require confirmation before
+  // deletion.
+  return url->prepopulate_id() != 0;
 }
 
 void KeywordEditorController::RemoveTemplateURL(int index) {

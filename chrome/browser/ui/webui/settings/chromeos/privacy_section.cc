@@ -6,12 +6,16 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -20,11 +24,13 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 namespace settings {
@@ -109,8 +115,6 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             {.subpage = mojom::Subpage::kSecurityAndSignInV2}}});
     }
 
-    // TODO(chromium:1262869): add smart privacy search concepts.
-
     return all_tags;
   }());
 
@@ -161,6 +165,50 @@ const std::vector<SearchConcept>& GetPciguardSearchConcepts() {
         IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION_ALT4,
         IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION_ALT5}},
   });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetSmartPrivacySearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    std::vector<SearchConcept> init_tags;
+
+    if (ash::features::IsSnoopingProtectionEnabled() ||
+        ash::features::IsQuickDimEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSubpage,
+                           {.subpage = mojom::Subpage::kSmartPrivacy}});
+    }
+
+    if (ash::features::IsSnoopingProtectionEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kSnoopingProtection},
+                           {IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT1,
+                            IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2}});
+    }
+
+    // Quick dim: a.k.a leave detection, a.k.a lock on leave, a.k.a. smart
+    // privacy screen lock.
+    //
+    // TODO(crbug.com/1241706): defrag these terms into one canonical name.
+    if (ash::features::IsQuickDimEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY_QUICK_DIM,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kQuickDim}});
+    }
+
+    return init_tags;
+  }());
+
   return *tags;
 }
 
@@ -218,6 +266,10 @@ PrivacySection::PrivacySection(Profile* profile,
   if (chromeos::features::IsPciguardUiEnabled()) {
     updater.AddSearchTags(GetPciguardSearchConcepts());
   }
+
+  // Conditionally adds search tags concepts based on the subset of smart
+  // privacy functionality enabled.
+  updater.AddSearchTags(GetSmartPrivacySearchConcepts());
 }
 
 PrivacySection::~PrivacySection() = default;
@@ -226,6 +278,11 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::PeripheralDataAccessHandler>());
 
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::MetricsConsentHandler>(
+          profile(), g_browser_process->metrics_service(),
+          user_manager::UserManager::Get()));
+
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
 }
@@ -233,7 +290,10 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"enableLogging", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
-      {"enableLoggingDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC},
+      // TODO(crbug/1295789): Revert descriptions back to a single description
+      // once per-user crash is ready.
+      {"enableLoggingOwnerDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC},
+      {"enableLoggingUserDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC},
       {"enableContentProtectionAttestation",
        IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION},
       {"enableSuggestedContent", IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
@@ -255,16 +315,30 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
-      {"smartPrivacySubtext", IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT},
+      {"smartPrivacyQuickDimTitle",
+       IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE},
+      {"smartPrivacyQuickDimSubtext",
+       IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_SUBTEXT},
       {"smartPrivacySnoopingTitle",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE},
       {"smartPrivacySnoopingSubtext",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
+      {"smartPrivacySnoopingNotifications",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("isSnoopingProtectionEnabled",
                           ash::features::IsSnoopingProtectionEnabled());
+  html_source->AddBoolean("isQuickDimEnabled",
+                          ash::features::IsQuickDimEnabled());
+
+  html_source->AddString(
+      "smartPrivacyDesc",
+      ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));
+
+  // TODO(1294649): update this to the real link.
+  html_source->AddString("smartPrivacyLearnMoreLink", "about:blank");
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
@@ -283,6 +357,21 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   ::settings::AddPersonalizationOptionsStrings(html_source);
   ::settings::AddSecureDnsStrings(html_source);
+
+  html_source->AddBoolean("isRevenBranding", switches::IsRevenBranding());
+  if (switches::IsRevenBranding()) {
+    html_source->AddString(
+        "enableHWDataUsage",
+        l10n_util::GetStringFUTF8(
+            IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE,
+            l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
+    html_source->AddString(
+        "enableHWDataUsageDesc",
+        l10n_util::GetStringFUTF8(
+            IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC,
+            l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
+    // TODO(dkuzmin): add learn more link here once available b/190964241
+  }
 }
 
 int PrivacySection::GetSectionNameMessageId() const {
@@ -368,10 +457,15 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_OS_SETTINGS_SMART_PRIVACY_TITLE, mojom::Subpage::kSmartPrivacy,
       mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSmartPrivacySubpagePath);
+  RegisterNestedSettingBulk(
+      mojom::Subpage::kSmartPrivacy,
+      {{mojom::Setting::kSnoopingProtection, mojom::Setting::kQuickDim}},
+      generator);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {
-  return quick_unlock::IsFingerprintEnabled(profile());
+  return quick_unlock::IsFingerprintEnabled(profile(),
+                                            quick_unlock::Purpose::kAny);
 }
 
 void PrivacySection::UpdateRemoveFingerprintSearchTags() {

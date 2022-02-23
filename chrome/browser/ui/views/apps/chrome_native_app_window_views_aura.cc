@@ -19,7 +19,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/shell_integration_linux.h"
 #endif
 
@@ -56,7 +56,7 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
     const AppWindow::CreateParams& create_params,
     views::Widget::InitParams* init_params,
     views::Widget* widget) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   std::string app_name =
       web_app::GenerateApplicationNameFromAppId(app_window()->extension_id());
   // Set up a custom WM_CLASS for app windows. This allows task switchers in
@@ -66,7 +66,7 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
   init_params->wm_class_class = shell_integration_linux::GetProgramClassClass();
   const char kX11WindowRoleApp[] = "app";
   init_params->wm_role_name = std::string(kX11WindowRoleApp);
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   ChromeNativeAppWindowViews::OnBeforeWidgetInit(create_params, init_params,
                                                  widget);

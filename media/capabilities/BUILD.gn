@@ -9,6 +9,10 @@ proto_library("video_decode_stats_proto") {
   sources = [ "video_decode_stats.proto" ]
 }
 
+proto_library("webrtc_video_stats_proto") {
+  sources = [ "webrtc_video_stats.proto" ]
+}
+
 source_set("capabilities") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -28,10 +32,17 @@ source_set("capabilities") {
     "video_decode_stats_db_impl.h",
     "video_decode_stats_db_provider.cc",
     "video_decode_stats_db_provider.h",
+    "webrtc_video_stats_db.cc",
+    "webrtc_video_stats_db.h",
+    "webrtc_video_stats_db_impl.cc",
+    "webrtc_video_stats_db_impl.h",
+    "webrtc_video_stats_db_provider.cc",
+    "webrtc_video_stats_db_provider.h",
   ]
 
   public_deps = [
     ":video_decode_stats_proto",
+    ":webrtc_video_stats_proto",
     "//base",
     "//components/leveldb_proto",
     "//media/base",
@@ -52,6 +63,8 @@ source_set("unit_tests") {
     "in_memory_video_decode_stats_db_unittest.cc",
     "video_decode_stats_db_impl_unittest.cc",
     "video_decode_stats_db_unittest.cc",
+    "webrtc_video_stats_db_impl_unittest.cc",
+    "webrtc_video_stats_db_unittest.cc",
   ]
 
   deps = [
@@ -59,6 +72,7 @@ source_set("unit_tests") {
     # public_deps), because the generated files seem not to be available through
     # the transitive "capabilities" target (via media:test_support -> media).
     ":video_decode_stats_proto",
+    ":webrtc_video_stats_proto",
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
     "//media:test_support",

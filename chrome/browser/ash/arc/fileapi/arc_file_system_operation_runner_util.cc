@@ -7,8 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"

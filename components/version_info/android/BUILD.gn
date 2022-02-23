@@ -13,6 +13,7 @@ _version_constants_java_file = "$target_gen_dir/java/org/chromium/components/ver
 android_library("version_constants_java") {
   sources = [
     "java/src/org/chromium/components/version_info/VersionConstantsBridge.java",
+    "java/src/org/chromium/components/version_info/VersionInfo.java",
     _version_constants_java_file,
   ]
   deps = [

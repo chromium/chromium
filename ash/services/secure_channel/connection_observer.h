@@ -1,0 +1,44 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_
+#define ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_
+
+#include "ash/services/secure_channel/connection.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/wire_message.h"
+
+namespace ash::secure_channel {
+
+// An interface for observing events that happen on a Connection.
+class ConnectionObserver {
+ public:
+  virtual ~ConnectionObserver() {}
+
+  // Called when the |connection|'s status changes from |old_status| to
+  // |new_status|. The |connectoin| is guaranteed to be non-null.
+  virtual void OnConnectionStatusChanged(Connection* connection,
+                                         Connection::Status old_status,
+                                         Connection::Status new_status) {}
+
+  // Called when a |message| is received from a remote device over the
+  // |connection|.
+  virtual void OnMessageReceived(const Connection& connection,
+                                 const WireMessage& message) {}
+
+  // Called after a |message| is sent to the remote device over the
+  // |connection|. |success| is |true| iff the message is sent successfully.
+  virtual void OnSendCompleted(const Connection& connection,
+                               const WireMessage& message,
+                               bool success) {}
+};
+
+}  // namespace ash::secure_channel
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ConnectionObserver;
+}
+
+#endif  // ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_

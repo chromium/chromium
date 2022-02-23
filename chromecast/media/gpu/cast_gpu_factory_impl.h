@@ -52,7 +52,8 @@ class CastGpuFactoryImpl : public CastGpuFactory,
       override;
 
   // media::GpuVideoAcceleratorFactories implementation.
-  bool IsGpuVideoAcceleratorEnabled() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
   base::UnguessableToken GetChannelToken() override;
   int32_t GetCommandBufferRouteId() override;
   ::media::GpuVideoAcceleratorFactories::Supported IsDecoderConfigSupported(

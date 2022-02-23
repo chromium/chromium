@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.TaskTraits;
@@ -32,6 +33,7 @@ import java.util.concurrent.RejectedExecutionException;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class EnterpriseInfoTest {
     @Mock
     public EnterpriseInfo.Natives mNatives;

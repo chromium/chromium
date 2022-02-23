@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.provider.Browser;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -96,6 +98,8 @@ public class HistoryActivityTest {
 
     private HistoryItem mItem1;
     private HistoryItem mItem2;
+
+    private static final String HISTORY_SEARCH_QUERY = "some page";
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -477,6 +481,22 @@ public class HistoryActivityTest {
         // The first group should be the history item group from SetUp()
         Assert.assertFalse(mAdapter.hasListHeader());
         Assert.assertEquals(3, firstGroup.size());
+    }
+
+    @Test
+    @SmallTest
+    public void testSearch_NotFound() throws Exception {
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+
+        // Enter search mode
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
+        EditText searchText = toolbar.findViewById(R.id.search_text);
+        TestThreadUtils.runOnUiThreadBlocking(() -> searchText.setText(HISTORY_SEARCH_QUERY));
+
+        TextView emptyView = mActivityTestRule.getActivity().findViewById(R.id.empty_view);
+        Assert.assertThat(emptyView.getText().toString(),
+                is("Can’t find that page. Check your spelling or try a search on Google."));
     }
 
     @Test

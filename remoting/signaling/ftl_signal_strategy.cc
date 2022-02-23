@@ -22,9 +22,9 @@
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 namespace remoting {
 
@@ -201,9 +201,9 @@ bool FtlSignalStrategy::Core::SendStanza(
   DCHECK(to_error.empty());
 
   // Synthesizing the from attribute in the message.
-  stanza->SetAttr(jingle_xmpp::QN_FROM, local_address_.id());
+  stanza->SetAttr(kQNameFrom, local_address_.id());
 
-  std::string stanza_id = stanza->Attr(jingle_xmpp::QN_ID);
+  std::string stanza_id = stanza->Attr(kQNameId);
 
   ftl::ChromotingMessage crd_message;
   crd_message.mutable_xmpp()->set_stanza(stanza->Str());
@@ -404,11 +404,11 @@ void FtlSignalStrategy::Core::OnSendMessageResponse(
   }
 
   // Fake an error message so JingleSession will take it as PEER_IS_OFFLINE.
-  auto error_iq = std::make_unique<jingle_xmpp::XmlElement>(jingle_xmpp::QN_IQ);
-  error_iq->SetAttr(jingle_xmpp::QN_TYPE, jingle_xmpp::STR_ERROR);
-  error_iq->SetAttr(jingle_xmpp::QN_ID, stanza_id);
-  error_iq->SetAttr(jingle_xmpp::QN_FROM, receiver.id());
-  error_iq->SetAttr(jingle_xmpp::QN_TO, local_address_.id());
+  auto error_iq = std::make_unique<jingle_xmpp::XmlElement>(kQNameIq);
+  error_iq->SetAttr(kQNameType, kIqTypeError);
+  error_iq->SetAttr(kQNameId, stanza_id);
+  error_iq->SetAttr(kQNameFrom, receiver.id());
+  error_iq->SetAttr(kQNameTo, local_address_.id());
   OnStanza(receiver, std::move(error_iq));
 }
 
@@ -441,18 +441,18 @@ void FtlSignalStrategy::Core::OnStanza(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Validate the schema and FTL IDs.
-  if (stanza->Name() != jingle_xmpp::QN_IQ) {
+  if (stanza->Name() != kQNameIq) {
     LOG(DFATAL) << "Received unexpected non-IQ packet " << stanza->Str();
     return;
   }
-  if (SignalingAddress(stanza->Attr(jingle_xmpp::QN_FROM)) != sender_address) {
+  if (SignalingAddress(stanza->Attr(kQNameFrom)) != sender_address) {
     LOG(DFATAL) << "Expected sender: " << sender_address.id()
-                << ", but received: " << stanza->Attr(jingle_xmpp::QN_FROM);
+                << ", but received: " << stanza->Attr(kQNameFrom);
     return;
   }
-  if (SignalingAddress(stanza->Attr(jingle_xmpp::QN_TO)) != local_address_) {
+  if (SignalingAddress(stanza->Attr(kQNameTo)) != local_address_) {
     LOG(DFATAL) << "Expected receiver: " << local_address_.id()
-                << ", but received: " << stanza->Attr(jingle_xmpp::QN_TO);
+                << ", but received: " << stanza->Attr(kQNameTo);
     return;
   }
 

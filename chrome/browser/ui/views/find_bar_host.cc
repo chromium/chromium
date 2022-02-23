@@ -31,7 +31,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -64,7 +64,8 @@ class FindBarHostHelper
  private:
   friend class content::WebContentsUserData<FindBarHostHelper>;
 
-  explicit FindBarHostHelper(content::WebContents* web_contents) {}
+  explicit FindBarHostHelper(content::WebContents* web_contents)
+      : content::WebContentsUserData<FindBarHostHelper>(*web_contents) {}
 
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
 
@@ -146,7 +147,7 @@ bool FindBarHost::MaybeForwardKeyEventToWebpage(
     case ui::VKEY_END:
       if (key_event.IsControlDown())
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return false;
   }
@@ -238,7 +239,7 @@ void FindBarHost::UpdateUIForFindResult(
 
 void FindBarHost::AudibleAlert() {
   ++audible_alerts_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MessageBeep(MB_OK);
 #endif
 }
@@ -271,7 +272,7 @@ void FindBarHost::RestoreSavedFocus() {
 }
 
 bool FindBarHost::HasGlobalFindPasteboard() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return true;
 #else
   return false;

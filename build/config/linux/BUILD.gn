@@ -22,6 +22,9 @@ config("compiler") {
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
       asmflags += [ "-mbranch-protection=standard" ]
+    } else if (arm_control_flow_integrity == "pac") {
+      cflags += [ "-mbranch-protection=pac-ret" ]
+      asmflags += [ "-mbranch-protection=pac-ret" ]
     }
   }
 }
@@ -65,13 +68,4 @@ if (use_glib) {
       "GLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_40",
     ]
   }
-}
-
-# Ensures all exported symbols are added to the dynamic symbol table.  This is
-# necessary to expose Chrome's custom operator new() and operator delete() (and
-# other memory-related symbols) to libraries.  Otherwise, they might
-# (de)allocate memory on a different heap, which would spell trouble if pointers
-# to heap-allocated memory are passed over shared library boundaries.
-config("export_dynamic") {
-  ldflags = [ "-rdynamic" ]
 }

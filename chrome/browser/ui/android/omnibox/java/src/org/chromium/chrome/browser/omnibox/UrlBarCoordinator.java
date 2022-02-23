@@ -18,7 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -122,9 +122,9 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mMediator.setAutocompleteText(userText, autocompleteText);
     }
 
-    /** @see UrlBarMediator#setOmniboxTheme(int) */
-    public boolean setOmniboxTheme(@OmniboxTheme int omniboxTheme) {
-        return mMediator.setOmniboxTheme(omniboxTheme);
+    /** @see UrlBarMediator#setBrandedColorScheme(int) */
+    public boolean setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        return mMediator.setBrandedColorScheme(brandedColorScheme);
     }
 
     /** @see UrlBarMediator#setIncognitoColorsEnabled(boolean) */

@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
@@ -989,13 +990,6 @@ void ResourceLoader::DidReceiveResponseInternal(
                                resource_);
   }
 
-  if (fetcher_->GetProperties().IsDetached()) {
-    // If the fetch context is already detached, we don't need further signals,
-    // so let's cancel the request.
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
-    return;
-  }
-
   ResourceType resource_type = resource_->GetType();
 
   const ResourceRequestHead& initial_request = resource_->GetResourceRequest();
@@ -1124,6 +1118,13 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   resource_->ResponseReceived(response);
 
+  if (resource_->Loader() && fetcher_->GetProperties().IsDetached()) {
+    // If the fetch context is already detached, we don't need further signals,
+    // so let's cancel the request.
+    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    return;
+  }
+
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the
   // corresponding cached code.
@@ -1150,7 +1151,7 @@ void ResourceLoader::DidReceiveResponseInternal(
 
   if (response.HttpStatusCode() >= 400 &&
       !resource_->ShouldIgnoreHTTPStatusCodeErrors()) {
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    HandleError(ResourceError::HttpError(response.CurrentRequestUrl()));
     return;
   }
 }
@@ -1357,14 +1358,11 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   WebBlobInfo downloaded_blob;
 
   if (CanHandleDataURLRequestLocally(request)) {
-    ResourceResponse response;
-    scoped_refptr<SharedBuffer> data;
-    int result;
-    // It doesn't have to verify mime type again since it's allowed to handle
+    // We don't have to verify mime type again since it's allowed to handle
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
     // be handled here.
-    std::tie(result, response, data) =
+    auto [result, response, data] =
         network_utils::ParseDataURL(resource_->Url(), request.HttpMethod());
     if (result != net::OK) {
       error_out = WebURLError(result, resource_->Url());
@@ -1587,14 +1585,11 @@ void ResourceLoader::HandleDataUrl() {
   }
 
   // Extract a ResourceResponse from the data url.
-  ResourceResponse response;
-  scoped_refptr<SharedBuffer> data;
-  int result;
-  // We doesn't have to verify mime type again since it's allowed to handle the
+  // We don't have to verify mime type again since it's allowed to handle the
   // data url with invalid mime type in some cases.
   // CanHandleDataURLRequestLocally() has already checked if the data url can be
   // handled here.
-  std::tie(result, response, data) = network_utils::ParseDataURL(
+  auto [result, response, data] = network_utils::ParseDataURL(
       resource_->Url(), resource_->GetResourceRequest().HttpMethod());
   if (result != net::OK) {
     HandleError(ResourceError(result, resource_->Url(), absl::nullopt));

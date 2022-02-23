@@ -23,12 +23,14 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager,
+    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
     base::Clock* clock,
     const PlatformOptions& platform_options)
     : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
       model_execution_manager_(model_execution_manager),
+      all_segment_ids_(segment_ids),
       clock_(clock),
       platform_options_(platform_options) {}
 
@@ -53,7 +55,10 @@ void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
 
 void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
     bool expired_only) {
-  segment_database_->GetAllSegmentInfo(
+  std::vector<OptimizationTarget> segment_ids(all_segment_ids_.begin(),
+                                              all_segment_ids_.end());
+  segment_database_->GetSegmentInfoForSegments(
+      segment_ids,
       base::BindOnce(&ModelExecutionSchedulerImpl::FilterEligibleSegments,
                      weak_ptr_factory_.GetWeakPtr(), expired_only));
 }
@@ -81,6 +86,10 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     segment_result.set_timestamp_us(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     stats::RecordModelScore(segment_id, result.first);
+  } else {
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::
+            kAtLeastOneModelFailedExecution);
   }
 
   segment_database_->SaveSegmentResult(
@@ -91,10 +100,9 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
 
 void ModelExecutionSchedulerImpl::FilterEligibleSegments(
     bool expired_only,
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        all_segments) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
   std::vector<OptimizationTarget> models_to_run;
-  for (const auto& pair : all_segments) {
+  for (const auto& pair : *all_segments) {
     OptimizationTarget segment_id = pair.first;
     const proto::SegmentInfo& segment_info = pair.second;
     if (!ShouldExecuteSegment(expired_only, segment_info)) {
@@ -132,6 +140,9 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
   // Filter out segments that don't match signal collection min length.
   if (!signal_storage_config_->MeetsSignalCollectionRequirement(
           segment_info.model_metadata())) {
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::
+            kAtLeastOneModelNeedsMoreSignals);
     VLOG(1) << "Segmentation model not executed since metadata requirements "
                "not met.";
     return false;
@@ -152,8 +163,11 @@ void ModelExecutionSchedulerImpl::CancelOutstandingExecutionRequests(
 void ModelExecutionSchedulerImpl::OnResultSaved(OptimizationTarget segment_id,
                                                 bool success) {
   stats::RecordModelExecutionSaveResult(segment_id, success);
-  if (!success)
+  if (!success) {
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::kFailedToSaveModelResult);
     return;
+  }
 
   for (Observer* observer : observers_)
     observer->OnModelExecutionCompleted(segment_id);

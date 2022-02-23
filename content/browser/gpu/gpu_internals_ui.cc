@@ -58,7 +58,7 @@
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #include "ui/gfx/win/physical_size.h"
 #endif
@@ -92,7 +92,7 @@ WebUIDataSource* CreateGpuHTMLSource() {
   return source;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Output DxDiagNode tree as nested array of {description,value} pairs
 base::Value DxDiagNodeToList(const gpu::DxDiagNode& node) {
   base::Value list(base::Value::Type::LIST);
@@ -112,7 +112,7 @@ base::Value DxDiagNodeToList(const gpu::DxDiagNode& node) {
   }
   return list;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
@@ -123,15 +123,15 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
     device += " [" + gpu.device_string + "]";
   std::string rt = base::StringPrintf("VENDOR= %s, DEVICE=%s", vendor.c_str(),
                                       device.c_str());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu.sub_sys_id)
     rt += base::StringPrintf(", SUBSYS=0x%08x", gpu.sub_sys_id);
 #endif
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   if (gpu.revision)
     rt += base::StringPrintf(", REV=%u", gpu.revision);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   rt += base::StringPrintf(", LUID={%ld,%lu}", gpu.luid.HighPart,
                            gpu.luid.LowPart);
 #endif
@@ -167,7 +167,7 @@ std::vector<base::Value> GetBasicGpuInfo(
       display::BuildGpuInfoEntry("Optimus", base::Value(gpu_info.optimus)));
   basic_info.push_back(display::BuildGpuInfoEntry(
       "AMD switchable", base::Value(gpu_info.amd_switchable)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string compositor =
       ui::win::IsAeroGlassEnabled() ? "Aero Glass" : "none";
   basic_info.push_back(
@@ -321,7 +321,7 @@ base::flat_map<std::string, base::Value> GetGpuInfo() {
       GetBasicGpuInfo(gpu_info, gpu_feature_info, gpu_extra_info);
   info["basicInfo"] = base::Value(std::move(basic_info));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::Value dx_info(base::Value::Type::LIST);
   if (gpu_info.dx_diagnostics.children.size())
     dx_info = DxDiagNodeToList(gpu_info.dx_diagnostics);
@@ -416,7 +416,11 @@ base::Value GetDisplayInfo() {
     }
     display_info.Append(display::BuildGpuInfoEntry(
         "SDR white level in nits",
-        base::NumberToString(display.color_spaces().GetSDRWhiteLevel())));
+        base::NumberToString(display.color_spaces().GetSDRMaxLuminanceNits())));
+    display_info.Append(display::BuildGpuInfoEntry(
+        "HDR relative maximum luminance",
+        base::NumberToString(
+            display.color_spaces().GetHDRMaxLuminanceRelative())));
     display_info.Append(display::BuildGpuInfoEntry(
         "Bits per color component",
         base::NumberToString(display.depth_per_component())));
@@ -431,7 +435,7 @@ base::Value GetDisplayInfo() {
   return display_info;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char* D3dFeatureLevelToString(D3D_FEATURE_LEVEL level) {
   switch (level) {
     case D3D_FEATURE_LEVEL_1_0_CORE:
@@ -472,7 +476,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
   NOTREACHED();
   return "";
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 base::Value GetDevicePerfInfo() {
   auto list = base::Value(base::Value::Type::LIST);
@@ -490,7 +494,7 @@ base::Value GetDevicePerfInfo() {
         "Hardware Concurrency",
         base::NumberToString(device_perf_info->hardware_concurrency)));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     list.Append(display::BuildGpuInfoEntry(
         "System Commit Limit (Gb)",
         base::NumberToString(device_perf_info->system_commit_limit_mb / 1024)));
@@ -500,7 +504,7 @@ base::Value GetDevicePerfInfo() {
     list.Append(display::BuildGpuInfoEntry(
         "Has Discrete GPU",
         HasDiscreteGpuToString(device_perf_info->has_discrete_gpu)));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
     if (device_perf_info->intel_gpu_generation !=
         gpu::IntelGpuGeneration::kNonIntel) {
@@ -694,9 +698,9 @@ class GpuMessageHandler
 
   // Submessages dispatched from OnCallAsync
   std::unique_ptr<base::DictionaryValue> OnRequestClientInfo(
-      const base::ListValue* list);
+      std::vector<base::Value> list);
   std::unique_ptr<base::ListValue> OnRequestLogMessages(
-      const base::ListValue* list);
+      std::vector<base::Value> list);
 
  private:
   // True if observing the GpuDataManager (re-attaching as observer would
@@ -733,28 +737,27 @@ void GpuMessageHandler::RegisterMessages() {
 }
 
 void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
-  DCHECK_GE(args->GetList().size(), static_cast<size_t>(2));
+  base::Value::ConstListView args_list = args->GetListDeprecated();
+  DCHECK_GE(args_list.size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
-  bool ok;
-  const base::Value& requestId = args->GetList()[0];
-
+  const base::Value& requestId = args_list[0];
   std::string submessage;
-  ok = args->GetString(1, &submessage);
-  DCHECK(ok);
+  if (args_list[1].is_string())
+    submessage = args_list[1].GetString();
+  else
+    DCHECK(false) << "submessage isn't string";
 
-  auto submessageArgs = std::make_unique<base::ListValue>();
-  for (size_t i = 2; i < args->GetList().size(); ++i) {
-    const base::Value& arg = args->GetList()[i];
-
-    submessageArgs->Append(arg.Clone());
+  std::vector<base::Value> submessageArgs;
+  for (size_t i = 2; i < args_list.size(); ++i) {
+    submessageArgs.push_back(args_list[i].Clone());
   }
 
   // call the submessage handler
   std::unique_ptr<base::Value> ret;
   if (submessage == "requestClientInfo") {
-    ret = OnRequestClientInfo(submessageArgs.get());
+    ret = OnRequestClientInfo(std::move(submessageArgs));
   } else if (submessage == "requestLogMessages") {
-    ret = OnRequestLogMessages(submessageArgs.get());
+    ret = OnRequestLogMessages(std::move(submessageArgs));
   } else {  // unrecognized submessage
     NOTREACHED();
     return;
@@ -794,33 +797,33 @@ void GpuMessageHandler::OnBrowserBridgeInitialized(
 }
 
 std::unique_ptr<base::DictionaryValue> GpuMessageHandler::OnRequestClientInfo(
-    const base::ListValue* list) {
+    std::vector<base::Value> args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto dict = std::make_unique<base::DictionaryValue>();
 
-  dict->SetString("version", GetContentClient()->browser()->GetProduct());
+  dict->SetStringKey("version", GetContentClient()->browser()->GetProduct());
   base::CommandLine::StringType command_line =
       base::CommandLine::ForCurrentProcess()->GetCommandLineString();
-#if defined(OS_WIN)
-  dict->SetString("command_line", base::WideToUTF8(command_line));
+#if BUILDFLAG(IS_WIN)
+  dict->SetStringKey("command_line", base::WideToUTF8(command_line));
 #else
-  dict->SetString("command_line", command_line);
+  dict->SetStringKey("command_line", command_line);
 #endif
-  dict->SetString("operating_system",
-                  base::SysInfo::OperatingSystemName() + " " +
-                  base::SysInfo::OperatingSystemVersion());
-  dict->SetString("angle_commit_id", angle::GetANGLECommitHash());
-  dict->SetString("graphics_backend",
-                  std::string("Skia/" STRINGIZE(SK_MILESTONE)
-                              " " SKIA_COMMIT_HASH));
-  dict->SetString("revision_identifier", GPU_LISTS_VERSION);
+  dict->SetStringKey("operating_system",
+                     base::SysInfo::OperatingSystemName() + " " +
+                         base::SysInfo::OperatingSystemVersion());
+  dict->SetStringKey("angle_commit_id", angle::GetANGLECommitHash());
+  dict->SetStringKey(
+      "graphics_backend",
+      std::string("Skia/" STRINGIZE(SK_MILESTONE) " " SKIA_COMMIT_HASH));
+  dict->SetStringKey("revision_identifier", GPU_LISTS_VERSION);
 
   return dict;
 }
 
 std::unique_ptr<base::ListValue> GpuMessageHandler::OnRequestLogMessages(
-    const base::ListValue*) {
+    std::vector<base::Value> args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return GpuDataManagerImpl::GetInstance()->GetLogMessages();

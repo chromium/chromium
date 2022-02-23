@@ -81,6 +81,9 @@ bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
 
 }  // namespace
 
+size_t CanvasResourceProvider::max_pinned_image_bytes_ =
+    kDefaultMaxPinnedImageBytes;
+
 class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
  public:
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
@@ -644,6 +647,18 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     resource_->WaitSyncToken(sync_token);
   }
 
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override {
+    CanvasResourceProvider::OnFlushForImage(content_id);
+    if (cached_snapshot_ &&
+        cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
+            content_id) {
+      // This handles the case where the cached snapshot is referenced by an
+      // ImageBitmap that is being transferred to a worker.
+      cached_snapshot_.reset();
+    }
+  }
+
+ private:
   const bool is_accelerated_;
   const uint32_t shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
@@ -791,11 +806,15 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     if (IsGpuContextLost() || !resource_)
       return nullptr;
 
+    const auto& capabilities =
+        ContextProviderWrapper()->ContextProvider()->GetCapabilities();
+
     GrGLTextureInfo texture_info = {};
     texture_info.fID = resource_->GetBackBufferTextureId();
     texture_info.fTarget = resource_->TextureTarget();
     texture_info.fFormat = viz::TextureStorageFormat(
-        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()));
+        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()),
+        capabilities.angle_rgbx_internal_format);
 
     auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
                                             GrMipMapped::kNo, texture_info);
@@ -968,7 +987,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
     shared_image_usage_flags &= ~gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if ((shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
       is_accelerated && adjusted_info.colorType() == kRGBA_8888_SkColorType) {
     // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
@@ -992,14 +1011,16 @@ CanvasResourceProvider::CreateSharedImageProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateWebGPUImageProvider(const SkImageInfo& info,
-                                                  bool is_origin_top_left) {
+CanvasResourceProvider::CreateWebGPUImageProvider(
+    const SkImageInfo& info,
+    bool is_origin_top_left,
+    uint32_t shared_image_usage_flags) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
-      gpu::SHARED_IMAGE_USAGE_WEBGPU);
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU);
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1088,7 +1109,9 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
       cc::PlaybackImageProvider::Settings();
   settings->raster_mode = raster_mode_;
 
-  playback_image_provider_n32_.emplace(cache_n32, target_color_space,
+  cc::TargetColorParams target_color_params;
+  target_color_params.color_space = target_color_space;
+  playback_image_provider_n32_.emplace(cache_n32, target_color_params,
                                        std::move(settings));
   // If the image provider may require to decode to half float instead of
   // uint8, create a f16 PlaybackImageProvider with the passed cache.
@@ -1096,7 +1119,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     DCHECK(cache_f16);
     settings = cc::PlaybackImageProvider::Settings();
     settings->raster_mode = raster_mode_;
-    playback_image_provider_f16_.emplace(cache_f16, target_color_space,
+    playback_image_provider_f16_.emplace(cache_f16, target_color_params,
                                          std::move(settings));
   }
 }
@@ -1209,6 +1232,14 @@ SkSurface* CanvasResourceProvider::GetSkSurface() const {
   if (!surface_)
     surface_ = CreateSkSurface();
   return surface_.get();
+}
+
+void CanvasResourceProvider::NotifyWillTransfer(
+    cc::PaintImage::ContentId content_id) {
+  // This is called when an ImageBitmap is about to be transferred. All
+  // references to such a bitmap on the current thread must be released, which
+  // means that DisplayItemLists that reference it must be flushed.
+  GetFlushForImageListener()->NotifyFlushForImage(content_id);
 }
 
 void CanvasResourceProvider::EnsureSkiaCanvas() {
@@ -1351,12 +1382,12 @@ void CanvasResourceProvider::FlushCanvas() {
 }
 
 sk_sp<cc::PaintRecord>
-CanvasResourceProvider::FlushCanvasAndPreserveRecording() {
-  return FlushCanvasInternal(true);
+CanvasResourceProvider::FlushCanvasAndMaybePreserveRecording(bool printing) {
+  return FlushCanvasInternal((printing || IsPrinting()) && clear_frame_);
 }
 
-IntSize CanvasResourceProvider::Size() const {
-  return IntSize(info_.width(), info_.height());
+gfx::Size CanvasResourceProvider::Size() const {
+  return gfx::Size(info_.width(), info_.height());
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
@@ -1375,6 +1406,7 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
     bool preserve_recording) {
   if (!HasRecordedDrawOps())
     return nullptr;
+  clear_frame_ = false;
   sk_sp<cc::PaintRecord> last_recording = recorder_->finishRecordingAsPicture();
   RasterRecord(last_recording, preserve_recording);
   total_pinned_image_bytes_ = 0;
@@ -1476,6 +1508,7 @@ void CanvasResourceProvider::Clear() {
     Canvas()->clear(SK_ColorTRANSPARENT);
 
   FlushCanvas();
+  ClearFrame();
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
@@ -1582,7 +1615,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   // Note that this function only gets called when canvas needs a full repaint,
   // so always update the |mode_| to discard the old copy of canvas content.
   mode_ = SkSurface::kDiscard_ContentChangeMode;
-
+  ClearFrame();
   if (!HasRecordedDrawOps())
     return;
   recorder_->finishRecordingAsPicture();

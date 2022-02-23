@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/background_sync_parameters.h"

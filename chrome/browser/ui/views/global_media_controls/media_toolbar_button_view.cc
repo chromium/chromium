@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -51,7 +51,6 @@ MediaToolbarButtonView::MediaToolbarButtonView(
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),
-      feature_promo_controller_(browser_view->feature_promo_controller()),
       context_menu_(std::move(context_menu)) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -106,11 +105,14 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  // Have to check for browser window because this can be called during setup,
+  // before there is a valid widget to anchor anything to. Previously any
+  // attempt to display an IPH at this point would have simply failed, so this
+  // is not a behavioral change (see crbug.com/1291170).
+  if (browser_->window() && media::IsLiveCaptionFeatureEnabled()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
-    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) &&
-        base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-      feature_promo_controller_->MaybeShowPromo(
+    if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+      browser_->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHLiveCaptionFeature);
     } else {
       // Live Caption only works for English-language speech for now, so we only
@@ -121,7 +123,7 @@ void MediaToolbarButtonView::Enable() {
               ->GetPrimaryModel();
       for (const auto& lang : language_model->GetLanguages()) {
         if (base::MatchPattern(lang.lang_code, "en*")) {
-          feature_promo_controller_->MaybeShowPromo(
+          browser_->window()->MaybeShowFeaturePromo(
               feature_engagement::kIPHLiveCaptionFeature);
           break;
         }
@@ -143,10 +145,10 @@ void MediaToolbarButtonView::Disable() {
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
-      media_router::MediaRouterEnabled(browser_->profile()) &&
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
       service_->HasLocalCastNotifications()) {
-    feature_promo_controller_->MaybeShowPromo(
+    browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }
 }
@@ -155,9 +157,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
   } else {
-    MediaDialogView::ShowDialog(
-        this, service_, browser_->profile(),
-        global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon);
+    MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
     ClosePromoBubble();
 
     for (auto& observer : observers_)
@@ -166,9 +166,15 @@ void MediaToolbarButtonView::ButtonPressed() {
 }
 
 void MediaToolbarButtonView::ClosePromoBubble() {
-  feature_promo_controller_->CloseBubble(
+  // This can get called during setup before the window is even added to the
+  // browser (and before any bubbles could possibly be shown) so if there is no
+  // window, just bail.
+  if (!browser_->window())
+    return;
+
+  browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHLiveCaptionFeature);
-  feature_promo_controller_->CloseBubble(
+  browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHGMCCastStartStopFeature);
 }
 

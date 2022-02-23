@@ -10,6 +10,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
@@ -56,9 +58,12 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/app/vector_icons/vector_icons.h"
+#endif
+
 namespace {
 
-constexpr char kGoogleGIconResourceName[] = "google_g.png";
 constexpr char kSearchIconResourceName[] = "search.svg";
 
 constexpr char kAnswerCurrencyIconResourceName[] = "realbox/icons/currency.svg";
@@ -89,9 +94,12 @@ constexpr char kDriveSlidesIconResourceName[] =
 constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "realbox/icons/extension_app.svg";
+constexpr char kGoogleGIconResourceName[] = "realbox/icons/google_g.svg";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
+#endif
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
@@ -109,6 +117,13 @@ CreateSuggestionGroupsMap(
     suggestion_group->header = pair.second;
     suggestion_group->hidden =
         result.IsSuggestionGroupIdHidden(prefs, pair.first);
+    suggestion_group->show_group_a11y_label =
+        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON,
+                                   result.GetHeaderForGroupId(pair.first));
+    suggestion_group->hide_group_a11y_label =
+        l10n_util::GetStringFUTF16(IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON,
+                                   result.GetHeaderForGroupId(pair.first));
+
     result_map.emplace(pair.first, std::move(suggestion_group));
   }
   return result_map;
@@ -139,10 +154,33 @@ std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
   return base::JoinString(text, u" ");
 }
 
+std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
+                                        RealboxHandler::FocusState state) {
+  switch (state) {
+    case RealboxHandler::FocusState::kFocusedMatch: {
+      if (match.action) {
+        return match.action->GetLabelStrings().accessibility_suffix;
+      }
+      if (match.SupportsDeletion()) {
+        return l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_SUFFIX);
+      }
+      break;
+    }
+    case RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion:
+      return l10n_util::GetStringUTF16(
+          IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX);
+    default:
+      NOTREACHED();
+      break;
+  }
+  return std::u16string();
+}
+
 std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model) {
   std::vector<realbox::mojom::AutocompleteMatchPtr> matches;
+  int line = 0;
   for (const AutocompleteMatch& match : result) {
     realbox::mojom::AutocompleteMatchPtr mojom_match =
         realbox::mojom::AutocompleteMatch::New();
@@ -193,17 +231,32 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value() &&
          base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
-    if (match.action &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+    const bool has_action = match.action && base::FeatureList::IsEnabled(
+                                                omnibox::kNtpRealboxPedals);
+    if (has_action) {
       mojom_match->action = realbox::mojom::Action::New(
           match.action->GetLabelStrings().accessibility_hint,
-          match.action->GetLabelStrings().accessibility_suffix,
           match.action->GetLabelStrings().hint,
           match.action->GetLabelStrings().suggestion_contents,
           RealboxHandler::PedalVectorIconToResourceName(
               match.action->GetVectorIcon()));
     }
+    mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
+        match, match.contents, line, 0,
+        GetAdditionalA11yMessage(match,
+                                 RealboxHandler::FocusState::kFocusedMatch));
+
+    mojom_match->remove_button_a11y_label =
+        AutocompleteMatchType::ToAccessibilityLabel(
+            match, match.contents, line, 0,
+            GetAdditionalA11yMessage(
+                match,
+                RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion));
+
+    mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
+
     matches.push_back(std::move(mojom_match));
+    line++;
   }
   return matches;
 }
@@ -223,7 +276,6 @@ realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
 // static
 void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
   static constexpr webui::ResourcePath kImages[] = {
-      {kGoogleGIconResourceName, IDR_WEBUI_IMAGES_200_LOGO_GOOGLEG_PNG},
       {kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG}};
   source->AddResourcePaths(kImages);
 
@@ -231,17 +283,26 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
       {"searchBoxHint", IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD},
       {"realboxSeparator", IDS_AUTOCOMPLETE_MATCH_DESCRIPTION_SEPARATOR},
       {"removeSuggestion", IDS_OMNIBOX_REMOVE_SUGGESTION},
-      {"removeSuggestionA11ySuffix", IDS_ACC_REMOVE_SUGGESTION_SUFFIX},
-      {"removeSuggestionA11yPrefix", IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX},
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON},
-      {"hideSection", IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON},
-      {"showSection", IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON}};
+      {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
 
+  source->AddInteger(
+      "realboxMatchOmniboxThemeVariant",
+      base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kRealboxMatchOmniboxTheme,
+          ntp_features::kRealboxMatchOmniboxThemeVariantParam, 0));
   source->AddBoolean(
       "realboxMatchOmniboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchOmniboxTheme));
+  source->AddBoolean(
+      "roundCorners",
+      base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kRealboxMatchSearchboxTheme,
+          ntp_features::kRealboxMatchSearchboxThemeParam, 0) == 1);
+  source->AddBoolean(
+      "realboxMatchSearchboxTheme",
+      base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
@@ -326,28 +387,36 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
   if (icon.name == omnibox::kDriveFormsIcon.name) {
     return kDriveFormIconResourceName;
-  } else if (icon.name == omnibox::kDriveDocsIcon.name) {
-    return kDriveDocsIconResourceName;
-  } else if (icon.name == omnibox::kDriveSheetsIcon.name) {
-    return kDriveSheetsIconResourceName;
-  } else if (icon.name == omnibox::kDriveSlidesIcon.name) {
-    return kDriveSlidesIconResourceName;
-  } else if (icon.name == omnibox::kGoogleCalendarIcon.name) {
-    return kGoogleCalendarIconResourceName;
-  } else if (icon.name == omnibox::kGoogleKeepNoteIcon.name) {
-    return kGoogleKeepNoteIconResourceName;
-  } else if (icon.name == omnibox::kGoogleSitesIcon.name) {
-    return kGoogleSitesIconResourceName;
-  } else if (icon.name == omnibox::kGoogleSuperGIcon.name) {
-    return kGoogleGIconResourceName;
-  } else if (icon.name == omnibox::kPedalIcon.name) {
-    return kPedalsIconResourceName;
-  } else {
-    NOTREACHED()
-        << "Every vector icon returned by OmniboxAction::GetVectorIcon "
-           "must have an equivalent SVG resource for the NTP Realbox.";
-    return "";
   }
+  if (icon.name == omnibox::kDriveDocsIcon.name) {
+    return kDriveDocsIconResourceName;
+  }
+  if (icon.name == omnibox::kDriveSheetsIcon.name) {
+    return kDriveSheetsIconResourceName;
+  }
+  if (icon.name == omnibox::kDriveSlidesIcon.name) {
+    return kDriveSlidesIconResourceName;
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (icon.name == kGoogleCalendarIcon.name) {
+    return kGoogleCalendarIconResourceName;
+  }
+  if (icon.name == kGoogleKeepNoteIcon.name) {
+    return kGoogleKeepNoteIconResourceName;
+  }
+  if (icon.name == kGoogleSitesIcon.name) {
+    return kGoogleSitesIconResourceName;
+  }
+  if (icon.name == kGoogleSuperGIcon.name) {
+    return kGoogleGIconResourceName;
+  }
+#endif
+  if (icon.name == omnibox::kPedalIcon.name) {
+    return kPedalsIconResourceName;
+  }
+  NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
+                  "must have an equivalent SVG resource for the NTP Realbox.";
+  return "";
 }
 
 RealboxHandler::RealboxHandler(
@@ -627,6 +696,11 @@ void RealboxHandler::ExecuteAction(uint8_t line,
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
   DCHECK(controller == autocomplete_controller_.get());
+
+  // Prepend missing tail suggestion prefixes in results, if present.
+  if (base::FeatureList::IsEnabled(omnibox::kNtpRealboxTailSuggest)) {
+    autocomplete_controller_->SetTailSuggestCommonPrefixes();
+  }
 
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),

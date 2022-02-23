@@ -16,14 +16,12 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -32,10 +30,11 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,7 +52,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -65,9 +63,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedAppMenuTest {
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsRule =
-            new DisableAnimationsTestRule();
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
@@ -84,6 +79,8 @@ public class TabbedAppMenuTest {
 
     @Before
     public void setUp() {
+        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
+
         // We need list selection; ensure we are not in touch mode.
         InstrumentationRegistry.getInstrumentation().setInTouchMode(false);
 
@@ -212,26 +209,13 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testHideMenuOnToggleOverview() throws TimeoutException {
-        CallbackHelper overviewModeFinishedShowingCallback = new CallbackHelper();
-        OverviewModeBehavior.OverviewModeObserver overviewModeObserver =
-                new EmptyOverviewModeObserver() {
-                    @Override
-                    public void onOverviewModeFinishedShowing() {
-                        overviewModeFinishedShowingCallback.notifyCalled();
-                    }
-                };
-
         // App menu is shown during setup.
         Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
         Assert.assertFalse("Overview shouldn't be showing.",
                 mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getLayoutManager().addOverviewModeObserver(
-                    overviewModeObserver);
-            mActivityTestRule.getActivity().getLayoutManager().showOverview(false);
-        });
-        overviewModeFinishedShowingCallback.waitForCallback(0);
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
         Assert.assertTrue("Overview should be showing.",
                 mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
@@ -244,7 +228,9 @@ public class TabbedAppMenuTest {
         showAppMenuAndAssertMenuShown();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
+                                LayoutType.BROWSING, false));
         Assert.assertFalse("Overview shouldn't be showing.",
                 mActivityTestRule.getActivity().getOverviewModeBehavior().overviewVisible());
         CriteriaHelper.pollUiThread(

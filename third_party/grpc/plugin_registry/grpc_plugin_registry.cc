@@ -31,8 +31,6 @@ void grpc_chttp2_plugin_init(void);
 void grpc_chttp2_plugin_shutdown(void);
 void grpc_client_channel_init(void);
 void grpc_client_channel_shutdown(void);
-void grpc_inproc_plugin_init(void);
-void grpc_inproc_plugin_shutdown(void);
 void grpc_resolver_fake_init(void);
 void grpc_resolver_fake_shutdown(void);
 void grpc_lb_policy_grpclb_init(void);
@@ -68,6 +66,8 @@ void ServiceConfigParserShutdown(void);
 
 #ifndef GRPC_NO_XDS
 namespace grpc_core {
+void RbacFilterInit(void);
+void RbacFilterShutdown(void);
 void XdsClientGlobalInit();
 void XdsClientGlobalShutdown();
 }  // namespace grpc_core
@@ -103,7 +103,6 @@ void grpc_register_built_in_plugins(void) {
   grpc_register_plugin(grpc_core::ServiceConfigParserInit,
                        grpc_core::ServiceConfigParserShutdown);
   grpc_register_plugin(grpc_client_channel_init, grpc_client_channel_shutdown);
-  grpc_register_plugin(grpc_inproc_plugin_init, grpc_inproc_plugin_shutdown);
   grpc_register_plugin(grpc_resolver_fake_init, grpc_resolver_fake_shutdown);
   // grpc_register_plugin(grpc_lb_policy_grpclb_init,
   // grpc_lb_policy_grpclb_shutdown);
@@ -132,6 +131,10 @@ void grpc_register_built_in_plugins(void) {
   grpc_register_plugin(grpc_core::FaultInjectionFilterInit,
                        grpc_core::FaultInjectionFilterShutdown);
 #ifndef GRPC_NO_XDS
+  // rbac_filter is being guarded with GRPC_NO_XDS to avoid a dependency on the
+  // re2 library by default
+  grpc_register_plugin(grpc_core::RbacFilterInit,
+                       grpc_core::RbacFilterShutdown);
   grpc_register_plugin(grpc_core::XdsClientGlobalInit,
                        grpc_core::XdsClientGlobalShutdown);
   grpc_register_plugin(grpc_certificate_provider_registry_init,
@@ -173,6 +176,7 @@ extern void RegisterMessageSizeFilter(CoreConfiguration::Builder* builder);
 extern void RegisterSecurityFilters(CoreConfiguration::Builder* builder);
 extern void RegisterServiceConfigChannelArgFilter(
     CoreConfiguration::Builder* builder);
+extern void RegisterResourceQuota(CoreConfiguration::Builder* builder);
 #ifndef GRPC_NO_XDS
 extern void RegisterXdsChannelStackModifier(
     CoreConfiguration::Builder* builder);
@@ -189,6 +193,7 @@ void BuildCoreConfiguration(CoreConfiguration::Builder* builder) {
   RegisterDeadlineFilter(builder);
   RegisterMessageSizeFilter(builder);
   RegisterServiceConfigChannelArgFilter(builder);
+  RegisterResourceQuota(builder);
 #ifndef GRPC_NO_XDS
   RegisterXdsChannelStackModifier(builder);
 #endif

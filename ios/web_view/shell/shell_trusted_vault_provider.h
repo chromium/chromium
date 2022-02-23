@@ -7,10 +7,23 @@
 
 #import <ChromeWebView/ChromeWebView.h>
 
+#import "ios/web_view/shell/shell_auth_service.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 // Provides trusted vault functions to ChromeWebView.
 @interface ShellTrustedVaultProvider : NSObject <CWVTrustedVaultProvider>
+
+- (instancetype)initWithAuthService:(ShellAuthService*)authService
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (void)showFetchKeysFlowForIdentity:(CWVIdentity*)identity
+                  fromViewController:(UIViewController*)viewController;
+- (void)showFixDegradedRecoverabilityFlowForIdentity:(CWVIdentity*)identity
+                                  fromViewController:
+                                      (UIViewController*)viewController;
+
 @end
 
 NS_ASSUME_NONNULL_END

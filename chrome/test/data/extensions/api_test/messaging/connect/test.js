@@ -272,8 +272,39 @@ chrome.test.getConfig(function(config) {
       chrome.tabs.reload(testTab.id);
     },
 
+    // Tests that the port is still available even if the page is salvaged
+    // from back/forward cache.
+    function keepConnectionOnNavigationWithBfcache() {
+      // Skip test if bfcache is disabled because this test expects
+      // the port will remain open when the page is salvaged from the
+      // back/forward cache.
+      if (config.customArg !== 'bfcache') {
+        chrome.test.succeed();
+        return;
+      }
+      listenOnce(chrome.runtime.onConnect, function(portFromTab) {
+        portFromTab.postMessage('navigateAwayAndHistoryBack');
+        listenOnce(portFromTab.onMessage, function(msg) {
+          chrome.test.assertTrue(msg.salvagedFromBackForwardCache2);
+        });
+      });
+      var port = chrome.tabs.connect(testTab.id);
+      listenOnce(port.onMessage, function(msg) {
+        // The port is still available even if the page is salvaged
+        // from back/forward cache.
+        chrome.test.assertTrue(msg.salvagedFromBackForwardCache1);
+      });
+      port.postMessage({testNavigateAwayAndHistoryBack: true});
+    },
+
     // Tests that we get the disconnect event when the tab context closes.
     function disconnectOnClose() {
+      // Skip test if bfcache is enabled because the port will not be
+      // closed immediately if the page is cached.
+      if (config.customArg === 'bfcache') {
+        chrome.test.succeed();
+        return;
+      }
       listenOnce(chrome.runtime.onConnect, function(portFromTab) {
         listenOnce(portFromTab.onDisconnect, function() {
           chrome.test.assertNoLastError();

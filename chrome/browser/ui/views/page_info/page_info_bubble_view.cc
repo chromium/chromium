@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/page_info/page_switcher_view.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/page_info/core/features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/url_constants.h"
@@ -152,8 +153,12 @@ PageInfoBubbleView::PageInfoBubbleView(
   presenter_ = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents()), web_contents(),
       url);
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
+    history_controller_ =
+        std::make_unique<PageInfoHistoryController>(web_contents(), url);
+  }
   view_factory_ = std::make_unique<PageInfoViewFactory>(
-      presenter_.get(), ui_delegate_.get(), this);
+      presenter_.get(), ui_delegate_.get(), this, history_controller_.get());
 
   SetTitle(presenter_->GetSimpleSiteName());
 
@@ -216,6 +221,13 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
       view_factory_->CreateAboutThisSitePageView(info));
 }
 
+void PageInfoBubbleView::OpenAdPersonalizationPage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED);
+  page_container_->SwitchToPage(
+      view_factory_->CreateAdPersonalizationPageView());
+}
+
 void PageInfoBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
@@ -242,6 +254,7 @@ void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void PageInfoBubbleView::WebContentsDestroyed() {
+  PageInfoBubbleViewBase::WebContentsDestroyed();
   weak_factory_.InvalidateWeakPtrs();
 }
 

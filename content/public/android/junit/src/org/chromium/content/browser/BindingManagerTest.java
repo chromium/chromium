@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.process_launcher.ChildProcessConnection;
@@ -38,6 +39,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class BindingManagerTest {
     // Creates a mocked ChildProcessConnection that is optionally added to a BindingManager.
     private static ChildProcessConnection createTestChildProcessConnection(

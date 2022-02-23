@@ -226,7 +226,6 @@ which binds it.
 
 ``` cpp
 #include "base/logging.h"
-#include "base/macros.h"
 #include "sample/logger.mojom.h"
 
 class LoggerImpl : public sample::mojom::Logger {
@@ -236,9 +235,9 @@ class LoggerImpl : public sample::mojom::Logger {
 
   explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
       : receiver_(this, std::move(receiver)) {}
-  ~Logger() override {}
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
+  ~Logger() override {}
 
   // sample::mojom::Logger:
   void Log(const std::string& message) override {

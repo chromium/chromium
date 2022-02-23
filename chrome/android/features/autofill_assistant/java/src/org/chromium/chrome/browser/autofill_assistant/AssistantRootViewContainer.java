@@ -14,17 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * A special linear layout that limits its maximum size to always stay below the Chrome navigation
  * bar.
  */
 public class AssistantRootViewContainer
-        extends LinearLayout implements BrowserControlsStateProvider.Observer {
+        extends LinearLayout implements AssistantBrowserControls.Observer {
     private final Activity mActivity;
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private AssistantBrowserControls mBrowserControls;
+    private AccessibilityUtil mAccessibilityUtil;
     private Rect mVisibleViewportRect = new Rect();
     private float mTalkbackSheetSizeFraction;
     private boolean mTalkbackResizingDisabled;
@@ -34,10 +34,16 @@ public class AssistantRootViewContainer
         mActivity = ContextUtils.activityFromContext(context);
     }
 
-    /** Initializes the object with the given {@link BrowserControlsStateProvider}. */
-    public void initialize(@NonNull BrowserControlsStateProvider browserControlsStateProvider) {
-        mBrowserControlsStateProvider = browserControlsStateProvider;
-        mBrowserControlsStateProvider.addObserver(this);
+    /** Initializes the object with the given {@link AssistantBrowserControls}. */
+    public void initialize(@NonNull AssistantBrowserControlsFactory browserControlsFactory,
+            AccessibilityUtil accessibilityUtil) {
+        mBrowserControls = browserControlsFactory.createBrowserControls();
+        mBrowserControls.setObserver(this);
+        mAccessibilityUtil = accessibilityUtil;
+    }
+
+    public void setAccessibilityUtil(AccessibilityUtil accessibilityUtil) {
+        mAccessibilityUtil = accessibilityUtil;
     }
 
     public void setTalkbackViewSizeFraction(float fraction) {
@@ -61,24 +67,23 @@ public class AssistantRootViewContainer
     }
 
     void destroy() {
-        if (mBrowserControlsStateProvider != null) {
-            mBrowserControlsStateProvider.removeObserver(this);
+        if (mBrowserControls != null) {
+            mBrowserControls.destroy();
         }
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        int browserControlsOffset = mBrowserControlsStateProvider == null
+        int browserControlsOffset = mBrowserControls == null
                 ? 0
-                : -mBrowserControlsStateProvider.getContentOffset()
-                        - mBrowserControlsStateProvider.getBottomControlsHeight()
-                        - mBrowserControlsStateProvider.getBottomControlOffset();
+                : -mBrowserControls.getContentOffset() - mBrowserControls.getBottomControlsHeight()
+                        - mBrowserControls.getBottomControlOffset();
         int availableHeight = mVisibleViewportRect.height() - browserControlsOffset;
 
         int targetHeight;
         int mode;
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled() && !mTalkbackResizingDisabled) {
+        if (mAccessibilityUtil.isAccessibilityEnabled() && !mTalkbackResizingDisabled) {
             // TODO(b/143944870): Make this more stable with landscape mode.
             targetHeight = (int) (availableHeight * mTalkbackSheetSizeFraction);
             mode = MeasureSpec.EXACTLY;

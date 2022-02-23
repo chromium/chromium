@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "content/public/android/content_jni_headers/ContentFeatureListImpl_jni.h"
 #include "content/public/common/content_features.h"
+#include "ui/accessibility/accessibility_features.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -20,12 +21,16 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &features::kAutoDisableAccessibility,
     &features::kAccessibilityPageZoom,
     &features::kBackgroundMediaRendererHasModerateBinding,
     &features::kBindingManagementWaiveCpu,
+    &features::kComputeAXMode,
     &features::kOnDemandAccessibilityEvents,
     &features::kProcessSharingWithStrictSiteInstances,
+    &features::kRequestDesktopSiteExceptions,
     &features::kRequestDesktopSiteGlobal,
+    &features::kTouchDragAndContextMenu,
     &features::kWebAuth,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebNfc,
@@ -49,6 +54,18 @@ static jboolean JNI_ContentFeatureListImpl_IsEnabled(
   const base::Feature* feature =
       FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
   return base::FeatureList::IsEnabled(*feature);
+}
+
+static jint JNI_ContentFeatureListImpl_GetFieldTrialParamByFeatureAsInt(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& jfeature_name,
+    const JavaParamRef<jstring>& jparam_name,
+    const jint jdefault_value) {
+  const base::Feature* feature =
+      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, jfeature_name));
+  const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
+  return base::GetFieldTrialParamByFeatureAsInt(*feature, param_name,
+                                                jdefault_value);
 }
 
 }  // namespace android

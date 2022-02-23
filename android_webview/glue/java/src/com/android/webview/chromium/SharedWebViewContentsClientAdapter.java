@@ -9,10 +9,9 @@ import android.os.Build;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewDelegate;
 
 import androidx.annotation.Nullable;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwHistogramRecorder;
@@ -125,7 +124,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else {
                 ApiHelperForM.onPageCommitVisible(mWebViewClient, mWebView, url);
             }
 
@@ -182,8 +181,9 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // Note: we must pass AwWebResourceError, since this class was introduced after L.
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                GlueApiHelperForM.onReceivedError(mWebViewClient, mWebView, request, error);
+            } else {
+                mWebViewClient.onReceivedError(mWebView, new WebResourceRequestAdapter(request),
+                        new WebResourceErrorAdapter(error));
             }
             // Otherwise, this is handled by {@link #onReceivedError}.
         } finally {
@@ -236,8 +236,11 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                         new WebResourceResponse(response.getMimeType(), response.getCharset(),
                                 response.getStatusCode(), reasonPhrase,
                                 response.getResponseHeaders(), response.getData()));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                GlueApiHelperForM.onReceivedHttpError(mWebViewClient, mWebView, request, response);
+            } else {
+                mWebViewClient.onReceivedHttpError(mWebView, new WebResourceRequestAdapter(request),
+                        new WebResourceResponse(true, response.getMimeType(), response.getCharset(),
+                                response.getStatusCode(), response.getReasonPhrase(),
+                                response.getResponseHeaders(), response.getData()));
             }
             // Otherwise, the API does not exist, so do nothing.
         } finally {

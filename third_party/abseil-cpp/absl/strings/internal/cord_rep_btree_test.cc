@@ -25,6 +25,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/cleanup/cleanup.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_test_util.h"
 #include "absl/strings/str_cat.h"
@@ -52,7 +53,6 @@ using ::absl::cordrep_testing::CordToString;
 using ::absl::cordrep_testing::CordVisitReps;
 using ::absl::cordrep_testing::CreateFlatsFromString;
 using ::absl::cordrep_testing::CreateRandomString;
-using ::absl::cordrep_testing::MakeConcat;
 using ::absl::cordrep_testing::MakeExternal;
 using ::absl::cordrep_testing::MakeFlat;
 using ::absl::cordrep_testing::MakeSubstring;
@@ -322,40 +322,31 @@ TEST(CordRepBtreeTest, EdgeData) {
   CordRepExternal* external = MakeExternal("Hello external");
   CordRep* substr1 = MakeSubstring(1, 6, CordRep::Ref(flat));
   CordRep* substr2 = MakeSubstring(1, 6, CordRep::Ref(external));
-  CordRep* concat = MakeConcat(CordRep::Ref(flat), CordRep::Ref(external));
   CordRep* bad_substr = MakeSubstring(1, 2, CordRep::Ref(substr1));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(flat));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(flat),
-              TypedEq<const void*>(flat->Data()));
-  EXPECT_THAT(CordRepBtree::EdgeData(flat), Eq("Hello world"));
+  EXPECT_TRUE(IsDataEdge(flat));
+  EXPECT_THAT(EdgeData(flat).data(), TypedEq<const void*>(flat->Data()));
+  EXPECT_THAT(EdgeData(flat), Eq("Hello world"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(external));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(external),
-              TypedEq<const void*>(external->base));
-  EXPECT_THAT(CordRepBtree::EdgeData(external), Eq("Hello external"));
+  EXPECT_TRUE(IsDataEdge(external));
+  EXPECT_THAT(EdgeData(external).data(), TypedEq<const void*>(external->base));
+  EXPECT_THAT(EdgeData(external), Eq("Hello external"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(substr1));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(substr1),
-              TypedEq<const void*>(flat->Data() + 1));
-  EXPECT_THAT(CordRepBtree::EdgeData(substr1), Eq("ello w"));
+  EXPECT_TRUE(IsDataEdge(substr1));
+  EXPECT_THAT(EdgeData(substr1).data(), TypedEq<const void*>(flat->Data() + 1));
+  EXPECT_THAT(EdgeData(substr1), Eq("ello w"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(substr2));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(substr2),
+  EXPECT_TRUE(IsDataEdge(substr2));
+  EXPECT_THAT(EdgeData(substr2).data(),
               TypedEq<const void*>(external->base + 1));
-  EXPECT_THAT(CordRepBtree::EdgeData(substr2), Eq("ello e"));
+  EXPECT_THAT(EdgeData(substr2), Eq("ello e"));
 
-  EXPECT_FALSE(CordRepBtree::IsDataEdge(concat));
-  EXPECT_FALSE(CordRepBtree::IsDataEdge(bad_substr));
+  EXPECT_FALSE(IsDataEdge(bad_substr));
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(NDEBUG)
-  EXPECT_DEATH(CordRepBtree::EdgeData(concat), ".*");
-  EXPECT_DEATH(CordRepBtree::EdgeDataPtr(concat), ".*");
-  EXPECT_DEATH(CordRepBtree::EdgeData(bad_substr), ".*");
-  EXPECT_DEATH(CordRepBtree::EdgeDataPtr(bad_substr), ".*");
+  EXPECT_DEATH(EdgeData(bad_substr), ".*");
 #endif
 
   CordRep::Unref(bad_substr);
-  CordRep::Unref(concat);
   CordRep::Unref(substr2);
   CordRep::Unref(substr1);
   CordRep::Unref(external);
@@ -1004,50 +995,6 @@ TEST_P(CordRepBtreeTest, AddLargeDataToLeaf) {
     EXPECT_THAT(CordToString(result), Eq(append ? "abc" + data : data + "abc"));
     CordRep::Unref(result);
   }
-}
-
-TEST_P(CordRepBtreeDualTest, CreateFromConcat) {
-  AutoUnref refs;
-  CordRep* flats[] = {MakeFlat("abcdefgh"), MakeFlat("ijklm"),
-                      MakeFlat("nopqrstuv"), MakeFlat("wxyz")};
-  auto* left = MakeConcat(flats[0], flats[1]);
-  auto* right = MakeConcat(flats[2], refs.RefIf(first_shared(), flats[3]));
-  auto* concat = refs.RefIf(second_shared(), MakeConcat(left, right));
-  CordRepBtree* result = CordRepBtree::Create(concat);
-  ASSERT_TRUE(CordRepBtree::IsValid(result));
-  EXPECT_THAT(result->length, Eq(26));
-  EXPECT_THAT(CordToString(result), Eq("abcdefghijklmnopqrstuvwxyz"));
-  CordRep::Unref(result);
-}
-
-TEST_P(CordRepBtreeDualTest, AppendConcat) {
-  AutoUnref refs;
-  CordRep* flats[] = {MakeFlat("defgh"), MakeFlat("ijklm"),
-                      MakeFlat("nopqrstuv"), MakeFlat("wxyz")};
-  auto* left = MakeConcat(flats[0], flats[1]);
-  auto* right = MakeConcat(flats[2], refs.RefIf(first_shared(), flats[3]));
-  auto* concat = refs.RefIf(second_shared(), MakeConcat(left, right));
-  CordRepBtree* result = CordRepBtree::Create(MakeFlat("abc"));
-  result = CordRepBtree::Append(result, concat);
-  ASSERT_TRUE(CordRepBtree::IsValid(result));
-  EXPECT_THAT(result->length, Eq(26));
-  EXPECT_THAT(CordToString(result), Eq("abcdefghijklmnopqrstuvwxyz"));
-  CordRep::Unref(result);
-}
-
-TEST_P(CordRepBtreeDualTest, PrependConcat) {
-  AutoUnref refs;
-  CordRep* flats[] = {MakeFlat("abcdefgh"), MakeFlat("ijklm"),
-                      MakeFlat("nopqrstuv"), MakeFlat("wx")};
-  auto* left = MakeConcat(flats[0], flats[1]);
-  auto* right = MakeConcat(flats[2], refs.RefIf(first_shared(), flats[3]));
-  auto* concat = refs.RefIf(second_shared(), MakeConcat(left, right));
-  CordRepBtree* result = CordRepBtree::Create(MakeFlat("yz"));
-  result = CordRepBtree::Prepend(result, concat);
-  ASSERT_TRUE(CordRepBtree::IsValid(result));
-  EXPECT_THAT(result->length, Eq(26));
-  EXPECT_THAT(CordToString(result), Eq("abcdefghijklmnopqrstuvwxyz"));
-  CordRep::Unref(result);
 }
 
 TEST_P(CordRepBtreeTest, CreateFromTreeReturnsTree) {

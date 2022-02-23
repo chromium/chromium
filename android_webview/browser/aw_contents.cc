@@ -53,8 +53,8 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/supports_user_data.h"
@@ -66,6 +66,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -79,6 +80,7 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -146,11 +148,11 @@ class AwContentsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwContentsUserData* data = static_cast<AwContentsUserData*>(
         web_contents->GetUserData(kAwContentsUserDataKey));
-    return data ? data->contents_ : NULL;
+    return data ? data->contents_.get() : NULL;
   }
 
  private:
-  AwContents* contents_;
+  raw_ptr<AwContents> contents_;
 };
 
 base::subtle::Atomic32 g_instance_count = 0;
@@ -238,6 +240,8 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       std::make_unique<AwRenderViewHostExt>(this, web_contents_.get());
 
   InitializePageLoadMetricsForWebContents(web_contents_.get());
+  metrics::ContentStabilityMetricsProvider::SetupWebContentsObserver(
+      web_contents_.get());
 
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
@@ -851,12 +855,12 @@ void AwContents::OnReceivedTouchIconUrl(const std::string& url,
       env, obj, ConvertUTF8ToJavaString(env, url), precomposed);
 }
 
-void AwContents::PostInvalidate() {
+void AwContents::PostInvalidate(bool inside_vsync) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj)
-    Java_AwContents_postInvalidateOnAnimation(env, obj);
+    Java_AwContents_postInvalidate(env, obj, inside_vsync);
 }
 
 void AwContents::OnNewPicture() {
@@ -882,8 +886,9 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::NavigationEntry* entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (!entry || !entry->GetSSL().certificate)
+  if (!entry || entry->IsInitialEntry() || !entry->GetSSL().certificate) {
     return ScopedJavaLocalRef<jbyteArray>();
+  }
 
   // Convert the certificate and return it
   base::StringPiece der_string = net::x509_util::CryptoBufferAsStringPiece(
@@ -1031,8 +1036,12 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
-  if (!web_contents_->GetController().GetEntryCount())
+  if (!web_contents_->GetController().GetLastCommittedEntry() ||
+      web_contents_->GetController()
+          .GetLastCommittedEntry()
+          ->IsInitialEntry()) {
     return ScopedJavaLocalRef<jbyteArray>();
+  }
 
   base::Pickle pickle;
   WriteToPickle(*web_contents_, &pickle);
@@ -1069,7 +1078,7 @@ bool AwContents::OnDraw(JNIEnv* env,
                         jint visible_bottom,
                         jboolean force_auxiliary_bitmap_rendering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  gfx::Vector2d scroll(scroll_x, scroll_y);
+  gfx::Point scroll(scroll_x, scroll_y);
   browser_view_renderer_.PrepareToDraw(
       scroll, gfx::Rect(visible_left, visible_top, visible_right - visible_left,
                         visible_bottom - visible_top));
@@ -1169,7 +1178,7 @@ gfx::Point AwContents::GetLocationOnScreen() {
   return gfx::Point(location[0], location[1]);
 }
 
-void AwContents::ScrollContainerViewTo(const gfx::Vector2d& new_value) {
+void AwContents::ScrollContainerViewTo(const gfx::Point& new_value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -1178,7 +1187,7 @@ void AwContents::ScrollContainerViewTo(const gfx::Vector2d& new_value) {
   Java_AwContents_scrollContainerViewTo(env, obj, new_value.x(), new_value.y());
 }
 
-void AwContents::UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
+void AwContents::UpdateScrollState(const gfx::Point& max_scroll_offset,
                                    const gfx::SizeF& contents_size_dip,
                                    float page_scale_factor,
                                    float min_page_scale_factor,
@@ -1195,7 +1204,8 @@ void AwContents::UpdateScrollState(const gfx::Vector2d& max_scroll_offset,
 }
 
 void AwContents::DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                               const gfx::Vector2dF& overscroll_velocity) {
+                               const gfx::Vector2dF& overscroll_velocity,
+                               bool inside_vsync) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
@@ -1203,7 +1213,7 @@ void AwContents::DidOverscroll(const gfx::Vector2d& overscroll_delta,
     return;
   Java_AwContents_didOverscroll(env, obj, overscroll_delta.x(),
                                 overscroll_delta.y(), overscroll_velocity.x(),
-                                overscroll_velocity.y());
+                                overscroll_velocity.y(), inside_vsync);
 }
 
 ui::TouchHandleDrawable* AwContents::CreateDrawable() {
@@ -1241,7 +1251,7 @@ void AwContents::ScrollTo(JNIEnv* env,
                           jint x,
                           jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_view_renderer_.ScrollTo(gfx::Vector2d(x, y));
+  browser_view_renderer_.ScrollTo(gfx::Point(x, y));
 }
 
 void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
@@ -1249,7 +1259,7 @@ void AwContents::RestoreScrollAfterTransition(JNIEnv* env,
                                               jint x,
                                               jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_view_renderer_.RestoreScrollAfterTransition(gfx::Vector2d(x, y));
+  browser_view_renderer_.RestoreScrollAfterTransition(gfx::Point(x, y));
 }
 
 void AwContents::SmoothScroll(JNIEnv* env,
@@ -1511,21 +1521,20 @@ void AwContents::RenderViewHostChanged(content::RenderViewHost* old_host,
       new_host->GetWidget()->GetFrameSinkId());
 }
 
-void AwContents::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // If this request was blocked in any way, broadcast an error.
-  net::Error error_code = navigation_handle->GetNetErrorCode();
-
-  bool navigation_successful_and_scheme_http_or_https =
-      ((error_code == net::OK) &&
-       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS());
-  if (navigation_successful_and_scheme_http_or_https != scheme_http_or_https_) {
-    scheme_http_or_https_ = navigation_successful_and_scheme_http_or_https;
+void AwContents::PrimaryPageChanged(content::Page& page) {
+  std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
+  if (scheme_ != scheme) {
+    scheme_ = scheme;
     AwBrowserProcess::GetInstance()
         ->visibility_metrics_logger()
         ->ClientVisibilityChanged(this);
   }
+}
 
+void AwContents::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If this request was blocked in any way, broadcast an error.
+  net::Error error_code = navigation_handle->GetNetErrorCode();
   if (!net::IsRequestBlockedError(error_code) &&
       error_code != net::ERR_ABORTED) {
     return;
@@ -1581,7 +1590,8 @@ VisibilityMetricsLogger::VisibilityInfo AwContents::GetVisibilityInfo() {
   return VisibilityMetricsLogger::VisibilityInfo{
       browser_view_renderer_.attached_to_window(),
       browser_view_renderer_.view_visible(),
-      browser_view_renderer_.window_visible(), scheme_http_or_https_};
+      browser_view_renderer_.window_visible(),
+      VisibilityMetricsLogger::SchemeStringToEnum(scheme_)};
 }
 
 void AwContents::RendererUnresponsive(

@@ -5,7 +5,6 @@
 #ifndef PPAPI_HOST_INSTANCE_MESSAGE_FILTER_H_
 #define PPAPI_HOST_INSTANCE_MESSAGE_FILTER_H_
 
-#include "base/macros.h"
 #include "ppapi/host/ppapi_host_export.h"
 
 namespace IPC {

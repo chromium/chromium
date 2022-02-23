@@ -4,7 +4,6 @@
 
 package org.chromium.base.compat;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.job.JobInfo;
@@ -26,6 +25,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.annotations.VerifiesOnN;
 
 /**
@@ -34,7 +35,7 @@ import org.chromium.base.annotations.VerifiesOnN;
  * encountering the new APIs.
  */
 @VerifiesOnN
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public final class ApiHelperForN {
     private ApiHelperForN() {}
 

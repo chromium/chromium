@@ -139,7 +139,7 @@ size_t MessageCenterImpl::NotificationCount() const {
 bool MessageCenterImpl::HasPopupNotifications() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return !IsMessageCenterVisible() &&
-      notification_list_->HasPopupNotifications(blockers_);
+         notification_list_->HasPopupNotifications(blockers_);
 }
 
 bool MessageCenterImpl::IsQuietMode() const {
@@ -216,6 +216,14 @@ MessageCenterImpl::GetPopupNotifications() {
   return notification_list_->GetPopupNotifications(blockers_, nullptr);
 }
 
+NotificationList::PopupNotifications
+MessageCenterImpl::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlocker& blocker) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return notification_list_->GetPopupNotificationsWithoutBlocker(blockers_,
+                                                                 blocker);
+}
+
 //------------------------------------------------------------------------------
 // Client code interface.
 void MessageCenterImpl::AddNotification(
@@ -229,6 +237,12 @@ void MessageCenterImpl::AddNotification(
   for (NotificationBlocker* blocker : blockers_)
     blocker->CheckState();
 
+  auto* parent = FindParentNotificationForOriginUrl(notification->origin_url());
+  if (notification->allow_group() && parent && !notification->group_parent()) {
+    parent->SetGroupParent();
+    notification->SetGroupChild();
+  }
+
   // Sometimes the notification can be added with the same id and the
   // |notification_list| will replace the notification instead of adding new.
   // This is essentially an update rather than addition.
@@ -236,12 +250,6 @@ void MessageCenterImpl::AddNotification(
   if (already_exists) {
     UpdateNotification(id, std::move(notification));
     return;
-  }
-
-  auto* parent = FindParentNotificationForOriginUrl(notification->origin_url());
-  if (notification->allow_group() && parent) {
-    parent->SetGroupParent();
-    notification->SetGroupChild();
   }
 
   notification_list_->AddNotification(std::move(notification));
@@ -487,9 +495,8 @@ void MessageCenterImpl::ResetSinglePopup(const std::string& id) {
   }
 }
 
-void MessageCenterImpl::DisplayedNotification(
-    const std::string& id,
-    const DisplaySource source) {
+void MessageCenterImpl::DisplayedNotification(const std::string& id,
+                                              const DisplaySource source) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This method may be called from the handlers, so we shouldn't manipulate
@@ -555,6 +562,12 @@ const std::u16string& MessageCenterImpl::GetSystemNotificationAppName() const {
 void MessageCenterImpl::SetSystemNotificationAppName(
     const std::u16string& name) {
   system_notification_app_name_ = name;
+}
+
+void MessageCenterImpl::OnMessageViewHovered(
+    const std::string& notification_id) {
+  for (MessageCenterObserver& observer : observer_list_)
+    observer.OnMessageViewHovered(notification_id);
 }
 
 void MessageCenterImpl::DisableTimersForTest() {

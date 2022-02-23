@@ -6,11 +6,11 @@
 
 import atexit
 import base64
+import http.client
 import json
 import os
 import platform
 import random
-import requests
 import signal
 import socket
 import stat
@@ -18,9 +18,10 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib
 import zipfile
 
-from six.moves import urllib, http_client
+import requests
 
 import chrome_paths
 
@@ -202,10 +203,10 @@ def DoesUrlExist(url):
   """
   parsed = urllib.parse.urlparse(url)
   try:
-    conn = http_client.HTTPConnection(parsed.netloc)
+    conn = http.client.HTTPConnection(parsed.netloc)
     conn.request('HEAD', parsed.path)
     response = conn.getresponse()
-  except http_client.HTTPException:
+  except http.client.HTTPException:
     return False
   finally:
     conn.close()
@@ -254,7 +255,7 @@ def FindProbableFreePorts():
   if there is any alternative.
   """
   # This is the range of dynamic ports. See RFC6335 page 10.
-  dynamic_ports = range(49152, 65535)
+  dynamic_ports = list(range(49152, 65535))
   random.shuffle(dynamic_ports)
 
   for port in dynamic_ports:
@@ -293,9 +294,9 @@ def WriteResultToJSONFile(test_suites, results, json_path):
   }
 
   def initialize(test_suite):
-    for test in test_suite:
-      if test.id() not in output['tests']:
-        output['tests'][test.id()] = {
+    for test_name in test_suite:
+      if test_name not in output['tests']:
+        output['tests'][test_name] = {
             'expected': 'PASS',
             'actual': []
         }
@@ -308,9 +309,9 @@ def WriteResultToJSONFile(test_suites, results, json_path):
     fail = []
     for failure in result.failures + result.errors:
       fail.append(failure[0].id())
-    for test in test_suite:
-      if test.id() not in fail:
-        success.append(test.id())
+    for test_name in test_suite:
+      if test_name not in fail:
+        success.append(test_name)
     return {
         'success': success,
         'fail': fail,
@@ -324,7 +325,7 @@ def WriteResultToJSONFile(test_suites, results, json_path):
       output['tests'][f]['actual'].append('FAIL')
 
   num_fails = 0
-  for test_result in output['tests'].itervalues():
+  for test_result in output['tests'].values():
     if test_result['actual'][-1] == 'FAIL':
       num_fails += 1
       test_result['is_unexpected'] = True
@@ -361,7 +362,7 @@ def TryUploadingResultToResultSink(results):
           # identify an artifact within the test result.
           'artifacts': {
                'stack_trace': {
-                    'contents': base64.b64encode(stack_trace),
+                    'contents': base64.b64encode(stack_trace.encode()).decode(),
                },
           },
       })
@@ -391,4 +392,3 @@ def TryUploadingResultToResultSink(results):
     data=json.dumps({'testResults': test_results})
   )
   res.raise_for_status()
-

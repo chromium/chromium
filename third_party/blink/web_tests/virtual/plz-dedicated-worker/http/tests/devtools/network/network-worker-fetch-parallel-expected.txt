@@ -1,0 +1,13 @@
+Test that parallel fetches in worker should not cause crash.
+
+Parallel fetch in worker result: ["Hello world","Hello world"]
+http://127.0.0.1:8000/devtools/network/resources/fetch-parallel-worker.js
+resource.type: script
+request.failed: false
+http://127.0.0.1:8000/devtools/network/resources/resource.php?1
+resource.type: fetch
+request.failed: false
+http://127.0.0.1:8000/devtools/network/resources/resource.php?2
+resource.type: fetch
+request.failed: false
+

@@ -34,8 +34,8 @@ bool MtpManagerClientChromeOS::GetStorageInfoForPath(
   if (!path.IsAbsolute())
     return false;
 
-  std::vector<base::FilePath::StringType> path_components;
-  path.GetComponents(&path_components);
+  std::vector<base::FilePath::StringType> path_components =
+      path.GetComponents();
   if (path_components.size() < 2)
     return false;
 

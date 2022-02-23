@@ -94,7 +94,7 @@ class ConstrainedWebDialogBrowserTest : public InProcessBrowserTest {
 
 // Tests that opening/closing the constrained window won't crash it.
 // Flaky on trusty builder: http://crbug.com/1020490.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BasicTest DISABLED_BasicTest
 #else
 #define MAYBE_BasicTest BasicTest
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWebDialogBrowserTest, MAYBE_BasicTest) {
 }
 
 // TODO(https://crbug.com/1020038): Crashy on Linux
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReleaseWebContents DISABLED_ReleaseWebContents
 #else
 #define MAYBE_ReleaseWebContents ReleaseWebContents

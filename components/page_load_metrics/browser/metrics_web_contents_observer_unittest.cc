@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
@@ -119,7 +121,6 @@ class MetricsWebContentsObserverTest
         std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(base::in_place), timing.Clone(),
-        mojom::DeferredResourceCountsPtr(base::in_place),
         mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
   }
 
@@ -138,15 +139,14 @@ class MetricsWebContentsObserverTest
       const mojom::PageLoadTiming& timing,
       content::RenderFrameHost* render_frame_host) {
     previous_timing_ = timing.Clone();
-    observer()->OnTimingUpdated(
-        render_frame_host, timing.Clone(),
-        mojom::FrameMetadataPtr(base::in_place),
-        std::vector<blink::UseCounterFeature>(),
-        std::vector<mojom::ResourceDataUpdatePtr>(),
-        mojom::FrameRenderDataUpdatePtr(base::in_place),
-        mojom::CpuTimingPtr(base::in_place),
-        mojom::DeferredResourceCountsPtr(base::in_place),
-        mojom::InputTimingPtr(base::in_place), blink::MobileFriendliness());
+    observer()->OnTimingUpdated(render_frame_host, timing.Clone(),
+                                mojom::FrameMetadataPtr(base::in_place),
+                                std::vector<blink::UseCounterFeature>(),
+                                std::vector<mojom::ResourceDataUpdatePtr>(),
+                                mojom::FrameRenderDataUpdatePtr(base::in_place),
+                                mojom::CpuTimingPtr(base::in_place),
+                                mojom::InputTimingPtr(base::in_place),
+                                blink::MobileFriendliness());
   }
 
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>
@@ -246,7 +246,7 @@ class MetricsWebContentsObserverTest
   }
 
   base::HistogramTester histogram_tester_;
-  TestMetricsWebContentsObserverEmbedder* embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
 
  private:
   int num_errors_ = 0;
@@ -256,7 +256,7 @@ class MetricsWebContentsObserverTest
   // previous structure that was passed when updating the PageLoadTiming.
   mojom::PageLoadTimingPtr previous_timing_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
 };
 
 TEST_F(MetricsWebContentsObserverTest, SuccessfulMainFrameNavigation) {
@@ -560,72 +560,6 @@ TEST_F(MetricsWebContentsObserverTest, ObservePartialNavigation) {
   CheckTotalErrorEvents();
 }
 
-TEST_F(MetricsWebContentsObserverTest, DontLogAbortChains) {
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeNewNavigation, 0);
-  CheckErrorNoIPCsReceivedIfNeeded(2);
-  CheckTotalErrorEvents();
-}
-
-TEST_F(MetricsWebContentsObserverTest, LogAbortChains) {
-  // Start and abort three loads before one finally commits.
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                    GURL(kDefaultTestUrl2));
-
-  histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeNewNavigation, 1);
-  histogram_tester_.ExpectBucketCount(internal::kAbortChainSizeNewNavigation, 3,
-                                      1);
-  CheckNoErrorEvents();
-}
-
-TEST_F(MetricsWebContentsObserverTest, LogAbortChainsSameURL) {
-  // Start and abort three loads before one finally commits.
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                    GURL(kDefaultTestUrl));
-  histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeNewNavigation, 1);
-  histogram_tester_.ExpectBucketCount(internal::kAbortChainSizeNewNavigation, 3,
-                                      1);
-  histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeSameURL, 1);
-  histogram_tester_.ExpectBucketCount(internal::kAbortChainSizeSameURL, 3, 1);
-}
-
-TEST_F(MetricsWebContentsObserverTest, LogAbortChainsNoCommit) {
-  // Start and abort three loads before one finally commits.
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2), net::ERR_ABORTED);
-
-  NavigationSimulator::NavigateAndFailFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl), net::ERR_ABORTED);
-
-  web_contents()->Stop();
-
-  histogram_tester_.ExpectTotalCount(internal::kAbortChainSizeNoCommit, 1);
-  histogram_tester_.ExpectBucketCount(internal::kAbortChainSizeNoCommit, 3, 1);
-}
-
 TEST_F(MetricsWebContentsObserverTest, FlushMetricsOnAppEnterBackground) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
@@ -807,9 +741,6 @@ TEST_F(MetricsWebContentsObserverTest, OutOfOrderCrossFrameTiming2) {
       GURL(kDefaultTestUrl2), subframe);
   SimulateTimingUpdateWithoutFiringDispatchTimer(subframe_timing, subframe);
 
-  histogram_tester_.ExpectTotalCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTiming, 1);
-
   EXPECT_TRUE(GetMostRecentTimer()->IsRunning());
   ASSERT_EQ(0, CountUpdatedTimingReported());
 
@@ -857,12 +788,6 @@ TEST_F(MetricsWebContentsObserverTest, OutOfOrderCrossFrameTiming2) {
   EXPECT_FALSE(GetMostRecentTimer()->IsRunning());
   ASSERT_EQ(2, CountUpdatedTimingReported());
   EXPECT_LT(updated_first_paint, initial_first_paint);
-
-  histogram_tester_.ExpectTotalCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTimingBuffered, 1);
-  histogram_tester_.ExpectBucketCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTimingBuffered,
-      (initial_first_paint - updated_first_paint).InMilliseconds(), 1);
 
   CheckNoErrorEvents();
 }
@@ -1465,11 +1390,10 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
 class MetricsWebContentsObserverBackForwardCacheTest
     : public MetricsWebContentsObserverTest,
       public content::WebContentsDelegate {
-  class CreatedPageLoadTrackerObserver
-      : public MetricsWebContentsObserver::TestingObserver {
+  class CreatedPageLoadTrackerObserver : public MetricsLifecycleObserver {
    public:
     explicit CreatedPageLoadTrackerObserver(content::WebContents* web_contents)
-        : MetricsWebContentsObserver::TestingObserver(web_contents) {}
+        : MetricsLifecycleObserver(web_contents) {}
 
     int tracker_committed_count() const { return tracker_committed_count_; }
 
@@ -1500,7 +1424,7 @@ class MetricsWebContentsObserverBackForwardCacheTest
     MetricsWebContentsObserverTest::SetUp();
     created_page_load_tracker_observer_ =
         std::make_unique<CreatedPageLoadTrackerObserver>(web_contents());
-    observer()->AddTestingObserver(created_page_load_tracker_observer_.get());
+    observer()->AddLifecycleObserver(created_page_load_tracker_observer_.get());
     web_contents()->SetDelegate(this);
   }
 
@@ -1644,7 +1568,7 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     }
 
    private:
-    MetricsWebContentsObserverNonPrimaryPageTest* owner_;
+    raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
     GURL committed_url_;
   };
 
@@ -1659,7 +1583,7 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     }
 
    private:
-    MetricsWebContentsObserverNonPrimaryPageTest* owner_;
+    raw_ptr<MetricsWebContentsObserverNonPrimaryPageTest> owner_;
   };
 
   std::unique_ptr<TestMetricsWebContentsObserverEmbedder> CreateEmbedder()

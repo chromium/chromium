@@ -104,8 +104,8 @@ ChromeVoxState.prototype = {
    * @param {!cursors.Range} range The new range.
    * @param {boolean=} opt_focus Focus the range; defaults to true.
    * @param {Object=} opt_speechProps Speech properties.
-   * @param {boolean=} opt_shouldSetSelection If true, does set
-   *     the selection.
+   * @param {boolean=} opt_skipSettingSelection If true, does not set
+   *     the selection, otherwise it does by default.
    */
   navigateToRange: goog.abstractMethod,
 

@@ -32,7 +32,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "ui/native_theme/native_theme.h"  // nogncheck
 #endif
 
@@ -89,7 +89,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     bool is_all_server_suggestions) {
   if (query_id != query_id_)
     return;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!manager_->client()->IsQueryIDRelevant(query_id))
     return;
 #endif
@@ -110,8 +110,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // Only include "Autofill Options" special menu item if we have Autofill
   // suggestions.
   has_autofill_suggestions_ = false;
-  for (size_t i = 0; i < suggestions.size(); ++i) {
-    if (suggestions[i].frontend_id > 0) {
+  for (auto& suggestion : suggestions) {
+    if (suggestion.frontend_id > 0) {
       has_autofill_suggestions_ = true;
       break;
     }
@@ -129,8 +129,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
     // Append the "Hide Suggestions" menu item for only Autofill Address and
     // Autocomplete popups.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_APPLE) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableHideSuggestionsUI)) {
     // If the user has selected a suggestion, it indicates the suggestions are
@@ -141,8 +141,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
           (GetPopupType() == PopupType::kAddresses ||
            GetPopupType() == PopupType::kUnspecified) &&
           suggestions[0].frontend_id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE) {
-        suggestions.push_back(Suggestion(
-            l10n_util::GetStringUTF16(IDS_AUTOFILL_HIDE_SUGGESTIONS)));
+        suggestions.emplace_back(
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_HIDE_SUGGESTIONS));
         suggestions.back().frontend_id =
             POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS;
       }
@@ -231,16 +231,23 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
   manager_->DidSuppressPopup(query_form_, query_field_);
 }
 
-void AutofillExternalDelegate::DidSelectSuggestion(const std::u16string& value,
-                                                   int frontend_id) {
+void AutofillExternalDelegate::DidSelectSuggestion(
+    const std::u16string& value,
+    int frontend_id,
+    const std::string& backend_id) {
   ClearPreviewedForm();
 
-  // Only preview the data if it is a profile.
-  if (frontend_id > 0)
+  // Only preview the data if it is a profile or a virtual card.
+  if (frontend_id > 0) {
     FillAutofillFormData(frontend_id, true);
-  else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+  } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
                                                  value);
+  } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kPreview, backend_id, query_id_,
+        query_form_, query_field_);
+  }
 }
 
 void AutofillExternalDelegate::DidAcceptSuggestion(
@@ -279,7 +286,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // No-op as the popup will be closed in the end of the method.
     manager_->OnUserHideSuggestions(query_form_, query_field_);
   } else if (frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     manager_->FetchVirtualCardCandidates();
 #else
     NOTREACHED();
@@ -288,8 +295,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     // There can be multiple virtual credit cards that all rely on
     // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
     // the backend_id identifies the actually chosen credit card.
-    manager_->FillVirtualCardInformation(backend_id, query_id_, query_form_,
-                                         query_field_);
+    manager_->FillOrPreviewVirtualCardInformation(
+        mojom::RendererFormDataAction::kFill, backend_id, query_id_,
+        query_form_, query_field_);
   } else {
     if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
@@ -348,7 +356,7 @@ PopupType AutofillExternalDelegate::GetPopupType() const {
 
 absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
 AutofillExternalDelegate::GetDriver() {
-  return driver_;
+  return driver_.get();
 }
 
 int32_t AutofillExternalDelegate::GetWebContentsPopupControllerAxId() const {
@@ -405,18 +413,32 @@ void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(
 void AutofillExternalDelegate::ApplyAutofillOptions(
     std::vector<Suggestion>* suggestions,
     bool is_all_server_suggestions) {
+  // Add a separator before the Autofill options unless there are no suggestions
+  // yet.
+  // TODO(crbug.com/1274134): Clean up once improvements are launched.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVisualImprovementsForSuggestionUi) &&
+      !suggestions->empty()) {
+    suggestions->push_back(Suggestion());
+    suggestions->back().frontend_id = POPUP_ITEM_ID_SEPARATOR;
+  }
+
   // The form has been auto-filled, so give the user the chance to clear the
   // form.  Append the 'Clear form' menu item.
   if (query_field_.is_autofilled) {
     std::u16string value =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (IsKeyboardAccessoryEnabled())
       value = base::i18n::ToUpper(value);
 #endif
 
     suggestions->push_back(Suggestion(value));
     suggestions->back().frontend_id = POPUP_ITEM_ID_CLEAR_FORM;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillVisualImprovementsForSuggestionUi)) {
+      suggestions->back().icon = "clearIcon";
+    }
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the
@@ -432,7 +454,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     suggestions->back().icon = "googlePay";
 #else
     suggestions->back().store_indicator_icon =
@@ -457,7 +479,7 @@ void AutofillExternalDelegate::InsertDataListValues(
            base::Contains(data_list_set, suggestion.value);
   });
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Insert the separator between the datalist and Autofill/Autocomplete values
   // (if there are any).
   if (!suggestions->empty()) {

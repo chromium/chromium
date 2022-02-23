@@ -9,17 +9,18 @@
 
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <array>
 #include <string>
 
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <poll.h>
 #include <sys/resource.h>
 #endif
@@ -27,14 +28,14 @@
 namespace viz {
 
 bool PreferRGB565ResourcesForDisplay() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
 #else
   return false;
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {
   // Full stack integration tests draw in sRGB and expect to read back in sRGB.
   // WideColorGamut causes pixels to be drawn in P3, but read back doesn't tell
@@ -115,9 +116,9 @@ bool GatherFDStats(base::TimeDelta* delta_time_taken,
                    int* fd_max,
                    int* active_fd_count,
                    int* rlim_cur) {
-#if !defined(OS_POSIX)
+#if !BUILDFLAG(IS_POSIX)
   return false;
-#else   // defined(OS_POSIX)
+#else   // BUILDFLAG(IS_POSIX)
   // https://stackoverflow.com/questions/7976769/
   // getting-count-of-current-used-file-descriptors-from-c-code
   base::ElapsedTimer timer;
@@ -145,7 +146,7 @@ bool GatherFDStats(base::TimeDelta* delta_time_taken,
   }
   *delta_time_taken = timer.Elapsed();
   return true;
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 }  // namespace viz

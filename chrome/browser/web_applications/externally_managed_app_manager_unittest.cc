@@ -17,9 +17,9 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/install_result_code.h"
 
 namespace web_app {
 
@@ -38,7 +38,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
         std::make_unique<FakeExternallyManagedAppManager>(profile());
 
     externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
-                                                   nullptr, nullptr, nullptr);
+                                                   nullptr, nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options)
@@ -56,7 +56,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                     install_options.install_source);
                 ++deduped_install_count_;
               }
-              return {.code = InstallResultCode::kSuccessNewInstall};
+              return ExternallyManagedAppManager::InstallResult(
+                  webapps::InstallResultCode::kSuccessNewInstall);
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(

@@ -45,8 +45,8 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
 #endif
 
   if (!SleepConditionVariableSRW(reinterpret_cast<PCONDITION_VARIABLE>(&cv_),
-                                 reinterpret_cast<PSRWLOCK>(srwlock_), timeout,
-                                 0)) {
+                                 reinterpret_cast<PSRWLOCK>(srwlock_.get()),
+                                 timeout, 0)) {
     // On failure, we only expect the CV to timeout. Any other error value means
     // that we've unexpectedly woken up.
     // Note that WAIT_TIMEOUT != ERROR_TIMEOUT. WAIT_TIMEOUT is used with the

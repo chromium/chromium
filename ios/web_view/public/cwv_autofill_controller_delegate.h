@@ -151,9 +151,18 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
 
 // Called if a submitted username and password combination is determined to be
 // leaked for |URL|. |leakType| provides additional context of the leak.
+// Deprecated: Use |autofillController:notifyUserOfPasswordLeakOnURL:username:|.
 - (void)autofillController:(CWVAutofillController*)autofillController
     notifyUserOfPasswordLeakOnURL:(NSURL*)URL
                          leakType:(CWVPasswordLeakType)leakType;
+
+// Called if a submitted username and password combination is determined to be
+// leaked for |URL|. |leakType| provides additional context of the leak.
+// |username| The username whose password is leaked.
+- (void)autofillController:(CWVAutofillController*)autofillController
+    notifyUserOfPasswordLeakOnURL:(NSURL*)URL
+                         leakType:(CWVPasswordLeakType)leakType
+                         username:(NSString*)username;
 
 // Called when the user taps on the "Suggest password..." suggestion when trying
 // to sign up for a new account on a site. |generatedPassword| is a randomly

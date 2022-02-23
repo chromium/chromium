@@ -84,7 +84,7 @@ public class TaskJniUtils {
         tryLoadLibrary(libName);
         try {
             return provider.createHandle();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             String errorMessage = "Error getting native address of native library: " + libName;
             Log.e(TAG, errorMessage, e);
             throw new IllegalStateException(errorMessage, e);
@@ -137,14 +137,12 @@ public class TaskJniUtils {
         }
     }
 
-    private TaskJniUtils() {}
-
     /**
-     * Try load a native library, if it's already loaded return directly.
+     * Try loading a native library, if it's already loaded return directly.
      *
      * @param libName name of the lib
      */
-    static void tryLoadLibrary(String libName) {
+    public static void tryLoadLibrary(String libName) {
         try {
             System.loadLibrary(libName);
         } catch (UnsatisfiedLinkError e) {
@@ -153,4 +151,22 @@ public class TaskJniUtils {
             throw new UnsatisfiedLinkError(errorMessage);
         }
     }
+
+    public static long createProtoBaseOptionsHandle(BaseOptions baseOptions) {
+        return createProtoBaseOptionsHandleWithLegacyNumThreads(
+                baseOptions, /*legacyNumThreads =*/-1);
+    }
+
+    public static long createProtoBaseOptionsHandleWithLegacyNumThreads(
+            BaseOptions baseOptions, int legacyNumThreads) {
+        // NumThreads should be configured through BaseOptions. However, if NumThreads is configured
+        // through the legacy API of the Task Java API (then it will not equal to -1, the default
+        // value), use it to overide the one in baseOptions.
+        return createProtoBaseOptions(baseOptions.getComputeSettings().getDelegate().getValue(),
+                legacyNumThreads == -1 ? baseOptions.getNumThreads() : legacyNumThreads);
+    }
+
+    private TaskJniUtils() {}
+
+    private static native long createProtoBaseOptions(int delegate, int numThreads);
 }

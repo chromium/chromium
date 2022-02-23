@@ -8,15 +8,13 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
+import("//v8/gni/v8.gni")
 
 buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-    "BLINK_HEAP_YOUNG_GENERATION=$enable_blink_heap_young_generation",
-  ]
+  flags = [ "VERBOSE_PERSISTENT=$cppgc_enable_object_names" ]
 }
 
 blink_platform_sources("heap") {
@@ -39,20 +37,20 @@ blink_platform_sources("heap") {
     "forward.h",
     "garbage_collected.h",
     "gc_task_runner.h",
-    "handle.h",
-    "heap.h",
-    "heap_allocator.h",
     "heap_allocator_impl.h",
     "heap_traits.h",
     "member.h",
     "persistent.h",
     "prefinalizer.h",
+    "process_heap.cc",
     "process_heap.h",
     "self_keep_alive.h",
     "thread_local.h",
     "thread_state.cc",
     "thread_state.h",
     "thread_state_scopes.h",
+    "thread_state_storage.cc",
+    "thread_state_storage.h",
     "trace_traits.h",
     "visitor.h",
     "write_barrier.h",
@@ -125,6 +123,8 @@ test("blink_heap_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
+
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
     additional_manifest_fragments =
@@ -148,7 +148,7 @@ source_set("blink_heap_unittests_sources") {
     "test/weakness_marking_test.cc",
   ]
 
-  if (enable_blink_heap_young_generation) {
+  if (cppgc_enable_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]
   }
 
@@ -187,6 +187,8 @@ test("blink_heap_perftests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
+
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
     additional_manifest_fragments =

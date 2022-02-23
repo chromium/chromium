@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -201,15 +201,15 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   VisualViewport& visual_viewport = WebView()->GetPage()->GetVisualViewport();
 
-  IntRect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
+  gfx::Rect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
 
   constexpr int kScaleFactor = 2;
   ScrollOffset scroll_delta(20, 30);
 
   const int expected_x =
-      (rect_in_document.x() - scroll_delta.width()) * kScaleFactor;
+      (rect_in_document.x() - scroll_delta.x()) * kScaleFactor;
   const int expected_y =
-      (rect_in_document.y() - scroll_delta.height()) * kScaleFactor;
+      (rect_in_document.y() - scroll_delta.y()) * kScaleFactor;
 
   WebView()->SetPageScaleFactor(kScaleFactor);
   visual_viewport.Move(scroll_delta);

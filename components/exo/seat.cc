@@ -31,6 +31,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -74,11 +75,6 @@ Seat::~Seat() {
   Shutdown();
 }
 
-void Seat::SetFocusChangedCallback(FocusChangedCallback callback) {
-  focus_changed_callbacks_.push_back(std::move(callback));
-  OnWindowFocused(WMHelper::GetInstance()->GetActiveWindow(), nullptr);
-}
-
 void Seat::Shutdown() {
   if (was_shutdown_)
     return;
@@ -95,10 +91,10 @@ void Seat::Shutdown() {
 }
 
 void Seat::AddObserver(SeatObserver* observer, int priority) {
-#if DCHECK_IS_ON()
   for (const auto& observer_list : priority_observer_list_)
-    DCHECK(!observer_list.HasObserver(observer));
-#endif
+    if (observer_list.HasObserver(observer))
+      return;
+
   DCHECK(IsValidObserverPriority(priority));
   priority_observer_list_[priority].AddObserver(observer);
 }
@@ -107,6 +103,22 @@ void Seat::RemoveObserver(SeatObserver* observer) {
   // We assume that the number of priority variations is small enough.
   for (auto& observer_list : priority_observer_list_)
     observer_list.RemoveObserver(observer);
+}
+
+void Seat::NotifyPointerCaptureEnabled(Pointer* pointer,
+                                       aura::Window* capture_window) {
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnPointerCaptureEnabled(pointer, capture_window);
+  }
+}
+
+void Seat::NotifyPointerCaptureDisabled(Pointer* pointer,
+                                        aura::Window* capture_window) {
+  for (auto& observer_list : priority_observer_list_) {
+    for (auto& observer : observer_list)
+      observer.OnPointerCaptureDisabled(pointer, capture_window);
+  }
 }
 
 Surface* Seat::GetFocusedSurface() {
@@ -154,10 +166,29 @@ void Seat::SetSelection(DataSource* source) {
   scoped_refptr<RefCountedScopedClipboardWriter> writer =
       base::MakeRefCounted<RefCountedScopedClipboardWriter>(endpoint_type);
 
+  size_t num_data_read_callbacks = DataSource::kMaxDataTypes;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Lacros sends additional metadata, in a custom MIME type, to sync clipboard
+  // source metadata,
+  if (endpoint_type == ui::EndpointType::kLacros)
+    ++num_data_read_callbacks;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
-      DataSource::kMaxDataTypes,
+      num_data_read_callbacks,
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
                      writer));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (endpoint_type == ui::EndpointType::kLacros) {
+    source->ReadDataTransferEndpoint(
+        base::BindOnce(&Seat::OnDataTransferEndpointRead,
+                       weak_ptr_factory_.GetWeakPtr(), writer,
+                       data_read_callback),
+        data_read_callback);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   source->GetDataForPreferredMimeTypes(
       base::BindOnce(&Seat::OnTextRead, weak_ptr_factory_.GetWeakPtr(), writer,
@@ -189,6 +220,20 @@ class Seat::RefCountedScopedClipboardWriter
   friend class base::RefCounted<RefCountedScopedClipboardWriter>;
   virtual ~RefCountedScopedClipboardWriter() = default;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void Seat::OnDataTransferEndpointRead(
+    scoped_refptr<RefCountedScopedClipboardWriter> writer,
+    base::OnceClosure callback,
+    const std::string& mime_type,
+    std::u16string data) {
+  std::string utf8_json = base::UTF16ToUTF8(data);
+  auto clipboard_source = ui::ConvertJsonToDataTransferEndpoint(utf8_json);
+
+  writer->SetDataSource(std::move(clipboard_source));
+  std::move(callback).Run();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
@@ -257,8 +302,9 @@ void Seat::OnWebCustomDataRead(
     base::OnceClosure callback,
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
-  NOTREACHED()
-      << "Seat does not support custom data mime types for selections.";
+  base::Pickle pickle(reinterpret_cast<const char*>(data.data()), data.size());
+  writer->WritePickledData(pickle,
+                           ui::ClipboardFormatType::WebCustomDataType());
   std::move(callback).Run();
 }
 
@@ -289,13 +335,10 @@ void Seat::OnWindowFocused(aura::Window* gained_focus,
   Surface* const lost_focus_surface =
       GetTargetSurfaceForKeyboardFocus(lost_focus);
 
-  for (auto& focus_changed_callback : focus_changed_callbacks_) {
-    focus_changed_callback.Run(gaining_focus_surface, lost_focus_surface,
-                               !!gained_focus);
-  }
   for (auto& observer_list : priority_observer_list_) {
     for (auto& observer : observer_list)
-      observer.OnSurfaceFocused(gaining_focus_surface);
+      observer.OnSurfaceFocused(gaining_focus_surface, lost_focus_surface,
+                                !!gained_focus);
   }
 }
 

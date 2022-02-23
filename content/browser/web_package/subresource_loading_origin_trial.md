@@ -29,10 +29,10 @@ Example:
 ```html
 <script type="webbundle">
 {
-  source: "https://example.com/dir/subresources.wbn",
-  credentials: "include",
-  resources: ["a.js", "b.js", "c.png"],
-  scopes: ["css"]
+  "source": "https://example.com/dir/subresources.wbn",
+  "credentials": "include",
+  "resources": ["a.js", "b.js", "c.png"],
+  "scopes": ["css"]
 }
 </script>
 ```
@@ -44,8 +44,8 @@ Example:
 ```html
 <script type="webbundle">
 {
-  source: "https://example.com/dir/subresources.wbn",
-  resources: ["uuid-in-package:f81d4fae-7dec-11d0-a765-00a0c91e6bf6"],
+  "source": "https://example.com/dir/subresources.wbn",
+  "resources": ["uuid-in-package:f81d4fae-7dec-11d0-a765-00a0c91e6bf6"]
 }
 </script>
 

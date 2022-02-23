@@ -2,36 +2,96 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("media_stream_device_enumerator") {
-  sources = [
-    "media_stream_device_enumerator.h",
-    "media_stream_device_enumerator_impl.cc",
-    "media_stream_device_enumerator_impl.h",
-  ]
+if (!is_ios) {
+  source_set("media_stream_device_enumerator") {
+    sources = [
+      "media_stream_device_enumerator.h",
+      "media_stream_device_enumerator_impl.cc",
+      "media_stream_device_enumerator_impl.h",
+    ]
 
-  deps = [
+    deps = [
+      "//base",
+      "//content/public/browser",
+      "//third_party/blink/public/common",
+    ]
+  }
+
+  source_set("webrtc") {
+    sources = [
+      "media_stream_devices_controller.cc",
+      "media_stream_devices_controller.h",
+    ]
+
+    public_deps = [ ":media_stream_device_enumerator" ]
+
+    deps = [
+      "//base",
+      "//components/content_settings/core/common",
+      "//components/permissions",
+      "//content/public/browser",
+      "//third_party/blink/public/common",
+    ]
+    if (is_android) {
+      deps += [ "//ui/android" ]
+    }
+  }
+}
+
+source_set("fake_ssl_socket") {
+  visibility = [
+    ":*",
+    "//services/network:*",
+  ]
+  sources = [
+    "fake_ssl_client_socket.cc",
+    "fake_ssl_client_socket.h",
+  ]
+  public_deps = [
     "//base",
-    "//content/public/browser",
-    "//third_party/blink/public/common",
+    "//net",
+    "//net/traffic_annotation",
   ]
 }
 
-source_set("webrtc") {
+source_set("net_address_utils") {
   sources = [
-    "media_stream_devices_controller.cc",
-    "media_stream_devices_controller.h",
+    "net_address_utils.cc",
+    "net_address_utils.h",
   ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
 
-  public_deps = [ ":media_stream_device_enumerator" ]
+source_set("thread_wrapper") {
+  sources = [
+    "thread_wrapper.cc",
+    "thread_wrapper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fake_ssl_client_socket_unittest.cc",
+    "thread_wrapper_unittest.cc",
+  ]
 
   deps = [
-    "//base",
-    "//components/content_settings/core/common",
-    "//components/permissions",
-    "//content/public/browser",
-    "//third_party/blink/public/common",
+    ":fake_ssl_socket",
+    ":thread_wrapper",
+    "//base/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/webrtc_overrides:metronome_like_task_queue_test",
   ]
-  if (is_android) {
-    deps += [ "//ui/android" ]
-  }
 }

@@ -1,0 +1,146 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("auth") {
+  defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
+  public_deps = [ ":challenge_response_key" ]
+  deps = [
+    "//ash/components/cryptohome",
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//chromeos/dbus/authpolicy",
+    "//chromeos/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/dbus/constants",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/login/login_state",
+    "//chromeos/metrics",
+    "//chromeos/tpm",
+    "//components/account_id",
+    "//components/device_event_log",
+    "//components/password_manager/core/browser:password_hash_data",
+    "//components/prefs",
+    "//components/user_manager",
+    "//crypto",
+    "//google_apis",
+    "//net",
+    "//skia",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
+  ]
+  sources = [
+    "auth_attempt_state.cc",
+    "auth_attempt_state.h",
+    "auth_session_authenticator.cc",
+    "auth_session_authenticator.h",
+    "auth_status_consumer.cc",
+    "auth_status_consumer.h",
+    "authenticator.cc",
+    "authenticator.h",
+    "challenge_response/cert_utils.cc",
+    "challenge_response/cert_utils.h",
+    "challenge_response/key_label_utils.cc",
+    "challenge_response/key_label_utils.h",
+    "challenge_response/known_user_pref_utils.cc",
+    "challenge_response/known_user_pref_utils.h",
+    "cryptohome_authenticator.cc",
+    "cryptohome_authenticator.h",
+    "cryptohome_key_constants.cc",
+    "cryptohome_key_constants.h",
+    "cryptohome_parameter_utils.cc",
+    "cryptohome_parameter_utils.h",
+    "extended_authenticator.cc",
+    "extended_authenticator.h",
+    "extended_authenticator_impl.cc",
+    "extended_authenticator_impl.h",
+    "key.cc",
+    "key.h",
+    "login_performer.cc",
+    "login_performer.h",
+    "password_visibility_utils.cc",
+    "password_visibility_utils.h",
+    "safe_mode_delegate.h",
+    "saml_password_attributes.cc",
+    "saml_password_attributes.h",
+    "stub_authenticator.cc",
+    "stub_authenticator.h",
+    "stub_authenticator_builder.cc",
+    "stub_authenticator_builder.h",
+    "sync_trusted_vault_keys.cc",
+    "sync_trusted_vault_keys.h",
+    "test_attempt_state.cc",
+    "test_attempt_state.h",
+    "user_context.cc",
+    "user_context.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":auth",
+    "//base",
+    "//chromeos/login/login_state",
+    "//components/account_id",
+    "//google_apis",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "fake_extended_authenticator.cc",
+    "fake_extended_authenticator.h",
+    "mock_auth_status_consumer.cc",
+    "mock_auth_status_consumer.h",
+  ]
+}
+
+# This is a separate targat to avoid a circular dependency with
+# ash/components/cryptohome.
+source_set("challenge_response_key") {
+  defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
+  deps = [ "//base" ]
+  sources = [
+    "challenge_response_key.cc",
+    "challenge_response_key.h",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":auth",
+    "//base",
+    "//base:i18n",
+    "//chromeos/dbus/authpolicy",
+    "//chromeos/dbus/authpolicy:authpolicy_proto",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/tpm:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+  sources = [
+    "challenge_response/cert_utils_unittest.cc",
+    "key_unittest.cc",
+    "saml_password_attributes_unittest.cc",
+    "sync_trusted_vault_keys_unittest.cc",
+  ]
+}

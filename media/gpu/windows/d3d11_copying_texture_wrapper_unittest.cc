@@ -148,9 +148,10 @@ class D3D11CopyingTexture2DWrapperTest
   scoped_refptr<MockVideoProcessorProxy> ExpectProcessorProxy() {
     auto result = base::MakeRefCounted<MockVideoProcessorProxy>();
     ON_CALL(*result.get(), MockInit(_, _))
-        .WillByDefault(Return(GetProcessorProxyInit()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetProcessorProxyInit()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockCreateVideoProcessorOutputView())
         .WillByDefault(Return(GetCreateVideoProcessorOutputView()));
@@ -168,19 +169,22 @@ class D3D11CopyingTexture2DWrapperTest
     auto result = std::make_unique<MockTexture2DWrapper>();
 
     ON_CALL(*result.get(), MockInit())
-        .WillByDefault(Return(GetTextureWrapperInit()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetTextureWrapperInit()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockAcquireKeyedMutexIfNeeded())
-        .WillByDefault(Return(GetAcquireKeyedMutexIfNeeded()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(
+            Return(GetAcquireKeyedMutexIfNeeded()
+                       ? D3D11Status::Codes::kOk
+                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockProcessTexture())
-        .WillByDefault(Return(GetProcessTexture()
-                                  ? D3D11Status::Codes::kOk
-                                  : D3D11Status::Codes::kCodeOnlyForTesting));
+        .WillByDefault(Return(
+            GetProcessTexture()
+                ? D3D11Status::Codes::kOk
+                : D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed));
 
     return result;
   }
@@ -204,16 +208,16 @@ class D3D11CopyingTexture2DWrapperTest
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 };
 
-INSTANTIATE_TEST_CASE_P(CopyingTexture2DWrapperTest,
-                        D3D11CopyingTexture2DWrapperTest,
-                        Combine(Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Values(S_OK, E_FAIL),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool(),
-                                Bool()));
+INSTANTIATE_TEST_SUITE_P(CopyingTexture2DWrapperTest,
+                         D3D11CopyingTexture2DWrapperTest,
+                         Combine(Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Values(S_OK, E_FAIL),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool(),
+                                 Bool()));
 
 // For ever potential return value combination for the D3D11VideoProcessor,
 // make sure that any failures result in a total failure.

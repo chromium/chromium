@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVWebView;
@@ -17,16 +15,16 @@ namespace ios_web_view {
 namespace test {
 
 // Creates web view with default configuration and frame equal to screen bounds.
-CWVWebView* CreateWebView() WARN_UNUSED_RESULT;
+[[nodiscard]] CWVWebView* CreateWebView();
 
 // Loads |URL| in |web_view| and waits until the load completes. Asserts if
 // loading does not complete.
-bool LoadUrl(CWVWebView* web_view, NSURL* url) WARN_UNUSED_RESULT;
+[[nodiscard]] bool LoadUrl(CWVWebView* web_view, NSURL* url);
 
 // Returns whether the element with |element_id| in the passed |web_view| has
 // been tapped using a JavaScript click() event.
-bool TapWebViewElementWithId(CWVWebView* web_view,
-                             NSString* element_id) WARN_UNUSED_RESULT;
+[[nodiscard]] bool TapWebViewElementWithId(CWVWebView* web_view,
+                                           NSString* element_id);
 
 // Waits until |script| is executed and synchronously returns the evaluation
 // result.
@@ -34,13 +32,12 @@ id EvaluateJavaScript(CWVWebView* web_view, NSString* script, NSError** error);
 
 // Waits for |web_view| to contain |text|. Returns false if the condition is not
 // met within a timeout.
-bool WaitForWebViewContainingTextOrTimeout(CWVWebView* web_view,
-                                           NSString* text) WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForWebViewContainingTextOrTimeout(CWVWebView* web_view,
+                                                         NSString* text);
 
 // Waits until |web_view| stops loading. Returns false if the condition is not
 // met within a timeout.
-bool WaitForWebViewLoadCompletionOrTimeout(CWVWebView* web_view)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool WaitForWebViewLoadCompletionOrTimeout(CWVWebView* web_view);
 
 // Copies the state of |source_web_view| to |destination_web_view| using state
 // restoration.

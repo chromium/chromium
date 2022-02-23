@@ -19,6 +19,7 @@ class SaveCardBubbleController;
 class SaveUPIBubble;
 class SaveUPIBubbleController;
 class VirtualCardManualFallbackBubbleController;
+class VirtualCardEnrollBubbleController;
 
 // Responsible for receiving calls from controllers and showing autofill
 // bubbles.
@@ -67,6 +68,11 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
       content::WebContents* web_contents,
       VirtualCardManualFallbackBubbleController* controller,
+      bool is_user_gesture) = 0;
+
+  virtual AutofillBubbleBase* ShowVirtualCardEnrollBubble(
+      content::WebContents* web_contents,
+      VirtualCardEnrollBubbleController* controller,
       bool is_user_gesture) = 0;
 
   // TODO(crbug.com/964127): Wait for the integration with sign in after local

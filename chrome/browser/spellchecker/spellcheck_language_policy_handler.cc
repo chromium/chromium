@@ -37,7 +37,7 @@ bool SpellcheckLanguagePolicyHandler::CheckPolicySettings(
   std::vector<std::string> unknown;
   SortForcedLanguages(policies, &forced, &unknown);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   for (const auto& language : unknown) {
     errors->AddError(policy_name(), IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE,
                      language);
@@ -87,7 +87,7 @@ void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
     return;
 
   // Separate the valid languages from the unknown / unsupported languages.
-  for (const base::Value& language : value->GetList()) {
+  for (const base::Value& language : value->GetListDeprecated()) {
     std::string candidate_language(
         base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =

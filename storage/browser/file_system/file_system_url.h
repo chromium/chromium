@@ -10,8 +10,10 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -29,6 +31,7 @@ namespace storage {
 //   virtual_path() returns 'foo/bar',
 //   type() returns the same value as mount_type(),
 //   path() returns the same value as virtual_path(),
+//   bucket() returns an empty string unless explicitly set with SetBucket(),
 //
 // All other accessors return empty or invalid value.
 //
@@ -133,6 +136,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
 
   const FileSystemMountOption& mount_option() const { return mount_option_; }
 
+  // Returns the BucketLocator for this URL's partitioned file location. In
+  // the majority of cases, this will not be populated and the default storage
+  // bucket will be used.
+  const absl::optional<BucketLocator>& bucket() const { return bucket_; }
+  void SetBucket(const BucketLocator& bucket) { bucket_ = bucket; }
+
   // Returns the formatted URL of this instance.
   GURL ToGURL() const;
 
@@ -191,6 +200,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   base::FilePath path_;
   std::string filesystem_id_;
   FileSystemMountOption mount_option_;
+
+  // Values that must be explicitly set.
+  absl::optional<BucketLocator> bucket_;
 };
 
 using FileSystemURLSet = std::set<FileSystemURL, FileSystemURL::Comparator>;

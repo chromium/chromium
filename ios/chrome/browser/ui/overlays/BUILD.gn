@@ -131,6 +131,7 @@ source_set("unit_tests") {
     ":ui",
     ":util",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/test_modality",

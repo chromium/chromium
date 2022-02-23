@@ -7,11 +7,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/child_process_host.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,7 +23,7 @@
 namespace content {
 
 constexpr size_t AuctionProcessManager::kMaxBidderProcesses = 10;
-constexpr size_t AuctionProcessManager::kMaxActiveSellerWorklets = 3;
+constexpr size_t AuctionProcessManager::kMaxSellerProcesses = 3;
 
 class AuctionProcessManager::WorkletProcess
     : public base::RefCounted<WorkletProcess> {
@@ -56,7 +59,7 @@ class AuctionProcessManager::WorkletProcess
 
   const WorkletType worklet_type_;
   const url::Origin origin_;
-  AuctionProcessManager* const auction_process_manager_;
+  const raw_ptr<AuctionProcessManager> auction_process_manager_;
 
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service_;
 };
@@ -64,8 +67,12 @@ class AuctionProcessManager::WorkletProcess
 AuctionProcessManager::ProcessHandle::ProcessHandle() = default;
 
 AuctionProcessManager::ProcessHandle::~ProcessHandle() {
-  if (manager_)
-    manager_->OnProcessHandleDestroyed(this);
+  if (manager_) {
+    // `manager_` should only be non-null if the handle is waiting for a
+    // process.
+    DCHECK(callback_);
+    manager_->RemovePendingProcessHandle(this);
+  }
 }
 
 auction_worklet::mojom::AuctionWorkletService*
@@ -78,6 +85,10 @@ AuctionProcessManager::ProcessHandle::GetService() {
 void AuctionProcessManager::ProcessHandle::AssignProcess(
     scoped_refptr<WorkletProcess> worklet_process) {
   worklet_process_ = std::move(worklet_process);
+
+  // No longer needed.
+  manager_ = nullptr;
+
   if (callback_) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&ProcessHandle::InvokeCallback,
@@ -96,9 +107,9 @@ AuctionProcessManager::~AuctionProcessManager() {
   DCHECK(pending_bidder_request_queue_.empty());
   DCHECK(pending_seller_request_queue_.empty());
   DCHECK(pending_bidder_requests_.empty());
+  DCHECK(pending_seller_requests_.empty());
   DCHECK(bidder_processes_.empty());
   DCHECK(seller_processes_.empty());
-  DCHECK_EQ(0u, num_active_seller_worklets_);
 }
 
 bool AuctionProcessManager::RequestWorkletService(WorkletType worklet_type,
@@ -124,30 +135,15 @@ bool AuctionProcessManager::RequestWorkletService(WorkletType worklet_type,
   process_handle->queued_request_ = std::prev(pending_requests->end());
   process_handle->callback_ = std::move(callback);
 
-  // Bidder processes are also tracked in map, to aid in the bidder process
+  // Pending requests are also tracked in a map, to aid in the bidder process
   // assignment logic.
-  if (worklet_type == WorkletType::kBidder)
-    pending_bidder_requests_[origin].insert(process_handle);
+  (*GetPendingRequestMap(worklet_type))[origin].insert(process_handle);
 
   return false;
 }
 
 bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
     ProcessHandle* process_handle) {
-  if (process_handle->worklet_type_ == WorkletType::kSeller) {
-    // If this is a seller worklet and the seller limit has been hit, nothing
-    // else to do - can't reuse a process even if there's a match. See
-    // discussion on deadlock in header file.
-    if (num_active_seller_worklets_ >= kMaxActiveSellerWorklets) {
-      DCHECK_EQ(num_active_seller_worklets_, kMaxActiveSellerWorklets);
-      return false;
-    }
-
-    // Otherwise, a process will be assigned to the seller worklet (either a new
-    // one or a pre-existing one).
-    ++num_active_seller_worklets_;
-  }
-
   // Look for a pre-existing matching process.
   ProcessMap* processes = Processes(process_handle->worklet_type_);
   auto process_it = processes->find(process_handle->origin_);
@@ -157,12 +153,10 @@ bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
     return true;
   }
 
-  // If this is for a bidder worklet, and the bidder process limit has been hit,
-  // can't create a new process.
-  if (process_handle->worklet_type_ == WorkletType::kBidder &&
-      bidder_processes_.size() == kMaxBidderProcesses) {
+  // If the corresponding process limit has been hit, can't create a new
+  // process.
+  if (!HasAvailableProcessSlot(process_handle->worklet_type_))
     return false;
-  }
 
   // Create WorkletProcess object. It will lazily create the actual process on
   // the first GetService() call.
@@ -180,7 +174,13 @@ void AuctionProcessManager::LaunchProcess(
     const std::string& display_name) {
   content::ServiceProcessHost::Launch(
       std::move(auction_worklet_service_receiver),
-      ServiceProcessHost::Options().WithDisplayName(display_name).Pass());
+      ServiceProcessHost::Options()
+          .WithDisplayName(display_name)
+#if BUILDFLAG(IS_MAC)
+          // TODO(https://crbug.com/1281311) add a utility helper for Jit.
+          .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
+#endif
+          .Pass());
 }
 
 std::string AuctionProcessManager::ComputeDisplayName(
@@ -198,27 +198,6 @@ std::string AuctionProcessManager::ComputeDisplayName(
   return display_name + origin.Serialize();
 }
 
-void AuctionProcessManager::OnProcessHandleDestroyed(
-    ProcessHandle* process_handle) {
-  // If the ProcessHandle has been assigned a WorkletProcess, update the number
-  // of seller slots if it's a seller worklet. For bidder worklets, nothing to
-  // do, since process creation/assignment happens when the process is destroyed
-  // instead.
-  if (process_handle->worklet_process_) {
-    if (process_handle->worklet_type_ == WorkletType::kSeller) {
-      DCHECK_GT(num_active_seller_worklets_, 0u);
-      --num_active_seller_worklets_;
-      OnSellerWorkletSlotFreed();
-    }
-    return;
-  }
-
-  // Otherwise, the ProcessHandle is in the corresponding list of pending
-  // handles.
-  DCHECK(process_handle->callback_);
-  RemovePendingProcessHandle(process_handle);
-}
-
 void AuctionProcessManager::RemovePendingProcessHandle(
     ProcessHandle* process_handle) {
   DCHECK(!process_handle->worklet_process_);
@@ -233,16 +212,17 @@ void AuctionProcessManager::RemovePendingProcessHandle(
   // accidentally used again.
   process_handle->queued_request_ = PendingRequestQueue::iterator();
 
-  // Bidder requests must also be removed from the map.
-  if (process_handle->worklet_type_ == WorkletType::kBidder) {
-    auto it = pending_bidder_requests_.find(process_handle->origin_);
-    DCHECK(it != pending_bidder_requests_.end());
-    DCHECK_EQ(1u, it->second.count(process_handle));
-
-    it->second.erase(process_handle);
-    if (it->second.empty())
-      pending_bidder_requests_.erase(it);
-  }
+  // Requests must also be removed from the map.
+  PendingRequestMap* pending_request_map =
+      GetPendingRequestMap(process_handle->worklet_type_);
+  auto it = pending_request_map->find(process_handle->origin_);
+  DCHECK(it != pending_request_map->end());
+  DCHECK_EQ(1u, it->second.count(process_handle));
+  it->second.erase(process_handle);
+  // If there are no more pending requests for the same origin, remove the
+  // origin's entry in `pending_request_map` as well.
+  if (it->second.empty())
+    pending_request_map->erase(it);
 }
 
 void AuctionProcessManager::OnWorkletProcessDestroyed(
@@ -252,48 +232,22 @@ void AuctionProcessManager::OnWorkletProcessDestroyed(
   DCHECK(it != processes->end());
   processes->erase(it);
 
-  // May need to launch another bidder process at this point. Pending seller
-  // requests are handled in RemovePendingProcessHandle() because of the
-  // differing logic.
-  if (worklet_process->worklet_type() == WorkletType::kBidder)
-    OnBidderProcessDestroyed();
-}
+  // May need to launch another process at this point.
 
-void AuctionProcessManager::OnSellerWorkletSlotFreed() {
-  // This method is currently only called once a seller worklet slot is freed.
-  DCHECK_LT(num_active_seller_worklets_, kMaxActiveSellerWorklets);
+  // Since a process was just destroyed, there should be at least one available
+  // slot to create another.
+  DCHECK(HasAvailableProcessSlot(worklet_process->worklet_type()));
 
-  // Nothing to do if no pending seller requests.
-  if (pending_seller_request_queue_.empty())
+  // If there are no pending requests for the corresponding worklet type,
+  // nothing more to do.
+  PendingRequestQueue* queue =
+      GetPendingRequestQueue(worklet_process->worklet_type());
+  if (queue->empty())
     return;
 
-  // Since the queue wasn't empty before, and only one seller worklet was freed,
-  // there must now be exactly one free seller worklet slot.
-  DCHECK_EQ(num_active_seller_worklets_, kMaxActiveSellerWorklets - 1);
-
-  ProcessHandle* process_handle = pending_seller_request_queue_.front();
-
-  // Remove the process handle from the list of pending requests.
-  RemovePendingProcessHandle(process_handle);
-
-  // Create or reuse a process handle for the request.
-  bool process_created = TryCreateOrGetProcessForHandle(process_handle);
-  // This follows from the DCHECK at the start of this method.
-  DCHECK(process_created);
-  // There should now be no free seller worklet slots.
-  DCHECK_EQ(num_active_seller_worklets_, kMaxActiveSellerWorklets);
-
-  // Nothing else to do after assigning the process - assigning a process
-  // results in the callback being invoked asynchonrously.
-}
-
-void AuctionProcessManager::OnBidderProcessDestroyed() {
-  // This method is currently only called once a bidder worklet is closed.
-  DCHECK_LT(bidder_processes_.size(), kMaxBidderProcesses);
-
-  // Nothing to do if no pending bidder requests.
-  if (pending_bidder_request_queue_.empty())
-    return;
+  // All the pending requests for the same origin as the oldest pending request.
+  std::set<ProcessHandle*>* pending_requests = &(*GetPendingRequestMap(
+      worklet_process->worklet_type()))[queue->front()->origin_];
 
   // Walk through all requests that can be served by the same process as the
   // next bidder process in the queue, assigning them a process. This code does
@@ -302,9 +256,6 @@ void AuctionProcessManager::OnBidderProcessDestroyed() {
   //
   // TODO(mmenke): Consider assigning processes to these matching requests in
   // FIFO order.
-
-  std::set<ProcessHandle*>* pending_requests =
-      &pending_bidder_requests_[pending_bidder_request_queue_.front()->origin_];
 
   // Have to record the number of requests and iterate on that, as
   // `pending_requests` will be deleted when the last request is removed.
@@ -316,17 +267,16 @@ void AuctionProcessManager::OnBidderProcessDestroyed() {
 
     RemovePendingProcessHandle(process_handle);
 
-    // This should always succeed for the fist request because
-    // `bidder_processes_` is less than kMaxBidderProcesses. Subsequent requests
-    // will just receive the process created for the first request. Could cache
-    // the process returned by the first request and reuse it, but doesn't seem
-    // worth the effort.
+    // This should always succeed for the first request because there's an
+    // available process slot. Subsequent requests will just receive the process
+    // created for the first request. Could cache the process returned by the
+    // first request and reuse it, but doesn't seem worth the effort.
     bool process_created = TryCreateOrGetProcessForHandle(process_handle);
     DCHECK(process_created);
     --num_matching_requests;
 
     // Nothing else to do after assigning the process - assigning a process
-    // results in the callback being invoked asynchonrously.
+    // results in the callback being invoked asynchronously.
   }
 }
 
@@ -342,6 +292,20 @@ AuctionProcessManager::ProcessMap* AuctionProcessManager::Processes(
   if (worklet_type == WorkletType::kBidder)
     return &bidder_processes_;
   return &seller_processes_;
+}
+
+AuctionProcessManager::PendingRequestMap*
+AuctionProcessManager::GetPendingRequestMap(WorkletType worklet_type) {
+  if (worklet_type == WorkletType::kBidder)
+    return &pending_bidder_requests_;
+  return &pending_seller_requests_;
+}
+
+bool AuctionProcessManager::HasAvailableProcessSlot(
+    WorkletType worklet_type) const {
+  if (worklet_type == WorkletType::kBidder)
+    return bidder_processes_.size() < kMaxBidderProcesses;
+  return seller_processes_.size() < kMaxSellerProcesses;
 }
 
 }  // namespace content

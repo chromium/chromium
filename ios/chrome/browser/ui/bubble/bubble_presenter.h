@@ -44,6 +44,10 @@ class ChromeBrowserState;
 // Shows a relevant Reading List help bubble, if applicable.
 - (void)presentReadingListBottomToolbarTipBubble;
 
+// Shows a help bubble to let the user know that they can change the default
+// mode (Desktop/Mobile) of the websites.
+- (void)presentDefaultSiteViewTipBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

@@ -30,7 +30,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/base/window_open_disposition.h"
 #endif
@@ -48,7 +48,7 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(url, contents->GetURL());
+  EXPECT_EQ(url, contents->GetLastCommittedURL());
 
   std::u16string blocked_page_title;
   if (url.has_host()) {
@@ -65,7 +65,7 @@ void CheckCanOpenViewSourceURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(view_source_url, contents->GetURL());
+  EXPECT_EQ(view_source_url, contents->GetLastCommittedURL());
 }
 
 // Handler for embedded http-server, returns a small page with javascript
@@ -189,6 +189,33 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
   // block http://aaa.com.
   CheckViewSourceURLIsBlocked(browser(), kURL_A);
   CheckCanOpenURL(browser(), kURL_A);
+}
+
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistNonStandardScheme) {
+  // Checks that non-standard schemes can be blocklisted, and that the blocking
+  // page mentions the URL's scheme.
+  const std::string kURL = "mailto:nobody";
+
+  // Block mailto: urls.
+  base::ListValue blocklist;
+  blocklist.Append("mailto:*");
+  PolicyMap policies;
+  policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  // Ensure the URL is blocked.
+  CheckURLIsBlocked(browser(), kURL);
+
+  // Ensure the blocking page mentions the scheme.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      contents, "domAutomationController.send(document.body.textContent);",
+      &result));
+  EXPECT_THAT(result, testing::HasSubstr("mailto"));
 }
 
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
@@ -395,9 +422,9 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   FlushBlocklistPolicy();
 
   PrefService* prefs = browser()->profile()->GetPrefs();
-  EXPECT_FALSE(
-      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
-                     base::Value("file://*")));
+  EXPECT_FALSE(base::Contains(
+      prefs->GetList(policy_prefs::kUrlBlocklist)->GetListDeprecated(),
+      base::Value("file://*")));
 
   base::ListValue disabledscheme;
   disabledscheme.Append("file");
@@ -406,9 +433,9 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, FileURLBlocklist) {
   UpdateProviderPolicy(policies);
   FlushBlocklistPolicy();
 
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(policy_prefs::kUrlBlocklist)->GetList(),
-                     base::Value("file://*")));
+  EXPECT_TRUE(base::Contains(
+      prefs->GetList(policy_prefs::kUrlBlocklist)->GetListDeprecated(),
+      base::Value("file://*")));
 
   // Allowlist one folder and blocklist an another just inside.
   base::ListValue allowlist;

@@ -41,7 +41,7 @@ if [[ $(pip show tensorflow) == *tensorflow* ]] || [[ $(pip show tf-nightly) == 
   echo 'Using installed tensorflow.'
 else
   echo 'Installing tensorflow.'
-  pip install tensorflow==2.4.0
+  pip install tensorflow==2.7.0
 fi
 
 if is_windows; then
@@ -49,12 +49,15 @@ if is_windows; then
   sed -i -e 's/":headers",$/":headers", ":windows_static_link_data",/' third_party/icu/BUILD.bzl
 fi
 
-write_to_bazelrc "build:manylinux2010 --crosstool_top=@org_tensorflow//third_party/toolchains/preconfig/ubuntu16.04/gcc7_manylinux2010-nvcc-cuda10.1:toolchain"
+write_to_bazelrc "build:manylinux2010 --crosstool_top=@ubuntu18.04-gcc7_manylinux2010-cuda11.2-cudnn8.1-tensorrt7.2_config_cuda//crosstool:toolchain"
 write_to_bazelrc "build --spawn_strategy=standalone"
 write_to_bazelrc "build --strategy=Genrule=standalone"
 write_to_bazelrc "build -c opt"
 write_to_bazelrc "build --define=framework_shared_object=true"
 write_to_bazelrc "build --experimental_repo_remote_exec"
+# By default, build in C++ 14 mode.
+write_to_bazelrc "build --cxxopt=-std=c++14"
+write_to_bazelrc "build --host_cxxopt=-std=c++14"
 
 # Config for Android build.
 write_to_bazelrc "build:android --crosstool_top=//external:android/crosstool"
@@ -96,6 +99,7 @@ if is_windows; then
   SHARED_LIBRARY_DIR="${HEADER_DIR:0:-7}python"
   SHARED_LIBRARY_NAME="_pywrap_tensorflow_internal.lib"
 fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SHARED_LIBRARY_DIR
 write_action_env_to_bazelrc "TF_HEADER_DIR" ${HEADER_DIR}
 write_action_env_to_bazelrc "TF_SHARED_LIBRARY_DIR" ${SHARED_LIBRARY_DIR}
 write_action_env_to_bazelrc "TF_SHARED_LIBRARY_NAME" ${SHARED_LIBRARY_NAME}

@@ -5,6 +5,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -191,28 +192,36 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
 base::Value NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     base::StringPiece reason) {
-  base::DictionaryValue dict;
-  dict.SetString("connection_id", connection_id.ToString());
-  dict.SetString("reason", reason);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("connection_id", connection_id.ToString());
+  dict.SetStringKey("reason", reason);
+  return dict;
 }
 
 base::Value NetLogQuicMigrationSuccessParams(
     quic::QuicConnectionId connection_id) {
-  base::DictionaryValue dict;
-  dict.SetString("connection_id", connection_id.ToString());
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("connection_id", connection_id.ToString());
+  return dict;
 }
 
 base::Value NetLogProbingResultParams(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress* peer_address,
     bool is_success) {
-  base::DictionaryValue dict;
-  dict.SetString("network", base::NumberToString(network));
-  dict.SetString("peer address", peer_address->ToString());
-  dict.SetBoolean("is_success", is_success);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("network", base::NumberToString(network));
+  dict.SetStringKey("peer address", peer_address->ToString());
+  dict.SetBoolKey("is_success", is_success);
+  return dict;
+}
+
+base::Value NetLogAcceptChFrameReceivedParams(
+    spdy::AcceptChOriginValuePair entry) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("origin", entry.origin);
+  dict.SetStringKey("accept_ch", entry.value);
+  return dict;
 }
 
 // Histogram for recording the different reasons that a QUIC session is unable
@@ -309,12 +318,12 @@ base::Value NetLogQuicPushPromiseReceivedParams(
     spdy::SpdyStreamId stream_id,
     spdy::SpdyStreamId promised_stream_id,
     NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("headers",
               ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.SetInteger("id", stream_id);
-  dict.SetInteger("promised_stream_id", promised_stream_id);
-  return std::move(dict);
+  dict.SetIntKey("id", stream_id);
+  dict.SetIntKey("promised_stream_id", promised_stream_id);
+  return dict;
 }
 
 // TODO(fayang): Remove this when necessary data is collected.
@@ -571,12 +580,12 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
   return session_->WasConnectionEverUsed();
 }
 
-const std::vector<std::string>&
+const std::set<std::string>&
 QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_ ? session_->GetDnsAliasesForSessionKey(key)
-                  : *emptyvector_result;
+                  : *emptyset_result;
 }
 
 bool QuicChromiumClientSession::Handle::CheckVary(
@@ -1028,7 +1037,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     set_debug_visitor(http3_logger_.get());
   connection->set_debug_visitor(logger_.get());
   connection->set_creator_debug_delegate(logger_.get());
-  migrate_back_to_default_timer_.SetTaskRunner(task_runner_);
+  migrate_back_to_default_timer_.SetTaskRunner(task_runner_.get());
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION, [&] {
     return NetLogQuicClientSessionParams(
         &session_key, connection_id(), connection->client_connection_id(),
@@ -1231,21 +1240,19 @@ void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
   bool has_valid_entry = false;
   bool has_invalid_entry = false;
   for (const auto& entry : frame.entries) {
-    // |entry.origin| must be a valid origin.
-    GURL url(entry.origin);
-    if (!url.is_valid()) {
-      has_invalid_entry = true;
-      continue;
-    }
-    const url::Origin origin = url::Origin::Create(url);
-    std::string serialized = origin.Serialize();
+    const url::SchemeHostPort scheme_host_port(GURL(entry.origin));
+    // |entry.origin| must be a valid SchemeHostPort.
+    std::string serialized = scheme_host_port.Serialize();
     if (serialized.empty() || entry.origin != serialized) {
       has_invalid_entry = true;
       continue;
     }
     has_valid_entry = true;
     accept_ch_entries_received_via_alps_.insert(
-        std::make_pair(std::move(origin), entry.value));
+        std::make_pair(std::move(scheme_host_port), entry.value));
+
+    net_log_.AddEvent(NetLogEventType::QUIC_ACCEPT_CH_FRAME_RECEIVED,
+                      [&] { return NetLogAcceptChFrameReceivedParams(entry); });
   }
   LogAcceptChFrameReceivedHistogram(has_valid_entry, has_invalid_entry);
 }
@@ -1508,9 +1515,9 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   return true;
 }
 
-base::StringPiece QuicChromiumClientSession::GetAcceptChViaAlpsForOrigin(
-    const url::Origin& origin) const {
-  auto it = accept_ch_entries_received_via_alps_.find(origin);
+base::StringPiece QuicChromiumClientSession::GetAcceptChViaAlps(
+    const url::SchemeHostPort& scheme_host_port) const {
+  auto it = accept_ch_entries_received_via_alps_.find(scheme_host_port);
   if (it == accept_ch_entries_received_via_alps_.end()) {
     LogAcceptChForOriginHistogram(false);
     return {};
@@ -1691,9 +1698,10 @@ void QuicChromiumClientSession::OnStreamClosed(quic::QuicStreamId stream_id) {
 
 void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
     bool unidirectional) {
-  if (CanOpenNextOutgoingBidirectionalStream() && !stream_requests_.empty() &&
-      crypto_stream_->encryption_established() && !goaway_received() &&
-      !going_away_ && connection()->connected()) {
+  while (CanOpenNextOutgoingBidirectionalStream() &&
+         !stream_requests_.empty() &&
+         crypto_stream_->encryption_established() && !goaway_received() &&
+         !going_away_ && connection()->connected()) {
     StreamRequest* request = stream_requests_.front();
     // TODO(ckrasic) - analyze data and then add logic to mark QUIC
     // broken if wait times are excessive.
@@ -2035,29 +2043,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
         "Net.QuicSession.ConnectionDuration",
         tick_clock_->NowTicks() - connect_timing_.connect_end);
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
-    // These values are persisted to logs. Entries should not be renumbered
-    // and numeric values should never be reused.
-    enum class KeyUpdateSupported {
-      kInvalid = 0,
-      kUnsupported = 1,
-      kSupported = 2,
-      kSupportedLocallyOnly = 3,
-      kSupportedRemotelyOnly = 4,
-      kMaxValue = kSupportedRemotelyOnly,
-    };
-    KeyUpdateSupported key_update_supported = KeyUpdateSupported::kInvalid;
-    if (config()->KeyUpdateSupportedForConnection()) {
-      key_update_supported = KeyUpdateSupported::kSupported;
-    } else if (config()->KeyUpdateSupportedLocally()) {
-      key_update_supported = KeyUpdateSupported::kSupportedLocallyOnly;
-    } else if (config()->KeyUpdateSupportedRemotely()) {
-      key_update_supported = KeyUpdateSupported::kSupportedRemotelyOnly;
-    } else {
-      key_update_supported = KeyUpdateSupported::kUnsupported;
-    }
-    base::UmaHistogramEnumeration("Net.QuicSession.KeyUpdate.Supported",
-                                  key_update_supported);
-    if (config()->KeyUpdateSupportedForConnection()) {
+    if (connection()->version().UsesTls()) {
       base::UmaHistogramCounts100("Net.QuicSession.KeyUpdate.PerConnection2",
                                   connection()->GetStats().key_update_count);
       base::UmaHistogramCounts100(
@@ -2806,7 +2792,7 @@ void QuicChromiumClientSession::OnPathDegrading() {
   if (!stream_factory_)
     return;
 
-  if (allow_port_migration_) {
+  if (allow_port_migration_ && !migrate_session_early_v2_) {
     current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
     MaybeMigrateToDifferentPortOnPathDegrading();
     return;
@@ -3378,9 +3364,10 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
 
 base::Value QuicChromiumClientSession::GetInfoAsValue(
     const std::set<HostPortPair>& aliases) {
-  base::DictionaryValue dict;
-  dict.SetString("version", ParsedQuicVersionToString(connection()->version()));
-  dict.SetInteger("open_streams", GetNumActiveStreams());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("version",
+                    ParsedQuicVersionToString(connection()->version()));
+  dict.SetIntKey("open_streams", GetNumActiveStreams());
 
   std::vector<base::Value> stream_list;
   auto* stream_list_ptr = &stream_list;
@@ -3414,7 +3401,7 @@ base::Value QuicChromiumClientSession::GetInfoAsValue(
   }
   dict.SetKey("aliases", base::Value(std::move(alias_list)));
 
-  return std::move(dict);
+  return dict;
 }
 
 bool QuicChromiumClientSession::gquic_zero_rtt_disabled() const {
@@ -3790,12 +3777,12 @@ quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
   return push_promise_index_->GetPromised(url.spec());
 }
 
-const std::vector<std::string>&
+const std::set<std::string>&
 QuicChromiumClientSession::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return stream_factory_ ? stream_factory_->GetDnsAliasesForSessionKey(key)
-                         : *emptyvector_result;
+                         : *emptyset_result;
 }
 
 bool QuicChromiumClientSession::ValidateStatelessReset(

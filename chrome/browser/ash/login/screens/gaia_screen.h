@@ -26,6 +26,7 @@ class GaiaScreen : public BaseScreen {
     CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,
+    SAML_VIDEO_TIMEOUT,
   };
 
   static std::string GetResultString(Result result);
@@ -47,6 +48,7 @@ class GaiaScreen : public BaseScreen {
   void LoadOnlineForChildSignup();
   // Loads online Gaia (for child signin) into the webview.
   void LoadOnlineForChildSignin();
+  void ShowAllowlistCheckFailedError();
 
  private:
   void ShowImpl() override;

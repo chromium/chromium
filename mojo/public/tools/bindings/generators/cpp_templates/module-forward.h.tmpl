@@ -180,13 +180,8 @@ class {{interface.name}};
 {{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}Ptr = mojo::InterfacePtr<{{interface.name}}>;
 using {{interface.name}}PtrInfo = mojo::InterfacePtrInfo<{{interface.name}}>;
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}Request = mojo::InterfaceRequest<{{interface.name}}>;
 using {{interface.name}}AssociatedPtrInfo =
     mojo::AssociatedInterfacePtrInfo<{{interface.name}}>;
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}AssociatedRequest =
-    mojo::AssociatedInterfaceRequest<{{interface.name}}>;
 {%  endfor %}
 
 

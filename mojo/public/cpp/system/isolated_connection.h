@@ -5,7 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_ISOLATED_CONNECTION_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_ISOLATED_CONNECTION_H_
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"

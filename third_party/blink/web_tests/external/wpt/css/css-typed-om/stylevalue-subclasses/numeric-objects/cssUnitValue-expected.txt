@@ -12,8 +12,8 @@ FAIL CSSUnitValue can be constructed with lh Failed to construct 'CSSUnitValue':
 FAIL CSSUnitValue can be constructed with rlh Failed to construct 'CSSUnitValue': Invalid unit: rlh
 PASS CSSUnitValue can be constructed with vw
 PASS CSSUnitValue can be constructed with vh
-FAIL CSSUnitValue can be constructed with vi Failed to construct 'CSSUnitValue': Invalid unit: vi
-FAIL CSSUnitValue can be constructed with vb Failed to construct 'CSSUnitValue': Invalid unit: vb
+PASS CSSUnitValue can be constructed with vi
+PASS CSSUnitValue can be constructed with vb
 PASS CSSUnitValue can be constructed with vmin
 PASS CSSUnitValue can be constructed with vmax
 PASS CSSUnitValue can be constructed with cm

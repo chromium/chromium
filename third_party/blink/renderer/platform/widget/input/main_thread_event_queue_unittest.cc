@@ -238,6 +238,8 @@ class MainThreadEventQueueTest : public testing::Test,
     }
   }
 
+  void RunPendingTasksWithoutRaf() { main_task_runner_->RunUntilIdle(); }
+
   // MainThreadEventQueueClient overrides.
   bool HandleInputEvent(const blink::WebCoalescedInputEvent& event,
                         std::unique_ptr<cc::EventMetrics> metrics,
@@ -249,6 +251,12 @@ class MainThreadEventQueueTest : public testing::Test,
     std::move(callback).Run(blink::mojom::InputEventResultState::kNotConsumed,
                             event.latency_info(), nullptr, absl::nullopt);
     return true;
+  }
+  void InputEventsDispatched(bool raf_aligned) override {
+    if (raf_aligned)
+      raf_aligned_events_dispatched_ = true;
+    else
+      non_raf_aligned_events_dispatched_ = true;
   }
   void SetNeedsMainFrame() override { needs_main_frame_ = true; }
 
@@ -270,6 +278,8 @@ class MainThreadEventQueueTest : public testing::Test,
 
   bool needs_main_frame_ = false;
   bool handle_input_event_ = true;
+  bool raf_aligned_events_dispatched_ = false;
+  bool non_raf_aligned_events_dispatched_ = false;
   base::TimeTicks frame_time_;
   unsigned closure_count_ = 0;
 };
@@ -1149,6 +1159,7 @@ class MainThreadEventQueueInitializationTest
     return true;
   }
 
+  void InputEventsDispatched(bool raf_aligned) override {}
   void SetNeedsMainFrame() override {}
 
  protected:
@@ -1585,6 +1596,69 @@ TEST_F(MainThreadEventQueueTest, PointerEventsWithRelativeMotionCoalescing) {
               handled_tasks_.at(5)->taskAsEvent()->Event().GetType());
     EXPECT_EQ(1u, handled_tasks_.at(5)->taskAsEvent()->CoalescedEventSize());
   }
+}
+
+// Verifies that after rAF-aligned or non-rAF-aligned events are dispatched,
+// clients are notified that the dispatch is done.
+TEST_F(MainThreadEventQueueTest, InputEventsDispatchedNotified) {
+  WebKeyboardEvent key_down(WebInputEvent::Type::kRawKeyDown, 0,
+                            base::TimeTicks::Now());
+  WebKeyboardEvent key_up(WebInputEvent::Type::kKeyUp, 0,
+                          base::TimeTicks::Now());
+  WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
+      WebInputEvent::Type::kMouseMove, 10, 10, 0);
+
+  // Post two non-rAF-aligned events.
+  HandleEvent(key_down, blink::mojom::InputEventResultState::kSetNonBlocking);
+  HandleEvent(key_up, blink::mojom::InputEventResultState::kSetNonBlocking);
+
+  // Post one rAF-aligned event.
+  HandleEvent(mouse_move, blink::mojom::InputEventResultState::kSetNonBlocking);
+
+  EXPECT_EQ(3u, event_queue().size());
+
+  // Task runner should have a task queued to dispatch non-rAF-aligned events.
+  EXPECT_TRUE(main_task_runner_->HasPendingTask());
+
+  // A main frame should be needed to dispatch the rAF-aligned event.
+  EXPECT_TRUE(needs_main_frame_);
+
+  // Run pending tasks without invoking a rAF.
+  RunPendingTasksWithoutRaf();
+
+  // The client should be notified that non-rAF-aligned events are dispatched.
+  // No notification for rAF-aligned events, yet.
+  EXPECT_TRUE(non_raf_aligned_events_dispatched_);
+  EXPECT_FALSE(raf_aligned_events_dispatched_);
+
+  // No task should be pending in the task runner.
+  EXPECT_FALSE(main_task_runner_->HasPendingTask());
+
+  // A main frame is still needed.
+  EXPECT_TRUE(needs_main_frame_);
+
+  // The two non-rAF-alinged events should be handled out of the queue.
+  EXPECT_EQ(1u, event_queue().size());
+  EXPECT_EQ(2u, handled_tasks_.size());
+  EXPECT_EQ(key_down.GetType(),
+            handled_tasks_.at(0)->taskAsEvent()->Event().GetType());
+  EXPECT_EQ(key_up.GetType(),
+            handled_tasks_.at(1)->taskAsEvent()->Event().GetType());
+
+  // Run pending tasks with a simulated rAF.
+  RunPendingTasksWithSimulatedRaf();
+
+  // Now, clients should be notified of rAF-aligned events dispatch.
+  EXPECT_TRUE(raf_aligned_events_dispatched_);
+
+  // No main frame should be needed anymore..
+  EXPECT_FALSE(needs_main_frame_);
+
+  // The rAF-alinged event should be handled out of the queue now.
+  EXPECT_EQ(0u, event_queue().size());
+  EXPECT_EQ(3u, handled_tasks_.size());
+  EXPECT_EQ(mouse_move.GetType(),
+            handled_tasks_.at(2)->taskAsEvent()->Event().GetType());
 }
 
 }  // namespace blink

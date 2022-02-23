@@ -87,6 +87,10 @@ source_set("lib") {
       "//chromeos/lacros",
     ]
   }
+
+  if (is_serial_enabled_platform) {
+    defines = [ "IS_SERIAL_ENABLED_PLATFORM" ]
+  }
 }
 
 # NOTE: We use a separate component target to support global binder overrides,
@@ -258,6 +262,7 @@ source_set("tests") {
   } else {
     sources += [
       "battery/battery_monitor_impl_unittest.cc",
+      "hid/hid_device_info_unittest.cc",
       "hid/hid_manager_unittest.cc",
       "public/cpp/hid/hid_blocklist_unittest.cc",
     ]
@@ -298,6 +303,7 @@ source_set("tests") {
 
   if (is_serial_enabled_platform) {
     sources += [
+      "serial/bluetooth_serial_device_enumerator_unittests.cc",
       "serial/bluetooth_serial_port_impl_unittest.cc",
       "serial/serial_device_enumerator_unittest.cc",
       "serial/serial_port_impl_unittest.cc",
@@ -474,4 +480,16 @@ source_set("usb_test_gadget") {
     "//services/device/usb",
     "//tools/usb_gadget",
   ]
+}
+
+source_set("utility") {
+  sources = []
+
+  if (is_mac) {
+    sources += [
+      "utils/mac_utils.cc",
+      "utils/mac_utils.h",
+    ]
+  }
+  deps = [ "//base" ]
 }

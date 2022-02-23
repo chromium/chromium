@@ -9,4 +9,9 @@ namespace extensions {
 const PrefMap kCorruptedDisableCount = {"extensions.corrupted_disable_count",
                                         PrefType::kInteger,
                                         PrefScope::kProfile};
+
+// Records the user permissions.
+const PrefMap kUserPermissions = {"extensions.user_permissions",
+                                  PrefType::kDictionary, PrefScope::kProfile};
+
 }  // namespace extensions

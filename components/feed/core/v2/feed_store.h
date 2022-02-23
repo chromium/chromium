@@ -52,8 +52,14 @@ class FeedStore {
     std::vector<feedstore::StreamData> stream_data;
   };
   struct WebFeedStartupData {
+    WebFeedStartupData();
+    WebFeedStartupData(WebFeedStartupData&&);
+    ~WebFeedStartupData();
+    WebFeedStartupData& operator=(WebFeedStartupData&&);
+
     feedstore::SubscribedWebFeeds subscribed_web_feeds;
     feedstore::RecommendedWebFeedIndex recommended_feed_index;
+    std::vector<feedstore::PendingWebFeedOperation> pending_operations;
   };
 
   explicit FeedStore(
@@ -136,6 +142,12 @@ class FeedStore {
       const std::string& web_feed_id,
       base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
           callback);
+  void ReadAllPendingWebFeedOperations(
+      base::OnceCallback<
+          void(std::vector<feedstore::PendingWebFeedOperation>)>);
+  void RemovePendingWebFeedOperation(int64_t operation_id);
+  void WritePendingWebFeedOperation(
+      feedstore::PendingWebFeedOperation operation);
 
   bool IsInitializedForTesting() const;
 

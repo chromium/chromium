@@ -157,7 +157,7 @@ SodaLanguagePackComponentInstallerPolicy::GetInstallerAttributes() const {
 void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
                                           PrefService* prefs,
                                           const base::FilePath& install_dir) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   absl::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
   if (config) {

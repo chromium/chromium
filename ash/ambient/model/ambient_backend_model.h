@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "ash/ambient/ambient_constants.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "base/containers/circular_deque.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/gfx/image/image_skia.h"
@@ -49,7 +51,7 @@ struct ASH_EXPORT PhotoWithDetails {
 // by |AmbientController|.
 class ASH_EXPORT AmbientBackendModel {
  public:
-  AmbientBackendModel();
+  explicit AmbientBackendModel(AmbientPhotoConfig photo_config);
   AmbientBackendModel(const AmbientBackendModel&) = delete;
   AmbientBackendModel& operator=(AmbientBackendModel&) = delete;
   ~AmbientBackendModel();
@@ -84,9 +86,29 @@ class ASH_EXPORT AmbientBackendModel {
   // Clear local storage.
   void Clear();
 
-  // Get images from local storage. Could be null image.
-  const PhotoWithDetails& GetNextImage() const { return next_image_; }
-  const PhotoWithDetails& GetCurrentImage() const { return current_image_; }
+  // Sets the new AmbientPhotoConfig to use. This automatically |Clear()|s the
+  // model of any existing topics.
+  void SetPhotoConfig(AmbientPhotoConfig photo_config);
+
+  // Returns all available decoded topics. The number of decoded topics in the
+  // output will always be <= |AmbientPhotoConfig.num_decoded_topics_to_buffer|.
+  //
+  // Every PhotoWithDetails instance in the output shall be non-null.
+  const base::circular_deque<PhotoWithDetails>& all_decoded_topics() const {
+    return all_decoded_topics_;
+  }
+
+  // Gets the 2 oldest decoded topics. It's possible to accomplish this as well
+  // by calling GetAllAvailableDecodedTopics() directly, but this wrapper
+  // function is provided as a convenience.
+  //
+  // If an output PhotoWithDetails argument is nullptr, that specific topic is
+  // ignored and not fetched.
+  //
+  // If one of the requested topics is unavailable, its corresponding output
+  // argument is set to an empty PhotoWithDetails instance.
+  void GetCurrentAndNextImages(PhotoWithDetails* current_image_out,
+                               PhotoWithDetails* next_image_out) const;
 
   // Updates the weather information and notifies observers if the icon image is
   // not null.
@@ -110,6 +132,8 @@ class ASH_EXPORT AmbientBackendModel {
 
   bool show_celsius() const { return show_celsius_; }
 
+  const AmbientPhotoConfig& photo_config() const { return photo_config_; }
+
  private:
   friend class AmbientBackendModelTest;
   friend class AmbientAshTestBase;
@@ -119,11 +143,14 @@ class ASH_EXPORT AmbientBackendModel {
   void NotifyImagesReady();
   void NotifyWeatherInfoUpdated();
 
+  AmbientPhotoConfig photo_config_;
   std::vector<AmbientModeTopic> topics_;
 
-  // Local cache of downloaded images for photo transition animation.
-  PhotoWithDetails current_image_;
-  PhotoWithDetails next_image_;
+  // All available decoded topics. The size of the ring buffer is capped
+  // according to |AmbientPhotoConfig.num_decoded_topics_to_buffer|. The most
+  // recently decoded topics are pushed to the back of the ring buffer and the
+  // oldest topics are popped from the front.
+  base::circular_deque<PhotoWithDetails> all_decoded_topics_;
 
   // Current weather information.
   gfx::ImageSkia weather_condition_icon_;

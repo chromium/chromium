@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -49,7 +48,7 @@ void LanguagePrefs::RegisterProfilePrefs(
       language::prefs::kPreferredLanguagesSyncable, "",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       language::prefs::kAppLanguagePromptShown, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -108,8 +107,8 @@ void LanguagePrefs::GetDeduplicatedUserLanguages(
   forced_languages_set_.clear();
 
   // Add policy languages.
-  for (const auto& language :
-       prefs_->GetList(language::prefs::kForcedLanguages)->GetList()) {
+  for (const auto& language : prefs_->GetList(language::prefs::kForcedLanguages)
+                                  ->GetListDeprecated()) {
     if (forced_languages_set_.find(language.GetString()) ==
         forced_languages_set_.end()) {
       deduplicated_languages.emplace_back(language.GetString());

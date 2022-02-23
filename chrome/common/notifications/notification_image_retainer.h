@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -84,7 +85,7 @@ class NotificationImageRetainer {
   const base::FilePath image_dir_;
 
   // Not owned.
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // A timer used to handle deleting files in batch.
   base::RepeatingTimer deletion_timer_;

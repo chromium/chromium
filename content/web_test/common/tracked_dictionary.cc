@@ -11,7 +11,7 @@ namespace content {
 TrackedDictionary::TrackedDictionary() {}
 
 void TrackedDictionary::ResetChangeTracking() {
-  changed_values_.Clear();
+  changed_values_.DictClear();
 }
 
 void TrackedDictionary::ApplyUntrackedChanges(

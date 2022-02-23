@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_SCREEN_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_SCREEN_H_
 
-#include "base/macros.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"

@@ -177,7 +177,7 @@ void HeadlessProtocolBrowserTest::FinishTest() {
 }
 
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
-#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
     test_folder_ = "/protocol/";                                              \
@@ -199,8 +199,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeInterrupt,
                        "emulation/virtual-time-interrupt.js")
 
 // Flaky on Linux, Mac & Win. TODO(crbug.com/930717): Re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_VirtualTimeCrossProcessNavigation \
   DISABLED_VirtualTimeCrossProcessNavigation
 #else
@@ -223,7 +223,13 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeSessionStorage,
 HEADLESS_PROTOCOL_TEST(VirtualTimeStarvation,
                        "emulation/virtual-time-starvation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeVideo, "emulation/virtual-time-video.js")
-HEADLESS_PROTOCOL_TEST(VirtualTimeErrorLoop,
+// Flaky on Linux and Mac. https://crbug.com/1295644
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_VirtualTimeErrorLoop DISABLED_VirtualTimeErrorLoop
+#else
+#define MAYBE_VirtualTimeErrorLoop VirtualTimeErrorLoop
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeErrorLoop,
                        "emulation/virtual-time-error-loop.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeFetchStream,
                        "emulation/virtual-time-fetch-stream.js")
@@ -235,7 +241,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
 
 // Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_VirtualTimeFetchKeepalive DISABLED_VirtualTimeFetchKeepalive
 #else
 #define MAYBE_VirtualTimeFetchKeepalive VirtualTimeFetchKeepalive
@@ -250,7 +256,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimePausesDocumentLoading,
 HEADLESS_PROTOCOL_TEST(PageBeforeUnload, "page/page-before-unload.js")
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_VirtualTimeTimerOrder DISABLED_VirtualTimeTimerOrder
 #define MAYBE_VirtualTimeTimerSuspend DISABLED_VirtualTimeTimerSuspend
 #else
@@ -269,7 +275,7 @@ HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
 HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 
 // https://crbug.com/1204620
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
 #else
 #define MAYBE_InputClipboardOps InputClipboardOps
@@ -284,6 +290,12 @@ HEADLESS_PROTOCOL_TEST(HeadlessSessionCreateContextDisposeOnDetach,
 
 HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
                        "sanity/browser-set-initial-proxy-config.js")
+
+HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
+                       "sanity/universal-network-access.js")
+
+HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
+                       "sanity/show-directory-picker-no-crash.js")
 
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {

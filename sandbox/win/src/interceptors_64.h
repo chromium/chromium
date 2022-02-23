@@ -146,32 +146,6 @@ TargetNtOpenProcessTokenEx64(HANDLE process,
                              ULONG handle_attributes,
                              PHANDLE token);
 
-// Interception of CreateProcessW in kernel32.dll.
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessW64(LPCWSTR application_name,
-                       LPWSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCWSTR current_directory,
-                       LPSTARTUPINFOW startup_info,
-                       LPPROCESS_INFORMATION process_information);
-
-// Interception of CreateProcessA in kernel32.dll.
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessA64(LPCSTR application_name,
-                       LPSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCSTR current_directory,
-                       LPSTARTUPINFOA startup_info,
-                       LPPROCESS_INFORMATION process_information);
-
 // Interception of CreateThread in kernel32.dll.
 SANDBOX_INTERCEPT HANDLE WINAPI
 TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
@@ -180,48 +154,6 @@ TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
                      PVOID parameter,
                      DWORD creation_flags,
                      LPDWORD thread_id);
-
-// -----------------------------------------------------------------------
-// Interceptors handled by the registry dispatcher.
-
-// Interception of NtCreateKey on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateKey64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG title_index,
-                    PUNICODE_STRING class_name,
-                    ULONG create_options,
-                    PULONG disposition);
-
-// Interception of NtOpenKey on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKey64(PHANDLE key,
-                  ACCESS_MASK desired_access,
-                  POBJECT_ATTRIBUTES object_attributes);
-
-// Interception of NtOpenKeyEx on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKeyEx64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG open_options);
-
-// -----------------------------------------------------------------------
-// Interceptors handled by the sync dispatcher.
-
-// Interception of NtCreateEvent/NtOpenEvent on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateEvent64(PHANDLE event_handle,
-                      ACCESS_MASK desired_access,
-                      POBJECT_ATTRIBUTES object_attributes,
-                      EVENT_TYPE event_type,
-                      BOOLEAN initial_state);
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenEvent64(PHANDLE event_handle,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes);
 
 // -----------------------------------------------------------------------
 // Interceptors handled by the process mitigations win32k lockdown code.

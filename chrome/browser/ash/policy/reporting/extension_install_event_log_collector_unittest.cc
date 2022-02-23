@@ -308,7 +308,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest, LoginTypes) {
     ExtensionInstallEventLogCollector collector(registry(), delegate(),
                                                 profile());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kLoginUser);
+        ash::switches::kLoginUser);
     collector.OnLogin();
     EXPECT_EQ(1, delegate()->add_for_all_count());
   }

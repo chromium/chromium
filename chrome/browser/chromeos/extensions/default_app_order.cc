@@ -18,11 +18,13 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
 namespace chromeos {
@@ -41,9 +43,11 @@ const char kImportDefaultOrderAttr[] = "import_default_order";
 
 // Canonical ordering specified in: go/default-apps
 const char* const kDefaultAppOrder[] = {
-    extension_misc::kChromeAppId,
+    app_constants::kChromeAppId,
     arc::kPlayStoreAppId,
+
     extension_misc::kFilesManagerAppId,
+    file_manager::kFileManagerSwaAppId,
 
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
@@ -223,24 +227,23 @@ const std::string& ExternalLoader::GetOemAppsFolderName() {
 
 void ExternalLoader::Load() {
   base::FilePath ordinals_file;
-  CHECK(
-      base::PathService::Get(chromeos::FILE_DEFAULT_APP_ORDER, &ordinals_file));
+  CHECK(base::PathService::Get(FILE_DEFAULT_APP_ORDER, &ordinals_file));
 
   std::unique_ptr<base::ListValue> ordinals_value =
       ReadExternalOrdinalFile(ordinals_file);
   if (ordinals_value) {
     std::string locale = g_browser_process->GetApplicationLocale();
-    for (size_t i = 0; i < ordinals_value->GetList().size(); ++i) {
-      std::string app_id;
-      base::DictionaryValue* dict = NULL;
-      if (ordinals_value->GetString(i, &app_id)) {
+    for (const base::Value& i : ordinals_value->GetListDeprecated()) {
+      const base::DictionaryValue* dict = nullptr;
+      if (i.is_string()) {
+        std::string app_id = i.GetString();
         app_ids_.push_back(app_id);
-      } else if (ordinals_value->GetDictionary(i, &dict)) {
-        bool flag = false;
-        if (dict->GetBoolean(kOemAppsFolderAttr, &flag) && flag) {
+      } else if (i.GetAsDictionary(&dict)) {
+        if (dict->FindBoolPath(kOemAppsFolderAttr).value_or(false)) {
           oem_apps_folder_name_ = GetLocaleSpecificStringImpl(
               dict, locale, kLocalizedContentAttr, kNameAttr);
-        } else if (dict->GetBoolean(kImportDefaultOrderAttr, &flag) && flag) {
+        } else if (dict->FindBoolPath(kImportDefaultOrderAttr)
+                       .value_or(false)) {
           GetDefault(&app_ids_);
         } else {
           LOG(ERROR) << "Invalid syntax in default_app_order.json";

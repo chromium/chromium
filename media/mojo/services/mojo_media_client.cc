@@ -5,7 +5,9 @@
 #include "media/mojo/services/mojo_media_client.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/renderer.h"
@@ -21,6 +23,11 @@ void MojoMediaClient::Initialize() {}
 
 std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return nullptr;
+}
+
+std::unique_ptr<AudioEncoder> MojoMediaClient::CreateAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return nullptr;
 }
 
@@ -60,7 +67,7 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateCastRenderer(
 }
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<Renderer> MojoMediaClient::CreateMediaFoundationRenderer(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojom::FrameInterfaceFactory* frame_interfaces,
@@ -69,7 +76,7 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateMediaFoundationRenderer(
         renderer_extension_receiver) {
   return nullptr;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 std::unique_ptr<CdmFactory> MojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {

@@ -87,7 +87,7 @@ void Discovery::StartInternal() {
   if (qr_keys_) {
     RecordEvent(CableV2DiscoveryEvent::kHaveQRKeys);
   }
-  if (extension_keys_) {
+  if (!extension_keys_.empty()) {
     RecordEvent(CableV2DiscoveryEvent::kHaveExtensionKeys);
   }
 
@@ -150,16 +150,16 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
   }
 
   // Check whether the EID matches the extension.
-  if (extension_keys_) {
+  for (const auto& extension : extension_keys_) {
     absl::optional<CableEidArray> plaintext =
-        eid::Decrypt(advert_array, extension_keys_->eid_key);
+        eid::Decrypt(advert_array, extension.eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
                       << " matches extension)";
       RecordEvent(CableV2DiscoveryEvent::kExtensionMatch);
       AddDevice(std::make_unique<cablev2::FidoTunnelDevice>(
-          network_context_, base::DoNothing(), extension_keys_->qr_secret,
-          extension_keys_->local_identity_seed, *plaintext));
+          network_context_, base::DoNothing(), extension.qr_secret,
+          extension.local_identity_seed, *plaintext));
       return;
     }
   }
@@ -216,8 +216,10 @@ absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
 }
 
 // static
-absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
+std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
     const std::vector<CableDiscoveryData>& extension_contents) {
+  std::vector<Discovery::UnpairedKeys> ret;
+
   for (auto const& data : extension_contents) {
     if (data.version != CableDiscoveryData::Version::V2) {
       continue;
@@ -229,10 +231,14 @@ absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
       continue;
     }
 
-    return KeysFromQRGeneratorKey(base::make_span<kQRKeySize>(*data.v2));
+    absl::optional<Discovery::UnpairedKeys> keys =
+        KeysFromQRGeneratorKey(base::make_span<kQRKeySize>(*data.v2));
+    if (keys.has_value()) {
+      ret.emplace_back(std::move(keys.value()));
+    }
   }
 
-  return absl::nullopt;
+  return ret;
 }
 
 }  // namespace cablev2

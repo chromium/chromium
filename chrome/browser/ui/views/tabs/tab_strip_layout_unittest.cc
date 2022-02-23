@@ -9,7 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
-#include "chrome/browser/ui/views/tabs/tab_animation_state.h"
+#include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,20 +67,17 @@ std::vector<gfx::Rect> CalculateTabBounds(TestCase test_case) {
 
   std::vector<TabWidthConstraints> tab_states;
   for (int tab_index = 0; tab_index < test_case.num_tabs; tab_index++) {
-    TabAnimationState ideal_animation_state =
-        TabAnimationState::ForIdealTabState(
-            TabOpen::kOpen,
-            tab_index < test_case.num_pinned_tabs ? TabPinned::kPinned
-                                                  : TabPinned::kUnpinned,
-            tab_index == test_case.active_index ? TabActive::kActive
-                                                : TabActive::kInactive,
-            0);
-    tab_states.push_back(TabWidthConstraints(ideal_animation_state,
-                                             layout_constants, size_info));
+    TabLayoutState ideal_animation_state = TabLayoutState(
+        TabOpen::kOpen,
+        tab_index < test_case.num_pinned_tabs ? TabPinned::kPinned
+                                              : TabPinned::kUnpinned,
+        tab_index == test_case.active_index ? TabActive::kActive
+                                            : TabActive::kInactive);
+    tab_states.emplace_back(ideal_animation_state, layout_constants, size_info);
   }
 
   return CalculateTabBounds(layout_constants, tab_states,
-                            test_case.tabstrip_width, absl::nullopt);
+                            test_case.tabstrip_width);
 }
 
 }  // namespace

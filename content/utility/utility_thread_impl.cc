@@ -198,7 +198,7 @@ void UtilityThreadImpl::EnsureBlinkInitialized() {
   EnsureBlinkInitializedInternal(/*sandbox_support=*/false);
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 void UtilityThreadImpl::EnsureBlinkInitializedWithSandboxSupport() {
   EnsureBlinkInitializedInternal(/*sandbox_support=*/true);
 }

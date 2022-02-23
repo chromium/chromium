@@ -4,6 +4,8 @@
 
 #include <wrl/client.h>
 
+#include <regstr.h>
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -20,6 +22,7 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -32,11 +35,13 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
@@ -47,6 +52,7 @@
 #include "chrome/updater/win/task_scheduler.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -66,13 +72,6 @@ enum class CheckInstallationVersions {
   kCheckSxSOnly = 0,
   kCheckActiveAndSxS = 1,
 };
-
-base::FilePath GetInstallerPath() {
-  base::FilePath test_executable;
-  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
-    return base::FilePath();
-  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
-}
 
 // Returns the root directory where the updater product is installed. This
 // is the parent directory where the versioned directories of the
@@ -208,11 +207,49 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_EQ(is_installed, RegKeyExists(root, key));
     }
 
-    if (!is_installed) {
+    EXPECT_EQ(is_installed, base::PathExists(*GetGoogleUpdateExePath(scope)));
+
+    if (is_installed) {
+      std::wstring pv;
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(
+                    root,
+                    base::StrCat({CLIENTS_KEY,
+                                  L"{430FD4D0-B729-4F61-AA34-91526481799D}"})
+                        .c_str(),
+                    Wow6432(KEY_READ))
+                    .ReadValue(kRegValuePV, &pv));
+      EXPECT_STREQ(kUpdaterVersionUtf16, pv.c_str());
+
+      std::wstring uninstall_cmd_line_string;
+      EXPECT_EQ(ERROR_SUCCESS,
+                base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                    .ReadValue(kRegValueUninstallCmdLine,
+                               &uninstall_cmd_line_string));
+      EXPECT_TRUE(base::CommandLine::FromString(uninstall_cmd_line_string)
+                      .HasSwitch(kUninstallIfUnusedSwitch));
+
+      if (scope == UpdaterScope::kUser) {
+        std::wstring run_updater_wake_command;
+        EXPECT_EQ(ERROR_SUCCESS,
+                  base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+                      .ReadValue(GetTaskNamePrefix(scope).c_str(),
+                                 &run_updater_wake_command));
+        EXPECT_TRUE(base::CommandLine::FromString(run_updater_wake_command)
+                        .HasSwitch(kWakeSwitch));
+      }
+    } else {
       for (const wchar_t* key :
            {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
             UPDATER_POLICIES_KEY}) {
         EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
+      }
+
+      EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
+
+      if (scope == UpdaterScope::kUser) {
+        EXPECT_FALSE(base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+                         .HasValue(GetTaskNamePrefix(scope).c_str()));
       }
     }
   }
@@ -247,11 +284,14 @@ void CheckInstallation(UpdaterScope scope,
     }
   }
 
-  std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance();
-  const std::wstring task_name = GetTaskName(scope);
-  EXPECT_EQ(is_installed, task_scheduler->IsTaskRegistered(task_name.c_str()));
   if (is_installed) {
+    std::unique_ptr<TaskScheduler> task_scheduler =
+        TaskScheduler::CreateInstance();
+    const std::wstring task_name =
+        task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+    EXPECT_TRUE(!task_name.empty());
+    EXPECT_TRUE(task_scheduler->IsTaskRegistered(task_name.c_str()));
+
     TaskScheduler::TaskInfo task_info;
     ASSERT_TRUE(task_scheduler->GetTaskInfo(task_name.c_str(), &task_info));
     ASSERT_EQ(task_info.exec_actions.size(), 1u);
@@ -282,11 +322,23 @@ void CheckInstallation(UpdaterScope scope,
 // Returns true is any updater process is found running in any session in the
 // system, regardless of its path.
 bool IsUpdaterRunning() {
-  ProcessFilterName filter(kUpdaterProcessName);
-  return base::ProcessIterator(&filter).NextProcessEntry();
+  return IsProcessRunning(kUpdaterProcessName);
+}
+
+void SleepFor(int seconds) {
+  VLOG(2) << "Sleeping " << seconds << " seconds...";
+  base::WaitableEvent().TimedWait(base::Seconds(seconds));
+  VLOG(2) << "Sleep complete.";
 }
 
 }  // namespace
+
+base::FilePath GetSetupExecutablePath() {
+  base::FilePath test_executable;
+  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+    return base::FilePath();
+  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
+}
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   absl::optional<base::FilePath> path = GetProductVersionPath(scope);
@@ -332,6 +384,11 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComTypeLibRegistryPath(iid)));
   }
 
+  if (scope == UpdaterScope::kUser) {
+    base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+        .DeleteValue(GetTaskNamePrefix(scope).c_str());
+  }
+
   if (scope == UpdaterScope::kSystem) {
     for (const bool is_internal_service : {true, false}) {
       EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service)));
@@ -340,7 +397,12 @@ void Clean(UpdaterScope scope) {
 
   std::unique_ptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
+  const std::wstring task_name =
+      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+  if (!task_name.empty())
+    task_scheduler->DeleteTask(task_name.c_str());
+  EXPECT_TRUE(
+      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope)).empty());
 
   absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);
@@ -350,6 +412,11 @@ void Clean(UpdaterScope scope) {
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+
+  const absl::optional<base::FilePath> target_path =
+      GetGoogleUpdateExePath(scope);
+  if (target_path)
+    base::DeleteFile(*target_path);
 }
 
 void EnterTestMode(const GURL& url) {
@@ -357,6 +424,7 @@ void EnterTestMode(const GURL& url) {
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
+                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .Overwrite());
 }
 
@@ -380,23 +448,13 @@ void ExpectActiveUpdater(UpdaterScope scope) {
                     CheckInstallationVersions::kCheckActiveAndSxS);
 }
 
-void Install(UpdaterScope scope) {
-  const base::FilePath path = GetInstallerPath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(0, exit_code);
-}
-
 void Uninstall(UpdaterScope scope) {
   // Note: updater_test.exe --uninstall is run from the build dir, not the
   // install dir, because it is useful for tests to be able to run it to clean
   // the system even if installation has failed or the installed binaries have
   // already been removed.
   base::FilePath path =
-      GetInstallerPath().DirName().AppendASCII("updater_test.exe");
+      GetSetupExecutablePath().DirName().AppendASCII("updater_test.exe");
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch("uninstall");
@@ -406,6 +464,7 @@ void Uninstall(UpdaterScope scope) {
 
   // Uninstallation involves a race with the uninstall.cmd script and the
   // process exit. Sleep to allow the script to complete its work.
+  // TODO(crbug.com/1217765): Figure out a way to replace this.
   SleepFor(5);
 }
 
@@ -442,7 +501,7 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
 
 // Waits for all updater processes to end, including the server process holding
 // the prefs lock.
-void WaitForServerExit(UpdaterScope /*scope*/) {
+void WaitForUpdaterExit(UpdaterScope /*scope*/) {
   WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
 }
 
@@ -506,13 +565,17 @@ HRESULT InitializeBundle(UpdaterScope scope,
   return S_OK;
 }
 
-HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
+HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
+                        int expected_final_state,
+                        HRESULT expected_error_code) {
   bool done = false;
   static const base::TimeDelta kExpirationTimeout = base::Minutes(1);
   base::ElapsedTimer timer;
 
   EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
 
+  LONG state_value = 0;
+  LONG error_code = 0;
   while (!done && (timer.Elapsed() < kExpirationTimeout)) {
     EXPECT_TRUE(bundle);
 
@@ -529,7 +592,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
     std::wstring stateDescription;
     std::wstring extraData;
 
-    LONG state_value = 0;
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
     switch (state_value) {
@@ -625,7 +687,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
       case STATE_ERROR: {
         stateDescription = L"Error!";
 
-        LONG error_code = 0;
         EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
 
         base::win::ScopedBstr completion_message;
@@ -657,22 +718,30 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
   }
 
   EXPECT_TRUE(done);
+  EXPECT_EQ(expected_final_state, state_value);
+  EXPECT_EQ(expected_error_code, error_code);
 
   return S_OK;
 }
 
-HRESULT DoUpdate(UpdaterScope scope, const base::win::ScopedBstr& appid) {
+HRESULT DoUpdate(UpdaterScope scope,
+                 const base::win::ScopedBstr& appid,
+                 int expected_final_state,
+                 HRESULT expected_error_code) {
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   EXPECT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
   EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
   EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
-  return DoLoopUntilDone(bundle);
+  return DoLoopUntilDone(bundle, expected_final_state, expected_error_code);
 }
 
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
-                                    const std::string& app_id) {
+                                    const std::string& app_id,
+                                    int expected_final_state,
+                                    int expected_error_code) {
   EXPECT_HRESULT_SUCCEEDED(
-      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str())));
+      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
+               expected_final_state, expected_error_code));
 }
 
 void SetFcLaunchCmd(const std::wstring& id) {
@@ -705,20 +774,6 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   const wchar_t* const kAppId1 = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
   ULONG_PTR proc_handle = 0;
   DWORD caller_proc_id = ::GetCurrentProcessId();
-
-  // Returns ERROR_BAD_IMPERSONATION_LEVEL when explicit security blanket is not
-  // set.
-  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_BAD_IMPERSONATION_LEVEL),
-            process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
-                                                caller_proc_id, &proc_handle));
-  EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
-
-  // Sets a security blanket that will allow the server to impersonate the
-  // client.
-  EXPECT_HRESULT_SUCCEEDED(::CoSetProxyBlanket(
-      process_launcher.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
-      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_DEFAULT,
-      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DEFAULT));
 
   // Succeeds when the command is present in the registry.
   SetFcLaunchCmd(kAppId1);
@@ -782,6 +837,124 @@ void InvokeTestServiceFunction(
   command.AppendSwitchASCII("--function", function_name);
   command.AppendSwitchASCII("--args", arguments_json_string);
   EXPECT_EQ(RunVPythonCommand(command), 0);
+}
+
+void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+  base::FilePath source_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  base::FilePath old_updater_path =
+      source_path.Append(FILE_PATH_LITERAL("third_party"))
+          .Append(FILE_PATH_LITERAL("updater"));
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
+#endif
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86"));
+#endif
+#endif
+  base::CommandLine command_line(
+      old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe")));
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  ASSERT_EQ(exit_code, 0);
+}
+
+void RunUninstallCmdLine(UpdaterScope scope) {
+  HKEY root =
+      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  std::wstring uninstall_cmd_line_string;
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+          .ReadValue(kRegValueUninstallCmdLine, &uninstall_cmd_line_string));
+  base::CommandLine command_line =
+      base::CommandLine::FromString(uninstall_cmd_line_string);
+
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
+
+  base::Process process = base::LaunchProcess(command_line, {});
+  EXPECT_TRUE(process.IsValid());
+
+  int exit_code = 0;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::Seconds(45), &exit_code));
+  EXPECT_EQ(0, exit_code);
+}
+
+void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+  HKEY root =
+      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(root, GetAppClientsKey(kLegacyGoogleUpdaterAppID).c_str(),
+                 Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"1.1.1.1"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GOOG"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
+          GetAppClientsKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"99.0.0.1"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
+          GetAppClientsKey(L"{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
+}
+
+void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+
+  // Legacy updater itself should not be migrated.
+  const std::string kLegacyUpdaterAppId =
+      base::SysWideToUTF8(kLegacyGoogleUpdaterAppID);
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion(kLegacyUpdaterAppId).IsValid());
+  EXPECT_TRUE(persisted_data->GetAP(kLegacyUpdaterAppId).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kLegacyUpdaterAppId).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kLegacyUpdaterAppId).empty());
+
+  // App without 'pv' should not be migrated.
+  const std::string kNoPVAppId("{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}");
+  EXPECT_FALSE(persisted_data->GetProductVersion(kNoPVAppId).IsValid());
+  EXPECT_TRUE(persisted_data->GetAP(kNoPVAppId).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kNoPVAppId).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kNoPVAppId).empty());
+
+  const std::string kChromeAppId = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
+  EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
+            base::Version("99.0.0.1"));
+  EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
+  EXPECT_EQ(persisted_data->GetBrandCode(kChromeAppId), "GGLS");
+  EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
 }
 
 }  // namespace test

@@ -65,8 +65,13 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
-  bool SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin) override;
+  void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) override;
+  void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
   base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) override;
   void GetFilesId(const AccountId& account_id,
@@ -85,6 +90,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   AccountId save_wallpaper_to_drive_fs_account_id_;
   std::unordered_map<AccountId, std::string> fake_files_ids_;
   bool wallpaper_sync_enabled_ = true;
+  bool fetch_images_for_collection_fails_ = false;
 };
 
 }  // namespace ash

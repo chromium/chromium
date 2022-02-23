@@ -107,7 +107,6 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MockVideoChannelStateObserver() = default;
   ~MockVideoChannelStateObserver() override = default;
 
-  MOCK_METHOD(void, OnEncoderReady, (), (override));
   MOCK_METHOD(void, OnKeyFrameRequested, (), (override));
   MOCK_METHOD(void, OnTargetBitrateChanged, (int bitrate_kbps), (override));
   MOCK_METHOD(void,

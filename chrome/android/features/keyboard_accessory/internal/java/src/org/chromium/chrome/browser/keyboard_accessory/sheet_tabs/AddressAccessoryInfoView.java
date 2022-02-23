@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * This view represents a section of user data in the address tab of the keyboard accessory.

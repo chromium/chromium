@@ -147,14 +147,9 @@ kern_return_t CrashReportExceptionHandler::CatchMachException(
 
     UUID client_id;
     Settings* const settings = database_->GetSettings();
-    if (settings) {
-      // If GetSettings() or GetClientID() fails, something else will log a
-      // message and client_id will be left at its default value, all zeroes,
-      // which is appropriate.
-      settings->GetClientID(&client_id);
+    if (settings && settings->GetClientID(&client_id)) {
+      process_snapshot.SetClientID(client_id);
     }
-
-    process_snapshot.SetClientID(client_id);
     process_snapshot.SetAnnotationsSimpleMap(*process_annotations_);
 
     std::unique_ptr<CrashReportDatabase::NewReport> new_report;

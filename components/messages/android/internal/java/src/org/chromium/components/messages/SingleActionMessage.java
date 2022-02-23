@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -70,7 +71,9 @@ public class SingleActionMessage implements MessageStateHandler {
                 ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION)
                 : 0;
 
-        mAutodismissDurationMs = () -> autodismissDurationProvider.get(dismissalDuration);
+        mAutodismissDurationMs = ()
+                -> autodismissDurationProvider.get(
+                        model.get(MessageBannerProperties.MESSAGE_IDENTIFIER), dismissalDuration);
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
@@ -132,6 +135,20 @@ public class SingleActionMessage implements MessageStateHandler {
                     dismissReason == DismissReason.GESTURE,
                     MessagesMetrics.now() - mMessageShownTime);
         }
+    }
+
+    /**
+     * Invoke a {@link BooleanSupplier} optionally defined by a consumer to determine if an enqueued
+     * message should be shown.
+     * @return true if an enqueued message should be shown, false otherwise.
+     */
+    @Override
+    public boolean shouldShow() {
+        BooleanSupplier onStartedShowing = mModel.get(MessageBannerProperties.ON_STARTED_SHOWING);
+        if (onStartedShowing != null) {
+            return onStartedShowing.getAsBoolean();
+        }
+        return true;
     }
 
     private void handlePrimaryAction(View v) {

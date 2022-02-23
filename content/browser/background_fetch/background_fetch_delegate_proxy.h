@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "content/public/browser/background_fetch_description.h"
 #include "content/public/browser/background_fetch_response.h"
@@ -141,6 +142,7 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
   // BackgroundFetchDelegate::Client implementation:
   void OnJobCancelled(
       const std::string& job_unique_id,
+      const std::string& download_guid,
       blink::mojom::BackgroundFetchFailureReason reason_to_abort) override;
   void OnDownloadComplete(
       const std::string& job_unique_id,
@@ -160,6 +162,10 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
       const std::string& job_unique_id,
       const std::string& download_guid,
       BackgroundFetchDelegate::GetUploadDataCallback callback) override;
+
+  void DidGetPermissionFromDownloadRequestLimiter(
+      GetPermissionForOriginCallback callback,
+      bool has_permission);
 
   BrowserContext* GetBrowserContext();
 

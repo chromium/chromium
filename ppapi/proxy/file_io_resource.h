@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/private/pp_file_handle.h"
 #include "ppapi/proxy/connection.h"

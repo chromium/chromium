@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -100,7 +101,7 @@ class RandomizedEncoder {
 
  private:
   const std::string seed_;
-  const EncodingInfo* const encoding_info_;
+  const raw_ptr<const EncodingInfo> encoding_info_;
   const bool anonymous_url_collection_is_enabled_;
 };
 }  // namespace autofill

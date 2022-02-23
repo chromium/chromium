@@ -15,6 +15,9 @@ enum class LayoutSwitcherState {
 // Interface to manage interactive animated transitions of layout.
 @protocol LayoutSwitcher
 
+// Returns current layout state.
+@property(nonatomic, readonly) LayoutSwitcherState currentLayoutSwitcherState;
+
 // Notifies of a transition of layout to the specified state. Called when the
 // view revealing vertical pan handler starts a transition of layout. The
 // conformer should prepare its layout for a transition to |nextState|, that

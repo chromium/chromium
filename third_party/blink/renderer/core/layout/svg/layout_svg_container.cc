@@ -214,12 +214,12 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
 
   // pointer-events: bounding-box makes it possible for containers to be direct
   // targets.
-  if (StyleRef().PointerEvents() == EPointerEvents::kBoundingBox) {
+  if (StyleRef().UsedPointerEvents() == EPointerEvents::kBoundingBox) {
     // Check for a valid bounding box because it will be invalid for empty
     // containers.
     if (IsObjectBoundingBoxValid() &&
         local_location->Intersects(ObjectBoundingBox())) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

@@ -7,18 +7,18 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/printing/print_servers_provider.h"
+#include "chrome/browser/ash/printing/print_servers_provider_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
 #include "components/policy/policy_constants.h"
 
 namespace policy {
 
 namespace {
 
-base::WeakPtr<chromeos::PrintServersProvider> GetPrintServersProvider(
+base::WeakPtr<ash::PrintServersProvider> GetPrintServersProvider(
     const std::string& user_id) {
-  return chromeos::PrintServersProviderFactory::Get()->GetForAccountId(
+  return ash::PrintServersProviderFactory::Get()->GetForAccountId(
       CloudExternalDataPolicyHandler::GetAccountId(user_id));
 }
 
@@ -58,7 +58,7 @@ void PrintServersExternalDataHandler::OnExternalDataFetched(
 
 void PrintServersExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
-  chromeos::PrintServersProviderFactory::Get()->RemoveForAccountId(account_id);
+  ash::PrintServersProviderFactory::Get()->RemoveForAccountId(account_id);
 }
 
 }  // namespace policy

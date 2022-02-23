@@ -44,7 +44,7 @@ source_set("music_manager_private") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/cryptohome" ]
+    deps += [ "//ash/components/cryptohome" ]
   }
 
   if (enable_rlz_support) {

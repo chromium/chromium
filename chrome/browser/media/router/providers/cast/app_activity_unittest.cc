@@ -51,7 +51,7 @@ class AppActivityTest : public CastActivityTestBase {
     CastActivityTestBase::SetUp();
 
     activity_ = std::make_unique<AppActivity>(
-        MediaRoute(kRouteId, MediaSource(), kSinkId, "", false, false), kAppId,
+        MediaRoute(kRouteId, MediaSource(), kSinkId, "", false), kAppId,
         &message_handler_, &session_tracker_);
   }
 
@@ -279,7 +279,7 @@ TEST_F(AppActivityTest, SetOrUpdateSession) {
 
   route().set_description("");
   for (auto* client : MockCastSessionClient::instances()) {
-    // TODO(jrw): Check argument of SendMessageToClient.
+    // TODO(crbug.com/1291744): Check argument of SendMessageToClient.
     EXPECT_CALL(*client, SendMessageToClient).Times(1);
   }
   activity_->SetOrUpdateSession(*session_, sink_, "theHashToken");

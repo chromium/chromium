@@ -31,9 +31,7 @@ void AshStructuredMetricsRecorder::Initialize() {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
         remote_.BindNewPipeAndPassReceiver());
     is_initialized_ = true;
-    LogClientInitializationSuccessful(true);
   } else {
-    LogClientInitializationSuccessful(false);
     VLOG(2) << "Initialize() called before CrosApi is initialized.";
   }
 }

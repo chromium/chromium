@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   )";
 
   ExtensionTestMessageListener ready_listener("notCrossOriginIsolated",
-                                              true /* will_reply */);
+                                              false /* will_reply */);
   TestExtensionDir coi_test_dir;
   const Extension* coi_extension =
       LoadExtension(coi_test_dir, {.coep_value = "require-corp",
@@ -459,10 +459,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
   EXPECT_EQ(Feature::BLESSED_EXTENSION_CONTEXT,
             process_map->GetMostLikelyContextType(
                 coi_extension, service_worker_process->GetID(), url));
-
-  // Reply to the service worker. This is not useful for the test but is
-  // required by ExtensionTestMessageListener.
-  ready_listener.Reply("");
 }
 
 // Tests certain extension APIs which retrieve in-process extension windows.

@@ -16,7 +16,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/gpu/windows/media_foundation_video_encode_accelerator_win.h"
@@ -99,7 +99,7 @@ std::string GetHostAttributes() {
       result.push_back(attribute.name);
     }
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   {
     GetD3DCapabilities(&result);
 
@@ -122,7 +122,7 @@ std::string GetHostAttributes() {
       media::InitializeMediaFoundation()) {
     result.push_back("HWEncoder");
   }
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   result.push_back("HWEncoder");
 #endif
 

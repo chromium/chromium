@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -44,7 +44,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
 #endif
 
@@ -179,7 +179,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   int GetId() const;
   void SetId(int id);
 
-  const std::string& GetName() const;
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
   void SetName(const std::string& name);
 
   const std::u16string& GetTitle() const;
@@ -261,7 +262,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // be individually capturable, and its layer won't be tagged with a valid
   // |viz::SubtreeCaptureId|.
   // See https://crbug.com/1143930 for more details.
-  ScopedWindowCaptureRequest MakeWindowCapturable() WARN_UNUSED_RESULT;
+  [[nodiscard]] ScopedWindowCaptureRequest MakeWindowCapturable();
   const viz::SubtreeCaptureId& subtree_capture_id() const {
     return subtree_capture_id_;
   }
@@ -714,7 +715,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // is relative to the parent Window.
   gfx::Rect bounds_;
 
-  WindowTreeHost* host_ = nullptr;
+  raw_ptr<WindowTreeHost> host_ = nullptr;
 
   client::WindowType type_;
 
@@ -725,10 +726,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // parent during its parents destruction.
   bool owned_by_parent_ = true;
 
-  WindowDelegate* delegate_;
+  raw_ptr<WindowDelegate> delegate_;
 
   // The Window's parent.
-  Window* parent_ = nullptr;
+  raw_ptr<Window> parent_ = nullptr;
 
   // Child windows. Topmost is last.
   Windows children_;

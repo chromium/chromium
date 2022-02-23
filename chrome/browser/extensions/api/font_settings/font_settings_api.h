@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -75,7 +76,7 @@ class FontSettingsEventRouter {
   FontPrefChangeNotifier::Registrar font_change_registrar_;
 
   // Weak, owns us (transitively via ExtensionService).
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 // The profile-keyed service that manages the font_settings extension API.

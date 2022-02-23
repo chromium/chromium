@@ -35,9 +35,9 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -738,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoPaintForEmptyDocument) {
 }
 
 // TODO(crbug.com/986642): Flaky on Win and Linux.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NoPaintForEmptyDocumentInChildFrame \
   DISABLED_NoPaintForEmptyDocumentInChildFrame
 #else
@@ -998,8 +998,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
@@ -1015,8 +1013,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
@@ -1031,23 +1027,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 
   // Reload should not log the histogram as the script is not blocked.
   waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(TimingField::kDocumentWriteBlockReload);
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/page_load_metrics/document_write_script_block.html")));
   waiter->Wait();
 
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 1);
-
   waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(TimingField::kDocumentWriteBlockReload);
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -1056,11 +1045,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 2);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteAsync) {
@@ -1077,8 +1061,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteAsync) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteSameDomain) {
@@ -1096,8 +1078,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteSameDomain) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWriteScript) {
@@ -1114,8 +1094,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWriteScript) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 // TODO(crbug.com/712935): Flaky on Linux dbg.
@@ -1195,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, AbortReload) {
 }
 
 // TODO(crbug.com/675061): Flaky on Win7 dbg.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AbortClose DISABLED_AbortClose
 #else
 #define MAYBE_AbortClose AbortClose
@@ -1285,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 }
 
 // TODO(crbug.com/1009885): Flaky on Linux MSan builds.
-#if defined(MEMORY_SANITIZER) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_FirstMeaningfulPaintRecorded DISABLED_FirstMeaningfulPaintRecorded
 #else
 #define MAYBE_FirstMeaningfulPaintRecorded FirstMeaningfulPaintRecorded
@@ -1646,13 +1624,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // UKM/UMA logging after BFCache eviction is checked by
+  // PageLoadMetricsBrowserTestWithBackForwardCache's
+  // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(TimingField::kLoadEvent);
@@ -1694,13 +1674,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
 
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // UKM/UMA logging after BFCache eviction is checked by
+  // PageLoadMetricsBrowserTestWithBackForwardCache's
+  // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->GetController()
       .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(TimingField::kLoadEvent);
@@ -2260,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
   ExpectFirstPaintMetricsTotalCount(1);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_InitialForegroundTabChanged DISABLED_InitialForegroundTabChanged
 #else
 #define MAYBE_InitialForegroundTabChanged InitialForegroundTabChanged
@@ -2322,7 +2304,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
         WindowOpenDisposition::CURRENT_TAB);
     ASSERT_EQ(1, browser()->tab_strip_model()->count());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
 
     session_restore_paint_waiter.WaitForForegroundTabs(1);
     ExpectFirstPaintMetricsTotalCount(1);
@@ -2337,7 +2319,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
     ASSERT_EQ(2, browser()->tab_strip_model()->count());
     ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
 
     session_restore_paint_waiter.WaitForForegroundTabs(1);
     ExpectFirstPaintMetricsTotalCount(2);
@@ -2351,7 +2333,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
     ASSERT_EQ(3, browser()->tab_strip_model()->count());
     ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
     ASSERT_TRUE(tab_contents);
-    ASSERT_EQ(GetTestURL(), tab_contents->GetURL());
+    ASSERT_EQ(GetTestURL(), tab_contents->GetLastCommittedURL());
     ASSERT_NO_FATAL_FAILURE(WaitForTabsToLoad(browser()));
 
     // Do not record timings of initially background tabs.
@@ -2360,7 +2342,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestorePageLoadMetricsBrowserTest,
 }
 
 // TODO(crbug.com/1242284): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreForeignSession DISABLED_RestoreForeignSession
 #else
 #define MAYBE_RestoreForeignSession RestoreForeignSession
@@ -2577,8 +2559,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 
   // Verify no resources were cached for the first load.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 0, 1);
   histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadCacheBytes,
                                        0, 1);
 
@@ -2587,36 +2567,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   // Verify that the cached resource from the memory cache is recorded
   // correctly.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 1, 1);
   histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadCacheBytes,
                                        10, 1);
-}
-
-// Verifies that css image resources shared across document do not cause a
-// crash, and are only counted once per context. https://crbug.com/979459.
-// TODO(crbug.com/1108534): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       DISABLED_MemoryCacheResources_RecordedOncePerContext) {
-  embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-  content::SetupCrossSiteRedirector(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "/page_load_metrics/document_with_css_image_sharing.html")));
-
-  waiter->AddMinimumCompleteResourcesExpectation(7);
-  waiter->Wait();
-
-  // Force histograms to record.
-  NavigateToUntrackedUrl();
-
-  // Verify that cached resources are only reported once per context.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForClick) {
@@ -3147,10 +3099,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
+#if BUILDFLAG(IS_MAC)  // crbug.com/1277391
+#define MAYBE_PageLCPAnimatedImage DISABLED_PageLCPAnimatedImage
+#else
+#define MAYBE_PageLCPAnimatedImage PageLCPAnimatedImage
+#endif
 // Tests that an animated image's reported LCP values are smaller than its load
 // times, when the feature flag for animated image reporting is enabled.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
-                       PageLCPAnimatedImage) {
+                       MAYBE_PageLCPAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
 }
 
@@ -3350,6 +3307,67 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
   histogram_tester_->ExpectBucketCount(
       internal::kHistogramBackForwardCacheEvent,
       internal::PageLoadBackForwardCacheEvent::kRestoreFromBackForwardCache, 0);
+}
+
+// Test UseCounter UKM features observed when a page is in the BFCache and is
+// evicted from it.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
+                       UseCounterUkmFeaturesLoggedOnBFCacheEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "/page_load_metrics/use_counter_features.html");
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(TimingField::kLoadEvent);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    MakeComponentFullscreen("testvideo");
+    waiter->Wait();
+  }
+  NavigateToUntrackedUrl();
+
+  // Force the BFCache to evict all entries. This should cause the
+  // UseCounter histograms to be logged.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .Flush();
+
+  // Navigate to a new URL. This gives the various page load tracking
+  // mechanisms time to process the BFCache evictions.
+  auto url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  const auto& entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Blink_UseCounter::kEntryName);
+  EXPECT_THAT(entries, SizeIs(4));
+  std::vector<int64_t> ukm_features;
+  for (const auto* entry : entries) {
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
+    const auto* metric = test_ukm_recorder_->GetEntryMetric(
+        entry, ukm::builders::Blink_UseCounter::kFeatureName);
+    DCHECK(metric);
+    ukm_features.push_back(*metric);
+  }
+  EXPECT_THAT(ukm_features,
+              UnorderedElementsAre(
+                  static_cast<int64_t>(WebFeature::kPageVisits),
+                  static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
+                  static_cast<int64_t>(WebFeature::kNavigatorVibrate),
+                  static_cast<int64_t>(WebFeature::kPageVisits)));
+
+  // Check histogram counts.
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kPageVisits), 2);
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kFullscreenSecureOrigin), 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
 }
 
 class NavigationPageLoadMetricsBrowserTest

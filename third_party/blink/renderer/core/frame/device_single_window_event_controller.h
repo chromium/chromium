@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -33,7 +33,6 @@ class CORE_EXPORT DeviceSingleWindowEventController
  protected:
   explicit DeviceSingleWindowEventController(LocalDOMWindow&);
 
-  bool IsSameSecurityOriginAsMainFrame() const;
   bool CheckPolicyFeatures(
       const Vector<mojom::blink::PermissionsPolicyFeature>& features) const;
 

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
 namespace gpu {
@@ -21,7 +22,7 @@ class DawnClientMemoryTransferService;
 class WebGPUCmdHelper;
 class WebGPUImplementation;
 
-class DawnClientSerializer : public dawn_wire::CommandSerializer {
+class DawnClientSerializer : public dawn::wire::CommandSerializer {
  public:
   DawnClientSerializer(WebGPUImplementation* client,
                        WebGPUCmdHelper* helper,
@@ -29,7 +30,7 @@ class DawnClientSerializer : public dawn_wire::CommandSerializer {
                        std::unique_ptr<TransferBuffer> transfer_buffer);
   ~DawnClientSerializer() override;
 
-  // dawn_wire::CommandSerializer implementation
+  // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
 
@@ -51,12 +52,12 @@ class DawnClientSerializer : public dawn_wire::CommandSerializer {
   void Commit();
 
  private:
-  // dawn_wire::CommandSerializer implementation
+  // dawn::wire::CommandSerializer implementation
   bool Flush() final;
 
-  WebGPUImplementation* client_;
-  WebGPUCmdHelper* helper_;
-  DawnClientMemoryTransferService* memory_transfer_service_;
+  raw_ptr<WebGPUImplementation> client_;
+  raw_ptr<WebGPUCmdHelper> helper_;
+  raw_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
   uint32_t put_offset_ = 0;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   uint32_t buffer_initial_size_;

@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -174,16 +175,6 @@ bool FindInPage::FindInternal(int identifier,
   // Unlikely, but just in case we try to find-in-page on a detached frame.
   DCHECK(frame_->GetFrame()->GetPage());
 
-  auto forced_activatable_locks = frame_->GetFrame()
-                                      ->GetDocument()
-                                      ->GetDisplayLockDocumentState()
-                                      .GetScopedForceActivatableLocks();
-
-  // Up-to-date, clean tree is required for finding text in page, since it
-  // relies on TextIterator to look over the text.
-  frame_->GetFrame()->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
-
   return EnsureTextFinder().Find(identifier, search_text, options,
                                  wrap_within_frame, active_now);
 }
@@ -256,7 +247,7 @@ void FindInPage::SetClient(
 void FindInPage::GetNearestFindResult(const gfx::PointF& point,
                                       GetNearestFindResultCallback callback) {
   float distance;
-  EnsureTextFinder().NearestFindMatch(FloatPoint(point), &distance);
+  EnsureTextFinder().NearestFindMatch(point, &distance);
   std::move(callback).Run(distance);
 }
 
@@ -282,9 +273,9 @@ void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
 
 void FindInPage::SetTickmarks(const WebElement& target,
                               const WebVector<gfx::Rect>& tickmarks) {
-  Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
+  Vector<gfx::Rect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
   for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-    tickmarks_converted[i] = IntRect(tickmarks[i]);
+    tickmarks_converted[i] = tickmarks[i];
 
   LayoutBox* box;
   if (target.IsNull())
@@ -352,13 +343,23 @@ void FindInPage::ReportFindInPageMatchCount(int request_id,
                    : mojom::blink::FindMatchUpdateType::kMoreUpdatesComing);
 }
 
-void FindInPage::ReportFindInPageSelection(int request_id,
-                                           int active_match_ordinal,
-                                           const gfx::Rect& selection_rect,
-                                           bool final_update) {
+void FindInPage::ReportFindInPageSelection(
+    int request_id,
+    int active_match_ordinal,
+    const gfx::Rect& local_selection_rect,
+    bool final_update) {
   // In tests, |client_| might not be set.
   if (!client_)
     return;
+
+  float device_scale_factor = 1.f;
+  if (LocalFrame* local_frame = frame_->GetFrame()) {
+    device_scale_factor =
+        local_frame->GetPage()->GetChromeClient().WindowToViewportScalar(
+            local_frame, 1.0f);
+  }
+  auto selection_rect = gfx::ScaleToEnclosingRect(local_selection_rect,
+                                                  1.f / device_scale_factor);
   client_->SetActiveMatch(
       request_id, selection_rect, active_match_ordinal,
       final_update ? mojom::blink::FindMatchUpdateType::kFinalUpdate

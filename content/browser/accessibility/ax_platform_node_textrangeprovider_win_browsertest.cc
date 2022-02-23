@@ -305,8 +305,7 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
 
     ComPtr<ITextRangeProvider> text_range_provider =
         ui::AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
-            start_browser_accessibility_com_win, std::move(start),
-            std::move(end));
+            std::move(start), std::move(end));
     ASSERT_NE(nullptr, text_range_provider);
 
     gfx::Rect previous_range_bounds =
@@ -462,8 +461,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ComPtr<IRawElementProviderSimple> before_link_text_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(before_link_text_node);
 
-  BrowserAccessibility* link_node = FindNode(
-      ax::mojom::Role::kLink, "Link text 1 Link text 2Link text 3 Link text 4");
+  BrowserAccessibility* link_node =
+      FindNode(ax::mojom::Role::kLink,
+               "Link text 1 Link text 2 Link text 3 Link text 4");
   ASSERT_NE(nullptr, link_node);
   ComPtr<IRawElementProviderSimple> link_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(link_node);
@@ -1048,6 +1048,83 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       8 + view_offset.x(), 16 + view_offset.y(), 49, 17,
       8 + view_offset.x(), 34 + view_offset.y(), 44, 17};
   EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       RemoveNode) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+        <div id="wrapper">
+          <p id="node_1">Node 1</p>
+          <p>Node 2</p>
+        </div>
+  )HTML");
+
+  BrowserAccessibility* node = FindNode(ax::mojom::Role::kStaticText, "Node 1");
+  ASSERT_NE(nullptr, node);
+  EXPECT_EQ(0u, node->PlatformChildCount());
+
+  // Create the text range on "Node 1".
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Node 1");
+
+  // Move the text range to "Node 2".
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Word,
+                  /*count*/ 2,
+                  /*expected_text*/ L"Node ",
+                  /*expected_count*/ 2);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
+                                   TextPatternRangeEndpoint_End, TextUnit_Word,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"Node 2",
+                                   /*expected_count*/ 1);
+
+  // Now remove "Node 1" from the DOM and verify the text range created from
+  // "Node 1" is still functional.
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+    EXPECT_TRUE(
+        ExecJs(shell()->web_contents(),
+               "document.getElementById('wrapper').removeChild(document."
+               "getElementById('node_1'));"));
+
+    waiter.WaitForNotification();
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+        /*count*/ -1,
+        /*expected_text*/ L"Node ",
+        /*expected_count*/ -1);
+  }
+
+  // Now remove all children from the DOM and verify the text range created from
+  // "Node 1" is still valid (it got moved to a non-deleted ancestor node).
+  {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       "while(document.body.childElementCount > 0) {"
+                       "  document.body.removeChild(document.body.firstChild);"
+                       "}"));
+
+    waiter.WaitForNotification();
+
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+        /*count*/ 1,
+        /*expected_text*/ L"",
+        /*expected_count*/ 0);
+
+    EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+        text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+        /*count*/ -1,
+        /*expected_text*/ L"",
+        /*expected_count*/ 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -2682,7 +2759,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_count*/ -1);
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0\n");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0");
 
   // Case 2: test on range that includes the whitespace and the following word.
   GetTextRangeProviderFromTextNode(*node, &text_range_provider);
@@ -2695,7 +2772,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                    /*expected_count*/ 1);
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Word));
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0\n");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\xA0");
 
   // Case 3: test on degenerate range after whitespace.
   node = FindNode(ax::mojom::Role::kStaticText, "3.14");

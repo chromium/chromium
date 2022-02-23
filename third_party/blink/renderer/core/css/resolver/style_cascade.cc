@@ -614,27 +614,44 @@ bool StyleCascade::IsRootElement() const {
 }
 
 StyleCascade::TokenSequence::TokenSequence(const CSSVariableData* data)
-    : backing_strings_(data->BackingStrings()),
-      is_animation_tainted_(data->IsAnimationTainted()),
+    : is_animation_tainted_(data->IsAnimationTainted()),
       has_font_units_(data->HasFontUnits()),
       has_root_font_units_(data->HasRootFontUnits()),
       base_url_(data->BaseURL()),
-      charset_(data->Charset()) {}
+      charset_(data->Charset()) {
+  variable_data_.push_back(base::WrapRefCounted(data));
+}
 
-void StyleCascade::TokenSequence::Append(const TokenSequence& sequence) {
-  tokens_.AppendVector(sequence.tokens_);
-  backing_strings_.AppendVector(sequence.backing_strings_);
+bool StyleCascade::TokenSequence::AppendTokens(
+    const Vector<CSSParserToken>& tokens,
+    wtf_size_t limit) {
+  // https://drafts.csswg.org/css-variables/#long-variables
+  if (tokens.size() > limit)
+    return false;
+  tokens_.AppendVector(tokens);
+  return true;
+}
+
+bool StyleCascade::TokenSequence::Append(const TokenSequence& sequence,
+                                         wtf_size_t limit) {
+  if (!AppendTokens(sequence.tokens_, limit))
+    return false;
+  variable_data_.AppendVector(sequence.variable_data_);
   is_animation_tainted_ |= sequence.is_animation_tainted_;
   has_font_units_ |= sequence.has_font_units_;
   has_root_font_units_ |= sequence.has_root_font_units_;
+  return true;
 }
 
-void StyleCascade::TokenSequence::Append(const CSSVariableData* data) {
-  tokens_.AppendVector(data->Tokens());
-  backing_strings_.AppendVector(data->BackingStrings());
+bool StyleCascade::TokenSequence::Append(CSSVariableData* data,
+                                         wtf_size_t limit) {
+  if (!AppendTokens(data->Tokens(), limit))
+    return false;
+  variable_data_.push_back(base::WrapRefCounted(data));
   is_animation_tainted_ |= data->IsAnimationTainted();
   has_font_units_ |= data->HasFontUnits();
   has_root_font_units_ |= data->HasRootFontUnits();
+  return true;
 }
 
 void StyleCascade::TokenSequence::Append(const CSSParserToken& token) {
@@ -643,8 +660,12 @@ void StyleCascade::TokenSequence::Append(const CSSParserToken& token) {
 
 scoped_refptr<CSSVariableData>
 StyleCascade::TokenSequence::BuildVariableData() {
+  Vector<String> backing_strings;
+  for (scoped_refptr<const CSSVariableData>& data : variable_data_)
+    backing_strings.AppendVector(data->BackingStrings());
+  variable_data_.clear();
   return CSSVariableData::CreateResolved(
-      std::move(tokens_), std::move(backing_strings_), is_animation_tainted_,
+      std::move(tokens_), std::move(backing_strings), is_animation_tainted_,
       has_font_units_, has_root_font_units_, base_url_, charset_);
 }
 
@@ -873,10 +894,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenRange range,
 bool StyleCascade::ResolveVarInto(CSSParserTokenRange range,
                                   CascadeResolver& resolver,
                                   TokenSequence& out) {
-  AtomicString variable_name = ConsumeVariableName(range);
+  CustomProperty property(ConsumeVariableName(range), state_.GetDocument());
   DCHECK(range.AtEnd() || (range.Peek().GetType() == kCommaToken));
-
-  CustomProperty property(variable_name, state_.GetDocument());
 
   // Any custom property referenced (by anything, even just once) in the
   // document can currently not be animated on the compositor. Hence we mark
@@ -917,20 +936,14 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenRange range,
     // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
     if (!ValidateFallback(property, fallback.TokenRange()))
       return false;
-    if (!data && success)
-      data = fallback.BuildVariableData();
+    if (!data)
+      return success && out.Append(fallback, kMaxSubstitutionTokens);
   }
 
   if (!data || resolver.InCycle())
     return false;
 
-  // https://drafts.csswg.org/css-variables/#long-variables
-  if (data->Tokens().size() > kMaxSubstitutionTokens)
-    return false;
-
-  out.Append(data.get());
-
-  return true;
+  return out.Append(data.get(), kMaxSubstitutionTokens);
 }
 
 bool StyleCascade::ResolveEnvInto(CSSParserTokenRange range,
@@ -960,9 +973,7 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenRange range,
     return false;
   }
 
-  out.Append(data);
-
-  return true;
+  return out.Append(data);
 }
 
 CSSVariableData* StyleCascade::GetVariableData(

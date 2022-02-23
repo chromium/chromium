@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
@@ -170,7 +171,12 @@ void ReputationService::GetReputationStatusWithEngagedSites(
     bool has_delayed_warning,
     ReputationCheckCallback callback,
     const std::vector<DomainInfo>& engaged_sites) {
+  base::TimeTicks start = base::TimeTicks::Now();
+
   const DomainInfo navigated_domain = GetDomainInfo(url);
+
+  UMA_HISTOGRAM_TIMES("Security.SafetyTips.GetDomainInfoTime",
+                      base::TimeTicks::Now() - start);
 
   ReputationCheckResult result;
 
@@ -281,4 +287,8 @@ void ReputationService::GetReputationStatusWithEngagedSites(
   DCHECK(done_checking_reputation_status ||
          !result.triggered_heuristics.triggered_any());
   std::move(callback).Run(result);
+
+  UMA_HISTOGRAM_TIMES(
+      "Security.SafetyTips.GetReputationStatusWithEngagedSitesTime",
+      base::TimeTicks::Now() - start);
 }

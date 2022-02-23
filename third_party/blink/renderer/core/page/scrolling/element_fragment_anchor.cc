@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -15,7 +14,6 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -32,6 +30,7 @@ String RemoveFragmentDirectives(const String& url_fragment) {
 
   return url_fragment.Substring(0, directive_delimiter_ix);
 }
+
 }  // namespace
 
 ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
@@ -89,8 +88,8 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
 
 ElementFragmentAnchor::ElementFragmentAnchor(Node& anchor_node,
                                              LocalFrame& frame)
-    : anchor_node_(&anchor_node),
-      frame_(&frame),
+    : FragmentAnchor(frame),
+      anchor_node_(&anchor_node),
       needs_focus_(!anchor_node.IsDocumentNode()) {
   DCHECK(frame_->View());
 }
@@ -108,49 +107,15 @@ bool ElementFragmentAnchor::Invoke() {
   if (!doc.HaveRenderBlockingResourcesLoaded() || !frame_->View())
     return true;
 
-  Frame* boundary_frame = frame_->FindUnsafeParentScrollPropagationBoundary();
-
-  // FIXME: Handle RemoteFrames
-  auto* boundary_local_frame = DynamicTo<LocalFrame>(boundary_frame);
-  if (boundary_local_frame) {
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(false);
-  }
-
   Member<Element> element_to_scroll = DynamicTo<Element>(anchor_node_.Get());
   if (!element_to_scroll)
     element_to_scroll = doc.documentElement();
 
   if (element_to_scroll) {
-    // Expand <details> elements so we can make |element_to_scroll| visible.
-    bool needs_style_and_layout =
-        RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-        HTMLDetailsElement::ExpandDetailsAncestors(*element_to_scroll);
-
-    // Reveal hidden=until-found ancestors so we can make |element_to_scroll|
-    // visible.
-    needs_style_and_layout |=
-        RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            element_to_scroll->GetExecutionContext()) &&
-        DisplayLockUtilities::RevealHiddenUntilFoundAncestors(
-            *element_to_scroll);
-
-    if (needs_style_and_layout) {
-      // If we opened any details elements, we need to update style and layout
-      // to account for the new content to render inside the now-expanded
-      // details element before we scroll to it. The added open attribute may
-      // also affect style.
-      doc.UpdateStyleAndLayoutForNode(element_to_scroll,
-                                      DocumentUpdateReason::kFindInPage);
-    }
-
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
     options->setBlock("start");
     options->setInlinePosition("nearest");
-    element_to_scroll->ScrollIntoViewNoVisualUpdate(options);
-  }
-
-  if (boundary_local_frame) {
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(true);
+    ScrollElementIntoViewWithOptions(element_to_scroll, options);
   }
 
   if (AXObjectCache* cache = doc.ExistingAXObjectCache())

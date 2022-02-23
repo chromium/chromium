@@ -188,7 +188,7 @@ TEST_P(AudioEncoderTest, EncodePcm16) {
   RunTestForCodec(CODEC_AUDIO_PCM16);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_P(AudioEncoderTest, EncodeAac) {
   RunTestForCodec(CODEC_AUDIO_AAC);
 }

@@ -19,7 +19,6 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
@@ -33,6 +32,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -149,8 +149,7 @@ public class BookmarkBottomSheetCoordinator {
                         new SpanInfo("<new>", "</new>", new RelativeSizeSpan(0.75f),
                                 new SuperscriptSpan(),
                                 new ForegroundColorSpan(
-                                        ApiCompatibilityUtils.getColor(mContext.getResources(),
-                                                R.color.default_text_color_blue))));
+                                        SemanticColorUtils.getDefaultTextColorAccent1(mContext))));
             } else {
                 spannableString = new SpannableString(SpanApplier.removeSpanText(
                         spannableString.toString(), new SpanInfo("<new>", "</new>")));

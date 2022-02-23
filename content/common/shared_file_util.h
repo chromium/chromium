@@ -10,12 +10,11 @@
 
 #include "base/command_line.h"
 #include "base/component_export.h"
-#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-class CONTENT_EXPORT SharedFileSwitchValueBuilder final {
+class SharedFileSwitchValueBuilder final {
  public:
   void AddEntry(const std::string& key_str, int key_id);
   const std::string& switch_value() const { return switch_value_; }
@@ -24,7 +23,6 @@ class CONTENT_EXPORT SharedFileSwitchValueBuilder final {
   std::string switch_value_;
 };
 
-CONTENT_EXPORT
 absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value);
 

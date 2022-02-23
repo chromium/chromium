@@ -64,6 +64,9 @@ class ASH_EXPORT HeaderView
 
   METADATA_HEADER(HeaderView);
 
+  // Initialize the parts with side effects.
+  void Init();
+
   void set_immersive_mode_changed_callback(base::RepeatingClosure callback) {
     immersive_mode_changed_callback_ = std::move(callback);
   }

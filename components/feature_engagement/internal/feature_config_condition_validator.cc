@@ -18,6 +18,7 @@
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -62,6 +63,10 @@ ConditionValidator::Result FeatureConfigConditionValidator::MeetsConditions(
       !event_model.IsSnoozeDismissed(config.trigger.name) &&
       (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
        base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
+
+  result.priority_notification_ok =
+      !pending_priority_notification_.has_value() ||
+      pending_priority_notification_.value() == feature.name;
 
   result.should_show_snooze =
       result.snooze_expiration_ok &&
@@ -113,6 +118,17 @@ bool FeatureConfigConditionValidator::EventConfigMeetsConditions(
   uint32_t event_count = event_model.GetEventCount(
       event_config.name, current_day, event_config.window);
   return event_config.comparator.MeetsCriteria(event_count);
+}
+
+void FeatureConfigConditionValidator::SetPriorityNotification(
+    const absl::optional<std::string>& feature) {
+  DCHECK(!pending_priority_notification_.has_value() || !feature.has_value());
+  pending_priority_notification_ = feature;
+}
+
+absl::optional<std::string>
+FeatureConfigConditionValidator::GetPendingPriorityNotification() {
+  return pending_priority_notification_;
 }
 
 bool FeatureConfigConditionValidator::AvailabilityMeetsConditions(

@@ -21,6 +21,14 @@ namespace signin {
 class IdentityManager;
 }  // signin
 
+// Sign-in error.
+typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
+  // Time out error.
+  ConsistencyPromoSigninMediatorErrorTimeout,
+  // Generic error.
+  ConsistencyPromoSigninMediatorErrorGeneric,
+};
+
 // Delegate for ConsistencyPromoSigninMediator.
 @protocol ConsistencyPromoSigninMediatorDelegate <NSObject>
 
@@ -39,8 +47,9 @@ class IdentityManager;
                                     withIdentity:(ChromeIdentity*)identity;
 
 // Called if there is sign-in error.
-- (void)consistencyPromoSigninMediatorGenericErrorDidHappen:
-    (ConsistencyPromoSigninMediator*)mediator;
+- (void)consistencyPromoSigninMediator:(ConsistencyPromoSigninMediator*)mediator
+                        errorDidHappen:
+                            (ConsistencyPromoSigninMediatorError)error;
 
 @end
 

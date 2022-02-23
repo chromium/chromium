@@ -111,7 +111,8 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void DidOpenFileAndGetLength(
       OpenAccessHandleCallback callback,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-      std::pair<base::File, base::FileErrorOr<int>> file_and_length);
+      base::ScopedClosureRunner on_close_callback,
+      std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length);
 
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);

@@ -1,0 +1,8 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Start of test: striped should have selected state" CollectionItemInfo:[heading, rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++ListView stateDescription:"4 items" clickable disabled CollectionInfo:[rows=4, cols=0] actions:[CLICK, AX_FOCUS] bundle:[chromeRole="listBox", roleDescription="list box"]
+++++View text:"Orange" stateDescription:"in list, item 1 of 4" disabled focusable CollectionItemInfo:[rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Striped" stateDescription:"in list, item 2 of 4" disabled focusable selected CollectionItemInfo:[rowIndex=1, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Calico" stateDescription:"in list, item 3 of 4" disabled focusable CollectionItemInfo:[rowIndex=2, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++++View text:"Black" stateDescription:"in list, item 4 of 4" disabled focusable CollectionItemInfo:[rowIndex=3, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption"]
+++TextView text:"End of test" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

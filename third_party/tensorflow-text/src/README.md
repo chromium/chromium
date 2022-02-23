@@ -30,6 +30,7 @@ version of TF Text (eg. for tensorflow==2.3.x use tensorflow_text==2.3.x).
 
 ## INDEX
 * [Introduction](#introduction)
+* [Documentation](#documentation)
 * [Unicode](#unicode)
 * [Normalization](#normalization)
 * [Tokenization](#tokenization)
@@ -57,6 +58,12 @@ The benefit of using these ops in your text preprocessing is that they are done
 in the TensorFlow graph. You do not need to worry about tokenization in
 training being different than the tokenization at inference, or managing
 preprocessing scripts.
+
+## Documentation
+
+Please visit [http://tensorflow.org/text](http://tensorflow.org/text) for all
+documentation. This site includes API docs, guides for working with TensorFlow
+Text, as well as tutorials for building specific models.
 
 ## Unicode
 
@@ -323,6 +330,16 @@ to do with Homebrew.
 
 1. [build and install TensorFlow](https://www.tensorflow.org/install/source).
 1. Clone the TF Text repo:
-   `git clone https://github.com/tensorflow/text.git`
+   ```Shell
+   git clone https://github.com/tensorflow/text.git
+   cd text
+   ```
 1. Run the build script to create a pip package:
-   `./oss_scripts/run_build.sh`
+   ```Shell
+   ./oss_scripts/run_build.sh
+   ```
+   After this step, there should be a `*.whl` file in current directory. File name similar to `tensorflow_text-2.5.0rc0-cp38-cp38-linux_x86_64.whl`.
+1. Install the package to environment:
+   ```Shell
+   pip install ./tensorflow_text-*-*-*-os_platform.whl
+   ```

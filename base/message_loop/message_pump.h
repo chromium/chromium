@@ -10,7 +10,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
@@ -106,6 +105,8 @@ class BASE_EXPORT MessagePump {
         outer_->OnBeginWorkItem();
       }
 
+      // `outer_` is not a raw_ptr<...> for performance reasons (based on
+      // analysis of sampling profiler data and tab_search:top100:2020).
       Delegate* outer_;
     };
 
@@ -115,7 +116,7 @@ class BASE_EXPORT MessagePump {
     // TODO(crbug.com/851163): Place calls for all platforms. Without this, some
     // state like the top-level "ThreadController active" trace event will not
     // be correct when work is performed.
-    ScopedDoWorkItem BeginWorkItem() WARN_UNUSED_RESULT {
+    [[nodiscard]] ScopedDoWorkItem BeginWorkItem() {
       return ScopedDoWorkItem(this);
     }
 

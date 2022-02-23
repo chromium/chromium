@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace content {
 class WebContents;
@@ -63,7 +65,7 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   base::WeakPtr<content::WebContents> web_contents_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::OnceCallback<void(NavigateParams*)> edit_callback_;
 
@@ -73,6 +75,11 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   views::LabelButton* edit_button_ = nullptr;
 };
 
+BEGIN_VIEW_BUILDER(, ScreenshotCapturedBubble, LocationBarBubbleDelegateView)
+END_VIEW_BUILDER
+
 }  // namespace sharing_hub
+
+DEFINE_VIEW_BUILDER(, sharing_hub::ScreenshotCapturedBubble)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SCREENSHOT_SCREENSHOT_CAPTURED_BUBBLE_H_

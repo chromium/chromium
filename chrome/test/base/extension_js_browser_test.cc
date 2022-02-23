@@ -78,9 +78,9 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   CHECK_EQ(base::Value::Type::DICTIONARY, value_result->type());
   base::DictionaryValue* dict_value =
       static_cast<base::DictionaryValue*>(value_result.get());
-  bool test_result;
+
   std::string test_result_message;
-  CHECK(dict_value->GetBoolean("result", &test_result));
+  bool test_result = dict_value->FindBoolKey("result").value();
   CHECK(dict_value->GetString("message", &test_result_message));
   if (!test_result_message.empty())
     ADD_FAILURE() << test_result_message;

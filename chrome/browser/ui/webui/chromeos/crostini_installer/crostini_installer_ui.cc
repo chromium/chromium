@@ -159,6 +159,7 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
                           IDR_CROSTINI_INSTALLER_TYPES_MOJO_LITE_JS);
   source->AddResourcePath("images/linux_illustration.png",
                           IDR_LINUX_ILLUSTRATION);
+  source->AddResourcePath("images/crostini_icon.svg", IDR_CROSTINI_ICON);
   source->SetDefaultResource(IDR_CROSTINI_INSTALLER_INDEX_HTML);
 
   content::WebUIDataSource::Add(profile, source);

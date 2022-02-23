@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/callback.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/views/view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -18,30 +22,85 @@ namespace ash {
 // An icon with a built-in progress bar functionality and animation support used
 // to show auth factors (e.g. Fingerprint, Smart Lock) in the
 // LoginAuthFactorsView.
-// TODO(crbug.com/1252880): Add progress animation.
-class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
+class ASH_EXPORT AuthIconView : public views::View {
  public:
+  enum class Color {
+    kPrimary,
+    kDisabled,
+    kError,
+    kPositive,
+  };
+
   AuthIconView();
   AuthIconView(AuthIconView&) = delete;
   AuthIconView& operator=(AuthIconView&) = delete;
   ~AuthIconView() override;
 
   // Show a static icon.
-  void SetIcon(const gfx::VectorIcon& icon);
+  void SetIcon(const gfx::VectorIcon& icon, Color color = Color::kPrimary);
 
-  // TODO(crbug.com/1233614): Add additional convenience methods here so that
-  // calling classes don't have to provide colors and sizes.
+  // Show a circle icon.
+  void SetCircleImage(int size, SkColor color);
+
+  // Show a sequence of animation frames. |animation_resource_id| should refer
+  // to an image with the frames of the animation layed out horizontally.
+  // |duration| is the total duration of the animation. |num_frames| is the
+  // number of frames in the image referred to by |animation_resource_id|.
+  void SetAnimation(int animation_resource_id,
+                    base::TimeDelta duration,
+                    int num_frames);
+
+  // Cause the icon to briefly shake left and right to signify that an error has
+  // occurred.
+  void RunErrorShakeAnimation();
+
+  // Cause the icon to repeatedly emit a circle that gradually scales up and
+  // fades out in order to nudge user to click.
+  void RunNudgeAnimation();
+
+  // Starts a progress spinner animation if not already running.
+  void StartProgressAnimation();
+
+  // Stops the progress spinner animation if running.
+  void StopProgressAnimation();
+
+  // Stops any existing animations.
+  void StopAnimating();
 
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;
   }
 
   // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
+  gfx::Size CalculatePreferredSize() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
  private:
+  // Helper class to draw a circle that can be converted to "gfx::ImageSkia"
+  class CircleImageSource : public gfx::CanvasImageSource {
+   public:
+    explicit CircleImageSource(int size, SkColor color);
+    CircleImageSource(const CircleImageSource&) = delete;
+    CircleImageSource& operator=(const CircleImageSource&) = delete;
+    ~CircleImageSource() override = default;
+
+    void Draw(gfx::Canvas* canvas) override;
+
+   private:
+    SkColor color_;
+  };
+
   base::RepeatingClosure on_tap_or_click_callback_;
+
+  AnimatedRoundedImageView* icon_;
+
+  // Time when the progress animation was enabled.
+  base::TimeTicks progress_animation_start_time_;
+
+  // Used to schedule paint calls for the progress animation.
+  base::RepeatingTimer progress_animation_timer_;
 };
 
 }  // namespace ash

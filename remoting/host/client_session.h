@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -17,14 +17,17 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/client_session_events.h"
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
-#include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
@@ -55,6 +58,7 @@ class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class MouseShapePump;
+class RemoteOpenUrlMessageHandler;
 class RemoteWebAuthnMessageHandler;
 class ScreenControls;
 
@@ -69,8 +73,10 @@ class ClientSession : public protocol::HostStub,
                       public protocol::VideoStream::Observer,
                       public ClientSessionControl,
                       public ClientSessionDetails,
+                      public ClientSessionEvents,
                       public DesktopAndCursorComposerNotifier::EventHandler,
-                      public webrtc::MouseCursorMonitor::Callback {
+                      public webrtc::MouseCursorMonitor::Callback,
+                      public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
   class EventHandler {
@@ -159,6 +165,10 @@ class ClientSession : public protocol::HostStub,
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
+  // ClientSessionEvents interface.
+  void OnDesktopAttached(uint32_t session_id) override;
+  void OnDesktopDetached() override;
+
   // ClientSessionDetails interface.
   uint32_t desktop_session_id() const override;
   ClientSessionControl* session_control() override;
@@ -170,7 +180,14 @@ class ClientSession : public protocol::HostStub,
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
-  void BindWebAuthnProxy(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+  // mojom::ChromotingSessionServices implementation.
+  void BindWebAuthnProxy(
+      mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+  void BindRemoteUrlOpener(
+      mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) override;
+
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver);
 
   protocol::ConnectionToClient* connection() const { return connection_.get(); }
 
@@ -230,10 +247,10 @@ class ClientSession : public protocol::HostStub,
       const std::string& channel_name,
       std::unique_ptr<protocol::MessagePipe> pipe);
 
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
-  DesktopEnvironmentFactory* desktop_environment_factory_;
+  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
 
   // The DesktopEnvironmentOptions used to initialize DesktopEnvironment.
   DesktopEnvironmentOptions desktop_environment_options_;
@@ -309,11 +326,13 @@ class ClientSession : public protocol::HostStub,
   int default_x_dpi_;
   int default_y_dpi_;
 
-  // The id of the desktop display to show to the user.
+  // The index of the desktop display to show to the user.
   // Default is webrtc::kInvalidScreenScreenId because we need to perform
   // an initial capture to determine if the current setup support capturing
   // the entire desktop or if it is restricted to a single display.
-  webrtc::ScreenId show_display_id_ = webrtc::kInvalidScreenId;
+  // This value is either an index into |desktop_display_info_| or one of
+  // the special values webrtc::kInvalidScreenId, webrtc::kFullDesktopScreenId.
+  webrtc::ScreenId selected_display_index_ = webrtc::kInvalidScreenId;
 
   // The initial video size captured by WebRTC.
   // This will be the full desktop unless webrtc cannot capture the entire
@@ -371,12 +390,20 @@ class ClientSession : public protocol::HostStub,
       desktop_and_cursor_composer_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
+  base::WeakPtr<RemoteOpenUrlMessageHandler> remote_open_url_message_handler_;
+
+  mojo::ReceiverSet<mojom::ChromotingSessionServices>
+      session_services_receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
-  base::WeakPtrFactory<ClientSessionControl> weak_factory_{this};
+  base::WeakPtrFactory<ClientSessionControl>
+      client_session_control_weak_factory_{this};
+
+  base::WeakPtrFactory<ClientSessionEvents> client_session_events_weak_factory_{
+      this};
 };
 
 }  // namespace remoting

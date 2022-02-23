@@ -5,27 +5,30 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './password_check_edit_disclaimer_dialog.html.js';
 
-interface SettingsPasswordEditDisclaimerDialogElement {
+export interface SettingsPasswordEditDisclaimerDialogElement {
   $: {
     dialog: CrDialogElement,
+    edit: CrButtonElement,
   };
 }
 
 const SettingsPasswordEditDisclaimerDialogElementBase =
     I18nMixin(PolymerElement);
 
-class SettingsPasswordEditDisclaimerDialogElement extends
+export class SettingsPasswordEditDisclaimerDialogElement extends
     SettingsPasswordEditDisclaimerDialogElementBase {
   static get is() {
     return 'settings-password-edit-disclaimer-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -57,6 +60,13 @@ class SettingsPasswordEditDisclaimerDialogElement extends
 
   private getDisclaimerTitle_(): string {
     return this.i18n('editDisclaimerTitle', this.origin);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-password-edit-disclaimer-dialog':
+        SettingsPasswordEditDisclaimerDialogElement,
   }
 }
 

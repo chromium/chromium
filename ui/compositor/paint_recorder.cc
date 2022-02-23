@@ -28,7 +28,7 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
       local_list_(cache ? base::MakeRefCounted<cc::DisplayItemList>(
                               cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
                         : nullptr),
-      record_canvas_(cache ? local_list_.get() : context_.list_,
+      record_canvas_(cache ? local_list_.get() : context_.list_.get(),
                      gfx::RectToSkRect(gfx::Rect(recording_size))),
       canvas_(&record_canvas_, context.device_scale_factor_),
       cache_(cache),

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
@@ -103,7 +104,7 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
   GURL origin_;
 
   // Owned by the |profile_| as a keyed service.
-  MockNotificationMetricsLogger* mock_logger_ = nullptr;
+  raw_ptr<MockNotificationMetricsLogger> mock_logger_ = nullptr;
 };
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"

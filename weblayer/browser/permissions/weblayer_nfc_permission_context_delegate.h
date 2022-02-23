@@ -23,7 +23,7 @@ class WebLayerNfcPermissionContextDelegate
   ~WebLayerNfcPermissionContextDelegate() override;
 
   // NfcPermissionContext::Delegate:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool IsInteractable(content::WebContents* web_contents) override;
 #endif
 };

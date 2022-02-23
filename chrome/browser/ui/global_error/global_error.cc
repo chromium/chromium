@@ -11,7 +11,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -26,7 +26,7 @@ GlobalError::~GlobalError() {}
 GlobalError::Severity GlobalError::GetSeverity() { return SEVERITY_MEDIUM; }
 
 ui::ImageModel GlobalError::MenuItemIcon() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return ui::ImageModel(
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           IDR_INPUT_ALERT_MENU));

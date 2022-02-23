@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_target_ray_space.h"
 
+#include <string>
 #include <utility>
 
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
@@ -15,7 +16,7 @@ namespace blink {
 XRTargetRaySpace::XRTargetRaySpace(XRSession* session, XRInputSource* source)
     : XRSpace(session), input_source_(source) {}
 
-absl::optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRTargetRaySpace::MojoFromNative() const {
   auto mojo_from_viewer = session()->GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType::kViewer);
   switch (input_source_->TargetRayMode()) {

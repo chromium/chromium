@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>  // For memcpy
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -321,7 +320,7 @@ void ParamTraits<ppapi::proxy::PPBURLLoader_UpdateProgress_Params>::Log(
     std::string* l) {
 }
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // PPBFlash_DrawGlyphs_Params --------------------------------------------------
 // static
 void ParamTraits<ppapi::proxy::PPBFlash_DrawGlyphs_Params>::Write(
@@ -432,9 +431,9 @@ void ParamTraits<ppapi::proxy::SerializedFontDescription>::Log(
     const param_type& p,
     std::string* l) {
 }
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // ppapi::PepperFilePath -------------------------------------------------------
 
 // static
@@ -470,7 +469,7 @@ void ParamTraits<ppapi::PepperFilePath>::Log(const param_type& p,
   l->append(")");
 }
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_X509Certificate_Fields --------------------------------------------------
 

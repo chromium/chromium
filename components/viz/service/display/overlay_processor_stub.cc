@@ -19,4 +19,8 @@ bool OverlayProcessorStub::NeedsSurfaceDamageRectList() const {
   return false;
 }
 
+gfx::CALayerResult OverlayProcessorStub::GetCALayerErrorCode() const {
+  return gfx::kCALayerFailedOverlayDisabled;
+}
+
 }  // namespace viz

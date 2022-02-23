@@ -23,7 +23,7 @@ class WPTServe(server_base.ServerBase):
         http_port = 8001
         http_alt_port = 8081
         http_private_port = 8082
-        http_public_port = 8083
+        http_public_port = 8093
         https_port = 8444
         https_alt_port = 8445
         https_private_port = 8446

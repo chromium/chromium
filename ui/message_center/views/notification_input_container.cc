@@ -63,16 +63,18 @@ void NotificationInputContainer::Init() {
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
   StyleTextfield();
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   box_layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(GetSendButtonPadding()));
   SetSendButtonHighlightPath();
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  button_->SetTooltipText(
+      l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId()));
 
   OnAfterUserAction(textfield_);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }

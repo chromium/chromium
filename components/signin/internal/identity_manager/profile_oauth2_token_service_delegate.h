@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -20,7 +21,7 @@
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #endif
 
@@ -47,10 +48,11 @@ class ProfileOAuth2TokenServiceDelegate {
 
   virtual ~ProfileOAuth2TokenServiceDelegate();
 
-  virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+  [[nodiscard]] virtual std::unique_ptr<OAuth2AccessTokenFetcher>
+  CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) WARN_UNUSED_RESULT = 0;
+      OAuth2AccessTokenConsumer* consumer) = 0;
 
   // Returns |true| if a refresh token is available for |account_id|, and
   // |false| otherwise.
@@ -65,7 +67,7 @@ class ProfileOAuth2TokenServiceDelegate {
                                const GoogleServiceAuthError& error) {}
 
   // Returns a list of accounts for which a refresh token is maintained by
-  // |this| instance.
+  // |this| instance, in the order the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
   virtual std::vector<CoreAccountId> GetAccounts() const;
@@ -132,19 +134,19 @@ class ProfileOAuth2TokenServiceDelegate {
   // and false otherwise.
   virtual bool FixRequestErrorIfPossible();
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Triggers platform specific implementation to reload accounts from system.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const absl::optional<CoreAccountId>& primary_account_id) {}
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Triggers platform specific implementation for iOS to add a given account
   // to the token service from a system account.
   virtual void ReloadAccountFromSystem(const CoreAccountId& account_id) {}
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 #endif
@@ -179,7 +181,7 @@ class ProfileOAuth2TokenServiceDelegate {
     ~ScopedBatchChange();
 
    private:
-    ProfileOAuth2TokenServiceDelegate* delegate_;  // Weak.
+    raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;  // Weak.
   };
 
  private:

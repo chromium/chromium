@@ -13,7 +13,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 
@@ -136,8 +136,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
 
   // The adapter and service associated with this characteristic. It's ok to
   // store a raw pointers here since they indirectly own this instance.
-  BluetoothAdapterAndroid* adapter_;
-  BluetoothRemoteGattServiceAndroid* service_;
+  raw_ptr<BluetoothAdapterAndroid> adapter_;
+  raw_ptr<BluetoothRemoteGattServiceAndroid> service_;
 
   // Java object
   // org.chromium.device.bluetooth.ChromeBluetoothRemoteGattCharacteristic.

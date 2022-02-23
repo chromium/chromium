@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 
 #include "base/feature_list.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/verbatim_match.h"
@@ -75,6 +76,16 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   match.contents = url_formatter::FormatUrl(page_url, format_types,
                                             net::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
+
+  TermMatches term_matches;
+  if (input.text().length() > 0) {
+    term_matches = {{0, 0, input.text().length()}};
+  }
+
+  match.contents_class = ClassifyTermMatches(
+      term_matches, match.contents.size(),
+      ACMatchClassification::MATCH | ACMatchClassification::URL,
+      ACMatchClassification::URL);
 
   // In the case of native pages, the classifier may replace the URL with an
   // empty content, resulting with a verbatim match that does not point

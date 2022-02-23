@@ -16,7 +16,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -113,7 +113,7 @@ class GPU_EXPORT SyncPointOrderData
       uint32_t wait_order_num,
       uint64_t fence_release);
 
-  SyncPointManager* const sync_point_manager_;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
 
   const SequenceId sequence_id_;
 
@@ -236,7 +236,7 @@ class GPU_EXPORT SyncPointClientState
   void ReleaseFenceSyncHelper(uint64_t release);
 
   // Sync point manager is guaranteed to exist in the lifetime of the client.
-  SyncPointManager* sync_point_manager_ = nullptr;
+  raw_ptr<SyncPointManager> sync_point_manager_ = nullptr;
 
   // Global order data where releases will originate from.
   scoped_refptr<SyncPointOrderData> order_data_;

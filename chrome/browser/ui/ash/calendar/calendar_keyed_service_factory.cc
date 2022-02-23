@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,8 +36,7 @@ CalendarKeyedService* CalendarKeyedServiceFactory::GetService(
 KeyedService* CalendarKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return nullptr;
 

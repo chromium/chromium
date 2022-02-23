@@ -35,7 +35,7 @@ class TestCreditCardOtpAuthenticator : public CreditCardOtpAuthenticator {
       int64_t billing_customer_number) override;
 
   // Reset all testing related states.
-  void Reset();
+  void Reset() override;
 
   const CreditCard& card() { return card_; }
   const CardUnmaskChallengeOption& selected_challenge_option() {

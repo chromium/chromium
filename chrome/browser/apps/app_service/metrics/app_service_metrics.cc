@@ -8,8 +8,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "extensions/common/constants.h"
@@ -221,7 +223,7 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
   } else if (app_id == web_app::kMediaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kMediaApp, launch_source);
-  } else if (app_id == extension_misc::kChromeAppId) {
+  } else if (app_id == app_constants::kChromeAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChrome, launch_source);
   } else if (app_id == extension_misc::kGoogleDocsAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDocs, launch_source);
@@ -231,7 +233,8 @@ void RecordAppLaunch(const std::string& app_id,
   } else if (app_id == arc::kGoogleDuoAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kDuo, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == extension_misc::kFilesManagerAppId) {
+  } else if (app_id == extension_misc::kFilesManagerAppId ||
+             app_id == file_manager::kFileManagerSwaAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kFiles, launch_source);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == extension_misc::kGmailAppId ||

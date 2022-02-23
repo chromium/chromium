@@ -65,6 +65,9 @@ class TabController {
   // Closes the tab.
   virtual void CloseTab(Tab* tab, CloseTabSource source) = 0;
 
+  // Toggles whether tab-wide audio muting is active.
+  virtual void ToggleTabAudioMute(Tab* tab) = 0;
+
   // Attempts to shift the specified tab towards the end of the tabstrip by one
   // index.
   virtual void ShiftTabNext(Tab* tab) = 0;

@@ -12,10 +12,6 @@
 class Profile;
 #endif
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace settings {
 
 // Chrome "Languages" settings page UI handler.
@@ -41,11 +37,11 @@ class LanguagesHandler : public SettingsPageUIHandler {
   // Returns the prospective UI language. May not match the actual UI language,
   // depending on the user's permissions and whether the language is substituted
   // for another locale.
-  void HandleGetProspectiveUILanguage(const base::ListValue* args);
+  void HandleGetProspectiveUILanguage(base::Value::ConstListView args);
 
   // Changes the preferred UI language, provided the user is allowed to do so.
   // The actual UI language will not change until the next restart.
-  void HandleSetProspectiveUILanguage(const base::ListValue* args);
+  void HandleSetProspectiveUILanguage(base::Value::ConstListView args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile_;  // Weak pointer.

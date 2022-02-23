@@ -10,7 +10,7 @@
 #include "chrome/install_static/buildflags.h"
 
 bool ShouldRecordActiveUse(const base::CommandLine& command_line) {
-#if defined(OS_WIN) && !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+#if BUILDFLAG(IS_WIN) && !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   return false;
 #else
   return command_line.GetSwitchValueNative(switches::kTryChromeAgain).empty();

@@ -5,6 +5,7 @@
 #ifndef MEDIA_FILTERS_FFMPEG_H264_TO_ANNEX_B_BITSTREAM_CONVERTER_H_
 #define MEDIA_FILTERS_FFMPEG_H264_TO_ANNEX_B_BITSTREAM_CONVERTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 #include "media/filters/h264_to_annex_b_bitstream_converter.h"
@@ -63,7 +64,7 @@ class MEDIA_EXPORT FFmpegH264ToAnnexBBitstreamConverter
 
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  AVCodecParameters* stream_codec_parameters_;
+  raw_ptr<AVCodecParameters> stream_codec_parameters_;
 };
 
 }  // namespace media

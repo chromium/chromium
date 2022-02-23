@@ -6,13 +6,17 @@
 
 #include <utility>
 
+#include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "components/crash/android/anr_skipped_reason.h"
 #include "components/minidump_uploader/minidump_uploader_jni_headers/CrashReportMimeWriter_jni.h"
+#include "components/version_info/android/channel_getter.h"
+#include "components/version_info/version_info.h"
 #include "third_party/crashpad/crashpad/handler/minidump_to_upload_parameters.h"
 #include "third_party/crashpad/crashpad/snapshot/exception_snapshot.h"
 #include "third_party/crashpad/crashpad/snapshot/minidump/process_snapshot_minidump.h"
@@ -25,7 +29,7 @@ namespace minidump_uploader {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProcessedMinidumpCounts {
@@ -36,7 +40,7 @@ enum class ProcessedMinidumpCounts {
   kUtility = 4,
   kMaxValue = kUtility
 };
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool MimeifyReportWithKeyValuePairs(
     const crashpad::CrashReportDatabase::UploadReport& report,
@@ -77,7 +81,7 @@ bool MimeifyReportWithKeyValuePairs(
         crashes_key_value_arr->push_back(kv.first);
         crashes_key_value_arr->push_back(kv.second);
       }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       if (kv.first == kPtypeKey) {
         const crashpad::ExceptionSnapshot* exception =
             minidump_process_snapshot.Exception();
@@ -106,7 +110,7 @@ bool MimeifyReportWithKeyValuePairs(
         }
         // TODO(wnwen): Add histogram for number of null exceptions.
       }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
     }
   }
 
@@ -213,6 +217,80 @@ void RewriteMinidumpsAsMIMEs(const base::FilePath& src_dir,
         db->DeleteReport(report.uuid);
         continue;
     }
+  }
+}
+
+static void reportAnrUploadFailure(AnrSkippedReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Crashpad.AnrUpload.Skipped", reason);
+}
+
+static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
+                           crashpad::FileWriter* writer,
+                           const std::string& version_number,
+                           const std::string& anr_file_name) {
+  static constexpr char kAnrKey[] = "anr_data";
+
+  crashpad::HTTPMultipartBuilder builder;
+  builder.SetFormData("version", version_number);
+  builder.SetFormData("product", "Chrome_Android");
+  std::string channel =
+      version_info::GetChannelString(version_info::android::GetChannel());
+  builder.SetFormData("channel", channel);
+
+  // We can't use crashpad::AnnotationList::Get() as it contains a number of
+  // fields which change on each Chrome restart.
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  builder.SetFormData("android_build_id", info->android_build_id());
+  builder.SetFormData("android_build_fp", info->android_build_fp());
+  builder.SetFormData("sdk", base::StringPrintf("%d", info->sdk_int()));
+  builder.SetFormData("device", info->device());
+  builder.SetFormData("model", info->model());
+  builder.SetFormData("brand", info->brand());
+  builder.SetFormData("board", info->board());
+  builder.SetFormData("installer_package_name", info->installer_package_name());
+  builder.SetFormData("abi_name", info->abi_name());
+  builder.SetFormData("custom_themes", info->custom_themes());
+  builder.SetFormData("resources_version", info->resources_version());
+  builder.SetFormData("gms_core_version", info->gms_version_code());
+  builder.SetFileAttachment(kAnrKey, anr_file_name, anr_reader,
+                            "application/octet-stream");
+  if (!WriteBodyToFile(builder.GetBodyStream().get(), writer)) {
+    reportAnrUploadFailure(AnrSkippedReason::kFilesystemWriteFailure);
+  }
+}
+
+static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobjectArray>& j_anr_files,
+    const base::android::JavaParamRef<jobjectArray>& j_version_numbers,
+    const base::android::JavaParamRef<jstring>& j_dest_dir) {
+  std::vector<std::string> anr_files;
+  AppendJavaStringArrayToStringVector(env, j_anr_files, &anr_files);
+  std::vector<std::string> version_numbers;
+  AppendJavaStringArrayToStringVector(env, j_version_numbers, &version_numbers);
+  // We are assuming a 1:1 mapping between an ANR and its version number.
+  DCHECK_EQ(anr_files.size(), version_numbers.size());
+  std::string dest_dir;
+  base::android::ConvertJavaStringToUTF8(env, j_dest_dir, &dest_dir);
+
+  for (size_t i = 0; i < anr_files.size(); ++i) {
+    crashpad::FileWriter writer;
+    crashpad::FileReader reader;
+    crashpad::UUID uuid;
+    uuid.InitializeWithNew();
+    std::string anr_file_name = uuid.ToString() + "_ANR.dmp";
+    if (!reader.Open(base::FilePath(anr_files[i]))) {
+      reportAnrUploadFailure(AnrSkippedReason::kFilesystemReadFailure);
+      continue;
+    }
+    if (!writer.Open(base::FilePath(dest_dir).Append(anr_file_name),
+                     crashpad::FileWriteMode::kCreateOrFail,
+                     crashpad::FilePermissions::kOwnerOnly)) {
+      reportAnrUploadFailure(AnrSkippedReason::kFilesystemWriteFailure);
+      continue;
+    }
+
+    WriteAnrAsMime(&reader, &writer, version_numbers[i], anr_file_name);
   }
 }
 

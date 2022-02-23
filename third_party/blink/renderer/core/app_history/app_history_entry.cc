@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
 namespace blink {
 
@@ -27,7 +29,7 @@ int64_t AppHistoryEntry::index() {
 }
 
 KURL AppHistoryEntry::url() {
-  return DomWindow() ? item_->Url() : NullURL();
+  return DomWindow() && !item_->Url().IsEmpty() ? item_->Url() : NullURL();
 }
 
 bool AppHistoryEntry::sameDocument() const {

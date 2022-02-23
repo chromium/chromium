@@ -86,7 +86,7 @@ namespace tray {
 ////////////////////////////////////////////////////////////////////////////////
 // ash::tray::AccessibilityDetailedView
 
-constexpr char AccessibilityDetailedView::kClassName[];
+const char AccessibilityDetailedView::kClassName[] = "AccessibilityDetailedView";
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)
@@ -99,7 +99,7 @@ AccessibilityDetailedView::AccessibilityDetailedView(
 }
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -583,7 +583,7 @@ void AccessibilityDetailedView::ShowHelp() {
 }
 
 void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();

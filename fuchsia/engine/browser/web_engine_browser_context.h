@@ -8,21 +8,28 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "components/client_hints/browser/in_memory_client_hints_controller_delegate.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
 #include "fuchsia/engine/browser/web_engine_permission_delegate.h"
 
 class WebEngineNetLogObserver;
 
+namespace network {
+class NetworkQualityTracker;
+}
+
 class WebEngineBrowserContext final : public content::BrowserContext {
  public:
   // Creates a browser context that persists cookies, LocalStorage, etc, in
   // the specified |data_directory|.
   static std::unique_ptr<WebEngineBrowserContext> CreatePersistent(
-      base::FilePath data_directory);
+      base::FilePath data_directory,
+      network::NetworkQualityTracker* network_quality_tracker);
 
   // Creates a browser context with no support for persistent data.
-  static std::unique_ptr<WebEngineBrowserContext> CreateIncognito();
+  static std::unique_ptr<WebEngineBrowserContext> CreateIncognito(
+      network::NetworkQualityTracker* network_quality_tracker);
 
   ~WebEngineBrowserContext() override;
 
@@ -58,7 +65,9 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   // Contains URLRequestContextGetter required for resource loading.
   class ResourceContext;
 
-  explicit WebEngineBrowserContext(base::FilePath data_dir_path);
+  explicit WebEngineBrowserContext(
+      base::FilePath data_dir_path,
+      network::NetworkQualityTracker* network_quality_tracker);
 
   const base::FilePath data_dir_path_;
 
@@ -66,6 +75,7 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   SimpleFactoryKey simple_factory_key_;
   WebEnginePermissionDelegate permission_delegate_;
   std::unique_ptr<ResourceContext> resource_context_;
+  client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_BROWSER_CONTEXT_H_

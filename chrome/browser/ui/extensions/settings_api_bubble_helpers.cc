@@ -36,7 +36,7 @@ namespace {
 
 // Whether the NTP post-install UI is enabled. By default, this is limited to
 // Windows, Mac, and ChromeOS, but can be overridden for testing.
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 bool g_ntp_post_install_ui_enabled = true;
 #else
 bool g_ntp_post_install_ui_enabled = false;
@@ -49,7 +49,7 @@ bool g_ntp_post_install_ui_enabled = false;
 // false (and keep the logic around for when/if we decide to expand the warning
 // treatment to Linux).
 bool g_acknowledge_existing_ntp_extensions =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     true;
 #else
     false;
@@ -60,7 +60,7 @@ bool g_acknowledge_existing_ntp_extensions =
 const char kDidAcknowledgeExistingNtpExtensions[] =
     "ack_existing_ntp_extensions";
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void ShowSettingsApiBubble(SettingsApiOverrideType type,
                            Browser* browser) {
   ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
@@ -125,7 +125,7 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 }
 
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ShowSettingsApiBubble(BUBBLE_TYPE_HOME_PAGE, browser);
 #endif
 }
@@ -133,7 +133,7 @@ void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 void MaybeShowExtensionControlledSearchNotification(
     content::WebContents* web_contents,
     AutocompleteMatch::Type match_type) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (!AutocompleteMatch::IsSearchType(match_type) ||
       match_type == AutocompleteMatchType::SEARCH_OTHER_ENGINE) {
     return;

@@ -82,15 +82,16 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   if (config.is_encrypted()) {
     std::move(bound_init_cb)
-        .Run(Status(StatusCode::kEncryptedContentUnsupported,
-                    "FFmpegAudioDecoder does not support encrypted content"));
+        .Run(DecoderStatus(
+            DecoderStatus::Codes::kUnsupportedEncryptionMode,
+            "FFmpegAudioDecoder does not support encrypted content"));
     return;
   }
 
   // TODO(dalecurtis): Remove this if ffmpeg ever gets xHE-AAC support.
   if (config.profile() == AudioCodecProfile::kXHE_AAC) {
     std::move(bound_init_cb)
-        .Run(Status(StatusCode::kDecoderUnsupportedProfile)
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedProfile)
                  .WithData("decoder", "FFmpegAudioDecoder")
                  .WithData("profile", config.profile()));
     return;
@@ -98,7 +99,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   if (!ConfigureDecoder(config)) {
     av_sample_format_ = 0;
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -106,7 +107,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = BindToCurrentLoop(output_cb);
   state_ = DecoderState::kNormal;
-  std::move(bound_init_cb).Run(OkStatus());
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -117,13 +118,13 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeCB decode_cb_bound = BindToCurrentLoop(std::move(decode_cb));
 
   if (state_ == DecoderState::kError) {
-    std::move(decode_cb_bound).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // Do nothing if decoding has finished.
   if (state_ == DecoderState::kDecodeFinished) {
-    std::move(decode_cb_bound).Run(DecodeStatus::OK);
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -150,20 +151,20 @@ void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
   // occurs with some damaged files.
   if (!buffer.end_of_stream() && buffer.timestamp() == kNoTimestamp) {
     DVLOG(1) << "Received a buffer without timestamps!";
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!FFmpegDecode(buffer)) {
     state_ = DecoderState::kError;
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (buffer.end_of_stream())
     state_ = DecoderState::kDecodeFinished;
 
-  std::move(decode_cb).Run(DecodeStatus::OK);
+  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {

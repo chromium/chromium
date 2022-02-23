@@ -206,7 +206,7 @@ INSTANTIATE_TEST_SUITE_P(SitePerProcess,
                          TaskManagerOOPIFBrowserTest,
                          ::testing::Values(true));
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShutdownWhileOpen DISABLED_ShutdownWhileOpen
 #else
 #define MAYBE_ShutdownWhileOpen ShutdownWhileOpen
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeTabContentsChanges) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchTab("title1.html")));
 
   // Open a new tab and make sure the task manager notices it.
-  AddTabAtIndex(0, GetTestURL(), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GetTestURL(), ui::PAGE_TRANSITION_TYPED));
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, KillTab) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchTab("title1.html")));
 
   // Open a new tab and make sure the task manager notices it.
-  AddTabAtIndex(0, GetTestURL(), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GetTestURL(), ui::PAGE_TRANSITION_TYPED));
 
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(2, MatchAnyTab()));
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NavigateAwayFromHungRenderer) {
   GURL url3(embedded_test_server()->GetURL("a.com", "/iframe.html"));
 
   // Open a new tab and make sure the task manager notices it.
-  AddTabAtIndex(0, url1, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url1, ui::PAGE_TRANSITION_TYPED));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTabChanges) {
   // The fourth entry (page.html) is also of type extension and has both a
   // WebContents and an extension. The title should start with "Extension:".
   GURL url("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html");
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchExtension("My extension 1")));
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeExtensionTab) {
                                 .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
                                 .AppendASCII("1.0.0.0")));
   GURL url("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html");
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   ShowTaskManager();
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTabChanges) {
 
   // Open a new tab to the app's launch URL and make sure we notice that.
   GURL url(extension->GetResourceURL("main.html"));
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   // There should be 1 "App: " tab and the original new tab page.
   ASSERT_NO_FATAL_FAILURE(
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, NoticeAppTab) {
 
   // Open a new tab to the app's launch URL and make sure we notice that.
   GURL url(extension->GetResourceURL("main.html"));
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   ShowTaskManager();
 
@@ -660,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
-#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This tests times out when MSan is enabled. See https://crbug.com/890313.
 // Failing on Linux CFI. See https://crbug.com/995132.
 #define MAYBE_SentDataObserved DISABLED_SentDataObserved
@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
 
-#if defined(MEMORY_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This tests times out when MSan is enabled. See https://crbug.com/890313.
 // Failing on Linux CFI. See https://crbug.com/995132.
 #define MAYBE_TotalSentDataObserved DISABLED_TotalSentDataObserved
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
 // forcing actual system-level idle wakeups to happen, it is inherently
 // dependent on the load of the rest of the system, details of the OS scheduler,
 // and so on, which makes it very prone to flakes.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This test is too flaky to be useable on Mac, because of the reasons given
 // above.
 #define MAYBE_IdleWakeups DISABLED_IdleWakeups

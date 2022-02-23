@@ -120,7 +120,7 @@ TEST_F(ExtendedCrashReportingTest, RecordsAnnotation) {
   EXPECT_TRUE(IsNonEmpty(GetActivtyTrackerAnnotation()));
 }
 
-#if defined(ADDRESS_SANITIZER) && defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
 // The test does not pass under WinASan. See crbug.com/809524.
 #define MAYBE_CrashingTest DISABLED_CrashingTest
 #else

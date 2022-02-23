@@ -7,7 +7,7 @@
 Test the accessibility tree after a pending modal dialog becomes active.
 <section>
   <dialog id="top-dialog">
-    This was the top dialog and should not be in the tree.
+    This was the top dialog and should be marked ignored in the tree.
   </dialog>
   <select>
     <optgroup label="Group">
@@ -17,7 +17,7 @@ Test the accessibility tree after a pending modal dialog becomes active.
 </section>
 <button>This button should not be in the tree.</button>
 <dialog id="middle-dialog">
-  This was the middle dialog and should not be in the tree.
+  This was the middle dialog and should be marked ignored in the tree.
 </dialog>
 <dialog id="bottom-dialog">
   This is the now active dialog. Of course it should be in the tree.

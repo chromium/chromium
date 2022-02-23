@@ -65,6 +65,8 @@ class LocalDeskDataManager : public DeskModel {
   bool IsReady() const override;
   bool IsSyncing() const override;
 
+  static void SetDisableMaxTemplateLimitForTesting(bool disabled);
+
  private:
   friend class ash::OverviewTestBase;
 
@@ -89,6 +91,7 @@ class LocalDeskDataManager : public DeskModel {
 
   // Wrapper method to call GetEntryByUuidCallback.
   void OnGetEntryByUuid(
+      const std::string& uuid_str,
       std::unique_ptr<DeskModel::GetEntryByUuidStatus> status_ptr,
       std::unique_ptr<ash::DeskTemplate*> entry_ptr_ptr,
       DeskModel::GetEntryByUuidCallback callback);

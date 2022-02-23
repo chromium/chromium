@@ -11,11 +11,11 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 namespace {
 
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
@@ -45,10 +45,73 @@ const base::flat_map<PackSpecPair, std::string>& GetAllDlcIds() {
   // It's a map from PackSpecPair to DLC ID. The pair is <feature id, locale>.
   // Whenever a new DLC is created, it needs to be added here.
   // Clients of Language Packs don't need to know the IDs.
+  // Note: English is not included because it's still using LongForm.
   static const base::NoDestructor<base::flat_map<PackSpecPair, std::string>>
       all_dlc_ids({
-          {{kHandwritingFeatureId, "es"}, "languagepack-handwriting-es"},
-          {{kHandwritingFeatureId, "spa"}, "languagepack-handwriting-es"},
+          {{kHandwritingFeatureId, "am"}, "handwriting-am"},
+          {{kHandwritingFeatureId, "ar"}, "handwriting-ar"},
+          {{kHandwritingFeatureId, "be"}, "handwriting-be"},
+          {{kHandwritingFeatureId, "bg"}, "handwriting-bg"},
+          {{kHandwritingFeatureId, "bn"}, "handwriting-bn"},
+          {{kHandwritingFeatureId, "ca"}, "handwriting-ca"},
+          {{kHandwritingFeatureId, "cs"}, "handwriting-cs"},
+          {{kHandwritingFeatureId, "da"}, "handwriting-da"},
+          {{kHandwritingFeatureId, "de"}, "handwriting-de"},
+          {{kHandwritingFeatureId, "el"}, "handwriting-el"},
+          {{kHandwritingFeatureId, "es"}, "handwriting-es"},
+          {{kHandwritingFeatureId, "et"}, "handwriting-et"},
+          {{kHandwritingFeatureId, "fa"}, "handwriting-fa"},
+          {{kHandwritingFeatureId, "fi"}, "handwriting-fi"},
+          {{kHandwritingFeatureId, "fr"}, "handwriting-fr"},
+          {{kHandwritingFeatureId, "ga"}, "handwriting-ga"},
+          {{kHandwritingFeatureId, "gu"}, "handwriting-gu"},
+          {{kHandwritingFeatureId, "hi"}, "handwriting-hi"},
+          {{kHandwritingFeatureId, "hr"}, "handwriting-hr"},
+          {{kHandwritingFeatureId, "hu"}, "handwriting-hu"},
+          {{kHandwritingFeatureId, "hy"}, "handwriting-hy"},
+          {{kHandwritingFeatureId, "id"}, "handwriting-id"},
+          {{kHandwritingFeatureId, "is"}, "handwriting-is"},
+          {{kHandwritingFeatureId, "it"}, "handwriting-it"},
+          {{kHandwritingFeatureId, "iw"}, "handwriting-iw"},
+          {{kHandwritingFeatureId, "ja"}, "handwriting-ja"},
+          {{kHandwritingFeatureId, "ka"}, "handwriting-ka"},
+          {{kHandwritingFeatureId, "kk"}, "handwriting-kk"},
+          {{kHandwritingFeatureId, "km"}, "handwriting-km"},
+          {{kHandwritingFeatureId, "kn"}, "handwriting-kn"},
+          {{kHandwritingFeatureId, "ko"}, "handwriting-ko"},
+          {{kHandwritingFeatureId, "lo"}, "handwriting-lo"},
+          {{kHandwritingFeatureId, "lt"}, "handwriting-lt"},
+          {{kHandwritingFeatureId, "lv"}, "handwriting-lv"},
+          {{kHandwritingFeatureId, "ml"}, "handwriting-ml"},
+          {{kHandwritingFeatureId, "mn"}, "handwriting-mn"},
+          {{kHandwritingFeatureId, "mr"}, "handwriting-mr"},
+          {{kHandwritingFeatureId, "ms"}, "handwriting-ms"},
+          {{kHandwritingFeatureId, "mt"}, "handwriting-mt"},
+          {{kHandwritingFeatureId, "my"}, "handwriting-my"},
+          {{kHandwritingFeatureId, "ne"}, "handwriting-ne"},
+          {{kHandwritingFeatureId, "nl"}, "handwriting-nl"},
+          {{kHandwritingFeatureId, "no"}, "handwriting-no"},
+          {{kHandwritingFeatureId, "or"}, "handwriting-or"},
+          {{kHandwritingFeatureId, "pa"}, "handwriting-pa"},
+          {{kHandwritingFeatureId, "pl"}, "handwriting-pl"},
+          {{kHandwritingFeatureId, "pt"}, "handwriting-pt"},
+          {{kHandwritingFeatureId, "ro"}, "handwriting-ro"},
+          {{kHandwritingFeatureId, "ru"}, "handwriting-ru"},
+          {{kHandwritingFeatureId, "si"}, "handwriting-si"},
+          {{kHandwritingFeatureId, "sk"}, "handwriting-sk"},
+          {{kHandwritingFeatureId, "sl"}, "handwriting-sl"},
+          {{kHandwritingFeatureId, "sr"}, "handwriting-sr"},
+          {{kHandwritingFeatureId, "sv"}, "handwriting-sv"},
+          {{kHandwritingFeatureId, "ta"}, "handwriting-ta"},
+          {{kHandwritingFeatureId, "te"}, "handwriting-te"},
+          {{kHandwritingFeatureId, "th"}, "handwriting-th"},
+          {{kHandwritingFeatureId, "ti"}, "handwriting-ti"},
+          {{kHandwritingFeatureId, "tl"}, "handwriting-tl"},
+          {{kHandwritingFeatureId, "tr"}, "handwriting-tr"},
+          {{kHandwritingFeatureId, "uk"}, "handwriting-uk"},
+          {{kHandwritingFeatureId, "ur"}, "handwriting-ur"},
+          {{kHandwritingFeatureId, "vi"}, "handwriting-vi"},
+          {{kHandwritingFeatureId, "zh"}, "handwriting-zh"},
       });
 
   return *all_dlc_ids;
@@ -233,5 +296,4 @@ LanguagePackManager* LanguagePackManager::GetInstance() {
   return instance.get();
 }
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs

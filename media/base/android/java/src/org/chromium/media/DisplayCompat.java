@@ -7,7 +7,6 @@ package org.chromium.media;
 import static android.content.Context.UI_MODE_SERVICE;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -138,7 +137,6 @@ public final class DisplayCompat {
      * @param size a Point object representing the size in horizontal and vertical direction
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    @TargetApi(Build.VERSION_CODES.M)
     private static boolean physicalSizeEquals(Display.Mode mode, Point size) {
         return (mode.getPhysicalWidth() == size.x && mode.getPhysicalHeight() == size.y)
                 || (mode.getPhysicalWidth() == size.y && mode.getPhysicalHeight() == size.x);
@@ -257,7 +255,6 @@ public final class DisplayCompat {
          * @param mode a Display.Mode object
          */
         @RequiresApi(Build.VERSION_CODES.M)
-        @TargetApi(Build.VERSION_CODES.M)
         ModeCompat(@NonNull Display.Mode mode, boolean isNative) {
             if (mode == null) {
                 throw new NullPointerException("Display.Mode == null, can't wrap a null reference");

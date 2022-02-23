@@ -791,7 +791,7 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
     }
     case SINGLE_TAP_PRESSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case GESTURE_IN_PROGRESS:
       // If only one finger is down, go into touch exploration.
       if (current_touch_ids_.size() == 1) {
@@ -858,6 +858,11 @@ void TouchExplorationController::DispatchEvent(
 // synchronously), so we ignore this callback.
 void TouchExplorationController::OnGestureEvent(ui::GestureConsumer* consumer,
                                                 ui::GestureEvent* gesture) {}
+
+const std::string& TouchExplorationController::GetName() const {
+  static const std::string name("TouchExplorationController");
+  return name;
+}
 
 void TouchExplorationController::ProcessGestureEvents() {
   std::vector<std::unique_ptr<ui::GestureEvent>> gestures =

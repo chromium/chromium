@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FRAME_PAINTER_H_
 
-#include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class CullRect;
 class GraphicsContext;
 class LocalFrameView;
 
@@ -23,8 +22,7 @@ class FramePainter {
   FramePainter(const FramePainter&) = delete;
   FramePainter& operator=(const FramePainter&) = delete;
 
-  void Paint(GraphicsContext&, const GlobalPaintFlags, const CullRect&);
-  void PaintContents(GraphicsContext&, const GlobalPaintFlags, const CullRect&);
+  void Paint(GraphicsContext&, PaintFlags);
 
  private:
   const LocalFrameView& GetFrameView();

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"

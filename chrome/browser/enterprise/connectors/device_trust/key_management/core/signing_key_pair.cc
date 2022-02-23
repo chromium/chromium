@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "crypto/unexportable_key.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -14,18 +16,16 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 namespace enterprise_connectors {
 
 // static
-absl::optional<SigningKeyPair> SigningKeyPair::Create(
+std::unique_ptr<SigningKeyPair> SigningKeyPair::Create(
     KeyPersistenceDelegate* persistence_delegate) {
   DCHECK(persistence_delegate);
 
-  KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  std::vector<uint8_t> wrapped;
-  std::tie(trust_level, wrapped) = persistence_delegate->LoadKeyPair();
+  auto [trust_level, wrapped] = persistence_delegate->LoadKeyPair();
 
   if (wrapped.empty()) {
     // No persisted key pair with a known trust level found.  This is not an
     // error, it could be that no key has been created yet.
-    return absl::nullopt;
+    return nullptr;
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> key_pair;
@@ -44,13 +44,21 @@ absl::optional<SigningKeyPair> SigningKeyPair::Create(
     }
     case BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED:
       NOTREACHED();
-      return absl::nullopt;
+      return nullptr;
   }
 
   if (key_pair) {
-    return SigningKeyPair(std::move(key_pair), trust_level);
+    return std::make_unique<SigningKeyPair>(std::move(key_pair), trust_level);
   }
-  return absl::nullopt;
+  return nullptr;
+}
+
+// static
+std::unique_ptr<SigningKeyPair> SigningKeyPair::LoadPersistedKey() {
+  auto* factory = KeyPersistenceDelegateFactory::GetInstance();
+  DCHECK(factory);
+  auto persistence_delegate = factory->CreateKeyPersistenceDelegate();
+  return Create(persistence_delegate.get());
 }
 
 SigningKeyPair::SigningKeyPair(
@@ -59,9 +67,6 @@ SigningKeyPair::SigningKeyPair(
     : key_pair_(std::move(key_pair)), trust_level_(trust_level) {
   DCHECK(key_pair_);
 }
-
-SigningKeyPair::SigningKeyPair(SigningKeyPair&& other) = default;
-SigningKeyPair& SigningKeyPair::operator=(SigningKeyPair&& other) = default;
 
 SigningKeyPair::~SigningKeyPair() = default;
 

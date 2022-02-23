@@ -15,11 +15,100 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 
+#include <dlfcn.h>
 #include <string.h>
+
+#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "tensorflow/lite/core/shims/c/experimental/acceleration/configuration/delegate_plugin.h"
+#include "tensorflow/lite/core/shims/cc/experimental/acceleration/configuration/delegate_registry.h"
+#include "tensorflow/lite/experimental/acceleration/configuration/delegate_plugin_converter.h"
+#include "tensorflow_lite_support/cc/common.h"
+#include "tensorflow_lite_support/cc/port/status_macros.h"
 
 namespace tflite {
 namespace support {
 namespace utils {
+namespace {
+
+using ::absl::StatusCode;
+using ::tflite::proto::Delegate;
+using ::tflite::support::CreateStatusWithPayload;
+using ::tflite_shims::delegates::DelegatePluginRegistry;
+
+// delegate_name should be one of the following:
+// gpu / hexagon
+absl::Status loadDelegatePluginLibrary(const std::string& delegate_name) {
+  // Load "lib<delegate_name>_plugin.so".
+  std::string lib_name =
+      absl::StrFormat("lib%s_delegate_plugin.so", delegate_name);
+
+  // Choosing RTLD_NOW over RTLD_LAZY: RTLD_NOW loads symbols now and
+  // makes sure there's no unresolved symbols. Using RTLD_LAZY will not
+  // discover unresolved symbols issues right away, and may lead to crash later
+  // during inference, which should be avoided.
+  // Choosing RTLD_LOCAL over RTLD_GLOBAL: the symbols should not be available
+  // for subsequently loaded libraries.
+  // Not choosing RTLD_DEEPBIND due to portability concerns; also we're using a
+  // linker script to hide internal symbols, so we don't really need it.
+  // Not choosing RTLD_NODELETE to avoid a (bounded) memory leak:
+  // if we used RTLD_NODELETE, dlclose() would not free the memory for the
+  // library.
+  void* handle = dlopen(lib_name.c_str(), RTLD_NOW | RTLD_LOCAL);
+  if (!handle) {
+    return CreateStatusWithPayload(
+        StatusCode::kInternal,
+        absl::StrFormat("Error loading %s. %s", lib_name, dlerror()));
+  }
+
+  // Load the method "TfLite<camel_name>DelegatePluginCApi".
+  std::string camel_name(delegate_name);
+  camel_name[0] = toupper(camel_name[0]);
+  std::string new_method_name =
+      absl::StrFormat("TfLite%sDelegatePluginCApi", camel_name);
+  TfLiteOpaqueDelegatePlugin* (*new_delegate_c)();
+  new_delegate_c = reinterpret_cast<decltype(new_delegate_c)>(
+      dlsym(handle, new_method_name.c_str()));
+  if (!new_delegate_c) {
+    // Ignore the return value of dlclose as we deliberately hide it from users.
+    dlclose(handle);
+    handle = nullptr;
+    return CreateStatusWithPayload(
+        StatusCode::kInternal,
+        absl::StrFormat("Error loading method, %s from %s", new_method_name,
+                        lib_name));
+  }
+
+  // Register the delegate.
+  new DelegatePluginRegistry::Register(
+      absl::StrFormat("%sPlugin", camel_name),
+      tflite::delegates::DelegatePluginConverter(*new_delegate_c()));
+
+  return absl::OkStatus();
+}
+
+}  // namespace
+
+tflite::support::StatusOr<Delegate> ConvertToProtoDelegate(jint delegate) {
+  // The supported delegate types should match
+  // org.tensorflow.lite.task.core.ComputeSettings.Delegate.
+  switch (delegate) {
+    case 0:
+      return Delegate::NONE;
+    case 1:
+      return Delegate::NNAPI;
+    case 2:
+      RETURN_IF_ERROR(loadDelegatePluginLibrary("gpu"));
+      return Delegate::GPU;
+    default:
+      break;
+  }
+  // Should never happen.
+  return CreateStatusWithPayload(
+      StatusCode::kInternal,
+      absl::StrFormat("The delegate type is unsupported: %d", delegate));
+}
 
 std::string JStringToString(JNIEnv* env, jstring jstr) {
   if (jstr == nullptr) {
@@ -94,6 +183,26 @@ void ThrowExceptionWithMessage(JNIEnv* env,
     return;
   }
   env->ThrowNew(e_class, message);
+}
+
+const char* GetExceptionClassNameForStatusCode(StatusCode status_code) {
+  switch (status_code) {
+    case StatusCode::kOk:
+      return nullptr;
+    case StatusCode::kInvalidArgument:
+      return kIllegalArgumentException;
+    // TODO(b/197650198): Uncomment this before the next major version bump
+    //  and update the signature, as IOException is a checked exception.
+    // case StatusCode::kNotFound:
+    //   return kIOException;
+    case StatusCode::kInternal:
+      return kIllegalStateException;
+    // kUnknown and all other status codes are mapped to a generic
+    // RuntimeException.
+    case StatusCode::kUnknown:
+    default:
+      return kRuntimeException;
+  }
 }
 
 }  // namespace utils

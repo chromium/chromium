@@ -19,7 +19,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
@@ -27,7 +27,7 @@
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/signin/public/identity_manager/ios/fake_device_accounts_provider.h"
 #endif
 
@@ -67,7 +67,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath dest_path = temp_dir.GetPath();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetUpMockAccountManagerFacade();
 #endif
 
@@ -81,7 +81,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   params.profile_path = dest_path;
   params.signin_client = GetSigninClient();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   params.device_accounts_provider =
       std::make_unique<FakeDeviceAccountsProvider>();
 #endif
@@ -104,7 +104,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   EXPECT_NE(init_params.primary_account_mutator, nullptr);
   EXPECT_NE(init_params.accounts_cookie_mutator, nullptr);
   EXPECT_NE(init_params.diagnostics_provider, nullptr);
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_NE(init_params.device_accounts_synchronizer, nullptr);
   EXPECT_EQ(init_params.accounts_mutator, nullptr);
 #else

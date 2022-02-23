@@ -335,3 +335,22 @@ message VideoFrameCopyToCase {
   // close(), etc.
   required VideoFrameCopyToInvocation copy_to = 2;
 }
+
+message AudioDataCopyToOptions {
+  required uint32 plane_index = 1;
+  optional uint32 frame_offset = 2;
+  optional uint32 frame_count = 3;
+  optional AudioSampleFormat format = 4;
+}
+
+message AudioDataCopyToInvocation {
+  required AllowSharedBufferSource destination = 1;
+  required AudioDataCopyToOptions options = 2;
+}
+
+message AudioDataCopyToCase {
+  required AudioDataInit audio_data = 1;
+  // TODO(chcunningham): Support multiple concurrent operations, optional
+  // waiting, close(), etc.
+  required AudioDataCopyToInvocation copy_to = 2;
+}

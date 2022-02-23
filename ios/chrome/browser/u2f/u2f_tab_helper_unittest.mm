@@ -9,7 +9,6 @@
 #import "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/chrome_url_util.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "net/base/escape.h"
@@ -27,17 +26,12 @@ class U2FTabHelperTest : public PlatformTest {
  protected:
   U2FTabHelperTest() {
     U2FTabHelper::CreateForWebState(&web_state_);
-    TabIdTabHelper::CreateForWebState(&web_state_);
     url::AddStandardScheme("chromium", url::SCHEME_WITH_HOST);
     [[ChromeAppConstants sharedInstance]
         setCallbackSchemeForTesting:@"chromium"];
   }
 
   U2FTabHelper* tab_helper() { return U2FTabHelper::FromWebState(&web_state_); }
-
-  NSString* tab_id() {
-    return TabIdTabHelper::FromWebState(&web_state_)->tab_id();
-  }
 
   // Returns the requestUUID NSString from a properly formatted U2F XCallback
   // GURL.
@@ -66,9 +60,9 @@ class U2FTabHelperTest : public PlatformTest {
   NSString* GetRegexString(const GURL& request_url, const GURL& origin_url) {
     return [@[
       @"u2f-x-callback://x-callback-url/auth\\?x-success=.+u2f-callback",
-      @"%2F%3FtabID%3D", tab_id(),
+      @"%2F%3FtabID%3D", web_state_.GetStableIdentifier(),
       @"%26requestUUID%3.+%26isU2F%3D1&x-error=.+u2f-callback%2F%3FtabID%3D",
-      tab_id(), @"%26requestUUID%3.+%26isU2F%3D1&data=",
+      web_state_.GetStableIdentifier(), @"%26requestUUID%3.+%26isU2F%3D1&data=",
       base::SysUTF8ToNSString(
           net::EscapeQueryParamValue(request_url.query(), true)),
       @"&origin=",
@@ -184,7 +178,7 @@ TEST_F(U2FTabHelperTest, TestEvaluateU2FResultWithCorrectFlowTest) {
       "chromium://u2f-callback?requestUUID=" +
       base::SysNSStringToUTF8(request_uuid) +
       "&requestId=TestID&registrationData=TestData&tabID=" +
-      base::SysNSStringToUTF8(tab_id()));
+      base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
 
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
 
@@ -216,23 +210,24 @@ TEST_F(U2FTabHelperTest, TestEvaluateU2FResultWithBadURLFormat) {
   GURL no_request_uuid_url(
       "chromium://"
       "u2f-callback?requestId=TestID&registrationData=TestData&tabID=" +
-      base::SysNSStringToUTF8(tab_id()));
+      base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
   tab_helper()->EvaluateU2FResult(no_request_uuid_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
 
   // Test when U2F callback has wrong requestUUID value.
-  GURL wrong_request_uuid_url("chromium://"
-                              "u2f-callback?requestId=TestID&registrationData="
-                              "TestData&requestUUID=123&tabID=" +
-                              base::SysNSStringToUTF8(tab_id()));
+  GURL wrong_request_uuid_url(
+      "chromium://"
+      "u2f-callback?requestId=TestID&registrationData="
+      "TestData&requestUUID=123&tabID=" +
+      base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
   tab_helper()->EvaluateU2FResult(wrong_request_uuid_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
 
   // Test when U2F callback has no registrationData value.
   GURL no_registration_request_url(
       "chromium://u2f-callback?requestUUID=" +
-      base::SysNSStringToUTF8(request_uuid) +
-      "&requestId=TestID&tabID=" + base::SysNSStringToUTF8(tab_id()));
+      base::SysNSStringToUTF8(request_uuid) + "&requestId=TestID&tabID=" +
+      base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
 
   tab_helper()->EvaluateU2FResult(no_registration_request_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
@@ -242,7 +237,7 @@ TEST_F(U2FTabHelperTest, TestEvaluateU2FResultWithBadURLFormat) {
       "chromium://"
       "evil-callback?requestId=TestID&registrationData=TestData&requestUUID=" +
       base::SysNSStringToUTF8(request_uuid) +
-      "&tabID=" + base::SysNSStringToUTF8(tab_id()));
+      "&tabID=" + base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
   tab_helper()->EvaluateU2FResult(wrong_host_name_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
 }
@@ -266,7 +261,7 @@ TEST_F(U2FTabHelperTest, TestEvaluateU2FResultWithBadTabState) {
       "chromium://"
       "u2f-callback?requestId=TestID&registrationData=TestData&requestUUID=" +
       base::SysNSStringToUTF8(request_uuid) +
-      "&tabID=" + base::SysNSStringToUTF8(tab_id()));
+      "&tabID=" + base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
 
   tab_helper()->EvaluateU2FResult(correct_request_uuid_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());
@@ -280,7 +275,7 @@ TEST_F(U2FTabHelperTest, TestEvaluateU2FResultWithBadTabState) {
       "chromium://"
       "u2f-callback?requestId=TestID&registrationData=TestData&requestUUID=" +
       base::SysNSStringToUTF8(request_uuid) +
-      "&tabID=" + base::SysNSStringToUTF8(tab_id()));
+      "&tabID=" + base::SysNSStringToUTF8(web_state_.GetStableIdentifier()));
 
   tab_helper()->EvaluateU2FResult(correct_request_uuid_url);
   EXPECT_TRUE(web_state_.GetLastExecutedJavascript().empty());

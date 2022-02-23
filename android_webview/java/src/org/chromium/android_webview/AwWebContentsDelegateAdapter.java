@@ -244,11 +244,11 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
 
     @Override
     public void navigationStateChanged(int flags) {
-        if ((flags & InvalidateTypes.URL) != 0
-                && mAwContents.isPopupWindow()
+        if ((flags & InvalidateTypes.URL) != 0 && mAwContents.isPopupWindow()
                 && mAwContents.hasAccessedInitialDocument()) {
-            // Hint the client to show the last committed url, as it may be unsafe to show
-            // the pending entry.
+            // This is a popup whose document has been accessed by script. Hint
+            // the client to show the last committed url, as it may be unsafe to
+            // show the pending entry.
             String url = mAwContents.getLastCommittedUrl();
             url = TextUtils.isEmpty(url) ? ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL : url;
             mContentsClient.getCallbackHelper().postSynthesizedPageLoadingForUrlBarUpdate(url);

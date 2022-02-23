@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/prefs",
+  "+components/user_prefs",
+  "+content/public/android/java",
+  "+content/public/browser",
+]

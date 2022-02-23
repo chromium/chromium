@@ -25,6 +25,7 @@
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -40,7 +41,7 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/android/url_utils.h"
 #endif
 
@@ -119,10 +120,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
           break;
         case network::mojom::ResolverType::kResolverTypeFailTimeout:
           host_resolver->AddSimulatedTimeoutFailure(rule->host_pattern);
-          break;
-        case network::mojom::ResolverType::
-            kResolverTypeFailHTTPSServiceFormRecord:
-          host_resolver->AddSimulatedHTTPSServiceFormRecord(rule->host_pattern);
           break;
         case network::mojom::ResolverType::kResolverTypeIPLiteral: {
           net::IPAddress ip_address;
@@ -210,7 +207,26 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
 
   void SetAllowNetworkAccessToHostResolutions(
       SetAllowNetworkAccessToHostResolutionsCallback callback) override {
+    DCHECK(!have_test_doh_servers_)
+        << "Cannot allow network access when test DoH servers have been set.";
     test_host_resolver_.reset();
+    std::move(callback).Run();
+  }
+
+  void ReplaceSystemDnsConfig(
+      ReplaceSystemDnsConfigCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ReplaceSystemDnsConfigForTesting();
+    std::move(callback).Run();
+  }
+
+  void SetTestDohConfig(const net::DnsOverHttpsConfig& doh_config,
+                        SetTestDohConfigCallback callback) override {
+    DCHECK(test_host_resolver_)
+        << "Network access for host resolutions must be disabled.";
+    have_test_doh_servers_ = true;
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->SetTestDohConfigForTesting(doh_config);
     std::move(callback).Run();
   }
 
@@ -235,14 +251,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
                          ->GetPeerToPeerConnectionsCountChange();
 
     std::move(callback).Run(count);
-  }
-
-  void GetFirstPartySetEntriesCount(
-      GetFirstPartySetEntriesCountCallback callback) override {
-    std::move(callback).Run(
-        network::NetworkService::GetNetworkServiceForTesting()
-            ->first_party_sets()
-            ->size());
   }
 
   void SetSCTAuditingRetryDelay(
@@ -284,6 +292,12 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     receivers_.Clear();
   }
 
+  void OpenFile(const base::FilePath& path,
+                base::OnceCallback<void(bool)> callback) override {
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    std::move(callback).Run(file.IsValid());
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
@@ -291,6 +305,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
   bool registered_as_destruction_observer_ = false;
+  bool have_test_doh_servers_ = false;
   mojo::ReceiverSet<network::mojom::NetworkServiceTest> receivers_;
   std::unique_ptr<TestHostResolver> test_host_resolver_;
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;

@@ -68,7 +68,7 @@ apiBridge.registerCustomHook(function(api) {
 
   // Convert complex permissions back to objects
   apiFunctions.setCustomCallback('getAll',
-      function(name, request, callback, response) {
+      function(callback, response) {
         for (var i = 0; i < response.permissions.length; i += 1) {
           response.permissions[i] =
               maybeConvertToObject(response.permissions[i]);

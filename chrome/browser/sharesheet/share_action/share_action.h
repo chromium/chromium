@@ -37,7 +37,8 @@ class ShareAction {
   // as the parent view for ShareAction views. It is guaranteed that
   // |root_view| and |controller| will stay alive and visible until either
   // ShareAction::OnClosing is called, or the ShareAction calls
-  // |controller|->ShareActionCompleted().
+  // |controller|->ShareActionCompleted(). If HasActionView() returns false,
+  // |root_view| will be a nullptr.
   //
   // |intent| contains the data (including the file URLs) for the share action
   // to parse and interpret if needed for its UI and functionality.
@@ -51,6 +52,10 @@ class ShareAction {
   // shutdown when OnClosing is called, and not use |root_view| or |controller|
   // once the method completes as they will be destroyed.
   virtual void OnClosing(SharesheetController* controller) = 0;
+
+  // Return true if the action has its own view that should be shown after the
+  // action has been selected. Returns false by default.
+  virtual bool HasActionView();
 
   // Return true if the action should be shown on the sharesheet. By default,
   // the actions are only visible if the files don't contain a Google Drive

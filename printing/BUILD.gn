@@ -52,7 +52,6 @@ component("printing_base") {
     public_configs = [ ":cups" ]
   }
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINTING_BASE_IMPL" ]
 
@@ -107,7 +106,6 @@ component("metafile") {
     "metafile_skia.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   defines = [ "IS_PRINTING_METAFILE_IMPL" ]
   public_deps = [
     ":native_drawing_context",
@@ -163,7 +161,6 @@ component("printing") {
     "pwg_raster_settings.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
 
@@ -187,7 +184,6 @@ component("printing") {
 
   if (is_android) {
     sources += [
-      "printed_document_android.cc",
       "printing_context_android.cc",
       "printing_context_android.h",
     ]
@@ -200,7 +196,6 @@ component("printing") {
 
   if (is_chromeos) {
     sources += [
-      "printed_document_chromeos.cc",
       "printing_context_no_system_dialog.cc",
       "printing_context_no_system_dialog.h",
     ]
@@ -208,7 +203,6 @@ component("printing") {
 
   if (is_linux) {
     sources += [
-      "printed_document_linux.cc",
       "printing_context_linux.cc",
       "printing_context_linux.h",
     ]
@@ -218,7 +212,6 @@ component("printing") {
     sources += [
       "print_settings_initializer_mac.cc",
       "print_settings_initializer_mac.h",
-      "printed_document_mac.cc",
       "printing_context_mac.h",
       "printing_context_mac.mm",
     ]
@@ -277,7 +270,6 @@ static_library("test_support") {
     "test_printing_context.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   public_deps = [
     "//printing",
     "//printing/backend:test_support",
@@ -287,6 +279,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//printing/backend",
     "//skia",
     "//ui/gfx",
   ]
@@ -322,7 +315,6 @@ test("printing_unittests") {
     "units_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
   deps = [
     ":printing",
     ":test_support",
@@ -366,7 +358,6 @@ test("printing_unittests") {
   if (is_win) {
     sources += [
       "emf_win_unittest.cc",
-      "printed_document_unittest.cc",
       "printed_page_win_unittest.cc",
       "printing_context_win_unittest.cc",
     ]

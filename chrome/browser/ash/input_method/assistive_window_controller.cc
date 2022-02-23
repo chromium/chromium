@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
@@ -27,13 +28,16 @@ gfx::NativeView GetParentView() {
   gfx::NativeView parent = nullptr;
 
   aura::Window* active_window = ash::window_util::GetActiveWindow();
-  // Use VirtualKeyboardContainer so that it works even with a system modal
-  // dialog.
+  // Use MenuContainer so that it works even with a system modal dialog.
   parent = ash::Shell::GetContainer(
       active_window ? active_window->GetRootWindow()
                     : ash::Shell::GetRootWindowForNewWindows(),
-      ash::kShellWindowId_VirtualKeyboardContainer);
+      ash::kShellWindowId_MenuContainer);
   return parent;
+}
+
+bool IsLacrosEnabled() {
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
 }  // namespace
@@ -60,8 +64,11 @@ void AssistiveWindowController::InitSuggestionWindow() {
   if (suggestion_window_view_)
     return;
   // suggestion_window_view_ is deleted by DialogDelegateView::DeleteDelegate.
-  suggestion_window_view_ =
-      ui::ime::SuggestionWindowView::Create(GetParentView(), this);
+  // TODO(b/215292569): Allow horizontal and vertical orientation to be toggled
+  // via some parameter.
+  suggestion_window_view_ = ui::ime::SuggestionWindowView::Create(
+      GetParentView(), this,
+      ui::ime::SuggestionWindowView::Orientation::kVertical);
   views::Widget* widget = suggestion_window_view_->GetWidget();
   widget->AddObserver(this);
   widget->Show();
@@ -142,6 +149,7 @@ void AssistiveWindowController::AcceptSuggestion(
 void AssistiveWindowController::HideSuggestion() {
   suggestion_text_ = base::EmptyString16();
   confirmed_length_ = 0;
+  tracking_last_suggestion_ = false;
   if (suggestion_window_view_)
     suggestion_window_view_->GetWidget()->Close();
   if (grammar_suggestion_window_)
@@ -156,15 +164,13 @@ void AssistiveWindowController::SetBounds(const Bounds& bounds) {
   // TODO(crbug/1112982): Investigate getting bounds to suggester before sending
   // show suggestion request.
   if (suggestion_window_view_ && !tracking_last_suggestion_) {
-    // TODO(crbug/1146266): Composition text is no longer available which means
-    //     bounds.composition_text is always 0x0. For the moment we can just use
-    //     bounds.caret to at least position the suggestion window in the right
-    //     location. Although for multiword completion suggestions, this window
-    //     will always be to the right of the correct position. Imagine the
-    //     following suggestion `ho|` -> `how are you`, with bounds.caret the
-    //     left edge of the window will be under the caret, whereas it should
-    //     be placed underneath the left edge of the `h` character.
-    suggestion_window_view_->SetAnchorRect(bounds.caret);
+    // TODO(crbug/1146266): When running the multi word feature with lacros,
+    //     composition mode is unavailable, thus we need to use the caret
+    //     bounds instead. Investigate how we can position the window correctly
+    //     without composition bounds.
+    suggestion_window_view_->SetAnchorRect(
+        (confirmed_length_ != 0 && !IsLacrosEnabled()) ? bounds.composition_text
+                                                       : bounds.caret);
   }
   if (grammar_suggestion_window_) {
     grammar_suggestion_window_->SetBounds(bounds_.caret);
@@ -193,6 +199,7 @@ void AssistiveWindowController::SetButtonHighlighted(
   switch (button.window_type) {
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
       if (!suggestion_window_view_)
         return;
 
@@ -248,6 +255,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
       break;
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
       if (!suggestion_window_view_)
         InitSuggestionWindow();
       if (window_.visible) {

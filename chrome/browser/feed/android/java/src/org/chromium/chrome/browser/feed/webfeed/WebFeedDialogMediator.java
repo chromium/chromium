@@ -31,11 +31,9 @@ class WebFeedDialogMediator {
         public void onClick(PropertyModel model, int buttonType) {
             switch (buttonType) {
                 case ModalDialogProperties.ButtonType.POSITIVE:
-                    mCallback.onResult(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     break;
                 case ModalDialogProperties.ButtonType.NEGATIVE:
-                    mCallback.onResult(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                     dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                     break;
                 default:

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -1253,7 +1252,8 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kInnerUrlKey);
   base::ExpectStringValue(
       kCertUrl_.spec(),
-      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
+      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)
+          ->GetListDeprecated()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
@@ -1304,7 +1304,8 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
                               NetworkErrorLoggingService::kInnerUrlKey);
   base::ExpectStringValue(
       kCertUrl_.spec(),
-      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
+      sxg_body->FindKey(NetworkErrorLoggingService::kCertUrlKey)
+          ->GetListDeprecated()[0]);
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {

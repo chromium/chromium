@@ -5,7 +5,7 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
-import {str, strf} from '../../../common/js/util.js';
+import {str, strf, util} from '../../../common/js/util.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
 
@@ -218,27 +218,39 @@ export class ProgressCenterPanel {
           '';
     }
 
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+    const locale = util.getCurrentLocaleOrDefault();
+    let minutes = Math.ceil(seconds / 60);
+    if (minutes <= 1) {
+      // Less than one minute. Display remaining time in seconds.
+      const formatter = new Intl.NumberFormat(
+          locale, {style: 'unit', unit: 'second', unitDisplay: 'long'});
+      return strf(
+          'TIME_REMAINING_ESTIMATE', formatter.format(Math.ceil(seconds)));
+    }
+
+    const minuteFormatter = new Intl.NumberFormat(
+        locale, {style: 'unit', unit: 'minute', unitDisplay: 'long'});
+
+    const hours = Math.floor(minutes / 60);
+    if (hours == 0) {
+      // Less than one hour. Display remaining time in minutes.
+      return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(minutes));
+    }
+
+    minutes -= hours * 60;
 
     const hourFormatter = new Intl.NumberFormat(
-        navigator.language, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
-    const minuteFormatter = new Intl.NumberFormat(
-        navigator.language,
-        {style: 'unit', unit: 'minute', unitDisplay: 'short'});
+        locale, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
 
-    if (hours > 0 && minutes > 0) {
-      return strf(
-          'TIME_REMAINING_ESTIMATE_2', hourFormatter.format(hours),
-          minuteFormatter.format(minutes));
-    } else if (hours > 0) {
+    if (minutes == 0) {
+      // Hours but no minutes.
       return strf('TIME_REMAINING_ESTIMATE', hourFormatter.format(hours));
-    } else if (minutes > 0) {
-      return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(minutes));
-    } else {
-      // Round up to 1 min for short period of remaining time.
-      return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(1));
     }
+
+    // Hours and minutes.
+    return strf(
+        'TIME_REMAINING_ESTIMATE_2', hourFormatter.format(hours),
+        minuteFormatter.format(minutes));
   }
 
   /**

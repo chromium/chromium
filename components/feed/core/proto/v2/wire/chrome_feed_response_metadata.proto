@@ -13,6 +13,8 @@ message ChromeFeedResponseMetadata {
   optional bool logging_enabled = 2;
   optional string session_id = 3;
   repeated Experiment experiments = 4;
+  optional bool web_and_app_activity_enabled = 5;
+  optional bool discover_personalization_enabled = 6;
 }
 message Experiment {
   optional string trial_name = 1;

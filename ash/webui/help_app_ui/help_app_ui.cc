@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_help_app_resources.h"
+#include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/help_app_page_handler.h"
@@ -18,6 +18,7 @@
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/local_search_service/public/mojom/types.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
@@ -33,9 +34,13 @@ namespace {
 content::WebUIDataSource* CreateHostDataSource() {
   auto* source = content::WebUIDataSource::Create(kChromeUIHelpAppHost);
 
-  // TODO(crbug.com/1012578): This is a placeholder only, update with the
-  // actual app content.
-  source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_HTML);
+  // TODO(b/218419680): Remove index_dark_light_html when the dark/light flag is
+  // no longer needed.
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_DARK_LIGHT_HTML);
+  } else {
+    source->SetDefaultResource(IDR_HELP_APP_HOST_INDEX_HTML);
+  }
   source->AddResourcePath("app_icon_192.png", IDR_HELP_APP_ICON_192);
   source->AddResourcePath("app_icon_512.png", IDR_HELP_APP_ICON_512);
   source->AddResourcePath("browser_proxy.js", IDR_HELP_APP_BROWSER_PROXY_JS);

@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -14,12 +17,22 @@ namespace {
 void ChromeOSDataPropertyGetCallback(
     v8::Local<v8::Name> v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Context> creation_context = info.Holder()->CreationContext();
-  bindings::V8SetReturnValue(info, MakeGarbageCollected<ChromeOS>(),
-                             creation_context);
+  v8::Local<v8::Context> creation_context =
+      info.Holder()->GetCreationContextChecked();
+  bindings::V8SetReturnValue(
+      info,
+      MakeGarbageCollected<ChromeOS>(ExecutionContext::From(creation_context)),
+      creation_context);
 }
 
 void InstallChromeOSExtensions(ScriptState* script_state) {
+  auto* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context ||
+      !ExecutionContext::From(script_state)->IsServiceWorkerGlobalScope() ||
+      !RuntimeEnabledFeatures::BlinkExtensionChromeOSEnabled()) {
+    return;
+  }
+
   auto global_proxy = script_state->GetContext()->Global();
 
   global_proxy

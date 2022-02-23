@@ -69,6 +69,10 @@ const char kGoogleMapsAppId[] = "mnhkaebcjjhencmpkapnbdaogjamfbcj";
 const char kGoogleMeetAppId[] = "kjgfgldnnfoeklkmfkjfagphfepbbdan";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://play.google.com/store/movies?usp=installed_webapp"))
+const char kGoogleMoviesAppId[] = "aiihaadhfoadjgjcegeomiajkajbjlcn";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://news.google.com/?lfhs=2"))
 const char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
 
@@ -147,6 +151,12 @@ const char kYoutubeMusicAppId[] = "cinhimbnkkaeohfgghhklpknlkffjgod";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://tv.youtube.com/"))
 const char kYoutubeTVAppId[] = "kiemjbkkegajmpbobdfngbmjccjhnofh";
+
+#if !defined(OFFICIAL_BUILD)
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "chrome://sample-system-web-app"))
+const char kSampleSystemWebAppId[] = "jalmdcokfklmaoadompgacjlcomfckcf";
+#endif  // !defined(OFFICIAL_BUILD)
 
 bool IsSystemAppIdWithFileHandlers(base::StringPiece id) {
   return id == kMediaAppId;

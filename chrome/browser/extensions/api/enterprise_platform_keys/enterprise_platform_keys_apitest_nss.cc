@@ -41,6 +41,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/test.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -150,7 +151,7 @@ base::FilePath GetExtensionPemFileName() {
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
@@ -328,11 +329,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   const Extension* extension =
       GetExtensionByPath(registry->enabled_extensions(), extension_path);
-  ASSERT_FALSE(extension->install_warnings().empty());
+  ASSERT_EQ(2u, extension->install_warnings().size());
+  // TODO(https://crbug.com/1269161): Remove the check for the deprecated
+  // manifest version when the test extension is updated to MV3.
+  EXPECT_EQ(extensions::manifest_errors::kManifestV2IsDeprecatedWarning,
+            extension->install_warnings()[0].message);
   EXPECT_EQ(
       "'enterprise.platformKeys' is not allowed for specified install "
       "location.",
-      extension->install_warnings()[0].message);
+      extension->install_warnings()[1].message);
 }
 
 class EnterprisePlatformKeysLoginScreenTest
@@ -368,7 +373,7 @@ class EnterprisePlatformKeysLoginScreenTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
                                     kExtensionId);
   }

@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "ash/public/cpp/keyboard_shortcut_item.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
-#include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "ash/shortcut_viewer/views/bubble_view.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
@@ -37,7 +37,7 @@ std::unique_ptr<views::View> CreateSeparatorView() {
   std::unique_ptr<views::ImageView> separator_view =
       std::make_unique<views::ImageView>();
   separator_view->SetImage(
-      gfx::CreateVectorIcon(kKsvSeparatorPlusIcon, kSeparatorColor));
+      gfx::CreateVectorIcon(ash::kKsvSeparatorPlusIcon, kSeparatorColor));
   separator_view->SetImageSize(gfx::Size(kIconSize, kIconSize));
   return separator_view;
 }

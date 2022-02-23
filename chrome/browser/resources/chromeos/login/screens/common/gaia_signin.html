@@ -1,0 +1,135 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../../../gaia_auth_host/authenticator.html">
+<link rel="import" href="../../cr_ui.html">
+<link rel="import" href="../../display_manager.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/notification_card.html">
+<link rel="import" href="../../components/security_token_pin.html">
+<link rel="import" href="../../components/gaia_dialog.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/oobe_types.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/throbber_notice.html">
+
+<dom-module id="gaia-signin-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      [transparent] {
+        opacity: 0;
+      }
+
+      [animated-transparency][transparent] {
+        transition: opacity 500ms ease-in;
+      }
+
+      [animated-transparency]:not([transparent]) {
+        transition: opacity 500ms ease-out;
+      }
+
+      .icon20 {
+        height: 20px;
+        width: 20px;
+      }
+    </style>
+    <gaia-dialog id="signin-frame-dialog"
+        transparent$="[[isLoadingUiShown_]]" class="flex"
+        for-step="online-gaia, gaia-loading"
+        is-saml-sso-visible="[[isSamlSsoVisible_]]"
+        is-default-sso-provider="[[isDefaultSsoProvider_]]"
+        is-closable="[[isClosable_]]"
+        video-enabled="{{videoEnabled_}}"
+        auth-domain="{{authDomain_}}"
+        auth-flow="{{authFlow}}"
+        navigation-enabled="{{navigationEnabled_}}"
+        navigation-hidden="[[navigationButtonsHidden_]]"
+        webview-name="signin-frame"
+        can-go-back="{{canGaiaGoBack_}}"
+        on-authcompleted="onAuthCompletedMessage_"
+        on-backcancel="onBackButtonCancel_"
+        on-closesaml="closeSaml_"
+        on-identifierentered="onIdentifierEnteredMessage_"
+        on-webviewerror="onLoadAbortMessage_"
+        on-ready="onAuthReady_"
+        on-showview="onShowView_"
+        on-startenrollment="onStartEnrollment_"
+        on-exit="onExitMessage_"
+        on-removeuserbyemail="onRemoveUserByEmailMessage_"
+        on-changesigninprovider="onSamlPageChangeAccount_">
+    </gaia-dialog>
+    <!-- TODO(dkuzmin): This alert is added here, because ChromeVox keep
+                        pronouncing it several times when role="alert" is added
+                        inside gaia-dialog. This problem should be resolved in
+                        https://crbug.com/1288829 -->
+    <div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled_]]"
+        aria-label$="[[getSamlVideoAlertMessage_(locale,
+            videoEnabled_,
+            authDomain_)]]">
+    </div>
+    <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
+        for-step="pin" on-cancel="onPinDialogCanceled_"
+        on-completed="onPinDialogCompleted_">
+    </security-token-pin>
+    <div hidden="[[flagRedirectToDefaultIdPEnabled_]]">
+      <oobe-adaptive-dialog id="saml-interstitial" role="dialog" has-buttons
+          for-step="saml-interstitial">
+        <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+        <h1 slot="title">
+          [[i18nDynamic(locale, 'loginWelcomeMessage')]]
+        </h1>
+        <div slot="subtitle"
+            hidden="[[isEmpty_(samlInterstitialDomainManager_)]]">
+          <iron-icon class="icon20" icon="cr20:domain"></iron-icon>
+          [[i18nDynamic(locale, 'samlInterstitialMessage',
+                        samlInterstitialDomainManager_)]]
+          <p>
+            <a class="oobe-local-link" on-click="onSamlPageChangeAccount_"
+                id="interstitial-change-account" is="action-link">
+              [[i18nDynamic(locale, 'samlInterstitialChangeAccountLink')]]
+            </a>
+          </p>
+        </div>
+        <div slot="back-navigation">
+          <oobe-back-button id="interstitial-back" hidden="[[!isClosable_]]"
+              on-click="onInterstitialBackButtonClicked_"></oobe-back-button>
+        </div>
+        <div slot="bottom-buttons">
+          <oobe-next-button on-click="onSamlInterstitialNext_"
+              id="interstitial-next" class="focus-on-show"></oobe-next-button>
+        </div>
+      </oobe-adaptive-dialog>
+    </div>
+    <div id="gaia-loading" class="layout center center-justified vertical fit"
+        for-step="loading, gaia-loading">
+      <throbber-notice text-key="gaiaLoading"></throbber-notice>
+    </div>
+    <notification-card id="gaia-allowlist-error" type="fail" class="fit"
+        for-step="allowlist-error"
+        on-buttonclick="onAllowlistErrorTryAgainClick_"
+        on-linkclick="onAllowlistErrorLinkClick_"
+        button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
+        link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
+      [[i18nDynamic(locale, allowListError_)]]
+    </notification-card>
+  </template>
+  <script src="gaia_signin.js"></script>
+</dom-module>

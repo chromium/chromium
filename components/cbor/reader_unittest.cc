@@ -1081,16 +1081,91 @@ TEST(CBORReaderTest, TestOutOfOrderKeyError) {
   };
 
   int test_element_index = 0;
-  Reader::DecoderError error_code;
   for (const auto& unsorted_map : kMapsWithUnsortedKeys) {
     testing::Message scope_message;
     scope_message << "testing unsorted map : " << test_element_index++;
     SCOPED_TRACE(scope_message);
 
-    absl::optional<Value> cbor =
-        Reader::Read(unsorted_map, &error_code);
-    EXPECT_FALSE(cbor.has_value());
-    EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+    // Expect `OUT_OF_ORDER_KEY`.
+    {
+      Reader::DecoderError error_code;
+      absl::optional<Value> cbor =
+          Reader::Read(unsorted_map, &error_code);
+      EXPECT_FALSE(cbor.has_value());
+      EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+    }
+
+    // When `allow_and_canonicalize_out_of_order_keys` flag is set, expect
+    // `CBOR_NO_ERROR`.
+    {
+      Reader::DecoderError error_code;
+      Reader::Config config;
+      config.error_code_out = &error_code;
+      config.allow_and_canonicalize_out_of_order_keys = true;
+
+      absl::optional<Value> cbor =
+          Reader::Read(unsorted_map, config);
+      EXPECT_TRUE(cbor);
+      EXPECT_EQ(error_code, Reader::DecoderError::CBOR_NO_ERROR);
+    }
+  }
+}
+
+TEST(CBORReaderTest, TestOutOfOrderKeyErrorWithDuplicateKeys) {
+  static const std::vector<uint8_t> kMapsWithUnsortedKeys[] = {
+      // clang-format off
+      {0xa3,  // map with 3 keys with same major type and length
+         0x61, 0x62,  // key "b"
+         0x61, 0x42,  // value "B"
+
+         0x61, 0x61,  // key "a" (out of order byte-wise lexically)
+         0x61, 0x45,   // value "E"
+
+         0x61, 0x62,  // key "b" (duplicate)
+         0x61, 0x42,  // value "B"
+      },
+      {0xa3,  // map with 3 byte string keys
+         0x42, 'x', 'x', // key byte string "xx"
+                         // (out of order due to longer length)
+         0x02,
+
+         0x41, 'y',  // key byte string "y"
+         0x01,
+
+         0x41, 'y',  // key byte string "y" (duplicate)
+         0x02,
+      },
+      //clang-format on
+  };
+
+  int test_element_index = 0;
+  for (const auto& unsorted_map : kMapsWithUnsortedKeys) {
+    testing::Message scope_message;
+    scope_message << "testing unsorted map : " << test_element_index++;
+    SCOPED_TRACE(scope_message);
+
+    // Expect `OUT_OF_ORDER_KEY`.
+    {
+      Reader::DecoderError error_code;
+      absl::optional<Value> cbor =
+          Reader::Read(unsorted_map, &error_code);
+      EXPECT_FALSE(cbor.has_value());
+      EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+    }
+
+    // When `allow_and_canonicalize_out_of_order_keys` flag is set, expect
+    // `DUPLICATE_KEY`.
+    {
+      Reader::DecoderError error_code;
+      Reader::Config config;
+      config.error_code_out = &error_code;
+      config.allow_and_canonicalize_out_of_order_keys = true;
+
+      absl::optional<Value> cbor =
+          Reader::Read(unsorted_map, config);
+      EXPECT_FALSE(cbor);
+      EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
+    }
   }
 }
 
@@ -1118,11 +1193,24 @@ TEST(CBORReaderTest, TestDuplicateKeyError) {
       // clang-format on
   };
 
-  Reader::DecoderError error_code;
+  {
+    Reader::DecoderError error_code;
+    absl::optional<Value> cbor =
+        Reader::Read(kMapWithDuplicateKey, &error_code);
+    EXPECT_FALSE(cbor.has_value());
+    EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
+  }
 
-  absl::optional<Value> cbor = Reader::Read(kMapWithDuplicateKey, &error_code);
-  EXPECT_FALSE(cbor.has_value());
-  EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+  {
+    Reader::DecoderError error_code;
+    Reader::Config config;
+    config.error_code_out = &error_code;
+    config.allow_and_canonicalize_out_of_order_keys = true;
+
+    absl::optional<Value> cbor = Reader::Read(kMapWithDuplicateKey, config);
+    EXPECT_FALSE(cbor.has_value());
+    EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
+  }
 }
 
 // Leveraging Markus Kuhn’s UTF-8 decoder stress test. See

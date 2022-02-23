@@ -6,7 +6,10 @@
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/logging.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace content {
 
@@ -26,6 +29,14 @@ StarScanLoadObserver::~StarScanLoadObserver() {
 void StarScanLoadObserver::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // We don't disable PCScan for a prerendering page's navigation since
+  // it doesn't invoke DidStopLoading.
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      navigation_handle->GetRenderFrameHost());
+  if (rfh->frame_tree()->type() == FrameTree::Type::kPrerender)
+    return;
+
   // Protect against ReadyToCommitNavigation() being called twice in a row.
   if (is_loading_)
     return;

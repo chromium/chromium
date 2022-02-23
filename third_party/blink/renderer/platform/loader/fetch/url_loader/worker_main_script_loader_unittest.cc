@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
@@ -114,9 +115,6 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         const FakeResourceLoadInfoNotifier&) = delete;
 
     // blink::mojom::ResourceLoadInfoNotifier overrides.
-#if defined(OS_ANDROID)
-    void NotifyUpdateUserGestureCarryoverInfo() override {}
-#endif
     void NotifyResourceRedirectReceived(
         const net::RedirectInfo& redirect_info,
         network::mojom::URLResponseHeadPtr redirect_response) override {}
@@ -124,8 +122,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
         int64_t request_id,
         const GURL& final_url,
         network::mojom::URLResponseHeadPtr head,
-        network::mojom::RequestDestination request_destination,
-        int32_t previews_state) override {}
+        network::mojom::RequestDestination request_destination) override {}
     void NotifyResourceTransferSizeUpdated(
         int64_t request_id,
         int32_t transfer_size_diff) override {}
@@ -267,7 +264,6 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithSucessThenOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
@@ -298,7 +294,6 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithFailureThenOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
@@ -322,7 +317,6 @@ TEST_F(WorkerMainScriptLoaderTest, DisconnectBeforeOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
@@ -346,7 +340,6 @@ TEST_F(WorkerMainScriptLoaderTest, OnCompleteWithError) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);

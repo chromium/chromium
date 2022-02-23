@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
@@ -263,7 +264,7 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void DispatchNonBlockingEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
           control_host,

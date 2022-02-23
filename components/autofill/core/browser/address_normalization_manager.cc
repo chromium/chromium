@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -46,8 +47,8 @@ class AddressNormalizationManager::NormalizerDelegate {
   void OnCompletion(const AutofillProfile& profile);
 
   bool has_completed_ = false;
-  AddressNormalizationManager* owner_ = nullptr;
-  AutofillProfile* profile_ = nullptr;
+  raw_ptr<AddressNormalizationManager> owner_ = nullptr;
+  raw_ptr<AutofillProfile> profile_ = nullptr;
 };
 
 AddressNormalizationManager::AddressNormalizationManager(

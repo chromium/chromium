@@ -58,6 +58,9 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   virtual void ShowContextMenu(RenderFrameHost& render_frame_host,
                                const ContextMenuParams& params);
 
+  // Dismiss the context menu if one exists.
+  virtual void DismissContextMenu();
+
   // Tests can use ExecuteCommandForTesting to simulate executing a context menu
   // item (after first opening the context menu using the ShowContextMenu
   // method).

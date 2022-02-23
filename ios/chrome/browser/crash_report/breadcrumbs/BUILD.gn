@@ -87,6 +87,5 @@ source_set("unit_tests") {
     "application_breadcrumbs_logger_unittest.mm",
     "breadcrumb_manager_browser_agent_unittest.mm",
     "breadcrumb_manager_tab_helper_unittest.mm",
-    "breadcrumb_persistent_storage_manager_unittest.mm",
   ]
 }

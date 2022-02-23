@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "weblayer/public/tab_observer.h"
 
 namespace weblayer {
@@ -32,7 +32,7 @@ class TabCallbackProxy : public TabObserver {
   void OnTitleUpdated(const std::u16string& title) override;
 
  private:
-  Tab* tab_;
+  raw_ptr<Tab> tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_observer_;
 };
 

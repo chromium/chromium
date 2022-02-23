@@ -5,6 +5,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/bind.h"
@@ -25,7 +26,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
-#include "chrome/browser/metrics/thread_watcher.h"
+#include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/buildflags.h"
@@ -40,7 +41,7 @@
 #include "content/public/browser/notification_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -63,11 +64,11 @@
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/profile_picker.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -80,7 +81,7 @@ namespace chrome {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns true if all browsers can be closed without user interaction.
 // This currently checks if there is pending download, or if it needs to
 // handle unload handler.
@@ -106,7 +107,7 @@ base::RepeatingCallbackList<void(bool)>& GetClosingAllBrowsersCallbackList() {
       callback_list;
   return *callback_list;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets kApplicationLocale in |local_state| for the login screen on the next
@@ -116,11 +117,12 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
-  std::string login_screen_locale;
   if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
-      !login_screen_locales->GetList().empty() &&
-      login_screen_locales->GetString(0, &login_screen_locale)) {
+      !login_screen_locales->GetListDeprecated().empty() &&
+      login_screen_locales->GetListDeprecated()[0].is_string()) {
+    std::string login_screen_locale =
+        login_screen_locales->GetListDeprecated()[0].GetString();
     local_state->SetString(language::prefs::kApplicationLocale,
                            login_screen_locale);
     return true;
@@ -144,7 +146,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
 bool g_send_stop_request_to_session_manager = false;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 using IgnoreUnloadHandlers =
     base::StrongAlias<class IgnoreUnloadHandlersTag, bool>;
 
@@ -199,16 +201,32 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
     AttemptExit();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MarkAsCleanShutdown() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Tracks profiles that have pending write of the exit type.
+  std::set<Profile*> pending_profiles;
+#endif
+
   for (auto* browser : *BrowserList::GetInstance()) {
     if (ExitTypeService* exit_type_service =
             ExitTypeService::GetInstanceForProfile(browser->profile())) {
       exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // Explicitly schedule pending writes on ChromeOS so that even if the
+      // UI thread is hosed (e.g. taking a long time to close all tabs because
+      // of page faults/swap-in), the clean shutdown flag still gets a chance
+      // to be persisted. See https://crbug.com/1294764
+      Profile* profile = browser->profile();
+      if (pending_profiles.insert(profile).second) {
+        profile->GetPrefs()->CommitPendingWrite();
+      }
+#endif
     }
   }
 }
@@ -216,19 +234,19 @@ void MarkAsCleanShutdown() {
 
 void AttemptExitInternal(bool try_to_quit_application) {
   // On Mac, the platform-specific part handles setting this.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (try_to_quit_application)
     browser_shutdown::SetTryingToQuit(true);
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   OnClosingAllBrowsers(true);
 #endif
 
   g_browser_process->platform_part()->AttemptExit(try_to_quit_application);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void CloseAllBrowsersAndQuit() {
   browser_shutdown::SetTryingToQuit(true);
   CloseAllBrowsers();
@@ -271,7 +289,7 @@ void CloseAllBrowsers() {
       new BrowserCloseManager;
   browser_close_manager->StartClosingBrowsers();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AttemptUserExit() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -294,7 +312,7 @@ void AttemptUserExit() {
 #else
   // Reset the restart bit that might have been set in cancelled restart
   // request.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ProfilePicker::Hide();
 #endif
   PrefService* pref_service = g_browser_process->local_state();
@@ -304,11 +322,11 @@ void AttemptUserExit() {
 }
 
 // The Android implementation is in application_lifetime_android.cc
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void AttemptRestart() {
   AttemptRestartInternal(IgnoreUnloadHandlers(false));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void AttemptRelaunch() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -319,15 +337,8 @@ void AttemptRelaunch() {
   AttemptRestart();
 }
 
-#if !defined(OS_ANDROID)
-namespace {
-
-bool g_relaunch_ignore_unload_handlers_called = false;
-
-}  // namespace
-
+#if !BUILDFLAG(IS_ANDROID)
 void RelaunchIgnoreUnloadHandlers() {
-  g_relaunch_ignore_unload_handlers_called = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
@@ -335,11 +346,6 @@ void RelaunchIgnoreUnloadHandlers() {
 #endif
   AttemptRestartInternal(IgnoreUnloadHandlers(true));
 }
-
-bool DidCallRelaunchIgnoreUnloadHandlers() {
-  return g_relaunch_ignore_unload_handlers_called;
-}
-
 #endif
 
 void AttemptExit() {
@@ -351,7 +357,7 @@ void AttemptExit() {
   // don't notify users of crashes beyond this point.
   // Note that MarkAsCleanShutdown() does not set UMA's exit cleanly bit
   // so crashes during shutdown are still reported in UMA.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Android doesn't use Browser.
   if (AreAllBrowsersCloseable())
     MarkAsCleanShutdown();
@@ -362,7 +368,7 @@ void AttemptExit() {
 
 void ExitIgnoreUnloadHandlers() {
   VLOG(1) << "ExitIgnoreUnloadHandlers";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // We always mark exit cleanly.
   MarkAsCleanShutdown();
 
@@ -386,7 +392,7 @@ void ExitIgnoreUnloadHandlers() {
   browser_shutdown::OnShutdownStarting(
       browser_shutdown::ShutdownType::kSilentExit);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   AttemptExitInternal(true);
 }
 
@@ -396,7 +402,7 @@ bool IsAttemptingShutdown() {
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SessionEnding() {
   // This is a time-limited shutdown where we need to write as much to
   // disk as we can as soon as we can, and where we must kill the
@@ -450,7 +456,7 @@ void SessionEnding() {
   // Write important data first.
   g_browser_process->EndSession();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::SetShouldCrashOnProcessDetach(false);
 #endif
 
@@ -485,6 +491,6 @@ base::CallbackListSubscription AddClosingAllBrowsersCallback(
   return GetClosingAllBrowsersCallbackList().Add(
       std::move(closing_all_browsers_callback));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace chrome

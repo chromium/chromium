@@ -5,6 +5,7 @@
 #import "components/storage_monitor/image_capture_device.h"
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -44,9 +45,8 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
     folder = [folder parentFolder];
   }
   base::FilePath path;
-  for (std::vector<std::string>::reverse_iterator i = components.rbegin();
-       i != components.rend(); ++i) {
-    path = path.Append(*i);
+  for (const std::string& component : base::Reversed(components)) {
+    path = path.Append(component);
   }
   path = path.Append(name);
 

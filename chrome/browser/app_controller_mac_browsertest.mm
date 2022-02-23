@@ -33,10 +33,10 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -57,8 +57,8 @@
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -935,8 +935,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(nullptr, [ac bookmarkMenuBridge]);
 }
 
+// Disabled because of flakiness. See crbug.com/1278031.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       ReloadingDestroyedProfileDoesNotCrash) {
+                       DISABLED_ReloadingDestroyedProfileDoesNotCrash) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);

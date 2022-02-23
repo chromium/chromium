@@ -1638,23 +1638,24 @@ xmlURIUnescapeString(const char *str, int len, char *target) {
     out = ret;
     while(len > 0) {
 	if ((len > 2) && (*in == '%') && (is_hex(in[1])) && (is_hex(in[2]))) {
+            int c = 0;
 	    in++;
 	    if ((*in >= '0') && (*in <= '9'))
-	        *out = (*in - '0');
+	        c = (*in - '0');
 	    else if ((*in >= 'a') && (*in <= 'f'))
-	        *out = (*in - 'a') + 10;
+	        c = (*in - 'a') + 10;
 	    else if ((*in >= 'A') && (*in <= 'F'))
-	        *out = (*in - 'A') + 10;
+	        c = (*in - 'A') + 10;
 	    in++;
 	    if ((*in >= '0') && (*in <= '9'))
-	        *out = *out * 16 + (*in - '0');
+	        c = c * 16 + (*in - '0');
 	    else if ((*in >= 'a') && (*in <= 'f'))
-	        *out = *out * 16 + (*in - 'a') + 10;
+	        c = c * 16 + (*in - 'a') + 10;
 	    else if ((*in >= 'A') && (*in <= 'F'))
-	        *out = *out * 16 + (*in - 'A') + 10;
+	        c = c * 16 + (*in - 'A') + 10;
 	    in++;
 	    len -= 3;
-	    out++;
+	    *out++ = (char) c;
 	} else {
 	    *out++ = *in++;
 	    len--;

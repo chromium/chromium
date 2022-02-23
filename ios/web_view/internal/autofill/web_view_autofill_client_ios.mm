@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/ios/browser/autofill_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/security_state/ios/security_state_utils.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
@@ -273,6 +274,11 @@ void WebViewAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
 
 bool WebViewAutofillClientIOS::IsAutocompleteEnabled() {
   return false;
+}
+
+bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
+  return GetPrefs()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableService);
 }
 
 void WebViewAutofillClientIOS::PropagateAutofillPredictions(

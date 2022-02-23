@@ -11,7 +11,6 @@
 #include "chrome/android/chrome_jni_headers/TabListSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_layer.h"
-#include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
@@ -24,7 +23,6 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
       content_obscures_self_(false),
       resource_manager_(nullptr),
-      layer_title_cache_(nullptr),
       tab_content_manager_(nullptr),
       background_color_(SK_ColorWHITE),
       own_tree_(cc::Layer::Create()) {
@@ -77,17 +75,13 @@ void TabListSceneLayer::PutTabLayer(
     const base::android::JavaRef<jintArray>& tab_ids_list,
     jboolean use_tab_ids_list,
     jint toolbar_resource_id,
-    jint close_button_resource_id,
     jint shadow_resource_id,
     jint contour_resource_id,
-    jint back_logo_resource_id,
     jint border_resource_id,
     jint border_inner_shadow_resource_id,
     jboolean can_use_live_layer,
     jint tab_background_color,
-    jint back_logo_color,
     jboolean incognito,
-    jboolean close_button_on_right,
     jfloat x,
     jfloat y,
     jfloat width,
@@ -98,18 +92,11 @@ void TabListSceneLayer::PutTabLayer(
     jfloat shadow_y,
     jfloat shadow_width,
     jfloat shadow_height,
-    jfloat pivot_x,
-    jfloat pivot_y,
-    jfloat rotation_x,
-    jfloat rotation_y,
     jfloat alpha,
     jfloat border_alpha,
     jfloat border_inner_shadow_alpha,
     jfloat contour_alpha,
     jfloat shadow_alpha,
-    jfloat close_alpha,
-    jfloat close_btn_width,
-    jfloat close_btn_asset_size,
     jfloat static_to_view_blend,
     jfloat border_scale,
     jfloat saturation,
@@ -117,9 +104,7 @@ void TabListSceneLayer::PutTabLayer(
     jboolean show_toolbar,
     jint default_theme_color,
     jint toolbar_background_color,
-    jint close_button_color,
     jboolean anonymize_toolbar,
-    jboolean show_tab_title,
     jint toolbar_textbox_resource_id,
     jint toolbar_textbox_background_color,
     jfloat toolbar_alpha,
@@ -129,8 +114,6 @@ void TabListSceneLayer::PutTabLayer(
     jboolean inset_border) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the TabLayer";
-  DCHECK(layer_title_cache_)
-      << "LayerTitleCache must be set before updating the TabLayer";
   DCHECK(resource_manager_)
       << "ResourceManager must be set before updating the TabLayer";
 
@@ -139,8 +122,8 @@ void TabListSceneLayer::PutTabLayer(
   if (iter != tab_map_.end()) {
     layer = iter->second;
   } else {
-    layer = TabLayer::Create(incognito, resource_manager_, layer_title_cache_,
-                             tab_content_manager_);
+    layer =
+        TabLayer::Create(incognito, resource_manager_, tab_content_manager_);
     tab_map_.insert(TabMap::value_type(id, layer));
   }
   own_tree_->AddChild(layer->layer());
@@ -156,19 +139,16 @@ void TabListSceneLayer::PutTabLayer(
     // used to indicate the currently selected tab for the TabLayer.
     layer->SetProperties(
         id, tab_ids, can_use_live_layer, toolbar_resource_id,
-        close_button_resource_id, shadow_resource_id, contour_resource_id,
-        back_logo_resource_id, border_resource_id,
-        border_inner_shadow_resource_id, tab_background_color, back_logo_color,
-        close_button_on_right, x, y, width, height, shadow_x, shadow_y,
-        shadow_width, shadow_height, pivot_x, pivot_y, rotation_x, rotation_y,
-        alpha, border_alpha, border_inner_shadow_alpha, contour_alpha,
-        shadow_alpha, close_alpha, border_scale, saturation, brightness,
-        close_btn_width, close_btn_asset_size, static_to_view_blend,
+        shadow_resource_id, contour_resource_id, border_resource_id,
+        border_inner_shadow_resource_id, tab_background_color, x, y, width,
+        height, shadow_x, shadow_y, shadow_width, shadow_height, alpha,
+        border_alpha, border_inner_shadow_alpha, contour_alpha, shadow_alpha,
+        border_scale, saturation, brightness, static_to_view_blend,
         content_width, content_height, content_width, show_toolbar,
-        default_theme_color, toolbar_background_color, close_button_color,
-        anonymize_toolbar, show_tab_title, toolbar_textbox_resource_id,
-        toolbar_textbox_background_color, toolbar_alpha, toolbar_y_offset,
-        content_offset, side_border_scale, inset_border);
+        default_theme_color, toolbar_background_color, anonymize_toolbar,
+        toolbar_textbox_resource_id, toolbar_textbox_background_color,
+        toolbar_alpha, toolbar_y_offset, content_offset, side_border_scale,
+        inset_border);
   }
 
   gfx::RectF self(own_tree_->position(), gfx::SizeF(own_tree_->bounds()));
@@ -208,14 +188,10 @@ void TabListSceneLayer::SetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
     const base::android::JavaParamRef<jobject>& jtab_content_manager,
-    const base::android::JavaParamRef<jobject>& jlayer_title_cache,
     const base::android::JavaParamRef<jobject>& jresource_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =
         TabContentManager::FromJavaObject(jtab_content_manager);
-  }
-  if (!layer_title_cache_) {
-    layer_title_cache_ = LayerTitleCache::FromJavaObject(jlayer_title_cache);
   }
   if (!resource_manager_) {
     resource_manager_ =

@@ -11,6 +11,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
+import("//build/rust/mixed_executable.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
@@ -23,6 +24,7 @@ declare_args() {
 
 if (is_android) {
   import("//build/config/android/config.gni")
+  import("//build/config/android/create_unwind_table.gni")
   import("//build/config/android/extract_unwind_tables.gni")
   import("//build/config/android/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
@@ -48,8 +50,13 @@ if (is_android) {
 # set.
 # Variable:
 #   use_xvfb: (optional) whether to run the executable under Xvfb.
-#   use_raw_android_executable: Use executable() rather than android_apk().
+#   use_raw_android_executable: Use mixed_executable() rather than
+#      android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
+#   use_cfv2: (Fuchsia, optional): build the test as a framework v2 component;
+#      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
+#      The default value is true; set it to false explicitly to build a test as
+#      a v1 component.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -118,8 +125,9 @@ template("test") {
       _exec_output =
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
 
-      executable(_exec_target) {
-        # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
+      mixed_executable(_exec_target) {
+        # Configs will always be defined since we set_defaults in
+        # BUILDCONFIG.gn.
         configs = []
         forward_variables_from(
             invoker,
@@ -136,6 +144,8 @@ template("test") {
           "//build/config/android:hide_all_but_jni",
         ]
         configs += [ "//build/config:executable_config" ]
+
+        rs_configs = [ "//build/rust:test" ]
 
         if (defined(invoker.data_deps)) {
           data_deps = invoker.data_deps
@@ -198,12 +208,21 @@ template("test") {
       if (defined(invoker.add_unwind_tables_in_apk) &&
           invoker.add_unwind_tables_in_apk) {
         _unwind_table_asset_name = "${target_name}_unwind_assets"
-        unwind_table_asset(_unwind_table_asset_name) {
-          library_target = _library_target
-          deps = [ ":$_library_target" ]
+        if (use_android_unwinder_v2) {
+          unwind_table_asset_v2(_unwind_table_asset_name) {
+            library_target = _library_target
+            deps = [ ":$_library_target" ]
+          }
+        } else {
+          unwind_table_asset(_unwind_table_asset_name) {
+            library_target = _library_target
+            deps = [ ":$_library_target" ]
+          }
         }
       }
 
+      # TODO(crbug.com/1296718): Need a mixed_shared_library for rust tests on
+      # Android (or can it be a mixed_component?).
       shared_library(_library_target) {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
@@ -326,31 +345,59 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    # Generate a CMX fragment that provides the program name.
-    _test_program_fragment_target = "${target_name}_program-fragment"
-    _test_program_fragment = "${target_out_dir}/${target_name}_program.test-cmx"
-    _program_name = get_label_info(":${_exec_target}", "name")
-    generated_file(_test_program_fragment_target) {
-      contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
-      outputs = [ _test_program_fragment ]
+    if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
+      # Generate a CML fragment that provides the program name.
+      _test_program_fragment_target = "${target_name}_program-fragment"
+      _test_program_fragment =
+          "${target_out_dir}/${target_name}_program.test-cml"
+      _program_name = get_label_info(":${_exec_target}", "name")
+      generated_file(_test_program_fragment_target) {
+        contents = "{ program: { binary: \"${_program_name}\",},}"
+        outputs = [ _test_program_fragment ]
+      }
+
+      # Collate the complete set of elements to include in the test component's
+      # manifest.
+      _manifest_fragments = [
+        "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+        "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
+        "//build/config/fuchsia/test/minimum.shard.test-cml",
+        _test_program_fragment,
+      ]
+
+      _test_component_manifest = "${target_out_dir}/${target_name}.cml"
+      _merged_manifest_name = "${_output_name}.cml"
+    } else {
+      # Generate a CMX fragment that provides the program name.
+      _test_program_fragment_target = "${target_name}_program-fragment"
+      _test_program_fragment =
+          "${target_out_dir}/${target_name}_program.test-cmx"
+      _program_name = get_label_info(":${_exec_target}", "name")
+      generated_file(_test_program_fragment_target) {
+        contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
+        outputs = [ _test_program_fragment ]
+      }
+
+      # Collate the complete set of elements to include in the test component's
+      # manifest.
+      _manifest_fragments = [
+        "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
+        _test_program_fragment,
+      ]
+
+      _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
+      _merged_manifest_name = "${_output_name}.cmx"
     }
 
-    # Collate the complete set of elements to include in the test component's
-    # manifest.
-    _manifest_fragments = [
-      "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
-      _test_program_fragment,
-    ]
     if (defined(invoker.additional_manifest_fragments)) {
       _manifest_fragments += invoker.additional_manifest_fragments
     }
 
     # Generate the test component manifest from the specified elements.
     _test_component_manifest_target = "${target_name}_component-manifest"
-    _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
     cmc_merge(_test_component_manifest_target) {
       sources = _manifest_fragments
-      output_name = "${_output_name}.cmx"
+      output_name = "${_merged_manifest_name}"
       deps = [ ":${_test_program_fragment_target}" ]
     }
 
@@ -414,6 +461,7 @@ template("test") {
                                "data",
                                "data_deps",
                                "package_deps",
+                               "use_cfv2",
                                "use_test_server",
                              ])
 
@@ -438,16 +486,20 @@ template("test") {
       if (!defined(data_deps)) {
         data_deps = []
       }
-      data_deps += [ "//testing/buildbot/filters:fuchsia_filters" ]
+
+      # TODO(crbug.com/1199334): Because perfetto unit test is defined outside
+      # of chromium, the dependency to the filter file is added here.
+      data_deps += [ "//testing/buildbot/filters:perfetto_unittests_filters" ]
 
       if (use_rts) {
         data_deps += [ ":${target_name}__rts_filters" ]
       }
     }
 
-    executable(_exec_target) {
+    mixed_executable(_exec_target) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
+      rs_configs = [ "//build/rust:test" ]
     }
   } else if (is_ios) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -532,10 +584,10 @@ template("test") {
       }
 
       if (ios_use_shared_bundle_id_for_test_apps) {
-        bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
+        bundle_identifier = shared_bundle_id_for_test_apps
         not_needed([ "_output_name" ])
       } else {
-        bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+        bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
                             string_replace(_output_name, "_", "-")
       }
 
@@ -596,9 +648,10 @@ template("test") {
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -647,6 +700,7 @@ template("test") {
 
       if (_use_xvfb) {
         executable = "//testing/xvfb.py"
+        data += [ "//.vpython3" ]
       } else {
         executable = "//testing/test_env.py"
       }
@@ -682,19 +736,17 @@ template("test") {
         executable_args += [ "--cfi-diag=true" ]
       }
 
-      data += [
-        "//build/lacros/test_runner.py",
-        "//.vpython",
-      ]
+      data += [ "//build/lacros/test_runner.py" ]
 
       if (use_rts) {
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -767,11 +819,12 @@ template("test") {
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker,
                              "*",
                              TESTONLY_AND_VISIBILITY + [ "use_xvfb" ])
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -797,9 +850,10 @@ template("test") {
     # will just define the underlying executables.
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
            "use_xvfb should not be defined for a non-linux configuration")
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
+      rs_configs = [ "//build/rust:test" ]
       if (!defined(deps)) {
         deps = []
       }
@@ -855,9 +909,6 @@ template("script_test") {
     if (defined(invoker.run_under_python2) && invoker.run_under_python2) {
       use_vpython3 = false
       data += [ "//.vpython" ]
-    } else {
-      use_vpython3 = true
-      data += [ "//.vpython3" ]
     }
 
     if (defined(invoker.data)) {
@@ -898,5 +949,11 @@ set_defaults("test") {
     configs += [ "//build/config/android:hide_all_but_jni" ]
   } else {
     configs = default_executable_configs
+    if (is_mac) {
+      # TODO(lgrey): Maybe restore this.
+      # Don't strip tests for visibility into test crashes/hangs.
+      # https://bugs.chromium.org/p/chromium/issues/detail?id=1244047#c49
+      configs -= [ "//build/config/mac:strip_all" ]
+    }
   }
 }

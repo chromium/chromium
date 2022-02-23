@@ -36,13 +36,16 @@ cast_source_set("display_settings_manager") {
   deps = [
     ":display_settings_public",
     "//base",
-    "//chromecast/browser",
     "//chromecast/graphics",
     "//chromecast/ui/display_settings",
     "//chromecast/ui/mojom",
     "//mojo/public/cpp/bindings",
     "//ui/display/types",
   ]
+
+  if (use_aura) {
+    deps += [ "//chromecast/browser:display_configurator" ]
+  }
 }
 
 cast_source_set("aura_components") {

@@ -1,0 +1,15 @@
+Name: pprof
+Short Name: pprof
+URL: https://github.com/google/pprof/tree/master/proto
+Version: 44fc4e887b6b0cfb196973bcdb1fab95f0b3a75b
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+Description:
+Profile proto definitions used by pprof.
+
+profile_pb2 is the compiled python proto for src/profile.proto. When
+src/profile.proto is updated, it should be re-generated with:
+
+  ninja -C out/Default tools/mac/power:proto
+  cp out/Default/pyproto/tools/mac/power/protos/third_party/pprof/src/profile_pb2.py tools/mac/power/protos/third_party/pprof/profile_pb2.py

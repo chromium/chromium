@@ -42,12 +42,14 @@ function respondToShare(event) {
     let field_index = 0;
     let files = undefined;
     let file_contents = '';
+    let file_names = '';
     let index = 0;
 
     function prepareField() {
       files = formData.getAll(
           file_fields[field_index]);  // sequence of File objects
       file_contents = '';
+      file_names = '';
       index = 0;
     }
 
@@ -57,6 +59,8 @@ function respondToShare(event) {
       while (index === files.length) {
         body = body.replace(
             '{{' + file_fields[field_index] + '}}', file_contents);
+        body = body.replace(
+            '{{' + file_fields[field_index] + '_filename}}', file_names);
 
         ++field_index;
         if (field_index === file_fields.length) {
@@ -70,8 +74,10 @@ function respondToShare(event) {
           await readAsFilePromise(fileReader, files[index], 'UTF-8');
       if (index > 0) {
         file_contents += ' ';
+        file_names += ' ';
       }
       file_contents += dataFromFileLoaded;
+      file_names += files[index].name;
       index += 1;
       return await progress();
     }

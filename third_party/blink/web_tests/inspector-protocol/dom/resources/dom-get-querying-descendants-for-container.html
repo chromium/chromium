@@ -13,19 +13,19 @@
   height: 100px;
 }
 
-@container (min-width: 50px) and (min-height: 50px) {
+@container size((min-width: 50px) and (min-height: 50px)) {
   .query-unnamed { margin-top: 5px; }
 }
 
-@container container-named (min-width: 50px) {
+@container container-named size(min-width: 50px) {
   .query-named { margin-top: 10px; }
 }
 
-@container (min-width: 50px) {
+@container size(min-width: 50px) {
   .query-unnamed-inline { margin-top: 15px; }
 }
 
-@container container-named-other (min-height: 50px) {
+@container container-named-other size(min-height: 50px) {
   .query-named-other { margin-top: 20px; }
 }
 </style>

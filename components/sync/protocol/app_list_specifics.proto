@@ -56,4 +56,26 @@ message AppListSpecifics {
 
   // Where on a shelf this item will appear.
   optional string item_pin_ordinal = 7;
+
+  // The color groups used for grouping together icons by colors.
+  enum ColorGroup {
+    COLOR_EMPTY = 0;
+    COLOR_WHITE = 1;
+    COLOR_RED = 2;
+    COLOR_ORANGE = 3;
+    COLOR_YELLOW = 4;
+    COLOR_GREEN = 5;
+    COLOR_BLUE = 6;
+    COLOR_MAGENTA = 7;
+    COLOR_BLACK = 8;
+  }
+
+  message IconColor {
+    // The item icon's background color.
+    optional ColorGroup background_color = 1;
+
+    // The item icon's hue.
+    optional int32 hue = 2;
+  }
+  optional IconColor item_color = 8;
 }

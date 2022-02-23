@@ -76,6 +76,7 @@ void WebMouseEvent::FlattenTransformSelf() {
 
 void WebMouseEvent::SetMenuSourceType(WebInputEvent::Type type) {
   switch (type) {
+    case Type::kGestureShortPress:
     case Type::kGestureTapDown:
     case Type::kGestureTap:
     case Type::kGestureDoubleTap:

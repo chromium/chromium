@@ -423,7 +423,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
       EXPECT_EQ(1, actual_number_of_matches)
           << "Verifying that \"" << expected_substring << "\" appears "
           << "exactly once in the text of web contents of "
-          << shell()->web_contents()->GetURL().spec();
+          << shell()->web_contents()->GetLastCommittedURL().spec();
     }
 
     for (const auto& forbidden_substring : forbidden_substrings) {
@@ -432,7 +432,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
       EXPECT_EQ(0, actual_number_of_matches)
           << "Verifying that \"" << forbidden_substring << "\" doesn't "
           << "appear in the text of web contents of "
-          << shell()->web_contents()->GetURL().spec();
+          << shell()->web_contents()->GetLastCommittedURL().spec();
     }
   }
 
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTML) {
 // Regression test for the crash/race from https://crbug.com/612098.
 //
 // TODO(crbug.com/959435): Flaky on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GenerateMHTMLAndCloseConnection \
   DISABLED_GenerateMHTMLAndCloseConnection
 #else
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest,
 }
 
 // TODO(crbug.com/672313): Flaky on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InvalidPath DISABLED_InvalidPath
 #else
 #define MAYBE_InvalidPath InvalidPath
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLIgnoreNoStore) {
 }
 
 // TODO(crbug.com/615291): These fail on Android under some circumstances.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ViewedMHTMLContainsNoStoreContent \
   DISABLED_ViewedMHTMLContainsNoStoreContent
 #else

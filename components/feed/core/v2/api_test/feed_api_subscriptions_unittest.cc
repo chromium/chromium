@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
@@ -14,6 +15,8 @@
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/core/v2/test/proto_printer.h"
+#include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +25,10 @@ namespace feed {
 namespace test {
 namespace {
 using testing::PrintToString;
+
+AccountInfo TestAccountInfo() {
+  return {"examplegaia", "example@foo.com"};
+}
 
 FeedNetwork::RawResponse MakeFailedResponse() {
   FeedNetwork::RawResponse network_response;
@@ -42,10 +49,26 @@ void WriteRecommendedFeeds(
   store.WriteRecommendedFeeds(index, recommended_feeds, base::DoNothing());
 }
 
+void WriteSubscribedFeeds(
+    FeedStore& store,
+    std::vector<feedstore::WebFeedInfo> recommended_feeds) {
+  feedstore::SubscribedWebFeeds record;
+  for (const feedstore::WebFeedInfo& info : recommended_feeds) {
+    *record.add_feeds() = info;
+  }
+  record.set_update_time_millis(
+      feedstore::ToTimestampMillis(base::Time::Now()));
+
+  store.WriteSubscribedFeeds(record, base::DoNothing());
+}
+
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
   void SetUp() override {
     FeedApiTest::SetUp();
+    subscriptions().SetHooksForTesting(&web_feed_subscription_hooks);
+    web_feed_subscription_hooks.before_clear_all = base::DoNothing();
+    web_feed_subscription_hooks.after_clear_all = base::DoNothing();
   }
 
   // The test fixture disables the delayed fetch after startup. This function
@@ -70,6 +93,30 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     // Check that they match.
     ([&]() { ASSERT_EQ(PrintToString(result), PrintToString(result2)); })();
     return result;
+  }
+
+  // The stored pending operations in WebFeedMetadataModel are eventually
+  // consistent with those in the database. This verifies that the in-memory
+  // copy in WebFeedMetadataModel are equivalent to the stored copy.
+  void CheckPendingOperationsAreStored() {
+    std::vector<feedstore::PendingWebFeedOperation> stored =
+        GetAllPendingOperations();
+    std::vector<feedstore::PendingWebFeedOperation> in_memory =
+        subscriptions().GetPendingOperationStateForTesting();
+    auto sort_fn = [](feedstore::PendingWebFeedOperation& a,
+                      feedstore::PendingWebFeedOperation& b) {
+      return a.id() < b.id();
+    };
+    std::sort(stored.begin(), stored.end(), sort_fn);
+    std::sort(in_memory.begin(), in_memory.end(), sort_fn);
+    EXPECT_EQ(PrintToString(stored), PrintToString(in_memory));
+  }
+
+  std::vector<feedstore::PendingWebFeedOperation> GetAllPendingOperations() {
+    // Get subscriptions stored in memory.
+    CallbackReceiver<FeedStore::WebFeedStartupData> startup_data;
+    store_->ReadWebFeedStartupData(startup_data.Bind());
+    return startup_data.RunAndGetResult().pending_operations;
   }
 
   // Get all recommended web feeds.
@@ -102,6 +149,13 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     return recommended_feeds;
   }
 
+  WebFeedMetadata FindWebFeedInfoForWebFeedIdSync(
+      const std::string& web_feed_id) {
+    CallbackReceiver<WebFeedMetadata> callback;
+    subscriptions().FindWebFeedInfoForWebFeedId(web_feed_id, callback.Bind());
+    return callback.RunAndGetResult();
+  }
+
   void InjectRecommendedWebFeedsResponse(
       std::vector<feedwire::webfeed::WebFeed> web_feeds) {
     feedwire::webfeed::ListRecommendedWebFeedsResponse response;
@@ -111,9 +165,20 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     network_.InjectResponse(response);
   }
 
+  void SetupWithSubscriptions(
+      std::vector<feedwire::webfeed::WebFeed> subscribed_feeds) {
+    CallbackReceiver<WebFeedSubscriptions::RefreshResult> refresh_result;
+    network_.InjectListWebFeedsResponse(subscribed_feeds);
+    subscriptions().RefreshSubscriptions(refresh_result.Bind());
+    refresh_result.RunUntilCalled();
+  }
+
   WebFeedSubscriptionCoordinator& subscriptions() {
     return stream_->subscriptions();
   }
+
+ protected:
+  WebFeedSubscriptionCoordinator::HooksForTesting web_feed_subscription_hooks;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
@@ -129,14 +194,13 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   WebFeedPageInformation page_info =
       MakeWebFeedPageInformation("http://cats.com");
   page_info.SetRssUrls({GURL("http://rss1/"), GURL("http://rss2/")});
-
   subscriptions().FollowWebFeed(page_info, callback.Bind());
-
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             callback.RunAndGetResult().request_status);
   auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
   ASSERT_THAT(sent_request->page_rss_uris(),
               testing::ElementsAre("http://rss1/", "http://rss2/"));
+  EXPECT_EQ(sent_request->canonical_uri(), "");
   EXPECT_EQ("token", sent_request->consistency_token().token());
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_cats title=Title cats "
@@ -157,13 +221,143 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0, 1);
 }
 
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedAbortOnClearAll) {
+  // The goal of this test is to test the task order:
+  // ClearAllTask, SubscribeToWebFeedTask.
+
+  // Set up a function to fetch the status of the "cats" webfeed. First, use
+  // GetAllSubscriptions to force the internal model to load. This ensures that
+  // FindWebFeedInfoForWebFeedId() will call its callback without a PostTask.
+  subscriptions().GetAllSubscriptions(base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  auto find_cats_subscription_status = [&]() {
+    CallbackReceiver<WebFeedMetadata> result;
+    subscriptions().FindWebFeedInfoForWebFeedId("cats", result.Bind());
+    EXPECT_TRUE(result.GetResult());
+    if (!result.GetResult())
+      return WebFeedSubscriptionStatus::kUnknown;
+    return result.GetResult()->subscription_status;
+  };
+
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+
+  // Try to follow cats.com.
+  subscriptions().FollowWebFeed("cats", /*is_durable_request=*/false,
+                                follow_callback.Bind());
+  EXPECT_EQ(WebFeedSubscriptionStatus::kSubscribeInProgress,
+            find_cats_subscription_status());
+
+  // Run until ClearAllTask completes, this should update the subscription
+  // status.
+  base::RunLoop run_loop;
+  web_feed_subscription_hooks.after_clear_all =
+      base::BindLambdaForTesting([&]() {
+        // The Follow task has not yet completed, and the subscription is no
+        // longer in progress due to ClearAll.
+        EXPECT_FALSE(follow_callback.GetResult());
+        EXPECT_EQ(WebFeedSubscriptionStatus::kNotSubscribed,
+                  find_cats_subscription_status());
+        run_loop.Quit();
+      });
+  run_loop.Run();
+
+  // Finally, let the subscription task complete.
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::
+                kAbortWebFeedSubscriptionPendingClearAll,
+            follow_callback.RunAndGetResult().request_status);
+  EXPECT_EQ(WebFeedSubscriptionStatus::kNotSubscribed,
+            find_cats_subscription_status());
+}
+
+TEST_F(FeedApiSubscriptionsTest, UnfollowWebFeedAbortOnClearAll) {
+  // Follow 'cats'.
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
+  subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
+                                follow_callback.Bind());
+  follow_callback.RunUntilCalled();
+
+  // Test task order: ClearAllTask, UnsubscribeToWebFeedTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
+      unfollow_callback;
+  network_.InjectResponse(SuccessfulUnfollowResponse());
+  subscriptions().UnfollowWebFeed(
+      follow_callback.GetResult()->web_feed_metadata.web_feed_id,
+      /*is_durable_request=*/false, unfollow_callback.Bind());
+
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::
+                kAbortWebFeedSubscriptionPendingClearAll,
+            unfollow_callback.RunAndGetResult().request_status);
+}
+
+TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreLoadedFromStore) {
+  // Store a subscribed web feed, and ensure it is loaded.
+  WriteSubscribedFeeds(*store_, {MakeWebFeedInfo("catfood")});
+
+  CallbackReceiver<std::vector<WebFeedMetadata>> subscriptions_callback;
+  subscriptions().GetAllSubscriptions(subscriptions_callback.Bind());
+
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_catfood title=Title catfood "
+      "publisher_url=https://catfood.com/ status=kSubscribed } }",
+      PrintToString(subscriptions_callback.RunAndGetResult()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, ClearAllAbortsModelLoad) {
+  // In this test, we want to trigger model loading, hit ClearAllFinished, and
+  // then verify the model loading completes. This unfortunately requires a
+  // test-only hook.
+
+  // Store a subscribed feed.
+  WriteSubscribedFeeds(*store_, {MakeWebFeedInfo("catfood")});
+
+  // Trigger ClearAll. Just before processing ClearAllFinished, trigger a model
+  // load.
+  CallbackReceiver<std::vector<WebFeedMetadata>> subscriptions_callback;
+  web_feed_subscription_hooks.before_clear_all =
+      base::BindLambdaForTesting([&]() {
+        subscriptions().GetAllSubscriptions(subscriptions_callback.Bind());
+        EXPECT_FALSE(subscriptions_callback.called());
+        EXPECT_TRUE(subscriptions().is_loading_model_for_testing());
+      });
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  // Model should be loaded, and GetAllSubscriptions should complete.
+  EXPECT_TRUE(subscriptions_callback.called());
+  EXPECT_FALSE(subscriptions().is_loading_model_for_testing());
+  // This call uses the model, and confirms it is non-null.
+  EXPECT_EQ(WebFeedSubscriptionStatus::kUnknown,
+            subscriptions().FindSubscriptionInfoById("catfood").status);
+  // Unlike the SubscribedWebFeedsAreLoadedFromStore test, there are no
+  // subscribed feeds loaded.
+  EXPECT_EQ("{}", PrintToString(*subscriptions_callback.GetResult()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSendsCanonicalUrl) {
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+  WebFeedPageInformation page_info =
+      MakeWebFeedPageInformation("http://cats.com");
+  page_info.SetCanonicalUrl(GURL("http://felis-catus.com"));
+  subscriptions().FollowWebFeed(page_info, callback.Bind());
+  callback.RunUntilCalled();
+
+  auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
+  EXPECT_EQ("http://felis-catus.com/", sent_request->canonical_uri());
+}
+
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
   base::HistogramTester histograms;
   WriteRecommendedFeeds(*store_, {MakeWebFeedInfo("catfood")});
   CreateStream();
   network_.InjectResponse(SuccessfulFollowResponse("catfood"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  subscriptions().FollowWebFeed("id_catfood", callback.Bind());
+  subscriptions().FollowWebFeed("id_catfood", /*is_durable_request=*/false,
+                                callback.Bind());
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribed }",
@@ -273,7 +467,8 @@ TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedByIdWhileOffline) {
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
-  subscriptions().FollowWebFeed("feed_id", callback.Bind());
+  subscriptions().FollowWebFeed("feed_id", /*is_durable_request=*/false,
+                                callback.Bind());
 
   EXPECT_EQ(0, network_.GetFollowRequestCount());
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedOffline,
@@ -321,7 +516,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback.Bind());
+      /*is_durable_request=*/false, unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(1, network_.GetUnfollowRequestCount());
@@ -356,10 +551,10 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
   network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback1.Bind());
+      /*is_durable_request=*/false, unfollow_callback1.Bind());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback2.Bind());
+      /*is_durable_request=*/false, unfollow_callback2.Bind());
 
   unfollow_callback1.RunUntilCalled();
   unfollow_callback2.RunUntilCalled();
@@ -385,7 +580,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
   stream_->SetStreamStale(kWebFeedStream, false);
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback.Bind());
+      /*is_durable_request=*/false, unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(1, network_.GetUnfollowRequestCount());
@@ -412,7 +607,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowWhileOffline) {
   network_.InjectUnfollowResponse(MakeFailedResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback.Bind());
+      /*is_durable_request=*/false, unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(0, network_.GetUnfollowRequestCount());
@@ -426,7 +621,8 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAnUnfollowedWebFeed) {
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
   network_.InjectResponse(SuccessfulUnfollowResponse());
-  subscriptions().UnfollowWebFeed("notfollowed", unfollow_callback.Bind());
+  subscriptions().UnfollowWebFeed("notfollowed", /*is_durable_request=*/false,
+                                  unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
   EXPECT_EQ(0, network_.GetUnfollowRequestCount());
@@ -581,7 +777,7 @@ TEST_F(FeedApiSubscriptionsTest,
   network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
-      unfollow_callback.Bind());
+      /*is_durable_request=*/false, unfollow_callback.Bind());
 
   {
     CallbackReceiver<WebFeedMetadata> metadata;
@@ -632,7 +828,8 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
   network_.SendResponsesOnCommand(true);
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
-  subscriptions().UnfollowWebFeed("id_dogs", unfollow_callback.Bind());
+  subscriptions().UnfollowWebFeed("id_dogs", /*is_durable_request=*/false,
+                                  unfollow_callback.Bind());
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://mice.com"),
                                 follow_callback.Bind());
 
@@ -719,7 +916,7 @@ TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
@@ -739,12 +936,12 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
 
   // Sign out, this clears recommended Web Feeds.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
 
   // Sign in, and verify web feeds are fetched and stored.
-  signed_in_gaia_ = "examplegaia";
+  account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 
@@ -861,7 +1058,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   }
 
   // Sign out, and verify recommended web feeds are cleared.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
@@ -881,14 +1078,14 @@ TEST_F(FeedApiSubscriptionsTest,
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
 
   // Sign out, and verify no web feeds are fetched.
-  signed_in_gaia_ = "";
+  account_info_ = {};
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 
   // Sign in, and verify web feeds are fetched and stored.
-  signed_in_gaia_ = "examplegaia";
+  account_info_ = TestAccountInfo();
   stream_->OnSignedIn();
   WaitForIdleTaskQueue();
 
@@ -1001,6 +1198,26 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
       PrintToString(CheckAllSubscriptions()));
 }
 
+TEST_F(FeedApiSubscriptionsTest, FetchRecommendedWebFeedsAbortOnClearAll) {
+  // Test task ordering: ClearAllTask, FetchRecommendedWebFeedsTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
+  InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshRecommendedFeeds(callback.Bind());
+
+  EXPECT_FALSE(callback.RunAndGetResult().success);
+}
+
+TEST_F(FeedApiSubscriptionsTest, FetchSubscribedWebFeedsAbortOnClearAll) {
+  // Test task ordering: ClearAllTask, FetchSubscribedWebFeedsTask.
+  stream_->OnCacheDataCleared();
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> callback;
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
+  subscriptions().RefreshSubscriptions(callback.Bind());
+
+  EXPECT_FALSE(callback.RunAndGetResult().success);
+}
+
 TEST_F(FeedApiSubscriptionsTest, FieldTrialRegistered_OneFollow) {
   // Follow one web feed, and recreate FeedStream to simulate a Chrome restart.
   network_.InjectResponse(SuccessfulFollowResponse("cats"));
@@ -1016,6 +1233,226 @@ TEST_F(FeedApiSubscriptionsTest, FieldTrialRegistered_OneFollow) {
   // one after CreateStream().
   EXPECT_EQ(std::vector<size_t>({0, 1}),
             register_following_feed_follow_count_field_trial_calls_);
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedDurableSuccess) {
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+
+  subscriptions().FollowWebFeed("cats", /*is_durable_request=*/true,
+                                callback.Bind());
+
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
+            callback.RunAndGetResult().request_status);
+  EXPECT_EQ("{}", PrintToString(GetAllPendingOperations()));
+  EXPECT_EQ("Subscribed to id_cats\n",
+            subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedDurable_RemainsAfterFailure) {
+  network_.InjectFollowResponse(MakeFailedResponse());
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+
+  subscriptions().FollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                callback.Bind());
+
+  // The request fails, but we retain the pending operation.
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
+            callback.RunAndGetResult().request_status);
+  EXPECT_EQ("Pending SUBSCRIBE id_cats attempts=1\n",
+            subscriptions().DescribeStateForTesting());
+  EXPECT_EQ(WebFeedSubscriptionStatus::kSubscribeInProgress,
+            FindWebFeedInfoForWebFeedIdSync("id_cats").subscription_status);
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, UnfollowWebFeedDurable_RemainsAfterFailure) {
+  SetupWithSubscriptions({MakeWireWebFeed("cats")});
+
+  network_.InjectUnfollowResponse(MakeFailedResponse());
+  CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult> callback;
+  subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                  callback.Bind());
+
+  // The request fails, but we retain the pending operation.
+  EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
+            callback.RunAndGetResult().request_status);
+  EXPECT_EQ(
+      "Pending UNSUBSCRIBE id_cats attempts=1\n"
+      "Subscribed to id_cats\n",
+      subscriptions().DescribeStateForTesting());
+  EXPECT_EQ(WebFeedSubscriptionStatus::kUnsubscribeInProgress,
+            FindWebFeedInfoForWebFeedIdSync("id_cats").subscription_status);
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedDurable_AbortsPreviousDurable) {
+  SetupWithSubscriptions({MakeWireWebFeed("cats")});
+
+  network_.InjectUnfollowResponse(MakeFailedResponse());
+  network_.InjectFollowResponse(MakeFailedResponse());
+
+  subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                  base::DoNothing());
+  WaitForIdleTaskQueue();
+  subscriptions().FollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  // The Follow request aborted the Unfollow request, so there are no pending
+  // requests.
+  EXPECT_EQ("Subscribed to id_cats\n",
+            subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, RetryPendingOperations_Success) {
+  SetupWithSubscriptions({MakeWireWebFeed("cats")});
+
+  network_.InjectUnfollowResponse(MakeFailedResponse());
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                  base::DoNothing());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  network_.InjectResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
+  subscriptions().RetryPendingOperationsForTesting();
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("Subscribed to id_dogs\n",
+            subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, RetryPendingOperations_Failure) {
+  SetupWithSubscriptions({MakeWireWebFeed("cats")});
+
+  network_.InjectUnfollowResponse(MakeFailedResponse());
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                  base::DoNothing());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  network_.InjectUnfollowResponse(MakeFailedResponse());
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().RetryPendingOperationsForTesting();
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(R"(Pending UNSUBSCRIBE id_cats attempts=2
+Pending SUBSCRIBE id_dogs attempts=2
+Subscribed to id_cats
+)",
+            subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, RetryPendingOperations_ExceedsRetryLimit) {
+  SetupWithSubscriptions({MakeWireWebFeed("cats")});
+
+  for (int i = 0; i < WebFeedInFlightChange::kMaxDurableOperationAttempts + 1;
+       ++i) {
+    network_.InjectUnfollowResponse(MakeFailedResponse());
+    network_.InjectFollowResponse(MakeFailedResponse());
+  }
+
+  subscriptions().UnfollowWebFeed("id_cats", /*is_durable_request=*/true,
+                                  base::DoNothing());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  for (int i = 0; i < WebFeedInFlightChange::kMaxDurableOperationAttempts;
+       ++i) {
+    subscriptions().RetryPendingOperationsForTesting();
+    WaitForIdleTaskQueue();
+  }
+
+  EXPECT_EQ(R"(Subscribed to id_cats
+)",
+            subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
+}
+
+TEST_F(FeedApiSubscriptionsTest, RetryPendingOperations_AbortsWhenOffline) {
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  is_offline_ = true;
+  subscriptions().RetryPendingOperationsForTesting();
+  WaitForIdleTaskQueue();
+
+  // Only one attempt has been tried.
+  EXPECT_EQ("Pending SUBSCRIBE id_dogs attempts=1\n",
+            subscriptions().DescribeStateForTesting());
+}
+
+TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptions_TriggersRetryPending) {
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
+
+  // Use RefreshSubscriptions(),
+  CallbackReceiver<WebFeedSubscriptions::RefreshResult> refresh_callback;
+  network_.InjectListWebFeedsResponse(
+      {MakeWireWebFeed("dogs"), MakeWireWebFeed("cats")});
+  subscriptions().RefreshSubscriptions(refresh_callback.Bind());
+  EXPECT_TRUE(refresh_callback.RunAndGetResult().success);
+
+  // Make sure kListWebFeeds is last.
+  EXPECT_EQ(std::vector<NetworkRequestType>({
+                NetworkRequestType::kFollowWebFeed,
+                NetworkRequestType::kFollowWebFeed,
+                NetworkRequestType::kListWebFeeds,
+            }),
+            network_.sent_request_types());
+  EXPECT_EQ(
+      "Subscribed to id_dogs\n"
+      "Subscribed to id_cats\n",
+      subscriptions().DescribeStateForTesting());
+}
+
+TEST_F(FeedApiSubscriptionsTest, Startup_PendingRequestsAreEventuallyRetried) {
+  // Fail a durable request so that there is a pending request stored.
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  // Simulate a restart, using the regular configuration that allows for delayed
+  // tasks at startup.
+  SetUpWithDefaultConfig();
+
+  // Wait and verify that the follow request is retried.
+  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
+  task_environment_.FastForwardBy(GetFeedConfig().fetch_web_feed_info_delay +
+                                  base::Seconds(1));
+
+  EXPECT_EQ("Subscribed to id_dogs\n",
+            subscriptions().DescribeStateForTesting());
+}
+
+TEST_F(FeedApiSubscriptionsTest, PendingOperations_RemovedOnClearAll) {
+  network_.InjectFollowResponse(MakeFailedResponse());
+  subscriptions().FollowWebFeed("id_dogs", /*is_durable_request=*/true,
+                                base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("", subscriptions().DescribeStateForTesting());
+  CheckPendingOperationsAreStored();
 }
 
 }  // namespace

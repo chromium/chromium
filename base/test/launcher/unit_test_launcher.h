@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/launcher/test_launcher.h"
 #include "build/build_config.h"
 
@@ -47,14 +47,14 @@ int LaunchUnitTestsWithOptions(int argc,
                                bool use_job_objects,
                                RunTestSuiteCallback run_test_suite);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Launches unit tests in given test suite. Returns exit code.
 // |use_job_objects| determines whether to use job objects.
 int LaunchUnitTests(int argc,
                     wchar_t** argv,
                     bool use_job_objects,
                     RunTestSuiteCallback run_test_suite);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Delegate to abstract away platform differences for unit tests.
 class UnitTestPlatformDelegate {
@@ -153,7 +153,7 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   ThreadChecker thread_checker_;
 
-  UnitTestPlatformDelegate* platform_delegate_;
+  raw_ptr<UnitTestPlatformDelegate> platform_delegate_;
 
   // Maximum number of tests to run in a single batch.
   size_t batch_limit_;

@@ -61,8 +61,14 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
   DCHECK(task_runner_->BelongsToCurrentThread());
   // If the source is canceled or there are too many queued frames,
   // drop the new frame.
-  if (!disconnect_callback_ || !Controller() ||
-      Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+  if (!disconnect_callback_ || !GetExecutionContext()) {
+    return;
+  }
+  if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+    dropped_frames_++;
+    VLOG_IF(2, (dropped_frames_ % 20 == 0))
+        << "Dropped total of " << dropped_frames_
+        << " encoded audio frames due to too many already being queued.";
     return;
   }
 
@@ -93,6 +99,8 @@ void RTCEncodedAudioUnderlyingSource::Close() {
 
 void RTCEncodedAudioUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  // This can potentially be called before the stream is constructed and so
+  // Controller() is still unset.
   if (Controller())
     Controller()->Close();
 }

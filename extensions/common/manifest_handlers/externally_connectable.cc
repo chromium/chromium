@@ -63,9 +63,9 @@ ExternallyConnectableHandler::~ExternallyConnectableHandler() {
 
 bool ExternallyConnectableHandler::Parse(Extension* extension,
                                          std::u16string* error) {
-  const base::Value* externally_connectable = NULL;
-  CHECK(extension->manifest()->Get(keys::kExternallyConnectable,
-                                   &externally_connectable));
+  const base::Value* externally_connectable =
+      extension->manifest()->FindPath(keys::kExternallyConnectable);
+  CHECK(externally_connectable != nullptr);
   bool allow_all_urls = PermissionsParser::HasAPIPermission(
       extension, mojom::APIPermissionID::kExternallyConnectableAllUrls);
 

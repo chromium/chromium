@@ -62,23 +62,24 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
 }
 
 void ScrollbarLayerBase::SetScrollElementId(ElementId element_id) {
-  DCHECK(IsMutationAllowed());
-  if (element_id == scroll_element_id_)
+  if (element_id == scroll_element_id_.Read(*this))
     return;
 
-  scroll_element_id_ = element_id;
+  scroll_element_id_.Write(*this) = element_id;
   SetNeedsCommit();
 }
 
-void ScrollbarLayerBase::PushPropertiesTo(LayerImpl* layer,
-                                          const CommitState& commit_state) {
-  Layer::PushPropertiesTo(layer, commit_state);
+void ScrollbarLayerBase::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
 
   auto* scrollbar_layer_impl = static_cast<ScrollbarLayerImplBase*>(layer);
   DCHECK_EQ(scrollbar_layer_impl->orientation(), orientation_);
   DCHECK_EQ(scrollbar_layer_impl->is_left_side_vertical_scrollbar(),
             is_left_side_vertical_scrollbar_);
-  scrollbar_layer_impl->SetScrollElementId(scroll_element_id_);
+  scrollbar_layer_impl->SetScrollElementId(scroll_element_id_.Read(*this));
 }
 
 bool ScrollbarLayerBase::IsScrollbarLayerForTesting() const {

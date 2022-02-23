@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -48,9 +47,6 @@ class SearchEngineTableViewControllerTest
     ChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
 
-    ASSERT_TRUE(state_dir_.CreateUniqueTempDir());
-    test_cbs_builder.SetPath(state_dir_.GetPath());
-
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -63,8 +59,10 @@ class SearchEngineTableViewControllerTest
     test_cbs_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(chrome_browser_state_->CreateHistoryService());
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
         chrome_browser_state_.get());
@@ -201,19 +199,14 @@ class SearchEngineTableViewControllerTest
   }
 
   // Deletes items at |indexes| and wait util condition returns true or timeout.
-  bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
-                          ConditionBlock condition) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool DeleteItemsAndWait(NSArray<NSIndexPath*>* indexes,
+                                        ConditionBlock condition) {
     SearchEngineTableViewController* searchEngineController =
         static_cast<SearchEngineTableViewController*>(controller());
     [searchEngineController deleteItems:indexes];
     return base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForUIElementTimeout, condition);
   }
-
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir state_dir_;
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -471,14 +464,14 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
   histogram_tester_.ExpectTotalCount(kUmaSelectDefaultSearchEngine, 3);
 
   // Check that the selection was written back to the prefs.
-  const base::DictionaryValue* searchProviderDict =
+  const base::Value* searchProviderDict =
       chrome_browser_state_->GetTestingPrefService()->GetDictionary(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   ASSERT_TRUE(searchProviderDict);
-  std::u16string short_name;
-  EXPECT_TRUE(searchProviderDict->GetString(DefaultSearchManager::kShortName,
-                                            &short_name));
-  EXPECT_EQ(url_c1->short_name(), short_name);
+  const std::string* short_name =
+      searchProviderDict->FindStringKey(DefaultSearchManager::kShortName);
+  ASSERT_TRUE(short_name);
+  EXPECT_EQ(url_c1->short_name(), base::ASCIIToUTF16(*short_name));
 }
 
 // Tests that prepopulated engines are disabled with checkmark removed in

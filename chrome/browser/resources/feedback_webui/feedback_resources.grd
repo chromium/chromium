@@ -18,6 +18,8 @@
       <include name="IDR_FEEDBACK_TAKE_SCREENSHOT_JS" file="js/take_screenshot.js" type="BINDATA" />
       <include name="IDR_FEEDBACK_QUESTIONNAIRE_JS" file="js/questionnaire.js" type="BINDATA" />
       <include name="IDR_FEEDBACK_FEEDBACK_CSS" file="css/feedback.css" type="BINDATA" />
+      <include name="IDR_FEEDBACK_FEEDBACK_SHARED_STYLES_CSS" file="css/feedback_shared_styles.css" type="BINDATA" />
+      <include name="IDR_FEEDBACK_FEEDBACK_SHARED_VARS_CSS" file="css/feedback_shared_vars.css" type="BINDATA" />
       <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PNG"
                file="images/button_butter_bar_close.png" type="BINDATA" />
       <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"

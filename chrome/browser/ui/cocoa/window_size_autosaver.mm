@@ -54,56 +54,62 @@ const int kMinWindowHeight = 17;
 
 - (void)save:(NSNotification*)notification {
   DictionaryPrefUpdate update(_prefService, _path);
-  base::DictionaryValue* windowPrefs = update.Get();
+  base::Value* windowPrefs = update.Get();
   NSRect frame = [_window frame];
   if ([_window styleMask] & NSResizableWindowMask) {
     // Save the origin of the window.
-    windowPrefs->SetInteger("left", NSMinX(frame));
-    windowPrefs->SetInteger("right", NSMaxX(frame));
+    windowPrefs->SetIntKey("left", NSMinX(frame));
+    windowPrefs->SetIntKey("right", NSMaxX(frame));
     // windows's and linux's profiles have top < bottom due to having their
     // screen origin in the upper left, while cocoa's is in the lower left. To
     // keep the top < bottom invariant, store top in bottom and vice versa.
-    windowPrefs->SetInteger("top", NSMinY(frame));
-    windowPrefs->SetInteger("bottom", NSMaxY(frame));
+    windowPrefs->SetIntKey("top", NSMinY(frame));
+    windowPrefs->SetIntKey("bottom", NSMaxY(frame));
   } else {
     // Save the origin of the window.
-    windowPrefs->SetInteger("x", frame.origin.x);
-    windowPrefs->SetInteger("y", frame.origin.y);
+    windowPrefs->SetIntKey("x", frame.origin.x);
+    windowPrefs->SetIntKey("y", frame.origin.y);
   }
 }
 
 - (void)restore {
   // Get the positioning information.
-  const base::DictionaryValue* windowPrefs = _prefService->GetDictionary(_path);
+  const base::Value* windowPrefs = _prefService->GetDictionary(_path);
   if ([_window styleMask] & NSResizableWindowMask) {
-    int x1, x2, y1, y2;
-    if (!windowPrefs->GetInteger("left", &x1) ||
-        !windowPrefs->GetInteger("right", &x2) ||
-        !windowPrefs->GetInteger("top", &y1) ||
-        !windowPrefs->GetInteger("bottom", &y2)) {
+    absl::optional<int> x1 = windowPrefs->FindIntKey("left");
+    absl::optional<int> x2 = windowPrefs->FindIntKey("right");
+    absl::optional<int> y1 = windowPrefs->FindIntKey("top");
+    absl::optional<int> y2 = windowPrefs->FindIntKey("bottom");
+    if (!x1.has_value() || !x2.has_value() || !y1.has_value() ||
+        !y2.has_value()) {
       return;
     }
-    if (x2 - x1 < kMinWindowWidth || y2 - y1 < kMinWindowHeight) {
+    if (x2.value() - x1.value() < kMinWindowWidth ||
+        y2.value() - y1.value() < kMinWindowHeight) {
       // Windows should never be very small.
       DictionaryPrefUpdate update(_prefService, _path);
-      base::DictionaryValue* mutableWindowPrefs = update.Get();
+      base::Value* mutableWindowPrefs = update.Get();
       mutableWindowPrefs->RemoveKey("left");
       mutableWindowPrefs->RemoveKey("right");
       mutableWindowPrefs->RemoveKey("top");
       mutableWindowPrefs->RemoveKey("bottom");
     } else {
-      [_window setFrame:NSMakeRect(x1, y1, x2 - x1, y2 - y1) display:YES];
+      [_window
+          setFrame:NSMakeRect(x1.value(), y1.value(), x2.value() - x1.value(),
+                              y2.value() - y1.value())
+           display:YES];
 
       // Make sure the window is on-screen.
       [_window cascadeTopLeftFromPoint:NSZeroPoint];
     }
   } else {
-    int x, y;
-    if (!windowPrefs->GetInteger("x", &x) ||
-        !windowPrefs->GetInteger("y", &y))
-       return;  // Nothing stored.
+    absl::optional<int> x = windowPrefs->FindIntKey("x");
+    absl::optional<int> y = windowPrefs->FindIntKey("y");
+    if (!x.has_value() || !y.has_value())
+      return;  // Nothing stored.
     // Turn the origin (lower-left) into an upper-left window point.
-    NSPoint upperLeft = NSMakePoint(x, y + NSHeight([_window frame]));
+    NSPoint upperLeft =
+        NSMakePoint(x.value(), y.value() + NSHeight([_window frame]));
     [_window cascadeTopLeftFromPoint:upperLeft];
   }
 }

@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -349,7 +350,7 @@ class EventListener
   }
 
  private:
-  PlatformSensorReaderWin32* const platform_sensor_reader_;
+  const raw_ptr<PlatformSensorReaderWin32> platform_sensor_reader_;
   SensorReading last_sensor_reading_;
 };
 

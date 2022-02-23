@@ -14,9 +14,11 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/website_login_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
@@ -49,6 +51,19 @@ enum AutofillContactField {
   EMAIL_ADDRESS = 9,
   PHONE_HOME_WHOLE_NUMBER = 14,
 };
+
+// GENERATED_JAVA_ENUM_PACKAGE: (
+// org.chromium.chrome.browser.autofill_assistant.user_data)
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: AssistantUserDataEventType
+enum UserDataEventType {
+  UNKNOWN,
+  NO_NOTIFICATION,
+  SELECTION_CHANGED,
+  ENTRY_EDITED,
+  ENTRY_CREATED
+};
+
+enum UserDataEventField { CONTACT_EVENT, CREDIT_CARD_EVENT, SHIPPING_EVENT };
 
 // Represents a concrete login choice in the UI, e.g., 'Guest checkout' or
 // a particular Chrome PWM login account.
@@ -109,6 +124,17 @@ struct Contact {
   std::unique_ptr<autofill::AutofillProfile> profile;
 };
 
+// Struct for holding a phone number. This is a wrapper around AutofillProfile
+// to easily extend it for the purposes of Autofill Assistant.
+struct PhoneNumber {
+  PhoneNumber();
+  PhoneNumber(std::unique_ptr<autofill::AutofillProfile> profile);
+  ~PhoneNumber();
+
+  absl::optional<std::string> identifier;
+  std::unique_ptr<autofill::AutofillProfile> profile;
+};
+
 // Struct for holding an address. This is a wrapper around AutofillProfile to
 // easily extend it for the purposes of Autofill Assistant.
 struct Address {
@@ -118,6 +144,43 @@ struct Address {
 
   absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
+};
+
+// Struct for holding metrics data used by CollectUserDataAction.
+struct UserDataMetrics {
+  UserDataMetrics();
+  ~UserDataMetrics();
+  UserDataMetrics(const UserDataMetrics&);
+  UserDataMetrics& operator=(const UserDataMetrics&);
+
+  bool metrics_logged = false;
+  ukm::SourceId source_id;
+
+  bool initially_prefilled = false;
+  bool personal_data_changed = false;
+  bool action_successful = false;
+
+  // Selection states.
+  Metrics::UserDataSelectionState contact_selection_state =
+      Metrics::UserDataSelectionState::NO_CHANGE;
+  Metrics::UserDataSelectionState credit_card_selection_state =
+      Metrics::UserDataSelectionState::NO_CHANGE;
+  Metrics::UserDataSelectionState shipping_selection_state =
+      Metrics::UserDataSelectionState::NO_CHANGE;
+
+  // Initial counts of complete/incomplete entries.
+  int complete_contacts_initial_count = 0;
+  int incomplete_contacts_initial_count = 0;
+  int complete_credit_cards_initial_count = 0;
+  int incomplete_credit_cards_initial_count = 0;
+  int complete_shipping_addresses_initial_count = 0;
+  int incomplete_shipping_addresses_initial_count = 0;
+
+  // Bitmasks of fields present in the initially selected entries.
+  int selected_contact_field_bitmask = 0;
+  int selected_shipping_address_field_bitmask = 0;
+  int selected_credit_card_field_bitmask = 0;
+  int selected_billing_address_field_bitmask = 0;
 };
 
 // Struct for holding the user data.
@@ -130,30 +193,28 @@ class UserData {
     NONE,
     ALL,
     CONTACT_PROFILE,
+    PHONE_NUMBER,
     CARD,
     SHIPPING_ADDRESS,
     BILLING_ADDRESS,
     LOGIN_CHOICE,
     TERMS_AND_CONDITIONS,
-    DATE_TIME_RANGE_START,
-    DATE_TIME_RANGE_END,
     ADDITIONAL_VALUES,
     AVAILABLE_PROFILES,
     AVAILABLE_PAYMENT_INSTRUMENTS,
   };
 
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
-  absl::optional<DateProto> date_time_range_start_date_;
-  absl::optional<DateProto> date_time_range_end_date_;
-  absl::optional<int> date_time_range_start_timeslot_;
-  absl::optional<int> date_time_range_end_timeslot_;
 
   std::vector<std::unique_ptr<Contact>> available_contacts_;
+  std::vector<std::unique_ptr<PhoneNumber>> available_phone_numbers_;
   std::vector<std::unique_ptr<Address>> available_addresses_;
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
 
   absl::optional<WebsiteLoginManager::Login> selected_login_;
+
+  absl::optional<UserDataMetrics> previous_user_data_metrics_;
 
   // Return true if address has been selected, otherwise return false.
   // Note that selected_address() might return nullptr when
@@ -164,6 +225,9 @@ class UserData {
   // or if selected 'Fill manually'.
   const autofill::AutofillProfile* selected_address(
       const std::string& name) const;
+
+  // The selected phone number.
+  const autofill::AutofillProfile* selected_phone_number() const;
 
   // The selected card.
   const autofill::CreditCard* selected_card() const;
@@ -188,6 +252,9 @@ class UserData {
 
   std::string GetAllAddressKeyNames() const;
 
+  void SetSelectedPhoneNumber(
+      std::unique_ptr<autofill::AutofillProfile> profile);
+
  private:
   friend class UserModel;
   // The address key requested by the autofill action.
@@ -198,6 +265,9 @@ class UserData {
   // The selected credit card.
   // Written by |UserModel| to ensure that it stays in sync.
   std::unique_ptr<autofill::CreditCard> selected_card_;
+
+  // The selected phone number.
+  std::unique_ptr<autofill::AutofillProfile> selected_phone_number_;
 
   // The selected login choice.
   // Written by |UserModel| to ensure that it stays in sync.
@@ -218,10 +288,10 @@ struct CollectUserDataOptions {
   bool request_payer_name = false;
   bool request_payer_email = false;
   bool request_payer_phone = false;
+  bool request_phone_number_separately = false;
   bool request_shipping = false;
   bool request_payment_method = false;
   bool request_login_choice = false;
-  bool request_date_time_range = false;
   std::vector<AutofillContactField> contact_summary_fields;
   int contact_summary_max_lines;
   std::vector<AutofillContactField> contact_full_fields;
@@ -232,12 +302,14 @@ struct CollectUserDataOptions {
   std::string credit_card_expired_text;
 
   std::vector<RequiredDataPiece> required_contact_data_pieces;
+  std::vector<RequiredDataPiece> required_phone_number_data_pieces;
   std::vector<RequiredDataPiece> required_shipping_address_data_pieces;
   std::vector<RequiredDataPiece> required_credit_card_data_pieces;
   std::vector<RequiredDataPiece> required_billing_address_data_pieces;
 
   bool should_store_data_changes = false;
   bool can_edit_contacts = true;
+  bool use_gms_core_edit_dialogs = false;
 
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;
@@ -255,12 +327,12 @@ struct CollectUserDataOptions {
   std::vector<LoginChoice> login_choices;
   std::string default_email;
   std::string contact_details_section_title;
+  std::string phone_number_section_title;
   std::string login_section_title;
   std::string shipping_address_section_title;
   UserActionProto confirm_action;
   std::vector<UserActionProto> additional_actions;
   TermsAndConditionsState initial_terms_and_conditions = NOT_SELECTED;
-  DateTimeRangeProto date_time_range;
   std::vector<UserFormSectionProto> additional_prepended_sections;
   std::vector<UserFormSectionProto> additional_appended_sections;
   absl::optional<GenericUserInterfaceProto> generic_user_interface_prepended;
@@ -272,6 +344,10 @@ struct CollectUserDataOptions {
       additional_actions_callback;
   base::OnceCallback<void(int, UserData*, const UserModel*)>
       terms_link_callback;
+  base::OnceCallback<void(UserData*)> reload_data_callback;
+  // Called whenever there is a change to the selected user data.
+  base::RepeatingCallback<void(UserDataEventField, UserDataEventType)>
+      selected_user_data_changed_callback;
 };
 
 }  // namespace autofill_assistant

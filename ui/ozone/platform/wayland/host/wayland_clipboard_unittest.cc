@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +23,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
@@ -59,6 +60,20 @@ class WaylandClipboardTestBase : public WaylandTest {
  public:
   void SetUp() override {
     WaylandTest::SetUp();
+
+    // As of now, WaylandClipboard::RequestClipboardData is implemented in a
+    // blocking way, which requires a roundtrip before attempting the data
+    // from the selection fd. As Wayland events polling is single-threaded for
+    // tests, WaylandConnection's roundtrip implementation must be hooked up
+    // here to make sure that the required test compositor calls are done,
+    // otherwise tests will enter in a dead lock.
+    // TODO(crbug.com/443355): Remove once Clipboard API becomes async.
+    WaylandConnectionTestApi(connection_.get())
+        .SetRoundtripClosure(base::BindLambdaForTesting([&]() {
+          wl_display_flush(connection_->display());
+          Sync();
+          base::ThreadPoolInstance::Get()->FlushForTesting();
+        }));
 
     clipboard_ = connection_->clipboard();
     ASSERT_TRUE(clipboard_);
@@ -332,7 +347,8 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
 
 // Makes sure overlapping read requests for the same clipboard buffer are
 // properly handled.
-TEST_P(CopyPasteOnlyClipboardTest, OverlappingReadRequests) {
+// TODO(crbug.com/443355): Re-enable once Clipboard API becomes async.
+TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   // Create an selection data offer containing plain and html mime types.
   auto* data_device = server_.data_device_manager()->data_device();
   auto* data_offer = data_device->OnDataOffer();

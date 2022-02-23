@@ -13,6 +13,9 @@ import android.os.ParcelFileDescriptor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -26,6 +29,7 @@ import java.util.Locale;
 /**
  * Helper methods for dealing with Files.
  */
+@JNINamespace("base::android")
 public class FileUtils {
     private static final String TAG = "FileUtils";
 
@@ -207,5 +211,23 @@ public class FileUtils {
             Log.w(TAG, "IO exception when reading uri " + uri);
         }
         return null;
+    }
+
+    /**
+     * Gets the canonicalised absolute pathname for |filePath|. Returns empty string if the path is
+     * invalid. This function can result in I/O so it can be slow.
+     * @param filePath Path of the file, has to be a file path instead of a content URI.
+     * @return canonicalised absolute pathname for |filePath|.
+     */
+    public static String getAbsoluteFilePath(String filePath) {
+        return FileUtilsJni.get().getAbsoluteFilePath(filePath);
+    }
+
+    @NativeMethods
+    public interface Natives {
+        /**
+         * Returns the canonicalised absolute pathname for |filePath|.
+         */
+        String getAbsoluteFilePath(String filePath);
     }
 }

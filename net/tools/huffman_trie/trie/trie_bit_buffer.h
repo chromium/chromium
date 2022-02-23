@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "net/tools/huffman_trie/huffman/huffman_builder.h"
 
 namespace net {
@@ -70,9 +69,6 @@ class TrieBitBuffer {
     uint8_t number_of_bits;
     uint32_t position;
   };
-
-  // Returns the minimum number of bits needed to represent |input|.
-  uint8_t BitLength(uint32_t input) const;
 
   // Append a new element to |elements_|.
   void AppendBitsElement(uint8_t bits, uint8_t number_of_bits);

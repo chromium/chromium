@@ -26,6 +26,11 @@ const char kDisableWaylandIme[] = "disable-wayland-ime";
 // See https://crbug.com/1220274
 const char kUseWaylandExplicitGrab[] = "use-wayland-explicit-grab";
 
+// Use normal priority (ThreadPriority::NORMAL) for Wayland event watcher
+// thread ("wayland-fd"). See https://crbug.com/1262133
+const char kUseWaylandNormalThreadPriority[] =
+    "use-wayland-normal-thread-priority";
+
 // Disable explicit DMA-fences
 const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 

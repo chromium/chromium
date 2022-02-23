@@ -70,7 +70,7 @@ void SetInitializedModalHeight(Browser* browser,
   if (!browser)
     return;
 
-  double height = args->GetList()[0].GetDouble();
+  double height = args->GetListDeprecated()[0].GetDouble();
   browser->signin_view_controller()->SetModalSigninHeight(
       static_cast<int>(height));
 }

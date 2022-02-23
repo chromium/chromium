@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -90,7 +91,7 @@ class TestPlatformEventDispatcher : public PlatformEventDispatcher {
 
  private:
   int id_;
-  std::vector<int>* list_;
+  raw_ptr<std::vector<int>> list_;
   uint32_t post_dispatch_action_;
 };
 
@@ -119,7 +120,7 @@ class TestPlatformEventObserver : public PlatformEventObserver {
 
  private:
   int id_;
-  std::vector<int>* list_;
+  raw_ptr<std::vector<int>> list_;
 };
 
 class PlatformEventTest : public testing::Test {

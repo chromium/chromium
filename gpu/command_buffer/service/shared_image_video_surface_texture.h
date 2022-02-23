@@ -65,12 +65,9 @@ class GPU_GLES2_EXPORT SharedImageVideoSurfaceTexture
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
 
-  std::unique_ptr<gpu::SharedImageRepresentationOverlay> ProduceOverlay(
-      gpu::SharedImageManager* manager,
-      gpu::MemoryTypeTracker* tracker) override;
-
-  // TODO(vikassoni): Add overlay and AHardwareBuffer representations in future
-  // patch. Overlays are anyways using legacy mailbox for now.
+  std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
+  ProduceLegacyOverlay(gpu::SharedImageManager* manager,
+                       gpu::MemoryTypeTracker* tracker) override;
 
  private:
   class SharedImageRepresentationGLTextureVideo;

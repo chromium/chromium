@@ -71,15 +71,16 @@ void LayoutSVGModelObject::MapAncestorToLocal(
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
 }
 
-void LayoutSVGModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
+  quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(StrokeBoundingBox()), mode));
 }
 
 // This method is called from inside PaintOutline(), and since we call
 // PaintOutline() while transformed to our coord system, return local coords.
 void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                           OutlineInfo* info,
                                            const PhysicalOffset&,
                                            NGOutlineType) const {
   NOT_DESTROYED();
@@ -91,11 +92,13 @@ void LayoutSVGModelObject::AddOutlineRects(Vector<PhysicalRect>& rects,
   if (!was_empty && visual_rect.IsEmpty())
     return;
   rects.push_back(PhysicalRect::EnclosingRect(visual_rect));
+  if (info)
+    *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
-FloatRect LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return FloatRect(StrokeBoundingBox());
+  return StrokeBoundingBox();
 }
 
 void LayoutSVGModelObject::WillBeDestroyed() {
@@ -138,7 +141,8 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  SetHasTransformRelatedProperty(StyleRef().HasTransformRelatedProperty());
+  SetHasTransformRelatedProperty(
+      StyleRef().HasTransformRelatedPropertyForSVG());
 
   SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
 
@@ -150,8 +154,6 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
         StyleRef().HasBlendMode() ? kDescendantIsolationRequired
                                   : kDescendantIsolationNeedsUpdate);
   }
-  if (diff.CompositingReasonsChanged())
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
   if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
 }
@@ -163,10 +165,6 @@ void LayoutSVGModelObject::InsertedIntoTree() {
                                                                          false);
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGModelObject::WillBeRemovedFromTree() {
@@ -176,10 +174,6 @@ void LayoutSVGModelObject::WillBeRemovedFromTree() {
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutObject::WillBeRemovedFromTree();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 }  // namespace blink

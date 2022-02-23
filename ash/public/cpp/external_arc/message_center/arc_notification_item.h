@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 
-#include "components/arc/mojom/notifications.mojom.h"
+#include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {

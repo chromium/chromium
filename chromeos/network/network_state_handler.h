@@ -23,7 +23,6 @@
 #include "chromeos/network/shill_property_handler.h"
 
 namespace base {
-class ListValue;
 class Location;
 class Value;
 }  // namespace base
@@ -31,7 +30,6 @@ class Value;
 namespace chromeos {
 
 class DeviceState;
-class NetworkState;
 class NetworkStateHandlerObserver;
 class NetworkStateHandlerTest;
 
@@ -485,7 +483,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // This adds new entries to |network_list_| or |device_list_| and deletes any
   // entries that are no longer in the list.
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::ListValue& entries) override;
+                         const base::Value& entries) override;
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
@@ -546,6 +544,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest, SyncStubCellularNetworks);
   FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
                            GetNetworkListAfterUpdateManagedList);
+  FRIEND_TEST_ALL_PREFIXES(NetworkStateHandlerTest,
+                           UpdateBlockedCellularNetworkAfterUpdateManagedList);
 
   // Implementation for GetNetworkListByType and GetActiveNetworkListByType.
   void GetNetworkListByTypeImpl(const NetworkTypePattern& type,
@@ -694,6 +694,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // |UpdateBlockedNetworksInternal(NetworkTypePattern::Wifi())| if the
   // availability changed.
   void UpdateManagedWifiNetworkAvailable();
+
+  // Check if the cellular device has received update and calls
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular())|
+  void UpdateBlockedCellularNetworks();
 
   // Calls |UpdateBlockedByPolicy()| for each given |network_type| network.
   void UpdateBlockedNetworksInternal(const NetworkTypePattern& network_type);

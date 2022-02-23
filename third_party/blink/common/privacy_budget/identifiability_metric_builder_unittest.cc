@@ -104,8 +104,8 @@ TEST(IdentifiabilityMetricBuilderTest, SetWebfeature) {
 namespace {
 
 // clang flags this function as unused although it's used in the MATCHER_P()
-// definition below. Hence the ALLOW_UNUSED_TYPE.
-ALLOW_UNUSED_TYPE bool HasSingleEntryWithValue(
+// definition below. Hence the [[maybe_unused]].
+[[maybe_unused]] bool HasSingleEntryWithValue(
     const test::ScopedIdentifiabilityTestSampleCollector& collector,
     int64_t value) {
   if (collector.entries().size() != 1u) {

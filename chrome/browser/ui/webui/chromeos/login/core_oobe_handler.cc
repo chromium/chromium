@@ -88,6 +88,9 @@ void CoreOobeHandler::DeclareLocalizedValues(
 
   builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
                 base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+
+  builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
+  builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
 }
 
 void CoreOobeHandler::Initialize() {
@@ -110,6 +113,8 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     dict->SetKey("flowType", base::Value("meet"));
   }
+  dict->SetKey("isQuickStartEnabled",
+               base::Value(ash::features::IsOobeQuickStartEnabled()));
 }
 
 void CoreOobeHandler::RegisterMessages() {
@@ -129,7 +134,6 @@ void CoreOobeHandler::RegisterMessages() {
   AddCallback("startDemoModeSetupForTesting",
               &CoreOobeHandler::HandleStartDemoModeSetupForTesting);
 
-  AddCallback("hideOobeDialog", &CoreOobeHandler::HandleHideOobeDialog);
   AddCallback("updateOobeUIState", &CoreOobeHandler::HandleUpdateOobeUIState);
   AddCallback("enableShelfButtons", &CoreOobeHandler::HandleEnableShelfButtons);
 }
@@ -138,25 +142,12 @@ void CoreOobeHandler::FocusReturned(bool reverse) {
   CallJS("cr.ui.Oobe.focusReturned", reverse);
 }
 
-void CoreOobeHandler::ResetSignInUI(bool force_online) {
-  CallJS("cr.ui.Oobe.resetSigninUI", force_online);
-}
-
 void CoreOobeHandler::ReloadContent(const base::DictionaryValue& dictionary) {
   CallJS("cr.ui.Oobe.reloadContent", dictionary);
 }
 
 void CoreOobeHandler::SetVirtualKeyboardShown(bool shown) {
   CallJS("cr.ui.Oobe.setVirtualKeyboardShown", shown);
-}
-
-void CoreOobeHandler::SetClientAreaSize(int width, int height) {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setClientAreaSize", width, height);
-  } else {
-    LOG(ERROR) << "Silently dropping SetClientAreaSize request.";
-  }
 }
 
 void CoreOobeHandler::SetShelfHeight(int height) {
@@ -198,11 +189,6 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
   GetOobeUI()->CurrentScreenChanged(screen);
   ash::EventRewriterController::Get()->SetArrowToTabRewritingEnabled(
       screen == EulaView::kScreenId);
-}
-
-void CoreOobeHandler::HandleHideOobeDialog() {
-  if (LoginDisplayHost::default_host())
-    LoginDisplayHost::default_host()->HideOobeDialog();
 }
 
 void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
@@ -321,7 +307,6 @@ void CoreOobeHandler::OnTabletModeEnded() {
 }
 
 void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
-  SetClientAreaSize(size.width(), size.height());
   SetShelfHeight(ash::ShelfConfig::Get()->shelf_size());
   const gfx::Size display_size =
       display::Screen::GetScreen()->GetPrimaryDisplay().size();
@@ -330,30 +315,6 @@ void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
   const gfx::Size dialog_size = CalculateOobeDialogSize(
       size, ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
   SetDialogSize(dialog_size.width(), dialog_size.height());
-}
-
-void CoreOobeHandler::SetDialogPaddingMode(
-    CoreOobeView::DialogPaddingMode mode) {
-  std::string padding;
-  switch (mode) {
-    case CoreOobeView::DialogPaddingMode::MODE_AUTO:
-      padding = "auto";
-      break;
-    case CoreOobeView::DialogPaddingMode::MODE_NARROW:
-      padding = "narrow";
-      break;
-    case CoreOobeView::DialogPaddingMode::MODE_WIDE:
-      padding = "wide";
-      break;
-    default:
-      NOTREACHED();
-  }
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.setDialogPaddingMode", padding);
-  } else {
-    LOG(ERROR) << "Silently dropping SetDialogPaddingMode request.";
-  }
 }
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
@@ -381,14 +342,13 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 
 void CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   cros_display_config_->GetDisplayUnitInfoList(
       false /* single_unified */,
       base::BindOnce(&CoreOobeHandler::GetPrimaryDisplayNameCallback,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id->Clone()));
+                     weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
 }
 
 void CoreOobeHandler::GetPrimaryDisplayNameCallback(

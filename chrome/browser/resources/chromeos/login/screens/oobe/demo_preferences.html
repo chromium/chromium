@@ -82,8 +82,10 @@
         <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
-            text-key="demoPreferencesNextButtonLabel"></oobe-text-button>
+        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_" 
+            disabled="[[!is_country_selected_]]"
+            text-key="demoPreferencesNextButtonLabel">
+        </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>
   </template>

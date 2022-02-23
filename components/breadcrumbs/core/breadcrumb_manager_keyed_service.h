@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace breadcrumbs {
@@ -72,7 +73,8 @@ class BreadcrumbManagerKeyedService : public KeyedService {
 
   // The current BreadcrumbPersistentStorageManager persisting events logged to
   // |breadcrumb_manager_|, set by StartPersisting. May be null.
-  BreadcrumbPersistentStorageManager* persistent_storage_manager_ = nullptr;
+  raw_ptr<BreadcrumbPersistentStorageManager> persistent_storage_manager_ =
+      nullptr;
 };
 
 }  // namespace breadcrumbs

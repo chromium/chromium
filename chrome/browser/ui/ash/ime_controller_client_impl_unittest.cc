@@ -244,7 +244,6 @@ TEST_F(ImeControllerClientImplTest, ShowImeMenuOnShelf) {
 }
 
 TEST_F(ImeControllerClientImplTest, InputMethodChanged) {
-  ui::IMEBridge::Initialize();
   auto mock_candidate_window =
       std::make_unique<ash::MockIMECandidateWindowHandler>();
   ui::IMEBridge::Get()->SetCandidateWindowHandler(mock_candidate_window.get());
@@ -290,11 +289,8 @@ TEST_F(ImeControllerClientImplTest, NoActiveState) {
 TEST_F(ImeControllerClientImplTest, MenuItemChanged) {
   ImeControllerClientImpl client(&input_method_manager_);
   client.Init();
-  const bool is_selection_item = true;
-  InputMethodMenuItem item1("key1", "label1", is_selection_item,
-                            true /* checked */);
-  InputMethodMenuItem item2("key2", "label2", is_selection_item,
-                            false /* checked */);
+  InputMethodMenuItem item1("key1", "label1", true /* checked */);
+  InputMethodMenuItem item2("key2", "label2", false /* checked */);
 
   // Setting the list triggers the InputMethodMenuItemChanged event.
   InputMethodMenuManager::GetInstance()->SetCurrentInputMethodMenuItemList(

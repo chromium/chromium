@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 
 #if DCHECK_IS_ON()
-#include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_ref.h"
 #endif
 
 namespace base {
@@ -73,12 +73,12 @@ class LOCKABLE BASE_EXPORT Lock {
   // Whether Lock mitigates priority inversion when used from different thread
   // priorities.
   static bool HandlesMultipleThreadPriorities() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Windows mitigates priority inversion by randomly boosting the priority of
     // ready threads.
     // https://msdn.microsoft.com/library/windows/desktop/ms684831.aspx
     return true;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // POSIX mitigates priority inversion by setting the priority of a thread
     // holding a Lock to the maximum priority of any other thread waiting on it.
     return internal::LockImpl::PriorityInheritanceAvailable();

@@ -7,14 +7,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
@@ -23,6 +27,7 @@
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -85,6 +90,17 @@ GURL GetUrlWithoutQuery(const GURL& url) {
 }
 
 using RawResponse = FeedNetwork::RawResponse;
+
+net::HttpRequestHeaders CreateApiRequestHeaders(
+    const RequestMetadata& request_metadata) {
+  std::string encoded_client_info;
+  base::Base64Encode(CreateClientInfo(request_metadata).SerializeAsString(),
+                     &encoded_client_info);
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kClientInfoHeader, encoded_client_info);
+  return headers;
+}
+
 }  // namespace
 
 namespace {
@@ -161,7 +177,8 @@ class FeedNetworkImpl::NetworkFetch {
                signin::IdentityManager* identity_manager,
                network::SharedURLLoaderFactory* loader_factory,
                const std::string& api_key,
-               const std::string& gaia,
+               const AccountInfo& account_info,
+               net::HttpRequestHeaders headers,
                bool allow_bless_auth)
       : url_(url),
         request_method_(request_method),
@@ -171,7 +188,8 @@ class FeedNetworkImpl::NetworkFetch {
         loader_factory_(loader_factory),
         api_key_(api_key),
         entire_send_start_ticks_(base::TimeTicks::Now()),
-        gaia_(gaia),
+        account_info_(account_info),
+        headers_(std::move(headers)),
         allow_bless_auth_(allow_bless_auth) {}
   ~NetworkFetch() = default;
   NetworkFetch(const NetworkFetch&) = delete;
@@ -180,7 +198,13 @@ class FeedNetworkImpl::NetworkFetch {
   void Start(base::OnceCallback<void(RawResponse)> done_callback) {
     done_callback_ = std::move(done_callback);
 
-    if (gaia_.empty()) {
+    if (delegate_->IsOffline()) {
+      std::move(done_callback_)
+          .Run(MakeFailureResponse(net::ERR_INTERNET_DISCONNECTED,
+                                   AccountTokenFetchStatus::kUnspecified));
+      return;
+    }
+    if (account_info_.IsEmpty()) {
       StartLoader();
       return;
     }
@@ -190,19 +214,44 @@ class FeedNetworkImpl::NetworkFetch {
 
  private:
   void StartAccessTokenFetch() {
-    // It's safe to pass base::Unretained(this) since deleting the token fetcher
-    // will prevent the callback from being completed.
     token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
         "feed", identity_manager_, GetAuthScopes(),
-        base::BindOnce(&NetworkFetch::AccessTokenFetchFinished,
-                       base::Unretained(this), base::TimeTicks::Now()),
+        base::BindOnce(&NetworkFetch::AccessTokenFetchFinished, GetWeakPtr(),
+                       base::TimeTicks::Now()),
         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&NetworkFetch::AccessTokenTimeout, GetWeakPtr()),
+        kAccessTokenFetchTimeout);
+  }
+
+  static RawResponse MakeFailureResponse(
+      int32_t status_code,
+      AccountTokenFetchStatus token_fetch_status) {
+    NetworkResponseInfo response_info;
+    RawResponse raw_response;
+    response_info.status_code = status_code;
+    response_info.account_token_fetch_status = token_fetch_status;
+    raw_response.response_info = std::move(response_info);
+    return raw_response;
+  }
+
+  void AccessTokenTimeout() {
+    if (access_token_fetch_complete_)
+      return;
+    access_token_fetch_complete_ = true;
+    std::move(done_callback_)
+        .Run(MakeFailureResponse(net::ERR_TIMED_OUT,
+                                 AccountTokenFetchStatus::kTimedOut));
   }
 
   void AccessTokenFetchFinished(base::TimeTicks token_start_ticks,
                                 GoogleServiceAuthError error,
                                 signin::AccessTokenInfo access_token_info) {
-    DCHECK(!gaia_.empty());
+    DCHECK(!account_info_.IsEmpty());
+    if (access_token_fetch_complete_)
+      return;
+    access_token_fetch_complete_ = true;
     UMA_HISTOGRAM_ENUMERATION(
         "ContentSuggestions.Feed.Network.TokenFetchStatus", error.state(),
         GoogleServiceAuthError::NUM_STATES);
@@ -214,12 +263,11 @@ class FeedNetworkImpl::NetworkFetch {
     access_token_ = access_token_info.token;
 
     // Abort if the signed-in user doesn't match.
-    if (delegate_->GetSyncSignedInGaia() != gaia_) {
-      NetworkResponseInfo response_info;
-      RawResponse raw_response;
-      response_info.status_code = net::ERR_INVALID_ARGUMENT;
-      raw_response.response_info = std::move(response_info);
-      std::move(done_callback_).Run(std::move(raw_response));
+    if (delegate_->GetAccountInfo() != account_info_) {
+      std::move(done_callback_)
+          .Run(
+              MakeFailureResponse(net::ERR_INVALID_ARGUMENT,
+                                  AccountTokenFetchStatus::kUnexpectedAccount));
       return;
     }
 
@@ -237,30 +285,30 @@ class FeedNetworkImpl::NetworkFetch {
   std::unique_ptr<network::SimpleURLLoader> MakeLoader() {
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("interest_feedv2_send", R"(
-        semantics {
-          sender: "Feed Library"
-          description: "Chrome can show content suggestions (e.g. articles) "
-            "in the form of a feed. For signed-in users, these may be "
-            "personalized based on interest signals in the user's account."
-          trigger: "Triggered periodically in the background, or upon "
-            "explicit user request."
-          data: "The locale of the device and data describing the suggested "
-            "content that the user interacted with. For signed-in users "
-            "the request is authenticated. "
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting: "This can be disabled from the New Tab Page by collapsing "
-          "the articles section."
-          chrome_policy {
-            NTPContentSuggestionsEnabled {
-              policy_options {mode: MANDATORY}
-              NTPContentSuggestionsEnabled: false
-            }
+      semantics {
+        sender: "Feed Library"
+        description: "Chrome can show content suggestions (e.g. articles) "
+          "in the form of a feed. For signed-in users, these may be "
+          "personalized based on interest signals in the user's account."
+        trigger: "Triggered periodically in the background, or upon "
+          "explicit user request."
+        data: "The locale of the device and data describing the suggested "
+          "content that the user interacted with. For signed-in users "
+          "the request is authenticated. "
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: YES
+        cookies_store: "user"
+        setting: "This can be disabled from the New Tab Page by collapsing "
+        "the articles section."
+        chrome_policy {
+          NTPContentSuggestionsEnabled {
+            policy_options {mode: MANDATORY}
+            NTPContentSuggestionsEnabled: false
           }
-        })");
+        }
+      })");
 
     GURL url(url_);
     if (access_token_.empty() && !api_key_.empty())
@@ -317,6 +365,8 @@ class FeedNetworkImpl::NetworkFetch {
       request.headers.SetHeader("Content-Encoding", "gzip");
     }
 
+    request.headers.MergeFrom(headers_);
+
     variations::SignedIn signed_in_status = variations::SignedIn::kNo;
     if (!access_token_.empty()) {
       base::StringPiece token = access_token_;
@@ -345,7 +395,9 @@ class FeedNetworkImpl::NetworkFetch {
         base::TimeTicks::Now() - entire_send_start_ticks_;
     response_info.fetch_time = base::Time::Now();
     response_info.base_request_url = GetUrlWithoutQuery(url_);
-    response_info.was_signed_in = !access_token_.empty();
+    if (!access_token_.empty()) {
+      response_info.account_info = account_info_;
+    }
     response_info.loader_start_time_ticks = loader_only_start_ticks_;
     response_info.encoded_size_bytes =
         completion_status ? completion_status->encoded_data_length : 0;
@@ -407,28 +459,34 @@ class FeedNetworkImpl::NetworkFetch {
     raw_response.response_bytes = std::move(response_body);
     std::move(done_callback_).Run(std::move(raw_response));
   }
+  base::WeakPtr<NetworkFetch> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   GURL url_;
   const std::string request_method_;
   std::string access_token_;
+  bool access_token_fetch_complete_ = false;
   const std::string request_body_;
-  FeedNetworkImpl::Delegate* delegate_;
-  signin::IdentityManager* const identity_manager_;
+  raw_ptr<FeedNetworkImpl::Delegate> delegate_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::OnceCallback<void(RawResponse)> done_callback_;
-  network::SharedURLLoaderFactory* loader_factory_;
+  raw_ptr<network::SharedURLLoaderFactory> loader_factory_;
   const std::string api_key_;
 
   // Set when the NetworkFetch is constructed, before token and article fetch.
   const base::TimeTicks entire_send_start_ticks_;
 
-  const std::string gaia_;
+  const AccountInfo account_info_;
+  const net::HttpRequestHeaders headers_;
 
   // Should be set right before the article fetch, and after the token fetch if
   // there is one.
   base::TimeTicks loader_only_start_ticks_;
   bool allow_bless_auth_ = false;
+  base::WeakPtrFactory<NetworkFetch> weak_ptr_factory_{this};
 };
 
 FeedNetworkImpl::FeedNetworkImpl(
@@ -448,7 +506,7 @@ FeedNetworkImpl::~FeedNetworkImpl() = default;
 void FeedNetworkImpl::SendQueryRequest(
     NetworkRequestType request_type,
     const feedwire::Request& request,
-    const std::string& gaia,
+    const AccountInfo& account_info,
     base::OnceCallback<void(QueryRequestResult)> callback) {
   std::string binary_proto;
   request.SerializeToString(&binary_proto);
@@ -495,7 +553,8 @@ void FeedNetworkImpl::SendQueryRequest(
   AddMothershipPayloadQueryParams(base64proto, delegate_->GetLanguageTag(),
                                   url);
   Send(url, "GET", /*request_body=*/{},
-       /*allow_bless_auth=*/host_overridden, gaia,
+       /*allow_bless_auth=*/host_overridden, account_info,
+       net::HttpRequestHeaders(),
        base::BindOnce(&ParseAndForwardQueryResponse, request_type,
                       std::move(callback)));
 }
@@ -508,12 +567,13 @@ void FeedNetworkImpl::Send(const GURL& url,
                            base::StringPiece request_method,
                            std::string request_body,
                            bool allow_bless_auth,
-                           const std::string& gaia,
+                           const AccountInfo& account_info,
+                           net::HttpRequestHeaders headers,
                            base::OnceCallback<void(RawResponse)> callback) {
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
-      identity_manager_, loader_factory_.get(), api_key_, gaia,
-      allow_bless_auth);
+      identity_manager_, loader_factory_.get(), api_key_, account_info,
+      std::move(headers), allow_bless_auth);
   NetworkFetch* fetch_unowned = fetch.get();
   pending_requests_.emplace(std::move(fetch));
 
@@ -529,7 +589,8 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     base::StringPiece request_path,
     base::StringPiece method,
     std::string request_body,
-    const std::string& gaia,
+    const AccountInfo& account_info,
+    absl::optional<RequestMetadata> request_metadata,
     base::OnceCallback<void(RawResponse)> callback) {
   GURL url(base::StrCat({kDiscoverHost, request_path}));
   // Override url if requested.
@@ -542,8 +603,13 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
     }
   }
 
+  net::HttpRequestHeaders headers =
+      request_metadata ? CreateApiRequestHeaders(*request_metadata)
+                       : net::HttpRequestHeaders();
+
   Send(url, method, std::move(request_body),
-       /*allow_bless_auth=*/false, gaia, std::move(callback));
+       /*allow_bless_auth=*/false, account_info, std::move(headers),
+       std::move(callback));
 }
 
 void FeedNetworkImpl::SendComplete(

@@ -12,13 +12,13 @@
 #include <memory>
 
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verifier.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/scoped_nss_types.h"
 #endif
 
@@ -60,7 +60,7 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier : public CertVerifier {
   // don't call them later, as required by the CertVerifier contract.
   base::LinkedList<InternalRequest> request_list_;
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
   // Holds NSS temporary certificates that will be exposed as untrusted
   // authorities by SystemCertStoreNSS.
   // TODO(https://crbug.com/978854): Pass these into the actual CertVerifyProc

@@ -25,7 +25,8 @@ class VisitScores {
            foreground_duration_score_ *
                features::ForegroundDurationRankingWeight() +
            bookmark_score_ * features::BookmarkRankingWeight() +
-           srp_score_ * features::SearchResultsPageRankingWeight();
+           srp_score_ * features::SearchResultsPageRankingWeight() +
+           page_title_score_ * features::HasPageTitleRankingWeight();
   }
 
   void set_visit_duration_score(float score) { visit_duration_score_ = score; }
@@ -38,6 +39,8 @@ class VisitScores {
 
   void set_is_srp() { srp_score_ = 1.0; }
 
+  void set_has_page_title() { page_title_score_ = 1.0; }
+
  private:
   // The score for the duration associated with a visit.
   float visit_duration_score_ = 0.0;
@@ -47,6 +50,8 @@ class VisitScores {
   float bookmark_score_ = 0.0;
   // The score for whether the visit was on a search results page.
   float srp_score_ = 0.0;
+  // The score for whether the visit had a page title.
+  float page_title_score_ = 0.0;
 };
 
 // A cluster finalizer that scores visits based on visit duration.
@@ -60,28 +65,22 @@ class RankingClusterFinalizer : public ClusterFinalizer {
 
  private:
   // Calculates the scores for the visits within |cluster| based on
-  // their total visit duration and updates |url_visit_scores|. Only
-  // visits not in |duplicate_visit_ids| will be scored.
+  // their total visit duration and updates |url_visit_scores|.
   void CalculateVisitDurationScores(
       history::Cluster& cluster,
-      base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-      const base::flat_set<history::VisitID>& duplicate_visit_ids);
+      base::flat_map<history::VisitID, VisitScores>& url_visit_scores);
 
   // Calculates the scores for the visits within |cluster| based on
-  // their binary attributes and updates |url_visit_scores|. Only
-  // visits not in |duplicate_visit_ids| will be scored.
+  // their binary attributes and updates |url_visit_scores|.
   void CalculateVisitAttributeScoring(
       history::Cluster& cluster,
-      base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-      const base::flat_set<history::VisitID>& duplicate_visit_ids);
+      base::flat_map<history::VisitID, VisitScores>& url_visit_scores);
 
   // Computes the final scores for each visit based on the current
-  // individual scores for each visit in |url_visit_scores|. Only
-  // visits not in |duplicate_visit_ids| will be scored.
+  // individual scores for each visit in |url_visit_scores|.
   void ComputeFinalVisitScores(
       history::Cluster& cluster,
-      base::flat_map<history::VisitID, VisitScores>& url_visit_scores,
-      const base::flat_set<history::VisitID>& duplicate_visit_ids);
+      base::flat_map<history::VisitID, VisitScores>& url_visit_scores);
 };
 
 }  // namespace history_clusters

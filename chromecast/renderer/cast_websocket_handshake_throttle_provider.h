@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"

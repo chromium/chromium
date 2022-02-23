@@ -145,18 +145,34 @@ CoreAccountId PrimaryAccountManager::GetPrimaryAccountId(
   return GetPrimaryAccountInfo(consent_level).account_id;
 }
 
-void PrimaryAccountManager::SetUnconsentedPrimaryAccountInfo(
-    const CoreAccountInfo& account_info) {
+void PrimaryAccountManager::SetPrimaryAccountInfo(
+    const CoreAccountInfo& account_info,
+    signin::ConsentLevel consent_level) {
   if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+    DCHECK_EQ(account_info, GetPrimaryAccountInfo(signin::ConsentLevel::kSync))
+        << "Changing the primary sync account is not allowed.";
     return;
   }
+  DCHECK(!account_info.account_id.empty());
+  DCHECK(!account_info.gaia.empty());
+  DCHECK(!account_info.email.empty());
+  DCHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
+              .IsEmpty())
+      << "Account must be seeded before being set as primary account";
 
-  bool account_changed = account_info != primary_account_info();
   PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
-  if (account_changed)
-    FirePrimaryAccountChanged(previous_state);
+  switch (consent_level) {
+    case signin::ConsentLevel::kSync:
+      SetSyncPrimaryAccountInternal(account_info);
+      FirePrimaryAccountChanged(previous_state);
+      return;
+    case signin::ConsentLevel::kSignin:
+      bool account_changed = account_info != primary_account_info();
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false);
+      if (account_changed)
+        FirePrimaryAccountChanged(previous_state);
+      return;
+  }
 }
 
 void PrimaryAccountManager::SetSyncPrimaryAccountInternal(
@@ -224,28 +240,6 @@ bool PrimaryAccountManager::HasPrimaryAccount(
     case signin::ConsentLevel::kSync:
       return consented_pref;
   }
-}
-
-void PrimaryAccountManager::SetSyncPrimaryAccountInfo(
-    const CoreAccountInfo& account_info) {
-#if DCHECK_IS_ON()
-  DCHECK(!account_info.account_id.empty());
-  DCHECK(!account_info.gaia.empty());
-  DCHECK(!account_info.email.empty());
-  DCHECK(!account_tracker_service_->GetAccountInfo(account_info.account_id)
-              .IsEmpty())
-      << "Account should have been seeded before being set as primary account";
-#endif
-  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    DCHECK_EQ(account_info.account_id,
-              GetPrimaryAccountId(signin::ConsentLevel::kSync))
-        << "Changing the primary sync account is not allowed.";
-    return;
-  }
-
-  PrimaryAccountChangeEvent::State previous_state = GetPrimaryAccountState();
-  SetSyncPrimaryAccountInternal(account_info);
-  FirePrimaryAccountChanged(previous_state);
 }
 
 void PrimaryAccountManager::UpdatePrimaryAccountInfo() {

@@ -67,21 +67,6 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration() {
       kSearchPrefetchServicePrefetching, "error_backoff_duration_ms", 60000));
 }
 
-bool SearchPrefetchOnlyFetchDefaultMatch() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSearchPrefetchServicePrefetching, "only_prefetch_default_match", false);
-}
-
-bool SearchPrefetchShouldCancelUneededInflightRequests() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSearchPrefetchServicePrefetching, "cancel_inflight_unneeded", true);
-}
-
-bool StreamSearchPrefetchResponses() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kSearchPrefetchServicePrefetching, "stream_responses", true);
-}
-
 size_t SearchPrefetchMaxCacheEntries() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "cache_size", 10);

@@ -4,8 +4,6 @@
 
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#include "base/macros.h"
-
 namespace service_manager {
 
 InterfaceProvider::InterfaceProvider(
@@ -35,21 +33,12 @@ void InterfaceProvider::Close() {
 void InterfaceProvider::Bind(
     mojo::PendingRemote<mojom::InterfaceProvider> interface_provider) {
   DCHECK(pending_receiver_ || !interface_provider_);
-  DCHECK(forward_callback_.is_null());
   if (pending_receiver_) {
     mojo::FusePipes(std::move(pending_receiver_),
                     std::move(interface_provider));
   } else {
     interface_provider_.Bind(std::move(interface_provider), task_runner_);
   }
-}
-
-void InterfaceProvider::Forward(const ForwardCallback& callback) {
-  DCHECK(pending_receiver_);
-  DCHECK(forward_callback_.is_null());
-  interface_provider_.reset();
-  pending_receiver_.PassPipe().reset();
-  forward_callback_ = callback;
 }
 
 void InterfaceProvider::SetConnectionLostClosure(
@@ -72,13 +61,8 @@ void InterfaceProvider::GetInterfaceByName(
     return;
   }
 
-  if (!forward_callback_.is_null()) {
-    DCHECK(!interface_provider_.is_bound());
-    forward_callback_.Run(name, std::move(request_handle));
-  } else {
-    DCHECK(interface_provider_.is_bound());
-    interface_provider_->GetInterface(name, std::move(request_handle));
-  }
+  DCHECK(interface_provider_.is_bound());
+  interface_provider_->GetInterface(name, std::move(request_handle));
 }
 
 bool InterfaceProvider::HasBinderForName(const std::string& name) const {

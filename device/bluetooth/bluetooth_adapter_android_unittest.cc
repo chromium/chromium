@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
@@ -23,7 +24,7 @@ class BluetoothAdapterAndroidTest : public BluetoothTestAndroid {
   }
 
  protected:
-  BluetoothAdapterAndroid* android_adapter_;
+  raw_ptr<BluetoothAdapterAndroid> android_adapter_;
 };
 
 TEST_F(BluetoothAdapterAndroidTest, ScanFilterTest) {

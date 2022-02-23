@@ -18,13 +18,13 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/preference/preference_api_constants.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_api.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -38,6 +38,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -96,7 +97,7 @@ const PrefMappingEntry kPrefMapping[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"hyperlinkAuditingEnabled", prefs::kEnableHyperlinkAuditing,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
-    {"networkPredictionEnabled", prefs::kNetworkPredictionOptions,
+    {"networkPredictionEnabled", prefetch::prefs::kNetworkPredictionOptions,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"passwordSavingEnabled",
      password_manager::prefs::kCredentialsEnableService,
@@ -240,21 +241,23 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
       DCHECK(false) << "Preference not found.";
     } else if (extension_pref->GetBool()) {
       return std::make_unique<base::Value>(
-          chrome_browser_net::NETWORK_PREDICTION_DEFAULT);
+          static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
     }
     return std::make_unique<base::Value>(
-        chrome_browser_net::NETWORK_PREDICTION_NEVER);
+        static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
       const base::Value* browser_pref,
       bool is_incognito_profile) override {
-    int int_value = chrome_browser_net::NETWORK_PREDICTION_DEFAULT;
+    prefetch::NetworkPredictionOptions value =
+        prefetch::NetworkPredictionOptions::kDefault;
     if (browser_pref->is_int()) {
-      int_value = browser_pref->GetInt();
+      value = static_cast<prefetch::NetworkPredictionOptions>(
+          browser_pref->GetInt());
     }
     return std::make_unique<base::Value>(
-        int_value != chrome_browser_net::NETWORK_PREDICTION_NEVER);
+        value != prefetch::NetworkPredictionOptions::kDisabled);
   }
 };
 
@@ -342,7 +345,7 @@ class PrefMapping {
                             std::make_unique<ProxyPrefTransformer>());
     RegisterPrefTransformer(prefs::kCookieControlsMode,
                             std::make_unique<CookieControlsModeTransformer>());
-    RegisterPrefTransformer(prefs::kNetworkPredictionOptions,
+    RegisterPrefTransformer(prefetch::prefs::kNetworkPredictionOptions,
                             std::make_unique<NetworkPredictionTransformer>());
     RegisterPrefTransformer(
         prefs::kProtectedContentDefault,
@@ -361,9 +364,7 @@ class PrefMapping {
   }
 
   struct PrefMapData {
-    PrefMapData()
-        : read_permission(APIPermissionID::kInvalid),
-          write_permission(APIPermissionID::kInvalid) {}
+    PrefMapData() = default;
 
     PrefMapData(const std::string& pref_name,
                 APIPermissionID read,
@@ -376,10 +377,10 @@ class PrefMapping {
     std::string pref_name;
 
     // Permission needed to read the preference.
-    APIPermissionID read_permission;
+    APIPermissionID read_permission = APIPermissionID::kInvalid;
 
     // Permission needed to write the preference.
-    APIPermissionID write_permission;
+    APIPermissionID write_permission = APIPermissionID::kInvalid;
   };
 
   using PrefMap = std::map<std::string, PrefMapData>;
@@ -409,7 +410,7 @@ PreferenceEventRouter::PreferenceEventRouter(Profile* profile)
                             base::Unretained(this), registrar_.prefs()));
   }
   DCHECK(!profile_->IsOffTheRecord());
-  observed_profiles_.AddObservation(profile_);
+  observed_profiles_.AddObservation(profile_.get());
   if (profile->HasPrimaryOTRProfile())
     OnOffTheRecordProfileCreated(
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -443,13 +444,13 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
     return;
   }
 
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->Set(extensions::preference_api_constants::kValue,
-            std::move(transformed_value));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(extensions::preference_api_constants::kValue,
+              std::move(*transformed_value));
   if (incognito) {
     ExtensionPrefs* ep = ExtensionPrefs::Get(profile_);
-    dict->SetBoolean(extensions::preference_api_constants::kIncognitoSpecific,
-                     ep->HasIncognitoPrefValue(browser_pref));
+    dict.SetBoolKey(extensions::preference_api_constants::kIncognitoSpecific,
+                    ep->HasIncognitoPrefValue(browser_pref));
   }
   args.Append(std::move(dict));
 
@@ -616,16 +617,16 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
                                             bool incognito) {
   if (incognito) {
     extension_prefs()->UpdateExtensionPref(
-        extension_id,
-        pref_names::kPrefIncognitoContentSettings,
-        content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeIncognitoPersistent));
+        extension_id, pref_names::kPrefIncognitoContentSettings,
+        base::Value::ToUniquePtrValue(
+            base::Value(content_settings_store()->GetSettingsForExtension(
+                extension_id, kExtensionPrefsScopeIncognitoPersistent))));
   } else {
     extension_prefs()->UpdateExtensionPref(
-        extension_id,
-        pref_names::kPrefContentSettings,
-        content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeRegular));
+        extension_id, pref_names::kPrefContentSettings,
+        base::Value::ToUniquePtrValue(
+            base::Value(content_settings_store()->GetSettingsForExtension(
+                extension_id, kExtensionPrefsScopeRegular))));
   }
 }
 

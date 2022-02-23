@@ -1,0 +1,31 @@
+{
+    "0": {
+        "benchmarks": {
+            "system_health.common_desktop": {
+                "abridged": false
+            },
+            "system_health.memory_desktop": {
+                "abridged": false
+            }
+        },
+        "executables": {
+            "base_perftests": {
+                "path": "bin/run_base_perftests",
+                "arguments": [
+                    "--test-launcher-jobs=1",
+                    "--test-launcher-retry-limit=0",
+                    "-d",
+                    "--os-check=ignore"
+                ]
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 165,
+        "predicted_min_shard_time": 2540.0,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 2540.0,
+        "predicted_max_shard_index": 0,
+        "shard #0": 2540.0
+    }
+}

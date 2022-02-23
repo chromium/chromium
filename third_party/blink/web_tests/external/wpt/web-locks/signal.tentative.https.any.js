@@ -206,3 +206,26 @@ promise_test(async t => {
     "The next request is processed after abort"
   );
 }, "Abort should process the next pending lock request");
+
+promise_test(async t => {
+  const res = uniqueName(t);
+
+  const controller = new AbortController();
+  const promise = requestLockAndHold(t, res, { signal: controller.signal });
+
+  const reason = "My cat handled it";
+  controller.abort(reason);
+
+  await promise_rejects_exactly(t, reason, promise, "Rejection should give the abort reason");
+}, "Aborted promise should reject with the custom abort reason");
+
+promise_test(async t => {
+  const res = uniqueName(t);
+
+  const controller = new AbortController();
+  const promise = requestLockAndHold(t, res, { signal: controller.signal });
+
+  controller.abort();
+
+  await promise_rejects_exactly(t, controller.signal.reason, promise, "Should be the same reason");
+}, "Aborted promise should reject with the default abort reason");

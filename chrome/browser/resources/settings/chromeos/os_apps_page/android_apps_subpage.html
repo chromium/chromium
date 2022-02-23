@@ -7,6 +7,16 @@
   </cr-link-row>
 </template>
 
+<template is="dom-if" if="[[showArcvmManageUsb]]">
+  <cr-link-row
+      class="hr"
+      label="$i18n{guestOsSharedUsbDevicesLabel}"
+      id="manageArcvmShareUsbDevices"
+      on-click="onSharedUsbDevicesClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
+
 <!-- Use 'restamp' so tests can check if the row exists. -->
 <template is="dom-if" if="[[allowRemove_(prefs.arc.enabled.*)]]" restamp>
   <div id="remove" class="settings-box">

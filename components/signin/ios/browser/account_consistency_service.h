@@ -51,7 +51,7 @@ class AccountConsistencyService : public KeyedService,
   // Sets the handler for |web_state| that reacts on Gaia responses with the
   // X-Chrome-Manage-Accounts header and notifies |delegate|.
   void SetWebStateHandler(web::WebState* web_state,
-                          id<ManageAccountsDelegate> delegate);
+                          ManageAccountsDelegate* delegate);
   // Removes the handler associated with |web_state|.
   void RemoveWebStateHandler(web::WebState* web_state);
 

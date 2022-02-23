@@ -5,6 +5,7 @@
 #include "components/sync/engine/commit_contribution_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/guid.h"
@@ -29,12 +30,6 @@ CommitResponseData BuildCommitResponseData(
     const sync_pb::CommitResponse_EntryResponse& entry_response) {
   CommitResponseData response_data;
   response_data.id = entry_response.id_string();
-  if (response_data.id != commit_request.entity->id) {
-    // Server has changed the sync id in the request. Write back the
-    // original sync id. This is useful for data types without a notion of
-    // a client tag such as bookmarks.
-    response_data.id_in_request = commit_request.entity->id;
-  }
   response_data.response_version = entry_response.version();
   response_data.client_tag_hash = commit_request.entity->client_tag_hash;
   response_data.sequence_number = commit_request.sequence_number;
@@ -87,7 +82,8 @@ void CommitContributionImpl::AddToCommitMessage(
   commit_message->mutable_entries()->Reserve(commit_message->entries_size() +
                                              commit_requests_.size());
 
-  for (const auto& commit_request : commit_requests_) {
+  for (const std::unique_ptr<CommitRequestData>& commit_request :
+       commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
     if (only_commit_specifics_) {
       DCHECK(!commit_request->entity->is_deleted());
@@ -248,8 +244,9 @@ void CommitContributionImpl::PopulateCommitProto(
       DCHECK(unique_position.IsValid());
       commit_proto->set_position_in_parent(unique_position.ToInt64());
       *commit_proto->mutable_unique_position() = unique_position.ToProto();
-      if (!entity_data.parent_id.empty()) {
-        commit_proto->set_parent_id_string(entity_data.parent_id);
+      // parent_id field is set only for legacy clients only, before M99.
+      if (!entity_data.legacy_parent_id.empty()) {
+        commit_proto->set_parent_id_string(entity_data.legacy_parent_id);
       }
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));

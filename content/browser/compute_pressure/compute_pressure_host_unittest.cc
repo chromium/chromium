@@ -112,6 +112,32 @@ TEST_F(ComputePressureHostTest, OneObserver_UpdateRateLimiting) {
             blink::mojom::ComputePressureState(0.1, 0.25));
 }
 
+TEST_F(ComputePressureHostTest, OneObserver_NoCallbackInvoke) {
+  FakeComputePressureObserver observer;
+  ASSERT_EQ(host_sync_->AddObserver(kQuantization,
+                                    observer.BindNewPipeAndPassRemote()),
+            blink::mojom::ComputePressureStatus::kOk);
+
+  base::Time now = base::Time::Now();
+
+  host_impl_->UpdateObservers({.cpu_utilization = 0.42, .cpu_speed = 0.84},
+                              now + base::Seconds(1));
+  observer.WaitForUpdate();
+  ASSERT_THAT(observer.updates(), testing::SizeIs(testing::Eq(1u)));
+  EXPECT_EQ(observer.updates()[0],
+            blink::mojom::ComputePressureState(0.35, 0.75));
+
+  // The first update should be discarded due to same bucket
+  host_impl_->UpdateObservers({.cpu_utilization = 0.37, .cpu_speed = 0.70},
+                              now + base::Seconds(2));
+  host_impl_->UpdateObservers({.cpu_utilization = 0.42, .cpu_speed = 0.42},
+                              now + base::Seconds(3));
+  observer.WaitForUpdate();
+  ASSERT_THAT(observer.updates(), testing::SizeIs(testing::Eq(2u)));
+  EXPECT_EQ(observer.updates()[1],
+            blink::mojom::ComputePressureState(0.35, 0.25));
+}
+
 TEST_F(ComputePressureHostTest, OneObserver_AddRateLimiting) {
   base::Time before_add = base::Time::Now();
 

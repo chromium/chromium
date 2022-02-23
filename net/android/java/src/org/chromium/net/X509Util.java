@@ -4,7 +4,6 @@
 
 package org.chromium.net;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +35,6 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,62 +92,16 @@ public class X509Util {
         }
     }
 
-    /**
-     * Interface that wraps one of X509TrustManager or
-     * X509TrustManagerExtensions to support platforms before the latter was
-     * added.
-     */
-    private static interface X509TrustManagerImplementation {
-        public List<X509Certificate> checkServerTrusted(X509Certificate[] chain,
-                                                        String authType,
-                                                        String host) throws CertificateException;
-    }
-
-    private static final class X509TrustManagerIceCreamSandwich implements
-            X509TrustManagerImplementation {
-        private final X509TrustManager mTrustManager;
-
-        public X509TrustManagerIceCreamSandwich(X509TrustManager trustManager) {
-            mTrustManager = trustManager;
-        }
-
-        @Override
-        public List<X509Certificate> checkServerTrusted(X509Certificate[] chain,
-                                                        String authType,
-                                                        String host) throws CertificateException {
-            try {
-                mTrustManager.checkServerTrusted(chain, authType);
-            } catch (RuntimeException e) {
-                // https://crbug.com/937354: X509TrustManager can unexpectedly throw runtime
-                // exceptions.
-                Log.e(TAG, "X509TrustManager unexpectedly threw: %s", e);
-                throw new CertificateException(e);
-            }
-            return Collections.<X509Certificate>emptyList();
-        }
-    }
-
-    private static final class X509TrustManagerJellyBean implements X509TrustManagerImplementation {
-        private final X509TrustManagerExtensions mTrustManagerExtensions;
-
-        @SuppressLint("NewApi")
-        public X509TrustManagerJellyBean(X509TrustManager trustManager) {
-            mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
-        }
-
-        @Override
-        @SuppressLint("NewApi")
-        public List<X509Certificate> checkServerTrusted(
-                X509Certificate[] chain, String authType, String host) throws CertificateException {
-            try {
-                // API Level 17: android.net.http.X509TrustManagerExtensions#checkServerTrusted
-                return mTrustManagerExtensions.checkServerTrusted(chain, authType, host);
-            } catch (RuntimeException e) {
-                // https://crbug.com/937354: checkServerTrusted() can unexpectedly throw runtime
-                // exceptions, most often within conscrypt while parsing certificates.
-                Log.e(TAG, "checkServerTrusted() unexpectedly threw: %s", e);
-                throw new CertificateException(e);
-            }
+    private static List<X509Certificate> checkServerTrustedIgnoringRuntimeException(
+            X509TrustManagerExtensions tm, X509Certificate[] chain, String authType, String host)
+            throws CertificateException {
+        try {
+            return tm.checkServerTrusted(chain, authType, host);
+        } catch (RuntimeException e) {
+            // https://crbug.com/937354: checkServerTrusted() can unexpectedly throw runtime
+            // exceptions, most often within conscrypt while parsing certificates.
+            Log.e(TAG, "checkServerTrusted() unexpectedly threw: %s", e);
+            throw new CertificateException(e);
         }
     }
 
@@ -166,7 +118,7 @@ public class X509Util {
     /**
      * Trust manager backed up by the read-only system certificate store.
      */
-    private static X509TrustManagerImplementation sDefaultTrustManager;
+    private static X509TrustManagerExtensions sDefaultTrustManager;
 
     /**
      * BroadcastReceiver that listens to change in the system keystore to invalidate certificate
@@ -178,7 +130,7 @@ public class X509Util {
      * Trust manager backed up by a custom certificate store. We need such manager to plant test
      * root CA to the trust store in testing.
      */
-    private static X509TrustManagerImplementation sTestTrustManager;
+    private static X509TrustManagerExtensions sTestTrustManager;
     private static KeyStore sTestKeyStore;
 
     /**
@@ -286,13 +238,13 @@ public class X509Util {
     }
 
     /**
-     * Creates a X509TrustManagerImplementation backed up by the given key
+     * Creates a X509TrustManagerExtensions backed up by the given key
      * store. When null is passed as a key store, system default trust store is
      * used. Returns null if no created TrustManager was suitable.
      * @throws KeyStoreException, NoSuchAlgorithmException on error initializing the TrustManager.
      */
-    private static X509TrustManagerImplementation createTrustManager(KeyStore keyStore) throws
-            KeyStoreException, NoSuchAlgorithmException {
+    private static X509TrustManagerExtensions createTrustManager(KeyStore keyStore)
+            throws KeyStoreException, NoSuchAlgorithmException {
         String algorithm = TrustManagerFactory.getDefaultAlgorithm();
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
         tmf.init(keyStore);
@@ -310,11 +262,7 @@ public class X509Util {
         for (TrustManager tm : trustManagers) {
             if (tm instanceof X509TrustManager) {
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        return new X509TrustManagerJellyBean((X509TrustManager) tm);
-                    } else {
-                        return new X509TrustManagerIceCreamSandwich((X509TrustManager) tm);
-                    }
+                    return new X509TrustManagerExtensions((X509TrustManager) tm);
                 } catch (IllegalArgumentException e) {
                     String className = tm.getClass().getName();
                     Log.e(TAG, "Error creating trust manager (" + className + "): " + e);
@@ -546,12 +494,12 @@ public class X509Util {
 
             List<X509Certificate> verifiedChain;
             try {
-                verifiedChain = sDefaultTrustManager.checkServerTrusted(serverCertificates,
-                                                                        authType, host);
+                verifiedChain = checkServerTrustedIgnoringRuntimeException(
+                        sDefaultTrustManager, serverCertificates, authType, host);
             } catch (CertificateException eDefaultManager) {
                 try {
-                    verifiedChain = sTestTrustManager.checkServerTrusted(serverCertificates,
-                                                                         authType, host);
+                    verifiedChain = checkServerTrustedIgnoringRuntimeException(
+                            sTestTrustManager, serverCertificates, authType, host);
                 } catch (CertificateException eTestManager) {
                     // Neither of the trust managers confirms the validity of the certificate chain,
                     // log the error message returned by the system trust manager.

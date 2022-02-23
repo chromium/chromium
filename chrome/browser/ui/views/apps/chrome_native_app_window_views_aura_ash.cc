@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -33,6 +34,8 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/common/constants.h"
@@ -597,13 +600,24 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
         proxy->AppRegistryCache().GetAppType(app_window()->extension_id());
 
     if (app_type != apps::mojom::AppType::kUnknown) {
-      proxy->LoadIcon(
-          app_type, app_window()->extension_id(),
-          apps::mojom::IconType::kStandard,
-          app_window()->app_delegate()->PreferredIconSize(),
-          allow_placeholder_icon,
-          base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
-                         weak_ptr_factory_.GetWeakPtr()));
+      if (base::FeatureList::IsEnabled(
+              features::kAppServiceLoadIconWithoutMojom)) {
+        proxy->LoadIcon(
+            apps::ConvertMojomAppTypToAppType(app_type),
+            app_window()->extension_id(), apps::IconType::kStandard,
+            app_window()->app_delegate()->PreferredIconSize(),
+            allow_placeholder_icon,
+            base::BindOnce(&ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
+                           weak_ptr_factory_.GetWeakPtr()));
+      } else {
+        proxy->LoadIcon(app_type, app_window()->extension_id(),
+                        apps::mojom::IconType::kStandard,
+                        app_window()->app_delegate()->PreferredIconSize(),
+                        allow_placeholder_icon,
+                        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+                            &ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon,
+                            weak_ptr_factory_.GetWeakPtr())));
+      }
     }
   }
 
@@ -613,8 +627,8 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon(
-    apps::mojom::IconValuePtr icon_value) {
-  if (icon_value->icon_type != apps::mojom::IconType::kStandard)
+    apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
   app_icon_image_skia_ = icon_value->uncompressed;

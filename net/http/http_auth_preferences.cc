@@ -27,13 +27,13 @@ bool HttpAuthPreferences::NegotiateEnablePort() const {
   return negotiate_enable_port_;
 }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 bool HttpAuthPreferences::NtlmV2Enabled() const {
   return ntlm_v2_enabled_;
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::string HttpAuthPreferences::AuthAndroidNegotiateAccountType() const {
   return auth_android_negotiate_account_type_;
 }
@@ -46,16 +46,16 @@ bool HttpAuthPreferences::AllowGssapiLibraryLoad() const {
 #endif
 
 bool HttpAuthPreferences::CanUseDefaultCredentials(
-    const GURL& auth_origin) const {
+    const url::SchemeHostPort& auth_scheme_host_port) const {
   return allow_default_credentials_ == ALLOW_DEFAULT_CREDENTIALS &&
-         security_manager_->CanUseDefaultCredentials(auth_origin);
+         security_manager_->CanUseDefaultCredentials(auth_scheme_host_port);
 }
 
 using DelegationType = HttpAuth::DelegationType;
 
 DelegationType HttpAuthPreferences::GetDelegationType(
-    const GURL& auth_origin) const {
-  if (!security_manager_->CanDelegate(auth_origin))
+    const url::SchemeHostPort& auth_scheme_host_port) const {
+  if (!security_manager_->CanDelegate(auth_scheme_host_port))
     return DelegationType::kNone;
 
   if (delegate_by_kdc_policy())
@@ -66,6 +66,12 @@ DelegationType HttpAuthPreferences::GetDelegationType(
 
 void HttpAuthPreferences::SetAllowDefaultCredentials(DefaultCredentials creds) {
   allow_default_credentials_ = creds;
+}
+
+bool HttpAuthPreferences::IsAllowedToUseAllHttpAuthSchemes(
+    const url::SchemeHostPort& scheme_host_port) const {
+  return !http_auth_scheme_filter_ ||
+         http_auth_scheme_filter_.Run(scheme_host_port);
 }
 
 void HttpAuthPreferences::SetServerAllowlist(

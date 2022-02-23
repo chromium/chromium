@@ -9,13 +9,14 @@
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_relative_pointer_manager.h"
 
 namespace ui {
 
 namespace {
-constexpr uint32_t kMinZwpPointerConstraintsVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -30,12 +31,12 @@ void WaylandZwpPointerConstraints::Instantiate(WaylandConnection* connection,
   DCHECK_EQ(interface, kInterfaceName);
 
   if (connection->wayland_zwp_pointer_constraints_ ||
-      version < kMinZwpPointerConstraintsVersion) {
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
 
   auto zwp_pointer_constraints_v1 =
-      wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, version);
+      wl::Bind<struct zwp_pointer_constraints_v1>(registry, name, kMinVersion);
   if (!zwp_pointer_constraints_v1) {
     LOG(ERROR) << "Failed to bind wp_pointer_constraints_v1";
     return;
@@ -57,8 +58,9 @@ WaylandZwpPointerConstraints::~WaylandZwpPointerConstraints() = default;
 
 void WaylandZwpPointerConstraints::LockPointer(WaylandSurface* surface) {
   locked_pointer_.reset(zwp_pointer_constraints_v1_lock_pointer(
-      obj_.get(), surface->surface(), connection_->pointer()->wl_object(),
-      nullptr, ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_ONESHOT));
+      obj_.get(), surface->surface(),
+      connection_->seat()->pointer()->wl_object(), nullptr,
+      ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_ONESHOT));
 
   static constexpr zwp_locked_pointer_v1_listener
       zwp_locked_pointer_v1_listener = {

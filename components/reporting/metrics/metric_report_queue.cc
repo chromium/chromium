@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/reporting_settings.h"
-#include "components/reporting/proto/metric_data.pb.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -37,6 +37,15 @@ MetricReportQueue::~MetricReportQueue() = default;
 void MetricReportQueue::Enqueue(const MetricData& metric_data,
                                 ReportQueue::EnqueueCallback callback) {
   report_queue_->Enqueue(&metric_data, priority_, std::move(callback));
+}
+
+void MetricReportQueue::Upload() {
+  Flush();
+  // Restart timer if the metric report queue flush is rate controlled.
+  if (rate_controller_) {
+    rate_controller_->Stop();
+    rate_controller_->Start();
+  }
 }
 
 void MetricReportQueue::Flush() {

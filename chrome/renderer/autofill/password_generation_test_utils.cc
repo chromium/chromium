@@ -36,8 +36,8 @@ const char* const kEvents[] = {"focus",  "keydown", "input",
 autofill::FieldRendererId GetRendererId(WebDocument document,
                                         const char* input_id) {
   WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
-  auto* input = ToWebInputElement(&element);
-  return autofill::FieldRendererId(input->UniqueRendererFormControlId());
+  blink::WebInputElement input = element.To<blink::WebInputElement>();
+  return autofill::FieldRendererId(input.UniqueRendererFormControlId());
 }
 
 }  // namespace

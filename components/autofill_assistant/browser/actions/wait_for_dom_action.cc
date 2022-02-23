@@ -69,8 +69,6 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
     ReportActionResult(std::move(callback), ClientStatus(INVALID_ACTION));
     return;
   }
-  wait_condition_ = std::make_unique<ElementPrecondition>(
-      proto_.wait_for_dom().wait_condition());
   delegate_->WaitForDomWithSlowWarning(
       max_wait_time, proto_.wait_for_dom().allow_interrupt(),
       /* observer= */ nullptr,
@@ -86,8 +84,8 @@ void WaitForDomAction::InternalProcessAction(ProcessActionCallback callback) {
 void WaitForDomAction::CheckElements(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  wait_condition_->Check(
-      checker,
+  checker->AddElementConditionCheck(
+      proto_.wait_for_dom().wait_condition(),
       base::BindOnce(&WaitForDomAction::OnWaitConditionDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -96,6 +94,7 @@ void WaitForDomAction::OnWaitConditionDone(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
     const std::vector<std::string>& payloads,
+    const std::vector<std::string>& tags,
     const base::flat_map<std::string, DomObjectFrameStack>& elements) {
   // Results are first cleared, as OnWaitConditionDone can be called more
   // than once. Yet, we want report only the payloads sent with the final call
@@ -105,6 +104,9 @@ void WaitForDomAction::OnWaitConditionDone(
   result->clear_matching_condition_payloads();
   for (const std::string& payload : payloads) {
     result->add_matching_condition_payloads(payload);
+  }
+  for (const std::string& tag : tags) {
+    result->add_matching_condition_tags(tag);
   }
 
   elements_ = elements;

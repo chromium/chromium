@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,7 +68,8 @@ class APISignature {
   static std::unique_ptr<APISignature> CreateFromValues(
       const base::Value& specification_list,
       const base::Value* returns_async,
-      BindingAccessChecker* access_checker);
+      BindingAccessChecker* access_checker,
+      const std::string& api_name);
 
   struct V8ParseResult {
     // Appease the Chromium style plugin (out of line ctor/dtor).

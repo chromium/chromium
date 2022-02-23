@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_path.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -17,7 +17,7 @@ InterpolationValue SVGPathInterpolationType::MaybeConvertSVGValue(
 
   return PathInterpolationFunctions::ConvertValue(
       To<SVGPath>(svg_value).GetStylePath(),
-      PathInterpolationFunctions::PreserveCoordinates);
+      PathInterpolationFunctions::kPreserveCoordinates);
 }
 
 InterpolationValue SVGPathInterpolationType::MaybeConvertNeutral(

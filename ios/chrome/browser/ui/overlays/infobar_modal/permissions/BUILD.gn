@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("permissions") {
+  sources = [
+    "permissions_infobar_modal_overlay_coordinator.h",
+    "permissions_infobar_modal_overlay_coordinator.mm",
+    "permissions_infobar_modal_overlay_mediator.h",
+    "permissions_infobar_modal_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_modal/permissions",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals/permissions",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ios/chrome/browser/ui/util",
+    "//ios/web/public",
+    "//ios/web/public/permissions",
+    "//ui/base",
+  ]
+}

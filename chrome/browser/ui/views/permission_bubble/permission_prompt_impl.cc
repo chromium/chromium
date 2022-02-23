@@ -11,10 +11,8 @@
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permission_bubble/file_handling_permission_prompt.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -92,12 +90,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   if (delegate->ShouldDropCurrentRequestIfCannotShowQuietly() &&
       IsFullScreenMode(web_contents, browser)) {
     return nullptr;
-  }
-
-  if (delegate->Requests().size() == 1U &&
-      delegate->Requests()[0]->request_type() ==
-          permissions::RequestType::kFileHandling) {
-    return FileHandlingPermissionPrompt::Create(web_contents, delegate);
   }
 
   return std::make_unique<PermissionPromptImpl>(browser, web_contents,

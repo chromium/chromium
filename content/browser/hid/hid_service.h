@@ -46,6 +46,8 @@ class HidService : public content::DocumentService<blink::mojom::HidService>,
   void Connect(const std::string& device_guid,
                mojo::PendingRemote<device::mojom::HidConnectionClient> client,
                ConnectCallback callback) override;
+  void Forget(device::mojom::HidDeviceInfoPtr device_info,
+              ForgetCallback callback) override;
 
   // HidDelegate::Observer:
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device_info) override;

@@ -14,6 +14,7 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -85,8 +86,6 @@ class AutocompleteProviderClientWithClosure
       AutocompleteController* controller) override {
     if (closure_)
       closure_.Run();
-    if (base::RunLoop::IsRunningOnCurrentThread())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
   base::RepeatingClosure closure_;
@@ -117,8 +116,10 @@ class TestProvider : public AutocompleteProvider {
     listener_ = listener;
   }
 
- private:
-  ~TestProvider() override {}
+  virtual AutocompleteProviderListener* listener() { return listener_; }
+
+ protected:
+  ~TestProvider() override = default;
 
   void Run();
 
@@ -129,11 +130,11 @@ class TestProvider : public AutocompleteProvider {
       AutocompleteMatch::Type type,
       const TemplateURLRef::SearchTermsArgs& search_terms_args);
 
-  AutocompleteProviderListener* listener_;
+  raw_ptr<AutocompleteProviderListener> listener_;
   int relevance_;
   const std::u16string prefix_;
   const std::u16string match_keyword_;
-  AutocompleteProviderClient* client_;
+  raw_ptr<AutocompleteProviderClient> client_;
 };
 
 void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
@@ -165,8 +166,7 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 void TestProvider::Run() {
   AddResults(1, kResultsPerProvider);
   done_ = true;
-  DCHECK(listener_);
-  listener_->OnProviderUpdate(true);
+  listener()->OnProviderUpdate(true);
 }
 
 void TestProvider::AddResults(int start_at, int num) {
@@ -203,6 +203,90 @@ void TestProvider::AddResultsWithSearchTermsArgs(
 
     matches_.push_back(match);
   }
+}
+
+// AutocompleteProviderListener implementation that calls the specified closure
+// when the provider is done and informs the controller, if applicable.
+class AutocompleteProviderListenerWithClosure
+    : public AutocompleteProviderListener {
+ public:
+  explicit AutocompleteProviderListenerWithClosure(
+      AutocompleteController* controller)
+      : controller_(controller) {}
+  ~AutocompleteProviderListenerWithClosure() override = default;
+  AutocompleteProviderListenerWithClosure(
+      const AutocompleteProviderListenerWithClosure&) = delete;
+  AutocompleteProviderListenerWithClosure& operator=(
+      const AutocompleteProviderListenerWithClosure&) = delete;
+
+  void set_closure(const base::RepeatingClosure& closure) {
+    closure_ = closure;
+  }
+
+  // Used by TestPrefetchProvider to notify it is done with a prefetch request.
+  void OnProviderFinishedPrefetch() {
+    if (closure_)
+      closure_.Run();
+  }
+
+  // AutocompleteProviderListener:
+  void OnProviderUpdate(bool updated_matches) override {
+    controller_->OnProviderUpdate(updated_matches);
+    if (closure_)
+      closure_.Run();
+  }
+
+ private:
+  AutocompleteController* controller_;
+  base::RepeatingClosure closure_;
+};
+
+// Extends TestProvider to handle prefetch requests. It notifies its instance of
+// AutocompleteProviderListenerWithClosure when is done with a prefetch request.
+class TestPrefetchProvider : public TestProvider {
+ public:
+  TestPrefetchProvider(int relevance,
+                       const std::u16string& prefix,
+                       const std::u16string& match_keyword,
+                       AutocompleteProviderClient* client)
+      : TestProvider(relevance, prefix, match_keyword, client) {}
+  TestPrefetchProvider(const TestPrefetchProvider&) = delete;
+  TestPrefetchProvider& operator=(const TestPrefetchProvider&) = delete;
+
+  // TestProvider:
+  AutocompleteProviderListener* listener() override { return listener_; }
+
+  // AutocompleteProvider:
+  void StartPrefetch(const AutocompleteInput& input) override;
+
+  void set_listener(AutocompleteProviderListenerWithClosure* listener) {
+    listener_ = listener;
+  }
+
+ private:
+  ~TestPrefetchProvider() override = default;
+
+  void RunPrefetch();
+
+  raw_ptr<AutocompleteProviderListenerWithClosure> listener_;
+};
+
+void TestPrefetchProvider::StartPrefetch(const AutocompleteInput& input) {
+  matches_.clear();
+  done_ = false;
+
+  if (input.want_asynchronous_matches()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&TestPrefetchProvider::RunPrefetch, this));
+  } else {
+    RunPrefetch();
+  }
+}
+
+void TestPrefetchProvider::RunPrefetch() {
+  AddResults(0, kResultsPerProvider);
+  done_ = true;
+  listener_->OnProviderFinishedPrefetch();
 }
 
 // Helper class to make running tests of ClassifyAllMatchesInString() more
@@ -333,19 +417,17 @@ class AutocompleteProviderTest : public testing::Test {
 
   TestingPrefServiceSimple* GetPrefs() { return &pref_service_; }
 
-  AutocompleteResult result_;
-
- private:
   // Resets the controller with the given |type|. |type| is a bitmap containing
   // AutocompleteProvider::Type values that will (potentially, depending on
   // platform, flags, etc.) be instantiated.
   void ResetControllerWithType(int type);
 
+  AutocompleteResult result_;
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<AutocompleteController> controller_;
   // Owned by |controller_|.
-  AutocompleteProviderClientWithClosure* client_;
+  raw_ptr<AutocompleteProviderClientWithClosure> client_;
   // Used to ensure that |client_| ownership has been passed to |controller_|
   // exactly once.
   bool client_owned_;
@@ -421,9 +503,6 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
   provider1->set_listener(controller_.get());
   provider2->set_listener(controller_.get());
 
-  client_->set_closure(base::BindRepeating(
-      &AutocompleteProviderTest::CopyResults, base::Unretained(this)));
-
   if (provider1_ptr)
     *provider1_ptr = provider1;
   if (provider2_ptr)
@@ -489,8 +568,8 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 
 void AutocompleteProviderTest::ResetControllerWithType(int type) {
   EXPECT_FALSE(client_owned_);
-  controller_ =
-      std::make_unique<AutocompleteController>(base::WrapUnique(client_), type);
+  controller_ = std::make_unique<AutocompleteController>(
+      base::WrapUnique(client_.get()), type);
   client_owned_ = true;
 }
 
@@ -589,12 +668,13 @@ void AutocompleteProviderTest::RunQuery(const std::string& query,
                           TestingSchemeClassifier());
   input.set_prevent_inline_autocomplete(true);
   input.set_allow_exact_keyword_match(allow_exact_keyword_match);
-  controller_->Start(input);
 
+  base::RunLoop run_loop;
+  client_->set_closure(run_loop.QuitClosure().Then(base::BindRepeating(
+      &AutocompleteProviderTest::CopyResults, base::Unretained(this))));
+  controller_->Start(input);
   if (!controller_->done())
-    // The message loop will terminate when all autocomplete input has been
-    // collected.
-    base::RunLoop().Run();
+    run_loop.Run();
 }
 
 void AutocompleteProviderTest::RunExactKeymatchTest(
@@ -1176,4 +1256,139 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   // ACMatch spans should be: "-------MMMMM---MMMMMM-----";
   EXPECT_EQ("0,0,7,2,12,0,15,2,21,0",
             AutocompleteMatch::ClassificationsToString(spans));
+}
+
+class AutocompleteProviderPrefetchTest : public AutocompleteProviderTest {
+ public:
+  AutocompleteProviderPrefetchTest() {
+    RegisterTemplateURL(kTestTemplateURLKeyword,
+                        "http://aqs/{searchTerms}/{google:assistedQueryStats}");
+    // Create an empty controller.
+    ResetControllerWithType(0);
+    provider_listener_ =
+        std::make_unique<AutocompleteProviderListenerWithClosure>(
+            controller_.get());
+  }
+  ~AutocompleteProviderPrefetchTest() override = default;
+  AutocompleteProviderPrefetchTest(const AutocompleteProviderPrefetchTest&) =
+      delete;
+  AutocompleteProviderPrefetchTest& operator=(
+      const AutocompleteProviderPrefetchTest&) = delete;
+
+ protected:
+  std::unique_ptr<AutocompleteProviderListenerWithClosure> provider_listener_;
+};
+
+TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_NonPrefetch) {
+  // Add a test provider that supports prefetch requests.
+  TestPrefetchProvider* provider = new TestPrefetchProvider(
+      kResultsPerProvider, u"http://a", kTestTemplateURLKeyword, client_);
+  controller_->providers_.push_back(provider);
+
+  base::RunLoop run_loop;
+  provider_listener_->set_closure(run_loop.QuitClosure());
+  provider->set_listener(provider_listener_.get());
+
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
+                          TestingSchemeClassifier());
+  controller_->Start(input);
+
+  ASSERT_FALSE(provider->done());
+  ASSERT_FALSE(controller_->done());
+
+  // Wait for the provider to finish asynchronously.
+  run_loop.Run();
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
+
+  // The results are expected to be non-empty as the provider did notify the
+  // controller of the non-prefetch request results.
+  CopyResults();
+  EXPECT_EQ(kResultsPerProvider, result_.size());
+}
+
+TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
+  // Add a test provider that supports prefetch requests.
+  TestPrefetchProvider* provider = new TestPrefetchProvider(
+      kResultsPerProvider, u"http://a", kTestTemplateURLKeyword, client_);
+  controller_->providers_.push_back(provider);
+
+  base::RunLoop run_loop;
+  provider_listener_->set_closure(run_loop.QuitClosure());
+  provider->set_listener(provider_listener_.get());
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestingSchemeClassifier());
+  controller_->StartPrefetch(input);
+
+  ASSERT_FALSE(provider->done());
+  // Prefetch requests do not affect the state of the controller.
+  ASSERT_TRUE(controller_->done());
+
+  // Wait for the provider to finish asynchronously.
+  run_loop.Run();
+  ASSERT_TRUE(provider->done());
+
+  // The results are expected to be empty as the provider did not notify the
+  // controller of the prefetch request results.
+  CopyResults();
+  EXPECT_TRUE(result_.empty());
+}
+
+TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
+  // Add a test provider that supports prefetch requests.
+  TestPrefetchProvider* provider = new TestPrefetchProvider(
+      kResultsPerProvider, u"http://a", kTestTemplateURLKeyword, client_);
+  controller_->providers_.push_back(provider);
+
+  base::RunLoop run_loop;
+  provider_listener_->set_closure(run_loop.QuitClosure());
+  provider->set_listener(provider_listener_.get());
+
+  AutocompleteInput input(u"bar", metrics::OmniboxEventProto::OTHER,
+                          TestingSchemeClassifier());
+  controller_->Start(input);
+
+  ASSERT_FALSE(provider->done());
+  ASSERT_FALSE(controller_->done());
+
+  // Try to start a prefetch request while a non-prefetch request is still in
+  // progress. We expect this not to call StartPrefetch() on the provider.
+  // We test this by requesting synchronous matches from TestPrefetchProvider
+  // which notifies the provider listener synchronously and calls the quit
+  // closure of `run_loop` before `run_loop` is run. This prevents the provider
+  // from being able to notify the controller of finishing the non-prefetch
+  // request resulting in the controller to remain in an invalid state.
+  input.set_want_asynchronous_matches(false);
+  controller_->StartPrefetch(input);
+
+  // Wait for the provider to finish asynchronously.
+  run_loop.Run();
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
+
+  // The results are expected to be non-empty as the provider did notify the
+  // controller of the non-prefetch request results.
+  CopyResults();
+  EXPECT_EQ(kResultsPerProvider, result_.size());
+}
+
+TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
+  // Add a test provider that does not support prefetch requests.
+  TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
+                                            kTestTemplateURLKeyword, client_);
+  controller_->providers_.push_back(provider);
+
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                          TestingSchemeClassifier());
+  controller_->StartPrefetch(input);
+
+  // The provider is expected to finish synchronously.
+  ASSERT_TRUE(provider->done());
+  ASSERT_TRUE(controller_->done());
+
+  // The results are expected to be empty since the provider did a no-op for the
+  // prefetch request.
+  CopyResults();
+  EXPECT_TRUE(result_.empty());
 }

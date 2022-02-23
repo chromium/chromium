@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
+#include "chrome/updater/app/app_recover.h"
 #include "chrome/updater/app/app_uninstall.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
@@ -31,15 +33,16 @@
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/process_startup_helper.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/win/win_util.h"
-#endif
-
-#if defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/app/server/mac/server.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "chrome/updater/app/server/linux/server.h"
 #endif
 
 // Instructions For Windows.
@@ -104,7 +107,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
                           const base::CommandLine* command_line) {
   // Used for unit test purposes. There is no need to run with a crash handler.
   if (command_line->HasSwitch(kTestSwitch))
-    return 0;
+    return kErrorOk;
 
   if (command_line->HasSwitch(kCrashHandlerSwitch)) {
     const int retval = CrashReporterMain();
@@ -123,9 +126,20 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Make the process more resilient to memory allocation issues.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
-#if defined(OS_WIN)
-  base::win::RegisterInvalidParamHandler();
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  if (!com_initializer.Succeeded()) {
+    PLOG(ERROR) << "Failed to initialize COM";
 
+    // TODO(crbug.com/1294543) - is there a more specific error needed?
+    return kErrorComInitializationFailed;
+  }
+  if (FAILED(DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
+  base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
 #endif
 
@@ -138,7 +152,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   }
 
   if (command_line->HasSwitch(kServerSwitch)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // By design, Windows uses a leaky singleton server for its RPC server.
     return AppServerSingletonInstance()->Run();
 #else
@@ -149,13 +163,18 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   if (command_line->HasSwitch(kUpdateSwitch))
     return MakeAppUpdate()->Run();
 
-#if defined(OS_WIN)
-  if (command_line->HasSwitch(kComServiceSwitch))
-    return ServiceMain::RunComService(command_line);
-#endif  // OS_WIN
+#if BUILDFLAG(IS_WIN)
+  if (command_line->HasSwitch(kWindowsServiceSwitch))
+    return ServiceMain::RunWindowsService(command_line);
+
+  if (command_line->HasSwitch(kHealthCheckSwitch)) {
+    return kErrorOk;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch(kInstallSwitch) ||
-      command_line->HasSwitch(kTagSwitch)) {
+      command_line->HasSwitch(kTagSwitch) ||
+      command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall()->Run();
   }
 
@@ -165,12 +184,17 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppUninstall()->Run();
   }
 
+  if (command_line->HasSwitch(kRecoverSwitch) ||
+      command_line->HasSwitch(kBrowserVersionSwitch)) {
+    return MakeAppRecover()->Run();
+  }
+
   if (command_line->HasSwitch(kWakeSwitch)) {
     return MakeAppWake()->Run();
   }
 
   VLOG(1) << "Unknown command line switch.";
-  return -1;
+  return kErrorUnknownCommandLine;
 }
 
 // Returns the string literal corresponding to an updater command, which
@@ -179,9 +203,11 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 const char* GetUpdaterCommand(const base::CommandLine* command_line) {
   // Contains the literals which are associated with specific updater commands.
   const char* commands[] = {
-      kComServiceSwitch,
+      kWindowsServiceSwitch,
       kCrashHandlerSwitch,
+      kHealthCheckSwitch,
       kInstallSwitch,
+      kRecoverSwitch,
       kServerSwitch,
       kTagSwitch,
       kTestSwitch,
@@ -190,11 +216,36 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kUninstallSwitch,
       kUpdateSwitch,
       kWakeSwitch,
+      kHealthCheckSwitch,
+      kHandoffSwitch,
   };
   const char** it = std::find_if(
       std::begin(commands), std::end(commands),
       [command_line](auto cmd) { return command_line->HasSwitch(cmd); });
-  return it != std::end(commands) ? *it : "";
+  // Return the command. As a workaround for recovery component invocations
+  // that do not pass --recover, report the browser version switch as --recover.
+  return it != std::end(commands)
+             ? *it
+             : command_line->HasSwitch(kBrowserVersionSwitch) ? kRecoverSwitch
+                                                              : "";
+}
+
+constexpr const char* BuildFlavor() {
+#if defined(NBEDUG)
+  return "opt";
+#else
+  return "debug";
+#endif
+}
+
+constexpr const char* BuildArch() {
+#if defined(ARCH_CPU_64_BITS)
+  return "64 bits";
+#elif defined(ARCH_CPU_32_BITS)
+  return "32 bits";
+#else
+#error CPU architecture is unknown.
+#endif
 }
 
 }  // namespace
@@ -210,11 +261,12 @@ int UpdaterMain(int argc, const char* const* argv) {
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
 
-  VLOG(1) << "Version " << kUpdaterVersion
+  VLOG(1) << "Version " << kUpdaterVersion << ", " << BuildFlavor() << ", "
+          << BuildArch()
           << ", command line: " << command_line->GetCommandLineString();
   const int retval = HandleUpdaterCommands(updater_scope, command_line);
-  DVLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
-           << " returned " << retval << ".";
+  VLOG(1) << __func__ << " (--" << GetUpdaterCommand(command_line) << ")"
+          << " returned " << retval << ".";
   return retval;
 }
 

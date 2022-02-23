@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link OmahaClientImpl}. */
 public class OmahaClient extends SplitCompatIntentService {
     private static final String TAG = "omaha";
 
+    @IdentifierNameString
+    private static String sImplClassName = "org.chromium.chrome.browser.omaha.OmahaClientImpl";
+
     public OmahaClient() {
-        super(SplitCompatUtils.getIdentifierName(
-                      "org.chromium.chrome.browser.omaha.OmahaClientImpl"),
-                TAG);
+        super(sImplClassName, TAG);
     }
 }

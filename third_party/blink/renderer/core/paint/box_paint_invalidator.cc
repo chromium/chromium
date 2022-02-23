@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -278,7 +277,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
       // onto an infinite canvas. In cases where it has a transform we can't
       // apply incremental invalidation, because the visual rect is no longer
       // axis-aligned to the LayoutView.
-      if (root_object->StyleRef().HasTransform())
+      if (root_object->HasTransform())
         return BackgroundInvalidationType::kFull;
     }
   }

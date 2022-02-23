@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece_forward.h"
@@ -114,7 +115,7 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  TestPasswordsPrivateDelegate* s_test_delegate_ = nullptr;
+  raw_ptr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
 };
 
 }  // namespace
@@ -309,6 +310,28 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
   AddCompromisedCredential(0);
   EXPECT_TRUE(RunPasswordsSubtest("removeInsecureCredentialSucceeds"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       MuteInsecureCredentialSucceeds) {
+  AddCompromisedCredential(0);
+  EXPECT_TRUE(RunPasswordsSubtest("muteInsecureCredentialSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MuteInsecureCredentialFails) {
+  EXPECT_TRUE(RunPasswordsSubtest("muteInsecureCredentialFails")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       UnmuteInsecureCredentialSucceeds) {
+  AddCompromisedCredential(0);
+  EXPECT_TRUE(RunPasswordsSubtest("unmuteInsecureCredentialSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, UnmuteInsecureCredentialFails) {
+  EXPECT_TRUE(RunPasswordsSubtest("unmuteInsecureCredentialFails")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartPasswordCheck) {

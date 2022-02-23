@@ -5,6 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 #define HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/configuration_policy_pref_store.h"  // nogncheck http://crbug.com/1227148
@@ -51,7 +52,7 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
   PlatformManagementService platform_management_service_;
 
   // Owned by the base class.
-  ConfigurationPolicyProvider* platform_provider_ = nullptr;
+  raw_ptr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
 };
 
 }  // namespace policy

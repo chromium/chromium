@@ -27,6 +27,25 @@ bool CanShowContextMenuForParams(const ContextMenuParams& params) {
   return false;
 }
 
+CGRect BoundingBoxFromBoundingBoxDictionary(const base::Value* boundingBox) {
+  absl::optional<double> x =
+      boundingBox->FindDoubleKey(kContextMenuElementBoundingBoxX);
+  absl::optional<double> y =
+      boundingBox->FindDoubleKey(kContextMenuElementBoundingBoxY);
+  absl::optional<double> width =
+      boundingBox->FindDoubleKey(kContextMenuElementBoundingBoxWidth);
+  absl::optional<double> height =
+      boundingBox->FindDoubleKey(kContextMenuElementBoundingBoxHeight);
+
+  if (x && y && width && height && width > 0.0 && height > 0.0) {
+    const double elementSize = *height * *width;
+    if (elementSize < kContextMenuMaxScreenshotSize) {
+      return CGRectMake(*x, *y, *width, *height);
+    }
+  }
+  return CGRectZero;
+}
+
 ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   ContextMenuParams params;
   if (!element || !element->is_dict()) {
@@ -65,6 +84,24 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   std::string* alt_text = element->FindStringKey(web::kContextMenuElementAlt);
   if (alt_text) {
     params.alt_text = base::SysUTF8ToNSString(*alt_text);
+  }
+
+  absl::optional<double> natural_width =
+      element->FindDoubleKey(web::kContextMenuElementNaturalWidth);
+  if (natural_width.has_value()) {
+    params.natural_width = *natural_width;
+  }
+
+  absl::optional<double> natural_height =
+      element->FindDoubleKey(web::kContextMenuElementNaturalHeight);
+  if (natural_height.has_value()) {
+    params.natural_height = *natural_height;
+  }
+
+  base::Value* bounding_box =
+      element->FindDictKey(web::kContextMenuElementBoundingBox);
+  if (bounding_box) {
+    params.bounding_box = BoundingBoxFromBoundingBoxDictionary(bounding_box);
   }
 
   return params;

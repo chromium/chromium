@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -43,16 +44,21 @@ class FidoDiscoveryFactory;
 class ChromeWebAuthenticationDelegate
     : public content::WebAuthenticationDelegate {
  public:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
   // platform authenticator for the given Profile.
   static TouchIdAuthenticatorConfig TouchIdAuthenticatorConfigForProfile(
       Profile* profile);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   ~ChromeWebAuthenticationDelegate() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // content::WebAuthenticationDelegate:
+  bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      content::BrowserContext* browser_context,
+      const url::Origin& caller_origin,
+      const std::string& relying_party_id) override;
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
       const url::Origin& caller_origin) override;
@@ -62,18 +68,23 @@ class ChromeWebAuthenticationDelegate
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;
   bool IsFocused(content::WebContents* web_contents) override;
-#if defined(OS_MAC)
-  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
-      content::BrowserContext* browser_context) override;
-#endif  // defined(OS_MAC)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
-      content::RenderFrameHost* render_frame_host) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host) override;
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context) override;
+#endif
+#if BUILDFLAG(IS_WIN)
+  void OperationSucceeded(content::BrowserContext* browser_context,
+                          bool used_win_api) override;
+#endif
+#if BUILDFLAG(IS_MAC)
+  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+      content::BrowserContext* browser_context) override;
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
+      content::RenderFrameHost* render_frame_host) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 class ChromeAuthenticatorRequestDelegate
@@ -169,6 +180,7 @@ class ChromeAuthenticatorRequestDelegate
   void OnStartOver() override;
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnCancelRequest() override;
+  void OnManageDevicesClicked() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
@@ -189,10 +201,6 @@ class ChromeAuthenticatorRequestDelegate
   // information that will be broadcast by the device.
   bool ShouldPermitCableExtension(const url::Origin& origin);
 
-  // GetCablePairings returns any known caBLE pairing data.
-  virtual std::vector<std::unique_ptr<device::cablev2::Pairing>>
-  GetCablePairings();
-
   void HandleCablePairingEvent(device::cablev2::PairingEvent pairing);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
@@ -203,7 +211,7 @@ class ChromeAuthenticatorRequestDelegate
   // |weak_dialog_model_|.
   std::unique_ptr<AuthenticatorRequestDialogModel>
       transient_dialog_model_holder_;
-  AuthenticatorRequestDialogModel* weak_dialog_model_ = nullptr;
+  raw_ptr<AuthenticatorRequestDialogModel> weak_dialog_model_ = nullptr;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;

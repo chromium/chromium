@@ -110,6 +110,11 @@ GetOpenXrInputProfilesMap() {
           // Microsoft Hand Interaction
           {OpenXrInteractionProfileType::kHandSelectGrasp,
            {{"", {"generic-hand-select-grasp", "generic-hand-select"}}}},
+
+          // Vive Cosmos
+          {OpenXrInteractionProfileType::kViveCosmos,
+           {{"",
+             {"htc-vive-cosmos", "generic-trigger-squeeze-thumbstick"}}}},
       });
   return *kInputProfilesMap;
 }
@@ -397,8 +402,62 @@ GetOpenXrControllerInteractionProfiles() {
            },
            /*left_button_maps=*/{},
            /*right_button_maps=*/{},
-           /*axis_maps=*/{}}
+           /*axis_maps=*/{}},
           // Microsoft Hands Profile
+
+          // Vive Cosmos
+          {OpenXrInteractionProfileType::kViveCosmos,
+           kHTCViveCosmosInteractionProfilePath,
+           /*required_extension=*/XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+           GamepadMapping::kXrStandard,
+           /*common_button_maps=*/
+           {
+               {OpenXrButtonType::kTrigger,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/trigger/value"},
+                    {OpenXrButtonActionType::kValue, "/input/trigger/value"},
+                }},
+               {OpenXrButtonType::kSqueeze,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/squeeze/click"},
+                }},
+               {OpenXrButtonType::kThumbstick,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/thumbstick/click"},
+                    {OpenXrButtonActionType::kTouch, "/input/thumbstick/touch"},
+                }},
+               {OpenXrButtonType::kShoulder,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/shoulder/click"},
+                }},
+           },
+           /*left_button_maps=*/
+           {
+               {OpenXrButtonType::kButton1,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/x/click"},
+                }},
+               {OpenXrButtonType::kButton2,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/y/click"},
+                }},
+           },
+           /*right_button_maps=*/
+           {
+               {OpenXrButtonType::kButton1,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/a/click"},
+                }},
+               {OpenXrButtonType::kButton2,
+                {
+                    {OpenXrButtonActionType::kPress, "/input/b/click"},
+                }},
+           },
+           /*axis_maps=*/
+           {
+               {OpenXrAxisType::kThumbstick, "/input/thumbstick"},
+           }},
+          // Vive Cosmos
       });
   return *kOpenXrControllerInteractionProfiles;
 }

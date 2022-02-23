@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="102360288709523007">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهبود Chromium کمک کنید.</translation>
+<translation id="1047130070405668746">‏Chromium را انتخاب کنید</translation>
+<translation id="1091252999271033193">‏به این معنی که Chromium هربار سایت ویژه تلفن همراه را درخواست خواهد کرد.</translation>
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1257458525759135959">‏برای ذخیره کردن تصاویر، روی «تنظیمات» ضربه بزنید و به Chromium اجازه دهید آن‌ها را به عکس‌ها اضافه کند</translation>
 <translation id="1289216811211435351">‏رفتن به Chromium</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">‏برای ورود به سیستم Chromium درخواست نشان می‌دهد.</translation>
 <translation id="1584569488888892906">‏Chromium ساده، ایمن، و سریع‌تر از همیشه است</translation>
 <translation id="1617663976202781617">‏داده‌های مربوط به همگام‌سازی Chromium</translation>
+<translation id="1722370509450468186">گذرواژه در «حسابتان» (<ph name="EMAIL" />) ذخیره خواهد شد.</translation>
 <translation id="1736662517232558588">‏داده‌های Chromium پاک شد</translation>
 <translation id="1838412507805038478">‏Chromium تأیید کرد که <ph name="ISSUER" /> گواهینامه این وب‌سایت را صادر کرده است.</translation>
 <translation id="1843424232666537147">‏Chromium دارای قابلیت‌هایی است که به شما کمک می‌کند داده‌های اینترنت و سرعت بارگیری صفحه‌های‌ وبتان را مدیریت کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">‏۴. Chromium را انتخاب کنید</translation>
 <translation id="2006345422933397527">‏Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2054703085270098503">‏با Chromium ایمن بمانید</translation>
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
 <translation id="2195025571279539885">‏می‌خواهید دفعه دیگر Chromium پیشنهاد ترجمه صفحات <ph name="LANGUAGE_NAME" /> را از این سایت بدهد؟</translation>
 <translation id="2218146227246548550">‏سازمانتان از شما می‌خواهد برای استفاده از Chromium به سیستم وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">‏به این معنی که Chromium هربار سایت ویژه رایانه را درخواست خواهد کرد.</translation>
 <translation id="2426113998523353159">‏سازمانتان از شما می‌خواهد برای استفاده از Chromium به سیستم وارد شوید.</translation>
 <translation id="2450140762465183767">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر همیشه در Chromium باز شوند.</translation>
 <translation id="2478931088402984578">‏<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> را انتخاب کنید</translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">‏در Chromium Canary پشتیبانی نمی‌شود</translation>
 <translation id="3639997914391704523">‏Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
 <translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم‌خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
-<translation id="3946918322491238254">همچنان می‌توانید همه نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیماتتان را در این دستگاه ببینید. اگر تغییری ایجاد کنید، با حسابتان همگام‌سازی نخواهد شد.</translation>
+<translation id="4043291146360695975">گذرواژه‌ها فقط در «مدیر گذرواژه» در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="4099085513035183040">‏در «Chromium بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4555020257205549924">‏وقتی این قابلیت روشن است، Chromium ترجمه صفحات نوشته‌شده به سایر زبان‌ها را با استفاده از ترجمه Google پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">‏اکنون می‌توانید با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها، از Chromium استفاده کنید.</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">‏Chromium بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="6752854822223394465">‏سازمانتان درحال راه‌اندازی Chromium است…</translation>
 <translation id="6820823224820483452">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
+<translation id="7006920032187763988">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه» در برنامه‌های دیگر iPad خودتان استفاده کنید.</translation>
 <translation id="7018284295775193585">‏Chromium به‌روزرسانی نمی‌شود</translation>
 <translation id="7045244423563602563">‏Chromium را برای خود اختصاصی کنید</translation>
 <translation id="7099326575020694068">‏Chromium نمی‌تواند از دوربین درحالت «نمای تقسیم» استفاده کند</translation>
 <translation id="7108914401277488191">‏با Chromium کارهای بیشتری انجام دهید</translation>
 <translation id="7118091470949186573">‏اکنون می‌توانید با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chromium استفاده کنید.</translation>
+<translation id="7175400662502680481">گذرواژه‌تان به‌دلیل سرقت اطلاعات شبکه لو رفته است. «مدیر گذرواژه» توصیه می‌کند آن را همین‌حالا تغییر دهید.</translation>
 <translation id="7208566199746267865">‏Chromium با آوردن حساب‌هایتان به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
 <translation id="725427773388857052">‏Chromium می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های ناامن، و موارد دیگر کمک کند.</translation>
 <translation id="7269362888766543920">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شوند. لطفاً آن‌ها را حذف نصب کنید.</translation>
 <translation id="7313655110045230863">‏برای تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض، «تنظیمات» را باز کنید. روی «برنامه مرورگر پیش‌فرض» ضربه بزنید، سپس Chromium را انتخاب کنید.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">‏داده‌های انتخاب‌‌شده از Chromium و دستگاه‌های همگام‌سازی‌شده حذف شده‌اند. ممکن است اشکال دیگری از سابقه مرورتان (مانند جستجو‌ها و فعالیت دیگر سرویس‌های Google در history.google.com) در حساب Google شما وجود داشته باشد.</translation>
+<translation id="7395825497086981028">گذرواژه‌تان در «مدیر گذرواژه» برای <ph name="EMAIL" /> ذخیره خواهد شد.</translation>
 <translation id="7400689562045506105">‏استفاده از Chromium در همه‌جا</translation>
 <translation id="766897673682622022">‏گذرواژه‌تان به‌دلیل نقض داده لو رفته است. Chromium توصیه می‌کند همین‌حالا گذرواژه را تغییر دهید.</translation>
 <translation id="7674213385180944843">‏Settings (تنظیمات) &gt; Privacy (حریم‌خصوصی) &gt; Camera (دوربین) &gt; Chromium را باز کنید و دوربین را روشن کنید.</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">‏داده‌های Chromium شما از این دستگاه پاک شود؟</translation>
 <translation id="8175055321229419309">‏نکته: <ph name="BEGIN_LINK" />Chromium را به لنگرگاهتان انتقال دهید<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">‏Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
+<translation id="858114650497379505">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه» در برنامه‌های دیگر iPhone خودتان استفاده کنید.</translation>
 <translation id="8586442755830160949">‏حق نشر <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
 <translation id="8663480472502753423">‏به‌روز نگه داشتن Chromium</translation>
 <translation id="8776843108004031667">‏این حساب و همه داده‌های ذخیره‌نشده از Chromium برداشته می‌شود.</translation>
 <translation id="894437814105052438">‏وقتی از سیستم خارج شوید، Chromium هیچ‌کدام از داده‌های جدید را با «حساب Google» شما همگام‌سازی نخواهد کرد. داده‌هایی که قبلاً همگام‌سازی شده‌اند در حساب می‌مانند.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
+<translation id="9059693977935746710">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9110075932708282655">‏استفاده از Chromium به‌طور پیش‌فرض</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>

@@ -195,7 +195,7 @@ TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
 }
 
 TEST(ElfReaderTestWithCurrentImage, ReadElfBuildId) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android the library loader memory maps the full so file.
   const char kLibraryName[] = "libbase_unittests__library";
   const void* addr = &__executable_start;
@@ -225,7 +225,7 @@ TEST(ElfReaderTestWithCurrentImage, ReadElfBuildId) {
       << "Library name " << *name << " doesn't contain expected "
       << kLibraryName;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   UnloadNativeLibrary(library);
 #endif
 }

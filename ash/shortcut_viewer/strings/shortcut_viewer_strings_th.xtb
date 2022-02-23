@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="ESC" /></translation>
+<translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1652741121070700329">ย้ายไปยังจุดเริ่มต้นของคำก่อนหน้า</translation>
 <translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="168356808214100546">กด <ph name="ALT" /> ค้างไว้แล้วแตะ <ph name="TAB" /> จนกว่าคุณจะไปถึงหน้าต่างที่ต้องการเปิดแล้วจึงปล่อย</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">กด <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> และคลิกลิงก์</translation>
 <translation id="561814908794220892">เปิดหน้าเว็บในแท็บใหม่</translation>
 <translation id="5620219513321115856">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านขวา</translation>
+<translation id="5699366815052349604">กำหนดหน้าต่างที่ใช้งานอยู่ให้กับเดสก์ทั้งหมด</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> หรือ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="5757474750054631686">หรี่แสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">นำแท็บกลับไปยังตำแหน่งเดิม</translation>
 <translation id="6474744297082284761">ซูมออก (เมื่อเปิดใช้แว่นขยายหน้าจอบางส่วนหรือแว่นขยายทั้งหน้าจอ)</translation>
 <translation id="649811797655257835">เลือกไฟล์แล้วกด <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">เปิดหรือปิดวิดเจ็ตปฏิทิน</translation>
 <translation id="6551886416582667425">ถ่ายภาพหน้าจอ/บันทึกหน้าจอบางส่วน</translation>
 <translation id="6556040137485212400">เปิดหน้าต่างที่ไม่ได้ใช้งานนานที่สุด</translation>
 <translation id="666343722268997814">เปิดเมนูคลิกขวาสำหรับรายการที่ไฮไลต์</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">แสดงไฟล์ที่ซ่อนอยู่ในแอป Files</translation>
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8727232706774971183">ดูการแจ้งเตือน</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 จนถึง 8</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8881584919399569791">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านซ้าย</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>

@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
+#include "components/sync/engine/cycle/commit_quota.h"
 
 namespace sync_pb {
 class DataTypeProgressMarker;
@@ -21,7 +22,7 @@ class GetUpdateTriggers;
 
 namespace syncer {
 
-class InvalidationInterface;
+class SyncInvalidation;
 
 struct WaitInterval {
   enum class BlockingMode {
@@ -64,8 +65,7 @@ class DataTypeTracker {
   void RecordLocalRefreshRequest();
 
   // Tracks that we received invalidation notifications for this type.
-  void RecordRemoteInvalidation(
-      std::unique_ptr<InvalidationInterface> incoming);
+  void RecordRemoteInvalidation(std::unique_ptr<SyncInvalidation> incoming);
 
   // Takes note that initial sync is pending for this type.
   void RecordInitialSyncRequired();
@@ -73,6 +73,11 @@ class DataTypeTracker {
   // Takes note that the conflict happended for this type, need to sync to
   // resolve conflict locally.
   void RecordCommitConflict();
+
+  // Records that a commit message has been sent (note that each commit message
+  // may include multiple entities of this data type and each sync cycle may
+  // include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage();
 
   // Records that a sync cycle has been performed successfully.
   // Generally, this means that all local changes have been committed and all
@@ -164,6 +169,8 @@ class DataTypeTracker {
  private:
   friend class SyncSchedulerImplTest;
 
+  const ModelType type_;
+
   // Number of local change nudges received for this type since the last
   // successful sync cycle.
   int local_nudge_count_;
@@ -177,7 +184,7 @@ class DataTypeTracker {
   // drop_tracker_.IsRecoveringFromDropEvent() and server_payload_overflow_.
   //
   // This list takes ownership of its contents.
-  std::vector<std::unique_ptr<InvalidationInterface>> pending_invalidations_;
+  std::vector<std::unique_ptr<SyncInvalidation>> pending_invalidations_;
 
   size_t payload_buffer_size_;
 
@@ -197,11 +204,15 @@ class DataTypeTracker {
   std::unique_ptr<WaitInterval> wait_interval_;
 
   // A helper to keep track invalidations we dropped due to overflow.
-  std::unique_ptr<InvalidationInterface> last_dropped_invalidation_;
+  std::unique_ptr<SyncInvalidation> last_dropped_invalidation_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.
   base::TimeDelta local_change_nudge_delay_;
+
+  // Quota for commits (used only for data types that can be committed by
+  // extensions).
+  std::unique_ptr<CommitQuota> quota_;
 };
 
 }  // namespace syncer

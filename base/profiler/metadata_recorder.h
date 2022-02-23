@@ -9,6 +9,7 @@
 #include <atomic>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -193,7 +194,7 @@ class BASE_EXPORT MetadataRecorder {
     size_t GetItems(ItemArray* const items) const NO_THREAD_SAFETY_ANALYSIS;
 
    private:
-    const MetadataRecorder* const metadata_recorder_;
+    const raw_ptr<const MetadataRecorder> metadata_recorder_;
     base::AutoLock auto_lock_;
   };
 

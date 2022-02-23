@@ -78,7 +78,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
@@ -122,6 +121,9 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 // the chip is shown.
 IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        ReleaseNotesDecreasesTimesShownOnAppListOpen) {
+  if (ash::features::IsProductivityLauncherEnabled())
+    return;
+
   web_app::WebAppProvider::GetForTest(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
@@ -160,7 +162,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
@@ -236,7 +237,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
@@ -264,9 +264,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  SearchAndWaitForProviders(
-      "", {ResultType::kInstalledApp, ResultType::kZeroStateFile,
-           ResultType::kHelpApp});
+  SearchAndWaitForProviders("",
+                            {ResultType::kInstalledApp, ResultType::kHelpApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
@@ -285,9 +284,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   system_web_app_manager.InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 
-  SearchAndWaitForProviders(
-      "", {ResultType::kInstalledApp, ResultType::kZeroStateFile,
-           ResultType::kHelpApp});
+  SearchAndWaitForProviders("",
+                            {ResultType::kInstalledApp, ResultType::kHelpApp});
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
 

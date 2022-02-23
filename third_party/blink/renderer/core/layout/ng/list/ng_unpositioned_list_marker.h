@@ -11,7 +11,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -90,10 +91,9 @@ class CORE_EXPORT NGUnpositionedListMarker final {
     return marker_layout_object_ == other.marker_layout_object_;
   }
 
-  scoped_refptr<const NGLayoutResult> Layout(
-      const NGConstraintSpace& parent_space,
-      const ComputedStyle& parent_style,
-      FontBaseline) const;
+  const NGLayoutResult* Layout(const NGConstraintSpace& parent_space,
+                               const ComputedStyle& parent_style,
+                               FontBaseline) const;
 
 #if DCHECK_IS_ON()
   void CheckMargin() const;

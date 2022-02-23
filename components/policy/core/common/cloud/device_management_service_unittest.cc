@@ -53,7 +53,6 @@ const char kResponseEmpty[] = "\x08\x00";
 #define PROTO_STRING(name) (std::string(name, base::size(name) - 1))
 
 // Some helper constants.
-const char kGaiaAuthToken[] = "gaia-auth-token";
 const char kOAuthToken[] = "oauth-token";
 const char kDMToken[] = "device-management-token";
 const char kClientID[] = "device-id";
@@ -158,8 +157,7 @@ class DeviceManagementServiceTestBase : public testing::Test {
           DeviceManagementService::Job::NO_RETRY) {
     return StartJob(
         DeviceManagementService::JobConfiguration::TYPE_CERT_BASED_REGISTRATION,
-        /*critical=*/false, DMAuth::FromGaiaToken(kGaiaAuthToken),
-        std::string(), payload, method);
+        /*critical=*/false, DMAuth::NoAuth(), std::string(), payload, method);
   }
 
   std::unique_ptr<DeviceManagementService::Job> StartTokenEnrollmentJob(
@@ -1160,25 +1158,6 @@ TEST_F(DeviceManagementRequestAuthTest, OnlyEnrollmentToken) {
   SendResponse(net::OK, 200, std::string());
 }
 
-TEST_F(DeviceManagementRequestAuthTest, OnlyGaiaToken) {
-  std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartJobWithAuthData(DMAuth::FromGaiaToken(kGaiaAuthToken),
-                           absl::nullopt /* oauth_token */));
-  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
-
-  const network::TestURLLoaderFactory::PendingRequest* request =
-      GetPendingRequest();
-  ASSERT_TRUE(request);
-
-  const std::vector<std::string> params = GetOAuthParams(*request);
-  EXPECT_EQ(0u, params.size());
-  EXPECT_EQ(base::StrCat(
-                {dm_protocol::kServiceTokenAuthHeaderPrefix, kGaiaAuthToken}),
-            GetAuthHeader(*request));
-
-  SendResponse(net::OK, 200, std::string());
-}
-
 TEST_F(DeviceManagementRequestAuthTest, OAuthAndDMToken) {
   std::unique_ptr<DeviceManagementService::Job> request_job(
       StartJobWithAuthData(DMAuth::FromDMToken(kDMToken), kOAuthToken));
@@ -1212,25 +1191,6 @@ TEST_F(DeviceManagementRequestAuthTest, OAuthAndEnrollmentToken) {
   EXPECT_EQ(kOAuthToken, params[0]);
   EXPECT_EQ(base::StrCat({dm_protocol::kEnrollmentTokenAuthHeaderPrefix,
                           kEnrollmentToken}),
-            GetAuthHeader(*request));
-
-  SendResponse(net::OK, 200, std::string());
-}
-
-TEST_F(DeviceManagementRequestAuthTest, OAuthAndGaiaToken) {
-  std::unique_ptr<DeviceManagementService::Job> request_job(
-      StartJobWithAuthData(DMAuth::FromGaiaToken(kGaiaAuthToken), kOAuthToken));
-  EXPECT_CALL(*this, OnShouldJobRetry(200, std::string()));
-
-  const network::TestURLLoaderFactory::PendingRequest* request =
-      GetPendingRequest();
-  ASSERT_TRUE(request);
-
-  std::vector<std::string> params = GetOAuthParams(*request);
-  ASSERT_EQ(1u, params.size());
-  EXPECT_EQ(kOAuthToken, params[0]);
-  EXPECT_EQ(base::StrCat(
-                {dm_protocol::kServiceTokenAuthHeaderPrefix, kGaiaAuthToken}),
             GetAuthHeader(*request));
 
   SendResponse(net::OK, 200, std::string());

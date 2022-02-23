@@ -36,10 +36,9 @@ NoStatePrefetchNavigationThrottle::CancelIfCrossOrigin() {
   if (!prefetch_url.SchemeIsHTTPOrHTTPS()) {
     return {CANCEL, net::ERR_BLOCKED_BY_CLIENT};
   }
-  url::Origin prefetch_origin = url::Origin::Create(prefetch_url);
   DCHECK(navigation_handle()->GetInitiatorOrigin());
-  if (!prefetch_origin.IsSameOriginWith(
-          navigation_handle()->GetInitiatorOrigin().value())) {
+  if (!navigation_handle()->GetInitiatorOrigin()->IsSameOriginWith(
+          prefetch_url)) {
     return {CANCEL, net::ERR_BLOCKED_BY_CLIENT};
   }
   return PROCEED;

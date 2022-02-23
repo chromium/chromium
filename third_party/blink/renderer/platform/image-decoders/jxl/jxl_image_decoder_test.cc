@@ -127,7 +127,7 @@ void TestHDR(const char* jxl_file,
   EXPECT_NEAR(expected_a, a, eps);
 }
 
-void TestSize(const char* jxl_file, IntSize expected_size) {
+void TestSize(const char* jxl_file, gfx::Size expected_size) {
   auto decoder = CreateJXLDecoderWithData(jxl_file);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
@@ -139,7 +139,7 @@ struct FramePoint {
 };
 
 void TestPixel(const char* jxl_file,
-               IntSize expected_size,
+               gfx::Size expected_size,
                const WTF::Vector<FramePoint>& coordinates,
                const WTF::Vector<SkColor>& expected_colors,
                ImageDecoder::AlphaOption alpha_option,
@@ -202,7 +202,7 @@ class PerByteSegmentReader : public SegmentReader {
 
 // Tests whether the decoder successfully parses the file without errors or
 // infinite loop in the worst case of the reader returning 1-byte segments.
-void TestSegmented(const char* jxl_file, IntSize expected_size) {
+void TestSegmented(const char* jxl_file, gfx::Size expected_size) {
   auto decoder = std::make_unique<JXLImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
       ColorBehavior::Tag(), ImageDecoder::kNoDecodedImageByteLimit);
@@ -231,43 +231,43 @@ void TestSegmented(const char* jxl_file, IntSize expected_size) {
 }
 
 TEST(JXLTests, SegmentedTest) {
-  TestSegmented("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10));
-  TestSegmented("/images/resources/jxl/3x3_srgb_lossy.jxl", IntSize(3, 3));
+  TestSegmented("/images/resources/jxl/alpha-lossless.jxl", gfx::Size(2, 10));
+  TestSegmented("/images/resources/jxl/3x3_srgb_lossy.jxl", gfx::Size(3, 3));
   TestSegmented("/images/resources/jxl/pq_gradient_icc_lossy.jxl",
-                IntSize(16, 16));
-  TestSegmented("/images/resources/jxl/animated.jxl", IntSize(16, 16));
+                gfx::Size(16, 16));
+  TestSegmented("/images/resources/jxl/animated.jxl", gfx::Size(16, 16));
 }
 
 TEST(JXLTests, SizeTest) {
-  TestSize("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10));
+  TestSize("/images/resources/jxl/alpha-lossless.jxl", gfx::Size(2, 10));
 }
 
 TEST(JXLTests, PixelTest) {
-  TestPixel("/images/resources/jxl/red-10-default.jxl", IntSize(10, 10),
+  TestPixel("/images/resources/jxl/red-10-default.jxl", gfx::Size(10, 10),
             {{0, {0, 0}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/red-10-lossless.jxl", IntSize(10, 10),
+  TestPixel("/images/resources/jxl/red-10-lossless.jxl", gfx::Size(10, 10),
             {{0, {0, 1}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/red-10-container.jxl", IntSize(10, 10),
+  TestPixel("/images/resources/jxl/red-10-container.jxl", gfx::Size(10, 10),
             {{0, {1, 0}}}, {SkColorSetARGB(255, 255, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/green-10-lossless.jxl", IntSize(10, 10),
+  TestPixel("/images/resources/jxl/green-10-lossless.jxl", gfx::Size(10, 10),
             {{0, {2, 3}}}, {SkColorSetARGB(255, 0, 255, 0)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/blue-10-lossless.jxl", IntSize(10, 10),
+  TestPixel("/images/resources/jxl/blue-10-lossless.jxl", gfx::Size(10, 10),
             {{0, {9, 9}}}, {SkColorSetARGB(255, 0, 0, 255)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10),
+  TestPixel("/images/resources/jxl/alpha-lossless.jxl", gfx::Size(2, 10),
             {{0, {0, 1}}}, {SkColorSetARGB(0, 255, 255, 255)},
             ImageDecoder::AlphaOption::kAlphaNotPremultiplied,
             ColorBehavior::Tag(), 0);
-  TestPixel("/images/resources/jxl/alpha-lossless.jxl", IntSize(2, 10),
+  TestPixel("/images/resources/jxl/alpha-lossless.jxl", gfx::Size(2, 10),
             {{0, {0, 1}}}, {SkColorSetARGB(0, 0, 0, 0)},
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::Tag(), 0);
@@ -277,7 +277,7 @@ TEST(JXLTests, PixelTest) {
       {0, {2, 1}}, {0, {0, 2}}, {0, {1, 2}}, {0, {2, 2}},
   };
 
-  TestPixel("/images/resources/jxl/3x3_srgb_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_srgb_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
@@ -293,7 +293,7 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 0);
 
-  TestPixel("/images/resources/jxl/3x3_srgb_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_srgb_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
@@ -309,7 +309,7 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 15);
 
-  TestPixel("/images/resources/jxl/3x3a_srgb_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_srgb_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
@@ -325,7 +325,7 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 0);
 
-  TestPixel("/images/resources/jxl/3x3a_srgb_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_srgb_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
@@ -342,7 +342,7 @@ TEST(JXLTests, PixelTest) {
             ColorBehavior::TransformToSRGB(), 15);
 
   // Lossless, but allow some inaccuracy due to the color profile conversion.
-  TestPixel("/images/resources/jxl/3x3_gbr_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_gbr_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 0, 255, 0),
@@ -358,7 +358,7 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 3);
 
-  TestPixel("/images/resources/jxl/3x3_gbr_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_gbr_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 0, 255, 0),
@@ -375,7 +375,7 @@ TEST(JXLTests, PixelTest) {
             ColorBehavior::TransformToSRGB(), 35);
 
   // Lossless, but allow some inaccuracy due to the color profile conversion.
-  TestPixel("/images/resources/jxl/3x3a_gbr_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_gbr_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 0, 255, 0),
@@ -391,7 +391,7 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 3);
 
-  TestPixel("/images/resources/jxl/3x3a_gbr_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_gbr_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 0, 255, 0),
@@ -408,71 +408,71 @@ TEST(JXLTests, PixelTest) {
             ColorBehavior::TransformToSRGB(), 35);
 
   // Lossless, but allow some inaccuracy due to the color profile conversion.
-  TestPixel("/images/resources/jxl/3x3_pq_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_pq_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
                 SkColorSetARGB(255, 0, 255, 0),
                 SkColorSetARGB(255, 0, 0, 255),
-                SkColorSetARGB(255, 33, 0, 0),
-                SkColorSetARGB(255, 0, 26, 0),
-                SkColorSetARGB(255, 0, 1, 26),
+                SkColorSetARGB(255, 255, 0, 53),
+                SkColorSetARGB(255, 0, 255, 0),
+                SkColorSetARGB(255, 0, 60, 255),
                 SkColorSetARGB(255, 255, 255, 255),
-                SkColorSetARGB(255, 24, 24, 24),
+                SkColorSetARGB(255, 248, 248, 248),
                 SkColorSetARGB(255, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 2);
 
-  TestPixel("/images/resources/jxl/3x3_pq_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_pq_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
                 SkColorSetARGB(255, 0, 255, 0),
                 SkColorSetARGB(255, 0, 0, 255),
-                SkColorSetARGB(255, 33, 0, 0),
-                SkColorSetARGB(255, 0, 26, 0),
-                SkColorSetARGB(255, 0, 1, 26),
+                SkColorSetARGB(255, 255, 0, 55),
+                SkColorSetARGB(255, 0, 255, 0),
+                SkColorSetARGB(255, 0, 55, 255),
                 SkColorSetARGB(255, 255, 255, 255),
-                SkColorSetARGB(255, 24, 24, 24),
+                SkColorSetARGB(255, 250, 246, 255),
                 SkColorSetARGB(255, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 15);
 
-  TestPixel("/images/resources/jxl/3x3a_pq_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_pq_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
                 SkColorSetARGB(128, 0, 255, 0),
                 SkColorSetARGB(128, 0, 0, 255),
-                SkColorSetARGB(128, 33, 0, 0),
-                SkColorSetARGB(128, 0, 26, 0),
-                SkColorSetARGB(128, 0, 1, 26),
+                SkColorSetARGB(128, 255, 0, 54),
+                SkColorSetARGB(128, 0, 255, 0),
+                SkColorSetARGB(128, 0, 60, 255),
                 SkColorSetARGB(128, 255, 255, 255),
-                SkColorSetARGB(128, 24, 24, 24),
+                SkColorSetARGB(128, 249, 249, 249),
                 SkColorSetARGB(128, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 2);
 
-  TestPixel("/images/resources/jxl/3x3a_pq_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_pq_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
                 SkColorSetARGB(128, 0, 255, 0),
                 SkColorSetARGB(128, 0, 0, 255),
-                SkColorSetARGB(128, 33, 0, 0),
-                SkColorSetARGB(128, 0, 26, 0),
-                SkColorSetARGB(128, 0, 1, 26),
+                SkColorSetARGB(128, 255, 0, 54),
+                SkColorSetARGB(128, 0, 255, 0),
+                SkColorSetARGB(128, 0, 54, 255),
                 SkColorSetARGB(128, 255, 255, 255),
-                SkColorSetARGB(128, 24, 24, 24),
+                SkColorSetARGB(128, 249, 247, 255),
                 SkColorSetARGB(128, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 2);
 
-  TestPixel("/images/resources/jxl/3x3_hlg_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_hlg_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
@@ -488,23 +488,23 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 15);
 
-  TestPixel("/images/resources/jxl/3x3_hlg_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3_hlg_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(255, 255, 0, 0),
                 SkColorSetARGB(255, 0, 255, 0),
                 SkColorSetARGB(255, 0, 0, 255),
-                SkColorSetARGB(255, 99, 30, 39),
-                SkColorSetARGB(255, 0, 86, 32),
-                SkColorSetARGB(255, 35, 39, 85),
+                SkColorSetARGB(255, 255, 108, 129),
+                SkColorSetARGB(255, 0, 255, 116),
+                SkColorSetARGB(255, 128, 133, 255),
                 SkColorSetARGB(255, 255, 255, 255),
-                SkColorSetARGB(255, 82, 82, 82),
+                SkColorSetARGB(255, 255, 253, 255),
                 SkColorSetARGB(255, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 15);
 
-  TestPixel("/images/resources/jxl/3x3a_hlg_lossless.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_hlg_lossless.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
@@ -520,17 +520,17 @@ TEST(JXLTests, PixelTest) {
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
             ColorBehavior::TransformToSRGB(), 6);
 
-  TestPixel("/images/resources/jxl/3x3a_hlg_lossy.jxl", IntSize(3, 3),
+  TestPixel("/images/resources/jxl/3x3a_hlg_lossy.jxl", gfx::Size(3, 3),
             coordinates_3x3,
             {
                 SkColorSetARGB(128, 255, 0, 0),
                 SkColorSetARGB(128, 0, 255, 0),
                 SkColorSetARGB(128, 0, 0, 255),
-                SkColorSetARGB(128, 99, 30, 39),
-                SkColorSetARGB(128, 0, 86, 32),
-                SkColorSetARGB(128, 35, 39, 85),
+                SkColorSetARGB(128, 255, 108, 129),
+                SkColorSetARGB(128, 0, 255, 116),
+                SkColorSetARGB(128, 128, 133, 255),
                 SkColorSetARGB(128, 255, 255, 255),
-                SkColorSetARGB(128, 82, 82, 82),
+                SkColorSetARGB(128, 255, 253, 255),
                 SkColorSetARGB(128, 0, 0, 0),
             },
             ImageDecoder::AlphaOption::kAlphaPremultiplied,
@@ -550,7 +550,7 @@ TEST(JXLTests, ColorProfileTest) {
 
 TEST(JXLTests, AnimatedPixelTest) {
   TestPixel(
-      "/images/resources/jxl/animated.jxl", IntSize(16, 16),
+      "/images/resources/jxl/animated.jxl", gfx::Size(16, 16),
       {{0, {0, 0}}, {1, {0, 0}}},
       {SkColorSetARGB(255, 204, 0, 153), SkColorSetARGB(255, 0, 102, 102)},
       ImageDecoder::AlphaOption::kAlphaNotPremultiplied, ColorBehavior::Tag(),
@@ -565,8 +565,8 @@ TEST(JXLTests, JXLHDRTest) {
           0.73333334922790527, 0.43921568989753723, 1);
   // sRGB as expected, but not an exact match
   TestHDR("/images/resources/jxl/pq_gradient_lossy.jxl",
-          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.3433017,
-          -0.0376128, 1);
+          ColorBehavior::TransformToSRGB(), true, -1.26171875, 2.62890625,
+          -0.61572265625, 1);
 
   // linear sRGB as expected.
   TestHDR("/images/resources/jxl/pq_gradient_lossy.jxl", ColorBehavior::Tag(),
@@ -578,8 +578,8 @@ TEST(JXLTests, JXLHDRTest) {
           ColorBehavior::Ignore(), false, 0.58039218187332153,
           0.73725491762161255, 0.45098039507865906, 1);
   TestHDR("/images/resources/jxl/pq_gradient_lossless.jxl",
-          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.3433017,
-          -0.0376128, 1);
+          ColorBehavior::TransformToSRGB(), true, -1.3056640625, 2.662109375,
+          -0.5791015625, 1);
   // correct, original PQ values
   TestHDR("/images/resources/jxl/pq_gradient_lossless.jxl",
           ColorBehavior::Tag(), true, 0.58056640625, 0.7373046875,
@@ -599,8 +599,8 @@ TEST(JXLTests, JXLHDRTest) {
           ColorBehavior::Ignore(), false, 0.58039218187332153,
           0.73725491762161255, 0.45098039507865906, 1);
   TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
-          ColorBehavior::TransformToSRGB(), true, -0.1437553, 0.34330175,
-          -0.0376128, 1);
+          ColorBehavior::TransformToSRGB(), true, -1.3056640625, 2.662109375,
+          -0.5791015625, 1);
   TestHDR("/images/resources/jxl/pq_gradient_icc_lossless.jxl",
           ColorBehavior::Tag(), true, 0.58039218187332153, 0.73725491762161255,
           0.45098039507865906, 1);

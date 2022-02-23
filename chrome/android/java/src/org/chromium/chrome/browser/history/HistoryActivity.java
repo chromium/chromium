@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 
@@ -27,6 +28,7 @@ public class HistoryActivity extends SnackbarActivity {
         mHistoryManager = new HistoryManager(
                 this, true, getSnackbarManager(), isIncognito, /* Supplier<Tab>= */ null);
         setContentView(mHistoryManager.getView());
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mHistoryManager::onBackPressed);
     }
 
     @Override
@@ -39,10 +41,5 @@ public class HistoryActivity extends SnackbarActivity {
     @VisibleForTesting
     HistoryManager getHistoryManagerForTests() {
         return mHistoryManager;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!mHistoryManager.onBackPressed()) super.onBackPressed();
     }
 }

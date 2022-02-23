@@ -22,6 +22,7 @@
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/cocoa/command_dispatcher.h"
+#include "ui/base/cocoa/weak_ptr_nsobject.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/display/display_observer.h"
 
@@ -253,6 +254,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void ReleaseCapture() override;
   void RedispatchKeyEvent(
       const std::vector<uint8_t>& native_event_data) override;
+  void SetLocalEventMonitorEnabled(bool enable) override;
   void CreateWindowControlsOverlayNSView(
       const mojom::WindowControlsOverlayNSViewType overlay_type) override;
   void UpdateWindowControlsOverlayNSView(
@@ -303,7 +305,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool HasWindowRestorationData();
 
   // CocoaMouseCaptureDelegate:
-  void PostCapturedEvent(NSEvent* event) override;
+  bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
   NSWindow* GetWindow() const override;
 
@@ -326,6 +328,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::unique_ptr<CocoaWindowMoveLoop> window_move_loop_;
   ui::ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   bool is_translucent_window_ = false;
+  bool is_headless_mode_window_ = false;
+  id key_down_event_monitor_ = nil;
 
   // Intended for PWAs with window controls overlay display override. These two
   // NSViews are added on top of the non client area to route events to the
@@ -399,6 +403,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_mojo_receiver_{this};
+
+  ui::WeakPtrNSObjectFactory<NativeWidgetNSWindowBridge> ns_weak_factory_;
 };
 
 }  // namespace remote_cocoa

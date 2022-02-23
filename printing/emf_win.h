@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "printing/metafile.h"
 
 namespace base {
@@ -69,6 +70,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* buffer, uint32_t size) const override;
+  bool ShouldCopySharedMemoryRegionData() const override;
   mojom::MetafileDataType GetDataType() const override;
 
   // Should be passed to Playback to keep the exact same size.
@@ -103,10 +105,10 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) Emf : public Metafile {
 struct Emf::EnumerationContext {
   EnumerationContext();
 
-  HANDLETABLE* handle_table;
+  raw_ptr<HANDLETABLE> handle_table;
   int objects_count;
   HDC hdc;
-  const XFORM* base_matrix;
+  raw_ptr<const XFORM> base_matrix;
   int dc_on_page_start;
 };
 

@@ -17,8 +17,8 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -47,11 +47,12 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/strings/grit/app_locale_settings.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
@@ -60,7 +61,7 @@
 #include "ui/gfx/platform_font_skia.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
@@ -77,7 +78,7 @@ const size_t kPngChunkMetadataSize = 12;  // length, type, crc32
 const unsigned char kPngScaleChunkType[4] = { 'c', 's', 'C', 'l' };
 const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 const char kPakFileExtension[] = ".pak";
 #endif
 
@@ -86,10 +87,13 @@ const char kPakFileExtension[] = ".pak";
 // See: tools/grit/grit/node/structure.py
 constexpr char kLottiePrefix[6] = {'L', 'O', 'T', 'T', 'I', 'E'};
 
-// Points to |lottie::ParseLottieAsStillImage| so that certain dependencies do
-// not need to be included directly in ui/base.
+// Pointers to the functions |lottie::ParseLottieAsStillImage| and
+// |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
+// functions do not need to be included directly in ui/base.
 ResourceBundle::LottieImageParseFunction g_parse_lottie_as_still_image_ =
     nullptr;
+ResourceBundle::LottieThemedImageParseFunction
+    g_parse_lottie_as_themed_still_image_ = nullptr;
 #endif
 
 ResourceBundle* g_shared_instance_ = nullptr;
@@ -100,11 +104,11 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
     return path.AppendASCII(pak_name.c_str());
 
   // Return just the name of the pak file.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::ASCIIToWide(pak_name));
 #else
   return base::FilePath(pak_name.c_str());
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 SkBitmap CreateEmptyBitmap() {
@@ -170,9 +174,11 @@ bool BrotliDecompress(base::StringPiece input, std::string* output) {
 // Helper function for decompressing resource.
 void DecompressIfNeeded(base::StringPiece data, std::string* output) {
   if (!data.empty() && HasGzipHeader(data)) {
+    TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
     bool success = compression::GzipUncompress(data, output);
     DCHECK(success);
   } else if (!data.empty() && HasBrotliHeader(data)) {
+    TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
     bool success = BrotliDecompress(data, output);
     DCHECK(success);
   } else {
@@ -183,57 +189,32 @@ void DecompressIfNeeded(base::StringPiece data, std::string* output) {
 
 }  // namespace
 
-// A descendant of |gfx::ImageSkiaSource| that loads an image (bitmap or vector
-// graphic) for the requested scale factor from |ResourceBundle| on demand for a
-// given |resource_id|. For bitmap assets, if the bitmap for the requested scale
-// factor does not exist, it will return the 1x bitmap scaled by the scale
-// factor. This may lead to broken UI if the correct size of the scaled image is
-// not exactly |scale_factor| * the size of the 1x bitmap. When
+// A descendant of |gfx::ImageSkiaSource| that loads a bitmap image for the
+// requested scale factor from |ResourceBundle| on demand for a given
+// |resource_id|. If the bitmap for the requested scale factor does not exist,
+// it will return the 1x bitmap scaled by the scale factor. This may lead to
+// broken UI if the correct size of the scaled image is not exactly
+// |scale_factor| * the size of the 1x bitmap. When
 // --highlight-missing-scaled-resources flag is specified, scaled 1x bitmaps are
 // highlighted by blending them with red.
-class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
+class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
  public:
-  ResourceBundleImageSource(ResourceBundle* rb, int resource_id)
-      : rb_(rb),
-        resource_id_(resource_id)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        ,
-        is_lottie_(rb->GetRawDataResourceForScale(resource_id, k100Percent)
-                       .substr(0u, base::size(kLottiePrefix)) ==
-                   base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
-#endif
-  {
-  }
+  BitmapImageSource(ResourceBundle* rb, int resource_id)
+      : rb_(rb), resource_id_(resource_id) {}
 
-  ResourceBundleImageSource(const ResourceBundleImageSource&) = delete;
-  ResourceBundleImageSource& operator=(const ResourceBundleImageSource&) =
-      delete;
-
-  ~ResourceBundleImageSource() override {}
+  BitmapImageSource(const BitmapImageSource&) = delete;
+  BitmapImageSource& operator=(const BitmapImageSource&) = delete;
+  ~BitmapImageSource() override = default;
 
   // gfx::ImageSkiaSource overrides:
   gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    ResourceScaleFactor scale_factor = GetSupportedResourceScaleFactor(scale);
-
-    // TODO(https://crbug.com/1128684): Consolidate |LoadBitmap| and
-    // |LoadLottie|.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (is_lottie_) {
-      gfx::ImageSkiaRep rep_from_lottie;
-      if (rb_->LoadLottie(resource_id_, scale, scale_factor, &rep_from_lottie))
-        return rep_from_lottie;
-      NOTREACHED() << "Unable to load Lottie image with id " << resource_id_
-                   << ", scale=" << scale;
-      return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
-    }
-#endif
-
     SkBitmap image;
     bool fell_back_to_1x = false;
+    ResourceScaleFactor scale_factor = GetSupportedResourceScaleFactor(scale);
     bool found = rb_->LoadBitmap(resource_id_, &scale_factor,
                                  &image, &fell_back_to_1x);
     if (!found) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
@@ -261,16 +242,10 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
     return gfx::ImageSkiaRep(image, scale);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool HasRepresentationAtAllScales() const override { return is_lottie_; }
-#endif
-
  private:
-  ResourceBundle* rb_;
+  raw_ptr<ResourceBundle> rb_;
+
   const int resource_id_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool is_lottie_;
-#endif
 };
 
 ResourceBundle::FontDetails::FontDetails(std::string typeface,
@@ -301,6 +276,21 @@ std::string ResourceBundle::InitSharedInstanceWithLocale(
                                               /*crash_on_failure=*/true);
   g_shared_instance_->InitDefaultFontList();
   return result;
+}
+
+// static
+void ResourceBundle::InitSharedInstanceWithBuffer(
+    base::span<const uint8_t> buffer,
+    ResourceScaleFactor scale_factor) {
+  InitSharedInstance(nullptr);
+
+  auto data_pack = std::make_unique<DataPack>(scale_factor);
+  if (data_pack->LoadFromBuffer(buffer)) {
+    g_shared_instance_->locale_resources_data_ = std::move(data_pack);
+  } else {
+    LOG(ERROR) << "Failed to load locale resource from buffer";
+  }
+  g_shared_instance_->InitDefaultFontList();
 }
 
 // static
@@ -354,9 +344,11 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
-void ResourceBundle::SetParseLottieAsStillImage(
-    ResourceBundle::LottieImageParseFunction parse_lottie_as_still_image) {
+void ResourceBundle::SetLottieParsingFunctions(
+    LottieImageParseFunction parse_lottie_as_still_image,
+    LottieThemedImageParseFunction parse_lottie_as_themed_still_image) {
   g_parse_lottie_as_still_image_ = parse_lottie_as_still_image;
+  g_parse_lottie_as_themed_still_image_ = parse_lottie_as_themed_still_image;
 }
 #endif
 
@@ -372,13 +364,13 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
   secondary_locale_resources_data_ = std::move(data_pack);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // static
 bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
   const auto path = GetLocaleFilePath(locale);
   return !path.empty() && base::PathExists(path);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ResourceBundle::AddDataPackFromPath(const base::FilePath& path,
                                          ResourceScaleFactor scale_factor) {
@@ -414,7 +406,7 @@ void ResourceBundle::AddDataPackFromFileRegion(
   }
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 // static
 base::FilePath ResourceBundle::GetLocaleFilePath(
     const std::string& app_locale) {
@@ -442,7 +434,7 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                                                 bool crash_on_failure) {
   DCHECK(!locale_resources_data_.get()) << "locale.pak already loaded";
@@ -461,14 +453,14 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   if (!data_pack->LoadFromPath(locale_file_path) && crash_on_failure) {
     // https://crbug.com/1076423: Chrome can't start when the locale file cannot
     // be loaded. Crash early and gather some data.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     const auto last_error = ::GetLastError();
     base::debug::Alias(&last_error);
     wchar_t path_copy[MAX_PATH];
     base::wcslcpy(path_copy, locale_file_path.value().c_str(),
                   base::size(path_copy));
     base::debug::Alias(path_copy);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     CHECK(false);
   }
 
@@ -476,7 +468,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   loaded_locale_ = pref_locale;
   return app_locale;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ResourceBundle::LoadTestResources(const base::FilePath& path,
                                        const base::FilePath& locale_path) {
@@ -582,25 +574,7 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
     image = delegate_->GetImageNamed(resource_id);
 
   if (image.IsEmpty()) {
-    DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
-#elif defined(OS_WIN)
-    ResourceScaleFactor scale_factor_to_load =
-        display::win::GetDPIScale() > 1.25 ? GetMaxResourceScaleFactor()
-                                           : ui::k100Percent;
-#else
-    ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
-#endif
-    // TODO(oshima): Consider reading the image size from png IHDR chunk and
-    // skip decoding here and remove #ifdef below.
-    // ResourceBundle::GetSharedInstance() is destroyed after the
-    // BrowserMainLoop has finished running. |image_skia| is guaranteed to be
-    // destroyed before the resource bundle is destroyed.
-    gfx::ImageSkia image_skia(
-        std::make_unique<ResourceBundleImageSource>(this, resource_id),
-        GetScaleForResourceScaleFactor(scale_factor_to_load));
+    gfx::ImageSkia image_skia = CreateImageSkia(resource_id);
     if (image_skia.isNull()) {
       LOG(WARNING) << "Unable to load image with id " << resource_id;
       NOTREACHED();  // Want to assert in debug mode.
@@ -616,6 +590,35 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
   DCHECK(inserted.second);
   return inserted.first->second;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
+    int resource_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Check to see if the image is already in the cache.
+  auto found = image_models_.find(resource_id);
+  if (found != image_models_.end())
+    return found->second;
+
+  std::string bytes_string;
+  if (!LoadLottieBytesString(resource_id, &bytes_string)) {
+    LOG(WARNING) << "Unable to load themed Lottie image with id "
+                 << resource_id;
+    NOTREACHED();  // Want to assert in debug mode.
+    // The load failed to retrieve the bytes string; show a debugging red
+    // square.
+    return GetEmptyImageModel();
+  }
+
+  // The bytes string was successfully loaded, so parse it and cache the
+  // resulting image.
+  auto inserted = image_models_.emplace(
+      resource_id, (*g_parse_lottie_as_themed_still_image_)(bytes_string));
+  DCHECK(inserted.second);
+  return inserted.first->second;
+}
+#endif
 
 constexpr uint8_t ResourceBundle::kBrotliConst[];
 
@@ -662,10 +665,13 @@ base::StringPiece ResourceBundle::GetRawDataResource(int resource_id) const {
 
 base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     int resource_id,
-    ResourceScaleFactor scale_factor) const {
+    ResourceScaleFactor scale_factor,
+    ResourceScaleFactor* loaded_scale_factor) const {
   base::StringPiece data;
   if (delegate_ &&
       delegate_->GetRawDataResource(resource_id, scale_factor, &data)) {
+    if (loaded_scale_factor)
+      *loaded_scale_factor = scale_factor;
     return data;
   }
 
@@ -673,8 +679,11 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
     for (size_t i = 0; i < data_packs_.size(); i++) {
       if (data_packs_[i]->GetResourceScaleFactor() == scale_factor &&
           data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
-                                         &data))
+                                         &data)) {
+        if (loaded_scale_factor)
+          *loaded_scale_factor = scale_factor;
         return data;
+      }
     }
   }
 
@@ -685,10 +694,13 @@ base::StringPiece ResourceBundle::GetRawDataResourceForScale(
          data_packs_[i]->GetResourceScaleFactor() == ui::kScaleFactorNone) &&
         data_packs_[i]->GetStringPiece(static_cast<uint16_t>(resource_id),
                                        &data)) {
+      if (loaded_scale_factor)
+        *loaded_scale_factor = data_packs_[i]->GetResourceScaleFactor();
       return data;
     }
   }
-
+  if (loaded_scale_factor)
+    *loaded_scale_factor = ui::kScaleFactorNone;
   return base::StringPiece();
 }
 
@@ -867,7 +879,7 @@ void ResourceBundle::ReloadFonts() {
 }
 
 ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return max_scale_factor_;
 #else
   return GetSupportedResourceScaleFactors().back();
@@ -905,7 +917,7 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   DCHECK(g_shared_instance_ == nullptr) << "ResourceBundle initialized twice";
   g_shared_instance_ = new ResourceBundle(delegate);
   std::vector<ResourceScaleFactor> supported_scale_factors;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   if (display.device_scale_factor() > 2.0) {
     DCHECK_EQ(3.0, display.device_scale_factor());
@@ -929,6 +941,9 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 
 void ResourceBundle::FreeImages() {
   images_.clear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  image_models_.clear();
+#endif
 }
 
 void ResourceBundle::LoadChromeResources() {
@@ -1003,6 +1018,29 @@ void ResourceBundle::InitDefaultFontList() {
 #endif
 }
 
+gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
+  DCHECK(!data_packs_.empty()) << "Missing call to SetResourcesDataDLL?";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string lottie_bytes_string;
+  if (LoadLottieBytesString(resource_id, &lottie_bytes_string))
+    return (*g_parse_lottie_as_still_image_)(lottie_bytes_string);
+  const ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
+#elif BUILDFLAG(IS_WIN)
+  const ResourceScaleFactor scale_factor_to_load =
+      display::win::GetDPIScale() > 1.25 ? GetMaxResourceScaleFactor()
+                                         : ui::k100Percent;
+#else
+  const ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
+#endif
+  // TODO(oshima): Consider reading the image size from png IHDR chunk and
+  // skip decoding here and remove #ifdef below.
+  // |ResourceBundle::GetSharedInstance()| is destroyed after the
+  // |BrowserMainLoop| has finished running. The |gfx::ImageSkia| is guaranteed
+  // to be destroyed before the resource bundle is destroyed.
+  return gfx::ImageSkia(std::make_unique<BitmapImageSource>(this, resource_id),
+                        GetScaleForResourceScaleFactor(scale_factor_to_load));
+}
+
 bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
                                 int resource_id,
                                 SkBitmap* bitmap,
@@ -1016,7 +1054,7 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (DecodePNG(memory->front(), memory->size(), bitmap, fell_back_to_1x))
     return true;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
   std::unique_ptr<SkBitmap> jpeg_bitmap(
@@ -1076,6 +1114,16 @@ gfx::Image& ResourceBundle::GetEmptyImage() {
   }
   return empty_image_;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const ui::ImageModel& ResourceBundle::GetEmptyImageModel() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (empty_image_model_.IsEmpty())
+    empty_image_model_ = ui::ImageModel::FromImage(GetEmptyImage());
+  return empty_image_model_;
+}
+#endif
 
 std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   std::u16string string;
@@ -1153,7 +1201,7 @@ bool ResourceBundle::PNGContainsFallbackMarker(const unsigned char* buf,
     if (size - pos < kPngChunkMetadataSize)
       break;
     uint32_t length = 0;
-    base::ReadBigEndian(reinterpret_cast<const char*>(buf + pos), &length);
+    base::ReadBigEndian(buf + pos, &length);
     if (size - pos - kPngChunkMetadataSize < length)
       break;
     if (length == 0 && memcmp(buf + pos + sizeof(uint32_t), kPngScaleChunkType,
@@ -1181,20 +1229,14 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool ResourceBundle::LoadLottie(int resource_id,
-                                float scale,
-                                ResourceScaleFactor scale_factor,
-                                gfx::ImageSkiaRep* rep) const {
-  const base::StringPiece potential_lottie =
-      GetRawDataResourceForScale(resource_id, scale_factor);
+bool ResourceBundle::LoadLottieBytesString(int resource_id,
+                                           std::string* bytes_string) const {
+  const base::StringPiece potential_lottie = GetRawDataResource(resource_id);
   if (potential_lottie.substr(0u, base::size(kLottiePrefix)) !=
       base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
     return false;
-
-  auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
   DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
-                     &(bytes_string->data()));
-  *rep = (*g_parse_lottie_as_still_image_)(*bytes_string, scale);
+                     bytes_string);
   return true;
 }
 #endif

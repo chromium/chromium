@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
@@ -49,6 +50,8 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -63,14 +66,30 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
 }
 
 ContainerQueryEvaluator* FindContainerQueryEvaluator(
-    const AtomicString& name,
+    const ContainerSelector& selector,
     const StyleRecalcContext& style_recalc_context) {
-  if (auto* element =
-          ContainerQueryEvaluator::FindContainer(style_recalc_context, name)) {
+  if (auto* element = ContainerQueryEvaluator::FindContainer(
+          style_recalc_context, selector)) {
     return element->GetContainerQueryEvaluator();
   }
 
   return nullptr;
+}
+
+bool EvaluateAndAddContainerQueries(
+    const ContainerQuery& container_query,
+    const StyleRecalcContext& style_recalc_context,
+    MatchResult& result) {
+  for (const ContainerQuery* current = &container_query; current;
+       current = current->Parent()) {
+    auto* evaluator =
+        FindContainerQueryEvaluator(current->Selector(), style_recalc_context);
+
+    if (!evaluator || !evaluator->EvalAndAdd(*current, result))
+      return false;
+  }
+
+  return true;
 }
 
 bool AffectsAnimations(const RuleData& rule_data) {
@@ -302,10 +321,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
           result.dynamic_pseudo == kPseudoIdNone) {
         result_.SetDependsOnContainerQueries();
 
-        auto* evaluator = FindContainerQueryEvaluator(container_query->Name(),
-                                                      style_recalc_context_);
-
-        if (!evaluator || !evaluator->EvalAndAdd(*container_query, result_)) {
+        if (!EvaluateAndAddContainerQueries(*container_query,
+                                            style_recalc_context_, result_)) {
           rejected++;
           if (AffectsAnimations(*rule_data))
             result_.SetConditionallyAffectsAnimations();
@@ -330,6 +347,22 @@ void ElementRuleCollector::CollectMatchingRulesForList(
                                 fast_rejected);
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_matched, matched);
 }
+
+namespace {
+
+base::span<const Attribute> GetAttributes(const Element& element,
+                                          bool need_style_synchronized) {
+  if (need_style_synchronized) {
+    const AttributeCollection collection = element.Attributes();
+    return {collection.data(), collection.size()};
+  } else {
+    const AttributeCollection collection =
+        element.AttributesWithoutStyleUpdate();
+    return {collection.data(), collection.size()};
+  }
+}
+
+}  // namespace
 
 DISABLE_CFI_PERF
 void ElementRuleCollector::CollectMatchingRules(
@@ -377,6 +410,61 @@ void ElementRuleCollector::CollectMatchingRules(
     }
   }
 
+  // Collect rules from attribute selector buckets, if we have any.
+  if (match_request.rule_set->HasAnyAttrRules()) {
+    // HTML documents have case-insensitive attribute matching
+    // (so we need to lowercase), non-HTML documents have
+    // case-sensitive attribute matching (so we should _not_ lowercase).
+    // However, HTML elements already have lowercased their attributes
+    // during parsing, so we do not need to do it again.
+    const bool lower_attrs_in_default_ns =
+        !element.IsHTMLElement() && IsA<HTMLDocument>(element.GetDocument());
+
+    // Due to lazy attributes, this can be a bit tricky. First of all,
+    // we need to make sure that if there's a dirty style attribute
+    // and there's a ruleset bucket for [style] selectors (which is extremely
+    // unusual, but allowed), we check the rules in that bucket.
+    // We do this by means of synchronizing the style attribute before
+    // iterating, but only if there's actually such a bucket, as it's fairly
+    // expensive to do so. (We have a similar issue with SVG attributes,
+    // but it is tricky enough to identify if there are any such buckets
+    // that we simply always synchronize them if there are any attribute
+    // ruleset buckets at all. We can always revisit this if there are any
+    // slowdowns from SVG attribute synchronization.)
+    //
+    // Second, CollectMatchingRulesForList() may call member functions
+    // that synchronize the element, adding new attributes to the list
+    // while we iterate. These are not relevant for correctness (we
+    // would never find any rule buckets matching them anyway),
+    // but they may cause reallocation of the vector. For this reason,
+    // we cannot use range-based iterators over the attributes here
+    // if we don't synchronize before the loop; we need to use
+    // simple indexes and then refresh the span after every call.
+    bool need_style_synchronized =
+        match_request.rule_set->HasBucketForStyleAttribute();
+    base::span<const Attribute> attributes =
+        GetAttributes(element, need_style_synchronized);
+
+    for (unsigned attr_idx = 0; attr_idx < attributes.size(); ++attr_idx) {
+      const AtomicString& attribute_name = attributes[attr_idx].LocalName();
+      // NOTE: Attributes in non-default namespaces are case-sensitive.
+      // There is a bug where you can set mixed-cased attributes (in non-default
+      // namespaces) with setAttributeNS(), but they never match anything.
+      // (The relevant code is in AnyAttributeMatches(), in
+      // selector_checker.cc.) What we're doing here doesn't influence that bug.
+      const AtomicString& lower_name =
+          (lower_attrs_in_default_ns &&
+           attributes[attr_idx].NamespaceURI() == g_null_atom)
+              ? attribute_name.LowerASCII()
+              : attribute_name;
+      CollectMatchingRulesForList(match_request.rule_set->AttrRules(lower_name),
+                                  match_request, checker);
+
+      const AttributeCollection collection = element.AttributesWithoutUpdate();
+      attributes = {collection.data(), collection.size()};
+    }
+  }
+
   if (element.IsLink()) {
     CollectMatchingRulesForList(match_request.rule_set->LinkPseudoClassRules(),
                                 match_request, checker);
@@ -392,6 +480,11 @@ void ElementRuleCollector::CollectMatchingRules(
   if (SelectorChecker::MatchesFocusPseudoClass(element)) {
     CollectMatchingRulesForList(match_request.rule_set->FocusPseudoClassRules(),
                                 match_request, checker);
+  }
+  if (SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(element)) {
+    CollectMatchingRulesForList(
+        match_request.rule_set->SelectorFragmentAnchorRules(), match_request,
+        checker);
   }
   if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
     CollectMatchingRulesForList(
@@ -533,14 +626,19 @@ void ElementRuleCollector::DidMatchRule(
         mode_ == SelectorChecker::kCollectingStyleRules)
       return;
     // FIXME: Matching should not modify the style directly.
-    if (!style_ || dynamic_pseudo >= kFirstInternalPseudoId)
+    if (!style_ || dynamic_pseudo > kLastTrackedPublicPseudoId)
       return;
     if ((dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent))
       return;
-    if (!rule_data->Rule()->Properties().IsEmpty())
+    if (!rule_data->Rule()->Properties().IsEmpty()) {
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
+      if (dynamic_pseudo == kPseudoIdHighlight) {
+        DCHECK(result.custom_highlight_name);
+        style_->SetHasCustomHighlightName(result.custom_highlight_name);
+      }
+    }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order,
                                          match_request.style_sheet_index,

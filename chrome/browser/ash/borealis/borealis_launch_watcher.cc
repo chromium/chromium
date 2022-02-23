@@ -11,7 +11,7 @@ namespace borealis {
 
 BorealisLaunchWatcher::BorealisLaunchWatcher(Profile* profile,
                                              std::string vm_name)
-    : owner_id_(chromeos::ProfileHelper::GetUserIdHashFromProfile(profile)),
+    : owner_id_(ash::ProfileHelper::GetUserIdHashFromProfile(profile)),
       vm_name_(vm_name) {
   chromeos::CiceroneClient::Get()->AddObserver(this);
 }

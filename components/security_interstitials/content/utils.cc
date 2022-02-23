@@ -13,14 +13,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/security_interstitials/content/android/jni_headers/DateAndTimeSettingsHelper_jni.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
 #endif
@@ -31,10 +31,10 @@ namespace security_interstitials {
 void LaunchDateAndTimeSettings() {
 // The code for each OS is completely separate, in order to avoid bugs like
 // https://crbug.com/430877 .
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DateAndTimeSettingsHelper_openDateAndTimeSettings(env);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   struct ClockCommand {
     const char* const pathname;
     const char* const argument;
@@ -74,7 +74,7 @@ void LaunchDateAndTimeSettings() {
   options.allow_new_privs = true;
   base::LaunchProcess(command, options);
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   base::CommandLine command(base::FilePath("/usr/bin/open"));
   command.AppendArg("/System/Library/PreferencePanes/DateAndTime.prefPane");
 
@@ -82,7 +82,7 @@ void LaunchDateAndTimeSettings() {
   options.wait = false;
   base::LaunchProcess(command, options);
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   base::FilePath path;
   base::PathService::Get(base::DIR_SYSTEM, &path);
   static const wchar_t kControlPanelExe[] = L"control.exe";
@@ -95,7 +95,7 @@ void LaunchDateAndTimeSettings() {
   options.wait = false;
   base::LaunchProcess(command, options);
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1233494): Send to the platform settings.
   NOTIMPLEMENTED_LOG_ONCE();
 #else

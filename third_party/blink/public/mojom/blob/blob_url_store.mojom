@@ -4,6 +4,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "url/mojom/url.mojom";
@@ -19,8 +20,9 @@ interface BlobURLStore {
   [Sync] Register(
       pending_remote<blink.mojom.Blob> blob,
       url.mojom.Url url,
-      // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-      mojo_base.mojom.UnguessableToken unsafe_agent_cluster_id) => ();
+      // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+      mojo_base.mojom.UnguessableToken unsafe_agent_cluster_id,
+      network.mojom.SchemefulSite? unsafe_top_level_site) => ();
 
   // Revokes a public Blob URL.
   Revoke(url.mojom.Url url);
@@ -41,8 +43,9 @@ interface BlobURLStore {
   ResolveAsURLLoaderFactory(
     url.mojom.Url url,
     pending_receiver<network.mojom.URLLoaderFactory> factory) => (
-    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
-    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
+    // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id,
+    network.mojom.SchemefulSite? unsafe_top_level_site);
 
   // Resolves a public Blob URL into a BlobURLToken. The BlobURLToken can be
   // used by the browser process to securely look up the blob a URL used to

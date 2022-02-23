@@ -40,7 +40,7 @@ bool AllColorsOpaque(const Vector<Color>& animated_colors) {
 class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
  public:
   BackgroundColorPaintWorkletInput(
-      const FloatSize& container_size,
+      const gfx::SizeF& container_size,
       int worklet_id,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
@@ -90,6 +90,7 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
     // TODO(crbug.com/1255912): handle system color.
     if (!computed_value->IsColorValue())
       return false;
+
     const cssvalue::CSSColor* color_value =
         static_cast<const cssvalue::CSSColor*>(computed_value);
     animated_colors->push_back(color_value->Value());
@@ -99,8 +100,20 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
         keyframe->GetValue()->Value().interpolable_value.get();
+
+    if (!value->IsList())
+      return false;
+
+    // Transition keyframes store a pair of color values: one for the actual
+    // color and one for the reported color (conditionally resolved). This is to
+    // prevent JavaScript code from snooping the visited status of links. The
+    // color to use for the animation is stored first in the list.
+    // We need to further check that the color is a simple RGBA color and does
+    // not require blending with other colors (e.g. currentcolor).
     const InterpolableList& list = To<InterpolableList>(*value);
-    // Only the first one has the real value.
+    if (!CSSColorInterpolationType::IsRGBA(*(list.Get(0))))
+      return false;
+
     Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
     animated_colors->push_back(rgba);
   }
@@ -178,7 +191,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
         animated_property_values) {
   const BackgroundColorPaintWorkletInput* input =
       static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
-  FloatSize container_size = input->ContainerSize();
+  gfx::SizeF container_size = input->ContainerSize();
   Vector<Color> animated_colors = input->AnimatedColors();
   Vector<double> offsets = input->Offsets();
   DCHECK_GT(animated_colors.size(), 1u);
@@ -230,7 +243,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
 
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.
-  IntSize rounded_size = RoundedIntSize(container_size);
+  gfx::Size rounded_size = gfx::ToRoundedSize(container_size);
   if (!context_ || context_->Width() != rounded_size.width() ||
       context_->Height() != rounded_size.height()) {
     PaintRenderingContext2DSettings* context_settings =
@@ -243,7 +256,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
 }
 
 scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
@@ -282,7 +295,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
-  FloatSize container_size(100, 100);
+  gfx::SizeF container_size(100, 100);
   absl::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
   scoped_refptr<BackgroundColorPaintWorkletInput> input =

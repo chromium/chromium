@@ -11,7 +11,6 @@
 #include <errno.h>
 #include <launch.h>
 
-#include "base/compiler_specific.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
@@ -41,7 +40,7 @@ class ScopedLaunchData {
     data_ = nullptr;
   }
 
-  launch_data_t release() WARN_UNUSED_RESULT {
+  [[nodiscard]] launch_data_t release() {
     launch_data_t val = data_;
     data_ = nullptr;
     return val;

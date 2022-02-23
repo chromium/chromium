@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_WINDOW_MANAGER_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_WINDOW_MANAGER_TEST_HELPER_H_
 
+#include "base/unguessable_token.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 
 namespace borealis {
@@ -20,6 +21,7 @@ class ScopedTestWindow {
   aura::Window* window() { return window_.get(); }
 
  private:
+  base::UnguessableToken instance_id_;
   std::unique_ptr<aura::Window> window_;
   borealis::BorealisWindowManager* manager_;
 };

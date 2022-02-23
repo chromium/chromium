@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -77,7 +78,8 @@ class ProfileImportProcess {
                        const std::string& app_locale,
                        const GURL& form_source_url,
                        const PersonalDataManager* personal_data_manager,
-                       bool allow_only_silent_updates);
+                       bool allow_only_silent_updates,
+                       bool did_complement_country = false);
 
   ProfileImportProcess(const ProfileImportProcess&);
   ProfileImportProcess& operator=(const ProfileImportProcess& other);
@@ -212,13 +214,18 @@ class ProfileImportProcess {
 
   // A pointer to the persona data manager that is used to retrieve additional
   // information about existing profiles.
-  const PersonalDataManager* personal_data_manager_;
+  raw_ptr<const PersonalDataManager> personal_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};
 
   // If true, denotes that the import process allows only silent updates.
   bool allow_only_silent_updates_;
+
+  // Passed through from FormDataImporter, to collect metrics on whether the
+  // profile is accepted/edited.
+  // TODO(crbug.com/1297032): Cleanup when launched.
+  bool did_complement_country_;
 };
 
 }  // namespace autofill

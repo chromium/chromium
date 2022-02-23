@@ -20,6 +20,16 @@ class Profile;
 namespace ash {
 namespace quick_unlock {
 
+// Enumeration specifying the purpose that the caller is using the credentials
+// for.
+enum class Purpose {
+  kAny,
+  kUnlock,
+  kWebAuthn,
+  // Total number of available purposes.
+  kNumOfPurposes,
+};
+
 // Enumeration specifying the possible intervals before a strong auth
 // (password) is required to use quick unlock. These values correspond to the
 // policy items of QuickUnlockTimeout (policy ID 352) in policy_templates.json,
@@ -42,14 +52,60 @@ enum class FingerprintLocation {
   UNKNOWN = 6,
 };
 
+// Override quick unlock checks for testing.
+class TestApi {
+ public:
+  // Setting state to true has an effect that instead of checking user prefs,
+  // quick_unlock will use test flags to determine whether PIN/fingerprint is
+  // enabled by policy. Setting to false resets the effect and quick_unlock will
+  // resume to checking prefs, and also clears the previously set test flags.
+  // Typical usage is setting state to true and enabling the purposes a test
+  // needs by calling Enable*ByPolicyForTesting in SetUp, and setting state to
+  // false in TearDown.
+  explicit TestApi(bool override_quick_unlock);
+
+  ~TestApi();
+
+  static TestApi* Get();
+
+  // Returns the current state of OverrideQuickUnlock.
+  bool IsQuickUnlockOverridden();
+
+  // Enable the specified purpose for PIN using a test flag. All purposes that
+  // are not enabled will be treated as disabled when
+  // EnablePinByPolicyUsingFlagsForTesting's state is true. When called, this
+  // will automatically set OverrideQuickUnlock's state to true.
+  void EnablePinByPolicy(Purpose purpose);
+
+  // Enable the specified purpose for fingerprint using a test flag. All
+  // purposes that are not enabled will be treated as disabled when
+  // EnableFingerprintByPolicyUsingFlagsForTesting's state is true. When called,
+  // this will automatically set OverrideQuickUnlock's state to true.
+  void EnableFingerprintByPolicy(Purpose purpose);
+
+  bool IsPinEnabledByPolicy(Purpose purpose);
+  bool IsFingerprintEnabledByPolicy(Purpose purpose);
+
+ private:
+  static constexpr int kNumOfPurposes =
+      static_cast<int>(Purpose::kNumOfPurposes);
+
+  TestApi* old_instance_;
+  bool overridden_;
+  bool pin_purposes_enabled_by_policy_[kNumOfPurposes];
+  bool fingerprint_purposes_enabled_by_policy_[kNumOfPurposes];
+};
+
 base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
     PasswordConfirmationFrequency frequency);
 
 // Register quick unlock prefs.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// Returns true if PIN unlock is disabled by policy.
-bool IsPinDisabledByPolicy(PrefService* pref_service);
+// Returns true if setting PIN is disabled by policy for the
+// specified purpose. If purpose is kAny, then it is regarded as enabled if any
+// of the purposes is enabled.
+bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose);
 
 // Returns true if the quick unlock feature flag is present.
 // TODO(crbug/1111541): Remove this function because it always returns true.
@@ -59,23 +115,17 @@ bool IsPinEnabled();
 bool IsFingerprintSupported();
 
 // Returns true if the fingerprint is allowed for specified profile.
-bool IsFingerprintEnabled(Profile* profile);
+bool IsFingerprintEnabled(Profile* profile, Purpose purpose);
 
-// Returns true if the fingerprint unlock is disabled by policy.
-bool IsFingerprintDisabledByPolicy(const PrefService* pref_service);
+// Returns true if the fingerprint unlock is disabled by policy for the
+// specified purpose. If purpose is kAny, then it is regarded as enabled if any
+// of the purposes is enabled.
+bool IsFingerprintDisabledByPolicy(const PrefService* pref_service,
+                                   Purpose purpose);
 
 // Returns fingerprint sensor location depending on the command line switch.
 // Is used to display correct UI assets. Returns TABLET_POWER_BUTTON by default.
 FingerprintLocation GetFingerprintLocation();
-
-// Enable or Disable quick-unlock modes for testing
-void EnabledForTesting(bool state);
-
-// Returns true if EnableForTesting() was previously called.
-bool IsEnabledForTesting();
-
-// Forcibly disable PIN for testing purposes.
-void DisablePinByPolicyForTesting(bool disable);
 
 // Add fingerprint animations and illustrations. Used for the Fingerprint setup
 // screen and the settings.
@@ -89,13 +139,13 @@ void AddFingerprintResources(content::WebUIDataSource* html_source);
 namespace chromeos {
 namespace quick_unlock {
 using ::ash::quick_unlock::AddFingerprintResources;
-using ::ash::quick_unlock::DisablePinByPolicyForTesting;
-using ::ash::quick_unlock::EnabledForTesting;
 using ::ash::quick_unlock::FingerprintLocation;
 using ::ash::quick_unlock::GetFingerprintLocation;
 using ::ash::quick_unlock::IsFingerprintEnabled;
 using ::ash::quick_unlock::IsPinDisabledByPolicy;
 using ::ash::quick_unlock::IsPinEnabled;
+using ::ash::quick_unlock::Purpose;
+using ::ash::quick_unlock::TestApi;
 }  // namespace quick_unlock
 }  // namespace chromeos
 

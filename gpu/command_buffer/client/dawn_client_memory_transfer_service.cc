@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/mapped_memory.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
@@ -12,7 +13,7 @@ namespace gpu {
 namespace webgpu {
 
 class DawnClientMemoryTransferService::ReadHandleImpl
-    : public dawn_wire::client::MemoryTransferService::ReadHandle {
+    : public dawn::wire::client::MemoryTransferService::ReadHandle {
  public:
   ReadHandleImpl(void* ptr,
                  MemoryTransferHandle handle,
@@ -46,13 +47,13 @@ class DawnClientMemoryTransferService::ReadHandleImpl
   }
 
  private:
-  void* ptr_;  // Pointer to client-side shared memory.
+  raw_ptr<void> ptr_;  // Pointer to client-side shared memory.
   MemoryTransferHandle handle_;
-  DawnClientMemoryTransferService* service_;
+  raw_ptr<DawnClientMemoryTransferService> service_;
 };
 
 class DawnClientMemoryTransferService::WriteHandleImpl
-    : public dawn_wire::client::MemoryTransferService::WriteHandle {
+    : public dawn::wire::client::MemoryTransferService::WriteHandle {
  public:
   WriteHandleImpl(void* ptr,
                   MemoryTransferHandle handle,
@@ -88,19 +89,19 @@ class DawnClientMemoryTransferService::WriteHandleImpl
   }
 
  private:
-  void* ptr_;
+  raw_ptr<void> ptr_;
   MemoryTransferHandle handle_;
-  DawnClientMemoryTransferService* service_;
+  raw_ptr<DawnClientMemoryTransferService> service_;
 };
 
 DawnClientMemoryTransferService::DawnClientMemoryTransferService(
     MappedMemoryManager* mapped_memory)
-    : dawn_wire::client::MemoryTransferService(),
+    : dawn::wire::client::MemoryTransferService(),
       mapped_memory_(mapped_memory) {}
 
 DawnClientMemoryTransferService::~DawnClientMemoryTransferService() = default;
 
-dawn_wire::client::MemoryTransferService::ReadHandle*
+dawn::wire::client::MemoryTransferService::ReadHandle*
 DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);
@@ -110,7 +111,7 @@ DawnClientMemoryTransferService::CreateReadHandle(size_t size) {
   return new ReadHandleImpl(ptr, handle, this);
 }
 
-dawn_wire::client::MemoryTransferService::WriteHandle*
+dawn::wire::client::MemoryTransferService::WriteHandle*
 DawnClientMemoryTransferService::CreateWriteHandle(size_t size) {
   MemoryTransferHandle handle = {};
   void* ptr = AllocateHandle(size, &handle);

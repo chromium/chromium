@@ -18,6 +18,7 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {
@@ -29,10 +30,6 @@ class LayerTreeSettings;
 class RenderFrameMetadataObserver;
 class TaskGraphRunner;
 }  // namespace cc
-
-namespace gfx {
-class RenderingPipeline;
-}  // namespace gfx
 
 namespace blink {
 
@@ -60,9 +57,7 @@ class PLATFORM_EXPORT LayerTreeView
   void Initialize(const cc::LayerTreeSettings& settings,
                   scoped_refptr<base::SingleThreadTaskRunner> main_thread,
                   scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-                  cc::TaskGraphRunner* task_graph_runner,
-                  gfx::RenderingPipeline* main_thread_pipeline,
-                  gfx::RenderingPipeline* compositor_thread_pipeline);
+                  cc::TaskGraphRunner* task_graph_runner);
 
   // Drops any references back to the delegate in preparation for being
   // destroyed.
@@ -90,7 +85,7 @@ class PLATFORM_EXPORT LayerTreeView
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit(cc::CommitState*) override;
+  void WillCommit(const cc::CommitState&) override;
   void DidCommit(base::TimeTicks commit_start_time,
                  base::TimeTicks commit_finish_time) override;
   void DidCommitAndDrawFrame() override;
@@ -129,6 +124,12 @@ class PLATFORM_EXPORT LayerTreeView
       uint32_t frame_token,
       base::OnceCallback<void(base::TimeTicks)> callback);
 
+#if BUILDFLAG(IS_MAC)
+  void AddCoreAnimationErrorCodeCallback(
+      uint32_t frame_token,
+      base::OnceCallback<void(gfx::CALayerResult)> callback);
+#endif
+
   cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_.get(); }
   const cc::LayerTreeHost* layer_tree_host() const {
     return layer_tree_host_.get();
@@ -142,6 +143,13 @@ class PLATFORM_EXPORT LayerTreeView
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink,
       std::unique_ptr<cc::RenderFrameMetadataObserver>
           render_frame_metadata_observer);
+
+  template <typename Callback>
+  void AddCallback(
+      uint32_t frame_token,
+      Callback callback,
+      base::circular_deque<std::pair<uint32_t, std::vector<Callback>>>&
+          callbacks);
 
   scheduler::WebThreadScheduler* const web_main_thread_scheduler_;
   const std::unique_ptr<cc::AnimationHost> animation_host_;
@@ -162,6 +170,13 @@ class PLATFORM_EXPORT LayerTreeView
       std::pair<uint32_t,
                 std::vector<base::OnceCallback<void(base::TimeTicks)>>>>
       presentation_callbacks_;
+
+#if BUILDFLAG(IS_MAC)
+  base::circular_deque<std::pair<
+      uint32_t,
+      std::vector<base::OnceCallback<void(gfx::CALayerResult error_code)>>>>
+      core_animation_error_code_callbacks_;
+#endif
 
   base::WeakPtrFactory<LayerTreeView> weak_factory_{this};
 };

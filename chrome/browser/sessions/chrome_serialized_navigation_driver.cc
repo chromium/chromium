@@ -10,14 +10,14 @@
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "content/public/common/referrer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #endif
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Mutates |navigation| so that it targets |new_destination_url| and has no
 // referrer information.
 void ChangeDestination(const GURL& new_destination_url,
@@ -33,7 +33,7 @@ void ChangeDestination(const GURL& new_destination_url,
   navigation->set_referrer_policy(
       static_cast<int>(network::mojom::ReferrerPolicy::kDefault));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -66,7 +66,7 @@ void ChromeSerializedNavigationDriver::Sanitize(
         driver->StripReferrerFromPageState(navigation->encoded_page_state()));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Rewrite the old new tab and welcome page URLs to the new NTP URL.
   if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
       (navigation->virtual_url().host_piece() == chrome::kChromeUIWelcomeHost ||
@@ -78,7 +78,7 @@ void ChromeSerializedNavigationDriver::Sanitize(
       navigation->virtual_url().host_piece() == chrome::kChromeUIHistoryHost) {
     ChangeDestination(GURL(chrome::kChromeUINativeHistoryURL), navigation);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSerializedNavigationDriver::ChromeSerializedNavigationDriver() {}

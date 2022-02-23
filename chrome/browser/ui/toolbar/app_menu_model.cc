@@ -30,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -41,7 +40,6 @@
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/sharing_hub/sharing_hub_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -94,16 +92,13 @@
 #include "base/feature_list.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/ui/base/tablet_state.h"
-#endif
-
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -238,11 +233,7 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  if (!base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopAppMenu) ||
-      browser->profile()->IsIncognitoProfile() ||
-      browser->profile()->IsGuestSession()) {
-    AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
-  }
+  AddItemWithStringId(IDC_SAVE_PAGE, IDS_SAVE_PAGE);
 
   AddItemWithStringId(IDC_CREATE_SHORTCUT, IDS_ADD_TO_OS_LAUNCH_SURFACE);
   AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
@@ -301,7 +292,7 @@ void AppMenuModel::Init() {
   Observe(tab_strip_model->GetActiveWebContents());
   UpdateZoomControls();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   PrefService* const local_state = g_browser_process->local_state();
   if (local_state) {
     local_state_pref_change_registrar_.Init(local_state);
@@ -311,7 +302,7 @@ void AppMenuModel::Init() {
                             base::Unretained(this)));
     UpdateSettingsItemState();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
@@ -320,9 +311,9 @@ bool AppMenuModel::DoesCommandIdDismissMenu(int command_id) const {
 
 bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
   return command_id == IDC_ZOOM_PERCENT_DISPLAY ||
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
          command_id == IDC_FULLSCREEN ||
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
          command_id == IDC_PIN_TO_START_SCREEN ||
 #endif
          command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
@@ -332,7 +323,7 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
   switch (command_id) {
     case IDC_ZOOM_PERCENT_DISPLAY:
       return zoom_label_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case IDC_FULLSCREEN: {
       int string_id = IDS_ENTER_FULLSCREEN_MAC;  // Default to Enter.
       // Note: On startup, |window()| may be NULL.
@@ -340,7 +331,7 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
         string_id = IDS_EXIT_FULLSCREEN_MAC;
       return l10n_util::GetStringUTF16(string_id);
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     case IDC_PIN_TO_START_SCREEN: {
       int string_id = IDS_PIN_TO_START_SCREEN;
       // TODO(scottmg): Remove http://crbug.com/558054.
@@ -833,23 +824,10 @@ void AppMenuModel::Build() {
   CreateZoomMenu();
   AddSeparator(ui::UPPER_SEPARATOR);
 
-  if (!(browser_->profile()->IsIncognitoProfile() ||
-        browser_->profile()->IsGuestSession()) &&
-      sharing_hub::SharingHubAppMenuEnabled(browser()->profile())) {
-    sub_menus_.push_back(
-        std::make_unique<sharing_hub::SharingHubSubMenuModel>(browser_));
-    AddSubMenuWithStringId(IDC_SHARING_HUB_MENU, IDS_SHARING_HUB_TITLE,
-                           sub_menus_.back().get());
-  }
-
   AddItemWithStringId(IDC_PRINT, IDS_PRINT);
 
-  if (!sharing_hub::SharingHubAppMenuEnabled(browser()->profile()) ||
-      browser_->profile()->IsIncognitoProfile() ||
-      browser_->profile()->IsGuestSession()) {
-    if (media_router::MediaRouterEnabled(browser()->profile()))
-      AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
-  }
+  if (media_router::MediaRouterEnabled(browser()->profile()))
+    AddItemWithStringId(IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
 
   AddItemWithStringId(IDC_FIND, IDS_FIND);
 
@@ -894,7 +872,7 @@ void AppMenuModel::Build() {
     }
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Always show this option if we're in tablet mode on Chrome OS.
   if (chromeos::TabletState::Get() &&
       chromeos::TabletState::Get()->InTabletMode()) {
@@ -981,11 +959,7 @@ void AppMenuModel::UpdateZoomControls() {
 }
 
 bool AppMenuModel::ShouldShowNewIncognitoWindowMenuItem() {
-  if (browser_->profile()->IsGuestSession())
-    return false;
-
-  return IncognitoModePrefs::GetAvailability(browser_->profile()->GetPrefs()) !=
-         IncognitoModePrefs::Availability::kDisabled;
+  return IncognitoModePrefs::IsIncognitoAllowed(browser_->profile());
 }
 
 bool AppMenuModel::AddGlobalErrorMenuItems() {
@@ -1017,27 +991,16 @@ void AppMenuModel::OnZoomLevelChanged(
   UpdateZoomControls();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppMenuModel::UpdateSettingsItemState() {
-  const base::ListValue* system_features_disable_list_pref = nullptr;
-  PrefService* const local_state = g_browser_process->local_state();
-  if (local_state) {  // Sometimes it's not available in tests.
-    system_features_disable_list_pref =
-        local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
-  }
-
-  bool is_enabled =
-      !system_features_disable_list_pref ||
-      // TODO(crbug.com/1187106): Use base::Contains once
-      // |system_features_disable_list_pref| is not a ListValue.
-      std::find(system_features_disable_list_pref->GetList().begin(),
-                system_features_disable_list_pref->GetList().end(),
-                base::Value(policy::SystemFeature::kBrowserSettings)) ==
-          system_features_disable_list_pref->GetList().end();
+  bool is_disabled =
+      policy::SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
+          policy::SystemFeature::kBrowserSettings,
+          g_browser_process->local_state());
 
   int index = GetIndexOfCommandId(IDC_OPTIONS);
   if (index != -1)
-    SetEnabledAt(index, is_enabled);
+    SetEnabledAt(index, !is_disabled);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   index = GetIndexOfCommandId(IDC_HELP_MENU);
@@ -1046,12 +1009,12 @@ void AppMenuModel::UpdateSettingsItemState() {
         static_cast<ui::SimpleMenuModel*>(GetSubmenuModelAt(index));
     index = help_menu->GetIndexOfCommandId(IDC_ABOUT);
     if (index != -1)
-      help_menu->SetEnabledAt(index, is_enabled);
+      help_menu->SetEnabledAt(index, !is_disabled);
   }
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   index = GetIndexOfCommandId(IDC_ABOUT);
   if (index != -1)
-    SetEnabledAt(index, is_enabled);
+    SetEnabledAt(index, !is_disabled);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

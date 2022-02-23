@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 #define COMPONENTS_VIZ_TEST_HOST_FRAME_SINK_MANAGER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 
 namespace viz {
@@ -34,7 +35,7 @@ class HostFrameSinkManagerTestApi {
 
  private:
   // Not owned.
-  HostFrameSinkManager* host_frame_sink_manager_;
+  raw_ptr<HostFrameSinkManager> host_frame_sink_manager_;
 };
 
 }  // namespace viz

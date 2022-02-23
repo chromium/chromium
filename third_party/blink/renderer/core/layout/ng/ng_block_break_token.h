@@ -8,8 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -49,7 +48,10 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // this method would return then), there's 50px left to consume. The next
   // fragment will become 50px tall, assuming no additional fragmentation (if
   // the fragmentainer is shorter than 50px, for instance).
-  LayoutUnit ConsumedBlockSize() const { return consumed_block_size_; }
+  LayoutUnit ConsumedBlockSize() const {
+    DCHECK(data_);
+    return data_->consumed_block_size;
+  }
 
   // The consumed block size when writing back to legacy layout. The only time
   // this may be different than ConsumedBlockSize() is in the case of a
@@ -59,7 +61,9 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // size when used for legacy. This difference is represented by
   // |consumed_block_size_legacy_adjustment_|.
   LayoutUnit ConsumedBlockSizeForLegacy() const {
-    return consumed_block_size_ + consumed_block_size_legacy_adjustment_;
+    DCHECK(data_);
+    return data_->consumed_block_size +
+           data_->consumed_block_size_legacy_adjustment;
   }
 
   // A unique identifier for a fragment that generates a break token. This is
@@ -70,17 +74,13 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // number is for such a break token is undefined.
   unsigned SequenceNumber() const {
     DCHECK(!IsBreakBefore());
-    return sequence_number_;
+    DCHECK(data_);
+    return data_->sequence_number;
   }
 
-  const NGFlexBreakTokenData& FlexData() const {
-    DCHECK(flex_data_);
-    return *flex_data_;
-  }
-
-  const NGGridBreakTokenData& GridData() const {
-    DCHECK(grid_data_);
-    return *grid_data_;
+  const NGBlockBreakTokenData* TokenData() const {
+    DCHECK(data_);
+    return data_.get();
   }
 
   // Return true if this is a break token that was produced without any
@@ -184,15 +184,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   void Trace(Visitor*) const override;
 
  private:
-  LayoutUnit consumed_block_size_;
-  LayoutUnit consumed_block_size_legacy_adjustment_;
-
-  // TODO(almaher): We won't ever need both of these at the same time.
-  // Consider subclasses instead.
-  std::unique_ptr<const NGFlexBreakTokenData> flex_data_;
-  std::unique_ptr<const NGGridBreakTokenData> grid_data_;
-
-  unsigned sequence_number_ = 0;
+  std::unique_ptr<NGBlockBreakTokenData> data_;
 
   const wtf_size_t const_num_children_;
   // This must be the last member, because it is a flexible array.

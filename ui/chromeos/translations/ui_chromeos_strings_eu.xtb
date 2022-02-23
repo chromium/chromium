@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalana</translation>
 <translation id="1168100932582989117">Google izen-zerbitzariak</translation>
+<translation id="1171082344678443012">XZ bidez konprimatutako artxiboa</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> inguru geratzen dira</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
@@ -113,12 +114,13 @@
 <translation id="1936717151811561466">Finlandiarra</translation>
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
-<translation id="1984456723671657197">Ez da onartzen mota horretako fitxategirik. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="1984456723671657197">Ez da onartzen mota horretako fitxategirik. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
 <translation id="2028997212275086731">RAR fitxategia</translation>
+<translation id="2036414735548252477">LZMA bidez konprimatutako .tar artxiboa</translation>
 <translation id="2037845485764049925">Errusiarra</translation>
 <translation id="2044023416777079300">Modema ez dago erregistratuta</translation>
 <translation id="2046702855113914483">Ramen-a</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Partekatu <ph name="EXTENSION_NAME" /> luzapenarekin</translation>
 <translation id="3083975830683400843">Chromebit-ak</translation>
 <translation id="3085752524577180175">SOCKS ostalaria</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />,<ph name="CONNECTION_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="3113153474486991170">Ezin izan da ireki "<ph name="PATH" />" kokapen honetatik. Irekitzeko, kopia ezazu "Nire fitxategiak" atalean.</translation>
 <translation id="3113592018909187986">Saiakera bat gelditzen zaizu. Ezingo duzu erabili sarea beste PIN bat konfiguratzen duzun arte.</translation>
 <translation id="3124404833828281817">Esna dagoela ametsetan ari den pertsona</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Ingelesa (AEB), nazioarteko teklatuarekin (ordenagailurako)</translation>
 <translation id="3567221313191587603">Hautatu fitxategi bat eta markatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera konexiorik gabe ere erabilgarri eduki dezazun.</translation>
 <translation id="357479282490346887">Lituaniarra</translation>
+<translation id="3587482841069643663">Guztiak</translation>
 <translation id="3592251141500063301">Ezin izan da deskargatu <ph name="FILE_NAME" /> konexiorik gabe erabiltzeko</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Fitxategi guztien babeskopia egin da!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
-<translation id="3645531960514756307">Kendu aingura karpetari</translation>
 <translation id="3685122418104378273">Datu-konexioa erabiltzean, Google Drive sinkronizazioa modu lehenetsian desaktibatuta dago.</translation>
 <translation id="3689865792480713551">Utzi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, <ph name="CONNECTION_STATUS" />, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
 <translation id="3691184985318546178">Sinhalarra</translation>
 <translation id="3726463242007121105">Ezin da gailua ireki bere fitxategi-sistema onartzen ez delako.</translation>
 <translation id="3727148787322499904">Ezarpen hau aldatzeak partekatutako sare guztietan izango du eragina</translation>
+<translation id="3737576078404241332">Kendu alboko barratik</translation>
 <translation id="3741243925913727067">Egin multimedia-gailuko argazkien eta bideoen babeskopia Google Drive-n.</translation>
 <translation id="3749289110408117711">Fitxategiaren izena</translation>
 <translation id="3780536599611287598">Ez duzu fitxategiak "<ph name="FOLDER_NAME" />" karpetara eramateko baimenik.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Botanikaria</translation>
 <translation id="4326192123064055915">Kafea</translation>
 <translation id="4336032328163998280">Ezin izan da kopiatu. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Gehitu alboko barran</translation>
 <translation id="4348495354623233847">Soraniarra, arabieran oinarritutako teklatuarekin</translation>
 <translation id="4363958938297989186">Errusiarra, teklatu fonetikoarekin</translation>
 <translation id="4364327530094270451">Meloia</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
 <translation id="4881695831933465202">Ireki</translation>
+<translation id="4886199584824489598">Bzip2 bidez konprimatutako artxiboa</translation>
 <translation id="4900532980794411603">Partekatu Parallels Desktop aplikazioarekin</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4905417359854579806">Hauen babeskopia egiteko prest: <ph name="FILE_COUNT" /></translation>
@@ -544,7 +550,7 @@
 <translation id="5700087501958648444">Audioari buruzko informazioa</translation>
 <translation id="5724172041621205163">Thailandiarra, Pattachote teklatuarekin</translation>
 <translation id="5731409020711461763">Argazki berri bat</translation>
-<translation id="5752453871435543420">Chrome OS-en hodeiko babeskopiak</translation>
+<translation id="5752453871435543420">Chrome OS-n hodeiko babeskopiak</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5763377084591234761">Alemana (Suitza)</translation>
 <translation id="5769519078756170258">Kanpoan utzi beharreko ostalaria edo domeinua</translation>
@@ -583,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> sarea. Konektatu gabe.</translation>
 <translation id="6074825444536523002">Google-ko inprimakia</translation>
 <translation id="6079871810119356840">Hungariarra, QWERTY teklatuarekin</translation>
+<translation id="6082256976217156453">LZMA bidez konprimatutako artxiboa</translation>
 <translation id="6096979789310008754">Garbitu da bilaketa-testua. Fitxategi eta karpeta guztiak daude ikusgai.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara eramaten</translation>
 <translation id="6129953537138746214">Zuriunea</translation>
@@ -678,6 +685,7 @@
 <translation id="6935521024859866267">Buruz gora</translation>
 <translation id="6943836128787782965">Ezin izan da HTTP protokoloa eskuratu</translation>
 <translation id="6949408524333579394">Serbieraren transliterazioa</translation>
+<translation id="6954309393500027528">Administratzaileak blokeatuta dauka fitxategi hau itsasteko aukera</translation>
 <translation id="6960565108681981554">Ez dago aktibatuta. Jarri operadorearekin harremanetan.</translation>
 <translation id="696203921837389374">Gaitu datu-konexio bidezko sinkronizazioa</translation>
 <translation id="6965382102122355670">Ados</translation>
@@ -805,7 +813,7 @@
 <translation id="7972920761225148017">Frantsesa (Suitza)</translation>
 <translation id="7973962044839454485">Ezin izan da PPP bidez autentifikatu erabiltzaile-izena edo pasahitza okerra zelako</translation>
 <translation id="7980421588063892270">Ingelesa (AEB), Colemak teklatuarekin</translation>
-<translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="8000066093800657092">Ez dago sarerik</translation>
 <translation id="8008366997883261463">Jack Russell Terrier arrazako zakurra</translation>
 <translation id="8028993641010258682">Tamaina</translation>
@@ -838,6 +846,7 @@
 <translation id="8297012244086013755">3. hangul-karaktere sorta (balio bikoitzeko teklarik gabe)</translation>
 <translation id="8299269255470343364">Japoniarra</translation>
 <translation id="8300849813060516376">OTASP zerbitzuak huts egin du</translation>
+<translation id="8308481408797647857">XZ bidez konprimatutako .tar artxiboa</translation>
 <translation id="8312871300878166382">Itsatsi karpetan</translation>
 <translation id="8329978297633540474">Testu arrunta</translation>
 <translation id="8335587457941836791">Desainguratu apaletik</translation>
@@ -874,6 +883,7 @@
 <translation id="8551494947769799688">Letoniarra</translation>
 <translation id="8560515948038859357">Kantondarra</translation>
 <translation id="8561206103590473338">Elefantea</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
 <translation id="8569764466147087991">Hautatu irekitzeko fitxategi bat</translation>
 <translation id="8577897833047451336">Kroaziarra</translation>
 <translation id="8578308463707544055">Indonesiarra</translation>
@@ -910,7 +920,7 @@
 <translation id="8912078710089354287">Buztanari eragiten ari dion txakurra</translation>
 <translation id="8919081441417203123">Daniarra</translation>
 <translation id="8965697826696209160">Ez dago memoria nahikorik.</translation>
-<translation id="8970501467542182729">Macintosh-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="8970501467542182729">Macintosh-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="8997962250644902079">Txinatarra (tradizionala, pinyin)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="9017798300203431059">Fonetika errusiarra</translation>
@@ -926,7 +936,6 @@
 <translation id="9110990317705400362">Arakatzea geroz eta seguruagoa izan dadin saiatzen gara etengabe. Lehen, edozein webgunek eskain ziezazukeen arakatzailean gehitzeko luzapen bat. Google Chrome-ren azken bertsioetan, ordea, luzapen horiek Luzapenak orrian gehituta instalatu nahi dituzula berariaz esan behar diozu Chrome-ri. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Desblokeatu</translation>
 <translation id="912419004897138677">Kodeka</translation>
-<translation id="9129931661813833980">Ainguratu karpeta</translation>
 <translation id="9130775360844693113">Elementu hauetarako sarbidea izango dute "<ph name="DESTINATION_NAME" />" unitateko kideek.</translation>
 <translation id="9131598836763251128">Hautatu fitxategi bat edo gehiago</translation>
 <translation id="9133055936679483811">Ezin izan da konprimatu. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +956,7 @@
 <translation id="943972244133411984">Aldaketaren egilea:</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
 <translation id="947144732524271678">Hautatu da <ph name="ENTRY_COUNT" /> sarrerako barruti bat, <ph name="FROM_ENTRY_NAME" /> sarreratik <ph name="TO_ENTRY_NAME" /> sarrerara.</translation>
+<translation id="961973045258256291">Gzip bidez konprimatutako artxiboa</translation>
 <translation id="965477715979482472">Ingelesa (Hegoafrika)</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="988685240266037636">Badago "<ph name="FILE_NAME" />" izeneko fitxategi bat. Ordeztu egin nahi duzu?</translation>

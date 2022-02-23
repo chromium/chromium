@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/mirror_layer.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/interpolated_transform.h"
 
 namespace ui {
@@ -103,8 +105,8 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
   }
 
  private:
-  Layer* const source_;
-  Layer* const dest_;
+  const raw_ptr<Layer> source_;
+  const raw_ptr<Layer> dest_;
 };
 
 // Manages the subpixel offset data for a given set of parameters (device
@@ -319,7 +321,7 @@ void Layer::SetShowReflectedLayerSubtree(Layer* subtree_reflected_layer) {
     return;
 
   scoped_refptr<cc::MirrorLayer> new_layer =
-      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_);
+      cc::MirrorLayer::Create(subtree_reflected_layer->cc_layer_.get());
   if (!SwitchToLayer(new_layer))
     return;
 
@@ -355,7 +357,7 @@ void Layer::SetCompositor(Compositor* compositor,
   compositor_ = compositor;
   OnDeviceScaleFactorChanged(compositor->device_scale_factor());
 
-  root_layer->AddChild(cc_layer_);
+  root_layer->AddChild(cc_layer_.get());
   SetCompositorForAnimatorsInTree(compositor);
 }
 
@@ -381,10 +383,10 @@ void Layer::Add(Layer* child) {
     child->parent_->Remove(child);
   child->parent_ = this;
   children_.push_back(child);
-  cc_layer_->AddChild(child->cc_layer_);
+  cc_layer_->AddChild(child->cc_layer_.get());
   child->OnDeviceScaleFactorChanged(device_scale_factor_);
   Compositor* compositor = GetCompositor();
-  if (compositor)
+  if (compositor && compositor->animations_are_enabled())
     child->SetCompositorForAnimatorsInTree(compositor);
 }
 
@@ -404,7 +406,7 @@ void Layer::Remove(Layer* child) {
     return;
 
   Compositor* compositor = GetCompositor();
-  if (compositor)
+  if (compositor && compositor->animations_are_enabled())
     child->ResetCompositorForAnimatorsInTree(compositor);
 
   auto i = std::find(children_.begin(), children_.end(), child);
@@ -449,7 +451,8 @@ void Layer::SetAnimator(LayerAnimator* animator) {
   Compositor* compositor = GetCompositor();
 
   if (animator_) {
-    if (compositor && !layer_mask_back_link())
+    if (compositor && compositor->animations_are_enabled() &&
+        !layer_mask_back_link())
       animator_->DetachLayerAndTimeline(compositor);
     animator_->SetDelegate(nullptr);
   }
@@ -458,7 +461,8 @@ void Layer::SetAnimator(LayerAnimator* animator) {
 
   if (animator_) {
     animator_->SetDelegate(this);
-    if (compositor && !layer_mask_back_link())
+    if (compositor && compositor->animations_are_enabled() &&
+        !layer_mask_back_link())
       animator_->AttachLayerAndTimeline(compositor);
   }
 }
@@ -786,7 +790,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   cc_layer_->RemoveAllChildren();
   if (cc_layer_->parent()) {
-    cc_layer_->parent()->ReplaceChild(cc_layer_, new_layer);
+    cc_layer_->mutable_parent()->ReplaceChild(cc_layer_, new_layer);
   }
   cc_layer_->ClearDebugInfo();
 
@@ -815,7 +819,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 
   for (auto* child : children_) {
     DCHECK(child->cc_layer_);
-    cc_layer_->AddChild(child->cc_layer_);
+    cc_layer_->AddChild(child->cc_layer_.get());
   }
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetContentsOpaque(fills_bounds_opaquely_);
@@ -1192,7 +1196,7 @@ void Layer::StackChildrenAtBottom(
     DCHECK_EQ(leading_child->parent(), this);
     new_children_order.emplace_back(leading_child);
     new_cc_children_order.emplace_back(
-        scoped_refptr<cc::Layer>(leading_child->cc_layer_));
+        scoped_refptr<cc::Layer>(leading_child->cc_layer_.get()));
   }
 
   base::flat_set<Layer*> reordered_children(new_children_order);
@@ -1276,7 +1280,7 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
 }
 
 void Layer::SetDidScrollCallback(
-    base::RepeatingCallback<void(const gfx::Vector2dF&, const cc::ElementId&)>
+    base::RepeatingCallback<void(const gfx::PointF&, const cc::ElementId&)>
         callback) {
   cc_layer_->SetDidScrollCallback(std::move(callback));
 }
@@ -1286,16 +1290,16 @@ void Layer::SetScrollable(const gfx::Size& container_bounds) {
   cc_layer_->SetUserScrollable(true, true);
 }
 
-gfx::Vector2dF Layer::CurrentScrollOffset() const {
+gfx::PointF Layer::CurrentScrollOffset() const {
   const Compositor* compositor = GetCompositor();
-  gfx::Vector2dF offset;
+  gfx::PointF offset;
   if (compositor &&
       compositor->GetScrollOffsetForLayer(cc_layer_->element_id(), &offset))
     return offset;
   return cc_layer_->scroll_offset();
 }
 
-void Layer::SetScrollOffset(const gfx::Vector2dF& offset) {
+void Layer::SetScrollOffset(const gfx::PointF& offset) {
   Compositor* compositor = GetCompositor();
   bool scrolled_on_impl_side =
       compositor && compositor->ScrollLayerTo(cc_layer_->element_id(), offset);
@@ -1377,8 +1381,7 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   children_.erase(children_.begin() + child_i);
   children_.insert(children_.begin() + dest_i, child);
 
-  child->cc_layer_->RemoveFromParent();
-  cc_layer_->InsertChild(child->cc_layer_, dest_i);
+  cc_layer_->InsertChild(child->cc_layer_.get(), dest_i);
 }
 
 bool Layer::ConvertPointForAncestor(const Layer* ancestor,

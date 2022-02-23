@@ -59,6 +59,11 @@ enum CommandId {
   USE_LAUNCH_TYPE_WINDOW = 203,
   USE_LAUNCH_TYPE_TABBED_WINDOW = 204,
   USE_LAUNCH_TYPE_COMMAND_END,
+  // The reorder submenu options used by AppServiceContextMenu.
+  REORDER_SUBMENU = 300,
+  REORDER_BY_NAME_ALPHABETICAL = 301,
+  REORDER_BY_NAME_REVERSE_ALPHABETICAL = 302,
+  REORDER_BY_COLOR = 303,
 
   // Range of command ids reserved for launching app shortcuts from context
   // menu for Android app. Used by AppContextMenu and ShelfContextMenu.

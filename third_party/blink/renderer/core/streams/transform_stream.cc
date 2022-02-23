@@ -338,12 +338,10 @@ class TransformStream::DefaultSinkWriteAlgorithm final
         ResponseFunction(ScriptState* script_state,
                          TransformStream* stream,
                          v8::Local<v8::Value> chunk)
-            : PromiseHandlerWithValue(script_state),
-              stream_(stream),
-              chunk_(script_state->GetIsolate(), chunk) {}
+            : stream_(stream), chunk_(script_state->GetIsolate(), chunk) {}
 
-        v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
-          auto* script_state = GetScriptState();
+        v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                           v8::Local<v8::Value>) override {
           auto* isolate = script_state->GetIsolate();
 
           // c. Return the result of transforming backpressureChangePromise with
@@ -371,7 +369,7 @@ class TransformStream::DefaultSinkWriteAlgorithm final
         void Trace(Visitor* visitor) const override {
           visitor->Trace(stream_);
           visitor->Trace(chunk_);
-          ScriptFunction::Trace(visitor);
+          PromiseHandlerWithValue::Trace(visitor);
         }
 
        private:
@@ -383,7 +381,9 @@ class TransformStream::DefaultSinkWriteAlgorithm final
       return StreamThenPromise(
           script_state->GetContext(),
           backpressure_change_promise->V8Promise(script_state->GetIsolate()),
-          MakeGarbageCollected<ResponseFunction>(script_state, stream_, chunk));
+          MakeGarbageCollected<ScriptFunction>(
+              script_state, MakeGarbageCollected<ResponseFunction>(
+                                script_state, stream_, chunk)));
     }
 
     //  4. Return ! TransformStreamDefaultControllerPerformTransform(controller,
@@ -457,19 +457,18 @@ class TransformStream::DefaultSinkCloseAlgorithm final
 
     class ResolveFunction final : public PromiseHandlerWithValue {
      public:
-      ResolveFunction(ScriptState* script_state, TransformStream* stream)
-          : PromiseHandlerWithValue(script_state), stream_(stream) {}
+      explicit ResolveFunction(TransformStream* stream) : stream_(stream) {}
 
-      v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
+      v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                         v8::Local<v8::Value>) override {
         // 5. Return the result of transforming flushPromise with:
         //    a. A fulfillment handler that performs the following steps:
         //       i. If readable.[[state]] is "errored", throw
         //          readable.[[storedError]].
         if (ReadableStream::IsErrored(stream_->readable_)) {
           // Returning a rejection is equivalent to throwing here.
-          return PromiseReject(GetScriptState(),
-                               stream_->readable_->GetStoredError(
-                                   GetScriptState()->GetIsolate()));
+          return PromiseReject(script_state, stream_->readable_->GetStoredError(
+                                                 script_state->GetIsolate()));
         }
 
         //      ii. Let readableController be
@@ -481,11 +480,11 @@ class TransformStream::DefaultSinkCloseAlgorithm final
         //          ReadableStreamDefaultControllerClose(readableController).
         if (ReadableStreamDefaultController::CanCloseOrEnqueue(
                 readable_controller)) {
-          ReadableStreamDefaultController::Close(GetScriptState(),
+          ReadableStreamDefaultController::Close(script_state,
                                                  readable_controller);
         }
 
-        return v8::Undefined(GetScriptState()->GetIsolate());
+        return v8::Undefined(script_state->GetIsolate());
       }
 
       void Trace(Visitor* visitor) const override {
@@ -499,19 +498,18 @@ class TransformStream::DefaultSinkCloseAlgorithm final
 
     class RejectFunction final : public PromiseHandlerWithValue {
      public:
-      RejectFunction(ScriptState* script_state, TransformStream* stream)
-          : PromiseHandlerWithValue(script_state), stream_(stream) {}
+      explicit RejectFunction(TransformStream* stream) : stream_(stream) {}
 
-      v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value> r) override {
+      v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                         v8::Local<v8::Value> r) override {
         // b. A rejection handler that, when called with argument r, performs
         //    the following steps:
         //    i. Perform ! TransformStreamError(stream, r).
-        Error(GetScriptState(), stream_, r);
+        Error(script_state, stream_, r);
 
         //   ii. Throw readable.[[storedError]].
-        return PromiseReject(
-            GetScriptState(),
-            stream_->readable_->GetStoredError(GetScriptState()->GetIsolate()));
+        return PromiseReject(script_state, stream_->readable_->GetStoredError(
+                                               script_state->GetIsolate()));
       }
 
       void Trace(Visitor* visitor) const override {
@@ -526,8 +524,10 @@ class TransformStream::DefaultSinkCloseAlgorithm final
     // 5. Return the result of transforming flushPromise ...
     return StreamThenPromise(
         script_state->GetContext(), flush_promise,
-        MakeGarbageCollected<ResolveFunction>(script_state, stream_),
-        MakeGarbageCollected<RejectFunction>(script_state, stream_));
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<ResolveFunction>(stream_)),
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<RejectFunction>(stream_)));
   }
 
   void Trace(Visitor* visitor) const override {

@@ -11,7 +11,6 @@
 #include <tuple>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/cors/preflight_result.h"
@@ -41,8 +40,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
 
   ~PreflightCache();
 
-  // Appends new |preflight_result| entry to the cache for a specified |origin|
-  // and |url|.
+  // Appends new `preflight_result` entry to the cache for a specified `origin`
+  // and `url`.
   void AppendEntry(const url::Origin& origin,
                    const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
@@ -63,7 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
   // Counts cached entries for testing.
   size_t CountEntriesForTesting() const;
 
-  // Purges one cache entry if number of entries is larger than |max_entries|
+  // Purges one cache entry if number of entries is larger than `max_entries`
   // for testing.
   void MayPurgeForTesting(size_t max_entries, size_t purge_unit);
 

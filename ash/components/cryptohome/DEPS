@@ -1,0 +1,18 @@
+noparent = True
+
+include_rules = [
+  "+ash/components/login/auth",
+  "+base",
+  "+chromeos/dbus",
+  "+components/account_id",
+  "+components/device_event_log",
+  "+components/user_manager",
+  "+third_party/abseil-cpp/absl",
+  "+third_party/cros_system_api",
+]
+
+specific_include_rules = {
+  ".*test\.cc|mock.*\.*": [
+    "+testing",
+  ],
+}

@@ -23,6 +23,9 @@ public interface OnboardingView {
     /** Hides the onboarding UI, if one is shown. */
     void hide();
 
+    /** Updates the contents of views based on the presence of parameters and experiments. */
+    void updateViews();
+
     /**
      * Returns {@code true} if the onboarding has been shown at the beginning when this
      * autofill assistant flow got triggered.

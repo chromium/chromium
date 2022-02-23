@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 #include "components/media_router/common/media_route_provider_helper.h"
@@ -71,14 +72,6 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
                  base::TimeDelta timeout,
                  bool off_the_record,
                  JoinRouteCallback callback) override;
-  void ConnectRouteByRouteId(const std::string& media_source,
-                             const std::string& route_id,
-                             const std::string& presentation_id,
-                             const url::Origin& origin,
-                             int32_t tab_id,
-                             base::TimeDelta timeout,
-                             bool off_the_record,
-                             ConnectRouteByRouteIdCallback callback) override;
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override;
   void SendRouteMessage(const std::string& media_route_id,
@@ -87,8 +80,7 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
                               const std::vector<uint8_t>& data) override;
   void StartObservingMediaSinks(const std::string& media_source) override;
   void StopObservingMediaSinks(const std::string& media_source) override;
-  void StartObservingMediaRoutes(const std::string& media_source) override;
-  void StopObservingMediaRoutes(const std::string& media_source) override;
+  void StartObservingMediaRoutes() override;
   void StartListeningForRouteMessages(const std::string& route_id) override;
   void StopListeningForRouteMessages(const std::string& route_id) override;
   void DetachRoute(const std::string& route_id) override;
@@ -198,13 +190,10 @@ class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
 
   // Presentation profiles are created based on this original profile. This
   // profile is not owned by |this|.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Map from presentation IDs to active presentations managed by this provider.
   std::map<std::string, Presentation> presentations_;
-
-  // A set of MediaSource IDs associated with queries for MediaRoute updates.
-  base::flat_set<std::string> route_queries_;
 
   // A set of MediaSource IDs associated with queries for MediaSink updates.
   base::flat_set<std::string> sink_queries_;

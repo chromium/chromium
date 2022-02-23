@@ -46,11 +46,10 @@
 
   await dp.Runtime.enable();
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
-  dp.Page.navigate({url: 'http://test.com/'});
+  await dp.Page.navigate({url: 'http://test.com/'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
   const {params} = await dp.Runtime.onceConsoleAPICalled();
-  testRunner.log(`PAGE: ${params.args[0].value}`);
-  testRunner.completeTest();
+    testRunner.log(`PAGE: ${params.args[0].value}`);
+    testRunner.completeTest();
 })

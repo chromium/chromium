@@ -11,15 +11,15 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/public/browser/native_event_processor_observer_mac.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/aura/window_event_dispatcher_observer.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/message_loop/message_pump_win.h"
 #endif
 
@@ -38,11 +38,11 @@ namespace responsiveness {
 // On Windows, the hook should be in MessagePumpForUI::ProcessMessageHelper.
 // On Android, the hook should be in <TBD>.
 class CONTENT_EXPORT NativeEventObserver
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     : public NativeEventProcessorObserver
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     : public aura::WindowEventDispatcherObserver
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     : public base::MessagePumpForUI::Observer
 #endif
 {
@@ -57,7 +57,7 @@ class CONTENT_EXPORT NativeEventObserver
   NativeEventObserver(WillRunEventCallback will_run_event_callback,
                       DidRunEventCallback did_run_event_callback);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   NativeEventObserver(const NativeEventObserver&) = delete;
   NativeEventObserver& operator=(const NativeEventObserver&) = delete;
@@ -68,19 +68,19 @@ class CONTENT_EXPORT NativeEventObserver
 #endif
 
  protected:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // NativeEventProcessorObserver overrides:
   // Exposed for tests.
   void WillRunNativeEvent(const void* opaque_identifier) override;
   void DidRunNativeEvent(const void* opaque_identifier) override;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // aura::WindowEventDispatcherObserver overrides:
   void OnWindowEventDispatcherStartedProcessing(
       aura::WindowEventDispatcher* dispatcher,
       const ui::Event& event) override;
   void OnWindowEventDispatcherFinishedProcessingEvent(
       aura::WindowEventDispatcher* dispatcher) override;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // base::MessagePumpForUI::Observer overrides:
   void WillDispatchMSG(const MSG& msg) override;
   void DidDispatchMSG(const MSG& msg) override;
@@ -90,7 +90,7 @@ class CONTENT_EXPORT NativeEventObserver
   void RegisterObserver();
   void DeregisterObserver();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   struct EventInfo {
     const void* unique_id;
   };

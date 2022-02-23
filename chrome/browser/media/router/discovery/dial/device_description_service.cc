@@ -39,7 +39,7 @@ constexpr int kCacheMaxEntries = 256;
 // Checks mandatory fields. Returns ParsingError::kNone if device description is
 // valid; Otherwise returns specific error type.
 ParsingError ValidateParsedDeviceDescription(
-    const GURL& device_description_url,
+    const DialDeviceData& device_data,
     const ParsedDialDeviceDescription& description_data) {
   if (description_data.unique_id.empty()) {
     return ParsingError::kMissingUniqueId;
@@ -50,24 +50,16 @@ ParsingError ValidateParsedDeviceDescription(
   if (!description_data.app_url.is_valid()) {
     return ParsingError::kMissingAppUrl;
   }
-
-  // TODO(crbug.com/679432): Get the device IP from the SSDP response.
-  net::IPAddress device_ip;
-  if (!device_ip.AssignFromIPLiteral(
-          device_description_url.HostNoBracketsPiece()) ||
-      !DialDeviceData::IsValidDialAppUrl(description_data.app_url, device_ip)) {
+  if (!device_data.IsValidUrl(description_data.app_url)) {
     return ParsingError::kInvalidAppUrl;
   }
+
   return ParsingError::kNone;
 }
 
 void RecordDialParsingError(
     SafeDialDeviceDescriptionParser::ParsingError parsing_error) {
-  DCHECK_LT(parsing_error,
-            SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
-  UMA_HISTOGRAM_ENUMERATION(
-      "MediaRouter.Dial.ParsingError", parsing_error,
-      SafeDialDeviceDescriptionParser::ParsingError::kTotalCount);
+  UMA_HISTOGRAM_ENUMERATION("MediaRouter.Dial.ParsingError", parsing_error);
 }
 
 }  // namespace
@@ -145,7 +137,7 @@ void DeviceDescriptionService::FetchDeviceDescription(
     return;
 
   auto device_description_fetcher = std::make_unique<DeviceDescriptionFetcher>(
-      device_data.device_description_url(),
+      device_data,
       base::BindOnce(
           &DeviceDescriptionService::OnDeviceDescriptionFetchComplete,
           base::Unretained(this), device_data),
@@ -198,8 +190,8 @@ void DeviceDescriptionService::OnParsedDeviceDescription(
     return;
   }
 
-  ParsingError error = ValidateParsedDeviceDescription(
-      device_data.device_description_url(), device_description);
+  ParsingError error =
+      ValidateParsedDeviceDescription(device_data, device_description);
   if (error != ParsingError::kNone) {
     RecordDialParsingError(error);
     error_cb_.Run(device_data, "Failed to process fetch result");

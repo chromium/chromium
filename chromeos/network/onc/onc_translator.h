@@ -5,13 +5,10 @@
 #ifndef CHROMEOS_NETWORK_ONC_ONC_TRANSLATOR_H_
 #define CHROMEOS_NETWORK_ONC_ONC_TRANSLATOR_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -31,9 +28,8 @@ struct OncValueSignature;
 // This function is used to translate network settings from ONC to Shill's
 // format before sending them to Shill.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> TranslateONCObjectToShill(
-    const OncValueSignature* signature,
-    const base::Value& onc_object);
+base::Value TranslateONCObjectToShill(const OncValueSignature* signature,
+                                      const base::Value& onc_object);
 
 // Translates a |shill_dictionary| (a Value of type DICTIONARY) to an ONC object
 // according to the given |onc_signature|. |onc_signature| must point to a
@@ -48,7 +44,7 @@ std::unique_ptr<base::DictionaryValue> TranslateONCObjectToShill(
 // will be used to set the ErrorState property. Otherwise ErrorState will not
 // be set.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::unique_ptr<base::DictionaryValue> TranslateShillServiceToONCPart(
+base::Value TranslateShillServiceToONCPart(
     const base::Value& shill_dictionary,
     ::onc::ONCSource onc_source,
     const OncValueSignature* onc_signature,

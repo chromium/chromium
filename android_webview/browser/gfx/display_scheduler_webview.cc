@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
+
 #include "android_webview/browser/gfx/root_frame_sink.h"
+#include "base/trace_event/trace_event.h"
 
 namespace android_webview {
 DisplaySchedulerWebView::DisplaySchedulerWebView(

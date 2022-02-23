@@ -52,7 +52,7 @@ class GIN_EXPORT V8Initializer {
       base::MemoryMappedFile::Region* snapshot_file_region,
       V8SnapshotFileType snapshot_file_type);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static base::FilePath GetSnapshotFilePath(
       bool abi_32_bit,
       V8SnapshotFileType snapshot_file_type);

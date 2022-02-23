@@ -11,7 +11,7 @@
 #include "headless/public/version.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
@@ -42,7 +42,7 @@ Options::Options(int argc, const char** argv)
       user_agent(content::BuildUserAgentFromProduct(product_name_and_version)),
       window_size(kDefaultWindowSize),
       font_render_hinting(kDefaultFontRenderHinting) {
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   gl_implementation = gl::kGLImplementationANGLEName;
   angle_implementation = gl::kANGLEImplementationSwiftShaderForWebGLName;
 #endif
@@ -136,7 +136,7 @@ Builder& Builder::SetAppendCommandLineFlagsCallback(
   return *this;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 Builder& Builder::SetInstance(HINSTANCE hinstance) {
   options_.instance = hinstance;
   return *this;
@@ -146,7 +146,7 @@ Builder& Builder::SetSandboxInfo(sandbox::SandboxInterfaceInfo* info) {
   options_.sandbox_info = info;
   return *this;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 Builder& Builder::SetUserDataDir(const base::FilePath& dir) {
   options_.user_data_dir = dir;

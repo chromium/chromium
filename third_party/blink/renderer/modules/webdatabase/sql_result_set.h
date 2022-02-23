@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_result_set_row_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

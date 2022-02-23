@@ -25,11 +25,9 @@ class PdfToEmfConverterFactory : public mojom::PdfToEmfConverterFactory {
 
  private:
   // mojom::PdfToEmfConverterFactory implementation.
-  void CreateConverter(
-      base::ReadOnlySharedMemoryRegion pdf_region,
-      const PdfRenderSettings& render_settings,
-      mojo::PendingRemote<mojom::PdfToEmfConverterClient> client,
-      CreateConverterCallback callback) override;
+  void CreateConverter(base::ReadOnlySharedMemoryRegion pdf_region,
+                       const PdfRenderSettings& render_settings,
+                       CreateConverterCallback callback) override;
 };
 
 }  // namespace printing

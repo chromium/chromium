@@ -3390,32 +3390,6 @@ void GLES2Implementation::LoseContextCHROMIUM(GLenum current, GLenum other) {
   CheckGLError();
 }
 
-void GLES2Implementation::UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
-                                                             GLuint dest_id,
-                                                             GLint x,
-                                                             GLint y,
-                                                             GLsizei width,
-                                                             GLsizei height) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glUnpremultiplyAndDitherCopyCHROMIUM(" << source_id
-                     << ", " << dest_id << ", " << x << ", " << y << ", "
-                     << width << ", " << height << ")");
-  if (width < 0) {
-    SetGLError(GL_INVALID_VALUE, "glUnpremultiplyAndDitherCopyCHROMIUM",
-               "width < 0");
-    return;
-  }
-  if (height < 0) {
-    SetGLError(GL_INVALID_VALUE, "glUnpremultiplyAndDitherCopyCHROMIUM",
-               "height < 0");
-    return;
-  }
-  helper_->UnpremultiplyAndDitherCopyCHROMIUM(source_id, dest_id, x, y, width,
-                                              height);
-  CheckGLError();
-}
-
 void GLES2Implementation::DrawBuffersEXT(GLsizei count, const GLenum* bufs) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDrawBuffersEXT(" << count << ", "

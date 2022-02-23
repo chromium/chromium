@@ -28,7 +28,7 @@
             android:layout_height="@dimen/cryptid_height_in_logo_wrapper"
             android:layout_gravity="bottom|start" />
 
-        <org.chromium.chrome.browser.ntp.LogoView
+        <org.chromium.chrome.browser.logo.LogoView
             android:id="@+id/search_provider_logo"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ntp_logo_height"

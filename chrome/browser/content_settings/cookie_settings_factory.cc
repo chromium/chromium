@@ -15,7 +15,11 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
+#endif
 
 using content_settings::CookieControlsMode;
 
@@ -68,7 +72,14 @@ CookieSettingsFactory::BuildServiceInstanceFor(
   base::UmaHistogramEnumeration("Privacy.CookieControlsSetting",
                                 cookie_controls_mode);
 
+  const char* extension_scheme =
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      extensions::kExtensionScheme;
+#else
+      content_settings::kDummyExtensionScheme;
+#endif
+
   return new content_settings::CookieSettings(
       HostContentSettingsMapFactory::GetForProfile(profile), prefs,
-      profile->IsIncognitoProfile(), extensions::kExtensionScheme);
+      profile->IsIncognitoProfile(), extension_scheme);
 }

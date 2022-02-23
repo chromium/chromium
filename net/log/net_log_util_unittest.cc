@@ -80,7 +80,7 @@ TEST(NetLogUtil, GetNetInfoIncludesFieldTrials) {
   ASSERT_TRUE(net_info.is_dict());
   base::Value* trials = net_info.FindListPath("activeFieldTrialGroups");
   ASSERT_NE(nullptr, trials);
-  const auto& trial_list = trials->GetList();
+  const auto& trial_list = trials->GetListDeprecated();
   EXPECT_EQ(1u, trial_list.size());
   EXPECT_TRUE(trial_list[0].is_string());
   EXPECT_EQ("NewFieldTrial:Active", trial_list[0].GetString());

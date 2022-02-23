@@ -39,7 +39,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/file_stream.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
 #endif
 
@@ -51,9 +51,9 @@ namespace net {
 
 class IOBuffer;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class FileStream::Context : public base::MessagePumpForIO::IOHandler {
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 class FileStream::Context {
 #endif
 
@@ -67,9 +67,9 @@ class FileStream::Context {
   Context(base::File file, scoped_refptr<base::TaskRunner> task_runner);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ~Context() override;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ~Context();
 #endif
 
@@ -160,7 +160,7 @@ class FileStream::Context {
 
   void OnFileOpened();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void IOCompletionIsPending(CompletionOnceCallback callback, IOBuffer* buf);
 
   // Implementation of MessagePumpForIO::IOHandler.
@@ -207,7 +207,7 @@ class FileStream::Context {
   // the ReadFile API.
   void ReadAsyncResult(BOOL read_file_ret, DWORD bytes_read, DWORD os_error);
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // ReadFileImpl() is a simple wrapper around read() that handles EINTR
   // signals and calls RecordAndMapError() to map errno to net error codes.
   IOResult ReadFileImpl(scoped_refptr<IOBuffer> buf, int buf_len);
@@ -216,7 +216,7 @@ class FileStream::Context {
   // signals and calls MapSystemError() to map errno to net error codes.
   // It tries to write to completion.
   IOResult WriteFileImpl(scoped_refptr<IOBuffer> buf, int buf_len);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   base::File file_;
   bool async_in_progress_ = false;
@@ -224,7 +224,7 @@ class FileStream::Context {
   bool orphaned_ = false;
   const scoped_refptr<base::TaskRunner> task_runner_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::MessagePumpForIO::IOContext io_context_;
   CompletionOnceCallback callback_;
   scoped_refptr<IOBuffer> in_flight_buf_;

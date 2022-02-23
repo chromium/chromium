@@ -5,6 +5,7 @@
 #ifndef MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 #define MEDIA_BASE_WALL_CLOCK_TIME_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -39,7 +40,7 @@ class MEDIA_EXPORT WallClockTimeSource : public TimeSource {
   base::TimeDelta CurrentMediaTime_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Allow for an injectable tick clock for testing.
-  const base::TickClock* tick_clock_ GUARDED_BY(lock_);
+  raw_ptr<const base::TickClock> tick_clock_ GUARDED_BY(lock_);
 
   bool ticking_ GUARDED_BY(lock_);
 

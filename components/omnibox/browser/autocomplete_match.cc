@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -36,7 +37,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
@@ -278,7 +279,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   duplicate_matches = std::move(match.duplicate_matches);
   query_tiles = std::move(match.query_tiles);
   navsuggest_tiles = std::move(match.navsuggest_tiles);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
   std::swap(matching_java_tab_, match.matching_java_tab_);
@@ -288,7 +289,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 }
 
 AutocompleteMatch::~AutocompleteMatch() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif
 }
@@ -348,7 +349,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   query_tiles = match.query_tiles;
   navsuggest_tiles = match.navsuggest_tiles;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // In case the target element previously held a java object, release it.
   // This happens, when in an expression "match1 = match2;" match1 already
   // is initialized and linked to a Java object: we rewrite the contents of the
@@ -362,7 +363,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   return *this;
 }
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
 const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
@@ -407,6 +408,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
     case Type::TAB_SEARCH_DEPRECATED:
     case Type::TILE_NAVSUGGEST:
+    case Type::OPEN_TAB:
       return omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
@@ -721,7 +723,14 @@ bool AutocompleteMatch::IsSearchHistoryType(Type type) {
 bool AutocompleteMatch::IsActionCompatibleType(Type type) {
   // Note: There is a PEDAL type, but it is deprecated because Pedals always
   // attach to matches of other types instead of creating dedicated matches.
-  return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+  return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
+         // Attaching to Tail Suggest types looks weird, and is actually
+         // technically wrong because the Pedals annotator (and history clusters
+         // annotator) both use match.contents. If we do want to turn on Actions
+         // for tail suggest in the future, we should switch to using
+         // match.fill_into_edit or maybe page title for URL matches, and come
+         // up with a UI design for the button in the tail suggest layout.
+         type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
 }
 
 // static
@@ -818,8 +827,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
       (input.terms_prefixed_by_http_or_https().empty() ||
        !WordMatchesURLContent(
            input.terms_prefixed_by_http_or_https(), url))) {
-    replacements.SetScheme(url::kHttpScheme,
-                           url::Component(0, strlen(url::kHttpScheme)));
+    replacements.SetSchemeStr(url::kHttpScheme);
     needs_replacement = true;
   }
 
@@ -1042,6 +1050,8 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
       return OmniboxEventProto::Suggestion::TILE_SUGGESTION;
     case AutocompleteMatchType::TILE_NAVSUGGEST:
       return OmniboxEventProto::Suggestion::NAVSUGGEST;
+    case AutocompleteMatchType::OPEN_TAB:
+      return OmniboxEventProto::Suggestion::OPEN_TAB;
     case AutocompleteMatchType::VOICE_SUGGEST:
       // VOICE_SUGGEST matches are only used in Java and are not logged,
       // so we should never reach this case.
@@ -1134,11 +1144,21 @@ void AutocompleteMatch::SetAllowedToBeDefault(const AutocompleteInput& input) {
   }
 }
 
-void AutocompleteMatch::InlineTailPrefix(const std::u16string& common_prefix) {
+void AutocompleteMatch::SetTailSuggestCommonPrefix(
+    const std::u16string& common_prefix) {
   // Prevent re-addition of prefix.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
       tail_suggest_common_prefix.empty()) {
     tail_suggest_common_prefix = common_prefix;
+  }
+}
+
+void AutocompleteMatch::SetTailSuggestContentPrefix(
+    const std::u16string& common_prefix) {
+  // Prevent re-addition of prefix.
+  if (type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL &&
+      tail_suggest_common_prefix.empty()) {
+    SetTailSuggestCommonPrefix(common_prefix);
     // Insert an ellipsis before uncommon part.
     const std::u16string ellipsis = kEllipsis;
     contents = ellipsis + contents;

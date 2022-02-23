@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {AppType, OptionalBool} from '//resources/cr_components/app_management/constants.js';
+import {PermissionType, PermissionValue, TriState} from '//resources/cr_components/app_management/permission_constants.js';
+import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '//resources/cr_components/app_management/permission_util.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {PermissionType, PermissionValue, TriState} from '../permission_constants.js';
-import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '../permission_util.js';
-
-import {AppType, OptionalBool} from './constants.js';
 import {AppManagementStore} from './store.js';
 
 /**
@@ -71,7 +70,7 @@ export class FakePageHandler {
   }
 
   /**
-   * @param {AppType} appType
+   * @param {apps.mojom.AppType} appType
    * @return {!Object<number, Permission>}
    */
   static createPermissions(appType) {
@@ -109,6 +108,7 @@ export class FakePageHandler {
       resizeLocked: false,
       hideResizeLocked: true,
       supportedLinks: [],
+      runOnOsLogin: null,
     };
 
     if (optConfig) {
@@ -196,6 +196,14 @@ export class FakePageHandler {
 
   /**
    * @param {!string} appId
+   * @return {!Promise<{app: appManagement.mojom.App}>}
+   */
+  async getApp(appId) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {!string} appId
    * @return {!Promise<{messages:
    *     !Array<!appManagement.mojom.ExtensionAppPermissionMessage>}>}
    */
@@ -212,7 +220,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {OptionalBool} pinnedValue
+   * @param {apps.mojom.OptionalBool} pinnedValue
    */
   setPinned(appId, pinnedValue) {
     const app = AppManagementStore.getInstance().data.apps[appId];
@@ -288,6 +296,22 @@ export class FakePageHandler {
    * @param {string} appId
    */
   openNativeSettings(appId) {}
+
+  /**
+   * @param {string} appId
+   * @param {apps.mojom.WindowMode} windowMode
+   */
+  setWindowMode(appId, windowMode) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {string} appId
+   * @param {apps.mojom.RunOnOsLoginMode} runOnOsLoginMode
+   */
+  setRunOnOsLoginMode(appId, runOnOsLoginMode) {
+    assertNotReached();
+  }
 
   /**
    * @param {string} appId

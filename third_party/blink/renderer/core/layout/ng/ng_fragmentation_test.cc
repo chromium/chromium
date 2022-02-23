@@ -280,36 +280,6 @@ TEST_F(NGFragmentationTest, InkOverflowInline) {
             PhysicalRect(0, 0, 260, 15));
 }
 
-TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxColumnBox) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-    #columns {
-      column-width: 100px;
-      column-gap: 10px;
-      column-fill: auto;
-      width: 320px;
-      height: 500px;
-    }
-    </style>
-    <div id="columns" style="background: blue">
-      <div id="block" style="height: 1500px"></div>
-    </div>
-  )HTML");
-  const auto* columns = GetLayoutBoxByElementId("columns");
-  const auto* flow_thread = To<LayoutBox>(columns->SlowFirstChild());
-  EXPECT_EQ(flow_thread->PhysicalFragmentCount(), 3u);
-  const NGPhysicalBoxFragment* fragment0 = flow_thread->GetPhysicalFragment(0);
-  EXPECT_EQ(fragment0->OffsetFromOwnerLayoutBox(), PhysicalOffset());
-  const NGPhysicalBoxFragment* fragment1 = flow_thread->GetPhysicalFragment(1);
-  EXPECT_EQ(fragment1->OffsetFromOwnerLayoutBox(), PhysicalOffset(110, 0));
-  const NGPhysicalBoxFragment* fragment2 = flow_thread->GetPhysicalFragment(2);
-  EXPECT_EQ(fragment2->OffsetFromOwnerLayoutBox(), PhysicalOffset(220, 0));
-
-  // Check running another layout does not crash.
-  GetElementById("block")->appendChild(GetDocument().createTextNode("a"));
-  RunDocumentLifecycle();
-}
-
 TEST_F(NGFragmentationTest, OffsetFromOwnerLayoutBoxFloat) {
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -22,7 +22,7 @@
   //
   // Applications can minimize underflow by enqueueing decode requests until
   // |decodeQueueSize| is greater than a constant.
-  readonly attribute long decodeQueueSize;
+  readonly attribute unsigned long decodeQueueSize;
 
   // Which state the decoder is in, indicating which methods can be called.
   readonly attribute CodecState state;
@@ -30,8 +30,6 @@
   // Set the stream configuration for future decode() requests.
   //
   // The next decode request must be for a keyframe.
-  //
-  // TODO(chcunningham): Move the keyframe rule into the bytestream registry.
   [RaisesException] void configure(AudioDecoderConfig config);
 
   // Request decoding of an input chunk.
@@ -44,10 +42,6 @@
   // Resolved after all output for earlier decode requests has been emitted.
   //
   // The next decode request must be for a keyframe.
-  //
-  // TODO(chcunningham): Consider relaxing the keyframe requirement.
-  // TODO(chcunningham): Indicate whether the flush() completed successfully or due
-  // to a reset.
   [RaisesException] Promise<void> flush();
 
   // Reset all codec state, including all pending requests.

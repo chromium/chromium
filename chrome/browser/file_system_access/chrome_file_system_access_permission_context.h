@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -197,7 +198,7 @@ class ChromeFileSystemAccessPermissionContext
   // An origin can only specify up to `max_ids_per_origin_` custom IDs per
   // origin (not including the default ID). If this limit is exceeded, evict
   // using LRU.
-  void MaybeEvictEntries(std::unique_ptr<base::Value>& value);
+  void MaybeEvictEntries(base::Value& value);
 
   // Schedules triggering all open windows to update their File System Access
   // usage indicator icon. Multiple calls to this method can result in only a
@@ -240,7 +241,7 @@ class ChromeFileSystemAccessPermissionContext
 
   base::WeakPtr<ChromeFileSystemAccessPermissionContext> GetWeakPtr();
 
-  content::BrowserContext* const profile_;
+  const raw_ptr<content::BrowserContext> profile_;
 
   // Permission state per origin.
   struct OriginState;
@@ -253,7 +254,7 @@ class ChromeFileSystemAccessPermissionContext
   // Number of custom IDs an origin can specify.
   size_t max_ids_per_origin_ = 32u;
 
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
   base::RepeatingTimer periodic_sweep_persisted_permissions_timer_;
 
   base::WeakPtrFactory<ChromeFileSystemAccessPermissionContext> weak_factory_{

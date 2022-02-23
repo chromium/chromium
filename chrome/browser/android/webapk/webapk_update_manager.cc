@@ -14,10 +14,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
+#include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,9 +27,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/color_utils_android.h"
-#include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -49,6 +49,13 @@ void OnUpdated(const JavaRef<jobject>& java_callback,
 }  // anonymous namespace
 
 // static JNI method.
+static jint JNI_WebApkUpdateManager_GetWebApkTargetShellVersion(JNIEnv* env) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kWebApkShellUpdate, kWebApkTargetShellVersion.name,
+      kWebApkTargetShellVersion.default_value);
+}
+
+// static JNI method.
 static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     JNIEnv* env,
     const JavaParamRef<jstring>& java_update_request_path,
@@ -57,10 +64,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const JavaParamRef<jstring>& java_name,
     const JavaParamRef<jstring>& java_short_name,
     const JavaParamRef<jstring>& java_primary_icon_url,
-    const JavaParamRef<jobject>& java_primary_icon_bitmap,
+    const JavaParamRef<jstring>& java_primary_icon_data,
     jboolean java_is_primary_icon_maskable,
     const JavaParamRef<jstring>& java_splash_icon_url,
-    const JavaParamRef<jobject>& java_splash_icon_bitmap,
+    const JavaParamRef<jstring>& java_splash_icon_data,
     jboolean java_is_splash_icon_maskable,
     const JavaParamRef<jobjectArray>& java_icon_urls,
     const JavaParamRef<jobjectArray>& java_icon_hashes,
@@ -158,18 +165,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
         webapps::WebApkIconHasher::Icon{/* data= */ "", icon_hashes[i]};
   }
 
-  gfx::JavaBitmap java_primary_icon_bitmap_lock(java_primary_icon_bitmap);
-  SkBitmap primary_icon =
-      gfx::CreateSkBitmapFromJavaBitmap(java_primary_icon_bitmap_lock);
-  primary_icon.setImmutable();
-
-  SkBitmap splash_icon;
-  if (!java_splash_icon_bitmap.is_null()) {
-    gfx::JavaBitmap java_splash_icon_bitmap_lock(java_splash_icon_bitmap);
-    splash_icon =
-        gfx::CreateSkBitmapFromJavaBitmap(java_splash_icon_bitmap_lock);
-    splash_icon.setImmutable();
-  }
+  std::string primary_icon_data =
+      ConvertJavaStringToUTF8(env, java_primary_icon_data);
+  std::string splash_icon_data =
+      ConvertJavaStringToUTF8(env, java_splash_icon_data);
 
   std::string webapk_package;
   ConvertJavaStringToUTF8(env, java_webapk_package, &webapk_package);
@@ -217,8 +216,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
         static_cast<webapps::WebApkUpdateReason>(update_reason));
 
   WebApkInstaller::StoreUpdateRequestToFile(
-      base::FilePath(update_request_path), info, primary_icon,
-      java_is_primary_icon_maskable, splash_icon, webapk_package,
+      base::FilePath(update_request_path), info, primary_icon_data,
+      java_is_primary_icon_maskable, splash_icon_data, webapk_package,
       base::NumberToString(java_webapk_version),
       std::move(icon_url_to_murmur2_hash), java_is_manifest_stale,
       java_is_app_identity_update_supported, std::move(update_reasons),

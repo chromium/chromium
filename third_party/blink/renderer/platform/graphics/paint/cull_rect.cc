@@ -5,14 +5,13 @@
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 
 #include "base/containers/adapters.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -28,7 +27,7 @@ static int LocalPixelDistanceToExpand(
   // composited scroll translation or other composited transform.
   static constexpr int kPixelDistanceToExpand = 4000;
 
-  FloatRect rect(0, 0, 1, 1);
+  gfx::RectF rect(0, 0, 1, 1);
   GeometryMapper::SourceToDestinationRect(root_transform, local_transform,
                                           rect);
   // Now rect.Size() is the size of a screen pixel in local coordinates.
@@ -75,37 +74,33 @@ void CullRect::ApplyTransform(const TransformPaintPropertyNode& transform) {
                                           rect_);
 }
 
-CullRect::ApplyTransformResult CullRect::ApplyScrollTranslation(
+bool CullRect::ApplyScrollTranslation(
     const TransformPaintPropertyNode& root_transform,
     const TransformPaintPropertyNode& scroll_translation) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-         RuntimeEnabledFeatures::CullRectUpdateEnabled());
-
   const auto* scroll = scroll_translation.ScrollNode();
   DCHECK(scroll);
 
   rect_.Intersect(scroll->ContainerRect());
   if (rect_.IsEmpty())
-    return kNotExpanded;
+    return false;
 
   ApplyTransform(scroll_translation);
 
   // Don't expand for non-composited scrolling.
   if (!scroll_translation.HasDirectCompositingReasons())
-    return kNotExpanded;
+    return false;
 
   // We create scroll node for the root scroller even it's not scrollable.
   // Don't expand in the case.
   gfx::Rect contents_rect = scroll->ContentsRect();
   if (scroll->ContainerRect().width() >= contents_rect.width() &&
       scroll->ContainerRect().height() >= contents_rect.height())
-    return kNotExpanded;
+    return false;
 
   // Expand the cull rect for scrolling contents for composited scrolling.
   rect_.Outset(LocalPixelDistanceToExpand(root_transform, scroll_translation));
   rect_.Intersect(contents_rect);
-  return rect_ == contents_rect ? kExpandedForWholeScrollingContents
-                                : kExpandedForPartialScrollingContents;
+  return true;
 }
 
 bool CullRect::ApplyPaintPropertiesWithoutExpansion(
@@ -136,9 +131,6 @@ bool CullRect::ApplyPaintProperties(
     const PropertyTreeState& source,
     const PropertyTreeState& destination,
     const absl::optional<CullRect>& old_cull_rect) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-         RuntimeEnabledFeatures::CullRectUpdateEnabled());
-
   Vector<const TransformPaintPropertyNode*, 4> scroll_translations;
   Vector<const ClipPaintPropertyNode*, 4> clips;
   bool abnormal_hierarchy = false;
@@ -177,7 +169,7 @@ bool CullRect::ApplyPaintProperties(
   // translation's transform/clip.
   const auto* last_transform = &source.Transform();
   const auto* last_clip = &source.Clip();
-  auto last_scroll_translation_result = kNotExpanded;
+  bool expanded = false;
 
   // For now effects (especially pixel-moving filters) are not considered in
   // this class. The client has to use infinite cull rect in the case.
@@ -213,8 +205,8 @@ bool CullRect::ApplyPaintProperties(
       last_clip = updated_last_clip;
     }
 
-    last_scroll_translation_result =
-        ApplyScrollTranslation(root.Transform(), *scroll_translation);
+    // We only keep the expanded status of the last scroll translation.
+    expanded = ApplyScrollTranslation(root.Transform(), *scroll_translation);
     last_transform = scroll_translation;
   }
 
@@ -243,8 +235,7 @@ bool CullRect::ApplyPaintProperties(
     rect_.set_height(kReasonablePixelLimit - rect_.y());
 
   absl::optional<gfx::Rect> expansion_bounds;
-  bool expanded = false;
-  if (last_scroll_translation_result == kExpandedForPartialScrollingContents) {
+  if (expanded) {
     DCHECK(last_transform->ScrollNode());
     expansion_bounds = last_transform->ScrollNode()->ContentsRect();
     if (last_transform != &destination.Transform() ||
@@ -259,7 +250,6 @@ bool CullRect::ApplyPaintProperties(
       GeometryMapper::SourceToDestinationRect(
           *last_transform, destination.Transform(), *expansion_bounds);
     }
-    expanded = true;
   }
 
   if (last_transform != &destination.Transform() &&
@@ -296,9 +286,6 @@ bool CullRect::ApplyPaintProperties(
 bool CullRect::ChangedEnough(
     const CullRect& old_cull_rect,
     const absl::optional<gfx::Rect>& expansion_bounds) const {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-         RuntimeEnabledFeatures::CullRectUpdateEnabled());
-
   const auto& new_rect = Rect();
   const auto& old_rect = old_cull_rect.Rect();
   if (old_rect.Contains(new_rect))

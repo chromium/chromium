@@ -109,6 +109,8 @@ source_set("wayland") {
     "host/wayland_event_watcher.h",
     "host/wayland_exchange_data_provider.cc",
     "host/wayland_exchange_data_provider.h",
+    "host/wayland_frame_manager.cc",
+    "host/wayland_frame_manager.h",
     "host/wayland_input_method_context.cc",
     "host/wayland_input_method_context.h",
     "host/wayland_input_method_context_factory.cc",
@@ -127,6 +129,8 @@ source_set("wayland") {
     "host/wayland_popup.h",
     "host/wayland_screen.cc",
     "host/wayland_screen.h",
+    "host/wayland_seat.cc",
+    "host/wayland_seat.h",
     "host/wayland_serial_tracker.cc",
     "host/wayland_serial_tracker.h",
     "host/wayland_shm.cc",
@@ -242,7 +246,6 @@ source_set("wayland") {
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
     "//ui/base/cursor",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop:types",
@@ -262,7 +265,7 @@ source_set("wayland") {
     "//ui/gfx/linux:drm",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom/wayland:wayland_mojom",
+    "//ui/ozone/platform/wayland/mojom",
     "//ui/platform_window",
     "//ui/platform_window/common",
     "//ui/platform_window/wm",
@@ -349,6 +352,18 @@ source_set("wayland") {
 
   deps += [ ":wayland_proxy" ]
 
+  if (use_glib) {
+    sources += [
+      "host/wayland_event_watcher_glib.cc",
+      "host/wayland_event_watcher_glib.h",
+    ]
+  } else {
+    sources += [
+      "host/wayland_event_watcher_fdwatch.cc",
+      "host/wayland_event_watcher_fdwatch.h",
+    ]
+  }
+
   configs += [ "//third_party/khronos:khronos_headers" ]
 }
 
@@ -387,6 +402,8 @@ source_set("test_support") {
     "test/test_alpha_blending.h",
     "test/test_alpha_compositing.cc",
     "test/test_alpha_compositing.h",
+    "test/test_augmented_subsurface.cc",
+    "test/test_augmented_subsurface.h",
     "test/test_augmented_surface.cc",
     "test/test_augmented_surface.h",
     "test/test_compositor.cc",
@@ -431,6 +448,8 @@ source_set("test_support") {
     "test/test_viewporter.h",
     "test/test_wayland_server_thread.cc",
     "test/test_wayland_server_thread.h",
+    "test/test_wp_pointer_gestures.cc",
+    "test/test_wp_pointer_gestures.h",
     "test/test_xdg_popup.cc",
     "test/test_xdg_popup.h",
     "test/test_zcr_text_input_extension.cc",
@@ -461,6 +480,7 @@ source_set("test_support") {
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
+    "//third_party/wayland-protocols:pointer_gestures_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
     "//third_party/wayland-protocols:primary_selection_protocol",
     "//third_party/wayland-protocols:text_input_extension_protocol",
@@ -481,6 +501,8 @@ source_set("wayland_unittests") {
     "host/wayland_connection_unittest.cc",
     "host/wayland_data_drag_controller_unittest.cc",
     "host/wayland_event_source_unittest.cc",
+    "host/wayland_event_watcher_unittest.cc",
+    "host/wayland_exchange_data_provider_unittest.cc",
     "host/wayland_input_method_context_unittest.cc",
     "host/wayland_keyboard_unittest.cc",
     "host/wayland_pointer_unittest.cc",
@@ -491,6 +513,7 @@ source_set("wayland_unittests") {
     "host/wayland_window_manager_unittests.cc",
     "host/wayland_window_unittest.cc",
     "host/wayland_zaura_shell_unittest.cc",
+    "host/wayland_zwp_pointer_gestures_unittest.cc",
     "test/wayland_drag_drop_test.cc",
     "test/wayland_drag_drop_test.h",
     "test/wayland_test.cc",
@@ -500,6 +523,8 @@ source_set("wayland_unittests") {
   deps = [
     ":test_support",
     ":wayland",
+    "//build:chromeos_buildflags",
+    "//components/crash/core/common:crash_key",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
@@ -512,7 +537,6 @@ source_set("wayland_unittests") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base",
     "//ui/base:buildflags",
-    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/linux",
@@ -521,7 +545,7 @@ source_set("wayland_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom/wayland:wayland_mojom",
+    "//ui/ozone/platform/wayland/mojom",
     "//ui/platform_window/wm",
   ]
 

@@ -13,9 +13,11 @@ import "url/mojom/url.mojom";
 
 // Plugin messages sent from renderer to the host.
 interface PluginHost {
+  [EnableIf=enable_plugins]
   // Tells the browser that there was an error loading a plugin.
   CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
 
+  [EnableIf=enable_plugins]
   // Notifies when a plugin couldn't be loaded because it's outdated.
   BlockedOutdatedPlugin(pending_remote<PluginRenderer> plugin_renderer,
                         string group_id);
@@ -70,8 +72,7 @@ interface PluginInfoHost {
   // Includes specific reasons why a plugin can't be used, for example because
   // it's disabled.
   [Sync]
-  GetPluginInfo(int32 render_frame_id,
-                url.mojom.Url url,
+  GetPluginInfo(url.mojom.Url url,
                 url.mojom.Origin origin,
                 string mime_type) => (PluginInfo plugin_info);
 };

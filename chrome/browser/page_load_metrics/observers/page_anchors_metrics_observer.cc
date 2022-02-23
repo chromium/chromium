@@ -8,7 +8,8 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 PageAnchorsMetricsObserver::AnchorsData::AnchorsData(
-    content::WebContents* contents) {}
+    content::WebContents* contents)
+    : content::WebContentsUserData<AnchorsData>(*contents) {}
 
 PageAnchorsMetricsObserver::AnchorsData::~AnchorsData() = default;
 

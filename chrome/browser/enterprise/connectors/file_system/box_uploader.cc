@@ -8,6 +8,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -367,7 +368,8 @@ void BoxUploader::OnPreflightCheckResponse(BoxApiCallResponse response) {
       }
       DLOG(WARNING) << "Box upload failed for file " << target_file_name_;
       LogUniquifierCountToUma();
-      FALLTHROUGH;  // Also OnOnApiCallFlowFailure() to surface this to user.
+      [[fallthrough]];  // Also OnOnApiCallFlowFailure() to surface this to
+                        // user.
     default:
       // Unexpected error. Notify failure to download thread.
       OnApiCallFlowFailure(response);
@@ -648,7 +650,8 @@ void BoxChunkedUploader::OnPartFileUploadResponse(BoxApiCallResponse response,
     return;
   }
   uploaded_parts_.Append(std::move(part_info));
-  chunks_handler_->ContinueToReadChunk(uploaded_parts_.GetList().size() + 1);
+  chunks_handler_->ContinueToReadChunk(
+      uploaded_parts_.GetListDeprecated().size() + 1);
 }
 
 void BoxChunkedUploader::OnFileCompletelyUploaded(

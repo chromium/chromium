@@ -46,7 +46,7 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "chrome/install_static/install_util.h"
 #endif
@@ -69,7 +69,7 @@ enum AllowedBuckets {
   ALLOW_ANY
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::wstring GetRegistryPathForTestProfile() {
   // Cleanup follow-up to http://crbug.com/721245 for the previous location of
   // this test key which had similar problems (to a lesser extent). It's
@@ -169,7 +169,7 @@ std::unique_ptr<base::DictionaryValue> ReadPrefsDictionary(
 // Returns whether external validation is supported on the platform through
 // storing MACs in the registry.
 bool SupportsRegistryValidation() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
@@ -208,7 +208,7 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
   }
 
@@ -287,7 +287,7 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     // order to be able to test all SettingsEnforcement groups.
     chrome_prefs::DisableDomainCheckForTesting();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Avoid polluting prefs for the user and the bots by writing to a specific
     // testing registry path.
     registry_key_for_external_validation_ = GetRegistryPathForTestProfile();
@@ -309,7 +309,7 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
   }
 
   void TearDown() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // When done, delete the Registry key to avoid polluting the registry.
     if (!content::IsPreTest()) {
       std::wstring registry_key = GetRegistryPathForTestProfile();
@@ -416,18 +416,18 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     if (!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking)
       return PROTECTION_DISABLED_ON_PLATFORM;
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // The strongest mode is enforced on Windows and MacOS in the absence of a
     // field trial.
     return PROTECTION_ENABLED_ALL;
 #else
     return PROTECTION_DISABLED_FOR_GROUP;
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   }
 
   int num_tracked_prefs_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring registry_key_for_external_validation_;
 #endif
 };
@@ -663,13 +663,13 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
       case PROTECTION_ENABLED_ALL:
       case PROTECTION_ENABLED_EXTENSIONS:
         ++num_protected_prefs;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_ENABLED_DSE:
         ++num_protected_prefs;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_ENABLED_BASIC:
         num_protected_prefs += num_tracked_prefs() - num_null_values - 2;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_DISABLED_FOR_GROUP:
       case PROTECTION_DISABLED_ON_PLATFORM:
         // No protection.
@@ -758,7 +758,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     EXPECT_TRUE(
         selected_prefs->GetList(prefs::kURLsToRestoreOnStartup, &startup_urls));
     EXPECT_TRUE(startup_urls);
-    EXPECT_EQ(1U, startup_urls->GetList().size());
+    EXPECT_EQ(1U, startup_urls->GetListDeprecated().size());
     startup_urls->Append("http://example.org");
   }
 
@@ -795,7 +795,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
               profile()
                   ->GetPrefs()
                   ->GetList(prefs::kURLsToRestoreOnStartup)
-                  ->GetList()
+                  ->GetListDeprecated()
                   .size());
 #endif
 
@@ -858,9 +858,9 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     // Tamper with any installed setting for good.crx
     base::DictionaryValue* good_crx_dict;
     EXPECT_TRUE(extensions_dict->GetDictionary(kGoodCrxId, &good_crx_dict));
-    int good_crx_state;
-    EXPECT_TRUE(good_crx_dict->GetInteger("state", &good_crx_state));
-    EXPECT_EQ(extensions::Extension::ENABLED, good_crx_state);
+    absl::optional<int> good_crx_state = good_crx_dict->FindIntKey("state");
+    ASSERT_TRUE(good_crx_state);
+    EXPECT_EQ(extensions::Extension::ENABLED, *good_crx_state);
     good_crx_dict->SetInteger("state", extensions::Extension::DISABLED);
 
     // Drop a fake extension (for the purpose of this test, dropped settings
@@ -1106,7 +1106,7 @@ class PrefHashBrowserTestUntrustedAdditionToPrefsAfterWipe
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestUntrustedAdditionToPrefsAfterWipe,
                        UntrustedAdditionToPrefsAfterWipe);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PrefHashBrowserTestRegistryValidationFailure
     : public PrefHashBrowserTestBase {
  public:

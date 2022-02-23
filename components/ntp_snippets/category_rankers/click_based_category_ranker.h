@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
@@ -91,8 +92,8 @@ class ClickBasedCategoryRanker : public CategoryRanker {
   bool DecayClicksIfNeeded();
 
   std::vector<RankedCategory> ordered_categories_;
-  PrefService* pref_service_;
-  base::Clock* clock_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace ntp_snippets

@@ -8,12 +8,15 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/video_encoder_info.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -30,7 +33,8 @@ class VideoEncodeAcceleratorClient
  public:
   VideoEncodeAcceleratorClient(
       VideoEncodeAccelerator::Client* client,
-      mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver);
+      mojo::PendingAssociatedReceiver<mojom::VideoEncodeAcceleratorClient>
+          receiver);
 
   VideoEncodeAcceleratorClient(const VideoEncodeAcceleratorClient&) = delete;
   VideoEncodeAcceleratorClient& operator=(const VideoEncodeAcceleratorClient&) =
@@ -49,13 +53,14 @@ class VideoEncodeAcceleratorClient
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
-  VideoEncodeAccelerator::Client* client_;
-  mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
+  raw_ptr<VideoEncodeAccelerator::Client> client_;
+  mojo::AssociatedReceiver<mojom::VideoEncodeAcceleratorClient> receiver_;
 };
 
 VideoEncodeAcceleratorClient::VideoEncodeAcceleratorClient(
     VideoEncodeAccelerator::Client* client,
-    mojo::PendingReceiver<mojom::VideoEncodeAcceleratorClient> receiver)
+    mojo::PendingAssociatedReceiver<mojom::VideoEncodeAcceleratorClient>
+        receiver)
     : client_(client), receiver_(this, std::move(receiver)) {
   DCHECK(client_);
 }
@@ -95,19 +100,19 @@ void VideoEncodeAcceleratorClient::NotifyEncoderInfoChange(
 }  // anonymous namespace
 
 MojoVideoEncodeAccelerator::MojoVideoEncodeAccelerator(
-    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
-    const SupportedProfiles& supported_profiles)
-    : vea_(std::move(vea)), supported_profiles_(supported_profiles) {
+    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea)
+    : vea_(std::move(vea)) {
   DVLOG(1) << __func__;
   DCHECK(vea_);
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 MojoVideoEncodeAccelerator::GetSupportedProfiles() {
-  DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return supported_profiles_;
+  NOTREACHED() << "GetSupportedProfiles() should never be called."
+               << "Use VEA provider or GPU factories";
+  return {};
 }
 
 bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
@@ -119,9 +124,14 @@ bool MojoVideoEncodeAccelerator::Initialize(const Config& config,
 
   // Get a mojom::VideoEncodeAcceleratorClient bound to a local implementation
   // (VideoEncodeAcceleratorClient) and send the remote.
-  mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> vea_client_remote;
+  mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient>
+      vea_client_remote;
   vea_client_ = std::make_unique<VideoEncodeAcceleratorClient>(
-      client, vea_client_remote.InitWithNewPipeAndPassReceiver());
+      client, vea_client_remote.InitWithNewEndpointAndPassReceiver());
+
+  vea_.set_disconnect_handler(
+      base::BindOnce(&MojoVideoEncodeAccelerator::MojoDisconnectionHandler,
+                     base::Unretained(this)));
 
   bool result = false;
   vea_->Initialize(config, std::move(vea_client_remote), &result);
@@ -231,6 +241,14 @@ void MojoVideoEncodeAccelerator::Destroy() {
 
 MojoVideoEncodeAccelerator::~MojoVideoEncodeAccelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void MojoVideoEncodeAccelerator::MojoDisconnectionHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (vea_client_) {
+    vea_client_->NotifyError(
+        VideoEncodeAccelerator::Error::kPlatformFailureError);
+  }
 }
 
 }  // namespace media

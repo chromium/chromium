@@ -36,32 +36,12 @@ DEFINE_CERT_ERROR_ID(kMissingQualifier,
 DEFINE_CERT_ERROR_ID(kPolicyQualifierInfoTrailingData,
                      "PolicyQualifierInfo has trailing data");
 
-// -- policyQualifierIds for Internet policy qualifiers
-//
-// id-qt          OBJECT IDENTIFIER ::=  { id-pkix 2 }
-// id-qt-cps      OBJECT IDENTIFIER ::=  { id-qt 1 }
-//
-// In dotted decimal form: 1.3.6.1.5.5.7.2.1
-const der::Input CpsPointerId() {
-  static const uint8_t cps_pointer_id[] = {0x2b, 0x06, 0x01, 0x05,
-                                           0x05, 0x07, 0x02, 0x01};
-  return der::Input(cps_pointer_id);
-}
-
-// id-qt-unotice  OBJECT IDENTIFIER ::=  { id-qt 2 }
-//
-// In dotted decimal form: 1.3.6.1.5.5.7.2.2
-const der::Input UserNoticeId() {
-  static const uint8_t user_notice_id[] = {0x2b, 0x06, 0x01, 0x05,
-                                           0x05, 0x07, 0x02, 0x02};
-  return der::Input(user_notice_id);
-}
-
-// Ignores the policyQualifiers, but does some minimal correctness checking.
-// TODO(mattm): parse and return the policyQualifiers, since the cert viewer
-// still needs to display them.
+// Minimally parse policyQualifiers, storing in |policy_qualifiers| if non-null.
+// If a policy qualifier other than User Notice/CPS is present, parsing
+// will fail if |restrict_to_known_qualifiers| was set to true.
 bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
                            der::Parser* policy_qualifiers_sequence_parser,
+                           std::vector<PolicyQualifierInfo>* policy_qualifiers,
                            CertErrors* errors) {
   DCHECK(errors);
 
@@ -85,16 +65,16 @@ bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
     der::Input qualifier_oid;
     if (!policy_information_parser.ReadTag(der::kOid, &qualifier_oid))
       return false;
-    if (restrict_to_known_qualifiers && qualifier_oid != CpsPointerId() &&
-        qualifier_oid != UserNoticeId()) {
+    if (restrict_to_known_qualifiers &&
+        qualifier_oid != der::Input(kCpsPointerId) &&
+        qualifier_oid != der::Input(kUserNoticeId)) {
       errors->AddError(kUnknownPolicyQualifierOid,
                        CreateCertErrorParams1Der("oid", qualifier_oid));
       return false;
     }
     //      qualifier          ANY DEFINED BY policyQualifierId }
-    der::Tag tag;
-    der::Input value;
-    if (!policy_information_parser.ReadTagAndValue(&tag, &value)) {
+    der::Input qualifier_tlv;
+    if (!policy_information_parser.ReadRawTLV(&qualifier_tlv)) {
       errors->AddError(kMissingQualifier);
       return false;
     }
@@ -103,42 +83,11 @@ bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
       errors->AddError(kPolicyQualifierInfoTrailingData);
       return false;
     }
+
+    if (policy_qualifiers)
+      policy_qualifiers->push_back({qualifier_oid, qualifier_tlv});
   }
   return true;
-}
-
-}  // namespace
-
-const der::Input AnyPolicy() {
-  // id-ce OBJECT IDENTIFIER  ::=  {joint-iso-ccitt(2) ds(5) 29}
-  //
-  // id-ce-certificatePolicies OBJECT IDENTIFIER ::=  { id-ce 32 }
-  //
-  // anyPolicy OBJECT IDENTIFIER ::= { id-ce-certificatePolicies 0 }
-  //
-  // In dotted decimal form: 2.5.29.32.0
-  static const uint8_t any_policy[] = {0x55, 0x1D, 0x20, 0x00};
-  return der::Input(any_policy);
-}
-
-der::Input InhibitAnyPolicyOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-inhibitAnyPolicy OBJECT IDENTIFIER ::=  { id-ce 54 }
-  //
-  // In dotted notation: 2.5.29.54
-  static const uint8_t oid[] = {0x55, 0x1d, 0x36};
-  return der::Input(oid);
-}
-
-der::Input PolicyMappingsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-policyMappings OBJECT IDENTIFIER ::=  { id-ce 33 }
-  //
-  // In dotted notation: 2.5.29.33
-  static const uint8_t oid[] = {0x55, 0x1d, 0x21};
-  return der::Input(oid);
 }
 
 // RFC 5280 section 4.2.1.4.  Certificate Policies:
@@ -177,10 +126,13 @@ der::Input PolicyMappingsOid() {
 //      visibleString    VisibleString  (SIZE (1..200)),
 //      bmpString        BMPString      (SIZE (1..200)),
 //      utf8String       UTF8String     (SIZE (1..200)) }
-bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
-                                       bool fail_parsing_unknown_qualifier_oids,
-                                       std::vector<der::Input>* policies,
-                                       CertErrors* errors) {
+bool ParseCertificatePoliciesExtensionImpl(
+    const der::Input& extension_value,
+    bool fail_parsing_unknown_qualifier_oids,
+    std::vector<der::Input>* policy_oids,
+    std::vector<PolicyInformation>* policy_informations,
+    CertErrors* errors) {
+  DCHECK(policy_oids);
   DCHECK(errors);
   // certificatePolicies ::= SEQUENCE SIZE (1..MAX) OF PolicyInformation
   der::Parser extension_parser(extension_value);
@@ -196,7 +148,9 @@ bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
     return false;
   }
 
-  policies->clear();
+  policy_oids->clear();
+  if (policy_informations)
+    policy_informations->clear();
 
   while (policies_sequence_parser.HasMore()) {
     // PolicyInformation ::= SEQUENCE {
@@ -208,19 +162,14 @@ bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
     if (!policy_information_parser.ReadTag(der::kOid, &policy_oid))
       return false;
 
-    // Build the |policies| vector in sorted order (sorted on DER encoded policy
-    // OID). Use a binary search to check whether a duplicate policy is present,
-    // and if not, where to insert the policy to maintain the sorted order.
-    auto i = std::lower_bound(policies->begin(), policies->end(), policy_oid);
-    // RFC 5280 section 4.2.1.4: A certificate policy OID MUST NOT appear more
-    // than once in a certificate policies extension.
-    if (i != policies->end() && *i == policy_oid) {
-      errors->AddError(kPoliciesDuplicateOid,
-                       CreateCertErrorParams1Der("oid", policy_oid));
-      return false;
-    }
+    policy_oids->push_back(policy_oid);
 
-    policies->insert(i, policy_oid);
+    std::vector<PolicyQualifierInfo>* policy_qualifiers = nullptr;
+    if (policy_informations) {
+      policy_informations->emplace_back();
+      policy_informations->back().policy_oid = policy_oid;
+      policy_qualifiers = &policy_informations->back().policy_qualifiers;
+    }
 
     if (!policy_information_parser.HasMore())
       continue;
@@ -241,15 +190,53 @@ bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
     // RFC 5280 section 4.2.1.4: When qualifiers are used with the special
     // policy anyPolicy, they MUST be limited to the qualifiers identified in
     // this section.
-    if (!ParsePolicyQualifiers(
-            fail_parsing_unknown_qualifier_oids || policy_oid == AnyPolicy(),
-            &policy_qualifiers_sequence_parser, errors)) {
+    if (!ParsePolicyQualifiers(fail_parsing_unknown_qualifier_oids ||
+                                   policy_oid == der::Input(kAnyPolicyOid),
+                               &policy_qualifiers_sequence_parser,
+                               policy_qualifiers, errors)) {
       errors->AddError(kFailedParsingPolicyQualifiers);
       return false;
     }
   }
 
+  // RFC 5280 section 4.2.1.4: A certificate policy OID MUST NOT appear more
+  // than once in a certificate policies extension.
+  std::sort(policy_oids->begin(), policy_oids->end());
+  auto dupe_policy_iter =
+      std::adjacent_find(policy_oids->begin(), policy_oids->end());
+  if (dupe_policy_iter != policy_oids->end()) {
+    errors->AddError(kPoliciesDuplicateOid,
+                     CreateCertErrorParams1Der("oid", *dupe_policy_iter));
+    return false;
+  }
+
   return true;
+}
+
+}  // namespace
+
+PolicyInformation::PolicyInformation() = default;
+PolicyInformation::~PolicyInformation() = default;
+PolicyInformation::PolicyInformation(const PolicyInformation&) = default;
+PolicyInformation::PolicyInformation(PolicyInformation&&) = default;
+
+bool ParseCertificatePoliciesExtension(const der::Input& extension_value,
+                                       std::vector<PolicyInformation>* policies,
+                                       CertErrors* errors) {
+  std::vector<der::Input> unused_policy_oids;
+  return ParseCertificatePoliciesExtensionImpl(
+      extension_value, /*fail_parsing_unknown_qualifier_oids=*/false,
+      &unused_policy_oids, policies, errors);
+}
+
+bool ParseCertificatePoliciesExtensionOids(
+    const der::Input& extension_value,
+    bool fail_parsing_unknown_qualifier_oids,
+    std::vector<der::Input>* policy_oids,
+    CertErrors* errors) {
+  return ParseCertificatePoliciesExtensionImpl(
+      extension_value, fail_parsing_unknown_qualifier_oids, policy_oids,
+      nullptr, errors);
 }
 
 // From RFC 5280:

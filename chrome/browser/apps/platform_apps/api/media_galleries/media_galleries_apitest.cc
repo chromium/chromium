@@ -45,10 +45,10 @@
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "base/command_line.h"
@@ -130,7 +130,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
 
     const char* custom_arg = NULL;
     std::string json_string;
-    if (!custom_arg_value.GetList().empty()) {
+    if (!custom_arg_value.GetListDeprecated().empty()) {
       base::JSONWriter::Write(custom_arg_value, &json_string);
       custom_arg = json_string.c_str();
     }
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+      ->LaunchAppWithParamsForTesting(std::move(params));
 
   bool result = true;
   if (!catcher.GetNextResult()) {
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {
 
 // Test is flaky, it fails on certain bots, namely WinXP Tests(1) and Linux
 // (dbg)(1)(32).  See crbug.com/354425.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MediaGalleriesNoAccess DISABLED_MediaGalleriesNoAccess
 #else
 #define MAYBE_MediaGalleriesNoAccess MediaGalleriesNoAccess
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppBrowserTest,
 
 // Test is flaky, it fails on certain bots, namely WinXP Tests(1) and Linux
 // (dbg)(1)(32).  See crbug.com/354425.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MediaGalleriesCopyTo DISABLED_MediaGalleriesCopyTo
 #else
 #define MAYBE_MediaGalleriesCopyTo MediaGalleriesCopyTo

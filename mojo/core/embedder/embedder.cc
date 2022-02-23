@@ -20,22 +20,23 @@
 #include "mojo/core/node_controller.h"
 #include "mojo/public/c/system/thunks.h"
 
-#if !defined(OS_NACL)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "mojo/core/channel_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#endif  // !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_NACL)
 
 namespace mojo {
 namespace core {
 
 // InitFeatures will be called as soon as the base::FeatureList is initialized.
 void InitFeatures() {
-#if defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
   Channel::set_posix_use_writev(
       base::FeatureList::IsEnabled(kMojoPosixUseWritev));
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   bool shared_mem_enabled =
       base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
   bool use_zero_on_wake = kMojoLinuxChannelSharedMemEfdZeroOnWake.Get();
@@ -49,8 +50,9 @@ void InitFeatures() {
   ChannelLinux::SetSharedMemParameters(shared_mem_enabled,
                                        static_cast<unsigned int>(num_pages),
                                        use_zero_on_wake);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#endif  // defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MAC)
 
   Channel::set_use_trivial_messages(
       base::FeatureList::IsEnabled(kMojoInlineMessagePayloads));

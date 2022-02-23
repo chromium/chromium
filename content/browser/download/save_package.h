@@ -18,6 +18,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -148,6 +149,7 @@ class CONTENT_EXPORT SavePackage
   FRIEND_TEST_ALL_PREFIXES(SavePackageTest, TestLongSafePureFilename);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ImplicitCancel);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, ExplicitCancel);
+  FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, Reload);
   FRIEND_TEST_ALL_PREFIXES(SavePackageBrowserTest, DownloadItemDestroyed);
 
   // Map from SaveItem::id() (aka save_item_id) into a SaveItem.
@@ -359,7 +361,7 @@ class CONTENT_EXPORT SavePackage
 
   // The current page, may be null if the primary page has been navigated away
   // or destroyed.
-  Page* page_;
+  base::WeakPtr<Page> page_;
 
   // A queue for items we are about to start saving.
   base::circular_deque<std::unique_ptr<SaveItem>> waiting_item_queue_;
@@ -397,11 +399,11 @@ class CONTENT_EXPORT SavePackage
   SaveItemIdMap saved_success_items_;
 
   // Non-owning pointer for handling file writing on the download sequence.
-  SaveFileManager* file_manager_ = nullptr;
+  raw_ptr<SaveFileManager> file_manager_ = nullptr;
 
   // DownloadManager owns the download::DownloadItem and handles history and UI.
-  DownloadManagerImpl* download_manager_ = nullptr;
-  download::DownloadItemImpl* download_ = nullptr;
+  raw_ptr<DownloadManagerImpl> download_manager_ = nullptr;
+  raw_ptr<download::DownloadItemImpl> download_ = nullptr;
 
   // The URL of the page the user wants to save.
   const GURL page_url_;

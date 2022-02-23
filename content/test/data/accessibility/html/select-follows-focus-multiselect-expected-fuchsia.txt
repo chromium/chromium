@@ -1,0 +1,15 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN focusable has_input_focus label='tab1' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='tab1'
+++++++++++++UNKNOWN label='tab1'
+++++++++UNKNOWN focusable selected label='tab2' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='tab2'
+++++++++++++UNKNOWN label='tab2'
+++++++++UNKNOWN focusable label='tab3' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='tab3'
+++++++++++++UNKNOWN label='tab3'
+++++++STATIC_TEXT label='Done'
+++++++++UNKNOWN label='Done'

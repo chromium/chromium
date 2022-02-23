@@ -11,6 +11,7 @@
 #include "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/common/unicode/uchar.h"

@@ -76,7 +76,7 @@ void StarterHeuristic::InitFromTrialParams() {
   url_matcher::URLMatcherConditionSet::Vector condition_sets;
   base::flat_map<url_matcher::URLMatcherConditionSet::ID, std::string> mapping;
   url_matcher::URLMatcherConditionSet::ID next_condition_set_id = 0;
-  for (const auto& heuristic : heuristics->GetList()) {
+  for (const auto& heuristic : heuristics->GetListDeprecated()) {
     auto* intent =
         heuristic.FindKeyOfType(kHeuristicIntentKey, base::Value::Type::STRING);
     auto* url_conditions = heuristic.FindKeyOfType(
@@ -104,7 +104,7 @@ void StarterHeuristic::InitFromTrialParams() {
   auto* denylisted_domains_value = dict->FindListKey(kDenylistedDomainsKey);
   base::flat_set<std::string> denylisted_domains;
   if (denylisted_domains_value != nullptr) {
-    for (const auto& domain : denylisted_domains_value->GetList()) {
+    for (const auto& domain : denylisted_domains_value->GetListDeprecated()) {
       if (!domain.is_string()) {
         VLOG(1) << "Invalid type for denylisted domain";
         return;

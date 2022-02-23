@@ -2,6 +2,7 @@ Tests property access on a cached DOMWindow after the associated frame is naviga
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS oldChildWindow.anonymous is newChildWindow.anonymous
 PASS oldChildWindow.appHistory.canGoBack is newChildWindow.appHistory.canGoBack
 PASS oldChildWindow.appHistory.canGoForward is newChildWindow.appHistory.canGoForward
 PASS oldChildWindow.appHistory.current is newChildWindow.appHistory.current
@@ -111,7 +112,9 @@ PASS oldChildWindow.oncanplaythrough is newChildWindow.oncanplaythrough
 PASS oldChildWindow.onchange is newChildWindow.onchange
 PASS oldChildWindow.onclick is newChildWindow.onclick
 PASS oldChildWindow.onclose is newChildWindow.onclose
+PASS oldChildWindow.oncontextlost is newChildWindow.oncontextlost
 PASS oldChildWindow.oncontextmenu is newChildWindow.oncontextmenu
+PASS oldChildWindow.oncontextrestored is newChildWindow.oncontextrestored
 PASS oldChildWindow.oncuechange is newChildWindow.oncuechange
 PASS oldChildWindow.ondblclick is newChildWindow.ondblclick
 PASS oldChildWindow.ondevicemotion is newChildWindow.ondevicemotion
@@ -243,10 +246,6 @@ PASS oldChildWindow.performance.timing.secureConnectionStart is newChildWindow.p
 PASS oldChildWindow.performance.timing.unloadEventEnd is newChildWindow.performance.timing.unloadEventEnd
 PASS oldChildWindow.performance.timing.unloadEventStart is newChildWindow.performance.timing.unloadEventStart
 PASS oldChildWindow.personalbar.visible is newChildWindow.personalbar.visible
-PASS oldChildWindow.scheduler.currentTaskSignal.aborted is newChildWindow.scheduler.currentTaskSignal.aborted
-PASS oldChildWindow.scheduler.currentTaskSignal.onabort is newChildWindow.scheduler.currentTaskSignal.onabort
-PASS oldChildWindow.scheduler.currentTaskSignal.onprioritychange is newChildWindow.scheduler.currentTaskSignal.onprioritychange
-PASS oldChildWindow.scheduler.currentTaskSignal.priority is newChildWindow.scheduler.currentTaskSignal.priority
 PASS oldChildWindow.screen.availHeight is newChildWindow.screen.availHeight
 PASS oldChildWindow.screen.availLeft is newChildWindow.screen.availLeft
 PASS oldChildWindow.screen.availTop is newChildWindow.screen.availTop

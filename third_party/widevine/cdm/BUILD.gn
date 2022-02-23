@@ -32,9 +32,6 @@ widevine_cdm_manifest_and_license_files = []
 # so we don't need to copy it in most cases.
 if (bundle_widevine_cdm) {
   widevine_arch = target_cpu
-  if (widevine_arch == "x86") {
-    widevine_arch = "ia32"
-  }
 
   widevine_cdm_root = "${widevine_root}/${target_os}/${widevine_arch}"
   cdm_file_name = "${shlib_prefix}widevinecdm${shlib_extension}"
@@ -50,11 +47,6 @@ if (bundle_widevine_cdm) {
     assert(is_win || is_mac)
     widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.sig" ]
   }
-}
-
-# For ChromeOS Ash build, the CDM is not component updated hence no manifest.
-if (is_chromeos_ash) {
-  widevine_cdm_manifest_and_license_files = []
 }
 
 copy("version_h") {

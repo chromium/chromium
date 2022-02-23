@@ -158,7 +158,7 @@ TEST_F(HttpAuthManagerTest, HttpAuthFilling) {
 
     MockHttpAuthObserver observer;
 
-    PasswordStoreConsumer* consumer = nullptr;
+    base::WeakPtr<PasswordStoreConsumer> consumer;
     EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&consumer));
     httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
                                                          observed_form);

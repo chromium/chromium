@@ -25,7 +25,7 @@
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 
 namespace base {
@@ -36,12 +36,13 @@ template <typename>
 class JavaRef;
 }  // namespace android
 }  // namespace base
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class GURL;
 
 namespace blink {
 class SecurityOrigin;
+class SecurityOriginTest;
 }  // namespace blink
 
 namespace ipc_fuzzer {
@@ -222,6 +223,15 @@ class COMPONENT_EXPORT(URL) Origin {
     return !IsSameOriginWith(other);
   }
 
+  // Non-opaque origin is "same-origin" with `url` if their schemes, hosts, and
+  // ports are exact matches.  Opaque origin is never "same-origin" with any
+  // `url`.  about:blank, about:srcdoc, and invalid GURLs are never
+  // "same-origin" with any origin.  This method is a shorthand for
+  // `origin.IsSameOriginWith(url::Origin::Create(url))`.
+  //
+  // See also CanBeDerivedFrom.
+  bool IsSameOriginWith(const GURL& url) const;
+
   // This method returns true for any |url| which if navigated to could result
   // in an origin compatible with |this|.
   bool CanBeDerivedFrom(const GURL& url) const;
@@ -289,16 +299,17 @@ class COMPONENT_EXPORT(URL) Origin {
   // and precursor information.
   std::string GetDebugString(bool include_nonce = true) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class blink::SecurityOrigin;
+  friend class blink::SecurityOriginTest;
   // SchemefulSite needs access to the serialization/deserialization logic which
   // includes the nonce.
   friend class net::SchemefulSite;
@@ -440,8 +451,7 @@ COMPONENT_EXPORT(URL) bool IsSameOriginWith(const GURL& a, const GURL& b);
 
 namespace debug {
 
-class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
-    : public base::debug::ScopedCrashKeyString {
+class COMPONENT_EXPORT(URL) ScopedOriginCrashKey {
  public:
   ScopedOriginCrashKey(base::debug::CrashKeyString* crash_key,
                        const url::Origin* value);
@@ -449,6 +459,9 @@ class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
 
   ScopedOriginCrashKey(const ScopedOriginCrashKey&) = delete;
   ScopedOriginCrashKey& operator=(const ScopedOriginCrashKey&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString scoped_string_value_;
 };
 
 }  // namespace debug

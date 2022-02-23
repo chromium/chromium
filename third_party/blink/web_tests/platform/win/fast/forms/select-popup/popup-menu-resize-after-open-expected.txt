@@ -1,0 +1,8 @@
+PASS internals.pagePopupWindow.innerWidth is 100
+PASS internals.pagePopupWindow.innerWidth is 150
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+o1
+o2

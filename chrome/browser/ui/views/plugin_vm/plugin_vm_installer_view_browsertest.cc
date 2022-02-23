@@ -112,9 +112,9 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
   void SetPluginVmImagePref(std::string url, std::string hash) {
     DictionaryPrefUpdate update(browser()->profile()->GetPrefs(),
                                 plugin_vm::prefs::kPluginVmImage);
-    base::DictionaryValue* plugin_vm_image = update.Get();
-    plugin_vm_image->SetKey("url", base::Value(url));
-    plugin_vm_image->SetKey("hash", base::Value(hash));
+    base::Value* plugin_vm_image = update.Get();
+    plugin_vm_image->SetStringKey("url", url);
+    plugin_vm_image->SetStringKey("hash", hash);
   }
 
   void WaitForSetupToFinish() {
@@ -178,7 +178,7 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager->AddUserWithAffiliation(account_id, true);
     user_manager->LoginUser(account_id);
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(
         user_manager->GetActiveUser());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -319,6 +319,9 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
   list_vms_response.add_vm_info()->set_state(
       vm_tools::plugin_dispatcher::VmState::VM_STATE_STOPPED);
   fake_vm_plugin_dispatcher_client_->set_list_vms_response(list_vms_response);
+
+  fake_vm_plugin_dispatcher_client_->set_start_vm_response(
+      vm_tools::plugin_dispatcher::StartVmResponse());
 
   ShowUi("default");
   EXPECT_NE(nullptr, view_);

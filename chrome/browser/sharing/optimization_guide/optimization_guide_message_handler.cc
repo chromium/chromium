@@ -7,12 +7,17 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/sharing/proto/optimization_guide_push_notification.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 
@@ -27,19 +32,24 @@ OptimizationGuideMessageHandler::Create(Profile* profile) {
       nullptr;
   auto* optimization_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  OptimizationGuideLogger* optimization_guide_logger = nullptr;
   if (optimization_guide_service) {
     auto* hint_manager = optimization_guide_service->GetHintsManager();
     DCHECK(hint_manager);
     push_notification_manager = hint_manager->push_notification_manager();
+    optimization_guide_logger =
+        optimization_guide_service->GetOptimizationGuideLogger();
   }
 
   return std::make_unique<OptimizationGuideMessageHandler>(
-      push_notification_manager);
+      push_notification_manager, optimization_guide_logger);
 }
 
 OptimizationGuideMessageHandler::OptimizationGuideMessageHandler(
-    optimization_guide::PushNotificationManager* push_notification_manager)
-    : push_notification_manager_(push_notification_manager) {}
+    optimization_guide::PushNotificationManager* push_notification_manager,
+    OptimizationGuideLogger* optimization_guide_logger)
+    : push_notification_manager_(push_notification_manager),
+      optimization_guide_logger_(optimization_guide_logger) {}
 
 OptimizationGuideMessageHandler::~OptimizationGuideMessageHandler() = default;
 
@@ -54,11 +64,18 @@ void OptimizationGuideMessageHandler::OnMessage(
   optimization_guide::proto::HintNotificationPayload hint_notification_payload;
   if (!hint_notification_payload.ParseFromString(
           notification_proto.hint_notification_payload_bytes())) {
-    LOG(ERROR) << "Can't parse the HintNotificationPayload proto from "
-                  "OptimizationGuidePushNotification.";
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
+                           "Can't parse the HintNotificationPayload proto from "
+                           "OptimizationGuidePushNotification.");
     std::move(done_callback).Run(/*response=*/nullptr);
     return;
   }
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_logger_,
+      base::StrCat({"Received push notifation for type:",
+                    optimization_guide::GetStringNameForOptimizationType(
+                        hint_notification_payload.optimization_type()),
+                    " hint_key:", hint_notification_payload.hint_key()}));
 
   // Pass the HintNotificationPayload to optimization guide, to delete
   // hints data from hints database.

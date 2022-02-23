@@ -40,7 +40,6 @@ import java.util.HashMap;
 public class DisplayAgent {
     private static final String TAG = "DisplayAgent";
     private static final String DISPLAY_AGENT_TAG = "NotificationSchedulerDisplayAgent";
-    private static final int DISPLAY_AGENT_NOTIFICATION_ID = 0;
 
     private static final String EXTRA_INTENT_TYPE =
             "org.chromium.chrome.browser.notifications.scheduler.EXTRA_INTENT_TYPE";
@@ -214,8 +213,16 @@ public class DisplayAgent {
         }
     }
 
-    private static AndroidNotificationData toAndroidNotificationData(NotificationData data) {
-        return new AndroidNotificationData(ChannelId.BROWSER, SystemNotificationType.UNKNOWN);
+    private static AndroidNotificationData toAndroidNotificationData(SystemData systemData) {
+        @ChannelId
+        String channel =
+                systemData.type == SchedulerClientType.FEATURE_GUIDE ? ChannelId.CHROME_TIPS
+                                                                     : ChannelId.BROWSER;
+        @SystemNotificationType
+        int systemNotificationType = systemData.type == SchedulerClientType.FEATURE_GUIDE
+                ? SystemNotificationType.CHROME_TIPS
+                : SystemNotificationType.UNKNOWN;
+        return new AndroidNotificationData(channel, systemNotificationType);
     }
 
     private static Intent buildIntent(Context context,
@@ -229,7 +236,7 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void showNotification(NotificationData notificationData, SystemData systemData) {
-        AndroidNotificationData platformData = toAndroidNotificationData(notificationData);
+        AndroidNotificationData platformData = toAndroidNotificationData(systemData);
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();

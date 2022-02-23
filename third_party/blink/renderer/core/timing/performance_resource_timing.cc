@@ -200,12 +200,10 @@ AtomicString PerformanceResourceTiming::GetNextHopProtocol(
   AtomicString returnedProtocol = (alpn_negotiated_protocol == "unknown")
                                       ? connection_info
                                       : alpn_negotiated_protocol;
-  // If connection_info is unknown, or if this is a `document` destination and
-  // TAO didn't pass, return the empty string.
-  // https://github.com/w3c/navigation-timing/issues/71
-  // https://github.com/w3c/resource-timing/pull/224
-  if (returnedProtocol == "unknown" ||
-      (!AllowTimingDetails() && IsDocumentDestination(context_type_))) {
+  // If connection_info is unknown, or if TAO didn't pass, return the empty
+  // string.
+  // https://fetch.spec.whatwg.org/#create-an-opaque-timing-info
+  if (returnedProtocol == "unknown" || !AllowTimingDetails()) {
     returnedProtocol = "";
   }
 
@@ -260,8 +258,10 @@ DOMHighResTimeStamp PerformanceResourceTiming::redirectEnd() const {
 
 DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing ||
+      (!allow_redirect_details_ && !last_redirect_end_time_.is_null())) {
     return PerformanceEntry::startTime();
+  }
 
   if (!last_redirect_end_time_.is_null()) {
     return Performance::MonotonicTimeToDOMHighResTimeStamp(

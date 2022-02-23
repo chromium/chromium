@@ -91,6 +91,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -98,6 +99,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_params_builder.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
@@ -107,7 +109,6 @@
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_double_size.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -141,7 +142,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -243,13 +243,12 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -263,6 +262,11 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/public/web/win/web_font_family_names.h"
+#include "third_party/blink/renderer/core/layout/layout_font_accessor_win.h"
+#endif
 
 namespace blink {
 
@@ -291,7 +295,7 @@ class ChromePrintContext : public PrintContext {
   }
 
   virtual float GetPageShrink(uint32_t page_number) const {
-    IntRect page_rect = page_rects_[page_number];
+    gfx::Rect page_rect = page_rects_[page_number];
     return printed_page_width_ / page_rect.width();
   }
 
@@ -308,7 +312,7 @@ class ChromePrintContext : public PrintContext {
 
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
-    FloatRect bounds(0, 0, printed_page_height_, printed_page_width_);
+    gfx::RectF bounds(0, 0, printed_page_height_, printed_page_width_);
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
@@ -321,8 +325,8 @@ class ChromePrintContext : public PrintContext {
 
   void SpoolAllPagesWithBoundariesForTesting(
       cc::PaintCanvas* canvas,
-      const FloatSize& page_size_in_pixels,
-      const FloatSize& spool_size_in_pixels) {
+      const gfx::SizeF& page_size_in_pixels,
+      const gfx::SizeF& spool_size_in_pixels) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
@@ -335,8 +339,7 @@ class ChromePrintContext : public PrintContext {
 
     ComputePageRects(page_size_in_pixels);
 
-    FloatRect all_pages_rect(0, 0, spool_size_in_pixels.width(),
-                             spool_size_in_pixels.height());
+    gfx::RectF all_pages_rect(spool_size_in_pixels);
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
@@ -381,7 +384,7 @@ class ChromePrintContext : public PrintContext {
         current_height += page_size_in_pixels.width() + 1;
       }
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Account for the disabling of scaling in spoolPage. In the context of
       // SpoolAllPagesWithBoundariesForTesting the scale HAS NOT been
       // pre-applied.
@@ -405,18 +408,18 @@ class ChromePrintContext : public PrintContext {
   // On Linux, we don't have the problem with NativeTheme, hence we let WebKit
   // do the scaling and ignore the return value.
   virtual float SpoolPage(GraphicsContext& context, int page_number) {
-    IntRect page_rect = page_rects_[page_number];
+    gfx::Rect page_rect = page_rects_[page_number];
     float scale = printed_page_width_ / page_rect.width();
 
     AffineTransform transform;
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     transform.Scale(scale);
 #endif
     transform.Translate(static_cast<float>(-page_rect.x()),
                         static_cast<float>(-page_rect.y()));
     context.Save();
     context.ConcatCTM(transform);
-    context.ClipRect(page_rect);
+    context.ClipRect(gfx::RectToSkRect(page_rect));
 
     auto* frame_view = GetFrame()->View();
     DCHECK(frame_view);
@@ -424,11 +427,10 @@ class ChromePrintContext : public PrintContext {
         frame_view->GetLayoutView()->FirstFragment().LocalBorderBoxProperties();
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
-    frame_view->PaintContentsOutsideOfLifecycle(
+    frame_view->PaintOutsideOfLifecycle(
         builder->Context(),
-        kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
-            kGlobalPaintAddUrlMetadata,
-        CullRect(ToGfxRect(page_rect)));
+        PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
+        CullRect(page_rect));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
           builder->Context().GetPaintController(), property_tree_state,
@@ -484,21 +486,33 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   void BeginPrintMode(float width, float height) override {}
 
-  void EndPrintMode() override { plugin_->PrintEnd(); }
+  void EndPrintMode() override {
+    plugin_->PrintEnd();
+    // TODO(junov): The following should not be necessary because
+    // the document's printing state does not need to be set when printing
+    // via a plugin. The problem is that WebLocalFrameImpl::DispatchBeforePrint
+    // modifies this state regardless of whether a plug-in is being used.
+    // This code should be refactored so that the print_context_ is in scope
+    // when  beforeprint/afterprint events are dispatched So that plug-in
+    // behavior can be differentiated. Also, should beforeprint/afterprint
+    // events even be dispatched when using a plug-in?
+    if (IsFrameValid())
+      GetFrame()->GetDocument()->SetPrinting(Document::kNotPrinting);
+  }
 
   float GetPageShrink(uint32_t page_number) const override {
     // We don't shrink the page (maybe we should ask the widget ??)
     return 1.0;
   }
 
-  void ComputePageRects(const FloatSize& print_size) override {
-    IntRect rect(gfx::Point(0, 0), FlooredIntSize(print_size));
-    print_params_.print_content_area = ToGfxRect(rect);
+  void ComputePageRects(const gfx::SizeF& print_size) override {
+    gfx::Rect rect(gfx::ToFlooredSize(print_size));
+    print_params_.print_content_area = rect;
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
 
   void ComputePageRectsWithPageSize(
-      const FloatSize& page_size_in_pixels) override {
+      const gfx::SizeF& page_size_in_pixels) override {
     NOTREACHED();
   }
 
@@ -529,7 +543,7 @@ class PaintPreviewContext : public PrintContext {
   ~PaintPreviewContext() override = default;
 
   bool Capture(cc::PaintCanvas* canvas,
-               const IntRect& bounds,
+               const gfx::Rect& bounds,
                bool include_linked_destinations) {
     // This code is based on ChromePrintContext::SpoolSinglePage()/SpoolPage().
     // It differs in that it:
@@ -554,13 +568,12 @@ class PaintPreviewContext : public PrintContext {
 
     // This calls BeginRecording on |builder| with dimensions specified by the
     // CullRect.
-    GlobalPaintFlags flags =
-        kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers;
+    PaintFlags flags = PaintFlag::kOmitCompositingInfo;
     if (include_linked_destinations)
-      flags |= kGlobalPaintAddUrlMetadata;
+      flags |= PaintFlag::kAddUrlMetadata;
 
-    frame_view->PaintContentsOutsideOfLifecycle(builder->Context(), flags,
-                                                CullRect(ToGfxRect(bounds)));
+    frame_view->PaintOutsideOfLifecycle(builder->Context(), flags,
+                                        CullRect(bounds));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -656,6 +669,21 @@ bool WebLocalFrameImpl::ConsumeTransientUserActivation(
 bool WebLocalFrameImpl::LastActivationWasRestricted() const {
   return GetFrame()->LastActivationWasRestricted();
 }
+
+#if BUILDFLAG(IS_WIN)
+WebFontFamilyNames WebLocalFrameImpl::GetWebFontFamilyNames() const {
+  FontFamilyNames font_family_names;
+  GetFontsUsedByFrame(*GetFrame(), font_family_names);
+  WebFontFamilyNames result;
+  for (const String& font_family_name : font_family_names.primary_fonts)
+    result.primary_family_names.push_back(font_family_name);
+  for (const String& font_family_name : font_family_names.fallback_fonts) {
+    if (!font_family_names.primary_fonts.Contains(font_family_name))
+      result.fallback_family_names.push_back(font_family_name);
+  }
+  return result;
+}
+#endif
 
 WebLocalFrame* WebLocalFrame::FrameForContext(v8::Local<v8::Context> context) {
   return WebLocalFrameImpl::FromFrame(ToLocalFrameIfNotDetached(context));
@@ -772,17 +800,16 @@ void WebLocalFrameImpl::CopyToFindPboard() {
     GetFrame()->GetSystemClipboard()->CopyToFindPboard(SelectionAsText());
 }
 
-gfx::Vector2dF WebLocalFrameImpl::GetScrollOffset() const {
-  if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    return ToGfxVector2dF(scrollable_area->ScrollPosition());
-  }
-  return gfx::Vector2dF();
+gfx::PointF WebLocalFrameImpl::GetScrollOffset() const {
+  if (ScrollableArea* scrollable_area = LayoutViewport())
+    return scrollable_area->ScrollPosition();
+  return gfx::PointF();
 }
 
-void WebLocalFrameImpl::SetScrollOffset(const gfx::Vector2dF& offset) {
+void WebLocalFrameImpl::SetScrollOffset(const gfx::PointF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
     scrollable_area->SetScrollOffset(
-        scrollable_area->ScrollPositionToOffset(FloatPoint(offset)),
+        scrollable_area->ScrollPositionToOffset(offset),
         mojom::blink::ScrollType::kProgrammatic);
   }
 }
@@ -791,9 +818,8 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
   if (!GetFrameView() || !GetFrameView()->GetLayoutView())
     return gfx::Size();
 
-  return ToGfxSize(
-      PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
-          .size());
+  return ToPixelSnappedRect(GetFrameView()->GetLayoutView()->DocumentRect())
+      .size();
 }
 
 bool WebLocalFrameImpl::HasVisibleContent() const {
@@ -810,7 +836,7 @@ bool WebLocalFrameImpl::HasVisibleContent() const {
 
 gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
   if (LocalFrameView* view = GetFrameView())
-    return ToGfxRect(view->LayoutViewport()->VisibleContentRect());
+    return view->LayoutViewport()->VisibleContentRect();
   return gfx::Rect();
 }
 
@@ -1188,7 +1214,7 @@ bool WebLocalFrameImpl::FirstRectForCharacterRange(
   if (range.IsNull())
     return false;
   rect_in_viewport =
-      ToGfxRect(GetFrame()->View()->FrameToViewport(FirstRectForRange(range)));
+      GetFrame()->View()->FrameToViewport(FirstRectForRange(range));
   return true;
 }
 
@@ -1342,7 +1368,7 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
 
   String text = GetFrame()->Selection().SelectedText(
       TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
   ReplaceNBSPWithSpace(text);
@@ -1370,14 +1396,38 @@ void WebLocalFrameImpl::TextSelectionChanged(const WebString& selection_text,
   GetFrame()->TextSelectionChanged(selection_text, offset, range);
 }
 
-bool WebLocalFrameImpl::SelectWordAroundCaret() {
-  TRACE_EVENT0("blink", "WebLocalFrameImpl::selectWordAroundCaret");
+bool WebLocalFrameImpl::SelectAroundCaret(
+    mojom::blink::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu) {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::selectAroundCaret");
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
-  return GetFrame()->Selection().SelectWordAroundCaret();
+  // TODO(1275801): Add mapping between the enums once it becomes possible to
+  // do so.
+  blink::TextGranularity text_granularity;
+  switch (granularity) {
+    case mojom::blink::SelectionGranularity::kWord:
+      text_granularity = blink::TextGranularity::kWord;
+      break;
+    case mojom::blink::SelectionGranularity::kSentence:
+      text_granularity = blink::TextGranularity::kSentence;
+      break;
+  }
+  return GetFrame()->Selection().SelectAroundCaret(
+      text_granularity,
+      should_show_handle ? HandleVisibility::kVisible
+                         : HandleVisibility::kNotVisible,
+      should_show_context_menu ? ContextMenuVisibility ::kVisible
+                               : ContextMenuVisibility ::kNotVisible);
+}
+
+EphemeralRange WebLocalFrameImpl::GetWordSelectionRangeAroundCaret() const {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::getWordSelectionRangeAroundCaret");
+  return GetFrame()->Selection().GetWordSelectionRangeAroundCaret();
 }
 
 void WebLocalFrameImpl::SelectRange(const gfx::Point& base_in_viewport,
@@ -1707,6 +1757,10 @@ WebPlugin* WebLocalFrameImpl::GetPluginToPrint(
   return plugin_container ? plugin_container->Plugin() : nullptr;
 }
 
+bool WebLocalFrameImpl::WillPrintSoon() {
+  return GetFrame()->GetDocument()->WillPrintSoon();
+}
+
 uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
                                        const WebNode& constrain_to_node) {
   WebPluginContainerImpl* plugin_container =
@@ -1719,7 +1773,7 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
         GetFrame(), print_params.use_printing_layout);
   }
 
-  FloatSize size(print_params.print_content_area.size());
+  gfx::SizeF size(print_params.print_content_area.size());
   print_context_->BeginPrintMode(size.width(), size.height());
   print_context_->ComputePageRects(size);
 
@@ -1772,7 +1826,7 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());
-    success = paint_preview_context->Capture(canvas, IntRect(bounds),
+    success = paint_preview_context->Capture(canvas, bounds,
                                              include_linked_destinations);
     GetFrame()->EndPaintPreview();
   }
@@ -1818,17 +1872,17 @@ void WebLocalFrameImpl::PrintPagesForTesting(
   DCHECK(print_context_);
 
   print_context_->SpoolAllPagesWithBoundariesForTesting(
-      canvas, FloatSize(page_size_in_pixels), FloatSize(spool_size_in_pixels));
+      canvas, gfx::SizeF(page_size_in_pixels),
+      gfx::SizeF(spool_size_in_pixels));
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
   DCHECK(GetFrame());  // Not valid after the Frame is detached.
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
-  return HasSelection()
-             ? ToGfxRect(PixelSnappedIntRect(
-                   GetFrame()->Selection().AbsoluteUnclippedBounds()))
-             : gfx::Rect();
+  return HasSelection() ? ToPixelSnappedRect(
+                              GetFrame()->Selection().AbsoluteUnclippedBounds())
+                        : gfx::Rect();
 }
 
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
@@ -2136,9 +2190,7 @@ std::pair<RemoteFrame*, PortalToken> WebLocalFrameImpl::CreatePortal(
     HTMLPortalElement* portal,
     mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient> portal_client) {
-  WebRemoteFrame* portal_frame;
-  PortalToken portal_token;
-  std::tie(portal_frame, portal_token) = client_->CreatePortal(
+  auto [portal_frame, portal_token] = client_->CreatePortal(
       std::move(portal_receiver), std::move(portal_client), portal);
   return {To<WebRemoteFrameImpl>(portal_frame)->GetFrame(), portal_token};
 }
@@ -2158,7 +2210,7 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
   return To<WebRemoteFrameImpl>(frame)->GetFrame();
 }
 
-void WebLocalFrameImpl::DidChangeContentsSize(const IntSize& size) {
+void WebLocalFrameImpl::DidChangeContentsSize(const gfx::Size& size) {
   if (GetTextFinder() && GetTextFinder()->TotalMatchCount() > 0)
     GetTextFinder()->IncreaseMarkerVersion();
 }
@@ -2173,7 +2225,6 @@ void WebLocalFrameImpl::UpdateDevToolsOverlaysPrePaint() {
 }
 
 void WebLocalFrameImpl::PaintDevToolsOverlays(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (dev_tools_agent_)
     dev_tools_agent_->PaintOverlays(context);
 }
@@ -2193,18 +2244,14 @@ void WebLocalFrameImpl::CreateFrameView() {
   bool is_main_frame = !Parent();
   // TODO(dcheng): Can this be better abstracted away? It's pretty ugly that
   // only local roots are special-cased here.
-  IntSize initial_size = (is_main_frame || !frame_widget_)
-                             ? web_view->MainFrameSize()
-                             : static_cast<IntSize>(frame_widget_->Size());
+  gfx::Size initial_size = (is_main_frame || !frame_widget_)
+                               ? web_view->MainFrameSize()
+                               : frame_widget_->Size();
   Color base_background_color = web_view->BaseBackgroundColor();
   if (!is_main_frame && Parent()->IsWebRemoteFrame())
     base_background_color = Color::kTransparent;
 
   GetFrame()->CreateView(initial_size, base_background_color);
-  if (is_main_frame) {
-    GetFrame()->View()->SetInitialViewportSize(
-        web_view->GetPageScaleConstraintsSet().InitialViewportSize());
-  }
   if (web_view->ShouldAutoResize() && GetFrame()->IsLocalRoot()) {
     GetFrame()->View()->EnableAutoSizeMode(web_view->MinAutoSize(),
                                            web_view->MaxAutoSize());
@@ -2266,6 +2313,10 @@ void WebLocalFrameImpl::DidFinish() {
   Client()->DidFinishLoad();
 }
 
+void WebLocalFrameImpl::DidFinishLoadForPrinting() {
+  Client()->DidFinishLoadForPrinting();
+}
+
 HitTestResult WebLocalFrameImpl::HitTestResultForVisualViewportPos(
     const gfx::Point& pos_in_viewport) {
   gfx::Point root_frame_point(
@@ -2314,6 +2365,12 @@ WebFrame* WebLocalFrameImpl::FindFrameByName(const WebString& name) {
 void WebLocalFrameImpl::SetEmbeddingToken(
     const base::UnguessableToken& embedding_token) {
   frame_->SetEmbeddingToken(embedding_token);
+}
+
+bool WebLocalFrameImpl::IsInFencedFrameTree() const {
+  bool result = frame_->IsInFencedFrameTree();
+  DCHECK(!result || blink::features::IsFencedFramesEnabled());
+  return result;
 }
 
 const absl::optional<base::UnguessableToken>&
@@ -2589,7 +2646,7 @@ void WebLocalFrameImpl::ShowContextMenu(
   params.selection_rect =
       LocalRootFrameWidget()->BlinkSpaceToEnclosedDIPs(data.selection_rect);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The Samsung Email app relies on the context menu being shown after the
   // javascript onselectionchanged is triggered.
   // See crbug.com/729488
@@ -2838,14 +2895,6 @@ void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
 
 void WebLocalFrameImpl::ResetHasScrolledFocusedEditableIntoView() {
   has_scrolled_focused_editable_node_into_rect_ = false;
-}
-
-bool WebLocalFrameImpl::ServiceWorkerSubresourceFilterEnabled() {
-  if (GetFrame() && GetFrame()->GetDocument()) {
-    return RuntimeEnabledFeatures::ServiceWorkerSubresourceFilterEnabled(
-        GetFrame()->GetDocument()->GetExecutionContext());
-  }
-  return false;
 }
 
 }  // namespace blink

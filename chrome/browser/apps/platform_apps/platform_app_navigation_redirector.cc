@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
-#include "components/navigation_interception/navigation_params.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -31,20 +30,20 @@ namespace {
 
 bool LaunchAppWithUrl(const scoped_refptr<const Extension> app,
                       const std::string& handler_id,
-                      content::WebContents* source,
-                      const navigation_interception::NavigationParams& params) {
+                      content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Redirect top-level navigations only. This excludes iframes and webviews
   // in particular.
-  if (source->IsInnerWebContentsForGuest()) {
+  if (navigation_handle->GetWebContents()->IsInnerWebContentsForGuest()) {
     DVLOG(1) << "Cancel redirection: source is a guest inner WebContents";
     return false;
   }
 
   // If no-state prefetching, don't launch the app but abort the navigation.
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
-      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(source);
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          navigation_handle->GetWebContents());
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(
         prerender::FINAL_STATUS_NAVIGATION_INTERCEPTED);
@@ -52,15 +51,18 @@ bool LaunchAppWithUrl(const scoped_refptr<const Extension> app,
   }
 
   // These are guaranteed by MaybeCreateThrottleFor below.
-  DCHECK(UrlHandlers::CanPlatformAppHandleUrl(app.get(), params.url()));
-  DCHECK(!params.is_post());
+  DCHECK(UrlHandlers::CanPlatformAppHandleUrl(app.get(),
+                                              navigation_handle->GetURL()));
+  DCHECK(!navigation_handle->IsPost());
 
-  Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle->GetWebContents()->GetBrowserContext());
 
-  DVLOG(1) << "Launching app handler with URL: " << params.url().spec()
+  DVLOG(1) << "Launching app handler with URL: " << navigation_handle->GetURL()
            << " -> " << app->name() << "(" << app->id() << "):" << handler_id;
-  apps::LaunchPlatformAppWithUrl(profile, app.get(), handler_id, params.url(),
-                                 params.referrer().url);
+  apps::LaunchPlatformAppWithUrl(profile, app.get(), handler_id,
+                                 navigation_handle->GetURL(),
+                                 navigation_handle->GetReferrer().url);
 
   return true;
 }

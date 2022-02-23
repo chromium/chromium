@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
-#include "chrome/browser/ash/first_run/drive_first_run_controller.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -99,8 +98,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -343,12 +340,11 @@ std::string GetManagedLoginScreenLocale() {
   // Currently, only the first element is used. The setting is a list for future
   // compatibility, if dynamically switching locales on the login screen will be
   // implemented.
-  std::string login_screen_locale;
-  if (login_screen_locales->GetList().empty() ||
-      !login_screen_locales->GetString(0, &login_screen_locale))
+  if (login_screen_locales->GetListDeprecated().empty() ||
+      !login_screen_locales->GetListDeprecated()[0].is_string())
     return std::string();
 
-  return login_screen_locale;
+  return login_screen_locales->GetListDeprecated()[0].GetString();
 }
 
 // Disables virtual keyboard overscroll. Login UI will scroll user pods
@@ -366,42 +362,6 @@ void ResetKeyboardOverscrollBehavior() {
   config.overscroll_behavior = keyboard::KeyboardOverscrollBehavior::kDefault;
   client->SetKeyboardConfig(config);
 }
-
-// Workaround for graphical glitches with animated user avatars due to a race
-// between GPU process cleanup for the closing WebContents versus compositor
-// draw of new animation frames. https://crbug.com/759148
-class CloseAfterCommit : public ui::CompositorObserver,
-                         public views::WidgetObserver {
- public:
-  explicit CloseAfterCommit(views::Widget* widget) : widget_(widget) {
-    widget->GetCompositor()->AddObserver(this);
-    widget_->AddObserver(this);
-  }
-
-  CloseAfterCommit(const CloseAfterCommit&) = delete;
-  CloseAfterCommit& operator=(const CloseAfterCommit&) = delete;
-
-  ~CloseAfterCommit() override {
-    widget_->RemoveObserver(this);
-    widget_->GetCompositor()->RemoveObserver(this);
-    CHECK(!IsInObserverList());
-  }
-
-  // ui::CompositorObserver:
-  void OnCompositingDidCommit(ui::Compositor* compositor) override {
-    DCHECK_EQ(widget_->GetCompositor(), compositor);
-    widget_->Close();
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    DCHECK_EQ(widget, widget_);
-    delete this;
-  }
-
- private:
-  views::Widget* const widget_;
-};
 
 // Returns true if we have default audio device.
 bool CanPlayStartupSound() {
@@ -512,12 +472,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   views::FocusManager::set_arrow_key_traversal_enabled(false);
   ResetLoginWindowAndView();
 
-  // TODO(tengs): This should be refactored. See crbug.com/314934.
-  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
-    // DriveOptInController will delete itself when finished.
-    (new DriveFirstRunController(ProfileManager::GetActiveUserProfile()))
-        ->EnableOfflineMode();
-  }
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
@@ -534,6 +488,10 @@ ExistingUserController* LoginDisplayHostWebUI::GetExistingUserController() {
 
 gfx::NativeWindow LoginDisplayHostWebUI::GetNativeWindow() const {
   return login_window_ ? login_window_->GetNativeWindow() : nullptr;
+}
+
+views::Widget* LoginDisplayHostWebUI::GetLoginWindowWidget() const {
+  return login_window_;
 }
 
 WebUILoginView* LoginDisplayHostWebUI::GetWebUILoginView() const {
@@ -592,7 +550,6 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   // Keep parameters to restore if renderer crashes.
   restore_path_ = RESTORE_WIZARD;
   first_screen_ = first_screen;
-  is_showing_login_ = WizardController::IsSigninScreen(first_screen);
 
   VLOG(1) << "Login WebUI >> wizard";
 
@@ -631,7 +588,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DisableKeyboardOverscroll();
 
   restore_path_ = RESTORE_SIGN_IN;
-  is_showing_login_ = true;
   finalize_animation_type_ = ANIMATION_WORKSPACE;
 
   VLOG(1) << "Login WebUI >> sign in";
@@ -658,7 +614,12 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
 
   CHECK(login_display_);
-  GetOobeUI()->ShowSigninScreen(login_display_.get());
+
+  // Legacy calls, will go away soon.
+  GetOobeUI()->signin_screen_handler()->SetDelegate(login_display_.get());
+  GetOobeUI()->signin_screen_handler()->Show();
+
+  ShowGaiaDialogCommon(EmptyAccountId());
 
   OnStartSignInScreenCommon();
 
@@ -669,11 +630,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   // TODO(crbug.com/784495): Make sure this is ported to views.
   BootTimesRecorder::Get()->RecordCurrentStats(
       "login-wait-for-signin-state-initialize");
-}
-
-void LoginDisplayHostWebUI::OnPreferencesChanged() {
-  if (is_showing_login_)
-    login_display_->OnPreferencesChanged();
 }
 
 void LoginDisplayHostWebUI::OnStartAppLaunch() {
@@ -791,6 +747,11 @@ void LoginDisplayHostWebUI::UpScaleOobe() {
   }
 }
 
+void LoginDisplayHostWebUI::OnShowWebUITimeout() {
+  VLOG(1) << "Login WebUI >> Show WebUI because of timeout";
+  ShowWebUI();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, ui::InputDeviceEventObserver
 void LoginDisplayHostWebUI::OnInputDeviceConfigurationChanged(
@@ -874,6 +835,9 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
 }
 
 void LoginDisplayHostWebUI::ShowWebUI() {
+  session_observation_.Reset();
+  show_webui_guard_.AbandonAndStop();
+
   DCHECK(login_window_);
   DCHECK(login_view_);
 
@@ -935,10 +899,14 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   // Delay showing the window until the login webui is ready.
   VLOG(1) << "Login WebUI >> login window is hidden on create";
   login_view_->set_is_hidden(true);
+
+  // A minute should be enough time for the UI to load.
+  show_webui_guard_.Start(FROM_HERE, base::Minutes(1), this,
+                          &LoginDisplayHostWebUI::OnShowWebUITimeout);
 }
 
 void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
-  VLOG(4) << "ResetLoginWindowAndView";
+  LOG(WARNING) << "ResetLoginWindowAndView";
   // Notify any oobe dialog state observers (e.g. login shelf) that the UI is
   // hidden (so they can reset any cached OOBE dialog state.)
   LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
@@ -953,10 +921,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
   }
 
   if (login_window_) {
-    login_window_->Hide();
-    // This CompositorObserver becomes "owned" by login_window_ after
-    // construction and will delete itself once login_window_ is destroyed.
-    new CloseAfterCommit(login_window_);
+    login_window_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     login_window_->RemoveRemovalsObserver(this);
     login_window_->RemoveObserver(this);
     login_window_ = nullptr;
@@ -1024,7 +989,7 @@ void LoginDisplayHostWebUI::ShowGuestTosScreen() {
   StartWizard(GuestTosScreenView::kScreenId);
 }
 
-void LoginDisplayHostWebUI::HideOobeDialog() {
+void LoginDisplayHostWebUI::HideOobeDialog(bool video_timeout) {
   NOTREACHED();
 }
 
@@ -1087,13 +1052,11 @@ void LoginDisplayHostWebUI::RemoveObserver(
 void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE(ERROR_SCREEN)";
   ShowWebUI();
-  session_observation_.Reset();
 }
 
 void LoginDisplayHostWebUI::OnLoginOrLockScreenVisible() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
   ShowWebUI();
-  session_observation_.Reset();
 }
 
 SigninUI* LoginDisplayHostWebUI::GetSigninUI() {
@@ -1110,6 +1073,10 @@ bool LoginDisplayHostWebUI::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
   return false;
+}
+
+bool LoginDisplayHostWebUI::IsWebUIStarted() const {
+  return true;
 }
 
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {

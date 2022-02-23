@@ -9,12 +9,12 @@
 #include <string>
 
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
-class GFX_EXPORT ColorTransform {
+class COLOR_SPACE_EXPORT ColorTransform {
  public:
   struct Options {
     // Used in testing to verify that optimizations have no effect.
@@ -23,6 +23,25 @@ class GFX_EXPORT ColorTransform {
     // Used to adjust the transfer and range adjust matrices.
     uint32_t src_bit_depth = kDefaultBitDepth;
     uint32_t dst_bit_depth = kDefaultBitDepth;
+
+    // If set to true, then PQ and HLG inputs are tone mapped to fit into
+    // the SDR range.
+    bool tone_map_pq_and_hlg_to_sdr = false;
+
+    // If set to true, then map PQ and HLG imputs such that their maximum
+    // luminance will be `dst_max_luminance_relative`.
+    bool tone_map_pq_and_hlg_to_dst = false;
+
+    // Used for tone mapping and for interpreting color spaces whose
+    // definition depends on an SDR white point.
+    // TODO(https://crbug.com/1286082): Use this value in the transform.
+    float sdr_max_luminance_nits = ColorSpace::kDefaultSDRWhiteLevel;
+
+    // The maximum luminance value for the destination, as a multiple of
+    // `sdr_max_luminance_nits` (so this is 1 for SDR displays).
+    // TODO(https://crbug.com/1286076): Use this value for transforming
+    // PQ and HLG content.
+    float dst_max_luminance_relative = 1.f;
   };
 
   // TriStimulus is a color coordinate in any color space.

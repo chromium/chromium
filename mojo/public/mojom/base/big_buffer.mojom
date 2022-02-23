@@ -16,6 +16,12 @@ struct BigBufferSharedMemoryRegion {
 // by the sender and the contents of the buffer would be too large to inline,
 // this will instead take on the value of |invalid_buffer=true| indicating that
 // the buffer does not represent any contents intended by the sender.
+//
+// SECURITY NOTE: When shmem is backing the message, it may be writable in the
+// sending process while being read in the receiving process. If a BigBuffer is
+// received from an untrustworthy process, you should make a copy of the data
+// before processing it to avoid time-of-check time-of-use (TOCTOU) bugs.
+// The |size()| of the data cannot be manipulated.
 [Stable]
 union BigBuffer {
   array<uint8> bytes;

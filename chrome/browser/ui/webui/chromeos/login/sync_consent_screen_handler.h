@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SYNC_CONSENT_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SYNC_CONSENT_SCREEN_HANDLER_H_
 
-#include <unordered_set>
+#include <string>
+#include <unordered_map>
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -27,7 +28,7 @@ class SyncConsentScreenView {
   virtual void Bind(ash::SyncConsentScreen* screen) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(bool is_arc_restricted) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -64,7 +65,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
 
   // SyncConsentScreenView:
   void Bind(ash::SyncConsentScreen* screen) override;
-  void Show() override;
+  void Show(bool is_arc_restricted) override;
   void Hide() override;
   void SetThrobberVisible(bool visible) override;
   void SetIsMinorMode(bool value) override;
@@ -82,15 +83,11 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
       const std::string& consent_confirmation);
 
   // WebUI message handlers for SplitSettingsSync.
+  // TODO(https://crbug.com/1278325): Remove these.
   void HandleAcceptAndContinue(const ::login::StringList& consent_description,
                                const std::string& consent_confirmation);
   void HandleDeclineAndContinue(const ::login::StringList& consent_description,
                                 const std::string& consent_confirmation);
-
-  // Helper for the accept and decline cases.
-  void Continue(const ::login::StringList& consent_description,
-                const std::string& consent_confirmation,
-                UserChoice choice);
 
   // Adds resource `resource_id` both to `builder` and to `known_string_ids_`.
   void RememberLocalizedValue(const std::string& name,
@@ -102,7 +99,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder);
 
   // Resource IDs of the displayed strings.
-  std::unordered_set<int> known_string_ids_;
+  std::unordered_map<std::string, int> known_strings_;
 
   ash::SyncConsentScreen* screen_ = nullptr;
 };

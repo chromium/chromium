@@ -65,8 +65,7 @@ generate_jni("photo_picker_jni_headers") {
 }
 
 android_aidl("photo_picker_aidl") {
-  import_include =
-      [ "java/src/org/chromium/components/browser_ui/photo_picker" ]
+  import_include = [ "java/src/" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/photo_picker/IDecoderService.aidl",
     "java/src/org/chromium/components/browser_ui/photo_picker/IDecoderServiceCallback.aidl",

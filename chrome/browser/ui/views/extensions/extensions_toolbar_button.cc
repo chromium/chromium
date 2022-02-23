@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
+#include "chrome/browser/ui/views/extensions/extensions_tabbed_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -135,19 +138,28 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {
-  // TODO(crbug.com/1239772): Once the extension menu tabs are implemented, need
-  // to check for the button type to a) hide the menu, b) change tabs or c) open
-  // menu in the correct tab.
-  if (ExtensionsMenuView::IsShowing()) {
+  if (ExtensionsTabbedMenuView::IsShowing()) {
+    ExtensionsTabbedMenuView::Hide();
+    return;
+  } else if (ExtensionsMenuView::IsShowing()) {
     ExtensionsMenuView::Hide();
     return;
   }
+
   pressed_lock_ = menu_button_controller_->TakeLock();
   extensions_container_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
-  ExtensionsMenuView::ShowBubble(this, browser_, extensions_container_,
-                                 extensions_container_->CanShowIconInToolbar())
-      ->AddObserver(this);
+  views::Widget* menu;
+  if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
+    menu = ExtensionsTabbedMenuView::ShowBubble(
+        this, browser_, extensions_container_, button_type_,
+        extensions_container_->CanShowIconInToolbar());
+  } else {
+    menu = ExtensionsMenuView::ShowBubble(
+        this, browser_, extensions_container_,
+        extensions_container_->CanShowIconInToolbar());
+  }
+  menu->AddObserver(this);
 }
 
 bool ExtensionsToolbarButton::GetExtensionsMenuShowing() const {

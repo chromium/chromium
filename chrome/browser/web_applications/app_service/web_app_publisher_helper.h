@@ -10,27 +10,32 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -54,7 +59,6 @@ class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
 class WebAppLaunchManager;
-class LinkCapturingMigrationManager;
 
 struct ShortcutIdTypeMarker {};
 
@@ -66,7 +70,8 @@ void UninstallImpl(WebAppProvider* provider,
                    gfx::NativeWindow parent_window);
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
-#if defined(OS_CHROMEOS)
+                              public WebAppInstallManagerObserver,
+#if BUILDFLAG(IS_CHROMEOS)
                               public NotificationDisplayService::Observer,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public apps::AppWebContentsData::Client,
@@ -80,8 +85,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
     Delegate& operator=(const Delegate&) = delete;
     ~Delegate();
 
-    virtual void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) = 0;
-    virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
+    virtual void PublishWebApps(std::vector<apps::AppPtr> apps) = 0;
+    virtual void PublishWebApp(apps::AppPtr app) = 0;
 
     virtual void ModifyWebAppCapabilityAccess(
         const std::string& app_id,
@@ -93,7 +98,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
-                        apps::mojom::AppType app_type,
+                        apps::AppType app_type,
                         Delegate* delegate,
                         bool observe_media_requests);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
@@ -116,28 +121,33 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void Shutdown();
 
   // Populates the various show_in_* fields of |app|.
+  void SetWebAppShowInFields(const WebApp* web_app, apps::App& app);
+
+  // Populates the various show_in_* fields of |app|.
   void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app);
 
   // Appends |web_app| permissions to |target|.
+  // TODO(crbug.com/1253250): Remove and use CreatePermissions.
   void PopulateWebAppPermissions(
       const WebApp* web_app,
       std::vector<apps::mojom::PermissionPtr>* target);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Creates an |std::unique_ptr<apps::App>| describing |web_app|.
-  std::unique_ptr<apps::App> CreateWebApp(const WebApp* web_app);
-#endif
+  // Creates permissions for `web_app`.
+  apps::Permissions CreatePermissions(const WebApp* web_app);
+
+  // Creates an |apps::AppPtr| describing |web_app|.
+  apps::AppPtr CreateWebApp(const WebApp* web_app);
 
   // Creates an |apps::mojom::App| describing |web_app|.
   apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to identify an
   // uninstallation.
-  apps::mojom::AppPtr ConvertUninstalledWebApp(const WebApp* web_app);
+  apps::AppPtr ConvertUninstalledWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to update
   // last launch time.
-  apps::mojom::AppPtr ConvertLaunchedWebApp(const WebApp* web_app);
+  apps::AppPtr ConvertLaunchedWebApp(const WebApp* web_app);
 
   // Directly uninstalls |web_app| without prompting the user.
   // If |clear_site_data| is true, any site data associated with the app will
@@ -160,9 +170,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   bool IsPaused(const std::string& app_id);
 
   void LoadIcon(const std::string& app_id,
-                const apps::IconKey& icon_key,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
+                apps::IconEffects icon_effects,
                 LoadIconCallback callback);
 
   content::WebContents* Launch(const std::string& app_id,
@@ -170,11 +180,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                apps::mojom::LaunchSource launch_source,
                                apps::mojom::WindowInfoPtr window_info);
 
-  content::WebContents* LaunchAppWithFiles(
-      const std::string& app_id,
-      int32_t event_flags,
-      apps::mojom::LaunchSource launch_source,
-      apps::mojom::FilePathsPtr file_paths);
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
+                          apps::mojom::LaunchSource launch_source,
+                          apps::mojom::FilePathsPtr file_paths);
 
   content::WebContents* MaybeNavigateExistingWindow(const std::string& app_id,
                                                     absl::optional<GURL> url);
@@ -203,18 +212,33 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
 
+  void SetRunOnOsLoginMode(const std::string& app_id,
+                           apps::mojom::RunOnOsLoginMode run_on_os_login_mode);
+
   // Converts |display_mode| to a |window_mode|.
   apps::mojom::WindowMode ConvertDisplayModeToWindowMode(
       blink::mojom::DisplayMode display_mode);
 
+  // Converts RunOnOsLoginMode from apps::mojom::RunOnOsLoginMode to
+  // web_app::RunOnOsLoginMode.
+  web_app::RunOnOsLoginMode ConvertOsLoginModeToWebAppConstants(
+      apps::mojom::RunOnOsLoginMode login_mode);
+
+  // Converts RunOnOsLoginMode from web_app::RunOnOsLoginMode to
+  // apps::mojom::RunOnOsLoginMode.
+  apps::mojom::RunOnOsLoginMode ConvertOsLoginModeToMojom(
+      web_app::RunOnOsLoginMode login_mode);
+
   void PublishWindowModeUpdate(const std::string& app_id,
                                blink::mojom::DisplayMode display_mode);
 
+  void PublishRunOnOsLoginModeUpdate(const std::string& app_id,
+                                     RunOnOsLoginMode run_on_os_login_mode);
+
   std::string GenerateShortcutId();
 
-  void StoreShortcutId(
-      const std::string& shortcut_id,
-      const WebApplicationShortcutsMenuItemInfo& menu_item_info);
+  void StoreShortcutId(const std::string& shortcut_id,
+                       const WebAppShortcutsMenuItemInfo& menu_item_info);
 
   // Execute the user command from the context menu items. Currently
   // on the web app shortcut need to be execute in the publisher.
@@ -226,14 +250,26 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const std::string& shortcut_id,
       int64_t display_id);
 
+  // Checks that the user permits the app launch (possibly presenting a blocking
+  // user choice dialog). Launches the app with read access to the files in
+  // `params.launch_files` and returns the created WebContents via `callback`,
+  // or doesn't launch the app and returns null in `callback`.
+  void LaunchAppWithFilesCheckingUserPermission(
+      const std::string& app_id,
+      apps::AppLaunchParams params,
+      base::OnceCallback<void(content::WebContents*)> callback);
+
   Profile* profile() { return profile_; }
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
 
   WebAppRegistrar& registrar() const;
+  WebAppInstallManager& install_manager() const;
+
+  bool IsShuttingDown() const;
 
  private:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
    public:
     explicit BadgeManagerDelegate(
@@ -248,13 +284,17 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   };
 #endif
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // AppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
+  void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
   void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                             bool is_locally_installed) override;
   void OnWebAppLastLaunchTimeChanged(
@@ -262,7 +302,12 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                       DisplayMode user_display_mode) override;
-#if defined(OS_CHROMEOS)
+  void OnWebAppRunOnOsLoginModeChanged(
+      const AppId& app_id,
+      RunOnOsLoginMode run_on_os_login_mode) override;
+  void OnWebAppSettingsPolicyChanged() override;
+
+#if BUILDFLAG(IS_CHROMEOS)
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
@@ -276,7 +321,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       NotificationDisplayService* service) override;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // MediaCaptureDevicesDispatcher::Observer:
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
@@ -309,7 +354,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       int64_t display_id,
       base::OnceCallback<void(content::WebContents*)> callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
+  // Updates app visibility.
+  void UpdateAppDisabledMode(apps::App& app);
+
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 
@@ -320,19 +368,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const NotificationCommon::Metadata* const metadata);
 
   // Returns whether the app should show a badge.
-  apps::mojom::OptionalBool ShouldShowBadge(
-      const std::string& app_id,
-      apps::mojom::OptionalBool has_notification_indicator);
+  bool ShouldShowBadge(const std::string& app_id,
+                       bool has_notification_indicator);
 #endif
-
-  // Checks that the user permits the app launch (possibly presenting a blocking
-  // user choice dialog). Launches the app with read access to the files in
-  // `params.launch_files` and returns the created WebContents via `callback`,
-  // or doesn't launch the app and returns null in `callback`.
-  void LaunchAppWithFilesCheckingUserPermission(
-      const std::string& app_id,
-      apps::AppLaunchParams params,
-      base::OnceCallback<void(content::WebContents*)> callback);
 
   // Called after the user has allowed or denied an app launch with files.
   void OnFileHandlerDialogCompleted(
@@ -342,29 +380,34 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       bool allowed,
       bool remember_user_choice);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  WebAppProvider* const provider_;
+  const raw_ptr<WebAppProvider> provider_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
+
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
   std::unique_ptr<WebAppLaunchManager> web_app_launch_manager_;
 
+  bool is_shutting_down_ = false;
+
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   apps::PausedApps paused_apps_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       notification_display_service_{this};
@@ -380,11 +423,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::MediaRequests media_requests_;
 #endif
 
-  std::map<std::string, WebApplicationShortcutsMenuItemInfo> shortcut_id_map_;
+  std::map<std::string, WebAppShortcutsMenuItemInfo> shortcut_id_map_;
   ShortcutId::Generator shortcut_id_generator_;
-
-  std::unique_ptr<web_app::LinkCapturingMigrationManager>
-      link_capturing_migration_manager_;
 
   base::WeakPtrFactory<WebAppPublisherHelper> weak_ptr_factory_{this};
 };

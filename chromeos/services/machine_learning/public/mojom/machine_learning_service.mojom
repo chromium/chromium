@@ -65,11 +65,6 @@ interface MachineLearningService {
       HandwritingRecognizerSpec spec,
       pending_receiver<HandwritingRecognizer> receiver)
       => (LoadHandwritingModelResult result);
-  // Will be deprecated soon.
-  LoadHandwritingModelWithSpec@4(
-      HandwritingRecognizerSpec spec,
-      pending_receiver<HandwritingRecognizer> receiver)
-      => (LoadModelResult result);
   // Create and initialize a speech recognizer with given `config`.
   LoadSpeechRecognizer@6(SodaConfig config,
       pending_remote<SodaClient> soda_client,
@@ -84,11 +79,11 @@ interface MachineLearningService {
       [MinVersion=3] TextSuggesterSpec? spec)
       => (LoadModelResult result);
   // Create a handwriting recognizer for web platform API.
-  // This API shares the same HWR engine with `LoadHandwritingModel` and
-  // `LoadHandwritingModelWithSpec` but with a different interface. This API is
-  // as identical to the Web Platform HWR API as possible so that we do not
-  // need to convert the input/output in the browser process. This is required
-  // for security reasons.
+  // This API shares the same HWR engine with `LoadHandwritingModel`
+  // but with a different interface. This API is as identical to
+  // the Web Platform HWR API as possible so that we do not
+  // need to convert the input/output in the browser process.
+  // This is required for security reasons.
   [MinVersion=1] LoadWebPlatformHandwritingModel@9(
     chromeos.machine_learning.web_platform.mojom.HandwritingModelConstraint
       constraint,
@@ -99,5 +94,10 @@ interface MachineLearningService {
   // Create and initialize a document scanner.
   [MinVersion=4] LoadDocumentScanner@10(
             pending_receiver<DocumentScanner> receiver)
+      => (LoadModelResult result);
+  // Deprecated `LoadHandwritingModelWithSpec`
+  REMOVED_4@4(
+      HandwritingRecognizerSpec spec,
+      pending_receiver<HandwritingRecognizer> receiver)
       => (LoadModelResult result);
 };

@@ -56,13 +56,12 @@ class ImageFetchTabHelperTest : public ChromeWebTest {
   }
 
   web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
+    return static_cast<web::FakeWebClient*>(ChromeWebTest::GetWebClient());
   }
 
   // Sets up the network::TestURLLoaderFactory to handle download request.
   void SetUpTestSharedURLLoaderFactory() {
-    chrome_browser_state_->SetSharedURLLoaderFactory(
+    GetBrowserState()->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
 

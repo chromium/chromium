@@ -9,6 +9,19 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos, "Only Chrome OS resources in //c/b/resources//chromeos.")
 
+grit("app_icon_resources") {
+  source = "app_icon/app_icon_resources.grd"
+  defines = chrome_grit_defines
+  outputs = [
+    "grit/app_icon_resources.h",
+    "grit/app_icon_resources_map.cc",
+    "grit/app_icon_resources_map.h",
+    "app_icon_resources_100_percent.pak",
+    "app_icon_resources_200_percent.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
 grit("multidevice_setup_resources") {
   multidevice_setup_gen_dir =
       "$root_gen_dir/chrome/browser/resources/chromeos/multidevice_setup"
@@ -28,6 +41,7 @@ grit("multidevice_setup_resources") {
 
 group("closure_compile") {
   deps = [
+    ":closure_compile_local",
     "accessibility/accessibility_common:closure_compile",
     "accessibility/braille_ime:closure_compile",
     "accessibility/chromevox:closure_compile",
@@ -40,7 +54,6 @@ group("closure_compile") {
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
     "edu_coexistence:closure_compile",
-    "edu_login:closure_compile",
     "emoji_picker:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
@@ -63,4 +76,27 @@ group("closure_compile") {
   if (is_cfm) {
     deps += [ "chromebox_for_meetings:closure_compile" ]
   }
+}
+
+js_type_check("closure_compile_local") {
+  deps = [
+    ":power",
+    ":slow",
+  ]
+}
+
+js_library("power") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("slow") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }

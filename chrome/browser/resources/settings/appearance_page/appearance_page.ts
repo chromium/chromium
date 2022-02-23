@@ -20,7 +20,7 @@ import '../controls/settings_dropdown_menu.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
@@ -32,6 +32,7 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
+import {getTemplate} from './appearance_page.html.js';
 
 
 /**
@@ -68,7 +69,7 @@ export class SettingsAppearancePageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -277,7 +278,7 @@ export class SettingsAppearancePageElement extends
   /** @return Whether to show the "USE GTK+" button. */
   private showUseSystem_(themeId: string, useSystemTheme: boolean): boolean {
     return (!!themeId || !useSystemTheme) &&
-        !this.appearanceBrowserProxy_.isSupervised();
+        !this.appearanceBrowserProxy_.isChildAccount();
   }
 
   /**
@@ -328,7 +329,7 @@ export class SettingsAppearancePageElement extends
     // <if expr="is_linux and not chromeos and not lacros">
     i18nId = useSystemTheme ? 'systemTheme' : 'classicTheme';
     // </if>
-    // <if expr="not is_linux or chromeos or lacros">
+    // <if expr="not is_linux or chromeos_ash or chromeos_lacros">
     i18nId = 'chooseFromWebStore';
     // </if>
     this.themeSublabel_ = this.i18n(i18nId);

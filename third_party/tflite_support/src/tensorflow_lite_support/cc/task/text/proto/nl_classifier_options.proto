@@ -1,0 +1,111 @@
+/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.text;
+
+import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
+
+// Options for setting up an NLClassifier.
+// Next Id: 8
+message NLClassifierOptions {
+  // Base options for configuring NLClassifier, such as specifying the
+  // TfLite model file with metadata, accelerator options, etc.
+  optional tflite.task.core.BaseOptions base_options = 1;
+
+  // ****************************************************
+  // Configure the input/output tensors for NLClassifier:
+  //
+  // - No special configuration is needed if the model has only one input tensor
+  // and one output tensor.
+  //
+  // - When the model has multiple input or output tensors, use the following
+  // configurations to specifiy the desired tensors:
+  //   -- tensor names: `input_tensor_name`, `output_score_tensor_name`,
+  //   `output_label_tensor_name`
+  //   -- tensor indices: `input_tensor_index`, `output_score_tensor_index`,
+  //   `output_label_tensor_index`
+  // Tensor names has higher priorities than tensor indices in locating the
+  // tensors. It means the tensors will be first located according to tensor
+  // names. If not found, then the tensors will be located according to tensor
+  // indices.
+  //
+  // - Failing to match the input text tensor or output score tensor with
+  // neither tensor names nor tensor indices will trigger a runtime error.
+  // However, failing to locate the output label tensor will not trigger an
+  // error because the label tensor is optional.
+  // ****************************************************
+
+  // Name of the input text tensor, if the model has multiple inputs. Only the
+  // input tensor specified will be used for inference; other input tensors will
+  // be ignored. Default to "INPUT".
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  optional string input_tensor_name = 2 [default = "INPUT"];
+
+  // Name of the output score tensor, if the model has multiple outputs. Default
+  // to "OUTPUT_SCORE".
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  optional string output_score_tensor_name = 3 [default = "OUTPUT_SCORE"];
+
+  // Name of the output label tensor, if the model has multiple outputs. Default
+  // to "OUTPUT_LABEL".
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  //
+  // By default, label file should be packed with
+  // the output score tensor through Model Metadata. See the MetadataWriter for
+  // NLClassifier [1]. NLClassifier reads and parses labels from the label
+  // file automatically. However, some models may output a specific label tensor
+  // instead. In this case, NLClassifier reads labels from the output label
+  // tensor.
+  //
+  // [1]:
+  // https://www.tensorflow.org/lite/convert/metadata_writer_tutorial#natural_language_classifiers
+  optional string output_label_tensor_name = 4 [default = "OUTPUT_LABEL"];
+
+  // Index of the input text tensor among all input tensors, if the model has
+  // multiple inputs. Only the input tensor specified will be used for
+  // inference; other input tensors will be ignored. Default to 0.
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  optional int32 input_tensor_index = 5 [default = 0];
+
+  // Index of the output score tensor among all output tensors, if the model has
+  // multiple outputs. Default to 0.
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  optional int32 output_score_tensor_index = 6 [default = 0];
+
+  // Index of the optional output label tensor among all output tensors, if the
+  // model has multiple outputs.
+  //
+  // See the comment above `output_label_tensor_name` for more information about
+  // what the output label tensor is.
+  //
+  // See the "Configure the input/output tensors for NLClassifier" section above
+  // for more details.
+  //
+  // `output_label_tensor_index` defaults to -1, meaning to disable searching
+  // the output label tensor as it might be optional.
+  optional int32 output_label_tensor_index = 7 [default = -1];
+}

@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_instance.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolation_context.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,13 +47,14 @@ class RecentlyDestroyedHostsTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  RecentlyDestroyedHosts* instance_;
+  raw_ptr<RecentlyDestroyedHosts> instance_;
 };
 
 TEST_F(RecentlyDestroyedHostsTest,
        RecordMetricIfReusableHostRecentlyDestroyed) {
   const IsolationContext isolation_context(BrowsingInstanceId(1),
-                                           &browser_context_);
+                                           &browser_context_,
+                                           /*is_guest=*/false);
   const ProcessLock process_lock = ProcessLock::Create(
       isolation_context,
       UrlInfo::CreateForTesting(GURL("https://www.google.com"),

@@ -6,6 +6,7 @@
 
 #include <drm_fourcc.h>
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
@@ -103,11 +104,11 @@ std::unique_ptr<HardwareDisplayPlane> HardwareDisplayPlaneManager::CreatePlane(
 
 HardwareDisplayPlane* HardwareDisplayPlaneManager::FindNextUnusedPlane(
     size_t* index,
-    uint32_t crtc_index,
+    uint32_t crtc_id,
     const DrmOverlayPlane& overlay) const {
   for (size_t i = *index; i < planes_.size(); ++i) {
     auto* plane = planes_[i].get();
-    if (!plane->in_use() && IsCompatible(plane, overlay, crtc_index)) {
+    if (!plane->in_use() && IsCompatible(plane, overlay, crtc_id)) {
       *index = i + 1;
       return plane;
     }
@@ -133,11 +134,22 @@ absl::optional<int> HardwareDisplayPlaneManager::LookupConnectorIndex(
   return {};
 }
 
+base::flat_set<uint32_t> HardwareDisplayPlaneManager::CrtcMaskToCrtcIds(
+    uint32_t crtc_mask) const {
+  base::flat_set<uint32_t> crtc_ids;
+  for (uint32_t idx = 0; idx < crtc_state_.size(); idx++) {
+    if (crtc_mask & (1 << idx))
+      crtc_ids.insert(crtc_state_[idx].properties.id);
+  }
+
+  return crtc_ids;
+}
+
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
-                                               uint32_t crtc_index) const {
+                                               uint32_t crtc_id) const {
   if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtc(crtc_index))
+      !plane->CanUseForCrtcId(crtc_id))
     return false;
 
   const uint32_t format =
@@ -201,16 +213,10 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
     uint32_t crtc_id) {
-  auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    LOG(ERROR) << "Cannot find crtc " << crtc_id;
-    return false;
-  }
-
   size_t plane_idx = 0;
   for (const auto& plane : overlay_list) {
     HardwareDisplayPlane* hw_plane =
-        FindNextUnusedPlane(&plane_idx, *crtc_index, plane);
+        FindNextUnusedPlane(&plane_idx, crtc_id, plane);
     if (!hw_plane) {
       RestoreCurrentPlaneList(plane_list);
       return false;
@@ -247,13 +253,8 @@ const std::vector<uint32_t>& HardwareDisplayPlaneManager::GetSupportedFormats()
 std::vector<uint64_t> HardwareDisplayPlaneManager::GetFormatModifiers(
     uint32_t crtc_id,
     uint32_t format) const {
-  auto crtc_index = LookupCrtcIndex(crtc_id);
-  if (!crtc_index) {
-    return {};
-  }
-
   for (const auto& plane : planes_) {
-    if (plane->CanUseForCrtc(*crtc_index) &&
+    if (plane->CanUseForCrtcId(crtc_id) &&
         plane->type() == DRM_PLANE_TYPE_PRIMARY) {
       return plane->ModifiersForFormat(format);
     }

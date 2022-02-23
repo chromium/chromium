@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::u16string& text,
                           const gfx::Range& selection_range) override;
+  void SetContentType(TextInputType input_type, int input_flags) override;
+  VirtualKeyboardController* GetVirtualKeyboardController() override;
 };
 
 }  // namespace ui

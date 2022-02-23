@@ -5,8 +5,10 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/fling_scheduler_base.h"
+#include "content/common/content_export.h"
 #include "ui/compositor/compositor_animation_observer.h"
 
 namespace ui {
@@ -39,9 +41,9 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
 
  protected:
   virtual ui::Compositor* GetCompositor();
-  RenderWidgetHostImpl* host_;
+  raw_ptr<RenderWidgetHostImpl> host_;
   base::WeakPtr<FlingController> fling_controller_;
-  ui::Compositor* observed_compositor_ = nullptr;
+  raw_ptr<ui::Compositor> observed_compositor_ = nullptr;
 
  private:
   // ui::CompositorAnimationObserver

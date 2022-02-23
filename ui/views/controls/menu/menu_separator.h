@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_SEPARATOR_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_SEPARATOR_H_
 
-#include "base/compiler_specific.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/view.h"

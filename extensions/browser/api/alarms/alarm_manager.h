@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -224,8 +224,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   static const char* service_name() { return "AlarmManager"; }
   static const bool kServiceHasOwnInstanceInIncognito = true;
 
-  content::BrowserContext* const browser_context_;
-  base::Clock* clock_;
+  const raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<Delegate> delegate_;
 
   // Listen to extension load notifications.

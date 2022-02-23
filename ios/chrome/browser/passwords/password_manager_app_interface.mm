@@ -50,8 +50,13 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
     return std::move(result_);
   }
 
+  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<std::unique_ptr<PasswordForm>> result_;
+  base::WeakPtrFactory<PasswordStoreConsumerHelper> weak_ptr_factory_{this};
 };
 
 @implementation PasswordManagerAppInterface
@@ -112,7 +117,7 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
           .get();
 
   PasswordStoreConsumerHelper consumer;
-  passwordStore->GetAllLogins(&consumer);
+  passwordStore->GetAllLogins(consumer.GetWeakPtr());
 
   std::vector<std::unique_ptr<PasswordForm>> credentials =
       consumer.WaitForResult();

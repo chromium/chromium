@@ -5,23 +5,28 @@
 #include "chrome/updater/win/win_util.h"
 
 #include <aclapi.h>
+#include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
+#include <wrl/client.h>
 #include <wtsapi32.h>
 
 #include <cstdlib>
 #include <memory>
 #include <string>
 
+#include "base/base_paths_win.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
+#include "base/path_service.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/strcat.h"
@@ -580,20 +585,9 @@ std::wstring GetServiceDisplayName(bool is_internal_service) {
        L" ", kUpdaterVersionUtf16});
 }
 
-std::wstring GetTaskName(UpdaterScope scope) {
-  std::wstring task_name = GetTaskDisplayName(scope);
-  task_name.erase(std::remove_if(task_name.begin(), task_name.end(), isspace),
-                  task_name.end());
-  return task_name;
-}
-
-std::wstring GetTaskDisplayName(UpdaterScope scope) {
-  return base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" Task ",
-                       scope == UpdaterScope::kSystem ? L" System " : L" User ",
-                       kUpdaterVersionUtf16});
-}
-
 REGSAM Wow6432(REGSAM access) {
+  CHECK(access);
+
   return KEY_WOW64_32KEY | access;
 }
 
@@ -639,6 +633,48 @@ HRESULT RunElevated(const base::FilePath& file_path,
 
   *exit_code = ret_val;
   return S_OK;
+}
+
+absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {
+  base::FilePath goopdate_base_dir;
+  if (!base::PathService::Get(scope == UpdaterScope::kSystem
+                                  ? base::DIR_PROGRAM_FILESX86
+                                  : base::DIR_LOCAL_APP_DATA,
+                              &goopdate_base_dir)) {
+    LOG(ERROR) << "Can't retrieve GoogleUpdate base directory.";
+    return absl::nullopt;
+  }
+
+  base::FilePath goopdate_dir =
+      goopdate_base_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
+          .AppendASCII("Update");
+  if (!base::CreateDirectory(goopdate_dir)) {
+    LOG(ERROR) << "Can't create GoogleUpdate directory: " << goopdate_dir;
+    return absl::nullopt;
+  }
+
+  return goopdate_dir.AppendASCII("GoogleUpdate.exe");
+}
+
+HRESULT DisableCOMExceptionHandling() {
+  Microsoft::WRL::ComPtr<IGlobalOptions> options;
+  HRESULT hr = ::CoCreateInstance(CLSID_GlobalOptions, nullptr,
+                                  CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&options));
+  if (FAILED(hr))
+    return hr;
+  return hr = options->Set(COMGLB_EXCEPTION_HANDLING,
+                           COMGLB_EXCEPTION_DONOT_HANDLE);
+}
+
+std::wstring BuildMsiCommandLine(const std::wstring& arguments,
+                                 const base::FilePath& msi_installer) {
+  if (!msi_installer.MatchesExtension(L".msi")) {
+    return std::wstring();
+  }
+
+  return base::StrCat(
+      {L"msiexec ", arguments, L" REBOOT=ReallySuppress /qn /i \"",
+       msi_installer.value(), L"\" /log \"", msi_installer.value(), L".log\""});
 }
 
 }  // namespace updater

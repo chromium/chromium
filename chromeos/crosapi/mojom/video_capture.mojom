@@ -56,15 +56,23 @@ struct GpuMemoryBufferHandle {
 
 // Similar to |media.mojom.VideoBufferHandle| but does not contain fields which
 // are not used in Chrome OS implementation.
-// Next min field ID: 2
-[Stable]
+// Next min field ID: 3
+[Stable, Uuid="0259e126-6da3-4cbb-8774-da1a7bf7f2f8"]
 union VideoBufferHandle {
   handle<shared_buffer> shared_buffer_handle@0;
 
   GpuMemoryBufferHandle gpu_memory_buffer_handle@1;
+
+  // TODO(https://crbug.com/1261313): Until unions truly support versioning, we
+  // don't have a way to check this/it ends up ignored. Currently this is only
+  // set by code in ash to be read by lacros, which is strictly guaranteed to be
+  // flowing from an older version to a newer version, so this is fine. It can
+  // be proxied by checking if VideoCaptureDevice supports RequestRefreshFrame,
+  // which was added at the same time.
+  [MinVersion=1]
+  mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region@2;
 };
 
-// Identical to |video_capture.mojom.DeviceAccessResultCode|.
 [Stable, Extensible]
 enum DeviceAccessResultCode {
   NOT_INITIALIZED,
@@ -125,7 +133,7 @@ interface ScopedAccessPermission {};
 
 // Similar to |video_capture.mojom.VideoFrameHandler| but depends on simplified
 // structures.
-// Next min method ID: 9
+// Next min method ID: 10
 [Stable, Uuid="590ab36a-9162-4c9d-8429-1753108825ea"]
 interface VideoFrameHandler {
   OnNewBuffer@0(int32 buffer_id, VideoBufferHandle buffer_handle);
@@ -139,6 +147,9 @@ interface VideoFrameHandler {
 
   OnFrameDropped@4(media.mojom.VideoCaptureFrameDropReason reason);
 
+  [MinVersion=1]
+  OnFrameWithEmptyRegionCapture@9();
+
   OnLog@5(string message);
 
   OnStarted@6();
@@ -149,7 +160,7 @@ interface VideoFrameHandler {
 };
 
 // Similar to |video_capture.mojom.Device| but depends on simplified structures.
-// Next min method ID: 7
+// Next min method ID: 8
 [Stable, Uuid="f50f1672-d512-451e-9c70-998ed45ab596"]
 interface VideoCaptureDevice {
   // It is assumed that it will be called only once.
@@ -167,6 +178,9 @@ interface VideoCaptureDevice {
   TakePhoto@5() => (media.mojom.Blob? blob);
 
   ProcessFeedback@6(media.mojom.VideoCaptureFeedback feedback);
+
+  [MinVersion = 1]
+  RequestRefreshFrame@7();
 };
 
 // Similar to |video_capture.mojom.DeviceFactory| but depends on simplified

@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
@@ -25,8 +26,6 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/nacl/common/buildflags.h"
-#include "components/nacl/common/nacl_switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/common/translate_switches.h"
@@ -43,17 +42,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
 #include "chrome/browser/ui/browser.h"
-#endif  // OS_ANDROID
+#endif
 
 namespace chrome {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Dangerous command line flags for which to display a warning that "stability
 // and security will suffer".
 static const char* kBadFlags[] = {
@@ -63,14 +62,11 @@ static const char* kBadFlags[] = {
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kDisableSetuidSandbox,
     sandbox::policy::switches::kNoSandbox,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     sandbox::policy::switches::kAllowThirdPartyModules,
 #endif
     switches::kDisableSiteIsolation,
     switches::kDisableWebSecurity,
-#if BUILDFLAG(ENABLE_NACL)
-    switches::kNaClDangerousNoSandboxNonSfi,
-#endif
     switches::kSingleProcess,
 
     // These flags disable or undermine the Same Origin Policy.
@@ -95,17 +91,17 @@ static const char* kBadFlags[] = {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Speech dispatcher is buggy, it can crash and it can make Chrome freeze.
     // http://crbug.com/327295
     switches::kEnableSpeechDispatcher,
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // This flag is only used for performance tests in mac, to ensure that
     // calculated values are reliable. Should not be used elsewhere.
     switches::kUseHighGPUThreadPriorityForPerfTests,
-#endif  // OS_MAC
+#endif
 
     // These flags control Blink feature state, which is not supported and is
     // intended only for use by Chromium developers.
@@ -146,16 +142,26 @@ static const char* kBadFlags[] = {
 
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
+
+    // This flag enables restricted APIs (which unlock capabilities
+    // with a high potential for security / privacy abuse) for specified
+    // origins.
+    switches::kRestrictedApiOrigins,
+
+    // Allows the specified origin to make Web Authentication API requests on
+    // behalf of other origins, if a corresponding Google-internal
+    // platform-level enterprise policy is also applied.
+    webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
 };
-#endif  // OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Dangerous feature flags in about:flags for which to display a warning that
 // "stability and security will suffer".
 static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
     &features::kWebBundlesFromNetwork,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     &chrome::android::kCommandLineOnNonRooted,
-#endif  // OS_ANDROID
+#endif
 };
 
 void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
@@ -178,14 +184,14 @@ void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
 void ShowBadFlagsPrompt(content::WebContents* web_contents) {
 // On Android, ShowBadFlagsPrompt doesn't show the warning notification
 // for flags which are not available in about:flags.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (const char* flag : kBadFlags) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(flag)) {
       ShowBadFlagsInfoBar(web_contents, IDS_BAD_FLAGS_WARNING_MESSAGE, flag);
       return;
     }
   }
-#endif  // OS_ANDROID
+#endif
 
   for (const base::Feature* feature : kBadFeatureFlagsInAboutFlags) {
     if (base::FeatureList::IsEnabled(*feature)) {

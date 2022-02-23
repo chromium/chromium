@@ -226,6 +226,64 @@ NotificationTypeDetailed GetNotificationType(
   }
 }
 
+absl::optional<NotificationViewType> GetNotificationViewType(
+    message_center::Notification* notification) {
+  absl::optional<NotificationViewType> type;
+
+  // Ignore ARC notification since its view is rendered through Android, and
+  // its notification metadata for image and buttons is empty. Also ignore group
+  // parent notification since it only serves as a placeholder.
+  if (!notification ||
+      notification->notifier_id().type ==
+          message_center::NotifierType::ARC_APPLICATION ||
+      notification->group_parent())
+    return type;
+
+  bool has_inline_reply = false;
+  for (auto button_info : notification->buttons()) {
+    if (button_info.placeholder) {
+      has_inline_reply = true;
+      break;
+    }
+  }
+
+  bool has_buttons = !notification->buttons().empty();
+  bool has_image = !notification->image().IsEmpty();
+  bool is_grouped_child = notification->group_child();
+
+  if (has_inline_reply) {
+    if (has_image) {
+      type = is_grouped_child
+                 ? NotificationViewType::GROUPED_HAS_IMAGE_AND_INLINE_REPLY
+                 : NotificationViewType::HAS_IMAGE_AND_INLINE_REPLY;
+    } else {
+      type = is_grouped_child ? NotificationViewType::GROUPED_HAS_INLINE_REPLY
+                              : NotificationViewType::HAS_INLINE_REPLY;
+    }
+    return type;
+  }
+
+  if (has_buttons) {
+    if (has_image) {
+      type = is_grouped_child
+                 ? NotificationViewType::GROUPED_HAS_IMAGE_AND_ACTION
+                 : NotificationViewType::HAS_IMAGE_AND_ACTION;
+    } else {
+      type = is_grouped_child ? NotificationViewType::GROUPED_HAS_ACTION
+                              : NotificationViewType::HAS_ACTION;
+    }
+    return type;
+  }
+
+  if (has_image) {
+    return is_grouped_child ? NotificationViewType::GROUPED_HAS_IMAGE
+                            : NotificationViewType::HAS_IMAGE;
+  } else {
+    return is_grouped_child ? NotificationViewType::GROUPED_SIMPLE
+                            : NotificationViewType::SIMPLE;
+  }
+}
+
 absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id) {
   absl::optional<NotificationTypeDetailed> type;
@@ -238,17 +296,45 @@ absl::optional<NotificationTypeDetailed> GetNotificationType(
   return type;
 }
 
-void LogClickedBody(const std::string& notification_id, bool is_popup) {
+void LogHover(const std::string& notification_id, bool is_popup) {
   auto type = GetNotificationType(notification_id);
   if (!type.has_value())
     return;
 
   if (is_popup) {
+    base::UmaHistogramEnumeration("Notifications.Cros.Actions.Popup.Hover",
+                                  type.value());
+  } else {
+    base::UmaHistogramEnumeration("Notifications.Cros.Actions.Tray.Hover",
+                                  type.value());
+  }
+}
+
+void LogClickedBody(const std::string& notification_id, bool is_popup) {
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+  if (!notification)
+    return;
+  auto type = GetNotificationType(*notification);
+
+  if (is_popup) {
     UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Popup.ClickedBody",
-                              type.value());
+                              type);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Tray.ClickedBody",
-                              type.value());
+                              type);
+  }
+
+  // If notification's delegate is null, that means the notification is not
+  // clickable and the user just did a "bad click", which is a click that did
+  // not do anything.
+  if (notification->delegate()) {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.ClickedBody.GoodClick", type);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Notifications.Cros.Actions.ClickedBody.BadClick", type);
   }
 }
 
@@ -383,12 +469,21 @@ void LogClosedByClearAll(const std::string& notification_id) {
 }
 
 void LogNotificationAdded(const std::string& notification_id) {
-  auto type = GetNotificationType(notification_id);
-  if (!type.has_value())
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id);
+  if (!notification)
     return;
 
   base::UmaHistogramEnumeration("Notifications.Cros.Actions.NotificationAdded",
-                                type.value());
+                                GetNotificationType(*notification));
+
+  auto notification_view_type = GetNotificationViewType(notification);
+  if (!notification_view_type)
+    return;
+
+  base::UmaHistogramEnumeration("Ash.NotificationView.NotificationAdded.Type",
+                                notification_view_type.value());
 }
 
 void LogNotificationsShownInFirstMinute(int count) {

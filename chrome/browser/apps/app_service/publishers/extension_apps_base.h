@@ -8,13 +8,16 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -39,6 +42,8 @@ class ExtensionSet;
 namespace apps {
 class ExtensionAppsEnableFlow;
 
+struct AppLaunchParams;
+
 // An app base publisher (in the App Service sense) of extension-backed apps,
 // including Chrome Apps (platform apps and legacy packaged apps) and hosted
 // apps.
@@ -53,7 +58,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
                           public extensions::ExtensionPrefsObserver,
                           public extensions::ExtensionRegistryObserver {
  public:
-  explicit ExtensionAppsBase(AppServiceProxy* proxy);
+  ExtensionAppsBase(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsBase() override;
 
   ExtensionAppsBase(const ExtensionAppsBase&) = delete;
@@ -71,11 +76,14 @@ class ExtensionAppsBase : public apps::PublisherBase,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
+  virtual void SetShowInFields(const extensions::Extension* extension,
+                               App& app);
+
   virtual void SetShowInFields(apps::mojom::AppPtr& app,
                                const extensions::Extension* extension);
 
-  std::unique_ptr<App> CreateAppImpl(const extensions::Extension* extension,
-                                     Readiness readiness);
+  AppPtr CreateAppImpl(const extensions::Extension* extension,
+                       Readiness readiness);
 
   apps::mojom::AppPtr ConvertImpl(const extensions::Extension* extension,
                                   apps::mojom::Readiness readiness);
@@ -92,12 +100,14 @@ class ExtensionAppsBase : public apps::PublisherBase,
       LaunchAppWithIntentCallback callback);
 
   virtual content::WebContents* LaunchImpl(AppLaunchParams&& params);
+  virtual void LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                                       LaunchCallback callback);
 
   // Returns extensions::Extension* for the valid |app_id|. Otherwise, returns
   // nullptr.
   const extensions::Extension* MaybeGetExtension(const std::string& app_id);
 
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+  virtual void Initialize();
 
   const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers() const {
     return subscribers_;
@@ -111,6 +121,15 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   apps_util::IncrementingIconKeyFactory& icon_key_factory() {
     return icon_key_factory_;
+  }
+
+  AppType app_type() { return app_type_; }
+
+  mojom::AppType mojom_app_type() {
+    DCHECK(app_type_ == AppType::kChromeApp ||
+           app_type_ == AppType::kExtension);
+    return app_type_ == AppType::kChromeApp ? mojom::AppType::kChromeApp
+                                            : mojom::AppType::kExtension;
   }
 
  private:
@@ -131,6 +150,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
   // and should therefore by handled by this publisher.
   virtual bool Accepts(const extensions::Extension* extension) = 0;
 
+  void OnExtensionsReady();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
@@ -138,6 +159,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -204,15 +227,15 @@ class ExtensionAppsBase : public apps::PublisherBase,
   void PopulateIntentFilters(const absl::optional<GURL>& app_scope,
                              std::vector<mojom::IntentFilterPtr>* target);
 
-  virtual std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
-                                         Readiness readiness) = 0;
+  virtual AppPtr CreateApp(const extensions::Extension* extension,
+                           Readiness readiness) = 0;
 
   virtual apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                                       apps::mojom::Readiness readiness) = 0;
 
   void CreateAppVector(const extensions::ExtensionSet& extensions,
                        Readiness readiness,
-                       std::vector<std::unique_ptr<App>>* apps_out);
+                       std::vector<AppPtr>* apps_out);
 
   void ConvertVector(const extensions::ExtensionSet& extensions,
                      apps::mojom::Readiness readiness,
@@ -227,7 +250,11 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
+
+  // The app type published by this publisher. Must be either kChromeApp or
+  // kExtension.
+  AppType app_type_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
@@ -242,7 +269,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
   std::map<std::string, EnableFlowPtr> enable_flow_map_;
 
   // app_service_ is owned by the object that owns this object.
-  apps::mojom::AppService* app_service_;
+  raw_ptr<apps::mojom::AppService> app_service_;
 
   base::WeakPtrFactory<ExtensionAppsBase> weak_factory_{this};
 };

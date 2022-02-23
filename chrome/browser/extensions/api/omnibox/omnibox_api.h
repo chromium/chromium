@@ -9,7 +9,9 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -127,9 +129,9 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   }
   static const bool kServiceRedirectedInIncognito = true;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  TemplateURLService* url_service_;
+  raw_ptr<TemplateURLService> url_service_;
 
   // List of extensions waiting for the TemplateURLService to Load to
   // have keywords registered.
@@ -154,7 +156,15 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
                              OMNIBOX_SETDEFAULTSUGGESTION)
 
  protected:
-  ~OmniboxSetDefaultSuggestionFunction() override {}
+  ~OmniboxSetDefaultSuggestionFunction() override = default;
+
+  // Called asynchronously with the parsed description and styles for the
+  // default suggestion.
+  void OnParsedDescriptionAndStyles(DescriptionAndStylesResult result);
+
+  // Sets the default suggestion in the extension preferences.
+  void SetDefaultSuggestion(
+      const api::omnibox::DefaultSuggestResult& suggestion);
 
   // ExtensionFunction:
   ResponseAction Run() override;

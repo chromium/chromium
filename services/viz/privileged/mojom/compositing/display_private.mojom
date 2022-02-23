@@ -13,6 +13,7 @@ import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/transform.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/latency/mojom/latency_info.mojom";
+import "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom";
 import "services/viz/privileged/mojom/compositing/layered_window_updater.mojom";
 import "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom";
 
@@ -86,6 +87,13 @@ interface DisplayPrivate {
   // sent to viz and stored, to be used when drawing a delegated ink trail.
   SetDelegatedInkPointRenderer(
     pending_receiver<gfx.mojom.DelegatedInkPointRenderer> receiver);
+
+  // Allow browser to observe begin frames without implementing the contract of
+  // CompositorFrameSink and Client. Eg there is no need to respond by
+  // submitting a frame. Note setting this to non-null requests begin frames,
+  // not just observe begin frames requested by other observers. This only a
+  // single observer at a time; calling this will replace any existing observer.
+  SetStandaloneBeginFrameObserver(pending_remote<BeginFrameObserver> observer);
 };
 
 interface DisplayClient {

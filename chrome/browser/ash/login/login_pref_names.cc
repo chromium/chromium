@@ -105,5 +105,15 @@ const char kOobeComplete[] = "OobeComplete";
 // The name of the screen that has to be shown if OOBE has been interrupted.
 const char kOobeScreenPending[] = "OobeScreenPending";
 
+// Boolean pref to hold guest metrics consent captured during guest OOBE. Guest
+// OOBE should only be triggered for guest sessions without a device owner. This
+// pref is used to hold that consent across browser restart.
+const char kOobeGuestMetricsEnabled[] = "oobe.guest_metrics_enabled";
+
+// Boolean pref whether guest user went through ToS screen before starting the
+// session. If so, kOobeGuestMetricsEnabled will be loaded as the metrics
+// consent for the session.
+const char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
+
 }  // namespace prefs
 }  // namespace ash

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">इन्कोग्निटो मोडमा नयाँ विन्डो खोलियोस्</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यसपछि <ph name="ESC" /></translation>
+<translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="1652741121070700329">अघिल्लो शब्दको सुरुमा सार्नुहोस्‌</translation>
 <translation id="1679841710523778799">उज्यालोपना बढाउनुहोस्‌</translation>
 <translation id="168356808214100546"><ph name="ALT" /> थिचिराख्नुहोस्, आफूले खोल्न चाहेको विन्डोमा नपुगुन्जेल <ph name="TAB" /> मा ट्याप गर्नुहोस्‌, त्यसपछि छाड्नुहोस्‌।</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> थिचेर कुनै लिंकमा क्लिक गर्नुहोस्</translation>
 <translation id="561814908794220892">वेबपृष्ठलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="5620219513321115856">सक्रिय विन्डो दायाँपट्टीको डेस्कमा सार्नुहोस्</translation>
+<translation id="5699366815052349604">सबै डेस्कमा सक्रिय विन्डो असाइन गर्नुहोस्</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> वा <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">लिंकलाई ट्याबमा खोल्नुहोस्</translation>
 <translation id="5757474750054631686">किबोर्डको उज्यालो कम गर्नुहोस्‌ (पछाडिको भागमा प्रकाशको सुविधा भएका किबोर्डहरूका लागि मात्र)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">लुकाइएका फाइलहरूलाई फाइल एपमा देखाउनुहोस्‌</translation>
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8727232706774971183">आफ्ना सूचनाहरू हेर्नुहोस्</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> १ देखि ८ सम्म</translation>
 <translation id="8855885154700222542">फुल स्क्रिन नामक कुञ्जी</translation>
 <translation id="8881584919399569791">सक्रिय विन्डो बायाँपट्टीको डेस्कमा सार्नुहोस्</translation>
 <translation id="88986195241502842">पृष्ठ तल</translation>

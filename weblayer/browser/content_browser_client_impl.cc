@@ -7,11 +7,9 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
@@ -79,6 +77,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -115,7 +114,7 @@
 #include "weblayer/public/fullscreen_delegate.h"
 #include "weblayer/public/main.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/bundle_utils.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -137,7 +136,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/base/resource/resource_bundle_android.h"
-#include "weblayer/browser/android/metrics/weblayer_metrics_navigation_throttle.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/android_descriptors.h"
 #include "weblayer/browser/bluetooth/weblayer_bluetooth_delegate_impl_client.h"
@@ -154,11 +152,12 @@
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_descriptors.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
@@ -187,7 +186,7 @@ namespace {
 bool IsSafebrowsingSupported() {
   // TODO(timvolodine): consider the non-android case, see crbug.com/1015809.
   // TODO(timvolodine): consider refactoring this out into safe_browsing/.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
@@ -243,7 +242,7 @@ void HandleSSLErrorWrapper(
       std::make_unique<WebLayerSecurityBlockingPageFactory>());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CreateOriginId(cdm::MediaDrmStorageImpl::OriginIdObtainedCB callback) {
   std::move(callback).Run(true, base::UnguessableToken::Create());
 }
@@ -270,12 +269,12 @@ void CreateMediaDrmStorage(
       render_frame_host, base::BindRepeating(&CreateOriginId),
       base::BindRepeating(&AllowEmptyOriginIdCB), std::move(receiver));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void RegisterPrefs(PrefRegistrySimple* pref_registry) {
   network_time::NetworkTimeTracker::RegisterPrefs(pref_registry);
   pref_registry->RegisterIntegerPref(kDownloadNextIDPref, 0);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metrics::AndroidMetricsServiceClient::RegisterPrefs(pref_registry);
   safe_browsing::RegisterLocalStatePrefs(pref_registry);
 #else
@@ -406,7 +405,7 @@ bool ContentBrowserClientImpl::CanShutdownGpuProcessNowOnIOThread() {
 
 std::unique_ptr<content::DevToolsManagerDelegate>
 ContentBrowserClientImpl::CreateDevToolsManagerDelegate() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<DevToolsManagerDelegateAndroid>();
 #else
   return std::make_unique<content::DevToolsManagerDelegate>();
@@ -426,6 +425,10 @@ std::string ContentBrowserClientImpl::GetProduct() {
 
 std::string ContentBrowserClientImpl::GetUserAgent() {
   return embedder_support::GetUserAgent();
+}
+
+std::string ContentBrowserClientImpl::GetFullUserAgent() {
+  return embedder_support::GetFullUserAgent();
 }
 
 std::string ContentBrowserClientImpl::GetReducedUserAgent() {
@@ -492,12 +495,6 @@ void ContentBrowserClientImpl::OnNetworkServiceCreated(
   if (!SystemNetworkContextManager::HasInstance())
     SystemNetworkContextManager::CreateInstance(
         embedder_support::GetUserAgent());
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  network::mojom::CryptConfigPtr config = network::mojom::CryptConfig::New();
-  content::GetNetworkService()->SetCryptConfig(std::move(config));
-#endif
   SystemNetworkContextManager::GetInstance()->OnNetworkServiceCreated(
       network_service);
 }
@@ -513,7 +510,7 @@ ContentBrowserClientImpl::CreateURLLoaderThrottles(
 
   if (base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing) &&
       IsSafebrowsingSupported()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     BrowserContextImpl* browser_context_impl =
         static_cast<BrowserContextImpl*>(browser_context);
     bool is_safe_browsing_enabled = safe_browsing::IsSafeBrowsingEnabled(
@@ -578,9 +575,9 @@ bool ContentBrowserClientImpl::IsHandledURL(const GURL& url) {
     content::kChromeUIScheme,
     content::kChromeUIUntrustedScheme,
     url::kDataScheme,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url::kContentScheme,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     url::kAboutScheme,
     url::kBlobScheme,
     url::kFileSystemScheme,
@@ -627,7 +624,7 @@ void ContentBrowserClientImpl::OverridePageVisibilityState(
       NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
     *visibility_state = content::PageVisibilityState::kHiddenButPainting;
   }
 }
@@ -658,7 +655,7 @@ base::OnceClosure ContentBrowserClientImpl::SelectClientCertificate(
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return browser_ui::ShowSSLClientCertificateSelector(
       web_contents, cert_request_info, std::move(delegate));
 #else
@@ -702,11 +699,11 @@ bool ContentBrowserClientImpl::CanCreateWindow(
   // the only ones that should be hit for this code path.
   switch (disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_POPUP:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW:
       break;
     default:
@@ -739,7 +736,7 @@ bool ContentBrowserClientImpl::CanCreateWindow(
 content::ControllerPresentationServiceDelegate*
 ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
     content::WebContents* web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (WebLayerFactoryImplAndroid::GetClientMajorVersion() < 88)
     return nullptr;
 
@@ -795,11 +792,6 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
         throttles.push_back(std::move(auto_reload_throttle));
     }
 
-#if defined(OS_ANDROID)
-    throttles.push_back(
-        std::make_unique<WebLayerMetricsNavigationThrottle>(handle));
-#endif
-
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
     // NavigationThrottles that don't delay or cancel navigations (e.g.
@@ -842,7 +834,7 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
     throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (IsSafebrowsingSupported()) {
     std::unique_ptr<content::NavigationThrottle> safe_browsing_throttle =
         GetSafeBrowsingService()->MaybeCreateSafeBrowsingNavigationThrottleFor(
@@ -874,59 +866,61 @@ ContentBrowserClientImpl::GetGeneratedCodeCacheSettings(
       true, 0, ProfileImpl::GetCachePath(context));
 }
 
-bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == autofill::mojom::AutofillDriver::Name_) {
-    autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == autofill::mojom::PasswordManagerDriver::Name_) {
-    PasswordManagerDriverFactory::BindPasswordManagerDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
-    content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
-        mojo::PendingAssociatedReceiver<
-            content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
-    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-        mojo::PendingAssociatedReceiver<
-            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      security_interstitials::mojom::InterstitialCommands::Name_) {
-    security_interstitials::SecurityInterstitialTabHelper::
-        BindInterstitialCommands(
-            mojo::PendingAssociatedReceiver<
-                security_interstitials::mojom::InterstitialCommands>(
-                std::move(*handle)),
-            render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      subresource_filter::mojom::SubresourceFilterHost::Name_) {
-    subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(
-        mojo::PendingAssociatedReceiver<
-            subresource_filter::mojom::SubresourceFilterHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-
-  return false;
+void ContentBrowserClientImpl::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+             receiver) {
+        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
+             receiver) {
+        PasswordManagerDriverFactory::BindPasswordManagerDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             content_capture::mojom::ContentCaptureReceiver> receiver) {
+        content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             page_load_metrics::mojom::PageLoadMetrics> receiver) {
+        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             security_interstitials::mojom::InterstitialCommands> receiver) {
+        security_interstitials::SecurityInterstitialTabHelper::
+            BindInterstitialCommands(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             subresource_filter::mojom::SubresourceFilterHost> receiver) {
+        subresource_filter::ContentSubresourceFilterThrottleManager::
+            BindReceiver(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
 }
 
 void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
@@ -936,7 +930,7 @@ void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
   performance_manager::PerformanceManagerRegistry::GetInstance()
       ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
           registry, render_process_host);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto create_spellcheck_host =
       [](mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver) {
         mojo::MakeSelfOwnedReceiver(std::make_unique<SpellCheckHostImpl>(),
@@ -949,13 +943,13 @@ void ContentBrowserClientImpl::ExposeInterfacesToRenderer(
       IsSafebrowsingSupported()) {
     GetSafeBrowsingService()->AddInterface(registry, render_process_host);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ContentBrowserClientImpl::BindMediaServiceReceiver(
     content::RenderFrameHost* render_frame_host,
     mojo::GenericPendingReceiver receiver) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {
     CreateMediaDrmStorage(render_frame_host, std::move(r));
     return;
@@ -973,7 +967,7 @@ void ContentBrowserClientImpl::RegisterBrowserInterfaceBindersForFrame(
 
 void ContentBrowserClientImpl::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   host->AddFilter(new cdm::CdmMessageFilterAndroid(
       !host->GetBrowserContext()->IsOffTheRecord(),
       /*force_to_support_secure_codecs*/ false));
@@ -997,7 +991,7 @@ void ContentBrowserClientImpl::CreateFeatureListAndFieldTrials() {
   feature_list_creator_->CreateFeatureListAndFieldTrials();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 SafeBrowsingService* ContentBrowserClientImpl::GetSafeBrowsingService() {
   return BrowserProcess::GetInstance()->GetSafeBrowsingService();
 }
@@ -1005,12 +999,13 @@ SafeBrowsingService* ContentBrowserClientImpl::GetSafeBrowsingService() {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_ANDROID)
 void ContentBrowserClientImpl::GetAdditionalMappedFilesForChildProcess(
     const base::CommandLine& command_line,
     int child_process_id,
     content::PosixFileDescriptorInfo* mappings) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::MemoryMappedFile::Region region;
   int fd = ui::GetMainAndroidPackFd(&region);
   mappings->ShareWithRegion(kWebLayerMainPakDescriptor, fd, region);
@@ -1037,9 +1032,9 @@ void ContentBrowserClientImpl::GetAdditionalMappedFilesForChildProcess(
       crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
   if (crash_signal_fd >= 0)
     mappings->Share(kCrashDumpSignal, crash_signal_fd);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
-#endif  // defined(OS_LINUX)|| defined(OS_ANDROID)
+#endif
 
 void ContentBrowserClientImpl::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
@@ -1080,7 +1075,7 @@ std::unique_ptr<PrefService> ContentBrowserClientImpl::CreateLocalState() {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClientImpl::WillCreateURLLoaderFactory(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* frame,
@@ -1176,7 +1171,7 @@ content::BluetoothDelegate* ContentBrowserClientImpl::GetBluetoothDelegate() {
   return bluetooth_delegate_.get();
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 content::SpeechRecognitionManagerDelegate*
 ContentBrowserClientImpl::CreateSpeechRecognitionManagerDelegate() {
@@ -1196,7 +1191,7 @@ ContentBrowserClientImpl::GetXrIntegrationClient() {
 #endif  // BUILDFLAG(ENABLE_ARCORE)
 
 ukm::UkmService* ContentBrowserClientImpl::GetUkmService() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebLayerMetricsServiceClient::GetInstance()->GetUkmService();
 #else
   return nullptr;
@@ -1231,6 +1226,11 @@ bool ContentBrowserClientImpl::IsClipboardPasteAllowed(
     return false;
   }
 
+  return true;
+}
+
+bool ContentBrowserClientImpl::ShouldPreconnectNavigation(
+    content::BrowserContext* browser_context) {
   return true;
 }
 

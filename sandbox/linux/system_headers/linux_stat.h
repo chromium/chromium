@@ -11,11 +11,7 @@
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 #if defined(ARCH_CPU_MIPS_FAMILY)
-#if defined(ARCH_CPU_64_BITS)
-struct kernel_stat {
-#else
 struct kernel_stat64 {
-#endif
   unsigned st_dev;
   unsigned __pad0[3];
   unsigned long long st_ino;
@@ -108,6 +104,28 @@ struct kernel_stat {
   uint64_t st_ctime_;
   uint64_t st_ctime_nsec_;
   int64_t __unused4[3];
+};
+#elif (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS))
+struct kernel_stat {
+  unsigned st_dev;
+  unsigned __pad0[3];
+  unsigned long st_ino;
+  unsigned st_mode;
+  unsigned st_nlink;
+  unsigned st_uid;
+  unsigned st_gid;
+  unsigned st_rdev;
+  unsigned __pad1[3];
+  long st_size;
+  unsigned st_atime_;
+  unsigned st_atime_nsec_;
+  unsigned st_mtime_;
+  unsigned st_mtime_nsec_;
+  unsigned st_ctime_;
+  unsigned st_ctime_nsec_;
+  unsigned st_blksize;
+  unsigned __pad2;
+  unsigned long st_blocks;
 };
 #elif (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
 struct kernel_stat {

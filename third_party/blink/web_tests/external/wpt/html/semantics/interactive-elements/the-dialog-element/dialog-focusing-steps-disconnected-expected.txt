@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-FAIL dialog.show(): focusing steps should not run on disconnected <dialog> assert_equals: Focusing steps should not run expected Element node <input></input> but got Element node <body>
+FAIL dialog.show(): focusing steps should not change focus on disconnected <dialog> assert_equals: Focusing steps should not change focus expected Element node <input></input> but got Element node <body>
 <input>
 <script>
-test(() => {
-  const outerInput =...
-PASS Test that focusing steps do not run when dialog is disconnected
+test(function() {
+  const outerIn...
+PASS dialog.showModal() should throw on disconnected <dialog>
 Harness: the test ran to completion.
 

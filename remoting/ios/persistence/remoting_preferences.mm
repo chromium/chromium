@@ -21,6 +21,8 @@ RemotingFlag const RemotingFlagUseWebRTC = @"UseWebRTC";
 RemotingFlag const RemotingFlagLastSeenNotificationMessageId =
     @"LastSeenNotificationMessageId";
 RemotingFlag const RemotingFlagNotificationUiState = @"NotificationUiState";
+RemotingFlag const RemotingFlagNotificationShownTimes =
+    @"NotificationShownTimes";
 
 static NSString* KeyWithPrefix(NSString* prefix, NSString* key) {
   return [NSString stringWithFormat:@"%@-%@", prefix, key];

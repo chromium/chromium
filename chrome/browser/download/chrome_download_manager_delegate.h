@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -33,7 +33,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_dialog_bridge.h"
 #endif
 
@@ -72,7 +72,7 @@ class ChromeDownloadManagerDelegate
 
   void SetDownloadManager(content::DownloadManager* dm);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ShowDownloadDialog(gfx::NativeWindow native_window,
                           int64_t total_bytes,
                           DownloadLocationDialogType dialog_type,
@@ -119,7 +119,8 @@ class ChromeDownloadManagerDelegate
                       const base::FilePath::StringType& default_extension,
                       bool can_save_as_complete,
                       content::SavePackagePathPickedCallback callback) override;
-  void SanitizeSavePackageResourceName(base::FilePath* filename) override;
+  void SanitizeSavePackageResourceName(base::FilePath* filename,
+                                       const GURL& source_url) override;
   void SanitizeDownloadParameters(
       download::DownloadUrlParameters* params) override;
   void OpenDownload(download::DownloadItem* download) override;
@@ -221,7 +222,7 @@ class ChromeDownloadManagerDelegate
   void GetFileMimeType(const base::FilePath& path,
                        GetFileMimeTypeCallback callback) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual void OnDownloadCanceled(download::DownloadItem* download,
                                   bool has_no_external_storage);
 #endif
@@ -234,7 +235,7 @@ class ChromeDownloadManagerDelegate
 
   // So that test classes that inherit from this for override purposes
   // can call back into the DownloadManager.
-  content::DownloadManager* download_manager_;
+  raw_ptr<content::DownloadManager> download_manager_;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeDownloadManagerDelegate>;
@@ -289,7 +290,7 @@ class ChromeDownloadManagerDelegate
   // multiple downloads are associated with the same file path.
   bool IsMostRecentDownloadItemAtFilePath(download::DownloadItem* download);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called after a unique file name is generated in the case that there is a
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
@@ -304,9 +305,9 @@ class ChromeDownloadManagerDelegate
       const download::DownloadItem* download) const;
 #endif
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DownloadDialogBridge> download_dialog_bridge_;
 #endif
 

@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_HTTP_SERVER_PROPERTIES_PREF_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/http/http_server_properties.h"
 
@@ -37,7 +37,7 @@ class HttpServerPropertiesPrefDelegate
   void WaitForPrefLoad(base::OnceClosure callback) override;
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

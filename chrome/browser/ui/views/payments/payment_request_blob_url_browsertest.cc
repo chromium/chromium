@@ -16,11 +16,19 @@ class PaymentRequestBlobUrlTest : public PaymentRequestBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, ConnectionTerminated) {
   NavigateTo("/payment_request_blob_url_test.html");
-  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+
+  // Trigger the Blob URL load, and wait for it to finish.
   ASSERT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),
       "(function() { document.getElementById('buy').click(); })();"));
+  WaitForLoadStop(GetActiveWebContents());
+
+  // Trigger the PaymentRequest, which should be rejected.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  ASSERT_TRUE(content::ExecuteScript(
+      GetActiveWebContents(), "triggerPaymentRequest();"));
   WaitForObservedEvent();
+
   ExpectBodyContains({"Rejected: NotSupportedError"});
 }
 

@@ -24,8 +24,10 @@ TEST(RustTest, RustComponentUsesPartitionAlloc) {
   // Verify that PartitionAlloc is consistently used in C++ and Rust.
   auto cpp_allocated_int = std::make_unique<int>();
   SomeStruct* rust_allocated_ptr = allocate_via_rust().into_raw();
-  EXPECT_EQ(base::IsManagedByPartitionAlloc(rust_allocated_ptr),
-            base::IsManagedByPartitionAlloc(cpp_allocated_int.get()));
+  EXPECT_EQ(base::IsManagedByPartitionAlloc(
+                reinterpret_cast<uintptr_t>(rust_allocated_ptr)),
+            base::IsManagedByPartitionAlloc(
+                reinterpret_cast<uintptr_t>(cpp_allocated_int.get())));
   rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
 }
 

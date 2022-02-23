@@ -22,12 +22,12 @@
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/security_state/ios/security_state_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -287,33 +287,8 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
 
-  bool sync_disabled_wallet_transport_enabled =
-      GetPersonalDataManager()->GetSyncSigninState() ==
-      autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
-  bool is_multiple_account_user =
-      identity_manager_->GetAccountsWithRefreshTokens().size() > 1;
-  AccountInfo account_info;
-  // AccountInfo data should be passed down only if the following conditions are
-  // satisfied:
-  // 1) kAutofillEnableSaveCardInfoBarAccountIndicationFooter is on (main flag).
-  // 2) Sync is off or the
-  //   kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers flag is on.
-  // 3) User has multiple accounts or the
-  //   kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers is on.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSaveCardInfoBarAccountIndicationFooter) &&
-      (sync_disabled_wallet_transport_enabled ||
-       base::FeatureList::IsEnabled(
-           features::
-               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
-      (is_multiple_account_user ||
-       base::FeatureList::IsEnabled(
-           features::
-               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers))) {
-    account_info = identity_manager_->FindExtendedAccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kSignin));
-  }
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/true, options, card, legal_message_lines,
@@ -406,15 +381,20 @@ bool ChromeAutofillClientIOS::IsAutocompleteEnabled() {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 
+bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
+  return GetPrefs()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableService);
+}
+
 void ChromeAutofillClientIOS::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
-  password_manager_->ProcessAutofillPredictions(/*driver=*/nullptr, forms);
-  auto* generationHelper =
-      PasswordTabHelper::FromWebState(web_state_)->GetGenerationHelper();
-  if (generationHelper) {
-    generationHelper->ProcessPasswordRequirements(forms);
+  if (!PasswordTabHelper::FromWebState(web_state_)) {
+    return;
   }
+  password_manager_->ProcessAutofillPredictions(
+      PasswordTabHelper::FromWebState(web_state_)->GetPasswordManagerDriver(),
+      forms);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewField(

@@ -14,62 +14,11 @@
 
 namespace history_clusters {
 
-// Differs from history::ClusterVisit in that the duplicate visits are
-// collapsed inline with the metadata subsumed into the canonical visit.
-struct Visit {
-  Visit();
-  ~Visit();
-  Visit(const Visit&);
-
-  history::AnnotatedVisit annotated_visit;
-
-  // A floating point score in the range [0, 1] describing how important this
-  // visit is to the containing cluster.
-  float score = 0.0;
-
-  // A list of visits that have been de-duplicated into this visit.
-  std::vector<Visit> duplicate_visits;
-
-  // The normalized URL for the visit (i.e. an SRP URL normalized based on the
-  // user's default search provider).
-  GURL normalized_url;
-};
-
-// Differs from history::Cluster in that the visits are de-duplicated and
-// metadata collapsed already.
-struct Cluster {
-  Cluster();
-  ~Cluster();
-  Cluster(const Cluster&);
-
-  // An unique but opaque cluster ID.
-  int64_t cluster_id;
-
-  // The constituent already de-duplicated visits of this cluster.
-  std::vector<Visit> visits;
-
-  // The keywords associated with this cluster that should never be explicitly
-  // presented within the UI.
-  // TODO(tommycli): Eliminate this field after removing the usage in
-  //  `PopulateClusterKeywordCache()`.
-  std::vector<std::u16string> keywords;
-};
-
-// The result data returned by `QueryClusters()`.
-struct QueryClustersResult {
-  QueryClustersResult();
-  ~QueryClustersResult();
-  QueryClustersResult(const QueryClustersResult&);
-
-  std::vector<Cluster> clusters;
-
-  // A nullopt `continuation_end_time` means we have exhausted History.
-  // Note that this differs from History itself, which uses base::Time() as the
-  // value to indicate we've exhausted history. I've found that to be not
-  // explicit enough in practice. This value will never be base::Time().
-  absl::optional<base::Time> continuation_end_time;
-};
-using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
+// If `continuation_end_time` is base::Time(), then we've exhausted History.
+// This matches the same semantics as returned directly from History.
+using QueryClustersCallback =
+    base::OnceCallback<void(std::vector<history::Cluster> clusters,
+                            base::Time continuation_end_time)>;
 
 // Tracks which fields have been or are pending recording. This helps 1) avoid
 // re-recording fields and 2) determine whether a visit is compete (i.e. has all

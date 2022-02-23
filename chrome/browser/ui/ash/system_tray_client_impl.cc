@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system_tray.h"
 #include "ash/public/cpp/update_types.h"
 #include "base/command_line.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
@@ -50,7 +52,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/tether_constants.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -69,6 +71,11 @@ using session_manager::SessionState;
 namespace {
 
 SystemTrayClientImpl* g_system_tray_client_instance = nullptr;
+
+// The prefix a calendar event URL *must* have in order to be launched by the
+// calendar web app.
+const char* kOfficialCalendarUrlPrefix =
+    "https://calendar.google.com/calendar/";
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -118,6 +125,52 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
              shill::kActivationStateNotActivated;
+}
+
+apps::AppServiceProxyAsh* GetActiveUserAppServiceProxyAsh() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  apps::AppServiceProxyAsh* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  return proxy;
+}
+
+apps::AppRegistryCache* GetActiveUserAppRegistryCache() {
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy)
+    return nullptr;
+
+  return &proxy->AppRegistryCache();
+}
+
+bool IsAppInstalled(std::string app_id) {
+  apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
+  if (!reg_cache) {
+    LOG(ERROR) << __FUNCTION__
+               << " Failed to get active user AppRegistryCache ";
+    return false;
+  }
+
+  bool found_app_id = false;
+  reg_cache->ForEachApp([&found_app_id, app_id](const apps::AppUpdate& update) {
+    if (update.AppId() == app_id) {
+      found_app_id = true;
+      return;
+    }
+  });
+
+  return found_app_id;
+}
+
+void OpenInBrowser(const GURL& event_url) {
+  ash::NewWindowDelegate* primary_delegate =
+      ash::NewWindowDelegate::GetPrimary();
+  if (!primary_delegate) {
+    LOG(ERROR) << __FUNCTION__ << " failed to get primary window delegate";
+    return;
+  }
+
+  primary_delegate->OpenUrl(event_url,
+                            ash::NewWindowDelegate::OpenUrlFrom::kUnspecified);
 }
 
 }  // namespace
@@ -228,6 +281,10 @@ SystemTrayClientImpl::~SystemTrayClientImpl() {
   DCHECK_EQ(this, g_system_tray_client_instance);
   g_system_tray_client_instance = nullptr;
 
+  // This can happen when mocking this class in tests.
+  if (!system_tray_)
+    return;
+
   system_tray_->SetClient(nullptr);
 
   policy::BrowserPolicyConnectorAsh* connector =
@@ -327,6 +384,16 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
       chromeos::settings::mojom::kDisplaySubpagePath);
 }
 
+void SystemTrayClientImpl::ShowDarkModeSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDarkModeSubpagePath);
+}
+
+void SystemTrayClientImpl::ShowStorageSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kStorageSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowPowerSettings() {
   base::RecordAction(base::UserMetricsAction("Tray_ShowPowerOptions"));
   ShowSettingsSubPageForActiveUser(
@@ -376,11 +443,6 @@ void SystemTrayClientImpl::ShowAboutChromeOS() {
       "?checkForUpdate=true");
 }
 
-void SystemTrayClientImpl::ShowHelp() {
-  chrome::ShowHelpForProfile(ProfileManager::GetActiveUserProfile(),
-                             chrome::HELP_SOURCE_MENU);
-}
-
 void SystemTrayClientImpl::ShowAccessibilityHelp() {
   chrome::ScopedTabbedBrowserDisplayer displayer(
       ProfileManager::GetActiveUserProfile());
@@ -416,12 +478,6 @@ void SystemTrayClientImpl::ShowPaletteSettings() {
   base::RecordAction(base::UserMetricsAction("ShowPaletteOptions"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kStylusSubpagePath);
-}
-
-void SystemTrayClientImpl::ShowPublicAccountInfo() {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  chrome::ShowPolicy(displayer.browser());
 }
 
 void SystemTrayClientImpl::ShowEnterpriseInfo() {
@@ -560,6 +616,10 @@ void SystemTrayClientImpl::ShowMultiDeviceSetup() {
   chromeos::multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
+void SystemTrayClientImpl::ShowFirmwareUpdate() {
+  chrome::ShowFirmwareUpdatesApp(ProfileManager::GetActiveUserProfile());
+}
+
 void SystemTrayClientImpl::RequestRestartForUpdate() {
   browser_shutdown::NotifyAndTerminate(/*fast_path=*/true);
 }
@@ -569,6 +629,63 @@ void SystemTrayClientImpl::SetLocaleAndExit(
   ProfileManager::GetActiveUserProfile()->ChangeAppLocale(
       locale_iso_code, Profile::APP_LOCALE_CHANGED_VIA_SYSTEM_TRAY);
   chrome::AttemptUserExit();
+}
+
+void SystemTrayClientImpl::ShowAccessCodeCastingDialog() {
+  AccessCodeCastDialog::ShowForDesktopMirroring();
+}
+
+void SystemTrayClientImpl::ShowCalendarEvent(
+    const absl::optional<GURL>& event_url,
+    bool& opened_pwa,
+    GURL& final_event_url) {
+  // Default is that we didn't open the calendar PWA.
+  opened_pwa = false;
+
+  // By default, open the calendar to no particular event, i.e. today's date.
+  GURL official_url(kOfficialCalendarUrlPrefix);
+
+  // Needed in order for us to pass the "in app scope" guards in
+  // WebAppLaunchProcess::Run().  See http://b/214428922
+  if (event_url.has_value()) {
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr("https");
+    replacements.SetHostStr("calendar.google.com");
+    official_url = event_url->ReplaceComponents(replacements);
+  }
+
+  // Return the URL we actually opened.
+  final_event_url = official_url;
+
+  // Check calendar web app installation.
+  if (!IsAppInstalled(web_app::kGoogleCalendarAppId)) {
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Need this in order to launch the web app.
+  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
+  if (!proxy) {
+    LOG(ERROR) << __FUNCTION__
+               << " failed to get active user AppServiceProxyAsh";
+    OpenInBrowser(official_url);
+    return;
+  }
+
+  // Launch web app.
+  proxy->LaunchAppWithUrl(
+      web_app::kGoogleCalendarAppId,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                          WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true),
+      official_url, apps::mojom::LaunchSource::kFromShelf);
+  opened_pwa = true;
+}
+
+SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)
+    : system_tray_(nullptr) {
+  DCHECK(!g_system_tray_client_instance);
+  g_system_tray_client_instance = mock_instance;
 }
 
 void SystemTrayClientImpl::HandleUpdateAvailable(ash::UpdateType update_type) {

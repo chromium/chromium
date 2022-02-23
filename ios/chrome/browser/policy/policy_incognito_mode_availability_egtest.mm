@@ -56,11 +56,17 @@ id<GREYMatcher> TabGridButton() {
 void AssertItemEnabledState(id<GREYMatcher> item,
                             id<GREYMatcher> parentMatcher,
                             bool enabled) {
+  id<GREYMatcher> enabledMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          // TODO(crbug.com/1285974): grey_userInteractionEnabled doesn't work
+          // for SwiftUI views.
+          ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
+          : grey_userInteractionEnabled();
   [[[EarlGrey selectElementWithMatcher:item]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   /*amount=*/200)
       onElementWithMatcher:parentMatcher]
-      assertWithMatcher:enabled ? grey_userInteractionEnabled()
+      assertWithMatcher:enabled ? enabledMatcher
                                 : grey_accessibilityTrait(
                                       UIAccessibilityTraitNotEnabled)];
 }

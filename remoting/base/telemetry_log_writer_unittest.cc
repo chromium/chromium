@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

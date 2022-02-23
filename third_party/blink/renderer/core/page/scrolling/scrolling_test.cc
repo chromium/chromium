@@ -22,6 +22,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/guid.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -55,17 +56,14 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -73,6 +71,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -167,23 +166,23 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     if (!scrollable_area)
       return nullptr;
     auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
-    return property_trees->scroll_tree.Node(
-        property_trees->element_id_to_scroll_node_index.at(
-            scrollable_area->GetScrollElementId()));
+    return property_trees->scroll_tree_mutable().FindNodeFromElementId(
+        scrollable_area->GetScrollElementId());
   }
 
   cc::ScrollNode* ScrollNodeByDOMElementId(const char* dom_id) {
     return ScrollNodeForScrollableArea(ScrollableAreaByDOMElementId(dom_id));
   }
 
-  gfx::Vector2dF CurrentScrollOffset(cc::ElementId element_id) const {
+  gfx::PointF CurrentScrollOffset(cc::ElementId element_id) const {
     return RootCcLayer()
         ->layer_tree_host()
         ->property_trees()
-        ->scroll_tree.current_scroll_offset(element_id);
+        ->scroll_tree()
+        .current_scroll_offset(element_id);
   }
 
-  gfx::Vector2dF CurrentScrollOffset(const cc::ScrollNode* scroll_node) const {
+  gfx::PointF CurrentScrollOffset(const cc::ScrollNode* scroll_node) const {
     return CurrentScrollOffset(scroll_node->element_id);
   }
 
@@ -820,16 +819,10 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
           TouchAction::kPanY);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
 
-  const auto* container_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? MainFrameScrollingContentsLayer()
-          : LayerByDOMElementId("scrollable");
+  const auto* container_layer = MainFrameScrollingContentsLayer();
   region = container_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanY);
-  EXPECT_EQ(region.bounds(),
-            RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-                ? gfx::Rect(8, 8, 100, 100)
-                : gfx::Rect(0, 0, 100, 100));
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
 }
 
 TEST_P(ScrollingTest, IframeWindowTouchHandler) {
@@ -1381,28 +1374,69 @@ TEST_P(ScrollingTest, NonFastScrollableRegionWithBorder) {
             gfx::Rect(0, 0, 120, 120));
 }
 
-TEST_P(ScrollingTest, ProduceCropIdRegionCaptureData) {
-  ScopedRegionCaptureForTest(true);
-  SetupHttpsTestURL("produce-crop-id.html");
+TEST_P(ScrollingTest, ElementRegionCaptureData) {
+  LoadHTML(R"HTML(
+              <head>
+                <style type="text/css">
+                  body {
+                    height: 2000px;
+                  }
+                  #scrollable {
+                    margin-top: 50px;
+                    margin-left: 50px;
+                    width: 200px;
+                    height: 200px;
+                    overflow: scroll;
+                  }
+                  #content {
+                    width: 1000px;
+                    height: 1000px;
+                  }
+                </style>
+              </head>
 
-  const cc::Layer* container_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? MainFrameScrollingContentsLayer()
-          : LayerByDOMElementId("scrollable");
-  const auto* contents_layer =
+              <body>
+                <div id="scrollable">
+                  <div id="content"></div>
+                </div>
+              </body>
+            )HTML");
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById("scrollable");
+  Element* content_element =
+      GetFrame()->GetDocument()->getElementById("content");
+
+  const RegionCaptureCropId scrollable_id(
+      GUIDToToken(base::GUID::GenerateRandomV4()));
+  const RegionCaptureCropId content_id(
+      GUIDToToken(base::GUID::GenerateRandomV4()));
+
+  scrollable_element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(scrollable_id));
+  content_element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(content_id));
+  ForceFullCompositingUpdate();
+
+  const cc::Layer* container_layer = MainFrameScrollingContentsLayer();
+  const cc::Layer* contents_layer =
       ScrollingContentsLayerByDOMElementId("scrollable");
+  ASSERT_TRUE(container_layer);
+  ASSERT_TRUE(contents_layer);
 
-  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& container_bounds =
+  const base::flat_map<viz::RegionCaptureCropId, gfx::Rect>& container_bounds =
       container_layer->capture_bounds().bounds();
-  const base::flat_map<cc::RegionCaptureCropId, gfx::Rect>& contents_bounds =
+  const base::flat_map<viz::RegionCaptureCropId, gfx::Rect>& contents_bounds =
       contents_layer->capture_bounds().bounds();
 
   EXPECT_EQ(1u, container_bounds.size());
   EXPECT_FALSE(container_bounds.begin()->first.is_zero());
+  EXPECT_EQ(scrollable_id.value(), container_bounds.begin()->first);
   EXPECT_EQ((gfx::Size{200, 200}), container_bounds.begin()->second.size());
 
   EXPECT_EQ(1u, contents_bounds.size());
   EXPECT_FALSE(contents_bounds.begin()->first.is_zero());
+  EXPECT_EQ(content_id.value(), contents_bounds.begin()->first);
   EXPECT_EQ((gfx::Rect{0, 0, 1000, 1000}), contents_bounds.begin()->second);
 }
 
@@ -1507,7 +1541,7 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldNotCrash) {
   // an empty document by javascript.
 }
 
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollingTest, DISABLED_setupScrollbarLayerShouldSetScrollLayerOpaque)
 #else
 TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
@@ -1527,12 +1561,10 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
       scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
   ASSERT_TRUE(horizontal_scrollbar_layer);
   // TODO(crbug.com/1029620): CAP needs more accurate contents_opaque.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!frame_view->LayoutViewport()
-                   ->HorizontalScrollbar()
-                   ->IsOverlayScrollbar(),
-              horizontal_scrollbar_layer->contents_opaque());
-  }
+  //   EXPECT_EQ(!frame_view->LayoutViewport()
+  //                  ->HorizontalScrollbar()
+  //                  ->IsOverlayScrollbar(),
+  //             horizontal_scrollbar_layer->contents_opaque());
 
   EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node,
                                            cc::ScrollbarOrientation::VERTICAL));
@@ -1783,7 +1815,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   ForceFullCompositingUpdate();
 
   auto* scrollable_area = ScrollableAreaByDOMElementId("container");
-  ASSERT_EQ(0, scrollable_area->GetScrollOffset().height());
+  ASSERT_EQ(0, scrollable_area->GetScrollOffset().y());
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
 
   // Simulate 100px of scroll coming from the compositor thread during a commit.
@@ -1793,9 +1825,10 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
       {scrollable_area->GetScrollElementId(), compositor_delta, absl::nullopt});
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
   // The compositor offset is reflected in blink and cc scroll tree.
-  EXPECT_EQ(compositor_delta,
-            ToGfxVector2dF(scrollable_area->ScrollPosition()));
-  EXPECT_EQ(compositor_delta, CurrentScrollOffset(scroll_node));
+  gfx::PointF expected_scroll_position =
+      gfx::PointAtOffsetFromOrigin(compositor_delta);
+  EXPECT_EQ(expected_scroll_position, scrollable_area->ScrollPosition());
+  EXPECT_EQ(expected_scroll_position, CurrentScrollOffset(scroll_node));
 
   // Before updating the lifecycle, set the scroll offset back to what it was
   // before the commit from the main thread.
@@ -1806,7 +1839,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
   // the main thread is concerned, it was unchanged since the last time we
   // pushed the scroll offset.
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_node));
+  EXPECT_EQ(gfx::PointF(), CurrentScrollOffset(scroll_node));
 }
 
 TEST_P(ScrollingTest, UpdateVisualViewportScrollLayer) {
@@ -1830,12 +1863,11 @@ TEST_P(ScrollingTest, UpdateVisualViewportScrollLayer) {
 
   page->GetVisualViewport().SetScale(2);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(0, 0),
-            CurrentScrollOffset(inner_viewport_scroll_node));
+  EXPECT_EQ(gfx::PointF(0, 0), CurrentScrollOffset(inner_viewport_scroll_node));
 
-  page->GetVisualViewport().SetLocation(FloatPoint(10, 20));
+  page->GetVisualViewport().SetLocation(gfx::PointF(10, 20));
   ForceFullCompositingUpdate();
-  EXPECT_EQ(gfx::Vector2dF(10, 20),
+  EXPECT_EQ(gfx::PointF(10, 20),
             CurrentScrollOffset(inner_viewport_scroll_node));
 }
 
@@ -1864,7 +1896,7 @@ TEST_P(ScrollingTest, NonCompositedNonFastScrollableRegion) {
       )HTML");
   ForceFullCompositingUpdate();
 
-  // The non-scrolling graphics layer should have a non-scrolling region for the
+  // The non-scrolling layer should have a non-scrolling region for the
   // non-composited scroller.
   const auto* cc_layer = LayerByDOMElementId("composited_container");
   auto region = cc_layer->non_fast_scrollable_region();
@@ -1895,9 +1927,9 @@ TEST_P(ScrollingTest, NonCompositedResizerNonFastScrollableRegion) {
   ForceFullCompositingUpdate();
 
   auto* container_cc_layer = LayerByDOMElementId("container");
-  // The non-fast scrollable region should be on the container's graphics layer
-  // and not one of the viewport scroll layers because the region should move
-  // when the container moves and not when the viewport scrolls.
+  // The non-fast scrollable region should be on the container's layer and not
+  // one of the viewport scroll layers because the region should move when the
+  // container moves and not when the viewport scrolls.
   auto region = container_cc_layer->non_fast_scrollable_region();
   EXPECT_EQ(region.bounds(), gfx::Rect(86, 121, 14, 14));
 }
@@ -1985,12 +2017,12 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
   auto element_id = scrollable_area->GetScrollElementId();
 
-  EXPECT_EQ(gfx::Vector2dF(), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(), CurrentScrollOffset(element_id));
 
   // Simulate a direct scroll update out of document lifecycle update.
   scroller->scrollTo(0, 200);
-  EXPECT_EQ(FloatPoint(0, 200), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 200), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(0, 200), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(0, 200), CurrentScrollOffset(element_id));
 
   // Simulate the scroll update with scroll delta from impl-side at the
   // beginning of BeginMainFrame.
@@ -1998,8 +2030,8 @@ TEST_P(ScrollingTest, MainThreadScrollAndDeltaFromImplSide) {
   commit_data.scrolls.push_back(cc::CompositorCommitData::ScrollUpdateInfo(
       element_id, gfx::Vector2dF(0, 10), absl::nullopt));
   RootCcLayer()->layer_tree_host()->ApplyCompositorChanges(&commit_data);
-  EXPECT_EQ(FloatPoint(0, 210), scrollable_area->ScrollPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 210), CurrentScrollOffset(element_id));
+  EXPECT_EQ(gfx::PointF(0, 210), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(0, 210), CurrentScrollOffset(element_id));
 }
 
 TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
@@ -2054,9 +2086,8 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
       return nullptr;
     const auto* property_trees =
         RootCcLayer()->layer_tree_host()->property_trees();
-    return property_trees->scroll_tree.Node(
-        property_trees->element_id_to_scroll_node_index.at(
-            scrollable_area->GetScrollElementId()));
+    return property_trees->scroll_tree().FindNodeFromElementId(
+        scrollable_area->GetScrollElementId());
   }
 
   PaintLayerScrollableArea* ScrollableAreaByDOMElementId(const char* id_value) {
@@ -2121,7 +2152,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 
   // Now remove the box-shadow property and ensure the compositor scroll node
   // changes.
@@ -2134,7 +2166,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*scroll_node));
 }
 
 // Tests that the compositor retains the scroll node for a composited scroller
@@ -2179,7 +2212,8 @@ TEST_P(UnifiedScrollingSimTest,
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*scroll_node));
 
   // Now add an inset box-shadow property to make the node noncomposited and
   // ensure the compositor scroll node updates accordingly.
@@ -2194,7 +2228,8 @@ TEST_P(UnifiedScrollingSimTest,
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 }
 
 // Tests that the compositor gets a scroll node for noncomposited scrollers
@@ -2260,7 +2295,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   EXPECT_TRUE(RootCcLayer()
                   ->layer_tree_host()
                   ->property_trees()
-                  ->scroll_tree.IsComposited(*iframe_scroll_node));
+                  ->scroll_tree()
+                  .IsComposited(*iframe_scroll_node));
 
   // Ensure we have a compositor scroll node for the noncomposited subscroller.
   auto* child_scrollable_area = iframe->contentDocument()
@@ -2280,7 +2316,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*child_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*child_scroll_node));
 }
 
 // Similar to the above test, but for deeper nesting iframes to ensure we
@@ -2365,7 +2402,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*child_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*child_scroll_node));
 }
 
 // Tests that the compositor gets a scroll node for opacity 0 noncomposited
@@ -2425,7 +2463,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*invisible_scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*invisible_scroll_node));
 
   // Ensure there's no scrollable area (and therefore no scroll node) for a
   // display none scroller.
@@ -2459,7 +2498,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   EXPECT_FALSE(RootCcLayer()
                    ->layer_tree_host()
                    ->property_trees()
-                   ->scroll_tree.IsComposited(*scroll_node));
+                   ->scroll_tree()
+                   .IsComposited(*scroll_node));
 }
 
 class ScrollingSimTest : public SimTest,

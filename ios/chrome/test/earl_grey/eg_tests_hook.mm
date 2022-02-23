@@ -78,7 +78,7 @@ void SetUpTestsIfPresent() {
         std::move(service));
     ios::FakeChromeIdentityService* identity_service =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-    identity_service->AddIdentity([SigninEarlGreyAppInterface fakeIdentity1]);
+    identity_service->AddIdentity([FakeChromeIdentity fakeIdentity1]);
   }
 }
 

@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -201,19 +201,6 @@ void FileSystemFileHandle::RequestPermissionImpl(
   mojo_ptr_->RequestPermission(writable, std::move(callback));
 }
 
-void FileSystemFileHandle::RenameImpl(
-    const String& new_entry_name,
-    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
-  if (!mojo_ptr_.is_bound()) {
-    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
-        mojom::blink::FileSystemAccessStatus::kInvalidState,
-        base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"));
-    return;
-  }
-
-  mojo_ptr_->Rename(new_entry_name, std::move(callback));
-}
-
 void FileSystemFileHandle::MoveImpl(
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
     const String& new_entry_name,
@@ -225,7 +212,11 @@ void FileSystemFileHandle::MoveImpl(
     return;
   }
 
-  mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  if (dest.is_valid()) {
+    mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  } else {
+    mojo_ptr_->Rename(new_entry_name, std::move(callback));
+  }
 }
 
 void FileSystemFileHandle::RemoveImpl(

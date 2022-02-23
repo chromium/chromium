@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <functional>
 
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/browser_list_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/browser_list_proxy.h"
 #endif
 
@@ -22,7 +24,7 @@ BrowserList* BrowserList::GetInstance() {
   return browser_list.get();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool BrowserList::HasAtLeastOneResumedBrowser() {
   return std::any_of(browsers_.begin(), browsers_.end(),
                      std::mem_fn(&BrowserImpl::fragment_resumed));
@@ -38,21 +40,21 @@ void BrowserList::RemoveObserver(BrowserListObserver* observer) {
 }
 
 BrowserList::BrowserList() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   browser_list_proxy_ = std::make_unique<BrowserListProxy>();
   AddObserver(browser_list_proxy_.get());
 #endif
 }
 
 BrowserList::~BrowserList() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   RemoveObserver(browser_list_proxy_.get());
 #endif
 }
 
 void BrowserList::AddBrowser(BrowserImpl* browser) {
   DCHECK(!browsers_.contains(browser));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Browsers should not start out resumed.
   DCHECK(!browser->fragment_resumed());
 #endif
@@ -63,7 +65,7 @@ void BrowserList::AddBrowser(BrowserImpl* browser) {
 
 void BrowserList::RemoveBrowser(BrowserImpl* browser) {
   DCHECK(browsers_.contains(browser));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Browsers should not be resumed when being destroyed.
   DCHECK(!browser->fragment_resumed());
 #endif
@@ -73,7 +75,7 @@ void BrowserList::RemoveBrowser(BrowserImpl* browser) {
     observer.OnBrowserDestroyed(browser);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BrowserList::NotifyHasAtLeastOneResumedBrowserChanged() {
   const bool value = HasAtLeastOneResumedBrowser();
   for (BrowserListObserver& observer : observers_)

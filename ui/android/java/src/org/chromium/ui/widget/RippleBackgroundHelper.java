@@ -11,6 +11,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.util.StateSet;
 import android.view.View;
 
@@ -21,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.ui.R;
 
@@ -40,13 +41,11 @@ public class RippleBackgroundHelper {
     private final View mView;
 
     private @Nullable ColorStateList mBackgroundColorList;
+    private @Nullable ColorStateList mStateLayerColorList;
 
     private GradientDrawable mBackgroundGradient;
-
-    // Used for applying tint on pre-L versions.
-    private Drawable mBackgroundDrawablePreL;
-    private Drawable mRippleDrawablePreL;
-    private Drawable mBorderDrawablePreL;
+    private GradientDrawable mStateLayerGradient;
+    private LayerDrawable mBackgroundLayerDrawable;
 
     /**
      * @param view The {@link View} on which background will be applied.
@@ -100,6 +99,26 @@ public class RippleBackgroundHelper {
     /**
      * @param view The {@link View} on which background will be applied.
      * @param backgroundColorResId The resource id of the background color.
+     * @param stateLayerColorResId The resource id of the state layer color.
+     * @param rippleColorResId The resource id of the ripple color.
+     * @param cornerRadius The corner radius in pixels of the background drawable.
+     * @param borderColorResId The resource id of the border color.
+     * @param borderSizeDimenId The resource id of the border size.
+     * @param verticalInset The vertical inset of the background drawable.
+     */
+    public RippleBackgroundHelper(View view, @ColorRes int backgroundColorResId,
+            @ColorRes int stateLayerColorResId, @ColorRes int rippleColorResId,
+            @Px int cornerRadius, @ColorRes int borderColorResId, @DimenRes int borderSizeDimenId,
+            @Px int verticalInset) {
+        this(view, backgroundColorResId, rippleColorResId, cornerRadius, borderColorResId,
+                borderSizeDimenId, verticalInset);
+        setStateLayerColor(
+                AppCompatResources.getColorStateList(view.getContext(), stateLayerColorResId));
+    }
+
+    /**
+     * @param view The {@link View} on which background will be applied.
+     * @param backgroundColorResId The resource id of the background color.
      * @param rippleColorResId The resource id of the ripple color.
      * @param cornerRadii An array of length >= 8 containing 4 pairs of X and Y radius for each
      *        corner, specified in pixels. The corners are ordered top-left, top-right,
@@ -112,11 +131,6 @@ public class RippleBackgroundHelper {
             @ColorRes int rippleColorResId, float[] cornerRadii, @ColorRes int borderColorResId,
             @DimenRes int borderSizeDimenId, @Px int verticalInset) {
         mView = view;
-
-        int paddingStart = ViewCompat.getPaddingStart(mView);
-        int paddingTop = mView.getPaddingTop();
-        int paddingEnd = ViewCompat.getPaddingEnd(mView);
-        int paddingBottom = mView.getPaddingBottom();
         mView.setBackground(createBackgroundDrawable(
                 AppCompatResources.getColorStateList(view.getContext(), rippleColorResId),
                 AppCompatResources.getColorStateList(view.getContext(), borderColorResId),
@@ -141,6 +155,11 @@ public class RippleBackgroundHelper {
         mBackgroundGradient = new GradientDrawable();
         mBackgroundGradient.setCornerRadii(cornerRadii);
         if (borderSize > 0) mBackgroundGradient.setStroke(borderSize, borderColorList);
+        mStateLayerGradient = new GradientDrawable();
+        mStateLayerGradient.setCornerRadii(cornerRadii);
+        mStateLayerGradient.setStroke(borderSize, Color.TRANSPARENT);
+        mBackgroundLayerDrawable =
+                new LayerDrawable(new Drawable[] {mBackgroundGradient, mStateLayerGradient});
         GradientDrawable mask = new GradientDrawable();
         mask.setCornerRadii(cornerRadii);
         mask.setColor(Color.WHITE);
@@ -149,7 +168,7 @@ public class RippleBackgroundHelper {
         // otherwise it creates corner artifacts on Android S.
         // Refer to crbug.com/1233720 for details.
         return new RippleDrawable(convertToRippleDrawableColorList(rippleColorList),
-                wrapDrawableWithInsets(mBackgroundGradient, verticalInset), mask);
+                wrapDrawableWithInsets(mBackgroundLayerDrawable, verticalInset), mask);
     }
 
     /**
@@ -188,13 +207,34 @@ public class RippleBackgroundHelper {
         if (color == mBackgroundColorList) return;
 
         mBackgroundColorList = color;
+        // This works around an issue before Android O where the drawable is drawn in the wrong
+        // default state.
+        if (VERSION.SDK_INT < VERSION_CODES.O) {
+            mBackgroundLayerDrawable.setDrawable(/* index */ 0, mBackgroundGradient);
+        }
         mBackgroundGradient.setColor(color);
+    }
+
+    /**
+     * Set the color state list that will be used to overlay the background based on the state.
+     * @param color The {@link ColorStateList}.
+     */
+    void setStateLayerColor(ColorStateList color) {
+        if (color == mStateLayerColorList) return;
+
+        mStateLayerColorList = color;
+        // This works around an issue before Android O where the drawable is drawn in the wrong
+        // default state.
+        if (VERSION.SDK_INT < VERSION_CODES.O) {
+            mBackgroundLayerDrawable.setDrawable(/* index */ 1, mStateLayerGradient);
+        }
+        mStateLayerGradient.setColor(color);
     }
 
     /**
      * @param color a single color to be set as the background color on the background drawable.
      */
-    void setBackgroundColor(@ColorInt int color) {
+    public void setBackgroundColor(@ColorInt int color) {
         mBackgroundGradient.setColor(color);
     }
 
@@ -203,7 +243,7 @@ public class RippleBackgroundHelper {
      * @param width of the border in pixels.
      * @param color of the border.
      */
-    void setBorder(int width, @ColorInt int color) {
+    public void setBorder(int width, @ColorInt int color) {
         mBackgroundGradient.setStroke(width, color);
     }
 

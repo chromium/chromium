@@ -4,18 +4,20 @@
 
 #include "chrome/browser/signin/reauth_tab_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace signin {
 
-class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness,
-                            public testing::WithParamInterface<bool> {
+class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   ReauthTabHelperTest()
       : reauth_url_("https://my-identity_provider.com/reauth") {}
@@ -24,7 +26,7 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness,
     ChromeRenderViewHostTestHarness::SetUp();
 
     ReauthTabHelper::CreateForWebContents(web_contents(), reauth_url(),
-                                          GetParam(), mock_callback_.Get());
+                                          mock_callback_.Get());
     tab_helper_ = ReauthTabHelper::FromWebContents(web_contents());
   }
 
@@ -37,22 +39,20 @@ class ReauthTabHelperTest : public ChromeRenderViewHostTestHarness,
   const GURL& reauth_url() { return reauth_url_; }
 
  private:
-  ReauthTabHelper* tab_helper_ = nullptr;
+  raw_ptr<ReauthTabHelper> tab_helper_ = nullptr;
   base::MockOnceCallback<void(signin::ReauthResult)> mock_callback_;
   const GURL reauth_url_;
 };
 
-INSTANTIATE_TEST_SUITE_P(, ReauthTabHelperTest, testing::Bool());
-
 // Tests a direct call to CompleteReauth().
-TEST_P(ReauthTabHelperTest, CompleteReauth) {
+TEST_F(ReauthTabHelperTest, CompleteReauth) {
   signin::ReauthResult result = signin::ReauthResult::kSuccess;
   EXPECT_CALL(*mock_callback(), Run(result));
   tab_helper()->CompleteReauth(result);
 }
 
 // Tests a successful navigation to the reauth URL.
-TEST_P(ReauthTabHelperTest, NavigateToReauthURL) {
+TEST_F(ReauthTabHelperTest, NavigateToReauthURL) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
@@ -61,7 +61,7 @@ TEST_P(ReauthTabHelperTest, NavigateToReauthURL) {
 }
 
 // Tests the reauth flow when the reauth URL has query parameters.
-TEST_P(ReauthTabHelperTest, NavigateToReauthURLWithQuery) {
+TEST_F(ReauthTabHelperTest, NavigateToReauthURLWithQuery) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url().Resolve("?rapt=35be36ae"), web_contents());
   simulator->Start();
@@ -70,7 +70,7 @@ TEST_P(ReauthTabHelperTest, NavigateToReauthURLWithQuery) {
 }
 
 // Tests the reauth flow with multiple navigations within the same origin.
-TEST_P(ReauthTabHelperTest, MultipleNavigationReauth) {
+TEST_F(ReauthTabHelperTest, MultipleNavigationReauth) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
@@ -88,7 +88,7 @@ TEST_P(ReauthTabHelperTest, MultipleNavigationReauth) {
 // Tests the reauth flow with multiple navigations across two different origins.
 // TODO(https://crbug.com/1045515): update this test once navigations outside of
 // reauth_url() are blocked.
-TEST_P(ReauthTabHelperTest, MultipleNavigationReauthThroughExternalOrigin) {
+TEST_F(ReauthTabHelperTest, MultipleNavigationReauthThroughExternalOrigin) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
@@ -104,7 +104,7 @@ TEST_P(ReauthTabHelperTest, MultipleNavigationReauthThroughExternalOrigin) {
 
 // Tests a failed navigation to the reauth URL, followed by a successful
 // navigation.
-TEST_P(ReauthTabHelperTest, NavigationToReauthURLFailed) {
+TEST_F(ReauthTabHelperTest, NavigationToReauthURLFailed) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
@@ -124,7 +124,7 @@ TEST_P(ReauthTabHelperTest, NavigationToReauthURLFailed) {
 
 // Tests a failed navigation redirecting to an external origin, followed by a
 // successful navigation.
-TEST_P(ReauthTabHelperTest, NavigationToExternalOriginFailed) {
+TEST_F(ReauthTabHelperTest, NavigationToExternalOriginFailed) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
       reauth_url(), web_contents());
   simulator->Start();
@@ -145,38 +145,40 @@ TEST_P(ReauthTabHelperTest, NavigationToExternalOriginFailed) {
 }
 
 // Tests the WebContents deletion.
-TEST_P(ReauthTabHelperTest, WebContentsDestroyed) {
+TEST_F(ReauthTabHelperTest, WebContentsDestroyed) {
   EXPECT_CALL(*mock_callback(), Run(signin::ReauthResult::kDismissedByUser));
   DeleteContents();
 }
 
-// Tests ShouldAllowNavigation() for a navigation within the reauth origin.
-TEST_P(ReauthTabHelperTest, ShouldAllowNavigationSameOrigin) {
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      reauth_url().DeprecatedGetOriginAsURL().Resolve("/login"),
-      web_contents());
-  simulator->Start();
-  EXPECT_TRUE(
-      tab_helper()->ShouldAllowNavigation(simulator->GetNavigationHandle()));
-  simulator->Commit();
-  EXPECT_TRUE(tab_helper()->is_within_reauth_origin());
-}
+class ReauthTabHelperPrerenderTest : public ReauthTabHelperTest {
+ public:
+  ReauthTabHelperPrerenderTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
 
-// Tests ShouldAllowNavigation() for a navigation outside of the reauth origin:
-TEST_P(ReauthTabHelperTest, ShouldAllowNavigationExternalOrigin) {
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("https://other-identity-provider.com/login"), web_contents());
-  simulator->Start();
-  bool should_allow_navigation =
-      tab_helper()->ShouldAllowNavigation(simulator->GetNavigationHandle());
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
-  bool restrict_to_reauth_origin = GetParam();
-  if (restrict_to_reauth_origin)
-    EXPECT_FALSE(should_allow_navigation);
-  else
-    EXPECT_TRUE(should_allow_navigation);
-  simulator->Commit();
-  EXPECT_FALSE(tab_helper()->is_within_reauth_origin());
+TEST_F(ReauthTabHelperPrerenderTest,
+       PrerenderDoesNotAffectLastCommittedErrorPage) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             reauth_url());
+  EXPECT_FALSE(tab_helper()->has_last_committed_error_page());
+
+  // Fail prerendering navigation.
+  const GURL prerender_url = reauth_url().Resolve("?prerendering");
+  auto simulator = content::WebContentsTester::For(web_contents())
+                       ->AddPrerenderAndStartNavigation(prerender_url);
+  simulator->Fail(net::ERR_TIMED_OUT);
+  simulator->CommitErrorPage();
+
+  // has_last_committed_error_page_ is not updated by preredering.
+  EXPECT_FALSE(tab_helper()->has_last_committed_error_page());
 }
 
 }  // namespace signin

@@ -21,10 +21,10 @@
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace floss {
 
@@ -104,7 +104,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
@@ -117,7 +117,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
   // BluetoothAdapter:
@@ -145,6 +145,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void OnStopDiscovery(DiscoverySessionResultCallback callback,
                        const absl::optional<Void>& ret,
                        const absl::optional<Error>& error);
+  void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
+                          const absl::optional<Error>& error);
+  void OnGetConnectionState(const FlossDeviceId& device_id,
+                            const absl::optional<uint32_t>& ret,
+                            const absl::optional<Error>& error);
+  void OnGetBondState(const FlossDeviceId& device_id,
+                      const absl::optional<uint32_t>& ret,
+                      const absl::optional<Error>& error);
 
   // Announce to observers a change in the adapter state.
   void DiscoverableChanged(bool discoverable);
@@ -162,6 +170,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   // Remove any active adapters.
   void RemoveAdapter();
+
+  void PopulateInitialDevices();
 
   // floss::FlossAdapterClient::Observer override.
   void AdapterDiscoveringChanged(bool state) override;

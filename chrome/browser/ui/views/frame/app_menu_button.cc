@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"

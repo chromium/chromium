@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/elapsed_timer.h"
 #import "ios/web/public/navigation/navigation_context.h"

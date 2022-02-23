@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "build/build_config.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -38,7 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #endif
 
@@ -49,6 +50,7 @@ struct SameSizeAsFontDescription {
   FontFamily family_list;
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
+  scoped_refptr<FontPalette> palette_;
   AtomicString locale;
   float sizes[6];
   FontSelectionRequest selection_request_;
@@ -132,7 +134,8 @@ bool FontDescription::operator==(const FontDescription& other) const {
            *feature_settings_ == *other.feature_settings_)) &&
          (variation_settings_ == other.variation_settings_ ||
           (variation_settings_ && other.variation_settings_ &&
-           *variation_settings_ == *other.variation_settings_));
+           *variation_settings_ == *other.variation_settings_)) &&
+         base::ValuesEquivalent(font_palette_, other.font_palette_);
 }
 
 // Compute a 'lighter' weight per
@@ -259,7 +262,7 @@ FontCacheKey FontDescription::CacheKey(
       static_cast<unsigned>(fields_.orientation_) << 1 |          // bit 2-3
       static_cast<unsigned>(fields_.subpixel_text_position_);     // bit 1
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   float device_scale_factor_for_key = FontCache::DeviceScaleFactor();
 #else
   float device_scale_factor_for_key = 1.0f;
@@ -267,13 +270,13 @@ FontCacheKey FontDescription::CacheKey(
   FontCacheKey cache_key(creation_params, EffectiveFontSize(),
                          options | font_selection_request_.GetHash() << 9,
                          device_scale_factor_for_key, variation_settings_,
-                         is_unique_match);
-#if defined(OS_ANDROID)
+                         font_palette_, is_unique_match);
+#if BUILDFLAG(IS_ANDROID)
   if (const LayoutLocale* locale = Locale()) {
     if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))
       cache_key.SetLocale(locale->LocaleForSkFontMgr());
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return cache_key;
 }
 
@@ -514,6 +517,8 @@ String FontDescription::ToString(GenericFamilyType familyType) {
       return "None";
     case GenericFamilyType::kStandardFamily:
       return "Standard";
+    case GenericFamilyType::kWebkitBodyFamily:
+      return "WebkitBody";
     case GenericFamilyType::kSerifFamily:
       return "Serif";
     case GenericFamilyType::kSansSerifFamily:

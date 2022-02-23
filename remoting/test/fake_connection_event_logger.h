@@ -8,7 +8,6 @@
 #include <memory>
 #include <ostream>
 
-#include "base/macros.h"
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/fake_connection_to_client.h"

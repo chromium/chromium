@@ -76,6 +76,15 @@ using device::BluetoothSocket;
   return self;
 }
 
+- (void)dealloc {
+  if (_error_callback) {
+    // The delegate's sdpQueryComplete was not called. This may happen if no
+    // target is specified.
+    std::move(_error_callback).Run("No target");
+  }
+  [super dealloc];
+}
+
 - (void)sdpQueryComplete:(IOBluetoothDevice*)device status:(IOReturn)status {
   DCHECK_EQ(device, _device);
   _socket->OnSDPQueryComplete(status, device, std::move(_success_callback),

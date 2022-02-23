@@ -21,7 +21,7 @@ struct ResourceRequest;
 namespace blink {
 
 // Helper functions for service worker classes that use URLLoader
-//(e.g., ServiceWorkerMainResourceLoader and ServiceWorkerSubresourceLoader).
+// (e.g., ServiceWorkerMainResourceLoader and ServiceWorkerSubresourceLoader).
 class BLINK_COMMON_EXPORT ServiceWorkerLoaderHelpers {
  public:
   // Populates |out_head| with given |response|.
@@ -43,6 +43,12 @@ class BLINK_COMMON_EXPORT ServiceWorkerLoaderHelpers {
       uint64_t blob_size,
       base::OnceCallback<void(int net_error)> on_blob_read_complete,
       mojo::ScopedDataPipeConsumerHandle* handle_out);
+
+  static bool IsMainRequestDestination(
+      network::mojom::RequestDestination destination);
+
+  static const char* FetchResponseSourceToSuffix(
+      network::mojom::FetchResponseSource source);
 };
 
 }  // namespace blink

@@ -28,13 +28,13 @@ const char kBasicNamedCommand[] = "toggle-feature";
 // Get another command platform, whcih is used for simulating a command has been
 // assigned with a shortcut on another platform.
 std::string GetAnotherCommandPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return extensions::manifest_values::kKeybindingPlatformMac;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return extensions::manifest_values::kKeybindingPlatformChromeOs;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return extensions::manifest_values::kKeybindingPlatformLinux;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return extensions::manifest_values::kKeybindingPlatformWin;
 #else
   return "";
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
 
   DictionaryPrefUpdate updater(browser()->profile()->GetPrefs(),
                                prefs::kExtensionCommands);
-  base::DictionaryValue* bindings = updater.Get();
+  base::Value* bindings = updater.Get();
 
   // Simulate command |toggle-feature| has been assigned with a shortcut on
   // another platform.
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
 
   // Removal of keybinding preference should be platform-specific, so the key on
   // another platform should always remained.
-  EXPECT_TRUE(bindings->HasKey(anotherPlatformKey));
+  EXPECT_TRUE(bindings->FindKey(anotherPlatformKey));
 }
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,

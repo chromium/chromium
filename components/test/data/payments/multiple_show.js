@@ -13,15 +13,24 @@ var request2;
  * Show a Payment Request.
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([
+    {supportedMethods: 'https://bobpay.com'},
+    {
+      supportedMethods: 'basic-card',
+      data: {supportedNetworks: ['visa']},
+    },
+  ]);
+}
+
+/**
+ * Show a Payment Request with given methods.
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function buyWithMethods(methodData) {
   try {
     request = new PaymentRequest(
-        [
-          {supportedMethods: 'https://bobpay.com'},
-          {
-            supportedMethods: 'basic-card',
-            data: {supportedNetworks: ['visa']},
-          },
-        ],
+        methodData,
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
     request.show()
         .then(function(resp) {
@@ -68,15 +77,24 @@ function showAgain() { // eslint-disable-line no-unused-vars
  * Show a second Payment Request.
  */
 function showSecondRequest() { // eslint-disable-line no-unused-vars
+  showSecondRequestWithMethods([
+    {supportedMethods: 'https://bobpay.com'},
+    {
+      supportedMethods: 'basic-card',
+      data: {supportedNetworks: ['visa']},
+    },
+  ]);
+}
+
+/**
+ * Show a second Payment Request with given methods.
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function showSecondRequestWithMethods(methodData) {
   try {
     request2 = new PaymentRequest(
-        [
-          {supportedMethods: 'https://bobpay.com'},
-          {
-            supportedMethods: 'basic-card',
-            data: {supportedNetworks: ['visa']},
-          },
-        ],
+        methodData,
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
     request2.show()
         .then(function(resp) {

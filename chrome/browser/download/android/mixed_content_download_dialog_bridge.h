@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
+#include "chrome/browser/download/android/download_callback_validator.h"
 #include "components/download/public/common/download_item.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -44,6 +45,9 @@ class MixedContentDownloadDialogBridge
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
   std::vector<download::DownloadItem*> download_items_;
+
+  // Validator for all JNI callbacks.
+  DownloadCallbackValidator validator_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

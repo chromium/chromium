@@ -106,8 +106,7 @@ class PLATFORM_EXPORT RasterInvalidator {
 
   void GenerateRasterInvalidations(RasterInvalidationFunction,
                                    const PaintChunkSubset&,
-                                   const PropertyTreeState& layer_state,
-                                   bool layer_offset_changed,
+                                   bool layer_offset_or_state_changed,
                                    Vector<PaintChunkInfo>& new_chunks_info);
 
   ALWAYS_INLINE const PaintChunk& GetOldChunk(wtf_size_t index) const;
@@ -154,6 +153,7 @@ class PLATFORM_EXPORT RasterInvalidator {
 
   gfx::Vector2dF layer_offset_;
   gfx::Size layer_bounds_;
+  PropertyTreeState layer_state_ = PropertyTreeState::Root();
   Vector<PaintChunkInfo> old_paint_chunks_info_;
   scoped_refptr<const PaintArtifact> current_paint_artifact_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;

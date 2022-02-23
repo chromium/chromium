@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_types.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
@@ -314,6 +313,11 @@ class TaskEnvironment {
   // thread, and currently running tasks on the thread pool.
   void DescribeCurrentTasks() const;
 
+  // Detach ThreadCheckers (will rebind on next usage), useful for the odd test
+  // suite which doesn't run on the main thread but still has exclusive access
+  // to driving this TaskEnvironment (e.g. WaylandClientTestSuiteServer).
+  void DetachFromThread();
+
   class TestTaskTracker;
   // Callers outside of TaskEnvironment may not use the returned pointer. They
   // should just use base::ThreadPoolInstance::Get().
@@ -335,6 +339,26 @@ class TaskEnvironment {
   // operation). Must be called on the main thread.
   static void AddDestructionObserver(DestructionObserver* observer);
   static void RemoveDestructionObserver(DestructionObserver* observer);
+
+  // Instantiating a ParallelExecutionFence waits for all currently running
+  // ThreadPool tasks before the constructor returns and from then on prevents
+  // additional tasks from running during its lifetime.
+  //
+  // Must be instantiated from the test main thread.
+  class ParallelExecutionFence {
+   public:
+    // Instantiates a ParallelExecutionFence, crashes with an optional
+    // |error_message| if not invoked from test main thread.
+    explicit ParallelExecutionFence(const char* error_message = "");
+    ~ParallelExecutionFence();
+
+    ParallelExecutionFence(const ParallelExecutionFence&) = delete;
+    ParallelExecutionFence& operator=(const ParallelExecutionFence& other) =
+        delete;
+
+   private:
+    bool previously_allowed_to_run_ = false;
+  };
 
   // The number of foreground workers in the ThreadPool managed by a
   // TaskEnvironment instance. This can be used to determine the maximum
@@ -364,8 +388,10 @@ class TaskEnvironment {
   void DeferredInitFromSubclass(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // Derived classes may need to control when the sequence manager goes away.
-  void NotifyDestructionObserversAndReleaseSequenceManager();
+  // Derived classes may need to control when the task environment goes away
+  // (e.g. ~FooTaskEnvironment() may want to effectively trigger
+  // ~TaskEnvironment() before its members are destroyed).
+  void DestroyTaskEnvironment();
 
  private:
   class MockTimeDomain;
@@ -407,7 +433,7 @@ class TaskEnvironment {
   // Only set for instances using TimeSource::MOCK_TIME.
   std::unique_ptr<Clock> mock_clock_;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Enables the FileDescriptorWatcher API iff running a MainThreadType::IO.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher_;
 #endif

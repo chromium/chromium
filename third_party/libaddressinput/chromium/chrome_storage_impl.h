@@ -5,12 +5,10 @@
 #ifndef THIRD_PARTY_LIBADDRESSINPUT_CHROMIUM_CHROME_STORAGE_IMPL_H_
 #define THIRD_PARTY_LIBADDRESSINPUT_CHROMIUM_CHROME_STORAGE_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_store.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"

@@ -86,11 +86,6 @@ luci.console_view(
             short_name = "7",
         ),
         luci.console_view_entry(
-            builder = "webrtc.fyi/WebRTC Chromium FYI Win8 Tester",
-            category = "win|release|tester",
-            short_name = "8",
-        ),
-        luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI ios-device",
             category = "ios",
             short_name = "dev",

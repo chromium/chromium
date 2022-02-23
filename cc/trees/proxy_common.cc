@@ -5,7 +5,7 @@
 #include "cc/trees/proxy_common.h"
 
 #include "cc/trees/compositor_commit_data.h"
-#include "cc/trees/layer_tree_host.h"
+#include "cc/trees/mutator_host.h"
 
 namespace cc {
 

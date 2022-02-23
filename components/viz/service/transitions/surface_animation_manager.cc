@@ -292,6 +292,22 @@ std::unique_ptr<gfx::AnimationCurve> CreateTransformCurve(
 
 }  // namespace
 
+class SurfaceAnimationManager::StorageWithSurface {
+ public:
+  StorageWithSurface(SurfaceSavedFrameStorage* storage, Surface* surface)
+      : storage_(storage) {
+    DCHECK(!storage_->has_active_surface());
+    storage_->set_active_surface(surface);
+  }
+
+  ~StorageWithSurface() { storage_->set_active_surface(nullptr); }
+
+  SurfaceSavedFrameStorage* operator->() { return storage_; }
+
+ private:
+  raw_ptr<SurfaceSavedFrameStorage> storage_;
+};
+
 SurfaceAnimationManager::SurfaceAnimationManager(
     SharedBitmapManager* shared_bitmap_manager)
     : animation_slowdown_factor_(
@@ -307,8 +323,9 @@ void SurfaceAnimationManager::SetDirectiveFinishedCallback(
 
 bool SurfaceAnimationManager::ProcessTransitionDirectives(
     const std::vector<CompositorFrameTransitionDirective>& directives,
-    SurfaceSavedFrameStorage* storage) {
+    Surface* active_surface) {
   bool started_animation = false;
+  StorageWithSurface storage(&surface_saved_frame_storage_, active_surface);
   for (auto& directive : directives) {
     // Don't process directives with sequence ids smaller than or equal to the
     // last seen one. It is possible that we call this with the same frame
@@ -331,7 +348,7 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
         handled = ProcessAnimateRendererDirective(directive, storage);
         break;
       case CompositorFrameTransitionDirective::Type::kRelease:
-        handled = ProcessReleaseDirective(directive, storage);
+        handled = ProcessReleaseDirective();
         break;
     }
 
@@ -347,7 +364,14 @@ bool SurfaceAnimationManager::ProcessTransitionDirectives(
 
 bool SurfaceAnimationManager::ProcessSaveDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
+  // We can only have one saved frame. It is the job of the client to ensure the
+  // correct API usage. So if we are receiving a save directive while we already
+  // have a saved frame, release it first. That ensures that any subsequent
+  // animate directives which presumably rely on this save directive will
+  // succeed.
+  ProcessReleaseDirective();
+
   // We need to be in the idle state in order to save.
   if (state_ != State::kIdle)
     return false;
@@ -357,7 +381,7 @@ bool SurfaceAnimationManager::ProcessSaveDirective(
 
 bool SurfaceAnimationManager::ProcessAnimateDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   // We can only begin an animate if we are currently idle.
   if (state_ != State::kIdle)
     return false;
@@ -395,7 +419,7 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
 
 bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
     const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+    StorageWithSurface& storage) {
   // We can only begin an animate if we are currently idle. The renderer sends
   // this in response to a notification of the capture completing successfully.
   if (state_ != State::kIdle)
@@ -416,9 +440,7 @@ bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
   return true;
 }
 
-bool SurfaceAnimationManager::ProcessReleaseDirective(
-    const CompositorFrameTransitionDirective& directive,
-    SurfaceSavedFrameStorage* storage) {
+bool SurfaceAnimationManager::ProcessReleaseDirective() {
   if (state_ != State::kAnimatingRenderer)
     return false;
 
@@ -1187,22 +1209,39 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
         shared_element_quad.resource_id);
 
     if (texture_it != saved_textures_->element_id_to_resource.end()) {
-      resource_list->push_back(saved_textures_->element_id_to_resource.at(
-          shared_element_quad.resource_id));
+      const auto& transferable_resource = texture_it->second;
+      resource_list->push_back(transferable_resource);
 
       // GPU textures are flipped but software bitmaps are not.
-      bool y_flipped = !saved_textures_->root.resource.is_software;
+      bool y_flipped = !transferable_resource.is_software;
       ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
                                       y_flipped, resource_list->back().id);
       return true;
     }
   }
 
+#if DCHECK_IS_ON()
+  LOG(ERROR) << "Content not found for shared element: "
+             << shared_element_quad.resource_id.ToString();
+  LOG(ERROR) << "Known shared element ids:";
+  for (const auto& [shared_resource_id, render_pass] : *element_id_to_pass) {
+    LOG(ERROR) << " " << shared_resource_id.ToString()
+               << " -> RenderPassId: " << render_pass->id.GetUnsafeValue();
+  }
+
+  if (saved_textures_) {
+    LOG(ERROR) << "Known saved textures:";
+    for (const auto& [shared_resource_id, transferable_resource] :
+         saved_textures_->element_id_to_resource) {
+      LOG(ERROR) << " " << shared_resource_id.ToString();
+    }
+  }
+
   // The DCHECK below is for debugging in dev builds. This can happen in
   // production code because of a compromised renderer.
-  LOG(ERROR) << "Content not found for shared element : "
-             << shared_element_quad.resource_id.ToString();
   NOTREACHED();
+#endif
+
   return true;
 }
 
@@ -1258,6 +1297,11 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   }
 
   surface->SetInterpolatedFrame(std::move(resolved_frame));
+}
+
+SurfaceSavedFrameStorage*
+SurfaceAnimationManager::GetSurfaceSavedFrameStorageForTesting() {
+  return &surface_saved_frame_storage_;
 }
 
 base::TimeDelta SurfaceAnimationManager::ApplySlowdownFactor(

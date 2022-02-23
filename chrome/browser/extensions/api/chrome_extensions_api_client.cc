@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
@@ -87,7 +86,7 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 // TODO(https://crbug.com/1060801): Here and elsewhere, possibly switch build
-// flag to #if defined(OS_CHROMEOS)
+// flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #endif
 
@@ -122,9 +121,6 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
   pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
       web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
 #endif
-
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
 }
 
 bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
@@ -339,7 +335,7 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
   const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
-    for (const auto& entry : policy_list->GetList()) {
+    for (const auto& entry : policy_list->GetListDeprecated()) {
       if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
           entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
         return true;

@@ -28,7 +28,7 @@ be describing additional metrics about the same event.
     <summary>
       The status of the &quot;About this site&quot; info, including if the data
       is available and whether the proto is valid. See
-      |page_info::about_this_site_validation::ProtoValidation| for enum
+      |page_info::about_this_site_validation::AboutThisSiteStatus| for enum
       elements.
     </summary>
     <aggregation>
@@ -105,7 +105,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.ImageDescriptions">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks automatic image descriptions provided to blind users.
   </summary>
@@ -149,7 +150,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.Renderer">
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>aleventhal@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
   <summary>
     Tracks the amount of time sending accessibility events from web renderers.
   </summary>
@@ -2055,6 +2057,135 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAssistant.CollectContact">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's contact data.
+  </summary>
+  <metric name="CompleteContactProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's contact profiles which are considered complete
+      for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="ContactModified" enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the contact data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+  <metric name="IncompleteContactProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's contact profiles which are considered incomplete
+      for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialContactFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected contact profile.
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.CollectPayment">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's payment details.
+  </summary>
+  <metric name="CompleteCreditCardsCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's credit cards which are considered complete for
+      the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="CreditCardModified"
+      enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the payment data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+  <metric name="IncompleteCreditCardsCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's credit cards which are considered incomplete for
+      the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialBillingAddressFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      billing address of the preselected credit card.
+    </summary>
+  </metric>
+  <metric name="InitialCreditCardFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected credit card
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.CollectShippingAddress">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    A set of metrics about the collection of the user's shipping address.
+  </summary>
+  <metric name="CompleteShippingProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's shipping address profiles which are considered
+      complete for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="IncompleteShippingProfilesCount"
+      enum="AutofillAssistantUserDataEntryCount">
+    <summary>
+      The number of the user's shipping address profiles which are considered
+      incomplete for the purposes of the current Autofill Assistant flow.
+    </summary>
+  </metric>
+  <metric name="InitialShippingFieldsStatus">
+    <summary>
+      A bit array of whether a given field is present. Only logged for the
+      preselected shipping address.
+    </summary>
+  </metric>
+  <metric name="ShippingModified"
+      enum="AutofillAssistantUserDataSelectionState">
+    <summary>
+      What kind of operation the user did to the shipping data (e.g. kept the
+      default value, edited it, etc.)
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.CollectUserDataResult">
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    The result of the CollectUserData action.
+  </summary>
+  <metric name="Result" enum="AutofillAssistantCollectUserDataResult">
+    <summary>
+      The result of the CollectUserData action.
+    </summary>
+  </metric>
+  <metric name="TimeTakenMs">
+    <summary>
+      The time it took the user to complete the action, from when it was
+      prompted to them to when the action finished, either succesfully or not.
+    </summary>
+  </metric>
+</event>
+
 <event name="AutofillAssistant.InChromeTriggering">
   <owner>arbesser@google.com</owner>
   <owner>mcarlen@google.com</owner>
@@ -2217,6 +2348,90 @@ be describing additional metrics about the same event.
   <metric name="TriggerUIType" enum="AutofillAssistantTriggerUIType">
     <summary>
       A enum that captures the type of trigger and its intent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.RegularScriptOnboarding">
+  <owner>arbesser@google.com</owner>
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Various metrics related to the onboarding during regular scripts. This is
+    recorded at the start of a regular script.
+  </summary>
+  <metric name="Onboarding" enum="AutofillAssistantOnBoarding">
+    <summary>
+      The various ways in which the onboarding may complete or fail.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="AutofillAssistant.StartRequest">
+  <owner>arbesser@google.com</owner>
+  <owner>hluca@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Metrics collected at the very beginning of an autofill-assistant flow.
+  </summary>
+  <metric name="Caller" enum="AutofillAssistantCaller">
+    <summary>
+      The caller that requested the start of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Experiments">
+    <summary>
+      Bitmask of the running experiments.
+    </summary>
+  </metric>
+  <metric name="Intent" enum="AutofillAssistantIntent">
+    <summary>
+      The autofill-assistant intent of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Source" enum="AutofillAssistantSource">
+    <summary>
+      The source that requested the start of a flow.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Started" enum="AutofillAssistantStarted">
+    <summary>
+      The various ways that a start request may succeed or fail.
     </summary>
     <aggregation>
       <history>
@@ -2455,6 +2670,54 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.FedCm">
+  <owner>yigu@chromium.org</owner>
+  <owner>webid-core@google.com</owner>
+  <summary>
+    Records performance metrics for FedCM(Federated Credential Management) API.
+  </summary>
+  <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
+    <summary>
+      Records the status of a request id token call to the FedCM API.
+    </summary>
+  </metric>
+  <metric name="Status.Revoke" enum="FedCmRevokeStatus">
+    <summary>
+      Records the status of a revoke call to the FedCM API.
+    </summary>
+  </metric>
+  <metric name="Timing.CancelOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user closes the dialog without selecting any account.
+    </summary>
+  </metric>
+  <metric name="Timing.ContinueOnDialog">
+    <summary>
+      Records the time (in milliseconds) from when the accounts dialog is shown
+      to when the user presses the Continue button.
+    </summary>
+  </metric>
+  <metric name="Timing.IdTokenResponse">
+    <summary>
+      Records the time (in milliseconds) from when the user presses the Continue
+      button to when the id token response is received.
+    </summary>
+  </metric>
+  <metric name="Timing.ShowAccountsDialog">
+    <summary>
+      Records the time (in milliseconds) from when a call to the API was made to
+      when the accounts dialog is shown.
+    </summary>
+  </metric>
+  <metric name="Timing.TurnaroundTime">
+    <summary>
+      Records the overall time (in milliseconds) from when the API is called to
+      when the id token response is received.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.FindInPage" singular="True">
   <owner>vmpstr@chromium.org</owner>
   <owner>chrishtr@chromium.org</owner>
@@ -2590,6 +2853,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time spent in main thread compositing assignments, between navigation
       and First Contentful Paint, in microseconds.
@@ -2707,6 +2973,11 @@ be describing additional metrics about the same event.
     <summary>
       The time spent in paint document lifecycle work, between navigation and
       First Contentful Paint, in microseconds.
+    </summary>
+  </metric>
+  <metric name="ParseStyleSheet">
+    <summary>
+      The time spent parsing style sheets.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -2991,6 +3262,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time taken by compositing assignments in microseconds during the
       sampled frame.
@@ -3005,6 +3279,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="CompositingAssignmentsBeginMainFrame">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The total main frame time used by the compositing assignments phase, in
       microseconds.
@@ -3731,6 +4008,16 @@ be describing additional metrics about the same event.
       [0,100].
     </summary>
   </metric>
+  <metric name="ParseStyleSheet">
+    <summary>
+      The time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="ParseStyleSheetBeginMainFrame">
+    <summary>
+      The total main frame time spent parsing style sheets.
+    </summary>
+  </metric>
   <metric name="PrePaint">
     <summary>
       The time taken for pre-paint for the main frame in microseconds during the
@@ -4183,6 +4470,50 @@ be describing additional metrics about the same event.
       An enum that specifies how the near V8 heap limit event was handled. See
       blink::NearV8HeapLimitHandling for the enum elements.
     </summary>
+  </metric>
+</event>
+
+<event name="ChromeOSApp.InputEvent">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records each five minutes in Chrome OS to log the input events happened on
+    the app window. This is logged only when the user allows app syncing or
+    allows sync of everything, and the user does not set up a sync passphrase.
+  </summary>
+  <metric name="AppInputEventCount">
+    <summary>
+      The number of the input events happened in each five mintues.
+    </summary>
+  </metric>
+  <metric name="AppInputEventSource" enum="AppInputEventSource">
+    <summary>
+      An enum that records the input event source.
+    </summary>
+  </metric>
+  <metric name="AppType" enum="AppType">
+    <summary>
+      An enum that records the app type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
+    <summary>
+      An enum that records the user type and the device type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -6249,6 +6580,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time portion of SendBeginMainFrameToCommit spent on updating
       compositing assignments, in microseconds.
@@ -6544,6 +6878,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="TotalLatencyToSwapBegin">
+    <obsolete>
+      Deprecated as of 01/2021.
+    </obsolete>
     <summary>
       The time from when the event is created in the browser to when the
       gpu-swap is started, for scroll events, in microseconds.
@@ -6749,6 +7086,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time portion of SendBeginMainFrameToCommit spent on updating
       compositing assignments, in microseconds.
@@ -7118,11 +7458,194 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CompositorFocusedMedian">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The median dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CompositorFocusedPercentile95">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CompositorFocusedVariance">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedMedian">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The median dropped frames within a fixed-duration sliding
+      window (as a percentage). So out of all PerecentDroppedFrames of sliding
+      windows the median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedPercentile95">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedVariance">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Median">
+    <summary>
+      The median dropped frames within a fixed-duration sliding window (as a
+      percentage). So out of all PerecentDroppedFrames of sliding windows the
+      median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Percentile95">
     <summary>
       The 95-th percentile dropped frames within a fixed-duration sliding window
       (as a percentage). So out of all PerecentDroppedFrames of sliding windows
       the 95th percentile will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedMedian">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The median dropped frames within a fixed-duration
+      sliding window (as a percentage) with highest priority given to scroll
+      throughput. So out of all PerecentDroppedFrames of sliding windows the
+      median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedPercentile95">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedVariance">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
     </summary>
     <aggregation>
       <history>
@@ -7250,6 +7773,23 @@ be describing additional metrics about the same event.
   <metric name="TimingSinceFCPWorstCase">
     <summary>
       The Time From FCP when the worst case happened
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Variance">
+    <summary>
+      The variance of percent dropped frames within a fixed-duration sliding
+      window. So out of all PerecentDroppedFrames of sliding windows the
+      variance will be reported here.
     </summary>
     <aggregation>
       <history>
@@ -8426,6 +8966,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Intervention.DocumentWrite.ScriptBlock" singular="True">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <owner>bmcquade@chromium.org</owner>
   <summary>
     Recorded for page loads where the document.write script block intervention
@@ -8474,7 +9017,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="IOS.IsDefaultBrowser">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
     As of iOS14, users will be able to set a default browser other than Safari.
@@ -8772,6 +9314,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="LiteVideo">
+  <obsolete>
+    Obsoleted December 2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -8854,7 +9399,7 @@ be describing additional metrics about the same event.
   <summary>
     Metrics that reflect the accuracy of the predictions used by the Loading
     Predictor. This event will be recorded once per page load on
-    DocumentOnLoadCompletedInMainFrame().
+    DocumentOnLoadCompletedInPrimaryMainFrame().
   </summary>
   <metric name="CorrectSubresourceOriginPreconnectsInitiated">
     <summary>
@@ -11515,6 +12060,13 @@ be describing additional metrics about the same event.
       The length of time, in ms, between when the notification was triggered and
       when it was closed.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TimeUntilFirstClick">
     <summary>
@@ -11529,6 +12081,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OfflineMeasurements">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <summary>
     Data collected by the OfflineMeasurementsBackgroundTask. At a regular
@@ -11936,6 +12491,13 @@ be describing additional metrics about the same event.
       is in the foreground. Measured in milliseconds.
     </summary>
   </metric>
+  <metric name="DayOfWeek">
+    <summary>
+      The day of the week when the page load was initiated. The time is measured
+      in the local time zone according to the system clock. Only collected for
+      page loads that start while on foreground.
+    </summary>
+  </metric>
   <metric name="DocumentTiming.NavigationToDOMContentLoadedEventFired">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
@@ -11981,6 +12543,53 @@ be describing additional metrics about the same event.
       known cases where it is missing: crbug.com/889223 crbug.com/893162
       crbug.com/897837 crbug.com/897840
     </summary>
+  </metric>
+  <metric
+      name="Experimental.LayoutInstability.CumulativeShiftScoreAtFirstOnHidden">
+    <summary>
+      Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
+      occurred on the page (including all subframes) until the first time the
+      page moves from the foreground to the background. This metric's integral
+      value is 100x the fractional cumulative layout shift score described in
+      the explainer. Stable since M79; previous versions are expermental and
+      subject to fluctuation between releases. Log of major changes:
+      http://bit.ly/chrome-speed-metrics-changelog. This metric is trying to
+      record the layout shift values which are not able to be recorded in
+      LayoutInstability.CumulativeShiftScore for some reasons.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="Experimental.LayoutInstability.MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow.Gap1000ms.Max5000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window until the first time the page moves from
+      the foreground to the background. The gap between two consecutive shifts
+      in a window is not bigger than 1000ms and the maximum window size is
+      5000ms. This metric's integral value is 100x the fractional cumulative
+      layout shift score described in the explainer. This metric is trying to
+      record the layout shift values which are not able to be recorded in
+      LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
+      for some reasons.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Experimental.Navigation.UserInitiated">
     <summary>
@@ -12126,6 +12735,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Experimental.TotalForegroundDuration">
+    <obsolete>
+      Deprecated on November 2021, replaced by
+      PageTiming.TotalForegroundDuration.
+    </obsolete>
     <summary>
       The total amount of time the page spent in the foreground, in
       milliseconds. Note that this metric adds all foreground durations
@@ -12137,6 +12750,13 @@ be describing additional metrics about the same event.
       the end of each page load. As usual with PageLoad metrics, we consider app
       backgrounding on Android to be the end of page load as well as the app
       could be evicted by Android anytime after that happens.
+    </summary>
+  </metric>
+  <metric name="HourOfDay">
+    <summary>
+      The hour of the day when the page load was initiated. The time is measured
+      in the local time zone according to the system clock. Only collected for
+      page loads that start while on foreground.
     </summary>
   </metric>
   <metric
@@ -13158,6 +13778,20 @@ be describing additional metrics about the same event.
       loads that failed in the foreground.
     </summary>
   </metric>
+  <metric name="PageTiming.TotalForegroundDuration">
+    <summary>
+      The total amount of time the page spent in the foreground, in
+      milliseconds. Note that this metric adds all foreground durations
+      occurring for the page. For example: if the page starts foregrounded
+      during 1 second, then goes to the background for a while, then is
+      foregrounded again for 2 seconds, and then is unloaded, this metric
+      reports 3 seconds. To see metrics about consecutive foreground sessions,
+      see the PageForegroundSession event instead. This metric is recorded at
+      the end of each page load. As usual with PageLoad metrics, we consider app
+      backgrounding on Android to be the end of page load as well as the app
+      could be evicted by Android anytime after that happens.
+    </summary>
+  </metric>
   <metric name="PageTiming.UserTimingMarkFullyLoaded">
     <summary>
       When the page UserTiming mark API is called with the standard
@@ -13208,6 +13842,16 @@ be describing additional metrics about the same event.
       usual with PageLoad metrics, we consider app backgrounding on Android to
       be the end of page load as well as the app could be evicted by Android
       anytime after that happens.
+    </summary>
+  </metric>
+  <metric name="PaintTiming.LargestContentfulPaintBPP"
+      enum="BitsPerPixelExponential">
+    <summary>
+      Measures the ratio of image file size (in bits) to displayed pixels for
+      the LCP candidate. Bucketed into roughly exponential intervals to account
+      for the wide range of encountered values (less than 1:100000 to greater
+      than 10000:1). This metric is recorded whenever the LCP candidate is an
+      image, and omitted when it is text.
     </summary>
   </metric>
   <metric name="PaintTiming.LargestContentfulPaintType">
@@ -13966,6 +14610,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.PasswordChangeTriggered">
+  <owner>selakovic@google.com</owner>
+  <owner>chrome-duplex@google.com</owner>
+  <summary>
+    Metrics related to password change. The Password Checkup in Chrome Settings
+    aims to help users find their leaked passwords. After getting list of
+    compromised passwords, user can trigger password change. On some limited
+    number of sites automated password change is available and on others only
+    manual change is available. We collect what type of password change user
+    triggered.
+  </summary>
+  <metric name="PasswordChangeType" enum="PasswordChangeType">
+    <summary>
+      Records what type of password change the user triggers.
+    </summary>
+  </metric>
+</event>
+
 <event name="PasswordManager.WellKnownChangePasswordResult">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
@@ -14110,6 +14772,19 @@ be describing additional metrics about the same event.
     <summary>
       The duration of the long task in microseconds. Mirrors the value reported
       in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.V8.Execute">
+    <summary>
+      The total time in microseconds that is V8 spent in main-thread V8,
+      including JS-time, but without time spent in callbacks to blink.
     </summary>
     <aggregation>
       <history>
@@ -14658,13 +15333,20 @@ be describing additional metrics about the same event.
   <summary>
     Page level pop-up statistics.
   </summary>
-  <metric name="Allowed">
+  <metric name="Allowed" enum="Boolean">
     <summary>
       Whether a user has, explicitly, allowed all popups on the last committed
       url of a page. The user's site level popup content setting is queried when
       a page that opened a popup is destroyed. Only emitted when at least one
       popup has been opened and the last committed page url is valid.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -14812,6 +15494,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="MainScreenBrightnessPercent">
+    <obsolete>
+      Removed 02/2022 because it's not actively used.
+    </obsolete>
     <summary>
       The brightness of the main screen in percent or -1 if not available.
       Samples have a 20% granularity, e.g. 65% will report as 60%.
@@ -14906,12 +15591,11 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy" singular="True">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
-    Metrics related to the privacy-preserving prefetch proxy. Recorded only for
-    Lite mode (AKA Data Saver) users.
+    Metrics related to the privacy-preserving prefetch proxy.
   </summary>
   <metric name="count_css_js_loaded_cache_before_fcp">
     <summary>
@@ -14984,9 +15668,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy.AfterSRPClick" singular="True">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Metrics related to the privacy-preserving prefetch proxy on the page load
     after the SRP. Recorded only for eligible users on the first mainframe
@@ -15023,9 +15707,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PrefetchProxy.PrefetchedResource">
-  <owner>robertogden@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
+  <owner>spelchat@chromium.org</owner>
   <summary>
     Each event corresponds to a single resource, either mainframe or
     subresource, that was prefetched during an Isolated Prerender. Logged one or
@@ -15089,10 +15773,20 @@ be describing additional metrics about the same event.
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
   </summary>
+  <metric name="FinalStatus" enum="PrerenderHostFinalStatus">
+    <summary>
+      A status of a prerendering attempt. Recorded as enum
+      PrerenderHostFinalStatus in //tools/metrics/histograms/enums.xml.
+
+      This is replicated as Prerender.Experimental.PrerenderHostFinalStatus.* in
+      UMA.
+    </summary>
+  </metric>
   <metric name="Timing.ActivationToFirstContentfulPaint">
     <summary>
       The duration in milliseconds from time of activation navigation start to
@@ -15131,6 +15825,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Previews" singular="True">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>ryansturm@chromium.org</owner>
   <summary>
     Previews related metrics associated with a page load. See
@@ -15439,6 +16136,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PublicImageCompressionDataUse">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -15493,6 +16193,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PublicImageCompressionImageLoad">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -15590,7 +16293,7 @@ be describing additional metrics about the same event.
 <event name="ReaderModeActivated" singular="True">
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <summary>
     Recorded after a user activates Reader Mode for a given page.
   </summary>
@@ -15612,7 +16315,7 @@ be describing additional metrics about the same event.
 <event name="ReaderModeReceivedDistillability">
   <owner>gilmanmh@google.com</owner>
   <owner>kjbooker@google.com</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <summary>
     Recorded when the Reader Mode badge receives a result from the
     distillability service.
@@ -16133,12 +16836,244 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Segmentation.ModelExecution">
+  <owner>nyquist@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Input and output tensors for executing the ML model identified by
+    optimization targets and version. The input tensors can come from UMA or
+    UKM, with or without aggregation. Check model metadata for more information
+    about each tensor. Since all the ML tensors are floats, they are encoded
+    into int64 and will be decoded later during model training. This metric is
+    recorded after an ML model is executed, and the actual result is collected.
+  </summary>
+  <metric name="ActualResult">
+    <summary>
+      UMA or UKM metrics related to the features affected by the ML model, with
+      or without aggregation, after running the features as instructed by the ML
+      model. For example, this can be the 7 day total button clicks after an ML
+      model decides to show it. No encoding is used as this is normally a count
+      or sum of a UMA/UKM metric.
+    </summary>
+  </metric>
+  <metric name="ActualResult2">
+    <summary>
+      The 2nd UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult3">
+    <summary>
+      The 3rd UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult4">
+    <summary>
+      The 4th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult5">
+    <summary>
+      The 5th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult6">
+    <summary>
+      The 6th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="Input0">
+    <summary>
+      The input tensor at index 0 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input1">
+    <summary>
+      The input tensor at index 1 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input10">
+    <summary>
+      The input tensor at index 10 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input11">
+    <summary>
+      The input tensor at index 11 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input12">
+    <summary>
+      The input tensor at index 12 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input13">
+    <summary>
+      The input tensor at index 13 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input14">
+    <summary>
+      The input tensor at index 14 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input15">
+    <summary>
+      The input tensor at index 15 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input16">
+    <summary>
+      The input tensor at index 16 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input17">
+    <summary>
+      The input tensor at index 17 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input18">
+    <summary>
+      The input tensor at index 18 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input19">
+    <summary>
+      The input tensor at index 19 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input2">
+    <summary>
+      The input tensor at index 2 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input20">
+    <summary>
+      The input tensor at index 20 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input21">
+    <summary>
+      The input tensor at index 21 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input22">
+    <summary>
+      The input tensor at index 22 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input23">
+    <summary>
+      The input tensor at index 23 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input24">
+    <summary>
+      The input tensor at index 24 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input25">
+    <summary>
+      The input tensor at index 25 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input26">
+    <summary>
+      The input tensor at index 26 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input27">
+    <summary>
+      The input tensor at index 27 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input28">
+    <summary>
+      The input tensor at index 28 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input29">
+    <summary>
+      The input tensor at index 29 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input3">
+    <summary>
+      The input tensor at index 3 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input4">
+    <summary>
+      The input tensor at index 4 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input5">
+    <summary>
+      The input tensor at index 5 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input6">
+    <summary>
+      The input tensor at index 6 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input7">
+    <summary>
+      The input tensor at index 7 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input8">
+    <summary>
+      The input tensor at index 8 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="Input9">
+    <summary>
+      The input tensor at index 9 represented in IEEE 754 double precision.
+    </summary>
+  </metric>
+  <metric name="ModelVersion">
+    <summary>
+      The version of the ML model used for execution. May not be a counter int.
+    </summary>
+  </metric>
+  <metric name="OptimizationTarget">
+    <summary>
+      The OptimizationTarget associated with the ML model. This is an enum for
+      classifying different ML models. It represents what an model is trying to
+      optimize.
+    </summary>
+  </metric>
+  <metric name="OutputDelaySec">
+    <summary>
+      The time from executing the model to when the UKM is recorded, in seconds.
+    </summary>
+  </metric>
+  <metric name="PredictionResult">
+    <summary>
+      Predicted result from executing the ML model. This is normally a score for
+      determining whether to show a particular feature. The value is a floating
+      number between 0 to 1 and encoded into IEEE 754 double precision here.
+    </summary>
+  </metric>
+</event>
+
 <event name="SharedHighlights.LinkGenerated">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
-    and selection the option to create a link which would contain the necessary
+    and selecting the option to create a link which would contain the necessary
     text fragment information to link back to this specific part of the page.
   </summary>
   <metric name="Error" enum="LinkGenerationError">
@@ -16150,6 +17085,28 @@ be describing additional metrics about the same event.
   <metric name="Success" enum="Boolean">
     <summary>
       Whether the generation of a link with text fragments was successful or
+      not.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedHighlights.LinkGenerated.Requested">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Event representing the user action of selecting a piece of text on a page
+    and selecting the option to create a link which would contain the necessary
+    text fragment information to link back to this specific part of the page.
+  </summary>
+  <metric name="Error" enum="LinkGenerationError">
+    <summary>
+      Record the type of error which prevented offering link to text to user.
+      Only recorded if the link was not offered to the user.
+    </summary>
+  </metric>
+  <metric name="Success" enum="Boolean">
+    <summary>
+      Whether the link with text fragments was successful offered to the user or
       not.
     </summary>
   </metric>
@@ -18141,6 +19098,15 @@ be describing additional metrics about the same event.
     Cache Restore (more metrics in the HistoryNavigation event), and AMP
     documents (more metrics in the AmpPageLoad event)
   </summary>
+  <metric name="NotCountedForCoreWebVitals" enum="Boolean">
+    <summary>
+      Determines if this page visit event should be counted towards calculations
+      involving Core Web Vitals. If true, this page visit event should not be
+      counted. If false or NULL, the page visit event should be considered.
+      Currently this is determined by checking the mime-type of the page visit
+      event.
+    </summary>
+  </metric>
   <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
     <summary>
       Determines the final status for this page visit. That is, records whether
@@ -18149,6 +19115,13 @@ be describing additional metrics about the same event.
       App backgrounding on Android to is considered to be the end of page visit
       as well, as the app could be evicted by Android anytime after that
       happens.
+    </summary>
+  </metric>
+  <metric name="UserInitiated" enum="Boolean">
+    <summary>
+      True if this page visit was initiated by user input. For renderer
+      navigations, only true if the code can trace back to the original input
+      event - there are cases where this known not to be possible.
     </summary>
   </metric>
 </event>

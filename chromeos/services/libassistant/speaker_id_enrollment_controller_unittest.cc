@@ -6,9 +6,9 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
-#include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

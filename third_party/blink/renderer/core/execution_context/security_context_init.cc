@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -120,17 +120,17 @@ void SecurityContextInit::ApplyDocumentPolicy(
 }
 
 void SecurityContextInit::ApplyPermissionsPolicy(
-    LocalFrame* frame,
+    LocalFrame& frame,
     const ResourceResponse& response,
     const absl::optional<WebOriginPolicy>& origin_policy,
     const FramePolicy& frame_policy) {
+  const url::Origin origin =
+      execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
   // inherited policies. https://crbug.com/898688.
-  if (frame->InViewSourceMode()) {
+  if (frame.InViewSourceMode()) {
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
-        PermissionsPolicy::CreateFromParentPolicy(
-            nullptr, {},
-            execution_context_->GetSecurityOrigin()->ToUrlOrigin()));
+        PermissionsPolicy::CreateFromParentPolicy(nullptr, {}, origin));
     return;
   }
 
@@ -195,7 +195,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   ParsedPermissionsPolicy container_policy;
-  if (frame && frame->Owner())
+  if (frame.Owner())
     container_policy = frame_policy.container_policy;
 
   // DocumentLoader applied the sandbox flags before calling this function, so
@@ -203,7 +203,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   auto sandbox_flags = execution_context_->GetSandboxFlags();
 
   if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled() &&
-      frame && frame->Tree().Parent() &&
+      frame.Tree().Parent() &&
       (sandbox_flags & network::mojom::blink::WebSandboxFlags::kNavigation) !=
           network::mojom::blink::WebSandboxFlags::kNone) {
     // Enforcing the policy for sandbox frames (for context see
@@ -214,13 +214,20 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   std::unique_ptr<PermissionsPolicy> permissions_policy;
-  auto* parent_permissions_policy =
-      frame->Tree().Parent()
-          ? frame->Tree().Parent()->GetSecurityContext()->GetPermissionsPolicy()
-          : nullptr;
-  permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-      parent_permissions_policy, container_policy,
-      execution_context_->GetSecurityOrigin()->ToUrlOrigin());
+  if (frame.IsInFencedFrameTree()) {
+    // In Fenced Frames, all permission policy gated features must be disabled
+    // for privacy reasons.
+    permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+  } else {
+    auto* parent_permissions_policy = frame.Tree().Parent()
+                                          ? frame.Tree()
+                                                .Parent()
+                                                ->GetSecurityContext()
+                                                ->GetPermissionsPolicy()
+                                          : nullptr;
+    permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+        parent_permissions_policy, container_policy, origin);
+  }
   permissions_policy->SetHeaderPolicy(permissions_policy_header_);
   execution_context_->GetSecurityContext().SetPermissionsPolicy(
       std::move(permissions_policy));

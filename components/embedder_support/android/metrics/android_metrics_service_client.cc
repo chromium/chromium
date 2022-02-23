@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_paths_android.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
@@ -57,6 +58,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace metrics {
+
+using InstallerPackageType = AndroidMetricsServiceClient::InstallerPackageType;
+
 namespace {
 
 // This specifies the amount of time to wait for all renderers to send their
@@ -230,9 +234,7 @@ void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   ukm::UkmService::RegisterPrefs(registry);
 }
 
-void AndroidMetricsServiceClient::Initialize(
-    const base::FilePath& user_data_dir,
-    PrefService* pref_service) {
+void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!init_finished_);
 
@@ -241,8 +243,11 @@ void AndroidMetricsServiceClient::Initialize(
   // TODO(crbug/1245347): If and when the Extended Variations Safe Mode
   // experiment is enabled on Android WebLayer, pass the channel to the
   // MetricsStateManager.
+  //
+  // Pass an empty file path since the path is for the Extended Variations Safe
+  // Mode experiment and Android embedders are excluded from this experiment.
   metrics_state_manager_ = MetricsStateManager::Create(
-      pref_service_, this, std::wstring(), user_data_dir);
+      pref_service_, this, std::wstring(), base::FilePath());
 
   // Creates the FieldTrialList using the low entropy provider. The low entropy
   // provider is used instead of the default provider because the default
@@ -611,11 +616,16 @@ bool AndroidMetricsServiceClient::IsInSample() const {
   return GetSampleBucketValue() < GetSampleRatePerMille();
 }
 
-bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
+InstallerPackageType AndroidMetricsServiceClient::GetInstallerPackageType() {
   // Check with Java side, to see if it's OK to log the package name for this
   // type of app (see Java side for the specific requirements).
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AndroidMetricsServiceClient_canRecordPackageNameForAppType(env);
+  int type = Java_AndroidMetricsServiceClient_getInstallerPackageType(env);
+  return static_cast<InstallerPackageType>(type);
+}
+
+bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
+  return GetInstallerPackageType() != InstallerPackageType::OTHER;
 }
 
 bool AndroidMetricsServiceClient::ShouldRecordPackageName() {

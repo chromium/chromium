@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_RELATION_CACHE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -121,12 +120,14 @@ class AXRelationCache {
   void UpdateRelatedText(Node*);
 
   bool IsValidOwnsRelation(AXObject* owner, AXObject* child) const;
-  void UnmapOwnedChildren(const AXObject* owner,
-                          const Vector<AXID>& removed_child_ids,
-                          const Vector<AXID>& newly_owned_ids);
+  void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
+                                         const Vector<AXID>& removed_child_ids,
+                                         const Vector<AXID>& newly_owned_ids);
 
-  void MapOwnedChildren(const AXObject* owner, const Vector<AXID>&);
+  void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
+                                       const Vector<AXID>&);
   void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
+  void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
   // either the content attribute or the attr associated elements.

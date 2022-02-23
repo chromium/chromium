@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
+class PrefChangeRegistrar;
+class PrefService;
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
@@ -26,7 +29,9 @@ class SearchTagRegistry;
 class BluetoothSection : public OsSettingsSection,
                          public device::BluetoothAdapter::Observer {
  public:
-  BluetoothSection(Profile* profile, SearchTagRegistry* search_tag_registry);
+  BluetoothSection(Profile* profile,
+                   SearchTagRegistry* search_tag_registry,
+                   PrefService* pref_service);
   ~BluetoothSection() override;
 
  private:
@@ -52,10 +57,14 @@ class BluetoothSection : public OsSettingsSection,
   void DeviceRemoved(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
 
+  void OnFastPairEnabledChanged();
   void OnFetchBluetoothAdapter(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
   void UpdateSearchTags();
 
+  // Observes user profile prefs.
+  PrefService* pref_service_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothSection> weak_ptr_factory_{this};
 };

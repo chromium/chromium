@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/browser/renderer_host/event_with_latency_info.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace ui {
@@ -33,7 +32,7 @@ enum TouchEventCoordinateSystem {
 // WebTouchPoint.position or WebTouchPoint.screenPosition.  Is's up to the
 // caller to do any co-ordinate system mapping (typically to get them into
 // the Aura EventDispatcher co-ordinate system).
-CONTENT_EXPORT bool MakeUITouchEventsFromWebTouchEvents(
+bool MakeUITouchEventsFromWebTouchEvents(
     const TouchEventWithLatencyInfo& touch,
     std::vector<std::unique_ptr<ui::TouchEvent>>* list,
     TouchEventCoordinateSystem coordinate_system);

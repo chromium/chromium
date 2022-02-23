@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -70,7 +69,10 @@ class BrowserControlsTest : public testing::Test,
     RegisterMockedHttpURLLoad("iframe-scrolling.html");
     RegisterMockedHttpURLLoad("iframe-scrolling-inner.html");
     RegisterMockedHttpURLLoad("percent-height.html");
-    RegisterMockedHttpURLLoad("vh-height.html");
+    RegisterMockedHttpURLLoad("v-size.html");
+    RegisterMockedHttpURLLoad("sv-size.html");
+    RegisterMockedHttpURLLoad("lv-size.html");
+    RegisterMockedHttpURLLoad("dv-size.html");
     RegisterMockedHttpURLLoad("vh-height-width-800.html");
     RegisterMockedHttpURLLoad("95-vh.html");
     RegisterMockedHttpURLLoad("vh-height-width-800-extra-wide.html");
@@ -203,10 +205,23 @@ class BrowserControlsSimTest : public SimTest {
   }
 };
 
+struct ViewportUnitTestCase {
+  // The file to load in the WebView. See mocked files in BrowserControlsTest().
+  const char* filename;
+  // The width that 50*vw should resolve to.
+  float width;
+  // The height that 50*vh should resolve to.
+  float height;
+};
+
+class BrowserControlsViewportUnitTest
+    : public BrowserControlsTest,
+      public ::testing::WithParamInterface<ViewportUnitTestCase> {};
+
 // Disable these tests on Mac OSX until further investigation.
 // Local build on Mac is OK but the bot fails. This is not an issue as
 // Browser Controls are currently only used on Android.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE(test) DISABLED_##test
 #else
 #define MAYBE(test) test
@@ -533,9 +548,9 @@ TEST_F(BrowserControlsTest, MAYBE(FloatingPointSlippage)) {
   // This will result in a 20px scroll to the browser controls so the show ratio
   // will be 30/50 == 0.6 which is not representible in a float. Make sure
   // that scroll still consumes the whole delta.
-  FloatSize remaining_delta =
-      web_view->GetBrowserControls().ScrollBy(FloatSize(0, 10));
-  EXPECT_EQ(0, remaining_delta.height());
+  ScrollOffset remaining_delta =
+      web_view->GetBrowserControls().ScrollBy(ScrollOffset(0, 10));
+  EXPECT_EQ(0, remaining_delta.y());
 }
 
 // Scrollable subregions should scroll before browser controls
@@ -726,8 +741,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollUpPastLimitDoesNotHide)) {
   web_view->SetPageScaleFactor(2.0);
 
   // Fully scroll frameview but visualviewport remains scrollable
-  web_view->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 10000));
-  GetVisualViewport().SetLocation(FloatPoint(0, 0));
+  web_view->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 10000));
+  GetVisualViewport().SetLocation(gfx::PointF(0, 0));
   GetWebView()->MainFrameViewWidget()->HandleInputEvent(
       GenerateEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -10.f));
   GetWebView()->MainFrameViewWidget()->HandleInputEvent(
@@ -740,8 +755,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollUpPastLimitDoesNotHide)) {
 
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   // Fully scroll visual veiwport but frameview remains scrollable
-  web_view->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 0));
-  GetVisualViewport().SetLocation(FloatPoint(0, 10000));
+  web_view->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 0));
+  GetVisualViewport().SetLocation(gfx::PointF(0, 10000));
   GetWebView()->MainFrameViewWidget()->HandleInputEvent(
       GenerateEvent(WebInputEvent::Type::kGestureScrollBegin, 0, -20.f));
   GetWebView()->MainFrameViewWidget()->HandleInputEvent(
@@ -754,8 +769,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollUpPastLimitDoesNotHide)) {
 
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   // Fully scroll both frameview and visual viewport
-  web_view->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 10000));
-  GetVisualViewport().SetLocation(FloatPoint(0, 10000));
+  web_view->MainFrameImpl()->SetScrollOffset(gfx::PointF(0, 10000));
+  GetVisualViewport().SetLocation(gfx::PointF(0, 10000));
   VerticalScroll(-30.f);
   // Browser controls should not move because neither frameview nor visual
   // viewport
@@ -1022,11 +1037,16 @@ TEST_F(BrowserControlsSimTest, MAYBE(AffectLayoutHeightWhenConstrained)) {
   EXPECT_EQ(400, GetDocument().GetFrame()->View()->GetLayoutSize().height());
 }
 
-// Ensure that browser controls do not affect vh units.
-TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnits)) {
+// Ensure that browser controls do not affect "static" viewport units
+// (vh, svh, lvh).
+TEST_P(BrowserControlsViewportUnitTest, MAYBE(DontAffectStaticUnits)) {
+  auto param = GetParam();
+  SCOPED_TRACE(param.filename);
+
   // Initialize with the browser controls showing.
-  WebViewImpl* web_view = Initialize("vh-height.html");
-  web_view->ResizeWithBrowserControls(gfx::Size(400, 300), 100.f, 0, true);
+  WebViewImpl* web_view = Initialize(param.filename);
+  web_view->GetPage()->GetChromeClient().SetBrowserControlsState(100.0f, 0.0f,
+                                                                 true);
   web_view->GetBrowserControls().UpdateConstraintsAndState(
       cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown);
   web_view->GetBrowserControls().SetShownRatio(1, 1);
@@ -1034,12 +1054,12 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnits)) {
 
   ASSERT_EQ(100.f, web_view->GetBrowserControls().ContentOffset());
 
-  // 'vh' units should be based on the viewport when the browser controls are
-  // hidden.
+  // Static '*vh' units should be based on the viewport when the browser
+  // controls are hidden.
   Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
   Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
-  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
-  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, abs_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, fixed_pos->getBoundingClientRect()->height());
 
   // The size used for viewport units should not be reduced by the top
   // controls.
@@ -1047,19 +1067,108 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnits)) {
 
   // Hide the browser controls.
   VerticalScroll(-100.f);
-  web_view->ResizeWithBrowserControls(gfx::Size(400, 400), 100.f, 0, false);
+  web_view->GetPage()->GetChromeClient().SetBrowserControlsState(100.0f, 0.0f,
+                                                                 false);
   UpdateAllLifecyclePhases();
 
   ASSERT_EQ(0.f, web_view->GetBrowserControls().ContentOffset());
 
-  // vh units should be static with respect to the browser controls so neighter
-  // <div> should change size are a result of the browser controls hiding.
+  // Static *vh units should be static with respect to the browser controls so
+  // neither <div> should change size as a result of the browser controls
+  // hiding.
+  EXPECT_FLOAT_EQ(param.height, abs_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(param.height, fixed_pos->getBoundingClientRect()->height());
+
+  // The viewport size used for static *vh units should not change as a result
+  // of top controls hiding.
+  EXPECT_EQ(400, GetFrame()->View()->ViewportSizeForViewportUnits().height());
+
+  // Static *vw units should not change when scrollbar disappears.
+  EXPECT_FLOAT_EQ(param.width, abs_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, fixed_pos->getBoundingClientRect()->width());
+  Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
+  ASSERT_TRUE(spacer);
+  spacer->remove();
+  UpdateAllLifecyclePhases();
+  EXPECT_FLOAT_EQ(param.width, abs_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(param.width, fixed_pos->getBoundingClientRect()->width());
+}
+
+static ViewportUnitTestCase viewport_unit_test_cases[] = {
+    {"v-size.html", 200.f, 200.f},
+    {"lv-size.html", 200.f, 200.f},
+    {"sv-size.html", 200.f, 150.f},
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserControlsViewportUnitTest,
+                         testing::ValuesIn(viewport_unit_test_cases));
+
+// Ensure that browser controls *do* affect dvh units.
+TEST_F(BrowserControlsTest, MAYBE(DoAffectDVHUnits)) {
+  // Initialize with the browser controls showing.
+  WebViewImpl* web_view = Initialize("dv-size.html");
+  web_view->GetPage()->GetChromeClient().SetBrowserControlsState(100.0f, 0.0f,
+                                                                 true);
+  web_view->GetBrowserControls().UpdateConstraintsAndState(
+      cc::BrowserControlsState::kBoth, cc::BrowserControlsState::kShown);
+  web_view->GetBrowserControls().SetShownRatio(1, 1);
+  UpdateAllLifecyclePhases();
+
+  ASSERT_EQ(100.f, web_view->GetBrowserControls().ContentOffset());
+
+  // 'dvh' units should respond according to the current state of the controls.
+  Element* abs_pos = GetElementById(WebString::FromUTF8("abs"));
+  Element* fixed_pos = GetElementById(WebString::FromUTF8("fixed"));
+  EXPECT_FLOAT_EQ(150.f, abs_pos->getBoundingClientRect()->height());
+  EXPECT_FLOAT_EQ(150.f, fixed_pos->getBoundingClientRect()->height());
+
+  // The size used for viewport units should not be reduced by the top
+  // controls.
+  EXPECT_EQ(300,
+            GetFrame()->View()->DynamicViewportSizeForViewportUnits().height());
+
+  // Hide the browser controls.
+  VerticalScroll(-100.f);
+  web_view->GetPage()->GetChromeClient().SetBrowserControlsState(100.0f, 0.0f,
+                                                                 false);
+  UpdateAllLifecyclePhases();
+
+  ASSERT_EQ(0.f, web_view->GetBrowserControls().ContentOffset());
+
+  // dvh units should be dynamic with respect to the browser controls so both
+  // <div>s should change size as a result of the browser controls hiding.
   EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->height());
   EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->height());
 
-  // The viewport size used for vh units should not change as a result of top
+  // The viewport size used for dvh units should change as a result of top
   // controls hiding.
-  EXPECT_EQ(400, GetFrame()->View()->ViewportSizeForViewportUnits().height());
+  EXPECT_EQ(400,
+            GetFrame()->View()->DynamicViewportSizeForViewportUnits().height());
+
+  // The viewport size used for dvh units should not change as a result of top
+  // controls partially showing.
+  ApplyViewportChangesArgs args;
+  args.page_scale_delta = 1.f;
+  args.is_pinch_gesture_active = false;
+  args.top_controls_delta = 0.5f;
+  args.bottom_controls_delta = 0.f;
+  args.browser_controls_constraint = cc::BrowserControlsState::kBoth;
+  args.scroll_gesture_did_end = false;
+  web_view->ApplyViewportChanges(args);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(400,
+            GetFrame()->View()->DynamicViewportSizeForViewportUnits().height());
+
+  // dvw units should not change when scrollbar disappears.
+  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->width());
+  Element* spacer = GetElementById(WebString::FromUTF8("spacer"));
+  ASSERT_TRUE(spacer);
+  spacer->remove();
+  UpdateAllLifecyclePhases();
+  EXPECT_FLOAT_EQ(200.f, abs_pos->getBoundingClientRect()->width());
+  EXPECT_FLOAT_EQ(200.f, fixed_pos->getBoundingClientRect()->width());
 }
 
 // Ensure that on a legacy page (there's a non-1 minimum scale) 100vh units fill
@@ -1141,7 +1250,7 @@ TEST_F(BrowserControlsTest, MAYBE(DontAffectVHUnitsUseLayoutSize)) {
 TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithTopMinHeight)) {
   // Initialize with the browser controls showing.
   // Top controls height: 100, top controls min-height: 20.
-  WebViewImpl* web_view = Initialize("vh-height.html");
+  WebViewImpl* web_view = Initialize("v-size.html");
   web_view->ResizeWithBrowserControls(gfx::Size(400, 300), gfx::Size(400, 300),
                                       {100, 20, 0, 0, false, true});
   web_view->GetBrowserControls().UpdateConstraintsAndState(
@@ -1188,7 +1297,7 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithBottomMinHeight)) {
   // Initialize with the browser controls showing.
   // Top controls height: 100, top controls min-height: 20.
   // Bottom controls height: 50, bottom controls min-height: 10.
-  WebViewImpl* web_view = Initialize("vh-height.html");
+  WebViewImpl* web_view = Initialize("v-size.html");
   web_view->ResizeWithBrowserControls(gfx::Size(400, 250), gfx::Size(400, 250),
                                       {100, 20, 50, 10, false, true});
   web_view->GetBrowserControls().UpdateConstraintsAndState(
@@ -1235,7 +1344,7 @@ TEST_F(BrowserControlsTest, MAYBE(VHUnitsWithMinHeightsChanging)) {
   // Initialize with the browser controls showing.
   // Top controls height: 100, top controls min-height: 20.
   // Bottom controls height: 50, bottom controls min-height: 10.
-  WebViewImpl* web_view = Initialize("vh-height.html");
+  WebViewImpl* web_view = Initialize("v-size.html");
   web_view->ResizeWithBrowserControls(gfx::Size(400, 250), gfx::Size(400, 250),
                                       {100, 20, 50, 10, false, true});
   web_view->GetBrowserControls().UpdateConstraintsAndState(
@@ -1318,10 +1427,10 @@ TEST_F(BrowserControlsTest,
     ASSERT_EQ(0.f, web_view->GetBrowserControls().ContentOffset());
 
     EXPECT_EQ(expected_visual_offset,
-              GetVisualViewport().GetScrollOffset().height());
+              GetVisualViewport().GetScrollOffset().y());
     EXPECT_EQ(expected_layout_offset,
-              view->LayoutViewport()->GetScrollOffset().height());
-    EXPECT_EQ(expected_root_offset, root_viewport->GetScrollOffset().height());
+              view->LayoutViewport()->GetScrollOffset().y());
+    EXPECT_EQ(expected_root_offset, root_viewport->GetScrollOffset().y());
 
     web_view->MainFrameViewWidget()->HandleInputEvent(
         GenerateEvent(WebInputEvent::Type::kGestureScrollEnd));
@@ -1333,11 +1442,10 @@ TEST_F(BrowserControlsTest,
       gfx::Size(800, layout_viewport_height + browser_controls_height),
       browser_controls_height, 0, false);
   UpdateAllLifecyclePhases();
-  ASSERT_EQ(expected_visual_offset,
-            GetVisualViewport().GetScrollOffset().height());
+  ASSERT_EQ(expected_visual_offset, GetVisualViewport().GetScrollOffset().y());
   ASSERT_EQ(expected_layout_offset,
-            view->LayoutViewport()->GetScrollOffset().height());
-  ASSERT_EQ(expected_root_offset, root_viewport->GetScrollOffset().height());
+            view->LayoutViewport()->GetScrollOffset().y());
+  ASSERT_EQ(expected_root_offset, root_viewport->GetScrollOffset().y());
 
   // Now scroll back up just enough to show the browser controls. The browser
   // controls should shrink both viewports but the layout viewport by a greater
@@ -1357,7 +1465,7 @@ TEST_F(BrowserControlsTest,
         mojom::blink::ScrollType::kProgrammatic);
 
     ASSERT_EQ(80.f, web_view->GetBrowserControls().ContentOffset());
-    EXPECT_EQ(expected_root_offset, root_viewport->GetScrollOffset().height());
+    EXPECT_EQ(expected_root_offset, root_viewport->GetScrollOffset().y());
 
     web_view->MainFrameViewWidget()->HandleInputEvent(
         GenerateEvent(WebInputEvent::Type::kGestureScrollEnd));

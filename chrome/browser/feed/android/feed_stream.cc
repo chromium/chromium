@@ -15,11 +15,13 @@
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/feed/android/jni_headers/FeedStream_jni.h"
+#include "chrome/browser/feed/android/jni_translation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/variations/variations_ids_provider.h"
 #include "url/android/gurl_android.h"
 
@@ -34,19 +36,19 @@ namespace android {
 
 static jlong JNI_FeedStream_Init(JNIEnv* env,
                                  const JavaParamRef<jobject>& j_this,
-                                 jboolean is_for_you_stream,
+                                 jint stream_kind,
                                  jlong native_feed_reliability_logging_bridge) {
   return reinterpret_cast<intptr_t>(
-      new FeedStream(j_this, is_for_you_stream,
+      new FeedStream(j_this, stream_kind,
                      reinterpret_cast<FeedReliabilityLoggingBridge*>(
                          native_feed_reliability_logging_bridge)));
 }
 
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
-                       jboolean is_for_you_stream,
+                       jint stream_kind,
                        FeedReliabilityLoggingBridge* reliability_logging_bridge)
-    : ::feed::FeedStreamSurface(is_for_you_stream ? kForYouStream
-                                                  : kWebFeedStream),
+    : ::feed::FeedStreamSurface(
+          StreamType(static_cast<StreamKind>(stream_kind))),
       feed_stream_api_(nullptr),
       reliability_logging_bridge_(reliability_logging_bridge) {
   java_ref_.Reset(j_this);
@@ -118,12 +120,14 @@ void FeedStream::ManualRefresh(JNIEnv* env,
 void FeedStream::ProcessThereAndBackAgain(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jbyteArray>& data) {
+    const JavaParamRef<jbyteArray>& data,
+    const JavaParamRef<jbyteArray>& logging_parameters) {
   if (!feed_stream_api_)
     return;
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
-  feed_stream_api_->ProcessThereAndBackAgain(data_string);
+  feed_stream_api_->ProcessThereAndBackAgain(
+      data_string, ToNativeLoggingParameters(env, logging_parameters));
 }
 
 int FeedStream::ExecuteEphemeralChange(JNIEnv* env,
@@ -168,22 +172,6 @@ void FeedStream::SurfaceClosed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
     attached_ = false;
     feed_stream_api_->DetachSurface(this);
   }
-}
-
-bool FeedStream::IsActivityLoggingEnabled(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
-  // Currently, the UI side isn't able to query streams independently for their
-  // logging activity state, and they will always ask for kForYouStream.
-  //
-  // We expect logging state to be in the same state for both streams, but we
-  // won't have this information if the stream isn't yet loaded.
-  // For this reason, we consider logging enabled as 'true' if it's enabled for
-  // either stream type.
-  // TODO(crbug.com/1262376): Improve this.
-
-  return feed_stream_api_ &&
-         (feed_stream_api_->IsActivityLoggingEnabled(kForYouStream) ||
-          feed_stream_api_->IsActivityLoggingEnabled(kWebFeedStream));
 }
 
 void FeedStream::ReportOpenAction(JNIEnv* env,

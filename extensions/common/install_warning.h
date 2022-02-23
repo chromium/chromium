@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_COMMON_INSTALL_WARNING_H_
 #define EXTENSIONS_COMMON_INSTALL_WARNING_H_
 
-#include "base/macros.h"
-
 #include <ostream>
 #include <string>
 

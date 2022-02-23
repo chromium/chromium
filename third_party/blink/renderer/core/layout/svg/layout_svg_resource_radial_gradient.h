@@ -57,8 +57,8 @@ class LayoutSVGResourceRadialGradient final : public LayoutSVGResourceGradient {
   void CollectGradientAttributes() override;
   scoped_refptr<Gradient> BuildGradient() const override;
 
-  FloatPoint CenterPoint(const RadialGradientAttributes&) const;
-  FloatPoint FocalPoint(const RadialGradientAttributes&) const;
+  gfx::PointF CenterPoint(const RadialGradientAttributes&) const;
+  gfx::PointF FocalPoint(const RadialGradientAttributes&) const;
   float Radius(const RadialGradientAttributes&) const;
   float FocalRadius(const RadialGradientAttributes&) const;
 

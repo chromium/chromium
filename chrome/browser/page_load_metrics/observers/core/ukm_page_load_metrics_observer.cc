@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/mime_util.h"
@@ -69,8 +70,6 @@ using page_load_metrics::PageVisitFinalStatus;
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
-extern const base::Feature kLayoutShiftNormalizationRecordUKM{
-    "LayoutShiftNormalizationRecordUKM", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsSupportedProtocol(page_load_metrics::NetworkProtocol protocol) {
   switch (protocol) {
@@ -138,6 +137,22 @@ int SiteInstanceRenderProcessAssignmentToInt(
   return 0;
 }
 
+// These are the high bounds of each bucket, in enum order. The index into this
+// array is cast to an enum value when recording UKM. These should correspond to
+// the upper bounds of the BitsPerPixelExponential enum in
+// tools/metrics/enums.xml.
+static const double kLCPEntropyBucketThresholds[] = {
+    0.0,  0.00001, 0.0001, 0.001, 0.01, 0.02, 0.03, 0.04,  0.05,   0.06,   0.07,
+    0.08, 0.09,    0.1,    0.2,   0.3,  0.4,  0.5,  0.6,   0.7,    0.8,    0.9,
+    1.0,  2.0,     3.0,    4.0,   5.0,  6.0,  7.0,  8.0,   9.0,    10.0,   20.0,
+    30.0, 40.0,    50.0,   60.0,  70.0, 80.0, 90.0, 100.0, 1000.0, 10000.0};
+
+int64_t CalculateLCPEntropyBucket(double bpp) {
+  return std::lower_bound(std::begin(kLCPEntropyBucketThresholds),
+                          std::end(kLCPEntropyBucketThresholds), bpp) -
+         std::begin(kLCPEntropyBucketThresholds);
+}
+
 }  // namespace
 
 // static
@@ -201,6 +216,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
   downstream_kbps_estimate_ =
       network_quality_tracker_->GetDownstreamThroughputKbps();
   page_transition_ = navigation_handle->GetPageTransition();
+  navigation_start_time_ = base::Time::Now();
   UpdateMainFrameRequestHadCookie(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
@@ -227,7 +243,7 @@ void UkmPageLoadMetricsObserver::UpdateMainFrameRequestHadCookie(
 
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       url, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeychain::Todo(),
+      net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(
           &UkmPageLoadMetricsObserver::OnMainFrameRequestHadCookieResult,
           weak_factory_.GetWeakPtr(), base::Time::Now()));
@@ -331,6 +347,16 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     RecordSiteEngagement();
     RecordInputTimingMetrics();
     was_hidden_ = true;
+  }
+
+  // Record the CLS metrics when the tab is first hidden after it is first
+  // shown in foreground, in case that OnComplete is not called.
+  // last_time_shown_ is set when the page starts in the foreground or the page
+  // becomes foregrounded.
+  if (!was_hidden_after_first_show_in_foreground &&
+      !last_time_shown_.is_null()) {
+    ReportLayoutInstabilityAfterFirstForeground();
+    was_hidden_after_first_show_in_foreground = true;
   }
   return CONTINUE_OBSERVING;
 }
@@ -597,6 +623,13 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
     builder.SetPaintTiming_LargestContentfulPaintType(
         all_frames_largest_contentful_paint.Type());
+    if (all_frames_largest_contentful_paint.TextOrImage() ==
+        page_load_metrics::ContentfulPaintTimingInfo::
+            LargestContentTextOrImage::kImage) {
+      builder.SetPaintTiming_LargestContentfulPaintBPP(
+          CalculateLCPEntropyBucket(
+              all_frames_largest_contentful_paint.ImageBPP()));
+    }
   }
   const page_load_metrics::ContentfulPaintTimingInfo&
       cross_site_sub_frame_largest_contentful_paint =
@@ -851,6 +884,7 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
   if (GetDelegate().DidCommit()) {
     builder.SetNavigationEntryOffset(navigation_entry_offset_);
     builder.SetMainDocumentSequenceNumber(main_document_sequence_number_);
+    RecordPageLoadTimestampMetrics(builder);
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -983,8 +1017,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               ACCUMULATE);
-  if (base::FeatureList::IsEnabled(kLayoutShiftNormalizationRecordUKM) &&
-      !normalized_cls_data.data_tainted) {
+  if (!normalized_cls_data.data_tainted) {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(
@@ -1030,6 +1063,28 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
 }
 
+void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
+  DCHECK(!last_time_shown_.is_null());
+
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder.SetExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHidden(
+      page_load_metrics::LayoutShiftUkmValue(
+          GetDelegate().GetPageRenderData().layout_shift_score));
+  // Record CLS normalization UKM.
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (!normalized_cls_data.data_tainted) {
+    builder
+        .SetExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap1000ms_max5000ms_max_cls));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks page_end_time,
@@ -1040,13 +1095,14 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
   if (currently_in_foreground_ && !last_time_shown_.is_null()) {
     total_foreground_duration_ += page_end_time - last_time_shown_;
   }
-  UMA_HISTOGRAM_ENUMERATION("PageLoad.PageVisitFinalStatus", page_visit_status);
+  UMA_HISTOGRAM_ENUMERATION("PageLoad.Experimental.PageVisitFinalStatus",
+                            page_visit_status);
   PAGE_LOAD_LONG_HISTOGRAM("PageLoad.Experimental.TotalForegroundDuration",
                            total_foreground_duration_);
 
   builder->SetPageVisitFinalStatus(static_cast<int>(page_visit_status))
-      .SetExperimental_TotalForegroundDuration(
-          ukm::GetExponentialBucketMinForUserTiming(
+      .SetPageTiming_TotalForegroundDuration(
+          ukm::GetSemanticBucketMinForDurationTiming(
               total_foreground_duration_.InMilliseconds()));
 }
 
@@ -1077,6 +1133,16 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
   builder.SetIsNTPCustomLink(context_annotations.is_ntp_custom_link);
   builder.SetDurationSinceLastVisitSeconds(
       context_annotations.duration_since_last_visit.InSeconds());
+}
+
+void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
+    ukm::builders::PageLoad& builder) {
+  DCHECK(!navigation_start_time_.is_null());
+
+  base::Time::Exploded exploded;
+  navigation_start_time_.LocalExplode(&exploded);
+  builder.SetDayOfWeek(exploded.day_of_week);
+  builder.SetHourOfDay(exploded.hour);
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
@@ -1115,9 +1181,11 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames builder(
       GetDelegate().GetPageUkmSourceId());
   builder.SetAverage(smoothness_data.avg_smoothness)
+      .SetMedian(smoothness_data.median_smoothness)
       .SetPercentile95(smoothness_data.percentile_95)
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
+      .SetVariance(smoothness_data.variance)
       .SetTimingSinceFCPWorstCase(
           smoothness_data.time_max_delta.InMilliseconds())
       .SetSmoothnessVeryGood(smoothness_data.buckets[0])
@@ -1126,7 +1194,18 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetSmoothnessBad(smoothness_data.buckets[3])
       .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
       .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
-      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6]);
+      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6])
+      .SetMainFocusedMedian(smoothness_data.main_focused_median)
+      .SetMainFocusedPercentile95(smoothness_data.main_focused_percentile_95)
+      .SetMainFocusedVariance(smoothness_data.main_focused_variance)
+      .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
+      .SetCompositorFocusedPercentile95(
+          smoothness_data.compositor_focused_percentile_95)
+      .SetCompositorFocusedVariance(smoothness_data.compositor_focused_variance)
+      .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
+      .SetScrollFocusedPercentile95(
+          smoothness_data.scroll_focused_percentile_95)
+      .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
   if (smoothness_data.worst_smoothness_after1sec >= 0)
     builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
   if (smoothness_data.worst_smoothness_after2sec >= 0)
@@ -1204,6 +1283,11 @@ void UkmPageLoadMetricsObserver::RecordPageEndMetrics(
   RecordMemoriesMetrics(builder, page_end_reason);
 
   builder.Record(ukm::UkmRecorder::Get());
+
+  // Also log UserInitiated in UserPerceivedPageVisit.
+  ukm::builders::UserPerceivedPageVisit(GetDelegate().GetPageUkmSourceId())
+      .SetUserInitiated(is_user_initiated_navigation)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 absl::optional<int64_t>

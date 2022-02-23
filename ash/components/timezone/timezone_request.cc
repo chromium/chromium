@@ -93,6 +93,54 @@ enum TimeZoneRequestResult {
   TIMEZONE_REQUEST_RESULT_COUNT = 4
 };
 
+constexpr net::NetworkTrafficAnnotationTag kTimezoneRequestNetworkTag =
+    net::DefineNetworkTrafficAnnotation("timezone_lookup", R"(
+        semantics {
+          sender: "Timezone Resolver"
+          description:
+            "Determine the user's timezone based on their geolocation."
+          trigger:
+            "Triggered during the device setup wizard, on boot, on user "
+            "session start, and in regular intervals."
+          data:
+            "The user's geolocation. By default, the geolocation is determined "
+            "from the ip address of the user, but depending on policies and "
+            "preferences, the user's Wi-Fi and mobile networks can also be "
+            "taken into account."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable automatic timezone detection in Chrome "
+            "OS settings under 'Advanced' -> 'Date and time' -> 'Timezone' by "
+            "specifying a fixed timezone under 'Choose from list'. When you do "
+            "not specify a fixed timezone, you can select whether just the ip "
+            "address or also Wi-Fi and mobile networks are used to determine "
+            "your geolocation."
+          policy_exception_justification:
+            "Controlled by SystemTimeZone and SystemTimezonAutomaticDetection. "
+            "chrome_device_policy not supported by auditor yet."
+          # TODO(b/210911671): Add the following policies once they are
+          # supported:
+          # chrome_policy {
+          #   SystemTimezone {
+          #     # cmfcmf: HasSystemTimezonePolicy
+          #     timezone: 'not empty, e.g. Europe/Berlin'
+          #   }
+          # }
+          # chrome_policy {
+          #   SystemTimezone {
+          #     AutomaticTimezoneDetectionType: DISABLED
+          #   }
+          # }
+          # chrome_policy {
+          #   SystemTimezone {
+          #     AutomaticTimezoneDetectionType: IP_ONLY
+          #   }
+          # }
+        })");
+
 // Too many requests (more than 1) mean there is a problem in implementation.
 void RecordUmaEvent(TimeZoneRequestEvent event) {
   UMA_HISTOGRAM_ENUMERATION(
@@ -354,7 +402,7 @@ void TimeZoneRequest::StartRequest() {
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                                 NO_TRAFFIC_ANNOTATION_YET);
+                                                 kTimezoneRequestNetworkTag);
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       shared_url_loader_factory_.get(),

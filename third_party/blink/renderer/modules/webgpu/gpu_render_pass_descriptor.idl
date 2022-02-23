@@ -11,12 +11,11 @@ dictionary GPURenderPassDescriptor : GPUObjectDescriptorBase {
 };
 
 enum GPULoadOp {
-    "load"
+    "load",
+    "clear",
 };
 
 enum GPUStoreOp {
     "store",
     "discard",
-
-    "clear" // Deprecated
 };

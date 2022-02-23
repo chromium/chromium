@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/time_limit_notifier.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
@@ -169,7 +170,7 @@ class ScreenTimeController
 
   // Contains the last time limit policy processed by this class. Used to
   // generate notifications when the policy changes.
-  std::unique_ptr<base::DictionaryValue> last_policy_;
+  base::Value last_policy_{base::Value::Type::DICTIONARY};
 
   // Used to set up timers when a time limit is approaching.
   TimeLimitNotifier time_limit_notifier_;

@@ -43,7 +43,7 @@ namespace blink {
 // path map certain common bitmap fonts to their truetype equivalent up front.
 inline const AtomicString& AdjustFamilyNameToAvoidUnsupportedFonts(
     const AtomicString& family_name) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, 'Courier New' (truetype font) is always present and
   // 'Courier' is a bitmap font. On Mac on the other hand 'Courier' is
   // a truetype font. Thus pages asking for Courier are better of
@@ -72,7 +72,7 @@ inline const AtomicString& AlternateFamilyName(
   // Alias Courier <-> Courier New
   if (EqualIgnoringASCIICase(family_name, font_family_names::kCourier))
     return font_family_names::kCourierNew;
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // On Windows, Courier New (truetype font) is always present and
   // Courier is a bitmap font. So, we don't want to map Courier New to
   // Courier.

@@ -12,13 +12,15 @@ import '../../settings_shared_css.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.m.js';
+import {getSearchHandler, setSearchHandlerForTesting} from '../search_handler.js';
 
 /**
  * This solution uses DP and has the complexity of O(M*N), where M and N are
@@ -548,7 +550,7 @@ function longestCommonSubstrings(string1, string2) {
     onKeyPress_(e) {
       if (e.key === 'Enter') {
         e.stopPropagation();
-        this.navigateToSearchResultRoute();
+        this.onSearchResultSelected();
       }
     },
 
@@ -587,9 +589,21 @@ function longestCommonSubstrings(string1, string2) {
       chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
     },
 
-    navigateToSearchResultRoute() {
+    /**
+     * Navigate to a search result route or launch an external url based on
+     * the search result's id.
+     */
+    onSearchResultSelected() {
       assert(this.searchResult.urlPathWithParameters, 'Url path is empty.');
       this.recordSearchResultMetrics_();
+
+      // Enable launching Personalization Hub for settings related to wallpaper,
+      // ambient mode, user avatar, etc.
+      const externalUrlToOpen = this.getExternalUrlForSearchResult_();
+      if (externalUrlToOpen) {
+        OpenWindowProxyImpl.getInstance().openURL(externalUrlToOpen);
+        return;
+      }
 
       // |this.searchResult.urlPathWithParameters| separates the path and params
       // by a '?' char.
@@ -702,5 +716,70 @@ function longestCommonSubstrings(string1, string2) {
         default:
           return 'os-settings:settings-general';
       }
+    },
+
+    /**
+     * @return {string} the external url to be opened in a new window. Empty if
+     *     no external url should be opened.
+     * @private
+     */
+    getExternalUrlForSearchResult_() {
+      if (!loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+        return '';
+      }
+
+      const PERSONALIZATION_ROOT_URL = 'chrome://personalization';
+      const PERSONALIZATION_AMBIENT_URL = PERSONALIZATION_ROOT_URL + '/ambient';
+      const PERSONALIZATION_USER_URL = PERSONALIZATION_ROOT_URL + '/user';
+      const PERSONALIZATION_WALLPAPER_URL =
+          PERSONALIZATION_ROOT_URL + '/wallpaper';
+
+      const SearchResultType = chromeos.settings.mojom.SearchResultType;
+      const Setting = chromeos.settings.mojom.Setting;
+      const Section = chromeos.settings.mojom.Section;
+      const Subpage = chromeos.settings.mojom.Subpage;
+      switch (this.searchResult.type) {
+        case SearchResultType.kSection: {
+          switch (this.searchResult.id.section) {
+            case Section.kPersonalization:
+              return PERSONALIZATION_ROOT_URL;
+          }
+        }
+        case SearchResultType.kSetting: {
+          switch (this.searchResult.id.setting) {
+            case Setting.kDarkModeOnOff:
+              return PERSONALIZATION_ROOT_URL;
+            case Setting.kAmbientModeOnOff:
+            case Setting.kAmbientModeSource:
+              return PERSONALIZATION_AMBIENT_URL;
+            case Setting.kChangeDeviceAccountImage:
+              return PERSONALIZATION_USER_URL;
+            case Setting.kOpenWallpaper:
+              return PERSONALIZATION_WALLPAPER_URL;
+          }
+        }
+        case SearchResultType.kSubpage: {
+          switch (this.searchResult.id.subpage) {
+            case Subpage.kDarkMode:
+              return PERSONALIZATION_ROOT_URL;
+            case Subpage.kAmbientMode:
+            case Subpage.kAmbientModeArtGalleryAlbum:
+            case Subpage.kAmbientModeGooglePhotosAlbum:
+              return PERSONALIZATION_AMBIENT_URL;
+            case Subpage.kChangePicture:
+              return PERSONALIZATION_USER_URL;
+          }
+        }
+      }
+      return '';
+    },
+
+    /**
+     * @return {string} The name of the icon to use.
+     * @private
+     */
+    getActionTypeIcon_() {
+      return this.getExternalUrlForSearchResult_() ? 'cr:open-in-new' :
+                                                     'cr:arrow-forward';
     },
   });

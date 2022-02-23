@@ -49,9 +49,11 @@ class HoldingSpaceDownloadsDelegate
   void Pause(const HoldingSpaceItem* item);
   void Resume(const HoldingSpaceItem* item);
 
-  // Attempts to mark the download underlying the given `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenWhenComplete(const HoldingSpaceItem* item);
+  // Attempts to mark the download underlying the given `item` to open when
+  // complete. Returns `absl::nullopt` on success or the reason if the attempt
+  // was not successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:
   class InProgressDownload;
@@ -70,7 +72,6 @@ class HoldingSpaceDownloadsDelegate
                          download::DownloadItem* item) override;
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
-  bool ShouldObserveProfile(Profile* profile) override;
 
   // arc::ArcIntentHelperObserver:
   void OnArcDownloadAdded(const base::FilePath& relative_path,

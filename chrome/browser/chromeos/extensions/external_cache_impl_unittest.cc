@@ -28,9 +28,12 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::Optional;
 
 const char kTestExtensionId1[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kTestExtensionId2[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
@@ -112,19 +115,19 @@ class ExternalCacheImplTest : public testing::Test,
 
   base::DictionaryValue CreateEntryWithUpdateUrl(bool from_webstore) {
     base::DictionaryValue entry;
-    entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                    from_webstore
-                        ? extension_urls::GetWebstoreUpdateUrl().spec()
-                        : kNonWebstoreUpdateUrl);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                       from_webstore
+                           ? extension_urls::GetWebstoreUpdateUrl().spec()
+                           : kNonWebstoreUpdateUrl);
     return entry;
   }
 
   base::DictionaryValue CreateEntryWithExternalCrx() {
     base::DictionaryValue entry;
-    entry.SetString(extensions::ExternalProviderImpl::kExternalCrx,
-                    kExternalCrxPath);
-    entry.SetString(extensions::ExternalProviderImpl::kExternalVersion,
-                    kExternalCrxVersion);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalCrx,
+                       kExternalCrxPath);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalVersion,
+                       kExternalCrxVersion);
     return entry;
   }
 
@@ -173,10 +176,9 @@ TEST_F(ExternalCacheImplTest, Basic) {
             nullptr);
   EXPECT_NE(entry1->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
             nullptr);
-  bool from_webstore = false;
-  EXPECT_TRUE(entry1->GetBoolean(
-      extensions::ExternalProviderImpl::kIsFromWebstore, &from_webstore));
-  EXPECT_TRUE(from_webstore);
+  EXPECT_THAT(
+      entry1->FindBoolKey(extensions::ExternalProviderImpl::kIsFromWebstore),
+      Optional(true));
 
   // File in cache not from Webstore.
   const base::DictionaryValue* entry3 = NULL;
@@ -216,10 +218,9 @@ TEST_F(ExternalCacheImplTest, Basic) {
             nullptr);
   EXPECT_NE(entry2->FindKey(extensions::ExternalProviderImpl::kExternalVersion),
             nullptr);
-  from_webstore = false;
-  EXPECT_TRUE(entry2->GetBoolean(
-      extensions::ExternalProviderImpl::kIsFromWebstore, &from_webstore));
-  EXPECT_TRUE(from_webstore);
+  EXPECT_THAT(
+      entry2->FindBoolKey(extensions::ExternalProviderImpl::kIsFromWebstore),
+      Optional(true));
   EXPECT_TRUE(
       base::PathExists(GetExtensionFile(cache_dir, kTestExtensionId2, "2")));
 

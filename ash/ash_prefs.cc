@@ -12,7 +12,7 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
-#include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
@@ -41,18 +41,19 @@
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/session/logout_button_tray.h"
 #include "ash/system/session/logout_confirmation_controller.h"
-#include "ash/system/unified/hps_notify_view.h"
+#include "ash/system/unified/hps_notify_controller.h"
 #include "ash/system/unified/top_shortcuts_view.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
 
@@ -66,7 +67,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AssistantControllerImpl::RegisterProfilePrefs(registry);
   AshColorProvider::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
-  BluetoothPowerController::RegisterProfilePrefs(registry);
+  if (!ash::features::IsBluetoothRevampEnabled())
+    BluetoothPowerController::RegisterProfilePrefs(registry);
   CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);
   CaptureModeController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);
@@ -79,7 +81,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
   holding_space_prefs::RegisterProfilePrefs(registry);
-  HpsNotifyView::RegisterProfilePrefs(registry);
+  HpsNotifyController::RegisterProfilePrefs(registry);
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
@@ -96,6 +98,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   ShelfController::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   tray::VPNListView::RegisterProfilePrefs(registry);
+  UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   WallpaperControllerImpl::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
@@ -104,15 +107,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   if (for_test) {
     chromeos::assistant::prefs::RegisterProfilePrefs(registry);
     quick_answers::prefs::RegisterProfilePrefs(registry);
-    registry->RegisterBooleanPref(
-        prefs::kMouseReverseScroll, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
-    registry->RegisterBooleanPref(
-        chromeos::prefs::kSuggestedContentEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        ::prefs::kLiveCaptionEnabled, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
+    registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
+    registry->RegisterBooleanPref(chromeos::prefs::kSuggestedContentEnabled,
+                                  true);
+    registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                  std::string());
   }
@@ -123,11 +122,13 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterLocalStatePrefs(registry);
   WallpaperControllerImpl::RegisterLocalStatePrefs(registry);
-  BluetoothPowerController::RegisterLocalStatePrefs(registry);
+  if (!ash::features::IsBluetoothRevampEnabled())
+    BluetoothPowerController::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);
   PowerPrefs::RegisterLocalStatePrefs(registry);
   DisplayPrefs::RegisterLocalStatePrefs(registry);
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
+  quick_pair::Mediator::RegisterLocalStatePrefs(registry);
   TopShortcutsView::RegisterLocalStatePrefs(registry);
 }
 

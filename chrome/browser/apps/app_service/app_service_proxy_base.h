@@ -10,16 +10,23 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
+#include "components/services/app_service/public/cpp/icon_loader.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -32,6 +39,8 @@ class Profile;
 namespace apps {
 
 class AppServiceMojomImpl;
+
+struct AppLaunchParams;
 
 struct IntentLaunchInfo {
   IntentLaunchInfo();
@@ -77,8 +86,24 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::PreferredAppsListHandle& PreferredApps();
 
+  // Registers `publisher` with the App Service as exclusively publishing apps
+  // of type `app_type`. `publisher` must have a lifetime equal to or longer
+  // than this object.
+  void RegisterPublisher(AppType app_type, AppPublisher* publisher);
+
   // apps::IconLoader overrides.
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::unique_ptr<Releaser> LoadIconFromIconKey(
+      AppType app_type,
+      const std::string& app_id,
+      const IconKey& icon_key,
+      IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback) override;
+
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,
@@ -134,6 +159,13 @@ class AppServiceProxyBase : public KeyedService,
                         GURL url,
                         apps::mojom::LaunchSource launch_source,
                         apps::mojom::WindowInfoPtr window_info = nullptr);
+
+  // Launches an app for the given |params.app_id|. The |params| can also
+  // contain other param such as launch container, window diposition, etc.
+  // Currently the return value in the callback will only be filled up for
+  // Chrome OS web apps and Chrome apps.
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback = base::DoNothing());
 
   // Sets |permission| for the app identified by |app_id|.
   void SetPermission(const std::string& app_id,
@@ -220,8 +252,8 @@ class AppServiceProxyBase : public KeyedService,
                      apps::mojom::WindowMode window_mode);
 
   // Called by an app publisher to inform the proxy of a change in app state.
-  void OnApps(std::vector<std::unique_ptr<apps::App>> deltas,
-              apps::AppType app_type,
+  void OnApps(std::vector<AppPtr> deltas,
+              AppType app_type,
               bool should_notify_initialized);
 
  protected:
@@ -270,7 +302,17 @@ class AppServiceProxyBase : public KeyedService,
     explicit InnerIconLoader(AppServiceProxyBase* host);
 
     // apps::IconLoader overrides.
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+    absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+    std::unique_ptr<Releaser> LoadIconFromIconKey(
+        AppType app_type,
+        const std::string& app_id,
+        const IconKey& icon_key,
+        IconType icon_type,
+        int32_t size_hint_in_dip,
+        bool allow_placeholder_icon,
+        apps::LoadIconCallback callback) override;
+
+    // TODO(crbug.com/1253250): Will be removed soon.
     std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,
@@ -282,9 +324,9 @@ class AppServiceProxyBase : public KeyedService,
 
     // |host_| owns |this|, as the InnerIconLoader is an AppServiceProxyBase
     // field.
-    AppServiceProxyBase* host_;
+    raw_ptr<AppServiceProxyBase> host_;
 
-    apps::IconLoader* overriding_icon_loader_for_testing_;
+    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
   };
 
   bool IsValidProfile();
@@ -294,6 +336,8 @@ class AppServiceProxyBase : public KeyedService,
   // operation that depends on a fully instantiated AppServiceProxy (i.e. to
   // avoid calling other virtual methods in the AppServiceProxy constructor).
   virtual void Initialize();
+
+  AppPublisher* GetPublisher(AppType app_type);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
@@ -328,6 +372,11 @@ class AppServiceProxyBase : public KeyedService,
       const std::string& app_id,
       apps::mojom::UninstallSource uninstall_source);
 
+  virtual void OnLaunched(LaunchCallback callback,
+                          LaunchResult&& launch_result);
+
+  base::flat_map<AppType, AppPublisher*> publishers_;
+
   // This proxy privately owns its instance of the App Service. This should not
   // be exposed except through the Mojo interface connected to |app_service_|.
   std::unique_ptr<apps::AppServiceMojomImpl> app_service_mojom_impl_;
@@ -349,7 +398,7 @@ class AppServiceProxyBase : public KeyedService,
 
   apps::PreferredAppsList preferred_apps_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
   // to AppServiceProxyBase when publishers(ExtensionApps and WebApps) can run
@@ -365,6 +414,8 @@ class AppServiceProxyBase : public KeyedService,
 
   // For test access to OnApps.
   friend class AppServiceProxyPreferredAppsTest;
+
+  base::WeakPtrFactory<AppServiceProxyBase> weak_factory_{this};
 };
 
 }  // namespace apps

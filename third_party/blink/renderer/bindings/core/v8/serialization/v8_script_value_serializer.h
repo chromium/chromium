@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_V8_SCRIPT_VALUE_SERIALIZER_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
@@ -119,8 +118,6 @@ class CORE_EXPORT V8ScriptValueSerializer
                                size_t,
                                size_t* actual_size) override;
   void FreeBufferMemory(void* buffer) override;
-
-  bool TransferableStreamsEnabled() const;
 
   ScriptState* script_state_;
   scoped_refptr<SerializedScriptValue> serialized_script_value_;

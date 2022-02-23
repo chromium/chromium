@@ -6,6 +6,7 @@
 #define NET_COOKIES_SAME_PARTY_CONTEXT_H_
 
 #include "net/base/net_export.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace net {
 
@@ -15,8 +16,8 @@ namespace net {
 // to explore the impact of different definitions of "same-party".
 class NET_EXPORT SamePartyContext {
  public:
-  // Computed in URLRequestHttpJob for every cookie access attempt but is only
-  // relevant for SameParty cookies.
+  // Computed for every cookie access attempt but is only relevant for SameParty
+  // cookies.
   enum class Type {
     // The opposite to kSameParty. Should be the default value.
     kCrossParty = 0,
@@ -57,6 +58,9 @@ class NET_EXPORT SamePartyContext {
   Type ancestors_for_metrics_only_ = Type::kCrossParty;
   Type top_resource_for_metrics_only_ = Type::kCrossParty;
 };
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const SamePartyContext& spc);
 
 }  // namespace net
 

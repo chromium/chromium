@@ -146,7 +146,7 @@ class ThirdPartyFileTest : public testing::Test {
   void CreateTestFile() {
     base::File file(base::FilePath(bl_test_file_path_),
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                        base::File::FLAG_SHARE_DELETE |
+                        base::File::FLAG_WIN_SHARE_DELETE |
                         base::File::FLAG_DELETE_ON_CLOSE);
     ASSERT_TRUE(file.IsValid());
 

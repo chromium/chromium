@@ -176,7 +176,7 @@
       {
         "name": "openWindow",
         "type": "function",
-        "description": "Open the Terminal tabbed window.",
+        "description": "Open a Terminal app window/tab",
         "parameters": [
           {
             "name": "data",
@@ -187,7 +187,12 @@
                 "description": "The url for the new Terminal window.",
                 "optional": true,
 		"type": "string"
-              }
+              },
+	      "asTab": {
+		"description": "Instead of openning a new window, open it as a new tab in the current app window.",
+                "optional": true,
+		"type": "boolean"
+	      }
 	    }
           }
         ]
@@ -201,6 +206,29 @@
           "name": "callback",
           "description": "Callback that will be called when complete.",
           "parameters": []
+        }
+      },
+      {
+        "name": "getOSInfo",
+        "type": "function",
+        "description": "Returns an object containing info about ChromeOS settings that affect the Terminal, e.g. which feature flags are enabled.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback that will be called with the info object.",
+          "parameters": [
+            {
+              "name": "info",
+              "type": "object",
+	      "properties": {
+	        "tmux_integration": {
+                  "description": "True if tmux control mode integration is enabled.",
+                  "type": "boolean"
+                }
+	      },
+              "description": "Information about which features are enabled."
+            }
+          ]
         }
       },
       {

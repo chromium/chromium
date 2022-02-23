@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -38,7 +39,7 @@ class TestInspectorClient : public v8_inspector::V8InspectorClient {
   void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
-  AuctionV8Helper* v8_helper_;
+  raw_ptr<AuctionV8Helper> v8_helper_;
 };
 
 // A thread-safe output channel that records everything that V8 tells it,
@@ -117,21 +118,12 @@ class TestChannel : public v8_inspector::V8Inspector::Channel {
                             std::string payload);
 
   scoped_refptr<AuctionV8Helper> v8_helper_;
-  v8_inspector::V8InspectorSession* v8_inspector_session_;
+  raw_ptr<v8_inspector::V8InspectorSession> v8_inspector_session_;
   base::Lock lock_;
   base::ConditionVariable wake_up_ GUARDED_BY(lock_);
   std::list<Event> seen_events_ GUARDED_BY(lock_);
   std::list<Event> events_ GUARDED_BY(lock_);
 };
-
-// Thread-hop wrapper around
-// AuctionV8Helper::AllocContextGroupIdAndSetResumeCallback. Sets a null
-// callback.
-int AllocContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper);
-
-// Thread-hop wrapper around AuctionV8Helper::FreeContextGroupId().
-void FreeContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper,
-                               int context_group_id);
 
 // Class that helps set a V8Inspector w/a TestInspectorClient on an
 // AuctionV8Helper, and clean it up properly. Assumes v8 thread is separate from

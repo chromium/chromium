@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 
 namespace ui_devtools {

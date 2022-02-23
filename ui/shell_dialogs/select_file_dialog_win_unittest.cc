@@ -20,10 +20,11 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_win.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -197,8 +198,11 @@ class SelectFileDialogWinTest : public ::testing::Test,
   bool was_cancelled_ = false;
 };
 
-// TODO(crbug.com/1265379): Flaky.
-TEST_F(SelectFileDialogWinTest, DISABLED_CancelAllDialogs) {
+TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
+  // TODO(crbug.com/1265379): Flaky on Windows 7.
+  if (base::win::GetVersion() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for Windows 7";
+
   // Intentionally not testing SELECT_UPLOAD_FOLDER because the dialog is
   // customized for that case.
   struct {

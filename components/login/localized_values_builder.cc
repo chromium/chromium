@@ -20,29 +20,31 @@ LocalizedValuesBuilder::LocalizedValuesBuilder(const std::string& prefix,
 
 void LocalizedValuesBuilder::Add(const std::string& key,
                                  const std::string& message) {
-  dict_->SetString(prefix_ + key, message);
+  dict_->SetStringPath(prefix_ + key, message);
 }
 
 void LocalizedValuesBuilder::Add(const std::string& key,
                                  const std::u16string& message) {
-  dict_->SetString(prefix_ + key, message);
+  dict_->SetStringPath(prefix_ + key, message);
 }
 
 void LocalizedValuesBuilder::Add(const std::string& key, int message_id) {
-  dict_->SetString(prefix_ + key, l10n_util::GetStringUTF16(message_id));
+  dict_->SetStringPath(prefix_ + key, l10n_util::GetStringUTF16(message_id));
 }
 
 void LocalizedValuesBuilder::AddF(const std::string& key,
                                   int message_id,
                                   const std::u16string& a) {
-  dict_->SetString(prefix_ + key, l10n_util::GetStringFUTF16(message_id, a));
+  dict_->SetStringPath(prefix_ + key,
+                       l10n_util::GetStringFUTF16(message_id, a));
 }
 
 void LocalizedValuesBuilder::AddF(const std::string& key,
                                   int message_id,
                                   const std::u16string& a,
                                   const std::u16string& b) {
-  dict_->SetString(prefix_ + key, l10n_util::GetStringFUTF16(message_id, a, b));
+  dict_->SetStringPath(prefix_ + key,
+                       l10n_util::GetStringFUTF16(message_id, a, b));
 }
 
 void LocalizedValuesBuilder::AddF(const std::string& key,
@@ -50,8 +52,8 @@ void LocalizedValuesBuilder::AddF(const std::string& key,
                                   const std::u16string& a,
                                   const std::u16string& b,
                                   const std::u16string& c) {
-  dict_->SetString(prefix_ + key,
-                   l10n_util::GetStringFUTF16(message_id, a, b, c));
+  dict_->SetStringPath(prefix_ + key,
+                       l10n_util::GetStringFUTF16(message_id, a, b, c));
 }
 
 void LocalizedValuesBuilder::AddF(const std::string& key,

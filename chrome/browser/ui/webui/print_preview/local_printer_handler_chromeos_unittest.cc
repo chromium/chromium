@@ -32,7 +32,8 @@ void RecordPrinterList(size_t& call_count,
                        std::unique_ptr<base::ListValue>& printers_out,
                        const base::ListValue& printers) {
   ++call_count;
-  printers_out = printers.CreateDeepCopy();
+  printers_out =
+      base::ListValue::From(base::Value::ToUniquePtrValue(printers.Clone()));
 }
 
 // Used as a callback to `StartGetPrinters` in tests.
@@ -160,32 +161,10 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
   caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
       "device_name", "printer_name", "printer_description", false);
 
-  // TODO(b/195001379, jkopanski): This block of code should be removed once
-  // Ash Chrome M94 is on stable channel. Also remove associated "policies"
-  // field in kExpectedValue below.
-  caps->allowed_color_modes_deprecated = 1;
-  caps->allowed_duplex_modes_deprecated = 2;
-  caps->allowed_pin_modes_deprecated_version_1 =
-      printing::mojom::PinModeRestriction::kPin;
-  caps->default_color_mode_deprecated =
-      printing::mojom::ColorModeRestriction::kColor;
-  caps->default_duplex_mode_deprecated =
-      printing::mojom::DuplexModeRestriction::kSimplex;
-  caps->default_pin_mode_deprecated =
-      printing::mojom::PinModeRestriction::kNoPin;
-
   const base::Value kExpectedValue = *base::JSONReader::Read(R"({
    "printer": {
       "cupsEnterprisePrinter": false,
       "deviceName": "device_name",
-      "policies": {
-         "allowedColorModes": 1,
-         "allowedDuplexModes": 2,
-         "allowedPinModes": 1,
-         "defaultColorMode": 2,
-         "defaultDuplexMode": 1,
-         "defaultPinMode": 2
-      },
       "printerDescription": "printer_description",
       "printerName": "printer_name",
       "printerOptions": {}
@@ -200,32 +179,10 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_ConfiguredViaPolicy) {
   caps->basic_info = crosapi::mojom::LocalDestinationInfo::New(
       "device_name", "printer_name", "printer_description", true);
 
-  // TODO(b/195001379, jkopanski): This block of code should be removed once
-  // Ash Chrome M94 is on stable channel. Also remove associated "policies"
-  // field in kExpectedValue below.
-  caps->allowed_color_modes_deprecated = 1;
-  caps->allowed_duplex_modes_deprecated = 2;
-  caps->allowed_pin_modes_deprecated_version_1 =
-      printing::mojom::PinModeRestriction::kPin;
-  caps->default_color_mode_deprecated =
-      printing::mojom::ColorModeRestriction::kColor;
-  caps->default_duplex_mode_deprecated =
-      printing::mojom::DuplexModeRestriction::kSimplex;
-  caps->default_pin_mode_deprecated =
-      printing::mojom::PinModeRestriction::kNoPin;
-
   const base::Value kExpectedValue = *base::JSONReader::Read(R"({
    "printer": {
       "cupsEnterprisePrinter": true,
       "deviceName": "device_name",
-      "policies": {
-         "allowedColorModes": 1,
-         "allowedDuplexModes": 2,
-         "allowedPinModes": 1,
-         "defaultColorMode": 2,
-         "defaultDuplexMode": 1,
-         "defaultPinMode": 2
-      },
       "printerDescription": "printer_description",
       "printerName": "printer_name",
       "printerOptions": {}

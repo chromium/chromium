@@ -10,11 +10,11 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
-#include "net/cert/x509_cert_types.h"
 
 namespace net {
 
@@ -66,14 +66,27 @@ class NET_EXPORT CertVerifyProc
     kMaxValue = kChainLengthOne
   };
 
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class EKUStatus {
+    kInvalid = 0,
+    kNoEKU = 1,
+    kAnyEKU = 2,
+    kServerAuthOnly = 3,
+    kServerAuthAndClientAuthOnly = 4,
+    kServerAuthAndOthers = 5,
+    kOther = 6,
+    kMaxValue = kOther
+  };
+
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // Creates and returns a CertVerifyProc that uses the system verifier.
   // |cert_net_fetcher| may not be used, depending on the implementation.
   static scoped_refptr<CertVerifyProc> CreateSystemVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);
 #endif
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher);

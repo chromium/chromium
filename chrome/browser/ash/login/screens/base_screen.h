@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/login_accelerators.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -43,7 +42,7 @@ class BaseScreen {
 
   // Returns whether the screen should be skipped i. e. should be exited due to
   // specific unmet conditions. Returns true if skips the screen.
-  virtual bool MaybeSkip(WizardContext* context) WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool MaybeSkip(WizardContext* context);
 
   // Forwards user action if screen is shown.
   void HandleUserAction(const std::string& action_id);

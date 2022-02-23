@@ -13,9 +13,9 @@
 class Profile;
 class SystemExtensionsInstallManager;
 
-// Name of the directory, under the user profile directory, where System
-// Extensions are installed.
-extern const char kSystemExtensionsProfileDirectory[];
+namespace content {
+class RenderProcessHost;
+}
 
 // Manages the installation, storage, and execution of System Extensions.
 class SystemExtensionsProvider : public KeyedService {
@@ -24,7 +24,16 @@ class SystemExtensionsProvider : public KeyedService {
   static SystemExtensionsProvider* Get(Profile* profile);
   static bool IsEnabled();
 
-  SystemExtensionsProvider();
+  // TODO(crbug.com/1272371): Remove when APIs can be accessed in a less hacky
+  // way.
+  // If true, System Extension APIs will be bound on all service workers. This
+  // is being added temporarily for development. Use in conjunction with e.g
+  // --enable-blink-features=BlinkExtensionChromeOS,
+  //                         BlinkExtensionChromeOSWindowManagement
+  // to use regular service workers to test your System Extension APIs.
+  static bool IsDebugMode();
+
+  explicit SystemExtensionsProvider(Profile* profile);
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;
   SystemExtensionsProvider& operator=(const SystemExtensionsProvider&) = delete;
   ~SystemExtensionsProvider() override;
@@ -32,6 +41,11 @@ class SystemExtensionsProvider : public KeyedService {
   SystemExtensionsInstallManager& install_manager() {
     return *install_manager_;
   }
+
+  // Called when a service worker will be started to enable blink runtime
+  // features based on system extension type.
+  void WillStartServiceWorker(const GURL& script_url,
+                              content::RenderProcessHost* render_process_host);
 
  private:
   std::unique_ptr<SystemExtensionsInstallManager> install_manager_;

@@ -14,12 +14,9 @@
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace net {
-class IsolationInfo;
-}
 
 namespace blink {
 
@@ -43,21 +40,44 @@ class BLINK_COMMON_EXPORT StorageKey {
   // StorageKey without a top-level site specified. Eventually these will all
   // merge into a static function(s) that will require the caller to explicitly
   // specify that they do not want a top-level site.
+  // TODO(https://crbug.com/1271615): Remove or mark as test-only most of these
+  // constructors and factory methods.
+
   explicit StorageKey(const url::Origin& origin)
-      : StorageKey(origin, net::SchemefulSite(origin), nullptr) {}
+      : StorageKey(origin,
+                   net::SchemefulSite(origin),
+                   nullptr,
+                   blink::mojom::AncestorChainBit::kSameSite) {}
 
+  // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
+  // bit value, add a parameter, or use this only in testing environments.
   StorageKey(const url::Origin& origin, const url::Origin& top_level_site)
-      : StorageKey(origin, net::SchemefulSite(top_level_site), nullptr) {}
+      : StorageKey(origin,
+                   net::SchemefulSite(top_level_site),
+                   nullptr,
+                   blink::mojom::AncestorChainBit::kSameSite) {}
 
+  // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
+  // bit value, add a parameter, or use this only in testing environments.
   StorageKey(const url::Origin& origin,
              const net::SchemefulSite& top_level_site)
-      : StorageKey(origin, top_level_site, nullptr) {}
+      : StorageKey(origin,
+                   top_level_site,
+                   nullptr,
+                   blink::mojom::AncestorChainBit::kSameSite) {}
 
   // This function does not take a top-level site as the nonce makes it globally
   // unique anyway. Implementation wise however, the top-level site is set to
-  // the `origin`'s site.
+  // the `origin`'s site and the ancestor-chain bit is set to kCrossSite.
   static StorageKey CreateWithNonce(const url::Origin& origin,
                                     const base::UnguessableToken& nonce);
+
+  // Same to the above, but this method does take a top-level site.
+  static StorageKey CreateWithOptionalNonce(
+      const url::Origin& origin,
+      const net::SchemefulSite& top_level_site,
+      const base::UnguessableToken* nonce,
+      blink::mojom::AncestorChainBit ancestor_chain_bit);
 
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;
@@ -66,10 +86,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   StorageKey& operator=(StorageKey&& other) noexcept = default;
 
   ~StorageKey() = default;
-
-  // Constructs a StorageKey from a `net::IsolationInfo`.
-  static StorageKey FromNetIsolationInfo(
-      const net::IsolationInfo& isolation_info);
 
   // Returns a newly constructed StorageKey from, a previously serialized, `in`.
   // If `in` is invalid then the return value will be nullopt. If this returns a
@@ -81,14 +97,6 @@ class BLINK_COMMON_EXPORT StorageKey {
   // SerializeForLocalStorage(), as it can handle both formats.
   static absl::optional<StorageKey> Deserialize(base::StringPiece in);
 
-  // Returns a newly constructed StorageKey from, a previously serialized, `in`
-  // (which was created using SerializeForServiceWorker()). If `in` is invalid
-  // then the return value will be nullopt. If this returns a non-nullopt value,
-  // it will be a valid, non-opaque StorageKey. A deserialized StorageKey will
-  // be equivalent to the StorageKey that was initially serialized.
-  static absl::optional<StorageKey> DeserializeForServiceWorker(
-      base::StringPiece in);
-
   // Transforms a string into a StorageKey if possible (and an opaque StorageKey
   // if not). Currently calls Deserialize, but this may change in future.
   // For use in tests only.
@@ -98,8 +106,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   static bool IsThirdPartyStoragePartitioningEnabled();
 
   // Serializes the `StorageKey` into a string.
-  // This function will return the spec url of the underlying Origin. Do not
-  // call if `this` is opaque.
+  // Do not call if `this` is opaque.
   std::string Serialize() const;
 
   // Serializes into a string in the format used for localStorage (without
@@ -107,20 +114,16 @@ class BLINK_COMMON_EXPORT StorageKey {
   // not call if `this` is opaque.
   std::string SerializeForLocalStorage() const;
 
-  // Serializes the `StorageKey` into the format used for ServiceWorkerDatabase.
-  // Do not call if `this` is opaque.
-  std::string SerializeForServiceWorker() const;
-
   // `IsThirdPartyContext` returns true if the StorageKey is for a context that
   // is "third-party", i.e. the StorageKey's top-level site and origin have
   // different schemes and/or domains.
   //
   // `IsThirdPartyContext` returns true if the StorageKey was created with a
-  // nonce.
-  //
-  // If storage partitioning is disabled, this always returns false.
+  // nonce or has an AncestorChainBit value of kCrossSite.
   bool IsThirdPartyContext() const {
-    return nonce_ || net::SchemefulSite(origin_) != top_level_site_;
+    return nonce_ ||
+           ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite ||
+           net::SchemefulSite(origin_) != top_level_site_;
   }
   bool IsFirstPartyContext() const { return !IsThirdPartyContext(); }
 
@@ -129,6 +132,10 @@ class BLINK_COMMON_EXPORT StorageKey {
   const net::SchemefulSite& top_level_site() const { return top_level_site_; }
 
   const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+
+  blink::mojom::AncestorChainBit ancestor_chain_bit() const {
+    return ancestor_chain_bit_;
+  }
 
   std::string GetDebugString() const;
 
@@ -144,6 +151,13 @@ class BLINK_COMMON_EXPORT StorageKey {
   // the spec it should be an opaque origin.
   const net::SiteForCookies ToNetSiteForCookies() const;
 
+  // Returns true if the registration key string is partitioned by top-level
+  // site but storage partitioning is currently disabled, otherwise returns
+  // false. Also returns false if the key string contains a serialized nonce.
+  // Used in
+  // components/services/storage/service_worker/service_worker_database.cc
+  static bool ShouldSkipKeyDueToPartitioning(const std::string& reg_key_string);
+
  private:
   // This enum represents the different type of encodable partitioning
   // attributes.
@@ -151,17 +165,22 @@ class BLINK_COMMON_EXPORT StorageKey {
     kTopLevelSite = 0,
     kNonceHigh = 1,
     kNonceLow = 2,
-    kMax
+    kAncestorChainBit = 3,
+    kMaxValue = kAncestorChainBit,
   };
 
   StorageKey(const url::Origin& origin,
              const net::SchemefulSite& top_level_site,
-             const base::UnguessableToken* nonce)
+             const base::UnguessableToken* nonce,
+             blink::mojom::AncestorChainBit ancestor_chain_bit)
       : origin_(origin),
         top_level_site_(IsThirdPartyStoragePartitioningEnabled()
                             ? top_level_site
                             : net::SchemefulSite(origin)),
-        nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {}
+        nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
+        ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
+                                ? ancestor_chain_bit
+                                : blink::mojom::AncestorChainBit::kSameSite) {}
 
   // Converts the attribute type into the separator + uint8_t byte
   // serialization. E.x.: kTopLevelSite becomes "^0"
@@ -170,7 +189,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Converts the serialized separator into an EncodedAttribute enum.
   // E.x.: "^0" becomes kTopLevelSite.
   // Expects `in` to have a length of 2.
-  static EncodedAttribute DeserializeAttributeSeparator(
+  static absl::optional<EncodedAttribute> DeserializeAttributeSeparator(
       const base::StringPiece& in);
 
   BLINK_COMMON_EXPORT
@@ -201,6 +220,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   // by anonymous iframes:
   // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
   absl::optional<base::UnguessableToken> nonce_;
+
+  // kCrossSite if any frame in the current frame's ancestor chain is
+  // cross-site with the current frame. kSameSite if entire ancestor
+  // chain is same-site with the current frame. Used by service workers.
+  blink::mojom::AncestorChainBit ancestor_chain_bit_;
 };
 
 BLINK_COMMON_EXPORT

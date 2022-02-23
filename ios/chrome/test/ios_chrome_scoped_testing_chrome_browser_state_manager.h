@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace ios {
 class ChromeBrowserStateManager;
 }

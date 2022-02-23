@@ -24,6 +24,8 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
+#include "chrome/browser/extensions/api/printing/print_job_controller.h"
+#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
@@ -35,11 +37,6 @@
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "printing/backend/print_backend.h"
@@ -51,6 +48,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/printing/print_job_utils_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -87,8 +85,6 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
                          ExtensionRegistry::Get(browser_context),
                          PrintJobController::Create(),
                          chromeos::CupsWrapper::Create()) {
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::NotificationService::AllSources());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   local_printer_ =
@@ -161,31 +157,73 @@ void PrintingAPIHandler::SubmitJob(
     gfx::NativeWindow native_window,
     scoped_refptr<const extensions::Extension> extension,
     std::unique_ptr<api::printing::SubmitJob::Params> params,
-    PrintJobSubmitter::SubmitJobCallback callback) {
-  auto print_job_submitter = std::make_unique<PrintJobSubmitter>(
+    SubmitJobCallback callback) {
+  // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
+  // expires, PrintJobSubmitter will continue to access PrintingAPIHandler
+  // member variables.
+  PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       &pdf_flattener_, std::move(extension), std::move(params->request),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       local_printer_version_,
 #endif
-      local_printer_);
-  PrintJobSubmitter* print_job_submitter_ptr = print_job_submitter.get();
-  print_job_submitter_ptr->Start(base::BindOnce(
-      &PrintingAPIHandler::OnPrintJobSubmitted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(print_job_submitter), std::move(callback)));
+      local_printer_,
+      base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }
 
 void PrintingAPIHandler::OnPrintJobSubmitted(
-    std::unique_ptr<PrintJobSubmitter> print_job_submitter,
-    PrintJobSubmitter::SubmitJobCallback callback,
-    absl::optional<api::printing::SubmitJobStatus> status,
-    std::unique_ptr<std::string> job_id,
+    SubmitJobCallback callback,
+    absl::optional<int> job_id,
+    printing::PrintJob* print_job,
+    printing::PrintedDocument* document,
     absl::optional<std::string> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!(job_id && error));
+
+  if (!job_id) {
+    absl::optional<api::printing::SubmitJobStatus> status;
+    if (!error)
+      status = api::printing::SUBMIT_JOB_STATUS_USER_REJECTED;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), status, nullptr, std::move(error)));
+    return;
+  }
+
+  DCHECK_EQ(print_job->source(), crosapi::mojom::PrintJob::Source::EXTENSION);
+
+  std::string printer_id =
+      base::UTF16ToUTF8(document->settings().device_name());
+  DCHECK(!printer_id.empty());
+
+  std::string cups_id = CreateUniqueId(printer_id, *job_id);
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), status, std::move(job_id), error));
+      base::BindOnce(std::move(callback), api::printing::SUBMIT_JOB_STATUS_OK,
+                     std::make_unique<std::string>(cups_id), absl::nullopt));
+
+  DCHECK(!base::Contains(print_jobs_, cups_id));
+  print_jobs_[cups_id] =
+      PrintJobInfo{printer_id, *job_id, print_job->source_id()};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  NotifyAshJobCreated(*print_job, *job_id, *document, local_printer_);
+#endif
+
+  if (!extension_registry_->enabled_extensions().Contains(
+          print_job->source_id())) {
+    return;
+  }
+
+  auto event =
+      std::make_unique<Event>(events::PRINTING_ON_JOB_STATUS_CHANGED,
+                              api::printing::OnJobStatusChanged::kEventName,
+                              api::printing::OnJobStatusChanged::Create(
+                                  cups_id, api::printing::JOB_STATUS_PENDING));
+  event_router_->DispatchEventToExtension(print_job->source_id(),
+                                          std::move(event));
 }
 
 absl::optional<std::string> PrintingAPIHandler::CancelJob(
@@ -336,35 +374,6 @@ void PrintingAPIHandler::SetPrintJobControllerForTesting(
   print_job_controller_ = std::move(print_job_controller);
 }
 
-void PrintingAPIHandler::Observe(int type,
-                                 const content::NotificationSource& source,
-                                 const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
-
-  content::Source<printing::PrintJob> job(source);
-  content::Details<printing::JobEventDetails> job_details(details);
-  if (job->source() != crosapi::mojom::PrintJob::Source::EXTENSION ||
-      job_details->type() != printing::JobEventDetails::DOC_DONE ||
-      !extension_registry_->enabled_extensions().Contains(job->source_id())) {
-    return;
-  }
-
-  std::string printer_id =
-      base::UTF16ToUTF8(job_details->document()->settings().device_name());
-  std::string cups_id = CreateUniqueId(printer_id, job_details->job_id());
-  DCHECK(!base::Contains(print_jobs_, cups_id));
-  print_jobs_[cups_id] =
-      PrintJobInfo{printer_id, job_details->job_id(), job->source_id()};
-  print_job_controller_->OnPrintJobCreated(job->source_id(), cups_id);
-  auto event =
-      std::make_unique<Event>(events::PRINTING_ON_JOB_STATUS_CHANGED,
-                              api::printing::OnJobStatusChanged::kEventName,
-                              api::printing::OnJobStatusChanged::Create(
-                                  cups_id, api::printing::JOB_STATUS_PENDING));
-  event_router_->DispatchEventToExtension(job->source_id(), std::move(event));
-}
-
 void PrintingAPIHandler::OnPrintJobUpdate(
     const std::string& printer_id,
     unsigned int job_id,
@@ -405,10 +414,8 @@ void PrintingAPIHandler::OnPrintJobUpdate(
     event_router_->DispatchEventToExtension(extension_id, std::move(event));
   }
 
-  if (done) {
+  if (done)
     print_jobs_.erase(it);
-    print_job_controller_->OnPrintJobFinished(cups_id);
-  }
 }
 
 template <>

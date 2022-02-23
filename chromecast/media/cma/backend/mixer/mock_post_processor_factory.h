@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "testing/gmock/include/gmock/gmock.h"

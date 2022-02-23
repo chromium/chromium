@@ -102,7 +102,7 @@ class PermissionsUpdaterListener : public content::NotificationObserver {
     UpdatedExtensionPermissionsInfo* info =
         content::Details<UpdatedExtensionPermissionsInfo>(details).ptr();
 
-    extension_ = info->extension;
+    extension_ = info->extension.get();
     permissions_ = info->permissions.Clone();
     reason_ = info->reason;
 

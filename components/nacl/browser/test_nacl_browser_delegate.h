@@ -39,8 +39,6 @@ class TestNaClBrowserDelegate : public NaClBrowserDelegate {
       const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
-  bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                           const GURL& manifest_url) override;
 };
 
 #endif  // COMPONENTS_NACL_BROWSER_TEST_NACL_BROWSER_DELEGATE_H_

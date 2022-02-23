@@ -5,6 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 
+#include <map>
+#include <string>
+
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +25,17 @@ BASE_EXPORT void StartThreadCachePeriodicPurge();
 
 BASE_EXPORT void StartMemoryReclaimer(
     scoped_refptr<SequencedTaskRunner> task_runner);
+
+BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials(
+    bool is_enterprise);
+
+// Install handlers for when dangling raw_ptr(s) have been detected. This prints
+// two StackTraces. One where the memory is freed, one where the last dangling
+// raw_ptr stopped referencing it.
+//
+// This is currently effective, only when compiled with
+// `enable_dangling_raw_ptr_checks` build flag.
+BASE_EXPORT void InstallDanglingRawPtrChecks();
 
 }  // namespace allocator
 }  // namespace base

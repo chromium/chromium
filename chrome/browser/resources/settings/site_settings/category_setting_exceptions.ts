@@ -10,9 +10,11 @@
 import './site_list.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+
+import {getTemplate} from './category_setting_exceptions.html.js';
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
@@ -27,7 +29,7 @@ export class CategorySettingExceptionsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

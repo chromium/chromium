@@ -5,6 +5,8 @@
 #ifndef BASE_TEST_SCOPED_FIELD_TRIAL_LIST_RESETTER_H_
 #define BASE_TEST_SCOPED_FIELD_TRIAL_LIST_RESETTER_H_
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 
 class FieldTrialList;
@@ -27,7 +29,7 @@ class ScopedFieldTrialListResetter final {
   ~ScopedFieldTrialListResetter();
 
  private:
-  base::FieldTrialList* const original_field_trial_list_;
+  const raw_ptr<base::FieldTrialList> original_field_trial_list_;
 };
 
 }  // namespace test

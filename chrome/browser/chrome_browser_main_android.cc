@@ -52,8 +52,12 @@ int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
   return result_code;
 }
 
-void ChromeBrowserMainPartsAndroid::PostProfileInit() {
-  ChromeBrowserMainParts::PostProfileInit();
+void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
+                                                    bool is_initial_profile) {
+  DCHECK(is_initial_profile);  // No multiprofile on Android, only the initial
+                               // call should happen.
+
+  ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
 
   // Idempotent.  Needs to be called once on startup.  If
   // InitializeClipboardAndroidFromLocalState() is called multiple times (e.g.,
@@ -63,7 +67,7 @@ void ChromeBrowserMainPartsAndroid::PostProfileInit() {
 
   // Start watching the preferences that need to be backed up backup using
   // Android backup, so that we create a new backup if they change.
-  backup_watcher_ = std::make_unique<android::ChromeBackupWatcher>(profile());
+  backup_watcher_ = std::make_unique<android::ChromeBackupWatcher>(profile);
 
   // The GCM driver can be used at this point because the primary profile has
   // been created. Register non-profile-specific things that use GCM so that no

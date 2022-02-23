@@ -213,7 +213,7 @@ DetachableBaseHandler::GetLastUsedDeviceForUser(const UserInfo& user) const {
   if (user.is_ephemeral)
     return "";
 
-  const base::DictionaryValue* detachable_base_info =
+  const base::Value* detachable_base_info =
       local_state_->GetDictionary(prefs::kDetachableBaseDevices);
   const base::Value* last_used = detachable_base_info->FindPathOfType(
       {GetKeyForPrefs(user.account_id), kLastUsedByUserPrefKey},

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/no_destructor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -65,7 +65,7 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
 
   // Pointer to the AXAuraObjCache object that owns |this|. Guaranteed not to be
   // null for the lifetime of this.
-  AXAuraObjCache* const cache_;
+  const raw_ptr<AXAuraObjCache> cache_;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
@@ -211,8 +211,8 @@ View* AXAuraObjCache::GetFocusedView() {
   if (!focused_widget) {
     // Uses the a11y override window for focus if it exists, otherwise gets the
     // last focused window.
-    focused_window =
-        a11y_override_window_ ? a11y_override_window_ : focused_window_;
+    focused_window = a11y_override_window_ ? a11y_override_window_.get()
+                                           : focused_window_.get();
 
     // Finally, fallback to searching for the focus.
     if (!focused_window) {

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -49,7 +50,7 @@ class BrowserRemovalWaiter : public BrowserListObserver {
       message_loop_runner_->Quit();
   }
 
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

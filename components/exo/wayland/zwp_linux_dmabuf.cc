@@ -8,6 +8,7 @@
 #include <linux-dmabuf-unstable-v1-server-protocol.h>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server_util.h"
@@ -37,14 +38,16 @@ void HandleBufferReleaseCallback(wl_resource* resource) {
 const struct dmabuf_supported_format {
   uint32_t dmabuf_format;
   gfx::BufferFormat buffer_format;
-} dmabuf_supported_formats[] = {
+} kSupportedDmaBufFormats[] = {
     {DRM_FORMAT_RGB565, gfx::BufferFormat::BGR_565},
     {DRM_FORMAT_XBGR8888, gfx::BufferFormat::RGBX_8888},
     {DRM_FORMAT_ABGR8888, gfx::BufferFormat::RGBA_8888},
     {DRM_FORMAT_XRGB8888, gfx::BufferFormat::BGRX_8888},
     {DRM_FORMAT_ARGB8888, gfx::BufferFormat::BGRA_8888},
     {DRM_FORMAT_NV12, gfx::BufferFormat::YUV_420_BIPLANAR},
-    {DRM_FORMAT_YVU420, gfx::BufferFormat::YVU_420}};
+    {DRM_FORMAT_YVU420, gfx::BufferFormat::YVU_420},
+    {DRM_FORMAT_ABGR2101010, gfx::BufferFormat::RGBA_1010102},
+    {DRM_FORMAT_ARGB2101010, gfx::BufferFormat::BGRA_1010102}};
 
 struct LinuxBufferParams {
   struct Plane {
@@ -78,10 +81,10 @@ void linux_buffer_params_add(wl_client* client,
   const uint64_t modifier = (static_cast<uint64_t>(modifier_hi) << 32) | modifier_lo;
   LinuxBufferParams::Plane plane{base::ScopedFD(fd), stride, offset, modifier};
 
-  const auto& inserted = linux_buffer_params->planes.insert(
-      std::pair<uint32_t, LinuxBufferParams::Plane>(plane_idx,
-                                                    std::move(plane)));
-  if (!inserted.second) {  // The plane was already there.
+  bool inserted = linux_buffer_params->planes
+                      .insert(std::make_pair(plane_idx, std::move(plane)))
+                      .second;
+  if (!inserted) {  // The plane was already there.
     wl_resource_post_error(resource, ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_PLANE_SET,
                            "plane already set");
   }
@@ -119,8 +122,7 @@ bool ValidateLinuxBufferParams(wl_resource* resource,
 
   // Validate that we have planes 0..num_planes-1
   for (uint32_t i = 0; i < num_planes; ++i) {
-    auto plane_it = linux_buffer_params->planes.find(i);
-    if (plane_it == linux_buffer_params->planes.end()) {
+    if (!base::Contains(linux_buffer_params->planes, i)) {
       wl_resource_post_error(resource,
                              ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INCOMPLETE,
                              "missing a plane");
@@ -150,11 +152,11 @@ wl_resource* create_buffer(wl_client* client,
                            uint32_t format,
                            uint32_t flags) {
   const auto* supported_format = std::find_if(
-      std::begin(dmabuf_supported_formats), std::end(dmabuf_supported_formats),
+      std::begin(kSupportedDmaBufFormats), std::end(kSupportedDmaBufFormats),
       [format](const dmabuf_supported_format& supported_format) {
         return supported_format.dmabuf_format == format;
       });
-  if (supported_format == std::end(dmabuf_supported_formats)) {
+  if (supported_format == std::end(kSupportedDmaBufFormats)) {
     wl_resource_post_error(resource,
                            ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INVALID_FORMAT,
                            "format not supported");
@@ -162,8 +164,9 @@ wl_resource* create_buffer(wl_client* client,
   }
 
   if (!ValidateLinuxBufferParams(resource, width, height,
-                                 supported_format->buffer_format, flags))
+                                 supported_format->buffer_format, flags)) {
     return nullptr;
+  }
 
   LinuxBufferParams* linux_buffer_params =
       GetUserDataAs<LinuxBufferParams>(resource);
@@ -279,7 +282,7 @@ void bind_linux_dmabuf(wl_client* client,
   wl_resource_set_implementation(resource, &linux_dmabuf_implementation, data,
                                  nullptr);
 
-  for (const auto& supported_format : dmabuf_supported_formats)
+  for (const auto& supported_format : kSupportedDmaBufFormats)
     zwp_linux_dmabuf_v1_send_format(resource, supported_format.dmabuf_format);
 }
 

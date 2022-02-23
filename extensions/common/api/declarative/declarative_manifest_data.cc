@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +37,7 @@ class ErrorBuilder {
   }
 
  private:
-  std::u16string* const error_;
+  const raw_ptr<std::u16string> error_;
 };
 
 // Converts a rule defined in the manifest into a JSON internal format. The
@@ -64,7 +64,7 @@ bool ConvertManifestRule(const DeclarativeManifestData::Rule& rule,
           if (type == declarative_content_constants::kLegacyShowAction)
             type = declarative_content_constants::kShowAction;
           dictionary->RemoveKey("type");
-          dictionary->SetString("instanceType", type);
+          dictionary->SetStringKey("instanceType", type);
         }
         return true;
       };
@@ -125,14 +125,13 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
   ErrorBuilder error_builder(error);
   std::unique_ptr<DeclarativeManifestData> result(
       new DeclarativeManifestData());
-  const base::ListValue* list = nullptr;
-  if (!value.GetAsList(&list)) {
+  if (!value.is_list()) {
     error_builder.Append("'event_rules' expected list, got %s",
                          base::Value::GetTypeName(value.type()));
     return nullptr;
   }
 
-  for (const auto& element : list->GetList()) {
+  for (const auto& element : value.GetListDeprecated()) {
     const base::DictionaryValue* dict = nullptr;
     if (!element.GetAsDictionary(&dict)) {
       error_builder.Append("expected dictionary, got %s",

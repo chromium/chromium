@@ -30,7 +30,7 @@ TEST(SwitchUtilsTest, RemoveSwitches) {
   EXPECT_TRUE(cmd_line.HasSwitch("bar"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(SwitchUtilsTest, RemoveSwitchesFromString) {
   // All these command line args (except foo and bar) will
   // be removed after RemoveSwitchesForAutostart:
@@ -88,4 +88,4 @@ TEST(SwitchUtilsTest, RemovePrefetchSwitchAndNormalSwitch) {
   EXPECT_TRUE(cmd_line.HasSwitch("foo"));
   EXPECT_TRUE(cmd_line.HasSwitch("bar"));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

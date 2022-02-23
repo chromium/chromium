@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
@@ -176,13 +177,26 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Returns true if encoded output can be enabled in the source.
   virtual bool SupportsEncodedOutput() const;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Start/stop cropping a video track.
+  //
   // Non-empty |crop_id| sets (or changes) the crop-target.
   // Empty |crop_id| reverts the capture to its original, uncropped state.
+  //
+  // |crop_version| is plumbed down to Viz, which associates that value with
+  // all subsequent frames.
+  // For a given device, new calls to Crop() must be with a |crop_version| that
+  // is greater than the value from the previous call, but not necessarily by
+  // exactly one. (If a call to cropTo is rejected earlier in the pipeline,
+  // the crop-version can increase in Blink, and later calls to cropTo()
+  // can appear over this mojom pipe with a higher version.)
+  //
   // The callback reports success/failure.
   virtual void Crop(
       const base::Token& crop_id,
+      uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+#endif
 
   // Notifies the source about that the number of encoded sinks have been
   // updated. Note: Can only be called if the number of encoded sinks have
@@ -316,7 +330,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // in the context of the callback. If gUM fails, the implementation will
   // simply drop the references to the blink source and track which will lead
   // to this object being deleted.
-  void FinalizeAddPendingTracks();
+  void FinalizeAddPendingTracks(mojom::MediaStreamRequestResult result);
 
   // Actually adds |track| to this source, provided the source has started.
   void FinalizeAddTrack(MediaStreamVideoTrack* track,

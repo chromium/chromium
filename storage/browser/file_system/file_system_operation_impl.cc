@@ -250,7 +250,8 @@ void FileSystemOperationImpl::OpenFile(const FileSystemURL& url,
                                        OpenFileCallback callback) {
   DCHECK(SetPendingOperationType(kOperationOpenFile));
 
-  if (file_flags & (base::File::FLAG_TEMPORARY | base::File::FLAG_HIDDEN)) {
+  if (file_flags &
+      (base::File::FLAG_WIN_TEMPORARY | base::File::FLAG_WIN_HIDDEN)) {
     std::move(callback).Run(base::File(base::File::FILE_ERROR_FAILED),
                             base::OnceClosure());
     return;

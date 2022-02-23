@@ -9,12 +9,12 @@
             <solid android:color="@android:color/transparent"/>
             <stroke
                 android:width="2dp"
-                android:color="?attr/default_icon_color"/>
+                android:color="@macro/default_icon_color"/>
         </shape>
     </item>
     <item android:maxLevel="@integer/list_item_level_selected">
         <shape android:shape="oval">
-            <solid android:color="@color/default_control_color_active" />
+            <solid android:color="@macro/default_control_color_active" />
         </shape>
     </item>
 </level-list>

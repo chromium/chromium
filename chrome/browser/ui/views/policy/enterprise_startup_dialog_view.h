@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -53,9 +54,9 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
 
   // Remove all existing child views from the dialog, show/hide dialog buttons.
   void ResetDialog(bool show_accept_button);
-  // Append child views to the content area, setup the layout.
-  void SetupLayout(std::unique_ptr<views::View> icon,
-                   std::unique_ptr<views::View> text);
+  // Append child views to the content area.
+  void AddContent(std::unique_ptr<views::View> icon,
+                  std::unique_ptr<views::View> text);
 
   EnterpriseStartupDialog::DialogResultCallback callback_;
   bool can_show_browser_window_ = false;
@@ -85,7 +86,7 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
 
  private:
   // The dialog_view_ is owned by itself.
-  EnterpriseStartupDialogView* dialog_view_;
+  raw_ptr<EnterpriseStartupDialogView> dialog_view_;
 };
 
 }  // namespace policy

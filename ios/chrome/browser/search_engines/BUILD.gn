@@ -21,10 +21,10 @@ source_set("search_engines") {
     "template_url_fetcher_factory.h",
     "template_url_service_client_impl.cc",
     "template_url_service_client_impl.h",
-    "template_url_service_factory.cc",
     "template_url_service_factory.h",
-    "ui_thread_search_terms_data.cc",
+    "template_url_service_factory.mm",
     "ui_thread_search_terms_data.h",
+    "ui_thread_search_terms_data.mm",
   ]
   deps = [
     ":search_engine_js",

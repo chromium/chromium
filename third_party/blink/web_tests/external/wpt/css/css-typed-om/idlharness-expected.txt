@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 508 tests; 431 PASS, 77 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 520 tests; 442 PASS, 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -229,15 +229,15 @@ PASS CSSMathMax interface: existence and properties of interface prototype objec
 PASS CSSMathMax interface: existence and properties of interface prototype object's "constructor" property
 PASS CSSMathMax interface: existence and properties of interface prototype object's @@unscopables property
 PASS CSSMathMax interface: attribute values
-FAIL CSSMathClamp interface: existence and properties of interface object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface object length assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface object name assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute lower assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute value assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
-FAIL CSSMathClamp interface: attribute upper assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+PASS CSSMathClamp interface: existence and properties of interface object
+PASS CSSMathClamp interface object length
+PASS CSSMathClamp interface object name
+PASS CSSMathClamp interface: existence and properties of interface prototype object
+PASS CSSMathClamp interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathClamp interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathClamp interface: attribute lower
+PASS CSSMathClamp interface: attribute value
+PASS CSSMathClamp interface: attribute upper
 PASS CSSNumericArray interface: existence and properties of interface object
 PASS CSSNumericArray interface object length
 PASS CSSNumericArray interface object name
@@ -431,16 +431,6 @@ FAIL CSSHWB interface: attribute h assert_own_property: self does not have own p
 FAIL CSSHWB interface: attribute w assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
 FAIL CSSHWB interface: attribute b assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
 FAIL CSSHWB interface: attribute alpha assert_own_property: self does not have own property "CSSHWB" expected property "CSSHWB" missing
-FAIL CSSLCH interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface object length assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface object name assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: attribute l assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: attribute c assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: attribute h assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
-FAIL CSSLCH interface: attribute alpha assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
 FAIL CSSLab interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
 FAIL CSSLab interface object length assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
 FAIL CSSLab interface object name assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
@@ -451,23 +441,45 @@ FAIL CSSLab interface: attribute l assert_own_property: self does not have own p
 FAIL CSSLab interface: attribute a assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
 FAIL CSSLab interface: attribute b assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
 FAIL CSSLab interface: attribute alpha assert_own_property: self does not have own property "CSSLab" expected property "CSSLab" missing
+FAIL CSSLCH interface: existence and properties of interface object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface object length assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface object name assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute l assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute c assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute h assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSLCH interface: attribute alpha assert_own_property: self does not have own property "CSSLCH" expected property "CSSLCH" missing
+FAIL CSSOKLab interface: existence and properties of interface object assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface object length assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface object name assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: attribute l assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: attribute a assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: attribute b assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLab interface: attribute alpha assert_own_property: self does not have own property "CSSOKLab" expected property "CSSOKLab" missing
+FAIL CSSOKLCH interface: existence and properties of interface object assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface object length assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface object name assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: attribute l assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: attribute c assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: attribute h assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
+FAIL CSSOKLCH interface: attribute alpha assert_own_property: self does not have own property "CSSOKLCH" expected property "CSSOKLCH" missing
 FAIL CSSColor interface: existence and properties of interface object assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface object length assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface object name assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 FAIL CSSColor interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface object length assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface object name assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute c assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute m assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute y assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute k assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
-FAIL CSSDeviceCMYK interface: attribute alpha assert_own_property: self does not have own property "CSSDeviceCMYK" expected property "CSSDeviceCMYK" missing
+FAIL CSSColor interface: attribute colorSpace assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface: attribute channels assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
+FAIL CSSColor interface: attribute alpha assert_own_property: self does not have own property "CSSColor" expected property "CSSColor" missing
 PASS CSSStyleRule interface: attribute styleMap
 PASS CSS namespace: operation escape(CSSOMString)
 PASS CSS namespace: operation number(double)
@@ -481,8 +493,8 @@ FAIL CSS namespace: operation lh(double) assert_own_property: namespace object m
 FAIL CSS namespace: operation rlh(double) assert_own_property: namespace object missing operation "rlh" expected property "rlh" missing
 PASS CSS namespace: operation vw(double)
 PASS CSS namespace: operation vh(double)
-FAIL CSS namespace: operation vi(double) assert_own_property: namespace object missing operation "vi" expected property "vi" missing
-FAIL CSS namespace: operation vb(double) assert_own_property: namespace object missing operation "vb" expected property "vb" missing
+PASS CSS namespace: operation vi(double)
+PASS CSS namespace: operation vb(double)
 PASS CSS namespace: operation vmin(double)
 PASS CSS namespace: operation vmax(double)
 PASS CSS namespace: operation cm(double)

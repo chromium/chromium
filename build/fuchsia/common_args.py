@@ -112,6 +112,9 @@ def AddCommonArgs(arg_parser):
   package_args.add_argument(
       '--package-name',
       help='Name of the package to execute, defined in ' + 'package metadata.')
+  package_args.add_argument('--component-version',
+                            help='Component version of the package to execute',
+                            default='1')
 
   emu_args = arg_parser.add_argument_group('emu', 'General emulator arguments')
   emu_args.add_argument('--cpu-cores',
@@ -162,6 +165,15 @@ def ConfigureLogging(args):
   # Only enable it if -vv is passed.
   logging.getLogger('ssh').setLevel(
       logging.DEBUG if args.verbose else logging.WARN)
+
+
+def InitializeTargetArgs():
+  """Set args for all targets to default values. This is used by test scripts
+     that have their own parser but still uses the target classes."""
+  parser = argparse.ArgumentParser()
+  AddCommonArgs(parser)
+  AddTargetSpecificArgs(parser)
+  return parser.parse_args([])
 
 
 def GetDeploymentTargetForArgs(args):

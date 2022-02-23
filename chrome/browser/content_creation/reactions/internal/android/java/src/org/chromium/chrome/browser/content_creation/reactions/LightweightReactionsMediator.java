@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.content_creation.reactions;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.util.Size;
 
 import org.chromium.base.Callback;
+import org.chromium.base.StreamUtil;
+import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils.FileOutputStreamWriter;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
@@ -50,6 +53,8 @@ public class LightweightReactionsMediator {
 
     private final ImageFetcher mImageFetcher;
 
+    private boolean mAssetFetchCancelled;
+    private boolean mGifGenerationCancelled;
     private int mFramesGenerated;
 
     public LightweightReactionsMediator(ImageFetcher imageFetcher) {
@@ -93,6 +98,8 @@ public class LightweightReactionsMediator {
             return;
         }
 
+        mAssetFetchCancelled = false;
+
         // Keep track of the number of callbacks received (two per reaction expected). Need a
         // final instance because the counter is updated from within a callback.
         final Counter counter = new Counter(reactions.size() * 2);
@@ -107,6 +114,15 @@ public class LightweightReactionsMediator {
 
             ReactionMetadata reaction = reactions.get(i);
             getBitmapForUrl(reaction.thumbnailUrl, bitmap -> {
+                if (mAssetFetchCancelled) {
+                    return;
+                }
+                if (bitmap == null) {
+                    mAssetFetchCancelled = true;
+                    callback.onResult(null);
+                    return;
+                }
+
                 thumbnails[index] = bitmap;
                 counter.increment();
 
@@ -114,7 +130,16 @@ public class LightweightReactionsMediator {
                     callback.onResult(thumbnails);
                 }
             });
-            getGifForUrl(reaction.thumbnailUrl, gif -> {
+            getGifForUrl(reaction.assetUrl, gif -> {
+                if (mAssetFetchCancelled) {
+                    return;
+                }
+                if (gif == null) {
+                    mAssetFetchCancelled = true;
+                    callback.onResult(null);
+                    return;
+                }
+
                 counter.increment();
 
                 if (counter.isDone()) {
@@ -129,48 +154,91 @@ public class LightweightReactionsMediator {
      * with the URI to the temporary GIF file for sharing.
      *
      * @param host The {@link GifGeneratorHost} to use for generating the GIF frames.
-     * @param frameCount The desired number of frames. The encoder will keep invoking the host's
-     *                   prepareFrame() and drawFrame() until this many frames have been generated.
-     * @param width The desired width, in pixels, for the final GIF.
-     * @param height The desired height, in pixels, for the final GIF.
+     * @param fileName The shared GIF's file name.
+     * @param sceneCoordinator The {@link SceneCoordinator} to restart the animations when
+     *         cancelling and to get the dimensions.
+     * @param progressDialog The {@link LightweightReactionsProgressDialog} to update the progress
+     *         dialog.
      * @param doneCallback The callback to invoke when the final GIF is ready. The callback is
      *                     passed the Uri to the temporary GIF file that was generated.
      */
-    public void generateGif(GifGeneratorHost host, int frameCount, int width, int height,
+    public void generateGif(GifGeneratorHost host, String fileName,
+            SceneCoordinator sceneCoordinator, LightweightReactionsProgressDialog progressDialog,
             Callback<Uri> doneCallback) {
-        FileOutputStreamWriter gifWriter = (fos, frameCallback) -> {
+        mGifGenerationCancelled = false;
+        final long generationStartTime = System.currentTimeMillis();
+        progressDialog.setCancelProgressListener(view -> {
+            mGifGenerationCancelled = true;
+            int frameCount = sceneCoordinator.getFrameCount();
+            assert frameCount != 0;
+            int completion = (int) (100.0 * mFramesGenerated / sceneCoordinator.getFrameCount());
+            LightweightReactionsMetrics.recordGifGenerationCancelled(
+                    System.currentTimeMillis() - generationStartTime, completion);
+        });
+        FileOutputStreamWriter gifWriter = (fos, gifCallback) -> {
             AnimatedGifEncoder encoder = new AnimatedGifEncoder();
             encoder.setFrameRate(GIF_FPS);
             encoder.setQuality(GIF_QUALITY);
             encoder.setRepeat(GIF_REPEAT);
             encoder.start(fos);
+
+            // The encoder will keep invoking the host's prepareFrame() and drawFrame() until this
+            // many frames have been generated.
+            int frameCount = sceneCoordinator.getFrameCount();
+            assert frameCount != 0;
             mFramesGenerated = 0;
 
-            // For performance reasons, the scene might need to be scaled down in the final
-            // GIF. Determine the scale factor based on the largest scene dimension.
-            int largestDimension = Math.max(width, height);
+            // For performance reasons, the result might need to be scaled down for devices with
+            // very large display sizes. Determine the scale factor based on the largest dimension
+            // of the background screenshot and the maximum output dimension.
+            Size screenshotSize = sceneCoordinator.getScreenshotDisplaySize();
+            int screenshotWidth = screenshotSize.getWidth();
+            int screenshotHeight = screenshotSize.getHeight();
+            int largestDimension = Math.max(screenshotWidth, screenshotHeight);
             float scaleFactor = largestDimension <= GIF_MAX_DIMENSION_PX
                     ? 1f
                     : (float) GIF_MAX_DIMENSION_PX / largestDimension;
-            int scaledWidth = (int) (width * scaleFactor);
-            int scaledHeight = (int) (height * scaleFactor);
+            int scaledScreenshotWidth = (int) (screenshotWidth * scaleFactor);
+            int scaledScreenshotHeight = (int) (screenshotHeight * scaleFactor);
+
+            // The raw frames need to be cropped on the sides to account for the grey background
+            // bars. Calculate the X offset at which to start the crop. Also remember the scene
+            // dimensions for drawing the raw frames.
+            int sceneWidth = sceneCoordinator.getSceneWidth();
+            int sceneHeight = sceneCoordinator.getSceneHeight();
+            int scaledSceneWidth = (int) (sceneWidth * scaleFactor);
+            int scaledSceneHeight = (int) (sceneHeight * scaleFactor);
+            int cropOffsetX = (scaledSceneWidth - scaledScreenshotWidth) / 2;
 
             Callback<Void> prepareFrameCallback = new Callback<Void>() {
                 @Override
                 public void onResult(Void v) {
+                    if (mGifGenerationCancelled) {
+                        if (progressDialog.getDialog().isShowing()) {
+                            progressDialog.getDialog().dismiss();
+                            sceneCoordinator.startAnimations();
+                        }
+                        encoder.finish();
+                        StreamUtil.closeQuietly(fos);
+                        return;
+                    }
+
                     // The next frame is ready to be drawn and encoded. Use ARGB_8888 config for the
                     // bitmap, which is a standard configuration that allows transparency.
-                    Bitmap frame =
-                            Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888);
-                    Canvas canvas = new Canvas(frame);
+                    Bitmap rawFrame = Bitmap.createBitmap(
+                            scaledSceneWidth, scaledSceneHeight, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(rawFrame);
                     canvas.scale(scaleFactor, scaleFactor);
                     host.drawFrame(canvas);
-                    encoder.addFrame(frame);
+                    Bitmap croppedFrame = Bitmap.createBitmap(rawFrame, cropOffsetX, 0,
+                            scaledScreenshotWidth, scaledScreenshotHeight);
+                    encoder.addFrame(croppedFrame);
                     ++mFramesGenerated;
+                    progressDialog.setProgress((int) (100.0 * mFramesGenerated / frameCount));
 
                     if (mFramesGenerated >= frameCount) {
                         boolean success = encoder.finish();
-                        frameCallback.onResult(success);
+                        gifCallback.onResult(success);
                     } else {
                         host.prepareFrame(this);
                     }
@@ -181,16 +249,7 @@ public class LightweightReactionsMediator {
         };
 
         ShareImageFileUtils.generateTemporaryUriFromStream(
-                getFileName(), gifWriter, GIF_FILE_EXT, doneCallback);
-    }
-
-    /**
-     * Returns the localized temporary filename. Random numbers will be appended to it when the file
-     * creation happens.
-     */
-    private String getFileName() {
-        // TODO(crbug.com/1213923): get final string from UX, and localize it here.
-        return "reaction";
+                fileName, gifWriter, GIF_FILE_EXT, doneCallback);
     }
 
     /**

@@ -11,6 +11,7 @@ mojom("stable_video_decoder") {
   ]
 
   public_deps = [
+    ":native_pixmap_handle",
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
@@ -58,9 +59,25 @@ mojom("stable_video_decoder") {
           cpp = "::gfx::HDRMetadata"
         },
         {
-          mojom = "media.stable.mojom.NativePixmapHandle"
-          cpp = "::gfx::NativePixmapHandle"
+          mojom = "media.stable.mojom.MediaLogRecord.Type"
+          cpp = "::media::MediaLogRecord::Type"
+        },
+        {
+          mojom = "media.stable.mojom.MediaLogRecord"
+          cpp = "::media::MediaLogRecord"
+        },
+        {
+          mojom = "media.stable.mojom.NativeGpuMemoryBufferHandle"
+          cpp = "::gfx::GpuMemoryBufferHandle"
           move_only = true
+        },
+        {
+          mojom = "media.stable.mojom.StatusData"
+          cpp = "::media::internal::StatusData"
+        },
+        {
+          mojom = "media.stable.mojom.Status"
+          cpp = "::media::DecoderStatus"
         },
         {
           mojom = "media.stable.mojom.SubsampleEntry"
@@ -87,6 +104,11 @@ mojom("stable_video_decoder") {
           cpp = "::media::VideoDecoderType"
         },
         {
+          mojom = "media.stable.mojom.VideoFrame"
+          cpp = "::scoped_refptr<::media::VideoFrame>"
+          nullable_is_same_type = true
+        },
+        {
           mojom = "media.stable.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },
@@ -101,11 +123,32 @@ mojom("stable_video_decoder") {
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
       traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
+      traits_public_deps = [ "//media/gpu" ]
     },
   ]
 
   cpp_proxy_target = "//media/mojo/services"
   export_class_attribute = "MEDIA_MOJO_EXPORT"
-  export_define = "MEDIA_MOJO_IMPLEMENTATION"
+  export_define = "IS_MEDIA_MOJO_IMPL"
   export_header = "media/mojo/services/media_mojo_export.h"
+}
+
+mojom("native_pixmap_handle") {
+  sources = [ "native_pixmap_handle.mojom" ]
+
+  public_deps = [ "//ui/gfx/mojom:native_handle_types" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.stable.mojom.NativePixmapHandle"
+          cpp = "::gfx::NativePixmapHandle"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "native_pixmap_handle_mojom_traits.h" ]
+      traits_sources = [ "native_pixmap_handle_mojom_traits.cc" ]
+    },
+  ]
 }

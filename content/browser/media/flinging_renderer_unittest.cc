@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "media/base/media_controller.h"
@@ -41,7 +42,7 @@ class MockFlingingController : public media::FlingingController {
   MOCK_METHOD0(GetApproximateCurrentTime, base::TimeDelta());
 
  private:
-  media::MediaController* media_controller_;
+  raw_ptr<media::MediaController> media_controller_;
 };
 
 class FlingingRendererTest : public testing::Test {
@@ -63,7 +64,7 @@ class FlingingRendererTest : public testing::Test {
  protected:
   NiceMock<media::MockRendererClient> renderer_client_;
   std::unique_ptr<MockMediaController> media_controller_;
-  StrictMock<MockFlingingController>* flinging_controller_;
+  raw_ptr<StrictMock<MockFlingingController>> flinging_controller_;
   std::unique_ptr<FlingingRenderer> renderer_;
 };
 

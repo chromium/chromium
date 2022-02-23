@@ -6,31 +6,41 @@
 
 #include <utility>
 
+#include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator_config.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {};
 
-class TestAuthenticatorModelObserver
+class TestAuthenticatorModelObserver final
     : public AuthenticatorRequestDialogModel::Observer {
  public:
   explicit TestAuthenticatorModelObserver(
@@ -49,7 +59,7 @@ class TestAuthenticatorModelObserver
   }
 
  private:
-  AuthenticatorRequestDialogModel* model_;
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
   AuthenticatorRequestDialogModel::Step last_step_;
 };
 
@@ -73,7 +83,54 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   }
 }
 
-#if defined(OS_MAC)
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       OverrideValidateDomainAndRelyingPartyIDTest) {
+  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
+  static const struct {
+    std::string rp_id;
+    std::string origin;
+    bool expected;
+  } kTests[] = {
+      {"example.com", "https://example.com", false},
+      {"foo.com", "https://example.com", false},
+      {"abcdef", kTestExtensionOrigin, true},
+      {"abcdefg", kTestExtensionOrigin, false},
+      {"example.com", kTestExtensionOrigin, false},
+  };
+
+  ChromeWebAuthenticationDelegate delegate;
+  for (const auto& test : kTests) {
+    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
+                  test.rp_id),
+              test.expected);
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
+  constexpr char kCryptotokenOrigin[] =
+      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
+  constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
+  ChromeWebAuthenticationDelegate delegate;
+  static const struct {
+    std::string rp_id;
+    std::string origin;
+    absl::optional<std::string> expected;
+  } kTests[] = {
+      {"example.com", "https://example.com", absl::nullopt},
+      {"foo.com", "https://example.com", absl::nullopt},
+      {"foobar.com", kCryptotokenOrigin, absl::nullopt},
+      {"abcdef", kTestExtensionOrigin, kTestExtensionOrigin},
+      {"example.com", kTestExtensionOrigin, kTestExtensionOrigin},
+  };
+  for (const auto& test : kTests) {
+    EXPECT_EQ(delegate.MaybeGetRelyingPartyIdOverride(
+                  test.rp_id, url::Origin::Create(GURL(test.origin))),
+              test.expected);
+  }
+}
+
+#if BUILDFLAG(IS_MAC)
 API_AVAILABLE(macos(10.12.2))
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
                                   content::BrowserContext* browser_context) {
@@ -117,9 +174,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
         TouchIdMetadataSecret(delegate, other_browser_context.get()).size());
   }
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 static constexpr char kRelyingPartyID[] = "example.com";
 
@@ -145,4 +202,158 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ShouldPromptForAttestationWin) {
   EXPECT_EQ(cb.value(), true);
 }
 
-#endif  // defined(OS_WIN)
+class ChromeAuthenticatorRequestDelegateWindowsBehaviorTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ public:
+  void CreateObjectsUnderTest() {
+    delegate_.emplace(main_rfh());
+    delegate_->SetRelyingPartyId("example.com");
+
+    AuthenticatorRequestDialogModel* const model = delegate_->dialog_model();
+    observer_.emplace(model);
+    model->AddObserver(&observer_.value());
+    CHECK_EQ(observer_->last_step(),
+             AuthenticatorRequestDialogModel::Step::kNotStarted);
+  }
+
+  absl::optional<ChromeAuthenticatorRequestDelegate> delegate_;
+  absl::optional<TestAuthenticatorModelObserver> observer_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthPhoneSupport};
+};
+
+TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
+       CancelAfterMechanismSelection) {
+  // Test that, on Windows, the `ChromeAuthenticatorRequestDelegate` should
+  // remember whether the last successful operation was with the native API or
+  // not and immediately trigger that UI for the next operation accordingly.
+
+  // Setup the Windows native authenticator and configure caBLE such that adding
+  // a phone is an option.
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  tai.has_win_native_api_authenticator = true;
+  tai.win_native_api_authenticator_id = "ID";
+  tai.available_transports.insert(
+      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Since there are two options, the mechanism selection sheet should be shown.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+
+  // Simulate the Windows native API being used successfully.
+  ChromeWebAuthenticationDelegate non_request_delegate;
+  non_request_delegate.OperationSucceeded(profile(), /* used_win_api= */ true);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Since the Windows API was used successfully last time, it should jump
+  // directly to the native UI this time.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kNotStarted);
+
+  // Simulate that caBLE was used successfully.
+  non_request_delegate.OperationSucceeded(profile(), /* used_win_api= */ false);
+
+  CreateObjectsUnderTest();
+  delegate_->dialog_model()->set_cable_transport_info(
+      absl::nullopt, {}, base::DoNothing(), "fido:/1234");
+  delegate_->OnTransportAvailabilityEnumerated(tai);
+
+  // Should show the mechanism selection sheet again.
+  EXPECT_EQ(observer_->last_step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+class CorpCrdOverrideOriginAndRpIdValidationTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
+};
+
+TEST_F(CorpCrdOverrideOriginAndRpIdValidationTest, Test) {
+  constexpr char kCorpCrdOrigin[] = "https://remotedesktop.corp.google.com";
+  constexpr char kExampleOrigin[] = "https://example.com";
+  constexpr char kTestRpId[] = "random.test.site.com";
+  enum class Policy {
+    kUnset,
+    kDisabled,
+    kEnabled,
+  };
+  struct {
+    Policy policy_value;
+    std::string switch_value;
+    std::string origin;
+    bool expected;
+  } kTestCases[] = {
+      // With the policy disabled, the override should be off.
+      {Policy::kUnset, "", kCorpCrdOrigin, false},
+      {Policy::kUnset, kExampleOrigin, kExampleOrigin, false},
+      {Policy::kDisabled, "", kCorpCrdOrigin, false},
+      {Policy::kDisabled, kExampleOrigin, kExampleOrigin, false},
+
+      // The origin must match the hard-coded value from the policy or the
+      // switch value exactly.
+      {Policy::kEnabled, "", kCorpCrdOrigin, true},
+      {Policy::kEnabled, kExampleOrigin, kCorpCrdOrigin, true},
+      {Policy::kEnabled, kExampleOrigin, kExampleOrigin, true},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, kExampleOrigin, "http://remotedesktop.corp.google.com",
+       false},
+      {Policy::kEnabled, kExampleOrigin, "https://remotedesktop.google.com",
+       false},
+      {Policy::kEnabled, kExampleOrigin, "https://google.com", false},
+      {Policy::kEnabled, kExampleOrigin, "https://a.google.com", false},
+      {Policy::kEnabled, kExampleOrigin, "https://sub.example.com", false},
+      {Policy::kEnabled, kExampleOrigin, "http://example.com", false},
+      {Policy::kEnabled, kExampleOrigin, "example.com2", false},
+
+      // The switch takes exactly one origin. No lists, or wildcards allowed.
+      {Policy::kEnabled, "https://example.com,https://other.com",
+       kExampleOrigin, false},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, "https://*", kExampleOrigin, false},
+      {Policy::kEnabled, "*.example.com", kExampleOrigin, false},
+      {Policy::kEnabled, "https://*.example.com", kExampleOrigin, false},
+  };
+  ChromeWebAuthenticationDelegate delegate;
+  for (const auto& test : kTestCases) {
+    PrefService* prefs =
+        Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+        test.switch_value);
+    switch (test.policy_value) {
+      case Policy::kUnset:
+        prefs->ClearPref(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
+        break;
+      case Policy::kDisabled:
+        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                          false);
+        break;
+      case Policy::kEnabled:
+        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                          true);
+        break;
+    }
+
+    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
+                  kTestRpId),
+              test.expected);
+  }
+}

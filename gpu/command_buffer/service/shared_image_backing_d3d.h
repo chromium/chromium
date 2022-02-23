@@ -10,7 +10,6 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -27,7 +26,7 @@
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
-#include <dawn_native/D3D12Backend.h>
+#include <dawn/native/D3D12Backend.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gfx {
@@ -200,7 +199,7 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   // If external_image_ exists, it means Dawn produced the D3D12 side of the
   // D3D11 texture created by ID3D12Device::OpenSharedHandle.
 #if BUILDFLAG(USE_DAWN)
-  std::unique_ptr<dawn_native::d3d12::ExternalImageDXGI> external_image_;
+  std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI> external_image_;
 #endif  // BUILDFLAG(USE_DAWN)
 
   // Staging texture used for copy to/from shared memory GMB.

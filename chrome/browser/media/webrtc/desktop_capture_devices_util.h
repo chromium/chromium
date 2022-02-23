@@ -13,20 +13,18 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
-// Helper to get list of media stream devices for desktop capture in |devices|.
-// Registers to display notification if |display_notification| is true.
-// Returns an instance of MediaStreamUI to be passed to content layer.
+// Helper to get the list of media stream devices for desktop capture and store
+// them in |out_devices|. Registers to display notification if
+// |display_notification| is true. Returns an instance of MediaStreamUI to be
+// passed to content layer.
 std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
+    const content::MediaStreamRequest& request,
     content::WebContents* web_contents,
-    const url::Origin& capturer_origin,
-    blink::MediaStreamDevices* devices,
     const content::DesktopMediaID& media_id,
-    blink::mojom::MediaStreamType devices_video_type,
-    blink::mojom::MediaStreamType devices_audio_type,
     bool capture_audio,
     bool disable_local_echo,
     bool display_notification,
     const std::u16string& application_title,
-    const std::u16string& registered_extension_name);
+    blink::MediaStreamDevices* out_devices);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_DEVICES_UTIL_H_

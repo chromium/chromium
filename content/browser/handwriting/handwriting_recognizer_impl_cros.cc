@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -88,6 +89,7 @@ absl::optional<std::string> GetModelIdentifier(base::StringPiece language_tag) {
 namespace content {
 
 namespace {
+using chromeos::machine_learning::mojom::LoadHandwritingModelResult;
 
 // The callback for `mojom::MachineLearningService::LoadHandwritingModel`
 // (CrOS).
@@ -95,16 +97,40 @@ void OnModelBinding(
     mojo::PendingRemote<handwriting::mojom::HandwritingRecognizer> remote,
     handwriting::mojom::HandwritingRecognitionService::
         CreateHandwritingRecognizerCallback callback,
-    chromeos::machine_learning::mojom::LoadHandwritingModelResult result) {
-  if (result ==
-      chromeos::machine_learning::mojom::LoadHandwritingModelResult::OK) {
+    LoadHandwritingModelResult result) {
+  if (result == LoadHandwritingModelResult::OK) {
     std::move(callback).Run(
         handwriting::mojom::CreateHandwritingRecognizerResult::kOk,
         std::move(remote));
-  } else {
-    std::move(callback).Run(
-        handwriting::mojom::CreateHandwritingRecognizerResult::kError,
-        mojo::NullRemote());
+    return;
+  }
+  switch (result) {
+    case LoadHandwritingModelResult::OK:
+      // Handled above.
+      NOTREACHED();
+      break;
+    case LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR:
+    case LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR:
+    case LoadHandwritingModelResult::FEATURE_DISABLED_BY_USER:
+    case LoadHandwritingModelResult::DLC_DOES_NOT_EXIST:
+      // Report as NotSupported if MLService indicates the model isn't
+      // available, or user doesn't want to use handwriting recognition.
+      std::move(callback).Run(
+          handwriting::mojom::CreateHandwritingRecognizerResult::kNotSupported,
+          mojo::NullRemote());
+      return;
+    case LoadHandwritingModelResult::DLC_GET_PATH_ERROR:
+    case LoadHandwritingModelResult::DLC_INSTALL_ERROR:
+    case LoadHandwritingModelResult::LOAD_NATIVE_LIB_ERROR:
+    case LoadHandwritingModelResult::LOAD_FUNC_PTR_ERROR:
+    case LoadHandwritingModelResult::LOAD_MODEL_FILES_ERROR:
+    case LoadHandwritingModelResult::LOAD_MODEL_ERROR:
+    case LoadHandwritingModelResult::DEPRECATED_MODEL_SPEC_ERROR:
+      // Report as error otherwise.
+      std::move(callback).Run(
+          handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+          mojo::NullRemote());
+      return;
   }
 }
 
@@ -155,7 +181,7 @@ void CrOSHandwritingRecognizerImpl::Create(
   // On CrOS, only one language is supported.
   if (constraint_blink->languages.size() != 1) {
     std::move(callback).Run(
-        handwriting::mojom::CreateHandwritingRecognizerResult::kError,
+        handwriting::mojom::CreateHandwritingRecognizerResult::kNotSupported,
         mojo::NullRemote());
     return;
   }

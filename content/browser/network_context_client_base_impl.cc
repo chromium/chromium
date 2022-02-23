@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
@@ -43,7 +43,7 @@ void HandleFileUploadRequest(
                                     std::vector<base::File>()));
       return;
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (file_path.IsContentUri()) {
       files.push_back(base::OpenContentUriForRead(file_path));
     } else {
@@ -104,7 +104,7 @@ void NetworkContextClientBase::OnCanSendDomainReliabilityUpload(
   std::move(callback).Run(false);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
     const std::string& server_auth_token,
     bool can_delegate,
@@ -115,7 +115,7 @@ void NetworkContextClientBase::OnGenerateHttpNegotiateAuthToken(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void NetworkContextClientBase::OnTrustAnchorUsed() {}
 #endif
 

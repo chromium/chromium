@@ -231,15 +231,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   const char kModel[] = "model";
 
   // Initialize sync bridge with test printer.
-  auto printer = CreateTestPrinterSpecifics(0);
+  std::unique_ptr<sync_pb::PrinterSpecifics> printer =
+      CreateTestPrinterSpecifics(0);
   const std::string spec_printer_id = printer->id();
   printer->set_manufacturer(kMake);
   printer->set_model(kModel);
-  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  ash::PrintersSyncBridge* bridge = GetPrinterStore(0)->GetSyncBridge();
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+      bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_THAT(spec_printer->make_and_model(), IsEmpty());
 
@@ -260,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   ASSERT_TRUE(SetupClients());
 
   // Initialize sync bridge with test printer.
-  auto printer = CreateTestPrinterSpecifics(0);
+  std::unique_ptr<sync_pb::PrinterSpecifics> printer =
+      CreateTestPrinterSpecifics(0);
   const std::string spec_printer_id = printer->id();
 
   auto ppd_ref = std::make_unique<sync_pb::PrinterPPDReference>();
@@ -268,14 +271,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest,
   ppd_ref->set_user_supplied_ppd_url("file://fake_ppd_url");
   printer->set_allocated_ppd_reference(ppd_ref.release());
 
-  auto* bridge = GetPrinterStore(0)->GetSyncBridge();
+  ash::PrintersSyncBridge* bridge = GetPrinterStore(0)->GetSyncBridge();
   bridge->AddPrinter(std::move(printer));
 
   // Confirm that the bridge is not migrated.
-  auto spec_printer = bridge->GetPrinter(spec_printer_id);
+  absl::optional<sync_pb::PrinterSpecifics> spec_printer =
+      bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
   ASSERT_TRUE(spec_printer->has_ppd_reference());
-  auto spec_ppd_ref = spec_printer->ppd_reference();
+  sync_pb::PrinterPPDReference spec_ppd_ref = spec_printer->ppd_reference();
   ASSERT_TRUE(spec_ppd_ref.autoconf());
   ASSERT_TRUE(spec_ppd_ref.has_user_supplied_ppd_url());
 

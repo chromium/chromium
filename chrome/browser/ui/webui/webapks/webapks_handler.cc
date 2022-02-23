@@ -38,7 +38,7 @@ void WebApksHandler::HandleRequestWebApksInfo(const base::ListValue* args) {
 
 void WebApksHandler::HandleRequestWebApkUpdate(const base::ListValue* args) {
   AllowJavascript();
-  for (const auto& val : args->GetList()) {
+  for (const auto& val : args->GetListDeprecated()) {
     if (val.is_string())
       ShortcutHelper::SetForceWebApkUpdate(val.GetString());
   }
@@ -48,34 +48,36 @@ void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
   if (!IsJavascriptAllowed())
     return;
   base::DictionaryValue result;
-  result.SetString("name", webapk_info.name);
-  result.SetString("shortName", webapk_info.short_name);
-  result.SetString("packageName", webapk_info.package_name);
-  result.SetString("id", webapk_info.id);
-  result.SetInteger("shellApkVersion", webapk_info.shell_apk_version);
-  result.SetInteger("versionCode", webapk_info.version_code);
-  result.SetString("uri", webapk_info.uri);
-  result.SetString("scope", webapk_info.scope);
-  result.SetString("manifestUrl", webapk_info.manifest_url);
-  result.SetString("manifestStartUrl", webapk_info.manifest_start_url);
-  result.SetString("displayMode",
-                   blink::DisplayModeToString(webapk_info.display));
-  result.SetString("orientation", blink::WebScreenOrientationLockTypeToString(
-                                      webapk_info.orientation));
-  result.SetString("themeColor",
-                   ui::OptionalSkColorToString(webapk_info.theme_color));
-  result.SetString("backgroundColor",
-                   ui::OptionalSkColorToString(webapk_info.background_color));
+  result.SetStringKey("name", webapk_info.name);
+  result.SetStringKey("shortName", webapk_info.short_name);
+  result.SetStringKey("packageName", webapk_info.package_name);
+  result.SetStringKey("id", webapk_info.id);
+  result.SetIntKey("shellApkVersion", webapk_info.shell_apk_version);
+  result.SetIntKey("versionCode", webapk_info.version_code);
+  result.SetStringKey("uri", webapk_info.uri);
+  result.SetStringKey("scope", webapk_info.scope);
+  result.SetStringKey("manifestUrl", webapk_info.manifest_url);
+  result.SetStringKey("manifestStartUrl", webapk_info.manifest_start_url);
+  result.SetStringKey("displayMode",
+                      blink::DisplayModeToString(webapk_info.display));
+  result.SetStringKey(
+      "orientation",
+      blink::WebScreenOrientationLockTypeToString(webapk_info.orientation));
+  result.SetStringKey("themeColor",
+                      ui::OptionalSkColorToString(webapk_info.theme_color));
+  result.SetStringKey("backgroundColor", ui::OptionalSkColorToString(
+                                             webapk_info.background_color));
   result.SetDoubleKey("lastUpdateCheckTimeMs",
                       webapk_info.last_update_check_time.ToJsTime());
   result.SetDoubleKey("lastUpdateCompletionTimeMs",
                       webapk_info.last_update_completion_time.ToJsTime());
-  result.SetBoolean("relaxUpdates", webapk_info.relax_updates);
-  result.SetString("backingBrowser", webapk_info.backing_browser_package_name);
-  result.SetBoolean("isBackingBrowser", webapk_info.is_backing_browser);
-  result.SetString("updateStatus",
-                   webapk_info.is_backing_browser
-                       ? webapk_info.update_status
-                       : "Current browser doesn't own this WebAPK.");
+  result.SetBoolKey("relaxUpdates", webapk_info.relax_updates);
+  result.SetStringKey("backingBrowser",
+                      webapk_info.backing_browser_package_name);
+  result.SetBoolKey("isBackingBrowser", webapk_info.is_backing_browser);
+  result.SetStringKey("updateStatus",
+                      webapk_info.is_backing_browser
+                          ? webapk_info.update_status
+                          : "Current browser doesn't own this WebAPK.");
   FireWebUIListener("web-apk-info", result);
 }

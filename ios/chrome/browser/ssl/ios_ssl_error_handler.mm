@@ -15,7 +15,6 @@
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
 #include "ios/chrome/browser/ssl/captive_portal_metrics.h"
 #include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
 #include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
@@ -30,14 +29,17 @@
 #error "This file requires ARC support."
 #endif
 
-const char kSessionDetectionResultHistogram[] =
-    "CaptivePortal.Session.DetectionResult";
-
 const int64_t kSSLInterstitialDelayInSeconds = 3;
 
 using captive_portal::CaptivePortalDetector;
+using security_interstitials::IOSBlockingPageTabHelper;
 
 namespace {
+// Result of captive portal network check after a request fails with
+// NSURLErrorSecureConnectionFailed.
+const char kCaptivePortalSecureConnectionFailedHistogram[] =
+    "IOS.CaptivePortal.SecureConnectionFailed";
+
 std::unique_ptr<security_interstitials::IOSBlockingPageMetricsHelper>
 CreateMetricsHelper(web::WebState* web_state,
                     const GURL& request_url,
@@ -92,18 +94,27 @@ IOSSSLErrorHandler::IOSSSLErrorHandler(
       weak_factory_(this) {}
 
 void IOSSSLErrorHandler::StartHandlingError() {
-  CaptivePortalDetectorTabHelper* tab_helper =
-      CaptivePortalDetectorTabHelper::FromWebState(web_state_);
   // TODO(crbug.com/760873): replace test with DCHECK when this method is only
   // called on WebStates attached to tabs.
-  if (!tab_helper) {
+  IOSBlockingPageTabHelper* blocking_tab_helper =
+      IOSBlockingPageTabHelper::FromWebState(web_state_);
+  if (!blocking_tab_helper) {
+    std::move(blocking_page_callback_).Run(@"");
     return;
   }
 
+  if (captive_portal_detector_) {
+    timer_.Stop();
+    captive_portal_detector_->Cancel();
+  }
+
+  captive_portal_detector_ =
+      std::make_unique<captive_portal::CaptivePortalDetector>(
+          web_state_->GetBrowserState()->GetURLLoaderFactory());
+
   base::WeakPtr<IOSSSLErrorHandler> weak_error_handler =
       weak_factory_.GetWeakPtr();
-
-  tab_helper->detector()->DetectCaptivePortal(
+  captive_portal_detector_->DetectCaptivePortal(
       GURL(CaptivePortalDetector::kDefaultURL),
       base::BindRepeating(
           &IOSSSLErrorHandler::HandleCaptivePortalDetectionResult,
@@ -119,6 +130,7 @@ void IOSSSLErrorHandler::StartHandlingError() {
 void IOSSSLErrorHandler::HandleCaptivePortalDetectionResult(
     const CaptivePortalDetector::Results& results) {
   timer_.Stop();
+  captive_portal_detector_.reset();
 
   IOSSSLErrorHandler::LogCaptivePortalResult(results.result);
   if (results.result == captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL) {
@@ -133,9 +145,10 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
 
   // Cancel the captive portal detection if it is still ongoing. This will be
   // the case if |timer_| triggered the call of this method.
-  CaptivePortalDetectorTabHelper* tab_helper =
-      CaptivePortalDetectorTabHelper::FromWebState(web_state_);
-  tab_helper->detector()->Cancel();
+  if (captive_portal_detector_) {
+    captive_portal_detector_->Cancel();
+    captive_portal_detector_.reset();
+  }
 
   int options_mask =
       overridable_
@@ -149,7 +162,7 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
           CreateMetricsHelper(web_state_, request_url_, overridable_),
           GetApplicationContext()->GetApplicationLocale()));
   std::string error_html = page->GetHtmlContents();
-  security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state_)
+  IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));
   std::move(blocking_page_callback_).Run(base::SysUTF8ToNSString(error_html));
   // Once an interstitial is displayed, no need to keep the handler around.
@@ -166,7 +179,7 @@ void IOSSSLErrorHandler::ShowCaptivePortalInterstitial(
           CreateMetricsHelper(web_state_, request_url_, overridable_),
           GetApplicationContext()->GetApplicationLocale()));
   std::string error_html = page->GetHtmlContents();
-  security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state_)
+  IOSBlockingPageTabHelper::FromWebState(web_state_)
       ->AssociateBlockingPage(navigation_id_, std::move(page));
   std::move(blocking_page_callback_).Run(base::SysUTF8ToNSString(error_html));
   // Once an interstitial is displayed, no need to keep the handler around.
@@ -177,19 +190,8 @@ void IOSSSLErrorHandler::ShowCaptivePortalInterstitial(
 // static
 void IOSSSLErrorHandler::LogCaptivePortalResult(
     captive_portal::CaptivePortalResult result) {
-  CaptivePortalStatus status;
-  switch (result) {
-    case captive_portal::RESULT_INTERNET_CONNECTED:
-      status = CaptivePortalStatus::ONLINE;
-      break;
-    case captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL:
-      status = CaptivePortalStatus::PORTAL;
-      break;
-    default:
-      status = CaptivePortalStatus::UNKNOWN;
-      break;
-  }
-  UMA_HISTOGRAM_ENUMERATION(kSessionDetectionResultHistogram,
+  CaptivePortalStatus status = CaptivePortalStatusFromDetectionResult(result);
+  UMA_HISTOGRAM_ENUMERATION(kCaptivePortalSecureConnectionFailedHistogram,
                             static_cast<int>(status),
                             static_cast<int>(CaptivePortalStatus::COUNT));
 }

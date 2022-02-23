@@ -25,19 +25,21 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/typed_buffer.h"
-#include "remoting/host/switches.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/window_station_and_desktop.h"
-#include "sandbox/win/src/restricted_token.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::win::ScopedHandle;
+using base::win::Sid;
 
 namespace remoting {
 
@@ -90,36 +92,37 @@ bool CreateRestrictedToken(ScopedHandle* token_out) {
   }
   ScopedHandle token(temp_handle);
 
-  sandbox::RestrictedToken restricted_token;
-  if (restricted_token.Init(token.Get()) != ERROR_SUCCESS)
-    return false;
-
-  // "SeChangeNotifyPrivilege" is needed to access the machine certificate
+  // The DISABLE_MAX_PRIVILEGE flag removes all privileges except for
+  // "SeChangeNotifyPrivilege" which is needed to access the machine certificate
   // (including its private key) in the "Local Machine" cert store. This is
   // needed for HTTPS client third-party authentication . But the presence of
   // "SeChangeNotifyPrivilege" also allows it to open and manipulate objects
   // owned by the same user. This risk is only mitigated by setting the
   // process integrity level to Low.
-  std::vector<std::wstring> exceptions;
-  exceptions.push_back(L"SeChangeNotifyPrivilege");
-
-  // Remove privileges in the token.
-  if (restricted_token.DeleteAllPrivileges(&exceptions) != ERROR_SUCCESS)
-    return false;
-
-  // Set low integrity level.
-  if (restricted_token.SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW) !=
-      ERROR_SUCCESS) {
+  if (!::CreateRestrictedToken(token.Get(), DISABLE_MAX_PRIVILEGE, 0, nullptr,
+                               0, nullptr, 0, nullptr, &temp_handle)) {
+    PLOG(ERROR) << "Failed to get the restricted token";
     return false;
   }
 
-  // Return the resulting token.
-  DWORD result = restricted_token.GetRestrictedToken(token_out);
-  if (result != ERROR_SUCCESS) {
-    LOG(ERROR) << "Failed to get the restricted token: " << result;
+  ScopedHandle restricted_token(temp_handle);
+  absl::optional<Sid> sid = Sid::FromIntegrityLevel(SECURITY_MANDATORY_LOW_RID);
+  if (!sid) {
+    LOG(ERROR) << "Failed to get integrity level SID";
     return false;
   }
 
+  TOKEN_MANDATORY_LABEL label = {};
+  label.Label.Attributes = SE_GROUP_INTEGRITY;
+  label.Label.Sid = sid->GetPSID();
+
+  if (!SetTokenInformation(restricted_token.Get(), TokenIntegrityLevel, &label,
+                           sizeof(label))) {
+    PLOG(ERROR) << "Failed to set low integrity level";
+    return false;
+  }
+
+  *token_out = std::move(restricted_token);
   return true;
 }
 

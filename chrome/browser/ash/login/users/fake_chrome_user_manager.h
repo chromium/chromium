@@ -10,6 +10,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,6 +19,8 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace ash {
 class FakeSupervisedUserManager;
@@ -219,6 +223,10 @@ class FakeChromeUserManager : public ChromeUserManager {
     last_session_active_account_id_ = last_session_active_account_id;
   }
 
+  void SetMockUserImageManagerForTesting() {
+    mock_user_image_manager_enabled_ = true;
+  }
+
  private:
   using UserImageManagerMap =
       std::map<AccountId, std::unique_ptr<UserImageManager>>;
@@ -234,8 +242,9 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool current_user_new_ = false;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
+  bool mock_user_image_manager_enabled_ = false;
 
-  MultiProfileUserController* multi_profile_user_controller_ = nullptr;
+  raw_ptr<MultiProfileUserController> multi_profile_user_controller_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.

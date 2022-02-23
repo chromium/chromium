@@ -25,7 +25,7 @@ namespace policy {
 
 class PolicyMap;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace android {
 class PolicyServiceAndroid;
 }
@@ -70,7 +70,7 @@ class POLICY_EXPORT PolicyServiceImpl
   bool IsInitializationComplete(PolicyDomain domain) const override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies(base::OnceClosure callback) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   android::PolicyServiceAndroid* GetPolicyServiceAndroid() override;
 #endif
 
@@ -168,7 +168,7 @@ class POLICY_EXPORT PolicyServiceImpl
   // initialization signal.
   bool initialization_throttled_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<android::PolicyServiceAndroid> policy_service_android_;
 #endif
 

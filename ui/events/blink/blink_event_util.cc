@@ -367,6 +367,13 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       gesture.data.tap.height =
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
+    case ET_GESTURE_SHORT_PRESS:
+      gesture.SetType(WebInputEvent::Type::kGestureShortPress);
+      gesture.data.long_press.width =
+          IfNanUseMaxFloat(details.bounding_box_f().width());
+      gesture.data.long_press.height =
+          IfNanUseMaxFloat(details.bounding_box_f().height());
+      break;
     case ET_GESTURE_LONG_PRESS:
       gesture.SetType(WebInputEvent::Type::kGestureLongPress);
       gesture.data.long_press.width =
@@ -754,7 +761,7 @@ blink::WebGestureEvent ScrollBeginFromScrollUpdate(
   return scroll_begin;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
     const GestureEventAndroid& event) {
   WebInputEvent::Type event_type = WebInputEvent::Type::kUndefined;

@@ -9,6 +9,8 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -75,6 +77,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
                                CompleteURLCallback complete_url_callback);
 
  private:
+  void AddConsoleMessage(const String& message) const;
   bool ResourcesOrScopesMatch(const KURL& url) const;
   void ReleaseBundleLoader();
 

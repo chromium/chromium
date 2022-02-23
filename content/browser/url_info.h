@@ -37,8 +37,9 @@ namespace content {
 //
 // To check whether a frame ends up in a site-isolated process, use
 // SiteInfo::RequiresDedicatedProcess() on its SiteInstance's SiteInfo.  To
-// check whether a frame ends up being origin-isolated (e.g., due to the
-// Origin-Agent-Cluster header), use SiteInfo::is_origin_keyed().
+// check whether a frame ends up being origin-isolated in a separate process
+// (e.g., due to the Origin-Agent-Cluster header), use
+// SiteInfo::requires_origin_keyed_process().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
 class UrlInfoInit;
@@ -49,12 +50,19 @@ struct CONTENT_EXPORT UrlInfo {
   enum OriginIsolationRequest {
     // No isolated has been requested.
     kNone = 0,
-    // The Origin-Agent-Cluster header is requesting origin-keyed isolation for
-    // `url`'s origin.
+    // The Origin-Agent-Cluster header is requesting OAC isolation for `url`'s
+    // origin in the renderer. If granted, this is tracked for consistency in
+    // ChildProcessSecurityPolicyImpl. If kRequiresOriginKeyedProcess is not
+    // set, then this only affects the renderer.
     kOriginAgentCluster = (1 << 0),
+    // If kOriginAgentCluster is set, the following bit triggers an origin-keyed
+    // process for `url`'s origin. If kRequiresOriginKeyedProcess is not set and
+    // kOriginAgentCluster is,  then OAC will be logical only, i.e. implemented
+    // in the renderer via a separate AgentCluster.
+    kRequiresOriginKeyedProcess = (1 << 1),
     // The Cross-Origin-Opener-Policy header has triggered a hint to turn on
     // site isolation for `url`'s site.
-    kCOOP = (1 << 1)
+    kCOOP = (1 << 2)
   };
 
   UrlInfo();  // Needed for inclusion in SiteInstanceDescriptor.
@@ -68,11 +76,18 @@ struct CONTENT_EXPORT UrlInfo {
                                   absl::optional<StoragePartitionConfig>
                                       storage_partition_config = absl::nullopt);
 
-  // Returns whether this UrlInfo is requesting origin-keyed isolation for
-  // `url`'s origin due to the OriginAgentCluster header.
-  bool requests_origin_agent_cluster_isolation() const {
+  // Returns whether this UrlInfo is requesting an origin-keyed agent cluster
+  // for `url`'s origin due to the OriginAgentCluster header.
+  bool requests_origin_agent_cluster() const {
     return (origin_isolation_request &
             OriginIsolationRequest::kOriginAgentCluster);
+  }
+
+  // Returns whether this UrlInfo is requesting an origin-keyed process for
+  // for `url`'s origin due to the OriginAgentCluster header.
+  bool requests_origin_keyed_process() const {
+    return (origin_isolation_request &
+            OriginIsolationRequest::kRequiresOriginKeyedProcess);
   }
 
   // Returns whether this UrlInfo is requesting isolation in response to the
@@ -80,6 +95,10 @@ struct CONTENT_EXPORT UrlInfo {
   bool requests_coop_isolation() const {
     return (origin_isolation_request & OriginIsolationRequest::kCOOP);
   }
+
+  // Returns whether this UrlInfo is for a page that should be cross-origin
+  // isolated.
+  bool IsIsolated() const;
 
   GURL url;
 
@@ -97,6 +116,10 @@ struct CONTENT_EXPORT UrlInfo {
   // this is just the origin of |url|.
   url::Origin origin;
 
+  // If url is being loaded in a frame that is in a origin-restricted sandboxed,
+  // then this flag will be true.
+  bool is_sandboxed = false;
+
   // The StoragePartitionConfig that should be used when loading content from
   // |url|. If absent, ContentBrowserClient::GetStoragePartitionConfig will be
   // used to determine which StoragePartitionConfig to use.
@@ -113,7 +136,10 @@ struct CONTENT_EXPORT UrlInfo {
   // safely expose otherwise. "Cross-origin isolation", for example, requires
   // assertion of a Cross-Origin-Opener-Policy and
   // Cross-Origin-Embedder-Policy, and unlocks SharedArrayBuffer.
-  WebExposedIsolationInfo web_exposed_isolation_info;
+  // When we haven't yet been to the network or inherited properties that are
+  // sufficient to know the future isolation state - we are in a speculative
+  // state - this member will be empty.
+  absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
 
   // Indicates that the URL directs to PDF content, which should be isolated
   // from other types of content.
@@ -135,10 +161,11 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithOriginIsolationRequest(
       UrlInfo::OriginIsolationRequest origin_isolation_request);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
+  UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithStoragePartitionConfig(
       absl::optional<StoragePartitionConfig> storage_partition_config);
   UrlInfoInit& WithWebExposedIsolationInfo(
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
 
  private:
@@ -150,8 +177,9 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kNone;
   url::Origin origin_;
+  bool is_sandboxed_ = false;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
-  WebExposedIsolationInfo web_exposed_isolation_info_;
+  absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.

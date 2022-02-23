@@ -46,24 +46,38 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
 
   //! \brief Initializes the object.
   //!
-  //! \param[in] dump_path A class containing various system data points.
+  //! \param[in] dump_path The intermediate dump to read.
+  //! \param[in] annotations Process annotations to set in each crash report.
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     an appropriate message logged.
-  bool Initialize(const base::FilePath& dump_path,
-                  const std::map<std::string, std::string>& annotations);
+  bool InitializeWithFilePath(
+      const base::FilePath& dump_path,
+      const std::map<std::string, std::string>& annotations);
+
+  //! \brief Initializes the object.
+  //!
+  //! \param[in] dump_interface An interface corresponding to an intermediate
+  //!     dump file.
+  //! \param[in] annotations Process annotations to set in each crash report.
+  //!
+  //! \return `true` if the snapshot could be created, `false` otherwise with
+  //!     an appropriate message logged.
+  bool InitializeWithFileInterface(
+      const IOSIntermediateDumpInterface& dump_interface,
+      const std::map<std::string, std::string>& annotations);
 
   //! On iOS, the client ID is under the control of the snapshot producer,
   //! which may call this method to set the client ID. If this is not done,
   //! ClientID() will return an identifier consisting entirely of zeroes.
-  void SetClientID(const UUID& client_id) { client_id_ = client_id; }
+  void SetClientID(const UUID& client_id);
 
   //! \brief Sets the value to be returned by ReportID().
   //!
   //! On iOS, the crash report ID is under the control of the snapshot
   //! producer, which may call this method to set the report ID. If this is not
   //! done, ReportID() will return an identifier consisting entirely of zeroes.
-  void SetReportID(const UUID& report_id) { report_id_ = report_id; }
+  void SetReportID(const UUID& report_id);
 
   // ProcessSnapshot:
   pid_t ProcessID() const override;

@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -66,10 +67,10 @@ class LaunchAppUserChoiceDialogView : public views::DialogDelegateView {
   // Runs the close_callback_ provided during Show() if it exists.
   void RunCloseCallback(bool allowed, bool remember_user_choice);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   const AppId app_id_;
-  views::Checkbox* remember_selection_checkbox_;
-  views::ImageView* icon_image_view_;
+  raw_ptr<views::Checkbox> remember_selection_checkbox_;
+  raw_ptr<views::ImageView> icon_image_view_;
   chrome::WebAppLaunchAcceptanceCallback close_callback_;
   base::WeakPtrFactory<LaunchAppUserChoiceDialogView> weak_ptr_factory_{this};
 };

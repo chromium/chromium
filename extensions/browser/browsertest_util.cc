@@ -4,8 +4,12 @@
 
 #include "extensions/browser/browsertest_util.h"
 
+#include "base/callback.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,6 +62,31 @@ bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
   }
   content::ExecuteScriptAsync(host->host_contents(), script);
   return true;
+}
+
+void ExecuteScriptInServiceWorker(
+    content::BrowserContext* browser_context,
+    const std::string& extension_id,
+    const std::string& script,
+    base::OnceCallback<void(base::Value)> callback) {
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+  ASSERT_TRUE(process_manager);
+  std::vector<WorkerId> worker_ids =
+      process_manager->GetServiceWorkersForExtension(extension_id);
+  ASSERT_EQ(1u, worker_ids.size())
+      << "Incorrect number of workers registered for extension.";
+  content::ServiceWorkerContext* service_worker_context =
+      util::GetStoragePartitionForExtensionId(extension_id, browser_context)
+          ->GetServiceWorkerContext();
+  auto callback_adapter =
+      [](base::OnceCallback<void(base::Value)> original_callback,
+         base::Value value, const absl::optional<std::string>& error) {
+        ASSERT_FALSE(error.has_value()) << *error;
+        std::move(original_callback).Run(std::move(value));
+      };
+  service_worker_context->ExecuteScriptForTest(  // IN-TEST
+      script, worker_ids[0].version_id,
+      base::BindOnce(callback_adapter, std::move(callback)));
 }
 
 }  // namespace browsertest_util

@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -61,7 +61,7 @@ class SVGFEConvolveMatrixElement final
   void Trace(Visitor*) const override;
 
  private:
-  IntSize MatrixOrder() const;
+  gfx::Size MatrixOrder() const;
   gfx::Point TargetPoint() const;
   float ComputeDivisor() const;
 

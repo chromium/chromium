@@ -22,12 +22,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
@@ -44,8 +44,8 @@
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 #include "ui/ozone/platform/drm/host/host_drm_device.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/platform_screen.h"
@@ -188,7 +188,7 @@ class OzonePlatformDrm : public OzonePlatform {
                                                                    usage);
   }
 
-  void InitializeUI(const InitParams& args) override {
+  bool InitializeUI(const InitParams& args) override {
     // Ozone drm can operate in two modes configured at runtime.
     //   1. single-process mode where host and viz components
     //      communicate via in-process mojo. Single-process mode can be single
@@ -225,9 +225,11 @@ class OzonePlatformDrm : public OzonePlatform {
     display_manager_ = std::make_unique<DrmDisplayHostManager>(
         adapter, device_manager_.get(), &host_properties_,
         event_factory_ozone_->input_controller());
-    cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
+    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 
     host_drm_device_->SetDisplayManager(display_manager_.get());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& args) override {
@@ -245,6 +247,9 @@ class OzonePlatformDrm : public OzonePlatform {
 
     surface_factory_ =
         std::make_unique<GbmSurfaceFactory>(drm_thread_proxy_.get());
+
+    // Native pixmaps are always available on ozone/drm.
+    host_properties_.supports_native_pixmaps = true;
 
     overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
         drm_thread_proxy_.get(),

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 

@@ -137,26 +137,26 @@ bool ScrollbarThemeOverlay::HasThumb(const Scrollbar& scrollbar) {
   return true;
 }
 
-IntRect ScrollbarThemeOverlay::BackButtonRect(const Scrollbar&) {
-  return IntRect();
+gfx::Rect ScrollbarThemeOverlay::BackButtonRect(const Scrollbar&) {
+  return gfx::Rect();
 }
 
-IntRect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
-  return IntRect();
+gfx::Rect ScrollbarThemeOverlay::ForwardButtonRect(const Scrollbar&) {
+  return gfx::Rect();
 }
 
-IntRect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
-  IntRect rect = scrollbar.FrameRect();
+gfx::Rect ScrollbarThemeOverlay::TrackRect(const Scrollbar& scrollbar) {
+  gfx::Rect rect = scrollbar.FrameRect();
   EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
   if (scrollbar.Orientation() == kHorizontalScrollbar)
-    rect.OutsetX(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
+    rect.Inset(ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width), 0);
   else
-    rect.OutsetY(-ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
+    rect.Inset(0, ScrollbarMargin(scrollbar.ScaleFromDIP(), scrollbar_width));
   return rect;
 }
 
-IntRect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
-  IntRect rect = ScrollbarTheme::ThumbRect(scrollbar);
+gfx::Rect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
+  gfx::Rect rect = ScrollbarTheme::ThumbRect(scrollbar);
   EScrollbarWidth scrollbar_width = scrollbar.CSSScrollbarWidth();
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     rect.set_height(ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar_width));
@@ -172,13 +172,13 @@ IntRect ScrollbarThemeOverlay::ThumbRect(const Scrollbar& scrollbar) {
 
 void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
-                                       const IntRect& rect) {
+                                       const gfx::Rect& rect) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, scrollbar,
                                                   DisplayItem::kScrollbarThumb))
     return;
 
   DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
-                           ToGfxRect(rect));
+                           rect);
 
   WebThemeEngine::State state = WebThemeEngine::kStateNormal;
 
@@ -207,8 +207,7 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
     canvas->scale(-1, 1);
   }
 
-  Platform::Current()->ThemeEngine()->Paint(canvas, part, state,
-                                            ToGfxRect(rect), &params,
+  Platform::Current()->ThemeEngine()->Paint(canvas, part, state, rect, &params,
                                             scrollbar.UsedColorScheme());
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
@@ -231,7 +230,7 @@ bool ScrollbarThemeOverlay::UsesNinePatchThumbResource() const {
       WebThemeEngine::kPartScrollbarVerticalThumb);
 }
 
-IntSize ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
+gfx::Size ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
     const Scrollbar& scrollbar) const {
   DCHECK(UsesNinePatchThumbResource());
 
@@ -241,10 +240,10 @@ IntSize ScrollbarThemeOverlay::NinePatchThumbCanvasSize(
           : WebThemeEngine::kPartScrollbarHorizontalThumb;
 
   DCHECK(Platform::Current()->ThemeEngine());
-  return IntSize(Platform::Current()->ThemeEngine()->NinePatchCanvasSize(part));
+  return Platform::Current()->ThemeEngine()->NinePatchCanvasSize(part);
 }
 
-IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
+gfx::Rect ScrollbarThemeOverlay::NinePatchThumbAperture(
     const Scrollbar& scrollbar) const {
   DCHECK(UsesNinePatchThumbResource());
 
@@ -253,7 +252,7 @@ IntRect ScrollbarThemeOverlay::NinePatchThumbAperture(
     part = WebThemeEngine::kPartScrollbarVerticalThumb;
 
   DCHECK(Platform::Current()->ThemeEngine());
-  return IntRect(Platform::Current()->ThemeEngine()->NinePatchAperture(part));
+  return Platform::Current()->ThemeEngine()->NinePatchAperture(part);
 }
 
 int ScrollbarThemeOverlay::MinimumThumbLength(const Scrollbar& scrollbar) {

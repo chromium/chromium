@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/regex_set_matcher.h"
 #include "components/url_matcher/substring_set_matcher.h"
@@ -91,7 +92,7 @@ class URL_MATCHER_EXPORT URLMatcherCondition {
   Criterion criterion_;
 
   // This is the StringPattern that is used in a SubstringSetMatcher.
-  const StringPattern* string_pattern_;
+  raw_ptr<const StringPattern> string_pattern_;
 };
 
 // Class to map the problem of finding {host, path, query} {prefixes, suffixes,
@@ -271,7 +272,7 @@ class URL_MATCHER_EXPORT URLQueryElementMatcherCondition {
   std::string value_;
   size_t key_length_;
   size_t value_length_;
-  const StringPattern* string_pattern_;
+  raw_ptr<const StringPattern> string_pattern_;
 };
 
 // This class represents a filter for the URL scheme to be hooked up into a

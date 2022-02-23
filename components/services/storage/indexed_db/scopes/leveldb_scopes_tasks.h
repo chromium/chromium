@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
@@ -38,18 +37,18 @@ class LevelDBScopesTask {
  protected:
   // Submits the in-progress WriteBatch to LevelDB, no matter what size the
   // batch is.
-  leveldb::Status SubmitWriteBatch(const leveldb::WriteOptions& options)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status SubmitWriteBatch(
+      const leveldb::WriteOptions& options);
   // Submits thein-progress WriteBatch to LevelDB only if the approximate size
   // of the batch is > |max_write_batch_size_|.
-  leveldb::Status MaybeSubmitWriteBatch(const leveldb::WriteOptions& options)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status MaybeSubmitWriteBatch(
+      const leveldb::WriteOptions& options);
 
-  leveldb::Status DeleteRange(leveldb::Slice range_start,
-                              leveldb::Slice range_end,
-                              const leveldb::ReadOptions& read_options,
-                              const leveldb::WriteOptions& write_options)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status DeleteRange(
+      leveldb::Slice range_start,
+      leveldb::Slice range_end,
+      const leveldb::ReadOptions& read_options,
+      const leveldb::WriteOptions& write_options);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -79,16 +78,16 @@ class CleanupScopeTask : private LevelDBScopesTask {
                    size_t max_write_batch_size_bytes);
   ~CleanupScopeTask();
 
-  leveldb::Status Run() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Run();
 
  private:
-  leveldb::Status ExecuteAndDeleteCleanupTasks(
+  [[nodiscard]] leveldb::Status ExecuteAndDeleteCleanupTasks(
       const leveldb::ReadOptions& read_options,
-      const leveldb::WriteOptions& write_options) WARN_UNUSED_RESULT;
-  leveldb::Status DeletePrefixedRange(
+      const leveldb::WriteOptions& write_options);
+  [[nodiscard]] leveldb::Status DeletePrefixedRange(
       leveldb::Slice prefix,
       const leveldb::ReadOptions& read_options,
-      const leveldb::WriteOptions& write_options) WARN_UNUSED_RESULT;
+      const leveldb::WriteOptions& write_options);
 
   const std::vector<uint8_t> metadata_prefix_;
   const int64_t scope_number_;
@@ -109,7 +108,7 @@ class RevertScopeTask : private LevelDBScopesTask {
                   size_t max_write_batch_size_bytes);
   ~RevertScopeTask();
 
-  leveldb::Status Run() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Run();
 
  private:
   const std::vector<uint8_t> metadata_prefix_;

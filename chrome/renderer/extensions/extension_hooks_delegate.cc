@@ -11,7 +11,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/view_type_util.h"
-#include "extensions/renderer/bindings/api_signature.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/get_script_context.h"
@@ -54,7 +54,7 @@ void GetAliasedFeature(v8::Local<v8::Name> property_name,
                        const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
+  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> chrome;
@@ -118,7 +118,7 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
   // TODO(devlin): This logic is the same in the RuntimeCustomHooksDelegate -
   // would it make sense to share it?
   using Handler = RequestResult (ExtensionHooksDelegate::*)(
-      ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
+      ScriptContext*, const APISignature::V8ParseResult&);
   static struct {
     Handler handler;
     base::StringPiece method;
@@ -156,7 +156,7 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
     return result;
   }
 
-  return (this->*handler)(script_context, *parse_result.arguments);
+  return (this->*handler)(script_context, parse_result);
 }
 
 void ExtensionHooksDelegate::InitializeTemplate(
@@ -210,7 +210,8 @@ void ExtensionHooksDelegate::InitializeInstance(
 
 RequestResult ExtensionHooksDelegate::HandleSendRequest(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
   // This DCHECK() is correct because no context with sendRequest-related
   // APIs disabled should have scriptable access to a context with them
@@ -242,25 +243,32 @@ RequestResult ExtensionHooksDelegate::HandleSendRequest(
   if (!arguments[2]->IsNull())
     response_callback = arguments[2].As<v8::Function>();
 
+  // extension.sendRequest() is restricted to MV2, so it should never be called
+  // with a promise based request as they are restricted to MV3 and above.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
+
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendRequestChannel, *message, response_callback);
+      messaging_util::kSendRequestChannel, *message, parse_result.async_type,
+      response_callback);
 
   return RequestResult(RequestResult::HANDLED);
 }
 
 RequestResult ExtensionHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
   // We call a static implementation here rather using an alias due to not being
   // able to remove the extension.json GetURL entry, as it is used for generated
   // documentation and api feature lists some other methods refer to.
-  return RuntimeHooksDelegate::GetURL(script_context, arguments);
+  return RuntimeHooksDelegate::GetURL(script_context, *parse_result.arguments);
 }
 
 APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   const Extension* extension = script_context->extension();
   DCHECK(extension);
 
@@ -312,7 +320,9 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
 
 RequestResult ExtensionHooksDelegate::HandleGetExtensionTabs(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   const Extension* extension = script_context->extension();
   DCHECK(extension);
 
@@ -332,7 +342,8 @@ RequestResult ExtensionHooksDelegate::HandleGetExtensionTabs(
 
 RequestResult ExtensionHooksDelegate::HandleGetBackgroundPage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   const Extension* extension = script_context->extension();
   DCHECK(extension);
 

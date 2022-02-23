@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -345,7 +344,7 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
 }
 
 // TODO(http://crbug.com/1166868): Flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ConnectionListenerComplete DISABLED_ConnectionListenerComplete
 #else
 #define MAYBE_ConnectionListenerComplete ConnectionListenerComplete

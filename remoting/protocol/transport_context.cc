@@ -12,7 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -59,7 +59,7 @@ void PrintIceConfig(const IceConfig& ice_config) {
 
 // static
 scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   return new protocol::TransportContext(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(), nullptr,
       nullptr,

@@ -115,11 +115,10 @@ bool LayoutSVGEllipse::ShapeDependentStrokeContains(
   if (use_path_fallback_ || radius_x_ != radius_y_)
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
-  const FloatPoint& point = location.TransformedPoint();
-  const FloatPoint center =
-      FloatPoint(center_.x() - point.x(), center_.y() - point.y());
+  const gfx::PointF& point = location.TransformedPoint();
+  const gfx::Vector2dF center_offset = center_ - point;
   const float half_stroke_width = StrokeWidth() / 2;
-  return std::abs(center.length() - radius_x_) <= half_stroke_width;
+  return std::abs(center_offset.Length() - radius_x_) <= half_stroke_width;
 }
 
 bool LayoutSVGEllipse::ShapeDependentFillContains(
@@ -131,9 +130,9 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
   if (!radius_x_ || !radius_y_)
     return false;
 
-  const FloatPoint& point = location.TransformedPoint();
-  const FloatPoint center =
-      FloatPoint(center_.x() - point.x(), center_.y() - point.y());
+  const gfx::PointF& point = location.TransformedPoint();
+  const gfx::PointF center =
+      gfx::PointF(center_.x() - point.x(), center_.y() - point.y());
 
   // This works by checking if the point satisfies the ellipse equation.
   // (x/rX)^2 + (y/rY)^2 <= 1

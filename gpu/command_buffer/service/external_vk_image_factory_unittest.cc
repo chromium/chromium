@@ -32,8 +32,8 @@
 
 #if BUILDFLAG(USE_DAWN)
 #include <dawn/dawn_proc.h>
+#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
@@ -93,17 +93,19 @@ class ExternalVkImageFactoryTest : public testing::Test {
     // Create a Dawn Vulkan device
     dawn_instance_.DiscoverDefaultAdapters();
 
-    std::vector<dawn_native::Adapter> adapters = dawn_instance_.GetAdapters();
+    std::vector<dawn::native::Adapter> adapters = dawn_instance_.GetAdapters();
     auto adapter_it = std::find_if(
-        adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-          return adapter.GetBackendType() == dawn_native::BackendType::Vulkan;
+        adapters.begin(), adapters.end(), [](dawn::native::Adapter adapter) {
+          wgpu::AdapterProperties properties;
+          adapter.GetProperties(&properties);
+          return properties.backendType == wgpu::BackendType::Vulkan;
         });
     ASSERT_NE(adapter_it, adapters.end());
 
-    DawnProcTable procs = dawn_native::GetProcs();
+    DawnProcTable procs = dawn::native::GetProcs();
     dawnProcSetProcs(&procs);
 
-    dawn_native::DeviceDescriptor device_descriptor;
+    dawn::native::DawnDeviceDescriptor device_descriptor;
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -135,7 +137,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
   std::unique_ptr<ExternalVkImageFactory> shared_image_factory_;
 
 #if BUILDFLAG(USE_DAWN)
-  dawn_native::Instance dawn_instance_;
+  dawn::native::Instance dawn_instance_;
   wgpu::Device dawn_device_;
 #endif  // BUILDFLAG(USE_DAWN)
 };

@@ -36,11 +36,12 @@ HttpAuth::AuthorizationResult HttpAuthHandlerNTLM::HandleAnotherChallengeImpl(
 }
 
 // static
-std::string HttpAuthHandlerNTLM::CreateSPN(const GURL& origin) {
+std::string HttpAuthHandlerNTLM::CreateSPN(
+    const url::SchemeHostPort& scheme_host_port) {
   // The service principal name of the destination server.  See
   // http://msdn.microsoft.com/en-us/library/ms677949%28VS.85%29.aspx
   std::string target("HTTP/");
-  target.append(GetHostAndOptionalPort(origin));
+  target.append(GetHostAndOptionalPort(scheme_host_port));
   return target;
 }
 

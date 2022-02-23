@@ -35,7 +35,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_select_element.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -284,7 +284,7 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
   ~FormAutofillTest() override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
@@ -2122,8 +2122,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {
@@ -2173,8 +2173,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {
@@ -2223,8 +2223,8 @@ class FormAutofillTest : public ChromeRenderViewTest {
     elements.push_back(GetInputElementById("email"));
     elements.push_back(GetInputElementById("email2"));
     elements.push_back(GetInputElementById("phone"));
-    WebInputElement& firstname = *blink::ToWebInputElement(&elements[0]);
-    WebInputElement& lastname = *blink::ToWebInputElement(&elements[1]);
+    WebInputElement firstname = elements[0].To<WebInputElement>();
+    WebInputElement lastname = elements[1].To<WebInputElement>();
 
     // Set the auto-filled attribute.
     for (WebFormControlElement& e : elements) {
@@ -3043,7 +3043,7 @@ TEST_F(FormAutofillTest, WebFormElementConsiderNonControlLabelableElements) {
 }
 
 // TODO(crbug.com/616730) Observe flakiness (if so, investigate and/or disable
-// test if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)).
+// test if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)).
 // We should not be able to serialize a form with too many fillable fields.
 TEST_F(FormAutofillTest, WebFormElementToFormDataTooManyFields) {
   std::string html =
@@ -5570,8 +5570,8 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
   EXPECT_EQ(u"firstname", fields[0].name);
   EXPECT_EQ(u"firstname", field.name);
 
-  frame->ExecuteScript(
-      WebString("document.getElementById('firstname').remove();"));
+  frame->ExecuteScript(blink::WebScriptSource(
+      WebString("document.getElementById('firstname').remove();")));
   form = {};
   EXPECT_FALSE(WebFormElementToFormData(web_form, control_element, nullptr,
                                         EXTRACT_NONE, &form, &field));

@@ -48,7 +48,8 @@ namespace blink {
 HTMLObjectElement::HTMLObjectElement(Document& document,
                                      const CreateElementFlags flags)
     : HTMLPlugInElement(html_names::kObjectTag, document, flags),
-      use_fallback_content_(false) {
+      use_fallback_content_(false),
+      should_use_count_param_url_(false) {
   EnsureUserAgentShadowRoot();
 }
 
@@ -147,6 +148,8 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
         HTMLParamElement::IsURLParameter(name)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLParamElementURLParameter);
+      // Use count this <param> usage, if it loads a PDF.
+      should_use_count_param_url_ = true;
       SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
     }
     // TODO(schenney): crbug.com/572908 serviceType calculation does not belong
@@ -170,6 +173,15 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   // Some plugins don't understand the "data" attribute of the OBJECT tag (i.e.
   // Real and WMP require "src" attribute).
   plugin_params.MapDataParamToSrc();
+}
+
+void HTMLObjectElement::UseCountParamUrlUsageIfNeeded(bool is_pdf) const {
+  if (should_use_count_param_url_) {
+    UseCounter::Count(
+        GetDocument(),
+        is_pdf ? WebFeature::kHTMLParamElementURLParameterInUsePdf
+               : WebFeature::kHTMLParamElementURLParameterInUseNonPdf);
+  }
 }
 
 bool HTMLObjectElement::HasFallbackContent() const {
@@ -363,6 +375,7 @@ void HTMLObjectElement::RenderFallbackContent(
   }
 
   // TODO(dcheng): Detach the content frame here.
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLObjectElementFallback);
   use_fallback_content_ = true;
   ReattachFallbackContent();
 }

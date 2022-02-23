@@ -16,6 +16,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
@@ -519,8 +520,11 @@ TEST(CTAPResponseTest, TestMakeCredentialNoneAttestationResponse) {
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html
 TEST(CTAPResponseTest, TestReadGetAssertionResponse) {
   auto get_assertion_response = ReadCTAPGetAssertionResponse(
+      FidoTransportProtocol::kBluetoothLowEnergy,
       DecodeCBOR(test_data::kDeviceGetAssertionResponse));
   ASSERT_TRUE(get_assertion_response);
+  EXPECT_EQ(*get_assertion_response->transport_used,
+            FidoTransportProtocol::kBluetoothLowEnergy);
   ASSERT_TRUE(get_assertion_response->num_credentials);
   EXPECT_EQ(*get_assertion_response->num_credentials, 1u);
 
@@ -648,7 +652,7 @@ TEST(CTAPResponseTest, TestParseSignResponseData) {
       test_data::kApplicationParameter, GetTestSignResponse(),
       GetTestCredentialRawIdBytes());
   ASSERT_TRUE(response);
-  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id());
+  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id);
   EXPECT_THAT(
       response->authenticator_data.SerializeToByteArray(),
       ::testing::ElementsAreArray(test_data::kTestSignAuthenticatorData));

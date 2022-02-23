@@ -59,7 +59,7 @@ bool IsEmpty(absl::string_view hashed_bucket_id, int bit_length) {
   if (!status_or_hashed_bucket_id.ok()) {
     return status_or_hashed_bucket_id.status();
   }
-  return Create(std::move(status_or_hashed_bucket_id).ValueOrDie(),
+  return Create(std::move(status_or_hashed_bucket_id).value(),
                 params.hashed_bucket_id_length());
 }
 

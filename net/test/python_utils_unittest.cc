@@ -21,7 +21,7 @@ TEST(PythonUtils, SetPythonPathInEnvironment) {
   SetPythonPathInEnvironment({base::FilePath(FILE_PATH_LITERAL("test/path1")),
                               base::FilePath(FILE_PATH_LITERAL("test/path2"))},
                              &env);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(FILE_PATH_LITERAL("test/path1;test/path2"),
             env[FILE_PATH_LITERAL("PYTHONPATH")]);
 #else

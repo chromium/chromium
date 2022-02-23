@@ -53,6 +53,7 @@ import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -107,7 +108,7 @@ public class SelectionPopupControllerTest {
         public void onSelectionEvent(int eventType, float posXPix, float poxYPix) {}
 
         @Override
-        public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {}
+        public void selectAroundCaretAck(SelectAroundCaretResult result) {}
 
         @Override
         public boolean requestSelectionPopupUpdates(boolean shouldSuggest) {

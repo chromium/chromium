@@ -108,6 +108,11 @@ void CastMediaSessionController::FlushForTesting() {
   route_controller_.FlushForTesting();
 }
 
+media_router::mojom::MediaStatusPtr
+CastMediaSessionController::GetMediaStatusForTesting() {
+  return media_status_.Clone();
+}
+
 base::TimeDelta CastMediaSessionController::PutWithinBounds(
     const base::TimeDelta& time) {
   if (time.is_negative() || !media_status_)

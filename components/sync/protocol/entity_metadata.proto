@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/entity_specifics.proto";
 import "components/sync/protocol/unique_position.proto";
 
 // Sync proto to store entity metadata in model type storage.
@@ -76,4 +77,12 @@ message EntityMetadata {
   // exclusively hashes the content of the favicon image, as represented in
   // proto field BookmarkSpecifics.favicon, using base::PersistentHash().
   optional fixed32 bookmark_favicon_hash = 12;
+
+  // Last specifics known by both the client and server. Used during commits to
+  // the server in order to prevent data loss caused by older clients dealing
+  // with unknown proto fields (fields that were introduced later). Datatypes
+  // (ModelTypeSyncBridge) may implement logic to trim down (or fully clear)
+  // this proto prior to caching, to avoid the memory and I/O overhead of
+  // dealing with an extra copy of the data. Introduced in M101.
+  optional EntitySpecifics possibly_trimmed_base_specifics = 13;
 }

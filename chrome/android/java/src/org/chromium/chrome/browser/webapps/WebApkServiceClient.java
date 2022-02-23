@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -16,6 +15,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -141,7 +141,7 @@ public class WebApkServiceClient {
     }
 
     /** Finishes and removes the WebAPK's task. */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
         final ApiUseCallback connectionCallback = new ApiUseCallback() {
             @Override

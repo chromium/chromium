@@ -56,6 +56,7 @@ import java.util.concurrent.Callable;
 
 /**
  * TestRule for common functionality between sync tests.
+ * TODO(crbug.com/1168590): Support batching tests with SyncTestRule.
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "SyncTestBase";
@@ -177,7 +178,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     private Context mContext;
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
-    private MockSyncContentResolverDelegate mSyncContentResolver;
     private final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     private void ruleTearDown() {
@@ -204,11 +204,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         return mSyncService;
     }
 
-    MockSyncContentResolverDelegate getSyncContentResolver() {
-        return mSyncContentResolver;
-    }
-
-    public void startMainActivityForSyncTest() throws Exception {
+    public void startMainActivityForSyncTest() {
         // Start the activity by opening about:blank. This URL is ideal because it is not synced as
         // a typed URL. If another URL is used, it could interfere with test data.
         startMainActivityOnBlankPage();
@@ -363,11 +359,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         final Statement base = super.apply(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                mSyncContentResolver = new MockSyncContentResolverDelegate();
-                mSyncContentResolver.setMasterSyncAutomatically(true);
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> SyncContentResolverDelegate.overrideForTests(mSyncContentResolver));
-
                 TrustedVaultClient.setInstanceForTesting(
                         new TrustedVaultClient(FakeTrustedVaultClientBackend.get()));
 
@@ -387,9 +378,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 });
 
                 startMainActivityForSyncTest();
-
-                // Ensure SyncController is created.
-                TestThreadUtils.runOnUiThreadBlocking(() -> SyncController.get());
 
                 statement.evaluate();
             }

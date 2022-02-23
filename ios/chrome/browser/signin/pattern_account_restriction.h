@@ -5,17 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_PATTERN_ACCOUNT_RESTRICTION_H_
 #define IOS_CHROME_BROWSER_SIGNIN_PATTERN_ACCOUNT_RESTRICTION_H_
 
-#import <Foundation/Foundation.h>
-
 #include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class ListValue;
-}  // namespace base
 
 // This code is adapted from
 // //components/signin/public/android/java/src/org/
@@ -61,10 +56,14 @@ class PatternAccountRestriction {
   std::vector<Pattern> patterns_;
 };
 
+// Returns true if |value| holds a correct list of patterns. If one of the
+// pattern is invalid, returns false.
+bool ArePatternsValid(const base::Value* value);
+
 // Creates a PatternAccountRestriction from |value| which needs to
 // be a list of strings.
 absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
-    const base::ListValue* value);
+    const base::Value::ConstListView& value);
 
 // The given chunk is split by wildcards and a Pattern (list of chunks) is
 // returned. The first chunk contains pattern characters from the beginning to

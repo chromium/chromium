@@ -27,6 +27,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -41,7 +43,9 @@ class TCPBoundSocketTest : public testing::Test {
  public:
   TCPBoundSocketTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        factory_(nullptr /* net_log */, &url_request_context_) {}
+        url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(/*net_log=*/nullptr, url_request_context_.get()) {}
 
   TCPBoundSocketTest(const TCPBoundSocketTest&) = delete;
   TCPBoundSocketTest& operator=(const TCPBoundSocketTest&) = delete;
@@ -198,7 +202,7 @@ class TCPBoundSocketTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
 };
 
@@ -229,7 +233,7 @@ TEST_F(TCPBoundSocketTest, BindError) {
 //
 // Don't run on Apple platforms because this pattern ends in a connect timeout
 // on OSX (after 25+ seconds) instead of connection refused.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(TCPBoundSocketTest, ConnectError) {
   mojo::Remote<mojom::TCPBoundSocket> bound_socket1;
   net::IPEndPoint bound_address1;
@@ -251,7 +255,7 @@ TEST_F(TCPBoundSocketTest, ConnectError) {
                     &connected_socket, mojo::NullRemote(),
                     &client_socket_receive_handle, &client_socket_send_handle));
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 // Test listen failure.
 
@@ -261,7 +265,7 @@ TEST_F(TCPBoundSocketTest, ConnectError) {
 //
 // Apple platforms don't allow binding multiple TCP sockets to the same port
 // even with SO_REUSEADDR enabled.
-#if !defined(OS_WIN) && !defined(OS_APPLE)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 TEST_F(TCPBoundSocketTest, ListenError) {
   // Bind a socket.
   mojo::Remote<mojom::TCPBoundSocket> bound_socket1;
@@ -288,7 +292,7 @@ TEST_F(TCPBoundSocketTest, ListenError) {
   EXPECT_TRUE(result == net::ERR_ADDRESS_IN_USE ||
               result == net::ERR_INVALID_ARGUMENT);
 }
-#endif  // !defined(OS_WIN) && !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE)
 
 // Test the case bind succeeds, and transfer some data.
 TEST_F(TCPBoundSocketTest, ReadWrite) {

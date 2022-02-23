@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.portals;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
@@ -16,6 +15,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -40,6 +40,7 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -457,6 +459,9 @@ public class PortalsTest {
     @Test
     @MediumTest
     @Feature({"Portals"})
+    // See https://crbug.com/1278223#c19. Remove this feature flag once
+    // portals are migrated off the multiple webcontents architecture.
+    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
     public void testHttpBasicAuthenticationInPortal() throws Exception {
         mActivityTestRule.startMainActivityWithURL(
                 mTestServer.getURL("/chrome/test/data/android/about.html"));
@@ -547,12 +552,12 @@ public class PortalsTest {
     private NotificationPredicate mMediaPlaybackNotificationPred =
             notification -> notification.getId() == R.id.media_playback_notification;
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred) {
         waitForNotification(pred, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNotification(NotificationPredicate pred, long maxTimeoutMs) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =
@@ -568,7 +573,7 @@ public class PortalsTest {
         }, maxTimeoutMs, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private void waitForNoNotifications(NotificationPredicate pred) {
         CriteriaHelper.pollInstrumentationThread(() -> {
             StatusBarNotification notifications[] =

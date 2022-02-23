@@ -14,6 +14,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,10 +29,6 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
-#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
@@ -71,6 +71,22 @@ class ArcAppListPrefs : public KeyedService,
                         public arc::ArcPolicyBridge::Observer,
                         public arc::ArcResizeLockPrefDelegate {
  public:
+  struct WindowLayout {
+    // TODO(sstan): Refactor WindowLayout and AppInfo for adding move
+    // constructor.
+    WindowLayout();
+    WindowLayout(arc::mojom::WindowSizeType type,
+                 bool resizable,
+                 absl::optional<gfx::Rect> bounds);
+    WindowLayout(const WindowLayout& other);
+    ~WindowLayout();
+
+    arc::mojom::WindowSizeType type;
+    bool resizable;
+    absl::optional<gfx::Rect> bounds;
+
+    bool operator==(const WindowLayout& other) const;
+  };
   struct AppInfo {
     AppInfo(const std::string& name,
             const std::string& package_name,
@@ -83,6 +99,7 @@ class ArcAppListPrefs : public KeyedService,
             bool notifications_enabled,
             arc::mojom::ArcResizeLockState resize_lock_state,
             bool resize_lock_needs_confirmation,
+            const WindowLayout& initial_window_layout,
             bool ready,
             bool suspended,
             bool show_in_launcher,
@@ -107,6 +124,8 @@ class ArcAppListPrefs : public KeyedService,
     // Whether the confirmation dialog is needed when user requests resize if
     // the app is in the resize-locked mode.
     bool resize_lock_needs_confirmation;
+    // The app window initial window layout.
+    WindowLayout initial_window_layout;
     // Whether app is ready. Disabled and removed apps are not ready.
     bool ready;
     // Whether app was suspended by policy. It may have or may not have ready
@@ -500,7 +519,8 @@ class ArcAppListPrefs : public KeyedService,
                          const bool app_ready,
                          const bool suspended,
                          const bool shortcut,
-                         const bool launchable);
+                         const bool launchable,
+                         const WindowLayout& initial_window_layout);
   // Adds or updates local pref for given package.
   void AddOrUpdatePackagePrefs(const arc::mojom::ArcPackageInfo& package);
   // Removes given package from local pref.

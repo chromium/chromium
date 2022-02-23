@@ -1,0 +1,43 @@
+/*
+ * The default style sheet used for document transitions.
+ * See third_party/blink/renderer/core/document_transition/README.md for details
+ *
+ * Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+html::page-transition {
+  position: fixed;
+  inset: 0;
+}
+
+html::page-transition-container(*) {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+html::transition-container(root) {
+  right: 0;
+  bottom: 0;
+}
+
+::page-transition-image-wrapper(*) {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+}
+
+::page-transition-incoming-image(*),
+::page-transition-outgoing-image(*) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* TODO(vmpstr): This needs to be updated to plus-lighter */
+  mix-blend-mode: normal;
+}

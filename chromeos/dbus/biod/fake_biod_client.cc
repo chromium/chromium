@@ -60,6 +60,13 @@ FakeBiodClient* FakeBiodClient::Get() {
   return g_instance;
 }
 
+void FakeBiodClient::SendRestarted() {
+  current_session_ = FingerprintSession::NONE;
+
+  for (auto& observer : observers_)
+    observer.BiodServiceRestarted();
+}
+
 void FakeBiodClient::SendEnrollScanDone(const std::string& fingerprint,
                                         biod::ScanResult type_result,
                                         bool is_complete,
@@ -86,26 +93,29 @@ void FakeBiodClient::SendEnrollScanDone(const std::string& fingerprint,
 }
 
 void FakeBiodClient::SendAuthScanDone(const std::string& fingerprint,
-                                      biod::ScanResult type_result) {
+                                      const biod::FingerprintMessage& msg) {
   // Auth scan signals do nothing if an auth session is not happening.
   if (current_session_ != FingerprintSession::AUTH)
     return;
 
   AuthScanMatches matches;
-  // Iterate through all the records to check if fingerprint is a match and
-  // populate |matches| accordingly. This searches through all the records and
-  // then each record's fake fingerprint, but neither of these should ever have
-  // more than five entries.
-  for (const auto& entry : records_) {
-    const std::unique_ptr<FakeRecord>& record = entry.second;
-    if (base::Contains(record->fake_fingerprint, fingerprint)) {
-      const std::string& user_id = record->user_id;
-      matches[user_id].push_back(entry.first);
+  if (msg.msg_case() == biod::FingerprintMessage::MsgCase::kScanResult &&
+      msg.scan_result() == biod::ScanResult::SCAN_RESULT_SUCCESS) {
+    // Iterate through all the records to check if fingerprint is a match and
+    // populate |matches| accordingly. This searches through all the records and
+    // then each record's fake fingerprint, but neither of these should ever
+    // have more than five entries.
+    for (const auto& entry : records_) {
+      const std::unique_ptr<FakeRecord>& record = entry.second;
+      if (base::Contains(record->fake_fingerprint, fingerprint)) {
+        const std::string& user_id = record->user_id;
+        matches[user_id].push_back(entry.first);
+      }
     }
   }
 
   for (auto& observer : observers_)
-    observer.BiodAuthScanDoneReceived(type_result, matches);
+    observer.BiodAuthScanDoneReceived(msg, matches);
 }
 
 void FakeBiodClient::SendSessionFailed() {

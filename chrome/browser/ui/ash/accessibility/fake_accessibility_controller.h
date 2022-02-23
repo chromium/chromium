@@ -67,6 +67,12 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) override;
+  void UpdateDictationBubble(
+      bool visible,
+      ash::DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<ash::DictationBubbleHintType>>& hints)
+      override;
 
  private:
   bool was_client_set_ = false;

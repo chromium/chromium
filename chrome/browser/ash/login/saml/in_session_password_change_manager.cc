@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_dialogs.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -438,8 +438,8 @@ void InSessionPasswordChangeManager::OnTokenCreated(
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 sync_token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
 }
 
 void InSessionPasswordChangeManager::OnTokenFetched(

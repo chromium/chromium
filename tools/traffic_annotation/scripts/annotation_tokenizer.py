@@ -22,7 +22,7 @@ TOKEN_REGEXEN = [
     # String literal. "string" or R"(string)". In Java, this will incorrectly
     # accept R-strings, which aren't part of the language's syntax. But since
     # that wouldn't compile anyways, we can just ignore this issue.
-    ('string_literal', re.compile(r'"((?:[^"]|\\.)*?)"|R"\((.*?)\)"',
+    ('string_literal', re.compile(r'"((?:\\.|[^"])*?)"|R"\((.*?)\)"',
                                   re.DOTALL)),
     # The '+' operator, for string concatenation. Java doesn't have multi-line
     # string literals, so this is the only way to keep long strings readable. It
@@ -97,7 +97,13 @@ class Tokenizer:
     for (token_type, regex) in TOKEN_REGEXEN:
       re_match = regex.match(self.body, pos)
       if re_match:
+        raw_token = re_match.group(0)
         token_content = next(g for g in re_match.groups() if g is not None)
+        if token_type == 'string_literal' and not raw_token.startswith('R"'):
+          # Remove the extra backslash in backslash sequences, but only in
+          # non-R strings. R-strings don't need escaping.
+          backslash_regex = re.compile(r'\\(\\|")')
+          token_content = backslash_regex.sub(r'\1', token_content)
         token = Token(token_type, token_content, re_match.end())
         break
 

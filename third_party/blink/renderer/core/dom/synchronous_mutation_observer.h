@@ -6,13 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SYNCHRONOUS_MUTATION_OBSERVER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class CharacterData;
 class ContainerNode;
 class Document;
+class Element;
 class Node;
 class NodeWithIndex;
 class Text;
@@ -43,7 +48,14 @@ class CORE_EXPORT SynchronousMutationObserver : public GarbageCollectedMixin {
   //  - didRemoveText(Node*, unsigned offset, unsigned length);
 
   // Called after child nodes changed.
-  virtual void DidChangeChildren(const ContainerNode&) {}
+  virtual void DidChangeChildren(const ContainerNode&,
+                                 const ContainerNode::ChildrenChange&) {}
+
+  // Called after attribute changes.
+  virtual void AttributeChanged(const Element& element,
+                                const QualifiedName& name,
+                                const AtomicString& old_value,
+                                const AtomicString& new_value) {}
 
   // Called after characters in |nodeToBeRemoved| is appended into |mergedNode|.
   // |oldLength| holds length of |mergedNode| before merge.

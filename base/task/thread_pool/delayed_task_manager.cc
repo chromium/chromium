@@ -37,7 +37,8 @@ DelayedTaskManager::DelayedTask& DelayedTaskManager::DelayedTask::operator=(
 
 bool DelayedTaskManager::DelayedTask::operator>(
     const DelayedTask& other) const {
-  return task > other.task;
+  return std::tie(task.delayed_run_time, task.sequence_num) >
+         std::tie(other.task.delayed_run_time, other.task.sequence_num);
 }
 
 bool DelayedTaskManager::DelayedTask::IsScheduled() const {
@@ -152,10 +153,9 @@ void DelayedTaskManager::ScheduleProcessRipeTasksOnServiceThread(
   DCHECK(!next_delayed_task_run_time.is_null());
   if (next_delayed_task_run_time.is_max())
     return;
-  const TimeTicks now = tick_clock_->NowTicks();
-  TimeDelta delay = std::max(TimeDelta(), next_delayed_task_run_time - now);
-  service_thread_task_runner_->PostDelayedTask(
-      FROM_HERE, process_ripe_tasks_closure_, delay);
+  service_thread_task_runner_->PostDelayedTaskAt(
+      subtle::PostDelayedTaskPassKey(), FROM_HERE, process_ripe_tasks_closure_,
+      next_delayed_task_run_time, subtle::DelayPolicy::kPrecise);
 }
 
 }  // namespace internal

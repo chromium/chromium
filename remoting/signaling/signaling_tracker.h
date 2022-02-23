@@ -5,8 +5,6 @@
 #ifndef REMOTING_SIGNALING_SIGNALING_TRACKER_H_
 #define REMOTING_SIGNALING_SIGNALING_TRACKER_H_
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Interface to track signaling related information. Useful for telemetry and

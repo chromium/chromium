@@ -27,7 +27,7 @@ message WebApkResponse {
   // from spamming update requests too often.
   optional bool relax_updates = 8;
 
-  reserved 3, 4, 5, 7;
+  reserved 3, 4, 5, 7, 9;
 }
 
 // Sent as part of request to create or update a WebAPK.

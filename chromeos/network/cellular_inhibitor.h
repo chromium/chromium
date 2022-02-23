@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
     kRemovingProfile,
     kConnectingToProfile,
     kRefreshingProfileList,
-    kResettingEuiccMemory
+    kResettingEuiccMemory,
+    kDisablingProfile,
   };
 
   // Callback which returns InhibitLock on inhibit success or nullptr on
@@ -167,8 +168,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   void SetInhibitProperty();
   void OnSetPropertySuccess();
   void OnSetPropertyError(bool attempted_inhibit,
-                          const std::string& error_name,
-                          std::unique_ptr<base::DictionaryValue> error_data);
+                          const std::string& error_name);
   // Returns result of setting inhibit property. |result| is the operation
   // error result and is set only for failures.
   void ReturnSetInhibitPropertyResult(

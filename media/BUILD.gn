@@ -37,6 +37,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
     "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",
     "ENABLE_LIBRARY_CDMS=$enable_library_cdms",
+    "ENABLE_LIBAOM=$enable_libaom",
     "ENABLE_LIBVPX=$media_use_libvpx",
     "ENABLE_LOGGING_OVERRIDE=$enable_logging_override",
     "ENABLE_MEDIA_DRM_STORAGE=$enable_media_drm_storage",
@@ -46,10 +47,12 @@ buildflag_header("media_buildflags") {
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
     "ENABLE_CAST_STREAMING_RENDERER=$enable_cast_streaming_renderer",
+    "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
+    "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
   ]
 }
 
@@ -160,7 +163,6 @@ test("media_unittests") {
     "//media/audio:unit_tests",
     "//media/base:unit_tests",
     "//media/capabilities:unit_tests",
-    "//media/cast/receiver:unit_tests",
     "//media/cdm:unit_tests",
     "//media/device_monitors:unit_tests",
     "//media/filters:unit_tests",
@@ -184,6 +186,10 @@ test("media_unittests") {
 
   data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]
 
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:media_unittests_filters" ]
+  }
+
   if (media_use_ffmpeg) {
     deps += [ "//media/ffmpeg:unit_tests" ]
   }
@@ -206,6 +212,7 @@ test("media_unittests") {
       "//media/fuchsia/cdm/service:unittests",
     ]
 
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/audio_capabilities.test-cmx",
 
@@ -272,6 +279,12 @@ test("audio_unittests") {
       "//media/base/android:media_java",
       "//ui/android:ui_java",
     ]
+  }
+
+  if (is_fuchsia) {
+    use_cfv2 = false
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/audio_capabilities.test-cmx" ]
   }
 }
 

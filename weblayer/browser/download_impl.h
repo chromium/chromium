@@ -5,14 +5,13 @@
 #ifndef WEBLAYER_BROWSER_DOWNLOAD_IMPL_H_
 #define WEBLAYER_BROWSER_DOWNLOAD_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
 #include "weblayer/public/download.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -27,7 +26,7 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   DownloadImpl(const DownloadImpl&) = delete;
   DownloadImpl& operator=(const DownloadImpl&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetJavaDownload(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_download);
@@ -79,7 +78,7 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   DownloadImpl();
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_download_;
 #endif
 };

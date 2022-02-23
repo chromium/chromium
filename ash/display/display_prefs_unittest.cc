@@ -27,11 +27,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_switches.h"
@@ -48,6 +50,10 @@
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace ash {
+
+using testing::DoubleEq;
+using testing::ElementsAre;
+using testing::Optional;
 
 namespace {
 const char kPrimaryIdKey[] = "primary-id";
@@ -154,10 +160,9 @@ class DisplayPrefsTest : public AshTestBase {
 
     DCHECK(!name.empty());
 
-    base::DictionaryValue* pref_data = update.Get();
+    base::Value* pref_data = update.Get();
     base::Value layout_value(base::Value::Type::DICTIONARY);
-    base::Value* value = nullptr;
-    if (pref_data->Get(name, &value) && value != nullptr)
+    if (const base::Value* value = pref_data->FindKey(name))
       layout_value = value->Clone();
     if (display::DisplayLayoutToJson(display_layout, &layout_value))
       pref_data->SetPath(name, std::move(layout_value));
@@ -165,19 +170,17 @@ class DisplayPrefsTest : public AshTestBase {
 
   void StoreDisplayPropertyForList(const display::DisplayIdList& list,
                                    const std::string& key,
-                                   std::unique_ptr<base::Value> value) {
+                                   base::Value value) {
     std::string name = display::DisplayIdListToString(list);
 
     DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
-    base::DictionaryValue* pref_data = update.Get();
+    base::Value* pref_data = update.Get();
 
-    base::Value* layout_value = pref_data->FindKey(name);
-    if (layout_value) {
-      layout_value->SetPath(key,
-                            base::Value::FromUniquePtrValue(std::move(value)));
+    if (base::Value* existing_layout_value = pref_data->FindKey(name)) {
+      existing_layout_value->SetKey(key, std::move(value));
     } else {
-      base::DictionaryValue layout_value;
-      layout_value.SetBoolean(key, value != nullptr);
+      base::Value layout_value(base::Value::Type::DICTIONARY);
+      layout_value.SetBoolKey(key, true);
       pref_data->SetPath(name, std::move(layout_value));
     }
   }
@@ -185,8 +188,7 @@ class DisplayPrefsTest : public AshTestBase {
   void StoreDisplayBoolPropertyForList(const display::DisplayIdList& list,
                                        const std::string& key,
                                        bool value) {
-    StoreDisplayPropertyForList(list, key,
-                                std::make_unique<base::Value>(value));
+    StoreDisplayPropertyForList(list, key, base::Value(value));
   }
 
   void StoreDisplayLayoutPrefForList(const display::DisplayIdList& list,
@@ -199,12 +201,12 @@ class DisplayPrefsTest : public AshTestBase {
     DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
     const std::string name = base::NumberToString(id);
 
-    base::DictionaryValue* pref_data = update.Get();
-    base::DictionaryValue insets_value;
-    insets_value.SetInteger("insets_top", insets.top());
-    insets_value.SetInteger("insets_left", insets.left());
-    insets_value.SetInteger("insets_bottom", insets.bottom());
-    insets_value.SetInteger("insets_right", insets.right());
+    base::Value* pref_data = update.Get();
+    base::Value insets_value(base::Value::Type::DICTIONARY);
+    insets_value.SetIntKey("insets_top", insets.top());
+    insets_value.SetIntKey("insets_left", insets.left());
+    insets_value.SetIntKey("insets_bottom", insets.bottom());
+    insets_value.SetIntKey("insets_right", insets.right());
     pref_data->SetKey(name, std::move(insets_value));
   }
 
@@ -218,10 +220,10 @@ class DisplayPrefsTest : public AshTestBase {
   void StoreExternalDisplayMirrorInfo(
       const std::set<int64_t>& external_display_mirror_info) {
     ListPrefUpdate update(local_state(), prefs::kExternalDisplayMirrorInfo);
-    base::ListValue* pref_data = update.Get();
+    base::Value* pref_data = update.Get();
     pref_data->ClearList();
     for (const auto& id : external_display_mirror_info)
-      pref_data->Append(base::Value(base::NumberToString(id)));
+      pref_data->Append(base::NumberToString(id));
   }
 
   std::string GetRegisteredDisplayPlacementStr(
@@ -232,6 +234,65 @@ class DisplayPrefsTest : public AshTestBase {
         ->GetRegisteredDisplayLayout(list)
         .placement_list[0]
         .ToString();
+  }
+
+  const base::Value* ReadPropertiesForDisplay(int64_t display_id) {
+    const base::Value* properties =
+        local_state()->GetDictionary(prefs::kDisplayProperties);
+    EXPECT_TRUE(properties);
+    const base::Value* property =
+        properties->FindDictKey(base::NumberToString(display_id));
+    EXPECT_TRUE(property);
+    return property;
+  }
+
+  void ExpectMixedMirrorModeParamsPrefs(
+      int64_t source_id,
+      const display::DisplayIdList& dest_ids) {
+    std::vector<std::string> expected_dest_id_strs;
+    for (const int64_t id : dest_ids) {
+      expected_dest_id_strs.push_back(base::NumberToString(id));
+    }
+    SCOPED_TRACE(testing::Message()
+                 << "Expected to read kDisplayMixedMirrorModeParams with "
+                    "mirroring_source_id="
+                 << source_id << " and mirroring_destination_ids="
+                 << base::JoinString(expected_dest_id_strs, ","));
+    const base::Value* prefs =
+        local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
+    ASSERT_TRUE(prefs);
+    EXPECT_THAT(prefs->FindStringKey("mirroring_source_id"),
+                testing::Pointee(base::NumberToString(source_id)));
+    const auto* mirror_ids = prefs->FindListKey("mirroring_destination_ids");
+    ASSERT_TRUE(mirror_ids);
+    display::DisplayIdList pref_dest_ids;
+    for (const auto& value : mirror_ids->GetListDeprecated()) {
+      int64_t id;
+      EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
+      pref_dest_ids.push_back(id);
+    }
+    EXPECT_EQ(pref_dest_ids, dest_ids);
+  }
+
+  void ExpectExternalDisplayMirrorPrefs(const std::set<int64_t>& display_ids) {
+    std::vector<std::string> expected_display_id_strs;
+    for (const int64_t id : display_ids) {
+      expected_display_id_strs.push_back(base::NumberToString(id));
+    }
+    SCOPED_TRACE(
+        testing::Message()
+        << "Expected to read kExternalDisplayMirrorInfo with list values="
+        << base::JoinString(expected_display_id_strs, ","));
+    const base::Value* prefs =
+        local_state()->Get(prefs::kExternalDisplayMirrorInfo);
+    ASSERT_TRUE(prefs);
+    std::set<int64_t> read_ids;
+    for (const auto& value : prefs->GetListDeprecated()) {
+      int64_t id;
+      EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
+      read_ids.insert(id);
+    }
+    EXPECT_EQ(read_ids, display_ids);
   }
 
   display::DisplayConfigurator* display_configurator() {
@@ -268,7 +329,7 @@ TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
       chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
   LoadDisplayPreferences();
 
   // requested_power_state_ should be chromeos::DISPLAY_POWER_ALL_ON at boot
@@ -383,13 +444,13 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   display_manager()->SetTouchCalibrationData(id2, point_pair_quad_2,
                                              touch_size_1, touchdevice_3);
 
-  const base::DictionaryValue* displays =
+  const base::Value* displays =
       local_state()->GetDictionary(prefs::kSecondaryDisplays);
-  const base::DictionaryValue* layout_value = nullptr;
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
   std::string dummy_key =
       base::NumberToString(id1) + "," + base::NumberToString(dummy_id);
-  EXPECT_TRUE(displays->GetDictionary(dummy_key, &layout_value));
+  const base::Value* layout_value = displays->FindDictKey(dummy_key);
+  EXPECT_TRUE(layout_value);
 
   display::DisplayLayout stored_layout;
   EXPECT_TRUE(display::JsonToDisplayLayout(*layout_value, &stored_layout));
@@ -400,14 +461,15 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_EQ(dummy_layout->placement_list[0].offset,
             stored_layout.placement_list[0].offset);
 
-  const base::ListValue* external_display_mirror_info =
+  const base::Value* external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(0U, external_display_mirror_info->GetList().size());
+  EXPECT_EQ(0U, external_display_mirror_info->GetListDeprecated().size());
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayProperties);
-  const base::DictionaryValue* property = nullptr;
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
+  const base::Value* property =
+      properties->FindDictKey(base::NumberToString(id1));
+  EXPECT_TRUE(property);
   EXPECT_EQ(1, property->FindIntKey("rotation"));
 
   absl::optional<double> display_zoom_1 =
@@ -449,7 +511,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   std::string touch_str;
 
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
+  property = properties->FindDictKey(base::NumberToString(id2));
+  ASSERT_TRUE(property);
   EXPECT_EQ(0, property->FindIntKey("rotation"));
 
   absl::optional<double> display_zoom_2 =
@@ -475,20 +538,23 @@ TEST_F(DisplayPrefsTest, BasicStores) {
 
   EXPECT_EQ(id2, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
+  property = properties->FindDictKey(base::NumberToString(id1));
+  ASSERT_TRUE(property);
   // Internal display shouldn't store its resolution.
   EXPECT_FALSE(property->FindIntKey("width"));
   EXPECT_FALSE(property->FindIntKey("height"));
 
   // External display's resolution must be stored this time because
   // it's not best.
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
+  property = properties->FindDictKey(base::NumberToString(id2));
+  ASSERT_TRUE(property);
   EXPECT_EQ(property->FindIntKey("width"), 300);
   EXPECT_EQ(property->FindIntKey("height"), 200);
   EXPECT_EQ(property->FindIntKey("device-scale-factor"), 1250);
 
   // The layout is swapped.
-  EXPECT_TRUE(displays->GetDictionary(key, &layout_value));
+  layout_value = displays->FindDictKey(key);
+  ASSERT_TRUE(layout_value);
 
   EXPECT_TRUE(display::JsonToDisplayLayout(*layout_value, &stored_layout));
   ASSERT_EQ(1u, stored_layout.placement_list.size());
@@ -500,9 +566,10 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_EQ(id2, stored_placement.parent_display_id);
   EXPECT_EQ(id2, stored_layout.primary_id);
 
-  std::string primary_id_str;
-  EXPECT_TRUE(layout_value->GetString(kPrimaryIdKey, &primary_id_str));
-  EXPECT_EQ(base::NumberToString(id2), primary_id_str);
+  const std::string* primary_id_str =
+      layout_value->FindStringKey(kPrimaryIdKey);
+  ASSERT_TRUE(primary_id_str);
+  EXPECT_EQ(base::NumberToString(id2), *primary_id_str);
 
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(Shell::Get()->display_manager(),
@@ -513,27 +580,30 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_TRUE(display_manager()->IsInHardwareMirrorMode());
 
-  EXPECT_TRUE(displays->GetDictionary(key, &layout_value));
+  layout_value = displays->FindDictKey(key);
+  ASSERT_TRUE(layout_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*layout_value, &stored_layout));
   EXPECT_EQ(display::DisplayPlacement::BOTTOM, stored_placement.position);
   EXPECT_EQ(20, stored_placement.offset);
   EXPECT_EQ(id1, stored_placement.display_id);
   EXPECT_EQ(id2, stored_placement.parent_display_id);
 
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id1), &property));
+  property = properties->FindDictKey(base::NumberToString(id1));
+  ASSERT_TRUE(property);
   EXPECT_FALSE(property->FindIntKey("width"));
   EXPECT_FALSE(property->FindIntKey("height"));
 
   external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, external_display_mirror_info->GetList().size());
+  EXPECT_EQ(1U, external_display_mirror_info->GetListDeprecated().size());
   // ExternalDisplayInfo stores ID without output index.
   EXPECT_EQ(base::NumberToString(display::GetDisplayIdWithoutOutputIndex(id2)),
-            external_display_mirror_info->GetList()[0].GetString());
+            external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // External display's selected resolution must not change
   // by mirroring.
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
+  property = properties->FindDictKey(base::NumberToString(id2));
+  ASSERT_TRUE(property);
   EXPECT_EQ(300, property->FindIntKey("width"));
   EXPECT_EQ(200, property->FindIntKey("height"));
 
@@ -549,17 +619,20 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   id2 = display_manager_test.GetSecondaryDisplay().id();
   key = base::NumberToString(id1) + "," + base::NumberToString(id2);
 
-  EXPECT_TRUE(displays->GetDictionary(key, &layout_value));
+  layout_value = displays->FindDictKey(key);
+  ASSERT_TRUE(layout_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*layout_value, &stored_layout));
   EXPECT_EQ(display::DisplayPlacement::RIGHT, stored_placement.position);
   EXPECT_EQ(0, stored_placement.offset);
   EXPECT_EQ(id1, stored_placement.parent_display_id);
   EXPECT_EQ(id2, stored_placement.display_id);
-  EXPECT_TRUE(layout_value->GetString(kPrimaryIdKey, &primary_id_str));
-  EXPECT_EQ(base::NumberToString(id1), primary_id_str);
+  primary_id_str = layout_value->FindStringKey(kPrimaryIdKey);
+  ASSERT_TRUE(primary_id_str);
+  EXPECT_EQ(base::NumberToString(id1), *primary_id_str);
 
   // Best resolution should not be saved.
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
+  property = properties->FindDictKey(base::NumberToString(id2));
+  ASSERT_TRUE(property);
   EXPECT_FALSE(property->FindIntKey("width"));
   EXPECT_FALSE(property->FindIntKey("height"));
 
@@ -574,15 +647,18 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // Update key as the 2nd display gets new id.
   id2 = display_manager_test.GetSecondaryDisplay().id();
   key = base::NumberToString(id1) + "," + base::NumberToString(id2);
-  EXPECT_TRUE(displays->GetDictionary(key, &layout_value));
+  layout_value = displays->FindDictKey(key);
+  ASSERT_TRUE(layout_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*layout_value, &stored_layout));
   EXPECT_EQ(display::DisplayPlacement::RIGHT, stored_placement.position);
   EXPECT_EQ(0, stored_placement.offset);
-  EXPECT_TRUE(layout_value->GetString(kPrimaryIdKey, &primary_id_str));
-  EXPECT_EQ(base::NumberToString(id1), primary_id_str);
+  primary_id_str = layout_value->FindStringKey(kPrimaryIdKey);
+  ASSERT_TRUE(primary_id_str);
+  EXPECT_EQ(base::NumberToString(id1), *primary_id_str);
 
   // External display's selected resolution must be updated.
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id2), &property));
+  property = properties->FindDictKey(base::NumberToString(id2));
+  ASSERT_TRUE(property);
   EXPECT_EQ(500, property->FindIntKey("width"));
   EXPECT_EQ(400, property->FindIntKey("height"));
 }
@@ -604,10 +680,11 @@ TEST_F(DisplayPrefsTest, PreventStore) {
                       base::OnceClosure()));
   UpdateDisplay("500x400#500x400|400x300|300x200");
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayProperties);
-  const base::DictionaryValue* property = nullptr;
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id), &property));
+  const base::Value* property =
+      properties->FindDictKey(base::NumberToString(id));
+  EXPECT_TRUE(property);
   EXPECT_FALSE(property->FindIntKey("width"));
   EXPECT_FALSE(property->FindIntKey("height"));
 
@@ -620,8 +697,8 @@ TEST_F(DisplayPrefsTest, PreventStore) {
       id, display::ManagedDisplayMode(gfx::Size(300, 200), 60.0f, false, true));
   UpdateDisplay("300x200#500x400|400x300|300x200");
 
-  property = nullptr;
-  EXPECT_TRUE(properties->GetDictionary(base::NumberToString(id), &property));
+  property = properties->FindDictKey(base::NumberToString(id));
+  ASSERT_TRUE(property);
   EXPECT_EQ(300, property->FindIntKey("width"));
   EXPECT_EQ(200, property->FindIntKey("height"));
 }
@@ -638,12 +715,12 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
   ASSERT_EQ(id1, display_manager_test.GetSecondaryDisplay().id());
 
   std::string key = base::NumberToString(id1) + "," + base::NumberToString(id2);
-  const base::DictionaryValue* displays =
+  const base::Value* displays =
       local_state()->GetDictionary(prefs::kSecondaryDisplays);
   // Initial saved value is swapped.
   {
-    const base::DictionaryValue* new_value = nullptr;
-    EXPECT_TRUE(displays->GetDictionary(key, &new_value));
+    const base::Value* new_value = displays->FindDictKey(key);
+    EXPECT_TRUE(new_value);
     display::DisplayLayout stored_layout;
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
     ASSERT_EQ(1u, stored_layout.placement_list.size());
@@ -661,8 +738,8 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
     display_manager()->SetLayoutForCurrentDisplays(
         display::test::CreateDisplayLayout(display_manager(),
                                            display::DisplayPlacement::TOP, 10));
-    const base::DictionaryValue* new_value = nullptr;
-    EXPECT_TRUE(displays->GetDictionary(key, &new_value));
+    const base::Value* new_value = displays->FindDictKey(key);
+    ASSERT_TRUE(new_value);
     display::DisplayLayout stored_layout;
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
     ASSERT_EQ(1u, stored_layout.placement_list.size());
@@ -678,11 +755,12 @@ TEST_F(DisplayPrefsTest, StoreForSwappedDisplay) {
   // Swapping primary will save the swapped value.
   {
     SwapPrimaryDisplay();
-    const base::DictionaryValue* new_value = nullptr;
-    EXPECT_TRUE(displays->GetDictionary(key, &new_value));
+    const base::Value* new_value = displays->FindDictKey(key);
+    ASSERT_TRUE(new_value);
     display::DisplayLayout stored_layout;
 
-    EXPECT_TRUE(displays->GetDictionary(key, &new_value));
+    new_value = displays->FindDictKey(key);
+    ASSERT_TRUE(new_value);
     EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
     ASSERT_EQ(1u, stored_layout.placement_list.size());
     const display::DisplayPlacement& stored_placement =
@@ -737,7 +815,7 @@ TEST_F(DisplayPrefsTestGuest, DisplayPrefsTestGuest) {
   EXPECT_EQ(display::DisplayPlacement::BOTTOM, placement.position);
   EXPECT_EQ(-10, placement.offset);
   const display::Display& primary_display = screen->GetPrimaryDisplay();
-  EXPECT_EQ("178x276", primary_display.bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(178, 276), primary_display.bounds().size());
   EXPECT_EQ(display::Display::ROTATE_90, primary_display.rotation());
 
   const display::ManagedDisplayInfo& info1 =
@@ -813,7 +891,7 @@ TEST_P(DisplayPrefsPublicAccountTest, StoreDisplayPrefsForPublicAccount) {
   EXPECT_EQ(display::DisplayPlacement::BOTTOM, placement.position);
   EXPECT_EQ(-10, placement.offset);
   const display::Display& primary_display = screen->GetPrimaryDisplay();
-  EXPECT_EQ("178x276", primary_display.bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(178, 276), primary_display.bounds().size());
   EXPECT_EQ(display::Display::ROTATE_90, primary_display.rotation());
 
   const display::ManagedDisplayInfo& info1 =
@@ -826,7 +904,7 @@ TEST_P(DisplayPrefsPublicAccountTest, StoreDisplayPrefsForPublicAccount) {
   EXPECT_EQ(1.0f, info_primary.zoom_factor());
 }
 
-INSTANTIATE_TEST_CASE_P(All, DisplayPrefsPublicAccountTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, DisplayPrefsPublicAccountTest, testing::Bool());
 
 TEST_F(DisplayPrefsTest, StorePowerStateNoLogin) {
   EXPECT_FALSE(local_state()->HasPrefPath(prefs::kDisplayPowerState));
@@ -916,20 +994,20 @@ TEST_F(DisplayPrefsTest, DontSaveTabletModeControllerRotations) {
   shell->screen_orientation_controller()->OnAccelerometerUpdated(update);
   EXPECT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayProperties);
-  const base::DictionaryValue* property = nullptr;
-  EXPECT_TRUE(properties->GetDictionary(
-      base::NumberToString(display::Display::InternalDisplayId()), &property));
+  const base::Value* property = properties->FindDictKey(
+      base::NumberToString(display::Display::InternalDisplayId()));
+  EXPECT_TRUE(property);
   EXPECT_EQ(display::Display::ROTATE_0, property->FindIntKey("rotation"));
 
   // Trigger a save, the acceleration rotation should not be saved as the user
   // rotation.
   display_prefs()->MaybeStoreDisplayPrefs();
   properties = local_state()->GetDictionary(prefs::kDisplayProperties);
-  property = nullptr;
-  EXPECT_TRUE(properties->GetDictionary(
-      base::NumberToString(display::Display::InternalDisplayId()), &property));
+  property = properties->FindDictKey(
+      base::NumberToString(display::Display::InternalDisplayId()));
+  EXPECT_TRUE(property);
   EXPECT_EQ(display::Display::ROTATE_0, property->FindIntKey("rotation"));
 }
 
@@ -944,7 +1022,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -967,7 +1045,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -990,7 +1068,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
                                                     current_rotation_lock);
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
   ASSERT_TRUE(rotation_lock.has_value());
@@ -1063,7 +1141,7 @@ TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
 
   EXPECT_TRUE(local_state()->HasPrefPath(prefs::kDisplayRotationLock));
 
-  const base::DictionaryValue* properties =
+  const base::Value* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
   absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
   EXPECT_TRUE(rotation_lock.has_value());
@@ -1075,52 +1153,52 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
 
   UpdateDisplay("300x200,200x100");
   display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
-  EXPECT_EQ(
-      "700x200",
-      display::Screen::GetScreen()->GetPrimaryDisplay().size().ToString());
+  EXPECT_EQ(gfx::Size(700, 200),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
-  const base::DictionaryValue* secondary_displays =
+  const base::Value* secondary_displays =
       local_state()->GetDictionary(prefs::kSecondaryDisplays);
-  const base::DictionaryValue* new_value = nullptr;
-  EXPECT_TRUE(secondary_displays->GetDictionary(
-      display::DisplayIdListToString(list), &new_value));
+  const base::Value* new_value =
+      secondary_displays->FindDictKey(display::DisplayIdListToString(list));
+  EXPECT_TRUE(new_value);
 
   display::DisplayLayout stored_layout;
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
-  const base::DictionaryValue* displays =
+  const base::Value* displays =
       local_state()->GetDictionary(prefs::kDisplayProperties);
   int64_t unified_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-  EXPECT_FALSE(
-      displays->GetDictionary(base::NumberToString(unified_id), &new_value));
+  new_value = displays->FindDictKey(base::NumberToString(unified_id));
+  EXPECT_FALSE(new_value);
 
   display::test::SetDisplayResolution(display_manager(), unified_id,
                                       gfx::Size(350, 100));
-  EXPECT_EQ(
-      "350x100",
-      display::Screen::GetScreen()->GetPrimaryDisplay().size().ToString());
-  EXPECT_FALSE(
-      displays->GetDictionary(base::NumberToString(unified_id), &new_value));
+  EXPECT_EQ(gfx::Size(350, 100),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  EXPECT_FALSE(displays->FindDictKey(base::NumberToString(unified_id)));
 
   // Mirror mode should remember if the default mode was unified.
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
-  ASSERT_TRUE(secondary_displays->GetDictionary(
-      display::DisplayIdListToString(list), &new_value));
+  new_value =
+      secondary_displays->FindDictKey(display::DisplayIdListToString(list));
+  ASSERT_TRUE(new_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
-  ASSERT_TRUE(secondary_displays->GetDictionary(
-      display::DisplayIdListToString(list), &new_value));
+  new_value =
+      secondary_displays->FindDictKey(display::DisplayIdListToString(list));
+  ASSERT_TRUE(new_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
   // Exit unified mode.
   display_manager()->SetDefaultMultiDisplayModeForCurrentDisplays(
       display::DisplayManager::EXTENDED);
-  ASSERT_TRUE(secondary_displays->GetDictionary(
-      display::DisplayIdListToString(list), &new_value));
+  new_value =
+      secondary_displays->FindDictKey(display::DisplayIdListToString(list));
+  ASSERT_TRUE(new_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_FALSE(stored_layout.default_unified);
 }
@@ -1144,8 +1222,7 @@ TEST_F(DisplayPrefsTest, RestoreUnifiedMode) {
       display::test::CreateDisplayIdList2(first_display_id, second_display_id);
   StoreDisplayBoolPropertyForList(list, "default_unified", true);
   StoreDisplayPropertyForList(
-      list, "primary-id",
-      std::make_unique<base::Value>(base::NumberToString(first_display_id)));
+      list, "primary-id", base::Value(base::NumberToString(first_display_id)));
   LoadDisplayPreferences();
 
   // Should not restore to unified unless unified desktop is enabled.
@@ -1209,11 +1286,11 @@ TEST_F(DisplayPrefsTest, SaveThreeDisplays) {
                               display::DisplayPlacement::BOTTOM, 100);
   display_manager()->SetLayoutForCurrentDisplays(builder.Build());
 
-  const base::DictionaryValue* secondary_displays =
+  const base::Value* secondary_displays =
       local_state()->GetDictionary(prefs::kSecondaryDisplays);
-  const base::DictionaryValue* new_value = nullptr;
-  EXPECT_TRUE(secondary_displays->GetDictionary(
-      display::DisplayIdListToString(list), &new_value));
+  const base::Value* new_value =
+      secondary_displays->FindDictKey(display::DisplayIdListToString(list));
+  EXPECT_TRUE(new_value);
 }
 
 TEST_F(DisplayPrefsTest, RestoreThreeDisplays) {
@@ -1315,7 +1392,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   LoggedInAsUser();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1342,11 +1419,12 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   external_display_mirror_info.emplace(first_display_masked_id);
   StoreExternalDisplayMirrorInfo(external_display_mirror_info);
   LoadDisplayPreferences();
-  const base::ListValue* pref_external_display_mirror_info =
+  const base::Value* pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add first display, mirror mode restores and the external display mirror
   // info does not change.
@@ -1355,9 +1433,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add second display, mirror mode persists and the second display id is added
   // to the external display mirror info.
@@ -1366,11 +1445,13 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(2U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(first_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[1].GetString());
+  EXPECT_EQ(2U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(first_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[1].GetString());
 
   // Disconnect all external displays.
   display_info_list.erase(display_info_list.begin() + 1,
@@ -1384,9 +1465,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   LoadDisplayPreferences();
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add first display, mirror mode is off and the external display mirror info
   // does not change.
@@ -1395,9 +1477,10 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(1U, pref_external_display_mirror_info->GetList().size());
-  EXPECT_EQ(base::NumberToString(second_display_masked_id),
-            pref_external_display_mirror_info->GetList()[0].GetString());
+  EXPECT_EQ(1U, pref_external_display_mirror_info->GetListDeprecated().size());
+  EXPECT_EQ(
+      base::NumberToString(second_display_masked_id),
+      pref_external_display_mirror_info->GetListDeprecated()[0].GetString());
 
   // Add second display, mirror mode remains off and the second display id is
   // removed from the external display mirror info.
@@ -1406,14 +1489,14 @@ TEST_F(DisplayPrefsTest, ExternalDisplayMirrorInfo) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   pref_external_display_mirror_info =
       local_state()->GetList(prefs::kExternalDisplayMirrorInfo);
-  EXPECT_EQ(0U, pref_external_display_mirror_info->GetList().size());
+  EXPECT_EQ(0U, pref_external_display_mirror_info->GetListDeprecated().size());
 }
 
 TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
   LoggedInAsUser();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kFirstExecAfterBoot);
+      switches::kFirstExecAfterBoot);
 
   const int64_t internal_display_id =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1490,15 +1573,15 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_EQ(first_display_id, destination_ids[0]);
 
   // Check the preferences.
-  const base::DictionaryValue* pref_data =
+  const base::Value* pref_data =
       local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_EQ(base::NumberToString(internal_display_id),
             pref_data->FindKey("mirroring_source_id")->GetString());
   const base::Value* destination_ids_value =
       pref_data->FindKey("mirroring_destination_ids");
-  EXPECT_EQ(1U, destination_ids_value->GetList().size());
+  EXPECT_EQ(1U, destination_ids_value->GetListDeprecated().size());
   EXPECT_EQ(base::NumberToString(first_display_id),
-            destination_ids_value->GetList()[0].GetString());
+            destination_ids_value->GetListDeprecated()[0].GetString());
 
   // Overwrite current mixed mirror mode with a new configuration. (Mirror from
   // the first external display to the second external display)
@@ -1520,9 +1603,9 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   EXPECT_EQ(base::NumberToString(first_display_id),
             pref_data->FindKey("mirroring_source_id")->GetString());
   destination_ids_value = pref_data->FindKey("mirroring_destination_ids");
-  EXPECT_EQ(1U, destination_ids_value->GetList().size());
+  EXPECT_EQ(1U, destination_ids_value->GetListDeprecated().size());
   EXPECT_EQ(base::NumberToString(second_display_id),
-            destination_ids_value->GetList()[0].GetString());
+            destination_ids_value->GetListDeprecated()[0].GetString());
 
   // Turn off mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
@@ -1532,6 +1615,236 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   pref_data =
       local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_TRUE(pref_data->DictEmpty());
+}
+
+TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
+  UpdateDisplay("480x320/r@1.25");
+
+  const int64_t id0 = display::test::DisplayManagerTestApi(display_manager())
+                          .SetFirstDisplayAsInternalDisplay();
+
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  const base::Value* properties = ReadPropertiesForDisplay(id0);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.25f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  LoggedInAsUser();
+
+  // Turn on tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  // Change display settings.
+  display_manager()->UpdateZoomFactor(id0, 1.5);
+  display_manager()->SetDisplayRotation(id0, display::Display::ROTATE_270,
+                                        display::Display::RotationSource::USER);
+  // Verify the settings have been changed.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(id0).zoom_factor(), 1.5);
+  EXPECT_EQ(display_manager()->GetDisplayInfo(id0).GetActiveRotation(),
+            display::Display::ROTATE_270);
+
+  properties = ReadPropertiesForDisplay(id0);
+  // Zoom pref should store the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  // Rotation pref should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  // Turn off tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  // Zoom should stay at the new value.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(id0).zoom_factor(), 1.5);
+  // Rotation should restore to the original value.
+  EXPECT_EQ(display_manager()->GetDisplayInfo(id0).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  properties = ReadPropertiesForDisplay(id0);
+  // Zoom pref should keep the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  // Rotation pref should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+}
+
+TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
+  UpdateDisplay("480x320/r@1.25,640x480/l@1.3,320x240@1.2");
+
+  display::DisplayIdList ids = display_manager()->GetCurrentDisplayIdList();
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Set up mixed mirror mode. (Mirror from the first display to the second
+  // display, and extend to third display)
+  const display::MixedMirrorModeParams mixed_params(ids[0], {ids[1]});
+  display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  // Mixed mirror mode params are properly set.
+  const auto& initial_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(initial_mixed_params);
+  EXPECT_EQ(initial_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(initial_mixed_params->destination_ids,
+            mixed_params.destination_ids);
+  const std::set<int64_t> old_ext_mirror_info =
+      display_manager()->external_display_mirror_info();
+  EXPECT_FALSE(old_ext_mirror_info.empty());
+  // Mixed mirror mode params prefs are properly saved.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  // Verify initial stored display prefs.
+  const base::Value* properties = ReadPropertiesForDisplay(ids[0]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.25f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
+
+  LoggedInAsUser();
+
+  // Turn on tablet mode and make display changes.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1], ids[2]));
+  // Tablet mode forces normal mirror mode, so mixed params is empty.
+  EXPECT_EQ(display_manager()->mixed_mirror_mode_params(), absl::nullopt);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Make changes to the display and verify.
+  display_manager()->UpdateZoomFactor(ids[0], 1.5);
+  display_manager()->SetDisplayRotation(ids[0], display::Display::ROTATE_180,
+                                        display::Display::RotationSource::USER);
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_180);
+
+  // Simulate a reboot.
+  LoadDisplayPreferences();
+  display_manager()->UpdateDisplays();
+
+  // Things should stay in tablet mode.
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  // Currently, restarting in tablet mode reverts back to the original mixed
+  // mirror mode, which may be surprising to users. This should be revisited by
+  // crbug.com/733092.
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  const auto& loaded_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(loaded_mixed_params);
+  EXPECT_EQ(loaded_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(loaded_mixed_params->destination_ids, mixed_params.destination_ids);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Check stored and loaded display prefs.
+  properties = ReadPropertiesForDisplay(ids[0]);
+  // Zoom factor should persist the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  // Rotation should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  // Properties for the second display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  // Properties for the third display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
+
+  // Turn off tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  // Original mixed mirror mode params are preserved.
+  const auto& restored_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(restored_mixed_params);
+  EXPECT_EQ(restored_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(restored_mixed_params->destination_ids,
+            mixed_params.destination_ids);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Check restored display prefs.
+  properties = ReadPropertiesForDisplay(ids[0]);
+  // Zoom factor should remain at the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  // Rotation should be restored to the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  // Properties for the second display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  // Properties for the third display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
 }
 
 }  // namespace ash

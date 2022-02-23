@@ -282,7 +282,7 @@ TEST_F(ContentSerializedNavigationBuilderTest, ToNavigationEntries) {
   content::BrowserTaskEnvironment test_environment;
   content::TestBrowserContext browser_context;
 
-  // Make a NavigationEntries, serialize it twice into a vector.
+  // Make a NavigationEntry and serialize it twice into a vector.
   const std::unique_ptr<content::NavigationEntry> entry(
       MakeNavigationEntryForTest());
   std::vector<SerializedNavigationEntry> navigations;
@@ -300,15 +300,74 @@ TEST_F(ContentSerializedNavigationBuilderTest, ToNavigationEntries) {
   ASSERT_EQ(entry->GetURL(), restored_entries[1]->GetURL());
 
   // Because the state of the two SerializedNavigationEntries was identical
-  // (specifcally, their item sequence numbers), the root FrameNavigationEntries
-  // for the two restored entries should be de-duplicated and shared. The url
-  // is stored on the root FrameNavigationEntry, so because they are shared,
-  // calling SetURL() on one of the restored entries should update the url on
-  // both.
+  // (specifically, their item sequence numbers), the root
+  // FrameNavigationEntries for the two restored entries should be de-duplicated
+  // and shared. The url is stored on the root FrameNavigationEntry, so because
+  // they are shared, calling SetURL() on one of the restored entries should
+  // update the url on both.
   GURL new_url("http://www.url.com#ToNavigationEntries");
   restored_entries[0]->SetURL(new_url);
   EXPECT_EQ(new_url, restored_entries[0]->GetURL());
   EXPECT_EQ(new_url, restored_entries[1]->GetURL());
+}
+
+// Test that we can restore FrameNavigationEntries with matching item sequence
+// numbers and unique names but different URLs, as these may be found in
+// serialized sessions from builds prior to r894383.
+// See https://crbug.com/1275257.
+TEST_F(ContentSerializedNavigationBuilderTest, DeduplicateEntriesByURL) {
+  content::BrowserTaskEnvironment test_environment;
+  content::TestBrowserContext browser_context;
+
+  // Make a NavigationEntry and serialize it several times into a vector.
+  // Change the URL but not item sequence number for the last two entries, to
+  // simulate a replaceState that was serialized from a build prior to r894383.
+  const std::unique_ptr<content::NavigationEntry> entry(
+      MakeNavigationEntryForTest());
+  GURL url1("http://www.url.com/page1");
+  entry->SetURL(url1);
+  std::vector<SerializedNavigationEntry> navigations;
+  navigations.push_back(
+      ContentSerializedNavigationBuilder::FromNavigationEntry(0, entry.get()));
+  navigations.push_back(
+      ContentSerializedNavigationBuilder::FromNavigationEntry(1, entry.get()));
+  GURL url2("http://www.url.com/page2");
+  entry->SetURL(url2);
+  navigations.push_back(
+      ContentSerializedNavigationBuilder::FromNavigationEntry(2, entry.get()));
+  navigations.push_back(
+      ContentSerializedNavigationBuilder::FromNavigationEntry(3, entry.get()));
+
+  // Deserialize them via ToNavigationEntries().
+  std::vector<std::unique_ptr<content::NavigationEntry>> restored_entries =
+      ContentSerializedNavigationBuilder::ToNavigationEntries(navigations,
+                                                              &browser_context);
+  ASSERT_EQ(restored_entries.size(), 4ul);
+  ASSERT_EQ(url1, restored_entries[0]->GetURL());
+  ASSERT_EQ(url1, restored_entries[1]->GetURL());
+  ASSERT_EQ(url2, restored_entries[2]->GetURL());
+  ASSERT_EQ(url2, restored_entries[3]->GetURL());
+
+  // The root FrameNavigationEntries for the first two restored entries should
+  // have been de-duplicated and shared, so changing the URL of one of them
+  // should change the other, but not the third and fourth entries (which had a
+  // different URL and thus aren't shared).
+  GURL url3("http://www.url.com/page3");
+  restored_entries[0]->SetURL(url3);
+  EXPECT_EQ(url3, restored_entries[0]->GetURL());
+  EXPECT_EQ(url3, restored_entries[1]->GetURL());
+  EXPECT_EQ(url2, restored_entries[2]->GetURL());
+  EXPECT_EQ(url2, restored_entries[3]->GetURL());
+
+  // The third and fourth entries should have a shared FrameNavigationEntry as
+  // well, such that updating one affects the other but not the first and second
+  // entries.
+  GURL url4("http://www.url.com/page4");
+  restored_entries[3]->SetURL(url4);
+  EXPECT_EQ(url3, restored_entries[0]->GetURL());
+  EXPECT_EQ(url3, restored_entries[1]->GetURL());
+  EXPECT_EQ(url4, restored_entries[2]->GetURL());
+  EXPECT_EQ(url4, restored_entries[3]->GetURL());
 }
 
 TEST_F(ContentSerializedNavigationBuilderTest, SetPasswordState) {

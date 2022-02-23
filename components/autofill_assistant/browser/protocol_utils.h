@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -28,6 +29,15 @@ class ProtocolUtils {
   // |url|.
   static std::string CreateGetScriptsRequest(
       const GURL& url,
+      const ClientContextProto& client_context,
+      const ScriptParameters& script_parameters);
+
+  // Create request to get domains capabilities via their url hash prefix.
+  // Note: Only a subset of allowed fields from |client_context| will be sent to
+  // the server.
+  static std::string CreateCapabilitiesByHashRequest(
+      uint32_t hash_prefix_length,
+      const std::vector<uint64_t>& hash_prefix,
       const ClientContextProto& client_context,
       const ScriptParameters& script_parameters);
 
@@ -63,9 +73,22 @@ class ProtocolUtils {
       const ClientContextProto& client_context,
       const ScriptParameters& script_parameters);
 
+  // Create request to get user data.
+  static std::string CreateGetUserDataRequest(
+      const CollectUserDataOptions& options);
+
   // Create an action from the |action|.
   static std::unique_ptr<Action> CreateAction(ActionDelegate* delegate,
                                               const ActionProto& action);
+
+  // Parses an individual action as ActionProto.
+  //
+  // If something goes wrong, returns nullopt. If error_message is non-null, it
+  // is filled with an error message suitable for logging.
+  static absl::optional<ActionProto> ParseFromString(
+      int32_t action_id,
+      const std::string& bytes,
+      std::string* error_message);
 
   // Parse actions from the given |response|, which can be an empty string.
   //

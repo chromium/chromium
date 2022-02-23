@@ -40,7 +40,7 @@ dictionary CanvasContextCreationAttributesModule {
     boolean alpha = true;  // Also used for WebGL.
     [RuntimeEnabled=CanvasColorManagement] PredefinedColorSpace colorSpace = "srgb";
     [RuntimeEnabled=CanvasColorManagementV2] CanvasPixelFormat pixelFormat = "uint8";
-    [RuntimeEnabled=NewCanvas2DAPI] boolean willReadFrequently = false;
+    boolean willReadFrequently = false;
 
     // WebGL attributes
     boolean depth = true;

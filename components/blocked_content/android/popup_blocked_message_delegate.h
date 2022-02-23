@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -42,8 +43,7 @@ class PopupBlockedMessageDelegate
   void HandleClick();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
 
-  content::WebContents* web_contents_ = nullptr;
-  HostContentSettingsMap* map_ = nullptr;
+  raw_ptr<HostContentSettingsMap> map_ = nullptr;
 
   // TODO(crbug.com/1179462): considering grouping the following members into a
   // struct because they all logically match the lifetime of a single Message.

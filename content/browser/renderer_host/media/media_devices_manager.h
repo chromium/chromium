@@ -14,8 +14,10 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
+#include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_device_description.h"
@@ -178,6 +180,11 @@ class CONTENT_EXPORT MediaDevicesManager
     int render_frame_id;
     BoolDeviceTypes subscribe_types;
     mojo::Remote<blink::mojom::MediaDevicesListener> listener_;
+
+    // The previously seen device ID salt for this subscription, to be used only
+    // to tell if a new salt has been generated, meaning the subscription should
+    // be notified that device IDs have changed.
+    absl::optional<std::string> last_seen_device_id_salt_;
   };
 
   // Class containing the state of each spawned enumeration. This state is
@@ -282,9 +289,17 @@ class CONTENT_EXPORT MediaDevicesManager
   void MaybeStopRemovedInputDevices(
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& new_snapshot);
-  void NotifyDeviceChangeSubscribers(
+  void SetSubscriptionLastSeenDeviceIdSalt(
+      uint32_t subscription_id,
+      MediaDeviceSaltAndOrigin salt_and_origin);
+  void OnSaltAndOriginForSubscription(
+      uint32_t subscription_id,
+      int render_process_id,
+      int render_frame_id,
       MediaDeviceType type,
-      const blink::WebMediaDeviceInfoArray& snapshot);
+      const blink::WebMediaDeviceInfoArray& device_infos,
+      bool devices_changed,
+      MediaDeviceSaltAndOrigin salt_and_origin);
   void CheckPermissionForDeviceChange(
       uint32_t subscription_id,
       int render_process_id,
@@ -298,12 +313,12 @@ class CONTENT_EXPORT MediaDevicesManager
                           const MediaDeviceSaltAndOrigin& salt_and_origin,
                           bool has_permission);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void StartMonitoringOnUIThread();
 #endif
 
   bool use_fake_devices_;
-  media::AudioSystem* const audio_system_;  // not owned
+  const raw_ptr<media::AudioSystem> audio_system_;  // not owned
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
   StopRemovedInputDeviceCallback stop_removed_input_device_cb_;
   UIInputDeviceChangeCallback ui_input_device_change_cb_;

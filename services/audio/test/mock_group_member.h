@@ -7,7 +7,6 @@
 
 #include "services/audio/group_coordinator.h"
 
-#include "base/macros.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/loopback_group_member.h"
 #include "testing/gmock/include/gmock/gmock.h"

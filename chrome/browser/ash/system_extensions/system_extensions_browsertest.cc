@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
@@ -22,8 +23,6 @@
 #include "content/public/test/browser_test.h"
 
 namespace {
-
-constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
 
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
@@ -42,36 +41,57 @@ base::FilePath GetBasicSystemExtensionDir() {
   return test_dir.Append("system_extensions").Append("basic_system_extension");
 }
 
-// Creates fake resources in the directory where the System Extension would
-// be installed.
-void CreateFakeSystemExtensionResources(
-    const base::FilePath& profile_path,
-    const SystemExtensionId& kTestSystemExtensionId) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath system_extensions_dir =
-      profile_path.Append(kSystemExtensionsProfileDirectory);
-  ASSERT_TRUE(base::CreateDirectory(system_extensions_dir));
-
-  ASSERT_TRUE(base::CopyDirectory(GetBasicSystemExtensionDir(),
-                                  system_extensions_dir, true));
-
-  base::FilePath system_extension_dir = system_extensions_dir.Append(
-      SystemExtension::IdToString(kTestSystemExtensionId));
-  ASSERT_TRUE(base::Move(system_extensions_dir.Append("basic_system_extension"),
-                         system_extension_dir));
-}
-
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {
  public:
   SystemExtensionsBrowserTest() {
     feature_list_.InitAndEnableFeature(ash::features::kSystemExtensions);
   }
-
   ~SystemExtensionsBrowserTest() override = default;
+
+  void TestInstalledTestExtensionWorks() {
+    auto* provider = SystemExtensionsProvider::Get(browser()->profile());
+    auto& install_manager = provider->install_manager();
+
+    auto extension_ids = install_manager.GetSystemExtensionIds();
+    EXPECT_EQ(std::vector<SystemExtensionId>({kTestSystemExtensionId}),
+              extension_ids);
+    EXPECT_TRUE(install_manager.GetSystemExtensionById(kTestSystemExtensionId));
+
+    auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+    {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), GURL(kTestSystemExtensionIndexURL)));
+      EXPECT_EQ(u"SystemExtension", tab->GetTitle());
+    }
+    {
+      // Check that navigating to non-existing resources doesn't crash the
+      // browser.
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), GURL(kTestSystemExtensionWrongURL)));
+      content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
+      EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
+    }
+    {
+      // Check that navigating to a directory, like the root directory, doesn't
+      // crash the browser.
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), GURL(kTestSystemExtensionEmptyPathURL)));
+      content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
+      EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SystemExtensionsSwitchBrowserTest : public SystemExtensionsBrowserTest {
+ public:
+  ~SystemExtensionsSwitchBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchPath(chromeos::switches::kInstallSystemExtension,
+    command_line->AppendSwitchPath(ash::switches::kInstallSystemExtension,
                                    GetBasicSystemExtensionDir());
   }
 
@@ -81,7 +101,23 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, ExtensionInstalled) {
+IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
+  auto* provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider->install_manager();
+
+  base::RunLoop run_loop;
+  install_manager.InstallUnpackedExtensionFromDir(
+      GetBasicSystemExtensionDir(),
+      base::BindLambdaForTesting([&](InstallStatusOrSystemExtensionId result) {
+        EXPECT_TRUE(result.ok());
+        EXPECT_EQ(kTestSystemExtensionId, result.value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  TestInstalledTestExtensionWorks();
+}
+
+IN_PROC_BROWSER_TEST_F(SystemExtensionsSwitchBrowserTest, ExtensionInstalled) {
   auto* provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider->install_manager();
 
@@ -89,35 +125,5 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, ExtensionInstalled) {
   install_manager.on_command_line_install_finished().Post(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
-
-  auto extension_ids = install_manager.GetSystemExtensionIds();
-  EXPECT_EQ(std::vector<SystemExtensionId>({kTestSystemExtensionId}),
-            extension_ids);
-  EXPECT_TRUE(install_manager.GetSystemExtensionById(kTestSystemExtensionId));
-
-  // TODO(ortuno): Actually move resources instead of faking them.
-  CreateFakeSystemExtensionResources(browser()->profile()->GetPath(),
-                                     kTestSystemExtensionId);
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(kTestSystemExtensionIndexURL)));
-    EXPECT_EQ(u"SystemExtension", tab->GetTitle());
-  }
-  {
-    // Check that navigating to non-existing resources doesn't crash the
-    // browser.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(kTestSystemExtensionWrongURL)));
-    content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
-    EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
-  }
-  {
-    // Check that navigating to a directory, like the root directory, doesn't
-    // crash the browser.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(kTestSystemExtensionEmptyPathURL)));
-    content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
-    EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
-  }
+  TestInstalledTestExtensionWorks();
 }

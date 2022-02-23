@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private.interfaces;
 
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
 
 interface IWebMessageCallbackClient {
@@ -16,4 +17,7 @@ interface IWebMessageCallbackClient {
 
   // @since 90
   void onReplyProxyActiveStateChanged(in int proxyId) = 3;
+
+  // @since 99
+  void onSetPage(in int proxyId, IClientPage page) = 4;
 }

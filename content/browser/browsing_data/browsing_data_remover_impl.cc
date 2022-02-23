@@ -376,10 +376,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   if (remove_mask & DATA_TYPE_WEB_SQL) {
     storage_partition_remove_mask |= StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   }
-  if (remove_mask & DATA_TYPE_APP_CACHE) {
-    storage_partition_remove_mask |=
-        StoragePartition::REMOVE_DATA_MASK_APPCACHE;
-  }
   if (remove_mask & DATA_TYPE_SERVICE_WORKERS) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
@@ -412,6 +408,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   if (remove_mask & DATA_TYPE_CONVERSIONS) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_CONVERSIONS;
+  }
+  if (remove_mask & DATA_TYPE_AGGREGATION_SERVICE) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
   }
 
   StoragePartition* storage_partition = GetStoragePartition();
@@ -534,9 +534,9 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         CreateTaskCompletionClosureForMojo(TracingDataType::kTrustTokens));
   }
 
-#if BUILDFLAG(ENABLE_REPORTING)
   //////////////////////////////////////////////////////////////////////////////
   // Reporting cache.
+  // TODO(https://crbug.com/1291489): Add unit test to cover this.
   if (remove_mask & DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* network_context =
         browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
@@ -548,7 +548,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
         CreateTaskCompletionClosureForMojo(
             TracingDataType::kNetworkErrorLogging));
   }
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   //////////////////////////////////////////////////////////////////////////////
   // Auth cache.
@@ -637,7 +636,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition() {
   DCHECK(!browser_context_->ShutdownStarted());
   return storage_partition_for_testing_
-             ? storage_partition_for_testing_
+             ? storage_partition_for_testing_.get()
              : browser_context_->GetDefaultStoragePartition();
 }
 

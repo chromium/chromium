@@ -8,6 +8,7 @@
 #include <climits>
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/enums.h"
@@ -18,7 +19,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
+namespace feedstore {
+class Metadata;
+}
+
 namespace feed {
+// If cached user setting info is older than this, it will not be reported.
+constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 
 // Reports UMA metrics for feed.
 // Note this is inherited only for testing.
@@ -35,6 +42,8 @@ class MetricsReporter {
     // subscribed.
     virtual void SubscribedWebFeedCount(
         base::OnceCallback<void(int)> callback) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   explicit MetricsReporter(PrefService* profile_prefs);
@@ -44,6 +53,11 @@ class MetricsReporter {
 
   // Two-step initialization, required for circular dependency.
   void Initialize(Delegate* delegate);
+
+  void OnMetadataInitialized(bool isEnabledByEnterprisePolicy,
+                             bool isFeedVisible,
+                             bool isSignedIn,
+                             const feedstore::Metadata& metadata);
 
   // User interactions. See |FeedApi| for definitions.
 
@@ -175,8 +189,8 @@ class MetricsReporter {
 
   StreamStats& ForStream(const StreamType& stream_type);
 
-  PrefService* profile_prefs_;
-  Delegate* delegate_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   StreamStats for_you_stats_;
   StreamStats web_feed_stats_;

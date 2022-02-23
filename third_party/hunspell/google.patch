@@ -732,14 +732,13 @@ diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
 index 812171a..af27d6c 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
-@@ -82,9 +82,23 @@
+@@ -82,9 +82,22 @@
  #include "filemgr.hxx"
  #include "w_char.hxx"
  
 +#ifdef HUNSPELL_CHROME_CLIENT
 +#include <map>
 +
-+#include "base/stl_util.h"
 +#include "base/strings/string_piece.h"
 +#include "third_party/hunspell/google/bdict_reader.h"
 +#endif

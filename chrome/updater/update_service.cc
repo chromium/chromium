@@ -17,6 +17,15 @@ UpdateService::UpdateState& UpdateService::UpdateState::operator=(
     UpdateState&&) = default;
 UpdateService::UpdateState::~UpdateState() = default;
 
+UpdateService::AppState::AppState() = default;
+UpdateService::AppState::AppState(const AppState&) = default;
+UpdateService::AppState& UpdateService::AppState::operator=(const AppState&) =
+    default;
+UpdateService::AppState::AppState(UpdateService::AppState&&) = default;
+UpdateService::AppState& UpdateService::AppState::operator=(AppState&&) =
+    default;
+UpdateService::AppState::~AppState() = default;
+
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state) {
   auto state_formatter = [update_state]() {

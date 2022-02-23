@@ -193,7 +193,7 @@ GURL TestPageURL() {
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in promo should be visible with an account on the device.
   [SigninEarlGreyUI
@@ -229,7 +229,7 @@ GURL TestPageURL() {
   [SigninEarlGreyUI verifySigninPromoNotVisible];
 
   // Add an account.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Tap on "Other Devices", to show the sign-in promo.
@@ -276,7 +276,7 @@ GURL TestPageURL() {
 // Tests that the Recent Tabs can be opened while signed in (prevent regression
 // for https://crbug.com/1056613).
 - (void)testOpenWhileSignedIn {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   OpenRecentTabsPanel();
@@ -346,7 +346,8 @@ GURL TestPageURL() {
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
-- (void)testContextMenuOpenInNewWindow {
+// Test is flaky. https://crbug.com/1273942.
+- (void)DISABLED_testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

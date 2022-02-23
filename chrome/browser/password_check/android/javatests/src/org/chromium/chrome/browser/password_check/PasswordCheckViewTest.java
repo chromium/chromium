@@ -86,6 +86,7 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties;
 import org.chromium.chrome.browser.password_check.internal.R;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
 import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;

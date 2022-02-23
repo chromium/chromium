@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -41,6 +40,21 @@ class ConnectivityChecker
     virtual ~ConnectivityObserver() {}
   };
 
+  class ConnectivityCheckFailureObserver {
+   public:
+    ConnectivityCheckFailureObserver(const ConnectivityCheckFailureObserver&) =
+        delete;
+    ConnectivityCheckFailureObserver& operator=(
+        const ConnectivityCheckFailureObserver&) = delete;
+
+    // will be called when connectivity check failed.
+    virtual void OnConnectivityCheckFailed() = 0;
+
+   protected:
+    ConnectivityCheckFailureObserver() = default;
+    virtual ~ConnectivityCheckFailureObserver() = default;
+  };
+
   static scoped_refptr<ConnectivityChecker> Create(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -53,6 +67,11 @@ class ConnectivityChecker
 
   void AddConnectivityObserver(ConnectivityObserver* observer);
   void RemoveConnectivityObserver(ConnectivityObserver* observer);
+
+  void AddConnectivityCheckFailureObserver(
+      ConnectivityCheckFailureObserver* observer);
+  void RemoveConnectivityCheckFailureObserver(
+      ConnectivityCheckFailureObserver* observer);
 
   // Returns if there is internet connectivity.
   virtual bool Connected() const = 0;
@@ -68,12 +87,18 @@ class ConnectivityChecker
   // Notifies observes that connectivity has changed.
   void Notify(bool connected);
 
+  // Notifies observers that connectivity check failed.
+  void NotifyCheckFailure();
+
  private:
   friend class base::RefCountedDeleteOnSequence<ConnectivityChecker>;
   friend class base::DeleteHelper<ConnectivityChecker>;
 
   const scoped_refptr<base::ObserverListThreadSafe<ConnectivityObserver>>
       connectivity_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<ConnectivityCheckFailureObserver>>
+      connectivity_check_failure_observer_list_;
 };
 
 }  // namespace chromecast

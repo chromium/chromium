@@ -39,7 +39,7 @@ void StateStore::Transaction::MarkAsReported(IncidentType type,
                                              const std::string& key,
                                              IncidentDigest digest) {
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  base::DictionaryValue* incidents_sent = GetPrefDict();
+  base::Value* incidents_sent = GetPrefDict();
   base::Value* type_dict =
       incidents_sent->FindKeyOfType(type_string, base::Value::Type::DICTIONARY);
   if (!type_dict) {
@@ -63,8 +63,7 @@ void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
   if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(
           type_string, &const_type_dict) &&
       const_type_dict->FindKey(key)) {
-    base::DictionaryValue* type_dict = nullptr;
-    GetPrefDict()->GetDictionaryWithoutPathExpansion(type_string, &type_dict);
+    base::Value* type_dict = GetPrefDict()->FindDictKey(type_string);
     type_dict->RemoveKey(key);
   }
 }
@@ -89,26 +88,26 @@ void StateStore::Transaction::ClearForType(IncidentType type) {
 void StateStore::Transaction::ClearAll() {
   // Clear the preference if it exists and contains any values.
   if (store_->incidents_sent_ && !store_->incidents_sent_->DictEmpty())
-    GetPrefDict()->Clear();
+    GetPrefDict()->DictClear();
 }
 
-base::DictionaryValue* StateStore::Transaction::GetPrefDict() {
+base::Value* StateStore::Transaction::GetPrefDict() {
   if (!pref_update_) {
     pref_update_ = std::make_unique<DictionaryPrefUpdate>(
         store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent);
     // Getting the dict will cause it to be created if it doesn't exist.
     // Unconditionally refresh the store's read-only view on the preference so
     // that it will always be correct.
-    store_->incidents_sent_ = pref_update_->Get();
+    store_->incidents_sent_ =
+        static_cast<base::DictionaryValue*>(pref_update_->Get());
   }
   return pref_update_->Get();
 }
 
-void StateStore::Transaction::ReplacePrefDict(
-    std::unique_ptr<base::DictionaryValue> pref_dict) {
-  GetPrefDict()->Swap(pref_dict.get());
+void StateStore::Transaction::ReplacePrefDict(base::Value pref_dict) {
+  DCHECK(pref_dict.is_dict());
+  *GetPrefDict() = std::move(pref_dict);
 }
-
 
 // StateStore ------------------------------------------------------------------
 
@@ -128,13 +127,12 @@ StateStore::StateStore(Profile* profile)
 
   // Apply the platform data.
   Transaction transaction(this);
-  std::unique_ptr<base::DictionaryValue> value_dict(
-      platform_state_store::Load(profile_));
+  absl::optional<base::Value> value_dict(platform_state_store::Load(profile_));
   if (value_dict) {
     if (value_dict->DictEmpty())
       transaction.ClearAll();
     else if (!incidents_sent_ || *incidents_sent_ != *value_dict)
-      transaction.ReplacePrefDict(std::move(value_dict));
+      transaction.ReplacePrefDict(*std::move(value_dict));
   }
 
   if (incidents_sent_)

@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
@@ -51,12 +51,12 @@ class FrameSequenceTrackerTest : public testing::Test {
                     compositor_frame_reporting_controller_.get()) {
     tracker_ = collection_.StartScrollSequence(
         FrameSequenceTrackerType::kTouchScroll,
-        FrameSequenceMetrics::ThreadType::kCompositor);
+        FrameInfo::SmoothEffectDrivingThread::kCompositor);
   }
   ~FrameSequenceTrackerTest() override = default;
 
-  void CreateNewTracker(FrameSequenceMetrics::ThreadType thread_type =
-                            FrameSequenceMetrics::ThreadType::kCompositor) {
+  void CreateNewTracker(FrameInfo::SmoothEffectDrivingThread thread_type =
+                            FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     tracker_ = collection_.StartScrollSequence(
         FrameSequenceTrackerType::kTouchScroll, thread_type);
   }
@@ -109,13 +109,15 @@ class FrameSequenceTrackerTest : public testing::Test {
 
   // Check whether a type of tracker exists in |frame_trackers_| or not.
   bool TrackerExists(FrameSequenceTrackerType type) const {
-    auto key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kUnknown);
+    auto key =
+        std::make_pair(type, FrameInfo::SmoothEffectDrivingThread::kUnknown);
     if (type == FrameSequenceTrackerType::kTouchScroll ||
         type == FrameSequenceTrackerType::kWheelScroll ||
         type == FrameSequenceTrackerType::kScrollbarScroll) {
-      key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kCompositor);
+      key = std::make_pair(type,
+                           FrameInfo::SmoothEffectDrivingThread::kCompositor);
       if (!collection_.frame_trackers_.contains(key))
-        key = std::make_pair(type, FrameSequenceMetrics::ThreadType::kMain);
+        key = std::make_pair(type, FrameInfo::SmoothEffectDrivingThread::kMain);
     }
     return collection_.frame_trackers_.contains(key);
   }
@@ -305,7 +307,7 @@ class FrameSequenceTrackerTest : public testing::Test {
   std::unique_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
   FrameSequenceTrackerCollection collection_;
-  FrameSequenceTracker* tracker_;
+  raw_ptr<FrameSequenceTracker> tracker_;
 };
 
 // Tests that the tracker works correctly when the source-id for the
@@ -725,7 +727,7 @@ TEST_F(FrameSequenceTrackerTest, ScrollingThreadMetricCompositorThread) {
 }
 
 TEST_F(FrameSequenceTrackerTest, ScrollingThreadMetricMainThread) {
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kMain);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
 
   // Start with a bunch of frames so that the metric does get reported at the
   // end of the test.
@@ -1729,7 +1731,7 @@ TEST_F(FrameSequenceTrackerTest, MergeTrackersScrollOnSameThread) {
   GenerateSequence(first_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
 
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kCompositor);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   const char second_sequence[] = "b(81)s(3)e(81,0)P(3)b(101)s(4)e(101,0)P(4)";
   GenerateSequence(second_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
@@ -1750,7 +1752,7 @@ TEST_F(FrameSequenceTrackerTest, MergeTrackersScrollOnDifferentThreads) {
   GenerateSequence(compscroll_sequence);
   collection_.StopSequence(FrameSequenceTrackerType::kTouchScroll);
 
-  CreateNewTracker(FrameSequenceMetrics::ThreadType::kMain);
+  CreateNewTracker(FrameInfo::SmoothEffectDrivingThread::kMain);
   const char mainscroll_sequence[] =
       "b(81)s(3)e(81,0)P(3)b(101)s(4)e(101,0)P(4)";
   GenerateSequence(mainscroll_sequence);

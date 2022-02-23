@@ -5,8 +5,23 @@
 #include "ui/gfx/geometry/size_f.h"
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif BUILDFLAG(IS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 namespace gfx {
+
+#if BUILDFLAG(IS_APPLE)
+SizeF::SizeF(const CGSize& size) : SizeF(size.width, size.height) {}
+
+CGSize SizeF::ToCGSize() const {
+  return CGSizeMake(width(), height());
+}
+#endif
 
 float SizeF::GetArea() const {
   return width() * height();
@@ -27,7 +42,7 @@ void SizeF::SetToMax(const SizeF& other) {
 }
 
 std::string SizeF::ToString() const {
-  return base::StringPrintf("%fx%f", width(), height());
+  return base::StringPrintf("%gx%g", width(), height());
 }
 
 SizeF ScaleSize(const SizeF& s, float x_scale, float y_scale) {

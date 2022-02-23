@@ -23,10 +23,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_audio_decoder.h"
 #include "media/filters/decrypting_video_decoder.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
@@ -68,16 +68,19 @@ bool DecoderCapabilitySupportsDecryption(DecoderCapability capability) {
   }
 }
 
-Status IsConfigSupported(DecoderCapability capability, bool is_encrypted) {
+DecoderStatus IsConfigSupported(DecoderCapability capability,
+                                bool is_encrypted) {
   switch (capability) {
     case kAlwaysFail:
-      return StatusCode::kCodeOnlyForTesting;
+      return DecoderStatus::Codes::kFailed;
     case kClearOnly:
-      return is_encrypted ? StatusCode::kCodeOnlyForTesting : OkStatus();
+      return is_encrypted ? DecoderStatus::Codes::kUnsupportedEncryptionMode
+                          : DecoderStatus::Codes::kOk;
     case kEncryptedOnly:
-      return is_encrypted ? OkStatus() : StatusCode::kCodeOnlyForTesting;
+      return is_encrypted ? DecoderStatus::Codes::kOk
+                          : DecoderStatus::Codes::kUnsupportedEncryptionMode;
     case kAlwaysSucceed:
-      return OkStatus();
+      return DecoderStatus::Codes::kOk;
   }
 }
 
@@ -96,9 +99,9 @@ class AudioDecoderSelectorTestParam {
   using Output = AudioBuffer;
   using DecoderType = AudioDecoderType;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   using DecryptingDecoder = DecryptingAudioDecoder;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // StreamTraits() takes different parameters depending on the type.
   static std::unique_ptr<StreamTraits> CreateStreamTraits(MediaLog* media_log) {
@@ -177,9 +180,9 @@ class VideoDecoderSelectorTestParam {
   using Output = VideoFrame;
   using DecoderType = VideoDecoderType;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   using DecryptingDecoder = DecryptingVideoDecoder;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   static const base::Feature& ForceHardwareDecodersFeature() {
     return kForceHardwareVideoDecoders;
@@ -346,13 +349,13 @@ class DecoderSelectorTest : public ::testing::Test {
   std::vector<std::unique_ptr<Decoder>> CreateDecoders() {
     std::vector<std::unique_ptr<Decoder>> decoders;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (use_decrypting_decoder_) {
       decoders.push_back(
           std::make_unique<typename TypeParam::DecryptingDecoder>(
               task_environment_.GetMainThreadTaskRunner(), &media_log_));
     }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     for (const auto& args : mock_decoders_to_create_) {
       std::unique_ptr<StrictMock<MockDecoder>> decoder =
@@ -948,7 +951,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptAndDecode) {
   this->UseEncryptedDecoderConfig();
   this->CreateDecoderSelector();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // A DecryptingVideoDecoder will be created and selected. The clear decoder
   // should not be touched at all. No DecryptingDemuxerStream should be
   // created.
@@ -958,7 +961,7 @@ TYPED_TEST(DecoderSelectorTest, EncryptedStream_DecryptAndDecode) {
   // initialized and returned.
   EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
   EXPECT_CALL(*this, OnDemuxerStreamSelected(NotNull()));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   this->SelectDecoder();
 }
@@ -972,11 +975,11 @@ TYPED_TEST(DecoderSelectorTest,
   this->UseEncryptedDecoderConfig();
   this->CreateDecoderSelector();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // DecryptingDecoder is selected immediately.
   EXPECT_CALL(*this, OnDecoderSelected(TestFixture::DecoderType::kDecrypting));
   this->SelectDecoder();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // On fallback, a DecryptingDemuxerStream will be created.
   std::unique_ptr<DecryptingDemuxerStream> saved_dds;

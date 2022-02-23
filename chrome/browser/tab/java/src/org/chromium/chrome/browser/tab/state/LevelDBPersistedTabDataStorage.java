@@ -87,6 +87,21 @@ public class LevelDBPersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with mapper currently unused in LevelDBPersistedTabDataStorage";
+        return null;
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with mapper currently unused in LevelDBPersistedTabDataStorage";
+    }
+
+    @MainThread
+    @Override
     public void delete(int tabId, String dataId) {
         mPersistedDataStorage.delete(getKey(tabId, dataId));
     }

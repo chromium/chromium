@@ -10,16 +10,16 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -209,7 +209,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   }
 
  private:
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
   const bool metrics_ids_were_reset_;
   // |previous_client_id_| is set only (if known) when
   // |metrics_ids_were_reset_|
@@ -253,7 +253,7 @@ MetricsStateManager::MetricsStateManager(
   DCHECK(!load_client_info_.is_null());
   ResetMetricsIDsIfNecessary();
 
-  bool is_first_run = false;
+  [[maybe_unused]] bool is_first_run = false;
   int64_t install_date = local_state_->GetInt64(prefs::kInstallDate);
 
   // Set the install date if this is our first run.
@@ -271,9 +271,7 @@ MetricsStateManager::MetricsStateManager(
     ForceClientIdCreation();
   }
 
-#if defined(OS_WIN)
-  ALLOW_UNUSED_LOCAL(is_first_run);
-#else
+#if !BUILDFLAG(IS_WIN)
   if (is_first_run) {
     // If this is a first run (no install date) and there's no client id, then
     // generate a provisional client id now. This id will be used for field
@@ -294,7 +292,7 @@ MetricsStateManager::MetricsStateManager(
     if (client_id_.empty())
       provisional_client_id_ = base::GenerateGUID();
   }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // The |initial_client_id_| should only be set if UMA is enabled or there's a
   // provisional client id.
@@ -349,7 +347,7 @@ void MetricsStateManager::InstantiateFieldTrialList(
     base::FieldTrialList* leaked_field_trial_list =
         new base::FieldTrialList(std::move(entropy_provider));
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
+    std::ignore = leaked_field_trial_list;
   }
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
@@ -402,9 +400,9 @@ void MetricsStateManager::InstantiateFieldTrialList(
 
 void MetricsStateManager::LogHasSessionShutdownCleanly(
     bool has_session_shutdown_cleanly,
-    bool write_synchronously) {
+    bool is_extended_safe_mode) {
   clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly,
-                                      write_synchronously);
+                                      is_extended_safe_mode);
 }
 
 void MetricsStateManager::ForceClientIdCreation() {

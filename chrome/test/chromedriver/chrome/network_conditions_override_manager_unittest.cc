@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/chrome/network_conditions_override_manager.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/network_conditions.h"
-#include "chrome/test/chromedriver/chrome/network_conditions_override_manager.h"
 #include "chrome/test/chromedriver/chrome/recorder_devtools_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::Optional;
 
 void AssertNetworkConditionsCommand(
     const Command& command,
     const NetworkConditions& network_conditions) {
   ASSERT_EQ("Network.emulateNetworkConditions", command.method);
-  bool offline;
-  ASSERT_TRUE(command.params.GetBoolean("offline", &offline));
-  ASSERT_EQ(network_conditions.offline, offline);
+  ASSERT_THAT(command.params.FindBoolKey("offline"),
+              Optional(network_conditions.offline));
 
   ASSERT_EQ(network_conditions.latency,
             command.params.FindDoubleKey("latency").value());

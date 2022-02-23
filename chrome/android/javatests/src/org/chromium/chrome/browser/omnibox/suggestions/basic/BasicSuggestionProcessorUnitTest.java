@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -144,11 +145,16 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.populateModel(mSuggestion, mModel, 0);
     }
 
-    /** Create URL suggestion for test. */
-    private void createUrlSuggestion(int type, String title) {
-        mSuggestion = createSuggestionBuilder(type, title).setIsSearch(false).build();
+    /** Create URL suggestion with supplied text and target URL for test. */
+    private void createUrlSuggestion(int type, String title, GURL url) {
+        mSuggestion = createSuggestionBuilder(type, title).setIsSearch(false).setUrl(url).build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
+    }
+
+    /** Create URL suggestion for test. */
+    private void createUrlSuggestion(int type, String title) {
+        createUrlSuggestion(type, title, GURL.emptyGURL());
     }
 
     /** Create switch to tab suggestion for test. */
@@ -395,5 +401,21 @@ public class BasicSuggestionProcessorUnitTest {
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), false);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void internalUrlSuggestions_doNotPresentInternalScheme() {
+        mProcessor.onNativeInitialized();
+        // chrome://newtab and such should have no URL in the suggestions list.
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "",
+                new GURL(UrlConstants.NTP_NON_NATIVE_URL));
+        Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
+
+        // Similarly, internal (eg. chrome-intenal://) URLs should not be shown.
+        createUrlSuggestion(
+                OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", new GURL(UrlConstants.DOWNLOADS_URL));
+        Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
     }
 }

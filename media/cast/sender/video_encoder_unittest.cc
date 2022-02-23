@@ -27,7 +27,8 @@
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
+#include "base/threading/platform_thread.h"
 #include "media/cast/sender/h264_vt_encoder.h"
 #endif
 
@@ -97,7 +98,7 @@ class VideoEncoderTest
 
   bool is_testing_video_toolbox_encoder() const {
     return
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         (!video_config_.use_external_encoder &&
          H264VideoToolboxEncoder::IsSupported(video_config_)) ||
 #endif
@@ -127,7 +128,7 @@ class VideoEncoderTest
     DCHECK_GT(video_config_.max_frame_rate, 0);
     const base::TimeDelta frame_duration =
         base::Microseconds(1000000.0 / video_config_.max_frame_rate);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (is_testing_video_toolbox_encoder()) {
       // The H264VideoToolboxEncoder (on MAC_OSX and IOS) is not a faked
       // implementation in these tests, and performs its encoding asynchronously
@@ -364,7 +365,7 @@ std::vector<std::pair<Codec, bool>> DetermineEncodersToTest() {
   values.push_back(std::make_pair(CODEC_VIDEO_VP8, false));
   // Hardware-accelerated encoder (faked).
   values.push_back(std::make_pair(CODEC_VIDEO_VP8, true));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // VideoToolbox encoder (when VideoToolbox is present).
   FrameSenderConfig video_config = GetDefaultVideoSenderConfig();
   video_config.use_external_encoder = false;

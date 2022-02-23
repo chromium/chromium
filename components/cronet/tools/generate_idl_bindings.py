@@ -12,7 +12,7 @@ import tempfile
 
 def run(command, extra_options=''):
   command = command + ' ' + extra_options
-  print command
+  print(command)
   ret = os.system(command)
   if ret != 0:
     raise OSError(ret)

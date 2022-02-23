@@ -10,12 +10,11 @@ static_library("browser_sync") {
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
     "browser_sync_client.h",
-    "browser_sync_switches.cc",
     "browser_sync_switches.h",
-    "profile_sync_components_factory_impl.cc",
-    "profile_sync_components_factory_impl.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
+    "sync_api_component_factory_impl.cc",
+    "sync_api_component_factory_impl.h",
   ]
 
   public_deps = [ "//components/sync" ]

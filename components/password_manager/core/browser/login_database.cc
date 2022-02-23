@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -41,6 +42,8 @@
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -57,7 +60,7 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 31;
+constexpr int kCurrentVersionNumber = 32;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 31;
@@ -121,7 +124,7 @@ class ScopedTransaction {
   ~ScopedTransaction() { db_->CommitTransaction(); }
 
  private:
-  LoginDatabase* db_;
+  raw_ptr<LoginDatabase> db_;
 };
 
 // Convenience enum for interacting with SQL queries that use all the columns.
@@ -239,6 +242,25 @@ void AddCallback(int* output_err, int err, sql::Statement* /*stmt*/) {
   if (err == 19 /*SQLITE_CONSTRAINT*/)
     DLOG(WARNING) << "LoginDatabase::AddLogin updated an existing form";
 }
+
+class ScopedDbErrorHandler {
+ public:
+  explicit ScopedDbErrorHandler(sql::Database* db) : db_(db) {
+    db_->set_error_callback(
+        base::BindRepeating(AddCallback, &sqlite_error_code_));
+  }
+  ScopedDbErrorHandler(const ScopedDbErrorHandler&) = delete;
+  ScopedDbErrorHandler& operator=(const ScopedDbErrorHandler&) = delete;
+
+  ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
+
+  void reset_error_code() { sqlite_error_code_ = 0; }
+  int get_error_code() const { return sqlite_error_code_; }
+
+ private:
+  raw_ptr<sql::Database> db_;
+  int sqlite_error_code_{0};
+};
 
 bool DoesMatchConstraints(const PasswordForm& form) {
   if (!IsValidAndroidFacetURI(form.signon_realm) && form.url.is_empty()) {
@@ -436,6 +458,10 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->DropColumn("date_synced");
   SealVersion(builders, /*expected_version=*/31u);
 
+  // Version 32. Set timestamps of uninitialized timestamps in
+  // 'insecure_credentials' table.
+  SealVersion(builders, /*expected_version=*/32u);
+
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -578,6 +604,18 @@ bool MigrateDatabase(unsigned current_version,
       return false;
   }
 
+  // Set the create_time value when uninitialized for 'insecure_credentials'.
+  if (current_version >= 29 && current_version < 32) {
+    sql::Statement set_timestamp;
+    set_timestamp.Assign(
+        db->GetUniqueStatement("UPDATE insecure_credentials SET create_time = "
+                               "? WHERE create_time = 0"));
+    set_timestamp.BindInt64(
+        0, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    if (!set_timestamp.Run())
+      return false;
+  }
+
   return true;
 }
 
@@ -627,7 +665,7 @@ std::string GeneratePlaceholders(size_t count) {
   return result;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
@@ -640,6 +678,16 @@ PasswordForm GetFormForRemoval(sql::Statement& statement) {
   return form;
 }
 #endif
+
+// Whether we should try to return the decryptable passwords while the
+// encryption service fails for some passwords.
+bool ShouldReturnPartialPasswords() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords);
+#else
+  return false;
+#endif
+}
 
 }  // namespace
 
@@ -819,11 +867,11 @@ bool LoginDatabase::Init() {
 }
 
 void LoginDatabase::ReportBubbleSuppressionMetrics() {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   base::UmaHistogramCustomCounts(
       "PasswordManager.BubbleSuppression.AccountsInStatisticsTable",
       stats_table_.GetNumAccounts(), 0, 1000, 100);
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
@@ -884,7 +932,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (DecryptedString(form.encrypted_password, &decrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncrytionServiceFailure;
+        *error = AddLoginError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -894,7 +942,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (EncryptedString(form.password_value, &encrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncrytionServiceFailure;
+        *error = AddLoginError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -905,8 +953,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE, add_statement_.c_str()));
   BindAddStatement(form_with_encrypted_password, &s);
-  int sqlite_error_code;
-  db_.set_error_callback(base::BindRepeating(&AddCallback, &sqlite_error_code));
+  ScopedDbErrorHandler db_error_handler(&db_);
   const bool success = s.Run();
   if (success) {
     // If success, the row never existed so password was not changed.
@@ -921,9 +968,8 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                       /*password_changed=*/false);
     return list;
   }
-
   // Repeat the same statement but with REPLACE semantic.
-  sqlite_error_code = 0;
+  db_error_handler.reset_error_code();
   DCHECK(!add_replace_statement_.empty());
   PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
@@ -950,13 +996,12 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                       FormPrimaryKey(db_.GetLastInsertRowId()),
                       password_changed, insecure_changed);
   } else if (error) {
-    if (sqlite_error_code == 19 /*SQLITE_CONSTRAINT*/) {
+    if (db_error_handler.get_error_code() == 19 /*SQLITE_CONSTRAINT*/) {
       *error = AddLoginError::kConstraintViolation;
     } else {
       *error = AddLoginError::kDbError;
     }
   }
-  db_.reset_error_callback();
   return list;
 }
 
@@ -970,7 +1015,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   if (EncryptedString(form.password_value, &encrypted_password) !=
       ENCRYPTION_RESULT_SUCCESS) {
     if (error) {
-      *error = UpdateLoginError::kEncrytionServiceFailure;
+      *error = UpdateLoginError::kEncryptionServiceFailure;
     }
     return PasswordStoreChangeList();
   }
@@ -978,7 +1023,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   const PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordFromKeychain(
       old_primary_key_password.encrypted_password);
 #endif
@@ -1080,7 +1125,7 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
   }
   const PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordFromKeychain(
       old_primary_key_password.encrypted_password);
 #endif
@@ -1126,7 +1171,7 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
     DCHECK_EQ(db_primary_key, primary_key.value());
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   DeleteEncryptedPasswordById(primary_key.value());
 #endif
   DCHECK(!delete_by_id_statement_.empty());
@@ -1159,7 +1204,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     return false;
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   for (const auto& pair : key_to_form_map) {
     DeleteEncryptedPasswordById(pair.first.value());
   }
@@ -1196,7 +1241,9 @@ bool LoginDatabase::GetAutoSignInLogins(PrimaryKeyToFormMap* key_to_form_map) {
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE, autosignin_statement_.c_str()));
   FormRetrievalResult result = StatementToForms(&s, nullptr, key_to_form_map);
-  return result == FormRetrievalResult::kSuccess;
+  return (result == FormRetrievalResult::kSuccess ||
+          result ==
+              FormRetrievalResult::kEncryptionServiceFailureWithPartialData);
 }
 
 bool LoginDatabase::DisableAutoSignInForOrigin(const GURL& origin) {
@@ -1318,50 +1365,26 @@ bool LoginDatabase::GetLogins(
 
   // PSL matching only applies to HTML forms.
   if (should_PSL_matching_apply) {
-    const GURL signon_realm(form.signon_realm);
-    std::string registered_domain = GetRegistryControlledDomain(signon_realm);
-    DCHECK(!registered_domain.empty());
-    // We are extending the original SQL query with one that includes more
-    // possible matches based on public suffix domain matching. Using a regexp
-    // here is just an optimization to not have to parse all the stored entries
-    // in the |logins| table. The result (scheme, domain and port) is verified
-    // further down using GURL. See the functions SchemeMatches,
-    // RegistryControlledDomainMatches and PortMatches.
-    // We need to escape . in the domain. Since the domain has already been
-    // sanitized using GURL, we do not need to escape any other characters.
-    base::ReplaceChars(registered_domain, ".", "\\.", &registered_domain);
-    std::string scheme = signon_realm.scheme();
-    // We need to escape . in the scheme. Since the scheme has already been
-    // sanitized using GURL, we do not need to escape any other characters.
-    // The scheme soap.beep is an example with '.'.
-    base::ReplaceChars(scheme, ".", "\\.", &scheme);
-    const std::string port = signon_realm.port();
-    // For a signon realm such as http://foo.bar/, this regexp will match
-    // domains on the form http://foo.bar/, http://www.foo.bar/,
-    // http://www.mobile.foo.bar/. It will not match http://notfoo.bar/.
-    // The scheme and port has to be the same as the observed form.
-    std::string regexp = "^(" + scheme + ":\\/\\/)([\\w-]+\\.)*" +
-                         registered_domain + "(:" + port + ")?\\/$";
-    s.BindString(placeholder++, regexp);
+    s.BindString(placeholder++, GetRegexForPSLMatching(form.signon_realm));
 
     if (should_federated_apply) {
       // This regex matches any subdomain of |registered_domain|, in particular
       // it matches the empty subdomain. Hence exact domain matches are also
       // retrieved.
       s.BindString(placeholder++,
-                   "^federation://([\\w-]+\\.)*" + registered_domain + "/.+$");
+                   GetRegexForPSLFederatedMatching(form.signon_realm));
     }
   } else if (should_federated_apply) {
-    std::string expression =
-        base::StringPrintf("federation://%s/%%", form.url.host().c_str());
-    s.BindString(placeholder++, expression);
+    s.BindString(placeholder++,
+                 GetExpressionForFederatedMatching(form.url) + "%");
   }
 
   PrimaryKeyToFormMap key_to_form_map;
   FormRetrievalResult result = StatementToForms(
       &s, should_PSL_matching_apply || should_federated_apply ? &form : nullptr,
       &key_to_form_map);
-  if (result != FormRetrievalResult::kSuccess) {
+  if (result != FormRetrievalResult::kSuccess &&
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
     return false;
   }
   for (auto& pair : key_to_form_map) {
@@ -1439,10 +1462,10 @@ bool LoginDatabase::GetAllLoginsWithBlocklistSetting(
 
   PrimaryKeyToFormMap key_to_form_map;
 
-  if (StatementToForms(&s, nullptr, &key_to_form_map) !=
-      FormRetrievalResult::kSuccess) {
+  FormRetrievalResult result = StatementToForms(&s, nullptr, &key_to_form_map);
+  if (result != FormRetrievalResult::kSuccess &&
+      result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData)
     return false;
-  }
 
   for (auto& pair : key_to_form_map) {
     forms->push_back(std::move(pair.second));
@@ -1466,9 +1489,10 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
-  // If the Keychain is unavailable, don't delete any logins.
+  // If the Keychain in MacOS or the real secret key in Linux is unavailable,
+  // don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable);
@@ -1758,6 +1782,7 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     const PasswordFormDigest* matched_form,
     PrimaryKeyToFormMap* key_to_form_map) {
   key_to_form_map->clear();
+  bool has_service_failure = false;
   while (statement->Step()) {
     auto new_form = std::make_unique<PasswordForm>();
     FillFormInStore(new_form.get());
@@ -1767,7 +1792,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
         *statement, /*decrypt_and_fill_password_value=*/true, &primary_key,
         new_form.get());
     if (result == ENCRYPTION_RESULT_SERVICE_FAILURE) {
-      return FormRetrievalResult::kEncrytionServiceFailure;
+      has_service_failure = true;
+      continue;
     }
     if (result == ENCRYPTION_RESULT_ITEM_FAILURE) {
       continue;
@@ -1793,6 +1819,13 @@ FormRetrievalResult LoginDatabase::StatementToForms(
 
   if (!statement->Succeeded()) {
     return FormRetrievalResult::kDbError;
+  }
+  if (has_service_failure &&
+      (key_to_form_map->empty() || !ShouldReturnPartialPasswords())) {
+    return FormRetrievalResult::kEncryptionServiceFailure;
+  }
+  if (has_service_failure) {
+    return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
   }
   return FormRetrievalResult::kSuccess;
 }

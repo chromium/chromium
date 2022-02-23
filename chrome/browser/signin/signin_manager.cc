@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/signin_manager.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -19,12 +21,10 @@ SigninManager::SigninManager(PrefService* prefs,
                           base::Unretained(this)));
 
   UpdateUnconsentedPrimaryAccount();
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
-SigninManager::~SigninManager() {
-  identity_manager_->RemoveObserver(this);
-}
+SigninManager::~SigninManager() = default;
 
 void SigninManager::UpdateUnconsentedPrimaryAccount() {
   // Only update the unconsented primary account only after accounts are loaded.
@@ -32,17 +32,15 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
     return;
   }
 
-  absl::optional<CoreAccountInfo> account =
-      ComputeUnconsentedPrimaryAccountInfo();
+  CoreAccountInfo account = ComputeUnconsentedPrimaryAccountInfo();
 
-  DCHECK(!account || !account->IsEmpty());
-  if (account) {
+  if (!account.IsEmpty()) {
     if (identity_manager_->GetPrimaryAccountInfo(
             signin::ConsentLevel::kSignin) != account) {
       DCHECK(
           !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
       identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-          account->account_id, signin::ConsentLevel::kSignin);
+          account.account_id, signin::ConsentLevel::kSignin);
     }
   } else if (identity_manager_->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
@@ -53,10 +51,26 @@ void SigninManager::UpdateUnconsentedPrimaryAccount() {
   }
 }
 
-absl::optional<CoreAccountInfo>
-SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
+CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   DCHECK(identity_manager_->AreRefreshTokensLoaded());
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, the first time an account is added to the profile, it is set as
+  // primary account. The `SigninManager` never removes the primary account.
+  // TODO(https://crbug.com/1260291): Revisit this once signout flows are
+  // defined.
+  if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager_->GetAccountsWithRefreshTokens();
+  if (!accounts.empty())
+    return accounts[0];
+
+  return CoreAccountInfo();
+#else
   // UPA is equal to the primary account with sync consent if it exists.
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return identity_manager_->GetPrimaryAccountInfo(
@@ -71,7 +85,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   // It was considered simpler to keep the logic to update the unconsented
   // primary account in a single place.
   if (!signin_allowed_.GetValue())
-    return absl::nullopt;
+    return CoreAccountInfo();
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();
@@ -85,7 +99,7 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
     // in cookies if it exists and has a refresh token.
     if (cookie_accounts.empty()) {
       // Cookies are empty, the UPA is empty.
-      return absl::nullopt;
+      return CoreAccountInfo();
     }
 
     AccountInfo account_info =
@@ -98,12 +112,11 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
             account_info.account_id);
 
-    return error_state ? absl::nullopt
-                       : absl::make_optional<CoreAccountInfo>(account_info);
+    return error_state ? CoreAccountInfo() : account_info;
   }
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin))
-    return absl::nullopt;
+    return CoreAccountInfo();
 
   // If cookies or tokens are not loaded, it is not possible to fully compute
   // the unconsented primary account. However, if the current unconsented
@@ -114,23 +127,30 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
   if (!identity_manager_->HasAccountWithRefreshToken(current_account)) {
     // Tokens are loaded, but the current UPA doesn't have a refresh token.
     // Clear the current UPA.
-    return absl::nullopt;
+    return CoreAccountInfo();
   }
 
   if (cookie_info.accounts_are_fresh) {
     if (cookie_accounts.empty() || cookie_accounts[0].id != current_account) {
       // The current UPA is not the first in fresh cookies. It needs to be
       // cleared.
-      return absl::nullopt;
+      return CoreAccountInfo();
     }
   }
 
   // No indication that the current UPA is invalid, return current UPA.
   return identity_manager_->GetPrimaryAccountInfo(
       signin::ConsentLevel::kSignin);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-// signin::IdentityManager::Observer implementation.
+void SigninManager::Shutdown() {
+  // Unsubscribe to all notifications to stop calling the identity manager.
+  signin_allowed_.Destroy();
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
+}
+
 void SigninManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   // This is needed for the case where the user chooses to start syncing

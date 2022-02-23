@@ -28,6 +28,7 @@
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 
 namespace blink {
@@ -39,9 +40,9 @@ inline unsigned ApproximateBoxWidth(float s) {
       floorf(s * (3 / 4.f * sqrtf(kTwoPiFloat)) + 0.5f));
 }
 
-IntSize CalculateKernelSize(const FloatSize& std) {
+gfx::Size CalculateKernelSize(const gfx::SizeF& std) {
   DCHECK(std.width() >= 0 && std.height() >= 0);
-  IntSize kernel_size;
+  gfx::Size kernel_size;
   if (std.width()) {
     int size = std::max<unsigned>(2, ApproximateBoxWidth(std.width()));
     kernel_size.set_width(size);
@@ -52,26 +53,25 @@ IntSize CalculateKernelSize(const FloatSize& std) {
   }
   return kernel_size;
 }
-
 }
 
 FEGaussianBlur::FEGaussianBlur(Filter* filter, float x, float y)
     : FilterEffect(filter), std_x_(x), std_y_(y) {}
 
-FloatRect FEGaussianBlur::MapEffect(const FloatSize& std_deviation,
-                                    const FloatRect& rect) {
-  IntSize kernel_size = CalculateKernelSize(std_deviation);
+gfx::RectF FEGaussianBlur::MapEffect(const gfx::SizeF& std_deviation,
+                                     const gfx::RectF& rect) {
+  gfx::Size kernel_size = CalculateKernelSize(std_deviation);
   // We take the half kernel size and multiply it by three, because we run box
   // blur three times.
-  FloatRect result = rect;
-  result.OutsetX(3.0f * kernel_size.width() * 0.5f);
-  result.OutsetY(3.0f * kernel_size.height() * 0.5f);
+  gfx::RectF result = rect;
+  result.Outset(3.0f * kernel_size.width() * 0.5f,
+                3.0f * kernel_size.height() * 0.5f);
   return result;
 }
 
-FloatRect FEGaussianBlur::MapEffect(const FloatRect& rect) const {
-  FloatSize std_error(GetFilter()->ApplyHorizontalScale(std_x_),
-                      GetFilter()->ApplyVerticalScale(std_y_));
+gfx::RectF FEGaussianBlur::MapEffect(const gfx::RectF& rect) const {
+  gfx::SizeF std_error(GetFilter()->ApplyHorizontalScale(std_x_),
+                       GetFilter()->ApplyVerticalScale(std_y_));
   return MapEffect(std_error, rect);
 }
 

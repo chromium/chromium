@@ -131,7 +131,7 @@ void SVGTextLayoutEngine::ComputeCurrentFragmentMetrics(
   float scaling_factor = text_line_layout.ScalingFactor();
   DCHECK(scaling_factor);
   const Font& scaled_font = text_line_layout.ScaledFont();
-  FloatRect glyph_overflow_bounds;
+  gfx::RectF glyph_overflow_bounds;
 
   const SimpleFontData* font_data = scaled_font.PrimaryFont();
   DCHECK(font_data);

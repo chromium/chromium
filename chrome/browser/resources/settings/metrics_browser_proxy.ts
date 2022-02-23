@@ -85,6 +85,61 @@ export enum SafeBrowsingInteractions {
   COUNT = 8,
 }
 
+/**
+ * All Privacy guide interactions with metrics.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with SettingsPrivacyGuideInteractions in emus.xml.
+ */
+export enum PrivacyGuideInteractions {
+  WELCOME_NEXT_BUTTON = 0,
+  MSBB_NEXT_BUTTON = 1,
+  HISTORY_SYNC_NEXT_BUTTON = 2,
+  SAFE_BROWSING_NEXT_BUTTON = 3,
+  COOKIES_NEXT_BUTTON = 4,
+  COMPLETION_NEXT_BUTTON = 5,
+  SETTINGS_LINK_ROW_ENTRY = 6,
+  PROMO_ENTRY = 7,
+  SWAA_COMPLETION_LINK = 8,
+  PRIVACY_SANDBOX_COMPLETION_LINK = 9,
+  // Leave this at the end.
+  COUNT = 10,
+}
+
+/**
+ * This enum covers all possible combinations of the start and end
+ * settings states for each Privacy guide fragment, allowing metrics to see if
+ * users change their settings inside of Privacy guide or not. The format is
+ * settingAtStart-To-settingAtEnd.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with SettingsPrivacyGuideSettingsStates in enums.xml.
+ */
+export enum PrivacyGuideSettingsStates {
+  MSBB_ON_TO_ON = 0,
+  MSBB_ON_TO_OFF = 1,
+  MSBB_OFF_TO_ON = 2,
+  MSBB_OFF_TO_OFF = 3,
+  BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO = 4,
+  BLOCK_3P_INCOGNITO_TO_3P = 5,
+  BLOCK_3P_TO_3P_INCOGNITO = 6,
+  BLOCK_3P_TO_3P = 7,
+  HISTORY_SYNC_ON_TO_ON = 8,
+  HISTORY_SYNC_ON_TO_OFF = 9,
+  HISTORY_SYNC_OFF_TO_ON = 10,
+  HISTORY_SYNC_OFF_TO_OFF = 11,
+  SAFE_BROWSING_ENHANCED_TO_ENHANCED = 12,
+  SAFE_BROWSING_ENHANCED_TO_STANDARD = 13,
+  SAFE_BROWSING_STANDARD_TO_ENHANCED = 14,
+  SAFE_BROWSING_STANDARD_TO_STANDARD = 15,
+  // Leave this at the end.
+  COUNT = 16,
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -110,6 +165,27 @@ export interface MetricsBrowserProxy {
    * SafeBrowsing.Settings.UserAction histogram
    */
   recordSafeBrowsingInteractionHistogram(interaction: SafeBrowsingInteractions):
+      void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.NextNavigation histogram
+   */
+  recordPrivacyGuideNextNavigationHistogram(interaction:
+                                                PrivacyGuideInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.EntryExit histogram
+   */
+  recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions):
+      void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.SettingsStates histogram
+   */
+  recordPrivacyGuideSettingsStatesHistogram(state: PrivacyGuideSettingsStates):
       void;
 }
 
@@ -139,6 +215,28 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordInHistogram', [
       'SafeBrowsing.Settings.UserAction.Default', interaction,
       SafeBrowsingInteractions.COUNT
+    ]);
+  }
+
+  recordPrivacyGuideNextNavigationHistogram(interaction:
+                                                PrivacyGuideInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.NextNavigation', interaction,
+      PrivacyGuideInteractions.COUNT
+    ]);
+  }
+
+  recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.EntryExit', interaction,
+      PrivacyGuideInteractions.COUNT
+    ]);
+  }
+
+  recordPrivacyGuideSettingsStatesHistogram(state: PrivacyGuideSettingsStates) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.SettingsStates', state,
+      PrivacyGuideSettingsStates.COUNT
     ]);
   }
 

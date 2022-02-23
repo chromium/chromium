@@ -31,7 +31,7 @@ class PredictionServiceRequest {
   void LookupReponseReceived(
       bool lookup_succesful,
       bool response_from_cache,
-      std::unique_ptr<permissions::GeneratePredictionsResponse> response);
+      const absl::optional<permissions::GeneratePredictionsResponse>& response);
 
   permissions::PredictionServiceBase::LookupResponseCallback callback_;
 

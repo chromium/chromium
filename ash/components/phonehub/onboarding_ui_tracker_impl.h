@@ -7,13 +7,13 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/onboarding_ui_tracker.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/callback.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // OnboardingUiTracker implementation that uses the
@@ -60,6 +60,6 @@ class OnboardingUiTrackerImpl
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_ONBOARDING_UI_TRACKER_IMPL_H_

@@ -5,11 +5,13 @@
 #ifndef CONTENT_BROWSER_SITE_INSTANCE_GROUP_MANAGER_H_
 #define CONTENT_BROWSER_SITE_INSTANCE_GROUP_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
 
 class RenderProcessHost;
+class SiteInstanceGroup;
 class SiteInstanceImpl;
 
 // Policy class that manages groups of SiteInstances and controls whether
@@ -43,6 +45,19 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
   // process is suitable.
   RenderProcessHost* GetExistingGroupProcess(SiteInstanceImpl* site_instance);
 
+  // Returns the group `site_instance` is assigned to. This should only be
+  // called once for each SiteInstance.
+  // Also sets the RenderProcessHost and AgentSchedulingGroupHost for the group.
+  // TODO(crbug.com/1291351): Remove the `process` parameter. Currently it's
+  // required due to SiteInstanceImpl::ReuseCurrentProcessIfPossible. This
+  // function could instead take a hint for which process the caller would like
+  // to use if possible. This will be needed before a group can have multiple
+  // SiteInstances. When this change happens, this should be renamed as it can
+  // be called multiple times per SiteInstance at that point.
+  scoped_refptr<SiteInstanceGroup> GetOrCreateGroupForNewSiteInstance(
+      SiteInstanceImpl* site_instance,
+      RenderProcessHost* process);
+
   // Called when the SiteInfo is set on `site_instance`. This is used to
   // discover new SiteInstances when they are assigned a specific security
   // principal so that they can be assigned to an existing group if appropriate.
@@ -73,7 +88,7 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
 
   // The process to use for any SiteInstance in this BrowsingInstance that
   // doesn't require a dedicated process.
-  RenderProcessHost* default_process_ = nullptr;
+  raw_ptr<RenderProcessHost> default_process_ = nullptr;
 };
 }  // namespace content
 

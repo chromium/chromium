@@ -17,12 +17,12 @@ class PolicyMap;
 // Handles NetworkPrediction policies.
 class NetworkPredictionPolicyHandler : public ConfigurationPolicyHandler {
  public:
-  NetworkPredictionPolicyHandler();
+  NetworkPredictionPolicyHandler() = default;
   NetworkPredictionPolicyHandler(const NetworkPredictionPolicyHandler&) =
       delete;
   NetworkPredictionPolicyHandler& operator=(
       const NetworkPredictionPolicyHandler&) = delete;
-  ~NetworkPredictionPolicyHandler() override;
+  ~NetworkPredictionPolicyHandler() override = default;
 
   // ConfigurationPolicyHandler methods:
   bool CheckPolicySettings(const PolicyMap& policies,

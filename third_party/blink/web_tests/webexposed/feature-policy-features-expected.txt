@@ -10,6 +10,7 @@ ch-device-memory
 ch-downlink
 ch-dpr
 ch-ect
+ch-partitioned-cookies
 ch-prefers-color-scheme
 ch-rtt
 ch-ua
@@ -21,6 +22,7 @@ ch-ua-mobile
 ch-ua-model
 ch-ua-platform
 ch-ua-platform-version
+ch-ua-wow64
 ch-viewport-height
 ch-viewport-width
 ch-width
@@ -40,7 +42,6 @@ geolocation
 gyroscope
 hid
 idle-detection
-interest-cohort
 keyboard-map
 magnetometer
 microphone

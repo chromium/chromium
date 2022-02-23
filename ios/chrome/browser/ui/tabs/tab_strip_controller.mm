@@ -105,9 +105,6 @@ const CGFloat kCollapsedTabWidthThreshold = 40.0;
 const CGFloat kMaxAutoscrollDistance = 10.0;
 const CGFloat kAutoscrollDecrementWidth = 10.0;
 
-// The size of the tab strip view.
-const CGFloat kTabStripHeight = 39.0;
-
 // The size of the new tab button.
 const CGFloat kNewTabButtonWidth = 44;
 
@@ -567,9 +564,11 @@ UIColor* BackgroundColor() {
 
   [self.view removeGestureRecognizer:self.panGestureRecognizer];
 
-  UIPanGestureRecognizer* panGestureRecognizer = [[UIPanGestureRecognizer alloc]
-      initWithTarget:panGestureHandler
-              action:@selector(handlePanGesture:)];
+  UIPanGestureRecognizer* panGestureRecognizer =
+      [[ViewRevealingPanGestureRecognizer alloc]
+          initWithTarget:panGestureHandler
+                  action:@selector(handlePanGesture:)
+                 trigger:ViewRevealTrigger::TabStrip];
   panGestureRecognizer.delegate = panGestureHandler;
   panGestureRecognizer.maximumNumberOfTouches = 1;
   [self.view addGestureRecognizer:panGestureRecognizer];
@@ -1820,17 +1819,16 @@ UIColor* BackgroundColor() {
   [self updateViewHidden];
 }
 
-- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
-  // No-op.
-}
-
-- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  if (viewRevealState == ViewRevealState::Hidden) {
+- (void)didAnimateViewRevealFromState:(ViewRevealState)startViewRevealState
+                              toState:(ViewRevealState)currentViewRevealState
+                              trigger:(ViewRevealTrigger)trigger {
+  if (currentViewRevealState == ViewRevealState::Hidden) {
     // Reset the background color to cover up the WKWebView if it is behind
     // the tab strip.
     self.view.backgroundColor = BackgroundColor();
   }
-  self.viewHiddenForThumbStrip = viewRevealState != ViewRevealState::Hidden;
+  self.viewHiddenForThumbStrip =
+      currentViewRevealState != ViewRevealState::Hidden;
   [self updateViewHidden];
 }
 

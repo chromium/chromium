@@ -28,7 +28,7 @@ namespace blink {
 // Like in ProcessedLocalAudioSource::GetBufferSize(), we should re-evaluate
 // whether Android needs special treatment here.
 const int kFallbackAudioLatencyMs =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     20;
 #else
     10;

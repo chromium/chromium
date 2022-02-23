@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/tab_groups/tab_group_color.h"
@@ -109,6 +110,7 @@ class MockPage : public tab_strip::mojom::Page {
   MOCK_METHOD2(TabThumbnailUpdated,
                void(int32_t tab_id, const std::string& data_uri));
   MOCK_METHOD0(ShowContextMenu, void());
+  MOCK_METHOD0(ThemeChanged, void());
 };
 
 }  // namespace
@@ -128,6 +130,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
   }
   void TearDown() override {
     web_contents_.reset();
+    handler_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -185,10 +188,6 @@ TEST_F(TabStripPageHandlerTest, GroupStateChangedEvents) {
                          extensions::ExtensionTabUtil::GetTabId(
                              browser()->tab_strip_model()->GetWebContentsAt(1)),
                          1, absl::optional<std::string>()));
-  EXPECT_CALL(page_, TabGroupStateChanged(
-                         extensions::ExtensionTabUtil::GetTabId(
-                             browser()->tab_strip_model()->GetWebContentsAt(0)),
-                         0, absl::optional<std::string>()));
 }
 
 TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
@@ -511,6 +510,22 @@ TEST_F(TabStripPageHandlerTest, TabActivated) {
                          browser()->tab_strip_model()->GetWebContentsAt(2))));
 }
 
+TEST_F(TabStripPageHandlerTest, SwitchTab) {
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+
+  web_ui()->ClearTrackedCalls();
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->GetActiveWebContents(),
+            tab_strip_model->GetWebContentsAt(0));
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetWebContentsAt(1));
+  handler()->ActivateTab(tab_id);
+  ASSERT_EQ(tab_strip_model->GetActiveWebContents(),
+            tab_strip_model->GetWebContentsAt(1));
+}
+
 TEST_F(TabStripPageHandlerTest, UngroupTab) {
   // Add a tab inside of a group.
   AddTab(browser(), GURL("http://foo"));
@@ -613,4 +628,10 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidGroupDrags) {
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabStripPageHandlerTest, OnThemeChanged) {
+  webui::GetNativeTheme(web_ui()->GetWebContents())
+      ->NotifyOnNativeThemeUpdated();
+  EXPECT_CALL(page_, ThemeChanged());
 }

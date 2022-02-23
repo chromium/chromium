@@ -7,13 +7,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/task_runner.h"
 #include "components/paint_preview/player/player_compositor_delegate.h"
-
-class SkBitmap;
 
 namespace paint_preview {
 class PaintPreviewBaseService;
+struct JavaBitmapResult;
 
 class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
  public:
@@ -31,6 +32,7 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   void OnCompositorReady(
       CompositorStatus compositor_status,
       mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+      float page_scale_factor,
       std::unique_ptr<ui::AXTreeUpdate> ax_tree) override;
 
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
@@ -80,17 +82,18 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
  private:
   ~PlayerCompositorDelegateAndroid() override;
 
-  void OnBitmapCallback(
+  void OnJavaBitmapCallback(
       const base::android::ScopedJavaGlobalRef<jobject>& j_bitmap_callback,
       const base::android::ScopedJavaGlobalRef<jobject>& j_error_callback,
       int request_id,
-      mojom::PaintPreviewCompositor::BitmapStatus status,
-      const SkBitmap& sk_bitmap);
+      JavaBitmapResult result);
 
   // Points to corresponding the Java object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   int request_id_;
+  // Task runner for converting bitmaps allows parallel and not in order.
+  scoped_refptr<base::TaskRunner> task_runner_;
   base::TimeTicks startup_timestamp_;
 
   base::WeakPtrFactory<PlayerCompositorDelegateAndroid> weak_factory_{this};

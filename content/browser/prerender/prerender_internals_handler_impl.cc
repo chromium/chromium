@@ -72,6 +72,12 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "MixedContent";
     case PrerenderHost::FinalStatus::kTriggerBackgrounded:
       return "TriggerBackgrounded";
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
+      return "EmbedderTriggeredAndSameOriginRedirected";
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+      return "EmbedderTriggeredAndCrossOriginRedirected";
+    case PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed:
+      return "EmbedderTriggeredAndDestroyed";
   }
   NOTREACHED();
   return "";

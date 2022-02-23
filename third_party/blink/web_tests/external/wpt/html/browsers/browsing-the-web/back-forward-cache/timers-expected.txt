@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Timers should be paused when the page is in BFCache assert_unreached: The timer is fired too early. Maybe the time isn't paused when the page is in BFCache Reached unreachable code
+Harness: the test ran to completion.
+

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "time_view.h"
 
@@ -22,7 +23,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
                                     public UnifiedSystemTrayModel::Observer {
  public:
   TimeTrayItemView(Shelf* shelf,
-                   UnifiedSystemTrayModel* model,
+                   scoped_refptr<UnifiedSystemTrayModel> model,
                    absl::optional<TimeView::OnTimeViewActionPerformedCallback>
                        callback = absl::nullopt);
 
@@ -54,7 +55,7 @@ class ASH_EXPORT TimeTrayItemView : public TrayItemView,
  private:
   friend class TimeTrayItemViewTest;
 
-  UnifiedSystemTrayModel* model_ = nullptr;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   TimeView* time_view_ = nullptr;
   ScopedSessionObserver session_observer_;
   base::ScopedObservation<UnifiedSystemTrayModel,

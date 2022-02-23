@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "content/public/test/test_web_ui.h"
@@ -39,7 +40,7 @@ class TestWebUIListenerObserver : public TestWebUI::JavascriptCallObserver {
   void OnJavascriptFunctionCalled(
       const TestWebUI::CallData& call_data) override;
 
-  content::TestWebUI* web_ui_;
+  raw_ptr<content::TestWebUI> web_ui_;
   std::string listener_name_;
   base::RunLoop run_loop_;
 

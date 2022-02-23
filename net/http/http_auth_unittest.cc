@@ -28,6 +28,8 @@
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -40,11 +42,11 @@ std::unique_ptr<HttpAuthHandlerMock> CreateMockHandler(bool connection_based) {
   std::string challenge_text = "Basic";
   HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
                                          challenge_text.end());
-  GURL origin("www.example.com");
+  url::SchemeHostPort scheme_host_port(GURL("https://www.example.com"));
   SSLInfo null_ssl_info;
   EXPECT_TRUE(auth_handler->InitFromChallenge(
       &challenge, HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-      origin, NetLogWithSource()));
+      scheme_host_port, NetLogWithSource()));
   return auth_handler;
 }
 
@@ -81,14 +83,16 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           "Y: Digest realm=\"X\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate: Basic realm=\"BasicRealm\"\n",
 
-          HttpAuth::AUTH_SCHEME_BASIC, "BasicRealm",
+          HttpAuth::AUTH_SCHEME_BASIC,
+          "BasicRealm",
       },
       {
           // Fake is the only challenge type, but it is unsupported.
           "Y: Digest realm=\"FooBar\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate: Fake realm=\"FooBar\"\n",
 
-          HttpAuth::AUTH_SCHEME_MAX, "",
+          HttpAuth::AUTH_SCHEME_MAX,
+          "",
       },
       {
           // Pick Digest over Basic.
@@ -98,23 +102,25 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           "www-authenticate: Digest realm=\"DigestRealm\", "
           "nonce=\"aaaaaaaaaa\"\n",
 
-          HttpAuth::AUTH_SCHEME_DIGEST, "DigestRealm",
+          HttpAuth::AUTH_SCHEME_DIGEST,
+          "DigestRealm",
       },
       {
           // Handle an empty header correctly.
           "Y: Digest realm=\"X\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate:\n",
 
-          HttpAuth::AUTH_SCHEME_MAX, "",
+          HttpAuth::AUTH_SCHEME_MAX,
+          "",
       },
       {
           "WWW-Authenticate: Negotiate\n"
           "WWW-Authenticate: NTLM\n",
 
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
           // Choose Negotiate over NTLM on all platforms.
-          // TODO(ahendrickson): This may be flaky on Linux and OSX as it
-          // relies on being able to load one of the known .so files
+          // TODO(ahendrickson): This may be flaky on Linux and OSX as
+          // it relies on being able to load one of the known .so files
           // for gssapi.
           HttpAuth::AUTH_SCHEME_NEGOTIATE,
 #else
@@ -122,8 +128,9 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           HttpAuth::AUTH_SCHEME_NTLM,
 #endif  // BUILDFLAG(USE_KERBEROS)
           "",
-      }};
-  GURL origin("http://www.example.com");
+      },
+  };
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::set<HttpAuth::Scheme> disabled_schemes;
   MockAllowHttpAuthPreferences http_auth_preferences;
   std::unique_ptr<HostResolver> host_resolver(new MockHostResolver());
@@ -143,8 +150,8 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
     std::unique_ptr<HttpAuthHandler> handler;
     HttpAuth::ChooseBestChallenge(
         http_auth_handler_factory.get(), *headers, null_ssl_info,
-        NetworkIsolationKey(), HttpAuth::AUTH_SERVER, origin, disabled_schemes,
-        NetLogWithSource(), host_resolver.get(), &handler);
+        NetworkIsolationKey(), HttpAuth::AUTH_SERVER, scheme_host_port,
+        disabled_schemes, NetLogWithSource(), host_resolver.get(), &handler);
 
     if (handler.get()) {
       EXPECT_EQ(tests[i].challenge_scheme, handler->auth_scheme());

@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++textField multiline value='ABCDEF<newline><newline>XYZ123'
+++++++textField multiline value='ABCDEF<newline>XYZ123'
 ++++++++paragraph
 ++++++++++staticText name='ABC' nextOnLineId=inlineTextBox:"DEF"
 ++++++++++++inlineTextBox name='ABC' nextOnLineId=inlineTextBox:"DEF"

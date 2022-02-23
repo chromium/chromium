@@ -650,7 +650,7 @@ TEST_F(UDPSocketPosixTest, WriteAsyncNoBatchingError) {
   EXPECT_EQ(ERR_INVALID_HANDLE, rv);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_WriteAsyncBasicDelay DISABLED_WriteAsyncBasicDelay
 #else
 #define MAYBE_WriteAsyncBasicDelay WriteAsyncBasicDelay

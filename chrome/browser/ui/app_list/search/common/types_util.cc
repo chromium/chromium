@@ -50,6 +50,10 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "File search";
     case ash::AppListSearchResultType::kDriveSearch:
       return "Drive search";
+    case ash::AppListSearchResultType::kKeyboardShortcut:
+      return "Keyboard shortcut";
+    case ash::AppListSearchResultType::kOpenTab:
+      return "Open tab";
   }
   NOTREACHED();
 }
@@ -148,6 +152,12 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "HELP_APP_UPDATES";
     case ash::SearchResultType::HELP_APP_DISCOVER:
       return "HELP_APP_DISCOVER";
+    case ash::SearchResultType::KEYBOARD_SHORTCUT:
+      return "KEYBOARD_SHORTCUT";
+    case ash::SearchResultType::OPEN_TAB:
+      return "OPEN_TAB";
+    case ash::SearchResultType::NO_RESULT:
+      return "NO_RESULT";
     case ash::SearchResultType::SEARCH_RESULT_TYPE_BOUNDARY:
       return "SEARCH_RESULT_TYPE_BOUNDARY";
   }
@@ -164,12 +174,14 @@ std::string DisplayTypeToString(
       return "List";
     case ash::SearchResultDisplayType::kTile:
       return "Tile";
-    case ash::SearchResultDisplayType::kCard:
-      return "Card";
+    case ash::SearchResultDisplayType::kAnswerCard:
+      return "AnswerCard";
     case ash::SearchResultDisplayType::kChip:
       return "Chip";
     case ash::SearchResultDisplayType::kContinue:
       return "Continue";
+    case ash::SearchResultDisplayType::kRecentApps:
+      return "RecentApps";
   }
   NOTREACHED();
 }

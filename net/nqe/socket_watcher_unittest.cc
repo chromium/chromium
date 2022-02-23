@@ -193,7 +193,7 @@ TEST_F(NetworkQualitySocketWatcherTest, QuicFirstNotificationDropped) {
   EXPECT_TRUE(socket_watcher.ShouldNotifyUpdatedRTT());
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_PrivateAddressRTTNotNotified DISABLED_PrivateAddressRTTNotNotified
 #else

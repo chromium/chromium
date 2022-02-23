@@ -23,4 +23,12 @@ void DmabufVideoFramePool::set_parent_task_runner(
   parent_task_runner_ = std::move(parent_task_runner);
 }
 
+PlatformVideoFramePool* DmabufVideoFramePool::AsPlatformVideoFramePool() {
+  return nullptr;
+}
+
+bool DmabufVideoFramePool::IsFakeVideoFramePool() {
+  return false;
+}
+
 }  // namespace media

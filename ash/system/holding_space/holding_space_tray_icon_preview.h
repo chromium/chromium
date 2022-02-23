@@ -15,10 +15,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace ui {
 class Layer;
 }  // namespace ui
@@ -26,7 +22,7 @@ class Layer;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceProgressRing;
+class ProgressIndicator;
 class Shelf;
 enum class ShelfAlignment;
 
@@ -38,6 +34,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
       public ui::ImplicitAnimationObserver,
       public views::ViewObserver {
  public:
+  static constexpr char kClassName[] = "HoldingSpaceTrayIconPreview";
+  static constexpr char kImageLayerName[] =
+      "HoldingSpaceTrayIconPreview::Image";
+
   HoldingSpaceTrayIconPreview(Shelf* shelf,
                               views::View* container,
                               const HoldingSpaceItem* item);
@@ -75,9 +75,6 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Invoked when the theme of the parent `container_` has changed.
   void OnThemeChanged();
 
-  // Returns the holding space `item_` visually represented by this preview.
-  const HoldingSpaceItem* item() const { return item_; }
-
   ui::Layer* layer() { return layer_owner_.layer(); }
 
   const absl::optional<size_t>& index() const { return index_; }
@@ -86,6 +83,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   void set_pending_index(size_t index) { pending_index_ = index; }
 
  private:
+  class ImageLayerOwner;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -97,13 +96,6 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;
-
-  // Subscription callback for `item_` image changes. Called when the icon
-  // representation gets updated.
-  void OnHoldingSpaceItemImageChanged();
-
-  // Subscription callback for `item_` deletion.
-  void OnHoldingSpaceItemDeleted();
 
   // Creates a layer for this preview. The layer will be owned by
   // `layer_owner_`. Note that a layer may be created multiple times throughout
@@ -139,23 +131,18 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // icon.
   views::View* const container_;
 
-  // The holding space item this preview represents - may be null if the item
-  // gets deleted before the preview.
-  const HoldingSpaceItem* item_;
+  // Owns the `ui::Layer` which paints the image representation of the
+  // associated holding space item.
+  std::unique_ptr<ImageLayerOwner> image_layer_owner_;
 
-  // Owns the `ui::Layer` which paints a ring to indicate progress of the
-  // associated holding space `item_`. NOTE: The `ui::Layer` is *not* painted if
-  // the holding space `item` is not in-progress.
-  std::unique_ptr<HoldingSpaceProgressRing> progress_ring_;
+  // Owns the `ui::Layer` which paints indicate of progress for the associated
+  // holding space item. NOTE: The `ui::Layer` is *not* painted if the holding
+  // space item is not in-progress.
+  std::unique_ptr<ProgressIndicator> progress_indicator_;
 
   // Whether or not this preview is currently using small dimensions. This is
   // done when in tablet mode and an app is in use.
   bool use_small_previews_ = false;
-
-  // A cached representation of the associated holding space `item_`'s image
-  // which has been cropped, resized, and clipped to a circle to be painted at
-  // `layer()`'s contents bounds.
-  gfx::ImageSkia contents_image_;
 
   // This is a proxy for `layer()`'s transform and represents the target
   // position of this preview. Because `layer()` only exists while in
@@ -164,9 +151,8 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   gfx::Transform transform_;
 
   // The layer serving as the visual representation of the associated holding
-  // space `item_` in the holding space icon in the shelf. This only exists
-  // while in the `container_`s viewport as determined by the current
-  // `transform_`.
+  // space item in the holding space icon in the shelf. This only exists while
+  // in the `container_`s viewport as determined by the current `transform_`.
   ui::LayerOwner layer_owner_;
 
   // Closure to invoke on completion of `AnimateOut()`. It is expected that this
@@ -180,13 +166,6 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // If set, the index within the holding space tray icon to which the preview
   // is about to move. Set while the holding space tray icon is updating.
   absl::optional<size_t> pending_index_;
-
-  // Subscription for changes to the holding space image backing
-  // `contents_image_`.
-  base::CallbackListSubscription image_subscription_;
-
-  // Subscription for the associated holding space item deletion.
-  base::CallbackListSubscription item_deletion_subscription_;
 
   // The `layer()` for this preview is parented by `container_`'s layer. It is
   // necessary to observe and react to bounds changes in `container_` to keep

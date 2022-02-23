@@ -78,7 +78,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -1018,8 +1018,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
   // Also, only async requests support upload progress events.
   bool upload_events = false;
   if (async_) {
-    probe::AsyncTaskScheduled(&execution_context, "XMLHttpRequest.send",
-                              &async_task_id_);
+    async_task_context_.Schedule(&execution_context, "XMLHttpRequest.send");
     DispatchProgressEvent(event_type_names::kLoadstart, 0, 0);
     // Event handler could have invalidated this send operation,
     // (re)setting the send flag and/or initiating another send
@@ -1058,8 +1057,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
   request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      execution_context.AddressSpace());
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);
 
@@ -1126,9 +1123,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
               WebFeature::kXMLHttpRequestSynchronousInSameOriginSubframe);
         }
       }
-      if (PageDismissalScope::IsActive() &&
-          !RuntimeEnabledFeatures::AllowSyncXHRInPageDismissalEnabled(
-              &execution_context)) {
+      if (PageDismissalScope::IsActive()) {
         HandleNetworkError();
         ThrowForLoadFailureIfNeeded(exception_state,
                                     "Synchronous XHR in page dismissal. See "
@@ -1287,7 +1282,7 @@ void XMLHttpRequest::DispatchProgressEvent(const AtomicString& type,
 
   ExecutionContext* context = GetExecutionContext();
   probe::AsyncTask async_task(
-      context, &async_task_id_,
+      context, &async_task_context_,
       type == event_type_names::kLoadend ? nullptr : "progress", async_);
   progress_event_throttle_->DispatchProgressEvent(type, length_computable,
                                                   loaded, total);
@@ -1719,13 +1714,10 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
 
 void XMLHttpRequest::DidFinishLoadingInternal() {
   if (response_document_parser_) {
-    // |DocumentParser::finish()| tells the parser that we have reached end of
-    // the data.  When using |HTMLDocumentParser|, which works asynchronously,
-    // we do not have the complete document just after the
-    // |DocumentParser::finish()| call.  Wait for the parser to call us back in
-    // |notifyParserStopped| to progress state.
     response_document_parser_->Finish();
-    DCHECK(response_document_);
+    // The remaining logic lives in `XMLHttpRequest::NotifyParserStopped()`
+    // which is called by `DocumentParser::Finish()` synchronously or
+    // asynchronously.
     return;
   }
 
@@ -1838,10 +1830,8 @@ void XMLHttpRequest::ParseDocumentChunk(const char* data, unsigned len) {
     if (!response_document_)
       return;
 
-    response_document_parser_ = response_document_->ImplicitOpen(
-        RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled()
-            ? kAllowDeferredParsing
-            : kAllowAsynchronousParsing);
+    response_document_parser_ =
+        response_document_->ImplicitOpen(kAllowDeferredParsing);
     response_document_parser_->AddClient(this);
   }
   DCHECK(response_document_parser_);
@@ -1877,7 +1867,7 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
     case kResponseTypeDefault:
       if (ResponseIsXML())
         return std::make_unique<TextResourceDecoder>(decoder_options_for_xml);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kResponseTypeText:
       return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent, UTF8Encoding()));

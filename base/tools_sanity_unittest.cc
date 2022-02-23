@@ -13,6 +13,7 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
@@ -104,7 +105,7 @@ TEST(ToolsSanityTest, MemoryLeak) {
 // The following tests pass with Clang r170392, but not r172454, which
 // makes AddressSanitizer detect errors in them. We disable these tests under
 // AddressSanitizer until we fully switch to Clang r172454. After that the
-// tests should be put back under the (defined(OS_IOS) || defined(OS_WIN))
+// tests should be put back under the (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_WIN))
 // clause above.
 // See also http://crbug.com/172614.
 #if defined(ADDRESS_SANITIZER)
@@ -222,7 +223,7 @@ TEST(ToolsSanityTest, AsanHeapUseAfterFree) {
   HARMFUL_ACCESS(debug::AsanHeapUseAfterFree(), "heap-use-after-free");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The ASAN runtime doesn't detect heap corruption, this needs fixing before
 // ASAN builds can ship to the wild. See https://crbug.com/818747.
 TEST(ToolsSanityTest, DISABLED_AsanCorruptHeapBlock) {
@@ -234,7 +235,7 @@ TEST(ToolsSanityTest, DISABLED_AsanCorruptHeap) {
   // particular string to look for in the stack trace.
   EXPECT_DEATH(debug::AsanCorruptHeap(), "");
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // !HARMFUL_ACCESS_IS_NOOP
 
 namespace {
@@ -254,7 +255,7 @@ class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
     PlatformThread::Sleep(Milliseconds(100));
   }
  private:
-  bool *value_;
+  raw_ptr<bool> value_;
 };
 
 class ReleaseStoreThread : public PlatformThread::Delegate {
@@ -270,7 +271,7 @@ class ReleaseStoreThread : public PlatformThread::Delegate {
     PlatformThread::Sleep(Milliseconds(100));
   }
  private:
-  base::subtle::Atomic32 *value_;
+  raw_ptr<base::subtle::Atomic32> value_;
 };
 
 class AcquireLoadThread : public PlatformThread::Delegate {
@@ -283,7 +284,7 @@ class AcquireLoadThread : public PlatformThread::Delegate {
     base::subtle::Acquire_Load(value_);
   }
  private:
-  base::subtle::Atomic32 *value_;
+  raw_ptr<base::subtle::Atomic32> value_;
 };
 
 void RunInParallel(PlatformThread::Delegate *d1, PlatformThread::Delegate *d2) {
@@ -334,9 +335,9 @@ TEST(ToolsSanityTest, AtomicsAreIgnored) {
 }
 
 #if BUILDFLAG(CFI_ENFORCEMENT_TRAP)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define CFI_ERROR_MSG "EXCEPTION_ILLEGAL_INSTRUCTION"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // TODO(pcc): Produce proper stack dumps on Android and test for the correct
 // si_code here.
 #define CFI_ERROR_MSG "^$"

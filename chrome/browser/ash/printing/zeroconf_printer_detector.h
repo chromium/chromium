@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 
 namespace ash {
@@ -17,7 +17,7 @@ namespace ash {
 // Use mDNS and DNS-SD to detect nearby networked printers.  This is sometimes
 // called zeroconf, or Bonjour.  Or Rendezvous.
 class ZeroconfPrinterDetector
-    : public chromeos::PrinterDetector,
+    : public PrinterDetector,
       public local_discovery::ServiceDiscoveryDeviceLister::Delegate {
  public:
   // Service types used by the detector.

@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 
+#include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -18,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
@@ -26,11 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -162,7 +164,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
   }
 
   base::Value ca_certs(base::Value::Type::LIST);
-  for (const auto& certificate : certificates.GetList()) {
+  for (const auto& certificate : certificates.GetListDeprecated()) {
     if (!certificate.is_dict()) {
       DLOG(FATAL) << "Value of a certificate entry is not a dictionary "
                   << "value.";
@@ -180,7 +182,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
       continue;
 
     bool web_trust_flag = false;
-    for (const auto& list_val : trust_list->GetList()) {
+    for (const auto& list_val : trust_list->GetListDeprecated()) {
       if (!list_val.is_string())
         NOTREACHED();
 
@@ -203,7 +205,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     data.SetStringKey("X509", *x509_data);
     ca_certs.Append(std::move(data));
   }
-  if (!ca_certs.GetList().empty())
+  if (!ca_certs.GetListDeprecated().empty())
     filtered_policies->SetKey("credentialsConfigDisabled", base::Value(true));
   filtered_policies->SetKey(kArcCaCerts, std::move(ca_certs));
 }
@@ -239,7 +241,7 @@ void AddChoosePrivateKeyRuleToPolicy(
     if (LooksLikeAndroidPackageName(app_id))
       arc_app_ids.Append(app_id);
   }
-  if (arc_app_ids.GetList().empty() ||
+  if (arc_app_ids.GetListDeprecated().empty() ||
       cert_store_service->get_required_cert_names().empty()) {
     return;
   }
@@ -254,6 +256,23 @@ void AddChoosePrivateKeyRuleToPolicy(
 
   filtered_policies->SetBoolKey(kPrivateKeySelectionEnabled, true);
   filtered_policies->SetKey(kChoosePrivateKeyRules, std::move(rules));
+}
+
+// Finds managed configurations of applications in |arc_policy| and replace
+// string values that refer to template variables.
+void ReplaceManagedConfigurationVariables(const Profile* profile,
+                                          base::Value* arc_policy) {
+  // Replace template variables in application managed configuration.
+  base::Value* applications =
+      arc_policy->FindListKey(ArcPolicyBridge::kApplications);
+  if (applications) {
+    base::Value::ListView list_view = applications->GetListDeprecated();
+    for (base::Value& entry : list_view) {
+      base::Value* config = entry.FindDictKey("managedConfiguration");
+      if (config)
+        RecursivelyReplaceManagedConfigurationVariables(profile, config);
+    }
+  }
 }
 
 std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
@@ -299,7 +318,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     base::Value* applications_value =
         filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
-      base::Value::ListView list_view = applications_value->GetList();
+      base::Value::ListView list_view = applications_value->GetListDeprecated();
       for (base::Value& entry : list_view) {
         auto* installType = entry.FindStringKey("installType");
         if (installType &&
@@ -312,8 +331,8 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     filtered_policies.SetBoolKey(ArcPolicyBridge::kResetAndroidIdEnabled, true);
   }
 
-  if (profile->IsSupervised() &&
-      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
+  if (profile->IsChild() &&
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
     filtered_policies.SetStringKey("playStoreMode", "SUPERVISED");
@@ -323,7 +342,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     base::Value* applications_value =
         filtered_policies.FindListKey(ArcPolicyBridge::kApplications);
     if (applications_value) {
-      base::Value::ListView list_view = applications_value->GetList();
+      base::Value::ListView list_view = applications_value->GetListDeprecated();
       for (base::Value& entry : list_view) {
         const std::string* packageName = entry.FindStringKey("packageName");
         if (packageName && *packageName != kPlayStorePackageName)
@@ -377,6 +396,8 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
   AddRequiredKeyPairs(cert_store_service, &filtered_policies);
   AddChoosePrivateKeyRuleToPolicy(policy_service, cert_store_service,
                                   &filtered_policies);
+
+  ReplaceManagedConfigurationVariables(profile, &filtered_policies);
 
   std::string policy_json;
   JSONStringValueSerializer serializer(&policy_json);
@@ -636,7 +657,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
     return std::string();
   const Profile* const profile = Profile::FromBrowserContext(context_);
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const CertStoreService* cert_store_service =
       CertStoreService::GetForBrowserContext(context_);
 
@@ -673,18 +694,19 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
     const base::DictionaryValue* report) {
   JSONStringValueSerializer serializer(&arc_policy_compliance_report_);
   serializer.Serialize(*report);
-  bool is_arc_plus_plus_report_successful = false;
-  report->GetBoolean("isArcPlusPlusReportSuccessful",
-                     &is_arc_plus_plus_report_successful);
-  std::string reported_policies_hash;
-  report->GetString("policyHash", &reported_policies_hash);
-  if (!is_arc_plus_plus_report_successful || reported_policies_hash.empty())
+  bool is_arc_plus_plus_report_successful =
+      report->FindBoolKey("isArcPlusPlusReportSuccessful").value_or(false);
+  const std::string* reported_policies_hash =
+      report->FindStringKey("policyHash");
+  if (!is_arc_plus_plus_report_successful || !reported_policies_hash ||
+      reported_policies_hash->empty()) {
     return;
+  }
 
   const base::TimeTicks now = base::TimeTicks::Now();
   ArcSessionManager* const session_manager = ArcSessionManager::Get();
 
-  if (reported_policies_hash == initial_policies_hash_ &&
+  if (*reported_policies_hash == initial_policies_hash_ &&
       !first_compliance_timing_reported_) {
     const base::TimeTicks sign_in_start_time =
         session_manager->sign_in_start_time();
@@ -697,7 +719,7 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
     first_compliance_timing_reported_ = true;
   }
 
-  if (reported_policies_hash == update_notification_policies_hash_ &&
+  if (*reported_policies_hash == update_notification_policies_hash_ &&
       !compliance_since_update_timing_reported_) {
     UpdateComplianceSinceUpdateTiming(now - update_notification_time_);
     compliance_since_update_timing_reported_ = true;

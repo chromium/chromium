@@ -27,12 +27,12 @@
 #include "util/misc/initialization_state.h"
 #include "util/misc/initialization_state_dcheck.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #include <sys/sysctl.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "util/linux/ptrace_connection.h"
 #endif
 
@@ -47,7 +47,8 @@ class ProcessInfo {
 
   ~ProcessInfo();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || DOXYGEN
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    DOXYGEN
   //! \brief Initializes this object with information about the process whose ID
   //!     is \a pid using a PtraceConnection \a connection.
   //!
@@ -62,9 +63,10 @@ class ProcessInfo {
   //!
   //! \return `true` on success, `false` on failure with a message logged.
   bool InitializeWithPtrace(PtraceConnection* connection);
-#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID || DOXYGEN
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID) || DOXYGEN
 
-#if defined(OS_APPLE) || DOXYGEN
+#if BUILDFLAG(IS_APPLE) || DOXYGEN
   //! \brief Initializes this object with information about the process whose ID
   //!     is \a pid.
   //!
@@ -169,9 +171,9 @@ class ProcessInfo {
   bool Arguments(std::vector<std::string>* argv) const;
 
  private:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   kinfo_proc kern_proc_info_;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Some members are marked mutable so that they can be lazily initialized by
   // const methods. These are always InitializationState-protected so that
   // multiple successive calls will always produce the same return value and out

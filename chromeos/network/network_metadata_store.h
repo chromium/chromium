@@ -110,6 +110,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   // marks networks that were added in OOBE to the user's list.
   void OwnSharedNetworksOnFirstUserLogin();
 
+  // Sets whether traffic counters should be automatically reset.
+  void SetEnableTrafficCountersAutoReset(const std::string& network_guid,
+                                         bool enable);
+
+  // Sets the day of the month on which traffic counters are automatically
+  // reset.
+  void SetDayOfTrafficCountersAutoReset(const std::string& network_guid,
+                                        const absl::optional<int>& day);
+
+  // Returns whether traffic counters should be automatically reset. Returns
+  // nullptr if no pref exists for |network_guid|.
+  const base::Value* GetEnableTrafficCountersAutoReset(
+      const std::string& network_guid);
+
+  // Returns the day of the month on which traffic counters are automatically
+  // reset. Returns nullptr if no pref exists for |network_guid|.
+  const base::Value* GetDayOfTrafficCountersAutoReset(
+      const std::string& network_guid);
+
   // Manage observers.
   void AddObserver(NetworkMetadataObserver* observer);
   void RemoveObserver(NetworkMetadataObserver* observer);
@@ -134,8 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
 
   // Sets the owner metadata when there is an active user, otherwise a no-op.
   void SetIsCreatedByUser(const std::string& network_guid);
-  void OnDisableHiddenError(const std::string& error_name,
-                            std::unique_ptr<base::DictionaryValue> error_data);
+  void OnDisableHiddenError(const std::string& error_name);
 
   base::ObserverList<NetworkMetadataObserver> observers_;
   NetworkConfigurationHandler* network_configuration_handler_;

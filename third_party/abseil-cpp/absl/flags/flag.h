@@ -163,6 +163,7 @@ ABSL_NAMESPACE_END
 // Note: do not construct objects of type `absl::Flag<T>` directly. Only use the
 // `ABSL_FLAG()` macro for such construction.
 #define ABSL_FLAG(Type, name, default_value, help) \
+  extern ::absl::Flag<Type> FLAGS_##name;          \
   ABSL_FLAG_IMPL(Type, name, default_value, help)
 
 // ABSL_FLAG().OnUpdate()

@@ -7,7 +7,10 @@
 
 #include <stddef.h>
 
+#include <map>
+
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,7 +35,7 @@
 // Requirements for canonical CBOR representation:
 //  - Duplicate keys in maps are not allowed.
 //  - Keys for maps must be sorted first by length and then by byte-wise
-//    lexical order.
+//    lexical order, as defined in Section 3.9.
 //
 // Known limitations and interpretations of the RFC (and the reasons):
 //  - Does not support indefinite-length data streams or semantic tags (major
@@ -70,6 +73,7 @@ class CBOR_EXPORT Reader {
     UNSUPPORTED_SIMPLE_VALUE,
     UNSUPPORTED_FLOATING_POINT_VALUE,
     OUT_OF_RANGE_INTEGER_VALUE,
+    DUPLICATE_KEY,
     UNKNOWN_ERROR,
   };
 
@@ -87,11 +91,11 @@ class CBOR_EXPORT Reader {
 
     // Used to report the number of bytes of input consumed. This suppresses the
     // |EXTRANEOUS_DATA| error case. May be nullptr.
-    size_t* num_bytes_consumed = nullptr;
+    raw_ptr<size_t> num_bytes_consumed = nullptr;
 
     // Used to report the specific error in the case that parsing fails. May be
     // nullptr;
-    DecoderError* error_code_out = nullptr;
+    raw_ptr<DecoderError> error_code_out = nullptr;
 
     // Controls the maximum depth of CBOR nesting that will be permitted. This
     // exists to control stack consumption during parsing.
@@ -107,6 +111,18 @@ class CBOR_EXPORT Reader {
     // the motivating case and because it adds complexity to handle the ordering
     // correctly.)
     bool allow_invalid_utf8 = false;
+
+    // Causes an input to be accepted even if it contains one or more maps with
+    // keys that are not in the canonical ordering as defined in Section 3.9,
+    // and suppresses the OUT_OF_ORDER_KEY error. The original ordering of keys
+    // will _not_ be preserved, but instead, in the returned cbor::Value, all
+    // maps are re-sorted so that their keys are in canonical order. By
+    // definition, enabling this option may result in loss of information (i.e.
+    // the original key ordering).
+    //
+    // Enabling this option will still not allow duplicate keys, in case of
+    // which the DUPLICATE_KEY error will be emitted.
+    bool allow_and_canonicalize_out_of_order_keys = false;
   };
 
   Reader(const Reader&) = delete;
@@ -181,7 +197,12 @@ class CBOR_EXPORT Reader {
                                        int max_nesting_level);
   absl::optional<uint8_t> ReadByte();
   absl::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
-  bool IsKeyInOrder(const Value& new_key, Value::MapValue* map);
+  bool IsKeyInOrder(const Value& new_key,
+                    const std::map<Value, Value, Value::Less>& map);
+  // Check if `new_key` is a duplicate of a key that already exists in the
+  // `map`.
+  bool IsDuplicateKey(const Value& new_key,
+                      const std::map<Value, Value, Value::Less>& map);
   bool IsEncodingMinimal(uint8_t additional_bytes, uint64_t uint_data);
 
   DecoderError GetErrorCode() { return error_code_; }

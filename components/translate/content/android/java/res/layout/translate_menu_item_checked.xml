@@ -43,7 +43,7 @@
         android:id="@+id/menu_item_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:visibility="gone" />
 
 </LinearLayout>

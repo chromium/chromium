@@ -21,18 +21,19 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -95,7 +96,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 @property(nonatomic, strong) PrefBackedBoolean* incognitoReauthPref;
 
 // Switch item for toggling incognito reauth.
-@property(nonatomic, strong) SettingsSwitchItem* incognitoReauthItem;
+@property(nonatomic, strong) TableViewSwitchItem* incognitoReauthItem;
 
 // Authentication module used when the user toggles the biometric auth on.
 @property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
@@ -212,20 +213,21 @@ const char kSyncSettingsURL[] = "settings://open_sync";
           initWithType:ItemTypePrivacyFooter];
 
   NSString* privacyFooterText;
-  std::vector<GURL> urls;
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetInstance()->GetForBrowserState(_browserState);
 
+  NSMutableArray* urls = [[NSMutableArray alloc] init];
   if (syncService->IsSyncFeatureEnabled()) {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
-    urls.push_back(GURL(kSyncSettingsURL));
+    [urls addObject:[[CrURL alloc] initWithGURL:GURL(kSyncSettingsURL)]];
   } else {
     privacyFooterText =
         l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
   }
-  urls.push_back(GURL(kGoogleServicesSettingsURL));
+  [urls
+      addObject:[[CrURL alloc] initWithGURL:GURL(kGoogleServicesSettingsURL)]];
 
   showPrivacyFooterItem.text = privacyFooterText;
   showPrivacyFooterItem.urls = urls;
@@ -251,12 +253,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   return setupPasscodeFooter;
 }
 
-- (SettingsSwitchItem*)incognitoReauthItem {
+- (TableViewSwitchItem*)incognitoReauthItem {
   if (_incognitoReauthItem) {
     return _incognitoReauthItem;
   }
   _incognitoReauthItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeIncognitoReauth];
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeIncognitoReauth];
   _incognitoReauthItem.text =
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME);
   _incognitoReauthItem.on = self.incognitoReauthPref.value;
@@ -332,8 +334,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
 
   if (itemType == ItemTypeIncognitoReauth) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -366,12 +368,12 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
-  if (URL == GURL(kGoogleServicesSettingsURL)) {
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
     // kGoogleServicesSettingsURL is not a realy link. It should be handled
     // with a special case.
     [self.dispatcher showGoogleServicesSettingsFromViewController:self];
-  } else if (URL == GURL(kSyncSettingsURL)) {
+  } else if (URL.gurl == GURL(kSyncSettingsURL)) {
     [self.dispatcher showSyncSettingsFromViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];

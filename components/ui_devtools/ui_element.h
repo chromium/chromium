@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "components/ui_devtools/DOM.h"
 #include "components/ui_devtools/devtools_export.h"
+#include "components/ui_devtools/dom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"

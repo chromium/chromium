@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview JavaScript shim for the liblouis Native Client wrapper.
+ * @fileoverview JavaScript shim for the liblouis Web Assembly wrapper.
  */
 
 goog.provide('LibLouis');
 goog.provide('LibLouis.FormType');
 
 /**
- * Encapsulates a liblouis Native Client instance in the page.
+ * Encapsulates a liblouis Web Assembly instance in the page.
  */
 LibLouis = class {
   /**
@@ -107,16 +107,13 @@ LibLouis = class {
   }
 
   /**
-   * Invoked when the Native Client instance successfully loads.
-   * @param {Event} e Event dispatched after loading.
+   * Invoked when the Web Assembly instance successfully loads.
    * @private
    */
-  onInstanceLoad_(e) {
-    window.console.info('loaded liblouis Native Client instance');
-  }
+  onInstanceLoad_() {}
 
   /**
-   * Invoked when the Native Client instance fails to load.
+   * Invoked when the Web Assembly instance fails to load.
    * @param {Event} e Event dispatched after loading failure.
    * @private
    */
@@ -126,7 +123,7 @@ LibLouis = class {
   }
 
   /**
-   * Invoked when the Native Client instance posts a message.
+   * Invoked when the Web Assembly instance posts a message.
    * @param {Event} e Event dispatched after the message was posted.
    * @private
    */
@@ -138,11 +135,11 @@ LibLouis = class {
     const messageId = message['in_reply_to'];
     if (!goog.isDef(messageId)) {
       window.console.warn(
-          'liblouis Native Client module sent message with no ID', message);
+          'liblouis Web Assembly module sent message with no ID', message);
       return;
     }
     if (goog.isDef(message['error'])) {
-      window.console.error('liblouis Native Client error', message['error']);
+      window.console.error('liblouis Web Assembly error', message['error']);
     }
     const callback = this.pendingRpcCallbacks_[messageId];
     if (goog.isDef(callback)) {
@@ -164,6 +161,7 @@ LibLouis = class {
     this.rpc_('load', {}, () => {
       this.isLoaded_ = true;
       opt_loadCallback && opt_loadCallback(this);
+      this.onInstanceLoad_();
     });
   }
 };
@@ -191,7 +189,7 @@ LibLouis.DEBUG = false;
 
 
 /**
- * Braille translator which uses a Native Client instance of liblouis.
+ * Braille translator which uses a Web Assembly instance of liblouis.
  */
 LibLouis.Translator = class {
   /**

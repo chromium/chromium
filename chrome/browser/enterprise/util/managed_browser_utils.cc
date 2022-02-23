@@ -8,11 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +34,7 @@
 #include "net/ssl/client_cert_identity.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 
 #include "base/android/jni_string.h"
@@ -38,7 +42,7 @@
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/managed_ui.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -61,16 +65,15 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
     const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  std::unique_ptr<base::Value> setting =
-      host_content_settings_map->GetWebsiteSetting(
-          requesting_url, requesting_url,
-          ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+  base::Value setting = host_content_settings_map->GetWebsiteSetting(
+      requesting_url, requesting_url,
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
 
-  if (!setting || !setting->is_dict())
+  if (!setting.is_dict())
     return {};
 
   base::Value* filters =
-      setting->FindKeyOfType("filters", base::Value::Type::LIST);
+      setting.FindKeyOfType("filters", base::Value::Type::LIST);
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by
@@ -78,10 +81,10 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
     // Therefore, delete the invalid value.
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE, base::Value());
     return {};
   }
-  return std::move(*filters).TakeList();
+  return std::move(*filters).TakeListDeprecated();
 }
 
 // Returns whether the client certificate matches any of the auto-selection
@@ -118,7 +121,11 @@ bool CertMatchesSelectionFilters(
 
 bool IsBrowserManaged(Profile* profile) {
   DCHECK(profile);
-  DCHECK(profile->GetProfilePolicyConnector());
+
+  if (base::FeatureList::IsEnabled(features::kUseManagementService)) {
+    return policy::ManagementServiceFactory::GetForProfile(profile)
+        ->IsManaged();
+  }
 
   // This profile may have policies configured.
   auto* profile_connector = profile->GetProfilePolicyConnector();
@@ -131,7 +138,7 @@ bool IsBrowserManaged(Profile* profile) {
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (primary_user) {
     auto* primary_profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+        ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
     if (primary_profile) {
       auto* primary_profile_connector =
           primary_profile->GetProfilePolicyConnector();
@@ -226,7 +233,7 @@ bool ProfileCanBeManaged(Profile* profile) {
   return entry && entry->CanBeManaged();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 std::string GetAccountManagerName(Profile* profile) {
   DCHECK(profile);
@@ -252,7 +259,7 @@ JNI_ManagedBrowserUtils_GetAccountManagerName(
       env, GetAccountManagerName(ProfileAndroid::FromProfileAndroid(profile)));
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_util
 }  // namespace chrome

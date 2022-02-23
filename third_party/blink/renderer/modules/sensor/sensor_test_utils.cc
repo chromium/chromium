@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -68,7 +69,7 @@ ScriptState* SensorTestContext::GetScriptState() const {
 void SensorTestContext::BindSensorProviderRequest(
     mojo::ScopedMessagePipeHandle handle) {
   sensor_provider_.Bind(
-      device::mojom::SensorProviderRequest(std::move(handle)));
+      mojo::PendingReceiver<device::mojom::SensorProvider>(std::move(handle)));
 }
 
 // SensorTestUtils

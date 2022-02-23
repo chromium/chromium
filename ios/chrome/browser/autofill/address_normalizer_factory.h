@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_ADDRESS_NORMALIZER_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_ADDRESS_NORMALIZER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 

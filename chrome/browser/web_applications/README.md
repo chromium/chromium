@@ -190,7 +190,7 @@ This is where web apps are created, updated and removed. The install manager
 spawns [`WebAppInstallTask`](web_app_install_task.h)s for each "job".
 
 Installation comes in many different forms from a simple "here's all the
-[info](web_application_info.h) necessary please install it" to
+[info](web_app_install_info.h) necessary please install it" to
 "please install the site currently loaded in this web contents and fetch all the
 manifest data it specifies" with a few inbetweens.
 

@@ -4,13 +4,13 @@
 
 package org.chromium.components.crash.browser;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ApplicationExitInfo;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -30,7 +30,7 @@ public class ProcessExitReasonFromSystem {
      * ID. Only available on R+ devices, returns -1 otherwise.
      * @return ApplicationExitInfo.Reason
      */
-    @TargetApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.R)
     public static int getExitReason(int pid) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return -1;

@@ -35,6 +35,10 @@ enum class ClipboardInternalFormat {
 // It mostly just provides APIs to cleanly access and manipulate this data.
 class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
  public:
+  // Encode a bitmap to a PNG. Callers encoding a PNG on a background thread
+  // should use this method.
+  static std::vector<uint8_t> EncodeBitmapData(const SkBitmap& bitmap);
+
   ClipboardData();
   explicit ClipboardData(const ClipboardData&);
   ClipboardData(ClipboardData&&);
@@ -93,13 +97,35 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
     format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
   }
 
-  const std::vector<uint8_t>& png() const { return png_; }
+  // Returns an encoded PNG, or absl::nullopt if either there is no image on the
+  // clipboard or there is an image which has not yet been encoded to a PNG.
+  // `GetBitmapIfPngNotEncoded()` will return a value in the latter case.
+  const absl::optional<std::vector<uint8_t>>& maybe_png() const {
+    return maybe_png_;
+  }
+  // Set PNG data. If an existing image is already on the clipboard, its
+  // contents will be overwritten. If setting the PNG after encoding the bitmap
+  // already on the clipboard, use `SetPngDataAfterEncoding()`.
   void SetPngData(std::vector<uint8_t> png);
 
-  // Bitmaps are stored as encoded bytes in the `png_` member. This means we
-  // cannot return a const reference, since the bitmap is created on request.
-  SkBitmap bitmap() const;
+  // Use this method if the PNG being set was encoded from the bitmap which is
+  // already on the clipboard. This allows the operator== method to check
+  // equality of two clipboard instances if only one has been encoded to a PNG.
+  // It is invalid to call this method unless a bitmap is already on the
+  // clipboard. This method is marked const to allow setting this member on
+  // const ClipboardData instances.
+  void SetPngDataAfterEncoding(std::vector<uint8_t> png) const;
+
+  // Prefer to use `SetPngData()` where possible. Images can be written to the
+  // clipboard as bitmaps, but must be read out as an encoded PNG. Callers are
+  // responsible for ensuring that the bitmap eventually gets encoded as a PNG.
+  // See GetBitmapIfPngNotEncoded() below.
   void SetBitmapData(const SkBitmap& bitmap);
+  // Use this method to obtain the bitmap to be encoded to a PNG. It is only
+  // recommended to call this method after checking that `maybe_png()` returns
+  // no value. If this returns a value, use `EncodeBitmapData()` to encode the
+  // bitmap to a PNG on a background thread.
+  absl::optional<SkBitmap> GetBitmapIfPngNotEncoded() const;
 
   const std::string& custom_data_format() const { return custom_data_format_; }
   const std::string& custom_data_data() const { return custom_data_data_; }
@@ -140,8 +166,19 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   std::string bookmark_title_;
   std::string bookmark_url_;
 
-  // PNG image data. Bitmaps are encoded into and decoded from this member.
-  std::vector<uint8_t> png_;
+  // Image data can take the form of PNGs or bitmaps. Strongly prefer PNGs where
+  // possible, since images can only be read out of this interface as PNGs. This
+  // field is marked as mutable so it can be set after a bitmap is encoded to a
+  // PNG on a const instance. The contents of the clipboard are not changing,
+  // merely the format.
+  mutable absl::optional<std::vector<uint8_t>> maybe_png_ = absl::nullopt;
+  // This member contains a value only in the following cases:
+  // 1) SetBitmapData() wrote a bitmap to the clipboard, but it has not yet been
+  //    encoded into a PNG.
+  // 2) SetBitmapData() wrote a bitmap to the clipboard, then this image was
+  //    encoded to PNG. SetPngDataAfterEncoding() was called to indicate that
+  //    this member is the decoded version of `maybe_png_`.
+  absl::optional<SkBitmap> maybe_bitmap_ = absl::nullopt;
 
   // Data with custom format.
   std::string custom_data_format_;

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/mock_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,7 +22,15 @@ namespace enterprise_connectors {
 using test::MockSignalsDecorator;
 using ::testing::_;
 
+namespace {
+
+constexpr char kLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Full";
+
+}  // namespace
+
 TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
+  base::HistogramTester histogram_tester;
   std::string fake_obfuscated_customer_id = "fake_obfuscated_customer_id";
   std::unique_ptr<MockSignalsDecorator> first_decorator =
       std::make_unique<MockSignalsDecorator>();
@@ -60,6 +69,7 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   service.CollectSignals(std::move(callback));
 
   EXPECT_TRUE(callback_called);
+  histogram_tester.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
 }  // namespace enterprise_connectors

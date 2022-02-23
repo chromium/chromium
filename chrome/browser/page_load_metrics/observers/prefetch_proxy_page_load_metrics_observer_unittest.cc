@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -146,7 +145,7 @@ class PrefetchProxyPageLoadMetricsObserverTest
     PopulateRequiredTimingFields(&timing_);
   }
 
-  TestPrefetchProxyPageLoadMetricsObserver* plm_observer_ = nullptr;
+  raw_ptr<TestPrefetchProxyPageLoadMetricsObserver> plm_observer_ = nullptr;
   page_load_metrics::mojom::PageLoadTiming timing_;
 
   GURL navigation_url_{"https://chromium.org"};

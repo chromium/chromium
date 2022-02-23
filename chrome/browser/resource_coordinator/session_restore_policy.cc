@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/common/url_constants.h"
@@ -31,7 +32,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -101,7 +102,7 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
 
 }  // namespace
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class TabDataAccess {
  public:
   using TabData = SessionRestorePolicy::TabData;
@@ -273,7 +274,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   TabData* tab_data = iter.first->second.get();
 
   // Determine if the tab is pinned. This is only defined on desktop platforms.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   tab_data->is_pinned = false;
 #else
   // TODO(chrisha): This is O(n^2) in the number of tabs being restored. Fix
@@ -290,7 +291,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
     tab_data->is_pinned = tab_strip->IsTabPinned(tab_index);
     break;
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Cache a handful of other properties.
   tab_data->is_app = IsApp(contents);
@@ -299,10 +300,10 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   tab_data->last_active = now_ - contents->GetLastActiveTime();
 
   // The local database doesn't exist on Android at all.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   TabDataAccess::SetUsedInBgFromSiteDataDB(weak_factory_.GetWeakPtr(), tab_data,
                                            contents);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Another tab has been added, so an existing all tabs scored notification may
   // be required.

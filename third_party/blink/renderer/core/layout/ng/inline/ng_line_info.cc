@@ -101,7 +101,8 @@ unsigned NGLineInfo::InflowEndOffset() const {
 }
 
 bool NGLineInfo::ShouldHangTrailingSpaces() const {
-  DCHECK(HasTrailingSpaces());
+  if (!HasTrailingSpaces())
+    return false;
   if (!line_style_->AutoWrap())
     return false;
   switch (text_align_) {
@@ -124,12 +125,19 @@ bool NGLineInfo::ShouldHangTrailingSpaces() const {
 
 void NGLineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
+  allow_hang_for_alignment_ = false;
 
-  if (HasTrailingSpaces() && ShouldHangTrailingSpaces()) {
-    hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-  } else if (text_align_ == ETextAlign::kJustify) {
-    end_offset_for_justify_ = InflowEndOffset();
+  if (HasTrailingSpaces() && line_style_->AutoWrap()) {
+    if (ShouldHangTrailingSpaces()) {
+      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+      allow_hang_for_alignment_ = true;
+      return;
+    }
+    hang_width_ = ComputeTrailingSpaceWidth();
   }
+
+  if (text_align_ == ETextAlign::kJustify)
+    end_offset_for_justify_ = InflowEndOffset();
 }
 
 LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(

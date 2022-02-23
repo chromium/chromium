@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -19,7 +20,10 @@ PerformanceMeasure::PerformanceMeasure(
     double end_time,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state)
-    : PerformanceEntry(name, start_time, end_time),
+    : PerformanceEntry(name,
+                       start_time,
+                       end_time,
+                       PerformanceEntry::GetNavigationCounter(script_state)),
       serialized_detail_(serialized_detail) {}
 
 // static

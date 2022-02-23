@@ -14,7 +14,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -30,7 +29,7 @@ enum MediaStreamProviderError {
 };
 
 // Callback class used by MediaStreamProvider.
-class CONTENT_EXPORT MediaStreamProviderListener {
+class MediaStreamProviderListener {
  public:
   // Called by a MediaStreamProvider when a stream has been opened.
   virtual void Opened(blink::mojom::MediaStreamType stream_type,
@@ -50,7 +49,7 @@ class CONTENT_EXPORT MediaStreamProviderListener {
 };
 
 // Implemented by a manager class providing captured media.
-class CONTENT_EXPORT MediaStreamProvider
+class MediaStreamProvider
     : public base::RefCountedThreadSafe<MediaStreamProvider> {
  public:
   // Registers a listener.

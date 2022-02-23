@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_WEBVIEW_WEBVIEW_NAVIGATION_THROTTLE_H_
 #define CHROMECAST_BROWSER_WEBVIEW_WEBVIEW_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"

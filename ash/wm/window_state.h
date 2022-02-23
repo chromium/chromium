@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_STATE_H_
 
 #include <memory>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/display/persistent_window_info.h"
@@ -13,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
@@ -23,7 +25,7 @@
 namespace chromeos {
 enum class WindowPinType;
 enum class WindowStateType;
-}
+}  // namespace chromeos
 
 namespace gfx {
 class Rect;
@@ -88,6 +90,12 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
     // Called when the window is being destroyed.
     virtual void OnWindowDestroying(WindowState* window_state) {}
+
+#if DCHECK_IS_ON()
+    // Check if the window state satisfies the maximizable condition.
+    virtual void CheckMaximizableCondition(
+        const WindowState* window_state) const;
+#endif  // DCHECK_IS_ON()
   };
 
   // Returns the WindowState for |window|. Creates WindowState if it doesn't
@@ -145,7 +153,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool CanMaximize() const;
   bool CanMinimize() const;
   bool CanResize() const;
-  bool CanSnap() const;
+  // CanSnap() checks if the window can be snapped on the display which
+  // currently the window is on, whereas CanSnapOnDisplay() checks the
+  // snappability on the given |display|.
+  bool CanSnap();
+  bool CanSnapOnDisplay(display::Display display) const;
   bool CanActivate() const;
 
   // Returns true if the window has restore bounds.
@@ -161,8 +173,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void Activate();
   void Deactivate();
 
-  // Set the window state to normal.
-  // TODO(oshima): Change to use RESTORE event.
+  // Set the window state to its previous applicable window state.
   void Restore();
 
   // Caches, then disables z-ordering state and then stacks |window_| below
@@ -349,12 +360,20 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Notifies that the window lost the activation.
   void OnActivationLost();
 
+  // Returns the Display that this WindowState is on.
+  display::Display GetDisplay() const;
+
+  // Returns the window state to restore to from the current window state.
+  chromeos::WindowStateType GetRestoreWindowState() const;
+
   // Returns a pointer to DragDetails during drag operations.
   const DragDetails* drag_details() const { return drag_details_.get(); }
   DragDetails* drag_details() { return drag_details_.get(); }
 
-  // Returns the Display that this WindowState is on.
-  display::Display GetDisplay();
+  const std::vector<chromeos::WindowStateType>&
+  window_state_restore_history_for_testing() const {
+    return window_state_restore_history_;
+  }
 
   class TestApi {
    public:
@@ -469,6 +488,17 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Collects PIP enter and exit metrics:
   void CollectPipEnterExitMetrics(bool enter);
 
+  // Called after the window state change to update the window state restore
+  // history stack.
+  void UpdateWindowStateRestoreHistoryStack(
+      chromeos::WindowStateType previous_state_type);
+
+  // Depending on the capabilities of the window we either return
+  // |WindowStateType::kMaximized| or |WindowStateType::kNormal|.
+  // |WindowStateType::kMaximized| can only be returned if the window can be
+  // maximized and is not a transient child window.
+  chromeos::WindowStateType GetMaximizedOrCenteredWindowType() const;
+
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -479,6 +509,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+
+  bool CanUnresizableSnapOnDisplay(display::Display display) const;
 
   // The owner of this window settings.
   aura::Window* window_;
@@ -539,6 +571,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // When the current (or last) PIP session started.
   base::TimeTicks pip_start_time_;
+
+  // Maintains the window state restore history that the current window state
+  // can restore back to. See kWindowStateRestoreHistoryLayerMap in the cc file
+  // for what window state types that can be put in the restore history stack.
+  std::vector<chromeos::WindowStateType> window_state_restore_history_;
 };
 
 }  // namespace ash

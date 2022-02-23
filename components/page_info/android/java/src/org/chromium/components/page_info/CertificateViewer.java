@@ -19,6 +19,7 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -92,7 +93,7 @@ public class CertificateViewer implements OnItemSelectedListener {
         LinearLayout dialogContainer = new LinearLayout(mContext);
         dialogContainer.setOrientation(LinearLayout.VERTICAL);
 
-        TextView title = new TextView(mContext);
+        TextView title = new AppCompatTextView(mContext);
         title.setText(R.string.certtitle);
         title.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         ApiCompatibilityUtils.setTextAppearance(title, android.R.style.TextAppearance_Large);
@@ -207,7 +208,7 @@ public class CertificateViewer implements OnItemSelectedListener {
     }
 
     private TextView addLabel(LinearLayout certificateView, String label) {
-        TextView t = new TextView(mContext);
+        TextView t = new AppCompatTextView(mContext);
         t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         t.setPadding(mPadding, mPadding / 2, mPadding, 0);
         t.setText(label);
@@ -217,7 +218,7 @@ public class CertificateViewer implements OnItemSelectedListener {
     }
 
     private void addValue(LinearLayout certificateView, String value) {
-        TextView t = new TextView(mContext);
+        TextView t = new AppCompatTextView(mContext);
         t.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         t.setText(value);
         t.setPadding(mPadding, 0, mPadding, mPadding / 2);

@@ -18,15 +18,16 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.MathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
@@ -215,9 +216,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             TabModelSelector tabModelSelector) {
         mContext = context;
         Resources resource = context.getResources();
-        float expectedThumbnailAspectRatio =
-                (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-        expectedThumbnailAspectRatio = MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+        float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(context);
 
         mThumbnailWidth = (int) resource.getDimension(R.dimen.tab_grid_thumbnail_card_default_size);
         mThumbnailHeight = (int) (mThumbnailWidth / expectedThumbnailAspectRatio);
@@ -250,8 +249,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         mThumbnailFramePaint.setStyle(Paint.Style.STROKE);
         mThumbnailFramePaint.setStrokeWidth(
                 resource.getDimension(R.dimen.tab_list_mini_card_frame_size));
-        mThumbnailFramePaint.setColor(
-                ApiCompatibilityUtils.getColor(resource, R.color.divider_line_bg_color));
+        mThumbnailFramePaint.setColor(SemanticColorUtils.getDividerLineBgColor(context));
         mThumbnailFramePaint.setAntiAlias(true);
 
         // TODO(996048): Use pre-defined styles to avoid style out of sync if any text/color styles

@@ -12,11 +12,13 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxPrerender_jni.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -118,6 +120,20 @@ void OmniboxPrerender::PrerenderMaybe(
       NOTREACHED();
       break;
   }
+
+  if (!prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
+    return;
+  }
+  // If search engine asks to prerender a search result explicitly, prerender
+  // it.
+  // TODO(https://crbug.com/1278634): Consider how to co-work with preconnect
+  // before launching this feature.
+  for (const AutocompleteMatch& match : *autocomplete_result) {
+    if (BaseSearchProvider::ShouldPrerender(match)) {
+      DoPrerender(match, profile, web_contents);
+      break;
+    }
+  }
 }
 
 void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
@@ -129,10 +145,10 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
   DCHECK(web_contents);
   if (!web_contents)
     return;
+
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match, *web_contents, container_bounds.size());
 }
 
 void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,

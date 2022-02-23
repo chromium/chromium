@@ -15,7 +15,7 @@
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -26,7 +26,7 @@ ChromeSigninStatusMetricsProviderDelegate::
 
 ChromeSigninStatusMetricsProviderDelegate::
     ~ChromeSigninStatusMetricsProviderDelegate() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserList::RemoveObserver(this);
 #endif
 
@@ -36,7 +36,7 @@ ChromeSigninStatusMetricsProviderDelegate::
 }
 
 void ChromeSigninStatusMetricsProviderDelegate::Initialize() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // On Android, there is always only one profile in any situation, opening new
   // windows (which is possible with only some Android devices) will not change
   // the opened profiles signin status.
@@ -56,7 +56,7 @@ ChromeSigninStatusMetricsProviderDelegate::GetStatusOfAllAccounts() {
   AccountsStatus accounts_status;
   accounts_status.num_accounts = profile_list.size();
   for (Profile* profile : profile_list) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (chrome::GetBrowserCount(profile) == 0) {
       // The profile is loaded, but there's no opened browser for this profile.
       continue;
@@ -91,7 +91,7 @@ ChromeSigninStatusMetricsProviderDelegate::GetIdentityManagersForAllAccounts() {
   return managers;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void ChromeSigninStatusMetricsProviderDelegate::OnBrowserAdded(
     Browser* browser) {
   signin::IdentityManager* identity_manager =
@@ -114,7 +114,7 @@ void ChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
 
 void ChromeSigninStatusMetricsProviderDelegate::UpdateStatusWhenBrowserAdded(
     bool signed_in) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   SigninStatusMetricsProviderBase::SigninStatus status =
       owner()->signin_status();
 

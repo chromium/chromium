@@ -15,6 +15,7 @@
 #include "base/files/file.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 class Profile;
@@ -89,17 +90,17 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
 
  private:
   void OnMimeTypesCollected(
-      sharesheet::SharesheetMetrics::LaunchSource launch_source,
+      sharesheet::LaunchSource launch_source,
       std::unique_ptr<std::vector<std::string>> mime_types);
 
   void OnDrivePropertyCollected(
-      sharesheet::SharesheetMetrics::LaunchSource launch_source,
+      sharesheet::LaunchSource launch_source,
       std::unique_ptr<std::vector<std::string>> mime_types,
       std::unique_ptr<api::file_manager_private::EntryProperties> properties,
       base::File::Error error);
 
   void OnIsDirectoryCollected(
-      sharesheet::SharesheetMetrics::LaunchSource launch_source,
+      sharesheet::LaunchSource launch_source,
       std::unique_ptr<std::vector<std::string>> mime_types,
       std::unique_ptr<api::file_manager_private::EntryProperties> properties,
       std::unique_ptr<std::set<base::FilePath>> path_directory_set);

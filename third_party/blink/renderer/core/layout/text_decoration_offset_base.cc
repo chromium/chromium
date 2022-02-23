@@ -58,7 +58,7 @@ int TextDecorationOffsetBase::ComputeUnderlineOffset(
   switch (underline_position) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont:
       DCHECK(RuntimeEnabledFeatures::UnderlineOffsetThicknessEnabled());
       return ComputeUnderlineOffsetFromFont(font_metrics,

@@ -15,6 +15,17 @@
 
 namespace blink {
 
+namespace {
+
+// Checks if the frame of the provided window is the outermost frame, which
+// means, neither an iframe, or a fenced frame.
+bool IsOutermostDocument(LocalDOMWindow* window) {
+  return window->GetFrame()->IsMainFrame() &&
+         !window->GetFrame()->IsInFencedFrameTree();
+}
+
+}  // namespace
+
 // static
 const char Presentation::kSupplementName[] = "Presentation";
 
@@ -61,7 +72,7 @@ void Presentation::setDefaultRequest(PresentationRequest* request) {
 
 void Presentation::MaybeInitReceiver() {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!receiver_ && window && window->GetFrame()->IsMainFrame() &&
+  if (!receiver_ && window && IsOutermostDocument(window) &&
       window->GetFrame()->GetSettings()->GetPresentationReceiver()) {
     receiver_ = MakeGarbageCollected<PresentationReceiver>(window);
   }

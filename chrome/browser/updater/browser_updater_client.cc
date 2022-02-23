@@ -52,7 +52,7 @@ void BrowserUpdaterClient::CheckForUpdate(
 
 void BrowserUpdaterClient::HandleStatusUpdate(
     base::RepeatingCallback<void(updater::UpdateService::UpdateState)> callback,
-    updater::UpdateService::UpdateState update_state) {
+    const updater::UpdateService::UpdateState& update_state) {
   callback_task_runner_->PostTask(FROM_HERE,
                                   base::BindRepeating(callback, update_state));
 }

@@ -28,14 +28,15 @@ void FakeCookieStore::SetCanonicalCookieAsync(
     std::unique_ptr<net::CanonicalCookie> cookie,
     const GURL& source_url,
     const net::CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    const net::CookieAccessResult* cookie_access_result) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }
 
 void FakeCookieStore::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
-    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }

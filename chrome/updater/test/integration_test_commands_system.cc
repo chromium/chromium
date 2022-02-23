@@ -23,15 +23,16 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace updater {
 namespace test {
@@ -65,6 +66,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 
   void EnterTestMode(const GURL& url) const override {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
+  }
+
+  void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
+    updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }
 
   void ExpectUpdateSequence(ScopedServer* test_server,
@@ -103,6 +108,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("setup_fake_updater_lower_version");
   }
 
+  void SetupRealUpdaterLowerVersion() const override {
+    RunCommand("setup_real_updater_lower_version");
+  }
+
   void SetExistenceCheckerPath(const std::string& app_id,
                                const base::FilePath& path) const override {
     RunCommand("set_existence_checker_path",
@@ -135,6 +144,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("exit_code", base::NumberToString(expected_exit_code))});
   }
 
+  void RunWakeActive(int expected_exit_code) const override {
+    RunCommand("run_wake_active",
+               {Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
   void Update(const std::string& app_id) const override {
     RunCommand("update", {Param("app_id", app_id)});
   }
@@ -145,22 +159,32 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("register_app", {Param("app_id", app_id)});
   }
 
-  void WaitForServerExit() const override {
-    updater::test::WaitForServerExit(updater_scope_);
+  void WaitForUpdaterExit() const override {
+    updater::test::WaitForUpdaterExit(updater_scope_);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() const override {
     RunCommand("expect_interfaces_registered");
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(
-      const std::string& app_id) const override {
-    RunCommand("expect_legacy_update3web_succeeds", {Param("app_id", app_id)});
+  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
+                                      int expected_final_state,
+                                      int expected_error_code) const override {
+    RunCommand("expect_legacy_update3web_succeeds",
+               {Param("app_id", app_id),
+                Param("expected_final_state",
+                      base::NumberToString(expected_final_state)),
+                Param("expected_error_code",
+                      base::NumberToString(expected_error_code))});
   }
 
   void ExpectLegacyProcessLauncherSucceeds() const override {
     RunCommand("expect_legacy_process_launcher_succeeds");
+  }
+
+  void RunUninstallCmdLine() const override {
+    RunCommand("run_uninstall_cmd_line");
   }
 
   void SetUpTestService() const override {
@@ -170,10 +194,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void TearDownTestService() const override {
     updater::test::RunTestServiceCommand("teardown");
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // The updater_tests executable is owned by non-root.
     return base::PathService::CheckedGet(base::FILE_EXE);
 #else
@@ -185,6 +209,37 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void StressUpdateService() const override {
     RunCommand("stress_update_service");
   }
+
+  void CallServiceUpdate(const std::string& app_id,
+                         UpdateService::PolicySameVersionUpdate
+                             policy_same_version_update) const override {
+    RunCommand("call_service_update",
+               {Param("app_id", app_id),
+                Param("same_version_update_allowed",
+                      policy_same_version_update ==
+                              UpdateService::PolicySameVersionUpdate::kAllowed
+                          ? "true"
+                          : "false")});
+  }
+
+  void SetupFakeLegacyUpdaterData() const override {
+    RunCommand("setup_fake_legacy_updater_data");
+  }
+
+  void ExpectLegacyUpdaterDataMigrated() const override {
+    RunCommand("expect_legacy_updater_data_migrated");
+  }
+
+  void RunRecoveryComponent(const std::string& app_id,
+                            const base::Version& version) const override {
+    RunCommand(
+        "run_recovery_component",
+        {Param("app_id", app_id), Param("version", version.GetString())});
+  }
+
+  void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }
+
+  void ExpectLastStarted() const override { RunCommand("expect_last_started"); }
 
  private:
   ~IntegrationTestCommandsSystem() override = default;
@@ -209,7 +264,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     EXPECT_TRUE(base::PathExists(path));
     path = MakeAbsoluteFilePath(path);
     path = path.Append(FILE_PATH_LITERAL("updater_integration_tests_helper"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     path = path.AddExtension(L"exe");
 #endif
     EXPECT_TRUE(base::PathExists(path));

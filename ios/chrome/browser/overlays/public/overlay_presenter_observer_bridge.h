@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-
-#include "base/macros.h"
 #include "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 
 // Observes overlay UI presentation events from Objective-C. To use as an

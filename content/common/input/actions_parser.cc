@@ -89,9 +89,9 @@ ActionsParser::ActionsParser(base::Value action_sequence_list)
   // gpuBenchmarking.pointerActionSequence. Below we are deciding where the
   // action sequence list comes from.
   if (action_sequence_list_.is_list() &&
-      action_sequence_list_.GetList().size() > 0) {
-    use_testdriver_api_ =
-        ActionsDictionaryUsesTestDriverApi(action_sequence_list_.GetList()[0]);
+      action_sequence_list_.GetListDeprecated().size() > 0) {
+    use_testdriver_api_ = ActionsDictionaryUsesTestDriverApi(
+        action_sequence_list_.GetListDeprecated()[0]);
   }
 }
 
@@ -99,13 +99,14 @@ ActionsParser::~ActionsParser() {}
 
 bool ActionsParser::Parse() {
   if (!action_sequence_list_.is_list() ||
-      action_sequence_list_.GetList().size() == 0) {
+      action_sequence_list_.GetListDeprecated().size() == 0) {
     error_message_ =
         std::string("provided action sequence list is not a list or is empty");
     return false;
   }
 
-  for (const auto& action_sequence : action_sequence_list_.GetList()) {
+  for (const auto& action_sequence :
+       action_sequence_list_.GetListDeprecated()) {
     if (!action_sequence.is_dict()) {
       error_message_ =
           std::string("Expected ActionSequence is not a dictionary");
@@ -222,7 +223,7 @@ bool ActionsParser::ParseGpuBenchmarkingActionSequence(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->GetListDeprecated().size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
@@ -285,11 +286,12 @@ bool ActionsParser::ParseTestDriverActionSequence(
         "action_sequence[%zu].actions is not defined or not a list",
         action_index_);
     return false;
-  } else if (actions->GetList().size() == 0) {
+  } else if (actions->GetListDeprecated().size() == 0) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions is an empty list", action_index_);
     return false;
-  } else if (*source_type == "wheel" && actions->GetList().size() > 1) {
+  } else if (*source_type == "wheel" &&
+             actions->GetListDeprecated().size() > 1) {
     error_message_ = base::StringPrintf(
         "action_sequence[%zu].actions should only have one action for the "
         "wheel input source",
@@ -372,7 +374,7 @@ bool ActionsParser::ParseActionItemList(const base::Value& actions,
                                         std::string source_type) {
   DCHECK(source_type == "none" || source_type == source_type_);
   SyntheticPointerActionListParams::ParamList param_list;
-  for (const auto& action : actions.GetList()) {
+  for (const auto& action : actions.GetListDeprecated()) {
     if (!action.is_dict()) {
       error_message_ = base::StringPrintf(
           "actions[%zu].actions is not defined or not a dictionary",

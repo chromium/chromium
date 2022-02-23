@@ -6,10 +6,13 @@
 
 #include <algorithm>
 #include <random>
+#include <utility>
 #include <vector>
 
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 
@@ -80,6 +83,24 @@ std::vector<AmbientModeTopic> CreatePairedTopics(
                std::default_random_engine());
   return paired_topics;
 }
+
+std::pair<AmbientModeTopic, AmbientModeTopic> SplitTopic(
+    const AmbientModeTopic& paired_topic) {
+  const auto clear_related_fields_from_topic = [](AmbientModeTopic& topic) {
+    topic.related_image_url.clear();
+    topic.related_details.clear();
+  };
+
+  AmbientModeTopic topic_with_primary(paired_topic);
+  clear_related_fields_from_topic(topic_with_primary);
+
+  AmbientModeTopic topic_with_related(paired_topic);
+  topic_with_related.url = std::move(topic_with_related.related_image_url);
+  topic_with_related.details = std::move(topic_with_related.related_details);
+  clear_related_fields_from_topic(topic_with_related);
+  return std::make_pair(topic_with_primary, topic_with_related);
+}
+
 }  // namespace
 
 // PhotoWithDetails------------------------------------------------------------
@@ -109,7 +130,10 @@ bool PhotoWithDetails::IsNull() const {
 }
 
 // AmbientBackendModel---------------------------------------------------------
-AmbientBackendModel::AmbientBackendModel() = default;
+AmbientBackendModel::AmbientBackendModel(AmbientPhotoConfig photo_config) {
+  SetPhotoConfig(std::move(photo_config));
+}
+
 AmbientBackendModel::~AmbientBackendModel() = default;
 
 void AmbientBackendModel::AddObserver(AmbientBackendModelObserver* observer) {
@@ -122,52 +146,68 @@ void AmbientBackendModel::RemoveObserver(
 }
 
 void AmbientBackendModel::AppendTopics(
-    const std::vector<AmbientModeTopic>& topics) {
-  std::vector<AmbientModeTopic> related_topics = CreatePairedTopics(topics);
-  topics_.insert(topics_.end(), related_topics.begin(), related_topics.end());
+    const std::vector<AmbientModeTopic>& topics_in) {
+  if (photo_config_.should_split_topics) {
+    static constexpr int kMaxImagesPerTopic = 2;
+    topics_.reserve(topics_.size() + kMaxImagesPerTopic * topics_in.size());
+    for (const AmbientModeTopic& topic : topics_in) {
+      if (topic.related_image_url.empty()) {
+        topics_.push_back(topic);
+      } else {
+        std::pair<AmbientModeTopic, AmbientModeTopic> split_topic =
+            SplitTopic(topic);
+        topics_.push_back(std::move(split_topic.first));
+        topics_.push_back(std::move(split_topic.second));
+      }
+    }
+  } else {
+    std::vector<AmbientModeTopic> related_topics =
+        CreatePairedTopics(topics_in);
+    topics_.insert(topics_.end(), related_topics.begin(), related_topics.end());
+  }
   NotifyTopicsChanged();
 }
 
 bool AmbientBackendModel::ImagesReady() const {
-  return !current_image_.IsNull() && !next_image_.IsNull();
+  DCHECK_LE(all_decoded_topics_.size(),
+            photo_config_.GetNumDecodedTopicsToBuffer());
+  // TODO(esum): Add a timeout (ex: 10 seconds) for the animated screensaver,
+  // after which we just start the UI anyways if at least 1 topic is buffered
+  // (duplicating that topic in the animation).
+  return all_decoded_topics_.size() ==
+         photo_config_.GetNumDecodedTopicsToBuffer();
 }
 
 void AmbientBackendModel::AddNextImage(
     const PhotoWithDetails& photo_with_details) {
   DCHECK(!photo_with_details.IsNull());
+  DCHECK(!photo_config_.should_split_topics ||
+         photo_with_details.related_photo.isNull());
 
   ResetImageFailures();
 
-  bool should_notify_ready = false;
+  bool old_images_ready = ImagesReady();
 
-  if (current_image_.IsNull()) {
-    // If |current_image_| is null, |photo_with_details| should be the first
-    // image stored. |next_image_| should also be null.
-    DCHECK(next_image_.IsNull());
-    current_image_ = photo_with_details;
-  } else if (next_image_.IsNull()) {
-    // |current_image_| and |next_image_| are set.
-    next_image_ = photo_with_details;
-    should_notify_ready = true;
-  } else {
-    // Cycle out the old |current_image_|.
-    current_image_ = next_image_;
-    next_image_ = photo_with_details;
+  all_decoded_topics_.push_back(photo_with_details);
+  while (all_decoded_topics_.size() >
+         photo_config_.GetNumDecodedTopicsToBuffer()) {
+    DCHECK(!all_decoded_topics_.empty());
+    all_decoded_topics_.pop_front();
   }
 
   NotifyImageAdded();
 
   // Observers expect |OnImagesReady| after |OnImageAdded|.
-  if (should_notify_ready)
+  bool new_images_ready = ImagesReady();
+  if (!old_images_ready && new_images_ready) {
     NotifyImagesReady();
+  }
 }
 
 bool AmbientBackendModel::IsHashDuplicate(const std::string& hash) const {
-  // Make sure that a photo does not appear twice in a row. If |next_image_| is
-  // not null, the new image must not be identical to |next_image_|.
-  const auto& image_to_compare =
-      next_image_.IsNull() ? current_image_ : next_image_;
-  return image_to_compare.hash == hash;
+  // Make sure that a photo does not appear twice in a row.
+  return all_decoded_topics_.empty() ? false
+                                     : all_decoded_topics_.back().hash == hash;
 }
 
 void AmbientBackendModel::AddImageFailure() {
@@ -194,10 +234,32 @@ base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() const {
   return AmbientUiModel::Get()->photo_refresh_interval();
 }
 
+void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
+  photo_config_ = std::move(photo_config);
+  DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
+  DCHECK(!photo_config_.refresh_topic_markers.empty());
+  Clear();
+}
+
 void AmbientBackendModel::Clear() {
   topics_.clear();
-  current_image_.Clear();
-  next_image_.Clear();
+  all_decoded_topics_.clear();
+}
+
+void AmbientBackendModel::GetCurrentAndNextImages(
+    PhotoWithDetails* current_image_out,
+    PhotoWithDetails* next_image_out) const {
+  auto fill_image_out = [&](size_t idx, PhotoWithDetails* image_out) {
+    if (!image_out)
+      return;
+
+    image_out->Clear();
+    if (idx < all_decoded_topics_.size()) {
+      *image_out = all_decoded_topics_[idx];
+    }
+  };
+  fill_image_out(/*idx=*/0, current_image_out);
+  fill_image_out(/*idx=*/1, next_image_out);
 }
 
 float AmbientBackendModel::GetTemperatureInCelsius() const {

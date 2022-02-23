@@ -5,6 +5,7 @@
 #include "chromeos/network/network_connection_handler_impl.h"
 
 #include <memory>
+#include <ostream>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -15,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -70,14 +72,14 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
   const base::Value* provider_properties =
       properties.FindDictKey(shill::kProviderProperty);
   switch (cert_config_type) {
-    case client_cert::CONFIG_TYPE_NONE:
+    case client_cert::ConfigType::kNone:
       return true;
-    case client_cert::CONFIG_TYPE_OPENVPN:
+    case client_cert::ConfigType::kOpenVpn:
       // We don't know whether a pasphrase or certificates are required, so
       // always return true here (otherwise we will never attempt to connect).
       // TODO(stevenjb/cernekee): Fix this?
       return true;
-    case client_cert::CONFIG_TYPE_IPSEC: {
+    case client_cert::ConfigType::kL2tpIpsec: {
       if (!provider_properties)
         return false;
 
@@ -85,7 +87,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
           *provider_properties, shill::kL2tpIpsecClientCertIdProperty);
       return !client_cert_id.empty();
     }
-    case client_cert::CONFIG_TYPE_EAP: {
+    case client_cert::ConfigType::kEap: {
       std::string cert_id =
           GetStringFromDictionary(properties, shill::kEapCertIdProperty);
       std::string key_id =
@@ -93,6 +95,14 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
       std::string identity =
           GetStringFromDictionary(properties, shill::kEapIdentityProperty);
       return !cert_id.empty() && !key_id.empty() && !identity.empty();
+    }
+    case client_cert::ConfigType::kIkev2: {
+      if (!provider_properties)
+        return false;
+
+      std::string client_cert_id = GetStringFromDictionary(
+          *provider_properties, shill::kIKEv2ClientCertIdProperty);
+      return !client_cert_id.empty();
     }
   }
   NOTREACHED();
@@ -159,10 +169,30 @@ bool IsVpnProhibited() {
   return base::Contains(prohibited_technologies, shill::kTypeVPN);
 }
 
-// TODO(b/161092818): Add wireguard type when it is supported in shill.
 bool IsBuiltInVpnType(const std::string& vpn_type) {
-  return vpn_type == shill::kProviderL2tpIpsec ||
-         vpn_type == shill::kProviderOpenVpn;
+  return vpn_type != shill::kProviderArcVpn &&
+         vpn_type != shill::kProviderThirdPartyVpn;
+}
+
+std::ostream& operator<<(std::ostream& stream, client_cert::ConfigType type) {
+  switch (type) {
+    case client_cert::ConfigType::kNone:
+      stream << "None";
+      return stream;
+    case client_cert::ConfigType::kOpenVpn:
+      stream << "OpenVPN";
+      return stream;
+    case client_cert::ConfigType::kL2tpIpsec:
+      stream << "L2TP/IPsec";
+      return stream;
+    case client_cert::ConfigType::kIkev2:
+      stream << "IKEv2";
+      return stream;
+    case client_cert::ConfigType::kEap:
+      stream << "EAP";
+      return stream;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -428,8 +458,8 @@ void NetworkConnectionHandlerImpl::DisconnectNetwork(
   if (!network) {
     NET_LOG(ERROR) << "Disconnect Error: Not Found: "
                    << NetworkPathId(service_path);
-    network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                      kErrorNotFound, "");
+    network_handler::RunErrorCallback(std::move(error_callback),
+                                      kErrorNotFound);
     return;
   }
   const std::string connection_state = network->connection_state();
@@ -437,8 +467,8 @@ void NetworkConnectionHandlerImpl::DisconnectNetwork(
       !NetworkState::StateIsConnecting(connection_state) &&
       !GetPendingRequest(service_path)) {
     NET_LOG(ERROR) << "Disconnect Error: Not Connected: " << NetworkId(network);
-    network_handler::RunErrorCallback(std::move(error_callback), service_path,
-                                      kErrorNotConnected, "");
+    network_handler::RunErrorCallback(std::move(error_callback),
+                                      kErrorNotConnected);
     return;
   }
   if (NetworkTypePattern::Tether().MatchesType(network->type())) {
@@ -573,8 +603,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
     const std::string& service_path,
     absl::optional<base::Value> properties) {
   if (!properties) {
-    HandleConfigurationFailure(service_path, "GetShillProperties failed",
-                               nullptr);
+    HandleConfigurationFailure(service_path, "GetShillProperties failed");
     return;
   }
   NET_LOG(EVENT) << "VerifyConfiguredAndConnect: "
@@ -593,8 +622,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   const std::string* type = properties->FindStringKey(shill::kTypeProperty);
   if (!type) {
-    HandleConfigurationFailure(service_path, "Properties with no type",
-                               nullptr);
+    HandleConfigurationFailure(service_path, "Properties with no type");
     return;
   }
   bool connectable =
@@ -661,39 +689,41 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   client_cert::ClientCertConfig cert_config_from_policy;
   if (policy) {
-    client_cert::OncToClientCertConfig(onc_source,
-                                       base::Value::AsDictionaryValue(*policy),
+    client_cert::OncToClientCertConfig(onc_source, *policy,
                                        &cert_config_from_policy);
   }
 
-  client_cert::ConfigType client_cert_type = client_cert::CONFIG_TYPE_NONE;
+  client_cert::ConfigType client_cert_type = client_cert::ConfigType::kNone;
   if (*type == shill::kTypeVPN) {
+    // Check the VPN types that may use the client cert: OpenVPN, L2TP/IPsec,
+    // and IKEv2.
     if (vpn_provider_type == shill::kProviderOpenVpn) {
-      client_cert_type = client_cert::CONFIG_TYPE_OPENVPN;
-    } else {
+      client_cert_type = client_cert::ConfigType::kOpenVpn;
+    } else if (vpn_provider_type == shill::kProviderL2tpIpsec) {
       // L2TP/IPSec only requires a certificate if one is specified in ONC
       // or one was configured by the UI. Otherwise it is L2TP/IPSec with
       // PSK and doesn't require a certificate.
-      //
-      // TODO(benchan): Modify shill to specify the authentication type via
-      // the kL2tpIpsecAuthenticationType property, so that Chrome doesn't need
-      // to deduce the authentication type based on the
-      // kL2tpIpsecClientCertIdProperty here (and also in VPNConfigView).
       if (!vpn_client_cert_id.empty() ||
           cert_config_from_policy.client_cert_type !=
               ::onc::client_cert::kClientCertTypeNone) {
-        client_cert_type = client_cert::CONFIG_TYPE_IPSEC;
+        client_cert_type = client_cert::ConfigType::kL2tpIpsec;
+      }
+    } else if (vpn_provider_type == shill::kProviderIKEv2) {
+      const std::string* auth_type =
+          properties->FindStringKey(shill::kIKEv2AuthenticationTypeProperty);
+      if (auth_type && *auth_type == shill::kIKEv2AuthenticationTypeCert) {
+        client_cert_type = client_cert::ConfigType::kIkev2;
       }
     }
   } else if (*type == shill::kTypeWifi) {
     const std::string* security_class =
         properties->FindStringKey(shill::kSecurityClassProperty);
     if (security_class && *security_class == shill::kSecurity8021x)
-      client_cert_type = client_cert::CONFIG_TYPE_EAP;
+      client_cert_type = client_cert::ConfigType::kEap;
   }
 
-  base::DictionaryValue config_properties;
-  if (client_cert_type != client_cert::CONFIG_TYPE_NONE) {
+  base::Value config_properties(base::Value::Type::DICTIONARY);
+  if (client_cert_type != client_cert::ConfigType::kNone) {
     // Note: if we get here then a certificate *may* be required, so we want
     // to ensure that certificates have loaded successfully before attempting
     // to connect.
@@ -748,7 +778,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
     // If it's L2TP/IPsec PSK, there is no properties to configure, so proceed
     // to connect.
-    if (client_cert_type == client_cert::CONFIG_TYPE_NONE) {
+    if (client_cert_type == client_cert::ConfigType::kNone) {
       CallShillConnect(service_path);
       return;
     }
@@ -869,8 +899,7 @@ void NetworkConnectionHandlerImpl::CallShillConnect(
 
 void NetworkConnectionHandlerImpl::HandleConfigurationFailure(
     const std::string& service_path,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   NET_LOG(ERROR) << "Connect configuration failure: " << error_name
                  << " for: " << NetworkPathId(service_path);
   ConnectRequest* request = GetPendingRequest(service_path);

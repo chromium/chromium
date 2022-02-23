@@ -8,7 +8,9 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
@@ -63,6 +66,14 @@
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
+  self.mediator.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator.actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:MenuScenario::kToolbarMenu];
+
+  self.viewController.menuProvider = self.mediator;
 }
 
 - (void)stop {

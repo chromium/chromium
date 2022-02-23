@@ -41,10 +41,14 @@ group("preprocess") {
   }
 }
 
+# TS files are passed to a separate target so that they are not listed in the
+# |out_manifest|.
 preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   in_files = [
+    "assert_ts.ts",
+    "custom_element.ts",
     "i18n_mixin.ts",
     "list_property_update_mixin.ts",
     "web_ui_listener_mixin.ts",
@@ -60,7 +64,6 @@ preprocess_if_expr("preprocess_src") {
     "assert.js",
     "color_utils.js",
     "cr.m.js",
-    "custom_element.js",
     "i18n_template_no_process.js",
     "icon.js",
     "load_time_data.m.js",
@@ -80,6 +83,9 @@ preprocess_if_expr("preprocess_src") {
       "post_message_api_request_handler.js",
       "post_message_api_server.js",
     ]
+  }
+  if (is_chromeos) {
+    in_files += [ "os_about.js" ]
   }
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
@@ -135,6 +141,7 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "i18n_template_no_process.m.js",
       "post_message_api_server.m.js",
       "post_message_api_request_handler.m.js",
       "post_message_api_client.m.js",
@@ -258,11 +265,13 @@ js_modulizer("modulize_local") {
   ]
   if (is_chromeos_ash) {
     input_files += [
+      "i18n_template_no_process.js",
       "post_message_api_server.js",
       "post_message_api_request_handler.js",
       "post_message_api_client.js",
     ]
   }
+
   namespace_rewrites = [
     "cr.search_highlight_utils.Range|Range",
     "Polymer.ArraySplice.calculateSplices|calculateSplices",
@@ -286,7 +295,6 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert.m",
     ":cr.m",
-    ":custom_element",
     ":event_tracker.m",
     ":i18n_behavior.m",
     ":icon",
@@ -303,6 +311,7 @@ js_type_check("js_resources_modules") {
 
   if (is_chromeos_ash) {
     deps += [
+      ":i18n_template_no_process.m",
       ":post_message_api_client.m",
       ":post_message_api_server.m",
     ]
@@ -320,9 +329,6 @@ js_library("cr.m") {
     ":promise_resolver.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("custom_element") {
 }
 
 js_library("event_tracker.m") {
@@ -366,6 +372,13 @@ js_library("plural_string_proxy") {
 }
 
 if (is_chromeos_ash) {
+  js_library("i18n_template_no_process.m") {
+    sources =
+        [ "$root_gen_dir/ui/webui/resources/js/i18n_template_no_process.m.js" ]
+    deps = [ ":load_time_data" ]
+    extra_deps = [ ":modulize_local" ]
+  }
+
   js_library("post_message_api_server.m") {
     sources =
         [ "$root_gen_dir/ui/webui/resources/js/post_message_api_server.m.js" ]

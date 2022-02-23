@@ -9,6 +9,9 @@
 
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
+
+using password_manager::PasswordChangeSuccessTracker;
 
 namespace autofill_assistant {
 
@@ -54,6 +57,11 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
   }
 
   delegate_->GetWebsiteLoginManager()->CommitGeneratedPassword();
+
+  delegate_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
+      delegate_->GetUserData()->selected_login_->origin,
+      delegate_->GetUserData()->selected_login_->username,
+      PasswordChangeSuccessTracker::EndEvent::kAutomatedGeneratedPasswordFlow);
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

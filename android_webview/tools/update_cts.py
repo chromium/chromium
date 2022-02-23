@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -18,6 +18,7 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
         'catapult', 'devil'))
+# pylint: disable=wrong-import-position,import-error
 from devil.utils import cmd_helper
 from devil.utils import logging_common
 
@@ -26,6 +27,8 @@ import cts_utils
 
 class PathError(IOError):
   def __init__(self, path, err_desc):
+    # pylint: disable=super-with-arguments
+    # Since this is currently executed with python2, we cannot go with python3.
     super(PathError, self).__init__('"%s": %s' % (path, err_desc))
 
 
@@ -35,6 +38,8 @@ class MissingDirError(PathError):
   """
 
   def __init__(self, path):
+    # pylint: disable=super-with-arguments
+    # Since this is currently executed with python2, we cannot go with python3.
     super(MissingDirError, self).__init__(path, 'directory is missing.')
 
 
@@ -44,6 +49,8 @@ class DirExistsError(PathError):
   """
 
   def __init__(self, path):
+    # pylint: disable=super-with-arguments
+    # Since this is currently executed with python2, we cannot go with python3.
     super(DirExistsError, self).__init__(path, 'directory already exists.')
 
 
@@ -53,6 +60,8 @@ class MissingFileError(PathError):
   """
 
   def __init__(self, path):
+    # pylint: disable=super-with-arguments
+    # Since this is currently executed with python2, we cannot go with python3.
     super(MissingFileError, self).__init__(path, 'file is missing.')
 
 
@@ -64,11 +73,13 @@ class UncommittedChangeException(Exception):
   """Files are about to be modified but previously uncommitted changes exist."""
 
   def __init__(self, path):
+    # pylint: disable=super-with-arguments
+    # Since this is currently executed with python2, we cannot go with python3.
     super(UncommittedChangeException, self).__init__(
         path, 'has uncommitted changes.')
 
 
-class UpdateCTS(object):
+class UpdateCTS:
   """Updates CTS archive to a new version.
 
   Prereqs:
@@ -168,7 +179,7 @@ class UpdateCTS(object):
       threads.append((origin, cts_utils.download(origin, destination)))
     for t in threads:
       t[1].join()
-      logging.info('Finished download from ' + t[0])
+      logging.info('Finished download from %s', t[0])
 
   def filter_downloaded_cts(self):
     """Filter files from downloaded/ to filtered/ to contain only WebView apks.

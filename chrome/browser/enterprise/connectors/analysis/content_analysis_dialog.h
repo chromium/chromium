@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -25,9 +27,11 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace views {
+class BoxLayoutView;
 class ImageView;
 class Label;
 class Link;
+class Textarea;
 class Throbber;
 class Widget;
 }  // namespace views
@@ -40,7 +44,8 @@ class DeepScanningSideIconSpinnerView;
 // Dialog shown for Deep Scanning to offer the possibility of cancelling the
 // upload to the user.
 class ContentAnalysisDialog : public views::DialogDelegate,
-                              public content::WebContentsObserver {
+                              public content::WebContentsObserver,
+                              public views::TextfieldController {
  public:
   // TestObserver should be implemented by tests that need to track when certain
   // ContentAnalysisDialog functions are called. The test can add itself as an
@@ -101,6 +106,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
@@ -125,6 +131,10 @@ class ContentAnalysisDialog : public views::DialogDelegate,
     return delegate_->GetCustomLearnMoreUrl().has_value();
   }
 
+  bool bypass_requires_justification() const {
+    return delegate_->BypassRequiresJustification();
+  }
+
   // Returns the side image's logo color depending on |dialog_state_|.
   SkColor GetSideImageLogoColor() const;
 
@@ -139,6 +149,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   views::ImageView* GetTopImageForTesting() const;
   views::Throbber* GetSideIconSpinnerForTesting() const;
   views::Label* GetMessageForTesting() const;
+  views::Label* GetBypassJustificationLabelForTesting() const;
+  views::Textarea* GetBypassJustificationTextareaForTesting() const;
 
  private:
   // Friend the unit test class for this so it can call the private dtor.
@@ -218,6 +230,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::u16string GetCustomMessage() const;
 
+  // Helper that indicates if the dialog corresponds to a print scan.
+  bool is_print_scan() const;
+
   void AcceptButtonCallback();
   void CancelButtonCallback();
   void LearnMoreLinkClickedCallback(const ui::Event& event);
@@ -226,17 +241,24 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // ensure the auto-closing success dialog handles focus correctly.
   void SuccessCallback();
 
+  // views::TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Views above the buttons. |contents_view_| owns every other view.
-  views::View* contents_view_ = nullptr;
-  DeepScanningTopImageView* image_ = nullptr;
-  DeepScanningSideIconImageView* side_icon_image_ = nullptr;
-  DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
-  views::Label* message_ = nullptr;
-  views::Link* learn_more_link_ = nullptr;
+  raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
+  raw_ptr<DeepScanningTopImageView> image_ = nullptr;
+  raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
+  raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
+  raw_ptr<views::Label> message_ = nullptr;
+  raw_ptr<views::Link> learn_more_link_ = nullptr;
+  raw_ptr<views::Label> justification_text_label_ = nullptr;
+  raw_ptr<views::Textarea> bypass_justification_ = nullptr;
+  raw_ptr<views::Label> bypass_justification_text_length_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
 

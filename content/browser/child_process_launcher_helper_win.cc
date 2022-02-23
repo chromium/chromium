@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -11,7 +12,7 @@
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -47,7 +48,9 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (!delegate_->ShouldLaunchElevated()) {
+  if (delegate_->ShouldLaunchElevated()) {
+    options->elevated = true;
+  } else {
     mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
                                                command_line());
   }
@@ -63,12 +66,16 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   *is_synchronous_launch = true;
   if (delegate_->ShouldLaunchElevated()) {
+    DCHECK(options.elevated);
     // When establishing a Mojo connection, the pipe path has already been added
     // to the command line.
     base::LaunchOptions win_options;
     win_options.start_hidden = true;
+    win_options.elevated = true;
     ChildProcessLauncherHelper::Process process;
     process.process = base::LaunchElevatedProcess(*command_line(), win_options);
+    *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
+                                               : LAUNCH_RESULT_FAILURE;
     return process;
   }
   ChildProcessLauncherHelper::Process process;

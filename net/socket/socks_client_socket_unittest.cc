@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/test_completion_callback.h"
@@ -57,7 +57,7 @@ class SOCKSClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   AddressList address_list_;
   // Filled in by BuildMockSocket() and owned by its return value
   // (which |user_sock| is set to).
-  StreamSocket* tcp_sock_;
+  raw_ptr<StreamSocket> tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<MockHostResolver> host_resolver_;
   std::unique_ptr<SocketDataProvider> data_;
@@ -443,11 +443,11 @@ TEST_F(SOCKSClientSocketTest, Tag) {
       &host_resolver, SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {

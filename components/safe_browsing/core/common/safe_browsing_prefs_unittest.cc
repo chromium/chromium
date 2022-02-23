@@ -54,15 +54,7 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
-#define MAYBE_GetSafeBrowsingExtendedReportingLevel \
-  DISABLED_GetSafeBrowsingExtendedReportingLevel
-#else
-#define MAYBE_GetSafeBrowsingExtendedReportingLevel \
-  GetSafeBrowsingExtendedReportingLevel
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
+TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
   // By Default, extended reporting is off.
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 
@@ -74,15 +66,7 @@ TEST_F(SafeBrowsingPrefsTest, MAYBE_GetSafeBrowsingExtendedReportingLevel) {
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 }
 
-// TODO(crbug.com/881476) disabled for flaky crashes.
-#if defined(OS_WIN)
-#define MAYBE_VerifyMatchesPasswordProtectionLoginURL \
-  DISABLED_VerifyMatchesPasswordProtectionLoginURL
-#else
-#define MAYBE_VerifyMatchesPasswordProtectionLoginURL \
-  VerifyMatchesPasswordProtectionLoginURL
-#endif
-TEST_F(SafeBrowsingPrefsTest, MAYBE_VerifyMatchesPasswordProtectionLoginURL) {
+TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {
   GURL url("https://mydomain.com/login.html#ref?username=alice");
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_FALSE(MatchesPasswordProtectionLoginURL(url, prefs_));
@@ -123,10 +107,14 @@ TEST_F(SafeBrowsingPrefsTest, EnhancedProtection) {
   SetEnhancedProtectionPrefForTests(&prefs_, true);
   {
     base::test::ScopedFeatureList scoped_feature_list;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kEnhancedProtection);
     EXPECT_TRUE(IsEnhancedProtectionEnabled(prefs_));
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kEnhancedProtection);
     prefs_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
     EXPECT_FALSE(IsEnhancedProtectionEnabled(prefs_));
   }

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -486,7 +487,7 @@ class RenderFrameHostGrabber : public content::WebContentsObserver {
 
  private:
   GURL url_;
-  content::RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -932,6 +933,34 @@ IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
               testing::ElementsAre(prerendering_fragment_url, initial_url));
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryPrerenderBrowserTest,
+                       RedirectedPrerenderPageIsRecordedIfActivated) {
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Start prerendering a URL that causes same-origin redirection.
+  const GURL redirected_url =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+  const GURL prerendering_url = embedded_test_server()->GetURL(
+      "/server-redirect?" + redirected_url.spec());
+  prerender_helper().AddPrerender(prerendering_url);
+  EXPECT_EQ(prerender_helper().GetRequestCount(prerendering_url), 1);
+  EXPECT_EQ(prerender_helper().GetRequestCount(redirected_url), 1);
+
+  // The prerendering page should not be recorded.
+  EXPECT_THAT(GetHistoryContents(), testing::ElementsAre(initial_url));
+
+  // Activate.
+  prerender_helper().NavigatePrimaryPage(prerendering_url);
+
+  // The redirected URL of the prerendering page, instead of the original
+  // prerendering URL, should be recorded.
+  EXPECT_THAT(GetHistoryContents(),
+              testing::ElementsAre(redirected_url, initial_url));
+}
+
 // For tests which use fenced frame.
 class HistoryFencedFrameBrowserTest : public HistoryMPArchBrowserTest {
  public:
@@ -970,7 +999,8 @@ IN_PROC_BROWSER_TEST_F(HistoryFencedFrameBrowserTest,
             history_tab_helper->last_load_completion_);
 
   // Create a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);

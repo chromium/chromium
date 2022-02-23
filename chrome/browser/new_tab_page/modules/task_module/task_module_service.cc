@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/new_tab_page/modules/task_module/time_format_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,6 +71,16 @@ const char* GetCacheMaxAgeSParam(
   }
 }
 
+const char* GetExperimentGroupParam(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return ntp_features::kNtpRecipeTasksModuleExperimentGroupParam;
+    case task_module::mojom::TaskModuleType::kShopping:
+      return ntp_features::kNtpShoppingTasksModuleExperimentGroupParam;
+  }
+}
+
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
@@ -89,6 +100,12 @@ GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
   if (cache_max_age_s > 0) {
     url = google_util::AppendToAsyncQueryParam(
         url, "cache_max_age_s", base::NumberToString(cache_max_age_s));
+  }
+  auto experiment_group = base::GetFieldTrialParamValueByFeature(
+      GetFeature(task_module_type), GetExperimentGroupParam(task_module_type));
+  if (!experiment_group.empty()) {
+    url = google_util::AppendToAsyncQueryParam(url, "experiment_group",
+                                               experiment_group);
   }
   return url;
 }
@@ -139,27 +156,6 @@ const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
     case task_module::mojom::TaskModuleType::kShopping:
       return "ShoppingTasks";
   }
-}
-
-std::string GetViewedItemText(int viewed_timestamp) {
-  // GWS timestamps are relative to the Unix Epoch.
-  auto viewed_time = base::Time::UnixEpoch() + base::Seconds(viewed_timestamp);
-  auto viewed_delta = base::Time::Now() - viewed_time;
-  // Viewing items in the future is not supported. Assume the item was viewed
-  // today to account for small shifts between the local and server clock.
-  if (viewed_delta.InSeconds() < 0) {
-    viewed_delta = base::TimeDelta();
-  }
-  if (viewed_delta.InDays() < 1) {
-    return l10n_util::GetStringUTF8(
-        IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_TODAY);
-  }
-  return base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
-      IDS_NTP_MODULES_STATEFUL_TASKS_VIEWED_AGO,
-      ui::TimeFormat::SimpleWithMonthAndYear(
-          ui::TimeFormat::Format::FORMAT_ELAPSED,
-          ui::TimeFormat::Length::LENGTH_LONG, viewed_delta,
-          /*use_month_and_year=*/true)));
 }
 
 std::string GetRecommendedItemText(
@@ -259,7 +255,7 @@ void TaskModuleService::DismissTask(
   ListPrefUpdate update(profile_->GetPrefs(),
                         GetDismissedTasksPrefName(task_module_type));
   base::Value task_name_value(task_name);
-  if (!base::Contains(update->GetList(), task_name_value))
+  if (!base::Contains(update->GetListDeprecated(), task_name_value))
     update->Append(std::move(task_name_value));
 }
 
@@ -316,25 +312,25 @@ void TaskModuleService::OnJsonParsed(
   // support showing a single task though. Therefore, pick the first task.
   auto* tasks = result.value->FindListPath(
       base::StringPrintf("update.%s", GetTasksKey(task_module_type)));
-  if (!tasks || tasks->GetList().size() == 0) {
+  if (!tasks || tasks->GetListDeprecated().size() == 0) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  for (const auto& task : tasks->GetList()) {
+  for (const auto& task : tasks->GetListDeprecated()) {
     auto* title = task.FindStringPath("title");
     auto* task_name = task.FindStringPath("task_name");
     auto* task_items = task.FindListPath(GetTaskItemsKey(task_module_type));
     auto* related_searches = task.FindListPath("related_searches");
     if (!title || !task_name || !task_items || !related_searches ||
-        task_items->GetList().size() == 0) {
+        task_items->GetListDeprecated().size() == 0) {
       continue;
     }
     if (IsTaskDismissed(task_module_type, *task_name)) {
       continue;
     }
     std::vector<task_module::mojom::TaskItemPtr> mojo_task_items;
-    for (const auto& task_item : task_items->GetList()) {
+    for (const auto& task_item : task_items->GetListDeprecated()) {
       auto* name = task_item.FindStringPath("name");
       auto* image_url = task_item.FindStringPath("image_url");
       auto* price = task_item.FindStringPath("price");
@@ -365,7 +361,7 @@ void TaskModuleService::OnJsonParsed(
       mojo_task_items.push_back(std::move(mojom_task_item));
     }
     std::vector<task_module::mojom::RelatedSearchPtr> mojo_related_searches;
-    for (const auto& related_search : related_searches->GetList()) {
+    for (const auto& related_search : related_searches->GetListDeprecated()) {
       auto* text = related_search.FindStringPath("text");
       auto* target_url = related_search.FindStringPath("target_url");
       if (!text || !target_url) {
@@ -400,8 +396,12 @@ void TaskModuleService::OnJsonParsed(
 bool TaskModuleService::IsTaskDismissed(
     task_module::mojom::TaskModuleType task_module_type,
     const std::string& task_name) {
-  const base::ListValue* dismissed_tasks = profile_->GetPrefs()->GetList(
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+    return false;
+  }
+  const base::Value* dismissed_tasks = profile_->GetPrefs()->GetList(
       GetDismissedTasksPrefName(task_module_type));
   DCHECK(dismissed_tasks);
-  return base::Contains(dismissed_tasks->GetList(), base::Value(task_name));
+  return base::Contains(dismissed_tasks->GetListDeprecated(),
+                        base::Value(task_name));
 }

@@ -49,7 +49,7 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
   std::unique_ptr<RendererPauseHandle> PauseRenderer() override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;
 #endif

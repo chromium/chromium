@@ -6,7 +6,6 @@
 #define MEDIA_GPU_VAAPI_H264_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
 #include <stddef.h>
-#include <list>
 
 #include "base/containers/circular_deque.h"
 #include "media/filters/h264_bitstream_buffer.h"

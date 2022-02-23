@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {

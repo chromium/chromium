@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/cdm/cdm_type.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -28,7 +29,7 @@
 
 // Currently this uses the PluginPrivateFileSystem as the previous CDMs ran
 // as pepper plugins and we need to be able to access any existing files.
-// TODO(jrummell): Switch to using a separate file system once CDMs no
+// TODO(crbug.com/1231162): Switch to using a separate file system once CDMs no
 // longer run as pepper plugins.
 
 namespace content {
@@ -36,7 +37,7 @@ namespace content {
 // static
 void CdmStorageImpl::Create(
     RenderFrameHost* render_frame_host,
-    const std::string& cdm_file_system_id,
+    const media::CdmType& cdm_type,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver) {
   DVLOG(3) << __func__;
   DCHECK(!render_frame_host->GetLastCommittedOrigin().opaque())
@@ -50,34 +51,17 @@ void CdmStorageImpl::Create(
     file_system_context = storage_partition->GetFileSystemContext();
 
   // The created object is bound to (and owned by) |receiver|.
-  new CdmStorageImpl(render_frame_host, cdm_file_system_id,
+  new CdmStorageImpl(render_frame_host, cdm_type,
                      std::move(file_system_context), std::move(receiver));
-}
-
-// static
-bool CdmStorageImpl::IsValidCdmFileSystemId(
-    const std::string& cdm_file_system_id) {
-  // To be compatible with PepperFileSystemBrowserHost::GeneratePluginId(),
-  // |cdm_file_system_id| must contain only letters (A-Za-z), digits(0-9),
-  // or "._-".
-  for (const auto& ch : cdm_file_system_id) {
-    if (!base::IsAsciiAlpha(ch) && !base::IsAsciiDigit(ch) && ch != '.' &&
-        ch != '_' && ch != '-') {
-      return false;
-    }
-  }
-
-  // Also ensure that |cdm_file_system_id| contains at least 1 character.
-  return !cdm_file_system_id.empty();
 }
 
 CdmStorageImpl::CdmStorageImpl(
     RenderFrameHost* render_frame_host,
-    const std::string& cdm_file_system_id,
+    const media::CdmType& cdm_type,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     mojo::PendingReceiver<media::mojom::CdmStorage> receiver)
     : DocumentService(render_frame_host, std::move(receiver)),
-      cdm_file_system_id_(cdm_file_system_id),
+      cdm_type_(cdm_type),
       file_system_context_(std::move(file_system_context)),
       child_process_id_(render_frame_host->GetProcess()->GetID()) {}
 
@@ -88,12 +72,6 @@ CdmStorageImpl::~CdmStorageImpl() {
 void CdmStorageImpl::Open(const std::string& file_name, OpenCallback callback) {
   DVLOG(3) << __func__ << " file: " << file_name;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  if (!IsValidCdmFileSystemId(cdm_file_system_id_)) {
-    DVLOG(1) << "CdmStorageImpl not initialized properly.";
-    std::move(callback).Run(Status::kFailure, mojo::NullAssociatedRemote());
-    return;
-  }
 
   if (file_name.empty()) {
     DVLOG(1) << "No file specified.";
@@ -146,7 +124,8 @@ void CdmStorageImpl::Open(const std::string& file_name, OpenCallback callback) {
 
   file_system_context_->OpenPluginPrivateFileSystem(
       origin(), storage::kFileSystemTypePluginPrivate, fsid,
-      cdm_file_system_id_, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      cdm_type_.legacy_file_system_id,
+      storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&CdmStorageImpl::OnFileSystemOpened,
                      weak_factory_.GetWeakPtr()));
 }
@@ -191,7 +170,7 @@ void CdmStorageImpl::CreateCdmFile(const std::string& file_name,
   }
 
   auto cdm_file_impl = std::make_unique<CdmFileImpl>(
-      file_name, origin(), cdm_file_system_id_, file_system_root_uri_,
+      file_name, origin(), cdm_type_, file_system_root_uri_,
       file_system_context_);
 
   if (!cdm_file_impl->Initialize()) {

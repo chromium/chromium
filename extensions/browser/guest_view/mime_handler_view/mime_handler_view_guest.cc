@@ -119,7 +119,7 @@ content::SiteInstance* MimeHandlerViewGuest::GetOwnerSiteInstance() {
   return rfh ? rfh->GetSiteInstance() : nullptr;
 }
 
-bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() {
+bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
 }
 
@@ -167,14 +167,14 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
 void MimeHandlerViewGuest::CreateWebContents(
     const base::DictionaryValue& create_params,
     WebContentsCreatedCallback callback) {
-  std::string view_id;
-  create_params.GetString(mime_handler_view::kViewId, &view_id);
-  if (view_id.empty()) {
+  const std::string* view_id =
+      create_params.FindStringKey(mime_handler_view::kViewId);
+  if (!view_id || view_id->empty()) {
     std::move(callback).Run(nullptr);
     return;
   }
   stream_ =
-      MimeHandlerStreamManager::Get(browser_context())->ReleaseStream(view_id);
+      MimeHandlerStreamManager::Get(browser_context())->ReleaseStream(*view_id);
   if (!stream_) {
     std::move(callback).Run(nullptr);
     return;
@@ -400,7 +400,7 @@ content::WebContents* MimeHandlerViewGuest::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   content::OpenURLParams open_params(target_url, content::Referrer(),
                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -430,8 +430,7 @@ bool MimeHandlerViewGuest::SetFullscreenState(bool is_fullscreen) {
   return true;
 }
 
-void MimeHandlerViewGuest::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
   DCHECK(GetEmbedderFrame());
   DCHECK_NE(element_instance_id(), guest_view::kInstanceIDNone);
 
@@ -471,11 +470,8 @@ void MimeHandlerViewGuest::DidFinishNavigation(
 
   if (navigation_handle->IsInMainFrame()) {
     // We should not navigate the guest away from the handling extension.
-    const url::Origin handler_origin =
-        url::Origin::Create(stream_->handler_url());
     const GURL& new_url = navigation_handle->GetURL();
-    const url::Origin new_origin = url::Origin::Create(new_url);
-    CHECK(new_origin.IsSameOriginWith(handler_origin) ||
+    CHECK(url::IsSameOriginWith(new_url, stream_->handler_url()) ||
           new_url.IsAboutBlank());
   }
 }

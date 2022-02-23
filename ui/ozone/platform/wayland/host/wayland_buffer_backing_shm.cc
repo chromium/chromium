@@ -24,8 +24,21 @@ WaylandBufferBackingShm::~WaylandBufferBackingShm() = default;
 void WaylandBufferBackingShm::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
-  std::move(callback).Run(
-      connection_->shm()->CreateBuffer(fd_, length_, size()));
+
+// Given that buffers for canvas surfaces are submitted with alpha disabled,
+// using a format with alpha channel results in popup surfaces that have black
+// background when they are shown with fade in/out animation. Thus, disable
+// alpha channel so that exo sets the background of these canvas surface to
+// transparent.
+//
+// TODO(crbug.com/1269044): Revisit once Exo-side Skia Renderer issue is fixed.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool with_alpha_channel = false;
+#else
+  const bool with_alpha_channel = true;
+#endif
+  std::move(callback).Run(connection_->shm()->CreateBuffer(fd_, length_, size(),
+                                                           with_alpha_channel));
 }
 
 }  // namespace ui

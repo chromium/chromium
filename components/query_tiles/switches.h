@@ -11,10 +11,6 @@ namespace query_tiles {
 
 namespace features {
 
-// Main feature flag for the query tiles feature that allows or blocks the
-// feature in the user's country. Must be checked in addition to any other flag.
-extern const base::Feature kQueryTilesGeoFilter;
-
 // Main feature flag for the query tiles feature. All other flags are
 // effective only when this flag is enabled.
 extern const base::Feature kQueryTiles;
@@ -41,9 +37,8 @@ extern const base::Feature kQueryTilesRemoveTrendingTilesAfterInactivity;
 // Whether segmentation rules are applied to query tiles.
 extern const base::Feature kQueryTilesSegmentation;
 
-// Helper function to determine whether query tiles should be shown on omnibox.
-bool IsEnabledQueryTilesInOmnibox();
-
+// Returns whether query tiles are enabled for the country.
+bool IsQueryTilesEnabledForCountry(const std::string& country_code);
 }  // namespace features
 
 namespace switches {

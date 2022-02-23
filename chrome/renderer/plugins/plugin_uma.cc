@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/content_constants.h"
 

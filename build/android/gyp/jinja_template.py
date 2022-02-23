@@ -34,7 +34,7 @@ class _RecordingFileSystemLoader(jinja2.FileSystemLoader):
     return contents, filename, uptodate
 
 
-class JinjaProcessor(object):
+class JinjaProcessor:
   """Allows easy rendering of jinja templates with input file tracking."""
   def __init__(self, loader_base_dir, variables=None):
     self.loader_base_dir = loader_base_dir

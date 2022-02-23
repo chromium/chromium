@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"

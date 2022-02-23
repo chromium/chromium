@@ -1,28 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script>
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
 </script>
-<script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src='../resources/picker-common.js'></script>
+<script src='color-picker-appearance-no-movement-helper.js'></script>
+
 <input type='color' id='color' value='#FF0000'>
 
 <p id='description' style='opacity: 0'></p>
 <div id='console' style='opacity: 0'></div>
 
-<script src='color-picker-appearance-no-movement-helper.js'></script>
 <script>
-let descriptionContainer = document.getElementById('description');
-openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
-
-function openPickerCallback() {
-  if (internals.pagePopupWindow) {
+window.onload = () => {
+  let descriptionContainer = document.getElementById('description');
+  openPicker(document.getElementById('color'))
+  .then(() => {
     descriptionContainer.append('Popup opened.', document.createElement('br'));
-    popupWindow.focus();
-    const popupDocument = popupWindow.document;
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
     const hueSlider = popupDocument.querySelector('hue-slider');
     const hueSliderRect = hueSlider.getBoundingClientRect();
     const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
@@ -41,12 +39,12 @@ function openPickerCallback() {
     eventSender.keyDown('ArrowRight', ['ctrlKey']);
     logKeyboardMovementResult(descriptionContainer, 'ctrlKey+ArrowRight', 'hue slider', hueSliderSelectionRing,
         hueSliderSelectionRingCurrentLeft, hueSliderSelectionRingCurrentTop);
-  } else {
-    descriptionContainer.append('Popup did not open.', document.createElement('br'));
-  }
-  descriptionContainer.append('TEST COMPLETE');
-  testRunner.notifyDone();
-}
+    descriptionContainer.append('TEST COMPLETE');
+    testRunner.notifyDone();
+  })
+  .catch((e) => {
+    descriptionContainer.append('Popup did not open.' + e, document.createElement('br'));
+    testRunner.notifyDone();
+  });
+};
 </script>
-</body>
-</html>

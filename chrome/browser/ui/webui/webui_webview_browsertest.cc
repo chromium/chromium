@@ -29,7 +29,7 @@
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
 // http://crbug.com/653353
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -443,4 +443,4 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DISABLED_DragAndDropToInput) {
 }
 #endif
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

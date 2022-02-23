@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,12 +27,14 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/test/stub_feed_api.h"
@@ -41,7 +44,7 @@ using testing::NiceMock;
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestFeedApi : public feed::StubFeedApi {
  public:
   MOCK_METHOD1(WasUrlRecentlyNavigatedFromFeed, bool(const GURL&));
@@ -60,7 +63,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     feed::FeedServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindLambdaForTesting([&](content::BrowserContext* context) {
@@ -136,8 +139,8 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::CancelableTaskTracker tracker_;
-  history::HistoryService* history_service_;
-#if defined(OS_ANDROID)
+  raw_ptr<history::HistoryService> history_service_;
+#if BUILDFLAG(IS_ANDROID)
   TestFeedApi test_feed_api_;
 #endif
 };
@@ -357,7 +360,7 @@ TEST_F(HistoryTabHelperTest,
   EXPECT_FALSE(args.opener.has_value());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(HistoryTabHelperTest, NonFeedNavigationsDoContributeToMostVisited) {
   GURL new_url("http://newurl.com");
@@ -381,3 +384,122 @@ TEST_F(HistoryTabHelperTest, FeedNavigationsDoNotContributeToMostVisited) {
 }
 
 #endif
+
+class HistoryTabHelperFencedFramesTest : public HistoryTabHelperTest {
+ public:
+  HistoryTabHelperFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~HistoryTabHelperFencedFramesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HistoryTabHelperFencedFramesTest,
+       CreateAddPageArgsReferringURLInFencedFrame) {
+  content::RenderFrameHostTester* main_rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  main_rfh_tester->InitializeRenderFrameIfNeeded();
+
+  content::RenderFrameHost* fenced_frame_root =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      GURL("http://someurl.com"), fenced_frame_root);
+  navigation_handle.set_is_in_primary_main_frame(false);
+  navigation_handle.set_redirect_chain({GURL("https://someurl.com")});
+  navigation_handle.set_previous_main_frame_url(
+      GURL("http://previousurl.com/abc"));
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url =
+      navigation_handle.GetPreviousMainFrameURL().DeprecatedGetOriginAsURL();
+  referrer->policy = network::mojom::ReferrerPolicy::kDefault;
+  navigation_handle.SetReferrer(std::move(referrer));
+
+  history::HistoryAddPageArgs args =
+      history_tab_helper()->CreateHistoryAddPageArgs(
+          GURL("http://someurl.com"), base::Time(), 1, &navigation_handle);
+
+  // Should default to referrer if not in main frame and the referrer should not
+  // be sent to the arbitrary previous URL that is set.
+  EXPECT_NE(args.referrer, GURL("http://previousurl.com/abc"));
+}
+
+enum class MPArchType {
+  kFencedFrame,
+  kPrerender,
+};
+class HistoryTabHelperMPArchTest
+    : public HistoryTabHelperTest,
+      public testing::WithParamInterface<MPArchType> {
+ public:
+  HistoryTabHelperMPArchTest() {
+    switch (GetParam()) {
+      case MPArchType::kFencedFrame:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kFencedFrames,
+            {{"implementation_type", "mparch"}});
+        break;
+      case MPArchType::kPrerender:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kPrerender2},
+            // Disable the memory requirement of Prerender2 so the test can run
+            // on any bot.
+            {blink::features::kPrerender2MemoryControls});
+        break;
+    }
+  }
+  ~HistoryTabHelperMPArchTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HistoryTabHelperMPArchTest,
+                         testing::Values(MPArchType::kFencedFrame,
+                                         MPArchType::kPrerender));
+
+TEST_P(HistoryTabHelperMPArchTest, DoNotAffectToLimitTitleUpdates) {
+  web_contents_tester()->NavigateAndCommit(page_url_);
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_NE(nullptr, entry);
+
+  // The first 10 title updates are accepted and update history, as per
+  // history::kMaxTitleChanges.
+  for (int i = 1; i <= history::kMaxTitleChanges; ++i) {
+    const std::string title = base::StringPrintf("title%d", i);
+    web_contents()->UpdateTitleForEntry(entry, base::UTF8ToUTF16(title));
+  }
+
+  ASSERT_EQ("title10", QueryPageTitleFromHistory(page_url_));
+
+  // Further updates should be ignored.
+  web_contents()->UpdateTitleForEntry(entry, u"title11");
+  EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
+
+  std::unique_ptr<content::NavigationSimulator> simulator;
+  if (GetParam() == MPArchType::kFencedFrame) {
+    // Navigate a fenced frame.
+    GURL fenced_frame_url = GURL("https://fencedframe.com");
+    content::RenderFrameHost* fenced_frame_root =
+        content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+    simulator = content::NavigationSimulator::CreateForFencedFrame(
+        fenced_frame_url, fenced_frame_root);
+  } else if (GetParam() == MPArchType::kPrerender) {
+    // Navigate a prerendering page.
+    const GURL prerender_url = page_url_.Resolve("?prerendering");
+    simulator = content::WebContentsTester::For(web_contents())
+                    ->AddPrerenderAndStartNavigation(prerender_url);
+  }
+  ASSERT_NE(nullptr, simulator);
+  simulator->Commit();
+
+  // Further updates should be ignored.
+  web_contents()->UpdateTitleForEntry(entry, u"title12");
+  EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
+}

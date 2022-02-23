@@ -40,8 +40,10 @@ class ParameterizedLocalCaretRectTest
     return RuntimeEnabledFeatures::LayoutNGEnabled();
   }
 
-  LocalCaretRect LocalCaretRectOf(const Position& position) {
-    return LocalCaretRectOfPosition(PositionWithAffinity(position));
+  LocalCaretRect LocalCaretRectOf(
+      const Position& position,
+      EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary) {
+    return LocalCaretRectOfPosition(PositionWithAffinity(position), rule);
   }
 };
 
@@ -881,9 +883,9 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
   Element* body = GetDocument().body();
   Element* one = body->QuerySelector("#one");
 
-  IntRect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
+  gfx::Rect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
       CreateVisiblePosition(Position(one, 0)).ToPositionWithAffinity());
-  IntRect bounds_in_flat_tree =
+  gfx::Rect bounds_in_flat_tree =
       AbsoluteCaretBoundsOf(CreateVisiblePosition(PositionInFlatTree(one, 0))
                                 .ToPositionWithAffinity());
 
@@ -896,7 +898,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteSelectionBoundsOfWithImage) {
   SetBodyContent("<div>foo<img></div>");
 
   Node* node = GetDocument().QuerySelector("img");
-  IntRect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
+  gfx::Rect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
       PositionWithAffinity(Position::LastPositionInNode(*node))));
   EXPECT_FALSE(rect.IsEmpty());
 }
@@ -917,8 +919,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockLTRLineLTR) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='ltr'>foo\n|<bdo dir='ltr'>abc</bdo></pre>");
-  PhysicalRect position_rect, visible_position_rect;
-  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
+  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), visible_position_rect);
 }
@@ -928,8 +929,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockLTRLineRTL) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='ltr'>foo\n|<bdo dir='rtl'>abc</bdo></pre>");
-  PhysicalRect position_rect, visible_position_rect;
-  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
+  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(0, 10, 1, 10), visible_position_rect);
 }
@@ -939,8 +939,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockRTLLineLTR) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='rtl'>foo\n|<bdo dir='ltr'>abc</bdo></pre>");
-  PhysicalRect position_rect, visible_position_rect;
-  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
+  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), visible_position_rect);
 }
@@ -950,8 +949,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterLineBreakInPreBlockRTLLineRTL) {
   InsertStyleElement("pre{ font: 10px/10px Ahem; width: 300px }");
   const Position& caret =
       SetCaretTextToBody("<pre dir='rtl'>foo\n|<bdo dir='rtl'>abc</bdo></pre>");
-  PhysicalRect position_rect, visible_position_rect;
-  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
+  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(299, 10, 1, 10), visible_position_rect);
 }
@@ -961,8 +959,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterTrimedLineBreak) {
   LoadAhem();
   InsertStyleElement("body { font: 10px/10px Ahem; width: 300px }");
   const Position& caret = SetCaretTextToBody("<div>foo\n|</div>");
-  PhysicalRect position_rect, visible_position_rect;
-  std::tie(position_rect, visible_position_rect) = GetPhysicalRects(caret);
+  auto [position_rect, visible_position_rect] = GetPhysicalRects(caret);
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), position_rect);
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), visible_position_rect);
 }
@@ -1154,6 +1151,203 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterIneditableInline) {
   const Position position = Position::LastPositionInNode(*div);
   EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(30, 0, 1, 10)),
             LocalCaretRectOfPosition(PositionWithAffinity(position)));
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtBeginningOfNonEditable) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
+  const Element* div = GetDocument().QuerySelector("div");
+  const Node* text = div->firstChild()->firstChild();
+
+  const Position& position = Position::FirstPositionInNode(*div);
+  EXPECT_EQ(LocalCaretRect(text->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest,
+       LocalCaretAtBeginningOfNonEditableInFlatTree) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  const char* body_content =
+      "<div contenteditable><div id='host'>"
+      "<span slot='#one'>foo1</span><span>foo3</span></div></div>";
+  const char* shadow_content =
+      "<slot name=#one></slot>"
+      "<span contenteditable='false' id='foo2'>foo2</span>";
+  SetBodyContent(body_content);
+  SetShadowContent(shadow_content, "host");
+  const Element* target = GetDocument().getElementById("host");
+  const Node* foo1 = target->firstChild()->firstChild();
+
+  const Position& position = Position::FirstPositionInNode(*target);
+  EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+
+  const PositionInFlatTree& position_in_flat_tree =
+      PositionInFlatTree::FirstPositionInNode(*target);
+  EXPECT_EQ(LocalCaretRect(foo1->GetLayoutObject(), PhysicalRect(25, 0, 1, 10)),
+            LocalCaretRectOfPosition(
+                PositionInFlatTreeWithAffinity(position_in_flat_tree),
+                kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(10, 0, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest, LocalCaretAtEndOfNonEditable) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }");
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
+  const Element* div = GetDocument().QuerySelector("div");
+  const Node* text = div->firstChild()->firstChild();
+
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(55, 10, 1, 10)),
+      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
+  // and it adds the padding-left twice.
+  // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
+  // LayoutNG
+  EXPECT_EQ(LocalCaretRect(div->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest,
+       LocalCaretAtEndOfNonEditableInFlatTree) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "div { width: 70px; padding: 10px; font: 10px/10px Ahem }"
+      "span { padding: 15px }");
+  const char* body_content =
+      "<div contenteditable><div id='host'>"
+      "<span slot='#one'>foo1</span><span>foo3</span></div></div>";
+  const char* shadow_content =
+      "<slot name=#one></slot>"
+      "<span contenteditable='false' id='foo2'>foo2</span>";
+  SetBodyContent(body_content);
+  auto* shadow_root = SetShadowContent(shadow_content, "host");
+  const Element* target = GetDocument().getElementById("host");
+  const Node* foo2 = shadow_root->getElementById("foo2")->firstChild();
+
+  // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
+  // and it adds the padding-left twice.
+  // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
+  // positioning the caret at the end of the non-editable area.
+  // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
+  // LayoutNG
+  const Position& position = Position::LastPositionInNode(*target);
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
+      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
+      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+
+  const PositionInFlatTree& position_in_flat_tree =
+      PositionInFlatTree::LastPositionInNode(*target);
+  EXPECT_EQ(
+      LocalCaretRect(foo2->GetLayoutObject(), PhysicalRect(50, 20, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          kCanCrossEditingBoundary));
+  // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
+  // and it adds the padding-left twice.
+  // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
+  // LayoutNG
+  EXPECT_EQ(
+      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
+      LocalCaretRectOfPosition(
+          PositionInFlatTreeWithAffinity(position_in_flat_tree),
+          kCannotCrossEditingBoundary));
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 5px; }"
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
+
+  const Element* div = GetDocument().QuerySelector("div");
+  const Position& position = Position::LastPositionInNode(*div);
+  EXPECT_EQ("60,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
+                                  kCanCrossEditingBoundary)
+                .ToString());
+  // TODO(jfernandez): It should be 84, but LayoutBox::LocalCaretRect is buggy
+  // and it adds the padding-left twice.
+  // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
+  // positioning the caret at the end of the non-editable area.
+  // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
+  // LayoutNG
+  EXPECT_EQ("94,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
+                                  kCannotCrossEditingBoundary)
+                .ToString());
+}
+
+// http://crbug.com/688015
+TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
+  // For LayoutNG, we also enable EditingNG to test NG caret rendering.
+  ScopedEditingNGForTest editing_ng(LayoutNGEnabled());
+
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 5px; }"
+      "div { width: 70px; padding-left: 10px; font: 10px/10px Ahem }"
+      "span { padding-left: 15px }");
+  SetBodyContent(
+      "<div contenteditable><span contenteditable=\"false\">foo</span></div>");
+
+  const Element* div = GetDocument().QuerySelector("div");
+  const Position& position = Position::FirstPositionInNode(*div);
+  EXPECT_EQ("30,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
+                                  kCanCrossEditingBoundary)
+                .ToString());
+  EXPECT_EQ("15,5 1x10",
+            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
+                                  kCannotCrossEditingBoundary)
+                .ToString());
 }
 
 // https://crbug.com/1155399

@@ -17,6 +17,40 @@ constexpr char kDelimiter[] = "|";
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, ShelfAutoHideState state) {
+  switch (state) {
+    case SHELF_AUTO_HIDE_SHOWN:
+      return out << "SHOWN";
+    case SHELF_AUTO_HIDE_HIDDEN:
+      return out << "HIDDEN";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out, ShelfBackgroundType type) {
+  switch (type) {
+    case ShelfBackgroundType::kDefaultBg:
+      return out << "DefaultBg";
+    case ShelfBackgroundType::kMaximized:
+      return out << "Maximized";
+    case ShelfBackgroundType::kAppList:
+      return out << "AppList";
+    case ShelfBackgroundType::kHomeLauncher:
+      return out << "HomeLauncher";
+    case ShelfBackgroundType::kMaximizedWithAppList:
+      return out << "MaximizedWithAppList";
+    case ShelfBackgroundType::kOobe:
+      return out << "Oobe";
+    case ShelfBackgroundType::kLogin:
+      return out << "Login";
+    case ShelfBackgroundType::kLoginNonBlurredWallpaper:
+      return out << "LoginNonBlurredWallpaper";
+    case ShelfBackgroundType::kOverview:
+      return out << "Overview";
+    case ShelfBackgroundType::kInApp:
+      return out << "InApp";
+  }
+}
+
 bool IsValidShelfItemType(int64_t type) {
   switch (type) {
     case TYPE_PINNED_APP:

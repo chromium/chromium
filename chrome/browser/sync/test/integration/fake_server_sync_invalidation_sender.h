@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_SYNC_INVALIDATION_SENDER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_SYNC_INVALIDATION_SENDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/fake_server/fake_server.h"
 
@@ -37,7 +38,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer {
   std::map<std::string, syncer::ModelTypeSet>
   GetTokenToInterestedDataTypesMap();
 
-  FakeServer* fake_server_;
+  raw_ptr<FakeServer> fake_server_;
   std::vector<syncer::FCMHandler*> fcm_handlers_;
 };
 

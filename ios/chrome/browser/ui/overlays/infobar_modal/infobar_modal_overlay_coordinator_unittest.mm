@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/test/mock_overlay_coordinator_delegate.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -78,14 +77,13 @@ DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
 class InfobarModalOverlayCoordinatorTest : public PlatformTest {
  public:
   InfobarModalOverlayCoordinatorTest()
-      : browser_state_(browser_state_builder_.Build()),
-        web_state_list_(&web_state_list_delegate_),
-        browser_(browser_state_.get(), &web_state_list_),
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
         request_(OverlayRequest::CreateWithConfig<ModalConfig>()),
         root_view_controller_([[UIViewController alloc] init]),
         coordinator_([[FakeInfobarModalOverlayCoordinator alloc]
             initWithBaseViewController:root_view_controller_
-                               browser:&browser_
+                               browser:browser_.get()
                                request:request_.get()
                               delegate:&delegate_]) {
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -93,11 +91,8 @@ class InfobarModalOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
-  TestBrowser browser_;
+  std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
   std::unique_ptr<OverlayRequest> request_;
   ScopedKeyWindow scoped_window_;

@@ -191,7 +191,7 @@ class CONTENT_EXPORT ClipboardHostImpl
                      const std::u16string& title) override;
   void WriteImage(const SkBitmap& unsafe_bitmap) override;
   void CommitWrite() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
 
@@ -215,6 +215,9 @@ class CONTENT_EXPORT ClipboardHostImpl
       std::string data,
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
+
+  using CopyAllowedCallback = base::OnceCallback<void()>;
+  void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
 
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,

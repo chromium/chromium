@@ -1,5 +1,5 @@
 rootWebArea
-++genericContainer ignored
+++genericContainer ignored invisible
 ++++genericContainer ignored invisible
 ++++++section ignored invisible
 ++++++++dialog

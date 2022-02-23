@@ -28,6 +28,8 @@ enum WindowOpenDisposition {
   // no session history; and behaves like CURRENT_TAB instead of
   // NEW_FOREGROUND_TAB when no existing tab is found.
   SWITCH_TO_TAB,
+  // Creates a new document picture-in-picture window showing a child WebView.
+  NEW_PICTURE_IN_PICTURE,
 };
 
 // Click information needed to determine user's desired window disposition using

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "extensions/common/manifest.h"
@@ -118,10 +117,10 @@ class SyncExtensionHelper {
   // Returns an extension for the given name in |profile|.  type and
   // index.  Two extensions with the name but different profiles will
   // have the same id.
-  scoped_refptr<extensions::Extension> GetExtension(
+  [[nodiscard]] scoped_refptr<extensions::Extension> GetExtension(
       Profile* profile,
       const std::string& name,
-      extensions::Manifest::Type type) WARN_UNUSED_RESULT;
+      extensions::Manifest::Type type);
 
   std::string extension_name_prefix_;
   ProfileExtensionNameMap profile_extensions_;

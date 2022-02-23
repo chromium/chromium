@@ -10,20 +10,20 @@
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-using google::protobuf::RepeatedPtrField;
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
+using ::google::protobuf::RepeatedPtrField;
+
 class DoNotDisturbController;
-class FeatureStatusProvider;
 class FindMyDeviceController;
+class MutablePhoneModel;
 class NotificationAccessManager;
 class NotificationProcessor;
-class MutablePhoneModel;
 class ScreenLockManager;
+class RecentAppsInteractionHandler;
 
 // Responsible for receiving incoming protos and calling on clients to update
 // their models.
@@ -41,7 +41,8 @@ class PhoneStatusProcessor
       ScreenLockManager* screen_lock_manager,
       NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      MutablePhoneModel* phone_model);
+      MutablePhoneModel* phone_model,
+      RecentAppsInteractionHandler* recent_apps_interaction_handler);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -84,9 +85,10 @@ class PhoneStatusProcessor
   NotificationProcessor* notification_processor_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MutablePhoneModel* phone_model_;
+  RecentAppsInteractionHandler* recent_apps_interaction_handler_;
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_STATUS_PROCESSOR_H_

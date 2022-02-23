@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "base/component_export.h"
@@ -47,10 +46,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
 
   virtual std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) = 0;
-
-  virtual std::vector<blink::StorageKey> GetStorageKeysForHostOnFileTaskRunner(
-      FileSystemType type,
-      const std::string& host) = 0;
 
   // Returns the amount of data used for the `storage_key` for usage tracking.
   virtual int64_t GetStorageKeyUsageOnFileTaskRunner(

@@ -24,10 +24,10 @@ AutofillCreditCardFillingInfoBarDelegateMobile::
       had_user_interaction_(false),
       was_shown_(false),
       issuer_icon_id_(CreditCard::IconResourceId(card.network())),
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       card_label_(card.NetworkAndLastFourDigits()),
 #else
-      card_label_(std::u16string(kMidlineEllipsis4Dots) +
+      card_label_(CreditCard::GetMidlineEllipsisDots(4) +
                   card.LastFourDigits()),
 #endif
       card_sub_label_(card.AbbreviatedExpirationDateForDisplay(false)) {
@@ -49,10 +49,10 @@ int AutofillCreditCardFillingInfoBarDelegateMobile::GetIconId() const {
 
 std::u16string AutofillCreditCardFillingInfoBarDelegateMobile::GetMessageText()
     const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_TITLE);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   // On iOS the card details are in the title of the infobar.
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_FORMATTED_TITLE, card_label_);

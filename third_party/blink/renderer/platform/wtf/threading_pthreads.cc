@@ -32,7 +32,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #include <errno.h>
 #include <limits.h>
@@ -46,15 +46,15 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <objc/objc-auto.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <sys/syscall.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <unistd.h>
 #endif
 
@@ -99,30 +99,6 @@ void MutexBase::unlock() {
   DCHECK_EQ(result, 0);
 }
 
-// There is a separate tryLock implementation for the Mutex and the
-// RecursiveMutex since on Windows we need to manually check if tryLock should
-// succeed or not for the non-recursive mutex. On Linux the two implementations
-// are equal except we can assert the recursion count is always zero for the
-// non-recursive mutex.
-bool Mutex::TryLock() {
-  int result = pthread_mutex_trylock(&mutex_.internal_mutex_);
-  if (result == 0) {
-#if DCHECK_IS_ON()
-    // The Mutex class is not recursive, so the recursionCount should be
-    // zero after getting the lock.
-    DCHECK(!mutex_.recursion_count_)
-        << "WTF does not support recursive mutex acquisition!";
-    ++mutex_.recursion_count_;
-#endif
-    return true;
-  }
-  if (result == EBUSY)
-    return false;
-
-  NOTREACHED();
-  return false;
-}
-
 bool RecursiveMutex::TryLock() {
   int result = pthread_mutex_trylock(&mutex_.internal_mutex_);
   if (result == 0) {
@@ -140,37 +116,6 @@ bool RecursiveMutex::TryLock() {
   return false;
 }
 
-ThreadCondition::ThreadCondition(Mutex& mutex) : mutex_(mutex.Impl()) {
-  pthread_cond_init(&condition_, nullptr);
-}
-
-ThreadCondition::~ThreadCondition() {
-  pthread_cond_destroy(&condition_);
-}
-
-void ThreadCondition::Wait() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-#if DCHECK_IS_ON()
-  --mutex_.recursion_count_;
-#endif
-  int result = pthread_cond_wait(&condition_, &mutex_.internal_mutex_);
-  DCHECK_EQ(result, 0);
-#if DCHECK_IS_ON()
-  ++mutex_.recursion_count_;
-#endif
-}
-
-void ThreadCondition::Signal() {
-  int result = pthread_cond_signal(&condition_);
-  DCHECK_EQ(result, 0);
-}
-
-void ThreadCondition::Broadcast() {
-  int result = pthread_cond_broadcast(&condition_);
-  DCHECK_EQ(result, 0);
-}
-
 }  // namespace WTF
 
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

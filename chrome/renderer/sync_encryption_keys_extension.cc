@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -117,7 +117,7 @@ void SyncEncryptionKeysExtension::Install() {
       .Check();
 
   if (!base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery)) {
+          syncer::kSyncTrustedVaultPassphraseRecovery)) {
     return;
   }
 

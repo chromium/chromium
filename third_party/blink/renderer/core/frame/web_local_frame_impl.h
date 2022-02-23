@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
@@ -61,10 +62,10 @@
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -73,7 +74,6 @@ struct ContextMenuData;
 class FindInPage;
 class HTMLFencedFrameElement;
 class HTMLPortalElement;
-class IntSize;
 class LocalFrameClientImpl;
 class ResourceError;
 class ScrollableArea;
@@ -133,6 +133,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const base::UnguessableToken& embedding_token) override;
   const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
       const override;
+  bool IsInFencedFrameTree() const override;
   void SendPings(const WebURL& destination_url) override;
   void StartReload(WebFrameLoadType) override;
   void ClearActiveFindMatchForTesting() override;
@@ -150,8 +151,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       int32_t world_id,
       const WebScriptSource&,
       BackForwardCacheAware back_forward_cache_aware) override;
-  WARN_UNUSED_RESULT v8::Local<v8::Value>
-  ExecuteScriptInIsolatedWorldAndReturnValue(
+  [[nodiscard]] v8::Local<v8::Value> ExecuteScriptInIsolatedWorldAndReturnValue(
       int32_t world_id,
       const WebScriptSource&,
       BackForwardCacheAware back_forward_cache_aware) override;
@@ -214,7 +214,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   void TextSelectionChanged(const WebString& selection_text,
                             uint32_t offset,
                             const gfx::Range& range) override;
-  bool SelectWordAroundCaret() override;
+  bool SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
+                         bool should_show_handle,
+                         bool should_show_context_menu);
+  EphemeralRange GetWordSelectionRangeAroundCaret() const;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
                    HandleVisibilityBehavior,
@@ -283,8 +286,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
   void DeprecatedStopLoading() override;
-  gfx::Vector2dF GetScrollOffset() const override;
-  void SetScrollOffset(const gfx::Vector2dF&) override;
+  gfx::PointF GetScrollOffset() const override;
+  void SetScrollOffset(const gfx::PointF&) override;
   gfx::Size DocumentSize() const override;
   bool HasVisibleContent() const override;
   gfx::Rect VisibleContentRect() const override;
@@ -293,6 +296,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebPlugin* GetPluginToPrint(const WebNode& constrain_to_node) override;
   uint32_t PrintBegin(const WebPrintParams&,
                       const WebNode& constrain_to_node) override;
+  bool WillPrintSoon() override;
   float GetPrintPageShrink(uint32_t page) override;
   float PrintPage(uint32_t page_to_print, cc::PaintCanvas*) override;
   void PrintEnd() override;
@@ -325,11 +329,13 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool HasTransientUserActivation() override;
   bool ConsumeTransientUserActivation(UserActivationUpdateSource) override;
   bool LastActivationWasRestricted() const override;
+#if BUILDFLAG(IS_WIN)
+  WebFontFamilyNames GetWebFontFamilyNames() const override;
+#endif
   void SetTargetToCurrentHistoryItem(const WebString& target) override;
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;
   const WebHistoryItem& GetCurrentHistoryItem() const override;
-  bool ServiceWorkerSubresourceFilterEnabled() override;
   void SetLocalStorageArea(
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           local_storage_area) override;
@@ -420,11 +426,11 @@ class CORE_EXPORT WebLocalFrameImpl final
       HTMLFencedFrameElement*,
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>);
 
-  void DidChangeContentsSize(const IntSize&);
+  void DidChangeContentsSize(const gfx::Size&);
 
   bool HasDevToolsOverlays() const;
   void UpdateDevToolsOverlaysPrePaint();
-  void PaintDevToolsOverlays(GraphicsContext&);  // For CompositeAfterPaint.
+  void PaintDevToolsOverlays(GraphicsContext&);
 
   void CreateFrameView();
 
@@ -463,6 +469,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void DidFailLoad(const ResourceError&, WebHistoryCommitType);
   void DidFinish();
+  void DidFinishLoadForPrinting();
 
   void SetClient(WebLocalFrameClient* client) { client_ = client; }
 

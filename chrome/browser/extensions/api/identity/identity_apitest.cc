@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -175,7 +176,7 @@ class AsyncFunctionRunner {
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetList();
+    const auto& result_list = function->GetResultList()->GetListDeprecated();
     EXPECT_EQ(2ul, result_list.size());
 
     *first_result = result_list[0].Clone();
@@ -284,9 +285,9 @@ class TestOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
 
  private:
   ResultType result_;
-  const std::set<std::string>* requested_scopes_;
+  raw_ptr<const std::set<std::string>> requested_scopes_;
   std::set<std::string> granted_scopes_;
-  OAuth2MintTokenFlow::Delegate* delegate_;
+  raw_ptr<OAuth2MintTokenFlow::Delegate> delegate_;
 };
 
 // Waits for a specific GURL to generate a NOTIFICATION_LOAD_STOP event and
@@ -332,7 +333,7 @@ class WaitForGURLAndCloseWindow : public content::WindowedNotificationObserver {
 
  private:
   GURL url_;
-  content::WebContents* embedder_web_contents_;
+  raw_ptr<content::WebContents> embedder_web_contents_;
 };
 
 }  // namespace
@@ -632,7 +633,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!callback_arguments)
       return GenerateFailureResult(gaia_ids, absl::nullopt) << "NULL result";
     base::Value::ConstListView callback_arguments_list =
-        callback_arguments->GetList();
+        callback_arguments->GetListDeprecated();
 
     if (callback_arguments_list.size() != 1u) {
       return GenerateFailureResult(gaia_ids, absl::nullopt)
@@ -643,7 +644,8 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     if (!callback_arguments_list[0].is_list())
       GenerateFailureResult(gaia_ids, absl::nullopt)
           << "Result was not an array";
-    base::Value::ConstListView results = callback_arguments_list[0].GetList();
+    base::Value::ConstListView results =
+        callback_arguments_list[0].GetListDeprecated();
 
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
@@ -997,7 +999,7 @@ class GetAuthTokenFunctionTest
         << "Unexpected error: " << function->GetError();
     EXPECT_NE(nullptr, function->GetResultList());
 
-    const auto& result_list = function->GetResultList()->GetList();
+    const auto& result_list = function->GetResultList()->GetListDeprecated();
     EXPECT_EQ(2ul, result_list.size());
 
     const auto& access_token_value = result_list[0];
@@ -1006,7 +1008,7 @@ class GetAuthTokenFunctionTest
     EXPECT_TRUE(granted_scopes_value.is_list());
 
     std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetList()) {
+    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
       EXPECT_TRUE(scope.is_string());
       scopes.insert(scope.GetString());
     }
@@ -1032,7 +1034,7 @@ class GetAuthTokenFunctionTest
     EXPECT_TRUE(granted_scopes_value.is_list());
 
     std::set<std::string> scopes;
-    for (const auto& scope : granted_scopes_value.GetList()) {
+    for (const auto& scope : granted_scopes_value.GetListDeprecated()) {
       EXPECT_TRUE(scope.is_string());
       scopes.insert(scope.GetString());
     }
@@ -1592,7 +1594,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, InteractiveApprovalSuccess) {
       1);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Test was originally written for http://crbug.com/753014 and subsequently
 // modified to use the remote consent flow.
 //
@@ -1624,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName,
       IdentityGetAuthTokenError::State::kRemoteConsentPageLoadFailure, 1);
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoninteractiveQueue) {
   SignIn("primary@example.com");
@@ -3400,7 +3402,7 @@ class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
   bool RunClearAllCachedAuthTokensFunction() {
     auto function =
         base::MakeRefCounted<IdentityClearAllCachedAuthTokensFunction>();
-    function->set_extension(extension_);
+    function->set_extension(extension_.get());
     return utils::RunFunction(function.get(), "[]", browser(),
                               api_test_utils::NONE);
   }
@@ -3411,7 +3413,7 @@ class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,

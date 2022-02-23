@@ -16,10 +16,10 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/key.h"
 
 namespace ash {
+
+class Key;
 
 // Controller for the active directory login screen.
 class ActiveDirectoryLoginScreen

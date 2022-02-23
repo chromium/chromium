@@ -17,8 +17,6 @@ extern const base::Feature kExpectCTReporting;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kNetworkErrorLogging;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kNetworkService;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kReporting;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kThrottleDelayable;
@@ -27,17 +25,15 @@ extern const base::Feature kDelayRequestsOnMultiplexedConnections;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCORBProtectionSniffing;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kProactivelyThrottleLowPriorityRequests;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginEmbedderPolicyCredentialless;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginOpenerPolicy;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginOpenerPolicyByDefault;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kCoopSameOriginAllowPopupsPlusCoep;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSplitAuthCacheByNetworkIsolationKey;
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -49,6 +45,8 @@ extern const base::FeatureParam<std::string>
     kDnsOverHttpsUpgradeDisabledProvidersParam;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kDisableKeepaliveFetch;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kOpaqueResponseBlockingV01;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kTrustTokens;
@@ -72,10 +70,10 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kAcceptCHFrame;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kSCTAuditingRetryAndPersistReports;
+extern const base::Feature kSCTAuditingRetryReports;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kLoaderDataPipeTuningFeature;
+extern const base::Feature kSCTAuditingPersistReports;
 
 enum class DataPipeAllocationSize {
   kDefaultSizeOnly,
@@ -88,9 +86,6 @@ extern uint32_t GetDataPipeDefaultAllocationSize(
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kRecordRadioWakeupTrigger;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCheckCacheForQueuedRequests;
@@ -110,7 +105,16 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kURLLoaderSyncClient;
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kClientHintDeprecationIssue;
+extern const base::Feature kOptimizeUpdateLoadInfo;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kCombineResponseBody;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kFasterSetCookie;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kBatchSimpleURLLoader;
 
 }  // namespace features
 }  // namespace network

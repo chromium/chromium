@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -101,7 +102,7 @@ class MenuScrollButton : public View {
     // The background.
     gfx::Rect item_bounds(0, 0, width(), height());
     ui::NativeTheme::ExtraParams extra;
-    GetNativeTheme()->Paint(canvas->sk_canvas(),
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kMenuItemBackground,
                             ui::NativeTheme::kNormal, item_bounds, extra);
 
@@ -134,7 +135,7 @@ class MenuScrollButton : public View {
 
  private:
   // SubmenuView we were created for.
-  SubmenuView* host_;
+  raw_ptr<SubmenuView> host_;
 
   // Direction of the button.
   bool is_up_;
@@ -212,7 +213,7 @@ class MenuScrollViewContainer::MenuScrollView : public View {
   const View* GetContents() const { return children().front(); }
 
  private:
-  MenuScrollViewContainer* owner_;
+  raw_ptr<MenuScrollViewContainer> owner_;
 };
 
 BEGIN_METADATA(MenuScrollViewContainer, MenuScrollView, View)
@@ -287,7 +288,7 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
-  GetNativeTheme()->Paint(canvas->sk_canvas(),
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupBackground,
                           ui::NativeTheme::kNormal, bounds, extra);
 }
@@ -300,7 +301,7 @@ void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // allow VoiceOver to recognize this as a menu and to read aloud the total
   // number of items inside it, we ignore the MenuScrollViewContainer (which
   // holds the menu itself: the SubmenuView).
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   node_data->role = ax::mojom::Role::kNone;
 #else
   node_data->role = ax::mojom::Role::kMenuBar;
@@ -391,14 +392,17 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   const MenuConfig& menu_config = MenuConfig::instance();
   const int border_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
+  ui::ColorId id = ui::kColorMenuBackground;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  id = ui::kColorAshSystemUIMenuBackground;
+#endif
   const SkColor color =
-      GetWidget() ? GetColorProvider()->GetColor(ui::kColorMenuBackground)
-                  : gfx::kPlaceholderColor;
+      GetWidget() ? GetColorProvider()->GetColor(id) : gfx::kPlaceholderColor;
   auto bubble_border = std::make_unique<BubbleBorder>(
       arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()
           ->GetMenuController()
-          ->use_touchable_layout() ||
+          ->use_ash_system_ui_layout() ||
       border_radius > 0) {
     bubble_border->SetCornerRadius(border_radius);
     bubble_border->set_md_shadow_elevation(

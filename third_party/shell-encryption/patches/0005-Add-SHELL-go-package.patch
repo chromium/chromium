@@ -1,0 +1,13 @@
+diff --git a/serialization.proto b/serialization.proto
+index b7fefcf191893..57c75a9027e6b 100644
+--- a/serialization.proto
++++ b/serialization.proto
+@@ -19,6 +19,8 @@ option optimize_for = LITE_RUNTIME;
+ 
+ package rlwe;
+ 
++option go_package = "github.com/google/shell-encryption";
++
+ // NTT Polynomial
+ message SerializedNttPolynomial {
+   // Coefficients of the polynomial

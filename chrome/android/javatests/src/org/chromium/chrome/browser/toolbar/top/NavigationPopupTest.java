@@ -63,7 +63,7 @@ public class NavigationPopupTest {
         public TestNavigationEntry(int index, GURL url, GURL virtualUrl, GURL originalUrl,
                 String title, Bitmap favicon, int transition, long timestamp) {
             super(index, url, virtualUrl, originalUrl, GURL.emptyGURL(), title, favicon, transition,
-                    timestamp);
+                    timestamp, /* isInitialEntry=*/false);
         }
     }
 

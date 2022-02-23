@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_metrics.h"
 
 namespace {
@@ -85,12 +86,15 @@ void VideoCaptureSystemImpl::GetDeviceInfosAsync(
   }
 }
 
-std::unique_ptr<VideoCaptureDevice> VideoCaptureSystemImpl::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const VideoCaptureDeviceInfo* device_info = LookupDeviceInfoFromId(device_id);
-  if (!device_info)
-    return nullptr;
+  if (!device_info) {
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  }
   return factory_->CreateDevice(device_info->descriptor);
 }
 

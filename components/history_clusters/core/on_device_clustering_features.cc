@@ -17,6 +17,13 @@ namespace features {
 const base::Feature kOnDeviceClustering{"HistoryClustersOnDeviceClustering",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kUseEngagementScoreCache{"JourneysUseEngagementScoreCache",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSplitClusteringTasksToSmallerBatches{
+    "JourneysSplitClusteringTasksToSmallerBatches",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 base::TimeDelta ClusterNavigationTimeCutoff() {
   return base::Minutes(GetFieldTrialParamByFeatureAsInt(
       kOnDeviceClustering, "navigation_time_cutoff_minutes", 60));
@@ -73,6 +80,23 @@ bool ShouldDedupeSimilarVisits() {
                                            "dedupe_similar_visits", true);
 }
 
+bool ShouldFilterNoisyClusters() {
+  return GetFieldTrialParamByFeatureAsBool(kOnDeviceClustering,
+                                           "filter_noisy_clusters", true);
+}
+
+float NoisyClusterVisitEngagementThreshold() {
+  float threshold = GetFieldTrialParamByFeatureAsDouble(
+      kOnDeviceClustering, "noisy_cluster_visit_engagement_threshold", 15.0);
+  return threshold;
+}
+
+size_t NumberInterestingVisitsFilterThreshold() {
+  int threshold = GetFieldTrialParamByFeatureAsInt(
+      kOnDeviceClustering, "num_interesting_visits_filter_threshold", 1);
+  return threshold;
+}
+
 float VisitDurationRankingWeight() {
   float weight = GetFieldTrialParamByFeatureAsDouble(
       kOnDeviceClustering, "visit_duration_ranking_weight", 1.0);
@@ -95,6 +119,44 @@ float SearchResultsPageRankingWeight() {
   float weight = GetFieldTrialParamByFeatureAsDouble(
       kOnDeviceClustering, "search_results_page_ranking_weight", 2.0);
   return std::max(0.f, weight);
+}
+
+float HasPageTitleRankingWeight() {
+  float weight = GetFieldTrialParamByFeatureAsDouble(
+      kOnDeviceClustering, "has_page_title_ranking_weight", 2.0);
+  return std::max(0.f, weight);
+}
+
+bool ContentClusterOnIntersectionSimilarity() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "use_content_clustering_intersection_similarity",
+      true);
+}
+
+int ClusterIntersectionThreshold() {
+  return GetFieldTrialParamByFeatureAsInt(
+      kOnDeviceClustering, "content_clustering_intersection_threshold", 2);
+}
+
+bool ShouldIncludeCategoriesInKeywords() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "include_categories_in_keywords", true);
+}
+
+bool ShouldExcludeKeywordsFromNoisyVisits() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "exclude_keywords_from_noisy_visits", false);
+}
+
+size_t GetClusteringTasksBatchSize() {
+  return GetFieldTrialParamByFeatureAsInt(
+      features::kSplitClusteringTasksToSmallerBatches,
+      "clustering_task_batch_size", 250);
+}
+
+bool ShouldSplitClustersAtSearchVisits() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "split_clusters_at_search_visits", true);
 }
 
 }  // namespace features

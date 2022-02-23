@@ -92,7 +92,8 @@ void WebComponent::StartComponent() {
   frame_->SetContentAreaSettings(std::move(settings));
 
   // Observe the Frame for failures, via navigation state change events.
-  frame_->SetNavigationEventListener(navigation_listener_binding_.NewBinding());
+  frame_->SetNavigationEventListener2(navigation_listener_binding_.NewBinding(),
+                                      /*flags=*/{});
 
   if (startup_context()->has_outgoing_directory_request()) {
     // Publish outgoing services and start serving component's outgoing

@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/bits.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -217,7 +217,7 @@ class GPU_EXPORT MappedMemoryManager {
 
   // size a chunk is rounded up to.
   uint32_t chunk_size_multiple_;
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
   MemoryChunkVector chunks_;
   size_t allocated_memory_;
   size_t max_free_bytes_;

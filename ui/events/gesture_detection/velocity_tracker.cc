@@ -7,9 +7,11 @@
 #include <stddef.h>
 
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
 using base::TimeTicks;

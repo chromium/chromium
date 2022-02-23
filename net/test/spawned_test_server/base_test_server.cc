@@ -54,33 +54,6 @@ std::string GetHostname(BaseTestServer::Type type,
   return "127.0.0.1";
 }
 
-std::string GetClientCertType(SSLClientCertType type) {
-  switch (type) {
-    case CLIENT_CERT_RSA_SIGN:
-      return "rsa_sign";
-    case CLIENT_CERT_ECDSA_SIGN:
-      return "ecdsa_sign";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-base::Value GetTLSIntoleranceType(
-    BaseTestServer::SSLOptions::TLSIntoleranceType type) {
-  switch (type) {
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_ALERT:
-      return base::Value("alert");
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_CLOSE:
-      return base::Value("close");
-    case BaseTestServer::SSLOptions::TLS_INTOLERANCE_RESET:
-      return base::Value("reset");
-    default:
-      NOTREACHED();
-      return base::Value("");
-  }
-}
-
 bool GetLocalCertificatesDir(const base::FilePath& certificates_dir,
                              base::FilePath* local_certificates_dir) {
   if (certificates_dir.IsAbsolute()) {
@@ -175,8 +148,6 @@ std::string BaseTestServer::GetScheme() const {
   switch (type_) {
     case TYPE_HTTP:
       return "http";
-    case TYPE_HTTPS:
-      return "https";
     case TYPE_WS:
       return "ws";
     case TYPE_WSS:
@@ -214,7 +185,7 @@ bool BaseTestServer::GetAddressList(AddressList* address_list) const {
     return false;
   }
 
-  *address_list = request->GetAddressResults().value();
+  *address_list = *request->GetAddressResults();
   return true;
 }
 
@@ -459,39 +430,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
     if (ssl_client_certs.size()) {
       arguments->SetKey("ssl-client-ca",
                         base::Value(std::move(ssl_client_certs)));
-    }
-
-    std::vector<base::Value> client_cert_types;
-    for (size_t i = 0; i < ssl_options_.client_cert_types.size(); i++) {
-      client_cert_types.emplace_back(
-          GetClientCertType(ssl_options_.client_cert_types[i]));
-    }
-    if (client_cert_types.size()) {
-      arguments->SetKey("ssl-client-cert-type",
-                        base::Value(std::move(client_cert_types)));
-    }
-  }
-
-  if (type_ == TYPE_HTTPS) {
-    arguments->SetKey("https", base::Value());
-
-    if (ssl_options_.tls_intolerant != SSLOptions::TLS_INTOLERANT_NONE) {
-      arguments->SetIntKey("tls-intolerant", ssl_options_.tls_intolerant);
-      arguments->SetKey(
-          "tls-intolerance-type",
-          GetTLSIntoleranceType(ssl_options_.tls_intolerance_type));
-    }
-    if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
-      arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
-    }
-    if (ssl_options_.alert_after_handshake)
-      arguments->SetKey("alert-after-handshake", base::Value());
-
-    if (ssl_options_.simulate_tls13_downgrade) {
-      arguments->SetKey("simulate-tls13-downgrade", base::Value());
-    }
-    if (ssl_options_.simulate_tls12_downgrade) {
-      arguments->SetKey("simulate-tls12-downgrade", base::Value());
     }
   }
 

@@ -7,7 +7,7 @@
 #include <inttypes.h>
 #include <string>
 
-//#include "base/hash/md5.h"
+#include "base/hash/md5.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"

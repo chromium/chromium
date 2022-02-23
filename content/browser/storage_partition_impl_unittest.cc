@@ -6,37 +6,50 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/partition.mojom.h"
+#include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/storage_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_impl.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +57,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -71,6 +85,8 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/leveldatabase/env_chromium.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "storage/browser/file_system/async_file_util.h"
@@ -81,10 +97,10 @@
 #include "url/origin.h"
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using net::CanonicalCookie;
 using CookieDeletionFilter = network::mojom::CookieDeletionFilter;
@@ -111,7 +127,6 @@ const storage::QuotaClientType kClientFile =
     storage::QuotaClientType::kFileSystem;
 
 const uint32_t kAllQuotaRemoveMask =
-    StoragePartition::REMOVE_DATA_MASK_APPCACHE |
     StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
     StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
     StoragePartition::REMOVE_DATA_MASK_WEBSQL;
@@ -167,7 +182,7 @@ class RemoveCookieTester {
     get_cookie_success_ = false;
     storage_partition_->GetCookieManagerForBrowserProcess()->GetCookieList(
         origin.GetURL(), net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
                        base::Unretained(this)));
     await_completion_.BlockUntilNotified();
@@ -209,7 +224,7 @@ class RemoveCookieTester {
 
   bool get_cookie_success_;
   AwaitCompletionHelper await_completion_;
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
 };
 
 class RemoveInterestGroupTester {
@@ -226,10 +241,12 @@ class RemoveInterestGroupTester {
   bool ContainsInterestGroupOwner(const url::Origin& origin) {
     get_interest_group_success_ = false;
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    storage_partition_->GetInterestGroupManager()->GetInterestGroupsForOwner(
-        origin,
-        base::BindOnce(&RemoveInterestGroupTester::GetInterestGroupsCallback,
-                       base::Unretained(this)));
+    static_cast<InterestGroupManagerImpl*>(
+        storage_partition_->GetInterestGroupManager())
+        ->GetInterestGroupsForOwner(
+            origin, base::BindOnce(
+                        &RemoveInterestGroupTester::GetInterestGroupsCallback,
+                        base::Unretained(this)));
     await_completion_.BlockUntilNotified();
     return get_interest_group_success_;
   }
@@ -240,8 +257,9 @@ class RemoveInterestGroupTester {
     group.owner = origin;
     group.name = "Name";
     group.expiry = base::Time::Now() + base::Days(30);
-    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
-        group, origin.GetURL());
+    static_cast<InterestGroupManagerImpl*>(
+        storage_partition_->GetInterestGroupManager())
+        ->JoinInterestGroup(group, origin.GetURL());
   }
 
  private:
@@ -252,7 +270,7 @@ class RemoveInterestGroupTester {
 
   bool get_interest_group_success_ = false;
   AwaitCompletionHelper await_completion_;
-  StoragePartitionImpl* storage_partition_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
 class RemoveLocalStorageTester {
@@ -393,9 +411,9 @@ class RemoveLocalStorageTester {
   }
 
   // We don't own these pointers.
-  BrowserTaskEnvironment* const task_environment_;
-  StoragePartition* const storage_partition_;
-  DOMStorageContext* dom_storage_context_;
+  const raw_ptr<BrowserTaskEnvironment> task_environment_;
+  const raw_ptr<StoragePartition> storage_partition_;
+  raw_ptr<DOMStorageContext> dom_storage_context_;
 
   std::vector<content::StorageUsageInfo> infos_;
 
@@ -416,7 +434,7 @@ class RemoveCodeCacheTester {
     entry_exists_ = false;
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::ContainsEntryOnThread,
                        base::Unretained(this), cache, url, origin_lock,
                        loop.QuitClosure()));
@@ -441,7 +459,7 @@ class RemoveCodeCacheTester {
                 const std::string& data) {
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::AddEntryOnThread,
                        base::Unretained(this), cache, url, origin_lock, data,
                        loop.QuitClosure()));
@@ -465,7 +483,7 @@ class RemoveCodeCacheTester {
                       base::Time time) {
     base::RunLoop loop;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_, FROM_HERE,
+        code_cache_context_.get(), FROM_HERE,
         base::BindOnce(&RemoveCodeCacheTester::SetLastUseTimeOnThread,
                        base::Unretained(this), cache, url, origin_lock, time,
                        loop.QuitClosure()));
@@ -507,7 +525,7 @@ class RemoveCodeCacheTester {
 
   bool entry_exists_;
   AwaitCompletionHelper await_completion_;
-  GeneratedCodeCacheContext* code_cache_context_;
+  raw_ptr<GeneratedCodeCacheContext> code_cache_context_;
   std::string received_data_;
 };
 
@@ -698,7 +716,7 @@ class RemovePluginPrivateDataTester {
   }
 
   // We don't own this pointer.
-  storage::FileSystemContext* filesystem_context_;
+  raw_ptr<storage::FileSystemContext> filesystem_context_;
 
   // Keep track of the URL for the ClearKey file so that it can be written to
   // or deleted.
@@ -722,6 +740,21 @@ class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
   base::ScopedObservation<StoragePartition,
                           StoragePartition::DataRemovalObserver>
       observation_{this};
+};
+
+class MockAggregationService : public AggregationServiceImpl {
+ public:
+  explicit MockAggregationService(StoragePartitionImpl* partition)
+      : AggregationServiceImpl(/*run_in_memory=*/true,
+                               /*user_data_directory=*/base::FilePath(),
+                               partition) {}
+
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               base::OnceClosure done),
+              (override));
 };
 
 bool IsWebSafeSchemeForTest(const std::string& scheme) {
@@ -882,11 +915,18 @@ class StoragePartitionImplTest : public testing::Test {
   StoragePartitionImplTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(new TestBrowserContext()) {
+    // Prevent test flakiness as a result of randomized responses in the
+    // Attribution Reporting API.
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kConversionsDebugMode);
+
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     AttributionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures({blink::features::kInterestGroupStorage},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {blink::features::kInterestGroupStorage,
+         features::kPrivacySandboxAggregationService},
+        {});
   }
 
   StoragePartitionImplTest(const StoragePartitionImplTest&) = delete;
@@ -901,9 +941,7 @@ class StoragePartitionImplTest : public testing::Test {
       mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<storage::MockQuotaClient>(
-              quota_manager_->proxy(),
-              base::span<const storage::MockStorageKeyData>(),
-              storage::QuotaClientType::kFileSystem),
+              quota_manager_->proxy(), storage::QuotaClientType::kFileSystem),
           quota_client.InitWithNewPipeAndPassReceiver());
       quota_manager_->proxy()->RegisterClient(
           std::move(quota_client), storage::QuotaClientType::kFileSystem,
@@ -920,6 +958,7 @@ class StoragePartitionImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedCommandLine command_line_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -993,16 +1032,12 @@ TEST_F(StoragePartitionImplTest, QuotaClientTypesGeneration) {
                   StoragePartition::REMOVE_DATA_MASK_WEBSQL),
               testing::ElementsAre(storage::QuotaClientType::kDatabase));
   EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
-                  StoragePartition::REMOVE_DATA_MASK_APPCACHE),
-              testing::ElementsAre(storage::QuotaClientType::kAppcache));
-  EXPECT_THAT(StoragePartitionImpl::GenerateQuotaClientTypes(
                   StoragePartition::REMOVE_DATA_MASK_INDEXEDDB),
               testing::ElementsAre(storage::QuotaClientType::kIndexedDatabase));
   EXPECT_THAT(
       StoragePartitionImpl::GenerateQuotaClientTypes(kAllQuotaRemoveMask),
       testing::UnorderedElementsAre(storage::QuotaClientType::kFileSystem,
                                     storage::QuotaClientType::kDatabase,
-                                    storage::QuotaClientType::kAppcache,
                                     storage::QuotaClientType::kIndexedDatabase,
                                     storage::QuotaClientType::kNativeIO));
 }
@@ -1761,9 +1796,16 @@ TEST_F(StoragePartitionImplTest, WebUICodeCacheDisabled) {
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
-  EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
-                ->generated_webui_js_code_cache(),
-            nullptr);
+  base::RunLoop run_loop;
+  auto* context = partition->GetGeneratedCodeCacheContext();
+  GeneratedCodeCacheContext::RunOrPostTask(
+      context, FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
+                      ->generated_webui_js_code_cache(),
+                  nullptr);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
@@ -1938,8 +1980,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
 
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0,
-                       source.impression_origin().GetURL(), now, now,
-                       run_loop.QuitClosure());
+                       source.common_info().impression_origin().GetURL(), now,
+                       now, run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(
@@ -1966,8 +2008,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   // Arbitrary non-conversions mask.
   base::RunLoop run_loop;
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_COOKIES, 0,
-                       source.impression_origin().GetURL(), now, now,
-                       run_loop.QuitClosure());
+                       source.common_info().impression_origin().GetURL(), now,
+                       now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
       GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
@@ -2025,10 +2067,10 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                                           .SetExpiry(base::Days(2))
                                           .Build());
     attribution_manager->HandleTrigger(
-        StorableTrigger(123, net::SchemefulSite(conv), reporter,
-                        /*event_source_trigger_data=*/0,
-                        /*priority=*/0,
-                        /*dedup_key=*/absl::nullopt));
+        TriggerBuilder()
+            .SetConversionDestination(net::SchemefulSite(conv))
+            .SetReportingOrigin(reporter)
+            .Build());
   }
 
   EXPECT_EQ(5u, GetAttributionsToReportForTesting(attribution_manager,
@@ -2054,7 +2096,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
   const uint32_t kTestClearMask =
-      content::StoragePartition::REMOVE_DATA_MASK_APPCACHE |
+      content::StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
       content::StoragePartition::REMOVE_DATA_MASK_WEBSQL;
   const uint32_t kTestQuotaClearMask = 0;
   const auto kTestOrigin = GURL("https://example.com");
@@ -2136,7 +2178,7 @@ class MockLocalTrustTokenFulfiller : public mojom::LocalTrustTokenFulfiller {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
   auto expected_answer = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
   expected_answer->status =
@@ -2204,9 +2246,9 @@ TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
     EXPECT_EQ(num_binds_attempted, 1);
   }
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
   // Construct a mock fulfiller that doesn't reply to issuance requests it
   // receives...
@@ -2244,10 +2286,10 @@ TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
   EXPECT_EQ(received_answer->status,
             network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, binding can be explicitly rejected by the Android-side
   // implementation code: to ensure we can handle the rejection, manually force
   // the bind to fail.
@@ -2266,7 +2308,7 @@ TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
       base::BindRepeating([](mojo::ScopedMessagePipeHandle handle) {
         mojo::Close(std::move(handle));
       }));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       browser_context()->GetDefaultStoragePartition());
@@ -2288,6 +2330,107 @@ TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
   ASSERT_TRUE(received_answer);
   EXPECT_EQ(received_answer->status,
             network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound);
+}
+
+TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  auto aggregation_service =
+      std::make_unique<MockAggregationService>(partition);
+  auto* aggregation_service_ptr = aggregation_service.get();
+  partition->OverrideAggregationServiceForTesting(
+      std::move(aggregation_service));
+
+  const uint32_t kTestClearMask =
+      StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
+  const uint32_t kTestQuotaClearMask =
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL;
+  const auto kTestOrigin = GURL("https://example.com");
+  const auto kBeginTime = base::Time() + base::Hours(1);
+  const auto kEndTime = base::Time() + base::Hours(2);
+  const auto invoke_callback =
+      [](base::Time delete_begin, base::Time delete_end,
+         base::OnceClosure done) { std::move(done).Run(); };
+
+  // Verify that each of the StoragePartition interfaces for clearing origin
+  // based data calls aggregation service appropriately.
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(base::Time(), base::Time::Max(), testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  base::RunLoop run_loop;
+  partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
+                                kTestOrigin, run_loop.QuitClosure());
+  run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask, kTestOrigin,
+                       kBeginTime, kEndTime, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(
+      kTestClearMask, kTestQuotaClearMask,
+      base::BindLambdaForTesting([&](const url::Origin& origin,
+                                     storage::SpecialStoragePolicy* policy) {
+        return origin == url::Origin::Create(kTestOrigin);
+      }),
+      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
+      kBeginTime, kEndTime, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+
+  EXPECT_CALL(*aggregation_service_ptr,
+              ClearData(kBeginTime, kEndTime, testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  partition->ClearData(kTestClearMask, kTestQuotaClearMask, GURL(), kBeginTime,
+                       kEndTime, base::DoNothing());
+}
+
+// https://crbug.com/1221382
+// Make sure StorageServiceImpl can be stored in a SequenceLocalStorageSlot and
+// that it can be safely destroyed when the thread terminates.
+TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
+  mojo::Remote<storage::mojom::StorageService> remote_service;
+  mojo::Remote<storage::mojom::Partition> persistent_partition;
+  mojo::Remote<storage::mojom::LocalStorageControl> storage_control;
+  // These remotes must outlive the thread, otherwise PartitionImpl cleanup will
+  // not happen in the ~StorageServiceImpl but on the mojo error handler.
+  {
+    // When this variable gets out of scope the IO thread will be destroyed
+    // along with all objects stored in a SequenceLocalStorageSlot.
+    content::BrowserTaskEnvironment task_environment(
+        content::BrowserTaskEnvironment::REAL_IO_THREAD);
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
+              DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+              static base::SequenceLocalStorageSlot<
+                  std::unique_ptr<storage::StorageServiceImpl>>
+                  service_storage_slot;
+              service_storage_slot.GetOrCreateValue() =
+                  std::make_unique<storage::StorageServiceImpl>(
+                      std::move(receiver),
+                      /*io_task_runner=*/nullptr);
+            },
+            remote_service.BindNewPipeAndPassReceiver()));
+
+    // Make sure PartitionImpl gets to destroy a LocalStorageImpl object.
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    remote_service->BindPartition(
+        temp_dir.GetPath(), persistent_partition.BindNewPipeAndPassReceiver());
+    persistent_partition->BindLocalStorageControl(
+        storage_control.BindNewPipeAndPassReceiver());
+    storage_control.FlushForTesting();
+  }
 }
 
 }  // namespace content

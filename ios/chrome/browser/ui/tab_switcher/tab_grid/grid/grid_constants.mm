@@ -90,6 +90,7 @@ const CGFloat kGridCellSelectionRingTintWidth = 5.0f;
 
 const CGFloat kGridCellPriceDropTopSpacing = 10.0f;
 const CGFloat kGridCellPriceDropLeadingSpacing = 10.0f;
+const CGFloat kGridCellPriceDropTrailingSpacing = 10.0f;
 
 const CGFloat kPlusSignImageTrailingCenterDistance = 55.5;
 // The threshold is set so that the hide transition starts at the moment the

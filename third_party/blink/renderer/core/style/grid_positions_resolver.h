@@ -29,7 +29,8 @@ class NamedLineCollection {
                       const String& named_line,
                       GridTrackSizingDirection,
                       wtf_size_t last_line,
-                      wtf_size_t auto_repeat_tracks_count);
+                      wtf_size_t auto_repeat_tracks_count,
+                      bool is_parent_grid_container = false);
 
   bool HasNamedLines();
   wtf_size_t FirstPosition();
@@ -43,6 +44,7 @@ class NamedLineCollection {
   const Vector<wtf_size_t>* auto_repeat_named_lines_indexes_ = nullptr;
   const Vector<wtf_size_t>* implicit_named_lines_indexes_ = nullptr;
 
+  bool is_standalone_grid_;
   wtf_size_t insertion_point_;
   wtf_size_t last_line_;
   wtf_size_t auto_repeat_total_tracks_;
@@ -73,7 +75,8 @@ class GridPositionsResolver {
       const ComputedStyle&,
       const ComputedStyle&,
       GridTrackSizingDirection,
-      wtf_size_t auto_repeat_tracks_count);
+      wtf_size_t auto_repeat_tracks_count,
+      bool is_parent_grid_container = false);
 };
 
 }  // namespace blink

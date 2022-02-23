@@ -15,7 +15,6 @@ namespace blink {
 class DisplayItemClient;
 class GraphicsContext;
 class LayoutObject;
-struct PhysicalOffset;
 
 class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
@@ -23,8 +22,7 @@ class CORE_EXPORT ClipPathClipper {
  public:
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
-                                       const DisplayItemClient&,
-                                       const PhysicalOffset& paint_offset);
+                                       const DisplayItemClient&);
 
   // Returns the reference box used by CSS clip-path. For HTML objects,
   // this is the border box of the element. For SVG objects this is the

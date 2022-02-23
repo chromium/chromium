@@ -1,0 +1,4 @@
+has_popup.accessibilityAttributeNames.has(AXHasPopup)='yes'
+has_popup.accessibilityAttributeValue(AXHasPopup)=1
+not_applicable.accessibilityAttributeNames.has(AXHasPopup)='no'
+not_applicable.accessibilityAttributeValue(AXHasPopup)=0

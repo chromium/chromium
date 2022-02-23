@@ -40,6 +40,8 @@ class ProtocolUtilsTest : public testing::Test {
     client_context_proto_.set_is_direct_action(false);
     client_context_proto_.set_accounts_matching_status(
         ClientContextProto::UNKNOWN);
+    client_context_proto_.set_country("US");
+    client_context_proto_.set_locale("en-US");
   }
   ~ProtocolUtilsTest() override {}
 
@@ -156,6 +158,31 @@ TEST_F(ProtocolUtilsTest, CreateGetScriptsRequest) {
   EXPECT_THAT(request.script_parameters(),
               UnorderedElementsAreArray(parameters.ToProto()));
   EXPECT_EQ("http://example.com/", request.url());
+}
+
+TEST_F(ProtocolUtilsTest, CreateCapabilitiesByHashRequest) {
+  ScriptParameters parameters = {
+      {{"key_a", "value_a"}, {"INTENT", "DUMMY_INTENT"}}};
+
+  GetCapabilitiesByHashPrefixRequestProto request;
+  EXPECT_TRUE(
+      request.ParseFromString(ProtocolUtils::CreateCapabilitiesByHashRequest(
+          16U, {13ULL, 17ULL}, client_context_proto_, parameters)));
+
+  // Note: We can only send the following approved fields on the client_context:
+  ClientContextProto client_context;
+  client_context.set_locale(client_context_proto_.locale());
+  client_context.set_country(client_context_proto_.country());
+  client_context.mutable_chrome()->set_chrome_version(
+      client_context_proto_.chrome().chrome_version());
+  EXPECT_EQ(client_context, request.client_context());
+
+  EXPECT_EQ(request.hash_prefix_length(), 16U);
+  EXPECT_THAT(request.hash_prefix(), ElementsAre(13ULL, 17ULL));
+  EXPECT_THAT(
+      request.script_parameters(),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>{
+          {"INTENT", "DUMMY_INTENT"}}));
 }
 
 TEST_F(ProtocolUtilsTest, AddScriptIgnoreInvalid) {
@@ -357,7 +384,7 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   ASSERT_THAT(script_parameters, Ne(absl::nullopt));
   EXPECT_THAT((*script_parameters)
                   ->ToProto(
-                      /* only_trigger_script_allowlisted = */ false),
+                      /* only_non_sensitive_allowlisted = */ false),
               ElementsAre(std::make_pair("param_1", "value_1"),
                           std::make_pair("param_2", "value_2")));
 }
@@ -521,6 +548,58 @@ TEST_F(ProtocolUtilsTest, ValidateTriggerConditionsComplexConditions) {
   EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
   *condition.mutable_none_of() = invalid_conditions;
   EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromString) {
+  TellProto tell;
+  tell.set_message("test");
+  std::string bytes;
+  tell.SerializeToString(&bytes);
+
+  ActionProto expected;
+  *expected.mutable_tell() = tell;
+
+  EXPECT_THAT(ProtocolUtils::ParseFromString(11, bytes, nullptr),
+              Optional(expected));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringUnknownAction) {
+  EXPECT_THAT(ProtocolUtils::ParseFromString(0, "ignored", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringUnsupportedActionId) {
+  // This case simulates getting an action id that the client doesn't yet
+  // understand.
+  EXPECT_THAT(ProtocolUtils::ParseFromString(9999, "", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringBadActionId) {
+  EXPECT_THAT(ProtocolUtils::ParseFromString(-1, "", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringCannotParse) {
+  ASSERT_FALSE(ProtocolUtils::ParseFromString(11, "\xff\xff\xff", nullptr));
+}
+
+TEST_F(ProtocolUtilsTest, CreateGetUserDataRequest) {
+  CollectUserDataOptions options;
+  options.request_payer_name = true;
+  options.request_payer_email = true;
+  options.request_phone_number_separately = true;
+  options.request_shipping = true;
+  options.request_payment_method = true;
+
+  GetUserDataRequestProto request;
+  EXPECT_TRUE(request.ParseFromString(
+      ProtocolUtils::CreateGetUserDataRequest(options)));
+  EXPECT_TRUE(request.request_name());
+  EXPECT_TRUE(request.request_email());
+  EXPECT_TRUE(request.request_phone());
+  EXPECT_TRUE(request.request_addresses());
+  EXPECT_TRUE(request.request_payment_methods());
 }
 
 }  // namespace autofill_assistant

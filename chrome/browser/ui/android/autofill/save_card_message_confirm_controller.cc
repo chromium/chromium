@@ -84,13 +84,13 @@ void SaveCardMessageConfirmController::FixDate(
                    IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));
 }
 
-void SaveCardMessageConfirmController::SetLegalMessageLine(
+void SaveCardMessageConfirmController::AddLegalMessageLine(
     const LegalMessageLine& line) {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object)
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillMessageConfirmFlowBridge_setLegalMessageLine(
+  Java_AutofillMessageConfirmFlowBridge_addLegalMessageLine(
       env, java_object,
       base::android::ConvertUTF16ToJavaString(env, line.text()));
   for (const auto& link : line.links()) {
@@ -112,7 +112,7 @@ SaveCardMessageConfirmController::GetOrCreateJavaObject() {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
   return java_object_ = Java_AutofillMessageConfirmFlowBridge_create(
-             env, reinterpret_cast<intptr_t>(delegate_),
+             env, reinterpret_cast<intptr_t>(delegate_.get()),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
 

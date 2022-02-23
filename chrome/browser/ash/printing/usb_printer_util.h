@@ -7,7 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 #define CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_
 
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 
@@ -34,7 +34,7 @@ bool UsbDeviceIsPrinter(const device::mojom::UsbDeviceInfo& device_info);
 //
 // Returns false and logs an error on failure.
 bool UsbDeviceToPrinter(const device::mojom::UsbDeviceInfo& device_info,
-                        chromeos::PrinterDetector::DetectedPrinter* entry);
+                        PrinterDetector::DetectedPrinter* entry);
 
 // Expects |device_ptr| to be linked to a Printer-class USB Device. Queries the
 // printer for its IEEE 1284 Standard Device ID.

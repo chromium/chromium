@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/background_fetch_event_dispatcher.h"
@@ -163,10 +164,10 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       std::map<std::string, std::string> metadata = {});
 
   // Owned by BackgroundFetchContext.
-  BackgroundFetchDataManager* data_manager_;
-  BackgroundFetchRegistrationNotifier* registration_notifier_;
-  BackgroundFetchDelegateProxy* delegate_proxy_;
-  DevToolsBackgroundServicesContextImpl* devtools_context_;
+  raw_ptr<BackgroundFetchDataManager> data_manager_;
+  raw_ptr<BackgroundFetchRegistrationNotifier> registration_notifier_;
+  raw_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
+  raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 
   BackgroundFetchEventDispatcher event_dispatcher_;
 

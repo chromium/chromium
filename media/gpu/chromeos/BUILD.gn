@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(use_v4l2_codec || use_vaapi)
 
@@ -24,6 +25,7 @@ source_set("chromeos") {
 
   deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//media",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
@@ -102,8 +104,10 @@ source_set("common") {
       "decoder_buffer_transcryptor.cc",
       "decoder_buffer_transcryptor.h",
     ]
-    deps +=
-        [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
+    deps += [
+      ":cdm-oemcrypto-proto",
+      "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu",
+    ]
   }
 }
 
@@ -140,6 +144,15 @@ source_set("video_frame_mapper") {
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
   ]
+}
+
+if (is_chromeos_ash) {
+  proto_library("cdm-oemcrypto-proto") {
+    sources = [
+      "//third_party/cros_system_api/dbus/cdm_oemcrypto/secure_buffer.proto",
+    ]
+    proto_out_dir = "media/gpu/chromeos"
+  }
 }
 
 source_set("unit_tests") {

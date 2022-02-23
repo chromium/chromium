@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_impl.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -108,7 +109,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     GrBackendFormat backend_format_;
-    const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+    raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
     absl::optional<SkColor> clear_color_;
   };
 
@@ -120,7 +121,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       ResourceFormat format,
       bool maybe_concurrent_reads,
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-      sk_sp<SkColorSpace> color_space) = 0;
+      sk_sp<SkColorSpace> color_space,
+      bool raw_draw_if_possible) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(
       std::vector<std::unique_ptr<ImageContext>> image_contexts) = 0;

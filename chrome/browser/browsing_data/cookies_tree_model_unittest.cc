@@ -19,7 +19,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mock_settings_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/mock_cache_storage_helper.h"
@@ -290,7 +289,10 @@ class CookiesTreeModelTest : public testing::Test {
       case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
         return node->GetDetailedInfo().shared_worker_info->worker.spec() + ",";
       case CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE:
-        return node->GetDetailedInfo().media_license_info->origin.spec() + ",";
+        return node->GetDetailedInfo()
+                   .media_license_usage_info->origin.GetURL()
+                   .spec() +
+               ",";
       default:
         return std::string();
     }
@@ -1722,8 +1724,8 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
 
   // Check that content settings for different URLs get applied to the
   // correct URL. That is, setting a cookie on https://example2.com
-  // should create a host node for http://example2.com and thus content
-  // settings set on that host node should apply to http://example2.com.
+  // should create a host node for https://example2.com and thus content
+  // settings set on that host node should apply to https://example2.com.
 
   cookies_model.UpdateSearchResults(std::u16string(u"file://"));
   EXPECT_EQ("", GetDisplayedCookies(&cookies_model));
@@ -1735,7 +1737,7 @@ TEST_F(CookiesTreeModelTest, CanonicalizeCookieSource) {
   EXPECT_EQ("J", GetDisplayedCookies(&cookies_model));
   CheckContentSettingsUrlForHostNodes(
       cookies_model.GetRoot(), CookieTreeNode::DetailedInfo::TYPE_ROOT,
-      cookie_settings, GURL("http://example2.com"));
+      cookie_settings, GURL("https://example2.com"));
 
   cookies_model.UpdateSearchResults(std::u16string(u"example3.com"));
   EXPECT_EQ("K", GetDisplayedCookies(&cookies_model));
@@ -1887,9 +1889,9 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
   EXPECT_FALSE(callback);
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
-  profile_->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile_->SetIsSupervisedProfile();
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
 

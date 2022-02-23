@@ -99,7 +99,10 @@ SurroundingText::SurroundingText(const EphemeralRange& range,
       EphemeralRange(Position::FirstPositionInNode(*root_element)
                          .ParentAnchoredEquivalent(),
                      start_position),
-      TextIteratorBehavior::Builder().SetStopsOnFormControls(true).Build());
+      TextIteratorBehavior::Builder()
+          .SetStopsOnFormControls(true)
+          .SetEmitsPunctuationForReplacedElements(true)
+          .Build());
   if (!backwards_iterator.AtEnd())
     backwards_iterator.Advance(half_max_length);
 

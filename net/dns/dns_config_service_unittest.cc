@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -161,7 +162,7 @@ class MockHostsParserFactory : public DnsHostsParser {
     }
 
    private:
-    MockHostsParserFactory* factory_;
+    raw_ptr<MockHostsParserFactory> factory_;
   };
 };
 

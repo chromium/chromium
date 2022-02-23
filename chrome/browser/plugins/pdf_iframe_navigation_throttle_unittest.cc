@@ -5,6 +5,7 @@
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/chrome_content_client.h"
@@ -81,7 +82,7 @@ class PDFIFrameNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
                     ->AppendChild("subframe");
   }
 
-  content::RenderFrameHost* subframe_;
+  raw_ptr<content::RenderFrameHost> subframe_;
 };
 
 TEST_F(PDFIFrameNavigationThrottleTest, OnlyCreateThrottleForSubframes) {

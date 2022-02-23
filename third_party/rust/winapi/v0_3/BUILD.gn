@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,7 @@ if (is_win) {
     visibility = [ "//third_party/rust/*" ]
     crate_root = "crate/src/lib.rs"
 
-    # Unit tests skipped. Generate with --with-tests to include them
+    # Unit tests skipped. Generate with --with-tests to include them.
     skip_unit_tests = true
     sources = [ "crate/src/lib.rs" ]
     edition = "2015"
@@ -23,6 +23,8 @@ if (is_win) {
       "consoleapi",
       "errhandlingapi",
       "fileapi",
+      "libloaderapi",
+      "minwinbase",
       "minwindef",
       "processenv",
       "std",
@@ -30,7 +32,6 @@ if (is_win) {
       "wincon",
       "winerror",
       "winnt",
-      "minwinbase",
     ]
     build_root = "crate/build.rs"
     build_sources = [ "crate/build.rs" ]

@@ -46,7 +46,14 @@ void MojoAudioInputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   factory_client_receiver_.set_disconnect_with_reason_handler(
       base::BindOnce(&MojoAudioInputIPC::OnDisconnect, base::Unretained(this)));
 
-  stream_creator_.Run(source_params_, std::move(client), params,
+  mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+      controls_receiver;
+
+  if (source_params_.processing.has_value())
+    controls_receiver = processor_controls_.BindNewPipeAndPassReceiver();
+
+  stream_creator_.Run(source_params_, std::move(client),
+                      std::move(controls_receiver), params,
                       automatic_gain_control, total_segments);
 }
 
@@ -77,6 +84,7 @@ void MojoAudioInputIPC::CloseStream() {
   factory_client_receiver_.reset();
   stream_client_receiver_.reset();
   stream_.reset();
+  processor_controls_.reset();
 }
 
 void MojoAudioInputIPC::StreamCreated(

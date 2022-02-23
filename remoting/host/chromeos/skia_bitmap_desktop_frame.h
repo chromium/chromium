@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 

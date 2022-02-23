@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "third_party/icu/source/i18n/unicode/ucal.h"
@@ -119,21 +119,21 @@ base::TimeDelta CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
     const icu::TimeZone& new_tz) {
   DCHECK(!delay.is_zero());
 
-  auto cur_time_utc_cal = scheduled_task_internal::ConvertUtcToTzIcuTime(
+  auto cur_time_utc_cal = scheduled_task_util::ConvertUtcToTzIcuTime(
       cur_time, *icu::TimeZone::getGMT());
 
   auto old_tz_timer_expiration_cal =
-      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time + delay, old_tz);
+      scheduled_task_util::ConvertUtcToTzIcuTime(cur_time + delay, old_tz);
 
   auto new_tz_timer_expiration_cal =
-      scheduled_task_internal::ConvertUtcToTzIcuTime(cur_time, new_tz);
+      scheduled_task_util::ConvertUtcToTzIcuTime(cur_time, new_tz);
   SetTimeOfDay(*old_tz_timer_expiration_cal, new_tz_timer_expiration_cal.get());
 
-  base::TimeDelta result = scheduled_task_internal::GetDiff(
+  base::TimeDelta result = scheduled_task_util::GetDiff(
       *new_tz_timer_expiration_cal, *cur_time_utc_cal);
   // If the scheduled task time in the new time zone has already passed then it
   // will happen on the next day.
-  if (result <= scheduled_task_internal::kInvalidDelay)
+  if (result <= base::TimeDelta())
     result += base::Days(1);
   return result;
 }
@@ -190,7 +190,7 @@ std::pair<base::Value, std::unique_ptr<icu::Calendar>> CreatePolicy(
   // Calculate time from one hour from now and set the policy to
   // happen daily at that time.
   base::Time scheduled_task_time = current_time + delay;
-  auto scheduled_task_icu_time = scheduled_task_internal::ConvertUtcToTzIcuTime(
+  auto scheduled_task_icu_time = scheduled_task_util::ConvertUtcToTzIcuTime(
       scheduled_task_time, time_zone);
 
   // Extracting fields from valid ICU time should always succeed.

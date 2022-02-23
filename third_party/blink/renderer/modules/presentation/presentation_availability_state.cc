@@ -92,8 +92,8 @@ void PresentationAvailabilityState::UpdateAvailability(
   if (!listening_status)
     return;
 
-  if (listening_status->listening_state == ListeningState::WAITING)
-    listening_status->listening_state = ListeningState::ACTIVE;
+  if (listening_status->listening_state == ListeningState::kWaiting)
+    listening_status->listening_state = ListeningState::kActive;
 
   if (listening_status->last_known_availability == availability)
     return;
@@ -144,10 +144,10 @@ void PresentationAvailabilityState::StartListeningToURL(const KURL& url) {
   }
 
   // Already listening.
-  if (listening_status->listening_state != ListeningState::INACTIVE)
+  if (listening_status->listening_state != ListeningState::kInactive)
     return;
 
-  listening_status->listening_state = ListeningState::WAITING;
+  listening_status->listening_state = ListeningState::kWaiting;
   presentation_service_->ListenForScreenAvailability(url);
 }
 
@@ -169,10 +169,10 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
     return;
   }
 
-  if (listening_status->listening_state == ListeningState::INACTIVE)
+  if (listening_status->listening_state == ListeningState::kInactive)
     return;
 
-  listening_status->listening_state = ListeningState::INACTIVE;
+  listening_status->listening_state = ListeningState::kInactive;
   presentation_service_->StopListeningForScreenAvailability(url);
 }
 
@@ -266,7 +266,7 @@ PresentationAvailabilityState::ListeningStatus::ListeningStatus(
     const KURL& availability_url)
     : url(availability_url),
       last_known_availability(mojom::blink::ScreenAvailability::UNKNOWN),
-      listening_state(ListeningState::INACTIVE) {}
+      listening_state(ListeningState::kInactive) {}
 
 PresentationAvailabilityState::ListeningStatus::~ListeningStatus() = default;
 

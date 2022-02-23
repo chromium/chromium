@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
@@ -96,9 +96,9 @@ class Job : public base::RefCountedThreadSafe<Job>,
           worker_task_runner(worker_task_runner),
           num_outstanding_callbacks(num_outstanding_callbacks) {}
 
-    ProxyResolverV8* v8_resolver;
+    raw_ptr<ProxyResolverV8> v8_resolver;
     scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner;
-    int* num_outstanding_callbacks;
+    raw_ptr<int> num_outstanding_callbacks;
   };
   // |params| is non-owned. It contains the parameters for this Job, and must
   // outlive it.
@@ -179,10 +179,9 @@ class Job : public base::RefCountedThreadSafe<Job>,
                              std::string* output,
                              bool* terminate);
 
-  bool PostDnsOperationAndWait(const std::string& host,
-                               net::ProxyResolveDnsOperation op,
-                               bool* completed_synchronously)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool PostDnsOperationAndWait(const std::string& host,
+                                             net::ProxyResolveDnsOperation op,
+                                             bool* completed_synchronously);
 
   void DoDnsOperation();
   void OnDnsOperationComplete(int result);
@@ -218,7 +217,7 @@ class Job : public base::RefCountedThreadSafe<Job>,
 
   // The Parameters for this Job.
   // Initialized on origin thread and then accessed from both threads.
-  const Params* const params_;
+  const raw_ptr<const Params> params_;
 
   std::unique_ptr<ProxyResolverV8Tracing::Bindings> bindings_;
 
@@ -255,13 +254,14 @@ class Job : public base::RefCountedThreadSafe<Job>,
   // -------------------------------------------------------
 
   scoped_refptr<net::PacFileData> script_data_;
-  std::unique_ptr<ProxyResolverV8>* resolver_out_;
+  raw_ptr<std::unique_ptr<ProxyResolverV8>> resolver_out_;
 
   // -------------------------------------------------------
   // State specific to GET_PROXY_FOR_URL.
   // -------------------------------------------------------
 
-  net::ProxyInfo* user_results_;  // Owned by caller, lives on origin thread.
+  raw_ptr<net::ProxyInfo>
+      user_results_;  // Owned by caller, lives on origin thread.
   GURL url_;
   net::NetworkIsolationKey network_isolation_key_;
   net::ProxyInfo results_;
@@ -860,7 +860,7 @@ void Job::SaveDnsToLocalCache(const std::string& host,
 
 std::string Job::MakeDnsCacheKey(const std::string& host,
                                  net::ProxyResolveDnsOperation op) {
-  return base::StringPrintf("%d:%s", op, host.c_str());
+  return base::StringPrintf("%d:%s", static_cast<int>(op), host.c_str());
 }
 
 void Job::HandleAlertOrError(bool is_alert,
@@ -1083,12 +1083,12 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
     thread_.reset();
   }
 
-  ProxyResolverV8TracingFactoryImpl* factory_;
+  raw_ptr<ProxyResolverV8TracingFactoryImpl> factory_;
   std::unique_ptr<base::Thread> thread_;
   std::unique_ptr<Job::Params> job_params_;
   scoped_refptr<Job> create_resolver_job_;
   std::unique_ptr<ProxyResolverV8> v8_resolver_;
-  std::unique_ptr<ProxyResolverV8Tracing>* resolver_out_;
+  raw_ptr<std::unique_ptr<ProxyResolverV8Tracing>> resolver_out_;
   net::CompletionOnceCallback callback_;
   int num_outstanding_callbacks_;
 };

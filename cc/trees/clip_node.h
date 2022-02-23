@@ -8,7 +8,6 @@
 #include "base/containers/stack_container.h"
 #include "cc/cc_export.h"
 #include "cc/trees/clip_expander.h"
-#include "cc/trees/property_tree.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -19,6 +18,16 @@ class TracedValue;
 }  // namespace base
 
 namespace cc {
+
+struct ConditionalClip {
+  bool is_clipped;
+  gfx::RectF clip_rect;
+};
+
+struct ClipRectData {
+  int target_id;
+  ConditionalClip clip;
+};
 
 struct CC_EXPORT ClipNode {
   ClipNode();

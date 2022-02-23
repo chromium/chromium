@@ -133,6 +133,9 @@
   <message name="IDS_ERRORPAGES_HEADING_BLOCKED" desc="Heading of the error page when a request is blocked by the administrator policy, extension or the browser itself.">
     <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.example.com</ex></ph> is blocked
   </message>
+  <message name="IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME" desc="Heading of the error page when a URL Scheme is blocked by the administrator policy, extension or the browser itself.">
+    “<ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>mailto</ex></ph>” links are blocked
+  </message>
   <message name="IDS_ERRORPAGES_SUMMARY_NOT_AVAILABLE" desc="Summary in the error page when we can't connect to a site.">
     The webpage at <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;</ph> might be temporarily down or it may have moved permanently to a new web address.
   </message>

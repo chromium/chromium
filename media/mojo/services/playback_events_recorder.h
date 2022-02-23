@@ -33,7 +33,7 @@ class MEDIA_MOJO_EXPORT PlaybackEventsRecorder final
   void OnEnded() final;
   void OnBuffering() final;
   void OnBufferingComplete() final;
-  void OnError(PipelineStatus status) final;
+  void OnError(const PipelineStatus& status) final;
   void OnNaturalSizeChanged(const gfx::Size& size) final;
   void OnPipelineStatistics(const PipelineStatistics& stats) final;
 

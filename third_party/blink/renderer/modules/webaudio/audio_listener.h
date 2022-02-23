@@ -32,8 +32,9 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/inspector_helper_mixin.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
@@ -78,16 +79,16 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
 
   bool IsListenerDirty() const { return is_listener_dirty_; }
 
-  const FloatPoint3D GetPosition() const {
-    return FloatPoint3D(position_x_->value(), position_y_->value(),
+  const gfx::Point3F GetPosition() const {
+    return gfx::Point3F(position_x_->value(), position_y_->value(),
                         position_z_->value());
   }
-  const FloatPoint3D Orientation() const {
-    return FloatPoint3D(forward_x_->value(), forward_y_->value(),
-                        forward_z_->value());
+  const gfx::Vector3dF Orientation() const {
+    return gfx::Vector3dF(forward_x_->value(), forward_y_->value(),
+                          forward_z_->value());
   }
-  const FloatPoint3D UpVector() const {
-    return FloatPoint3D(up_x_->value(), up_y_->value(), up_z_->value());
+  const gfx::Vector3dF UpVector() const {
+    return gfx::Vector3dF(up_x_->value(), up_y_->value(), up_z_->value());
   }
 
   const float* GetPositionXValues(uint32_t frames_to_process);
@@ -104,7 +105,7 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
 
   // Position
   void setPosition(float x, float y, float z, ExceptionState& exceptionState) {
-    setPosition(FloatPoint3D(x, y, z), exceptionState);
+    setPosition(gfx::Point3F(x, y, z), exceptionState);
   }
 
   // Orientation and Up-vector
@@ -115,8 +116,8 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
                       float up_y,
                       float up_z,
                       ExceptionState& exceptionState) {
-    setOrientation(FloatPoint3D(x, y, z), exceptionState);
-    SetUpVector(FloatPoint3D(up_x, up_y, up_z), exceptionState);
+    setOrientation(gfx::Vector3dF(x, y, z), exceptionState);
+    SetUpVector(gfx::Vector3dF(up_x, up_y, up_z), exceptionState);
   }
 
   Mutex& ListenerLock() { return listener_lock_; }
@@ -139,9 +140,9 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   void Trace(Visitor*) const override;
 
  private:
-  void setPosition(const FloatPoint3D&, ExceptionState&);
-  void setOrientation(const FloatPoint3D&, ExceptionState&);
-  void SetUpVector(const FloatPoint3D&, ExceptionState&);
+  void setPosition(const gfx::Point3F&, ExceptionState&);
+  void setOrientation(const gfx::Vector3dF&, ExceptionState&);
+  void SetUpVector(const gfx::Vector3dF&, ExceptionState&);
 
   void MarkPannersAsDirty(unsigned);
 
@@ -161,9 +162,9 @@ class AudioListener : public ScriptWrappable, public InspectorHelperMixin {
   Member<AudioParam> up_z_;
 
   // The position, forward, and up vectors from the last rendering quantum.
-  FloatPoint3D last_position_;
-  FloatPoint3D last_forward_;
-  FloatPoint3D last_up_;
+  gfx::Point3F last_position_;
+  gfx::Vector3dF last_forward_;
+  gfx::Vector3dF last_up_;
 
   // Last time that the automations were updated.
   double last_update_time_;

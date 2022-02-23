@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -79,7 +80,7 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/process/process_handle.h"
 #endif
@@ -114,7 +115,7 @@ class ScopedEvent {
   ~ScopedEvent() { event_->Signal(); }
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
 };
 
 // Has to be called after Initialize.
@@ -375,7 +376,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       task_executor_->passthrough_discardable_manager(),
       task_executor_->shared_image_manager());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference:::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM. https://crbug.com/180463
   use_virtualized_gl_context_ |=
@@ -419,7 +420,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     } else {
       gl::GLSurfaceFormat surface_format;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       // Handle Android low-bit-depth surface formats.
       if (params.attribs.red_size <= 5 && params.attribs.green_size <= 6 &&
           params.attribs.blue_size <= 5 && params.attribs.alpha_size == 0) {
@@ -495,7 +496,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
         webgpu::WebGPUDecoder::Create(
             this, command_buffer_.get(), task_executor_->shared_image_manager(),
             gpu_dependency_->memory_tracker(), task_executor_->outputter(),
-            task_executor_->gpu_preferences()));
+            task_executor_->gpu_preferences(), context_state_));
     gpu::ContextResult result = webgpu_decoder->Initialize();
     if (result != gpu::ContextResult::kSuccess) {
       DestroyOnGpuThread();
@@ -1415,7 +1416,7 @@ void InProcessCommandBuffer::SetFrameRateOnGpuThread(float frame_rate) {
   surface_->SetFrameRate(frame_rate);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void InProcessCommandBuffer::DidCreateAcceleratedSurfaceChildWindow(
     SurfaceHandle parent_window,
     SurfaceHandle child_window) {

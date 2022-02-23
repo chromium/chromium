@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -26,14 +27,13 @@ QuotaClientCallbackWrapper::~QuotaClientCallbackWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void QuotaClientCallbackWrapper::GetStorageKeyUsage(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void QuotaClientCallbackWrapper::GetBucketUsage(
+    const BucketLocator& bucket,
+    GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetStorageKeyUsage(
-      storage_key, type,
+  wrapped_client_->GetBucketUsage(
+      bucket,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), 0));
 }
 
@@ -47,26 +47,13 @@ void QuotaClientCallbackWrapper::GetStorageKeysForType(
                 std::move(callback), std::vector<blink::StorageKey>()));
 }
 
-void QuotaClientCallbackWrapper::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void QuotaClientCallbackWrapper::DeleteBucketData(
+    const BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  wrapped_client_->GetStorageKeysForHost(
-      type, host,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), std::vector<blink::StorageKey>()));
-}
-
-void QuotaClientCallbackWrapper::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  wrapped_client_->DeleteStorageKeyData(
-      storage_key, type,
+  wrapped_client_->DeleteBucketData(
+      bucket,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           std::move(callback), blink::mojom::QuotaStatusCode::kErrorAbort));
 }

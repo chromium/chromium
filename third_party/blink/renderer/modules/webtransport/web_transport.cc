@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/base_fetch_context.h"
+#include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -45,6 +47,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -279,7 +283,6 @@ class WebTransport::DatagramUnderlyingSource final
     waiting_for_datagrams_ = false;
     canceled_ = true;
     DiscardQueue();
-    Controller()->NoteHasBeenCanceled();
 
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -671,7 +674,8 @@ WebTransport* WebTransport::Create(ScriptState* script_state,
                                    ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::Create() url=" << url;
   DCHECK(options);
-  ExecutionContext::From(script_state)->CountUse(WebFeature::kWebTransport);
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebTransport);
   auto* transport =
       MakeGarbageCollected<WebTransport>(PassKey(), script_state, url);
   transport->Init(url, *options, exception_state);
@@ -700,7 +704,8 @@ ScriptPromise WebTransport::createUnidirectionalStream(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createUnidirectionalStream() this=" << this;
 
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   if (!transport_remote_.is_bound()) {
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
@@ -728,7 +733,8 @@ ScriptPromise WebTransport::createUnidirectionalStream(
 }
 
 ReadableStream* WebTransport::incomingUnidirectionalStreams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   return received_streams_;
 }
 
@@ -737,20 +743,14 @@ ScriptPromise WebTransport::createBidirectionalStream(
     ExceptionState& exception_state) {
   DVLOG(1) << "WebTransport::createBidirectionalStream() this=" << this;
 
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   if (!transport_remote_.is_bound()) {
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
     return ScriptPromise();
   }
-
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  // TODO(ricea): Find an appropriate value for capacity_num_bytes.
-  options.capacity_num_bytes = 0;
 
   mojo::ScopedDataPipeProducerHandle outgoing_producer;
   mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
@@ -778,22 +778,26 @@ ScriptPromise WebTransport::createBidirectionalStream(
 }
 
 ReadableStream* WebTransport::incomingBidirectionalStreams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportStreamApis);
   return received_bidirectional_streams_;
 }
 
 DatagramDuplexStream* WebTransport::datagrams() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return datagrams_;
 }
 
 WritableStream* WebTransport::datagramWritable() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return outgoing_datagrams_;
 }
 
 ReadableStream* WebTransport::datagramReadable() {
-  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kQuicTransportDatagramApis);
   return received_datagrams_;
 }
 
@@ -1112,19 +1116,20 @@ void WebTransport::Init(const String& url,
 
   auto* execution_context = GetExecutionContext();
 
-  bool had_csp_failure = false;
+  bool is_url_blocked = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kSecurityError,
-        "Failed to connect to '" + url_.ElidedString() + "'",
+    v8::Local<v8::Value> error = WebTransportError::Create(
+        script_state_->GetIsolate(),
+        /*stream_error_code=*/absl::nullopt,
         "Refused to connect to '" + url_.ElidedString() +
-            "' because it violates the document's Content Security Policy");
+            "' because it violates the document's Content Security Policy",
+        WebTransportError::Source::kSession);
 
-    ready_resolver_->Reject(dom_exception);
-    closed_resolver_->Reject(dom_exception);
+    ready_resolver_->Reject(error);
+    closed_resolver_->Reject(error);
 
-    had_csp_failure = true;
+    is_url_blocked = true;
   }
 
   Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
@@ -1159,6 +1164,10 @@ void WebTransport::Init(const String& url,
               hash->algorithm(), value_builder.ToString()));
     }
   }
+  if (!fingerprints.IsEmpty()) {
+    execution_context->CountUse(
+        WebFeature::kWebTransportServerCertificateHashes);
+  }
 
   if (auto* scheduler = execution_context->GetScheduler()) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
@@ -1167,10 +1176,17 @@ void WebTransport::Init(const String& url,
                          SchedulingPolicy::DisableBackForwardCache()});
   }
 
-  // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
-  // disallowed. Must be done before shipping.
+  if (DoesSubresourceFilterBlockConnection(url_)) {
+    // SubresourceFilter::ReportLoad() may report an actual message.
+    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
+        script_state_->GetIsolate(), DOMExceptionCode::kNetworkError, "");
 
-  if (!had_csp_failure) {
+    ready_resolver_->Reject(dom_exception);
+    closed_resolver_->Reject(dom_exception);
+    is_url_blocked = true;
+  }
+
+  if (!is_url_blocked) {
     execution_context->GetBrowserInterfaceBroker().GetInterface(
         connector_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
@@ -1221,6 +1237,15 @@ void WebTransport::Init(const String& url,
   received_bidirectional_streams_ =
       ReadableStream::CreateWithCountQueueingStrategy(
           script_state_, received_bidirectional_streams_underlying_source_, 1);
+}
+
+bool WebTransport::DoesSubresourceFilterBlockConnection(const KURL& url) {
+  ResourceFetcher* resource_fetcher = GetExecutionContext()->Fetcher();
+  SubresourceFilter* subresource_filter =
+      static_cast<BaseFetchContext*>(&resource_fetcher->Context())
+          ->GetSubresourceFilter();
+  return subresource_filter &&
+         !subresource_filter->AllowWebTransportConnection(url);
 }
 
 void WebTransport::Dispose() {

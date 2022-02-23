@@ -4,6 +4,7 @@
 
 #include "remoting/codec/webrtc_video_encoder_gpu.h"
 
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -31,7 +33,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -51,7 +53,7 @@ constexpr int kH264MinimumTargetBitrateKbpsPerMegapixel = 1800;
 
 gpu::GpuPreferences CreateGpuPreferences() {
   gpu::GpuPreferences gpu_preferences;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_media_foundation_vea_on_windows7 = true;
 #endif
   return gpu_preferences;
@@ -93,7 +95,7 @@ namespace remoting {
 // 3. In BeginInitialization(), the Core instance constructs the
 //      VideoEncodeAccelerator using the saved dimensions from the DesktopFrame.
 //      If the VideoEncodeAccelerator is constructed successfully, the state is
-//      set to INITIALIZING. If not, the state isset to INIITALIZATION_ERROR.
+//      set to INITIALIZING. If not, the state isset to INITIALIZATION_ERROR.
 // 4. Some time later, the VideoEncodeAccelerator sets itself up and is ready
 //      to encode. At this point, it calls the Core instance's
 //      RequireBitstreamBuffers() method. Once bitstream buffers are allocated,
@@ -130,7 +132,7 @@ class WebrtcVideoEncoderGpu::Core
 
   void RunAnyPendingEncode();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.
@@ -265,10 +267,12 @@ void WebrtcVideoEncoderGpu::Core::Encode(
   if (params.bitrate_kbps > 0 && params.fps > 0) {
     // TODO(zijiehe): Forward frame_rate from FrameParams.
     bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
+    base::CheckedNumeric<uint32_t> checked_bitrate = base::CheckMul<uint32_t>(
+        std::max(bitrate_filter_.GetTargetBitrateKbps(), 0), 1000);
+    uint32_t bitrate_bps =
+        checked_bitrate.ValueOrDefault(std::numeric_limits<uint32_t>::max());
     video_encode_accelerator_->RequestEncodingParametersChange(
-        media::Bitrate::ConstantBitrate(bitrate_filter_.GetTargetBitrateKbps() *
-                                        1000),
-        params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_bps), params.fps);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }
@@ -340,7 +344,7 @@ void WebrtcVideoEncoderGpu::Core::NotifyError(
 void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!scoped_com_initializer_) {
     scoped_com_initializer_ =
         std::make_unique<base::win::ScopedCOMInitializer>();
@@ -351,8 +355,8 @@ void WebrtcVideoEncoderGpu::Core::BeginInitialization() {
   // TODO(zijiehe): implement some logical way to set an initial bitrate.
   // Currently we set the bitrate to 8M bits / 1M bytes per frame, and 30 frames
   // per second.
-  media::Bitrate initial_bitrate =
-      media::Bitrate::ConstantBitrate(kTargetFrameRate * 1024 * 1024 * 8);
+  media::Bitrate initial_bitrate = media::Bitrate::ConstantBitrate(
+      static_cast<uint32_t>(kTargetFrameRate * 1024 * 1024 * 8));
 
   const media::VideoEncodeAccelerator::Config config(
       input_format, input_visible_size_, codec_profile_, initial_bitrate);
@@ -397,7 +401,7 @@ std::unique_ptr<WebrtcVideoEncoder> WebrtcVideoEncoderGpu::CreateForH264() {
 // static
 bool WebrtcVideoEncoderGpu::IsSupportedByH264(
     const WebrtcVideoEncoderSelector::Profile& profile) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This object is required by Chromium to ensure proper init/uninit of COM on
   // this thread.  The guidance is to match the lifetime of this object to the
   // lifetime of the thread if possible.  Since we are still experimenting with

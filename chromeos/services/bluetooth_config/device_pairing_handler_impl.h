@@ -43,6 +43,8 @@ class DevicePairingHandlerImpl : public DevicePairingHandler {
 
  private:
   // DevicePairingHandler:
+  void FetchDevice(const std::string& device_address,
+                   FetchDeviceCallback callback) override;
   device::BluetoothDevice* FindDevice(
       const std::string& device_id) const override;
 

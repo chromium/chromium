@@ -33,8 +33,8 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dst_rect,
-            const FloatRect& src_rect,
+            const gfx::RectF& dst_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override;
 
   PaintImage PaintImageForCurrentFrame() override;
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   UnacceleratedStaticBitmapImage(sk_sp<SkImage>, ImageOrientation);
   UnacceleratedStaticBitmapImage(PaintImage, ImageOrientation);
 
-  IntSize SizeInternal() const override;
+  gfx::Size SizeInternal() const override;
 
   PaintImage paint_image_;
   THREAD_CHECKER(thread_checker_);

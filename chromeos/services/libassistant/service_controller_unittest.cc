@@ -12,6 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
@@ -19,9 +20,6 @@
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/device_state_listener.h"
-#include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -333,11 +331,12 @@ TEST_F(AssistantServiceControllerTest,
 
 TEST_F(AssistantServiceControllerTest,
        ShouldCreateAssistantManagerWhenCallingInitialize) {
-  EXPECT_EQ(nullptr, service_controller().assistant_manager());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 }
 
 TEST_F(AssistantServiceControllerTest, ShouldBeNoopWhenCallingStartTwice) {
@@ -373,7 +372,8 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
   // The second Initialize() call should create the AssistantManager.
 
   Initialize();
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 
   // The second Start() call should send out a state update.
 
@@ -384,18 +384,20 @@ TEST_F(AssistantServiceControllerTest, ShouldAllowStartAfterStop) {
 
   Start();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 }
 
 TEST_F(AssistantServiceControllerTest,
        ShouldDestroyAssistantManagerWhenCallingStop) {
   Initialize();
   Start();
-  EXPECT_NE(nullptr, service_controller().assistant_manager());
+  EXPECT_NE(nullptr,
+            service_controller().assistant_client()->assistant_manager());
 
   Stop();
 
-  EXPECT_EQ(nullptr, service_controller().assistant_manager());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -414,11 +416,13 @@ TEST_F(AssistantServiceControllerTest,
 
 TEST_F(AssistantServiceControllerTest,
        ShouldCreateButNotPublishAssistantManagerInternalWhenCallingInitialize) {
-  EXPECT_EQ(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -426,19 +430,23 @@ TEST_F(AssistantServiceControllerTest,
   Initialize();
   Start();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 }
 
 TEST_F(AssistantServiceControllerTest,
        ShouldDestroyAssistantManagerInternalWhenCallingStop) {
   Initialize();
 
-  EXPECT_NE(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_NE(
+      nullptr,
+      service_controller().assistant_client()->assistant_manager_internal());
 
   Start();
   Stop();
 
-  EXPECT_EQ(nullptr, service_controller().assistant_manager_internal());
+  EXPECT_EQ(nullptr, service_controller().assistant_client());
 }
 
 TEST_F(AssistantServiceControllerTest,

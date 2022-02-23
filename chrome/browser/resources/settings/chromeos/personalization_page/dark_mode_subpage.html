@@ -1,57 +1,39 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="../../controls/settings_radio_group.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../prefs_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../os_route.html">
-
-<dom-module id="settings-dark-mode-subpage">
-  <template>
-    <style include="settings-shared"></style>
-    <div id="darkModeEnablerDiv">
-      <settings-toggle-button
-          id="darkModeToggleButton"
-          class="hr"
-          pref="{{prefs.ash.dark_mode.enabled}}"
-          label="[[getDarkModeOnOffLabel_(prefs.ash.dark_mode.enabled.value)]]"
-          deep-link-focus-id$="[[Setting.kDarkModeOnOff]]">
-      </settings-toggle-button>
-    </div>
-    <div id="darkModeThemedDiv">
-      <div class="settings-box">
-        <div class="settings-box-text start" aria-hidden="true">
-          <div id="darkModeThemedLabel" class="label">
-            $i18n{darkModeThemedRadioGroupTitle}
-          </div>
-          <div id="darkModeThemedSubLabel" class="secondary label">
-            $i18n{darkModeThemedRadioGroupDescription}
-          </div>
-        </div>
+<style include="settings-shared"></style>
+<div id="darkModeEnablerDiv">
+  <settings-toggle-button
+      id="darkModeToggleButton"
+      class="hr"
+      pref="{{prefs.ash.dark_mode.enabled}}"
+      label="[[getDarkModeOnOffLabel_(prefs.ash.dark_mode.enabled.value)]]"
+      deep-link-focus-id$="[[Setting.kDarkModeOnOff]]">
+  </settings-toggle-button>
+</div>
+<div id="darkModeThemedDiv">
+  <div class="settings-box">
+    <div class="settings-box-text start" aria-hidden="true">
+      <div id="darkModeThemedLabel" class="label">
+        $i18n{darkModeThemedRadioGroupTitle}
       </div>
-      <div class="list-frame">
-        <settings-radio-group id="darkModeThemedRadioGroup"
-            pref="{{prefs.ash.dark_mode.color_mode_themed}}"
-            group-aria-label="$i18n{darkModeThemedRadioGroupTitle}"
-            deep-link-focus-id$="[[Setting.kDarkModeThemed]]">
-          <cr-radio-button id="darkModeThemedOn"
-              name="true" class="list-item underbar"
-              pref="[[prefs.ash.dark_mode.color_mode_themed]]"
-              label="$i18n{darkModeThemedOn}">
-          </cr-radio-button>
-          <cr-radio-button id="darkModeThemedOff"
-              name="false" class="list-item"
-              pref="[[prefs.ash.dark_mode.color_mode_themed]]"
-              label="$i18n{darkModeThemedOff}">
-          </cr-radio-button>
-        </settings-radio-group>
+      <div id="darkModeThemedSubLabel" class="secondary label">
+        $i18n{darkModeThemedRadioGroupDescription}
       </div>
     </div>
-  </template>
-  <script src="dark_mode_subpage.js"></script>
-</dom-module>
+  </div>
+  <div class="list-frame">
+    <settings-radio-group id="darkModeThemedRadioGroup"
+        pref="{{prefs.ash.dark_mode.color_mode_themed}}"
+        group-aria-label="$i18n{darkModeThemedRadioGroupTitle}"
+        deep-link-focus-id$="[[Setting.kDarkModeThemed]]">
+      <cr-radio-button id="darkModeThemedOn"
+          name="true" class="list-item underbar"
+          pref="[[prefs.ash.dark_mode.color_mode_themed]]"
+          label="$i18n{darkModeThemedOn}">
+      </cr-radio-button>
+      <cr-radio-button id="darkModeThemedOff"
+          name="false" class="list-item"
+          pref="[[prefs.ash.dark_mode.color_mode_themed]]"
+          label="$i18n{darkModeThemedOff}">
+      </cr-radio-button>
+    </settings-radio-group>
+  </div>
+</div>

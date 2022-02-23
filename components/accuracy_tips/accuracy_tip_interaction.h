@@ -25,8 +25,10 @@ enum class AccuracyTipInteraction {
   kDisabledByExperiment = 4,
   // Pressed "ignore" button.
   kIgnore = 5,
+  // The UI was closed because the site requested a permission.
+  kPermissionRequested = 6,
 
-  kMaxValue = kIgnore,
+  kMaxValue = kPermissionRequested,
 };
 
 }  // namespace accuracy_tips

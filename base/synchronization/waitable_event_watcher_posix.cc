@@ -184,7 +184,7 @@ void WaitableEventWatcher::StopWatching() {
     // In this case, a task was enqueued on the MessageLoop and will run.
     // We set the flag in case the task hasn't yet run. The flag will stop the
     // delegate getting called. If the task has run then we have the last
-    // reference to the flag and it will be deleted immedately after.
+    // reference to the flag and it will be deleted immediately after.
     cancel_flag_->Set();
     cancel_flag_ = nullptr;
     return;

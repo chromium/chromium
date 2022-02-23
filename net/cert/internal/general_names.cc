@@ -111,7 +111,7 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
   return general_names;
 }
 
-WARN_UNUSED_RESULT bool ParseGeneralName(
+[[nodiscard]] bool ParseGeneralName(
     const der::Input& input,
     GeneralNames::ParseGeneralNameIPAddressType ip_address_type,
     GeneralNames* subtrees,

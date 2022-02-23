@@ -14,7 +14,7 @@
 
 namespace content {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The mobile hang timer is shorter than the desktop hang timer because the
 // screen is smaller and more intimate, and therefore requires more nimbleness.
 constexpr base::TimeDelta kHungRendererDelay = base::Seconds(5);

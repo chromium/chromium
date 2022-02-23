@@ -198,7 +198,7 @@ class PtraceStrategyDeciderImpl : public PtraceStrategyDecider {
         if (HaveCapSysPtrace()) {
           return Strategy::kDirectPtrace;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case PtraceScope::kNoAttach:
         LOG(WARNING) << "no ptrace";
         return Strategy::kNoPtrace;

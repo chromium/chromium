@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_script_tracker.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -250,7 +250,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   // Populated by InstallContentScriptsExtension (called by individual tests).
   TestExtensionDir dir_;
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
 }
 
 // Flaky on MacOS since r622662. See https://crbug.com/921883
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ContentScriptMatching_NotAllFrames \
   DISABLED_ContentScriptMatching_NotAllFrames
 #else

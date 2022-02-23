@@ -50,11 +50,9 @@ declare_args() {
   cros_target_extra_cxxflags = ""
   cros_target_extra_ldflags = ""
 
-  # is_clang is used instead of cros_target_is_clang
   cros_host_ar = "${clang_base_path}/bin/llvm-ar"
   cros_host_cc = "${clang_base_path}/bin/clang"
   cros_host_cxx = "${clang_base_path}/bin/clang++"
-  cros_host_is_clang = true
   cros_host_nm = ""
   cros_host_readelf = ""
   cros_host_extra_cflags = ""
@@ -66,7 +64,6 @@ declare_args() {
   cros_v8_snapshot_ar = "${clang_base_path}/bin/llvm-ar"
   cros_v8_snapshot_cc = "${clang_base_path}/bin/clang"
   cros_v8_snapshot_cxx = "${clang_base_path}/bin/clang++"
-  cros_v8_snapshot_is_clang = true
   cros_v8_snapshot_nm = ""
   cros_v8_snapshot_readelf = ""
   cros_v8_snapshot_extra_cflags = ""

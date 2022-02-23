@@ -17,31 +17,41 @@ void MakeTransferFunctionHLG01(skcms_TransferFunction* tf) {
       tf, 1 / 12.0f, 2.0f, 2.0f, 1 / 0.17883277f, 0.28466892f, 0.55991073f);
 }
 
+// The input profile must outlive the output one as they will share their
+// buffers.
+skcms_ICCProfile ReplaceTransferFunction(skcms_ICCProfile profile,
+                                         const skcms_TransferFunction& tf) {
+  // Override the transfer function with a known parametric curve.
+  profile.has_trc = true;
+  for (int c = 0; c < 3; c++) {
+    profile.trc[c].table_entries = 0;
+    profile.trc[c].parametric = tf;
+  }
+  return profile;
+}
+
 // Computes whether the transfer function from the ColorProfile, that was
 // created from a parsed ICC profile, approximately matches the given parametric
-// transfer function. Returns a ColorProfile if it matches, or nullptr if not.
-std::unique_ptr<ColorProfile> ApproximatelyMatchesTF(
-    const ColorProfile& profile,
-    const skcms_TransferFunction* tf) {
-  skcms_ICCProfile parsed_copy = *profile.GetProfile();
-  // Override the transfer function with a known parametric curve.
-  parsed_copy.has_trc = true;
-  for (int c = 0; c < 3; c++) {
-    parsed_copy.trc[c].table_entries = 0;
-    parsed_copy.trc[c].parametric = *tf;
-  }
-  if (skcms_ApproximatelyEqualProfiles(profile.GetProfile(), &parsed_copy)) {
-    // The input ColorProfile owns the buffer memory, make a new copy for
-    // the newly created one and pass the ownership of the new copy to the new
-    // color profile.
-    std::unique_ptr<uint8_t[]> owned_buffer(
-        new uint8_t[profile.GetProfile()->size]);
-    memcpy(owned_buffer.get(), profile.GetProfile()->buffer,
-           profile.GetProfile()->size);
-    parsed_copy.buffer = owned_buffer.get();
-    return std::make_unique<ColorProfile>(parsed_copy, std::move(owned_buffer));
-  }
-  return nullptr;
+// transfer function.
+bool ApproximatelyMatchesTF(const ColorProfile& profile,
+                            const skcms_TransferFunction& tf) {
+  skcms_ICCProfile parsed_copy =
+      ReplaceTransferFunction(*profile.GetProfile(), tf);
+  return skcms_ApproximatelyEqualProfiles(profile.GetProfile(), &parsed_copy);
+}
+
+std::unique_ptr<ColorProfile> NewColorProfileWithSameBuffer(
+    const ColorProfile& buffer_donor,
+    skcms_ICCProfile new_profile) {
+  // The input ColorProfile owns the buffer memory, make a new copy for
+  // the newly created one and pass the ownership of the new copy to the new
+  // color profile.
+  std::unique_ptr<uint8_t[]> owned_buffer(
+      new uint8_t[buffer_donor.GetProfile()->size]);
+  memcpy(owned_buffer.get(), buffer_donor.GetProfile()->buffer,
+         buffer_donor.GetProfile()->size);
+  new_profile.buffer = owned_buffer.get();
+  return std::make_unique<ColorProfile>(new_profile, std::move(owned_buffer));
 }
 }  // namespace
 
@@ -278,31 +288,32 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
                                                &color_encoding)) {
           bool known_transfer_function = true;
           bool known_gamut = true;
-          skcms_Matrix3x3 gamut;
-          skcms_TransferFunction transfer;
+          gfx::ColorSpace::PrimaryID gamut;
+          gfx::ColorSpace::TransferID transfer;
           if (color_encoding.transfer_function == JXL_TRANSFER_FUNCTION_PQ) {
-            transfer = SkNamedTransferFn::kPQ;
+            transfer = gfx::ColorSpace::TransferID::PQ;
           } else if (color_encoding.transfer_function ==
                      JXL_TRANSFER_FUNCTION_HLG) {
-            // Cannot use transfer = SkNamedTransferFn::kHLG directly since JXL
-            // uses the linear 0..1, not the linear 0..12, version of HLG.
-            MakeTransferFunctionHLG01(&transfer);
+            transfer = gfx::ColorSpace::TransferID::HLG;
           } else if (color_encoding.transfer_function ==
                      JXL_TRANSFER_FUNCTION_LINEAR) {
-            transfer = SkNamedTransferFn::kLinear;
+            transfer = gfx::ColorSpace::TransferID::LINEAR;
           } else if (color_encoding.transfer_function ==
                      JXL_TRANSFER_FUNCTION_SRGB) {
-            transfer = SkNamedTransferFn::kSRGB;
+            transfer = gfx::ColorSpace::TransferID::SRGB;
           } else {
             known_transfer_function = false;
           }
 
           if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
               color_encoding.primaries == JXL_PRIMARIES_2100) {
-            gamut = SkNamedGamut::kRec2020;
+            gamut = gfx::ColorSpace::PrimaryID::BT2020;
           } else if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
                      color_encoding.primaries == JXL_PRIMARIES_SRGB) {
-            gamut = SkNamedGamut::kSRGB;
+            gamut = gfx::ColorSpace::PrimaryID::BT709;
+          } else if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
+                     color_encoding.primaries == JXL_PRIMARIES_P3) {
+            gamut = gfx::ColorSpace::PrimaryID::P3;
           } else {
             known_gamut = false;
           }
@@ -311,7 +322,9 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
 
           if (have_data_profile) {
             skcms_ICCProfile dataProfile;
-            SkColorSpace::MakeRGB(transfer, gamut)->toProfile(&dataProfile);
+            gfx::ColorSpace(gamut, transfer)
+                .ToSkColorSpace()
+                ->toProfile(&dataProfile);
             profile = std::make_unique<ColorProfile>(dataProfile);
           }
         }
@@ -344,12 +357,27 @@ void JXLImageDecoder::DecodeImpl(wtf_size_t index, bool only_size) {
             MakeTransferFunctionHLG01(&tf_hlg01);
             skcms_TransferFunction_makeHLG(&tf_hlg12);
 
-            for (skcms_TransferFunction tf : {tf_pq, tf_hlg01, tf_hlg12}) {
-              auto match = ApproximatelyMatchesTF(*profile, &tf);
-              if (match) {
-                is_hdr_ = true;
-                profile.swap(match);
-                break;
+            if (ApproximatelyMatchesTF(*profile, tf_pq)) {
+              is_hdr_ = true;
+              auto hdr10 = gfx::ColorSpace::CreateHDR10().ToSkColorSpace();
+              skcms_TransferFunction pq;
+              hdr10->transferFn(&pq);
+              profile = NewColorProfileWithSameBuffer(
+                  *profile,
+                  ReplaceTransferFunction(*profile->GetProfile(), pq));
+            } else {
+              for (skcms_TransferFunction tf : {tf_hlg01, tf_hlg12}) {
+                if (ApproximatelyMatchesTF(*profile, tf)) {
+                  is_hdr_ = true;
+                  auto hlg_colorspace =
+                      gfx::ColorSpace::CreateHLG().ToSkColorSpace();
+                  skcms_TransferFunction hlg;
+                  hlg_colorspace->transferFn(&hlg);
+                  profile = NewColorProfileWithSameBuffer(
+                      *profile,
+                      ReplaceTransferFunction(*profile->GetProfile(), hlg));
+                  break;
+                }
               }
             }
           }

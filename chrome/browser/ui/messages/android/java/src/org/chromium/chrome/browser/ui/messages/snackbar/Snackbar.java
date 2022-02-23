@@ -100,6 +100,10 @@ public class Snackbar {
     public static final int UMA_AUTOFILL_VIRTUAL_CARD_FILLED = 44;
     public static final int UMA_WINDOW_ERROR = 45;
     public static final int UMA_MODULE_INSTALL_FAILURE = 46;
+    public static final int UMA_PRICE_TRACKING_SUCCESS = 47;
+    public static final int UMA_PRICE_TRACKING_FAILURE = 48;
+    public static final int UMA_PRIVACY_SANDBOX_ADD_INTEREST = 49;
+    public static final int UMA_PRIVACY_SANDBOX_REMOVE_INTEREST = 50;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

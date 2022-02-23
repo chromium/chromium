@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -45,10 +45,10 @@ class MouseShapePump : public webrtc::MouseCursorMonitor::Callback {
 
   base::ThreadChecker thread_checker_;
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
-  protocol::CursorShapeStub* cursor_shape_stub_;
+  raw_ptr<protocol::CursorShapeStub> cursor_shape_stub_;
 
   base::RepeatingTimer capture_timer_;
-  webrtc::MouseCursorMonitor::Callback* callback_ = nullptr;
+  raw_ptr<webrtc::MouseCursorMonitor::Callback> callback_ = nullptr;
 };
 
 }  // namespace remoting

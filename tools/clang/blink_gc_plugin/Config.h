@@ -182,27 +182,16 @@ class Config {
     return IsGCBase(name) || IsRefCountedBase(name);
   }
 
-  static bool IsAnnotated(clang::Decl* decl, const std::string& anno) {
+  static bool IsAnnotated(const clang::Decl* decl, const std::string& anno) {
     clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
     return attr && (attr->getAnnotation() == anno);
   }
 
-  static bool IsStackAnnotated(clang::Decl* decl) {
-    return IsAnnotated(decl, "blink_stack_allocated");
-  }
-
-  static bool IsIgnoreAnnotated(clang::Decl* decl) {
+  static bool IsIgnoreAnnotated(const clang::Decl* decl) {
     return IsAnnotated(decl, "blink_gc_plugin_ignore");
   }
 
-  static bool IsIgnoreCycleAnnotated(clang::Decl* decl) {
-    return IsAnnotated(decl, "blink_gc_plugin_ignore_cycle") ||
-           IsIgnoreAnnotated(decl);
-  }
-
-  static bool IsVisitor(llvm::StringRef name) {
-    return name == "Visitor" || name == "VisitorHelper";
-  }
+  static bool IsVisitor(llvm::StringRef name) { return name == "Visitor"; }
 
   static bool IsVisitorPtrType(const clang::QualType& formal_type) {
     if (!formal_type->isPointerType())

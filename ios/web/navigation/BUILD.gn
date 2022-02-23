@@ -21,6 +21,7 @@ source_set("navigation") {
     "//ios/net",
     "//ios/web:core",
     "//ios/web/common",
+    "//ios/web/download",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:wk_navigation_util",
@@ -97,6 +98,10 @@ source_set("core") {
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
+    "synthesized_history_entry_data.h",
+    "synthesized_history_entry_data.mm",
+    "synthesized_session_restore.h",
+    "synthesized_session_restore.mm",
     "time_smoother.cc",
     "time_smoother.h",
   ]

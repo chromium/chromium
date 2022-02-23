@@ -5,6 +5,7 @@
 #include "ui/gfx/android/android_surface_control_compat.h"
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,8 +25,8 @@ class SurfaceControlTransactionTest : public testing::Test {
     CallbackContext(bool* called, bool* destroyed)
         : called(called), destroyed(destroyed) {}
     ~CallbackContext() { *destroyed = true; }
-    bool* called;
-    bool* destroyed;
+    raw_ptr<bool> called;
+    raw_ptr<bool> destroyed;
   };
 
   SurfaceControl::Transaction::OnCompleteCb CreateOnCompleteCb(

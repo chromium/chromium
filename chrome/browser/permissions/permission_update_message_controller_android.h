@@ -83,7 +83,6 @@ class PermissionUpdateMessageController
       std::vector<std::string>& required_permissions,
       std::vector<std::string>& optional_permissions);
 
-  content::WebContents* web_contents_ = nullptr;
   std::vector<std::unique_ptr<PermissionUpdateMessageDelegate>>
       message_delegates_;
 

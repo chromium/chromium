@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -24,11 +24,10 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -206,7 +205,32 @@ ScriptPromise SharedStorage::runURLSelectionOperation(
     converted_urls.push_back(converted_url);
   }
 
-  // TODO: handle the operation
+  Vector<uint8_t> serialized_data;
+  if (!Serialize(script_state, options, exception_state, serialized_data))
+    return promise;
+
+  GetSharedStorageDocumentService(execution_context)
+      ->RunURLSelectionOperationOnWorklet(
+          name, std::move(converted_urls), std::move(serialized_data),
+          WTF::Bind(
+              [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
+                 bool success, const String& error_message,
+                 const KURL& opaque_url) {
+                DCHECK(resolver);
+                ScriptState* script_state = resolver->GetScriptState();
+
+                if (!success) {
+                  ScriptState::Scope scope(script_state);
+                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                      script_state->GetIsolate(),
+                      DOMExceptionCode::kOperationError, error_message));
+                  return;
+                }
+
+                resolver->Resolve(opaque_url);
+              },
+              WrapPersistent(resolver), WrapPersistent(this)));
+
   return promise;
 }
 
@@ -277,7 +301,7 @@ SharedStorage::GetEmptySharedStorageDocumentService() {
     auto& remote = slot.GetOrCreateValue();
     mojo::PendingRemote<mojom::blink::SharedStorageDocumentService>
         pending_remote;
-    ignore_result(pending_remote.InitWithNewPipeAndPassReceiver());
+    std::ignore = pending_remote.InitWithNewPipeAndPassReceiver();
     remote.Bind(std::move(pending_remote), base::ThreadTaskRunnerHandle::Get());
   }
   return slot.GetOrCreateValue().get();

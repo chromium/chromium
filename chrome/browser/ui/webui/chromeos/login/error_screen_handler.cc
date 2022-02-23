@@ -124,17 +124,6 @@ void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
   }
 }
 
-// TODO (crbug.com/1168114): We need to handle that fully in C++ once
-// all error screen logic is migrated to Screen object.
-void ErrorScreenHandler::OnCancelButtonClicked() {
-  // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
-  if (IsSafeToCallJavascript()) {
-    CallJS("cr.ui.Oobe.showUserPods");
-  } else {
-    LOG(ERROR) << "Silently dropping OnCancelButtonClicked request.";
-  }
-}
-
 void ErrorScreenHandler::OnReloadGaiaClicked() {
   // TODO(crbug.com/1180291) - Remove once OOBE JS calls are fixed.
   if (IsSafeToCallJavascript()) {

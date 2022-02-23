@@ -13,7 +13,6 @@
 #include <unordered_set>
 
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"

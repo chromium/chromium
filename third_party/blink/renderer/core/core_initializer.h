@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -51,6 +52,7 @@ namespace blink {
 
 class DevToolsSession;
 class Document;
+class ExecutionContext;
 class HTMLMediaElement;
 class InspectedFrames;
 class InspectorDOMAgent;
@@ -149,6 +151,9 @@ class CORE_EXPORT CoreInitializer {
   virtual void SetSessionStorageArea(
       LocalFrame& frame,
       mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) = 0;
+
+  virtual mojom::blink::FileSystemManager& GetFileSystemManager(
+      ExecutionContext* context) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

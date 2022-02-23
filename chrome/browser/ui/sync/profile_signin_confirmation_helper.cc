@@ -15,9 +15,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/color_utils.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/common/extensions/extension_constants.h"
@@ -46,14 +43,6 @@ bool HasBookmarks(Profile* profile) {
 }  // namespace
 
 namespace ui {
-
-SkColor GetSigninConfirmationPromptBarColor(
-    const ui::ColorProvider* color_provider,
-    SkAlpha alpha) {
-  static const SkColor kBackgroundColor =
-      color_provider->GetColor(ui::kColorDialogBackground);
-  return color_utils::BlendTowardMaxContrast(kBackgroundColor, alpha);
-}
 
 bool HasBeenShutdown(Profile* profile) {
   bool has_been_shutdown = !profile->IsNewProfile();

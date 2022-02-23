@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -22,15 +23,11 @@ namespace sandbox {
 namespace {
 
 TEST(SandboxNtUtil, IsSameProcessPseudoHandle) {
-  InitGlobalNt();
-
   HANDLE current_process_pseudo = GetCurrentProcess();
   EXPECT_TRUE(IsSameProcess(current_process_pseudo));
 }
 
 TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
-  InitGlobalNt();
-
   base::win::ScopedHandle current_process(
       OpenProcess(PROCESS_QUERY_INFORMATION, false, GetCurrentProcessId()));
   ASSERT_TRUE(current_process.IsValid());
@@ -38,8 +35,6 @@ TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
 }
 
 TEST(SandboxNtUtil, IsSameProcessDifferentProcess) {
-  InitGlobalNt();
-
   STARTUPINFO si = {sizeof(si)};
   PROCESS_INFORMATION pi = {};
   wchar_t notepad[] = L"notepad";
@@ -183,7 +178,6 @@ void TestExtremes() {
 // Test nearest allocator, only do this for 64 bit. We test through the exposed
 // new operator as we can't call the AllocateNearTo function directly.
 TEST(SandboxNtUtil, NearestAllocator) {
-  InitGlobalNt();
   std::vector<unique_ptr_vmem> mem_range;
   AllocateTestRange(&mem_range);
   ASSERT_LT(0U, mem_range.size());
@@ -242,8 +236,6 @@ TEST(SandboxNtUtil, ValidParameter) {
 }
 
 TEST(SandboxNtUtil, NtGetPathFromHandle) {
-  InitGlobalNt();
-
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
   base::File exe_file(exe, base::File::FLAG_OPEN);
@@ -261,6 +253,51 @@ TEST(SandboxNtUtil, NtGetPathFromHandle) {
   std::wstring nt_path;
   EXPECT_TRUE(GetNtPathFromWin32Path(exe.value(), &nt_path));
   EXPECT_STREQ(path.get(), nt_path.c_str());
+}
+
+TEST(SandboxNtUtil, CopyNameAndAttributes) {
+  OBJECT_ATTRIBUTES object_attributes;
+  InitializeObjectAttributes(&object_attributes, nullptr, 0, nullptr, nullptr);
+  std::unique_ptr<wchar_t, NtAllocDeleter> name;
+  size_t name_len;
+  uint32_t attributes;
+  EXPECT_EQ(STATUS_UNSUCCESSFUL,
+            sandbox::CopyNameAndAttributes(&object_attributes, &name, &name_len,
+                                           &attributes));
+  UNICODE_STRING object_name = {};
+  InitializeObjectAttributes(&object_attributes, &object_name, 0,
+                             reinterpret_cast<HANDLE>(0x88), nullptr);
+  EXPECT_EQ(STATUS_UNSUCCESSFUL,
+            sandbox::CopyNameAndAttributes(&object_attributes, &name, &name_len,
+                                           &attributes));
+  wchar_t name_buffer[] = {L'A', L'B', L'C', L'D'};
+  object_name.Length = static_cast<USHORT>(sizeof(name_buffer));
+  object_name.MaximumLength = object_name.Length;
+  object_name.Buffer = name_buffer;
+
+  InitializeObjectAttributes(&object_attributes, &object_name, 0,
+                             reinterpret_cast<HANDLE>(0x88), nullptr);
+  EXPECT_EQ(STATUS_UNSUCCESSFUL,
+            sandbox::CopyNameAndAttributes(&object_attributes, &name, &name_len,
+                                           &attributes));
+  InitializeObjectAttributes(&object_attributes, &object_name, 0x12345678,
+                             nullptr, nullptr);
+  ASSERT_EQ(STATUS_SUCCESS,
+            sandbox::CopyNameAndAttributes(&object_attributes, &name, &name_len,
+                                           &attributes));
+  EXPECT_EQ(object_attributes.Attributes, attributes);
+  EXPECT_EQ(base::size(name_buffer), name_len);
+  EXPECT_EQ(0, wcsncmp(name.get(), name_buffer, base::size(name_buffer)));
+  EXPECT_EQ(L'\0', name.get()[name_len]);
+}
+
+TEST(SandboxNtUtil, GetNtExports) {
+  const NtExports* exports = GetNtExports();
+  ASSERT_TRUE(exports);
+  static_assert((sizeof(NtExports) % sizeof(void*)) == 0);
+  // Verify that the structure is fully initialized.
+  for (size_t i = 0; i < sizeof(NtExports) / sizeof(void*); i++)
+    EXPECT_TRUE(reinterpret_cast<void* const*>(exports)[i]);
 }
 
 }  // namespace

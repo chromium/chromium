@@ -12,6 +12,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/core/browser/db/v4_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 
@@ -80,7 +81,7 @@ class TestV4DatabaseFactory : public V4DatabaseFactory {
   // test in the test fixture instantiates a new SafebrowsingService instance,
   // which instantiates a new V4LocalDatabaseManager, which instantiates a new
   // V4Database using this method so use-after-free isn't possible.
-  TestV4Database* v4_db_ = nullptr;
+  raw_ptr<TestV4Database> v4_db_ = nullptr;
 };
 
 class TestV4GetHashProtocolManager : public V4GetHashProtocolManager {
@@ -108,7 +109,7 @@ class TestV4GetHashProtocolManagerFactory
 
  private:
   // Owned by the SafeBrowsingService.
-  TestV4GetHashProtocolManager* pm_ = nullptr;
+  raw_ptr<TestV4GetHashProtocolManager> pm_ = nullptr;
 };
 
 // Returns FullHashInfo object for the basic host+path pattern for a given URL

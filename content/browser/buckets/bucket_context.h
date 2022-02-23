@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "url/origin.h"
 
@@ -37,7 +38,8 @@ class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
   BucketContext(const BucketContext&) = delete;
   BucketContext& operator=(const BucketContext&) = delete;
 
-  void Initialize();
+  void Initialize(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   // Posts task on IO thread and calls BindBucketManagerHostOnIOThread to create
   // BucketManagerHost and bind blink::mojom::BucketManagerHost receiver.
@@ -51,7 +53,8 @@ class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
 
   ~BucketContext();
 
-  void InitializeOnIOThread();
+  void InitializeOnIOThread(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   // Must be called on the IO thread. This will create a BucketManagerHost
   // and bind the blink::mojom::BucketManagerHost receiver.

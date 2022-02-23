@@ -110,4 +110,30 @@ TEST(BlinkSchemefulSiteTest, FromWire) {
   EXPECT_EQ(out, valid_site);
 }
 
+TEST(BlinkSchemefulSiteTest, HashBlinkSchemefulSite) {
+  WTF::HashMap<BlinkSchemefulSite, int> blink_schemeful_site_map_;
+
+  BlinkSchemefulSite blink_site_1(
+      SecurityOrigin::CreateFromString("https://example.com"));
+  BlinkSchemefulSite blink_site_2(
+      SecurityOrigin::CreateFromString("https://other.com"));
+  BlinkSchemefulSite opaque_site_1;
+  BlinkSchemefulSite opaque_site_2;
+
+  blink_schemeful_site_map_.insert(blink_site_1, 1);
+  EXPECT_EQ(blink_schemeful_site_map_.size(), 1u);
+  EXPECT_TRUE(blink_schemeful_site_map_.Contains(blink_site_1));
+  EXPECT_EQ(blink_schemeful_site_map_.at(blink_site_1), 1);
+
+  blink_schemeful_site_map_.insert(blink_site_2, 2);
+  blink_schemeful_site_map_.insert(opaque_site_1, 3);
+  blink_schemeful_site_map_.insert(opaque_site_2, 4);
+  EXPECT_EQ(blink_schemeful_site_map_.size(), 4u);
+
+  blink_schemeful_site_map_.erase(blink_site_1);
+  blink_schemeful_site_map_.erase(opaque_site_1);
+  EXPECT_FALSE(blink_schemeful_site_map_.Contains(blink_site_1));
+  EXPECT_FALSE(blink_schemeful_site_map_.Contains(opaque_site_1));
+}
+
 }  // namespace blink

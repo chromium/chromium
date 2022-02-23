@@ -15,31 +15,31 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurveFactory {
   enum class ScrollType { kProgrammatic, kKeyboard, kMouseWheel, kAutoScroll };
 
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateAnimation(
-      const gfx::Vector2dF& target_value,
+      const gfx::PointF& target_value,
       ScrollType scroll_type);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve>
   CreateEaseInOutAnimationForTesting(
-      const gfx::Vector2dF& target_value,
+      const gfx::PointF& target_value,
       ScrollOffsetAnimationCurve::DurationBehavior duration_behavior =
           ScrollOffsetAnimationCurve::DurationBehavior::DELTA_BASED);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve>
-  CreateLinearAnimationForTesting(const gfx::Vector2dF& target_value);
+  CreateLinearAnimationForTesting(const gfx::PointF& target_value);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve>
-  CreateImpulseAnimationForTesting(const gfx::Vector2dF& target_value);
+  CreateImpulseAnimationForTesting(const gfx::PointF& target_value);
 
  private:
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateEaseInOutAnimation(
-      const gfx::Vector2dF& target_value,
+      const gfx::PointF& target_value,
       ScrollOffsetAnimationCurve::DurationBehavior duration_hint);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateLinearAnimation(
-      const gfx::Vector2dF& target_value);
+      const gfx::PointF& target_value);
 
   static std::unique_ptr<ScrollOffsetAnimationCurve> CreateImpulseAnimation(
-      const gfx::Vector2dF& target_value);
+      const gfx::PointF& target_value);
 };
 }  // namespace cc
 

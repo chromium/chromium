@@ -10,21 +10,22 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
@@ -35,13 +36,16 @@ class SiteSettingsCounterTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     map_ = HostContentSettingsMapFactory::GetForProfile(profile());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     zoom_map_ = content::HostZoomMap::GetDefaultForBrowserContext(profile());
 #else
     zoom_map_ = nullptr;
 #endif
-    handler_registry_ = std::make_unique<ProtocolHandlerRegistry>(
-        profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
+    handler_registry_ =
+        std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
+            profile(),
+            std::make_unique<
+                custom_handlers::TestProtocolHandlerRegistryDelegate>());
 
     counter_ = std::make_unique<SiteSettingsCounter>(
         map(), zoom_map(), handler_registry(), profile_->GetPrefs());
@@ -49,7 +53,7 @@ class SiteSettingsCounterTest : public testing::Test {
                    browsing_data::ClearBrowsingDataTab::ADVANCED,
                    base::BindRepeating(&SiteSettingsCounterTest::Callback,
                                        base::Unretained(this)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ClearNotificationsChannels();
 #endif
   }
@@ -60,7 +64,7 @@ class SiteSettingsCounterTest : public testing::Test {
 
   content::HostZoomMap* zoom_map() { return zoom_map_; }
 
-  ProtocolHandlerRegistry* handler_registry() {
+  custom_handlers::ProtocolHandlerRegistry* handler_registry() {
     return handler_registry_.get();
   }
 
@@ -91,7 +95,7 @@ class SiteSettingsCounterTest : public testing::Test {
                   ->Value();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ClearNotificationsChannels() {
     // Because notification channel settings aren't tied to the profile, they
     // will persist across tests. We need to make sure they're reset here.
@@ -114,8 +118,8 @@ class SiteSettingsCounterTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   scoped_refptr<HostContentSettingsMap> map_;
-  content::HostZoomMap* zoom_map_;
-  std::unique_ptr<ProtocolHandlerRegistry> handler_registry_;
+  raw_ptr<content::HostZoomMap> zoom_map_;
+  std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> handler_registry_;
   std::unique_ptr<SiteSettingsCounter> counter_;
   bool finished_;
   browsing_data::BrowsingDataCounter::ResultInt result_;
@@ -177,7 +181,7 @@ TEST_F(SiteSettingsCounterTest, OnlyCountContentSettings) {
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://maps.google.com"), GURL(),
       ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::DictionaryValue>());
+      base::Value(base::Value::Type::DICTIONARY));
 
   counter()->Restart();
   EXPECT_EQ(1, GetResult());
@@ -188,7 +192,7 @@ TEST_F(SiteSettingsCounterTest, CountWebUsbSettings) {
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
       ContentSettingsType::USB_CHOOSER_DATA,
-      std::make_unique<base::DictionaryValue>());
+      base::Value(base::Value::Type::DICTIONARY));
 
   counter()->Restart();
   EXPECT_EQ(1, GetResult());
@@ -230,7 +234,7 @@ TEST_F(SiteSettingsCounterTest, PeriodChanged) {
   EXPECT_EQ(1, GetResult());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SiteSettingsCounterTest, ZoomLevel) {
   zoom_map()->SetZoomLevelForHost("google.com", 1.5);
   zoom_map()->SetZoomLevelForHost("www.google.com", 1.5);

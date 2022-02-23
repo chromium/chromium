@@ -83,8 +83,8 @@ java_target_patterns = _java_library_patterns + _java_resource_patterns
 _r8_path = "//third_party/r8/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
 _desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
-_desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.1.jar"
-_desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.1.jar"
+_desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.5.jar"
+_desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
 _desugar_runtime_jar = "$root_build_dir/obj/third_party/bazel/desugar/Desugar_runtime.processed.jar"
 
 _dexdump_path = "$android_sdk_build_tools/dexdump"
@@ -893,9 +893,18 @@ template("test_runner_script") {
           "@WrappedPath(@FileArg($_rebased_build_config:deps_info:apk_path))",
         ]
       }
-      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled &&
-          !_incremental_apk) {
-        executable_args += [ "--enable-java-deobfuscation" ]
+      if (defined(invoker.proguard_mapping_path)) {
+        if (_incremental_apk) {
+          not_needed(invoker, [ "proguard_mapping_path" ])
+        } else {
+          data += [ invoker.proguard_mapping_path ]
+          _rebased_mapping_path =
+              rebase_path(invoker.proguard_mapping_path, root_build_dir)
+          executable_args += [
+            "--proguard-mapping-path",
+            "@WrappedPath($_rebased_mapping_path)",
+          ]
+        }
       }
       if (use_jacoco_coverage) {
         # Set a default coverage output directory (can be overridden by user
@@ -1092,6 +1101,8 @@ if (enable_java_templates) {
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
         # Nocompile tests need lint to fail through ninja.
         args += [ "--skip-build-server" ]
+      } else if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
       }
 
       if (defined(invoker.lint_suppressions_file)) {
@@ -1943,6 +1954,9 @@ if (enable_java_templates) {
         "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",
       ]
+      if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
+      }
       if (invoker.requires_android) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:android:sdk_jars)" ]
       }
@@ -2393,6 +2407,7 @@ if (enable_java_templates) {
     }
 
     if (defined(invoker.include_resource)) {
+      _inputs += [ invoker.include_resource ]
       _rebased_include_resources =
           rebase_path(invoker.include_resource, root_build_dir)
       _args += [ "--include-resources=$_rebased_include_resources" ]
@@ -2584,7 +2599,10 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/${target_name}.d"
       _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
       inputs = [ _unused_resources_script ]
-      outputs = [ invoker.output_config ]
+      outputs = [
+        invoker.output_config,
+        invoker.output_r_txt,
+      ]
       if (!defined(deps)) {
         deps = []
       }
@@ -2596,7 +2614,9 @@ if (enable_java_templates) {
         rebase_path(_unused_resources_script, root_build_dir),
         "--output-config",
         rebase_path(invoker.output_config, root_build_dir),
-        "--r-text=@FileArg($_rebased_module_build_config:deps_info:r_text_path)",
+        "--r-text-in=@FileArg($_rebased_module_build_config:deps_info:r_text_path)",
+        "--r-text-out",
+        rebase_path(invoker.output_r_txt, root_build_dir),
         "--dependencies-res-zips=@FileArg($_rebased_module_build_config:deps_info:dependency_zips)",
         "--depfile",
         rebase_path(depfile, root_build_dir),
@@ -3109,6 +3129,8 @@ if (enable_java_templates) {
       if (defined(invoker.skip_build_server) && invoker.skip_build_server) {
         # Nocompile tests need lint to fail through ninja.
         args += [ "--skip-build-server" ]
+      } else if (android_static_analysis == "build_server") {
+        args += [ "--use-build-server" ]
       }
 
       foreach(e, _processor_args) {
@@ -3685,21 +3707,6 @@ if (enable_java_templates) {
 
     _public_deps = []
     _analysis_public_deps = []
-    _analysis_files = []
-
-    if (defined(invoker.proguard_configs)) {
-      assert(_build_host_jar || _build_device_jar)
-
-      # proguard_configs listed on java_library targets need to be marked
-      # as inputs to at least one action so that "gn analyze" will know
-      # about them. Although this target doesn't use them, it's a convenient spot
-      # to list them.
-      # https://crbug.com/827197
-      _analysis_files = invoker.proguard_configs
-      _analysis_public_deps =
-          _non_java_deps + _srcjar_deps  # For the aapt-generated
-                                         # proguard rules.
-    }
 
     if (_has_sources) {
       if (defined(invoker.enable_errorprone)) {
@@ -3895,8 +3902,9 @@ if (enable_java_templates) {
     }
 
     if (_build_host_jar || _build_device_jar) {
-      _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
-                                invoker.enable_bytecode_checks
+      _enable_bytecode_checks =
+          (!defined(invoker.enable_bytecode_checks) ||
+           invoker.enable_bytecode_checks) && android_static_analysis != "off"
       if (_enable_bytecode_checks) {
         _bytecode_checks_target = "${target_name}__validate_classpath"
         bytecode_processor(_bytecode_checks_target) {
@@ -3911,6 +3919,8 @@ if (enable_java_templates) {
           is_prebuilt = _is_prebuilt
         }
         _analysis_public_deps += [ ":$_bytecode_checks_target" ]
+      } else {
+        not_needed(invoker, [ "missing_classes_allowlist" ])
       }
 
       if (_build_host_jar) {
@@ -4015,6 +4025,19 @@ if (enable_java_templates) {
     # the non-analysis steps of other targets that depend on this one.
     group("${target_name}__impl") {
       public_deps = _public_deps
+
+      # proguard_configs listed on java_library targets need to be marked
+      # as inputs to at least one target so that "gn analyze" will know
+      # about them. Although this target doesn't use them, it's a convenient spot
+      # to list them.
+      # https://crbug.com/827197
+      if (compute_inputs_for_analyze && defined(invoker.proguard_configs)) {
+        assert(_build_host_jar || _build_device_jar)
+        data = invoker.proguard_configs
+
+        # For the aapt-generated proguard rules.
+        deps = _non_java_deps + _srcjar_deps
+      }
     }
 
     java_lib_group("${target_name}__assetres") {
@@ -4040,10 +4063,6 @@ if (enable_java_templates) {
         public_deps = []
       }
       public_deps += [ ":${target_name}__impl" ]
-      if (!defined(data)) {
-        data = []
-      }
-      data += _analysis_files
       if (!defined(data_deps)) {
         data_deps = []
       }

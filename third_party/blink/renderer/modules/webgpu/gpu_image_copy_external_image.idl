@@ -8,5 +8,5 @@
 dictionary GPUImageCopyExternalImage {
     required (ImageBitmap or HTMLCanvasElement or OffscreenCanvas) source;
     GPUOrigin2D origin = {};
-    boolean temporaryOriginBottomLeftIfWebGL = false;
+    boolean flipY = false;
 };

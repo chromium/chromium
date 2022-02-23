@@ -57,7 +57,7 @@ bool IncognitoModePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void IncognitoModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // When browser starts with GCPW sign-in flag, it runs in incognito mode and
   // gaia login page is loaded. With this flag, user can't use Chrome normally.
   // However GCPW can't work in non-incognito mode and policy setting prevents

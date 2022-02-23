@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/data_object_builder.h"

@@ -9,8 +9,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assistant_client {
@@ -92,10 +92,11 @@ class AssistantClientV1 : public AssistantClient {
   void PauseTimer(const std::string& timer_id) override;
   void RemoveTimer(const std::string& timer_id) override;
   void ResumeTimer(const std::string& timer_id) override;
-  std::vector<assistant::AssistantTimer> GetTimers() override;
-  void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) override;
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) override;
 
  private:
@@ -114,6 +115,9 @@ class AssistantClientV1 : public AssistantClient {
 
   assistant_client::AlarmTimerManager* alarm_timer_manager();
 
+  // Get the timer status and notify the `timer_observer_`.
+  void GetAndNotifyTimerStatus();
+
   absl::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
@@ -126,6 +130,10 @@ class AssistantClientV1 : public AssistantClient {
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
+
+  base::ObserverList<
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+      timer_event_observer_list_;
 
   ServicesStatusObserver* services_status_observer_ = nullptr;
 

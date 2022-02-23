@@ -31,6 +31,10 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace chrome {
 
 namespace {
@@ -72,14 +76,14 @@ bool ShouldDisplayManagedUi(Profile* profile) {
     return false;
 
   // Don't show the UI for Unicorn accounts.
-  if (profile->IsSupervised())
+  if (profile->IsChild())
     return false;
 #endif
 
   return enterprise_util::IsBrowserManaged(profile);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   absl::optional<std::string> account_manager =
       GetAccountManagerIdentity(profile);
@@ -108,7 +112,7 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
 
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::u16string GetDeviceManagedUiWebUILabel() {
@@ -142,6 +146,14 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
                           ->machine_level_user_cloud_policy_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+absl::optional<std::string> GetSessionManagerIdentity() {
+  if (!policy::PolicyLoaderLacros::IsMainUserManaged())
+    return absl::nullopt;
+  return policy::PolicyLoaderLacros::main_user_policy_data()->managed_by();
+}
+#endif
 
 absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())

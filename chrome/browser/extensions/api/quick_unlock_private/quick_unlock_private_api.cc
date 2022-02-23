@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -21,8 +23,6 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -78,7 +78,7 @@ constexpr const char* kMostCommonPins[] = {"1212", "1004", "2000", "6969",
 // Returns the active set of quick unlock modes.
 void ComputeActiveModes(Profile* profile, ActiveModeCallback result) {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   ash::quick_unlock::PinBackend::GetInstance()->IsSet(
       user->GetAccountId(),
       base::BindOnce(
@@ -192,7 +192,7 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // When OOBE continues in-session as Furst Run UI, it is still executed
   // under Sign-In profile.
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return ProfileManager::GetPrimaryUserProfile();
 
   return profile;
@@ -240,8 +240,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
   if (authenticator_allocator_) {
     extended_authenticator_ = authenticator_allocator_.Run(helper.get());
   } else {
-    extended_authenticator_ =
-        chromeos::ExtendedAuthenticator::Create(helper.get());
+    extended_authenticator_ = ash::ExtendedAuthenticator::Create(helper.get());
   }
 
   // The extension function needs to stay alive while the authenticator runs the
@@ -321,7 +320,7 @@ QuickUnlockPrivateSetPinAutosubmitEnabledFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   ash::quick_unlock::PinBackend::GetInstance()->SetPinAutoSubmitEnabled(
       user->GetAccountId(), params->pin, params->enabled,
@@ -355,10 +354,10 @@ QuickUnlockPrivateCanAuthenticatePinFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
   ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      user->GetAccountId(),
+      user->GetAccountId(), ash::quick_unlock::Purpose::kAny,
       base::BindOnce(&QuickUnlockPrivateCanAuthenticatePinFunction::
                          HandleCanAuthenticateResult,
                      this));
@@ -384,7 +383,8 @@ ExtensionFunction::ResponseAction
 QuickUnlockPrivateGetAvailableModesFunction::Run() {
   QuickUnlockModeList modes;
   if (!ash::quick_unlock::IsPinDisabledByPolicy(
-          GetActiveProfile(browser_context())->GetPrefs())) {
+          GetActiveProfile(browser_context())->GetPrefs(),
+          ash::quick_unlock::Purpose::kAny)) {
     modes.push_back(quick_unlock_private::QUICK_UNLOCK_MODE_PIN);
   }
 
@@ -520,7 +520,8 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   // on the UI, but users can still reach here via dev tools.
   for (size_t i = 0; i < params_->modes.size(); ++i) {
     if (params_->modes[i] == QuickUnlockMode::QUICK_UNLOCK_MODE_PIN &&
-        ash::quick_unlock::IsPinDisabledByPolicy(pref_service)) {
+        ash::quick_unlock::IsPinDisabledByPolicy(
+            pref_service, ash::quick_unlock::Purpose::kAny)) {
       return RespondNow(Error(kPinDisabledByPolicy));
     }
   }
@@ -585,7 +586,7 @@ void QuickUnlockPrivateSetModesFunction::OnGetActiveModes(
   if (update_pin) {
     Profile* profile = GetActiveProfile(browser_context());
     user_manager::User* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     if (pin_credential.empty()) {
       ash::quick_unlock::PinBackend::GetInstance()->Remove(
           user->GetAccountId(), params_->token,
@@ -628,9 +629,9 @@ void QuickUnlockPrivateSetModesFunction::ModeChangeComplete(
     FireEvent(updated_modes);
 
   const user_manager::User* const user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
+      ash::ProfileHelper::Get()->GetUserByProfile(
           GetActiveProfile(browser_context()));
-  const chromeos::UserContext user_context(*user);
+  const ash::UserContext user_context(*user);
 
   Respond(ArgumentList(SetModes::Results::Create()));
 }

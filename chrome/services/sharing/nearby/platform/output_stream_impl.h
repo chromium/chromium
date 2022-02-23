@@ -5,14 +5,14 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_STREAM_IMPL_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_OUTPUT_STREAM_IMPL_H_
 
-#include "third_party/nearby/src/cpp/platform/base/output_stream.h"
+#include "third_party/nearby/src/internal/platform/output_stream.h"
 
 #include <stdint.h>
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

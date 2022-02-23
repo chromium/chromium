@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -22,12 +23,12 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -91,7 +92,7 @@ class DummyNoStatePrefetchContents : public NoStatePrefetchContents {
   static int g_next_route_id_;
   int route_id_;
 
-  UnitTestNoStatePrefetchManager* test_no_state_prefetch_manager_;
+  raw_ptr<UnitTestNoStatePrefetchManager> test_no_state_prefetch_manager_;
   FinalStatus expected_final_status_;
 };
 
@@ -473,15 +474,13 @@ class PrerenderTest : public testing::Test {
   }
 
   void DisablePrerender() {
-    profile_.GetPrefs()->SetInteger(
-        prefs::kNetworkPredictionOptions,
-        chrome_browser_net::NETWORK_PREDICTION_NEVER);
+    prefetch::SetPreloadPagesState(profile_.GetPrefs(),
+                                   prefetch::PreloadPagesState::kNoPreloading);
   }
 
   void EnablePrerender() {
-    profile_.GetPrefs()->SetInteger(
-        prefs::kNetworkPredictionOptions,
-        chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+    prefetch::SetPreloadPagesState(
+        profile_.GetPrefs(), prefetch::PreloadPagesState::kStandardPreloading);
   }
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -1497,8 +1496,8 @@ TEST_F(PrerenderTest, LinkManagerAbandonThenCancel) {
 
 // Flaky on Android, crbug.com/1087876.
 // Flaky on Mac and Linux, crbug.com/1087735.
-#if defined(OS_ANDROID) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LinkManagerAddTwiceCancelTwice \
   DISABLED_LinkManagerAddTwiceCancelTwice
 #else

@@ -41,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
@@ -64,14 +65,18 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
   return autofill::ValidationRulesStorageFactory::CreateStorage();
 }
 
+bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
+  return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
+         rfh->IsFeatureEnabled(
+             blink::mojom::PermissionsPolicyFeature::kPayment);
+}
+
 }  // namespace
 
 ChromePaymentRequestDelegate::ChromePaymentRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : shown_dialog_(nullptr),
-      frame_routing_id_(content::GlobalRenderFrameHostId(
-          render_frame_host->GetProcess()->GetID(),
-          render_frame_host->GetRoutingID())) {}
+      frame_routing_id_(render_frame_host->GetGlobalId()) {}
 
 ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() = default;
 
@@ -151,9 +156,8 @@ bool ChromePaymentRequestDelegate::IsOffTheRecord() const {
 
 const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
-                                      ->GetLastCommittedURL()
-                                : GURL::EmptyGURL();
+  return FrameSupportsPayments(rfh) ? rfh->GetMainFrame()->GetLastCommittedURL()
+                                    : GURL::EmptyGURL();
 }
 
 void ChromePaymentRequestDelegate::DoFullCardRequest(
@@ -161,14 +165,10 @@ void ChromePaymentRequestDelegate::DoFullCardRequest(
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsActive() || !shown_dialog_)
+  if (!FrameSupportsPayments(rfh) || !shown_dialog_)
     return;
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return;
-  shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate,
-                                     web_contents);
+
+  shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate, rfh);
 }
 
 autofill::RegionDataLoader*
@@ -213,7 +213,7 @@ PrefService* ChromePaymentRequestDelegate::GetPrefService() {
 
 bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsActive())
+  if (!FrameSupportsPayments(rfh))
     return false;
 
   Browser* browser = chrome::FindBrowserWithWebContents(
@@ -225,7 +225,7 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
     const std::u16string& merchant_name,
     base::OnceClosure response_callback) {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsActive())
+  if (!FrameSupportsPayments(rfh))
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -244,9 +244,16 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // displays the top-level origin in its UI before the user can click on the
   // [Verify] button to invoke this authenticator.
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsActive()
-             ? std::make_unique<content::InternalAuthenticatorImpl>(rfh)
-             : nullptr;
+  // Lifetime of the created authenticator is externally managed by the
+  // authenticator factory, but is generally tied to the RenderFrame by
+  // listening for `RenderFrameDeleted()`. `FrameSupportsPayments()` already
+  // performs this check on our behalf, so the DCHECK() here is just for
+  // documentation purposes: this ensures that `RenderFrameDeleted()` will be
+  // called at some point.
+  if (!FrameSupportsPayments(rfh))
+    return nullptr;
+  DCHECK(rfh->IsRenderFrameLive());
+  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 }
 
 scoped_refptr<PaymentManifestWebDataService>
@@ -281,7 +288,7 @@ bool ChromePaymentRequestDelegate::IsInteractive() const {
 std::string
 ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  return rfh && rfh->IsActive()
+  return FrameSupportsPayments(rfh)
              ? SslValidityChecker::GetInvalidSslCertificateErrorMessage(
                    content::WebContents::FromRenderFrameHost(rfh))
              : "";
@@ -294,7 +301,7 @@ bool ChromePaymentRequestDelegate::SkipUiForBasicCard() const {
 std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsActive())
+  if (!FrameSupportsPayments(rfh))
     return "";
 
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);

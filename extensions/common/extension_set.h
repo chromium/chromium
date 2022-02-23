@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"

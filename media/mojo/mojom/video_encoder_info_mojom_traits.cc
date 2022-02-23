@@ -28,6 +28,7 @@ bool StructTraits<
   out->has_trusted_rate_controller = data.has_trusted_rate_controller();
   out->is_hardware_accelerated = data.is_hardware_accelerated();
   out->supports_simulcast = data.supports_simulcast();
+  out->reports_average_qp = data.reports_average_qp();
 
   if (!data.ReadImplementationName(&out->implementation_name))
     return false;

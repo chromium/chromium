@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -36,7 +37,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -48,7 +48,9 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -91,32 +93,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      * {@link UrlUtilities#getDomainAndRegistry}.
      */
     public static final String EXTRA_SELECTED_DOMAINS = "selected_domains";
-
-    /**
-     * Observer that monitors changes for {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT}.
-     * Used to receive updates that //component/site_settings might not have access to.
-     *
-     * This is a temporary workaround until JNI content setting observer is available thus is not a
-     * recommended pattern to follow.
-     * TODO(https://crbug.com/1252504): Remove when java content_settings_observer is available.
-     */
-    public interface AutoDarkSiteSettingObserver {
-        /**
-         * Called when {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT} changed in its
-         * default value (by the toggle).
-         * @param isEnabled The new state of the default value.
-         */
-        void onDefaultValueChanged(boolean isEnabled);
-
-        /**
-         * Called when {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT} as a site exception
-         * is being added or removed.
-         * @param isAdded True if a site exception is being added; False otherwise.
-         */
-        void onSiteExceptionChanged(boolean isAdded);
-    }
-
-    private static @Nullable AutoDarkSiteSettingObserver sAutoDarkSiteSettingsObserver;
 
     // The list that contains preferences.
     private RecyclerView mListView;
@@ -212,15 +188,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         public boolean isPreferenceControlledByCustodian(Preference preference) {
             return mCategory.isManagedByCustodian();
         }
-    }
-
-    /**
-     * Set the observer that looks at {@link SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT}
-     * @param observer
-     */
-    public static void setAutoDarkSiteSettingsObserver(
-            @Nullable AutoDarkSiteSettingObserver observer) {
-        sAutoDarkSiteSettingsObserver = observer;
     }
 
     private void getInfoForOrigins() {
@@ -330,13 +297,12 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // Color the first part of the title blue.
         ForegroundColorSpan blueSpan = new ForegroundColorSpan(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_text_color_link));
+                SemanticColorUtils.getDefaultTextColorAccent1(getContext()));
         spannable.setSpan(blueSpan, 0, spannable.length() - prefCount.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Gray out the total count of items.
-        int gray = ApiCompatibilityUtils.getColor(
-                getResources(), R.color.default_text_color_secondary);
+        final @ColorInt int gray = SemanticColorUtils.getDefaultTextColorSecondary(getContext());
         spannable.setSpan(new ForegroundColorSpan(gray), spannable.length() - prefCount.length(),
                 spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return spannable;
@@ -511,7 +477,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 if (type == SiteSettingsCategory.Type.NOTIFICATIONS) {
                     updateNotificationsSecondaryControls();
                 } else if (type == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
-                    sAutoDarkSiteSettingsObserver.onDefaultValueChanged((boolean) newValue);
+                    AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
+                            AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, (boolean) newValue);
                 } else if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
                     recordSiteLayoutChanged((boolean) newValue);
                 }
@@ -687,8 +654,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             } else {
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.PatternException");
             }
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
-            sAutoDarkSiteSettingsObserver.onSiteExceptionChanged(true);
         }
     }
 
@@ -719,10 +684,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)
                 && !WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.AUTOMATIC_DOWNLOADS)) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)
-                && WebsitePreferenceBridge.isCategoryEnabled(
-                        browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)) {
             allowSpecifyingExceptions = true;
         }
         if (allowSpecifyingExceptions) {
@@ -1049,6 +1010,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         params.cookieControlsMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
         params.cookiesContentSettingEnforced = mCategory.isManaged();
         params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
+        params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
         fourStateCookieToggle.setState(params);
     }
 
@@ -1159,8 +1121,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
                             if (mCategory.showSites(
                                         SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
-                                sAutoDarkSiteSettingsObserver.onSiteExceptionChanged(
-                                        /*isAdded=*/false);
+                                AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
+                                        AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST,
+                                        false);
                             }
 
                             getInfoForOrigins();

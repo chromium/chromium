@@ -24,6 +24,9 @@ const base::Feature kAvoidH2Reprioritization{"AvoidH2Reprioritization",
 const base::Feature kCapReferrerToOriginOnCrossOrigin{
     "CapReferrerToOriginOnCrossOrigin", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCookieDomainAttributeEmptyString{
+    "CookieDomainAttributeEmptyString", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kDnsTransactionDynamicTimeouts{
     "DnsTransactionDynamicTimeouts", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -164,12 +167,12 @@ const base::Feature kSameSiteDefaultChecksMethodRigorously{
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 const base::Feature kCertVerifierBuiltinFeature{
     "CertVerifierBuiltin", base::FEATURE_DISABLED_BY_DEFAULT};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::FeatureParam<int> kCertVerifierBuiltinImpl{
     &kCertVerifierBuiltinFeature, "impl", 0};
 const base::FeatureParam<int> kCertVerifierBuiltinCacheSize{
     &kCertVerifierBuiltinFeature, "cachesize", 0};
-#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(IS_MAC) */
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
@@ -177,12 +180,12 @@ const base::FeatureParam<int> kCertVerifierBuiltinCacheSize{
 // https://crbug.com/649026
 const base::Feature kCertDualVerificationTrialFeature{
     "CertDualVerificationTrial", base::FEATURE_DISABLED_BY_DEFAULT};
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::FeatureParam<int> kCertDualVerificationTrialImpl{
     &kCertDualVerificationTrialFeature, "impl", 0};
 const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
     &kCertDualVerificationTrialFeature, "cachesize", 0};
-#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(IS_MAC) */
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -198,12 +201,6 @@ const base::Feature kTurnOffStreamingMediaCachingAlways{
 
 const base::Feature kSchemefulSameSite{"SchemefulSameSite",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kReportPoorConnectivity{"ReportPoorConnectivity",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPreemptiveMobileNetworkActivation{
-    "PreemptiveMobileNetworkActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kLimitOpenUDPSockets{"LimitOpenUDPSockets",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
@@ -231,22 +228,16 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
     "TimeoutTcpConnectAttemptMax",
     base::Seconds(30));
 
-constexpr base::Feature kFirstPartySets{"FirstPartySets",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
-    &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
-
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::Feature kDocumentReporting{"DocumentReporting",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived{
     "UdpSocketPosixAlwaysUpdateBytesReceived",
     base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 const base::Feature kCookieSameSiteConsidersRedirectChain{
     "CookieSameSiteConsidersRedirectChain", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -260,8 +251,11 @@ const base::Feature kPartitionedCookies{"PartitionedCookies",
 const base::Feature kExtraCookieValidityChecks{
     "ExtraCookieValidityChecks", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kFirstPartySetsV2ComponentFormat{
-    "FirstPartySetsV2ComponentFormat", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kRecordRadioWakeupTrigger{
+    "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSandboxHttpCache("SandboxHttpCache",
+                                      base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace net

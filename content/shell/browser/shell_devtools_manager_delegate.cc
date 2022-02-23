@@ -35,11 +35,11 @@
 #include "net/socket/tcp_server_socket.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/devtools_auth.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
 #endif
@@ -52,7 +52,7 @@ const int kBackLog = 10;
 
 base::subtle::Atomic32 g_last_used_port;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
@@ -119,7 +119,7 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
 std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string socket_name = "content_shell_devtools_remote";
   if (command_line.HasSwitch(switches::kRemoteDebuggingSocketName)) {
     socket_name = command_line.GetSwitchValueASCII(
@@ -206,7 +206,7 @@ ShellDevToolsManagerDelegate::CreateNewTarget(const GURL& url) {
 }
 
 std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::string();
 #else
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -215,7 +215,7 @@ std::string ShellDevToolsManagerDelegate::GetDiscoveryPageHTML() {
 }
 
 bool ShellDevToolsManagerDelegate::HasBundledFrontendResources() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;

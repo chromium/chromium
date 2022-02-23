@@ -37,7 +37,7 @@ class INVALIDATION_EXPORT Invalidation {
   ~Invalidation();
 
   // Compares two invalidations.  The comparison ignores ack-tracking state.
-  bool Equals(const Invalidation& other) const;
+  bool operator==(const Invalidation& other) const;
 
   Topic topic() const;
   bool is_unknown_version() const;

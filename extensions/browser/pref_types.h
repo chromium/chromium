@@ -32,6 +32,7 @@ struct PrefMap {
 };
 
 extern const PrefMap kCorruptedDisableCount;
+extern const PrefMap kUserPermissions;
 
 }  // namespace extensions
 

@@ -41,7 +41,7 @@ function loadFrame(iframe, src) {
         assert_equals(data.name, 'SecurityError', 'Exception Name:');
         assert_equals(data.message, "Failed to construct 'PaymentRequest': " +
           "Must be in a top-level browsing context or an iframe needs to " +
-          "specify 'allowpaymentrequest' explicitly", 'Error Message:');
+          "specify allow=\"payment\" explicitly", 'Error Message:');
       }
     });
   }, 'Paymentrequest enabled for all on URL: ' + src + ' with ' +

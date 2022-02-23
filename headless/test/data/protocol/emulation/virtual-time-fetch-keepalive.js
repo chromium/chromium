@@ -16,10 +16,9 @@
       FetchHelper.makeContentResponse(`<html></html>`));
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
   await dp.Page.navigate({url: 'https://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
 
   helper.onceRequest('https://test.com/post').matched().then(() =>
       testRunner.log('FAIL: this request should not come through!'));

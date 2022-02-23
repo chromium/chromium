@@ -66,6 +66,10 @@
     width: 20px;
   }
 
+  cr-policy-indicator {
+    margin-inline-start: 24px;
+  }
+
   .separator {
     margin-inline-end: 0;
     margin-inline-start: 24px;
@@ -90,11 +94,16 @@
               active="[[isDeviceInhibited_]]">
           </paper-spinner-lite>
         </template>
-        <template is="dom-if" if="[[showAddESimButton_(cellularDeviceState,
-            globalPolicy)]]" restamp>
+        <template is="dom-if" if="[[shouldShowAddESimButton_(
+            cellularDeviceState)]]" restamp>
+          <cr-policy-indicator indicator-type="devicePolicy"
+              hidden="[[!shouldShowAddESimPolicyIcon_(globalPolicy)]]"
+              icon-aria-label="$i18n{internetAddCellular}">
+          </cr-policy-indicator>
           <cr-icon-button class="icon-add-cellular add-button"
               aria-label="$i18n{internetAddCellular}" id="addESimButton"
-              disabled="[[isDeviceInhibited_]]"
+              disabled="[[isAddESimButtonDisabled_(cellularDeviceState,
+                  globalPolicy)]]"
               on-click="onAddEsimButtonTap_">
           </cr-icon-button>
           <div class="separator"></div>
@@ -135,14 +144,23 @@
       </network-list>
     </div>
   </template>
-  <template is="dom-if" if="[[!shouldShowNetworkSublist_(eSimNetworks_,
+  <template is="dom-if" if="[[shouldShowNoESimMessageOrDownloadLink_(
+      cellularDeviceState.inhibitReason, eSimNetworks_,
       eSimPendingProfileItems_)]]" restamp>
     <div id="eSimNoNetworkFound"
-        class="cellular-network-content cellular-not-setup">
+        class="cellular-network-content cellular-not-setup flex">
+      <div hidden="[[!shouldShowNoESimSubtextMessage_(
+               globalPolicy.allowOnlyPolicyCellularNetworks,
+               isESimPolicyEnabled_)]]">
+        $i18n{eSimNetworkNotSetup}
+      </div>
       <localized-link
           link-disabled = "[[isDeviceInhibited_]]"
           on-link-clicked="onEsimLearnMoreClicked_"
-          localized-string="$i18n{eSimNetworkNotSetup}">
+          localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
+          hidden="[[shouldShowNoESimSubtextMessage_(
+              globalPolicy.allowOnlyPolicyCellularNetworks,
+              isESimPolicyEnabled_)]]">
       </localized-link>
     </div>
   </template>

@@ -46,7 +46,7 @@ typedef int32_t Atomic32;
 #ifdef ARCH_CPU_64_BITS
 // We need to be able to go between Atomic64 and AtomicWord implicitly.  This
 // means Atomic64 and AtomicWord should be the same type on 64-bit.
-#if defined(__ILP32__) || defined(OS_NACL)
+#if defined(__ILP32__) || BUILDFLAG(IS_NACL)
 // NaCl's intptr_t is not actually 64-bits on 64-bit!
 // http://code.google.com/p/nativeclient/issues/detail?id=1162
 typedef int64_t Atomic64;
@@ -133,7 +133,7 @@ Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 
 // On some platforms we need additional declarations to make
 // AtomicWord compatible with our other Atomic* types.
-#if defined(OS_APPLE) || defined(OS_OPENBSD)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD)
 #include "base/atomicops_internals_atomicword_compat.h"
 #endif
 

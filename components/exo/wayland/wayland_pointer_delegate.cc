@@ -4,7 +4,7 @@
 
 #include "components/exo/wayland/wayland_pointer_delegate.h"
 
-#include <linux/input.h>
+#include <linux/input-event-codes.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
@@ -75,8 +75,8 @@ void WaylandPointerDelegate::OnPointerButton(base::TimeTicks time_stamp,
       {ui::EF_LEFT_MOUSE_BUTTON, BTN_LEFT},
       {ui::EF_RIGHT_MOUSE_BUTTON, BTN_RIGHT},
       {ui::EF_MIDDLE_MOUSE_BUTTON, BTN_MIDDLE},
-      {ui::EF_FORWARD_MOUSE_BUTTON, BTN_FORWARD},
-      {ui::EF_BACK_MOUSE_BUTTON, BTN_BACK},
+      {ui::EF_FORWARD_MOUSE_BUTTON, BTN_EXTRA},
+      {ui::EF_BACK_MOUSE_BUTTON, BTN_SIDE},
   };
   for (auto button : buttons) {
     if (button_flags & button.flag) {

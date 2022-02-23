@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
@@ -54,13 +56,20 @@ class TestTabStatsObserver : public TabStatsObserver {
     --tab_count_;
   }
 
+  void OnTabInteraction(content::WebContents* web_contents) override {
+    ++interaction_count_;
+  }
+
   size_t tab_count() { return tab_count_; }
 
   size_t window_count() { return window_count_; }
 
+  size_t interaction_count() { return interaction_count_; }
+
  private:
   size_t tab_count_ = 0;
   size_t window_count_ = 0;
+  size_t interaction_count_ = 0;
 };
 
 using TabsStats = TabStatsDataStore::TabsStats;
@@ -82,7 +91,7 @@ class MockTabStatsTrackerDelegate : public TabStatsTrackerDelegate {
   MockTabStatsTrackerDelegate() = default;
   ~MockTabStatsTrackerDelegate() override = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OcclusionStatusMap CallComputeNativeWindowOcclusionStatus(
       std::vector<aura::WindowTreeHost*> hosts) override {
     // Checking that the hosts are not nullptr, because of a bug where nullptr
@@ -123,11 +132,15 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(tab_stats_tracker_ != nullptr);
   }
 
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  protected:
   // Used to make sure that the metrics are reported properly.
   base::HistogramTester histogram_tester_;
 
-  TabStatsTracker* tab_stats_tracker_{nullptr};
+  raw_ptr<TabStatsTracker> tab_stats_tracker_{nullptr};
   std::vector<std::unique_ptr<TestTabStatsObserver>> test_tab_stats_observers_;
 };
 
@@ -150,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                                   tab_stats_tracker_->tab_stats());
 
   // Add a tab and make sure that the counters get updated.
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   ++expected_stats.max_tab_per_window;
@@ -169,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EnsureTabStatsMatchExpectations(expected_stats,
                                   tab_stats_tracker_->tab_stats());
 
-  AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
   ++expected_stats.total_tab_count_max;
   EnsureTabStatsMatchExpectations(expected_stats,
@@ -214,8 +227,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   ++expected_stats.total_tab_count;
   ++expected_stats.window_count;
 
-  AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ++expected_stats.total_tab_count;
 
   test_tab_stats_observers_.push_back(std::make_unique<TestTabStatsObserver>());
@@ -240,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
       data_store->AddInterval();
 
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
   EXPECT_EQ(2U, interval_map->size());
 
@@ -271,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_EQ(0U, interval_map->size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                        TestCalculateAndRecordNativeWindowVisibilities) {
   std::unique_ptr<MockTabStatsTrackerDelegate> mock_delegate =
@@ -351,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                                       5, 1);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -378,12 +391,12 @@ class LenientMockTabStatsObserver : public TabStatsObserver {
   MOCK_METHOD2(OnMediaEffectivelyFullscreenChanged,
                void(content::WebContents*, bool));
 };
-using MockTabStatsObserver = testing::StrictMock<LenientMockTabStatsObserver>;
+using MockTabStatsObserver = testing::NiceMock<LenientMockTabStatsObserver>;
 
 }  // namespace
 
 // TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
 #else
 #define MAYBE_TabStatsObserverBasics TabStatsObserverBasics
@@ -444,8 +457,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_CALL(mock_observer,
               OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
-  AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   auto* window2_tab2 = window2->tab_strip_model()->GetWebContentsAt(1);
@@ -499,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   EXPECT_CALL(mock_observer,
               OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
-  AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
-                         ui::PAGE_TRANSITION_TYPED, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
+                                     ui::PAGE_TRANSITION_TYPED, true));
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   EXPECT_EQ(content::Visibility::HIDDEN, window1_tab1->GetVisibility());
@@ -577,26 +590,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
   tab_stats_tracker_->RemoveObserver(&mock_observer);
 }
 
-namespace {
-
-class MockTabStatsObserverForPrerenderingTest : public TabStatsObserver {
- public:
-  MockTabStatsObserverForPrerenderingTest() = default;
-  ~MockTabStatsObserverForPrerenderingTest() override = default;
-  MockTabStatsObserverForPrerenderingTest(
-      const MockTabStatsObserverForPrerenderingTest& other) = delete;
-  MockTabStatsObserverForPrerenderingTest& operator=(
-      const MockTabStatsObserverForPrerenderingTest&) = delete;
-
-  MOCK_METHOD1(OnPrimaryMainFrameNavigationCommitted,
-               void(content::WebContents*));
-};
-
-using MockTabStatsPrerenderingObserver =
-    testing::StrictMock<MockTabStatsObserverForPrerenderingTest>;
-
-}  // namespace
-
 class TabStatsTrackerPrerenderBrowserTest : public TabStatsTrackerBrowserTest {
  public:
   TabStatsTrackerPrerenderBrowserTest()
@@ -625,10 +618,6 @@ class TabStatsTrackerPrerenderBrowserTest : public TabStatsTrackerBrowserTest {
     return prerender_helper_;
   }
 
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
  private:
   content::test::PrerenderTestHelper prerender_helper_;
 };
@@ -645,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
   // OnPrimaryMainFrameNavigationCommitted() should not be called in
   // prerendering.
   {
-    MockTabStatsPrerenderingObserver mock_observer;
+    MockTabStatsObserver mock_observer;
     tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
     EXPECT_CALL(mock_observer,
                 OnPrimaryMainFrameNavigationCommitted(::testing::_))
@@ -659,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // OnPrimaryMainFrameNavigationCommitted() should be called after activating.
   {
-    MockTabStatsPrerenderingObserver mock_observer;
+    MockTabStatsObserver mock_observer;
     tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
     EXPECT_CALL(mock_observer,
                 OnPrimaryMainFrameNavigationCommitted(::testing::_))
@@ -668,6 +657,73 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(host_observer->was_activated());
     tab_stats_tracker_->RemoveObserver(&mock_observer);
   }
+}
+
+class TabStatsTrackerSubFrameBrowserTest : public TabStatsTrackerBrowserTest {
+ public:
+  TabStatsTrackerSubFrameBrowserTest() = default;
+  ~TabStatsTrackerSubFrameBrowserTest() override = default;
+  TabStatsTrackerSubFrameBrowserTest(
+      const TabStatsTrackerSubFrameBrowserTest&) = delete;
+  TabStatsTrackerSubFrameBrowserTest& operator=(
+      const TabStatsTrackerSubFrameBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    TabStatsTrackerBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Ensure that subframe navigation cannot affect TabStatsTracker.
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerSubFrameBrowserTest,
+                       VerifyBehaviorOnSubFrameNavigation) {
+  MockTabStatsObserver mock_observer;
+  TestTabStatsObserver count_observer;
+  tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+  tab_stats_tracker_->AddObserverAndSetInitialState(&count_observer);
+
+  // Navigate to an initial page.
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_))
+      .Times(1);
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  EXPECT_EQ(1U, count_observer.interaction_count());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Create an iframe and navigate inside the iframe.
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_))
+      .Times(0);
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      content::JsReplace("var iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         embedded_test_server()->GetURL("/title1.html"))));
+  WaitForLoadStop(GetWebContents());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  // Create a fenced frame and navigate inside the fenced frame.
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_))
+      .Times(0);
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper_.CreateFencedFrame(
+          GetWebContents()->GetMainFrame(),
+          embedded_test_server()->GetURL("/fenced_frames/title1.html"));
+  ASSERT_NE(nullptr, fenced_frame_host);
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+
+  tab_stats_tracker_->RemoveObserver(&mock_observer);
+  tab_stats_tracker_->RemoveObserver(&count_observer);
+  // Ensure that subframe navigation doesn't increase the user interaction
+  // count.
+  EXPECT_EQ(1U, count_observer.interaction_count());
 }
 
 }  // namespace metrics

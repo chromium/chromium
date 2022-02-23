@@ -21,12 +21,12 @@ BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(
 
 BackgroundSyncDelegateImpl::~BackgroundSyncDelegateImpl() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
 BackgroundSyncDelegateImpl::CreateBackgroundSyncEventKeepAlive() {
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::GetUkmSourceId(
     const url::Origin& origin,
@@ -75,7 +75,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
   return 0;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::ScheduleBrowserWakeUpWithDelay(
     blink::mojom::BackgroundSyncType sync_type,
@@ -99,6 +99,6 @@ bool BackgroundSyncDelegateImpl::ShouldDisableAndroidNetworkDetection() {
   // embedder is supported.
   return true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace weblayer

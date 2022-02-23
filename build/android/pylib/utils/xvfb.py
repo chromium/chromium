@@ -16,7 +16,7 @@ def _IsLinux():
   return sys.platform.startswith('linux')
 
 
-class Xvfb(object):
+class Xvfb:
   """Class to start and stop Xvfb if relevant.  Nop if not Linux."""
 
   def __init__(self):

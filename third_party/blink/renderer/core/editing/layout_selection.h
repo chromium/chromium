@@ -24,12 +24,16 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+
+namespace gfx {
+class Rect;
+}
 
 namespace blink {
 
 class InlineTextBox;
-class IntRect;
 class LayoutObject;
 class LayoutText;
 class NGInlineCursor;
@@ -48,7 +52,7 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   void SetHasPendingSelection();
   void Commit();
 
-  IntRect AbsoluteSelectionBounds();
+  gfx::Rect AbsoluteSelectionBounds();
   void InvalidatePaintForSelection();
 
   LayoutTextSelectionStatus ComputeSelectionStatus(const LayoutText&) const;

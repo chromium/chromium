@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/finder/sync_find_buffer.h"
+#include "third_party/blink/renderer/core/editing/iterators/backwards_character_iterator.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
@@ -86,20 +87,6 @@ PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
   return itr.ComputePosition();
 }
 
-PositionInFlatTree NextTextPosition(PositionInFlatTree position,
-                                    PositionInFlatTree end_position) {
-  const TextIteratorBehavior options =
-      TextIteratorBehavior::Builder().SetEmitsSpaceForNbsp(true).Build();
-  CharacterIteratorInFlatTree char_it(position, end_position, options);
-
-  for (; char_it.length(); char_it.Advance(1)) {
-    if (!IsSpaceOrNewline(char_it.CharacterAt(0)))
-      return char_it.StartPosition();
-  }
-
-  return end_position;
-}
-
 bool ContainedByListItem(const EphemeralRangeInFlatTree& range) {
   Node* node = range.CommonAncestorContainer();
   while (node) {
@@ -123,6 +110,38 @@ bool ContainedByTableCell(const EphemeralRangeInFlatTree& range) {
 }
 
 }  // namespace
+
+// static
+PositionInFlatTree TextFragmentFinder::NextTextPosition(
+    PositionInFlatTree position,
+    PositionInFlatTree end_position) {
+  const TextIteratorBehavior options =
+      TextIteratorBehavior::Builder().SetEmitsSpaceForNbsp(true).Build();
+  CharacterIteratorInFlatTree char_it(position, end_position, options);
+  for (; char_it.length(); char_it.Advance(1)) {
+    if (!IsSpaceOrNewline(char_it.CharacterAt(0)))
+      return char_it.StartPosition();
+  }
+
+  return end_position;
+}
+
+// static
+PositionInFlatTree TextFragmentFinder::PreviousTextPosition(
+    PositionInFlatTree position,
+    PositionInFlatTree max_position) {
+  const TextIteratorBehavior options =
+      TextIteratorBehavior::Builder().SetEmitsSpaceForNbsp(true).Build();
+  BackwardsCharacterIteratorInFlatTree char_it(
+      EphemeralRangeInFlatTree(max_position, position), options);
+
+  for (; char_it.length(); char_it.Advance(1)) {
+    if (!IsSpaceOrNewline(char_it.CharacterAt(0)))
+      return char_it.EndPosition();
+  }
+
+  return max_position;
+}
 
 void TextFragmentFinder::OnFindMatchInRangeComplete(
     String search_text,

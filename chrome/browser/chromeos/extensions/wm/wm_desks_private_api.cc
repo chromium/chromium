@@ -9,7 +9,8 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/desks_client.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
 namespace extensions {
@@ -34,7 +35,7 @@ WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
-  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+  DesksTemplatesClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(&WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
                          OnCaptureActiveDeskAndSaveTemplateCompleted,
                      this));
@@ -68,7 +69,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
       api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->UpdateDeskTemplate(
+  DesksTemplatesClient::Get()->UpdateDeskTemplate(
       params->desk_template.template_uuid,
       base::UTF8ToUTF16(params->desk_template.template_name),
       base::BindOnce(&WmDesksPrivateUpdateDeskTemplateFunction::
@@ -94,7 +95,7 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
-  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
+  DesksTemplatesClient::Get()->GetDeskTemplates(base::BindOnce(
       &WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate,
       this));
   return RespondLater();
@@ -121,6 +122,38 @@ void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
           api_templates)));
 }
 
+WmDesksPrivateGetDeskTemplateJsonFunction::
+    WmDesksPrivateGetDeskTemplateJsonFunction() = default;
+WmDesksPrivateGetDeskTemplateJsonFunction::
+    ~WmDesksPrivateGetDeskTemplateJsonFunction() = default;
+
+ExtensionFunction::ResponseAction
+WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::GetDeskTemplateJson::Params> params(
+      api::wm_desks_private::GetDeskTemplateJson::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DesksTemplatesClient::Get()->GetTemplateJson(
+      params->template_uuid, Profile::FromBrowserContext(browser_context()),
+      base::BindOnce(
+          &WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson,
+          this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson(
+    const std::string& template_json,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  Respond(
+      ArgumentList(api::wm_desks_private::GetDeskTemplateJson::Results::Create(
+          template_json)));
+}
+
 WmDesksPrivateDeleteDeskTemplateFunction::
     WmDesksPrivateDeleteDeskTemplateFunction() = default;
 WmDesksPrivateDeleteDeskTemplateFunction::
@@ -132,7 +165,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
       api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->DeleteDeskTemplate(
+  DesksTemplatesClient::Get()->DeleteDeskTemplate(
       params->template_uuid,
       base::BindOnce(&WmDesksPrivateDeleteDeskTemplateFunction::
                          OnDeleteDeskTemplateCompleted,
@@ -161,7 +194,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
       api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->LaunchDeskTemplate(
+  DesksTemplatesClient::Get()->LaunchDeskTemplate(
       params->template_uuid,
       base::BindOnce(
           &WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate,

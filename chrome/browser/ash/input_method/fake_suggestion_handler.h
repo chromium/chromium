@@ -55,6 +55,10 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool GetAcceptedSuggestion() { return accepted_suggestion_; }
   bool GetDismissedSuggestion() { return dismissed_suggestion_; }
   std::vector<std::u16string> GetAnnouncements() { return announcements_; }
+  bool GetHighlightedSuggestion() { return highlighted_suggestion_; }
+  ui::ime::SuggestionDetails GetLastSuggestionDetails() {
+    return last_suggestion_details_;
+  }
 
  private:
   int context_id_ = 0;
@@ -63,7 +67,9 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   bool showing_suggestion_ = false;
   bool accepted_suggestion_ = false;
   bool dismissed_suggestion_ = false;
+  bool highlighted_suggestion_ = false;
   std::vector<std::u16string> announcements_;
+  ui::ime::SuggestionDetails last_suggestion_details_;
 };
 
 }  // namespace input_method

@@ -35,6 +35,13 @@ class CORE_EXPORT V8ThrowDOMException {
       const String& sanitized_message,
       const String& unsanitized_message = String());
 
+  // Same as CreateOrEmpty, but performs CHECK for exception to not be empty.
+  static v8::Local<v8::Value> CreateOrDie(
+      v8::Isolate*,
+      DOMExceptionCode,
+      const String& sanitized_message,
+      const String& unsanitized_message = String());
+
   // Attaches a stacktrace to an existing DOMException object. This should only
   // be used when initializing a subclass of DOMException. In other cases, uses
   // CreateOrEmpty().

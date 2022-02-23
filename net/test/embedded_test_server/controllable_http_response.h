@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -56,7 +55,8 @@ class ControllableHttpResponse {
   void Send(net::HttpStatusCode http_status,
             const std::string& content_type = std::string("text/html"),
             const std::string& content = std::string(),
-            const std::vector<std::string>& cookies = {});
+            const std::vector<std::string>& cookies = {},
+            const std::vector<std::string>& extra_headers = {});
 
   // 3) Notify there are no more data to be sent and close the socket.
   void Done();

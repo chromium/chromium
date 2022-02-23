@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

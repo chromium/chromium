@@ -4,6 +4,7 @@
 
 #include "base/environment.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,7 +20,7 @@ namespace vr {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      device_test::mojom::SubmittedFrameDataPtr frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   void WaitForFrame() {
@@ -37,13 +38,15 @@ class MyXRMock : public MockXRDeviceHookBase {
   unsigned int num_submitted_frames_ = 0;
 
  private:
-  base::RunLoop* wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
 };
 
 void MyXRMock::OnFrameSubmitted(
-    device_test::mojom::SubmittedFrameDataPtr frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
-  last_submitted_color_ = std::move(frame_data->color);
+  // Since we clear the entire context to a single color (see onXRFrame() in
+  // webxr_boilerplate.js), every view in the frame has the same color.
+  last_submitted_color_ = std::move(views[0]->color);
   num_submitted_frames_++;
 
   if (wait_loop_) {

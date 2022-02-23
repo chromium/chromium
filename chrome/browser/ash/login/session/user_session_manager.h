@@ -12,8 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/net/always_on_vpn_manager.h"
+#include "ash/components/login/auth/authenticator.h"
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -39,13 +43,6 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/authenticator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/stub_authenticator_builder.h"
-#include "chromeos/login/auth/user_context.h"
-#include "components/arc/net/always_on_vpn_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -53,7 +50,6 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
-class AshTurnSyncOnHelper;
 class GURL;
 class PrefRegistrySimple;
 class PrefService;
@@ -64,8 +60,10 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+class AuthStatusConsumer;
 class LoginDisplayHost;
 class OnboardingUserActivityCounter;
+class StubAuthenticatorBuilder;
 class TokenHandleFetcher;
 
 namespace test {
@@ -515,6 +513,10 @@ class UserSessionManager
       InputEventsBlocker* input_events_blocker,
       const locale_util::LanguageSwitchResult& result);
 
+  // Returns `true` if policy mandates that all mounts on device should
+  // be ephemeral.
+  bool IsEphemeralMountForced();
+
   // Callback invoked when `token_handle_util_` has finished.
   void OnTokenHandleObtained(const AccountId& account_id, bool success);
 
@@ -662,6 +664,8 @@ class UserSessionManager
   // Mapped to `chrome::AttemptRestart`, except in tests.
   base::RepeatingClosure attempt_restart_closure_;
 
+  base::flat_set<Profile*> user_profile_initialized_called_;
+
   std::unique_ptr<arc::AlwaysOnVpnManager> always_on_vpn_manager_;
 
   std::unique_ptr<SecureDnsManager> secure_dns_manager_;
@@ -672,8 +676,6 @@ class UserSessionManager
 
   std::unique_ptr<HelpAppNotificationController>
       help_app_notification_controller_;
-
-  std::unique_ptr<AshTurnSyncOnHelper> ash_turn_sync_on_helper_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
 

@@ -126,8 +126,7 @@ class PermissionRequestManager
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -149,8 +148,10 @@ class PermissionRequestManager
   void SetDismissOnTabClose() override;
   void SetBubbleShown() override;
   void SetDecisionTime() override;
+  void SetManageClicked() override;
+  void SetLearnMoreClicked() override;
 
-  void set_managed_clicked() { did_click_managed_ = true; }
+  void set_manage_clicked() { did_click_manage_ = true; }
   void set_learn_more_clicked() { did_click_learn_more_ = true; }
 
   void set_web_contents_supports_permission_requests(
@@ -399,7 +400,7 @@ class PermissionRequestManager
   // at all.
   base::Time current_request_decision_time_;
 
-  bool did_click_managed_ = false;
+  bool did_click_manage_ = false;
 
   bool did_click_learn_more_ = false;
 

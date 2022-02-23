@@ -186,7 +186,7 @@ bool Benchmark::ParseArgs(const base::CommandLine* command_line) {
        ++iter) {
     const std::string& s = iter->first;
     std::string value;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     value = base::WideToUTF8(iter->second);
 #else
     value = iter->second;

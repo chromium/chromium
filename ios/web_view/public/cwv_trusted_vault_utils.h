@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "cwv_export.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 // Possible states of the trusted vault. Keep in sync with
@@ -21,6 +23,7 @@ typedef NS_ENUM(NSInteger, CWVTrustedVaultState) {
 };
 
 // Utility methods for trusted vault.
+CWV_EXPORT
 @interface CWVTrustedVaultUtils : NSObject
 
 // Call to log to UMA when trusted vault state changes.

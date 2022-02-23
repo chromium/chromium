@@ -11,9 +11,10 @@ import static android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -46,7 +47,6 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
@@ -66,6 +66,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     // Delay to allow a frame to render between getting the fullscreen layout update and clearing
     // the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag.
     private static final long CLEAR_LAYOUT_FULLSCREEN_DELAY_MS = 20;
+    // Fade in/out animation duration for fullscreen notification toast.
+    private static final int TOAST_FADE_MS = 500;
 
     private final Activity mActivity;
     private final Handler mHandler;
@@ -86,7 +88,10 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
     // Toast at the top of the screen that is shown when user enters fullscreen for the
     // first time.
-    private Toast mNotificationToast;
+    private View mNotificationToast;
+    private long mNotificationStartTimestamp;
+    private long mNotificationRemainingTimeMs;
+    private final Runnable mHideNotificationToastRunnable;
 
     private OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
@@ -197,6 +202,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         mPersistentModeSupplier = new ObservableSupplierImpl<>();
         mPersistentModeSupplier.set(false);
         mExitFullscreenOnStop = exitFullscreenOnStop;
+        mHideNotificationToastRunnable = this::hideNotificationToast;
     }
 
     /**
@@ -355,9 +361,14 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @param controlsHidden {@code true} if the controls are now hidden.
      */
     private void maybeEnterFullscreenFromPendingState(boolean controlsHidden) {
-        if (!controlsHidden) return;
-        if (mTab != null && mPendingFullscreenOptions != null) {
-            enterFullscreen(mTab, mPendingFullscreenOptions);
+        if (!controlsHidden || mTab == null) return;
+        if (mPendingFullscreenOptions != null) {
+            if (mPendingFullscreenOptions.canceled()) {
+                // Restore browser controls if the fullscreen process got canceled.
+                TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
+            } else {
+                enterFullscreen(mTab, mPendingFullscreenOptions);
+            }
             mPendingFullscreenOptions = null;
         }
     }
@@ -373,7 +384,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             } else {
                 assert mPendingFullscreenOptions
                         != null : "No content previously set to fullscreen.";
-                mPendingFullscreenOptions = null;
+                mPendingFullscreenOptions.setCanceled();
             }
             mWebContentsInFullscreen = null;
             mContentViewInFullscreen = null;
@@ -509,23 +520,33 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * Create and show the fullscreen notification toast.
      */
     private void showNotificationToast() {
-        if (mNotificationToast != null) {
-            mNotificationToast.cancel();
+        assert mTab != null && mTab.getContentView() != null;
+        ViewGroup parent = mTab.getContentView();
+        if (mNotificationToast != null) parent.removeView(mNotificationToast);
+        mNotificationToast =
+                LayoutInflater.from(mActivity).inflate(R.layout.fullscreen_notification, null);
+        mNotificationToast.setAlpha(0);
+        parent.addView(mNotificationToast);
+        mNotificationToast.animate().alpha(1).setDuration(TOAST_FADE_MS).start();
+        mNotificationRemainingTimeMs = 5000;
+        if (parent.hasWindowFocus()) {
+            mNotificationStartTimestamp = System.currentTimeMillis();
+            mHandler.postDelayed(mHideNotificationToastRunnable, mNotificationRemainingTimeMs);
         }
-        int resId = R.string.immersive_fullscreen_api_notification;
-        mNotificationToast = Toast.makeText(mActivity, resId, Toast.LENGTH_LONG);
-        mNotificationToast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 0);
-        mNotificationToast.show();
     }
 
     /**
      * Hides the notification toast.
      */
     private void hideNotificationToast() {
-        if (mNotificationToast != null) {
-            mNotificationToast.cancel();
+        if (mNotificationToast == null) return;
+        mNotificationToast.animate().alpha(0).setDuration(TOAST_FADE_MS).withEndAction(() -> {
+            // The Tab might have been destroyed while the toast is on.
+            if (mTab != null && mTab.getContentView() != null) {
+                mTab.getContentView().removeView(mNotificationToast);
+            }
             mNotificationToast = null;
-        }
+        });
     }
 
     // ActivityStateListener
@@ -557,7 +578,16 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     @Override
     public void onWindowFocusChanged(Activity activity, boolean hasWindowFocus) {
         if (mActivity != activity) return;
-        if (!hasWindowFocus) hideNotificationToast();
+        if (mNotificationToast != null) {
+            if (hasWindowFocus) {
+                mNotificationStartTimestamp = System.currentTimeMillis();
+                mHandler.postDelayed(mHideNotificationToastRunnable, mNotificationRemainingTimeMs);
+            } else {
+                mHandler.removeCallbacks(mHideNotificationToastRunnable);
+                mNotificationRemainingTimeMs -=
+                        System.currentTimeMillis() - mNotificationStartTimestamp;
+            }
+        }
 
         mHandler.removeMessages(MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS);
         mHandler.removeMessages(MSG_ID_CLEAR_LAYOUT_FULLSCREEN_FLAG);
@@ -630,5 +660,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         setContentView(null);
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         if (mTabFullscreenObserver != null) mTabFullscreenObserver.destroy();
+    }
+
+    void setTabForTesting(Tab tab) {
+        mTab = tab;
     }
 }

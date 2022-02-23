@@ -1116,51 +1116,55 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // If the feature is enabled, typing a URL in the omnibox without a scheme
 // should load the HTTPS version. In this test, the HTTPS site redirects to
-// another working HTTPS site. This should succeed and an additional histogram
-// entry should be recorded.
+// a working HTTPS site and a working HTTP site. Both of these cases should
+// count as successful upgrades and histogram entries should be recorded.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleRedirectBrowserTest,
     UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade) {
   if (!IsFeatureEnabled()) {
     return;
   }
-  const GURL target_url =
-      https_server()->GetURL(kSiteWithGoodHttps, "/title1.html");
-  const GURL url = embedded_test_server()->GetURL(
-      kSiteWithGoodHttpsRedirect, "/server-redirect?" + target_url.spec());
+  // First test a redirect to an HTTPS site, then to an HTTP site.
+  const std::vector<GURL> target_url_test_cases = {
+      https_server()->GetURL(kSiteWithGoodHttps, "/title1.html"),
+      embedded_test_server()->GetURL(kSiteWithGoodHttps, "/title1.html")};
+  for (const GURL& target_url : target_url_test_cases) {
+    const GURL url = embedded_test_server()->GetURL(
+        kSiteWithGoodHttpsRedirect, "/server-redirect?" + target_url.spec());
 
-  base::HistogramTester histograms;
-  TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
-                                     target_url);
+    base::HistogramTester histograms;
+    TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
+                                       target_url);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              3);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
+    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                                3);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kRedirected, 1);
 
-  // Try again. The navigation will be upgraded again and metrics will be
-  // recorded.
-  TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
-                                     target_url);
+    // Try again. The navigation will be upgraded again and metrics will be
+    // recorded.
+    TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
+                                       target_url);
 
-  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
-                              6);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 2);
-  histograms.ExpectBucketCount(
-      TypedNavigationUpgradeThrottle::kHistogramName,
-      TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+    histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                                6);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 2);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 2);
+    histograms.ExpectBucketCount(
+        TypedNavigationUpgradeThrottle::kHistogramName,
+        TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
+  }
 }
 
 // Similar to UrlTypedWithoutScheme_GoodHttps_Redirected, but this time the

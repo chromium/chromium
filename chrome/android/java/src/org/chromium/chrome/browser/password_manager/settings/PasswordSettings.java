@@ -16,7 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
@@ -25,17 +27,14 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_check.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
-import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -45,13 +44,16 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
@@ -61,6 +63,15 @@ import java.util.Locale;
 public class PasswordSettings extends PreferenceFragmentCompat
         implements PasswordManagerHandler.PasswordListObserver,
                    Preference.OnPreferenceClickListener, SyncService.SyncStateChangedListener {
+    @IntDef({TrustedVaultBannerState.NOT_SHOWN, TrustedVaultBannerState.OFFER_OPT_IN,
+            TrustedVaultBannerState.OPTED_IN})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface TrustedVaultBannerState {
+        int NOT_SHOWN = 0;
+        int OFFER_OPT_IN = 1;
+        int OPTED_IN = 2;
+    }
+
     // Keys for name/password dictionaries.
     public static final String PASSWORD_LIST_URL = "url";
     public static final String PASSWORD_LIST_NAME = "name";
@@ -75,13 +86,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public static final String PREF_SAVE_PASSWORDS_SWITCH = "save_passwords_switch";
     public static final String PREF_AUTOSIGNIN_SWITCH = "autosignin_switch";
     public static final String PREF_CHECK_PASSWORDS = "check_passwords";
-    public static final String PREF_TRUSTED_VAULT_OPT_IN = "trusted_vault_opt_in";
+    public static final String PREF_TRUSTED_VAULT_BANNER = "trusted_vault_banner";
     public static final String PREF_KEY_MANAGE_ACCOUNT_LINK = "manage_account_link";
-
-    // A PasswordEntryViewer receives a boolean value with this key. If set true, the the entry was
-
-    // part of a search result.
-    public static final String EXTRA_FOUND_VIA_SEARCH = "found_via_search_args";
 
     private static final String PREF_KEY_CATEGORY_SAVED_PASSWORDS = "saved_passwords";
     private static final String PREF_KEY_CATEGORY_EXCEPTIONS = "exceptions";
@@ -90,7 +96,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     private static final int ORDER_SWITCH = 0;
     private static final int ORDER_AUTO_SIGNIN_CHECKBOX = 1;
     private static final int ORDER_CHECK_PASSWORDS = 2;
-    private static final int ORDER_TRUSTED_VAULT_OPT_IN = 3;
+    private static final int ORDER_TRUSTED_VAULT_BANNER = 3;
     private static final int ORDER_MANAGE_ACCOUNT_LINK = 4;
     private static final int ORDER_SECURITY_KEY = 5;
     private static final int ORDER_SAVED_PASSWORDS = 6;
@@ -103,7 +109,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     private boolean mNoPasswords;
     private boolean mNoPasswordExceptions;
-    private boolean mShouldShowTrustedVaultOptIn;
+    private @TrustedVaultBannerState int mTrustedVaultBannerState =
+            TrustedVaultBannerState.NOT_SHOWN;
 
     private MenuItem mHelpItem;
     private MenuItem mSearchItem;
@@ -113,7 +120,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mSavePasswordsSwitch;
     private ChromeSwitchPreference mAutoSignInSwitch;
     private ChromeBasePreference mCheckPasswords;
-    private ChromeBasePreference mTrustedVaultOptIn;
+    private ChromeBasePreference mTrustedVaultBanner;
     private TextMessagePreference mEmptyView;
     private boolean mSearchRecorded;
     private Menu mMenu;
@@ -186,8 +193,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
-        mShouldShowTrustedVaultOptIn =
-                SyncService.get() != null && SyncService.get().shouldOfferTrustedVaultOptIn();
+        computeTrustedVaultBannerState();
     }
 
     @Override
@@ -278,15 +284,26 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mNoPasswords = false;
         mNoPasswordExceptions = false;
         getPreferenceScreen().removeAll();
-        if (mSearchQuery == null) {
-            createSavePasswordsSwitch();
-            createAutoSignInCheckbox();
-            if (mPasswordCheck != null) {
-                createCheckPasswords();
-            }
-            if (mShouldShowTrustedVaultOptIn) {
-                createTrustedVaultOptIn();
-            }
+        if (mSearchQuery != null) {
+            // Only the filtered passwords and exceptions should be shown.
+            PasswordManagerHandlerProvider.getInstance()
+                    .getPasswordManagerHandler()
+                    .updatePasswordLists();
+            return;
+        }
+
+        createSavePasswordsSwitch();
+        createAutoSignInCheckbox();
+        if (mPasswordCheck != null) {
+            createCheckPasswords();
+        }
+
+        if (mTrustedVaultBannerState == TrustedVaultBannerState.OPTED_IN) {
+            createTrustedVaultBanner(R.string.android_trusted_vault_banner_sub_label_opted_in,
+                    this::openTrustedVaultInfoPage);
+        } else if (mTrustedVaultBannerState == TrustedVaultBannerState.OFFER_OPT_IN) {
+            createTrustedVaultBanner(R.string.android_trusted_vault_banner_sub_label_offer_opt_in,
+                    this::openTrustedVaultOptInDialog);
         }
         PasswordManagerHandlerProvider.getInstance()
                 .getPasswordManagerHandler()
@@ -475,7 +492,7 @@ public class PasswordSettings extends PreferenceFragmentCompat
                     Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
+        } else {
             boolean isBlockedCredential =
                     !preference.getExtras().containsKey(PasswordSettings.PASSWORD_LIST_NAME);
             PasswordManagerHandlerProvider.getInstance()
@@ -483,14 +500,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
                     .showPasswordEntryEditingView(getActivity(), new SettingsLauncherImpl(),
                             preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
                             isBlockedCredential);
-        } else {
-            // Launch preference activity with PasswordEntryViewer fragment with
-            // intent extras specifying the object.
-            Bundle fragmentAgs = new Bundle(preference.getExtras());
-            fragmentAgs.putBoolean(PasswordSettings.EXTRA_FOUND_VIA_SEARCH, mSearchQuery != null);
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(
-                    getActivity(), PasswordEntryViewer.class, fragmentAgs);
         }
         return true;
     }
@@ -556,26 +565,23 @@ public class PasswordSettings extends PreferenceFragmentCompat
         getPreferenceScreen().addPreference(mCheckPasswords);
     }
 
-    private void createTrustedVaultOptIn() {
-        mTrustedVaultOptIn = new ChromeBasePreference(getStyledContext());
-        mTrustedVaultOptIn.setKey(PREF_TRUSTED_VAULT_OPT_IN);
-        mTrustedVaultOptIn.setTitle(R.string.android_trusted_vault_opt_in_label);
-        mTrustedVaultOptIn.setOrder(ORDER_TRUSTED_VAULT_OPT_IN);
-        mTrustedVaultOptIn.setSummary(R.string.android_trusted_vault_opt_in_sub_label);
-        mTrustedVaultOptIn.setOnPreferenceClickListener(preference -> {
-            assert SyncService.get() != null;
-            CoreAccountInfo accountInfo = SyncService.get().getAccountInfo();
-            assert accountInfo != null;
-            SyncSettingsUtils.openTrustedVaultOptInDialog(
-                    this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);
-            // Return true to notify the click was handled.
-            return true;
-        });
-        getPreferenceScreen().addPreference(mTrustedVaultOptIn);
+    private void createTrustedVaultBanner(
+            @StringRes int subLabel, Preference.OnPreferenceClickListener listener) {
+        mTrustedVaultBanner = new ChromeBasePreference(getStyledContext());
+        mTrustedVaultBanner.setKey(PREF_TRUSTED_VAULT_BANNER);
+        mTrustedVaultBanner.setTitle(R.string.android_trusted_vault_banner_label);
+        mTrustedVaultBanner.setOrder(ORDER_TRUSTED_VAULT_BANNER);
+        mTrustedVaultBanner.setSummary(subLabel);
+        mTrustedVaultBanner.setOnPreferenceClickListener(listener);
+        getPreferenceScreen().addPreference(mTrustedVaultBanner);
     }
 
     private void displayManageAccountLink() {
-        if (!PasswordManagerLauncher.isSyncingPasswordsWithoutCustomPassphrase()) {
+        SyncService syncService = SyncService.get();
+        if (syncService == null || !syncService.isEngineInitialized()) {
+            return;
+        }
+        if (!PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(SyncService.get())) {
             return;
         }
         if (mSearchQuery != null && !mNoPasswords) {
@@ -589,8 +595,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
             getPreferenceScreen().addPreference(mLinkPref);
             return;
         }
-        ForegroundColorSpan colorSpan = new ForegroundColorSpan(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_text_color_link));
+        ForegroundColorSpan colorSpan =
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorLink(getContext()));
         SpannableString title = SpanApplier.applySpans(getString(R.string.manage_passwords_text),
                 new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));
         mLinkPref = new ChromeBasePreference(getStyledContext());
@@ -611,11 +617,52 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     @Override
     public void syncStateChanged() {
-        boolean shouldShowTrustedVaultOptIn = SyncService.get().shouldOfferTrustedVaultOptIn();
-        if (mShouldShowTrustedVaultOptIn != shouldShowTrustedVaultOptIn) {
-            mShouldShowTrustedVaultOptIn = shouldShowTrustedVaultOptIn;
+        final @TrustedVaultBannerState int oldTrustedVaultBannerState = mTrustedVaultBannerState;
+        computeTrustedVaultBannerState();
+        if (oldTrustedVaultBannerState != mTrustedVaultBannerState) {
             rebuildPasswordLists();
         }
+    }
+
+    private void computeTrustedVaultBannerState() {
+        final SyncService syncService = SyncService.get();
+        if (syncService == null) {
+            mTrustedVaultBannerState = TrustedVaultBannerState.NOT_SHOWN;
+            return;
+        }
+        if (!syncService.isEngineInitialized()) {
+            // Can't call getPassphraseType() yet.
+            mTrustedVaultBannerState = TrustedVaultBannerState.NOT_SHOWN;
+            return;
+        }
+        if (syncService.getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE) {
+            mTrustedVaultBannerState = TrustedVaultBannerState.OPTED_IN;
+            return;
+        }
+        if (syncService.shouldOfferTrustedVaultOptIn()) {
+            mTrustedVaultBannerState = TrustedVaultBannerState.OFFER_OPT_IN;
+            return;
+        }
+        mTrustedVaultBannerState = TrustedVaultBannerState.NOT_SHOWN;
+    }
+
+    private boolean openTrustedVaultOptInDialog(Preference unused) {
+        assert SyncService.get() != null;
+        CoreAccountInfo accountInfo = SyncService.get().getAccountInfo();
+        assert accountInfo != null;
+        SyncSettingsUtils.openTrustedVaultOptInDialog(
+                this, accountInfo, REQUEST_CODE_TRUSTED_VAULT_OPT_IN);
+        // Return true to notify the click was handled.
+        return true;
+    }
+
+    private boolean openTrustedVaultInfoPage(Preference unused) {
+        Intent intent = new Intent(
+                Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
+        intent.setPackage(getActivity().getPackageName());
+        getActivity().startActivity(intent);
+        // Return true to notify the click was handled.
+        return true;
     }
 
     @VisibleForTesting

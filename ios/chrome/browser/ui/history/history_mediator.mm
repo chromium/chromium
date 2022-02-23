@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/net/crurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,10 +41,10 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(const GURL&)URL
+- (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   self.faviconLoader->FaviconForPageUrl(
-      URL, kFaviconWidthHeight, kFaviconMinWidthHeight,
+      URL.gurl, kFaviconWidthHeight, kFaviconMinWidthHeight,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });

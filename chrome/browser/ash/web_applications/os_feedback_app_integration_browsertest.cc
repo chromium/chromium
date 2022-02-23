@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -47,7 +48,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OSFeedbackAppInLauncher) {
 
   histogram_tester_.ExpectBucketCount(
       "Webapp.InstallResult.System.Apps.OSFeedback",
-      web_app::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
+      webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
 }
 
 // This test verifies that the Feedback app is opened in a new browser window.

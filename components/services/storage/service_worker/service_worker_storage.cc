@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
@@ -1580,6 +1581,8 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     InitializeCallback callback) {
+  base::TimeTicks now = base::TimeTicks::Now();
+
   DCHECK(database);
   std::unique_ptr<ServiceWorkerStorage::InitialData> data(
       new ServiceWorkerStorage::InitialData());
@@ -1604,6 +1607,10 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
 
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data), status));
+
+  base::UmaHistogramMediumTimes(
+      "ServiceWorker.Storage.ReadInitialDataFromDB.Time",
+      base::TimeTicks::Now() - now);
 }
 
 void ServiceWorkerStorage::DeleteRegistrationFromDB(

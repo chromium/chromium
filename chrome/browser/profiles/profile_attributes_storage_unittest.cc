@@ -43,7 +43,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/native_theme/native_theme.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #endif
 
@@ -146,11 +146,11 @@ class ProfileAttributesTestObserver
 };
 
 size_t GetDefaultAvatarIconResourceIDAtIndex(int index) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return profiles::GetOldDefaultAvatar2xIconResourceIDAtIndex(index);
 #else
   return profiles::GetDefaultAvatarIconResourceIDAtIndex(index);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 std::u16string ConcatenateGaiaAndProfileNames(
@@ -310,7 +310,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
 
   EXPECT_EQ(0u, storage()->GetNumberOfProfiles());
   // Avatar icons not used on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 #endif
 
@@ -319,12 +319,12 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
         GetProfilePath(base::StringPrintf("path_%zu", i));
     std::u16string profile_name =
         base::ASCIIToUTF16(base::StringPrintf("name_%zu", i));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
     size_t icon_id = GetDefaultAvatarIconResourceIDAtIndex(i);
     const SkBitmap* icon = rb.GetImageNamed(icon_id).ToSkBitmap();
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     std::string supervised_user_id;
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     if (i == 3u)
@@ -352,7 +352,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     EXPECT_EQ(expected_profile_name, entry->GetName());
 
     EXPECT_EQ(profile_path, entry->GetPath());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     const SkBitmap* actual_icon = entry->GetAvatarIcon().ToSkBitmap();
     EXPECT_EQ(icon->width(), actual_icon->width());
     EXPECT_EQ(icon->height(), actual_icon->height());
@@ -382,7 +382,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfiles) {
     std::u16string expected_profile_name =
         ConcatenateGaiaAndProfileNames(gaia_name, profile_name);
     EXPECT_EQ(expected_profile_name, entry->GetName());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(i, entry->GetAvatarIconIndex());
 #endif
     EXPECT_EQ(true, entry->GetBackgroundStatus());
@@ -534,7 +534,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
   // Check that the profiles can be extracted from the local state.
   std::vector<std::string> names;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* attributes =
+  const base::Value* attributes =
       local_state->GetDictionary(prefs::kProfileAttributes);
   for (const auto kv : attributes->DictItems()) {
     const base::Value& info = kv.second;
@@ -547,7 +547,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
 }
 
 TEST_F(ProfileAttributesStorageTest, InitialValues) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android has only one default avatar.
   size_t kIconIndex = 0;
 #else
@@ -1085,8 +1085,8 @@ TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
       testing_profile_manager()
           .CreateTestingProfile(
               "test1", std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-              supervised_user_name, 0, supervised_users::kChildAccountSUID,
-              TestingProfile::TestingFactories())
+              supervised_user_name, 0, TestingProfile::TestingFactories(),
+              /*is_supervised_profile=*/true)
           ->GetPath();
   base::FilePath profile_paths[] = {path_1, path_2};
   for (const base::FilePath& path : profile_paths) {
@@ -1337,7 +1337,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileForceSigninLock) {
 }
 
 // Avatar icons not used on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
   AddTestingProfile();
 
@@ -1361,7 +1361,7 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 #endif
 
 // High res avatar downloading is only supported on desktop.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1555,7 +1555,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_ActiveMultiProfile) {
 
 // On Android (at least on KitKat), all profiles are considered active (because
 // ActiveTime is not set in production). Thus, these test does not work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfilesState_LatentMultiProfile) {
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
   for (size_t i = 0; i < 5; ++i)
@@ -1607,7 +1607,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 }
 
 // Themes aren't used on Android
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
@@ -1647,7 +1647,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
             GetDefaultProfileThemeColors(false));
   VerifyAndResetCallExpectations();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
   const int kDefaultAvatarIndex = 0;
@@ -1698,7 +1698,7 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
   EXPECT_FALSE(entry->IsUsingDefaultAvatar());
   EXPECT_FALSE(entry->IsUsingGAIAPicture());
 // Avatar icons not used on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
   size_t other_avatar_id =
       GetDefaultAvatarIconResourceIDAtIndex(kOtherAvatarIndex);
@@ -1706,7 +1706,7 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
       ui::ResourceBundle::GetSharedInstance().GetImageNamed(other_avatar_id));
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Explicitly setting the GAIA picture should make it preferred again.
   EXPECT_CALL(observer(), OnProfileAvatarChanged(profile_path)).Times(1);
@@ -1723,7 +1723,7 @@ TEST_F(ProfileAttributesStorageTest, GAIAPicture) {
   VerifyAndResetCallExpectations();
   EXPECT_FALSE(entry->IsUsingGAIAPicture());
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, *entry->GetGAIAPicture()));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(
       gfx::test::AreImagesEqual(other_avatar_image, entry->GetAvatarIcon()));
 #endif
@@ -1802,7 +1802,7 @@ TEST_F(ProfileAttributesStorageTest, EmptyGAIAInfo) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, entry->GetAvatarIcon()));
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1853,9 +1853,9 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
                                               kArbitraryPreferredSize));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ProfileAttributesStorageTest,
        MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   DisableObserver();  // This test doesn't test observers.
@@ -1922,9 +1922,9 @@ TEST_F(ProfileAttributesStorageTest,
   }
   EXPECT_EQ(actual_profile_names, expected_profile_names);
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest,
        DontMigrateLegacyProfileNamesWithoutNewAvatarMenu) {
   DisableObserver();  // This test doesn't test observers.
@@ -1966,4 +1966,4 @@ TEST_F(ProfileAttributesStorageTest,
     EXPECT_EQ(profile_name, entry->GetName());
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)

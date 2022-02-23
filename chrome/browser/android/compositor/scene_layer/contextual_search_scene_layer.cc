@@ -62,8 +62,7 @@ void ContextualSearchSceneLayer::CreateContextualSearchLayer(
   layer()->AddChild(contextual_search_layer_->layer());
 }
 
-ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {
-}
+ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {}
 
 void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     JNIEnv* env,
@@ -94,12 +93,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     jfloat search_promo_height,
     jfloat search_promo_opacity,
     jint search_promo_background_color,
-    // Panel Help
-    jint panel_help_resource_id,
-    jboolean panel_help_visible,
-    jfloat panel_help_height,
-    jfloat panel_help_opacity,
-    jint panel_help_container_background_color,
     // Related Searches
     jint related_searches_in_content_resource_id,
     jboolean related_searches_in_content_visible,
@@ -184,9 +177,6 @@ void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
       bar_banner_ripple_resource_id, bar_banner_text_resource_id, dp_to_px,
       content_layer, search_promo_visible, search_promo_height,
       search_promo_opacity, search_promo_background_color,
-      // Panel Help
-      panel_help_resource_id, panel_help_visible, panel_help_height,
-      panel_help_opacity, panel_help_container_background_color,
       // Related Searches
       related_searches_in_content_resource_id,
       related_searches_in_content_visible, related_searches_in_content_height,
@@ -219,16 +209,46 @@ void ContextualSearchSceneLayer::FetchThumbnail(
 
   GURL gurl(thumbnail_url_);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  // Semantic details for this "Thumbnail" request.
+  // The URLs processed access gstatic.com, which is considered a Google-owned
+  // service.
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("contextual_search_thumbnail",
+                                          R"(
+            semantics {
+              sender: "Contextual Search"
+              description:
+                "This request is for a thumbnail image to show in the "
+                "Contextual Search bottom sheet for an entity or similar "
+                "object identified by the selected text."
+              trigger:
+                "Triggered by a server response to the "
+                "contextual_search_resolve request which contains a thumbnail "
+                "URL."
+              data:
+                "The URL of the thumbnail."
+              destination: GOOGLE_OWNED_SERVICE
+            }
+            policy {
+              cookies_allowed: NO
+              setting:
+                "This feature can be disabled by turning off 'Touch to Search' "
+                "in Chrome for Android settings."
+              chrome_policy {
+                ContextualSearchEnabled {
+                    policy_options {mode: MANDATORY}
+                    ContextualSearchEnabled: false
+                }
+              }
+            })");
   network::mojom::URLLoaderFactory* loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
-  fetcher_ =
-      std::make_unique<BitmapFetcher>(gurl, this, MISSING_TRAFFIC_ANNOTATION);
+  fetcher_ = std::make_unique<BitmapFetcher>(gurl, this, traffic_annotation);
   fetcher_->Init(
-      std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      network::mojom::CredentialsMode::kInclude);
+      network::mojom::CredentialsMode::kOmit);
   fetcher_->Start(loader_factory);
 }
 
@@ -247,16 +267,17 @@ void ContextualSearchSceneLayer::SetContentTree(
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
-  if (!content_tree || !content_tree->layer()) return;
+  if (!content_tree || !content_tree->layer())
+    return;
 
-  if (!content_tree->layer()->parent()
-      || (content_tree->layer()->parent()->id() != content_container_->id())) {
+  if (!content_tree->layer()->parent() ||
+      (content_tree->layer()->parent()->id() != content_container_->id())) {
     content_container_->AddChild(content_tree->layer());
   }
 }
 
 void ContextualSearchSceneLayer::HideTree(JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+                                          const JavaParamRef<jobject>& jobj) {
   // TODO(mdjones): Create super class for this logic.
   if (contextual_search_layer_) {
     contextual_search_layer_->layer()->SetHideLayerAndSubtree(true);

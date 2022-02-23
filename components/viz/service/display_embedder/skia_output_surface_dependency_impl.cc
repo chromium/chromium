@@ -66,6 +66,10 @@ SkiaOutputSurfaceDependencyImpl::GetGrShaderCache() {
 
 VulkanContextProvider*
 SkiaOutputSurfaceDependencyImpl::GetVulkanContextProvider() {
+  if (gpu_service_impl_->compositor_gpu_thread()) {
+    return gpu_service_impl_->compositor_gpu_thread()
+        ->vulkan_context_provider();
+  }
   return gpu_service_impl_->vulkan_context_provider();
 }
 
@@ -139,7 +143,7 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
       FROM_HERE, std::move(task), kDelayForDelayedWork);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SkiaOutputSurfaceDependencyImpl::DidCreateAcceleratedSurfaceChildWindow(
     gpu::SurfaceHandle parent_window,
     gpu::SurfaceHandle child_window) {

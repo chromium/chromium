@@ -8,13 +8,21 @@ include_rules = [
   "+chromeos/lacros/lacros_test_helper.h",
   "+chromeos/startup/startup_switches.h",
 
+  # Tests can use all content/public headers.
   "+content/public",
+
+  # This file does not belong in content/public as it should not be
+  # included directly by embedders of content/.  It must however be
+  # available to code in content/public.
+  "+content/common/content_export.h",
+
   "+components/discardable_memory/service",
   "+components/download/public/common",
   "+components/enterprise/common/download_item_reroute_info.h",
   "+components/leveldb_proto/public",
   "+components/network_session_configurator/common/network_switches.h",
   "+components/services/storage/public",
+  "+components/startup_metric_utils/browser",
   "+components/viz/client",
   "+components/viz/common",
   "+components/viz/host",

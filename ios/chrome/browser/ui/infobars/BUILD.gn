@@ -56,6 +56,8 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "test_infobar_badge_tab_helper_delegate.h",
+    "test_infobar_badge_tab_helper_delegate.mm",
     "test_infobar_delegate.h",
     "test_infobar_delegate.mm",
   ]
@@ -63,6 +65,9 @@ source_set("test_support") {
     "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/badges",
   ]
 }
 

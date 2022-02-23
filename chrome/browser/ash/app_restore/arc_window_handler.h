@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_HANDLER_H_
 #define CHROME_BROWSER_ASH_APP_RESTORE_ARC_WINDOW_HANDLER_H_
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/arc/mojom/app.mojom-forward.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/wm_helper.h"
 
@@ -64,7 +64,9 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler() override;
 
-  void LaunchArcGhostWindow(const std::string& app_id,
+  // Returns true if the ghost window is created and launched. Otherwise,
+  // returns false.
+  bool LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
                             ::app_restore::AppRestoreData* restore_data);
 

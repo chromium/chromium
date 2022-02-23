@@ -139,7 +139,7 @@ class CredentialProviderService
   BooleanPrefMember saving_passwords_enabled_;
 
   // Weak pointer factory.
-  base::WeakPtrFactory<CredentialProviderService> weak_factory_{this};
+  base::WeakPtrFactory<CredentialProviderService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_H_

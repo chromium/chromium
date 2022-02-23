@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer.test;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -13,6 +12,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.webkit.ValueCallback;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -240,7 +240,7 @@ public final class MediaCaptureTest {
      * Asserts that at most one notification exists.
      * {@link NotificationManager#getActiveNotifications()} is only available from M.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Notification getMediaCaptureNotification() {
         StatusBarNotification notifications[];
         try {

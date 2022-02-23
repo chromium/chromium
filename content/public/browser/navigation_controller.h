@@ -217,7 +217,7 @@ class NavigationController {
     // data loads.
     GURL virtual_url_for_data_url;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Used in LOAD_TYPE_DATA loads only. The real data URI is represented
     // as a string to circumvent the restriction on GURL size. This is only
     // needed to pass URLs that exceed the IPC limit (kMaxURLChars). Short
@@ -342,7 +342,7 @@ class NavigationController {
   // Returns the entry that should be displayed to the user in the address bar.
   // This is the pending entry if a navigation is in progress *and* is safe to
   // display to the user (see below), or the last committed entry otherwise.
-  // NOTE: This can be nullptr if no entry has committed!
+  // NOTE: This can be nullptr if no entry has been committed!
   //
   // A pending entry is safe to display if it started in the browser process or
   // if it's a renderer-initiated navigation in a new tab which hasn't been

@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
   subresource_filter::FilterTool filter_tool(std::move(ruleset), &std::cout);
 
   std::string cmd;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cmd = base::WideToASCII(args[0]);
 #else
   cmd = args[0];

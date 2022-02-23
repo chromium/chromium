@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 

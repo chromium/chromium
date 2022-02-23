@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_EXTENSION_CLEANUP_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/extensions/extension_service.h"
 

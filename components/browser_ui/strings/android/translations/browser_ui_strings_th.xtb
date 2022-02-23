@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">เพิ่มเว็บไซต์ <ph name="SITE_NAME" /> แล้ว</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384959399684842514">หยุดดาวน์โหลดไว้ชั่วคราว</translation>
+<translation id="1409426117486808224">มุมมองอย่างง่ายสำหรับแท็บที่เปิดไว้</translation>
 <translation id="1415402041810619267">ตัด URL ให้สั้นลงแล้ว</translation>
 <translation id="1446450296470737166">ควบคุมอุปกรณ์ MIDI ได้สมบูรณ์</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">อนุญาตคุกกี้</translation>
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
+<translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
 <translation id="2289270750774289114">ถามเมื่อเว็บไซต์ต้องการค้นหาอุปกรณ์บลูทูธใกล้เคียง (แนะนำ)</translation>
 <translation id="2315043854645842844">ระบบปฏิบัติการไม่สนับสนุนการเลือกใบรับรองฝั่งลูกค้า</translation>
+<translation id="2321958826496381788">ลากแถบเลื่อนจนกว่าคุณจะสามารถอ่านได้อย่างสะดวก ข้อความควรมีขนาดเท่านี้เป็นอย่างน้อยหลังจากแตะ 2 ครั้งบนย่อหน้า</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2379925928934107488">เมื่อทำได้ ให้ใช้ธีมมืดกับเว็บไซต์เมื่อ Chrome ใช้ธีมมืด</translation>
+<translation id="2387895666653383613">อัตราส่วนข้อความ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}other{อนุญาตให้เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการ}}</translation>
 <translation id="2434158240863470628">ดาวน์โหลดเสร็จสมบูรณ์ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">ขอเว็บไซต์เวอร์ชันเดสก์ท็อปเสมอ</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2485422356828889247">ถอนการติดตั้ง</translation>
 <translation id="2490684707762498678">จัดการโดย <ph name="APP_NAME" /></translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">แสดงข้อมูล</translation>
 <translation id="3123473560110926937">บล็อกในบางเว็บไซต์</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บมี <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">จากเว็บ</translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3277252321222022663">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ (แนะนำ)</translation>
@@ -109,14 +115,18 @@
 <translation id="3835233591525155343">การใช้งานอุปกรณ์ของคุณ</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3859306556332390985">ไปข้างหน้า</translation>
+<translation id="3895926599014793903">บังคับให้เปิดใช้การซูม</translation>
 <translation id="3955193568934677022">อนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง (แนะนำ)</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3987993985790029246">คัดลอกลิงก์</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4008040567710660924">อนุญาตคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
+<translation id="4040330681741629921">รับการแจ้งเตือนเมื่อแสดงเว็บไซต์ในมุมมองอย่างง่ายได้</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
+<translation id="4149994727733219643">มุมมองอย่างง่ายสำหรับหน้าเว็บ</translation>
 <translation id="4165986682804962316">การตั้งค่าเว็บไซต์</translation>
+<translation id="4194328954146351878">ถามก่อนที่จะอนุญาตให้เว็บไซต์ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC (แนะนำ)</translation>
 <translation id="4200726100658658164">เปิดการตั้งค่าตำแหน่ง</translation>
 <translation id="4226663524361240545">การแจ้งเตือนอาจทำให้อุปกรณ์สั่น</translation>
 <translation id="4259722352634471385">มีการบล็อกการนำทาง: <ph name="URL" /></translation>
@@ -125,6 +135,7 @@
 <translation id="42981349822642051">ขยาย</translation>
 <translation id="4336434711095810371">ล้างข้อมูลทั้งหมด</translation>
 <translation id="4402755511846832236">บล็อกเว็บไซต์ไม่ให้ทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
+<translation id="4428065317363009941">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="4434045419905280838">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
 <translation id="445467742685312942">อนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="4468959413250150279">ปิดเสียงไซต์ที่ต้องการ</translation>
@@ -148,11 +159,14 @@
 <translation id="5048398596102334565">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว (แนะนำ)</translation>
 <translation id="5050380848339752099">เว็บไซต์นี้กำลังจะแชร์ข้อมูลกับแอปนอกโหมดไม่ระบุตัวตน</translation>
 <translation id="5063480226653192405">การใช้</translation>
+<translation id="509133520954049755">ขอมุมมองบนเดสก์ท็อป</translation>
 <translation id="5100237604440890931">ยุบ - คลิกเพื่อขยาย</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
+<translation id="5134599672855298214">ขอมุมมองบนอุปกรณ์เคลื่อนที่ (แนะนำ)</translation>
 <translation id="5186036860380548585">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
+<translation id="5264323282659631142">นำ "<ph name="CHIP_LABEL" />" ออก</translation>
 <translation id="528192093759286357">ลากจากด้านบน แล้วแตะปุ่มกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5301954838959518834">ตกลง เข้าใจแล้ว</translation>
@@ -163,6 +177,7 @@
 <translation id="5354152178998424783">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ที่เว็บไซต์ต่างๆ จัดเก็บไว้รวมทั้งสิ้น <ph name="DATASIZE" /></translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
 <translation id="5403592356182871684">ชื่อ</translation>
+<translation id="5412236728747081950">เว็บไซต์นี้รับข้อมูลความสนใจของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="5438097262470833822">ตัวเลือกนี้จะรีเซ็ตสิทธิ์ของ <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">เวลาผ่านไป <ph name="ELAPSED_TIME" /> จาก <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">บล็อกโฆษณาในเว็บไซต์ที่แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
@@ -174,10 +189,10 @@
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5649053991847567735">การดาวน์โหลดโดยอัตโนมัติ</translation>
+<translation id="5668404140385795438">ลบล้างคำขอของเว็บไซต์เพื่อป้องกันการซูมเข้า</translation>
 <translation id="5677928146339483299">ถูกบล็อก</translation>
 <translation id="5689516760719285838">ตำแหน่ง</translation>
 <translation id="5690795753582697420">กล้องปิดอยู่ในการตั้งค่า Android</translation>
-<translation id="5710871682236653961">ถามก่อนที่จะอนุญาตให้เว็บไซต์ส่งและรับข้อมูลเมื่อคุณแตะอุปกรณ์ NFC (แนะนำ)</translation>
 <translation id="5719847187258001597">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> หรือแอปที่อยู่ในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="5771720122942595109">บล็อก<ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
@@ -227,16 +242,16 @@
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
 <translation id="6864395892908308021">อุปกรณ์นี้อ่าน NFC ไม่ได้</translation>
-<translation id="6910211073230771657">ลบแล้ว</translation>
 <translation id="6912998170423641340">บล็อกเว็บไซต์ไม่ให้อ่านข้อความและดูรูปภาพจากคลิปบอร์ด</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6965382102122355670">ตกลง</translation>
+<translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="6992289844737586249">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้ไมโครโฟน (แนะนำ)</translation>
 <translation id="7000754031042624318">ปิดในการตั้งค่า Android</translation>
 <translation id="7016516562562142042">อนุญาตสำหรับเครื่องมือค้นหาปัจจุบัน</translation>
+<translation id="702463548815491781">แนะนำให้ใช้เมื่อ TalkBack หรือการเข้าถึงด้วยสวิตช์เปิดอยู่</translation>
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{เลือก 1 รายการ}other{เลือก # รายการ}}</translation>
-<translation id="7070090581017165256">เกี่ยวกับเว็บไซต์นี้</translation>
 <translation id="7087918508125750058">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -251,8 +266,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">มีเว็บไซต์กำลังใช้ไมโครโฟน</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
-<translation id="7572498721684305250">บล็อกเว็บไซต์ไม่ให้ส่งหรือรับข้อมูลเมื่อคุณแตะอุปกรณ์ NFC</translation>
 <translation id="757524316907819857">บล็อกไม่ให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
+<translation id="7577900504646297215">จัดการความสนใจ</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
@@ -285,6 +300,7 @@
 <translation id="8211406090763984747">การเชื่อมต่อปลอดภัย</translation>
 <translation id="8249310407154411074">เลื่อนไปบนสุด</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8284326494547611709">คำบรรยาย</translation>
 <translation id="8300705686683892304">จัดการโดยแอป</translation>
 <translation id="8324158725704657629">ไม่ต้องถามอีก</translation>
 <translation id="8372893542064058268">อนุญาตให้ใช้การซิงค์ในแบ็กกราวด์สำหรับเว็บไซต์ที่เจาะจง</translation>
@@ -298,6 +314,7 @@
 <translation id="8447861592752582886">เพิกถอนสิทธิ์ของอุปกรณ์</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ใช้คุกกี้อยู่ 1 รายการ}other{ใช้คุกกี้อยู่ # รายการ}}</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
+<translation id="848952951823693243">ขอเว็บไซต์เวอร์ชันอุปกรณ์เคลื่อนที่เสมอ</translation>
 <translation id="851751545965956758">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>
@@ -317,6 +334,7 @@
 <translation id="8903921497873541725">ขยาย</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ในอุปกรณ์นี้ปิดอยู่ เปิดได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
+<translation id="8928445016601307354">บล็อกเว็บไซต์ไม่ให้ดูและเปลี่ยนแปลงข้อมูลในอุปกรณ์ NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">บล็อกคุกกี้ของเว็บไซต์ที่เจาะจง</translation>
 <translation id="8959122750345127698">ไม่สามารถเข้าถึงการนำทางได้: <ph name="URL" /></translation>

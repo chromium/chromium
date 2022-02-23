@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 12
+// Next MinVersion: 16
 
 module crosapi.mojom;
 
@@ -84,6 +84,11 @@ struct App {
   [MinVersion=11]
   // Whether the app publisher allows the app to be uninstalled.
   OptionalBool allow_uninstall@25;
+
+  [MinVersion=12]
+  // kTrue if the app is able to handle intents and should be shown in intent
+  // surfaces.
+  OptionalBool handles_intents@26;
 };
 
 // The types of apps available in the registry.
@@ -94,7 +99,7 @@ enum AppType {
   kWeb,           // Web app.
   kSystemWeb,     // System web app.
   [MinVersion=1]
-  kStandaloneBrowserExtension,     // Extension based app.
+  kStandaloneBrowserChromeApp,     // Chrome app.
 };
 
 // Whether an app is ready to launch, i.e. installed.
@@ -304,7 +309,10 @@ enum WindowMode {
 [Stable]
 struct IntentFile {
   // The file path of the file to share.
-  mojo_base.mojom.FilePath file_path;
+  mojo_base.mojom.FilePath file_path@0;
+
+  // File MIME type.
+  [MinVersion=15] string? mime_type@1;
 };
 
 // Action and resource handling request. This should
@@ -318,7 +326,9 @@ struct Intent {
   string? share_text@3;  // Text to share. e.g. Share link to other app.
   string? share_title@4; // Title for the share.
   // The files to view or share.
-  [MinVersion=5]array<IntentFile>? files@5;
+  [MinVersion=5] array<IntentFile>? files@5;
+  // The activity for the app to launch.
+  [MinVersion=13] string? activity_name@6;
 };
 
 // The result from launching an app.
@@ -366,12 +376,34 @@ enum LaunchSource {
   [MinVersion=10] kFromUrlHandler,               // Url handler.
 };
 
+[Stable, Extensible]
+// The container type to launch the application in.
+enum LaunchContainer {
+  [Default] kLaunchContainerNone, // No specified container
+  kLaunchContainerWindow,         // Window container
+  kLaunchContainerTab,            // Tab container
+};
+
+[Stable, Extensible]
+// Controls how a tab is opened in a window.
+enum WindowOpenDisposition {
+  [Default] kUnknown,
+  kCurrentTab,
+  kNewForegroundTab,
+  kNewBackgroundTab,
+  kNewWindow,
+};
+
 [Stable]
 // The parameters to launch an app.
 struct LaunchParams {
   string app_id@0;               // The app id of the app.
   LaunchSource launch_source@1;  // The app launch source.
   Intent? intent@2;              // The intent the app will launch with.
+  // The container the app will launch in.
+  [MinVersion=14]LaunchContainer container@3;
+  // How the tab opened in a window if app is opened in tab.
+  [MinVersion=14]WindowOpenDisposition disposition@4;
 };
 
 [Stable]

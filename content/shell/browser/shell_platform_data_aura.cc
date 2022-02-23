@@ -4,6 +4,7 @@
 
 #include "content/shell/browser/shell_platform_data_aura.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -20,7 +21,7 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/default_activation_client.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
@@ -70,7 +71,7 @@ class FillLayout : public aura::LayoutManager {
     SetChildBoundsDirect(child, requested_bounds);
   }
 
-  aura::Window* root_;
+  raw_ptr<aura::Window> root_;
   bool has_bounds_;
 };
 
@@ -92,7 +93,7 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
   ui::PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(initial_size);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // When using Scenic Ozone platform we need to supply a view_token to the
   // window. This is not necessary when using the headless ozone platform.
   if (ui::OzonePlatform::GetInstance()

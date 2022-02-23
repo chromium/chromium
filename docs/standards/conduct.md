@@ -65,7 +65,12 @@ report](https://docs.google.com/forms/d/1nr1B_TOMIhSXh1yG8VsvGpEO9p6GWY-3kxJu-rn
 
 ## FIDO
 
-The [FIDO Alliance](https://fidoalliance.org/) does not currently have a code of conduct.
+See the [Code of Conduct](https://fidoalliance.org/code-of-conduct/). To report
+a violation, talk to an [Executive
+Director](https://fidoalliance.org/overview/leadership/#staff-members) or the
+[President](https://fidoalliance.org/overview/leadership/#executive-council), or
+fill out the [contact form](https://fidoalliance.org/contact/) or email
+help@fidoalliance.org.
 
 ## AO Media
 

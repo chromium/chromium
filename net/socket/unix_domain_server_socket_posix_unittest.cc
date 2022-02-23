@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -32,7 +33,7 @@ const char kInvalidSocketPath[] = "/invalid/path";
 bool UserCanConnectCallback(bool allow_user,
     const UnixDomainServerSocket::Credentials& credentials) {
   // Here peers are running in same process.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(getpid(), credentials.process_id);
 #endif
   EXPECT_EQ(getuid(), credentials.user_id);
@@ -67,7 +68,7 @@ TEST_F(UnixDomainServerSocketTest, ListenWithInvalidPathWithAbstractNamespace) {
   const bool kUseAbstractNamespace = true;
   UnixDomainServerSocket server_socket(CreateAuthCallback(true),
                                        kUseAbstractNamespace);
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_THAT(server_socket.BindAndListen(kInvalidSocketPath, /*backlog=*/1),
               IsOk());
 #else

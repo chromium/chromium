@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/fingerprint_setup_screen_handler.h"
@@ -184,6 +185,18 @@ void ExitScreenSyncConsent() {
   screen->SetProfileSyncDisabledByPolicyForTesting(true);
   screen->OnStateChanged(nullptr);
   WaitForExit(SyncConsentScreenView::kScreenId);
+}
+
+void WaitForConsolidatedConsentScreen() {
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
+    return;
+  WaitFor(ConsolidatedConsentScreenView::kScreenId);
+}
+
+void TapConsolidatedConsentAccept() {
+  if (!LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build)
+    return;
+  OobeJS().TapOnPath({"consolidated-consent", "acceptButton"});
 }
 
 void ClickSignInFatalScreenActionButton() {

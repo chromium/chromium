@@ -59,13 +59,19 @@ class WelcomeScreen : public BaseScreen,
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when language list is reloaded.
     virtual void OnLanguageListReloaded() = 0;
   };
 
-  enum class Result { NEXT, NEXT_OS_INSTALL, SETUP_DEMO, ENABLE_DEBUGGING };
+  enum class Result {
+    NEXT,
+    NEXT_OS_INSTALL,
+    SETUP_DEMO,
+    ENABLE_DEBUGGING,
+    QUICK_START
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -85,7 +91,7 @@ class WelcomeScreen : public BaseScreen,
   const std::string& language_list_locale() const {
     return language_list_locale_;
   }
-  const base::ListValue* language_list() const { return language_list_.get(); }
+  const base::Value& language_list() const { return language_list_; }
 
   void UpdateLanguageList();
 
@@ -166,6 +172,11 @@ class WelcomeScreen : public BaseScreen,
   void NotifyLocaleChange();
   void OnLocaleChangeResult(LocaleNotificationResult result);
 
+  // Updates the local variable according to the existence of the Chromad
+  // migration flag file. Then, simulates a user action, if the flag is set and
+  // the screen is not hidden.
+  void UpdateChromadMigrationOobeFlow(bool exists);
+
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
 
@@ -179,14 +190,23 @@ class WelcomeScreen : public BaseScreen,
   // Creation of language list happens on Blocking Pool, so we cache
   // resolved data.
   std::string language_list_locale_;
-  std::unique_ptr<base::ListValue> language_list_;
+  base::Value language_list_{base::Value::Type::LIST};
 
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
+  // This local flag should be true if the OOBE flow is operating as part of the
+  // Chromad to cloud device migration. If so, this screen should be skipped.
+  bool is_chromad_migration_oobe_flow_ = false;
+
+  // WeakPtrFactory used to schedule and cancel tasks related to language update
+  // in this object.
+  base::WeakPtrFactory<WelcomeScreen> language_weak_ptr_factory_{this};
+
+  // WeakPtrFactory used to schedule other tasks in this object.
+  base::WeakPtrFactory<WelcomeScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

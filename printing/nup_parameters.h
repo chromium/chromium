@@ -11,7 +11,9 @@ namespace printing {
 
 class COMPONENT_EXPORT(PRINTING) NupParameters {
  public:
-  NupParameters();
+  // Callers should check `pages_per_sheet` values with IsSupported() first,
+  // and only pass in supported values.
+  NupParameters(int pages_per_sheet, bool is_source_landscape);
 
   // Whether or not the input `pages_per_sheet` is a supported N-up value.
   // Supported values are: 1 2 4 6 9 16
@@ -22,21 +24,14 @@ class COMPONENT_EXPORT(PRINTING) NupParameters {
   int num_pages_on_x_axis() const { return num_pages_on_x_axis_; }
   int num_pages_on_y_axis() const { return num_pages_on_y_axis_; }
 
+ private:
   // Calculates the `num_pages_on_x_axis_`, `num_pages_on_y_axis_` and
-  // `landscape_` based on the input.  `is_source_landscape` is true if the
-  // source document orientation is landscape.
-  // Callers should check `pages_per_sheet` values with IsSupported() first,
-  // and only pass in supported values.
+  // `landscape_` based on the input.
   void SetParameters(int pages_per_sheet, bool is_source_landscape);
 
-  // Turns off N-up mode by resetting `num_pages_on_x_axis` = 1,
-  // `num_pages_on_y_axis` = 1, and `landscape_` = false
-  void Clear();
-
- private:
-  int num_pages_on_x_axis_;
-  int num_pages_on_y_axis_;
-  bool landscape_;
+  int num_pages_on_x_axis_ = 1;
+  int num_pages_on_y_axis_ = 1;
+  bool landscape_ = false;
 };
 
 }  // namespace printing

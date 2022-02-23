@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"

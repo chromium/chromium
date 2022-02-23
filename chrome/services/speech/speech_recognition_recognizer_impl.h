@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/services/speech/cloud_speech_recognition_client.h"
 #include "components/soda/constants.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,6 +30,8 @@ class SpeechRecognitionRecognizerImpl
   using OnLanguageIdentificationEventCallback = base::RepeatingCallback<void(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level)>;
+
+  using OnSpeechRecognitionStoppedCallback = base::RepeatingCallback<void()>;
 
   SpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
@@ -72,12 +73,19 @@ class SpeechRecognitionRecognizerImpl
     return language_identification_event_callback_;
   }
 
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback()
+      const {
+    return speech_recognition_stopped_callback_;
+  }
+
   // Convert the audio buffer into the appropriate format and feed the raw audio
   // into the speech recognition instance.
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer) final;
 
   void OnSpeechRecognitionError();
+
+  void MarkDone() override;
 
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
@@ -91,7 +99,8 @@ class SpeechRecognitionRecognizerImpl
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level);
 
-  const bool enable_soda_;
+  void OnRecognitionStoppedCallback();
+
   media::mojom::SpeechRecognitionOptionsPtr options_;
 
  private:
@@ -116,14 +125,14 @@ class SpeechRecognitionRecognizerImpl
 
   std::unique_ptr<soda::SodaClient> soda_client_;
 
-  std::unique_ptr<CloudSpeechRecognitionClient> cloud_client_;
-
   // The callback that is eventually executed on a speech recognition event
   // which passes the transcribed audio back to the caller via the speech
   // recognition event client remote.
   OnRecognitionEventCallback recognition_event_callback_;
 
   OnLanguageIdentificationEventCallback language_identification_event_callback_;
+
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback_;
 
   base::FilePath config_path_;
   int sample_rate_ = 0;

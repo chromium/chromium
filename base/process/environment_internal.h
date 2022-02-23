@@ -16,7 +16,7 @@
 namespace base {
 namespace internal {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Returns a modified environment vector constructed from the given environment
 // and the list of changes given in |changes|. Each key in the environment is
 // matched against the first element of the pairs. In the event of a match, the
@@ -31,7 +31,7 @@ namespace internal {
 BASE_EXPORT std::unique_ptr<char*[]> AlterEnvironment(
     const char* const* env,
     const EnvironmentMap& changes);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // Returns a modified environment vector constructed from the given environment
 // and the list of changes given in |changes|. Each key in the environment is
 // matched against the first element of the pairs. In the event of a match, the

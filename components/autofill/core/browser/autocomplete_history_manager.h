@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
@@ -178,7 +179,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
       request_callbacks_;
 
   // The PrefService that this instance uses. Must outlive this instance.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // When the manager makes a request from WebDataServiceBase, the database is
   // queried asynchronously. We associate the query handle to the requestor

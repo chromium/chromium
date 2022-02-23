@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -125,7 +126,7 @@ class PaneView : public View, public FocusTraversable {
   View* GetFocusTraversableParentView() override { return nullptr; }
 
  private:
-  FocusSearch* focus_search_ = nullptr;
+  raw_ptr<FocusSearch> focus_search_ = nullptr;
 };
 
 // BorderView is a view containing a native window with its own view hierarchy.
@@ -224,11 +225,11 @@ class FocusTraversalTest : public FocusManagerTest {
     }
   }
 
-  TabbedPane* style_tab_ = nullptr;
-  BorderView* search_border_view_ = nullptr;
+  raw_ptr<TabbedPane> style_tab_ = nullptr;
+  raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  PaneView* left_container_;
-  PaneView* right_container_;
+  raw_ptr<PaneView> left_container_;
+  raw_ptr<PaneView> right_container_;
 };
 
 FocusTraversalTest::FocusTraversalTest() = default;
@@ -625,7 +626,7 @@ TEST_F(FocusTraversalTest, NormalTraversal) {
   AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Test focus traversal with full keyboard access off on Mac.
 TEST_F(FocusTraversalTest, NormalTraversalMac) {
   GetFocusManager()->SetKeyboardAccessible(false);
@@ -681,7 +682,7 @@ TEST_F(FocusTraversalTest, FullKeyboardToggle) {
   EXPECT_EQ(THUMBNAIL_CONTAINER_ID,
             GetFocusManager()->GetFocusedView()->GetID());
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(FocusTraversalTest, TraversalWithNonEnabledViews) {
   const int kDisabledIDs[] = {

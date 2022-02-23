@@ -69,8 +69,9 @@ DynamicsCompressorKernel::DynamicsCompressorKernel(float sample_rate,
 
 void DynamicsCompressorKernel::SetNumberOfChannels(
     unsigned number_of_channels) {
-  if (pre_delay_buffers_.size() == number_of_channels)
+  if (pre_delay_buffers_.size() == number_of_channels) {
     return;
+  }
 
   pre_delay_buffers_.clear();
   for (unsigned i = 0; i < number_of_channels; ++i) {
@@ -82,13 +83,15 @@ void DynamicsCompressorKernel::SetNumberOfChannels(
 void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
   // Re-configure look-ahead section pre-delay if delay time has changed.
   unsigned pre_delay_frames = pre_delay_time * SampleRate();
-  if (pre_delay_frames > kMaxPreDelayFrames - 1)
+  if (pre_delay_frames > kMaxPreDelayFrames - 1) {
     pre_delay_frames = kMaxPreDelayFrames - 1;
+  }
 
   if (last_pre_delay_frames_ != pre_delay_frames) {
     last_pre_delay_frames_ = pre_delay_frames;
-    for (unsigned i = 0; i < pre_delay_buffers_.size(); ++i)
-      pre_delay_buffers_[i]->Zero();
+    for (auto& pre_delay_buffer : pre_delay_buffers_) {
+      pre_delay_buffer->Zero();
+    }
 
     pre_delay_read_index_ = 0;
     pre_delay_write_index_ = pre_delay_frames;
@@ -100,8 +103,9 @@ void DynamicsCompressorKernel::SetPreDelayTime(float pre_delay_time) {
 // approaches the value m_linearThreshold + 1 / k.
 float DynamicsCompressorKernel::KneeCurve(float x, float k) const {
   // Linear up to threshold.
-  if (x < linear_threshold_)
+  if (x < linear_threshold_) {
     return x;
+  }
 
   return linear_threshold_ + (1 - static_cast<float>(exp(static_cast<double>(
                                       -k * (x - linear_threshold_))))) /
@@ -112,9 +116,9 @@ float DynamicsCompressorKernel::KneeCurve(float x, float k) const {
 float DynamicsCompressorKernel::Saturate(float x, float k) const {
   float y;
 
-  if (x < knee_threshold_)
+  if (x < knee_threshold_) {
     y = KneeCurve(x, k);
-  else {
+  } else {
     // Constant ratio after knee.
     float x_db = audio_utilities::LinearToDecibels(x);
     float y_db = yknee_threshold_db_ + slope_ * (x_db - knee_threshold_db_);
@@ -129,8 +133,9 @@ float DynamicsCompressorKernel::Saturate(float x, float k) const {
 // This slope is equal to the inverse of the compression "ratio".
 // In other words, a compression ratio of 20 would be a slope of 1/20.
 float DynamicsCompressorKernel::SlopeAt(float x, float k) const {
-  if (x < linear_threshold_)
+  if (x < linear_threshold_) {
     return 1;
+  }
 
   float x2 = x * 1.001;
 
@@ -292,10 +297,12 @@ void DynamicsCompressorKernel::Process(
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // Fix gremlins.
-    if (std::isnan(detector_average_))
+    if (std::isnan(detector_average_)) {
       detector_average_ = 1;
-    if (std::isinf(detector_average_))
+    }
+    if (std::isinf(detector_average_)) {
       detector_average_ = 1;
+    }
 
     float desired_gain = detector_average_;
 
@@ -331,10 +338,12 @@ void DynamicsCompressorKernel::Process(
       // Fix gremlins.
       // TODO(rtoy): Replace with a DCHECK so we can figure out how NaN can
       // occur.
-      if (std::isnan(compression_diff_db))
+      if (std::isnan(compression_diff_db)) {
         compression_diff_db = -1;
-      if (std::isinf(compression_diff_db))
+      }
+      if (std::isinf(compression_diff_db)) {
         compression_diff_db = -1;
+      }
 
       // Adaptive release - higher compression (lower compressionDiffDb)
       // releases faster.
@@ -362,16 +371,19 @@ void DynamicsCompressorKernel::Process(
       // Fix gremlins.
       // TODO(rtoy): Replace with a DCHECK so we can figure out how NaN can
       // occur.
-      if (std::isnan(compression_diff_db))
+      if (std::isnan(compression_diff_db)) {
         compression_diff_db = 1;
-      if (std::isinf(compression_diff_db))
+      }
+      if (std::isinf(compression_diff_db)) {
         compression_diff_db = 1;
+      }
 
       // As long as we're still in attack mode, use a rate based off
       // the largest compressionDiffDb we've encountered so far.
       if (max_attack_compression_diff_db_ == -1 ||
-          max_attack_compression_diff_db_ < compression_diff_db)
+          max_attack_compression_diff_db_ < compression_diff_db) {
         max_attack_compression_diff_db_ = compression_diff_db;
+      }
 
       float eff_atten_diff_db = std::max(0.5f, max_attack_compression_diff_db_);
 
@@ -402,8 +414,9 @@ void DynamicsCompressorKernel::Process(
 
           float abs_undelayed_source =
               undelayed_source > 0 ? undelayed_source : -undelayed_source;
-          if (compressor_input < abs_undelayed_source)
+          if (compressor_input < abs_undelayed_source) {
             compressor_input = abs_undelayed_source;
+          }
         }
 
         // Calculate shaped power on undelayed input.
@@ -435,10 +448,12 @@ void DynamicsCompressorKernel::Process(
         detector_average = std::min(1.0f, detector_average);
 
         // Fix gremlins.
-        if (std::isnan(detector_average))
+        if (std::isnan(detector_average)) {
           detector_average = 1;
-        if (std::isinf(detector_average))
+        }
+        if (std::isinf(detector_average)) {
           detector_average = 1;
+        }
 
         // Exponential approach to desired gain.
         if (envelope_rate < 1) {
@@ -462,11 +477,12 @@ void DynamicsCompressorKernel::Process(
 
         // Calculate metering.
         float db_real_gain = 20 * log10(post_warp_compressor_gain);
-        if (db_real_gain < metering_gain_)
+        if (db_real_gain < metering_gain_) {
           metering_gain_ = db_real_gain;
-        else
+        } else {
           metering_gain_ +=
               (db_real_gain - metering_gain_) * metering_release_k_;
+        }
 
         // Apply final gain.
         for (unsigned j = 0; j < number_of_channels; ++j) {
@@ -499,8 +515,9 @@ void DynamicsCompressorKernel::Reset() {
   metering_gain_ = 1;
 
   // Predelay section.
-  for (unsigned i = 0; i < pre_delay_buffers_.size(); ++i)
-    pre_delay_buffers_[i]->Zero();
+  for (auto& pre_delay_buffer : pre_delay_buffers_) {
+    pre_delay_buffer->Zero();
+  }
 
   pre_delay_read_index_ = 0;
   pre_delay_write_index_ = kDefaultPreDelayFrames;

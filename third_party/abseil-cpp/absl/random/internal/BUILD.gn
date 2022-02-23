@@ -6,7 +6,11 @@ import("//third_party/abseil-cpp/absl.gni")
 
 absl_source_set("traits") {
   public = [ "traits.h" ]
-  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/numeric:bits",
+    "//third_party/abseil-cpp/absl/numeric:int128",
+  ]
 }
 
 absl_source_set("distribution_caller") {
@@ -21,6 +25,7 @@ absl_source_set("distribution_caller") {
 absl_source_set("fast_uniform_bits") {
   public = [ "fast_uniform_bits.h" ]
   deps = [
+    ":traits",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
@@ -265,5 +270,6 @@ absl_source_set("uniform_helper") {
     ":traits",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/numeric:int128",
   ]
 }

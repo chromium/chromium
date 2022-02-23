@@ -61,7 +61,7 @@ bool MatchingString(const std::string& search_string,
 enum class FindAppIdResult { NoMatch, UniqueMatch, NonUniqueMatch };
 // Looks for an app where prefs_key is set to search_value. Returns the apps id
 // if there was only one app matching, otherwise returns an empty string.
-FindAppIdResult FindAppId(const base::DictionaryValue* prefs,
+FindAppIdResult FindAppId(const base::Value* prefs,
                           base::StringPiece prefs_key,
                           base::StringPiece search_value,
                           std::string* result,
@@ -142,7 +142,7 @@ const char kCrostiniUpgraderShelfId[] =
 std::string GetCrostiniShelfAppId(const Profile* profile,
                                   const std::string* window_app_id,
                                   const std::string* window_startup_id) {
-  const base::DictionaryValue* apps =
+  const base::Value* apps =
       profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
   std::string app_id;
 

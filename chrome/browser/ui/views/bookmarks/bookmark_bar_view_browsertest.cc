@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, SecFetchFromEmptyTab) {
   }
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 //  TODO(crbug.com/1006033): Test flaky on Mac and Windows.
 #define MAYBE_SecFetchSiteNoneFromNonEmptyTab \
   DISABLED_SecFetchSiteNoneFromNonEmptyTab

@@ -15,6 +15,9 @@ namespace ime {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
   // TODO(https://crbug.com/1185629): Add a new helper in
   // base/i18n/icu_string_conversions.h that does the conversion directly
@@ -60,7 +63,9 @@ mojom::KeyEventResult HandleEngineResult(
     std::vector<mojom::CompositionSpanPtr> spans;
     spans.push_back(mojom::CompositionSpan::New(
         0, text.length(), mojom::CompositionSpanStyle::kDefault));
-    host->SetComposition(std::move(text), std::move(spans));
+    const int new_cursor_position = text.length();
+    host->SetComposition(std::move(text), std::move(spans),
+                         new_cursor_position);
   }
   return result.key_handled ? mojom::KeyEventResult::kConsumedByIme
                             : mojom::KeyEventResult::kNeedsHandlingBySystem;
@@ -100,6 +105,12 @@ std::unique_ptr<RuleBasedEngine> RuleBasedEngine::Create(
 }
 
 RuleBasedEngine::~RuleBasedEngine() = default;
+
+void RuleBasedEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info,
+                              mojom::InputMethodSettingsPtr settings,
+                              OnFocusCallback callback) {
+  std::move(callback).Run(false);
+}
 
 bool RuleBasedEngine::IsConnected() {
   // `receiver_` will reset upon disconnection, so bound state is equivalent to

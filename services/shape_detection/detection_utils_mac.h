@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 

@@ -24,15 +24,6 @@ VALID_EXPERIMENT_KEYS = [
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
 
-FIELDTRIAL_CONFIG_TOO_LONG_ERROR_MSG = \
-  "Contents of %s result in command-line flags that exceed Windows' 32767 "\
-  "character limit. To add a new entry, please remove existing obsolete "\
-  "entries. To check if an entry is obsolete, do a code search for its "\
-  "'enable_features' and 'disable_features' strings and verify there are "\
-  "no results other than the files related to the testing config. "\
-  "Automating this is tracked under crbug.com/1053702." % \
-  FIELDTRIAL_CONFIG_FILE_NAME
-
 
 def PrettyPrint(contents):
   """Pretty prints a fieldtrial configuration.
@@ -105,12 +96,10 @@ def PrettyPrint(contents):
       ordered_config, sort_keys=False, indent=4, separators=(',', ': ')) + '\n'
 
 
-def ValidateData(input_api, json_data, file_path, message_type):
+def ValidateData(json_data, file_path, message_type):
   """Validates the format of a fieldtrial configuration.
 
   Args:
-    input_api: An instance passed to presubmit scripts telling info about the
-      changes.
     json_data: Parsed JSON object representing the fieldtrial config.
     file_path: String representing the path to the JSON file.
     message_type: Type of message from |output_api| to return in the case of
@@ -124,9 +113,6 @@ def ValidateData(input_api, json_data, file_path, message_type):
   def _CreateMessage(message_format, *args):
     return _CreateMalformedConfigMessage(message_type, file_path,
                                          message_format, *args)
-
-  if not _IsFieldTrialSizeBelowLimitOnWindows(input_api, file_path):
-    return [message_type(FIELDTRIAL_CONFIG_TOO_LONG_ERROR_MSG)]
 
   if not isinstance(json_data, dict):
     return _CreateMessage('Expecting dict')
@@ -251,33 +237,6 @@ def CheckPretty(contents, file_path, message_type):
   return []
 
 
-def _IsFieldTrialSizeBelowLimitOnWindows(input_api, file_path):
-  """Checks whether the fieldtrial parameters exceeded the Windows cmd limit.
-
-  When launching chrome, the fieldtrial related parameters take more than
-  30,000 characters. Windows has a limit of 32767 characters on command
-  line and thus it raises parameter error when the parameters are too long.
-  Before we have a valid fix, we need to limit the number of fieldtrias in
-  fieldtrial_testing_config.json to 31,500, from the fact that the
-  non-fieldtrial parameters take roughly 1450 characters.
-  See crbug.com/1045530 for more details.
-
-  Args:
-    input_api: An instance passed to presubmit scripts telling info about the
-      changes.
-    file_path: the absolute path to the json file with the fieldtrial configs.
-  """
-  sys.path.append(input_api.os_path.join(
-      input_api.PresubmitLocalPath(), '..', '..', 'tools', 'variations'))
-  import fieldtrial_util
-
-  args = fieldtrial_util.GenerateArgs(file_path, 'windows')
-  total_length = 0
-  for arg in args:
-    total_length += len(arg)
-  return total_length < 31500
-
-
 def CommonChecks(input_api, output_api):
   affected_files = input_api.AffectedFiles(
       include_deletes=False,
@@ -295,7 +254,6 @@ def CommonChecks(input_api, output_api):
     try:
       json_data = input_api.json.loads(contents)
       result = ValidateData(
-          input_api,
           json_data,
           f.AbsoluteLocalPath(),
           output_api.PresubmitError)

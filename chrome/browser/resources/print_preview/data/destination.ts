@@ -4,17 +4,17 @@
 
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCrosImpl} from '../native_layer_cros.js';
 // </if>
 
 import {Cdd, ColorCapability, ColorOption, CopiesCapability} from './cdd.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status_cros.js';
 // </if>
 
@@ -34,7 +34,7 @@ export enum DestinationType {
 export enum DestinationOrigin {
   LOCAL = 'local',
   COOKIES = 'cookies',
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   DEVICE = 'device',
   // </if>
   // Note: Privet is deprecated, but used to filter any legacy entries in the
@@ -50,7 +50,7 @@ export enum DestinationOrigin {
  */
 export const CloudOrigins: DestinationOrigin[] = [
   DestinationOrigin.COOKIES,
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   DestinationOrigin.DEVICE,
   // </if>
 ];
@@ -267,7 +267,7 @@ export class Destination {
    */
   private certificateStatus_: DestinationCertificateStatus;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * EULA url for printer's PPD. Empty string indicates no provided EULA.
    */
@@ -457,7 +457,7 @@ export class Destination {
     }
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   get eulaUrl(): string {
     return this.eulaUrl_;
   }
@@ -634,7 +634,7 @@ export class Destination {
 
   /** @return Path to the SVG for the destination's icon. */
   get icon(): string {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.id_ === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return 'print-preview:save-to-drive';
     }
@@ -732,9 +732,10 @@ export class Destination {
     let hasColor = false;
     let hasMonochrome = false;
     capability.option.forEach(option => {
-      const type = assert(option.type!);
-      hasColor = hasColor || this.COLOR_TYPES_.includes(type);
-      hasMonochrome = hasMonochrome || this.MONOCHROME_TYPES_.includes(type);
+      assert(option.type);
+      hasColor = hasColor || this.COLOR_TYPES_.includes(option.type);
+      hasMonochrome =
+          hasMonochrome || this.MONOCHROME_TYPES_.includes(option.type);
     });
     return hasColor && hasMonochrome;
   }
@@ -812,7 +813,7 @@ const LOCATION_TAG_PREFIXES: string[] =
 export enum GooglePromotedDestinationId {
   DOCS = '__google__docs',
   SAVE_AS_PDF = 'Save as PDF',
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   SAVE_TO_DRIVE_CROS = 'Save to Drive CrOS',
   // </if>
 }
@@ -821,7 +822,7 @@ export enum GooglePromotedDestinationId {
 export const PDF_DESTINATION_KEY: string =
     `${GooglePromotedDestinationId.SAVE_AS_PDF}/${DestinationOrigin.LOCAL}/`;
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 /* Unique identifier for the Save to Drive CrOS destination */
 export const SAVE_TO_DRIVE_CROS_DESTINATION_KEY: string =
     `${GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS}/${

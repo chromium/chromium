@@ -1,5 +1,4 @@
 <script type="text/javascript">
-var deviceLostReceived = false;
 
 function reportProgress(msg) {
   if (window.domAutomationController) {
@@ -8,30 +7,35 @@ function reportProgress(msg) {
   console.log(msg);
 }
 
-async function init()
-{
+async function requestDevice() {
   const adapter = await navigator.gpu.requestAdapter();
   if (!adapter) {
     reportProgress('FAILED');
-    console.log('TEST FAILED - requestAdapter() failed unexpectedly');
-    return;
+    console.log('TEST FAILED - Could not get a GPUAdapter');
+    return null;
   }
 
-  let device;
   try {
-    device = await adapter.requestDevice();
+    return await adapter.requestDevice();
   } catch {
     reportProgress('FAILED');
-    console.log('TEST FAILED - requestDevice() failed unexpectedly');
+    console.log('TEST FAILED - Could not get a GPUDevice');
+    return null;
+  }
+}
+
+async function init() {
+  const device = await requestDevice();
+  if (device == null) {
     return;
   }
-
-  reportProgress('SUCCESS');
   reportProgress('LOADED');
 
-  console.log('Waiting for a GPU crash to cause device loss');
-  const {reason} = await device.lost;
-  if (reason !== undefined) {
+  // The test runner forces the GPU process to crash. This should result in the
+  // domain being blocked.
+  console.log('Waiting for GPU crash to cause device loss');
+  const lost = await device.lost;
+  if (lost.reason !== undefined) {
     console.log('TEST FAILED - Expected undefined device lost reason');
     reportProgress('FAILED');
     return;
@@ -54,9 +58,10 @@ async function init()
     reportProgress('FAILED');
     console.log(
         'TEST FAILED - WebGPU adapter request should have been blocked');
+  } else {
+    console.log('Adapter request failed as expected');
+    reportProgress('SUCCESS');
   }
-
-  deviceLostReceived = true;
 }
 
 init();

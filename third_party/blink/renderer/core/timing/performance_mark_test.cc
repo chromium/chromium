@@ -44,12 +44,13 @@ TEST(PerformanceMarkTest, Construction) {
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
       "mark-name", 0, base::TimeTicks(), SerializedScriptValue::NullValue(),
-      exception_state);
+      exception_state, 1);
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
   ASSERT_EQ(SerializedScriptValue::NullValue()->Deserialize(isolate),
             pm->detail(script_state).V8Value());
+  ASSERT_EQ(1u, pm->navigationCount());
 }
 
 TEST(PerformanceMarkTest, ConstructionWithDetail) {

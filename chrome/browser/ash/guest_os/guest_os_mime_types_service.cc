@@ -38,7 +38,7 @@ GuestOsMimeTypesService::~GuestOsMimeTypesService() = default;
 void GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(
     PrefService* pref_service) {
   DictionaryPrefUpdate update(pref_service, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
+  base::Value* mime_types = update.Get();
   std::map<std::string,
            std::map<std::string, std::map<std::string, std::string>>>
       migrated;
@@ -131,7 +131,7 @@ void GuestOsMimeTypesService::ClearMimeTypes(
     const std::string& container_name) {
   VLOG(1) << "ClearMimeTypes(" << vm_name << ", " << container_name << ")";
   DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
+  base::Value* mime_types = update.Get();
   base::Value* vm = mime_types->FindDictKey(vm_name);
   if (vm) {
     vm->RemoveKey(container_name);
@@ -159,7 +159,7 @@ void GuestOsMimeTypesService::UpdateMimeTypes(
   VLOG(1) << "UpdateMimeTypes(" << mime_type_mappings.vm_name() << ", "
           << mime_type_mappings.container_name() << ")=" << exts;
   DictionaryPrefUpdate update(prefs_, prefs::kGuestOsMimeTypes);
-  base::DictionaryValue* mime_types = update.Get();
+  base::Value* mime_types = update.Get();
   base::Value* vm = mime_types->FindDictKey(mime_type_mappings.vm_name());
   if (!vm) {
     vm = mime_types->SetKey(mime_type_mappings.vm_name(),

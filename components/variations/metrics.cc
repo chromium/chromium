@@ -6,15 +6,16 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 
 namespace variations {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
   UMA_HISTOGRAM_ENUMERATION("Variations.FirstRunResult", result,
                             FirstRunSeedImportResult::ENUM_SIZE);
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void RecordLoadSeedResult(LoadSeedResult state) {
   base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);

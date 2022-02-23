@@ -9,7 +9,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -48,7 +48,8 @@ PrerenderCommitDeferringCondition::~PrerenderCommitDeferringCondition() =
 PrerenderCommitDeferringCondition::PrerenderCommitDeferringCondition(
     NavigationRequest& navigation_request,
     int candidate_prerender_frame_tree_node_id)
-    : WebContentsObserver(navigation_request.GetWebContents()),
+    : CommitDeferringCondition(navigation_request),
+      WebContentsObserver(navigation_request.GetWebContents()),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
   DCHECK_NE(candidate_prerender_frame_tree_node_id_,

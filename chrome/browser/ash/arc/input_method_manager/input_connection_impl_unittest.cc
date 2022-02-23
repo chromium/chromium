@@ -21,7 +21,7 @@ namespace arc {
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBase::Observer {
+    : public ash::input_method::InputMethodEngineObserver {
  public:
   DummyInputMethodEngineObserver() = default;
 
@@ -37,6 +37,7 @@ class DummyInputMethodEngineObserver
       const std::string& engine_id,
       int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
   void OnKeyEvent(
       const std::string& engine_id,
@@ -51,11 +52,10 @@ class DummyInputMethodEngineObserver
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset_pos) override {}
-  void OnCandidateClicked(
-      const std::string& component_id,
-      int candidate_id,
-      ash::input_method::InputMethodEngineBase::MouseButtonEvent button)
-      override {}
+  void OnCandidateClicked(const std::string& component_id,
+                          int candidate_id,
+                          ash::input_method::MouseButtonEvent button) override {
+  }
   void OnMenuItemActivated(const std::string& component_id,
                            const std::string& menu_id) override {}
   void OnScreenProjectionChanged(bool is_projected) override {}
@@ -195,7 +195,6 @@ class InputConnectionImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    ui::IMEBridge::Initialize();
     ash::input_method::InputMethodManager::Initialize(
         new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
@@ -217,7 +216,6 @@ class InputConnectionImplTest : public testing::Test {
     engine_.reset();
     bridge_.reset();
     ash::input_method::InputMethodManager::Shutdown();
-    ui::IMEBridge::Shutdown();
   }
 
  private:

@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Suppress x.py warning about configuration changes
+changelog-seen = 2
+
+[llvm]
+download-ci-llvm = false
+
+# Doesn't affect LLVM build (which we don't do) but rather how rustc_llvm crate
+# is linked.
+static-libstdcpp = true
+
+[rust]
+download-rustc = false
+channel = "dev"
+description = "$PACKAGE_VERSION chromium"
+
+[build]
+# Vendor crates.io dependencies to rust-src/vendor and check they match root
+# Cargo.lock. In the future we will probably want to vendor these ourself like
+# we do with third_party/rust dependencies. For now, the Rust build script auto
+# fetches the dependencies.
+#
+# This is added now to work around a permissions bug in Rust's bootstrap:
+# it fails to run under sudo even if the sudo user is not root, unless sources
+# are vendored in tree.
+locked-deps = true
+vendor = true
+
+target = ["x86_64-unknown-linux-gnu"]
+
+[install]
+prefix = "$INSTALL_DIR"
+sysconfdir = "etc"
+
+[target.x86_64-unknown-linux-gnu]
+cc = "$LLVM_ROOT/bin/clang"
+cxx = "$LLVM_ROOT/bin/clang++"
+ar = "$LLVM_ROOT/bin/llvm-ar"
+ranlib = "$LLVM_ROOT/bin/llvm-ranlib"
+linker = "$LLVM_ROOT/bin/clang"
+llvm-config = "$LLVM_ROOT/bin/llvm-config"

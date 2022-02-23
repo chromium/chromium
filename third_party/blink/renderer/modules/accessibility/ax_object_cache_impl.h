@@ -34,7 +34,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
@@ -44,8 +43,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
+#include "third_party/blink/renderer/modules/accessibility/inspector_accessibility_agent.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -81,6 +81,12 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   const ui::AXMode& GetAXMode() override;
   void SetAXMode(const ui::AXMode&) override;
+
+  // When the accessibility tree view is open in DevTools, we listen for changes
+  // to the tree by registering an InspectorAccessibilityAgent here and notify
+  // the agent when AXEvents are fired or nodes are marked dirty.
+  void AddInspectorAgent(InspectorAccessibilityAgent*);
+  void RemoveInspectorAgent(InspectorAccessibilityAgent*);
 
   void Dispose() override;
 
@@ -156,6 +162,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleUpdateActiveMenuOption(Node*) override;
   void DidShowMenuListPopup(LayoutObject*) override;
   void DidHideMenuListPopup(LayoutObject*) override;
+  void HandleLoadStart(Document*) override;
   void HandleLoadComplete(Document*) override;
   void HandleLayoutComplete(Document*) override;
   void HandleClicked(Node*) override;
@@ -194,10 +201,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void OnTouchAccessibilityHover(const gfx::Point&) override;
 
-  AXObject* ObjectFromAXID(AXID id) const {
-    auto it = objects_.find(id);
-    return it != objects_.end() ? it->value : nullptr;
-  }
+  AXObject* ObjectFromAXID(AXID id) const override;
   AXObject* Root();
 
   // Used for objects without backing DOM nodes, layout objects, etc.
@@ -213,7 +217,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent_if_known);
 
   AXID GetAXID(Node*) override;
-  Element* GetElementFromAXID(AXID) override;
 
   AXObject* Get(AccessibleNode*);
   AXObject* Get(AbstractInlineTextBox*);
@@ -237,6 +240,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
+  // Mark an object or subtree dirty, aka its properties have changed and it
+  // needs to be reserialized. Use the |*WithCleanLayout| versions when layout
+  // is already known to be clean.
+  void MarkAXObjectDirty(AXObject*);
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
@@ -349,14 +356,14 @@ class MODULES_EXPORT AXObjectCacheImpl
       const LayoutObject& layout_object);
   static bool IsRelevantSlotElement(const HTMLSlotElement& slot);
 
-#if DCHECK_IS_ON()
   bool HasBeenDisposed() { return has_been_disposed_; }
-#endif
 
   // Retrieves a vector of all AXObjects whose bounding boxes may have changed
   // since the last query. Clears the vector so that the next time it's
   // called, it will only retrieve objects that have changed since now.
   HeapVector<Member<AXObject>> GetAllObjectsWithChangedBounds();
+
+  static constexpr int kDataTableHeuristicMinRows = 20;
 
  protected:
   void PostPlatformNotification(
@@ -393,6 +400,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(AXID);
 
  private:
+  HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
+
   struct AXEventParams final : public GarbageCollected<AXEventParams> {
     AXEventParams(AXObject* target,
                   ax::mojom::blink::Event event_type,
@@ -446,7 +455,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
   void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
-  void MarkAXObjectDirty(AXObject*);
   void MarkAXSubtreeDirty(AXObject*);
   void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);
@@ -488,10 +496,8 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   std::unique_ptr<AXRelationCache> relation_cache_;
 
-#if DCHECK_IS_ON()
   // Verified when finalizing.
   bool has_been_disposed_ = false;
-#endif
 
   HeapVector<Member<AXEventParams>> notifications_to_post_main_;
   HeapVector<Member<AXEventParams>> notifications_to_post_popup_;

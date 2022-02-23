@@ -20,7 +20,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/wake_lock/wake_lock_context_host.h"
@@ -111,7 +111,7 @@ void BindDeviceServiceReceiver(
   params->geolocation_manager =
       GetContentClient()->browser()->GetGeolocationManager();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   params->java_nfc_delegate = Java_ContentNfcDelegate_create(env);
   DCHECK(!params->java_nfc_delegate.is_null());

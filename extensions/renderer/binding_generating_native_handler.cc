@@ -5,8 +5,6 @@
 #include "extensions/renderer/binding_generating_native_handler.h"
 
 #include "base/cxx17_backports.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/data_object_builder.h"
@@ -32,7 +30,6 @@ bool BindingGeneratingNativeHandler::IsInitialized() {
 }
 
 v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
-  base::ElapsedTimer timer;
   // This long sequence of commands effectively runs the JavaScript code,
   // such that result[bind_to] is the compiled schema for |api_name|:
   //
@@ -127,12 +124,6 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Object> object =
       gin::DataObjectBuilder(isolate).Set(bind_to_, compiled_schema).Build();
 
-  // Log UMA with microsecond accuracy*; maxes at 10 seconds.
-  // *Obviously, limited by our TimeTicks implementation, but as close as
-  // possible.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ApiBindingObjectGenerationTime",
-                              timer.Elapsed().InMicroseconds(),
-                              1, 10000000, 100);
   // return result;
   return scope.Escape(object);
 }

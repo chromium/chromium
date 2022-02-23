@@ -447,8 +447,32 @@ enum class PasswordCheckInteraction {
   kEditPassword = 4,
   kRemovePassword = 5,
   kShowPassword = 6,
+  kMutePassword = 7,
+  kUnmutePassword = 8,
   // Must be last.
-  kMaxValue = kShowPassword,
+  kMaxValue = kUnmutePassword,
+};
+
+// Represents different user interactions related to adding credential from the
+// setting. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused. Always keep this enum in sync with
+// the corresponding PasswordCheckInteraction in enums.xml and
+// password_manager_proxy.js.
+enum class AddCredentialFromSettingsUserInteractions {
+  // Used when the add credential dialog is opened from the settings.
+  kAddDialogOpened = 0,
+  // Used when the add credential dialog is closed from the settings.
+  kAddDialogClosed = 1,
+  // Used when a new credential is added from the settings .
+  kCredentialAdded = 2,
+  // Used when a new credential is being added from the add credential dialog in
+  // settings and another credential exists with the same username/website
+  // combination.
+  kDuplicatedCredentialEntered = 3,
+  // Used when an existing credential is viewed while adding a new credential
+  // from the settings.
+  kDuplicateCredentialViewed = 4,
+  kMaxValue = kDuplicateCredentialViewed
 };
 
 // Metrics: PasswordManager.MoveToAccountStoreTrigger.
@@ -655,8 +679,8 @@ void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
 void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
                                 bool is_under_advanced_protection);
 
-// Log the number of Gaia password hashes saved, and the number of enterprise
-// password hashes saved. Currently only called on profile start up.
+// Log the number of Gaia password hashes saved. Currently only called on
+// profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in);
@@ -664,6 +688,11 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
 // Log the result of the password edit action.
 void LogPasswordEditResult(IsUsernameChanged password_changed,
                            IsPasswordChanged username_changed);
+
+// Log the user interaction events when creating a new credential from settings.
+void LogUserInteractionsWhenAddingCredentialFromSettings(
+    AddCredentialFromSettingsUserInteractions
+        add_credential_from_settings_user_interaction);
 
 }  // namespace metrics_util
 

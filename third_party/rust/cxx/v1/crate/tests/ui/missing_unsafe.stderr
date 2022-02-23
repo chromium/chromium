@@ -1,5 +1,5 @@
 error[E0133]: call to unsafe function is unsafe and requires unsafe function or block
- --> $DIR/missing_unsafe.rs:4:12
+ --> tests/ui/missing_unsafe.rs:4:12
   |
 4 |         fn f(x: i32);
   |            ^ call to unsafe function

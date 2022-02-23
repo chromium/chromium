@@ -19,10 +19,12 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -35,7 +37,6 @@
 #include "content/browser/service_worker/service_worker_quota_client.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -175,6 +176,15 @@ class WrapResultCallbackToTakeStatusCode {
   ServiceWorkerContext::ResultCallback callback_;
 };
 
+void RunOrPostTaskOnUIThread(const base::Location& location,
+                             base::OnceClosure task) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    std::move(task).Run();
+  } else {
+    GetUIThreadTaskRunner({})->PostTask(location, std::move(task));
+  }
+}
+
 }  // namespace
 
 
@@ -250,15 +260,15 @@ void ServiceWorkerContextWrapper::InitInternal(
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
 
-  if (storage_partition_) {
-    context()->registry()->GetRegisteredStorageKeys(base::BindOnce(
-        &ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys, this));
-  }
+  context()->registry()->GetRegisteredStorageKeys(
+      base::BindOnce(&ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys,
+                     this, base::TimeTicks::Now()));
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  ClearRunningServiceWorkers();
   storage_partition_ = nullptr;
   process_manager_->Shutdown();
   storage_control_.reset();
@@ -393,6 +403,9 @@ void ServiceWorkerContextWrapper::OnStarted(
     const blink::StorageKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (is_deleting_and_starting_over_)
+    return;
+
   // TODO(crbug.com/1199077): Update this when ServiceWorkerContextCoreObserver
   // implements StorageKey.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
@@ -417,14 +430,8 @@ void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
 }
 
 void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& kv : running_service_workers_) {
-    int64_t version_id = kv.first;
-    for (auto& observer : observer_list_)
-      observer.OnVersionStoppedRunning(version_id);
-  }
-  running_service_workers_.clear();
+  is_deleting_and_starting_over_ = true;
+  ClearRunningServiceWorkers();
 }
 
 void ServiceWorkerContextWrapper::OnVersionStateChanged(
@@ -508,6 +515,7 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
 ServiceWorkerExternalRequestResult
 ServiceWorkerContextWrapper::StartingExternalRequest(
     int64_t service_worker_version_id,
+    ServiceWorkerExternalRequestTimeoutType timeout_type,
     const std::string& request_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context())
@@ -516,7 +524,22 @@ ServiceWorkerContextWrapper::StartingExternalRequest(
       context()->GetLiveVersion(service_worker_version_id);
   if (!version)
     return ServiceWorkerExternalRequestResult::kWorkerNotFound;
-  return version->StartExternalRequest(request_uuid);
+  return version->StartExternalRequest(request_uuid, timeout_type);
+}
+
+bool ServiceWorkerContextWrapper::ExecuteScriptForTest(
+    const std::string& script,
+    int64_t service_worker_version_id,
+    ServiceWorkerScriptExecutionCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!context())
+    return false;
+  scoped_refptr<ServiceWorkerVersion> version =
+      context()->GetLiveVersion(service_worker_version_id);
+  if (!version)
+    return false;
+  version->ExecuteScriptForTest(script, std::move(callback));  // IN-TEST
+  return true;
 }
 
 ServiceWorkerExternalRequestResult
@@ -663,7 +686,6 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
     const blink::StorageKey& key,
     blink::TransferableMessage message,
     ResultCallback result_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Ensure the callback is called asynchronously.
   auto wrapped_callback = base::BindOnce(
       [](ResultCallback callback, bool success) {
@@ -672,12 +694,44 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
       },
       std::move(result_callback));
 
+  // TODO(https://crbug.com/1295029): Don't post task to the UI thread. Instead,
+  // make all call sites run on the UI thread.
+  RunOrPostTaskOnUIThread(
+      FROM_HERE,
+      base::BindOnce(&ServiceWorkerContextWrapper::
+                         StartServiceWorkerAndDispatchMessageOnUIThread,
+                     this, scope, key, std::move(message),
+                     base::BindOnce(
+                         [](ResultCallback callback,
+                            scoped_refptr<base::TaskRunner> callback_runner,
+                            bool success) {
+                           callback_runner->PostTask(
+                               FROM_HERE,
+                               base::BindOnce(std::move(callback), success));
+                         },
+                         std::move(wrapped_callback),
+                         base::ThreadTaskRunnerHandle::Get())));
+}
+
+void ServiceWorkerContextWrapper::
+    StartServiceWorkerAndDispatchMessageOnUIThread(
+        const GURL& scope,
+        const blink::StorageKey& key,
+        blink::TransferableMessage message,
+        ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!context_core_) {
+    std::move(result_callback).Run(/*success=*/false);
+    return;
+  }
+
   FindRegistrationForScopeImpl(
       net::SimplifyUrlForRequest(scope), key,
       /*include_installing_version=*/false,
       base::BindOnce(
           &ServiceWorkerContextWrapper::DidFindRegistrationForMessageDispatch,
-          this, std::move(message), scope, std::move(wrapped_callback)));
+          this, std::move(message), scope, std::move(result_callback)));
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForMessageDispatch(
@@ -1276,6 +1330,8 @@ void ServiceWorkerContextWrapper::OnStatusChangedForFindReadyRegistration(
 void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(running_service_workers_.empty());
+  is_deleting_and_starting_over_ = false;
   storage_control_.reset();
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     context_core_.reset();
@@ -1564,6 +1620,7 @@ void ServiceWorkerContextWrapper::WaitForRegistrationsInitializedForTest() {
 }
 
 void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
+    base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const blink::StorageKey& storage_key : storage_keys)
@@ -1571,6 +1628,21 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
   registrations_initialized_ = true;
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();
+
+  base::UmaHistogramMediumTimes(
+      "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
+      base::TimeTicks::Now() - start_time);
+}
+
+void ServiceWorkerContextWrapper::ClearRunningServiceWorkers() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (const auto& kv : running_service_workers_) {
+    int64_t version_id = kv.first;
+    for (auto& observer : observer_list_)
+      observer.OnVersionStoppedRunning(version_id);
+  }
+  running_service_workers_.clear();
 }
 
 }  // namespace content

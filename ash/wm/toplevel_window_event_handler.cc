@@ -456,7 +456,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     case ui::ET_SCROLL_FLING_START:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SWIPE:
       HandleFlingOrSwipe(event);
       return;
@@ -731,8 +731,9 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   if (!window_resizer_)
     return;
   gfx::PointF location_in_parent = event->location_f();
-  aura::Window::ConvertPointToTarget(target, target->parent(),
-                                     &location_in_parent);
+  aura::Window::ConvertPointToTarget(
+      target, window_resizer_->resizer()->GetTarget()->parent(),
+      &location_in_parent);
   window_resizer_->resizer()->Drag(location_in_parent, event->flags());
   event->StopPropagation();
 }

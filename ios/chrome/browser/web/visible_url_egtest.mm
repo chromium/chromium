@@ -13,13 +13,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/features.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -43,9 +43,6 @@ const char kGoPositiveDeltaLink[] = "go-positive-delta";
 const char kPage1Link[] = "page-1";
 const char kPage2Link[] = "page-2";
 const char kPage3Link[] = "page-3";
-
-// Suffix used to disable kRestoreSessionFromCache.
-NSString* const kDisableCacheRestoreSuffix = @"WithCacheRestoreDisabled";
 
 id<GREYMatcher> ContextMenuMatcherForText(NSString* text) {
   return grey_allOf(
@@ -122,49 +119,6 @@ class PausableResponseProvider : public HtmlResponseProvider {
 @end
 
 @implementation VisibleURLTestCase
-
-+ (NSArray*)testInvocations {
-  NSMutableArray* testInvocations = [[super testInvocations] mutableCopy];
-
-  // VisibleURLTestCase tests a lot of ios/web session restore logic. iOS 15
-  // supports a more efficient session restore flow, but there are plenty of
-  // edge case reasons for a session restore to fall back to legacy restore.
-  // To ensure each test below ios/web restore path, duplicate each test with a
-  // version that runs with kRestoreSessionFromCache enabled and disabled.
-  if (@available(iOS 15, *)) {
-    unsigned int count = 0;
-    Method* methods = class_copyMethodList(self, &count);
-    for (unsigned i = 0; i < count; i++) {
-      SEL selector = method_getName(methods[i]);
-      NSString* name = NSStringFromSelector(selector);
-      if ([name hasPrefix:@"test"]) {
-        // Add disabled selector to test invocations.
-        SEL disabled_selector = NSSelectorFromString([NSString
-            stringWithFormat:@"%@%@", name, kDisableCacheRestoreSuffix]);
-        NSInvocation* invocation = [NSInvocation
-            invocationWithMethodSignature:
-                [self instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:disabled_selector];
-        [testInvocations addObject:invocation];
-
-        // Link method to disabled selector.
-        Method instanceMethod = class_getInstanceMethod(self, selector);
-        const char* typeEncoding = method_getTypeEncoding(instanceMethod);
-        class_addMethod(self, disabled_selector,
-                        method_getImplementation(instanceMethod), typeEncoding);
-      }
-    }
-  }
-  return [testInvocations copy];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self.name containsString:kDisableCacheRestoreSuffix]) {
-    config.features_disabled.push_back(web::kRestoreSessionFromCache);
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -327,7 +281,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
     [self setServerPaused:NO];
   }
 
-  if ([self.name containsString:kDisableCacheRestoreSuffix] ||
+  if (![ChromeEarlGrey isSynthesizedRestoreSessionEnabled] ||
       !base::ios::IsRunningOnIOS15OrLater()) {
     // In this case, legacy restore will commit page1 with the pushState
     // empty page (see restore_session.html). With legacy restore check that

@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -29,11 +29,12 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "url/gurl.h"
 
@@ -118,7 +119,7 @@ class EventRouter : public KeyedService,
   // methods BroadcastEvent or DispatchEventToExtension.
   // Note that this method will dispatch the event with
   // UserGestureState:USER_GESTURE_UNKNOWN.
-  static void DispatchEventToSender(IPC::Sender* ipc_sender,
+  static void DispatchEventToSender(content::RenderProcessHost* rph,
                                     content::BrowserContext* browser_context,
                                     const std::string& extension_id,
                                     events::HistogramValue histogram_value,
@@ -127,7 +128,7 @@ class EventRouter : public KeyedService,
                                     int worker_thread_id,
                                     int64_t service_worker_version_id,
                                     std::unique_ptr<base::ListValue> event_args,
-                                    const EventFilteringInfo& info);
+                                    mojom::EventFilteringInfoPtr info);
 
   // Returns false when the event is scoped to a context and the listening
   // extension does not have access to events from that context.
@@ -341,6 +342,8 @@ class EventRouter : public KeyedService,
       UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
                            ExtensionUpdatedEventOnPermissionsChange);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
+                           OnUserSiteSettingsChanged);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
                            ExtensionUpdatedEventOnAllowlistWarningChange);
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, StorageAreaOnChanged);
@@ -356,7 +359,7 @@ class EventRouter : public KeyedService,
 
   // TODO(gdk): Document this.
   static void DispatchExtensionMessage(
-      IPC::Sender* ipc_sender,
+      content::RenderProcessHost* rph,
       int worker_thread_id,
       content::BrowserContext* browser_context,
       const std::string& extension_id,
@@ -364,7 +367,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       base::ListValue* event_args,
       UserGestureState user_gesture,
-      const extensions::EventFilteringInfo& info);
+      extensions::mojom::EventFilteringInfoPtr info);
 
   // Adds an extension as an event listener for |event_name|.
   //
@@ -445,6 +448,10 @@ class EventRouter : public KeyedService,
                                const std::string& event_name,
                                int64_t service_worker_version_id);
 
+  void RouteDispatchEvent(content::RenderProcessHost* rph,
+                          const mojom::DispatchEventParamsPtr params,
+                          const base::ListValue& event_args);
+
   // static
   static void DoDispatchEventToSenderBookkeeping(
       content::BrowserContext* context,
@@ -469,11 +476,11 @@ class EventRouter : public KeyedService,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // The ExtensionPrefs associated with |browser_context_|. May be NULL in
   // tests.
-  ExtensionPrefs* const extension_prefs_;
+  const raw_ptr<ExtensionPrefs> extension_prefs_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -493,6 +500,10 @@ class EventRouter : public KeyedService,
   LazyEventDispatchUtil lazy_event_dispatch_util_;
 
   EventAckData event_ack_data_;
+
+  std::map<content::RenderProcessHost*,
+           mojo::AssociatedRemote<mojom::EventDispatcher>>
+      rph_dispatcher_map_;
 
   // All the Mojo receivers for the EventRouter. Keeps track of the render
   // process id.
@@ -526,7 +537,7 @@ struct Event {
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
   // tab only works if extension is allowed incognito access).
-  content::BrowserContext* const restrict_to_browser_context;
+  const raw_ptr<content::BrowserContext> restrict_to_browser_context;
 
   // If not empty, the event is only sent to extensions with host permissions
   // for this url.
@@ -536,7 +547,7 @@ struct Event {
   EventRouter::UserGestureState user_gesture;
 
   // Extra information used to filter which events are sent to the listener.
-  EventFilteringInfo filter_info;
+  mojom::EventFilteringInfoPtr filter_info;
 
   // If specified, this is called before dispatching an event to each
   // extension. The third argument is a mutable reference to event_args,
@@ -568,7 +579,7 @@ struct Event {
         content::BrowserContext* restrict_to_browser_context,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
-        const EventFilteringInfo& info);
+        mojom::EventFilteringInfoPtr info);
 
   ~Event();
 
@@ -597,7 +608,7 @@ struct EventListenerInfo {
   const std::string event_name;
   const std::string extension_id;
   const GURL listener_url;
-  content::BrowserContext* const browser_context;
+  const raw_ptr<content::BrowserContext> browser_context;
   const int worker_thread_id;
   const int64_t service_worker_version_id;
 };

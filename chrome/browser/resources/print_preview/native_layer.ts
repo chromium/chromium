@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
@@ -46,6 +45,7 @@ export enum DuplexModeRestriction {
   DUPLEX = 0x6,
 }
 
+// <if expr="chromeos_ash or chromeos_lacros">
 /**
  * Enumeration of PIN printing mode restrictions used by Chromium.
  * This has to coincide with |printing::PinModeRestriction| as defined in
@@ -56,6 +56,7 @@ export enum PinModeRestriction {
   PIN = 1,
   NO_PIN = 2,
 }
+// </if>
 
 /**
  * Policies affecting print settings values and availability.
@@ -76,7 +77,9 @@ export type Policies = {
     allowedMode?: DuplexModeRestriction,
     defaultMode?: DuplexModeRestriction
   },
+  // <if expr="chromeos_ash or chromeos_lacros">
   pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction},
+  // </if>
   printPdfAsImage?: {defaultMode?: boolean},
   printPdfAsImageAvailability?: {allowedMode?: boolean},
 };

@@ -71,4 +71,11 @@ void GPURenderPassEncoder::executeBundles(
                                              dawn_bundles.get());
 }
 
+void GPURenderPassEncoder::endPass() {
+  device_->AddConsoleWarning(
+      "endPass() has been deprecated and will soon be "
+      "removed. Use end() instead.");
+  end();
+}
+
 }  // namespace blink

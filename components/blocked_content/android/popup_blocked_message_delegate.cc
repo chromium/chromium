@@ -27,7 +27,7 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   }
 
   on_show_popups_callback_ = std::move(on_show_popups_callback);
-  url_ = web_contents_->GetLastCommittedURL();
+  url_ = GetWebContents().GetLastCommittedURL();
   // Unretained is safe because |this| will always outlive |message_| which owns
   // the callback.
   auto message = std::make_unique<messages::MessageWrapper>(
@@ -57,7 +57,8 @@ bool PopupBlockedMessageDelegate::ShowMessage(
   // or destroyed, popup blocked message will not be displayed and the
   // method will return false.
   if (!message_dispatcher_bridge->EnqueueMessage(
-          message.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+          message.get(), &GetWebContents(),
+          messages::MessageScopeType::NAVIGATION,
           messages::MessagePriority::kNormal)) {
     return false;
   }
@@ -75,7 +76,8 @@ PopupBlockedMessageDelegate::~PopupBlockedMessageDelegate() {
 
 PopupBlockedMessageDelegate::PopupBlockedMessageDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<PopupBlockedMessageDelegate>(*web_contents) {
+}
 
 void PopupBlockedMessageDelegate::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {
@@ -93,7 +95,7 @@ void PopupBlockedMessageDelegate::HandleClick() {
                                    CONTENT_SETTING_ALLOW);
 
   // Launch popups.
-  ShowBlockedPopups(web_contents_);
+  ShowBlockedPopups(&GetWebContents());
 
   if (on_show_popups_callback_)
     std::move(on_show_popups_callback_).Run();

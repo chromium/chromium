@@ -22,7 +22,13 @@ class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
 
   ~WaylandWatcher() override;
 
+  // Start/Stop watching the fd for testing.
+  void StartForTesting();
+  void StopForTesting();
+
  private:
+  void Start();
+
   // base::MessagePumpForUI::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override;
 

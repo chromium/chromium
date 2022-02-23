@@ -221,32 +221,6 @@ void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
   resource_response_->SetHasMajorCertificateErrors(value);
 }
 
-void WebURLResponse::SetCTPolicyCompliance(
-    net::ct::CTPolicyCompliance compliance) {
-  switch (compliance) {
-    case net::ct::CTPolicyCompliance::
-        CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
-    case net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS:
-    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyDoesNotComply);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS:
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplies);
-      break;
-    case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED();
-      resource_response_->SetCTPolicyCompliance(
-          ResourceResponse::kCTPolicyComplianceDetailsNotAvailable);
-      break;
-  };
-}
-
 void WebURLResponse::SetIsLegacyTLSVersion(bool value) {
   resource_response_->SetIsLegacyTLSVersion(value);
 }
@@ -374,6 +348,15 @@ network::mojom::IPAddressSpace WebURLResponse::AddressSpace() const {
 void WebURLResponse::SetAddressSpace(
     network::mojom::IPAddressSpace remote_ip_address_space) {
   resource_response_->SetAddressSpace(remote_ip_address_space);
+}
+
+network::mojom::IPAddressSpace WebURLResponse::ClientAddressSpace() const {
+  return resource_response_->ClientAddressSpace();
+}
+
+void WebURLResponse::SetClientAddressSpace(
+    network::mojom::IPAddressSpace client_address_space) {
+  resource_response_->SetClientAddressSpace(client_address_space);
 }
 
 void WebURLResponse::SetIsValidated(bool is_validated) {

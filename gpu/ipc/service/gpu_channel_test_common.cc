@@ -5,8 +5,9 @@
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -58,7 +59,7 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
                          const std::string& shader) override {}
   void MaybeExitOnContextLost() override { is_exiting_ = true; }
   bool IsExiting() const override { return is_exiting_; }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) override {}
   void DidUpdateHDRStatus(bool hdr_enabled) override {}
   void SendCreatedChildWindow(SurfaceHandle parent_window,
@@ -69,7 +70,7 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
 
  private:
   bool is_exiting_ = false;
-  Scheduler* const scheduler_;
+  const raw_ptr<Scheduler> scheduler_;
 };
 
 GpuChannelTestCommon::GpuChannelTestCommon(bool use_stub_bindings)
@@ -136,7 +137,7 @@ void GpuChannelTestCommon::CreateCommandBuffer(
   auto quit = loop.QuitClosure();
   mojo::PendingAssociatedRemote<mojom::CommandBuffer> remote;
   mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client;
-  ignore_result(client.InitWithNewEndpointAndPassReceiver());
+  std::ignore = client.InitWithNewEndpointAndPassReceiver();
   client.EnableUnassociatedUsage();
   channel.CreateCommandBuffer(
       std::move(init_params), routing_id, std::move(shared_state),

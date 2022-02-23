@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -90,7 +90,7 @@ class VideoFramePump : public VideoStream,
   void SetLosslessEncode(bool want_lossless) override;
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
-  void SelectSource(int id) override;
+  void SelectSource(webrtc::ScreenId id) override;
 
   protocol::VideoFeedbackStub* video_feedback_stub() {
     return &capture_scheduler_;
@@ -165,9 +165,9 @@ class VideoFramePump : public VideoStream,
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 
   // Interface through which video frames are passed to the client.
-  protocol::VideoStub* video_stub_;
+  raw_ptr<protocol::VideoStub> video_stub_;
 
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
   webrtc::DesktopSize frame_size_;
   webrtc::DesktopVector frame_dpi_;
 

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,9 +53,13 @@
 #include "ui/gfx/range/range.h"
 #include "v8/include/v8-forward.h"
 
+namespace cc {
+class PaintCanvas;
+}  // namespace cc
+
 namespace gfx {
 class Point;
-class Vector2dF;
+class PointF;
 }  // namespace gfx
 
 namespace ui {
@@ -96,6 +101,10 @@ struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
 struct WebScriptSource;
+
+#if BUILDFLAG(IS_WIN)
+struct WebFontFamilyNames;
+#endif
 
 namespace mojom {
 enum class TreeScopeType;
@@ -254,6 +263,11 @@ class WebLocalFrame : public WebFrame {
   virtual const absl::optional<base::UnguessableToken>& GetEmbeddingToken()
       const = 0;
 
+  // "Returns true if the frame the document belongs to, or any of its ancestor
+  // nodes is a fenced frame. See blink::Frame::IsInFencedFrameTree() for more
+  // details.
+  virtual bool IsInFencedFrameTree() const = 0;
+
   // Navigation Ping --------------------------------------------------------
 
   virtual void SendPings(const WebURL& destination_url) = 0;
@@ -338,7 +352,7 @@ class WebLocalFrame : public WebFrame {
 
   // `world_id` must be > kMainDOMWorldId and < kEmbedderWorldIdLimit (a
   // high number used internally).
-  WARN_UNUSED_RESULT virtual v8::Local<v8::Value>
+  [[nodiscard]] virtual v8::Local<v8::Value>
   ExecuteScriptInIsolatedWorldAndReturnValue(int32_t world_id,
                                              const WebScriptSource&,
                                              BackForwardCacheAware) = 0;
@@ -492,11 +506,6 @@ class WebLocalFrame : public WebFrame {
   virtual void TextSelectionChanged(const WebString& selection_text,
                                     uint32_t offset,
                                     const gfx::Range& range) = 0;
-
-  // Expands the selection to a word around the caret and returns
-  // true. Does nothing and returns false if there is no caret or
-  // there is ranged selection.
-  virtual bool SelectWordAroundCaret() = 0;
 
   // DEPRECATED: Use moveRangeSelection.
   virtual void SelectRange(const gfx::Point& base,
@@ -701,8 +710,8 @@ class WebLocalFrame : public WebFrame {
   // because it is the term used throughout Chrome (except for blink renderer)
   // where there is no concept of scroll origin.
   // See renderer/core/scroll/scroll_area.h for details.
-  virtual gfx::Vector2dF GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const gfx::Vector2dF&) = 0;
+  virtual gfx::PointF GetScrollOffset() const = 0;
+  virtual void SetScrollOffset(const gfx::PointF&) = 0;
 
   // The size of the document in this frame.
   virtual gfx::Size DocumentSize() const = 0;
@@ -735,6 +744,11 @@ class WebLocalFrame : public WebFrame {
   // Returns the number of pages that can be printed at the given page size.
   virtual uint32_t PrintBegin(const WebPrintParams& print_params,
                               const WebNode& constrain_to_node) = 0;
+
+  // Called when printing has been requested, but has not yet begun. This
+  // gives the document an opportunity to load any new resources needed for
+  // printing. It returns whether any resources will need to load.
+  virtual bool WillPrintSoon() = 0;
 
   // Returns the page shrinking factor calculated by webkit (usually
   // between 1/1.33 and 1/2). Returns 0 if the page number is invalid or
@@ -821,6 +835,13 @@ class WebLocalFrame : public WebFrame {
   // See |blink::Frame::LastActivationWasRestricted()|.
   virtual bool LastActivationWasRestricted() const = 0;
 
+  // Fonts --------------------------------------------------------------------
+
+#if BUILDFLAG(IS_WIN)
+  // Returns the font family names currently used.
+  virtual WebFontFamilyNames GetWebFontFamilyNames() const = 0;
+#endif
+
   // Testing ------------------------------------------------------------------
 
   // Get the total spool size (the bounding box of all the pages placed after
@@ -862,8 +883,6 @@ class WebLocalFrame : public WebFrame {
   virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
   // Reset TextFinder state for the web test runner in between two tests.
   virtual void ClearActiveFindMatchForTesting() = 0;
-
-  virtual bool ServiceWorkerSubresourceFilterEnabled() = 0;
 
   // Sets a local storage area which can be used for this frame. This storage
   // area is ignored if a cached storage area already exists for the storage

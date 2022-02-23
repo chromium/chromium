@@ -128,13 +128,13 @@ TEST(PaymentRequestTest, PaymentDetailsFromValueFailure) {
   payment_method.SetKey("total", std::move(invalid_total_dict));
   details_dict.FindKey("modifiers")->Append(std::move(payment_method));
   EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-  details_dict.FindKey("modifiers")->GetList()[0].RemoveKey("total");
+  details_dict.FindKey("modifiers")->GetListDeprecated()[0].RemoveKey("total");
 
   // Invalid additional_display_item in modifiers.
   base::Value additional_display_items_list(base::Value::Type::LIST);
   additional_display_items_list.Append("not a payment item");
   details_dict.FindKey("modifiers")
-      ->GetList()[0]
+      ->GetListDeprecated()[0]
       .SetKey("additionalDisplayItems",
               std::move(additional_display_items_list));
   EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));

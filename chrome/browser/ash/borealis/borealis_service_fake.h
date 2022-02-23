@@ -20,6 +20,7 @@ class BorealisServiceFake : public BorealisService {
   static BorealisServiceFake* UseFakeForTesting(
       content::BrowserContext* context);
 
+  BorealisServiceFake();
   ~BorealisServiceFake() override;
 
   BorealisAppLauncher& AppLauncher() override;
@@ -30,6 +31,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisInstaller& Installer() override;
   BorealisLaunchOptions& LaunchOptions() override;
   BorealisShutdownMonitor& ShutdownMonitor() override;
+  BorealisWaylandInterface& WaylandInterface() override;
   BorealisWindowManager& WindowManager() override;
 
   void SetAppLauncherForTesting(BorealisAppLauncher* app_launcher);
@@ -41,6 +43,8 @@ class BorealisServiceFake : public BorealisService {
   void SetInstallerForTesting(BorealisInstaller* installer);
   void SetLaunchOptionsForTesting(BorealisLaunchOptions* launch_options);
   void SetShutdownMonitorForTesting(BorealisShutdownMonitor* shutdown_monitor);
+  void SetWaylandInterfaceForTesting(
+      BorealisWaylandInterface* wayland_interface);
   void SetWindowManagerForTesting(BorealisWindowManager* window_manager);
 
  private:
@@ -52,6 +56,7 @@ class BorealisServiceFake : public BorealisService {
   BorealisInstaller* installer_ = nullptr;
   BorealisLaunchOptions* launch_options_ = nullptr;
   BorealisShutdownMonitor* shutdown_monitor_ = nullptr;
+  BorealisWaylandInterface* wayland_interface_ = nullptr;
   BorealisWindowManager* window_manager_ = nullptr;
 };
 

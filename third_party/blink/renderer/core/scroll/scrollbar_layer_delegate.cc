@@ -75,15 +75,15 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 }
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
-  IntRect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
-  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
-  return ToGfxRect(track_rect);
+  gfx::Rect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
+  track_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
+  return track_rect;
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
-  IntRect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
-  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
-  return ToGfxRect(track_rect);
+  gfx::Rect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
+  track_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
+  return track_rect;
 }
 
 bool ScrollbarLayerDelegate::SupportsDragSnapBack() const {
@@ -95,18 +95,19 @@ bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
 }
 
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
-  IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
+  gfx::Rect back_button_rect =
+      scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
   if (!back_button_rect.IsEmpty())
-    back_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
-  return ToGfxRect(back_button_rect);
+    back_button_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
+  return back_button_rect;
 }
 
 gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
-  IntRect forward_button_rect =
+  gfx::Rect forward_button_rect =
       scrollbar_->GetTheme().ForwardButtonRect(*scrollbar_);
   if (!forward_button_rect.IsEmpty())
-    forward_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
-  return ToGfxRect(forward_button_rect);
+    forward_button_rect.Offset(-scrollbar_->Location().OffsetFromOrigin());
+  return forward_button_rect;
 }
 
 float ScrollbarLayerDelegate::Opacity() const {
@@ -125,13 +126,12 @@ bool ScrollbarLayerDelegate::UsesNinePatchThumbResource() const {
 
 gfx::Size ScrollbarLayerDelegate::NinePatchThumbCanvasSize() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return ToGfxSize(
-      scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_));
+  return scrollbar_->GetTheme().NinePatchThumbCanvasSize(*scrollbar_);
 }
 
 gfx::Rect ScrollbarLayerDelegate::NinePatchThumbAperture() const {
   DCHECK(scrollbar_->GetTheme().UsesNinePatchThumbResource());
-  return ToGfxRect(scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_));
+  return scrollbar_->GetTheme().NinePatchThumbAperture(*scrollbar_);
 }
 
 bool ScrollbarLayerDelegate::ShouldPaint() const {
@@ -164,11 +164,11 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
   // The canvas coordinate space is relative to the part's origin.
   switch (part) {
     case cc::ScrollbarPart::THUMB:
-      theme.PaintThumb(painter.Context(), *scrollbar_, IntRect(rect));
+      theme.PaintThumb(painter.Context(), *scrollbar_, gfx::Rect(rect));
       scrollbar_->ClearThumbNeedsRepaint();
       break;
     case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
-      DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().size());
+      DCHECK_EQ(rect.size(), scrollbar_->FrameRect().size());
       gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();

@@ -10,11 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_surface_egl.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
 
 #include "base/posix/eintr_wrapper.h"

@@ -79,8 +79,16 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 0);
 }
 
+// TODO(https://crbug.com/1287783): Fails on the linux and android.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
+  DISABLED_OverlayPopupAd_AdInterventionTriggered
+#else
+#define MAYBE_OverlayPopupAd_AdInterventionTriggered \
+  OverlayPopupAd_AdInterventionTriggered
+#endif
 IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
-                       OverlayPopupAd_AdInterventionTriggered) {
+                       MAYBE_OverlayPopupAd_AdInterventionTriggered) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(

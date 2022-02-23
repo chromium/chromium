@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "ui/base/cursor/cursor.h"
 
 namespace blink {
 
@@ -496,8 +497,8 @@ bool LayoutFrameSet::UserResize(const MouseEvent& evt) {
     if (evt.type() == event_type_names::kMousedown &&
         evt.button() ==
             static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-      FloatPoint local_pos =
-          AbsoluteToLocalFloatPoint(FloatPoint(evt.AbsoluteLocation()));
+      gfx::PointF local_pos =
+          AbsoluteToLocalPoint(gfx::PointF(evt.AbsoluteLocation()));
       StartResizing(cols_, local_pos.x());
       StartResizing(rows_, local_pos.y());
       if (cols_.split_being_resized_ != kNoSplit ||
@@ -511,8 +512,8 @@ bool LayoutFrameSet::UserResize(const MouseEvent& evt) {
         (evt.type() == event_type_names::kMouseup &&
          evt.button() ==
              static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      FloatPoint local_pos =
-          AbsoluteToLocalFloatPoint(FloatPoint(evt.AbsoluteLocation()));
+      gfx::PointF local_pos =
+          AbsoluteToLocalPoint(gfx::PointF(evt.AbsoluteLocation()));
       ContinueResizing(cols_, local_pos.x());
       ContinueResizing(rows_, local_pos.y());
       if (evt.type() == event_type_names::kMouseup &&

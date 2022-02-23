@@ -12,8 +12,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // MessageForJob sends a single message to launchd with a simple dictionary
 // mapping |operation| to |job_label|, and returns the result of calling
@@ -76,7 +75,6 @@ pid_t PIDForJob(const std::string& job_label) {
   return launch_data_get_integer(pid_data);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #pragma clang diagnostic pop

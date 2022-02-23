@@ -171,7 +171,11 @@ class DecodeVideoTask extends AsyncTask<List<Bitmap>> {
             mDecodingResult = DecodingResult.IO_ERROR;
             return null;
         } finally {
-            if (retriever != null) retriever.release();
+            try {
+                if (retriever != null) retriever.release();
+                // TODO(crbug.com/1285047): Update to IOException after it go to public.
+            } catch (Exception exception) {
+            }
         }
     }
 

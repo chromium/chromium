@@ -8,6 +8,7 @@ import "services/device/public/mojom/screen_orientation_lock_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/capture_links.mojom";
+import "third_party/blink/public/mojom/manifest/handle_links.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -99,15 +100,28 @@ struct Manifest {
   // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
   bool isolated_storage;
 
+  array<ManifestPermissionsPolicyDeclaration> permissions_policy;
+
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
   // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
   ManifestLaunchHandler? launch_handler;
 
   // TODO(crbug.com/1259777): This field is non-standard and part of a Chrome
-  // experiment. See: https://github.com/w3c/manifest/issues/676#issuecomment-810628993
+  // experiment. See:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/translations-explainer.md
   // A mapping of locales to their translations.
   map<mojo_base.mojom.String16, ManifestTranslationItem> translations;
+
+  // TODO(crbug.com/1271804): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/w3c/manifest/issues/975#issuecomment-960222756
+  ManifestUserPreferences? user_preferences;
+
+  // TODO(crbug.com/1254457): This field is non-standard and part of a Chrome
+  // experiment. See:
+  // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
+  HandleLinks handle_links;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -287,6 +301,29 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? short_name;
 
   mojo_base.mojom.String16? description;
+};
+
+// Structure representing overrides for certain user preferences.
+struct ManifestUserPreferences {
+  ManifestUserPreferenceOverrides? color_scheme_dark;
+};
+
+// Structure representing manifest fields that can be overridden given certain
+// user preferences (eg. dark mode). All fields are optional.
+struct ManifestUserPreferenceOverrides {
+  bool has_theme_color;
+  uint32 theme_color;
+
+  bool has_background_color;
+  uint32 background_color;
+};
+
+// Used by Isolated Apps to declare a permissions policy.
+// TODO(crbug.com/1275708): Add a link to the explainer when it becomes
+// available.
+struct ManifestPermissionsPolicyDeclaration {
+  string feature;
+  array<string> allowlist;
 };
 
 // Debug information for a parsed manifest.

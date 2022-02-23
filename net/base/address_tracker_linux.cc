@@ -21,7 +21,7 @@
 #include "net/base/network_interfaces_linux.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -183,7 +183,7 @@ AddressTrackerLinux::AddressTrackerLinux(
 AddressTrackerLinux::~AddressTrackerLinux() = default;
 
 void AddressTrackerLinux::Init() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // RTM_GETLINK stopped working in Android 11 (see
   // https://developer.android.com/preview/privacy/mac-address),
   // so AddressTrackerLinux should not be used in later versions

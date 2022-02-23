@@ -10,6 +10,7 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,8 +33,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "chrome/updater/win/win_util.h"
 #endif
 
 namespace updater {
@@ -66,6 +68,21 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
     LOG(ERROR) << "Missing switch: " << flag;
     return false;
   });
+}
+
+// Overload for bool switches, represented by literals "false" and "true".
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(bool, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        if (flag == "false" || flag == "true") {
+          return callback.Run(flag == "true", std::move(args)...);
+        }
+        return false;
+      }));
 }
 
 // Overload for int switches.
@@ -192,15 +209,19 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
     {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
     {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"expect_interfaces_registered",
      WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
     {"expect_legacy_update3web_succeeds",
-     WithSwitch("app_id",
-                WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
+     WithSwitch("expected_error_code",
+                WithSwitch("expected_final_state",
+                           WithSwitch("app_id",
+                                      WithSystemScope(Wrap(
+                                          &ExpectLegacyUpdate3WebSucceeds)))))},
     {"expect_legacy_process_launcher_succeeds",
      WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
-#endif  // OS_WIN
+    {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
+#endif  // BUILDFLAG(IS_WIN)
     {"expect_version_active",
      WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
     {"expect_version_not_active",
@@ -208,6 +229,8 @@ void AppTestHelper::FirstTaskRun() {
     {"install", WithSystemScope(Wrap(&Install))},
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+    {"run_wake_active",
+     WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
     {"update", WithSwitch("app_id", WithSystemScope(Wrap(&Update)))},
     {"update_all", WithSystemScope(Wrap(&UpdateAll))},
     {"register_app", WithSwitch("app_id", WithSystemScope(Wrap(&RegisterApp)))},
@@ -219,10 +242,25 @@ void AppTestHelper::FirstTaskRun() {
      WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
     {"setup_fake_updater_lower_version",
      WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+    {"setup_real_updater_lower_version",
+     WithSystemScope(Wrap(&SetupRealUpdaterLowerVersion))},
     {"set_first_registration_counter",
      WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
     {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
     {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+    {"call_service_update",
+     WithSwitch(
+         "same_version_update_allowed",
+         WithSwitch("app_id", WithSystemScope(Wrap(&CallServiceUpdate))))},
+    {"setup_fake_legacy_updater_data",
+     WithSystemScope(Wrap(&SetupFakeLegacyUpdaterData))},
+    {"expect_legacy_updater_data_migrated",
+     WithSystemScope(Wrap(&ExpectLegacyUpdaterDataMigrated))},
+    {"run_recovery_component",
+     WithSwitch("version", WithSwitch("app_id", WithSystemScope(Wrap(
+                                                    &RunRecoveryComponent))))},
+    {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
+    {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
   };
 
   const base::CommandLine* command_line =
@@ -290,10 +328,14 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
+  if (FAILED(DisableCOMExceptionHandling())) {
+    // Failing to disable COM exception handling is a critical error.
+    CHECK(false) << "Failed to disable COM exception handling.";
+  }
 #endif
   chrome::RegisterPathProvider();
   TestEventListeners& listeners = UnitTest::GetInstance()->listeners();

@@ -242,11 +242,12 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ResourceMapper::MapToJavaDrawableId(autofill::GetIconResourceID(
           card.CardIconStringForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
-      ConvertUTF8ToJavaString(env, card.server_id()),
+      ConvertUTF8ToJavaString(env, card.server_id()), card.instrument_id(),
       ConvertUTF16ToJavaString(env,
                                card.CardIdentifierStringForAutofillDisplay()),
       ConvertUTF16ToJavaString(env, card.nickname()),
-      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()));
+      url::GURLAndroid::FromNativeGURL(env, card.card_art_url()),
+      static_cast<jint>(card.virtual_card_enrollment_state()));
 }
 
 // static
@@ -272,6 +273,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
       ConvertJavaStringToUTF8(Java_CreditCard_getBillingAddressId(env, jcard)));
   card->set_server_id(
       ConvertJavaStringToUTF8(Java_CreditCard_getServerId(env, jcard)));
+  card->set_instrument_id(Java_CreditCard_getInstrumentId(env, jcard));
   card->SetNickname(
       ConvertJavaStringToUTF16(Java_CreditCard_getNickname(env, jcard)));
   base::android::ScopedJavaLocalRef<jobject> java_card_art_url =
@@ -300,6 +302,9 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
                   env, Java_CreditCard_getBasicCardIssuerNetwork(env, jcard))));
     }
   }
+  card->set_virtual_card_enrollment_state(
+      static_cast<CreditCard::VirtualCardEnrollmentState>(
+          Java_CreditCard_getVirtualCardEnrollmentState(env, jcard)));
 }
 
 // static

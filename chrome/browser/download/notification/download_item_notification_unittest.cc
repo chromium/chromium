@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
@@ -17,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #include "chrome/browser/download/offline_item_utils.h"
@@ -39,6 +39,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
@@ -53,8 +60,16 @@ const base::FilePath::CharType kDownloadItemTargetPathString[] =
     FILE_PATH_LITERAL("/tmp/TITLE.bin");
 
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()
+      ->init_params()
+      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
+#else
+  return false;
+#endif
 }
 
 }  // anonymous namespace
@@ -67,9 +82,18 @@ class DownloadItemNotificationTest : public testing::Test {
       bool
           is_holding_space_in_progress_downloads_notification_suppression_enabled)
       : profile_(nullptr) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         is_holding_space_in_progress_downloads_notification_suppression_enabled);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params(crosapi::mojom::BrowserInitParams::New());
+    init_params
+        ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
+        is_holding_space_in_progress_downloads_notification_suppression_enabled;
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+#endif
   }
 
   void SetUp() override {
@@ -105,8 +129,8 @@ class DownloadItemNotificationTest : public testing::Test {
     ON_CALL(*download_item_, IsDone()).WillByDefault(Return(false));
     ON_CALL(*download_item_, GetURL()).WillByDefault(ReturnRefOfCopy(
         GURL("http://www.example.com/download.bin")));
-    content::DownloadItemUtils::AttachInfo(download_item_.get(), profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(download_item_.get(),
+                                                     profile_, nullptr);
   }
 
   void TearDown() override {
@@ -169,6 +193,10 @@ class DownloadItemNotificationTest : public testing::Test {
   std::unique_ptr<DownloadNotificationManager> download_notification_manager_;
   DownloadItemNotification* download_item_notification_;
   std::unique_ptr<NotificationDisplayServiceTester> service_tester_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
 };
 
 class DownloadItemNotificationParameterizedTest
@@ -612,7 +640,7 @@ TEST_P(DownloadItemNotificationFileReroutedParametrizedTest,
       break;
     case (download::DownloadItem::COMPLETE):
       EXPECT_CALL(*download_item_, IsDone()).WillRepeatedly(Return(true));
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       EXPECT_CALL(*download_item_, GetLastReason()).Times(0);
   }

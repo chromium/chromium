@@ -15,7 +15,8 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/logging.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/remote_open_url/remote_open_url_client.h"
 #include "remoting/host/resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,6 +35,10 @@ int RemoteOpenUrlMain(int argc, char** argv) {
 
   base::CommandLine::Init(argc, argv);
   InitHostLogging();
+
+  if (!ChromotingHostServicesClient::Initialize()) {
+    return kInitializationFailed;
+  }
 
   base::i18n::InitializeICU();
   LoadResources("");
@@ -58,7 +63,7 @@ int RemoteOpenUrlMain(int argc, char** argv) {
     run_loop.Run();
   }
 
-  return 0;
+  return kSuccessExitCode;
 }
 
 }  // namespace remoting

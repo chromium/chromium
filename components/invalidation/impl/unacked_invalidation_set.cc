@@ -13,7 +13,7 @@ namespace invalidation {
 const size_t UnackedInvalidationSet::kMaxBufferedInvalidations = 5;
 
 UnackedInvalidationSet::UnackedInvalidationSet(const Topic& topic)
-    : registered_(false), topic_(topic) {}
+    : topic_(topic) {}
 
 UnackedInvalidationSet::UnackedInvalidationSet(
     const UnackedInvalidationSet& other) = default;
@@ -29,15 +29,13 @@ void UnackedInvalidationSet::Add(
   SingleTopicInvalidationSet set;
   set.Insert(invalidation);
   AddSet(set);
-  if (!registered_)
-    Truncate(kMaxBufferedInvalidations);
+  Truncate(kMaxBufferedInvalidations);
 }
 
 void UnackedInvalidationSet::AddSet(
     const SingleTopicInvalidationSet& invalidations) {
   invalidations_.insert(invalidations.begin(), invalidations.end());
-  if (!registered_)
-    Truncate(kMaxBufferedInvalidations);
+  Truncate(kMaxBufferedInvalidations);
 }
 
 void UnackedInvalidationSet::ExportInvalidations(
@@ -52,22 +50,9 @@ void UnackedInvalidationSet::ExportInvalidations(
   }
 }
 
-void UnackedInvalidationSet::Clear() {
-  invalidations_.clear();
-}
-
-void UnackedInvalidationSet::SetHandlerIsRegistered() {
-  registered_ = true;
-}
-
-void UnackedInvalidationSet::SetHandlerIsUnregistered() {
-  registered_ = false;
-  Truncate(kMaxBufferedInvalidations);
-}
-
 // Removes the matching ack handle from the list.
 void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
-  bool handle_found = false;
+  [[maybe_unused]] bool handle_found = false;
   for (auto it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     if (it->ack_handle().Equals(handle)) {
       invalidations_.erase(*it);
@@ -76,7 +61,6 @@ void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
     }
   }
   DLOG_IF(WARNING, !handle_found) << "Unrecognized to ack for topic " << topic_;
-  (void)handle_found;  // Silence unused variable warning in release builds.
 }
 
 // Erase the invalidation with matching ack handle from the list.  Also creates

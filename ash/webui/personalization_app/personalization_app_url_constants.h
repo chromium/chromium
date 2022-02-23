@@ -9,6 +9,8 @@ namespace ash {
 
 extern const char kChromeUIPersonalizationAppHost[];
 extern const char kChromeUIPersonalizationAppURL[];
+extern const char kChromeUIPersonalizationAppAmbientModeSubpageURL[];
+extern const char kChromeUIPersonalizationAppUserSubpageURL[];
 extern const char kChromeUIPersonalizationAppWallpaperSubpageURL[];
 extern const char kChromeUIUntrustedPersonalizationAppURL[];
 

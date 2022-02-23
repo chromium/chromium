@@ -332,9 +332,9 @@ void OnConflictsDataFetched(
     base::DictionaryValue results,
     ThirdPartyFeaturesStatus third_party_features_status) {
   // Third-party conflicts status.
-  results.SetBoolean("thirdPartyFeatureEnabled",
+  results.SetBoolKey("thirdPartyFeatureEnabled",
                      IsThirdPartyFeatureEnabled(third_party_features_status));
-  results.SetString(
+  results.SetStringKey(
       "thirdPartyFeatureStatus",
       GetThirdPartyFeaturesStatusString(third_party_features_status));
 
@@ -435,7 +435,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
 
   auto data = std::make_unique<base::DictionaryValue>();
 
-  data->SetString("third_party_module_status", std::string());
+  data->SetStringKey("third_party_module_status", std::string());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (ModuleDatabase::GetInstance()->third_party_conflicts_manager()) {
     auto* incompatible_applications_updater =
@@ -447,7 +447,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
             ->third_party_conflicts_manager()
             ->module_blocklist_cache_updater();
 
-    data->SetString(
+    data->SetStringKey(
         "third_party_module_status",
         GetModuleStatusString(module_key, incompatible_applications_updater,
                               module_blocklist_cache_updater));
@@ -457,17 +457,18 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
   std::string type_string;
   if (module_data.module_properties & ModuleInfoData::kPropertyShellExtension)
     type_string = "Shell extension";
-  data->SetString("type_description", type_string);
+  data->SetStringKey("type_description", type_string);
 
   const auto& inspection_result = *module_data.inspection_result;
-  data->SetString("location", inspection_result.location);
-  data->SetString("name", inspection_result.basename);
-  data->SetString("product_name", inspection_result.product_name);
-  data->SetString("description", inspection_result.description);
-  data->SetString("version", inspection_result.version);
-  data->SetString("digital_signer", inspection_result.certificate_info.subject);
-  data->SetString("code_id", GenerateCodeId(module_key));
-  data->SetString("process_types", GetProcessTypesString(module_data));
+  data->SetStringKey("location", inspection_result.location);
+  data->SetStringKey("name", inspection_result.basename);
+  data->SetStringKey("product_name", inspection_result.product_name);
+  data->SetStringKey("description", inspection_result.description);
+  data->SetStringKey("version", inspection_result.version);
+  data->SetStringKey("digital_signer",
+                     inspection_result.certificate_info.subject);
+  data->SetStringKey("code_id", GenerateCodeId(module_key));
+  data->SetStringKey("process_types", GetProcessTypesString(module_data));
 
   module_list_->Append(std::move(data));
 }
@@ -479,7 +480,7 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 
   base::DictionaryValue results;
-  results.SetInteger("moduleCount", module_list_->GetList().size());
+  results.SetIntKey("moduleCount", module_list_->GetListDeprecated().size());
   results.Set("moduleList", std::move(module_list_));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

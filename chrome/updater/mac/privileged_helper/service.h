@@ -27,8 +27,8 @@ class PrivilegedHelperService
  public:
   PrivilegedHelperService();
 
-  void PerformSystemUpdaterTasks(const std::string& browser_path,
-                                 base::OnceCallback<void(int)> result);
+  void SetupSystemUpdater(const std::string& browser_path,
+                          base::OnceCallback<void(int)> result);
 
  protected:
   friend class base::RefCountedThreadSafe<PrivilegedHelperService>;

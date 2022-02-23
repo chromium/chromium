@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_trace_utils.h"
 
-#include <memory>
+#include <sstream>
 
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"

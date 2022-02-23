@@ -1,0 +1,34 @@
+<style>
+  #container {
+    border-radius: 8px;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 48px;
+    outline: 1px solid rgb(154, 160, 166);
+    width: 100%;
+  }
+  .row {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    margin: 0 20px;
+  }
+  .row + .row {
+    border-top: 1px solid var(--cros-separator-color);
+  }
+  .row > p {
+    font: var(--cros-body-1-font);
+    height: 20px;
+    margin: 0;
+  }
+</style>
+<div id="container">
+  <div class="row">
+    <p>$i18n{ambientModePageDescription}</p>
+    <cr-toggle id="toggle" checked="{{checked}}"
+        aria-label$="[[getAriaLabel_(checked)]]">
+    </cr-toggle>
+  </div>
+</div>

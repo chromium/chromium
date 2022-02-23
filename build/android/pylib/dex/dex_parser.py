@@ -65,7 +65,7 @@ _ClassDefItem = collections.namedtuple(
     'annotations_off,class_data_off,static_values_off')
 
 
-class _MemoryItemList(object):
+class _MemoryItemList:
   """Base class for repeated memory items."""
 
   def __init__(self,
@@ -119,14 +119,14 @@ class _TypeIdItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     factory = lambda x: _TypeIdItem(x.ReadUInt())
-    super(_TypeIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _ProtoIdItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     factory = lambda x: _ProtoIdItem(x.ReadUInt(), x.ReadUInt(), x.ReadUInt())
-    super(_ProtoIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _MethodIdItemList(_MemoryItemList):
@@ -134,7 +134,7 @@ class _MethodIdItemList(_MemoryItemList):
   def __init__(self, reader, offset, size):
     factory = (
         lambda x: _MethodIdItem(x.ReadUShort(), x.ReadUShort(), x.ReadUInt()))
-    super(_MethodIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _StringItemList(_MemoryItemList):
@@ -148,7 +148,7 @@ class _StringItemList(_MemoryItemList):
       string = x.ReadString(data_offset)
       return _StringDataItem(len(string), string)
 
-    super(_StringItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _TypeListItem(_MemoryItemList):
@@ -160,19 +160,18 @@ class _TypeListItem(_MemoryItemList):
     # This is necessary because we need to extract the size of the type list
     # (in other cases the list size is provided in the header).
     first_item_offset = reader.Tell()
-    super(_TypeListItem, self).__init__(
-        reader,
-        offset,
-        size,
-        factory,
-        alignment=4,
-        first_item_offset=first_item_offset)
+    super().__init__(reader,
+                     offset,
+                     size,
+                     factory,
+                     alignment=4,
+                     first_item_offset=first_item_offset)
 
 
 class _TypeListItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
-    super(_TypeListItemList, self).__init__(reader, offset, size, _TypeListItem)
+    super().__init__(reader, offset, size, _TypeListItem)
 
 
 class _ClassDefItemList(_MemoryItemList):
@@ -184,10 +183,10 @@ class _ClassDefItemList(_MemoryItemList):
       return _ClassDefItem(*(x.ReadUInt()
                              for _ in range(len(_ClassDefItem._fields))))
 
-    super(_ClassDefItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
-class _DexMapItem(object):
+class _DexMapItem:
 
   def __init__(self, reader):
     self.type = reader.ReadUShort()
@@ -200,7 +199,7 @@ class _DexMapItem(object):
         self.type, self.size, self.offset)
 
 
-class _DexMapList(object):
+class _DexMapList:
   # Full list of type codes:
   # https://source.android.com/devices/tech/dalvik/dex-format#type-codes
   TYPE_TYPE_LIST = 0x1001
@@ -223,7 +222,7 @@ class _DexMapList(object):
     return '_DexMapList(size={}, items={})'.format(self._size, self._map)
 
 
-class _DexReader(object):
+class _DexReader:
 
   def __init__(self, data):
     self._data = data
@@ -337,10 +336,10 @@ class _MUTf8DecodeError(Exception):
   def __init__(self, message, length, offset):
     message += ' (decoded string length: {}, string data offset: {:#x})'.format(
         length, offset)
-    super(_MUTf8DecodeError, self).__init__(message)
+    super().__init__(message)
 
 
-class DexFile(object):
+class DexFile:
   """Represents a single dex file.
 
   Parses and exposes access to dex file structure and contents, as described
@@ -455,7 +454,7 @@ class DexFile(object):
     return '\n'.join(str(item) for item in items)
 
 
-class _DumpCommand(object):
+class _DumpCommand:
 
   def __init__(self, dexfile):
     self._dexfile = dexfile

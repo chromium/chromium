@@ -1,8 +1,9 @@
 <style include="history-clusters-shared-style">
   :host {
     align-items: center;
+    cursor: pointer;
     display: flex;
-    height: 64px;
+    min-height: 64px;
   }
 
   :host(:hover) {
@@ -48,14 +49,17 @@
   }
 
   #title-and-annotations {
+    align-items: center;
     display: flex;
-    line-height: 28px;
+    line-height: 2;  /* 28px */
   }
 
   .annotation {
+    align-items: center;
     background-color: var(--annotation-background-color);
     border-radius: 4px;
     color: var(--annotation-text-color);
+    display: inline-flex;
     flex-shrink: 0;
     font-weight: 500;
     margin-inline-start: 12px;
@@ -67,19 +71,19 @@
   }
 
   #title,
-  #hostname {
+  #url {
     font-size: .875rem;  /* 14px */
   }
 
   :host([is-top-visit]) #title,
-  :host([is-top-visit]) #hostname {
+  :host([is-top-visit]) #url {
     font-size: 1.125rem;  /* 18px */
     font-weight: 500;
   }
 
-  #hostname {
-    color: var(--url-hostname-color);
-    line-height: 20px;
+  #url {
+    color: var(--url-color);
+    line-height: 1.5;  /* 21px */
   }
 
   #debug-info {
@@ -117,11 +121,6 @@
   :host([is-top-visit]) #actionMenuButton {
     --cr-icon-button-icon-size: 24px;
   }
-
-  :host(:not([has-related-visits])) #removeAllButton,
-  :host(:not([has-related-visits])) #openAllButton {
-    display: none;
-  }
 </style>
 <div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
     on-keydown="onKeydown_">
@@ -136,9 +135,9 @@
           <span class="annotation">[[item]]</span>
         </template>
       </div>
-      <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
-        [[getHostname_(visit)]]
-        <!-- Print the debug next to the hostname to keep layout the same. -->
+      <span id="url" class="truncate">
+        [[getVisibleUrl_(visit)]]
+        <!-- Print the debug next to the url to keep layout the same. -->
         <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
       </span>
     </div>
@@ -156,14 +155,16 @@
   <template>
     <cr-action-menu role-description="$i18n{actionMenuDescription}">
       <button id="openAllButton" class="dropdown-item"
-          on-click="onOpenAllButtonClick_">
+          on-click="onOpenAllButtonClick_"
+          hidden="[[!visit.relatedVisits.length]]">
         $i18n{openAllInTabGroup}
       </button>
       <button class="dropdown-item" on-click="onRemoveSelfButtonClick_">
         $i18n{removeFromHistory}
       </button>
       <button id="removeAllButton" class="dropdown-item"
-          on-click="onRemoveAllButtonClick_">
+          on-click="onRemoveAllButtonClick_"
+          hidden="[[!visit.relatedVisits.length]]">
         $i18n{removeAllFromHistory}
       </button>
     </cr-action-menu>

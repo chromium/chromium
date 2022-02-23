@@ -10,7 +10,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'dromaeo',
     'dummy_benchmark.noisy_benchmark_1',
     'dummy_benchmark.stable_benchmark_1',
-    'gpu_perftests',
     'jetstream',
     'kraken',
     'load_library_perf_tests',

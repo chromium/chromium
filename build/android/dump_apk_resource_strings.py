@@ -185,7 +185,7 @@ def ReadStringMapFromRTxt(r_txt_path):
   return result
 
 
-class ResourceStringValues(object):
+class ResourceStringValues:
   """Models all possible values for a named string."""
 
   def __init__(self):
@@ -236,7 +236,7 @@ class ResourceStringValues(object):
     return result
 
 
-class ResourceStringMap(object):
+class ResourceStringMap:
   """Convenience class to hold the set of all localized strings in a table.
 
   Usage is the following:
@@ -532,7 +532,7 @@ def ParseApkResources(aapt_path, apk_path):
 
   res_map = ResourceStringMap()
   current_locale = None
-  current_resource_id = None
+  current_resource_id = -1  # represents undefined.
   current_resource_name = None
   need_value = False
   while True:

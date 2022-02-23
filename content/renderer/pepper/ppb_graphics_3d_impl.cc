@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -180,7 +181,7 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     bool is_overlay_candidate = use_image_chromium_;
     // TODO(reveman): Get texture target from browser process.
     uint32_t target = GL_TEXTURE_2D;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (use_image_chromium_)
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif

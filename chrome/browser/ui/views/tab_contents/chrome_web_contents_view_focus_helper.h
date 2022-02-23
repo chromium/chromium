@@ -47,8 +47,6 @@ class ChromeWebContentsViewFocusHelper
   // Used to store the last focused view.
   views::ViewTracker last_focused_view_tracker_;
 
-  content::WebContents* web_contents_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

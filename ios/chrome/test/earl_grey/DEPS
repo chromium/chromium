@@ -2,8 +2,10 @@ specific_include_rules = {
   # To compile base::Feature under EG2
   "chrome_earl_grey_app_interface\.mm":[
    "+components/autofill/core/common/autofill_features.h",
+   "+components/password_manager/core/common/password_manager_features.h",
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",
+   "+ios/web/js_messaging",
    "+services/metrics/public/cpp/ukm_recorder.h",
   ],
 
@@ -15,9 +17,17 @@ specific_include_rules = {
     "+third_party/metrics_proto",
   ],
 
+  "chrome_matchers_app_interface\.mm":[
+    "+components/password_manager/core/common/password_manager_features.h",
+  ],
+
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.
   "web_http_server_chrome_test_case\.mm": [
     "+ios/web/public/test/http_server",
+  ],
+
+  "chrome_test_case\.mm": [
+    "+ios/third_party/edo",
   ],
 }

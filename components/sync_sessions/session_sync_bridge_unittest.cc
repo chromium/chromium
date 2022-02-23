@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -28,6 +27,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_metadata_store.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -1574,9 +1574,6 @@ TEST_F(SessionSyncBridgeTest, ShouldDoGarbageCollection) {
 }
 
 TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncPopulateTabBrowserTypeInGetData);
-
   const int kWindowId = 1000001;
   const int kTabId = 1000002;
 
@@ -1592,27 +1589,6 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
 
   EXPECT_EQ(sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB,
             tab_data->specifics.session().tab().browser_type());
-}
-
-TEST_F(SessionSyncBridgeTest,
-       ShouldReturnBrowserTypeInGetDataWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSyncPopulateTabBrowserTypeInGetData);
-
-  const int kWindowId = 1000001;
-  const int kTabId = 1000002;
-
-  AddWindow(kWindowId, sync_pb::SessionWindow_BrowserType_TYPE_CUSTOM_TAB);
-  AddTab(kWindowId, "http://foo.com/", kTabId);
-
-  InitializeBridge();
-  StartSyncing();
-
-  std::unique_ptr<EntityData> tab_data = GetData(
-      SessionStore::GetTabStorageKey(kLocalCacheGuid, /*tab_node_id=*/0));
-  ASSERT_THAT(tab_data, NotNull());
-
-  EXPECT_FALSE(tab_data->specifics.session().tab().has_browser_type());
 }
 
 }  // namespace

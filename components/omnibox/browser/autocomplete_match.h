@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,12 +24,13 @@
 #include "components/query_tiles/tile.h"
 #include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -201,7 +201,7 @@ struct AutocompleteMatch {
   AutocompleteMatch& operator=(const AutocompleteMatch& match);
   AutocompleteMatch& operator=(AutocompleteMatch&& match) noexcept;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a corresponding Java object, creating it if necessary.
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
@@ -242,7 +242,7 @@ struct AutocompleteMatch {
   JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   // Converts SuggestionAnswer::AnswerType to an answer vector icon.
   static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
 
@@ -514,9 +514,11 @@ struct AutocompleteMatch {
   void SetAllowedToBeDefault(const AutocompleteInput& input);
 
   // If this match is a tail suggestion, prepends the passed |common_prefix|.
-  // If not, but the prefix matches the beginning of the suggestion, dims that
-  // portion in the classification.
-  void InlineTailPrefix(const std::u16string& common_prefix);
+  void SetTailSuggestCommonPrefix(const std::u16string& common_prefix);
+
+  // If this match is a tail suggestion, prepends the passed |common_prefix|
+  // and adds ellipses to contents.
+  void SetTailSuggestContentPrefix(const std::u16string& common_prefix);
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -767,7 +769,7 @@ struct AutocompleteMatch {
       const std::string& provider_name = "");
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.
   // This element should not be copied with the rest of the AutocompleteMatch
   // object to ensure consistent 1:1 relationship between the objects.

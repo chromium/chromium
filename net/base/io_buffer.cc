@@ -34,8 +34,7 @@ IOBuffer::IOBuffer(char* data)
 }
 
 IOBuffer::~IOBuffer() {
-  delete[] data_;
-  data_ = nullptr;
+  data_.ClearAndDeleteArray();
 }
 
 IOBufferWithSize::IOBufferWithSize(size_t size) : IOBuffer(size), size_(size) {

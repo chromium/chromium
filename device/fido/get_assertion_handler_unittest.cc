@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -33,9 +34,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/u2f/u2f_client.h"
@@ -181,10 +182,10 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<test::FakeFidoDiscoveryFactory> fake_discovery_factory_ =
       std::make_unique<test::FakeFidoDiscoveryFactory>();
-  test::FakeFidoDiscovery* discovery_;
-  test::FakeFidoDiscovery* cable_discovery_;
-  test::FakeFidoDiscovery* nfc_discovery_;
-  test::FakeFidoDiscovery* platform_discovery_;
+  raw_ptr<test::FakeFidoDiscovery> discovery_;
+  raw_ptr<test::FakeFidoDiscovery> cable_discovery_;
+  raw_ptr<test::FakeFidoDiscovery> nfc_discovery_;
+  raw_ptr<test::FakeFidoDiscovery> platform_discovery_;
   scoped_refptr<::testing::NiceMock<MockBluetoothAdapter>> mock_adapter_ =
       base::MakeRefCounted<::testing::NiceMock<MockBluetoothAdapter>>();
   TestGetAssertionRequestCallback get_assertion_cb_;
@@ -196,6 +197,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_config_ =
           BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+  FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };
 
 TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
@@ -348,7 +350,7 @@ TEST_F(FidoGetAssertionHandlerTest, ValidEmptyCredential) {
   ASSERT_EQ(1u, response->size());
   EXPECT_TRUE(response.value()[0].credential);
   EXPECT_THAT(
-      response.value()[0].credential->id(),
+      response.value()[0].credential->id,
       ::testing::ElementsAreArray(test_data::kTestGetAssertionCredentialId));
 }
 
@@ -777,7 +779,7 @@ TEST(GetAssertionRequestHandlerTest, IncorrectTransportType) {
   EXPECT_FALSE(cb.was_called());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 class TestObserver : public FidoRequestHandlerBase::Observer {
  public:
@@ -857,6 +859,6 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

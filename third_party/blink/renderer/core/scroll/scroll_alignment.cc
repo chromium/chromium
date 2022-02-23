@@ -43,7 +43,10 @@
 
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -139,12 +142,12 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // We would like calculate the ScrollPosition to move |expose_rect| inside
   // the scroll_snapport, which is based on the scroll_origin of the scroller.
   non_zero_visible_rect.Move(
-      -PhysicalOffset::FromFloatSizeRound(current_scroll_offset));
+      -PhysicalOffset::FromVector2dFRound(current_scroll_offset));
 
   // Given the X behavior, compute the X coordinate.
   float x;
   if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    x = current_scroll_offset.width();
+    x = current_scroll_offset.x();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kRight) {
     x = (expose_rect.Right() - non_zero_visible_rect.Right()).ToFloat();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kCenter) {
@@ -159,7 +162,7 @@ ScrollOffset ScrollAlignment::GetScrollOffsetToExpose(
   // Given the Y behavior, compute the Y coordinate.
   float y;
   if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
-    y = current_scroll_offset.height();
+    y = current_scroll_offset.y();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kBottom) {
     y = (expose_rect.Bottom() - non_zero_visible_rect.Bottom()).ToFloat();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kCenter) {
@@ -253,7 +256,8 @@ ScrollAlignment::CreateScrollIntoViewParams(
     bool make_visible_in_visual_viewport,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_for_scroll_sequence,
-    bool zoom_into_rect) {
+    bool zoom_into_rect,
+    bool cross_origin_boundaries) {
   auto params = mojom::blink::ScrollIntoViewParams::New();
   params->align_x = mojom::blink::ScrollAlignment::New(align_x);
   params->align_y = mojom::blink::ScrollAlignment::New(align_y);
@@ -262,6 +266,124 @@ ScrollAlignment::CreateScrollIntoViewParams(
   params->behavior = scroll_behavior;
   params->is_for_scroll_sequence = is_for_scroll_sequence;
   params->zoom_into_rect = zoom_into_rect;
+  params->cross_origin_boundaries = cross_origin_boundaries;
+  return params;
+}
+
+namespace {
+mojom::blink::ScrollAlignment AlignmentFromOptions(
+    const ScrollIntoViewOptions& options,
+    ScrollOrientation axis,
+    const ComputedStyle& computed_style) {
+  WritingMode writing_mode = computed_style.GetWritingMode();
+  bool is_ltr = computed_style.IsLeftToRightDirection();
+
+  bool is_horizontal_writing_mode = IsHorizontalWritingMode(writing_mode);
+  String alignment =
+      ((axis == kHorizontalScroll && is_horizontal_writing_mode) ||
+       (axis == kVerticalScroll && !is_horizontal_writing_mode))
+          ? options.inlinePosition()
+          : options.block();
+
+  if (alignment == "center")
+    return ScrollAlignment::CenterAlways();
+  if (alignment == "nearest")
+    return ScrollAlignment::ToEdgeIfNeeded();
+  if (alignment == "start") {
+    if (axis == kHorizontalScroll) {
+      switch (writing_mode) {
+        case WritingMode::kHorizontalTb:
+          return is_ltr ? ScrollAlignment::LeftAlways()
+                        : ScrollAlignment::RightAlways();
+        case WritingMode::kVerticalRl:
+        case WritingMode::kSidewaysRl:
+          return ScrollAlignment::RightAlways();
+        case WritingMode::kVerticalLr:
+        case WritingMode::kSidewaysLr:
+          return ScrollAlignment::LeftAlways();
+        default:
+          NOTREACHED();
+          return ScrollAlignment::LeftAlways();
+      }
+    } else {
+      switch (writing_mode) {
+        case WritingMode::kHorizontalTb:
+          return ScrollAlignment::TopAlways();
+        case WritingMode::kVerticalRl:
+        case WritingMode::kSidewaysRl:
+        case WritingMode::kVerticalLr:
+          return is_ltr ? ScrollAlignment::TopAlways()
+                        : ScrollAlignment::BottomAlways();
+        case WritingMode::kSidewaysLr:
+          return is_ltr ? ScrollAlignment::BottomAlways()
+                        : ScrollAlignment::TopAlways();
+        default:
+          NOTREACHED();
+          return ScrollAlignment::TopAlways();
+      }
+    }
+  }
+  if (alignment == "end") {
+    if (axis == kHorizontalScroll) {
+      switch (writing_mode) {
+        case WritingMode::kHorizontalTb:
+          return is_ltr ? ScrollAlignment::RightAlways()
+                        : ScrollAlignment::LeftAlways();
+        case WritingMode::kVerticalRl:
+        case WritingMode::kSidewaysRl:
+          return ScrollAlignment::LeftAlways();
+        case WritingMode::kVerticalLr:
+        case WritingMode::kSidewaysLr:
+          return ScrollAlignment::RightAlways();
+        default:
+          NOTREACHED();
+          return ScrollAlignment::RightAlways();
+      }
+    } else {
+      switch (writing_mode) {
+        case WritingMode::kHorizontalTb:
+          return ScrollAlignment::BottomAlways();
+        case WritingMode::kVerticalRl:
+        case WritingMode::kSidewaysRl:
+        case WritingMode::kVerticalLr:
+          return is_ltr ? ScrollAlignment::BottomAlways()
+                        : ScrollAlignment::TopAlways();
+        case WritingMode::kSidewaysLr:
+          return is_ltr ? ScrollAlignment::TopAlways()
+                        : ScrollAlignment::BottomAlways();
+        default:
+          NOTREACHED();
+          return ScrollAlignment::BottomAlways();
+      }
+    }
+  }
+
+  // Default values
+  if (is_horizontal_writing_mode) {
+    return (axis == kHorizontalScroll) ? ScrollAlignment::ToEdgeIfNeeded()
+                                       : ScrollAlignment::TopAlways();
+  }
+  return (axis == kHorizontalScroll) ? ScrollAlignment::LeftAlways()
+                                     : ScrollAlignment::ToEdgeIfNeeded();
+}
+}  // namespace
+
+// static
+mojom::blink::ScrollIntoViewParamsPtr
+ScrollAlignment::CreateScrollIntoViewParams(
+    const ScrollIntoViewOptions& options,
+    const ComputedStyle& computed_style) {
+  mojom::blink::ScrollBehavior behavior =
+      (options.behavior() == "smooth") ? mojom::blink::ScrollBehavior::kSmooth
+                                       : mojom::blink::ScrollBehavior::kAuto;
+
+  auto align_x =
+      AlignmentFromOptions(options, kHorizontalScroll, computed_style);
+  auto align_y = AlignmentFromOptions(options, kVerticalScroll, computed_style);
+
+  mojom::blink::ScrollIntoViewParamsPtr params =
+      ScrollAlignment::CreateScrollIntoViewParams(align_x, align_y);
+  params->behavior = behavior;
   return params;
 }
 

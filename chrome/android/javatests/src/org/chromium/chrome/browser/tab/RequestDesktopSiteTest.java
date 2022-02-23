@@ -55,6 +55,7 @@ import java.util.concurrent.TimeoutException;
 public class RequestDesktopSiteTest {
     private static final String URL_1 = "https://www.chromium.org/";
     private static final String URL_2 = "https://www.example.com/";
+    private CallbackHelper mMenuObserver;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -72,6 +73,17 @@ public class RequestDesktopSiteTest {
                 .shouldTriggerHelpUI(ArgumentMatchers.anyString());
         mActivityTestRule.startMainActivityOnBlankPage();
         assertContentSettingsHistogramRecorded();
+        mMenuObserver = new CallbackHelper();
+        mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().addObserver(
+                new AppMenuObserver() {
+                    @Override
+                    public void onMenuVisibilityChanged(boolean isVisible) {
+                        mMenuObserver.notifyCalled();
+                    }
+
+                    @Override
+                    public void onMenuHighlightChanged(boolean highlighting) {}
+                });
     }
 
     @After
@@ -87,32 +99,16 @@ public class RequestDesktopSiteTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testGlobalSiteSettingsAndException() throws TimeoutException {
         Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
         assertUsingDesktopUserAgent(tab, false, "Default user agent should be mobile.");
 
-        CallbackHelper menuObserver = new CallbackHelper();
-        mActivityTestRule.getAppMenuCoordinator().getAppMenuHandler().addObserver(
-                new AppMenuObserver() {
-                    @Override
-                    public void onMenuVisibilityChanged(boolean isVisible) {
-                        menuObserver.notifyCalled();
-                    }
-
-                    @Override
-                    public void onMenuHighlightChanged(boolean highlighting) {}
-                });
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
-
-        menuObserver.waitForCallback(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(
-                    mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_id);
-        });
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
+        mMenuObserver.waitForCallback(0);
+        toggleFromAppMenu(tab);
         assertUsingDesktopUserAgent(
                 tab, true, "User agent should be desktop according to site settings.");
         assertChangeUserActionRecorded(true);
@@ -122,15 +118,68 @@ public class RequestDesktopSiteTest {
                 tab, false, "Site settings exceptions should not affect other URL.");
 
         // Change site settings and reload.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridge.setContentSettingEnabled(
-                    Profile.fromWebContents(tab.getWebContents()),
-                    ContentSettingsType.REQUEST_DESKTOP_SITE, true);
-            tab.reload();
-        });
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
+        updateGlobalSetting(tab, true);
         assertUsingDesktopUserAgent(
                 tab, true, "User agent should be desktop according to global site settings.");
+    }
+
+    @Test
+    @SmallTest
+    public void testUnsetPerTabSettings() throws TimeoutException {
+        Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
+        // Explicitly set the global setting to mobile to avoid flakiness.
+        updateGlobalSetting(tab, false);
+        assertUsingDesktopUserAgent(tab, false,
+                "Tab layout should be <Mobile>, while global settings is <Mobile> and tab level settings is <Default>.");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+        mMenuObserver.waitForCallback(0);
+        toggleFromAppMenu(tab);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Mobile> and tab level settings is <Desktop>.");
+
+        updateGlobalSetting(tab, true);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Desktop> and tab level settings is <Desktop>.");
+
+        updateGlobalSetting(tab, false);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Mobile> and tab level settings is <Desktop>.");
+
+        toggleFromAppMenu(tab);
+        assertUsingDesktopUserAgent(tab, false,
+                "Tab layout should be <Mobile>, while global settings is <Mobile> and tab level settings is <Default>.");
+
+        updateGlobalSetting(tab, true);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Desktop> and tab level settings is <Default>.");
+    }
+
+    @Test
+    @SmallTest
+    public void testGlobalAndPerTabSettings() throws TimeoutException {
+        Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
+        updateGlobalSetting(tab, true);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Desktop> and tab level settings is <Default>.");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+        mMenuObserver.waitForCallback(0);
+        toggleFromAppMenu(tab);
+        assertUsingDesktopUserAgent(tab, false,
+                "Tab layout should be <Mobile>, while global settings is <Desktop> and tab level settings is <Mobile>.");
+
+        updateGlobalSetting(tab, false);
+        assertUsingDesktopUserAgent(tab, false,
+                "Tab layout should be <Mobile>, while global settings is <Mobile> and tab level settings is <Mobile>.");
+
+        toggleFromAppMenu(tab);
+        assertUsingDesktopUserAgent(tab, true,
+                "Tab layout should be <Desktop>, while global settings is <Mobile> and tab level settings is <Desktop>.");
     }
 
     private void assertUsingDesktopUserAgent(
@@ -157,5 +206,23 @@ public class RequestDesktopSiteTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.RequestDesktopSite.UserSwitchToDesktop", sample));
+    }
+
+    private void updateGlobalSetting(Tab tab, boolean setting) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebsitePreferenceBridge.setContentSettingEnabled(
+                    Profile.fromWebContents(tab.getWebContents()),
+                    ContentSettingsType.REQUEST_DESKTOP_SITE, setting);
+            tab.reload();
+        });
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
+    }
+
+    private void toggleFromAppMenu(Tab tab) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.callOnItemClick(
+                    mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_id);
+        });
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
     }
 }

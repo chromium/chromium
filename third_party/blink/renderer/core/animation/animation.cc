@@ -69,7 +69,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -111,13 +111,13 @@ PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
 
 Animation::AnimationClassPriority AnimationPriority(
     const Animation& animation) {
-  // According to the spec:
-  // https://drafts.csswg.org/web-animations/#animation-class,
-  // CSS tranisiton has a lower composite order than the CSS animation, and CSS
-  // animation has a lower composite order than other animations. Thus,CSS
+  // https://www.w3.org/TR/web-animations-1/#animation-class
+
+  // CSS transitions have a lower composite order than CSS animations, and CSS
+  // animations have a lower composite order than other animations. Thus,CSS
   // transitions are to appear before CSS animations and CSS animations are to
-  // appear before other animations
-  // TODO: When animations are disassociated from their element they are sorted
+  // appear before other animations.
+  // When animations are disassociated from their element they are sorted
   // by their sequence number, i.e. kDefaultPriority. See
   // https://drafts.csswg.org/css-animations-2/#animation-composite-order and
   // https://drafts.csswg.org/css-transitions-2/#animation-composite-order
@@ -264,7 +264,7 @@ Animation* Animation::Create(ExecutionContext* execution_context,
 Animation::Animation(ExecutionContext* execution_context,
                      AnimationTimeline* timeline,
                      AnimationEffect* content)
-    : ExecutionContextLifecycleObserver(execution_context),
+    : ExecutionContextLifecycleObserver(nullptr),
       reported_play_state_(kIdle),
       playback_rate_(1),
       start_time_(),
@@ -288,6 +288,9 @@ Animation::Animation(ExecutionContext* execution_context,
       effect_suppressed_(false),
       compositor_property_animations_have_no_effect_(false),
       animation_has_no_effect_(false) {
+  if (execution_context && !execution_context->IsContextDestroyed())
+    SetExecutionContext(execution_context);
+
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->cancel();
@@ -430,7 +433,7 @@ bool Animation::ConvertCSSNumberishToTime(
   return true;
 }
 
-// https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation.
+// https://www.w3.org/TR/web-animations-1/#setting-the-current-time-of-an-animation
 void Animation::setCurrentTime(const V8CSSNumberish* current_time,
                                ExceptionState& exception_state) {
   if (!current_time) {
@@ -470,7 +473,7 @@ void Animation::setCurrentTime(const V8CSSNumberish* current_time,
   NotifyProbe();
 }
 
-// https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation
+// https://www.w3.org/TR/web-animations-1/#setting-the-current-time-of-an-animation
 // See steps for silently setting the current time. The preliminary step of
 // handling an unresolved time are to be handled by the caller.
 void Animation::SetCurrentTimeInternal(AnimationTimeDelta new_current_time) {
@@ -530,7 +533,7 @@ V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
   return nullptr;
 }
 
-// https://drafts.csswg.org/web-animations/#the-current-time-of-an-animation
+// https://www.w3.org/TR/web-animations-1/#the-current-time-of-an-animation
 V8CSSNumberish* Animation::currentTime() const {
   // 1. If the animation’s hold time is resolved,
   //    The current time is the animation’s hold time.
@@ -590,7 +593,6 @@ bool Animation::PreCommit(
     int compositor_group,
     const PaintArtifactCompositor* paint_artifact_compositor,
     bool start_on_compositor) {
-
   bool soft_change =
       compositor_state_ &&
       (Paused() || compositor_state_->playback_rate != EffectivePlaybackRate());
@@ -634,6 +636,12 @@ bool Animation::PreCommit(
       RecordCompositorAnimationFailureReasons(failure_reasons);
 
       if (failure_reasons == CompositorAnimations::kNoFailure) {
+        // We could still have a stale compositor keyframe model ID if
+        // a previous cancel failed due to not having a layout object at the
+        // time of the cancel operation. The start and stop of an animation
+        // for a marquee element does not depend on having a layout object.
+        if (HasActiveAnimationsOnCompositor())
+          CancelAnimationOnCompositor();
         CreateCompositorAnimation();
         StartAnimationOnCompositor(paint_artifact_compositor);
         compositor_state_ = std::make_unique<CompositorState>(*this);
@@ -787,8 +795,8 @@ void Animation::NotifyReady(AnimationTimeDelta ready_time) {
 }
 
 // Microtask for playing an animation.
-// Refer to Step 8.3 'pending play task' in
-// https://drafts.csswg.org/web-animations/#playing-an-animation-section.
+// Refer to Step 8.3 'pending play task' in the following spec:
+// https://www.w3.org/TR/web-animations-1/#playing-an-animation-section
 void Animation::CommitPendingPlay(AnimationTimeDelta ready_time) {
   DCHECK(start_time_ || hold_time_);
   DCHECK(pending_play_);
@@ -848,8 +856,8 @@ void Animation::CommitPendingPlay(AnimationTimeDelta ready_time) {
 }
 
 // Microtask for pausing an animation.
-// Refer to step 7 'pending pause task' in
-// https://drafts.csswg.org/web-animations-1/#pausing-an-animation-section
+// Refer to step 7 'pending pause task' in the following spec:
+// https://www.w3.org/TR/web-animations-1/#pausing-an-animation-section
 void Animation::CommitPendingPause(AnimationTimeDelta ready_time) {
   DCHECK(pending_pause_);
   pending_pause_ = false;
@@ -892,11 +900,7 @@ bool Animation::Affects(const Element& element,
 }
 
 void Animation::setTimeline(AnimationTimeline* timeline) {
-  // https://drafts.csswg.org/web-animations-1/#setting-the-timeline
-
-  // Steps refined to accommodate scroll timelines.
-  // TODO(crbug.com/827626): Update the web-animation-1 spec.
-  // https://github.com/w3c/csswg-drafts/pull/5423.
+  // https://www.w3.org/TR/web-animations-1/#setting-the-timeline
 
   // Unfortunately cannot mark the setter only as being conditionally enabled
   // via a feature flag. Conditionally making the feature a no-op is nearly
@@ -1042,7 +1046,7 @@ TimelinePhase Animation::CalculateCurrentPhase() const {
   return timeline_->Phase();
 }
 
-// https://drafts.csswg.org/web-animations/#setting-the-start-time-of-an-animation
+// https://www.w3.org/TR/web-animations-1/#setting-the-start-time-of-an-animation
 void Animation::setStartTime(const V8CSSNumberish* start_time,
                              ExceptionState& exception_state) {
 
@@ -1137,7 +1141,7 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
   NotifyProbe();
 }
 
-// https://drafts.csswg.org/web-animations-1/#setting-the-associated-effect
+// https://www.w3.org/TR/web-animations-1/#setting-the-associated-effect
 void Animation::setEffect(AnimationEffect* new_effect) {
   // 1. Let old effect be the current associated effect of animation, if any.
   AnimationEffect* old_effect = content_;
@@ -1261,7 +1265,7 @@ const char* Animation::PlayStateString(AnimationPlayState play_state) {
   }
 }
 
-// https://drafts.csswg.org/web-animations/#play-states
+// https://www.w3.org/TR/web-animations-1/#play-states
 Animation::AnimationPlayState Animation::CalculateAnimationPlayState() const {
   // 1. All of the following conditions are true:
   //    * The current time of animation is unresolved, and
@@ -1301,7 +1305,7 @@ bool Animation::pending() const {
   return PendingInternal();
 }
 
-// https://drafts.csswg.org/web-animations-1/#reset-an-animations-pending-tasks.
+// https://www.w3.org/TR/web-animations-1/#reset-an-animations-pending-tasks.
 void Animation::ResetPendingTasks() {
   // 1. If animation does not have a pending play task or a pending pause task,
   //    abort this procedure.
@@ -1329,7 +1333,7 @@ void Animation::ResetPendingTasks() {
 // Pause methods.
 // ----------------------------------------------
 
-// https://drafts.csswg.org/web-animations/#pausing-an-animation-section
+// https://www.w3.org/TR/web-animations-1/#pausing-an-animation-section
 void Animation::pause(ExceptionState& exception_state) {
   // 1. If animation has a pending pause task, abort these steps.
   // 2. If the play state of animation is paused, abort these steps.
@@ -1415,21 +1419,21 @@ void Animation::pause(ExceptionState& exception_state) {
 // ----------------------------------------------
 
 // Refer to the unpause operation in the following spec:
-// https://drafts.csswg.org/css-animations-1/#animation-play-state
+// https://www.w3.org/TR/css-animations-1/#animation-play-state
 void Animation::Unpause() {
   if (CalculateAnimationPlayState() != kPaused)
     return;
   PlayInternal(AutoRewind::kDisabled, ASSERT_NO_EXCEPTION);
 }
 
-// https://drafts.csswg.org/web-animations/#programming-interface.
+// https://www.w3.org/TR/web-animations-1/#playing-an-animation-section
 void Animation::play(ExceptionState& exception_state) {
   // Begin or resume playback of the animation by running the procedure to
   // play an animation passing true as the value of the auto-rewind flag.
   PlayInternal(AutoRewind::kEnabled, exception_state);
 }
 
-// https://drafts.csswg.org/web-animations/#playing-an-animation-section.
+// https://www.w3.org/TR/web-animations-1/#playing-an-animation-section
 void Animation::PlayInternal(AutoRewind auto_rewind,
                              ExceptionState& exception_state) {
   // 1. Let aborted pause be a boolean flag that is true if animation has a
@@ -1557,7 +1561,7 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   NotifyProbe();
 }
 
-// https://drafts.csswg.org/web-animations/#reversing-an-animation-section
+// https://www.w3.org/TR/web-animations-1/#reversing-an-animation-section
 void Animation::reverse(ExceptionState& exception_state) {
   // 1. If there is no timeline associated with animation, or the associated
   //    timeline is inactive throw an "InvalidStateError" DOMException and abort
@@ -1594,7 +1598,7 @@ void Animation::reverse(ExceptionState& exception_state) {
 // Finish methods.
 // ----------------------------------------------
 
-// https://drafts.csswg.org/web-animations/#finishing-an-animation-section
+// https://www.w3.org/TR/web-animations-1/#finishing-an-animation-section
 void Animation::finish(ExceptionState& exception_state) {
   if (!EffectivePlaybackRate()) {
     exception_state.ThrowDOMException(
@@ -1763,7 +1767,7 @@ void Animation::AsyncFinishMicrotask() {
 }
 
 // Refer to 'finished notification steps' in
-// https://drafts.csswg.org/web-animations-1/#updating-the-finished-state
+// https://www.w3.org/TR/web-animations-1/#updating-the-finished-state
 void Animation::CommitFinishNotification() {
   if (committed_finish_notification_)
     return;
@@ -1786,7 +1790,7 @@ void Animation::CommitFinishNotification() {
   committed_finish_notification_ = true;
 }
 
-// https://drafts.csswg.org/web-animations/#setting-the-playback-rate-of-an-animation
+// https://www.w3.org/TR/web-animations-1/#setting-the-playback-rate-of-an-animation
 void Animation::updatePlaybackRate(double playback_rate,
                                    ExceptionState& exception_state) {
   // 1. Let previous play state be animation’s play state.
@@ -2273,7 +2277,7 @@ bool Animation::AtScrollTimelineBoundary() {
 }
 
 // Update current time of the animation. Refer to step 1 in:
-// https://drafts.csswg.org/web-animations/#update-animations-and-send-events
+// https://www.w3.org/TR/web-animations-1/#update-animations-and-send-events
 bool Animation::Update(TimingUpdateReason reason) {
   // Due to the hierarchical nature of the timing model, updating the current
   // time of an animation also involves:
@@ -2286,7 +2290,7 @@ bool Animation::Update(TimingUpdateReason reason) {
 
   ClearOutdated();
   bool idle = CalculateAnimationPlayState() == kIdle;
-  if (!idle)
+  if (!idle && reason == kTimingUpdateForAnimationFrame)
     UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
 
   if (content_) {
@@ -2317,10 +2321,6 @@ bool Animation::Update(TimingUpdateReason reason) {
 
   if (reason == kTimingUpdateForAnimationFrame) {
     if (idle || CalculateAnimationPlayState() == kFinished) {
-      // TODO(crbug.com/1029348): Per spec, we should have a microtask
-      // checkpoint right after the update cycle. Once this is fixed we should
-      // no longer need to force a synchronous resolution here.
-      AsyncFinishMicrotask();
       finished_ = true;
     }
   }
@@ -2649,17 +2649,15 @@ void Animation::NotifyProbe() {
 // Replacement of animations
 // -------------------------------------
 
-// https://drafts.csswg.org/web-animations-1/#removing-replaced-animations
+// https://www.w3.org/TR/web-animations-1/#removing-replaced-animations
 bool Animation::IsReplaceable() {
   // An animation is replaceable if all of the following conditions are true:
 
   // 1. The existence of the animation is not prescribed by markup. That is, it
   //    is not a CSS animation with an owning element, nor a CSS transition with
   //    an owning element.
-  if (IsCSSAnimation() || IsCSSTransition()) {
-    // TODO(crbug.com/981905): Add OwningElement method to Animation and
-    // override in CssAnimations and CssTransitions. Only bail here if the
-    // animation has an owning element.
+  if ((IsCSSAnimation() || IsCSSTransition()) && OwningElement()) {
+    // A CSS animation or transition that is bound to markup is not replaceable.
     return false;
   }
 
@@ -2691,7 +2689,7 @@ bool Animation::IsReplaceable() {
   return true;
 }
 
-// https://drafts.csswg.org/web-animations-1/#removing-replaced-animations
+// https://www.w3.org/TR/web-animations-1/#removing-replaced-animations
 void Animation::RemoveReplacedAnimation() {
   DCHECK(IsReplaceable());
 
@@ -2754,7 +2752,7 @@ String Animation::replaceState() {
   }
 }
 
-// https://drafts.csswg.org/web-animations-1/#dom-animation-commitstyles
+// https://www.w3.org/TR/web-animations-1/#dom-animation-commitstyles
 void Animation::commitStyles(ExceptionState& exception_state) {
   Element* target = content_ && content_->IsKeyframeEffect()
                         ? To<KeyframeEffect>(effect())->target()

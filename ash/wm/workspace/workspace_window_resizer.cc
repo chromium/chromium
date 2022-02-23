@@ -17,6 +17,7 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/default_window_resizer.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
@@ -26,6 +27,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -47,6 +49,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -705,14 +708,19 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     if (!did_move_or_resize_) {
       if (!details().restore_bounds_in_parent.IsEmpty()) {
         window_state()->ClearRestoreBounds();
-        if (window_state()->IsMaximized() &&
-            details().window_component == HTCAPTION) {
-          // Update the maximized window so that it looks like it has been
-          // restored (i.e. update the caption buttons and height of the browser
-          // frame).
-          window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
-          CrossFadeAnimation(window_state()->window(), bounds,
-                             /*maximize=*/false);
+        if (details().window_component == HTCAPTION) {
+          if (window_state()->IsMaximized()) {
+            // Update the maximized window so that it looks like it has been
+            // restored (i.e. update the caption buttons and height of the
+            // browser frame).
+            window_state()->window()->SetProperty(kFrameRestoreLookKey, true);
+            CrossFadeAnimation(window_state()->window(), bounds,
+                               /*maximize=*/false);
+            base::RecordAction(
+                base::UserMetricsAction("WindowDrag_Unmaximize"));
+          } else if (window_state()->IsSnapped()) {
+            base::RecordAction(base::UserMetricsAction("WindowDrag_Unsnap"));
+          }
         }
       }
       RestackWindows();
@@ -1316,6 +1324,9 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
       continue;
 
     WindowState* other_state = WindowState::Get(*i);
+    if (!other_state)
+      continue;
+
     if (other_state->window() == GetTarget() ||
         !other_state->window()->IsVisible() ||
         !other_state->IsNormalOrSnapped() || !other_state->CanResize()) {
@@ -1523,6 +1534,11 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
       break;
   }
 
+  const bool need_haptic_feedback =
+      snap_phantom_window_controller_->GetTargetWindowBounds() !=
+          phantom_bounds &&
+      !Shell::Get()->toplevel_window_event_handler()->in_gesture_drag();
+
   if (is_top_to_maximize) {
     snap_phantom_window_controller_
         ->TransformPhantomWidgetFromSnapTopToMaximize(phantom_bounds);
@@ -1535,6 +1551,13 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
         snap_type_ != last_type) {
       snap_phantom_window_controller_->ShowMaximizeCue();
     }
+  }
+
+  // Fire a haptic event if necessary.
+  if (need_haptic_feedback) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kSnap,
+        ui::HapticTouchpadEffectStrength::kMedium);
   }
 }
 
@@ -1577,7 +1600,7 @@ WorkspaceWindowResizer::SnapType WorkspaceWindowResizer::GetSnapType(
   switch (snap_type) {
     case SnapType::kPrimary:
     case SnapType::kSecondary:
-      if (!window_state()->CanSnap())
+      if (!window_state()->CanSnapOnDisplay(display))
         snap_type = SnapType::kNone;
       break;
     case SnapType::kMaximize:

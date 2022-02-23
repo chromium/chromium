@@ -202,6 +202,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
 
   bool has_large_blob = options->GetHasLargeBlob(/*default=*/false);
   bool has_cred_blob = options->GetHasCredBlob(/*default=*/false);
+  bool has_min_pin_length = options->GetHasMinPinLength(/*default=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*default=*/false);
 
   if (has_large_blob && !has_resident_key)
@@ -209,7 +210,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
 
   if ((protocol != device::ProtocolVersion::kCtap2 ||
        ctap2_version < device::Ctap2Version::kCtap2_1) &&
-      (has_large_blob || has_cred_blob)) {
+      (has_large_blob || has_cred_blob || has_min_pin_length)) {
     return Response::InvalidParams(kRequiresCtap2_1);
   }
 
@@ -234,6 +235,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
           options->GetHasUserVerification(/*default=*/false);
       virt_auth_options->has_large_blob = has_large_blob;
       virt_auth_options->has_cred_blob = has_cred_blob;
+      virt_auth_options->has_min_pin_length = has_min_pin_length;
       break;
     case device::ProtocolVersion::kUnknown:
       NOTREACHED();

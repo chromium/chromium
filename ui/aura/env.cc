@@ -7,7 +7,9 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
@@ -22,8 +24,8 @@
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/platform/platform_event_source.h"
 
-#if defined(OS_WIN)
-#include "ui/base/cursor/win/win_cursor_factory.h"
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/win/win_cursor_factory.h"
 #endif
 
 #if defined(USE_OZONE)
@@ -77,8 +79,8 @@ class EventObserverAdapter : public ui::EventHandler,
   }
 
  private:
-  ui::EventObserver* observer_;
-  ui::EventTarget* target_;
+  raw_ptr<ui::EventObserver> observer_;
+  raw_ptr<ui::EventTarget> target_;
   const std::set<ui::EventType> types_;
 };
 
@@ -98,8 +100,9 @@ std::unique_ptr<Env> Env::CreateInstance() {
   DCHECK(!g_primary_instance);
   // No make_unique as constructor is private.
   std::unique_ptr<Env> env(new Env());
+  if (!env->Init())
+    return {};
   g_primary_instance = env.get();
-  env->Init();
   return env;
 }
 
@@ -203,12 +206,12 @@ Env::Env()
     : env_controller_(std::make_unique<EnvInputStateController>(this)),
       gesture_recognizer_(std::make_unique<ui::GestureRecognizerImpl>()),
       input_state_lookup_(InputStateLookup::Create()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   cursor_factory_ = std::make_unique<ui::WinCursorFactory>();
 #endif
 }
 
-void Env::Init() {
+bool Env::Init() {
 #if defined(USE_OZONE)
   // The ozone platform can provide its own event source. So initialize the
   // platform before creating the default event source
@@ -218,10 +221,14 @@ void Env::Init() {
   // Env::CreateInstance() instead of checking flags here.
   params.single_process = command_line->HasSwitch("single-process") ||
                           command_line->HasSwitch("in-process-gpu");
-  ui::OzonePlatform::InitializeForUI(params);
+  if (!ui::OzonePlatform::InitializeForUI(params)) {
+    LOG(ERROR) << "The platform failed to initialize.  Exiting.";
+    return false;
+  }
 #endif
   if (!ui::PlatformEventSource::GetInstance())
     event_source_ = ui::PlatformEventSource::CreateDefault();
+  return true;
 }
 
 void Env::NotifyWindowInitialized(Window* window) {

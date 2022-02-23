@@ -83,9 +83,7 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
             gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds()),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
-    mojo_vea_.reset(new MojoVideoEncodeAccelerator(
-        std::move(mojo_vea),
-        media::VideoEncodeAccelerator::SupportedProfiles()));
+    mojo_vea_.reset(new MojoVideoEncodeAccelerator(std::move(mojo_vea)));
   }
 
   void TearDown() override {
@@ -344,7 +342,7 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
   VideoBitrateAllocation bitrate_allocation;
   for (size_t i = 0; i <= kMaxNumBitrates; ++i) {
     if (i > 0) {
-      int layer_bitrate = i * 1000;
+      uint32_t layer_bitrate = i * 1000;
       const size_t si = (i - 1) / VideoBitrateAllocation::kMaxTemporalLayers;
       const size_t ti = (i - 1) % VideoBitrateAllocation::kMaxTemporalLayers;
       bitrate_allocation.SetBitrate(si, ti, layer_bitrate);

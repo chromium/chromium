@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,10 +7,10 @@
 
 import argparse
 import generate_token
-import unittest
+from unittest import main, mock, TestCase
 
 
-class GenerateTokenTest(unittest.TestCase):
+class GenerateTokenTest(TestCase):
 
   def test_hostname_validation(self):
     for hostname, expected_result in [
@@ -64,5 +64,23 @@ class GenerateTokenTest(unittest.TestCase):
                         generate_token.OriginFromArg,
                         invalid_hostname)
 
+  def test_end_to_end(self):
+    with mock.patch('sys.argv',
+                    ['generate-token.py', 'example.com', 'example']):
+      generate_token.GenerateTokenAndSignature()
+
+  def test_FormatToken(self):
+    for version, signature, token_data, expected in [
+        (b'\x03', bytes([1, 2, 3]), bytes([4, 5, 6]), 'AwECAwAAAAMEBQY='),
+        (b'\x03', bytes([200, 100, 1]), bytes([30, 40,
+                                               50]), 'A8hkAQAAAAMeKDI='),
+        (b'\x02', bytes([2, 3, 2]), bytes([2, 3, 2]), 'AgIDAgAAAAMCAwI='),
+        (b'\x02', bytes([255, 150, 10]), bytes([10, 150,
+                                                255]), 'Av+WCgAAAAMKlv8=')
+    ]:
+      self.assertEqual(
+          generate_token.FormatToken(version, signature, token_data), expected)
+
+
 if __name__ == '__main__':
-  unittest.main()
+  main()

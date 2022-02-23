@@ -5,11 +5,11 @@
 #ifndef REMOTING_CODEC_AUDIO_ENCODER_OPUS_H_
 #define REMOTING_CODEC_AUDIO_ENCODER_OPUS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/codec/audio_encoder.h"
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "remoting/proto/audio.pb.h"
 
 struct OpusEncoder;
@@ -47,7 +47,7 @@ class AudioEncoderOpus : public AudioEncoder {
 
   int sampling_rate_;
   AudioPacket::Channels channels_;
-  OpusEncoder* encoder_;
+  raw_ptr<OpusEncoder> encoder_;
 
   int frame_size_;
   std::unique_ptr<media::MultiChannelResampler> resampler_;

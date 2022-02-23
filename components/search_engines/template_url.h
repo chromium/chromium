@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
@@ -252,6 +253,14 @@ class TemplateURLRef {
     bool is_prefetch = false;
 
     ContextualSearchParams contextual_search_params;
+
+    // The cache duration to be sent as a query string parameter in the zero
+    // suggest requests, if non-zero.
+    uint32_t zero_suggest_cache_duration_sec = 0;
+
+    // Whether the request should bypass the HTTP cache, i.e., a "shift-reload".
+    // If true, the net::LOAD_BYPASS_CACHE load flag will be set on the request.
+    bool bypass_cache = false;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);
@@ -379,18 +388,19 @@ class TemplateURLRef {
   enum ReplacementType {
     ENCODING,
     GOOGLE_ASSISTED_QUERY_STATS,
-    GOOGLE_BASE_URL,
     GOOGLE_BASE_SEARCH_BY_IMAGE_URL,
     GOOGLE_BASE_SUGGEST_URL,
-    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
+    GOOGLE_BASE_URL,
+    GOOGLE_CLIENT_CACHE_TIME_TO_LIVE,
     GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA,
+    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
     GOOGLE_CURRENT_PAGE_URL,
     GOOGLE_CURSOR_POSITION,
     GOOGLE_IMAGE_ORIGINAL_HEIGHT,
     GOOGLE_IMAGE_ORIGINAL_WIDTH,
     GOOGLE_IMAGE_SEARCH_SOURCE,
-    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_THUMBNAIL_BASE64,
+    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_URL,
     GOOGLE_INPUT_TYPE,
     GOOGLE_IOS_SEARCH_LANGUAGE,
@@ -517,7 +527,7 @@ class TemplateURLRef {
       PostContent* post_content) const;
 
   // The TemplateURL that contains us.  This should outlive us.
-  const TemplateURL* owner_;
+  raw_ptr<const TemplateURL> owner_;
 
   // What kind of URL we are.
   Type type_;

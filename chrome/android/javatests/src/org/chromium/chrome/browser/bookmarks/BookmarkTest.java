@@ -73,6 +73,9 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -171,8 +174,7 @@ public class BookmarkTest {
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
 
-            // Stub SyncService state to make sure promos aren't suppressed.
-            when(mSyncService.isSyncAllowedByPlatform()).thenReturn(true);
+            // Emulate sync disabled so promos are shown.
             when(mSyncService.isSyncRequested()).thenReturn(false);
             SyncService.overrideForTests(mSyncService);
         });
@@ -1256,6 +1258,38 @@ public class BookmarkTest {
     }
 
     @Test
+    @SmallTest
+    @Features.EnableFeatures(
+            {ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER + "<Study"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    public void
+    testReadingListOpenInRegularTab() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) != null);
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        Assert.assertEquals("The 2nd view should be reading list.", BookmarkType.READING_LIST,
+                getIdByPosition(1).getType());
+        TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
+
+        ChromeTabbedActivity activity = waitForTabbedActivity();
+        CriteriaHelper.pollUiThread(() -> {
+            Tab activityTab = activity.getActivityTab();
+            Criteria.checkThat(activityTab, Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl(), Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl(), Matchers.is(mTestUrlA));
+        });
+    }
+
+    @Test
     @MediumTest
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -1742,6 +1776,7 @@ public class BookmarkTest {
     @SmallTest
     @Features.
     EnableFeatures({ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER})
+    @Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testReadingListFolderShown() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
         openBookmarkManager();
@@ -1749,7 +1784,7 @@ public class BookmarkTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
-        Assert.assertEquals("Wrong number of top level elements.", 3, getAdapter().getItemCount());
+        Assert.assertEquals("Wrong number of top level elements.", 2, getAdapter().getItemCount());
 
         // Reading list should show in the root folder.
         View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
@@ -1758,11 +1793,8 @@ public class BookmarkTest {
         Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
                 getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
-
-        Assert.assertEquals("The 2nd view should be a divider.", BookmarkListEntry.ViewType.DIVIDER,
-                getAdapter().getItemViewType(1));
-        Assert.assertEquals("The 3rd view should be a normal folder.",
-                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(2));
+        Assert.assertEquals("The 2rd view should be a normal folder.",
+                BookmarkListEntry.ViewType.FOLDER, getAdapter().getItemViewType(1));
     }
 
     /**
@@ -2099,6 +2131,56 @@ public class BookmarkTest {
 
         mRenderTestRule.render(
                 manager.getView(), "bookmarks_visual_refresh_bookmarksandfolders_selected");
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER})
+    public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mManager.openFolder(mBookmarkModel.getRootFolderId()); });
+
+        onView(withText("Tracked products")).perform(click());
+        final BookmarkDelegate delegate = getBookmarkManager();
+        final BookmarkActionBar toolbar = ((BookmarkManager) delegate).getToolbarForTests();
+
+        // Check that we are in the mobile bookmarks folder.
+        Assert.assertEquals("Tracked products", toolbar.getTitle());
+        Assert.assertEquals(SelectableListToolbar.NAVIGATION_BUTTON_BACK,
+                toolbar.getNavigationButtonForTests());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.SHOPPING_LIST})
+    public void testShoppingDataPresentButFeatureDisabled()
+            throws InterruptedException, ExecutionException {
+        BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        PowerBookmarkMeta.Builder meta =
+                PowerBookmarkMeta.newBuilder()
+                        .setType(PowerBookmarkType.SHOPPING)
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBookmarkModel.setPowerBookmarkMeta(id, meta.build()); });
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        final BookmarkManager manager = getBookmarkManager();
+
+        BookmarkRow itemView = (BookmarkRow) manager.getRecyclerViewForTests()
+                                       .findViewHolderForAdapterPosition(0)
+                                       .itemView;
+        Assert.assertNotEquals(PowerBookmarkShoppingItemRow.class, itemView.getClass());
     }
 
     /**

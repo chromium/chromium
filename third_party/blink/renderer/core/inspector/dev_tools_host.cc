@@ -31,7 +31,6 @@
 
 #include "base/json/json_reader.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/context_menu_provider.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -126,11 +126,13 @@ void DevToolsHost::EvaluateScript(const String& expression) {
   ScriptState::Scope scope(script_state);
   v8::MicrotasksScope microtasks(script_state->GetIsolate(),
                                  v8::MicrotasksScope::kRunMicrotasks);
-  ScriptSourceCode source_code(expression, ScriptSourceLocationType::kInternal,
-                               nullptr, KURL(),
-                               TextPosition::MinimumPosition());
-  V8ScriptRunner::CompileAndRunInternalScript(script_state->GetIsolate(),
-                                              script_state, source_code);
+  // `kDoNotSanitize` is used for internal scripts for keeping the existing
+  // behavior.
+  V8ScriptRunner::CompileAndRunInternalScript(
+      script_state->GetIsolate(), script_state,
+      *ClassicScript::CreateUnspecifiedScript(
+          expression, ScriptSourceLocationType::kInternal,
+          SanitizeScriptErrors::kDoNotSanitize));
 }
 
 void DevToolsHost::DisconnectClient() {

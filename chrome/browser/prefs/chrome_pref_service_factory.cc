@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chromium_strings.h"
@@ -75,12 +77,12 @@
 #include "chrome/browser/supervised_user/supervised_user_pref_store.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif  // BUILDFLAG(ENABLE_RLZ)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -93,12 +95,12 @@ using ValueType = prefs::mojom::TrackedPreferenceMetadata::ValueType;
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Whether we are in testing mode; can be enabled via
 // DisableDomainCheckForTesting(). Forces startup checks to ignore the presence
 // of a domain when determining the active SettingsEnforcement group.
 bool g_disable_domain_check_for_testing = false;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // These preferences must be kept in sync with the TrackedPreference enum in
 // tools/metrics/histograms/enums.xml. To add a new preference, append it to the
@@ -125,7 +127,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
     {7, prefs::kSearchProviderOverrides, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {11, prefs::kPinnedTabs, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
@@ -148,11 +150,11 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     // releases after M50.
     {18, prefs::kSafeBrowsingIncidentsSent, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {19, prefs::kSwReporterPromptVersion, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {22, prefs::kSwReporterPromptSeed, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #endif
@@ -160,7 +162,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
     {24, prefs::kGoogleServicesLastAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {25, prefs::kSettingsResetPromptPromptWave,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
@@ -173,20 +175,20 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {28, prefs::kSettingsResetPromptLastTriggeredForHomepage,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {30, prefs::kModuleBlocklistCacheMD5Digest,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {31, prefs::kSwReporterReportingEnabled, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {32, prefs::kMediaCdmOriginData, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.
@@ -211,7 +213,7 @@ enum SettingsEnforcementGroup {
 };
 
 SettingsEnforcementGroup GetSettingsEnforcementGroup() {
-# if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!g_disable_domain_check_for_testing) {
     static bool first_call = true;
     static const bool is_managed = base::IsMachineExternallyManaged();
@@ -228,7 +230,7 @@ SettingsEnforcementGroup GetSettingsEnforcementGroup() {
   // Use the strongest enforcement setting on Windows and MacOS. Remember to
   // update the OFFICIAL_BUILD section of extension_startup_browsertest.cc and
   // pref_hash_browsertest.cc when updating the default value below.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return GROUP_ENFORCE_DEFAULT;
 #else
   return GROUP_NO_ENFORCEMENT;
@@ -274,7 +276,7 @@ GetTrackingConfiguration() {
 std::unique_ptr<ProfilePrefStoreManager> CreateProfilePrefStoreManager(
     const base::FilePath& profile_path) {
   std::string legacy_device_id;
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_RLZ)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_RLZ)
   // This is used by
   // chrome/browser/apps/platform_apps/api/music_manager_private/device_id_win.cc
   // but that API is private (http://crbug.com/276485) and other platforms are
@@ -299,6 +301,7 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
                     SupervisedUserSettingsService* supervised_user_settings,
                     scoped_refptr<PersistentPrefStore> user_pref_store,
                     scoped_refptr<PrefStore> extension_prefs,
+                    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
                     bool async,
                     policy::BrowserPolicyConnector* policy_connector) {
   factory->SetManagedPolicies(policy_service, policy_connector);
@@ -311,6 +314,10 @@ void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
     DCHECK(async || supervised_user_prefs->IsInitializationComplete());
     factory->set_supervised_user_prefs(supervised_user_prefs);
   }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  factory->set_standalone_browser_prefs(std::move(standalone_browser_prefs));
 #endif
 
   factory->set_async(async);
@@ -368,17 +375,17 @@ const char kSettingsEnforcementGroupEnforceAlwaysWithExtensionsAndDSE[] =
 
 std::unique_ptr<PrefService> CreateLocalState(
     const base::FilePath& pref_filename,
+    scoped_refptr<PersistentPrefStore> pref_store,
     policy::PolicyService* policy_service,
     scoped_refptr<PrefRegistry> pref_registry,
-    bool async,
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, pref_filename, policy_service,
                  nullptr,  // supervised_user_settings
-                 base::MakeRefCounted<JsonPrefStore>(
-                     pref_filename, std::unique_ptr<PrefFilter>()),
+                 pref_store,
                  nullptr,  // extension_prefs
-                 async, policy_connector);
+                 nullptr,  // standalone_browser_prefs
+                 /*async=*/false, policy_connector);
 
   return factory.Create(std::move(pref_registry));
 }
@@ -401,22 +408,41 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
       std::make_unique<ResetOnLoadObserverImpl>(profile_path),
       reset_on_load_observer.InitWithNewPipeAndPassReceiver());
   sync_preferences::PrefServiceSyncableFactory factory;
+  scoped_refptr<JsonPrefStore> standalone_browser_prefs = nullptr;
+
   scoped_refptr<PersistentPrefStore> user_pref_store =
       CreateProfilePrefStoreManager(profile_path)
           ->CreateProfilePrefStore(
               GetTrackingConfiguration(), kTrackedPrefsReportingIDsCount,
-              std::move(io_task_runner), std::move(reset_on_load_observer),
+              io_task_runner, std::move(reset_on_load_observer),
               std::move(validation_delegate));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In ash, load the standalone_browser_prefs. This PrefStore
+  // contains data about prefs set by extensions in lacros where the feature
+  // lives in ash (for example, screen magnifier). The values are persisted in
+  // ash so they can be loaded on startup or when lacros is not running.
+  base::FilePath user_data_dir;
+  const bool success =
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  DCHECK(success);
+  standalone_browser_prefs = base::MakeRefCounted<JsonPrefStore>(
+      user_data_dir.Append(
+          FILE_PATH_LITERAL("standalone_browser_preferences.json")),
+      std::unique_ptr<PrefFilter>(), io_task_runner);
+#endif
+
   PrepareFactory(&factory, profile_path, policy_service,
                  supervised_user_settings, std::move(user_pref_store),
-                 std::move(extension_prefs), async, connector);
+                 std::move(extension_prefs),
+                 std::move(standalone_browser_prefs), async, connector);
   return factory.CreateSyncable(std::move(pref_registry));
 }
 
 void DisableDomainCheckForTesting() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   g_disable_domain_check_for_testing = true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 bool InitializePrefsFromMasterPrefs(

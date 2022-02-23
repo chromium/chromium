@@ -151,7 +151,8 @@ bool ParseFormatString(string_view src, Consumer consumer) {
   const char* p = src.data();
   const char* const end = p + src.size();
   while (p != end) {
-    const char* percent = static_cast<const char*>(memchr(p, '%', end - p));
+    const char* percent =
+        static_cast<const char*>(memchr(p, '%', static_cast<size_t>(end - p)));
     if (!percent) {
       // We found the last substring.
       return consumer.Append(string_view(p, end - p));
@@ -242,7 +243,8 @@ class ParsedFormatBase {
     string_view text(base, 0);
     for (const auto& item : items_) {
       const char* const end = text.data() + text.size();
-      text = string_view(end, (base + item.text_end) - end);
+      text =
+          string_view(end, static_cast<size_t>((base + item.text_end) - end));
       if (item.is_conversion) {
         if (!consumer.ConvertOne(item.conv, text)) return false;
       } else {

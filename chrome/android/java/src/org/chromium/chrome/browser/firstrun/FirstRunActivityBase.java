@@ -40,7 +40,6 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     // received by ChromeLauncherActivity.)
     public static final String EXTRA_CHROME_LAUNCH_INTENT_EXTRAS =
             "Extra.FreChromeLaunchIntentExtras";
-    static final String SHOW_DATA_REDUCTION_PAGE = "ShowDataReduction";
     static final String SHOW_SEARCH_ENGINE_PAGE = "ShowSearchEnginePage";
     static final String SHOW_SYNC_CONSENT_PAGE = "ShowSyncConsent";
 
@@ -90,10 +89,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     public void onResume() {
         super.onResume();
         // Since the FRE may be shown before any tab is shown, mark that this is the point at
-        // which Chrome went to foreground. This is needed as otherwise an assert will be hit
-        // in UmaUtils.getForegroundStartTicks() when recording the time taken to load the first
-        // page (which happens after native has been initialized possibly while FRE is still
-        // active).
+        // which Chrome went to foreground.
         UmaUtils.recordForegroundStartTime();
     }
 

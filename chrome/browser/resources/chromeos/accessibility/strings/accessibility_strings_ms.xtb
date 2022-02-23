@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Kawasan latihan: Senarai lungsur</translation>
 <translation id="1195238899008218998">Kata hujungan</translation>
 <translation id="1197088940767939838">Oren</translation>
+<translation id="1198865190323699001">Gerak Isyarat Sentuh</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1206619573307042055">marki</translation>
 <translation id="1207086294218137981">Tiada tajuk tahap 4 seterusnya</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{tanda kurung kanan}other{# tanda kurung kanan}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{tanda soal}other{# tanda soal}}</translation>
+<translation id="3505359110822747654">Menu ChromeVox runtuh</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{karet}other{# karet}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{bulet putih}other{# bulet putih}}</translation>
 <translation id="352577523970648069">Medan teks boleh edit</translation>
 <translation id="3538907380453898475">snrprhl</translation>
 <translation id="3549141990712742152">potong <ph name="TEXT" />.</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Orientasi pantas selesai!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
+<translation id="554893713779400387">Togol pengimlakan</translation>
 <translation id="5549179427201066174">Hidupkan atau matikan maklum balas bunyi (earkon)</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5561345396546889625">Senarai seterusnya</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Kotak pilihan seterusnya</translation>
 <translation id="5598905979683743333">Butang radio, <ph name="NAME" /> dinyahpilih</translation>
 <translation id="5601172225407283979">Lakukan tindakan lalai</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{bulet segi empat sama}other{# bulet segi empat sama}}</translation>
 <translation id="5608798115546226984">Autolengkap sebaris</translation>
 <translation id="5616029807486814372">Pelajaran seterusnya</translation>
 <translation id="561939826962581046">masa</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">Senarai Lungsur</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> tamat</translation>
 <translation id="867187640362843212">Tajuk 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{tahap bersarang #}}</translation>
 <translation id="8693391540059827073">Musim kegemaran saya</translation>
 <translation id="8696284982970258155">Hijau Tembikai Susu</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{paip}other{# paip menegak}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">Merah Gelap</translation>
 <translation id="923331726185079994">ChromeVox Dikemas Kini</translation>
 <translation id="93384979447910801">Hijau Laut Gelap</translation>
+<translation id="937605981140327129">TalkBack tidak dipasang pada masa ini. Sila pasang Android Accessibility Suite melalui Play Store dan cuba lagi.</translation>
 <translation id="948171205378458592">Kurangkan kadar pertuturan</translation>
 <translation id="957570623732056069">Leret ke kiri atau kanan dengan satu jari untuk menavigasi pelajaran ini</translation>
 <translation id="958854023026327378">Leret satu jari ke bawah</translation>

@@ -157,9 +157,7 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
   const size_t kDataSize = kPageSize * 2;
   const size_t kCount = kDataSize / sizeof(uint32_t);
 
-  TypeParam region;
-  WritableSharedMemoryMapping rw_mapping;
-  std::tie(region, rw_mapping) = CreateMappedRegion<TypeParam>(kDataSize);
+  auto [region, rw_mapping] = CreateMappedRegion<TypeParam>(kDataSize);
   ASSERT_TRUE(region.IsValid());
   ASSERT_TRUE(rw_mapping.IsValid());
   uint32_t* ptr = static_cast<uint32_t*>(rw_mapping.memory());
@@ -183,9 +181,7 @@ TYPED_TEST(SharedMemoryRegionTest, MapAt) {
 TYPED_TEST(SharedMemoryRegionTest, MapAtNotAlignedOffsetFails) {
   const size_t kDataSize = SysInfo::VMAllocationGranularity();
 
-  TypeParam region;
-  WritableSharedMemoryMapping rw_mapping;
-  std::tie(region, rw_mapping) = CreateMappedRegion<TypeParam>(kDataSize);
+  auto [region, rw_mapping] = CreateMappedRegion<TypeParam>(kDataSize);
   ASSERT_TRUE(region.IsValid());
   ASSERT_TRUE(rw_mapping.IsValid());
   off_t offset = kDataSize / 2;

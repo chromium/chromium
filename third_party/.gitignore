@@ -37,15 +37,10 @@
 /apache-win32/bin/iconv/*.so
 /apache-win32/modules/*.so
 /apache-win32/modules/*.dll
-/apache-mac/bin/httpd
-/apache-mac/bin/openssl
-/apache-mac/lib/*.dylib
-/apache-mac/libexec/apache2/*.so
 /arcore-android-sdk/src/
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan
 /barhopper
-/binutils
 /bison
 /boringssl/src
 /bouncycastle/lib/
@@ -77,7 +72,6 @@
 /devtools-frontend/src
 /devtools-frontend-internal
 /directxsdk
-/distributed_point_functions/src
 /dom_distiller_js/dist
 /eigen3/src
 /elfutils/src
@@ -102,7 +96,6 @@
 /glfw/src
 /gn/
 /gnu_binutils/
-/google_appengine_cloudstorage
 /google_benchmark/src
 /google_toolbox_for_mac/src
 /googlemac
@@ -136,9 +129,10 @@
 /leveldatabase/src
 /leveldb
 /libaom/source/libaom
-/libc++-static/libc++.a
 /libaddressinput/src
+/libassistant
 /libavif/src
+/libc++-static/libc++.a
 /libdrm/src
 /libFuzzer/src
 /libgav1/src
@@ -165,7 +159,6 @@
 /llvm-build
 /llvm-build-tools
 /lss
-/marble
 /material_design_icons/src
 /mesa/src
 /mingw-w64
@@ -220,6 +213,8 @@
 /requests/src
 /robolectric/lib/
 /robolectric/robolectric
+/rust-src
+/rust-toolchain
 /ruy/src
 /scan-build/src
 /scons-2.0.1

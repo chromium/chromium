@@ -8,39 +8,15 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
 
 namespace syncer {
-
-namespace {
-
-void LogNonReflectionUpdateFreshnessToUma(ModelType type,
-                                          base::Time remote_modification_time) {
-  const base::TimeDelta latency = base::Time::Now() - remote_modification_time;
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("Sync.NonReflectionUpdateFreshnessPossiblySkewed2",
-                             latency,
-                             /*min=*/base::Milliseconds(100),
-                             /*max=*/base::Days(7),
-                             /*bucket_count=*/50);
-
-  base::UmaHistogramCustomTimes(
-      std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed2.") +
-          ModelTypeToHistogramSuffix(type),
-      latency,
-      /*min=*/base::Milliseconds(100),
-      /*max=*/base::Days(7),
-      /*bucket_count=*/50);
-}
-
-}  // namespace
 
 ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
     ModelType type,
@@ -155,7 +131,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     SyncRecordModelTypeUpdateDropReason(
         UpdateDropReason::kInconsistentClientTag, type_);
     DLOG(WARNING) << "Received unexpected client tag hash: " << client_tag_hash
-                  << " for " << ModelTypeToString(type_);
+                  << " for " << ModelTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -169,7 +145,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
         UpdateDropReason::kTombstoneForNonexistentInIncrementalUpdate, type_);
     DLOG(WARNING) << "Received remote delete for a non-existing item."
                   << " client_tag_hash: " << client_tag_hash << " for "
-                  << ModelTypeToString(type_);
+                  << ModelTypeToDebugString(type_);
     return nullptr;
   }
 
@@ -228,8 +204,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (!update_is_tombstone &&
       entity_tracker_->model_type_state().encryption_key_name() !=
           update_encryption_key_name) {
-    DVLOG(2) << ModelTypeToString(type_) << ": Requesting re-encrypt commit "
-             << update_encryption_key_name << " -> "
+    DVLOG(2) << ModelTypeToDebugString(type_)
+             << ": Requesting re-encrypt commit " << update_encryption_key_name
+             << " -> "
              << entity_tracker_->model_type_state().encryption_key_name();
 
     entity->IncrementSequenceNumber(base::Time::Now());

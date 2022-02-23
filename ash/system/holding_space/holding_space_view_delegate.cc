@@ -434,7 +434,7 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
   if (context_menu_runner_ && context_menu_runner_->IsRunning())
     return;
 
-  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+  int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::CONTEXT_MENU |
                   views::MenuRunner::FIXED_ANCHOR;
 
@@ -700,7 +700,8 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       context_menu_model_->AddItemWithIcon(
           static_cast<int>(menu_item.command_id),
           l10n_util::GetStringUTF16(menu_item.label_id),
-          ui::ImageModel::FromVectorIcon(menu_item.icon, ui::kColorMenuIcon,
+          ui::ImageModel::FromVectorIcon(menu_item.icon,
+                                         ui::kColorAshSystemUIMenuIcon,
                                          kHoldingSpaceIconSize));
     }
   }

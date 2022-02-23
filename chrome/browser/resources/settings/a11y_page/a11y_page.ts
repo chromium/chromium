@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared_css.js';
-
 // <if expr="not is_macosx and not chromeos">
 import './captions_subpage.js';
 import '../settings_page/settings_subpage.js';
@@ -20,10 +19,11 @@ import '../settings_page/settings_subpage.js';
 
 // <if expr="is_win or is_macosx">
 import './live_caption_section.js';
+
 // </if>
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -31,8 +31,10 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {getTemplate} from './a11y_page.html.js';
 // <if expr="is_win or is_macosx">
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
+
 // </if>
 
 const SettingsA11YPageElementBase =
@@ -44,7 +46,7 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

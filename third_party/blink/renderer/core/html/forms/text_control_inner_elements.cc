@@ -210,7 +210,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
         GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style->SetDisplay(EDisplay::kNone);
-    text_block_style->AddCachedPseudoElementStyle(no_scrollbar_style);
+    text_block_style->AddCachedPseudoElementStyle(
+        no_scrollbar_style, kPseudoIdScrollbar, g_null_atom);
     text_block_style->SetHasPseudoElementStyle(kPseudoIdScrollbar);
 
     text_block_style->SetDisplay(EDisplay::kFlowRoot);

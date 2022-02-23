@@ -108,9 +108,13 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       bool is_submitted) = 0;
   using ScopedOverlayAccess =
       gpu::SharedImageRepresentationOverlay::ScopedReadAccess;
+  virtual void ScheduleOneOverlay(const OverlayCandidate& overlay,
+                                  ScopedOverlayAccess* access);
   virtual void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                                 std::vector<ScopedOverlayAccess*> accesses) = 0;
-  virtual void ScheduleBackground(Image* image);
+#if BUILDFLAG(IS_MAC)
+  virtual void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) {}
+#endif
 };
 
 }  // namespace viz

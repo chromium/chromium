@@ -22,15 +22,15 @@
 namespace {
 
 absl::optional<content::TtsControllerDelegate::PreferredVoiceId>
-PreferredVoiceIdFromString(const base::DictionaryValue* pref,
+PreferredVoiceIdFromString(const base::Value* pref,
                            const std::string& pref_key) {
-  std::string voice_id;
-  pref->GetString(l10n_util::GetLanguage(pref_key), &voice_id);
-  if (voice_id.empty())
+  const std::string* voice_id =
+      pref->FindStringPath(l10n_util::GetLanguage(pref_key));
+  if (!voice_id || voice_id->empty())
     return absl::nullopt;
 
   std::unique_ptr<base::DictionaryValue> json =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
+      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(*voice_id));
   std::string name;
   std::string id;
   json->GetString("name", &name);
@@ -57,8 +57,7 @@ TtsControllerDelegateImpl::~TtsControllerDelegateImpl() = default;
 std::unique_ptr<content::TtsControllerDelegate::PreferredVoiceIds>
 TtsControllerDelegateImpl::GetPreferredVoiceIdsForUtterance(
     content::TtsUtterance* utterance) {
-  const base::DictionaryValue* lang_to_voice_pref =
-      GetLangToVoicePref(utterance);
+  const base::Value* lang_to_voice_pref = GetLangToVoicePref(utterance);
   if (!lang_to_voice_pref)
     return nullptr;
 
@@ -112,7 +111,7 @@ const PrefService* TtsControllerDelegateImpl::GetPrefService(
   return profile ? profile->GetPrefs() : nullptr;
 }
 
-const base::DictionaryValue* TtsControllerDelegateImpl::GetLangToVoicePref(
+const base::Value* TtsControllerDelegateImpl::GetLangToVoicePref(
     content::TtsUtterance* utterance) {
   const PrefService* prefs = GetPrefService(utterance);
   return prefs == nullptr

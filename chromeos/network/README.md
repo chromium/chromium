@@ -1,8 +1,13 @@
 # Chrome OS Network - Chrome Layer
 
-Chrome OS networking consists of several key components. This document describes
-the Chrome layer, implemented within `//chromeos/network`. To describe this layer,
-we highlight three primary processes:
+Chrome OS networking consists of several key components, shown in the diagram
+below:
+
+![Chrome OS Connectivity Layers](docs/cros_connectivity_layers.svg){width="1200" height="864"}
+
+This document describes the Chrome layer (light blue rectangle above). This
+layer is implemented within `//chromeos/network`. To describe this layer, we
+highlight three primary processes:
 
 *   ***Chrome.*** Contains all system UI (e.g., settings) and processes inputs
     from the user as well as enterprise policies. Chrome sits atop the
@@ -33,27 +38,27 @@ for VPNs.
 
 Shill exposes 5 key interfaces used by Chrome:
 
-*   [`flimflam.Manager`](https://source.corp.google.com/chromeos_public/src/platform2/shill/doc/manager-api.txt):
+*   [`flimflam.Manager`](https://source.corp.google.com/chromeos_public/src/platform2/shill/dbus_bindings/org.chromium.flimflam.Manager.dbus-xml):
     Allows Chrome to enable/disable a technology (e.g., turning Wi-Fi on or
     off), perform a scan (e.g., look for nearby Wi-Fi networks), and configure a
     network (e.g., attempt to set up a Wi-Fi network with a password).
-*   [`flimflam.Device`](https://source.corp.google.com/chromeos_public/src/platform2/shill/doc/device-api.txt):
+*   [`flimflam.Device`](https://source.corp.google.com/chromeos_public/src/platform2/shill/dbus_bindings/org.chromium.flimflam.Device.dbus-xml):
     A Shill "Device" refers to a connection medium (Wi-Fi, Cellular, and
     Ethernet are all Shill Devices). This interface allows Chrome to get or set
     properties of each connection medium as well as perform operations on each
     connection medium (e.g., unlocking the Cellular Device when it has a locked
     SIM).
-*   [`flimflam.Service`](https://source.corp.google.com/chromeos_public/src/platform2/shill/doc/service-api.txt):
+*   [`flimflam.Service`](https://source.corp.google.com/chromeos_public/src/platform2/shill/dbus_bindings/org.chromium.flimflam.Service.dbus-xml):
     A Shill "Service" refers to an individual network (a Wi-Fi network or a
     cellular SIM are Shill services). This interface allows Chrome to get or set
     properties for a given network as well as initiate connections and
     disconnections.
-*   [`flimflam.Profile`](https://source.corp.google.com/chromeos_public/src/platform2/shill/doc/profile-api.txt):
+*   [`flimflam.Profile`](https://source.corp.google.com/chromeos_public/src/platform2/shill/dbus_bindings/org.chromium.flimflam.Profile.dbus-xml):
     A Shill "Profile" refers to a grouping of services corresponding to a
     logged-in user. Chrome OS allows configuration of networks as part of the
     "default" (i.e., shared) Profile which is available to all users or as part
     of individual (i.e., per-user) Profiles.
-*   [`flimflam.IPConfig`](https://source.corp.google.com/chromeos_public/src/platform2/shill/doc/ipconfig-api.txt):
+*   [`flimflam.IPConfig`](https://source.corp.google.com/chromeos_public/src/platform2/shill/dbus_bindings/org.chromium.flimflam.IPConfig.dbus-xml):
     Allows Chrome to configure IP addresses (e.g., DNS and DHCP).
 
 ### Hermes
@@ -71,12 +76,13 @@ been downloaded to a EUICC.
 
 Hermes exposes 3 key interfaces used by Chrome:
 
-*   `Hermes.Manager`: Allows Chrome to retrieve the list of all EUICCs and to
+*   [`Hermes.Manager`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Manager.xml): Allows Chrome to retrieve the list of all EUICCs and to
     observe changes to this list.
-*   `Hermes.Euicc`: Allows Chrome to request pending or installed profiles for a
-    given EUICC; additionally, exposes functionality for installing and
-    uninstalling profiles.
-*   `Hermes.Profile`: Allows Chrome to enable or disable an individual profile.
+*   [`Hermes.Euicc`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Euicc.xml):
+    Allows Chrome to request pending or installed profiles for a given EUICC;
+    additionally, exposes functionality for installing and uninstalling
+    profiles.
+*   [`Hermes.Profile`](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/hermes/dbus_bindings/org.chromium.Hermes.Profile.xml): Allows Chrome to enable or disable an individual profile.
     A profile must be enabled in order to be used for a connection.
 
 ## TODO: Finish README

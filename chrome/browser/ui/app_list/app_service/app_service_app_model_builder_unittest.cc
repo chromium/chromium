@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -47,8 +48,8 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -131,9 +132,9 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
                                              const std::string& id) {
   std::string err;
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", version);
-  value.SetString("app.launch.web_url", url);
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
+  value.SetStringPath("app.launch.web_url", url);
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
@@ -152,7 +153,7 @@ void RemoveApps(apps::mojom::AppType app_type,
   proxy->AppRegistryCache().ForEachApp(
       [&model_updater, &app_type](const apps::AppUpdate& update) {
         if (update.AppType() != app_type) {
-          model_updater->RemoveItem(update.AppId());
+          model_updater->RemoveItem(update.AppId(), /*is_uninstall=*/true);
         }
       });
 }
@@ -182,6 +183,13 @@ void VerifyIcon(const gfx::ImageSkia& src, const gfx::ImageSkia& dst) {
   }
 }
 
+void InitAppPosition(ChromeAppListItem* new_item) {
+  if (new_item->position().IsValid())
+    return;
+
+  new_item->SetChromePosition(new_item->CalculateDefaultPositionForTest());
+}
+
 }  // namespace
 
 class AppServiceAppModelBuilderTest : public AppListTestBase {
@@ -204,6 +212,7 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
 
  protected:
   void ResetBuilder() {
+    scoped_callback_.reset();
     builder_.reset();
     controller_.reset();
     model_updater_.reset();
@@ -220,10 +229,16 @@ class AppServiceAppModelBuilderTest : public AppListTestBase {
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    scoped_callback_ = std::make_unique<
+        AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+        builder_.get(), base::BindRepeating(&InitAppPosition));
     builder_->Initialize(nullptr, testing_profile(), model_updater_.get());
   }
 
   apps::AppServiceTest app_service_test_;
+  std::unique_ptr<
+      AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>
+      scoped_callback_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
@@ -254,7 +269,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
   // Creates a new builder, destroying any existing one.
   void CreateBuilder() {
     AppServiceAppModelBuilderTest::CreateBuilder(false /*guest_mode*/);
-    RemoveApps(apps::mojom::AppType::kExtension, testing_profile(),
+    RemoveApps(apps::mojom::AppType::kChromeApp, testing_profile(),
                model_updater_.get());
   }
 
@@ -323,7 +338,7 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   std::string CreateWebApp(const std::string& app_name) {
     const GURL kAppUrl("https://example.com/");
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(app_name);
     web_app_info->start_url = kAppUrl;
     web_app_info->scope = kAppUrl;
@@ -437,6 +452,9 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   FakeAppListModelUpdater model_updater1(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder1(controller_.get());
+  auto scoped_callback1 = std::make_unique<
+      AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+      &builder1, base::BindRepeating(&InitAppPosition));
   builder1.Initialize(nullptr, profile_.get(), &model_updater1);
   EXPECT_TRUE(model_updater1.FindItem(store->id()));
   EXPECT_TRUE(model_updater1.FindItem(enterprise_store->id()));
@@ -452,6 +470,9 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   FakeAppListModelUpdater model_updater2(/*profile=*/nullptr,
                                          /*reorder_delegate=*/nullptr);
   AppServiceAppModelBuilder builder2(controller_.get());
+  auto scoped_callback2 = std::make_unique<
+      AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+      &builder2, base::BindRepeating(&InitAppPosition));
   builder2.Initialize(nullptr, profile_.get(), &model_updater2);
   app_service_test_.FlushMojoCalls();
   EXPECT_FALSE(model_updater2.FindItem(store->id()));
@@ -463,6 +484,10 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   // Now the web stores should have appeared.
   EXPECT_TRUE(model_updater2.FindItem(store->id()));
   EXPECT_TRUE(model_updater2.FindItem(enterprise_store->id()));
+
+  // Destroy scoped callbacks before model builders.
+  scoped_callback1.reset();
+  scoped_callback2.reset();
 }
 
 TEST_F(ExtensionAppTest, DisableAndEnable) {
@@ -763,7 +788,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
           id == crostini::kCrostiniTerminalSystemAppId) {
         continue;
       }
-      sync_service_->RemoveItem(id);
+      sync_service_->RemoveItem(id, /*is_uninstall=*/false);
     }
   }
 
@@ -772,7 +797,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
         base::BindRepeating(
             [](Profile* profile,
-               app_list::AppListReorderDelegate* reorder_delegate)
+               app_list::reorder::AppListReorderDelegate* reorder_delegate)
                 -> std::unique_ptr<AppListModelUpdater> {
               return std::make_unique<FakeAppListModelUpdater>(
                   profile, reorder_delegate);
@@ -973,6 +998,7 @@ class PluginVmAppTest : public testing::Test {
 
   // Destroys any existing builder in the correct order.
   void ResetBuilder() {
+    scoped_callback_.reset();
     builder_.reset();
     controller_.reset();
     model_updater_.reset();
@@ -989,6 +1015,9 @@ class PluginVmAppTest : public testing::Test {
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    scoped_callback_ = std::make_unique<
+        AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+        builder_.get(), base::BindRepeating(&InitAppPosition));
     builder_->Initialize(nullptr, testing_profile_.get(), model_updater_.get());
 
     RemoveApps(apps::mojom::AppType::kPluginVm, testing_profile_.get(),
@@ -1009,6 +1038,9 @@ class PluginVmAppTest : public testing::Test {
 
   apps::AppServiceTest app_service_test_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
+  std::unique_ptr<
+      AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>
+      scoped_callback_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
 };
@@ -1070,33 +1102,33 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    scoped_callback_ = std::make_unique<
+        AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+        builder_.get(), base::BindRepeating(&InitAppPosition));
     builder_->Initialize(nullptr, testing_profile_.get(), model_updater_.get());
 
     RemoveApps(apps::mojom::AppType::kBorealis, testing_profile_.get(),
                model_updater_.get());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
-TEST_F(BorealisAppTest, BorealisDisabled) {
-  EXPECT_FALSE(borealis::BorealisService::GetForProfile(testing_profile_.get())
-                   ->Features()
-                   .IsAllowed());
+TEST_F(BorealisAppTest, BorealisDisallowed) {
+  ASSERT_NE(borealis::BorealisService::GetForProfile(testing_profile_.get())
+                ->Features()
+                .MightBeAllowed(),
+            borealis::BorealisFeatures::AllowStatus::kAllowed);
   EXPECT_EQ(std::vector<std::string>{}, GetModelContent(model_updater_.get()));
 }
 
-TEST_F(BorealisAppTest, BorealisEnabled) {
-  // Enable the Borealis feature.
-  scoped_feature_list_.InitAndEnableFeature(features::kBorealis);
+TEST_F(BorealisAppTest, BorealisAllowed) {
+  borealis::ScopedAllowBorealis allow_borealis(testing_profile_.get(),
+                                               /*also_enable=*/false);
   // Reset the AppModelBuilder, so that it is created in a state where
   // Borealis was enabled.
   CreateBuilder(/*guest_mode=*/false);
 
-  EXPECT_TRUE(borealis::BorealisService::GetForProfile(testing_profile_.get())
-                  ->Features()
-                  .IsAllowed());
   EXPECT_EQ(
       std::vector<std::string>{l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME)},
       GetModelContent(model_updater_.get()));

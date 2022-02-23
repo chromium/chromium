@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,7 +58,7 @@ class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
   content::SignedExchangeBrowserTestHelper sxg_test_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
+IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlockList) {
   embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -72,21 +73,21 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-  base::ListValue blacklist;
-  blacklist.Append("test.example.org");
+  base::ListValue blocklist;
+  blocklist.Append("test.example.org");
   policy::PolicyMap policies;
-  policies.Set(policy::key::kURLBlacklist, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               blacklist.Clone(), nullptr);
+               blocklist.Clone(), nullptr);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::SetEnterpriseUsersProfileDefaults(&policies);
 #endif
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop loop;
   loop.RunUntilIdle();
 
-  // Updates of the URLBlacklist are done on IO, after building the blacklist
+  // Updates of the URLBlocklist are done on IO, after building the blocklist
   // on the blocking pool, which is initiated from IO.
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
   content::RunAllTasksUntilIdle();

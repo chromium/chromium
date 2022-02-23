@@ -4,28 +4,80 @@
 
 #include "content/browser/attribution_reporting/attribution_report.h"
 
+#include <utility>
+
 #include "base/check.h"
-#include "base/json/json_writer.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
 namespace content {
 
-AttributionReport::AttributionReport(StorableSource impression,
-                                     uint64_t trigger_data,
-                                     base::Time conversion_time,
-                                     base::Time report_time,
-                                     int64_t priority,
-                                     absl::optional<Id> conversion_id)
-    : impression(std::move(impression)),
-      trigger_data(trigger_data),
-      conversion_time(conversion_time),
-      report_time(report_time),
+AttributionReport::EventLevelData::EventLevelData(
+    uint64_t trigger_data,
+    int64_t priority,
+    double randomized_trigger_rate,
+    absl::optional<Id> id)
+    : trigger_data(trigger_data),
       priority(priority),
-      conversion_id(conversion_id) {}
+      randomized_trigger_rate(randomized_trigger_rate),
+      id(id) {
+  DCHECK_GE(randomized_trigger_rate, 0);
+  DCHECK_LE(randomized_trigger_rate, 1);
+}
+
+AttributionReport::EventLevelData::EventLevelData(const EventLevelData& other) =
+    default;
+
+AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
+    const EventLevelData& other) = default;
+
+AttributionReport::EventLevelData::EventLevelData(EventLevelData&& other) =
+    default;
+
+AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
+    EventLevelData&& other) = default;
+
+AttributionReport::EventLevelData::~EventLevelData() = default;
+
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
+    AggregatableHistogramContribution contribution,
+    absl::optional<Id> id)
+    : contribution(std::move(contribution)), id(id) {}
+
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
+    const AggregatableContributionData& other) = default;
+
+AttributionReport::AggregatableContributionData&
+AttributionReport::AggregatableContributionData::operator=(
+    const AggregatableContributionData& other) = default;
+
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
+    AggregatableContributionData&& other) = default;
+
+AttributionReport::AggregatableContributionData&
+AttributionReport::AggregatableContributionData::operator=(
+    AggregatableContributionData&& other) = default;
+
+AttributionReport::AggregatableContributionData::
+    ~AggregatableContributionData() = default;
+
+AttributionReport::AttributionReport(
+    AttributionInfo attribution_info,
+    base::Time report_time,
+    base::GUID external_report_id,
+    absl::variant<EventLevelData, AggregatableContributionData> data)
+    : attribution_info_(std::move(attribution_info)),
+      report_time_(report_time),
+      external_report_id_(std::move(external_report_id)),
+      data_(std::move(data)) {
+  DCHECK(external_report_id_.is_valid());
+}
 
 AttributionReport::AttributionReport(const AttributionReport& other) = default;
 
@@ -40,44 +92,92 @@ AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
 AttributionReport::~AttributionReport() = default;
 
 GURL AttributionReport::ReportURL() const {
+  struct Visitor {
+    const char* operator()(const EventLevelData&) {
+      static constexpr char kEventEndpointPath[] =
+          "/.well-known/attribution-reporting/report-attribution";
+      return kEventEndpointPath;
+    }
+
+    const char* operator()(const AggregatableContributionData&) {
+      static constexpr char kAggregateEndpointPath[] =
+          "/.well-known/attribution-reporting/report-aggregate-attribution";
+      return kAggregateEndpointPath;
+    }
+  };
+
+  const char* path = absl::visit(Visitor{}, data_);
   url::Replacements<char> replacements;
-  static constexpr char kEndpointPath[] =
-      "/.well-known/attribution-reporting/report-attribution";
-  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  return impression.reporting_origin().GetURL().ReplaceComponents(replacements);
+  replacements.SetPath(path, url::Component(0, strlen(path)));
+  return attribution_info_.source.common_info()
+      .reporting_origin()
+      .GetURL()
+      .ReplaceComponents(replacements);
 }
 
-std::string AttributionReport::ReportBody(bool pretty_print) const {
+base::Value AttributionReport::ReportBody() const {
+  const auto* event_data = absl::get_if<EventLevelData>(&data_);
+  DCHECK(event_data);
+
   base::Value dict(base::Value::Type::DICTIONARY);
 
+  const CommonSourceInfo& common_source_info =
+      attribution_info_.source.common_info();
+
   dict.SetStringKey("attribution_destination",
-                    impression.ConversionDestination().Serialize());
+                    common_source_info.ConversionDestination().Serialize());
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
   // a dict as an integer in order to be opaque to various API configurations.
   dict.SetStringKey("source_event_id",
-                    base::NumberToString(impression.source_event_id()));
+                    base::NumberToString(common_source_info.source_event_id()));
 
-  dict.SetStringKey("trigger_data", base::NumberToString(trigger_data));
+  dict.SetStringKey("trigger_data",
+                    base::NumberToString(event_data->trigger_data));
 
   const char* source_type = nullptr;
-  switch (impression.source_type()) {
-    case StorableSource::SourceType::kNavigation:
+  switch (common_source_info.source_type()) {
+    case CommonSourceInfo::SourceType::kNavigation:
       source_type = "navigation";
       break;
-    case StorableSource::SourceType::kEvent:
+    case CommonSourceInfo::SourceType::kEvent:
       source_type = "event";
       break;
   }
   dict.SetStringKey("source_type", source_type);
 
-  // Write the dict to json;
-  std::string output_json;
-  bool success = base::JSONWriter::WriteWithOptions(
-      dict, pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0,
-      &output_json);
-  DCHECK(success);
-  return output_json;
+  dict.SetStringKey("report_id", external_report_id_.AsLowercaseString());
+
+  dict.SetDoubleKey("randomized_trigger_rate",
+                    event_data->randomized_trigger_rate);
+
+  if (absl::optional<uint64_t> debug_key = common_source_info.debug_key())
+    dict.SetStringKey("source_debug_key", base::NumberToString(*debug_key));
+
+  if (absl::optional<uint64_t> debug_key = attribution_info_.debug_key)
+    dict.SetStringKey("trigger_debug_key", base::NumberToString(*debug_key));
+
+  return dict;
+}
+
+absl::optional<AttributionReport::Id> AttributionReport::ReportId() const {
+  return absl::visit([](const auto& v) { return absl::optional<Id>(v.id); },
+                     data_);
+}
+
+void AttributionReport::set_report_time(base::Time report_time) {
+  report_time_ = report_time;
+}
+
+void AttributionReport::set_failed_send_attempts(int failed_send_attempts) {
+  DCHECK_GE(failed_send_attempts, 0);
+  failed_send_attempts_ = failed_send_attempts;
+}
+
+void AttributionReport::SetExternalReportIdForTesting(
+    base::GUID external_report_id) {
+  DCHECK(external_report_id.is_valid());
+  external_report_id_ = std::move(external_report_id);
 }
 
 }  // namespace content

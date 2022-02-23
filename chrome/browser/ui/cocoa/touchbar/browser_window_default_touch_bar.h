@@ -44,16 +44,14 @@ API_AVAILABLE(macos(10.12.2))
 @interface BrowserWindowDefaultTouchBar (ExposedForTesting)
 
 @property(readonly, class) NSString* reloadOrStopItemIdentifier;
+@property(readonly, class) NSString* bookmarkStarItemIdentifier;
 @property(readonly, class) NSString* backItemIdentifier;
 @property(readonly, class) NSString* forwardItemIdentifier;
 @property(readonly, class) NSString* fullscreenOriginItemIdentifier;
-
-// Updates the reload/stop button. Called when creating the touch bar or the
-// page load state has been updated.
-- (void)updateReloadStopButton;
-
-// Returns the reload/stop button on the touch bar. Creates it if it's null.
-- (NSButton*)reloadStopButton;
+@property(readonly, class) NSImage* starDefaultIcon;
+@property(readonly, class) NSImage* starActiveIcon;
+@property(readonly, class) NSImage* navigateStopIcon;
+@property(readonly, class) NSImage* reloadIcon;
 
 // Returns the bridge object that BrowserWindowDefaultTouchBar uses to receive
 // notifications.

@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
   // NetworkService (see how CorsURLLoaderFactory::IsValidRequest checks
   // InitiatorLockCompatibility), but may need extra care in the browser
   // process.
-  static absl::optional<mojom::BlockedByResponseReason> IsBlocked(
+  [[nodiscard]] static absl::optional<mojom::BlockedByResponseReason> IsBlocked(
       const GURL& request_url,
       const GURL& original_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -51,20 +51,20 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       mojom::RequestMode request_mode,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter) WARN_UNUSED_RESULT;
+      mojom::CrossOriginEmbedderPolicyReporter* reporter);
 
   // Same as IsBlocked(), but this method can take a raw value of
   // Cross-Origin-Resource-Policy header instead of using a URLResponseHead.
-  static absl::optional<mojom::BlockedByResponseReason> IsBlockedByHeaderValue(
-      const GURL& request_url,
-      const GURL& original_url,
-      const absl::optional<url::Origin>& request_initiator,
-      absl::optional<std::string> corp_header_value,
-      mojom::RequestMode request_mode,
-      mojom::RequestDestination request_destination,
-      bool request_include_credentials,
-      const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter) WARN_UNUSED_RESULT;
+  [[nodiscard]] static absl::optional<mojom::BlockedByResponseReason>
+  IsBlockedByHeaderValue(const GURL& request_url,
+                         const GURL& original_url,
+                         const absl::optional<url::Origin>& request_initiator,
+                         absl::optional<std::string> corp_header_value,
+                         mojom::RequestMode request_mode,
+                         mojom::RequestDestination request_destination,
+                         bool request_include_credentials,
+                         const CrossOriginEmbedderPolicy& embedder_policy,
+                         mojom::CrossOriginEmbedderPolicyReporter* reporter);
 
   // The CORP check for navigation requests. This is expected to be called
   // from the navigation algorithm.

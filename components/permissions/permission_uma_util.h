@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -240,6 +241,17 @@ enum class AutoDSEPermissionRevertTransition {
   kMaxValue = INVALID_END_STATE,
 };
 
+// This enum backs up the 'PermissionPredictionSource` histogram enum. It
+// indicates whether the permission prediction was done by the local on device
+// model or by the server side model.
+enum class PermissionPredictionSource {
+  ON_DEVICE = 0,
+  SERVER_SIDE = 1,
+
+  // Always keep at the end.
+  kMaxValue = SERVER_SIDE,
+};
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -343,6 +355,14 @@ class PermissionUmaUtil {
   static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
                                         ContentSetting setting);
 
+  static void RecordPermissionPredictionSource(
+      PermissionPredictionSource prediction_type);
+
+  static void RecordPermissionPredictionServiceHoldback(
+      RequestType request_type,
+      bool is_on_device,
+      bool is_heldback);
+
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
 
@@ -372,7 +392,7 @@ class PermissionUmaUtil {
     ~ScopedRevocationReporter();
 
    private:
-    content::BrowserContext* browser_context_;
+    raw_ptr<content::BrowserContext> browser_context_;
     const GURL primary_url_;
     const GURL secondary_url_;
     ContentSettingsType content_type_;

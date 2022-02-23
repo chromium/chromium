@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -93,7 +94,7 @@ class ThrottledOfflineContentProvider
   base::TimeTicks last_update_time_;
   bool update_queued_;
 
-  OfflineContentProvider* const wrapped_provider_;
+  const raw_ptr<OfflineContentProvider> wrapped_provider_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};

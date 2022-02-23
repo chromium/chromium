@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Đã thêm trang web <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
+<translation id="1409426117486808224">Chế độ xem đơn giản cho thẻ đang mở</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1446450296470737166">Cho phép kiểm soát hoàn toàn thiết bị MIDI</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">Cho phép cookie</translation>
 <translation id="2228071138934252756">Để cho phép <ph name="APP_NAME" /> truy cập vào máy ảnh của bạn, hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Chỉ một lần</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Xoá</translation>
 <translation id="2289270750774289114">Hỏi khi một trang web muốn tìm các thiết bị Bluetooth ở gần (khuyên dùng)</translation>
 <translation id="2315043854645842844">Lựa chọn chứng chỉ phía ứng dụng khách không được hệ điều hành hỗ trợ.</translation>
+<translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2379925928934107488">Áp dụng giao diện tối cho các trang web khi Chrome sử dụng giao diện tối, nếu có thể</translation>
+<translation id="2387895666653383613">Chia tỷ lệ văn bản</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã cho phép <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="2434158240863470628">Quá trình tải xuống hoàn tất <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Luôn yêu cầu trang web dành cho máy tính</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
 <translation id="2490684707762498678">Do <ph name="APP_NAME" /> quản lý</translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">Trên web</translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
@@ -109,6 +115,7 @@
 <translation id="3835233591525155343">Hoạt động dùng thiết bị của bạn</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3859306556332390985">Tìm kiếm tiến</translation>
+<translation id="3895926599014793903">Buộc bật thu phóng</translation>
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
@@ -116,7 +123,9 @@
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4008040567710660924">Cho phép cookie của một trang web cụ thể.</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
+<translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4194328954146351878">Hỏi trước khi cho phép các trang web xem và thay đổi thông tin trên thiết bị NFC (nên chọn)</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
@@ -125,6 +134,7 @@
 <translation id="42981349822642051">Mở rộng</translation>
 <translation id="4336434711095810371">Xóa tất cả dữ liệu</translation>
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
+<translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="445467742685312942">Cho phép trang web phát nội dung được bảo vệ</translation>
 <translation id="4468959413250150279">Tắt âm thanh trên một trang web cụ thể.</translation>
@@ -148,11 +158,14 @@
 <translation id="5048398596102334565">Cho phép trang web sử dụng cảm biến chuyển động (nên dùng)</translation>
 <translation id="5050380848339752099">Trang web này sắp chia sẻ thông tin với một ứng dụng bên ngoài chế độ Ẩn danh.</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
+<translation id="509133520954049755">Yêu cầu chế độ xem trên máy tính để bàn</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
+<translation id="5134599672855298214">Yêu cầu chế độ xem trên thiết bị di động (được đề xuất)</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
+<translation id="5264323282659631142">Xóa "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Kéo từ trên xuống và chạm vào nút quay lại để thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
@@ -163,6 +176,7 @@
 <translation id="5354152178998424783">Thao tác này sẽ xóa <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
+<translation id="5412236728747081950">Trang web này lấy thông tin về mối quan tâm của bạn trên Chrome để cho bạn thấy những quảng cáo phù hợp hơn</translation>
 <translation id="5438097262470833822">Lựa chọn này sẽ đặt lại các quyền của <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Chặn quảng cáo trên các trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
@@ -174,10 +188,10 @@
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
 <translation id="5649053991847567735">Tự động tải xuống</translation>
+<translation id="5668404140385795438">Ghi đè yêu cầu của trang web để chặn phóng to</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="5690795753582697420">Bạn đã tắt máy ảnh trong phần cài đặt của Android</translation>
-<translation id="5710871682236653961">Hỏi ý bạn trước khi cho phép các trang web gửi và nhận thông tin khi bạn nhấn vào tùy chọn thiết bị dùng công nghệ giao tiếp tầm gần (NFC) (khuyên dùng)</translation>
 <translation id="5719847187258001597">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính.</translation>
 <translation id="5771720122942595109">Đã chặn <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Quyền</translation>
@@ -227,16 +241,16 @@
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6818926723028410516">Chọn mục</translation>
 <translation id="6864395892908308021">Thiết bị này không hỗ trợ công nghệ Giao tiếp phạm vi gần (NFC)</translation>
-<translation id="6910211073230771657">Đã xóa</translation>
 <translation id="6912998170423641340">Chặn trang web đọc văn bản và hình ảnh từ bảng nhớ tạm</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="6992289844737586249">Hỏi trước trước khi cho phép các trang web sử dụng micrô của bạn (được đề xuất)</translation>
 <translation id="7000754031042624318">Đã tắt trong phần Cài đặt Android</translation>
 <translation id="7016516562562142042">Được cho phép đối với công cụ tìm kiếm hiện tại</translation>
+<translation id="702463548815491781">Khuyên dùng khi dịch vụ TalkBack hoặc Tiếp cận bằng công tắc đang bật</translation>
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Đã chọn 1 mục}other{Đã chọn # mục}}</translation>
-<translation id="7070090581017165256">Thông tin về trang web này</translation>
 <translation id="7087918508125750058">Đã chọn <ph name="ITEM_COUNT" /> mục. Bạn có thể sử dụng các tùy chọn ở gần đầu màn hình</translation>
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -251,8 +265,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Một trang web đang sử dụng micrô của bạn</translation>
 <translation id="7561196759112975576">Luôn luôn</translation>
-<translation id="7572498721684305250">Chặn không cho các trang web gửi và nhận thông tin khi bạn nhấn vào tùy chọn thiết bị dùng công nghệ giao tiếp tầm gần (NFC)</translation>
 <translation id="757524316907819857">Chặn không cho trang web phát nội dung được bảo vệ</translation>
+<translation id="7577900504646297215">Quản lý mối quan tâm</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
@@ -285,6 +299,7 @@
 <translation id="8211406090763984747">Kết nối an toàn</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xóa</translation>
+<translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8324158725704657629">Không hỏi lại</translation>
 <translation id="8372893542064058268">Cho phép Đồng bộ hóa dưới nền cho trang web cụ thể.</translation>
@@ -298,9 +313,10 @@
 <translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie đang được sử dụng}other{# cookie đang được sử dụng}}</translation>
 <translation id="8487700953926739672">Có thể dùng khi không có mạng</translation>
+<translation id="848952951823693243">Luôn yêu cầu trang web dành cho thiết bị di động</translation>
 <translation id="851751545965956758">Chặn các trang web kết nối với thiết bị</translation>
 <translation id="8525306231823319788">Toàn màn hình</translation>
-<translation id="857943718398505171">Được phép (được đề xuất)</translation>
+<translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
@@ -317,6 +333,7 @@
 <translation id="8903921497873541725">Phóng to</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC đã tắt đối với thiết bị này. Hãy bật trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Chặn không cho các trang web xem và thay đổi thông tin trên thiết bị NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Chặn cookie của một trang web cụ thể.</translation>
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>

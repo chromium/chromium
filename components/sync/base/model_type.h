@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/containers/enum_set.h"
 
 namespace base {
@@ -364,7 +363,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type);
 
 // Returns a string with application lifetime that represents the name of
 // |model_type|.
-const char* ModelTypeToString(ModelType model_type);
+const char* ModelTypeToDebugString(ModelType model_type);
 
 // Returns a string with application lifetime that is used as the histogram
 // suffix for |model_type|.
@@ -383,17 +382,11 @@ int ModelTypeToStableIdentifier(ModelType model_type);
 // Handles all model types, and not just real ones.
 std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type);
 
-// Returns the ModelType corresponding to the name |model_type_string|.
-ModelType ModelTypeFromString(const std::string& model_type_string);
-
 // Returns the comma-separated string representation of |model_types|.
-std::string ModelTypeSetToString(ModelTypeSet model_types);
+std::string ModelTypeSetToDebugString(ModelTypeSet model_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set);
-
-// Returns the set of comma-separated model types from |model_type_string|.
-ModelTypeSet ModelTypeSetFromString(const std::string& model_type_string);
 
 // Generates a base::ListValue from |model_types|.
 std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types);
@@ -416,8 +409,9 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // Converts a notification type to a real model type.  Returns true
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
-bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type) WARN_UNUSED_RESULT;
+[[nodiscard]] bool NotificationTypeToRealModelType(
+    const std::string& notification_type,
+    ModelType* model_type);
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);

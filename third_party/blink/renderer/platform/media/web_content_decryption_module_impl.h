@@ -35,7 +35,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
     : public WebContentDecryptionModule {
  public:
   static void Create(media::CdmFactory* cdm_factory,
-                     const std::u16string& key_system,
                      const WebSecurityOrigin& security_origin,
                      const media::CdmConfig& cdm_config,
                      WebCdmCreatedCB web_cdm_created_cb);
@@ -56,9 +55,6 @@ class PLATFORM_EXPORT WebContentDecryptionModuleImpl
                           WebContentDecryptionModuleResult result) override;
 
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef();
-
-  std::string GetKeySystem() const;
-
   media::CdmConfig GetCdmConfig() const;
 
  private:

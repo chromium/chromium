@@ -46,8 +46,8 @@ const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 // Enable validation layers in Dawn backends.
 const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 
-// Force all WebGPU content to run on the WebGPU/Compat (GLES) backend.
-const char kForceWebGPUCompat[] = "force-webgpu-compat";
+// The adapter to use for WebGPU content.
+GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 
 // Set the Dawn features(toggles) enabled on the creation of Dawn devices.
 const char kEnableDawnFeatures[] = "enable-dawn-features";

@@ -53,6 +53,8 @@ void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {
   GamepadService* service = GamepadService::GetInstance();
   if (!service->ConsumerBecameActive(this)) {
     mojo::ReportBadMessage("GamepadMonitor::GamepadStartPolling failed");
+    std::move(callback).Run(base::ReadOnlySharedMemoryRegion());
+    return;
   }
   std::move(callback).Run(service->DuplicateSharedMemoryRegion());
 }

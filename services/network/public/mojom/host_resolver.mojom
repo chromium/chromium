@@ -11,15 +11,10 @@ import "services/network/public/mojom/network_isolation_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 
-// An HTTPS server to send DNS queries to, per the DNS Queries over HTTPS spec.
-// spec:  https://tools.ietf.org/html/draft-ietf-doh-dns-over-https-12
-struct DnsOverHttpsServer {
-  // DNS over HTTPS server URI template. Must be HTTPS.
-  string server_template;
-
-  // Whether to use POST to do DNS lookups. Otherwise, GET is used. See spec
-  // for more details.
-  bool use_post = false;
+// The DNS over HTTPS configuration, containing zero or more servers.
+struct DnsOverHttpsConfig {
+  // String representation of each server.
+  array<string> servers;
 };
 
 // The secure DNS mode specifies what types of lookups (secure/insecure) should
@@ -44,6 +39,8 @@ enum SecureDnsMode {
 enum SecureDnsPolicy {
   ALLOW,
   DISABLE,
+  // The "bootstrap" policy is only used within the network process, so it is
+  // not exposed via Mojo.
 };
 
 // Overridable DNS configuration values for host resolution. All fields default
@@ -85,9 +82,8 @@ struct DnsConfigOverrides {
   // as it may cause them to return incorrect results.
   Tristate use_local_ipv6 = Tristate.NO_OVERRIDE;
 
-  // List of servers to query over HTTPS, queried in order
-  // (https://tools.ietf.org/id/draft-ietf-doh-dns-over-https-12.txt).
-  array<DnsOverHttpsServer>? dns_over_https_servers;
+  // DNS over HTTPS configuration, containing servers to query.
+  DnsOverHttpsConfig? dns_over_https_config;
 
   // The SecureDnsMode to use when resolving queries. If set, it overrides
   // the resolver's current configured mode, and can in turn be overridden by

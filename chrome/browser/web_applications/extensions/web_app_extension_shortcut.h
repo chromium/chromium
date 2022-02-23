@@ -10,8 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_shortcut.h"
 
 class Profile;
 
@@ -91,13 +91,13 @@ void UpdateAllShortcuts(const std::u16string& old_app_title,
 // on the UI thread.
 void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Update the relaunch details for the given app's window, making the taskbar
 // group's "Pin to the taskbar" button function correctly.
 void UpdateRelaunchDetailsForApp(Profile* profile,
                                  const extensions::Extension* extension,
                                  HWND hwnd);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace web_app
 

@@ -29,7 +29,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
@@ -49,7 +49,6 @@ constexpr int kIntroLabelSizeDelta = 2;
 
 // Suggestions.
 constexpr int kSuggestionsColumnCount = 3;
-constexpr int kSuggestionsColumnSetId = 1;
 constexpr int kSuggestionsMaxCount = 6;
 constexpr int kSuggestionsMarginDip = 16;
 constexpr int kSuggestionsMarginTopDip = 32;
@@ -212,26 +211,24 @@ void AssistantOnboardingView::InitLayout() {
 }
 
 void AssistantOnboardingView::UpdateSuggestions() {
-  if (grid_)
-    RemoveChildViewT(grid_);
+  if (table_)
+    RemoveChildViewT(table_);
 
-  grid_ = AddChildView(std::make_unique<views::View>());
-  grid_->SetBorder(views::CreateEmptyBorder(kSuggestionsMarginTopDip, 0, 0, 0));
-
-  auto* layout = grid_->SetLayoutManager(std::make_unique<views::GridLayout>());
-  auto* columns = layout->AddColumnSet(kSuggestionsColumnSetId);
+  table_ = AddChildView(std::make_unique<views::TableLayoutView>());
+  table_->SetBorder(
+      views::CreateEmptyBorder(kSuggestionsMarginTopDip, 0, 0, 0));
 
   // Initialize columns.
   for (int i = 0; i < kSuggestionsColumnCount; ++i) {
     if (i > 0) {
-      columns->AddPaddingColumn(
-          /*resize_percent=*/views::GridLayout::kFixedSize,
+      table_->AddPaddingColumn(
+          /*horizontal_resize=*/views::TableLayout::kFixedSize,
           /*width=*/kSuggestionsMarginDip);
     }
-    columns->AddColumn(
-        /*h_align=*/views::GridLayout::Alignment::FILL,
-        /*v_align=*/views::GridLayout::Alignment::FILL, /*resize_percent=*/1.0,
-        /*size_type=*/views::GridLayout::ColumnSize::kFixed,
+    table_->AddColumn(
+        /*h_align=*/views::LayoutAlignment::kStretch,
+        /*v_align=*/views::LayoutAlignment::kStretch, /*horizontal_resize=*/1.0,
+        /*size_type=*/views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
   }
 
@@ -244,17 +241,14 @@ void AssistantOnboardingView::UpdateSuggestions() {
   for (size_t i = 0; i < suggestions.size() && i < kSuggestionsMaxCount; ++i) {
     if (i % kSuggestionsColumnCount == 0) {
       if (i > 0) {
-        layout->StartRowWithPadding(
-            /*vertical_resize=*/views::GridLayout::kFixedSize,
-            /*column_set_id=*/kSuggestionsColumnSetId,
-            /*padding_resize=*/views::GridLayout::kFixedSize,
-            /*padding=*/kSuggestionsMarginDip);
-      } else {
-        layout->StartRow(/*vertical_resize=*/views::GridLayout::kFixedSize,
-                         /*column_set_id=*/kSuggestionsColumnSetId);
+        table_->AddPaddingRow(
+            /*vertical_resize=*/views::TableLayout::kFixedSize,
+            /*height=*/kSuggestionsMarginDip);
       }
+      table_->AddRows(/*n=*/1,
+                      /*vertical_resize=*/views::TableLayout::kFixedSize);
     }
-    layout->AddView(std::make_unique<AssistantOnboardingSuggestionView>(
+    table_->AddChildView(std::make_unique<AssistantOnboardingSuggestionView>(
         delegate_, suggestions.at(i), i));
   }
 }

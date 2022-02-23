@@ -50,6 +50,55 @@ ExtensionFunction::ResponseAction WebAuthenticationProxyDetachFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+WebAuthenticationProxyCompleteCreateRequestFunction::
+    WebAuthenticationProxyCompleteCreateRequestFunction() = default;
+WebAuthenticationProxyCompleteCreateRequestFunction::
+    ~WebAuthenticationProxyCompleteCreateRequestFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebAuthenticationProxyCompleteCreateRequestFunction::Run() {
+  DCHECK(extension());
+  auto params =
+      api::web_authentication_proxy::CompleteCreateRequest::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+  WebAuthenticationProxyService* proxy_service =
+      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+          browser_context());
+  if (proxy_service->GetActiveRequestProxy() != extension()) {
+    return RespondNow(Error("Invalid sender"));
+  }
+  std::string error;
+  if (!proxy_service->CompleteCreateRequest(params->details, &error)) {
+    return RespondNow(Error(error));
+  }
+  return RespondNow(NoArguments());
+}
+
+WebAuthenticationProxyCompleteGetRequestFunction::
+    WebAuthenticationProxyCompleteGetRequestFunction() = default;
+WebAuthenticationProxyCompleteGetRequestFunction::
+    ~WebAuthenticationProxyCompleteGetRequestFunction() = default;
+
+ExtensionFunction::ResponseAction
+WebAuthenticationProxyCompleteGetRequestFunction::Run() {
+  DCHECK(extension());
+  auto params =
+      api::web_authentication_proxy::CompleteGetRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+  WebAuthenticationProxyService* proxy_service =
+      WebAuthenticationProxyServiceFactory::GetForBrowserContext(
+          browser_context());
+  if (proxy_service->GetActiveRequestProxy() != extension()) {
+    return RespondNow(Error("Invalid sender"));
+  }
+  std::string error;
+  if (!proxy_service->CompleteGetRequest(params->details, &error)) {
+    return RespondNow(Error(error));
+  }
+  return RespondNow(NoArguments());
+}
+
 WebAuthenticationProxyCompleteIsUvpaaRequestFunction::
     WebAuthenticationProxyCompleteIsUvpaaRequestFunction() = default;
 WebAuthenticationProxyCompleteIsUvpaaRequestFunction::
@@ -68,8 +117,7 @@ WebAuthenticationProxyCompleteIsUvpaaRequestFunction::Run() {
   if (proxy_service->GetActiveRequestProxy() != extension()) {
     return RespondNow(Error("Invalid sender"));
   }
-  if (!proxy_service->CompleteIsUvpaaRequest(params->details.request_id,
-                                             params->details.is_uvpaa)) {
+  if (!proxy_service->CompleteIsUvpaaRequest(params->details)) {
     return RespondNow(Error("Invalid request id"));
   }
   return RespondNow(NoArguments());

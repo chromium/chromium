@@ -13,8 +13,11 @@
 #import "ios/web/js_messaging/java_script_content_world.h"
 #include "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/test/js_test_util_internal.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -311,11 +314,13 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   ASSERT_TRUE(LoadHtml("<p>"));
 
   if (@available(ios 14, *)) {
-    ExecuteJavaScript(WKContentWorld.defaultClientWorld,
-                      @"__gCrWeb = {};"
-                      @"__gCrWeb['fakeFunction'] = function() {"
-                      @"  return '10';"
-                      @"}");
+    WKWebView* web_view =
+        [web::test::GetWebController(web_state()) ensureWebViewCreated];
+    test::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
+                            @"__gCrWeb = {};"
+                            @"__gCrWeb['fakeFunction'] = function() {"
+                            @"  return '10';"
+                            @"}");
   }
 
   web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(

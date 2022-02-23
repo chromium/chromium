@@ -20,6 +20,9 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
+#include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
+#include "third_party/blink/renderer/platform/widget/widget_base.h"
 
 namespace blink {
 
@@ -129,9 +132,9 @@ TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
   EXPECT_EQ(gfx::PointF(150.27, 150.25), point);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
-  cc::LayerTreeHost* layer_tree_host =
+  const cc::LayerTreeHost* layer_tree_host =
       WebView().MainFrameViewWidget()->LayerTreeHostForTesting();
   // We should not have any force send metadata requests at start.
   EXPECT_FALSE(
@@ -142,7 +145,7 @@ TEST_F(WebFrameWidgetSimTest, ForceSendMetadataOnInput) {
   EXPECT_TRUE(
       layer_tree_host->pending_commit_state()->force_send_metadata_request);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // A test that forces a RemoteMainFrame to be created.
 class WebFrameWidgetImplRemoteFrameSimTest : public SimTest {
@@ -214,7 +217,7 @@ class MockHandledEventCallback {
                       InputHandlerProxy::DidOverscrollParams*,
                       absl::optional<cc::TouchAction>));
 
-  WebWidget::HandledEventCallback GetCallback() {
+  WidgetBaseInputHandler::HandledEventCallback GetCallback() {
     return base::BindOnce(&MockHandledEventCallback::HandleCallback,
                           base::Unretained(this));
   }
@@ -283,7 +286,7 @@ class WebFrameWidgetImplSimTest : public SimTest {
   }
 
   void SendInputEvent(const WebInputEvent& event,
-                      WebWidget::HandledEventCallback callback) {
+                      WidgetBaseInputHandler::HandledEventCallback callback) {
     MockMainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
         WebCoalescedInputEvent(event.Clone(), {}, {}, ui::LatencyInfo()),
         std::move(callback));
@@ -501,21 +504,21 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     base::TimeTicks swap_time;
     static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
         ->NotifySwapAndPresentationTimeForTesting(
-            base::BindOnce(
-                [](base::OnceClosure swap_quit_closure,
-                   base::TimeTicks* swap_time, base::TimeTicks timestamp) {
-                  DCHECK(!timestamp.is_null());
-                  *swap_time = timestamp;
-                  std::move(swap_quit_closure).Run();
-                },
-                swap_run_loop.QuitClosure(), &swap_time),
-            base::BindOnce(
-                [](base::OnceClosure presentation_quit_closure,
-                   base::TimeTicks timestamp) {
-                  DCHECK(!timestamp.is_null());
-                  std::move(presentation_quit_closure).Run();
-                },
-                presentation_run_loop.QuitClosure()));
+            {base::BindOnce(
+                 [](base::OnceClosure swap_quit_closure,
+                    base::TimeTicks* swap_time, base::TimeTicks timestamp) {
+                   DCHECK(!timestamp.is_null());
+                   *swap_time = timestamp;
+                   std::move(swap_quit_closure).Run();
+                 },
+                 swap_run_loop.QuitClosure(), &swap_time),
+             base::BindOnce(
+                 [](base::OnceClosure presentation_quit_closure,
+                    base::TimeTicks timestamp) {
+                   DCHECK(!timestamp.is_null());
+                   std::move(presentation_quit_closure).Run();
+                 },
+                 presentation_run_loop.QuitClosure())});
 
     // Composite and wait for the swap to complete.
     Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
@@ -590,35 +593,52 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   base::TimeTicks failed_presentation_time;
   base::TimeTicks successful_presentation_time;
 
+  WebFrameWidgetImpl::PromiseCallbacks callbacks = {
+      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+        DCHECK(!timestamp.is_null());
+
+        // Now that the swap time is known, we can determine what
+        // timestamps should we use for the failed and the subsequent
+        // successful presentations.
+        DCHECK(failed_presentation_time.is_null());
+        failed_presentation_time = timestamp + swap_to_failed;
+        DCHECK(successful_presentation_time.is_null());
+        successful_presentation_time =
+            failed_presentation_time + failed_to_successful;
+
+        swap_run_loop.Quit();
+      }),
+      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+        DCHECK(!timestamp.is_null());
+        DCHECK(!failed_presentation_time.is_null());
+        DCHECK(!successful_presentation_time.is_null());
+
+        // Verify that this callback is run in response to the
+        // successful presentation, not the failed one before that.
+        EXPECT_NE(timestamp, failed_presentation_time);
+        EXPECT_EQ(timestamp, successful_presentation_time);
+
+        presentation_run_loop.Quit();
+      })};
+
+#if BUILDFLAG(IS_MAC)
+  // Assign a ca_layer error code.
+  constexpr gfx::CALayerResult ca_layer_error_code =
+      gfx::kCALayerFailedTileNotCandidate;
+
+  callbacks.core_animation_error_code_callback = base::BindLambdaForTesting(
+      [&](gfx::CALayerResult core_animation_error_code) {
+        // Verify that the error code received here is the same as the
+        // one sent to DidPresentCompositorFrame.
+        EXPECT_EQ(ca_layer_error_code, core_animation_error_code);
+
+        presentation_run_loop.Quit();
+      });
+#endif
+
   // Register callbacks for swap and presentation times.
   static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
-      ->NotifySwapAndPresentationTimeForTesting(
-          base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-            DCHECK(!timestamp.is_null());
-
-            // Now that the swap time is known, we can determine what timestamps
-            // should we use for the failed and the subsequent successful
-            // presentations.
-            DCHECK(failed_presentation_time.is_null());
-            failed_presentation_time = timestamp + swap_to_failed;
-            DCHECK(successful_presentation_time.is_null());
-            successful_presentation_time =
-                failed_presentation_time + failed_to_successful;
-
-            swap_run_loop.Quit();
-          }),
-          base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-            DCHECK(!timestamp.is_null());
-            DCHECK(!failed_presentation_time.is_null());
-            DCHECK(!successful_presentation_time.is_null());
-
-            // Verify that this callback is run in response to the
-            // successful presentation, not the failed one before that.
-            EXPECT_NE(timestamp, failed_presentation_time);
-            EXPECT_EQ(timestamp, successful_presentation_time);
-
-            presentation_run_loop.Quit();
-          }));
+      ->NotifySwapAndPresentationTimeForTesting(std::move(callbacks));
 
   // Composite and wait for the swap to complete.
   Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
@@ -638,6 +658,10 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   viz::FrameTimingDetails successful_timing_details;
   successful_timing_details.presentation_feedback = gfx::PresentationFeedback(
       successful_presentation_time, base::Milliseconds(16), 0);
+#if BUILDFLAG(IS_MAC)
+  successful_timing_details.presentation_feedback.ca_layer_error_code =
+      ca_layer_error_code;
+#endif
   GetWebFrameWidget().LastCreatedFrameSink()->NotifyDidPresentCompositorFrame(
       2, successful_timing_details);
 
@@ -754,6 +778,263 @@ TEST_F(WebFrameWidgetSimTest, PropagateScaleToRemoteFrames) {
           .page_scale_factor,
       1.3f);
   WebView().MainFrame()->FirstChild()->FirstChild()->Detach();
+}
+
+class EventHandlingWebFrameWidgetSimTest : public SimTest {
+ public:
+  void SetUp() override {
+    SimTest::SetUp();
+
+    WebView().StopDeferringMainFrameUpdate();
+    GetWebFrameWidget().UpdateCompositorViewportRect(gfx::Rect(200, 100));
+    Compositor().BeginFrame();
+  }
+
+  SimWebFrameWidget* CreateSimWebFrameWidget(
+      base::PassKey<WebLocalFrame> pass_key,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame,
+      SimCompositor* compositor) override {
+    return MakeGarbageCollected<TestWebFrameWidget>(
+        compositor, pass_key, std::move(frame_widget_host),
+        std::move(frame_widget), std::move(widget_host), std::move(widget),
+        std::move(task_runner), frame_sink_id, hidden, never_composited,
+        is_for_child_local_root, is_for_nested_main_frame);
+  }
+
+ protected:
+  // A test `cc::SwapPromise` implementation that can be used to track the state
+  // of the swap promise.
+  class TestSwapPromise : public cc::SwapPromise {
+   public:
+    enum class State {
+      kPending,
+      kResolved,
+      kBroken,
+      kMaxValue = kBroken,
+    };
+
+    explicit TestSwapPromise(State* state) : state_(state) {
+      DCHECK(state_);
+      *state_ = State::kPending;
+    }
+
+    void DidActivate() override {}
+
+    void WillSwap(viz::CompositorFrameMetadata* metadata) override {}
+
+    void DidSwap() override {
+      DCHECK_EQ(State::kPending, *state_);
+      *state_ = State::kResolved;
+    }
+
+    DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override {
+      DCHECK_EQ(State::kPending, *state_);
+      *state_ = State::kBroken;
+      return DidNotSwapAction::BREAK_PROMISE;
+    }
+
+    int64_t GetTraceId() const override { return 0; }
+
+   private:
+    State* const state_;
+  };
+
+  // A test `WebFrameWidget` implementation that fakes handling of an event.
+  class TestWebFrameWidget : public SimWebFrameWidget {
+   public:
+    template <typename... Args>
+    explicit TestWebFrameWidget(Args&&... args)
+        : SimWebFrameWidget(std::forward<Args>(args)...) {}
+
+    WebInputEventResult HandleInputEvent(
+        const WebCoalescedInputEvent& coalesced_event) override {
+      if (event_causes_update_)
+        RequestUpdateIfNecessary();
+      return WebInputEventResult::kHandledApplication;
+    }
+
+    void set_event_causes_update(bool event_causes_update) {
+      event_causes_update_ = event_causes_update;
+    }
+
+    void RequestUpdateIfNecessary() {
+      if (update_requested_)
+        return;
+
+      LayerTreeHost()->SetNeedsCommit();
+      update_requested_ = true;
+    }
+
+    void QueueSwapPromise(TestSwapPromise::State* state) {
+      LayerTreeHost()->GetSwapPromiseManager()->QueueSwapPromise(
+          std::make_unique<TestSwapPromise>(state));
+    }
+
+    void SendInputEventAndWaitForDispatch(
+        std::unique_ptr<WebInputEvent> event) {
+      MainThreadEventQueue* input_event_queue =
+          widget_base_for_testing()
+              ->widget_input_handler_manager()
+              ->input_event_queue();
+      input_event_queue->HandleEvent(
+          std::make_unique<WebCoalescedInputEvent>(std::move(event),
+                                                   ui::LatencyInfo()),
+          MainThreadEventQueue::DispatchType::kNonBlocking,
+          mojom::blink::InputEventResultState::kSetNonBlocking,
+          WebInputEventAttribution(), nullptr, base::DoNothing());
+      auto* main_task_runner = static_cast<scheduler::FakeTaskRunner*>(
+          input_event_queue->main_task_runner_for_testing());
+      main_task_runner->RunUntilIdle();
+    }
+
+    void CompositeAndWaitForPresentation(SimCompositor& compositor) {
+      base::RunLoop swap_run_loop;
+      base::RunLoop presentation_run_loop;
+
+      // Register callbacks for swap and presentation times.
+      base::TimeTicks swap_time;
+      NotifySwapAndPresentationTimeForTesting(
+          {base::BindOnce(
+               [](base::OnceClosure swap_quit_closure,
+                  base::TimeTicks* swap_time, base::TimeTicks timestamp) {
+                 DCHECK(!timestamp.is_null());
+                 *swap_time = timestamp;
+                 std::move(swap_quit_closure).Run();
+               },
+               swap_run_loop.QuitClosure(), &swap_time),
+           base::BindOnce(
+               [](base::OnceClosure presentation_quit_closure,
+                  base::TimeTicks timestamp) {
+                 DCHECK(!timestamp.is_null());
+                 std::move(presentation_quit_closure).Run();
+               },
+               presentation_run_loop.QuitClosure())});
+
+      // Composite and wait for the swap to complete.
+      compositor.BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
+      swap_run_loop.Run();
+
+      // Present and wait for it to complete.
+      viz::FrameTimingDetails timing_details;
+      timing_details.presentation_feedback = gfx::PresentationFeedback(
+          swap_time + base::Milliseconds(2), base::Milliseconds(16), 0);
+      LastCreatedFrameSink()->NotifyDidPresentCompositorFrame(1,
+                                                              timing_details);
+      presentation_run_loop.Run();
+    }
+
+   private:
+    // Whether an update is already requested. Used to avoid calling
+    // `LayerTreeHost::SetNeedsCommit()` multiple times.
+    bool update_requested_ = false;
+
+    // Whether handling of the event should end up in an update or not.
+    bool event_causes_update_ = false;
+  };
+
+  TestWebFrameWidget& GetTestWebFrameWidget() {
+    return static_cast<TestWebFrameWidget&>(GetWebFrameWidget());
+  }
+};
+
+// Verifies that when a non-rAF-aligned event is handled without causing an
+// update, swap promises will be broken.
+TEST_F(EventHandlingWebFrameWidgetSimTest, NonRafAlignedEventWithoutUpdate) {
+  TestSwapPromise::State swap_promise_state;
+  GetTestWebFrameWidget().QueueSwapPromise(&swap_promise_state);
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().set_event_causes_update(false);
+
+  GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
+      std::make_unique<WebKeyboardEvent>());
+  EXPECT_EQ(TestSwapPromise::State::kBroken, swap_promise_state);
+}
+
+// Verifies that when a non-rAF-aligned event is handled without causing an
+// update while an update is already requested, swap promises won't be broken.
+TEST_F(EventHandlingWebFrameWidgetSimTest,
+       NonRafAlignedEventWithoutUpdateAfterUpdate) {
+  GetTestWebFrameWidget().RequestUpdateIfNecessary();
+
+  TestSwapPromise::State swap_promise_state;
+  GetTestWebFrameWidget().QueueSwapPromise(&swap_promise_state);
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().set_event_causes_update(false);
+
+  GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
+      std::make_unique<WebKeyboardEvent>());
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());
+  EXPECT_EQ(TestSwapPromise::State::kResolved, swap_promise_state);
+}
+
+// Verifies that when a non-rAF-aligned event is handled and causes an update,
+// swap promises won't be broken.
+TEST_F(EventHandlingWebFrameWidgetSimTest, NonRafAlignedEventWithUpdate) {
+  TestSwapPromise::State swap_promise_state;
+  GetTestWebFrameWidget().QueueSwapPromise(&swap_promise_state);
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().set_event_causes_update(true);
+
+  GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
+      std::make_unique<WebKeyboardEvent>());
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());
+  EXPECT_EQ(TestSwapPromise::State::kResolved, swap_promise_state);
+}
+
+// Verifies that when a rAF-aligned event is handled without causing an update,
+// swap promises won't be broken.
+TEST_F(EventHandlingWebFrameWidgetSimTest, RafAlignedEventWithoutUpdate) {
+  TestSwapPromise::State swap_promise_state;
+  GetTestWebFrameWidget().QueueSwapPromise(&swap_promise_state);
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().set_event_causes_update(false);
+
+  GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
+      std::make_unique<WebMouseEvent>(WebInputEvent::Type::kMouseMove, 0,
+                                      base::TimeTicks::Now()));
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());
+  EXPECT_EQ(TestSwapPromise::State::kResolved, swap_promise_state);
+}
+
+// Verifies that when a rAF-aligned event is handled and causes an update, swap
+// promises won't be broken.
+TEST_F(EventHandlingWebFrameWidgetSimTest, RafAlignedEventWithUpdate) {
+  TestSwapPromise::State swap_promise_state;
+  GetTestWebFrameWidget().QueueSwapPromise(&swap_promise_state);
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().set_event_causes_update(true);
+
+  GetTestWebFrameWidget().SendInputEventAndWaitForDispatch(
+      std::make_unique<WebMouseEvent>(WebInputEvent::Type::kMouseMove, 0,
+                                      base::TimeTicks::Now()));
+  EXPECT_EQ(TestSwapPromise::State::kPending, swap_promise_state);
+
+  GetTestWebFrameWidget().CompositeAndWaitForPresentation(Compositor());
+  EXPECT_EQ(TestSwapPromise::State::kResolved, swap_promise_state);
 }
 
 }  // namespace blink

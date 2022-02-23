@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/shadow_tree_style_sheet_collection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -65,7 +66,7 @@ void ShadowTreeStyleSheetCollection::CollectStyleSheets(
   if (!GetTreeScope().HasAdoptedStyleSheets())
     return;
 
-  for (CSSStyleSheet* sheet : GetTreeScope().AdoptedStyleSheets()) {
+  for (CSSStyleSheet* sheet : *GetTreeScope().AdoptedStyleSheets()) {
     if (!sheet || !sheet->CanBeActivated(g_null_atom))
       continue;
     DCHECK_EQ(GetTreeScope().GetDocument(), sheet->ConstructorDocument());

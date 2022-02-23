@@ -51,9 +51,23 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstPin, unix_epoch);
 }
 
+void ResetProfilePrefsForTesting(PrefService* prefs) {
+  prefs->ClearPref(kPreviewsEnabled);
+  prefs->ClearPref(kTimeOfFirstAdd);
+  prefs->ClearPref(kTimeOfFirstAvailability);
+  prefs->ClearPref(kTimeOfFirstEntry);
+  prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
+  prefs->ClearPref(kTimeOfFirstPin);
+}
+
 void AddPreviewsEnabledChangedCallback(PrefChangeRegistrar* registrar,
                                        base::RepeatingClosure callback) {
   registrar->Add(kPreviewsEnabled, std::move(callback));
+}
+
+void AddTimeOfFirstAddChangedCallback(PrefChangeRegistrar* registrar,
+                                      base::RepeatingClosure callback) {
+  registrar->Add(kTimeOfFirstAdd, std::move(callback));
 }
 
 bool IsPreviewsEnabled(PrefService* prefs) {

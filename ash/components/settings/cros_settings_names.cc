@@ -160,6 +160,10 @@ const char kReportDeviceNetworkInterfaces[] =
 const char kReportDeviceNetworkStatus[] =
     "cros.device_status.report_network_status";
 
+// A boolean pref that determines whether the device peripherals should be
+// included in reports to the telemetry API.
+const char kReportDevicePeripherals[] = "cros.device_status.report_peripherals";
+
 // A boolean pref that determines whether the device power status should be
 // included in status reports to the device management server.
 const char kReportDevicePowerStatus[] =
@@ -243,6 +247,9 @@ const char kReportDevicePrintJobs[] = "cros.device_status.report_print_jobs";
 // A boolean pref that determines whether the login/logout events are reported.
 const char kReportDeviceLoginLogout[] = "cros.reporting.report_login_logout";
 
+// Determines whether CRD session events are reported.
+const char kReportCRDSessions[] = "cros.reporting.report_crd_sessions";
+
 // Determines whether heartbeats should be sent to the policy service via
 // the GCM channel.
 const char kHeartbeatEnabled[] = "cros.device_status.heartbeat_enabled";
@@ -261,6 +268,10 @@ const char kReportDeviceNetworkTelemetryCollectionRateMs[] =
 // How frequently the networks data are checked for events.
 const char kReportDeviceNetworkTelemetryEventCheckingRateMs[] =
     "cros.telemetry_reporting.report_network_telemetry_event_checking_rate_ms";
+
+// How frequently the audio data are checked for events.
+const char kReportDeviceAudioStatusCheckingRateMs[] =
+    "cros.telemetry_reporting.report_device_audio_status_checking_rate_ms";
 
 // This policy should not appear in the protobuf ever but is used internally to
 // signal that we are running in a "safe-mode" for policy recovery.
@@ -568,5 +579,15 @@ const char kDeviceScheduledReboot[] = "cros.device.device_scheduled_reboot";
 // taken care of via clean-up mechanism in the managed guest session).
 const char kDeviceRestrictedManagedGuestSessionEnabled[] =
     "cros.device.restricted_managed_guest_session_enabled";
+
+// On reven board we collect hardware data of the device to provide relevant
+// updates. A boolean pref specifies whether this data can be also used for
+// overall improvements. This setting is available only on reven boards.
+const char kRevenEnableDeviceHWDataUsage[] = "cros.reven.enable_hw_data_usage";
+
+// A boolean that indicates whether the encrypted reporting pipeline is
+// enabled or not.
+const char kDeviceEncryptedReportingPipelineEnabled[] =
+    "cros.device.encrypted_reporting_pipeline_enabled";
 
 }  // namespace ash

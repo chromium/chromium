@@ -53,7 +53,6 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(IsGattConnected, bool());
   MOCK_CONST_METHOD0(IsConnectable, bool());
   MOCK_CONST_METHOD0(IsConnecting, bool());
-  MOCK_CONST_METHOD0(IsBlockedByPolicy, bool());
   MOCK_CONST_METHOD0(GetUUIDs, UUIDSet());
   MOCK_CONST_METHOD0(GetInquiryRSSI, absl::optional<int8_t>());
   MOCK_CONST_METHOD0(GetInquiryTxPower, absl::optional<int8_t>());
@@ -77,6 +76,15 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_METHOD2(Connect_,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
                     ConnectCallback& callback));
+#if BUILDFLAG(IS_CHROMEOS)
+  void ConnectClassic(BluetoothDevice::PairingDelegate* pairing_delegate,
+                      ConnectCallback callback) override {
+    ConnectClassic_(pairing_delegate, callback);
+  }
+  MOCK_METHOD2(ConnectClassic_,
+               void(BluetoothDevice::PairingDelegate* pairing_delegate,
+                    ConnectCallback& callback));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void Pair(BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override {
     Pair_(pairing_delegate, callback);
@@ -110,7 +118,6 @@ class MockBluetoothDevice : public BluetoothDevice {
   }
   MOCK_METHOD1(CreateGattConnection_, void(GattConnectionCallback& callback));
 
-  MOCK_METHOD1(SetGattServicesDiscoveryComplete, void(bool));
   MOCK_CONST_METHOD0(IsGattServicesDiscoveryComplete, bool());
 
   MOCK_CONST_METHOD0(GetGattServices,
@@ -120,14 +127,14 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_METHOD1(CreateGattConnectionImpl,
                void(absl::optional<BluetoothUUID> service_uuid));
   MOCK_METHOD0(DisconnectGatt, void());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD2(ExecuteWrite,
                void(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback));
   MOCK_METHOD2(AbortWrite,
                void(base::OnceClosure callback,
                     AbortWriteErrorCallback error_callback));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // BluetoothDevice manages the lifetime of its BluetoothGATTServices.
   // This method takes ownership of the MockBluetoothGATTServices. This is only

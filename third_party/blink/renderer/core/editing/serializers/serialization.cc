@@ -73,7 +73,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -794,7 +794,7 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
-      MakeGarbageCollected<LocalFrameView>(*frame, IntSize(800, 600));
+      MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
   frame->SetView(frame_view);
   frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 

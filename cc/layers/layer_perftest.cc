@@ -89,8 +89,9 @@ TEST_F(LayerPerfTest, PushPropertiesTo) {
     // layer_tree_host_->ActivateCommitState() and the second argument would
     // come from layer_tree_host_->active_commit_state(); we use
     // pending_commit_state() just to keep the test code simple.
-    test_layer->PushPropertiesTo(impl_layer.get(),
-                                 *layer_tree_host_->pending_commit_state());
+    test_layer->PushPropertiesTo(
+        impl_layer.get(), *layer_tree_host_->GetPendingCommitState(),
+        layer_tree_host_->GetThreadUnsafeCommitState());
 
     transform_origin_z += 0.01f;
     scrollable = !scrollable;
@@ -108,8 +109,9 @@ TEST_F(LayerPerfTest, PushPropertiesTo) {
   // Properties didn't change.
   timer_.Reset();
   do {
-    test_layer->PushPropertiesTo(impl_layer.get(),
-                                 *layer_tree_host_->pending_commit_state());
+    test_layer->PushPropertiesTo(
+        impl_layer.get(), *layer_tree_host_->GetPendingCommitState(),
+        layer_tree_host_->GetThreadUnsafeCommitState());
     timer_.NextLap();
   } while (!timer_.HasTimeLimitExpired());
 

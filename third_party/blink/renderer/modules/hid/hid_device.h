@@ -16,7 +16,8 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -26,7 +27,6 @@
 namespace blink {
 
 class ExecutionContext;
-class HID;
 class HIDCollectionInfo;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -39,7 +39,20 @@ class MODULES_EXPORT HIDDevice
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  HIDDevice(HID* parent,
+  // ServiceInterface provides a pure-virtual HID service interface for
+  // HIDDevice creators to, for example, open a device.
+  class ServiceInterface : public GarbageCollectedMixin {
+   public:
+    virtual void Connect(
+        const String& device_guid,
+        mojo::PendingRemote<device::mojom::blink::HidConnectionClient>
+            connection_client,
+        device::mojom::blink::HidManager::ConnectCallback callback) = 0;
+    virtual void Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
+                        mojom::blink::HidService::ForgetCallback callback) = 0;
+  };
+
+  HIDDevice(ServiceInterface* parent,
             device::mojom::blink::HidDeviceInfoPtr info,
             ExecutionContext* execution_context);
   ~HIDDevice() override;
@@ -60,8 +73,10 @@ class MODULES_EXPORT HIDDevice
   String productName() const;
   const HeapVector<Member<HIDCollectionInfo>>& collections() const;
 
-  ScriptPromise open(ScriptState*);
+  ScriptPromise open(ScriptState* script_state,
+                     ExceptionState& exception_state);
   ScriptPromise close(ScriptState*);
+  ScriptPromise forget(ScriptState*, ExceptionState& exception_state);
   ScriptPromise sendReport(ScriptState*,
                            uint8_t report_id,
                            const DOMArrayPiece& data);
@@ -85,11 +100,13 @@ class MODULES_EXPORT HIDDevice
 
  private:
   bool EnsureNoDeviceChangeInProgress(ScriptPromiseResolver* resolver) const;
+  bool EnsureDeviceIsNotForgotten(ScriptPromiseResolver* resolver) const;
 
   void OnServiceConnectionError();
 
   void FinishOpen(ScriptPromiseResolver*,
                   mojo::PendingRemote<device::mojom::blink::HidConnection>);
+  void FinishForget(ScriptPromiseResolver*);
   void FinishSendReport(ScriptPromiseResolver*, bool success);
   void FinishReceiveReport(ScriptPromiseResolver*,
                            bool success,
@@ -102,7 +119,7 @@ class MODULES_EXPORT HIDDevice
 
   void MarkRequestComplete(ScriptPromiseResolver*);
 
-  Member<HID> parent_;
+  Member<ServiceInterface> parent_;
   device::mojom::blink::HidDeviceInfoPtr device_info_;
   HeapMojoRemote<device::mojom::blink::HidConnection> connection_;
   HeapMojoReceiver<device::mojom::blink::HidConnectionClient, HIDDevice>
@@ -110,6 +127,7 @@ class MODULES_EXPORT HIDDevice
   HeapHashSet<Member<ScriptPromiseResolver>> device_requests_;
   HeapVector<Member<HIDCollectionInfo>> collections_;
   bool device_state_change_in_progress_ = false;
+  bool device_is_forgotten_ = false;
 };
 
 }  // namespace blink

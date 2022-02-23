@@ -4,6 +4,8 @@
 
 #include "cc/tiles/tile_draw_info.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_macros.h"
 #include "cc/base/math_util.h"
 
@@ -33,7 +35,7 @@ void TileDrawInfo::SetResource(ResourcePool::InUsePoolResource resource,
   resource_ = std::move(resource);
 }
 
-const ResourcePool::InUsePoolResource& TileDrawInfo::GetResource() {
+const ResourcePool::InUsePoolResource& TileDrawInfo::GetResource() const {
   DCHECK_EQ(mode_, RESOURCE_MODE);
   DCHECK(resource_);
   return resource_;

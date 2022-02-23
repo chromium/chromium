@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/site_engagement/site_engagement_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 using site_engagement::SiteEngagementService;

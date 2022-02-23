@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_PLATFORM_UI_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_PLATFORM_UI_ELEMENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 
@@ -59,7 +60,7 @@ class PlatformUiElement : public UiElement {
   GlTextureLocation texture_location() const { return texture_location_; }
 
  private:
-  PlatformUiInputDelegate* delegate_ = nullptr;
+  raw_ptr<PlatformUiInputDelegate> delegate_ = nullptr;
   unsigned int texture_id_ = 0;
   GlTextureLocation texture_location_ = kGlTextureLocationExternal;
 };

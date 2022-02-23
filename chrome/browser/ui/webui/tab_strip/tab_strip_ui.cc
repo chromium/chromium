@@ -10,11 +10,11 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,7 +46,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       ->SetZoomLevelForHostAndScheme(content::kChromeUIScheme,
                                      chrome::kChromeUITabStripHost, 0);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUITabStripHost);
   webui::SetupWebUIDataSource(
@@ -57,12 +56,17 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   html_source->AddString("tabGroupIdDataType", kWebUITabGroupIdDataType);
 
   // Add a load time string for the frame color to allow the tab strip to paint
-  // a background color that matches the frame before any content loads
-  const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(profile);
+  // a background color that matches the frame before any content loads.
+  const auto* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_ui->GetWebContents());
+  const auto* theme_provider =
+      browser_window ? browser_window->GetThemeProvider() : nullptr;
+  const SkColor frame_color =
+      theme_provider
+          ? theme_provider->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)
+          : SK_ColorWHITE;
   html_source->AddString("frameColor",
-                         color_utils::SkColorToRgbaString(
-                             tp.GetColor(ThemeProperties::COLOR_FRAME_ACTIVE)));
+                         color_utils::SkColorToRgbaString(frame_color));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"tabListTitle", IDS_ACCNAME_TAB_LIST},
@@ -86,14 +90,12 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
       {"namedGroupLabel", IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT},
   };
   html_source->AddLocalizedStrings(kStrings);
+  Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, html_source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-
-  // TODO(crbug.com/1234500): Migrate to mojo as well.
-  web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 }
 
 TabStripUI::~TabStripUI() = default;

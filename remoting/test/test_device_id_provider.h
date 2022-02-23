@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/signaling/ftl_device_id_provider.h"
 
 namespace remoting {
@@ -38,7 +38,7 @@ class TestDeviceIdProvider final : public FtlDeviceIdProvider {
   ftl::DeviceId GetDeviceId() override;
 
  private:
-  TokenStorage* token_storage_;
+  raw_ptr<TokenStorage> token_storage_;
 };
 
 }  // namespace test

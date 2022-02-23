@@ -9,21 +9,21 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/v2/operation_token.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
+#include "components/feed/core/v2/web_feed_subscriptions/web_feed_types.h"
 
 namespace feed {
-namespace internal {
-class WebFeedSubscriptionModel;
-struct InFlightChange;
-
-}  // namespace internal
 class FeedStream;
+class WebFeedSubscriptionModel;
+class WebFeedMetadataModel;
 
 // Coordinates the state of subscription to web feeds.
 class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
@@ -54,9 +54,11 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       base::OnceCallback<void(FollowWebFeedResult)> callback) override;
   void FollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
       base::OnceCallback<void(FollowWebFeedResult)> callback) override;
   void UnfollowWebFeed(
       const std::string& web_feed_id,
+      bool is_durable_request,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback) override;
   void FindWebFeedInfoForPage(
       const WebFeedPageInformation& page_info,
@@ -71,43 +73,60 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override;
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
   void DumpStateForDebugging(std::ostream& ss) override;
-  void RefreshRecommendedFeeds() override;
+  void RefreshRecommendedFeeds(
+      base::OnceCallback<void(RefreshResult)> callback) override;
 
   // Types / functions exposed for task implementations.
-
-  struct SubscriptionInfo {
-    WebFeedSubscriptionStatus status = WebFeedSubscriptionStatus::kUnknown;
-    feedstore::WebFeedInfo web_feed_info;
-  };
 
   const feedstore::WebFeedInfo* FindRecentSubscription(
       const std::string& subscription_id);
 
-  SubscriptionInfo FindSubscriptionInfo(
+  WebFeedSubscriptionInfo FindSubscriptionInfo(
       const WebFeedPageInformation& page_info);
-  SubscriptionInfo FindSubscriptionInfoById(const std::string& web_feed_id);
+  WebFeedSubscriptionInfo FindSubscriptionInfoById(
+      const std::string& web_feed_id);
 
   WebFeedIndex& index() { return index_; }
 
   bool is_loading_model_for_testing() const { return loading_model_; }
+  std::string DescribeStateForTesting() const;
+  void RetryPendingOperationsForTesting() { RetryPendingOperations(); }
+  std::vector<feedstore::PendingWebFeedOperation>
+  GetPendingOperationStateForTesting();
+
+  struct HooksForTesting {
+    HooksForTesting();
+    ~HooksForTesting();
+    base::RepeatingClosure before_clear_all;
+    base::RepeatingClosure after_clear_all;
+  };
+  void SetHooksForTesting(HooksForTesting* hooks) {
+    hooks_for_testing_ = hooks;
+  }
 
  private:
-  using WebFeedSubscriptionModel = internal::WebFeedSubscriptionModel;
-  using InFlightChange = internal::InFlightChange;
   base::WeakPtr<WebFeedSubscriptionCoordinator> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   bool IsSignedInAndWebFeedsEnabled() const;
+  // Queues up tasks to retry any pending subscribe / unsubscribe operations.
+  void RetryPendingOperations();
 
   void FindWebFeedInfoForPageStart(
       const WebFeedPageInformation& page_info,
       base::OnceCallback<void(WebFeedMetadata)> callback);
+
+  void FollowWebFeedInternal(
+      const std::string& web_feed_id,
+      WebFeedInFlightChangeStrategy strategy,
+      base::OnceCallback<void(FollowWebFeedResult)> callback);
   void FollowWebFeedFromUrlStart(
       const WebFeedPageInformation& page_info,
       base::OnceCallback<void(FollowWebFeedResult)> callback);
   void FollowWebFeedFromIdStart(
       const std::string& web_feed_id,
+      WebFeedInFlightChangeStrategy strategy,
       base::OnceCallback<void(FollowWebFeedResult)> callback);
 
   void LookupWebFeedDataAndRespond(
@@ -128,7 +147,6 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   // Run `closure` after the model is loaded.
   void WithModel(base::OnceClosure closure);
-  void LoadSubscriptionModel();
   void ModelDataLoaded(FeedStore::WebFeedStartupData startup_data);
   void FindWebFeedInfoNonRecommended(
       const std::string& web_feed_id,
@@ -139,8 +157,13 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       bool followed_with_id,
       SubscribeToWebFeedTask::Result result);
 
+  void UnfollowWebFeedInternal(
+      const std::string& web_feed_id,
+      WebFeedInFlightChangeStrategy strategy,
+      base::OnceCallback<void(UnfollowWebFeedResult)> callback);
   void UnfollowWebFeedStart(
       const std::string& web_feed_id,
+      WebFeedInFlightChangeStrategy strategy,
       base::OnceCallback<void(UnfollowWebFeedResult)> callback);
   void UnfollowWebFeedComplete(
       base::OnceCallback<void(UnfollowWebFeedResult)> callback,
@@ -148,41 +171,54 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   void EnqueueInFlightChange(
       bool subscribing,
+      WebFeedInFlightChangeStrategy strategy,
       absl::optional<WebFeedPageInformation> page_information,
       absl::optional<feedstore::WebFeedInfo> info);
-  const InFlightChange* FindInflightChange(
+  const WebFeedInFlightChange* FindInflightChange(
       const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info);
-  void DequeueInflightChange();
+  WebFeedInFlightChange DequeueInflightChange();
 
   void FetchRecommendedWebFeedsIfStale();
   void FetchRecommendedWebFeedsStart();
   void FetchRecommendedWebFeedsComplete(
       FetchRecommendedWebFeedsTask::Result result);
+  void CallRefreshRecommendedFeedsCompleteCallbacks(RefreshResult result);
 
   void FetchSubscribedWebFeedsIfStale(base::OnceClosure callback);
   void FetchSubscribedWebFeedsStart();
   void FetchSubscribedWebFeedsComplete(
       FetchSubscribedWebFeedsTask::Result result);
-  void CallRefreshCompleteCallbacks(RefreshResult);
+  void CallRefreshCompleteCallbacks(RefreshResult result);
   void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
   void SubscribedWebFeedCountDone(base::OnceCallback<void(int)> callback);
 
-  Delegate* delegate_;       // Always non-null.
-  FeedStream* feed_stream_;  // Always non-null, it owns this.
+  void UpdatePendingOperationBeforeAttempt(
+      const std::string& web_feed_id,
+      WebFeedInFlightChangeStrategy strategy,
+      feedstore::PendingWebFeedOperation::Kind kind);
+
+  raw_ptr<Delegate> delegate_;       // Always non-null.
+  raw_ptr<FeedStream> feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   // Whether `Populate()` has been called.
   bool populated_ = false;
   std::vector<base::OnceClosure> on_populated_;
-
+  // Non-null after `Populate()`.
+  std::unique_ptr<WebFeedMetadataModel> metadata_model_;
   // A model of subscriptions. In memory only while needed.
   // TODO(harringtond): Unload the model eventually.
   std::unique_ptr<WebFeedSubscriptionModel> model_;
   bool loading_model_ = false;
+  OperationToken loading_token_ = OperationToken::MakeInvalid();
 
-  // Queue of in-flight changes. For each of these, there exists a task in the
-  // TaskQueue.
-  std::vector<InFlightChange> in_flight_changes_;
+  // This operation is destroyed upon a ClearAll event, to cancel all
+  // in flight operations. Note that we don't destroy the whole coordinator
+  // on a ClearAll event to ensure that all callbacks are eventually called.
+  OperationToken::Operation token_generator_;
+
+  std::vector<WebFeedInFlightChange> in_flight_changes_;
+
   // Feeds which were subscribed to recently, but are no longer.
   // These are not persisted, so we only remember recent subscriptions until the
   // Chrome process goes down.
@@ -190,9 +226,13 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   std::vector<base::OnceClosure> when_model_loads_;
   std::vector<base::OnceCallback<void(RefreshResult)>>
       on_refresh_subscriptions_;
+  std::vector<base::OnceCallback<void(RefreshResult)>>
+      on_refresh_recommended_feeds_;
   bool fetching_recommended_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_ = false;
   bool fetching_subscribed_web_feeds_because_stale_ = false;
+
+  HooksForTesting* hooks_for_testing_ = nullptr;
 
   base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };

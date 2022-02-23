@@ -345,7 +345,6 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
   bool is_primary_plane = false;
   if (scoped_hardware_buffer) {
     hardware_buffer = scoped_hardware_buffer->buffer();
-    fence_fd = scoped_hardware_buffer->TakeFence();
 
     // We currently only promote the display compositor's buffer or a video
     // buffer to an overlay. So if this buffer is not for video then it implies
@@ -374,8 +373,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     if (gpu_fence && surface_state.hardware_buffer) {
       auto fence_handle = gpu_fence->GetGpuFenceHandle().Clone();
       DCHECK(!fence_handle.is_null());
-      fence_fd =
-          MergeFDs(std::move(fence_fd), std::move(fence_handle.owned_fd));
+      fence_fd = std::move(fence_handle.owned_fd);
     }
 
     if (is_primary_plane) {
@@ -394,7 +392,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
         gfx::ScaleRect(overlay_plane_data.crop_rect, buffer_size.width(),
                        buffer_size.height());
 
-    gfx::Rect dst = overlay_plane_data.display_bounds;
+    gfx::Rect dst = gfx::ToNearestRect(overlay_plane_data.display_bounds);
     gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
 
     // When the video is being scrolled offscreen DisplayCompositor will crop it
@@ -448,6 +446,15 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     surface_state.color_space = image_color_space;
     pending_transaction_->SetColorSpace(*surface_state.surface,
                                         image_color_space);
+  }
+
+  if (uninitialized ||
+      surface_state.hdr_metadata != overlay_plane_data.hdr_metadata) {
+    DCHECK(!overlay_plane_data.hdr_metadata ||
+           surface_state.color_space.IsHDR());
+    surface_state.hdr_metadata = overlay_plane_data.hdr_metadata;
+    pending_transaction_->SetHDRMetadata(*surface_state.surface,
+                                         surface_state.hdr_metadata);
   }
 
   if (frame_rate_update_pending_)

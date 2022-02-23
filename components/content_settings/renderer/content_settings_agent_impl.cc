@@ -18,12 +18,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -42,7 +40,6 @@ using blink::WebSecurityOrigin;
 using blink::WebString;
 using blink::WebURL;
 using blink::WebView;
-using content::DocumentState;
 
 namespace content_settings {
 namespace {
@@ -89,9 +86,6 @@ ContentSettingsAgentImpl::Delegate::AllowWriteToClipboard() {
 absl::optional<bool> ContentSettingsAgentImpl::Delegate::AllowMutationEvents() {
   return absl::nullopt;
 }
-
-void ContentSettingsAgentImpl::Delegate::PassiveInsecureContentFound(
-    const blink::WebURL&) {}
 
 ContentSettingsAgentImpl::ContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
@@ -435,11 +429,6 @@ bool ContentSettingsAgentImpl::AllowPopupsAndRedirects(bool default_value) {
              content_setting_rules_->popup_redirect_rules, frame,
              url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL()) ==
          CONTENT_SETTING_ALLOW;
-}
-
-void ContentSettingsAgentImpl::PassiveInsecureContentFound(
-    const blink::WebURL& resource_url) {
-  delegate_->PassiveInsecureContentFound(resource_url);
 }
 
 bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {

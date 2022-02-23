@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     virtual void NumberOfInputStreamsWithPermissionChanged(
         const base::flat_map<std::string, uint32_t>& num_input_streams);
 
+    // Called when an audio survey should be triggered.
+    virtual void SurveyTriggered(
+        const base::flat_map<std::string, std::string>& survey_specific_data);
+
    protected:
     virtual ~Observer();
   };

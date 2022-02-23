@@ -20,7 +20,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
@@ -238,7 +238,6 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
   // size+1 for the browser entry.
   size_t total_buttons = launch_params_list_.size() + 1;
   hover_buttons_.reserve(total_buttons);
-  size_t button_index = hover_buttons_.size();
 
   // Creates a view to hold the views for each app.
   auto scrollable_view_builder =
@@ -259,7 +258,8 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
                         hover_buttons.push_back(view);
                       },
                       std::ref(hover_buttons_), total_buttons)),
-              button_index++);
+              0);
+  size_t next_button_index = 1;
 
   for (const auto& launch_params : launch_params_list_) {
     Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
@@ -281,7 +281,7 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
                   IDS_URL_HANDLER_INTENT_PICKER_APP_TITLE, app_name,
                   profile_name);
 
-    const size_t this_button_index = button_index++;
+    const size_t this_button_index = next_button_index++;
     // TODO(crbug.com/1072058): Make sure the UI is reasonable when
     // |app_title| is long.
     scrollable_view_builder.AddChildAt(
@@ -289,10 +289,10 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
             std::make_unique<WebAppUrlHandlerHoverButton>(
                 base::BindRepeating(
                     &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
-                    base::Unretained(this), button_index),
+                    base::Unretained(this), this_button_index),
                 launch_params, provider, app_title,
                 registrar.GetAppStartUrl(launch_params.app_id)))
-            .SetTag(button_index)
+            .SetTag(this_button_index)
             .CustomConfigure(base::BindOnce(
                 [](HoverButtons& hover_buttons, size_t this_button_index,
                    size_t total_buttons, WebAppUrlHandlerHoverButton* view) {
@@ -356,7 +356,7 @@ void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       remember_selection_checkbox_->SetChecked(/*checked=*/true);
-      FALLTHROUGH;
+      [[fallthrough]];
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
       accepted_override = true;
       selected_app_tag_ =

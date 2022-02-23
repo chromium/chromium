@@ -85,7 +85,7 @@ class TaskManagerMacTest : public InProcessBrowserTest {
 
     DictionaryPrefUpdate dict_update(local_state,
                                      prefs::kTaskManagerColumnVisibility);
-    dict_update->Clear();
+    dict_update->DictClear();
   }
 
   void ToggleColumnVisibility(TaskManagerMac* task_manager, int col_id) {

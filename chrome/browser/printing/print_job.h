@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "printing/print_settings.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
@@ -32,7 +32,7 @@ class JobEventDetails;
 class MetafilePlayer;
 class PrintJobWorker;
 class PrintedDocument;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PrintedPage;
 #endif
 class PrinterQuery;
@@ -45,15 +45,23 @@ class PrintSettings;
 // reference to the job to be sure it is kept alive. All the code in this class
 // runs in the UI thread. All virtual functions are virtual only so that
 // TestPrintJob can override them in tests.
-class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
-                 public content::NotificationObserver {
+class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
  public:
-#if defined(OS_CHROMEOS)
+  // An observer interface implemented by classes which are interested
+  // in `PrintJob` events.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnDocDone(int job_id, PrintedDocument* document) {}
+    virtual void OnJobDone() {}
+    virtual void OnFailed() {}
+  };
+
+#if BUILDFLAG(IS_CHROMEOS)
   // An enumeration of components where print jobs can come from. The order of
   // these enums must match that of
-  // chrome/browser/chromeos/printing/history/print_job_info.proto.
+  // chrome/browser/ash/printing/history/print_job_info.proto.
   using Source = crosapi::mojom::PrintJob::Source;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Create a empty PrintJob. When initializing with this constructor,
   // post-constructor initialization must be done with Initialize().
@@ -71,7 +79,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
                           const std::u16string& name,
                           uint32_t page_count);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void StartConversionToNativeFormat(
       scoped_refptr<base::RefCountedMemory> print_data,
       const gfx::Size& page_size,
@@ -84,12 +92,16 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // of pages, because all PDF pages will be converted, but only the user's
   // selected pages should be sent to the printer. See https://crbug.com/823876.
   void ResetPageMapping();
+
+  // Called when `page` is done printing.
+  void OnPageDone(PrintedPage* page);
 #endif
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // Called when the document is done printing.
+  virtual void OnDocDone(int job_id, PrintedDocument* document);
+
+  // Called if the document fails to print.
+  virtual void OnFailed();
 
   // Starts the actual printing. Signals the worker that it should begin to
   // spool as soon as data is available.
@@ -122,7 +134,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // Access stored settings.
   const PrintSettings& settings() const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Sets the component which initiated the print job.
   void SetSource(Source source, const std::string& source_id);
 
@@ -131,38 +143,45 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
 
   // Returns the ID of the source.
   const std::string& source_id() const;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
+
+  const base::ObserverList<Observer>& GetObserversForTesting() {
+    return observers_;
+  }
+
+  // Adds and removes observers for `PrintJob` events. The order in
+  // which notifications are sent to observers is undefined. Observers must be
+  // sure to remove the observer before they go away.
+  void AddObserver(Observer& observer);
+  void RemoveObserver(Observer& observer);
 
  protected:
   // Refcounted class.
   friend class base::RefCountedThreadSafe<PrintJob>;
 
-  ~PrintJob() override;
+  virtual ~PrintJob();
 
   // The functions below are used for tests only.
   void set_job_pending(bool pending);
 
-  // Updates |document_| to a new instance. Protected so that tests can access
+  // Updates `document_` to a new instance. Protected so that tests can access
   // it.
   void UpdatePrintedDocument(scoped_refptr<PrintedDocument> new_document);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(PrintJobTest, PageRangeMapping);
 #endif
 
-  // Clears reference to |document_|.
+  // Clears reference to `document_`.
   void ClearPrintedDocument();
 
   // Helper method for UpdatePrintedDocument() and ClearPrintedDocument() to
-  // sync |document_| updates with |worker_|.
+  // sync `document_` updates with `worker_`.
   void SyncPrintedDocumentToWorker();
-
-  // Processes a NOTIFY_PRINT_JOB_EVENT notification.
-  void OnNotifyPrintJobEvent(const JobEventDetails& event_details);
 
   // Releases the worker thread by calling Stop(), then broadcasts a JOB_DONE
   // notification.
@@ -174,7 +193,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
 
   void HoldUntilStopIsCalled();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void StartPdfToEmfConversion(
       scoped_refptr<base::RefCountedMemory> bytes,
       const gfx::Size& page_size,
@@ -199,9 +218,9 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   static std::vector<uint32_t> GetFullPageMapping(
       const std::vector<uint32_t>& pages,
       uint32_t total_page_count);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-  content::NotificationRegistrar registrar_;
+  base::ObserverList<Observer> observers_;
 
   // All the UI is done in a worker thread because many Win32 print functions
   // are blocking and enters a message loop without your consent. There is one
@@ -218,20 +237,20 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // the notified calls Cancel() again.
   bool is_canceling_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   class PdfConversionState;
   std::unique_ptr<PdfConversionState> pdf_conversion_state_;
   std::vector<uint32_t> pdf_page_mapping_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // The component which initiated the print job.
   Source source_;
 
   // ID of the source.
   // This should be blank if the source is PRINT_PREVIEW or ARC.
   std::string source_id_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Holds the quit closure while running a nested RunLoop to flush tasks.
   base::OnceClosure quit_closure_;
@@ -254,20 +273,9 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
     JOB_DONE,
 
     // An error occured. Printing is canceled.
-    FAILED,
-
-#if defined(OS_WIN)
-    // A page is done printing. Only used on Windows.
-    PAGE_DONE,
-#endif
+    FAILED
   };
 
-#if defined(OS_WIN)
-  JobEventDetails(Type type,
-                  int job_id,
-                  PrintedDocument* document,
-                  PrintedPage* page);
-#endif
   JobEventDetails(Type type, int job_id, PrintedDocument* document);
 
   JobEventDetails(const JobEventDetails&) = delete;
@@ -275,9 +283,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
 
   // Getters.
   PrintedDocument* document() const;
-#if defined(OS_WIN)
-  PrintedPage* page() const;
-#endif
   Type type() const {
     return type_;
   }
@@ -289,9 +294,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
   ~JobEventDetails();
 
   scoped_refptr<PrintedDocument> document_;
-#if defined(OS_WIN)
-  scoped_refptr<PrintedPage> page_;
-#endif
   const Type type_;
   int job_id_;
 };

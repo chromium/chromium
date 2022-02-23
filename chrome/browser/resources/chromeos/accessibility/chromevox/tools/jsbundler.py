@@ -41,7 +41,7 @@ _CHROME_SOURCE = os.path.realpath(
 sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE,
-                 'third_party/devtools-frontend/src/scripts/build'))
+                 'third_party/rjsmin'))
 sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE, ('third_party/google-closure-library/' +

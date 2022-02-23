@@ -258,13 +258,14 @@ public abstract class PathUtils {
                         ContextUtils.getApplicationContext(), StorageManager.class);
                 File volumeDir =
                         ApiHelperForR.getVolumeDir(manager, MediaStore.Files.getContentUri(vol));
-                assert volumeDir.isDirectory();
-                assert volumeDir.exists();
-
-                File volumeDownloadDir =
-                        new File(volumeDir.getAbsolutePath(), Environment.DIRECTORY_DOWNLOADS);
-                assert volumeDownloadDir.isDirectory();
-                assert volumeDownloadDir.exists();
+                File volumeDownloadDir = new File(volumeDir, Environment.DIRECTORY_DOWNLOADS);
+                // Happens in rare case when Android doesn't create the download directory for this
+                // volume.
+                if (!volumeDownloadDir.isDirectory()) {
+                    Log.w(TAG, "Download dir missing: %s, parent dir:%s, isDirectory:%s",
+                            volumeDownloadDir.getAbsolutePath(), volumeDir.getAbsolutePath(),
+                            volumeDir.isDirectory());
+                }
                 files.add(volumeDownloadDir);
             }
         }

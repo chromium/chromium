@@ -15,9 +15,9 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-#include "components/sync/invalidations/switches.h"
 #include "google_apis/gcm/engine/account_mapping.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,8 +111,8 @@ class FCMHandlerTest : public testing::Test {
     ON_CALL(mock_instance_id_driver_, GetInstanceID(kSyncInvalidationsAppId))
         .WillByDefault(Return(&mock_instance_id_));
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations},
+        /*enabled_features=*/{kSyncSendInterestedDataTypes,
+                              kUseSyncInvalidations},
         /*disabled_features=*/{});
   }
 

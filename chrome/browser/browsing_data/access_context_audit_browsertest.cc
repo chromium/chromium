@@ -35,7 +35,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
@@ -533,12 +533,12 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
 
   // Close the previous tab, keeping the browser active if required to ensure
   // the profile does not begin destruction.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(
       chrome_test_utils::GetActiveWebContents(this));
   tab_model->CloseTabAt(tab_model->GetActiveIndex());
 #else
-  AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabStripModel::CLOSE_NONE);
 #endif  // defined (OS_ANDROID)
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
 // when the browser restarts. Android has a superficially similar behavior where
 // tabs are re-opened after close, but non-persistent cookies are not preserved,
 // making this test only applicable to desktop.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class AccessContextAuditSessionRestoreBrowserTest
     : public AccessContextAuditBrowserTest {
  public:
@@ -655,4 +655,4 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
                                     embedded_origin(), embedded_origin(),
                                     /* compare_host_only */ true);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

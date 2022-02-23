@@ -19,7 +19,9 @@
     async function openUdp(options) {
       try {
         let udpSocket = await navigator.openUDPSocket(options);
-        return 'openUdp succeeded';
+        return ('openUdp succeeded: ' +
+                '{remoteAddress: "' + udpSocket.remoteAddress +
+                '", remotePort: ' + udpSocket.remotePort + '}');
       } catch(error) {
         return ('openUdp failed: ' + error);
       }

@@ -7,9 +7,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <Carbon/Carbon.h>
 #include "base/mac/scoped_cftyperef.h"
 #elif defined(USE_OZONE)
@@ -20,7 +20,7 @@ namespace ui {
 
 enum KeyboardLayout {
   KEYBOARD_LAYOUT_ENGLISH_US,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   KEYBOARD_LAYOUT_FRENCH,
   KEYBOARD_LAYOUT_GERMAN,
   KEYBOARD_LAYOUT_GREEK,
@@ -30,13 +30,13 @@ enum KeyboardLayout {
 #endif
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using PlatformKeyboardLayout = HKL;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 using PlatformKeyboardLayout = base::ScopedCFTypeRef<TISInputSourceRef>;
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 PlatformKeyboardLayout GetPlatformKeyboardLayout(KeyboardLayout layout);
 #endif
 
@@ -54,7 +54,7 @@ class ScopedKeyboardLayout {
 #if defined(USE_OZONE)
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
 #endif
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   static PlatformKeyboardLayout GetActiveLayout();
   static void ActivateLayout(PlatformKeyboardLayout layout);
 

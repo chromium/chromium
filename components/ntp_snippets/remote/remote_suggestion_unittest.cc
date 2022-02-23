@@ -180,8 +180,8 @@ TEST(RemoteSuggestionTest, CreateFromProtoIgnoreMissingSalientImageAndSnippet) {
 
 TEST(RemoteSuggestionTest, NotifcationInfoAllSpecified) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
-  json.SetString("notificationInfo.deadline", "2016-06-30T13:01:37.000Z");
+  json.SetBoolPath("notificationInfo.shouldNotify", true);
+  json.SetStringPath("notificationInfo.deadline", "2016-06-30T13:01:37.000Z");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_TRUE(snippet->should_notify());
@@ -192,8 +192,8 @@ TEST(RemoteSuggestionTest, NotifcationInfoAllSpecified) {
 
 TEST(RemoteSuggestionTest, NotificationInfoDeadlineInvalid) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
-  json.SetString("notificationInfo.deadline", "abcd");
+  json.SetBoolPath("notificationInfo.shouldNotify", true);
+  json.SetStringPath("notificationInfo.deadline", "abcd");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_TRUE(snippet->should_notify());
@@ -202,7 +202,7 @@ TEST(RemoteSuggestionTest, NotificationInfoDeadlineInvalid) {
 
 TEST(RemoteSuggestionTest, NotificationInfoDeadlineAbsent) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", true);
+  json.SetBoolPath("notificationInfo.shouldNotify", true);
   json.RemovePath("notificationInfo.deadline");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
@@ -212,7 +212,7 @@ TEST(RemoteSuggestionTest, NotificationInfoDeadlineAbsent) {
 
 TEST(RemoteSuggestionTest, NotificationInfoShouldNotifyInvalid) {
   auto json = TestSnippetJsonValue();
-  json.SetString("notificationInfo.shouldNotify", "non-bool");
+  json.SetStringPath("notificationInfo.shouldNotify", "non-bool");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_FALSE(snippet->should_notify());
@@ -220,7 +220,7 @@ TEST(RemoteSuggestionTest, NotificationInfoShouldNotifyInvalid) {
 
 TEST(RemoteSuggestionTest, NotificationInfoAbsent) {
   auto json = TestSnippetJsonValue();
-  json.SetBoolean("notificationInfo.shouldNotify", false);
+  json.SetBoolPath("notificationInfo.shouldNotify", false);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   EXPECT_FALSE(snippet->should_notify());
@@ -276,7 +276,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithNotificationInfo) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeVideo) {
   auto json = TestSnippetJsonValue();
-  json.SetString("contentType", "VIDEO");
+  json.SetStringKey("contentType", "VIDEO");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -288,7 +288,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeVideo) {
 
 TEST(RemoteSuggestionTest, ToContentSuggestionWithContentTypeUnknown) {
   auto json = TestSnippetJsonValue();
-  json.SetString("contentType", "UNKNOWN");
+  json.SetStringKey("contentType", "UNKNOWN");
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -313,7 +313,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithLargeImageDominantColor) {
   auto json = TestSnippetJsonValue();
   // JSON does not support unsigned types. As a result the value is parsed as
   // int if it fits and as double otherwise.
-  json.SetDouble("imageDominantColor", 4289379276.);
+  json.SetDoubleKey("imageDominantColor", 4289379276.);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());
@@ -329,7 +329,7 @@ TEST(RemoteSuggestionTest, ToContentSuggestionWithSmallImageDominantColor) {
   auto json = TestSnippetJsonValue();
   // JSON does not support unsigned types. As a result the value is parsed as
   // int if it fits and as double otherwise.
-  json.SetInteger("imageDominantColor", 16777216 /*=0x1000000*/);
+  json.SetIntKey("imageDominantColor", 16777216 /*=0x1000000*/);
   auto snippet = RemoteSuggestion::CreateFromContentSuggestionsDictionary(
       json, 0, base::Time());
   ASSERT_THAT(snippet, NotNull());

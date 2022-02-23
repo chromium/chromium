@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_THROBBER_H_
 #define UI_VIEWS_CONTROLS_THROBBER_H_
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"

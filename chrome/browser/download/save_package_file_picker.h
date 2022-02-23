@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/save_page_type.h"
@@ -49,7 +50,7 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   // Whether the web page can be saved as a complete HTML file.
   bool can_save_as_complete_;
 
-  DownloadPrefs* download_prefs_;
+  raw_ptr<DownloadPrefs> download_prefs_;
 
   content::SavePackagePathPickedCallback callback_;
 

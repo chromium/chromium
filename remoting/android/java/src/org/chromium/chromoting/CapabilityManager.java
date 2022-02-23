@@ -27,7 +27,7 @@ import java.util.List;
  * a chance to handle the message.
  */
 public class CapabilityManager {
-    /** Used to allow objects to receive notifications when the host capabilites are received. */
+    /** Used to allow objects to receive notifications when the host capabilities are received. */
     public interface CapabilitiesChangedListener {
         void onCapabilitiesChanged(List<String> newCapabilities);
     }

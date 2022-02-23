@@ -65,8 +65,10 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   if (inner_rect.Contains(adjusted_playback_rect))
     return false;
 
+  if (!outer_rect.Intersects(adjusted_playback_rect))
+    return false;
+
   outer_rect.Intersect(adjusted_playback_rect);
-  DCHECK(!outer_rect.IsEmpty());
   inner_rect.Intersect(adjusted_playback_rect);
   // inner_rect can be empty if the content is very small.
 

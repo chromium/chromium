@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
@@ -63,11 +64,11 @@ class BadgeManagerUnittest : public ::testing::Test {
   ~BadgeManagerUnittest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-
+    TestingProfile::Builder builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_->SetIsMainProfile(true);
+    builder.SetIsMainProfile(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
 
     fake_registry_controller_ =
         std::make_unique<web_app::FakeWebAppRegistryController>();
@@ -97,7 +98,7 @@ class BadgeManagerUnittest : public ::testing::Test {
   }
 
  private:
-  TestBadgeManagerDelegate* delegate_;
+  raw_ptr<TestBadgeManagerDelegate> delegate_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BadgeManager> badge_manager_;

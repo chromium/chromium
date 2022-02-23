@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #endif
@@ -51,7 +51,7 @@ class AutocompleteResult {
   AutocompleteResult(const AutocompleteResult&) = delete;
   AutocompleteResult& operator=(const AutocompleteResult&) = delete;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a corresponding Java object, creating it if necessary.
   // NOTE: Android specific methods are defined in autocomplete_match_android.cc
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
@@ -214,8 +214,15 @@ class AutocompleteResult {
       const AutocompleteMatch& match,
       AutocompleteProviderClient* provider_client);
 
-  // Prepend missing tail suggestion prefixes in results, if present.
-  void InlineTailPrefixes();
+  // Gets common prefix from SEARCH_SUGGEST_TAIL matches
+  std::u16string GetCommonPrefix();
+
+  // Populates tail_suggest_common_prefix on the matches as well as prepends
+  // ellipses.
+  void SetTailSuggestContentPrefixes();
+
+  // Populates tail_suggest_common_prefix on the matches.
+  void SetTailSuggestCommonPrefixes();
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -259,7 +266,7 @@ class AutocompleteResult {
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // iterator::difference_type is not defined in the STL that we compile with on
   // Android.
   typedef int matches_difference_type;
@@ -335,7 +342,7 @@ class AutocompleteResult {
   // The server supplied list of group IDs that should be hidden-by-default.
   std::set<int> hidden_group_ids_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.
   // This object should be ignored when AutocompleteResult is copied or moved.
   // This object should never be accessed directly. To acquire a reference to

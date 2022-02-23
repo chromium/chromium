@@ -77,7 +77,8 @@ _FUNCTION_INFO = {
   'RequestAdapter': {
     'impl_func': False,
     'internal': True,
-    'cmd_args': 'uint64_t request_adapter_serial, uint32_t power_preference'
+    'cmd_args': 'uint64_t request_adapter_serial, uint32_t power_preference, '
+                'bool force_fallback_adapter',
   },
   'RequestDevice': {
     'impl_func': False,
@@ -98,7 +99,7 @@ _FUNCTION_INFO = {
   'DestroyServer': {
     'impl_func': False,
     'internal': True,
-    },
+  },
 }
 
 def main(argv):

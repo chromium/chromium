@@ -32,7 +32,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_error.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"

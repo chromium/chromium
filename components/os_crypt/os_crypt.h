@@ -12,15 +12,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "build/chromecast_buildflags.h"
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 class KeyStorageLinux;
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class PrefRegistrySimple;
 class PrefService;
 #endif
@@ -39,25 +37,21 @@ class OSCrypt {
   OSCrypt(const OSCrypt&) = delete;
   OSCrypt& operator=(const OSCrypt&) = delete;
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Set the configuration of OSCrypt.
+  // This method, or SetRawEncryptionKey(), must be called before using
+  // EncryptString() and DecryptString().
   static COMPONENT_EXPORT(OS_CRYPT) void SetConfig(
       std::unique_ptr<os_crypt::Config> config);
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_APPLE) || defined(OS_WIN) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // On Linux returns true iff the real secret key (not hardcoded one) is
   // available. On MacOS returns true if Keychain is available (for mock
   // Keychain it returns true if not using locked Keychain, false if using
   // locked mock Keychain). On Windows returns true if non mock encryption
-  // key is available.
+  // key is available. On other platforms, returns false as OSCrypt will use
+  // a hardcoded key.
   static COMPONENT_EXPORT(OS_CRYPT) bool IsEncryptionAvailable();
-#endif
 
   // Encrypt a string16. The output (second argument) is really an array of
   // bytes, but we're passing it back as a std::string.
@@ -84,7 +78,7 @@ class OSCrypt {
       const std::string& ciphertext,
       std::string* plaintext);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Registers preferences used by OSCrypt.
   static COMPONENT_EXPORT(OS_CRYPT) void RegisterLocalPrefs(
       PrefRegistrySimple* registry);
@@ -94,9 +88,22 @@ class OSCrypt {
   // encryption or decryption. Returns |true| if os_crypt successfully
   // initialized.
   static COMPONENT_EXPORT(OS_CRYPT) bool Init(PrefService* local_state);
+
+  // Initialises OSCrypt using an encryption key present in the |local_state|.
+  // It is similar to the Init() method above, however, it will not create
+  // a new encryption key if it is not present in the |local_state|.
+  enum InitResult {
+    kSuccess,
+    kKeyDoesNotExist,
+    kInvalidKeyFormat,
+    kDecryptionFailed
+  };
+
+  static COMPONENT_EXPORT(OS_CRYPT) InitResult
+      InitWithExistingKey(PrefService* local_state);
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // For unit testing purposes we instruct the Encryptor to use a mock Keychain
   // on the Mac. The default is to use the real Keychain. Use OSCryptMocker,
   // instead of calling this method directly.
@@ -110,19 +117,23 @@ class OSCrypt {
       bool use_locked);
 #endif
 
-#if defined(OS_WIN) || defined(OS_APPLE)
-  // Get the raw encryption key to be used for all AES encryption. Returns an
-  // empty string in the case password access is denied or key generation error
-  // occurs. This method is thread-safe.
+  // Get the raw encryption key to be used for all AES encryption. The result
+  // can be used to call SetRawEncryptionKey() in another process. Returns an
+  // empty string in some situations, for example:
+  // - password access is denied
+  // - key generation error
+  // - if a hardcoded password is used instead of a random per-user key
+  // This method is thread-safe.
   static COMPONENT_EXPORT(OS_CRYPT) std::string GetRawEncryptionKey();
 
   // Set the raw encryption key to be used for all AES encryption.
+  // On platforms that may use a hardcoded key, |key| can be empty and OSCrypt
+  // will default to the hardcoded key.
   // This method is thread-safe.
   static COMPONENT_EXPORT(OS_CRYPT) void SetRawEncryptionKey(
       const std::string& key);
-#endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // For unit testing purposes we instruct the Encryptor to use a mock Key. The
   // default is to use the real Key bound to profile. Use OSCryptMocker, instead
   // of calling this method directly.
@@ -137,25 +148,23 @@ class OSCrypt {
   // loaded via Init() or SetRawEncryptionkey().
   static COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
 #endif
+
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+  // For unit testing purposes, inject methods to be used.
+  // |get_key_storage_mock| provides the desired |KeyStorage| implementation.
+  // If the provider returns |nullptr|, a hardcoded password will be used.
+  // If |get_key_storage_mock| is nullptr, restores the real implementation.
+  static COMPONENT_EXPORT(OS_CRYPT) void UseMockKeyStorageForTesting(
+      std::unique_ptr<KeyStorageLinux> (*get_key_storage_mock)());
+
+  // Clears any caching and most lazy initialisations performed by the
+  // production code. Should be used after any test which required a password.
+  static COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
+
+  // Sets the password with which the encryption key is derived, e.g. "peanuts".
+  static COMPONENT_EXPORT(OS_CRYPT) void SetEncryptionPasswordForTesting(
+      const std::string& password);
+#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 };
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// For unit testing purposes, inject methods to be used.
-// |get_key_storage_mock| provides the desired |KeyStorage| implementation.
-// If the provider returns |nullptr|, a hardcoded password will be used.
-// |get_password_v11_mock| provides a password to derive the encryption key from
-// If one parameter is |nullptr|, the function will be not be replaced.
-// If all parameters are |nullptr|, the real implementation is restored.
-COMPONENT_EXPORT(OS_CRYPT)
-void UseMockKeyStorageForTesting(
-    std::unique_ptr<KeyStorageLinux> (*get_key_storage_mock)(),
-    std::string* (*get_password_v11_mock)());
-
-// Clears any caching and most lazy initialisations performed by the production
-// code. Should be used after any test which required a password.
-COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // COMPONENTS_OS_CRYPT_OS_CRYPT_H_

@@ -14,7 +14,6 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -30,9 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -247,10 +245,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /**
      * Update the suggestion popup background to reflect the current state.
-     * @param omniboxTheme The {@link @OmniboxTheme}.
+     * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    public void refreshPopupBackground(@OmniboxTheme int omniboxTheme) {
-        int color = omniboxTheme == OmniboxTheme.INCOGNITO ? mIncognitoBgColor : mStandardBgColor;
+    public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
+        int color = brandedColorScheme == BrandedColorScheme.INCOGNITO ? mIncognitoBgColor
+                                                                       : mStandardBgColor;
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
             // mOmniboxResultsContainer' background from the area not covered by
@@ -403,16 +402,17 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (!isShown()) return false;
 
+        View selectedView = mAdapter.getSelectedView();
+        if (selectedView != null && selectedView.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
         int selectedPosition = mAdapter.getSelectedViewIndex();
         if (KeyNavigationUtil.isGoDown(event)) {
             return mAdapter.setSelectedViewIndex(selectedPosition + 1);
         } else if (KeyNavigationUtil.isGoUp(event)) {
             return mAdapter.setSelectedViewIndex(selectedPosition - 1);
-        } else if (KeyNavigationUtil.isGoRight(event) || KeyNavigationUtil.isGoLeft(event)) {
-            View selectedView = mAdapter.getSelectedView();
-            if (selectedView != null) return selectedView.onKeyDown(keyCode, event);
         } else if (KeyNavigationUtil.isEnter(event)) {
-            View selectedView = mAdapter.getSelectedView();
             if (selectedView != null) return selectedView.performClick();
         }
         return super.onKeyDown(keyCode, event);
@@ -486,7 +486,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     currentInsets = mAnchorView.getRootWindowInsets();
                     result = !currentInsets.equals(mWindowInsets);
                     mWindowInsets = currentInsets;
-                } else if (isAdaptiveSuggestionsCountEnabled()) {
+                } else {
                     mEmbedder.getWindowDelegate().getWindowVisibleDisplayFrame(mTempRect);
                     result = !mTempRect.equals(mWindowRect);
                     mWindowRect.set(mTempRect);
@@ -516,12 +516,5 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setPadding(mTempPosition[0], getPaddingTop(),
                 mAnchorView.getWidth() - mAlignmentView.getWidth() - mTempPosition[0],
                 getPaddingBottom());
-    }
-
-    /** Return whether Adaptive Suggestions Count feature is enabled. */
-    private boolean isAdaptiveSuggestionsCountEnabled() {
-        return ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
     }
 }

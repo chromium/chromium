@@ -152,11 +152,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   const char* GetName() const override;
 
-  virtual const NGPhysicalBoxFragment* CurrentFragment() const {
-    NOT_DESTROYED();
-    return nullptr;
-  }
-
  protected:
   // Insert a child correctly into the tree when |beforeDescendant| isn't a
   // direct child of |this|. This happens e.g. when there's an anonymous block
@@ -212,6 +207,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return has_percent_height_descendants_;
   }
 
+  void AddSvgTextDescendant(LayoutBox& svg_text);
+  void RemoveSvgTextDescendant(LayoutBox& svg_text);
+
   void NotifyScrollbarThicknessChanged() {
     NOT_DESTROYED();
     width_available_to_children_changed_ = true;
@@ -222,6 +220,13 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // rendered legend is laid out on the outside, although the layout object
   // itself for the legend is still a child of this object.
   bool IsAnonymousNGFieldsetContentWrapper() const;
+
+  // Return true if this block establishes a fragmentation context root (e.g. a
+  // multicol container).
+  virtual bool IsFragmentationContextRoot() const {
+    NOT_DESTROYED();
+    return false;
+  }
 
   void SetHasMarkupTruncation(bool b) {
     NOT_DESTROYED();
@@ -483,10 +488,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   absl::optional<LayoutUnit> InlineBlockBaselineOverride(
       LineDirectionMode) const;
 
-  bool HitTestOverflowControl(
-      HitTestResult&,
-      const HitTestLocation&,
-      const PhysicalOffset& adjusted_location) const override;
   bool HitTestChildren(HitTestResult&,
                        const HitTestLocation&,
                        const PhysicalOffset& accumulated_offset,
@@ -521,6 +522,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   virtual void AddVisualOverflowFromBlockChildren();
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 
@@ -571,10 +573,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   // Returns true if the positioned movement-only layout succeeded.
   bool TryLayoutDoingPositionedMovementOnly();
-
-  bool IsPointInOverflowControl(HitTestResult&,
-                                const PhysicalOffset&,
-                                const PhysicalOffset& accumulated_offset) const;
 
   void ComputeBlockPreferredLogicalWidths(LayoutUnit& min_logical_width,
                                           LayoutUnit& max_logical_width) const;
@@ -633,6 +631,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   unsigned has_positioned_objects_ : 1;
   unsigned has_percent_height_descendants_ : 1;
+  unsigned has_svg_text_descendants_ : 1;
 
   // When an object ceases to establish a fragmentation context (e.g. the
   // LayoutView when we're no longer printing), we need a deep layout

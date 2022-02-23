@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
-#include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -13,15 +13,23 @@
 
 namespace blink {
 
-TCPSocket::TCPSocket(ScriptPromiseResolver& resolver)
-    : resolver_(&resolver),
+namespace {
+
+constexpr char kTCPNetworkFailuresHistogramName[] =
+    "DirectSockets.TCPNetworkFailures";
+
+}  // namespace
+
+TCPSocket::TCPSocket(ExecutionContext* execution_context,
+                     ScriptPromiseResolver& resolver)
+    : ExecutionContextClient(execution_context),
+      resolver_(&resolver),
       feature_handle_for_scheduler_(
-          ExecutionContext::From(resolver_->GetScriptState())
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::
-                      kOutstandingNetworkRequestDirectSocket,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
+              {SchedulingPolicy::DisableBackForwardCache()})),
+      tcp_socket_{execution_context},
+      socket_observer_receiver_{this, execution_context} {
   DCHECK(resolver_);
 }
 
@@ -30,13 +38,15 @@ TCPSocket::~TCPSocket() = default;
 mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
 TCPSocket::GetTCPSocketReceiver() {
   DCHECK(resolver_);
-  return tcp_socket_.BindNewPipeAndPassReceiver();
+  return tcp_socket_.BindNewPipeAndPassReceiver(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 }
 
 mojo::PendingRemote<network::mojom::blink::SocketObserver>
 TCPSocket::GetTCPSocketObserver() {
   DCHECK(resolver_);
-  auto result = socket_observer_receiver_.BindNewPipeAndPassRemote();
+  auto result = socket_observer_receiver_.BindNewPipeAndPassRemote(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
   socket_observer_receiver_.set_disconnect_handler(WTF::Bind(
       &TCPSocket::OnSocketObserverConnectionError, WrapPersistent(this)));
@@ -52,7 +62,7 @@ void TCPSocket::Init(int32_t result,
   DCHECK(resolver_);
   DCHECK(!tcp_readable_stream_wrapper_);
   DCHECK(!tcp_writable_stream_wrapper_);
-  if (result == net::Error::OK) {
+  if (result == net::Error::OK && peer_addr.has_value()) {
     local_addr_ = local_addr;
     peer_addr_ = peer_addr;
     tcp_readable_stream_wrapper_ =
@@ -69,8 +79,13 @@ void TCPSocket::Init(int32_t result,
             std::move(send_stream));
     resolver_->Resolve(this);
   } else {
+    if (result != net::Error::OK) {
+      // Error codes are negative.
+      base::UmaHistogramSparse(kTCPNetworkFailuresHistogramName, -result);
+    }
+    // TODO(crbug/1282199): Create specific exception based on error code.
     resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError, "Permission denied"));
+        DOMExceptionCode::kNetworkError, "Network error."));
     socket_observer_receiver_.reset();
   }
   resolver_ = nullptr;
@@ -122,6 +137,9 @@ void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   visitor->Trace(tcp_readable_stream_wrapper_);
   visitor->Trace(tcp_writable_stream_wrapper_);
+  visitor->Trace(tcp_socket_);
+  visitor->Trace(socket_observer_receiver_);
+  ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

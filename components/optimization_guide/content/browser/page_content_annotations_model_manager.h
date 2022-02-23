@@ -5,13 +5,16 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/core/page_topics_model_executor.h"
+#include "components/optimization_guide/core/page_visibility_model_executor.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "net/base/priority_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,7 +36,8 @@ using EntityMetadataRetrievedCallback =
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
-  explicit PageContentAnnotationsModelManager(
+  PageContentAnnotationsModelManager(
+      const std::string& application_locale,
       OptimizationGuideModelProvider* optimization_guide_model_provider);
   ~PageContentAnnotationsModelManager() override;
   PageContentAnnotationsModelManager(
@@ -43,16 +47,28 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // Requests to annotate |text|, will invoke |callback| when completed.
   //
-  // This will execute all supported models based on the models_to_execute
-  // param on the PageContentAnnotationsService feature and is only used by the
-  // History service code path. See the below |Annotate| for the publicly
-  // available Annotation code path.
+  // This will execute all supported models of the PageContentAnnotationsService
+  // feature and is only used by the History service code path. See the below
+  // |Annotate| for the publicly available Annotation code path.
+  // TODO(crbug/1278833): Remove this.
   void Annotate(const std::string& text, PageContentAnnotatedCallback callback);
 
   // PageContentAnnotator:
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
+
+  // Requests that the given model for |type| be loaded in the background and
+  // then runs |callback| with true when the model is ready to execute. If the
+  // model is ready now, the callback is run immediately. If the model file will
+  // never be available, the callback is run with false.
+  void RequestAndNotifyWhenModelAvailable(
+      AnnotationType type,
+      base::OnceCallback<void(bool)> callback);
+
+  // Returns the model info associated with the given AnnotationType, if it is
+  // available and loaded.
+  absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being
@@ -78,7 +94,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
     // All publicly posted jobs will have this priority level.
     kNormal = 1,
 
-    // TODO(crbug/1249632): Add a kHigh value for internal jobs.
+    // TODO(crbug/1278833): Add a kHigh value for internal jobs.
 
     // Always keep this last and as the highest priority + 1. This value is
     // passed to the priority queue ctor as "how many level of priorities are
@@ -152,6 +168,12 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void SetUpPageTopicsV2Model(
       OptimizationGuideModelProvider* optimization_guide_model_provider);
 
+  // Set up the machinery for execution of the page visibility model. This
+  // should only be run at construction.
+  // TODO(crbug/1266504): Actually call this based on a separate feature flag.
+  void SetUpPageVisibilityModel(
+      OptimizationGuideModelProvider* optimization_guide_model_provider);
+
   // Requests to execute the page topics model with |text|, populate
   // |current_annotations| with detected topics on success, and proceed to
   // execute any subsequent models.
@@ -195,7 +217,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // Runs the next job in |job_queue_| if there is any.
   void MaybeStartNextAnnotationJob();
 
-  // Called when a job finishes executing.
+  // Called when a |job| finishes executing, just before it is deleted.
   void OnJobExecutionComplete();
 
   // The model executor responsible for executing the page topics model.
@@ -212,6 +234,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // this.
   std::unique_ptr<PageTopicsModelExecutor>
       on_demand_page_topics_model_executor_;
+
+  // The model executor responsible for executing the page visibility model.
+  std::unique_ptr<PageVisibilityModelExecutor> page_visibility_model_executor_;
 
   // The model executor responsible for executing the page entities model.
   //
@@ -230,6 +255,9 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
   // The current state of the running job, if any.
   JobExecutionState job_state_ = JobExecutionState::kIdle;
+
+  // The model provider, not owned.
+  raw_ptr<OptimizationGuideModelProvider> optimization_guide_model_provider_;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};

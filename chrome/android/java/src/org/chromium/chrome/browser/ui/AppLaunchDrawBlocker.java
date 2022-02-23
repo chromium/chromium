@@ -136,7 +136,8 @@ public class AppLaunchDrawBlocker {
     }
 
     private void writeSearchEngineHadLogoPref() {
-        boolean searchEngineHasLogo = TemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo();
+        boolean searchEngineHasLogo =
+                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, searchEngineHasLogo);
     }
@@ -217,7 +218,8 @@ public class AppLaunchDrawBlocker {
      * @param isTabRegularNtp Whether the tab is regular NTP, not incognito.
      */
     private void recordBlockDrawForInitialTabHistograms(boolean isTabRegularNtp) {
-        boolean searchEngineHasLogo = TemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo();
+        boolean searchEngineHasLogo =
+                TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
         boolean singleUrlBarMode =
                 NewTabPage.isInSingleUrlBarMode(mIsTabletSupplier.get(), searchEngineHasLogo);
         boolean focusedOmnibox =

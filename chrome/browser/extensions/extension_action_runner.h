@@ -13,9 +13,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
@@ -41,12 +42,6 @@ class Extension;
 class ExtensionActionRunner : public content::WebContentsObserver,
                               public ExtensionRegistryObserver {
  public:
-  enum class PageAccess {
-    RUN_ON_CLICK,
-    RUN_ON_SITE,
-    RUN_ON_ALL_SITES,
-  };
-
   class TestObserver {
    public:
     virtual void OnBlockedActionAdded() = 0;
@@ -74,9 +69,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Notifies the ExtensionActionRunner that the page access for |extension| has
   // changed.
-  void HandlePageAccessModified(const Extension* extension,
-                                PageAccess current_access,
-                                PageAccess new_access);
+  void HandlePageAccessModified(
+      const Extension* extension,
+      SitePermissionsHelper::SiteAccess current_access,
+      SitePermissionsHelper::SiteAccess new_access);
 
   // Notifies the ExtensionActionRunner that an extension has been granted
   // active tab permissions. This will run any pending injections for that
@@ -135,6 +131,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 #endif  // defined(UNIT_TEST)
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
+                           DoNotResetExtensionActionRunner);
+
   struct PendingScript {
     PendingScript(mojom::RunLocation run_location,
                   ScriptInjectionCallback permit_script);
@@ -194,15 +193,16 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void OnBlockedActionBubbleForPageAccessGrantClosed(
       const std::string& extension_id,
       const GURL& page_url,
-      PageAccess current_access,
-      PageAccess new_access,
+      SitePermissionsHelper::SiteAccess current_access,
+      SitePermissionsHelper::SiteAccess new_access,
       ToolbarActionsBarBubbleDelegate::CloseAction action);
 
   // Handles permission changes necessary for page access modification of the
   // |extension|.
-  void UpdatePageAccessSettings(const Extension* extension,
-                                PageAccess current_access,
-                                PageAccess new_access);
+  void UpdatePageAccessSettings(
+      const Extension* extension,
+      SitePermissionsHelper::SiteAccess current_access,
+      SitePermissionsHelper::SiteAccess new_access);
 
   // Runs any actions that were blocked for the given |extension|. As a
   // requirement, this will grant activeTab permission to the extension.
@@ -230,7 +230,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   int num_page_requests_;
 
   // The associated browser context.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Whether or not the feature was used for any extensions. This may not be the
   // case if the user never enabled the scripts-require-action flag.
@@ -256,7 +256,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::CloseAction>
       default_bubble_close_action_for_testing_;
 
-  TestObserver* test_observer_;
+  raw_ptr<TestObserver> test_observer_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};

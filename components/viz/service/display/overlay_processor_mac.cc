@@ -15,9 +15,10 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
-OverlayProcessorMac::OverlayProcessorMac(bool enable_ca_overlay)
-    : ca_layer_overlay_processor_(
-          std::make_unique<CALayerOverlayProcessor>(enable_ca_overlay)) {}
+
+OverlayProcessorMac::OverlayProcessorMac()
+    : ca_layer_overlay_processor_(std::make_unique<CALayerOverlayProcessor>()) {
+}
 
 OverlayProcessorMac::OverlayProcessorMac(
     std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor)
@@ -47,10 +48,14 @@ gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   return result;
 }
 
+void OverlayProcessorMac::SetIsVideoCaptureEnabled(bool enabled) {
+  ca_layer_overlay_processor_->SetIsVideoCaptureEnabled(enabled);
+}
+
 void OverlayProcessorMac::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -108,6 +113,10 @@ void OverlayProcessorMac::AdjustOutputSurfaceOverlay(
 
 bool OverlayProcessorMac::NeedsSurfaceDamageRectList() const {
   return false;
+}
+
+gfx::CALayerResult OverlayProcessorMac::GetCALayerErrorCode() const {
+  return ca_layer_overlay_processor_->ca_layer_result();
 }
 
 }  // namespace viz

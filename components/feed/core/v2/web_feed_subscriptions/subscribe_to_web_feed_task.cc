@@ -11,29 +11,32 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
+#include "components/feed/core/v2/web_feed_subscriptions/web_feed_types.h"
 #include "components/feed/core/v2/web_feed_subscriptions/wire_to_store.h"
 
 namespace feed {
 
 SubscribeToWebFeedTask::SubscribeToWebFeedTask(
     FeedStream* stream,
+    const OperationToken& operation_token,
     Request request,
     base::OnceCallback<void(Result)> callback)
     : stream_(*stream),
+      operation_token_(operation_token),
       request_(std::move(request)),
       callback_(std::move(callback)) {}
 
 SubscribeToWebFeedTask::~SubscribeToWebFeedTask() = default;
 
 void SubscribeToWebFeedTask::Run() {
-  if (stream_.ClearAllInProgress()) {
+  if (!operation_token_) {
     Done(WebFeedSubscriptionRequestStatus::
              kAbortWebFeedSubscriptionPendingClearAll);
     return;
   }
   if (!request_.web_feed_id.empty()) {
     DCHECK(request_.page_info.url().is_empty());
-    WebFeedSubscriptionCoordinator::SubscriptionInfo info =
+    WebFeedSubscriptionInfo info =
         stream_.subscriptions().FindSubscriptionInfoById(request_.web_feed_id);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
       subscribed_web_feed_info_ = info.web_feed_info;
@@ -48,12 +51,12 @@ void SubscribeToWebFeedTask::Run() {
     SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_name(request_.web_feed_id);
     stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, stream_.GetSyncSignedInGaia(),
+        request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                        base::Unretained(this)));
   } else {
     DCHECK(request_.page_info.url().is_valid());
-    WebFeedSubscriptionCoordinator::SubscriptionInfo info =
+    WebFeedSubscriptionInfo info =
         stream_.subscriptions().FindSubscriptionInfo(request_.page_info);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
       subscribed_web_feed_info_ = info.web_feed_info;
@@ -67,11 +70,14 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_web_page_uri(request_.page_info.url().spec());
+    if (request_.page_info.canonical_url().is_valid()) {
+      request.set_canonical_uri(request_.page_info.canonical_url().spec());
+    }
     for (const GURL& rss_url : request_.page_info.GetRssUrls()) {
       request.add_page_rss_uris(rss_url.spec());
     }
     stream_.GetNetwork().SendApiRequest<FollowWebFeedDiscoverApi>(
-        request, stream_.GetSyncSignedInGaia(),
+        request, stream_.GetAccountInfo(), stream_.GetSignedInRequestMetadata(),
         base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                        base::Unretained(this)));
   }
@@ -79,6 +85,10 @@ void SubscribeToWebFeedTask::Run() {
 
 void SubscribeToWebFeedTask::RequestComplete(
     FeedNetwork::ApiResult<feedwire::webfeed::FollowWebFeedResponse> result) {
+  // This will always be valid, because ClearAllTask cannot have run after this
+  // task starts.
+  DCHECK(operation_token_);
+
   if (result.response_body) {
     stream_.SetMetadata(feedstore::MaybeUpdateConsistencyToken(
         stream_.GetMetadata(), result.response_body->consistency_token()));

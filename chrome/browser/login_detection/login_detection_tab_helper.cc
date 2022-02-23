@@ -58,6 +58,7 @@ void LoginDetectionTabHelper::MaybeCreateForWebContents(
 LoginDetectionTabHelper::LoginDetectionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoginDetectionTabHelper>(*web_contents),
       oauth_login_detector_(std::make_unique<OAuthLoginDetector>()) {
   DCHECK(IsLoginDetectionFeatureEnabled());
 }

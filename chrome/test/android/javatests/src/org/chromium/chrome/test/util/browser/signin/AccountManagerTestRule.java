@@ -21,11 +21,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.R;
@@ -46,16 +46,11 @@ public class AccountManagerTestRule implements TestRule {
     private boolean mIsSignedIn;
 
     public AccountManagerTestRule() {
-        this(new FakeAccountManagerFacade());
+        this(new FakeAccountManagerFacade(), new FakeAccountInfoService());
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
-        mFakeAccountManagerFacade = fakeAccountManagerFacade;
-        mFakeAccountInfoService = null;
-    }
-
-    public AccountManagerTestRule(@NonNull FakeAccountInfoService fakeAccountInfoService) {
-        this(new FakeAccountManagerFacade(), fakeAccountInfoService);
+        this(fakeAccountManagerFacade, new FakeAccountInfoService());
     }
 
     public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
@@ -83,11 +78,8 @@ public class AccountManagerTestRule implements TestRule {
      * Sets up the AccountManagerFacade mock.
      */
     public void setUpRule() {
-        if (mFakeAccountInfoService != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
-            });
-        }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService); });
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
@@ -104,23 +96,15 @@ public class AccountManagerTestRule implements TestRule {
             signOut();
         }
         AccountManagerFacadeProvider.resetInstanceForTests();
-        if (mFakeAccountInfoService != null) {
-            AccountInfoServiceProvider.resetForTests();
-        }
+        AccountInfoServiceProvider.resetForTests();
     }
 
     /**
-     * Adds an account to the fake AccountManagerFacade, if the {@link FakeAccountInfoService} is
-     * set up, add the corresponding {@link AccountInfo} to the {@link FakeAccountInfoService}.
-     * @return The CoreAccountInfo for the account added.
+     * Adds an observer that detects changes in the account state propagated by the
+     * IdentityManager object.
      */
-    public CoreAccountInfo addAccount(Account account) {
-        if (mFakeAccountInfoService != null) {
-            return addAccountWithNameAndAvatar(account.name);
-        } else {
-            mFakeAccountManagerFacade.addAccount(account);
-            return toCoreAccountInfo(account.name);
-        }
+    public void observeIdentityManager(IdentityManager identityManager) {
+        identityManager.addObserver(mFakeAccountInfoService);
     }
 
     /**
@@ -128,7 +112,9 @@ public class AccountManagerTestRule implements TestRule {
      * @return The CoreAccountInfo for the account added.
      */
     public CoreAccountInfo addAccount(String accountName) {
-        return addAccount(AccountUtils.createAccountFromName(accountName));
+        assert mFakeAccountInfoService != null;
+        final String baseEmail = accountName.split("@", 2)[0];
+        return addAccount(accountName, baseEmail + ".full", baseEmail + ".given", createAvatar());
     }
 
     /**
@@ -142,16 +128,6 @@ public class AccountManagerTestRule implements TestRule {
         final Account account = AccountUtils.createAccountFromName(email);
         mFakeAccountManagerFacade.addAccount(account);
         return toCoreAccountInfo(email);
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and the corresponding {@link AccountInfo}
-     * with name and avatar to {@link FakeAccountInfoService}.
-     */
-    public CoreAccountInfo addAccountWithNameAndAvatar(String email) {
-        assert mFakeAccountInfoService != null;
-        final String baseEmail = email.split("@", 2)[0];
-        return addAccount(email, baseEmail + ".full", baseEmail + ".given", createAvatar());
     }
 
     /**
@@ -256,13 +232,13 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Creates a child account.
+     * Creates an email used to identify child accounts in tests.
      * A child-specific prefix will be appended to the base name so that the created account
      * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
      * {@link FakeAccountManagerFacade}.
      */
-    public static Account createChildAccount(String baseName) {
-        return FakeAccountManagerFacade.createChildAccount(baseName);
+    public static String generateChildEmail(String baseName) {
+        return FakeAccountManagerFacade.generateChildEmail(baseName);
     }
 
     /**

@@ -6,9 +6,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Unsupported on Android."
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"

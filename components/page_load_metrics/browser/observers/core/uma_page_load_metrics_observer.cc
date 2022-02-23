@@ -20,6 +20,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -272,9 +273,6 @@ const char kHistogramLoadTypeParseStartNewNavigation[] =
 const char kHistogramFirstForeground[] =
     "PageLoad.PageTiming.NavigationToFirstForeground";
 
-const char kHistogramFailedProvisionalLoad[] =
-    "PageLoad.PageTiming.NavigationToFailedProvisionalLoad";
-
 const char kHistogramUserGestureNavigationToForwardBack[] =
     "PageLoad.PageTiming.ForegroundDuration.PageEndReason."
     "ForwardBackNavigation.UserGesture";
@@ -346,13 +344,6 @@ const char kHistogramLoadTypeNetworkBytesNewNavigation[] =
     "PageLoad.Experimental.Bytes.Network.LoadType.NewNavigation";
 const char kHistogramLoadTypeCacheBytesNewNavigation[] =
     "PageLoad.Experimental.Bytes.Cache2.LoadType.NewNavigation";
-
-const char kHistogramTotalCompletedResources[] =
-    "PageLoad.Experimental.CompletedResources.Total2";
-const char kHistogramNetworkCompletedResources[] =
-    "PageLoad.Experimental.CompletedResources.Network";
-const char kHistogramCacheCompletedResources[] =
-    "PageLoad.Experimental.CompletedResources.Cache2";
 
 const char kHistogramInputToNavigation[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart";
@@ -428,8 +419,6 @@ const char kHistogramMemoryUpdateReceived[] =
 UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
     : transition_(ui::PAGE_TRANSITION_LINK),
       was_no_store_main_resource_(false),
-      num_cache_resources_(0),
-      num_network_resources_(0),
       cache_bytes_(0),
       network_bytes_(0),
       network_bytes_including_headers_(0),
@@ -831,17 +820,6 @@ UmaPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 void UmaPageLoadMetricsObserver::OnFailedProvisionalLoad(
     const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info) {
-  // Only handle actual failures; provisional loads that failed due to another
-  // committed load or due to user action are recorded in
-  // AbortsPageLoadMetricsObserver.
-  if (failed_load_info.error != net::OK &&
-      failed_load_info.error != net::ERR_ABORTED) {
-    if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-            failed_load_info.time_to_failed_provisional_load, GetDelegate())) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFailedProvisionalLoad,
-                          failed_load_info.time_to_failed_provisional_load);
-    }
-  }
   // Provide an empty PageLoadTiming, since we don't have any timing metrics
   // for failed provisional loads.
   RecordForegroundDurationHistograms(page_load_metrics::mojom::PageLoadTiming(),
@@ -941,10 +919,8 @@ void UmaPageLoadMetricsObserver::OnResourceDataUseObserved(
       if (resource->cache_type ==
           page_load_metrics::mojom::CacheType::kNotCached) {
         network_bytes_ += resource->encoded_body_length;
-        num_network_resources_++;
       } else {
         cache_bytes_ += resource->encoded_body_length;
-        num_cache_resources_++;
       }
     }
     network_bytes_including_headers_ += resource->delta_bytes;
@@ -1312,14 +1288,6 @@ void UmaPageLoadMetricsObserver::RecordByteAndResourceHistograms(
       NOTREACHED();
       break;
   }
-
-  PAGE_RESOURCE_COUNT_HISTOGRAM(internal::kHistogramNetworkCompletedResources,
-                                num_network_resources_);
-  PAGE_RESOURCE_COUNT_HISTOGRAM(internal::kHistogramCacheCompletedResources,
-                                num_cache_resources_);
-  PAGE_RESOURCE_COUNT_HISTOGRAM(internal::kHistogramTotalCompletedResources,
-                                num_cache_resources_ + num_network_resources_);
-
   click_tracker_.RecordClickBurst(GetDelegate().GetPageUkmSourceId());
 }
 

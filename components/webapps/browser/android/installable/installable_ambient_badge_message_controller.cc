@@ -9,6 +9,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
+#include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace webapps {
@@ -31,6 +32,7 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
     content::WebContents* web_contents,
     const std::u16string& app_name,
     const SkBitmap& icon,
+    const bool is_primary_icon_maskable,
     const GURL& start_url) {
   DCHECK(!message_);
 
@@ -47,9 +49,16 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
       IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE, app_name));
   message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
       start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  // TODO(crbug.com/1247374): Add support for maskable primary icon.
   message_->DisableIconTint();
-  message_->SetIcon(icon);
+  if (is_primary_icon_maskable &&
+      WebappsIconUtils::DoesAndroidSupportMaskableIcons()) {
+    message_->SetIcon(WebappsIconUtils::GenerateAdaptiveIconBitmap(icon));
+  } else {
+    message_->SetIcon(icon);
+  }
+  message_->EnableLargeIcon(true);
+  message_->SetIconRoundedCornerRadius(
+      WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI());
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_INSTALL));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,

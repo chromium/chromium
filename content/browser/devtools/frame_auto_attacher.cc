@@ -194,6 +194,15 @@ void FrameAutoAttacher::UpdatePages() {
   DispatchSetAttachedTargetsOfType(new_hosts, DevToolsAgentHost::kTypePage);
 }
 
+void FrameAutoAttacher::AutoAttachToPage(FrameTree* frame_tree,
+                                         bool wait_for_debugger_on_start) {
+  if (!auto_attach())
+    return;
+  scoped_refptr<DevToolsAgentHost> agent_host =
+      RenderFrameDevToolsAgentHost::GetOrCreateFor(frame_tree->root());
+  DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start);
+}
+
 void FrameAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
   if (auto_attach()) {
     UpdateFrames();
@@ -203,10 +212,15 @@ void FrameAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
       observing_service_workers_ = true;
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
     }
+    if (observing_service_workers_) {
+      // Update service workers even if we've already been observing them,
+      // to notify new clients about existing service workers.
+      // This is similar to frames and pages above.
+      ReattachServiceWorkers();
+    }
     if (render_frame_host_ && !observing_auction_worklets_) {
       observing_auction_worklets_ = true;
       DebuggableAuctionWorkletTracker::GetInstance()->AddObserver(this);
-      ReattachServiceWorkers();
     }
   } else {
     if (observing_service_workers_) {

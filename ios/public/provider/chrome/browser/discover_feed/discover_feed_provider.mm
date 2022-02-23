@@ -13,16 +13,31 @@ void DiscoverFeedProvider::StartFeed(
 
 void DiscoverFeedProvider::StopFeed() {}
 
+void DiscoverFeedProvider::StartFeedService(
+    DiscoverFeedConfiguration* discover_config) {}
+
+void DiscoverFeedProvider::StopFeedService() {}
+
+void DiscoverFeedProvider::CreateFeedModels() {}
+
+void DiscoverFeedProvider::ClearFeedModels() {}
+
 bool DiscoverFeedProvider::IsDiscoverFeedEnabled() {
   return false;
 }
 
-UIViewController* DiscoverFeedProvider::NewFeedViewController(
-    Browser* browser) {
+FeedMetricsRecorder* DiscoverFeedProvider::GetFeedMetricsRecorder() {
   return nil;
 }
 
-UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
+UIViewController*
+DiscoverFeedProvider::NewDiscoverFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+
+UIViewController*
+DiscoverFeedProvider::NewFollowingFeedViewControllerWithConfiguration(
     DiscoverFeedViewControllerConfiguration* configuration) {
   return nil;
 }
@@ -32,11 +47,11 @@ void DiscoverFeedProvider::RemoveFeedViewController(
 
 void DiscoverFeedProvider::UpdateTheme() {}
 
+void DiscoverFeedProvider::RefreshFeedIfNeeded() {}
+
 void DiscoverFeedProvider::RefreshFeed() {}
 
 void DiscoverFeedProvider::UpdateFeedForAccountChange() {}
 
 void DiscoverFeedProvider::AddObserver(Observer* observer) {}
 void DiscoverFeedProvider::RemoveObserver(Observer* observer) {}
-void DiscoverFeedProvider::LoadMoreFeedArticles() {}
-void DiscoverFeedProvider::FeedWasShown() {}

@@ -113,7 +113,11 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(RenderWidgetHost* rwh,
   UMA_HISTOGRAM_LONG_TIMES("TextInputClient.FirstRect",
                            delta * base::Time::kMicrosecondsPerMillisecond);
 
-  return first_rect_;
+  // `first_rect_` is in (child) frame coordinate and needs to be transformed to
+  // the root frame coordinate.
+  return gfx::Rect(
+      rwh->GetView()->TransformPointToRootCoordSpace(first_rect_.origin()),
+      first_rect_.size());
 }
 
 void TextInputClientMac::SetCharacterIndexAndSignal(uint32_t index) {

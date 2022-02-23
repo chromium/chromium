@@ -48,6 +48,7 @@ bool OomInterventionTabHelper::IsEnabled() {
 OomInterventionTabHelper::OomInterventionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OomInterventionTabHelper>(*web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
           web_contents->GetBrowserContext())) {
   scoped_observation_.Observe(
@@ -167,7 +168,7 @@ void OomInterventionTabHelper::DidStartNavigation(
 }
 
 void OomInterventionTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInMainFrame())
+  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();
@@ -183,10 +184,7 @@ void OomInterventionTabHelper::OnVisibilityChanged(
   }
 }
 
-void OomInterventionTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->GetPage().IsPrimary())
-    return;
+void OomInterventionTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();
 }
@@ -235,7 +233,7 @@ void OomInterventionTabHelper::StartMonitoringIfNeeded() {
   if (near_oom_detected_time_)
     return;
 
-  if (!web_contents()->IsDocumentOnLoadCompletedInMainFrame())
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
   auto* config = OomInterventionConfig::GetInstance();

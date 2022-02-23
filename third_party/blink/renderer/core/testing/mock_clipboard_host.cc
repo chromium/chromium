@@ -202,7 +202,7 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   unsanitized_custom_data_map_.Set(format, data_copy);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const String& text) {}
 #endif
 

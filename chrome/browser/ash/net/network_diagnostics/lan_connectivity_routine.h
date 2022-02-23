@@ -28,7 +28,7 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -41,7 +41,8 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   bool lan_connected_ = false;
-  std::vector<mojom::LanConnectivityProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::LanConnectivityProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics

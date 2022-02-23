@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
 
@@ -58,8 +58,8 @@ namespace blink {
 namespace {
 
 template <typename T, typename... Args>
-NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<NewScriptFunction>(
+ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
 }
 
@@ -405,7 +405,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     return StreamThenPromise(
         script_state->GetContext(),
         writable_->backpressure_promise_->V8Promise(isolate),
-        MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this));
+        MakeGarbageCollected<ScriptFunction>(
+            script_state,
+            MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -420,12 +422,10 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     DoWriteOnResolve(ScriptState* script_state,
                      v8::Local<v8::Value> chunk,
                      WriteAlgorithm* target)
-        : PromiseHandlerWithValue(script_state),
-          chunk_(script_state->GetIsolate(), chunk),
-          target_(target) {}
+        : chunk_(script_state->GetIsolate(), chunk), target_(target) {}
 
-    v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
-      ScriptState* script_state = GetScriptState();
+    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                       v8::Local<v8::Value>) override {
       return target_->DoWrite(script_state,
                               chunk_.Get(script_state->GetIsolate()));
     }
@@ -780,9 +780,9 @@ class CrossRealmTransformReadable::CancelAlgorithm final
 
 class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
  public:
-  using Constant = NewScriptFunction::Constant;
+  using Constant = ScriptFunction::Constant;
 
-  class PullSource2 final : public NewScriptFunction::Callable {
+  class PullSource2 final : public ScriptFunction::Callable {
    public:
     explicit PullSource2(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
@@ -792,21 +792,21 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     }
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
    private:
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Success final : public NewScriptFunction::Callable {
+  class OnReadingSource1Success final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Success(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
     ScriptValue Call(ScriptState* script_state,
                      ScriptValue read_result) override {
@@ -835,14 +835,14 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
     const Member<ConcatenatingUnderlyingSource> source_;
   };
 
-  class OnReadingSource1Fail final : public NewScriptFunction::Callable {
+  class OnReadingSource1Fail final : public ScriptFunction::Callable {
    public:
     explicit OnReadingSource1Fail(ConcatenatingUnderlyingSource* source)
         : source_(source) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(source_);
-      NewScriptFunction::Callable::Trace(visitor);
+      ScriptFunction::Callable::Trace(visitor);
     }
 
     ScriptValue Call(ScriptState* script_state, ScriptValue value) override {

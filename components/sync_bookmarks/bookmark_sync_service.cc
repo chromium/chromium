@@ -5,7 +5,6 @@
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
 #include "base/feature_list.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync_bookmarks/bookmark_model_type_processor.h"
 #include "components/undo/bookmark_undo_service.h"
 

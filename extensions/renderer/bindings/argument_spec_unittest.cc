@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -176,8 +175,7 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
     if (params.should_convert_to_base) {
       ASSERT_TRUE(out_value);
       if (params.expected_value) {
-        EXPECT_TRUE(params.expected_value->Equals(out_value.get()))
-            << params.script_source;
+        EXPECT_EQ(*params.expected_value, *out_value) << params.script_source;
       } else {
         EXPECT_EQ(params.expected_json, ValueToString(*out_value));
       }
@@ -896,7 +894,8 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
                   base::BindOnce([](v8::Local<v8::Value> value) {
                     ASSERT_TRUE(value->IsObject());
                     v8::Local<v8::Object> object = value.As<v8::Object>();
-                    v8::Local<v8::Context> context = object->CreationContext();
+                    v8::Local<v8::Context> context =
+                        object->GetCreationContextChecked();
                     gin::Dictionary dict(context->GetIsolate(), object);
                     std::string result;
                     ASSERT_TRUE(dict.Get("str", &result));
@@ -934,7 +933,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
     ExpectSuccess(*spec, "({})", base::BindOnce([](v8::Local<v8::Value> value) {
       ASSERT_TRUE(value->IsObject());
       v8::Local<v8::Object> object = value.As<v8::Object>();
-      v8::Local<v8::Context> context = object->CreationContext();
+      v8::Local<v8::Context> context = object->GetCreationContextChecked();
       // We expect a null prototype to ensure we avoid tricky getters/setters on
       // the Object prototype.
       EXPECT_TRUE(object->GetPrototype()->IsNull());
@@ -960,7 +959,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
         base::BindOnce([](v8::Local<v8::Value> value) {
           ASSERT_TRUE(value->IsObject());
           v8::Local<v8::Object> object = value.As<v8::Object>();
-          v8::Local<v8::Context> context = object->CreationContext();
+          v8::Local<v8::Context> context = object->GetCreationContextChecked();
           v8::Local<v8::Value> prop =
               object
                   ->Get(context, gin::StringToV8(context->GetIsolate(), "prop"))

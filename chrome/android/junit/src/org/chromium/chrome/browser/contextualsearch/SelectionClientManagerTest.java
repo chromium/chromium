@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 
 /**
@@ -50,7 +53,7 @@ public class SelectionClientManagerTest {
         public void onSelectionEvent(int eventType, float posXPix, float posYPix) {}
 
         @Override
-        public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {}
+        public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {}
 
         @Override
         public void cancelAllRequests() {}

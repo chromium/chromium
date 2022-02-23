@@ -26,7 +26,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
 <translation id="2329392777730037872">Kon nie <ph name="URL" /> op die kliënt se toestel oopmaak nie.</translation>
-<translation id="2333212046079545895">Kopierieg 2021 Google LLC. Alle regte voorbehou.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2366718077645204424">Kan nie die gasheer bereik nie. Dit is waarskynlik weens die opstelling van die netwerk wat jy gebruik.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Is <ph name="RELATIVE_TIMESTAMP" /> laas aanlyn gesien.</translation>
@@ -37,6 +36,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="2599300881200251572">Hierdie diens maak inkomende verbindings van Chrome-afstandwerkskermkliënte af moontlik.</translation>
 <translation id="2647232381348739934">Chromoting-diens</translation>
 <translation id="2676780859508944670">Werk tans …</translation>
+<translation id="2692522824157224199">Kopierieg 2022 Google LLC. Alle regte voorbehou.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Kon nie staaf nie. Probeer weer aanmeld.</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
@@ -73,10 +73,10 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> se URL-aanstuurder</translation>
 <translation id="4277736576214464567">Die toegangkode is ongeldig. Probeer asseblief weer.</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4372650392690220936">Kopiereg 2022 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4405930547258349619">Kernbiblioteek</translation>
 <translation id="443560535555262820">Maak Toeganklikheid-voorkeure oop</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
-<translation id="4512952200932940229">Kopiereg 2021 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4563926062592110512">Kliënt het ontkoppel: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is nie reg opgestel nie. Kies asseblief 'n ander webblaaier en aktiveer dan weer URL-aanstuur.</translation>

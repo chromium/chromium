@@ -6,10 +6,11 @@
 #define CHROME_UTILITY_IMPORTER_NSS_DECRYPTOR_H_
 
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/utility/importer/nss_decryptor_win.h"
-#elif defined(USE_NSS_CERTS)
+#elif BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/utility/importer/nss_decryptor_system_nss.h"
 #else
 #error NSSDecryptor not implemented.

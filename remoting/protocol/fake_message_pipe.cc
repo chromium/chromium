@@ -64,6 +64,14 @@ void FakeMessagePipe::Receive(std::unique_ptr<CompoundBuffer> message) {
   ReceiveImpl(std::move(message));
 }
 
+void FakeMessagePipe::ReceiveProtobufMessage(
+    const google::protobuf::MessageLite& message) {
+  auto buffer = std::make_unique<CompoundBuffer>();
+  std::string data = message.SerializeAsString();
+  buffer->AppendCopyOf(data.data(), data.size());
+  Receive(std::move(buffer));
+}
+
 void FakeMessagePipe::OpenPipe() {
   if (asynchronous_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(

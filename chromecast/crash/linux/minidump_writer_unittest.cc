@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/test/scoped_path_override.h"
 #include "chromecast/base/scoped_temp_file.h"
 #include "chromecast/crash/linux/crash_testing_utils.h"

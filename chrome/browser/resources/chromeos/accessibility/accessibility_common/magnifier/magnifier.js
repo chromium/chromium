@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
+
 /**
  * Main class for the Chrome OS magnifier.
  */
@@ -34,18 +37,35 @@ export class Magnifier {
      */
     this.magnifierDebugDrawRect_ = false;
 
+    /**
+     * Last seen mouse location (cached from event in onMouseMovedOrDragged).
+     * @private {{x: number, y: number}}
+     */
+    this.mouseLocation_;
+
+    /**
+     * Last time mouse has moved (from last onMouseMovedOrDragged).
+     * @private {Date}
+     */
+    this.lastMouseMovedTime_;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
-        [], chrome.automation.EventType.FOCUS, event => this.onFocus_(event));
+        [], EventType.FOCUS, event => this.onFocusOrSelectionChanged_(event));
 
     /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
-        [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
+        [], EventType.ACTIVE_DESCENDANT_CHANGED,
         event => this.onActiveDescendantChanged_(event));
 
     /** @private {!EventHandler} */
+    this.selectionHandler_ = new EventHandler(
+        [], EventType.SELECTION,
+        event => this.onFocusOrSelectionChanged_(event));
+
+    /** @private {!EventHandler} */
     this.onCaretBoundsChangedHandler = new EventHandler(
-        [], chrome.automation.EventType.CARET_BOUNDS_CHANGED,
+        [], EventType.CARET_BOUNDS_CHANGED,
         event => this.onCaretBoundsChanged(event));
 
     /** @private {!ChromeEventHandler} */
@@ -58,6 +78,16 @@ export class Magnifier {
         chrome.settingsPrivate.onPrefsChanged,
         prefs => this.updateFromPrefs_(prefs));
 
+    /** @private {!EventHandler} */
+    this.onMouseMovedHandler_ = new EventHandler(
+        [], chrome.automation.EventType.MOUSE_MOVED,
+        event => this.onMouseMovedOrDragged_(event));
+
+    /** @private {!EventHandler} */
+    this.onMouseDraggedHandler_ = new EventHandler(
+        [], chrome.automation.EventType.MOUSE_DRAGGED,
+        event => this.onMouseMovedOrDragged_(event));
+
     this.init_();
   }
 
@@ -65,9 +95,12 @@ export class Magnifier {
   onMagnifierDisabled() {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
+    this.selectionHandler_.stop();
     this.onCaretBoundsChangedHandler.stop();
     this.onMagnifierBoundsChangedHandler_.stop();
     this.updateFromPrefsHandler_.stop();
+    this.onMouseMovedHandler_.stop();
+    this.onMouseDraggedHandler_.stop();
   }
 
   /**
@@ -83,11 +116,19 @@ export class Magnifier {
       this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
+      this.selectionHandler_.setNodes(desktop);
+      this.selectionHandler_.start();
       this.onCaretBoundsChangedHandler.setNodes(desktop);
       this.onCaretBoundsChangedHandler.start();
+      this.onMouseMovedHandler_.setNodes(desktop);
+      this.onMouseMovedHandler_.start();
+      this.onMouseDraggedHandler_.setNodes(desktop);
+      this.onMouseDraggedHandler_.start();
     });
 
     this.onMagnifierBoundsChangedHandler_.start();
+
+    chrome.accessibilityPrivate.enableMouseEvents(true);
 
     this.isInitializing_ = true;
 
@@ -168,13 +209,25 @@ export class Magnifier {
    * @param {!chrome.automation.AutomationEvent} event
    * @private
    */
-  onFocus_(event) {
-    const {location} = event.target;
-    if (!location || !this.shouldFollowFocus()) {
+  onFocusOrSelectionChanged_(event) {
+    const node = event.target;
+    if (!node.location || !this.shouldFollowFocus()) {
       return;
     }
 
-    chrome.accessibilityPrivate.moveMagnifierToRect(location);
+    if (new Date() - this.lastMouseMovedTime_ <
+        Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
+      return;
+    }
+
+    // Skip trying to move magnifier to encompass whole webpage or pdf. It's too
+    // big, and magnifier usually ends up in middle at left edge of page.
+    if (node.isRootNode || node.role === RoleType.WEB_VIEW ||
+        node.role === RoleType.EMBEDDED_OBJECT) {
+      return;
+    }
+
+    chrome.accessibilityPrivate.moveMagnifierToRect(node.location);
   }
 
   /**
@@ -209,6 +262,11 @@ export class Magnifier {
       return;
     }
 
+    if (new Date() - this.lastMouseMovedTime_ <
+        Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
+      return;
+    }
+
     // Note: onCaretBoundsChanged can get called when TextInputType is changed,
     // during which the caret bounds are set to an empty rect (0x0), and we
     // don't need to adjust the viewport position based on this bogus caret
@@ -220,6 +278,16 @@ export class Magnifier {
 
     const caretBoundsCenter = RectUtil.center(target.caretBounds);
     chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
+  }
+
+  /**
+   * Listener for when mouse moves or drags.
+   * @param {!chrome.automation.AutomationEvent} event
+   * @private
+   */
+  onMouseMovedOrDragged_(event) {
+    this.lastMouseMovedTime_ = new Date();
+    this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
 }
 
@@ -249,3 +317,10 @@ Magnifier.Prefs = {
  * @const {number}
  */
 Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS = 500;
+
+/**
+ * Duration of time directly after a mouse move or drag to ignore focus updates,
+ * to prevent the magnified region from jumping.
+ * @const {number}
+ */
+Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -111,7 +112,7 @@ class PrintPreviewDialogControllerBrowserTest
 
  private:
   void SetUpOnMainThread() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableModalAnimations);
 #endif
@@ -120,7 +121,7 @@ class PrintPreviewDialogControllerBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(first_tab);
 
-    // Open a new tab so |cloned_tab_observer_| can see it and create a
+    // Open a new tab so `cloned_tab_observer_` can see it and create a
     // TestPrintViewManagerForRequestPreview for it before the real
     // PrintViewManager gets created.
     // Since TestPrintViewManagerForRequestPreview is created with
@@ -149,8 +150,9 @@ class PrintPreviewDialogControllerBrowserTest
 
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
       cloned_tab_observer_;
-  printing::TestPrintViewManagerForRequestPreview* test_print_view_manager_;
-  WebContents* initiator_ = nullptr;
+  raw_ptr<printing::TestPrintViewManagerForRequestPreview>
+      test_print_view_manager_;
+  raw_ptr<WebContents> initiator_ = nullptr;
 };
 
 // Test to verify that when a initiator navigates, we can create a new preview

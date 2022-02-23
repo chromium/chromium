@@ -37,6 +37,7 @@ extern const char kHistogramFromGWSForegroundDuration[];
 extern const char kHistogramFromGWSForegroundDurationAfterPaint[];
 extern const char kHistogramFromGWSForegroundDurationNoCommit[];
 extern const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[];
+extern const char kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow[];
 
 }  // namespace internal
 

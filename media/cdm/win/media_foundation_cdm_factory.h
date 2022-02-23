@@ -41,8 +41,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
       CreateCdmFactoryCB create_cdm_factory_cb);
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
@@ -54,7 +53,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   using IsTypeSupportedResultCB = base::OnceCallback<void(bool is_supported)>;
 
   void OnCdmOriginIdObtained(
-      const std::string& key_system,
       const CdmConfig& cdm_config,
       const SessionMessageCB& session_message_cb,
       const SessionClosedCB& session_closed_cb,
@@ -74,7 +72,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   void StoreClientToken(const std::vector<uint8_t>& client_token);
 
   HRESULT CreateMfCdmInternal(
-      const std::string& key_system,
       const CdmConfig& cdm_config,
       const base::UnguessableToken& cdm_origin_id,
       const absl::optional<std::vector<uint8_t>>& cdm_client_token,
@@ -83,8 +80,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
 
   // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
   // so we can bind it to a repeating callback using weak pointer.
-  void CreateMfCdm(const std::string& key_system,
-                   const CdmConfig& cdm_config,
+  void CreateMfCdm(const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
                    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
                    const base::FilePath& cdm_store_path_root,

@@ -9,9 +9,12 @@
 
 namespace base {
 class FilePath;
+class Version;
 }
 
 namespace updater {
+
+enum class UpdaterScope;
 
 enum class InstallErrors {
   // Failed to mount the DMG.
@@ -49,6 +52,8 @@ enum class InstallErrors {
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
                        const std::string& ap,
+                       const UpdaterScope& scope,
+                       const base::Version& pv,
                        const std::string& arguments);
 
 }  // namespace updater

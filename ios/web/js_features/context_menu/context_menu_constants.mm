@@ -17,5 +17,12 @@ const char kContextMenuElementTitle[] = "title";
 const char kContextMenuElementReferrerPolicy[] = "referrerPolicy";
 const char kContextMenuElementInnerText[] = "innerText";
 const char kContextMenuElementAlt[] = "alt";
+const char kContextMenuElementNaturalWidth[] = "naturalWidth";
+const char kContextMenuElementNaturalHeight[] = "naturalHeight";
+const char kContextMenuElementBoundingBox[] = "boundingBox";
+const char kContextMenuElementBoundingBoxX[] = "x";
+const char kContextMenuElementBoundingBoxY[] = "y";
+const char kContextMenuElementBoundingBoxWidth[] = "width";
+const char kContextMenuElementBoundingBoxHeight[] = "height";
 
 }  // namespace web

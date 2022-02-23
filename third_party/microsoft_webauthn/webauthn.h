@@ -84,7 +84,15 @@ extern "C" {
 //          - WEBAUTHN_EXTENSIONS_IDENTIFIER_MIN_PIN_LENGTH
 //
 
-#define WEBAUTHN_API_CURRENT_VERSION WEBAUTHN_API_VERSION_3
+#define WEBAUTHN_API_VERSION_4 4
+// WEBAUTHN_API_VERSION_4 : Delta From WEBAUTHN_API_VERSION_3
+//      Data Structures and their sub versions:
+//          - WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS    :   5
+//          - WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS      :   6
+//          - WEBAUTHN_ASSERTION                                :   3
+//
+
+#define WEBAUTHN_API_CURRENT_VERSION WEBAUTHN_API_VERSION_4
 
 //+------------------------------------------------------------------------------------------
 // Information about an RP Entity
@@ -273,6 +281,44 @@ typedef struct _WEBAUTHN_CREDENTIAL_LIST {
 typedef const WEBAUTHN_CREDENTIAL_LIST *PCWEBAUTHN_CREDENTIAL_LIST;
 
 //+------------------------------------------------------------------------------------------
+// PRF values.
+//-------------------------------------------------------------------------------------------
+
+#define WEBAUTHN_CTAP_ONE_HMAC_SECRET_LENGTH 32
+
+typedef struct _WEBAUTHN_HMAC_SECRET_SALT {
+  // Size of pbFirst.
+  DWORD cbFirst;
+  _Field_size_bytes_(cbFirst) PBYTE pbFirst;  // Required
+
+  // Size of pbSecond.
+  DWORD cbSecond;
+  _Field_size_bytes_(cbSecond) PBYTE pbSecond;
+} WEBAUTHN_HMAC_SECRET_SALT, *PWEBAUTHN_HMAC_SECRET_SALT;
+typedef const WEBAUTHN_HMAC_SECRET_SALT* PCWEBAUTHN_HMAC_SECRET_SALT;
+
+typedef struct _WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT {
+  // Size of pbCredID.
+  DWORD cbCredID;
+  _Field_size_bytes_(cbCredID) PBYTE pbCredID;  // Required
+
+  // PRF Values for above credential
+  PWEBAUTHN_HMAC_SECRET_SALT pHmacSecretSalt;  // Required
+} WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT, *PWEBAUTHN_CRED_WITH_HMAC_SECRET_SALT;
+typedef const WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT*
+    PCWEBAUTHN_CRED_WITH_HMAC_SECRET_SALT;
+
+typedef struct _WEBAUTHN_HMAC_SECRET_SALT_VALUES {
+  PWEBAUTHN_HMAC_SECRET_SALT pGlobalHmacSalt;
+
+  DWORD cCredWithHmacSecretSaltList;
+  _Field_size_(cCredWithHmacSecretSaltList)
+      PWEBAUTHN_CRED_WITH_HMAC_SECRET_SALT pCredWithHmacSecretSaltList;
+} WEBAUTHN_HMAC_SECRET_SALT_VALUES, *PWEBAUTHN_HMAC_SECRET_SALT_VALUES;
+typedef const WEBAUTHN_HMAC_SECRET_SALT_VALUES*
+    PCWEBAUTHN_HMAC_SECRET_SALT_VALUES;
+
+//+------------------------------------------------------------------------------------------
 // Hmac-Secret extension
 //-------------------------------------------------------------------------------------------
 
@@ -416,8 +462,9 @@ typedef const WEBAUTHN_EXTENSIONS *PCWEBAUTHN_EXTENSIONS;
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_2            2
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_3            3
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4 4
+#define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_5 5
 #define WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_CURRENT_VERSION \
-  WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4
+  WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_5
 
 typedef struct _WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS {
     // Version of this structure, to allow for modifications in the future.
@@ -473,12 +520,20 @@ typedef struct _WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS {
     // Large Blob Support: none, required or preferred
     //
     // NTE_INVALID_PARAMETER when large blob required or preferred and
-    //   both bRequireResidentKey and bPreferResidentKey are set to FALSE.
+    //   bRequireResidentKey isn't set to TRUE
     DWORD dwLargeBlobSupport;
 
     // Optional. Prefer key to be resident. Defaulting to FALSE. When TRUE,
     // overrides the above bRequireResidentKey.
     BOOL bPreferResidentKey;
+
+    //
+    // The following fields have been added in
+    // WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_5
+    //
+
+    // Optional. BrowserInPrivate Mode. Defaulting to FALSE.
+    BOOL bBrowserInPrivateMode;
 
 } WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS, *PWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS;
 typedef const WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS *PCWEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS;
@@ -493,8 +548,9 @@ typedef const WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS *PCWEBAUTHN_AUTHENT
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_3          3
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_4          4
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5 5
+#define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6 6
 #define WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_CURRENT_VERSION \
-  WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_5
+  WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6
 
 typedef struct _WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS {
     // Version of this structure, to allow for modifications in the future.
@@ -554,6 +610,19 @@ typedef struct _WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS {
     // Size of pbCredLargeBlob
     DWORD cbCredLargeBlob;
     _Field_size_bytes_(cbCredLargeBlob) PBYTE pbCredLargeBlob;
+
+    //
+    // The following fields have been added in
+    // WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_6
+    //
+
+    // PRF values which will be converted into HMAC-SECRET values according to
+    // WebAuthn Spec.
+    PWEBAUTHN_HMAC_SECRET_SALT_VALUES pHmacSecretSaltValues;
+
+    // Optional. BrowserInPrivate Mode. Defaulting to FALSE.
+    BOOL bBrowserInPrivateMode;
+
 } WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS,  *PWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS;
 typedef const WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS  *PCWEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS;
 
@@ -716,7 +785,8 @@ typedef const WEBAUTHN_CREDENTIAL_ATTESTATION *PCWEBAUTHN_CREDENTIAL_ATTESTATION
 
 #define WEBAUTHN_ASSERTION_VERSION_1 1
 #define WEBAUTHN_ASSERTION_VERSION_2 2
-#define WEBAUTHN_ASSERTION_CURRENT_VERSION WEBAUTHN_ASSERTION_VERSION_2
+#define WEBAUTHN_ASSERTION_VERSION_3 3
+#define WEBAUTHN_ASSERTION_CURRENT_VERSION WEBAUTHN_ASSERTION_VERSION_3
 
 typedef struct _WEBAUTHN_ASSERTION {
     // Version of this structure, to allow for modifications in the future.
@@ -754,6 +824,12 @@ typedef struct _WEBAUTHN_ASSERTION {
     _Field_size_bytes_(cbCredLargeBlob) PBYTE pbCredLargeBlob;
 
     DWORD dwCredLargeBlobStatus;
+
+    //
+    // Following fields have been added in WEBAUTHN_ASSERTION_VERSION_3
+    //
+
+    PWEBAUTHN_HMAC_SECRET_SALT pHmacSecret;
 
 } WEBAUTHN_ASSERTION, *PWEBAUTHN_ASSERTION;
 typedef const WEBAUTHN_ASSERTION *PCWEBAUTHN_ASSERTION;

@@ -12,7 +12,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
@@ -21,7 +21,7 @@ namespace content {
 // static
 std::unique_ptr<WebBundleSource> WebBundleSource::MaybeCreateFromTrustedFileUrl(
     const GURL& url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme)) {
     const base::FilePath file_path = base::FilePath(url.spec());
     return base::WrapUnique(
@@ -45,7 +45,7 @@ std::unique_ptr<WebBundleSource> WebBundleSource::MaybeCreateFromFileUrl(
       return base::WrapUnique(new WebBundleSource(Type::kFile, file_path, url));
     }
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme)) {
     return base::WrapUnique(
         new WebBundleSource(Type::kFile, base::FilePath(url.spec()), url));
@@ -71,7 +71,7 @@ std::unique_ptr<WebBundleSource> WebBundleSource::Clone() const {
 
 std::unique_ptr<base::File> WebBundleSource::OpenFile() const {
   DCHECK(!file_path_.empty());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_path_.IsContentUri()) {
     return std::make_unique<base::File>(
         base::OpenContentUriForRead(file_path_));

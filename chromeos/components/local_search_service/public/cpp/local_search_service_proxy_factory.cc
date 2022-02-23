@@ -4,6 +4,7 @@
 
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 
+#include "base/no_destructor.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 

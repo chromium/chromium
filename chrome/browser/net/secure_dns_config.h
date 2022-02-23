@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 
-#include <vector>
-
 #include "base/strings/string_piece.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +33,7 @@ class SecureDnsConfig {
   static constexpr char kModeSecure[] = "secure";
 
   SecureDnsConfig(net::SecureDnsMode mode,
-                  std::vector<net::DnsOverHttpsServerConfig> servers,
+                  net::DnsOverHttpsConfig doh_config,
                   ManagementMode management_mode);
   // This class is move-only to avoid any accidental copying.
   SecureDnsConfig(SecureDnsConfig&& other);
@@ -49,14 +47,12 @@ class SecureDnsConfig {
   static const char* ModeToString(net::SecureDnsMode mode);
 
   net::SecureDnsMode mode() { return mode_; }
-  const std::vector<net::DnsOverHttpsServerConfig>& servers() {
-    return servers_;
-  }
+  const net::DnsOverHttpsConfig& doh_servers() { return doh_servers_; }
   ManagementMode management_mode() { return management_mode_; }
 
  private:
   net::SecureDnsMode mode_;
-  std::vector<net::DnsOverHttpsServerConfig> servers_;
+  net::DnsOverHttpsConfig doh_servers_;
   ManagementMode management_mode_;
 };
 

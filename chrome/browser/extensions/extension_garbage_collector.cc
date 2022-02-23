@@ -220,16 +220,13 @@ void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
     return;
   extension_prefs->SetNeedsStorageGarbageCollection(false);
 
-  std::unique_ptr<std::unordered_set<base::FilePath>> active_paths(
-      new std::unordered_set<base::FilePath>());
+  std::unordered_set<base::FilePath> active_paths;
   std::unique_ptr<ExtensionSet> extensions =
       ExtensionRegistry::Get(context_)->GenerateInstalledExtensionsSet();
-  for (ExtensionSet::const_iterator iter = extensions->begin();
-       iter != extensions->end();
-       ++iter) {
-    if (AppIsolationInfo::HasIsolatedStorage(iter->get())) {
-      active_paths->insert(
-          util::GetStoragePartitionForExtensionId((*iter)->id(), context_)
+  for (const auto& ext : *extensions) {
+    if (AppIsolationInfo::HasIsolatedStorage(ext.get())) {
+      active_paths.insert(
+          util::GetStoragePartitionForExtensionId(ext->id(), context_)
               ->GetPath());
     }
   }

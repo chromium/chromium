@@ -109,6 +109,8 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     pref_service_.registry()->RegisterDictionaryPref(
         translate::prefs::kPrefAlwaysTranslateList);
     pref_service_.registry()->RegisterDictionaryPref(
+        translate::TranslatePrefs::kPrefAlwaysTranslateListDeprecated);
+    pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateDeniedCount);
     pref_service_.registry()->RegisterDictionaryPref(
         translate::TranslatePrefs::kPrefTranslateIgnoredCount);
@@ -146,7 +148,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
   }
 
   // Checks if |lang_code| matches the OCMArg's CWVTranslationLanguage.
-  id CheckLanguageCode(NSString* lang_code) WARN_UNUSED_RESULT {
+  [[nodiscard]] id CheckLanguageCode(NSString* lang_code) {
     return [OCMArg checkWithBlock:^BOOL(CWVTranslationLanguage* lang) {
       return [lang.languageCode isEqualToString:lang_code];
     }];

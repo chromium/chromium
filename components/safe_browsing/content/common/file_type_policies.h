@@ -13,6 +13,9 @@
 #include "base/synchronization/lock.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
+class GURL;
+class PrefService;
+
 namespace safe_browsing {
 
 struct FileTypePoliciesSingletonTrait;
@@ -68,7 +71,9 @@ class FileTypePolicies {
 
   // Return the danger level of this file type.
   DownloadFileType::DangerLevel GetFileDangerLevel(
-      const base::FilePath& file) const;
+      const base::FilePath& file,
+      const GURL& source_url,
+      const PrefService* prefs) const;
 
   // Return the type of ping we should send for this file
   DownloadFileType::PingSetting PingSettingForFile(
@@ -76,9 +81,13 @@ class FileTypePolicies {
 
   float SampledPingProbability() const;
 
-  DownloadFileType PolicyForFile(const base::FilePath& file) const;
+  DownloadFileType PolicyForFile(const base::FilePath& file,
+                                 const GURL& source_url,
+                                 const PrefService* prefs) const;
   DownloadFileType::PlatformSettings SettingsForFile(
-      const base::FilePath& file) const;
+      const base::FilePath& file,
+      const GURL& source_url,
+      const PrefService* prefs) const;
 
   // Return max size for which unpacking and/or binary feature extration is
   // supported for the given file extension.
@@ -119,7 +128,9 @@ class FileTypePolicies {
 
   // Look up the policy for a given ASCII ext.
   virtual const DownloadFileType& PolicyForExtension(
-      const std::string& ext) const;
+      const std::string& ext,
+      const GURL& source_url,
+      const PrefService* prefs) const;
 
  private:
   // Swap in a different config. This will rebuild file_type_by_ext_ index.

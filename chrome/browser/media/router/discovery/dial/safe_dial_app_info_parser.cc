@@ -31,7 +31,7 @@ void ProcessAdditionalDataElement(const base::Value& additional_data_element,
       data_decoder::GetXmlElementChildren(additional_data_element);
   if (!child_elements || !child_elements->is_list())
     return;
-  for (const auto& child_element : child_elements->GetList()) {
+  for (const auto& child_element : child_elements->GetListDeprecated()) {
     std::string tag_name;
     if (!data_decoder::GetXmlElementTagName(child_element, &tag_name))
       continue;
@@ -95,7 +95,7 @@ void SafeDialAppInfoParser::Parse(const std::string& xml_text,
                                   ParseCallback callback) {
   DCHECK(callback);
   GetDataDecoder().ParseXml(
-      xml_text,
+      xml_text, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
       base::BindOnce(&SafeDialAppInfoParser::OnXmlParsingDone,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -133,7 +133,7 @@ void SafeDialAppInfoParser::OnXmlParsingDone(
   }
 
   ParsingResult parsing_result = ParsingResult::kSuccess;
-  for (const auto& child_element : child_elements->GetList()) {
+  for (const auto& child_element : child_elements->GetListDeprecated()) {
     parsing_result = ProcessChildElement(child_element, app_info.get());
     if (parsing_result != ParsingResult::kSuccess) {
       std::move(callback).Run(nullptr, parsing_result);

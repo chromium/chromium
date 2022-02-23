@@ -4,13 +4,13 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.ServiceWorkerClient;
 import android.webkit.ServiceWorkerController;
 import android.webkit.ServiceWorkerWebSettings;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwServiceWorkerController;
 
@@ -18,7 +18,7 @@ import org.chromium.android_webview.AwServiceWorkerController;
  * Chromium implementation of ServiceWorkerController -- forwards calls to
  * the chromium internal implementation.
  */
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public class ServiceWorkerControllerAdapter extends ServiceWorkerController {
     private AwServiceWorkerController mAwServiceWorkerController;
 

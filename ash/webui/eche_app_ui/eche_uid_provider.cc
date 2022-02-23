@@ -26,6 +26,7 @@ EcheUidProvider::~EcheUidProvider() = default;
 
 void EcheUidProvider::GetUid(
     base::OnceCallback<void(const std::string&)> callback) {
+  PA_LOG(INFO) << "echeapi EcheUidProvider GetUid";
   if (!uid_.empty()) {
     std::move(callback).Run(uid_);
     return;

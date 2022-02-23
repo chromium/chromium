@@ -50,6 +50,7 @@ class DeviceMediaToMojoAdapter : public mojom::Device {
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
+  void RequestRefreshFrame() override;
 
   void Stop();
   void OnClientConnectionErrorOrClose();

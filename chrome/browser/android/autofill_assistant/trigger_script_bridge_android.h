@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -19,6 +21,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
  public:
   TriggerScriptBridgeAndroid(
       JNIEnv* env,
+      const base::android::JavaRef<jobject>& jweb_contents,
       const base::android::JavaRef<jobject>& jassistant_deps);
   ~TriggerScriptBridgeAndroid() override;
   TriggerScriptBridgeAndroid(const TriggerScriptBridgeAndroid&) = delete;
@@ -57,7 +60,11 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   // Reference to the Java counterpart to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   // Pointer to the native coordinator. Only set while attached.
-  TriggerScriptCoordinator* trigger_script_coordinator_ = nullptr;
+  raw_ptr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
+
+  // Java-side AssistantStaticDependencies object. This never changes during the
+  // life of the application.
+  const std::unique_ptr<const Dependencies> dependencies_;
 };
 
 }  // namespace autofill_assistant

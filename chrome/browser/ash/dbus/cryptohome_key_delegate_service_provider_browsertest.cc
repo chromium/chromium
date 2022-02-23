@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -16,13 +17,13 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
+#include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension_mixin.h"
 #include "chrome/browser/ash/dbus/cryptohome_key_delegate_service_provider.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
@@ -82,15 +83,11 @@ class CryptohomeKeyDelegateServiceProviderTest
             kCryptohomeKeyDelegateChallengeKey /* exported_method_name */,
         &service_provider_);
 
-    certificate_provider_extension_ =
-        std::make_unique<TestCertificateProviderExtension>(
-            GetOriginalSigninProfile());
     force_install_mixin_.InitWithDeviceStateMixin(GetOriginalSigninProfile(),
                                                   &device_state_mixin_);
-    ASSERT_TRUE(force_install_mixin_.ForceInstallFromSourceDir(
-        TestCertificateProviderExtension::GetExtensionSourcePath(),
-        TestCertificateProviderExtension::GetExtensionPemPath(),
-        ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+    ASSERT_NO_FATAL_FAILURE(
+        test_certificate_provider_extension_mixin_.ForceInstall(
+            GetOriginalSigninProfile()));
     // Populate the browser's state with the mapping between the test
     // certificate provider extension and the certs that it provides, so that
     // the tested implementation knows where it should send challenges to. In
@@ -101,7 +98,6 @@ class CryptohomeKeyDelegateServiceProviderTest
   }
 
   void TearDownOnMainThread() override {
-    certificate_provider_extension_.reset();
     dbus_service_test_helper_->TearDown();
     dbus_service_test_helper_.reset();
 
@@ -132,7 +128,7 @@ class CryptohomeKeyDelegateServiceProviderTest
         cryptohome::KeyChallengeRequest::CHALLENGE_TYPE_SIGNATURE);
     request.mutable_signature_request_data()->set_data_to_sign(kDataToSign);
     request.mutable_signature_request_data()->set_public_key_spki_der(
-        certificate_provider_extension_->GetCertificateSpki());
+        certificate_provider_extension()->GetCertificateSpki());
     request.mutable_signature_request_data()->set_signature_algorithm(
         signature_algorithm);
     return request;
@@ -182,7 +178,7 @@ class CryptohomeKeyDelegateServiceProviderTest
   bool IsSignatureValid(crypto::SignatureVerifier::SignatureAlgorithm algorithm,
                         const std::vector<uint8_t>& signature) const {
     const std::string spki =
-        certificate_provider_extension_->GetCertificateSpki();
+        certificate_provider_extension()->GetCertificateSpki();
     crypto::SignatureVerifier verifier;
     if (!verifier.VerifyInit(algorithm, signature,
                              base::as_bytes(base::make_span(spki)))) {
@@ -193,7 +189,12 @@ class CryptohomeKeyDelegateServiceProviderTest
   }
 
   TestCertificateProviderExtension* certificate_provider_extension() {
-    return certificate_provider_extension_.get();
+    return test_certificate_provider_extension_mixin_.extension();
+  }
+
+  const TestCertificateProviderExtension* certificate_provider_extension()
+      const {
+    return test_certificate_provider_extension_mixin_.extension();
   }
 
  private:
@@ -211,8 +212,10 @@ class CryptohomeKeyDelegateServiceProviderTest
   CryptohomeKeyDelegateServiceProvider service_provider_;
   std::unique_ptr<chromeos::ServiceProviderTestHelper>
       dbus_service_test_helper_;
-  std::unique_ptr<TestCertificateProviderExtension>
-      certificate_provider_extension_;
+
+  TestCertificateProviderExtensionMixin
+      test_certificate_provider_extension_mixin_{&mixin_host_,
+                                                 &force_install_mixin_};
 };
 
 // Verifies that the ChallengeKey request with the PKCS #1 v1.5 SHA-256

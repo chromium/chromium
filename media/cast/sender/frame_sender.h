@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -92,7 +93,7 @@ class FrameSender {
   // process to the browser process over IPC, with the browser process being
   // responsible for "packetizing" the frames and pushing packets into the
   // network layer.
-  CastTransport* const transport_sender_;
+  const raw_ptr<CastTransport> transport_sender_;
 
   const uint32_t ssrc_;
 

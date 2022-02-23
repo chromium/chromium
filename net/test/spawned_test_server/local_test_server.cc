@@ -35,9 +35,10 @@ bool AppendArgumentFromJSONValue(const std::string& key,
       break;
     }
     case base::Value::Type::STRING: {
-      std::string value;
-      bool result = value_node.GetAsString(&value);
-      if (!result || value.empty())
+      if (!value_node.is_string())
+        return false;
+      const std::string value = value_node.GetString();
+      if (value.empty())
         return false;
       command_line->AppendArg(argument_name + "=" + value);
       break;
@@ -174,7 +175,6 @@ absl::optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
   third_party_dir = third_party_dir.AppendASCII("third_party");
 
   std::vector<base::FilePath> ret = {
-      third_party_dir.AppendASCII("tlslite"),
       third_party_dir.AppendASCII("pywebsocket3").AppendASCII("src"),
   };
 
@@ -204,9 +204,9 @@ bool LocalTestServer::AddCommandLineArguments(
 
     // Add arguments from a list.
     if (value.is_list()) {
-      if (value.GetList().empty())
+      if (value.GetListDeprecated().empty())
         return false;
-      for (const auto& entry : value.GetList()) {
+      for (const auto& entry : value.GetListDeprecated()) {
         if (!AppendArgumentFromJSONValue(key, entry, command_line))
           return false;
       }
@@ -218,9 +218,6 @@ bool LocalTestServer::AddCommandLineArguments(
   // Append the appropriate server type argument.
   switch (type()) {
     case TYPE_HTTP:  // The default type is HTTP, no argument required.
-      break;
-    case TYPE_HTTPS:
-      command_line->AppendArg("--https");
       break;
     case TYPE_WS:
     case TYPE_WSS:

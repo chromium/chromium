@@ -5,15 +5,14 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace storage {
+
+struct BucketLocator;
 
 // Stopgap for QuotaClients in systems with an unclear ownership graph.
 //
@@ -53,24 +52,19 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) QuotaClientCallbackWrapper
   ~QuotaClientCallbackWrapper() override;
 
   // mojom::QuotaClient.
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void GetStorageKeysForHost(blink::mojom::StorageType type,
-                             const std::string& host,
-                             GetStorageKeysForHostCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  mojom::QuotaClient* const wrapped_client_
+  const raw_ptr<mojom::QuotaClient> wrapped_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

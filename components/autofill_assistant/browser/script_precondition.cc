@@ -25,6 +25,7 @@ void RunCallbackWithoutData(
     base::OnceCallback<void(bool)> callback,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   std::move(callback).Run(status.ok());
 }
@@ -70,8 +71,8 @@ void ScriptPrecondition::Check(
     std::move(callback).Run(false);
     return;
   }
-  element_precondition_.Check(
-      batch_checks,
+  batch_checks->AddElementConditionCheck(
+      element_precondition_,
       base::BindOnce(&RunCallbackWithoutData, std::move(callback)));
 }
 

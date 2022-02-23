@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
@@ -56,6 +57,15 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat brightness,
                            jboolean should_readd_background);
 
+  void UpdateStripScrim(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jobj,
+                        jfloat x,
+                        jfloat y,
+                        jfloat width,
+                        jfloat height,
+                        jint color,
+                        jfloat alpha);
+
   void UpdateNewTabButton(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
@@ -65,6 +75,8 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat width,
       jfloat height,
       jboolean visible,
+      jint tint,
+      jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateModelSelectorButton(
@@ -128,6 +140,7 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::SolidColorLayer> tab_strip_layer_;
   scoped_refptr<cc::Layer> scrollable_strip_layer_;
+  scoped_refptr<cc::SolidColorLayer> scrim_layer_;
   scoped_refptr<cc::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::UIResourceLayer> left_fade_;
   scoped_refptr<cc::UIResourceLayer> right_fade_;
@@ -137,7 +150,7 @@ class TabStripSceneLayer : public SceneLayer {
   float brightness_;
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;
-  SceneLayer* content_tree_;
+  raw_ptr<SceneLayer> content_tree_;
 };
 
 }  // namespace android

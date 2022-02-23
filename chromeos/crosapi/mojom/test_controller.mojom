@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "chromeos/crosapi/mojom/app_service_types.mojom";
 
 [Stable, Extensible]
 enum TouchEventType {
@@ -27,11 +28,22 @@ enum OptionalBoolean {
   kTrue,
 };
 
+// Implemented in lacros-chrome.
+// Lets the Ash browser tests that require Lacros to send commands to this
+// lacros-chrome instance.
+[Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
+interface StandaloneBrowserTestController {
+  // Installs a test web app in lacros-chrome given a start URL and mode (open
+  // in a tab or window) and returns the ID of the installed app (see
+  // |web_app::GenerateAppId|).
+  InstallWebApp@0(string start_url, WindowMode mode) => (string app_id);
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 7
-// Next method id: 13
+// Next version: 11
+// Next method id: 18
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the window. Assumes that the window exists and is
@@ -44,9 +56,10 @@ interface TestController {
   [MinVersion=5]
   DoesItemExistInShelf@9(string item_id) => (bool exists);
 
-  // Queries whether a window with the given |window_id| exists. |window_id|
-  // should be obtained from PlatformWindow::GetWindowUniqueId(). A typical
-  // format might be: "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  // Queries whether a window with the given |window_id| exists and is either
+  // visible or minimized. |window_id| should be obtained from
+  // PlatformWindow::GetWindowUniqueId(). A typical format might be:
+  // "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
   DoesWindowExist@0(string window_id) => (bool exist);
 
   // Causes ash to enter or exit overview mode. The callback is invoked after
@@ -114,4 +127,22 @@ interface TestController {
   SendTouchEvent@7(string window_id, TouchEventType type, uint8 pointer_id,
                    gfx.mojom.PointF location_in_window) => ();
 
+  // Get the number of open Ash browser windows.
+  [MinVersion=8]
+  GetOpenAshBrowserWindows@14() => (uint32 number);
+
+  // Close all browser windows.
+  // Note: Usually there should be no Ash window open unless the test opened
+  // one.
+  [MinVersion=8]
+  CloseAllBrowserWindows@15() => (bool success);
+
+  // Register a lacros-chrome test controller with ash-chrome to let ash-chrome
+  // send commands to lacros-chrome.
+  [MinVersion=9] RegisterStandaloneBrowserTestController@16(
+      pending_remote<StandaloneBrowserTestController> controller);
+
+  // Provides a mechanism for lacros to tell ash to perform tab scrubbing.
+  [MinVersion=10]
+  TriggerTabScrubbing@17(float x_offset) => (bool scrubbing);
 };

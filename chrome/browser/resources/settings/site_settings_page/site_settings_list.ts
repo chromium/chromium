@@ -6,19 +6,21 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import '../icons.js';
 import '../settings_shared_css.js';
+import '../i18n_setup.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+
+import {getTemplate} from './site_settings_list.html.js';
 
 export type CategoryListItem = {
   route: Route,
@@ -32,13 +34,6 @@ export type CategoryListItem = {
 };
 
 type FocusConfig = Map<string, (string|(() => void))>;
-
-/** Event interface for dom-repeat. */
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    index: number,
-  };
-}
 
 export function defaultSettingLabel(
     setting: string, enabled: string, disabled: string,
@@ -64,7 +59,7 @@ class SettingsSiteSettingsListElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -237,7 +232,7 @@ class SettingsSiteSettingsListElement extends
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
 
-  private onClick_(event: RepeaterEvent) {
+  private onClick_(event: DomRepeatEvent<CategoryListItem>) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
   }
 }

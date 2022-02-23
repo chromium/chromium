@@ -65,8 +65,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // ChromeClient methods:
   WebViewImpl* GetWebView() const override;
   void ChromeDestroyed() override;
-  void SetWindowRect(const IntRect&, LocalFrame&) override;
-  IntRect RootWindowRect(LocalFrame&) override;
+  void SetWindowRect(const gfx::Rect&, LocalFrame&) override;
+  gfx::Rect RootWindowRect(LocalFrame&) override;
   void DidAccessInitialMainDocument() override;
   void FocusPage() override;
   void DidFocusPage() override;
@@ -92,9 +92,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              network::mojom::blink::WebSandboxFlags,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override;
-  void Show(const blink::LocalFrameToken& opener_frame_token,
+  void Show(LocalFrame& frame,
+            LocalFrame& opener_frame,
             NavigationPolicy navigation_policy,
-            const IntRect& initial_rect,
+            const gfx::Rect& initial_rect,
             bool user_gesture) override;
   void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
                      const gfx::Vector2dF& accumulated_overscroll,
@@ -105,7 +106,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void InjectGestureScrollEvent(LocalFrame& local_frame,
                                 WebGestureDevice device,
                                 const gfx::Vector2dF& delta,
-                                ScrollGranularity granularity,
+                                ui::ScrollGranularity granularity,
                                 CompositorElementId scrollable_area_element_id,
                                 WebInputEvent::Type injected_type) override;
   bool ShouldReportDetailedMessageForSourceAndSeverity(
@@ -136,15 +137,13 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool TabsToLinks() override;
   void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*, base::TimeDelta delay) override;
-  IntRect ViewportToScreen(const IntRect&,
-                           const LocalFrameView*) const override;
+  gfx::Rect ViewportToScreen(const gfx::Rect&,
+                             const LocalFrameView*) const override;
   float WindowToViewportScalar(LocalFrame*, const float) const override;
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override;
   const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override;
-  void OverrideVisibleRectForMainFrame(LocalFrame& frame,
-                                       IntRect* paint_rect) const override;
   float InputEventsScaleForEmulation() const override;
-  void ContentsSizeChanged(LocalFrame*, const IntSize&) const override;
+  void ContentsSizeChanged(LocalFrame*, const gfx::Size&) const override;
   bool DoubleTapToZoomEnabled() const override;
   void EnablePreferredSizeChangedMode() override;
   void ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) override;
@@ -208,9 +207,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void AnimateDoubleTapZoom(const gfx::Point& point,
                             const gfx::Rect& rect) override;
 
-  void ClearLayerSelection(LocalFrame*) override;
-  void UpdateLayerSelection(LocalFrame*, const cc::LayerSelection&) override;
-
   // ChromeClient methods:
   String AcceptLanguages() override;
   void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) override;
@@ -266,7 +262,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void OnMouseDown(Node&) override;
   void DidUpdateBrowserControls() const override;
 
-  FloatSize ElasticOverscroll() const override;
+  gfx::Vector2dF ElasticOverscroll() const override;
 
   void RegisterPopupOpeningObserver(PopupOpeningObserver*) override;
   void UnregisterPopupOpeningObserver(PopupOpeningObserver*) override;
@@ -308,6 +304,16 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // Returns WebAutofillClient associated with the WebLocalFrame. This takes and
   // returns nullable.
   WebAutofillClient* AutofillClientFromFrame(LocalFrame*);
+
+  // Returns a copy of |pending_rect|, adjusted for minimum window size and
+  // available screen area constraints. This is used to synchronously estimate,
+  // or preemptively apply, anticipated browser- or OS-imposed constraints.
+  // Note: This applies legacy same-screen constraints; use un-adjusted values
+  // if permission-gated cross-screen window placement requests may be honored.
+  // TODO(crbug.com/897300): Use permission state for better sync estimates or
+  // store unadjusted pending window rects if that will not break many sites.
+  gfx::Rect CalculateWindowRectWithAdjustment(const gfx::Rect& pending_rect,
+                                              LocalFrame& frame);
 
   WebViewImpl* web_view_;  // Weak pointer.
   HeapHashSet<WeakMember<PopupOpeningObserver>> popup_opening_observers_;

@@ -65,7 +65,8 @@ void AppIdExcludeProbeTask::NextSilentSignOperation() {
       device(), std::move(request),
       base::BindOnce(&AppIdExcludeProbeTask::HandleResponseToSilentSignRequest,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&ReadCTAPGetAssertionResponse),
+      base::BindOnce(&ReadCTAPGetAssertionResponse,
+                     device()->DeviceTransport()),
       /*string_fixup_predicate=*/nullptr);
   silent_sign_operation_->Start();
 }

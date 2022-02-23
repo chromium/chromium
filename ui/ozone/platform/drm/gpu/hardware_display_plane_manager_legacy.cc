@@ -206,9 +206,9 @@ bool HardwareDisplayPlaneManagerLegacy::SetPlaneData(
 bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
     HardwareDisplayPlane* plane,
     const DrmOverlayPlane& overlay,
-    uint32_t crtc_index) const {
+    uint32_t crtc_id) const {
   if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
-      !plane->CanUseForCrtc(crtc_index))
+      !plane->CanUseForCrtcId(crtc_id))
     return false;
 
   // When using legacy kms we always scanout only one plane (the primary),

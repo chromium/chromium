@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -52,7 +52,7 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
 ScriptPromise BluetoothRemoteGATTDescriptor::readValue(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!GetGatt()->connected()) {
+  if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
@@ -69,7 +69,7 @@ ScriptPromise BluetoothRemoteGATTDescriptor::readValue(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
-  GetService()->RemoteDescriptorReadValue(
+  GetBluetooth()->Service()->RemoteDescriptorReadValue(
       descriptor_->instance_id,
       WTF::Bind(&BluetoothRemoteGATTDescriptor::ReadValueCallback,
                 WrapPersistent(this), WrapPersistent(resolver)));
@@ -105,7 +105,7 @@ ScriptPromise BluetoothRemoteGATTDescriptor::writeValue(
     ScriptState* script_state,
     const DOMArrayPiece& value,
     ExceptionState& exception_state) {
-  if (!GetGatt()->connected()) {
+  if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
@@ -146,7 +146,7 @@ ScriptPromise BluetoothRemoteGATTDescriptor::writeValue(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
-  GetService()->RemoteDescriptorWriteValue(
+  GetBluetooth()->Service()->RemoteDescriptorWriteValue(
       descriptor_->instance_id, value_vector,
       WTF::Bind(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
                 WrapPersistent(this), WrapPersistent(resolver), value_vector));

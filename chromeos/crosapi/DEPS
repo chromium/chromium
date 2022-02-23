@@ -3,6 +3,7 @@
 # be kept as small as possible.
 include_rules = [
   "+components/services/app_service/public",
+  "+components/webapps/browser",
 ]
 
 specific_include_rules = {

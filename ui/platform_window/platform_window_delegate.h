@@ -12,9 +12,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/gfx/geometry/insets.h"
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
 class Rect;
@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     // The dimensions of the window, in physical window coordinates.
     gfx::Rect bounds;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
     // The widths of border regions which are obscured by overlapping
     // platform UI elements like onscreen keyboards.
     //
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
     // |    onscreen keyboard   |   |  overlap    |
     // +------------------------+  ---           ---
     gfx::Insets system_ui_overlap;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
   };
 
   PlatformWindowDelegate();
@@ -135,6 +135,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // in positioning child windows, which must be repositioned if the originally
   // intended position caused the surface to be constrained.
   virtual absl::optional<OwnedWindowAnchor> GetOwnedWindowAnchorAndRectInPx();
+
+  // Enables or disables frame rate throttling.
+  virtual void SetFrameRateThrottleEnabled(bool enabled);
 };
 
 }  // namespace ui

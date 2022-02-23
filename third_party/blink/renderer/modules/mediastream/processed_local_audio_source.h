@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/audio_capturer_source.h"
@@ -80,7 +79,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // first track is connected).
   scoped_refptr<webrtc::AudioProcessorInterface> GetAudioProcessor() const;
 
-  bool HasAudioProcessing() const;
+  bool HasWebRtcAudioProcessing() const;
 
   // Instructs the Audio Processing Module (APM) to reduce its complexity when
   // |muted| is true. This mode is triggered when all audio tracks are disabled.
@@ -114,18 +113,14 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
       media::AudioProcessorControls* controls) override;
 
  private:
-  // Runs the audio through |audio_processor_| before sending it along.
-  void CaptureUsingProcessor(const media::AudioBus* audio_source,
+  // Receive and forward processed capture audio. Called on the same thread as
+  // Capture().
+  void DeliverProcessedAudio(const media::AudioBus& processed_audio,
                              base::TimeTicks audio_capture_time,
-                             double volume,
-                             bool key_pressed);
+                             absl::optional<double> new_volume);
 
   // Update the device (source) mic volume.
   void SetVolume(double volume);
-
-  // Helper function to get the source buffer size based on whether audio
-  // processing will take place.
-  int GetBufferSize(int sample_rate) const;
 
   // Helper method which sends the log |message| to a native WebRTC log and
   // adds the current session ID (from the associated media stream device) to
@@ -146,15 +141,20 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // Callback that's called when the audio source has been initialized.
   ConstraintsOnceCallback started_callback_;
 
-  // Audio processor doing processing like FIFO, AGC, AEC and NS. Its output
-  // data is in a unit of 10 ms data chunk.
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor_;
+  // Audio processor doing software processing like FIFO, AGC, AEC and NS. Its
+  // output data is in a unit of up to 10 ms data chunk.
+  scoped_refptr<MediaStreamAudioProcessor> media_stream_audio_processor_;
 
   // The device created by the AudioDeviceFactory in EnsureSourceIsStarted().
   scoped_refptr<media::AudioCapturerSource> source_;
 
   // Used to calculate the signal level that shows in the UI.
   blink::MediaStreamAudioLevelCalculator level_calculator_;
+
+  // Used to signal non-silent mic input to the level calculator, when there is
+  // a risk that the audio processor will zero it out.
+  // Is only accessed on the audio capture thread.
+  bool force_report_nonzero_energy_ = false;
 
   bool allow_invalid_render_frame_id_for_testing_;
 

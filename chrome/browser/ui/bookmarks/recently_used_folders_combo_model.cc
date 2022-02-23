@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

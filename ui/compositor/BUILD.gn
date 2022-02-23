@@ -62,6 +62,8 @@ component("compositor") {
     "paint_context.h",
     "paint_recorder.cc",
     "paint_recorder.h",
+    "presentation_time_recorder.cc",
+    "presentation_time_recorder.h",
     "property_change_reason.h",
     "scoped_animation_duration_scale_mode.cc",
     "scoped_animation_duration_scale_mode.h",
@@ -226,6 +228,7 @@ test("compositor_unittests") {
     "layer_animator_unittest.cc",
     "layer_owner_unittest.cc",
     "layer_unittest.cc",
+    "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
     "throughput_tracker_unittest.cc",
     "total_animation_throughput_reporter_unittest.cc",
@@ -256,11 +259,14 @@ test("compositor_unittests") {
     "//ui/resources",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:compositor_unittests_filters" ]
+
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",

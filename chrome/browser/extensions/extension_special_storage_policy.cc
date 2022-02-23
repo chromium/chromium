@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,7 +97,7 @@ class ExtensionSpecialStoragePolicy::CookieSettingsObserver
   const scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   base::Lock policy_lock_;
-  ExtensionSpecialStoragePolicy* weak_policy_ GUARDED_BY(policy_lock_);
+  raw_ptr<ExtensionSpecialStoragePolicy> weak_policy_ GUARDED_BY(policy_lock_);
 };
 
 ExtensionSpecialStoragePolicy::ExtensionSpecialStoragePolicy(
@@ -186,9 +187,8 @@ bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(
     const extensions::Extension* extension) {
-  // We only consider "protecting" storage for hosted apps (excluding bookmark
-  // apps, which are only hosted apps as an implementation detail).
-  if (!extension->is_hosted_app() || extension->from_bookmark())
+  // We only consider "protecting" storage for hosted apps.
+  if (!extension->is_hosted_app())
     return false;
 
   // Default-installed apps don't have protected storage.

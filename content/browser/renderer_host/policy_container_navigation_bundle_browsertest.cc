@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -104,25 +105,27 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
               IsNull());
 }
 
-// Verifies that HistoryPolicies() returns nullptr if the history entry given to
-// the bundle contains no policies.
+// Verifies that HistoryPolicies() returns non-null during history navigation.
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
-                       HistoryPoliciesWithoutEntryPolicies) {
-  // Navigate to a document with a network scheme. Its history entry will have
-  // nullptr policies, since those should always be reconstructed from the
-  // network response.
+                       HistoryPoliciesForNetworkScheme) {
+  // Navigate to a document with a network scheme. Its history entry should have
+  // its policies initialized from the network response.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LocalUrl()));
+
+  const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
+  EXPECT_EQ(root_policies.ip_address_space,
+            network::mojom::IPAddressSpace::kLocal);
 
   PolicyContainerNavigationBundle bundle(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  EXPECT_THAT(bundle.HistoryPolicies(), IsNull());
+  EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(root_policies))));
 }
 
-// Verifies that SetFrameNavigationEntry() copies the policies of the given
-// entry, if any, or resets those policies when given nullptr.
+// Verifies that SetFrameNavigationEntry() copies the policies during history
+// navigation, if any, or resets those policies when given nullptr.
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
-                       HistoryPoliciesWithEntry) {
+                       HistoryPoliciesForBlankUrl) {
   RenderFrameHostImpl* root = root_frame_host();
 
   // First navigate to a local scheme with non-default policies. To do that, we
@@ -145,6 +148,33 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(root_policies))));
 }
 
+// Verifies that HistoryPolicies() returns non-null even when associated with
+// a non-current FrameNavigationEntry.
+IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
+                       HistoryPoliciesForNonCurentEntry) {
+  // Navigate to a document with a network scheme. Its history entry should have
+  // its policies initialized from the network response.
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), LocalUrl()));
+
+  const PolicyContainerPolicies& root_policies = GetPolicies(root_frame_host());
+  EXPECT_EQ(root_policies.ip_address_space,
+            network::mojom::IPAddressSpace::kLocal);
+
+  FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, entry);
+
+  // Verify the state is correct before navigating away.
+  EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(root_policies))));
+
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
+
+  // Now that the FrameNavigationEntry is non-current, verify that it still has
+  // the bundle.
+  EXPECT_NE(entry, GetLastCommittedFrameNavigationEntry());
+  PolicyContainerNavigationBundle bundle2(nullptr, nullptr, entry);
+  EXPECT_THAT(bundle2.HistoryPolicies(), Pointee(Eq(ByRef(root_policies))));
+}
+
 // Verifies that CreatePolicyContainerForBlink() returns a policy container
 // containing a copy of the bundle's final policies.
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
@@ -152,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
 
-  bundle.ComputePolicies(GURL());
+  bundle.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone);
 
   // This must be called on a task runner, hence the need for this test to be
   // a browser test and not a simple unit test.
@@ -202,7 +232,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   // is using the history policies.
   bundle.AddContentSecurityPolicy(MakeTestCSP());
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -246,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   // is using the history policies.
   bundle.AddContentSecurityPolicy(MakeTestCSP());
 
-  bundle.ComputePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }
@@ -265,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   PolicyContainerNavigationBundle bundle(
       nullptr, nullptr, GetLastCommittedFrameNavigationEntry());
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
 
   // Error pages commit with default policies, ignoring the history policies.
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
@@ -289,10 +321,11 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 }
 
@@ -321,6 +354,49 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 }
 
+// Verifies that history policies from a restored navigation entry are
+// overwritten if the policies have changed.
+IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
+                       NoHistoryPoliciesInheritedForNetworkUrlsOnBack) {
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  // Start by navigating to a network URL with one policy.
+  WebContents* tab = shell()->web_contents();
+  EXPECT_TRUE(NavigateToURL(tab, PublicUrl()));
+  EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
+
+  // Use replaceState() to change to a same-origin URL with a different policy
+  // (which happens to be no policy for LocalUrl()).
+  TestNavigationObserver navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(root_frame_host(),
+             base::StringPrintf("window.history.replaceState('', null, '%s');",
+                                LocalUrl().spec().data())));
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(LocalUrl(), tab->GetLastCommittedURL());
+
+  // Because we changed the url via replaceState rather than actually
+  // navigating to LocalUrl(), it shouldn't have modified any policies.
+  EXPECT_FALSE(
+      GetPolicies(root_frame_host()).content_security_policies.empty());
+  FrameNavigationEntry* entry = GetLastCommittedFrameNavigationEntry();
+  EXPECT_FALSE(
+      entry->policy_container_policies()->content_security_policies.empty());
+
+  // Navigate away, then back to LocalUrl().
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), AboutBlankUrl()));
+  EXPECT_TRUE(HistoryGoBack(shell()->web_contents()));
+
+  // This time we actually loaded LocalUrl(). We should use its (non-existent)
+  // content security policies and updated the policies on the
+  // FrameNavigationEntry, rather than restoring the previous set from the FNE.
+  EXPECT_EQ(entry, GetLastCommittedFrameNavigationEntry());
+  EXPECT_TRUE(
+      entry->policy_container_policies()->content_security_policies.empty());
+  EXPECT_TRUE(GetPolicies(root_frame_host()).content_security_policies.empty());
+}
+
 // Verifies that the history policies are preserved on
 // ResetForCrossDocumentRestart.
 IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
@@ -341,14 +417,16 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerNavigationBundleBrowserTest,
   std::unique_ptr<PolicyContainerPolicies> history_policies =
       bundle.HistoryPolicies()->Clone();
 
-  bundle.ComputePolicies(GURL("http://foo.test"));
+  bundle.ComputePolicies(GURL("http://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 
   bundle.ResetForCrossDocumentRestart();
   EXPECT_THAT(bundle.HistoryPolicies(), Pointee(Eq(ByRef(*history_policies))));
 
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *history_policies);
 }

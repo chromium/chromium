@@ -8,182 +8,318 @@
 
 namespace blink {
 
-// ------ CalculationExpressionLeafNode ------
+// ------ CalculationExpressionNumberNode ------
 
-float CalculationExpressionLeafNode::Evaluate(float max_value) const {
+float CalculationExpressionNumberNode::Evaluate(float max_value) const {
+  return value_;
+}
+
+bool CalculationExpressionNumberNode::operator==(
+    const CalculationExpressionNode& other) const {
+  if (!other.IsNumber())
+    return false;
+  const auto& other_number = To<CalculationExpressionNumberNode>(other);
+  return value_ == other_number.Value();
+}
+
+scoped_refptr<const CalculationExpressionNode>
+CalculationExpressionNumberNode::Zoom(double) const {
+  return base::MakeRefCounted<CalculationExpressionNumberNode>(value_);
+}
+
+#if DCHECK_IS_ON()
+CalculationExpressionNode::ResultType
+CalculationExpressionNumberNode::ResolvedResultType() const {
+  return result_type_;
+}
+#endif
+
+// ------ CalculationExpressionPixelsAndPercentNode ------
+
+float CalculationExpressionPixelsAndPercentNode::Evaluate(
+    float max_value) const {
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
-bool CalculationExpressionLeafNode::operator==(
+bool CalculationExpressionPixelsAndPercentNode::operator==(
     const CalculationExpressionNode& other) const {
-  if (!other.IsLeaf())
+  if (!other.IsPixelsAndPercent())
     return false;
-  const auto& other_leaf = To<CalculationExpressionLeafNode>(other);
-  return value_.pixels == other_leaf.value_.pixels &&
-         value_.percent == other_leaf.value_.percent;
+  const auto& other_pixels_and_percent =
+      To<CalculationExpressionPixelsAndPercentNode>(other);
+  return value_.pixels == other_pixels_and_percent.value_.pixels &&
+         value_.percent == other_pixels_and_percent.value_.percent;
 }
 
 scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionLeafNode::Zoom(double factor) const {
+CalculationExpressionPixelsAndPercentNode::Zoom(double factor) const {
   PixelsAndPercent result(value_.pixels * factor, value_.percent);
-  return base::MakeRefCounted<CalculationExpressionLeafNode>(result);
+  return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+      result);
 }
 
-// ------ CalculationExpressionMultiplicationNode ------
+#if DCHECK_IS_ON()
+CalculationExpressionNode::ResultType
+CalculationExpressionPixelsAndPercentNode::ResolvedResultType() const {
+  return result_type_;
+}
+#endif
+
+// ------ CalculationExpressionOperationNode ------
 
 // static
 scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionMultiplicationNode::CreateSimplified(
-    scoped_refptr<const CalculationExpressionNode> node,
-    float factor) {
-  if (!node->IsLeaf()) {
-    return base::MakeRefCounted<CalculationExpressionMultiplicationNode>(
-        std::move(node), factor);
+CalculationExpressionOperationNode::CreateSimplified(Children&& children,
+                                                    CalculationOperator op) {
+  switch (op) {
+    case CalculationOperator::kAdd:
+    case CalculationOperator::kSubtract: {
+      DCHECK_EQ(children.size(), 2u);
+      if (!children[0]->IsPixelsAndPercent() ||
+          !children[1]->IsPixelsAndPercent()) {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            Children({std::move(children[0]), std::move(children[1])}), op);
+      }
+      const auto& left_pixels_and_percent =
+          To<CalculationExpressionPixelsAndPercentNode>(*children[0]);
+      const auto& right_pixels_and_percent =
+          To<CalculationExpressionPixelsAndPercentNode>(*children[1]);
+      PixelsAndPercent value = left_pixels_and_percent.GetPixelsAndPercent();
+      if (op == CalculationOperator::kAdd) {
+        value.pixels += right_pixels_and_percent.Pixels();
+        value.percent += right_pixels_and_percent.Percent();
+      } else {
+        value.pixels -= right_pixels_and_percent.Pixels();
+        value.percent -= right_pixels_and_percent.Percent();
+      }
+      return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          value);
+    }
+    case CalculationOperator::kMultiply: {
+      DCHECK_EQ(children.size(), 2u);
+      auto& maybe_pixels_and_percent_node =
+          children[0]->IsNumber() ? children[1] : children[0];
+      if (!maybe_pixels_and_percent_node->IsPixelsAndPercent()) {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            Children({std::move(children[0]), std::move(children[1])}), op);
+      }
+      auto& number_node = children[0]->IsNumber() ? children[0] : children[1];
+      const auto& number = To<CalculationExpressionNumberNode>(*number_node);
+      const auto& pixels_and_percent =
+          To<CalculationExpressionPixelsAndPercentNode>(
+              *maybe_pixels_and_percent_node);
+      PixelsAndPercent value(pixels_and_percent.Pixels() * number.Value(),
+                             pixels_and_percent.Percent() * number.Value());
+      return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          value);
+    }
+    case CalculationOperator::kMin:
+    case CalculationOperator::kMax: {
+      DCHECK(children.size());
+      float simplified_px;
+      bool can_simplify = true;
+      for (wtf_size_t i = 0; i < children.size(); ++i) {
+        const auto* pixels_and_percent =
+            DynamicTo<CalculationExpressionPixelsAndPercentNode>(*children[i]);
+        if (!pixels_and_percent || pixels_and_percent->Percent()) {
+          can_simplify = false;
+          break;
+        }
+        if (!i) {
+          simplified_px = pixels_and_percent->Pixels();
+        } else {
+          if (op == CalculationOperator::kMin) {
+            simplified_px =
+                std::min(simplified_px, pixels_and_percent->Pixels());
+          } else {
+            simplified_px =
+                std::max(simplified_px, pixels_and_percent->Pixels());
+          }
+        }
+      }
+      if (can_simplify) {
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(simplified_px, 0));
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
+    case CalculationOperator::kClamp: {
+      DCHECK_EQ(children.size(), 3u);
+      Vector<float> operand_pixels;
+      operand_pixels.ReserveCapacity(children.size());
+      bool can_simplify = true;
+      for (auto& child : children) {
+        const auto* pixels_and_percent =
+            DynamicTo<CalculationExpressionPixelsAndPercentNode>(*child);
+        if (!pixels_and_percent || pixels_and_percent->Percent()) {
+          can_simplify = false;
+          break;
+        }
+        operand_pixels.push_back(pixels_and_percent->Pixels());
+      }
+      if (can_simplify) {
+        float min_px = operand_pixels[0];
+        float val_px = operand_pixels[1];
+        float max_px = operand_pixels[2];
+        // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
+        // according to the spec,
+        // https://drafts.csswg.org/css-values-4/#funcdef-clamp.
+        float clamped_px = std::max(min_px, std::min(val_px, max_px));
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(clamped_px, 0));
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
+    case CalculationOperator::kInvalid:
+      NOTREACHED();
+      return nullptr;
   }
-  const auto& leaf = To<CalculationExpressionLeafNode>(*node);
-  PixelsAndPercent value(leaf.Pixels() * factor, leaf.Percent() * factor);
-  return base::MakeRefCounted<CalculationExpressionLeafNode>(value);
 }
 
-float CalculationExpressionMultiplicationNode::Evaluate(float max_value) const {
-  return child_->Evaluate(max_value) * factor_;
-}
-
-bool CalculationExpressionMultiplicationNode::operator==(
-    const CalculationExpressionNode& other) const {
-  if (!other.IsMultiplication())
-    return false;
-  const auto& other_multiply =
-      To<CalculationExpressionMultiplicationNode>(other);
-  return factor_ == other_multiply.factor_ && *child_ == *other_multiply.child_;
-}
-
-scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionMultiplicationNode::Zoom(double factor) const {
-  return CreateSimplified(child_->Zoom(factor), factor_);
-}
-
-// ------ CalculationExpressionAdditiveNode ------
-
-// static
-scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionAdditiveNode::CreateSimplified(
-    scoped_refptr<const CalculationExpressionNode> lhs,
-    scoped_refptr<const CalculationExpressionNode> rhs,
-    Type type) {
-  if (!lhs->IsLeaf() || !rhs->IsLeaf()) {
-    return base::MakeRefCounted<CalculationExpressionAdditiveNode>(
-        std::move(lhs), std::move(rhs), type);
-  }
-  const auto& left_leaf = To<CalculationExpressionLeafNode>(*lhs);
-  const auto& right_leaf = To<CalculationExpressionLeafNode>(*rhs);
-  PixelsAndPercent value = left_leaf.GetPixelsAndPercent();
-  if (type == Type::kAdd) {
-    value.pixels += right_leaf.Pixels();
-    value.percent += right_leaf.Percent();
-  } else {
-    value.pixels -= right_leaf.Pixels();
-    value.percent -= right_leaf.Percent();
-  }
-  return base::MakeRefCounted<CalculationExpressionLeafNode>(value);
-}
-
-float CalculationExpressionAdditiveNode::Evaluate(float max_value) const {
-  if (IsAdd())
-    return lhs_->Evaluate(max_value) + rhs_->Evaluate(max_value);
-  if (IsSubtract())
-    return lhs_->Evaluate(max_value) - rhs_->Evaluate(max_value);
-  NOTREACHED();
-  return 0;
-}
-
-bool CalculationExpressionAdditiveNode::operator==(
-    const CalculationExpressionNode& other) const {
-  if (!other.IsAdditive())
-    return false;
-  const auto& other_add_subtract = To<CalculationExpressionAdditiveNode>(other);
-  // Do we need to consider add as commutative?
-  return type_ == other_add_subtract.type_ &&
-         *lhs_ == *other_add_subtract.lhs_ && *rhs_ == *other_add_subtract.rhs_;
-}
-
-scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionAdditiveNode::Zoom(double factor) const {
-  return CreateSimplified(lhs_->Zoom(factor), rhs_->Zoom(factor), type_);
-}
-
-// ------ CalculationExpressionComparisonNode ------
-
-// static
-scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionComparisonNode::CreateSimplified(
-    Vector<scoped_refptr<const CalculationExpressionNode>>&& operands,
-    Type type) {
-  DCHECK(operands.size());
-  float simplified_px;
-  bool can_simplify = true;
-  for (wtf_size_t i = 0; i < operands.size(); ++i) {
-    const auto* leaf = DynamicTo<CalculationExpressionLeafNode>(*operands[i]);
-    if (!leaf || leaf->Percent()) {
-      can_simplify = false;
+float CalculationExpressionOperationNode::Evaluate(float max_value) const {
+  switch (operator_) {
+    case CalculationOperator::kAdd: {
+      DCHECK_EQ(children_.size(), 2u);
+      float left = children_[0]->Evaluate(max_value);
+      float right = children_[1]->Evaluate(max_value);
+      return left + right;
+    }
+    case CalculationOperator::kSubtract: {
+      DCHECK_EQ(children_.size(), 2u);
+      float left = children_[0]->Evaluate(max_value);
+      float right = children_[1]->Evaluate(max_value);
+      return left - right;
+    }
+    case CalculationOperator::kMultiply: {
+      DCHECK_EQ(children_.size(), 2u);
+      float left = children_[0]->Evaluate(max_value);
+      float right = children_[1]->Evaluate(max_value);
+      return left * right;
+    }
+    case CalculationOperator::kMin: {
+      DCHECK(!children_.IsEmpty());
+      float minimum = children_[0]->Evaluate(max_value);
+      for (auto& child : children_)
+        minimum = std::min(minimum, child->Evaluate(max_value));
+      return minimum;
+    }
+    case CalculationOperator::kMax: {
+      DCHECK(!children_.IsEmpty());
+      float maximum = children_[0]->Evaluate(max_value);
+      for (auto& child : children_)
+        maximum = std::max(maximum, child->Evaluate(max_value));
+      return maximum;
+    }
+    case CalculationOperator::kClamp: {
+      DCHECK(!children_.IsEmpty());
+      float min = children_[0]->Evaluate(max_value);
+      float val = children_[1]->Evaluate(max_value);
+      float max = children_[2]->Evaluate(max_value);
+      // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
+      return std::max(min, std::min(val, max));
+    }
+    case CalculationOperator::kInvalid:
       break;
-    }
-    if (!i) {
-      simplified_px = leaf->Pixels();
-    } else {
-      if (type == Type::kMin)
-        simplified_px = std::min(simplified_px, leaf->Pixels());
-      else
-        simplified_px = std::max(simplified_px, leaf->Pixels());
-    }
+      // TODO(crbug.com/1284199): Support other math functions.
   }
-  if (can_simplify) {
-    return base::MakeRefCounted<CalculationExpressionLeafNode>(
-        PixelsAndPercent(simplified_px, 0));
-  }
-  return base::MakeRefCounted<CalculationExpressionComparisonNode>(
-      std::move(operands), type);
+  NOTREACHED();
+  return std::numeric_limits<float>::quiet_NaN();
 }
 
-float CalculationExpressionComparisonNode::Evaluate(float max_value) const {
-  float result = operands_.front()->Evaluate(max_value);
-  if (IsMin()) {
-    for (wtf_size_t i = 1; i < operands_.size(); ++i)
-      result = std::min(result, operands_[i]->Evaluate(max_value));
-  } else if (IsMax()) {
-    for (wtf_size_t i = 1; i < operands_.size(); ++i)
-      result = std::max(result, operands_[i]->Evaluate(max_value));
-  } else {
-    NOTREACHED();
-  }
-  return result;
-}
-
-bool CalculationExpressionComparisonNode::operator==(
+bool CalculationExpressionOperationNode::operator==(
     const CalculationExpressionNode& other) const {
-  if (!other.IsComparison())
+  if (!other.IsOperation())
     return false;
-  const auto& other_comparison = To<CalculationExpressionComparisonNode>(other);
-  if (type_ != other_comparison.type_)
-    return false;
-  if (operands_.size() != other_comparison.operands_.size())
-    return false;
-  // We may consider ignoring operand ordering to allow better memory
-  // optimization. The code complexity might not pay off, though.
-  for (wtf_size_t i = 0; i < operands_.size(); ++i) {
-    if (*operands_[i] != *other_comparison.operands_[i])
-      return false;
-  }
-  return true;
+  const auto& other_operation = To<CalculationExpressionOperationNode>(other);
+  return operator_ == other_operation.GetOperator() &&
+         children_ == other_operation.GetChildren();
 }
 
 scoped_refptr<const CalculationExpressionNode>
-CalculationExpressionComparisonNode::Zoom(double factor) const {
-  Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
-  cloned_operands.ReserveCapacity(operands_.size());
-  for (const auto& operand : operands_)
-    cloned_operands.push_back(operand->Zoom(factor));
-  return CreateSimplified(std::move(cloned_operands), type_);
+CalculationExpressionOperationNode::Zoom(double factor) const {
+  switch (operator_) {
+    case CalculationOperator::kAdd:
+    case CalculationOperator::kSubtract:
+      DCHECK_EQ(children_.size(), 2u);
+      return CreateSimplified(
+          Children({children_[0]->Zoom(factor), children_[1]->Zoom(factor)}),
+          operator_);
+    case CalculationOperator::kMultiply: {
+      DCHECK_EQ(children_.size(), 2u);
+      auto& number = children_[0]->IsNumber() ? children_[0] : children_[1];
+      auto& pixels_and_percent =
+          children_[0]->IsNumber() ? children_[1] : children_[0];
+      return CreateSimplified(
+          Children({pixels_and_percent->Zoom(factor), number}), operator_);
+    }
+    case CalculationOperator::kMin:
+    case CalculationOperator::kMax:
+    case CalculationOperator::kClamp: {
+      DCHECK(children_.size());
+      Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
+      cloned_operands.ReserveCapacity(children_.size());
+      for (const auto& child : children_)
+        cloned_operands.push_back(child->Zoom(factor));
+      return CreateSimplified(std::move(cloned_operands), operator_);
+    }
+    case CalculationOperator::kInvalid:
+      NOTREACHED();
+      return nullptr;
+  }
 }
+
+#if DCHECK_IS_ON()
+CalculationExpressionNode::ResultType
+CalculationExpressionOperationNode::ResolvedResultType() const {
+  switch (operator_) {
+    case CalculationOperator::kAdd:
+    case CalculationOperator::kSubtract: {
+      DCHECK_EQ(children_.size(), 2u);
+      auto left_type = children_[0]->ResolvedResultType();
+      auto right_type = children_[1]->ResolvedResultType();
+      if (left_type == ResultType::kInvalid ||
+          right_type == ResultType::kInvalid || left_type != right_type)
+        return ResultType::kInvalid;
+
+      return left_type;
+    }
+    case CalculationOperator::kMultiply: {
+      DCHECK_EQ(children_.size(), 2u);
+      auto left_type = children_[0]->ResolvedResultType();
+      auto right_type = children_[1]->ResolvedResultType();
+      if (left_type == ResultType::kInvalid ||
+          right_type == ResultType::kInvalid ||
+          (left_type == ResultType::kPixelsAndPercent &&
+           right_type == ResultType::kPixelsAndPercent))
+        return ResultType::kInvalid;
+
+      if ((left_type == ResultType::kPixelsAndPercent &&
+           right_type == ResultType::kNumber) ||
+          (left_type == ResultType::kNumber &&
+           right_type == ResultType::kPixelsAndPercent))
+        return ResultType::kPixelsAndPercent;
+
+      return ResultType::kNumber;
+    }
+    case CalculationOperator::kMin:
+    case CalculationOperator::kMax:
+    case CalculationOperator::kClamp: {
+      DCHECK(children_.size());
+      auto first_child_type = children_.front()->ResolvedResultType();
+      for (const auto& child : children_) {
+        if (first_child_type != child->ResolvedResultType())
+          return ResultType::kInvalid;
+      }
+
+      return first_child_type;
+    }
+    case CalculationOperator::kInvalid:
+      NOTREACHED();
+      return result_type_;
+  }
+}
+#endif
 
 }  // namespace blink

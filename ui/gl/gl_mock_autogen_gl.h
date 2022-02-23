@@ -12,6 +12,10 @@
 // no-include-guard-because-multiply-included
 // NOLINT(build/header_guard)
 
+MOCK_METHOD3(AcquireTexturesANGLE,
+             void(GLuint numTextures,
+                  const GLuint* textures,
+                  const GLenum* layouts));
 MOCK_METHOD2(ActiveShaderProgram, void(GLuint pipeline, GLuint program));
 MOCK_METHOD1(ActiveTexture, void(GLenum texture));
 MOCK_METHOD2(AttachShader, void(GLuint program, GLuint shader));
@@ -1177,6 +1181,8 @@ MOCK_METHOD7(ReadPixels,
 // TODO(zmo): crbug.com/456340
 // glReadPixelsRobustANGLE cannot be mocked because it has 11 args.
 MOCK_METHOD0(ReleaseShaderCompiler, void());
+MOCK_METHOD3(ReleaseTexturesANGLE,
+             void(GLuint numTextures, const GLuint* textures, GLenum* layouts));
 MOCK_METHOD4(
     RenderbufferStorageEXT,
     void(GLenum target, GLenum internalformat, GLsizei width, GLsizei height));
@@ -1403,16 +1409,17 @@ MOCK_METHOD7(TexStorageMem2DEXT,
                   GLsizei height,
                   GLuint memory,
                   GLuint64 offset));
-MOCK_METHOD9(TexStorageMemFlags2DANGLE,
-             void(GLenum target,
-                  GLsizei levels,
-                  GLenum internalFormat,
-                  GLsizei width,
-                  GLsizei height,
-                  GLuint memory,
-                  GLuint64 offset,
-                  GLbitfield createFlags,
-                  GLbitfield usageFlags));
+MOCK_METHOD10(TexStorageMemFlags2DANGLE,
+              void(GLenum target,
+                   GLsizei levels,
+                   GLenum internalFormat,
+                   GLsizei width,
+                   GLsizei height,
+                   GLuint memory,
+                   GLuint64 offset,
+                   GLbitfield createFlags,
+                   GLbitfield usageFlags,
+                   const void* imageCreateInfoPNext));
 MOCK_METHOD9(TexSubImage2D,
              void(GLenum target,
                   GLint level,

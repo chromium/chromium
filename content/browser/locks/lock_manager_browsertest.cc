@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/feature_observer.h"
@@ -22,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -44,7 +45,7 @@ class TestBrowserClient : public ContentBrowserClient {
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
 
  private:
-  FeatureObserverClient* feature_observer_client_;
+  raw_ptr<FeatureObserverClient> feature_observer_client_;
 };
 
 class MockObserverClient : public FeatureObserverClient {
@@ -111,7 +112,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   }
 
   bool CheckShouldRunTestAndNavigate() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Don't run the test if we couldn't override BrowserClient. It happens only
     // on Android Kitkat or older systems.
     if (!original_client_)
@@ -123,7 +124,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
         base::android::SDK_VERSION_KITKAT) {
       return false;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetLocksURL("a.com")));
     return true;
   }
@@ -137,7 +138,7 @@ class LockManagerBrowserTest : public ContentBrowserTest {
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
 };
 
@@ -227,7 +228,14 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
 
 // Verify that content::FeatureObserver is notified that a frame stopped holding
 // locks when it is navigated away.
-IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverNavigate) {
+// TODO(crbug.com/1286329): Flakes on Linux, Chrome OS, Mac and Win.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+#define MAYBE_ObserverNavigate DISABLED_ObserverNavigate
+#else
+#define MAYBE_ObserverNavigate ObserverNavigate
+#endif
+IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, MAYBE_ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
@@ -354,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
 }
 
 // SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a shared worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
@@ -376,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
   // Wait a short timeout to make sure that the observer is not notified.
   RunLoopWithTimeout();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that content::FeatureObserver is *not* notified when a lock is
 // acquired by a service worker.

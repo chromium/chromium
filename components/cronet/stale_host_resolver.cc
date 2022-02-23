@@ -5,6 +5,7 @@
 #include "components/cronet/stale_host_resolver.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
@@ -45,13 +47,14 @@ class StaleHostResolver::RequestImpl
 
   // net::HostResolver::ResolveHostRequest implementation:
   int Start(net::CompletionOnceCallback result_callback) override;
-  const absl::optional<net::AddressList>& GetAddressResults() const override;
+  const net::AddressList* GetAddressResults() const override;
+  const std::vector<net::HostResolverEndpointResult>* GetEndpointResults()
+      const override;
   const absl::optional<std::vector<std::string>>& GetTextResults()
       const override;
   const absl::optional<std::vector<net::HostPortPair>>& GetHostnameResults()
       const override;
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override;
+  const std::set<std::string>* GetDnsAliasResults() const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
   const absl::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
@@ -181,13 +184,22 @@ int StaleHostResolver::RequestImpl::Start(
   return network_rv;
 }
 
-const absl::optional<net::AddressList>&
-StaleHostResolver::RequestImpl::GetAddressResults() const {
+const net::AddressList* StaleHostResolver::RequestImpl::GetAddressResults()
+    const {
   if (network_request_)
     return network_request_->GetAddressResults();
 
   DCHECK(cache_request_);
   return cache_request_->GetAddressResults();
+}
+
+const std::vector<net::HostResolverEndpointResult>*
+StaleHostResolver::RequestImpl::GetEndpointResults() const {
+  if (network_request_)
+    return network_request_->GetEndpointResults();
+
+  DCHECK(cache_request_);
+  return cache_request_->GetEndpointResults();
 }
 
 const absl::optional<std::vector<std::string>>&
@@ -208,7 +220,7 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
   return cache_request_->GetHostnameResults();
 }
 
-const absl::optional<std::vector<std::string>>&
+const std::set<std::string>*
 StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
   if (network_request_)
     return network_request_->GetDnsAliasResults();

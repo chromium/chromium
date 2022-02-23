@@ -15,6 +15,10 @@ class AuthenticationServiceObserver : public base::CheckedObserver {
   // Called when the primary account is filtered out due to an
   // enterprise restriction.
   virtual void OnPrimaryAccountRestricted() {}
+
+  // Called when the AuthenticationService::GetServiceStatus() value changes.
+  // This method might be called with no changes.
+  virtual void OnServiceStatusChanged() {}
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_OBSERVER_H_

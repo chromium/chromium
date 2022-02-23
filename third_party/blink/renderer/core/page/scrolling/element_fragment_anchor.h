@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -61,8 +62,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
 
   void Trace(Visitor*) const override;
 
-  bool IsTextFragmentAnchor() override { return false; }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,
                            AnchorRemovedBeforeBeginFrameCrash);
@@ -70,7 +69,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
   void ApplyFocusIfNeeded();
 
   WeakMember<Node> anchor_node_;
-  Member<LocalFrame> frame_;
   bool needs_focus_;
 
   // While this is true, the fragment is still "active" in the sense that we

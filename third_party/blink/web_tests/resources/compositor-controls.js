@@ -1,6 +1,6 @@
 // To make sure animation events get processed, periodic lifecycle phase runs
 // will include rasterization. See
-// https://chromium.googlesource.com/chromium/src/+/master/docs/testing/writing_web_tests.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/testing/writing_web_tests.md
 // for more information.
 function setAnimationRequiresRaster() {
   if (window.testRunner) {

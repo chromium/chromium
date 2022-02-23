@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, MoveTabsToNewWindow) {
   // single tab window.
   EXPECT_FALSE(delegate->CanMoveTabsToWindow({0}));
 
-  AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
 
   EXPECT_TRUE(delegate->CanMoveTabsToWindow({0}));
   EXPECT_TRUE(delegate->CanMoveTabsToWindow({1}));
@@ -108,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   // single tab window.
   EXPECT_FALSE(delegate->CanMoveTabsToWindow({0}));
 
-  AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK);
-  AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK));
+  ASSERT_TRUE(AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK));
 
   EXPECT_TRUE(delegate->CanMoveTabsToWindow({0}));
   EXPECT_TRUE(delegate->CanMoveTabsToWindow({1}));

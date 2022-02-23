@@ -112,6 +112,11 @@ ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
 
 void ContentAutofillDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableWithinFencedFrame) &&
+      render_frame_host_->IsNestedWithinFencedFrame()) {
+    return;
+  }
   receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -192,14 +197,15 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-void ContentAutofillDriver::FillOrPreviewForm(
+base::flat_map<FieldGlobalId, ServerFieldType>
+ContentAutofillDriver::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  GetAutofillRouter().FillOrPreviewForm(this, query_id, action, data,
-                                        triggered_origin, field_type_map);
+  return GetAutofillRouter().FillOrPreviewForm(
+      this, query_id, action, data, triggered_origin, field_type_map);
 }
 
 void ContentAutofillDriver::FillOrPreviewFormImpl(
@@ -215,7 +221,7 @@ void ContentAutofillDriver::FillOrPreviewFormImpl(
 void ContentAutofillDriver::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
   AutofillManager* manager = browser_autofill_manager_
-                                 ? browser_autofill_manager_
+                                 ? browser_autofill_manager_.get()
                                  : autofill_manager_.get();
   DCHECK(manager);
   manager->PropagateAutofillPredictions(render_frame_host_, forms);
@@ -624,7 +630,14 @@ void ContentAutofillDriver::DidNavigateFrame(
     return;
   }
 
-  ShowOfferNotificationIfApplicable(navigation_handle);
+  // If the navigation happened in the main frame and the BrowserAutofillManager
+  // exists (not in Android Webview), and the AutofillOfferManager exists (not
+  // in Incognito windows), notifies the navigation event.
+  if (navigation_handle->IsInPrimaryMainFrame() && browser_autofill_manager_ &&
+      browser_autofill_manager_->offer_manager()) {
+    browser_autofill_manager_->offer_manager()->OnDidNavigateFrame(
+        browser_autofill_manager_->client());
+  }
 
   // When IsServedFromBackForwardCache or IsPrerendererdPageActivation, the form
   // data is not parsed again. So, we should keep and use the autofill manager's
@@ -773,44 +786,6 @@ void ContentAutofillDriver::ReportAutofillWebOTPMetrics(
   UMA_HISTOGRAM_ENUMERATION(
       "Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
       static_cast<PhoneCollectionMetricState>(phone_collection_metric_state_));
-}
-
-void ContentAutofillDriver::ShowOfferNotificationIfApplicable(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return;
-
-  // Android webview does not have |browser_autofill_manager_|, so flow is not
-  // enabled in Android Webview.
-  if (!browser_autofill_manager_)
-    return;
-
-  AutofillOfferManager* offer_manager =
-      browser_autofill_manager_->offer_manager();
-  // This happens in the Incognito mode.
-  if (!offer_manager)
-    return;
-
-  GURL url = browser_autofill_manager_->client()->GetLastCommittedURL();
-  if (!offer_manager->IsUrlEligible(url))
-    return;
-
-  // Try to show offer notification when the last committed URL has the domain
-  // that an offer is applicable for.
-  // TODO(crbug.com/1203811): GetOfferForUrl needs to know whether to give
-  //   precedence to card-linked offers or promo code offers. Eventually, promo
-  //   code offers should take precedence if a bubble is shown. Currently, if a
-  //   url has both types of offers and the promo code offer is selected, no
-  //   bubble will end up being shown (due to not yet being implemented).
-  AutofillOfferData* offer = offer_manager->GetOfferForUrl(url);
-
-  if (!offer || offer->merchant_origins.empty() ||
-      (offer->IsCardLinkedOffer() && offer->eligible_instrument_id.empty()) ||
-      (offer->IsPromoCodeOffer() && offer->promo_code.empty())) {
-    return;
-  }
-
-  browser_autofill_manager_->client()->ShowOfferNotificationIfApplicable(offer);
 }
 
 ContentAutofillRouter& ContentAutofillDriver::GetAutofillRouter() {

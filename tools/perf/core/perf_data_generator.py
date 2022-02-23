@@ -95,10 +95,14 @@ class TEST_TYPES(object):
 # The perf data will be handled on a separated 'processor' VM.
 # This list will be removed or replace by an opt-out list.
 LIGHTWEIGHT_TESTERS = [
-    'android-go-perf', 'android-pixel2-perf', 'android-pixel2_webview-perf',
-    'linux-perf', 'mac-10_12_laptop_low_end-perf',
-    'mac-10_13_laptop_high_end-perf', 'win-10-perf',
-    'win-10_laptop_low_end-perf'
+    'android-go-perf',
+    'android-pixel2-perf',
+    'android-pixel2_webview-perf',
+    'linux-perf',
+    'win-10-perf',
+    'win-10_laptop_low_end-perf',
+    'mac-laptop_high_end-perf',
+    'mac-laptop_low_end-perf',
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
@@ -150,30 +154,10 @@ FYI_BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
         ],
-    },
-    'android-nexus5x-perf-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_chrome',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-            ],
-        }],
-        'platform':
-        'android-chrome',
-        'dimension': {
-            'pool': 'chrome.tests.perf-fyi',
-            'os': 'Android',
-            'device_type': 'bullhead',
-            'device_os': 'MMB29Q',
-            'device_os_flavor': 'google',
-        },
     },
     'android-pixel2-perf-fyi': {
         'tests': [{
@@ -217,7 +201,6 @@ FYI_BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -245,21 +228,36 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-                '-d',
-                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested',
-                '--os-check=update',
-            ],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['astro'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
-        'fuchsia',
+        'fuchsia-wes',
         'dimension': {
             'cpu': None,
             'device_type': 'Astro',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
+    'fuchsia-perf-atlas-fyi': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['atlas'],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia-chrome',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Atlas',
             'os': 'Fuchsia',
             'pool': 'chrome.tests',
         },
@@ -268,18 +266,14 @@ FYI_BUILDERS = {
         'tests': [{
             'isolate':
             'performance_web_engine_test_suite',
-            'extra_args': [
-                '--output-format=histograms',
-                '--experimental-tbmv3-metrics',
-                '-d',
-                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested',
-                '--os-check=update',
-            ],
+            'extra_args':
+            ['--output-format=histograms', '--experimental-tbmv3-metrics'] +
+            bot_platforms.FUCHSIA_EXEC_ARGS['sherlock'],
             'type':
             TEST_TYPES.TELEMETRY,
         }],
         'platform':
-        'fuchsia',
+        'fuchsia-wes',
         'dimension': {
             'cpu': None,
             'device_type': 'Sherlock',
@@ -341,8 +335,11 @@ FYI_BUILDERS = {
     'fuchsia-builder-perf-fyi': {
         'additional_compile_targets': [
             'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
-            'chromedriver', 'chromium_builder_perf'
+            'chromium_builder_perf', 'base_perftests'
         ],
+    },
+    'fuchsia-builder-perf-x64': {
+        'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
     },
 }
 
@@ -372,7 +369,6 @@ BUILDERS = {
             'chrome_public_apk',
             'chromium_builder_perf',
             'dump_syms',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -452,7 +448,6 @@ BUILDERS = {
             'cc_perftests',
             'chrome_public_apk',
             'chromium_builder_perf',
-            'gpu_perftests',
             'push_apps_to_background_apk',
             'system_webview_apk',
             'system_webview_shell_apk',
@@ -653,42 +648,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'Android Nexus5 Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite_android_chrome',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'android',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'hammerhead',
-            'device_os': 'M4B30Z',
-            'device_os_flavor': 'google',
-        },
-    },
-    'Android Nexus5X WebView Perf': {
-        'tests': [{
-            'isolate': 'performance_webview_test_suite',
-            'extra_args': [
-                '--assert-gpu-compositing',
-            ],
-        }],
-        'platform':
-        'android-webview',
-        'dimension': {
-            'pool': 'chrome.tests.perf-webview',
-            'os': 'Android',
-            'device_type': 'bullhead',
-            'device_os': 'MOB30K',
-            'device_os_flavor': 'aosp',
-        },
-    },
     'android-pixel2_webview-perf': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
@@ -739,7 +698,7 @@ BUILDERS = {
             'pool': 'chrome.tests.perf-webview',
             'os': 'Android',
             'device_type': 'flame',
-            'device_os': 'R',
+            'device_os': 'RP1A.201105.002',
             'device_os_flavor': 'google',
         },
     },
@@ -752,7 +711,7 @@ BUILDERS = {
             'pool': 'chrome.tests.perf-weblayer',
             'os': 'Android',
             'device_type': 'flame',
-            'device_os': 'R',
+            'device_os': 'RP1A.201105.002',
             'device_os_flavor': 'google',
         },
     },
@@ -767,7 +726,7 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
             'device_type': 'flame',
-            'device_os': 'R',
+            'device_os': 'RP1A.201105.002',
             'device_os_flavor': 'google',
         },
     },
@@ -882,46 +841,11 @@ BUILDERS = {
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
             'os': 'Windows-10-19043.1052',
-            'gpu': '1002:1638-10.0.19041.868',
+            'gpu': '1002:1638-30.0.13033.1000',
             'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
         },
     },
-    'Win 7 Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-            },
-        ],
-        'platform': 'win',
-        'target_bits': 32,
-        'dimension': {
-            'gpu': '102b:0532-6.1.7600.16385',
-            'os': 'Windows-2008ServerR2-SP1',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R210 II (Dell Inc.)',
-        },
-    },
-    'Win 7 Nvidia GPU Perf': {
-        'tests': [
-            {
-                'isolate': 'performance_test_suite',
-                'extra_args': [
-                    '--assert-gpu-compositing',
-                ],
-            },
-        ],
-        'platform':
-        'win',
-        'target_bits':
-        64,
-        'dimension': {
-            'gpu': '10de:1cb3-23.21.13.8792',
-            'os': 'Windows-2008ServerR2-SP1',
-            'pool': 'chrome.tests.perf',
-            'synthetic_product_name': 'PowerEdge R220 [01] (Dell Inc.)'
-        },
-    },
-    'mac-10_12_laptop_low_end-perf': {
+    'mac-laptop_low_end-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -999,7 +923,7 @@ BUILDERS = {
             'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'mac-10_13_laptop_high_end-perf': {
+    'mac-laptop_high_end-perf': {
         'tests': [
             {
                 'isolate': 'performance_test_suite',
@@ -1016,7 +940,7 @@ BUILDERS = {
             'gpu':
             '1002:6821-4.0.20-3.2.8',
             'os':
-            'Mac-10.13.3',
+            'Mac-11.6.1',
             'pool':
             'chrome.tests.perf',
             'synthetic_product_name':
@@ -1047,11 +971,11 @@ BUILDERS = {
         'platform': 'linux',
         'perf_processor': True,
     },
-    'mac-10_12_laptop_low_end-processor-perf': {
+    'mac-laptop_low_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
-    'mac-10_13_laptop_high_end-processor-perf': {
+    'mac-laptop_high_end-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },
@@ -1196,10 +1120,6 @@ GTEST_BENCHMARKS = {
         'skyostil@chromium.org, gab@chromium.org', 'Internals>SequenceManager',
         ('https://chromium.googlesource.com/chromium/src/+/HEAD/base/' +
          'README.md#performance-testing')),
-    'gpu_perftests':
-    BenchmarkMetadata(
-        'reveman@chromium.org, chrome-gpu-perf-owners@chromium.org',
-        'Internals>GPU'),
     'tracing_perftests':
     BenchmarkMetadata('eseckler@chromium.org, oysteine@chromium.org',
                       'Speed>Tracing'),
@@ -1547,8 +1467,10 @@ def generate_telemetry_args(tester_config, platform):
   elif (tester_config['platform'] == 'win'
     and tester_config['target_bits'] == 64):
     browser_name = 'release_x64'
-  elif tester_config['platform'] == 'fuchsia':
+  elif tester_config['platform'] == 'fuchsia-wes':
     browser_name = 'web-engine-shell'
+  elif tester_config['platform'] == 'fuchsia-chrome':
+    browser_name = 'fuchsia-chrome'
   else:
     browser_name ='release'
   test_args = [

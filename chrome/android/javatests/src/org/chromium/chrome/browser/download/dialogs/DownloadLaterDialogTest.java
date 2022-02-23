@@ -29,8 +29,6 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -42,27 +40,25 @@ import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Test to verify download later dialog.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLaterDialogTest {
+public class DownloadLaterDialogTest extends BlankUiTestActivityTestCase {
     private static final long INVALID_START_TIME = -1;
     private static final String POSITIVE_BUTTON_TEXT = "Done";
     private static final String DEFAULT_SUBTITLE =
             "You'll see a notification when this file is ready";
-
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private DownloadLaterDialogCoordinator mDialogCoordinator;
     private PropertyModel mModel;
@@ -76,8 +72,11 @@ public class DownloadLaterDialogTest {
     @Mock
     PrefService mPrefService;
 
+    private AppModalPresenter mAppModalPresenter;
+    private ModalDialogManager mModalDialogManager;
+
     private ModalDialogManager getModalDialogManager() {
-        return mActivityTestRule.getActivity().getModalDialogManager();
+        return mModalDialogManager;
     }
 
     private DownloadLaterDialogView getDownloadLaterDialogView() {
@@ -85,14 +84,20 @@ public class DownloadLaterDialogTest {
                 ModalDialogProperties.CUSTOM_VIEW);
     }
 
-    @Before
-    public void setUp() {
+    @Override
+    public void setUpTest() throws Exception {
+        super.setUpTest();
         MockitoAnnotations.initMocks(this);
         when(mPrefService.getInteger(Pref.DOWNLOAD_LATER_PROMPT_STATUS))
                 .thenReturn(DownloadLaterPromptStatus.SHOW_INITIAL);
         doNothing().when(mPrefService).setInteger(anyString(), anyInt());
 
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mAppModalPresenter = new AppModalPresenter(getActivity());
+        mModalDialogManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ModalDialogManager(
+                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        });
+
         mDialogCoordinator = new DownloadLaterDialogCoordinator(mDateTimePicker);
         mModel = createModel(
                 DownloadLaterDialogChoice.ON_WIFI, DownloadLaterPromptStatus.SHOW_INITIAL);
@@ -133,7 +138,7 @@ public class DownloadLaterDialogTest {
     private void showDialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDialogCoordinator.showDialog(
-                    mActivityTestRule.getActivity(), getModalDialogManager(), mPrefService, mModel);
+                    getActivity(), getModalDialogManager(), mPrefService, mModel);
         });
     }
 

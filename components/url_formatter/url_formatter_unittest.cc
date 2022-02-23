@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -186,7 +187,7 @@ TEST(UrlFormatterTest, FormatUrl) {
        7},
 
       // -------- omit file: --------
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       {"omit file on Windows", "file:///C:/Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitFileScheme, net::UnescapeRule::NORMAL,
        L"C:/Users/homedirname/folder/file.pdf/", static_cast<size_t>(-1)},
@@ -247,7 +248,7 @@ TEST(UrlFormatterTest, FormatUrl) {
            kFormatUrlOmitTrivialSubdomains | kFormatUrlTrimAfterHost,
        net::UnescapeRule::NORMAL, L"view-source:https://www.google.com/foo",
        20},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       {"view-source should not omit file on Windows",
        "view-source:file:///C:/Users/homedirname/folder/file.pdf/",
        kFormatUrlOmitDefaults | kFormatUrlOmitFileScheme,
@@ -472,6 +473,26 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
   EXPECT_EQ(u"host", formatted.substr(parsed.host.begin, parsed.host.len));
   EXPECT_EQ(u"81", formatted.substr(parsed.port.begin, parsed.port.len));
   EXPECT_EQ(u"/path", formatted.substr(parsed.path.begin, parsed.path.len));
+  EXPECT_EQ(u"query", formatted.substr(parsed.query.begin, parsed.query.len));
+  EXPECT_EQ(u"ref", formatted.substr(parsed.ref.begin, parsed.ref.len));
+
+  // Repeated view-source separated by a space.
+  formatted = FormatUrl(
+      GURL(
+          "view-source: view-source:http://user:passwd@host:81/path?query#ref"),
+      kFormatUrlOmitUsernamePassword, net::UnescapeRule::NORMAL, &parsed,
+      nullptr, nullptr);
+  EXPECT_EQ(
+      u"view-source: view-source:http://user:passwd@host:81/path?query#ref",
+      formatted);
+  EXPECT_EQ(u"view-source",
+            formatted.substr(parsed.scheme.begin, parsed.scheme.len));
+  EXPECT_FALSE(parsed.username.is_valid());
+  EXPECT_FALSE(parsed.password.is_valid());
+  EXPECT_FALSE(parsed.host.is_valid());
+  EXPECT_FALSE(parsed.port.is_valid());
+  EXPECT_EQ(u" view-source:http://user:passwd@host:81/path",
+            formatted.substr(parsed.path.begin, parsed.path.len));
   EXPECT_EQ(u"query", formatted.substr(parsed.query.begin, parsed.query.len));
   EXPECT_EQ(u"ref", formatted.substr(parsed.ref.begin, parsed.ref.len));
 

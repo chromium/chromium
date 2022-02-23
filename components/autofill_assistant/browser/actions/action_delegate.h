@@ -35,6 +35,10 @@ struct FormFieldData;
 class PersonalDataManager;
 }  // namespace autofill
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -116,6 +120,7 @@ class ActionDelegate {
   // If |allow_interrupt| interrupts can run while waiting.
   virtual void WaitForDom(
       base::TimeDelta max_wait_time,
+      bool allow_observer_mode,
       bool allow_interrupt,
       WaitForDomObserver* observer,
       base::RepeatingCallback<
@@ -271,8 +276,12 @@ class ActionDelegate {
   // Get current personal data manager.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
-  // Get current login fetcher.
+  // Get current login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
+
+  // Get current password change success tracker.
+  virtual password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const = 0;
 
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() const = 0;
@@ -421,6 +430,11 @@ class ActionDelegate {
   // Get modifiable log information gathered while executing the action. This
   // gets attached to the action's response if non empty.
   virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
+
+  virtual void RequestUserData(
+      const CollectUserDataOptions& options,
+      base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+          callback) = 0;
 
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 

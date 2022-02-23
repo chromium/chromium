@@ -225,7 +225,7 @@ void NotificationChannelsProviderAndroid::MigrateToChannelsIfNecessary(
   for (const auto& rule : rules) {
     pref_provider->SetWebsiteSetting(
         rule.primary_pattern, rule.secondary_pattern,
-        ContentSettingsType::NOTIFICATIONS, nullptr, {});
+        ContentSettingsType::NOTIFICATIONS, base::Value(), {});
   }
 
   prefs->SetBoolean(prefs::kMigratedToSiteNotificationChannels, true);
@@ -299,7 +299,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value>&& value,
+    base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints) {
   if (content_type != ContentSettingsType::NOTIFICATIONS ||
       !platform_supports_channels_) {
@@ -317,7 +317,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
   DCHECK(!origin.opaque());
   const std::string origin_string = origin.Serialize();
 
-  ContentSetting setting = content_settings::ValueToContentSetting(value.get());
+  ContentSetting setting = content_settings::ValueToContentSetting(value);
   switch (setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(origin_string,
@@ -340,7 +340,7 @@ bool NotificationChannelsProviderAndroid::SetWebsiteSetting(
       NOTREACHED();
       break;
   }
-  value.reset();
+  value = base::Value();
   return true;
 }
 
@@ -422,7 +422,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
   DCHECK(!origin.opaque());
   const std::string origin_string = origin.Serialize();
   ContentSetting content_setting =
-      content_settings::ValueToContentSetting(&rule.value);
+      content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(origin_string,

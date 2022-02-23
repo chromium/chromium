@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/scope_lock.h"
@@ -40,7 +41,6 @@
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_return_value.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/transaction_impl.h"
@@ -175,8 +175,8 @@ IndexedDBDatabase::~IndexedDBDatabase() = default;
 
 void IndexedDBDatabase::RegisterAndScheduleTransaction(
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::RegisterAndScheduleTransaction", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
+               "txn.id", transaction->id());
   std::vector<ScopesLockManager::ScopeLockRequest> lock_requests;
   lock_requests.reserve(1 + transaction->scope().size());
   lock_requests.emplace_back(
@@ -428,8 +428,8 @@ leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     bool auto_increment,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  IDB_TRACE1("IndexedDBDatabase::CreateObjectStoreOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CreateObjectStoreOperation",
+               "txn.id", transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -455,15 +455,16 @@ leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
 
 void IndexedDBDatabase::CreateObjectStoreAbortOperation(
     int64_t object_store_id) {
-  IDB_TRACE("IndexedDBDatabase::CreateObjectStoreAbortOperation");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBDatabase::CreateObjectStoreAbortOperation");
   RemoveObjectStoreFromMetadata(object_store_id);
 }
 
 Status IndexedDBDatabase::DeleteObjectStoreOperation(
     int64_t object_store_id,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::DeleteObjectStoreOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::DeleteObjectStoreOperation",
+               "txn.id", transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -502,7 +503,8 @@ Status IndexedDBDatabase::DeleteObjectStoreOperation(
 
 void IndexedDBDatabase::DeleteObjectStoreAbortOperation(
     IndexedDBObjectStoreMetadata object_store_metadata) {
-  IDB_TRACE("IndexedDBDatabase::DeleteObjectStoreAbortOperation");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBDatabase::DeleteObjectStoreAbortOperation");
   AddObjectStoreToMetadata(std::move(object_store_metadata),
                            IndexedDBObjectStoreMetadata::kInvalidId);
 }
@@ -512,8 +514,8 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
     const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  IDB_TRACE1("IndexedDBDatabase::RenameObjectStore", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RenameObjectStore", "txn.id",
+               transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -546,7 +548,8 @@ leveldb::Status IndexedDBDatabase::RenameObjectStoreOperation(
 void IndexedDBDatabase::RenameObjectStoreAbortOperation(
     int64_t object_store_id,
     std::u16string old_name) {
-  IDB_TRACE("IndexedDBDatabase::RenameObjectStoreAbortOperation");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBDatabase::RenameObjectStoreAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
          metadata_.object_stores.end());
@@ -557,8 +560,8 @@ Status IndexedDBDatabase::VersionChangeOperation(
     int64_t version,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::VersionChangeOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::VersionChangeOperation",
+               "txn.id", transaction->id());
   int64_t old_version = metadata_.version;
   DCHECK_GT(version, old_version);
 
@@ -578,7 +581,7 @@ Status IndexedDBDatabase::VersionChangeOperation(
 }
 
 void IndexedDBDatabase::VersionChangeAbortOperation(int64_t previous_version) {
-  IDB_TRACE("IndexedDBDatabase::VersionChangeAbortOperation");
+  TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::VersionChangeAbortOperation");
   metadata_.version = previous_version;
 }
 
@@ -591,8 +594,8 @@ leveldb::Status IndexedDBDatabase::CreateIndexOperation(
     bool multi_entry,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  IDB_TRACE1("IndexedDBDatabase::CreateIndexOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CreateIndexOperation", "txn.id",
+               transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -620,7 +623,7 @@ leveldb::Status IndexedDBDatabase::CreateIndexOperation(
 
 void IndexedDBDatabase::CreateIndexAbortOperation(int64_t object_store_id,
                                                   int64_t index_id) {
-  IDB_TRACE("IndexedDBDatabase::CreateIndexAbortOperation");
+  TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::CreateIndexAbortOperation");
   RemoveIndexFromMetadata(object_store_id, index_id);
 }
 
@@ -628,8 +631,8 @@ Status IndexedDBDatabase::DeleteIndexOperation(
     int64_t object_store_id,
     int64_t index_id,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::DeleteIndexOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::DeleteIndexOperation", "txn.id",
+               transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -666,7 +669,7 @@ Status IndexedDBDatabase::DeleteIndexOperation(
 void IndexedDBDatabase::DeleteIndexAbortOperation(
     int64_t object_store_id,
     IndexedDBIndexMetadata index_metadata) {
-  IDB_TRACE("IndexedDBDatabase::DeleteIndexAbortOperation");
+  TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::DeleteIndexAbortOperation");
   AddIndexToMetadata(object_store_id, std::move(index_metadata),
                      IndexedDBIndexMetadata::kInvalidId);
 }
@@ -677,7 +680,8 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
     const std::u16string& new_name,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  IDB_TRACE1("IndexedDBDatabase::RenameIndex", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RenameIndex", "txn.id",
+               transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -707,7 +711,7 @@ leveldb::Status IndexedDBDatabase::RenameIndexOperation(
 void IndexedDBDatabase::RenameIndexAbortOperation(int64_t object_store_id,
                                                   int64_t index_id,
                                                   std::u16string old_name) {
-  IDB_TRACE("IndexedDBDatabase::RenameIndexAbortOperation");
+  TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::RenameIndexAbortOperation");
 
   DCHECK(metadata_.object_stores.find(object_store_id) !=
          metadata_.object_stores.end());
@@ -726,7 +730,8 @@ Status IndexedDBDatabase::GetOperation(
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBDatabase::GetCallback callback,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::GetOperation", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::GetOperation", "txn.id",
+               transaction->id());
 
   if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id)) {
     IndexedDBDatabaseError error = CreateError(
@@ -916,7 +921,8 @@ Status IndexedDBDatabase::GetAllOperation(
     int64_t max_count,
     blink::mojom::IDBDatabase::GetAllCallback callback,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::GetAllOperation", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::GetAllOperation", "txn.id",
+               transaction->id());
 
   mojo::Remote<blink::mojom::IDBDatabaseGetAllResultSink> result_sink;
   std::move(callback).Run(result_sink.BindNewPipeAndPassReceiver());
@@ -1078,8 +1084,8 @@ Status IndexedDBDatabase::GetAllOperation(
 Status IndexedDBDatabase::PutOperation(
     std::unique_ptr<PutOperationParams> params,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE2("IndexedDBDatabase::PutOperation", "txn.id", transaction->id(),
-             "size", params->value.SizeEstimate());
+  TRACE_EVENT2("IndexedDB", "IndexedDBDatabase::PutOperation", "txn.id",
+               transaction->id(), "size", params->value.SizeEstimate());
   DCHECK_NE(transaction->mode(), blink::mojom::IDBTransactionMode::ReadOnly);
   bool key_was_generated = false;
   Status s = Status::OK();
@@ -1177,8 +1183,8 @@ Status IndexedDBDatabase::PutOperation(
     return s;
 
   {
-    IDB_TRACE1("IndexedDBDatabase::PutOperation.UpdateIndexes", "txn.id",
-               transaction->id());
+    TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::PutOperation.UpdateIndexes",
+                 "txn.id", transaction->id());
     for (const auto& writer : index_writers) {
       writer->WriteIndexKeys(record_identifier, backing_store_,
                              transaction->BackingStoreTransaction(), id(),
@@ -1189,16 +1195,16 @@ Status IndexedDBDatabase::PutOperation(
   if (object_store.auto_increment &&
       params->put_mode != blink::mojom::IDBPutMode::CursorUpdate &&
       key->type() == blink::mojom::IDBKeyType::Number) {
-    IDB_TRACE1("IndexedDBDatabase::PutOperation.AutoIncrement", "txn.id",
-               transaction->id());
+    TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::PutOperation.AutoIncrement",
+                 "txn.id", transaction->id());
     s = UpdateKeyGenerator(backing_store_, transaction, id(),
                            params->object_store_id, *key, !key_was_generated);
     if (!s.ok())
       return s;
   }
   {
-    IDB_TRACE1("IndexedDBDatabase::PutOperation.Callbacks", "txn.id",
-               transaction->id());
+    TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::PutOperation.Callbacks",
+                 "txn.id", transaction->id());
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
@@ -1214,8 +1220,8 @@ Status IndexedDBDatabase::SetIndexKeysOperation(
     const std::vector<IndexedDBIndexKeys>& index_keys,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  IDB_TRACE1("IndexedDBDatabase::SetIndexKeysOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::SetIndexKeysOperation",
+               "txn.id", transaction->id());
   DCHECK_EQ(transaction->mode(),
             blink::mojom::IDBTransactionMode::VersionChange);
 
@@ -1277,8 +1283,8 @@ Status IndexedDBDatabase::OpenCursorOperation(
     const blink::StorageKey& storage_key,
     base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::OpenCursorOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::OpenCursorOperation", "txn.id",
+               transaction->id());
 
   Status s;
   if (!dispatcher_host) {
@@ -1375,7 +1381,8 @@ Status IndexedDBDatabase::CountOperation(
     std::unique_ptr<IndexedDBKeyRange> key_range,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::CountOperation", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CountOperation", "txn.id",
+               transaction->id());
 
   if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(object_store_id, index_id))
     return leveldb::Status::InvalidArgument(
@@ -1418,8 +1425,8 @@ Status IndexedDBDatabase::DeleteRangeOperation(
     std::unique_ptr<IndexedDBKeyRange> key_range,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::DeleteRangeOperation", "txn.id",
-             transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::DeleteRangeOperation", "txn.id",
+               transaction->id());
 
   if (!IsObjectStoreIdInMetadata(object_store_id))
     return leveldb::Status::InvalidArgument("Invalid object_store_id.");
@@ -1463,7 +1470,8 @@ Status IndexedDBDatabase::ClearOperation(
     int64_t object_store_id,
     scoped_refptr<IndexedDBCallbacks> callbacks,
     IndexedDBTransaction* transaction) {
-  IDB_TRACE1("IndexedDBDatabase::ClearOperation", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::ClearOperation", "txn.id",
+               transaction->id());
 
   if (!IsObjectStoreIdInMetadata(object_store_id))
     return leveldb::Status::InvalidArgument("Invalid object_store_id.");
@@ -1599,7 +1607,7 @@ void IndexedDBDatabase::SendVersionChangeToAllConnections(int64_t old_version,
 }
 
 void IndexedDBDatabase::ConnectionClosed(IndexedDBConnection* connection) {
-  IDB_TRACE("IndexedDBDatabase::ConnectionClosed");
+  TRACE_EVENT0("IndexedDB", "IndexedDBDatabase::ConnectionClosed");
   // Ignore connection closes during force close to prevent re-entry.
   if (force_closing_)
     return;

@@ -22,18 +22,20 @@ SystemHandler::~SystemHandler() {}
 
 // static
 void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   data_source->AddBoolean("hardwareAccelerationEnabledAtStartup",
       g_browser_process->gpu_mode_manager()->initial_gpu_mode_pref());
+#endif
 }
 
 void SystemHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showProxySettings",
       base::BindRepeating(&SystemHandler::HandleShowProxySettings,
                           base::Unretained(this)));
 }
 
-void SystemHandler::HandleShowProxySettings(const base::ListValue* /*args*/) {
+void SystemHandler::HandleShowProxySettings(base::Value::ConstListView args) {
   base::RecordAction(base::UserMetricsAction("Options_ShowProxySettings"));
   settings_utils::ShowNetworkProxySettings(web_ui()->GetWebContents());
 }

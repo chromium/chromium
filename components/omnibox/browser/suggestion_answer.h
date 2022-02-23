@@ -11,10 +11,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -259,7 +260,7 @@ class SuggestionAnswer {
   // omnibox to go somewhere.
   static void LogAnswerUsed(const absl::optional<SuggestionAnswer>& answer);
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
 #endif
 

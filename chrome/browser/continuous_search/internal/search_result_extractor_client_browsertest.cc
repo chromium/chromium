@@ -20,7 +20,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -31,7 +31,7 @@ namespace continuous_search {
 class SearchResultExtractorClientBrowserTest : public PlatformBrowserTest {
  public:
   SearchResultExtractorClientBrowserTest() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     feature_list_.InitWithFeatures({features::kContinuousSearch}, {});
 #else
     feature_list_.InitWithFeatures(

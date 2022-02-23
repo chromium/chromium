@@ -38,7 +38,10 @@ source_set("net") {
     "//net:extras",
     "//url",
   ]
-  public_deps = [ ":net_types" ]
+  public_deps = [
+    ":crurl",
+    ":net_types",
+  ]
   allow_circular_includes_from = [ "//ios/chrome/browser" ]
 }
 
@@ -47,6 +50,19 @@ source_set("net_types") {
   deps = [
     "//base",
     "//net",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("crurl") {
+  sources = [
+    "crurl.h",
+    "crurl.mm",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//url",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

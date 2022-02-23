@@ -63,7 +63,7 @@ std::unique_ptr<ImageDecoder> CreatePNGDecoderWithPngData(
   return decoder;
 }
 
-void TestSize(const char* png_file, IntSize expected_size) {
+void TestSize(const char* png_file, gfx::Size expected_size) {
   auto decoder = CreatePNGDecoderWithPngData(png_file);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
@@ -73,7 +73,7 @@ void TestSize(const char* png_file, IntSize expected_size) {
 // data byte by byte.
 void TestSizeByteByByte(const char* png_file,
                         size_t bytes_needed_to_decode_size,
-                        IntSize expected_size) {
+                        gfx::Size expected_size) {
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> data = ReadFile(png_file);
   ASSERT_FALSE(data->IsEmpty());
@@ -114,7 +114,7 @@ void TestRepetitionCount(const char* png_file, int expected_repetition_count) {
 
 struct PublicFrameInfo {
   base::TimeDelta duration;
-  IntRect frame_rect;
+  gfx::Rect frame_rect;
   ImageFrame::AlphaBlendSource alpha_blend;
   ImageFrame::DisposalMethod disposal_method;
 };
@@ -123,19 +123,19 @@ struct PublicFrameInfo {
 // web_tests/images/resources/png-animated-idat-part-of-animation.png
 static PublicFrameInfo g_png_animated_frame_info[] = {
     {base::Milliseconds(500),
-     {gfx::Point(0, 0), IntSize(5, 5)},
+     {gfx::Point(0, 0), gfx::Size(5, 5)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
     {base::Milliseconds(900),
-     {gfx::Point(1, 1), IntSize(3, 1)},
+     {gfx::Point(1, 1), gfx::Size(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeOverwriteBgcolor},
     {base::Milliseconds(2000),
-     {gfx::Point(1, 2), IntSize(3, 2)},
+     {gfx::Point(1, 2), gfx::Size(3, 2)},
      ImageFrame::kBlendAtopPreviousFrame,
      ImageFrame::kDisposeKeep},
     {base::Milliseconds(1500),
-     {gfx::Point(1, 2), IntSize(3, 1)},
+     {gfx::Point(1, 2), gfx::Size(3, 1)},
      ImageFrame::kBlendAtopBgcolor,
      ImageFrame::kDisposeKeep},
 };
@@ -277,11 +277,11 @@ TEST(AnimatedPNGTests, sizeTest) {
   TestSize(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
-      IntSize(5, 5));
+      gfx::Size(5, 5));
   TestSize(
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png",
-      IntSize(227, 35));
+      gfx::Size(227, 35));
 }
 
 TEST(AnimatedPNGTests, repetitionCountTest) {
@@ -330,11 +330,11 @@ TEST(AnimatedPNGTests, ByteByByteSizeAvailable) {
   TestSizeByteByByte(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png",
-      141u, IntSize(5, 5));
+      141u, gfx::Size(5, 5));
   TestSizeByteByByte(
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png",
-      79u, IntSize(227, 35));
+      79u, gfx::Size(227, 35));
 }
 
 TEST(AnimatedPNGTests, ByteByByteMetaData) {
@@ -703,7 +703,7 @@ TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
 
   decoder->SetData(modified_data, true);
 
-  IntSize expected_size(5, 5);
+  gfx::Size expected_size(5, 5);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
 
@@ -955,7 +955,7 @@ TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
   frame = decoder->DecodeFrameBufferAtIndex(1);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
-  ASSERT_NE(IntRect({}, decoder->Size()), frame->OriginalFrameRect());
+  ASSERT_NE(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
   ASSERT_EQ(kNotFound, frame->RequiredPreviousFrameIndex());
 
   const auto hash = HashBitmap(frame->Bitmap());
@@ -1076,7 +1076,7 @@ TEST(StaticPNGTests, repetitionCountTest) {
 }
 
 TEST(StaticPNGTests, sizeTest) {
-  TestSize("/images/resources/png-simple.png", IntSize(111, 29));
+  TestSize("/images/resources/png-simple.png", gfx::Size(111, 29));
 }
 
 TEST(StaticPNGTests, MetaDataTest) {
@@ -1119,7 +1119,7 @@ static void TestHighBitDepthPNGDecoding(const PNGSample& png_sample,
   ASSERT_TRUE(decoder->IsSizeAvailable());
   ASSERT_TRUE(decoder->IsDecodedSizeAvailable());
 
-  IntSize size(2, 2);
+  gfx::Size size(2, 2);
   ASSERT_EQ(size, decoder->Size());
   ASSERT_EQ(size, decoder->DecodedSize());
   ASSERT_EQ(true, decoder->ImageIsHighBitDepth());
@@ -1331,7 +1331,7 @@ TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
 TEST(StaticPNGTests, ImageIsHighBitDepth) {
   const bool include_8bit_pngs = true;
   Vector<PNGSample> png_samples = GetPNGSamplesInfo(include_8bit_pngs);
-  IntSize size(2, 2);
+  gfx::Size size(2, 2);
 
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {

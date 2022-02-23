@@ -98,6 +98,7 @@ class UpdaterImpl
                              IUpdaterRegisterAppCallback* callback) override;
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
+                        BOOL same_version_update_allowed,
                         IUpdaterObserver* observer) override;
   IFACEMETHODIMP UpdateAll(IUpdaterObserver* observer) override;
 

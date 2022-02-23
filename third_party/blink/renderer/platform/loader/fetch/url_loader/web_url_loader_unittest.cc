@@ -512,69 +512,28 @@ TEST_F(WebURLLoaderTest, ResponseIPEndpoint) {
 }
 
 TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
-  using AddressSpace = network::mojom::IPAddressSpace;
+  KURL url("http://foo.example");
 
-  struct TestCase {
-    std::string url;
-    std::string ip;
-    AddressSpace expected;
-  } cases[] = {
-      {"http://localhost", "127.0.0.1", AddressSpace::kLocal},
-      {"http://localhost", "::1", AddressSpace::kLocal},
-      {"file:///a/path", "", AddressSpace::kLocal},
-      {"file:///a/path", "8.8.8.8", AddressSpace::kLocal},
-      {"http://router.local", "10.1.0.1", AddressSpace::kPrivate},
-      {"http://router.local", "::ffff:192.168.2.128", AddressSpace::kPrivate},
-      {"https://bleep.test", "8.8.8.8", AddressSpace::kPublic},
-      {"http://a.test", "2001:db8:85a3::8a2e:370:7334", AddressSpace::kPublic},
-      {"http://invalid", "", AddressSpace::kUnknown},
-  };
-
-  for (const auto& test : cases) {
-    SCOPED_TRACE(test.url + ", " + test.ip);
-
-    KURL url(test.url.c_str());
-
-    // We are forced to use the result of AssignFromIPLiteral(), and we cannot
-    // just assign it to an unused variable. Check that all non-empty literals
-    // are correctly parsed.
-    net::IPAddress address;
-    EXPECT_EQ(!test.ip.empty(), address.AssignFromIPLiteral(test.ip));
-
-    network::mojom::URLResponseHead head;
-    head.remote_endpoint = net::IPEndPoint(address, 443);
-
-    WebURLResponse response;
-    WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
-
-    EXPECT_EQ(test.expected, response.AddressSpace());
-  }
-}
-
-// This test verifies that the IPAddressSpace set on WebURLResponse takes into
-// account WebURLResponse::ResponseUrl() instead of
-// WebURLResponse::CurrentRequestUrl().
-TEST_F(WebURLLoaderTest, ResponseAddressSpaceConsidersResponseUrl) {
-  KURL request_url("http://request.test");
-
-  // The remote endpoint contains a public IP address, but the response was
-  // ultimately fetched by a service worker from a file URL.
   network::mojom::URLResponseHead head;
-  head.remote_endpoint = net::IPEndPoint(net::IPAddress(8, 8, 8, 8), 80);
-  head.was_fetched_via_service_worker = true;
-  head.url_list_via_service_worker = {
-      GURL("http://redirect.test"),
-      GURL("file:///a/path"),
-  };
+  head.response_address_space = network::mojom::IPAddressSpace::kPrivate;
 
   WebURLResponse response;
-  WebURLLoader::PopulateURLResponse(request_url, head, &response, true, -1);
+  WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
 
-  // The address space of the response reflects the fact the it was fetched
-  // from a file, even though the request was initially to a public website.
-  EXPECT_EQ(KURL("http://request.test"), KURL(response.CurrentRequestUrl()));
-  EXPECT_EQ(KURL("file:///a/path"), KURL(response.ResponseUrl()));
-  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
+}
+
+TEST_F(WebURLLoaderTest, ClientAddressSpace) {
+  KURL url("http://foo.example");
+
+  network::mojom::URLResponseHead head;
+  head.client_address_space = network::mojom::IPAddressSpace::kPublic;
+
+  WebURLResponse response;
+  WebURLLoader::PopulateURLResponse(url, head, &response, true, -1);
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
+            response.ClientAddressSpace());
 }
 
 TEST_F(WebURLLoaderTest, SSLInfo) {

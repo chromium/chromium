@@ -105,7 +105,8 @@ _TRACKED_GROUPS = [
     _Group(paths=['nacl_irt_x86_64.nexe'], title='File: nacl_irt_x86_64.nexe'),
     _Group(paths=['resources.pak'], title='File: resources.pak'),
     _Group(paths=[
-        'chrome_100_percent.pak', 'chrome_200_percent.pak', 'headless_lib.pak'
+        'chrome_100_percent.pak', 'chrome_200_percent.pak',
+        'headless_lib_data.pak', 'headless_lib_strings.pak'
     ],
            title='Group: Other PAKs'),
     _Group(paths=['snapshot_blob.bin'], title='Group: Misc'),
@@ -240,7 +241,7 @@ def _dump_chart_json(output_dir, chartjson):
 
   histogram_path = os.path.join(output_dir, 'perf_results.json')
   logging.critical('Dumping histograms to %s', histogram_path)
-  with open(histogram_path, 'w') as json_file:
+  with open(histogram_path, 'wb') as json_file:
     json_file.write(histogram_result.stdout)
 
 

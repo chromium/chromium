@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -127,7 +126,7 @@ void AffiliationServiceImpl::Init(
 void AffiliationServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, backend_);
+    backend_task_runner_->DeleteSoon(FROM_HERE, backend_.get());
     backend_ = nullptr;
   }
 }
@@ -256,12 +255,31 @@ void AffiliationServiceImpl::CancelPrefetch(
                      base::Unretained(backend_), facet_uri, keep_fresh_until));
 }
 
+void AffiliationServiceImpl::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::KeepPrefetchForFacets,
+                     base::Unretained(backend_), std::move(facet_uris)));
+}
+
 void AffiliationServiceImpl::TrimCacheForFacetURI(const FacetURI& facet_uri) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AffiliationBackend::TrimCacheForFacetURI,
                                 base::Unretained(backend_), facet_uri));
+}
+
+void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::TrimUnusedCache,
+                     base::Unretained(backend_), std::move(facet_uris)));
 }
 
 void AffiliationServiceImpl::InjectAffiliationAndBrandingInformation(

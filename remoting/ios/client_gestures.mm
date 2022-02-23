@@ -311,8 +311,8 @@ static remoting::GestureInterpreter::GestureState toGestureState(
     return YES;
   }
 
-  // TODO(nicholss): If we return NO here, it dismisses the other reconizers.
-  // As we add more types of reconizers, they need to be accounted for in the
+  // TODO(nicholss): If we return NO here, it dismisses the other recognizers.
+  // As we add more types of recognizers, they need to be accounted for in the
   // above logic.
   return NO;
 }

@@ -56,11 +56,6 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   return false;
 }
 
-bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return base::FeatureList::IsEnabled(
-      kRealTimeUrlLookupReferrerChainForEnterprise);
-}
-
 int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
     const {
   return 2;
@@ -153,6 +148,11 @@ double ChromeEnterpriseRealTimeUrlLookupService::
   // Enterprise URL lookup is enabled at startup and managed by the admin, so
   // all referrer URLs should be included in the referrer chain.
   return 0;
+}
+
+bool ChromeEnterpriseRealTimeUrlLookupService::CanSendRTSampleRequest() const {
+  // Do not send sampled pings for enterprise users.
+  return false;
 }
 
 }  // namespace safe_browsing

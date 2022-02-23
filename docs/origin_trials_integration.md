@@ -23,6 +23,11 @@ name will be used in the origin trials developer console. You can have both
 to be enabled either by using the `--enable-experimental-web-platform-features`
 flag **or** the origin trial.
 
+You will have to change all callers of the no-argument overload of
+`RuntimeEnabledFeatures::FooEnabled()` to the overload that takes a
+`const FeatureContext*`. You can pass an `ExecutionContext` here
+(e.g. using `ExecutionContext::From(ScriptState*)`).
+
 You may have a feature that is not available on all platforms, or need to limit
 the trial to specific platforms. Use `origin_trial_os: [list]` to specify which
 platforms will allow the trial to be enabled. The list values are case-

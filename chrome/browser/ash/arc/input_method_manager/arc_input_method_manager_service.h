@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "components/arc/mojom/input_method_manager.mojom-forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/ime/ash/ime_bridge_observer.h"
@@ -92,7 +92,6 @@ class ArcInputMethodManagerService
                           bool show_message) override;
 
   // ui::IMEBridgeObserver overrides:
-  void OnRequestSwitchEngine() override {}
   void OnInputContextHandlerChanged() override;
 
   // Called when a11y keyboard option changed and disables ARC IME while a11y
@@ -156,7 +155,7 @@ class ArcInputMethodManagerService
   std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
   // The current (active) input method, observed for
-  // OnShowVirtualKeyboardIfEnabled.
+  // OnVirtualKeyboardVisibilityChangedIfEnabled.
   ui::InputMethod* input_method_ = nullptr;
   bool is_arc_ime_active_ = false;
 

@@ -58,9 +58,9 @@ suite('SettingsSecureDnsInput', function() {
 
   test('SecureDnsInputEmpty', async function() {
     // Trigger validation on an empty input.
-    testBrowserProxy.setParsedEntry([]);
+    testBrowserProxy.setIsValidConfigResult('', false);
     testElement.validate();
-    assertEquals('', await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
+    assertEquals('', await testBrowserProxy.whenCalled('isValidConfig'));
     assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
   });
@@ -68,15 +68,13 @@ suite('SettingsSecureDnsInput', function() {
   test('SecureDnsInputValidFormatAndProbeFail', async function() {
     // Enter a valid server that fails the test query.
     testElement.value = validFailEntry;
-    testBrowserProxy.setParsedEntry([validFailEntry]);
-    testBrowserProxy.setProbeResults({[validFailEntry]: false});
+    testBrowserProxy.setIsValidConfigResult(validFailEntry, true);
+    testBrowserProxy.setProbeConfigResult(validFailEntry, false);
     testElement.validate();
     assertEquals(
-        validFailEntry,
-        await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
+        validFailEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(
-        validFailEntry,
-        await testBrowserProxy.whenCalled('probeCustomDnsTemplate'));
+        validFailEntry, await testBrowserProxy.whenCalled('probeConfig'));
     assertTrue(testElement.$.input.invalid);
     assertTrue(testElement.isInvalid());
     assertEquals(probeFail, testElement.$.input.errorMessage);
@@ -85,33 +83,13 @@ suite('SettingsSecureDnsInput', function() {
   test('SecureDnsInputValidFormatAndProbeSuccess', async function() {
     // Enter a valid input and make the test query succeed.
     testElement.value = validSuccessEntry;
-    testBrowserProxy.setParsedEntry([validSuccessEntry]);
-    testBrowserProxy.setProbeResults({[validSuccessEntry]: true});
+    testBrowserProxy.setIsValidConfigResult(validSuccessEntry, true);
+    testBrowserProxy.setProbeConfigResult(validSuccessEntry, true);
     testElement.validate();
     assertEquals(
-        validSuccessEntry,
-        await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
+        validSuccessEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(
-        validSuccessEntry,
-        await testBrowserProxy.whenCalled('probeCustomDnsTemplate'));
-    assertFalse(testElement.$.input.invalid);
-    assertFalse(testElement.isInvalid());
-  });
-
-  test('SecureDnsInputValidFormatAndProbeTwice', async function() {
-    // Enter two valid servers but make the first one fail the test query.
-    testElement.value = `${validFailEntry} ${validSuccessEntry}`;
-    testBrowserProxy.setParsedEntry([validFailEntry, validSuccessEntry]);
-    testBrowserProxy.setProbeResults({
-      [validFailEntry]: false,
-      [validSuccessEntry]: true,
-    });
-    testElement.validate();
-    assertEquals(
-        `${validFailEntry} ${validSuccessEntry}`,
-        await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
-    await flushTasks();
-    assertEquals(2, testBrowserProxy.getCallCount('probeCustomDnsTemplate'));
+        validSuccessEntry, await testBrowserProxy.whenCalled('probeConfig'));
     assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
   });
@@ -119,10 +97,11 @@ suite('SettingsSecureDnsInput', function() {
   test('SecureDnsInputInvalid', async function() {
     // Enter an invalid input and trigger validation.
     testElement.value = invalidEntry;
-    testBrowserProxy.setParsedEntry([]);
+    testBrowserProxy.setIsValidConfigResult(invalidEntry, false);
     testElement.validate();
     assertEquals(
-        invalidEntry, await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
+        invalidEntry, await testBrowserProxy.whenCalled('isValidConfig'));
+    assertEquals(0, testBrowserProxy.getCallCount('probeConfig'));
     assertTrue(testElement.$.input.invalid);
     assertTrue(testElement.isInvalid());
     assertEquals(invalidFormat, testElement.$.input.errorMessage);
@@ -196,7 +175,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsOff', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -211,7 +190,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsAutomatic', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -226,7 +205,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsSecure', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -241,7 +220,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsManagedEnvironment', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
     flush();
@@ -260,7 +239,7 @@ suite('SettingsSecureDns', function() {
   test('SecureDnsParentalControl', function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
     flush();
@@ -284,7 +263,7 @@ suite('SettingsSecureDns', function() {
 
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
-      templates: [],
+      config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();

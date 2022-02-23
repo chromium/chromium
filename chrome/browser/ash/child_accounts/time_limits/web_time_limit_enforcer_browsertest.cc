@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -178,7 +178,7 @@ WebTimeLimitEnforcerThrottleTest::GetWebTimeLimitEnforcer() {
 content::WebContents* WebTimeLimitEnforcerThrottleTest::InstallAndLaunchWebApp(
     const GURL& url,
     bool allowlisted_app) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->title = base::UTF8ToUTF16(url.host());
   web_app_info->description = u"Web app";
   web_app_info->start_url = url;
@@ -429,7 +429,15 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
   EXPECT_EQ(web_contents->GetTitle(), title);
 }
 
-IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, EnsureQueryIsCleared) {
+// TODO(crbug.com/1291093): Flaky on Linux.
+// TODO(crbug.com/1291093): Flaky on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_EnsureQueryIsCleared DISABLED_EnsureQueryIsCleared
+#else
+#define MAYBE_EnsureQueryIsCleared EnsureQueryIsCleared
+#endif
+IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
+                       MAYBE_EnsureQueryIsCleared) {
   AllowlistUrlRegx(kExampleHost);
   BlockWeb();
 

@@ -313,7 +313,12 @@ class circular_deque_const_iterator {
   inline void CheckComparable(const circular_deque_const_iterator&) const {}
 #endif  // DCHECK_IS_ON()
 
+  // `parent_deque_` is not a raw_ptr<...> for performance reasons: Usually
+  // on-stack pointer, pointing back to the collection being iterated, owned by
+  // object that iterates over it.  Additionally this is supported by the
+  // analysis of sampling profiler data and tab_search:top100:2020.
   const circular_deque<T>* parent_deque_;
+
   size_t index_;
 
 #if DCHECK_IS_ON()

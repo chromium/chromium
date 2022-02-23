@@ -20,10 +20,13 @@ static_library("sync_bookmarks") {
     "bookmark_specifics_conversions.h",
     "bookmark_sync_service.cc",
     "bookmark_sync_service.h",
-    "switches.cc",
+    "parent_guid_preprocessing.cc",
+    "parent_guid_preprocessing.h",
     "switches.h",
     "synced_bookmark_tracker.cc",
     "synced_bookmark_tracker.h",
+    "synced_bookmark_tracker_entity.cc",
+    "synced_bookmark_tracker_entity.h",
   ]
 
   deps = [
@@ -48,6 +51,7 @@ source_set("unit_tests") {
     "bookmark_model_type_processor_unittest.cc",
     "bookmark_remote_updates_handler_unittest.cc",
     "bookmark_specifics_conversions_unittest.cc",
+    "parent_guid_preprocessing_unittest.cc",
     "synced_bookmark_tracker_unittest.cc",
   ]
 

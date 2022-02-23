@@ -73,7 +73,7 @@
   });
 
   async function dumpConsoleMessagesSorted() {
-    const messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray();
+    const messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray(false, false, ConsoleTestRunner.prepareConsoleMessageTextTrimmed);
     messages.sort().forEach(TestRunner.addResult);
   };
 

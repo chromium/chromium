@@ -29,8 +29,6 @@ target(link_target_type, "renderer_sources") {
     "chrome_object_extensions_utils.h",
     "content_renderer_client.cc",
     "content_renderer_client.h",
-    "document_state.cc",
-    "document_state.h",
     "pepper_plugin_instance.h",
     "plugin_ax_tree_source.h",
     "render_accessibility.h",

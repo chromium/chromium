@@ -9,6 +9,7 @@
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -142,6 +143,45 @@ void RecordSignalDatabaseGetSamplesSampleCount(size_t count);
 void RecordSignalsListeningCount(
     const std::set<uint64_t>& user_actions,
     const std::set<std::pair<std::string, proto::SignalType>>& histograms);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "SegmentationSelectionFailureReason" in
+// //tools/metrics/histograms/enums.xml.
+enum class SegmentationSelectionFailureReason {
+  kPlatformDisabled = 0,
+  kSelectionAvailableInPrefs = 1,
+  kAtLeastOneSegmentNotReady = 2,
+  kAtLeastOneSegmentSignalsNotCollected = 3,
+  kSelectionTtlNotExpired = 4,
+  kAtLeastOneModelFailedExecution = 5,
+  kAtLeastOneModelNeedsMoreSignals = 6,
+  kAtLeastOneModelWithInvalidMetadata = 7,
+  kFailedToSaveModelResult = 8,
+  kInvalidSelectionResultInPrefs = 9,
+  kDBInitFailure = 10,
+  kMaxValue = kDBInitFailure
+};
+
+// Records the reason for failure or success to compute a segment selection.
+void RecordSegmentSelectionFailure(SegmentationSelectionFailureReason reason);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "SegmentationModelAvailability" in //tools/metrics/histograms/enums.xml.
+enum class SegmentationModelAvailability {
+  kModelHandlerCreated = 0,
+  kModelAvailable = 1,
+  kMetadataInvalid = 2,
+  kMaxValue = kMetadataInvalid
+};
+// Records the availability of segmentation models for each target needed.
+void RecordModelAvailability(OptimizationTarget segment_id,
+                             SegmentationModelAvailability availability);
+
+// Records the number of input tensor that's causing a failure to upload
+// structured metrics.
+void RecordTooManyInputTensors(int tensor_size);
 
 }  // namespace stats
 }  // namespace segmentation_platform

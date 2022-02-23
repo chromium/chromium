@@ -41,7 +41,7 @@ class ButlerBootstrap(_ButlerBootstrapBase):
       env (dict): The environment to probe. If None, `os.getenv` will be used.
 
     Raises:
-      NotBootstrappedError if the current environment is not boostrapped.
+      NotBootstrappedError if the current environment is not bootstrapped.
     """
     if env is None:
       env = os.environ

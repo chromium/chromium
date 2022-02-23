@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
@@ -30,7 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
@@ -101,30 +102,6 @@ bool ShouldBlockDanglingMarkup(const KURL& request_url) {
          request_url.ProtocolIsInHTTPFamily();
 }
 
-bool ShouldBlockGateWayAttacks(ExecutionContext* execution_context,
-                               const KURL& request_url) {
-  if (RuntimeEnabledFeatures::CorsRFC1918Enabled()) {
-    network::mojom::IPAddressSpace requestor_space =
-        execution_context->AddressSpace();
-
-    // TODO(mkwst): This only checks explicit IP addresses. We'll have to move
-    // all this up to //net and //content in order to have any real impact on
-    // gateway attacks. That turns out to be a TON of work (crbug.com/378566).
-    network::mojom::IPAddressSpace target_space =
-        network::mojom::IPAddressSpace::kPublic;
-    if (network_utils::IsReservedIPAddress(request_url.Host()))
-      target_space = network::mojom::IPAddressSpace::kPrivate;
-    if (SecurityOrigin::Create(request_url)->IsLocalhost())
-      target_space = network::mojom::IPAddressSpace::kLocal;
-
-    bool is_external_request = requestor_space > target_space;
-    if (is_external_request)
-      return true;
-  }
-
-  return false;
-}
-
 scoped_refptr<BlobDataHandle> ExtractBlobHandle(
     Request* request,
     ExceptionState& exception_state) {
@@ -164,6 +141,14 @@ ScriptPromise BackgroundFetchManager::fetch(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
+    return ScriptPromise();
+  }
+
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
     return ScriptPromise();
   }
 
@@ -235,13 +220,6 @@ ScriptPromise BackgroundFetchManager::fetch(
     if (ShouldBlockDanglingMarkup(request_url)) {
       return RejectWithTypeError(script_state, request_url,
                                  "it contains dangling markup",
-                                 exception_state);
-    }
-
-    if (ShouldBlockGateWayAttacks(execution_context, request_url)) {
-      return RejectWithTypeError(script_state, request_url,
-                                 "Requestor IP address space doesn't match the "
-                                 "target address space.",
                                  exception_state);
     }
 
@@ -358,6 +336,14 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
   if (!registration_->active())
     return ScriptPromise::CastUndefined(script_state);
+
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
+    return ScriptPromise();
+  }
 
   ScriptState::Scope scope(script_state);
 
@@ -496,7 +482,16 @@ void BackgroundFetchManager::DidGetRegistration(
   NOTREACHED();
 }
 
-ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state) {
+ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
+    return ScriptPromise();
+  }
+
   // Creating a Background Fetch registration requires an activated worker, so
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
   if (!registration_->active()) {

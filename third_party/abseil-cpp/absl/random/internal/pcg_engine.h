@@ -262,7 +262,7 @@ struct pcg_xsl_rr_128_64 {
     uint64_t rotate = h >> 58u;
     uint64_t s = Uint128Low64(state) ^ h;
 #endif
-    return rotr(s, rotate);
+    return rotr(s, static_cast<int>(rotate));
   }
 };
 

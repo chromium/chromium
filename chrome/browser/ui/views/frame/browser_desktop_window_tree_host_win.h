@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
@@ -90,8 +91,8 @@ class BrowserDesktopWindowTreeHostWin
 
   void SetWindowIcon(bool badged);
 
-  BrowserView* browser_view_;
-  BrowserFrame* browser_frame_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<BrowserFrame> browser_frame_;
 
   MinimizeButtonMetrics minimize_button_metrics_;
 

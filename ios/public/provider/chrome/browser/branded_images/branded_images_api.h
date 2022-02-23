@@ -47,6 +47,9 @@ enum class BrandedImage {
 
   // The image used for the non-modal default browser promo.
   kNonModalDefaultBrowserPromo,
+
+  // The icon used for the password suggestion half sheet.
+  kPasswordSuggestionKey,
 };
 
 // Return the branded image corresponding to |branded_image|.

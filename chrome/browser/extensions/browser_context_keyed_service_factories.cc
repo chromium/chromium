@@ -13,7 +13,6 @@
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_display_private_api.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -53,20 +52,17 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
-#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
-#endif
-
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
 #endif
 
@@ -85,7 +81,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::BookmarkManagerPrivateAPI::GetFactoryInstance();
   extensions::BrailleDisplayPrivateAPI::GetFactoryInstance();
   extensions::CommandService::GetFactoryInstance();
-  extensions::ContentSettingsService::GetFactoryInstance();
   extensions::CookiesAPI::GetFactoryInstance();
   extensions::ChromeExtensionCookiesFactory::GetInstance();
   extensions::DeveloperPrivateAPI::GetFactoryInstance();
@@ -108,7 +103,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MDnsAPI::GetFactoryInstance();
 #endif
   extensions::MenuManagerFactory::GetInstance();
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   auto networking_private_ui_delegate_factory =
       std::make_unique<extensions::NetworkingPrivateUIDelegateFactoryImpl>();
   extensions::NetworkingPrivateDelegateFactory::GetInstance()
@@ -123,13 +118,13 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ProcessesAPI::GetFactoryInstance();
   extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance();
   extensions::SessionsAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
 #endif
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
   extensions::SignedInDevicesManager::GetFactoryInstance();
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   extensions::SystemIndicatorManagerFactory::GetInstance();
 #endif
   extensions::TabGroupsEventRouterFactory::GetInstance();

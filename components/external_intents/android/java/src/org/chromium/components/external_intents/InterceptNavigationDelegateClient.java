@@ -7,7 +7,7 @@ package org.chromium.components.external_intents;
 import android.app.Activity;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -40,8 +40,8 @@ public interface InterceptNavigationDelegateClient {
     boolean isHidden();
 
     /* Returns whether intent launching from hidden tabs is allowed for the navigation specified
-     * by |params|. */
-    boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params);
+     * by |navigationHandle|. */
+    boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationHandle navigationHandle);
 
     /* Returns the Activity associated with this client. */
     Activity getActivity();
@@ -58,11 +58,11 @@ public interface InterceptNavigationDelegateClient {
 
     /* Invoked when a navigation has begun in the InterceptNavigationDelegateImpl instance
      * associated with this instance. */
-    void onNavigationStarted(NavigationParams params);
+    void onNavigationStarted(NavigationHandle navigationHandle);
 
     /* Invoked when the InterceptNavigationDelegateImpl instance
      * associated with this instance has reached a decision for the navigation specified by
-     * |params|. |overrideUrlLoadingResult| specifies the decision. */
+     * |navigationHandle|. |overrideUrlLoadingResult| specifies the decision. */
     void onDecisionReachedForNavigation(
-            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult);
+            NavigationHandle navigationHandle, OverrideUrlLoadingResult overrideUrlLoadingResult);
 }

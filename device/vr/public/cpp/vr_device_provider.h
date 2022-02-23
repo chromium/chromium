@@ -13,22 +13,30 @@
 
 namespace device {
 
+class COMPONENT_EXPORT(VR_PUBLIC_CPP) VRDeviceProviderClient {
+ public:
+  VRDeviceProviderClient();
+  virtual ~VRDeviceProviderClient();
+
+  // TODO(crbug.com/1090029): Wrap XRDeviceId + VRDisplayInfo into XRDeviceData
+  virtual void AddRuntime(
+      device::mojom::XRDeviceId id,
+      device::mojom::VRDisplayInfoPtr info,
+      device::mojom::XRDeviceDataPtr device_data,
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime) = 0;
+  virtual void RemoveRuntime(device::mojom::XRDeviceId id) = 0;
+  virtual void OnProviderInitialized() = 0;
+  virtual XrFrameSinkClientFactory GetXrFrameSinkClientFactory() = 0;
+};
+
 class COMPONENT_EXPORT(VR_PUBLIC_CPP) VRDeviceProvider {
  public:
   VRDeviceProvider();
   virtual ~VRDeviceProvider();
 
   // If the VR API requires initialization that should happen here.
-  virtual void Initialize(
-      base::RepeatingCallback<void(mojom::XRDeviceId id,
-                                   mojom::VRDisplayInfoPtr,
-                                   mojom::XRDeviceDataPtr,
-                                   mojo::PendingRemote<mojom::XRRuntime>)>
-          add_device_callback,
-      base::RepeatingCallback<void(mojom::XRDeviceId id)>
-          remove_device_callback,
-      base::OnceClosure initialization_complete,
-      XrFrameSinkClientFactory xr_frame_sink_client_factory) = 0;
+  // Note that the client must be guaranteed to outlive the device provider.
+  virtual void Initialize(VRDeviceProviderClient* client) = 0;
 
   // Returns true if initialization is complete.
   virtual bool Initialized() = 0;

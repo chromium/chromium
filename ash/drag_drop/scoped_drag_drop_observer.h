@@ -34,7 +34,8 @@ class ASH_EXPORT ScopedDragDropObserver
  private:
   // aura::client::DragDropClientObserver:
   void OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragEnded() override;
+  void OnDragCompleted(const ui::DropTargetEvent& event) override;
+  void OnDragCancelled() override;
 
   // ShellObserver:
   void OnShellDestroying() override;

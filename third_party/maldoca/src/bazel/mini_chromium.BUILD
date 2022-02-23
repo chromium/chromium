@@ -150,7 +150,7 @@ MINI_CHROMIUM_HDRS = [
     "base/files/scoped_file.h",
     "base/format_macros.h",
     "base/logging.h",
-    "base/macros.h",
+    "base/ignore_result.h",
     "base/memory/free_deleter.h",
     "base/memory/page_size.h",
     "base/metrics/histogram_functions.h",

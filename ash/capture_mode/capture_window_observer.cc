@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_window_observer.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -61,6 +62,11 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window) {
   if (window)
     StartObserving(window);
   RepaintCaptureRegion();
+
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && !controller->is_recording_in_progress())
+    camera_controller->MaybeReparentPreviewWidget();
 }
 
 void CaptureWindowObserver::OnWindowBoundsChanged(

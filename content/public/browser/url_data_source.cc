@@ -96,6 +96,7 @@ std::string URLDataSource::GetContentSecurityPolicy(
                                                : std::string();
     case network::mojom::CSPDirectiveName::BlockAllMixedContent:
     case network::mojom::CSPDirectiveName::ConnectSrc:
+    case network::mojom::CSPDirectiveName::FencedFrameSrc:
     case network::mojom::CSPDirectiveName::FrameSrc:
     case network::mojom::CSPDirectiveName::FontSrc:
     case network::mojom::CSPDirectiveName::ImgSrc:

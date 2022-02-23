@@ -144,6 +144,19 @@ TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback_FeatureEnabled) {
             user_scripts[6]->match_origin_as_fallback());
 }
 
+TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback_InvalidCases) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kContentScriptsMatchOriginAsFallback);
+
+  LoadAndExpectWarning(
+      "content_script_match_origin_as_fallback_warning_for_mv2.json",
+      errors::kMatchOriginAsFallbackRestrictedToMV3);
+  LoadAndExpectError(
+      "content_script_match_origin_as_fallback_invalid_with_paths.json",
+      errors::kMatchOriginAsFallbackCantHavePaths);
+}
+
 TEST_F(ContentScriptsManifestTest, MatchOriginAsFallback_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(

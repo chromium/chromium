@@ -14,13 +14,12 @@ namespace syncer {
 std::unique_ptr<base::DictionaryValue> ProgressMarkerMapToValue(
     const ProgressMarkerMap& marker_map) {
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  for (const auto& model_type_and_progress_marker : marker_map) {
+  for (const auto& [model_type, progress_marker] : marker_map) {
     std::string printable_payload;
-    base::EscapeJSONString(model_type_and_progress_marker.second,
-                           false /* put_in_quotes */, &printable_payload);
+    base::EscapeJSONString(progress_marker, false /* put_in_quotes */,
+                           &printable_payload);
     base::Base64Encode(printable_payload, &printable_payload);
-    value->SetString(ModelTypeToString(model_type_and_progress_marker.first),
-                     printable_payload);
+    value->SetStringPath(ModelTypeToDebugString(model_type), printable_payload);
   }
   return value;
 }

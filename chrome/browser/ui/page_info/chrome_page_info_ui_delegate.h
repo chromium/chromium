@@ -7,9 +7,10 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui_delegate.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -43,7 +44,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
 
   void AboutThisSiteSourceClicked(GURL url, const ui::Event& event);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If PageInfo should show a link to the site or app's settings page, this
   // will return true and set the params to the appropriate resource IDs (IDS_*).
   // Otherwise, it will return false.
@@ -53,17 +54,20 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // extra details to the user concerning the granted permission.
   std::u16string GetPermissionDetail(ContentSettingsType type);
 
+  // Opens "Privacy Sandbox" settings page.
+  void ShowPrivacySandboxSettings();
+
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) override;
 
  private:
   Profile* GetProfile() const;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   GURL site_url_;
 };
 

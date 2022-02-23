@@ -71,7 +71,7 @@ class FakeEventRouter : public extensions::EventRouter {
       const extensions::ExtensionId& extension_id,
       std::unique_ptr<extensions::Event> event) override {
     ASSERT_TRUE(file_system_);
-    const base::Value* dict = &event->event_args->GetList()[0];
+    const base::Value* dict = &event->event_args->GetListDeprecated()[0];
     ASSERT_TRUE(dict->is_dict());
     const std::string* file_system_id = dict->FindStringKey("fileSystemId");
     EXPECT_NE(file_system_id, nullptr);
@@ -90,14 +90,14 @@ class FakeEventRouter : public extensions::EventRouter {
 
     if (reply_result_ == base::File::FILE_OK) {
       base::ListValue value_as_list;
-      value_as_list.Set(0, std::make_unique<base::Value>(kFileSystemId));
-      value_as_list.Set(1, std::make_unique<base::Value>(request_id));
-      value_as_list.Set(2,
-                        std::make_unique<base::Value>(0) /* execution_time */);
+      value_as_list.Append(kFileSystemId);
+      value_as_list.Append(request_id);
+      value_as_list.Append(0 /* execution_time */);
 
       using extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params;
-      std::unique_ptr<Params> params(Params::Create(value_as_list.GetList()));
+      std::unique_ptr<Params> params(
+          Params::Create(value_as_list.GetListDeprecated()));
       ASSERT_TRUE(params.get());
       file_system_->GetRequestManager()->FulfillRequest(
           request_id,

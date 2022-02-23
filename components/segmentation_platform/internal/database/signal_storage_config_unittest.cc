@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
@@ -50,7 +51,8 @@ class SignalStorageConfigTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock test_clock_;
   std::map<std::string, proto::SignalStorageConfigs> db_entries_;
-  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>* db_{nullptr};
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>> db_{
+      nullptr};
   std::unique_ptr<SignalStorageConfig> signal_storage_config_;
 };
 
@@ -78,14 +80,14 @@ TEST_F(SignalStorageConfigTest,
   metadata2.set_min_signal_collection_length(4);
 
   // Add a user action feature to the both models.
-  proto::Feature* feature = metadata.add_features();
+  proto::UMAFeature* feature = metadata.add_features();
   uint64_t name_hash = base::HashMetricName("some user action");
   feature->set_type(proto::SignalType::USER_ACTION);
   feature->set_name_hash(name_hash);
   feature->set_bucket_count(1);
   feature->set_tensor_length(1);
   feature->set_aggregation(proto::Aggregation::COUNT);
-  proto::Feature* feature2 = metadata2.add_features();
+  proto::UMAFeature* feature2 = metadata2.add_features();
   feature2->set_type(proto::SignalType::USER_ACTION);
   feature2->set_name_hash(name_hash);
   feature2->set_bucket_count(1);

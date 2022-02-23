@@ -13,4 +13,9 @@ int MockMessageDispatcherBridge::MapToJavaDrawableId(int resource_id) {
   return -1;
 }
 
+void MockMessageDispatcherBridge::SetMessagesEnabledForEmbedder(
+    bool messages_enabled_for_embedder) {
+  messages_enabled_for_embedder_ = messages_enabled_for_embedder;
+}
+
 }  // namespace messages

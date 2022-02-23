@@ -94,7 +94,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   }
 
   // Creates the fragment. Can only be called once.
-  scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
+  const NGLayoutResult* ToLineBoxFragment();
 
  private:
   absl::optional<LayoutUnit> line_box_bfc_block_offset_;

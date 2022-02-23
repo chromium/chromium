@@ -103,6 +103,8 @@ CAPTURE_EXPORT
   bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);
   std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
       _weakPtrFactoryForStallCheck;
+  // Timestamp offset to subtract from all frames, to avoid leaking uptime.
+  base::TimeDelta start_timestamp_;
 
   // Used to rate-limit crash reports for https://crbug.com/1168112.
   bool _hasDumpedForFrameSizeMismatch;

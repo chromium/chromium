@@ -91,42 +91,6 @@ void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
     InstallUtil::DeleteRegistryKey(root, delegate_execute_path, bitness);
 }
 
-// Remove the registration of profile statistics. This used to be reported to
-// Omaha, but no more.
-void RemoveProfileStatistics(const InstallerState& installer_state) {
-  const HKEY root = installer_state.root_key();
-  bool found = false;
-  bool deleted = true;
-  if (installer_state.system_install()) {
-    for (std::wstring key : {L"_NumAccounts", L"_NumSignedIn"}) {
-      std::wstring path(install_static::GetClientStateMediumKeyPath() + L"\\" +
-                        key);
-      if (base::win::RegKey(root, path.c_str(),
-                            KEY_QUERY_VALUE | KEY_WOW64_32KEY)
-              .Valid()) {
-        found = true;
-        if (!InstallUtil::DeleteRegistryKey(root, path, KEY_WOW64_32KEY))
-          deleted = false;
-      }
-    }
-  } else {
-    base::win::RegKey client_state;
-    if (client_state.Open(root, install_static::GetClientStateKeyPath().c_str(),
-                          KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY) ==
-        ERROR_SUCCESS) {
-      for (const wchar_t* value : {L"_NumAccounts", L"_NumSignedIn"}) {
-        if (!client_state.HasValue(value))
-          continue;
-        found = true;
-        if (client_state.DeleteValue(value) != ERROR_SUCCESS)
-          deleted = false;
-      }
-    }
-  }
-  if (found)
-    UMA_HISTOGRAM_BOOLEAN("Setup.Install.RemoveProfileStatistics", deleted);
-}
-
 // "The binaries" once referred to the on-disk footprint of Chrome and/or Chrome
 // Frame when the products were configured to share such on-disk bits. Support
 // for this mode of install was dropped from ToT in December 2016. Remove any
@@ -670,7 +634,6 @@ void DoLegacyCleanups(const InstallerState& installer_state,
 
   // Cleanups that apply to any install mode.
   RemoveLegacyIExecuteCommandKey(installer_state);
-  RemoveProfileStatistics(installer_state);
 
   // The cleanups below only apply to normal Chrome, not side-by-side (canary).
   if (!install_static::InstallDetails::Get().is_primary_mode())

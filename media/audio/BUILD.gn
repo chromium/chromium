@@ -150,6 +150,7 @@ source_set("audio") {
     "//url",
   ]
   libs = []
+  defines = []
   configs += [
     ":platform_config",
     "//media:subcomponent_config",
@@ -234,6 +235,13 @@ source_set("audio") {
     deps += [
       ":aaudio_stubs",
       "//media/base/android:media_jni_headers",
+    ]
+
+    defines += [
+      # media/audio includes functions from NDK API levels beyond the one Chromium compiles
+      # with by default.
+      # Therefore relax the verification of functions <=> API level introduced with NDK 23.
+      "__ANDROID_UNAVAILABLE_SYMBOLS_ARE_WEAK__",
     ]
   }
 
@@ -406,7 +414,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",

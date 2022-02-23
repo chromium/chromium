@@ -63,14 +63,8 @@
 }
 
 - (void)fetchCredentials {
-  if (IsPasswordCreationEnabled()) {
-    [self.consumer
-        setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
-  } else {
-    NSString* identifier = self.serviceIdentifiers.firstObject.identifier;
-    NSURL* promptURL = identifier ? [NSURL URLWithString:identifier] : nil;
-    [self.consumer setTopPrompt:promptURL.host];
-  }
+  [self.consumer
+      setTopPrompt:PromptForServiceIdentifiers(self.serviceIdentifiers)];
 
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
@@ -102,8 +96,10 @@
     self.suggestedCredentials = suggestions;
 
     dispatch_async(dispatch_get_main_queue(), ^{
+      // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+      // new password screen properly supports user url entry.
       BOOL canCreatePassword =
-          IsPasswordCreationEnabled() && IsPasswordCreationUserRestricted();
+          IsPasswordCreationUserEnabled() && self.serviceIdentifiers.count > 0;
       if (!canCreatePassword && !self.allCredentials.count) {
         [self.UIHandler showEmptyCredentials];
         return;
@@ -131,8 +127,11 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
-  BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled() &&
-                               IsPasswordCreationUserRestricted();
+  // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+  // new password screen properly supports user url entry.
+  BOOL showNewPasswordOption = !filter.length &&
+                               IsPasswordCreationUserEnabled() &&
+                               self.serviceIdentifiers.count > 0;
   if (!filter.length) {
     [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                 allPasswords:self.allCredentials

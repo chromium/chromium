@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_collection.h"
@@ -207,6 +206,9 @@ void V8Window::NamedPropertyGetterCustom(
   Frame* child = frame->Tree().ScopedChild(name);
   if (child) {
     window->ReportCoopAccess("named");
+    window->RecordWindowProxyAccessMetrics(
+        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
     UseCounter::Count(CurrentExecutionContext(info.GetIsolate()),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
 
@@ -260,6 +262,9 @@ void V8Window::NamedPropertyGetterCustom(
   if (!has_named_item && !has_id_item)
     return;
   window->ReportCoopAccess("named");
+  window->RecordWindowProxyAccessMetrics(
+      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
+      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter);
 
   if (!has_named_item && has_id_item &&
       !doc->ContainsMultipleElementsWithId(name)) {

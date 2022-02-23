@@ -13,29 +13,31 @@
 namespace chromeos {
 namespace ime {
 
-SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
-  if (!TryLoadDecoder()) {
-    LOG(WARNING) << "DecoderEngine INIT INCOMPLETED.";
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
+SystemEngine::SystemEngine(ImeCrosPlatform* platform,
+                           absl::optional<ImeDecoder::EntryPoints> entry_points)
+    : platform_(platform) {
+  if (!entry_points) {
+    LOG(WARNING) << "SystemEngine INIT INCOMPLETE.";
+    return;
   }
+
+  decoder_entry_points_ = *entry_points;
+  decoder_entry_points_->init_once(platform_);
 }
 
 SystemEngine::~SystemEngine() {}
-
-bool SystemEngine::TryLoadDecoder() {
-  auto* decoder = ImeDecoder::GetInstance();
-  if (decoder->GetStatus() == ImeDecoder::Status::kSuccess &&
-      decoder->GetEntryPoints().is_ready) {
-    decoder_entry_points_ = decoder->GetEntryPoints();
-    decoder_entry_points_->init_once(platform_);
-    return true;
-  }
-  return false;
-}
 
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> receiver,
     mojo::PendingRemote<mojom::InputMethodHost> host) {
+  if (!decoder_entry_points_) {
+    return false;
+  }
+
   auto receiver_pipe_handle = receiver.PassPipe().release().value();
   auto host_pipe_version = host.version();
   auto host_pipe_handle = host.PassPipe().release().value();
@@ -44,8 +46,18 @@ bool SystemEngine::BindRequest(
       host_pipe_version);
 }
 
+bool SystemEngine::BindConnectionFactory(
+    mojo::PendingReceiver<mojom::ConnectionFactory> receiver) {
+  if (!decoder_entry_points_)
+    return false;
+  auto receiver_pipe_handle = receiver.PassPipe().release().value();
+  return decoder_entry_points_->initialize_connection_factory(
+      receiver_pipe_handle);
+}
+
 bool SystemEngine::IsConnected() {
-  return decoder_entry_points_->is_input_method_connected();
+  return decoder_entry_points_ &&
+         decoder_entry_points_->is_input_method_connected();
 }
 
 }  // namespace ime

@@ -31,8 +31,6 @@ content::WebUIDataSource* CreateInternalsHTMLSource(
       content::WebUIDataSource::Create(source_name);
   source->AddResourcePath("autofill_and_password_manager_internals.js",
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
-  source->AddResourcePath("autofill_and_password_manager_internals.css",
-                          IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_CSS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
   source->AddString(version_ui::kVersion, version_info::GetVersionNumber());

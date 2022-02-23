@@ -52,6 +52,9 @@ class BreadcrumbManager {
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);
 
+  // TODO(crbug.com/1287441): remove this once crash is understood.
+  bool HasObserver(BreadcrumbManagerObserver* observer);
+
  private:
   // Drops events which are considered stale. Note that stale events are not
   // guaranteed to be removed. Explicitly, stale events will be retained while

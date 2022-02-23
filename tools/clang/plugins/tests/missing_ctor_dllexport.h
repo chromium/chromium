@@ -9,6 +9,7 @@ struct MyString {
   MyString();
   MyString(const MyString&);
   MyString(MyString&&);
+  ~MyString();
 };
 
 template <class T>
@@ -16,6 +17,7 @@ struct MyVector {
   MyVector();
   MyVector(const MyVector&);
   MyVector(MyVector&&);
+  ~MyVector();
 };
 
 // For now, this should only warn on the missing constructor, not on the missing

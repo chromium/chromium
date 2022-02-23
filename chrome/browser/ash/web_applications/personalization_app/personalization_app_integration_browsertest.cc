@@ -20,10 +20,12 @@
 #include "base/test/test_switches.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/user_manager/user_manager.h"
@@ -174,6 +176,16 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
     SystemWebAppIntegrationTest::SetUp();
   }
 
+  // Launch the app at the wallpaper subpage to avoid a redirect while loading
+  // the app.
+  content::WebContents* LaunchAppAtWallpaperSubpage(Browser** browser) {
+    apps::AppLaunchParams launch_params =
+        LaunchParamsForApp(web_app::SystemAppType::PERSONALIZATION);
+    launch_params.override_url =
+        GURL(ash::kChromeUIPersonalizationAppWallpaperSubpageURL);
+    return LaunchApp(std::move(launch_params), browser);
+  }
+
   void SetAppFullscreenAndWait(Browser* browser,
                                content::WebContents* web_contents) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
@@ -211,8 +223,11 @@ class PersonalizationAppIntegrationTest : public SystemWebAppIntegrationTest {
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppInstalls) {
   const GURL url(ash::kChromeUIPersonalizationAppURL);
+  std::string appTitle = (chromeos::features::IsPersonalizationHubEnabled())
+                             ? "Personalization"
+                             : "Wallpaper";
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      web_app::SystemAppType::PERSONALIZATION, url, "Wallpaper"));
+      web_app::SystemAppType::PERSONALIZATION, url, appTitle));
 }
 
 // Test that the widget is modified to be transparent.
@@ -220,21 +235,18 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        PersonalizationAppWidgetIsTransparent) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::PERSONALIZATION, &browser);
+  content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
   EXPECT_TRUE(web_contents->GetTopLevelNativeWindow()->GetTransparent());
   EXPECT_FALSE(web_contents->GetTopLevelNativeWindow()->GetProperty(
       chromeos::kWindowManagerManagesOpacityKey));
 }
 
-// Flaky in CQ (crbug.com/1268795).
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
-                       DISABLED_PersonalizationAppDisablesWindowBackdrop) {
+                       PersonalizationAppDisablesWindowBackdrop) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::PERSONALIZATION, &browser);
+  content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
   aura::Window* window = web_contents->GetTopLevelNativeWindow();
 
   ash::WindowBackdrop* window_backdrop = ash::WindowBackdrop::Get(window);
@@ -243,12 +255,12 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 }
 
 // Test that the background color is forced to be transparent.
+// Disabled due to flakiness. crbug.com/1294458
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
-                       SetsTransparentBackgroundColor) {
+                       DISABLED_SetsTransparentBackgroundColor) {
   WaitForTestSystemAppInstall();
   Browser* browser;
-  content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::PERSONALIZATION, &browser);
+  content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   EXPECT_EQ(SK_ColorTRANSPARENT,
@@ -263,10 +275,10 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
       web_contents->GetRenderWidgetHostView()->GetBackgroundColor().value());
 }
 
-// Flaky in CQ (crbug.com/1268795).
 // Screenshot the entire system UI while in fullscreen preview mode. Should see
 // a bright yellow wallpaper with the full screen controls overlay. Note should
 // not see crop option buttons even though wallpaper type is custom.
+// TODO(crbug/1268795) fix this flaky test.
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
                        DISABLED_ScreenshotShowsWallpaperUnderSWA) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -284,8 +296,7 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 
   WaitForTestSystemAppInstall();
   Browser* browser;
-  content::WebContents* web_contents =
-      LaunchApp(web_app::SystemAppType::PERSONALIZATION, &browser);
+  content::WebContents* web_contents = LaunchAppAtWallpaperSubpage(&browser);
 
   WallpaperChangeWaiter wallpaper_changer;
   wallpaper_changer.SetWallpaperAndWait();

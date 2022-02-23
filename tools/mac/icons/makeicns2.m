@@ -8,6 +8,7 @@
 // Note that this doesn't handle @2x icons. If those are ever needed, add an
 // "int scale" parameter to parallel the "int size" one.
 
+#include <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #include <assert.h>
 #include <libkern/OSByteOrder.h>

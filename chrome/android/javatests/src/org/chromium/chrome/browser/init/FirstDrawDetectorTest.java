@@ -13,11 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.chrome.R;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -25,9 +24,8 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class FirstDrawDetectorTest {
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Test
     @SmallTest
@@ -35,7 +33,7 @@ public class FirstDrawDetectorTest {
         mActivityTestRule.launchActivity(null);
         final CountDownLatch firstDrawEvent = new CountDownLatch(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DummyUiActivity activity = mActivityTestRule.getActivity();
+            BlankUiTestActivity activity = mActivityTestRule.getActivity();
             View view = new FrameLayout(activity);
             activity.setContentView(view);
 

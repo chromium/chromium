@@ -23,8 +23,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #endif
 
 namespace extensions {
@@ -64,7 +64,7 @@ class MockOperationManager : public OperationManager {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A fake for the DiskMountManager that will successfully call the unmount
 // callback.
-class FakeDiskMountManager : public chromeos::disks::MockDiskMountManager {
+class FakeDiskMountManager : public ash::disks::MockDiskMountManager {
  public:
   FakeDiskMountManager();
   ~FakeDiskMountManager() override;

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -64,6 +63,7 @@ class NET_EXPORT HttpResponseHeaders
   };
 
   static const char kContentRange[];
+  static const char kLastModified[];
 
   HttpResponseHeaders() = delete;
 

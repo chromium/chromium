@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -151,7 +152,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   std::vector<views::View*> GetButtons();
 
   // Container that receives OnExpanded events.
-  MediaNotificationContainer* const container_;
+  const raw_ptr<MediaNotificationContainer> container_;
 
   // Keeps track of media metadata and controls the session when buttons are
   // clicked.
@@ -159,7 +160,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // Optional View that is put into the header row. E.g. in Ash we show
   // notification control buttons.
-  views::View* header_row_controls_view_ = nullptr;
+  raw_ptr<views::View> header_row_controls_view_ = nullptr;
 
   // String to set as the app name of the header when there is no source title.
   std::u16string default_app_name_;
@@ -183,21 +184,21 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   std::u16string accessible_name_;
 
   // Container views directly attached to this view.
-  message_center::NotificationHeaderView* header_row_ = nullptr;
-  views::Label* cros_header_label_ = nullptr;
-  views::View* button_row_ = nullptr;
-  views::View* playback_button_container_ = nullptr;
-  views::View* pip_button_separator_view_ = nullptr;
-  views::ToggleImageButton* play_pause_button_ = nullptr;
-  views::ToggleImageButton* picture_in_picture_button_ = nullptr;
-  views::View* title_artist_row_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::Label* artist_label_ = nullptr;
-  views::View* layout_row_ = nullptr;
-  views::View* main_row_ = nullptr;
+  raw_ptr<message_center::NotificationHeaderView> header_row_ = nullptr;
+  raw_ptr<views::Label> cros_header_label_ = nullptr;
+  raw_ptr<views::View> button_row_ = nullptr;
+  raw_ptr<views::View> playback_button_container_ = nullptr;
+  raw_ptr<views::View> pip_button_separator_view_ = nullptr;
+  raw_ptr<views::ToggleImageButton> play_pause_button_ = nullptr;
+  raw_ptr<views::ToggleImageButton> picture_in_picture_button_ = nullptr;
+  raw_ptr<views::View> title_artist_row_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> artist_label_ = nullptr;
+  raw_ptr<views::View> layout_row_ = nullptr;
+  raw_ptr<views::View> main_row_ = nullptr;
 
-  views::BoxLayout* title_artist_row_layout_ = nullptr;
-  const gfx::VectorIcon* vector_header_icon_ = nullptr;
+  raw_ptr<views::BoxLayout> title_artist_row_layout_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> vector_header_icon_ = nullptr;
 
   absl::optional<NotificationTheme> theme_;
 

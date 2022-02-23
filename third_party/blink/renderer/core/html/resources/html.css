@@ -402,7 +402,7 @@ button {
 
 /* Form controls don't go vertical. */
 input, textarea, select, button, meter, progress {
-    -webkit-writing-mode: horizontal-tb !important;
+    writing-mode: horizontal-tb !important;
 }
 
 input, textarea, select, button {
@@ -643,7 +643,7 @@ input[type="radio" i] {
 input[type="button" i], input[type="submit" i], input[type="reset" i] {
     -internal-empty-line-height: fabricated;
     appearance: auto;
-    -webkit-user-select: none;
+    user-select: none;
     white-space: pre
 }
 
@@ -710,7 +710,7 @@ input[type="range" i]:-internal-has-datalist::-webkit-slider-container {
 input[type="range" i]::-webkit-slider-runnable-track {
     flex: 1;
     min-inline-size: 0;
-    -webkit-align-self: center;
+    align-self: center;
 
     box-sizing: border-box;
     -webkit-user-modify: read-only !important;
@@ -992,27 +992,6 @@ option {
     min-height: 1.2em;
 }
 
-/* selectmenu */
-
-selectmenu {
-    display: inline-block;
-}
-
-selectmenu option:hover {
-    background-color: lightgray;
-    cursor: default;
-    user-select: none;
-}
-
-selectmenu popup {
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
-  box-sizing: border-box;
-  overflow: auto;
-  padding: 4px;
-}
-
 output {
     display: inline;
 }
@@ -1180,6 +1159,10 @@ nobr {
 
 /* states */
 
+:-internal-selector-fragment-anchor {
+    outline: Highlight 3px solid;
+}
+
 :-internal-spatial-navigation-interest {
     outline: auto 1px -webkit-focus-ring-color !important;
     box-shadow: none !important
@@ -1225,15 +1208,11 @@ input[type="week" i]::-webkit-calendar-picker-indicator {
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
-  height: 1.2em;
-  margin-inline-start: 24px;
+  height: 1.0em;
+  width: 1.0em;
   opacity: 1;
   outline: none;
-  padding-bottom: 2px;
-  padding-inline-start: 3px;
-  padding-inline-end: 3px;
-  padding-top: 2px;
-  width: 1.2em;
+  padding: 2px;
 }
 
 input[type="date" i]::-webkit-calendar-picker-indicator:focus-visible,
@@ -1292,7 +1271,7 @@ input::-webkit-datetime-edit-hour-field[disabled],
 input::-webkit-datetime-edit-millisecond-field[disabled],
 input::-webkit-datetime-edit-minute-field[disabled],
 input::-webkit-datetime-edit-second-field[disabled] {
-    color: -internal-light-dark(GrayText, #000000);
+    color: -internal-light-dark(GrayText, rgb(165, 165, 165));
 }
 
 a:-webkit-any-link {
@@ -1321,7 +1300,7 @@ ruby, rt {
 
 rt {
     line-height: normal;
-    -webkit-text-emphasis: none;
+    text-emphasis: none;
 }
 
 ruby > rt {
@@ -1341,6 +1320,10 @@ frameset {
 }
 
 iframe {
+    border: 2px inset
+}
+
+fencedframe {
     border: 2px inset
 }
 

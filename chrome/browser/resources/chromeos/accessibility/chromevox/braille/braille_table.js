@@ -16,7 +16,9 @@ goog.provide('BrailleTable');
  *   id:string,
  *   grade:(string|undefined),
  *   variant:(string|undefined),
- *   fileNames:string
+ *   fileNames:string,
+ *   enDisplayName:(string|undefined),
+ *   alwaysUseEnDisplayName:boolean
  * }}
  */
 BrailleTable.Table;
@@ -41,11 +43,28 @@ BrailleTable.COMMON_DEFS_FILENAME_ = 'cvox-common.cti';
  *     Called asynchronously with an array of tables.
  */
 BrailleTable.getAll = function(callback) {
-  function appendCommonFilename(tables) {
-    // Append the common definitions to all table filenames.
+  const needsDisambiguation = new Map();
+  function preprocess(tables) {
     tables.forEach(function(table) {
+      // Append the common definitions to all table filenames.
       table.fileNames += (',' + BrailleTable.COMMON_DEFS_FILENAME_);
+
+      // Save all tables which have a mirroring duplicate for locale + grade.
+      const key = table.locale + table.grade;
+      if (!needsDisambiguation.has(key)) {
+        needsDisambiguation.set(key, []);
+      }
+
+      const entry = needsDisambiguation.get(key);
+      entry.push(table);
     });
+
+    for (const entry of needsDisambiguation.values()) {
+      if (entry.length > 1) {
+        entry.forEach(table => table.alwaysUseEnDisplayName = true);
+      }
+    }
+
     return tables;
   }
   const url = chrome.extension.getURL(BrailleTable.TABLE_PATH);
@@ -58,7 +77,7 @@ BrailleTable.getAll = function(callback) {
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
       if (xhr.status === 200) {
-        callback(appendCommonFilename(
+        callback(preprocess(
             /** @type {!Array<BrailleTable.Table>} */ (
                 JSON.parse(xhr.responseText))));
       }
@@ -112,23 +131,39 @@ BrailleTable.getUncontracted = function(tables, table) {
 
 /**
  * @param {!BrailleTable.Table} table Table to get name for.
- * @return {string} Localized display name.
+ * @return {string|undefined} Localized display name.
  */
 BrailleTable.getDisplayName = function(table) {
+  const uiLanguage = chrome.i18n.getUILanguage().toLowerCase();
   const localeName = chrome.accessibilityPrivate.getDisplayNameForLocale(
       table.locale /* locale to be displayed */,
-      chrome.i18n.getUILanguage().toLowerCase() /* locale to localize into */);
+      uiLanguage /* locale to localize into */);
+
+  const enDisplayName = table.enDisplayName;
+  if (!localeName && !enDisplayName) {
+    return;
+  }
+
+  let baseName;
+  if (enDisplayName &&
+      (table.alwaysUseEnDisplayName || uiLanguage.startsWith('en') ||
+       !localeName)) {
+    baseName = enDisplayName;
+  } else {
+    baseName = localeName;
+  }
+
   if (!table.grade && !table.variant) {
-    return localeName;
+    return baseName;
   } else if (table.grade && !table.variant) {
     return Msgs.getMsg(
-        'braille_table_name_with_grade', [localeName, table.grade]);
+        'braille_table_name_with_grade', [baseName, table.grade]);
   } else if (!table.grade && table.variant) {
     return Msgs.getMsg(
-        'braille_table_name_with_variant', [localeName, table.variant]);
+        'braille_table_name_with_variant', [baseName, table.variant]);
   } else {
     return Msgs.getMsg(
         'braille_table_name_with_variant_and_grade',
-        [localeName, table.variant, table.grade]);
+        [baseName, table.variant, table.grade]);
   }
 };

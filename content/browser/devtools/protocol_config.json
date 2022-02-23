@@ -52,9 +52,14 @@
                 "async": ["prepareForLeakDetection"]
             },
             {
+                "domain": "NativeProfiling",
+                "include": ["dumpProfilingDataOfAllProcesses"],
+                "async": ["dumpProfilingDataOfAllProcesses"]
+            },
+            {
                 "domain": "Network",
                 "include": ["enable", "disable", "clearBrowserCache", "clearBrowserCookies", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "setExtraHTTPHeaders", "canEmulateNetworkConditions", "emulateNetworkConditions", "setBypassServiceWorker", "setRequestInterception", "continueInterceptedRequest", "getResponseBodyForInterception", "setCacheDisabled", "takeResponseBodyForInterceptionAsStream", "getSecurityIsolationStatus", "loadNetworkResource", "setAcceptedEncodings", "clearAcceptedEncodingsOverride", "enableReportingApi"],
-                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "trustTokenOperationDone", "subresourceWebBundleMetadataReceived", "subresourceWebBundleMetadataError", "subresourceWebBundleInnerResponseParsed", "subresourceWebBundleInnerResponseError", "reportingApiReportAdded", "reportingApiReportUpdated"],
+                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "trustTokenOperationDone", "subresourceWebBundleMetadataReceived", "subresourceWebBundleMetadataError", "subresourceWebBundleInnerResponseParsed", "subresourceWebBundleInnerResponseError", "reportingApiReportAdded", "reportingApiReportUpdated", "reportingApiEndpointsChangedForOrigin"],
                 "async": ["clearBrowserCookies", "clearBrowserCache", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "continueInterceptedRequest", "getResponseBodyForInterception", "takeResponseBodyForInterceptionAsStream", "loadNetworkResource"]
             },
             {
@@ -86,7 +91,7 @@
             },
             {
                 "domain": "Storage",
-                "async": ["getUsageAndQuota", "clearDataForOrigin", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens"]
+                "async": ["getUsageAndQuota", "clearDataForOrigin", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails"]
             },
             {
                 "domain": "SystemInfo",
@@ -124,7 +129,7 @@
     "lib": {
         "package": "content/browser/devtools/protocol",
         "output": "protocol",
-        "string_header": "content/browser/devtools/protocol/base_string_adapter.h",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h",
         "export_macro": "CONTENT_EXPORT",
         "export_header": "content/common/content_export.h"
     },

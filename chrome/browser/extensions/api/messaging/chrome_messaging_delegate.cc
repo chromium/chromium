@@ -51,7 +51,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // All native messaging hosts are allowed if there is no blocklist.
   if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlocklist))
     return allow_result;
-  const base::ListValue* blocklist =
+  const base::Value* blocklist =
       pref_service->GetList(pref_names::kNativeMessagingBlocklist);
   if (!blocklist)
     return allow_result;
@@ -59,17 +59,17 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // Check if the name or the wildcard is in the blocklist.
   base::Value name_value(native_host_name);
   base::Value wildcard_value("*");
-  if (!base::Contains(blocklist->GetList(), name_value) &&
-      !base::Contains(blocklist->GetList(), wildcard_value)) {
+  if (!base::Contains(blocklist->GetListDeprecated(), name_value) &&
+      !base::Contains(blocklist->GetListDeprecated(), wildcard_value)) {
     return allow_result;
   }
 
   // The native messaging host is blocklisted. Check the allowlist.
   if (pref_service->IsManagedPreference(
           pref_names::kNativeMessagingAllowlist)) {
-    const base::ListValue* allowlist =
+    const base::Value* allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (allowlist && base::Contains(allowlist->GetList(), name_value))
+    if (allowlist && base::Contains(allowlist->GetListDeprecated(), name_value))
       return allow_result;
   }
 

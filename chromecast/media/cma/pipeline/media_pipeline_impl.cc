@@ -112,12 +112,14 @@ MediaPipelineImpl::~MediaPipelineImpl() {
 
 void MediaPipelineImpl::Initialize(
     LoadType load_type,
-    std::unique_ptr<CmaBackend> media_pipeline_backend) {
+    std::unique_ptr<CmaBackend> media_pipeline_backend,
+    bool is_buffering_enabled) {
   LOG(INFO) << __FUNCTION__;
   DCHECK(thread_checker_.CalledOnValidThread());
   media_pipeline_backend_ = std::move(media_pipeline_backend);
 
-  if (load_type == kLoadTypeURL || load_type == kLoadTypeMediaSource) {
+  if ((load_type == kLoadTypeURL || load_type == kLoadTypeMediaSource) &&
+      is_buffering_enabled) {
     base::TimeDelta low_threshold(kLowBufferThresholdURL);
     base::TimeDelta high_threshold(kHighBufferThresholdURL);
     if (load_type == kLoadTypeMediaSource) {
@@ -177,7 +179,7 @@ void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
   ::media::PipelineStatus status =
       audio_pipeline_->Initialize(config, std::move(frame_provider));
 
-  if (status == ::media::PipelineStatus::PIPELINE_OK) {
+  if (status.is_ok()) {
     // TODO(b/67112414): Do something better than this.
     MediaPipelineObserver::NotifyAudioPipelineInitialized(this, config);
   }
@@ -571,10 +573,10 @@ void MediaPipelineImpl::UpdateMediaTime() {
 
 void MediaPipelineImpl::OnError(::media::PipelineStatus error) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_NE(error, ::media::PIPELINE_OK) << "PIPELINE_OK is not an error!";
+  DCHECK(error != ::media::PIPELINE_OK) << "PIPELINE_OK is not an error!";
 
   metrics::CastMetricsHelper::GetInstance()->RecordApplicationEventWithValue(
-      "Cast.Platform.Error", error);
+      "Cast.Platform.Error", error.code());
 
   if (!client_.error_cb.is_null())
     std::move(client_.error_cb).Run(error);

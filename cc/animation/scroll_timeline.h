@@ -118,6 +118,12 @@ inline ScrollTimeline* ToScrollTimeline(AnimationTimeline* timeline) {
   return static_cast<ScrollTimeline*>(timeline);
 }
 
+inline const ScrollTimeline* ToScrollTimeline(
+    const AnimationTimeline* timeline) {
+  DCHECK(timeline->IsScrollTimeline());
+  return static_cast<const ScrollTimeline*>(timeline);
+}
+
 // https://drafts.csswg.org/scroll-animations-1/#progress-calculation-algorithm
 template <typename T>
 double ComputeProgress(double current_offset, const T& resolved_offsets) {

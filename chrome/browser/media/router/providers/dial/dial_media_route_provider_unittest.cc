@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -111,7 +112,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
     // Observe media routes in order for DialMediaRouteProvider to send back
     // route updates.
-    provider_->StartObservingMediaRoutes(MediaSource::Id());
+    provider_->StartObservingMediaRoutes();
   }
 
   void TearDown() override { provider_.reset(); }
@@ -147,7 +148,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
     // DialMediaRouteProvider doesn't send route list update following
     // CreateRoute, but MR will add the route returned in the response.
-    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _, _, _)).Times(0);
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _)).Times(0);
     provider_->CreateRoute(
         source_id, sink_id, presentation_id, origin_, 1, base::TimeDelta(),
         /* off_the_record */ false,
@@ -286,7 +287,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     loader_factory_.AddResponse(app_launch_url_, std::move(response_head), "",
                                 network::URLLoaderCompletionStatus());
     std::vector<MediaRoute> routes;
-    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, Not(IsEmpty()), _, IsEmpty()))
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, Not(IsEmpty())))
         .WillOnce(SaveArg<1>(&routes));
     base::RunLoop().RunUntilIdle();
 
@@ -362,7 +363,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
         mock_router_,
         OnPresentationConnectionStateChanged(
             route_id, blink::mojom::PresentationConnectionState::TERMINATED));
-    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, IsEmpty(), _, IsEmpty()));
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, IsEmpty()));
     base::RunLoop().RunUntilIdle();
 
     ASSERT_EQ(1u, received_messages.size());
@@ -385,7 +386,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     EXPECT_CALL(*this,
                 OnTerminateRoute(_, testing::Ne(RouteRequestResult::OK)));
     EXPECT_CALL(mock_router_, OnRouteMessagesReceived(_, _));
-    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _, _, _)).Times(1);
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(_, _)).Times(1);
     EXPECT_CALL(*mock_sink_service_.app_discovery_service(),
                 DoFetchDialAppInfo(_, _));
     provider_->TerminateRoute(
@@ -418,7 +419,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
-  TestDialActivityManager* activity_manager_ = nullptr;
+  raw_ptr<TestDialActivityManager> activity_manager_ = nullptr;
   std::unique_ptr<DialMediaRouteProvider> provider_;
 
   MediaSinkInternal sink_{CreateDialSink(1)};

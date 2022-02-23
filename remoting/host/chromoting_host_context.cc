@@ -117,18 +117,18 @@ policy::ManagementService* ChromotingHostContext::management_service() {
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
     scoped_refptr<AutoThreadTaskRunner> ui_task_runner) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows the AudioCapturer requires COM, so we run a single-threaded
   // apartment, which requires a UI thread.
   scoped_refptr<AutoThreadTaskRunner> audio_task_runner =
       AutoThread::CreateWithLoopAndComInitTypes(
           "ChromotingAudioThread", ui_task_runner, base::MessagePumpType::UI,
           AutoThread::COM_INIT_STA);
-#else   // !defined(OS_WIN)
+#else   // !BUILDFLAG(IS_WIN)
   scoped_refptr<AutoThreadTaskRunner> audio_task_runner =
       AutoThread::CreateWithType("ChromotingAudioThread", ui_task_runner,
                                  base::MessagePumpType::IO);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
   scoped_refptr<AutoThreadTaskRunner> file_task_runner =
       AutoThread::CreateWithType("ChromotingFileThread", ui_task_runner,
                                  base::MessagePumpType::IO);
@@ -143,16 +143,16 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(
   // on a UI thread.
   scoped_refptr<AutoThreadTaskRunner> input_task_runner =
       AutoThread::CreateWithType("ChromotingInputThread", ui_task_runner,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                                  base::MessagePumpType::UI);
 #else
                                  base::MessagePumpType::IO);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   return base::WrapUnique(new ChromotingHostContext(
       ui_task_runner, audio_task_runner, file_task_runner, input_task_runner,
       network_task_runner,
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       // Mac requires a UI thread for the capturer.
       AutoThread::CreateWithType("ChromotingCaptureThread", ui_task_runner,
                                  base::MessagePumpType::UI),

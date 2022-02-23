@@ -17,7 +17,7 @@ void ShowBlockedPopups(content::WebContents* web_contents) {
 
 bool PopupSettingManagedByPolicy(HostContentSettingsMap* map, const GURL& url) {
   content_settings::SettingInfo setting_info;
-  std::unique_ptr<base::Value> setting = map->GetWebsiteSetting(
+  const base::Value setting = map->GetWebsiteSetting(
       url, url, ContentSettingsType::POPUPS, &setting_info);
   return setting_info.source == content_settings::SETTING_SOURCE_POLICY;
 }

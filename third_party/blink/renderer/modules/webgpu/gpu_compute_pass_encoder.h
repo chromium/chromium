@@ -54,8 +54,11 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
     GetProcs().computePassEncoderSetPipeline(GetHandle(),
                                              pipeline->GetHandle());
   }
-  void dispatch(uint32_t x, uint32_t y, uint32_t z) {
-    GetProcs().computePassEncoderDispatch(GetHandle(), x, y, z);
+  void dispatch(uint32_t workgroup_count_x,
+                uint32_t workgroup_count_y,
+                uint32_t workgroup_count_z) {
+    GetProcs().computePassEncoderDispatch(GetHandle(), workgroup_count_x,
+                                          workgroup_count_y, workgroup_count_z);
   }
   void dispatchIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
                         uint64_t indirectOffset) {
@@ -67,7 +70,8 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
     GetProcs().computePassEncoderWriteTimestamp(
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
-  void endPass() { GetProcs().computePassEncoderEndPass(GetHandle()); }
+  void end() { GetProcs().computePassEncoderEnd(GetHandle()); }
+  void endPass();
 };
 
 }  // namespace blink

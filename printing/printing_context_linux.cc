@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_dialog_gtk_interface.h"
@@ -32,8 +33,14 @@ gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
-  return std::make_unique<PrintingContextLinux>(delegate);
+    Delegate* delegate,
+    bool skip_system_calls) {
+  auto context = std::make_unique<PrintingContextLinux>(delegate);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 PrintingContextLinux::PrintingContextLinux(Delegate* delegate)
@@ -61,11 +68,6 @@ void PrintingContextLinux::SetPdfPaperSizeFunction(
   DCHECK(get_pdf_paper_size);
   DCHECK(!get_pdf_paper_size_);
   get_pdf_paper_size_ = get_pdf_paper_size;
-}
-
-void PrintingContextLinux::PrintDocument(const MetafilePlayer& metafile) {
-  DCHECK(print_dialog_);
-  print_dialog_->PrintDocument(metafile, document_name_);
 }
 
 void PrintingContextLinux::AskUserForSettings(int max_pages,
@@ -109,12 +111,9 @@ gfx::Size PrintingContextLinux::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
-  DCHECK(!external_preview) << "Not implemented";
 
   if (!create_dialog_func_)
     return mojom::ResultCode::kSuccess;
@@ -144,28 +143,25 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
+  // If this implementation is expanded to include system calls then such calls
+  // should be gated upon `skip_system_calls()`.
+
   document_name_ = document_name;
 
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextLinux::NewPage() {
+mojom::ResultCode PrintingContextLinux::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextLinux::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
+  DCHECK(print_dialog_);
+  // TODO(crbug.com/1252685)  Plumb error code back from
+  // `PrintDialogGtkInterface`.
+  print_dialog_->PrintDocument(metafile, document_name_);
   return mojom::ResultCode::kSuccess;
 }
 

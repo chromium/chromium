@@ -11,12 +11,15 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "url/gurl.h"
@@ -34,8 +37,8 @@ class ValueStore;
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl
     : public ash::WallpaperControllerClient,
-      public user_manager::UserManager::UserSessionStateObserver,
-      public file_manager::VolumeManagerObserver {
+      public file_manager::VolumeManagerObserver,
+      public session_manager::SessionManagerObserver {
  public:
   WallpaperControllerClientImpl();
 
@@ -66,8 +69,13 @@ class WallpaperControllerClientImpl
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
-  bool SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin) override;
+  void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) override;
+  void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
   base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) override;
   void GetFilesId(const AccountId& account_id,
@@ -75,12 +83,12 @@ class WallpaperControllerClientImpl
                       files_id_callback) const override;
   bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
-  // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(user_manager::User* active_user) override;
-
   // file_manager::VolumeManagerObserver:
   void OnVolumeMounted(chromeos::MountError error_code,
                        const file_manager::Volume& volume) override;
+
+  // session_manager::SessionManagerObserver implementation.
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
@@ -91,6 +99,9 @@ class WallpaperControllerClientImpl
   void SetOnlineWallpaper(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetOnlineWallpaperCallback callback);
+  void SetGooglePhotosWallpaper(
+      const ash::GooglePhotosWallpaperParams& params,
+      ash::WallpaperController::SetGooglePhotosWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetOnlineWallpaperCallback callback);
@@ -134,6 +145,9 @@ class WallpaperControllerClientImpl
   void MigrateCollectionIdFromValueStoreForTesting(
       const AccountId& account_id,
       value_store::ValueStore* storage);
+  // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
+  // either by built-in Wallpaper app or a third party extension/app.
+  void RecordWallpaperSourceUMA(const ash::WallpaperType type);
 
  private:
   // Initialize the controller for this client and some wallpaper directories.
@@ -167,9 +181,14 @@ class WallpaperControllerClientImpl
                                bool success,
                                const backdrop::Image& image,
                                const std::string& next_resume_token);
+  void OnFetchImagesForCollection(
+      FetchImagesForCollectionCallback callback,
+      std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher> fetcher,
+      bool success,
+      const std::string& collection_id,
+      const std::vector<backdrop::Image>& images);
 
-  void OnProfileCreated(user_manager::User* user);
-  void ObserveVolumeManagerForActiveUser(user_manager::User* user);
+  void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
   ash::WallpaperController* wallpaper_controller_;
@@ -187,9 +206,14 @@ class WallpaperControllerClientImpl
   std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
 
-  base::ScopedObservation<file_manager::VolumeManager,
-                          file_manager::VolumeManagerObserver>
+  base::ScopedMultiSourceObservation<file_manager::VolumeManager,
+                                     file_manager::VolumeManagerObserver>
       volume_manager_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
   base::WeakPtrFactory<WallpaperControllerClientImpl> storage_weak_factory_{

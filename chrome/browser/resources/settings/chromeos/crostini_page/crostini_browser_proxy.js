@@ -259,6 +259,12 @@ export class CrostiniBrowserProxy {
   requestContainerInfo() {}
 
   /**
+   * @param {!ContainerId} containerId container id to update.
+   * @param {!skia.mojom.SkColor} badge_color new badge color for the container.
+   */
+  setContainerBadgeColor(containerId, badge_color) {}
+
+  /**
    * @param {!ContainerId} containerId id of container to stop, recovering
    * CPU and other resources.
    */
@@ -421,6 +427,11 @@ export class CrostiniBrowserProxyImpl {
   /** @override */
   requestContainerInfo() {
     return chrome.send('requestContainerInfo');
+  }
+
+  /** @override */
+  setContainerBadgeColor(containerId, badge_color) {
+    chrome.send('setContainerBadgeColor', [containerId, badge_color]);
   }
 
   /** @override */

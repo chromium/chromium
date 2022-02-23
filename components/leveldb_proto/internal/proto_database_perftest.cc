@@ -564,7 +564,7 @@ class ProtoDBPerfTest : public testing::Test {
 };
 
 // Flakily times out on Windows and Mac, see http://crbug.com/918874.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_InsertMultipleDBsAlternating_Individual_100b \
   DISABLED_InsertMultipleDBsAlternating_Individual_100b
 #else
@@ -579,7 +579,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertMultipleDBsAlternating_Individual_100b) {
 }
 
 // Flakily times out on Windows and Mac, see http://crbug.com/918874.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_InsertMultipleDBsAlternating_Individual_1000b \
   DISABLED_InsertMultipleDBsAlternating_Individual_1000b
 #else
@@ -594,7 +594,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertMultipleDBsAlternating_Individual_1000b) {
 }
 
 // Flakily times out on Windows and Mac, see http://crbug.com/918874.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_InsertSingleDBAlternating_Individual_100b \
   DISABLED_InsertSingleDBAlternating_Individual_100b
 #else
@@ -609,7 +609,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_InsertSingleDBAlternating_Individual_100b) {
 }
 
 // Flakily times out on Windows and Mac, see http://crbug.com/918874.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_InsertSingleDBAlternating_Individual_1000b \
   DISABLED_InsertSingleDBAlternating_Individual_1000b
 #else
@@ -662,7 +662,7 @@ TEST_F(ProtoDBPerfTest, DistributionTestSmall_FewEntries_Multi) {
 }
 
 // Flakily times out on Mac, see http://crbug.com/918874.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DistributionTestSmall_ManyEntries_Single \
   DISABLED_DistributionTestSmall_ManyEntries_Single
 #else
@@ -675,7 +675,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Single) {
 }
 
 // Flakily times out on Mac, see http://crbug.com/918874.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DistributionTestSmall_ManyEntries_Multi \
   DISABLED_DistributionTestSmall_ManyEntries_Multi
 #else
@@ -688,7 +688,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Multi) {
 }
 
 // Flakily times out on Mac, see http://crbug.com/918874.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DistributionTestSmall_ManyEntries_Batch_Single \
   DISABLED_DistributionTestSmall_ManyEntries_Batch_Single
 #else
@@ -701,7 +701,7 @@ TEST_F(ProtoDBPerfTest, MAYBE_DistributionTestSmall_ManyEntries_Batch_Single) {
 }
 
 // Flakily times out on Mac, see http://crbug.com/918874.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DistributionTestSmall_ManyEntries_Batch_Multi \
   DISABLED_DistributionTestSmall_ManyEntries_Batch_Multi
 #else

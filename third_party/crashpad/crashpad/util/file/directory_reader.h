@@ -18,13 +18,13 @@
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "util/posix/scoped_dir.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "util/win/scoped_handle.h"
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace crashpad {
 
@@ -67,20 +67,20 @@ class DirectoryReader {
   //!     logged.
   Result NextFile(base::FilePath* filename);
 
-#if defined(OS_POSIX) || DOXYGEN
+#if BUILDFLAG(IS_POSIX) || DOXYGEN
   //! \brief Returns the file descriptor associated with this reader, logging a
   //!     message and returning -1 on error.
   int DirectoryFD();
 #endif
 
  private:
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   ScopedDIR dir_;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   WIN32_FIND_DATA find_data_;
   ScopedSearchHANDLE handle_;
   bool first_entry_;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 };
 
 }  // namespace crashpad

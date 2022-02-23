@@ -21,7 +21,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -191,6 +190,83 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
           &profile_, kEventName));
 }
 
+// Tests that when a browser_context shuts down, all data keyed to that
+// context is removed.
+TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
+  ExtensionWebRequestEventRouter* const event_router =
+      ExtensionWebRequestEventRouter::GetInstance();
+  ASSERT_TRUE(event_router);
+
+  std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
+  ExtensionWebRequestEventRouter::RequestFilter filter;
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/1";
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+
+  // Add two listeners for the main profile.
+  event_router->AddEventListener(
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      filter, 0, 1 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->AddEventListener(
+      &profile_, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      filter, 0, 2 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->IncrementExtraHeadersListenerCount(&profile_);
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+
+  // Create an off-the-record profile.
+  auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
+  Profile* const otr_profile =
+      profile_.GetOffTheRecordProfile(otr_profile_id,
+                                      /*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  // Because the ExtensionWebRequestEventRouter is a singleton, there are hooks
+  // in the off-the-record profile for notifying it when an OTR profile is
+  // created and destroyed. Unfortunately, that doesn't work with test profiles,
+  // so the test needs to simulate those calls
+  event_router->OnOTRBrowserContextCreated(&profile_, otr_profile);
+  EXPECT_EQ(2u, event_router->cross_browser_context_map_.size());
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // Add two listeners for the otr profile.
+  event_router->AddEventListener(
+      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      filter, 0, 1 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->AddEventListener(
+      otr_profile, ext_id, ext_id, events::FOR_TEST, kEventName, kSubEventName,
+      filter, 0, 2 /* render_process_id */, 0, extensions::kMainThreadId,
+      blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->IncrementExtraHeadersListenerCount(otr_profile);
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // Simulate the OTR being destroyed.
+  event_router->OnOTRBrowserContextDestroyed(&profile_, otr_profile);
+  EXPECT_EQ(0u, event_router->cross_browser_context_map_.size());
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(otr_profile, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(otr_profile));
+
+  // We can't just delete the profile, because the call comes through the
+  // WebRequestAPI instance for that profile, and creating that requires
+  // more infrastucture than it's worth. Instead, simulate it with a call
+  // into the event router directly.
+  event_router->OnBrowserContextShutdown(&profile_);
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerImpl(&profile_));
+}
+
 namespace {
 
 void TestInitFromValue(content::BrowserContext* browser_context,
@@ -255,10 +331,11 @@ TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
   std::string string_value(reinterpret_cast<char *>(char_value), 5);
 
   base::Value converted_list(StringToCharList(string_value));
-  EXPECT_TRUE(list_value.Equals(&converted_list));
+  EXPECT_EQ(list_value, converted_list);
 
   std::string converted_string;
-  EXPECT_TRUE(CharListToString(list_value.GetList(), &converted_string));
+  EXPECT_TRUE(
+      CharListToString(list_value.GetListDeprecated(), &converted_string));
   EXPECT_EQ(string_value, converted_string);
 }
 
@@ -1107,25 +1184,7 @@ TEST(ExtensionWebRequestHelpersTest,
 namespace {
 
 std::string GetCookieExpirationDate(int delta_secs) {
-  const char* const kWeekDays[] = {
-    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-  };
-  const char* const kMonthNames[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  };
-
-  Time::Exploded exploded_time;
-  (Time::Now() + base::Seconds(delta_secs)).UTCExplode(&exploded_time);
-
-  return base::StringPrintf("%s, %d %s %d %.2d:%.2d:%.2d GMT",
-                            kWeekDays[exploded_time.day_of_week],
-                            exploded_time.day_of_month,
-                            kMonthNames[exploded_time.month - 1],
-                            exploded_time.year,
-                            exploded_time.hour,
-                            exploded_time.minute,
-                            exploded_time.second);
+  return base::TimeFormatHTTP(Time::Now() + base::Seconds(delta_secs));
 }
 
 }  // namespace

@@ -5,9 +5,12 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 
+#include "base/memory/raw_ptr.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
 
@@ -22,7 +25,7 @@ class BucketManagerHost;
 class BucketHost : public blink::mojom::BucketHost {
  public:
   BucketHost(BucketManagerHost* bucket_manager_host,
-             std::string name,
+             const storage::BucketInfo& bucket_info,
              blink::mojom::BucketPoliciesPtr policies);
   ~BucketHost() override;
 
@@ -44,12 +47,11 @@ class BucketHost : public blink::mojom::BucketHost {
  private:
   void OnReceiverDisconnected();
 
-  // |bucket_manager_host_| is valid throughout lifetime of `this` because it
-  // owns `this` and is therefore guaranteed to outlive it.
-  BucketManagerHost* bucket_manager_host_;
+  // Raw pointer use is safe here because BucketManagerHost owns this
+  // BucketHost.
+  raw_ptr<BucketManagerHost> bucket_manager_host_;
 
-  // TODO(ayui): Temporarily used as bucket ID.
-  const std::string bucket_name_;
+  const storage::BucketInfo bucket_info_;
 
   // TODO(ayui): The authoritative source of bucket policies should be the
   //             buckets database.

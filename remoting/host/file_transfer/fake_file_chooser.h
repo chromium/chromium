@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_FILE_TRANSFER_FAKE_FILE_CHOOSER_H_
 #define REMOTING_HOST_FILE_TRANSFER_FAKE_FILE_CHOOSER_H_
 
-#include "base/macros.h"
 #include "remoting/host/file_transfer/file_chooser.h"
 
 namespace remoting {

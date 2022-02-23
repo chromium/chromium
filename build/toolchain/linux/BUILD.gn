@@ -4,6 +4,7 @@
 
 import("//build/config/ozone.gni")
 import("//build/config/sysroot.gni")
+import("//build/config/ui.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
 clang_toolchain("clang_ppc64") {
@@ -116,7 +117,6 @@ template("clang_v8_toolchain") {
   clang_toolchain(target_name) {
     toolchain_args = {
       current_os = "linux"
-      use_glib = false
       forward_variables_from(invoker.toolchain_args, "*")
     }
   }

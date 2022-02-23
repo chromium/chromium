@@ -192,6 +192,27 @@ struct EditCommand {
   string value;
 };
 
+// A structure that indicates selection offsets if the selection could be
+// established.
+struct SelectAroundCaretResult {
+  // The offset differences between the extended selection and the initial
+  // selection (which is a caret).
+  int32 extended_start_adjust;
+  int32 extended_end_adjust;
+  // The offset differences between the word selection (regardless of the
+  // extended selection granularity) and the initial selection (which is a
+  // caret).
+  int32 word_start_adjust;
+  int32 word_end_adjust;
+};
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.input
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SelectionGranularity
+enum SelectionGranularity {
+  kWord,
+  kSentence,
+};
+
 // Interface exposed by the browser to the renderer.
 interface WidgetInputHandlerHost {
   // When the renderer's main thread computes the touch action, send this to the
@@ -314,13 +335,15 @@ interface FrameWidgetInputHandler {
   AdjustSelectionByCharacterOffset(
       int32 start, int32 end, SelectionMenuBehavior behavior);
 
-  // Requests the renderer to select word around caret.
-  // Expects ack with new selection information when finished. |start_adjust|
-  // and |end_adjust| are the start and end offset difference between the
-  // current selection and the previous selection (which is a caret).
+  // Requests the renderer to select the specified granularity around caret and
+  // to potentially show the selection handles and / or context menu after
+  // selection.
+  // Expects ack with new selection information when finished, or null if the
+  // selection failed.
   [EnableIf=is_android]
-  SelectWordAroundCaret()
-      => (bool did_select, int32 start_adjust, int32 end_adjust);
+  SelectAroundCaret(SelectionGranularity granularity, bool should_show_handle,
+                    bool should_show_context_menu)
+      => (SelectAroundCaretResult? result);
 
   // Requests the renderer to move the selection extent point to a new position.
   // Expects a MoveRangeSelectionExtent_ACK message when finished.

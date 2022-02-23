@@ -13,5 +13,5 @@ import "ash/public/mojom/accelerator_keys.mojom";
 // the Shortcut Customization webui app (JS).
 interface AcceleratorConfigurationProvider {
   // Whether the source is mutable and shortcuts can be changed.
-  IsMutable(ash.accelerator_keys.mojom.Source source) => (bool is_mutable);
+  IsMutable(ash.mojom.AcceleratorSource source) => (bool is_mutable);
 };

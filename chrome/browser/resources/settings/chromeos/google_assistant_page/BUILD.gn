@@ -24,9 +24,9 @@ js_library("google_assistant_page") {
   deps = [
     ":google_assistant_browser_proxy",
     "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
-    "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
-    "//chrome/browser/resources/settings/chromeos:os_route.m",
+    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
+    "//chrome/browser/resources/settings/chromeos:metrics_recorder",
+    "//chrome/browser/resources/settings/chromeos:os_route",
     "//chrome/browser/resources/settings/chromeos:prefs_behavior",
     "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

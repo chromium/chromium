@@ -15,6 +15,8 @@ limitations under the License.
 
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_CATEGORY_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_CATEGORY_H_
+
+#include <cmath>
 #include <string>
 
 namespace tflite {
@@ -29,7 +31,9 @@ struct Category {
       : class_name(class_name), score(score) {}
 
   friend bool operator==(const Category& lhs, const Category& rhs) {
-    return lhs.score == rhs.score && lhs.class_name == rhs.class_name;
+    constexpr const double kScoreTolerance = 1e-6;
+    return lhs.class_name == rhs.class_name &&
+           abs((double)(lhs.score - rhs.score)) <= kScoreTolerance;
   }
 
   friend bool operator!=(const Category& lhs, const Category& rhs) {

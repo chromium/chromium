@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -45,7 +44,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -70,6 +68,8 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -78,6 +78,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "extensions/browser/browsertest_util.h"
+#include "ui/base/test/ui_controls.h"
 #endif
 
 namespace {
@@ -163,6 +165,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents(), off_scheme_page,
       1);
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+
+  // URL has been added to be within scope for the SWA.
+  GURL in_scope_for_swa_page("http://example.com/in-scope");
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      app_browser->tab_strip_model()->GetActiveWebContents(),
+      in_scope_for_swa_page, 1);
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
@@ -271,13 +280,6 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
         std::move(params));
   }
 
-  void GrantFileHandlingPermission() {
-    auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
-                                  CONTENT_SETTING_ALLOW);
-  }
-
   // Must be called before WaitAndExposeLaunchParamsToWindow. This sets up the
   // promise used to wait for launchParam callback.
   bool PrepareToReceiveLaunchParams(content::WebContents* web_contents) {
@@ -337,7 +339,6 @@ class SystemWebAppManagerLaunchFilesBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchFilesForSystemWebApp) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -376,7 +377,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchMetricsWorks) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -550,7 +550,6 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        LaunchDirectoryForSystemWebApp) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -607,7 +606,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_OrdinaryDirectory) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
 
   // Test for ordinary directory.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -619,7 +617,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_SensitiveDirectory) {
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
 
   // Test for sensitive directory (which are otherwise blocked by
   // FileSystemAccess API). It is safe to use |chrome::DIR_DEFAULT_DOWNLOADS|,
@@ -718,7 +715,6 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   // Launch from FileSystemProvider path.
@@ -768,7 +764,6 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =
@@ -793,7 +788,6 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
-  GrantFileHandlingPermission();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =
@@ -835,12 +829,6 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
   ~SystemWebAppManagerFileHandlingOriginTrialsBrowserTest() override = default;
 
   content::WebContents* LaunchWithTestFiles() {
-    // Grant permission.
-    auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
-                                  CONTENT_SETTING_ALLOW);
-
     // Create temporary directory and files.
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::ScopedTempDir temp_directory;
@@ -951,6 +939,33 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
       ->AppRegistryCache()
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInSearch());
+      });
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+class SystemWebAppManagerHandlesFileOpenIntentsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerHandlesFileOpenIntentsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppThatHandlesFileOpenIntents();
+  }
+};
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHandlesFileOpenIntentsTest,
+                       HandlesFileOpenIntents) {
+  WaitForTestSystemAppInstall();
+  AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
+
+  // OS Integration only relevant for Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  GetAppServiceProxy(browser()->profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.HandlesIntents());
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -1132,6 +1147,10 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
 // aforementioned crbug is fixed.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        WebAppProtoEntryDefined) {
+  // Wait for apps to install before performing assertions, otherwise the test
+  // might flake. See https://crbug.com/1286600#c6.
+  WaitForSystemAppsSynchronized();
+
   const auto& app_map = GetManager().GetRegisteredSystemAppsForTesting();
   ASSERT_GT(app_map.size(), 0U);
 
@@ -1415,7 +1434,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    base::Value* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
   WaitForTestSystemAppInstall();
@@ -1431,7 +1450,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    base::Value* list = update.Get();
     list->ClearList();
   }
   GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
@@ -1453,7 +1472,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    base::Value* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
 
@@ -1467,7 +1486,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
                           policy::policy_prefs::kSystemFeaturesDisableList);
-    base::ListValue* list = update.Get();
+    base::Value* list = update.Get();
     list->ClearList();
   }
   proxy->FlushMojoCallsForTesting();
@@ -1743,6 +1762,54 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerContextMenuBrowserTest, WebLink) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class SystemWebAppAccessibilityTest : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppAccessibilityTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
+  }
+  ~SystemWebAppAccessibilityTest() override = default;
+
+ protected:
+  ash::test::SpeechMonitor speech_monitor_;
+};
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
+                       CanCycleToWindowControlButtons) {
+  ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  WaitForTestSystemAppInstall();
+
+  // Launch the app so it shows up in shelf.
+  Browser* app_browser;
+  LaunchApp(maybe_installation_->GetType(), &app_browser);
+
+  auto* app_window = app_browser->window()->GetNativeWindow();
+
+  // F6 to switch pane.
+  speech_monitor_.Call([&]() {
+    ui_controls::SendKeyPress(app_window, ui::VKEY_F6, /*Ctrl*/ false,
+                              /*Shift*/ false, /*Alt*/ false,
+                              /*Launcher*/ false);
+  });
+  speech_monitor_.ExpectSpeech("Test System App");
+  speech_monitor_.ExpectSpeech("Application");
+
+  // Launcher-B to find minimize button.
+  speech_monitor_.Call([&]() {
+    ui_controls::SendKeyPress(app_window, ui::VKEY_B, /*Ctrl*/ false,
+                              /*Shift*/ false, /*Alt*/ false,
+                              /*Launcher*/ true);
+  });
+  speech_monitor_.ExpectSpeech("Minimize");
+  speech_monitor_.ExpectSpeech("Button");
+
+  // Start the actions.
+  speech_monitor_.Replay();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerBrowserTest);
@@ -1765,6 +1832,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNotShownInSearchTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHandlesFileOpenIntentsTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAdditionalSearchTermsTest);
@@ -1804,6 +1874,8 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerDefaultBoundsTest);
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppAccessibilityTest);
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

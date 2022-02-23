@@ -21,6 +21,10 @@ interface CrDialogElement extends CrContainerShadowBehavior, LegacyElementMixin,
   setTitleAriaLabel(title: string): void;
   getNative(): HTMLDialogElement;
   focus(): void;
+
+  $: {
+    close: HTMLElement,
+  };
 }
 
 export {CrDialogElement};

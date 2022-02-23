@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -502,10 +502,10 @@ IN_PROC_BROWSER_TEST_F(EphemeralUserKeyboardTest, PersistToProfile) {
 
   const AccountId& account_id =
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Should be empty because known_user does not persist data for ephemeral
   // users.
-  EXPECT_FALSE(
-      user_manager::known_user::GetUserLastInputMethodId(account_id, nullptr));
+  EXPECT_FALSE(known_user.GetUserLastInputMethodId(account_id));
 
   std::vector<std::string> expected_input_method;
   Append_en_US_InputMethod(&expected_input_method);

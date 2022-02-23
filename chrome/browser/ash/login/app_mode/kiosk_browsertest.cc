@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -89,7 +90,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"
@@ -308,7 +308,7 @@ class KioskFakeDiskMountManager : public file_manager::FakeDiskMountManager {
   void MountUsbStick() {
     DCHECK(!usb_mount_path_.empty());
     MountPath(usb_mount_path_, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-              chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
+              chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
   }
 
   void UnMountUsbStick() {
@@ -1509,7 +1509,8 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 }
 
 // TODO(crbug.com/1149893): Migrate to KioskDeviceOwnedTest.
-IN_PROC_BROWSER_TEST_F(KioskTest, SpokenFeedback) {
+// This test is flaky (https://crbug.com/1294660).
+IN_PROC_BROWSER_TEST_F(KioskTest, DISABLED_SpokenFeedback) {
   test::SpeechMonitor sm;
   // Disable the TTS engine for testing so that we don't wait for the TTS engine
   // to load (the engine will never load on linux-chromeos builds).
@@ -2875,7 +2876,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
     DictionaryPrefUpdate dict_update(prefs,
                                      KioskAppManager::kKioskDictionaryName);
     // The AutoLoginState is taken from KioskAppManager::AutoLoginState.
-    dict_update->SetInteger(
+    dict_update->SetIntKey(
         KioskAppManager::kKeyAutoLoginState,
         static_cast<int>(KioskAppManager::AutoLoginState::kRequested));
   }

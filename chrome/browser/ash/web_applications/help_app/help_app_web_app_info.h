@@ -15,7 +15,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 class Browser;
 
 namespace ash {
@@ -25,7 +25,7 @@ class HelpAppSystemAppDelegate : public web_app::SystemWebAppDelegate {
   explicit HelpAppSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
@@ -34,8 +34,8 @@ class HelpAppSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
 };
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp();
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForHelpApp(Browser*);

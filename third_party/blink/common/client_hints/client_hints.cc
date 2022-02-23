@@ -73,6 +73,12 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintViewportWidth},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        mojom::PermissionsPolicyFeature::kClientHintUAFullVersionList},
+      {network::mojom::WebClientHintsType::kFullUserAgent,
+       mojom::PermissionsPolicyFeature::kClientHintUAFull},
+      {network::mojom::WebClientHintsType::kUAWoW64,
+       mojom::PermissionsPolicyFeature::kClientHintUAWoW64},
+      {network::mojom::WebClientHintsType::kPartitionedCookies,
+       mojom::PermissionsPolicyFeature::kClientHintPartitionedCookies},
   };
 }
 
@@ -81,6 +87,24 @@ const ClientHintToPolicyFeatureMap& GetClientHintToPolicyFeatureMap() {
             MakeClientHintToPolicyFeatureMap().size());
   static const base::NoDestructor<ClientHintToPolicyFeatureMap> map(
       MakeClientHintToPolicyFeatureMap());
+  return *map;
+}
+
+PolicyFeatureToClientHintMap MakePolicyFeatureToClientHintMap() {
+  PolicyFeatureToClientHintMap map;
+  for (const auto& pair : GetClientHintToPolicyFeatureMap()) {
+    if (map.contains(pair.second)) {
+      map[pair.second].insert(pair.first);
+    } else {
+      map[pair.second] = {pair.first};
+    }
+  }
+  return map;
+}
+
+const PolicyFeatureToClientHintMap& GetPolicyFeatureToClientHintMap() {
+  static const base::NoDestructor<PolicyFeatureToClientHintMap> map(
+      MakePolicyFeatureToClientHintMap());
   return *map;
 }
 

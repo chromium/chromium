@@ -136,7 +136,7 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
 gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
                             const EphemeralRange& range,
                             NSAttributedString* string) {
-  IntRect string_rect = frame_view->FrameToViewport(FirstRectForRange(range));
+  gfx::Rect string_rect = frame_view->FrameToViewport(FirstRectForRange(range));
   gfx::Point string_point = string_rect.bottom_left();
 
   // Adjust for the font's descender. AppKit wants the baseline point.

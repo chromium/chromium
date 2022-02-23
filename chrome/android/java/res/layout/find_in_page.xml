@@ -39,7 +39,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/divider_line_bg_color" />
+        android:background="@macro/divider_line_bg_color" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/find_prev_button"
         style="@style/ToolbarButton"

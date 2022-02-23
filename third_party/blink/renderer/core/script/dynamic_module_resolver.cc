@@ -43,15 +43,14 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 };
 
 // Abstract callback for modules resolution.
-class ModuleResolutionCallback : public ScriptFunction {
+class ModuleResolutionCallback : public ScriptFunction::Callable {
  public:
-  ModuleResolutionCallback(ScriptState* script_state,
-                           ScriptPromiseResolver* promise_resolver)
-      : ScriptFunction(script_state), promise_resolver_(promise_resolver) {}
+  explicit ModuleResolutionCallback(ScriptPromiseResolver* promise_resolver)
+      : promise_resolver_(promise_resolver) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(promise_resolver_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  protected:
@@ -62,21 +61,10 @@ class ModuleResolutionCallback : public ScriptFunction {
 // Called on successful resolution.
 class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionSuccessCallback(ScriptState* script_state,
-                                  ScriptPromiseResolver* promise_resolver,
+  ModuleResolutionSuccessCallback(ScriptPromiseResolver* promise_resolver,
                                   ModuleScript* module_script)
-      : ModuleResolutionCallback(script_state, promise_resolver),
+      : ModuleResolutionCallback(promise_resolver),
         module_script_(module_script) {}
-
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ScriptPromiseResolver* promise_resolver,
-      ModuleScript* module_script) {
-    ModuleResolutionSuccessCallback* self =
-        MakeGarbageCollected<ModuleResolutionSuccessCallback>(
-            script_state, promise_resolver, module_script);
-    return self->BindToV8Function();
-  }
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(module_script_);
@@ -84,8 +72,8 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
   }
 
  private:
-  ScriptValue Call(ScriptValue value) override {
-    ScriptState::Scope scope(GetScriptState());
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    ScriptState::Scope scope(script_state);
     v8::Local<v8::Module> record = module_script_->V8Module();
     v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
     promise_resolver_->Resolve(module_namespace);
@@ -99,28 +87,19 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
 // Called on unsuccessful resolution.
 class ModuleResolutionFailureCallback final : public ModuleResolutionCallback {
  public:
-  ModuleResolutionFailureCallback(ScriptState* script_state,
-                                  ScriptPromiseResolver* promise_resolver)
-      : ModuleResolutionCallback(script_state, promise_resolver) {}
-
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      ScriptPromiseResolver* promise_resolver) {
-    ModuleResolutionFailureCallback* self =
-        MakeGarbageCollected<ModuleResolutionFailureCallback>(script_state,
-                                                              promise_resolver);
-    return self->BindToV8Function();
-  }
+  explicit ModuleResolutionFailureCallback(
+      ScriptPromiseResolver* promise_resolver)
+      : ModuleResolutionCallback(promise_resolver) {}
 
  private:
-  ScriptValue Call(ScriptValue exception) override {
-    ScriptState::Scope scope(GetScriptState());
+  ScriptValue Call(ScriptState* script_state, ScriptValue exception) override {
+    ScriptState::Scope scope(script_state);
     promise_resolver_->Reject(exception);
     return ScriptValue();
   }
 };
 
-// Implements steps 2.[5-8] of
+// Implements steps 2 and 9-10 of
 // <specdef
 // href="https://html.spec.whatwg.org/C/#hostimportmoduledynamically(referencingscriptormodule,-specifier,-promisecapability)">
 void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
@@ -136,41 +115,32 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  // <spec step="6">If result is null, then:</spec>
+  // <spec step="2">If settings object's ...</spec>
   if (!module_script) {
-    // <spec step="6.1">Let completion be Completion { [[Type]]: throw,
+    // <spec step="2.1">Let completion be Completion { [[Type]]: throw,
     // [[Value]]: a new TypeError, [[Target]]: empty }.</spec>
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
         isolate,
         "Failed to fetch dynamically imported module: " + url_.GetString());
 
-    // <spec step="6.2">Perform FinishDynamicImport(referencingScriptOrModule,
+    // <spec step="2.2">Perform FinishDynamicImport(referencingScriptOrModule,
     // specifier, promiseCapability, completion).</spec>
     promise_resolver_->Reject(error);
 
-    // <spec step="6.3">Return.</spec>
+    // <spec step="2.3">Return.</spec>
     return;
   }
 
-  // <spec step="7">Run the module script result, with the rethrow errors
-  // boolean set to true.</spec>
+  // <spec step="9">Otherwise, set promise to the result of running a module
+  // script given result and true.</spec>
   ScriptEvaluationResult result = module_script->RunScriptAndReturnValue(
       V8ScriptRunner::RethrowErrorsOption::Rethrow(String()));
 
   switch (result.GetResultType()) {
     case ScriptEvaluationResult::ResultType::kException:
-      // <spec step="8">If running the module script throws an exception,
-      // ...</spec> <spec step="8">... then perform
-      // FinishDynamicImport(referencingScriptOrModule, specifier,
-      // promiseCapability, the thrown exception completion).</spec>
-      //
-      // Note: "the thrown exception completion" is |error|.
-      //
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="1">If completion is an abrupt completion, then perform !
-      // Call(promiseCapability.[[Reject]], undefined, « completion.[[Value]]
-      // »).</spec>
+      // With top-level await, even though according to spec a promise is always
+      // returned, the kException case is still reachable when there is a parse
+      // or instantiation error.
       promise_resolver_->Reject(result.GetExceptionForModule());
       break;
 
@@ -180,65 +150,17 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       break;
 
     case ScriptEvaluationResult::ResultType::kSuccess: {
-      // <spec step="9">Otherwise, perform
+      // <spec step="10">Perform
       // FinishDynamicImport(referencingScriptOrModule, specifier,
-      // promiseCapability, NormalCompletion(undefined)).</spec>
-      //
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.1">Assert: completion is a normal completion and
-      // completion.[[Value]] is undefined.</spec>
-
-      if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-        ScriptPromise promise = result.GetPromise(script_state);
-        v8::Local<v8::Function> callback_success =
-            ModuleResolutionSuccessCallback::CreateFunction(
-                script_state, promise_resolver_, module_script);
-        v8::Local<v8::Function> callback_failure =
-            ModuleResolutionFailureCallback::CreateFunction(script_state,
-                                                            promise_resolver_);
-        promise.Then(callback_success, callback_failure);
-        return;
-      }
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.2">Let moduleRecord be !
-      // HostResolveImportedModule(referencingScriptOrModule, specifier).</spec>
-      //
-      // Note: We skip invocation of ModuleRecordResolver here. The
-      // result of HostResolveImportedModule is guaranteed to be
-      // |module_script|.
-      v8::Local<v8::Module> record = module_script->V8Module();
-      DCHECK(!record.IsEmpty());
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.3">Assert: Evaluate has already been invoked on moduleRecord
-      // and successfully completed.</spec>
-      //
-      // Because |error| is empty, we are sure that RunScriptAndReturnValue()
-      // above was successfully completed.
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.4">Let namespace be GetModuleNamespace(moduleRecord).</spec>
-      v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.5">If namespace is an abrupt completion, perform !
-      // Call(promiseCapability.[[Reject]], undefined, « namespace.[[Value]]
-      // »).</spec>
-      //
-      // Note: Blink's implementation never allows |module_namespace| to be
-      // an abrupt completion.
-
-      // <spec
-      // href="https://tc39.github.io/proposal-dynamic-import/#sec-finishdynamicimport"
-      // step="2.6">Otherwise, perform ! Call(promiseCapability.[[Resolve]],
-      // undefined, « namespace.[[Value]] »).</spec>
-      promise_resolver_->Resolve(module_namespace);
+      // promiseCapability, promise).</spec>
+      ScriptPromise promise = result.GetPromise(script_state);
+      auto* callback_success = MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
+                            promise_resolver_, module_script));
+      auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
+          script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
+                            promise_resolver_));
+      promise.Then(callback_success, callback_failure);
       break;
     }
   }

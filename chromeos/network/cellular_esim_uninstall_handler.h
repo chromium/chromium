@@ -11,11 +11,11 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
-#include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
 
 namespace chromeos {
@@ -40,14 +40,13 @@ class NetworkConnectionHandler;
 //
 // Uninstallation requests are queued and run in order.
 //
-// This class also checks for stale Shill eSIM services (Shill services that no
-// longer have corresponding eSIM profile in Hermes), and removes their
-// configurations from Shill. This allows handling cases where the configuration
-// was not removed properly during uninstallation or the eSIM profile was
-// removed externally (e.g. Removable EUICC card).
+// Note: This class doesn't check and remove stale Shill eSIM services anymore
+// because it might remove usable eSIM services incorrectly. This may cause some
+// issues where some stale networks showing in UI because its Shill
+// configuration doesn't get removed properly during the uninstallation.
+// TODO(b/210726568)
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
-    : public CellularESimProfileHandler::Observer,
-      public NetworkStateHandlerObserver {
+    : public NetworkStateHandlerObserver {
  public:
   CellularESimUninstallHandler();
   CellularESimUninstallHandler(const CellularESimUninstallHandler&) = delete;
@@ -73,14 +72,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
                      const dbus::ObjectPath& euicc_path,
                      UninstallRequestCallback callback);
 
-  // CellularESimProfileHandler::Observer:
-  void OnESimProfileListUpdated() override;
-
-  // NetworkStateHandlerObserver:
-  void NetworkListChanged() override;
-  void DevicePropertiesUpdated(const DeviceState* device_state) override;
+  // Resets memory ie. Removes all eSIM profiles on the Euicc with given
+  // |euicc_path|.
+  void ResetEuiccMemory(const dbus::ObjectPath& euicc_path,
+                        UninstallRequestCallback callback);
 
  private:
+  // NetworkStateHandlerObserver:
+  void NetworkListChanged() override;
+  void OnShuttingDown() override;
+
   friend class CellularESimUninstallHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, Success);
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
@@ -90,8 +91,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, MultipleRequests);
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
                            StubCellularNetwork);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
-                           RemovesShillOnlyServices);
+  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, ResetEuiccMemory);
+
+  // Timeout when waiting for network list change after removing network
+  // service. Service removal continues with next service.
+  static const base::TimeDelta kNetworkListWaitTimeout;
 
   enum class UninstallState {
     kIdle,
@@ -102,6 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
     kDisablingProfile,
     kUninstallingProfile,
     kRemovingShillService,
+    kWaitingForNetworkListUpdate,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const UninstallState& step);
@@ -125,31 +130,34 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   // for stale eSIM service removal requests. These requests skip directly to
   // Shill configuration removal.
   struct UninstallRequest {
-    UninstallRequest(const std::string& iccid,
+    UninstallRequest(const absl::optional<std::string>& iccid,
                      const absl::optional<dbus::ObjectPath>& esim_profile_path,
                      const absl::optional<dbus::ObjectPath>& euicc_path,
+                     bool reset_euicc,
                      UninstallRequestCallback callback);
     ~UninstallRequest();
-    std::string iccid;
+    absl::optional<std::string> iccid;
     absl::optional<dbus::ObjectPath> esim_profile_path;
     absl::optional<dbus::ObjectPath> euicc_path;
+    bool reset_euicc;
     UninstallRequestCallback callback;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
   };
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const UninstallRequest& request);
 
   void ProcessPendingUninstallRequests();
   void TransitionToUninstallState(UninstallState next_state);
   void CompleteCurrentRequest(UninstallESimResult result);
 
-  const std::string& GetIccidForCurrentRequest() const;
+  std::string GetIdForCurrentRequest() const;
   const NetworkState* GetNetworkStateForCurrentRequest() const;
 
-  void CheckNetworkState();
+  void CheckActiveNetworkState();
 
   void AttemptNetworkDisconnect(const NetworkState* network);
   void OnDisconnectSuccess();
-  void OnDisconnectFailure(const std::string& error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data);
+  void OnDisconnectFailure(const std::string& error_name);
 
   void AttemptShillInhibit();
   void OnShillInhibit(
@@ -167,17 +175,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
 
   void AttemptRemoveShillService();
   void OnRemoveServiceSuccess();
-  void OnRemoveServiceFailure(
-      const std::string& error_name,
-      std::unique_ptr<base::DictionaryValue> error_data);
+  void OnRemoveServiceFailure(const std::string& error_name);
+  void OnNetworkListWaitTimeout();
 
-  void CheckStaleESimServices();
-
+  absl::optional<dbus::ObjectPath> GetEnabledCellularESimProfilePath();
   NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
-  bool HasQueuedRequest(const std::string& iccid) const;
+  const NetworkState* GetNextResetServiceToRemove() const;
 
   UninstallState state_ = UninstallState::kIdle;
   base::circular_deque<std::unique_ptr<UninstallRequest>> uninstall_requests_;
+
+  base::OneShotTimer network_list_wait_timer_;
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
   CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;

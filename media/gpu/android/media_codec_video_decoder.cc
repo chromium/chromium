@@ -309,7 +309,7 @@ void MediaCodecVideoDecoder::DestroyAsync(
 
   // Cancel callbacks we no longer want.
   self->codec_allocator_weak_factory_.InvalidateWeakPtrs();
-  self->CancelPendingDecodes(DecodeStatus::ABORTED);
+  self->CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   self->StartDrainingCodec(DrainType::kForDestroy);
 
   // Per the WARNING above. Validate that no draining work remains.
@@ -336,7 +336,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                 << config.AsHumanReadableString();
     DVLOG(1) << "Invalid configuration.";
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderUnsupportedConfig);
+        .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -351,7 +351,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "
                                 << config.AsHumanReadableString();
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderUnsupportedConfig);
+        .Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 
@@ -362,7 +362,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                 << decoder_config_.AsHumanReadableString()
                                 << " -> " << config.AsHumanReadableString();
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderCantChangeCodec);
+        .Run(DecoderStatus::Codes::kCantChangeCodec);
     return;
   }
   decoder_config_ = config;
@@ -391,12 +391,12 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DVLOG(1) << "No MediaCrypto to handle encrypted config";
     MEDIA_LOG(INFO, media_log_) << "No MediaCrypto to handle encrypted config";
     BindToCurrentLoop(std::move(init_cb))
-        .Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   // Do the rest of the initialization lazily on the first decode.
-  BindToCurrentLoop(std::move(init_cb)).Run(OkStatus());
+  BindToCurrentLoop(std::move(init_cb)).Run(DecoderStatus::Codes::kOk);
 
   const int width = decoder_config_.coded_size().width();
   // On re-init, reallocate the codec if the size has changed too much.
@@ -451,14 +451,14 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
     if (decoder_config_.is_encrypted()) {
       LOG(ERROR) << "MediaCrypto is not available";
       EnterTerminalState(State::kError, "MediaCrypto is not available");
-      std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
 
     // MediaCrypto is not available, but the stream is clear. So we can still
     // play the current stream. But if we switch to an encrypted stream playback
     // will fail.
-    std::move(init_cb).Run(OkStatus());
+    std::move(init_cb).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -473,7 +473,7 @@ void MediaCodecVideoDecoder::OnMediaCryptoReady(
           : SurfaceChooserHelper::SecureSurfaceMode::kRequested);
 
   // Signal success, and create the codec lazily on the first decode.
-  std::move(init_cb).Run(OkStatus());
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void MediaCodecVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
@@ -736,7 +736,7 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                     DecodeCB decode_cb) {
   DVLOG(3) << __func__ << ": " << buffer->AsHumanReadableString();
   if (state_ == State::kError) {
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
   pending_decodes_.emplace_back(std::move(buffer), std::move(decode_cb));
@@ -932,7 +932,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
     DCHECK(!eos_decode_cb_);
     eos_decode_cb_ = std::move(pending_decode.decode_cb);
   } else {
-    std::move(pending_decode.decode_cb).Run(DecodeStatus::OK);
+    std::move(pending_decode.decode_cb).Run(DecoderStatus::Codes::kOk);
   }
   pending_decodes_.pop_front();
   return true;
@@ -1039,7 +1039,7 @@ void MediaCodecVideoDecoder::RunEosDecodeCb(int reset_generation) {
   //  * After a Reset(), the reset generations won't match, but we might already
   //    have a new |eos_decode_cb_| for the new generation.
   if (reset_generation == reset_generation_ && eos_decode_cb_)
-    std::move(eos_decode_cb_).Run(DecodeStatus::OK);
+    std::move(eos_decode_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void MediaCodecVideoDecoder::ForwardVideoFrame(
@@ -1080,7 +1080,7 @@ void MediaCodecVideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK(!reset_cb_);
   reset_generation_++;
   reset_cb_ = std::move(closure);
-  CancelPendingDecodes(DecodeStatus::ABORTED);
+  CancelPendingDecodes(DecoderStatus::Codes::kAborted);
   StartDrainingCodec(DrainType::kForReset);
 }
 
@@ -1163,7 +1163,7 @@ void MediaCodecVideoDecoder::EnterTerminalState(State state,
   target_surface_bundle_ = nullptr;
   texture_owner_bundle_ = nullptr;
   if (state == State::kError)
-    CancelPendingDecodes(DecodeStatus::DECODE_ERROR);
+    CancelPendingDecodes(DecoderStatus::Codes::kFailed);
   if (drain_type_)
     OnCodecDrained();
 }
@@ -1172,7 +1172,7 @@ bool MediaCodecVideoDecoder::InTerminalState() {
   return state_ == State::kSurfaceDestroyed || state_ == State::kError;
 }
 
-void MediaCodecVideoDecoder::CancelPendingDecodes(DecodeStatus status) {
+void MediaCodecVideoDecoder::CancelPendingDecodes(DecoderStatus status) {
   for (auto& pending_decode : pending_decodes_)
     std::move(pending_decode.decode_cb).Run(status);
   pending_decodes_.clear();

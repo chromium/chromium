@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -19,9 +20,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "url/gurl.h"
-
 #include "third_party/re2/src/re2/re2.h"
+#include "url/gurl.h"
 
 namespace browser_switcher {
 
@@ -34,7 +34,7 @@ const char kUrlVarName[] = "${url}";
 // TODO(crbug.com/1124758): add ${edge} on macOS/Linux once it's released on
 // those platforms.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kChromeExecutableName[] = "Google Chrome";
 const char kFirefoxExecutableName[] = "Firefox";
 const char kOperaExecutableName[] = "Opera";
@@ -49,7 +49,7 @@ const char kOperaExecutableName[] = "opera";
 const char kChromeVarName[] = "${chrome}";
 const char kFirefoxVarName[] = "${firefox}";
 const char kOperaVarName[] = "${opera}";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kSafariVarName[] = "${safari}";
 const char kEdgeVarName[] = "${edge}";
 #endif
@@ -66,7 +66,7 @@ const BrowserVarMapping kBrowserVarMappings[] = {
     {kFirefoxVarName, kFirefoxExecutableName, "Mozilla Firefox",
      BrowserType::kFirefox},
     {kOperaVarName, kOperaExecutableName, "Opera", BrowserType::kOpera},
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     {kSafariVarName, kSafariExecutableName, "Safari", BrowserType::kSafari},
     {kEdgeVarName, kEdgeExecutableName, "Microsoft Edge", BrowserType::kEdge},
 #endif
@@ -113,14 +113,14 @@ void ExpandEnvironmentVariables(std::string* arg) {
   std::swap(out, *arg);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool ContainsUrlVarName(const std::vector<std::string>& tokens) {
   return std::any_of(tokens.begin(), tokens.end(),
                      [](const std::string& token) {
                        return token.find(kUrlVarName) != std::string::npos;
                      });
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 void AppendCommandLineArguments(base::CommandLine* cmd_line,
                                 const std::vector<std::string>& raw_args,
@@ -140,7 +140,7 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
 }
 
 const BrowserVarMapping* FindBrowserMapping(base::StringPiece path) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
   // so admins don't have to explicitly configure one.
   if (path.empty())
@@ -167,7 +167,7 @@ base::CommandLine CreateCommandLine(const GURL& url,
   ExpandTilde(&path);
   ExpandEnvironmentVariables(&path);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On MacOS, if the path doesn't start with a '/', it's probably not an
   // executable path. It is probably a name for an application, e.g. "Safari" or
   // "Google Chrome". Those can be launched using the `open(1)' command.
@@ -238,7 +238,7 @@ AlternativeBrowserDriverImpl::~AlternativeBrowserDriverImpl() = default;
 
 void AlternativeBrowserDriverImpl::TryLaunch(const GURL& url,
                                              LaunchCallback cb) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (prefs_->GetAlternativeBrowserPath().empty()) {
     LOG(ERROR) << "Alternative browser not configured. "
                << "Aborting browser switch.";

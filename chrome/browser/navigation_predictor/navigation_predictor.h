@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/visibility.h"
@@ -94,7 +95,7 @@ class NavigationPredictor
   ukm::SourceId ukm_source_id_;
 
   // UKM recorder
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
 
   // The time at which the navigation started.
   base::TimeTicks navigation_start_;

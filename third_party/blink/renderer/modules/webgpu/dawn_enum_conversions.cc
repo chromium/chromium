@@ -293,11 +293,20 @@ WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
   if (webgpu_enum == "depth32float") {
     return WGPUTextureFormat_Depth32Float;
   }
+  if (webgpu_enum == "depth32float-stencil8") {
+    return WGPUTextureFormat_Depth32FloatStencil8;
+  }
   if (webgpu_enum == "depth24plus") {
     return WGPUTextureFormat_Depth24Plus;
   }
   if (webgpu_enum == "depth24plus-stencil8") {
     return WGPUTextureFormat_Depth24PlusStencil8;
+  }
+  if (webgpu_enum == "depth24unorm-stencil8") {
+    return WGPUTextureFormat_Depth24UnormStencil8;
+  }
+  if (webgpu_enum == "depth16unorm") {
+    return WGPUTextureFormat_Depth16Unorm;
   }
 
   // Block Compression (BC) formats
@@ -542,13 +551,13 @@ WGPUStencilOperation AsDawnEnum<WGPUStencilOperation>(
 
 template <>
 WGPUStoreOp AsDawnEnum<WGPUStoreOp>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum.IsNull()) {
+    return WGPUStoreOp_Undefined;
+  }
   if (webgpu_enum == "store") {
     return WGPUStoreOp_Store;
   }
   if (webgpu_enum == "discard") {
-    return WGPUStoreOp_Discard;
-  }
-  if (webgpu_enum == "clear") {
     return WGPUStoreOp_Discard;
   }
   NOTREACHED();
@@ -557,8 +566,14 @@ WGPUStoreOp AsDawnEnum<WGPUStoreOp>(const WTF::String& webgpu_enum) {
 
 template <>
 WGPULoadOp AsDawnEnum<WGPULoadOp>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum.IsNull()) {
+    return WGPULoadOp_Undefined;
+  }
   if (webgpu_enum == "load") {
     return WGPULoadOp_Load;
+  }
+  if (webgpu_enum == "clear") {
+    return WGPULoadOp_Clear;
   }
   NOTREACHED();
   return WGPULoadOp_Force32;
@@ -858,9 +873,6 @@ WGPUTextureAspect AsDawnEnum<WGPUTextureAspect>(
 
 template <>
 WGPUErrorFilter AsDawnEnum<WGPUErrorFilter>(const WTF::String& webgpu_enum) {
-  if (webgpu_enum == "none") {
-    return WGPUErrorFilter_None;
-  }
   if (webgpu_enum == "out-of-memory") {
     return WGPUErrorFilter_OutOfMemory;
   }

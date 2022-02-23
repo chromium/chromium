@@ -25,7 +25,7 @@ class ReceiverSessionClient {
   ReceiverSessionClient& operator=(const ReceiverSessionClient&) = delete;
 
   void SetCastStreamingReceiver(
-      mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+      mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
           cast_streaming_receiver);
 
  private:

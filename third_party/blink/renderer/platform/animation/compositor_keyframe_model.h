@@ -11,7 +11,6 @@
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -53,8 +52,9 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   void SetElementId(CompositorElementId element_id);
 
   // This is the number of times that the animation will play. If this
-  // value is zero the animation will not play. If it is negative, then
-  // the animation will loop indefinitely.
+  // value is zero or negative, the animation will not play. If it is
+  // std::numeric_limits<double>::infinity(), then the animation will loop
+  // indefinitely.
   double Iterations() const;
   void SetIterations(double);
 

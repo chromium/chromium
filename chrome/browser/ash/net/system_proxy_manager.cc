@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -30,7 +31,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

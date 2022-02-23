@@ -152,12 +152,12 @@ class ScopedTempDirNoWow64 : protected base::ScopedTempDir {
 
   // Creates a unique subdirectory under system32, bypassing Wow64 redirection,
   // and takes ownership of it.
-  bool CreateUniqueSystem32TempDir() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CreateUniqueSystem32TempDir();
 
   // Convenience function to call CreateUniqueSystem32TempDir and create an
   // empty file with the given |file_name| in the resulting directory.
-  bool CreateEmptyFileInUniqueSystem32TempDir(const std::wstring& file_name)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CreateEmptyFileInUniqueSystem32TempDir(
+      const std::wstring& file_name);
 
   using base::ScopedTempDir::Delete;
   using base::ScopedTempDir::GetPath;

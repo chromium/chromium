@@ -43,17 +43,20 @@ import java.util.concurrent.TimeoutException;
  */
 public class InstrumentationActivityTestRule
         extends WebLayerActivityTestRule<InstrumentationActivity> {
+    /** The top level key of the JSON object returned by executeScriptSync(). */
+    public static final String SCRIPT_RESULT_KEY = "result";
+
     @Rule
     private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
-    private static final class JSONCallbackHelper extends CallbackHelper {
-        private JSONObject mResult;
+    private static final class StringCallbackHelper extends CallbackHelper {
+        private String mResult;
 
-        public JSONObject getResult() {
+        public String getResult() {
             return mResult;
         }
 
-        public void notifyCalled(JSONObject result) {
+        public void notifyCalled(String result) {
             mResult = result;
             notifyCalled();
         }
@@ -149,22 +152,31 @@ public class InstrumentationActivityTestRule
     }
 
     /**
-     * Executes the script passed in and waits for the result.
+     * Executes the script passed in and waits for the result. Wraps that result in a JSONObject for
+     * convenience of callers that want to process that result as a type other than String.
      */
     public JSONObject executeScriptSync(String script, boolean useSeparateIsolate, Tab tab) {
-        JSONCallbackHelper callbackHelper = new JSONCallbackHelper();
+        StringCallbackHelper callbackHelper = new StringCallbackHelper();
         int count = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Tab scriptTab = tab == null ? getActivity().getBrowser().getActiveTab() : tab;
             scriptTab.executeScript(script, useSeparateIsolate,
-                    (JSONObject result) -> { callbackHelper.notifyCalled(result); });
+                    (String result) -> { callbackHelper.notifyCalled(result); });
         });
         try {
             callbackHelper.waitForCallback(count);
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
         }
-        return callbackHelper.getResult();
+        JSONObject resultAsJSONObject;
+        try {
+            resultAsJSONObject = new JSONObject(
+                    "{\"" + SCRIPT_RESULT_KEY + "\":" + callbackHelper.getResult() + "}");
+        } catch (JSONException e) {
+            // This should never happen since the result should be well formed.
+            throw new RuntimeException(e);
+        }
+        return resultAsJSONObject;
     }
 
     public JSONObject executeScriptSync(String script, boolean useSeparateIsolate) {
@@ -174,7 +186,7 @@ public class InstrumentationActivityTestRule
     public int executeScriptAndExtractInt(String script) {
         try {
             return executeScriptSync(script, true /* useSeparateIsolate */)
-                    .getInt(Tab.SCRIPT_RESULT_KEY);
+                    .getInt(SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -186,7 +198,7 @@ public class InstrumentationActivityTestRule
 
     public String executeScriptAndExtractString(String script, boolean useSeparateIsolate) {
         try {
-            return executeScriptSync(script, useSeparateIsolate).getString(Tab.SCRIPT_RESULT_KEY);
+            return executeScriptSync(script, useSeparateIsolate).getString(SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -198,7 +210,7 @@ public class InstrumentationActivityTestRule
 
     public boolean executeScriptAndExtractBoolean(String script, boolean useSeparateIsolate) {
         try {
-            return executeScriptSync(script, useSeparateIsolate).getBoolean(Tab.SCRIPT_RESULT_KEY);
+            return executeScriptSync(script, useSeparateIsolate).getBoolean(SCRIPT_RESULT_KEY);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

@@ -5,7 +5,6 @@
 #ifndef IPC_IPC_MESSAGE_ATTACHMENT_H_
 #define IPC_IPC_MESSAGE_ATTACHMENT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
 #include "build/build_config.h"

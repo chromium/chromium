@@ -43,6 +43,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "gpu-gl-renderer",
     "gr-context-type",
     "oop_read_failure",
+    "gpu-gl-error-message",
 
     // components/viz
     "viz_deserialization",
@@ -126,6 +127,12 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "VerifyDidCommit-last_code",
 
     "VerifyDidCommit-has_si_url",
+
+    "NoNode-ftn_is_main_frame",
+    "NoNode-ftn_child_count",
+    "NoNode-bfs_depth",
+    "NoFTN-is_main_frame",
+    "NoFTN-children_size",
 
     // services/network
     "network_deserialization",

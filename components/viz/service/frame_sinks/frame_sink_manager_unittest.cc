@@ -94,7 +94,7 @@ class FrameSinkManagerTest : public testing::Test {
   }
 
   CapturableFrameSink* FindCapturableFrameSink(const FrameSinkId& id) {
-    return manager_.FindCapturableFrameSink(id);
+    return manager_.FindCapturableFrameSink(VideoCaptureTarget(id));
   }
 
   // Verifies the frame sinks with provided id in |ids| are throttled at

@@ -116,6 +116,10 @@ class ProcessSnapshotMinidump final : public ProcessSnapshot {
   // Initialize().
   bool InitializeMemoryInfo();
 
+  // Initializes data carried in a MINIDUMP_MEMORY_LIST stream on behalf of
+  // Initialize().
+  bool InitializeExtraMemory();
+
   // Initializes data carried in a MINIDUMP_SYSTEM_INFO stream on behalf of
   // Initialize().
   bool InitializeSystemSnapshot();
@@ -147,6 +151,7 @@ class ProcessSnapshotMinidump final : public ProcessSnapshot {
   std::vector<std::unique_ptr<internal::MemoryMapRegionSnapshotMinidump>>
       mem_regions_;
   std::vector<const MemoryMapRegionSnapshot*> mem_regions_exposed_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotMinidump>> extra_memory_;
   std::vector<std::unique_ptr<MinidumpStream>> custom_streams_;
   MinidumpCrashpadInfo crashpad_info_;
   internal::SystemSnapshotMinidump system_snapshot_;

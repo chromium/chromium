@@ -42,7 +42,11 @@ enum class DownloadOpenSource {
   kDownloadProgressMessage = 13,
   // Duplicate download dialog.
   kDuplicateDownloadDialog = 14,
-  kMaxValue = kDuplicateDownloadDialog
+  // Download triggered by external app.
+  kExternalApp = 15,
+  // New download tab open button.
+  kNewDownloadTabOpenButton = 16,
+  kMaxValue = kNewDownloadTabOpenButton
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_OPEN_SOURCE_H_

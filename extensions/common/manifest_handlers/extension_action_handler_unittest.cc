@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/version_info/channel.h"
@@ -267,8 +268,10 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
 
   // default_state is only valid for "action" types.
   const bool default_state_allowed = GetParam() == ActionInfo::TYPE_ACTION;
-  const char* key_disallowed_error =
-      manifest_errors::kDefaultStateShouldNotBeSet;
+  const std::string key_disallowed_error =
+      base::UTF16ToUTF8(manifest_errors::kDefaultStateShouldNotBeSet);
+  const std::string invalid_action_error =
+      base::UTF16ToUTF8(manifest_errors::kInvalidActionDefaultState);
 
   struct {
     // The manifest definition of the action key.
@@ -279,16 +282,16 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
     absl::optional<ActionInfo::DefaultState> expected_state;
   } test_cases[] = {
       {kDefaultStateDisabled,
-       default_state_allowed ? nullptr : key_disallowed_error,
+       default_state_allowed ? nullptr : key_disallowed_error.c_str(),
        default_state_allowed ? absl::make_optional(ActionInfo::STATE_DISABLED)
                              : absl::nullopt},
       {kDefaultStateEnabled,
-       default_state_allowed ? nullptr : key_disallowed_error,
+       default_state_allowed ? nullptr : key_disallowed_error.c_str(),
        default_state_allowed ? absl::make_optional(ActionInfo::STATE_ENABLED)
                              : absl::nullopt},
       {kDefaultStateInvalid,
-       default_state_allowed ? manifest_errors::kInvalidActionDefaultState
-                             : key_disallowed_error,
+       default_state_allowed ? invalid_action_error.c_str()
+                             : key_disallowed_error.c_str(),
        absl::nullopt},
   };
 

@@ -4,12 +4,17 @@
 
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/dbus/privacy_screen_service_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
+#include "chromeos/dbus/services/service_provider_test_helper.h"
 #include "components/prefs/pref_service.h"
+#include "dbus/message.h"
+#include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -136,6 +141,73 @@ class PrivacyScreenControllerTest : public NoSessionAshTestBase {
   std::unique_ptr<display::DisplayConfigurator::TestApi> test_api_;
   std::vector<std::unique_ptr<display::DisplaySnapshot>> owned_snapshots_;
   ::testing::NiceMock<MockObserver> observer_;
+};
+
+class PrivacyScreenServiceProviderTest : public PrivacyScreenControllerTest {
+ public:
+  PrivacyScreenServiceProviderTest() = default;
+  ~PrivacyScreenServiceProviderTest() override = default;
+  PrivacyScreenServiceProviderTest(const PrivacyScreenServiceProviderTest&) =
+      delete;
+  PrivacyScreenServiceProviderTest& operator=(
+      const PrivacyScreenServiceProviderTest&) = delete;
+
+  // PrivacyScreenControllerTest:
+  void SetUp() override {
+    PrivacyScreenControllerTest::SetUp();
+    service_provider_ = std::make_unique<PrivacyScreenServiceProvider>();
+    test_helper_.SetUp(
+        privacy_screen::kPrivacyScreenServiceName,
+        dbus::ObjectPath(privacy_screen::kPrivacyScreenServicePath),
+        privacy_screen::kPrivacyScreenServiceInterface,
+        privacy_screen::kPrivacyScreenServiceGetPrivacyScreenSettingMethod,
+        service_provider_.get());
+  }
+
+  void TearDown() override {
+    test_helper_.TearDown();
+    service_provider_.reset();
+    PrivacyScreenControllerTest::TearDown();
+  }
+
+  privacy_screen::PrivacyScreenSetting_PrivacyScreenState
+  GetPrivacyScreenSettingStateFromDBus() {
+    dbus::MethodCall method_call(
+        privacy_screen::kPrivacyScreenServiceInterface,
+        privacy_screen::kPrivacyScreenServiceGetPrivacyScreenSettingMethod);
+    std::unique_ptr<dbus::Response> response =
+        test_helper_.CallMethod(&method_call);
+
+    dbus::MessageReader reader(response.get());
+    privacy_screen::PrivacyScreenSetting setting;
+    EXPECT_TRUE(reader.PopArrayOfBytesAsProto(&setting));
+    EXPECT_FALSE(reader.HasMoreData());
+    return setting.state();
+  }
+
+  void ConnectToPrivacyScreenSettingChangedDBusSignal() {
+    test_helper_.SetUpReturnSignal(
+        privacy_screen::kPrivacyScreenServiceInterface,
+        privacy_screen::kPrivacyScreenServicePrivacyScreenSettingChangedSignal,
+        base::BindRepeating(&PrivacyScreenServiceProviderTest::
+                                OnPrivacyScreenSettingChangedDBusSignal,
+                            base::Unretained(this)),
+        base::DoNothing());
+  }
+
+  void OnPrivacyScreenSettingChangedDBusSignal(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    privacy_screen::PrivacyScreenSetting setting;
+    EXPECT_TRUE(reader.PopArrayOfBytesAsProto(&setting));
+    last_signal_state_ = setting.state();
+    EXPECT_FALSE(reader.HasMoreData());
+  }
+
+ protected:
+  privacy_screen::PrivacyScreenSetting_PrivacyScreenState last_signal_state_ =
+      privacy_screen::PrivacyScreenSetting_PrivacyScreenState_NOT_SUPPORTED;
+  std::unique_ptr<PrivacyScreenServiceProvider> service_provider_;
+  chromeos::ServiceProviderTestHelper test_helper_;
 };
 
 // Test that user prefs do not get mixed up between user changes on a device
@@ -367,6 +439,49 @@ TEST_F(PrivacyScreenControllerTest,
   ASSERT_FALSE(controller()->IsSupported());
 
   EXPECT_FALSE(controller()->GetEnabled());
+}
+
+TEST_F(PrivacyScreenServiceProviderTest, PrivacyScreenNotSupported) {
+  BuildAndUpdateDisplaySnapshots({{
+      /*id=*/123u,
+      /*is_internal_display=*/true,
+      /*supports_privacy_screen=*/false,
+  }});
+
+  ASSERT_EQ(
+      GetPrivacyScreenSettingStateFromDBus(),
+      privacy_screen::PrivacyScreenSetting_PrivacyScreenState_NOT_SUPPORTED);
+}
+
+TEST_F(PrivacyScreenServiceProviderTest, PrivacyScreenDisabled) {
+  BuildAndUpdateDisplaySnapshots({{
+      /*id=*/123u,
+      /*is_internal_display=*/true,
+      /*supports_privacy_screen=*/true,
+  }});
+
+  ASSERT_EQ(GetPrivacyScreenSettingStateFromDBus(),
+            privacy_screen::PrivacyScreenSetting_PrivacyScreenState_DISABLED);
+}
+
+TEST_F(PrivacyScreenServiceProviderTest, PrivacyScreenEnabled) {
+  ConnectToPrivacyScreenSettingChangedDBusSignal();
+
+  BuildAndUpdateDisplaySnapshots({{
+      /*id=*/123u,
+      /*is_internal_display=*/true,
+      /*supports_privacy_screen=*/true,
+  }});
+
+  controller()->SetEnabled(true,
+                           PrivacyScreenController::kToggleUISurfaceCount);
+
+  // Expects PrivacyScreenSettingChanged D-Bus signal to be called once.
+  ASSERT_EQ(last_signal_state_,
+            privacy_screen::PrivacyScreenSetting_PrivacyScreenState_ENABLED);
+
+  ASSERT_EQ(GetPrivacyScreenSettingStateFromDBus(),
+            privacy_screen::PrivacyScreenSetting_PrivacyScreenState_ENABLED);
 }
 
 }  // namespace

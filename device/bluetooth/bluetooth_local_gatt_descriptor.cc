@@ -9,7 +9,8 @@
 
 namespace device {
 
-#if (!defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(LINUX_WITHOUT_DBUS)
+#if (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)) || \
+    defined(LINUX_WITHOUT_DBUS)
 // static
 base::WeakPtr<BluetoothLocalGattDescriptor>
 BluetoothLocalGattDescriptor::Create(

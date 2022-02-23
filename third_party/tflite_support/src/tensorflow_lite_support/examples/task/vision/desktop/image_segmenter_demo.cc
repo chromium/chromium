@@ -23,11 +23,11 @@ limitations under the License.
 
 #include <iostream>
 
-#include "absl/flags/flag.h"
-#include "absl/flags/parse.h"
-#include "absl/status/status.h"
-#include "absl/strings/match.h"
-#include "absl/strings/str_format.h"
+#include "absl/flags/flag.h"          // from @com_google_absl
+#include "absl/flags/parse.h"         // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/match.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
@@ -52,17 +52,34 @@ ABSL_FLAG(std::string,
           "",
           "Absolute path to the output category mask (confidence masks outputs "
           "are not supported by this tool). Must have a '.png' extension.");
+ABSL_FLAG(bool,
+          use_coral,
+          false,
+          "If true, inference will be delegated to a connected Coral Edge TPU "
+          "device.");
 
 namespace tflite {
 namespace task {
 namespace vision {
 
+namespace {
+using std::chrono::microseconds;
+using std::chrono::steady_clock;
+}  // namespace
+
 ImageSegmenterOptions BuildOptions() {
   ImageSegmenterOptions options;
-  options.mutable_model_file_with_metadata()->set_file_name(
+  options.mutable_base_options()->mutable_model_file()->set_file_name(
       absl::GetFlag(FLAGS_model_path));
   // Confidence masks are not supported by this tool: output_type is set to
   // CATEGORY_MASK by default.
+
+  if (absl::GetFlag(FLAGS_use_coral)) {
+    options.mutable_base_options()
+        ->mutable_compute_settings()
+        ->mutable_tflite_settings()
+        ->set_delegate(::tflite::proto::Delegate::EDGETPU_CORAL);
+  }
   return options;
 }
 
@@ -160,8 +177,18 @@ absl::Status Segment() {
   }
 
   // Run segmentation and save category mask.
+  auto start_segment = steady_clock::now();
   ASSIGN_OR_RETURN(SegmentationResult result,
                    image_segmenter->Segment(*frame_buffer));
+  auto end_segment = steady_clock::now();
+  std::string delegate =
+      absl::GetFlag(FLAGS_use_coral) ? "Coral Edge TPU" : "CPU";
+  std::cout << "Time cost to segment the input image on " << delegate << ": "
+            << std::chrono::duration<float, std::milli>(end_segment -
+                                                        start_segment)
+                   .count()
+            << " ms" << std::endl;
+
   RETURN_IF_ERROR(EncodeMaskToPngFile(result));
 
   // Display the legend.

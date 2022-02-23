@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.photo_picker;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link DecoderServiceImpl}. */
 public class DecoderService extends SplitCompatService {
+    @IdentifierNameString
+    private static String sImplClassName =
+            "org.chromium.chrome.browser.photo_picker.DecoderServiceImpl";
+
     public DecoderService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.photo_picker.DecoderServiceImpl"));
+        super(sImplClassName);
     }
 }

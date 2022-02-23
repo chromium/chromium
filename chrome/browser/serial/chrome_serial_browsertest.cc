@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,7 +72,7 @@ class SerialTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
-  SerialChooserContext* context_;
+  raw_ptr<SerialChooserContext> context_;
 };
 
 IN_PROC_BROWSER_TEST_F(SerialTest, NavigateWithChooserCrossOrigin) {

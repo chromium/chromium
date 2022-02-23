@@ -42,7 +42,7 @@ static cc::Layer* GetDrawsContentLeaf(scoped_refptr<cc::Layer> layer) {
   if (layer->opacity() == 0.0f)
     return nullptr;
 
-  if (layer->DrawsContent())
+  if (layer->draws_content())
     return layer.get();
 
   const cc::LayerList& children = layer->children();

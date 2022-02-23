@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -137,7 +137,7 @@ class GLES2_IMPL_EXPORT VertexArrayObject {
     GLboolean normalized_;
 
     // The pointer/offset into the buffer.
-    const GLvoid* pointer_;
+    raw_ptr<const GLvoid> pointer_;
 
     // The stride that will be used to access the buffer. This is the bogus GL
     // stride where 0 = compute the stride based on size and type.

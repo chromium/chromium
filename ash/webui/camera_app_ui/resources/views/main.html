@@ -19,19 +19,13 @@
     <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/review.css">
+    <link rel="stylesheet" href="/css/views/settings.css">
     <script type="module" src="/js/init.js"></script>
   </head>
   <body class="sound mirror mic grid-3x3 view-splash">
     <div id="view-camera">
       <div id="preview-box">
         <div id="preview-viewport">
-          <img id="review-photo-result" class="preview-content"
-            aria-hidden="true">
-          <video id="review-video-result" class="preview-content"></video>
-          <div class="buttons circle centered-overlay">
-            <button id="play-result-video" tabindex="0"
-              i18n-label="play_result_video_button"></button>
-          </div>
           <video id="preview-video" class="preview-content"></video>
           <div id="expert-controls">
             <div id="preview-info" class="expert-control-row metadata-row
@@ -102,7 +96,7 @@
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container">
           <div class="barcode-chip-url">
-            <a target="_blank"></a>
+            <a href="#barcode-chip-url-container"></a>
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
@@ -151,7 +145,9 @@
       </div>
       <div class="bottom-stripe right-stripe buttons circle">
         <button id="gallery-enter" tabindex="0"
-                i18n-label="gallery_button" hidden></button>
+                i18n-label="gallery_button" hidden>
+          <img>
+        </button>
       </div>
       <div id="mode-selector" class="bottom-stripe">
         <div id="modes-group" class="buttons" role="radiogroup"
@@ -227,12 +223,6 @@
                aria-hidden="true"></div>
         </div>
       </div>
-      <div id="confirm-result-groups" class="buttons right-stripe circle">
-        <button id="confirm-result" tabindex="0"
-          i18n-label="confirm_review_button"></button>
-        <button id="cancel-result" tabindex="0"
-          i18n-label="cancel_review_button"></button>
-      </div>
       <div class="bottom-stripe left-stripe buttons circle">
         <button id="switch-device" tabindex="0"
                 i18n-label="switch_camera_button"></button>
@@ -280,10 +270,7 @@
     <div id="view-review" class="review-views">
       <div class="review-frame">
         <img class="review-image">
-      </div>
-      <div class="button-groups">
-        <div class="positive button-group"></div>
-        <div class="negative button-group"></div>
+        <video class="review-video" controls autoplay></video>
       </div>
     </div>
     <div id="view-crop-document" class="review-views">
@@ -295,16 +282,13 @@
             <polygon class="crop-area"></polygon>
           </svg>
         </div>
+        <video class="review-video"></video>
       </div>
-      <div class="button-groups">
-        <div class="positive button-group"></div>
-        <div class="button-group">
-          <button class="icon-button dark inkdrop"
-            i18n-aria="rotate_clockwise_button" tabindex="0"></button>
-          <button class="icon-button dark inkdrop"
-            i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
-        </div>
-        <div class="negative button-group"></div>
+      <div class="review-crop-rotation-button-group button-group">
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_clockwise_button" tabindex="0"></button>
+        <button class="icon-button dark inkdrop"
+          i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
       </div>
     </div>
     <div id="view-ptz-panel">
@@ -364,8 +348,8 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div id="settings-header" i18n-text="settings_button"></div>
         </div>
-        <button id="settings-gridtype" class="menu-item inkdrop" tabindex="0"
-                aria-describedby="gridtype-desc">
+        <button id="settings-gridtype" class="menu-item inkdrop expandable"
+                tabindex="0" aria-describedby="gridtype-desc">
           <div class="icon"></div>
           <div>
             <div i18n-text="grid_type_button"></div>
@@ -375,10 +359,9 @@
               <span i18n-text="label_grid_golden"></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-timerdur" class="menu-item inkdrop" tabindex="0"
-                aria-describedby="timerdur-desc">
+        <button id="settings-timerdur" class="menu-item inkdrop expandable"
+                tabindex="0" aria-describedby="timerdur-desc">
           <div class="icon"></div>
           <div>
             <div i18n-text="timer_duration_button"></div>
@@ -387,19 +370,18 @@
               <span i18n-text="label_timer_10s"></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-resolution" class="menu-item inkdrop" tabindex="0">
+        <button id="settings-resolution" class="menu-item inkdrop expandable"
+                tabindex="0">
           <div class="icon"></div>
           <div i18n-text="camera_resolution_button">
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-expert" class="menu-item inkdrop" tabindex="0">
+        <button id="settings-expert" class="menu-item inkdrop expandable"
+                tabindex="0">
           <div class="icon"></div>
           <div i18n-text="expert_mode_button">
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
@@ -463,8 +445,8 @@
         </div>
         <div id="builtin-photo-header" class="menu-item"
           i18n-text="label_switch_take_photo_button"></div>
-        <button id="settings-front-photores"
-                class="menu-item resol-item photo-item inkdrop" tabindex="0"
+        <button id="settings-front-photores" class="menu-item resol-item
+                photo-item inkdrop expandable" tabindex="0"
                 aria-describedby="front-photores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
@@ -473,24 +455,22 @@
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-back-photores"
-                class="menu-item resol-item photo-item inkdrop" tabindex="0"
-                aria-describedby="back-photores-desc">
+                class="menu-item resol-item photo-item inkdrop expandable"
+                tabindex="0" aria-describedby="back-photores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
             <div id="back-photores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <div id="builtin-video-header" class="menu-item"
           i18n-text="label_switch_record_video_button"></div>
         <button id="settings-front-videores"
-                class="menu-item resol-item video-item inkdrop" tabindex="0"
-                aria-describedby="front-videores-desc">
+                class="menu-item resol-item video-item inkdrop expandable"
+                tabindex="0" aria-describedby="front-videores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
             <div id="front-videores-desc" class="description"
@@ -498,18 +478,16 @@
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-back-videores"
-                class="menu-item resol-item video-item inkdrop" tabindex="0"
-                aria-describedby="back-videores-desc">
+                class="menu-item resol-item video-item inkdrop expandable"
+                tabindex="0" aria-describedby="back-videores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
             <div id="back-videores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
       </div>
     </div>
@@ -575,12 +553,6 @@
           <span i18n-text="expert_enable_full_sized_video_snapshot"></span>
         </label>
         <label class="menu-item inkdrop">
-          <input id="expert-enable-gif-recording" class="icon" type="checkbox"
-                 tabindex="0" data-state="show-gif-recording-option"
-                 data-key="show-gif-recording-option">
-          <span i18n-text="expert_show_gif_recording_option"></span>
-        </label>
-        <label class="menu-item inkdrop">
           <input id="expert-enable-expert-mode" class="icon" type="checkbox"
                  tabindex="0" data-state="expert"
                  data-key="expert">
@@ -592,7 +564,7 @@
     <div id="view-flash">
       <div id="processing-indicator" class="centered-overlay">
         <div class="icon"></div>
-        <div class="msg" i18n-text="msg_processing_image"></div>
+        <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
       </div>
     </div>
     <div id="view-splash"></div>
@@ -610,7 +582,10 @@
         </div>
       </div>
     </div>
-    <div id="toast" class="centered-overlay" aria-live="polite"></div>
+    <div id="toast" class="centered-overlay" tabindex="-1"
+         aria-live="polite"></div>
+    <div id="spoken_msg" class="centered-overlay" tabindex="-1"
+         aria-live="polite"></div>
     <div id="focus-ring"></div>
     <div id="tooltip" aria-hidden="true"></div>
     <audio id="sound-tick-final" src="/sounds/tick_final.ogg">
@@ -633,25 +608,23 @@
     <template id="extcam-resolution-item-template">
         <div class="menu-item external-camera title-item"
           i18n-text="label_external_camera"></div>
-        <button class="menu-item external-camera resol-item photo-item inkdrop"
-              tabindex="0">
+        <button class="menu-item external-camera resol-item photo-item inkdrop
+                expandable" tabindex="0">
           <div>
             <div i18n-text="photo_resolution_button"></div>
             <div class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button class="menu-item external-camera resol-item video-item inkdrop"
-              tabindex="0">
+        <button class="menu-item external-camera resol-item video-item inkdrop
+                expandable" tabindex="0">
           <div>
             <div i18n-text="video_resolution_button"></div>
             <div class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
     </template>
     <template id="video-profile-option-template">
@@ -685,6 +658,19 @@
     </template>
     <template id="text-button-template">
       <button class="text-button pill dark inkdrop" tabindex="0"></button>
+    </template>
+    <template id="review-positive-button-group-template">
+      <div class="positive button-group"></div>
+    </template>
+    <template id="review-negative-button-group-template">
+      <div class="negative button-group"></div>
+    </template>
+    <template id="review-intent-button-group-template">
+      <div class="review-intent-button-group buttons right-stripe circle">
+      </div>
+    </template>
+    <template id="review-intent-button-template">
+      <button tabindex="0"></button>
     </template>
   </body>
 </html>

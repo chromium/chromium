@@ -44,6 +44,19 @@ found in the LICENSE file.
     </select>
     <input type="text" id="myPet"/>
 
+    <div class="dynamic less-than-2-seconds">Dynamic element</div>
+    <script>
+      setTimeout(() => {
+        const el = document.querySelector('.dynamic');
+        el.classList.remove('less-than-2-seconds');
+        el.classList.add('about-2-seconds');
+        setTimeout(() => {
+          el.classList.remove('about-2-seconds');
+          el.classList.add('more-than-2-seconds');
+        }, 200);
+      }, 2000);
+    </script>
+
     <!--
     Intentionally make this section has the full height of the window
     to force scroll when operating on the elements below this section.

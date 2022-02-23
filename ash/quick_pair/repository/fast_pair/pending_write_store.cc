@@ -107,7 +107,7 @@ std::vector<const std::string> PendingWriteStore::GetPendingDeletes() {
     return list;
   }
 
-  for (const auto& item : result->GetList()) {
+  for (const auto& item : result->GetListDeprecated()) {
     list.emplace_back(item.GetString());
   }
 

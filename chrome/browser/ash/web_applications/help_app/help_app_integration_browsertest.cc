@@ -45,18 +45,21 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -78,6 +81,28 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
 };
 
 using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
+
+class HelpAppIntegrationDarkLightModeEnabledTest
+    : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationDarkLightModeEnabledTest() {
+    feature_list_.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class HelpAppIntegrationDarkLightModeDisabledTest
+    : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationDarkLightModeDisabledTest() {
+    feature_list_.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 content::WebContents* GetActiveWebContents() {
   return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
@@ -181,6 +206,35 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
   EXPECT_EQ(nullptr,
             SandboxedWebUiAppTestBase::EvalJsInAppFrame(web_contents, kScript));
   EXPECT_EQ(1, user_action_tester.GetActionCount("Discover.Help.TabClicked"));
+}
+
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeEnabledTest,
+                       HasCorrectThemeAndBackgroundColor) {
+  WaitForTestSystemAppInstall();
+  web_app::AppId app_id =
+      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
+  web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar();
+
+  EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), gfx::kGoogleGrey900);
+  EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id),
+            gfx::kGoogleGrey900);
+}
+
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeDisabledTest,
+                       HasCorrectThemeAndBackgroundColor) {
+  WaitForTestSystemAppInstall();
+  web_app::AppId app_id =
+      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::HELP);
+  web_app::WebAppRegistrar& registrar =
+      web_app::WebAppProvider::GetForTest(profile())->registrar();
+
+  EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
+  EXPECT_EQ(registrar.GetAppDarkModeThemeColor(app_id), absl::nullopt);
+  EXPECT_EQ(registrar.GetAppDarkModeBackgroundColor(app_id), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
@@ -771,6 +825,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationDarkLightModeEnabledTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationDarkLightModeDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 

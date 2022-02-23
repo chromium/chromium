@@ -10,15 +10,16 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
+import {PasswordCheckReferrer, PasswordManagerImpl} from '../autofill_page/password_manager_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {SafetyCheckCallbackConstants, SafetyCheckPasswordsStatus} from './safety_check_browser_proxy.js';
 import {SafetyCheckIconStatus} from './safety_check_child.js';
+import {getTemplate} from './safety_check_passwords_child.html.js';
 
 type PasswordsChangedEvent = {
   newState: SafetyCheckPasswordsStatus,
@@ -35,7 +36,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

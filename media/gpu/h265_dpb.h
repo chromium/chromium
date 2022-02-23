@@ -15,6 +15,7 @@
 namespace media {
 
 class VaapiH265Picture;
+class D3D11H265Picture;
 
 // A picture (a frame or a field) in the H.265 spec sense.
 // See spec at http://www.itu.int/rec/T-REC-H.265
@@ -28,6 +29,7 @@ class MEDIA_GPU_EXPORT H265Picture : public CodecPicture {
   H265Picture& operator=(const H265Picture&) = delete;
 
   virtual VaapiH265Picture* AsVaapiH265Picture();
+  virtual D3D11H265Picture* AsD3D11H265Picture();
 
   enum ReferenceType {
     kUnused = 0,

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
@@ -80,7 +79,7 @@ class WebViewMediaAccessAPITest : public WebViewAPITest {
     ExtensionTestMessageListener test_run_listener("TEST_PASSED", false);
     test_run_listener.set_failure_message("TEST_FAILED");
     EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s');", test_name.c_str())));
     ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
   }

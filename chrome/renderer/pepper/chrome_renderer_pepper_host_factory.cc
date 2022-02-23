@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "chrome/renderer/pepper/pepper_flash_font_file_host.h"
-#include "chrome/renderer/pepper/pepper_flash_fullscreen_host.h"
 #include "chrome/renderer/pepper/pepper_uma_host.h"
 #include "components/pdf/renderer/pepper_pdf_host.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
@@ -37,22 +36,10 @@ ChromeRendererPepperHostFactory::CreateResourceHost(
   if (!host_->IsValidInstance(instance))
     return nullptr;
 
-  if (host_->GetPpapiHost()->permissions().HasPermission(
-          ppapi::PERMISSION_FLASH)) {
-    switch (message.type()) {
-      case PpapiHostMsg_FlashFullscreen_Create::ID: {
-        return std::make_unique<PepperFlashFullscreenHost>(host_, instance,
-                                                           resource);
-      }
-    }
-  }
-
   // TODO(raymes): PDF also needs access to the FlashFontFileHost currently.
   // We should either rename PPB_FlashFont_File to PPB_FontFile_Private or get
   // rid of its use in PDF if possible.
   if (host_->GetPpapiHost()->permissions().HasPermission(
-          ppapi::PERMISSION_FLASH) ||
-      host_->GetPpapiHost()->permissions().HasPermission(
           ppapi::PERMISSION_PDF)) {
     switch (message.type()) {
       case PpapiHostMsg_FlashFontFile_Create::ID: {

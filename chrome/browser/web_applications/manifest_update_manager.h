@@ -9,11 +9,14 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,12 +43,13 @@ class WebAppSyncBridge;
 //
 // TODO(crbug.com/926083): Replace MaybeUpdate() with a background check instead
 // of being triggered by page loads.
-class ManifestUpdateManager final : public AppRegistrarObserver {
+class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-  void SetSubsystems(WebAppRegistrar* registrar,
+  void SetSubsystems(raw_ptr<WebAppInstallManager> install_manager_,
+                     WebAppRegistrar* registrar,
                      WebAppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* install_finalizer,
@@ -60,8 +64,9 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const AppId& app_id);
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   // |app_id| will be nullptr when |result| is kNoAppInScope.
   using ResultCallback =
@@ -87,16 +92,17 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                     const AppId& app_id,
                     ManifestUpdateResult result);
 
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppIconManager* icon_manager_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
-  WebAppInstallFinalizer* install_finalizer_ = nullptr;
-  SystemWebAppManager* system_web_app_manager_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
+  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
+  raw_ptr<SystemWebAppManager> system_web_app_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<WebAppInstallManager> install_manager_ = nullptr;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::flat_map<AppId, std::unique_ptr<ManifestUpdateTask>> tasks_;
 

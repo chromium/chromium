@@ -23,7 +23,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/color_transform.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -342,7 +342,7 @@ class GLScalerShaderPixelTest
   // values in the expected vs actual image comparisons, given the current test
   // parameters and known platform-specific inaccuracy.
   int GetMaxAllowedColorDifference() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android seems to have texture sampling and/or readback accuracy issues
     // with these programs that are not at all seen on any of the desktop
     // platforms. Also, versions before Marshmallow seem to have a much larger
@@ -360,7 +360,7 @@ class GLScalerShaderPixelTest
   }
 
   bool IsAndroidMarshmallow() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return base::android::BuildInfo::GetInstance()->sdk_int() ==
            base::android::SDK_VERSION_MARSHMALLOW;
 #else

@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -288,7 +289,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   base::CancelableTaskTracker cancelable_task_tracker_;
 
   // The Profile object is used to listen for events.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Manages the registration of pref change observers.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

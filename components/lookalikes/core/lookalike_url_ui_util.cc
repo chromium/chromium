@@ -89,7 +89,7 @@ void PopulateLookalikeUrlBlockingPageStrings(base::Value* load_time_data,
     load_time_data->SetStringKey(
         "primaryButtonText",
         l10n_util::GetStringUTF16(IDS_LOOKALIKE_URL_BACK_TO_SAFETY));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // On iOS, offer to close the page instead of navigating to NTP when the
     // safe URL is empty or invalid, and unable to go back.
     absl::optional<bool> maybe_cant_go_back =

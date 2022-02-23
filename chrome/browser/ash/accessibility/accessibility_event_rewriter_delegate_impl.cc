@@ -90,8 +90,21 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
 
 void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
     std::unique_ptr<ui::Event> event) {
-  AutomationManagerAura::GetInstance()->HandleEvent(
-      ax::mojom::Event::kMouseMoved);
+  ax::mojom::Event event_type;
+
+  switch (event->type()) {
+    case ui::ET_MOUSE_MOVED:
+      event_type = ax::mojom::Event::kMouseMoved;
+      break;
+    case ui::ET_MOUSE_DRAGGED:
+      event_type = ax::mojom::Event::kMouseDragged;
+      break;
+    default:
+      NOTREACHED();
+      return;
+  }
+
+  AutomationManagerAura::GetInstance()->HandleEvent(event_type);
 }
 
 void AccessibilityEventRewriterDelegateImpl::SendSwitchAccessCommand(

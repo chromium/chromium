@@ -42,8 +42,6 @@ class MediaRouterCastUiForTest
   void WaitForAnyRoute() override;
   void WaitForDialogShown() override;
   void WaitForDialogHidden() override;
-  void SetLocalFile(const GURL& file_url) override;
-  void SetLocalFileSelectionIssue(const IssueInfo& issue) override;
   void OnDialogCreated() override;
 
  private:

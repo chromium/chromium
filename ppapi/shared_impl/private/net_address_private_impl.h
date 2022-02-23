@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/ip_address.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/c/ppb_net_address.h"

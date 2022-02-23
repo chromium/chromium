@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -118,7 +117,7 @@ class Service final : public mojom::AudioService {
   std::unique_ptr<AudioManagerAccessor> audio_manager_accessor_;
   const bool enable_remote_client_support_;
   std::unique_ptr<base::SystemMonitor> system_monitor_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::AudioDeviceListenerMac> audio_device_listener_mac_;
 #endif
   std::unique_ptr<SystemInfo> system_info_;

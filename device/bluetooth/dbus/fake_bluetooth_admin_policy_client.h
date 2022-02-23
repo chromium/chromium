@@ -49,6 +49,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdminPolicyClient
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
 
+  void CreateAdminPolicy(const dbus::ObjectPath& object_path,
+                         bool is_blocked_by_policy);
+  void ChangeAdminPolicy(const dbus::ObjectPath& object_path,
+                         bool is_blocked_by_policy);
+  void RemoveAdminPolicy(const dbus::ObjectPath& object_path);
+
  private:
   // Property callback passed when we create Properties* structures.
   void OnPropertyChanged(const dbus::ObjectPath& object_path,

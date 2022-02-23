@@ -70,10 +70,10 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
     DCHECK(effect_);
   }
 
-  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
-    Transform().ClearChangedTo(&to.Transform());
-    Clip().ClearChangedTo(&to.Clip());
-    Effect().ClearChangedTo(&to.Effect());
+  void ClearChangedToRoot(int sequence_number) const {
+    Transform().ClearChangedToRoot(sequence_number);
+    Clip().ClearChangedToRoot(sequence_number);
+    Effect().ClearChangedToRoot(sequence_number);
   }
 
   // Returns true if any property tree state change is >= |change| relative to

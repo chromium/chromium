@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 

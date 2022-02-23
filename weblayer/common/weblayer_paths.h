@@ -17,7 +17,7 @@ enum {
 
   DIR_USER_DATA = PATH_START,  // Directory where user data can be written.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DIR_CRASH_DUMPS,  // Directory where crash dumps are written.
 #endif
 

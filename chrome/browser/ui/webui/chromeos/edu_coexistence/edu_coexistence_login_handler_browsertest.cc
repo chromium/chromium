@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -71,9 +70,8 @@ class EduCoexistenceLoginHandlerBrowserTest
                                     const std::string& call_type) {
     EXPECT_EQ(call_type, data.function_name());
 
-    std::string callback_id;
-    ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
-    EXPECT_EQ(event_name, callback_id);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_name, data.arg1()->GetString());
   }
 
   void SimulateAccessTokenFetched(EduCoexistenceLoginHandler* handler,

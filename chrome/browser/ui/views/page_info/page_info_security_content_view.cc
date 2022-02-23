@@ -108,7 +108,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     // container, but its unlikely that the user will notice, since other
     // things are changing too.
     if (certificate_button_) {
-      RemoveChildViewT(certificate_button_);
+      RemoveChildViewT(certificate_button_.get());
     }
     certificate_button_ = AddChildView(
         std::make_unique<PageInfoHoverButton>(

@@ -80,6 +80,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   ~DevToolsUIBindings() override;
 
+  std::string GetTypeForMetrics() override;
+
   content::WebContents* web_contents() { return web_contents_; }
   Profile* profile() { return profile_; }
   content::DevToolsAgentHost* agent_host() { return agent_host_.get(); }
@@ -175,6 +177,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void RegisterPreference(const std::string& name,
                           const RegisterOptions& options) override;
   void GetPreferences(DispatchCallback callback) override;
+  void GetPreference(DispatchCallback callback,
+                     const std::string& name) override;
   void SetPreference(const std::string& name,
                      const std::string& value) override;
   void RemovePreference(const std::string& name) override;
@@ -205,8 +209,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                               const base::Value& targets);
 
   void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
-  void DocumentOnLoadCompletedInMainFrame();
-  void DidNavigateMainFrame();
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
+  void PrimaryPageChanged();
   void FrontendLoaded();
 
   void JsonReceived(DispatchCallback callback,

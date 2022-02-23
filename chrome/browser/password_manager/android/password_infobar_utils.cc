@@ -16,13 +16,7 @@ namespace password_manager {
 absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                                                               bool is_syncing) {
   DCHECK(profile);
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillEnablePasswordInfoBarAccountIndicationFooter) ||
-      !is_syncing ||
-      !base::FeatureList::IsEnabled(
-          autofill::features::
-              kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) {
+  if (!is_syncing) {
     return absl::nullopt;
   }
   signin::IdentityManager* identity_manager =
@@ -31,17 +25,8 @@ absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
   AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-  bool is_single_account_user =
-      identity_manager->GetAccountsWithRefreshTokens().size() == 1;
 
-  bool should_show_account_footer =
-      (!is_single_account_user ||
-       base::FeatureList::IsEnabled(
-           autofill::features::
-               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)) &&
-      !account_info.IsEmpty();
-
-  return should_show_account_footer
+  return !account_info.IsEmpty()
              ? absl::make_optional<AccountInfo>(account_info)
              : absl::nullopt;
 }

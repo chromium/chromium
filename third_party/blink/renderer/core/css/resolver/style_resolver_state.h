@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/element_style_resources.h"
 #include "third_party/blink/renderer/core/css/resolver/font_builder.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -42,7 +43,6 @@ namespace blink {
 class ComputedStyle;
 class FontDescription;
 class PseudoElement;
-class StyleRecalcContext;
 
 // A per-element object which wraps an ElementResolveContext. It collects state
 // throughout the process of computing the style. It also gives convenient
@@ -160,6 +160,8 @@ class CORE_EXPORT StyleResolverState {
   // reference to the passed value.
   const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
+  bool IsForHighlight() const { return is_for_highlight_; }
+
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
   bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
@@ -180,6 +182,7 @@ class CORE_EXPORT StyleResolverState {
   void SetAffectsCompositorSnapshots() { affects_compositor_snapshots_ = true; }
 
  private:
+  void UpdateLengthConversionData();
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
 

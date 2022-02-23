@@ -95,7 +95,8 @@ base::Value ValidList(const base::Value* list) {
 }
 
 bool HasValidEntry(const base::Value* list) {
-  return list && !list->GetList().empty() && !ValidList(list).GetList().empty();
+  return list && !list->GetListDeprecated().empty() &&
+         !ValidList(list).GetListDeprecated().empty();
 }
 
 void CompareStringKeys(const base::Value& expected,
@@ -107,9 +108,12 @@ void CompareStringKeys(const base::Value& expected,
 
 void ValidateList(const base::Value* list_out, const base::Value* input_list) {
   auto input_list_valid = ValidList(input_list);
-  ASSERT_EQ(list_out->GetList().size(), input_list_valid.GetList().size());
-  for (size_t index = 0; index < list_out->GetList().size(); index++) {
-    EXPECT_EQ(list_out->GetList()[index], input_list_valid.GetList()[index]);
+  ASSERT_EQ(list_out->GetListDeprecated().size(),
+            input_list_valid.GetListDeprecated().size());
+  for (size_t index = 0; index < list_out->GetListDeprecated().size();
+       index++) {
+    EXPECT_EQ(list_out->GetListDeprecated()[index],
+              input_list_valid.GetListDeprecated()[index]);
   }
 }
 
@@ -162,8 +166,9 @@ void ValidateVendorCaps(const base::Value* printer_out,
 
   ASSERT_TRUE(vendor_capability_out);
   size_t index = 0;
-  base::Value::ConstListView output_list = vendor_capability_out->GetList();
-  for (const auto& input_entry : input_vendor_caps->GetList()) {
+  base::Value::ConstListView output_list =
+      vendor_capability_out->GetListDeprecated();
+  for (const auto& input_entry : input_vendor_caps->GetListDeprecated()) {
     if (!HasValidEntry(
             input_entry
                 .FindKeyOfType(kSelectCapKey, base::Value::Type::DICTIONARY)
@@ -266,7 +271,7 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityAllElement) {
   base::DictionaryValue printer = GetCapabilitiesFull();
   base::Value* select_cap_0 =
       printer.FindKeyOfType(kVendorCapability, base::Value::Type::LIST)
-          ->GetList()[0]
+          ->GetListDeprecated()[0]
           .FindKeyOfType(kSelectCapKey, base::Value::Type::DICTIONARY);
   select_cap_0->RemoveKey(kOptionKey);
   base::Value::ListStorage option_list;
@@ -283,7 +288,7 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
   base::DictionaryValue printer = GetCapabilitiesFull();
   base::Value* vendor_dictionary =
       printer.FindKeyOfType(kVendorCapability, base::Value::Type::LIST)
-          ->GetList()[0]
+          ->GetListDeprecated()[0]
           .FindKeyOfType(kSelectCapKey, base::Value::Type::DICTIONARY);
   vendor_dictionary->RemoveKey(kOptionKey);
   base::Value::ListStorage pages_per_sheet;

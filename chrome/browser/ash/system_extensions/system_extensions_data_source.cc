@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/url_data_source.h"
@@ -71,9 +71,7 @@ void SystemExtensionsDataSource::StartDataRequest(
   // Skip first '/' in path.
   std::string relative_path = url.path().substr(1);
   base::FilePath path =
-      profile_->GetPath()
-          .Append(kSystemExtensionsProfileDirectory)
-          .Append(SystemExtension::IdToString(system_extension_id_))
+      GetDirectoryForSystemExtension(*profile_, system_extension_id_)
           .Append(relative_path);
 
   base::ThreadPool::PostTask(

@@ -36,10 +36,9 @@ void ValidatePrimarySettingPrefValue(
     CookiePrimarySetting pref_value,
     ContentSetting expected_content_setting,
     CookieControlsMode expected_cookie_controls_mode) {
-  EXPECT_EQ(
-      generated_pref->SetPref(
-          std::make_unique<base::Value>(static_cast<int>(pref_value)).get()),
-      extensions::settings_private::SetPrefResult::SUCCESS);
+  base::Value pref(static_cast<int>(pref_value));
+  EXPECT_EQ(generated_pref->SetPref(&pref),
+            extensions::settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       expected_content_setting);
@@ -254,17 +253,17 @@ void SetupManagedTestConditions(
     sync_preferences::TestingPrefServiceSyncable* prefs,
     const PrimaryCookieSettingManagedTestCase& test_case) {
   auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(test_case.default_content_setting));
+  provider->SetWebsiteSetting(ContentSettingsPattern::Wildcard(),
+                              ContentSettingsPattern::Wildcard(),
+                              ContentSettingsType::COOKIES,
+                              base::Value(test_case.default_content_setting));
 
   if (test_case.default_content_setting != CONTENT_SETTING_DEFAULT) {
     auto mock_provider = std::make_unique<content_settings::MockProvider>();
     mock_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::COOKIES,
-        std::make_unique<base::Value>(test_case.default_content_setting));
+        base::Value(test_case.default_content_setting));
     HostContentSettingsMap::ProviderType provider_type;
     switch (test_case.default_content_setting_source) {
       case content_settings::SETTING_SOURCE_POLICY:
@@ -401,7 +400,7 @@ TEST_F(GeneratedCookiePrefsTest, PrimarySettingPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
   ValidatePrimarySettingPrefValue(map, prefs(), pref.get(),
@@ -499,7 +498,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider),
       HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
@@ -513,7 +512,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
   pref_object = pref->GetPrefObject();
@@ -526,7 +525,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
   pref_object = pref->GetPrefObject();

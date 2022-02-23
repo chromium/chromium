@@ -4,7 +4,6 @@
 
 package org.chromium.ui.base;
 
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -12,11 +11,13 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputConnection;
-import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -31,6 +32,16 @@ import org.chromium.ui.mojom.CursorType;
  */
 @JNINamespace("ui")
 public class ViewAndroidDelegate {
+    /**
+     * Delegate to re-route the call to {@link #startDragAndDrop(Bitmap, DropDataAndroid).}
+     */
+    public interface DragAndDropDelegate {
+        boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
+    }
+
+    private static DragAndDropDelegate sDragAndDropTestDelegate;
+    private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
+
     /**
      * The current container view. This view can be updated with
      * {@link #setContainerView()}.
@@ -58,6 +69,7 @@ public class ViewAndroidDelegate {
 
     protected ViewAndroidDelegate(ViewGroup containerView) {
         mContainerView = containerView;
+        mDragAndDropDelegateImpl = new DragAndDropDelegateImpl();
     }
 
     /**
@@ -96,6 +108,24 @@ public class ViewAndroidDelegate {
         for (ContainerViewObserver observer : mContainerViewObservers) {
             observer.onUpdateContainerView(containerView);
         }
+    }
+
+    private DragAndDropDelegate getDragAndDropDelegate() {
+        return sDragAndDropTestDelegate != null ? sDragAndDropTestDelegate
+                                                : mDragAndDropDelegateImpl;
+    }
+
+    /**
+     * Get the tracker that records the drag event on the view this delegate attached to. Will
+     * return null if there's no {@link DragStateTracker} set up.
+     */
+    public @Nullable DragStateTracker getDragStateTracker() {
+        return null;
+    }
+
+    /** Return the {@link DragAndDropDelegateImpl} instance for this delegate class. */
+    protected DragStateTracker getDragStateTrackerInternal() {
+        return mDragAndDropDelegateImpl;
     }
 
     /**
@@ -165,25 +195,22 @@ public class ViewAndroidDelegate {
     }
 
     /**
-     * Drag the text out of current view.
-     * @param text The dragged text.
+     * Start {@link View#startDragAndDrop(ClipData, DragShadowBuilder, Object, int)} with
+     * {@link DropDataAndroid} from the web content.
+     *
      * @param shadowImage The shadow image for the dragged text.
+     * @param dropData The drop data presenting the drag target.
      */
     @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @CalledByNative
-    private boolean startDragAndDrop(String text, Bitmap shadowImage) {
+    private boolean startDragAndDrop(Bitmap shadowImage, DropDataAndroid dropData) {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) return false;
 
         ViewGroup containerView = getContainerViewGroup();
         if (containerView == null) return false;
 
-        ImageView imageView = new ImageView(containerView.getContext());
-        imageView.setImageBitmap(shadowImage);
-        imageView.layout(0, 0, shadowImage.getWidth(), shadowImage.getHeight());
-
-        return ApiHelperForN.startDragAndDrop(containerView, ClipData.newPlainText(null, text),
-                new View.DragShadowBuilder(imageView), null, View.DRAG_FLAG_GLOBAL);
+        return getDragAndDropDelegate().startDragAndDrop(containerView, shadowImage, dropData);
     }
 
     @VisibleForTesting
@@ -487,5 +514,16 @@ public class ViewAndroidDelegate {
     @CalledByNative
     protected int[] getDisplayFeature() {
         return null;
+    }
+
+    /** Destroy and clean up dependencies (e.g. drag state tracker if set). */
+    public void destroy() {
+        // TODO(https://crbug.com/1297354): Call this in when destroying WebContents.
+        mDragAndDropDelegateImpl.destroy();
+    }
+
+    @VisibleForTesting
+    public static void setDragAndDropDelegateForTest(DragAndDropDelegate testDelegate) {
+        sDragAndDropTestDelegate = testDelegate;
     }
 }

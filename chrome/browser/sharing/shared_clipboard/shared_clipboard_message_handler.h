@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 
 class SharingDeviceSource;
@@ -32,7 +33,7 @@ class SharedClipboardMessageHandler : public SharingMessageHandler {
   virtual void ShowNotification(const std::string& device_name) = 0;
 
  private:
-  SharingDeviceSource* device_source_ = nullptr;
+  raw_ptr<SharingDeviceSource> device_source_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_H_

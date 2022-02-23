@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_PAYMENT_REQUEST_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/payments/mojom/payment_request_data.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
@@ -20,7 +19,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"

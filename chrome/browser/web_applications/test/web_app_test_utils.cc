@@ -6,14 +6,35 @@
 
 #include <random>
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/common/pref_names.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::vector<std::string> features = {
+    "default_on_feature", "default_self_feature", "default_disabled_feature"};
+
+}  // namespace
 
 namespace web_app {
 namespace test {
@@ -108,6 +129,35 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
   return share_target;
 }
 
+std::vector<PermissionsPolicyDeclaration> CreateRandomPermissionsPolicy(
+    RandomHelper& random) {
+  const int num_permissions_policy_declarations =
+      random.next_uint(features.size());
+
+  std::vector<std::string> available_features;
+  for (const auto& feature : features)
+    available_features.push_back(feature);
+
+  const auto suffix = random.next_uint();
+  std::default_random_engine rng;
+  std::shuffle(available_features.begin(), available_features.end(), rng);
+
+  std::vector<PermissionsPolicyDeclaration> permissions_policy(
+      num_permissions_policy_declarations);
+  for (int i = 0; i < num_permissions_policy_declarations; ++i) {
+    permissions_policy[i].feature = available_features[i];
+    for (unsigned int j = 0; j < 5; ++j) {
+      std::string suffix_str =
+          base::NumberToString(suffix) + base::NumberToString(j);
+
+      const auto origin =
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+      permissions_policy[i].allowlist.push_back(origin.Serialize());
+    }
+  }
+  return permissions_policy;
+}
+
 std::vector<apps::ProtocolHandlerInfo> CreateRandomProtocolHandlers(
     uint32_t suffix) {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers;
@@ -143,26 +193,25 @@ std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
   return url_handlers;
 }
 
-std::vector<WebApplicationShortcutsMenuItemInfo>
-CreateRandomShortcutsMenuItemInfos(const GURL& scope, RandomHelper& random) {
+std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
+    const GURL& scope,
+    RandomHelper& random) {
   const uint32_t suffix = random.next_uint();
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (int i = random.next_uint(4) + 1; i >= 0; --i) {
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
-    WebApplicationShortcutsMenuItemInfo shortcut_info;
+    WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.url = scope.Resolve("shortcut" + suffix_str);
     shortcut_info.name = base::UTF8ToUTF16("shortcut" + suffix_str);
 
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons_any;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_icons_maskable;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_icons_monochrome;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_any;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_maskable;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_monochrome;
 
     for (int j = random.next_uint(4) + 1; j >= 0; --j) {
       std::string icon_suffix_str = suffix_str + base::NumberToString(j);
-      WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon;
+      WebAppShortcutsMenuItemInfo::Icon shortcut_icon;
       shortcut_icon.url = scope.Resolve("/shortcuts/icon" + icon_suffix_str);
       // Within each shortcut_icons_*, square_size_px must be unique.
       shortcut_icon.square_size_px = (j * 10) + random.next_uint(10);
@@ -323,6 +372,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
 
   app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
+  app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);
@@ -399,8 +449,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   app->SetStorageIsolated(random.next_bool());
 
-  app->SetFileHandlerPermissionBlocked(false);
-
   app->SetWindowControlsOverlayEnabled(false);
 
   WebApp::SyncFallbackData sync_fallback_data;
@@ -425,15 +473,26 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (random.next_bool())
     app->SetParentAppId(base::NumberToString(random.next_uint()));
 
-  // `random` should not be used after the chromeos block if the result
-  // is expected to be deterministic across cros and non-cros builds.
+  app->SetHandleLinks(random.next_enum<blink::mojom::HandleLinks>());
+
+  if (random.next_bool())
+    app->SetPermissionsPolicy(CreateRandomPermissionsPolicy(random));
+
+  uint32_t install_source =
+      random.next_uint(static_cast<int>(webapps::WebappInstallSource::COUNT));
+  app->SetInstallSourceForMetrics(
+      static_cast<webapps::WebappInstallSource>(install_source));
+
   if (IsChromeOsDataMandatory()) {
+    // Use a separate random generator for CrOS so the result is deterministic
+    // across cros and non-cros builds.
+    RandomHelper cros_random(seed);
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
-    chromeos_data->show_in_launcher = random.next_bool();
-    chromeos_data->show_in_search = random.next_bool();
-    chromeos_data->show_in_management = random.next_bool();
-    chromeos_data->is_disabled = random.next_bool();
-    chromeos_data->oem_installed = random.next_bool();
+    chromeos_data->show_in_launcher = cros_random.next_bool();
+    chromeos_data->show_in_search = cros_random.next_bool();
+    chromeos_data->show_in_management = cros_random.next_bool();
+    chromeos_data->is_disabled = cros_random.next_bool();
+    chromeos_data->oem_installed = cros_random.next_bool();
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
@@ -442,7 +501,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -452,12 +511,49 @@ void TestAcceptDialogCallback(
 
 void TestDeclineDialogCallback(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(acceptance_callback),
                                 false /*accept*/, std::move(web_app_info)));
+}
+
+AppId InstallPwaForCurrentUrl(Browser* browser) {
+  // Depending on the installability criteria, different dialogs can be used.
+  chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  WebAppTestInstallObserver observer(browser->profile());
+  observer.BeginListening();
+  CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
+  AppId app_id = observer.Wait();
+  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+  chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
+  return app_id;
+}
+
+void CheckServiceWorkerStatus(const GURL& url,
+                              content::StoragePartition* storage_partition,
+                              content::ServiceWorkerCapability status) {
+  base::RunLoop run_loop;
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+  service_worker_context->CheckHasServiceWorker(
+      url, blink::StorageKey(url::Origin::Create(url)),
+      base::BindLambdaForTesting(
+          [&run_loop, status](content::ServiceWorkerCapability capability) {
+            CHECK_EQ(status, capability);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+void SetWebAppSettingsDictPref(Profile* profile, const base::StringPiece pref) {
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  DCHECK(result.value && result.value->is_dict()) << result.error_message;
+  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result.value));
 }
 
 }  // namespace test

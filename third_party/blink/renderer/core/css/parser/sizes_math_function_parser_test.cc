@@ -58,7 +58,8 @@ static void VerifyCSSCalc(String text,
   CSSToLengthConversionData::ViewportSize viewport_size(viewport_width,
                                                         viewport_height);
   CSSToLengthConversionData::ContainerSizes container_sizes;
-  CSSToLengthConversionData conversion_data(nullptr, font_sizes, viewport_size,
+  CSSToLengthConversionData conversion_data(nullptr, WritingMode::kHorizontalTb,
+                                            font_sizes, viewport_size,
                                             container_sizes, 1.0);
   EXPECT_APPROX_EQ(value, math_value->ComputeLength<float>(conversion_data));
 }

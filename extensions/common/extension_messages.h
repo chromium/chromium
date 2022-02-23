@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
@@ -169,6 +168,9 @@ IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
   // The ID of the frame that initiated the connection.
   // 0 if main frame, positive otherwise. -1 if not initiated from a frame.
   IPC_STRUCT_MEMBER(int, frame_id)
+
+  // The unique ID of the document of the frame that initiated the connection.
+  IPC_STRUCT_MEMBER(std::string, document_id)
 IPC_STRUCT_END()
 
 // Struct containing information about the destination of tab.connect().
@@ -311,10 +313,6 @@ IPC_STRUCT_TRAITS_END()
 IPC_MESSAGE_CONTROL2(ExtensionMsg_DispatchEvent,
                      extensions::mojom::DispatchEventParams /* params */,
                      base::ListValue /* event_args */)
-
-// Tell the render view which browser window it's being attached to.
-IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
-                    int /* id of browser window */)
 
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
 IPC_MESSAGE_CONTROL2(ExtensionMsg_WakeEventPageResponse,

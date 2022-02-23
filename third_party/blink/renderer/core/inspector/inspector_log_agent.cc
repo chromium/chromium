@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -31,8 +31,6 @@ String MessageSourceValue(mojom::blink::ConsoleMessageSource source) {
       return protocol::Log::LogEntry::SourceEnum::Network;
     case mojom::blink::ConsoleMessageSource::kStorage:
       return protocol::Log::LogEntry::SourceEnum::Storage;
-    case mojom::blink::ConsoleMessageSource::kAppCache:
-      return protocol::Log::LogEntry::SourceEnum::Appcache;
     case mojom::blink::ConsoleMessageSource::kRendering:
       return protocol::Log::LogEntry::SourceEnum::Rendering;
     case mojom::blink::ConsoleMessageSource::kSecurity:

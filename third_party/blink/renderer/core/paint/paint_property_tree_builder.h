@@ -14,7 +14,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -228,13 +229,6 @@ struct PaintPropertyTreeBuilderContext final {
 
   // Note that the next four bitfields are conceptually bool, but are declared
   // as unsigned in order to be packed in the same word as the above bitfield.
-
-  // Whether a clip paint property node appeared, disappeared, or changed
-  // its clip since this variable was last set to false. This is used
-  // to find out whether a clip changed since the last transform update.
-  // Code outside of this class resets clip_changed to false when transforms
-  // change. Used only when CullRectUpdate is not enabled.
-  unsigned clip_changed : 1;
 
   // When printing, fixed-position objects and their descendants need to repeat
   // in each page.

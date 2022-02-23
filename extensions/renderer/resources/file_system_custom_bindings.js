@@ -10,7 +10,6 @@ var fileBindings = getFileBindingsForApi('fileSystem');
 var bindFileEntryCallback = fileBindings.bindFileEntryCallback;
 var entryIdManager = fileBindings.entryIdManager;
 var fileSystemNatives = requireNative('file_system_natives');
-var safeCallbackApply = require('uncaught_exception_handler').safeCallbackApply;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
@@ -49,7 +48,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       function(id, callback) {
     var savedEntry = entryIdManager.getEntryById(id);
     if (savedEntry) {
-      safeCallbackApply('fileSystem.isRestorable', {}, callback, [true]);
+      callback(true);
     } else {
       bindingUtil.sendRequest('fileSystem.isRestorable', [id, callback],
                               undefined);
@@ -62,7 +61,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     if (savedEntry) {
       // We already have a file entry for this id so pass it to the callback and
       // send a request to the browser to move it to the back of the LRU.
-      safeCallbackApply('fileSystem.restoreEntry', {}, callback, [savedEntry]);
+      callback(savedEntry);
       return [id, false, null];
     } else {
       // Ask the browser process for a new file entry for this id, to be passed
@@ -72,14 +71,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setCustomCallback('requestFileSystem',
-      function(name, request, callback, response) {
+      function(callback, response) {
     var fileSystem;
     if (response && response.file_system_id) {
       fileSystem = fileSystemNatives.GetIsolatedFileSystem(
           response.file_system_id, response.file_system_path);
     }
-    safeCallbackApply('fileSystem.requestFileSystem', request, callback,
-                      [fileSystem]);
+    callback(fileSystem);
   });
 
   // TODO(benwells): Remove these deprecated versions of the functions.

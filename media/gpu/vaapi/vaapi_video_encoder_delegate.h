@@ -24,7 +24,6 @@ struct BitstreamBufferMetadata;
 class CodecPicture;
 class ScopedVABuffer;
 class VideoFrame;
-class VASurface;
 class VaapiWrapper;
 
 // An VaapiVideoEncoderDelegate  performs high-level, platform-independent
@@ -69,18 +68,14 @@ class VaapiVideoEncoderDelegate {
   // calling VaapiWrapper::DownloadFromVABuffer().
   class EncodeResult {
    public:
-    EncodeResult(scoped_refptr<VASurface> surface,
-                 std::unique_ptr<ScopedVABuffer> coded_buffer,
+    EncodeResult(std::unique_ptr<ScopedVABuffer> coded_buffer,
                  const BitstreamBufferMetadata& metadata);
     ~EncodeResult();
 
-    VASurfaceID input_surface_id() const;
     VABufferID coded_buffer_id() const;
-
     const BitstreamBufferMetadata& metadata() const;
 
    private:
-    const scoped_refptr<VASurface> surface_;
     const std::unique_ptr<ScopedVABuffer> coded_buffer_;
     const BitstreamBufferMetadata metadata_;
   };
@@ -100,7 +95,8 @@ class VaapiVideoEncoderDelegate {
     // Constructor for VA-API.
     EncodeJob(scoped_refptr<VideoFrame> input_frame,
               bool keyframe,
-              scoped_refptr<VASurface> input_surface,
+              VASurfaceID input_surface_id,
+              const gfx::Size& input_surface_size,
               scoped_refptr<CodecPicture> picture,
               std::unique_ptr<ScopedVABuffer> coded_buffer);
 
@@ -129,7 +125,8 @@ class VaapiVideoEncoderDelegate {
 
     // VA-API specific methods.
     VABufferID coded_buffer_id() const;
-    const scoped_refptr<VASurface>& input_surface() const;
+    VASurfaceID input_surface_id() const;
+    const gfx::Size& input_surface_size() const;
     const scoped_refptr<CodecPicture>& picture() const;
 
    private:
@@ -140,8 +137,9 @@ class VaapiVideoEncoderDelegate {
     bool keyframe_;
 
     // VA-API specific members.
-    // Input surface for video frame data or scaled data.
-    const scoped_refptr<VASurface> input_surface_;
+    // Input surface ID and size for video frame data or scaled data.
+    const VASurfaceID input_surface_id_;
+    const gfx::Size input_surface_size_;
     const scoped_refptr<CodecPicture> picture_;
     // Buffer that will contain the output bitstream data for this frame.
     std::unique_ptr<ScopedVABuffer> coded_buffer_;

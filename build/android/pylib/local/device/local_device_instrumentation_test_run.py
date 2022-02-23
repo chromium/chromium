@@ -163,8 +163,7 @@ def _GetTargetPackageName(test_apk):
 class LocalDeviceInstrumentationTestRun(
     local_device_test_run.LocalDeviceTestRun):
   def __init__(self, env, test_instance):
-    super(LocalDeviceInstrumentationTestRun, self).__init__(
-        env, test_instance)
+    super().__init__(env, test_instance)
     self._chrome_proxy = None
     self._context_managers = collections.defaultdict(list)
     self._flag_changers = {}
@@ -536,15 +535,28 @@ class LocalDeviceInstrumentationTestRun(
       else:
         other_tests.append(test)
 
+    def dict2list(d):
+      if isinstance(d, dict):
+        return sorted([(k, dict2list(v)) for k, v in d.items()])
+      if isinstance(d, list):
+        return [dict2list(v) for v in d]
+      if isinstance(d, tuple):
+        return tuple(dict2list(v) for v in d)
+      return d
+
     all_tests = []
-    for _, tests in list(batched_tests.items()):
-      tests.sort()  # Ensure a consistent ordering across external shards.
+    for _, btests in list(batched_tests.items()):
+      # Ensure a consistent ordering across external shards.
+      if len(btests) > _TEST_BATCH_MAX_GROUP_SIZE:
+        btests.sort(key=dict2list)
       all_tests.extend([
-          tests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]
-          for i in range(0, len(tests), _TEST_BATCH_MAX_GROUP_SIZE)
+          btests[i:i + _TEST_BATCH_MAX_GROUP_SIZE]
+          for i in range(0, len(btests), _TEST_BATCH_MAX_GROUP_SIZE)
       ])
     all_tests.extend(other_tests)
-    return all_tests
+    # Sort all tests by hash.
+    # TODO(crbug.com/1257820): Add sorting logic back to _PartitionTests.
+    return self._SortTests(all_tests)
 
   #override
   def _GetUniqueTestName(self, test):
@@ -1052,8 +1064,8 @@ class LocalDeviceInstrumentationTestRun(
     if device.FileExists(trace_device_file.name):
       try:
         java_trace_json = device.ReadFile(trace_device_file.name)
-      except IOError:
-        raise Exception('error pulling trace file from device')
+      except IOError as e:
+        raise Exception('error pulling trace file from device') from e
       finally:
         trace_device_file.close()
 
@@ -1363,10 +1375,8 @@ def _IsWPRRecordReplayTest(test):
   """Determines whether a test or a list of tests is a WPR RecordReplay Test."""
   if not isinstance(test, list):
     test = [test]
-  return any([
-      WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION in t['annotations'].get(
-          FEATURE_ANNOTATION, {}).get('value', ()) for t in test
-  ])
+  return any(WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION in t['annotations'].get(
+      FEATURE_ANNOTATION, {}).get('value', ()) for t in test)
 
 
 def _GetWPRArchivePath(test):
@@ -1397,8 +1407,8 @@ def _IsRenderTest(test):
   """Determines if a test or list of tests has a RenderTest amongst them."""
   if not isinstance(test, list):
     test = [test]
-  return any([RENDER_TEST_FEATURE_ANNOTATION in t['annotations'].get(
-              FEATURE_ANNOTATION, {}).get('value', ()) for t in test])
+  return any(RENDER_TEST_FEATURE_ANNOTATION in t['annotations'].get(
+      FEATURE_ANNOTATION, {}).get('value', ()) for t in test)
 
 
 def _GenerateRenderTestHtml(image_name, failure_link, golden_link, diff_link):
@@ -1510,7 +1520,7 @@ def _MatchingTestInResults(results, full_test_name):
     True if one of the results in |results| has the same name as
     |full_test_name|, otherwise False.
   """
-  return any([r for r in results if r.GetName() == full_test_name])
+  return any(r for r in results if r.GetName() == full_test_name)
 
 
 def _ShouldReportNoMatchingResult(full_test_name):

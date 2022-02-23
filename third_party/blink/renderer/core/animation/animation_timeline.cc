@@ -177,8 +177,10 @@ void AnimationTimeline::SetOutdatedAnimation(Animation* animation) {
   DCHECK(animation->Outdated());
   outdated_animation_count_++;
   animations_needing_update_.insert(animation);
-  if (IsActive() && !document_->GetPage()->Animator().IsServicingAnimations())
+  if (IsActive() && document_->GetPage() &&
+      !document_->GetPage()->Animator().IsServicingAnimations()) {
     ScheduleServiceOnNextFrame();
+  }
 }
 
 void AnimationTimeline::ScheduleServiceOnNextFrame() {

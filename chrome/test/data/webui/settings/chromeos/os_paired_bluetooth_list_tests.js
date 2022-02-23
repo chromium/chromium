@@ -57,4 +57,47 @@ suite('OsPairedBluetoothListTest', function() {
     Polymer.dom.flush();
     assertEquals(getListItems().length, 5);
   });
+
+  test('Tooltip is shown', async function() {
+    const getTooltip = () => {
+      return pairedBluetoothList.$$('#tooltip');
+    };
+
+    assertFalse(getTooltip()._showing);
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+
+    pairedBluetoothList.devices = [device];
+    await flushAsync();
+
+    const listItem = pairedBluetoothList.shadowRoot.querySelector(
+        'os-settings-paired-bluetooth-list-item');
+
+    listItem.dispatchEvent(new CustomEvent('managed-tooltip-state-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        address: 'device-address',
+        show: true,
+        element: document.createElement('div'),
+      }
+    }));
+
+    await flushAsync();
+    assertTrue(getTooltip()._showing);
+
+    listItem.dispatchEvent(new CustomEvent('managed-tooltip-state-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        address: 'device-address',
+        show: false,
+        element: document.createElement('div'),
+      }
+    }));
+    await flushAsync();
+    assertFalse(getTooltip()._showing);
+  });
 });

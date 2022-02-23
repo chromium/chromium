@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -244,7 +245,7 @@ void EventHandlerRegistry::NotifyHandlersChanged(
     case kTouchStartOrMoveEventBlockingLowLatency:
       GetPage()->GetChromeClient().SetNeedsLowLatencyInput(frame,
                                                            has_active_handlers);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kTouchAction:
     case kTouchStartOrMoveEventBlocking:
     case kTouchStartOrMoveEventPassive:

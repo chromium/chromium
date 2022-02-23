@@ -54,7 +54,7 @@ Loop:
 	movz	w28,#0x7999
 	sub	x2,x2,#1
 	movk	w28,#0x5a82,lsl#16
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x3,x3,#32
 #else
 	rev32	x3,x3
@@ -72,7 +72,7 @@ Loop:
 	ror	w21,w21,#2
 	add	w23,w23,w4	// future e+=X[i]
 	add	w24,w24,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x5,x5,#32
 #else
 	rev32	x5,x5
@@ -97,7 +97,7 @@ Loop:
 	ror	w24,w24,#2
 	add	w21,w21,w6	// future e+=X[i]
 	add	w22,w22,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x7,x7,#32
 #else
 	rev32	x7,x7
@@ -122,7 +122,7 @@ Loop:
 	ror	w22,w22,#2
 	add	w24,w24,w8	// future e+=X[i]
 	add	w20,w20,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x9,x9,#32
 #else
 	rev32	x9,x9
@@ -147,7 +147,7 @@ Loop:
 	ror	w20,w20,#2
 	add	w22,w22,w10	// future e+=X[i]
 	add	w23,w23,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x11,x11,#32
 #else
 	rev32	x11,x11
@@ -172,7 +172,7 @@ Loop:
 	ror	w23,w23,#2
 	add	w20,w20,w12	// future e+=X[i]
 	add	w21,w21,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x13,x13,#32
 #else
 	rev32	x13,x13
@@ -197,7 +197,7 @@ Loop:
 	ror	w21,w21,#2
 	add	w23,w23,w14	// future e+=X[i]
 	add	w24,w24,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x15,x15,#32
 #else
 	rev32	x15,x15
@@ -222,7 +222,7 @@ Loop:
 	ror	w24,w24,#2
 	add	w21,w21,w16	// future e+=X[i]
 	add	w22,w22,w25		// e+=F(b,c,d)
-#ifdef	__ARMEB__
+#ifdef	__AARCH64EB__
 	ror	x17,x17,#32
 #else
 	rev32	x17,x17

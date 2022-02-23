@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
-
 // Helper class that wraps ScopedBlockSwizzler for use in EG1 and EG2 tests.
 class EarlGreyScopedBlockSwizzler {
  public:

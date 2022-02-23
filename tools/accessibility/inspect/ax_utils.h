@@ -8,14 +8,30 @@
 #include "base/command_line.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
 namespace tools {
 
-// Prints help for tree selectors like --pattern, --chromium etc.
-void PrintHelpForTreeSelectors();
+// Prints help for options and the help footer.
+void PrintHelpShared();
 
-// Returns tree selector from command line arguments.
+// Prints help for tree selectors like --pattern, --chromium etc.
+void PrintHelpTreeSelectors();
+
+// Prints help for filters.
+void PrintHelpFilters();
+
+// Prints the help footer portion.
+void PrintHelpFooter();
+
+// Returns tree selector from the command line arguments. Returns nullopt in
+// case of error.
 absl::optional<ui::AXTreeSelector> TreeSelectorFromCommandLine(
+    const base::CommandLine& command_line);
+
+// Returns inspect scenario from the command line arguments. Returns nullopt in
+// case of error.
+absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
     const base::CommandLine& command_line);
 
 }  // namespace tools

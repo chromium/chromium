@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -11,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_toggle_controller.h"
 #include "ash/system/keyboard_brightness/unified_keyboard_brightness_slider_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
@@ -112,9 +114,19 @@ void UnifiedSliderBubbleController::OnDisplayBrightnessChanged(bool by_user) {
     ShowBubble(SLIDER_TYPE_DISPLAY_BRIGHTNESS);
 }
 
-void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(bool by_user) {
-  if (by_user)
+void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
+    power_manager::BacklightBrightnessChange_Cause cause) {
+  if (cause == power_manager::BacklightBrightnessChange_Cause_USER_REQUEST) {
+    // User has made a brightness adjustment, or the KBL was made
+    // no-longer-forced-off implicitly in response to a user adjustment.
     ShowBubble(SLIDER_TYPE_KEYBOARD_BRIGHTNESS);
+  } else if (cause == power_manager::
+                          BacklightBrightnessChange_Cause_USER_TOGGLED_OFF ||
+             cause == power_manager::
+                          BacklightBrightnessChange_Cause_USER_TOGGLED_ON) {
+    // User has explicitly toggled the KBL backlight.
+    ShowBubble(SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE);
+  }
 }
 
 void UnifiedSliderBubbleController::OnAudioSettingsButtonClicked() {
@@ -196,7 +208,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   init_params.insets = GetTrayBubbleInsets();
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
 
@@ -230,13 +242,17 @@ void UnifiedSliderBubbleController::CreateSliderController() {
           std::make_unique<UnifiedVolumeSliderController>(this);
       return;
     case SLIDER_TYPE_DISPLAY_BRIGHTNESS:
-      slider_controller_ =
-          std::make_unique<UnifiedBrightnessSliderController>(tray_->model());
+      slider_controller_ = std::make_unique<UnifiedBrightnessSliderController>(
+          tray_->model().get());
+      return;
+    case SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE:
+      slider_controller_ = std::make_unique<KeyboardBacklightToggleController>(
+          tray_->model().get());
       return;
     case SLIDER_TYPE_KEYBOARD_BRIGHTNESS:
       slider_controller_ =
           std::make_unique<UnifiedKeyboardBrightnessSliderController>(
-              tray_->model());
+              tray_->model().get());
       return;
     case SLIDER_TYPE_MIC:
       slider_controller_ = std::make_unique<MicGainSliderController>();

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/scoped_multi_source_observation.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -17,37 +18,36 @@ class Rect;
 }
 
 namespace views {
-class DialogDelegateView;
+class WidgetDelegate;
 }
 
 namespace ash {
 
-// A helper to keep track and manage bounds of a dialog window anchored within
-// the search results app list page.
-class SearchResultPageAnchoredDialog : public views::WidgetObserver {
+// A helper to keep track and manage bounds of a dialog window anchored to the
+// search results app list page.
+class SearchResultPageAnchoredDialog : public views::WidgetObserver,
+                                       public views::ViewObserver {
  public:
   // Creates a widget for the provided dialog delegate view.
   // |dialog| - The dialog delegate view whose widget this should manage.
   // |host_view| - The view that is "hosting" the dialog - the dialog widget
-  //     will be parented by the host view's widget, and anchor bounds provided
-  //     to UpdateBounds() will be expected to be in host view bounds.
+  //     will be parented by the host view's widget, and the dialog will be
+  //     positioned relative to this view's bounds.
   // |callback| - A closure called when the dialog widget gets closed. The
   //     callback will not be called when the SearchResultPageAnchoredDialog
   //     gets destroyed,
-  SearchResultPageAnchoredDialog(
-      std::unique_ptr<views::DialogDelegateView> dialog,
-      views::View* host_view,
-      base::OnceClosure callback);
+  SearchResultPageAnchoredDialog(std::unique_ptr<views::WidgetDelegate> dialog,
+                                 views::View* host_view,
+                                 base::OnceClosure callback);
   SearchResultPageAnchoredDialog(const SearchResultPageAnchoredDialog& other) =
       delete;
   SearchResultPageAnchoredDialog& operator=(
       const SearchResultPageAnchoredDialog& other) = delete;
   ~SearchResultPageAnchoredDialog() override;
 
-  // Repositions the dialog widget bounds relative to the provided anchor
+  // Repositions the dialog widget bounds relative to the current host view
   // bounds.
-  // |anchor_bounds| are expected to be in |host_view_| coordinates.
-  void UpdateBounds(const gfx::Rect& anchor_bounds);
+  void UpdateBounds();
 
   // Adjusts the vertical translate offset to be used during search results page
   // animation. The default offset follows the search box bounds translation
@@ -59,6 +59,9 @@ class SearchResultPageAnchoredDialog : public views::WidgetObserver {
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
   views::Widget* widget() { return widget_; }
 
  private:
@@ -67,9 +70,6 @@ class SearchResultPageAnchoredDialog : public views::WidgetObserver {
   views::View* const host_view_;
 
   base::OnceClosure callback_;
-
-  // Most recent anchor bounds (in |host_view_| coordinates).
-  gfx::Rect anchor_bounds_;
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};

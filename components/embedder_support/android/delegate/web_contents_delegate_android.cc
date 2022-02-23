@@ -138,11 +138,11 @@ void WebContentsDelegateAndroid::ActivateContents(WebContents* contents) {
 
 void WebContentsDelegateAndroid::LoadingStateChanged(
     WebContents* source,
-    bool to_different_document) {
+    bool should_show_loading_ui) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   Java_WebContentsDelegateAndroid_loadingStateChanged(env, obj,
-                                                      to_different_document);
+                                                      should_show_loading_ui);
 }
 
 void WebContentsDelegateAndroid::RendererUnresponsive(
@@ -272,7 +272,7 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_onUpdateUrl(
-      env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetURL()));
+      env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetVisibleURL()));
 }
 
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(

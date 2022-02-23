@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"

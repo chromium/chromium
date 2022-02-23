@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
 

@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -59,23 +58,20 @@ class SearchEngineTabHelperTest : public ChromeWebTest {
       : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
 
   void SetUp() override {
-    WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state(), ios::FaviconServiceFactory::GetForBrowserState(
-                         chrome_browser_state_->GetOriginalChromeBrowserState(),
-                         ServiceAccessType::IMPLICIT_ACCESS));
+        web_state(),
+        ios::FaviconServiceFactory::GetForBrowserState(
+            GetBrowserState(), ServiceAccessType::IMPLICIT_ACCESS));
     SearchEngineTabHelper::CreateForWebState(web_state());
     server_.ServeFilesFromSourceDirectory(".");
     ASSERT_TRUE(server_.Start());
-    // Set the TestingFactory of BrowserState of ios::TemplateURLServiceFactory
-    // to provide a testing TemplateURLService. Notice that we should not use
-    // GetBrowserState() because it may be overriden to return incognito
-    // BrowserState but TemplateURLService is always created on regular
-    // BrowserState.
-    ios::TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-        chrome_browser_state_->GetOriginalChromeBrowserState(),
-        base::BindRepeating(&CreateTestingTemplateURLService));
     template_url_service()->Load();
+  }
+
+  TestChromeBrowserState::TestingFactories GetTestingFactories() override {
+    return {{ios::TemplateURLServiceFactory::GetInstance(),
+             base::BindRepeating(&CreateTestingTemplateURLService)}};
   }
 
   // Returns the testing TemplateURLService.
@@ -189,10 +185,37 @@ class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
  protected:
   SearchEngineTabHelperIncognitoTest() {}
 
-  // Overrides WebTest::GetBrowserState.
-  web::BrowserState* GetBrowserState() override {
-    return chrome_browser_state_->GetOffTheRecordChromeBrowserState();
+  void SetUp() override {
+    SearchEngineTabHelperTest::SetUp();
+
+    ChromeBrowserState* incognito_browser_state =
+        GetBrowserState()->GetOffTheRecordChromeBrowserState();
+
+    // TemplateURLServiceFactory redirects to the original profile, so it
+    // doesn't really matter which browser state is used in tests to interact
+    // with TemplateURLService.
+    ASSERT_EQ(template_url_service(),
+              ios::TemplateURLServiceFactory::GetForBrowserState(
+                  incognito_browser_state));
+
+    web::WebState::CreateParams params(incognito_browser_state);
+    incognito_web_state_ = web::WebState::Create(params);
+    incognito_web_state_->SetKeepRenderProcessAlive(true);
+
+    // SearchEngineTabHelper depends on WebFaviconDriver, which must be created
+    // before and using the original (non-incognito) browser state, in
+    // consistency with the logic in AttachTabHelpers().
+    favicon::WebFaviconDriver::CreateForWebState(
+        incognito_web_state(),
+        ios::FaviconServiceFactory::GetForBrowserState(
+            GetBrowserState(), ServiceAccessType::IMPLICIT_ACCESS));
+    SearchEngineTabHelper::CreateForWebState(incognito_web_state());
   }
+
+  web::WebState* incognito_web_state() { return incognito_web_state_.get(); }
+
+ private:
+  std::unique_ptr<web::WebState> incognito_web_state_;
 };
 
 // Tests that SearchEngineTabHelper doesn't add TemplateURL to
@@ -208,8 +231,8 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
-  LoadHtml(@"<html></html>", page_url);
-  SearchEngineTabHelper::FromWebState(web_state())
+  LoadHtmlInWebState(@"<html></html>", page_url, incognito_web_state());
+  SearchEngineTabHelper::FromWebState(incognito_web_state())
       ->AddTemplateURLByOSDD(page_url, osdd_url);
 
   // No new TemplateURL should be added to TemplateURLService, wait for timeout.
@@ -240,10 +263,10 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
       template_url_service()->GetTemplateURLs();
 
   // Load an empty page, and send a message of openSearchUrl from Js.
-  LoadHtml(html, page_url);
-  SearchEngineTabHelper::FromWebState(web_state())
+  LoadHtmlInWebState(html, page_url, incognito_web_state());
+  SearchEngineTabHelper::FromWebState(incognito_web_state())
       ->SetSearchableUrl(searchable_url);
-  SubmitWebViewFormWithId(web_state(), "f");
+  SubmitWebViewFormWithId(incognito_web_state(), "f");
 
   // Wait for TemplateURL added to TemplateURLService.
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{

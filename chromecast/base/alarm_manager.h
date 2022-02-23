@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -61,9 +60,9 @@ class AlarmManager {
   // if it is past the requested time if the software is suspended. However,
   // once woken up, the event will fire within 5 seconds if the target time has
   // passed.
-  std::unique_ptr<AlarmHandle> PostAlarmTask(base::OnceClosure task,
-                                             base::Time time)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<AlarmHandle> PostAlarmTask(
+      base::OnceClosure task,
+      base::Time time);
 
  private:
   class AlarmInfo {

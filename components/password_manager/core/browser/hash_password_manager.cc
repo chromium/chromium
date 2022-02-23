@@ -136,7 +136,7 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
   // unchanged, no need to save password hash again. Instead we update the last
   // sign in timestamp.
   ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
-  for (base::Value& password_hash_data : update.Get()->GetList()) {
+  for (base::Value& password_hash_data : update.Get()->GetListDeprecated()) {
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
             IsGaiaPassword(password_hash_data), username, is_gaia_password)) {
@@ -222,10 +222,9 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   if (!prefs_ || !prefs_->HasPrefPath(prefs::kPasswordHashDataList))
     return result;
 
-  const base::ListValue* hash_list =
-      prefs_->GetList(prefs::kPasswordHashDataList);
+  const base::Value* hash_list = prefs_->GetList(prefs::kPasswordHashDataList);
 
-  for (const base::Value& entry : hash_list->GetList()) {
+  for (const base::Value& entry : hash_list->GetListDeprecated()) {
     absl::optional<PasswordHashData> password_hash_data =
         ConvertToPasswordHashData(entry);
     if (password_hash_data)
@@ -243,7 +242,7 @@ absl::optional<PasswordHashData> HashPasswordManager::RetrievePasswordHash(
   }
 
   for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)->GetList()) {
+       prefs_->GetList(prefs::kPasswordHashDataList)->GetListDeprecated()) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return ConvertToPasswordHashData(entry);
@@ -261,7 +260,7 @@ bool HashPasswordManager::HasPasswordHash(const std::string& username,
   }
 
   for (const base::Value& entry :
-       prefs_->GetList(prefs::kPasswordHashDataList)->GetList()) {
+       prefs_->GetList(prefs::kPasswordHashDataList)->GetListDeprecated()) {
     if (AreUsernamesSame(GetAndDecryptField(entry, kUsernameFieldKey),
                          IsGaiaPassword(entry), username, is_gaia_password)) {
       return true;
@@ -322,10 +321,10 @@ bool HashPasswordManager::EncryptAndSave(
   });
 
   if (num_erased == 0 &&
-      update->GetList().size() >= kMaxPasswordHashDataDictSize) {
+      update->GetListDeprecated().size() >= kMaxPasswordHashDataDictSize) {
     // Erase the oldest sign-in password hash data.
     update->EraseListIter(std::min_element(
-        update->GetList().begin(), update->GetList().end(),
+        update->GetListDeprecated().begin(), update->GetListDeprecated().end(),
         [](const auto& lhs, const auto& rhs) {
           return lhs.FindKey(kLastSignInTimeFieldKey)->GetDouble() <
                  rhs.FindKey(kLastSignInTimeFieldKey)->GetDouble();

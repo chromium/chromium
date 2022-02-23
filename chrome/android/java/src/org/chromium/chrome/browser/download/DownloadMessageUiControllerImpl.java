@@ -8,20 +8,20 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogHelper.Source;
@@ -29,12 +29,11 @@ import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactor
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
-import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -51,8 +50,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -135,6 +136,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int SCHEDULED = 3;
     }
 
+    @IntDef({IconType.DRAWABLE, IconType.VECTOR_DRAWABLE, IconType.ANIMATED_VECTOR_DRAWABLE})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface IconType {
+        int DRAWABLE = 0;
+        int VECTOR_DRAWABLE = 1;
+        int ANIMATED_VECTOR_DRAWABLE = 2;
+    }
+
     /**
      * Represents the data required to show UI elements of the message.
      */
@@ -147,8 +156,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public String link;
         public int icon;
 
-        // Whether the icon corresponds to a vector drawable.
-        public boolean hasVectorDrawable;
+        @IconType
+        public int iconType = IconType.DRAWABLE;
 
         // Whether the the message must be shown, even though it was dismissed earlier. This
         // usually means there is a significant download update, e.g. download completed.
@@ -193,7 +202,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             message = other.message;
             link = other.link;
             icon = other.icon;
-            hasVectorDrawable = other.hasVectorDrawable;
+            iconType = other.iconType;
             forceShow = other.forceShow;
             downloadCount = other.downloadCount;
             resultState = other.resultState;
@@ -287,23 +296,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     // Used to show the download later dialog to change download schedule.
     private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
-    // The associated activity context.
-    private Context mContext;
-
-    // The associated OTR profile ID.
-    private final OTRProfileID mOtrProfileID;
-
-    // The message dispatcher for showing the message UI.
-    private Supplier<MessageDispatcher> mMessageDispatcher;
-
-    // Dialog manager used for creating download later dialogs.
-    private ModalDialogManager mModalDialogManager;
-
-    // Provides information about currently focused tab.
-    private ActivityTabProvider mActivityTabProvider;
-
-    // Used to get information about whenever current tab is switched.
-    private ActivityTabTabObserver mActivityTabObserver;
+    // The delegate to provide dependencies.
+    private final Delegate mDelegate;
 
     // The model used to update the UI properties.
     private PropertyModel mPropertyModel;
@@ -311,37 +305,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private Runnable mDismissRunnable;
 
     /** Constructor. */
-    public DownloadMessageUiControllerImpl(Context context, OTRProfileID otrProfileID,
-            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
-            ActivityTabProvider activityTabProvider) {
-        mOtrProfileID = otrProfileID;
-        mMessageDispatcher = messageDispatcher;
-        mContext = context;
-        mModalDialogManager = modalDialogManager;
-        mActivityTabProvider = activityTabProvider;
-
+    public DownloadMessageUiControllerImpl(Delegate delegate) {
+        mDelegate = delegate;
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
-        createActivityTabObserver();
-    }
-
-    @Override
-    public void onConfigurationChanged(Context context,
-            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
-            ActivityTabProvider activityTabProvider) {
-        mContext = context;
-        mMessageDispatcher = messageDispatcher;
-        mModalDialogManager = modalDialogManager;
-        mActivityTabProvider = activityTabProvider;
-        createActivityTabObserver();
-    }
-
-    private void createActivityTabObserver() {
-        mActivityTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
-            @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                closePreviousMessage();
-            }
-        };
     }
 
     /**
@@ -401,13 +367,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         return mPropertyModel != null;
     }
 
+    private MessageDispatcher getMessageDispatcher() {
+        return mDelegate.getMessageDispatcher();
+    }
+
+    private ModalDialogManager getModalDialogManager() {
+        return mDelegate.getModalDialogManager();
+    }
+
     private boolean isVisibleToUser(OfflineItem offlineItem) {
         if (offlineItem.isTransient
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
-        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
-        if (!OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)) return false;
 
         if (LegacyHelpers.isLegacyDownload(offlineItem.id)
                 && TextUtils.isEmpty(offlineItem.filePath)) {
@@ -581,17 +553,19 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param resultState The state of the corresponding offline items to be shown.
      */
     private void createMessageForState(@UiState int uiState, @ResultState int resultState) {
+        if (getContext() == null) return;
         DownloadProgressMessageUiData info = new DownloadProgressMessageUiData();
 
         @PluralsRes
         int stringRes = -1;
         if (uiState == UiState.DOWNLOADING) {
             stringRes = R.plurals.download_message_multiple_download_in_progress;
-            info.icon = R.drawable.infobar_downloading;
+            info.icon = R.drawable.downloading_fill_animation_24dp;
+            info.iconType = IconType.ANIMATED_VECTOR_DRAWABLE;
         } else if (resultState == ResultState.COMPLETE) {
             stringRes = R.plurals.download_message_multiple_download_complete;
             info.icon = R.drawable.infobar_download_complete;
-            info.hasVectorDrawable = true;
+            info.iconType = IconType.VECTOR_DRAWABLE;
         } else if (resultState == ResultState.FAILED) {
             stringRes = R.plurals.download_message_multiple_download_failed;
             info.icon = R.drawable.ic_error_outline_googblue_24dp;
@@ -642,8 +616,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 info.icon = R.drawable.infobar_download_complete_animation;
             } else if (singleDownloadScheduled) {
                 // TODO(shaktisahu, xingliu): Find out what the message should be.
-                info.description = getContext().getString(
-                        R.string.download_message_download_scheduled_description);
+                info.description = getMessageForDownloadScheduled(itemToShow);
                 info.link = getContext().getString(R.string.change_link);
                 info.id = itemToShow.id;
                 info.schedule = itemToShow.schedule.clone();
@@ -696,6 +669,24 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mEndTimerRunnable = null;
     }
 
+    private String getMessageForDownloadScheduled(OfflineItem offlineItem) {
+        assert offlineItem != null && offlineItem.schedule != null;
+        if (offlineItem.schedule.onlyOnWifi) {
+            return getContext().getString(
+                    R.string.download_message_download_scheduled_description_on_wifi);
+        } else {
+            long now = new Date().getTime();
+            String dateTimeString = DateUtils
+                                            .formatSameDayTime(offlineItem.schedule.startTimeMs,
+                                                    now, DateFormat.MEDIUM, DateFormat.SHORT)
+                                            .toString();
+            int stringId = CalendarUtils.isSameDay(now, offlineItem.schedule.startTimeMs)
+                    ? R.string.download_message_download_scheduled_description_on_time
+                    : R.string.download_message_download_scheduled_description_on_date;
+            return getContext().getString(stringId, dateTimeString);
+        }
+    }
+
     private void preProcessUpdatedItem(OfflineItem updatedItem) {
         if (updatedItem == null) return;
 
@@ -730,18 +721,17 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     @VisibleForTesting
     protected void showMessage(@UiState int state, DownloadProgressMessageUiData info) {
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
+        if (mDelegate.maybeSwitchToFocusedActivity()) {
+            closePreviousMessage();
+        }
 
-        Tab currentTab = mActivityTabProvider.get();
-        boolean shouldShowMessage = currentTab != null && currentTab.getWebContents() != null
-                && mMessageDispatcher.get() != null && (info.forceShow || mPropertyModel != null)
-                && currentTab.isIncognito() == OTRProfileID.isOffTheRecord(mOtrProfileID);
+        boolean shouldShowMessage =
+                getMessageDispatcher() != null && (info.forceShow || mPropertyModel != null);
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
-        Drawable drawable = info.hasVectorDrawable
-                ? VectorDrawableCompat.create(
-                        getContext().getResources(), info.icon, getContext().getTheme())
-                : ApiCompatibilityUtils.getDrawable(getContext().getResources(), info.icon);
+
+        Drawable drawable = createDrawable(info);
 
         boolean updateOnly = mPropertyModel != null;
         if (mPropertyModel == null) {
@@ -749,6 +739,22 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                                      .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                              MessageIdentifier.DOWNLOAD_PROGRESS)
                                      .build();
+        }
+
+        if (info.iconType == IconType.ANIMATED_VECTOR_DRAWABLE) {
+            mPropertyModel.set(
+                    MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
+            drawable = drawable.mutate();
+            final AnimatedVectorDrawableCompat animatedDrawable =
+                    (AnimatedVectorDrawableCompat) drawable;
+            animatedDrawable.start();
+            animatedDrawable.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+                @Override
+                public void onAnimationEnd(Drawable drawable) {
+                    if (mCurrentInfo == null || mCurrentInfo.icon != info.icon) return;
+                    animatedDrawable.start();
+                }
+            });
         }
 
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
@@ -768,14 +774,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     MessageBannerProperties.DISMISSAL_DURATION, getMessageDismissDurationMs());
         }
 
+        final MessageDispatcher dispatcher = getMessageDispatcher();
         mDismissRunnable = () -> {
-            if (mMessageDispatcher.get() == null) return;
-            mMessageDispatcher.get().dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
+            if (dispatcher == null) return;
+            dispatcher.dismissMessage(mPropertyModel, DismissReason.SCOPE_DESTROYED);
         };
 
         if (updateOnly) return;
-        mMessageDispatcher.get().enqueueMessage(mPropertyModel, currentTab.getWebContents(),
-                MessageScopeType.WEB_CONTENTS, /*highPriority=*/false);
+        getMessageDispatcher().enqueueWindowScopedMessage(mPropertyModel, /*highPriority=*/false);
         recordMessageCreated();
     }
 
@@ -786,7 +792,22 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private Context getContext() {
-        return mContext;
+        return mDelegate.getContext();
+    }
+
+    private Drawable createDrawable(DownloadProgressMessageUiData info) {
+        switch (info.iconType) {
+            case IconType.DRAWABLE:
+                return AppCompatResources.getDrawable(getContext(), info.icon);
+            case IconType.VECTOR_DRAWABLE:
+                return VectorDrawableCompat.create(
+                        getContext().getResources(), info.icon, getContext().getTheme());
+            case IconType.ANIMATED_VECTOR_DRAWABLE:
+                return AnimatedVectorDrawableCompat.create(getContext(), info.icon);
+            default:
+                assert false : "Unexpected icon type: " + info.iconType;
+                return null;
+        }
     }
 
     private DownloadCount getDownloadCount() {
@@ -889,8 +910,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else {
             // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
             // item.
-            DownloadManagerService.openDownloadsPage(getContext(), getOTRProfileIDForTrackedItems(),
-                    DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
+            DownloadManagerService.openDownloadsPage(
+                    getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(false /*openItem*/);
         }
     }
@@ -918,8 +939,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         // Show the download later dialog to let the user change download schedule.
-        mDownloadLaterDialogHelper =
-                DownloadLaterDialogHelper.create(getContext(), mModalDialogManager, prefService);
+        mDownloadLaterDialogHelper = DownloadLaterDialogHelper.create(
+                getContext(), getModalDialogManager(), prefService);
         DownloadLaterMetrics.recordDownloadLaterUiEvent(
                 DownloadLaterUiEvent.DOWNLOAD_INFOBAR_CHANGE_SCHEDULE_CLICKED);
         mDownloadLaterDialogHelper.showChangeScheduleDialog(

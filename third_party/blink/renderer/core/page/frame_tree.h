@@ -22,7 +22,8 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -68,11 +69,15 @@ class CORE_EXPORT FrameTree final {
                     FrameTreeBoundary::kIgnoreFence) const;
   Frame& Top(FrameTreeBoundary frame_tree_boundary =
                  FrameTreeBoundary::kIgnoreFence) const;
-  Frame* NextSibling() const;
-  Frame* FirstChild() const;
+  Frame* NextSibling(FrameTreeBoundary frame_tree_boundary =
+                         FrameTreeBoundary::kIgnoreFence) const;
+  Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
+                        FrameTreeBoundary::kIgnoreFence) const;
 
   bool IsDescendantOf(const Frame* ancestor) const;
-  Frame* TraverseNext(const Frame* stay_within = nullptr) const;
+  Frame* TraverseNext(const Frame* stay_within = nullptr,
+                      FrameTreeBoundary frame_tree_boundary =
+                          FrameTreeBoundary::kIgnoreFence) const;
 
   // For plugins and tests only.
   Frame* FindFrameByName(const AtomicString& name) const;

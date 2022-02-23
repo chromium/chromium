@@ -32,11 +32,14 @@ void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
     HandleWorkspaceEvents(window_state, event);
     if (window_state->IsPip())
       window_state->UpdatePipBounds();
+    if (window_state->IsSnapped() && !window_state->CanSnap())
+      window_state->Restore();
     return;
   }
   if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
-      (event->type() != WM_EVENT_NORMAL && event->IsTransitionEvent())) {
-    // PIN state can be exited only by normal event.
+      (event->type() != WM_EVENT_NORMAL && event->type() != WM_EVENT_RESTORE &&
+       event->IsTransitionEvent())) {
+    // PIN state can be exited only by normal event or restore event.
     return;
   }
 
@@ -58,9 +61,12 @@ WindowStateType BaseState::GetType() const {
 }
 
 // static
-WindowStateType BaseState::GetStateForTransitionEvent(const WMEvent* event) {
+WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
+                                                      const WMEvent* event) {
   switch (event->type()) {
     case WM_EVENT_NORMAL:
+      if (window_state->window()->GetProperty(aura::client::kIsRestoringKey))
+        return window_state->GetRestoreWindowState();
       return WindowStateType::kNormal;
     case WM_EVENT_MAXIMIZE:
       return WindowStateType::kMaximized;
@@ -72,6 +78,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(const WMEvent* event) {
       return WindowStateType::kPrimarySnapped;
     case WM_EVENT_SNAP_SECONDARY:
       return WindowStateType::kSecondarySnapped;
+    case WM_EVENT_RESTORE:
+      return window_state->GetRestoreWindowState();
     case WM_EVENT_SHOW_INACTIVE:
       return WindowStateType::kInactive;
     case WM_EVENT_PIN:

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -129,7 +131,7 @@ class TestMenuControllerDelegate : public internal::MenuControllerDelegate {
 
   // The values passed on the last call of OnMenuClosed.
   NotifyType on_menu_closed_notify_type_ = NOTIFY_DELEGATE;
-  MenuItemView* on_menu_closed_menu_ = nullptr;
+  raw_ptr<MenuItemView> on_menu_closed_menu_ = nullptr;
   int on_menu_closed_mouse_event_flags_ = 0;
 
   // Optional callback triggered during OnMenuClosed
@@ -277,7 +279,7 @@ class CancelMenuOnMousePressView : public View {
   gfx::Size CalculatePreferredSize() const override { return size(); }
 
  private:
-  MenuController* controller_;
+  raw_ptr<MenuController> controller_;
 };
 
 }  // namespace
@@ -912,14 +914,14 @@ class MenuControllerTest : public ViewsTestBase,
   }
 
   // Not owned.
-  ReleaseRefTestViewsDelegate* test_views_delegate_ = nullptr;
+  raw_ptr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
 
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<TestMenuItemViewShown> menu_item_;
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
-  MenuController* menu_controller_ = nullptr;
+  raw_ptr<MenuController> menu_controller_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, MenuControllerTest, testing::Bool());
@@ -1682,7 +1684,9 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
   gfx::PointF location(target->origin());
   ui::DropTargetEvent target_event(drop_data, location, location,
                                    ui::DragDropTypes::DRAG_MOVE);
-  controller->OnPerformDrop(source, target_event);
+  auto drop_cb = controller->GetDropCallback(source, target_event);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(target_event, output_drag_op);
 
   TestMenuDelegate* menu_delegate =
       static_cast<TestMenuDelegate*>(target->GetDelegate());
@@ -2414,7 +2418,7 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
 
 // Test that submenus are displayed within the screen bounds on smaller screens.
 TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
-  menu_controller()->set_use_touchable_layout(true);
+  menu_controller()->set_use_ash_system_ui_layout(true);
   MenuItemView* sub_item = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 
@@ -3153,7 +3157,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 2);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This test exercises a Mac-specific behavior, by which hotkeys using modifiers
 // cause menus to close and the hotkeys to be handled by the browser window.
 // This specific test case tries using cmd-ctrl-f, which normally means

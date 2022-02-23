@@ -9,17 +9,16 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
-#include "base/values.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 
-class PrefService;
+class GURL;
 
 namespace enterprise_connectors {
 
 class AttestationService;
+class DeviceTrustConnectorService;
 class SignalsService;
 
 // Main service used to drive device trust connector scenarios. It is currently
@@ -29,17 +28,9 @@ class DeviceTrustService : public KeyedService {
  public:
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
-  using TrustedUrlPatternsChangedCallbackList =
-      base::RepeatingCallbackList<void(const base::ListValue&)>;
-  using TrustedUrlPatternsChangedCallback =
-      TrustedUrlPatternsChangedCallbackList::CallbackType;
-
-  // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
-  static bool IsEnabled(PrefService* prefs);
-
-  DeviceTrustService(PrefService* profile_prefs,
-                     std::unique_ptr<AttestationService> attestation_service,
-                     std::unique_ptr<SignalsService> signals_service);
+  DeviceTrustService(std::unique_ptr<AttestationService> attestation_service,
+                     std::unique_ptr<SignalsService> signals_service,
+                     DeviceTrustConnectorService* connector);
 
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
@@ -54,36 +45,26 @@ class DeviceTrustService : public KeyedService {
   virtual void BuildChallengeResponse(const std::string& challenge,
                                       AttestationCallback callback);
 
+  // Returns whether the Device Trust connector watches navigations to the given
+  // `url` or not.
+  virtual bool Watches(const GURL& url) const;
+
   // Collects device trust signals and returns them via `callback`.
   void GetSignals(
       base::OnceCallback<void(std::unique_ptr<SignalsType>)> callback);
 
-  // Register a `callback` that listens for changes in the trust URL patterns.
-  // The callback may be run synchronously for initialization purposes.
-  virtual base::CallbackListSubscription
-  RegisterTrustedUrlPatternsChangedCallback(
-      TrustedUrlPatternsChangedCallback callback);
-
-  // KeyedService:
-  void Shutdown() override;
-
  protected:
   // Default constructor that can be used by mocks to bypass initialization.
-  explicit DeviceTrustService(PrefService* profile_prefs);
+  DeviceTrustService();
 
  private:
-  void OnPolicyUpdated();
-
   void OnSignalsCollected(const std::string& challenge,
                           AttestationCallback callback,
                           std::unique_ptr<SignalsType> signals);
 
-  PrefChangeRegistrar pref_observer_;
-
-  PrefService* const profile_prefs_;
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;
-  TrustedUrlPatternsChangedCallbackList callbacks_;
+  const raw_ptr<DeviceTrustConnectorService> connector_{nullptr};
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };

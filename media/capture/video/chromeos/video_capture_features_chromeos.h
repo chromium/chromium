@@ -18,6 +18,10 @@ CAPTURE_EXPORT extern const char kHdrNetOverride[];
 constexpr char kHdrNetForceEnabled[] = "force-enabled";
 constexpr char kHdrNetForceDisabled[] = "force-disabled";
 
+CAPTURE_EXPORT extern const char kAutoFramingOverride[];
+constexpr char kAutoFramingForceEnabled[] = "force-enabled";
+constexpr char kAutoFramingForceDisabled[] = "force-disabled";
+
 }  // namespace switches
 
 namespace features {

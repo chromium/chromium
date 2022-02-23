@@ -44,7 +44,7 @@ static_library("client") {
   public_deps = [ "//remoting/base" ]
 
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
     "//remoting/client/audio",

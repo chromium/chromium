@@ -5,7 +5,6 @@
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
-import("//build/config/crypto.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 
@@ -63,9 +62,6 @@ config("feature_flags") {
   if (use_glib) {
     defines += [ "USE_GLIB=1" ]
   }
-  if (use_nss_certs) {
-    defines += [ "USE_NSS_CERTS=1" ]
-  }
   if (use_ozone && !is_android) {
     # Note that some Chrome OS builds unconditionally set |use_ozone| to true,
     # but they also build some targets with the Android toolchain. This ensures
@@ -74,9 +70,6 @@ config("feature_flags") {
     # TODO(crbug.com/837032): Maybe this can be cleaned up if we can avoid
     # setting use_ozone globally.
     defines += [ "USE_OZONE=1" ]
-  }
-  if (use_x11) {
-    defines += [ "USE_X11=1" ]
   }
   if (is_asan || is_hwasan || is_lsan || is_tsan || is_msan) {
     defines += [ "MEMORY_TOOL_REPLACES_ALLOCATOR" ]
@@ -264,6 +257,9 @@ group("common_deps") {
   if (is_fuchsia) {
     public_deps +=
         [ "//third_party/fuchsia-sdk/sdk/build/config:runtime_library_group" ]
+    if (is_asan) {
+      public_deps += [ "//build/config/fuchsia:asan_runtime_library" ]
+    }
   }
 }
 

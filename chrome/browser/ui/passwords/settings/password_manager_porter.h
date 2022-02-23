@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/password_manager/core/browser/ui/export_flow.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
@@ -98,7 +99,8 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
   // We store |credential_provider_interface_| and
   // |on_export_progress_callback_| to use them to create a new
   // PasswordManagerExporter instance for each export.
-  password_manager::CredentialProviderInterface* credential_provider_interface_;
+  raw_ptr<password_manager::CredentialProviderInterface>
+      credential_provider_interface_;
   ProgressCallback on_export_progress_callback_;
   // If |exporter_for_testing_| is set, the next export will make it the current
   // exporter, instead of creating a new instance.
@@ -106,7 +108,7 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener,
       exporter_for_testing_;
 
   // Caching the current WebContents for when PresentFileSelector is called.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_H_

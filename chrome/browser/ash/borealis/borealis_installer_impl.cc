@@ -65,7 +65,24 @@ class BorealisInstallerImpl::Installation
   void Start(std::unique_ptr<BorealisInstallerImpl::InstallInfo> start_instance)
       override {
     install_info_ = std::move(start_instance);
+    SetState(InstallingState::kCheckingIfAllowed);
+    BorealisService::GetForProfile(profile_)->Features().IsAllowed(
+        base::BindOnce(&Installation::OnAllowedCheckCompleted,
+                       weak_factory_.GetWeakPtr()));
+  }
 
+  void SetState(InstallingState state) {
+    update_state_callback_.Run(state);
+    installing_state_ = state;
+  }
+
+  void OnAllowedCheckCompleted(BorealisFeatures::AllowStatus allow_status) {
+    if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
+      LOG(ERROR) << "Installation of Borealis cannot be started because "
+                 << "Borealis is not allowed: " << allow_status;
+      Fail(BorealisInstallResult::kBorealisNotAllowed);
+      return;
+    }
     SetState(InstallingState::kInstallingDlc);
     chromeos::DlcserviceClient::Get()->Install(
         kBorealisDlcName,
@@ -73,11 +90,6 @@ class BorealisInstallerImpl::Installation
                        weak_factory_.GetWeakPtr()),
         base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,
                             weak_factory_.GetWeakPtr()));
-  }
-
-  void SetState(InstallingState state) {
-    update_state_callback_.Run(state);
-    installing_state_ = state;
   }
 
   void OnDlcInstallationProgressUpdated(double progress) {
@@ -159,7 +171,7 @@ class BorealisInstallerImpl::Installation
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
     apps_observation_.Observe(apps_registry);
     absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
-        apps_registry->GetRegistration(kBorealisMainAppId);
+        apps_registry->GetRegistration(kClientAppId);
     if (main_app.has_value() && main_app->VmType() ==
                                     guest_os::GuestOsRegistryService::VmType::
                                         ApplicationList_VmType_BOREALIS) {
@@ -186,7 +198,7 @@ class BorealisInstallerImpl::Installation
     }
 
     for (const auto& app : inserted_apps) {
-      if (app == kBorealisMainAppId) {
+      if (app == kClientAppId) {
         MainAppFound(true);
         break;
       }
@@ -252,7 +264,7 @@ class BorealisInstallerImpl::Uninstallation
 
     vm_tools::concierge::DestroyDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(uninstall_info_->vm_name);
     chromeos::ConciergeClient::Get()->DestroyDiskImage(
         std::move(request), base::BindOnce(&Uninstallation::OnDiskRemoved,
@@ -318,15 +330,6 @@ bool BorealisInstallerImpl::IsProcessing() {
 
 void BorealisInstallerImpl::Start() {
   RecordBorealisInstallNumAttemptsHistogram();
-  if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
-    LOG(ERROR) << "Installation of Borealis cannot be started because "
-               << "Borealis is not allowed.";
-    OnInstallComplete(
-        Unexpected<std::unique_ptr<InstallInfo>, BorealisInstallResult>(
-            BorealisInstallResult::kBorealisNotAllowed));
-    return;
-  }
-
   if (IsProcessing()) {
     LOG(ERROR) << "Installation of Borealis is already in progress.";
     OnInstallComplete(
@@ -419,8 +422,12 @@ void BorealisInstallerImpl::UpdateProgress(double state_progress) {
   double start_range = 0;
   double end_range = 0;
   switch (installing_state_) {
-    case InstallingState::kInstallingDlc:
+    case InstallingState::kCheckingIfAllowed:
       start_range = 0;
+      end_range = 0.1;
+      break;
+    case InstallingState::kInstallingDlc:
+      start_range = 0.1;
       end_range = 0.5;
       break;
     case InstallingState::kStartingUp:

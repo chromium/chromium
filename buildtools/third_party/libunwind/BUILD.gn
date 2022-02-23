@@ -5,6 +5,7 @@
 import("//build/config/c++/c++.gni")
 
 config("libunwind_config") {
+  defines = [ "_LIBUNWIND_IS_NATIVE_ONLY" ]
   cflags = [
     "-fstrict-aliasing",
     "-fPIC",
@@ -16,13 +17,6 @@ config("libunwind_config") {
     # unwind its own frames.
     "-funwind-tables",
   ]
-
-  if (is_fuchsia) {
-    # Workaround for https://bugs.llvm.org/show_bug.cgi?id=45875:
-    # compiling the C code with -fexceptions ensures that accurate
-    # unwinding information is generated for _Unwind_RaiseException.
-    cflags_c = [ "-fexceptions" ]
-  }
 }
 
 source_set("libunwind") {

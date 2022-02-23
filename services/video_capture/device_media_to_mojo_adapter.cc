@@ -14,7 +14,7 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "services/video_capture/receiver_mojo_to_media_adapter.h"
+#include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
@@ -154,6 +154,10 @@ void DeviceMediaToMojoAdapter::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
   // Feedback ID is not propagated by mojo interface.
   device_->OnUtilizationReport(/*frame_feedback_id=*/0, feedback);
+}
+
+void DeviceMediaToMojoAdapter::RequestRefreshFrame() {
+  device_->RequestRefreshFrame();
 }
 
 void DeviceMediaToMojoAdapter::Stop() {

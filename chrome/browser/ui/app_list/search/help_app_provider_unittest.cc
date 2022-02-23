@@ -69,7 +69,7 @@ TEST_F(HelpAppProviderTest, HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   EXPECT_TRUE(provider()->results().empty());
 }
@@ -81,7 +81,7 @@ TEST_F(HelpAppProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   EXPECT_EQ(1, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
@@ -95,7 +95,7 @@ TEST_F(HelpAppProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   EXPECT_EQ(1, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
@@ -108,7 +108,7 @@ TEST_F(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   EXPECT_EQ(1, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
@@ -120,7 +120,7 @@ TEST_F(HelpAppProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
   provider()->AppListShown();
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
@@ -132,7 +132,7 @@ TEST_F(HelpAppProviderTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
   provider()->AppListShown();
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
@@ -143,7 +143,7 @@ TEST_F(HelpAppProviderTest, ClickingDiscoverTabChipStopsItFromShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   ChromeSearchResult* result = provider()->results().at(0).get();
   result->Open(/*event_flags=*/0);
@@ -156,7 +156,7 @@ TEST_F(HelpAppProviderTest, ClickingReleaseNotesChipStopsItFromShowing) {
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   ChromeSearchResult* result = provider()->results().at(0).get();
   result->Open(/*event_flags=*/0);
@@ -188,7 +188,7 @@ TEST_F(HelpAppProviderWithDiscoverTabDisabledTest,
   profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
-  provider()->Start(u"");
+  provider()->StartZeroState();
 
   EXPECT_TRUE(provider()->results().empty());
 }

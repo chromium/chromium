@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+
+async_test((t) => {
+  // This test passes by not crashing.
+  const image = new Image();
+  image.src = '../canvas/resources/html5.png';
+  image.onload = () => {
+    canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+    createImageBitmap(canvas).then((imageBitmap) => {
+      const worker = new Worker('resources/bug1280361-worker.js');
+      worker.addEventListener("message", (msg) => {
+        assert_equals(msg.data, 'Done');
+        worker.terminate();
+        ctx = null;
+        canvas = null;
+        // Trigger immediate destruction to force a thread check.
+        // Otherwise the crash might be delayed until the next test.
+        if (window.GCController)
+          window.GCController.collectAll();
+        t.done();
+      });
+      worker.postMessage(imageBitmap, [imageBitmap]);
+    });
+  };
+}, "Transfer ImageBitmap from canvas with drawImage");
+
+async_test((t) => {
+  // This test passes by not crashing.
+  const image = new Image();
+  image.src = '../canvas/resources/html5.png';
+  image.onload = () => {
+    canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    ctx = canvas.getContext('2d');
+    createImageBitmap(image).then((imageBitmap) => {
+      ctx.drawImage(imageBitmap, 0, 0);
+      const worker = new Worker('resources/bug1280361-worker.js');
+      worker.addEventListener("message", (msg) => {
+        assert_equals(msg.data, 'Done');
+        worker.terminate();
+        ctx = null;
+        canvas = null;
+        // Trigger immediate destruction to force a thread check.
+        // Otherwise the crash might be delayed until the next test.
+        if (window.GCController)
+          window.GCController.collectAll();
+        t.done();
+      });
+      worker.postMessage(imageBitmap, [imageBitmap]);
+    });
+  };
+}, "Transfer ImageBitmap after using as source for drawImage.");
+
+async_test((t) => {
+  // This test passes by not crashing.
+  const image = new Image();
+  image.src = '../canvas/resources/html5.png';
+  image.onload = () => {
+    canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+    createImageBitmap(canvas).then((imageBitmap) => {
+      pattern = ctx.createPattern(imageBitmap, 'repeat');
+      const worker = new Worker('resources/bug1280361-worker.js');
+      worker.addEventListener("message", (msg) => {
+        assert_equals(msg.data, 'Done');
+        worker.terminate();
+        ctx = null;
+        canvas = null;
+        pattern = null;
+        // Trigger immediate destruction to force a thread check.
+        // Otherwise the crash might be delayed until the next test.
+        if (window.GCController)
+          window.GCController.collectAll();
+        t.done();
+      });
+      worker.postMessage(imageBitmap, [imageBitmap]);
+    });
+  };
+}, "Transfer ImageBitmap after using as source for createPattern");
+
+async_test((t) => {
+  // This test passes by not crashing.
+  const image = new Image();
+  image.src = '../canvas/resources/html5.png';
+  image.onload = () => {
+    canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+    createImageBitmap(canvas).then((imageBitmap) => {
+      createImageBitmap(imageBitmap).then((imageBitmapCopy) => {
+        const worker = new Worker('resources/bug1280361-worker.js');
+        worker.addEventListener("message", (msg) => {
+          assert_equals(msg.data, 'Done');
+          worker.terminate();
+          ctx = null;
+          canvas = null;
+          imageBitmapCopy = null;
+          // Trigger immediate destruction to force a thread check.
+          // Otherwise the crash might be delayed until the next test.
+          if (window.GCController)
+            window.GCController.collectAll();
+          t.done();
+        });
+        worker.postMessage(imageBitmap, [imageBitmap]);
+      });
+    });
+  };
+}, "Transfer ImageBitmap after using as source for another ImageBitmap");
+</script>

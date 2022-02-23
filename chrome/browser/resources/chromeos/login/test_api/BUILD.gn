@@ -3,14 +3,35 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   deps = [ ":test_api" ]
+}
+
+js_type_check("closure_compile_module") {
+  deps = [ ":test_api.m" ]
 }
 
 js_library("test_api") {
   deps = [
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("test_api.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/test_api/test_api.m.js" ]
+  deps = [
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "test_api.js",
+    "no_test_api.js",
   ]
 }

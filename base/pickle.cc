@@ -4,9 +4,8 @@
 
 #include "base/pickle.h"
 
-#include <stdlib.h>
-
 #include <algorithm>  // for max()
+#include <cstdlib>
 #include <limits>
 
 #include "base/bits.h"
@@ -24,8 +23,7 @@ static const size_t kCapacityReadOnly = static_cast<size_t>(-1);
 PickleIterator::PickleIterator(const Pickle& pickle)
     : payload_(pickle.payload()),
       read_index_(0),
-      end_index_(pickle.payload_size()) {
-}
+      end_index_(pickle.payload_size()) {}
 
 template <typename Type>
 inline bool PickleIterator::ReadBuiltinType(Type* result) {
@@ -48,7 +46,7 @@ inline void PickleIterator::Advance(size_t size) {
   }
 }
 
-template<typename Type>
+template <typename Type>
 inline const char* PickleIterator::GetReadPointerAndAdvance() {
   if (sizeof(Type) > end_index_ - read_index_) {
     read_index_ = end_index_;
@@ -269,8 +267,10 @@ Pickle::Pickle(const Pickle& other)
       header_size_(other.header_size_),
       capacity_after_header_(0),
       write_offset_(other.write_offset_) {
-  Resize(other.header_->payload_size);
-  memcpy(header_, other.header_, header_size_ + other.header_->payload_size);
+  if (other.header_) {
+    Resize(other.header_->payload_size);
+    memcpy(header_, other.header_, header_size_ + other.header_->payload_size);
+  }
 }
 
 Pickle::~Pickle() {
@@ -291,10 +291,12 @@ Pickle& Pickle::operator=(const Pickle& other) {
     header_ = nullptr;
     header_size_ = other.header_size_;
   }
-  Resize(other.header_->payload_size);
-  memcpy(header_, other.header_,
-         other.header_size_ + other.header_->payload_size);
-  write_offset_ = other.write_offset_;
+  if (other.header_) {
+    Resize(other.header_->payload_size);
+    memcpy(header_, other.header_,
+           other.header_size_ + other.header_->payload_size);
+    write_offset_ = other.write_offset_;
+  }
   return *this;
 }
 
@@ -401,7 +403,8 @@ bool Pickle::PeekNext(size_t header_size,
   return true;
 }
 
-template <size_t length> void Pickle::WriteBytesStatic(const void* data) {
+template <size_t length>
+void Pickle::WriteBytesStatic(const void* data) {
   WriteBytesCommon(data, length);
 }
 

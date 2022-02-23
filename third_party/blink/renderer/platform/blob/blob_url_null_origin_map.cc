@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 
+#include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -52,7 +53,7 @@ BlobURLOpaqueOriginNonceMap& BlobURLOpaqueOriginNonceMap::GetInstance() {
 
 void BlobURLOpaqueOriginNonceMap::Add(const KURL& blob_url,
                                       SecurityOrigin* origin) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   DCHECK(blob_url.ProtocolIs("blob"));
   DCHECK_EQ(BlobURL::GetOrigin(blob_url), "null");
   DCHECK(!blob_url.HasFragmentIdentifier());
@@ -65,13 +66,13 @@ void BlobURLOpaqueOriginNonceMap::Add(const KURL& blob_url,
 }
 
 void BlobURLOpaqueOriginNonceMap::Remove(const KURL& blob_url) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   DCHECK(blob_url.ProtocolIs("blob"));
   blob_url_opaque_origin_nonce_map_.erase(blob_url.GetString());
 }
 
 base::UnguessableToken BlobURLOpaqueOriginNonceMap::Get(const KURL& blob_url) {
-  MutexLocker lock(mutex_);
+  base::AutoLock lock(lock_);
   DCHECK(blob_url.ProtocolIs("blob"));
   DCHECK_EQ(BlobURL::GetOrigin(blob_url), "null");
   KURL blob_url_without_fragment = blob_url;

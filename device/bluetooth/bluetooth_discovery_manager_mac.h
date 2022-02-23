@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_DISCOVERY_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_DISCOVERY_MANAGER_MAC_H_
 
-#include "base/macros.h"
-
 @class IOBluetoothDevice;
 
 namespace device {

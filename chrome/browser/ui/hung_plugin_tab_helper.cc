@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "chrome/browser/hang_monitor/hang_crash_dump.h"
@@ -44,7 +45,7 @@ struct HungPluginTabHelper::PluginState {
   std::u16string name;
 
   // Possibly-null if we're not showing an infobar right now.
-  infobars::InfoBar* infobar = nullptr;
+  raw_ptr<infobars::InfoBar> infobar = nullptr;
 
   // Time to delay before re-showing the infobar for a hung plugin. This is
   // increased each time the user cancels it.
@@ -156,7 +157,8 @@ void HungPluginTabHelper::KillPlugin(int child_id) {
 }
 
 HungPluginTabHelper::HungPluginTabHelper(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<HungPluginTabHelper>(*contents) {}
 
 void HungPluginTabHelper::OnReshowTimer(int child_id) {
   // The timer should have been cancelled if the record isn't in our map

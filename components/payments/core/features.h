@@ -15,7 +15,7 @@ namespace features {
 // release.
 extern const base::Feature kWebPaymentsExperimentalFeatures;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Used to control the support for iOS third party apps as payment methods.
 extern const base::Feature kWebPaymentsNativeApps;
 #endif

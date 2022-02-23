@@ -1,0 +1,101 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+# Files to pass directly to preprocess_if_expr() that are used only in PDF
+# Viewer.
+pdf_non_webcomponents_files = [
+  "bookmark_type.js",
+  "local_storage_proxy.js",
+  "navigator.js",
+  "pdf_viewer_wrapper.js",
+  "pdf_internal_plugin_wrapper.ts",
+]
+
+if (enable_ink) {
+  pdf_non_webcomponents_files += [
+    "annotation_tool.js",
+    "ink_controller.js",
+    "ink/drawing_canvas_externs.js",
+    "ink/ink_api.js",
+  ]
+}
+
+# Files that need to be passed to html_to_js() that are used only in PDF Viewer.
+pdf_webcomponents_files = [
+  "elements/shared-css.js",
+  "elements/viewer-bookmark.js",
+  "elements/viewer-document-outline.js",
+  "elements/viewer-download-controls.js",
+  "elements/viewer-page-selector.js",
+  "elements/viewer-password-dialog.js",
+  "elements/viewer-pdf-sidenav.js",
+  "elements/viewer-properties-dialog.js",
+  "elements/viewer-thumbnail-bar.js",
+  "elements/viewer-thumbnail.js",
+  "elements/viewer-toolbar.js",
+  "pdf_viewer.js",
+]
+
+if (enable_ink) {
+  pdf_webcomponents_files += [
+    "elements/viewer-annotations-bar.js",
+    "elements/viewer-annotations-mode-dialog.js",
+    "elements/viewer-ink-host.js",
+    "elements/viewer-pen-options.js",
+    "elements/viewer-toolbar-dropdown.js",
+  ]
+}
+
+# Files to pass directly to preprocess_if_expr() that are used only in Print
+# Preview.
+print_preview_non_webcomponents_files = [ "toolbar_manager.ts" ]
+
+# Files that need to be passed to html_to_js() that are used only in Print
+# Preview.
+print_preview_webcomponents_files = [
+  "elements/viewer-page-indicator.ts",
+  "elements/viewer-zoom-button.ts",
+  "elements/viewer-zoom-toolbar.ts",
+  "pdf_viewer_pp.ts",
+]
+
+# Files to pass directly to preprocess_if_expr() that are shared by PDF Viewer
+# and Print Preview.
+shared_non_webcomponents_files = [
+  "browser_api.js",
+  "constants.js",
+  "controller.js",
+  "gesture_detector.js",
+  "internal_plugin.js",
+  "main.js",
+  "metrics.js",
+  "open_pdf_params_parser.js",
+  "pdf_scripting_api.js",
+  "pdf_viewer_base.js",
+  "pdf_viewer_utils.js",
+  "viewport.js",
+  "viewport_scroller.js",
+  "zoom_manager.js",
+]
+
+# Files that need to be passed to html_to_js() that are shared by PDF Viewer
+# and Print Preview.
+shared_webcomponents_files = [
+  "elements/icons.js",
+  "elements/shared-vars.js",
+  "elements/viewer-error-dialog.js",
+  "pdf_viewer_shared_style.js",
+]
+
+# Print Preview's GRDP needs all the shared + Print Preview specific files.
+print_preview_grdp_ts_files =
+    shared_non_webcomponents_files + shared_webcomponents_files +
+    print_preview_non_webcomponents_files + print_preview_webcomponents_files
+
+print_preview_grdp_input_files = []
+foreach(f, print_preview_grdp_ts_files) {
+  print_preview_grdp_input_files += [ string_replace(f, ".ts", ".js") ]
+}

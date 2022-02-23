@@ -10,7 +10,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.DragStateTracker;
+import org.chromium.ui.base.DropDataContentProvider;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -18,6 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
  */
 public class TabViewAndroidDelegate extends ViewAndroidDelegate {
+    private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     private final TabImpl mTab;
 
     /**
@@ -29,9 +35,16 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     /** The inset supplier the observer is currently attached to. */
     private ObservableSupplier<Integer> mCurrentInsetSupplier;
 
-    TabViewAndroidDelegate(Tab tab, ViewGroup containerView) {
+    TabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);
         mTab = (TabImpl) tab;
+        containerView.addOnDragListener(getDragStateTrackerInternal());
+        if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
+            int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
+                    DropDataContentProvider.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
+            DropDataContentProvider.setClearCachedDataIntervalMs(delay);
+        }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
         mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetProvider();
@@ -82,6 +95,11 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
                 bottomControlsOffsetY, bottomControlsMinHeightOffsetY);
     }
 
+    @Override
+    public @Nullable DragStateTracker getDragStateTracker() {
+        return getDragStateTrackerInternal();
+    }
+
     /** Sets the Visual Viewport bottom inset. */
     private void updateInsetViewportBottom() {
         int inset =
@@ -100,5 +118,35 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     @Override
     protected int getViewportInsetBottom() {
         return mApplicationViewportInsetBottomPx;
+    }
+
+    @Override
+    public void updateAnchorViews(ViewGroup oldContainerView) {
+        super.updateAnchorViews(oldContainerView);
+
+        assert oldContainerView
+                instanceof ContentView
+            : "TabViewAndroidDelegate does not host container views other than ContentView.";
+
+        // Transfer the drag state tracker to the new container view.
+        ((ContentView) oldContainerView).removeOnDragListener(getDragStateTrackerInternal());
+        getContentView().addOnDragListener(getDragStateTrackerInternal());
+    }
+
+    private ContentView getContentView() {
+        assert getContainerView()
+                        instanceof ContentView
+            : "TabViewAndroidDelegate does not host container views other than ContentView.";
+
+        return (ContentView) getContainerView();
+    }
+
+    /* Destroy and clean up {@link DragStateTracker} to the content view. */
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (getContentView() != null) {
+            getContentView().removeOnDragListener(getDragStateTrackerInternal());
+        }
     }
 }

@@ -15,8 +15,7 @@ namespace app_list {
 
 // A search provider implementation serving results from Assistant.
 // This is currently only used to provide a single search result that runs an
-// Assistant query of the search text. This is displayed when
-// kEnableAssistantSearch feature is enabled. This search result does not go
+// Assistant query of the search text. This search result does not go
 // through normal ranking procedures, but is instead appended to an existing
 // list of search results.
 class AssistantTextSearchProvider : public SearchProvider,
@@ -34,7 +33,7 @@ class AssistantTextSearchProvider : public SearchProvider,
 
  private:
   // SearchProvider:
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
 
   // ash::AssistantControllerObserver:
   void OnAssistantControllerDestroying() override;

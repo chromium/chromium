@@ -37,7 +37,7 @@ class BytesConsumerTestClient final
 class BytesConsumerTeeTest : public PageTestBase {
  public:
   using Command = ReplayingBytesConsumer::Command;
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 };
 
 class FakeBlobBytesConsumer : public BytesConsumer {

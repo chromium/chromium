@@ -10,8 +10,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-
 namespace device {
 
 class FakeStatusChangedEventArgs

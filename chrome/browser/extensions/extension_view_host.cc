@@ -30,28 +30,6 @@
 
 namespace extensions {
 
-// Notifies an ExtensionViewHost when a WebContents is destroyed.
-class ExtensionViewHost::AssociatedWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  AssociatedWebContentsObserver(ExtensionViewHost* host,
-                                content::WebContents* web_contents)
-      : WebContentsObserver(web_contents), host_(host) {}
-  AssociatedWebContentsObserver(const AssociatedWebContentsObserver&) = delete;
-  AssociatedWebContentsObserver& operator=(
-      const AssociatedWebContentsObserver&) = delete;
-  ~AssociatedWebContentsObserver() override = default;
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override {
-    // Deleting |this| from here is safe.
-    host_->SetAssociatedWebContents(nullptr);
-  }
-
- private:
-  ExtensionViewHost* host_;
-};
-
 ExtensionViewHost::ExtensionViewHost(const Extension* extension,
                                      content::SiteInstance* site_instance,
                                      const GURL& url,
@@ -108,15 +86,8 @@ ExtensionViewHost::~ExtensionViewHost() {
 
 void ExtensionViewHost::SetAssociatedWebContents(
     content::WebContents* web_contents) {
-  associated_web_contents_ = web_contents;
-  if (associated_web_contents_) {
-    // Observe the new WebContents for deletion.
-    associated_web_contents_observer_ =
-        std::make_unique<AssociatedWebContentsObserver>(
-            this, associated_web_contents_);
-  } else {
-    associated_web_contents_observer_.reset();
-  }
+  associated_web_contents_ =
+      web_contents ? web_contents->GetWeakPtr() : nullptr;
 }
 
 bool ExtensionViewHost::UnhandledKeyboardEvent(
@@ -278,12 +249,12 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() const {
 }
 
 content::WebContents* ExtensionViewHost::GetAssociatedWebContents() const {
-  return associated_web_contents_;
+  return associated_web_contents_.get();
 }
 
 content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
   if (associated_web_contents_)
-    return associated_web_contents_;
+    return associated_web_contents_.get();
   return (extension_host_type() == mojom::ViewType::kExtensionPopup)
              ? host_contents()
              : nullptr;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -23,7 +26,6 @@
 #include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/constants/devicetype.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -75,6 +77,7 @@
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
+#include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
@@ -91,6 +94,7 @@
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
@@ -143,6 +147,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
@@ -159,10 +164,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/smart_privacy_protection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
@@ -182,9 +189,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/metrics/structured/neutrino_logging.h"
@@ -233,6 +237,7 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::TermsOfServiceScreenView::kScreenId,
     chromeos::SyncConsentScreenView::kScreenId,
+    chromeos::HWDataCollectionView::kScreenId,
     chromeos::FingerprintSetupScreenView::kScreenId,
     chromeos::GestureNavigationScreenView::kScreenId,
     chromeos::ArcTermsOfServiceScreenView::kScreenId,
@@ -252,19 +257,6 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     chromeos::TpmErrorView::kScreenId,
     chromeos::WrongHWIDScreenView::kScreenId,
 };
-
-// The HID detection screen is only allowed for form factors without built-in
-// inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/965765).
-bool CanShowHIDDetectionScreen() {
-  switch (GetDeviceType()) {
-    case DeviceType::kChromebase:
-    case DeviceType::kChromebit:
-    case DeviceType::kChromebox:
-      return true;
-    default:
-      return false;
-  }
-}
 
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumableOobeScreens) {
@@ -301,7 +293,8 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
     {chromeos::WelcomeView::kScreenId, "network"},
-    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
+    {chromeos::TermsOfServiceScreenView::kScreenId, "tos"},
+    {chromeos::RecommendAppsScreenView::kScreenId, "recommend-apps"}};
 
 void RecordUMAHistogramForOOBEStepShownStatus(
     OobeScreenId screen,
@@ -335,10 +328,8 @@ void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
   screen_name[0] = std::toupper(screen_name[0]);
   std::string histogram_name_with_reason =
       "OOBE.StepCompletionTimeByExitReason." + screen_name + "." + exit_reason;
-  base::HistogramBase* histogram_with_reason = base::Histogram::FactoryTimeGet(
-      histogram_name_with_reason, base::Milliseconds(10), base::Minutes(10),
-      100, base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram_with_reason->AddTime(step_time);
+  base::UmaHistogramCustomTimes(histogram_name_with_reason, step_time,
+                                base::Milliseconds(10), base::Minutes(10), 100);
 }
 
 LoginDisplayHost* GetLoginDisplayHost() {
@@ -372,7 +363,7 @@ const int WizardController::kMinAudibleOutputVolumePercent = 10;
 bool WizardController::skip_post_login_screens_ = false;
 
 // static
-bool WizardController::skip_enrollment_prompts_ = false;
+bool WizardController::skip_enrollment_prompts_for_testing_ = false;
 
 // static
 WizardController* WizardController::default_controller() {
@@ -401,6 +392,10 @@ WizardController::WizardController(WizardContext* wizard_context)
   if (GetOobeUI()) {
     // could be null in unit tests.
     screen_manager_->Init(CreateScreens());
+    // OOBE UI can be recreated in case of CrossOriginOpenerPolicyByDefault.
+    // TODO(crbug.com/1100879): Remove this logic after WebUI split is done,
+    // as screens should work with late binding/early unbinding in that case.
+    oobe_ui_observation_.Observe(GetOobeUI());
   }
 }
 
@@ -433,7 +428,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   // enterprise-enrolled devices.
   //
   // TODO (ygorshenin@): implement handling of the local state
-  // corruption in the case of asynchronious loading.
+  // corruption in the case of asynchronous loading.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
@@ -455,8 +450,12 @@ void WizardController::Init(OobeScreenId first_screen) {
       is_enterprise_managed ||
       !user_manager::UserManager::Get()->GetUsers().empty();
   // Do not show the HID Detection screen if device is owned.
-  if (!device_is_owned && CanShowHIDDetectionScreen() &&
+  if (!device_is_owned && HIDDetectionScreen::CanShowScreen() &&
       first_screen == OobeScreen::SCREEN_UNKNOWN) {
+    // Temp logs for crbug/1274589
+    VLOG(1) << "CheckIsScreenRequired";
+    // TODO(https://crbug.com/1275960): Move logic into
+    // HIDDetectionScreen::MaybeSkip.
     GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(
         base::BindOnce(&WizardController::OnHIDScreenNecessityCheck,
                        weak_factory_.GetWeakPtr()));
@@ -464,6 +463,12 @@ void WizardController::Init(OobeScreenId first_screen) {
   }
 
   AdvanceToScreenAfterHIDDetection(first_screen);
+}
+
+void WizardController::OnDestroyingOobeUI() {
+  // Reset screens, they should not access handlers anymore.
+  screen_manager_->Shutdown();
+  oobe_ui_observation_.Reset();
 }
 
 void WizardController::AdvanceToScreenAfterHIDDetection(
@@ -548,6 +553,12 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
         oobe_ui->GetView<EulaScreenHandler>(),
         base::BindRepeating(&WizardController::OnEulaScreenExit,
                             weak_factory_.GetWeakPtr())));
+    if (ash::features::IsOobeQuickStartEnabled()) {
+      append(std::make_unique<QuickStartScreen>(
+          oobe_ui->GetView<QuickStartScreenHandler>(),
+          base::BindRepeating(&WizardController::OnQuickStartScreenExit,
+                              weak_factory_.GetWeakPtr())));
+    }
   }
 
   append(std::make_unique<NetworkScreen>(
@@ -617,7 +628,7 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
   append(std::make_unique<LacrosDataMigrationScreen>(
       oobe_ui->GetView<LacrosDataMigrationScreenHandler>()));
 
-  if (CanShowHIDDetectionScreen()) {
+  if (HIDDetectionScreen::CanShowScreen()) {
     append(std::make_unique<HIDDetectionScreen>(
         oobe_ui->GetView<HIDDetectionScreenHandler>(),
         base::BindRepeating(&WizardController::OnHidDetectionScreenExit,
@@ -748,11 +759,28 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  if (switches::IsRevenBranding()) {
+    append(std::make_unique<HWDataCollectionScreen>(
+        oobe_ui->GetView<HWDataCollectionScreenHandler>(),
+        base::BindRepeating(&WizardController::OnHWDataCollectionScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
+  append(std::make_unique<SmartPrivacyProtectionScreen>(
+      oobe_ui->GetView<SmartPrivacyProtectionScreenHandler>(),
+      base::BindRepeating(&WizardController::OnSmartPrivacyProtectionScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
 void WizardController::ShowWelcomeScreen() {
   SetCurrentScreen(GetScreen(WelcomeView::kScreenId));
+}
+
+void WizardController::ShowQuickStartScreen() {
+  CHECK(ash::features::IsOobeQuickStartEnabled());
+  SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
 void WizardController::ShowNetworkScreen() {
@@ -1037,6 +1065,10 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
       break;
+    case GaiaScreen::Result::SAML_VIDEO_TIMEOUT:
+      LoginDisplayHost::default_host()->HideOobeDialog(
+          /*saml_video_timeout=*/true);
+      break;
   }
 }
 
@@ -1065,7 +1097,13 @@ void WizardController::OnEduCoexistenceLoginScreenExit(
     EduCoexistenceLoginScreen::Result result) {
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
                EduCoexistenceLoginScreen::GetResultString(result));
-  ShowSyncConsentScreen();
+  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
+  // after being enabled during OOBE.
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    ShowConsolidatedConsentScreen();
+  } else {
+    ShowSyncConsentScreen();
+  }
 }
 
 void WizardController::OnParentalHandoffScreenExit(
@@ -1082,7 +1120,7 @@ void WizardController::OnConsolidatedConsentScreenExit(
   switch (result) {
     case ConsolidatedConsentScreen::Result::ACCEPTED:
     case ConsolidatedConsentScreen::Result::NOT_APPLICABLE:
-      ShowTermsOfServiceScreen();
+      ShowSyncConsentScreen();
       break;
     case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE:
       DCHECK(demo_setup_controller_);
@@ -1150,14 +1188,28 @@ void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
   }
 }
 
+void WizardController::OnHWDataCollectionScreenExit(
+    HWDataCollectionScreen::Result result) {
+  OnScreenExit(HWDataCollectionView::kScreenId,
+               HWDataCollectionScreen::GetResultString(result));
+  ShowFingerprintSetupScreen();
+}
+
+void WizardController::OnSmartPrivacyProtectionScreenExit(
+    SmartPrivacyProtectionScreen::Result result) {
+  OnScreenExit(SmartPrivacyProtectionView::kScreenId,
+               SmartPrivacyProtectionScreen::GetResultString(result));
+  ShowParentalHandoffScreen();
+}
+
 void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
   OnScreenExit(GuestTosScreenView::kScreenId,
                GuestTosScreen::GetResultString(result));
   switch (result) {
     case GuestTosScreen::Result::ACCEPT:
       ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-          chromeos::UserContext(user_manager::USER_TYPE_GUEST,
-                                user_manager::GuestAccountId()),
+          UserContext(user_manager::USER_TYPE_GUEST,
+                      user_manager::GuestAccountId()),
           chromeos::SigninSpecifics());
       break;
     case GuestTosScreen::Result::BACK:
@@ -1177,7 +1229,10 @@ void WizardController::SkipToLoginForTesting() {
   if (current_screen_ && current_screen_->screen_id() == GaiaView::kScreenId)
     return;
   wizard_context_->skip_to_login_for_tests = true;
-  StartupUtils::MarkEulaAccepted();
+  login_screen_started_ = false;
+
+  if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
+    StartupUtils::MarkEulaAccepted();
 
   PerformPostEulaActions();
   OnDeviceDisabledChecked(false /* device_disabled */);
@@ -1244,7 +1299,13 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
     case WelcomeScreen::Result::NEXT:
       ShowNetworkScreen();
       return;
+    case WelcomeScreen::Result::QUICK_START:
+      ShowQuickStartScreen();
+      return;
   }
+}
+
+void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
 }
 
 void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
@@ -1253,6 +1314,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
 
   switch (result) {
     case NetworkScreen::Result::CONNECTED_REGULAR:
+    case NetworkScreen::Result::NOT_APPLICABLE:
       DCHECK(!demo_setup_controller_);
       ShowEulaScreen();
       break;
@@ -1262,11 +1324,24 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
           DemoSession::DemoModeConfig::kOnline);
       ShowEulaScreen();
       break;
-    case NetworkScreen::Result::OFFLINE_DEMO_SETUP:
+    case NetworkScreen::Result::OFFLINE_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOffline);
       ShowEulaScreen();
+      break;
+    case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
+    case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
+      DCHECK(!demo_setup_controller_);
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
+      break;
+    case NetworkScreen::Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
+      DCHECK(demo_setup_controller_);
+      demo_setup_controller_->set_demo_config(
+          DemoSession::DemoModeConfig::kOnline);
+      PerformPostEulaActions();
+      InitiateOOBEUpdate();
       break;
     case NetworkScreen::Result::BACK_DEMO:
       DCHECK(demo_setup_controller_);
@@ -1299,20 +1374,6 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
     case EulaScreen::Result::ACCEPTED_WITHOUT_USAGE_STATS_REPORTING:
     case EulaScreen::Result::NOT_APPLICABLE:
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
-      break;
-    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_DEMO:
-      // TODO(crbug.com/1247998): Investigate if we can call
-      // PerformPostEulaActions from here before enabling
-      // OobeConsolidatedConsent flag. If it's allowed, update the name of the
-      // method.
-      DCHECK(demo_setup_controller_);
-      PerformPostEulaActions();
-      ShowArcTermsOfServiceScreen();
-      break;
-    case EulaScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT_REGULAR:
-      DCHECK(!demo_setup_controller_);
-      PerformPostEulaActions();
-      InitiateOOBEUpdate();
       break;
     case EulaScreen::Result::BACK:
       ShowNetworkScreen();
@@ -1391,12 +1452,12 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
           << EnrollmentScreen::GetResultString(result) << ").";
   switch (result) {
     case EnrollmentScreen::Result::COMPLETED:
-    case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
       OnEnrollmentDone();
       break;
     case EnrollmentScreen::Result::BACK:
-      retry_auto_enrollment_check_ = true;
-      ShowAutoEnrollmentCheckScreen();
+    case EnrollmentScreen::Result::SKIPPED_FOR_TESTS:
+      PerformOOBECompletedActions();
+      ShowPackagedLicenseScreen();
       break;
     case EnrollmentScreen::Result::TPM_ERROR:
       DCHECK(switches::IsTpmDynamic());
@@ -1407,6 +1468,10 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       DCHECK(switches::IsTpmDynamic());
       wizard_context_->tpm_dbus_error = true;
       AdvanceToScreen(TpmErrorView::kScreenId);
+      break;
+    case EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK:
+      retry_auto_enrollment_check_ = true;
+      ShowAutoEnrollmentCheckScreen();
       break;
   }
 }
@@ -1529,13 +1594,7 @@ void WizardController::OnLocaleSwitchScreenExit(
     LocaleSwitchScreen::Result result) {
   OnScreenExit(LocaleSwitchView::kScreenId,
                LocaleSwitchScreen::GetResultString(result));
-  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
-  // after being enabled during OOBE.
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    ShowConsolidatedConsentScreen();
-  } else {
-    AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
-  }
+  AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
 }
 
 void WizardController::OnTermsOfServiceScreenExit(
@@ -1573,6 +1632,10 @@ void WizardController::OnSyncConsentScreenExit(
     SyncConsentScreen::Result result) {
   OnScreenExit(SyncConsentScreenView::kScreenId,
                SyncConsentScreen::GetResultString(result));
+  if (switches::IsRevenBranding()) {
+    AdvanceToScreen(HWDataCollectionView::kScreenId);
+    return;
+  }
   ShowFingerprintSetupScreen();
 }
 
@@ -1651,7 +1714,7 @@ void WizardController::OnAssistantOptInFlowScreenExit(
     AssistantOptInFlowScreen::Result result) {
   OnScreenExit(AssistantOptInFlowScreenView::kScreenId,
                AssistantOptInFlowScreen::GetResultString(result));
-  ShowParentalHandoffScreen();
+  AdvanceToScreen(SmartPrivacyProtectionView::kScreenId);
 }
 
 void WizardController::OnMultiDeviceSetupScreenExit(
@@ -1942,6 +2005,8 @@ void WizardController::UpdateStatusAreaVisibilityForScreen(
 }
 
 void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
+  // Temp logs for crbug/1274589
+  VLOG(1) << "OnHIDScreenNecessityCheck " << screen_needed;
   if (!GetOobeUI())
     return;
 
@@ -1993,6 +2058,8 @@ bool WizardController::CanNavigateTo(OobeScreenId screen_id) {
 }
 
 void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
+  // Temp logs for crbug/1274589
+  VLOG(1) << "AdvanceToScreen " << screen_id;
   if (!CanNavigateTo(screen_id)) {
     LOG(WARNING) << "Cannot advance to screen : " << screen_id
                  << " as it's priority is less than the current screen : "
@@ -2083,7 +2150,9 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == OfflineLoginView::kScreenId ||
              screen_id == OsInstallScreenView::kScreenId ||
              screen_id == OsTrialScreenView::kScreenId ||
-             screen_id == ParentalHandoffScreenView::kScreenId) {
+             screen_id == ParentalHandoffScreenView::kScreenId ||
+             screen_id == HWDataCollectionView::kScreenId ||
+             screen_id == SmartPrivacyProtectionView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();
@@ -2212,7 +2281,8 @@ void WizardController::SkipPostLoginScreensForTesting() {
       current_screen_id == ArcTermsOfServiceScreenView::kScreenId ||
       current_screen_id == PinSetupScreenView::kScreenId ||
       current_screen_id == MarketingOptInScreenView::kScreenId ||
-      current_screen_id == ParentalHandoffScreenView::kScreenId) {
+      current_screen_id == ParentalHandoffScreenView::kScreenId ||
+      current_screen_id == ConsolidatedConsentScreenView::kScreenId) {
     default_controller()->OnOobeFlowFinished();
   } else {
     LOG(WARNING) << "SkipPostLoginScreensForTesting(): Ignore screen "
@@ -2222,11 +2292,11 @@ void WizardController::SkipPostLoginScreensForTesting() {
 
 // static
 void WizardController::SkipEnrollmentPromptsForTesting() {
-  skip_enrollment_prompts_ = true;
+  skip_enrollment_prompts_for_testing_ = true;
 }
 
 // static
-bool WizardController::UsingHandsOffEnrollment() {
+bool WizardController::IsZeroTouchHandsOffOobeFlow() {
   return policy::DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() ==
          policy::ZeroTouchEnrollmentMode::HANDS_OFF;
 }

@@ -34,9 +34,9 @@ export class ProjectorBrowserProxy {
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<boolean>}
+   * @return {Promise<!projectorApp.NewScreencastPreconditionState>}
    */
-  canStartProjectorSession() {}
+  getNewScreencastPreconditionState() {}
 
   /**
    * Launches the Projector recording session. Returns true if a projector
@@ -72,12 +72,6 @@ export class ProjectorBrowserProxy {
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
   sendXhr(url, method, requestBody, useCredentials) {}
-
-  /**
-   * Return true if the "new screencast" button should be shown to the user.
-   * @return {!Promise<boolean>}
-   */
-  shouldShowNewScreencastButton() {}
 
   /**
    * Returns true if the "install speech recognition" button should be shown to
@@ -120,6 +114,13 @@ export class ProjectorBrowserProxy {
    * @return {!Promise} Promise resolved when the request was handled.
    */
   setUserPref(userPref, value) {}
+
+  /**
+   * Opens the Chrome feedback dialog. The returned promise will be rejected if
+   * the dialog open is not successful.
+   * @return {!Promise}
+   */
+  openFeedbackDialog() {}
 }
 
 /**
@@ -143,8 +144,8 @@ export class ProjectorBrowserProxyImpl {
   }
 
   /** @override */
-  canStartProjectorSession() {
-    return sendWithPromise('canStartProjectorSession');
+  getNewScreencastPreconditionState() {
+    return sendWithPromise('getNewScreencastPreconditionState');
   }
 
   /** @override */
@@ -166,11 +167,6 @@ export class ProjectorBrowserProxyImpl {
   sendXhr(url, method, requestBody, useCredentials) {
     return sendWithPromise(
         'sendXhr', [url, method, requestBody, useCredentials]);
-  }
-
-  /** @override */
-  shouldShowNewScreencastButton() {
-    return sendWithPromise('shouldShowNewScreencastButton');
   }
 
   /** @override */
@@ -196,6 +192,11 @@ export class ProjectorBrowserProxyImpl {
   /** @override */
   setUserPref(userPref, value) {
     return sendWithPromise('setUserPref', [userPref, value]);
+  }
+
+  /** @override */
+  openFeedbackDialog() {
+    return sendWithPromise('openFeedbackDialog');
   }
 }
 

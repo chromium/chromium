@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalaans</translation>
 <translation id="1168100932582989117">Google-naambedieners</translation>
+<translation id="1171082344678443012">Saamgeperste XZ-argief</translation>
 <translation id="1172970565351728681">Omtrent <ph name="REMAINING_TIME" /> bly oor</translation>
 <translation id="1173894706177603556">Hernoem</translation>
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, besonderhede</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Hierdie vouer word met Linux gedeel</translation>
 <translation id="1864756863218646478">Die lêer kon nie gevind word nie.</translation>
 <translation id="1884013283844450420">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, koppel</translation>
+<translation id="1914901738028575085">CloudReady 2.0-toestel</translation>
 <translation id="1920670151694390848">Malabaarse transliterasie</translation>
 <translation id="1920798810075583923">Waatlemoen</translation>
 <translation id="1924372192547904021">Het <ph name="DRIVE_NAME" /> geformateer</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR-argief</translation>
+<translation id="2036414735548252477">Saamgeperste LZMA-teerargief</translation>
 <translation id="2037845485764049925">Russies</translation>
 <translation id="2044023416777079300">Modem is nie geregistreer nie</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">Deel met <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-gasheer</translation>
+<translation id="3104793765551262433">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Seinsterkte <ph name="SIGNAL_STRENGTH" />%, Geblokkeer deur jou administrateur, Besonderhede</translation>
 <translation id="3113153474486991170">Kon nie "<ph name="PATH" />" van hierdie ligging af oopmaak nie. Kopieer asseblief na "My lêers" toe om oop te maak.</translation>
 <translation id="3113592018909187986">Jy het 1 poging oor. Jy sal nie hierdie netwerk kan gebruik voordat jy 'n nuwe PIN opgestel het nie.</translation>
 <translation id="3124404833828281817">Persoon wat dagdroom</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
 <translation id="3567221313191587603">Kies 'n lêer en wissel <ph name="OFFLINE_CHECKBOX_NAME" /> na aan vir vanlyn toegang tot jou lêers.</translation>
 <translation id="357479282490346887">Litaus</translation>
+<translation id="3587482841069643663">Alles</translation>
 <translation id="3592251141500063301">Kon nie <ph name="FILE_NAME" /> vanlyn beskikbaar maak nie</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadese Frans</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Alles is gerugsteun!</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, deur jou administrateur bestuur, besonderhede</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items is geskuif.</translation>
-<translation id="3645531960514756307">Ontspeld vouer</translation>
 <translation id="3685122418104378273">Google Drive-sinkronisering is by verstek afgeskakel wanneer dit mobiele data gebruik.</translation>
 <translation id="3689865792480713551">Kanselleer <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />; nie geaktiveer nie; <ph name="CONNECTION_STATUS" />; seinsterkte <ph name="SIGNAL_STRENGTH" />%; besonderhede</translation>
 <translation id="3691184985318546178">Singalees</translation>
 <translation id="3726463242007121105">Hierdie toestel kan nie oopgemaak word nie want sy lêerstelsel word nie gesteun nie.</translation>
 <translation id="3727148787322499904">As hierdie instelling verander word, sal dit alle gedeelde netwerke raak</translation>
+<translation id="3737576078404241332">Verwyder uit kantbalk</translation>
 <translation id="3741243925913727067">Rugsteun jou mediatoestel se foto's en video's na Google Drive.</translation>
 <translation id="3749289110408117711">Lêernaam</translation>
 <translation id="3780536599611287598">Jy het nie toestemming om lêers na "<ph name="FOLDER_NAME" />" te skuif nie.</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Plantkundige</translation>
 <translation id="4326192123064055915">Koffie</translation>
 <translation id="4336032328163998280">Kopieerhandeling het misluk. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Voeg by kantbalk</translation>
 <translation id="4348495354623233847">Sorani-Koerdies met sleutelbord wat op Arabies gegrond is</translation>
 <translation id="4363958938297989186">Russies met fonetiese sleutelbord</translation>
 <translation id="4364327530094270451">Spanspek</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> grepe</translation>
 <translation id="4880214202172289027">Volumeglyer</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="4886199584824489598">Saamgeperste Bzip2-argief</translation>
 <translation id="4900532980794411603">Deel met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, koppel</translation>
 <translation id="4905417359854579806">Gereed om <ph name="FILE_COUNT" /> te rugsteun</translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-netwerk; nie gekoppel nie</translation>
 <translation id="6074825444536523002">Google-vorm</translation>
 <translation id="6079871810119356840">Hongaars met Qwerty-sleutelbord</translation>
+<translation id="6082256976217156453">Saamgeperste LZMA-argief</translation>
 <translation id="6096979789310008754">Soekteks is uitgevee; alle lêers en vouers word gewys.</translation>
 <translation id="610101264611565198">Skuif <ph name="FILE_NAME" /> nou na <ph name="FOLDER_NAME" /> toe</translation>
 <translation id="6129953537138746214">Spasie</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">Onderstebo</translation>
 <translation id="6943836128787782965">HTTP het misluk</translation>
 <translation id="6949408524333579394">Serwiese transliterasie</translation>
+<translation id="6954309393500027528">Jou administrateur blokkeer die plak van hierdie lêer</translation>
 <translation id="6960565108681981554">Nie geaktiveer nie. Kontak jou diensverskaffer.</translation>
 <translation id="696203921837389374">Aktiveer sinkronisering oor mobiele data</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">Hangul 3 Stel (Geen skuifsleutel)</translation>
 <translation id="8299269255470343364">Japannees</translation>
 <translation id="8300849813060516376">OTASP het misluk</translation>
+<translation id="8308481408797647857">Saamgeperste XZ-teerargief</translation>
 <translation id="8312871300878166382">Plak in vouer</translation>
 <translation id="8329978297633540474">Gewone teks</translation>
 <translation id="8335587457941836791">Ontspeld van rak af</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">Letties</translation>
 <translation id="8560515948038859357">Kantonnees</translation>
 <translation id="8561206103590473338">Olifant</translation>
+<translation id="8566466896628108558">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Seinsterkte <ph name="SIGNAL_STRENGTH" />%, Geblokkeer deur jou administrateur, Besonderhede</translation>
 <translation id="8569764466147087991">Kies 'n lêer om oop te maak</translation>
 <translation id="8577897833047451336">Kroaties</translation>
 <translation id="8578308463707544055">Indonesies</translation>
@@ -891,6 +902,7 @@
 <translation id="8714406895390098252">Fiets</translation>
 <translation id="8719721339511222681">Het <ph name="ENTRY_NAME" /> gekies.</translation>
 <translation id="872537912056138402">Kroaties</translation>
+<translation id="873847021056608403">CloudReady 2.0-toestelle</translation>
 <translation id="8743164338060742337">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> seinsterkte <ph name="SIGNAL_STRENGTH" />%, bestuur deur jou administrateur, koppel</translation>
 <translation id="8750438273876807512">Raak en hou 'n lêer en tik op <ph name="ICON" />. Kies dan "Speld aan rak vas" vir kitstoegang tot jou lêers in die rak.</translation>
 <translation id="8787254343425541995">Laat instaanbedienerinstellings toe vir gedeelde netwerke</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">Ons soek gedurig na maniere om jou blaai-ervaring veiliger te maak. Voorheen kon enige webwerf jou vra om 'n uitbreiding by jou blaaier te voeg. In die nuutste weergawes van Google Chrome moet jy Chrome spesifiek aansê dat jy hierdie uitbreidings wil installeer deur hulle via die uitbreidingbladsy by te voeg. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ontsluit</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Speld vouer vas</translation>
 <translation id="9130775360844693113">Lede van "<ph name="DESTINATION_NAME" />" sal toegang tot hierdie items kry.</translation>
 <translation id="9131598836763251128">Kies een of meer lêers</translation>
 <translation id="9133055936679483811">Kon nie kompakteer nie. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">Gewysig deur</translation>
 <translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="947144732524271678">Kies 'n reeks van <ph name="ENTRY_COUNT" /> inskrywings van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Saamgeperste Gzip-argief</translation>
 <translation id="965477715979482472">Engels (Suid-Afrika)</translation>
 <translation id="981121421437150478">Vanlyn</translation>
 <translation id="988685240266037636">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Wil jy dit vervang?</translation>

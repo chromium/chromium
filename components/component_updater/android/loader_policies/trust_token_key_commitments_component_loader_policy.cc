@@ -5,7 +5,6 @@
 #include "components/component_updater/android/loader_policies/trust_token_key_commitments_component_loader_policy.h"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include <memory>
 #include <string>
@@ -32,13 +31,10 @@ constexpr char kTrustTokenKeyCommitmentsComponentMetricsSuffix[] =
 
 // Attempts to load key commitments as raw JSON from their storage file,
 // returning the loaded commitments on success and nullopt on failure.
-// TODO(crbug.com/1180964) move reading string from fd to base/file_util.h
 absl::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
   // Transfer the ownership of the file from `fd` to `file_stream`.
-  base::ScopedFILE file_stream(fdopen(fd.release(), "r"));
-  if (!file_stream.get()) {
-    return absl::nullopt;
-  }
+  base::ScopedFILE file_stream(
+      base::FileToFILE(base::File(std::move(fd)), "r"));
   std::string commitments;
   if (!base::ReadStreamToString(file_stream.get(), &commitments))
     return absl::nullopt;

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"

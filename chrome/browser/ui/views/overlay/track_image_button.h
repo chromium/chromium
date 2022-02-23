@@ -5,18 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_TRACK_IMAGE_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_TRACK_IMAGE_BUTTON_H_
 
+#include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
 struct VectorIcon;
 }
 
-namespace views {
-
 // A resizable previous/next track image button.
-class TrackImageButton : public views::ImageButton {
+class TrackImageButton : public OverlayWindowImageButton {
  public:
   METADATA_HEADER(TrackImageButton);
 
@@ -40,7 +38,5 @@ class TrackImageButton : public views::ImageButton {
   // Last visible size of the image button.
   gfx::Size last_visible_size_;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_TRACK_IMAGE_BUTTON_H_

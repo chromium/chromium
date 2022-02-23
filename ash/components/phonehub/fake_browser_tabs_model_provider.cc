@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_browser_tabs_model_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeBrowserTabsModelProvider::FakeBrowserTabsModelProvider() = default;
@@ -20,4 +20,4 @@ void FakeBrowserTabsModelProvider::NotifyBrowserTabsUpdated(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

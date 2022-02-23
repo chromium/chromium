@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -242,7 +244,29 @@ void HTMLBodyElement::ParseAttribute(
 Node::InsertionNotificationRequest HTMLBodyElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  // If the inserted body becomes the first body which may be the viewport
+  // defining element, an existing body may no longer propagate overflow to the
+  // viewport and establish its own scroll container. Mark that body for style
+  // update in case it stops being a viewport defining element.
+  if (body == this) {
+    if ((body = Traversal<HTMLBodyElement>::NextSibling(*body)))
+      GetDocument().GetStyleEngine().FirstBodyElementChanged(*body);
+  }
   return kInsertionShouldCallDidNotifySubtreeInsertions;
+}
+
+void HTMLBodyElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+
+  if (insertion_point != GetDocument().documentElement())
+    return;
+
+  // Mark remaining body for overflow update since it may change its used values
+  // for scrolling due to viewport propagation if the removed body used to be
+  // the viewport defining element.
+  if (HTMLBodyElement* body = GetDocument().FirstBodyElement())
+    GetDocument().GetStyleEngine().FirstBodyElementChanged(*body);
 }
 
 void HTMLBodyElement::DidNotifySubtreeInsertionsToDocument() {

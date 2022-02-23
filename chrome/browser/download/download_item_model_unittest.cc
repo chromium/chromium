@@ -403,9 +403,9 @@ TEST_F(DownloadItemModelTest, CompletedStatus) {
   SetupCompletedDownloadItem();
 
   EXPECT_TRUE(model().GetStatusText().empty());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in Finder", base::UTF16ToUTF8(model().GetShowInFolderText()));
-#else  // defined(OS_MAC)
+#else  // BUILDFLAG(IS_MAC)
   EXPECT_EQ("Show in folder", base::UTF16ToUTF8(model().GetShowInFolderText()));
 #endif
 

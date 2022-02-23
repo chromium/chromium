@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
@@ -65,7 +66,7 @@ const gfx::DisplayColorSpaces kRec601DisplayColorSpaces(
     gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
                     gfx::ColorSpace::TransferID::SMPTE170M));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 template <typename T>
 base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
   return base::make_span(reinterpret_cast<const uint8_t*>(vec.data()),
@@ -1199,10 +1200,10 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperature) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(
@@ -1239,10 +1240,10 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
 
   // Set a non-identity output color matrix on the output surface, and expect
   // that the colors will be transformed.
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(
@@ -1342,8 +1343,8 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
 
   std::unique_ptr<AggregatedRenderPass> render_pass_;
   gfx::Rect viewport_rect_;
-  SharedQuadState* front_quad_state_;
-  SharedQuadState* back_quad_state_;
+  raw_ptr<SharedQuadState> front_quad_state_;
+  raw_ptr<SharedQuadState> back_quad_state_;
   gfx::Rect quad_rect_;
   AggregatedRenderPassList pass_list_;
 };
@@ -1964,10 +1965,10 @@ TEST_P(VideoRendererPixelTest, SimpleYUVJRectWithTemperature) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(0, 0, 0.7f);
-  color_matrix.set(1, 1, 0.4f);
-  color_matrix.set(2, 2, 0.5f);
+  SkM44 color_matrix;
+  color_matrix.setRC(0, 0, 0.7f);
+  color_matrix.setRC(1, 1, 0.4f);
+  color_matrix.setRC(2, 2, 0.5f);
   this->output_surface_->set_color_matrix(color_matrix);
 
   EXPECT_TRUE(this->RunPixelTest(
@@ -2327,8 +2328,7 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
       FuzzyForSkiaOnlyPixelComparator(renderer_type())));
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_FastPassColorFilterAlphaTranslation) {
+TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
   AggregatedRenderPassId root_pass_id{1};
@@ -3758,8 +3758,6 @@ TEST_P(GPURendererPixelTest, BlendingWithoutAntiAliasing) {
       cc::ExactPixelComparator(/*discard_alpha=*/true)));
 }
 
-// Trilinear filtering is only supported in the gl renderer.
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
 TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 
@@ -4844,8 +4842,7 @@ TEST_P(GPURendererPixelTest, RoundedCornerSimpleTextureDrawQuad) {
   }
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerOnRenderPass) {
+TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr int kInset = 20;
   constexpr int kCornerRadius = 20;
@@ -4905,8 +4902,7 @@ TEST_P(RendererPixelTest, DISABLED_RoundedCornerOnRenderPass) {
                                  cc::FuzzyPixelOffByOneComparator(true)));
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultiRadii) {
+TEST_P(RendererPixelTest, RoundedCornerMultiRadii) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr gfx::RoundedCornersF kCornerRadii(5, 15, 25, 35);
   constexpr int kInset = 20;
@@ -4960,8 +4956,7 @@ TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultiRadii) {
   }
 }
 
-// TODO(https://crbug.com/1044841): Flaky, especially on Linux/TSAN and Fuchsia.
-TEST_P(RendererPixelTest, DISABLED_RoundedCornerMultipleQads) {
+TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
   const gfx::Rect viewport_rect(this->device_viewport_size_);
   constexpr gfx::RoundedCornersF kCornerRadiiUL(5, 0, 0, 0);
   constexpr gfx::RoundedCornersF kCornerRadiiUR(0, 15, 0, 0);
@@ -5124,6 +5119,12 @@ class ColorTransformPixelTest
     }
     this->display_color_spaces_ =
         gfx::DisplayColorSpaces(this->dst_color_space_);
+    float sdr_max_luminance_nits =
+        this->display_color_spaces_.GetSDRMaxLuminanceNits();
+    if (src_color_space_.GetSDRWhiteLevel(&sdr_max_luminance_nits)) {
+      this->display_color_spaces_.SetSDRMaxLuminanceNits(
+          sdr_max_luminance_nits);
+    }
     this->premultiplied_alpha_ = std::get<3>(GetParam());
   }
 
@@ -5133,6 +5134,12 @@ class ColorTransformPixelTest
     if ((src_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR ||
          dst_color_space_.GetTransferID() == TransferID::PIECEWISE_HDR)) {
       LOG(ERROR) << "Skipping piecewise HDR function";
+      return;
+    }
+
+    if (src_color_space_.GetTransferID() == TransferID::PQ &&
+        !dst_color_space_.IsHDR()) {
+      LOG(ERROR) << "Skipping tonemapped output";
       return;
     }
 
@@ -5167,9 +5174,12 @@ class ColorTransformPixelTest
       }
     }
 
+    gfx::ColorTransform::Options options;
+    options.sdr_max_luminance_nits =
+        display_color_spaces_.GetSDRMaxLuminanceNits();
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(this->src_color_space_,
-                                               this->dst_color_space_);
+                                               this->dst_color_space_, options);
 
     for (size_t i = 0; i < expected_output_colors.size(); ++i) {
       gfx::ColorTransform::TriStim color;
@@ -5257,9 +5267,9 @@ gfx::ColorSpace src_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
     // Piecewise HDR transfer functions skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.5, 1.5),
@@ -5275,8 +5285,8 @@ gfx::ColorSpace dst_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
     // Piecewise HDR transfer functions are skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.25, 2.5),
@@ -5284,7 +5294,7 @@ gfx::ColorSpace dst_color_spaces[] = {
 
 gfx::ColorSpace intermediate_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::SRGB_HDR),
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5649,7 +5659,7 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   // is no trail after another draw.
   EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace viz

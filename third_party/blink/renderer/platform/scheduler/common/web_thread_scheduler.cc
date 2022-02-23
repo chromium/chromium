@@ -38,8 +38,7 @@ WebThreadScheduler::CreateMainThreadScheduler(
                     std::move(message_pump), std::move(settings))
           : base::sequence_manager::CreateSequenceManagerOnCurrentThread(
                 std::move(settings));
-  return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager),
-                                                   absl::nullopt);
+  return std::make_unique<MainThreadSchedulerImpl>(std::move(sequence_manager));
 }
 
 // static
@@ -158,7 +157,7 @@ void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
   NOTREACHED();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebThreadScheduler::PauseTimersForAndroidWebView() {
   NOTREACHED();
 }
@@ -166,7 +165,7 @@ void WebThreadScheduler::PauseTimersForAndroidWebView() {
 void WebThreadScheduler::ResumeTimersForAndroidWebView() {
   NOTREACHED();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<WebThreadScheduler::RendererPauseHandle>
 WebThreadScheduler::PauseRenderer() {

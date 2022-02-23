@@ -22,6 +22,9 @@ extern const char kLocalStorageLeveldbName[];
 COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
 extern const base::FilePath::CharType kServiceWorkerDirectory[];
 
+COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC)
+extern const base::FilePath::CharType kMediaLicenseDatabaseFileName[];
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_CONSTANTS_H_

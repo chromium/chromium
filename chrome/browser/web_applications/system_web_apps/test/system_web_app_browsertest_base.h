@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
@@ -102,7 +102,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
                                   bool wait_for_load,
                                   Browser** out_browser);
 
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 class SystemWebAppManagerBrowserTest

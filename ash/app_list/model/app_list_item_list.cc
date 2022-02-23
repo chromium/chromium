@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/guid.h"
 #include "base/logging.h"
@@ -153,6 +154,8 @@ bool AppListItemList::SetItemPosition(AppListItem* item,
 
 AppListItem* AppListItemList::AddPageBreakItemAfter(
     const AppListItem* previous_item) {
+  DCHECK(!features::IsProductivityLauncherEnabled());
+
   size_t previous_index;
   CHECK(FindItemIndex(previous_item->id(), &previous_index));
   CHECK(!previous_item->IsInFolder());

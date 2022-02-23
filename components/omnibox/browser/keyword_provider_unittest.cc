@@ -15,13 +15,11 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
@@ -382,8 +380,6 @@ TEST_F(KeywordProviderTest, RemoveKeyword) {
 }
 
 TEST_F(KeywordProviderTest, GetKeywordForInput) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kOmniboxKeywordSearchButton);
   SetUpClientAndKeywordProvider();
   EXPECT_EQ(u"aa", kw_provider_->GetKeywordForText(u"aa"));
   EXPECT_EQ(std::u16string(), kw_provider_->GetKeywordForText(u"aafoo"));

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -105,9 +106,9 @@ class UnifiedConsentService
   // |OnStateChanged| when the sync engine is initialized.
   void UpdateSettingsForMigration();
 
-  sync_preferences::PrefServiceSyncable* pref_service_;
-  signin::IdentityManager* identity_manager_;
-  syncer::SyncService* sync_service_;
+  raw_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Used for tracking the service pref states during the advanced sync opt-in.
   const std::vector<std::string> service_pref_names_;

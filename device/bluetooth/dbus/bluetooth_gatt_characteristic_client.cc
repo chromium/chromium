@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -188,9 +187,9 @@ class BluetoothGattCharacteristicClientImpl
   // BluetoothGattCharacteristicClient override.
   void StartNotify(
       const dbus::ObjectPath& object_path,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       device::BluetoothGattCharacteristic::NotificationType notification_type,
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::OnceClosure callback,
       ErrorCallback error_callback) override {
     dbus::ObjectProxy* object_proxy =
@@ -203,10 +202,10 @@ class BluetoothGattCharacteristicClientImpl
     dbus::MethodCall method_call(
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface,
         bluetooth_gatt_characteristic::kStartNotify);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     dbus::MessageWriter writer(&method_call);
     writer.AppendByte(static_cast<uint8_t>(notification_type));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

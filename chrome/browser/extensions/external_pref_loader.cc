@@ -54,7 +54,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 // TODO(crbug.com/1023268) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::switches::IsTabletFormFactor())
+  if (!ash::switches::IsTabletFormFactor())
     return false;
 
   constexpr char const* kIdsNotToBeInstalledOnTabletFormFactor[] = {
@@ -85,9 +85,9 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
       external_extension_search_path,
       false,  // Recursive.
       base::FileEnumerator::FILES);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType extension = base::UTF8ToWide(".json");
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath::StringType extension(".json");
 #endif
   do {
@@ -136,40 +136,10 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     }
     DCHECK(!done_closure_);
     done_closure_ = std::move(done_closure);
-    if (chromeos::features::IsSyncConsentOptionalEnabled()) {
-      // SyncConsentOptional lets users opt-out of sync during OOBE.
-      PrefService* prefs = profile_->GetPrefs();
-      if (!prefs->GetBoolean(chromeos::prefs::kSyncOobeCompleted)) {
-        // Need to wait for OOBE completion before checking if sync is enabled.
-        pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-        pref_change_registrar_->Init(prefs);
-        // base::Unretained is safe because we own |pref_changed_registrar_|.
-        pref_change_registrar_->Add(
-            chromeos::prefs::kSyncOobeCompleted,
-            base::BindRepeating(&PrioritySyncReadyWaiter::OnSyncOobeCompleted,
-                                base::Unretained(this)));
-        return;
-      }
-    }
     MaybeObserveSyncStart();
   }
 
  private:
-  void OnSyncOobeCompleted() {
-    DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
-    DCHECK(
-        profile_->GetPrefs()->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
-    pref_change_registrar_.reset();
-    syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
-    if (!service->GetUserSettings()->IsOsSyncFeatureEnabled()) {
-      // User opted-out of OS sync, OS sync will never start, we're done here.
-      Finish();
-      // Note: |this| is deleted.
-      return;
-    }
-    MaybeObserveSyncStart();
-  }
-
   void MaybeObserveSyncStart() {
     syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
     DCHECK(service);
@@ -228,9 +198,6 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   Profile* profile_;
 
   base::OnceClosure done_closure_;
-
-  // Used with SyncConsentOptional to wait for OOBE sync dialog completion.
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Used for registering observer for sync_preferences::PrefServiceSyncable.
   base::ScopedObservation<sync_preferences::PrefServiceSyncable,
@@ -363,7 +330,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
   }
 
   if (IsOptionSet(ENSURE_PATH_CONTROLLED_BY_ADMIN)) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (!base::VerifyPathControlledByAdmin(json_file)) {
       LOG(ERROR) << "Can not read external extensions source.  The file "
                  << json_file.value() << " and every directory in its path, "
@@ -378,7 +345,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     // you need to implement base::VerifyPathControlledByAdmin() for
     // that platform.
     NOTREACHED();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   JSONFileValueDeserializer deserializer(json_file);
@@ -413,10 +380,10 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
     base::FilePath extension_candidate_path = base_path_.Append(*it);
 
     const std::string id =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         base::WideToASCII(
             extension_candidate_path.RemoveExtension().BaseName().value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
         extension_candidate_path.RemoveExtension().BaseName().value();
 #endif
 

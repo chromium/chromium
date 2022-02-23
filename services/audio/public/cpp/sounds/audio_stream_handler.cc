@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"

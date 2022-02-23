@@ -7,7 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 

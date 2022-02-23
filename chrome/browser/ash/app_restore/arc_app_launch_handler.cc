@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,8 +43,6 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/wm_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -253,6 +254,10 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
   RemoveWindowsForApp(app_id);
 }
 
+bool ArcAppLaunchHandler::IsAppPendingRestore(const std::string& app_id) const {
+  return base::Contains(app_ids_, app_id);
+}
+
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (!update.ReadinessChanged() ||
       update.AppType() != apps::mojom::AppType::kArc) {
@@ -416,26 +421,25 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     // Set an ARC session id to find the restore window id based on the newly
     // created ARC task id.
-    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    const int32_t arc_session_id = ::app_restore::CreateArcSessionId();
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
     session_id_to_window_id_[arc_session_id] = data_it.first;
 
     bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-    if (window_handler_ && (data_it.second->bounds_in_root.has_value() ||
-                            data_it.second->current_bounds.has_value())) {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
-      window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
-                                            data_it.second.get());
+    if (window_handler_ &&
+        arc::CanLaunchGhostWindowByRestoreData(*data_it.second) &&
+        window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
+                                              data_it.second.get())) {
       launch_ghost_window = true;
     } else {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
       // Only record bounds state when no ghost window launch.
       RecordLaunchBoundsState(data_it.second->bounds_in_root.has_value(),
                               data_it.second->current_bounds.has_value());
     }
 #endif
+    RecordArcGhostWindowLaunch(launch_ghost_window);
 
     const auto& file_path = handler_->profile()->GetPath();
     int32_t event_flags = data_it.second->event_flag.value();
@@ -623,7 +627,7 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
   } else {
     // Set an ARC session id to find the restore window id based on the newly
     // created ARC task id.
-    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    const int32_t arc_session_id = ::app_restore::CreateArcSessionId();
     window_info->window_id = arc_session_id;
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, window_id);
     window_id_to_session_id_[window_id] = arc_session_id;
@@ -762,6 +766,7 @@ void ArcAppLaunchHandler::StartCpuUsageCount() {
 }
 
 void ArcAppLaunchHandler::StopCpuUsageCount() {
+  probe_service_.reset();
   cpu_tick_count_timer_.Stop();
 }
 
@@ -776,6 +781,12 @@ void ArcAppLaunchHandler::UpdateCpuUsage() {
 
 void ArcAppLaunchHandler::OnCpuUsageUpdated(
     chromeos::cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
+  // May be null in tests.
+  if (info_ptr.is_null() || info_ptr->cpu_result.is_null() ||
+      info_ptr->cpu_result->get_cpu_info().is_null()) {
+    return;
+  }
+
   CpuTick tick;
   // For simplicity, assume that device has only one physical CPU.
   for (const auto& logical_cpu :
@@ -806,10 +817,6 @@ void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
     if (!::full_restore::features::IsArcGhostWindowEnabled()) {
       base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
                                     NoGhostWindowReason::kFlagDisabled);
-    }
-    if (!arc::IsArcVmEnabled()) {
-      base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,
-                                    NoGhostWindowReason::kNotARCVM);
     }
     if (!exo::WMHelper::HasInstance()) {
       base::UmaHistogramEnumeration(kNoGhostWindowReasonHistogram,

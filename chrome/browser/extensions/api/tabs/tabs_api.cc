@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,11 +28,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
-#include "chrome/browser/extensions/api/tabs/tabs_util.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -85,6 +87,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_zoom_request_client.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/file_reader.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/api/extension_types.h"
@@ -105,6 +108,20 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ui_base_types.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
+#include "chromeos/ui/base/window_pin_type.h"
+#include "content/public/browser/devtools_agent_host.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/platform_window/extensions/pinned_mode_extension.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#endif
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -144,7 +161,7 @@ class ApiParameterExtractor {
   }
 
  private:
-  T* params_;
+  raw_ptr<T> params_;
 };
 
 bool GetBrowserFromWindowID(const ChromeExtensionFunctionDetails& details,
@@ -346,6 +363,66 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   return target_tab_strip->InsertWebContentsAt(
       target_index, std::move(web_contents), TabStripModel::ADD_NONE);
+}
+
+// This function sets the state of the browser window to a "locked"
+// fullscreen state (where the user can't exit fullscreen) in response to a
+// call to either chrome.windows.create or chrome.windows.update when the
+// screen is set locked. This is only necessary for ChromeOS and Lacros and
+// is restricted to allowlisted extensions.
+void SetLockedFullscreenState(Browser* browser, bool pinned) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  aura::Window* window = browser->window()->GetNativeWindow();
+  DCHECK(window);
+
+  // As this gets triggered from extensions, we might encounter this case.
+  if (IsWindowPinned(window) == pinned)
+    return;
+
+  if (pinned) {
+    // Pins from extension are always trusted.
+    PinWindow(window, /*trusted=*/true);
+  } else {
+    UnpinWindow(window);
+  }
+
+  // Update the set of available browser commands.
+  browser->command_controller()->LockedFullscreenStateChanged();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  aura::Window* window = browser->window()->GetNativeWindow();
+  DCHECK(window);
+
+  const chromeos::WindowPinType previous_type =
+      window->GetProperty(lacros::kWindowPinTypeKey);
+  DCHECK_NE(previous_type, chromeos::WindowPinType::kTrustedPinned)
+      << "Extensions only set Trusted Pinned";
+
+  bool previous_pinned =
+      previous_type == chromeos::WindowPinType::kTrustedPinned;
+  // As this gets triggered from extensions, we might encounter this case.
+  if (previous_pinned == pinned)
+    return;
+
+  window->SetProperty(lacros::kWindowPinTypeKey,
+                      pinned ? chromeos::WindowPinType::kTrustedPinned
+                             : chromeos::WindowPinType::kNone);
+
+  auto* pinned_mode_extension =
+      views::DesktopWindowTreeHostLinux::From(window->GetHost())
+          ->GetPinnedModeExtension();
+  if (pinned) {
+    pinned_mode_extension->Pin(/*trusted=*/true);
+  } else {
+    pinned_mode_extension->Unpin();
+  }
+
+  // Update the set of available browser commands.
+  browser->command_controller()->LockedFullscreenStateChanged();
+
+  // Wipe the clipboard in browser and detach any dev tools.
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  content::DevToolsAgentHost::DetachAllClients();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -743,7 +820,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // (otherwise that resets the locked mode for devices in tablet mode).
   if (create_data &&
       create_data->state == windows::WINDOW_STATE_LOCKED_FULLSCREEN) {
-    tabs_util::SetLockedFullscreenState(new_window, /*pinned=*/true);
+    SetLockedFullscreenState(new_window, /*pinned=*/true);
   }
 
   std::unique_ptr<base::Value> result;
@@ -843,12 +920,11 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   if (is_locked_fullscreen &&
       params->update_info.state != windows::WINDOW_STATE_LOCKED_FULLSCREEN &&
       params->update_info.state != windows::WINDOW_STATE_NONE) {
-    tabs_util::SetLockedFullscreenState(browser,
-                                        /*pinned=*/false);
+    SetLockedFullscreenState(browser, /*pinned=*/false);
   } else if (!is_locked_fullscreen &&
              params->update_info.state ==
                  windows::WINDOW_STATE_LOCKED_FULLSCREEN) {
-    tabs_util::SetLockedFullscreenState(browser, /*pinned=*/true);
+    SetLockedFullscreenState(browser, /*pinned=*/true);
   }
 
   if (show_state != ui::SHOW_STATE_FULLSCREEN &&
@@ -1602,8 +1678,9 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   if (num_tabs == 0)
     return RespondNow(Error("No tabs given."));
   if (num_tabs == 1) {
-    CHECK_EQ(1u, tab_values.GetList().size());
-    return RespondNow(OneArgument(std::move(tab_values.GetList()[0])));
+    CHECK_EQ(1u, tab_values.GetListDeprecated().size());
+    return RespondNow(
+        OneArgument(std::move(tab_values.GetListDeprecated()[0])));
   }
 
   // Return the results as an array if there are multiple tabs.
@@ -1828,7 +1905,7 @@ class TabsRemoveFunction::WebContentsDestroyedObserver
 
  private:
   // Guaranteed to outlive this object.
-  extensions::TabsRemoveFunction* owner_;
+  raw_ptr<extensions::TabsRemoveFunction> owner_;
 };
 
 ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
@@ -1926,6 +2003,10 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       ExtensionTabUtil::GetEditableTabStripModel(target_browser);
   if (!tab_strip)
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  if (!tab_strip->SupportsTabGroups()) {
+    return RespondNow(
+        Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+  }
   if (group.is_empty()) {
     group = tab_strip->AddToNewGroup(tab_indices);
     group_id = tab_groups_util::GetGroupId(group);
@@ -1963,10 +2044,10 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
 
 bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
   Browser* browser = nullptr;
-  TabStripModel* tab_strip = nullptr;
+  TabStripModel* tab_strip_model = nullptr;
   int tab_index = -1;
   if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
-                  &browser, &tab_strip, nullptr, &tab_index, error)) {
+                  &browser, &tab_strip_model, nullptr, &tab_index, error)) {
     return false;
   }
 
@@ -1975,7 +2056,12 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
     return false;
   }
 
-  tab_strip->RemoveFromGroup({tab_index});
+  if (!tab_strip_model->SupportsTabGroups()) {
+    *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  tab_strip_model->RemoveFromGroup({tab_index});
 
   return true;
 }
@@ -1995,7 +2081,7 @@ TabsCaptureVisibleTabFunction::GetScreenshotAccess(
   if (service->GetBoolean(prefs::kDisableScreenshots))
     return ScreenshotAccess::kDisabledByPreferences;
 
-  if (tabs_util::IsScreenshotRestricted(web_contents))
+  if (ExtensionsBrowserClient::Get()->IsScreenshotRestricted(web_contents))
     return ScreenshotAccess::kDisabledByDlp;
 
   return ScreenshotAccess::kEnabled;

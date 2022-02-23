@@ -108,7 +108,7 @@ class MediaFileSystemBackend : public storage::FileSystemBackend {
 
   std::unique_ptr<storage::AsyncFileUtil> native_media_file_util_;
 
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<DeviceMediaAsyncFileUtil> device_media_async_file_util_;
 #endif
 };

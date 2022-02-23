@@ -18,6 +18,7 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 
 import java.io.DataOutputStream;
@@ -41,6 +42,7 @@ public class TabStateFileManagerUnitTest {
     private static final String OPENER_APP_ID = "test";
     private static final @Nullable @TabLaunchType Integer LAUNCH_TYPE_AT_CREATION = null;
     private static final int ROOT_ID = 1;
+    private static final @TabUserAgent int USER_AGENT = TabUserAgent.MOBILE;
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -70,6 +72,7 @@ public class TabStateFileManagerUnitTest {
             state.openerAppId = OPENER_APP_ID;
             state.tabLaunchTypeAtCreation = LAUNCH_TYPE_AT_CREATION;
             state.rootId = ROOT_ID;
+            state.userAgent = USER_AGENT;
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
         }
@@ -85,6 +88,7 @@ public class TabStateFileManagerUnitTest {
         assertEquals(LAUNCH_TYPE_AT_CREATION, state.tabLaunchTypeAtCreation);
         assertEquals(ROOT_ID, state.rootId);
         assertEquals(CONTENTS_STATE_BYTES.length, state.contentsState.buffer().remaining());
+        assertEquals(USER_AGENT, state.userAgent);
 
         byte[] bytesFromFile = new byte[CONTENTS_STATE_BYTES.length];
         state.contentsState.buffer().get(bytesFromFile);

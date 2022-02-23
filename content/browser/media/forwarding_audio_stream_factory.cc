@@ -80,6 +80,7 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
     bool enable_agc,
+    media::mojom::AudioProcessingConfigPtr processing_config,
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -89,6 +90,7 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
       .insert(broker_factory_->CreateAudioInputStreamBroker(
           render_process_id, render_frame_id, device_id, params,
           shared_memory_count, user_input_monitor_, enable_agc,
+          std::move(processing_config),
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
                          base::Unretained(this)),
           std::move(renderer_factory_client)))

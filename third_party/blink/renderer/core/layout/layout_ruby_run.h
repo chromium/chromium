@@ -83,7 +83,7 @@ class LayoutRubyRun : public LayoutBlockFlow {
   }
 
   // The argument must be nullptr.
-  explicit LayoutRubyRun(Element*);
+  explicit LayoutRubyRun(ContainerNode*);
 
  protected:
   LayoutRubyBase* CreateRubyBase() const;

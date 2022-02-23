@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -26,7 +27,7 @@ const CGFloat kVerticalPadding = 8;
 }  // namespace
 
 @implementation TableViewLinkHeaderFooterItem {
-  std::vector<GURL> urls_;
+  NSArray<CrURL*>* urls_;
 }
 
 - (instancetype)initWithType:(NSInteger)type {
@@ -39,13 +40,13 @@ const CGFloat kVerticalPadding = 8;
 
 #pragma mark Properties
 
-- (const std::vector<GURL>&)urls {
+- (NSArray<CrURL*>*)urls {
   return urls_;
 }
 
-- (void)setUrls:(const std::vector<GURL>&)urls {
-  for (const GURL& url : urls_) {
-    DCHECK(url.is_valid());
+- (void)setUrls:(NSArray<CrURL*>*)urls {
+  for (CrURL* url in urls_) {
+    DCHECK(url.gurl.is_valid());
   }
   urls_ = urls;
 }
@@ -56,7 +57,7 @@ const CGFloat kVerticalPadding = 8;
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:headerFooter withStyler:styler];
 
-  if (!self.urls.empty()) {
+  if ([self.urls count] != 0) {
     headerFooter.urls = self.urls;
   }
   [headerFooter setText:self.text];
@@ -72,7 +73,7 @@ const CGFloat kVerticalPadding = 8;
 @end
 
 @implementation TableViewLinkHeaderFooterView {
-  std::vector<GURL> urls_;
+  NSArray<CrURL*>* urls_;
 }
 
 @synthesize textView = _textView;
@@ -80,6 +81,7 @@ const CGFloat kVerticalPadding = 8;
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
+    urls_ = @[];
     _textView = [[UITextView alloc] init];
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
@@ -115,7 +117,7 @@ const CGFloat kVerticalPadding = 8;
   [super prepareForReuse];
   self.textView.text = nil;
   self.delegate = nil;
-  self.urls = std::vector<GURL>();
+  self.urls = @[];
 }
 
 #pragma mark - Properties
@@ -133,11 +135,11 @@ const CGFloat kVerticalPadding = 8;
       [[NSMutableAttributedString alloc] initWithString:parsedString.string
                                              attributes:textAttributes];
 
-  DCHECK_EQ(parsedString.ranges.size(), self.urls.size());
+  DCHECK_EQ(parsedString.ranges.size(), [self.urls count]);
   size_t index = 0;
-  for (const GURL& url : self.urls) {
+  for (CrURL* url in self.urls) {
     [attributedText addAttribute:NSLinkAttributeName
-                           value:net::NSURLWithGURL(url)
+                           value:url.nsurl
                            range:parsedString.ranges[index]];
     index += 1;
   }
@@ -145,13 +147,13 @@ const CGFloat kVerticalPadding = 8;
   self.textView.attributedText = attributedText;
 }
 
-- (const std::vector<GURL>&)urls {
+- (NSArray<CrURL*>*)urls {
   return urls_;
 }
 
-- (void)setUrls:(const std::vector<GURL>&)urls {
-  for (const GURL& url : urls_) {
-    DCHECK(url.is_valid());
+- (void)setUrls:(NSArray<CrURL*>*)urls {
+  for (CrURL* url in urls_) {
+    DCHECK(url.gurl.is_valid());
   }
   urls_ = urls;
 }
@@ -163,10 +165,10 @@ const CGFloat kVerticalPadding = 8;
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
   DCHECK(self.textView == textView);
-  const GURL gURL = net::GURLWithNSURL(URL);
-  DCHECK(gURL.is_valid());
-  DCHECK(base::Contains(self.urls, gURL));
-  [self.delegate view:self didTapLinkURL:gURL];
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  DCHECK(crurl.gurl.is_valid());
+  // DCHECK(base::Contains(self.urls, gURL));
+  [self.delegate view:self didTapLinkURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
 }

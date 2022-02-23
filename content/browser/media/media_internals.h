@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
@@ -157,7 +156,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   void UpdateAudioLog(AudioLogUpdateType type,
                       const std::string& cache_key,
                       const std::string& function,
-                      const base::DictionaryValue* value);
+                      const base::Value& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,
                                                    int component_id,

@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -180,7 +180,7 @@ TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
       "-webkit-appearance:none;'><option>o1</select>");
   auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
-  IntRect bounds = select->VisibleBoundsInVisualViewport();
+  gfx::Rect bounds = select->VisibleBoundsInVisualViewport();
   EXPECT_EQ(24, bounds.height());
 }
 

@@ -30,8 +30,8 @@ std::unique_ptr<AudioDeviceIdCalculator> CreateIdCalculator(
   return std::make_unique<AudioDeviceIdCalculator>(context);
 }
 
-// Checks if an extension is whitelisted to use deprecated version of audio API.
-// TODO(tbarzic): Retire this whitelist and remove the deprecated API methods,
+// Checks if an extension is allowlisted to use deprecated version of audio API.
+// TODO(tbarzic): Retire this allowlist and remove the deprecated API methods,
 //     properties and events. This is currently targeted for M-60
 //     (http://crbug.com/697279).
 bool CanUseDeprecatedAudioApi(const Extension* extension) {

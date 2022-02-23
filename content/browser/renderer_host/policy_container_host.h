@@ -7,11 +7,14 @@
 
 #include <iosfwd>
 
+#include "content/common/child_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -29,7 +32,9 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       bool is_web_secure_context,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy);
+      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      network::mojom::WebSandboxFlags sandbox_flags);
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
   PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
   ~PolicyContainerPolicies();
@@ -57,7 +62,7 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
 
   // Whether the document is a secure context.
   //
-  // See: https://html.spec.whatwg.org/#secure-contexts.
+  // See: https://html.spec.whatwg.org/C/#secure-contexts.
   //
   // See also:
   //  - |network::IsUrlPotentiallyTrustworthy()|
@@ -72,6 +77,17 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // See:
   // https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
   network::CrossOriginOpenerPolicy cross_origin_opener_policy;
+
+  // The cross-origin-embedder-policy (COEP) of the document
+  // See:
+  // https://html.spec.whatwg.org/multipage/origin.html#coep
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // Tracks the sandbox flags which are in effect on this document. This
+  // includes any flags which have been set by a Content-Security-Policy header,
+  // in addition to those which are set by the embedding frame.
+  network::mojom::WebSandboxFlags sandbox_flags =
+      network::mojom::WebSandboxFlags::kNone;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -133,7 +149,9 @@ class CONTENT_EXPORT PolicyContainerHost
   // becomes owned by a RenderFrameHost. After this function is called, it
   // becomes possible to retrieve this PolicyContainerHost via
   // PolicyContainerHost::FromFrameToken. This function can be called only once.
-  void AssociateWithFrameToken(const blink::LocalFrameToken& token);
+  void AssociateWithFrameToken(
+      const blink::LocalFrameToken& token,
+      int process_id = ChildProcessHost::kInvalidUniqueID);
 
   const PolicyContainerPolicies& policies() const { return *policies_; }
 
@@ -149,6 +167,15 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_->cross_origin_opener_policy;
   }
 
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return policies_->cross_origin_embedder_policy;
+  }
+
+  network::mojom::WebSandboxFlags sandbox_flags() const {
+    return policies_->sandbox_flags;
+  }
+
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies) final;
@@ -156,6 +183,11 @@ class CONTENT_EXPORT PolicyContainerHost
   void set_cross_origin_opener_policy(
       const network::CrossOriginOpenerPolicy& policy) {
     policies_->cross_origin_opener_policy = policy;
+  }
+
+  // Merges the provided sandbox flags with the existing flags.
+  void set_sandbox_flags(network::mojom::WebSandboxFlags sandbox_flags) {
+    policies_->sandbox_flags = sandbox_flags;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending
@@ -199,6 +231,7 @@ class CONTENT_EXPORT PolicyContainerHost
       keep_alive_handles_receiver_set_;
 
   absl::optional<blink::LocalFrameToken> frame_token_ = absl::nullopt;
+  int process_id_ = ChildProcessHost::kInvalidUniqueID;
 };
 
 }  // namespace content

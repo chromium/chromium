@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
@@ -18,11 +19,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
-
-#if defined(WAYLAND_GBM)
-#include "ui/gfx/linux/gbm_device.h"  // nogncheck
-#endif
+#include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
 
 namespace gfx {
 enum class SwapResult;
@@ -30,6 +27,7 @@ enum class SwapResult;
 
 namespace ui {
 
+class GbmDevice;
 class WaylandConnection;
 class WaylandSurfaceGpu;
 class WaylandWindow;
@@ -43,11 +41,14 @@ struct OverlayPlane;
 class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
  public:
   WaylandBufferManagerGpu();
-
   WaylandBufferManagerGpu(const WaylandBufferManagerGpu&) = delete;
   WaylandBufferManagerGpu& operator=(const WaylandBufferManagerGpu&) = delete;
 
   ~WaylandBufferManagerGpu() override;
+
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_runner() const {
+    return gpu_thread_runner_;
+  }
 
   // WaylandBufferManagerGpu overrides:
   void Initialize(
@@ -57,7 +58,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_dma_buf,
       bool supports_viewporter,
       bool supports_acquire_fence,
-      bool supports_non_backed_solid_color_buffers) override;
+      bool supports_non_backed_solid_color_buffers,
+      bool supports_subpixel_accurate_position) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -82,7 +84,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Methods, which can be used when in both in-process-gpu and out of process
   // modes. These calls are forwarded to the browser process through the
   // WaylandConnection mojo interface. See more in
-  // ui/ozone/public/mojom/wayland/wayland_connection.mojom.
+  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.
   //
   // Asks Wayland to create generic dmabuf-based wl_buffer.
   void CreateDmabufBasedBuffer(base::ScopedFD dmabuf_fd,
@@ -135,16 +137,16 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
 #if defined(WAYLAND_GBM)
   // Returns a gbm_device based on a DRM render node.
-  GbmDevice* gbm_device() const { return gbm_device_.get(); }
-  void set_gbm_device(std::unique_ptr<GbmDevice> gbm_device) {
-    gbm_device_ = std::move(gbm_device);
-  }
+  GbmDevice* GetGbmDevice();
 #endif
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
   bool supports_viewporter() const { return supports_viewporter_; }
   bool supports_non_backed_solid_color_buffers() const {
     return supports_non_backed_solid_color_buffers_;
+  }
+  bool supports_subpixel_accurate_position() const {
+    return supports_subpixel_accurate_position_;
   }
 
   // Adds a WaylandBufferManagerGpu binding.
@@ -159,25 +161,15 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   uint32_t AllocateBufferID();
 
  private:
-  void CreateDmabufBasedBufferInternal(base::ScopedFD dmabuf_fd,
-                                       gfx::Size size,
-                                       const std::vector<uint32_t>& strides,
-                                       const std::vector<uint32_t>& offsets,
-                                       const std::vector<uint64_t>& modifiers,
-                                       uint32_t current_format,
-                                       uint32_t planes_count,
-                                       uint32_t buffer_id);
-  void CreateShmBasedBufferInternal(base::ScopedFD shm_fd,
-                                    size_t length,
-                                    gfx::Size size,
-                                    uint32_t buffer_id);
-  void CreateSolidColorBufferInternal(SkColor color,
-                                      const gfx::Size& size,
-                                      uint32_t buf_id);
-  void CommitOverlaysInternal(
-      gfx::AcceleratedWidget widget,
-      std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
-  void DestroyBufferInternal(gfx::AcceleratedWidget widget, uint32_t buffer_id);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest, CreateSurfaceCheckGbm);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
+                           GbmSurfacelessWaylandCommitOverlaysCallbacksTest);
+  FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
+                           GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest);
+  FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
+                           ExecutesTasksAfterInitialization);
+  FRIEND_TEST_ALL_PREFIXES(WaylandOverlayManagerTest,
+                           SupportsNonIntegerDisplayRect);
 
   void BindHostInterface(
       mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host);
@@ -198,9 +190,48 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       uint32_t buffer_id,
       const gfx::PresentationFeedback& feedback);
 
+  void OnHostDisconnected();
+
+  // Executes the |task| immediately if the pipe has been bound. Otherwise, the
+  // tasks are stored and executed after the remote pipe becomes bound.
+  void RunOrQueueTask(base::OnceClosure task);
+  // Called when the manager is initialized and the remote host is bound. Runs
+  // pending tasks.
+  void ProcessPendingTasks();
+
+  // Internal methods that do calls to the |remote_host|.
+  void CreateDmabufBasedBufferTask(base::ScopedFD dmabuf_fd,
+                                   gfx::Size size,
+                                   const std::vector<uint32_t>& strides,
+                                   const std::vector<uint32_t>& offsets,
+                                   const std::vector<uint64_t>& modifiers,
+                                   uint32_t current_format,
+                                   uint32_t planes_count,
+                                   uint32_t buffer_id);
+  void CreateShmBasedBufferTask(base::ScopedFD shm_fd,
+                                size_t length,
+                                gfx::Size size,
+                                uint32_t buffer_id);
+  void CreateSolidColorBufferTask(SkColor color,
+                                  const gfx::Size& size,
+                                  uint32_t buf_id);
+  void CommitOverlaysTask(
+      gfx::AcceleratedWidget widget,
+      std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
+  void DestroyBufferTask(gfx::AcceleratedWidget widget, uint32_t buffer_id);
+
 #if defined(WAYLAND_GBM)
+  // Finds drm render node, opens it and stores the handle into
+  // |drm_render_node_fd|.
+  void OpenAndStoreDrmRenderNodeFd();
+  // Used by the gbm_device for self creation.
+  base::ScopedFD drm_render_node_fd_;
   // A DRM render node based gbm device.
   std::unique_ptr<GbmDevice> gbm_device_;
+  // When set, avoids creating a real gbm_device. Instead, tests that set
+  // this variable to true must set own instance of the GbmDevice. See the
+  // CreateSurfaceCheckGbm for example.
+  bool use_fake_gbm_device_for_test_ = false;
 #endif
   // Whether Wayland server allows buffer submission with acquire fence.
   bool supports_acquire_fence_ = false;
@@ -212,6 +243,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Determines whether solid color overlays can be delegated without a backing
   // image via a wayland protocol.
   bool supports_non_backed_solid_color_buffers_ = false;
+
+  // Determines whether subpixel accurate position is supported.
+  bool supports_subpixel_accurate_position_ = false;
+
+  // Determines whether Wayland server supports Wayland protocols that allow to
+  // export wl_buffers backed by dmabuf.
+  bool supports_dmabuf_ = true;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
@@ -233,26 +271,33 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // These task runners can be used to pass messages back to the same thread,
   // where the commit buffer request came from. For example, swap requests can
-  // come from the GpuMainThread, but are rerouted to the IOChildThread and then
+  // come from the Viz thread, but are rerouted to the GpuMainThread and then
   // mojo calls happen. However, when the manager receives mojo calls, it has to
   // reroute calls back to the same thread where the calls came from to ensure
-  // correct sequence. Note that not all calls come from the GpuMainThread, e.g.
-  // WaylandCanvasSurface calls from the VizCompositorThread.
-  // This map must only be accessed from the IO thread.
+  // correct sequence. Note that not all calls come from the Viz thread, e.g.
+  // GbmPixmapWayland may call from either the GpuMainThread or IOChildThread.
+  // This map must only be accessed from the GpuMainThread.
   base::small_map<std::map<gfx::AcceleratedWidget,
                            scoped_refptr<base::SingleThreadTaskRunner>>>
       commit_thread_runners_;
 
   // A task runner, which is initialized in a multi-process mode. It is used to
-  // ensure all the methods of this class are run on IOChildThread. This is
+  // ensure all the methods of this class are run on GpuMainThread. This is
   // needed to ensure mojo calls happen on a right sequence.
-  scoped_refptr<base::SingleThreadTaskRunner> io_thread_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_runner_;
 
   // Protects access to |widget_to_surface_map_| and |commit_thread_runners_|.
   base::Lock lock_;
 
   // Keeps track of the next unique buffer ID.
   uint32_t next_buffer_id_ = 0;
+
+  // The tasks that are blocked on a remote_host pipe becoming bound.
+  std::vector<base::OnceClosure> pending_tasks_;
+
+  // All calls must happen on the correct sequence. See comments in the
+  // constructor for more details.
+  SEQUENCE_CHECKER(gpu_sequence_checker_);
 };
 
 }  // namespace ui

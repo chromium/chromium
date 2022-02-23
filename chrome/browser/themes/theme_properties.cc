@@ -14,7 +14,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -34,7 +34,7 @@ constexpr char kTilingRepeatY[] = "repeat-y";
 constexpr char kTilingRepeat[] = "repeat";
 
 SkColor GetLightModeColor(int id) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const SkColor kDefaultColorNTPBackground =
       color_utils::GetSysSkColor(COLOR_WINDOW);
   const SkColor kDefaultColorNTPText =
@@ -46,7 +46,7 @@ SkColor GetLightModeColor(int id) {
   constexpr SkColor kDefaultColorNTPBackground = SK_ColorWHITE;
   constexpr SkColor kDefaultColorNTPText = SK_ColorBLACK;
   constexpr SkColor kDefaultColorNTPLink = SkColorSetRGB(0x06, 0x37, 0x74);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   switch (id) {
     // Properties stored in theme pack.  If you change these defaults, you must
@@ -75,9 +75,7 @@ SkColor GetLightModeColor(int id) {
       return gfx::kGoogleGrey050;
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
-    case ThemeProperties::COLOR_BOOKMARK_TEXT:
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return gfx::kGoogleGrey800;
     case ThemeProperties::COLOR_NTP_BACKGROUND:
       return kDefaultColorNTPBackground;
@@ -160,9 +158,7 @@ absl::optional<SkColor> GetIncognitoColor(int id) {
     case ThemeProperties::COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND:
     case ThemeProperties::COLOR_NTP_SHORTCUT:
       return gfx::kGoogleGrey900;
-    case ThemeProperties::COLOR_BOOKMARK_TEXT:
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
+    case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return SK_ColorWHITE;
     case ThemeProperties::COLOR_NTP_TEXT:
       return gfx::kGoogleGrey200;

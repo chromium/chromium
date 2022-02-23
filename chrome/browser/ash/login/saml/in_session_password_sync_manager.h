@@ -8,18 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/user_context.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "base/callback_forward.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/cryptohome_authenticator.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "base/callback_forward.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -30,6 +26,9 @@ class User;
 }
 
 namespace ash {
+
+class CryptohomeAuthenticator;
+class ExtendedAuthenticator;
 
 using PasswordChangedCallback = ::base::RepeatingClosure;
 
@@ -100,7 +99,7 @@ class InSessionPasswordSyncManager
 
   // AuthStatusConsumer:
   // Shows password changed dialog.
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const AuthFailure& error) override;
 
   // Unlocks the screen if active user successfully verified the password
   // with an IdP.

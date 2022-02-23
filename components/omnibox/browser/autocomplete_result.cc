@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/field_trial_params.h"
@@ -22,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -68,13 +70,13 @@ struct MatchGURLHash {
 
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
-#if (defined(OS_ANDROID))
+#if BUILDFLAG(IS_ANDROID)
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
-#elif defined(OS_IOS)  // !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
-#else                  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#else
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
 #endif
@@ -112,11 +114,17 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 
 // static
 size_t AutocompleteResult::GetDynamicMaxMatches() {
+#if BUILDFLAG(IS_ANDROID)
+  constexpr const int kDynamicMaxMatchesLimit = 15;
+#else
+  constexpr const int kDynamicMaxMatchesLimit = 10;
+#endif
   if (!base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
     return AutocompleteResult::GetMaxMatches();
   return base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDynamicMaxAutocomplete,
-      OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam, 10);
+      OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam,
+      kDynamicMaxMatchesLimit);
 }
 
 AutocompleteResult::AutocompleteResult() {
@@ -225,7 +233,7 @@ void AutocompleteResult::SortAndCull(
   CompareWithDemoteByType<AutocompleteMatch> comparing_object(
       input.current_page_classification());
 
-#if !(defined(OS_ANDROID) || defined(OS_IOS))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
   // Because tail suggestions are a "last resort", we cull the tail suggestions
   // if there any non-default non-tail suggestions.
   MaybeCullTailSuggestions(&matches_, comparing_object);
@@ -280,7 +288,7 @@ void AutocompleteResult::SortAndCull(
   matches_.resize(num_matches);
 
   // Group search suggestions above URL suggestions.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (matches_.size() > 2 &&
       !base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
 #else
@@ -509,7 +517,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
         continue;
 
       match.has_tab_match = tab_info->second.has_matching_tab;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       match.UpdateMatchingJavaTab(tab_info->second.android_tab);
 #endif
     }
@@ -699,14 +707,14 @@ void AutocompleteResult::Reset() {
   matches_.clear();
   headers_map_.clear();
   hidden_group_ids_.clear();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
 }
 
 void AutocompleteResult::Swap(AutocompleteResult* other) {
   matches_.swap(other->matches_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
   other->java_result_.Reset();
 #endif
@@ -717,7 +725,7 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
     return;
 
   matches_ = other.matches_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_result_.Reset();
 #endif
 }
@@ -816,7 +824,7 @@ void AutocompleteResult::DeduplicateMatches(ACMatches* matches) {
   });
 }
 
-void AutocompleteResult::InlineTailPrefixes() {
+std::u16string AutocompleteResult::GetCommonPrefix() {
   std::u16string common_prefix;
 
   for (const auto& match : matches_) {
@@ -831,9 +839,25 @@ void AutocompleteResult::InlineTailPrefixes() {
       break;
     }
   }
-  if (common_prefix.size()) {
+  return common_prefix;
+}
+
+void AutocompleteResult::SetTailSuggestCommonPrefixes() {
+  std::u16string common_prefix = GetCommonPrefix();
+
+  if (!common_prefix.empty()) {
     for (auto& match : matches_)
-      match.InlineTailPrefix(common_prefix);
+      match.SetTailSuggestCommonPrefix(common_prefix);
+  }
+}
+
+void AutocompleteResult::SetTailSuggestContentPrefixes() {
+  std::u16string common_prefix = GetCommonPrefix();
+
+  if (!common_prefix.empty()) {
+    for (auto& match : matches_) {
+      match.SetTailSuggestContentPrefix(common_prefix);
+    }
   }
 }
 
@@ -968,7 +992,7 @@ void AutocompleteResult::MaybeCullTailSuggestions(
   // as a default match (and that's a non-tail suggestion).
   // 1) above.
   if (default_tail != matches->end() && default_non_tail == matches->end()) {
-    base::EraseIf(*matches, std::not1(is_tail));
+    base::EraseIf(*matches, std::not_fn(is_tail));
     return;
   }
   // 2) above.
@@ -1038,10 +1062,13 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // "overwrite" the initial matches from that provider's previous results,
   // minimally disturbing the rest of the matches.
   size_t delta = old_matches->size() - new_matches.size();
-  for (auto j = old_matches->rbegin(); j != old_matches->rend() && delta > 0;
-       ++j) {
-    if (!HasMatchByDestination(*j, new_matches)) {
-      matches_.push_back(std::move(*j));
+  for (const AutocompleteMatch& old_match : base::Reversed(*old_matches)) {
+    if (delta == 0) {
+      break;
+    }
+
+    if (!HasMatchByDestination(old_match, new_matches)) {
+      matches_.push_back(std::move(old_match));
       matches_.back().relevance =
           std::min(max_relevance, matches_.back().relevance);
       matches_.back().from_previous = true;

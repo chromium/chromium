@@ -57,28 +57,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
       scoped_refptr<base::SingleThreadTaskRunner> ack_handler_task_runner,
       TopicInvalidationMap* out) const;
 
-  // Removes all stored invalidations from this object.
-  void Clear();
-
-  // Indicates that a handler has registered to handle these invalidations.
-  //
-  // Registrations with the invalidations server persist across restarts, but
-  // registrations from InvalidationHandlers to the InvalidationService are not.
-  // In the time immediately after a restart, it's possible that the server
-  // will send us invalidations, and we won't have a handler to send them to.
-  //
-  // The SetIsRegistered() call indicates that this period has come to an end.
-  // There is now a handler that can receive these invalidations.  Once this
-  // function has been called, the kMaxBufferedInvalidations limit will be
-  // ignored.  It is assumed that the handler will manage its own buffer size.
-  void SetHandlerIsRegistered();
-
-  // Indicates that the handler has now unregistered itself.
-  //
-  // This causes the object to resume enforcement of the
-  // kMaxBufferedInvalidations limit.
-  void SetHandlerIsUnregistered();
-
   // Given an AckHandle belonging to one of the contained invalidations, finds
   // the invalidation and drops it from the list.  It is considered to be
   // acknowledged, so there is no need to continue maintaining its state.
@@ -98,7 +76,6 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   // dropped.
   void Truncate(size_t max_size);
 
-  bool registered_;
   const Topic topic_;
   InvalidationsSet invalidations_;
 };

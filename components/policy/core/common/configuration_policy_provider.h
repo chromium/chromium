@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -83,6 +85,10 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
   void OnSchemaRegistryReady() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void ShutdownForTesting();
+#endif  // BUILDFLAG(IS_ANDROID)
+
  protected:
   // Subclasses must invoke this to update the policies currently served by
   // this provider. UpdatePolicy() takes ownership of |policies|.
@@ -101,7 +107,7 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   // Init() and cleared by Shutdown() and needs to be false in the destructor.
   bool initialized_;
 
-  SchemaRegistry* schema_registry_;
+  raw_ptr<SchemaRegistry> schema_registry_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 };

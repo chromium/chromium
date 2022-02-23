@@ -6,6 +6,7 @@ module storage.mojom;
 
 import "third_party/blink/public/mojom/quota/quota_types.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 
 // Interface between each storage API and the quota manager.
 //
@@ -17,25 +18,24 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 // currently lives in the browser process, and will eventually move to the
 // Storage Service process.
 interface QuotaClient {
-  // Returns the amount of data stored in the storage specified by `storage_key`
-  // and `type`.
-  GetStorageKeyUsage(blink.mojom.StorageKey storage_key,
-                     blink.mojom.StorageType type)
-      => (int64 usage);
+  // Returns the amount of data stored in the storage specified by `bucket`.
+  // The quota manager should not assume that 0 `usage` means the
+  // storage API has no record of the `bucket`'s existence.
+  // DeleteBucketData() is the only way to guarantee that storage APIs erase
+  // all tracks of a `bucket`.
+  GetBucketUsage(BucketLocator bucket) => (int64 usage);
 
-  // Returns a list of storage keys that have data in the `type` storage.
+  // Returns a list of storage keys that have data in the default bucket for
+  // `type` storage.
+  //
+  // This method is currently used to bootstrap the buckets table in the quota
+  // database with data produced by old code. No other uses should be added.
+  // We're planning to remove this around 2024.
   GetStorageKeysForType(blink.mojom.StorageType type)
       => (array<blink.mojom.StorageKey> storage_keys);
 
-  // Returns a list of storage keys that match the `host` and have data in the
-  // `type` storage.
-  GetStorageKeysForHost(blink.mojom.StorageType type, string host)
-      => (array<blink.mojom.StorageKey> storage_keys);
-
-  // Returns after all data belonging to `storage_key` in the `type` storage
-  // has been deleted.
-  DeleteStorageKeyData(blink.mojom.StorageKey storage_key, 
-                       blink.mojom.StorageType type)
+  // Returns after all data belonging to `bucket` has been deleted.
+  DeleteBucketData(BucketLocator bucket)
       => (blink.mojom.QuotaStatusCode status);
 
   // An opportunity to perform a cleanup step after major deletions.

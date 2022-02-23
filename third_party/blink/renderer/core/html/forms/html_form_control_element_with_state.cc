@@ -296,6 +296,10 @@ bool HTMLFormControlElementWithState::IsFormControlElementWithState() const {
   return true;
 }
 
+void HTMLFormControlElementWithState::ResetImpl() {
+  user_has_edited_the_field_ = false;
+}
+
 int HTMLFormControlElementWithState::DefaultTabIndex() const {
   return 0;
 }

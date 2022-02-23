@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -158,6 +159,11 @@ class CronetURLRequestContext {
   void ProvideRTTObservations(bool should);
   void ProvideThroughputObservations(bool should);
 
+  bool bidi_stream_detect_broken_connection() const {
+    return bidi_stream_detect_broken_connection_;
+  }
+  base::TimeDelta heartbeat_interval() const { return heartbeat_interval_; }
+
  private:
   friend class TestUtil;
   class ContextGetter;
@@ -271,7 +277,7 @@ class CronetURLRequestContext {
     std::unique_ptr<URLRequestContextConfig> context_config_;
 
     // Effective experimental options. Kept for NetLog.
-    std::unique_ptr<base::DictionaryValue> effective_experimental_options_;
+    base::Value effective_experimental_options_;
 
     // A queue of tasks that need to be run after context has been initialized.
     base::queue<base::OnceClosure> tasks_waiting_for_context_;
@@ -290,6 +296,13 @@ class CronetURLRequestContext {
   // Gets the file thread. Create one if there is none.
   base::Thread* GetFileThread();
 
+  // Whether the connection status of active bidirectional streams should be
+  // monitored.
+  bool bidi_stream_detect_broken_connection_;
+  // If |bidi_stream_detect_broken_connection_| is true, this suggests the
+  // period of the heartbeat signal.
+  base::TimeDelta heartbeat_interval_;
+
   const int default_load_flags_;
 
   // File thread should be destroyed last.
@@ -297,7 +310,7 @@ class CronetURLRequestContext {
 
   // |network_tasks_| is owned by |this|. It is created off the network thread,
   // but invoked and destroyed on network thread.
-  NetworkTasks* network_tasks_;
+  raw_ptr<NetworkTasks> network_tasks_;
 
   // Network thread is destroyed from client thread.
   std::unique_ptr<base::Thread> network_thread_;

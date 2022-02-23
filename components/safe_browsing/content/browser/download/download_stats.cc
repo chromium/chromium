@@ -6,6 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -89,6 +91,8 @@ void RecordDangerousDownloadWarningShown(
   RecordDangerousWarningIsHttps(danger_type, is_https, kShownMetricSuffix);
   RecordDangerousWarningHasUserGesture(danger_type, has_user_gesture,
                                        kShownMetricSuffix);
+  base::RecordAction(
+      base::UserMetricsAction("SafeBrowsing.Download.WarningShown"));
 }
 
 void RecordDangerousDownloadWarningBypassed(
@@ -100,6 +104,8 @@ void RecordDangerousDownloadWarningBypassed(
   RecordDangerousWarningIsHttps(danger_type, is_https, kBypassedMetricSuffix);
   RecordDangerousWarningHasUserGesture(danger_type, has_user_gesture,
                                        kBypassedMetricSuffix);
+  base::RecordAction(
+      base::UserMetricsAction("SafeBrowsing.Download.WarningBypassed"));
 }
 
 void RecordDownloadOpened(download::DownloadDangerType danger_type,

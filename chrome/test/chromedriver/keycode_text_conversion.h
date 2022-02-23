@@ -36,7 +36,7 @@ bool ConvertCharToKeyCode(char16_t key,
                           int* necessary_modifiers,
                           std::string* error_msg);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool SwitchToUSKeyboardLayout();
 #endif
 

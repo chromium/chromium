@@ -16,6 +16,7 @@
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -23,9 +24,8 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/surface_origin.h"
@@ -67,10 +67,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     Capabilities(const Capabilities& capabilities);
     Capabilities& operator=(const Capabilities& capabilities);
 
-    int max_frames_pending = 1;
-    // If set, should be the max number of pending frames when running at or
-    // above 120hz. Otherwise, fallback to `max_frames_pending`.
-    absl::optional<int> max_frames_pending_120hz;
+    PendingSwapParams pending_swap_params{1};
     // The number of buffers for the SkiaOutputDevice. If the
     // |supports_post_sub_buffer| true, SkiaOutputSurfaceImpl will track target
     // damaged area based on this number.
@@ -173,10 +170,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   // Downcasts to SkiaOutputSurface if it is one and returns nullptr otherwise.
   virtual SkiaOutputSurface* AsSkiaOutputSurface();
 
-  void set_color_matrix(const skia::Matrix44& color_matrix) {
+  void set_color_matrix(const SkM44& color_matrix) {
     color_matrix_ = color_matrix;
   }
-  const skia::Matrix44& color_matrix() const { return color_matrix_; }
+  const SkM44& color_matrix() const { return color_matrix_; }
 
   // Only useful for GPU backend.
   virtual gpu::SurfaceHandle GetSurfaceHandle() const;
@@ -306,7 +303,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
 
  private:
   const Type type_;
-  skia::Matrix44 color_matrix_;
+  SkM44 color_matrix_;
 };
 
 }  // namespace viz

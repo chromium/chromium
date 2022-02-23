@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_messages.h"
-#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
 using base::win::ScopedHandle;

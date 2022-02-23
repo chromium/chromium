@@ -244,7 +244,7 @@ NssService::NssService(content::BrowserContext* context) {
 
   Profile* profile = Profile::FromBrowserContext(context);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   // No need to initialize NSS for users with empty username hash:
   // Getters for a user's NSS slots always return a null slot if the user's
   // username hash is empty, even when the NSS is not initialized for the

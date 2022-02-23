@@ -63,9 +63,11 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
 
   // As of 2021Q4, Earl Grey build don't support security groups in their
   // entitlements.
-  if (!groupURL &&
-      [[[NSBundle mainBundle] bundleIdentifier] containsString:@".gtest."]) {
-    groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
+  if (!groupURL) {
+    NSNumber* isEarlGreyTest =
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CRIsEarlGreyTest"];
+    if ([isEarlGreyTest boolValue])
+      groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
   }
 
   NSURL* credentialProviderURL =

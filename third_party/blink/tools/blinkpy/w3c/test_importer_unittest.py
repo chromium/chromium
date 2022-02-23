@@ -431,7 +431,10 @@ class TestImporterTest(LoggingTestCase):
             'https://chromium.googlesource.com'
             '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
             'NOAUTOREVERT=true\n'
-            'No-Export: true')
+            'No-Export: true\n'
+            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
+            'linux-wpt-input-fyi-rel,linux-blink-rel')
+        print(host.executive.calls)
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
@@ -529,17 +532,22 @@ class TestImporterTest(LoggingTestCase):
         self.assertEqual(importer.chromium_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
-    def test_only_wpt_manifest_changed(self):
+    def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
-        self.assertFalse(importer._only_wpt_manifest_changed())
+        self.assertTrue(importer._has_wpt_changes())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'TestExpectations']
+        self.assertFalse(importer._has_wpt_changes())
 
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
-        self.assertTrue(importer._only_wpt_manifest_changed())
+        self.assertFalse(importer._has_wpt_changes())
 
     def test_need_sheriff_attention(self):
         host = self.mock_host()

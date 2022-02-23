@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 
 // Listens to debug events and enables test code to block until a desired
 // number of DevTools ports are open.

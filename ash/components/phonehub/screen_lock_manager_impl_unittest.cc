@@ -8,7 +8,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -83,4 +83,4 @@ TEST_F(ScreenLockManagerImplTest, ScreenLockStateChanged) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

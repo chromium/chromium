@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
@@ -57,7 +57,7 @@ bool WebDocumentLoader::WillLoadUrlAsEmpty(const WebURL& url) {
 }
 
 WebString WebDocumentLoaderImpl::OriginalReferrer() const {
-  return DocumentLoader::OriginalReferrer().referrer;
+  return DocumentLoader::OriginalReferrer();
 }
 
 WebURL WebDocumentLoaderImpl::GetUrl() const {
@@ -69,12 +69,7 @@ WebString WebDocumentLoaderImpl::HttpMethod() const {
 }
 
 WebString WebDocumentLoaderImpl::Referrer() const {
-  return DocumentLoader::GetReferrer().referrer;
-}
-
-network::mojom::ReferrerPolicy WebDocumentLoaderImpl::GetReferrerPolicy()
-    const {
-  return DocumentLoader::GetReferrer().referrer_policy;
+  return DocumentLoader::GetReferrer();
 }
 
 const WebURLResponse& WebDocumentLoaderImpl::GetResponse() const {
@@ -162,10 +157,6 @@ void WebDocumentLoaderImpl::ResumeParser() {
 
 bool WebDocumentLoaderImpl::HasBeenLoadedAsWebArchive() const {
   return archive_;
-}
-
-PreviewsState WebDocumentLoaderImpl::GetPreviewsState() const {
-  return DocumentLoader::GetPreviewsState();
 }
 
 WebArchiveInfo WebDocumentLoaderImpl::GetArchiveInfo() const {

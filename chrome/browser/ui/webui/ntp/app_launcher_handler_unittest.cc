@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -21,11 +22,14 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
 
 namespace {
+
+using ::testing::Optional;
 
 constexpr char kTestAppUrl[] = "https://www.example.com/";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
@@ -60,8 +64,8 @@ class TestAppLauncherHandler : public AppLauncherHandler {
   }
 };
 
-std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo() {
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
@@ -84,13 +88,12 @@ class AppLauncherHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    testing_profile_ = TestingProfile::Builder().Build();
+    TestingProfile::Builder builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    testing_profile_->SetIsMainProfile(true);
-#endif
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    testing_profile_ = builder.Build();
 
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     extension_service_ = CreateTestExtensionService();
 
     auto* const provider = web_app::FakeWebAppProvider::Get(profile());
@@ -137,13 +140,11 @@ class AppLauncherHandlerTest : public testing::Test {
     const base::DictionaryValue* app_info;
     arg1->GetAsDictionary(&app_info);
 
-    std::string app_id;
-    app_info->GetString(kKeyAppId, &app_id);
-    EXPECT_EQ(app_id, installed_app_id);
+    const std::string* app_id = app_info->FindStringKey(kKeyAppId);
+    ASSERT_TRUE(app_id);
+    EXPECT_EQ(*app_id, installed_app_id);
 
-    bool is_locally_installed = false;
-    app_info->GetBoolean(kKeyIsLocallyInstalled, &is_locally_installed);
-    EXPECT_TRUE(is_locally_installed);
+    EXPECT_THAT(app_info->FindBoolPath(kKeyIsLocallyInstalled), Optional(true));
   }
 
   std::unique_ptr<content::TestWebUI> CreateTestWebUI(
@@ -176,8 +177,8 @@ class AppLauncherHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
-  extensions::ExtensionService* extension_service_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  raw_ptr<extensions::ExtensionService> extension_service_;
 };
 
 // Tests that AppLauncherHandler::HandleInstallAppLocally calls the JS method

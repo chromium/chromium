@@ -81,7 +81,7 @@ NET_EXPORT net::Error CreateCacheBackend(net::CacheType type,
                                          std::unique_ptr<Backend>* backend,
                                          net::CompletionOnceCallback callback);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Similar to the function above, but takes an |app_status_listener| which is
 // used to listen for when the Android application status changes, so we can
 // flush the cache to disk when the app goes to the background.

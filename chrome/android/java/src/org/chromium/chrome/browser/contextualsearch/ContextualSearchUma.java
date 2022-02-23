@@ -784,54 +784,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * When Contextual Search panel is opened, logs whether In-Product Help for opening the panel
-     * was ever shown.
-     * @param wasIPHShown Whether In-Product help was shown.
-     */
-    public static void logPanelOpenedIPH(boolean wasIPHShown) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchPanelOpenedIPHShown", wasIPHShown);
-    }
-
-    /**
-     * When Contextual Search panel is opened, logs whether In-Product Help for Contextual Search
-     * was ever shown.
-     * @param wasIPHShown Whether In-Product help was shown.
-     */
-    public static void logContextualSearchIPH(boolean wasIPHShown) {
-        RecordHistogram.recordBooleanHistogram("Search.ContextualSearchIPHShown", wasIPHShown);
-    }
-
-    /**
-     * When Contextual Search is triggered by tapping, logs whether In-Product Help for tapping was
-     * ever shown.
-     * @param wasIPHShown Whether In-Product help was shown.
-     */
-    public static void logTapIPH(boolean wasIPHShown) {
-        RecordHistogram.recordBooleanHistogram("Search.ContextualSearchTapIPHShown", wasIPHShown);
-    }
-
-    /**
-     * Logs whether we have ever shown an In-Product Help for Translations suggesting that the user
-     * Opt-in.
-     * @param wasIPHShown Whether In-Product help was shown.
-     */
-    public static void logTranslationsOptInIPHShown(boolean wasIPHShown) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearch.TranslationsOptInIPHShown", wasIPHShown);
-    }
-
-    /**
-     * Logs whether the user actually did opt-in after seeing the In-Product Help for Translations
-     * suggesting that the user should Opt-in.
-     * @param didOptIn Whether the user did opt-in.
-     */
-    public static void logTranslationsOptInIPHWorked(boolean didOptIn) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearch.TranslationsOptInIPHWorked", didOptIn);
-    }
-
-    /**
      * Logs a user action for the duration of viewing the panel that describes the amount of time
      * the user viewed the bar and panel overall.
      * @param durationMs The duration to record.
@@ -1025,15 +977,6 @@ public class ContextualSearchUma {
     public static void logScreenTopTapSuppression(boolean wasSuppressed) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearchScreenTopSuppressed", wasSuppressed);
-    }
-
-    /**
-     * Log whether results were seen due to a Tap that was allowed to override an ML suppression.
-     * @param wasSearchContentViewSeen If the panel was opened.
-     */
-    static void logSecondTapMlOverrideResultsSeen(boolean wasSearchContentViewSeen) {
-        RecordHistogram.recordBooleanHistogram(
-                "Search.ContextualSearchSecondTapMlOverrideSeen", wasSearchContentViewSeen);
     }
 
     /**

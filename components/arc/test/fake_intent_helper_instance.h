@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/callback.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -54,6 +54,9 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   const std::vector<Broadcast>& broadcasts() const { return broadcasts_; }
   const std::vector<HandledIntent>& handled_intents() const {
     return handled_intents_;
+  }
+  const std::map<std::string, bool>& verified_links() const {
+    return verified_links_;
   }
 
   std::vector<Broadcast> GetBroadcastsForAction(
@@ -134,6 +137,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   // RequestIntentHandlerList().
   std::map<std::string, std::vector<mojom::IntentHandlerInfoPtr>>
       intent_handlers_;
+
+  std::map<std::string, bool> verified_links_;
 
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_NOTIFICATIONS_NOTIFICATIONS_INTERNALS_UI_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_NOTIFICATIONS_NOTIFICATIONS_INTERNALS_UI_MESSAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -36,7 +37,7 @@ class NotificationsInternalsUIMessageHandler
  private:
   void HandleScheduleNotification(const base::ListValue* args);
 
-  notifications::NotificationScheduleService* schedule_service_;
+  raw_ptr<notifications::NotificationScheduleService> schedule_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_NOTIFICATIONS_NOTIFICATIONS_INTERNALS_UI_MESSAGE_HANDLER_H_

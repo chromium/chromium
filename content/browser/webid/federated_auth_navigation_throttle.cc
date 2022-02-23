@@ -54,7 +54,7 @@ bool AreCookieIsolatedPrincipals(url::Origin src_origin,
 std::unique_ptr<NavigationThrottle>
 FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  if (!IsWebIDEnabled() || !handle->IsInMainFrame())
+  if (!IsFedCmInterceptionEnabled() || handle->GetParentFrameOrOuterDocument())
     return nullptr;
 
   return std::make_unique<FederatedAuthNavigationThrottle>(handle);
@@ -76,9 +76,9 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
 
   GURL navigation_url = navigation_handle()->GetURL();
 
-  // Explicit WebID requests are exempt from throttling.
+  // Explicit FedCM requests are exempt from throttling.
   const auto headers = navigation_handle()->GetRequestHeaders();
-  if (headers.HasHeader(kSecWebIdCsrfHeader))
+  if (headers.HasHeader(kSecFedCmCsrfHeader))
     return NavigationThrottle::PROCEED;
 
   const auto initiator_origin = navigation_handle()->GetInitiatorOrigin();

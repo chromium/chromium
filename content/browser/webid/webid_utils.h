@@ -19,8 +19,5 @@ class RenderFrameHost;
 bool IsSameOriginWithAncestors(RenderFrameHost* host,
                                const url::Origin& origin);
 
-// Checks requirements for URLs received from the IDP.
-bool IdpUrlIsValid(const GURL& url);
-
 }  // namespace content
 #endif  // CONTENT_BROWSER_WEBID_WEBID_UTILS_H_

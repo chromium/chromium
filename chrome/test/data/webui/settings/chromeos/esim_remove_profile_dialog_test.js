@@ -40,8 +40,8 @@ suite('EsimRemoveProfileDialog', function() {
     esimRemoveProfileDialog.networkState = response.result;
     document.body.appendChild(esimRemoveProfileDialog);
     assertTrue(!!esimRemoveProfileDialog);
+    // TODO(b/214301268): Add interactive test for cancel button focus.
     await flushAsync();
-    assertEquals(esimRemoveProfileDialog.$$('#cancel'), getDeepActiveElement());
   }
 
   function flushAsync() {

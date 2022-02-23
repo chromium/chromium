@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/layers/texture_layer.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/common/content_constants.h"
@@ -49,7 +48,6 @@
 #include "content/renderer/pepper/url_request_info_util.h"
 #include "content/renderer/pepper/url_response_info_util.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/sad_plugin.h"
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -100,7 +98,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -116,10 +114,10 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -133,7 +131,7 @@
 #include "printing/metafile_skia.h"          // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #endif
 
@@ -322,7 +320,7 @@ std::unique_ptr<const char* []> StringVectorToArgArray(
 // all keys sent to them. This can prevent keystrokes from working for things
 // like screen brightness and volume control.
 bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (event.GetType() != WebInputEvent::Type::kKeyDown &&
       event.GetType() != WebInputEvent::Type::kKeyUp)
     return false;
@@ -342,7 +340,7 @@ bool IsReservedSystemInputEvent(const blink::WebInputEvent& event) {
   }
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PrintPDFOutput(PP_Resource print_output,
@@ -1203,11 +1201,11 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::Vector2dF scroll_offset =
+  gfx::PointF scroll_offset =
       container_->GetDocument().GetFrame()->GetScrollOffset();
   scroll_offset.Scale(viewport_to_dip_scale_);
 
-  gfx::Vector2d floored_scroll_offset = gfx::ToFlooredVector2d(scroll_offset);
+  gfx::Point floored_scroll_offset = gfx::ToFlooredPoint(scroll_offset);
   view_data_.scroll_offset =
       PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 
@@ -2328,7 +2326,7 @@ PP_Var PepperPluginInstanceImpl::ExecuteScript(PP_Instance instance,
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
     PP_Instance instance) {
   return render_frame()
-             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
+             ? blink::AudioDeviceFactory::GetOutputDeviceInfo(
                    render_frame()->GetWebFrame()->GetLocalFrameToken(),
                    media::AudioSinkParameters())
                    .output_params()
@@ -2339,7 +2337,7 @@ uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputSampleRate(
 uint32_t PepperPluginInstanceImpl::GetAudioHardwareOutputBufferSize(
     PP_Instance instance) {
   return render_frame()
-             ? blink::WebAudioDeviceFactory::GetOutputDeviceInfo(
+             ? blink::AudioDeviceFactory::GetOutputDeviceInfo(
                    render_frame()->GetWebFrame()->GetLocalFrameToken(),
                    media::AudioSinkParameters())
                    .output_params()

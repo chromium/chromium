@@ -84,8 +84,9 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
       task_ = nullptr;
       break;
     case web::DownloadTask::State::kInProgress:
-      break;
     case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
       break;
     case web::DownloadTask::State::kNotStarted:
       // OnDownloadUpdated cannot be called with this state.

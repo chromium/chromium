@@ -434,6 +434,11 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_hidden1->RoleValue());
   ASSERT_TRUE(ax_hidden1->AccessibilityIsIgnored());
   ASSERT_TRUE(ax_hidden1->AccessibilityIsIncludedInTree());
+  const AXObject* ax_hidden1_text = ax_hidden1->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_hidden1_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_hidden1_text->RoleValue());
+  ASSERT_TRUE(ax_hidden1_text->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_hidden1_text->AccessibilityIsIncludedInTree());
   const AXObject* ax_between = GetAXObjectByElementId("betweenHidden");
   ASSERT_NE(nullptr, ax_between);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_between->RoleValue());
@@ -442,6 +447,11 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_hidden2->RoleValue());
   ASSERT_TRUE(ax_hidden2->AccessibilityIsIgnored());
   ASSERT_TRUE(ax_hidden2->AccessibilityIsIncludedInTree());
+  const AXObject* ax_hidden2_text = ax_hidden2->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_hidden2_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_hidden2_text->RoleValue());
+  ASSERT_TRUE(ax_hidden2_text->AccessibilityIsIgnored());
+  ASSERT_TRUE(ax_hidden2_text->AccessibilityIsIncludedInTree());
   const AXObject* ax_after = GetAXObjectByElementId("afterHidden");
   ASSERT_NE(nullptr, ax_after);
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
@@ -458,26 +468,27 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
       selection, AXSelectionBehavior::kExtendToValidRange);
 
   // The "display: none" content is included in the AXTree as an ignored node,
-  // so shrunk selection should include those AXObjects. Note that the browser
-  // process will adjust the position to only encompass the |AXObject| between
-  // the two "display: none" elements, since they are ignored nodes.
-  ASSERT_FALSE(ax_selection_shrink.Base().IsTextPosition());
-  EXPECT_EQ(ax_hidden1, ax_selection_shrink.Base().ContainerObject());
-  EXPECT_EQ(0, ax_selection_shrink.Base().ChildIndex());
-  ASSERT_FALSE(ax_selection_shrink.Extent().IsTextPosition());
-  EXPECT_EQ(ax_hidden2, ax_selection_shrink.Extent().ContainerObject());
-  EXPECT_EQ(0, ax_selection_shrink.Extent().ChildIndex());
+  // so shrunk selection should include those AXObjects. The tree in the browser
+  // process also includes those ignored nodes, and the position will be
+  // adjusted according to AXPosition rules; in particular, a position anchored
+  // before a text node is explicitly moved to before the first character of the
+  // text object.
+  ASSERT_TRUE(ax_selection_shrink.Base().IsTextPosition());
+  EXPECT_EQ(ax_hidden1_text, ax_selection_shrink.Base().ContainerObject());
+  EXPECT_EQ(0, ax_selection_shrink.Base().TextOffset());
+  ASSERT_TRUE(ax_selection_shrink.Extent().IsTextPosition());
+  EXPECT_EQ(ax_hidden2_text, ax_selection_shrink.Extent().ContainerObject());
+  EXPECT_EQ(0, ax_selection_shrink.Extent().TextOffset());
 
   // The extended selection should start in the "display: none" content because
-  // they are included in the AXTree. The browser process will adjust ignored
-  // positions so that in this case it would only encompass the paragraph
-  // between the "display: none" nodes.
-  ASSERT_FALSE(ax_selection_extend.Base().IsTextPosition());
-  EXPECT_EQ(ax_hidden1, ax_selection_extend.Base().ContainerObject());
-  EXPECT_EQ(0, ax_selection_extend.Base().ChildIndex());
-  ASSERT_FALSE(ax_selection_extend.Extent().IsTextPosition());
-  EXPECT_EQ(ax_hidden2, ax_selection_extend.Extent().ContainerObject());
-  EXPECT_EQ(0, ax_selection_extend.Extent().ChildIndex());
+  // they are included in the AXTree. Similarly to above, the position will be
+  // adjusted to point to the first character of the text object.
+  ASSERT_TRUE(ax_selection_extend.Base().IsTextPosition());
+  EXPECT_EQ(ax_hidden1_text, ax_selection_extend.Base().ContainerObject());
+  EXPECT_EQ(0, ax_selection_extend.Base().TextOffset());
+  ASSERT_TRUE(ax_selection_extend.Extent().IsTextPosition());
+  EXPECT_EQ(ax_hidden2_text, ax_selection_extend.Extent().ContainerObject());
+  EXPECT_EQ(0, ax_selection_extend.Extent().TextOffset());
 
   // Even though the two AX selections have different anchors and foci, the text
   // selected in the accessibility tree should not differ, because any
@@ -491,10 +502,12 @@ TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
       "++++++++<Paragraph>\n"
       "++++++++++<StaticText: Before display:none.>\n"
       "++++++++<Paragraph>\n"
-      "^++++++++<Paragraph>\n"
+      "^++++++++++<StaticText: ^Display:none 1.>\n"
+      "++++++++<Paragraph>\n"
       "++++++++++<StaticText: In between two display:none elements.>\n"
       "++++++++<Paragraph>\n"
-      "|++++++++<Paragraph>\n"
+      "|++++++++++<StaticText: |Display:none 2.>\n"
+      "++++++++<Paragraph>\n"
       "++++++++++<StaticText: After display:none.>\n");
   EXPECT_EQ(selection_text, GetSelectionText(ax_selection_shrink));
   EXPECT_EQ(selection_text, GetSelectionText(ax_selection_extend));

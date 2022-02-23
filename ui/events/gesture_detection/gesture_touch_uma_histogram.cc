@@ -117,6 +117,8 @@ UMAEventType GestureTouchUMAHistogram::UMAEventTypeFromEvent(
         return UMA_ET_GESTURE_PINCH_UPDATE_3;
       return UMA_ET_GESTURE_PINCH_UPDATE;
     }
+    case ET_GESTURE_SHORT_PRESS:
+      return UMA_ET_GESTURE_SHORT_PRESS;
     case ET_GESTURE_LONG_PRESS:
       return UMA_ET_GESTURE_LONG_PRESS;
     case ET_GESTURE_LONG_TAP:

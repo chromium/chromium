@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -23,6 +23,7 @@ class PrefRegistrySimple;
 class Profile;
 
 namespace base {
+// TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
 class DictionaryValue;
 class FilePath;
 }  // namespace base

@@ -86,7 +86,8 @@ NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
   autofill::CreditCard credit_card(base::GenerateGUID(),
                                    "https://www.example.com/");
 
-  base::Value::ConstListView profile_entries_list = autofill_profile->GetList();
+  base::Value::ConstListView profile_entries_list =
+      autofill_profile->GetListDeprecated();
 
   // For each type-value dictionary in the autofill profile list, validate it,
   // then add it to the appropriate profile.

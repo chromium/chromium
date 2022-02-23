@@ -18,12 +18,15 @@
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
+
+namespace base {
+struct Feature;
+}
 
 namespace media {
 class VideoFrame;
@@ -41,6 +44,8 @@ class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
+
+extern const MODULES_EXPORT base::Feature kRemoveWebCodecsSpecViolations;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -107,6 +112,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   scoped_refptr<VideoFrameHandle> handle() const { return handle_; }
   scoped_refptr<media::VideoFrame> frame() const { return handle_->frame(); }
 
+  bool WouldTaintOrigin() const override;
+
   // GarbageCollected override
   void Trace(Visitor*) const override;
 
@@ -114,20 +121,20 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
-  bool WouldTaintOrigin() const override;
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override;
+
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override;
   bool IsVideoFrame() const override;
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
 
   // ImageBitmapSource implementation
   static constexpr uint64_t kCpuEfficientFrameSize = 320u * 240u;
-  IntSize BitmapSourceSize() const override;
+  gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

@@ -778,7 +778,6 @@ class PolicyTemplateChecker(object):
           'example_value',
           'features',
           'deprecated',
-          'future',
           'future_on',
           'id',
           'schema',
@@ -828,9 +827,6 @@ class PolicyTemplateChecker(object):
 
     # If 'deprecated' is present, it must be a bool.
     self._CheckContains(policy, 'deprecated', bool, True)
-
-    # If 'future' is present, it must be a bool.
-    is_future = self._CheckContains(policy, 'future', bool, True)
 
     # If 'arc_support' is present, it must be a string.
     self._CheckContains(policy, 'arc_support', str, True)
@@ -930,11 +926,6 @@ class PolicyTemplateChecker(object):
 
       if future_on == []:
         self._Warning("Policy %s: 'future_on' is empty." % (policy.get('name')))
-
-      if future_on is not None and is_future is not None:
-        self._Error(
-            "Tag 'future' has been deprecated, please use 'future_on' instead.",
-            'policy', policy.get('name'))
 
       if future_on:
         for platform in set(supported_platforms).intersection(future_on):
@@ -1195,12 +1186,9 @@ class PolicyTemplateChecker(object):
 
     released_platforms = {}
     rolling_out_platform = {}
-    if not policy or policy.get('future', False):
-      return released_platforms, rolling_out_platform
-
     for supported_on in policy.get('supported_on', []):
-      supported_platform, supported_from, _ = \
-              _GetSupportedVersionPlatformAndRange(supported_on)
+      (supported_platform, supported_from,
+       _) = _GetSupportedVersionPlatformAndRange(supported_on)
       if supported_from < current_version - 1:
         released_platforms[supported_platform] = supported_from
       else:
@@ -1211,17 +1199,18 @@ class PolicyTemplateChecker(object):
 
     return released_platforms, rolling_out_platform
 
-  def _CheckSingleSchemaValueIsCompatible(
-      self, old_schema_value, new_schema_value, custom_value_validation):
+  def _CheckSingleSchemaValueIsCompatible(self, old_schema_value,
+                                          new_schema_value,
+                                          custom_value_validation):
     '''
     Checks if a |new_schema_value| in a schema is compatible with an
     |old_schema_value| in a schema. The check will either use the provided
     |custom_value_validation| if any or do a normal equality comparison.
     '''
-    return (custom_value_validation == None and
-            old_schema_value == new_schema_value) or (
-                custom_value_validation != None and
-                custom_value_validation(old_schema_value, new_schema_value))
+    return (custom_value_validation == None
+            and old_schema_value == new_schema_value) or (
+                custom_value_validation != None
+                and custom_value_validation(old_schema_value, new_schema_value))
 
   def _CheckSchemaValueIsCompatible(self, schema_key_path, old_schema_value,
                                     new_schema_value, only_removals_allowed,
@@ -1263,9 +1252,9 @@ class PolicyTemplateChecker(object):
     if type(old_schema_value) != type(new_schema_value):
       self._Error(
           'Value in policy schema path \'%s\' is of type \'%s\' but value in '
-          'schema is of type \'%s\'.' % (current_schema_key,
-                                         type(old_schema_value).__name__,
-                                         type(new_schema_value).__name__))
+          'schema is of type \'%s\'.' %
+          (current_schema_key, type(old_schema_value).__name__,
+           type(new_schema_value).__name__))
 
     # We are checking a leaf schema key and do not expect to ever get a
     # dictionary value at this level.
@@ -1311,8 +1300,8 @@ class PolicyTemplateChecker(object):
         while j < len(new_schema_value):
           self._Error(
               'Value \'%s\' in policy schema path \'%s/[%s]\' was added which '
-              'is not allowed.' % (str(new_schema_value[j]), current_schema_key,
-                                   j))
+              'is not allowed.' %
+              (str(new_schema_value[j]), current_schema_key, j))
           j += 1
       else:
         # If removals are not allowed we should be able to add to the list, but
@@ -1379,8 +1368,8 @@ class PolicyTemplateChecker(object):
       self._Error(
           'Mismatch in type definition for old schema and new schema for '
           'policy schema path \'%s\'. One schema defines a type while the other'
-          ' does not.' % (current_schema_key, old_schema['type'],
-                          new_schema['type']))
+          ' does not.' %
+          (current_schema_key, old_schema['type'], new_schema['type']))
       return
 
     # For schemas that define a 'type', make sure they match.
@@ -1429,7 +1418,7 @@ class PolicyTemplateChecker(object):
         if type(old_value) is not dict:
           self._Error(
               'Unexpected type \'%s\' at policy schema path \'%s\'. It must be '
-              'dict' % (type(old_value).__name__,))
+              'dict' % (type(old_value).__name__, ))
           continue
 
         # Make sure that all old properties exist and are compatible. Everything
@@ -1515,25 +1504,18 @@ class PolicyTemplateChecker(object):
           'Cannot change the type of released policy \'%s\' from %s to %s.' %
           (new_policy['name'], original_policy['type'], new_policy['type']))
 
-    #3 Check if the policy has suddenly been marked as future: true.
-    if ('future' in new_policy
-        and new_policy['future']) and ('future' not in original_policy
-                                       or not original_policy['future']):
-      self._Error('Cannot make released policy \'%s\' a future policy' %
-                  (new_policy['name']))
 
-    original_device_only = ('device_only' in original_policy and
-                            original_policy['device_only'])
-
-    #4 Check if the policy has changed its device_only value
-    if (('device_only' in new_policy and
-         original_device_only != new_policy['device_only']) or
-        ('device_only' not in new_policy and original_device_only)):
+    #3 Check if the policy has changed its device_only value
+    original_device_only = ('device_only' in original_policy
+                            and original_policy['device_only'])
+    if (('device_only' in new_policy
+         and original_device_only != new_policy['device_only'])
+        or ('device_only' not in new_policy and original_device_only)):
       self._Error(
           'Cannot change the device_only status of released policy \'%s\'' %
           (new_policy['name']))
 
-    #5 Check schema changes for compatibility.
+    #4 Check schema changes for compatibility.
     self._CheckSchemasAreCompatible([original_policy['name']],
                                     original_policy['schema'],
                                     new_policy['schema'])
@@ -1558,23 +1540,11 @@ class PolicyTemplateChecker(object):
             'version %d instead for platform %s.' %
             (new_version, current_version, platform), 'policy', policy_name)
 
-  def _CheckDeprecatedFutureField(self, original_policy, new_policy,
-                                  policy_name):
-    '''The 'future' flag has been deprecated, it shouldn't be used for any new
-       policy.'''
-    if ('future' in new_policy
-        and (original_policy is None or 'future' not in original_policy)):
-      self.non_compatibility_error_count += 1
-      self._Error(
-          "The 'future' flag has been deprecated, please use the 'future_on' "
-          "list instead. Search the flag documentation at the top of the "
-          "policy_templates.json file for more information.", 'policy',
-          policy_name)
-
   # Checks if the new policy definitions are compatible with the policy
   # definitions coming from the original_file_contents.
-  def _CheckPolicyDefinitionsChangeCompatibility(
-      self, policy_definitions, original_file_contents, current_version):
+  def _CheckPolicyDefinitionsChangeCompatibility(self, policy_definitions,
+                                                 original_file_contents,
+                                                 current_version):
     '''
     Checks if all the |policy_definitions| in the modified policy templates file
     are compatible with the policy definitions defined in the original policy
@@ -1614,8 +1584,7 @@ class PolicyTemplateChecker(object):
     # Sort the new policies by name for faster searches.
     policy_definitions_dict = {
         policy['name']: policy
-        for policy in policy_definitions
-        if policy['type'] != 'group'
+        for policy in policy_definitions if policy['type'] != 'group'
     }
 
     original_policy_name_set = {
@@ -1628,19 +1597,26 @@ class PolicyTemplateChecker(object):
       if original_policy['type'] == 'group':
         continue
 
-      original_released_platforms, original_rolling_out_platforms = \
-              self._GetReleasedPlatforms( original_policy, current_version)
+      (original_released_platforms,
+       original_rolling_out_platforms) = self._GetReleasedPlatforms(
+           original_policy, current_version)
 
       new_policy = policy_definitions_dict.get(original_policy['name'])
 
       # A policy that has at least one released platform cannot be removed.
-      if new_policy is None and original_released_platforms:
-        self._Error('Released policy \'%s\' has been removed.' %
-                    original_policy['name'])
+      if new_policy is None:
+        name = original_policy['name']
+        if original_released_platforms:
+          self._Error(f'Released policy {name} has been removed.')
+        else:
+          self._Warning(f'Unreleased Policy {name} has been removed. If the '
+                        'policy is available in Beta, please cleanup the Beta '
+                        'branch as well.')
         continue
 
-      new_released_platforms, new_rolling_out_platform = \
-              self._GetReleasedPlatforms(new_policy, current_version)
+      (new_released_platforms,
+       new_rolling_out_platform) = self._GetReleasedPlatforms(
+           new_policy, current_version)
 
       # Check policy compatibility if there is at least one released platform.
       if original_released_platforms:
@@ -1657,23 +1633,18 @@ class PolicyTemplateChecker(object):
             MergeDict(new_released_platforms, new_rolling_out_platform),
             current_version, original_policy['name'])
 
-      if new_policy:
-        self._CheckDeprecatedFutureField(original_policy, new_policy,
-                                         original_policy['name'])
-
     # Check brand new policies:
     for new_policy_name in set(
         policy_definitions_dict.keys()) - original_policy_name_set:
       new_policy = policy_definitions_dict[new_policy_name]
-      new_released_platforms, new_rolling_out_platform = \
-              self._GetReleasedPlatforms(new_policy, current_version)
+      (new_released_platforms,
+       new_rolling_out_platform) = self._GetReleasedPlatforms(
+           new_policy, current_version)
       if new_released_platforms or new_rolling_out_platform:
         self._CheckNewReleasedPlatforms({},
                                         MergeDict(new_released_platforms,
                                                   new_rolling_out_platform),
                                         current_version, new_policy_name)
-      self._CheckDeprecatedFutureField(None, new_policy, new_policy_name)
-
       # TODO(crbug.com/1139046): This default check should apply to all
       # policies instead of just new ones.
       if self._NeedsDefault(new_policy) and not 'default' in new_policy:

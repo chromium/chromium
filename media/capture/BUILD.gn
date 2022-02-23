@@ -252,7 +252,7 @@ component("capture_lib") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux || is_chromeos) {
     sources += [
       "video/linux/scoped_v4l2_device_fd.cc",
       "video/linux/scoped_v4l2_device_fd.h",
@@ -469,6 +469,7 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
     ]

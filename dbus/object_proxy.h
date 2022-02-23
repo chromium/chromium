@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -251,10 +250,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
     // Returns |callback_| with releasing its ownership.
     // This must be called on the origin thread.
     ResponseOrErrorCallback ReleaseCallback();
-
-    // Whether |callback_| is null.
-    // TODO(http://crbug/1211451): Remove after fix.
-    bool IsNullCallback() const;
 
    private:
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;

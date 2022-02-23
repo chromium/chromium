@@ -12,7 +12,6 @@ final R.java class for all resource packages the APK depends on.
 This will crunch images with aapt2.
 """
 
-import argparse
 import collections
 import contextlib
 import filecmp
@@ -23,9 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import textwrap
-import zipfile
 from xml.etree import ElementTree
 
 from util import build_utils
@@ -398,7 +395,7 @@ def _FixManifest(options, temp_dir, extra_manifest=None):
     raise Exception(
         'Unable to find android SDK jar among candidates: %s'
             % ', '.join(android_sdk_jars))
-  elif len(successful_extractions) > 1:
+  if len(successful_extractions) > 1:
     raise Exception(
         'Found multiple android SDK jars among candidates: %s'
             % ', '.join(android_sdk_jars))
@@ -835,7 +832,15 @@ def _PackageApk(options, build):
   logging.debug('Created .res.info file')
 
   exit_code = link_proc.wait()
+  assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
   logging.debug('Finished: aapt2 link')
+
+  if options.shared_resources:
+    logging.debug('Resolving styleables in R.txt')
+    # Need to resolve references because unused resource removal tool does not
+    # support references in R.txt files.
+    resource_utils.ResolveStyleableReferences(build.r_txt_path)
+
   if exit_code:
     raise subprocess.CalledProcessError(exit_code, link_command)
 

@@ -90,11 +90,6 @@ JavaScriptDialogPresenter* FakeWebStateDelegate::GetJavaScriptDialogPresenter(
   return &java_script_dialog_presenter_;
 }
 
-void FakeWebStateDelegate::HandleContextMenu(WebState*,
-                                             const ContextMenuParams&) {
-  handle_context_menu_called_ = true;
-}
-
 void FakeWebStateDelegate::ShowRepostFormWarningDialog(
     WebState* source,
     base::OnceCallback<void(bool)> callback) {

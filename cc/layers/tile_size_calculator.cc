@@ -4,9 +4,12 @@
 
 #include "cc/layers/tile_size_calculator.h"
 
+#include <algorithm>
+
 #include "cc/base/math_util.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "ui/base/ui_base_features.h"
 
 namespace cc {
 namespace {
@@ -35,25 +38,10 @@ gfx::Size ApplyDsfAdjustment(const gfx::Size& device_pixels_size, float dsf) {
   return content_size_in_dps;
 }
 
-// For GPU rasterization, we pick an ideal tile size using the viewport so we
-// don't need any settings. The current approach uses 4 tiles to cover the
-// viewport vertically.
-gfx::Size CalculateGpuTileSize(const gfx::Size& base_tile_size,
-                               const gfx::Size& content_bounds,
-                               const gfx::Size& max_tile_size,
-                               int min_height_for_gpu_raster_tile) {
-  int tile_width = base_tile_size.width();
-
-  // Increase the height proportionally as the width decreases, and pad by our
-  // border texels to make the tiles exactly match the viewport.
-  int divisor = 4;
-  if (content_bounds.width() <= base_tile_size.width() / 2)
-    divisor = 2;
-  if (content_bounds.width() <= base_tile_size.width() / 4)
-    divisor = 1;
-  int tile_height =
-      MathUtil::UncheckedRoundUp(base_tile_size.height(), divisor) / divisor;
-
+gfx::Size AdjustGpuTileSize(int tile_width,
+                            int tile_height,
+                            const gfx::Size& max_tile_size,
+                            int min_height_for_gpu_raster_tile) {
   // Grow default sizes to account for overlapping border texels.
   tile_width += 2 * PictureLayerTiling::kBorderTexels;
   tile_height += 2 * PictureLayerTiling::kBorderTexels;
@@ -73,6 +61,62 @@ gfx::Size CalculateGpuTileSize(const gfx::Size& base_tile_size,
   return gfx::Size(tile_width, tile_height);
 }
 
+// For GPU rasterization, we pick an ideal tile size using the viewport so we
+// don't need any settings. The current approach uses 4 tiles to cover the
+// viewport vertically.
+gfx::Size CalculateGpuTileSize(const gfx::Size& base_tile_size,
+                               const gfx::Size& content_bounds,
+                               const gfx::Size& max_tile_size,
+                               int min_height_for_gpu_raster_tile) {
+  int tile_width = base_tile_size.width();
+
+  // Increase the height proportionally as the width decreases, and pad by our
+  // border texels to make the tiles exactly match the viewport.
+  int divisor = 4;
+  if (content_bounds.width() <= base_tile_size.width() / 2)
+    divisor = 2;
+  if (content_bounds.width() <= base_tile_size.width() / 4)
+    divisor = 1;
+  int tile_height =
+      MathUtil::UncheckedRoundUp(base_tile_size.height(), divisor) / divisor;
+
+  return AdjustGpuTileSize(tile_width, tile_height, max_tile_size,
+                           min_height_for_gpu_raster_tile);
+}
+
+gfx::Size CalculateGpuRawDrawTileSize(const gfx::Size& base_tile_size,
+                                      const gfx::Size& content_bounds,
+                                      const gfx::Size& max_tile_size,
+                                      int min_height_for_gpu_raster_tile,
+                                      double raw_draw_tile_size_factor) {
+  // Sometime the |base_tile_size| could be (0x0) or (1x1), so set a min base
+  // tile size, to avoid incorrect calculation.
+  // Use 2280 (mid range phone screen height) as the min base tile size for now.
+  // TODO(penghuang): find better numbers for different platforms.
+  constexpr int kMinBaseTileSize = 2280;
+  int tile_size = std::max(
+      {base_tile_size.width(), base_tile_size.height(), kMinBaseTileSize});
+  tile_size = std::ceil(tile_size * raw_draw_tile_size_factor);
+
+  // If the content area is not greater than the calculated tile area, then
+  // content bounds is used for the tile size.
+  // Sometime |content_bounds| is longer than |tile_size| in one direction, but
+  // it is much shorter in the other direction. In that case, we don't want to
+  // split the content into several very small tiles.
+  if (content_bounds.Area64() <=
+      static_cast<uint64_t>(tile_size) * static_cast<uint64_t>(tile_size)) {
+    return AdjustGpuTileSize(content_bounds.width(), content_bounds.height(),
+                             max_tile_size, min_height_for_gpu_raster_tile);
+  }
+
+  // Clamp tile size with content bounds
+  int tile_width = std::min(tile_size, content_bounds.width());
+  int tile_height = std::min(tile_size, content_bounds.height());
+
+  return AdjustGpuTileSize(tile_width, tile_height, max_tile_size,
+                           min_height_for_gpu_raster_tile);
+}
+
 }  // namespace
 
 // AffectingParams.
@@ -90,7 +134,9 @@ bool TileSizeCalculator::AffectingParams::operator==(
 
 // TileSizeCalculator.
 TileSizeCalculator::TileSizeCalculator(PictureLayerImpl* layer_impl)
-    : layer_impl_(layer_impl) {}
+    : layer_impl_(layer_impl),
+      is_using_raw_draw_(features::IsUsingRawDraw()),
+      raw_draw_tile_size_factor_(features::RawDrawTileSizeFactor()) {}
 
 bool TileSizeCalculator::IsAffectingParamsChanged() {
   AffectingParams new_params = GetAffectingParams();
@@ -141,7 +187,7 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
   int default_tile_width = 0;
   int default_tile_height = 0;
   if (affecting_params_.use_gpu_rasterization) {
-    gfx::Size max_tile_size = affecting_params_.max_tile_size;
+    const gfx::Size& max_tile_size = affecting_params_.max_tile_size;
 
     // Calculate |base_tile_size| based on |gpu_raster_max_texture_size|,
     // adjusting for ceil operations that may occur due to DSF.
@@ -151,18 +197,26 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
 
     // Set our initial size assuming a |base_tile_size| equal to our
     // |viewport_size|.
-    gfx::Size default_tile_size =
-        CalculateGpuTileSize(base_tile_size, content_bounds, max_tile_size,
-                             affecting_params_.min_height_for_gpu_raster_tile);
-
-    // Use half-width GPU tiles when the content_width is greater than our
-    // calculated tile size.
-    if (content_bounds.width() > default_tile_size.width()) {
-      // Divide width by 2 and round up.
-      base_tile_size.set_width((base_tile_size.width() + 1) / 2);
+    gfx::Size default_tile_size;
+    if (is_using_raw_draw_) {
+      default_tile_size = CalculateGpuRawDrawTileSize(
+          base_tile_size, content_bounds, max_tile_size,
+          affecting_params_.min_height_for_gpu_raster_tile,
+          raw_draw_tile_size_factor_);
+    } else {
       default_tile_size = CalculateGpuTileSize(
           base_tile_size, content_bounds, max_tile_size,
           affecting_params_.min_height_for_gpu_raster_tile);
+
+      // Use half-width GPU tiles when the content_width is greater than our
+      // calculated tile size.
+      if (content_bounds.width() > default_tile_size.width()) {
+        // Divide width by 2 and round up.
+        base_tile_size.set_width((base_tile_size.width() + 1) / 2);
+        default_tile_size = CalculateGpuTileSize(
+            base_tile_size, content_bounds, max_tile_size,
+            affecting_params_.min_height_for_gpu_raster_tile);
+      }
     }
 
     default_tile_width = default_tile_size.width();
@@ -195,13 +249,13 @@ gfx::Size TileSizeCalculator::CalculateTileSize() {
 
   // Clamp the tile width/height to the content width/height to save space.
   if (content_bounds.width() < default_tile_width) {
-    tile_width = std::min(tile_width, content_bounds.width());
-    tile_width = MathUtil::UncheckedRoundUp(tile_width, kTileRoundUp);
+    tile_width =
+        MathUtil::UncheckedRoundUp(content_bounds.width(), kTileRoundUp);
     tile_width = std::min(tile_width, default_tile_width);
   }
   if (content_bounds.height() < default_tile_height) {
-    tile_height = std::min(tile_height, content_bounds.height());
-    tile_height = MathUtil::UncheckedRoundUp(tile_height, kTileRoundUp);
+    tile_height =
+        MathUtil::UncheckedRoundUp(content_bounds.height(), kTileRoundUp);
     tile_height = std::min(tile_height, default_tile_height);
   }
 

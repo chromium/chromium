@@ -49,7 +49,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 
@@ -76,9 +75,6 @@ public class SyncErrorMessageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Before
     public void setUp() {

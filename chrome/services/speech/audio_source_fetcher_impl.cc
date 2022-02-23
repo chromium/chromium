@@ -68,7 +68,7 @@ void AudioSourceFetcherImpl::Start(
 
   // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
   // Windows.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   is_started_ = true;
   // Initialize the AudioCapturerSource with |this| as the CaptureCallback,
   // get the parameters for the device ID, then start audio capture.
@@ -87,6 +87,7 @@ void AudioSourceFetcherImpl::Stop() {
   }
   send_audio_callback_.Reset();
   is_started_ = false;
+  speech_recognition_recognizer_->MarkDone();
 }
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
@@ -119,8 +120,9 @@ void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
-  return audio_capturer_source_for_tests_ ? audio_capturer_source_for_tests_
-                                          : audio_capturer_source_.get();
+  return audio_capturer_source_for_tests_
+             ? audio_capturer_source_for_tests_.get()
+             : audio_capturer_source_.get();
 }
 
 void AudioSourceFetcherImpl::OnCreated(const media::AudioParameters& params,

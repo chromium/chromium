@@ -7,12 +7,14 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/features.h"
 
 namespace history_clusters {
 
@@ -41,14 +43,12 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
     base::Time begin_time,
     base::Time end_time,
-    size_t max_count,
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
       begin_time_limit_(
           std::max(begin_time, base::Time::Now() - base::Days(90))),
       original_end_time_(end_time),
       continuation_end_time_(end_time),
-      visit_soft_cap_(max_count),
       callback_(std::move(callback)) {}
 
 GetAnnotatedVisitsToCluster::~GetAnnotatedVisitsToCluster() = default;
@@ -56,6 +56,8 @@ GetAnnotatedVisitsToCluster::~GetAnnotatedVisitsToCluster() = default;
 bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryBackend* backend,
     history::HistoryDatabase* db) {
+  base::ElapsedThreadTimer query_visits_timer;
+
   history::QueryOptions options;
 
   // History Clusters wants a complete navigation graph and internally handles
@@ -186,6 +188,10 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
                                        history::SOURCE_SYNCED;
                               }),
       annotated_visits_.end());
+
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime",
+      query_visits_timer.Elapsed());
 
   return true;
 }

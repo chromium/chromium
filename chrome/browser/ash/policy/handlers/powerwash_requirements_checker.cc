@@ -162,7 +162,7 @@ bool PowerwashRequirementsChecker::IsPolicySet() const {
 
 bool PowerwashRequirementsChecker::IsUserAffiliated() const {
   user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   return user->IsAffiliated();
 }
 

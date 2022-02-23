@@ -50,7 +50,6 @@ namespace web_view_internal = extensions::api::web_view_internal;
 
 namespace {
 
-const char kAppCacheKey[] = "appcache";
 const char kCacheKey[] = "cache";
 const char kCookiesKey[] = "cookies";
 const char kSessionCookiesKey[] = "sessionCookies";
@@ -68,8 +67,6 @@ const char kDuplicatedContentScriptNamesError[] =
 const char kGeneratedScriptFilePrefix[] = "generated_script_file:";
 
 uint32_t MaskForKey(const char* key) {
-  if (strcmp(key, kAppCacheKey) == 0)
-    return webview::WEB_VIEW_REMOVE_DATA_MASK_APPCACHE;
   if (strcmp(key, kCacheKey) == 0)
     return webview::WEB_VIEW_REMOVE_DATA_MASK_CACHE;
   if (strcmp(key, kSessionCookiesKey) == 0)

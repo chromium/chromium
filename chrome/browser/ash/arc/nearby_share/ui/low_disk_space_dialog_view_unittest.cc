@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "ui/base/ui_base_types.h"
 
 namespace arc {

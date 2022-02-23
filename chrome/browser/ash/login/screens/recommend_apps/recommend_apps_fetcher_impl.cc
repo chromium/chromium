@@ -16,7 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/common/api/system_display.h"
 #include "gpu/config/gpu_info.h"
@@ -40,6 +42,9 @@ namespace {
 constexpr const char kGetAppListUrl[] =
     "https://android.clients.google.com/fdfe/chrome/getfastreinstallappslist";
 
+constexpr const char kGetRevisedAppListUrl[] =
+    "https://android.clients.google.com/fdfe/chrome/getSetupAppRecommendations";
+
 constexpr int kResponseErrorNotEnoughApps = 5;
 
 constexpr int kResponseErrorNotFirstTimeChromebookUser = 6;
@@ -49,6 +54,9 @@ constexpr base::TimeDelta kDownloadTimeOut = base::Minutes(1);
 constexpr const int64_t kMaxDownloadBytes = 1024 * 1024;  // 1Mb
 
 constexpr const int kMaxAppCount = 21;
+
+// Fake gpu info for test.
+const gpu::GPUInfo* g_gpu_info_for_test = nullptr;
 
 enum RecommendAppsResponseParseResult {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -186,13 +194,15 @@ GetScreenLayoutSizeId(const int screen_layout_size_value) {
 }
 
 const gpu::GPUInfo GetGPUInfo() {
+  if (g_gpu_info_for_test)
+    return *g_gpu_info_for_test;
+
   return content::GpuDataManager::GetInstance()->GetGPUInfo();
 }
 
 // This function converts the major and minor versions to the proto accepted
 // value. For example, if the version is 3.2, the return value is 0x00030002.
-unsigned GetGLVersionInfo() {
-  const gpu::GPUInfo gpu_info = GetGPUInfo();
+unsigned GetGLVersionInfo(const gpu::GPUInfo& gpu_info) {
   gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
   gl::GLVersionInfo glVersionInfo(gpu_info.gl_version.c_str(),
                                   gpu_info.gl_renderer.c_str(), extensionSet);
@@ -206,8 +216,7 @@ unsigned GetGLVersionInfo() {
   return version;
 }
 
-gfx::ExtensionSet GetGLExtensions() {
-  const gpu::GPUInfo gpu_info = GetGPUInfo();
+gfx::ExtensionSet GetGLExtensions(const gpu::GPUInfo& gpu_info) {
   gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
 
   return extensionSet;
@@ -259,6 +268,16 @@ void RecordUmaResponseParseResult(RecommendAppsResponseParseResult result) {
 
 }  // namespace
 
+RecommendAppsFetcherImpl::ScopedGpuInfoForTest::ScopedGpuInfoForTest(
+    const gpu::GPUInfo* gpu_info) {
+  DCHECK(!g_gpu_info_for_test);
+  g_gpu_info_for_test = gpu_info;
+}
+
+RecommendAppsFetcherImpl::ScopedGpuInfoForTest::~ScopedGpuInfoForTest() {
+  g_gpu_info_for_test = nullptr;
+}
+
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
     mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
@@ -307,9 +326,10 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
           DeviceConfigurationProto_Navigation_NONAV);
   device_config_.set_has_five_way_navigation(false);
 
-  device_config_.set_gl_es_version(GetGLVersionInfo());
+  const gpu::GPUInfo gpu_info = GetGPUInfo();
+  device_config_.set_gl_es_version(GetGLVersionInfo(gpu_info));
 
-  for (const base::StringPiece& gl_extension : GetGLExtensions()) {
+  for (const base::StringPiece& gl_extension : GetGLExtensions(gpu_info)) {
     if (!gl_extension.empty())
       device_config_.add_gl_extension(std::string(gl_extension));
   }
@@ -415,7 +435,11 @@ void RecommendAppsFetcherImpl::StartDownload() {
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kGetAppListUrl);
+  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
+    resource_request->url = GURL(kGetRevisedAppListUrl);
+  } else {
+    resource_request->url = GURL(kGetAppListUrl);
+  }
   resource_request->method = "GET";
   resource_request->load_flags =
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
@@ -481,18 +505,16 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   //
   // The response starts with a prefix ")]}'". This needs to be removed before
   // further parsing.
-  constexpr base::StringPiece json_xss_prevention_prefix(")]}'");
-  base::StringPiece response_body_json(*response_body);
+  const std::string json_xss_prevention_prefix = ")]}'";
+  std::string response_body_json = *response_body;
   if (base::StartsWith(response_body_json, json_xss_prevention_prefix))
-    response_body_json.remove_prefix(json_xss_prevention_prefix.length());
-  absl::optional<base::Value> output = ParseResponse(response_body_json);
-  if (!output.has_value()) {
-    RecordUmaResponseAppCount(0);
-    delegate_->OnParseResponseError();
-    return;
-  }
+    response_body_json =
+        response_body_json.substr(json_xss_prevention_prefix.length());
 
-  delegate_->OnLoadSuccess(std::move(output.value()));
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      response_body_json,
+      base::BindOnce(&RecommendAppsFetcherImpl::OnJsonParsed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RecommendAppsFetcherImpl::Start() {
@@ -508,31 +530,17 @@ void RecommendAppsFetcherImpl::Retry() {
 }
 
 absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
-    base::StringPiece response) {
+    const base::Value& parsed_json) {
   base::Value output(base::Value::Type::LIST);
-
-  base::JSONReader::ValueWithError parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(response);
-
-  if (!parsed_json.value ||
-      (!parsed_json.value->is_list() && !parsed_json.value->is_dict())) {
-    LOG(ERROR) << "Error parsing response JSON: " << parsed_json.error_message;
-    RecordUmaResponseParseResult(
-        RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
-    return absl::nullopt;
-  }
 
   // If the response is a dictionary, it is an error message in the
   // following format:
   //   {"Error code":"error code","Error message":"Error message"}
-  if (parsed_json.value->is_dict()) {
+  if (parsed_json.is_dict()) {
     const base::Value* response_error_code_value =
-        parsed_json.value->FindKeyOfType("Error code",
-                                         base::Value::Type::STRING);
-
+        parsed_json.FindKeyOfType("Error code", base::Value::Type::STRING);
     if (!response_error_code_value) {
-      LOG(ERROR) << "Unable to find error code: response="
-                 << response.substr(0, 128);
+      LOG(ERROR) << "Unable to find error code";
       RecordUmaResponseParseResult(
           RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
       return absl::nullopt;
@@ -563,7 +571,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   // Otherwise, the response should return a list of apps.
-  base::Value::ConstListView app_list = parsed_json.value->GetList();
+  base::Value::ConstListView app_list = parsed_json.GetListDeprecated();
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";
     RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_APP);
@@ -613,9 +621,36 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   RecordUmaResponseParseResult(RECOMMEND_APPS_RESPONSE_PARSE_RESULT_NO_ERROR);
-  RecordUmaResponseAppCount(static_cast<int>(output.GetList().size()));
+  RecordUmaResponseAppCount(
+      static_cast<int>(output.GetListDeprecated().size()));
 
   return output;
+}
+
+void RecommendAppsFetcherImpl::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (base::FeatureList::IsEnabled(features::kAppDiscoveryForOobe)) {
+    if (!result.value) {
+      delegate_->OnParseResponseError();
+      return;
+    }
+    delegate_->OnLoadSuccess(std::move(*result.value));
+    return;
+  }
+
+  if (!result.value || (!result.value->is_list() && !result.value->is_dict())) {
+    RecordUmaResponseParseResult(
+        RECOMMEND_APPS_RESPONSE_PARSE_RESULT_INVALID_JSON);
+    delegate_->OnParseResponseError();
+    return;
+  }
+  absl::optional<base::Value> output = ParseResponse(*result.value);
+  if (!output.has_value()) {
+    RecordUmaResponseAppCount(0);
+    delegate_->OnParseResponseError();
+    return;
+  }
+  delegate_->OnLoadSuccess(std::move(output.value()));
 }
 
 }  // namespace ash

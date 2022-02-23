@@ -40,7 +40,7 @@ constexpr int kRequestedBufferSize = 512;
 
 // On Android, ProcessedLocalAudioSource forces a 20ms buffer size from the
 // input device.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kExpectedSourceBufferSize = kSampleRate / 50;
 #else
 constexpr int kExpectedSourceBufferSize = kRequestedBufferSize;

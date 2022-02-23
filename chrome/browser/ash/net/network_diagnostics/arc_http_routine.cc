@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_http_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -16,6 +16,9 @@ namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr int kTotalHostsToQuery = 3;
 // The length of a random eight letter prefix.

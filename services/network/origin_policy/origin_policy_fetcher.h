@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
@@ -51,7 +52,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyFetcher {
   void FetchPolicy(mojom::URLLoaderFactory* factory);
 
   // The owner of this object. When it is destroyed, this is destroyed too.
-  OriginPolicyManager* const owner_policy_manager_;
+  const raw_ptr<OriginPolicyManager> owner_policy_manager_;
 
   // We may need the SimpleURLLoader to download the policy. The loader must
   // be kept alive while the load is ongoing.

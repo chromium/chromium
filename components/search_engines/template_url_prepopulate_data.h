@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
 class PrefService;
 struct TemplateURLData;
 
@@ -42,7 +44,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(PrefService* prefs,
                                                        int prepopulated_id);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns the prepopulated URLs associated with |locale|.  |locale| should be a
 // two-character uppercase ISO 3166-1 country code.
 std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(

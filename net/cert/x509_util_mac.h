@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"

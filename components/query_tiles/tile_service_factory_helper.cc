@@ -89,8 +89,9 @@ std::unique_ptr<TileService> CreateTileService(
   // Create fetcher.
   auto tile_fetcher = TileFetcher::Create(
       TileConfig::GetQueryTilesServerUrl(default_server_url, false),
-      country_code, accepted_language, api_key, TileConfig::GetExperimentTag(),
-      client_version, url_loader_factory);
+      country_code, accepted_language, api_key,
+      TileConfig::GetExperimentTag(country_code), client_version,
+      url_loader_factory);
 
   // Wrap background task scheduler.
   auto policy = std::make_unique<net::BackoffEntry::Policy>();

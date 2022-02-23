@@ -19,4 +19,14 @@ IN_PROC_BROWSER_TEST_F(LoginStateApitest, GetProfileType_UserProfile) {
                                {.custom_arg = "USER_PROFILE"}));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Test that |loginState.getSessionState()| returns |IN_SESSION| for extensions
+// not running on the login screen.
+IN_PROC_BROWSER_TEST_F(LoginStateApitest, GetSessionState_InSession) {
+  EXPECT_TRUE(
+      RunExtensionTest("login_screen_apis/login_state/get_session_state",
+                       {.custom_arg = "IN_SESSION"}));
+}
+#endif
+
 }  // namespace extensions

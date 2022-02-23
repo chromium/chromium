@@ -43,12 +43,10 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
     views::View* advanced_view();
     PublicAccountMonitoringInfoDialog* learn_more_dialog();
     views::StyledLabel* learn_more_label();
-    views::View* language_selection_button();
-    views::View* keyboard_selection_button();
     PublicAccountMenuView* language_menu_view();
     PublicAccountMenuView* keyboard_menu_view();
-    PublicAccountMenuView::Item selected_language_item();
-    PublicAccountMenuView::Item selected_keyboard_item();
+    std::string selected_language_item_value();
+    std::string selected_keyboard_item_value();
     views::ImageView* monitoring_warning_icon();
     views::Label* monitoring_warning_label();
     void ResetUserForTest();

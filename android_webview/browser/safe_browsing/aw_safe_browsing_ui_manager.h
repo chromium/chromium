@@ -21,7 +21,6 @@ class SharedURLLoaderFactory;
 
 namespace safe_browsing {
 class BaseBlockingPage;
-class PingManager;
 class SafeBrowsingNetworkContext;
 }  // namespace safe_browsing
 
@@ -60,6 +59,8 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,
                                    const std::string& serialized) override;
 
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
+
   // Called on the IO thread to get a SharedURLLoaderFactory that can be used on
   // the IO thread.
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -78,9 +79,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // the IO thread.
   void CreateURLLoaderFactoryForIO(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver);
-
-  // Provides phishing and malware statistics. Accessed on IO thread.
-  std::unique_ptr<safe_browsing::PingManager> ping_manager_;
 
   // This is what owns the URLRequestContext inside the network service. This is
   // used by SimpleURLLoader for Safe Browsing requests.

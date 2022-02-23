@@ -41,6 +41,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -52,7 +53,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -180,7 +181,10 @@ const struct {
     {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr, kDontBlockChildren},
     // The Chrome installation itself should not be modified by the web.
     {base::DIR_EXE, nullptr, kBlockAllChildren},
+#if !BUILDFLAG(IS_FUCHSIA)
     {base::DIR_MODULE, nullptr, kBlockAllChildren},
+#endif
+    {base::DIR_ASSETS, nullptr, kBlockAllChildren},
     // And neither should the configuration of at least the currently running
     // Chrome instance (note that this does not take --user-data-dir command
     // line overrides into account).
@@ -189,7 +193,7 @@ const struct {
     {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), kBlockAllChildren},
     // And limit access to ~/.gnupg as well.
     {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"), kBlockAllChildren},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Some Windows specific directories to block, basically all apps, the
     // operating system itself, as well as configuration data for apps.
     {base::DIR_PROGRAM_FILES, nullptr, kBlockAllChildren},
@@ -205,7 +209,7 @@ const struct {
     // not whole directories.
     {base::DIR_IE_INTERNET_CACHE, nullptr, kBlockNestedDirectories},
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
@@ -213,7 +217,7 @@ const struct {
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
      kDontBlockChildren},
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // On Linux also block access to devices via /dev, as well as security
     // sensitive data in /sys and /proc.
     {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), kBlockAllChildren},
@@ -862,7 +866,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
           // Open and Save dialog only grant read access for individual files.
           if (handle_type == HandleType::kDirectory)
             break;
-          FALLTHROUGH;
+          [[fallthrough]];
         case UserAction::kDragAndDrop:
           // Drag&drop grants read access for all handles.
           existing_grant->SetStatus(
@@ -1177,15 +1181,15 @@ void ChromeFileSystemAccessPermissionContext::
 }
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
-    std::unique_ptr<base::Value>& value) {
-  if (!value->is_dict()) {
-    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    base::Value& value) {
+  if (!value.is_dict()) {
+    value = base::Value(base::Value::Type::DICTIONARY);
     return;
   }
 
   std::vector<std::pair<base::Time, std::string>> entries;
-  entries.reserve(value->DictSize());
-  for (auto entry : value->DictItems()) {
+  entries.reserve(value.DictSize());
+  for (auto entry : value.DictItems()) {
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
@@ -1205,7 +1209,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
   base::ranges::sort(entries);
   size_t entries_to_remove = entries.size() - max_ids_per_origin_;
   for (size_t i = 0; i < entries_to_remove; ++i) {
-    bool did_remove_entry = value->RemoveKey(entries[i].second);
+    bool did_remove_entry = value.RemoveKey(entries[i].second);
     DCHECK(did_remove_entry);
   }
 }
@@ -1215,11 +1219,12 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const std::string& id,
     const base::FilePath& path,
     const PathType type) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
+  base::Value value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
-  if (!value)
-    value = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      /*info=*/nullptr);
+  if (!value.is_dict())
+    value = base::Value(base::Value::Type::DICTIONARY);
 
   // Create an entry into the nested dictionary.
   base::Value entry(base::Value::Type::DICTIONARY);
@@ -1227,7 +1232,7 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
   entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
   entry.SetKey(kTimestampKey, base::TimeToValue(clock_->Now()));
 
-  value->SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
+  value.SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
 
   MaybeEvictEntries(value);
 
@@ -1240,15 +1245,16 @@ ChromeFileSystemAccessPermissionContext::PathInfo
 ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
-  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
+  base::Value value = content_settings()->GetWebsiteSetting(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      /*info=*/nullptr);
 
   PathInfo path_info;
-  if (!value)
+  if (!value.is_dict())
     return path_info;
 
-  auto* entry = value->FindDictKey(GenerateLastPickedDirectoryKey(id));
+  auto* entry = value.FindDictKey(GenerateLastPickedDirectoryKey(id));
   if (!entry)
     return path_info;
 
@@ -1390,7 +1396,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
   if (it == origins_.end())
     return;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Iterate over all top-level frames by iterating over all browsers, and all
   // tabs within those browsers. This also counts PWAs in windows without
   // tab strips, as those are still implemented as a Browser with a single tab.
@@ -1675,7 +1681,7 @@ void ChromeFileSystemAccessPermissionContext::ScheduleUsageIconUpdate() {
 void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_icon_update_scheduled_ = false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile())
       continue;

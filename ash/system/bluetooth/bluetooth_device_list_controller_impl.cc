@@ -18,6 +18,8 @@
 namespace ash {
 namespace {
 
+using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+
 // Helper function to remove |*view| from its view hierarchy, delete the view,
 // and reset the value of |*view| to be |nullptr|.
 template <class T>
@@ -165,7 +167,11 @@ int BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
 
   BluetoothDeviceListItemView* device_view = nullptr;
 
-  for (const auto& device_properties : device_property_list) {
+  const size_t device_count = device_property_list.size();
+
+  for (size_t i = 0; i < device_count; ++i) {
+    const PairedBluetoothDevicePropertiesPtr& device_properties =
+        device_property_list.at(i);
     const std::string& device_id = device_properties->device_properties->id;
     auto it = previous_views->find(device_id);
 
@@ -177,7 +183,7 @@ int BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     }
     device_id_to_view_map_.emplace(device_id, device_view);
 
-    device_view->UpdateDeviceProperties(device_properties);
+    device_view->UpdateDeviceProperties(i, device_count, device_properties);
     bluetooth_detailed_view_->device_list()->ReorderChildView(device_view,
                                                               index);
 

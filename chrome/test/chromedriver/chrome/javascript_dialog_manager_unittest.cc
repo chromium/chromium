@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/recorder_devtools_client.h"
@@ -41,7 +42,7 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
   std::string text;
   ASSERT_TRUE(client.commands_[0].params.GetString("promptText", &text));
   ASSERT_EQ(given_text, text);
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
 }
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
@@ -56,8 +57,8 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
   ASSERT_EQ(kOk, manager.HandleDialog(false, NULL).code());
-  ASSERT_TRUE(client.commands_[0].params.HasKey("promptText"));
-  ASSERT_TRUE(client.commands_[0].params.HasKey("accept"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("promptText"));
+  ASSERT_TRUE(client.commands_[0].params.FindKey("accept"));
 }
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
@@ -94,10 +95,9 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from StubDevToolsClient:
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     while (closing_count_ > 0) {
       base::DictionaryValue empty;
       Status status =
@@ -106,6 +106,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
         return status;
       closing_count_--;
     }
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
   void AddListener(DevToolsEventListener* listener) override {
@@ -113,7 +114,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
  private:
-  DevToolsEventListener* listener_;
+  raw_ptr<DevToolsEventListener> listener_;
   int closing_count_;
 };
 

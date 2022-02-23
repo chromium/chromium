@@ -15,7 +15,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void MouseLockLost(PP_Instance instance) {
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
   if (!dispatcher) {
@@ -34,7 +34,7 @@ static const PPP_MouseLock mouse_lock_interface = {
 #else
 // The NaCl plugin doesn't need the host side interface - stub it out.
 static const PPP_MouseLock mouse_lock_interface = {};
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 

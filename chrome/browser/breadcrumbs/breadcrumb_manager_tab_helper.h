@@ -46,10 +46,6 @@ class BreadcrumbManagerTabHelper
   void DidChangeVisibleSecurityState() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void WebContentsDestroyed() override;
-
-  // The WebContents associated with this tab helper.
-  content::WebContents* web_contents_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

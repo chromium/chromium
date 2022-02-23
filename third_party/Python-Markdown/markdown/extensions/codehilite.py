@@ -4,28 +4,27 @@ CodeHilite Extension for Python-Markdown
 
 Adds code/syntax highlighting to standard Python-Markdown code blocks.
 
-See <https://pythonhosted.org/Markdown/extensions/code_hilite.html>
+See <https://Python-Markdown.github.io/extensions/code_hilite>
 for documentation.
 
 Original code Copyright 2006-2008 [Waylan Limberg](http://achinghead.com/).
 
 All changes Copyright 2008-2014 The Python Markdown Project
 
-License: [BSD](http://www.opensource.org/licenses/bsd-license.php)
+License: [BSD](https://opensource.org/licenses/bsd-license.php)
 
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 from . import Extension
 from ..treeprocessors import Treeprocessor
+from ..util import parseBoolValue
 
-try:
+try:  # pragma: no cover
     from pygments import highlight
     from pygments.lexers import get_lexer_by_name, guess_lexer
     from pygments.formatters import get_formatter_by_name
     pygments = True
-except ImportError:
+except ImportError:  # pragma: no cover
     pygments = False
 
 
@@ -40,52 +39,78 @@ def parse_hl_lines(expr):
 
     try:
         return list(map(int, expr.split()))
-    except ValueError:
+    except ValueError:  # pragma: no cover
         return []
 
 
 # ------------------ The Main CodeHilite Class ----------------------
-class CodeHilite(object):
+class CodeHilite:
     """
-    Determine language of source code, and pass it into pygments hilighter.
+    Determine language of source code, and pass it on to the Pygments highlighter.
 
-    Basic Usage:
-        >>> code = CodeHilite(src = 'some text')
-        >>> html = code.hilite()
+    Usage:
+        code = CodeHilite(src=some_code, lang='python')
+        html = code.hilite()
 
+    Arguments:
     * src: Source string or any object with a .readline attribute.
 
-    * linenums: (Boolean) Set line numbering to 'on' (True),
-      'off' (False) or 'auto'(None). Set to 'auto' by default.
+    * lang: String name of Pygments lexer to use for highlighting. Default: `None`.
 
-    * guess_lang: (Boolean) Turn language auto-detection
-      'on' or 'off' (on by default).
+    * guess_lang: Auto-detect which lexer to use. Ignored if `lang` is set to a valid
+      value. Default: `True`.
 
-    * css_class: Set class name of wrapper div ('codehilite' by default).
+    * use_pygments: Pass code to pygments for code highlighting. If `False`, the code is
+      instead wrapped for highlighting by a JavaScript library. Default: `True`.
 
-    * hl_lines: (List of integers) Lines to emphasize, 1-indexed.
+    * linenums: An alias to Pygments `linenos` formatter option. Default: `None`.
 
-    Low Level Usage:
-        >>> code = CodeHilite()
-        >>> code.src = 'some text' # String or anything with a .readline attr.
-        >>> code.linenos = True  # Turns line numbering on or of.
-        >>> html = code.hilite()
+    * css_class: An alias to Pygments `cssclass` formatter option. Default: 'codehilite'.
+
+    * lang_prefix: Prefix prepended to the language when `use_pygments` is `False`.
+      Default: "language-".
+
+    Other Options:
+    Any other options are accepted and passed on to the lexer and formatter. Therefore,
+    valid options include any options which are accepted by the `html` formatter or
+    whichever lexer the code's language uses. Note that most lexers do not have any
+    options. However, a few have very useful options, such as PHP's `startinline` option.
+    Any invalid options are ignored without error.
+
+    Formatter options: https://pygments.org/docs/formatters/#HtmlFormatter
+    Lexer Options: https://pygments.org/docs/lexers/
+
+    Advanced Usage:
+        code = CodeHilite(
+            src = some_code,
+            lang = 'php',
+            startinline = True,      # Lexer option. Snippet does not start with `<?php`.
+            linenostart = 42,        # Formatter option. Snippet starts on line 42.
+            hl_lines = [45, 49, 50], # Formatter option. Highlight lines 45, 49, and 50.
+            linenos = 'inline'       # Formatter option. Avoid alignment problems.
+        )
+        html = code.hilite()
 
     """
 
-    def __init__(self, src=None, linenums=None, guess_lang=True,
-                 css_class="codehilite", lang=None, style='default',
-                 noclasses=False, tab_length=4, hl_lines=None, use_pygments=True):
+    def __init__(self, src, **options):
         self.src = src
-        self.lang = lang
-        self.linenums = linenums
-        self.guess_lang = guess_lang
-        self.css_class = css_class
-        self.style = style
-        self.noclasses = noclasses
-        self.tab_length = tab_length
-        self.hl_lines = hl_lines or []
-        self.use_pygments = use_pygments
+        self.lang = options.pop('lang', None)
+        self.guess_lang = options.pop('guess_lang', True)
+        self.use_pygments = options.pop('use_pygments', True)
+        self.lang_prefix = options.pop('lang_prefix', 'language-')
+
+        if 'linenos' not in options:
+            options['linenos'] = options.pop('linenums', None)
+        if 'cssclass' not in options:
+            options['cssclass'] = options.pop('css_class', 'codehilite')
+        if 'wrapcode' not in options:
+            # Override pygments default
+            options['wrapcode'] = True
+        # Disallow use of `full` option
+        options['full'] = False
+
+        self.options = options
 
     def hilite(self):
         """
@@ -105,21 +130,16 @@ class CodeHilite(object):
 
         if pygments and self.use_pygments:
             try:
-                lexer = get_lexer_by_name(self.lang)
+                lexer = get_lexer_by_name(self.lang, **self.options)
             except ValueError:
                 try:
                     if self.guess_lang:
-                        lexer = guess_lexer(self.src)
+                        lexer = guess_lexer(self.src, **self.options)
                     else:
-                        lexer = get_lexer_by_name('text')
-                except ValueError:
-                    lexer = get_lexer_by_name('text')
-            formatter = get_formatter_by_name('html',
-                                              linenos=self.linenums,
-                                              cssclass=self.css_class,
-                                              style=self.style,
-                                              noclasses=self.noclasses,
-                                              hl_lines=self.hl_lines)
+                        lexer = get_lexer_by_name('text', **self.options)
+                except ValueError:  # pragma: no cover
+                    lexer = get_lexer_by_name('text', **self.options)
+            formatter = get_formatter_by_name('html', **self.options)
             return highlight(self.src, lexer, formatter)
         else:
             # just escape and build markup usable by JS highlighting libs
@@ -129,27 +149,30 @@ class CodeHilite(object):
             txt = txt.replace('"', '&quot;')
             classes = []
             if self.lang:
-                classes.append('language-%s' % self.lang)
-            if self.linenums:
+                classes.append('{}{}'.format(self.lang_prefix, self.lang))
+            if self.options['linenos']:
                 classes.append('linenums')
             class_str = ''
             if classes:
-                class_str = ' class="%s"' % ' '.join(classes)
-            return '<pre class="%s"><code%s>%s</code></pre>\n' % \
-                   (self.css_class, class_str, txt)
+                class_str = ' class="{}"'.format(' '.join(classes))
+            return '<pre class="{}"><code{}>{}\n</code></pre>\n'.format(
+                self.options['cssclass'],
+                class_str,
+                txt
+            )
 
     def _parseHeader(self):
         """
-        Determines language of a code block from shebang line and whether said
-        line should be removed or left in place. If the sheband line contains a
-        path (even a single /) then it is assumed to be a real shebang line and
-        left alone. However, if no path is given (e.i.: #!python or :::python)
-        then it is assumed to be a mock shebang for language identifitation of
-        a code fragment and removed from the code block prior to processing for
-        code highlighting. When a mock shebang (e.i: #!python) is found, line
-        numbering is turned on. When colons are found in place of a shebang
-        (e.i.: :::python), line numbering is left in the current state - off
-        by default.
+        Determines language of a code block from shebang line and whether the
+        said line should be removed or left in place. If the sheband line
+        contains a path (even a single /) then it is assumed to be a real
+        shebang line and left alone. However, if no path is given
+        (e.i.: #!python or :::python) then it is assumed to be a mock shebang
+        for language identification of a code fragment and removed from the
+        code block prior to processing for code highlighting. When a mock
+        shebang (e.i: #!python) is found, line numbering is turned on. When
+        colons are found in place of a shebang (e.i.: :::python), line
+        numbering is left in the current state - off by default.
 
         Also parses optional list of highlight lines, like:
 
@@ -166,7 +189,7 @@ class CodeHilite(object):
         c = re.compile(r'''
             (?:(?:^::+)|(?P<shebang>^[#]!)) # Shebang or 2 or more colons
             (?P<path>(?:/\w+)*[/ ])?        # Zero or 1 path
-            (?P<lang>[\w+-]*)               # The language
+            (?P<lang>[\w#.+-]*)             # The language
             \s*                             # Arbitrary whitespace
             # Optional highlight lines, single- or double-quote-delimited
             (hl_lines=(?P<quot>"|')(?P<hl_lines>.*?)(?P=quot))?
@@ -177,16 +200,16 @@ class CodeHilite(object):
             # we have a match
             try:
                 self.lang = m.group('lang').lower()
-            except IndexError:
+            except IndexError:  # pragma: no cover
                 self.lang = None
             if m.group('path'):
                 # path exists - restore first line
                 lines.insert(0, fl)
-            if self.linenums is None and m.group('shebang'):
+            if self.options['linenos'] is None and m.group('shebang'):
                 # Overridable and Shebang exists - use line numbers
-                self.linenums = True
+                self.options['linenos'] = True
 
-            self.hl_lines = parse_hl_lines(m.group('hl_lines'))
+            self.options['hl_lines'] = parse_hl_lines(m.group('hl_lines'))
         else:
             # No match
             lines.insert(0, fl)
@@ -200,23 +223,27 @@ class CodeHilite(object):
 class HiliteTreeprocessor(Treeprocessor):
     """ Hilight source code in code blocks. """
 
+    def code_unescape(self, text):
+        """Unescape code."""
+        text = text.replace("&lt;", "<")
+        text = text.replace("&gt;", ">")
+        # Escaped '&' should be replaced at the end to avoid
+        # conflicting with < and >.
+        text = text.replace("&amp;", "&")
+        return text
+
     def run(self, root):
         """ Find code blocks and store in htmlStash. """
         blocks = root.iter('pre')
         for block in blocks:
             if len(block) == 1 and block[0].tag == 'code':
                 code = CodeHilite(
-                    block[0].text,
-                    linenums=self.config['linenums'],
-                    guess_lang=self.config['guess_lang'],
-                    css_class=self.config['css_class'],
-                    style=self.config['pygments_style'],
-                    noclasses=self.config['noclasses'],
-                    tab_length=self.markdown.tab_length,
-                    use_pygments=self.config['use_pygments']
+                    self.code_unescape(block[0].text),
+                    tab_length=self.md.tab_length,
+                    style=self.config.pop('pygments_style', 'default'),
+                    **self.config
                 )
-                placeholder = self.markdown.htmlStash.store(code.hilite(),
-                                                            safe=True)
+                placeholder = self.md.htmlStash.store(code.hilite())
                 # Clear codeblock in etree instance
                 block.clear()
                 # Change to p element which will later
@@ -228,11 +255,11 @@ class HiliteTreeprocessor(Treeprocessor):
 class CodeHiliteExtension(Extension):
     """ Add source code hilighting to markdown codeblocks. """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         # define default configs
         self.config = {
             'linenums': [None,
-                         "Use lines numbers. True=yes, False=no, None=auto"],
+                         "Use lines numbers. True|table|inline=yes, False=no, None=auto"],
             'guess_lang': [True,
                            "Automatic language detection - Default: True"],
             'css_class': ["codehilite",
@@ -247,19 +274,34 @@ class CodeHiliteExtension(Extension):
             'use_pygments': [True,
                              'Use Pygments to Highlight code blocks. '
                              'Disable if using a JavaScript library. '
-                             'Default: True']
+                             'Default: True'],
+            'lang_prefix': [
+                'language-',
+                'Prefix prepended to the language when use_pygments is false. Default: "language-"'
+            ]
             }
 
-        super(CodeHiliteExtension, self).__init__(*args, **kwargs)
+        for key, value in kwargs.items():
+            if key in self.config:
+                self.setConfig(key, value)
+            else:
+                # manually set unknown keywords.
+                if isinstance(value, str):
+                    try:
+                        # Attempt to parse str as a bool value
+                        value = parseBoolValue(value, preserve_none=True)
+                    except ValueError:
+                        pass  # Assume it's not a bool value. Use as-is.
+                self.config[key] = [value, '']
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """ Add HilitePostprocessor to Markdown instance. """
         hiliter = HiliteTreeprocessor(md)
         hiliter.config = self.getConfigs()
-        md.treeprocessors.add("hilite", hiliter, "<inline")
+        md.treeprocessors.register(hiliter, 'hilite', 30)
 
         md.registerExtension(self)
 
 
-def makeExtension(*args, **kwargs):
-    return CodeHiliteExtension(*args, **kwargs)
+def makeExtension(**kwargs):  # pragma: no cover
+    return CodeHiliteExtension(**kwargs)

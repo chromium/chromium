@@ -11,12 +11,12 @@ namespace web {
 class WebState;
 }
 
-@class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @protocol DiscoverFeedDelegate;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
+class NotificationPromoWhatsNew;
 @class NTPHomeMediator;
 @protocol ThumbStripSupporting;
 @class ViewRevealingVerticalPanHandler;
@@ -52,18 +52,11 @@ class WebState;
 // Command handler for NTP related commands.
 @property(nonatomic, weak) id<NewTabPageCommands> ntpCommandHandler;
 
-// Bubble presenter for displaying IPH bubbles relating to the NTP.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
-
-// Metrics recorder for the Discover feed events related to ContentSuggestions.
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+// Metrics recorder for the feed events related to ContentSuggestions.
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Delegate used to communicate to communicate events to the DiscoverFeed.
 @property(nonatomic, weak) id<DiscoverFeedDelegate> discoverFeedDelegate;
-
-// Dismisses all modals owned by the NTP mediator.
-- (void)dismissModals;
 
 // Stop any scrolling in the scroll view.
 - (void)stopScrolling;
@@ -81,11 +74,11 @@ class WebState;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
-// Constrains the named layout guide for the Discover header menu button.
-- (void)constrainDiscoverHeaderMenuButtonNamedGuide;
-
 // Configure Content Suggestions if showing the Start Surface.
 - (void)configureStartSurfaceIfNeeded;
+
+// The notification promo.
+- (NotificationPromoWhatsNew*)notificationPromo;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COORDINATOR_H_

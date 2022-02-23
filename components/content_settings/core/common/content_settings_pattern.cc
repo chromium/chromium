@@ -367,8 +367,6 @@ operator=(PatternParts&& other) = default;
 //   - a.b.c.d (matches an exact IPv4 ip)
 //   - [a:b:c:d:e:f:g:h] (matches an exact IPv6 ip)
 //   - file:///tmp/test.html (a complete URL without a host)
-// Version 2 adds a resource identifier for plugins.
-// TODO(jochen): update once this feature is no longer behind a flag.
 const int ContentSettingsPattern::kContentSettingsPatternVersion = 1;
 
 // static

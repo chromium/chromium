@@ -8,8 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
-#include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/device_pairing_handler.h"
+#include "chromeos/services/bluetooth_config/discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -31,7 +31,7 @@ namespace bluetooth_config {
 // responsible for starting and stopping discovery and does not handle pairing
 // attempts.
 class DiscoverySessionManager : public AdapterStateController::Observer,
-                                public DeviceCache::Observer {
+                                public DiscoveredDevicesProvider::Observer {
  public:
   ~DiscoverySessionManager() override;
 
@@ -42,8 +42,9 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
       mojo::PendingRemote<mojom::BluetoothDiscoveryDelegate> delegate);
 
  protected:
-  DiscoverySessionManager(AdapterStateController* adapter_state_controller,
-                          DeviceCache* device_cache);
+  DiscoverySessionManager(
+      AdapterStateController* adapter_state_controller,
+      DiscoveredDevicesProvider* discovered_devices_provider);
 
   void NotifyDiscoveryStarted();
   void NotifyDiscoveryStoppedAndClearActiveClients();
@@ -70,8 +71,8 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   // AdapterStateController::Observer:
   void OnAdapterStateChanged() override;
 
-  // DeviceCache::Observer:
-  void OnUnpairedDevicesListChanged() override;
+  // DiscoveredDevicesProvider::Observer:
+  void OnDiscoveredDevicesListChanged() override;
 
   // Creates a new DevicePairingHandler for |id| and inserts it into
   // |id_to_pairing_handler_map_|. Returns the remote connected to the handler.
@@ -90,13 +91,14 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
       id_to_pairing_handler_map_;
 
   AdapterStateController* adapter_state_controller_;
-  DeviceCache* device_cache_;
+  DiscoveredDevicesProvider* discovered_devices_provider_;
 
   base::ScopedObservation<AdapterStateController,
                           AdapterStateController::Observer>
       adapter_state_controller_observation_{this};
-  base::ScopedObservation<DeviceCache, DeviceCache::Observer>
-      device_cache_observation_{this};
+  base::ScopedObservation<DiscoveredDevicesProvider,
+                          DiscoveredDevicesProvider::Observer>
+      discovered_devices_provider_observation_{this};
 
   mojo::RemoteSet<mojom::BluetoothDiscoveryDelegate> delegates_;
 

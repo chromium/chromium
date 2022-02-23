@@ -59,6 +59,28 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
     return algorithm_.Render(start, end, frames_dropped);
   }
 
+  scoped_refptr<media::VideoFrame> RenderWithGlitchAndStep(
+      size_t* frames_dropped,
+      double deadline_begin_error,
+      double deadline_end_error) {
+    constexpr base::TimeDelta kRenderInterval =
+        base::Milliseconds(1000.0 / 60.0);  // 60fps.
+    return RenderAndStep(frames_dropped, kRenderInterval);
+  }
+
+  scoped_refptr<media::VideoFrame> RenderWithGlitchAndStep(
+      size_t* frames_dropped,
+      base::TimeDelta render_interval,
+      double deadline_begin_error,
+      double deadline_end_error) {
+    const base::TimeTicks start =
+        current_render_time_ + deadline_begin_error * render_interval;
+    current_render_time_ += render_interval;
+    const base::TimeTicks end =
+        current_render_time_ + deadline_end_error * render_interval;
+    return algorithm_.Render(start, end, frames_dropped);
+  }
+
   void StepUntilJustBeforeNextFrameIsRendered(
       base::TimeDelta render_interval,
       absl::optional<int> expected_id = absl::nullopt) {
@@ -516,6 +538,56 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
     rendered_frame = RenderAndStep(nullptr, kRenderInterval);
     ASSERT_TRUE(rendered_frame);
     EXPECT_EQ(rendered_frame->unique_id(), frame_id_2);
+  }
+}
+
+// Render at 60Hz with irregular vsync boundaries.
+TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch60Hz) {
+  constexpr int kNumberOfFrames = 5;
+  constexpr int kMaxCompositionDelayInFrames = 6;
+  constexpr double kDeadlineBeginErrorRate[] = {0.01, 0.03, -0.01, -0.02, 0.02};
+  constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
+  for (int i = 0; i < kNumberOfFrames; ++i) {
+    int frame_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    size_t frames_dropped = 0u;
+    scoped_refptr<media::VideoFrame> rendered_frame = RenderWithGlitchAndStep(
+        &frames_dropped, kDeadlineBeginErrorRate[i], kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    EXPECT_EQ(rendered_frame->unique_id(), frame_id);
+    EXPECT_EQ(frames_dropped, 0u);
+  }
+}
+
+// Double frame rate (120Hz playing back 60Hz video) and render with irregular
+// vsync boundaries.
+TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch120Hz) {
+  constexpr size_t kNumberOfFrames = 5;
+  constexpr base::TimeDelta kRenderInterval =
+      base::Milliseconds(1000.0 / 120.0);  // 120Hz.
+  constexpr int kMaxCompositionDelayInFrames = 6;
+  constexpr double kDeadlineBeginErrorRate[] = {0.01, 0.03, -0.01, -0.02, 0.02};
+  constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
+
+  // Add one initial frame.
+  int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+
+  for (size_t i = 0; i < kNumberOfFrames; ++i) {
+    size_t frames_dropped = 0;
+    scoped_refptr<media::VideoFrame> rendered_frame = RenderWithGlitchAndStep(
+        &frames_dropped, kRenderInterval, kDeadlineBeginErrorRate[i],
+        kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    int rendered_frame_id = last_id;
+    EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
+
+    last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+
+    // The same frame should be rendered.
+    rendered_frame = RenderWithGlitchAndStep(&frames_dropped, kRenderInterval,
+                                             kDeadlineBeginErrorRate[i],
+                                             kDeadlineEndErrorRate[i]);
+    ASSERT_TRUE(rendered_frame);
+    EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
   }
 }
 

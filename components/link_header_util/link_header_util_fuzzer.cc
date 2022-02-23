@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include <string>
+#include <tuple>
 #include <unordered_map>
 
 #include "components/link_header_util/link_header_util.h"
@@ -20,7 +21,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     assert(pair.first < pair.second);
     std::string url;
     std::unordered_map<std::string, absl::optional<std::string>> params;
-    (void)ParseLinkHeaderValue(pair.first, pair.second, &url, &params);
+    std::ignore = ParseLinkHeaderValue(pair.first, pair.second, &url, &params);
   }
 
   return 0;

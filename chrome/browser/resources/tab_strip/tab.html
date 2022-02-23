@@ -18,6 +18,10 @@
     display: none;
   }
 
+  tabstrip-alert-indicators {
+    --indicator-color: var(--tabstrip-tab-text-color);
+  }
+
   #tab {
     background: var(--tabstrip-tab-background-color);
     border-radius: var(--tabstrip-tab-border-radius);
@@ -38,13 +42,36 @@
     box-shadow: 0 0 0 2px var(--tabstrip-focus-outline-color);
   }
 
-  :host([active]) #tab {
-    box-shadow: 0 0 0 2px var(--tabstrip-tab-active-border-color);
+  :host([active]) #title {
+    background-color: var(--tabstrip-tab-active-title-background-color);
   }
 
-  :host-context(.focus-outline-visible):host([active]) #tab:focus {
-    box-shadow: 0 0 0 4px var(--tabstrip-focus-outline-color),
-                0 0 0 2px var(--tabstrip-tab-active-border-color);
+  :host([active]) #titleText {
+    color: var(--tabstrip-tab-active-title-content-color);
+  }
+
+  :host([active]) #titleText::after {
+    background: linear-gradient(
+        to right, transparent,
+        var(--tabstrip-tab-active-title-background-color));
+  }
+
+  :host-context([dir='rtl']):host([active]) #titleText::after {
+    background: linear-gradient(
+        to left, transparent,
+        var(--tabstrip-tab-active-title-background-color));
+  }
+
+  :host([active]) tabstrip-alert-indicators {
+    --indicator-color: var(--tabstrip-tab-active-title-content-color);
+    --tabstrip-indicator-capturing-color:
+        var(--tabstrip-tab-active-title-content-color);
+    --tabstrip-indicator-pip-color:
+        var(--tabstrip-tab-active-title-content-color);
+  }
+
+  :host([active]) #closeIcon {
+    background-color: var(--tabstrip-tab-active-title-content-color);
   }
 
   #title {
@@ -160,12 +187,20 @@
               translate(-50%, -50%) scaleX(-1);
   }
 
+  :host([active][waiting_]) #progressSpinner {
+    background-color: var(--tabstrip-tab-active-title-content-color);
+  }
+
   :host([waiting_]) #favicon {
     display: none;
   }
 
   :host([loading_]) #progressSpinner {
     background-color: var(--tabstrip-tab-loading-spinning-color);
+  }
+
+  :host([active][loading_]) #progressSpinner {
+    background-color: var(--tabstrip-tab-active-title-content-color);
   }
 
   :host([crashed_]) #favicon {

@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -33,7 +34,7 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
 
@@ -46,12 +47,22 @@ namespace content {
 class WebContents;
 }
 
+class TabGroupModelFactory {
+ public:
+  TabGroupModelFactory();
+  TabGroupModelFactory(const TabGroupModelFactory&) = delete;
+  TabGroupModelFactory& operator=(const TabGroupModelFactory&) = delete;
+
+  static TabGroupModelFactory* GetInstance();
+  std::unique_ptr<TabGroupModel> Create(TabGroupController* controller);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModel
 //
 // A model & low level controller of a Browser Window tabstrip. Holds a vector
-// of WebContentses, and provides an API for adding, removing and
+// of WebContents, and provides an API for adding, removing and
 // shuffling them, as well as a higher level API for doing specific Browser-
 // related tasks like adding new Tabs from just a URL, etc.
 //
@@ -177,7 +188,7 @@ class TabStripModel : public TabGroupController {
     // guaranteed to be valid for the life time of the notification (and
     // possibly longer).
     std::unique_ptr<content::WebContents> owned_contents;
-    content::WebContents* contents;
+    raw_ptr<content::WebContents> contents;
 
     // The index of the WebContents in the original selection model of the tab
     // strip [prior to any tabs being removed, if multiple tabs are being
@@ -202,7 +213,12 @@ class TabStripModel : public TabGroupController {
 
   // Construct a TabStripModel with a delegate to help it do certain things
   // (see the TabStripModelDelegate documentation). |delegate| cannot be NULL.
-  explicit TabStripModel(TabStripModelDelegate* delegate, Profile* profile);
+  // the TabGroupModelFactory can be replaced with a nullptr to set the
+  // group_model to null in cases where groups are not supported.
+  explicit TabStripModel(TabStripModelDelegate* delegate,
+                         Profile* profile,
+                         TabGroupModelFactory* group_model_factory =
+                             TabGroupModelFactory::GetInstance());
 
   TabStripModel(const TabStripModel&) = delete;
   TabStripModel& operator=(const TabStripModel&) = delete;
@@ -531,6 +547,8 @@ class TabStripModel : public TabGroupController {
 
   TabGroupModel* group_model() const { return group_model_.get(); }
 
+  bool SupportsTabGroups() const { return group_model_.get() != nullptr; }
+
   // Returns true if one or more of the tabs pointed to by |indices| are
   // supported by read later.
   bool IsReadLaterSupportedForAny(const std::vector<int>& indices);
@@ -539,6 +557,7 @@ class TabStripModel : public TabGroupController {
   void AddToReadLater(const std::vector<int>& indices);
 
   // TabGroupController:
+  Profile* GetProfile() override;
   void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
   void ChangeTabGroupContents(const tab_groups::TabGroupId& group) override;
@@ -826,7 +845,9 @@ class TabStripModel : public TabGroupController {
   // no tabs. Returns that group.
   absl::optional<tab_groups::TabGroupId> UngroupTab(int index);
 
-  // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|.
+  // Helper function for MoveAndSetGroup. Adds the tab at |index| to |group|,
+  // updates the group model, and notifies the observers if the group at that
+  // index would change.
   void GroupTab(int index, const tab_groups::TabGroupId& group);
 
   // Changes the pinned state of the tab at |index|.
@@ -856,14 +877,14 @@ class TabStripModel : public TabGroupController {
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;
 
-  TabStripModelDelegate* delegate_;
+  raw_ptr<TabStripModelDelegate> delegate_;
 
   bool tab_strip_ui_was_set_ = false;
 
   base::ObserverList<TabStripModelObserver>::Unchecked observers_;
 
   // A profile associated with this TabStripModel.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // True if all tabs are currently being closed via CloseAllTabs.
   bool closing_all_ = false;

@@ -22,6 +22,9 @@ enum class EventPageShowPersisted {
   // should be almost the same as kYesInRenderer. See crbug.com/1234634.
   kYesInBrowser = 2,
 
+  // TODO(https://crbug.com/1234634): Below here is for tracking down the
+  // mismatch. Remove these when debugging is complete.
+
   // Browser triggers a pageshow event with persisted flag, counted in the
   // back-forward cache code. The recorded count should be almost the same as
   // kYesInRenderer. See crbug.com/1234634.
@@ -29,10 +32,28 @@ enum class EventPageShowPersisted {
   kYesInBrowser_BackForwardCache_RestoreEntry_Attempt = 4,
   kYesInBrowser_BackForwardCache_RestoreEntry_Succeed = 5,
   kYesInBrowser_RenderFrameHostManager_CommitPending = 6,
+
+  // Renderer has a received a state with
+  // `should_dispatch_pageshow_for_debugging` set to true.
+  kBrowserYesInRenderer = 7,
+
+  // As kBrowserYesInRenderer but we have confirmed that we have a Page object.
+  kBrowserYesInRendererWithPage = 8,
+
+  // Browser received an ACK after sending state with
+  // `should_dispatch_pageshow_for_debugging` set to true.
+  kYesInBrowserAck = 9,
+
+  // Mojo interface was not connected when the IPC was being sent.
+  kYesInBrowserDisconnected = 10,
+
+  // RenderView was not live when the IPC was being sent.
+  kYesInBrowserRenderViewNotLive = 11,
+
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowser_RenderFrameHostManager_CommitPending,
+  kMaxValue = kYesInBrowserRenderViewNotLive,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(

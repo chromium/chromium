@@ -99,7 +99,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
     case kLsPoint: {
       PointLightSource* point_light_source =
           static_cast<PointLightSource*>(light_source_.get());
-      const FloatPoint3D position = point_light_source->GetPosition();
+      const gfx::Point3F position = point_light_source->GetPosition();
       const SkPoint3 sk_position =
           SkPoint3::Make(position.x(), position.y(), position.z());
       return sk_make_sp<LightingPointPaintFilter>(
@@ -113,10 +113,9 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           SkPoint3::Make(spot_light_source->GetPosition().x(),
                          spot_light_source->GetPosition().y(),
                          spot_light_source->GetPosition().z());
-      const SkPoint3 target =
-          SkPoint3::Make(spot_light_source->Direction().x(),
-                         spot_light_source->Direction().y(),
-                         spot_light_source->Direction().z());
+      const SkPoint3 target = SkPoint3::Make(spot_light_source->PointsAt().x(),
+                                             spot_light_source->PointsAt().y(),
+                                             spot_light_source->PointsAt().z());
       float specular_exponent = spot_light_source->SpecularExponent();
       float limiting_cone_angle = spot_light_source->LimitingConeAngle();
       if (!limiting_cone_angle || limiting_cone_angle > 90 ||

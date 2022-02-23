@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_model.h"
@@ -93,7 +94,7 @@ class DeletePageTask : public Task {
   void InformDeletePageDone(DeletePageResult result);
 
   // The store to delete pages from. Not owned.
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   // The function which will delete pages.
   DeleteFunction func_;
   DeletePageTaskCallback callback_;

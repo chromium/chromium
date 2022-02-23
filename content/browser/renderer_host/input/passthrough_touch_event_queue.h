@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
@@ -234,7 +235,7 @@ class CONTENT_EXPORT PassthroughTouchEventQueue {
   size_t SizeForTesting() const;
 
   // Handles touch event forwarding and ack'ed event dispatch.
-  PassthroughTouchEventQueueClient* client_;
+  raw_ptr<PassthroughTouchEventQueueClient> client_;
 
   // Whether the renderer has at least one consumer of touch events, e.g. a JS
   // event handler or hit-testable scrollbars

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
@@ -18,12 +19,11 @@
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/platform/crypto.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
@@ -535,34 +535,65 @@ bool CheckSourceAndReportViolation(
   DCHECK_NE(CSPDirectiveName::DefaultSrc, effective_type);
 
   String prefix = "Refused to ";
-  if (CSPDirectiveName::BaseURI == effective_type)
-    prefix = prefix + "set the document's base URI to '";
-  else if (CSPDirectiveName::WorkerSrc == effective_type)
-    prefix = prefix + "create a worker from '";
-  else if (CSPDirectiveName::ConnectSrc == effective_type)
-    prefix = prefix + "connect to '";
-  else if (CSPDirectiveName::FontSrc == effective_type)
-    prefix = prefix + "load the font '";
-  else if (CSPDirectiveName::FormAction == effective_type)
-    prefix = prefix + "send form data to '";
-  else if (CSPDirectiveName::FrameSrc == effective_type)
-    prefix = prefix + "frame '";
-  else if (CSPDirectiveName::ImgSrc == effective_type)
-    prefix = prefix + "load the image '";
-  else if (CSPDirectiveName::MediaSrc == effective_type)
-    prefix = prefix + "load media from '";
-  else if (CSPDirectiveName::ManifestSrc == effective_type)
-    prefix = prefix + "load manifest from '";
-  else if (CSPDirectiveName::ObjectSrc == effective_type)
-    prefix = prefix + "load plugin data from '";
-  else if (CSPDirectiveName::PrefetchSrc == effective_type)
-    prefix = prefix + "prefetch content from '";
-  else if (ContentSecurityPolicy::IsScriptDirective(effective_type))
-    prefix = prefix + "load the script '";
-  else if (ContentSecurityPolicy::IsStyleDirective(effective_type))
-    prefix = prefix + "load the stylesheet '";
-  else if (CSPDirectiveName::NavigateTo == effective_type)
-    prefix = prefix + "navigate to '";
+  switch (effective_type) {
+    case CSPDirectiveName::BaseURI:
+      prefix = prefix + "set the document's base URI to '";
+      break;
+    case CSPDirectiveName::ConnectSrc:
+      prefix = prefix + "connect to '";
+      break;
+    case CSPDirectiveName::FontSrc:
+      prefix = prefix + "load the font '";
+      break;
+    case CSPDirectiveName::FormAction:
+      prefix = prefix + "send form data to '";
+      break;
+    case CSPDirectiveName::ImgSrc:
+      prefix = prefix + "load the image '";
+      break;
+    case CSPDirectiveName::ManifestSrc:
+      prefix = prefix + "load manifest from '";
+      break;
+    case CSPDirectiveName::MediaSrc:
+      prefix = prefix + "load media from '";
+      break;
+    case CSPDirectiveName::ObjectSrc:
+      prefix = prefix + "load plugin data from '";
+      break;
+    case CSPDirectiveName::PrefetchSrc:
+      prefix = prefix + "prefetch content from '";
+      break;
+    case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcAttr:
+    case CSPDirectiveName::ScriptSrcElem:
+      prefix = prefix + "load the script '";
+      break;
+    case CSPDirectiveName::StyleSrc:
+    case CSPDirectiveName::StyleSrcAttr:
+    case CSPDirectiveName::StyleSrcElem:
+      prefix = prefix + "load the stylesheet '";
+      break;
+    case CSPDirectiveName::WorkerSrc:
+      prefix = prefix + "create a worker from '";
+      break;
+    case CSPDirectiveName::BlockAllMixedContent:
+    case CSPDirectiveName::ChildSrc:
+    case CSPDirectiveName::DefaultSrc:
+    case CSPDirectiveName::FencedFrameSrc:
+    case CSPDirectiveName::FrameAncestors:
+    case CSPDirectiveName::FrameSrc:
+    case CSPDirectiveName::NavigateTo:
+    case CSPDirectiveName::ReportTo:
+    case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::RequireTrustedTypesFor:
+    case CSPDirectiveName::Sandbox:
+    case CSPDirectiveName::TreatAsPublicAddress:
+    case CSPDirectiveName::TrustedTypes:
+    case CSPDirectiveName::UpgradeInsecureRequests:
+    case CSPDirectiveName::Unknown:
+      NOTREACHED();
+      break;
+  }
 
   String directive_name =
       ContentSecurityPolicy::GetDirectiveName(directive.type);
@@ -572,6 +603,19 @@ bool CheckSourceAndReportViolation(
     suffix = suffix + " Note that '" + effective_directive_name +
              "' was not explicitly set, so '" + directive_name +
              "' is used as a fallback.";
+  }
+
+  // Wildcards match network schemes ('http', 'https', 'ws', 'wss'), and the
+  // scheme of the protected resource:
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
+  // schemes, including custom schemes, must be explicitly listed in a source
+  // list.
+  if (directive.source_list->allow_star) {
+    suffix = suffix +
+             " Note that '*' matches only URLs with network schemes ('http', "
+             "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
+             "scheme. " +
+             url.Protocol() + ":' must be added explicitely.";
   }
 
   String raw_directive =
@@ -775,7 +819,6 @@ bool CSPDirectiveListAllowFromSource(
          type == CSPDirectiveName::ConnectSrc ||
          type == CSPDirectiveName::FontSrc ||
          type == CSPDirectiveName::FormAction ||
-         type == CSPDirectiveName::FrameSrc ||
          type == CSPDirectiveName::ImgSrc ||
          type == CSPDirectiveName::ManifestSrc ||
          type == CSPDirectiveName::MediaSrc ||
@@ -785,8 +828,7 @@ bool CSPDirectiveListAllowFromSource(
          type == CSPDirectiveName::StyleSrcElem ||
          type == CSPDirectiveName::WorkerSrc);
 
-  if (type == CSPDirectiveName::ObjectSrc ||
-      type == CSPDirectiveName::FrameSrc) {
+  if (type == CSPDirectiveName::ObjectSrc) {
     if (url.ProtocolIsAbout())
       return true;
   }

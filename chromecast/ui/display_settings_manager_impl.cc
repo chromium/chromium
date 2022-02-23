@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "chromecast/graphics/cast_window_manager.h"
@@ -14,8 +15,7 @@
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 
 #if defined(USE_AURA)
-#include "chromecast/browser/cast_browser_process.h"
-#include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/ui/display_settings/gamma_configurator.h"
 #endif  // defined(USE_AURA)
 
@@ -33,22 +33,15 @@ const float kDefaultApiBrightness = kMaxApiBrightness;
 
 DisplaySettingsManagerImpl::DisplaySettingsManagerImpl(
     CastWindowManager* window_manager,
-    const DisplaySettingsManager::ColorTemperatureConfig&
-        color_temperature_config)
+    shell::CastDisplayConfigurator* display_configurator)
     : window_manager_(window_manager),
+      display_configurator_(display_configurator),
 #if defined(USE_AURA)
-      display_configurator_(
-          shell::CastBrowserProcess::GetInstance()->display_configurator()),
       gamma_configurator_(
           std::make_unique<GammaConfigurator>(display_configurator_)),
-#else
-      display_configurator_(nullptr),
 #endif  // defined(USE_AURA)
       brightness_(-1.0f),
       screen_power_controller_(ScreenPowerController::Create(this)),
-      color_temperature_animation_(std::make_unique<ColorTemperatureAnimation>(
-          display_configurator_,
-          color_temperature_config)),
       weak_factory_(this) {
   DCHECK(window_manager_);
 #if defined(USE_AURA)
@@ -67,6 +60,13 @@ void DisplaySettingsManagerImpl::ResetDelegate() {
   // Skip a brightess animation to its last step and stop
   // This is important for the final brightness to be cached on reboot
   brightness_animation_.reset();
+}
+
+void DisplaySettingsManagerImpl::SetColorTemperatureConfig(
+    const DisplaySettingsManager::ColorTemperatureConfig& config) {
+  DCHECK(!color_temperature_animation_);
+  color_temperature_animation_ = std::make_unique<ColorTemperatureAnimation>(
+      display_configurator_, config);
 }
 
 void DisplaySettingsManagerImpl::SetGammaCalibration(
@@ -115,6 +115,9 @@ void DisplaySettingsManagerImpl::SetScreenBrightnessOn(
 
 void DisplaySettingsManagerImpl::SetColorTemperature(float temperature) {
   DVLOG(4) << "Setting color temperature to " << temperature << " Kelvin.";
+  if (!color_temperature_animation_) {
+    return;
+  }
   color_temperature_animation_->AnimateToNewValue(temperature,
                                                   kAnimationDuration);
 }
@@ -124,10 +127,16 @@ void DisplaySettingsManagerImpl::SetColorTemperatureSmooth(
     base::TimeDelta duration) {
   DVLOG(4) << "Setting color temperature to " << temperature
            << " Kelvin. Duration: " << duration;
+  if (!color_temperature_animation_) {
+    return;
+  }
   color_temperature_animation_->AnimateToNewValue(temperature, duration);
 }
 
 void DisplaySettingsManagerImpl::ResetColorTemperature() {
+  if (!color_temperature_animation_) {
+    return;
+  }
   color_temperature_animation_->AnimateToNeutral(kAnimationDuration);
 }
 

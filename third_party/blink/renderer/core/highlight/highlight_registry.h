@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry_map_entry.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
@@ -24,7 +24,8 @@ namespace blink {
 using HighlightRegistryMap =
     HeapLinkedHashSet<Member<HighlightRegistryMapEntry>,
                       HashTraits<Member<HighlightRegistryMapEntry>>>;
-using HighlightRegistryMapIterable = Maplike<AtomicString, Member<Highlight>>;
+using HighlightRegistryMapIterable =
+    Maplike<AtomicString, IDLString, Member<Highlight>, Highlight>;
 class LocalFrame;
 
 class CORE_EXPORT HighlightRegistry : public ScriptWrappable,

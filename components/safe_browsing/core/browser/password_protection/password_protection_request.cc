@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_service_base.h"
@@ -110,17 +111,6 @@ PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
   CheckAllowlist();
 }
 
@@ -248,9 +238,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
   }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetReferringAppInfo();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   switch (trigger_type_) {
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
@@ -333,19 +323,6 @@ bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
-
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
     password_protection_service_->token_fetcher()->Start(
@@ -444,8 +421,7 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
   const bool is_success = url_loader_->NetError() == net::OK;
 
   LogPasswordProtectionNetworkResponseAndDuration(
-      is_success ? response_code : url_loader_->NetError(),
-      request_start_time_);
+      response_code, url_loader_->NetError(), request_start_time_);
 
   if (!is_success || net::HTTP_OK != response_code) {
     Finish(RequestOutcome::FETCH_FAILED, nullptr);

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_animation.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
@@ -101,7 +101,7 @@ class TestTabStripObserver : public TabStripObserver {
 
   void OnTabRemoved(int index) override { last_tab_removed_ = index; }
 
-  TabStrip* tab_strip_;
+  raw_ptr<TabStrip> tab_strip_;
   int last_tab_added_ = -1;
   int last_tab_removed_ = -1;
   int last_tab_moved_from_ = -1;
@@ -144,7 +144,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
             views::kFlexBehaviorKey,
             views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                      views::MaximumFlexSizeRule::kPreferred));
-    tab_strip_parent->AddChildView(tab_strip_);
+    tab_strip_parent->AddChildView(tab_strip_.get());
     // The tab strip is free to use all of the space in its parent view, since
     // there are no sibling controls such as the NTB in the test context.
     tab_strip_->SetAvailableWidthCallback(base::BindRepeating(
@@ -195,7 +195,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   void AnimateToIdealBounds() { tab_strip_->AnimateToIdealBounds(); }
 
   views::BoundsAnimator* bounds_animator() {
-    return &tab_strip_->bounds_animator_;
+    return &tab_strip_->tab_container_->bounds_animator();
   }
 
   int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }
@@ -223,9 +223,18 @@ class TabStripTestBase : public ChromeViewsTestBase {
     }
   }
 
+  std::vector<views::View*> GetChildViews() {
+    // The first (and only) View child of TabStrip is its TabContainer, which
+    // contains the tabs and group views.
+    // TODO(1116121): Move tests that test view/focus order to test
+    // TabContainer directly, once that functionality has been moved there.
+    return tab_strip_->children()[0]->children();
+  }
+
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
-    for (auto const& group_view_pair : tab_strip_->group_views_)
+    for (auto const& group_view_pair :
+         tab_strip_->tab_container_->group_views())
       result.push_back(group_view_pair.second.get());
     return result;
   }
@@ -233,10 +242,11 @@ class TabStripTestBase : public ChromeViewsTestBase {
   // Returns all TabSlotViews in the order that they have as ViewChildren of
   // TabStrip. This should match the actual order that they appear in visually.
   views::View::Views GetTabSlotViewsInFocusOrder() {
-    views::View::Views all_children = tab_strip_->children();
+    views::View::Views all_children = GetChildViews();
 
     const int num_tab_slot_views =
-        tab_strip_->GetTabCount() + tab_strip_->group_views_.size();
+        tab_strip_->GetTabCount() +
+        tab_strip_->tab_container_->group_views().size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);
@@ -266,9 +276,9 @@ class TabStripTestBase : public ChromeViewsTestBase {
   }
 
   // Owned by TabStrip.
-  FakeBaseTabStripController* controller_ = nullptr;
-  TabStrip* tab_strip_ = nullptr;
-  views::View* tab_strip_parent_ = nullptr;
+  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<views::View> tab_strip_parent_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
   ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::ET_MOUSE_PRESSED,
@@ -375,40 +385,23 @@ TEST_P(TabStripTest, RemoveTab) {
   TestTabStripObserver observer(tab_strip_);
   controller_->AddTab(0, false);
   controller_->AddTab(1, false);
-  const size_t num_children = tab_strip_->children().size();
+  const size_t num_children = GetChildViews().size();
   EXPECT_EQ(2, tab_strip_->GetTabCount());
   controller_->RemoveTab(0);
   EXPECT_EQ(0, observer.last_tab_removed());
   // When removing a tab the tabcount should immediately decrement.
   EXPECT_EQ(1, tab_strip_->GetTabCount());
   // But the number of views should remain the same (it's animatining closed).
-  EXPECT_EQ(num_children, tab_strip_->children().size());
+  EXPECT_EQ(num_children, GetChildViews().size());
 
   CompleteAnimationAndLayout();
 
-  EXPECT_EQ(num_children - 1, tab_strip_->children().size());
+  EXPECT_EQ(num_children - 1, GetChildViews().size());
 
   // Remove the last tab to make sure things are cleaned up correctly when
   // the TabStrip is destroyed and an animation is ongoing.
   controller_->RemoveTab(0);
   EXPECT_EQ(0, observer.last_tab_removed());
-}
-
-// Verifies child view order matches model order.
-TEST_P(TabStripTest, TabViewOrder) {
-  controller_->AddTab(0, false);
-  controller_->AddTab(1, false);
-  controller_->AddTab(2, false);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-
-  controller_->MoveTab(0, 1);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(1, 2);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(1, 0);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
-  controller_->MoveTab(0, 2);
-  EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 }
 
 // Verifies child view order matches slot order with group headers.
@@ -700,15 +693,15 @@ TEST_P(TabStripTest, ActiveTabWidthWhenTabsAreTiny) {
 
   int active_index = controller_->GetActiveIndex();
   EXPECT_EQ(tab_strip_->GetTabCount() - 1, active_index);
-  EXPECT_LT(tab_strip_->ideal_bounds(0).width(),
-            tab_strip_->ideal_bounds(active_index).width());
+  EXPECT_LT(tab_strip_->tab_at(0)->bounds().width(),
+            tab_strip_->tab_at(active_index)->bounds().width());
 
   // During mouse-based tab closure, the active tab should remain at least as
   // wide as it's minimum width.
   controller_->SelectTab(0, dummy_event_);
   while (tab_strip_->GetTabCount() > 0) {
     active_index = controller_->GetActiveIndex();
-    EXPECT_GE(tab_strip_->ideal_bounds(active_index).width(),
+    EXPECT_GE(tab_strip_->tab_at(active_index)->bounds().width(),
               TabStyleViews::GetMinimumActiveWidth());
     tab_strip_->CloseTab(tab_strip_->tab_at(active_index),
                          CLOSE_TAB_FROM_MOUSE);
@@ -791,7 +784,7 @@ TEST_P(TabStripTest, ResetBoundsForDraggedTabs) {
   const int min_active_width = TabStyleViews::GetMinimumActiveWidth();
 
   int dragged_tab_index = controller_->GetActiveIndex();
-  EXPECT_GE(tab_strip_->ideal_bounds(dragged_tab_index).width(),
+  EXPECT_GE(tab_strip_->tab_at(dragged_tab_index)->bounds().width(),
             min_active_width);
 
   // Mark the active tab as being dragged.
@@ -1175,7 +1168,7 @@ struct SizeChangeObserver : public views::ViewObserver {
     size_change_count++;
   }
 
-  views::View* const view;
+  const raw_ptr<views::View> view;
   int size_change_count = 0;
 };
 

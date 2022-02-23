@@ -4,6 +4,9 @@
 
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
 
+#include "chromeos/services/bluetooth_config/device_conversion_util.h"
+#include "components/device_event_log/device_event_log.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 namespace {
@@ -48,10 +51,34 @@ DevicePairingHandlerImpl::DevicePairingHandlerImpl(
 DevicePairingHandlerImpl::~DevicePairingHandlerImpl() {
   // If we have a pairing attempt and this class is destroyed, cancel the
   // pairing.
-  if (!current_pairing_device_id().empty())
+  if (!current_pairing_device_id().empty()) {
+    BLUETOOTH_LOG(EVENT)
+        << "DevicePairingHandlerImpl is being destroyed while pairing with "
+        << current_pairing_device_id() << ", canceling pairing";
     CancelPairing();
+  }
 
   NotifyFinished();
+}
+
+void DevicePairingHandlerImpl::FetchDevice(const std::string& device_address,
+                                           FetchDeviceCallback callback) {
+  BLUETOOTH_LOG(EVENT) << "Fetching device with address: " << device_address;
+  for (auto* device : bluetooth_adapter_->GetDevices()) {
+    if (device->GetAddress() != device_address)
+      continue;
+
+    // Return the BluetoothDeviceProperties corresponding with device. We always
+    // input |fast_pair_delegate| as null here regardless if the Fast Pair
+    // delegate exists in CrosBluetoothConfig because clients of this method
+    // don't need properties related to the Fast Pair delegate (eg. image info).
+    std::move(callback).Run(GenerateBluetoothDeviceMojoProperties(
+        device, /*fast_pair_delegate=*/nullptr));
+    return;
+  }
+  BLUETOOTH_LOG(ERROR) << "Device with address: " << device_address
+                       << " was not found";
+  std::move(callback).Run(std::move(nullptr));
 }
 
 device::BluetoothDevice* DevicePairingHandlerImpl::FindDevice(

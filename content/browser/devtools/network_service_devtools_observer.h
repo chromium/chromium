@@ -9,19 +9,17 @@
 
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace content {
 
 class DevToolsAgentHostImpl;
+class FrameTreeNode;
 
 // A springboard class to be able to bind to the network service as a
 // DevToolsObserver but not requiring the creation of a DevToolsAgentHostImpl.
-class CONTENT_EXPORT NetworkServiceDevToolsObserver
-    : public network::mojom::DevToolsObserver {
+class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
  public:
   NetworkServiceDevToolsObserver(
       base::PassKey<NetworkServiceDevToolsObserver> pass_key,
@@ -73,8 +71,10 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       const network::URLLoaderCompletionStatus& status) override;
   void OnCorsError(const absl::optional<std::string>& devtool_request_id,
                    const absl::optional<::url::Origin>& initiator_origin,
+                   network::mojom::ClientSecurityStatePtr client_security_state,
                    const GURL& url,
-                   const network::CorsErrorStatus& status) override;
+                   const network::CorsErrorStatus& status,
+                   bool is_warning) override;
   void OnSubresourceWebBundleMetadata(const std::string& devtools_request_id,
                                       const std::vector<GURL>& urls) override;
   void OnSubresourceWebBundleMetadataError(

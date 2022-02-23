@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -370,12 +371,12 @@ public:
   const SkPaint* paint() const { return &filtered_paint_; }
 
 private:
-  BenchmarkingCanvas* canvas_;
-  std::unique_ptr<base::DictionaryValue> op_record_;
-  base::ListValue* op_params_;
-  base::TimeTicks start_ticks_;
+ raw_ptr<BenchmarkingCanvas> canvas_;
+ std::unique_ptr<base::DictionaryValue> op_record_;
+ raw_ptr<base::ListValue> op_params_;
+ base::TimeTicks start_ticks_;
 
-  SkPaint filtered_paint_;
+ SkPaint filtered_paint_;
 };
 
 BenchmarkingCanvas::BenchmarkingCanvas(SkCanvas* canvas)
@@ -387,7 +388,7 @@ BenchmarkingCanvas::BenchmarkingCanvas(SkCanvas* canvas)
 BenchmarkingCanvas::~BenchmarkingCanvas() = default;
 
 size_t BenchmarkingCanvas::CommandCount() const {
-  return op_records_.GetList().size();
+  return op_records_.GetListDeprecated().size();
 }
 
 const base::ListValue& BenchmarkingCanvas::Commands() const {
@@ -395,7 +396,7 @@ const base::ListValue& BenchmarkingCanvas::Commands() const {
 }
 
 double BenchmarkingCanvas::GetTime(size_t index) {
-  const base::Value& op = op_records_.GetList()[index];
+  const base::Value& op = op_records_.GetListDeprecated()[index];
   if (!op.is_dict())
     return 0;
   return op.FindDoubleKey("cmd_time").value_or(0);

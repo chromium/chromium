@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 
 /**
@@ -16,15 +17,21 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
  */
 public interface AssistantCollectUserDataDelegate {
     /** The currently selected contact has changed. */
-    void onContactInfoChanged(@Nullable AssistantCollectUserDataModel.ContactModel contactModel);
+    void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+            @AssistantUserDataEventType int eventType);
+
+    /** The currently selected phone number has changed. */
+    void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel phoneNumberModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected shipping address has changed. */
-    void onShippingAddressChanged(
-            @Nullable AssistantCollectUserDataModel.AddressModel addressModel);
+    void onShippingAddressChanged(@Nullable AssistantOptionModel.AddressModel addressModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected payment method has changed. */
     void onPaymentMethodChanged(
-            @Nullable AssistantCollectUserDataModel.PaymentInstrumentModel paymentInstrumentModel);
+            @Nullable AssistantOptionModel.PaymentInstrumentModel paymentInstrumentModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The currently selected terms & conditions state has changed. */
     void onTermsAndConditionsChanged(@AssistantTermsAndConditionsState int state);
@@ -34,19 +41,8 @@ public interface AssistantCollectUserDataDelegate {
 
     /** The currently selected login choice has changed. */
     void onLoginChoiceChanged(
-            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel);
-
-    /** The start date of the date/time range has changed. */
-    void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date);
-
-    /** The start time of the date/time range has changed. */
-    void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index);
-
-    /** The start date of the date/time range has changed. */
-    void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date);
-
-    /** The end time of the date/time range has changed. */
-    void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index);
+            @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel,
+            @AssistantUserDataEventType int eventType);
 
     /** The value of a key/value pair has changed. */
     void onKeyValueChanged(String key, AssistantValue value);

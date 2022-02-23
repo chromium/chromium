@@ -9,6 +9,8 @@
 
 #include <Security/Security.h>
 
+#include "net/cert/cert_status_flags.h"
+
 namespace net {
 
 // Performs certificate path construction and validation using iOS's

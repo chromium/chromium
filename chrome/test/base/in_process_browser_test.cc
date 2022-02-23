@@ -42,7 +42,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -82,13 +81,13 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "ui/base/win/atl_module.h"
@@ -98,19 +97,19 @@
 #include "components/captive_portal/content/captive_portal_service.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/services/device_sync/device_sync_impl.h"
 #include "chromeos/services/device_sync/fake_device_sync.h"
 #include "components/user_manager/user_names.h"
@@ -128,6 +127,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
@@ -165,7 +165,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // An observer that returns back to test code after a new profile is
 // initialized.
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
@@ -176,7 +176,7 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 class ChromeBrowserMainExtraPartsBrowserProcessInjection
     : public ChromeBrowserMainExtraParts {
  public:
@@ -202,7 +202,7 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
   ChromeBrowserMainExtraPartsBrowserProcessInjection& operator=(
       const ChromeBrowserMainExtraPartsBrowserProcessInjection&) = delete;
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // For browser tests that depend on AccountManager on Lacros - e.g. tests that
@@ -223,22 +223,20 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory());
 
-    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
-      // Make sure the primary accounts for all profiles are present in the
-      // account manager, to prevent profiles from being deleted. This is useful
-      // in particular for tests that create profiles in a PRE_ step and expect
-      // the profiles to still exist when Chrome is restarted.
-      ProfileAttributesStorage* storage =
-          &g_browser_process->profile_manager()->GetProfileAttributesStorage();
-      for (const ProfileAttributesEntry* entry :
-           storage->GetAllProfilesAttributes()) {
-        const std::string& gaia_id = entry->GetGAIAId();
-        if (!gaia_id.empty()) {
-          account_manager->UpsertAccount(
-              {gaia_id, account_manager::AccountType::kGaia},
-              base::UTF16ToUTF8(entry->GetUserName()),
-              "identity_extra_setup_test_token");
-        }
+    // Make sure the primary accounts for all profiles are present in the
+    // account manager, to prevent profiles from being deleted. This is useful
+    // in particular for tests that create profiles in a PRE_ step and expect
+    // the profiles to still exist when Chrome is restarted.
+    ProfileAttributesStorage* storage =
+        &g_browser_process->profile_manager()->GetProfileAttributesStorage();
+    for (const ProfileAttributesEntry* entry :
+         storage->GetAllProfilesAttributes()) {
+      const std::string& gaia_id = entry->GetGAIAId();
+      if (!gaia_id.empty()) {
+        account_manager->UpsertAccount(
+            {gaia_id, account_manager::AccountType::kGaia},
+            base::UTF16ToUTF8(entry->GetUserName()),
+            "identity_extra_setup_test_token");
       }
     }
   }
@@ -305,7 +303,7 @@ void InProcessBrowserTest::Initialize() {
   CHECK(base::PathService::Override(chrome::DIR_TEST_DATA,
                                     src_dir.Append(GetChromeTestDataDir())));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bundle_swizzler_ = std::make_unique<ScopedBundleSwizzlerMac>();
 #endif
 
@@ -383,14 +381,14 @@ void InProcessBrowserTest::SetUp() {
   // (--login-user), or the guest session (--bwsi). This is essentially
   // the same as in `ChromeBrowserMainPartsAsh::PreEarlyInitialization`
   // but it will be done on device and only for tests.
-  if (!command_line->HasSwitch(chromeos::switches::kLoginManager) &&
-      !command_line->HasSwitch(chromeos::switches::kLoginUser) &&
-      !command_line->HasSwitch(chromeos::switches::kGuestSession)) {
+  if (!command_line->HasSwitch(ash::switches::kLoginManager) &&
+      !command_line->HasSwitch(ash::switches::kLoginUser) &&
+      !command_line->HasSwitch(ash::switches::kGuestSession)) {
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
+        ash::switches::kLoginUser,
         cryptohome::Identification(user_manager::StubAccountId()).id());
-    if (!command_line->HasSwitch(chromeos::switches::kLoginProfile)) {
-      command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    if (!command_line->HasSwitch(ash::switches::kLoginProfile)) {
+      command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       chrome::kTestUserProfileDir);
     }
   }
@@ -403,7 +401,7 @@ void InProcessBrowserTest::SetUp() {
   // Cookies). Without this on Mac and Linux, many tests will hang waiting for a
   // user to approve KeyChain/kwallet access. On Windows this is not needed as
   // OS APIs never block.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   OSCryptMocker::SetUp();
 #endif
 
@@ -421,6 +419,11 @@ void InProcessBrowserTest::SetUp() {
   // rely on the ability to open any files via file: scheme.
   ChromeNetworkDelegate::EnableAccessToAllFilesForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  CertDbInitializerFactory::GetInstance()
+      ->SetCreateWithBrowserContextForTesting(/*should_create=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Device sync (for multidevice "Better Together") is ash specific.
@@ -472,11 +475,11 @@ void InProcessBrowserTest::SetUpDefaultCommandLine(
 
 void InProcessBrowserTest::TearDown() {
   DCHECK(!g_browser_process);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   com_initializer_.reset();
 #endif
   BrowserTestBase::TearDown();
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   OSCryptMocker::TearDown();
 #endif
 
@@ -502,7 +505,7 @@ size_t InProcessBrowserTest::GetTestPreCount() {
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   BrowserTestBase::CreatedBrowserMainParts(parts);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());
 #endif
@@ -525,7 +528,7 @@ void InProcessBrowserTest::CloseBrowserSynchronously(Browser* browser) {
 
 void InProcessBrowserTest::CloseBrowserAsynchronously(Browser* browser) {
   browser->window()->Close();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // BrowserWindowController depends on the auto release pool being recycled
   // in the message loop to delete itself.
   AutoreleasePool()->Recycle();
@@ -534,7 +537,7 @@ void InProcessBrowserTest::CloseBrowserAsynchronously(Browser* browser) {
 
 void InProcessBrowserTest::CloseAllBrowsers() {
   chrome::CloseAllBrowsers();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // BrowserWindowController depends on the auto release pool being recycled
   // in the message loop to delete itself.
   AutoreleasePool()->Recycle();
@@ -548,36 +551,39 @@ void InProcessBrowserTest::RunUntilBrowserProcessQuits() {
 // TODO(alexmos): This function should expose success of the underlying
 // navigation to tests, which should make sure navigations succeed when
 // appropriate. See https://crbug.com/425335
-void InProcessBrowserTest::AddTabAtIndexToBrowser(
+bool InProcessBrowserTest::AddTabAtIndexToBrowser(
     Browser* browser,
     int index,
     const GURL& url,
     ui::PageTransition transition,
     bool check_navigation_success) {
+  return AddTabAtIndexToBrowser(browser, index, url, transition);
+}
+
+bool InProcessBrowserTest::AddTabAtIndexToBrowser(
+    Browser* browser,
+    int index,
+    const GURL& url,
+    ui::PageTransition transition) {
   NavigateParams params(browser, url, transition);
   params.tabstrip_index = index;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 
-  if (check_navigation_success) {
-    content::WaitForLoadStop(params.navigated_or_inserted_contents);
-  } else {
-    content::WaitForLoadStopWithoutSuccessCheck(
-        params.navigated_or_inserted_contents);
-  }
+  return content::WaitForLoadStop(params.navigated_or_inserted_contents);
 }
 
-void InProcessBrowserTest::AddTabAtIndex(int index,
+bool InProcessBrowserTest::AddTabAtIndex(int index,
                                          const GURL& url,
                                          ui::PageTransition transition) {
-  AddTabAtIndexToBrowser(browser(), index, url, transition, true);
+  return AddTabAtIndexToBrowser(browser(), index, url, transition, true);
 }
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
   return true;
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 void InProcessBrowserTest::OpenDevToolsWindow(
     content::WebContents* web_contents) {
   ASSERT_FALSE(content::DevToolsAgentHost::HasFor(web_contents));
@@ -629,9 +635,9 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
   AddBlankTabAndShow(browser);
   return browser;
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 Browser* InProcessBrowserTest::CreateGuestBrowser() {
   // Get Guest profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -650,7 +656,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   AddBlankTabAndShow(browser);
   return browser;
 }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(
@@ -661,7 +667,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   browser->window()->Show();
 }
 
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::CommandLine InProcessBrowserTest::GetCommandLineForRelaunch() {
   base::CommandLine new_command_line(
       base::CommandLine::ForCurrentProcess()->GetProgram());
@@ -682,7 +688,7 @@ base::CommandLine InProcessBrowserTest::GetCommandLineForRelaunch() {
   }
   return new_command_line;
 }
-#endif  // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 base::FilePath InProcessBrowserTest::GetChromeTestDataDir() const {
   return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
@@ -710,13 +716,13 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     SetInitialWebContents(tab);
   }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Do not use the real StorageMonitor for tests, which introduces another
   // source of variability and potential slowness.
   ASSERT_TRUE(storage_monitor::TestStorageMonitor::CreateForBrowserTests());
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, without the following autorelease pool, code which is directly
   // executed (as opposed to executed inside a message loop) would autorelease
   // objects into a higher-level pool. This pool is not recycled in-sync with
@@ -734,13 +740,13 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
   if (browser_ && global_browser_set_up_function_)
     ASSERT_TRUE(global_browser_set_up_function_(browser_));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_->Recycle();
 #endif
 }
 
 void InProcessBrowserTest::PostRunTestOnMainThread() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool_->Recycle();
 #endif
 
@@ -777,7 +783,7 @@ void InProcessBrowserTest::QuitBrowsers() {
       FROM_HERE, base::BindOnce(&chrome::AttemptExit));
   RunUntilBrowserProcessQuits();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // chrome::AttemptExit() will attempt to close all browsers by deleting
   // their tab contents. The last tab contents being removed triggers closing of
   // the browser window.

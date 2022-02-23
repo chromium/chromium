@@ -23,17 +23,19 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/status/status.h"
+#include "absl/base/macros.h"         // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/kernels/register.h"
+#include "tensorflow/lite/core/shims/cc/kernels/register.h"
 #include "tensorflow/lite/string_type.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "tensorflow_lite_support/cc/task/core/category.h"
-#include "tensorflow_lite_support/cc/text/tokenizers/regex_tokenizer.h"
+#include "tensorflow_lite_support/cc/task/processor/regex_preprocessor.h"
+#include "tensorflow_lite_support/cc/task/text/proto/nl_classifier_options_proto_inc.h"
 
 namespace tflite {
 namespace task {
@@ -87,30 +89,49 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
  public:
   using BaseTaskApi::BaseTaskApi;
 
-  // Creates a NLClassifier from TFLite model buffer.
+  // Creates an NLClassifier from the provided options. A non-default
+  // OpResolver can be specified in order to support custom Ops or specify a
+  // subset of built-in Ops.
+  //
+  // This is a forward compatible method that uses
+  // `tflite::task::text::NLClassifierOptions`. Factory create methods with
+  // `tflite::task::text::nlclassifier::NLClassifierOptions` will be deprecated.
+  //
+  // TODO(b/182537114): unify the classification options (support the common
+  // classification options) and results across vision/text/audio.
+  static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
+  CreateFromOptions(
+      const tflite::task::text::NLClassifierOptions& options,
+      std::unique_ptr<tflite::OpResolver> resolver =
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
+
+  // Creates an NLClassifier from TFLite model buffer.
+  ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromBufferAndOptions(
       const char* model_buffer_data,
       size_t model_buffer_size,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
-  // Creates a NLClassifier from TFLite model file.
+  // Creates an NLClassifier from TFLite model file.
+  ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromFileAndOptions(
       const std::string& path_to_model,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
-  // Creates a NLClassifier from TFLite model file descriptor.
+  // Creates an NLClassifier from TFLite model file descriptor.
+  ABSL_DEPRECATED("Prefer using `CreateFromOptions`")
   static tflite::support::StatusOr<std::unique_ptr<NLClassifier>>
   CreateFromFdAndOptions(
       int fd,
       const NLClassifierOptions& options = {},
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
   // Performs classification on a string input, returns classified results.
   std::vector<core::Category> Classify(const std::string& text);
@@ -119,7 +140,18 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
   static constexpr int kOutputTensorIndex = 0;
   static constexpr int kOutputTensorLabelFileIndex = 0;
 
-  absl::Status Initialize(const NLClassifierOptions& options);
+  // Initialize NLClassifier with the proto NLClassifierOptions.
+  absl::Status Initialize(
+      std::unique_ptr<tflite::task::text::NLClassifierOptions> options);
+
+  ABSL_DEPRECATED(
+      "Prefer using `tflite::task::text::NLClassifierOptions` and "
+      "`Initialize(std::unique_ptr<tflite::task::text::NLClassifierOptions> "
+      "options)`")
+  absl::Status Initialize(const NLClassifierOptions& options = {});
+  ABSL_DEPRECATED(
+      "Prefer using `tflite::task::text::NLClassifierOptions` and "
+      "`CreateFromOptions`")
   const NLClassifierOptions& GetOptions() const;
 
   // Try to extract attached label file from metadata and initialize
@@ -150,31 +182,52 @@ class NLClassifier : public core::BaseTaskApi<std::vector<core::Category>,
           metadata_array,
       const std::string& name,
       int index) {
+    int tensor_index = FindTensorIndex(tensors, metadata_array, name, index);
+    return tensor_index >= 0 && tensor_index < tensors.size()
+               ? tensors[tensor_index]
+               : nullptr;
+  }
+
+  // Gets the tensor index of the specified tensor name from a vector of tensors
+  // Return nullptr if no tensor is found by name (metadata tensor name or model
+  // tensor name).
+  template <typename TensorType>
+  static int FindTensorIndex(
+      const std::vector<TensorType*>& tensors,
+      const flatbuffers::Vector<flatbuffers::Offset<TensorMetadata>>*
+          metadata_array,
+      const std::string& name,
+      int default_index) {
     if (metadata_array != nullptr && metadata_array->size() == tensors.size()) {
       for (size_t i = 0; i < metadata_array->size(); i++) {
         if (strcmp(name.data(), metadata_array->Get(i)->name()->c_str()) == 0) {
-          return tensors[i];
+          return i;
         }
       }
     }
 
-    for (TensorType* tensor : tensors) {
+    for (int i = 0; i < tensors.size(); i++) {
+      TensorType* tensor = tensors[i];
       if (tensor->name == name) {
-        return tensor;
+        return i;
       }
     }
-    return index >= 0 && index < tensors.size() ? tensors[index] : nullptr;
+    return default_index;
   }
 
  private:
-  bool HasRegexTokenizerMetadata();
-  absl::Status SetupRegexTokenizer();
+  std::unique_ptr<tflite::task::processor::RegexPreprocessor> preprocessor_ =
+      nullptr;
 
-  NLClassifierOptions options_;
+  std::unique_ptr<tflite::task::text::NLClassifierOptions> proto_options_;
+
   // labels vector initialized from output tensor's associated file, if one
   // exists.
   std::unique_ptr<std::vector<std::string>> labels_vector_;
-  std::unique_ptr<tflite::support::text::tokenizer::RegexTokenizer> tokenizer_;
+
+  // Deprecated: using the proto_options_
+  // (tflite::task::text::NLClassifierOptions).
+  NLClassifierOptions struct_options_;
 };
 
 }  // namespace nlclassifier

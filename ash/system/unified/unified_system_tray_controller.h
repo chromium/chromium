@@ -9,13 +9,20 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/media/unified_media_controls_controller.h"
+#include "ash/system/time/calendar_metrics.h"
+#include "ash/system/time/calendar_model.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/animation_delegate_views.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace gfx {
 class SlideAnimation;
@@ -36,18 +43,23 @@ class UnifiedSystemTrayView;
 // Controller class of UnifiedSystemTrayView. Handles events of the view.
 class ASH_EXPORT UnifiedSystemTrayController
     : public views::AnimationDelegateViews,
+      public SessionObserver,
       public UnifiedVolumeSliderController::Delegate,
       public UnifiedMediaControlsController::Delegate {
  public:
-  UnifiedSystemTrayController(UnifiedSystemTrayModel* model,
-                              UnifiedSystemTrayBubble* bubble = nullptr,
-                              views::View* owner_view = nullptr);
+  explicit UnifiedSystemTrayController(
+      scoped_refptr<UnifiedSystemTrayModel> model,
+      UnifiedSystemTrayBubble* bubble = nullptr,
+      views::View* owner_view = nullptr);
 
   UnifiedSystemTrayController(const UnifiedSystemTrayController&) = delete;
   UnifiedSystemTrayController& operator=(const UnifiedSystemTrayController&) =
       delete;
 
   ~UnifiedSystemTrayController() override;
+
+  // Registers pref to preserve tray expanded state between reboots.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Create the view. The created view is unowned.
   UnifiedSystemTrayView* CreateView();
@@ -95,14 +107,13 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowLocaleDetailedView();
   // Show the detailed view of audio. Called from the view.
   void ShowAudioDetailedView();
-  // Show the detailed view for dark mode. Called from the feature pod button.
-  void ShowDarkModeDetailedView();
   // Show the detailed view of notifier settings. Called from the view.
   void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView();
   // Show the detailed view of Calendar. Called from the view.
-  void ShowCalendarView();
+  void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
+                        calendar_metrics::CalendarEventSource event_source);
 
   // If you want to add a new detailed view, add here.
 
@@ -132,6 +143,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Collapse the tray without animating.
   void CollapseWithoutAnimating();
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
   // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -144,7 +158,10 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowMediaControls() override;
   void OnMediaControlsViewClicked() override;
 
-  UnifiedSystemTrayModel* model() { return model_; }
+  // Return true if UnifiedSystemTray is expanded.
+  bool IsExpanded() const;
+
+  scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
 
   PaginationController* pagination_controller() {
     return pagination_controller_.get();
@@ -175,6 +192,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   // enum is used to back an UMA histogram and should be treated as append-only.
   enum ManagedType { MANAGED_TYPE_ENTERPRISE = 0, MANAGED_TYPE_COUNT };
 
+  // Loads the `kSystemTrayExpanded` pref to the model.
+  void LoadIsExpandedPref();
+
   // Initialize feature pod controllers and their views.
   // If you want to add a new feature pod item, you have to add here.
   void InitFeaturePods();
@@ -199,9 +219,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // keeps returning 1.0.
   double GetDragExpandedAmount(const gfx::PointF& location) const;
 
-  // Return true if UnifiedSystemTray is expanded.
-  bool IsExpanded() const;
-
   // Return true if message center needs to be collapsed due to limited
   // screen height.
   bool IsMessageCenterCollapseRequired() const;
@@ -213,13 +230,16 @@ class ASH_EXPORT UnifiedSystemTrayController
   base::TimeDelta GetAnimationDurationForReporting() const override;
 
   // Model that stores UI specific variables. Unowned.
-  UnifiedSystemTrayModel* const model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Unowned. Owned by Views hierarchy.
   UnifiedSystemTrayView* unified_view_ = nullptr;
 
   // Unowned.
   UnifiedSystemTrayBubble* bubble_ = nullptr;
+
+  // The pref service of the currently active user. Can be null in tests.
+  PrefService* active_user_prefs_ = nullptr;
 
   // The controller of the current detailed view. If the main view is shown,
   // it's null. Owned.

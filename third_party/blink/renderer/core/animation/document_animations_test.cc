@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 using ::testing::_;
 using ::testing::Mock;

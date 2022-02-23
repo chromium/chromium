@@ -35,6 +35,12 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 mNativePtr, this, segmentationKey, callback);
     }
 
+    @Override
+    public SegmentSelectionResult getCachedSegmentResult(String segmentationKey) {
+        return SegmentationPlatformServiceImplJni.get().getCachedSegmentResult(
+                mNativePtr, this, segmentationKey);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -53,5 +59,7 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
         void getSelectedSegment(long nativeSegmentationPlatformServiceAndroid,
                 SegmentationPlatformServiceImpl caller, String segmentationKey,
                 Callback<SegmentSelectionResult> callback);
+        SegmentSelectionResult getCachedSegmentResult(long nativeSegmentationPlatformServiceAndroid,
+                SegmentationPlatformServiceImpl caller, String segmentationKey);
     }
 }

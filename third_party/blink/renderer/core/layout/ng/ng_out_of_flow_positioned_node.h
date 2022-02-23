@@ -32,15 +32,20 @@ struct NGContainingBlock {
   // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
   OffsetType relative_offset;
   scoped_refptr<const NGPhysicalFragment> fragment;
+  // True if there is a column spanner between the containing block and the
+  // multicol container (or if the containing block is a column spanner).
+  bool is_inside_column_spanner = false;
 
   NGContainingBlock() : fragment(nullptr) {}
 
   NGContainingBlock(OffsetType offset,
                     OffsetType relative_offset,
-                    scoped_refptr<const NGPhysicalFragment> fragment)
+                    scoped_refptr<const NGPhysicalFragment> fragment,
+                    bool is_inside_column_spanner)
       : offset(offset),
         relative_offset(relative_offset),
-        fragment(std::move(fragment)) {}
+        fragment(std::move(fragment)),
+        is_inside_column_spanner(is_inside_column_spanner) {}
 };
 
 // This holds the containing block for an out-of-flow positioned element

@@ -64,9 +64,9 @@ FieldRendererId FindConfirmationPasswordFieldId(
 
   ++iter;
   for (; iter != control_elements.end(); ++iter) {
-    const WebInputElement* input_element = ToWebInputElement(&(*iter));
-    if (input_element && input_element->IsPasswordFieldForAutofill())
-      return FieldRendererId(input_element->UniqueRendererFormControlId());
+    const WebInputElement input_element = iter->DynamicTo<WebInputElement>();
+    if (!input_element.IsNull() && input_element.IsPasswordFieldForAutofill())
+      return FieldRendererId(input_element.UniqueRendererFormControlId());
   }
   return FieldRendererId();
 }
@@ -451,26 +451,26 @@ bool PasswordGenerationAgent::FocusedNodeHasChanged(
     return false;
   }
 
-  const blink::WebElement web_element = node.ToConst<blink::WebElement>();
+  const blink::WebElement web_element = node.To<blink::WebElement>();
   if (!web_element.GetDocument().GetFrame()) {
     return false;
   }
 
-  const WebInputElement* element = ToWebInputElement(&web_element);
-  if (!element)
+  const WebInputElement element = web_element.DynamicTo<WebInputElement>();
+  if (element.IsNull())
     return false;
 
-  if (element->IsPasswordFieldForAutofill())
-    last_focused_password_element_ = *element;
+  if (element.IsPasswordFieldForAutofill())
+    last_focused_password_element_ = element;
 
   auto it = generation_enabled_fields_.find(
-      FieldRendererId(element->UniqueRendererFormControlId()));
+      FieldRendererId(element.UniqueRendererFormControlId()));
   if (it != generation_enabled_fields_.end()) {
     MaybeCreateCurrentGenerationItem(
-        *element, it->second.confirmation_password_renderer_id);
+        element, it->second.confirmation_password_renderer_id);
   }
   if (!current_generation_item_ ||
-      *element != current_generation_item_->generation_element_) {
+      element != current_generation_item_->generation_element_) {
     return false;
   }
 
@@ -493,8 +493,8 @@ bool PasswordGenerationAgent::FocusedNodeHasChanged(
   // Assume that if the password field has less than
   // |kMaximumCharsForGenerationOffer| characters then the user is not finished
   // typing their password and display the password suggestion.
-  if (!element->IsReadOnly() && element->IsEnabled() &&
-      element->Value().length() <= kMaximumCharsForGenerationOffer) {
+  if (!element.IsReadOnly() && element.IsEnabled() &&
+      element.Value().length() <= kMaximumCharsForGenerationOffer) {
     MaybeOfferAutomaticGeneration();
     return true;
   }
@@ -693,9 +693,9 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
           generation_element.GetDocument(), confirmation_password_renderer_id);
 
   if (!confirmation_password.IsNull()) {
-    WebInputElement* input = ToWebInputElement(&confirmation_password);
-    if (input)
-      passwords.push_back(*input);
+    WebInputElement input = confirmation_password.DynamicTo<WebInputElement>();
+    if (!input.IsNull())
+      passwords.push_back(input);
   }
 
   current_generation_item_ = std::make_unique<GenerationItemInfo>(

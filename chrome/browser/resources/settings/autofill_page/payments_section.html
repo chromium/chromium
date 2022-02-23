@@ -1,95 +1,116 @@
-    <style include="cr-shared-style settings-shared iron-flex passwords-shared">
-      .expiration-column {
-        align-items: center;
-        display: flex;
-        flex: 1;
-      }
+<style include="cr-shared-style settings-shared iron-flex passwords-shared">
+  .expiration-column {
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
 
-      #migrateCreditCards {
-        border-bottom: var(--cr-separator-line);
-        border-top: none;
-      }
+  #migrateCreditCards {
+    border-bottom: var(--cr-separator-line);
+    border-top: none;
+  }
 
-      #migrateCreditCardsButton {
-        margin: 0 auto;
-      }
-    </style>
-    <settings-toggle-button id="autofillCreditCardToggle"
-        aria-label="$i18n{creditCards}" no-extension-indicator
-        label="$i18n{enableCreditCardsLabel}"
-        sub-label="$i18n{enableCreditCardsSublabel}"
-        pref="{{prefs.autofill.credit_card_enabled}}">
-    </settings-toggle-button>
-    <settings-toggle-button id="canMakePaymentToggle"
-        aria-label="$i18n{canMakePaymentToggleLabel}"
-        label="$i18n{canMakePaymentToggleLabel}"
-        pref="{{prefs.payments.can_make_payment_enabled}}"
-        on-settings-boolean-control-change="onCanMakePaymentChange_">
-    </settings-toggle-button>
-    <template is="dom-if"
-        if="[[shouldShowFidoToggle_(
-            prefs.autofill.credit_card_enabled.value,
-            userIsFidoVerifiable_)]]">
-      <settings-toggle-button
-          id="autofillCreditCardFIDOAuthToggle"
-          aria-label="$i18n{creditCards}" no-extension-indicator
-          label="$i18n{enableCreditCardFIDOAuthLabel}"
-          sub-label="$i18n{enableCreditCardFIDOAuthSublabel}"
-          pref="{{prefs.autofill.credit_card_fido_auth_enabled}}"
-          on-change="setFIDOAuthenticationEnabledState_">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if"
-        if="[[prefs.autofill.credit_card_enabled.extensionId]]">
-      <div class="cr-row continuation">
-        <extension-controlled-indicator class="flex"
-            id="autofillExtensionIndicator"
-            extension-id="[[prefs.autofill.credit_card_enabled.extensionId]]"
-            extension-name="[[
-                prefs.autofill.credit_card_enabled.controlledByName]]"
-            extension-can-be-disabled="[[
-                prefs.autofill.credit_card_enabled.extensionCanBeDisabled]]">
-        </extension-controlled-indicator>
-      </div>
-    </template>
+  #migrateCreditCardsButton {
+    margin: 0 auto;
+  }
+</style>
+<settings-toggle-button id="autofillCreditCardToggle"
+    aria-label="$i18n{creditCards}" no-extension-indicator
+    label="$i18n{enableCreditCardsLabel}"
+    sub-label="$i18n{enableCreditCardsSublabel}"
+    pref="{{prefs.autofill.credit_card_enabled}}">
+</settings-toggle-button>
+<settings-toggle-button id="canMakePaymentToggle"
+    aria-label="$i18n{canMakePaymentToggleLabel}"
+    label="$i18n{canMakePaymentToggleLabel}"
+    pref="{{prefs.payments.can_make_payment_enabled}}"
+    on-settings-boolean-control-change="onCanMakePaymentChange_">
+</settings-toggle-button>
+<template is="dom-if"
+    if="[[shouldShowFidoToggle_(
+        prefs.autofill.credit_card_enabled.value,
+        userIsFidoVerifiable_)]]">
+  <settings-toggle-button
+      id="autofillCreditCardFIDOAuthToggle"
+      aria-label="$i18n{creditCards}" no-extension-indicator
+      label="$i18n{enableCreditCardFIDOAuthLabel}"
+      sub-label="$i18n{enableCreditCardFIDOAuthSublabel}"
+      pref="{{prefs.autofill.credit_card_fido_auth_enabled}}"
+      on-change="setFIDOAuthenticationEnabledState_">
+  </settings-toggle-button>
+</template>
+<template is="dom-if"
+    if="[[prefs.autofill.credit_card_enabled.extensionId]]">
+  <div class="cr-row continuation">
+    <extension-controlled-indicator class="flex"
+        id="autofillExtensionIndicator"
+        extension-id="[[prefs.autofill.credit_card_enabled.extensionId]]"
+        extension-name="[[
+            prefs.autofill.credit_card_enabled.controlledByName]]"
+        extension-can-be-disabled="[[
+            prefs.autofill.credit_card_enabled.extensionCanBeDisabled]]">
+    </extension-controlled-indicator>
+  </div>
+</template>
 
-    <div id="manageLink" class="cr-row first">
-      <!-- This span lays out the link correctly, relative to the text. -->
-      <div class="cr-padded-text">$i18nRaw{manageCreditCardsLabel}</div>
-    </div>
+<div id="manageLink" class="cr-row first">
+  <!-- This span lays out the link correctly, relative to the text. -->
+  <div class="cr-padded-text">$i18nRaw{manageCreditCardsLabel}</div>
+</div>
 
-    <div class="cr-row continuation">
-      <h2 class="flex">$i18n{creditCards}</h2>
-      <cr-button id="addCreditCard" class="header-aligned-button"
-          on-click="onAddCreditCardTap_"
-          hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
-        $i18n{add}
-      </cr-button>
-    </div>
-    <cr-link-row id="migrateCreditCards"
-        hidden$="[[!checkIfMigratable_(creditCards,
-            prefs.autofill.credit_card_enabled.value)]]"
-        on-click="onMigrateCreditCardsClick_"
-        label="$i18n{migrateCreditCardsLabel}"
-        sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
-    <settings-payments-list id="paymentsList" class="list-frame"
-        credit-cards="[[creditCards]]" upi-ids="[[upiIds]]">
-    </settings-payments-list>
+<div class="cr-row continuation">
+  <h2 class="flex">$i18n{creditCards}</h2>
+  <cr-button id="addCreditCard" class="header-aligned-button"
+      on-click="onAddCreditCardClick_"
+      hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
+    $i18n{add}
+  </cr-button>
+</div>
+<cr-link-row id="migrateCreditCards"
+    hidden$="[[!checkIfMigratable_(creditCards,
+        prefs.autofill.credit_card_enabled.value)]]"
+    on-click="onMigrateCreditCardsClick_"
+    label="$i18n{migrateCreditCardsLabel}"
+    sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
+<settings-payments-list id="paymentsList" class="list-frame"
+    credit-cards="[[creditCards]]" upi-ids="[[upiIds]]">
+</settings-payments-list>
 
-    <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
-      <button id="menuEditCreditCard" class="dropdown-item"
-          on-click="onMenuEditCreditCardTap_">$i18n{edit}</button>
-      <button id="menuRemoveCreditCard" class="dropdown-item"
-          hidden$="[[!activeCreditCard_.metadata.isLocal]]"
-          on-click="onMenuRemoveCreditCardTap_">$i18n{removeCreditCard}</button>
-      <button id="menuClearCreditCard" class="dropdown-item"
-          on-click="onMenuClearCreditCardTap_"
-          hidden$="[[!activeCreditCard_.metadata.isCached]]">
-        $i18n{clearCreditCard}
-      </button>
-    </cr-action-menu>
-    <template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
-      <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
-          on-close="onCreditCardDialogClose_">
-      </settings-credit-card-edit-dialog>
-    </template>
+<cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
+  <button id="menuEditCreditCard" class="dropdown-item"
+      on-click="onMenuEditCreditCardClick_">
+    [[getMenuEditCardText_(activeCreditCard_.metadata.isLocal)]]
+  </button>
+
+  <button id="menuRemoveCreditCard" class="dropdown-item"
+      hidden$="[[!activeCreditCard_.metadata.isLocal]]"
+      on-click="onMenuRemoveCreditCardClick_">$i18n{removeCreditCard}</button>
+  <button id="menuClearCreditCard" class="dropdown-item"
+      on-click="onMenuClearCreditCardClick_"
+      hidden$="[[!activeCreditCard_.metadata.isCached]]">
+    $i18n{clearCreditCard}
+  </button>
+
+  <button id="menuAddVirtualCard" class="dropdown-item"
+      on-click="onMenuAddVirtualCardClick_"
+      hidden$="[[!shouldShowAddVirtualCardButton_(activeCreditCard_)]]">
+    $i18n{addVirtualCard}
+  </button>
+  <button id="menuRemoveVirtualCard" class="dropdown-item"
+      on-click="onMenuRemoveVirtualCardClick_"
+      hidden$="[[!shouldShowRemoveVirtualCardButton_(activeCreditCard_)]]">
+    $i18n{removeVirtualCard}
+  </button>
+</cr-action-menu>
+
+<template is="dom-if" if="[[showCreditCardDialog_]]" restamp>
+  <settings-credit-card-edit-dialog credit-card="[[activeCreditCard_]]"
+      on-close="onCreditCardDialogClose_">
+  </settings-credit-card-edit-dialog>
+</template>
+
+<template is="dom-if" if="[[showVirtualCardUnenrollDialog_]]" restamp>
+  <settings-virtual-card-unenroll-dialog credit-card="[[activeCreditCard_]]"
+      on-close="onVirtualCardUnenrollDialogClose_">
+  </settings-virtual-card-unenroll-dialog>
+</template>

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-forward.h"
@@ -196,13 +197,13 @@ class PerformanceManagerTabHelper
   base::flat_set<std::unique_ptr<PageData>, PageDataComparator> pages_;
 
   // Tracks the primary page associated with this WebContents.
-  PageData* primary_page_ = nullptr;
+  raw_ptr<PageData> primary_page_ = nullptr;
 
   // Maps from RenderFrameHost to the associated PM node. This is a single
   // map across all pages associated with this WebContents.
   std::map<content::RenderFrameHost*, std::unique_ptr<FrameNodeImpl>> frames_;
 
-  DestructionObserver* destruction_observer_ = nullptr;
+  raw_ptr<DestructionObserver> destruction_observer_ = nullptr;
   base::ObserverList<Observer, true, false> observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

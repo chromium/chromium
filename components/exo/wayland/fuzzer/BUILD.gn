@@ -132,6 +132,9 @@ source_set("server_environment") {
     "//ui/base",
     "//ui/gl:test_support",
   ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash:test_support" ]
+  }
 }
 
 source_set("harness") {

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,15 +26,12 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
-
-// Filling timeout for waiting server predictions
-constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
-    base::Milliseconds(500);
 
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
@@ -43,6 +41,7 @@ struct PossibleUsernameData;
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
 class PasswordFormManager : public PasswordFormManagerForUI,
+                            public PasswordFormPredictionWaiter::Client,
                             public FormFetcher::Consumer {
  public:
   // TODO(crbug.com/621355): So far, |form_fetcher| can be null. In that case
@@ -189,7 +188,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   int driver_id() { return driver_id_; }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Presaves the form with |generated_password|. This function is called once
   // when the user accepts the generated password. The password was generated in
   // the field with identifier |generation_element|. |driver| corresponds to the
@@ -214,7 +213,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void ProvisionallySaveFieldDataManagerInfo(
       const autofill::FieldDataManager& field_data_manager,
       const PasswordManagerDriver* driver);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling
   // save-password related UI. This omits some parts of the internal data, so
@@ -259,6 +258,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // FormFetcher::Consumer:
   void OnFetchCompleted() override;
+
+  // PasswordFormPredictionWaiter::Client:
+  void OnWaitCompleted() override;
 
   // Create pending credentials from |parsed_submitted_form_| and forms received
   // from the password store.
@@ -336,12 +338,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const autofill::FormData& observed_form_data,
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
-  // Delays form filling by |kMaxFillingDelayForServerPredictions| while waiting
-  // for server-side predictions.
+  // Sets the timer on |async_predictions_waiter_| while waiting for
+  // server-side predictions.
   void DelayFillForServerSidePredictions();
 
   // The client which implements embedder-specific PasswordManager operations.
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 
@@ -371,7 +373,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::unique_ptr<FormFetcher> owned_form_fetcher_;
 
   // FormFetcher instance which owns the login data from PasswordStore.
-  FormFetcher* form_fetcher_;
+  raw_ptr<FormFetcher> form_fetcher_;
 
   std::unique_ptr<PasswordSaveManager> password_save_manager_;
 
@@ -398,10 +400,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Time when stored credentials are received from the store. Used for metrics.
   base::TimeTicks received_stored_credentials_time_;
 
+  PasswordFormPredictionWaiter async_predictions_waiter_;
+
   // Used to transform FormData into PasswordForms.
   FormDataParser parser_;
-
-  base::WeakPtrFactory<PasswordFormManager> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

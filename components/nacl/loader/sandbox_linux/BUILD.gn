@@ -21,7 +21,6 @@ source_set("sandbox_linux") {
     "//base",
     "//components/nacl/common",
     "//components/nacl/loader",
-    "//content/public/common",
     "//crypto",
     "//ipc",
     "//sandbox",

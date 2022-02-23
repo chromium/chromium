@@ -38,22 +38,19 @@
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
+#include "chrome/browser/breadcrumbs/breadcrumbs_status.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
-#include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -68,15 +65,16 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/printing/background_printing_manager.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/repost_form_warning_controller.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_web_contents_data.h"
@@ -98,6 +96,7 @@
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -150,7 +149,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/ssl_insecure_content.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -165,6 +163,8 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -186,7 +186,6 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/user_manager/user_manager.h"
-#include "components/viz/common/surfaces/surface_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/color_chooser.h"
@@ -243,7 +242,7 @@
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // windows.h must be included before shellapi.h
 #include <windows.h>
 
@@ -252,7 +251,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "components/autofill/core/browser/autofill_ie_toolbar_import_win.h"
 #include "ui/base/win/shell.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -280,6 +279,10 @@
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 #include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
 #endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/color_chooser.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
@@ -452,9 +455,11 @@ Browser::Browser(const CreateParams& params)
       window_(nullptr),
       tab_strip_model_delegate_(
           std::make_unique<chrome::BrowserTabStripModelDelegate>(this)),
-      tab_strip_model_(
-          std::make_unique<TabStripModel>(tab_strip_model_delegate_.get(),
-                                          params.profile)),
+      tab_strip_model_(std::make_unique<TabStripModel>(
+          tab_strip_model_delegate_.get(),
+          params.profile,
+          params.are_tab_groups_enabled ? TabGroupModelFactory::GetInstance()
+                                        : nullptr)),
       tab_menu_model_delegate_(
           std::make_unique<chrome::BrowserTabMenuModelDelegate>(this)),
       app_name_(params.app_name),
@@ -480,7 +485,11 @@ Browser::Browser(const CreateParams& params)
       command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
-      signin_view_controller_(this)
+      signin_view_controller_(this),
+      breadcrumb_manager_browser_agent_(
+          BreadcrumbsStatus::IsEnabled()
+              ? std::make_unique<BreadcrumbManagerBrowserAgent>(this)
+              : nullptr)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       ,
       extension_browser_window_helper_(
@@ -521,7 +530,7 @@ Browser::Browser(const CreateParams& params)
   if (params.skip_window_init_for_testing)
     return;
 
-  window_ = params.window ? params.window
+  window_ = params.window ? params.window.get()
                           : CreateBrowserWindow(std::unique_ptr<Browser>(this),
                                                 params.user_gesture,
                                                 params.in_tab_dragging);
@@ -541,11 +550,11 @@ Browser::Browser(const CreateParams& params)
 
   // TODO(beng): move to ChromeBrowserMain:
   if (first_run::ShouldDoPersonalDataManagerFirstRun()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Notify PDM that this is a first run.
     ImportAutofillDataWin(
         autofill::PersonalDataManagerFactory::GetForProfile(profile_));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
@@ -782,7 +791,7 @@ std::u16string Browser::GetWindowTitleFromWebContents(
   if (title.empty() && (is_type_normal() || is_type_popup()))
     title = CoreTabHelper::GetDefaultTitle();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, we don't want to suffix the page title with the application name.
   return title;
 #else
@@ -916,7 +925,7 @@ void Browser::OnWindowClosing() {
       TabRestoreServiceFactory::GetForProfile(profile());
 
   bool notify_restore_service = is_type_normal() && tab_strip_model_->count();
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   notify_restore_service |= is_type_app() || is_type_app_popup();
 #endif
 
@@ -1189,6 +1198,7 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   // work to refactor the code to support that into SessionServiceBase
   // would be the best way to achieve that.
   DCHECK(!IsRelevantToAppSessionService(type_));
+  DCHECK(tab_strip_model_->group_model());
   if (change.type == TabGroupChange::kVisualsChanged) {
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(profile_);
@@ -1363,13 +1373,6 @@ void Browser::CreateSmsPrompt(content::RenderFrameHost*,
   std::move(on_confirm).Run();
 }
 
-void Browser::PassiveInsecureContentFound(const GURL& resource_url) {
-  // Note: this implementation is a mirror of
-  // ContentSettingsObserver::passiveInsecureContentFound
-  ReportInsecureContent(SslInsecureContentType::DISPLAY);
-  FilteredReportInsecureContentDisplayed(resource_url);
-}
-
 bool Browser::ShouldAllowRunningInsecureContent(
     content::WebContents* web_contents,
     bool allowed_per_prefs,
@@ -1377,8 +1380,6 @@ bool Browser::ShouldAllowRunningInsecureContent(
     const GURL& resource_url) {
   // Note: this implementation is a mirror of
   // ContentSettingsObserver::allowRunningInsecureContent.
-  FilteredReportInsecureContentRan(resource_url);
-
   if (allowed_per_prefs)
     return true;
 
@@ -1412,11 +1413,9 @@ void Browser::OnDidBlockNavigation(
 }
 
 content::PictureInPictureResult Browser::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents, surface_id, natural_size);
+    content::WebContents* web_contents) {
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void Browser::ExitPictureInPicture() {
@@ -1427,8 +1426,10 @@ bool Browser::IsBackForwardCacheSupported() {
   return true;
 }
 
-bool Browser::IsPrerender2Supported() {
-  return true;
+bool Browser::IsPrerender2Supported(content::WebContents& web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::unique_ptr<content::WebContents> Browser::ActivatePortalWebContents(
@@ -1620,7 +1621,7 @@ void Browser::AddNewContents(WebContents* source,
                              const gfx::Rect& initial_rect,
                              bool user_gesture,
                              bool* was_blocked) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On the Mac, the convention is to turn popups into new tabs when in
   // fullscreen mode. Only worry about user-initiated fullscreen as showing a
   // popup in HTML5 fullscreen would have kicked the page out of fullscreen.
@@ -1653,9 +1654,9 @@ void Browser::ActivateContents(WebContents* contents) {
 }
 
 void Browser::LoadingStateChanged(WebContents* source,
-                                  bool to_different_document) {
+                                  bool should_show_loading_ui) {
   ScheduleUIUpdate(source, content::INVALIDATE_TYPE_LOAD);
-  UpdateWindowForLoadingStateChanged(source, to_different_document);
+  UpdateWindowForLoadingStateChanged(source, should_show_loading_ui);
 }
 
 void Browser::CloseContents(WebContents* source) {
@@ -1781,11 +1782,11 @@ WebContents* Browser::CreateCustomWebContents(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContents* background_contents = CreateBackgroundContents(
       source_site_instance, opener, opener_url, is_new_browsing_instance,
-      frame_name, target_url, partition_id, session_storage_namespace);
+      frame_name, target_url, partition_config, session_storage_namespace);
   if (background_contents) {
     return background_contents->web_contents();
   }
@@ -1830,7 +1831,8 @@ void Browser::RendererUnresponsive(
     base::RepeatingClosure hang_monitor_restarter) {
   // Don't show the page hung dialog when a HTML popup hangs because
   // the dialog will take the focus and immediately close the popup.
-  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+  RenderWidgetHostView* view = render_widget_host->GetView();
+  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
     TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
         render_widget_host, std::move(hang_monitor_restarter));
   }
@@ -1839,7 +1841,8 @@ void Browser::RendererUnresponsive(
 void Browser::RendererResponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host) {
-  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+  RenderWidgetHostView* view = render_widget_host->GetView();
+  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
     TabDialogs::FromWebContents(source)->HideHungRendererDialog(
         render_widget_host);
   }
@@ -1861,6 +1864,15 @@ bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
   return guest_view && guest_view->PluginDoSave();
 }
 
+#if BUILDFLAG(IS_MAC)
+std::unique_ptr<content::ColorChooser> Browser::OpenColorChooser(
+    WebContents* web_contents,
+    SkColor initial_color,
+    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
+  return chrome::ShowColorChooser(web_contents, initial_color);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
@@ -1880,6 +1892,13 @@ void Browser::EnumerateDirectory(
     scoped_refptr<content::FileSelectListener> listener,
     const base::FilePath& path) {
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
+}
+
+bool Browser::CanEnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  return exclusive_access_manager_->fullscreen_controller()
+      ->CanEnterFullscreenModeForTab(requesting_frame, options.display_id);
 }
 
 void Browser::EnterFullscreenModeForTab(
@@ -1965,7 +1984,7 @@ void Browser::RegisterProtocolHandler(
   if (!handler.IsValid())
     return;
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
   if (registry->SilentlyHandleRegisterHandlerRequest(handler))
     return;
@@ -2000,7 +2019,7 @@ void Browser::RegisterProtocolHandler(
 
     permission_request_manager->AddRequest(
         requesting_frame,
-        new RegisterProtocolHandlerPermissionRequest(
+        new custom_handlers::RegisterProtocolHandlerPermissionRequest(
             registry, handler, url, std::move(fullscreen_block)));
   }
 }
@@ -2019,7 +2038,7 @@ void Browser::UnregisterProtocolHandler(
   ProtocolHandler handler = ProtocolHandler::CreateProtocolHandler(
       protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(context);
   registry->RemoveHandler(handler);
 }
@@ -2336,7 +2355,7 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
 // background color, so it does not need this block of code. Aura should
 // implement this as well.
 // https://crbug.com/719230
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Copies the background color from an old WebContents to a new one that
   // replaces it on the screen. This allows the new WebContents to use the
   // old one's background color as the starting background color, before having
@@ -2648,7 +2667,7 @@ void Browser::SyncHistoryWithTabs(int index) {
 // Browser, In-progress download termination handling (private):
 
 bool Browser::CanCloseWithInProgressDownloads() {
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Mac and ChromeOS, non-incognito and non-Guest downloads can still
   // continue after window is closed.
   if (!profile_->IsOffTheRecord())
@@ -2762,13 +2781,13 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
 }
 
 void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
-                                                 bool to_different_document) {
+                                                 bool should_show_loading_ui) {
   window_->UpdateLoadingAnimations(tab_strip_model_->TabsAreLoading());
   window_->UpdateTitleBar();
 
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();
   if (source == selected_contents) {
-    bool is_loading = source->IsLoading() && to_different_document;
+    bool is_loading = source->IsLoading() && should_show_loading_ui;
     command_controller_->LoadingStateChanged(is_loading, false);
     if (GetStatusBubble()) {
       GetStatusBubble()->SetStatus(CoreTabHelper::FromWebContents(
@@ -2999,7 +3018,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
     bool is_new_browsing_instance,
     const std::string& frame_name,
     const GURL& target_url,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   BackgroundContentsService* service =
       BackgroundContentsServiceFactory::GetForProfile(profile_);
@@ -3025,7 +3044,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
   if (allow_js_access) {
     return service->CreateBackgroundContents(
         source_site_instance, opener, is_new_browsing_instance, frame_name,
-        extension->id(), partition_id, session_storage_namespace);
+        extension->id(), partition_config, session_storage_namespace);
   }
 
   // If script access is not allowed, create the the background contents in a
@@ -3035,7 +3054,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
   BackgroundContents* contents = service->CreateBackgroundContents(
       content::SiteInstance::Create(source_site_instance->GetBrowserContext()),
       nullptr, is_new_browsing_instance, frame_name, extension->id(),
-      partition_id, session_storage_namespace);
+      partition_config, session_storage_namespace);
 
   // When a separate process is used, the original renderer cannot access the
   // new window later, thus we need to navigate the window now.

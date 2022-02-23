@@ -14,7 +14,6 @@ include_rules = [
     "+third_party/blink/renderer/modules/event_modules.h",
     "+third_party/blink/renderer/modules/gamepad",
     "+third_party/blink/renderer/modules/modules_export.h",
-    "+base/macros.h",
 
     # For shared metrics.
     "+third_party/blink/renderer/modules/vr/navigator_vr.h",

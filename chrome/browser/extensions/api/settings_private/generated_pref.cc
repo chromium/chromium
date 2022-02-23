@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
+#include "base/observer_list.h"
 #include "chrome/common/extensions/api/settings_private.h"
 
 namespace settings_api = extensions::api::settings_private;

@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -40,13 +40,15 @@ class CORE_EXPORT HighlightPaintingUtils {
       const ComputedStyle&,
       Node*,
       PseudoId,
-      const GlobalPaintFlags,
+      PaintFlags,
       const AtomicString& pseudo_argument = g_null_atom);
-  static Color HighlightEmphasisMarkColor(const Document&,
-                                          const ComputedStyle&,
-                                          Node*,
-                                          PseudoId,
-                                          const GlobalPaintFlags);
+  static Color HighlightEmphasisMarkColor(
+      const Document&,
+      const ComputedStyle&,
+      Node*,
+      PseudoId,
+      PaintFlags,
+      const AtomicString& pseudo_argument = g_null_atom);
   static TextPaintStyle HighlightPaintingStyle(
       const Document&,
       const ComputedStyle&,
@@ -57,6 +59,12 @@ class CORE_EXPORT HighlightPaintingUtils {
       const AtomicString& pseudo_argument = g_null_atom);
   static absl::optional<Color>
   HighlightTextDecorationColor(const ComputedStyle&, Node*, PseudoId);
+
+  static scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
+      Node* node,
+      const ComputedStyle& style,
+      PseudoId pseudo,
+      const AtomicString& pseudo_argument = g_null_atom);
 };
 
 }  // namespace blink

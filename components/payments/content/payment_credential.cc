@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
-#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -28,16 +28,11 @@ bool PaymentCredential::IsFrameAllowedToUseSecurePaymentConfirmation(
 }
 
 PaymentCredential::PaymentCredential(
-    content::WebContents* web_contents,
-    content::GlobalRenderFrameHostId initiator_frame_routing_id,
-    scoped_refptr<PaymentManifestWebDataService> web_data_service,
-    mojo::PendingReceiver<mojom::PaymentCredential> receiver)
-    : WebContentsObserver(web_contents),
-      initiator_frame_routing_id_(initiator_frame_routing_id),
-      web_data_service_(web_data_service) {
-  DCHECK(web_contents);
-  receiver_.Bind(std::move(receiver));
-}
+    content::RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<mojom::PaymentCredential> receiver,
+    scoped_refptr<PaymentManifestWebDataService> web_data_service)
+    : DocumentService(&render_frame_host, std::move(receiver)),
+      web_data_service_(web_data_service) {}
 
 PaymentCredential::~PaymentCredential() {
   Reset();
@@ -46,12 +41,13 @@ PaymentCredential::~PaymentCredential() {
 void PaymentCredential::StorePaymentCredential(
     const std::vector<uint8_t>& credential_id,
     const std::string& rp_id,
+    const std::vector<uint8_t>& user_id,
     StorePaymentCredentialCallback callback) {
   if (state_ != State::kIdle || !IsCurrentStateValid() ||
-      credential_id.empty() || rp_id.empty()) {
+      credential_id.empty() || rp_id.empty() || user_id.empty()) {
     Reset();
     std::move(callback).Run(
-        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
+        mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
     return;
   }
 
@@ -61,9 +57,9 @@ void PaymentCredential::StorePaymentCredential(
   storage_callback_ = std::move(callback);
   state_ = State::kStoringCredential;
   data_service_request_handle_ =
-      web_data_service_->AddSecurePaymentConfirmationInstrument(
-          std::make_unique<SecurePaymentConfirmationInstrument>(credential_id,
-                                                                rp_id),
+      web_data_service_->AddSecurePaymentConfirmationCredential(
+          std::make_unique<SecurePaymentConfirmationCredential>(credential_id,
+                                                                rp_id, user_id),
           /*consumer=*/this);
 }
 
@@ -82,42 +78,12 @@ void PaymentCredential::OnWebDataServiceRequestDone(
   std::move(callback).Run(
       static_cast<WDResult<bool>*>(result.get())->GetValue()
           ? mojom::PaymentCredentialStorageStatus::SUCCESS
-          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_INSTRUMENT);
-}
-
-void PaymentCredential::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Reset the service before the page navigates away.
-  // TODO(1251691): Using DidStartNavigation to infer the document's lifetime
-  // like this is incorrect. Consider making this class a DocumentService
-  // instead.
-  if (!navigation_handle->IsSameDocument() &&
-      (navigation_handle->IsInPrimaryMainFrame() ||
-       navigation_handle->GetPreviousRenderFrameHostId() ==
-           initiator_frame_routing_id_)) {
-    Reset();
-  }
-}
-
-void PaymentCredential::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  // Reset the service before the render frame is deleted.
-  if (render_frame_host == web_contents()->GetMainFrame() ||
-      render_frame_host ==
-          content::RenderFrameHost::FromID(initiator_frame_routing_id_)) {
-    Reset();
-  }
+          : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
 }
 
 bool PaymentCredential::IsCurrentStateValid() const {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(initiator_frame_routing_id_);
-
-  if (!IsFrameAllowedToUseSecurePaymentConfirmation(render_frame_host) ||
-      !web_contents() ||
-      web_contents() !=
-          content::WebContents::FromRenderFrameHost(render_frame_host) ||
-      !web_data_service_ || !receiver_.is_bound()) {
+  if (!IsFrameAllowedToUseSecurePaymentConfirmation(render_frame_host()) ||
+      !web_data_service_) {
     return false;
   }
 
@@ -141,12 +107,9 @@ void PaymentCredential::RecordFirstSystemPromptResult(
 void PaymentCredential::Reset() {
   // Callbacks must either be run or disconnected before being destroyed, so
   // run them if they are still connected.
-  if (receiver_.is_bound()) {
-    if (storage_callback_) {
-      std::move(storage_callback_)
-          .Run(mojom::PaymentCredentialStorageStatus::
-                   FAILED_TO_STORE_INSTRUMENT);
-    }
+  if (storage_callback_) {
+    std::move(storage_callback_)
+        .Run(mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
   }
 
   if (web_data_service_ && data_service_request_handle_) {

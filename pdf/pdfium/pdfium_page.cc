@@ -32,7 +32,6 @@
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_annot.h"
 #include "third_party/pdfium/public/fpdf_catalog.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -42,7 +41,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
 
@@ -87,10 +86,10 @@ gfx::RectF FloatPageRectToPixelRect(FPDF_PAGE page, const gfx::RectF& input) {
     height = 1;
 
   gfx::RectF output_rect(
-      ConvertUnitDouble(min_x, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(min_y, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(width, kPointsPerInch, kPixelsPerInch),
-      ConvertUnitDouble(height, kPointsPerInch, kPixelsPerInch));
+      ConvertUnitFloat(min_x, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(min_y, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(width, kPointsPerInch, kPixelsPerInch),
+      ConvertUnitFloat(height, kPointsPerInch, kPixelsPerInch));
   return output_rect;
 }
 
@@ -618,6 +617,23 @@ gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
   FPDF_PAGE page = GetPage();
   FPDF_TEXTPAGE text_page = GetTextPage();
   return GetFloatCharRectInPixels(page, text_page, char_index);
+}
+
+gfx::RectF PDFiumPage::GetCroppedRect() {
+  FPDF_PAGE page = GetPage();
+  FS_RECTF raw_rect;
+  if (!FPDF_GetPageBoundingBox(page, &raw_rect))
+    return gfx::RectF();
+
+  if (raw_rect.right < raw_rect.left)
+    std::swap(raw_rect.right, raw_rect.left);
+  if (raw_rect.bottom > raw_rect.top)
+    std::swap(raw_rect.bottom, raw_rect.top);
+
+  gfx::RectF rect(raw_rect.left, raw_rect.bottom,
+                  raw_rect.right - raw_rect.left,
+                  raw_rect.top - raw_rect.bottom);
+  return FloatPageRectToPixelRect(page, rect);
 }
 
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
@@ -1538,23 +1554,30 @@ Thumbnail PDFiumPage::GenerateThumbnail(float device_pixel_ratio) {
   gfx::Size page_size(base::saturated_cast<int>(FPDF_GetPageWidthF(page)),
                       base::saturated_cast<int>(FPDF_GetPageHeightF(page)));
   Thumbnail thumbnail(page_size, device_pixel_ratio);
+  const gfx::Size& image_size = thumbnail.image_size();
 
-  SkBitmap& sk_bitmap = thumbnail.bitmap();
   ScopedFPDFBitmap fpdf_bitmap(FPDFBitmap_CreateEx(
-      sk_bitmap.width(), sk_bitmap.height(), FPDFBitmap_BGRA,
-      sk_bitmap.getPixels(), sk_bitmap.rowBytes()));
+      image_size.width(), image_size.height(), FPDFBitmap_BGRA,
+      thumbnail.GetImageData().data(), thumbnail.stride()));
 
   // Clear the bitmap.
   FPDFBitmap_FillRect(fpdf_bitmap.get(), /*left=*/0, /*top=*/0,
-                      sk_bitmap.width(), sk_bitmap.height(),
+                      image_size.width(), image_size.height(),
                       /*color=*/0xFFFFFFFF);
 
   // The combination of the `FPDF_REVERSE_BYTE_ORDER` rendering flag and the
   // `FPDFBitmap_BGRA` format when initializing `fpdf_bitmap` results in an RGBA
   // rendering, which is the format required by HTML <canvas>.
+  constexpr int kRenderingFlags = FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER;
   FPDF_RenderPageBitmap(fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
-                        /*start_y=*/0, sk_bitmap.width(), sk_bitmap.height(),
-                        /*rotate=*/0, FPDF_ANNOT | FPDF_REVERSE_BYTE_ORDER);
+                        /*start_y=*/0, image_size.width(), image_size.height(),
+                        ToPDFiumRotation(PageOrientation::kOriginal),
+                        kRenderingFlags);
+
+  // Draw the forms.
+  FPDF_FFLDraw(engine_->form(), fpdf_bitmap.get(), GetPage(), /*start_x=*/0,
+               /*start_y=*/0, image_size.width(), image_size.height(),
+               ToPDFiumRotation(PageOrientation::kOriginal), kRenderingFlags);
 
   return thumbnail;
 }
@@ -1636,22 +1659,6 @@ uint32_t PDFiumPage::CountLinkHighlightOverlaps(
     const std::vector<Highlight>& highlights) {
   return CountOverlaps(links, highlights) + CountInternalTextOverlaps(links) +
          CountInternalTextOverlaps(highlights);
-}
-
-int ToPDFiumRotation(PageOrientation orientation) {
-  // Could use static_cast<int>(orientation), but using an exhaustive switch
-  // will trigger an error if we ever change the definition of
-  // `PageOrientation`.
-  switch (orientation) {
-    case PageOrientation::kOriginal:
-      return 0;
-    case PageOrientation::kClockwise90:
-      return 1;
-    case PageOrientation::kClockwise180:
-      return 2;
-    case PageOrientation::kClockwise270:
-      return 3;
-  }
 }
 
 }  // namespace chrome_pdf

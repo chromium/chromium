@@ -14,11 +14,11 @@ namespace storage_monitor {
 extern const char kFSUniqueIdPrefix[];
 extern const char kVendorModelSerialPrefix[];
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kVendorModelVolumeStoragePrefix[];
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows portable device interface GUID constant.
 extern const wchar_t kWPDDevInterfaceGUID[];
 #endif

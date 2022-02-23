@@ -14,11 +14,8 @@ bool NormalizeExtensionResourcePath(const base::FilePath& path,
   if (path.ReferencesParent())
     return false;
 
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-
   base::FilePath rv;
-  for (const auto& path_component : components) {
+  for (const auto& path_component : path.GetComponents()) {
     if (path_component != base::FilePath::kCurrentDirectory)
       rv = rv.Append(path_component);
   }

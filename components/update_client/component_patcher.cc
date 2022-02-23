@@ -66,13 +66,13 @@ void ComponentPatcher::StartPatching() {
   if (!commands_) {
     DonePatching(UnpackerError::kDeltaBadCommands, 0);
   } else {
-    next_command_ = commands_->GetList().begin();
+    next_command_ = commands_->GetListDeprecated().begin();
     PatchNextFile();
   }
 }
 
 void ComponentPatcher::PatchNextFile() {
-  if (next_command_ == commands_->GetList().end()) {
+  if (next_command_ == commands_->GetListDeprecated().end()) {
     DonePatching(UnpackerError::kNone, 0);
     return;
   }

@@ -64,7 +64,7 @@ WindowsSystemProxyResolutionRequest::WindowsSystemProxyResolutionRequest(
   DCHECK(!user_callback_.is_null());
   DCHECK(windows_system_proxy_resolver);
   proxy_resolution_request_ =
-      windows_system_proxy_resolver->GetProxyForUrl(url.spec(), this);
+      windows_system_proxy_resolver->GetProxyForUrl(url, this);
 }
 
 WindowsSystemProxyResolutionRequest::~WindowsSystemProxyResolutionRequest() {
@@ -118,6 +118,16 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
   service_ = nullptr;
   user_callback_.Reset();
   std::move(callback).Run(net_error);
+}
+
+WindowsSystemProxyResolver::Request*
+WindowsSystemProxyResolutionRequest::GetProxyResolutionRequestForTesting() {
+  return proxy_resolution_request_.get();
+}
+
+void WindowsSystemProxyResolutionRequest::
+    ResetProxyResolutionRequestForTesting() {
+  proxy_resolution_request_.reset();
 }
 
 }  // namespace net

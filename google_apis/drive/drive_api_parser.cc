@@ -50,16 +50,14 @@ bool GetParentsFromValue(const base::Value* value,
   DCHECK(value);
   DCHECK(result);
 
-  const base::ListValue* list_value = nullptr;
-  if (!value->GetAsList(&list_value))
+  if (!value->is_list())
     return false;
 
   base::JSONValueConverter<ParentReference> converter;
-  result->resize(list_value->GetList().size());
-  for (size_t i = 0; i < list_value->GetList().size(); ++i) {
-    const base::Value* parent_value = nullptr;
-    if (!list_value->Get(i, &parent_value) ||
-        !converter.Convert(*parent_value, &(*result)[i]))
+  result->resize(value->GetListDeprecated().size());
+  for (size_t i = 0; i < value->GetListDeprecated().size(); ++i) {
+    const base::Value& parent_value = value->GetListDeprecated()[i];
+    if (!converter.Convert(parent_value, &(*result)[i]))
       return false;
   }
 

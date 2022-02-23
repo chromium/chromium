@@ -17,6 +17,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -110,8 +111,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
 
   InitializeXdgDecoration();
 
-  wayland_window_->root_surface()->Commit();
-  connection_->ScheduleFlush();
   return true;
 }
 
@@ -143,14 +142,16 @@ void XDGToplevelWrapperImpl::SetMinimized() {
 void XDGToplevelWrapperImpl::SurfaceMove(WaylandConnection* connection) {
   DCHECK(xdg_toplevel_);
   if (auto serial = GetSerialForMoveResize(connection))
-    xdg_toplevel_move(xdg_toplevel_.get(), connection->seat(), serial->value);
+    xdg_toplevel_move(xdg_toplevel_.get(), connection->seat()->wl_object(),
+                      serial->value);
 }
 
 void XDGToplevelWrapperImpl::SurfaceResize(WaylandConnection* connection,
                                            uint32_t hittest) {
   DCHECK(xdg_toplevel_);
   if (auto serial = GetSerialForMoveResize(connection)) {
-    xdg_toplevel_resize(xdg_toplevel_.get(), connection->seat(), serial->value,
+    xdg_toplevel_resize(xdg_toplevel_.get(), connection->seat()->wl_object(),
+                        serial->value,
                         wl::IdentifyDirection(*connection, hittest));
   }
 }

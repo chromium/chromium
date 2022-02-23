@@ -154,7 +154,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_Timeout) {
   auth_->GetAccessToken(
       false, base::BindLambdaForTesting(
                  [&](mojom::AccessTokenStatus status, const std::string&) {
-                   EXPECT_EQ(mojom::AccessTokenStatus::kAuthError, status);
+                   EXPECT_EQ(mojom::AccessTokenStatus::kTransientError, status);
                    std::move(quit_closure).Run();
                  }));
   // Timer fires before access token becomes available.
@@ -168,7 +168,7 @@ TEST_F(DriveFsAuthTest, GetAccessToken_GetAccessTokenFailure_TimeoutRace) {
   auth_->GetAccessToken(
       false, base::BindLambdaForTesting(
                  [&](mojom::AccessTokenStatus status, const std::string&) {
-                   EXPECT_EQ(mojom::AccessTokenStatus::kAuthError, status);
+                   EXPECT_EQ(mojom::AccessTokenStatus::kTransientError, status);
                    std::move(quit_closure).Run();
                  }));
   // Timer fires before access token becomes available.

@@ -4,7 +4,7 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
-#include "base/files/memory_mapped_file.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,19 +73,27 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   if (!model_file.IsValid())
     return;
 
-  if (!model_fb_.Initialize(std::move(model_file)))
-    return;
-
   recorder.set_state(
       LanguageDetectionModelState::kModelFileValidAndMemoryMapped);
 
-  auto statusor_classifier = tflite::task::text::nlclassifier::NLClassifier::
-      CreateFromBufferAndOptions(
-          reinterpret_cast<const char*>(model_fb_.data()), model_fb_.length(),
-          {.input_tensor_index = 0,
-           .output_score_tensor_index = 0,
-           .output_label_tensor_index = 2},
-          CreateLangIdResolver());
+  tflite::task::text::NLClassifierOptions options;
+  options.set_input_tensor_index(0);
+  options.set_output_score_tensor_index(0);
+  options.set_output_label_tensor_index(2);
+
+  std::string file_content(model_file.GetLength(), '\0');
+  int bytes_read =
+      model_file.Read(0, base::data(file_content), model_file.GetLength());
+  if (bytes_read != model_file.GetLength()) {
+    return;
+  }
+  *options.mutable_base_options()
+       ->mutable_model_file()
+       ->mutable_file_content() = std::move(file_content);
+
+  auto statusor_classifier =
+      tflite::task::text::nlclassifier::NLClassifier::CreateFromOptions(
+          options, CreateLangIdResolver());
   if (!statusor_classifier.ok()) {
     LOCAL_HISTOGRAM_BOOLEAN("LanguageDetection.TFLiteModel.InvalidModelFile",
                             true);

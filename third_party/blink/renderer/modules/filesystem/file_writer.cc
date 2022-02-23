@@ -254,8 +254,7 @@ void FileWriter::CompleteAbort() {
 }
 
 void FileWriter::DoOperation(Operation operation) {
-  probe::AsyncTaskScheduled(GetExecutionContext(), "FileWriter",
-                            &async_task_id_);
+  async_task_context_.Schedule(GetExecutionContext(), "FileWriter");
   switch (operation) {
     case kOperationWrite:
       DCHECK_EQ(kOperationNone, operation_in_progress_);
@@ -305,11 +304,11 @@ void FileWriter::SignalCompletion(base::File::Error error) {
   }
   FireEvent(event_type_names::kWriteend);
 
-  probe::AsyncTaskCanceled(GetExecutionContext(), &async_task_id_);
+  async_task_context_.Cancel();
 }
 
 void FileWriter::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), &async_task_id_);
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_);
   ++recursion_depth_;
   DispatchEvent(
       *ProgressEvent::Create(type, true, bytes_written_, bytes_to_write_));

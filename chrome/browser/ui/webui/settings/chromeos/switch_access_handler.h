@@ -9,10 +9,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event_handler.h"
 
-namespace base {
-class ListValue;
-}
-
 class PrefService;
 
 namespace chromeos {
@@ -35,11 +31,11 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
-  void HandleRefreshAssignmentsFromPrefs(const base::ListValue* args);
+  void HandleRefreshAssignmentsFromPrefs(base::Value::ConstListView args);
   void HandleNotifySwitchAccessActionAssignmentPaneActive(
-      const base::ListValue* args);
+      base::Value::ConstListView args);
   void HandleNotifySwitchAccessActionAssignmentPaneInactive(
-      const base::ListValue* args);
+      base::Value::ConstListView args);
   void OnSwitchAccessAssignmentsUpdated();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

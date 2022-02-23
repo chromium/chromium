@@ -16,9 +16,9 @@ using testing::ElementsAre;
 namespace blink {
 
 class TablePainterTest : public PaintControllerPaintTest,
-                         private ScopedLayoutNGTableForTest {
+                         private ScopedLayoutNGForTest {
  protected:
-  TablePainterTest() : ScopedLayoutNGTableForTest(false) {}
+  TablePainterTest() : ScopedLayoutNGForTest(false) {}
 };
 
 // using TablePainterTest = PaintControllerPaintTest;

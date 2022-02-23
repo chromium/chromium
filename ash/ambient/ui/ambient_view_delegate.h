@@ -5,6 +5,7 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_VIEW_DELEGATE_H_
 #define ASH_AMBIENT_UI_AMBIENT_VIEW_DELEGATE_H_
 
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ash_export.h"
 #include "base/observer_list_types.h"
 
@@ -18,6 +19,13 @@ class ASH_EXPORT AmbientViewDelegateObserver : public base::CheckedObserver {
   virtual void OnPhotoTransitionAnimationCompleted() = 0;
 };
 
+// Handles UI state changes from the currently rendering view. The events below
+// are common to all ambient UI modes.
+class AmbientViewEventHandler {
+ public:
+  virtual void OnMarkerHit(AmbientPhotoConfig::Marker marker) = 0;
+};
+
 class ASH_EXPORT AmbientViewDelegate {
  public:
   virtual ~AmbientViewDelegate() = default;
@@ -29,6 +37,8 @@ class ASH_EXPORT AmbientViewDelegate {
   // server to render the photo frame and the glanceable weather information on
   // Ambient Mode.
   virtual AmbientBackendModel* GetAmbientBackendModel() = 0;
+
+  virtual AmbientViewEventHandler* GetAmbientViewEventHandler() = 0;
 
   // Invoked when the photo transition animation completed.
   virtual void OnPhotoTransitionAnimationCompleted() = 0;

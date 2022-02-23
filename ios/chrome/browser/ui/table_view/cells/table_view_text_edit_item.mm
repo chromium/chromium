@@ -23,6 +23,8 @@ namespace {
 const CGFloat kLabelAndFieldGap = 5;
 // Height/width of the edit icon.
 const CGFloat kEditIconLength = 18;
+// Height/width of the error icon.
+const CGFloat kErrorIconLength = 20;
 
 }  // namespace
 
@@ -56,7 +58,14 @@ const CGFloat kEditIconLength = 18;
   NSString* textLabelFormat = self.required ? @"%@*" : @"%@";
   cell.textLabel.text =
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
-  cell.textField.placeholder = self.textFieldPlaceholder;
+  if (self.textFieldPlaceholder) {
+    cell.textField.attributedPlaceholder = [[NSAttributedString alloc]
+        initWithString:self.textFieldPlaceholder
+            attributes:@{
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextSecondaryColor]
+            }];
+  }
   cell.textField.text = self.textFieldValue;
   cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
@@ -80,11 +89,11 @@ const CGFloat kEditIconLength = 18;
   if (self.hideIcon) {
     cell.textField.textColor = self.textFieldEnabled
                                    ? [UIColor colorNamed:kBlueColor]
-                                   : [UIColor colorNamed:kTextSecondaryColor];
+                                   : [UIColor colorNamed:kTextPrimaryColor];
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
     } else {
       cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }
@@ -240,8 +249,10 @@ const CGFloat kEditIconLength = 18;
         constraintEqualToAnchor:_identifyingIconButton.leadingAnchor];
 
     _standardConstraints = @[
-      [_textField.firstBaselineAnchor
-          constraintEqualToAnchor:_textLabel.firstBaselineAnchor],
+      [_textLabel.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_textField.centerYAnchor
+          constraintEqualToAnchor:_textLabel.centerYAnchor],
       [_textField.leadingAnchor
           constraintEqualToAnchor:_textLabel.trailingAnchor
                          constant:kLabelAndFieldGap],
@@ -290,6 +301,9 @@ const CGFloat kEditIconLength = 18;
 #pragma mark Public
 
 - (void)setIcon:(TableViewTextEditItemIconType)iconType {
+  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
+  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
+
   switch (iconType) {
     case TableViewTextEditItemIconTypeNone:
       self.iconView.hidden = YES;
@@ -303,13 +317,15 @@ const CGFloat kEditIconLength = 18;
       self.iconView.hidden = NO;
       [self.iconView setImage:[self editImage]];
       self.iconView.tintColor = [UIColor colorNamed:kGrey400Color];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kEditIconLength;
       break;
     case TableViewTextEditItemIconTypeError:
       self.iconView.hidden = NO;
       [self.iconView setImage:[self errorImage]];
       self.iconView.tintColor = [UIColor colorNamed:kRedColor];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
       NOTREACHED();
@@ -358,6 +374,7 @@ const CGFloat kEditIconLength = 18;
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.textField.text = nil;
+  self.textField.attributedPlaceholder = nil;
   self.textField.returnKeyType = UIReturnKeyNext;
   self.textField.keyboardType = UIKeyboardTypeDefault;
   self.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
@@ -407,14 +424,6 @@ const CGFloat kEditIconLength = 18;
     _textField.textAlignment =
         UseRTLLayout() ? NSTextAlignmentLeft : NSTextAlignmentRight;
   }
-}
-
-// Sets constraints when the icon needs to be hidden.
-- (void)setIconTypeNoneConstraints {
-  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
-  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
-
-  _editIconHeightConstraint.constant = kEditIconLength;
 }
 
 // Returns the edit icon image.

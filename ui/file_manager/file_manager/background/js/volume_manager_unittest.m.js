@@ -25,14 +25,6 @@ export function setUp() {
   // Set up mock of chrome.fileManagerPrivate APIs.
   mockChrome = {
     runtime: {lastError: undefined},
-    fileSystem: {
-      requestFileSystem: function(options, callback) {
-        if (!(options.volumeId in chrome.fileManagerPrivate.fileSystemMap_)) {
-          chrome.runtime.lastError = {message: 'Not found.'};
-        }
-        callback(chrome.fileManagerPrivate.fileSystemMap_[options.volumeId]);
-      },
-    },
     fileManagerPrivate: {
       DriveConnectionStateType: {
         ONLINE: 'ONLINE',
@@ -53,6 +45,13 @@ export function setUp() {
       addMount: function(fileUrl, password, callback) {
         mockChrome.fileManagerPrivate.password = password;
         callback(mockChrome.fileManagerPrivate.mountSourcePath_);
+      },
+      getVolumeRoot: function(options, callback) {
+        if (!(options.volumeId in chrome.fileManagerPrivate.fileSystemMap_)) {
+          chrome.runtime.lastError = {message: 'Not found.'};
+        }
+        callback(
+            chrome.fileManagerPrivate.fileSystemMap_[options.volumeId].root);
       },
       removeMount: function(volumeId) {
         const event = {
@@ -91,9 +90,6 @@ export function setUp() {
       },
       getVolumeMetadataList: function(callback) {
         callback(mockChrome.fileManagerPrivate.volumeMetadataList_);
-      },
-      resolveIsolatedEntries: function(entries, callback) {
-        callback(entries);
       },
       set driveConnectionState(state) {
         mockChrome.fileManagerPrivate.driveConnectionState_ = state;
@@ -197,17 +193,17 @@ export async function testUnresponsiveVolumeStartUp(done) {
   let unblock;
   const fileManagerPrivate = mockChrome.fileManagerPrivate;
 
-  // Replace chrome.fileManagerPrivate.resolveIsolatedEntries() to emulate 1
+  // Replace chrome.fileManagerPrivate.getVolumeRoot() to emulate 1
   // volume not resolving.
-  const origResolveIsolatedEntries = fileManagerPrivate.resolveIsolatedEntries;
+  const origGetVolumeRoot = fileManagerPrivate.getVolumeRoot;
 
-  fileManagerPrivate.resolveIsolatedEntries = (entries, callback) => {
-    if (entries.length && entries[0].filesystem.name === 'download:Downloads') {
-      console.log(`blocking the resolve for ${entries[0].filesystem.name}`);
-      unblock = () => origResolveIsolatedEntries(entries, callback);
+  fileManagerPrivate.getVolumeRoot = (options, callback) => {
+    if (options.volumeId === 'download:Downloads') {
+      console.log(`blocking the resolve for ${options.volumeId}`);
+      unblock = () => origGetVolumeRoot(options, callback);
       return;
     }
-    return origResolveIsolatedEntries(entries, callback);
+    return origGetVolumeRoot(options, callback);
   };
 
   // getInstance() calls and waits for initialize(), which shouldn't get stuck

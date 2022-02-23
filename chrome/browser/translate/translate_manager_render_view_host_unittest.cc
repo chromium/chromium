@@ -138,7 +138,7 @@ class TranslateManagerRenderViewHostTest
   TranslateManagerRenderViewHostTest& operator=(
       const TranslateManagerRenderViewHostTest&) = delete;
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
   // Ensure that we are testing under the bubble UI.
   // TODO(groby): Remove once the bubble is enabled by default everywhere.
   // http://crbug.com/507442
@@ -203,7 +203,7 @@ class TranslateManagerRenderViewHostTest
       return infobar->translate_step();
     }
   }
-#endif  // defined(USE_AURA) && !defined(OS_MAC)
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 
   // Simulates navigating to a page and getting the page contents and language
   // for that navigation.
@@ -288,7 +288,7 @@ class TranslateManagerRenderViewHostTest
                : NULL;
   }
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
   // If there is 1 infobar and it is a translate infobar, closes it and returns
   // true.  Returns false otherwise.
   bool CloseTranslateInfoBar() {
@@ -327,7 +327,7 @@ class TranslateManagerRenderViewHostTest
       return true;
     }
   }
-#endif  // defined(USE_AURA) && !defined(OS_MAC)
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 
   void ReloadAndWait(bool successful_reload) {
     if (successful_reload) {
@@ -352,11 +352,11 @@ class TranslateManagerRenderViewHostTest
     params.is_editable = false;
     params.page_url =
         web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     params.edit_flags = blink::ContextMenuDataEditFlags::kCanTranslate;
     return new TestRenderViewContextMenu(*web_contents()->GetMainFrame(),
                                          params);
@@ -558,7 +558,7 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
 // The following tests depend on the translate infobar. They should be ported to
 // use the translate bubble. On Aura there is no infobar so the tests are not
 // compiled.
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 TEST_F(TranslateManagerRenderViewHostTest, NormalTranslate) {
   // See BubbleNormalTranslate for corresponding bubble UX testing.
   if (TranslateService::IsTranslateBubbleEnabled())
@@ -1685,7 +1685,7 @@ TEST_F(TranslateManagerRenderViewHostTest, BubbleUnknownLanguage) {
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
             bubble->GetViewState());
 }
-#endif  // defined(USE_AURA) && !defined(OS_MAC)
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace translate

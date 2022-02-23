@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 #include "chrome/elevation_service/elevator.h"

@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/policy/enrollment_status.h"
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -103,8 +103,8 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
                                const std::string& auth_code);
 
   // Owned by this class owner.
-  CloudPolicyClient* client_;
-  Delegate* delegate_;
+  raw_ptr<CloudPolicyClient> client_;
+  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
 

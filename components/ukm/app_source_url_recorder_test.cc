@@ -36,6 +36,10 @@ class AppSourceUrlRecorderTest : public testing::Test {
     return AppSourceUrlRecorder::GetSourceIdForPWA(url);
   }
 
+  SourceId GetSourceIdForBorealis(const std::string& app) {
+    return AppSourceUrlRecorder::GetSourceIdForBorealis(app);
+  }
+
   SourceId GetSourceIdForCrostini(const std::string& desktop_id,
                                   const std::string& app_name) {
     return AppSourceUrlRecorder::GetSourceIdForCrostini(desktop_id, app_name);
@@ -47,7 +51,7 @@ class AppSourceUrlRecorderTest : public testing::Test {
 };
 
 TEST_F(AppSourceUrlRecorderTest, CheckChromeApp) {
-  const std::string app_id = "hhaomjibdihmijegdhdafkllkbggdgoj";
+  const std::string app_id = "unique_app_id";
   SourceId id = GetSourceIdForChromeApp(app_id);
   GURL expected_url("app://" + app_id);
 
@@ -103,6 +107,20 @@ TEST_F(AppSourceUrlRecorderTest, CheckPWA) {
   auto it = sources.find(id);
   ASSERT_NE(sources.end(), it);
   EXPECT_EQ(url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
+
+TEST_F(AppSourceUrlRecorderTest, CheckBorealis) {
+  GURL expected_url("app://borealis/123");
+  SourceId id = GetSourceIdForBorealis("123");
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
   EXPECT_EQ(1u, it->second->urls().size());
 }
 

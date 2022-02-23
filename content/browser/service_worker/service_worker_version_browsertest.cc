@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -22,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
@@ -165,7 +167,7 @@ class WorkerActivatedObserver
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   base::RunLoop run_loop_;
-  ServiceWorkerContextWrapper* context_;
+  raw_ptr<ServiceWorkerContextWrapper> context_;
 };
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -439,7 +441,6 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     version_ = CreateNewServiceWorkerVersion(
         wrapper()->context()->registry(), registration_.get(),
         embedded_test_server()->GetURL(worker_url), script_type);
-    version_->set_initialize_global_scope_after_main_script_loaded();
     // Make the registration findable via storage functions.
     wrapper()->context()->registry()->NotifyInstallingRegistration(
         registration_.get());
@@ -1448,6 +1449,57 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   ASSERT_EQ(StartWorker(), blink::ServiceWorkerStatusCode::kOk);
   EXPECT_EQ(CrossOriginEmbedderPolicyRequireCorp(),
             version_->cross_origin_embedder_policy());
+}
+
+// Tests that JS can be executed in the context of a running service worker.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       ExecuteScriptForTesting) {
+  StartServerAndNavigateToSetup();
+  SetUpRegistration("/service_worker/execute_script_worker.js");
+  ASSERT_EQ(StartWorker(), blink::ServiceWorkerStatusCode::kOk);
+  ASSERT_TRUE(version_);
+
+  auto execute_script_helper = [this](const std::string& script,
+                                      base::Value* value_out,
+                                      std::string* error_out) {
+    base::RunLoop run_loop;
+    auto callback = [&run_loop, value_out, error_out](
+                        base::Value value,
+                        const absl::optional<std::string>& error) {
+      *value_out = std::move(value);
+      *error_out = error.value_or("<no error>");
+      run_loop.Quit();
+    };
+
+    version_->ExecuteScriptForTest(script,
+                                   base::BindLambdaForTesting(callback));
+    run_loop.Run();
+  };
+
+  {
+    base::Value value;
+    std::string error;
+    execute_script_helper("self.workerFlag;", &value, &error);
+    EXPECT_THAT(value, base::test::IsJson(R"("worker flag")"));
+    EXPECT_EQ("<no error>", error);
+  }
+  {
+    base::Value value;
+    std::string error;
+    // Execute a script that will hit an exception.
+    execute_script_helper("foo = bar + baz;", &value, &error);
+    EXPECT_TRUE(value.is_none());
+    EXPECT_EQ("Uncaught ReferenceError: bar is not defined", error);
+  }
+  {
+    base::Value value;
+    std::string error;
+    // Execute a script that evaluates to undefined. This converts to an empty
+    // base::Value, and should not throw an error.
+    execute_script_helper("(function() { })();", &value, &error);
+    EXPECT_TRUE(value.is_none());
+    EXPECT_EQ("<no error>", error);
+  }
 }
 
 class ServiceWorkerVersionBrowserV8FullCodeCacheTest

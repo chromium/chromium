@@ -4,8 +4,9 @@
 
 #include "content/public/test/prerender_test_util.h"
 
+#include <tuple>
+
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -310,6 +311,25 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url) {
       base::UTF8ToUTF16(script), base::NullCallback());
 }
 
+std::unique_ptr<PrerenderHandle>
+PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
+    const GURL& prerendering_url,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix,
+    ui::PageTransition page_transition) {
+  TRACE_EVENT("test", "PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync",
+              "prerendering_url", prerendering_url, "trigger_type",
+              trigger_type, "embedder_histogram_suffix",
+              embedder_histogram_suffix, "page_transition", page_transition);
+  if (!content::BrowserThread::CurrentlyOn(BrowserThread::UI))
+    return nullptr;
+
+  WebContents* web_contents = GetWebContents();
+  return web_contents->StartPrerendering(prerendering_url, trigger_type,
+                                         embedder_histogram_suffix,
+                                         page_transition);
+}
+
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
                                                   const GURL& gurl) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrerenderedPage", "host_id",
@@ -329,8 +349,8 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  ignore_result(
-      ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl)));
+  std::ignore =
+      ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl));
 }
 
 // static
@@ -363,8 +383,8 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  ignore_result(
-      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl)));
+  std::ignore =
+      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl));
   observer.Wait();
 }
 
@@ -445,6 +465,21 @@ void PrerenderTestHelper::MonitorResourceRequest(
 
 WebContents* PrerenderTestHelper::GetWebContents() {
   return get_web_contents_fn_.Run();
+}
+
+std::string PrerenderTestHelper::GenerateHistogramName(
+    const std::string& histogram_base_name,
+    content::PrerenderTriggerType trigger_type,
+    const std::string& embedder_suffix) {
+  switch (trigger_type) {
+    case content::PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".SpeculationRule";
+    case content::PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
+  }
+  NOTREACHED();
 }
 
 }  // namespace test

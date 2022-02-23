@@ -257,11 +257,14 @@ base::WeakPtr<SpdyStream> CreateStreamSynchronously(
     const base::WeakPtr<SpdySession>& session,
     const GURL& url,
     RequestPriority priority,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    bool detect_broken_connection,
+    base::TimeDelta heartbeat_interval) {
   SpdyStreamRequest stream_request;
   int rv = stream_request.StartRequest(
       type, session, url, false /* no early data */, priority, SocketTag(),
-      net_log, CompletionOnceCallback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+      net_log, CompletionOnceCallback(), TRAFFIC_ANNOTATION_FOR_TESTS,
+      detect_broken_connection, heartbeat_interval);
 
   return
       (rv == OK) ? stream_request.ReleaseStream() : base::WeakPtr<SpdyStream>();
@@ -319,16 +322,23 @@ SpdySessionDependencies::SpdySessionDependencies(
       enable_early_data(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
       enable_priority_update(false),
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
-      go_away_on_ip_change(true) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+      go_away_on_ip_change(true),
 #else
-      go_away_on_ip_change(false) {
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+      go_away_on_ip_change(false),
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+      ignore_ip_address_changes(false) {
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
 
+SpdySessionDependencies::SpdySessionDependencies(SpdySessionDependencies&&) =
+    default;
+
 SpdySessionDependencies::~SpdySessionDependencies() = default;
+
+SpdySessionDependencies& SpdySessionDependencies::operator=(
+    SpdySessionDependencies&&) = default;
 
 // static
 std::unique_ptr<HttpNetworkSession> SpdySessionDependencies::SpdyCreateSession(
@@ -371,8 +381,6 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.time_func = session_deps->time_func;
   params.enable_http2_alternative_service =
       session_deps->enable_http2_alternative_service;
-  params.enable_websocket_over_http2 =
-      session_deps->enable_websocket_over_http2;
   params.enable_http2_settings_grease =
       session_deps->enable_http2_settings_grease;
   params.greased_http2_frame = session_deps->greased_http2_frame;
@@ -385,6 +393,7 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
   params.enable_priority_update = session_deps->enable_priority_update;
   params.spdy_go_away_on_ip_change = session_deps->go_away_on_ip_change;
+  params.ignore_ip_address_changes = session_deps->ignore_ip_address_changes;
   return params;
 }
 
@@ -474,22 +483,24 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
     bool enable_ip_based_pooling) {
   EXPECT_FALSE(http_session->spdy_session_pool()->FindAvailableSession(
       key, enable_ip_based_pooling,
-      /* is_websocket = */ false, NetLogWithSource()));
+      /*is_websocket=*/false, NetLogWithSource()));
 
   auto connection = std::make_unique<ClientSocketHandle>();
   TestCompletionCallback callback;
 
+  auto ssl_config = std::make_unique<SSLConfig>();
+  ssl_config->alpn_protos = http_session->GetAlpnProtos();
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          /*ssl_config_for_origin=*/std::move(ssl_config),
+          /*ssl_config_for_proxy=*/nullptr);
   int rv = connection->Init(
       ClientSocketPool::GroupId(
           url::SchemeHostPort(url::kHttpsScheme,
                               key.host_port_pair().HostForURL(),
                               key.host_port_pair().port()),
           key.privacy_mode(), NetworkIsolationKey(), SecureDnsPolicy::kAllow),
-      socket_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
+      socket_params, /*proxy_annotation_tag=*/absl::nullopt, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),
       http_session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
@@ -506,6 +517,10 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(http_session->spdy_session_pool(), key));
+  // Disable the time-based receive window updates by setting the delay to
+  // the max time interval. This prevents time-based flakiness in the tests
+  // for any test not explicitly exercising the window update buffering.
+  spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
   return spdy_session;
 }
 
@@ -596,6 +611,10 @@ base::WeakPtr<SpdySession> CreateFakeSpdySession(SpdySessionPool* pool,
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(spdy_session);
   EXPECT_TRUE(HasSpdySession(pool, key));
+  // Disable the time-based receive window updates by setting the delay to
+  // the max time interval. This prevents time-based flakiness in the tests
+  // for any test not explicitly exercising the window update buffering.
+  spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
   return spdy_session;
 }
 

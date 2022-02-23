@@ -8,7 +8,11 @@
 #include "media/base/media_export.h"
 
 namespace media {
+
+MEDIA_EXPORT bool SupportMediaFoundationPlayback();
 MEDIA_EXPORT bool SupportMediaFoundationClearPlayback();
+MEDIA_EXPORT bool SupportMediaFoundationEncryptedPlayback();
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_FEATURE_CHECKS_H_

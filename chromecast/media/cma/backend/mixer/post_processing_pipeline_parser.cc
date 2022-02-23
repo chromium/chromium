@@ -95,7 +95,7 @@ PostProcessingPipelineParser::GetStreamPipelines() {
     return descriptors;
   }
   for (const base::Value& pipeline_description_dict :
-       pipelines_list->GetList()) {
+       pipelines_list->GetListDeprecated()) {
     CHECK(pipeline_description_dict.is_dict());
 
     const base::Value* processors_list =

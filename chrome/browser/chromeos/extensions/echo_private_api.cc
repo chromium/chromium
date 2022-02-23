@@ -117,12 +117,12 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
 
   const std::string& service_id = params->id;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* offer_infos = local_state->
-      GetDictionary(prefs::kEchoCheckedOffers);
+  const base::Value* offer_infos =
+      local_state->GetDictionary(prefs::kEchoCheckedOffers);
 
-  const base::DictionaryValue* offer_info = NULL;
-  if (!offer_infos->GetDictionaryWithoutPathExpansion(
-         "echo." + service_id, &offer_info)) {
+  const base::Value* offer_info =
+      offer_infos->FindDictKey("echo." + service_id);
+  if (!offer_info) {
     return RespondNow(Error("Not found"));
   }
 

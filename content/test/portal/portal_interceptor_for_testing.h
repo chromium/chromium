@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -89,7 +90,7 @@ class PortalInterceptorForTesting final
 
   const scoped_refptr<base::RefCountedData<base::ObserverList<Observer>>>
       observers_;
-  content::Portal* portal_;  // Owns this.
+  raw_ptr<content::Portal> portal_;  // Owns this.
   NavigateCallback navigate_callback_;
   base::WeakPtrFactory<PortalInterceptorForTesting> weak_ptr_factory_{this};
 };

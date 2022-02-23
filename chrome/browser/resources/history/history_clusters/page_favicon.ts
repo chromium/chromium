@@ -6,7 +6,8 @@ import './shared_vars.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './page_favicon.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a page favicon.
@@ -24,7 +25,7 @@ class PageFavicon extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

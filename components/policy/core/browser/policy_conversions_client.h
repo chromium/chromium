@@ -59,7 +59,7 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Enabled by default.
   void EnableUserPolicies(bool enabled);
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sets the updater policies.
   void SetUpdaterPolicies(std::unique_ptr<PolicyMap> policies);
 
@@ -70,7 +70,7 @@ class POLICY_EXPORT PolicyConversionsClient {
 
   // Sets the updater policy schemas.
   void SetUpdaterPolicySchemas(PolicyConversions::PolicyToSchemaMap schemas);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Converts the given |value| to JSON, respecting the configuration
   // preferences that were set on this client.
@@ -167,10 +167,10 @@ class POLICY_EXPORT PolicyConversionsClient {
   bool GetUserPoliciesEnabled() const;
 
  private:
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<PolicyMap> updater_policies_;
   absl::optional<PolicyConversions::PolicyToSchemaMap> updater_policy_schemas_;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_WIN)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
 
   bool convert_types_enabled_ = true;
   bool convert_values_enabled_ = false;

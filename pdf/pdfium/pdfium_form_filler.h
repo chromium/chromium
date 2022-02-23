@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -204,7 +205,7 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
 
    private:
     std::unique_ptr<v8::Isolate::Scope> isolate_scope_;
-    PDFiumEngine* engine_;
+    raw_ptr<PDFiumEngine> engine_;
   };
 
   class EngineInIsolateScopeFactory {
@@ -219,13 +220,13 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
     EngineInIsolateScope GetEngineInIsolateScope() const;
 
    private:
-    PDFiumEngine* const engine_;
+    const raw_ptr<PDFiumEngine> engine_;
 
     // The V8 isolate to enter inside callbacks from PDFium. Can be `nullptr`
     // because indirect callers of `PDFiumFormFiller` might not be embedding V8
     // separately. This can happen in utility processes (through callers of
     // //pdf/pdf.h) and in Pepper plugin processes.
-    v8::Isolate* const callback_isolate_;
+    const raw_ptr<v8::Isolate> callback_isolate_;
   };
 
   // Gets an `EngineInIsolateScope` using `engine_in_isolate_scope_factory_`.

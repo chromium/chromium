@@ -94,7 +94,7 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
   *parsed = chrome::ParsedFaviconPath();
 
   for (net::QueryIterator it(query_url); !it.IsAtEnd(); it.Advance()) {
-    const std::string key = it.GetKey();
+    const base::StringPiece key = it.GetKey();
     // Note: each of these keys can be used in chrome://favicon2 path. See file
     // "favicon_url_parser.h" for a description of what each one does.
     if (key == "allow_google_server_fallback") {

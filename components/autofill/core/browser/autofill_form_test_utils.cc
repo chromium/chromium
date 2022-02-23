@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +24,6 @@ testing::Message DescribeFormData(const FormData& form_data) {
 
 FormFieldData CreateFieldByRole(ServerFieldType role) {
   FormFieldData field;
-
   switch (role) {
     case ServerFieldType::USERNAME:
       field.label = u"Username";
@@ -81,45 +81,42 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
     default:
       break;
   }
-
   return field;
 }
 
-FormData GetFormData(const TestFormAttributes& test_form_attributes) {
-  FormData form_data;
-
-  form_data.url = GURL(test_form_attributes.url);
-  form_data.action = GURL(test_form_attributes.action);
-  form_data.name = test_form_attributes.name.data();
-  static int field_count = 0;
-  if (test_form_attributes.unique_renderer_id)
-    form_data.unique_renderer_id = *test_form_attributes.unique_renderer_id;
-  if (test_form_attributes.main_frame_origin)
-    form_data.main_frame_origin = *test_form_attributes.main_frame_origin;
-  for (const FieldDataDescription& field_description :
-       test_form_attributes.fields) {
-    FormFieldData field = CreateFieldByRole(field_description.role);
-    field.form_control_type = field_description.form_control_type.data();
-    field.is_focusable = field_description.is_focusable;
-    if (!field_description.autocomplete_attribute.empty()) {
-      field.autocomplete_attribute =
-          field_description.autocomplete_attribute.data();
-    }
-    if (field_description.label != kLabelText)
-      field.label = field_description.label.data();
-    if (field_description.name != kNameText)
-      field.name = field_description.name.data();
-    if (field_description.value)
-      field.value = *field_description.value;
-    if (field_description.is_autofilled)
-      field.is_autofilled = *field_description.is_autofilled;
-    field.unique_renderer_id = FieldRendererId(field_count++);
-    field.should_autocomplete = field_description.should_autocomplete;
-    form_data.fields.push_back(field);
+FormData GetFormData(const FormDataDescription& d) {
+  FormData f;
+  f.url = GURL(d.url);
+  f.action = GURL(d.action);
+  f.name = d.name;
+  f.host_frame = d.host_frame.value_or(MakeLocalFrameToken());
+  f.unique_renderer_id = d.unique_renderer_id.value_or(MakeFormRendererId());
+  if (d.main_frame_origin)
+    f.main_frame_origin = *d.main_frame_origin;
+  f.is_form_tag = d.is_form_tag;
+  for (const FieldDataDescription& dd : d.fields) {
+    FormFieldData ff = CreateFieldByRole(dd.role);
+    ff.form_control_type = dd.form_control_type;
+    if (ff.form_control_type == "select-one" && !dd.select_options.empty())
+      ff.options = dd.select_options;
+    ff.host_frame = dd.host_frame.value_or(f.host_frame);
+    ff.unique_renderer_id =
+        dd.unique_renderer_id.value_or(MakeFieldRendererId());
+    ff.is_focusable = dd.is_focusable;
+    if (!dd.autocomplete_attribute.empty())
+      ff.autocomplete_attribute = dd.autocomplete_attribute;
+    if (dd.label)
+      ff.label = *dd.label;
+    if (dd.name)
+      ff.name = *dd.name;
+    if (dd.value)
+      ff.value = *dd.value;
+    ff.is_autofilled = dd.is_autofilled.value_or(false);
+    ff.origin = dd.origin.value_or(f.main_frame_origin);
+    ff.should_autocomplete = dd.should_autocomplete;
+    f.fields.push_back(ff);
   }
-  form_data.is_form_tag = test_form_attributes.is_form_tag;
-
-  return form_data;
+  return f;
 }
 
 // static
@@ -148,52 +145,46 @@ void FormStructureTest::CheckFormStructureTestData(
     if (test_case.form_flags.has_author_specified_upi_vpa_hint)
       EXPECT_TRUE(form_structure->has_author_specified_upi_vpa_hint());
 
-    if (test_case.form_flags.is_complete_credit_card_form.first) {
-      if (test_case.form_flags.is_complete_credit_card_form.second)
-        EXPECT_TRUE(form_structure->IsCompleteCreditCardForm());
-      else
-        EXPECT_FALSE(form_structure->IsCompleteCreditCardForm());
+    if (test_case.form_flags.is_complete_credit_card_form.has_value()) {
+      EXPECT_EQ(form_structure->IsCompleteCreditCardForm(),
+                *test_case.form_flags.is_complete_credit_card_form);
     }
-
-    if (test_case.form_flags.field_count)
+    if (test_case.form_flags.field_count) {
       ASSERT_EQ(*test_case.form_flags.field_count,
                 static_cast<int>(form_structure->field_count()));
-    if (test_case.form_flags.autofill_count)
+    }
+    if (test_case.form_flags.autofill_count) {
       ASSERT_EQ(*test_case.form_flags.autofill_count,
                 static_cast<int>(form_structure->autofill_count()));
+    }
     if (test_case.form_flags.section_count) {
       std::set<std::string> section_names;
-      for (size_t i = 0; i < 9; ++i) {
-        section_names.insert(form_structure->field(i)->section);
-      }
+      for (const auto& field : *form_structure)
+        section_names.insert(field->section);
       EXPECT_EQ(*test_case.form_flags.section_count,
                 static_cast<int>(section_names.size()));
     }
 
-    if (!test_case.expected_field_types.expected_html_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_html_type.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_html_type[i],
-                  form_structure->field(i)->html_type());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_html_type.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_html_type[i],
+                form_structure->field(i)->html_type());
     }
-    if (!test_case.expected_field_types.expected_phone_part.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_phone_part.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_phone_part[i],
-                  form_structure->field(i)->phone_part());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_phone_part.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_phone_part[i],
+                form_structure->field(i)->phone_part());
     }
-    if (!test_case.expected_field_types.expected_heuristic_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_heuristic_type.size();
-           i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],
-                  form_structure->field(i)->heuristic_type());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_heuristic_type.size();
+         i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],
+                form_structure->field(i)->heuristic_type());
     }
-    if (!test_case.expected_field_types.expected_overall_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_overall_type.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_overall_type[i],
-                  form_structure->field(i)->Type().GetStorableType());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_overall_type.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_overall_type[i],
+                form_structure->field(i)->Type().GetStorableType());
     }
   }
 }

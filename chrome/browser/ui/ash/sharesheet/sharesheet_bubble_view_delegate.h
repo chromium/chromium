@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
+#include "chromeos/components/sharesheet/constants.h"
 
 namespace sharesheet {
 class SharesheetServiceDelegator;
@@ -42,7 +44,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
       ::sharesheet::CloseCallback close_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void OnActionLaunched() override;
+  void OnActionLaunched(bool has_action_view) override;
 
   // ::sharesheet::SharesheetController:
   void SetBubbleSize(int width, int height) override;
@@ -54,8 +56,8 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
 
   SharesheetBubbleView* GetBubbleViewForTesting();
 
-  // Owned by views.
-  SharesheetBubbleView* sharesheet_bubble_view_;
+  std::unique_ptr<SharesheetBubbleView> sharesheet_bubble_view_owned_;
+  raw_ptr<SharesheetBubbleView> sharesheet_bubble_view_ = nullptr;
 };
 
 }  // namespace sharesheet

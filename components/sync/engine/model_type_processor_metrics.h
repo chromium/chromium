@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_
 #define COMPONENTS_SYNC_ENGINE_MODEL_TYPE_PROCESSOR_METRICS_H_
 
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 
 namespace syncer {
@@ -14,6 +15,12 @@ namespace syncer {
 void LogUpdatesReceivedByProcessorHistogram(ModelType model_type,
                                             bool is_initial_sync,
                                             size_t num_updates);
+
+// Logs histogram representing the staleness of an incoming incremental
+// (non-initial) update, when received by a ModelTypeProcessor via
+// OnUpdateReceived().
+void LogNonReflectionUpdateFreshnessToUma(ModelType type,
+                                          base::Time remote_modification_time);
 
 }  // namespace syncer
 

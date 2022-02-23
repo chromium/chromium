@@ -5,8 +5,14 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 
+#include <string>
+#include <vector>
+
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/default_user_image.h"
+#include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -64,12 +70,56 @@ struct StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   static GURL url(const backdrop::Image& image);
   static std::vector<std::string> attribution(const backdrop::Image& image);
   static uint64_t asset_id(const backdrop::Image& image);
-  static int32_t unit_id(const backdrop::Image& image);
+  static uint64_t unit_id(const backdrop::Image& image);
   static ::backdrop::Image::ImageType type(const backdrop::Image& image);
 
   static bool Read(ash::personalization_app::mojom::WallpaperImageDataView data,
                    backdrop::Image* out);
   static bool IsNull(const backdrop::Image& image);
+};
+
+template <>
+struct StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+                    ash::personalization_app::UserDisplayInfo> {
+  static const std::string& email(
+      const ash::personalization_app::UserDisplayInfo& user_display_info);
+  static const std::string& name(
+      const ash::personalization_app::UserDisplayInfo& user_display_info);
+  static bool Read(ash::personalization_app::mojom::UserInfoDataView data,
+                   ash::personalization_app::UserDisplayInfo* out);
+};
+
+template <>
+struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+                    ash::default_user_image::DefaultUserImage> {
+  static int index(
+      const ash::default_user_image::DefaultUserImage& default_user_image);
+  static const std::u16string& title(
+      const ash::default_user_image::DefaultUserImage& default_user_image);
+  static const GURL& url(
+      const ash::default_user_image::DefaultUserImage& default_user_image);
+  static bool Read(
+      ash::personalization_app::mojom::DefaultUserImageDataView data,
+      ash::default_user_image::DefaultUserImage* out);
+};
+
+template <>
+struct EnumTraits<ash::personalization_app::mojom::TopicSource,
+                  ash::AmbientModeTopicSource> {
+  using MojomTopicSource = ::ash::personalization_app::mojom::TopicSource;
+  static MojomTopicSource ToMojom(ash::AmbientModeTopicSource input);
+  static bool FromMojom(MojomTopicSource input,
+                        ash::AmbientModeTopicSource* output);
+};
+
+template <>
+struct EnumTraits<ash::personalization_app::mojom::TemperatureUnit,
+                  ash::AmbientModeTemperatureUnit> {
+  using MojomTemperatureUnit =
+      ::ash::personalization_app::mojom::TemperatureUnit;
+  static MojomTemperatureUnit ToMojom(ash::AmbientModeTemperatureUnit input);
+  static bool FromMojom(MojomTemperatureUnit input,
+                        ash::AmbientModeTemperatureUnit* output);
 };
 
 }  // namespace mojo

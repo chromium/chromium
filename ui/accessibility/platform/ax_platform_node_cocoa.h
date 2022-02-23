@@ -16,6 +16,7 @@
 namespace ui {
 
 class AXPlatformNodeBase;
+class AXPlatformNodeDelegate;
 
 struct AXAnnouncementSpec {
   AXAnnouncementSpec();
@@ -34,6 +35,9 @@ AX_EXPORT
 // Determines if this object is alive, i.e. it hasn't been detached.
 - (BOOL)instanceActive;
 
+// Returns true if this accessible element should be included into the ax tree.
+- (BOOL)isIncludedInPlatformTree;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;
@@ -49,6 +53,7 @@ AX_EXPORT
 
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
+@property(nonatomic, readonly) ui::AXPlatformNodeDelegate* nodeDelegate;
 
 // Returns the data necessary to queue an NSAccessibility announcement if
 // |eventType| should be announced, or nullptr otherwise.

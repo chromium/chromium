@@ -58,7 +58,6 @@ GestureConfiguration::GestureConfiguration()
 #else
       scroll_debounce_interval_in_ms_(0),
 #endif
-      semi_long_press_time_in_ms_(400),
       show_press_delay_in_ms_(150),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       single_pointer_cancel_enabled_(true),

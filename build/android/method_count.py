@@ -13,7 +13,7 @@ import zipfile
 from pylib.dex import dex_parser
 
 
-class DexStatsCollector(object):
+class DexStatsCollector:
   """Tracks count of method/field/string/type as well as unique methods."""
 
   def __init__(self):

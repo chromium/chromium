@@ -18,11 +18,11 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -70,6 +70,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -91,17 +92,16 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/browser/update_observer.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/manifest_fetch_data.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/feature_switch.h"
-#include "extensions/common/features/feature_channel.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -231,7 +231,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
-    if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
+    if (!corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
             info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
@@ -284,7 +284,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       // set of extensions. If the extension is corrupted, it should be
       // reinstalled, thus it should be added to the pending extensions for
       // installation.
-      if (!pending_extension_manager_.IsReinstallForCorruptionExpected(
+      if (!corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
               info.extension_id)) {
         return false;
       }
@@ -378,7 +378,13 @@ ExtensionService::ExtensionService(Profile* profile,
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_(profile_, this),
       force_installed_tracker_(registry_, profile_),
-      force_installed_metrics_(registry_, profile_, &force_installed_tracker_) {
+      force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
+      corrupted_extension_reinstaller_(profile_)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      ash_keeplist_manager_(profile, extension_prefs, this)
+#endif
+{
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
 
@@ -431,6 +437,10 @@ ExtensionService::ExtensionService(Profile* profile,
   extension_action_storage_manager_ =
       std::make_unique<ExtensionActionStorageManager>(profile_);
 
+  SetCurrentDeveloperMode(
+      util::GetBrowserContextId(profile),
+      profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
+
   // How long is the path to the Extensions directory?
   UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ExtensionRootPathLength",
                               install_directory_.value().length(), 1, 500, 100);
@@ -438,6 +448,11 @@ ExtensionService::ExtensionService(Profile* profile,
 
 PendingExtensionManager* ExtensionService::pending_extension_manager() {
   return &pending_extension_manager_;
+}
+
+CorruptedExtensionReinstaller*
+ExtensionService::corrupted_extension_reinstaller() {
+  return &corrupted_extension_reinstaller_;
 }
 
 ExtensionService::~ExtensionService() {
@@ -452,12 +467,12 @@ void ExtensionService::Shutdown() {
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
+  corrupted_extension_reinstaller_.Shutdown();
 }
 
 void ExtensionService::Init() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::Init");
-  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.ExtensionServiceInitTime");
 
   DCHECK(!system_->is_ready());  // Can't redo init.
   DCHECK_EQ(registry_->enabled_extensions().size(), 0u);
@@ -466,15 +481,14 @@ void ExtensionService::Init() {
   bool load_saved_extensions = true;
   bool load_command_line_extensions = extensions_enabled_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile_)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile_)) {
     load_saved_extensions = false;
     load_command_line_extensions = false;
   }
 
   const bool load_autotest_ext =
       command_line_->HasSwitch(switches::kLoadSigninProfileTestExtension);
-  const bool is_signin_profile =
-      chromeos::ProfileHelper::IsSigninProfile(profile_);
+  const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile_);
   if (load_autotest_ext && is_signin_profile) {
     LoadSigninProfileTestExtension(command_line_->GetSwitchValueASCII(
         switches::kLoadSigninProfileTestExtension));
@@ -504,10 +518,14 @@ void ExtensionService::Init() {
   // Must be called after extensions are loaded.
   allowlist_.Init();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash_keeplist_manager_.Init();
+#endif
+
   // Check for updates especially for corrupted user installed extension from
   // the webstore. This will do nothing if an extension update check was
   // triggered before and is still running.
-  if (pending_extension_manager_.HasAnyReinstallForCorruption())
+  if (corrupted_extension_reinstaller()->HasAnyReinstallForCorruption())
     CheckForUpdatesSoon();
 }
 
@@ -1036,10 +1054,6 @@ void ExtensionService::BlockAllExtensions() {
     if (!CanBlockExtension(extension.get()))
       continue;
 
-    registry_->RemoveEnabled(id);
-    registry_->RemoveDisabled(id);
-    registry_->RemoveTerminated(id);
-
     registry_->AddBlocked(extension.get());
     UnloadExtension(id, UnloadedExtensionReason::LOCK_ALL);
   }
@@ -1387,9 +1401,6 @@ void ExtensionService::ReloadExtensionsForTest() {
 void ExtensionService::SetReadyAndNotifyListeners() {
   TRACE_EVENT0("browser,startup",
                "ExtensionService::SetReadyAndNotifyListeners");
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Extensions.ExtensionServiceNotifyReadyListenersTime");
-
   ready_->Signal();
 }
 
@@ -1604,6 +1615,13 @@ void ExtensionService::OnExtensionInstalled(
   std::string install_parameter;
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager()->GetById(id);
+  bool is_reinstall_for_corruption =
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          extension->id());
+
+  if (is_reinstall_for_corruption)
+    corrupted_extension_reinstaller()->MarkResolved(id);
+
   if (pending_extension_info) {
     if (!pending_extension_info->ShouldAllowInstall(extension, profile())) {
       // Hack for crbug.com/558299, see comment on DeleteThemeDoNotUse.
@@ -1632,10 +1650,7 @@ void ExtensionService::OnExtensionInstalled(
 
     install_parameter = pending_extension_info->install_parameter();
     pending_extension_manager()->Remove(id);
-  } else if (pending_extension_manager()->IsReinstallForCorruptionExpected(
-                 extension->id())) {
-    pending_extension_manager()->Remove(id);
-  } else {
+  } else if (!is_reinstall_for_corruption) {
     // We explicitly want to re-enable an uninstalled external
     // extension; if we're here, that means the user is manually
     // installing the extension.
@@ -2232,6 +2247,9 @@ void ExtensionService::UnloadAllExtensionsInternal() {
   profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForAllExtensions();
 
   registry_->ClearAll();
+
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->UnloadAllExtensionsForTest();  // IN-TEST
 
   // TODO(erikkay) should there be a notification for this?  We can't use
   // EXTENSION_UNLOADED since that implies that the extension has

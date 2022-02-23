@@ -26,14 +26,11 @@ void DlpContentTabHelper::MaybeCreateForWebContents(
   if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     return;
   }
-  // TODO(crbug.com/1254326): Check on LaCros once DlpRulesManager is available.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Do not observe non-managed users.
   if (!g_ignore_rules_manager_for_testing_ &&
       !DlpRulesManagerFactory::GetForPrimaryProfile()) {
     return;
   }
-#endif
   DlpContentTabHelper::CreateForWebContents(web_contents);
 }
 
@@ -104,7 +101,8 @@ void DlpContentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 DlpContentTabHelper::DlpContentTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<DlpContentTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 DlpContentRestrictionSet DlpContentTabHelper::GetRestrictionSet() const {
   DlpContentRestrictionSet set;

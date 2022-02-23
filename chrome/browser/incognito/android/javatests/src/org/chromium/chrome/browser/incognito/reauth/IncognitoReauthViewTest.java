@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class IncognitoReauthViewTest extends DummyUiActivityTestCase {
+public class IncognitoReauthViewTest extends BlankUiTestActivityTestCase {
     private View mView;
 
     @Rule
@@ -55,6 +55,7 @@ public class IncognitoReauthViewTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     public void testIncognitoReauthViewPageCorrectlyDisplayed() {
+        onView(withId(R.id.incognito_reauth_menu_button)).check(matches(isDisplayed()));
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
         onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
                 .check(matches(isDisplayed()));

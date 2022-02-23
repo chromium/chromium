@@ -5,6 +5,7 @@
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/xr/metrics/session_timer.h"
 #include "content/browser/xr/metrics/webxr_session_tracker.h"
@@ -44,7 +45,7 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelper* get() const { return session_metrics_helper_; }
 
  private:
-  SessionMetricsHelper* session_metrics_helper_;
+  raw_ptr<SessionMetricsHelper> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features
@@ -250,29 +251,21 @@ void SessionMetricsHelper::MediaStoppedPlaying(
   }
 }
 
-void SessionMetricsHelper::DidStartNavigation(
-    content::NavigationHandle* handle) {
+void SessionMetricsHelper::PrimaryPageChanged(content::Page& page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // All sessions are terminated on navigations, so to ensure that we log
+  // everything that we have, cleanup any outstanding session trackers now.
+  if (webxr_immersive_session_tracker_)
+    StopAndRecordImmersiveSession();
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (handle && handle->IsInPrimaryMainFrame() && !handle->IsSameDocument()) {
-    // All sessions are terminated on navigations, so to ensure that we log
-    // everything that we have, cleanup any outstanding session trackers now.
-    if (webxr_immersive_session_tracker_) {
-      StopAndRecordImmersiveSession();
-    }
-
-    for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
-      inline_session_tracker.second->SetSessionEnd(base::Time::Now());
-      inline_session_tracker.second->ukm_entry()->SetDuration(
-          inline_session_tracker.second->GetRoundedDurationInSeconds());
-      inline_session_tracker.second->RecordEntry();
-    }
-
-    webxr_inline_session_trackers_.clear();
+  for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
+    inline_session_tracker.second->SetSessionEnd(base::Time::Now());
+    inline_session_tracker.second->ukm_entry()->SetDuration(
+        inline_session_tracker.second->GetRoundedDurationInSeconds());
+    inline_session_tracker.second->RecordEntry();
   }
+
+  webxr_inline_session_trackers_.clear();
 }
 
 }  // namespace content

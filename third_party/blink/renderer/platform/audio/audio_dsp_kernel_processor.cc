@@ -43,25 +43,28 @@ AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sample_rate,
       has_just_reset_(true) {}
 
 void AudioDSPKernelProcessor::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
-  MutexLocker locker(process_lock_);
+  base::AutoLock locker(process_lock_);
   DCHECK(!kernels_.size());
 
   // Create processing kernels, one per channel.
-  for (unsigned i = 0; i < NumberOfChannels(); ++i)
+  for (unsigned i = 0; i < NumberOfChannels(); ++i) {
     kernels_.push_back(CreateKernel());
+  }
 
   initialized_ = true;
   has_just_reset_ = true;
 }
 
 void AudioDSPKernelProcessor::Uninitialize() {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
-  MutexLocker locker(process_lock_);
+  base::AutoLock locker(process_lock_);
   kernels_.clear();
 
   initialized_ = false;
@@ -78,15 +81,16 @@ void AudioDSPKernelProcessor::Process(const AudioBus* source,
     return;
   }
 
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     DCHECK_EQ(source->NumberOfChannels(), destination->NumberOfChannels());
     DCHECK_EQ(source->NumberOfChannels(), kernels_.size());
 
-    for (unsigned i = 0; i < kernels_.size(); ++i)
+    for (unsigned i = 0; i < kernels_.size(); ++i) {
       kernels_[i]->Process(source->Channel(i)->Data(),
                            destination->Channel(i)->MutableData(),
                            frames_to_process);
+    }
   } else {
     // Unfortunately, the kernel is being processed by another thread.
     // See also ConvolverNode::process().
@@ -96,38 +100,43 @@ void AudioDSPKernelProcessor::Process(const AudioBus* source,
 
 void AudioDSPKernelProcessor::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
-  MutexTryLocker try_locker(process_lock_);
+  base::AutoTryLock try_locker(process_lock_);
   // Only update the AudioParams if we can get the lock.  If not, some
   // other thread is updating the kernels, so we'll have to skip it
   // this time.
-  if (try_locker.Locked()) {
-    for (unsigned i = 0; i < kernels_.size(); ++i)
-      kernels_[i]->ProcessOnlyAudioParams(frames_to_process);
+  if (try_locker.is_acquired()) {
+    for (auto& kernel : kernels_) {
+      kernel->ProcessOnlyAudioParams(frames_to_process);
+    }
   }
 }
 
 // Resets filter state
 void AudioDSPKernelProcessor::Reset() {
   DCHECK(IsMainThread());
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   // Forces snap to parameter values - first time.
   // Any processing depending on this value must set it to false at the
   // appropriate time.
   has_just_reset_ = true;
 
-  MutexLocker locker(process_lock_);
-  for (unsigned i = 0; i < kernels_.size(); ++i)
-    kernels_[i]->Reset();
+  base::AutoLock locker(process_lock_);
+  for (auto& kernel : kernels_) {
+    kernel->Reset();
+  }
 }
 
 void AudioDSPKernelProcessor::SetNumberOfChannels(unsigned number_of_channels) {
-  if (number_of_channels == number_of_channels_)
+  if (number_of_channels == number_of_channels_) {
     return;
+  }
 
   DCHECK(!IsInitialized());
   number_of_channels_ = number_of_channels;
@@ -140,8 +149,8 @@ bool AudioDSPKernelProcessor::RequiresTailProcessing() const {
 
 double AudioDSPKernelProcessor::TailTime() const {
   DCHECK(!IsMainThread());
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     // It is expected that all the kernels have the same tailTime.
     return !kernels_.IsEmpty() ? kernels_.front()->TailTime() : 0;
   }
@@ -152,8 +161,8 @@ double AudioDSPKernelProcessor::TailTime() const {
 
 double AudioDSPKernelProcessor::LatencyTime() const {
   DCHECK(!IsMainThread());
-  MutexTryLocker try_locker(process_lock_);
-  if (try_locker.Locked()) {
+  base::AutoTryLock try_locker(process_lock_);
+  if (try_locker.is_acquired()) {
     // It is expected that all the kernels have the same latencyTime.
     return !kernels_.IsEmpty() ? kernels_.front()->LatencyTime() : 0;
   }

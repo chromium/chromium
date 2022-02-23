@@ -4,7 +4,6 @@
 
 module cc.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
@@ -31,7 +30,7 @@ struct RenderFrameMetadata {
 
   // Scroll offset of the root layer. This optional parameter is only sent
   // during tests.
-  gfx.mojom.Vector2dF? root_scroll_offset;
+  gfx.mojom.PointF? root_scroll_offset;
 
   // Indicates whether the scroll offset of the root layer is at top, i.e.,
   // whether scroll_offset.y() == 0.
@@ -79,8 +78,6 @@ struct RenderFrameMetadata {
   float top_controls_shown_ratio;
 
   viz.mojom.VerticalScrollDirection new_vertical_scroll_direction;
-
-  mojo_base.mojom.TimeDelta visual_properties_update_duration;
 
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
@@ -153,5 +150,5 @@ interface RenderFrameMetadataObserverClient {
   // Only called if ReportAllRootScrolls(true) has been called. See
   // ReportAllRootScrolls() for details.
   [EnableIf=is_android]
-  OnRootScrollOffsetChanged(gfx.mojom.Vector2dF root_scroll_offset);
+  OnRootScrollOffsetChanged(gfx.mojom.PointF root_scroll_offset);
 };

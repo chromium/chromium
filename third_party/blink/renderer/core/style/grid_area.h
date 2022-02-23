@@ -171,7 +171,7 @@ struct GridSpan {
     }
 #endif
 
-    const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGGridEnabled()
+    const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGEnabled()
                                     ? kGridMaxTracks
                                     : kLegacyGridMaxTracks;
 

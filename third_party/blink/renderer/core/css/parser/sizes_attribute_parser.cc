@@ -20,6 +20,8 @@ SizesAttributeParser::SizesAttributeParser(
       length_(0),
       length_was_set_(false) {
   DCHECK(media_values_);
+  DCHECK(media_values_->Width().has_value());
+  DCHECK(media_values_->Height().has_value());
   is_valid_ =
       Parse(CSSParserTokenRange(CSSTokenizer(attribute).TokenizeToEOF()));
 }
@@ -107,7 +109,7 @@ float SizesAttributeParser::EffectiveSize() {
 
 float SizesAttributeParser::EffectiveSizeDefaultValue() {
   // Returning the equivalent of "100vw"
-  return ClampTo<float>(media_values_->Width());
+  return ClampTo<float>(*media_values_->Width());
 }
 
 }  // namespace blink

@@ -8,6 +8,7 @@
 #include "ash/system/brightness/unified_brightness_view.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace ash {
 namespace {
@@ -21,7 +22,7 @@ constexpr double kMinBrightnessPercent = 5.0;
 }  // namespace
 
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
-    UnifiedSystemTrayModel* model)
+    scoped_refptr<UnifiedSystemTrayModel> model)
     : model_(model) {}
 
 UnifiedBrightnessSliderController::~UnifiedBrightnessSliderController() =

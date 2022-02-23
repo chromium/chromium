@@ -31,6 +31,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
@@ -50,7 +51,7 @@ DragOperation DndActionToDragOperation(uint32_t action) {
       return DragOperation::kMove;
     case WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK:
       // Unsupported in the browser.
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return DragOperation::kNone;
   }
@@ -140,6 +141,11 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       // Corresponds to actual scale factor of the origin surface.
       icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
       icon_surface_->ApplyPendingState();
+
+      auto icon_offset = -data.provider().GetDragImageOffset();
+      icon_offset_ =
+          gfx::ScaleToRoundedPoint({icon_offset.x(), icon_offset.y()},
+                                   1.0f / origin_window->window_scale());
     } else {
       LOG(ERROR) << "Failed to create drag icon surface.";
       icon_surface_.reset();
@@ -148,6 +154,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
+  drag_source_ = serial->type == wl::SerialType::kTouchPress
+                     ? DragSource::kTouch
+                     : DragSource::kMouse;
   data_device_->StartDrag(*data_source_, *origin_window, serial->value,
                           icon_surface_ ? icon_surface_->surface() : nullptr,
                           this);
@@ -155,10 +164,20 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   origin_window_ = origin_window;
   window_manager_->AddObserver(this);
 
+  SetUpWindowDraggingSessionIfNeeded(data);
+
   // Monitor mouse events so that the session can be aborted if needed.
   nested_dispatcher_ =
       PlatformEventSource::GetInstance()->OverrideDispatcher(this);
   return true;
+}
+
+bool WaylandDataDragController::ShouldReleaseCaptureForDrag(
+    ui::OSExchangeData* data) const {
+  DCHECK(data);
+  // For a window dragging session, we must not release capture to be able to
+  // handle window dragging even when dragging out of the window.
+  return !IsWindowDraggingSession(*data);
 }
 
 // Sessions initiated from Chromium, will have |data_source_| set. In which
@@ -184,7 +203,8 @@ void WaylandDataDragController::DrawIcon() {
   }
   wl::DrawBitmap(*icon_bitmap_, shm_buffer_.get());
   auto* const surface = icon_surface_->surface();
-  wl_surface_attach(surface, shm_buffer_->get(), 0, 0);
+  wl_surface_attach(surface, shm_buffer_->get(), icon_offset_.x(),
+                    icon_offset_.y());
   wl_surface_damage(surface, 0, 0, size.width(), size.height());
   wl_surface_commit(surface);
 }
@@ -206,6 +226,18 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   for (auto mime : data_offer_->mime_types()) {
     unprocessed_mime_types_.push_back(mime);
     data_offer_->Accept(serial, mime);
+  }
+
+  if (pointer_grabber_for_window_drag_) {
+    DCHECK(drag_source_.has_value());
+    if (*drag_source_ == DragSource::kMouse)
+      pointer_delegate_->OnPointerFocusChanged(window, location);
+    else
+      touch_delegate_->OnTouchFocusChanged(window);
+
+    pointer_grabber_for_window_drag_ =
+        window_manager_->GetCurrentPointerOrTouchFocusedWindow();
+    DCHECK(pointer_grabber_for_window_drag_);
   }
 
   if (IsDragSource()) {
@@ -287,12 +319,21 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
     origin_window_ = nullptr;
   }
 
+  // We need to reset |nested_dispatcher_| before dispatching the pointer
+  // release, or else the event will be intercepted by ourself.
+  nested_dispatcher_.reset();
+
+  // Dispatch this after calling WaylandWindow::OnDragSessionClose(), else the
+  // extra leave event that is dispatched if |completed| is false may cause
+  // problems.
+  if (pointer_grabber_for_window_drag_)
+    DispatchPointerRelease();
+
   window_manager_->RemoveObserver(this);
   data_source_.reset();
   data_offer_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
-  nested_dispatcher_.reset();
   state_ = State::kIdle;
 }
 
@@ -312,6 +353,9 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
 
   if (window == origin_window_)
     origin_window_ = nullptr;
+
+  if (window == pointer_grabber_for_window_drag_)
+    pointer_grabber_for_window_drag_ = nullptr;
 }
 
 // Asynchronously requests and reads data for every negotiated/supported mime
@@ -435,6 +479,30 @@ WaylandDataDragController::GetOfferedExchangeDataProvider() const {
   DCHECK(offered_exchange_data_provider_);
   return static_cast<const WaylandExchangeDataProvider*>(
       offered_exchange_data_provider_.get());
+}
+
+bool WaylandDataDragController::IsWindowDraggingSession(
+    const ui::OSExchangeData& data) const {
+  auto custom_format =
+      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag);
+  return data.provider().HasCustomFormat(custom_format);
+}
+
+void WaylandDataDragController::SetUpWindowDraggingSessionIfNeeded(
+    const ui::OSExchangeData& data) {
+  if (!IsWindowDraggingSession(data))
+    return;
+
+  DCHECK(origin_window_);
+  pointer_grabber_for_window_drag_ = origin_window_;
+}
+
+void WaylandDataDragController::DispatchPointerRelease() {
+  DCHECK(pointer_grabber_for_window_drag_);
+  pointer_delegate_->OnPointerButtonEvent(ET_MOUSE_RELEASED,
+                                          EF_LEFT_MOUSE_BUTTON,
+                                          pointer_grabber_for_window_drag_);
+  pointer_grabber_for_window_drag_ = nullptr;
 }
 
 bool WaylandDataDragController::CanDispatchEvent(const PlatformEvent& event) {

@@ -31,7 +31,6 @@ base::Value NetLogURLRequestStartParams(
     const GURL& url,
     const std::string& method,
     int load_flags,
-    PrivacyMode privacy_mode,
     const IsolationInfo& isolation_info,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& initiator,
@@ -40,7 +39,6 @@ base::Value NetLogURLRequestStartParams(
   dict.SetStringKey("url", url.possibly_invalid_spec());
   dict.SetStringKey("method", method);
   dict.SetIntKey("load_flags", load_flags);
-  dict.SetStringKey("privacy_mode", PrivacyModeToDebugString(privacy_mode));
   dict.SetStringKey("network_isolation_key",
                     isolation_info.network_isolation_key().ToDebugString());
   std::string request_type;

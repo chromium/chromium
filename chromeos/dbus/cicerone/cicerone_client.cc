@@ -89,6 +89,10 @@ class CiceroneClientImpl : public CiceroneClient {
     return is_lxd_container_starting_signal_connected_;
   }
 
+  bool IsLxdContainerStoppingSignalConnected() override {
+    return is_lxd_container_stopping_signal_connected_;
+  }
+
   bool IsExportLxdContainerProgressSignalConnected() override {
     return is_export_lxd_container_progress_signal_connected_;
   }
@@ -303,6 +307,28 @@ class CiceroneClientImpl : public CiceroneClient {
         &method_call, kLongOperationTimeout.InMilliseconds(),
         base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
                            vm_tools::cicerone::StartLxdContainerResponse>,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void StopLxdContainer(
+      const vm_tools::cicerone::StopLxdContainerRequest& request,
+      DBusMethodCallback<vm_tools::cicerone::StopLxdContainerResponse> callback)
+      override {
+    dbus::MethodCall method_call(vm_tools::cicerone::kVmCiceroneInterface,
+                                 vm_tools::cicerone::kStopLxdContainerMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode StopLxdContainerRequest protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+
+    cicerone_proxy_->CallMethod(
+        &method_call, kLongOperationTimeout.InMilliseconds(),
+        base::BindOnce(&CiceroneClientImpl::OnDBusProtoResponse<
+                           vm_tools::cicerone::StopLxdContainerResponse>,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
@@ -721,6 +747,13 @@ class CiceroneClientImpl : public CiceroneClient {
                        weak_ptr_factory_.GetWeakPtr()));
     cicerone_proxy_->ConnectToSignal(
         vm_tools::cicerone::kVmCiceroneInterface,
+        vm_tools::cicerone::kLxdContainerStoppingSignal,
+        base::BindRepeating(&CiceroneClientImpl::OnLxdContainerStoppingSignal,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CiceroneClientImpl::OnSignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
+    cicerone_proxy_->ConnectToSignal(
+        vm_tools::cicerone::kVmCiceroneInterface,
         vm_tools::cicerone::kExportLxdContainerProgressSignal,
         base::BindRepeating(
             &CiceroneClientImpl::OnExportLxdContainerProgressSignal,
@@ -925,6 +958,18 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
+  void OnLxdContainerStoppingSignal(dbus::Signal* signal) {
+    vm_tools::cicerone::LxdContainerStoppingSignal proto;
+    dbus::MessageReader reader(signal);
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR) << "Failed to parse proto from DBus Signal";
+      return;
+    }
+    for (auto& observer : observer_list_) {
+      observer.OnLxdContainerStopping(proto);
+    }
+  }
+
   void OnExportLxdContainerProgressSignal(dbus::Signal* signal) {
     vm_tools::cicerone::ExportLxdContainerProgressSignal proto;
     dbus::MessageReader reader(signal);
@@ -1050,6 +1095,8 @@ class CiceroneClientImpl : public CiceroneClient {
       is_tremplin_started_signal_connected_ = is_connected;
     } else if (signal_name == vm_tools::cicerone::kLxdContainerStartingSignal) {
       is_lxd_container_starting_signal_connected_ = is_connected;
+    } else if (signal_name == vm_tools::cicerone::kLxdContainerStoppingSignal) {
+      is_lxd_container_stopping_signal_connected_ = is_connected;
     } else if (signal_name ==
                vm_tools::cicerone::kExportLxdContainerProgressSignal) {
       is_export_lxd_container_progress_signal_connected_ = is_connected;
@@ -1090,6 +1137,7 @@ class CiceroneClientImpl : public CiceroneClient {
   bool is_lxd_container_downloading_signal_connected_ = false;
   bool is_tremplin_started_signal_connected_ = false;
   bool is_lxd_container_starting_signal_connected_ = false;
+  bool is_lxd_container_stopping_signal_connected_ = false;
   bool is_export_lxd_container_progress_signal_connected_ = false;
   bool is_import_lxd_container_progress_signal_connected_ = false;
   bool is_pending_app_list_updates_signal_connected_ = false;

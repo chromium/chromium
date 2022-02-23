@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Feature flag used for enabling side panel on desktop.
 // TODO(crbug.com/1225279): Move this back to chrome/browser/ui/ui_features.h
 // after kReadLater is cleaned up (and IsReadingListEnabled() returns true on
@@ -17,7 +17,7 @@
 namespace features {
 extern const base::Feature kSidePanel;
 }  // namespace features
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace reading_list {
 namespace switches {
@@ -39,7 +39,7 @@ bool IsReadingListEnabled();
 // details.
 extern const base::Feature kReadLaterBackendMigration;
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 // Feature flag used for enabling read later reminder notification.
 extern const base::Feature kReadLaterReminderNotification;
 #endif

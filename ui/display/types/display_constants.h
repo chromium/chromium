@@ -87,7 +87,15 @@ enum PanelOrientation {
 enum PrivacyScreenState {
   kDisabled = 0,
   kEnabled = 1,
-  kNotSupported = 2,
+  // |kDisabledLocked| and |kEnabledLocked| are states in which the hardware is
+  // force-disabled or forced-enabled by a physical external switch. When
+  // privacy screen is set to one of these states, an attempt to set it to a
+  // non-conforming state (e.g. enable it when it's Disabled-locked) should
+  // fail.
+  kDisabledLocked = 2,
+  kEnabledLocked = 3,
+  kNotSupported = 4,
+  kPrivacyScreenLegacyStateLast = kDisabledLocked,
   kPrivacyScreenStateLast = kNotSupported,
 };
 

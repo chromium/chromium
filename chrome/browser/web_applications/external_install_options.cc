@@ -51,13 +51,13 @@ bool ExternalInstallOptions::operator==(
         options.add_to_quick_launch_bar,
         options.add_to_search,
         options.add_to_management,
-        options.run_on_os_login,
         options.is_disabled,
         options.override_previous_user_uninstall,
         options.only_for_new_users,
         options.only_if_previously_preinstalled,
         options.user_type_allowlist,
         options.gate_on_feature,
+        options.gate_on_feature_or_installed,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         options.disable_if_arc_supported,
         options.disable_if_tablet_form_factor,
@@ -77,7 +77,9 @@ bool ExternalInstallOptions::operator==(
         options.only_use_app_info_factory,
         options.system_app_type,
         options.oem_installed,
-        options.disable_if_touchscreen_with_stylus_not_supported
+        options.disable_if_touchscreen_with_stylus_not_supported,
+        options.handles_file_open_intents,
+        options.expected_app_id
         // clang-format on
     );
   };
@@ -116,11 +118,15 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   root.SetBoolKey("disable_if_touchscreen_with_stylus_not_supported",
                   disable_if_touchscreen_with_stylus_not_supported);
+  root.SetKey("expected_app_id", ConvertOptional(expected_app_id));
+  root.SetBoolKey("handles_file_open_intents", handles_file_open_intents);
   root.SetKey("fallback_app_name", ConvertOptional(fallback_app_name));
   root.SetBoolKey("force_reinstall", force_reinstall);
   root.SetKey("force_reinstall_for_milestone",
               ConvertOptional(force_reinstall_for_milestone));
   root.SetKey("gate_on_feature", ConvertOptional(gate_on_feature));
+  root.SetKey("gate_on_feature_or_installed",
+              ConvertOptional(gate_on_feature_or_installed));
   root.SetBoolKey("install_placeholder", install_placeholder);
   root.SetIntKey("install_source", static_cast<int>(install_source));
   root.SetBoolKey("is_disabled", is_disabled);
@@ -136,7 +142,6 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                   override_previous_user_uninstall);
   root.SetBoolKey("reinstall_placeholder", reinstall_placeholder);
   root.SetBoolKey("require_manifest", require_manifest);
-  root.SetBoolKey("run_on_os_login", run_on_os_login);
   root.SetKey("service_worker_registration_url",
               service_worker_registration_url
                   ? base::Value(service_worker_registration_url->spec())
@@ -172,10 +177,10 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.add_to_applications_menu = install_options.add_to_applications_menu;
   params.add_to_desktop = install_options.add_to_desktop;
   params.add_to_quick_launch_bar = install_options.add_to_quick_launch_bar;
-  params.run_on_os_login = install_options.run_on_os_login;
   params.add_to_search = install_options.add_to_search;
   params.add_to_management = install_options.add_to_management;
   params.is_disabled = install_options.is_disabled;
+  params.handles_file_open_intents = install_options.handles_file_open_intents;
 
   params.bypass_service_worker_check =
       install_options.bypass_service_worker_check;

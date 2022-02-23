@@ -76,7 +76,7 @@ class ConditionVariableTest : public testing::Test {
 };
 
 // Speculatively disabled on ChromeOS MSAN bots due to https://crbug.com/1186166
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_SingleSequence_BlocksOnWaitAndUnblocksOnNotify \
   DISABLED_SingleSequence_BlocksOnWaitAndUnblocksOnNotify
 #else

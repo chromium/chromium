@@ -1,0 +1,29 @@
+Tests DOM.getNodeStackTraces method.
+#none-1
+{
+}
+#none-2
+{
+}
+#stacks
+{
+    creation : {
+        callFrames : [
+            [0] : {
+                columnNumber : 22
+                functionName : createElementForStackTraces
+                lineNumber : 1
+                scriptId : <string>
+                url : 
+            }
+            [1] : {
+                columnNumber : 4
+                functionName : 
+                lineNumber : 4
+                scriptId : <string>
+                url : 
+            }
+        ]
+    }
+}
+

@@ -11,8 +11,8 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "net/http/http_response_info.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -91,8 +91,7 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //     and the milestones being experimented with are first paint and first
 //     contentful paint so far.
 class PLATFORM_EXPORT ResourceLoadScheduler final
-    : public GarbageCollected<ResourceLoadScheduler>,
-      public FrameOrWorkerScheduler::Observer {
+    : public GarbageCollected<ResourceLoadScheduler> {
  public:
   // An option to use in calling Request(). If kCanNotBeStoppedOrThrottled is
   // specified, the request should be granted and Run() should be called
@@ -180,7 +179,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
                         LoadingBehaviorObserver* loading_behavior_observer);
   ResourceLoadScheduler(const ResourceLoadScheduler&) = delete;
   ResourceLoadScheduler& operator=(const ResourceLoadScheduler&) = delete;
-  ~ResourceLoadScheduler() override;
+  ~ResourceLoadScheduler();
 
   void Trace(Visitor*) const;
 
@@ -225,8 +224,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   }
   void SetOutstandingLimitForTesting(size_t tight_limit, size_t normal_limit);
 
-  // FrameOrWorkerScheduler::Observer overrides:
-  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState) override;
+  // FrameOrWorkerScheduler lifecycle observer callback.
+  void OnLifecycleStateChanged(scheduler::SchedulingLifecycleState);
 
   // The caller is the owner of the |clock|. The |clock| must outlive the
   // ResourceLoadScheduler.
@@ -303,9 +302,6 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Gets the highest priority pending request that is allowed to be run.
   bool GetNextPendingRequest(ClientId* id);
-
-  // Determines whether or not a low-priority request should be delayed.
-  bool ShouldDelay(PendingRequestMap::iterator found) const;
 
   // Returns whether we can throttle a request with the given option based
   // on life cycle state.

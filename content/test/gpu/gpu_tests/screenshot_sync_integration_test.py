@@ -12,13 +12,11 @@ import sys
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 from telemetry.util import image_util
 from telemetry.util import rgba_color
-
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                         'data', 'gpu')
 
 
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -53,7 +51,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help='(Mainly on Mac) don\'t restore the system\'s original color '
+        help="(Mainly on Mac) don't restore the system's original color "
         'profile after the test completes; leave the system using the sRGB '
         'color profile. See http://crbug.com/784456.')
 
@@ -65,7 +63,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(cls, ScreenshotSyncIntegrationTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args):
@@ -124,11 +122,10 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),
         255)
     tab = self.tab
-    tab.EvaluateJavaScript(
-        "window.draw({{ red }}, {{ green }}, {{ blue }});",
-        red=canvasRGB.r,
-        green=canvasRGB.g,
-        blue=canvasRGB.b)
+    tab.EvaluateJavaScript('window.draw({{ red }}, {{ green }}, {{ blue }});',
+                           red=canvasRGB.r,
+                           green=canvasRGB.g,
+                           blue=canvasRGB.b)
     screenshot = tab.Screenshot(10)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
     # interpolation precision (crbug.com/847984). We inset by one CSS pixel

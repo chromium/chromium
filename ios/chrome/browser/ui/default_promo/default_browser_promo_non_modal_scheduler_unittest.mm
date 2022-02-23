@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -45,15 +44,14 @@ namespace {
 
 class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
  protected:
-  DefaultBrowserPromoNonModalSchedulerTest()
-      : web_state_list_(&web_state_list_delegate_) {}
+  DefaultBrowserPromoNonModalSchedulerTest() {}
+
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     std::unique_ptr<TestChromeBrowserState> chrome_browser_state =
         test_cbs_builder.Build();
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state.get(),
-                                             &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(chrome_browser_state.get());
 
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kInfobarBanner)
@@ -65,9 +63,9 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
     test_web_state_->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(test_web_state_);
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
+                                                WebStateList::INSERT_ACTIVATE,
+                                                WebStateOpener());
 
     ClearUserDefaults();
 
@@ -115,8 +113,6 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
   web::FakeWebState* test_web_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
@@ -258,7 +254,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
   // Switch to a new tab.
   auto web_state = std::make_unique<web::FakeWebState>();
   test_web_state_ = web_state.get();
-  web_state_list_.InsertWebState(
+  browser_->GetWebStateList()->InsertWebState(
       1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Advance the timer and the mock handler should not have any interactions.
@@ -516,11 +512,11 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoDCHECKIfPromoNotShown) {
   // Switch to a new tab before loading a page. This will prevent the promo from
   // showing.
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state_list_.InsertWebState(
+  browser_->GetWebStateList()->InsertWebState(
       1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
 
   // Activate the first page again.
-  web_state_list_.ActivateWebStateAt(0);
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
 
   // Finish loading the page.
   test_web_state_->SetLoading(true);

@@ -189,14 +189,15 @@ void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
   }
 }
 
-void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason, const char* message) {
+void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
+                                  const char* message) {
   if (!GetExecutionContext())
     return;
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {
-    // TODO(crbug.com/1253721): Add the `reason` attribute to GPUDeviceLostInfo.
-    auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(message);
+    auto* device_lost_info =
+        MakeGarbageCollected<GPUDeviceLostInfo>(reason, message);
     lost_property_->Resolve(device_lost_info);
   }
 }
@@ -271,6 +272,11 @@ GPUQueue* GPUDevice::queue() {
   return queue_;
 }
 
+void GPUDevice::destroy() {
+  GetProcs().deviceDestroy(GetHandle());
+  FlushNow();
+}
+
 GPUBuffer* GPUDevice::createBuffer(const GPUBufferDescriptor* descriptor) {
   return GPUBuffer::Create(this, descriptor);
 }
@@ -297,7 +303,7 @@ GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
   GPUExternalTexture* externalTexture =
-      GPUExternalTexture::FromVideo(this, descriptor, exception_state);
+      GPUExternalTexture::Create(this, descriptor, exception_state);
   if (externalTexture)
     EnsureExternalTextureDestroyed(externalTexture);
   return externalTexture;

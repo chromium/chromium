@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--Copyright 2019 The Chromium Authors. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.-->
-<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" tools:targetApi="21" android:width="24dp" android:height="24dp" android:viewportWidth="24.0" android:viewportHeight="24.0">
-    <path android:pathData="M7.5 6c2.796 0 5.145 1.912 5.811 4.5H22.5v3h-2V18H17v-4.5h-3.69C12.646 16.089 10.297 18 7.5 18c-3.314 0-6-2.686-6-6s2.686-6 6-6zm0 3.5C6.12 9.5 5 10.62 5 12s1.12 2.5 2.5 2.5S10 13.38 10 12 8.88 9.5 7.5 9.5z" android:strokeWidth="1" android:fillColor="@android:color/white" android:fillType="evenOdd"/>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M7,18q-2.5,0 -4.25,-1.75T1,12q0,-2.5 1.75,-4.25T7,6q1.65,0 3.025,0.825T12.2,9L23,9v6h-2v3h-6v-3h-2.8q-0.8,1.35 -2.175,2.175Q8.65,18 7,18zM7,16q1.65,0 2.65,-1.012 1,-1.013 1.2,-1.988L17,13v3h2v-3h2v-2L10.85,11q-0.2,-0.975 -1.2,-1.988Q8.65,8 7,8T4.175,9.175Q3,10.35 3,12q0,1.65 1.175,2.825Q5.35,16 7,16zM7,14q0.825,0 1.412,-0.588Q9,12.825 9,12t-0.588,-1.412Q7.825,10 7,10t-1.412,0.588Q5,11.175 5,12t0.588,1.412Q6.175,14 7,14zM7,12h11L7,12z"/>
 </vector>

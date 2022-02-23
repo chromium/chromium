@@ -62,6 +62,9 @@ class ActiveTabPermissionGranter
   void RevokeForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ExtensionActionRunnerFencedFrameBrowserTest,
+                           FencedFrameDoesNotClearActiveExtensions);
+
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;

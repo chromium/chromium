@@ -29,7 +29,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -141,7 +141,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
                                IDR_PRODUCT_LOGO_24PX_1X);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   html_source->AddBoolean("is_win10",
                           base::win::GetVersion() >= base::win::Version::WIN10);
 #endif

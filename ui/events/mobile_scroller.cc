@@ -5,6 +5,7 @@
 #include "ui/events/mobile_scroller.h"
 
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/lazy_instance.h"

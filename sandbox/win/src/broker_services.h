@@ -5,14 +5,13 @@
 #ifndef SANDBOX_WIN_SRC_BROKER_SERVICES_H_
 #define SANDBOX_WIN_SRC_BROKER_SERVICES_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -68,7 +67,7 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
-  ThreadPool* thread_pool_ = nullptr;
+  raw_ptr<ThreadPool> thread_pool_ = nullptr;
 };
 
 }  // namespace sandbox

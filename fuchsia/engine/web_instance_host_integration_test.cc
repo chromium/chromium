@@ -63,6 +63,7 @@ class WebInstanceHostIntegrationTest : public testing::Test {
  protected:
   fuchsia::web::CreateContextParams TestContextParams() {
     fuchsia::web::CreateContextParams create_params;
+    create_params.set_features(fuchsia::web::ContextFeatureFlags::NETWORK);
     zx_status_t status = filtered_service_directory_.ConnectClient(
         create_params.mutable_service_directory()->NewRequest());
     ZX_CHECK(status == ZX_OK, status)
@@ -138,8 +139,9 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
   base::Value devtools_list =
       cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetList().size(), 1u);
-  base::Value* devtools_url = devtools_list.GetList()[0].FindPath("url");
+  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  base::Value* devtools_url =
+      devtools_list.GetListDeprecated()[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url);
 
@@ -157,8 +159,8 @@ TEST_F(WebInstanceHostIntegrationTest, FrameHostDebugging) {
 
   devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
-  EXPECT_EQ(devtools_list.GetList().size(), 1u);
-  devtools_url = devtools_list.GetList()[0].FindPath("url");
+  EXPECT_EQ(devtools_list.GetListDeprecated().size(), 1u);
+  devtools_url = devtools_list.GetListDeprecated()[0].FindPath("url");
   ASSERT_TRUE(devtools_url->is_string());
   EXPECT_EQ(devtools_url->GetString(), url2);
 }

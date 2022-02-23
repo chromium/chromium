@@ -4,7 +4,7 @@
 
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 
-#include "ash/grit/ash_help_app_resources.h"
+#include "ash/webui/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources.h"

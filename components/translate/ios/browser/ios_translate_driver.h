@@ -16,7 +16,6 @@
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {
-class NavigationManager;
 class WebState;
 }
 
@@ -32,7 +31,6 @@ class IOSTranslateDriver
       public language::IOSLanguageDetectionTabHelper::Observer {
  public:
   IOSTranslateDriver(web::WebState* web_state,
-                     web::NavigationManager* navigation_manager,
                      TranslateManager* translate_manager);
 
   IOSTranslateDriver(const IOSTranslateDriver&) = delete;
@@ -104,9 +102,6 @@ class IOSTranslateDriver
 
   // The WebState this instance is observing.
   web::WebState* web_state_ = nullptr;
-
-  // The navigation manager of the tab we are associated with.
-  web::NavigationManager* navigation_manager_;
 
   base::WeakPtr<TranslateManager> translate_manager_;
   std::unique_ptr<TranslateController> translate_controller_;

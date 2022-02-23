@@ -25,14 +25,13 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
   TestBrowserContext browser_context;
   StoragePartitionImplMap storage_partition_impl_map(&browser_context);
 
-  std::unique_ptr<std::unordered_set<base::FilePath>> active_paths(
-      new std::unordered_set<base::FilePath>);
+  std::unordered_set<base::FilePath> active_paths;
 
   base::FilePath active_path = browser_context.GetPath().Append(
       StoragePartitionImplMap::GetStoragePartitionPath(
           "active", std::string()));
   ASSERT_TRUE(base::CreateDirectory(active_path));
-  active_paths->insert(active_path);
+  active_paths.insert(active_path);
 
   base::FilePath inactive_path = browser_context.GetPath().Append(
       StoragePartitionImplMap::GetStoragePartitionPath(
@@ -50,8 +49,6 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
 }
 
 TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
-  base::test::ScopedFeatureList f;
-  f.InitAndDisableFeature(blink::features::kAppCache);
   BrowserTaskEnvironment task_environment;
   TestBrowserContext browser_context;
   base::FilePath appcache_path;

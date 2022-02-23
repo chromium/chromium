@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -31,7 +34,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -42,7 +47,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/aura/window.h"
@@ -147,15 +152,18 @@ struct TestMode {
         file_type_filter(file_type_filter),
         tablet_mode(tablet_mode) {}
 
-  static testing::internal::ParamGenerator<TestMode> Values() {
-    return ::testing::Values(TestMode(EXTENSION_FILES_APP_MODE, false, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, false, true),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, true),
-                             TestMode(SYSTEM_FILES_APP_MODE, false, false),
+  static testing::internal::ParamGenerator<TestMode> SystemWebAppValues() {
+    return ::testing::Values(TestMode(SYSTEM_FILES_APP_MODE, false, false),
                              TestMode(SYSTEM_FILES_APP_MODE, false, true),
                              TestMode(SYSTEM_FILES_APP_MODE, true, false),
                              TestMode(SYSTEM_FILES_APP_MODE, true, true));
+  }
+
+  static testing::internal::ParamGenerator<TestMode> LegacyValues() {
+    return ::testing::Values(TestMode(EXTENSION_FILES_APP_MODE, false, false),
+                             TestMode(EXTENSION_FILES_APP_MODE, false, true),
+                             TestMode(EXTENSION_FILES_APP_MODE, true, false),
+                             TestMode(EXTENSION_FILES_APP_MODE, true, true));
   }
 
   AppMode app_mode;
@@ -169,9 +177,6 @@ class BaseSelectFileDialogExtensionBrowserTest
       public testing::WithParamInterface<TestMode> {
  public:
   BaseSelectFileDialogExtensionBrowserTest() {
-    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-    }
     use_file_type_filter_ = GetParam().file_type_filter;
   }
 
@@ -198,6 +203,15 @@ class BaseSelectFileDialogExtensionBrowserTest
     extensions::ExtensionBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
+      feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
+    } else {
+      feature_list_.InitWithFeatures({}, {chromeos::features::kFilesSWA});
+    }
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+  }
+
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     CHECK(profile());
@@ -213,7 +227,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // extensions now and not before: crbug.com/831074, crbug.com/804413.
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-    if (GetParam().app_mode != SYSTEM_FILES_APP_MODE) {
+    if (GetParam().app_mode == EXTENSION_FILES_APP_MODE) {
       // Ensure the Files app background page has shut down. These tests should
       // ensure launching without the background page functions correctly.
       extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
@@ -222,9 +236,8 @@ class BaseSelectFileDialogExtensionBrowserTest
           extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
               ->GetExtensionById(extension_misc::kFilesManagerAppId,
                                  extensions::ExtensionRegistry::ENABLED);
-      extensions::BackgroundPageWatcher background_page_watcher(
-          extensions::ProcessManager::Get(profile()), extension);
-      background_page_watcher.WaitForClose();
+      extensions::ExtensionBackgroundPageWaiter(profile(), *extension)
+          .WaitForBackgroundClosed();
     }
   }
 
@@ -278,8 +291,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   void OpenDialog(ui::SelectFileDialog::Type dialog_type,
                   const base::FilePath& file_path,
                   const gfx::NativeWindow& owning_window,
-                  const std::string& additional_message,
-                  const bool check_js_errors = false) {
+                  const std::string& additional_message) {
     if (GetParam().tablet_mode) {
       ash::ShellTestApi().SetTabletModeEnabledForTest(true);
     }
@@ -316,11 +328,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // Dialog should be running now.
     ASSERT_TRUE(dialog_->IsRunning(owning_window));
 
-    if (check_js_errors) {
-      // TODO(895703): Files app currently has errors during this call. Work
-      // out why and either fix or remove this code.
-      ASSERT_NO_FATAL_FAILURE(CheckJavascriptErrors());
-    }
+    ASSERT_NO_FATAL_FAILURE(CheckJavascriptErrors());
   }
 
   bool OpenDialogIsResizable() const {
@@ -341,10 +349,8 @@ class BaseSelectFileDialogExtensionBrowserTest
         owning_window, this /* params */);
   }
 
-  void CloseDialog(DialogButtonType button_type,
-                   const gfx::NativeWindow& owning_window) {
-    // Inject JavaScript into the dialog to click the dialog |button_type|.
-    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  void ClickJsButton(content::RenderFrameHost* frame_host,
+                     DialogButtonType button_type) {
     std::string button_class =
         (button_type == DIALOG_BTN_OK) ? ".button-panel .ok" :
                                          ".button-panel .cancel";
@@ -355,6 +361,14 @@ class BaseSelectFileDialogExtensionBrowserTest
     // The file selection handler code closes the dialog but does not return
     // control to JavaScript, so do not wait for the script return value.
     frame_host->ExecuteJavaScriptForTests(script, base::NullCallback());
+  }
+
+  void CloseDialog(DialogButtonType button_type,
+                   const gfx::NativeWindow& owning_window) {
+    // Inject JavaScript into the dialog to click the dialog |button_type|.
+    content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+
+    ClickJsButton(frame_host, button_type);
 
     // Instead, wait for Listener notification that the window has closed.
     LOG(INFO) << "Waiting for window close notification.";
@@ -399,6 +413,32 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener) {
   // up the dialog.  Make sure we don't crash.
   dialog_->ListenerDestroyed();
   listener_.reset();
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, DestroyListener2) {
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, ""));
+
+  // Get the Files app WebContents/Framehost, before deleting the dialog_.
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+
+  // Some users of SelectFileDialog destroy their listener before cleaning
+  // up the dialog, delete the `dialog_`, however the
+  // SystemFilesAppDialogDelegate will still be alive with the Files app
+  // WebContents.  Make sure we don't crash.
+  dialog_->ListenerDestroyed();
+  listener_.reset();
+  dialog_.reset();
+
+  // This will close the FrameHost/WebContents and will try to close the
+  // `dialog_`.
+  ClickJsButton(frame_host, DIALOG_BTN_CANCEL);
+
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, CanResize) {
@@ -611,9 +651,12 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, MultipleOpenFile) {
   browser()->OpenFile();
 }
 
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtensionBrowserTest,
+INSTANTIATE_TEST_SUITE_P(Legacy,
                          SelectFileDialogExtensionBrowserTest,
-                         TestMode::Values());
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionBrowserTest,
+                         TestMode::SystemWebAppValues());
 
 // Tests that ash window has correct colors for GM2.
 // TODO(adanilo) factor out the unnecessary override of Setup().
@@ -634,23 +677,73 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
-  SkColor active_color =
-      dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
-  SkColor inactive_color =
-      dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
-
-  constexpr SkColor kFilesNgTitleColor = gfx::kGoogleGrey200;
-  // TODO(b/194970433): Enable these checks.
-  if (GetParam().app_mode != SYSTEM_FILES_APP_MODE) {
-    // FilesNG enabled the title should be Google Grey 200.
-    EXPECT_EQ(active_color, kFilesNgTitleColor);
-    // Active and Inactive should have the same color.
-    EXPECT_EQ(active_color, inactive_color);
-  }
+  auto* color_provider = ash::ColorProvider::Get();
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
+            color_provider->GetActiveDialogTitleBarColor());
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
+            color_provider->GetInactiveDialogTitleBarColor());
 
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
 
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtensionFlagTest,
+INSTANTIATE_TEST_SUITE_P(Legacy,
                          SelectFileDialogExtensionFlagTest,
-                         TestMode::Values());
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionFlagTest,
+                         TestMode::SystemWebAppValues());
+
+class SelectFileDialogExtensionDarkLightModeEnabledTest
+    : public BaseSelectFileDialogExtensionBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
+      feature_list_.InitWithFeatures(
+          {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
+          {});
+    } else {
+      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
+                                     {chromeos::features::kFilesSWA});
+    }
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionDarkLightModeEnabledTest,
+                       ColorModeChange) {
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, ""));
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  aura::Window* dialog_window =
+      frame_host->GetNativeView()->GetToplevelWindow();
+
+  auto* color_provider = ash::ColorProvider::Get();
+  EXPECT_FALSE(color_provider->IsDarkModeEnabled());
+  SkColor light_active_color =
+      dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
+  SkColor light_inactive_color =
+      dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
+  // Switch on dark mode.
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  PrefService* prefs = profile->GetPrefs();
+  prefs->SetBoolean(ash::prefs::kDarkModeEnabled, true);
+  EXPECT_TRUE(color_provider->IsDarkModeEnabled());
+  // Check active/invactive color in Dark mode should be different.
+  EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
+            light_active_color);
+  EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
+            light_inactive_color);
+
+  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+}
+
+INSTANTIATE_TEST_SUITE_P(Legacy,
+                         SelectFileDialogExtensionDarkLightModeEnabledTest,
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionDarkLightModeEnabledTest,
+                         TestMode::SystemWebAppValues());

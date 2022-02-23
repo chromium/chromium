@@ -13,7 +13,7 @@
 namespace content {
 
 // Provided customized disposition response for input events.
-class CONTENT_EXPORT InputDispositionHandler {
+class InputDispositionHandler {
  public:
   virtual ~InputDispositionHandler() {}
 

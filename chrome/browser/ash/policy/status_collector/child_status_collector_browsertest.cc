@@ -21,6 +21,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
@@ -318,14 +319,14 @@ class ChildStatusCollectorTest : public testing::Test {
     app_registry->OnAppInstalled(app_id);
 
     // Window instance is irrelevant for tests here.
-    auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(nullptr);
-    app_registry->OnAppActive(app_id, instance_key, Time::Now());
+    auto instance_id = base::UnguessableToken::Create();
+    app_registry->OnAppActive(app_id, instance_id, Time::Now());
     if (should_run_tasks) {
       task_environment_.FastForwardBy(duration);
     } else {
       task_environment_.AdvanceClock(duration);
     }
-    app_registry->OnAppInactive(app_id, instance_key, Time::Now());
+    app_registry->OnAppInactive(app_id, instance_id, Time::Now());
   }
 
   virtual void RestartStatusCollector(
@@ -366,7 +367,7 @@ class ChildStatusCollectorTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     testing_profile_ = profile_builder.Build();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
@@ -704,7 +705,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
 
   // Report activity for two different apps.
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const Time start_time = Time::Now();
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
@@ -761,7 +762,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   status_collector_->OnSubmittedSuccessfully();
 
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
 
@@ -807,7 +808,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
 
   // Report activity for two different apps.
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Seconds(1);
   const base::TimeDelta app2_interval = base::Seconds(2);
   SimulateAppActivity(app1, app1_interval);

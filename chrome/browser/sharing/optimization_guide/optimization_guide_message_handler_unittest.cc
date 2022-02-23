@@ -30,7 +30,7 @@ class OptimizationGuideMessageHandlerTest : public testing::Test {
 
   void SetUp() override {
     message_handler_ = std::make_unique<OptimizationGuideMessageHandler>(
-        push_notification_manager());
+        push_notification_manager(), /*optimization_guide_logger=*/nullptr);
   }
 
   optimization_guide::MockPushNotificationManager* push_notification_manager() {

@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -357,7 +356,7 @@ void TCPSocket::OnListenComplete(
 
 content::StoragePartition* TCPSocket::GetStoragePartitionHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return storage_partition_ ? storage_partition_
+  return storage_partition_ ? storage_partition_.get()
                             : browser_context_->GetDefaultStoragePartition();
 }
 

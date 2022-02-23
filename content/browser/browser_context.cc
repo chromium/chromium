@@ -18,13 +18,11 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -79,7 +77,7 @@ base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetterForBrowser(
 }  // namespace
 
 BrowserContext::BrowserContext() {
-  impl_ = std::make_unique<Impl>(this);
+  impl_ = base::WrapUnique(new BrowserContextImpl(this));
   TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
               ChromeTrackEvent::kChromeBrowserContext, *this);
   TRACE_EVENT_BEGIN("shutdown", "Browser.BrowserContext",
@@ -122,11 +120,9 @@ StoragePartition* BrowserContext::GetStoragePartition(
   if (site_instance)
     DCHECK_EQ(this, site_instance->GetBrowserContext());
 
-  auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
-  auto partition_config =
-      site_instance_impl
-          ? site_instance_impl->GetSiteInfo().storage_partition_config()
-          : StoragePartitionConfig::CreateDefault(this);
+  auto partition_config = site_instance
+                              ? site_instance->GetStoragePartitionConfig()
+                              : StoragePartitionConfig::CreateDefault(this);
   return GetStoragePartition(partition_config, can_create);
 }
 
@@ -174,7 +170,7 @@ void BrowserContext::AsyncObliterateStoragePartition(
 }
 
 void BrowserContext::GarbageCollectStoragePartitions(
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    std::unordered_set<base::FilePath> active_paths,
     base::OnceClosure done) {
   impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
       std::move(active_paths), std::move(done));

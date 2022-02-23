@@ -69,7 +69,7 @@ class MockDecodeCache : public StubDecodeCache {
 
 TEST(PlaybackImageProviderTest, SkipsAllImages) {
   MockDecodeCache cache;
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(), absl::nullopt);
+  PlaybackImageProvider provider(&cache, TargetColorParams(), absl::nullopt);
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
   SkM44 matrix = SkM44();
@@ -96,7 +96,7 @@ TEST(PlaybackImageProviderTest, SkipsSomeImages) {
   settings.emplace();
   settings->images_to_skip = {skip_image.stable_id()};
 
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+  PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
@@ -111,7 +111,7 @@ TEST(PlaybackImageProviderTest, RefAndUnrefDecode) {
 
   absl::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+  PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
 
   {
@@ -141,7 +141,7 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
   settings.emplace();
   settings->image_to_current_frame_index = image_to_frame;
 
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+  PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
 
   SkIRect rect = SkIRect::MakeWH(10, 10);
@@ -159,7 +159,7 @@ TEST(PlaybackImageProviderTest, BitmapImages) {
 
   absl::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+  PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
 
   {
@@ -182,7 +182,7 @@ TEST(PlaybackImageProviderTest, IgnoresImagesNotSupportedByCache) {
   cache.set_use_cache_for_draw_image(false);
   absl::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
-  PlaybackImageProvider provider(&cache, gfx::ColorSpace(),
+  PlaybackImageProvider provider(&cache, TargetColorParams(),
                                  std::move(settings));
   {
     SkIRect rect = SkIRect::MakeWH(10, 10);

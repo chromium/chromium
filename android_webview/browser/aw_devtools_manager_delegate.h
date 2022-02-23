@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace android_webview {

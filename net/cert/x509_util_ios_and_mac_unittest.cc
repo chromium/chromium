@@ -4,13 +4,14 @@
 
 #include "net/cert/x509_util_ios_and_mac.h"
 
+#include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "net/cert/x509_util_ios.h"
 #else
 #include "net/cert/x509_util_mac.h"

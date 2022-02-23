@@ -69,6 +69,12 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
     base::span<const double> doubles);
 
+// Returns a new clazz[] with the content of |v|.
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jclass> clazz,
+    base::span<const ScopedJavaLocalRef<jobject>> v);
+
 // Returns a new Object[] with the content of |v|.
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,

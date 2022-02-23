@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -35,8 +36,9 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -126,14 +128,16 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
 
   source->AddBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
 
-  source->AddString("enableBrandingUpdateAttribute",
-                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-                        ? "enable-branding-update"
-                        : "");
+  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
+  // need this attribute.
+  source->AddString("enableBrandingUpdateAttribute", "enable-branding-update");
 
   // History clusters
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(profile);
   source->AddBoolean("isHistoryClustersEnabled",
-                     base::FeatureList::IsEnabled(history_clusters::kJourneys));
+                     history_clusters_service &&
+                         history_clusters_service->IsJourneysEnabled());
   source->AddBoolean(
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
@@ -233,11 +237,11 @@ void HistoryUI::UpdateDataSource() {
 
   std::unique_ptr<base::DictionaryValue> update =
       std::make_unique<base::DictionaryValue>();
-  update->SetBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
-  update->SetBoolean(
+  update->SetBoolKey(kIsUserSignedInKey, IsUserSignedIn(profile));
+  update->SetBoolKey(
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
-  update->SetBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
+  update->SetBoolKey(kIsHistoryClustersVisibleManagedByPolicyKey,
                      profile->GetPrefs()->IsManagedPreference(
                          history_clusters::prefs::kVisible));
 

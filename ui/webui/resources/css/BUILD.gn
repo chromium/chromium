@@ -51,4 +51,8 @@ preprocess_if_expr("preprocess_src") {
   if (include_polymer) {
     in_files += [ "md_colors.css" ]
   }
+
+  if (is_chromeos) {
+    in_files += [ "os_header.css" ]
+  }
 }

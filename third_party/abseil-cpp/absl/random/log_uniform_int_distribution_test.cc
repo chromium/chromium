@@ -42,7 +42,7 @@ class LogUniformIntDistributionTypeTest : public ::testing::Test {};
 
 using IntTypes = ::testing::Types<int8_t, int16_t, int32_t, int64_t,  //
                                   uint8_t, uint16_t, uint32_t, uint64_t>;
-TYPED_TEST_CASE(LogUniformIntDistributionTypeTest, IntTypes);
+TYPED_TEST_SUITE(LogUniformIntDistributionTypeTest, IntTypes);
 
 TYPED_TEST(LogUniformIntDistributionTypeTest, SerializeTest) {
   using param_type =

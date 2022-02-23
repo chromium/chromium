@@ -9,11 +9,18 @@
 #include <vector>
 
 #include "base/pickle.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/skia_util.h"
 
 namespace ui {
 namespace {
@@ -29,12 +36,16 @@ std::vector<std::string> UTF8Types(std::vector<std::u16string> types) {
 
 class ClipboardNonBackedTest : public testing::Test {
  public:
-  ClipboardNonBackedTest() = default;
+  ClipboardNonBackedTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
   ClipboardNonBackedTest(const ClipboardNonBackedTest&) = delete;
   ClipboardNonBackedTest& operator=(const ClipboardNonBackedTest&) = delete;
   ~ClipboardNonBackedTest() override = default;
 
   ClipboardNonBacked* clipboard() { return &clipboard_; }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
 
  private:
   ClipboardNonBacked clipboard_;
@@ -143,6 +154,164 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   EXPECT_FALSE(clipboard()->IsFormatAvailable(
       ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
+}
+
+// Tests that bitmaps written to the clipboard are read out encoded as a PNG.
+TEST_F(ClipboardNonBackedTest, ImageEncoding) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  // Asynchronously read out the image as a PNG. It should be the encoded
+  // version of the bitmap we wrote above.
+  std::vector<uint8_t> png;
+  base::RunLoop loop;
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        png = png_data;
+        loop.Quit();
+      }));
+  loop.Run();
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png.data(), png.size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+}
+
+// Tests that consecutive calls to read an image from the clipboard only results
+// in the image being encoded once.
+TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  std::vector<std::vector<uint8_t>> pngs;
+  base::RunLoop loop;
+  // Read from the clipboard many times in a row.
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+        // Read operations should be ordered. This callback will be called last.
+        loop.Quit();
+      }));
+  loop.Run();
+
+  ASSERT_EQ(pngs.size(), 3u);
+  EXPECT_EQ(pngs[0], pngs[1]);
+  EXPECT_EQ(pngs[0], pngs[2]);
+
+  // The bitmap should only have been encoded once.
+  EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 1);
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+}
+
+// Tests that consecutive calls to read an image from the clipboard only results
+// in the image being encoded once, but if another image is placed on the
+// clipboard, this image is appropriately encoded.
+TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
+  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
+
+  auto data = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  data->SetBitmapData(test_bitmap);
+
+  auto data2 = std::make_unique<ClipboardData>();
+  SkBitmap test_bitmap2 = gfx::test::CreateBitmap(4, 3);
+  data2->SetBitmapData(test_bitmap2);
+
+  clipboard()->WriteClipboardData(std::move(data));
+
+  std::vector<std::u16string> types;
+  clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
+                                  /*data_dst=*/nullptr, &types);
+  EXPECT_EQ(std::vector<std::string>({"image/png"}), UTF8Types(types));
+  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
+                                             ClipboardBuffer::kCopyPaste,
+                                             /*data_dst=*/nullptr));
+
+  std::vector<std::vector<uint8_t>> pngs;
+  base::RunLoop loop;
+  // Read from the clipboard many times in a row.
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+      }));
+
+  // Write a different image to the clipboard.
+  clipboard()->WriteClipboardData(std::move(data2));
+
+  clipboard()->ReadPng(
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr,
+      base::BindLambdaForTesting([&](const std::vector<uint8_t>& png_data) {
+        pngs.emplace_back(png_data);
+        // Read operations should be ordered. This callback will be called last.
+        loop.Quit();
+      }));
+  loop.Run();
+
+  ASSERT_EQ(pngs.size(), 3u);
+  EXPECT_EQ(pngs[0], pngs[1]);
+  EXPECT_NE(pngs[0], pngs[2]);
+
+  // The first bitmap should only have been encoded once, but the second bitmap
+  // should have been encoded separately.
+  EXPECT_EQ(clipboard()->NumImagesEncodedForTesting(), 2);
+
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(pngs[0].data(), pngs[0].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
+  gfx::PNGCodec::Decode(pngs[2].data(), pngs[2].size(), &bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap2));
 }
 
 }  // namespace ui

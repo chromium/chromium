@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
-#include "content/common/content_export.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/quota/storage_policy_observer.h"
@@ -22,8 +21,7 @@ namespace content {
 // service mojo for cache storage. It wraps mojo calls to track storage keys
 // usage and forwards them to the storage service remote. All functions should
 // be called on the UI thread.
-class CONTENT_EXPORT CacheStorageControlWrapper
-    : public storage::mojom::CacheStorageControl {
+class CacheStorageControlWrapper : public storage::mojom::CacheStorageControl {
  public:
   CacheStorageControlWrapper(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,

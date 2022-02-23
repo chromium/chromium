@@ -68,12 +68,12 @@ void IdleTimeEstimator::DidProcessTask(const base::PendingTask& pending_task) {
 
 void IdleTimeEstimator::AddCompositorTaskQueue(
     scoped_refptr<MainThreadTaskQueue> compositor_task_queue) {
-  compositor_task_queue->GetTaskQueue()->AddTaskObserver(this);
+  compositor_task_queue->AddTaskObserver(this);
 }
 
 void IdleTimeEstimator::RemoveCompositorTaskQueue(
     scoped_refptr<MainThreadTaskQueue> compositor_task_queue) {
-  compositor_task_queue->GetTaskQueue()->RemoveTaskObserver(this);
+  compositor_task_queue->RemoveTaskObserver(this);
 }
 
 }  // namespace scheduler

@@ -34,11 +34,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__),
                                 'build', 'android'))
 from pylib import constants
 from pylib.constants import host_paths
-from pylib.symbols import elf_symbolizer
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__),
+                                os.pardir, os.pardir, os.pardir, os.pardir,
+                                'tools', 'python'))
+from llvm_symbolizer import LLVMSymbolizer, IsValidLLVMSymbolizerTarget
+
+from llvm_objdump import LLVMObjdumper
 
 # WARNING: These global variables can be modified by other scripts!
-SYMBOLS_DIR = constants.DIR_SOURCE_ROOT
+SYMBOLS_DIR = constants.DIR_SOURCE_ROOT + os.sep
 CHROME_SYMBOLS_DIR = None
 ARCH = "arm"
 
@@ -220,8 +225,7 @@ def GetCandidateLibraries(library_name):
     A list of matching library filenames for library_name.
   """
   def extant_library(filename):
-    if (os.path.exists(filename)
-        and elf_symbolizer.ContainsElfMagic(filename)):
+    if (os.path.exists(filename) and IsValidLLVMSymbolizerTarget(filename)):
       return [filename]
     return []
 
@@ -313,12 +317,15 @@ def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
   if not lib:
     return None
 
-  addr_to_line = _CallAddr2LineForSet(lib, unique_addrs, cpu_arch)
+  symbols = SYMBOLS_DIR + lib
+
+  addr_to_line = _CallAddr2LineForSet(symbols, unique_addrs)
+
   if not addr_to_line:
     return None
 
   if get_detailed_info:
-    addr_to_objdump = _CallObjdumpForSet(lib, unique_addrs, cpu_arch)
+    addr_to_objdump = _CallObjdumpForSet(symbols, unique_addrs, cpu_arch)
     if not addr_to_objdump:
       return None
   else:
@@ -328,53 +335,27 @@ def SymbolInformationForSet(lib, unique_addrs, get_detailed_info,
   for addr in unique_addrs:
     source_info = addr_to_line.get(addr)
     if not source_info:
-      source_info = [(None, None)]
+      source_info = [(None,None)]
+
     if addr in addr_to_objdump:
       (object_symbol, object_offset) = addr_to_objdump.get(addr)
       object_symbol_with_offset = _FormatSymbolWithOffset(object_symbol,
                                                           object_offset)
     else:
       object_symbol_with_offset = None
+
     result[addr] = [(source_symbol, source_location, object_symbol_with_offset)
         for (source_symbol, source_location) in source_info]
 
   return result
 
 
-class _MemoizedForSet:
-  """Decorator class used to memoize CallXXXForSet() results."""
-  def __init__(self, fn):
-    self.fn = fn
-    self.cache = {}
-    self.cpu_arch = None
-
-  def __call__(self, lib, unique_addrs, cpu_arch):
-    if self.cpu_arch is None:
-      self.cpu_arch = cpu_arch
-    else:
-      # Sanity check, this doesn't expect cpu_arch to change.
-      assert self.cpu_arch == cpu_arch
-
-    lib_cache = self.cache.setdefault(lib, {})
-
-    uncached_addrs = [k for k in unique_addrs if k not in lib_cache]
-    if uncached_addrs:
-      lib_cache.update((k, None) for k in uncached_addrs)
-      result = self.fn(lib, uncached_addrs, cpu_arch)
-      if result:
-        lib_cache.update(result)
-
-    return dict((k, lib_cache[k]) for k in unique_addrs if lib_cache[k])
-
-
-@_MemoizedForSet
-def _CallAddr2LineForSet(lib, unique_addrs, cpu_arch):
+def _CallAddr2LineForSet(lib, unique_addrs):
   """Look up line and symbol information for a set of addresses.
 
   Args:
     lib: library (or executable) pathname containing symbols
     unique_addrs: set of string hexidecimal addresses look up.
-    cpu_arch: Target CPU architecture.
 
   Returns:
     A dictionary of the form {addr: [(symbol, file:line)]} where
@@ -388,55 +369,23 @@ def _CallAddr2LineForSet(lib, unique_addrs, cpu_arch):
   if not lib:
     return None
 
-  symbols = SYMBOLS_DIR + lib
-  if not os.path.splitext(symbols)[1] in ['', '.so', '.apk']:
+  if not os.path.splitext(lib)[1] in ['', '.so', '.apk']:
     return None
 
-  if not os.path.isfile(symbols):
+  if not os.path.isfile(lib):
     return None
 
-  addrs = sorted(unique_addrs)
+  sorted_addrs = sorted(unique_addrs)
+
   result = {}
 
-  def _Callback(sym, addr):
-    records = []
-    while sym:  # Traverse all the inlines following the |inlined_by| chain.
-      if sym.source_path and sym.source_line:
-        location = '%s:%d' % (sym.source_path, sym.source_line)
-      else:
-        location = None
-      records += [(sym.name, location)]
-      sym = sym.inlined_by
-    result[addr] = records
+  with LLVMSymbolizer() as llvm_symbolizer:
+    for addr in sorted_addrs:
+      result[addr] = llvm_symbolizer.GetSymbolInformation(lib,addr)
 
-  symbolizer = elf_symbolizer.ELFSymbolizer(
-      elf_file_path=symbols,
-      addr2line_path=host_paths.ToolPath("addr2line", cpu_arch),
-      callback=_Callback,
-      inlines=True)
-
-  for addr in addrs:
-    symbolizer.SymbolizeAsync(int(addr, 16), addr)
-  symbolizer.Join()
   return result
 
 
-def _StripPC(addr, cpu_arch):
-  """Strips the Thumb bit a program counter address when appropriate.
-
-  Args:
-    addr: the program counter address
-    cpu_arch: Target CPU architecture.
-
-  Returns:
-    The stripped program counter address.
-  """
-  if cpu_arch == "arm":
-    return addr & ~1
-  return addr
-
-
-@_MemoizedForSet
 def _CallObjdumpForSet(lib, unique_addrs, cpu_arch):
   """Use objdump to find out the names of the containing functions.
 
@@ -448,72 +397,20 @@ def _CallObjdumpForSet(lib, unique_addrs, cpu_arch):
   Returns:
     A dictionary of the form {addr: (string symbol, offset)}.
   """
+
   if not lib:
     return None
 
-  symbols = SYMBOLS_DIR + lib
-  if not os.path.exists(symbols):
-    return None
-
-  symbols = SYMBOLS_DIR + lib
-  if not os.path.exists(symbols):
+  if not os.path.exists(lib):
     return None
 
   result = {}
 
-  # Function lines look like:
-  #   000177b0 <android::IBinder::~IBinder()+0x2c>:
-  # We pull out the address and function first. Then we check for an optional
-  # offset. This is tricky due to functions that look like "operator+(..)+0x2c"
-  func_regexp = re.compile("(^[a-f0-9]*) \<(.*)\>:$")
-  offset_regexp = re.compile("(.*)\+0x([a-f0-9]*)")
-
-  # A disassembly line looks like:
-  #   177b2:  b510        push  {r4, lr}
-  asm_regexp = re.compile("(^[ a-f0-9]*):[ a-f0-0]*.*$")
-
-  for target_addr in unique_addrs:
-    start_addr_dec = str(_StripPC(int(target_addr, 16), cpu_arch))
-    stop_addr_dec = str(_StripPC(int(target_addr, 16), cpu_arch) + 8)
-    cmd = [host_paths.ToolPath("objdump", cpu_arch),
-           "--section=.text",
-           "--demangle",
-           "--disassemble",
-           "--start-address=" + start_addr_dec,
-           "--stop-address=" + stop_addr_dec,
-           symbols]
-
-    current_symbol = None    # The current function symbol in the disassembly.
-    current_symbol_addr = 0  # The address of the current function.
-
-    stream = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout
-    for line in stream:
-      # Is it a function line like:
-      #   000177b0 <android::IBinder::~IBinder()>:
-      components = func_regexp.match(line)
-      if components:
-        # This is a new function, so record the current function and its
-        # address.
-        current_symbol_addr = int(components.group(1), 16)
-        current_symbol = components.group(2)
-
-        # Does it have an optional offset like: "foo(..)+0x2c"?
-        components = offset_regexp.match(current_symbol)
-        if components:
-          current_symbol = components.group(1)
-          offset = components.group(2)
-          if offset:
-            current_symbol_addr -= int(offset, 16)
-
-      # Is it an disassembly line like:
-      #   177b2:  b510        push  {r4, lr}
-      components = asm_regexp.match(line)
-      if components:
-        addr = components.group(1)
-        i_addr = int(addr, 16)
-        i_target = _StripPC(int(target_addr, 16), cpu_arch)
-        if i_addr == i_target:
-          result[target_addr] = (current_symbol, i_target - current_symbol_addr)
-    stream.close()
+  with LLVMObjdumper() as llvm_objdumper:
+    for current_address in unique_addrs:
+      symbol_data = llvm_objdumper.GetSymbolInformation(lib=lib,
+                                                        address=current_address,
+                                                        cpu_arch=cpu_arch)
+      result[current_address] = (symbol_data.symbol, symbol_data.offset)
 
   return result

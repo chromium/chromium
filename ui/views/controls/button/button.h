@@ -130,9 +130,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   int tag() const { return tag_; }
   void set_tag(int tag) { tag_ = tag; }
 
-  void SetCallback(PressedCallback callback) {
-    callback_ = std::move(callback);
-  }
+  virtual void SetCallback(PressedCallback callback);
 
   void SetAccessibleName(const std::u16string& name);
   const std::u16string& GetAccessibleName() const;

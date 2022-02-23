@@ -271,6 +271,7 @@ class ChromeUserManagerImpl
   // Cros settings change subscriptions.
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
+  base::CallbackListSubscription family_link_accounts_subscription_;
 
   base::CallbackListSubscription local_accounts_subscription_;
 

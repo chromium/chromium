@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_MEDIA_COMPONENT_WIDEVINE_CDM_HINT_FILE_LINUX_H_
 #define CHROME_COMMON_MEDIA_COMPONENT_WIDEVINE_CDM_HINT_FILE_LINUX_H_
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -16,7 +15,7 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #error "This file only applies to desktop Linux."
 #endif
 
@@ -47,14 +46,13 @@ class FilePath;
 // contents if any. |cdm_base_path| is the directory containing the new
 // instance. Returns true if the hint file has been successfully updated,
 // otherwise false.
-bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] bool UpdateWidevineCdmHintFile(
+    const base::FilePath& cdm_base_path);
 
 // Returns the latest component updated Widevine CDM directory. If the hint file
 // exists and is valid, returns the CDM base_path with the value loaded from the
 // file. Otherwise returns empty base::FilePath(). This function does not verify
 // that the path returned exists or not.
-base::FilePath GetLatestComponentUpdatedWidevineCdmDirectory()
-    WARN_UNUSED_RESULT;
+[[nodiscard]] base::FilePath GetLatestComponentUpdatedWidevineCdmDirectory();
 
 #endif  // CHROME_COMMON_MEDIA_COMPONENT_WIDEVINE_CDM_HINT_FILE_LINUX_H_

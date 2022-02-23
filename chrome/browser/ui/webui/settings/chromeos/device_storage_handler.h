@@ -7,12 +7,12 @@
 
 #include <string>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ui/webui/settings/chromeos/calculator/size_calculator.h"
+#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "third_party/re2/src/re2/re2.h"
 
 class Profile;
@@ -44,7 +44,7 @@ const int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 
 class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public arc::ArcSessionManagerObserver,
-                       public chromeos::disks::DiskMountManager::Observer,
+                       public ash::disks::DiskMountManager::Observer,
                        public calculator::SizeCalculator::Observer {
  public:
   StorageHandler(Profile* profile, content::WebUIDataSource* html_source);
@@ -62,11 +62,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // arc::ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
-  // chromeos::disks::DiskMountManager::Observer:
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  // ash::disks::DiskMountManager::Observer:
+  void OnMountEvent(
+      ash::disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // chromeos::settings::calculator::SizeCalculator::Observer:
   void OnSizeCalculated(
@@ -83,11 +83,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   // Handlers of JS messages.
-  void HandleUpdateAndroidEnabled(const base::ListValue* unused_args);
-  void HandleUpdateStorageInfo(const base::ListValue* unused_args);
-  void HandleOpenMyFiles(const base::ListValue* unused_args);
-  void HandleOpenArcStorage(const base::ListValue* unused_args);
-  void HandleUpdateExternalStorages(const base::ListValue* unused_args);
+  void HandleUpdateAndroidEnabled(base::Value::ConstListView unused_args);
+  void HandleUpdateStorageInfo(base::Value::ConstListView unused_args);
+  void HandleOpenMyFiles(base::Value::ConstListView unused_args);
+  void HandleOpenArcStorage(base::Value::ConstListView unused_args);
+  void HandleUpdateExternalStorages(base::Value::ConstListView unused_args);
 
   // Updates storage row on the UI.
   void UpdateStorageItem(

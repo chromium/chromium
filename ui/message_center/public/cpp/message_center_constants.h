@@ -70,9 +70,9 @@ constexpr int kMinPixelsPerTitleCharacter = 4;
 
 // Message.
 
-// Max number of lines for message_view_.
-constexpr int kMaxLinesForMessageView = 1;
-constexpr int kMaxLinesForExpandedMessageView = 4;
+// Max number of lines for message_label_.
+constexpr int kMaxLinesForMessageLabel = 1;
+constexpr int kMaxLinesForExpandedMessageLabel = 4;
 
 // Character limit = pixels per line * line limit / min. pixels per character.
 constexpr size_t kMessageCharacterLimit =
@@ -100,7 +100,7 @@ const int kButtonIconToTitlePadding = 16;  // In DIPs.
 
 // Progress bar.
 const int kProgressBarTopPadding = 16;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 const int kProgressBarThickness = 5;
 const int kProgressBarCornerRadius = 3;
 #endif

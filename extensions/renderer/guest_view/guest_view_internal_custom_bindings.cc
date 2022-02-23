@@ -9,19 +9,18 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "components/guest_view/common/guest_view.mojom.h"
 #include "components/guest_view/common/guest_view_constants.h"
-#include "components/guest_view/common/guest_view_messages.h"
+#include "components/guest_view/renderer/guest_view_container.h"
 #include "components/guest_view/renderer/guest_view_request.h"
-#include "components/guest_view/renderer/iframe_guest_view_container.h"
-#include "components/guest_view/renderer/iframe_guest_view_request.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/renderer/script_context.h"
+#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -42,6 +41,18 @@ using ViewMap = std::map<int, v8::Global<v8::Object>*>;
 static base::LazyInstance<ViewMap>::DestructorAtExit weak_view_map =
     LAZY_INSTANCE_INITIALIZER;
 
+guest_view::mojom::GuestViewHost* GetGuestViewHost() {
+  static base::NoDestructor<
+      mojo::AssociatedRemote<guest_view::mojom::GuestViewHost>>
+      guest_view_host;
+  if (!*guest_view_host) {
+    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
+        guest_view_host.get());
+  }
+
+  return guest_view_host->get();
+}
+
 }  // namespace
 
 namespace extensions {
@@ -49,10 +60,11 @@ namespace extensions {
 namespace {
 
 content::RenderFrame* GetRenderFrame(v8::Local<v8::Value> value) {
-  v8::Local<v8::Context> context =
-      v8::Local<v8::Object>::Cast(value)->CreationContext();
-  if (context.IsEmpty())
-    return nullptr;
+  v8::Local<v8::Context> context;
+  if (!v8::Local<v8::Object>::Cast(value)->GetCreationContext().ToLocal(
+          &context))
+    if (context.IsEmpty())
+      return nullptr;
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForContext(context);
   if (!frame)
     return nullptr;
@@ -135,8 +147,7 @@ void GuestViewInternalCustomBindings::ResetMapEntry(
   view_map.erase(entry);
 
   // Let the GuestViewManager know that a GuestView has been garbage collected.
-  content::RenderThread::Get()->Send(
-      new GuestViewHostMsg_ViewGarbageCollected(view_instance_id));
+  GetGuestViewHost()->ViewGarbageCollected(view_instance_id);
 }
 
 void GuestViewInternalCustomBindings::AttachIframeGuest(
@@ -188,7 +199,7 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
       content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
 
   // Create a GuestViewContainer if it does not exist.
-  // An element instance ID uniquely identifies an IframeGuestViewContainer
+  // An element instance ID uniquely identifies a GuestViewContainer
   // within a RenderView.
   auto* guest_view_container =
       guest_view::GuestViewContainer::FromID(element_instance_id);
@@ -196,16 +207,17 @@ void GuestViewInternalCustomBindings::AttachIframeGuest(
   DCHECK(!guest_view_container);
   // The <webview> element's GC takes ownership of |guest_view_container|.
   guest_view_container =
-      new guest_view::IframeGuestViewContainer(embedder_parent_frame);
+      new guest_view::GuestViewContainer(embedder_parent_frame);
   guest_view_container->SetElementInstanceID(element_instance_id);
 
-  std::unique_ptr<guest_view::GuestViewRequest> request(
-      new guest_view::GuestViewAttachIframeRequest(
+  std::unique_ptr<guest_view::GuestViewAttachRequest> request =
+      std::make_unique<guest_view::GuestViewAttachRequest>(
           guest_view_container, render_frame->GetRoutingID(), guest_instance_id,
-          std::move(params), args.Length() == (num_required_params + 1)
-                                 ? args[num_required_params].As<v8::Function>()
-                                 : v8::Local<v8::Function>(),
-          args.GetIsolate()));
+          std::move(params),
+          args.Length() == (num_required_params + 1)
+              ? args[num_required_params].As<v8::Function>()
+              : v8::Local<v8::Function>(),
+          args.GetIsolate());
   guest_view_container->IssueRequest(std::move(request));
 
   args.GetReturnValue().Set(v8::Boolean::New(context()->isolate(), true));
@@ -330,8 +342,7 @@ void GuestViewInternalCustomBindings::RegisterView(
   // Let the GuestViewManager know that a GuestView has been created.
   const std::string& view_type =
       *v8::String::Utf8Value(args.GetIsolate(), args[2]);
-  content::RenderThread::Get()->Send(
-      new GuestViewHostMsg_ViewCreated(view_instance_id, view_type));
+  GetGuestViewHost()->ViewCreated(view_instance_id, view_type);
 }
 
 void GuestViewInternalCustomBindings::RunWithGesture(

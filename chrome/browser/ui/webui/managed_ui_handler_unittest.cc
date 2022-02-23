@@ -115,7 +115,7 @@ TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagedUIHandlerTest, ManagedUIDisabledForChildAccount) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
-  profile()->SetSupervisedUserId("supervised");
+  profile()->SetIsSupervisedProfile();
 
   InitializeHandler();
 

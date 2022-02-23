@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.metrics;
 import android.os.Build;
 import android.os.SystemClock;
 
+import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -17,10 +19,41 @@ import org.chromium.base.compat.ApiHelperForN;
  */
 @JNINamespace("chrome::android")
 public class UmaUtils {
+    /** Observer for this class. */
+    public interface Observer {
+        /**
+         * Called when hasComeToForeground() changes from false to true.
+         */
+        void onHasComeToForeground();
+    }
+
+    private static ObserverList<Observer> sObservers;
+
+    /** Adds an observer. */
+    public static boolean addObserver(Observer observer) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) sObservers = new ObserverList<>();
+        return sObservers.addObserver(observer);
+    }
+
+    /** Removes an observer. */
+    public static boolean removeObserver(Observer observer) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) return false;
+        return sObservers.removeObserver(observer);
+    }
+
     // All these values originate from SystemClock.uptimeMillis().
     private static long sApplicationStartTimeMs;
     private static long sForegroundStartTimeMs;
     private static long sBackgroundTimeMs;
+
+    private static boolean sSkipRecordingNextForegroundStartTimeForTesting;
+
+    // Will short-circuit out of the next recordForegroundStartTime() call.
+    public static void skipRecordingNextForegroundStartTimeForTesting() {
+        sSkipRecordingNextForegroundStartTimeForTesting = true;
+    }
 
     /**
      * Record the time in the application lifecycle at which Chrome code first runs
@@ -38,10 +71,21 @@ public class UmaUtils {
      * Record the time at which Chrome was brought to foreground.
      */
     public static void recordForegroundStartTime() {
+        if (sSkipRecordingNextForegroundStartTimeForTesting) {
+            sSkipRecordingNextForegroundStartTimeForTesting = false;
+            return;
+        }
+
         // Since this can be called from multiple places (e.g. ChromeActivitySessionTracker
         // and FirstRunActivity), only set the time if it hasn't been set previously or if
         // Chrome has been sent to background since the last foreground time.
         if (sForegroundStartTimeMs == 0 || sForegroundStartTimeMs < sBackgroundTimeMs) {
+            if (sObservers != null && sForegroundStartTimeMs == 0) {
+                for (Observer observer : sObservers) {
+                    observer.onHasComeToForeground();
+                }
+            }
+
             sForegroundStartTimeMs = SystemClock.uptimeMillis();
         }
     }
@@ -95,11 +139,6 @@ public class UmaUtils {
             return 0;
         }
         return ApiHelperForN.getStartUptimeMillis();
-    }
-
-    public static long getForegroundStartTicks() {
-        assert sForegroundStartTimeMs != 0;
-        return sForegroundStartTimeMs;
     }
 
     @NativeMethods

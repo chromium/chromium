@@ -10,10 +10,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace chrome {
 namespace enterprise_util {
 
 bool IsProfileAffiliated(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (profile->IsMainProfile()) {
+    return policy::PolicyLoaderLacros::IsMainUserAffiliated();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   return policy::IsAffiliated(
       profile->GetProfilePolicyConnector()->user_affiliation_ids(),
       g_browser_process->browser_policy_connector()->device_affiliation_ids());

@@ -9,12 +9,16 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/key_systems.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
@@ -78,12 +82,24 @@ using IsTypeSupportedCB =
 bool IsTypeSupportedInternal(
     ComPtr<IMFContentDecryptionModuleFactory> cdm_factory,
     const std::string& key_system,
+    bool is_hw_secure,
     const std::string& content_type) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   bool supported =
       cdm_factory->IsTypeSupported(base::UTF8ToWide(key_system).c_str(),
                                    base::UTF8ToWide(content_type).c_str());
+  // The above function may take seconds to run. Report UMA to understand the
+  // actual performance impact. Report UMA only for success cases.
+  if (supported) {
+    auto uma_name = "Media.EME.MediaFoundationService." +
+                    GetKeySystemNameForUMA(key_system, is_hw_secure) +
+                    ".IsTypeSupported";
+    base::UmaHistogramTimes(uma_name, base::TimeTicks::Now() - start_time);
+  }
+
   DVLOG(3) << __func__ << " " << (supported ? "[yes]" : "[no]") << ": "
            << key_system << ", " << content_type;
+
   return supported;
 }
 
@@ -299,6 +315,9 @@ void MediaFoundationService::IsKeySystemSupported(
     IsKeySystemSupportedCallback callback) {
   DVLOG(2) << __func__ << ", key_system=" << key_system;
 
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.EME.MediaFoundationService.IsKeySystemSupported");
+
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   HRESULT hr = MediaFoundationCdmModule::GetInstance()->GetCdmFactory(
       key_system, cdm_factory);
@@ -309,13 +328,14 @@ void MediaFoundationService::IsKeySystemSupported(
     return;
   }
 
-  IsTypeSupportedCB is_type_supported_cb =
-      base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system);
-
-  absl::optional<CdmCapability> sw_secure_capability =
-      GetCdmCapability(is_type_supported_cb, /*is_hw_secure=*/false);
-  absl::optional<CdmCapability> hw_secure_capability =
-      GetCdmCapability(is_type_supported_cb, /*is_hw_secure=*/true);
+  absl::optional<CdmCapability> sw_secure_capability = GetCdmCapability(
+      base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system,
+                          /*is_hw_secure=*/false),
+      /*is_hw_secure=*/false);
+  absl::optional<CdmCapability> hw_secure_capability = GetCdmCapability(
+      base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system,
+                          /*is_hw_secure=*/true),
+      /*is_hw_secure=*/true);
 
   if (!sw_secure_capability && !hw_secure_capability) {
     DVLOG(2) << "Get empty CdmCapability.";

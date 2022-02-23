@@ -10,8 +10,8 @@ namespace feature_engagement {
 
 namespace events {
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 const char kNewTabOpened[] = "new_tab_opened";
 const char kSixthTabOpened[] = "sixth_tab_opened";
 const char kTabGroupCreated[] = "tab_group_created";
@@ -47,10 +47,10 @@ const char kFocusHelpBubbleAcceleratorPressed[] =
 const char kFocusHelpBubbleAcceleratorPromoRead[] =
     "focus_help_bubble_accelerator_promo_read";
 
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const char kChromeOpened[] = "chrome_opened";
 const char kIncognitoTabOpened[] = "incognito_tab_opened";
 const char kClearedBrowsingData[] = "cleared_browsing_data";
@@ -58,11 +58,13 @@ const char kViewedReadingList[] = "viewed_reading_list";
 const char kTriggeredTranslateInfobar[] = "triggered_translate_infobar";
 const char kBottomToolbarOpened[] = "bottom_toolbar_opened";
 const char kDiscoverFeedLoaded[] = "discover_feed_loaded";
-#endif  // defined(OS_IOS)
+const char kDesktopVersionRequested[] = "desktop_version_requested";
+const char kDefaultSiteViewShown[] = "default_site_view_shown";
+#endif  // BUILDFLAG(IS_IOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace events
 

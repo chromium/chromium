@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -79,7 +80,7 @@ class Adder {
  private:
   bool added_ = false;
   int total_ = 0;
-  RepeatingClosureList* cb_reg_;
+  raw_ptr<RepeatingClosureList> cb_reg_;
   CallbackListSubscription subscription_;
 };
 

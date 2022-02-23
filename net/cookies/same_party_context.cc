@@ -4,6 +4,8 @@
 
 #include "net/cookies/same_party_context.h"
 
+#include <tuple>
+
 #include "net/cookies/cookie_constants.h"
 
 namespace net {
@@ -24,6 +26,13 @@ bool SamePartyContext::operator==(const SamePartyContext& other) const {
          std::make_tuple(other.context_type(),
                          other.ancestors_for_metrics_only(),
                          other.top_resource_for_metrics_only());
+}
+
+std::ostream& operator<<(std::ostream& os, const SamePartyContext& spc) {
+  os << "{" << static_cast<int>(spc.context_type()) << ", "
+     << static_cast<int>(spc.ancestors_for_metrics_only()) << ", "
+     << static_cast<int>(spc.top_resource_for_metrics_only()) << "}";
+  return os;
 }
 
 // static

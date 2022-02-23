@@ -49,7 +49,7 @@ std::unique_ptr<SiteDataReader> SiteDataCacheImpl::GetReaderForOrigin(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   internal::SiteDataImpl* impl = GetOrCreateFeatureImpl(origin);
   DCHECK(impl);
-  SiteDataReader* data_reader = new SiteDataReader(impl);
+  SiteDataReader* data_reader = new SiteDataReaderImpl(impl);
   return base::WrapUnique(data_reader);
 }
 

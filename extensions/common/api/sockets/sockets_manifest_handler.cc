@@ -17,8 +17,9 @@ SocketsManifestHandler::~SocketsManifestHandler() {}
 
 bool SocketsManifestHandler::Parse(Extension* extension,
                                    std::u16string* error) {
-  const base::Value* sockets = NULL;
-  CHECK(extension->manifest()->Get(manifest_keys::kSockets, &sockets));
+  const base::Value* sockets =
+      extension->manifest()->FindPath(manifest_keys::kSockets);
+  CHECK(sockets != nullptr);
   std::unique_ptr<SocketsManifestData> data =
       SocketsManifestData::FromValue(*sockets, error);
   if (!data)

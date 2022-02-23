@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 
 namespace segmentation_platform {
@@ -70,8 +69,8 @@ class SignalKey {
   std::string ToBinary() const;
   // Parses a machine readable representation of a SignalKeyInternal into
   // a SignalKey. Returns whether the conversion succeeded.
-  static bool FromBinary(const std::string& input,
-                         SignalKey* output) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromBinary(const std::string& input,
+                                       SignalKey* output);
   // The SignalKey prefix in binary format.
   std::string GetPrefixInBinary() const;
   // Returns a human readable representation of the SignalKey.

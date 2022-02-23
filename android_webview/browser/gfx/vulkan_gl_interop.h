@@ -11,6 +11,7 @@
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
@@ -70,7 +71,7 @@ class VulkanGLInterop {
     GrVkImageInfo image_info;
 
     // Used to clean up Vulkan objects.
-    AwVulkanContextProvider* vk_context_provider;
+    raw_ptr<AwVulkanContextProvider> vk_context_provider;
   };
 
   RenderThreadManager* const render_thread_manager_;

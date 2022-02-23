@@ -18,8 +18,8 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/loader/download_utils_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,9 +35,12 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 
 namespace content {
@@ -360,7 +363,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   // network::mojom::URLLoaderClient methods
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -420,6 +424,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   std::unique_ptr<BodyReader> body_reader_;
   std::unique_ptr<ResponseMetadata> response_metadata_;
+  mojo::ScopedDataPipeConsumerHandle body_;
   bool registered_in_global_request_map_;
 
   absl::optional<std::pair<net::RequestPriority, int32_t>> priority_;
@@ -818,6 +823,7 @@ void InterceptionJob::GetResponseBody(
     callback->sendFailure(Response::ServerError(std::move(error_reason)));
     return;
   }
+  bool body_reader_created = !body_reader_;
   if (!body_reader_) {
     body_reader_ = std::make_unique<BodyReader>(base::BindOnce(
         &InterceptionJob::ResponseBodyComplete, base::Unretained(this)));
@@ -825,6 +831,9 @@ void InterceptionJob::GetResponseBody(
     loader_->ResumeReadingBodyFromNet();
   }
   body_reader_->AddCallback(std::move(callback));
+  // Needs to happen after |AddCallback| to avoid a DCHECK.
+  if (body_reader_created && body_)
+    OnStartLoadingResponseBody(std::move(body_));
 }
 
 void InterceptionJob::TakeResponseBodyPipe(
@@ -841,6 +850,8 @@ void InterceptionJob::TakeResponseBodyPipe(
   state_ = State::kResponseTaken;
   pending_response_body_pipe_callback_ = std::move(callback);
   client_receiver_.Resume();
+  if (body_)
+    OnStartLoadingResponseBody(std::move(body_));
   loader_->ResumeReadingBodyFromNet();
 }
 
@@ -994,10 +1005,13 @@ Response InterceptionJob::InnerContinueRequest(
     }
     DCHECK_EQ(State::kResponseReceived, state_);
     DCHECK(!body_reader_);
-    client_->OnReceiveResponse(std::move(response_metadata_->head));
+    client_->OnReceiveResponse(std::move(response_metadata_->head),
+                               mojo::ScopedDataPipeConsumerHandle());
     response_metadata_.reset();
     loader_->ResumeReadingBodyFromNet();
     client_receiver_.Resume();
+    if (body_)
+      OnStartLoadingResponseBody(std::move(body_));
     return Response::Success();
   }
 
@@ -1220,7 +1234,8 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
-  client_->OnReceiveResponse(std::move(response_metadata_->head));
+  client_->OnReceiveResponse(std::move(response_metadata_->head),
+                             mojo::ScopedDataPipeConsumerHandle());
   if (response_metadata_->cached_metadata.size() != 0)
     client_->OnReceiveCachedMetadata(
         std::move(response_metadata_->cached_metadata));
@@ -1278,6 +1293,7 @@ void InterceptionJob::CancelRequest() {
   if (state_ == State::kNotStarted)
     return;
   client_receiver_.reset();
+  body_.reset();
   loader_.reset();
   if (body_reader_) {
     body_reader_->CancelWithError(
@@ -1337,7 +1353,7 @@ void InterceptionJob::FetchCookies(
           should_treat_as_first_party));
 
   cookie_manager_->GetCookieList(request.url, options,
-                                 net::CookiePartitionKeychain::Todo(),
+                                 net::CookiePartitionKeyCollection::Todo(),
                                  std::move(callback));
 }
 
@@ -1391,11 +1407,9 @@ void InterceptionJob::FollowRedirect(
 
   network::ResourceRequest* request = &create_loader_params_->request;
   const net::RedirectInfo& info = *response_metadata_->redirect_info;
-  const auto current_origin = url::Origin::Create(request->url);
-  const auto new_origin = url::Origin::Create(info.new_url);
   if (request->request_initiator &&
-      (!new_origin.IsSameOriginWith(current_origin) &&
-       !request->request_initiator->IsSameOriginWith(current_origin))) {
+      (!url::IsSameOriginWith(info.new_url, request->url) &&
+       !request->request_initiator->IsSameOriginWith(request->url))) {
     tainted_origin_ = true;
   }
 
@@ -1415,6 +1429,7 @@ void InterceptionJob::FollowRedirect(
   request->referrer_policy = info.new_referrer_policy;
   request->referrer = GURL(info.new_referrer);
   if (request->trusted_params) {
+    const auto new_origin = url::Origin::Create(info.new_url);
     request->trusted_params->isolation_info =
         request->trusted_params->isolation_info.CreateForRedirect(new_origin);
   }
@@ -1469,15 +1484,17 @@ void InterceptionJob::OnReceiveEarlyHints(
 }
 
 void InterceptionJob::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
   if (!(stage_ & InterceptionStage::RESPONSE)) {
-    client_->OnReceiveResponse(std::move(head));
+    client_->OnReceiveResponse(std::move(head), std::move(body));
     return;
   }
   loader_->PauseReadingBodyFromNet();
   client_receiver_.Pause();
+  body_ = std::move(body);
 
   auto request_info = BuildRequestInfo(head);
   const network::ResourceRequest& request = create_loader_params_->request;

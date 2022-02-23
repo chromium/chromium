@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -47,7 +48,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_impl_win.h"
 #endif
 
@@ -55,7 +56,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -65,7 +66,7 @@ constexpr char kUpdates[] = "updates";
 constexpr char kPasswords[] = "passwords";
 constexpr char kSafeBrowsing[] = "safe-browsing";
 constexpr char kExtensions[] = "extensions";
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kChromeCleaner[] = "chrome-cleaner";
 #endif
 
@@ -119,7 +120,7 @@ class TestTimestampDelegate : public TimestampDelegate {
     return base::Time::FromDoubleT(1609459199).LocalMidnight() -
            base::Seconds(1);
   }
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::Time FetchChromeCleanerScanCompletionTimestamp() override {
     // 2 seconds before midnight Dec 31st 2020.
     return base::Time::FromDoubleT(1609459199).LocalMidnight() -
@@ -221,7 +222,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   }
 
  private:
-  password_manager::BulkLeakCheckService* leak_service_ = nullptr;
+  raw_ptr<password_manager::BulkLeakCheckService> leak_service_ = nullptr;
   int compromised_password_count_ = 0;
   int weak_password_count_ = 0;
   int done_ = 0;
@@ -271,7 +272,7 @@ class TestSafetyCheckExtensionService : public TestExtensionService {
   std::unordered_map<std::string, ExtensionState> state_map_;
 };
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class TestChromeCleanerControllerDelegate
     : public safe_browsing::ChromeCleanerControllerDelegate {
  public:
@@ -309,17 +310,17 @@ class SafetyCheckHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  safety_check::TestUpdateCheckHelper* update_helper_ = nullptr;
-  TestVersionUpdater* version_updater_ = nullptr;
+  raw_ptr<safety_check::TestUpdateCheckHelper> update_helper_ = nullptr;
+  raw_ptr<TestVersionUpdater> version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
   TestPasswordsDelegate test_passwords_delegate_;
-  extensions::ExtensionPrefs* test_extension_prefs_ = nullptr;
+  raw_ptr<extensions::ExtensionPrefs> test_extension_prefs_ = nullptr;
   TestSafetyCheckExtensionService test_extension_service_;
   content::TestWebUI test_web_ui_;
   std::unique_ptr<TestingSafetyCheckHandler> safety_check_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   TestChromeCleanerControllerDelegate test_chrome_cleaner_controller_delegate_;
 #endif
 };
@@ -393,8 +394,9 @@ std::string SafetyCheckHandlerTest::GenerateExtensionId(char char_to_repeat) {
 void SafetyCheckHandlerTest::VerifyDisplayString(
     const base::DictionaryValue* event,
     const std::u16string& expected) {
-  std::u16string display;
-  ASSERT_TRUE(event->GetString("displayString", &display));
+  const std::string* display_ptr = event->FindStringKey("displayString");
+  ASSERT_TRUE(display_ptr);
+  std::u16string display = base::UTF8ToUTF16(*display_ptr);
   ReplaceBrowserName(&display);
   // Need to also replace any instances of Chrome and Chromium in the
   // expected string due to an edge case on ChromeOS, where a device name
@@ -481,7 +483,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
 #else
   VerifyDisplayString(event,
                       "Nearly up to date! Relaunch Browser to finish "
-                      "updating. Incognito windows won't reopen.");
+                      "updating.");
 #endif
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.UpdatesResult",
@@ -490,7 +492,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
 
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
   const char* processor_variation = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   switch (base::mac::GetCPUType()) {
     case base::mac::CPUType::kIntel:
       processor_variation = " (x86_64)";
@@ -1386,7 +1388,7 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
       SafetyCheckHandler::ExtensionsStatus::kBlocklistedReenabledSomeByUser, 1);
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class SafetyCheckHandlerChromeCleanerIdleTest
     : public SafetyCheckHandlerTest,
       public testing::WithParamInterface<
@@ -1685,7 +1687,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   }
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
   // Test string without timestamp.
   base::Time null_time;
@@ -1774,7 +1776,7 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kSignedOut);
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Set the Chrome cleaner mock response.
   safe_browsing::ChromeCleanerControllerImpl::ResetInstanceForTesting();
   safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetStateForTesting(
@@ -1788,7 +1790,7 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
   ASSERT_TRUE(event_parent);
   VerifyDisplayString(event_parent, u"Safety check ran a moment ago");
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Subsequent Chrome cleaner status updates without the user running safety
   // check again should not trigger further parent element completion events.
   safety_check_->OnIdle(safe_browsing::ChromeCleanerController::IdleReason::

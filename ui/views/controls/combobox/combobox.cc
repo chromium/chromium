@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -86,7 +87,7 @@ class TransparentButton : public Button {
   ~TransparentButton() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& mouse_event) override {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // On Mac, comboboxes do not take focus on mouse click, but on other
     // platforms they do.
     parent()->RequestFocus();
@@ -99,7 +100,7 @@ class TransparentButton : public Button {
   }
 };
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Returns the next or previous valid index (depending on |increment|'s value).
 // Skips separator or disabled indices. Returns -1 if there is no valid adjacent
 // index.
@@ -211,8 +212,8 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
 
   MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
 
-  Combobox* owner_;           // Weak. Owns this.
-  ui::ComboboxModel* model_;  // Weak.
+  raw_ptr<Combobox> owner_;           // Weak. Owns this.
+  raw_ptr<ui::ComboboxModel> model_;  // Weak.
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -235,7 +236,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
           base::BindRepeating(&Combobox::ArrowButtonPressed,
                               base::Unretained(this)))) {
   SetModel(model);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -244,7 +245,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   UpdateBorder();
 
   arrow_button_->SetVisible(true);
-  AddChildView(arrow_button_);
+  AddChildView(arrow_button_.get());
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
@@ -306,7 +307,7 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   }
 
   if (model_) {
-    DCHECK(observation_.IsObservingSource(model_));
+    DCHECK(observation_.IsObservingSource(model_.get()));
     observation_.Reset();
   }
 
@@ -315,7 +316,7 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   if (model_) {
     model_ = model;
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
-    observation_.Observe(model_);
+    observation_.Observe(model_.get());
     SetSelectedIndex(model_->GetDefaultIndex());
     OnComboboxModelChanged(model_);
   }
@@ -360,6 +361,10 @@ void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
   size_to_largest_label_ = size_to_largest_label;
   content_size_ = GetContentSize();
   OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
+}
+
+bool Combobox::IsMenuRunning() const {
+  return menu_runner_ && menu_runner_->IsRunning();
 }
 
 void Combobox::OnThemeChanged() {
@@ -437,7 +442,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   bool show_menu = false;
   int new_index = kNoSelection;
   switch (e.key_code()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case ui::VKEY_DOWN:
     case ui::VKEY_UP:
     case ui::VKEY_SPACE:
@@ -483,7 +488,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     case ui::VKEY_SPACE:
       show_menu = true;
       break;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
     default:
       return false;
   }
@@ -677,7 +682,7 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
 
   // Allow |menu_runner_| to be set by the testing API, but if this method is
   // ever invoked recursively, ensure the old menu is closed.
-  if (!menu_runner_ || menu_runner_->IsRunning()) {
+  if (!menu_runner_ || IsMenuRunning()) {
     menu_runner_ = std::make_unique<MenuRunner>(
         menu_model_.get(), MenuRunner::COMBOBOX,
         base::BindRepeating(&Combobox::OnMenuClosed, base::Unretained(this),
@@ -723,6 +728,11 @@ gfx::Size Combobox::GetContentSize() const {
         item_width +=
             icon_skia.width() + LayoutProvider::Get()->GetDistanceMetric(
                                     DISTANCE_RELATED_LABEL_HORIZONTAL);
+        if (MenuConfig::instance().check_selected_combobox_item) {
+          item_width +=
+              kMenuCheckSize + LayoutProvider::Get()->GetDistanceMetric(
+                                   DISTANCE_RELATED_BUTTON_HORIZONTAL);
+        }
         height = std::max(height, icon_skia.height());
       }
       width = std::max(width, item_width);

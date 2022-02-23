@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 310 tests; 203 PASS, 107 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 310 tests; 204 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -91,7 +91,7 @@ FAIL outbound-rtp's bytesDiscardedOnSend assert_true: Is bytesDiscardedOnSend pr
 FAIL outbound-rtp's fecPacketsSent assert_true: Is fecPacketsSent present expected true got false
 PASS outbound-rtp's retransmittedPacketsSent
 PASS outbound-rtp's retransmittedBytesSent
-FAIL outbound-rtp's targetBitrate assert_true: Is targetBitrate present expected true got false
+PASS outbound-rtp's targetBitrate
 PASS outbound-rtp's totalEncodedBytesTarget
 PASS outbound-rtp's frameWidth
 PASS outbound-rtp's frameHeight

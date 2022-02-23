@@ -39,6 +39,12 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
   if (!rfhi)
     return 0;
 
+  // If the RenderFrameHost does not have a live RenderFrame, immediately bail
+  // out: not only is there nothing to do, the `RenderFrameDeleted()`
+  // notification to clean up the overlay would never be called.
+  if (!rfhi->IsRenderFrameLive())
+    return 0;
+
   // TODO(http://crbug.com/673886): Support overlay surfaces in VR using GVR
   // reprojection video surface.
   RenderWidgetHostViewBase* rwhvb =
@@ -93,7 +99,7 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
 
   // Make sure RenderFrameDeleted will be called on RFH and thus we will clean
   // up.
-  DCHECK(rfhi_->IsRenderFrameCreated());
+  CHECK(rfhi_->IsRenderFrameCreated());
   web_contents->GetNativeView()->AddObserver(this);
 
   // Note that we're not allowed to call back into |obj| before it calls

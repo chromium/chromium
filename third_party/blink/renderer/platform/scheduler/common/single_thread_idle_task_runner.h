@@ -70,6 +70,7 @@ class SingleThreadIdleTaskRunner
   // literals). They may not include " chars.
   SingleThreadIdleTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> control_task_runner,
       Delegate* delegate);
   SingleThreadIdleTaskRunner(const SingleThreadIdleTaskRunner&) = delete;
   SingleThreadIdleTaskRunner& operator=(const SingleThreadIdleTaskRunner&) =
@@ -103,9 +104,15 @@ class SingleThreadIdleTaskRunner
 
   void EnqueueReadyDelayedIdleTasks();
 
+  void PostDelayedIdleTaskOnAssociatedThread(
+      const base::Location& from_here,
+      const base::TimeTicks delayed_run_time,
+      IdleTask idle_task);
+
   using DelayedIdleTask = std::pair<const base::Location, base::OnceClosure>;
 
   scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> control_task_runner_;
   std::multimap<base::TimeTicks, DelayedIdleTask> delayed_idle_tasks_;
   Delegate* delegate_;                              // NOT OWNED
   base::trace_event::BlameContext* blame_context_;  // Not owned.

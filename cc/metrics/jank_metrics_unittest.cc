@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -138,8 +137,8 @@ TEST_F(JankMetricsTest, CompositorAnimationOneJankWithMildFluctuation) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kCompositorAnimation;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // One Jank; there are no no-update frames. The fluctuation in presentation of
@@ -197,8 +196,8 @@ TEST_F(JankMetricsTest, MainThreadAnimationOneJankWithNoUpdate) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kMainThreadAnimation;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kMain;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kMain;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // There are only 1 jank because of a no-update frame.
@@ -250,8 +249,8 @@ TEST_F(JankMetricsTest, MainThreadAnimationOneJankWithNoUpdate) {
 TEST_F(JankMetricsTest, VideoManyJanksOver300ExpectedFrames) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type = FrameSequenceTrackerType::kVideo;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // 7 janks.
@@ -298,8 +297,8 @@ TEST_F(JankMetricsTest, WheelScrollMainThreadNoJanksWithNoUpdates) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kWheelScroll;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kMain;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kMain;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   SimulateFrameSequence(&jank_reporter,
@@ -349,8 +348,8 @@ TEST_F(JankMetricsTest, WheelScrollCompositorTwoJanksWithLargeFluctuation) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kWheelScroll;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // Two janks; there are no no-update frames. The fluctuations in presentation
@@ -405,8 +404,8 @@ TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanksLongLatency) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kTouchScroll;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
 
   JankMetrics jank_reporter{tracker_type, thread_type};
 
@@ -464,8 +463,8 @@ TEST_F(JankMetricsTest, TouchScrollCompositorThreadManyJanksLongLatency) {
 TEST_F(JankMetricsTest, RAFMergeJanks) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type = FrameSequenceTrackerType::kRAF;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kMain;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kMain;
 
   JankMetrics jank_reporter{tracker_type, thread_type};
   std::unique_ptr<JankMetrics> other_reporter =
@@ -523,8 +522,8 @@ TEST_F(JankMetricsTest, RAFMergeJanks) {
 TEST_F(JankMetricsTest, CustomNotReported) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type = FrameSequenceTrackerType::kCustom;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kMain;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kMain;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // There should be 4 janks, but the jank reporter does not track or report
@@ -559,8 +558,8 @@ TEST_F(JankMetricsTest, CompositorAnimationOneJankWithLongIdlePeriod) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kCompositorAnimation;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // One jank at E. The long delay of 100 frames between b and c is considered
@@ -625,8 +624,8 @@ TEST_F(JankMetricsTest, CompositorAnimationTwoJanksWithModerateIdlePeriod) {
   base::HistogramTester histogram_tester;
   FrameSequenceTrackerType tracker_type =
       FrameSequenceTrackerType::kCompositorAnimation;
-  FrameSequenceMetrics::ThreadType thread_type =
-      FrameSequenceMetrics::ThreadType::kCompositor;
+  FrameInfo::SmoothEffectDrivingThread thread_type =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   JankMetrics jank_reporter{tracker_type, thread_type};
 
   // Two janks at D and E. The long delay of 99 no-update frames does not

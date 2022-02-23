@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 
@@ -52,7 +53,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   void SetViewportSize(const gfx::Size& size) override {}
 
-  void CheckOverlaySupport(
+  void CheckOverlaySupportImpl(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(
@@ -80,7 +81,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   // overlay, if one backs them with a SurfaceView.
   PromotionHintInfoMap promotion_hint_info_map_;
 
-  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_;
+  raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_;
   // This class is created, accessed, and destroyed on the gpu thread.
   std::unique_ptr<OverlayProcessorOnGpu> processor_on_gpu_;
 

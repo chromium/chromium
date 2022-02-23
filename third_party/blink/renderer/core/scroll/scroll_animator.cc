@@ -34,12 +34,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 // This should be after all other #includes.
@@ -61,7 +61,7 @@ ScrollAnimator::ScrollAnimator(ScrollableArea* scrollable_area,
                                const base::TickClock* tick_clock)
     : ScrollAnimatorBase(scrollable_area),
       tick_clock_(tick_clock),
-      last_granularity_(ScrollGranularity::kScrollByPixel) {}
+      last_granularity_(ui::ScrollGranularity::kScrollByPixel) {}
 
 ScrollAnimator::~ScrollAnimator() {
   if (on_finish_)
@@ -100,7 +100,7 @@ void ScrollAnimator::ResetAnimationState() {
 }
 
 ScrollResult ScrollAnimator::UserScroll(
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
     ScrollableArea::ScrollCallback on_finish) {
   // We only store on_finish_ when running an animation, and it should be
@@ -108,14 +108,14 @@ ScrollResult ScrollAnimator::UserScroll(
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   have_scrolled_since_page_load_ = true;
 #endif
 
   base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
   if (!scrollable_area_->ScrollAnimatorEnabled() ||
-      granularity == ScrollGranularity::kScrollByPrecisePixel) {
+      granularity == ui::ScrollGranularity::kScrollByPrecisePixel) {
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
@@ -157,7 +157,7 @@ ScrollResult ScrollAnimator::UserScroll(
   // animation rather than animating multiple scrollers at the same time.
   if (on_finish_)
     std::move(on_finish_).Run();
-  return ScrollResult(false, false, delta.width(), delta.height());
+  return ScrollResult(false, false, delta.x(), delta.y());
 }
 
 bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
@@ -220,7 +220,7 @@ bool ScrollAnimator::WillAnimateToOffset(const ScrollOffset& target_offset) {
   return true;
 }
 
-void ScrollAnimator::AdjustAnimation(const IntSize& adjustment) {
+void ScrollAnimator::AdjustAnimation(const gfx::Vector2d& adjustment) {
   if (run_state_ == RunState::kIdle) {
     AdjustImplOnlyScrollOffsetAnimation(adjustment);
   } else if (HasRunningAnimation()) {
@@ -239,7 +239,7 @@ void ScrollAnimator::ScrollToOffsetWithoutAnimation(
   current_offset_ = offset;
 
   ResetAnimationState();
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
@@ -267,7 +267,7 @@ void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   }
 
   TRACE_EVENT0("blink", "ScrollAnimator::notifyOffsetChanged");
-  NotifyOffsetChanged();
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 }
 
 bool ScrollAnimator::SendAnimationToCompositor() {
@@ -298,7 +298,7 @@ void ScrollAnimator::CreateAnimationCurve() {
   // It is not correct to assume the input type from the granularity, but we've
   // historically determined animation parameters from granularity.
   CompositorScrollOffsetAnimationCurve::ScrollType scroll_type =
-      (last_granularity_ == ScrollGranularity::kScrollByPixel)
+      (last_granularity_ == ui::ScrollGranularity::kScrollByPixel)
           ? CompositorScrollOffsetAnimationCurve::ScrollType::kMouseWheel
           : CompositorScrollOffsetAnimationCurve::ScrollType::kKeyboard;
   animation_curve_ = std::make_unique<CompositorScrollOffsetAnimationCurve>(
@@ -393,7 +393,7 @@ void ScrollAnimator::CancelAnimation() {
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_)
     std::move(on_finish_).Run();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   have_scrolled_since_page_load_ = false;
 #endif
 }

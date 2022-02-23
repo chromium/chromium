@@ -64,16 +64,17 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     // forcing the type to be 'custom".
     SetPeriodicWave(wave_table);
   } else {
-    if (oscillator_type == "sine")
+    if (oscillator_type == "sine") {
       SetType(SINE);
-    else if (oscillator_type == "square")
+    } else if (oscillator_type == "square") {
       SetType(SQUARE);
-    else if (oscillator_type == "sawtooth")
+    } else if (oscillator_type == "sawtooth") {
       SetType(SAWTOOTH);
-    else if (oscillator_type == "triangle")
+    } else if (oscillator_type == "triangle") {
       SetType(TRIANGLE);
-    else
+    } else {
       NOTREACHED();
+    }
   }
 
   // An oscillator is always mono.
@@ -857,8 +858,9 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext* context,
              options->hasPeriodicWave() ? options->periodicWave() : nullptr,
              exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

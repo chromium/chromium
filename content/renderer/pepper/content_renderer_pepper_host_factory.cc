@@ -40,7 +40,7 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -123,7 +123,7 @@ ContentRendererPepperHostFactory::CreateResourceHost(
       }
       ppapi::PPB_ImageData_Shared::ImageDataType image_type =
           ppapi::PPB_ImageData_Shared::PLATFORM;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // Win32K lockdown mitigations are enabled for Windows 8 and beyond.
       // We use the SIMPLE image data type as the PLATFORM image data type
       // calls GDI functions to create DIB sections etc which fail in Win32K

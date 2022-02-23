@@ -101,11 +101,11 @@ class VideoCaptureParams {
   // Returns true if the video encoder needs to be reconfigured, which happens
   // when the pixel size of the window changes, resulting in a change in the
   // size of the video. Returns false otherwise.
-  virtual bool OnRecordedWindowChangingRoot(
+  [[nodiscard]] virtual bool OnRecordedWindowChangingRoot(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
       viz::FrameSinkId new_frame_sink_id,
       const gfx::Size& new_frame_sink_size_dip,
-      float new_device_scale_factor) WARN_UNUSED_RESULT;
+      float new_device_scale_factor);
 
   // Called when a window being recorded by the given |capturer| is resized
   // (e.g. due to snapping, maximizing, user resizing, ... etc.) to
@@ -115,9 +115,9 @@ class VideoCaptureParams {
   // Returns true if the video encoder needs to be reconfigured, indicating that
   // there's a change in the pixel size of the recorded window, resulting in a
   // change in the video size. False otherwise.
-  virtual bool OnRecordedWindowSizeChanged(
+  [[nodiscard]] virtual bool OnRecordedWindowSizeChanged(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
-      const gfx::Size& new_window_size_dip) WARN_UNUSED_RESULT;
+      const gfx::Size& new_window_size_dip);
 
   // Called when the frame sink being recorded changes its size or device scale
   // factor to |new_frame_sink_size_dip| or |new_device_scale_factor|
@@ -128,10 +128,10 @@ class VideoCaptureParams {
   // would require a video encoder reconfiguration.
   // Returns true if the video encoder needs to be reconfigured. False
   // otherwise.
-  bool OnFrameSinkSizeChanged(
+  [[nodiscard]] bool OnFrameSinkSizeChanged(
       mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
       const gfx::Size& new_frame_sink_size_dip,
-      float new_device_scale_factor) WARN_UNUSED_RESULT;
+      float new_device_scale_factor);
 
  protected:
   VideoCaptureParams(viz::FrameSinkId frame_sink_id,

@@ -34,7 +34,7 @@
 ++++++[static] name='<newline>'
 ++++++[radio button] name='blue' checkable:true posinset:1 setsize:1
 ++[tree table] cols=1 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)
-++++[table row] posinset:2 setsize:100
+++++[table row] name='content' posinset:2 setsize:100
 ++++++[table cell] name='content' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++[static] name='content'
 ++[table] cols=1 headers=(NONE); rows=1 headers=(NONE); caption=false; spans=(all: 1x1)

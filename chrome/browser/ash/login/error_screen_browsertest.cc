@@ -34,6 +34,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -207,7 +208,9 @@ IN_PROC_BROWSER_TEST_F(NetworkErrorScreenTest, HideCallback) {
   EXPECT_TRUE(callback_called);
 }
 
-class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
+class GuestErrorScreenTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<DeviceStateMixin::State> {
  public:
   GuestErrorScreenTest() { login_manager_.set_session_restore_enabled(); }
 
@@ -226,11 +229,12 @@ class GuestErrorScreenTest : public MixinBasedInProcessBrowserTest {
  protected:
   std::unique_ptr<WizardContext> wizard_context_;
   LoginManagerMixin login_manager_{&mixin_host_};
+  DeviceStateMixin device_state_{&mixin_host_, GetParam()};
 };
 
 // Test that guest signin option is shown when enabled and that clicking on it
 // starts a guest session.
-IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, PRE_GuestLogin) {
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLogin) {
   GetScreen()->AllowGuestSignin(true);
   GetScreen()->SetUIState(NetworkError::UI_STATE_UPDATE);
   GetScreen()->Show(wizard_context_.get());
@@ -246,11 +250,19 @@ IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, PRE_GuestLogin) {
   restart_job_waiter.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, GuestLogin) {
+IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLogin) {
   login_manager_.WaitForActiveSession();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GuestErrorScreenTest,
+    testing::Values(DeviceStateMixin::State::BEFORE_OOBE,
+                    // We use OOBE completed and cloud enrolled to trigger the
+                    // Gaia dialog right away.
+                    DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED));
 
 class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
  public:

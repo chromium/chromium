@@ -5,7 +5,7 @@
 #include "components/update_client/crx_downloader_factory.h"
 
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
 #endif
 #include "components/update_client/crx_downloader.h"
@@ -36,7 +36,7 @@ scoped_refptr<CrxDownloader> CrxDownloaderFactoryChromium::MakeCrxDownloader(
   scoped_refptr<CrxDownloader> url_fetcher_downloader =
       base::MakeRefCounted<UrlFetcherDownloader>(nullptr,
                                                  network_fetcher_factory_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If background downloads are allowed, then apply the BITS service
   // background downloader first.
   if (background_download_enabled) {

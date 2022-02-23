@@ -88,6 +88,12 @@ class GPU_GLES2_EXPORT SharedImageManager {
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
 
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<SharedImageRepresentationLegacyOverlay> ProduceLegacyOverlay(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
+#endif
+
   // Called by SharedImageRepresentation in the destructor.
   void OnRepresentationDestroyed(const Mailbox& mailbox,
                                  SharedImageRepresentation* representation);
@@ -112,14 +118,14 @@ class GPU_GLES2_EXPORT SharedImageManager {
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
   SharedImageBatchAccessManager* batch_access_manager() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return batch_access_manager_.get();
 #else
     return nullptr;
 #endif
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const scoped_refptr<DXGISharedHandleManager>& dxgi_shared_handle_manager()
       const {
     return dxgi_shared_handle_manager_;
@@ -138,11 +144,11 @@ class GPU_GLES2_EXPORT SharedImageManager {
 
   const bool display_context_on_another_thread_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SharedImageBatchAccessManager> batch_access_manager_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 #endif
 

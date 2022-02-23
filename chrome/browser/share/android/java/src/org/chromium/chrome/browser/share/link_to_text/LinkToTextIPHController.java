@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import android.net.Uri;
-
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,11 +24,8 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-
-import java.util.List;
 
 /**
  * This class is responsible for rendering an IPH, when receiving a link-to-text.
@@ -62,36 +56,19 @@ public class LinkToTextIPHController {
                     return;
                 }
 
-                if (!hasTextFragment(tab, url)) return;
+                if (!LinkToTextHelper.hasTextFragment(url)) return;
 
                 if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
                     return;
                 }
 
-                getExistingSelectors(tab);
+                LinkToTextHelper.hasExistingSelectors(tab, (hasSelectors) -> {
+                    if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
+                        showMessageIPH(tab);
+                    }
+                });
             }
         }, null);
-    }
-
-    // Request text fragment selectors for existing highlights
-    private void getExistingSelectors(Tab tab) {
-        List<RenderFrameHost> renderFrameHosts =
-                tab.getWebContents().getMainFrame().getAllRenderFrameHosts();
-
-        for (RenderFrameHost renderFrameHost : renderFrameHosts) {
-            TextFragmentReceiver producer =
-                    renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
-            if (producer == null) {
-                continue;
-            }
-
-            LinkToTextCoordinator.getExistingSelectors(producer, (text) -> {
-                if (text.length > 0 && mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
-                    showMessageIPH(tab);
-                }
-                producer.close();
-            });
-        }
     }
 
     private void showMessageIPH(Tab tab) {
@@ -119,7 +96,7 @@ public class LinkToTextIPHController {
     }
 
     private void onMessageButtonClicked() {
-        onOpenInChrome(LinkToTextCoordinator.SHARED_HIGHLIGHTING_SUPPORT_URL);
+        onOpenInChrome(LinkToTextHelper.SHARED_HIGHLIGHTING_SUPPORT_URL);
         mTracker.dismissed(FEATURE_NAME);
     }
 
@@ -130,12 +107,5 @@ public class LinkToTextIPHController {
     private void onOpenInChrome(String linkUrl) {
         mTabModelSelector.openNewTab(new LoadUrlParams(linkUrl), TabLaunchType.FROM_LINK,
                 mTabModelSelector.getCurrentTab(), mTabModelSelector.isIncognitoSelected());
-    }
-
-    private boolean hasTextFragment(Tab tab, GURL url) {
-        Uri uri = Uri.parse(url.getSpec());
-        String fragment = uri.getEncodedFragment();
-        return fragment != null ? fragment.contains(LinkToTextCoordinator.TEXT_FRAGMENT_PREFIX)
-                                : false;
     }
 }

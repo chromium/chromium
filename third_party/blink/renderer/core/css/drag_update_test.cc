@@ -16,7 +16,8 @@ TEST(DragUpdateTest, AffectedByDragUpdate) {
   // Check that when dragging the div in the document below, you only get a
   // single element style recalc.
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   document.documentElement()->setInnerHTML(R"HTML(
     <style>div {width:100px;height:100px} div:-webkit-drag {
@@ -45,7 +46,8 @@ TEST(DragUpdateTest, ChildAffectedByDragUpdate) {
   // Check that when dragging the div in the document below, you get a
   // single element style recalc.
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   document.documentElement()->setInnerHTML(R"HTML(
     <style>div {width:100px;height:100px} div:-webkit-drag .drag {
@@ -74,7 +76,8 @@ TEST(DragUpdateTest, SiblingAffectedByDragUpdate) {
   // Check that when dragging the div in the document below, you get a
   // single element style recalc.
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   document.documentElement()->setInnerHTML(R"HTML(
     <style>div {width:100px;height:100px} div:-webkit-drag + .drag {

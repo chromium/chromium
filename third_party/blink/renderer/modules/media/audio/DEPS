@@ -4,6 +4,7 @@ include_rules = [
     "+media/audio",
     "+media/base",
     "+media/mojo",
+    "+media/webrtc",
 
     # TODO(https://crbug.com/787252): Replace this use by a Blink singleton
     # construction.

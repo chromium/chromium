@@ -7,6 +7,22 @@
 
 namespace features {
 
+// Enable code space compaction when finalizing a full GC with stack.
+const base::Feature kV8CompactCodeSpaceWithStack{
+    "V8CompactCodeSpaceWithStack", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable compaction when finalizing a full GC with stack.
+const base::Feature kV8CompactWithStack{"V8CompactWithStack",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables compaction of maps in a full GC.
+const base::Feature kV8CompactMaps{"V8CompactMaps",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables a separate heap space for all map objects.
+const base::Feature kV8UseMapSpace{"V8UseMapSpace",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables optimization of JavaScript in V8.
 const base::Feature kV8OptimizeJavascript{"V8OptimizeJavascript",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -66,6 +82,12 @@ const base::Feature kV8Turboprop{"V8Turboprop",
 const base::Feature kV8Sparkplug{"V8Sparkplug",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the concurrent Sparkplug compiler.
+const base::Feature kV8ConcurrentSparkplug{"V8ConcurrentSparkplug",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kV8ConcurrentSparkplugMaxThreads{
+    &kV8ConcurrentSparkplug, "V8ConcurrentSparkplugMaxThreads", 0};
+
 // Makes sure the experimental Sparkplug compiler is only enabled if short
 // builtin calls are enabled too.
 const base::Feature kV8SparkplugNeedsShortBuiltinCalls{
@@ -105,15 +127,10 @@ const base::Feature kV8SlowHistogramsSparkplugAndroid{
 const base::Feature kV8SlowHistogramsScriptAblation{
     "V8SlowHistogramsScriptAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the V8 virtual memory cage.
-const base::Feature kV8VirtualMemoryCage {
-  "V8VirtualMemoryCage",
-#if defined(V8_HEAP_SANDBOX)
-      // The cage is required for the V8 Heap Sandbox.
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
+// Enables the experimental V8 sandbox. This is called V8VirtualMemoryCage
+// instead of V8Sandbox for historical reasons.
+// TODO(1218005) remove this once the finch trial has ended.
+const base::Feature kV8VirtualMemoryCage{"V8VirtualMemoryCage",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features

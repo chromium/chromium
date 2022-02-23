@@ -10,6 +10,7 @@
 
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 namespace test {
@@ -39,6 +40,12 @@ class MockTracker : public Tracker {
                void(const base::Feature& feature,
                     absl::optional<SnoozeAction> snooze_action));
   MOCK_METHOD0(AcquireDisplayLock, std::unique_ptr<DisplayLockHandle>());
+  MOCK_METHOD1(SetPriorityNotification, void(const base::Feature&));
+  MOCK_METHOD0(GetPendingPriorityNotification, absl::optional<std::string>());
+  MOCK_METHOD2(RegisterPriorityNotificationHandler,
+               void(const base::Feature&, base::OnceClosure));
+  MOCK_METHOD1(UnregisterPriorityNotificationHandler,
+               void(const base::Feature&));
   MOCK_METHOD1(AddOnInitializedCallback, void(OnInitializedCallback callback));
 };
 

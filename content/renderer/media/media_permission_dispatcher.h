@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/media_permission.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,7 +24,7 @@ class SingleThreadTaskRunner;
 namespace content {
 
 // MediaPermission implementation using content PermissionService.
-class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
+class MediaPermissionDispatcher : public media::MediaPermission {
  public:
   explicit MediaPermissionDispatcher(RenderFrameImpl* render_frame);
 

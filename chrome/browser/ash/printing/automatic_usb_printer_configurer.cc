@@ -27,8 +27,8 @@ bool IsPrinterIdInList(const std::string& printer_id,
 }  // namespace
 
 AutomaticUsbPrinterConfigurer::AutomaticUsbPrinterConfigurer(
-    std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-    chromeos::PrinterInstallationManager* installation_manager,
+    std::unique_ptr<PrinterConfigurer> printer_configurer,
+    PrinterInstallationManager* installation_manager,
     UsbPrinterNotificationController* notification_controller)
     : printer_configurer_(std::move(printer_configurer)),
       installation_manager_(installation_manager),
@@ -88,19 +88,19 @@ void AutomaticUsbPrinterConfigurer::SetupPrinter(
 
 void AutomaticUsbPrinterConfigurer::OnSetupComplete(
     const chromeos::Printer& printer,
-    chromeos::PrinterSetupResult result) {
+    PrinterSetupResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
-  if (result == chromeos::PrinterSetupResult::kPrinterIsNotAutoconfigurable) {
+  if (result == PrinterSetupResult::kPrinterIsNotAutoconfigurable) {
     installation_manager_->PrinterIsNotAutoconfigurable(printer);
     return;
   }
-  if (result != chromeos::PrinterSetupResult::kSuccess) {
+  if (result != PrinterSetupResult::kSuccess) {
     LOG(ERROR) << "Unable to autoconfigure usb printer " << printer.id();
     return;
   }
   installation_manager_->PrinterInstalled(printer, /*is_automatic=*/true);
-  chromeos::PrinterConfigurer::RecordUsbPrinterSetupSource(
-      chromeos::UsbPrinterSetupSource::kAutoconfigured);
+  PrinterConfigurer::RecordUsbPrinterSetupSource(
+      UsbPrinterSetupSource::kAutoconfigured);
   CompleteConfiguration(printer);
 }
 

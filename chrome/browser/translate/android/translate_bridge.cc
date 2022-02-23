@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/android/jni_headers/TranslateBridge_jni.h"
@@ -345,14 +346,14 @@ void TranslateBridge::PrependToAcceptLanguagesIfNecessary(
   // differences in case and whitespace.
   std::set<std::string> seen_languages;
   std::vector<std::string> output_list;
-  for (auto it = unique_locale_list.rbegin(); it != unique_locale_list.rend();
-       ++it) {
-    if (seen_languages.find(it->first) == seen_languages.end()) {
-      output_list.push_back(it->first);
-      seen_languages.insert(it->first);
+  for (const auto& [language_code, country_code] :
+       base::Reversed(unique_locale_list)) {
+    if (seen_languages.find(language_code) == seen_languages.end()) {
+      output_list.push_back(language_code);
+      seen_languages.insert(language_code);
     }
-    if (!it->second.empty())
-      output_list.push_back(it->first + "-" + it->second);
+    if (!country_code.empty())
+      output_list.push_back(language_code + "-" + country_code);
   }
 
   std::reverse(output_list.begin(), output_list.end());

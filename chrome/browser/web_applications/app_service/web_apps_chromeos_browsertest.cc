@@ -11,14 +11,12 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -60,17 +58,7 @@ void CheckSeparator(const ui::SimpleMenuModel& model, int index) {
 
 }  // namespace
 
-class WebAppsChromeOsBrowserTest : public web_app::WebAppControllerBrowserTest {
- public:
-  WebAppsChromeOsBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kDesktopPWAsAppIconShortcutsMenuUI}, {});
-  }
-  ~WebAppsChromeOsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using WebAppsChromeOsBrowserTest = web_app::WebAppControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =

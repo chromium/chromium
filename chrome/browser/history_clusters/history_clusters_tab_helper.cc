@@ -26,16 +26,16 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -74,7 +74,7 @@ class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
 bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
     if (tab_index != TabStripModel::kNoTab &&
@@ -83,12 +83,12 @@ bool IsPageInTabGroup(content::WebContents* contents) {
     }
   }
   return false;
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
   if (!tab)
     return false;
   return TabModelJniBridge::HasOtherRelatedTabs(tab);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Pass in a separate `url` parameter to ensure that we check the same URL that
@@ -269,7 +269,8 @@ void HistoryClustersTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Will detect:
   // 1) When the history clusters page was toggled to the basic history page.
-  // 2) A link was followed in the same web contents from the history clusters
+  // 2) The history clusters page was refreshed.
+  // 3) A link was followed in the same web contents from the history clusters
   //    page.
   // And will update this page's associated `HistoryClustersMetricsLogger`.
 
@@ -277,31 +278,72 @@ void HistoryClustersTabHelper::DidStartNavigation(
     return;
   }
 
-  // We only care if the previously committed navigation was on the
-  // HistoryClusters UI.
+  // When the user navigates back to the HistoryClusters UI after having
+  // navigated away from it to another history UI (e.g. the ChromeHistory or
+  // TabSync UIs), clear the final state that was set to `kSameDocNavigation`
+  // when they navigated away.
+  if (IsHistoryPage(navigation_handle->GetURL(),
+                    GURL(chrome::kChromeUIHistoryClustersURL))) {
+    auto* logger =
+        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+            navigation_handle->GetWebContents()->GetPrimaryPage());
+    DCHECK(!logger->get_final_state() ||
+           *logger->get_final_state() ==
+               history_clusters::HistoryClustersFinalState::kSameDocNavigation);
+    logger->clear_final_state();
+  }
+
+  // The remaining logic only pertains to if the previously committed navigation
+  // was the HistoryClusters UI.
   if (!IsHistoryPage(navigation_handle->GetWebContents()->GetLastCommittedURL(),
                      GURL(chrome::kChromeUIHistoryClustersURL))) {
     return;
   }
 
+  // Detect toggling to another history UI:
+  // 1) Previous committed navigation was the HistoryClusters UI.
+  // 2) This is a same doc navigation.
   if (navigation_handle->IsSameDocument()) {
+    auto* logger =
+        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+            navigation_handle->GetWebContents()->GetPrimaryPage());
+    // When the user navigates away from the HistoryClusters UI to the
+    // ChromeHistory UI, increment the toggles count.
     if (IsHistoryPage(navigation_handle->GetURL(),
                       GURL(chrome::kChromeUIHistoryURL))) {
-      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
-          navigation_handle->GetWebContents()->GetPrimaryPage())
-          ->increment_toggles_to_basic_history();
+      logger->increment_toggles_to_basic_history();
     }
+    // When the user navigates from the HistoryClusters UI to another History UI
+    // (e.g. the ChromeHistory or TabSync UIs), set the final state to
+    // `kSameDocNavigation`.
+    logger->set_final_state(
+        history_clusters::HistoryClustersFinalState::kSameDocNavigation);
     return;
   }
 
+  // Detect refreshes:
+  // 1) Previous committed navigation was the history clusters UI.
+  // 2) The current navigation is the history clusters UI.
+  // 3) The transition type is `kRefreshTab`.
+  if (IsHistoryPage(navigation_handle->GetURL(),
+                    GURL(chrome::kChromeUIHistoryClustersURL)) &&
+      PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_RELOAD)) {
+    auto* logger =
+        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+            navigation_handle->GetWebContents()->GetPrimaryPage());
+    logger->set_final_state(
+        history_clusters::HistoryClustersFinalState::kRefreshTab);
+  }
+
+  // Detect link navigations:
+  // 1) Previous committed navigation was the history clusters UI.
+  // 2) The current navigation is not the history clusters UI.
+  // 3) The transition type is `PAGE_TRANSITION_LINK`.
   if (!IsHistoryPage(navigation_handle->GetURL(),
                      GURL(chrome::kChromeUIHistoryClustersURL)) &&
       PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                ui::PAGE_TRANSITION_LINK)) {
-    // If the previously committed navigation was on the history clusters page,
-    // the current navigation is not on the history clusters UI and the
-    // transition type is a link click, then we know the user clicked on a
-    // result on the clusters page.
     auto* logger =
         history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
             navigation_handle->GetWebContents()->GetPrimaryPage());
@@ -426,7 +468,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
       IsPageBookmarked(web_contents(),
                        incomplete_visit_context_annotations.url_row.url());
   // Android does not have NTP Custom Links.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This queries the prefs directly if the visit URL is stored as an NTP
   // custom link, bypassing the CustomLinksManager.
   PrefService* pref_service =
@@ -437,7 +479,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
       base::Contains(custom_link_store.RetrieveLinks(),
                      incomplete_visit_context_annotations.url_row.url(),
                      [](const auto& link) { return link.url; });
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   incomplete_visit_context_annotations.status.navigation_end_signals = true;
   history_clusters_service->CompleteVisitContextAnnotationsIfReady(

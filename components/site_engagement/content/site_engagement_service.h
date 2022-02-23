@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "ui/base/page_transition_types.h"
 
@@ -46,19 +48,9 @@ enum class EngagementType;
 class SiteEngagementObserver;
 class SiteEngagementScore;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SiteEngagementServiceAndroid;
 #endif
-
-class SiteEngagementScoreProvider {
- public:
-  // Returns a non-negative integer representing the engagement score of the
-  // origin for this URL.
-  virtual double GetScore(const GURL& url) const = 0;
-
-  // Returns the sum of engagement points awarded to all sites.
-  virtual double GetTotalEngagementPoints() const = 0;
-};
 
 // Stores and retrieves the engagement score of an origin.
 //
@@ -228,7 +220,7 @@ class SiteEngagementService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AppBannerSettingsHelperTest, SiteEngagementTrigger);
   FRIEND_TEST_ALL_PREFIXES(HostedAppPWAOnlyTest, EngagementHistogram);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Shim class to expose the service to Java.
   friend class SiteEngagementServiceAndroid;
   SiteEngagementServiceAndroid* GetAndroidService() const;
@@ -314,12 +306,12 @@ class SiteEngagementService : public KeyedService,
   void AddObserver(SiteEngagementObserver* observer);
   void RemoveObserver(SiteEngagementObserver* observer);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The clock used to vend times.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SiteEngagementServiceAndroid> android_service_;
 #endif
 

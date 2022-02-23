@@ -23,13 +23,10 @@ class PluginRegistryImpl : public blink::mojom::PluginRegistry {
   void Bind(mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
 
   // blink::mojom::PluginRegistry
-  void GetPlugins(bool refresh,
-                  const url::Origin& main_frame_origin,
-                  GetPluginsCallback callback) override;
+  void GetPlugins(bool refresh, GetPluginsCallback callback) override;
 
  private:
-  void GetPluginsComplete(const url::Origin& main_frame_origin,
-                          GetPluginsCallback callback,
+  void GetPluginsComplete(GetPluginsCallback callback,
                           const std::vector<WebPluginInfo>& all_plugins);
 
   int render_process_id_;

@@ -45,7 +45,7 @@ void AtomicHTMLToken::Show() const {
     case HTMLToken::kEndTag:
       if (self_closing_)
         printf(" selfclosing");
-      FALLTHROUGH;
+      [[fallthrough]];
     case HTMLToken::DOCTYPE:
       printf(" name \"%s\"", name_.GetString().Utf8().c_str());
       break;

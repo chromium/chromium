@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.Scheduler;
 
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncTaskThreadTest {
     private static final String TAG = "AsyncTaskThreadTest";
     private static final boolean DEBUG = false;

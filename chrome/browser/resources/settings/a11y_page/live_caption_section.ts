@@ -15,11 +15,13 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+
+import {getTemplate} from './live_caption_section.html.js';
 
 
 /**
@@ -45,7 +47,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

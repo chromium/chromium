@@ -1,8 +1,7 @@
-<style include="cr-shared-style settings-shared cr-page-host-style">
+<style include="cr-shared-style settings-shared cr-page-host-style iron-flex">
   .banner {
     display: block;
-    margin-inline-end: auto;
-    margin-inline-start: auto;
+    margin: var(--cr-section-vertical-margin) auto;
     width: 120px;
   }
 
@@ -84,6 +83,62 @@
   settings-toggle-button {
     font-weight: 500;
   }
+
+  a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+  }
+
+  .dialog-description {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-dialog [slot=body] .dialog-description:not(:last-of-type) {
+    margin-bottom: 8px;
+  }
+
+  .learn-more-section-title {
+    color: var(--cr-primary-text-color);
+    font-size: 0.875rem; /* 14px */
+  }
+
+  .learn-more-section-subtitle {
+    color: var(--cr-primary-text-color);
+  }
+
+  .ad-personalization-title {
+    align-items: center;
+    column-gap: 20px;
+    display: flex;
+    justify-content: space-between;
+    min-height: 36px;
+    padding-bottom: 8px;
+  }
+
+  .ad-personalization-section-title {
+    font-weight: 500;
+    padding: 8px 0;
+  }
+
+  .ad-personalization-section {
+    padding: 0 0 8px 16px;
+  }
+
+  #trialsCardSettings3 > *:not(:last-child) {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #adPersonalizationBackButton {
+    --cr-icon-button-icon-size: 24px;
+    margin-inline-start: 0;
+  }
+
+  #adPersonalizationRemovedRow {
+    border-top: var(--cr-separator-line);
+    color: var(--cr-primary-text-color);
+    margin-top: 8px;
+    padding-inline-start: 0;
+  }
 </style>
 
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -96,79 +151,284 @@
     <img class="banner" alt=""
         src="chrome://settings/images/privacy_sandbox_banner.svg">
   </picture>
-  <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
-  <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
-  <div class="card">
-    <settings-toggle-button id="apiToggleButton"
-        pref="{{prefs.privacy_sandbox.apis_enabled}}"
-        label="$i18n{privacySandboxPageSettingTitle}"
-        on-change="onApiToggleButtonChange_">
-    </settings-toggle-button>
-    <div class="cr-row continuation">
-      <div class="secondary">
-        $i18n{privacySandboxPageSettingExplanation1Phase2}
+  <template is="dom-if" if="[[privacySandboxSettings3Enabled_]]">
+    <div id="trialsCardSettings3" class="card">
+      <settings-toggle-button id="trialsToggle"
+          pref="{{prefs.privacy_sandbox.apis_enabled_v2}}"
+          label="$i18n{privacySandboxTrialsTitle}"
+          sub-label="$i18n{privacySandboxTrialsSummary}"
+          on-change="onApiToggleButtonChange_">
+      </settings-toggle-button>
+      <cr-link-row id="adPersonalizationRow"
+        start-icon="privacy-sandbox:ads-click"
+        label="$i18n{privacySandboxAdPersonalizationTitle}"
+        on-click="onAdPersonalizationRowClick_">
+        <div slot="sub-label">
+          $i18n{privacySandboxAdPersonalizationSummary}
+          <a id="learnMoreLink" on-click="onLearnMoreClick_">
+            $i18n{learnMore}
+          </a>
+        </div>
+      </cr-link-row>
+      <cr-link-row id="adMeasurementRow"
+        start-icon="privacy-sandbox:insert-chart"
+        label="$i18n{privacySandboxAdMeasurementTitle}"
+        sub-label="$i18n{privacySandboxAdMeasurementSummary}"
+        on-click="onAdMeasurementRowClick_"></cr-link-row>
+      <cr-link-row id="spamAndFraudRow"
+        start-icon="privacy-sandbox:spam-reduction"
+        label="$i18n{privacySandboxSpamAndFraudTitle}"
+        sub-label="$i18n{privacySandboxSpamAndFraudSummary}"
+        on-click="onSpamAndFraudRowClick_"></cr-link-row>
+    </div>
+    <template is="dom-if"
+        if="[[!showFragment_(privacySandboxSettingsViewEnum_.MAIN,
+                privacySandboxSettingsView_)]]" restamp>
+      <cr-dialog id="dialogWrapper" show-on-attach>
+        <template id="learnMoreDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.LEARN_MORE_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div slot="title">$i18n{privacySandboxLearnMoreDialogTitle}</div>
+          <div slot="body">
+            <div class="learn-more-section-title">
+              $i18n{privacySandboxLearnMoreDialogTopicsTitle}
+            </div>
+            <div class="cr-secondary-text">
+              <ul>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataTypes}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataUsage}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataManagement}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+              </ul>
+            </div>
+            <div class="learn-more-section-title">
+              $i18n{privacySandboxLearnMoreDialogFledgeTitle}
+            </div>
+            <div class="cr-secondary-text">
+              <ul>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataTypes}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataUsage}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+                <li>
+                  <span class="learn-more-section-subtitle">
+                    $i18n{privacySandboxLearnMoreDialogDataManagement}
+                  </span>
+                  <!-- TODO(crbug/1286276): Replace this with real string. -->
+                  $i18n{privacySandboxAdMeasurementSummary}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </template>
+        <template id="adPersonalizationDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div class="ad-personalization-title" slot="title">
+            $i18n{privacySandboxAdPersonalizationDialogTitle}
+          </div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxAdPersonalizationDialogDescription}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogTopicsEmpty}
+              <cr-link-row id="adPersonalizationRemovedRow"
+                  label="$i18n{privacySandboxAdPersonalizationDialogRemovedInterestsLabel}"
+                  on-click="onAdPersonalizationRemovedRowClick_">
+              </cr-link-row>
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogFledgeEmpty}
+            </div>
+          </div>
+        </template>
+        <template id="adPersonalizationRemovedDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_REMOVED_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div class="ad-personalization-title" slot="title">
+            <cr-icon-button id="adPersonalizationBackButton"
+                class="icon-arrow-back"
+                on-click="onAdPersonalizationRowClick_">
+            </cr-icon-button>
+            <span class="flex">
+              $i18n{privacySandboxAdPersonalizationDialogTitle}
+            </span>
+          </div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedDescription}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogTopicsTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedTopicsEmpty}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogFledgeTitle}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogRemovedFledgeEmpty}
+            </div>
+          </div>
+        </template>
+        <template id="adMeasurementDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.AD_MEASUREMENT_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div slot="title">$i18n{privacySandboxAdMeasurementDialogTitle}</div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxAdMeasurementDialogDescription}
+            </div>
+            <div id="adMeasurementDialogControlMeasurement"
+                class="dialog-description">
+              $i18nRaw{privacySandboxAdMeasurementDialogControlMeasurement}
+            </div>
+          </div>
+        </template>
+        <template id="spamAndFraudDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.SPAM_AND_FRAUD_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div slot="title">$i18n{privacySandboxSpamAndFraudDialogTitle}</div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription1}
+            </div>
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription2}
+            </div>
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription3}
+            </div>
+          </div>
+        </template>
+        <div slot="button-container">
+          <cr-button id="dialogCloseButton" class="action-button"
+              on-click="onDialogClose_">
+            $i18n{ok}
+          </cr-button>
+        </div>
+      </cr-dialog>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[!privacySandboxSettings3Enabled_]]">
+    <p>$i18nRaw{privacySandboxPageExplanation1Phase2}</p>
+    <p>$i18n{privacySandboxPageExplanation2Phase2}</p>
+    <div id="trialsCard" class="card">
+      <settings-toggle-button id="apiToggleButton"
+          pref="{{prefs.privacy_sandbox.apis_enabled}}"
+          label="$i18n{privacySandboxPageSettingTitle}"
+          on-change="onApiToggleButtonChange_">
+      </settings-toggle-button>
+      <div class="cr-row continuation">
+        <div class="secondary">
+          $i18n{privacySandboxPageSettingExplanation1Phase2}
+        </div>
       </div>
-    </div>
-    <div class="cr-row continuation box-last">
-      <div class="secondary">
-        <ul>
-          <li>
-            <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
-          </li>
-          <li>
-            <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-  <div id="flocCard" class="card">
-    <picture>
-      <source class="card-banner" media="(prefers-color-scheme: dark)"
-          srcset="./images/privacy_sandbox_floc_banner_dark.svg">
-      <img class="card-banner" alt=""
-          src="./images/privacy_sandbox_floc_banner.svg">
-    </picture>
-    <settings-toggle-button id="flocToggleButton"
-        pref="{{prefs.generated.floc_enabled}}"
-        label="$i18n{privacySandboxPageFlocHeading}"
-        on-change="onFlocToggleButtonChange_">
-    </settings-toggle-button>
-    <div id="flocExplanation" class="cr-row continuation">
-      <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
-    </div>
-    <div class="cr-row continuation">
-      <div class="label-wrapper">
-        <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
-        <div id="flocStatus" class="cr-secondary-text">
-          [[flocId_.trialStatus]]
+      <div class="cr-row continuation box-last">
+        <div class="secondary">
+          <ul>
+            <li>
+              <span>$i18n{privacySandboxPageSettingExplanation2Phase2}</span>
+            </li>
+            <li>
+              <span>$i18n{privacySandboxPageSettingExplanation3Phase2}</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
-    <div class="cr-row continuation">
-      <div class="label-wrapper">
-        <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
-        <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+    <div id="flocCard" class="card">
+      <picture>
+        <source class="card-banner" media="(prefers-color-scheme: dark)"
+            srcset="./images/privacy_sandbox_floc_banner_dark.svg">
+        <img class="card-banner" alt=""
+            src="./images/privacy_sandbox_floc_banner.svg">
+      </picture>
+      <settings-toggle-button id="flocToggleButton"
+          pref="{{prefs.generated.floc_enabled}}"
+          label="$i18n{privacySandboxPageFlocHeading}"
+          on-change="onFlocToggleButtonChange_">
+      </settings-toggle-button>
+      <div id="flocExplanation" class="cr-row continuation">
+        <div class="secondary">$i18nRaw{privacySandboxPageFlocExplanation}</div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="label-wrapper">
+          <div class="info-header">$i18n{privacySandboxPageFlocStatus}</div>
+          <div id="flocStatus" class="cr-secondary-text">
+            [[flocId_.trialStatus]]
+          </div>
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="label-wrapper">
+          <div class="info-header">$i18n{privacySandboxPageFlocCohort}</div>
+          <div id="flocId" class="cr-secondary-text">[[flocId_.cohort]]</div>
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="label-wrapper">
+          <div class="info-header">
+            $i18n{privacySandboxPageFlocCohortNextUpdate}
+          </div>
+          <div id="flocUpdatedOn" class="cr-secondary-text">
+            [[flocId_.nextUpdate]]
+          </div>
+        </div>
+      </div>
+      <div class="cr-row continuation">
+        <div class="secondary">
+          $i18n{privacySandboxPageFlocResetExplanation}
+        </div>
+      </div>
+      <div class="cr-row continuation box-last">
+        <cr-button id="resetFlocIdButton" class="cr-button" role="button"
+            disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
+          $i18n{privacySandboxPageFlocResetCohort}
+        </cr-button>
       </div>
     </div>
-    <div class="cr-row continuation">
-      <div class="label-wrapper">
-        <div class="info-header">
-          $i18n{privacySandboxPageFlocCohortNextUpdate}
-        </div>
-        <div id="flocUpdatedOn" class="cr-secondary-text">
-          [[flocId_.nextUpdate]]
-        </div>
-      </div>
-    </div>
-  <div class="cr-row continuation">
-    <div class="secondary">$i18n{privacySandboxPageFlocResetExplanation}</div>
-  </div>
-  <div class="cr-row continuation box-last">
-    <cr-button id="resetFlocIdButton" class="cr-button" role="button"
-        disabled$="[[!flocId_.canReset]]" on-click="onResetFlocClick_">
-      $i18n{privacySandboxPageFlocResetCohort}
-    </cr-button>
-  </div>
+  </template>
 </div>
 <div id="overscroll"></div>

@@ -34,7 +34,7 @@ Status StubDevToolsClient::SetUpDevTools() {
 Status StubDevToolsClient::SendCommand(
     const std::string& method,
     const base::DictionaryValue& params) {
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   return SendCommandAndGetResult(method, params, &result);
 }
 
@@ -61,8 +61,8 @@ Status StubDevToolsClient::SendAsyncCommand(
 Status StubDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
     const base::DictionaryValue& params,
-    std::unique_ptr<base::DictionaryValue>* result) {
-  *result = std::make_unique<base::DictionaryValue>();
+    base::Value* result) {
+  *result = base::Value(base::Value::Type::DICTIONARY);
   return Status(kOk);
 }
 
@@ -70,7 +70,7 @@ Status StubDevToolsClient::SendCommandAndGetResultWithTimeout(
     const std::string& method,
     const base::DictionaryValue& params,
     const Timeout* timeout,
-    std::unique_ptr<base::DictionaryValue>* result) {
+    base::Value* result) {
   return SendCommandAndGetResult(method, params, result);
 }
 

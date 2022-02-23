@@ -21,11 +21,17 @@ const char kAutofillCreditCardUploadDescription[] =
     "Offers uploading Autofilled credit cards to Google Payments after form "
     "submission.";
 
-const char kAutofillEnableOffersInDownstreamName[] =
-    "Enable Autofill offers in downstream";
-const char kAutofillEnableOffersInDownstreamDescription[] =
-    "When enabled, offer data will be retrieved during downstream and shown in "
-    "the dropdown list.";
+const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
+    "Enable sending billing customer number in GetUploadDetails";
+const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =
+    "When enabled the billing customer number will be sent in the "
+    "GetUploadDetails preflight calls.";
+
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[] =
+    "When enabled, sets non-legacy instrument ID in UnmaskCardRequest";
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =
+    "When enabled, UnmaskCardRequest will set the card's non-legacy ID when "
+    "available.";
 
 const char kAutofillFillMerchantPromoCodeFieldsName[] =
     "Enable Autofill of promo code fields in forms";
@@ -66,16 +72,6 @@ const char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
 
-extern const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
-extern const char kLogBreadcrumbsDescription[] =
-    "When enabled, breadcrumb events will be logged.";
-
-const char kSyntheticCrashReportsForUteName[] =
-    "Generate synthetic crash reports for UTE";
-const char kSyntheticCrashReportsForUteDescription[] =
-    "When enabled the app will create synthetic crash report when chrome "
-    "starts up after Unexplained Termination Event (UTE).";
-
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =
@@ -83,18 +79,23 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kCommercePriceTrackingName[] = "Price Tracking";
-const char kCommercePriceTrackingDescription[] =
-    "Allows users to track product prices through Chrome.";
-
-const char kContextMenuActionsRefreshName[] = "Context menu actions refresh";
-const char kContextMenuActionsRefreshDescription[] =
-    "When enabled, context menu actions are updated";
+const char kContentSuggestionsHeaderMigrationName[] =
+    "Content Suggestions header migration";
+const char kContentSuggestionsHeaderMigrationDescription[] =
+    "When enabled, the Content Suggestions header will be logically moved to "
+    "the Discover feed ScrollView";
 
 const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
 const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "
     "When disabled use Breakpad. This flag takes two restarts to take effect";
+
+const char kCredentialProviderExtensionPromoName[] =
+    "Enable the credential provider extension promo";
+const char kCredentialProviderExtensionPromoDescription[] =
+    "When enabled, a new item 'Passwords In Other Apps' item will be available "
+    "Chrome passwords settings, containing promotional instructions to enable"
+    "password autofill using Chrome.";
 
 #if defined(DCHECK_IS_CONFIGURABLE)
 const char kDcheckIsFatalName[] = "DCHECKs are fatal";
@@ -103,17 +104,16 @@ const char kDcheckIsFatalDescription[] =
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-const char kUseDefaultUserAgentInWebClientName[] =
-    "[Refactoring] Let the client choose default mode";
-const char kUseDefaultUserAgentInWebClientDescription[] =
-    "When enabled, the web client will choose the default mode. It is a "
-    "refactoring, no visible impact.";
-
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
 const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
     "When enabled, will show a modified default browser fullscreen modal promo "
     "UI.";
+
+const char kAddSettingForDefaultPageModeName[] = "Let user choose default mode";
+const char kAddSettingForDefaultPageModeDescription[] =
+    "When enabled, the user can choose if they want the page in Desktop or "
+    "Mobile mode.";
 
 const char kDefaultWebViewContextMenuName[] =
     "Use the default WebKit context menus";
@@ -150,11 +150,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kEnableAutofillAccountWalletStorageName[] =
-    "Enable the account data storage for autofill";
-const char kEnableAutofillAccountWalletStorageDescription[] =
-    "Enable the ephemeral storage for account data for autofill.";
-
 const char kEnableAutofillAddressSavePromptAddressVerificationName[] =
     "Autofill Address Save Prompts Address Verification";
 const char kEnableAutofillAddressSavePromptAddressVerificationDescription[] =
@@ -164,12 +159,6 @@ const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
-
-const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[] =
-    "Display save card infobar with account indication information";
-const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
-    "When enabled, UI indicating user's e-mail address will appear at the"
-    "bottom of save card infobar.";
 
 const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
     "Enable discover feed discofeed";
@@ -197,9 +186,15 @@ const char kEnableFREDefaultBrowserScreenTestingDescription[] =
     "This test display the FRE default browser screen and other default "
     "browser promo depending on experiment.";
 
-const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
+const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module with options";
 const char kEnableFREUIModuleIOSDescription[] =
-    "Enable the option of using new FRE UI module to show first run screens.";
+    "Use the new FRE UI module for first run. There are 4 UI options: Identity "
+    "switcher at the TOP or BOTTOM and using OLD or NEW strings set for the "
+    "sign-in sync screen.";
+
+const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
+const char kEnableFullscreenAPIDescription[] =
+    "Enable the Fullscreen API for web content (iOS 15.4+).";
 
 const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
@@ -210,6 +205,10 @@ const char kEnableManualPasswordGenerationName[] =
 const char kEnableManualPasswordGenerationDescription[] =
     "Enable UI that allows to generate a strong password for any password "
     "field";
+
+const char kEnableNewDownloadAPIName[] = "Enable new download API";
+const char kEnableNewDownloadAPIDescription[] =
+    "Enable new download API (restricted to iOS 15.0+).";
 
 const char kEnableOptimizationGuideName[] = "Enable optimization guide";
 const char kEnableOptimizationGuideDescription[] =
@@ -227,6 +226,26 @@ const char kEnableOptimizationHintsFetchingMSBBDescription[] =
     "Enable optimization hints fetching for users who have enabled the 'Make "
     "Searches and Browsing Better' setting.";
 
+const char kEnableUnicornAccountSupportName[] =
+    "Enable Unicorn account support";
+const char kEnableUnicornAccountSupportDescription[] =
+    "Allows users to sign-in with their Unicorn account.";
+
+const char kEnableShortenedPasswordAutoFillInstructionName[] =
+    "Enable shortened instructions to turn on Password AutoFill for Chrome";
+const char kEnableShortenedPasswordAutoFillInstructionDescription[] =
+    "When enabled, the instructions to turn on Password AutoFill will have "
+    "shorter steps and come with a button that links the user to iOS Settings.";
+
+const char kEnableWebChannelsName[] = "Enable WebChannels";
+const char kEnableWebChannelsDescription[] =
+    "Enable folowing content from web and display Following feed on NTP based "
+    "on web channels that users followed.";
+
+const char kEnhancedProtectionName[] = "Enable Enhanced Safe Browsing";
+const char kEnhancedProtectionDescription[] =
+    "Allows users to opt-in to Enhanced Safe Browsing";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
@@ -238,34 +257,20 @@ const char kFillingAcrossAffiliatedWebsitesDescription[] =
     "Enables filling password on a website when there is saved "
     "password on affiliated website.";
 
-const char kEnableWebChannelsName[] = "Enable Web Channels";
-const char kEnableWebChannelsDescription[] =
-    "Enable folowing content from web and display Following feed on NTP based "
-    "on websites that users followed.";
-
 const char kForceDisableExtendedSyncPromosName[] =
     "Disable all extended sync promos";
 const char kForceDisableExtendedSyncPromosDescription[] =
     "When enabled, will not display any extended sync promos";
-
-const char kForceMajorVersion100InUserAgentName[] =
-    "Force major version to 100 in User-Agent";
-const char kForceMajorVersion100InUserAgentDescription[] =
-    "Force the Chrome major version in the User-Agent string to 100, which "
-    "allows testing the 3-digit major version number before the actual M100 "
-    "release. This flag is only available from M96-M99.";
 
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
-const char kCredentialProviderExtensionPromoName[] =
-    "Enable the credential provider extension promo";
-const char kCredentialProviderExtensionPromoDescription[] =
-    "When enabled, a new item 'Passwords In Other Apps' item will be available "
-    "Chrome passwords settings, containing promotional instructions to enable"
-    "password autofill using Chrome.";
+const char kFREMobileIdentityConsistencyName[] = "Display the MICe FRE";
+const char kFREMobileIdentityConsistencyDescription[] =
+    "When enabled, the FRE with MICe (the welcome screen and sign-in screen "
+    "are merged).";
 
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
@@ -295,16 +300,10 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
-const char kIOSLegacyTLSInterstitialsName[] = "Show legacy TLS interstitials";
-const char kIOSLegacyTLSInterstitialsDescription[] =
-    "When enabled, an interstitial will be shown on main-frame navigations "
-    "that use legacy TLS connections, and subresources using legacy TLS "
-    "connections will be blocked.";
-
-const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
-const char kIOSPersistCrashRestoreDescription[] =
-    "When enabled, the Crash Restore Infobar will persist through navigations "
-    "instead of dismissing.";
+const char kIOSEnablePasswordManagerBrandingUpdateName[] =
+    "Enable new Google Password Manager branding";
+const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
+    "Updates icons, strings, and views for Google Password Manager.";
 
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
@@ -321,18 +320,29 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
-const char kSharedHighlightingUseBlocklistIOSName[] =
-    "Shared Highlighting blocklist";
-const char kSharedHighlightingUseBlocklistIOSDescription[] =
-    "Uses a blocklist to disable Shared Highlighting link generation on "
-    "certain sites where personalized or dynamic content or other technical "
-    "restrictions make it unlikely that a URL can be generated and actually "
-    "work when shared.";
+const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
+const char kLazilyCreateWebStateOnRestorationDescription[] =
+    "Create WebState in unrealized state upon session restoration.";
+
+const char kLeakDetectionUnauthenticatedName[] =
+    "Leak detection for signed out users";
+const char kLeakDetectionUnauthenticatedDescription[] =
+    "Enables leak detection feature for signed out users";
 
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
+
+const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
+const char kLogBreadcrumbsDescription[] =
+    "When enabled, breadcrumb events will be logged.";
+
+const char kMediaPermissionsControlName[] =
+    "Camera and Microphone Access Permissions Control";
+const char kMediaPermissionsControlDescription[] =
+    "Enables user control for camera and/or microphone access for a specific "
+    "site through site settings during its lifespan.";
 
 const char kMetrickitCrashReportName[] = "Metrickit crash reports";
 const char kMetrickitCrashReportDescription[] =
@@ -342,17 +352,17 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
+const char kMuteCompromisedPasswordsName[] =
+    "Mute & Unmute compromised passwords in bulk leak check";
+const char kMuteCompromisedPasswordsDescription[] =
+    "Enables muting/unmuting compromised passwords in bulk leak check.";
+
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
 const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
-
-const char kOldSyncStringFREName[] = "Use previous sync screen strings";
-const char kOldSyncStringFREDescription[] =
-    "When enabled, the strings of the previous sync screen are used in the "
-    "new FRE.";
 
 const char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
@@ -389,6 +399,10 @@ const char kOmniboxNewImplementationName[] =
 const char kOmniboxNewImplementationDescription[] =
     "Uses a textfield implementation that doesn't use UILabels internally";
 
+const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
+const char kIOSOmniboxUpdatedPopupUIDescription[] =
+    "Enable the new SwiftUI Popup implementation";
+
 const char kPasswordReuseDetectionName[] =
     "PhishGuard password reuse detection";
 const char kPasswordReuseDetectionDescription[] =
@@ -405,9 +419,15 @@ const char kReadingListTimeToReadDescription[] =
     "When enabled, a Time to Read estimate is added to each Reading List "
     "entry.";
 
-extern const char kRemoveExcessNTPsExperimentName[] =
-    "Remove extra New Tab Pages";
-extern const char kRemoveExcessNTPsExperimentDescription[] =
+const char kRecordSnapshotSizeName[] =
+    "Record the size of image and PDF snapshots in UMA histograms";
+const char kRecordSnapshotSizeDescription[] =
+    "When enabled, the app will record UMA histograms for image and PDF "
+    "snapshots. PDF snaphot will be taken just for the purpose of the "
+    "histogram recording.";
+
+const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
+const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
@@ -427,6 +447,11 @@ const char kSafeBrowsingRealTimeLookupDescription[] =
     "When enabled, navigation URLs are checked using real-time queries to Safe "
     "Browsing servers, subject to an opt-in preference.";
 
+const char kSaveSessionTabsToSeparateFilesName[] =
+    "Enable save tabs to separate files";
+const char kSaveSessionTabsToSeparateFilesDescription[] =
+    "When enabled, each Tab is saved in a separate file.";
+
 const char kScreenTimeIntegrationName[] = "Enables ScreenTime Integration";
 const char kScreenTimeIntegrationDescription[] =
     "Enables integration with ScreenTime in iOS 14.0 and above.";
@@ -436,16 +461,10 @@ const char kSearchHistoryLinkIOSDescription[] =
     "Changes the Clear Browsing Data "
     "UI to display a link to clear search history on My Google Activity.";
 
-const char kSendTabToSelfWhenSignedInName[] = "Send-tab-to-self when signed in";
-const char kSendTabToSelfWhenSignedInDescription[] =
-    "Makes the tab sharing feature also available for users who have \"only\" "
-    "signed-in to their Google Account (as opposed to having enabled Sync).";
-
-const char kSendTabToSelfManageDevicesLinkName[] =
-    "Send-tab-to-self manage devices link";
-const char kSendTabToSelfManageDevicesLinkDescription[] =
-    "Shows a link to manage the user's devices below the device list when "
-    "sharing";
+const char kSendTabToSelfSigninPromoName[] = "Send tab to self sign-in promo";
+const char kSendTabToSelfSigninPromoDescription[] =
+    "Enables a sign-in promo if the user attempts to share a tab while being "
+    "signed out";
 
 const char kSendUmaOverAnyNetwork[] =
     "Send UMA data over any network available.";
@@ -456,6 +475,15 @@ const char kSharedHighlightingIOSName[] = "Enable Shared Highlighting features";
 const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
+
+const char kSingleCellContentSuggestionsName[] =
+    "Use Single Cell for Content Suggestions";
+const char kSingleCellContentSuggestionsDescription[] =
+    "Uses a single cell for all items in the NTP's content suggestions.";
+
+const char kSingleNtpName[] = "Enable Single NTP";
+const char kSingleNtpDescription[] =
+    "When enabled, uses one NTP for all tabs in a Browser";
 
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
@@ -471,6 +499,12 @@ const char kSynthesizedRestoreSessionName[] =
 const char kSynthesizedRestoreSessionDescription[] =
     "Enable instant session restoration by synthesizing WKWebView session "
     "restoration data (iOS15 only).";
+
+const char kSyntheticCrashReportsForUteName[] =
+    "Generate synthetic crash reports for UTE";
+const char kSyntheticCrashReportsForUteDescription[] =
+    "When enabled the app will create synthetic crash report when chrome "
+    "starts up after Unexplained Termination Event (UTE).";
 
 const char kSyncTrustedVaultPassphraseiOSRPCName[] =
     "Enable RPC for sync trusted vault passphrase.";
@@ -496,15 +530,16 @@ const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
     "icon or the app switcher.";
 
-const char kTabsBulkActionsName[] = "Enable Tab Grid Bulk Actions";
-const char kTabsBulkActionsDescription[] =
-    "Enables the selection mode in the Tab grid where users can perform "
-    "actions on multiple tabs at once for iOS 13 and above.";
-
-extern const char kTabsSearchName[] = "Enable Tabs Search";
-extern const char kTabsSearchDescription[] =
+const char kTabsSearchName[] = "Enable Tabs Search";
+const char kTabsSearchDescription[] =
     "Enables the search mode in the Tab grid where users can search open tabs "
     "or recent tabs.";
+
+const char kTabsSearchRegularResultsSuggestedActionsName[] =
+    "Enable Tabs Search regular results suggested actions section";
+const char kTabsSearchRegularResultsSuggestedActionsDescription[] =
+    "Enables the suggested actions section in the regular tabs page when the "
+    "search mode is enabled.";
 
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
@@ -517,16 +552,20 @@ const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
     "When enabled, the entry points to history UI from Incognito mode will be "
     "removed.";
 
-const char kURLBlocklistIOSName[] = "URL Blocklist Policy";
-const char kURLBlocklistIOSDescription[] =
-    "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
-    "enterprise policies.";
-
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =
     "When enabled, use Lens to search for images from the long press context "
     "menu when Google is the selected search engine.";
+
+const char kUseSFSymbolsSamplesName[] = "Replace Image by SFSymbols";
+const char kUseSFSymbolsSamplesDescription[] =
+    "When enabled, some images (toolbar...) are replaced by SFSymbols";
+
+const char kUseUIKitPopupMenuName[] = "Replace popup menus by native ones";
+const char kUseUIKitPopupMenuDescription[] =
+    "When enabled, the popup menus displayed for example when long pressing on "
+    "a toolbar button are replaced by native ones (UIKit).";
 
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
@@ -537,14 +576,6 @@ const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[] =
 const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
-
-const char kEnableNewDownloadAPIName[] = "Enable new download API";
-const char kEnableNewDownloadAPIDescription[] =
-    "Enable new download API (restricted to iOS 15.0+).";
-
-const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
-const char kLazilyCreateWebStateOnRestorationDescription[] =
-    "Create WebState in unrealized state upon session restoration.";
 
 const char kWebPageDefaultZoomFromDynamicTypeName[] =
     "Use dynamic type size for default text zoom level";
@@ -557,28 +588,18 @@ const char kWebPageAlternativeTextZoomName[] =
 const char kWebPageAlternativeTextZoomDescription[] =
     "When enabled, switches the method used to zoom web pages.";
 
-const char kWebViewNativeContextMenuName[] =
-    "Use the native Context Menus in the WebView";
-const char kWebViewNativeContextMenuDescription[] =
-    "When enabled, the native context menu are displayed when the user long "
-    "press on a link or an image.";
-
 const char kWebViewNativeContextMenuPhase2Name[] =
     "Context Menu with non-live preview";
 const char kWebViewNativeContextMenuPhase2Description[] =
     "When enabled, the context menu displayed when long pressing on a link or "
     "an image has a non-live preview.";
 
-const char kRecordSnapshotSizeName[] =
-    "Record the size of image and PDF snapshots in UMA histograms";
-const char kRecordSnapshotSizeDescription[] =
-    "When enabled, the app will record UMA histograms for image and PDF "
-    "snapshots. PDF snaphot will be taken just for the purpose of the "
-    "histogram recording.";
+const char kWebViewNativeContextMenuPhase2ScreenshotName[] =
+    "Screenshot preview animation for Context Menu";
 
-const char kSingleNtpName[] = "Enable Single NTP";
-const char kSingleNtpDescription[] =
-    "When enabled, uses one NTP for all tabs in a Browser";
+const char kWebViewNativeContextMenuPhase2ScreenshotDescription[] =
+    "When enabled with phase2, uses a screenshot as transition animation to "
+    "the context menu.";
 
 // Please insert your name/description above in alphabetical order.
 

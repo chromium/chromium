@@ -158,10 +158,9 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
       base::FeatureList::IsEnabled(features::kWebGPUService);
-  gpu_preferences.enable_webgpu_spirv =
+  gpu_preferences.enable_unsafe_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU);
-  gpu_preferences.force_webgpu_compat =
-      command_line->HasSwitch(switches::kForceWebGPUCompat);
+  gpu_preferences.use_webgpu_adapter = ParseWebGPUAdapterName(command_line);
   if (command_line->HasSwitch(switches::kEnableDawnBackendValidation)) {
     auto value = command_line->GetSwitchValueASCII(
         switches::kEnableDawnBackendValidation);
@@ -199,18 +198,21 @@ GrContextType ParseGrContextType() {
   if (base::FeatureList::IsEnabled(features::kSkiaDawn))
     return GrContextType::kDawn;
 #endif
-#if defined(OS_MAC)
-  return base::FeatureList::IsEnabled(features::kMetal) ? GrContextType::kMetal
-                                                        : GrContextType::kGL;
-#else
-  return features::IsUsingVulkan() ? GrContextType::kVulkan
-                                   : GrContextType::kGL;
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kMetal))
+    return GrContextType::kMetal;
 #endif
+
+  if (features::IsUsingVulkan())
+    return GrContextType::kVulkan;
+
+  return GrContextType::kGL;
 }
 
 VulkanImplementationName ParseVulkanImplementationName(
     const base::CommandLine* command_line) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (command_line->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan) &&
       base::FeatureList::IsEnabled(features::kWebViewVulkan)) {
     return VulkanImplementationName::kForcedNative;
@@ -246,6 +248,26 @@ VulkanImplementationName ParseVulkanImplementationName(
   // GrContext is not going to use Vulkan.
   return VulkanImplementationName::kNone;
 #endif
+}
+
+WebGPUAdapterName ParseWebGPUAdapterName(
+    const base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kUseWebGPUAdapter)) {
+    auto value = command_line->GetSwitchValueASCII(switches::kUseWebGPUAdapter);
+    if (value.empty()) {
+      return WebGPUAdapterName::kDefault;
+    } else if (value == "compat") {
+      return WebGPUAdapterName::kCompat;
+    } else if (value == "swiftshader") {
+      return WebGPUAdapterName::kSwiftShader;
+    } else if (value == "default") {
+      return WebGPUAdapterName::kDefault;
+    } else {
+      DLOG(ERROR) << "Invalid switch " << switches::kUseWebGPUAdapter << "="
+                  << value << ".";
+    }
+  }
+  return WebGPUAdapterName::kDefault;
 }
 
 }  // namespace gles2

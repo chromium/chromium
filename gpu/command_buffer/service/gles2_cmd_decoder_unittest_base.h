@@ -11,6 +11,7 @@
 #include <array>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -117,12 +118,13 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
 
   template <typename T>
   T GetSharedMemoryAs() {
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   template <typename T>
   T GetSharedMemoryAsWithOffset(uint32_t offset) {
-    void* ptr = reinterpret_cast<int8_t*>(shared_memory_address_) + offset;
+    void* ptr =
+        reinterpret_cast<int8_t*>(shared_memory_address_.get()) + offset;
     return reinterpret_cast<T>(ptr);
   }
 
@@ -721,8 +723,8 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
 
   int32_t shared_memory_id_;
   uint32_t shared_memory_offset_;
-  void* shared_memory_address_;
-  void* shared_memory_base_;
+  raw_ptr<void> shared_memory_address_;
+  raw_ptr<void> shared_memory_base_;
 
   GLuint service_renderbuffer_id_;
   bool service_renderbuffer_valid_;
@@ -806,8 +808,9 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   MockGLStates gl_states_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  MockCopyTextureResourceManager* copy_texture_manager_;     // not owned
-  MockCopyTexImageResourceManager* copy_tex_image_blitter_;  // not owned
+  raw_ptr<MockCopyTextureResourceManager> copy_texture_manager_;  // not owned
+  raw_ptr<MockCopyTexImageResourceManager>
+      copy_tex_image_blitter_;  // not owned
 };
 
 class GLES2DecoderWithShaderTestBase : public GLES2DecoderTestBase {
@@ -895,18 +898,19 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
 
   template <typename T>
   T GetSharedMemoryAs() {
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   template <typename T>
   T GetSharedMemoryAsWithSize(size_t* out_shmem_size) {
     *out_shmem_size = shared_memory_size_;
-    return reinterpret_cast<T>(shared_memory_address_);
+    return reinterpret_cast<T>(shared_memory_address_.get());
   }
 
   template <typename T>
   T GetSharedMemoryAsWithOffset(uint32_t offset) {
-    void* ptr = reinterpret_cast<int8_t*>(shared_memory_address_) + offset;
+    void* ptr =
+        reinterpret_cast<int8_t*>(shared_memory_address_.get()) + offset;
     return reinterpret_cast<T>(ptr);
   }
 
@@ -915,7 +919,8 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
                                        size_t* out_shmem_size) {
     EXPECT_LT(offset, shared_memory_size_);
     *out_shmem_size = shared_memory_size_ - offset;
-    void* ptr = reinterpret_cast<int8_t*>(shared_memory_address_) + offset;
+    void* ptr =
+        reinterpret_cast<int8_t*>(shared_memory_address_.get()) + offset;
     return reinterpret_cast<T>(ptr);
   }
 
@@ -1008,8 +1013,8 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
 
   int32_t shared_memory_id_;
   uint32_t shared_memory_offset_;
-  void* shared_memory_address_;
-  void* shared_memory_base_;
+  raw_ptr<void> shared_memory_address_;
+  raw_ptr<void> shared_memory_base_;
   size_t shared_memory_size_;
 
   uint32_t immediate_buffer_[64];

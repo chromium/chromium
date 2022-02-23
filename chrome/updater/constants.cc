@@ -4,6 +4,7 @@
 
 #include "chrome/updater/constants.h"
 
+#include "build/build_config.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
@@ -16,6 +17,7 @@ const char kNullVersion[] = "0.0.0.0";
 
 // Command line arguments.
 const char kServerSwitch[] = "server";
+const char kWindowsServiceSwitch[] = "windows-service";
 const char kComServiceSwitch[] = "com-service";
 const char kCrashMeSwitch[] = "crash-me";
 const char kCrashHandlerSwitch[] = "crash-handler";
@@ -31,11 +33,11 @@ const char kNoRateLimitSwitch[] = "no-rate-limit";
 const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kLoggingModuleSwitchValue[] =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     "*/chrome/updater/*=2,*/components/winhttp/*=2";
 #else
     "*/chrome/updater/*=2,*/components/update_client/*=2";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
@@ -46,9 +48,19 @@ const char kServerServiceSwitch[] = "service";
 const char kServerUpdateServiceInternalSwitchValue[] = "update-internal";
 const char kServerUpdateServiceSwitchValue[] = "update";
 
-#if defined(OS_WIN)
+// Recovery command line arguments.
+const char kRecoverSwitch[] = "recover";
+const char kBrowserVersionSwitch[] = "browser-version";
+const char kSessionIdSwitch[] = "sessionid";
+const char kAppGuidSwitch[] = "appguid";
+
+#if BUILDFLAG(IS_WIN)
 const char kInstallFromOutDir[] = "install-from-out-dir";
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
+
+const char kHealthCheckSwitch[] = "healthcheck";
+
+const char kHandoffSwitch[] = "handoff";
 
 // Path names.
 const char kAppsDir[] = "apps";
@@ -59,6 +71,7 @@ const char kDevOverrideKeyUrl[] = "url";
 const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
 const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";
+const char kDevOverrideKeyCrxVerifierFormat[] = "crx_verifier_format";
 
 // Developer override file name, relative to app data directory.
 const char kDevOverrideFileName[] = "overrides.json";
@@ -73,9 +86,9 @@ const char kProxyModeSystem[] = "system";
 // Specifies that urls that can be cached by proxies are preferred.
 const char kDownloadPreferenceCacheable[] = "cacheable";
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // The user defaults suite name.
 const char kUserDefaultsSuiteName[] = MAC_BUNDLE_IDENTIFIER_STRING ".defaults";
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace updater

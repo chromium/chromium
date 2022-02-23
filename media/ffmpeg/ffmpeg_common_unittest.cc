@@ -323,7 +323,58 @@ TEST_F(FFmpegCommonTest, VerifyH264Profile) {
     }
   }
 }
-#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+TEST_F(FFmpegCommonTest, VerifyH265MainProfile) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(GetTestDataFilePath("bear-1280x720-hevc.mp4")));
+  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+
+  for (size_t i = 0; i < format_context->nb_streams; ++i) {
+    AVStream* stream = format_context->streams[i];
+    AVCodecParameters* codec_parameters = stream->codecpar;
+    AVMediaType codec_type = codec_parameters->codec_type;
+
+    if (codec_type == AVMEDIA_TYPE_VIDEO) {
+      VideoDecoderConfig video_config;
+      EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+      EXPECT_EQ(HEVCPROFILE_MAIN, video_config.profile());
+    } else {
+      // Only process video.
+      continue;
+    }
+  }
+}
+TEST_F(FFmpegCommonTest, VerifyH265Main10Profile) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(
+      file.Initialize(GetTestDataFilePath("bear-1280x720-hevc-10bit.mp4")));
+  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+
+  for (size_t i = 0; i < format_context->nb_streams; ++i) {
+    AVStream* stream = format_context->streams[i];
+    AVCodecParameters* codec_parameters = stream->codecpar;
+    AVMediaType codec_type = codec_parameters->codec_type;
+
+    if (codec_type == AVMEDIA_TYPE_VIDEO) {
+      VideoDecoderConfig video_config;
+      EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+      EXPECT_EQ(HEVCPROFILE_MAIN10, video_config.profile());
+    } else {
+      // Only process video.
+      continue;
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Verifies that the HDR Metadata and VideoColorSpace are correctly parsed.
 TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/net/secure_dns_config.h"
 
+#include "chrome/browser/net/secure_dns_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,13 +31,13 @@ TEST(SecureDnsConfig, ModeToString) {
 }
 
 TEST(SecureDnsConfig, Constructor) {
-  std::vector<net::DnsOverHttpsServerConfig> servers{
-      {{"https://template1", false}, {"https://template2", true}}};
+  net::DnsOverHttpsConfig doh_config = *net::DnsOverHttpsConfig::FromString(
+      "https://template1 https://template2/{?dns}");
   SecureDnsConfig config(
-      net::SecureDnsMode::kSecure, servers,
+      net::SecureDnsMode::kSecure, doh_config,
       SecureDnsConfig::ManagementMode::kDisabledParentalControls);
   EXPECT_EQ(net::SecureDnsMode::kSecure, config.mode());
-  EXPECT_THAT(config.servers(), testing::ElementsAreArray(servers));
+  EXPECT_EQ(doh_config, config.doh_servers());
   EXPECT_EQ(SecureDnsConfig::ManagementMode::kDisabledParentalControls,
             config.management_mode());
 }

@@ -16,15 +16,13 @@ namespace cdm {
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 void AddAndroidWidevine(
-    std::vector<std::unique_ptr<media::KeySystemProperties>>*
-        concrete_key_systems);
+    std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems);
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 // Add platform-supported key systems which are not explicitly handled
 // by Chrome.
 void AddAndroidPlatformKeySystems(
-    std::vector<std::unique_ptr<media::KeySystemProperties>>*
-        concrete_key_systems);
+    std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems);
 
 // Query key system property in browser process.
 SupportedKeySystemResponse QueryKeySystemSupport(const std::string& key_system);

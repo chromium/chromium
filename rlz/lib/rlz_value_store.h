@@ -15,11 +15,11 @@
 #include "build/build_config.h"
 #include "rlz/lib/rlz_enums.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "rlz/win/lib/lib_mutex.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -101,14 +101,14 @@ class ScopedRlzValueStoreLock {
 
  private:
   std::unique_ptr<RlzValueStore> store_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   LibMutex lock_;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool autorelease_pool_;
 #endif
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 namespace testing {
 // Prefix |directory| to the path where the RLZ data file lives, for tests.
 void SetRlzStoreDirectory(const base::FilePath& directory);
@@ -116,7 +116,7 @@ void SetRlzStoreDirectory(const base::FilePath& directory);
 // Returns the path of the file used as data store.
 std::string RlzStoreFilenameStr();
 }  // namespace testing
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace rlz_lib
 

@@ -1,5 +1,9 @@
+# Primary owners
+bfranz@chromium.org
+
+# Backup owners
 apotapchuk@chromium.org
 anqing@chromium.org
 
-# Policy stack owners.
+# Policy stack owners
 file://chrome/browser/ash/policy/OWNERS

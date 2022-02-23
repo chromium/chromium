@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/profiler/stack_sampling_profiler_test_util.h"
+#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -20,14 +20,14 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 #include "base/android/apk_assets.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/profiler/chrome_unwinder_android.h"
 #include "base/profiler/native_unwinder_android.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows doesn't provide an alloca function like Linux does.
 // Fortunately, it provides _alloca, which functions identically.
 #include <malloc.h>
@@ -79,7 +79,7 @@ class TestProfileBuilder : public ProfileBuilder {
   }
 
  private:
-  ModuleCache* const module_cache_;
+  const raw_ptr<ModuleCache> module_cache_;
   CompletedCallback callback_;
   std::vector<Frame> sample_;
 };
@@ -91,11 +91,10 @@ void OtherLibraryCallback(void* arg) {
   std::move(*wait_for_sample).Run();
 
   // Prevent tail call.
-  volatile int i = 0;
-  ALLOW_UNUSED_LOCAL(i);
+  [[maybe_unused]] volatile int i = 0;
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
     uintptr_t exclude_module_with_base_address) {
   class NativeUnwinderAndroidForTesting : public NativeUnwinderAndroid {
@@ -154,7 +153,7 @@ std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
   return std::make_unique<ChromeUnwinderAndroidForTesting>(
       std::move(cfi_file), std::move(cfi_table), chrome_module_base_address);
 }
-#endif  // #if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#endif  // #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 
 }  // namespace
 
@@ -394,8 +393,13 @@ NativeLibrary LoadOtherLibrary() {
   // macros in a function returning non-null.
   const auto load = [](NativeLibrary* library) {
     FilePath other_library_path;
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1262430): Find a solution that works across platforms.
+    ASSERT_TRUE(PathService::Get(DIR_ASSETS, &other_library_path));
+#else
     // The module is next to the test module rather than with test data.
     ASSERT_TRUE(PathService::Get(DIR_MODULE, &other_library_path));
+#endif  // BUILDFLAG(IS_FUCHSIA)
     other_library_path = other_library_path.AppendASCII(
         GetLoadableModuleName("base_profiler_test_support_library"));
     NativeLibraryLoadError load_error;
@@ -419,7 +423,7 @@ uintptr_t GetAddressInOtherLibrary(NativeLibrary library) {
 
 StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
     ModuleCache* module_cache) {
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
   std::vector<std::unique_ptr<Unwinder>> unwinders;
   unwinders.push_back(CreateNativeUnwinderAndroidForTesting(
       reinterpret_cast<uintptr_t>(&__executable_start)));
@@ -435,4 +439,23 @@ StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactoryForTesting(
 #endif
 }
 
+uintptr_t TestModule::GetBaseAddress() const {
+  return base_address_;
+}
+std::string TestModule::GetId() const {
+  return id_;
+}
+FilePath TestModule::GetDebugBasename() const {
+  return debug_basename_;
+}
+size_t TestModule::GetSize() const {
+  return size_;
+}
+bool TestModule::IsNative() const {
+  return is_native_;
+}
+
+bool operator==(const Frame& a, const Frame& b) {
+  return a.instruction_pointer == b.instruction_pointer && a.module == b.module;
+}
 }  // namespace base

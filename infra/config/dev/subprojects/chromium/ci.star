@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os")
+load("//lib/builder_config.star", "builder_config")
 
 luci.bucket(
     name = "ci",
@@ -20,7 +21,7 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
-            groups = "google/luci-task-force@google.com",
+            groups = "project-chromium-admins",
         ),
     ],
 )
@@ -42,7 +43,7 @@ defaults.build_numbers.set(True)
 defaults.builder_group.set("chromium.dev")
 defaults.builderless.set(None)
 defaults.cpu.set(cpu.X86_64)
-defaults.executable.set(luci.recipe(name = "swarming/staging"))
+defaults.executable.set("recipe:swarming/staging")
 defaults.execution_timeout.set(3 * time.hour)
 defaults.os.set(os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
 defaults.service_account.set(
@@ -96,24 +97,12 @@ ci_builder(
 
 ci_builder(
     name = "win-rel-swarming",
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_10,
     goma_enable_ats = True,
 )
 
-## builders using swarming staging instance
-
-def ci_builder_staging(**kwargs):
-    return ci_builder(
-        swarming_host = "chromium-swarm-staging.appspot.com",
-        **kwargs
-    )
-
-ci_builder_staging(
-    name = "linux-rel-swarming-staging",
-)
-
-ci_builder_staging(
-    name = "win-rel-swarming-staging",
-    os = os.WINDOWS_DEFAULT,
+ci_builder(
+    name = "win11-rel-swarming",
+    os = os.WINDOWS_11,
     goma_enable_ats = True,
 )

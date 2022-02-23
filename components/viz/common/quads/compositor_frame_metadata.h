@@ -28,10 +28,10 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace viz {
 
@@ -73,7 +73,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Scroll offset and scale of the root layer. This can be used for tasks
   // like positioning windowed plugins.
-  gfx::Vector2dF root_scroll_offset;
+  gfx::PointF root_scroll_offset;
   float page_scale_factor = 0.f;
 
   gfx::SizeF scrollable_viewport_size;

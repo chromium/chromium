@@ -65,27 +65,6 @@
 #error "Unsupported platform"
 #endif
 
-#if defined(__native_client_nonsfi__)
-#if !defined(__i386__) && !defined(__arm__)
-#error "Unsupported platform"
-#endif
-
-#include <signal.h>
-
-struct LinuxSigInfo {
-  int si_signo;
-  int si_errno;
-  int si_code;
-
-  // Extra data is followed by the |si_code|. The length depends on the
-  // signal number.
-  char _sifields[1];
-};
-
-#include "sandbox/linux/system_headers/linux_ucontext.h"
-
-#else  // !defined(__native_client_nonsfi__)
-
 #include <signal.h>
 
 static_assert(LINUX_SIGHUP == SIGHUP, "LINUX_SIGHUP == SIGHUP");
@@ -109,8 +88,6 @@ static_assert(LINUX_SA_RESTART == SA_RESTART, "LINUX_SA_RESTART == SA_RESTART");
 static_assert(LINUX_SIG_DFL == SIG_DFL, "LINUX_SIG_DFL == SIG_DFL");
 
 typedef siginfo_t LinuxSigInfo;
-
-#endif  // !defined(__native_client_nonsfi__)
 
 // struct sigset_t is different size in PNaCl from the Linux's.
 #if (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))

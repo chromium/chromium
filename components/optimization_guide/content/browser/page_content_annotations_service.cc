@@ -4,14 +4,22 @@
 
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros_local.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/timer/timer.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/optimization_guide/core/local_page_entities_metadata_provider.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -71,26 +79,61 @@ void MaybeRecordVisibilityUKM(
 }
 #endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
+const char kDummyTextBlob[] =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+    "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim "
+    "veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea "
+    "commodo consequat. Duis aute irure dolor in reprehenderit in voluptate "
+    "velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint "
+    "occaecat cupidatat non proident, sunt in culpa qui officia deserunt "
+    "mollit anim id est laborum";
+
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
+    const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    leveldb_proto::ProtoDatabaseProvider* database_provider,
+    const base::FilePath& database_dir,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : last_annotated_history_visits_(
-          features::MaxContentAnnotationRequestsCached()) {
+          features::MaxContentAnnotationRequestsCached()),
+      annotated_text_cache_(features::MaxVisitAnnotationCacheSize()) {
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service);
   history_service_ = history_service;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
-      optimization_guide_model_provider);
+      application_locale, optimization_guide_model_provider);
+  annotator_ = model_manager_.get();
 #endif
+
+  if (features::UseLocalPageEntitiesMetadataProvider()) {
+    local_page_entities_metadata_provider_ =
+        std::make_unique<LocalPageEntitiesMetadataProvider>();
+    local_page_entities_metadata_provider_->Initialize(
+        database_provider, database_dir, background_task_runner);
+  }
+
+  if (features::BatchAnnotationsValidationEnabled()) {
+    // Normally the caller would do this, but we are our own caller.
+    RequestAndNotifyWhenModelAvailable(AnnotationType::kContentVisibility,
+                                       base::DoNothing());
+
+    validation_timer_ = std::make_unique<base::OneShotTimer>(
+        base::DefaultTickClock::GetInstance());
+    validation_timer_->Start(
+        FROM_HERE, features::BatchAnnotationValidationStartupDelay(),
+        base::BindRepeating(
+            &PageContentAnnotationsService::RunBatchAnnotationValidation,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
 
-void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
-                                             const std::string& text) {
+void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
   if (last_annotated_history_visits_.Peek(visit) !=
       last_annotated_history_visits_.end()) {
     // We have already been requested to annotate this visit, so don't submit
@@ -100,16 +143,96 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
   last_annotated_history_visits_.Put(visit, true);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  model_manager_->Annotate(
-      text,
-      base::BindOnce(&PageContentAnnotationsService::OnPageContentAnnotated,
-                     weak_ptr_factory_.GetWeakPtr(), visit));
+  if (!visit.text_to_annotate)
+    return;
+  // Used for testing.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "PageContentAnnotations.AnnotateVisit.AnnotationRequested", true);
+
+  auto it = annotated_text_cache_.Peek(*visit.text_to_annotate);
+  if (it != annotated_text_cache_.end()) {
+    // We have annotations the text for this visit, so return that immediately
+    // rather than re-executing the model.
+    //
+    // TODO(crbug.com/1291275): If the model was updated, the cached value could
+    // be stale so we should invalidate the cache on model updates.
+    OnPageContentAnnotated(visit, it->second);
+    base::UmaHistogramBoolean(
+        "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+        true);
+    return;
+  }
+  if (switches::ShouldLogPageContentAnnotationsInput()) {
+    LOG(ERROR) << "Adding annotation job: \n"
+               << "URL: " << visit.url << "\n"
+               << "Text: " << visit.text_to_annotate.value_or(std::string());
+  }
+  visits_to_annotate_.emplace_back(visit);
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+      false);
+  if (visits_to_annotate_.size() >= features::AnnotateVisitBatchSize()) {
+    if (current_visit_annotation_batch_.empty()) {
+      // Used for testing.
+      LOCAL_HISTOGRAM_BOOLEAN(
+          "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true);
+      current_visit_annotation_batch_ = std::move(visits_to_annotate_);
+      AnnotateVisitBatch();
+      return;
+    }
+    // The queue is full and an batch annotation is actively being done so
+    // we will remove the "oldest" visit.
+    visits_to_annotate_.erase(visits_to_annotate_.begin());
+    // Used for testing.
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "PageContentAnnotations.AnnotateVisit.QueueFullVisitDropped", true);
+  }
+  // Used for testing.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "PageContentAnnotations.AnnotateVisit.AnnotationRequestQueued", true);
 #endif
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void PageContentAnnotationsService::AnnotateVisitBatch() {
+  DCHECK(!current_visit_annotation_batch_.empty());
+
+  if (switches::StopHistoryVisitBatchAnnotateForTesting()) {
+    // Code beyond this is tested in multiple places. This just ensures the
+    // calls up to this point can be more easily configured.
+    return;
+  }
+
+  if (current_visit_annotation_batch_.empty()) {
+    return;
+  }
+  auto visit = current_visit_annotation_batch_.back();
+  DCHECK(visit.text_to_annotate);
+  if (visit.text_to_annotate) {
+    model_manager_->Annotate(
+        *(visit.text_to_annotate),
+        base::BindOnce(&PageContentAnnotationsService::OnBatchVisitAnnotated,
+                       weak_ptr_factory_.GetWeakPtr(), visit));
+  }
+}
+
+void PageContentAnnotationsService::OnBatchVisitAnnotated(
+    const HistoryVisit& visit,
+    const absl::optional<history::VisitContentModelAnnotations>&
+        content_annotations) {
+  OnPageContentAnnotated(visit, content_annotations);
+  DCHECK_EQ(visit.navigation_id,
+            current_visit_annotation_batch_.back().navigation_id);
+  current_visit_annotation_batch_.pop_back();
+  if (!current_visit_annotation_batch_.empty()) {
+    AnnotateVisitBatch();
+  }
+}
+#endif
+
 void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
-    std::unique_ptr<PageContentAnnotator> annotator) {
-  annotator_ = std::move(annotator);
+    PageContentAnnotator* annotator) {
+  annotator_ = annotator;
 }
 
 void PageContentAnnotationsService::BatchAnnotate(
@@ -117,11 +240,41 @@ void PageContentAnnotationsService::BatchAnnotate(
     const std::vector<std::string>& inputs,
     AnnotationType annotation_type) {
   if (!annotator_) {
-    std::move(callback).Run(CreateEmptyBatchAnnotationResultsWithStatus(
-        inputs, ExecutionStatus::kErrorInternalError));
+    std::move(callback).Run(CreateEmptyBatchAnnotationResults(inputs));
     return;
   }
   annotator_->Annotate(std::move(callback), inputs, annotation_type);
+}
+
+absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
+    AnnotationType type) const {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  DCHECK(model_manager_);
+  return model_manager_->GetModelInfoForType(type);
+#else
+  return absl::nullopt;
+#endif
+}
+
+void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
+    AnnotationType type,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  DCHECK(model_manager_);
+  model_manager_->RequestAndNotifyWhenModelAvailable(type, std::move(callback));
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
+void PageContentAnnotationsService::PersistSearchMetadata(
+    const HistoryVisit& visit,
+    const SearchMetadata& search_metadata) {
+  QueryURL(visit,
+           base::BindOnce(&history::HistoryService::AddSearchMetadataForVisit,
+                          history_service_->AsWeakPtr(),
+                          search_metadata.normalized_url,
+                          search_metadata.search_terms));
 }
 
 void PageContentAnnotationsService::ExtractRelatedSearches(
@@ -144,6 +297,10 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
   if (!content_annotations)
     return;
 
+  if (annotated_text_cache_.Peek(*visit.text_to_annotate) ==
+      annotated_text_cache_.end()) {
+    annotated_text_cache_.Put(*visit.text_to_annotate, *content_annotations);
+  }
   MaybeRecordVisibilityUKM(visit, content_annotations);
 
   if (!features::ShouldWriteContentAnnotationsToHistoryService())
@@ -233,18 +390,16 @@ void PageContentAnnotationsService::OnURLQueried(
       did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound);
 }
 
-absl::optional<int64_t>
-PageContentAnnotationsService::GetPageTopicsModelVersion() const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return model_manager_->GetPageTopicsModelVersion();
-#else
-  return absl::nullopt;
-#endif
-}
-
 void PageContentAnnotationsService::GetMetadataForEntityId(
     const std::string& entity_id,
     EntityMetadataRetrievedCallback callback) {
+  if (features::UseLocalPageEntitiesMetadataProvider()) {
+    DCHECK(local_page_entities_metadata_provider_);
+    local_page_entities_metadata_provider_->GetMetadataForEntityId(
+        entity_id, std::move(callback));
+    return;
+  }
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
 #else
@@ -252,14 +407,63 @@ void PageContentAnnotationsService::GetMetadataForEntityId(
 #endif
 }
 
+void PageContentAnnotationsService::PersistRemotePageEntities(
+    const HistoryVisit& history_visit,
+    const std::vector<history::VisitContentModelAnnotations::Category>&
+        entities) {
+  history::VisitContentModelAnnotations annotations;
+  annotations.entities = entities;
+  QueryURL(history_visit,
+           base::BindOnce(
+               &history::HistoryService::AddContentModelAnnotationsForVisit,
+               history_service_->AsWeakPtr(), annotations));
+}
+
+void PageContentAnnotationsService::RunBatchAnnotationValidation() {
+  DCHECK(features::BatchAnnotationsValidationEnabled());
+  DCHECK(validation_timer_);
+  validation_timer_.reset();
+
+  std::vector<std::string> dummy_inputs;
+  dummy_inputs.reserve(features::BatchAnnotationsValidationBatchSize());
+  for (size_t i = 0; i < features::BatchAnnotationsValidationBatchSize(); i++) {
+    // Pick a random substring of the dummy blob so that we can't do any caching
+    // or deduping.
+    size_t half_length = std::strlen(kDummyTextBlob) / 2;
+    size_t rand_start = base::RandInt(0, half_length - 1);
+    dummy_inputs.emplace_back(
+        std::string(kDummyTextBlob + rand_start, half_length));
+  }
+
+  LOCAL_HISTOGRAM_COUNTS_100(
+      "OptimizationGuide.PageContentAnnotationsService.ValidationRun",
+      dummy_inputs.size());
+
+  BatchAnnotate(base::DoNothing(), dummy_inputs,
+                AnnotationType::kContentVisibility);
+}
+
 // static
 HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
     content::WebContents* web_contents,
     int64_t navigation_id) {
-  HistoryVisit visit = {
+  HistoryVisit visit(
       web_contents->GetController().GetLastCommittedEntry()->GetTimestamp(),
-      web_contents->GetLastCommittedURL(), navigation_id};
+      web_contents->GetLastCommittedURL(), navigation_id);
   return visit;
 }
+
+HistoryVisit::HistoryVisit() = default;
+
+HistoryVisit::HistoryVisit(base::Time nav_entry_timestamp,
+                           GURL url,
+                           int64_t navigation_id) {
+  this->nav_entry_timestamp = nav_entry_timestamp;
+  this->url = url;
+  this->navigation_id = navigation_id;
+}
+
+HistoryVisit::~HistoryVisit() = default;
+HistoryVisit::HistoryVisit(const HistoryVisit&) = default;
 
 }  // namespace optimization_guide

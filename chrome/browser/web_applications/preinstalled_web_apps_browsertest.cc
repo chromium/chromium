@@ -60,13 +60,13 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     const char* launch_url;
   } kOfflineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {
         kGoogleCalendarAppId,
         "https://calendar.google.com/calendar/installwebapp?usp=chrome_default",
         "https://calendar.google.com/calendar/r?usp=installed_webapp",
     },
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     {
         kGoogleDocsAppId,
         "https://docs.google.com/document/installwebapp?usp=chrome_default",
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     const char* install_url;
   } kOnlineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     {
         "https://mail.google.com/chat/download?usp=chrome_default",
     },
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     {
         "https://calculator.apps.chrome/install",
     },
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   size_t kOnlineOnlyExpectedCount =
@@ -133,13 +133,14 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
                         kOfflineOnlyExpectedCount + kOnlineOnlyExpectedCount);
 
               for (const auto& expectation : kOfflineOnlyExpectations) {
-                EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                          InstallResultCode::kSuccessOfflineOnlyInstall);
+                EXPECT_EQ(
+                    install_results[GURL(expectation.install_url)].code,
+                    webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
               }
 
               for (const auto& expectation : kOnlineOnlyExpectations) {
                 EXPECT_EQ(install_results[GURL(expectation.install_url)].code,
-                          InstallResultCode::kInstallURLLoadFailed);
+                          webapps::InstallResultCode::kInstallURLLoadFailed);
               }
             } else {
               EXPECT_EQ(install_results.size(), 0u);

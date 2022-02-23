@@ -123,87 +123,9 @@ class AutofillAgentTests : public web::WebTest {
 
 // Tests that form's name and fields' identifiers, values, and whether they are
 // autofilled are sent to the JS. Fields with empty values and those that are
-// not autofilled are skipped.
-// TODO(crbug/1131038): Remove once using only renderer IDs is launched.
-TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> disabled_features;
-  disabled_features.push_back(
-      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-  scoped_feature_list.InitWithFeatures({}, disabled_features);
-
-  std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale,
-      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
-
-  autofill::FormData form;
-  form.url = GURL("https://myform.com");
-  form.action = GURL("https://myform.com/submit");
-  form.name = u"CC form";
-  form.unique_renderer_id = FormRendererId(1);
-
-  autofill::FormFieldData field;
-  field.form_control_type = "text";
-  field.label = u"Card number";
-  field.name = u"number";
-  field.name_attribute = field.name;
-  field.id_attribute = u"number";
-  field.unique_id = field.id_attribute;
-  field.value = u"number_value";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
-  form.fields.push_back(field);
-  field.label = u"Name on Card";
-  field.name = u"name";
-  field.name_attribute = field.name;
-  field.id_attribute = u"name";
-  field.unique_id = field.id_attribute;
-  field.value = u"name_value";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(3);
-  form.fields.push_back(field);
-  field.label = u"Expiry Month";
-  field.name = u"expiry_month";
-  field.name_attribute = field.name;
-  field.id_attribute = u"expiry_month";
-  field.unique_id = field.id_attribute;
-  field.value = u"01";
-  field.is_autofilled = false;
-  field.unique_renderer_id = FieldRendererId(4);
-  form.fields.push_back(field);
-  field.label = u"Unknown field";
-  field.name = u"unknown";
-  field.name_attribute = field.name;
-  field.id_attribute = u"unknown";
-  field.unique_id = field.id_attribute;
-  field.value = u"";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(5);
-  form.fields.push_back(field);
-  [autofill_agent_
-      fillFormData:form
-           inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
-  fake_web_state_.WasShown();
-  EXPECT_EQ(
-      "__gCrWeb.autofill.fillForm({\"fields\":{\"name\":{\"section\":\"\","
-      "\"value\":\"name_value\"},"
-      "\"number\":{\"section\":\"\",\"value\":\"number_value\"}},"
-      "\"formName\":\"CC form\",\"formRendererID\":1}, \"\", 0, false);",
-      fake_main_frame_->GetLastJavaScriptCall());
-}
-
-// Tests that form's name and fields' identifiers, values, and whether they are
-// autofilled are sent to the JS. Fields with empty values and those that are
 // not autofilled are skipped. Tests logic based on renderer ids usage.
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> enabled_features;
-  enabled_features.push_back(
-      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-  scoped_feature_list.InitWithFeatures(enabled_features, {});
-
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       &fake_web_state_, &client_, nil, locale,
@@ -260,69 +182,7 @@ TEST_F(AutofillAgentTests,
   EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"\","
             "\"value\":\"number_value\"},"
             "\"3\":{\"section\":\"\",\"value\":\"name_value\"}},"
-            "\"formName\":\"CC form\",\"formRendererID\":1}, \"\", 0, true);",
-            fake_main_frame_->GetLastJavaScriptCall());
-}
-
-// Tests that in the case of conflict in fields' identifiers, the last seen
-// value of a given field is used.
-// TODO(crbug/1131038): Remove once using only renderer IDs is launched.
-TEST_F(AutofillAgentTests,
-       OnFormDataFilledWithNameCollisionTestFrameMessaging) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> disabled_features;
-  disabled_features.push_back(
-      autofill::features::kAutofillUseUniqueRendererIDsOnIOS);
-  scoped_feature_list.InitWithFeatures({}, disabled_features);
-
-  std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale,
-      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
-
-  autofill::FormData form;
-  form.url = GURL("https://myform.com");
-  form.action = GURL("https://myform.com/submit");
-  form.unique_renderer_id = FormRendererId(1);
-
-  autofill::FormFieldData field;
-  field.form_control_type = "text";
-  field.label = u"State";
-  field.name = u"region";
-  field.name_attribute = field.name;
-  field.id_attribute = u"region";
-  field.unique_id = field.id_attribute;
-  field.value = u"California";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
-  form.fields.push_back(field);
-  field.label = u"Other field";
-  field.name = u"field1";
-  field.name_attribute = field.name;
-  field.id_attribute = u"field1";
-  field.unique_id = field.id_attribute;
-  field.value = u"value 1";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(3);
-  form.fields.push_back(field);
-  field.label = u"Other field";
-  field.name = u"field1";
-  field.name_attribute = field.name;
-  field.id_attribute = u"field1";
-  field.unique_id = field.id_attribute;
-  field.value = u"value 2";
-  field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(4);
-  form.fields.push_back(field);
-  // Fields are in alphabetical order.
-  [autofill_agent_
-      fillFormData:form
-           inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
-  fake_web_state_.WasShown();
-  EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"field1\":{\"section\":"
-            "\"\",\"value\":\"value "
-            "2\"},\"region\":{\"section\":\"\",\"value\":\"California\"}},"
-            "\"formName\":\"\",\"formRendererID\":1}, \"\", 0, false);",
+            "\"formName\":\"CC form\",\"formRendererID\":1}, 0);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 

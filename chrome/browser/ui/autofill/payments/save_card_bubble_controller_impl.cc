@@ -48,7 +48,9 @@ namespace autofill {
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents) {
+    : AutofillBubbleControllerBase(web_contents),
+      content::WebContentsUserData<SaveCardBubbleControllerImpl>(
+          *web_contents) {
   security_level_ =
       SecurityStateTabHelper::FromWebContents(web_contents)->GetSecurityLevel();
 

@@ -33,7 +33,7 @@ const char kPreferredLanguagesSyncable[] =
 // Important: Refer to header file for how to use this.
 const char kApplicationLocale[] = "intl.app_locale";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kAppLanguagePromptShown[] = "language.app_language_prompt_shown";
 #endif
 

@@ -220,7 +220,7 @@ class EventSender {
   bool is_drag_mode() const { return is_drag_mode_; }
   void set_is_drag_mode(bool drag_mode) { is_drag_mode_ = drag_mode; }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int wm_key_down() const { return wm_key_down_; }
   void set_wm_key_down(int key_down) { wm_key_down_ = key_down; }
 

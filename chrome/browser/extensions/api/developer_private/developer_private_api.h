@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/warning_service.h"
@@ -70,7 +72,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
-                                    public content::NotificationObserver {
+                                    public content::NotificationObserver,
+                                    public PermissionsManager::Observer {
  public:
   explicit DeveloperPrivateEventRouter(Profile* profile);
 
@@ -144,6 +147,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  // PermissionsManager::Observer:
+  void UserPermissionsSettingsChanged(
+      const PermissionsManager::UserPermissionsSettings& settings) override;
+
   // Handles a profile preference change.
   void OnProfilePrefChanged();
 
@@ -174,10 +181,12 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       command_service_observation_{this};
   base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
       extension_allowlist_observer_{this};
+  base::ScopedObservation<PermissionsManager, PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
-  EventRouter* event_router_;
+  raw_ptr<EventRouter> event_router_;
 
   // The set of IDs of the Extensions that have subscribed to DeveloperPrivate
   // events. Since the only consumer of the DeveloperPrivate API is currently
@@ -292,7 +301,7 @@ class DeveloperPrivateAPI : public BrowserContextKeyedAPI,
   WebContentsData* GetOrCreateWebContentsData(
       content::WebContents* web_contents);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used to start the load |load_extension_dialog_| in the last directory that
   // was loaded.
@@ -861,6 +870,60 @@ class DeveloperPrivateRemoveHostPermissionFunction
   ResponseAction Run() override;
 
   void OnRuntimePermissionsRevoked();
+};
+
+class DeveloperPrivateGetUserSiteSettingsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.getUserSiteSettings",
+                             DEVELOPERPRIVATE_GETUSERSITESETTINGS)
+  DeveloperPrivateGetUserSiteSettingsFunction();
+
+  DeveloperPrivateGetUserSiteSettingsFunction(
+      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
+  DeveloperPrivateGetUserSiteSettingsFunction& operator=(
+      const DeveloperPrivateGetUserSiteSettingsFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateGetUserSiteSettingsFunction() override;
+
+  ResponseAction Run() override;
+};
+
+class DeveloperPrivateAddUserSpecifiedSiteFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.addUserSpecifiedSite",
+                             DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITE)
+  DeveloperPrivateAddUserSpecifiedSiteFunction();
+
+  DeveloperPrivateAddUserSpecifiedSiteFunction(
+      const DeveloperPrivateAddUserSpecifiedSiteFunction&) = delete;
+  DeveloperPrivateAddUserSpecifiedSiteFunction& operator=(
+      const DeveloperPrivateAddUserSpecifiedSiteFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateAddUserSpecifiedSiteFunction() override;
+
+  ResponseAction Run() override;
+};
+
+class DeveloperPrivateRemoveUserSpecifiedSiteFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeUserSpecifiedSite",
+                             DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE)
+  DeveloperPrivateRemoveUserSpecifiedSiteFunction();
+
+  DeveloperPrivateRemoveUserSpecifiedSiteFunction(
+      const DeveloperPrivateRemoveUserSpecifiedSiteFunction&) = delete;
+  DeveloperPrivateRemoveUserSpecifiedSiteFunction& operator=(
+      const DeveloperPrivateRemoveUserSpecifiedSiteFunction&) = delete;
+
+ private:
+  ~DeveloperPrivateRemoveUserSpecifiedSiteFunction() override;
+
+  ResponseAction Run() override;
 };
 
 }  // namespace api

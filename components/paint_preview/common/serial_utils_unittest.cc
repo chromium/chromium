@@ -87,7 +87,7 @@ TEST(PaintPreviewSerialUtils, TestSerialPictureNotInMap) {
 
 // Skip this on Android as we only have system fonts in this test and Android
 // doesn't serialize those.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
   PictureSerializationContext picture_ctx;
 
@@ -119,7 +119,7 @@ TEST(PaintPreviewSerialUtils, TestSerialTypeface) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(PaintPreviewSerialUtils, TestSerialAndroidSystemTypeface) {
   PictureSerializationContext picture_ctx;
 

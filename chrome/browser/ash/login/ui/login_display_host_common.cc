@@ -193,7 +193,7 @@ void LoginDisplayHostCommon::BeforeSessionStart() {
 }
 
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
-  VLOG(4) << "Finalize";
+  LOG(WARNING) << "Finalize";
   // If finalize is called twice the LoginDisplayHost instance will be deleted
   // multiple times.
   CHECK(!is_finalizing_);
@@ -340,6 +340,13 @@ void LoginDisplayHostCommon::SetDisplayAndGivenName(
   if (GetExistingUserController())
     GetExistingUserController()->SetDisplayAndGivenName(display_name,
                                                         given_name);
+}
+
+void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
+  StartWizard(GaiaView::kScreenId);
+
+  GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
+  gaia_screen->ShowAllowlistCheckFailedError();
 }
 
 void LoginDisplayHostCommon::LoadWallpaper(const AccountId& account_id) {
@@ -553,6 +560,7 @@ void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {
 }
 
 void LoginDisplayHostCommon::ShutdownDisplayHost() {
+  LOG(WARNING) << "ShutdownDisplayHost";
   if (shutting_down_)
     return;
   shutting_down_ = true;

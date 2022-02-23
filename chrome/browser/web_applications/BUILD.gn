@@ -15,6 +15,10 @@ group("web_app_test_group") {
 source_set("web_applications") {
   sources = [
     "app_registrar_observer.h",
+    "commands/clear_browsing_data_command.cc",
+    "commands/clear_browsing_data_command.h",
+    "commands/run_on_os_login_command.cc",
+    "commands/run_on_os_login_command.h",
     "daily_metrics_helper.cc",
     "daily_metrics_helper.h",
     "extension_status_utils.h",
@@ -30,10 +34,6 @@ source_set("web_applications") {
     "externally_managed_app_manager_impl.h",
     "externally_managed_app_registration_task.cc",
     "externally_managed_app_registration_task.h",
-    "file_handlers_permission_helper.cc",
-    "file_handlers_permission_helper.h",
-    "file_handling_permission_context.cc",
-    "file_handling_permission_context.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
     "install_bounce_metric.cc",
@@ -44,15 +44,34 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "manifest_update_task.cc",
     "manifest_update_task.h",
-    "os_integration_manager.cc",
-    "os_integration_manager.h",
+    "os_integration/os_integration_manager.cc",
+    "os_integration/os_integration_manager.h",
+    "os_integration/url_handler_manager.cc",
+    "os_integration/url_handler_manager.h",
+    "os_integration/web_app_file_handler_manager.cc",
+    "os_integration/web_app_file_handler_manager.h",
+    "os_integration/web_app_file_handler_registration.cc",
+    "os_integration/web_app_file_handler_registration.h",
+    "os_integration/web_app_protocol_handler_manager.cc",
+    "os_integration/web_app_protocol_handler_manager.h",
+    "os_integration/web_app_protocol_handler_registration.cc",
+    "os_integration/web_app_protocol_handler_registration.h",
+    "os_integration/web_app_run_on_os_login.cc",
+    "os_integration/web_app_run_on_os_login.h",
+    "os_integration/web_app_shortcut.cc",
+    "os_integration/web_app_shortcut.h",
+    "os_integration/web_app_shortcut_manager.cc",
+    "os_integration/web_app_shortcut_manager.h",
+    "os_integration/web_app_shortcuts_menu.cc",
+    "os_integration/web_app_shortcuts_menu.h",
+    "os_integration/web_app_uninstallation_via_os_settings_registration.cc",
+    "os_integration/web_app_uninstallation_via_os_settings_registration.h",
     "policy/pre_redirection_url_observer.cc",
     "policy/pre_redirection_url_observer.h",
     "policy/web_app_policy_constants.cc",
     "policy/web_app_policy_constants.h",
     "policy/web_app_policy_manager.cc",
     "policy/web_app_policy_manager.h",
-    "policy/web_app_policy_manager_observer.h",
     "preinstalled_app_install_features.cc",
     "preinstalled_app_install_features.h",
     "preinstalled_web_app_manager.cc",
@@ -70,8 +89,6 @@ source_set("web_applications") {
     "system_web_apps/system_web_app_manager.cc",
     "system_web_apps/system_web_app_manager.h",
     "system_web_apps/system_web_app_types.h",
-    "url_handler_manager.cc",
-    "url_handler_manager.h",
     "web_app.cc",
     "web_app.h",
     "web_app_audio_focus_id_map.cc",
@@ -87,10 +104,6 @@ source_set("web_applications") {
     "web_app_database.h",
     "web_app_database_factory.cc",
     "web_app_database_factory.h",
-    "web_app_file_handler_manager.cc",
-    "web_app_file_handler_manager.h",
-    "web_app_file_handler_registration.cc",
-    "web_app_file_handler_registration.h",
     "web_app_helpers.cc",
     "web_app_helpers.h",
     "web_app_icon_downloader.cc",
@@ -104,8 +117,11 @@ source_set("web_applications") {
     "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",
+    "web_app_install_info.cc",
+    "web_app_install_info.h",
     "web_app_install_manager.cc",
     "web_app_install_manager.h",
+    "web_app_install_manager_observer.h",
     "web_app_install_params.cc",
     "web_app_install_params.h",
     "web_app_install_task.cc",
@@ -114,8 +130,10 @@ source_set("web_applications") {
     "web_app_install_utils.h",
     "web_app_installation_utils.cc",
     "web_app_installation_utils.h",
-    "web_app_mover.cc",
-    "web_app_mover.h",
+    "web_app_internals_utils.cc",
+    "web_app_internals_utils.h",
+    "web_app_offline.cc",
+    "web_app_offline.h",
     "web_app_origin_association_manager.cc",
     "web_app_origin_association_manager.h",
     "web_app_origin_association_task.cc",
@@ -124,10 +142,6 @@ source_set("web_applications") {
     "web_app_prefs_utils.h",
     "web_app_proto_utils.cc",
     "web_app_proto_utils.h",
-    "web_app_protocol_handler_manager.cc",
-    "web_app_protocol_handler_manager.h",
-    "web_app_protocol_handler_registration.cc",
-    "web_app_protocol_handler_registration.h",
     "web_app_provider.cc",
     "web_app_provider.h",
     "web_app_provider_factory.cc",
@@ -136,14 +150,6 @@ source_set("web_applications") {
     "web_app_registrar.h",
     "web_app_registry_update.cc",
     "web_app_registry_update.h",
-    "web_app_run_on_os_login.cc",
-    "web_app_run_on_os_login.h",
-    "web_app_shortcut.cc",
-    "web_app_shortcut.h",
-    "web_app_shortcut_manager.cc",
-    "web_app_shortcut_manager.h",
-    "web_app_shortcuts_menu.cc",
-    "web_app_shortcuts_menu.h",
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
     "web_app_sync_install_delegate.h",
@@ -151,37 +157,37 @@ source_set("web_applications") {
     "web_app_system_web_app_data.h",
     "web_app_tab_helper.cc",
     "web_app_tab_helper.h",
+    "web_app_translation_manager.cc",
+    "web_app_translation_manager.h",
     "web_app_ui_manager.h",
     "web_app_uninstall_job.cc",
     "web_app_uninstall_job.h",
-    "web_app_uninstallation_via_os_settings_registration.cc",
-    "web_app_uninstallation_via_os_settings_registration.h",
     "web_app_url_loader.cc",
     "web_app_url_loader.h",
     "web_app_utils.cc",
     "web_app_utils.h",
-    "web_application_info.cc",
-    "web_application_info.h",
+    "web_launch_params_helper.cc",
+    "web_launch_params_helper.h",
   ]
 
   if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
-      "web_app_run_on_os_login_chromeos.cc",
-      "web_app_shortcut_chromeos.cc",
+      "os_integration/web_app_run_on_os_login_chromeos.cc",
+      "os_integration/web_app_shortcut_chromeos.cc",
     ]
   }
 
   if (is_fuchsia) {
-    sources += [ "web_app_stubs.cc" ]
+    sources += [ "os_integration/web_app_stubs.cc" ]
   }
 
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
-      "web_app_file_handler_registration_linux.cc",
-      "web_app_run_on_os_login_linux.cc",
-      "web_app_shortcut_linux.cc",
-      "web_app_shortcut_linux.h",
+      "os_integration/web_app_file_handler_registration_linux.cc",
+      "os_integration/web_app_run_on_os_login_linux.cc",
+      "os_integration/web_app_shortcut_linux.cc",
+      "os_integration/web_app_shortcut_linux.h",
     ]
   }
 
@@ -189,34 +195,34 @@ source_set("web_applications") {
     sources += [
       "app_shim_registry_mac.cc",
       "app_shim_registry_mac.h",
-      "web_app_file_handler_registration_mac.cc",
-      "web_app_run_on_os_login_mac.mm",
-      "web_app_shortcut_mac.h",
-      "web_app_shortcut_mac.mm",
+      "os_integration/web_app_file_handler_registration_mac.cc",
+      "os_integration/web_app_run_on_os_login_mac.mm",
+      "os_integration/web_app_shortcut_mac.h",
+      "os_integration/web_app_shortcut_mac.mm",
     ]
   }
 
   if (is_win) {
     sources += [
-      "web_app_file_handler_registration_win.cc",
-      "web_app_handler_registration_utils_win.cc",
-      "web_app_handler_registration_utils_win.h",
-      "web_app_protocol_handler_registration_win.cc",
-      "web_app_run_on_os_login_win.cc",
-      "web_app_shortcut_win.cc",
-      "web_app_shortcut_win.h",
-      "web_app_shortcuts_menu_win.cc",
-      "web_app_shortcuts_menu_win.h",
-      "web_app_uninstallation_via_os_settings_registration_win.cc",
+      "os_integration/web_app_file_handler_registration_win.cc",
+      "os_integration/web_app_handler_registration_utils_win.cc",
+      "os_integration/web_app_handler_registration_utils_win.h",
+      "os_integration/web_app_protocol_handler_registration_win.cc",
+      "os_integration/web_app_run_on_os_login_win.cc",
+      "os_integration/web_app_shortcut_win.cc",
+      "os_integration/web_app_shortcut_win.h",
+      "os_integration/web_app_shortcuts_menu_win.cc",
+      "os_integration/web_app_shortcuts_menu_win.h",
+      "os_integration/web_app_uninstallation_via_os_settings_registration_win.cc",
     ]
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
+      "os_integration/url_handler_manager_impl.cc",
+      "os_integration/url_handler_manager_impl.h",
       "url_handler_launch_params.cc",
       "url_handler_launch_params.h",
-      "url_handler_manager_impl.cc",
-      "url_handler_manager_impl.h",
       "url_handler_prefs.cc",
       "url_handler_prefs.h",
     ]
@@ -235,6 +241,7 @@ source_set("web_applications") {
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
+    "//components/resources:components_resources_grit",
 
     # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
     "//components/crx_file",
@@ -255,6 +262,7 @@ source_set("web_applications") {
     "//components/sync",
     "//components/user_manager",
     "//components/webapps/browser",
+    "//components/webapps/common:common",
     "//components/webapps/common:mojo_bindings",
     "//components/webapps/services/web_app_origin_association:lib",
     "//components/webapps/services/web_app_origin_association:service",
@@ -305,11 +313,16 @@ source_set("web_applications") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+    deps += [
+      "//chrome/browser/web_applications/chrome_pwa_launcher:util",
+      "//components/custom_handlers",
+    ]
   }
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc:arc_base",
+      "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp",
       "//ash/webui/camera_app_ui",
@@ -323,9 +336,8 @@ source_set("web_applications") {
       "//ash/webui/personalization_app",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
+      "//chrome/browser/ash/crosapi:browser_util",
       "//chromeos/strings",
-      "//components/arc:arc_base",
-      "//components/arc/mojom",
     ]
 
     if (!is_official_build) {
@@ -416,6 +428,8 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_registry_controller.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
+    "test/isolated_app_test_utils.cc",
+    "test/isolated_app_test_utils.h",
     "test/mock_file_utils_wrapper.cc",
     "test/mock_file_utils_wrapper.h",
     "test/mock_os_integration_manager.cc",
@@ -426,6 +440,8 @@ source_set("web_applications_test_support") {
     "test/test_web_app_url_loader.h",
     "test/web_app_icon_test_utils.cc",
     "test/web_app_icon_test_utils.h",
+    "test/web_app_icon_waiter.cc",
+    "test/web_app_icon_waiter.h",
     "test/web_app_registration_waiter.cc",
     "test/web_app_registration_waiter.h",
     "test/web_app_sync_test_utils.cc",
@@ -441,6 +457,7 @@ source_set("web_applications_test_support") {
     ":web_app_test_group",
     ":web_applications",
     "//base/test:test_support",
+    "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
@@ -463,23 +480,26 @@ source_set("web_applications_unit_tests") {
   testonly = true
 
   sources = [
+    "commands/clear_browsing_data_command_unittest.cc",
+    "commands/run_on_os_login_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
     "externally_managed_app_manager_impl_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
     "isolation_prefs_utils_unittest.cc",
     "manifest_update_task_unittest.cc",
-    "os_integration_manager_unittest.cc",
+    "os_integration/os_integration_manager_unittest.cc",
+    "os_integration/protocol_handler_manager_unittest.cc",
+    "os_integration/web_app_file_handler_manager_unittest.cc",
+    "os_integration/web_app_shortcut_unittest.cc",
     "policy/pre_redirection_url_observer_unittest.cc",
     "preinstalled_app_install_features_unittest.cc",
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
-    "protocol_handler_manager_unittest.cc",
     "web_app_constants_unittest.cc",
     "web_app_data_retriever_unittest.cc",
     "web_app_database_unittest.cc",
-    "web_app_file_handler_manager_unittest.cc",
     "web_app_helpers_unittest.cc",
     "web_app_icon_downloader_unittest.cc",
     "web_app_icon_generator_unittest.cc",
@@ -489,12 +509,11 @@ source_set("web_applications_unit_tests") {
     "web_app_install_task_unittest.cc",
     "web_app_install_utils_unittest.cc",
     "web_app_installation_utils_unittest.cc",
-    "web_app_mover_unittest.cc",
     "web_app_prefs_utils_unittest.cc",
     "web_app_proto_utils_unittest.cc",
     "web_app_registrar_unittest.cc",
-    "web_app_shortcut_unittest.cc",
     "web_app_sync_bridge_unittest.cc",
+    "web_app_translation_manager_unittest.cc",
     "web_app_uninstall_job_unittest.cc",
     "web_app_unittest.cc",
     "web_app_url_loader_unittest.cc",
@@ -503,34 +522,34 @@ source_set("web_applications_unit_tests") {
 
   if (is_win) {
     sources += [
-      "web_app_file_handler_registration_win_unittest.cc",
-      "web_app_handler_registration_utils_win_unittest.cc",
-      "web_app_protocol_handler_registration_win_unittest.cc",
-      "web_app_run_on_os_login_win_unittest.cc",
-      "web_app_shortcut_win_unittest.cc",
+      "os_integration/web_app_file_handler_registration_win_unittest.cc",
+      "os_integration/web_app_handler_registration_utils_win_unittest.cc",
+      "os_integration/web_app_protocol_handler_registration_win_unittest.cc",
+      "os_integration/web_app_run_on_os_login_win_unittest.cc",
+      "os_integration/web_app_shortcut_win_unittest.cc",
     ]
   }
 
   if (is_mac) {
     sources += [
       "app_shim_registry_mac_unittest.cc",
-      "web_app_run_on_os_login_mac_unittest.mm",
-      "web_app_shortcut_mac_unittest.mm",
+      "os_integration/web_app_run_on_os_login_mac_unittest.mm",
+      "os_integration/web_app_shortcut_mac_unittest.mm",
     ]
   }
 
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
-      "web_app_file_handler_registration_linux_unittest.cc",
-      "web_app_run_on_os_login_linux_unittest.cc",
-      "web_app_shortcut_linux_unittest.cc",
+      "os_integration/web_app_file_handler_registration_linux_unittest.cc",
+      "os_integration/web_app_run_on_os_login_linux_unittest.cc",
+      "os_integration/web_app_shortcut_linux_unittest.cc",
     ]
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
-      "url_handler_manager_impl_unittest.cc",
+      "os_integration/url_handler_manager_impl_unittest.cc",
       "url_handler_prefs_unittest.cc",
     ]
   }
@@ -548,6 +567,7 @@ source_set("web_applications_unit_tests") {
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
@@ -570,11 +590,12 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc:arc",
+      "//ash/components/arc:arc_test_support",
+      "//ash/components/arc/mojom",
       "//ash/constants",
       "//chrome/browser/chromeos",
-      "//components/arc:arc",
       "//components/arc:arc_test_support",
-      "//components/arc/mojom",
     ]
   }
 
@@ -595,23 +616,31 @@ source_set("web_applications_browser_tests") {
 
   sources = [
     "externally_managed_app_manager_impl_browsertest.cc",
+    "isolated_app_browsertest.cc",
     "manifest_update_manager_browsertest.cc",
     "preinstalled_web_app_manager_browsertest.cc",
     "preinstalled_web_app_migration_browsertest.cc",
     "preinstalled_web_apps_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
-    "web_app_mover_browsertest.cc",
+    "web_app_internals_browsertest.cc",
+    "web_app_offline_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
+    "web_app_pref_migration_browsertest.cc",
     "web_app_url_loader_browsertest.cc",
   ]
 
   if (is_linux) {
-    sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
+    sources += [
+      "os_integration/web_app_file_handler_registration_linux_browsertest.cc",
+    ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
-    sources += [ "system_web_apps/test/system_web_app_manager_browsertest.cc" ]
+    sources += [
+      "policy/web_app_policy_manager_browsertest.cc",
+      "system_web_apps/test/system_web_app_manager_browsertest.cc",
+    ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -619,6 +648,7 @@ source_set("web_applications_browser_tests") {
   deps = [
     ":web_applications",
     ":web_applications_test_support",
+    "adjustments:adjustments_browser_tests",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -634,6 +664,7 @@ source_set("web_applications_browser_tests") {
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/webapps/browser",
     "//components/webapps/services/web_app_origin_association/test:test_support",
     "//extensions/browser:test_support",

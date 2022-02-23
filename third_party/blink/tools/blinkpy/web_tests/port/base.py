@@ -135,6 +135,9 @@ class Port(object):
 
     CONTENT_SHELL_NAME = 'content_shell'
 
+    # Update the first line in third_party/blink/web_tests/TestExpectations and
+    # the documentation in docs/testing/web_test_expectations.md when this list
+    # changes.
     ALL_SYSTEMS = (
         ('mac10.12', 'x86'),
         ('mac10.13', 'x86'),
@@ -249,6 +252,8 @@ class Port(object):
                                     self.default_configuration())
         if not hasattr(options, 'target') or not options.target:
             self.set_option_default('target', self._options.configuration)
+        if not hasattr(options, 'no_virtual_tests'):
+            self.set_option_default('no_virtual_tests', False)
         self._test_configuration = None
         self._results_directory = None
         self._virtual_test_suites = None
@@ -409,7 +414,7 @@ class Port(object):
         """Returns the amount of time in seconds to wait before killing the process in driver.stop()."""
         # We want to wait for at least 3 seconds, but if we are really slow, we
         # want to be slow on cleanup as well (for things like ASAN, Valgrind, etc.)
-        return (3.0 * float(self.get_option('time_out_ms', '0')) /
+        return (3.0 * float(self.get_option('timeout_ms', '0')) /
                 self._default_timeout_ms())
 
     def default_batch_size(self):
@@ -534,6 +539,7 @@ class Port(object):
                     return False
                 return True
             except OSError as e:
+                _log.error('while trying to run: ' + httpd_path)
                 _log.error('httpd launch error: ' + repr(e))
         _log.error('No httpd found. Cannot run http tests.')
         return False
@@ -915,7 +921,8 @@ class Port(object):
         tests = self.real_tests(paths)
 
         if paths:
-            tests.extend(self._virtual_tests_matching_paths(paths))
+            if not self._options.no_virtual_tests:
+                tests.extend(self._virtual_tests_matching_paths(paths))
             if (any(wpt_path in path for wpt_path in self.WPT_DIRS
                     for path in paths)
                     # TODO(robertma): Remove this special case when external/wpt is moved to wpt.
@@ -933,7 +940,8 @@ class Port(object):
                 dirname = os.path.dirname(test) + '/'
                 tests_by_dir[dirname].append(test)
 
-            tests.extend(self._all_virtual_tests(tests_by_dir))
+            if not self._options.no_virtual_tests:
+                tests.extend(self._all_virtual_tests(tests_by_dir))
             tests.extend(wpt_tests)
         return tests
 
@@ -1455,7 +1463,6 @@ class Port(object):
             ]
             clean_env['DISPLAY'] = self.host.environ.get('DISPLAY', ':1')
         if self.host.platform.is_mac():
-            clean_env['DYLD_LIBRARY_PATH'] = self._build_path()
             variables_to_copy += [
                 'HOME',
             ]
@@ -1782,7 +1789,8 @@ class Port(object):
                 self._used_expectation_files.append(flag_specific)
             for path in self.get_option('additional_expectations', []):
                 expanded_path = self._filesystem.expanduser(path)
-                self._used_expectation_files.append(expanded_path)
+                abs_path = self._filesystem.abspath(expanded_path)
+                self._used_expectation_files.append(abs_path)
         return self._used_expectation_files
 
     def extra_expectations_files(self):

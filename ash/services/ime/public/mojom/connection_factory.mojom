@@ -1,0 +1,19 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.ime.mojom;
+
+import "ash/services/ime/public/mojom/input_method.mojom";
+import "ash/services/ime/public/mojom/input_method_host.mojom";
+
+// Responsible for instantiating the connection between the shared library
+// and Chromium over an associated Mojo pipe.
+interface ConnectionFactory {
+  // Connects to the given input method specified via ime_spec.
+  ConnectToInputMethod(
+    string ime_spec,
+    pending_associated_receiver<InputMethod> input_method,
+    pending_associated_remote<InputMethodHost> input_method_host)
+    => (bool success);
+};

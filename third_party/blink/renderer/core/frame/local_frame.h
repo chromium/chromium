@@ -70,7 +70,7 @@
 #include "third_party/blink/renderer/core/loader/back_forward_cache_loader_helper_impl.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
@@ -89,11 +89,14 @@ class SingleThreadTaskRunner;
 namespace gfx {
 class Point;
 class Range;
+class Size;
+class SizeF;
 }  // namespace gfx
 
 namespace blink {
 
 class AdTracker;
+class AttributionSrcLoader;
 class AssociatedInterfaceProvider;
 class BrowserInterfaceBrokerProxy;
 class Color;
@@ -103,7 +106,6 @@ class Editor;
 class Element;
 class EventHandler;
 class EventHandlerRegistry;
-class FloatSize;
 class FrameConsole;
 class FrameOverlay;
 class FrameSelection;
@@ -115,7 +117,6 @@ class CoreProbeSink;
 class IdlenessDetector;
 class InspectorTaskRunner;
 class InterfaceRegistry;
-class IntSize;
 class LayoutView;
 class LocalDOMWindow;
 class LocalWindowProxy;
@@ -141,6 +142,10 @@ class WebPluginContainerImpl;
 class WebPrescientNetworking;
 class WebURLLoaderFactory;
 struct BlinkTransferableMessage;
+
+#if !BUILDFLAG(IS_ANDROID)
+class WindowControlsOverlayChangedDelegate;
+#endif
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
@@ -188,7 +193,7 @@ class CORE_EXPORT LocalFrame final
   // this LocalFrame has no corresponding RenderFrameHost.
   void Init(Frame* opener, std::unique_ptr<PolicyContainer> policy_container);
   void SetView(LocalFrameView*);
-  void CreateView(const IntSize&, const Color&);
+  void CreateView(const gfx::Size&, const Color&);
 
   // Frame overrides:
   ~LocalFrame() override;
@@ -210,7 +215,7 @@ class CORE_EXPORT LocalFrame final
   void SetInheritedEffectiveTouchAction(TouchAction) override;
   bool BubbleLogicalScrollFromChildFrame(
       mojom::blink::ScrollDirection direction,
-      ScrollGranularity granularity,
+      ui::ScrollGranularity granularity,
       Frame* child) override;
   void DidFocus() override;
   bool IsAdSubframe() const override;
@@ -219,7 +224,6 @@ class CORE_EXPORT LocalFrame final
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
@@ -232,10 +236,11 @@ class CORE_EXPORT LocalFrame final
 
   void Reload(WebFrameLoadType);
 
-  // Note: these two functions are not virtual but intentionally shadow the
+  // Note: these three functions are not virtual but intentionally shadow the
   // corresponding method in the Frame base class to return the
   // LocalFrame-specific subclass.
   LocalWindowProxy* WindowProxy(DOMWrapperWorld&);
+  LocalWindowProxy* WindowProxyMaybeUninitialized(DOMWrapperWorld&);
   LocalDOMWindow* DomWindow();
   const LocalDOMWindow* DomWindow() const;
   void SetDOMWindow(LocalDOMWindow*);
@@ -310,15 +315,15 @@ class CORE_EXPORT LocalFrame final
   // All public functions below this point are candidates to move out of
   // LocalFrame into another class.
 
-  // See GraphicsLayerClient.h for accepted flags.
+  // See layers_as_json.h for accepted flags.
   String GetLayerTreeAsTextForTesting(unsigned flags = 0) const;
 
   // Begin printing with the given page size information.
   // The frame content will fit to the page size with specified shrink ratio.
   // If this frame doesn't need to fit into a page size, default values are
   // used.
-  void StartPrinting(const FloatSize& page_size = FloatSize(),
-                     const FloatSize& original_page_size = FloatSize(),
+  void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
+                     const gfx::SizeF& original_page_size = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
   void EndPrinting();
@@ -336,8 +341,8 @@ class CORE_EXPORT LocalFrame final
   void EnsureSaveScrollOffset(Node&);
   void RestoreScrollOffsets();
 
-  FloatSize ResizePageRectsKeepingRatio(const FloatSize& original_size,
-                                        const FloatSize& expected_size) const;
+  gfx::SizeF ResizePageRectsKeepingRatio(const gfx::SizeF& original_size,
+                                         const gfx::SizeF& expected_size) const;
 
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
@@ -406,7 +411,7 @@ class CORE_EXPORT LocalFrame final
   //
   // Navigation-associated interfaces are currently implemented as
   // channel-associated interfaces. See
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/mojo_ipc_conversion.md#Channel_Associated-Interfaces
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/mojo_ipc_conversion.md#Channel_Associated-Interfaces
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces();
 
   LocalFrameClient* Client() const;
@@ -426,12 +431,11 @@ class CORE_EXPORT LocalFrame final
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_; }
   AdTracker* GetAdTracker() { return ad_tracker_; }
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
+  AttributionSrcLoader* GetAttributionSrcLoader() {
+    return attribution_src_loader_;
+  }
 
-  enum class LazyLoadImageSetting {
-    kDisabled,
-    kEnabledExplicit,
-    kEnabledAutomatic
-  };
+  enum class LazyLoadImageSetting { kDisabled, kEnabledExplicit };
   // Returns the enabled state of lazyloading of images.
   LazyLoadImageSetting GetLazyLoadImageSetting() const;
 
@@ -454,18 +458,18 @@ class CORE_EXPORT LocalFrame final
   void SetViewportIntersectionFromParent(
       const mojom::blink::ViewportIntersectionState& intersection_state);
 
-  IntSize GetMainFrameViewportSize() const override;
+  gfx::Size GetMainFrameViewportSize() const override;
   gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 
   // See viewport_intersection_state.mojom for more info on these
   // methods.
-  IntRect RemoteViewportIntersection() const {
-    return IntRect(intersection_state_.viewport_intersection);
+  gfx::Rect RemoteViewportIntersection() const {
+    return intersection_state_.viewport_intersection;
   }
-  IntRect RemoteMainFrameIntersection() const {
-    return IntRect(intersection_state_.main_frame_intersection);
+  gfx::Rect RemoteMainFrameIntersection() const {
+    return intersection_state_.main_frame_intersection;
   }
   gfx::Transform RemoteMainFrameTransform() const {
     return intersection_state_.main_frame_transform;
@@ -564,7 +568,6 @@ class CORE_EXPORT LocalFrame final
   void SetSubframeColorOverlay(SkColor color);
   void UpdateFrameColorOverlayPrePaint();
 
-  // For CompositeAfterPaint.
   void PaintFrameColorOverlay(GraphicsContext&);
 
   // To be called from OomInterventionImpl.
@@ -645,10 +648,15 @@ class CORE_EXPORT LocalFrame final
   void ClosePageForTesting();
   void SetInitialFocus(bool reverse);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
+  void RegisterWindowControlsOverlayChangedDelegate(
+      WindowControlsOverlayChangedDelegate*);
+#endif
 
   SystemClipboard* GetSystemClipboard();
 
@@ -686,6 +694,7 @@ class CORE_EXPORT LocalFrame final
 
   bool SwapIn();
 
+#if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_overrides, these getters are information about the
   // titlebar bounds sent over from the browser via UpdateWindowControlsOverlay
   // in LocalMainFrame that are needed to persist the lifetime of the frame.
@@ -695,6 +704,7 @@ class CORE_EXPORT LocalFrame final
   const gfx::Rect& GetWindowControlsOverlayRect() const {
     return window_controls_overlay_rect_;
   }
+#endif
 
   void LoadJavaScriptURL(const KURL& url);
 
@@ -712,7 +722,13 @@ class CORE_EXPORT LocalFrame final
 
   void CreateTextFragmentHandler();
 
-#if defined(OS_MAC)
+  // Invokes on first paint, this method could be invoked multiple times, refer
+  // to FrameFirstPaint.
+  void OnFirstPaint(bool text_painted, bool image_painted);
+  void IncrementNavigationCounter() { navigation_counter_++; }
+  uint32_t GetNavigationCounter() { return navigation_counter_; }
+
+#if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
 #endif
@@ -740,8 +756,6 @@ class CORE_EXPORT LocalFrame final
   void EnableNavigation() { --navigation_disable_count_; }
   void DisableNavigation() { ++navigation_disable_count_; }
 
-  void PropagateInertToChildFrames();
-
   // Internal implementation for starting and ending paint preview capture.
   // `capturing` is true when capture starts and false when it ends.
   void SetInvalidationForCapture(bool capturing);
@@ -751,8 +765,8 @@ class CORE_EXPORT LocalFrame final
   // |page_size|, |original_page_size|, and |maximum_shrink_ratio| are only
   // meaningful when we should use printing layout for this frame.
   void SetPrinting(bool printing,
-                   const FloatSize& page_size,
-                   const FloatSize& original_page_size,
+                   const gfx::SizeF& page_size,
+                   const gfx::SizeF& original_page_size,
                    float maximum_shrink_ratio);
 
   // FrameScheduler::Delegate overrides:
@@ -848,16 +862,12 @@ class CORE_EXPORT LocalFrame final
   float page_zoom_factor_;
   float text_zoom_factor_;
 
-  // The total bytes buffered by all network requests in this frame while frozen
-  // due to back-forward cache. This number gets reset when the frame gets out
-  // of the back-forward cache.
-  size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
-
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
   Member<PerformanceMonitor> performance_monitor_;
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
+  Member<AttributionSrcLoader> attribution_src_loader_;
   Member<InspectorIssueReporter> inspector_issue_reporter_;
   Member<InspectorTraceEvents> inspector_trace_events_;
   // SmoothScrollSequencer is only populated for local roots; all local frames
@@ -873,16 +883,6 @@ class CORE_EXPORT LocalFrame final
   std::unique_ptr<WebURLLoaderFactory> url_loader_factory_;
 
   ClientHintsPreferences client_hints_preferences_;
-
-  // The value of |is_save_data_enabled_| is read once per frame from
-  // NetworkStateNotifier, which is guarded by a mutex lock, and cached locally
-  // here for performance.
-  // TODO(sclittle): This field doesn't really belong here - we should find some
-  // way to make the state of NetworkStateNotifier accessible without needing to
-  // acquire a mutex, such as by adding thread-local objects to hold the network
-  // state that get updated whenever the network state changes. That way, this
-  // field would be no longer necessary.
-  const bool is_save_data_enabled_;
 
   IsCapturingMediaCallback is_capturing_media_callback_;
 
@@ -931,8 +931,12 @@ class CORE_EXPORT LocalFrame final
 
   PaymentRequestToken payment_request_token_;
 
+#if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
+  WeakMember<WindowControlsOverlayChangedDelegate>
+      window_controls_overlay_changed_delegate_;
+#endif
 
   // The evidence for or against a frame being an ad frame. `absl::nullopt` if
   // not yet set or if the frame is a top-level frame. (Only subframes can be
@@ -951,6 +955,12 @@ class CORE_EXPORT LocalFrame final
   bool is_subframe_created_by_ad_script_ = false;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
+
+  // Indicate if the current document's color scheme was notified.
+  bool notified_color_scheme_ = false;
+  // Tracks the number of times this document has been retrieved from the
+  // bfcache.
+  uint32_t navigation_counter_ = 0;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -121,16 +122,16 @@ class EditableComboboxTest : public ViewsTestBase {
   void OnContentChanged() { ++change_count_; }
 
   // The widget where the control will appear.
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 
   // |combobox_| and |dummy_focusable_view_| are allocated in
   // |InitEditableCombobox| and then owned by |widget_|.
-  EditableCombobox* combobox_ = nullptr;
-  View* dummy_focusable_view_ = nullptr;
+  raw_ptr<EditableCombobox> combobox_ = nullptr;
+  raw_ptr<View> dummy_focusable_view_ = nullptr;
 
   // We make |combobox_| a child of another View to test different removal
   // scenarios.
-  View* parent_of_combobox_ = nullptr;
+  raw_ptr<View> parent_of_combobox_ = nullptr;
 
   int change_count_ = 0;
 
@@ -212,12 +213,12 @@ void EditableComboboxTest::InitWidget() {
 
   widget_->Init(std::move(params));
   View* container = widget_->SetContentsView(std::make_unique<View>());
-  container->AddChildView(parent_of_combobox_);
-  parent_of_combobox_->AddChildView(combobox_);
-  container->AddChildView(dummy_focusable_view_);
+  container->AddChildView(parent_of_combobox_.get());
+  parent_of_combobox_->AddChildView(combobox_.get());
+  container->AddChildView(dummy_focusable_view_.get());
   widget_->Show();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The event loop needs to be flushed here, otherwise in various tests:
   // 1. The actual showing of the native window backing the widget gets delayed
   //    until a spin of the event loop.
@@ -289,7 +290,7 @@ void EditableComboboxTest::SendKeyEvent(ui::KeyboardCode key_code,
                                         const bool alt,
                                         const bool shift,
                                         const bool ctrl_cmd) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool command = ctrl_cmd;
   bool control = false;
 #else
@@ -365,16 +366,20 @@ TEST_F(EditableComboboxTest, RemovingControlWhileMenuOpenClosesMenu) {
   InitEditableCombobox();
   ClickArrow();
   EXPECT_TRUE(IsMenuOpen());
-  parent_of_combobox_->RemoveChildView(combobox_);
+  auto combobox = parent_of_combobox_->RemoveChildViewT(combobox_);
   EXPECT_EQ(nullptr, combobox_->GetMenuRunnerForTest());
+  combobox_ = nullptr;
 }
 
 TEST_F(EditableComboboxTest, RemovingParentOfControlWhileMenuOpenClosesMenu) {
   InitEditableCombobox();
   ClickArrow();
   EXPECT_TRUE(IsMenuOpen());
-  widget_->GetContentsView()->RemoveChildView(parent_of_combobox_);
+  auto parent =
+      widget_->GetContentsView()->RemoveChildViewT(parent_of_combobox_);
   EXPECT_EQ(nullptr, combobox_->GetMenuRunnerForTest());
+  combobox_ = nullptr;
+  parent_of_combobox_ = nullptr;
 }
 
 TEST_F(EditableComboboxTest, LeftOrRightKeysMoveInTextfield) {
@@ -391,7 +396,7 @@ TEST_F(EditableComboboxTest, LeftOrRightKeysMoveInTextfield) {
   EXPECT_EQ(u"abcde", combobox_->GetText());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Windows. https://crbug.com/965601
 #define MAYBE_UpOrDownKeysMoveInMenu DISABLED_UpOrDownKeysMoveInMenu
 #else
@@ -426,7 +431,7 @@ TEST_F(EditableComboboxTest, EndOrHomeMovesToBeginningOrEndOfText) {
   EXPECT_EQ(u"xabcy", combobox_->GetText());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(EditableComboboxTest, AltLeftOrRightMovesToNextWords) {
   InitEditableCombobox();
@@ -492,7 +497,7 @@ TEST_F(EditableComboboxTest, CtrlLeftOrRightMovesToNextWords) {
   SendKeyEvent(ui::VKEY_RIGHT, /*alt=*/false, /*shift=*/false,
                /*ctrl_cmd=*/true);
   SendKeyEvent(ui::VKEY_Y);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Matches Windows-specific logic in
   // RenderTextHarfBuzz::AdjacentWordSelectionModel.
   EXPECT_EQ(u"foo xbar yfoobar", combobox_->GetText());
@@ -533,7 +538,7 @@ TEST_F(EditableComboboxTest, EnterClosesMenuWhileSelectingHighlightedMenuItem) {
   EXPECT_EQ(u"item[0]", combobox_->GetText());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on Windows. https://crbug.com/965601
 #define MAYBE_F4ClosesMenuWhileSelectingHighlightedMenuItem \
   DISABLED_F4ClosesMenuWhileSelectingHighlightedMenuItem
@@ -600,7 +605,7 @@ TEST_F(EditableComboboxTest, SpaceIsReflectedInTextfield) {
   EXPECT_EQ(u"a  b", combobox_->GetText());
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 // Flaky on Windows and Linux. https://crbug.com/965601
 #define MAYBE_MenuCanAdaptToContentChange DISABLED_MenuCanAdaptToContentChange
 #else
@@ -636,7 +641,7 @@ TEST_F(EditableComboboxTest, MAYBE_MenuCanAdaptToContentChange) {
   EXPECT_EQ(menu_runner1, menu_runner2);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // Flaky on Linux. https://crbug.com/1204584
 #define MAYBE_RefocusingReopensMenuBasedOnLatestContent \
     DISABLED_RefocusingReopensMenuBasedOnLatestContent
@@ -913,7 +918,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
   void SetItemCount(int item_count) { item_count_ = item_count; }
 
  private:
-  bool* const destroyed_;
+  const raw_ptr<bool> destroyed_;
   int item_count_ = 0;
 };
 

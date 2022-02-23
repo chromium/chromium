@@ -19,6 +19,8 @@ import org.gradle.api.logging.Logger
  */
 class ChromiumDepGraph {
 
+    private static final String DEFAULT_CIPD_SUFFIX = 'cr0'
+
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
@@ -27,11 +29,13 @@ class ChromiumDepGraph {
         com_android_tools_desugar_jdk_libs: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/google/desugar_jdk_libs/master/LICENSE',
             licenseName: 'GNU General Public License, version 2, with the Classpath Exception',
-            generateTarget: false),
+            generateTarget: false,
+            cipdSuffix: 'cr1'),
         com_android_tools_desugar_jdk_libs_configuration: new PropertyOverride(
             licensePath: 'licenses/desugar_jdk_libs_configuration.txt',
             licenseName: 'BSD 3-Clause',
-            generateTarget: false),
+            generateTarget: false,
+            cipdSuffix: 'cr1'),
         backport_util_concurrent_backport_util_concurrent: new PropertyOverride(
             licensePath: 'licenses/CC01.0.txt',
             licenseName: 'CC0 1.0'),
@@ -127,7 +131,8 @@ class ChromiumDepGraph {
             description: 'Only contains necessary framework & Xerces2 classes',
             url: 'http://nekohtml.sourceforge.net/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
+            licenseName: 'Apache 2.0',
+            overrideLatest: true),
         org_apache_ant_ant: new PropertyOverride(
             url: 'https://ant.apache.org/',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
@@ -434,18 +439,35 @@ class ChromiumDepGraph {
 
         PROPERTY_OVERRIDES.each { id, fallbackProperties ->
             DependencyDescription dep = dependencies.get(id)
-            if (!dep) {
+            if (dep) {
+                // Null-check is required since isShipped is a boolean. This
+                // check must come after all the deps are resolved instead of in
+                // customizeDep, since otherwise it gets overwritten.
+                if (fallbackProperties?.isShipped != null) {
+                    dep.isShipped = fallbackProperties.isShipped
+                }
+                // if overrideLatest is truey, set it recursively on the dep and
+                // all its children. This makes it easier to manage since you do
+                // not have to set it on a whole set of old deps.
+                if (fallbackProperties?.overrideLatest) {
+                    recursivelyOverrideLatestVersion(dep)
+                }
+            } else {
                 logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
-            // Null-check is required since isShipped is a boolean. This check must come after all the deps are
-            // resolved instead of in customizeDep, since otherwise it gets overwritten.
-            } else if (fallbackProperties?.isShipped != null) {
-                dep.isShipped = fallbackProperties.isShipped
             }
         }
     }
 
     private static String sanitize(String input) {
         return input.replaceAll('[:.-]', '_')
+    }
+
+    private void recursivelyOverrideLatestVersion(DependencyDescription dep) {
+        dep.overrideLatest = true
+        dep.children.each { childID ->
+            DependencyDescription child = dependencies.get(childID)
+            recursivelyOverrideLatestVersion(child)
+        }
     }
 
     private void collectDependenciesInternal(ResolvedDependency dependency, boolean recurse = true) {
@@ -464,18 +486,9 @@ class ChromiumDepGraph {
             }
         }
 
-        if (dependency.moduleArtifacts.empty ||
-            !areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
-            throw new IllegalStateException("The dependency ${id} does not have exactly one " +
-                                            "artifact: ${dependency.moduleArtifacts}")
-        }
-        ResolvedArtifact artifact = dependency.moduleArtifacts[0]
-        if (artifact.extension != 'jar' && artifact.extension != 'aar') {
-            throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
-        }
-
+        List<ResolvedDependency> childDependenciesWithArtifacts = []
+        List<String> childModules = []
         if (recurse) {
-            List<ResolvedDependency> childDependenciesWithArtifacts = []
 
             dependency.children.each { childDependency ->
                 // Replace dependency which acts as a redirect (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
@@ -491,16 +504,34 @@ class ChromiumDepGraph {
                 }
             }
 
-            List<String> childModules = []
             childDependenciesWithArtifacts.each { childDependency ->
                 childModules += makeModuleId(childDependency.module)
             }
-            dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+        }
+
+        if (dependency.moduleArtifacts.empty) {
+            assert childModules : "${id} has no children and no artifacts."
+            assert recurse : "${id} has no artifacts so it needs to have child modules."
+            dependencies.put(id, buildDepDescriptionNoArtifact(id, dependency, childModules))
             childDependenciesWithArtifacts.each {
                 childDependency -> collectDependenciesInternal(childDependency)
             }
+        } else if (!areAllModuleArtifactsSameFile(dependency.moduleArtifacts)) {
+            throw new IllegalStateException("The dependency ${id} has multiple different artifacts: " +
+                                            "${dependency.moduleArtifacts}")
         } else {
-            dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
+            ResolvedArtifact artifact = dependency.moduleArtifacts[0]
+            if (artifact.extension != 'jar' && artifact.extension != 'aar') {
+                throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
+            }
+            if (recurse) {
+                dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+                childDependenciesWithArtifacts.each {
+                    childDependency -> collectDependenciesInternal(childDependency)
+                }
+            } else {
+                dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
+            }
         }
     }
 
@@ -519,11 +550,28 @@ class ChromiumDepGraph {
         return true
     }
 
+    private DependencyDescription buildDepDescriptionNoArtifact(
+            String id, ResolvedDependency dependency, List<String> childModules) {
+
+        return customizeDep(new DependencyDescription(
+                id: id,
+                group: dependency.module.id.group,
+                name: dependency.module.id.name,
+                version: dependency.module.id.version,
+                extension: 'group',
+                children: Collections.unmodifiableList(new ArrayList<>(childModules)),
+                directoryName: id.toLowerCase(),
+                displayName: dependency.module.id.name,
+                exclude: false,
+                cipdSuffix: DEFAULT_CIPD_SUFFIX,
+        ))
+    }
+
     private DependencyDescription buildDepDescription(
             String id, ResolvedDependency dependency, ResolvedArtifact artifact, List<String> childModules) {
-        String pomUrl
+        String pomUrl, repoUrl
         GPathResult pomContent
-        (pomUrl, pomContent) = computePomFromArtifact(artifact)
+        (repoUrl, pomUrl, pomContent) = computePomFromArtifact(artifact)
 
         List<LicenseSpec> licenses = []
         if (!skipLicenses) {
@@ -552,11 +600,12 @@ class ChromiumDepGraph {
                 directoryName: id.toLowerCase(),
                 fileName: artifact.file.name,
                 fileUrl: fileUrl,
+                repoUrl: repoUrl,
                 description: description,
                 url: pomContent.url?.text(),
                 displayName: displayName,
                 exclude: false,
-                cipdSuffix: 'cr0',
+                cipdSuffix: DEFAULT_CIPD_SUFFIX,
         ))
     }
 
@@ -701,7 +750,7 @@ class ChromiumDepGraph {
                 GPathResult content = new XmlSlurper(
                         false /* validating */, false /* namespaceAware */).parse(fileUrl)
                 logger.debug("Succeeded in resolving url $fileUrl")
-                return [fileUrl, content]
+                return [repoUrl, fileUrl, content]
             } catch (any) {
                 logger.debug("Failed in resolving url $fileUrl")
             }
@@ -730,6 +779,10 @@ class ChromiumDepGraph {
         String group, name, version, extension, displayName, description, url
         List<LicenseSpec> licenses
         String fileName, fileUrl
+        // |repoUrl| is the url to the repo that hosts this dep's artifact
+        // (|fileUrl|). Basically |fileurl|.startswith(|repoUrl|). |url| is the
+        // project homepage as supplied by the developer.
+        String repoUrl
         // The local directory name to store the files like artifact, license file, 3pp subdirectory, and etc. Must be
         // lowercase since 3pp uses the directory name as part of the CIPD names. However CIPD does not allow uppercase
         // in names.
@@ -740,6 +793,10 @@ class ChromiumDepGraph {
         ComponentIdentifier componentId
         List<String> children
         String cipdSuffix
+        // When set overrides the version downloaded by the 3pp fetch script to
+        // be, instead of the latest available, the resolved version by gradle
+        // in this run.
+        Boolean overrideLatest
 
     }
 
@@ -760,6 +817,9 @@ class ChromiumDepGraph {
         Boolean exclude
         // Set to false to skip creation of BUILD.gn target.
         Boolean generateTarget
+        // Set to override the 3pp fetch script returing the latest version and
+        // instead forcibly return the version required by gradle.
+        Boolean overrideLatest
 
     }
 

@@ -86,7 +86,7 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
                                   bool uses_zoomed_reference_box) {
   DCHECK(HasCompositeClipPathAnimation(clip_path_owner));
   DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
-            ClipPathOperation::SHAPE);
+            ClipPathOperation::kShape);
 
   float zoom = uses_zoomed_reference_box
                    ? clip_path_owner.StyleRef().EffectiveZoom()
@@ -94,15 +94,15 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
 
-  scoped_refptr<Image> paint_worklet_image = generator->Paint(
-      zoom, FloatRect(reference_box), *clip_path_owner.GetNode());
+  scoped_refptr<Image> paint_worklet_image =
+      generator->Paint(zoom, reference_box, *clip_path_owner.GetNode());
 
   // TODO(crbug.com/1248610): Fix bounding box. It should enclose affected area
   // of the animation.
   absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
-  FloatRect src_rect(bounding_box.value());
+  gfx::RectF src_rect = bounding_box.value();
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
                     PaintAutoDarkMode(clip_path_owner.StyleRef(),
                                       DarkModeFilter::ElementRole::kBackground),
@@ -127,18 +127,16 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
 
   gfx::RectF reference_box = LocalReferenceBox(object);
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
-  if (clip_path.GetType() == ClipPathOperation::SHAPE) {
+  if (clip_path.GetType() == ClipPathOperation::kShape) {
     auto zoom =
         UsesZoomedReferenceBox(object) ? object.StyleRef().EffectiveZoom() : 1;
     auto& shape = To<ShapeClipPathOperation>(clip_path);
-    gfx::RectF bounding_box =
-        shape.GetPath(FloatRect(reference_box), zoom).BoundingRect();
-    bounding_box.Intersect(
-        gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())));
+    gfx::RectF bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
+    bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
     return bounding_box;
   }
 
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::REFERENCE);
+  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper = ResolveElementReference(
       object, To<ReferenceClipPathOperation>(clip_path));
   if (!clipper)
@@ -154,7 +152,7 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     // local space is shifted by paint offset.
     bounding_box.Offset(reference_box.OffsetFromOrigin());
   }
-  bounding_box.Intersect(gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())));
+  bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
   return bounding_box;
 }
 
@@ -195,19 +193,18 @@ static absl::optional<Path> PathBasedClipInternal(
     return path;
   }
 
-  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::SHAPE);
+  DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
   auto& shape = To<ShapeClipPathOperation>(clip_path);
   float zoom = uses_zoomed_reference_box
                    ? clip_path_owner.StyleRef().EffectiveZoom()
                    : 1;
-  return shape.GetPath(FloatRect(reference_box), zoom);
+  return shape.GetPath(reference_box, zoom);
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(
     GraphicsContext& context,
     const LayoutObject& layout_object,
-    const DisplayItemClient& display_item_client,
-    const PhysicalOffset& paint_offset) {
+    const DisplayItemClient& display_item_client) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
   DCHECK(properties);
   DCHECK(properties->MaskClip());
@@ -227,9 +224,9 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   // CompositeClipPathAnimation.
   DrawingRecorder recorder(
       context, display_item_client, DisplayItem::kSVGClip,
-      ToGfxRect(
-          EnclosingIntRect(properties->MaskClip()->PaintClipRect().Rect())));
+      gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect()));
   context.Save();
+  PhysicalOffset paint_offset = layout_object.FirstFragment().PaintOffset();
   context.Translate(paint_offset.left, paint_offset.top);
 
   bool uses_zoomed_reference_box = UsesZoomedReferenceBox(layout_object);

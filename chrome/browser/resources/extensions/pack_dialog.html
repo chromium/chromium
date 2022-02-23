@@ -17,16 +17,16 @@
   <div slot="title">$i18n{packDialogTitle}</div>
   <div slot="body">
     <div>$i18n{packDialogContent}</div>
-    <cr-input id="root-dir" label="$i18n{packDialogExtensionRoot}"
+    <cr-input id="rootDir" label="$i18n{packDialogExtensionRoot}"
         value="{{packDirectory_}}">
-      <cr-button id="root-dir-browse" on-click="onRootBrowse_"
+      <cr-button id="rootDirBrowse" on-click="onRootBrowse_"
           slot="suffix">
         $i18n{packDialogBrowse}
       </cr-button>
     </cr-input>
-    <cr-input id="key-file" label="$i18n{packDialogKeyFile}"
+    <cr-input id="keyFile" label="$i18n{packDialogKeyFile}"
         value="{{keyFile_}}">
-      <cr-button id="key-file-browse" on-click="onKeyBrowse_"
+      <cr-button id="keyFileBrowse" on-click="onKeyBrowse_"
           slot="suffix">
         $i18n{packDialogBrowse}
       </cr-button>

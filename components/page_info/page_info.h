@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -57,7 +58,6 @@ class PageInfo {
     SITE_CONNECTION_STATUS_UNENCRYPTED,      // Connection is not encrypted.
     SITE_CONNECTION_STATUS_ENCRYPTED_ERROR,  // Connection error occurred.
     SITE_CONNECTION_STATUS_INTERNAL_PAGE,    // Internal site.
-    SITE_CONNECTION_STATUS_LEGACY_TLS,  // Connection used a legacy TLS version.
   };
 
   // Validation status of a website's identity.
@@ -147,6 +147,8 @@ class PageInfo {
     PAGE_INFO_STORE_INFO_CLICKED = 27,
     PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED = 28,
     PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED = 29,
+    PAGE_INFO_AD_PERSONALIZATION_PAGE_OPENED = 30,
+    PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED = 31,
     PAGE_INFO_COUNT
   };
 
@@ -319,6 +321,9 @@ class PageInfo {
   // presented in a headset.
   void PresentPageFeatureInfo();
 
+  // Sets (presents) the information about ad personalization in the |ui_|.
+  void PresentAdPersonalizationData();
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Records a password reuse event. If FULL_SAFE_BROWSING is defined, this
   // function WILL record an event. Callers should check conditions beforehand.
@@ -359,7 +364,7 @@ class PageInfo {
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
   // information (identity, connection status, etc.).
-  PageInfoUI* ui_;
+  raw_ptr<PageInfoUI> ui_;
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;
@@ -395,7 +400,7 @@ class PageInfo {
   // strings below to the corresponding UI code, in order to prevent
   // unnecessary UTF-8 string conversions.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Details about the website's identity. If the website's identity has been
   // verified then |identity_status_description_android_| contains who verified
   // the identity. This string will be displayed in the UI.

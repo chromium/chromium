@@ -4,12 +4,6 @@
 
 #include "ui/base/hit_test.h"
 
-#include <set>
-
-#if defined(OS_WIN)
-#include <windows.h>
-#endif
-
 namespace ui {
 
 bool IsResizingComponent(int component) {

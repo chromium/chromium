@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
@@ -41,18 +42,20 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/ukm/content/source_url_recorder.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
+#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -64,6 +67,24 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+bool ShouldUseQuietUI(content::WebContents* web_contents,
+                      ContentSettingsType type) {
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  return type == ContentSettingsType::NOTIFICATIONS &&
+         manager->ShouldCurrentRequestUseQuietUI();
+}
+#endif
+
+}  // namespace
 
 // static
 ChromePermissionsClient* ChromePermissionsClient::GetInstance() {
@@ -172,7 +193,7 @@ void ChromePermissionsClient::AreSitesImportant(
   }
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Some Google-affiliated domains are not allowed to delete cookies for
 // supervised accounts.
 bool ChromePermissionsClient::IsCookieDeletionDisabled(
@@ -301,15 +322,20 @@ absl::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  // The New Tab Page is excluded from origin checks as its effective requesting
-  // origin may be the Default Search Engine origin. Extensions are also
-  // excluded as currently they can request permission from iframes when
-  // embedded in non-secure contexts (https://crbug.com/530507).
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Extensions are excluded from origin checks as currently they can request
+  // permission from iframes when embedded in non-secure contexts
+  // (https://crbug.com/530507).
+  if (requesting_origin.SchemeIs(extensions::kExtensionScheme))
+    return true;
+#endif
+
+  // The New Tab Page is excluded from origin checks as its effective
+  // requesting origin may be the Default Search Engine origin.
   return embedding_origin ==
              GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL() ||
          embedding_origin ==
-             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL() ||
-         requesting_origin.SchemeIs(extensions::kExtensionScheme);
+             GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
 absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
@@ -325,6 +351,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
     return requesting_origin;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Note that currently chrome extensions are allowed to use permissions even
   // when in embedded in non-secure contexts. This is unfortunate and we
   // should remove this at some point, but for now always use the requesting
@@ -332,6 +359,7 @@ absl::optional<GURL> ChromePermissionsClient::OverrideCanonicalOrigin(
   if (requesting_origin.SchemeIs(extensions::kExtensionScheme)) {
     return requesting_origin;
   }
+#endif
 
   return absl::nullopt;
 }
@@ -345,37 +373,13 @@ bool ChromePermissionsClient::DoOriginsMatchNewTabPage(
              GURL(chrome::kChromeUINewTabPageURL).DeprecatedGetOriginAsURL();
 }
 
-#if defined(OS_ANDROID)
-bool ChromePermissionsClient::IsPermissionControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
-  SearchPermissionsService* search_helper =
-      SearchPermissionsService::Factory::GetForBrowserContext(browser_context);
-  return search_helper &&
-         search_helper->IsPermissionControlledByDSE(type, origin);
-}
-
+#if BUILDFLAG(IS_ANDROID)
 bool ChromePermissionsClient::IsDseOrigin(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
   SearchPermissionsService* search_helper =
       SearchPermissionsService::Factory::GetForBrowserContext(browser_context);
   return search_helper && search_helper->IsDseOrigin(origin);
-}
-
-bool ChromePermissionsClient::ResetPermissionIfControlledByDse(
-    content::BrowserContext* browser_context,
-    ContentSettingsType type,
-    const url::Origin& origin) {
-  SearchPermissionsService* search_helper =
-      SearchPermissionsService::Factory::GetForBrowserContext(browser_context);
-  if (search_helper &&
-      search_helper->IsPermissionControlledByDSE(type, origin)) {
-    search_helper->ResetDSEPermission(type);
-    return true;
-  }
-  return false;
 }
 
 infobars::InfoBarManager* ChromePermissionsClient::GetInfoBarManager(
@@ -389,13 +393,28 @@ infobars::InfoBar* ChromePermissionsClient::MaybeCreateInfoBar(
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (infobar_manager &&
-      GroupedPermissionInfoBarDelegate::ShouldShowMiniInfobar(web_contents,
-                                                              type)) {
+  if (infobar_manager && ShouldUseQuietUI(web_contents, type)) {
     return GroupedPermissionInfoBarDelegate::Create(std::move(prompt),
                                                     infobar_manager);
   }
   return nullptr;
+}
+
+std::unique_ptr<ChromePermissionsClient::PermissionMessageDelegate>
+ChromePermissionsClient::MaybeCreateMessageUI(
+    content::WebContents* web_contents,
+    ContentSettingsType type,
+    base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
+  if (messages::IsNotificationBlockedMessagesUiEnabled() &&
+      ShouldUseQuietUI(web_contents, type)) {
+    auto delegate =
+        std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
+            std::move(prompt));
+    return std::make_unique<NotificationBlockedMessageDelegate>(
+        web_contents, std::move(delegate));
+  }
+
+  return {};
 }
 
 void ChromePermissionsClient::RepromptForAndroidPermissions(

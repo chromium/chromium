@@ -74,9 +74,8 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(context);
 
-  const bool is_signin_profile =
-      chromeos::ProfileHelper::IsSigninProfile(profile) &&
-      !profile->IsOffTheRecord();
+  const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile) &&
+                                 !profile->IsOffTheRecord();
 
   if (is_signin_profile) {
     // Check for flag.
@@ -92,11 +91,11 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 
     // For the ChromeOS login profile, only allow apps installed by device
     // policy or that are explicitly allowlisted.
-    return login_screen_apps_list->HasKey(extension.id()) ||
+    return login_screen_apps_list->FindKey(extension.id()) ||
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
-  if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
+  if (ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !profile->IsOffTheRecord()) {
     return extension.permissions_data()->HasAPIPermission(
         mojom::APIPermissionID::kLockScreen);

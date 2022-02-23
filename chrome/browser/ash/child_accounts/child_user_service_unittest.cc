@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_constants/constants.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -91,7 +91,7 @@ TEST_F(PerAppTimeLimitsTest, PauseAndResumeWebActivity) {
   EnableWebTimeLimits();
   EXPECT_FALSE(service()->WebTimeLimitReached());
 
-  const std::string app_id = extension_misc::kChromeAppId;
+  const std::string app_id = app_constants::kChromeAppId;
   service()->PauseWebActivity(app_id);
   EXPECT_TRUE(service()->WebTimeLimitReached());
 
@@ -104,7 +104,7 @@ TEST_F(PerAppTimeLimitsTest, PauseWebActivityTwice) {
   EnableWebTimeLimits();
   EXPECT_FALSE(service()->WebTimeLimitReached());
 
-  const std::string app_id = extension_misc::kChromeAppId;
+  const std::string app_id = app_constants::kChromeAppId;
   service()->PauseWebActivity(app_id);
   EXPECT_TRUE(service()->WebTimeLimitReached());
 
@@ -116,7 +116,7 @@ TEST_F(PerAppTimeLimitsTest, ResumeWebActivityTwice) {
   EnableWebTimeLimits();
   EXPECT_FALSE(service()->WebTimeLimitReached());
 
-  const std::string app_id = extension_misc::kChromeAppId;
+  const std::string app_id = app_constants::kChromeAppId;
   service()->ResumeWebActivity(app_id);
 
   EXPECT_FALSE(service()->WebTimeLimitReached());
@@ -132,7 +132,7 @@ TEST_F(PerAppTimeLimitsTest, WebAppsDontTriggerPauseOrResumeWebActivity) {
   EnableWebTimeLimits();
   EXPECT_FALSE(service()->WebTimeLimitReached());
 
-  const std::string chrome_app_id = extension_misc::kChromeAppId;
+  const std::string chrome_app_id = app_constants::kChromeAppId;
   service()->PauseWebActivity(chrome_app_id);
 
   EXPECT_TRUE(service()->WebTimeLimitReached());

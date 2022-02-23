@@ -4,12 +4,6 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_NACL_NONSFI)
-static_assert(false,
-              "ipc_message_protobuf_utils is not able to work with nacl_nonsfi "
-              "configuration.");
-#endif
-
 #include "ipc/ipc_message_protobuf_utils.h"
 
 #include <initializer_list>

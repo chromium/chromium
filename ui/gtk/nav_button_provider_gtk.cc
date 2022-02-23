@@ -8,6 +8,7 @@
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"

@@ -29,8 +29,8 @@
 // on the current web state.
 + (id<GREYAction>)scrollElementToVisible:(ElementSelector*)selector;
 
-// Action to turn the switch of a SettingsSwitchCell to the given |on| state.
-+ (id<GREYAction>)turnSettingsSwitchOn:(BOOL)on;
+// Action to turn the switch of a TableViewSwitchCell to the given |on| state.
++ (id<GREYAction>)turnTableViewSwitchOn:(BOOL)on;
 
 // Action to turn the switch of a SyncSwitchCell to the given |on| state.
 + (id<GREYAction>)turnSyncSwitchOn:(BOOL)on;

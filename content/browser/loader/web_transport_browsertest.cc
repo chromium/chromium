@@ -196,10 +196,8 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CreateSendStream) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-// ReceiveStream is flaky: crbug.com/1140193
-// TODO(vasilvv): change from QuicTransport to WebTransport when re-enabling.
-#define MAYBE_ReceiveStream DISABLED_ReceiveStream
-IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, MAYBE_ReceiveStream) {
+// Disabled due to flakes; see https://crbug.com/1140193.
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, DISABLED_ReceiveStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -209,35 +207,35 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(
       ExecJs(shell(), base::StringPrintf(R"JS(
     async function run() {
-      const transport = new QuicTransport('https://localhost:%d/echo');
+      const transport = new WebTransport('https://localhost:%d/echo');
 
       await transport.ready;
 
       const data = [65, 66, 67];
 
-      const sendStream = await transport.createSendStream();
-      const writer = sendStream.writable.getWriter();
+      const sendStream = await transport.createUnidirectionalStream();
+      const writer = sendStream.getWriter();
       await writer.write(new Uint8Array(data));
       await writer.close();
 
-      const receiveStreamReader = transport.receiveStreams().getReader();
+      const receiveStreamReader =
+          transport.incomingUnidirectionalStreams.getReader();
       const {value: receiveStream, done: streamsDone} =
           await receiveStreamReader.read();
       if (streamsDone) {
         throw new Error('should not be done');
       }
-      const reader = receiveStream.readable.getReader();
-      const {value: u8array, done: arraysDone} = await reader.read();
-      if (arraysDone) {
-        throw new Error('receiveStream should not be done');
+      const reader = receiveStream.getReader();
+      const actual = [];
+      while (true) {
+        const {value, done} = await reader.read();
+        if (done)
+          break;
+        actual.push(...value);
       }
-      const actual = Array.from(u8array);
+
       if (JSON.stringify(actual) !== JSON.stringify(data)) {
         throw new Error('arrays do not match');
-      }
-      const {done: finalDone} = await reader.read();
-      if (!finalDone) {
-        throw new Error('receiveStream should be done');
       }
     }
 
@@ -249,8 +247,6 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-// This is flaky on all platforms. https://crbug.com/1254667
-// TODO(ricea): Fix it and re-enable.
 IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, BidirectionalStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(

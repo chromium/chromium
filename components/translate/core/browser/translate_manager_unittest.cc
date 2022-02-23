@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -219,7 +220,7 @@ class TranslateManagerTest : public ::testing::Test {
   ProfilePrefRegistration registration_;
   // TODO(groby): request TranslatePrefs from |mock_translate_client_| instead.
   TranslatePrefs translate_prefs_;
-  TranslateDownloadManager* manager_;
+  raw_ptr<TranslateDownloadManager> manager_;
 
   TestNetworkChangeNotifier network_notifier_;
   testing::MockTranslateDriver driver_;
@@ -683,15 +684,15 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
 
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
-  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->InitiateTranslation("en");
+  translate_manager_->InitiateTranslation("zu");
   EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
               ElementsAre(Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1),
                           Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 
-  translate_manager_->TranslatePage("en", "hi", false);
+  translate_manager_->TranslatePage("zu", "hi", false);
 
   // Accept languages should now contain "hi" because the user chose to
   // translate to it once.
@@ -1120,13 +1121,10 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
   translate_manager_->GetLanguageState()->LanguageDetermined(
       kUnknownLanguageCode, true);
 
-  // Translation of unknown source language pages is not supported on iOS.
-  // Experiment in place for supporting it on Android.
+  // Manual translation of unknown source language pages is not supported on
+  // iOS.
   bool unknown_source_supported = true;
-#if defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    unknown_source_supported = false;
-#elif defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   unknown_source_supported = false;
 #endif
   EXPECT_EQ(translate_manager_->CanManuallyTranslate(),
@@ -1136,7 +1134,7 @@ TEST_F(TranslateManagerTest, CanManuallyTranslate_UndefinedSourceLanguage) {
 TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");
-  ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("en"));
+  ASSERT_TRUE(TranslateDownloadManager::IsSupportedLanguage("zu"));
 
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
@@ -1151,19 +1149,19 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage) {
       "ru",
       translate_manager_->GetLanguageState()->GetPredefinedTargetLanguage());
 
-  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
 
   EXPECT_CALL(
       mock_translate_client_,
-      ShowTranslateUI(translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "en", "ru",
+      ShowTranslateUI(translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "zu", "ru",
                       TranslateErrors::NONE, /*triggered_from_menu=*/false))
       .WillOnce(Return(true));
 
   base::HistogramTester histogram_tester;
-  translate_manager_->InitiateTranslation("en");
+  translate_manager_->InitiateTranslation("zu");
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kInitiationStatusName),
-      ElementsAre(Bucket(
+      ::testing::Contains(Bucket(
           metrics::INITIATION_STATUS_SHOW_UI_PREDEFINED_TARGET_LANGUAGE, 1)));
 }
 

@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"

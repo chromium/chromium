@@ -350,6 +350,9 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   properties_->can_share =
       std::make_unique<bool>(metadata->capabilities->can_share);
 
+  properties_->can_pin = std::make_unique<bool>(
+      metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk);
+
   if (drivefs::IsAFile(metadata->type)) {
     properties_->thumbnail_url = std::make_unique<std::string>(
         base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));
@@ -497,6 +500,10 @@ void VolumeToVolumeMetadata(
     case VOLUME_TYPE_SMB:
       volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_SMB;
       break;
+    case VOLUME_TYPE_SYSTEM_INTERNAL:
+      volume_metadata->volume_type =
+          file_manager_private::VOLUME_TYPE_SYSTEM_INTERNAL;
+      break;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
       break;
@@ -535,17 +542,18 @@ void VolumeToVolumeMetadata(
 
   volume_metadata->is_read_only = volume.is_read_only();
   volume_metadata->has_media = volume.has_media();
+  volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
-    case chromeos::disks::MOUNT_CONDITION_NONE:
+    case ash::disks::MOUNT_CONDITION_NONE:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
+    case ash::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNKNOWN;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
+    case ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
       break;

@@ -44,9 +44,9 @@ class AppServerTest : public AppServer {
               ActiveDutyInternal,
               (scoped_refptr<UpdateServiceInternal>),
               (override));
-  MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
+  MOCK_METHOD(bool, SwapInNewVersion, (), (override));
   MOCK_METHOD(bool,
-              ConvertLegacyUpdaters,
+              MigrateLegacyUpdaters,
               (base::RepeatingCallback<void(const RegistrationRequest&)>),
               (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
@@ -108,8 +108,8 @@ TEST_F(AppServerTestCase, SelfUninstall) {
 
   // Expect the app to ActiveDuty then SelfUninstall.
   EXPECT_CALL(*app, ActiveDuty).Times(1);
-  EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
-  EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+  EXPECT_CALL(*app, SwapInNewVersion).Times(0);
+  EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
   EXPECT_CALL(*app, UninstallSelf).Times(1);
   EXPECT_EQ(app->Run(), 0);
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
@@ -124,10 +124,11 @@ TEST_F(AppServerTestCase, SelfPromote) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
+    // Expect the app to SwapInNewVersion and then ActiveDuty then
+    // Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -141,11 +142,11 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty then Shutdown(0).
-    // In this case it bypasses qualification.
+    // Expect the app to SwapInNewVersion and then ActiveDuty then
+    // Shutdown(0). In this case it bypasses qualification.
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
     EXPECT_FALSE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
@@ -165,10 +166,10 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then Shutdown(2).
+    // Expect the app to SwapInNewVersion and then Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }
@@ -193,8 +194,8 @@ TEST_F(AppServerTestCase, ActiveDutyAlready) {
 
     // Expect the app to ActiveDuty and then Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).Times(0);
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).Times(0);
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -218,11 +219,11 @@ TEST_F(AppServerTestCase, StateDirty) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and then ActiveDuty and then
+    // Expect the app to SwapInNewVersion and then ActiveDuty and then
     // Shutdown(0).
     EXPECT_CALL(*app, ActiveDuty).Times(1);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(true));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).WillOnce(Return(true));
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(true));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).WillOnce(Return(true));
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 0);
   }
@@ -246,10 +247,10 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
     auto app = base::MakeRefCounted<AppServerTest>();
 
-    // Expect the app to SwapRpcInterfaces and Shutdown(2).
+    // Expect the app to SwapInNewVersion and Shutdown(2).
     EXPECT_CALL(*app, ActiveDuty).Times(0);
-    EXPECT_CALL(*app, SwapRPCInterfaces).WillOnce(Return(false));
-    EXPECT_CALL(*app, ConvertLegacyUpdaters).Times(0);
+    EXPECT_CALL(*app, SwapInNewVersion).WillOnce(Return(false));
+    EXPECT_CALL(*app, MigrateLegacyUpdaters).Times(0);
     EXPECT_CALL(*app, UninstallSelf).Times(0);
     EXPECT_EQ(app->Run(), 2);
   }

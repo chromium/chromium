@@ -16,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -650,6 +651,42 @@ TEST_F(PDFiumEngineTest, HandleInputEventRawKeyDown) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   raw_key_down_event.windows_key_code = ui::VKEY_TAB;
   EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
+}
+
+TEST_F(PDFiumEngineTest, SelectText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+#if BUILDFLAG(IS_WIN)
+  constexpr char kExpectedText[] =
+      "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
+#else
+  constexpr char kExpectedText[] =
+      "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
+#endif
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+}
+
+TEST_F(PDFiumEngineTest, SelectCroppedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+#if BUILDFLAG(IS_WIN)
+  constexpr char kExpectedText[] = "world!\r\n";
+#else
+  constexpr char kExpectedText[] = "world!\n";
+#endif
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
 using PDFiumEngineDeathTest = PDFiumEngineTest;

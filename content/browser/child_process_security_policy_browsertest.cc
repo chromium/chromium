@@ -43,7 +43,7 @@ class ChildProcessSecurityPolicyInProcessBrowserTest
   }
 };
 
-#if !defined(NDEBUG) && defined(OS_MAC)
+#if !defined(NDEBUG) && BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, DISABLED_NoLeak) {
 #else
 IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, NoLeak) {

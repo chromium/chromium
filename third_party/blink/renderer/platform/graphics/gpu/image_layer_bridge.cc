@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -107,12 +106,12 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   has_presented_since_last_set_image_ = false;
 }
 
-void ImageLayerBridge::SetUV(const FloatPoint& left_top,
-                             const FloatPoint& right_bottom) {
+void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
+                             const gfx::PointF& right_bottom) {
   if (disposed_)
     return;
 
-  layer_->SetUV(ToGfxPointF(left_top), ToGfxPointF(right_bottom));
+  layer_->SetUV(left_top, right_bottom);
 }
 
 void ImageLayerBridge::Dispose() {
@@ -140,11 +139,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
   has_presented_since_last_set_image_ = true;
 
   const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
-  const bool gpu_image = image_->IsTextureBacked();
-
-  // Expect software images for software compositing.
-  if (!gpu_compositing && gpu_image)
-    return false;
 
   const ImageOrientation origin = image_->IsOriginTopLeft()
                                       ? ImageOrientationEnum::kOriginTopLeft
@@ -212,14 +206,17 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
 
     const gfx::Size size(image_->width(), image_->height());
-    viz::ResourceFormat resource_format = viz::RGBA_8888;
-    if (sk_image->colorType() == SkColorType::kRGBA_F16_SkColorType)
-      resource_format = viz::RGBA_F16;
+
+    // Always convert to N32 format.  This is a constraint of the software
+    // compositor.
+    constexpr SkColorType dst_color_type = kN32_SkColorType;
+    viz::ResourceFormat resource_format =
+        viz::SkColorTypeToResourceFormat(dst_color_type);
     RegisteredBitmap registered =
         CreateOrRecycleBitmap(size, resource_format, bitmap_registrar);
 
     SkImageInfo dst_info =
-        SkImageInfo::Make(size.width(), size.height(), sk_image->colorType(),
+        SkImageInfo::Make(size.width(), size.height(), dst_color_type,
                           kPremul_SkAlphaType, sk_image->refColorSpace());
     void* pixels = registered.bitmap->memory();
 
@@ -248,8 +245,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
       recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
       [&size, &format](const RegisteredBitmap& registered) {
         unsigned src_bytes_per_pixel =
-            (registered.bitmap->format() == viz::RGBA_8888) ? 4 : 8;
-        unsigned target_bytes_per_pixel = (format == viz::RGBA_8888) ? 4 : 8;
+            viz::BitsPerPixel(registered.bitmap->format()) / 8;
+        unsigned target_bytes_per_pixel = viz::BitsPerPixel(format) / 8;
         return (registered.bitmap->size().GetArea() * src_bytes_per_pixel !=
                 size.GetArea() * target_bytes_per_pixel);
       });

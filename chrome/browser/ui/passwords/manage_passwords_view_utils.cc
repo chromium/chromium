@@ -32,6 +32,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,7 +45,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -179,7 +180,7 @@ bool IsSyncingAutosignSetting(Profile* profile) {
 GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
   GURL url(chrome::kGooglePasswordManagerURL);
   url = net::AppendQueryParameter(url, "utm_source", "chrome");
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   url = net::AppendQueryParameter(url, "utm_medium", "android");
 #else
   url = net::AppendQueryParameter(url, "utm_medium", "desktop");
@@ -215,7 +216,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
 }
 
 // Navigation is handled differently on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void NavigateToGooglePasswordManager(Profile* profile,
                                      ManagePasswordsReferrer referrer) {
   NavigateParams params(profile, GetGooglePasswordManagerURL(referrer),
@@ -237,4 +238,13 @@ void NavigateToPasswordCheckupPage(Profile* profile) {
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
+    content::WebContents* web_contents) {
+  content::RenderFrameHost* frame = web_contents->GetMainFrame();
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+  frame->CreateNetworkServiceDefaultFactory(
+      url_loader_factory.BindNewPipeAndPassReceiver());
+  return url_loader_factory;
+}

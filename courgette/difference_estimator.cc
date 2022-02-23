@@ -14,8 +14,6 @@
 
 #include <unordered_set>
 
-#include "base/macros.h"
-
 namespace courgette {
 
 // Our difference measure is the number of k-tuples that occur in Subject that

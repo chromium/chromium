@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -145,6 +146,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
   DCHECK(base::Contains(inherited_policies_, feature));
 
   auto inherited_value = inherited_policies_.at(feature);
+  allowlists_checked_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return inherited_value && allowlist->second.Contains(origin);
@@ -167,6 +169,7 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
   DCHECK(base::Contains(inherited_policies_, feature));
 
   auto inherited_value = inherited_policies_.at(feature);
+  allowlists_checked_ = true;
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return inherited_value && allowlist->second.Contains(origin);
@@ -182,9 +185,9 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
     return PermissionsPolicy::Allowlist();
 
   // Return defined policy if exists; otherwise return default policy.
-  auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end())
-    return allowlist->second;
+  const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
+  if (maybe_allow_list.has_value())
+    return maybe_allow_list.value();
 
   // Note: |allowlists_| purely comes from HTTP header. If a feature is not
   // declared in HTTP header, all origins are implicitly allowed.
@@ -200,15 +203,14 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForDevTools(
 const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
     mojom::PermissionsPolicyFeature feature) const {
   DCHECK(base::Contains(feature_list_, feature));
-  DCHECK(base::Contains(inherited_policies_, feature));
   // Return an empty allowlist when disabled through inheritance.
-  if (!inherited_policies_.at(feature))
+  if (!IsFeatureEnabledByInheritedPolicy(feature))
     return PermissionsPolicy::Allowlist();
 
   // Return defined policy if exists; otherwise return default policy.
-  auto allowlist = allowlists_.find(feature);
-  if (allowlist != allowlists_.end())
-    return allowlist->second;
+  const auto& maybe_allow_list = GetAllowlistForFeatureIfExists(feature);
+  if (maybe_allow_list.has_value())
+    return maybe_allow_list.value();
 
   const PermissionsPolicyFeatureDefault default_policy =
       feature_list_.at(feature);
@@ -223,15 +225,42 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
   return default_allowlist;
 }
 
+absl::optional<const PermissionsPolicy::Allowlist>
+PermissionsPolicy::GetAllowlistForFeatureIfExists(
+    mojom::PermissionsPolicyFeature feature) const {
+  // Return an empty allowlist when disabled through inheritance.
+  if (!IsFeatureEnabledByInheritedPolicy(feature))
+    return absl::nullopt;
+
+  // Only return allowlist if actually in `allowlists_`.
+  allowlists_checked_ = true;
+  auto allowlist = allowlists_.find(feature);
+  if (allowlist != allowlists_.end())
+    return allowlist->second;
+  return absl::nullopt;
+}
+
 void PermissionsPolicy::SetHeaderPolicy(
     const ParsedPermissionsPolicy& parsed_header) {
-  DCHECK(allowlists_.empty());
+  DCHECK(allowlists_.empty() && !allowlists_checked_);
   for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
     allowlists_.emplace(
         feature, AllowlistFromDeclaration(parsed_declaration, feature_list_));
+  }
+}
+
+void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
+    const ParsedPermissionsPolicy& parsed_header) {
+  DCHECK(!allowlists_checked_);
+  for (const ParsedPermissionsPolicyDeclaration& parsed_declaration :
+       parsed_header) {
+    mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
+    DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
+    allowlists_[feature] =
+        AllowlistFromDeclaration(parsed_declaration, feature_list_);
   }
 }
 
@@ -245,9 +274,28 @@ PermissionsPolicyFeatureState PermissionsPolicy::GetFeatureState() const {
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
     const PermissionsPolicyFeatureList& feature_list)
-    : origin_(std::move(origin)), feature_list_(feature_list) {}
+    : origin_(std::move(origin)),
+      allowlists_checked_(false),
+      feature_list_(feature_list) {}
 
 PermissionsPolicy::~PermissionsPolicy() = default;
+
+// static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+    const url::Origin& origin) {
+  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList());
+}
+
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+    const url::Origin& origin,
+    const PermissionsPolicyFeatureList& features) {
+  std::unique_ptr<PermissionsPolicy> new_policy =
+      base::WrapUnique(new PermissionsPolicy(origin, features));
+  for (const auto& feature : features) {
+    new_policy->inherited_policies_[feature.first] = false;
+  }
+  return new_policy;
+}
 
 // static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(

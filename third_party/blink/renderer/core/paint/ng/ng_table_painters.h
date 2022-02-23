@@ -35,7 +35,7 @@ class NGTablePainter {
 
   void PaintCollapsedBorders(const PaintInfo&,
                              const PhysicalOffset&,
-                             const IntRect& visual_rect);
+                             const gfx::Rect& visual_rect);
 
  private:
   const NGPhysicalBoxFragment& fragment_;

@@ -102,11 +102,12 @@ TEST_F(PasswordReuseControllerAndroidTest, VerifyButtonText) {
   }
 
   {
+    // TODO(crbug.com/1237388): Remove it once the flags are completed removed.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
         {safe_browsing::
              kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid},
-        {});
+        {safe_browsing::kPasswordProtectionForSignedInUsers});
 
     password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
     password_type.set_is_account_syncing(true);

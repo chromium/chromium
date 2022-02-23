@@ -89,7 +89,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
  protected:
   WebViewAutofillTest() : autofill_controller_(web_view_.autofillController) {}
 
-  bool LoadTestPage() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool LoadTestPage() {
     std::string html = base::SysNSStringToUTF8(kTestFormHtml);
     main_frame_id_ = nil;
     GURL url = GetUrlForPageWithHtmlBody(html);
@@ -101,7 +101,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
     });
   }
 
-  bool SubmitForm() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool SubmitForm() {
     NSString* submit_script =
         [NSString stringWithFormat:@"document.getElementById('%@').click();",
                                    kTestSubmitID];
@@ -110,8 +110,8 @@ class WebViewAutofillTest : public WebViewInttestBase {
     return !submit_error;
   }
 
-  bool SetFormFieldValue(NSString* field_id,
-                         NSString* field_value) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool SetFormFieldValue(NSString* field_id,
+                                       NSString* field_value) {
     NSString* set_value_script = [NSString
         stringWithFormat:@"document.getElementById('%@').value = '%@';",
                          field_id, field_value];

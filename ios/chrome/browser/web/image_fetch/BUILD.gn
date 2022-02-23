@@ -55,7 +55,10 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("image_fetch_java_script_feature_fuzzer") {
-  additional_configs = [ "//build/config/compiler:enable_arc" ]
+  additional_configs = [
+    "//build/config/compiler:enable_arc",
+    "//testing/libfuzzer:build_for_ios_clusterfuzz_job",
+  ]
 
   sources = [ "image_fetch_java_script_feature_fuzzer.mm" ]
   deps = [

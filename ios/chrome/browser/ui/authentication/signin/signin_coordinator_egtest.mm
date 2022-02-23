@@ -6,9 +6,11 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/policy/policy_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -64,6 +66,12 @@ typedef NS_ENUM(NSInteger, OpenSigninMethod) {
 
 namespace {
 
+// Label used to find the 'Learn more' link.
+NSString* const kLearnMoreLabel = @"Learn More";
+
+// Text displayed in the chrome://management page.
+char const kManagedText[] = "Your browser is managed by your administrator.";
+
 NSString* const kPassphrase = @"hello";
 
 // Closes the sign-in import data dialog and choose either to combine the data
@@ -82,8 +90,8 @@ void CloseImportDataDialog(id<GREYMatcher> choiceButtonMatcher) {
 // account.
 void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Set up the fake identities.
-  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
-  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [FakeChromeIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
@@ -164,7 +172,7 @@ void ExpectSyncConsentHistogram(
 // correctly when there is already an identity on the device.
 - (void)testSignInOneUser {
   // Set up a fake identity.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Check |fakeIdentity| is signed-in.
@@ -175,19 +183,19 @@ void ExpectSyncConsentHistogram(
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to keep the browsing data separate during the switch.
-- (void)testSignInSwitchAccountsAndKeepDataSeparate {
+- (void)DISABLED_testSignInSwitchAccountsAndKeepDataSeparate {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataKeepSeparateButton());
 }
 
 // Tests signing in with one account, switching sync account to a second and
 // choosing to import the browsing data during the switch.
-- (void)testSignInSwitchAccountsAndImportData {
+- (void)DISABLED_testSignInSwitchAccountsAndImportData {
   ChooseImportOrKeepDataSepareteDialog(SettingsImportDataImportButton());
 }
 
 // Tests that signing out from the Settings works correctly.
 - (void)testSignInDisconnectFromChrome {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Sign out.
@@ -199,7 +207,7 @@ void ExpectSyncConsentHistogram(
 // correctly.
 - (void)testSignInDisconnectFromChromeManaged {
   // Sign-in with a managed account.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
   ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
@@ -214,7 +222,7 @@ void ExpectSyncConsentHistogram(
 - (void)testSignInCancelIdentityPicker {
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -253,8 +261,8 @@ void ExpectSyncConsentHistogram(
 // crbug.com/462202
 - (void)testSignInCancelAuthenticationFlow {
   // Set up the fake identities.
-  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
-  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [FakeChromeIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
@@ -314,7 +322,7 @@ void ExpectSyncConsentHistogram(
 // done. Ensures that the sign in screen is correctly dismissed.
 // Regression test for crbug.com/596029.
 - (void)testSignInCancelFromBookmarks {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Open Bookmarks and tap on Sign In promo button.
@@ -428,7 +436,7 @@ void ExpectSyncConsentHistogram(
 // Sign-in opened from: tab switcher.
 // Interrupted at: identity picker.
 - (void)testDismissSigninFromTabSwitcherFromIdentityPicker {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:OpenSigninMethodFromTabSwitcher tapSettingsLink:NO];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -452,7 +460,7 @@ void ExpectSyncConsentHistogram(
 // Opens the reauth dialog and interrupts it by open an URL from an external
 // app.
 - (void)testInterruptReauthSignin {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
@@ -464,8 +472,16 @@ void ExpectSyncConsentHistogram(
 
 // Verifies that the user is signed in when selecting "Yes I'm In", after the
 // advanced settings were swiped to dismiss.
-- (void)testSwipeDownInAdvancedSettings {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+// TODO(crbug.com/1277545): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSwipeDownInAdvancedSettings \
+  DISABLED_testSwipeDownInAdvancedSettings
+#else
+#define MAYBE_testSwipeDownInAdvancedSettings \
+  testSwipeDownInAdvancedSettings
+#endif
+- (void)MAYBE_testSwipeDownInAdvancedSettings {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:YES];
 
@@ -517,7 +533,7 @@ void ExpectSyncConsentHistogram(
 // |tapSettingsLink| if YES, the setting link is tapped before opening the URL.
 - (void)assertOpenURLWhenSigninFromView:(OpenSigninMethod)openSigninMethod
                         tapSettingsLink:(BOOL)tapSettingsLink {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:openSigninMethod tapSettingsLink:tapSettingsLink];
   // Open the URL as if it was opened from another app.
@@ -580,7 +596,7 @@ void ExpectSyncConsentHistogram(
 // Tests to remove the last identity in the identity chooser.
 - (void)testRemoveLastAccount {
   // Set up a fake identity.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   // Open the identity chooser.
@@ -603,7 +619,7 @@ void ExpectSyncConsentHistogram(
 - (void)testSignInCancelAddAccount {
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -649,7 +665,7 @@ void ExpectSyncConsentHistogram(
 // the UI has retrieved the list of valid accounts. The test ensures that in
 // this case no account is presented to the user.
 - (void)testAccountInvalidatedDuringSignin {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -688,7 +704,7 @@ void ExpectSyncConsentHistogram(
 // Tests that a signed-in user can open "Settings" screen from the NTP.
 - (void)testOpenManageSyncSettingsFromNTP {
   // Sign in to Chrome.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Select the identity disc particle.
@@ -706,7 +722,7 @@ void ExpectSyncConsentHistogram(
 // correctly when there is already an identity on the device.
 - (void)testSignInFromSettingsMenu {
   // Set up a fake identity.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   // Check |fakeIdentity| is signed-in.
@@ -733,7 +749,7 @@ void ExpectSyncConsentHistogram(
 // Tests that opening the sign-in screen from the Sync Off tab and signin in
 // will turn Sync On.
 - (void)testSignInFromSyncOffLink {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -770,7 +786,7 @@ void ExpectSyncConsentHistogram(
 // Tests that opening the sign-in screen from the Sync Off tab and canceling the
 // sign-in flow will leave a signed-in with sync off user in the same state.
 - (void)testCancelFromSyncOffLink {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -821,7 +837,7 @@ void ExpectSyncConsentHistogram(
 // user is signed out.
 - (void)testSigninPromoWhenSignedOut {
   // Add identity to the device.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -835,7 +851,7 @@ void ExpectSyncConsentHistogram(
 // is signed out and has closed the sign-in promo with user name.
 - (void)testSigninPromoClosedWhenSignedOut {
   // Add identity to the device.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -856,7 +872,7 @@ void ExpectSyncConsentHistogram(
 // with Sync off.
 - (void)testSigninPromoWhenSyncOff {
   // Add identity to the device.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -871,7 +887,7 @@ void ExpectSyncConsentHistogram(
 // with Sync off and has closed the sign-in promo for Sync.
 - (void)testSigninPromoClosedWhenSyncOff {
   // Add identity to the device.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -893,7 +909,7 @@ void ExpectSyncConsentHistogram(
 // Tests that a user in the |ConsentLevel::kSignin| state will be signed out
 // after clearing their browsing history.
 - (void)testUserSignedOutWhenClearingBrowsingData {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -911,9 +927,17 @@ void ExpectSyncConsentHistogram(
 
 // Tests that Sync is on when introducing passphrase from settings, after
 // logging in.
-- (void)testSyncOnWhenPassphraseIntroducedAfterSignIn {
+// TODO(crbug.com/1277545): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
+  DISABLED_testSyncOnWhenPassphraseIntroducedAfterSignIn
+#else
+#define MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn \
+  testSyncOnWhenPassphraseIntroducedAfterSignIn
+#endif
+- (void)MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -958,10 +982,10 @@ void ExpectSyncConsentHistogram(
 }
 
 // Tests to sign-in with one user, and then turn on syncn with a second account.
-- (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
-  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+- (void)DISABLED_testSignInWithOneAccountStartSyncWithAnotherAccount {
+  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  FakeChromeIdentity* fakeIdentity2 = [FakeChromeIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
 
   // Sign-in only with fakeIdentity1.
@@ -981,6 +1005,95 @@ void ExpectSyncConsentHistogram(
 
   // Check fakeIdentity2 is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
+// Tests that when the syncTypesListDisabled policy is enabled, the signin promo
+// description is updated and when opening the sign-in screen a policy warning
+// is displayed with a link that opens the policy management page.
+- (void)DISABLED_testSynTypesDisabledPolicy {
+  // Set policy.
+  std::vector<base::Value> values;
+  values.push_back(base::Value("tabs"));
+  policy_test_utils::SetPolicy(base::Value(std::move(values)),
+                               policy::key::kSyncTypesListDisabled);
+
+  // Check that the promo description is updated.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED)),
+              grey_sufficientlyVisible(), nil)]
+
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  NSString* policyText =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE);
+  policyText = [policyText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
+                                                     withString:@""];
+  policyText = [policyText stringByReplacingOccurrencesOfString:@"END_LINK"
+                                                     withString:@""];
+
+  // Check that the policy warning is presented.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(policyText),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the "learn more link" works.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(kLearnMoreLabel),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitLink),
+                                   nil)] performAction:grey_tap()];
+
+  // Check that the policy management page was opened.
+  [ChromeEarlGrey waitForWebStateContainingText:kManagedText];
+}
+
+// Tests that the sign-in promo disappear when sync is disabled and reappears
+// when sync is enabled again.
+// Related to crbug.com/1287465.
+- (void)testTurnOffSyncDisablePolicy {
+  // Disable sync by policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+  // Open other device tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  // Add an identity to generate a SSO identity update notification.
+  FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Enable sync.
+  policy_test_utils::SetPolicy(false, policy::key::kSyncDisabled);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Check that the sign-in promo is visible.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollToContentEdgeWithStartPoint(
+                               kGREYContentEdgeBottom, 0.5, 0.5)
+      onElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kRecentTabsTableViewControllerAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

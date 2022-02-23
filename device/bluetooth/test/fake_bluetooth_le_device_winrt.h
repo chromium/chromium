@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_device_information_winrt.h"
 
@@ -153,7 +153,7 @@ class FakeBluetoothLEDeviceWinrt
   void SimulateGattServicesDiscoveryError();
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   uint32_t reference_count_ = 1u;
   absl::optional<std::string> name_;
 
@@ -221,7 +221,7 @@ class FakeBluetoothLEDeviceStaticsWinrt
   IFACEMETHODIMP GetDeviceSelector(HSTRING* device_selector) override;
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 };
 
 }  // namespace device

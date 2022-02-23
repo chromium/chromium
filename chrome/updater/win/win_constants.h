@@ -11,6 +11,8 @@
 
 namespace updater {
 
+extern const wchar_t kLegacyGoogleUpdaterAppID[];
+
 extern const wchar_t kUpdaterProcessName[];
 
 // The prefix to use for global names in WIN32 API's. The prefix is necessary
@@ -28,6 +30,7 @@ extern const wchar_t kPrefsAccessMutex[];
 #define UPDATER_KEY COMPANY_KEY L"Update\\"
 #define CLIENTS_KEY UPDATER_KEY L"Clients\\"
 #define CLIENT_STATE_KEY UPDATER_KEY L"ClientState\\"
+#define CLIENT_STATE_MEDIUM_KEY UPDATER_KEY L"ClientStateMedium\\"
 
 #define COMPANY_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"
@@ -43,7 +46,10 @@ extern const wchar_t kPrefsAccessMutex[];
 #define ENV_GOOGLE_UPDATE_IS_MACHINE COMPANY_SHORTNAME_STRING L"UpdateIsMachine"
 
 extern const wchar_t kRegValuePV[];
+extern const wchar_t kRegValueBrandCode[];
+extern const wchar_t kRegValueAP[];
 extern const wchar_t kRegValueName[];
+extern const wchar_t kRegValueUninstallCmdLine[];
 
 // Installer API registry names.
 extern const wchar_t kRegValueInstallerError[];

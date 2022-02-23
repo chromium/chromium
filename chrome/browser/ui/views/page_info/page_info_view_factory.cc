@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -11,12 +12,13 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -59,7 +61,7 @@ class PageInfoSubpageView : public views::View {
     PreferredSizeChanged();
   }
 
-  views::View* content_ = nullptr;
+  raw_ptr<views::View> content_ = nullptr;
 };
 
 int GetIconSize() {
@@ -103,16 +105,18 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateLabelWrapper() {
 PageInfoViewFactory::PageInfoViewFactory(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
-    PageInfoNavigationHandler* navigation_handler)
+    PageInfoNavigationHandler* navigation_handler,
+    PageInfoHistoryController* history_controller)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
-      navigation_handler_(navigation_handler) {}
+      navigation_handler_(navigation_handler),
+      history_controller_(history_controller) {}
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
     base::OnceClosure initialized_callback) {
-  return std::make_unique<PageInfoMainView>(presenter_, ui_delegate_,
-                                            navigation_handler_,
-                                            std::move(initialized_callback));
+  return std::make_unique<PageInfoMainView>(
+      presenter_, ui_delegate_, navigation_handler_, history_controller_,
+      std::move(initialized_callback));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSecurityPageView() {
@@ -138,6 +142,15 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER)),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
                                                          ui_delegate_, info));
+}
+
+std::unique_ptr<views::View>
+PageInfoViewFactory::CreateAdPersonalizationPageView() {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER)),
+      std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
+                                                             ui_delegate_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
@@ -237,7 +250,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       icon = &vector_icons::kFileDownloadIcon;
       break;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       icon = &vector_icons::kProtectedContentIcon;
       break;
@@ -290,9 +303,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::IDLE_DETECTION:
       icon = &vector_icons::kDevicesIcon;
-      break;
-    case ContentSettingsType::FILE_HANDLING:
-      icon = &vector_icons::kDescriptionIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
@@ -400,6 +410,18 @@ const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
 const ui::ImageModel PageInfoViewFactory::GetAboutThisSiteIcon() {
   return ui::ImageModel::FromVectorIcon(views::kInfoIcon, ui::kColorIcon,
                                         GetIconSize());
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetHistoryIcon() {
+  return ui::ImageModel::FromVectorIcon(vector_icons::kHistoryIcon,
+                                        ui::kColorIcon, GetIconSize());
+}
+
+// static
+const ui::ImageModel PageInfoViewFactory::GetAdPersonalizationIcon() {
+  return ui::ImageModel::FromVectorIcon(vector_icons::kAdsClickIcon,
+                                        ui::kColorIcon, GetIconSize());
 }
 
 // static

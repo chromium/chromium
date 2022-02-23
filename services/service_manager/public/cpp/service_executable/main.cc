@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -23,11 +22,11 @@
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -50,7 +49,7 @@ void WaitForDebuggerIfNecessary() {
       }
     }
     if (apps_to_debug.empty() || base::Contains(apps_to_debug, app)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       std::wstring appw = base::UTF8ToWide(app);
       std::wstring message = base::UTF8ToWide(
           base::StringPrintf("%s - %ld", app.c_str(), GetCurrentProcessId()));
@@ -69,7 +68,7 @@ int main(int argc, char** argv) {
   base::AtExitManager at_exit;
   base::CommandLine::Init(argc, argv);
 
-#if !defined(OFFICIAL_BUILD) && defined(OS_WIN)
+#if !defined(OFFICIAL_BUILD) && BUILDFLAG(IS_WIN)
   base::RouteStdioToConsole(false);
 #endif
 

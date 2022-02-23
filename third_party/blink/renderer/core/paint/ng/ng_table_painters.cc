@@ -333,7 +333,7 @@ class TableCellBackgroundClipper {
     PhysicalRect clip_rect = cell_rect;
     clip_rect.Expand(table_cell.BorderInsets());
     context.Save();
-    context.Clip(PixelSnappedIntRect(clip_rect));
+    context.Clip(ToPixelSnappedRect(clip_rect));
   }
 
   ~TableCellBackgroundClipper() {
@@ -420,7 +420,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
 
 void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                            const PhysicalOffset& paint_offset,
-                                           const IntRect& visual_rect) {
+                                           const gfx::Rect& visual_rect) {
   const NGTableBorders* collapsed_borders = fragment_.TableCollapsedBorders();
   if (!collapsed_borders)
     return;
@@ -434,7 +434,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
           paint_info.context, layout_table, paint_info.phase))
     return;
   DrawingRecorder recorder(paint_info.context, layout_table, paint_info.phase,
-                           ToGfxRect(visual_rect));
+                           visual_rect);
 
   PhysicalRect grid_paint_rect = fragment_.TableGridRect();
   grid_paint_rect.offset += paint_offset;
@@ -529,7 +529,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
     }
     BoxBorderPainter::DrawBoxSide(
-        paint_info.context, PixelSnappedIntRect(physical_border_rect), box_side,
+        paint_info.context, ToPixelSnappedRect(physical_border_rect), box_side,
         edge.BorderColor(), edge.BorderStyle(), auto_dark_mode);
   }
 }
@@ -698,9 +698,8 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
                            fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
                                        cell_rect);
-    BoxModelObjectPainter(layout_table_cell)
-        .PaintFillLayers(paint_info, color, background_layers, cell_rect,
-                         geometry);
+    NGBoxFragmentPainter(fragment_).PaintFillLayers(
+        paint_info, color, background_layers, cell_rect, geometry);
   }
 }
 

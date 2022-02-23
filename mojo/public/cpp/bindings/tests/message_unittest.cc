@@ -5,9 +5,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +48,7 @@ TEST(BindingsMessageTest, ConstructFromPayload) {
                   reinterpret_cast<const MojoHandle*>(in_handles1.data()),
                   in_handles1.size(), MOJO_WRITE_MESSAGE_FLAG_NONE);
   for (auto& handle : in_handles1)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
 
   // Now construct a Message object from the same payload and feed that into the
   // pipe.

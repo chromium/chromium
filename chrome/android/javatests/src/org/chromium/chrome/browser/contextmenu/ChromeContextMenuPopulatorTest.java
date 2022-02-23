@@ -105,6 +105,7 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsSendTextMessage()).thenReturn(true);
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
 
+        FeatureList.setTestCanUseDefaultsForTesting();
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
         features.put(ChromeFeatureList.READ_LATER, false);
@@ -120,6 +121,7 @@ public class ChromeContextMenuPopulatorTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ApplicationStatus.resetActivitiesForInstrumentationTests(); });
+        FeatureList.resetTestCanUseDefaultsForTesting();
     }
 
     private void initializePopulator(@ContextMenuMode int mode, ContextMenuParams params) {

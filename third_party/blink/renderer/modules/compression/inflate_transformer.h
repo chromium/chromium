@@ -8,6 +8,7 @@
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/zlib/zlib.h"
 

@@ -15,7 +15,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/task_util.h"
@@ -212,10 +212,10 @@ template <typename T1, typename T2, typename T3, typename T4>
 struct OutputParams {
   OutputParams(T1* out1, T2* out2, T3* out3, T4* out4)
       : out1(out1), out2(out2), out3(out3), out4(out4) {}
-  T1* out1;
-  T2* out2;
-  T3* out3;
-  T4* out4;
+  raw_ptr<T1> out1;
+  raw_ptr<T2> out2;
+  raw_ptr<T3> out3;
+  raw_ptr<T4> out4;
 };
 
 // Copies the |in1|'s value to |output->out1|, |in2|'s to |output->out2|,

@@ -44,7 +44,8 @@ GestureProvider::Config CreateDefaultConfig() {
   // The longpress timeout is non-zero only to indicate ordering with respect to
   // the showpress timeout.
   sConfig.gesture_detector_config.showpress_timeout = base::TimeDelta();
-  sConfig.gesture_detector_config.longpress_timeout = kOneMicrosecond;
+  sConfig.gesture_detector_config.shortpress_timeout = kOneMicrosecond;
+  sConfig.gesture_detector_config.longpress_timeout = kOneMicrosecond * 2;
 
   // A valid doubletap timeout should always be non-zero. The value is used not
   // only to trigger the timeout that confirms the tap event, but also to gate
@@ -285,9 +286,11 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
   }
 
   void SetShowPressAndLongPressTimeout(base::TimeDelta showpress_timeout,
+                                       base::TimeDelta shortpress_timeout,
                                        base::TimeDelta longpress_timeout) {
     GestureProvider::Config config = GetDefaultConfig();
     config.gesture_detector_config.showpress_timeout = showpress_timeout;
+    config.gesture_detector_config.shortpress_timeout = shortpress_timeout;
     config.gesture_detector_config.longpress_timeout = longpress_timeout;
     SetUpWithConfig(config);
   }
@@ -599,7 +602,8 @@ TEST_F(GestureProviderTest, GestureTapWithDelay) {
       GetMostRecentGestureEvent().details.primary_unique_touch_event_id());
 }
 
-// Verify that a DOWN followed by a MOVE will trigger fling (but not LONG).
+// Verify that a DOWN followed by a MOVE will trigger fling, but won't trigger
+// either short-press or long-press.
 TEST_F(GestureProviderTest, GestureFlingAndCancelLongPress) {
   base::TimeTicks event_time = TimeTicks::Now();
   base::TimeDelta delta_time = kDeltaTimeForFlingSequences;
@@ -645,6 +649,7 @@ TEST_F(GestureProviderTest, GestureFlingAndCancelLongPress) {
   EXPECT_EQ(
       primary_unique_touch_event_id,
       GetMostRecentGestureEvent().details.primary_unique_touch_event_id());
+  EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_SHORT_PRESS));
   EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_LONG_PRESS));
   EXPECT_EQ(
       BoundsForSingleMockTouchAtLocation(kFakeCoordX * 10, kFakeCoordY * 10),
@@ -745,11 +750,16 @@ TEST_F(GestureProviderTest, GestureCancelledOnCancelEvent) {
 
   RunTasksAndWait(GetLongPressTimeout() + GetShowPressTimeout() +
                   kOneMicrosecond);
-  EXPECT_TRUE(HasReceivedGesture(ET_GESTURE_SHOW_PRESS));
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
+
+  EXPECT_EQ(ET_GESTURE_SHOW_PRESS, GetNthMostRecentGestureEventType(2));
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
   EXPECT_EQ(
       primary_unique_touch_event_id,
-      GetMostRecentGestureEvent().details.primary_unique_touch_event_id());
+      GetNthMostRecentGestureEvent(1).details.primary_unique_touch_event_id());
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
+  EXPECT_EQ(
+      primary_unique_touch_event_id,
+      GetNthMostRecentGestureEvent(0).details.primary_unique_touch_event_id());
 
   // A cancellation event may be triggered for a number of reasons, e.g.,
   // from a context-menu-triggering long press resulting in loss of focus.
@@ -780,13 +790,19 @@ TEST_F(GestureProviderTest, GestureCancelledOnDetectionReset) {
 
   RunTasksAndWait(GetLongPressTimeout() + GetShowPressTimeout() +
                   kOneMicrosecond);
-  EXPECT_TRUE(HasReceivedGesture(ET_GESTURE_SHOW_PRESS));
-  EXPECT_EQ(primary_unique_touch_event_id,
-            GetReceivedGesture(1).details.primary_unique_touch_event_id());
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
+
+  EXPECT_EQ(ET_GESTURE_SHOW_PRESS, GetNthMostRecentGestureEventType(2));
   EXPECT_EQ(
       primary_unique_touch_event_id,
-      GetMostRecentGestureEvent().details.primary_unique_touch_event_id());
+      GetNthMostRecentGestureEvent(2).details.primary_unique_touch_event_id());
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(
+      primary_unique_touch_event_id,
+      GetNthMostRecentGestureEvent(1).details.primary_unique_touch_event_id());
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
+  EXPECT_EQ(
+      primary_unique_touch_event_id,
+      GetNthMostRecentGestureEvent(0).details.primary_unique_touch_event_id());
 
   ResetGestureDetection();
   EXPECT_FALSE(HasDownEvent());
@@ -1439,6 +1455,7 @@ TEST_F(GestureProviderTest, LongPressAndTapCancelledWhenScrollBegins) {
   RunTasksAndWait(long_press_timeout);
 
   // No LONG_TAP as the LONG_PRESS timer is cancelled.
+  EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_SHORT_PRESS));
   EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_LONG_PRESS));
   EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_LONG_TAP));
 }
@@ -1455,13 +1472,18 @@ TEST_F(GestureProviderTest, GestureLongTap) {
       GetLongPressTimeout() + GetShowPressTimeout() + kOneMicrosecond;
   RunTasksAndWait(long_press_timeout);
 
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
-  EXPECT_EQ(1, GetMostRecentGestureEvent().details.touch_points());
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(1).details.touch_points());
   EXPECT_EQ(BoundsForSingleMockTouchAtLocation(kFakeCoordX, kFakeCoordY),
-            GetMostRecentGestureEvent().details.bounding_box_f());
+            GetNthMostRecentGestureEvent(1).details.bounding_box_f());
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(0).details.touch_points());
+  EXPECT_EQ(BoundsForSingleMockTouchAtLocation(kFakeCoordX, kFakeCoordY),
+            GetNthMostRecentGestureEvent(0).details.bounding_box_f());
 
   event = ObtainMotionEvent(event_time + kOneSecond, MotionEvent::Action::UP);
   gesture_provider_->OnTouchEvent(event);
+
   EXPECT_EQ(ET_GESTURE_LONG_TAP, GetMostRecentGestureEventType());
   EXPECT_EQ(1, GetMostRecentGestureEvent().details.touch_points());
   EXPECT_EQ(BoundsForSingleMockTouchAtLocation(kFakeCoordX, kFakeCoordY),
@@ -1479,8 +1501,11 @@ TEST_F(GestureProviderTest, GestureLongPressDoesNotPreventScrolling) {
       GetLongPressTimeout() + GetShowPressTimeout() + kOneMicrosecond;
   RunTasksAndWait(long_press_timeout);
 
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
-  EXPECT_EQ(1, GetMostRecentGestureEvent().details.touch_points());
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(1).details.touch_points());
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(0).details.touch_points());
+
   event = ObtainMotionEvent(event_time + long_press_timeout,
                             MotionEvent::Action::MOVE, kFakeCoordX + 100,
                             kFakeCoordY + 100);
@@ -1510,7 +1535,9 @@ TEST_F(GestureProviderTest, DeepPressAcceleratedLongPress) {
   event.SetToolType(0, MotionEvent::ToolType::FINGER);
   event.SetClassification(MotionEvent::Classification::DEEP_PRESS);
   EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
+
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
 }
 
 TEST_F(GestureProviderTest, StylusButtonCausesLongPress) {
@@ -1527,7 +1554,9 @@ TEST_F(GestureProviderTest, StylusButtonCausesLongPress) {
   event.SetToolType(0, MotionEvent::ToolType::STYLUS);
   event.set_flags(EF_LEFT_MOUSE_BUTTON);
   EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
+
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
 }
 
 TEST_F(GestureProviderTest, DisabledStylusButtonDoesNotCauseLongPress) {
@@ -1544,7 +1573,9 @@ TEST_F(GestureProviderTest, DisabledStylusButtonDoesNotCauseLongPress) {
   event.SetToolType(0, MotionEvent::ToolType::STYLUS);
   event.set_flags(EF_LEFT_MOUSE_BUTTON);
   EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
-  EXPECT_NE(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
+
+  EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_SHORT_PRESS));
+  EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_LONG_PRESS));
 }
 
 TEST_F(GestureProviderTest, NoGestureLongPressDuringDoubleTap) {
@@ -1572,6 +1603,8 @@ TEST_F(GestureProviderTest, NoGestureLongPressDuringDoubleTap) {
   const base::TimeDelta long_press_timeout =
       GetLongPressTimeout() + GetShowPressTimeout() + kOneMicrosecond;
   RunTasksAndWait(long_press_timeout);
+
+  EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_SHORT_PRESS));
   EXPECT_FALSE(HasReceivedGesture(ET_GESTURE_LONG_PRESS));
 
   event = ObtainMotionEvent(event_time + long_press_timeout,
@@ -2336,8 +2369,11 @@ TEST_F(GestureProviderTest, GesturesCancelledAfterLongPressCausesLostFocus) {
   const base::TimeDelta long_press_timeout =
       GetLongPressTimeout() + GetShowPressTimeout() + kOneMicrosecond;
   RunTasksAndWait(long_press_timeout);
-  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetMostRecentGestureEventType());
-  EXPECT_EQ(1, GetMostRecentGestureEvent().details.touch_points());
+
+  EXPECT_EQ(ET_GESTURE_SHORT_PRESS, GetNthMostRecentGestureEventType(1));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(1).details.touch_points());
+  EXPECT_EQ(ET_GESTURE_LONG_PRESS, GetNthMostRecentGestureEventType(0));
+  EXPECT_EQ(1, GetNthMostRecentGestureEvent(0).details.touch_points());
 
   EXPECT_TRUE(CancelActiveTouchSequence());
   EXPECT_FALSE(HasDownEvent());
@@ -3142,7 +3178,7 @@ TEST_F(GestureProviderTest, NoMinOrMaxGestureBoundsLengthWithStylusOrMouse) {
             GetMostRecentGestureEvent().details.bounding_box_f().height());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222659
 #define MAYBE_BoundingBoxForShowPressAndTapGesture \
   DISABLED_BoundingBoxForShowPressAndTapGesture
@@ -3155,8 +3191,10 @@ TEST_F(GestureProviderTest, MAYBE_BoundingBoxForShowPressAndTapGesture) {
   base::TimeTicks event_time = base::TimeTicks::Now();
   gesture_provider_->SetDoubleTapSupportForPlatformEnabled(false);
   base::TimeDelta showpress_timeout = kOneMicrosecond;
-  base::TimeDelta longpress_timeout = kOneSecond;
-  SetShowPressAndLongPressTimeout(showpress_timeout, longpress_timeout);
+  base::TimeDelta shortpress_timeout = kOneSecond;
+  base::TimeDelta longpress_timeout = kOneSecond * 2;
+  SetShowPressAndLongPressTimeout(showpress_timeout, shortpress_timeout,
+                                  longpress_timeout);
 
   MockMotionEvent event =
       ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 10, 10);

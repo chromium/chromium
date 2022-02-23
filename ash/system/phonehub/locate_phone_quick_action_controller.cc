@@ -25,10 +25,10 @@ constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(5);
 
 }  // namespace
 
-using Status = chromeos::phonehub::FindMyDeviceController::Status;
+using Status = phonehub::FindMyDeviceController::Status;
 
 LocatePhoneQuickActionController::LocatePhoneQuickActionController(
-    chromeos::phonehub::FindMyDeviceController* find_my_device_controller)
+    phonehub::FindMyDeviceController* find_my_device_controller)
     : find_my_device_controller_(find_my_device_controller) {
   DCHECK(find_my_device_controller_);
   find_my_device_controller_->AddObserver(this);
@@ -41,8 +41,7 @@ LocatePhoneQuickActionController::~LocatePhoneQuickActionController() {
 QuickActionItem* LocatePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_LOCATE_PHONE_TITLE,
-                              kPhoneHubLocatePhoneOnIcon,
-                              kPhoneHubLocatePhoneOffIcon);
+                              kPhoneHubLocatePhoneIcon);
   OnPhoneRingingStateChanged();
   return item_;
 }
@@ -122,11 +121,11 @@ void LocatePhoneQuickActionController::SetItemState(ActionState state) {
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
   if (state == ActionState::kNotAvailable) {
-    item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
+    item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
   } else {
     std::u16string tooltip_state =
         l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-    item_->SetIconTooltip(l10n_util::GetStringFUTF16(
+    item_->SetTooltip(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
         tooltip_state));
   }

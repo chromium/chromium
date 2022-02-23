@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_APP_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_APP_VIEW_GUEST_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
 

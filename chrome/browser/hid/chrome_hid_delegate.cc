@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,14 +15,6 @@
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 #include "content/public/browser/render_frame_host.h"
-#include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
-#include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -54,6 +47,10 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
 
 bool ChromeHidDelegate::CanRequestDevicePermission(
     content::RenderFrameHost* render_frame_host) {
+  // The use below of GetMainFrame is safe as content::HidService instances are
+  // not created for fenced frames.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+
   auto* chooser_context = GetChooserContext(render_frame_host);
   const auto& origin =
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
@@ -63,10 +60,23 @@ bool ChromeHidDelegate::CanRequestDevicePermission(
 bool ChromeHidDelegate::HasDevicePermission(
     content::RenderFrameHost* render_frame_host,
     const device::mojom::HidDeviceInfo& device) {
+  // The use below of GetMainFrame is safe as content::HidService instances are
+  // not created for fenced frames.
+  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+
   auto* chooser_context = GetChooserContext(render_frame_host);
   const auto& origin =
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
   return chooser_context->HasDevicePermission(origin, device);
+}
+
+void ChromeHidDelegate::RevokeDevicePermission(
+    content::RenderFrameHost* render_frame_host,
+    const device::mojom::HidDeviceInfo& device) {
+  auto* chooser_context = GetChooserContext(render_frame_host);
+  const auto& origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+  return chooser_context->RevokeDevicePermission(origin, device);
 }
 
 device::mojom::HidManager* ChromeHidDelegate::GetHidManager(
@@ -98,21 +108,11 @@ const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
   return chooser_context->GetDeviceInfo(guid);
 }
 
-bool ChromeHidDelegate::IsFidoAllowedForOrigin(const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  static constexpr auto kPrivilegedExtensionIds =
-      base::MakeFixedFlatSet<base::StringPiece>({
-          "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
-          "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
-      });
-
-  if (origin.scheme() == extensions::kExtensionScheme &&
-      base::Contains(kPrivilegedExtensionIds, origin.host())) {
-    return true;
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  return false;
+bool ChromeHidDelegate::IsFidoAllowedForOrigin(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& origin) {
+  auto* chooser_context = GetChooserContext(render_frame_host);
+  return chooser_context->IsFidoAllowedForOrigin(origin);
 }
 
 void ChromeHidDelegate::OnPermissionRevoked(const url::Origin& origin) {

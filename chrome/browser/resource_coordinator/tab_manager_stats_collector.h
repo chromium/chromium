@@ -99,12 +99,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   // Update session and sequence information for UKM recording.
   void UpdateSessionAndSequence();
 
-  // Helper function for RecordSampledTabData. Records a single UKM entry for
-  // the provided DecisionDetails and destination lifecycle state.
-  static void RecordDecisionDetails(LifecycleUnit* lifecycle_unit,
-                                    const DecisionDetails& decision_details,
-                                    LifecycleUnitState new_state);
-
   static const char kHistogramSessionRestoreSwitchToTab[];
   static const char kHistogramSessionRestoreTabSwitchLoadTime[];
   static const char kHistogramSessionOverlapSessionRestore[];

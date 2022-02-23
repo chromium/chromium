@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 
 namespace base {
 class Value;

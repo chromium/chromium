@@ -19,6 +19,10 @@ web tests and are located at
 Tests that should work across browsers go there. Other directories are for
 Chrome-specific tests only.
 
+Note: if you are looking for a guide for the Web Platform Test, you should read
+["Web platform tests"](./web_platform_tests.md) (WPT). This document does not
+cover WPT specific features/behaviors.
+
 [TOC]
 
 ## Running Web Tests
@@ -170,8 +174,7 @@ to see a full list of options. A few of the most useful options are below:
 | `--debug`                   | Run the debug build of the test shell (default is release). Equivalent to `-t Debug` |
 | `--nocheck-sys-deps`        | Don't check system dependencies; this allows faster iteration. |
 | `--verbose`                 |	Produce more verbose output, including a list of tests that pass. |
-| `--reset-results`           |	Overwrite the current baselines (`-expected.{png|txt|wav}` files) with actual results, or create new baselines if there are no existing baselines. |
-| `--renderer-startup-dialog` | Bring up a modal dialog before running the test, useful for attaching a debugger. |
+| `--reset-results`           |	Overwrite the current baselines (`-expected.{png`&#124;`txt`&#124;`wav}` files) with actual results, or create new baselines if there are no existing baselines. |
 | `--fully-parallel`          | Run tests in parallel using as many child processes as the system has cores. |
 | `--driver-logging`          | Print C++ logs (LOG(WARNING), etc).  |
 
@@ -452,6 +455,12 @@ tips for finding the problem.
 
 ### Debugging HTTP Tests
 
+Note: HTTP Tests mean tests under `web_tests/http/tests/`,
+which is a subset of WebKit Layout Tests originated suite.
+If you want to debug WPT's HTTP behavior, you should read
+["Web platform tests"](./web_platform_tests.md) instead.
+
+
 To run the server manually to reproduce/debug a failure:
 
 ```bash
@@ -501,7 +510,7 @@ machine?
 
 * Do one of the following:
     * Option A) Run from the `chromium/src` folder:
-      `third_party/blink/tools/run_web_tests.py --additional-driver-flag='--remote-debugging-port=9222' --additional-driver-flag='--debug-devtools' --time-out-ms=6000000`
+      `third_party/blink/tools/run_web_tests.py --additional-driver-flag='--remote-debugging-port=9222' --additional-driver-flag='--debug-devtools' --timeout-ms=6000000`
     * Option B) If you need to debug an http/tests/inspector test, start httpd
       as described above. Then, run content_shell:
       `out/Default/content_shell --remote-debugging-port=9222 --additional-driver-flag='--debug-devtools' --run-web-tests http://127.0.0.1:8000/path/to/test.html`

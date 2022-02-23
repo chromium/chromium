@@ -8,8 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // NSBundle isn't threadsafe, all functions in this file must be called on the
 // main thread.
@@ -79,5 +78,4 @@ void SetOverrideFrameworkBundlePath(const FilePath& file_path) {
   AssignOverridePath(file_path, &g_override_framework_bundle);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

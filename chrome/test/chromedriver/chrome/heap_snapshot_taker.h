@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -39,7 +39,7 @@ class HeapSnapshotTaker : public DevToolsEventListener {
  private:
   Status TakeSnapshotInternal();
 
-  DevToolsClient* client_;
+  raw_ptr<DevToolsClient> client_;
   std::string snapshot_;
 };
 

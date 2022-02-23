@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/test/extension_test_notification_observer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -43,7 +44,7 @@ class ExtensionTestNotificationObserver::NotificationSet::
     owner_->WebContentsDestroyed(web_contents());
   }
 
-  ExtensionTestNotificationObserver::NotificationSet* owner_;
+  raw_ptr<ExtensionTestNotificationObserver::NotificationSet> owner_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

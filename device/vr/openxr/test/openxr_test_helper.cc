@@ -7,16 +7,36 @@
 #include <cmath>
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
+#include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
   return path.find(s) != std::string::npos;
+}
+
+device::XrEye GetEyeForIndex(uint32_t index, uint32_t num_views) {
+  DCHECK_LE(num_views, 2u);
+
+  if (num_views == 1) {
+    // Per WebXR spec, the eye for the first person observer view is none.
+    return device::XrEye::kNone;
+  }
+
+  // Per OpenXR spec, the left eye is at index 0 and the right eye at index 1
+  // for the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO view configuration.
+  return (index == 0) ? device::XrEye::kLeft : device::XrEye::kRight;
+}
+
+int GetOffsetMultiplierForIndex(uint32_t index) {
+  return ((index % 2 == 0) ? 1 : -1);
 }
 
 }  // namespace
@@ -39,12 +59,35 @@ OpenXrTestHelper::OpenXrTestHelper()
     : system_id_(0),
       session_(XR_NULL_HANDLE),
       swapchain_(XR_NULL_HANDLE),
+      frame_count_(0),
       session_state_(XR_SESSION_STATE_UNKNOWN),
       frame_begin_(false),
       acquired_swapchain_texture_(0),
-      next_space_(0),
+      next_handle_(0),
       next_predicted_display_time_(0),
-      interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {}
+      interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {
+  // We currently only support one primary and one secondary view configs, but
+  // there will likely be more added in the future to support various devices.
+  // Add new ones here for testing.
+
+  // Per spec, the primary view configuration is always active.
+  primary_configs_supported_.insert(
+      {XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+       device::OpenXrViewConfiguration(
+           XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, true /*active*/,
+           2 /*num_views*/, kPrimaryViewDimension, kSwapCount)});
+
+  // Mark all secondary views as inactive initially until a certain number of
+  // frames has passed, so we can to test the process of switching states. It's
+  // a common scenario for secondary view configurations to become active or
+  // inactive during a session.
+  secondary_configs_supported_.insert(
+      {XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT,
+       device::OpenXrViewConfiguration(
+           XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT,
+           false /*active*/, 1 /*num_views*/, kSecondaryViewDimension,
+           kSwapCount)});
+}
 
 OpenXrTestHelper::~OpenXrTestHelper() = default;
 
@@ -57,7 +100,7 @@ void OpenXrTestHelper::Reset() {
   frame_begin_ = false;
   d3d_device_ = nullptr;
   acquired_swapchain_texture_ = 0;
-  next_space_ = 0;
+  next_handle_ = 0;
   next_predicted_display_time_ = 0;
 
   // vectors
@@ -93,39 +136,46 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
 
 void OpenXrTestHelper::OnPresentedFrame() {
   DCHECK_NE(textures_arr_.size(), 0ull);
-  D3D11_TEXTURE2D_DESC desc;
 
-  device::SubmittedFrameData left_data = {};
+  std::vector<device::ViewData> submitted_views;
+  uint32_t current_x = 0;
 
-  textures_arr_[acquired_swapchain_texture_]->GetDesc(&desc);
-  left_data.image_width = desc.Width;
-  left_data.image_height = desc.Height;
+  for (XrViewConfigurationType view_config_type : view_configs_enabled_) {
+    const device::OpenXrViewConfiguration& view_config =
+        GetViewConfigInfo(view_config_type);
+    if (view_config.Active()) {
+      const std::vector<XrViewConfigurationView>& view_properties =
+          view_config.Properties();
+      for (uint32_t i = 0; i < view_properties.size(); i++) {
+        const XrViewConfigurationView& properties = view_properties[i];
+        device::ViewData& data = submitted_views.emplace_back();
+        data.viewport =
+            gfx::Rect(current_x, 0, properties.recommendedImageRectWidth,
+                      properties.recommendedImageRectHeight);
+        data.eye = GetEyeForIndex(i, view_properties.size());
 
-  device::SubmittedFrameData right_data = left_data;
-  left_data.left_eye = true;
-  right_data.left_eye = false;
-
-  CopyTextureDataIntoFrameData(&left_data, true);
-  CopyTextureDataIntoFrameData(&right_data, false);
+        CopyTextureDataIntoFrameData(current_x, data);
+        current_x += properties.recommendedImageRectWidth;
+      }
+    }
+  }
 
   base::AutoLock auto_lock(lock_);
   if (!test_hook_)
     return;
 
-  test_hook_->OnFrameSubmitted(left_data);
-  test_hook_->OnFrameSubmitted(right_data);
+  test_hook_->OnFrameSubmitted(submitted_views);
 }
 
-void OpenXrTestHelper::CopyTextureDataIntoFrameData(
-    device::SubmittedFrameData* data,
-    bool left) {
+void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
+                                                    device::ViewData& data) {
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
   d3d_device_->GetImmediateContext(&context);
 
-  constexpr size_t buffer_size = sizeof(device::SubmittedFrameData::raw_buffer);
-  constexpr size_t buffer_size_pixels = buffer_size / sizeof(device::Color);
+  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
+  constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 
   // We copy the submitted texture to a new texture, so we can map it, and
   // read back pixel data.
@@ -147,12 +197,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(
 
   // A strip of pixels along the top of the texture, however many will fit into
   // our buffer.
-  D3D11_BOX box;
-  if (left) {
-    box = {0, 0, 0, buffer_size_pixels, 1, 1};
-  } else {
-    box = {kDimension, 0, 0, kDimension + buffer_size_pixels, 1, 1};
-  }
+  D3D11_BOX box{x_start, 0, 0, x_start + buffer_size_pixels, 1, 1};
   context->CopySubresourceRegion(
       texture_destination.Get(), 0, 0, 0, 0,
       textures_arr_[acquired_swapchain_texture_].Get(), 0, &box);
@@ -160,11 +205,11 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(
   D3D11_MAPPED_SUBRESOURCE map_data = {};
   hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
   DCHECK_EQ(hr, S_OK);
-  // We have a 1-pixel image, so store it in the provided SubmittedFrameData
+  // We have a 1-pixel image, so store it in the provided ViewData
   // along with the raw data.
   device::Color* color = static_cast<device::Color*>(map_data.pData);
-  data->color = color[0];
-  memcpy(&data->raw_buffer, map_data.pData, buffer_size);
+  data.color = color[0];
+  memcpy(&data.raw_buffer, map_data.pData, buffer_size);
 
   context->Unmap(texture_destination.Get(), 0);
 }
@@ -178,24 +223,53 @@ XrSystemProperties OpenXrTestHelper::GetSystemProperties() {
   return kSystemProperties;
 }
 
-XrResult OpenXrTestHelper::GetSession(XrSession* session) {
+XrResult OpenXrTestHelper::CreateSession(XrSession* session) {
   RETURN_IF(session_state_ != XR_SESSION_STATE_UNKNOWN,
             XR_ERROR_VALIDATION_FAILURE,
             "SessionState is not unknown before xrCreateSession");
-  session_ = TreatIntegerAsHandle<XrSession>(2);
+  session_ = TreatIntegerAsHandle<XrSession>(++next_handle_);
   *session = session_;
   SetSessionState(XR_SESSION_STATE_IDLE);
   SetSessionState(XR_SESSION_STATE_READY);
   return XR_SUCCESS;
 }
 
-XrSwapchain OpenXrTestHelper::GetSwapchain() {
-  swapchain_ = TreatIntegerAsHandle<XrSwapchain>(3);
+XrResult OpenXrTestHelper::DestroySession(XrSession session) {
+  RETURN_IF_XR_FAILED(ValidateSession(session));
+
+  // Clear the test helper state so that tests can request multiple sessions.
+  Reset();
+
+  return XR_SUCCESS;
+}
+
+XrSwapchain OpenXrTestHelper::CreateSwapchain() {
+  // Our OpenXR backend currently only creates one swapchain at a time, so any
+  // previously created swapchain must have been destroyed.
+  DCHECK_EQ(swapchain_, static_cast<XrSwapchain>(XR_NULL_HANDLE));
+  swapchain_ = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
   return swapchain_;
+}
+
+XrResult OpenXrTestHelper::DestroySwapchain(XrSwapchain swapchain) {
+  RETURN_IF_XR_FAILED(ValidateSwapchain(swapchain));
+  swapchain_ = XR_NULL_HANDLE;
+  return XR_SUCCESS;
 }
 
 XrInstance OpenXrTestHelper::CreateInstance() {
   return reinterpret_cast<XrInstance>(this);
+}
+
+XrResult OpenXrTestHelper::DestroyInstance(XrInstance instance) {
+  RETURN_IF_XR_FAILED(ValidateInstance(instance));
+  // Though Reset() primarily clears variables relating to being able to create
+  // a new session, some tests may instead destroy the device (to simulate a
+  // crash or simply removing the headset). It is impossible to keep an active
+  // session with a destroyed instance, so this ensures that the test helper is
+  // setup to allow a new session to be requested.
+  Reset();
+  return XR_SUCCESS;
 }
 
 XrResult OpenXrTestHelper::GetActionStateFloat(XrAction action,
@@ -252,7 +326,7 @@ XrResult OpenXrTestHelper::GetActionStatePose(XrAction action,
 }
 
 XrSpace OpenXrTestHelper::CreateReferenceSpace(XrReferenceSpaceType type) {
-  XrSpace cur_space = TreatIntegerAsHandle<XrSpace>(++next_space_);
+  XrSpace cur_space = TreatIntegerAsHandle<XrSpace>(++next_handle_);
   switch (type) {
     case XR_REFERENCE_SPACE_TYPE_VIEW:
       reference_spaces_[cur_space] = kViewReferenceSpacePath;
@@ -272,6 +346,21 @@ XrSpace OpenXrTestHelper::CreateReferenceSpace(XrReferenceSpaceType type) {
   return cur_space;
 }
 
+XrResult OpenXrTestHelper::CreateActionSpace(
+    const XrActionSpaceCreateInfo& action_space_create_info,
+    XrSpace* space) {
+  RETURN_IF_XR_FAILED(ValidateActionSpaceCreateInfo(action_space_create_info));
+  *space = TreatIntegerAsHandle<XrSpace>(++next_handle_);
+  action_spaces_[*space] = action_space_create_info.action;
+  return XR_SUCCESS;
+}
+
+XrResult OpenXrTestHelper::DestroySpace(XrSpace space) {
+  RETURN_IF_XR_FAILED(ValidateSpace(space));
+  reference_spaces_.erase(space) || action_spaces_.erase(space);
+  return XR_SUCCESS;
+}
+
 XrResult OpenXrTestHelper::CreateAction(XrActionSet action_set,
                                         const XrActionCreateInfo& create_info,
                                         XrAction* action) {
@@ -281,7 +370,7 @@ XrResult OpenXrTestHelper::CreateAction(XrActionSet action_set,
   action_names_.emplace(create_info.actionName);
   action_localized_names_.emplace(create_info.localizedActionName);
   // The OpenXR Loader will return an error if the action handle is 0.
-  XrAction cur_action = TreatIntegerAsHandle<XrAction>(actions_.size() + 1);
+  XrAction cur_action = TreatIntegerAsHandle<XrAction>(++next_handle_);
   ActionProperties cur_action_properties;
   cur_action_properties.type = create_info.actionType;
   switch (create_info.actionType) {
@@ -317,22 +406,19 @@ XrResult OpenXrTestHelper::CreateAction(XrActionSet action_set,
 }
 
 XrActionSet OpenXrTestHelper::CreateActionSet(
-    const XrActionSetCreateInfo& createInfo) {
-  action_set_names_.emplace(createInfo.actionSetName);
-  action_set_localized_names_.emplace(createInfo.localizedActionSetName);
+    const XrActionSetCreateInfo& create_info) {
+  action_set_names_.emplace(create_info.actionSetName);
+  action_set_localized_names_.emplace(create_info.localizedActionSetName);
   // The OpenXR Loader will return an error if the action set handle is 0.
   XrActionSet cur_action_set =
-      TreatIntegerAsHandle<XrActionSet>(action_sets_.size() + 1);
+      TreatIntegerAsHandle<XrActionSet>(++next_handle_);
   action_sets_[cur_action_set];
   return cur_action_set;
 }
 
-XrResult OpenXrTestHelper::CreateActionSpace(
-    const XrActionSpaceCreateInfo& action_space_create_info,
-    XrSpace* space) {
-  RETURN_IF_XR_FAILED(ValidateActionSpaceCreateInfo(action_space_create_info));
-  *space = TreatIntegerAsHandle<XrSpace>(++next_space_);
-  action_spaces_[*space] = action_space_create_info.action;
+XrResult OpenXrTestHelper::DestroyActionSet(XrActionSet action_set) {
+  RETURN_IF_XR_FAILED(ValidateActionSet(action_set));
+  action_sets_.erase(action_set);
   return XR_SUCCESS;
 }
 
@@ -351,12 +437,99 @@ XrPath OpenXrTestHelper::GetCurrentInteractionProfile() {
   return GetPath(interaction_profile_);
 }
 
-XrResult OpenXrTestHelper::BeginSession() {
+device::OpenXrViewConfiguration& OpenXrTestHelper::GetViewConfigInfo(
+    XrViewConfigurationType view_config) {
+  const auto& primary_config = primary_configs_supported_.find(view_config);
+  if (primary_config != primary_configs_supported_.end()) {
+    return primary_config->second;
+  }
+
+  const auto& secondary_config = secondary_configs_supported_.find(view_config);
+  // The view configuration type should have been validated by the caller.
+  DCHECK(secondary_config != secondary_configs_supported_.end());
+
+  return secondary_config->second;
+}
+
+std::vector<XrViewConfigurationType> OpenXrTestHelper::SupportedViewConfigs()
+    const {
+  std::vector<XrViewConfigurationType> view_configs;
+  for (auto& view_config : primary_configs_supported_) {
+    view_configs.push_back(view_config.first);
+  }
+  for (auto& view_config : secondary_configs_supported_) {
+    view_configs.push_back(view_config.first);
+  }
+
+  return view_configs;
+}
+
+XrResult OpenXrTestHelper::GetSecondaryConfigStates(
+    uint32_t count,
+    XrSecondaryViewConfigurationStateMSFT* states) const {
+  // The number of secondary view configurations is the number of total views
+  // minus the primary view configuration (there is always exactly one primary
+  // config)
+  RETURN_IF(count != view_configs_enabled_.size() - 1,
+            XR_ERROR_SIZE_INSUFFICIENT,
+            "XrSecondaryViewConfigurationFrameStateMSFT "
+            "viewConfigurationCount insufficient");
+
+  // Start at 1, since the primary view is always added first in BeginSession.
+  for (uint32_t i = 1; i < view_configs_enabled_.size(); i++) {
+    const device::OpenXrViewConfiguration& view_config =
+        secondary_configs_supported_.find(view_configs_enabled_[i])->second;
+    states[i - 1] = {XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT, nullptr,
+                     view_config.Type(), view_config.Active()};
+  }
+
+  return XR_SUCCESS;
+}
+
+XrViewConfigurationType OpenXrTestHelper::PrimaryViewConfig() const {
+  return view_configs_enabled_[0];
+}
+
+XrResult OpenXrTestHelper::BeginSession(
+    const std::vector<XrViewConfigurationType>& view_configs) {
   RETURN_IF(IsSessionRunning(), XR_ERROR_SESSION_RUNNING,
             "Session is already running");
   RETURN_IF(session_state_ != XR_SESSION_STATE_READY,
             XR_ERROR_SESSION_NOT_READY,
             "Session is not XR_ERROR_SESSION_NOT_READY");
+
+  // xrBeginSession in the fake OpenXR runtime should have added the primary
+  // view configuration first.
+  if (primary_configs_supported_.find(view_configs[0]) ==
+      primary_configs_supported_.end()) {
+    return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
+  }
+
+  // Add the primary view configuration first - this assumption is made in other
+  // areas of the code.
+  view_configs_enabled_.push_back(view_configs[0]);
+
+  // Process the rest of the view configurations, which should all be secondary.
+  for (uint32_t i = 1; i < view_configs.size(); i++) {
+    if (secondary_configs_supported_.find(view_configs[i]) ==
+        secondary_configs_supported_.end()) {
+      return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
+    }
+
+    // Check for additional primary view configuration.
+    if (primary_configs_supported_.find(view_configs[i]) !=
+        primary_configs_supported_.end()) {
+      return XR_ERROR_VALIDATION_FAILURE;
+    }
+
+    // Check for duplicates.
+    if (base::Contains(view_configs_enabled_, view_configs[i])) {
+      return XR_ERROR_VALIDATION_FAILURE;
+    }
+
+    view_configs_enabled_.push_back(view_configs[i]);
+  }
+
   SetSessionState(XR_SESSION_STATE_FOCUSED);
   return XR_SUCCESS;
 }
@@ -393,6 +566,21 @@ XrResult OpenXrTestHelper::EndFrame() {
   }
 
   frame_begin_ = false;
+
+  ++frame_count_;
+  if (frame_count_ % 10 == 0 && view_configs_enabled_.size() > 1) {
+    // Flip the active state of all secondary views every 10 frames
+    for (uint32_t i = 1; i < view_configs_enabled_.size(); i++) {
+      device::OpenXrViewConfiguration& view_config =
+          secondary_configs_supported_.find(view_configs_enabled_[i])->second;
+      view_config.SetActive(!view_config.Active());
+    }
+
+    // Re-create the D3D textures, since adding or removing a view will change
+    // the width and height of the overall texture.
+    ReinitializeTextures();
+  }
+
   return XR_SUCCESS;
 }
 
@@ -404,14 +592,53 @@ XrResult OpenXrTestHelper::BindActionAndPath(XrPath interaction_profile_path,
   return XR_SUCCESS;
 }
 
-void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
-  DCHECK(d3d_device_ == nullptr);
-  DCHECK(d3d_device != nullptr);
-  d3d_device_ = d3d_device;
+void OpenXrTestHelper::AddDimensions(
+    const device::OpenXrViewConfiguration& view_config,
+    uint32_t& width,
+    uint32_t& height) const {
+  const std::vector<XrViewConfigurationView>& views = view_config.Properties();
+  for (const XrViewConfigurationView& view : views) {
+    width += view.recommendedImageRectWidth;
+    height = std::max(height, view.recommendedImageRectHeight);
+  }
+}
+
+void OpenXrTestHelper::ReinitializeTextures() {
+  DCHECK(d3d_device_);
+
+  uint32_t total_width = 0;
+  uint32_t total_height = 0;
+
+  // The first view config in the enabled list should always be the primary
+  // view configuration.
+  const auto primary =
+      primary_configs_supported_.find(view_configs_enabled_[0]);
+  DCHECK(primary != primary_configs_supported_.end());
+  AddDimensions(primary->second, total_width, total_height);
+
+  // Add secondary views
+  for (uint32_t i = 1; i < view_configs_enabled_.size(); i++) {
+    // There shouldn't be any more primary views enabled.
+    DCHECK(primary_configs_supported_.find(view_configs_enabled_[i]) ==
+           primary_configs_supported_.end());
+    const auto secondary =
+        secondary_configs_supported_.find(view_configs_enabled_[i]);
+    DCHECK(secondary != secondary_configs_supported_.end());
+    if (secondary->second.Active()) {
+      AddDimensions(secondary->second, total_width, total_height);
+    }
+  }
+
+  CreateTextures(total_width, total_height);
+}
+
+void OpenXrTestHelper::CreateTextures(uint32_t width, uint32_t height) {
+  DCHECK(d3d_device_);
+  textures_arr_.clear();
 
   D3D11_TEXTURE2D_DESC desc{};
-  desc.Width = kDimension * 2;  // Using a double wide texture
-  desc.Height = kDimension;
+  desc.Width = width;
+  desc.Height = height;
   desc.MipLevels = 1;
   desc.ArraySize = 1;
   desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -422,10 +649,22 @@ void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
   for (uint32_t i = 0; i < kMinSwapchainBuffering; i++) {
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
     HRESULT hr = d3d_device_->CreateTexture2D(&desc, nullptr, &texture);
-    DCHECK(hr == S_OK);
+    DCHECK_EQ(hr, S_OK);
 
     textures_arr_.push_back(texture);
   }
+}
+
+void OpenXrTestHelper::SetD3DDevice(ID3D11Device* d3d_device) {
+  DCHECK_EQ(d3d_device_, nullptr);
+  DCHECK_NE(d3d_device, nullptr);
+  d3d_device_ = d3d_device;
+
+  // The device is set when the session is created. However, the view
+  // configurations to enable are not specified until a session begins, so we
+  // should use the default primary dimensions to create the textures. The width
+  // is multiplied by 2 because WebXR uses a single double wide texture.
+  CreateTextures(kPrimaryViewDimension * 2, kPrimaryViewDimension);
 }
 
 XrResult OpenXrTestHelper::AttachActionSets(
@@ -526,6 +765,8 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
         button_id = device::kX;
       } else if (PathContainsString(path_string, "/y/")) {
         button_id = device::kY;
+      } else if (PathContainsString(path_string, "/shoulder/")) {
+        button_id = device::kShoulder;
       } else {
         NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
@@ -676,6 +917,14 @@ absl::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
   return absl::nullopt;
 }
 
+absl::optional<device::DeviceConfig> OpenXrTestHelper::GetDeviceConfig() {
+  base::AutoLock lock(lock_);
+  if (test_hook_) {
+    return test_hook_->WaitGetDeviceConfig();
+  }
+  return absl::nullopt;
+}
+
 device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
     std::string path_string) const {
   device::ControllerRole role;
@@ -728,6 +977,9 @@ void OpenXrTestHelper::UpdateInteractionProfile(
     case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
       interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
       break;
+    case device_test::mojom::InteractionProfileType::kViveCosmos:
+      interaction_profile_ = device::kHTCViveCosmosInteractionProfilePath;
+      break;
     case device_test::mojom::InteractionProfileType::kInvalid:
       NOTREACHED() << "Invalid EventData interaction_profile type";
       break;
@@ -735,7 +987,7 @@ void OpenXrTestHelper::UpdateInteractionProfile(
 }
 
 void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
-  DCHECK(pose != nullptr);
+  DCHECK_NE(pose, nullptr);
   *pose = device::PoseIdentity();
   absl::optional<gfx::Transform> transform = absl::nullopt;
 
@@ -800,15 +1052,38 @@ bool OpenXrTestHelper::UpdateData() {
   return false;
 }
 
-bool OpenXrTestHelper::UpdateViewFOV(XrView views[], uint32_t size) {
-  RETURN_IF(size != 2, XR_ERROR_VALIDATION_FAILURE,
-            "UpdateViewFOV currently only supports 2 viewports config");
-  base::AutoLock auto_lock(lock_);
-  if (test_hook_) {
-    auto config = test_hook_->WaitGetDeviceConfig();
-    views[0].pose.position.x = config.interpupillary_distance / 2;
-    views[1].pose.position.x = -config.interpupillary_distance / 2;
+bool OpenXrTestHelper::UpdateViews(XrViewConfigurationType view_config_type,
+                                   XrView views[],
+                                   uint32_t size) {
+  device::OpenXrViewConfiguration& view_config =
+      GetViewConfigInfo(view_config_type);
+  RETURN_IF(size != view_config.Views().size(), XR_ERROR_VALIDATION_FAILURE,
+            "UpdateViews mismatched number of views");
+  RETURN_IF(size != 1 && size != 2, XR_ERROR_VALIDATION_FAILURE,
+            "UpdateViews only supports view configurations with 1 or 2 views");
+
+  absl::optional<gfx::Transform> pose = GetPose();
+  absl::optional<device::DeviceConfig> config = GetDeviceConfig();
+
+  if (!pose.has_value() && !config.has_value()) {
+    return true;
   }
+
+  for (uint32_t i = 0; i < size; i++) {
+    if (pose.has_value()) {
+      views[i].pose = device::GfxTransformToXrPose(*pose);
+    }
+    if (config.has_value()) {
+      // For view configurations with 2 views, assume they are the left and
+      // right eye and set the X offset from zero to be half the IPD.
+      // View configurations with 1 view are not necessarily always at zero, so
+      // just also use half the IPD as an arbitrary offset to avoid adding
+      // additional logic to set to zero.
+      views[i].pose.position.x =
+          config->interpupillary_distance / 2 * GetOffsetMultiplierForIndex(i);
+    }
+  }
+
   return true;
 }
 
@@ -941,9 +1216,9 @@ XrResult OpenXrTestHelper::ValidateSwapchain(XrSwapchain swapchain) const {
 XrResult OpenXrTestHelper::ValidateSpace(XrSpace space) const {
   RETURN_IF(space == XR_NULL_HANDLE, XR_ERROR_HANDLE_INVALID,
             "XrSpace has not been queried");
-  if (reference_spaces_.count(space) != 1 && action_spaces_.count(space) != 1) {
-    RETURN_IF(true, XR_ERROR_HANDLE_INVALID, "XrSpace invalid");
-  }
+  RETURN_IF(
+      reference_spaces_.count(space) != 1 && action_spaces_.count(space) != 1,
+      XR_ERROR_HANDLE_INVALID, space);
 
   return XR_SUCCESS;
 }
@@ -963,7 +1238,9 @@ XrResult OpenXrTestHelper::ValidatePredictedDisplayTime(XrTime time) const {
 }
 
 XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
-    const XrCompositionLayerProjection& projection_layer) const {
+    XrViewConfigurationType view_config,
+    const XrCompositionLayerProjection& projection_layer) {
+  // The caller should have validated the view configuration.
   RETURN_IF(projection_layer.type != XR_TYPE_COMPOSITION_LAYER_PROJECTION,
             XR_ERROR_LAYER_INVALID,
             "XrCompositionLayerProjection type invalid");
@@ -978,29 +1255,38 @@ XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
   RETURN_IF(space_path.compare(kLocalReferenceSpacePath) != 0,
             XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection space is not local space");
-  RETURN_IF(projection_layer.viewCount != OpenXrTestHelper::kViewCount,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerProjection viewCount invalid");
   RETURN_IF(projection_layer.views == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection view is nullptr");
+
+  const device::OpenXrViewConfiguration& config =
+      GetViewConfigInfo(view_config);
+
+  RETURN_IF(projection_layer.viewCount != config.Views().size(),
+            XR_ERROR_VALIDATION_FAILURE,
+            "XrCompositionLayerProjection viewCount invalid");
 
   for (uint32_t j = 0; j < projection_layer.viewCount; j++) {
     const XrCompositionLayerProjectionView& projection_view =
         projection_layer.views[j];
-    RETURN_IF_XR_FAILED(
-        ValidateXrCompositionLayerProjectionView(projection_view));
+    RETURN_IF_XR_FAILED(ValidateXrCompositionLayerProjectionView(
+        projection_view, projection_layer.viewCount, j));
   }
 
   return XR_SUCCESS;
 }
 
 XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjectionView(
-    const XrCompositionLayerProjectionView& projection_view) const {
-  RETURN_IF(projection_view.type != XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW,
+    const XrCompositionLayerProjectionView& view,
+    uint32_t view_count,
+    uint32_t index) {
+  DCHECK_LE(view_count, 2u);
+  DCHECK_LE(index, 2u);
+  RETURN_IF(view.type != XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW,
             XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjectionView type invalid");
-  RETURN_IF(projection_view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+  RETURN_IF(view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjectionView next is not nullptr");
+
   return XR_SUCCESS;
 }
 
@@ -1028,7 +1314,21 @@ XrResult OpenXrTestHelper::ValidateViews(uint32_t view_capacity_input,
     XrView view = views[i];
     RETURN_IF_FALSE(view.type == XR_TYPE_VIEW, XR_ERROR_VALIDATION_FAILURE,
                     "XrView type invalid");
+    RETURN_IF(view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+              "XrView next is not nullptr");
   }
+
+  return XR_SUCCESS;
+}
+
+XrResult OpenXrTestHelper::ValidateViewConfigType(
+    XrViewConfigurationType view_config) const {
+  RETURN_IF(primary_configs_supported_.find(view_config) ==
+                    primary_configs_supported_.end() &&
+                secondary_configs_supported_.find(view_config) ==
+                    secondary_configs_supported_.end(),
+            XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED,
+            "XrViewConfigurationType unsupported");
 
   return XR_SUCCESS;
 }

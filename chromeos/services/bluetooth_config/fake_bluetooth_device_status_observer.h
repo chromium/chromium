@@ -35,13 +35,31 @@ class FakeBluetoothDeviceStatusObserver
     return paired_device_properties_list_;
   }
 
+  const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
+  connected_device_properties_list() const {
+    return connected_device_properties_list_;
+  }
+
+  const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
+  disconnected_device_properties_list() const {
+    return disconnected_device_properties_list_;
+  }
+
  private:
   // mojom::BluetoothDeviceStatusObserver:
   void OnDevicePaired(
       mojom::PairedBluetoothDevicePropertiesPtr device) override;
+  void OnDeviceConnected(
+      mojom::PairedBluetoothDevicePropertiesPtr device) override;
+  void OnDeviceDisconnected(
+      mojom::PairedBluetoothDevicePropertiesPtr device) override;
 
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
       paired_device_properties_list_;
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+      connected_device_properties_list_;
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr>
+      disconnected_device_properties_list_;
   mojo::Receiver<mojom::BluetoothDeviceStatusObserver> receiver_{this};
 };
 

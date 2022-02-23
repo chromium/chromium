@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
@@ -36,8 +37,7 @@ std::unique_ptr<base::Value> PrerenderHistory::CopyEntriesAsValue() const {
   auto return_list = std::make_unique<base::ListValue>();
   // Javascript needs times in terms of milliseconds since Jan 1, 1970.
   base::Time epoch_start = base::Time::UnixEpoch();
-  for (auto it = entries_.rbegin(); it != entries_.rend(); ++it) {
-    const Entry& entry = *it;
+  for (const Entry& entry : base::Reversed(entries_)) {
     auto entry_dict = std::make_unique<base::DictionaryValue>();
     entry_dict->SetString("url", entry.url.spec());
     entry_dict->SetString("final_status",

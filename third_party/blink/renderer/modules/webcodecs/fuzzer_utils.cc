@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
@@ -36,7 +37,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -51,20 +52,9 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 }  // namespace
 
-// static
-FakeFunction* FakeFunction::Create(ScriptState* script_state,
-                                   std::string name) {
-  return MakeGarbageCollected<FakeFunction>(script_state, name);
-}
+FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}
 
-FakeFunction::FakeFunction(ScriptState* script_state, std::string name)
-    : ScriptFunction(script_state), name_(name) {}
-
-v8::Local<v8::Function> FakeFunction::Bind() {
-  return BindToV8Function();
-}
-
-ScriptValue FakeFunction::Call(ScriptValue) {
+ScriptValue FakeFunction::Call(ScriptState*, ScriptValue) {
   return ScriptValue();
 }
 
@@ -376,8 +366,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
                             IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-AudioData* MakeAudioData(ScriptState* script_state,
-                         const wc_fuzzer::AudioDataInit& proto) {
+AudioData* MakeAudioData(const wc_fuzzer::AudioDataInit& proto) {
   if (!proto.channels().size() ||
       proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
@@ -417,6 +406,19 @@ AudioData* MakeAudioData(ScriptState* script_state,
   init->setData(MakeGarbageCollected<AllowSharedBufferSource>(buffer));
 
   return AudioData::Create(init, IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+AudioDataCopyToOptions* MakeAudioDataCopyToOptions(
+    const wc_fuzzer::AudioDataCopyToOptions& options_proto) {
+  AudioDataCopyToOptions* options = AudioDataCopyToOptions::Create();
+  options->setPlaneIndex(options_proto.plane_index());
+  if (options_proto.has_frame_offset())
+    options->setFrameOffset(options_proto.frame_offset());
+  if (options_proto.has_frame_count())
+    options->setFrameCount(options_proto.frame_count());
+  if (options_proto.has_format())
+    options->setFormat(ToAudioSampleFormat(options_proto.format()));
+  return options;
 }
 
 }  // namespace blink

@@ -7,7 +7,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -38,21 +37,6 @@
 
 - (KeyCommandsProvider*)newKeyCommandsProvider {
   return [[KeyCommandsProvider alloc] init];
-}
-
-- (AlertCoordinator*)alertCoordinatorWithTitle:(NSString*)title
-                                       message:(NSString*)message
-                                viewController:
-                                    (UIViewController*)viewController {
-  AlertCoordinator* alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:viewController
-                                                   browser:_browser
-                                                     title:title
-                                                   message:message];
-  [alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                              action:nil
-                               style:UIAlertActionStyleDefault];
-  return alertCoordinator;
 }
 
 @end

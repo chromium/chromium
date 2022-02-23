@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
@@ -61,6 +62,19 @@ void MediaInterfaceFactory::CreateVideoDecoder(
   GetMediaInterfaceFactory()->CreateVideoDecoder(std::move(receiver));
 }
 
+void MediaInterfaceFactory::CreateAudioEncoder(
+    mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
+  if (!task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateAudioEncoder,
+                                  weak_this_, std::move(receiver)));
+    return;
+  }
+
+  DVLOG(1) << __func__;
+  GetMediaInterfaceFactory()->CreateAudioEncoder(std::move(receiver));
+}
+
 void MediaInterfaceFactory::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {
@@ -95,7 +109,7 @@ void MediaInterfaceFactory::CreateCastRenderer(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MediaInterfaceFactory::CreateMediaPlayerRenderer(
     mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
         client_extension_remote,
@@ -136,9 +150,9 @@ void MediaInterfaceFactory::CreateFlingingRenderer(
   GetMediaInterfaceFactory()->CreateFlingingRenderer(
       presentation_id, std::move(client_extension), std::move(receiver));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void MediaInterfaceFactory::CreateMediaFoundationRenderer(
     mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
@@ -159,21 +173,19 @@ void MediaInterfaceFactory::CreateMediaFoundationRenderer(
       std::move(media_log_remote), std::move(receiver),
       std::move(renderer_extension_receiver));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-void MediaInterfaceFactory::CreateCdm(const std::string& key_system,
-                                      const media::CdmConfig& cdm_config,
+void MediaInterfaceFactory::CreateCdm(const media::CdmConfig& cdm_config,
                                       CreateCdmCallback callback) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&MediaInterfaceFactory::CreateCdm, weak_this_,
-                                  key_system, cdm_config, std::move(callback)));
+                                  cdm_config, std::move(callback)));
     return;
   }
 
-  DVLOG(1) << __func__ << ": key_system = " << key_system;
-  GetMediaInterfaceFactory()->CreateCdm(key_system, cdm_config,
-                                        std::move(callback));
+  DVLOG(1) << __func__ << ": cdm_config=" << cdm_config;
+  GetMediaInterfaceFactory()->CreateCdm(cdm_config, std::move(callback));
 }
 
 media::mojom::InterfaceFactory*

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -94,8 +95,8 @@ class InfoBarContainer : public InfoBarManager::Observer {
   // infobar->Show().
   void AddInfoBar(InfoBar* infobar, size_t position, bool animate);
 
-  Delegate* delegate_;
-  InfoBarManager* infobar_manager_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<InfoBarManager> infobar_manager_;
   InfoBars infobars_;
 
   // Normally false.  When true, OnInfoBarStateChanged() becomes a no-op.  We

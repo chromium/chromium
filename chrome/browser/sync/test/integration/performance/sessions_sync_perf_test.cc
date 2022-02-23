@@ -116,9 +116,9 @@ int SessionsSyncPerfTest::GetTabCount(int profile) {
 
   int tab_count = 0;
   sessions.push_back(local_session);
-  for (auto* session : sessions)
-    for (const auto& win_pair : session->windows)
-      tab_count += win_pair.second->wrapped_window.tabs.size();
+  for (const sync_sessions::SyncedSession* session : sessions)
+    for (const auto& [window_id, window] : session->windows)
+      tab_count += window->wrapped_window.tabs.size();
 
   return tab_count;
 }
@@ -135,7 +135,8 @@ GURL SessionsSyncPerfTest::IntToURL(int n) {
 IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, DISABLED_P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter = SetUpReporter(base::NumberToString(kNumTabs) + "_tabs");
+  perf_test::PerfResultReporter reporter =
+      SetUpReporter(base::NumberToString(kNumTabs) + "_tabs");
   AddTabs(0, kNumTabs);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
   ASSERT_EQ(kNumTabs, GetTabCount(0));

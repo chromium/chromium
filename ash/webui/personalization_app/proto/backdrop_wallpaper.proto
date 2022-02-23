@@ -35,7 +35,7 @@ message Image {
 
   // The unit this image belongs to. The unit can be the collection of
   // dark/light theme for the same wallpaper.
-  optional int32 unit_id = 6;
+  optional fixed64 unit_id = 6;
 
   enum ImageType {
     IMAGE_TYPE_UNKNOWN = 0;

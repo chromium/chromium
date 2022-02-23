@@ -69,7 +69,7 @@ public class CppWrappedTestTracker implements Tracker {
     @CheckResult
     @Override
     public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
-        return null;
+        return new TriggerDetails(ourFeature(feature), false);
     }
 
     @CalledByNative
@@ -115,6 +115,22 @@ public class CppWrappedTestTracker implements Tracker {
         assert false : "This should only be called on a production tracker";
         return () -> {};
     }
+
+    @Override
+    public void setPriorityNotification(String feature) {}
+
+    @Override
+    @Nullable
+    public String getPendingPriorityNotification() {
+        return null;
+    }
+
+    @Override
+    public void registerPriorityNotificationHandler(
+            String feature, Runnable priorityNotificationHandler) {}
+
+    @Override
+    public void unregisterPriorityNotificationHandler(String feature) {}
 
     @CalledByNative
     @Override

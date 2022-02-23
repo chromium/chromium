@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -93,10 +94,10 @@ class ChromeMetricsServicesManagerClient
   bool IsMetricsReportingEnabled() override;
   bool IsMetricsConsentGiven() override;
   bool IsOffTheRecordSessionActive() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the client controls whether Crashpad can upload crash reports.
   void UpdateRunningServices(bool may_record, bool may_upload) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // MetricsStateManager which is passed as a parameter to service constructors.
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -109,7 +110,7 @@ class ChromeMetricsServicesManagerClient
   THREAD_CHECKER(thread_checker_);
 
   // Weak pointer to the local state prefs store.
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription reporting_setting_subscription_;

@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gfx/color_utils.h"
@@ -86,7 +85,8 @@ class GtkUi : public views::LinuxUI {
   void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
   bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
-                                   int size) const override;
+                                   int size,
+                                   float scale) const override;
   std::unique_ptr<views::Border> CreateNativeBorder(
       views::LabelButton* owning_button,
       std::unique_ptr<views::LabelButtonBorder> border) override;

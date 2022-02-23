@@ -13,7 +13,7 @@
  */
 
 import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from './prefs_types.js';
 
@@ -350,6 +350,12 @@ export class SettingsPrefsElement extends PolymerElement {
     // Remove the listener added in initialize().
     this.settingsApi_.onPrefsChanged.removeListener(this.boundPrefsChanged_);
     this.settingsApi_ = chrome.settingsPrivate;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-prefs': SettingsPrefsElement;
   }
 }
 

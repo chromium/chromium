@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stdio.h>
 
+#include <stddef.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -29,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -44,14 +46,6 @@ namespace {
 
 constexpr char kManifestFileName[] = "manifest.json";
 
-// TODO(crbug.com/1180964) move to base/file_util.h
-bool ReadFdToString(int fd, std::string* contents) {
-  base::ScopedFILE file_stream(fdopen(fd, "r"));
-  return file_stream.get()
-             ? base::ReadStreamToString(file_stream.get(), contents)
-             : false;
-}
-
 std::unique_ptr<base::DictionaryValue> ReadManifest(
     const std::string& manifest_content) {
   JSONStringValueDeserializer deserializer(manifest_content);
@@ -65,10 +59,11 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
 
 std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
   std::string content;
-  if (!ReadFdToString(fd, &content)) {
-    return nullptr;
-  }
-  return ReadManifest(content);
+  base::ScopedFILE file_stream(
+      base::FileToFILE(base::File(std::move(fd)), "r"));
+  return base::ReadStreamToString(file_stream.get(), &content)
+             ? ReadManifest(content)
+             : nullptr;
 }
 
 void RecordComponentLoadStatusHistogram(const std::string& suffix,
@@ -169,7 +164,10 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
     return;
   }
   std::string version_ascii;
-  manifest->GetStringASCII("version", &version_ascii);
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
+    if (base::IsStringASCII(*ptr))
+      version_ascii = *ptr;
+  }
   base::Version version(version_ascii);
   if (!version.IsValid()) {
     ComponentLoadFailedInternal(ComponentLoadResult::kInvalidVersion);

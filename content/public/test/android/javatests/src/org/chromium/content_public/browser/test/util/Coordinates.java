@@ -27,6 +27,10 @@ public class Coordinates {
         return mRenderCoordinates.getPageScaleFactor();
     }
 
+    public boolean frameInfoUpdated() {
+        return mRenderCoordinates.frameInfoUpdatedForTesting();
+    }
+
     public float getDeviceScaleFactor() {
         return mRenderCoordinates.getDeviceScaleFactor();
     }

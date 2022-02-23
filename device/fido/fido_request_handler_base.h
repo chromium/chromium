@@ -17,7 +17,7 @@
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
@@ -189,6 +189,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual void OnRetryUserVerification(int attempts) = 0;
   };
 
+  // ScopedAlwaysAllowBLECalls allows BLE API calls to always be made, even if
+  // they would be disabled on macOS because Chromium was not launched with
+  // self-responsibility.
+  class COMPONENT_EXPORT(DEVICE_FIDO) ScopedAlwaysAllowBLECalls {
+   public:
+    ScopedAlwaysAllowBLECalls();
+    ~ScopedAlwaysAllowBLECalls();
+  };
+
   FidoRequestHandlerBase();
 
   // The |available_transports| should be the intersection of transports
@@ -316,7 +325,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   AuthenticatorMap active_authenticators_;
   std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries_;
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
   TransportAvailabilityInfo transport_availability_info_;
   std::unique_ptr<BleAdapterManager> bluetooth_adapter_manager_;
 

@@ -47,12 +47,6 @@ using certificate_reporting_test_utils::EventHistogramTester;
 using certificate_reporting_test_utils::ReportExpectation;
 using certificate_reporting_test_utils::RetryStatus;
 
-namespace {
-
-const char* kFailedReportHistogram = "SSL.CertificateErrorReportFailure";
-
-}  // namespace
-
 namespace safe_browsing {
 
 // These tests check the whole mechanism to send and queue invalid certificate
@@ -105,16 +99,6 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
     test_helper()->ExpectNoRequests(service());
     EXPECT_GE(num_expected_failed_report_, 0)
         << "Don't forget to set expected failed report count.";
-    // Check the histogram as the last thing. This makes sure no in-flight
-    // report is missed.
-    if (num_expected_failed_report_ != 0) {
-      histogram_tester_.ExpectUniqueSample(kFailedReportHistogram,
-                                           -net::ERR_SSL_PROTOCOL_ERROR,
-                                           num_expected_failed_report_);
-    } else {
-      histogram_tester_.ExpectTotalCount(kFailedReportHistogram, 0);
-    }
-
     event_histogram_tester_.reset();
   }
 

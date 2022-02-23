@@ -39,9 +39,11 @@ struct AURA_EXPORT DragUpdateInfo {
 // Delegate interface for drag and drop actions on aura::Window.
 class AURA_EXPORT DragDropDelegate {
  public:
+  // Callback emitted by GetDropCallback used to handle deferred drop events.
+  // Note that it does not contain a location. If implementers need a location,
+  // they should bind it in GetDropCallback. See crbug.com/1289902.
   using DropCallback =
-      base::OnceCallback<void(const ui::DropTargetEvent& event,
-                              std::unique_ptr<ui::OSExchangeData> data,
+      base::OnceCallback<void(std::unique_ptr<ui::OSExchangeData> data,
                               ui::mojom::DragOperation& output_drag_op)>;
 
   // OnDragEntered is invoked when the mouse enters this window during a drag &
@@ -69,10 +71,12 @@ class AURA_EXPORT DragDropDelegate {
   // instead.
   virtual ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) = 0;
+      std::unique_ptr<ui::OSExchangeData> data);
 
   // Invoked during a drag and drop session when the user release the mouse, but
   // the drop is held because of the DataTransferPolicyController.
+  // The returned callback may be NullCallback if there's nothing to do and the
+  // drop event is ignored.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
 
  protected:

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/url_data_source.h"
 #include "ui/base/layout.h"

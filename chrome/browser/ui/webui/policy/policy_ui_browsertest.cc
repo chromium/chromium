@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
@@ -101,7 +102,7 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
       run_loop_.Quit();
   }
 
-  policy::SchemaRegistry* const registry_;
+  const raw_ptr<policy::SchemaRegistry> registry_;
   const policy::PolicyNamespace policy_namespace_;
   base::RunLoop run_loop_;
 };
@@ -317,18 +318,18 @@ void PolicyUITest::VerifyPolicies(
   std::string json;
   ASSERT_TRUE(
       content::ExecuteScriptAndExtractString(contents, javascript, &json));
-  std::unique_ptr<base::Value> value_ptr =
-      base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(value_ptr.get());
+  absl::optional<base::Value> value_ptr = base::JSONReader::Read(json);
+  ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
-  base::Value::ConstListView actual_policies = value_ptr->GetList();
+  base::Value::ConstListView actual_policies = value_ptr->GetListDeprecated();
 
   // Verify that the cells contain the expected strings for all policies.
   ASSERT_EQ(expected_policies.size(), actual_policies.size());
   for (size_t i = 0; i < expected_policies.size(); ++i) {
     const std::vector<std::string> expected_policy = expected_policies[i];
     ASSERT_TRUE(actual_policies[i].is_list());
-    base::Value::ConstListView actual_policy = actual_policies[i].GetList();
+    base::Value::ConstListView actual_policy =
+        actual_policies[i].GetListDeprecated();
     ASSERT_EQ(expected_policy.size(), actual_policy.size());
     for (size_t j = 0; j < expected_policy.size(); ++j) {
       const std::string* value = actual_policy[j].GetIfString();
@@ -363,30 +364,27 @@ void PolicyUITest::VerifyExportingPolicies(
   EXPECT_TRUE(
       base::ReadFileToString(export_policies_test_file_path, &file_contents));
 
-  std::unique_ptr<base::Value> value_ptr =
-      base::JSONReader::ReadDeprecated(file_contents);
+  absl::optional<base::Value> value_ptr = base::JSONReader::Read(file_contents);
 
   // Check that the file contains a valid dictionary.
-  EXPECT_TRUE(value_ptr.get());
-  base::DictionaryValue* actual_policies = nullptr;
-  EXPECT_TRUE(value_ptr->GetAsDictionary(&actual_policies));
+  EXPECT_TRUE(value_ptr);
+  EXPECT_TRUE(value_ptr->is_dict());
 
   // Since Chrome Metadata has a lot of variations based on platform, OS,
   // architecture and version, it is difficult to test for exact values. Test
   // instead that the same keys exist in the meta data and also that the type of
   // all the keys is a string. The incoming |expected| value should already be
   // filled with the expected keys.
-  base::Value* chrome_metadata = actual_policies->FindKeyOfType(
-      "chromeMetadata", base::Value::Type::DICTIONARY);
+  base::Value* chrome_metadata =
+      value_ptr->FindKeyOfType("chromeMetadata", base::Value::Type::DICTIONARY);
   EXPECT_NE(chrome_metadata, nullptr);
 
-  base::DictionaryValue* chrome_metadata_dict = nullptr;
-  EXPECT_TRUE(chrome_metadata->GetAsDictionary(&chrome_metadata_dict));
+  EXPECT_TRUE(chrome_metadata->is_dict());
 
   // The |chrome_metadata| we compare against will have the actual values so
   // those will be cleared to empty values so that the equals comparison below
   // will just compare key existence and value types.
-  for (auto key_value : chrome_metadata_dict->DictItems())
+  for (auto key_value : chrome_metadata->DictItems())
     key_value.second = base::Value(key_value.second.type());
 
   // Since policy management status can have variable information based on the
@@ -396,12 +394,12 @@ void PolicyUITest::VerifyExportingPolicies(
   // |expected| value should already have a "status" key with an empty
   // dictionary value.
   base::Value* status =
-      actual_policies->FindKeyOfType("status", base::Value::Type::DICTIONARY);
+      value_ptr->FindKeyOfType("status", base::Value::Type::DICTIONARY);
   EXPECT_NE(status, nullptr);
   status->DictClear();
 
   // Check that this dictionary is the same as expected.
-  EXPECT_EQ(expected, *actual_policies);
+  EXPECT_EQ(expected, *value_ptr);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
@@ -430,12 +428,12 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
                     std::string(), false, base::Value(2));
 
   // This also checks that we save complex policies correctly.
-  base::DictionaryValue unknown_policy;
-  base::DictionaryValue body;
-  body.SetInteger("first", 0);
-  body.SetBoolean("second", true);
-  unknown_policy.SetInteger("head", 12);
-  unknown_policy.SetDictionary("body", body.CreateDeepCopy());
+  base::Value unknown_policy(base::Value::Type::DICTIONARY);
+  base::Value* body =
+      unknown_policy.SetKey("body", base::Value(base::Value::Type::DICTIONARY));
+  body->SetIntKey("first", 0);
+  body->SetBoolKey("second", true);
+  unknown_policy.SetIntKey("head", 12);
   const std::string kUnknownPolicy = "NoSuchThing";
   values.Set(kUnknownPolicy, policy::POLICY_LEVEL_RECOMMENDED,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -446,15 +444,14 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
 
   // Set the extension policies to an empty dictionary as we haven't added any
   // such policies.
-  expected_values.SetDictionary("extensionPolicies",
-                                std::make_unique<base::DictionaryValue>());
-  expected_values.SetDictionary("status",
-                                std::make_unique<base::DictionaryValue>());
+  expected_values.SetKey("extensionPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
+  expected_values.SetKey("status", base::Value(base::Value::Type::DICTIONARY));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_values.SetDictionary("loginScreenExtensionPolicies",
-                                std::make_unique<base::DictionaryValue>());
-  expected_values.SetDictionary("deviceLocalAccountPolicies",
-                                std::make_unique<base::DictionaryValue>());
+  expected_values.SetKey("loginScreenExtensionPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
+  expected_values.SetKey("deviceLocalAccountPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   provider_.UpdateChromePolicy(values);
@@ -516,13 +513,13 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
         it.key(), std::string(), std::string(), nullptr, false));
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the Policy Precedence table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), nullptr, false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
@@ -605,20 +602,20 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
           kUnknownPolicyWithDots, expected_values[kUnknownPolicyWithDots],
           "Platform", values.Get(kUnknownPolicyWithDots), true));
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the Policy Precedence table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), values.Get(policy), false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class PolicyPrecedenceUITest
     : public PolicyUITest,
       public ::testing::WithParamInterface<std::tuple<
@@ -705,7 +702,7 @@ INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
                          testing::Combine(testing::Values(false, true),
                                           testing::Values(false, true),
                                           testing::Values(false, true)));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
@@ -719,7 +716,7 @@ class ExtensionPolicyUITest : public PolicyUITest,
   Profile* extension_profile() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (UseSigninProfile()) {
-      return chromeos::ProfileHelper::GetSigninProfile();
+      return ash::ProfileHelper::GetSigninProfile();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return browser()->profile();
@@ -839,13 +836,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
         it.key(), std::string(), std::string(), nullptr, false));
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Add policies found in the precedence policy table.
   for (auto* policy : policy::metapolicy::kPrecedence) {
     expected_chrome_policies.push_back(PopulateExpectedPolicy(
         policy, std::string(), std::string(), nullptr, false));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Add extension policy to expected policy list.
   std::vector<std::vector<std::string>> expected_policies =

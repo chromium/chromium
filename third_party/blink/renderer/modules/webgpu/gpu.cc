@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/gpu/gpu.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -25,7 +26,8 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -99,8 +101,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   return context_provider;
 }
 
-void AddConsoleWarning(ExecutionContext* execution_context,
-                       const char* message) {
+[[maybe_unused]] void AddConsoleWarning(ExecutionContext* execution_context,
+                                        const char* message) {
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
@@ -126,7 +128,9 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()) {}
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      mappable_buffer_handles_(
+          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
 GPU::~GPU() = default;
 
@@ -138,18 +142,26 @@ void GPU::Trace(Visitor* visitor) const {
 }
 
 void GPU::ContextDestroyed() {
-  if (!mappable_buffers_.IsEmpty()) {
-    // Destroy all mappable buffers. This ensures all mappings backed by
-    // shared memory are detached before the WebGPU command buffer and
-    // transfer buffers are destroyed.
-    v8::Isolate* isolate = ThreadState::Current()->GetIsolate();
-    for (GPUBuffer* buffer : mappable_buffers_) {
-      buffer->Destroy(isolate);
-    }
-  }
   if (!dawn_control_client_) {
     return;
   }
+  // Ensure all DOMArrayBuffers backed by shared memory are detached before
+  // the WebGPU command buffer and transfer buffers are destroyed.
+  // This is necessary because we will free the shmem backings, and some
+  // short amount of JS can still execute after the ContextDestroyed event
+  // is received.
+  for (GPUBuffer* buffer : mappable_buffers_) {
+    buffer->DetachMappedArrayBuffers(ThreadState::Current()->GetIsolate());
+  }
+  // GPUBuffer::~GPUBuffer and GPUBuffer::destroy will remove WGPUBuffers from
+  // |mappable_buffer_handles_|.
+  // However, there may be GPUBuffers that were removed from mappable_buffers_
+  // for which ~GPUBuffer has not run yet. These GPUBuffers and their
+  // DOMArrayBuffer mappings are no longer reachable from JS, so we don't need
+  // to detach them, but we do need to eagerly destroy the WGPUBuffer so that
+  // its shared memory is freed before the context is completely destroyed.
+  mappable_buffer_handles_->ClearAndDestroyAll(
+      dawn_control_client_->GetProcs());
   dawn_control_client_->Destroy();
 }
 
@@ -236,22 +248,6 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
     }
   }
 
-  bool forceFallbackAdapter = options->forceFallbackAdapter();
-
-  if (options->hasForceSoftware()) {
-    AddConsoleWarning(
-        ExecutionContext::From(script_state),
-        "forceSoftware is deprecated. Use forceFallbackAdapter instead.");
-
-    forceFallbackAdapter = options->forceSoftware();
-  }
-
-  // Software adapters are not currently supported.
-  if (forceFallbackAdapter) {
-    resolver->Resolve(v8::Null(script_state->GetIsolate()));
-    return promise;
-  }
-
   // For now we choose kHighPerformance by default.
   gpu::webgpu::PowerPreference power_preference =
       gpu::webgpu::PowerPreference::kHighPerformance;
@@ -263,7 +259,7 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
   auto context_provider = dawn_control_client_->GetContextProviderWeakPtr();
   DCHECK(context_provider);
   context_provider->ContextProvider()->WebGPUInterface()->RequestAdapterAsync(
-      power_preference,
+      power_preference, options->forceFallbackAdapter(),
       WTF::Bind(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
                 WrapPersistent(script_state), WrapPersistent(options),
                 WrapPersistent(resolver)));
@@ -275,6 +271,20 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
 
 void GPU::TrackMappableBuffer(GPUBuffer* buffer) {
   mappable_buffers_.insert(buffer);
+  mappable_buffer_handles_->insert(buffer->GetHandle());
+}
+
+void GPU::UntrackMappableBuffer(GPUBuffer* buffer) {
+  mappable_buffers_.erase(buffer);
+  mappable_buffer_handles_->erase(buffer->GetHandle());
+}
+
+void BoxedMappableWGPUBufferHandles::ClearAndDestroyAll(
+    const DawnProcTable& procs) {
+  for (void* p : contents_) {
+    procs.bufferDestroy(static_cast<WGPUBuffer>(p));
+  }
+  contents_.clear();
 }
 
 }  // namespace blink

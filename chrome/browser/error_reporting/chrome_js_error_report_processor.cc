@@ -138,7 +138,7 @@ ChromeJsErrorReportProcessor::GetPlatformInfo() {
 
   // TODO(https://crbug.com/1121816): Get correct product_name for non-POSIX
   // platforms.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
                                                  &info.version, &info.channel);
 #endif

@@ -26,7 +26,9 @@ void WebContentsForcedTitle::CreateForWebContentsWithTitle(
 WebContentsForcedTitle::WebContentsForcedTitle(
     content::WebContents* web_contents,
     const std::u16string& title)
-    : content::WebContentsObserver(web_contents), title_(title) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsForcedTitle>(*web_contents),
+      title_(title) {}
 
 WebContentsForcedTitle::~WebContentsForcedTitle() {}
 

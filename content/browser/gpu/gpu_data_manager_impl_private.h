@@ -16,13 +16,14 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/gl/gpu_preference.h"
@@ -73,7 +74,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
       const absl::optional<gpu::GPUInfo>& optional_gpu_info_for_hardware_gpu);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);
@@ -222,12 +223,12 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void RecordCompositingMode();
 
-  GpuDataManagerImpl* const owner_;
+  const raw_ptr<GpuDataManagerImpl> owner_;
 
   gpu::GpuFeatureInfo gpu_feature_info_;
   gpu::GPUInfo gpu_info_;
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool gpu_info_dx_diag_requested_ = false;
   bool gpu_info_dx_diag_request_failed_ = false;
   bool gpu_info_dx12_valid_ = false;

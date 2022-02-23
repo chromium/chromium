@@ -16,9 +16,6 @@ from pylib.local.device import local_device_test_run
 _CHROME_PACKAGE = constants.PACKAGE_INFO['chrome'].package
 
 class LocalDeviceMonkeyTestRun(local_device_test_run.LocalDeviceTestRun):
-  def __init__(self, env, test_instance):
-    super(LocalDeviceMonkeyTestRun, self).__init__(env, test_instance)
-
   def TestPackage(self):
     return 'monkey'
 

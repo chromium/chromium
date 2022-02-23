@@ -142,7 +142,7 @@ absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
 bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
   switch (role) {
     case ElementRole::kSVG:
-    case ElementRole::kText:
+    case ElementRole::kForeground:
     case ElementRole::kListSymbol:
       DCHECK(immutable_.foreground_classifier);
       return immutable_.foreground_classifier->ShouldInvertColor(color) ==

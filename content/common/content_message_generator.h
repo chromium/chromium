@@ -8,10 +8,10 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #undef CONTENT_COMMON_GIN_JAVA_BRIDGE_MESSAGES_H_
 #include "content/common/gin_java_bridge_messages.h"
 #ifndef CONTENT_COMMON_GIN_JAVA_BRIDGE_MESSAGES_H_
 #error "Failed to include content/common/gin_java_bridge_messages.h"
 #endif
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)

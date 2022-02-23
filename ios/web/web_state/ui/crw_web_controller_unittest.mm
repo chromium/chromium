@@ -251,7 +251,6 @@ TEST_F(CRWWebControllerTest, CancelCommittedNavigation) {
 // Tests returning pending item stored in navigation context.
 TEST_F(CRWWebControllerTest, TestPendingItem) {
   ASSERT_FALSE([web_controller() lastPendingItemForNewNavigation]);
-  ASSERT_FALSE(web_controller().webStateImpl->GetPendingItem());
 
   // Create pending item by simulating a renderer-initiated navigation.
   [navigation_delegate_ webView:mock_web_view_
@@ -259,11 +258,7 @@ TEST_F(CRWWebControllerTest, TestPendingItem) {
 
   NavigationItemImpl* item = [web_controller() lastPendingItemForNewNavigation];
 
-  // Verify that the same item is returned by NavigationManagerDelegate and
-  // CRWWebController.
   ASSERT_TRUE(item);
-  EXPECT_EQ(item, web_controller().webStateImpl->GetPendingItem());
-
   EXPECT_EQ(kTestURLString, item->GetURL());
 }
 
@@ -278,10 +273,6 @@ TEST_F(CRWWebControllerTest, SetAllowsBackForwardNavigationGestures) {
 // Tests that a web view is created after calling -[ensureWebViewCreated] and
 // check its user agent.
 TEST_F(CRWWebControllerTest, WebViewCreatedAfterEnsureWebViewCreated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kUseDefaultUserAgentInWebClient);
-
   FakeWebClient* web_client = static_cast<FakeWebClient*>(GetWebClient());
 
   [web_controller() removeWebView];
@@ -516,11 +507,11 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
   // Calls webView:decidePolicyForNavigationResponse:decisionHandler: callback
   // and waits for decision handler call. Returns false if decision handler call
   // times out.
-  bool CallDecidePolicyForNavigationResponseWithResponse(
+  [[nodiscard]] bool CallDecidePolicyForNavigationResponseWithResponse(
       NSURLResponse* response,
       BOOL for_main_frame,
       BOOL can_show_mime_type,
-      WKNavigationResponsePolicy* out_policy) WARN_UNUSED_RESULT {
+      WKNavigationResponsePolicy* out_policy) {
     id navigation_response =
         [OCMockObject mockForClass:[WKNavigationResponse class]];
     OCMStub([navigation_response response]).andReturn(response);
@@ -818,9 +809,9 @@ class CRWWebControllerPolicyDeciderTest : public CRWWebControllerTest {
   // callback and waits for decision handler call. Returns false if decision
   // handler policy parameter didn't match |expected_policy| or if the call
   // timed out.
-  bool VerifyDecidePolicyForNavigationAction(
+  [[nodiscard]] bool VerifyDecidePolicyForNavigationAction(
       NSURLRequest* request,
-      WKNavigationActionPolicy expected_policy) WARN_UNUSED_RESULT {
+      WKNavigationActionPolicy expected_policy) {
     CRWFakeWKNavigationAction* navigation_action =
         [[CRWFakeWKNavigationAction alloc] init];
     navigation_action.request = request;
@@ -1117,6 +1108,7 @@ TEST_F(WindowOpenByDomTest, CloseWindow) {
 
   delegate_.child_windows()[0]->SetDelegate(&delegate_);
   CloseWindow();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(delegate_.child_windows().empty());
   EXPECT_TRUE(delegate_.popups().empty());

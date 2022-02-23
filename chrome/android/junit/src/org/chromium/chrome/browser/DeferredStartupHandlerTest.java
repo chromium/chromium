@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.test.util.CallbackHelper;
@@ -22,6 +23,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowIdleHandlerAwareMessageQueue.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class DeferredStartupHandlerTest {
     private DeferredStartupHandler mDeferredStartupHandler;
     private ShadowIdleHandlerAwareMessageQueue mShadowMessageQueue;

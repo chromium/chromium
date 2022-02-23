@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.view.Window;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -45,7 +47,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.O_MR1)
-@TargetApi(Build.VERSION_CODES.O_MR1)
+@RequiresApi(Build.VERSION_CODES.O_MR1)
 @SuppressLint("NewApi")
 public class TabbedNavigationBarColorControllerTest {
     @Rule
@@ -73,14 +75,14 @@ public class TabbedNavigationBarColorControllerTest {
         assertEquals("Navigation bar should be white before entering overview mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(false));
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
         assertEquals("Navigation bar should be white in overview mode.", mLightNavigationColor,
                 mWindow.getNavigationBarColor());
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
         assertEquals("Navigation bar should be white after exiting overview mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());

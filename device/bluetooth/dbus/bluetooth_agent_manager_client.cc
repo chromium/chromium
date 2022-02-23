@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
 namespace autofill_assistant {
@@ -26,6 +27,8 @@ class GenericUiRootControllerAndroid {
   static std::unique_ptr<GenericUiRootControllerAndroid> CreateFromProto(
       const GenericUserInterfaceProto& proto,
       base::android::ScopedJavaGlobalRef<jobject> jcontext,
+      base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+      const Dependencies& dependencies,
       base::android::ScopedJavaGlobalRef<jobject> jdelegate,
       EventHandler* event_handler,
       UserModel* user_model,

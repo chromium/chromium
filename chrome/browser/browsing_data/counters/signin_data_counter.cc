@@ -21,19 +21,45 @@ SigninDataCounter::SigninDataCounter(
 
 SigninDataCounter::~SigninDataCounter() = default;
 
-int SigninDataCounter::CountWebAuthnCredentials() {
-  return credential_store_ ? credential_store_->CountCredentials(
-                                 GetPeriodStart(), GetPeriodEnd())
-                           : 0;
+void SigninDataCounter::OnCountWebAuthnCredentialsFinished(
+    size_t num_credentials) {
+  num_webauthn_credentials_ = num_credentials;
+  webauthn_credentials_fetch_done_ = true;
+  if (passwords_counter_fetch_done_)
+    ReportResult(MakeResult());
+}
+
+void SigninDataCounter::CountWebAuthnCredentials(base::Time start,
+                                                 base::Time end) {
+  if (!credential_store_) {
+    OnCountWebAuthnCredentialsFinished(0);
+    return;
+  }
+
+  credential_store_->CountCredentials(
+      start, end,
+      base::BindOnce(&SigninDataCounter::OnCountWebAuthnCredentialsFinished,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SigninDataCounter::Count() {
+  passwords_counter_fetch_done_ = webauthn_credentials_fetch_done_ = false;
+  PasswordsCounter::Count();
+  CountWebAuthnCredentials(GetPeriodStart(), GetPeriodEnd());
+}
+
+void SigninDataCounter::OnPasswordsFetchDone() {
+  passwords_counter_fetch_done_ = true;
+  if (webauthn_credentials_fetch_done_)
+    ReportResult(MakeResult());
 }
 
 std::unique_ptr<PasswordsCounter::PasswordsResult>
 SigninDataCounter::MakeResult() {
   DCHECK(!(is_sync_active() && num_account_passwords() > 0));
   return std::make_unique<SigninDataResult>(
-      this, num_passwords(), num_account_passwords(),
-      CountWebAuthnCredentials(), is_sync_active(), domain_examples(),
-      account_domain_examples());
+      this, num_passwords(), num_account_passwords(), num_webauthn_credentials_,
+      is_sync_active(), domain_examples(), account_domain_examples());
 }
 
 SigninDataCounter::SigninDataResult::SigninDataResult(

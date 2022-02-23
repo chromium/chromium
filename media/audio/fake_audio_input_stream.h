@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_io.h"
@@ -71,11 +72,11 @@ class MEDIA_EXPORT FakeAudioInputStream : public AudioInputStream {
   std::unique_ptr<AudioOutputStream::AudioSourceCallback> ChooseSource();
   void ReadAudioFromSource(base::TimeTicks ideal_time, base::TimeTicks now);
 
-  AudioManagerBase* audio_manager_;
+  raw_ptr<AudioManagerBase> audio_manager_;
   // |callback_| needs the lock as ReadAudioFromSource reads callback_
   // on the capture thread, while callback_ is set on the audio thread.
   base::Lock callback_lock_;
-  AudioInputCallback* callback_ GUARDED_BY(callback_lock_);
+  raw_ptr<AudioInputCallback> callback_ GUARDED_BY(callback_lock_);
   AudioParameters params_;
 
   std::unique_ptr<FakeAudioWorker> fake_audio_worker_;

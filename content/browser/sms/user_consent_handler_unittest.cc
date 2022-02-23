@@ -153,13 +153,23 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
   EXPECT_TRUE(cancelled);
 }
 
-TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenInactiveRFH) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kBackForwardCache, {}}},
-      // Allow BackForwardCache for all devices regardless of their memory.
-      {features::kBackForwardCacheMemoryControls});
+class PromptBasedUserConsentHandlerAlwaysAllowedTest
+    : public PromptBasedUserConsentHandlerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache, {}}},
+        // Allow BackForwardCache for all devices regardless of their
+        // memory.
+        {features::kBackForwardCacheMemoryControls});
+    PromptBasedUserConsentHandlerTest::SetUp();
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PromptBasedUserConsentHandlerAlwaysAllowedTest, CancelsWhenInactiveRFH) {
   NavigateAndCommit(GURL(kTestUrl));
   RenderFrameHost* old_main_frame_host = main_rfh();
   const url::Origin& origin = old_main_frame_host->GetLastCommittedOrigin();

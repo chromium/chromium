@@ -30,16 +30,21 @@ namespace protocol_request {
 
 struct HW {
   uint32_t physmemory = 0;  // Physical memory rounded down to the closest GB.
+  bool sse = false;
+  bool sse2 = false;
+  bool sse3 = false;
+  bool sse41 = false;
+  bool sse42 = false;
+  bool ssse3 = false;
+  bool avx = false;
 };
 
 struct OS {
   OS();
-
   OS(const OS&) = delete;
   OS& operator=(const OS&) = delete;
-
   OS(OS&&);
-
+  OS& operator=(OS&&);
   ~OS();
 
   std::string platform;
@@ -69,6 +74,7 @@ struct UpdateCheck {
   bool is_update_disabled = false;
   std::string target_version_prefix;
   bool rollback_allowed = false;
+  bool same_version_update_allowed = false;
 };
 
 // didrun element. The element is named "ping" for legacy reasons.
@@ -90,12 +96,10 @@ struct Ping {
 
 struct App {
   App();
-
   App(const App&) = delete;
   App& operator=(const App&) = delete;
-
   App(App&&);
-
+  App& operator=(App&&);
   ~App();
 
   std::string app_id;
@@ -129,12 +133,10 @@ struct App {
 
 struct Request {
   Request();
-
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
-
   Request(Request&&);
-
+  Request& operator=(Request&&);
   ~Request();
 
   std::string protocol_version;
@@ -159,7 +161,7 @@ struct Request {
   std::string arch;
   std::string nacl_arch;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_wow64 = false;
 #endif
 

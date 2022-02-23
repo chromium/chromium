@@ -12,6 +12,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 
 enum FileSystemType {
   kTemporary,
@@ -197,4 +198,28 @@ interface FileSystemManager {
   [Sync]
   GetPlatformPath(url.mojom.Url file_path) =>
       (mojo_base.mojom.FilePath platform_path);
+
+  // Register a new blob and return the SerializedBlob (which is typemapped to
+  // blink::BlobDataHandle). Since Blob construction is generally a synchronous
+  // process even in window environments, this IPC is expected to be called
+  // synchronously everywhere.
+  // TODO(crbug.com/974616): Get rid of return/sync behavior after removing
+  // UUIDs
+  //
+  // |content_type| is simply reflected back into the
+  // SerializedBlob returned, and will be used in the "content-type" header if
+  // the blob is fetched with a "blob:" url.
+  // |url| should be a serialized "filesystem:" url that is readable by the
+  // renderer. An invalid url will create a blob that will return an error any
+  // time it is read from.
+  // |expected_modification_time| is used to implement the snapshotting behavior
+  // described in the Blob spec. If a time is provided the resulting Blob will
+  // only be readable as long as the last modified timestamp of the underlying
+  // file doesn't change.
+  [Sync]
+  RegisterBlob(string content_type,
+               url.mojom.Url url,
+               uint64 length,
+               mojo_base.mojom.Time? expected_modification_time) =>
+      (SerializedBlob blob);
 };

@@ -40,6 +40,8 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
+#include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -198,6 +200,8 @@ std::vector<LocaleInfo> GetSupportedLocales() {
 // static
 constexpr char DemoSession::kSupportedCountries[][3];
 
+constexpr char DemoSession::kCountryNotSelectedId[];
+
 // static
 std::string DemoSession::DemoConfigToString(
     DemoSession::DemoModeConfig config) {
@@ -282,16 +286,6 @@ void DemoSession::ResetDemoConfigForTesting() {
 }
 
 // static
-void DemoSession::PreloadOfflineResourcesIfInDemoMode() {
-  if (!IsDeviceInDemoMode())
-    return;
-
-  if (!g_demo_session)
-    g_demo_session = new DemoSession();
-  g_demo_session->EnsureOfflineResourcesLoaded(base::OnceClosure());
-}
-
-// static
 DemoSession* DemoSession::StartIfInDemoMode() {
   if (!IsDeviceInDemoMode())
     return nullptr;
@@ -303,7 +297,6 @@ DemoSession* DemoSession::StartIfInDemoMode() {
     g_demo_session = new DemoSession();
 
   g_demo_session->started_ = true;
-  g_demo_session->EnsureOfflineResourcesLoaded(base::OnceClosure());
   return g_demo_session;
 }
 
@@ -343,6 +336,21 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
          app_id != extensions::kWebStoreAppId;
 }
 
+// Static function to default region from VPD.
+static std::string GetDefaultRegion() {
+  std::string region_code;
+  bool found_region_code =
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kRegionKey, &region_code);
+  if (found_region_code) {
+    std::string region_code_upper_case = base::ToUpperASCII(region_code);
+    std::string region_upper_case =
+        region_code_upper_case.substr(0, region_code_upper_case.find("."));
+    return region_upper_case.length() == 2 ? region_upper_case : "";
+  }
+  return "";
+}
+
 // static
 bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
   if (IsDeviceInDemoMode() &&
@@ -357,16 +365,35 @@ bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
 // static
 base::Value DemoSession::GetCountryList() {
   base::Value country_list(base::Value::Type::LIST);
-  const std::string current_country =
-      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  std::string region(GetDefaultRegion());
   const std::string current_locale = g_browser_process->GetApplicationLocale();
+  bool country_selected = false;
+
   for (const std::string country : kSupportedCountries) {
-    base::DictionaryValue dict;
-    dict.SetString("value", country);
-    dict.SetString(
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetStringKey("value", country);
+    dict.SetStringKey(
         "title", l10n_util::GetDisplayNameForCountry(country, current_locale));
-    dict.SetBoolean("selected", current_country == country);
+    if (country == region) {
+      dict.SetBoolKey("selected", true);
+      g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                  country);
+      country_selected = true;
+    } else {
+      dict.SetBoolKey("selected", false);
+    }
     country_list.Append(std::move(dict));
+  }
+  if (!country_selected) {
+    base::Value countryNotSelectedDict(base::Value::Type::DICTIONARY);
+    countryNotSelectedDict.SetStringKey("value",
+                                        DemoSession::kCountryNotSelectedId);
+    countryNotSelectedDict.SetStringKey(
+        "title",
+        l10n_util::GetStringUTF16(
+            IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE));
+    countryNotSelectedDict.SetBoolKey("selected", true);
+    country_list.Append(std::move(countryNotSelectedDict));
   }
   return country_list;
 }
@@ -377,8 +404,7 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
 }
 
-void DemoSession::EnsureOfflineResourcesLoaded(
-    base::OnceClosure load_callback) {
+void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!demo_resources_)
     demo_resources_ = std::make_unique<DemoResources>(GetDemoConfig());
   demo_resources_->EnsureLoaded(std::move(load_callback));
@@ -496,22 +522,22 @@ void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  if (!extension_registry_observations_.IsObservingSource(extension_registry))
-    extension_registry_observations_.AddObservation(extension_registry);
   extensions::AppWindowRegistry* app_window_registry =
       extensions::AppWindowRegistry::Get(profile);
   if (!app_window_registry_observations_.IsObservingSource(app_window_registry))
     app_window_registry_observations_.AddObservation(app_window_registry);
+  auto& app_registry_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  if (!app_registry_cache_observation_.IsObservingSource(&app_registry_cache))
+    app_registry_cache_observation_.AddObservation(&app_registry_cache);
   extensions_external_loader_->LoadApp(id);
 }
 
 void DemoSession::OnSessionStateChanged() {
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::LOGIN_PRIMARY:
-      EnsureOfflineResourcesLoaded(base::BindOnce(
-          &DemoSession::ShowSplashScreen, weak_ptr_factory_.GetWeakPtr()));
+      EnsureResourcesLoaded(base::BindOnce(&DemoSession::ShowSplashScreen,
+                                           weak_ptr_factory_.GetWeakPtr()));
       break;
     case session_manager::SessionState::ACTIVE:
       if (ShouldRemoveSplashScreen())
@@ -530,8 +556,8 @@ void DemoSession::OnSessionStateChanged() {
       if (!offline_enrolled_)
         InstallAppFromUpdateUrl(GetHighlightsAppId());
 
-      EnsureOfflineResourcesLoaded(base::BindOnce(
-          &DemoSession::InstallDemoResources, weak_ptr_factory_.GetWeakPtr()));
+      EnsureResourcesLoaded(base::BindOnce(&DemoSession::InstallDemoResources,
+                                           weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
       break;
@@ -571,27 +597,32 @@ bool DemoSession::ShouldRemoveSplashScreen() {
          screensaver_activated_;
 }
 
-void DemoSession::OnExtensionInstalled(content::BrowserContext* browser_context,
-                                       const extensions::Extension* extension,
-                                       bool is_update) {
-  if (extension->id() != GetHighlightsAppId())
-    return;
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::LaunchSource::kFromChromeInternal));
-}
-
 void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
   if (app_window->extension_id() != GetScreensaverAppId())
     return;
   screensaver_activated_ = true;
   if (ShouldRemoveSplashScreen())
     RemoveSplashScreen();
+}
+
+void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.AppId() != GetHighlightsAppId() ||
+      !(update.PriorReadiness() == apps::Readiness::kUnknown &&
+        update.GetReadiness() == apps::Readiness::kReady)) {
+    return;
+  }
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
+      apps::AppLaunchParams(
+          update.AppId(), apps::mojom::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW,
+          apps::mojom::LaunchSource::kFromChromeInternal));
+}
+
+void DemoSession::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.RemoveObservation(cache);
 }
 
 }  // namespace ash

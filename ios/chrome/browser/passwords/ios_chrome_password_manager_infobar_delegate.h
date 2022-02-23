@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "ios/chrome/browser/signin/authentication_service.h"
 
 @protocol ApplicationCommands;
 
@@ -46,6 +46,7 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  protected:
   IOSChromePasswordManagerInfoBarDelegate(
+      NSString* user_email,
       bool is_sync_user,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager);
 
@@ -54,6 +55,8 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
   }
 
   bool is_sync_user() const { return is_sync_user_; }
+
+  NSString* user_email() { return user_email_; }
 
   void set_infobar_response(
       password_manager::metrics_util::UIDismissalReason response) {
@@ -77,6 +80,8 @@ class IOSChromePasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Whether to show the additional footer.
   const bool is_sync_user_;
+
+  NSString* user_email_;
 
   // Handler for calling Application commands.
   __weak id<ApplicationCommands> handler_ = nil;

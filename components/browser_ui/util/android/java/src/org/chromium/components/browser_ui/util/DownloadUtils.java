@@ -24,6 +24,7 @@ import org.chromium.url.GURL;
  * A class containing some utility static methods.
  */
 public class DownloadUtils {
+    public static final long INVALID_SYSTEM_DOWNLOAD_ID = -1;
     private static final int[] BYTES_STRINGS = {
             R.string.download_ui_kb, R.string.download_ui_mb, R.string.download_ui_gb};
 
@@ -82,16 +83,20 @@ public class DownloadUtils {
                 (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         boolean useSystemNotification = !notificationManager.areNotificationsEnabled();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            // OriginalUri has to be null or non-empty http(s) scheme.
-            Uri originalUri = parseOriginalUrl(originalUrl);
-            Uri refererUri = TextUtils.isEmpty(referer) ? null : Uri.parse(referer);
-            return manager.addCompletedDownload(fileName, description, true, mimeType, filePath,
-                    fileSizeBytes, useSystemNotification, originalUri, refererUri);
-        }
+        try {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                // OriginalUri has to be null or non-empty http(s) scheme.
+                Uri originalUri = parseOriginalUrl(originalUrl);
+                Uri refererUri = TextUtils.isEmpty(referer) ? null : Uri.parse(referer);
+                return manager.addCompletedDownload(fileName, description, true, mimeType, filePath,
+                        fileSizeBytes, useSystemNotification, originalUri, refererUri);
+            }
 
-        return manager.addCompletedDownload(fileName, description, true, mimeType, filePath,
-                fileSizeBytes, useSystemNotification);
+            return manager.addCompletedDownload(fileName, description, true, mimeType, filePath,
+                    fileSizeBytes, useSystemNotification);
+        } catch (Exception e) {
+            return INVALID_SYSTEM_DOWNLOAD_ID;
+        }
     }
 
     /**

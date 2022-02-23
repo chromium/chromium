@@ -6,6 +6,7 @@
 
 #include <list>
 
+#include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"

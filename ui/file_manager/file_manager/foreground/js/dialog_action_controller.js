@@ -8,7 +8,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
-import {str, util} from '../../common/js/util.js';
+import {str, UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -107,7 +107,7 @@ export class DialogActionController {
   /**
    * @private
    */
-  processOKActionForSaveDialog_() {
+  async processOKActionForSaveDialog_() {
     const selection = this.fileSelectionHandler_.selection;
 
     // If OK action is clicked when a directory is selected, open the directory.
@@ -125,21 +125,20 @@ export class DialogActionController {
       throw new Error('Missing filename!');
     }
 
-    this.namingController_.validateFileNameForSaving(filename)
-        .then(url => {
-          // TODO(mtomasz): Clean this up by avoiding constructing a URL
-          //                via string concatenation.
-          this.selectFilesAndClose_({
-            urls: [url],
-            multiple: false,
-            filterIndex: this.dialogFooter_.selectedFilterIndex
-          });
-        })
-        .catch(error => {
-          if (error instanceof Error) {
-            console.error(error.stack && error);
-          }
-        });
+    try {
+      const url =
+          await this.namingController_.validateFileNameForSaving(filename);
+
+      this.selectFilesAndClose_({
+        urls: [url],
+        multiple: false,
+        filterIndex: this.dialogFooter_.selectedFilterIndex
+      });
+    } catch (error) {
+      if (!(error instanceof UserCanceledError)) {
+        console.error(error);
+      }
+    }
   }
 
   /**

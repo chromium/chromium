@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_manage_cards_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_offer_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_upi_offer_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
+#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
@@ -29,6 +31,10 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -232,6 +238,28 @@ AutofillBubbleHandlerImpl::ShowVirtualCardManualFallbackBubble(
   return bubble;
 }
 
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
+    content::WebContents* web_contents,
+    VirtualCardEnrollBubbleController* controller,
+    bool is_user_gesture) {
+  VirtualCardEnrollBubbleViews* bubble = new VirtualCardEnrollBubbleViews(
+      toolbar_button_provider_->GetAnchorView(
+          PageActionIconType::kVirtualCardEnroll),
+      web_contents, controller);
+
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(is_user_gesture
+                            ? VirtualCardEnrollBubbleViews::USER_GESTURE
+                            : VirtualCardEnrollBubbleViews::AUTOMATIC);
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kVirtualCardEnroll);
+  if (icon_view)
+    bubble->SetHighlightedButton(icon_view);
+
+  return bubble;
+}
+
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {
   if (base::FeatureList::IsEnabled(
           features::kAutofillCreditCardUploadFeedback)) {
@@ -252,6 +280,29 @@ void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
     chrome::ExecuteCommand(
         browser_, IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE);
   }
+
+  // Notify the virtual card enrollment manager that the avatar highlight
+  // animation has completed in case we are offering VCN enrollment.
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return;
+
+  autofill::ContentAutofillDriverFactory* driver =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
+  if (!driver)
+    return;
+
+  autofill::AutofillClient* autofill_client = driver->client();
+  if (!autofill_client)
+    return;
+
+  raw_ptr<autofill::VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager =
+          autofill_client->GetVirtualCardEnrollmentManager();
+
+  if (virtual_card_enrollment_manager)
+    virtual_card_enrollment_manager->OnCardSavedAnimationComplete();
 }
 
 void AutofillBubbleHandlerImpl::ShowAvatarHighlightAnimation() {

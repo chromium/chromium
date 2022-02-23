@@ -65,6 +65,14 @@ class PlatformInfo(object):
     def is_mac(self):
         return self.os_name == 'mac'
 
+    def is_mac_monterey(self):
+        if not self.is_mac():
+            return False
+
+        command = ['sw_vers', '-productVersion']
+        version = self._executive.run_command(command).strip()
+        return version.startswith('12.')
+
     def is_win(self):
         return self.os_name == 'win'
 

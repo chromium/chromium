@@ -16,6 +16,11 @@ import java.util.List;
 
 /**
  * Represents the information for one commerce subscription entry.
+ *
+ * To add a new SubscriptionType / ManagementType / TrackingIdType:
+ * 1. Add the type in this class.
+ * 2. Add the corresponding entry in {@link commerce_subscription_db_content.proto} to ensure the
+ * storage works correctly.
  */
 public class CommerceSubscription {
     @StringDef({CommerceSubscriptionType.TYPE_UNSPECIFIED, CommerceSubscriptionType.PRICE_TRACK})
@@ -82,16 +87,16 @@ public class CommerceSubscription {
     }
 
     @TrackingIdType
-    String getTrackingIdType() {
+    public String getTrackingIdType() {
         return mTrackingIdType;
     }
 
-    String getTrackingId() {
+    public String getTrackingId() {
         return mTrackingId;
     }
 
     @SubscriptionManagementType
-    String getManagementType() {
+    public String getManagementType() {
         return mManagementType;
     }
 

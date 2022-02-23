@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -21,6 +22,9 @@ namespace metrics {
 
 // Captures all possible beacon value permutations for two distinct beacons.
 // Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CleanExitBeaconConsistency {
   kCleanClean = 0,
   kCleanDirty = 1,
@@ -32,6 +36,39 @@ enum class CleanExitBeaconConsistency {
   kMissingDirty = 7,
   kMissingMissing = 8,
   kMaxValue = kMissingMissing,
+};
+
+// Denotes the state of the beacon file. Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BeaconFileState {
+  kReadable = 0,
+  kNotDeserializable = 1,
+  kMissingDictionary = 2,
+  kMissingCrashStreak = 3,
+  kMissingBeacon = 4,
+  kMaxValue = kMissingBeacon,
+};
+
+// Denotes whether Chrome is monitoring for browser crashes via the
+// CleanExitBeacon, and if so, whether the monitoring is due to the Extended
+// Variations Safe Mode experiment or the status quo code. Exposed for
+// testing.
+enum class BeaconMonitoringStage {
+  // The beacon file lacks a monitoring stage. This is possible because the
+  // monitoring stage was added in a later milestone. Used by only experiment
+  // group clients.
+  kMissing = 0,
+  // Chrome is not monitoring for crashes.
+  kNotMonitoring = 1,
+  // Chrome is monitoring for crashes earlier on in startup as a result of the
+  // experiment. Used by only experiment group clients.
+  kExtended = 2,
+  // Chrome is monitoring for crashes in the code covered by the status quo
+  // Variations Safe Mode mechanism.
+  kStatusQuo = 3,
+  kMaxValue = kStatusQuo,
 };
 
 // Reads and updates a beacon used to detect whether the previous browser
@@ -78,14 +115,15 @@ class CleanExitBeacon {
   }
 
   // Sets the beacon value to |exited_cleanly| and updates the last live
-  // timestamp. If |write_synchronously| is true, then the beacon value is
+  // timestamp. If |is_extended_safe_mode| is true, then the beacon value is
   // written to disk synchronously. If false, a write is scheduled, and for
   // clients in the Extended Variations Safe Mode experiment, a synchronous
   // write is done, too.
   //
-  // Note: |write_synchronously| should be true only for some clients in the
+  // Note: |is_extended_safe_mode| should be true only for some clients in the
   // Extended Variations Safe Mode experiment.
-  void WriteBeaconValue(bool exited_cleanly, bool write_synchronously = false);
+  void WriteBeaconValue(bool exited_cleanly,
+                        bool is_extended_safe_mode = false);
 
   // Updates the last live timestamp.
   void UpdateLastLiveTimestamp();
@@ -103,7 +141,7 @@ class CleanExitBeacon {
   // CHECKs that Chrome exited cleanly.
   static void EnsureCleanShutdown(PrefService* local_state);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Sets the NSUserDefaults beacon value.
   static void SetUserDefaultsBeacon(bool exited_cleanly);
 
@@ -115,7 +153,7 @@ class CleanExitBeacon {
   // Syncs feature kUseUserDefaultsForExitedCleanlyBeacon to NSUserDefaults
   // kUserDefaultsFeatureFlagForExitedCleanlyBeacon.
   static void SyncUseUserDefaultsBeacon();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Prevents a test browser from performing two clean shutdown steps. First, it
   // prevents the beacon value from being updated after this function is called.
@@ -127,23 +165,27 @@ class CleanExitBeacon {
   // Returns true if the previous session exited cleanly. Either Local State
   // or |beacon_file_contents| is used to get this information. Which is used
   // depends on the client's Extended Variations Safe Mode experiment group in
-  // the previous session.
+  // the previous session. Also, records several metrics.
+  //
+  // Should be called only once: at startup.
+  //
   // TODO(crbug/1241702): Update this comment when experimentation is over.
   bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents);
 
-  // Writes |exited_cleanly| and the crash streak to the file located at
-  // |beacon_file_path_|.
-  void WriteBeaconFile(bool exited_cleanly) const;
+  // Writes |exited_cleanly|, |monitoring_stage|, and the crash streak to the
+  // file located at |beacon_file_path_|.
+  void WriteBeaconFile(bool exited_cleanly,
+                       BeaconMonitoringStage monitoring_stage) const;
 
-#if defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   // Returns whether Chrome exited cleanly in the previous session according to
   // the platform-specific beacon (the registry for Windows or NSUserDefaults
   // for iOS). Returns absl::nullopt if the platform-specific location does not
   // have beacon info.
   absl::optional<bool> ExitedCleanly();
-#endif  // defined(OS_WIN) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Returns true if the NSUserDefaults beacon value is set.
   static bool HasUserDefaultsBeacon();
 
@@ -152,7 +194,7 @@ class CleanExitBeacon {
 
   // Clears the NSUserDefaults beacon value.
   static void ResetUserDefaultsBeacon();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Indicates whether the CleanExitBeacon has been initialized.
   bool initialized_ = false;
@@ -163,7 +205,7 @@ class CleanExitBeacon {
   // Path to the client's user data directory. May be empty.
   const base::FilePath user_data_dir_;
 
-  PrefService* const local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // This is the value of the last live timestamp from local state at the time
   // of construction. It is a timestamp from the previous browser session when

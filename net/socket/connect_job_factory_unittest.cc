@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
@@ -18,6 +19,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
@@ -216,11 +218,11 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*websocket_endpoint_lock_manager=*/nullptr};
   TestConnectJobDelegate delegate_;
 
-  TestHttpProxyConnectJobFactory* http_proxy_job_factory_;
-  TestSocksConnectJobFactory* socks_job_factory_;
-  TestSslConnectJobFactory* ssl_job_factory_;
-  TestTransportConnectJobFactory* transport_job_factory_;
-  TestWebsocketConnectJobFactory* websocket_job_factory_;
+  raw_ptr<TestHttpProxyConnectJobFactory> http_proxy_job_factory_;
+  raw_ptr<TestSocksConnectJobFactory> socks_job_factory_;
+  raw_ptr<TestSslConnectJobFactory> ssl_job_factory_;
+  raw_ptr<TestTransportConnectJobFactory> transport_job_factory_;
+  raw_ptr<TestWebsocketConnectJobFactory> websocket_job_factory_;
 
   std::unique_ptr<ConnectJobFactory> factory_;
 };
@@ -270,6 +272,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJobWithoutScheme) {
 TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 84);
   SSLConfig ssl_config;
+  ssl_config.alpn_protos = {kProtoHTTP2, kProtoHTTP11};
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       kEndpoint, ProxyServer::Direct(),
@@ -292,6 +295,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
       *params.GetDirectConnectionParams();
   EXPECT_THAT(transport_params.destination(),
               testing::VariantWith<url::SchemeHostPort>(kEndpoint));
+  EXPECT_THAT(transport_params.supported_alpns(),
+              testing::UnorderedElementsAre("h2", "http/1.1"));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {

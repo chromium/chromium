@@ -1,23 +1,11 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-if (window.internals)
-    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
-<input type=date id=date value="12345-05-12" lang="ru-ru">
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+<input type=date value="12345-05-12" lang="ru-ru">
 
 <script>
-openPickerAppearanceOnly(document.getElementById('date'), finishJSTest);
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>
+

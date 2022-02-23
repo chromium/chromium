@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/browser/app_sorting.h"
 
 namespace extensions {

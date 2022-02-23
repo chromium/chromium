@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_AUDIO_STREAM_MONITOR_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -93,7 +94,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
     ~AudibleClientRegistration();
 
    private:
-    AudioStreamMonitor* audio_stream_monitor_;
+    raw_ptr<AudioStreamMonitor> audio_stream_monitor_;
   };
 
   // Registers an audible client, which will be unregistered when the returned
@@ -139,7 +140,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   // The WebContents instance to receive indicator toggle notifications.  This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
-  WebContents* const web_contents_;
+  const raw_ptr<WebContents> web_contents_;
 
   // Note: |clock_| is always a DefaultTickClock, except during unit
   // testing.

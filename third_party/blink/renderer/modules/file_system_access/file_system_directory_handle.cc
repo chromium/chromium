@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_directory_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_file_options.h"
@@ -92,8 +93,10 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   ScriptPromise result = resolver->Promise();
 
   if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -129,8 +132,10 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
   ScriptPromise result = resolver->Promise();
 
   if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -166,8 +171,10 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
   ScriptPromise result = resolver->Promise();
 
   if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -192,8 +199,10 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
   ScriptPromise result = resolver->Promise();
 
   if (!mojo_ptr_.is_bound()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError));
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
+        DOMExceptionCode::kInvalidStateError, ""));
     return result;
   }
 
@@ -259,19 +268,6 @@ void FileSystemDirectoryHandle::RequestPermissionImpl(
   mojo_ptr_->RequestPermission(writable, std::move(callback));
 }
 
-void FileSystemDirectoryHandle::RenameImpl(
-    const String& new_entry_name,
-    base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)> callback) {
-  if (!mojo_ptr_.is_bound()) {
-    std::move(callback).Run(mojom::blink::FileSystemAccessError::New(
-        mojom::blink::FileSystemAccessStatus::kInvalidState,
-        base::File::Error::FILE_ERROR_FAILED, "Context Destroyed"));
-    return;
-  }
-
-  mojo_ptr_->Rename(new_entry_name, std::move(callback));
-}
-
 void FileSystemDirectoryHandle::MoveImpl(
     mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
     const String& new_entry_name,
@@ -283,7 +279,11 @@ void FileSystemDirectoryHandle::MoveImpl(
     return;
   }
 
-  mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  if (dest.is_valid()) {
+    mojo_ptr_->Move(std::move(dest), new_entry_name, std::move(callback));
+  } else {
+    mojo_ptr_->Rename(new_entry_name, std::move(callback));
+  }
 }
 
 void FileSystemDirectoryHandle::RemoveImpl(

@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/component_updater/component_updater_service.h"
@@ -34,6 +35,7 @@ class CrOSComponentManager;
 }  // namespace component_updater
 
 namespace apps {
+class AppServiceProxyAsh;
 class StandaloneBrowserExtensionApps;
 }  // namespace apps
 
@@ -62,7 +64,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   explicit BrowserManager(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
   // Constructor for testing.
-  BrowserManager(scoped_refptr<component_updater::CrOSComponentManager> manager,
+  BrowserManager(std::unique_ptr<BrowserLoader> browser_loader,
                  ComponentUpdateService* update_service);
 
   BrowserManager(const BrowserManager&) = delete;
@@ -82,6 +84,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunningOrWillRun() const;
 
+  // Returns true if Lacros is terminated.
+  bool IsTerminated() const { return is_terminated_; }
+
   // Opens the browser window in lacros-chrome.
   // If lacros-chrome is not yet launched, it triggers to launch. If this is
   // called again during the setup phase of the launch process, it will be
@@ -95,7 +100,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // class, so there's no way for callers to handle such error cases properly.
   // This design often leads the flakiness behavior of the product and testing,
   // so should be avoided.
-  void NewWindow(bool incognito);
+  // If `should_trigger_session_restore` is true, a new window opening should be
+  // treated like the start of a new session (with potential session restore,
+  // startup URLs, etc). Otherwise, don't restore the session and instead open a
+  // new window with the default blank tab.
+  void NewWindow(bool incognito, bool should_trigger_session_restore);
 
   // Returns true if crosapi interface supports NewWindowForDetachingTab API.
   bool NewWindowForDetachingTabSupported() const;
@@ -124,6 +133,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   virtual void NewFullscreenWindow(const GURL& url,
                                    NewFullscreenWindowCallback callback);
 
+  // Opens a new window in lacros-chrome with the Guest profile if the Guest
+  // mode is enabled.
+  void NewGuestWindow();
+
   // Similar to NewWindow(), but opens a tab, instead.
   // See crosapi::mojom::BrowserService::NewTab for more details
   void NewTab();
@@ -131,11 +144,24 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Opens the specified URL in lacros-chrome. If it is not running,
   // it launches lacros-chrome with the given URL.
   // See crosapi::mojom::BrowserService::OpenUrl for more details.
-  void OpenUrl(const GURL& url);
+  void OpenUrl(const GURL& url, crosapi::mojom::OpenUrlFrom from);
+
+  // If there's already a tab opening the URL in lacros-chrome, in some window
+  // of the primary profile, activate the tab. Otherwise, opens a tab for
+  // the given URL.
+  void SwitchToTab(const GURL& url);
 
   // Similar to NewWindow(), but restores a tab recently closed.
   // See crosapi::mojom::BrowserService::RestoreTab for more details
   void RestoreTab();
+
+  // Returns true if crosapi interface supports HandleTabScrubbing API.
+  bool HandleTabScrubbingSupported() const;
+
+  // Triggers tab switching in Lacros via horizontal 3-finger swipes.
+  //
+  // |x_offset| is in DIP coordinates.
+  void HandleTabScrubbing(float x_offset);
 
   // Initialize resources and start Lacros. This class provides two approaches
   // to fulfill different requirements.
@@ -244,7 +270,18 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
+  FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
+                           LacrosKeepAliveReloadsWhenUpdateAvailable);
   friend class apps::StandaloneBrowserExtensionApps;
+  // App service require the lacros-chrome to keep alive for web apps to:
+  // 1. Have lacros-chrome running before user open the browser so we can
+  //    have web apps info showing on the app list, shelf, etc..
+  // 2. Able to interact with web apps (e.g. uninstall) at any time.
+  // 3. Have notifications.
+  // TODO(crbug.com/1174246): This is a short term solution to integrate
+  // web apps in Lacros. Need to decouple the App Platform systems from
+  // needing lacros-chrome running all the time.
+  friend class apps::AppServiceProxyAsh;
 
   // Returns true if the binary is ready to launch or already launched.
   bool IsReady() const;
@@ -372,15 +409,23 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // (i.e., if there's no browser window opened, it may be shut down).
   void UpdateKeepAliveInBrowserIfNecessary(bool enabled);
 
+  // Shared implementation of OpenUrl and SwitchToTab.
+  void OpenUrlImpl(
+      const GURL& url,
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+      crosapi::mojom::OpenUrlFrom from);
+
+  // Returns true if the crosapi interface of the currently running lacros
+  // supports NewGuestWindow API. If lacros is older or lacros is not running,
+  // this returns false.
+  bool IsNewGuestWindowSupported() const;
+
   State state_ = State::NOT_INITIALIZED;
 
-  // May be null in tests.
-  scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+  std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // May be null in tests.
   ComponentUpdateService* const component_update_service_;
-
-  std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
   // Path to the lacros-chrome disk image directory.
   base::FilePath lacros_path_;
@@ -420,6 +465,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether an updated browser component is available. Used to determine
   // if an update should be loaded prior to starting the browser.
   bool update_available_ = false;
+
+  // Tracks whether lacros-chrome is terminated.
+  bool is_terminated_ = false;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

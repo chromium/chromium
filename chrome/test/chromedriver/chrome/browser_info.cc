@@ -30,34 +30,37 @@ Status ParseBrowserInfo(const std::string& data, BrowserInfo* browser_info) {
   if (!value.get())
     return Status(kUnknownError, "version info not in JSON");
 
-  base::DictionaryValue* dict;
-  if (!value->GetAsDictionary(&dict))
+  if (!value->is_dict())
     return Status(kUnknownError, "version info not a dictionary");
 
-  bool has_android_package = dict->HasKey("Android-Package");
-  if (has_android_package) {
-    if (!dict->GetString("Android-Package", &browser_info->android_package))
+  const base::Value* android_package = value->FindKey("Android-Package");
+  if (android_package) {
+    if (!android_package->is_string())
       return Status(kUnknownError, "'Android-Package' is not a string");
+    browser_info->android_package = android_package->GetString();
   }
 
-  std::string browser_string;
-  if (!dict->GetString("Browser", &browser_string))
+  const std::string* browser_string = value->FindStringKey("Browser");
+  if (!browser_string)
     return Status(kUnknownError, "version doesn't include 'Browser'");
 
-  Status status =
-      ParseBrowserString(has_android_package, browser_string, browser_info);
+  Status status = ParseBrowserString(android_package != nullptr,
+                                     *browser_string, browser_info);
   if (status.IsError())
     return status;
 
   // "webSocketDebuggerUrl" is only returned on Chrome 62.0.3178 and above,
   // thus it's not an error if it's missing.
-  dict->GetString("webSocketDebuggerUrl", &browser_info->web_socket_url);
+  const std::string* web_socket_url_in =
+      value->FindStringKey("webSocketDebuggerUrl");
+  if (web_socket_url_in)
+    browser_info->web_socket_url = *web_socket_url_in;
 
-  std::string blink_version;
-  if (!dict->GetString("WebKit-Version", &blink_version))
+  const std::string* blink_version = value->FindStringKey("WebKit-Version");
+  if (!blink_version)
     return Status(kUnknownError, "version doesn't include 'WebKit-Version'");
 
-  return ParseBlinkVersionString(blink_version, &browser_info->blink_revision);
+  return ParseBlinkVersionString(*blink_version, &browser_info->blink_revision);
 }
 
 Status ParseBrowserString(bool has_android_package,

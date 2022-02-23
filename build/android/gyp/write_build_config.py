@@ -580,12 +580,6 @@ import xml.dom.minidom
 from util import build_utils
 from util import resource_utils
 
-# TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
-if sys.version_info.major == 2:
-  zip_longest = itertools.izip_longest
-else:
-  zip_longest = itertools.zip_longest
-
 
 # Types that should never be used as a dependency of another build config.
 _ROOT_TYPES = ('android_apk', 'java_binary', 'java_annotation_processor',
@@ -595,10 +589,8 @@ _RESOURCE_TYPES = ('android_assets', 'android_resources', 'system_java_library')
 
 
 class OrderedSet(collections.OrderedDict):
-  # Value |parameter| is present to avoid presubmit warning due to different
-  # number of parameters from overridden method.
   @staticmethod
-  def fromkeys(iterable, value=None):
+  def fromkeys(iterable):
     out = OrderedSet()
     out.update(iterable)
     return out
@@ -630,7 +622,8 @@ def _ExtractMarkdownDocumentation(input_text):
 
   return result
 
-class AndroidManifest(object):
+
+class AndroidManifest:
   def __init__(self, path):
     self.path = path
     dom = xml.dom.minidom.parse(path)
@@ -701,7 +694,7 @@ def RemoveObjDups(obj, base, *key_path):
   target[:] = [x for x in target if x not in base_target]
 
 
-class Deps(object):
+class Deps:
   def __init__(self, direct_deps_config_paths):
     self._all_deps_config_paths = GetAllDepsConfigsInOrder(
         direct_deps_config_paths)
@@ -787,7 +780,7 @@ def _MergeAssets(all_assets):
     dest_map = uncompressed if disable_compression else compressed
     other_map = compressed if disable_compression else uncompressed
     outputs = entry.get('outputs', [])
-    for src, dest in zip_longest(entry['sources'], outputs):
+    for src, dest in itertools.zip_longest(entry['sources'], outputs):
       if not dest:
         dest = os.path.basename(src)
       # Merge so that each path shows up in only one of the lists, and that
@@ -2114,6 +2107,7 @@ def main(argv):
   if options.depfile:
     build_utils.WriteDepfile(options.depfile, options.build_config,
                              sorted(set(all_inputs)))
+  return 0
 
 
 if __name__ == '__main__':

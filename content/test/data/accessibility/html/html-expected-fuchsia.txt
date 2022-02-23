@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus label='HTML element'
+++UNKNOWN hidden
+++++UNKNOWN label='BODY element'
+++++++BUTTON focusable label='Button element' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Button'
+++++++++++UNKNOWN label='Button'

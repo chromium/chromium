@@ -10,7 +10,7 @@
 
 namespace variations {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The result of importing a seed during Android first run.
 // Note: UMA histogram enum - don't re-order or remove entries.
 enum class FirstRunSeedImportResult {
@@ -21,7 +21,7 @@ enum class FirstRunSeedImportResult {
   FAIL_INVALID_RESPONSE_DATE,
   ENUM_SIZE
 };
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The result of attempting to load a variations seed during startup.
 //
@@ -99,11 +99,11 @@ struct InstanceManipulations {
   const bool delta_compressed;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Records the result of importing a seed during Android first run.
 COMPONENT_EXPORT(VARIATIONS)
 void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Records the result of attempting to load the latest variations seed on
 // startup.

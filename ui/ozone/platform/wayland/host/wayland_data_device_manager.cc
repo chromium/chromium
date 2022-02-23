@@ -10,11 +10,13 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxDeviceManagerVersion = 3;
+constexpr uint32_t kMinVersion = 1;
+constexpr uint32_t kMaxVersion = 3;
 }
 
 // static
@@ -28,17 +30,22 @@ void WaylandDataDeviceManager::Instantiate(WaylandConnection* connection,
                                            uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->data_device_manager_)
+  if (connection->data_device_manager_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
+  }
 
   auto data_device_manager = wl::Bind<wl_data_device_manager>(
-      registry, name, std::min(version, kMaxDeviceManagerVersion));
+      registry, name, std::min(version, kMaxVersion));
   if (!data_device_manager) {
     LOG(ERROR) << "Failed to bind to wl_data_device_manager global";
     return;
   }
   connection->data_device_manager_ = std::make_unique<WaylandDataDeviceManager>(
       data_device_manager.release(), connection);
+
+  // The data device manager is one of objects needed for data exchange.  Notify
+  // the connection so it might set up the rest if all other parts are in place.
   connection->CreateDataObjectsIfReady();
 }
 
@@ -56,8 +63,9 @@ WaylandDataDevice* WaylandDataDeviceManager::GetDevice() {
   DCHECK(connection_->seat());
   if (!device_) {
     device_ = std::make_unique<WaylandDataDevice>(
-        connection_, wl_data_device_manager_get_data_device(
-                         device_manager_.get(), connection_->seat()));
+        connection_,
+        wl_data_device_manager_get_data_device(
+            device_manager_.get(), connection_->seat()->wl_object()));
   }
   DCHECK(device_);
   return device_.get();

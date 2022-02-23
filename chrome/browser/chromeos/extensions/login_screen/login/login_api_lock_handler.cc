@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chromeos/login/auth/user_context.h"
 
 namespace chromeos {
 
@@ -42,7 +42,7 @@ void LoginApiLockHandler::RequestLockScreen() {
 }
 
 void LoginApiLockHandler::Authenticate(
-    const UserContext& user_context,
+    const ash::UserContext& user_context,
     base::OnceCallback<void(bool auth_success)> callback) {
   unlock_in_progress_ = true;
   callback_ = std::move(callback);

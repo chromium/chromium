@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -57,7 +58,7 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
 
  private:
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
-  const gpu::GpuPreferences& gpu_preferences_;
+  const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 };
 

@@ -38,7 +38,7 @@ TEST_F(GoogleUpdateTest, StatsConsent) {
   EXPECT_FALSE(GoogleUpdateSettings::GetCollectStatsConsent());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST_F(GoogleUpdateTest, LastRunTime) {
   // Querying the value that does not exists should fail.
@@ -50,7 +50,7 @@ TEST_F(GoogleUpdateTest, LastRunTime) {
   EXPECT_EQ(0, GoogleUpdateSettings::GetLastRunTime());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(GoogleUpdateTest, IsOrganic) {
   // Test some brand codes to ensure that future changes to this method won't
@@ -74,7 +74,7 @@ TEST_F(GoogleUpdateTest, IsOrganicFirstRunBrandCodes) {
   EXPECT_TRUE(google_brand::IsOrganicFirstRun("EUBA"));
   EXPECT_TRUE(google_brand::IsOrganicFirstRun("GGRA"));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // An empty brand string on Mac is used for channels other than stable,
   // which are always organic.
   EXPECT_TRUE(google_brand::IsOrganicFirstRun(""));

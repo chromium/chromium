@@ -40,8 +40,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
     base::DictionaryValue* pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction) const {
-  const base::Value* value = NULL;
-  pref_store_contents->Get(pref_path_, &value);
+  const base::Value* value = pref_store_contents->FindPath(pref_path_);
   ValueState value_state = transaction->CheckValue(pref_path_, value);
   helper_.ReportValidationResult(value_state, transaction->GetStoreUMASuffix());
 
@@ -71,8 +70,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   if (value_state != ValueState::UNCHANGED) {
     // Store the hash for the new value (whether it was reset or not).
-    const base::Value* new_value = NULL;
-    pref_store_contents->Get(pref_path_, &new_value);
+    const base::Value* new_value = pref_store_contents->FindPath(pref_path_);
     transaction->StoreHash(pref_path_, new_value);
   }
 
@@ -80,8 +78,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
   // reset or external validation failed.
   if (external_validation_transaction &&
       (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
-    const base::Value* new_value = nullptr;
-    pref_store_contents->Get(pref_path_, &new_value);
+    const base::Value* new_value = pref_store_contents->FindPath(pref_path_);
     external_validation_transaction->StoreHash(pref_path_, new_value);
   }
 

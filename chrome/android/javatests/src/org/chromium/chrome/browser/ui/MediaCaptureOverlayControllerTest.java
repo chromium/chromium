@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -104,12 +105,12 @@ public class MediaCaptureOverlayControllerTest {
 
         // Summon the overview, and assert that the overlay is no longer visible.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().showOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         waitForOverlayVisibility(false);
 
         // Now hide the overview and assert that it becomes visible again.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().hideOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
         waitForOverlayVisibility(true);
     }
 

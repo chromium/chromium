@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -62,6 +62,28 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+namespace {
+// https://fetch.spec.whatwg.org/#cors-unsafe-request-header-byte
+bool IsCorsUnsafeRequestHeaderByte(char c) {
+  const auto u = static_cast<uint8_t>(c);
+  return (u < 0x20 && u != 0x09) || u == 0x22 || u == 0x28 || u == 0x29 ||
+         u == 0x3a || u == 0x3c || u == 0x3e || u == 0x3f || u == 0x40 ||
+         u == 0x5b || u == 0x5c || u == 0x5d || u == 0x7b || u == 0x7d ||
+         u == 0x7f;
+}
+
+void ReportUMA(ExecutionContext& context,
+               const std::string& value,
+               network::mojom::FetchResponseType response_type) {
+  if (response_type == network::mojom::FetchResponseType::kCors &&
+      (value.size() > 128 || std::any_of(value.begin(), value.end(),
+                                         IsCorsUnsafeRequestHeaderByte))) {
+    UseCounter::Count(context,
+                      WebFeature::kFetchEventSourceLastEventIdCorsUnSafe);
+  }
+}
+
+}  // anonymous namespace
 
 const uint64_t EventSource::kDefaultReconnectDelay = 3000;
 
@@ -131,8 +153,6 @@ void EventSource::Connect() {
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
   request.SetCacheMode(blink::mojom::FetchCacheMode::kNoStore);
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      execution_context.AddressSpace());
   request.SetCorsPreflightPolicy(
       network::mojom::CorsPreflightPolicy::kPreventPreflight);
   if (parser_ && !parser_->LastEventId().IsEmpty()) {
@@ -267,6 +287,9 @@ void EventSource::DidReceiveResponse(uint64_t identifier,
     if (parser_) {
       // The new parser takes over the event ID.
       last_event_id = parser_->LastEventId();
+      DCHECK(GetExecutionContext());
+      ReportUMA(*GetExecutionContext(), last_event_id.Utf8(),
+                response.GetType());
     }
     parser_ = MakeGarbageCollected<EventSourceParser>(last_event_id, this);
     DispatchEvent(*Event::Create(event_type_names::kOpen));

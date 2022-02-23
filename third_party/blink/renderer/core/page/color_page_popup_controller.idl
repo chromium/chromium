@@ -10,4 +10,5 @@
     RuntimeEnabled=PagePopup
 ] interface ColorPagePopupController : PagePopupController {
     void openEyeDropper();
+    void openSystemColorChooser();
 };

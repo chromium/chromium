@@ -60,7 +60,7 @@ void PrefMetricsService::RecordLaunchPrefs() {
   // for a response from a third party provider installed on the device.  So,
   // it will be logged later once all the dependent information is available.
   // See DeferredStartupHandler.java.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   GURL homepage_url(prefs_->GetString(prefs::kHomePage));
   RecordHomePageLaunchMetrics(prefs_->GetBoolean(prefs::kShowHomeButton),
                               prefs_->GetBoolean(prefs::kHomePageIsNewTabPage),
@@ -69,38 +69,27 @@ void PrefMetricsService::RecordLaunchPrefs() {
 
   // Tab restoring is always done on Android, so these metrics are not
   // applicable.  Also, startup pages are not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   int restore_on_startup = prefs_->GetInteger(prefs::kRestoreOnStartup);
   UMA_HISTOGRAM_ENUMERATION(
       "Settings.StartupPageLoadSettings", restore_on_startup,
       static_cast<int>(SessionStartupPref::kPrefValueMax));
-  if (restore_on_startup == SessionStartupPref::kPrefValueURLs) {
-    const base::ListValue* url_list =
+  if (SessionStartupPref(
+          SessionStartupPref::PrefValueToType(restore_on_startup))
+          .ShouldOpenUrls()) {
+    const base::Value* url_list =
         prefs_->GetList(prefs::kURLsToRestoreOnStartup);
     // Similarly, check startup pages for known search engine TLD+1s.
-    std::string url_text;
-    for (size_t i = 0; i < url_list->GetList().size(); ++i) {
-      if (url_list->GetString(i, &url_text)) {
-        GURL start_url(url_text);
+    for (const base::Value& i : url_list->GetListDeprecated()) {
+      const std::string* url_text = i.GetIfString();
+      if (url_text) {
+        GURL start_url(*url_text);
         if (start_url.is_valid()) {
           UMA_HISTOGRAM_ENUMERATION("Settings.StartupPageEngineTypes",
                                     SearchEngineUtils::GetEngineType(start_url),
                                     SEARCH_ENGINE_MAX);
         }
       }
-    }
-  }
-#endif
-
-  // Android does not support pinned tabs.
-#if !defined(OS_ANDROID)
-  StartupTabs startup_tabs = PinnedTabCodec::ReadPinnedTabs(profile_);
-  for (size_t i = 0; i < startup_tabs.size(); ++i) {
-    GURL start_url(startup_tabs.at(i).url);
-    if (start_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION("Settings.PinnedTabEngineTypes",
-                                SearchEngineUtils::GetEngineType(start_url),
-                                SEARCH_ENGINE_MAX);
     }
   }
 #endif

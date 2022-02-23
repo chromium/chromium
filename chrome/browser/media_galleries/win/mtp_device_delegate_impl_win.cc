@@ -86,8 +86,7 @@ std::wstring GetFileObjectIdFromPathOnBlockingPoolThread(
           file_path, &relative_path))
     return std::wstring();
 
-  std::vector<std::wstring> path_components;
-  relative_path.GetComponents(&path_components);
+  std::vector<std::wstring> path_components = relative_path.GetComponents();
   DCHECK(!path_components.empty());
   std::wstring parent_id(device_info.storage_object_id);
   std::wstring file_object_id;

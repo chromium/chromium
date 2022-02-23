@@ -100,7 +100,7 @@ void PluginPlaceholderBase::HidePlugin() {
       parent = parent.ParentNode();
       if (!parent.IsElementNode())
         continue;
-      element = parent.ToConst<blink::WebElement>();
+      element = parent.To<blink::WebElement>();
       if (element.HasAttribute("style")) {
         std::string style_str = element.GetAttribute("style").Utf8();
         if (RE2::PartialMatch(style_str, width_str) &&

@@ -54,6 +54,11 @@ a sledge hammer.
             {NUM_MISSISSIPPIS, plural,
             =1{OneMississippi}other{ManyMississippis}}
           </message>
+          <message name="IDS_PLURALS_PSEUDO_LONG" desc="A string using the ICU plurals format after being transformed to en-XA">
+            {MSG_COUNT, plural,
+            =1 {Only one message}
+            other {# messages}} - one two three four
+          </message>
         </messages>
         """)
 
@@ -78,6 +83,10 @@ a sledge hammer."</string>
 <plurals name="plurals_no_space">
   <item quantity="one">"OneMississippi"</item>
   <item quantity="other">"ManyMississippis"</item>
+</plurals>
+<plurals name="plurals_pseudo_long">
+  <item quantity="one">"Only one message - one two three four"</item>
+  <item quantity="other">"%d messages - one two three four"</item>
 </plurals>
 </resources>
 """

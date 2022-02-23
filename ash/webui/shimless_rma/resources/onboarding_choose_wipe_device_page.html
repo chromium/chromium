@@ -1,0 +1,23 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+<base-page>
+  <div slot="left-pane">
+    <h1>[[i18n('wipeDeviceTitleText')]]</h1>
+    <!-- TODO(gavinwill): Replace |disabled| with variable -->
+    <cr-radio-group id="wipeDeviceRadioGroup" disabled="[[allButtonsDisabled]]"
+        on-selected-changed="onOptionChanged_">
+      <cr-radio-button name="[[wipeDeviceOption_.WIPE_DEVICE]]">
+        [[i18n('wipeDeviceRemoveDataLabel')]]
+      </cr-radio-button>
+      <div class="indented-description">
+        [[i18n('wipeDeviceRemoveDataDescription')]]
+      </div>
+      <cr-radio-button name="[[wipeDeviceOption_.PRESERVE_DATA]]">
+        [[i18n('wipeDevicePreserveDataLabel')]]
+      </cr-radio-button>
+      <div class="indented-description">
+        [[i18n('wipeDevicePreserveDataDescription')]]
+      </div>
+    </cr-radio-group>
+  </div>
+</base-page>

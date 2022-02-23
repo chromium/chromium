@@ -9,33 +9,20 @@
 
 namespace blink {
 
-// static
-v8::Local<v8::Function> UpdatePaymentDetailsFunction::CreateFunction(
-    ScriptState* script_state,
-    PaymentRequestDelegate* delegate,
-    ResolveType resolve_type) {
-  UpdatePaymentDetailsFunction* self =
-      MakeGarbageCollected<UpdatePaymentDetailsFunction>(script_state, delegate,
-                                                         resolve_type);
-  return self->BindToV8Function();
-}
-
 UpdatePaymentDetailsFunction::UpdatePaymentDetailsFunction(
-    ScriptState* script_state,
     PaymentRequestDelegate* delegate,
     ResolveType resolve_type)
-    : ScriptFunction(script_state),
-      delegate_(delegate),
-      resolve_type_(resolve_type) {
+    : delegate_(delegate), resolve_type_(resolve_type) {
   DCHECK(delegate_);
 }
 
 void UpdatePaymentDetailsFunction::Trace(Visitor* visitor) const {
   visitor->Trace(delegate_);
-  ScriptFunction::Trace(visitor);
+  ScriptFunction::Callable::Trace(visitor);
 }
 
-ScriptValue UpdatePaymentDetailsFunction::Call(ScriptValue value) {
+ScriptValue UpdatePaymentDetailsFunction::Call(ScriptState* script_state,
+                                               ScriptValue value) {
   if (!delegate_)
     return ScriptValue();
 
@@ -46,7 +33,7 @@ ScriptValue UpdatePaymentDetailsFunction::Call(ScriptValue value) {
     case ResolveType::kReject:
       delegate_->OnUpdatePaymentDetailsFailure(
           ToCoreString(value.V8Value()
-                           ->ToString(GetScriptState()->GetContext())
+                           ->ToString(script_state->GetContext())
                            .ToLocalChecked()));
       break;
   }

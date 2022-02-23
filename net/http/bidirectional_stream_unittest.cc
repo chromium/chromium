@@ -11,8 +11,8 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -454,7 +454,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
   const HostPortPair host_port_pair_;
   std::unique_ptr<SequencedSocketData> sequenced_data_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  MockTaggingClientSocketFactory* socket_factory_;
+  raw_ptr<MockTaggingClientSocketFactory> socket_factory_;
 
  private:
   SSLSocketDataProvider ssl_data_;
@@ -1706,7 +1706,8 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
       spdy_util_.ConstructSpdyGet(kDefaultUrl, 1, LOWEST));
   MockWrite writes[] = {CreateMockWrite(req, 0)};
 
-  std::string alt_svc_header_value = NextProtoToString(kProtoQUIC);
+  std::string alt_svc_header_value =
+      quic::AlpnForVersion(DefaultSupportedQuicVersions().front());
   alt_svc_header_value.append("=\"www.example.org:443\"");
   const char* const kExtraResponseHeaders[] = {"alt-svc",
                                                alt_svc_header_value.c_str()};
@@ -1776,7 +1777,7 @@ TEST_F(BidirectionalStreamTest, Tagging) {
       MockRead(ASYNC, ERR_IO_PENDING, 2),  // Force a pause.
       CreateMockRead(response_body_frame, 4), MockRead(ASYNC, 0, 5),
   };
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
 #else
   SocketTag tag;

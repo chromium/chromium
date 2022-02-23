@@ -5,6 +5,10 @@
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 
 #include <algorithm>
+
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc.mojom.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
@@ -14,10 +18,8 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/platform/input_file.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
 #include "services/network/public/mojom/p2p.mojom.h"
-#include "third_party/nearby/src/cpp/core/core.h"
+#include "third_party/nearby/src/connections/core.h"
 
 namespace location {
 namespace nearby {
@@ -151,6 +153,37 @@ NearbyConnections::NearbyConnections(
                      MojoDependencyName::kWebRtcSignalingMessenger),
       base::SequencedTaskRunnerHandle::Get());
 
+  // TODO(https://crbug.com/1261238): This should always be true when the
+  // WifiLan feature flag is enabled. Remove when flag is enabled by default.
+  if (dependencies->wifilan_dependencies) {
+    cros_network_config_.Bind(
+        std::move(dependencies->wifilan_dependencies->cros_network_config),
+        io_task_runner);
+    cros_network_config_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kCrosNetworkConfig),
+        base::SequencedTaskRunnerHandle::Get());
+
+    firewall_hole_factory_.Bind(
+        std::move(dependencies->wifilan_dependencies->firewall_hole_factory),
+        io_task_runner);
+    firewall_hole_factory_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kFirewallHoleFactory),
+        base::SequencedTaskRunnerHandle::Get());
+
+    tcp_socket_factory_.Bind(
+        std::move(dependencies->wifilan_dependencies->tcp_socket_factory),
+        io_task_runner);
+    tcp_socket_factory_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kTcpSocketFactory),
+        base::SequencedTaskRunnerHandle::Get());
+  }
+
   // There should only be one instance of NearbyConnections in a process.
   DCHECK(!g_instance);
   g_instance = this;
@@ -187,6 +220,12 @@ std::string NearbyConnections::GetMojoDependencyName(
       return "ICE Config Fetcher";
     case MojoDependencyName::kWebRtcSignalingMessenger:
       return "WebRTC Signaling Messenger";
+    case MojoDependencyName::kCrosNetworkConfig:
+      return "CrOS Network Config";
+    case MojoDependencyName::kFirewallHoleFactory:
+      return "Firewall Hole Factory";
+    case MojoDependencyName::kTcpSocketFactory:
+      return "TCP socket Factory";
   }
 }
 
@@ -213,9 +252,7 @@ void NearbyConnections::StartAdvertising(
     mojom::AdvertisingOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
     StartAdvertisingCallback callback) {
-  ConnectionOptions connection_options{
-      .strategy = StrategyFromMojom(options->strategy),
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
+  AdvertisingOptions advertising_options{
       .auto_upgrade_bandwidth = options->auto_upgrade_bandwidth,
       .enforce_topology_constraints = options->enforce_topology_constraints,
       .enable_bluetooth_listening = options->enable_bluetooth_listening,
@@ -223,9 +260,13 @@ void NearbyConnections::StartAdvertising(
       .fast_advertisement_service_uuid =
           options->fast_advertisement_service_uuid.canonical_value()};
 
+  advertising_options.strategy = StrategyFromMojom(options->strategy);
+  advertising_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
+
   GetCore(service_id)
       ->StartAdvertising(
-          service_id, std::move(connection_options),
+          service_id, std::move(advertising_options),
           CreateConnectionRequestInfo(endpoint_info, std::move(listener)),
           ResultCallbackFromMojom(std::move(callback)));
 }
@@ -248,11 +289,12 @@ void NearbyConnections::StartDiscovery(
         options->fast_advertisement_service_uuid->canonical_value();
   }
 
-  ConnectionOptions connection_options{
-      .strategy = StrategyFromMojom(options->strategy),
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
+  DiscoveryOptions discovery_options{
       .is_out_of_band_connection = options->is_out_of_band_connection,
       .fast_advertisement_service_uuid = fast_advertisement_service_uuid};
+  discovery_options.strategy = StrategyFromMojom(options->strategy);
+  discovery_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
   mojo::SharedRemote<mojom::EndpointDiscoveryListener> remote(
       std::move(listener), thread_task_runner_);
   DiscoveryListener discovery_listener{
@@ -293,7 +335,7 @@ void NearbyConnections::StartDiscovery(
   ResultCallback result_callback = ResultCallbackFromMojom(std::move(callback));
 
   GetCore(service_id)
-      ->StartDiscovery(service_id, std::move(connection_options),
+      ->StartDiscovery(service_id, std::move(discovery_options),
                        std::move(discovery_listener),
                        std::move(result_callback));
 }
@@ -338,10 +380,11 @@ void NearbyConnections::RequestConnection(
           : 0;
 
   ConnectionOptions connection_options{
-      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
       .keep_alive_interval_millis = std::max(keep_alive_interval_millis, 0),
-      .keep_alive_timeout_millis = std::max(keep_alive_timeout_millis, 0),
-  };
+      .keep_alive_timeout_millis = std::max(keep_alive_timeout_millis, 0)};
+  connection_options.allowed =
+      MediumSelectorFromMojom(options->allowed_mediums.get());
+
   if (options->remote_bluetooth_mac_address) {
     connection_options.remote_bluetooth_mac_address =
         ByteArrayFromMojom(*options->remote_bluetooth_mac_address);
@@ -436,7 +479,7 @@ void NearbyConnections::AcceptConnection(
 
             switch (info.status) {
               case PayloadProgressInfo::Status::kFailure:
-                FALLTHROUGH;
+                [[fallthrough]];
               case PayloadProgressInfo::Status::kCanceled:
                 buffer_manager_.StopTrackingFailedPayload(info.payload_id);
                 break;

@@ -7,12 +7,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_service.grpc.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/async_service_driver.h"
 #include "chromeos/services/libassistant/grpc/rpc_method_driver.h"
-#include "libassistant/shared/internal_api/action_module.h"
 
 namespace assistant {
 namespace api {

@@ -47,6 +47,10 @@ def create_config(config_args, development):
                 # spctl assessment so don't do it.
                 return False
 
+            @property
+            def inject_get_task_allow_entitlement(self):
+                return True
+
         config_class = DevelopmentCodeSignConfig
 
     return config_class(*config_args)
@@ -107,7 +111,16 @@ def main():
         dest='skip_brands',
         action='append',
         default=[],
-        help='Causes any distribution whose brand code matches to be skipped.')
+        help='Causes any distribution whose brand code matches to be skipped. '
+        'A value of * matches all brand codes.')
+    parser.add_argument(
+        '--channel',
+        dest='channels',
+        action='append',
+        default=[],
+        help='If provided, only the distributions matching the specified '
+        'channel(s) will be produced. The string "stable" matches the None '
+        'channel.')
 
     group = parser.add_mutually_exclusive_group(required=False)
     group.add_argument(
@@ -141,7 +154,8 @@ def main():
         config,
         disable_packaging=args.disable_packaging,
         do_notarization=args.notarize,
-        skip_brands=args.skip_brands)
+        skip_brands=args.skip_brands,
+        channels=args.channels)
 
 
 if __name__ == '__main__':

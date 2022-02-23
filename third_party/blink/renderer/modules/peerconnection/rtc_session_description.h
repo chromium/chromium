@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_sdp_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 

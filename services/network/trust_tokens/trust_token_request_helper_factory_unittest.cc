@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,8 +16,8 @@
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

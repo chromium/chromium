@@ -2,33 +2,108 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import ctypes
+import io
+import json
 import logging
 import os
-import psutil
+import pandas as pd
+import signal
 import subprocess
 import sys
 import time
+import typing
 
+import browsers
+import scenarios
 import utils
 
-class Driver:
+
+class DriverContext:
   """Class in charge of running the measurements and keeping track
   of the global state needed to do so.
   """
 
-  def __init__(self, output_dir):
+  def __init__(self, output_dir: str, power_sample_path: str):
     """
     Args:
       output_dir: A string path of Where the results should be stored.
     """
 
-    self._started_processeds = []
-    self.__output_dir = output_dir
+    self._output_dir = output_dir
+    self._power_sample_path = power_sample_path
 
     # Make sure there is somewhere to put  results.
-    os.makedirs(f"{self.__output_dir}", exist_ok=True)
+    os.makedirs(f"{self._output_dir}", exist_ok=True)
 
-  def CheckEnv(self, throw_on_bad_env):
+  def __enter__(self):
+
+    self._caffeinate_process = subprocess.Popen([
+        "caffeinate",
+        "-d",  # Prevent the display from sleeping.
+    ])
+    # Force user_idle_level to stay active by poking a key code. caffeinate -u
+    # declares that a user is active but this doesn't seem to have a lasting
+    # effect.
+    self._poke_user_process = subprocess.Popen([
+        "osascript",
+        os.path.join(os.path.dirname(__file__), "driver_scripts_templates",
+                     "poke_user.scpt")
+    ])
+    return self
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    utils.TerminateProcess(self._caffeinate_process)
+    utils.TerminateProcess(self._poke_user_process)
+
+  def SetMainDisplayBrightness(self, brightness_level: int):
+    # This function imitates the open-source "brightness" tool at
+    # https://github.com/nriley/brightness.
+    # Since the benchmark doesn't care about older MacOSen, multiple displays
+    # or other complications that tool has to consider, setting the brightness
+    # level boils down to calling this function for the main display.
+    CoreGraphics = ctypes.CDLL(
+        "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics")
+    main_display = CoreGraphics.CGMainDisplayID()
+    DisplayServices = ctypes.CDLL(
+        "/System/Library/PrivateFrameworks/DisplayServices.framework"
+        "/DisplayServices")
+    DisplayServices.DisplayServicesSetBrightness.argtypes = [
+        ctypes.c_int, ctypes.c_float
+    ]
+    DisplayServices.DisplayServicesSetBrightness(main_display,
+                                                 brightness_level / 100)
+
+  def WaitBatteryNotFull(self):
+    # Empirical evidence has shown that right after a full battery charge, the
+    # current capacity stays equal to the maximum capacity for several minutes,
+    # despite the fact that power is definitely consumed. To ensure that power
+    # consumption estimates from battery level are meaningful, wait until the
+    # battery is no longer reporting being fully charged before benchmarking.
+
+    power_sampler_args = [
+        self._power_sample_path, "--sample-on-notification",
+        "--samplers=battery", "--sample-count=1"
+    ]
+
+    logging.info('Waiting for battery to no longer be full')
+
+    while True:
+      power_sampler_output = subprocess.check_output(power_sampler_args)
+      power_sampler_data = pd.read_csv(io.BytesIO(power_sampler_output))
+      max_capacity = power_sampler_data.iloc[0]['battery_max_capacity(Ah)']
+      current_capacity = power_sampler_data.iloc[0][
+          'battery_current_capacity(Ah)']
+
+      logging.info(
+          f'Battery level is {100 * current_capacity / max_capacity:.2f}%')
+
+      if max_capacity != current_capacity:
+        return
+
+    logging.info('Battery is no longer full')
+
+  def CheckEnv(self, throw_on_bad_env: bool):
     """Verifies that the environment is conducive to proper profiling or
     measurements.
 
@@ -53,7 +128,10 @@ class Driver:
     sudo_check.wait()
 
     try:
-      check_env = subprocess.run(['zsh', '-c', './check_env.sh'],
+      check_env = subprocess.run([
+          'zsh', '-c',
+          os.path.join(os.path.dirname(__file__), 'check_env.sh')
+      ],
                                  check=throw_on_bad_env,
                                  capture_output=True)
       logging_function(check_env.stdout.decode('ascii'))
@@ -63,128 +141,15 @@ class Driver:
 
     # Make sure that no browsers are running which would affect the
     # tests.
-    for browser in utils.get_browser_process_names():
-      if self.FindBrowserProcess(browser):
-        logging_function(f"{browser} already running. \
-                Make sure to close it before running again.")
+    for browser_name in browsers.PROCESS_NAMES:
+      if utils.FindProcess(browser_name):
+        logging_function(f"{browser_name} already running. "
+                         "Make sure to close it before running again.")
 
         if throw_on_bad_env:
           sys.exit(-1)
 
-  def Teardown(self):
-    """Cleans up global state after all calls to Record()/Profile().
-
-    Makes sure that all processes started for measurement/profiling are exited
-    and that the execution can move on to the next one.
-    """
-
-    # Cleanup can't be achieved with a simple call to psutil.waitprocs() because
-    # some executables are started with sudo and will end up as a zombie
-    # processes.
-    for process in self._started_processeds:
-      logging.info(f"Terminating PID:{process.pid}")
-
-      try:
-        process.terminate()
-        process.wait(0.5)
-      except psutil.NoSuchProcess:
-        continue
-      except (psutil.TimeoutExpired, psutil.AccessDenied) as e:
-        logging.info(f"Terminate failed, moving on to kill.")
-
-      try:
-        process.kill()
-        process.wait(0.5)
-      except psutil.NoSuchProcess:
-        continue
-      except (psutil.TimeoutExpired, psutil.AccessDenied) as e:
-        logging.info(f"Kill failed, trying sudo kill.")
-
-      try:
-        os.system(f"sudo kill {process.pid}")
-        process.wait(0.5)
-      except psutil.NoSuchProcess:
-        continue
-      except psutil.TimeoutExpired:
-        logging.error(f"Could not clean up PID:{process.pid}. Aborting")
-        sys.exit(-1)
-
-    # Start over for next round.
-    self._started_processeds.clear()
-
-  def FindBrowserProcess(self, browser):
-    """Looks for the process associated with |browser|.
-
-    Args:
-      browser: A string of the browser name
-
-    Returns:
-      A psutil.process representation of the browser process.
-
-    Raises:
-      SystemExit: When no process is found for the browser.
-    """
-
-    process_name = utils.get_browser_property(browser, 'process_name')
-    processes = filter(lambda p: p.name() == process_name,
-                       psutil.process_iter())
-    browser_process = None
-
-    for process in processes:
-      if not browser_process:
-        browser_process = process
-      else:
-        logging.error("Too many copies of the browser running, this is wrong")
-        sys.exit(-1)
-
-    return browser_process
-
-  def RunScenario(self, scenario_config):
-    """Start the browser and initiate the scenario
-
-    Args:
-      scenario_config: A dictionary describing the scenario.
-
-    Returns: A psutil.process representation the driver script process.
-    """
-
-    scenario_browser = scenario_config["browser"]
-
-    if scenario_browser is not None:
-      browser_executable = utils.get_browser_property(scenario_browser,
-                                                      'executable')
-      if scenario_browser in ["Chromium", "Chrome", "Canary", "Edge"]:
-        subprocess.call(["open", "-a", browser_executable, "--args"] +
-                        ["--enable-benchmarking", "--disable-stack-profiler"] +
-                        scenario_config["extra_args"])
-      elif scenario_browser == "Safari":
-        subprocess.call(["open", "-a", browser_executable])
-        # Call prep_safari.scpt to make sure the run starts clean. See file
-        # comment for details.
-        subprocess.call(["osascript", './driver_scripts/prep_safari.scpt'])
-        subprocess.call(["open", "-a", browser_executable, "--args"] +
-                        scenario_config["extra_args"])
-
-    # Wait for the browser to be started and ready for AppleScript commands.
-    if scenario_browser:
-      browser_process_name = utils.get_browser_property(scenario_browser,
-                                                        'process_name')
-      browser_process = None
-      while not browser_process:
-        browser_process = self.FindBrowserProcess(scenario_config["browser"])
-        time.sleep(0.100)
-        logging.info(f"Waiting for {browser_process_name} to start")
-
-    self._started_processeds.append(browser_process)
-
-    driver_script_args = [
-        "osascript", f'./driver_scripts/{scenario_config["driver_script"]}.scpt'
-    ]
-    process = subprocess.Popen(driver_script_args)
-
-    return process
-
-  def Record(self, scenario_config):
+  def Record(self, scenario_driver: scenarios.ScenarioOSADriver):
     """Cover the running of the scenario with powermetrics and save
     the results
 
@@ -192,56 +157,75 @@ class Driver:
       scenario_config: A dictionary describing the scenario.
     """
 
-    output_file = \
-        f'./{self.__output_dir}/{scenario_config["name"]}_powermetrics.plist'
+    self.WriteScenarioSummary(scenario_driver)
 
-    with open(output_file, "w") as powermetrics_output:
+    powermetrics_output = os.path.join(self._output_dir, scenario_driver.name,
+                                       "powermetrics.plist")
+    power_sampler_output = os.path.join(self._output_dir, scenario_driver.name,
+                                        "power_sampler.json")
+    power_sampler_battery_output = os.path.join(self._output_dir,
+                                                scenario_driver.name,
+                                                "power_sampler_battery.json")
 
-      # TODO(crbug.com/1224994): Narrow down samplers to only those of interest.
-      powermetrics_args = [
-          "sudo", "powermetrics", "-f", "plist", "--samplers", "all",
-          "--show-responsible-pid", "--show-process-gpu",
-          "--show-process-energy", "-i", "60000"
-      ]
-
-      powermetrics_process = subprocess.Popen(powermetrics_args,
-                                              stdout=powermetrics_output,
-                                              stdin=subprocess.PIPE)
-
-      self._started_processeds.append(psutil.Process(powermetrics_process.pid))
-
-
-    # No need to add |scenario_process| to |self._started_processeds| as it's
-    # explicitly waited on.
-    scenario_process = self.RunScenario(scenario_config)
-    scenario_process.wait()
-
-    self.Teardown()
-
-
-  def GetAllPids(self, browser_process):
-    """Get the pids for the browser and all children. w
-
-    Args:
-      browser_process: A psutil.Process object associated with the
-      browser process.
-
-    Returns:
-      A list of pids as integers.
-    """
-
-    pids = [browser_process.pid]
+    powermetrics_process = None
+    power_sampler_process = None
+    power_sampler_battery_process = None
+    browser_process = None
     try:
-      children = browser_process.children(recursive=True)
-    except psutil.NoSuchProcess:
-      return []
+      scenario_driver.Launch()
+      if hasattr(scenario_driver, 'browser'):
+        browser_process = scenario_driver.browser.browser_process
 
-    for child in children:
-      pids.append(child.pid)
+      powermetrics_args = [
+          "sudo", "powermetrics", "-f", "plist", "--samplers",
+          "tasks,cpu_power,gpu_power,thermal,disk,network",
+          "--show-process-coalition", "--show-process-gpu",
+          "--show-process-energy", "-i", "10000", "--output-file",
+          powermetrics_output
+      ]
+      powermetrics_process = subprocess.Popen(powermetrics_args,
+                                              stdout=subprocess.PIPE,
+                                              stdin=subprocess.PIPE)
+      power_sampler_battery_args = [
+          self._power_sample_path, "--sample-on-notification",
+          "--samplers=battery",
+          f"--timeout={int(scenario_driver.duration.total_seconds())}",
+          f"--json-output-file={power_sampler_battery_output}"
+      ]
+      power_sampler_battery_process = subprocess.Popen(
+          power_sampler_battery_args,
+          stdout=subprocess.PIPE,
+          stdin=subprocess.PIPE)
+      power_sampler_args = [
+          self._power_sample_path, "--sample-interval=10",
+          "--samplers=smc,user_idle_level,main_display",
+          f"--timeout={int(scenario_driver.duration.total_seconds())}",
+          f"--json-output-file={power_sampler_output}"
+      ]
+      if browser_process is not None:
+        power_sampler_args += [
+            f"--resource-coalition-pid={browser_process.pid}"
+        ]
+      power_sampler_process = subprocess.Popen(power_sampler_args,
+                                               stdout=subprocess.PIPE,
+                                               stdin=subprocess.PIPE)
+      scenario_driver.Wait()
+      power_sampler_process.wait()
+      power_sampler_battery_process.wait()
 
-    return pids
+    finally:
+      scenario_driver.TearDown()
+      if power_sampler_process:
+        utils.TerminateProcess(power_sampler_process)
+      if power_sampler_battery_process:
+        utils.TerminateProcess(power_sampler_battery_process)
+      if powermetrics_process:
+        # Force powermetrics to flush data.
+        utils.SendSignalToRootProcess(powermetrics_process, signal.SIGIO)
+        utils.TerminateRootProcess(powermetrics_process)
 
-  def Profile(self, scenario_config, profile_mode):
+  def Profile(self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver,
+              profile_mode: str):
     """Cover the running of the scenario with DTrace and save the
     results.
 
@@ -254,59 +238,80 @@ class Driver:
       terminate after the end of the scenario.
     """
 
-    if scenario_config["browser"] != "Chromium":
-      logging.error("Only Chromium can be profiled! Skipping.")
-      return
+    if scenario_driver.browser is None:
+      raise ValueError("Scenario must have an associated browser.")
+    if scenario_driver.browser.name not in ["chromium", "canary", "chrome"]:
+      raise ValueError("Only Chromium can be profiled! Skipping.")
 
-    script_process = self.RunScenario(scenario_config)
-    browser_process = self.FindBrowserProcess(scenario_config["browser"])
+    self.WriteScenarioSummary(scenario_driver)
+
+    dtraces_output_dir = os.path.join(self._output_dir, scenario_driver.name,
+                                      f"dtraces_{profile_mode}")
+    os.makedirs(dtraces_output_dir, exist_ok=True)
+    scenario_driver.Launch()
+    browser_process = scenario_driver.browser.browser_process
 
     # Set up the environment for correct dtrace execution.
     dtrace_env = os.environ.copy()
     dtrace_env["DYLD_SHARED_REGION"] = "avoid"
 
-    pid_to_subprocess = {}
+    pid_to_subprocess: typing.Dict[str, subprocess.Popen] = {}
 
-    with open('./dtrace_log.txt', "w") as dtrace_log:
-      # Keep looking for child processes as long as the scenario is running.
-      while script_process.poll() is None:
+    try:
+      with open(
+          os.path.join(self._output_dir, scenario_driver.name,
+                       f'dtrace_{profile_mode}_log.txt'), "w") as dtrace_log:
+        # Keep looking for child processes as long as the scenario is running.
+        while scenario_driver.IsRunning():
 
-        # Let some time pass to limit the overhead of this script.
-        time.sleep(0.100)
-        logging.info("Looking for child processes")
+          # Let some time pass to limit the overhead of this script.
+          time.sleep(0.100)
+          logging.debug("Looking for child processes")
 
-        # Watch for new processes and follow those too.
-        for pid in self.GetAllPids(browser_process):
-          if profile_mode == "wakeups":
-            probe_def = \
-              f"mach_kernel::wakeup/pid == {pid}/ " \
-              "{{ @[ustack(32)] = count(); }}"
-          else:
-            probe_def = \
-              f"profile-1001/pid == {pid}/ {{ @[ustack(32)] = count(); }}"
+          # Watch for new processes and follow those too.
+          for process in browser_process.children(
+              recursive=True) + [browser_process]:
+            pid = process.pid
+            if profile_mode == "wakeups":
+              probe_def = \
+                f"mach_kernel::wakeup/pid == {pid}/ " \
+                "{{ @[ustack(64)] = count(); }}"
+            else:
+              probe_def = \
+                f"profile-1001/pid == {pid}/ {{ @[ustack(64)] = count(); }}"
+            output_filename = os.path.join(dtraces_output_dir, f"{pid}.txt")
+            dtrace_args = [
+                'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-n',
+                probe_def
+            ]
 
-          dtrace_args = [
-              'sudo', 'dtrace', '-p', f"{pid}", "-o",
-              f"{self.__output_dir}/{pid}.txt", '-n', probe_def
-          ]
+            if pid not in pid_to_subprocess:
+              logging.debug(f"Found new child!:{pid}")
+              # No need to add |process| to |self._started_processeds| as it's
+              # explicitly waited on later.
+              process = subprocess.Popen(dtrace_args,
+                                         env=dtrace_env,
+                                         stdout=dtrace_log,
+                                         stderr=dtrace_log)
+              pid_to_subprocess[pid] = process
 
-          if pid not in pid_to_subprocess:
-            logging.info(f"Found new child!:{pid}")
-            # No need to add |process| to |self._started_processeds| as it's
-            # explicitly waited on later.
-            process = subprocess.Popen(dtrace_args,
-                    env=dtrace_env,
-                    stdout=dtrace_log,
-                    stderr=dtrace_log)
-            pid_to_subprocess[pid] = process
+      scenario_driver.Wait()
 
-    script_process.wait()
+    finally:
+      scenario_driver.TearDown()
 
-    # Cleanup executed before waiting for the DTrace processes so that they
-    # see that the browse is gone.
-    self.Teardown()
+      for pid, dtrace_process in pid_to_subprocess.items():
+        logging.debug(f"Waiting for dtrace hooked on {pid} to exit")
+        dtrace_process.wait(30)
 
-    for pid, dtrace_process in pid_to_subprocess.items():
-      logging.info(f"Waiting for dtrace hooked on {pid} to exit")
-      dtrace_process.wait(30)
-
+  def WriteScenarioSummary(
+      self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver):
+    """Outputs a json file describing `scenario_driver` arguments into the
+        output directory
+    """
+    os.makedirs(os.path.join(self._output_dir, scenario_driver.name),
+                exist_ok=True)
+    with open(
+        os.path.join(self._output_dir, scenario_driver.name, 'metadata.json'),
+        'w') as summary_file:
+      json.dump(scenario_driver.Summary(), summary_file, indent=2)

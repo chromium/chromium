@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_CACHE_COUNTER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_CACHE_COUNTER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/devicetype.h"
@@ -33,7 +34,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_util.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -229,7 +229,7 @@ const struct {
      ash::prefs::kAccessibilitySwitchAccessEnabled},
     {kPropertyCursorColorEnabled, ash::prefs::kAccessibilityCursorColorEnabled},
     {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
-    {kPropertySendFunctionsKeys, prefs::kLanguageSendFunctionKeys}};
+    {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}};
 
 const char* GetBoolPrefNameForApiProperty(const char* api_name) {
   for (size_t i = 0;
@@ -267,7 +267,7 @@ ChromeosInfoPrivateGetFunction::~ChromeosInfoPrivateGetFunction() {
 
 ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(!args().empty() && args()[0].is_list());
-  base::Value::ConstListView list = args()[0].GetList();
+  base::Value::ConstListView list = args()[0].GetListDeprecated();
 
   base::Value result(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < list.size(); ++i) {
@@ -449,7 +449,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
           ->SetString(prefs::kUserTimezone, param_value);
     } else {
       const user_manager::User* user =
-          chromeos::ProfileHelper::Get()->GetUserByProfile(
+          ash::ProfileHelper::Get()->GetUserByProfile(
               Profile::FromBrowserContext(browser_context()));
       if (user)
         ash::system::SetSystemTimezone(user, param_value);

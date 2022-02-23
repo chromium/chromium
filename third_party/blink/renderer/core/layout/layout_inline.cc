@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 
+#include "cc/base/region.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -49,9 +50,8 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/region.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -540,17 +540,29 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
       !new_child->IsTablePart()) {
     if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
         !ForceLegacyLayout()) {
-      // TODO(crbug.com/716930): This logic is still at the prototype level and
-      // to be re-written, but landed under the runtime flag to allow us working
-      // on dependent code in parallel.
       DCHECK(!new_child->IsInline());
-      auto* anonymous_box = DynamicTo<LayoutBlockFlow>(
-          before_child ? before_child->PreviousSibling() : LastChild());
-      if (!anonymous_box || !anonymous_box->IsAnonymous()) {
+      LayoutBlockFlow* anonymous_box;
+      if (!before_child) {
+        anonymous_box = DynamicTo<LayoutBlockFlow>(LastChild());
+      } else if (before_child->IsInline() ||
+                 before_child->IsFloatingOrOutOfFlowPositioned()) {
+        anonymous_box =
+            DynamicTo<LayoutBlockFlow>(before_child->PreviousSibling());
+      } else {
+        // If |before_child| is not inline, it should have been added to the
+        // anonymous block.
+        anonymous_box = DynamicTo<LayoutBlockFlow>(before_child->Parent());
+        DCHECK(anonymous_box);
+        DCHECK(anonymous_box->IsBlockInInline());
+        anonymous_box->AddChild(new_child, before_child);
+        return;
+      }
+      if (!anonymous_box || !anonymous_box->IsBlockInInline()) {
         anonymous_box =
             CreateAnonymousContainerForBlockChildren(/* split_flow */ false);
         LayoutBoxModelObject::AddChild(anonymous_box, before_child);
       }
+      DCHECK(anonymous_box->IsBlockInInline());
       anonymous_box->AddChild(new_child);
       return;
     }
@@ -992,16 +1004,16 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
   return false;
 }
 
-void LayoutInline::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+void LayoutInline::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   QuadsForSelfInternal(quads, 0, false);
 }
 
-void LayoutInline::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+void LayoutInline::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                                         MapCoordinatesFlags mode) const {
   QuadsForSelfInternal(quads, mode, true);
 }
 
-void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         MapCoordinatesFlags mode,
                                         bool map_to_absolute) const {
   NOT_DESTROYED();
@@ -1020,10 +1032,12 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
       if (!transform_depends_on_point)
         mapping_to_absolute.emplace(LocalToAbsoluteTransform(mode));
     }
-    if (transform_depends_on_point)
-      quads.push_back(LocalToAbsoluteQuad(FloatQuad(FloatRect(rect)), mode));
-    else
-      quads.push_back(mapping_to_absolute->MapQuad(FloatQuad(FloatRect(rect))));
+    if (transform_depends_on_point) {
+      quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(gfx::RectF(rect)), mode));
+    } else {
+      quads.push_back(
+          mapping_to_absolute->MapQuad(gfx::QuadF(gfx::RectF(rect))));
+    }
   };
 
   CollectLineBoxRects(
@@ -1031,13 +1045,13 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
         if (map_to_absolute)
           PushAbsoluteQuad(rect);
         else
-          quads.push_back(FloatQuad(FloatRect(rect)));
+          quads.push_back(gfx::QuadF(gfx::RectF(rect)));
       });
   if (quads.IsEmpty()) {
     if (map_to_absolute)
       PushAbsoluteQuad(PhysicalRect());
     else
-      quads.push_back(FloatQuad());
+      quads.push_back(gfx::QuadF());
   }
 }
 
@@ -1089,7 +1103,7 @@ PhysicalRect LayoutInline::AbsoluteBoundingBoxRectHandlingEmptyInline(
     MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
   PhysicalRect rect = UnionRect(rects);
   // When empty LayoutInline is not culled, |rect| is empty but |rects| is not.
   if (rect.IsEmpty())
@@ -1162,7 +1176,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
                                const PhysicalOffset& accumulated_offset,
                                HitTestAction hit_test_action) {
   NOT_DESTROYED();
-  if (ContainingNGBlockFlow()) {
+  if (IsInLayoutNGInlineFormattingContext()) {
     // TODO(crbug.com/965976): We should fix the root cause of the missed
     // layout.
     if (UNLIKELY(NeedsLayout())) {
@@ -1225,13 +1239,13 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     return false;
 
   HitTestLocation adjusted_location(hit_test_location, -accumulated_offset);
-  Region region_result;
+  cc::Region region_result;
   bool intersected = false;
   auto yield = [&adjusted_location, &region_result,
                 &intersected](const PhysicalRect& rect) {
     if (adjusted_location.Intersects(rect)) {
       intersected = true;
-      region_result.Unite(EnclosingIntRect(rect));
+      region_result.Union(ToEnclosingRect(rect));
     }
   };
 
@@ -1247,7 +1261,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       yield(cursor.Current().RectInContainerFragment());
   } else {
-    DCHECK(!ContainingNGBlockFlow());
+    DCHECK(!IsInLayoutNGInlineFormattingContext());
     CollectCulledLineBoxRects(yield);
   }
 
@@ -1277,7 +1291,7 @@ PositionWithAffinity LayoutInline::PositionForPoint(
         To<LayoutBlockFlow>(continuation)->InlineElementContinuation();
   }
 
-  if (const LayoutBlockFlow* ng_block_flow = ContainingNGBlockFlow())
+  if (const LayoutBlockFlow* ng_block_flow = FragmentItemsContainer())
     return ng_block_flow->PositionForPoint(point);
 
   DCHECK(CanUseInlineBox(*this));
@@ -1505,7 +1519,7 @@ PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
     rect = PhysicalVisualOverflowRect();
   } else {
     // Should also cover continuations.
-    rect = UnionRect(OutlineRects(PhysicalOffset(),
+    rect = UnionRect(OutlineRects(nullptr, PhysicalOffset(),
                                   NGOutlineType::kIncludeBlockVisualOverflow));
   }
   MapToVisualRectInAncestorSpace(View(), rect, flags);
@@ -1532,7 +1546,8 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();
   const ComputedStyle& style = StyleRef();
-  LayoutUnit outline_outset(OutlinePainter::OutlineOutsetExtent(style));
+  LayoutUnit outline_outset(OutlinePainter::OutlineOutsetExtent(
+      style, OutlineInfo::GetFromStyle(style)));
   if (outline_outset) {
     Vector<PhysicalRect> rects;
     if (GetDocument().InNoQuirksMode()) {
@@ -1547,7 +1562,7 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
       // LayoutBlock::minLineHeightForReplacedObject(),
       // linesVisualOverflowBoundingBox() may not cover outline rects of lines
       // containing replaced objects.
-      AddOutlineRects(rects, PhysicalOffset(),
+      AddOutlineRects(rects, nullptr, PhysicalOffset(),
                       style.OutlineRectsShouldIncludeBlockVisualOverflow());
     }
     if (!rects.IsEmpty()) {
@@ -1845,6 +1860,7 @@ void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
 
 void LayoutInline::AddOutlineRects(
     Vector<PhysicalRect>& rects,
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
@@ -1864,6 +1880,8 @@ void LayoutInline::AddOutlineRects(
   });
   AddOutlineRectsForChildrenAndContinuations(rects, additional_offset,
                                              include_block_overflows);
+  if (info)
+    *info = OutlineInfo::GetFromStyle(StyleRef());
 }
 
 void LayoutInline::AddOutlineRectsForChildrenAndContinuations(
@@ -1900,15 +1918,16 @@ void LayoutInline::AddOutlineRectsForContinuations(
     else
       offset += To<LayoutBox>(continuation)->PhysicalLocation();
     offset -= ContainingBlock()->PhysicalLocation();
-    continuation->AddOutlineRects(rects, offset, include_block_overflows);
+    continuation->AddOutlineRects(rects, nullptr, offset,
+                                  include_block_overflows);
   }
 }
 
-FloatRect LayoutInline::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects = OutlineRects(
-      PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
-  return FloatRect(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
+      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  return gfx::RectF(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
 }
 
 void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
@@ -1971,7 +1990,7 @@ void LayoutInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
 
 PhysicalRect LayoutInline::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(EnclosingIntRect(PhysicalLinesBoundingBox()));
+  return PhysicalRect(ToEnclosingRect(PhysicalLinesBoundingBox()));
 }
 
 }  // namespace blink

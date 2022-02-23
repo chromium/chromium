@@ -5,7 +5,11 @@
 #ifndef CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
 #define CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
 
+#include <windows.h>
+#include <wrl/client.h>
+
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -42,13 +46,16 @@ class UpdateServiceProxy : public UpdateService {
 
   // Overrides for updater::UpdateService.
   void GetVersion(
-      base::OnceCallback<void(const base::Version&)> callback) const override;
+      base::OnceCallback<void(const base::Version&)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    RegisterAppCallback callback) override;
+  void GetAppStates(
+      base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
   void Uninitialize() override;
@@ -56,16 +63,26 @@ class UpdateServiceProxy : public UpdateService {
  private:
   ~UpdateServiceProxy() override;
 
-  // These functions runs on the |com_task_runner_|.
-  void GetVersionOnSTA(
-      base::OnceCallback<void(const base::Version&)> callback) const;
+  // These functions run on the `com_task_runner_`. `prev_hr` contains the
+  // result of the previous callback invocation in a `Then` chain.
+  HRESULT InitializeSTA();
+  void UninitializeOnSTA();
+  void GetVersionOnSTA(base::OnceCallback<void(const base::Version&)> callback,
+                       HRESULT prev_hr);
   void RegisterAppOnSTA(const RegistrationRequest& request,
-                        RegisterAppCallback callback);
-  void RunPeriodicTasksOnSTA(base::OnceClosure callback);
-  void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
+                        RegisterAppCallback callback,
+                        HRESULT prev_hr);
+  void GetAppStatesSTA(base::OnceCallback<void(const std::vector<AppState>&)>,
+                       HRESULT prev_hr);
+  void RunPeriodicTasksOnSTA(base::OnceClosure callback, HRESULT prev_hr);
+  void UpdateAllOnSTA(StateChangeCallback state_update,
+                      Callback callback,
+                      HRESULT prev_hr);
   void UpdateOnSTA(const std::string& app_id,
+                   PolicySameVersionUpdate policy_same_version_update,
                    StateChangeCallback state_update,
-                   Callback callback);
+                   Callback callback,
+                   HRESULT prev_hr);
 
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_main_);
@@ -78,6 +95,10 @@ class UpdateServiceProxy : public UpdateService {
   // Runs the tasks which involve outbound COM calls and inbound COM callbacks.
   // This task runner is thread-affine with the COM STA.
   scoped_refptr<base::SingleThreadTaskRunner> com_task_runner_;
+
+  // COM server instance owned by the STA. That means the instance must be
+  // created and destroyed on the com_task_runner_.
+  Microsoft::WRL::ComPtr<IUnknown> server_;
 };
 
 }  // namespace updater

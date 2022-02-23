@@ -1,0 +1,6 @@
+# crbug.com/416665, Fuchsia's sanitizer runtimes don't support source-based
+# suppressions
+-SharedStorageAddModuleTest*
+-SharedStorageObjectMethodTest*
+-SharedStorageRunOperationTest*
+-SharedStorageWorkletGlobalScopeTest.OnModuleScriptDownloadedSuccess

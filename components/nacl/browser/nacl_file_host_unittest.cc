@@ -110,7 +110,7 @@ TEST_F(NaClFileHostTest, TestFilenamesWithPnaclPath) {
   EXPECT_FALSE(PnaclCanOpenFile(std::string(), &out_path));
   EXPECT_FALSE(PnaclCanOpenFile(".", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("..", &out_path));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_FALSE(PnaclCanOpenFile("..\\llc", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%\\explorer.exe", &out_path));

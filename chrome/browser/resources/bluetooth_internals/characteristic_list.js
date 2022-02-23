@@ -12,6 +12,7 @@ import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
 import {DescriptorList} from './descriptor_list.js';
+import {CharacteristicInfo, Property} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ExpandableList, ExpandableListItem} from './expandable_list.js';
 import {ObjectFieldSet} from './object_fieldset.js';
@@ -49,7 +50,7 @@ const PROPERTIES_PROPERTY_NAMES = {
  * properties, 'id' and 'uuid', and one for the 'properties' bitfield in the
  * CharacteristicInfo object.
  * @constructor
- * @param {!bluetooth.mojom.CharacteristicInfo} characteristicInfo
+ * @param {!CharacteristicInfo} characteristicInfo
  * @param {string} deviceAddress
  * @param {string} serviceId
  * @extends {ExpandableListItem}
@@ -59,7 +60,7 @@ export function CharacteristicListItem(
   const listItem = new ExpandableListItem();
   listItem.__proto__ = CharacteristicListItem.prototype;
 
-  /** @type {!bluetooth.mojom.CharacteristicInfo} */
+  /** @type {!CharacteristicInfo} */
   listItem.info = characteristicInfo;
   /** @private {string} */
   listItem.deviceAddress_ = deviceAddress;
@@ -92,7 +93,6 @@ CharacteristicListItem.prototype = {
     /** @private {!ObjectFieldSet} */
     this.propertiesFieldSet_ = new ObjectFieldSet();
     this.propertiesFieldSet_.setPropertyDisplayNames(PROPERTIES_PROPERTY_NAMES);
-    const Property = bluetooth.mojom.Property;
     this.propertiesFieldSet_.showAll = false;
     this.propertiesFieldSet_.setObject({
       broadcast: (this.info.properties & Property.BROADCAST) > 0,

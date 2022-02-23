@@ -22,8 +22,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -43,8 +43,8 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const gfx::RectF& reference_box,
-                                float reference_box_zoom);
+  gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box,
+                                 float reference_box_zoom);
 
   SVGUnitTypes::SVGUnitType MaskUnits() const;
   SVGUnitTypes::SVGUnitType MaskContentUnits() const;

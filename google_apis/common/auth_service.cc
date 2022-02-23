@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -120,7 +120,7 @@ class AuthService::IdentityManagerObserver
     : public signin::IdentityManager::Observer {
  public:
   explicit IdentityManagerObserver(AuthService* service) : service_(service) {
-    manager_observation_.Observe(service->identity_manager_);
+    manager_observation_.Observe(service->identity_manager_.get());
   }
   ~IdentityManagerObserver() override = default;
 
@@ -136,7 +136,7 @@ class AuthService::IdentityManagerObserver
   }
 
  private:
-  AuthService* service_ = nullptr;
+  raw_ptr<AuthService> service_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       manager_observation_{this};

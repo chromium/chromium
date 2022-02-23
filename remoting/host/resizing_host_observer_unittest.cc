@@ -7,14 +7,14 @@
 #include <list>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_resizer.h"
-#include "remoting/host/screen_resolution.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -88,9 +88,9 @@ class FakeDesktopResizer : public DesktopResizer {
  private:
   bool exact_size_supported_;
   ScreenResolution initial_resolution_;
-  ScreenResolution *current_resolution_;
+  raw_ptr<ScreenResolution> current_resolution_;
   std::vector<ScreenResolution> supported_resolutions_;
-  CallCounts* call_counts_;
+  raw_ptr<CallCounts> call_counts_;
   bool check_final_resolution_;
 };
 

@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -66,9 +67,8 @@ import org.chromium.ui.DeferredViewStubInflationProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
@@ -94,9 +94,8 @@ public class AccessorySheetRenderTest {
 
     // No @Rule since we only need the launching helpers. Adding the rule to the chain breaks with
     // any ParameterizedRunnerDelegate.
-    private ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    private BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -106,7 +105,7 @@ public class AccessorySheetRenderTest {
         FeatureList.setTestFeatures(
                 Collections.singletonMap(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, true));
         setRtlForTesting(useRtlLayout);
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
     }
@@ -145,7 +144,7 @@ public class AccessorySheetRenderTest {
 
     @After
     public void tearDown() {
-        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         setRtlForTesting(false);
         try {
             ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());

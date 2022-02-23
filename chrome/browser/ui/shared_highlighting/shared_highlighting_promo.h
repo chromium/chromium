@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SHARED_HIGHLIGHTING_SHARED_HIGHLIGHTING_PROMO_H_
 #define CHROME_BROWSER_UI_SHARED_HIGHLIGHTING_SHARED_HIGHLIGHTING_PROMO_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
@@ -36,19 +35,13 @@ class SharedHighlightingPromo
 
   SharedHighlightingPromo(content::WebContents* web_contents, Browser* browser);
 
-  void OnGetExistingSelectorsComplete(
-      const std::vector<std::string>& selectors);
-
   void CheckExistingSelectors(content::RenderFrameHost* render_frame_host);
 
   bool HasTextFragment(std::string url);
 
-  // The window's IPH promo controller.
-  FeaturePromoController* feature_promo_controller_;
+  const raw_ptr<Browser> browser_;
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
-
-  base::WeakPtrFactory<SharedHighlightingPromo> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

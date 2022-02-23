@@ -14,6 +14,8 @@ console-functions.js:27 async ƒ asyncSimple() {}
 console-functions.js:28 async ƒ asyncSimple()
     length: 0
     name: "asyncSimple"
+    arguments: (...)
+    caller: (...)
     [[FunctionLocation]]: console-functions.js:14
     [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]
@@ -22,6 +24,8 @@ console-functions.js:28 ƒ* genSimple()
     length: 0
     name: "genSimple"
     prototype: Generator {}
+    arguments: (...)
+    caller: (...)
     [[FunctionLocation]]: console-functions.js:15
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
@@ -81,6 +85,8 @@ console-functions.js:28 ƒ *    whitespace(  x  )
     length: 1
     name: "whitespace"
     prototype: Generator {}
+    arguments: (...)
+    caller: (...)
     [[FunctionLocation]]: console-functions.js:21
     [[IsGenerator]]: true
     [[Prototype]]: GeneratorFunction
@@ -89,6 +95,8 @@ console-functions.js:27 async ƒ whitespace2   (  x  ,  y  ,  z  )    {   }
 console-functions.js:28 async ƒ whitespace2(  x  ,  y  ,  z  )
     length: 3
     name: "whitespace2"
+    arguments: (...)
+    caller: (...)
     [[FunctionLocation]]: console-functions.js:22
     [[Prototype]]: AsyncFunction
     [[Scopes]]: Scopes[1]

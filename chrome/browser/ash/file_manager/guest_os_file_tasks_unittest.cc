@@ -62,7 +62,7 @@ class GuestOsFileTasksTest : public testing::Test {
     //                           mime_types: [<mime>,], vm_name: "termina"}}
     DictionaryPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsRegistry);
-    base::DictionaryValue* registry = update.Get();
+    base::Value* registry = update.Get();
     base::Value app(base::Value::Type::DICTIONARY);
     app.SetKey("container_name", base::Value("penguin"));
     base::Value mime_list(base::Value::Type::LIST);
@@ -95,7 +95,7 @@ class GuestOsFileTasksTest : public testing::Test {
     // crostini.mime_types.termina.penguin.<file_ext>: <mime>
     DictionaryPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsMimeTypes);
-    base::DictionaryValue* mimes = update.Get();
+    base::Value* mimes = update.Get();
     mimes->SetStringPath("termina.penguin." + file_ext, mime);
   }
 

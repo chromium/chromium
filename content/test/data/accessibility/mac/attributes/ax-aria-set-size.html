@@ -1,0 +1,20 @@
+<!--
+@SCRIPT:
+  item_numeric.accessibilityAttributeNames.has(AXARIASetSize)
+  item_numeric.accessibilityAttributeValue(AXARIASetSize)
+  item_null.accessibilityAttributeNames.has(AXARIASetSize)
+  item_null.accessibilityAttributeValue(AXARIASetSize)
+  set_null.accessibilityAttributeNames.has(AXARIASetSize)
+  set_null.accessibilityAttributeValue(AXARIASetSize)
+  not_applicable.accessibilityAttributeNames.has(AXARIASetSize)
+  not_applicable.accessibilityAttributeValue(AXARIASetSize)
+-->
+<!DOCTYPE html>
+<ul role="menu">
+  <li id="item_numeric" role="menuitem" aria-setsize="3"></li>
+</ul>
+<li id="item_null" role="menuitem" aria-setsize="2"></li>
+<ul>
+  <li id="set_null" aria-setsize="-1"></li>
+</ul>
+<div id="not_applicable"></div>

@@ -42,7 +42,6 @@ namespace views {
 
 Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
     : tabbed_pane_(tabbed_pane), contents_(contents) {
-  set_suppress_default_focus_handling();
   // Calculate the size while the font list is bold.
   auto title_label = std::make_unique<Label>(title, style::CONTEXT_LABEL,
                                              style::STYLE_TAB_ACTIVE);
@@ -80,7 +79,7 @@ void Tab::SetSelected(bool selected) {
   contents_->SetVisible(selected);
   contents_->parent()->InvalidateLayout();
   SetState(selected ? State::kActive : State::kInactive);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(selected ? FocusBehavior::ACCESSIBLE_ONLY
                             : FocusBehavior::NEVER);
 #else
@@ -162,12 +161,6 @@ void Tab::OnFocus() {
         GetInsets() - gfx::Insets(border_size)));
   }
 
-  // When the tab gains focus, send an accessibility event indicating that the
-  // contents are focused. When the tab loses focus, whichever new View ends up
-  // with focus will send an ax::mojom::Event::kFocus of its own, so there's no
-  // need to send one in OnBlur().
-  if (contents())
-    contents()->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
   SchedulePaint();
 }
 
@@ -210,7 +203,7 @@ void Tab::OnStateChanged() {
 
   // Tab design spec dictates special handling of font weight for the windows
   // platform when dealing with border style tabs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::Font::Weight font_weight = gfx::Font::Weight::BOLD;
 #else
   gfx::Font::Weight font_weight = gfx::Font::Weight::MEDIUM;
@@ -532,7 +525,7 @@ void TabbedPane::AddTabInternal(size_t index,
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);
   contents->GetViewAccessibility().OverrideName(title);
-  contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTab);
+  contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTabPanel);
 
   tab_strip_->AddChildViewAt(std::make_unique<Tab>(this, title, contents.get()),
                              static_cast<int>(index));
@@ -555,6 +548,10 @@ void TabbedPane::SelectTab(Tab* new_selected_tab, bool animate) {
     old_selected_tab->SetSelected(false);
     tab_strip_->OnSelectedTabChanged(old_selected_tab, new_selected_tab,
                                      animate);
+
+    new_selected_tab->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                               true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
   tab_strip_->SchedulePaint();
 

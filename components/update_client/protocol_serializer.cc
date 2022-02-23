@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/cpu.h"
 #include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,10 +23,10 @@
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_query_params.h"
-#include "components/update_client/updater_state.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -41,7 +42,7 @@ int GetPhysicalMemoryGB() {
 }
 
 std::string GetOSVersion() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const auto ver = base::win::OSInfo::GetInstance()->version_number();
   return base::StringPrintf("%u.%u.%u.%u", ver.major, ver.minor, ver.build,
                             ver.patch);
@@ -51,7 +52,7 @@ std::string GetOSVersion() {
 }
 
 std::string GetServicePack() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::win::OSInfo::GetInstance()->service_pack_str();
 #else
   return {};
@@ -104,8 +105,9 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
+    absl::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
-    const std::map<std::string, std::string>* updater_state_attributes,
+    const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps) {
   protocol_request::Request request;
   request.protocol_version = kProtocolVersion;
@@ -128,21 +130,24 @@ protocol_request::Request MakeProtocolRequest(
   request.arch = UpdateQueryParams::GetArch();
   request.nacl_arch = UpdateQueryParams::GetNaclArch();
   request.dlpref = download_preference;
+  request.domain_joined = domain_joined;
   request.additional_attributes = additional_attributes;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     request.is_wow64 = true;
 #endif
 
-  if (updater_state_attributes &&
-      updater_state_attributes->count(UpdaterState::kIsEnterpriseManaged)) {
-    request.domain_joined =
-        updater_state_attributes->at(UpdaterState::kIsEnterpriseManaged) == "1";
-  }
-
   // HW platform information.
+  base::CPU cpu;
   request.hw.physmemory = GetPhysicalMemoryGB();
+  request.hw.sse = cpu.has_sse();
+  request.hw.sse2 = cpu.has_sse2();
+  request.hw.sse3 = cpu.has_sse3();
+  request.hw.ssse3 = cpu.has_ssse3();
+  request.hw.sse41 = cpu.has_sse41();
+  request.hw.sse42 = cpu.has_sse42();
+  request.hw.avx = cpu.has_avx();
 
   // OS version and platform information.
   request.os.platform = os_long_name;
@@ -150,38 +155,38 @@ protocol_request::Request MakeProtocolRequest(
   request.os.service_pack = GetServicePack();
   request.os.arch = base::SysInfo().OperatingSystemArchitecture();
 
-  if (updater_state_attributes) {
+  if (!updater_state_attributes.empty()) {
     request.updater = absl::make_optional<protocol_request::Updater>();
-    auto it = updater_state_attributes->find("name");
-    if (it != updater_state_attributes->end())
+    auto it = updater_state_attributes.find("name");
+    if (it != updater_state_attributes.end())
       request.updater->name = it->second;
-    it = updater_state_attributes->find("version");
-    if (it != updater_state_attributes->end())
+    it = updater_state_attributes.find("version");
+    if (it != updater_state_attributes.end())
       request.updater->version = it->second;
-    it = updater_state_attributes->find("ismachine");
-    if (it != updater_state_attributes->end()) {
+    it = updater_state_attributes.find("ismachine");
+    if (it != updater_state_attributes.end()) {
       DCHECK(it->second == "0" || it->second == "1");
       request.updater->is_machine = it->second != "0";
     }
-    it = updater_state_attributes->find("autoupdatecheckenabled");
-    if (it != updater_state_attributes->end()) {
+    it = updater_state_attributes.find("autoupdatecheckenabled");
+    if (it != updater_state_attributes.end()) {
       DCHECK(it->second == "0" || it->second == "1");
       request.updater->autoupdate_check_enabled = it->second != "0";
     }
-    it = updater_state_attributes->find("laststarted");
-    if (it != updater_state_attributes->end()) {
+    it = updater_state_attributes.find("laststarted");
+    if (it != updater_state_attributes.end()) {
       int last_started = 0;
       if (base::StringToInt(it->second, &last_started))
         request.updater->last_started = last_started;
     }
-    it = updater_state_attributes->find("lastchecked");
-    if (it != updater_state_attributes->end()) {
+    it = updater_state_attributes.find("lastchecked");
+    if (it != updater_state_attributes.end()) {
       int last_checked = 0;
       if (base::StringToInt(it->second, &last_checked))
         request.updater->last_checked = last_checked;
     }
-    it = updater_state_attributes->find("updatepolicy");
-    if (it != updater_state_attributes->end()) {
+    it = updater_state_attributes.find("updatepolicy");
+    if (it != updater_state_attributes.end()) {
       int update_policy = 0;
       if (base::StringToInt(it->second, &update_policy))
         request.updater->update_policy = update_policy;
@@ -233,11 +238,13 @@ protocol_request::App MakeProtocolApp(
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,
     const std::string& target_version_prefix,
-    bool rollback_allowed) {
+    bool rollback_allowed,
+    bool same_version_update_allowed) {
   protocol_request::UpdateCheck update_check;
   update_check.is_update_disabled = is_update_disabled;
   update_check.target_version_prefix = target_version_prefix;
   update_check.rollback_allowed = rollback_allowed;
+  update_check.same_version_update_allowed = same_version_update_allowed;
   return update_check;
 }
 

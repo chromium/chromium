@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {

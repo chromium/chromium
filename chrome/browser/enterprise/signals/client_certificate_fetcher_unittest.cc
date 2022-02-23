@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/signals/client_certificate_fetcher.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -87,7 +88,8 @@ class ClientCertificateFetcherTest : public testing::Test {
 
     m->SetWebsiteSettingDefaultScope(
         GURL(kRequestingUrl), GURL(),
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(root));
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+        base::Value::FromUniquePtrValue(std::move(root)));
   }
 
   base::Value CreateFilterValue(const std::string& issuer,
@@ -118,7 +120,7 @@ class ClientCertificateFetcherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<scoped_refptr<net::X509Certificate>> client_certs_;

@@ -57,6 +57,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
@@ -127,7 +128,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
 
 bool IsNormalSession() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             chromeos::switches::kGuestSession) &&
+             ash::switches::kGuestSession) &&
          user_manager::UserManager::IsInitialized() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
 }
@@ -344,8 +345,8 @@ void ComponentLoader::AddWithNameAndDescription(
       ParseManifest(manifest_contents);
 
   if (manifest) {
-    manifest->SetString(manifest_keys::kName, name_string);
-    manifest->SetString(manifest_keys::kDescription, description_string);
+    manifest->SetStringKey(manifest_keys::kName, name_string);
+    manifest->SetStringKey(manifest_keys::kDescription, description_string);
     Add(std::move(manifest), root_directory, true);
   }
 }
@@ -430,8 +431,6 @@ void ComponentLoader::AddDefaultComponentExtensions(
   // Do not add component extensions that have background pages here -- add them
   // to AddDefaultComponentExtensionsWithBackgroundPages.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  Add(IDR_MOBILE_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/mobile")));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (browser_defaults::enable_help_app) {
@@ -448,7 +447,8 @@ void ComponentLoader::AddDefaultComponentExtensions(
   if (!skip_session_components) {
     AddWebStoreApp();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    AddChromeApp();
+    if (crosapi::browser_util::IsAshWebBrowserEnabled())
+      AddChromeApp();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(ENABLE_PDF)
     Add(pdf_extension_util::GetManifest(),
@@ -542,7 +542,7 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
 
-    if (!command_line->HasSwitch(chromeos::switches::kGuestSession)) {
+    if (!command_line->HasSwitch(ash::switches::kGuestSession)) {
       Add(IDR_WALLPAPERMANAGER_MANIFEST,
           base::FilePath(FILE_PATH_LITERAL("chromeos/wallpaper_manager")));
     }
@@ -665,11 +665,11 @@ void ComponentLoader::FinishAddComponentFromDir(
     return;  // Error already logged.
 
   if (name_string)
-    manifest->SetString(manifest_keys::kName, name_string.value());
+    manifest->SetStringKey(manifest_keys::kName, name_string.value());
 
   if (description_string) {
-    manifest->SetString(manifest_keys::kDescription,
-                        description_string.value());
+    manifest->SetStringKey(manifest_keys::kDescription,
+                           description_string.value());
   }
 
   std::string actual_extension_id =

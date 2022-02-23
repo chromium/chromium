@@ -261,7 +261,7 @@ class CxxFuncDeclNode(CompositeNode):
                  override=False,
                  default=False,
                  delete=False,
-                 warn_unused_result=False):
+                 nodiscard=False):
         """
         Args:
             name: Function name.
@@ -275,7 +275,7 @@ class CxxFuncDeclNode(CompositeNode):
             override: True makes this an overriding function.
             default: True makes this have the default implementation.
             delete: True makes this function be deleted.
-            warn_unused_result: True adds WARN_UNUSED_RESULT annotation.
+            nodiscard: True adds [[nodiscard]] attribute.
         """
         assert isinstance(name, str)
         assert isinstance(static, bool)
@@ -286,16 +286,16 @@ class CxxFuncDeclNode(CompositeNode):
         assert isinstance(default, bool)
         assert isinstance(delete, bool)
         assert not (default and delete)
-        assert isinstance(warn_unused_result, bool)
+        assert isinstance(nodiscard, bool)
 
         template_format = ("{template}"
+                           "{nodiscard_result}"
                            "{static}{explicit}{constexpr}"
                            "{return_type} "
                            "{name}({arg_decls})"
                            "{const}"
                            "{override}"
                            "{default_or_delete}"
-                           "{warn_unused_result}"
                            ";")
 
         if template_params is None:
@@ -313,8 +313,7 @@ class CxxFuncDeclNode(CompositeNode):
             default_or_delete = " = delete"
         else:
             default_or_delete = ""
-        warn_unused_result = (" WARN_UNUSED_RESULT"
-                              if warn_unused_result else "")
+        nodiscard_result = ("[[nodiscard]] " if nodiscard else "")
 
         CompositeNode.__init__(self,
                                template_format,
@@ -330,7 +329,7 @@ class CxxFuncDeclNode(CompositeNode):
                                const=const,
                                override=override,
                                default_or_delete=default_or_delete,
-                               warn_unused_result=warn_unused_result)
+                               nodiscard_result=nodiscard_result)
 
 
 class CxxFuncDefNode(CompositeNode):

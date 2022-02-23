@@ -10,6 +10,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/SaveBitmapDelegate.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsAreaSelectionDialogProperties.java",
@@ -84,4 +85,5 @@ share_java_deps = [
   "//chrome/browser/content_creation/reactions/android:factory_java",
   "//chrome/browser/content_creation/reactions/android:public_java",
   "//components/feature_engagement/public:public_java",
+  "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
 ]

@@ -197,8 +197,7 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
     fake_user_manager_->LoginUser(account_id);
     TestingProfile* profile =
         profile_manager()->CreateTestingProfile(account_id.GetUserEmail());
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
     return user;
   }
 

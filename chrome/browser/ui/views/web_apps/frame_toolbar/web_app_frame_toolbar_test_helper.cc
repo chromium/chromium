@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -34,7 +34,7 @@ WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
 web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
     Browser* browser,
     const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";
@@ -61,7 +61,7 @@ web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
 
 web_app::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
     Browser* browser,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     const GURL& start_url) {
   web_app::AppId app_id =
       web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
@@ -105,8 +105,8 @@ GURL WebAppFrameToolbarTestHelper::
       "     position: relative;"
       "     top: 5px;"
       "     left: 5px;"
-      "     height: 1px;"
-      "     width: 1px;"
+      "     height: 2px;"
+      "     width: 2px;"
       "  }"
       "  #target {"
       "     padding-left: env(titlebar-area-x);"
@@ -129,24 +129,23 @@ GURL WebAppFrameToolbarTestHelper::
   return url;
 }
 
-base::ListValue WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
+base::Value::ListStorage
+WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     content::WebContents* web_contents,
     std::string rect_value_list,
     std::string rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList();
+  return EvalJs(web_contents, rect_var_name).ExtractList().TakeListDeprecated();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
     content::WebContents* web_contents,
     std::string rect_value_list,
     std::string rect_var_name) {
-  base::ListValue rectValues =
+  base::Value::ListStorage rect_list =
       GetXYWidthHeightListValue(web_contents, rect_value_list, rect_var_name);
-  auto rectList = rectValues.GetList();
-
-  return gfx::Rect(rectList[0].GetInt(), rectList[1].GetInt(),
-                   rectList[2].GetInt(), rectList[3].GetInt());
+  return gfx::Rect(rect_list[0].GetInt(), rect_list[1].GetInt(),
+                   rect_list[2].GetInt(), rect_list[3].GetInt());
 }
 
 void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
@@ -157,7 +156,7 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
              "document.title = 'beforegeometrychange';"
              "navigator.windowControlsOverlay.ongeometrychange = (e) => {"
              "  geometrychangeCount++;"
-             "  overlay_rect_from_event = e.boundingRect;"
+             "  overlay_rect_from_event = e.titlebarAreaRect;"
              "  overlay_visible_from_event = e.visible;"
              "  document.title = 'ongeometrychange';"
              "}"));

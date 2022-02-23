@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace content {
@@ -49,7 +50,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
 
   void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node) override;
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           BrowserAccessibility* node) override;
 

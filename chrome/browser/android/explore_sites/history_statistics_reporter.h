@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_HISTORY_STATISTICS_REPORTER_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_HISTORY_STATISTICS_REPORTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -47,8 +48,8 @@ class HistoryStatisticsReporter : public history::HistoryServiceObserver {
   void ComputeStatistics();
   void ReportStatistics(history::HistoryCountResult result);
 
-  history::HistoryService* const history_service_;
-  PrefService* prefs_;
+  const raw_ptr<history::HistoryService> history_service_;
+  raw_ptr<PrefService> prefs_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
   base::ScopedObservation<history::HistoryService,

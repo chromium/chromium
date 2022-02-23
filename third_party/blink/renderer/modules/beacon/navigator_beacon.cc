@@ -78,15 +78,8 @@ bool NavigatorBeacon::SendBeaconImpl(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   KURL url = execution_context->CompleteURL(url_string);
   if (!CanSendBeacon(execution_context, url, exception_state)) {
-    // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-    VLOG(1) << "Cannot send a beacon to " << url.ElidedString()
-            << ", initiator = " << execution_context->Url();
     return false;
   }
-
-  // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
-  VLOG(1) << "Send a beacon to " << url.ElidedString()
-          << ", initiator = " << execution_context->Url();
 
   bool allowed;
   LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();

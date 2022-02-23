@@ -31,10 +31,9 @@ GhostImageView::~GhostImageView() {
   StopObservingImplicitAnimations();
 }
 
-void GhostImageView::Init(const AppListConfig* app_list_config,
-                          const gfx::Rect& drop_target_bounds) {
-  DCHECK(app_list_config);
-  corner_radius_ = app_list_config->grid_focus_corner_radius();
+void GhostImageView::Init(const gfx::Rect& drop_target_bounds,
+                          int grid_focus_corner_radius) {
+  corner_radius_ = grid_focus_corner_radius;
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

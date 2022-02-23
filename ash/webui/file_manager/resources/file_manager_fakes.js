@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @suppress {checkTypes} */
-window.chrome.extension = {
-  inIncognitoContext: false,
-};
-
 window.DriveSyncHandler = class extends EventTarget {
   /**
    * Returns the completed event name.

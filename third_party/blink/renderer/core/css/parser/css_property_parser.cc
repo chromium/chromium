@@ -193,7 +193,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     CSSParserMode mode) {
   if (length == 0)
     return CSSPropertyID::kInvalid;
-  if (length >= 2 && property_name[0] == '-' && property_name[1] == '-')
+  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-')
     return CSSPropertyID::kVariable;
   if (length > kMaxCSSPropertyNameLength)
     return CSSPropertyID::kInvalid;

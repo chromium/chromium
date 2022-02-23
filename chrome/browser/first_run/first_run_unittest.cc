@@ -137,17 +137,17 @@ TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_NotCreated) {
 // TODO(ellyjones): Add a scoped override for
 // NSSearchPathForDirectoriesInDomains, then re-enable these on macOS.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitialPrefsUsedIfReadable DISABLED_InitialPrefsUsedIfReadable
 #else
 #define MAYBE_InitialPrefsUsedIfReadable InitialPrefsUsedIfReadable
 #endif
-  
+
 TEST_F(FirstRunTest, MAYBE_InitialPrefsUsedIfReadable) {
   base::ScopedPathOverride override(base::DIR_EXE, GetTestDataPath("initial"));
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Initial preferences are not supported on Fuchsia and will thus return a
   // null result.
   ASSERT_FALSE(prefs);
@@ -157,7 +157,7 @@ TEST_F(FirstRunTest, MAYBE_InitialPrefsUsedIfReadable) {
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent \
   DISABLED_LegacyInitialPrefsUsedIfNewFileIsNotPresent
 #else
@@ -170,7 +170,7 @@ TEST_F(FirstRunTest, MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent) {
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Initial preferences are not supported on Fuchsia and will thus return a
   // null result.
   ASSERT_FALSE(prefs);

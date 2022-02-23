@@ -39,11 +39,6 @@ class NavigationContextImpl;
 - (void)webRequestControllerDisableNavigationGesturesUntilFinishNavigation:
     (CRWWebRequestController*)requestController;
 
-// Tells the delegate to restores the state for current page from session
-// history.
-- (void)webRequestControllerRestoreStateFromHistory:
-    (CRWWebRequestController*)requestController;
-
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
     (CRWWebRequestController*)requestController;
 

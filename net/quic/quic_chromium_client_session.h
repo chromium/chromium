@@ -20,7 +20,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -288,9 +288,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     bool WasEverUsed() const;
 
     // Retrieves any DNS aliases for the given session key from the map stored
-    // in `stream_factory_`. The alias chain order is preserved in reverse, from
-    // canonical name (i.e. address record name) through to query name.
-    const std::vector<std::string>& GetDnsAliasesForSessionKey(
+    // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+    // HTTPS, not just from the address used for the connection, in no
+    // particular order.
+    const std::set<std::string>& GetDnsAliasesForSessionKey(
         const QuicSessionKey& key) const;
 
    private:
@@ -339,7 +340,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     quic::QuicServerId server_id_;
     quic::ParsedQuicVersion quic_version_;
     LoadTimingInfo::ConnectTiming connect_timing_;
-    quic::QuicClientPushPromiseIndex* push_promise_index_;
+    raw_ptr<quic::QuicClientPushPromiseIndex> push_promise_index_;
 
     // |quic::QuicClientPromisedInfo| owns this. It will be set when |Try()|
     // is asynchronous, i.e. it returned quic::QUIC_PENDING, and remains valid
@@ -410,7 +411,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // if |session_| is destroyed while the stream request is still pending.
     void OnRequestCompleteFailure(int rv);
 
-    QuicChromiumClientSession::Handle* session_;
+    raw_ptr<QuicChromiumClientSession::Handle> session_;
     const bool requires_confirmation_;
     CompletionOnceCallback callback_;
     std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
@@ -468,7 +469,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
    private:
     // |session_| owns |this| and should out live |this|.
-    QuicChromiumClientSession* session_;
+    raw_ptr<QuicChromiumClientSession> session_;
   };
 
   // This class implements Chrome logic for path validation events associated
@@ -487,7 +488,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
    private:
     // |session_| owns |this| and should out live |this|.
-    QuicChromiumClientSession* session_;
+    raw_ptr<QuicChromiumClientSession> session_;
   };
 
   // This class is used to handle writer events that occur on the probing path.
@@ -520,9 +521,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     void NotifySessionProbeFailed(NetworkChangeNotifier::NetworkHandle network);
 
     // |session_| owns |this| and should out live |this|.
-    QuicChromiumClientSession* session_;
+    raw_ptr<QuicChromiumClientSession> session_;
     // |task_owner_| should out live |this|.
-    base::SequencedTaskRunner* task_runner_;
+    raw_ptr<base::SequencedTaskRunner> task_runner_;
     // The path validation context of the most recent probing.
     NetworkChangeNotifier::NetworkHandle network_;
     quic::QuicSocketAddress peer_address_;
@@ -721,8 +722,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
-  base::StringPiece GetAcceptChViaAlpsForOrigin(
-      const url::Origin& origin) const override;
+  base::StringPiece GetAcceptChViaAlps(
+      const url::SchemeHostPort& scheme_host_port) const override;
 
   // Performs a crypto handshake with the server.
   int CryptoConnect(CompletionOnceCallback callback);
@@ -868,9 +869,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool require_confirmation() const { return require_confirmation_; }
 
   // Retrieves any DNS aliases for the given session key from the map stored
-  // in `stream_factory_`. The alias chain order is preserved in reverse, from
-  // canonical name (i.e. address record name) through to query name.
-  const std::vector<std::string>& GetDnsAliasesForSessionKey(
+  // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+  // HTTPS, not just from the address used for the connection, in no particular
+  // order.
+  const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
  protected:
@@ -995,14 +997,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // path degrading per default network.
   int max_migrations_to_non_default_network_on_path_degrading_;
   int current_migrations_to_non_default_network_on_path_degrading_;
-  const quic::QuicClock* clock_;  // Unowned.
+  raw_ptr<const quic::QuicClock> clock_;  // Unowned.
   int yield_after_packets_;
   quic::QuicTime::Delta yield_after_duration_;
   bool go_away_on_path_degrading_;
 
   base::TimeTicks most_recent_path_degrading_timestamp_;
   base::TimeTicks most_recent_network_disconnected_timestamp_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks most_recent_stream_close_time_;
 
   int most_recent_write_error_;
@@ -1011,11 +1013,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_;
 
   std::unique_ptr<quic::QuicCryptoClientStream> crypto_stream_;
-  QuicStreamFactory* stream_factory_;
+  raw_ptr<QuicStreamFactory> stream_factory_;
   base::ObserverList<ConnectivityObserver> connectivity_observer_list_;
   std::vector<std::unique_ptr<DatagramClientSocket>> sockets_;
-  TransportSecurityState* transport_security_state_;
-  SSLConfigService* ssl_config_service_;
+  raw_ptr<TransportSecurityState> transport_security_state_;
+  raw_ptr<SSLConfigService> ssl_config_service_;
   std::unique_ptr<QuicServerInfo> server_info_;
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
   std::string pinning_failure_log_;
@@ -1026,7 +1028,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;
   CompletionOnceCallback callback_;
   size_t num_total_streams_;
-  base::SequencedTaskRunner* task_runner_;
+  raw_ptr<base::SequencedTaskRunner> task_runner_;
   NetLogWithSource net_log_;
   std::vector<std::unique_ptr<QuicChromiumPacketReader>> packet_readers_;
   LoadTimingInfo::ConnectTiming connect_timing_;
@@ -1039,7 +1041,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool port_migration_detected_;
   // Not owned. |push_delegate_| outlives the session and handles server pushes
   // received by session.
-  ServerPushDelegate* push_delegate_;
+  raw_ptr<ServerPushDelegate> push_delegate_;
   // UMA histogram counters for streams pushed to this session.
   int streams_pushed_count_;
   int streams_pushed_and_claimed_count_;
@@ -1085,7 +1087,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
   // Map of origin to Accept-CH header field values received via ALPS.
-  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
+  base::flat_map<url::SchemeHostPort, std::string>
+      accept_ch_entries_received_via_alps_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

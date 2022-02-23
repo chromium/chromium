@@ -13,6 +13,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -21,8 +22,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -171,7 +172,7 @@ public class StatusProperties {
             int width = ViewUtils.dpToPx(context, OMNIBOX_ICON_DP);
             Bitmap bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
-            drawCircleBackground(canvas, resources);
+            drawCircleBackground(canvas, context, resources);
             drawCenteredIcon(context, canvas, icon);
             return new BitmapDrawable(resources, bitmap);
         }
@@ -187,13 +188,14 @@ public class StatusProperties {
         }
 
         /** Draws a circle background on canvas. */
-        private void drawCircleBackground(Canvas canvas, Resources resources) {
+        private void drawCircleBackground(Canvas canvas, Context context, Resources resources) {
             float radius = 0.5f * canvas.getWidth();
             Paint paint = new Paint();
             // Use the dark mode color if in incognito mode.
-            paint.setColor(ApiCompatibilityUtils.getColor(resources,
-                    mIsIncognito ? R.color.toolbar_background_primary_dark
-                                 : R.color.toolbar_background_primary));
+            final @ColorInt int color = mIsIncognito
+                    ? context.getColor(R.color.toolbar_background_primary_dark)
+                    : SemanticColorUtils.getToolbarBackgroundPrimary(context);
+            paint.setColor(color);
             paint.setAntiAlias(true);
             canvas.drawCircle(radius, radius, radius, paint);
         }
@@ -207,7 +209,7 @@ public class StatusProperties {
             new WritableBooleanPropertyKey();
 
     /** The status separator color. */
-    static final WritableIntPropertyKey SEPARATOR_COLOR_RES = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey SEPARATOR_COLOR = new WritableIntPropertyKey();
 
     /** Whether the icon is shown. */
     static final WritableBooleanPropertyKey SHOW_STATUS_ICON = new WritableBooleanPropertyKey();
@@ -235,8 +237,7 @@ public class StatusProperties {
             new WritableObjectPropertyKey<>();
 
     /** Text color of the verbose status text field. */
-    static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR_RES =
-            new WritableIntPropertyKey();
+    static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR = new WritableIntPropertyKey();
 
     /** The string resource used for the content of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_STRING_RES =
@@ -253,7 +254,7 @@ public class StatusProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ANIMATIONS_ENABLED,
             INCOGNITO_BADGE_VISIBLE,
-            SEPARATOR_COLOR_RES,
+            SEPARATOR_COLOR,
             SHOW_STATUS_ICON,
             STATUS_CLICK_LISTENER,
             STATUS_ACCESSIBILITY_TOAST_RES,
@@ -261,7 +262,7 @@ public class StatusProperties {
             STATUS_ICON_ALPHA,
             STATUS_ICON_DESCRIPTION_RES,
             STATUS_ICON_RESOURCE,
-            VERBOSE_STATUS_TEXT_COLOR_RES,
+            VERBOSE_STATUS_TEXT_COLOR,
             VERBOSE_STATUS_TEXT_STRING_RES,
             VERBOSE_STATUS_TEXT_VISIBLE,
             VERBOSE_STATUS_TEXT_WIDTH,

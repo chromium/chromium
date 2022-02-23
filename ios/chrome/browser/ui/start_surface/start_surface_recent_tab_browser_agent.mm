@@ -106,7 +106,7 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     gfx::Image favicon = driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       for (auto& observer : observers_) {
-        observer.MostRecentTabFaviconUpdated(image.ToUIImage());
+        observer.MostRecentTabFaviconUpdated(favicon.ToUIImage());
       }
     }
   }

@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/bluetooth/weblayer_bluetooth_chooser_context_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"

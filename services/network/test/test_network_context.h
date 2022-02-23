@@ -19,6 +19,7 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -74,6 +75,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override {}
+  void SetBlockTrustTokens(bool block) override {}
 #if BUILDFLAG(ENABLE_REPORTING)
   void AddReportingApiObserver(
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
@@ -136,7 +138,7 @@ class TestNetworkContext : public mojom::NetworkContext {
                             mojom::NetworkConditionsPtr conditions) override {}
   void SetAcceptLanguage(const std::string& new_accept_language) override {}
   void SetEnableReferrers(bool enable_referrers) override {}
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override {}
 #endif
@@ -153,7 +155,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void GetExpectCTState(const std::string& domain,
                         const net::NetworkIsolationKey& network_isolation_key,
                         GetExpectCTStateCallback callback) override {}
-  void SetSCTAuditingEnabled(bool enabled) override {}
+  void SetSCTAuditingMode(mojom::SCTAuditingMode mode) override {}
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,

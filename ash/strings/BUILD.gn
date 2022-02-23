@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 grit("strings") {
   source = "../ash_strings.grd"
@@ -31,6 +32,7 @@ template("repack_one_locale_ash") {
       "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_${locale}.pak",
       "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_${locale}.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+      "$root_gen_dir/ui/strings/ax_strings_${locale}.pak",
       "$root_gen_dir/ui/strings/ui_strings_${locale}.pak",
     ]
 
@@ -42,6 +44,7 @@ template("repack_one_locale_ash") {
       "//device/bluetooth/strings",
       "//ui/chromeos/strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
   }

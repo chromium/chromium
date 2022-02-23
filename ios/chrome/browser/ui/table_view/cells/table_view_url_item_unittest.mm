@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +31,7 @@ TEST_F(TableViewURLItemTest, TextLabels) {
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
   item.title = titleText;
-  item.URL = net::GURLWithNSURL([NSURL URLWithString:URLText]);
+  item.URL = [[CrURL alloc] initWithNSURL:[NSURL URLWithString:URLText]];
   item.metadata = metadataText;
 
   id cell = [[[item cellClass] alloc] init];
@@ -91,7 +92,7 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithTitle) {
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
   item.title = kTitle;
-  item.URL = kURL;
+  item.URL = [[CrURL alloc] initWithGURL:kURL];
   item.supplementalURLText = kSupplementalURLText;
   item.supplementalURLTextDelimiter = kSupplementalURLTextDelimiter;
 
@@ -110,7 +111,7 @@ TEST_F(TableViewURLItemTest, SupplementalURLTextWithNoTitle) {
   NSString* const kSupplementalURLText = @"supplement";
 
   TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:0];
-  item.URL = kURL;
+  item.URL = [[CrURL alloc] initWithGURL:kURL];
   item.supplementalURLText = kSupplementalURLText;
 
   id cell = [[[item cellClass] alloc] init];

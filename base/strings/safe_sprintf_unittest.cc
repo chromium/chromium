@@ -13,14 +13,13 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Death tests on Android are currently very flaky. No need to add more flaky
 // tests, as they just make it hard to spot real problems.
 // TODO(markus): See if the restrictions on Android can eventually be lifted.
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 #define ALLOW_DEATH_TEST
 #endif
 

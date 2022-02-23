@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_FFT_FRAME_H_
 
 #include <memory>
-
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -43,7 +42,7 @@ struct RDFTContext;
 #elif defined(WTF_USE_WEBAUDIO_PFFFT)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/pffft/src/pffft.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
 
@@ -60,7 +59,7 @@ class PLATFORM_EXPORT FFTFrame {
   // The constructors, destructor, and methods up to the CROSS-PLATFORM section
   // have platform-dependent implementations.
 
-  FFTFrame(unsigned fft_size);
+  explicit FFTFrame(unsigned fft_size);
   // creates a blank/empty frame for later use with createInterpolatedFrame()
   FFTFrame();
   FFTFrame(const FFTFrame& frame);
@@ -150,7 +149,7 @@ class PLATFORM_EXPORT FFTFrame {
   AudioFloatArray real_data_;
   AudioFloatArray imag_data_;
 
-#if defined(OS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
+#if BUILDFLAG(IS_MAC) && !defined(WTF_USE_WEBAUDIO_PFFFT)
   // Thin wrapper around FFTSetup so we can call the appropriate routines to
   // construct or release the FFTSetup objects.
   class FFTSetupDatum {
@@ -186,7 +185,7 @@ class PLATFORM_EXPORT FFTFrame {
   // routines to construct or release the PFFFT_Setup objects.
   class FFTSetup {
    public:
-    FFTSetup(unsigned fft_size);
+    explicit FFTSetup(unsigned fft_size);
     ~FFTSetup();
     PFFFT_Setup* GetSetup() const { return setup_; }
 

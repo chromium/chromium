@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -183,7 +184,8 @@ FakeSkiaOutputSurface::CreateImageContext(
     ResourceFormat format,
     bool concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space) {
+    sk_sp<SkColorSpace> color_space,
+    bool raw_draw_if_possible) {
   return std::make_unique<ExternalUseClient::ImageContext>(
       holder, size, format, ycbcr_info, std::move(color_space));
 }
@@ -330,7 +332,7 @@ gpu::SyncToken FakeSkiaOutputSurface::Flush() {
   return sync_token;
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,
@@ -364,7 +366,9 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
       image_context.mailbox_holder().sync_token.GetConstData());
   auto texture_id = gl->CreateAndConsumeTextureCHROMIUM(
       image_context.mailbox_holder().mailbox.name);
-  auto gl_format = TextureStorageFormat(image_context.resource_format());
+  auto gl_format = TextureStorageFormat(
+      image_context.resource_format(),
+      context_provider()->ContextCapabilities().angle_rgbx_internal_format);
   GrGLTextureInfo gl_texture_info = {
       image_context.mailbox_holder().texture_target, texture_id, gl_format};
   *backend_texture = GrBackendTexture(image_context.size().width(),

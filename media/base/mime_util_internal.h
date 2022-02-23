@@ -51,13 +51,14 @@ class MEDIA_EXPORT MimeUtil {
     DOLBY_VISION,
     AV1,
     MPEG_H_AUDIO,
-    LAST_CODEC = MPEG_H_AUDIO
+    DTS,
+    DTSXP2,
+    LAST_CODEC = DTSXP2
   };
 
   // Platform configuration structure.  Controls which codecs are supported at
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
-    bool has_platform_decoders = false;
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
     bool has_platform_dv_decoder = false;
 #endif
@@ -193,7 +194,7 @@ class MEDIA_EXPORT MimeUtil {
   bool GetDefaultCodec(const std::string& mime_type_lower_case,
                        Codec* default_codec) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Indicates the support of various codecs within the platform.
   PlatformInfo platform_info_;
 #endif

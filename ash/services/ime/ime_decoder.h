@@ -14,66 +14,93 @@
 namespace chromeos {
 namespace ime {
 
-// A proxy class for the IME decoder.
-// ImeDecoder is implemented as a singleton and is initialized before 'ime'
-// sandbox is engaged.
+// START: Signatures of "C" API entry points of CrOS 1P IME shared library.
+// Must match API specs in ash/services/ime/public/cpp/shared_lib/interfaces.h
+
+inline constexpr char kImeDecoderInitOnceFnName[] = "ImeDecoderInitOnce";
+typedef void (*ImeDecoderInitOnceFn)(ImeCrosPlatform* platform);
+
+inline constexpr char kSetImeEngineLoggerFnName[] = "SetImeEngineLogger";
+typedef void (*SetImeEngineLoggerFn)(ChromeLoggerFunc logger_func);
+
+inline constexpr char kImeDecoderCloseFnName[] = "ImeDecoderClose";
+typedef void (*ImeDecoderCloseFn)();
+
+inline constexpr char kImeDecoderSupportsFnName[] = "ImeDecoderSupports";
+typedef bool (*ImeDecoderSupportsFn)(const char* ime_spec);
+
+inline constexpr char kImeDecoderActivateImeFnName[] = "ImeDecoderActivateIme";
+typedef bool (*ImeDecoderActivateImeFn)(const char* ime_spec,
+                                        ImeClientDelegate* delegate);
+
+inline constexpr char kImeDecoderProcessFnName[] = "ImeDecoderProcess";
+typedef void (*ImeDecoderProcessFn)(const uint8_t* data, size_t size);
+
+inline constexpr char kConnectToInputMethodFnName[] = "ConnectToInputMethod";
+typedef bool (*ConnectToInputMethodFn)(
+    const char* ime_spec,
+    uint32_t receiver_input_method_handle,
+    uint32_t remote_input_method_host_handle,
+    uint32_t remote_input_method_host_version);
+
+inline constexpr char kInitializeConnectionFactoryFnName[] =
+    "InitializeConnectionFactory";
+typedef bool (*InitializeConnectionFactoryFn)(
+    uint32_t receiver_connection_factory_handle);
+
+inline constexpr char kIsInputMethodConnectedFnName[] =
+    "IsInputMethodConnected";
+typedef bool (*IsInputMethodConnectedFn)();
+
+// END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
+
 class ImeDecoder {
  public:
-  // Status of loading func from IME decoder DSO: either success or error type.
-  enum class Status {
-    kSuccess = 0,
-    kUninitialized = 1,
-    kNotInstalled = 2,
-    kLoadLibraryFailed = 3,
-    kFunctionMissing = 4,
-  };
+  virtual ~ImeDecoder() = default;
 
-  // This contains the function pointers to the entry points for the loaded
-  // decoder shared library.
+  // Function pointers to "C" API entry points of the loaded IME shared library.
+  // See ash/services/ime/public/cpp/shared_lib/interfaces.h for API specs.
   struct EntryPoints {
     ImeDecoderInitOnceFn init_once;
+    ImeDecoderCloseFn close;
     ImeDecoderSupportsFn supports;
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
-    ImeDecoderCloseFn close;
     ConnectToInputMethodFn connect_to_input_method;
+    InitializeConnectionFactoryFn initialize_connection_factory;
     IsInputMethodConnectedFn is_input_method_connected;
-
-    // Whether the EntryPoints is ready to use.
-    bool is_ready = false;
   };
 
-  // Gets the singleton ImeDecoder.
-  static ImeDecoder* GetInstance();
+  // Loads the IME shared library (if not already loaded) then returns its entry
+  // points. Entry points are only available if the IME shared library has been
+  // successfully loaded.
+  virtual absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() = 0;
+};
 
-  ImeDecoder(const ImeDecoder&) = delete;
-  ImeDecoder& operator=(const ImeDecoder&) = delete;
+// A proxy class for the IME decoder.
+// ImeDecoder is implemented as a singleton and is initialized before 'ime'
+// sandbox is engaged.
+class ImeDecoderImpl : public ImeDecoder {
+ public:
+  // Gets the singleton ImeDecoderImpl.
+  static ImeDecoderImpl* GetInstance();
 
-  // Get status of the IME decoder library initialization.
-  // Return `Status::kSuccess` if the lib is successfully initialized.
-  Status GetStatus() const;
+  ImeDecoderImpl(const ImeDecoderImpl&) = delete;
+  ImeDecoderImpl& operator=(const ImeDecoderImpl&) = delete;
 
-  // Returns entry points of the loaded decoder shared library.
-  EntryPoints GetEntryPoints();
+  absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
 
  private:
-  friend class base::NoDestructor<ImeDecoder>;
+  friend class base::NoDestructor<ImeDecoderImpl>;
 
-  // Initialize the Ime decoder library.
-  explicit ImeDecoder();
-  ~ImeDecoder();
-
-  Status status_;
+  explicit ImeDecoderImpl();
+  ~ImeDecoderImpl() override;
 
   // Result of IME decoder DSO initialization.
   absl::optional<base::ScopedNativeLibrary> library_;
 
-  EntryPoints entry_points_;
+  absl::optional<EntryPoints> entry_points_;
 };
-
-// Only used in tests to set a fake `ImeDecoder::EntryPoints`.
-void FakeDecoderEntryPointsForTesting(
-    const ImeDecoder::EntryPoints& decoder_entry_points);
 
 }  // namespace ime
 }  // namespace chromeos

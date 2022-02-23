@@ -2,23 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function wrapupRepairCompletePageTest() {
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used by
+   * the rework button.
+   * @type {?ShimlessRma}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?WrapupRepairCompletePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
-  let shimlessRmaService = null;
+  let service = null;
 
   suiteSetup(() => {
-    shimlessRmaService = new FakeShimlessRmaService();
-    setShimlessRmaServiceForTesting(shimlessRmaService);
+    service = new FakeShimlessRmaService();
+    setShimlessRmaServiceForTesting(service);
   });
 
   setup(() => {
@@ -28,7 +37,9 @@ export function wrapupRepairCompletePageTest() {
   teardown(() => {
     component.remove();
     component = null;
-    shimlessRmaService.reset();
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
+    service.reset();
   });
 
   /**
@@ -36,6 +47,11 @@ export function wrapupRepairCompletePageTest() {
    */
   function initializeRepairCompletePage() {
     assertFalse(!!component);
+
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     component = /** @type {!WrapupRepairCompletePage} */ (
         document.createElement('wrapup-repair-complete-page'));
@@ -64,13 +80,39 @@ export function wrapupRepairCompletePageTest() {
     const logsDialog = component.shadowRoot.querySelector('#logsDialog');
     assertTrue(!!logsDialog);
     assertFalse(logsDialog.open);
-
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertFalse(batteryDialog.open);
   });
 
+  test('CanShutDown', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+    let callCount = 0;
+    service.endRmaAndShutdown = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#shutDownButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
+  });
+
+  test('CanReboot', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+    let callCount = 0;
+    service.endRmaAndReboot = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    await clickButton('#rebootButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
+  });
 
   test('OpensRmaLogDialog', async () => {
     await initializeRepairCompletePage();
@@ -81,14 +123,32 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(logsDialog.open);
   });
 
-  test('OpensBatteryCutDialog', async () => {
+  test('BatteryCutButtonDisabledByDefault', async () => {
     await initializeRepairCompletePage();
-    await clickButton('#batteryCutButton');
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
 
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertTrue(batteryDialog.open);
+    assertTrue(!!button);
+    assertTrue(button.disabled);
+  });
+
+  test('PowerCableStateTrueDisablesBatteryCutButton', async () => {
+    await initializeRepairCompletePage();
+    service.triggerPowerCableObserver(true, 0);
+    await flushTasks();
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertTrue(!!button);
+    assertTrue(button.disabled);
+  });
+
+  test('PowerCableStateFalseEnablesBatteryCutButton', async () => {
+    await initializeRepairCompletePage();
+    service.triggerPowerCableObserver(false, 0);
+    await flushTasks();
+    const button = component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertTrue(!!button);
+    assertFalse(button.disabled);
   });
 
   test('DialogCloses', async () => {
@@ -101,11 +161,33 @@ export function wrapupRepairCompletePageTest() {
     assertFalse(logsDialog.open);
 
     await clickButton('#batteryCutButton');
-    await clickButton('#closeBatteryDialogButton');
+  });
 
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertFalse(batteryDialog.open);
+  test('AllButtonsDisabled', async () => {
+    await initializeRepairCompletePage();
+    const shutDownButton =
+        component.shadowRoot.querySelector('#shutDownButton');
+    const rebootButton = component.shadowRoot.querySelector('#rebootButton');
+    const diagnosticsButton =
+        component.shadowRoot.querySelector('#diagnosticsButton');
+    const rmaLogButton = component.shadowRoot.querySelector('#rmaLogButton');
+    const batteryCutButton =
+        component.shadowRoot.querySelector('#batteryCutButton');
+
+    assertFalse(shutDownButton.disabled);
+    assertFalse(rebootButton.disabled);
+    assertFalse(diagnosticsButton.disabled);
+    assertFalse(rmaLogButton.disabled);
+
+    service.triggerPowerCableObserver(false, 0);
+    await flushTasks();
+    assertFalse(batteryCutButton.disabled);
+
+    component.allButtonsDisabled = true;
+    assertTrue(shutDownButton.disabled);
+    assertTrue(rebootButton.disabled);
+    assertTrue(diagnosticsButton.disabled);
+    assertTrue(rmaLogButton.disabled);
+    assertTrue(batteryCutButton.disabled);
   });
 }

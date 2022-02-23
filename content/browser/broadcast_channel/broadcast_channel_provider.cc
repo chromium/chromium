@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 
 #include "content/public/browser/storage_partition.h"
 

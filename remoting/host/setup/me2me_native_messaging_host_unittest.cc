@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
@@ -36,11 +37,12 @@
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using remoting::protocol::MockPairingRegistryDelegate;
 using remoting::protocol::PairingRegistry;
 using remoting::protocol::SynchronousPairingRegistry;
-
-namespace {
+using ::testing::Optional;
 
 void VerifyHelloResponse(std::unique_ptr<base::DictionaryValue> response) {
   ASSERT_TRUE(response);
@@ -94,7 +96,7 @@ void VerifyGetDaemonConfigResponse(
   EXPECT_EQ("getDaemonConfigResponse", value);
   const base::DictionaryValue* config = nullptr;
   EXPECT_TRUE(response->GetDictionary("config", &config));
-  EXPECT_TRUE(base::DictionaryValue().Equals(config));
+  EXPECT_EQ(base::DictionaryValue(), *config);
 }
 
 void VerifyGetUsageStatsConsentResponse(
@@ -103,13 +105,10 @@ void VerifyGetUsageStatsConsentResponse(
   std::string value;
   EXPECT_TRUE(response->GetString("type", &value));
   EXPECT_EQ("getUsageStatsConsentResponse", value);
-  bool supported, allowed, set_by_policy;
-  EXPECT_TRUE(response->GetBoolean("supported", &supported));
-  EXPECT_TRUE(response->GetBoolean("allowed", &allowed));
-  EXPECT_TRUE(response->GetBoolean("setByPolicy", &set_by_policy));
-  EXPECT_TRUE(supported);
-  EXPECT_TRUE(allowed);
-  EXPECT_TRUE(set_by_policy);
+
+  EXPECT_THAT(response->FindBoolKey("supported"), Optional(true));
+  EXPECT_THAT(response->FindBoolKey("allowed"), Optional(true));
+  EXPECT_THAT(response->FindBoolKey("setByPolicy"), Optional(true));
 }
 
 void VerifyStopDaemonResponse(std::unique_ptr<base::DictionaryValue> response) {
@@ -215,7 +214,7 @@ void MockDaemonControllerDelegate::SetConfigAndStart(
     bool consent,
     DaemonController::CompletionCallback done) {
   // Verify parameters passed in.
-  if (consent && config && config->HasKey("start")) {
+  if (consent && config && config->FindKey("start")) {
     std::move(done).Run(DaemonController::RESULT_OK);
   } else {
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -225,7 +224,7 @@ void MockDaemonControllerDelegate::SetConfigAndStart(
 void MockDaemonControllerDelegate::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
     DaemonController::CompletionCallback done) {
-  if (config && config->HasKey("update")) {
+  if (config && config->FindKey("update")) {
     std::move(done).Run(DaemonController::RESULT_OK);
   } else {
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -272,7 +271,7 @@ class Me2MeNativeMessagingHostTest : public testing::Test {
  protected:
   // Reference to the MockDaemonControllerDelegate, which is owned by
   // |channel_|.
-  MockDaemonControllerDelegate* daemon_controller_delegate_;
+  raw_ptr<MockDaemonControllerDelegate> daemon_controller_delegate_;
 
  private:
   void StartHost();
@@ -342,8 +341,8 @@ void Me2MeNativeMessagingHostTest::StartHost() {
   ASSERT_TRUE(MakePipe(&output_read_file_, &output_write_file));
 
   daemon_controller_delegate_ = new MockDaemonControllerDelegate();
-  scoped_refptr<DaemonController> daemon_controller(
-      new DaemonController(base::WrapUnique(daemon_controller_delegate_)));
+  scoped_refptr<DaemonController> daemon_controller(new DaemonController(
+      base::WrapUnique(daemon_controller_delegate_.get())));
 
   scoped_refptr<PairingRegistry> pairing_registry =
       new SynchronousPairingRegistry(
@@ -499,7 +498,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.SetString("pin", "1234");
   WriteMessageToInputPipe(message);
 
-  message.Clear();
+  message.DictClear();
   message.SetInteger("id", next_id++);
   message.SetString("type", "generateKeyPair");
   WriteMessageToInputPipe(message);
@@ -528,7 +527,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.SetString("type", "updateDaemonConfig");
   WriteMessageToInputPipe(message);
 
-  config.Clear();
+  config.DictClear();
   config.SetBoolean("start", true);
   message.Set("config", config.CreateDeepCopy());
   message.SetBoolean("consent", true);

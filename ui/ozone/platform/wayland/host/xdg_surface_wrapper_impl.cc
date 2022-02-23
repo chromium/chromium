@@ -71,6 +71,7 @@ void XDGSurfaceWrapperImpl::Configure(void* data,
   DCHECK(surface);
 
   surface->wayland_window_->HandleSurfaceConfigure(serial);
+  surface->wayland_window_->OnSurfaceConfigureEvent();
 }
 
 xdg_surface* XDGSurfaceWrapperImpl::xdg_surface() const {

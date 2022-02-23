@@ -6,12 +6,13 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
@@ -81,7 +82,7 @@ bool OmniboxAction::IsReadyToTrigger(
   return true;
 }
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
   // TODO(tommycli): Replace with real icon.
   return omnibox::kPedalIcon;
@@ -102,6 +103,13 @@ size_t OmniboxAction::EstimateMemoryUsage() const {
 int32_t OmniboxAction::GetID() const {
   return 0;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaGlobalRef<jobject> OmniboxAction::GetJavaObject()
+    const {
+  return base::android::ScopedJavaGlobalRef<jobject>();
+}
+#endif
 
 void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
                             const GURL& url) const {

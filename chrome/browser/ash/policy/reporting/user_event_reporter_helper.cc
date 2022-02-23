@@ -8,25 +8,17 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/reporting/client/report_queue_factory.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace reporting {
 
-UserEventReporterHelper::UserEventReporterHelper(Destination destination)
-    : report_queue_(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
-          nullptr,
-          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()))) {
-  policy::DMToken dm_token = GetDMToken();
-  if (!dm_token.is_valid()) {
-    DVLOG(1) << "Cannot initialize user event reporter. Invalid DMToken.";
-    return;
-  }
-  report_queue_ = ReportQueueFactory::CreateSpeculativeReportQueue(
-      dm_token.value(), destination);
-}
+UserEventReporterHelper::UserEventReporterHelper(Destination destination,
+                                                 EventType event_type)
+    : report_queue_(
+          ReportQueueFactory::CreateSpeculativeReportQueue(event_type,
+                                                           destination)) {}
 
 UserEventReporterHelper::UserEventReporterHelper(
     std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue)
@@ -35,11 +27,13 @@ UserEventReporterHelper::UserEventReporterHelper(
 UserEventReporterHelper::~UserEventReporterHelper() = default;
 
 bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   return ash::ChromeUserManager::Get()->ShouldReportUser(email);
 }
 
 bool UserEventReporterHelper::ReportingEnabled(
     const std::string& policy_path) const {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   bool enabled = false;
   chromeos::CrosSettings::Get()->GetBoolean(policy_path, &enabled);
   return enabled;
@@ -67,21 +61,8 @@ bool UserEventReporterHelper::IsCurrentUserNew() const {
 }
 
 // static
-policy::DMToken UserEventReporterHelper::GetDMToken() {
-  policy::DMToken dm_token(policy::DMToken::Status::kEmpty, "");
-
-  auto* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector) {
-    return dm_token;
-  }
-
-  auto* const policy_manager = connector->GetDeviceCloudPolicyManager();
-  if (policy_manager && policy_manager->IsClientRegistered()) {
-    dm_token = policy::DMToken(policy::DMToken::Status::kValid,
-                               policy_manager->core()->client()->dm_token());
-  }
-
-  return dm_token;
+scoped_refptr<base::SequencedTaskRunner>
+UserEventReporterHelper::valid_task_runner() {
+  return ::content::GetUIThreadTaskRunner({});
 }
 }  // namespace reporting

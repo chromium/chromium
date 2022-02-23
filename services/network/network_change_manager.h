@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -46,7 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkChangeManager
       mojo::PendingRemote<mojom::NetworkChangeManagerClient> client_remote)
       override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
   void OnNetworkChanged(
       bool dns_changed,
       bool ip_address_changed,

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/extensions_manifest_types.h"
@@ -17,8 +16,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-
-using base::ASCIIToUTF16;
 
 namespace extensions {
 
@@ -47,7 +44,7 @@ bool ParseOptionsUrl(Extension* extension,
     // Hosted apps require an absolute URL.
     GURL options_url(url_string);
     if (!options_url.is_valid() || !options_url.SchemeIsHTTPOrHTTPS()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidOptionsPageInHostedApp);
+      *error = errors::kInvalidOptionsPageInHostedApp;
       return false;
     }
     *result = options_url;
@@ -56,7 +53,7 @@ bool ParseOptionsUrl(Extension* extension,
 
   // Otherwise the options URL should be inside the extension.
   if (GURL(url_string).is_valid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidOptionsPageExpectUrlInPackage);
+    *error = errors::kInvalidOptionsPageExpectUrlInPackage;
     return false;
   }
 
@@ -142,7 +139,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
         if (extension->manifest_version() < 3)
           chrome_style = *options_ui->chrome_style;
         else {
-          *error = base::ASCIIToUTF16(errors::kChromeStyleInvalidForManifestV3);
+          *error = errors::kChromeStyleInvalidForManifestV3;
           return nullptr;
         }
       }
@@ -180,15 +177,16 @@ bool OptionsPageManifestHandler::Parse(Extension* extension,
   const Manifest* manifest = extension->manifest();
 
   std::string options_page_string;
-  if (manifest->HasPath(keys::kOptionsPage) &&
-      !manifest->GetString(keys::kOptionsPage, &options_page_string)) {
-    *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
-                                                 keys::kOptionsPage);
-    return false;
+  if (const base::Value* temp = manifest->FindPath(keys::kOptionsPage)) {
+    if (!temp->is_string()) {
+      *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
+                                                   keys::kOptionsPage);
+      return false;
+    }
+    options_page_string = temp->GetString();
   }
 
-  const base::Value* options_ui_value = NULL;
-  ignore_result(manifest->Get(keys::kOptionsUI, &options_ui_value));
+  const base::Value* options_ui_value = manifest->FindPath(keys::kOptionsUI);
 
   std::unique_ptr<OptionsPageInfo> info =
       OptionsPageInfo::Create(extension, options_ui_value, options_page_string,

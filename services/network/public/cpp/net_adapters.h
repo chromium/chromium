@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -56,6 +55,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
                          void* buffer);
   ~NetToMojoPendingBuffer();
   mojo::ScopedDataPipeProducerHandle handle_;
+
+  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
+  // protected by BackupRefPtr, because the pointer comes either from using
+  // `mmap`, MapViewOfFile or base::AllocPages directly.
   void* buffer_;
 };
 
@@ -118,6 +121,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   ~MojoToNetPendingBuffer();
 
   mojo::ScopedDataPipeConsumerHandle handle_;
+
+  // `buffer_` is not a raw_ptr<...> for performance reasons: pointee is never
+  // protected by BackupRefPtr, because the pointer comes either from using
+  // `mmap`, MapViewOfFile or base::AllocPages directly.
   const void* buffer_;
 };
 

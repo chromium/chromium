@@ -15,7 +15,13 @@ def _RunTestRunnerUnitTests(input_api, output_api):
   files = ['.*_test.py$']
 
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=files)
+      input_api,
+      output_api,
+      '.',
+      files_to_check=files,
+      run_on_python2=not USE_PYTHON3,
+      run_on_python3=USE_PYTHON3,
+      skip_shebang_check=True)
 
 
 def CheckChange(input_api, output_api):

@@ -24,7 +24,7 @@ ViewsContentClientMainParts::ViewsContentClientMainParts(
 ViewsContentClientMainParts::~ViewsContentClientMainParts() {
 }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 void ViewsContentClientMainParts::PreBrowserMain() {}
 #endif
 

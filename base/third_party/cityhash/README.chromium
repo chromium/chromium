@@ -12,8 +12,9 @@ This is a fast non-cryptographic hash function.
 There are currently two distinct sets of CityHash functions:
 v1.0.3 and v1.1+ that produce distinct outputs.
 
-The version in //third_party/smhasher is 1.0.3 and has some hash
-quality issues that led to non-backwards compatible changes in v1.1+.
+The version in //base/third_party/cityhash_v103 is 1.0.3 and has some hash
+quality issues that led to non-backwards compatible changes in v1.1+. See
+//base/hash/README.md for instructions on how to choose a hash function.
 
 Local changes:
 - guarded function declaration (i.e. CityHash64) within a namespace

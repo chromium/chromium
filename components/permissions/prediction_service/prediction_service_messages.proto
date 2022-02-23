@@ -55,6 +55,21 @@ message ClientFeatures {
   // The type of gesture performed by the user on the page before the permission
   // prompt was shown.
   optional Gesture gesture = 3;
+
+  enum GestureEnum {
+    GESTURE_V2 = 0;
+    GESTURE_UNSPECIFIED_V2 = 1;
+  }
+
+  optional GestureEnum gesture_enum = 4;
+
+  enum PlatformEnum {
+    PLATFORM_MOBILE_V2 = 0;
+    PLATFORM_DESKTOP_V2 = 1;
+    PLATFORM_UNSPECIFIED_V2 = 3;
+  }
+
+  optional PlatformEnum platform_enum = 5;
 }
 
 // Features related to a specific permission type.

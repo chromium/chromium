@@ -34,18 +34,6 @@ extern const char kDefaultChangePasswordScriptsListUrl[];
 class PasswordScriptsFetcherImpl
     : public password_manager::PasswordScriptsFetcher {
  public:
-  // These enums are used in histograms. Do not change or reuse values.
-  enum class CacheState {
-    // Cache is ready.
-    kReady = 0,
-    // Cache was set but it is stale. Re-fetch needed.
-    kStale = 1,
-    // Cache was never set,
-    kNeverSet = 2,
-    // Cache is waiting for an in-flight request.
-    kWaiting = 3,
-    kMaxValue = kWaiting,
-  };
   enum class ParsingResult {
     // No response from the server.
     kNoResponse = 0,
@@ -87,6 +75,7 @@ class PasswordScriptsFetcherImpl
 #endif
 
  private:
+  using CacheState = PasswordScriptsFetcher::CacheState;
   // Sends new request to gstatic.
   void StartFetch();
   // Callback for the request to gstatic.

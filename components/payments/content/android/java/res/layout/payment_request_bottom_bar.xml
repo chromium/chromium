@@ -14,7 +14,7 @@
     android:paddingBottom="@dimen/payments_request_bottom_bar_vertical_padding"
     android:paddingStart="@dimen/payments_request_bottom_bar_horizontal_padding"
     android:paddingEnd="@dimen/payments_request_bottom_bar_horizontal_padding"
-    android:background="@color/payment_request_bg"
+    android:background="@drawable/sheet_background"
     android:visibility="gone" >
 
     <ImageView

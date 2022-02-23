@@ -18,8 +18,6 @@
 
 namespace ash {
 
-using BrowserTabsModel = chromeos::phonehub::BrowserTabsModel;
-
 namespace {
 
 // Appearance constants in dip.
@@ -71,8 +69,8 @@ class HeaderView : public views::Label {
 }  // namespace
 
 TaskContinuationView::TaskContinuationView(
-    chromeos::phonehub::PhoneModel* phone_model,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    phonehub::PhoneModel* phone_model,
+    phonehub::UserActionRecorder* user_action_recorder)
     : phone_model_(phone_model), user_action_recorder_(user_action_recorder) {
   SetID(PhoneHubViewID::kTaskContinuationView);
 
@@ -171,7 +169,7 @@ void TaskContinuationView::Update() {
     return;
   }
 
-  const BrowserTabsModel& browser_tabs =
+  const phonehub::BrowserTabsModel& browser_tabs =
       phone_model_->browser_tabs_model().value();
 
   if (!browser_tabs.is_tab_sync_enabled() ||
@@ -181,7 +179,7 @@ void TaskContinuationView::Update() {
   }
 
   int index = 0;
-  for (const BrowserTabsModel::BrowserTabMetadata& metadata :
+  for (const phonehub::BrowserTabsModel::BrowserTabMetadata& metadata :
        browser_tabs.most_recent_tabs()) {
     chips_view_->AddTaskChip(new ContinueBrowsingChip(
         metadata, index, browser_tabs.most_recent_tabs().size(),

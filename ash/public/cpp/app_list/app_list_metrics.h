@@ -9,6 +9,19 @@
 
 namespace ash {
 enum class AppListLaunchedFrom;
+enum class AppListOrderUpdateEvent;
+enum class AppListSortOrder;
+
+// UMA histograms that record the actions that clear the pref sort order.
+ASH_PUBLIC_EXPORT extern const char kClamshellPrefOrderClearActionHistogram[];
+ASH_PUBLIC_EXPORT extern const char kTabletPrefOrderClearActionHistogram[];
+
+// UMA histograms that record app list pref sort order when a session starts.
+// Exposed in this header because they are needed in tests.
+ASH_PUBLIC_EXPORT extern const char
+    kClamshellAppListSortOrderOnSessionStartHistogram[];
+ASH_PUBLIC_EXPORT extern const char
+    kTabletAppListSortOrderOnSessionStartHistogram[];
 
 // The type of the ChromeSearchResult. This is used for logging so do not
 // change the order of this enum. If you add to this enum update
@@ -111,6 +124,13 @@ enum SearchResultType {
   HELP_APP_UPDATES,
   // A Help App result about the "Discover" page.
   HELP_APP_DISCOVER,
+  // A keyboard shortcut result from the Keyboard Shortcut provider.
+  KEYBOARD_SHORTCUT,
+  // A keyboard shortcut result from the Keyboard Shortcut provider.
+  OPEN_TAB,
+  // Null result type that indicates that user did not interact with any results
+  // in some metrics.
+  NO_RESULT,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
@@ -133,6 +153,17 @@ ASH_PUBLIC_EXPORT void RecordLauncherClickedSearchQueryLength(int query_length);
 ASH_PUBLIC_EXPORT void RecordSuccessfulAppLaunchUsingSearch(
     AppListLaunchedFrom launched_from,
     int query_length);
+
+ASH_PUBLIC_EXPORT void ReportPrefOrderClearAction(
+    AppListOrderUpdateEvent action,
+    bool in_tablet);
+
+ASH_PUBLIC_EXPORT void RecordFirstSearchResult(SearchResultType type,
+                                               bool in_tablet);
+
+ASH_PUBLIC_EXPORT void ReportPrefSortOrderOnSessionStart(
+    ash::AppListSortOrder permanent_order,
+    bool in_tablet);
 
 }  // namespace ash
 

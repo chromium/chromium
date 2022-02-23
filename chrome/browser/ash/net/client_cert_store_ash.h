@@ -10,12 +10,12 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-// TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/ash/certificate_provider/certificate_provider.h"
 #include "chrome/browser/ash/net/client_cert_filter.h"
 #include "net/ssl/client_cert_store_nss.h"
 
 namespace ash {
+
+class CertificateProvider;
 
 class ClientCertStoreAsh : public net::ClientCertStore {
  public:

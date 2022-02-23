@@ -537,14 +537,6 @@ const aura::Window* RootWindowController::GetRootWindow() const {
   return GetHost()->window();
 }
 
-void RootWindowController::InitializeShelf() {
-  if (shelf_initialized_)
-    return;
-  shelf_initialized_ = true;
-
-  shelf_->shelf_widget()->PostCreateShelf();
-}
-
 ShelfLayoutManager* RootWindowController::GetShelfLayoutManager() {
   return shelf_->shelf_layout_manager();
 }
@@ -799,7 +791,7 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
       gfx::Rect(location_in_screen, gfx::Size()),
       views::MenuAnchorPosition::kBubbleRight,
       views::MenuRunner::CONTEXT_MENU |
-          views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+          views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
           views::MenuRunner::FIXED_ANCHOR);
 }
 
@@ -898,7 +890,9 @@ void RootWindowController::Init(RootWindowType root_window_type) {
 
   InitLayoutManagers();
   InitTouchHuds();
-  InitializeShelf();
+
+  // `shelf_` was created in the constructor.
+  shelf_->shelf_widget()->PostCreateShelf();
 
   if (Shell::GetPrimaryRootWindowController()
           ->GetSystemModalLayoutManager(nullptr)
@@ -1260,7 +1254,7 @@ void RootWindowController::CreateSystemWallpaper(
   const bool is_boot_splash_screen =
       root_window_type == RootWindowType::PRIMARY &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFirstExecAfterBoot);
+          switches::kFirstExecAfterBoot);
   if (is_boot_splash_screen)
     color = kChromeOsBootColor;
   system_wallpaper_ =

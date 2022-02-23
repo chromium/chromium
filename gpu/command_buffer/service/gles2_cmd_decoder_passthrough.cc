@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -29,9 +30,9 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/progress_reporter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_factory_d3d.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace gpu {
 namespace gles2 {
@@ -78,7 +79,7 @@ class ScopedFramebufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   bool supports_separate_fbo_bindings_;
   GLint draw_framebuffer_;
   GLint read_framebuffer_;
@@ -96,7 +97,7 @@ class ScopedRenderbufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLint renderbuffer_;
 };
 
@@ -114,7 +115,7 @@ class ScopedTextureBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLenum texture_target_;
   GLint texture_;
 };
@@ -130,7 +131,7 @@ class ScopedClearColorReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLfloat clear_color_[4];
 };
 
@@ -145,7 +146,7 @@ class ScopedColorMaskReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLboolean color_mask_[4];
 };
 
@@ -162,7 +163,7 @@ class ScopedScissorTestReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLboolean scissor_test_;
 };
 
@@ -399,8 +400,15 @@ void PassthroughResources::Destroy(gl::GLApi* api,
 PassthroughResources::SharedImageData::SharedImageData() = default;
 PassthroughResources::SharedImageData::SharedImageData(
     std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-        representation)
-    : representation_(std::move(representation)) {}
+        representation,
+    gl::GLApi* api)
+    : representation_(std::move(representation)) {
+  DCHECK(representation_);
+
+  // Note, that ideally we could defer clear till BeginAccess, but there is no
+  // enforcement that will require clients to call Begin/End access.
+  EnsureClear(api);
+}
 PassthroughResources::SharedImageData::SharedImageData(
     SharedImageData&& other) = default;
 PassthroughResources::SharedImageData::~SharedImageData() = default;
@@ -412,24 +420,19 @@ operator=(SharedImageData&& other) {
   return *this;
 }
 
-bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
-                                                        gl::GLApi* api) {
-  DCHECK(!is_being_accessed());
-  // When importing a texture for use in passthrough cmd decoder, always allow
-  // uncleared access. We ensure the texture is cleared below.
-  scoped_access_ = representation_->BeginScopedAccess(
-      mode, SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  if (!scoped_access_) {
-    return false;
-  }
-  // ANGLE does not handle clear tracking in an interoperable way. Clear
-  // any uncleared SharedImage before using it with ANGLE.
-  //
-  // NOTE: This will not introduce extra clears in common cases. The default GL
-  // SharedImage, which is exclusively used with ANGLE, always returns true
-  // from IsCleared, allowing ANGLE to manage clearing internally. This path is
-  // only run for interop shared image backings.
+void PassthroughResources::SharedImageData::EnsureClear(gl::GLApi* api) {
+  // To avoid unnessary overhead we don't enable robust initialization on shared
+  // gl context where all shared images are created, so we clear image here if
+  // necessary.
   if (!representation_->IsCleared()) {
+    // Allow uncleared access as we're going to clear the image.
+    auto scoped_access = representation_->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+    if (!scoped_access)
+      return;
+
     auto texture = representation_->GetTexturePassthrough();
 
     // Back up all state we are about to change.
@@ -463,7 +466,17 @@ bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
     // Mark the shared image as cleared.
     representation_->SetCleared();
   }
-  return true;
+}
+
+bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
+                                                        gl::GLApi* api) {
+  DCHECK(!is_being_accessed());
+  // The image should have been cleared already when we created the texture if
+  // necessary.
+  scoped_access_ = representation_->BeginScopedAccess(
+      mode, SharedImageRepresentation::AllowUnclearedAccess::kNo);
+
+  return !!scoped_access_;
 }
 
 GLES2DecoderPassthroughImpl::PendingQuery::PendingQuery() = default;
@@ -883,7 +896,7 @@ GLES2Decoder::Error GLES2DecoderPassthroughImpl::DoCommandsImpl(
   if (entries_processed)
     *entries_processed = process_pos;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Aggressively call glFlush on macOS. This is the only fix that has been
   // found so far to avoid crashes on Intel drivers. The workaround
   // isn't needed for WebGL contexts, though.
@@ -951,12 +964,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
     static constexpr const char* kRequiredFunctionalityExtensions[] = {
       "GL_ANGLE_framebuffer_blit",
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       "GL_ANGLE_memory_object_fuchsia",
 #endif
       "GL_ANGLE_memory_size",
       "GL_ANGLE_native_id",
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       "GL_ANGLE_semaphore_fuchsia",
 #endif
       "GL_ANGLE_texture_storage_external",
@@ -974,9 +987,10 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
       "GL_OES_EGL_image",
       "GL_OES_EGL_image_external",
       "GL_OES_EGL_image_external_essl3",
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       "GL_ANGLE_texture_rectangle",
 #endif
+      "GL_ANGLE_vulkan_image",
     };
     RequestExtensions(api(), requestable_extensions,
                       kRequiredFunctionalityExtensions,
@@ -1231,7 +1245,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   api()->glGetIntegervFn(GL_SCISSOR_BOX, scissor_);
   ApplySurfaceDrawOffset();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On mac we need the ANGLE_texture_rectangle extension to support IOSurface
   // backbuffers, but we don't want it exposed to WebGL user shaders. This
   // disables support for it in the shader compiler. We then enable it
@@ -1620,7 +1634,7 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.discard_framebuffer =
       feature_info_->feature_flags().ext_discard_framebuffer;
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This is unconditionally true on mac, no need to test for it at runtime.
   caps.iosurface = true;
 #endif
@@ -1672,10 +1686,10 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.commit_overlay_planes = surface_->SupportsCommitOverlayPlanes();
   caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
   caps.gpu_vsync = surface_->SupportsGpuVSync();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   caps.shared_image_swap_chain =
       SharedImageBackingFactoryD3D::IsSwapChainSupported();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
   caps.texture_storage_image =
       feature_info_->feature_flags().chromium_texture_storage_image;
@@ -1689,6 +1703,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.disable_legacy_mailbox =
       group_->shared_image_manager() &&
       group_->shared_image_manager()->display_context_on_another_thread();
+  caps.angle_rgbx_internal_format =
+      feature_info_->feature_flags().angle_rgbx_internal_format;
 
   return caps;
 }

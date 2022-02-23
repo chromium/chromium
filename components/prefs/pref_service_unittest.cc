@@ -32,6 +32,7 @@ const char kPrefName[] = "pref.name";
 const char kManagedPref[] = "managed_pref";
 const char kRecommendedPref[] = "recommended_pref";
 const char kSupervisedPref[] = "supervised_pref";
+const char kStandaloneBrowserPref[] = "standalone_browser_pref";
 
 }  // namespace
 
@@ -130,7 +131,7 @@ TEST(PrefServiceTest, Observers) {
   obs2.Expect(pref_name, &expected_new_pref_value2);
   // This should fire the checks in obs and obs2 but with an unchanged value
   // as the recommended value is being overridden by the user-set value.
-  prefs.SetRecommendedPref(pref_name, recommended_pref_value.CreateDeepCopy());
+  prefs.SetRecommendedPref(pref_name, recommended_pref_value.Clone());
   Mock::VerifyAndClearExpectations(&obs);
   Mock::VerifyAndClearExpectations(&obs2);
 
@@ -499,12 +500,13 @@ class PrefValueStoreChangeTest : public testing::Test {
     auto pref_notifier = std::make_unique<PrefNotifierImpl>();
     auto pref_value_store = std::make_unique<PrefValueStore>(
         nullptr /* managed_prefs */, nullptr /* supervised_user_prefs */,
-        nullptr /* extension_prefs */, new TestingPrefStore(),
-        user_pref_store_.get(), nullptr /* recommended_prefs */,
-        pref_registry_->defaults().get(), pref_notifier.get());
+        nullptr /* extension_prefs */, nullptr /* standalone_browser_prefs */,
+        new TestingPrefStore(), user_pref_store_.get(),
+        nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
+        pref_notifier.get());
     pref_service_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
-        pref_registry_, base::DoNothing(), false);
+        nullptr, pref_registry_, base::DoNothing(), false);
     pref_registry_->RegisterIntegerPref(kManagedPref, 1);
     pref_registry_->RegisterIntegerPref(kRecommendedPref, 2);
     pref_registry_->RegisterIntegerPref(kSupervisedPref, 3);
@@ -613,4 +615,58 @@ TEST_F(PrefValueStoreChangeTest, PrefChangeRegistrar) {
   obs.Expect(kSupervisedPref, &expected_value);
   supervised_pref_store->SetInteger(kSupervisedPref, 31);
   Mock::VerifyAndClearExpectations(&obs);
+}
+
+class PrefStandaloneBrowserPrefsTest : public testing::Test {
+ protected:
+  PrefStandaloneBrowserPrefsTest()
+      : user_pref_store_(base::MakeRefCounted<TestingPrefStore>()),
+        standalone_browser_pref_store_(
+            base::MakeRefCounted<TestingPrefStore>()),
+        pref_registry_(base::MakeRefCounted<PrefRegistrySimple>()) {}
+
+  ~PrefStandaloneBrowserPrefsTest() override = default;
+
+  void SetUp() override {
+    auto pref_notifier = std::make_unique<PrefNotifierImpl>();
+    auto pref_value_store = std::make_unique<PrefValueStore>(
+        nullptr /* managed_prefs */, nullptr /* supervised_user_prefs */,
+        nullptr /* extension_prefs */, standalone_browser_pref_store_.get(),
+        new TestingPrefStore(), user_pref_store_.get(),
+        nullptr /* recommended_prefs */, pref_registry_->defaults().get(),
+        pref_notifier.get());
+    pref_service_ = std::make_unique<PrefService>(
+        std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
+        standalone_browser_pref_store_, pref_registry_, base::DoNothing(),
+        false);
+    pref_registry_->RegisterIntegerPref(kStandaloneBrowserPref, 4);
+  }
+
+  std::unique_ptr<PrefService> pref_service_;
+  scoped_refptr<TestingPrefStore> user_pref_store_;
+  scoped_refptr<TestingPrefStore> standalone_browser_pref_store_;
+  scoped_refptr<PrefRegistrySimple> pref_registry_;
+};
+
+// Check that the standalone browser pref store is correctly initialized,
+// written to, read, and has correct precedence.
+TEST_F(PrefStandaloneBrowserPrefsTest, CheckStandaloneBrowserPref) {
+  const PrefService::Preference* preference =
+      pref_service_->FindPreference(kStandaloneBrowserPref);
+  EXPECT_TRUE(preference->IsDefaultValue());
+  EXPECT_EQ(base::Value(4), *(preference->GetValue()));
+  user_pref_store_->SetInteger(kStandaloneBrowserPref, 11);
+  EXPECT_EQ(base::Value(11), *(preference->GetValue()));
+  // The standalone_browser_pref_store has higher precedence.
+  standalone_browser_pref_store_->SetInteger(kStandaloneBrowserPref, 10);
+  ASSERT_EQ(base::Value(10), *(preference->GetValue()));
+  // Removing user_pref_store value shouldn't change the pref value.
+  user_pref_store_->RemoveValue(kStandaloneBrowserPref,
+                                WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  ASSERT_EQ(base::Value(10), *(preference->GetValue()));
+  // Now removing the standalone_browser_pref_store value should revert the
+  // value to default.
+  standalone_browser_pref_store_->RemoveValue(
+      kStandaloneBrowserPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  EXPECT_EQ(base::Value(4), *(preference->GetValue()));
 }

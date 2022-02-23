@@ -15,10 +15,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
-using FeatureStatus = chromeos::phonehub::FeatureStatus;
-using TetherStatus = chromeos::phonehub::TetherController::Status;
-
 namespace ash {
+
+using FeatureStatus = phonehub::FeatureStatus;
+using TetherStatus = phonehub::TetherController::Status;
 
 constexpr char kUser1Email[] = "user1@test.com";
 constexpr char kUser2Email[] = "user2@test.com";
@@ -60,21 +60,20 @@ class PhoneHubUiControllerTest : public AshTestBase,
         AccountId::FromUserEmail(email));
   }
 
-  chromeos::phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {
+  phonehub::FakeFeatureStatusProvider* GetFeatureStatusProvider() {
     return phone_hub_manager_.fake_feature_status_provider();
   }
 
-  chromeos::phonehub::FakeOnboardingUiTracker* GetOnboardingUiTracker() {
+  phonehub::FakeOnboardingUiTracker* GetOnboardingUiTracker() {
     return phone_hub_manager_.fake_onboarding_ui_tracker();
   }
 
-  chromeos::phonehub::FakeTetherController* GetTetherController() {
+  phonehub::FakeTetherController* GetTetherController() {
     return phone_hub_manager_.fake_tether_controller();
   }
 
   void SetPhoneStatusModel(
-      const absl::optional<chromeos::phonehub::PhoneStatusModel>&
-          phone_status_model) {
+      const absl::optional<phonehub::PhoneStatusModel>& phone_status_model) {
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phone_status_model);
   }
@@ -96,7 +95,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
   }
 
   std::unique_ptr<PhoneHubUiController> controller_;
-  chromeos::phonehub::FakePhoneHubManager phone_hub_manager_;
+  phonehub::FakePhoneHubManager phone_hub_manager_;
   bool ui_state_changed_ = false;
 };
 
@@ -160,7 +159,7 @@ TEST_F(PhoneHubUiControllerTest, BluetoothOff) {
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
   GetTetherController()->SetStatus(
-      chromeos::phonehub::TetherController::Status::kConnectionAvailable);
+      phonehub::TetherController::Status::kConnectionAvailable);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_->ui_state());
@@ -171,7 +170,7 @@ TEST_F(PhoneHubUiControllerTest, PhoneConnecting) {
 
 TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
   GetTetherController()->SetStatus(
-      chromeos::phonehub::TetherController::Status::kConnecting);
+      phonehub::TetherController::Status::kConnecting);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
   EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
             controller_->ui_state());
@@ -180,7 +179,7 @@ TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
   // |kEnabledAndConnecting|. The UiState should still be
   // kTetherConnectionPending.
   GetTetherController()->SetStatus(
-      chromeos::phonehub::TetherController::Status::kConnected);
+      phonehub::TetherController::Status::kConnected);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnecting);
   EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
             controller_->ui_state());
@@ -199,7 +198,7 @@ TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
 }
 
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
-  SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
+  SetPhoneStatusModel(phonehub::CreateFakePhoneStatusModel());
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
             controller_->ui_state());
@@ -241,7 +240,7 @@ TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
   EXPECT_EQ(kPhoneConnectingView, content_view->GetID());
 
   // Update the phone status model and expect the connected view to show up.
-  SetPhoneStatusModel(chromeos::phonehub::CreateFakePhoneStatusModel());
+  SetPhoneStatusModel(phonehub::CreateFakePhoneStatusModel());
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
             controller_->ui_state());
   auto content_view2 = controller_->CreateContentView(/*delegate=*/nullptr);

@@ -2360,14 +2360,6 @@
         "name": "rendering.desktop/canvas_to_canvas_draw"
     },
     {
-        "duration": "16.0",
-        "name": "rendering.desktop/cats_unscaled"
-    },
-    {
-        "duration": "15.0",
-        "name": "rendering.desktop/cats_viewport_width"
-    },
-    {
         "duration": "39.0",
         "name": "rendering.desktop/cc_poster_circle"
     },

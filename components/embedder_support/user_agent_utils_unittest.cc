@@ -16,6 +16,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/embedder_support/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -26,11 +29,11 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/re2/src/re2/re2.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/utsname.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.foundation.metadata.h>
 #include <wrl.h>
 
@@ -39,7 +42,7 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace embedder_support {
 
@@ -49,7 +52,20 @@ namespace {
 // the User-Agent string, where the first capture is the {major_version} and the
 // second capture is the {minor_version}.
 static constexpr char kChromeProductVersionRegex[] =
-    "Chrome/([0-9]+)\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
+    "Chrome/([0-9]+).([0-9]+).([0-9]+).([0-9]+)";
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+std::string GetMachine() {
+  struct utsname unixinfo;
+  uname(&unixinfo);
+  std::string machine = unixinfo.machine;
+  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
+      sizeof(void*) == sizeof(int32_t)) {
+    machine = "i686 (x86_64)";
+  }
+  return machine;
+}
+#endif
 
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
@@ -86,7 +102,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
 
   pieces = base::SplitStringUsingSubstr(os_str, "; ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows NT 10.0; Win64; x64
   // Windows NT 10.0; WOW64
   // Windows NT 10.0
@@ -105,7 +121,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_TRUE(base::StringToDouble(pieces[2], &version));
   ASSERT_LE(4.0, version);
   ASSERT_GT(11.0, version);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Macintosh; Intel Mac OS X 10_15_4
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("Macintosh", pieces[0]);
@@ -131,42 +147,33 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_LE(0, value);
   ASSERT_TRUE(base::StringToInt(pieces[2], &value));
   ASSERT_LE(0, value);
-#elif defined(USE_OZONE)
-  // X11; Linux x86_64
+#elif BUILDFLAG(IS_CHROMEOS)
   // X11; CrOS armv7l 4537.56.0
-  struct utsname unixinfo;
-  uname(&unixinfo);
-  std::string machine = unixinfo.machine;
-  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
-      sizeof(void*) == sizeof(int32_t)) {
-    machine = "i686 (x86_64)";
-  }
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
-#if defined(OS_CHROMEOS)
-  // X11; CrOS armv7l 4537.56.0
-  //      ^^
   ASSERT_EQ(3u, pieces.size());
   ASSERT_EQ("CrOS", pieces[0]);
-  ASSERT_EQ(machine, pieces[1]);
+  ASSERT_EQ(GetMachine(), pieces[1]);
   pieces = base::SplitStringUsingSubstr(pieces[2], ".", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   for (unsigned int i = 1; i < pieces.size(); ++i) {
     int value;
     ASSERT_TRUE(base::StringToInt(pieces[i], &value));
   }
-#else
+#elif BUILDFLAG(IS_LINUX)
   // X11; Linux x86_64
-  //      ^^
+  ASSERT_EQ(2u, pieces.size());
+  ASSERT_EQ("X11", pieces[0]);
+  pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
+                                        base::SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size());
   // This may not be Linux in all cases in the wild, but it is on the bots.
   ASSERT_EQ("Linux", pieces[0]);
-  ASSERT_EQ(machine, pieces[1]);
-#endif
-#elif defined(OS_ANDROID)
-  // Linux; Android 7.1.1; Samsung Chromebook 3
+  ASSERT_EQ(GetMachine(), pieces[1]);
+#elif BUILDFLAG(IS_ANDROID)
+  // Linux; Android 7.1.1; Pixel 2
   ASSERT_GE(3u, pieces.size());
   ASSERT_EQ("Linux", pieces[0]);
   std::string model;
@@ -190,11 +197,13 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
     else
       ASSERT_EQ("", model);
   }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // X11; Fuchsia
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   ASSERT_EQ("Fuchsia", pieces[1]);
+#else
+#error Unsupported platform
 #endif
 
   // Check that the version numbers match.
@@ -211,7 +220,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ResolveCoreWinRT() {
   return base::win::ResolveCoreWinRTDelayload() &&
          base::win::ScopedHString::ResolveCoreWinRTStringDelayload() &&
@@ -283,42 +292,62 @@ void VerifyWinPlatformVersion(std::string version) {
   EXPECT_FALSE(is_supported) << " expected major version " << major_version + 1
                              << " to not be supported.";
 }
-#endif  // defined(OS_WIN)
+
+void VerifyLegacyWinPlatformVersion(const std::string& version) {
+  switch (base::win::GetVersion()) {
+    case base::win::Version::WIN7:
+      EXPECT_EQ("0.1.0", version);
+      break;
+    case base::win::Version::WIN8:
+      EXPECT_EQ("0.2.0", version);
+      break;
+    case base::win::Version::WIN8_1:
+      EXPECT_EQ("0.3.0", version);
+      break;
+    default:
+      EXPECT_EQ("0.0.0", version);
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
+                          const blink::UserAgentBrandVersion brand_version) {
+  for (const auto& brand_list_entry : brand_list) {
+    if (brand_list_entry == brand_version)
+      return true;
+  }
+  return false;
+}
 
 }  // namespace
 
 class UserAgentUtilsTest : public testing::Test,
                            public testing::WithParamInterface<bool> {
  public:
-  void SetUp() override {
-    if (ForceMajorVersionTo100())
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kForceMajorVersion100InUserAgent);
-  }
-
-  bool ForceMajorVersionTo100() { return GetParam(); }
-
-  std::string M100VersionNumber() {
+  std::string MajorToMinorVersionNumber() {
     const base::Version version = version_info::GetVersion();
-    std::string m100_version("100");
-    // The rest of the version after the major version string is the same.
-    for (size_t i = 1; i < version.components().size(); ++i) {
-      m100_version.append(".");
-      m100_version.append(base::NumberToString(version.components()[i]));
+    std::string version_str;
+    const auto& components = version.components();
+    for (size_t i = 0; i < version.components().size(); ++i) {
+      if (i > 0)
+        version_str.append(".");
+      if (i == 0)
+        version_str.append("99");
+      else if (i == 1)
+        version_str.append(base::NumberToString(components[0]));
+      else
+        version_str.append(base::NumberToString(components[i]));
     }
-    return m100_version;
+    return version_str;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        UserAgentUtilsTest,
-                        /*force_major_version_to_M100*/ testing::Bool());
-
-TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
-#if defined(OS_ANDROID)
+TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
+#if BUILDFLAG(IS_ANDROID)
   const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -337,11 +366,11 @@ TEST_P(UserAgentUtilsTest, UserAgentStringOrdering) {
 #endif
 }
 
-TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
+TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Verify the correct user agent is returned when the UseMobileUserAgent
   // command line flag is present.
   const char* const kArguments[] = {"chrome"};
@@ -350,8 +379,7 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
   command_line->InitFromArgv(1, kArguments);
   const std::string major_version_number =
       version_info::GetMajorVersionNumber();
-  const char* const major_version =
-      ForceMajorVersionTo100() ? "100" : major_version_number.c_str();
+  const char* const major_version = major_version_number.c_str();
 
   // Verify the mobile user agent string is not returned when not using a mobile
   // user agent.
@@ -377,30 +405,107 @@ TEST_P(UserAgentUtilsTest, UserAgentStringReduced) {
                                  content::GetUnifiedPlatform().c_str(),
                                  major_version, device_compat.c_str()));
   }
+
+  // Verify that the reduced user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent}, {});
+  {
+    std::string buffer = GetReducedUserAgent();
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                content::GetUnifiedPlatform().c_str(), "99",
+                                device_compat.c_str()));
+  }
+
+  // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
+  // when it contradicts Blink feature status values.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  {
+    std::string buffer = GetReducedUserAgent(kForceDisabled);
+    std::string device_compat = "Mobile ";
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kAndroid,
+                                 content::GetUnifiedPlatform().c_str(),
+                                 major_version, device_compat.c_str()));
+  }
 #else
   {
     std::string buffer = GetUserAgent();
     EXPECT_EQ(buffer, base::StringPrintf(
                           content::frozen_user_agent_strings::kDesktop,
                           content::GetUnifiedPlatform().c_str(),
-                          ForceMajorVersionTo100()
-                              ? "100"
-                              : version_info::GetMajorVersionNumber().c_str()));
+                          version_info::GetMajorVersionNumber().c_str()));
+  }
+
+  // Verify that the reduced user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent}, {});
+  {
+    std::string buffer = GetReducedUserAgent();
+    EXPECT_EQ(buffer,
+              base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
+                                content::GetUnifiedPlatform().c_str(), "99"));
+  }
+
+  // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
+  // when it contradicts Blink feature status values.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  {
+    std::string buffer = GetReducedUserAgent(kForceDisabled);
+    EXPECT_EQ(buffer, base::StringPrintf(
+                          content::frozen_user_agent_strings::kDesktop,
+                          content::GetUnifiedPlatform().c_str(),
+                          version_info::GetMajorVersionNumber().c_str()));
   }
 #endif
 
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());
 }
 
-TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
+TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  // Verify that the full user agent string respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kFullUserAgent,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
+
+  // Verify that the full user agent string when both reduced and full UA
+  // feature enabled respects
+  // --force-major-version-to-minor
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kFullUserAgent, blink::features::kReduceUserAgent,
+       blink::features::kForceMajorVersionInMinorPositionInUserAgent},
+      {});
+  { EXPECT_EQ(GetUserAgent(), GetFullUserAgent()); }
+}
+
+TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();
 
-  const std::string major_version =
-      ForceMajorVersionTo100() ? "100" : version_info::GetMajorVersionNumber();
-
-  const std::string full_version = ForceMajorVersionTo100()
-                                       ? M100VersionNumber()
-                                       : version_info::GetVersionNumber();
+  const std::string major_version = version_info::GetMajorVersionNumber();
+  const std::string full_version = version_info::GetVersionNumber();
+  const std::string major_to_minor_full_version = MajorToMinorVersionNumber();
 
   // According to spec, Sec-CH-UA should contain what project the browser is
   // based on (i.e. Chromium in this case) as well as the actual product.
@@ -409,48 +514,85 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
 
   const blink::UserAgentBrandVersion chromium_brand_version = {"Chromium",
                                                                major_version};
+  const blink::UserAgentBrandVersion major_to_minor_chromium_brand_version = {
+      "Chromium", "99"};
   const blink::UserAgentBrandVersion product_brand_version = {
       version_info::GetProductName(), major_version};
-  bool contains_chromium_brand_version = false;
-  bool contains_product_brand_version = false;
+  const blink::UserAgentBrandVersion major_to_minor_product_brand_version = {
+      version_info::GetProductName(), "99"};
 
-  for (const auto& brand_version : metadata.brand_version_list) {
-    if (brand_version == chromium_brand_version) {
-      contains_chromium_brand_version = true;
-    }
-    if (brand_version == product_brand_version) {
-      contains_product_brand_version = true;
-    }
-  }
-
-  EXPECT_TRUE(contains_chromium_brand_version);
-  EXPECT_TRUE(contains_product_brand_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   chromium_brand_version));
+  EXPECT_TRUE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
 
   // verify full version list
   const blink::UserAgentBrandVersion chromium_brand_full_version = {
       "Chromium", full_version};
+  const blink::UserAgentBrandVersion
+      major_to_minor_chromium_brand_full_version = {
+          "Chromium", major_to_minor_full_version};
   const blink::UserAgentBrandVersion product_brand_full_version = {
       version_info::GetProductName(), full_version};
-  bool contains_chromium_brand_full_version = false;
-  bool contains_product_brand_full_version = false;
+  const blink::UserAgentBrandVersion major_to_minor_product_brand_full_version =
+      {version_info::GetProductName(), major_to_minor_full_version};
 
-  for (const auto& brand_version : metadata.brand_full_version_list) {
-    if (brand_version == chromium_brand_full_version) {
-      contains_chromium_brand_full_version = true;
-    }
-    if (brand_version == product_brand_full_version) {
-      contains_product_brand_full_version = true;
-    }
-  }
-
-  EXPECT_TRUE(contains_chromium_brand_full_version);
-  EXPECT_TRUE(contains_product_brand_full_version);
-
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   product_brand_full_version));
   EXPECT_EQ(metadata.full_version, full_version);
 
-#if defined(OS_WIN)
+  // Ensure ForceMajorVersionToMinorPosition is respected,
+  TestingPrefServiceSimple pref_service;
+
+  // ForceMajorVersionToMinorPosition: kForceDisabled
+  pref_service.registry()->RegisterIntegerPref(
+      kForceMajorVersionToMinorPosition, kForceDisabled);
+  metadata = GetUserAgentMetadata(&pref_service);
+  EXPECT_EQ(metadata.full_version, full_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   chromium_brand_version));
+  EXPECT_TRUE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   product_brand_full_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_version_list,
+                                    major_to_minor_chromium_brand_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_version_list,
+                                    major_to_minor_product_brand_version));
+  EXPECT_FALSE(
+      ContainsBrandVersion(metadata.brand_full_version_list,
+                           major_to_minor_chromium_brand_full_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                    major_to_minor_product_brand_full_version));
+
+  // ForceMajorVersionToMinorPosition: kForceEnabled
+  pref_service.SetInteger(kForceMajorVersionToMinorPosition, kForceEnabled);
+  metadata = GetUserAgentMetadata(&pref_service);
+  EXPECT_EQ(metadata.full_version, major_to_minor_full_version);
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   major_to_minor_chromium_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_version_list,
+                                   major_to_minor_product_brand_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   major_to_minor_chromium_brand_full_version));
+  EXPECT_TRUE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                   major_to_minor_product_brand_full_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_version_list,
+                                    chromium_brand_version));
+  EXPECT_FALSE(
+      ContainsBrandVersion(metadata.brand_version_list, product_brand_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                    chromium_brand_full_version));
+  EXPECT_FALSE(ContainsBrandVersion(metadata.brand_full_version_list,
+                                    product_brand_full_version));
+
+#if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10) {
-    EXPECT_EQ(metadata.platform_version, "0.0.0");
+    VerifyLegacyWinPlatformVersion(metadata.platform_version);
   } else {
     VerifyWinPlatformVersion(metadata.platform_version);
   }
@@ -464,7 +606,7 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.platform_version.find(";"), std::string::npos);
   // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
   // "macOS" by default
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(metadata.platform, "macOS");
 #else
   EXPECT_EQ(metadata.platform, version_info::GetOSType());
@@ -472,9 +614,10 @@ TEST_P(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.architecture, content::GetLowEntropyCpuArchitecture());
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
   EXPECT_EQ(metadata.bitness, content::GetLowEntropyCpuBitness());
+  EXPECT_EQ(metadata.wow64, content::IsWoW64());
 }
 
-TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
+TEST_F(UserAgentUtilsTest, GenerateBrandVersionList) {
   blink::UserAgentMetadata metadata;
 
   metadata.brand_version_list = GenerateBrandVersionList(
@@ -525,6 +668,9 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
                           "\"Chromium\";v=\"84.0.0.0\", ",
                           "\"Totally A Brand\";v=\"84.0.0.0\""}),
             brand_list_w_brand_fv);
+
+  // The old GREASE generation algorithm should not respond to experiment
+  // overrides.
   metadata.brand_version_list = GenerateBrandVersionList(
       84, absl::nullopt, "84", "Clean GREASE", absl::nullopt, true,
       blink::UserAgentBrandVersionType::kMajorVersion);
@@ -534,15 +680,13 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
   // 1. verify major version
   std::string brand_list_grease_override =
       metadata.SerializeBrandMajorVersionList();
-  EXPECT_EQ(R"("Clean GREASE";v="99", "Chromium";v="84")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")",
             brand_list_grease_override);
-  EXPECT_NE(brand_list, brand_list_grease_override);
   // 2. verify full version
   std::string brand_list_grease_override_fv =
       metadata.SerializeBrandFullVersionList();
-  EXPECT_EQ(R"("Clean GREASE";v="99.0.0.0", "Chromium";v="84.0.0.0")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99.0.0.0", "Chromium";v="84.0.0.0")",
             brand_list_grease_override_fv);
-  EXPECT_NE(brand_list_w_fv, brand_list_grease_override_fv);
 
   metadata.brand_version_list = GenerateBrandVersionList(
       84, absl::nullopt, "84", "Clean GREASE", "1024", true,
@@ -553,15 +697,13 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
   // 1. verify major version
   std::string brand_list_and_version_grease_override =
       metadata.SerializeBrandMajorVersionList();
-  EXPECT_EQ(R"("Clean GREASE";v="1024", "Chromium";v="84")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")",
             brand_list_and_version_grease_override);
-  EXPECT_NE(brand_list, brand_list_and_version_grease_override);
   // 2. verify full version
   std::string brand_list_and_version_grease_override_fv =
       metadata.SerializeBrandFullVersionList();
-  EXPECT_EQ(R"("Clean GREASE";v="1024.0.0.0", "Chromium";v="84.0.0.0")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99.0.0.0", "Chromium";v="84.0.0.0")",
             brand_list_and_version_grease_override_fv);
-  EXPECT_NE(brand_list_w_fv, brand_list_and_version_grease_override_fv);
 
   metadata.brand_version_list = GenerateBrandVersionList(
       84, absl::nullopt, "84", absl::nullopt, "1024", true,
@@ -572,15 +714,13 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
   // 1. verify major version
   std::string brand_version_grease_override =
       metadata.SerializeBrandMajorVersionList();
-  EXPECT_EQ(R"(" Not A;Brand";v="1024", "Chromium";v="84")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99", "Chromium";v="84")",
             brand_version_grease_override);
-  EXPECT_NE(brand_list, brand_version_grease_override);
   // 2. verify full version
   std::string brand_version_grease_override_fv =
       metadata.SerializeBrandFullVersionList();
-  EXPECT_EQ(R"(" Not A;Brand";v="1024.0.0.0", "Chromium";v="84.0.0.0")",
+  EXPECT_EQ(R"(" Not A;Brand";v="99.0.0.0", "Chromium";v="84.0.0.0")",
             brand_version_grease_override_fv);
-  EXPECT_NE(brand_list_w_fv, brand_version_grease_override_fv);
 
   // Should DCHECK on negative numbers
   EXPECT_DCHECK_DEATH(GenerateBrandVersionList(
@@ -591,7 +731,7 @@ TEST_P(UserAgentUtilsTest, GenerateBrandVersionList) {
       blink::UserAgentBrandVersionType::kFullVersion));
 }
 
-TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
+TEST_F(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Test to ensure the old algorithm is respected when the flag is not set.
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -610,41 +750,43 @@ TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
   EXPECT_EQ(greased_bv.brand, " Not A;Brand");
   EXPECT_EQ(greased_bv.version, "99.0.0.0");
 
+  // With the new algorithm disabled, we want to avoid experiment params
+  // ("WhatIsGrease", 1024) from taking an effect.
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, "WhatIsGrease", absl::nullopt, true,
       blink::UserAgentBrandVersionType::kMajorVersion);
-  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
   EXPECT_EQ(greased_bv.version, "99");
 
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, "WhatIsGrease", absl::nullopt, true,
       blink::UserAgentBrandVersionType::kFullVersion);
-  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
   EXPECT_EQ(greased_bv.version, "99.0.0.0");
 
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, absl::nullopt, "1024", true,
       blink::UserAgentBrandVersionType::kMajorVersion);
   EXPECT_EQ(greased_bv.brand, " Not A;Brand");
-  EXPECT_EQ(greased_bv.version, "1024");
+  EXPECT_EQ(greased_bv.version, "99");
 
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, absl::nullopt, "1024", true,
       blink::UserAgentBrandVersionType::kFullVersion);
   EXPECT_EQ(greased_bv.brand, " Not A;Brand");
-  EXPECT_EQ(greased_bv.version, "1024.0.0.0");
+  EXPECT_EQ(greased_bv.version, "99.0.0.0");
 
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, "WhatIsGrease", "1024", true,
       blink::UserAgentBrandVersionType::kMajorVersion);
-  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
-  EXPECT_EQ(greased_bv.version, "1024");
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
+  EXPECT_EQ(greased_bv.version, "99");
 
   greased_bv = GetGreasedUserAgentBrandVersion(
       permuted_order, 84, "WhatIsGrease", "1024", true,
       blink::UserAgentBrandVersionType::kFullVersion);
-  EXPECT_EQ(greased_bv.brand, "WhatIsGrease");
-  EXPECT_EQ(greased_bv.version, "1024.0.0.0");
+  EXPECT_EQ(greased_bv.brand, " Not A;Brand");
+  EXPECT_EQ(greased_bv.version, "99.0.0.0");
 
   // Test to ensure the new algorithm works and is still overridable.
   scoped_feature_list.Reset();
@@ -756,28 +898,68 @@ TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
   }
 }
 
-TEST_P(UserAgentUtilsTest, GetProduct) {
-  const std::string product = GetProduct();
+TEST_F(UserAgentUtilsTest, GetProduct) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent);
+
+  std::string product = GetProduct(/*allow_override=*/false);
   std::string major_version;
   EXPECT_TRUE(
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
-  if (ForceMajorVersionTo100())
-    EXPECT_EQ(major_version, "100");
-  else
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+
+  // Ensure the policy is ignored if allow_override is false
+  product = GetProduct(/*allow_override=*/false,
+                       /*force_major_to_minor=*/kForceEnabled);
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+
+  // Ensure policy is respected if ForceMajorToMinor is force enabled
+  product = GetProduct(/*allow_override=*/true,
+                       /*force_major_to_minor=*/kForceEnabled);
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, "99");
+
+  // Ensure policy is respected if ForcemajorToMinor is force disabled, even if
+  // the respective Blink feature is enabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kForceMajorVersionInMinorPositionInUserAgent);
+  product = GetProduct(/*allow_override=*/true,
+                       /*force_major_to_minor=*/kForceDisabled);
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 }
 
-TEST_P(UserAgentUtilsTest, GetUserAgent) {
+TEST_F(UserAgentUtilsTest, GetUserAgent) {
   const std::string ua = GetUserAgent();
   std::string major_version;
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
                                      &major_version, &minor_version));
-  if (ForceMajorVersionTo100())
-    EXPECT_EQ(major_version, "100");
-  else
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  EXPECT_NE(minor_version, "0.0.0");
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  // Minor version should contain the actual minor version number.
+  EXPECT_EQ(minor_version, "0");
 }
+
+class UserAgentUtilsMinorVersionTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (ForceMajorInMinorVersion())
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kForceMajorVersionInMinorPositionInUserAgent);
+  }
+
+  bool ForceMajorInMinorVersion() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 }  // namespace embedder_support

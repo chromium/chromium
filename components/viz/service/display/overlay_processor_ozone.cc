@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
@@ -140,18 +142,9 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
-void OverlayProcessorOzone::CheckOverlaySupport(
+void OverlayProcessorOzone::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* surfaces) {
-  // This number is depended on what type of strategies we have. Currently we
-  // only overlay one video.
-#if DCHECK_IS_ON()
-  // TODO(petermcneeley) : Reconsider this check in light of delegated
-  // compositing and multiple overlay work.
-  if (!features::IsDelegatedCompositingEnabled()) {
-    DCHECK_EQ(1U, surfaces->size());
-  }
-#endif
   auto full_size = surfaces->size();
   if (primary_plane)
     full_size += 1;
@@ -168,7 +161,7 @@ void OverlayProcessorOzone::CheckOverlaySupport(
       ConvertToOzoneOverlaySurface(*primary_plane, &(*ozone_surface_iterator));
       // TODO(crbug.com/1138568): Fuchsia claims support for presenting primary
       // plane as overlay, but does not provide a mailbox. Handle this case.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       if (shared_image_interface_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox,
@@ -250,6 +243,12 @@ void OverlayProcessorOzone::CheckOverlaySupport(
 gfx::Rect OverlayProcessorOzone::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& overlay) const {
   return ToEnclosedRect(overlay.display_rect);
+}
+
+void OverlayProcessorOzone::RegisterOverlayRequirement(bool requires_overlay) {
+  // This can be null in unit tests.
+  if (overlay_candidates_)
+    overlay_candidates_->RegisterOverlayRequirement(requires_overlay);
 }
 
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(

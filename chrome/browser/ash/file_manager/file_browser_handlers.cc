@@ -62,23 +62,6 @@ namespace file_manager {
 namespace file_browser_handlers {
 namespace {
 
-// Returns process id of the process the extension is running in.
-int ExtractProcessFromExtensionId(Profile* profile,
-                                  const std::string& extension_id) {
-  GURL extension_url =
-      Extension::GetBaseURLFromExtensionId(extension_id);
-  extensions::ProcessManager* manager =
-      extensions::ProcessManager::Get(profile);
-
-  scoped_refptr<SiteInstance> site_instance =
-      manager->GetSiteInstanceForURL(extension_url);
-  if (!site_instance || !site_instance->HasProcess())
-    return -1;
-  content::RenderProcessHost* process = site_instance->GetProcess();
-
-  return process->GetID();
-}
-
 // Finds a file browser handler that matches |action_id|. Returns NULL if not
 // found.
 const FileBrowserHandler* FindFileBrowserHandlerForActionId(
@@ -188,7 +171,6 @@ class FileBrowserHandlerExecutor {
   void SetupPermissionsAndDispatchEvent(
       std::unique_ptr<FileDefinitionList> file_definition_list,
       std::unique_ptr<EntryDefinitionList> entry_definition_list,
-      int handler_pid_in,
       std::unique_ptr<extensions::LazyContextTaskQueue::ContextInfo>
           context_info);
 
@@ -325,44 +307,42 @@ void FileBrowserHandlerExecutor::ExecuteFileActionsOnUIThread(
     return;
   }
 
-  int handler_pid = ExtractProcessFromExtensionId(profile_, extension_->id());
-  if (handler_pid <= 0 &&
-      !extensions::BackgroundInfo::HasLazyBackgroundPage(extension_.get())) {
-    ExecuteDoneOnUIThread(false, "No app running or with background page");
-    return;
-  }
+  extensions::ProcessManager* manager =
+      extensions::ProcessManager::Get(profile_);
+  extensions::ExtensionHost* extension_host =
+      manager->GetBackgroundHostForExtension(extension_->id());
 
-  if (handler_pid > 0) {
-    SetupPermissionsAndDispatchEvent(std::move(file_definition_list),
-                                     std::move(entry_definition_list),
-                                     handler_pid, nullptr);
-  } else {
-    // We have to wake the handler background page before we proceed.
-    const extensions::LazyContextId context_id(profile_, extension_->id());
-    extensions::LazyContextTaskQueue* queue = context_id.GetTaskQueue();
-    if (!queue->ShouldEnqueueTask(profile_, extension_.get())) {
-      ExecuteDoneOnUIThread(false, "Could not queue task for app");
-      return;
-    }
-    queue->AddPendingTask(
+  const extensions::LazyContextId context_id(profile_, extension_->id());
+  extensions::LazyContextTaskQueue* task_queue = context_id.GetTaskQueue();
+
+  if (task_queue->ShouldEnqueueTask(profile_, extension_.get())) {
+    task_queue->AddPendingTask(
         context_id,
         base::BindOnce(
             &FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent,
             weak_ptr_factory_.GetWeakPtr(), std::move(file_definition_list),
-            std::move(entry_definition_list), handler_pid));
+            std::move(entry_definition_list)));
+  } else if (extension_host) {
+    SetupPermissionsAndDispatchEvent(
+        std::move(file_definition_list), std::move(entry_definition_list),
+        std::make_unique<extensions::LazyContextTaskQueue::ContextInfo>(
+            extension_host));
+  } else {
+    ExecuteDoneOnUIThread(false, "No background page available");
   }
 }
 
 void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
     std::unique_ptr<FileDefinitionList> file_definition_list,
     std::unique_ptr<EntryDefinitionList> entry_definition_list,
-    int handler_pid_in,
     std::unique_ptr<extensions::LazyContextTaskQueue::ContextInfo>
         context_info) {
-  int handler_pid = context_info != nullptr
-                        ? context_info->render_process_host->GetID()
-                        : handler_pid_in;
+  if (!context_info) {
+    ExecuteDoneOnUIThread(false, "Failed to start app");
+    return;
+  }
 
+  int handler_pid = context_info->render_process_host->GetID();
   if (handler_pid <= 0) {
     ExecuteDoneOnUIThread(false, "No app available");
     return;
@@ -390,8 +370,8 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   event_args->Append(std::move(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::FILE_BROWSER_HANDLER_ON_EXECUTE,
-      "fileBrowserHandler.onExecute", std::move(*event_args).TakeList(),
-      profile_);
+      "fileBrowserHandler.onExecute",
+      std::move(*event_args).TakeListDeprecated(), profile_);
   router->DispatchEventToExtension(extension_->id(), std::move(event));
 
   ExecuteDoneOnUIThread(true, "");

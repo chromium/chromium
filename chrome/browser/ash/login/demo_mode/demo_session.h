@@ -15,12 +15,11 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
 
 class PrefRegistrySimple;
 
@@ -34,9 +33,9 @@ class DemoResources;
 // Tracks global demo session state, such as whether the demo session has
 // started and the state of demo mode resources.
 class DemoSession : public session_manager::SessionManagerObserver,
-                    public extensions::ExtensionRegistryObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
-                    public extensions::AppWindowRegistry::Observer {
+                    public extensions::AppWindowRegistry::Observer,
+                    public apps::AppRegistryCache::Observer {
  public:
   // Type of demo mode configuration.
   // Warning: DemoModeConfig is stored in local state. Existing entries should
@@ -77,8 +76,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // TODO(crbug.com/983359): Sort these by country name in the current locale
   // instead of using this hard-coded US-centric order.
   static constexpr char kSupportedCountries[][3] = {
-      "us", "be", "ca", "dk", "fi", "fr", "de", "ie",
-      "it", "jp", "lu", "nl", "no", "es", "se", "gb"};
+      "US", "BE", "CA", "DK", "FI", "FR", "DE", "IE",
+      "IT", "JP", "LU", "NL", "NO", "ES", "SE", "GB"};
+
+  static constexpr char kCountryNotSelectedId[] = "N/A";
 
   DemoSession(const DemoSession&) = delete;
   DemoSession& operator=(const DemoSession&) = delete;
@@ -107,10 +108,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // and requests load of demo session resources.
   // Creates global DemoSession instance if required.
   static DemoSession* StartIfInDemoMode();
-
-  // Requests load of demo session resources, without marking the demo session
-  // as started. Creates global DemoSession instance if required.
-  static void PreloadOfflineResourcesIfInDemoMode();
 
   // Deletes the global DemoSession instance if it was previously created.
   static void ShutDownIfInitialized();
@@ -147,9 +144,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Records the launch of an app in Demo mode from the specified source.
   static void RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source);
 
-  // Ensures that the load of offline demo session resources is requested.
-  // `load_callback` will be run once the offline resource load finishes.
-  void EnsureOfflineResourcesLoaded(base::OnceClosure load_callback);
+  // Ensures that the load of demo session resources is requested.
+  // `load_callback` will be run once the resource load finishes.
+  void EnsureResourcesLoaded(base::OnceClosure load_callback);
 
   // Returns false if the Chrome app or ARC++ package, which is normally pinned
   // by policy, should actually not be force-pinned because the device is
@@ -192,7 +189,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // success.
   void LoadAndLaunchHighlightsApp();
 
-  // Installs the CRX file from an update URL. Observes `ExtensionRegistry` to
+  // Installs the CRX file from an update URL. Observes `AppRegistryCache` to
   // launch the app upon installation.
   void InstallAppFromUpdateUrl(const std::string& id);
 
@@ -210,10 +207,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
-  // extensions::ExtensionRegistryObserver:
-  void OnExtensionInstalled(content::BrowserContext* browser_context,
-                            const extensions::Extension* extension,
-                            bool is_update) override;
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   // Whether the device was offline-enrolled into demo mode, i.e. enrolled using
   // pre-built policies. Offline enrolled demo sessions do not have working
@@ -233,13 +230,13 @@ class DemoSession : public session_manager::SessionManagerObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
-                                     extensions::ExtensionRegistryObserver>
-      extension_registry_observations_{this};
-
   base::ScopedMultiSourceObservation<extensions::AppWindowRegistry,
                                      extensions::AppWindowRegistry::Observer>
       app_window_registry_observations_{this};
+
+  base::ScopedMultiSourceObservation<apps::AppRegistryCache,
+                                     apps::AppRegistryCache::Observer>
+      app_registry_cache_observation_{this};
 
   scoped_refptr<DemoExtensionsExternalLoader> extensions_external_loader_;
 

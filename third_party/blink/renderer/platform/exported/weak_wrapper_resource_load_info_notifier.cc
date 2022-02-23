@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 
+#include "build/build_config.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
@@ -24,24 +25,14 @@ void WeakWrapperResourceLoadInfoNotifier::NotifyResourceRedirectReceived(
       redirect_info, std::move(redirect_response));
 }
 
-#if defined(OS_ANDROID)
-void WeakWrapperResourceLoadInfoNotifier::
-    NotifyUpdateUserGestureCarryoverInfo() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  resource_load_info_notifier_->NotifyUpdateUserGestureCarryoverInfo();
-}
-#endif
-
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceResponseReceived(
     int64_t request_id,
     const GURL& final_url,
     network::mojom::URLResponseHeadPtr response_head,
-    network::mojom::RequestDestination request_destination,
-    int32_t previews_state) {
+    network::mojom::RequestDestination request_destination) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   resource_load_info_notifier_->NotifyResourceResponseReceived(
-      request_id, final_url, std::move(response_head), request_destination,
-      previews_state);
+      request_id, final_url, std::move(response_head), request_destination);
 }
 
 void WeakWrapperResourceLoadInfoNotifier::NotifyResourceTransferSizeUpdated(

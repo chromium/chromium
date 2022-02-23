@@ -35,9 +35,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -92,6 +92,7 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
     }
 
     private final Context mContext;
+    private final AssistantInfoPageUtil mInfoPageUtil;
 
     private final int mImageWidth;
     private final int mImageHeight;
@@ -104,8 +105,10 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
     private List<Callback<Integer>> mPlaceholdersColorCallbacks = new ArrayList<>();
     private ImageFetcher mImageFetcher;
 
-    AssistantDetailsAdapter(Context context, ImageFetcher imageFetcher) {
+    AssistantDetailsAdapter(
+            Context context, AssistantInfoPageUtil infoPageUtil, ImageFetcher imageFetcher) {
         mContext = context;
+        mInfoPageUtil = infoPageUtil;
         mImageWidth = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_details_image_size);
         mImageHeight = context.getResources().getDimensionPixelSize(
@@ -441,7 +444,7 @@ class AssistantDetailsAdapter extends RecyclerView.Adapter<AssistantDetailsAdapt
                     String presentUrl = clickthroughData.getClickthroughUrl().isEmpty()
                             ? imageUrl
                             : clickthroughData.getClickthroughUrl();
-                    CustomTabActivity.showInfoPage(context.getApplicationContext(), presentUrl);
+                    mInfoPageUtil.showInfoPage(context.getApplicationContext(), presentUrl);
                 }
             }
 

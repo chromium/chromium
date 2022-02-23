@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -39,7 +39,7 @@ bool IsAccountManaged(const Profile* profile) {
 
 bool IsArcDisabledForEnterprise() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnterpriseDisableArc);
+      ash::switches::kEnterpriseDisableArc);
 }
 
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
@@ -55,7 +55,7 @@ std::set<std::string> GetRequestedPackagesFromArcPolicy(
     return {};
 
   std::set<std::string> requested_packages;
-  for (const auto& package : packages->GetList()) {
+  for (const auto& package : packages->GetListDeprecated()) {
     if (!package.is_dict())
       continue;
     const base::Value* const install_type =

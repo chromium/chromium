@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
@@ -75,6 +74,8 @@ class ChromeVirtualKeyboardDelegate
   void OnClipboardHistoryItemListAddedOrRemoved() override;
   void OnClipboardHistoryItemsUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
+
+  void OnGetHistoryValuesAfterItemsUpdated(base::Value updated_items);
 
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);

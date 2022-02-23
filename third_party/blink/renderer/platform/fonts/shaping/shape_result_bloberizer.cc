@@ -240,7 +240,7 @@ inline bool ShapeResultBloberizer::IsSkipInkException(
 inline void ShapeResultBloberizer::AddEmphasisMark(
     const GlyphData& emphasis_data,
     CanvasRotationInVertical canvas_rotation,
-    FloatPoint glyph_center,
+    gfx::PointF glyph_center,
     float mid_glyph_offset) {
   const SimpleFontData* emphasis_font_data = emphasis_data.font_data;
   DCHECK(emphasis_font_data);
@@ -255,7 +255,8 @@ inline void ShapeResultBloberizer::AddEmphasisMark(
         0);
   } else {
     Add(emphasis_data.glyph, emphasis_font_data, emphasis_data.canvas_rotation,
-        FloatPoint(-glyph_center.x(), mid_glyph_offset - glyph_center.y()), 0);
+        gfx::Vector2dF(-glyph_center.x(), mid_glyph_offset - glyph_center.y()),
+        0);
   }
 }
 
@@ -276,7 +277,7 @@ class GlyphCallbackContext {
     void* context,
     unsigned character_index,
     Glyph glyph,
-    FloatSize glyph_offset,
+    gfx::Vector2dF glyph_offset,
     float advance,
     bool is_horizontal,
     CanvasRotationInVertical rotation,
@@ -288,8 +289,8 @@ class GlyphCallbackContext {
 
   if (bloberizer->IsSkipInkException(text, character_index))
     return;
-  FloatPoint start_offset =
-      is_horizontal ? FloatPoint(advance, 0) : FloatPoint(0, advance);
+  gfx::Vector2dF start_offset =
+      is_horizontal ? gfx::Vector2dF(advance, 0) : gfx::Vector2dF(0, advance);
   bloberizer->Add(glyph, font_data, rotation, start_offset + glyph_offset,
                   character_index);
 }
@@ -298,17 +299,17 @@ class GlyphCallbackContext {
     void* context,
     unsigned character_index,
     Glyph glyph,
-    FloatSize glyph_offset,
+    gfx::Vector2dF glyph_offset,
     float advance,
     bool is_horizontal,
     CanvasRotationInVertical canvas_rotation,
     const SimpleFontData* font_data) {
   ShapeResultBloberizer* bloberizer =
       static_cast<ShapeResultBloberizer*>(context);
-  DCHECK(!glyph_offset.height());
+  DCHECK(!glyph_offset.y());
   DCHECK(is_horizontal);
-  bloberizer->Add(glyph, font_data, canvas_rotation,
-                  advance + glyph_offset.width(), character_index);
+  bloberizer->Add(glyph, font_data, canvas_rotation, advance + glyph_offset.x(),
+                  character_index);
 }
 
 float ShapeResultBloberizer::FillGlyphsForResult(const ShapeResult* result,
@@ -334,7 +335,7 @@ class ClusterCallbackContext {
   ShapeResultBloberizer* bloberizer;
   const StringView& text;
   const GlyphData& emphasis_data;
-  FloatPoint glyph_center;
+  gfx::PointF glyph_center;
 };
 }  // namespace
 
@@ -350,7 +351,7 @@ class ClusterCallbackContext {
   ShapeResultBloberizer* bloberizer = parsed_context->bloberizer;
   const StringView& text = parsed_context->text;
   const GlyphData& emphasis_data = parsed_context->emphasis_data;
-  FloatPoint glyph_center = parsed_context->glyph_center;
+  gfx::PointF glyph_center = parsed_context->glyph_center;
 
   if (text.Is8Bit()) {
     if (Character::CanReceiveTextEmphasis(text[character_index])) {
@@ -384,7 +385,7 @@ class ClusterStarts {
   static void Accumulate(void* context,
                          unsigned character_index,
                          Glyph,
-                         FloatSize,
+                         gfx::Vector2dF,
                          float,
                          bool,
                          CanvasRotationInVertical,
@@ -544,7 +545,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
     : ShapeResultBloberizer(font_description,
                             device_scale_factor,
                             Type::kNormal) {
-  FloatPoint glyph_center =
+  gfx::PointF glyph_center =
       emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
 
   float advance = 0;
@@ -589,7 +590,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
     : ShapeResultBloberizer(font_description,
                             device_scale_factor,
                             Type::kNormal) {
-  FloatPoint glyph_center =
+  gfx::PointF glyph_center =
       emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
   ClusterCallbackContext context = {this, text, emphasis, glyph_center};
   float initial_advance = 0;

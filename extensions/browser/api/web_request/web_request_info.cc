@@ -144,8 +144,10 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
     }
   }
 
-  if (!some_succeeded)
-    request_body_data->SetString(keys::kRequestBodyErrorKey, "Unknown error.");
+  if (!some_succeeded) {
+    request_body_data->SetStringKey(keys::kRequestBodyErrorKey,
+                                    "Unknown error.");
+  }
 
   return request_body_data;
 }
@@ -181,7 +183,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
       ukm_source_id(ukm_source_id) {
   web_request_type = ToWebRequestResourceType(request, is_download);
 
-  DCHECK_EQ(is_navigation_request, navigation_id.has_value());
+  DCHECK_EQ(is_navigation_request, this->navigation_id.has_value());
 
   InitializeWebViewAndFrameData(navigation_ui_data.get());
 

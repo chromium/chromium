@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +116,7 @@ class StatusBubbleViews::StatusViewAnimation
   // gfx::AnimationDelegate:
   void AnimationEnded(const Animation* animation) override;
 
-  StatusView* status_view_;
+  raw_ptr<StatusView> status_view_;
 
   // Start and end opacities for the current transition - note that as a
   // fade-in can easily turn into a fade out, opacity_start_ is sometimes
@@ -218,7 +219,7 @@ class StatusBubbleViews::StatusView : public views::View {
   std::unique_ptr<StatusViewAnimation> animation_;
 
   // The status bubble that manages the popup widget and this view.
-  StatusBubbleViews* status_bubble_;
+  raw_ptr<StatusBubbleViews> status_bubble_;
 
   // The currently-displayed text.
   views::Label* text_;
@@ -306,8 +307,9 @@ void StatusView::HideInstantly() {
   destroy_popup_timer_.Stop();
   // This isn't done in the constructor as tests may change the task runner
   // after the fact.
-  destroy_popup_timer_.SetTaskRunner(status_bubble_->task_runner_);
-  destroy_popup_timer_.Start(FROM_HERE, kDestroyPopupDelay, status_bubble_,
+  destroy_popup_timer_.SetTaskRunner(status_bubble_->task_runner_.get());
+  destroy_popup_timer_.Start(FROM_HERE, kDestroyPopupDelay,
+                             status_bubble_.get(),
                              &StatusBubbleViews::DestroyPopup);
 }
 
@@ -460,7 +462,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
     round_corner(gfx::RRectF::Corner::kLowerRight);
     round_corner(gfx::RRectF::Corner::kLowerLeft);
   } else {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Mac's window has rounded corners, but the corner radius might be
     // different on different versions. Status bubble will use its own round
     // corner on Mac when there is no download shelf beneath.
@@ -619,10 +621,10 @@ class StatusBubbleViews::StatusViewExpander
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // The status bubble that manages the popup widget and this object.
-  StatusBubbleViews* status_bubble_;
+  raw_ptr<StatusBubbleViews> status_bubble_;
 
   // Change the bounds and text of this view.
-  StatusView* status_view_;
+  raw_ptr<StatusView> status_view_;
 
   // Text elided (if needed) to fit maximum status bar width.
   std::u16string expanded_text_;
@@ -691,7 +693,7 @@ void StatusBubbleViews::InitPopup() {
     popup_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread blocking issue during command buffer creation. We can
     // revert this change once http://crbug.com/125248 is fixed.
@@ -715,7 +717,7 @@ void StatusBubbleViews::InitPopup() {
     popup_->SetOpacity(0.f);
     view_ = popup_->SetContentsView(std::make_unique<StatusView>(this));
     expand_view_ = std::make_unique<StatusViewExpander>(this, view_);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Stack the popup above the base widget and below higher z-order windows.
     // This is unnecessary and even detrimental on Mac, see CreateBubbleWidget.
     popup_->StackAboveWidget(frame);

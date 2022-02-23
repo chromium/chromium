@@ -243,9 +243,8 @@ class FileSystemOperation {
   // set to the copied file size.
   using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
-  // The possible options for copy or move operations.
-  // Some combinations might not work (e.g. kPreserveLastModified and
-  // kPreserveDestinationPermissions on Mac).
+  // The possible options for copy or move operations. Used as an EnumSet to
+  // allow multiple options to be specified.
   enum class CopyOrMoveOption {
     // Preserves last modified time if possible. If the operation to update
     // last modified time is not supported on the file system for the
@@ -263,8 +262,20 @@ class FileSystemOperation {
     // implementation.
     kForceCrossFilesystem,
 
+    // Removes copied files that result in an error (potentially a
+    // cancellation), as these files are potentially partial/corrupted.
+    // Directories are not removed recursively, as it can lead to data loss
+    // (e.g. user changing the content of the destination folder during a copy
+    // or a move). Therefore, all successfully copied entries are preserved.
+    // The removal is best-effort: depending on the origin of the error,
+    // removing the destination file can fail.
+    // This option can impact cross-filesystem moves since they are implemented
+    // as copy + delete (only the copy step is impacted), but not
+    // same-filesystem moves where the file paths are just renamed.
+    kRemovePartiallyCopiedFilesOnError,
+
     kFirst = kPreserveLastModified,
-    kLast = kPreserveDestinationPermissions
+    kLast = kRemovePartiallyCopiedFilesOnError
   };
 
   using CopyOrMoveOptionSet = base::EnumSet<CopyOrMoveOption,

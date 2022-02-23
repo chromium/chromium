@@ -40,6 +40,8 @@ extern NSString* const kOverscrollActionsDidEnd;
 // Called when an action has been triggered.
 // The action index holds the current triggered action which are numbered left
 // to right.
+// TODO(crbug.com/1272486) : Separate action handling for overscroll from UI
+// management.
 - (void)overscrollActionsController:(OverscrollActionsController*)controller
                    didTriggerAction:(OverscrollAction)action;
 // Should return true when the delegate wants to enable the overscroll actions.
@@ -58,6 +60,10 @@ extern NSString* const kOverscrollActionsDidEnd;
     (OverscrollActionsController*)controller;
 // Called to retrieve the current height of the header.
 - (CGFloat)headerHeightForOverscrollActionsController:
+    (OverscrollActionsController*)controller;
+// Called to retrieve the initial content offset for the scrollview because
+// some scrollviews don't start at offset 0.
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
     (OverscrollActionsController*)controller;
 // The fullscreen controller, if any, the delegate makes available for
 // overscroll. The deleagate may return nullptr if fullscreen isn't supported.

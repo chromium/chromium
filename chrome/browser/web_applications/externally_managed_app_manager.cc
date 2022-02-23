@@ -13,15 +13,30 @@
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/install_result_code.h"
 
 namespace web_app {
 
+ExternallyManagedAppManager::InstallResult::InstallResult() = default;
+
+ExternallyManagedAppManager::InstallResult::InstallResult(
+    webapps::InstallResultCode code,
+    absl::optional<AppId> app_id,
+    bool did_uninstall_and_replace)
+    : code(code),
+      app_id(std::move(app_id)),
+      did_uninstall_and_replace(did_uninstall_and_replace) {}
+
+ExternallyManagedAppManager::InstallResult::InstallResult(
+    const InstallResult&) = default;
+
+ExternallyManagedAppManager::InstallResult::~InstallResult() = default;
+
 bool ExternallyManagedAppManager::InstallResult::operator==(
     const InstallResult& other) const {
-  return std::tie(code, did_uninstall_and_replace) ==
-         std::tie(other.code, other.did_uninstall_and_replace);
+  return std::tie(code, app_id, did_uninstall_and_replace) ==
+         std::tie(other.code, other.app_id, other.did_uninstall_and_replace);
 }
 
 ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
@@ -51,12 +66,10 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 
 void ExternallyManagedAppManager::SetSubsystems(
     WebAppRegistrar* registrar,
-    OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
     WebAppInstallManager* install_manager) {
   registrar_ = registrar;
-  os_integration_manager_ = os_integration_manager;
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   install_manager_ = install_manager;

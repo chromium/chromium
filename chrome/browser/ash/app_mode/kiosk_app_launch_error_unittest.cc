@@ -6,17 +6,17 @@
 
 #include <string>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
-using ::chromeos::AuthFailure;
+using ::ash::AuthFailure;
 using ::chromeos::KioskAppLaunchError;
 
 namespace {
@@ -28,7 +28,7 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Get Kiosk dictionary value. It is replaced after each update.
-const base::DictionaryValue* GetKioskDictionary() {
+const base::Value* GetKioskDictionary() {
   return g_browser_process->local_state()->GetDictionary(
       KioskAppManager::kKioskDictionaryName);
 }
@@ -103,9 +103,11 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kCount);
 
   // The launch error can be retrieved.
-  int out_error;
-  EXPECT_TRUE(GetKioskDictionary()->GetInteger(kKeyLaunchError, &out_error));
-  EXPECT_EQ(out_error, static_cast<int>(KioskAppLaunchError::Error::kCount));
+  absl::optional<int> out_error =
+      GetKioskDictionary()->FindIntKey(kKeyLaunchError);
+  EXPECT_TRUE(out_error.has_value());
+  EXPECT_EQ(out_error.value(),
+            static_cast<int>(KioskAppLaunchError::Error::kCount));
   EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kCount);
 
   // The launch error is cleaned up after clear operation.
@@ -121,10 +123,10 @@ TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
 
   // The cryptohome failure can be retrieved.
-  int out_error;
-  EXPECT_TRUE(
-      GetKioskDictionary()->GetInteger(kKeyCryptohomeFailure, &out_error));
-  EXPECT_EQ(out_error, auth_failure.reason());
+  absl::optional<int> out_error =
+      GetKioskDictionary()->FindIntKey(kKeyCryptohomeFailure);
+  EXPECT_TRUE(out_error.has_value());
+  EXPECT_EQ(out_error.value(), auth_failure.reason());
 
   // The cryptohome failure is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();

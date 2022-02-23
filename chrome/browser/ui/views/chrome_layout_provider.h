@@ -76,6 +76,11 @@ enum ChromeDistanceMetric {
   // Vertical padding at the top and bottom of the an omnibox match row for two
   // line layout.
   DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING,
+  // Width and Height of a vector icon in the side panel header.
+  DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE,
+  // Horizontal right margin for separating side panel header border from close
+  // button.
+  DISTANCE_SIDE_PANEL_HEADER_RIGHT_MARGIN
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

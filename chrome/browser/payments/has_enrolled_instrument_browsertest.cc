@@ -2,29 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "chrome/test/payments/personal_data_manager_test_util.h"
-#include "components/payments/core/features.h"
-#include "components/payments/core/journey_logger.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 namespace {
 
-class HasEnrolledInstrumentTest : public PaymentRequestPlatformBrowserTestBase {
+class HasEnrolledInstrumentBaseTest
+    : public PaymentRequestPlatformBrowserTestBase {
  public:
-  HasEnrolledInstrumentTest() = default;
+  HasEnrolledInstrumentBaseTest(const HasEnrolledInstrumentBaseTest&) = delete;
+  HasEnrolledInstrumentBaseTest& operator=(
+      const HasEnrolledInstrumentBaseTest&) = delete;
 
-  HasEnrolledInstrumentTest(const HasEnrolledInstrumentTest&) = delete;
-  HasEnrolledInstrumentTest& operator=(const HasEnrolledInstrumentTest&) =
-      delete;
-
-  ~HasEnrolledInstrumentTest() override = default;
+  ~HasEnrolledInstrumentBaseTest() override = default;
 
   void SetUpOnMainThread() override {
     PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
@@ -33,31 +28,57 @@ class HasEnrolledInstrumentTest : public PaymentRequestPlatformBrowserTestBase {
 
   // Helper function to test that all variations of hasEnrolledInstrument()
   // returns |expected|.
-  void ExpectHasEnrolledInstrumentIs(bool expected) {
-    EXPECT_EQ(expected, content::EvalJs(GetActiveWebContents(),
-                                        "hasEnrolledInstrument()"));
-    EXPECT_EQ(expected,
-              content::EvalJs(GetActiveWebContents(),
-                              "hasEnrolledInstrument({requestShipping:true})"));
+  void ExpectHasEnrolledInstrumentIs(
+      bool expected,
+      const std::string& payment_method = "basic-card") {
     EXPECT_EQ(expected, content::EvalJs(
                             GetActiveWebContents(),
-                            "hasEnrolledInstrument({requestPayerEmail:true})"));
+                            content::JsReplace("hasEnrolledInstrument({}, $1)",
+                                               payment_method)));
+    EXPECT_EQ(
+        expected,
+        content::EvalJs(GetActiveWebContents(),
+                        content::JsReplace(
+                            "hasEnrolledInstrument({requestShipping:true}, $1)",
+                            payment_method)));
+    EXPECT_EQ(expected,
+              content::EvalJs(
+                  GetActiveWebContents(),
+                  content::JsReplace(
+                      "hasEnrolledInstrument({requestPayerEmail:true}, $1)",
+                      payment_method)));
   }
 
- private:
+ protected:
+  HasEnrolledInstrumentBaseTest() = default;
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, NoCard) {
+class HasEnrolledInstrumentBasicCardTest
+    : public HasEnrolledInstrumentBaseTest {
+ public:
+  HasEnrolledInstrumentBasicCardTest() {
+    feature_list_.InitAndEnableFeature(features::kPaymentRequestBasicCard);
+  }
+
+  HasEnrolledInstrumentBasicCardTest(
+      const HasEnrolledInstrumentBasicCardTest&) = delete;
+  HasEnrolledInstrumentBasicCardTest& operator=(
+      const HasEnrolledInstrumentBasicCardTest&) = delete;
+
+  ~HasEnrolledInstrumentBasicCardTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest, NoCard) {
   ExpectHasEnrolledInstrumentIs(false);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, NoBillingAddress) {
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest, NoBillingAddress) {
   AddCreditCard(autofill::test::GetCreditCard());
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest,
                        HaveShippingNoBillingAddress) {
   CreateAndAddAutofillProfile();
   AddCreditCard(autofill::test::GetCreditCard());
@@ -65,14 +86,14 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest,
                        HaveShippingAndBillingAddress) {
   CreateAndAddCreditCardForProfile(CreateAndAddAutofillProfile());
 
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, InvalidCardNumber) {
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest, InvalidCardNumber) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   AddAutofillProfile(address);
   autofill::CreditCard card = CreatCreditCardForProfile(address);
@@ -83,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, InvalidCardNumber) {
   ExpectHasEnrolledInstrumentIs(false);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, ExpiredCard) {
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest, ExpiredCard) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   AddAutofillProfile(address);
   autofill::CreditCard card = CreatCreditCardForProfile(address);
@@ -95,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, ExpiredCard) {
 
 // TODO(https://crbug.com/994799): Unify autofill data validation and returned
 // data across platforms.
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest,
                        HaveNoNameShippingAndBillingAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::NAME_FIRST, std::u16string());
@@ -113,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest,
                        HaveNoStreetShippingAndBillingAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::ADDRESS_HOME_STREET_ADDRESS,
@@ -124,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest,
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, NoEmailAddress) {
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest, NoEmailAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
                      std::u16string());
@@ -134,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, NoEmailAddress) {
   ExpectHasEnrolledInstrumentIs(true);
 }
 
-IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, InvalidEmailAddress) {
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentBasicCardTest,
+                       InvalidEmailAddress) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   address.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
                      u"this-is-not-a-valid-email-address");
@@ -142,6 +164,43 @@ IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentTest, InvalidEmailAddress) {
   CreateAndAddCreditCardForProfile(address);
 
   ExpectHasEnrolledInstrumentIs(true);
+}
+
+class HasEnrolledInstrumentPaymentHandlerTest
+    : public HasEnrolledInstrumentBaseTest {
+ public:
+  HasEnrolledInstrumentPaymentHandlerTest() {
+    feature_list_.InitAndDisableFeature(features::kPaymentRequestBasicCard);
+  }
+
+  HasEnrolledInstrumentPaymentHandlerTest(
+      const HasEnrolledInstrumentPaymentHandlerTest&) = delete;
+  HasEnrolledInstrumentPaymentHandlerTest& operator=(
+      const HasEnrolledInstrumentPaymentHandlerTest&) = delete;
+
+  ~HasEnrolledInstrumentPaymentHandlerTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentPaymentHandlerTest,
+                       FalseWithoutPaymentHandler) {
+  ExpectHasEnrolledInstrumentIs(false);
+}
+
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentPaymentHandlerTest,
+                       FalseWithPaymentHandlerAvailableToInstallJustInTime) {
+  std::string payment_method =
+      https_server()->GetURL("nickpay.com", "/nickpay.com/pay").spec();
+
+  ExpectHasEnrolledInstrumentIs(false, payment_method);
+}
+
+IN_PROC_BROWSER_TEST_F(HasEnrolledInstrumentPaymentHandlerTest,
+                       TrueWithInstalledPaymentHandler) {
+  std::string payment_method;
+  InstallPaymentApp("nickpay.com", "/nickpay.com/app.js", &payment_method);
+  NavigateTo("/has_enrolled_instrument.html");
+
+  ExpectHasEnrolledInstrumentIs(true, payment_method);
 }
 
 }  // namespace

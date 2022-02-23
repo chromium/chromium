@@ -20,6 +20,12 @@
 
 namespace blink {
 
+enum class RunState {
+  kRunning = 0,
+  kStopped,
+  kSystemPermissionsError,
+};
+
 // VideoCapturerSource is an interface representing the source for captured
 // video.  An implementation will periodically call the frame callback with new
 // video frames.
@@ -27,7 +33,7 @@ class PLATFORM_EXPORT VideoCapturerSource {
  public:
   virtual ~VideoCapturerSource();
 
-  using RunningCallback = base::RepeatingCallback<void(bool)>;
+  using RunningCallback = base::RepeatingCallback<void(RunState)>;
 
   // Returns formats that are preferred and can currently be used. May be empty
   // if no formats are available or known.
@@ -84,14 +90,6 @@ class PLATFORM_EXPORT VideoCapturerSource {
   // Note: This should only be called after StartCapture() and before
   // StopCapture(). Otherwise, its behavior is undefined.
   virtual void Resume() {}
-
-  // Start/stop cropping a video track.
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
-  // The callback reports success/failure.
-  virtual void Crop(
-      const base::Token& crop_id,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {}
 
   // Stops capturing frames and clears all callbacks including the
   // SupportedFormatsCallback callback. Note that queued frame callbacks

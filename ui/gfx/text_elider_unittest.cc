@@ -259,7 +259,7 @@ static void CheckCodeUnitPairs(const std::u16string& text,
 // Test that both both UTF-16 surrogate pairs and combining character sequences
 // do not get split by ElideText.
 TEST(TextEliderTest, ElideTextAtomicSequences) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Needed to bypass DCHECK in GetFallbackFont.
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
@@ -342,7 +342,7 @@ TEST(TextEliderTest, ElideTextLongStrings) {
   std::u16string long_string_middle(
       data_scheme + std::u16string(number_of_as - number_of_trailing_as, 'a') +
       u"…" + std::u16string(number_of_trailing_as, 'a'));
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   long_string_middle += u"…";
 #endif
 
@@ -369,7 +369,7 @@ TEST(TextEliderTest, ElideTextLongStrings) {
 
   std::u16string long_string_beginning(u"…" +
                                        std::u16string(number_of_as, 'a'));
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   long_string_beginning += u"…";
 #endif
 
@@ -879,7 +879,7 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
 // to wrap incorrectly.
 TEST(TextEliderTest, ElideRectangleTextCheckLineWidth) {
   FontList font_list;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Use a specific font to expose the line width exceeding problem.
   font_list = FontList(Font("LucidaGrande", 12));
 #endif

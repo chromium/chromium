@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.omaha;
 
-import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.job.JobService;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -90,7 +90,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     // overriding.
     @SuppressWarnings("WrongThread")
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public boolean onStartTask(
             Context context, TaskParameters parameters, final TaskFinishedCallback callback) {
         mJobServiceTask = new AsyncTask<Void>() {
@@ -109,7 +109,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public boolean onStopTask(Context context, TaskParameters taskParameters) {
         if (mJobServiceTask != null) {
             mJobServiceTask.cancel(false);
@@ -119,7 +119,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     public void reschedule(Context context) {
         // Needs appropriate implementation.
     }
@@ -129,7 +129,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
      * @param context Context to use.
      * @param delayMs How long to wait until the job should be triggered.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     static boolean scheduleJobService(Context context, long delayMs) {
         long latency = Math.max(0, delayMs);
 

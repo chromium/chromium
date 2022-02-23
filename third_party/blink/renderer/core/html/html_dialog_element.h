@@ -34,7 +34,7 @@ namespace blink {
 class Document;
 class ExceptionState;
 
-class HTMLDialogElement final : public HTMLElement {
+class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

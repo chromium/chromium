@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="utils.js"></script>
+<title>Fenced frame content to report whether it loaded</title>
+
+<body>
+<script>
+function init() {
+  // This file is meant to be navigated to from a <fencedframe> element.
+  // It reports back to the page hosting the <fencedframe> letting it
+  // know that the frame loaded successfully.
+  const [window_data_key] = parseKeylist();
+  writeValueToServer(window_data_key, "page loaded");
+}
+
+init();
+</script>
+</body>
+</html>

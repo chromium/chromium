@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,12 +39,14 @@ const char* const kNameserversIPv4[] = {
     "1.0.0.1",
 };
 
+#if BUILDFLAG(IS_LINUX)
 const char* const kNameserversIPv6[] = {
     nullptr,
-    "2001:DB8:0::42",
+    "2001:db8::42",
     nullptr,
     "::FFFF:129.144.52.38",
 };
+#endif
 
 // Fills in |res| with sane configuration.
 void InitializeResState(res_state res) {
@@ -59,6 +62,7 @@ void InitializeResState(res_state res) {
     ++res->nscount;
   }
 
+#if BUILDFLAG(IS_LINUX)
   // Install IPv6 addresses, replacing the corresponding IPv4 addresses.
   unsigned nscount6 = 0;
   for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
@@ -76,20 +80,36 @@ void InitializeResState(res_state res) {
     ++nscount6;
   }
   res->_u._ext.nscount6 = nscount6;
+#endif
 }
 
 void FreeResState(struct __res_state* res) {
+#if BUILDFLAG(IS_LINUX)
   for (int i = 0; i < res->nscount; ++i) {
     if (res->_u._ext.nsaddrs[i] != nullptr)
       free(res->_u._ext.nsaddrs[i]);
   }
+#endif
 }
 
 TEST(ResolvReaderTest, GetNameservers) {
   auto res = std::make_unique<struct __res_state>();
   InitializeResState(res.get());
 
-  EXPECT_TRUE(GetNameservers(*res.get()).has_value());
+  absl::optional<std::vector<IPEndPoint>> nameservers =
+      GetNameservers(*res.get());
+  EXPECT_TRUE(nameservers.has_value());
+
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(kNameserversIPv4[0], nameservers->at(0).ToStringWithoutPort());
+  EXPECT_EQ(kNameserversIPv6[1], nameservers->at(1).ToStringWithoutPort());
+  EXPECT_EQ(kNameserversIPv4[2], nameservers->at(2).ToStringWithoutPort());
+#else
+  EXPECT_EQ(kNameserversIPv4[0], nameservers->at(0).ToStringWithoutPort());
+  EXPECT_EQ(kNameserversIPv4[1], nameservers->at(1).ToStringWithoutPort());
+  EXPECT_EQ(kNameserversIPv4[2], nameservers->at(2).ToStringWithoutPort());
+#endif
+
   FreeResState(res.get());
 }
 

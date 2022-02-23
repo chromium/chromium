@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.CommandLine;
@@ -43,6 +44,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowRecordHistogram.class, ShadowPostTask.class, ShadowUserManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunAppRestrictionInfoTest {
     private static final List<String> HISTOGRAM_NAMES =
             Arrays.asList("Enterprise.FirstRun.AppRestrictionLoadTime",

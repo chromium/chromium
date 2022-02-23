@@ -24,6 +24,12 @@ extern NSString* const kBadgeButtonSaveCardAccessibilityIdentifier;
 extern NSString* const kBadgeButtonSaveCardAcceptedAccessibilityIdentifier;
 extern NSString* const kBadgeButtonTranslateAccessibilityIdentifier;
 extern NSString* const kBadgeButtonTranslateAcceptedAccessibilityIdentifier;
+extern NSString* const kBadgeButtonPermissionsCameraAccessibilityIdentifier;
+extern NSString* const
+    kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier;
+extern NSString* const kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
+extern NSString* const
+    kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier;
 
 // A11y identifier for the Badge Popup Menu Table View.
 extern NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier;

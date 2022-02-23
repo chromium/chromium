@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -53,7 +54,7 @@ class WrappedObserver {
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  SystemDnsConfigChangeNotifier::Observer* const observer_;
+  const raw_ptr<SystemDnsConfigChangeNotifier::Observer> observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<WrappedObserver> weak_ptr_factory_{this};

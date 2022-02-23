@@ -4,9 +4,10 @@
 
 #include "chrome/browser/background_sync/background_sync_delegate_impl.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -17,7 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/background_sync_launcher_android.h"
 #endif
 
@@ -38,7 +39,7 @@ BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(Profile* profile)
 
 BackgroundSyncDelegateImpl::~BackgroundSyncDelegateImpl() = default;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
     BackgroundSyncEventKeepAliveImpl(Profile* profile) {
   keepalive_ = std::unique_ptr<ScopedKeepAlive,
@@ -61,7 +62,7 @@ BackgroundSyncDelegateImpl::CreateBackgroundSyncEventKeepAlive() {
     return std::make_unique<BackgroundSyncEventKeepAliveImpl>(profile_);
   return nullptr;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::GetUkmSourceId(
     const url::Origin& origin,
@@ -119,7 +120,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
   return kEngagementLevelNonePenalty;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::ScheduleBrowserWakeUpWithDelay(
     blink::mojom::BackgroundSyncType sync_type,
@@ -141,7 +142,7 @@ bool BackgroundSyncDelegateImpl::ShouldDisableAndroidNetworkDetection() {
   return false;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void BackgroundSyncDelegateImpl::OnEngagementEvent(
     content::WebContents* web_contents,

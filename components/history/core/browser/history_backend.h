@@ -177,6 +177,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // thread.
     virtual void NotifyKeywordSearchTermDeleted(URLID url_id) = 0;
 
+    // Notify HistoryService that content model annotation associated with
+    // the URL for `row` has been modified. Changes to the floc and related
+    // searches annotations will not trigger this. The event will be forwarded
+    // to the HistoryServiceObservers in the correct thread.
+    virtual void NotifyContentModelAnnotationModified(
+        const URLRow& row,
+        const VisitContentModelAnnotations& model_annotations) = 0;
+
     // Invoked when the backend has finished loading the db.
     virtual void DBLoaded() = 0;
   };
@@ -216,7 +224,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // actually be deleted.
   void Closing();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Persists any in-flight state, without actually shutting down the history
   // system. This is intended for use when the application is backgrounded.
   void PersistState();
@@ -244,13 +252,18 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              int nav_entry_id,
                              const GURL& url,
                              base::Time end_ts);
-  void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
+  void SetBrowsingTopicsAllowed(ContextID context_id,
+                                int nav_entry_id,
+                                const GURL& url);
   void AddContentModelAnnotationsForVisit(
       VisitID visit_id,
       const VisitContentModelAnnotations& model_annotations);
   void AddRelatedSearchesForVisit(
       VisitID visit_id,
       const std::vector<std::string>& related_searches);
+  void AddSearchMetadataForVisit(VisitID visit_id,
+                                 const GURL& search_normalized_url,
+                                 const std::u16string& search_terms);
 
   // Querying ------------------------------------------------------------------
 

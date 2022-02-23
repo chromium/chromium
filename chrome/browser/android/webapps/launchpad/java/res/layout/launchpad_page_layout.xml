@@ -17,7 +17,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/launchpad_recycler"
-        android:background="@color/default_bg_color"
+        android:background="@macro/default_bg_color"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

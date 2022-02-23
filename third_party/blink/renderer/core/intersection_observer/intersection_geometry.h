@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -116,11 +115,11 @@ class CORE_EXPORT IntersectionGeometry {
 
   PhysicalRect RootRect() const { return root_rect_; }
 
-  IntRect IntersectionIntRect() const {
-    return PixelSnappedIntRect(intersection_rect_);
+  gfx::Rect IntersectionIntRect() const {
+    return ToPixelSnappedRect(intersection_rect_);
   }
-  IntRect TargetIntRect() const { return PixelSnappedIntRect(target_rect_); }
-  IntRect RootIntRect() const { return PixelSnappedIntRect(root_rect_); }
+  gfx::Rect TargetIntRect() const { return ToPixelSnappedRect(target_rect_); }
+  gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
 
   double IntersectionRatio() const { return intersection_ratio_; }
   unsigned ThresholdIndex() const { return threshold_index_; }

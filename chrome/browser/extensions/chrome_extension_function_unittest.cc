@@ -61,7 +61,7 @@ class ValidationFunction : public ExtensionFunction {
 
 using ChromeExtensionFunctionUnitTest = ExtensionServiceTestBase;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SimpleFunctionTest DISABLED_SimpleFunctionTest
 #else
 #define MAYBE_SimpleFunctionTest SimpleFunctionTest

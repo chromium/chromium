@@ -10,8 +10,10 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -54,8 +56,8 @@ class EmbeddedPolicyTestServer {
     PolicyStorage* policy_storage() { return policy_storage_; }
 
    private:
-    ClientStorage* client_storage_;
-    PolicyStorage* policy_storage_;
+    raw_ptr<ClientStorage> client_storage_;
+    raw_ptr<PolicyStorage> policy_storage_;
   };
 
   EmbeddedPolicyTestServer();
@@ -77,10 +79,29 @@ class EmbeddedPolicyTestServer {
   void RegisterHandler(std::unique_ptr<EmbeddedPolicyTestServer::RequestHandler>
                            request_handler);
 
+  // Configures requests of a given |request_type| to always fail with
+  // |error_code|.
+  void ConfigureRequestError(const std::string& request_type,
+                             net::HttpStatusCode error_code);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Updates policy selected by |type| and optional |entity_id|. The
+  // |raw_policy| is served via an external endpoint. This does not trigger
+  // policy invalidation, hence test authors must manually trigger a policy
+  // fetch.
+  void UpdateExternalPolicy(const std::string& type,
+                            const std::string& entity_id,
+                            const std::string& raw_policy);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  private:
   // Default request handler.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
+
+  // Request handler for external policy data.
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleExternalPolicyDataRequest(const GURL& request);
 
   net::test_server::EmbeddedTestServer http_server_;
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;

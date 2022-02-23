@@ -4,12 +4,13 @@
 
 package org.chromium.content.browser.accessibility;
 
-import android.annotation.TargetApi;
 import android.app.assist.AssistStructure.ViewNode;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewStructure;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -33,7 +34,7 @@ public class ViewStructureBuilder {
         this.mRenderCoordinates = renderCoordinates;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void populateViewStructureNode(ViewStructure node, String text, boolean hasSelection,
             int selStart, int selEnd, int color, int bgcolor, float size, boolean bold,
@@ -50,16 +51,15 @@ public class ViewStructureBuilder {
 
         // if size is smaller than 0, then style information does not exist.
         if (size >= 0.0) {
-            float scaledTextSize = mRenderCoordinates.fromLocalCssToPix(size);
             int style = (bold ? ViewNode.TEXT_STYLE_BOLD : 0)
                     | (italic ? ViewNode.TEXT_STYLE_ITALIC : 0)
                     | (underline ? ViewNode.TEXT_STYLE_UNDERLINE : 0)
                     | (lineThrough ? ViewNode.TEXT_STYLE_STRIKE_THRU : 0);
-            node.setTextStyle(scaledTextSize, color, bgcolor, style);
+            node.setTextStyle(size, color, bgcolor, style);
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void setViewStructureNodeBounds(ViewStructure node, boolean isRootNode,
             int parentRelativeLeft, int parentRelativeTop, int width, int height) {
@@ -76,7 +76,7 @@ public class ViewStructureBuilder {
         node.setDimens(boundsInParent.left, boundsInParent.top, 0, 0, width, height);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     protected void setViewStructureNodeHtmlInfo(
             ViewStructure node, String htmlTag, String cssDisplay, String[][] htmlAttributes) {
@@ -88,7 +88,7 @@ public class ViewStructureBuilder {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     protected void setViewStructureNodeHtmlMetadata(ViewStructure node, String[] metadataStrings) {
         Bundle extras = node.getExtras();
@@ -96,13 +96,13 @@ public class ViewStructureBuilder {
                 "metadata", new ArrayList<String>(Arrays.asList(metadataStrings)));
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private void commitViewStructureNode(ViewStructure node) {
         node.asyncCommit();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private ViewStructure addViewStructureNodeChild(ViewStructure node, int index) {
         return node.asyncNewChild(index);

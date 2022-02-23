@@ -9,7 +9,7 @@
 namespace extensions {
 
 // Flaky for Mac: crbug.com/1141100
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Storage DISABLED_Storage
 #else
 #define MAYBE_Storage Storage

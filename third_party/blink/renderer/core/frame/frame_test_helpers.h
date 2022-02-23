@@ -70,26 +70,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-#define EXPECT_FLOAT_POINT_EQ(expected, actual)    \
-  do {                                             \
-    EXPECT_FLOAT_EQ((expected).x(), (actual).x()); \
-    EXPECT_FLOAT_EQ((expected).y(), (actual).y()); \
-  } while (false)
-
-#define EXPECT_FLOAT_SIZE_EQ(expected, actual)               \
-  do {                                                       \
-    EXPECT_FLOAT_EQ((expected).width(), (actual).width());   \
-    EXPECT_FLOAT_EQ((expected).height(), (actual).height()); \
-  } while (false)
-
-#define EXPECT_FLOAT_RECT_EQ(expected, actual)               \
-  do {                                                       \
-    EXPECT_FLOAT_EQ((expected).x(), (actual).x());           \
-    EXPECT_FLOAT_EQ((expected).y(), (actual).y());           \
-    EXPECT_FLOAT_EQ((expected).width(), (actual).width());   \
-    EXPECT_FLOAT_EQ((expected).height(), (actual).height()); \
-  } while (false)
-
 namespace base {
 class TickClock;
 }

@@ -181,7 +181,8 @@ CastMessageType CastMessageTypeFromString(const std::string& type);
 // correspond to a known type.
 V2MessageType V2MessageTypeFromString(const std::string& type);
 
-// Returns a human readable string for |message|.
+// Returns a human readable string for |message|.  Should probably be converted
+// to operator<<.
 std::string AuthMessageToString(const DeviceAuthMessage& message);
 
 // Fills |message_proto| appropriately for an auth challenge request message.

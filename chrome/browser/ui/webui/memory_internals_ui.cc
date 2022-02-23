@@ -12,6 +12,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -163,13 +164,19 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   void SaveTraceFinished(bool success);
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  content::WebUI* web_ui_;  // The WebUI that owns us.
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<content::WebUI> web_ui_;  // The WebUI that owns us.
+#endif
 
   base::WeakPtrFactory<MemoryInternalsDOMHandler> weak_factory_{this};
 };
 
 MemoryInternalsDOMHandler::MemoryInternalsDOMHandler(content::WebUI* web_ui)
-    : web_ui_(web_ui) {}
+#if !BUILDFLAG(IS_ANDROID)
+    : web_ui_(web_ui)
+#endif
+{
+}
 
 MemoryInternalsDOMHandler::~MemoryInternalsDOMHandler() {
   if (select_file_dialog_)
@@ -200,7 +207,7 @@ void MemoryInternalsDOMHandler::RegisterMessages() {
 void MemoryInternalsDOMHandler::HandleRequestProcessList(
     const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
 
   std::vector<base::Value> result;
 
@@ -238,7 +245,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
 
   AllowJavascript();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::Value result("Saving...");
   FireWebUIListener("save-dump-progress", result);
 
@@ -253,8 +260,6 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
       base::BindOnce(&MemoryInternalsDOMHandler::SaveTraceFinished,
                      weak_factory_.GetWeakPtr()),
       false);
-
-  (void)web_ui_;  // Avoid warning about not using private web_ui_ member.
 #else
   if (select_file_dialog_)
     return;  // Currently running, wait for existing save to complete.
@@ -277,10 +282,10 @@ void MemoryInternalsDOMHandler::HandleReportProcess(
 void MemoryInternalsDOMHandler::HandleStartProfiling(
     const base::ListValue* args) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!args->is_list() || args->GetList().size() != 1)
+  if (!args->is_list() || args->GetListDeprecated().size() != 1)
     return;
 
-  base::ProcessId pid = args->GetList()[0].GetInt();
+  base::ProcessId pid = args->GetListDeprecated()[0].GetInt();
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();
   if (supervisor->HasStarted()) {
@@ -328,10 +333,10 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
 
   // Append whether each process is being profiled.
   for (base::Value& value : process_list) {
-    DCHECK_EQ(value.GetList().size(), 2u);
+    DCHECK_EQ(value.GetListDeprecated().size(), 2u);
 
     base::ProcessId pid =
-        static_cast<base::ProcessId>(value.GetList()[0].GetInt());
+        static_cast<base::ProcessId>(value.GetListDeprecated()[0].GetInt());
     bool is_profiled =
         std::binary_search(profiled_pids.begin(), profiled_pids.end(), pid);
     value.Append(is_profiled);

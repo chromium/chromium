@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -184,7 +184,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     HitTestRegionObserver observer(host->GetFrameSinkId());
     // Wait for the hit test data to be ready
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   // Smooth scrolling is disabled for wheel scroll on Mac.
   // https://crbug.com/574283.
-#if defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   ValueHoldsAt(scroll_top_script, 0);
 #else
   WaitUntilLessThan(scroll_top_script, scroll_top);

@@ -16,16 +16,11 @@
 
 namespace blink {
 
-class HTMLBackgroundParserMetricsTest
-    : public testing::Test,
-      private ScopedForceSynchronousHTMLParsingForTest {
+class HTMLMetricsTest : public testing::Test {
  public:
-  HTMLBackgroundParserMetricsTest()
-      : ScopedForceSynchronousHTMLParsingForTest(false) {
-    helper_.Initialize(nullptr, nullptr, nullptr);
-  }
+  HTMLMetricsTest() { helper_.Initialize(nullptr, nullptr, nullptr); }
 
-  ~HTMLBackgroundParserMetricsTest() override = default;
+  ~HTMLMetricsTest() override = default;
 
   void SetUp() override {}
 
@@ -41,184 +36,18 @@ class HTMLBackgroundParserMetricsTest
   frame_test_helpers::WebViewHelper helper_;
 };
 
-class HTMLForceSynchronousParserMetricsTest
-    : public testing::Test,
-      private ScopedForceSynchronousHTMLParsingForTest {
- public:
-  HTMLForceSynchronousParserMetricsTest()
-      : ScopedForceSynchronousHTMLParsingForTest(true) {
-    helper_.Initialize(nullptr, nullptr, nullptr);
-  }
-
-  ~HTMLForceSynchronousParserMetricsTest() override = default;
-
-  void SetUp() override {}
-
-  void TearDown() override {}
-
-  void LoadHTML(const std::string& html) {
-    frame_test_helpers::LoadHTMLString(helper_.GetWebView()->MainFrameImpl(),
-                                       html,
-                                       url_test_helpers::ToKURL("about:blank"));
-  }
-
- protected:
-  frame_test_helpers::WebViewHelper helper_;
-};
-
-TEST_F(HTMLBackgroundParserMetricsTest, ReportSingleChunk) {
-  // Although the tests use a mock clock, the metrics recorder checks if the
-  // system has a high resolution clock before recording results. As a result,
-  // the tests will fail if the system does not have a high resolution clock.
-  if (!base::TimeTicks::IsHighResolution())
-    return;
-
-  base::HistogramTester histogram_tester;
-  LoadHTML(R"HTML(
-    <div></div>
-  )HTML");
-
-  // Should have one of each metric, except the yield times because with
-  // a single chunk they should not report.
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ChunkCount", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMax", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMin", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedAverage", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedTotal", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeMax", 0);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeMin", 0);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeAverage", 0);
-
-  // Expect specific values for the chunks and tokens counts
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.ChunkCount", 1, 1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedMax", 2,
-                                      1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedMin", 2,
-                                      1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedAverage",
-                                      2, 1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedTotal", 2,
-                                      1);
-
-  // Expect that the times have moved from the default and the max and min
-  // and total are all the same (within the same bucket)
-  std::vector<base::Bucket> parsing_time_max_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax");
-  std::vector<base::Bucket> parsing_time_min_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin");
-  std::vector<base::Bucket> parsing_time_total_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal");
-  EXPECT_EQ(parsing_time_max_buckets.size(), 1u);
-  EXPECT_EQ(parsing_time_min_buckets.size(), 1u);
-  EXPECT_EQ(parsing_time_total_buckets.size(), 1u);
-  EXPECT_GT(parsing_time_max_buckets[0].min, 0);
-  EXPECT_GT(parsing_time_min_buckets[0].min, 0);
-  EXPECT_GT(parsing_time_total_buckets[0].min, 0);
-}
-
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222653
-#define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
-#else
-#define MAYBE_HistogramReportsTwoChunks HistogramReportsTwoChunks
-#endif
-TEST_F(HTMLBackgroundParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
-  // Although the tests use a mock clock, the metrics recorder checks if the
-  // system has a high resolution clock before recording results. As a result,
-  // the tests will fail if the system does not have a high resolution clock.
-  if (!base::TimeTicks::IsHighResolution())
-    return;
-
-  base::HistogramTester histogram_tester;
-
-  // This content exceeds the number of tokens before a script tag used as
-  // the yield threshold. If the yield threshold changes, this test will fail
-  // and/or need changing. See the HTMLParserScheduler::ShouldYield method for
-  // the current value of the constant. The code below assumes 50 tokens.
-  LoadHTML(R"HTML(
-    <head></head>
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div><div></div><div></div>
-    <div></div><div></div><div></div><div></div><div></div><div></div> 63 tokens including this text token
-    <script>document.offsetTop</script>
-  )HTML");
-
-  // Comment this back in to see histogram values:
-  // LOG(ERROR) << histogram_tester.GetAllHistogramsRecorded();
-
-  // Should have one of each metric.
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ChunkCount", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMax", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMin", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedAverage", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedTotal", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeMax", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeMin", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.YieldedTimeAverage", 1);
-
-  // Expect specific values for the chunks and tokens counts
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.ChunkCount", 2, 1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedMax", 49,
-                                      1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedMin", 0,
-                                      1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedAverage",
-                                      28, 1);
-  histogram_tester.ExpectUniqueSample("Blink.HTMLParsing.TokensParsedTotal", 55,
-                                      1);
-
-  // For parse times, expect that the times have moved from the default.
-  std::vector<base::Bucket> parsing_time_max_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax");
-  std::vector<base::Bucket> parsing_time_min_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin");
-  std::vector<base::Bucket> parsing_time_total_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal");
-  EXPECT_EQ(parsing_time_max_buckets.size(), 1u);
-  EXPECT_EQ(parsing_time_min_buckets.size(), 1u);
-  EXPECT_EQ(parsing_time_total_buckets.size(), 1u);
-  EXPECT_GT(parsing_time_max_buckets[0].min, 0);
-  EXPECT_GT(parsing_time_min_buckets[0].min, 0);
-  EXPECT_GT(parsing_time_total_buckets[0].min, 0);
-
-  // For yields, the values should be the same because there was only one yield,
-  // but due to different histogram sizes we can't directly compare them.
-  std::vector<base::Bucket> yield_time_max_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.YieldedTimeMax");
-  std::vector<base::Bucket> yield_time_min_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.YieldedTimeMin");
-  std::vector<base::Bucket> yield_time_average_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.YieldedTimeAverage");
-  EXPECT_EQ(yield_time_max_buckets.size(), 1u);
-  EXPECT_EQ(yield_time_min_buckets.size(), 1u);
-  EXPECT_EQ(yield_time_average_buckets.size(), 1u);
-  EXPECT_GT(yield_time_max_buckets[0].min, 0);
-  EXPECT_GT(yield_time_min_buckets[0].min, 0);
-  EXPECT_GT(yield_time_average_buckets[0].min, 0);
-}
-
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222653
 #define MAYBE_ReportSingleChunk DISABLED_ReportSingleChunk
 #else
 #define MAYBE_ReportSingleChunk ReportSingleChunk
 #endif
-TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_ReportSingleChunk) {
+TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
   if (!base::TimeTicks::IsHighResolution())
     return;
-
-  ScopedForceSynchronousHTMLParsingForTest(true);
 
   base::HistogramTester histogram_tester;
   LoadHTML(R"HTML(
@@ -270,14 +99,19 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_ReportSingleChunk) {
                                       19, 1);
 }
 
-TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// https://crbug.com/1222653
+#define MAYBE_HistogramReportsTwoChunks DISABLED_HistogramReportsTwoChunks
+#else
+#define MAYBE_HistogramReportsTwoChunks HistogramReportsTwoChunks
+#endif
+
+TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
   if (!base::TimeTicks::IsHighResolution())
     return;
-
-  ScopedForceSynchronousHTMLParsingForTest(true);
 
   base::HistogramTester histogram_tester;
 
@@ -371,7 +205,7 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, MAYBE_HistogramReportsTwoChunks) {
                                       1447, 1);
 }
 
-TEST_F(HTMLForceSynchronousParserMetricsTest, UkmStoresValuesCorrectly) {
+TEST_F(HTMLMetricsTest, UkmStoresValuesCorrectly) {
   // Although the tests use a mock clock, the metrics recorder checks if the
   // system has a high resolution clock before recording results. As a result,
   // the tests will fail if the system does not have a high resolution clock.
@@ -400,7 +234,7 @@ TEST_F(HTMLForceSynchronousParserMetricsTest, UkmStoresValuesCorrectly) {
   reporter.AddChunk(second_parse_time, second_tokens_parsed);
   reporter.AddYieldInterval(second_yield_time);
   reporter.AddChunk(third_parse_time, third_tokens_parsed);
-  reporter.ReportMetricsAtParseEnd(false);
+  reporter.ReportMetricsAtParseEnd();
 
   // Check we have a single entry
   entries = recorder.GetEntriesByName("Blink.HTMLParsing");

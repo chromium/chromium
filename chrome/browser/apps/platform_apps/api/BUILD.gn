@@ -77,9 +77,9 @@ source_set("api") {
     ]
 
     deps += [
+      "//ash/components/proximity_auth",
       "//chrome:strings",
       "//chromeos/components/multidevice/logging",
-      "//chromeos/components/proximity_auth",
       "//components/account_id",
       "//components/strings:components_strings_grit",
       "//components/user_manager",

@@ -82,6 +82,12 @@ TEST(ConditionValidatorResultTest, TestDisplayLockFailed) {
   EXPECT_FALSE(result.NoErrors());
 }
 
+TEST(ConditionValidatorResultTest, TestPriorityNotificationFailed) {
+  ConditionValidator::Result result(true);
+  result.priority_notification_ok = false;
+  EXPECT_FALSE(result.NoErrors());
+}
+
 TEST(ConditionValidatorResultTest, TestMultipleErrors) {
   ConditionValidator::Result result(true);
   result.preconditions_ok = false;

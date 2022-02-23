@@ -19,11 +19,3 @@ imageset("default_browser_world") {
     "default_browser_world.imageset/default_browser_world@3x.png",
   ]
 }
-
-imageset("settings") {
-  sources = [
-    "settings.imageset/Contents.json",
-    "settings.imageset/settings@2x.png",
-    "settings.imageset/settings@3x.png",
-  ]
-}

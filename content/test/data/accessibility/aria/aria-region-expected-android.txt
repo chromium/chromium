@@ -5,4 +5,4 @@ android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='region' name='Named ARIA region#2 gets the region role.'
 ++++android.widget.TextView name='Named ARIA region#2 gets the region role.'
 ++android.view.View role_description='region' name='Named region'
-++android.view.View role_description='region' name='An aria-rolescription works on a nameless role=region.'
+++android.view.View role_description='Regioneque region' name='An aria-rolescription works on a nameless role=region.'

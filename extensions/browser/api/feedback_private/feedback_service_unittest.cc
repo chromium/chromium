@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "components/feedback/feedback_data.h"
@@ -93,8 +94,10 @@ class FeedbackServiceTest : public ApiUnitTest {
     mock_uploader_ = std::make_unique<StrictMock<MockFeedbackUploader>>(
         /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
+    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
+        base::AsWeakPtr(mock_uploader_.get());
     feedback_data_ =
-        base::MakeRefCounted<FeedbackData>(mock_uploader_.get(), nullptr);
+        base::MakeRefCounted<FeedbackData>(std::move(wkptr_uploader), nullptr);
   }
 
   ~FeedbackServiceTest() override = default;

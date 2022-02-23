@@ -79,32 +79,23 @@ void SecurityKeyMessageHandler::ProcessSecurityKeyMessage(
   } else if (message_type == SecurityKeyMessageType::REQUEST) {
     HandleSecurityKeyRequest(message->payload());
   } else {
+    // uint8_t is handled as char, so we use uint16_t to show number here.
     LOG(ERROR) << "Unknown message type: "
-               << static_cast<uint8_t>(message_type);
+               << static_cast<uint16_t>(message_type);
     SendMessage(SecurityKeyMessageType::UNKNOWN_COMMAND);
   }
 }
 
-void SecurityKeyMessageHandler::HandleIpcConnectionChange(
-    bool connection_established) {
+void SecurityKeyMessageHandler::HandleIpcConnectionChange() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (connection_established) {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
-                           std::string(1, kConnectResponseActiveSession));
-  } else {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
-                           std::string(1, kConnectResponseNoSession));
-    // We expect the server to close the IPC channel in this scenario.
-    expect_ipc_channel_close_ = true;
-  }
+  SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
+                         std::string(1, kConnectResponseActiveSession));
 }
 
 void SecurityKeyMessageHandler::HandleIpcConnectionError() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!expect_ipc_channel_close_) {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_ERROR,
-                           "Unknown error occurred during connection.");
-  }
+  SendMessageWithPayload(SecurityKeyMessageType::CONNECT_ERROR,
+                         "Unknown error occurred during connection.");
 }
 
 void SecurityKeyMessageHandler::HandleSecurityKeyResponse(

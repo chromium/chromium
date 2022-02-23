@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<header>
+<title>Not rendered</title>
+</header>
+
+<body style="margin: 0;">
+  <h1>Top of Document</h1>
+  <canvas width="1000" height="10000"></canvas>
+  <h1>Bottom of Document</h1>
+</body>
+
+<script>
+// Render a red and blue checkerboard this ensures the render test checks for
+// any stretching or misalignment.
+const canvas = document.querySelector('canvas');
+const context = canvas.getContext('2d');
+
+context.fillStyle = 'rgba(255, 0, 0, 1.0)';
+for(let i = 0; i < canvas.width; i += 400) {
+  for(let j = 0; j < canvas.height; j += 400) {
+    context.fillRect(i, j, 200, 200);
+  }
+}
+context.fillStyle = 'rgba(0, 0, 255, 1.0)';
+for(let i = 200; i < canvas.width; i += 400) {
+  for(let j = 200; j < canvas.height; j += 400) {
+    context.fillRect(i, j, 200, 200);
+  }
+}
+
+// Indicate the content is now rendered for capture.
+document.title = 'rendered';
+</script>
+</html>
+

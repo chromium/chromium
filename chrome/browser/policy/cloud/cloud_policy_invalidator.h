@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -191,16 +191,16 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   const std::string owner_name_;
 
   // The cloud policy core.
-  CloudPolicyCore* core_;
+  raw_ptr<CloudPolicyCore> core_;
 
   // Schedules delayed tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The clock.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // The invalidation service.
-  invalidation::InvalidationService* invalidation_service_;
+  raw_ptr<invalidation::InvalidationService> invalidation_service_;
 
   // Whether the invalidator currently has the ability to receive invalidations.
   // This is true if the invalidation service is enabled and the invalidator

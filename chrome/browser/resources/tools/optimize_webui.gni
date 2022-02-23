@@ -49,6 +49,10 @@ template("optimize_webui") {
     external_paths = [
       "chrome://resources/polymer/v3_0/|$polymer_path",
       "chrome://resources/|$resources_path",
+
+      # Scheme relative versions to work with chrome-untrusted://
+      "//resources/polymer/v3_0/|$polymer_path",
+      "//resources/|$resources_path",
     ]
     if (defined(invoker.external_paths)) {
       external_paths += invoker.external_paths

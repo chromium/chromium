@@ -40,42 +40,10 @@ void ArcPictureInPictureWindowControllerImpl::OnWindowDestroyed(
   // Should be a no-op on ARC. This is managed on the Android side.
 }
 
-content::OverlayWindow*
-ArcPictureInPictureWindowControllerImpl::GetWindowForTesting() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-  return nullptr;
-}
-
-void ArcPictureInPictureWindowControllerImpl::UpdateLayerBounds() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-bool ArcPictureInPictureWindowControllerImpl::IsPlayerActive() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-  return false;
-}
-
 content::WebContents*
 ArcPictureInPictureWindowControllerImpl::GetWebContents() {
   // Should be a no-op on ARC. This is managed on the Android side.
   return nullptr;
-}
-
-bool ArcPictureInPictureWindowControllerImpl::TogglePlayPause() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-  return false;
-}
-
-void ArcPictureInPictureWindowControllerImpl::SkipAd() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-void ArcPictureInPictureWindowControllerImpl::NextTrack() {
-  // Should be a no-op on ARC. This is managed on the Android side.
-}
-
-void ArcPictureInPictureWindowControllerImpl::PreviousTrack() {
-  // Should be a no-op on ARC. This is managed on the Android side.
 }
 
 }  // namespace arc

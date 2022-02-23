@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -219,7 +220,7 @@ void MediaStreamSource::AddAudioConsumer(
   DCHECK(requires_consumer_);
   auto consumer_wrapper = std::make_unique<ConsumerWrapper>(consumer);
 
-  MutexLocker locker(audio_consumers_lock_);
+  base::AutoLock locker(audio_consumers_lock_);
   audio_consumers_.insert(consumer, std::move(consumer_wrapper));
 }
 
@@ -227,7 +228,7 @@ bool MediaStreamSource::RemoveAudioConsumer(
     WebAudioDestinationConsumer* consumer) {
   DCHECK(requires_consumer_);
 
-  MutexLocker locker(audio_consumers_lock_);
+  base::AutoLock locker(audio_consumers_lock_);
   auto it = audio_consumers_.find(consumer);
   if (it == audio_consumers_.end())
     return false;
@@ -282,7 +283,7 @@ void MediaStreamSource::SetAudioFormat(int number_of_channels,
                                 sample_rate)
                      .Utf8());
   DCHECK(requires_consumer_);
-  MutexLocker locker(audio_consumers_lock_);
+  base::AutoLock locker(audio_consumers_lock_);
   for (auto&& consumer : audio_consumers_.Values())
     consumer->SetFormat(number_of_channels, sample_rate);
 }
@@ -292,7 +293,7 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
                "MediaStreamSource::ConsumeAudio");
 
   DCHECK(requires_consumer_);
-  MutexLocker locker(audio_consumers_lock_);
+  base::AutoLock locker(audio_consumers_lock_);
   for (auto&& consumer : audio_consumers_.Values())
     consumer->ConsumeAudio(bus, number_of_frames);
 }
@@ -325,7 +326,7 @@ void MediaStreamSource::Trace(Visitor* visitor) const {
 
 void MediaStreamSource::Dispose() {
   {
-    MutexLocker locker(audio_consumers_lock_);
+    base::AutoLock locker(audio_consumers_lock_);
     audio_consumers_.clear();
   }
   platform_source_.reset();

@@ -84,9 +84,11 @@ void WindowDimmer::OnWindowBoundsChanged(aura::Window* window,
 void WindowDimmer::OnWindowDestroying(aura::Window* window) {
   if (window == parent_) {
     parent_->RemoveObserver(this);
-    if (delegate_)
-      delegate_->OnDimmedWindowDestroying(window);
     parent_ = nullptr;
+    if (delegate_) {
+      delegate_->OnDimmedWindowDestroying(window);
+      // `this` can be deleted above. So don't access any member after this.
+    }
   } else {
     DCHECK_EQ(window_, window);
     window_->RemoveObserver(this);

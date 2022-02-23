@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,11 +22,20 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/component_updater/pref_names.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Common";
+constexpr char kCachedLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Common.WithCache";
+
+}  // namespace
 
 class CommonSignalsDecoratorTest : public testing::Test {
  protected:
@@ -34,19 +44,20 @@ class CommonSignalsDecoratorTest : public testing::Test {
     safe_browsing::RegisterProfilePrefs(fake_profile_prefs_.registry());
     fake_local_state_.registry()->RegisterBooleanPref(
         prefs::kBuiltInDnsClientEnabled, false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     fake_local_state_.registry()->RegisterBooleanPref(prefs::kSwReporterEnabled,
                                                       false);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     fake_local_state_.registry()->RegisterBooleanPref(
         prefs::kThirdPartyBlockingEnabled, false);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     decorator_.emplace(&fake_local_state_, &fake_profile_prefs_);
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple fake_local_state_;
   sync_preferences::TestingPrefServiceSyncable fake_profile_prefs_;
   absl::optional<CommonSignalsDecorator> decorator_;
@@ -76,16 +87,32 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   EXPECT_TRUE(signals.has_safe_browsing_protection_level());
   EXPECT_TRUE(signals.has_password_protection_warning_trigger());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(signals.has_chrome_cleanup_enabled());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(signals.has_third_party_blocking_enabled());
 #else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_FALSE(signals.has_third_party_blocking_enabled());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   EXPECT_FALSE(signals.has_chrome_cleanup_enabled());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 0);
+
+  // Run a second time to exercise the caching code.
+  base::RunLoop second_run_loop;
+  SignalsType second_signals;
+  decorator_->Decorate(second_signals, second_run_loop.QuitClosure());
+  second_run_loop.Run();
+
+  EXPECT_EQ(signals.device_model(), second_signals.device_model());
+  EXPECT_EQ(signals.device_manufacturer(),
+            second_signals.device_manufacturer());
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 1);
 }
 
 }  // namespace enterprise_connectors

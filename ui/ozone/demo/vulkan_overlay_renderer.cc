@@ -240,7 +240,8 @@ void VulkanOverlayRenderer::SubmitFrame(
 
   ui::OverlayPlane primary_plane;
   primary_plane.pixmap = buffer->native_pixmap();
-  primary_plane.overlay_plane_data.display_bounds = gfx::Rect(buffer->size());
+  primary_plane.overlay_plane_data.display_bounds =
+      gfx::RectF(buffer->size().width(), buffer->size().height());
   primary_plane.gpu_fence = std::move(gpu_fence);
 
   std::vector<ui::OverlayPlane> overlay_planes;

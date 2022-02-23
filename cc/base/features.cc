@@ -33,7 +33,7 @@ const base::Feature kImpulseScrollAnimations = {
 // submitting a frame.
 const base::Feature kSynchronizedScrolling = {
     "SynchronizedScrolling",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT};
 #else
     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -56,10 +56,15 @@ const base::Feature kJankInjectionAblationFeature{
 
 const base::Feature kPreferNewContentForCheckerboardedScrolls{
     "PreferNewContentForCheckerboardedScrolls",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDurationEstimatesInCompositorTimingHistory{
     "DurationEstimatesInCompositorTimingHistory",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kNonBlockingCommit{"NonBlockingCommit",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSlidingWindowForDroppedFrameCounter{
+    "SlidingWindowForDroppedFrameCounter", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features

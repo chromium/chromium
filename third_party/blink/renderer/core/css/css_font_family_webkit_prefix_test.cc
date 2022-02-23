@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
 
@@ -49,7 +49,7 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     m_standard_font = GetGenericGenericFontFamilySettings().Standard();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // An extra step is required to ensure that the system font is configured.
     // TODO(crbug.com/969622): Remove this.
     blink::WebFontRendering::SetMenuFontMetrics(
@@ -67,34 +67,15 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
 };
 
 TEST_F(CSSFontFamilyWebKitPrefixTest,
-       CSSFontFamilyWebKitPrefixTest_WebKitPictograph) {
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-  LoadPageWithFontFamilyValue("-webkit-pictograph, serif");
-#if defined(OS_ANDROID)
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-#else
-  ASSERT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-#endif
-}
-
-TEST_F(CSSFontFamilyWebKitPrefixTest,
-       CSSFontFamilyWebKitPrefixTest_WebKitStandard) {
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
-  LoadPageWithFontFamilyValue("-webkit-standard, serif");
-  ASSERT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
-}
-
-TEST_F(CSSFontFamilyWebKitPrefixTest,
        CSSFontFamilyWebKitPrefixTest_WebKitBodyFontBuilder) {
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
+  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -108,6 +89,9 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // This counter is triggered in FontBuilder when -webkit-body is replaced with
   // a non-empty GenericFontFamilySettings's standard font.
   GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body, serif");
   ASSERT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));
@@ -119,6 +103,10 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
 
   // If empty standard font is specified, counter is never triggered.
+  GetGenericGenericFontFamilySettings().UpdateStandard(g_empty_atom);
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
@@ -133,6 +121,9 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // last specified generic family is set by FontBuilder. So FontSelector will
   // only trigger the counter if -webkit-body is at the last position.
   GetGenericGenericFontFamilySettings().UpdateStandard("MyStandardFont");
+  LoadPageWithFontFamilyValue("initial");
+  ASSERT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
   LoadPageWithFontFamilyValue("-webkit-body, serif");
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixBody));
@@ -152,7 +143,7 @@ TEST_F(CSSFontFamilyWebKitPrefixTest,
   // Counter should be triggered on macOS, even if -apple-system is placed
   // before or -system-ui is place after.
   LoadPageWithFontFamilyValue("-apple-system, BlinkMacSystemFont, system-ui");
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(GetDocument().IsUseCounted(WebFeature::kBlinkMacSystemFont));
 #else
   ASSERT_FALSE(GetDocument().IsUseCounted(WebFeature::kBlinkMacSystemFont));

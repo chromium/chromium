@@ -4,11 +4,13 @@
 
 #include "services/network/public/cpp/features.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "net/base/mime_sniffer.h"
 
 namespace network {
 namespace features {
@@ -20,15 +22,6 @@ const base::Feature kExpectCTReporting{"ExpectCTReporting",
 
 const base::Feature kNetworkErrorLogging{"NetworkErrorLogging",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
-// Enables the network service.
-const base::Feature kNetworkService {
-#if defined(OS_ANDROID)
-  "NetworkService",
-#else
-  "NetworkServiceNotSupported",
-#endif
-      base::FEATURE_ENABLED_BY_DEFAULT
-};
 
 const base::Feature kReporting{"Reporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -60,13 +53,6 @@ const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P{
     "PauseBrowserInitiatedHeavyTrafficForP2P",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When kPauseLowPriorityBrowserRequestsOnWeakSignal is enabled, then a subset
-// of the browser initiated requests may be deferred if the device is using
-// cellular connection and the signal quality is low. Android only.
-const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal{
-    "PauseLowPriorityBrowserRequestsOnWeakSignal",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
 // resources if they look sensitive.
 const base::Feature kCORBProtectionSniffing{"CORBProtectionSniffing",
@@ -79,17 +65,9 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
     "ProactivelyThrottleLowPriorityRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables Cross-Origin-Embedder-Policy: credentialless.
-// https://github.com/mikewest/credentiallessness
-// TODO(https://crbug.com/1175099): Remove one week after M96: 2021-11-25
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
-    "CrossOriginEmbedderPolicyCredentialless",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables Cross-Origin Opener Policy (COOP).
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-// https://html.spec.whatwg.org/#cross-origin-opener-policy
+// https://html.spec.whatwg.org/C/#cross-origin-opener-policy
 // Currently this feature is enabled for all platforms except WebView.
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -99,6 +77,13 @@ const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Introduce a new COOP value, Same-Origin-Opener-Policy-Plus-Coep, which grants
+// cross-origin isolation. This used mainly for testing the process model and
+// should not be enabled in any production code.
+// See https://crbug.com/1221127.
+const base::Feature kCoopSameOriginAllowPopupsPlusCoep{
+    "CoopSameOriginAllowPopupsPlusCoep", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.
 const base::Feature kSplitAuthCacheByNetworkIsolationKey{
@@ -107,8 +92,8 @@ const base::Feature kSplitAuthCacheByNetworkIsolationKey{
 // Enable usage of hardcoded DoH upgrade mapping for use in automatic mode.
 const base::Feature kDnsOverHttpsUpgrade {
   "DnsOverHttpsUpgrade",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_ANDROID) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -134,6 +119,22 @@ const base::FeatureParam<std::string>
 // for investigation on the memory usage, and should not be enabled widely.
 const base::Feature kDisableKeepaliveFetch{"DisableKeepaliveFetch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
+// Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
+//
+// This is ORB v0.1 - it doesn't implement the full spec from
+// https://github.com/annevk/orb:
+// - No Javascript sniffing is done.  Instead the implementation uses all
+//   of CORB's confirmation sniffers (for HTML, XML and JSON).
+// - Blocking is still done by injecting an empty response rather than erroring
+//   out the network request
+// - See other differences in the "ORB v0.1 vs full ORB differences" section in
+//   https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit#heading=h.mptmm5bpjtdn
+//
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
+const base::Feature kOpaqueResponseBlockingV01{
+    "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
@@ -189,53 +190,51 @@ const base::Feature kWebSocketReassembleShortMessages{
 const base::Feature kAcceptCHFrame{"AcceptCHFrame",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSCTAuditingRetryAndPersistReports{
-    "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSCTAuditingRetryReports{"SCTAuditingRetryReports",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// This feature is used for tuning several loading-related data pipe
-// parameters. See crbug.com/1041006.
-const base::Feature kLoaderDataPipeTuningFeature{
-    "LoaderDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSCTAuditingPersistReports{
+    "SCTAuditingPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
-// The default buffer size of DataPipe which is used to send the content body.
-static constexpr uint32_t kDataPipeDefaultAllocationSize = 512 * 1024;
-constexpr base::FeatureParam<int> kDataPipeAllocationSize{
-    &kLoaderDataPipeTuningFeature, "allocation_size_bytes",
-    base::saturated_cast<int>(kDataPipeDefaultAllocationSize)};
+// The default Mojo ring buffer size, used to send the content body.
+static constexpr uint32_t kDefaultDataPipeAllocationSize = 512 * 1024;
+// The larger ring buffer size, used primarily for network::URLLoader loads.
+// This value was optimized via Finch: see crbug.com/1041006.
+static constexpr uint32_t kLargerDataPipeAllocationSize = 2 * 1024 * 1024;
 
 // The maximal number of bytes consumed in a loading task. When there are more
 // bytes in the data pipe, they will be consumed in following tasks. Setting too
 // small of a number will generate many tasks but setting a too large of a
-// number will lead to thread janks.
-static constexpr uint32_t kMaxNumConsumedBytesInTask = 64 * 1024;
-constexpr base::FeatureParam<int> kLoaderChunkSize{
-    &kLoaderDataPipeTuningFeature, "loader_chunk_size",
-    base::saturated_cast<int>(kMaxNumConsumedBytesInTask)};
+// number will lead to thread janks. This value was optimized via Finch:
+// see crbug.com/1041006.
+static constexpr uint32_t kMaxNumConsumedBytesInTask = 1024 * 1024;
+
+// The smallest buffer size must be larger than the maximum MIME sniffing
+// chunk size. This is assumed several places in content/browser/loader.
+static_assert(kDefaultDataPipeAllocationSize < kLargerDataPipeAllocationSize);
+static_assert(kDefaultDataPipeAllocationSize >= net::kMaxBytesToSniff,
+              "Smallest data pipe size must be at least as large as a "
+              "MIME-type sniffing buffer.");
 }  // namespace
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
   // For low-memory devices, always use the (smaller) default buffer size.
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
-    return kDataPipeDefaultAllocationSize;
+    return kDefaultDataPipeAllocationSize;
   switch (option) {
     case DataPipeAllocationSize::kDefaultSizeOnly:
-      return kDataPipeDefaultAllocationSize;
+      return kDefaultDataPipeAllocationSize;
     case DataPipeAllocationSize::kLargerSizeIfPossible:
-      return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+      return kLargerDataPipeAllocationSize;
   }
 }
 
 // static
 uint32_t GetLoaderChunkSize() {
-  return base::saturated_cast<uint32_t>(kLoaderChunkSize.Get());
+  return kMaxNumConsumedBytesInTask;
 }
-
-// Enable recording UMAs for network activities which can wake-up radio on
-// Android.
-const base::Feature kRecordRadioWakeupTrigger{
-    "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Check disk cache to see if the queued requests (especially those don't need
 // validation) have already been cached. If yes, start them as they may not
@@ -263,9 +262,23 @@ const base::Feature kCorsNonWildcardRequestHeadersSupport{
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Warn developers via a DevTools issue if requested client hint is deprecated.
-const base::Feature kClientHintDeprecationIssue{
-    "ClientHintDeprecationIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+// Optimize the implementation of calling URLLoaderFactory::UpdateLoadInfo().
+const base::Feature kOptimizeUpdateLoadInfo{"OptimizeUpdateLoadInfo",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
+const base::Feature kCombineResponseBody{"CombineResponseBody",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Don't wait for database write before responding to
+// RestrictedCookieManager::SetCookieFromString.
+const base::Feature kFasterSetCookie{"FasterSetCookie",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Allow batching SimpleURLLoaders when the underlying network state is
+// inactive.
+const base::Feature kBatchSimpleURLLoader{"BatchSimpleURLLoader",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace network

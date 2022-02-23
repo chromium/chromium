@@ -50,8 +50,12 @@ design docs should follow the process at
 
 ## Legal stuff
 
-All contributors must complete the contributor license agreement. For
-individual contributors, please complete the [Individual Contributor License
+All contributors must have valid Gerrit/Google accounts (which means you must
+be [old enough to manage your own
+account](https://support.google.com/accounts/answer/1350409)) and complete the
+contributor license agreement.
+
+For individual contributors, please complete the [Individual Contributor License
 Agreement][individual-cla] online. Corporate contributors must fill out the
 [Corporate Contributor License Agreement][corporate-cla] and send it to us as
 described on that page.
@@ -420,8 +424,11 @@ formats.
 * **Cq-Include-Trybots:**
   * A comma-separated list of trybots which should be triggered and
     checked by the CQ in addition to the normal set.
-  * Trybots are indicated in `master:builder` format (e.g.
-    `tryserver.chromium.linux:linux_asan_experimental`).
+  * Trybots are indicated in `bucket:builder` format (e.g.
+    `luci.chromium.try:android-asan`).
+  * The "Choose Tryjobs" UI in the "Checks" tab in Gerrit shows (and has
+    a button to copy) the Cq-Include-Trybots syntax for the currently
+    selected tryjobs.
 * **No-Presubmit:**
   * If present, the value should always be the string `true`.
   * Indicates to the CQ that it should not run presubmit checks on the CL.

@@ -105,7 +105,7 @@ class CORE_EXPORT AOMPropertyClient {
 };
 
 // Accessibility Object Model node
-// Explainer: https://github.com/WICG/aom/blob/master/explainer.md
+// Explainer: https://github.com/WICG/aom/blob/gh-pages/explainer.md
 // Spec: https://wicg.github.io/aom/spec/
 class CORE_EXPORT AccessibleNode : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();

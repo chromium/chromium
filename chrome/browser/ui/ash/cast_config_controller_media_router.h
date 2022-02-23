@@ -42,6 +42,7 @@ class CastConfigControllerMediaRouter
   void RemoveObserver(Observer* observer) override;
   bool HasSinksAndRoutes() const override;
   bool HasActiveRoute() const override;
+  bool AccessCodeCastingEnabled() const override;
   void RequestDeviceRefresh() override;
   const std::vector<ash::SinkAndRoute>& GetSinksAndRoutes() override;
   void CastToSink(const std::string& sink_id) override;

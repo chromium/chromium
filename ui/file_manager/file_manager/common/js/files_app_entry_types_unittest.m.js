@@ -112,7 +112,7 @@ export function testEntryListAddEntry() {
 
 /**
  * Tests EntryList's methods addEntry, findIndexByVolumeInfo,
- * removeByVolumeType, removeByRootType, removeChildEntry.
+ * removeByVolumeType, removeAllByRootType, removeChildEntry.
  */
 export function testEntryFindIndex() {
   const entryList =
@@ -145,9 +145,11 @@ export function testEntryFindIndex() {
   assertFalse(
       entryList.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
 
-  // Test removeByRootType.
+  // Test removeAllByRootType.
   entryList.addEntry(fakeEntry);
-  assertTrue(entryList.removeByRootType(VolumeManagerCommon.RootType.CROSTINI));
+  entryList.addEntry(fakeEntry);
+  assertEquals(3, entryList.getUIChildren().length);
+  entryList.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
   assertEquals(1, entryList.getUIChildren().length);
 
   // Test removeChildEntry.
@@ -159,7 +161,7 @@ export function testEntryFindIndex() {
 
 /**
  * Tests VolumeEntry's methods findIndexByVolumeInfo, removeByVolumeType,
- * removeByRootType, removeChildEntry.
+ * removeAllByRootType, removeChildEntry.
  * @suppress {accessControls} to be able to access private properties.
  */
 export function testVolumeEntryFindIndex() {
@@ -197,10 +199,11 @@ export function testVolumeEntryFindIndex() {
   assertFalse(
       volumeEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
 
-  // Test removeByRootType.
+  // Test removeAllByRootType.
   volumeEntry.addEntry(fakeEntry);
-  assertTrue(
-      volumeEntry.removeByRootType(VolumeManagerCommon.RootType.CROSTINI));
+  volumeEntry.addEntry(fakeEntry);
+  assertEquals(3, volumeEntry.children_.length);
+  volumeEntry.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
   assertEquals(1, volumeEntry.children_.length);
 
   // Test removeChildEntry.

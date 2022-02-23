@@ -72,6 +72,7 @@ void DuplicateDownloadDialogBridge::Show(
   CHECK(!callback.is_null());
   jlong callback_id = reinterpret_cast<jlong>(
       new DuplicateDownloadDialogCallback(std::move(callback)));
+  validator_.AddJavaCallback(callback_id);
   Java_DuplicateDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
       base::android::ConvertUTF16ToJavaString(env,
@@ -83,9 +84,10 @@ void DuplicateDownloadDialogBridge::Show(
 void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
                                                 jlong callback_id,
                                                 jboolean accepted) {
+  if (!validator_.ValidateAndClearJavaCallback(callback_id))
+    return;
   // Convert java long long int to c++ pointer, take ownership.
   std::unique_ptr<DuplicateDownloadDialogCallback> cb(
       reinterpret_cast<DuplicateDownloadDialogCallback*>(callback_id));
-  CHECK(cb.get() && !cb.get()->is_null());
   std::move(*cb).Run(accepted);
 }

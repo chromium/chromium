@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_offset.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -21,8 +21,8 @@ class FECompositeTest : public testing::Test {
                                float k4 = 0) {
     // Use big filter region to avoid it from affecting FEComposite's MapRect
     // results.
-    FloatRect filter_region(-10000, -10000, 20000, 20000);
-    auto* filter = MakeGarbageCollected<Filter>(FloatRect(), filter_region, 1,
+    gfx::RectF filter_region(-10000, -10000, 20000, 20000);
+    auto* filter = MakeGarbageCollected<Filter>(gfx::RectF(), filter_region, 1,
                                                 Filter::kUserSpace);
 
     // Input 1 of composite has a fixed output rect.
@@ -44,46 +44,47 @@ class FECompositeTest : public testing::Test {
     return composite;
   }
 
-  const IntRect kInput1Rect = {50, -50, 100, 100};
+  const gfx::Rect kInput1Rect = {50, -50, 100, 100};
 };
 
-#define EXPECT_INTERSECTION(c)                                  \
-  do {                                                          \
-    EXPECT_TRUE(c->MapRect(FloatRect()).IsEmpty());             \
-    EXPECT_TRUE(c->MapRect(FloatRect(0, 0, 50, 50)).IsEmpty()); \
-    EXPECT_EQ(FloatRect(50, 0, 100, 50),                        \
-              c->MapRect(FloatRect(0, 0, 200, 200)));           \
+#define EXPECT_INTERSECTION(c)                                   \
+  do {                                                           \
+    EXPECT_TRUE(c->MapRect(gfx::RectF()).IsEmpty());             \
+    EXPECT_TRUE(c->MapRect(gfx::RectF(0, 0, 50, 50)).IsEmpty()); \
+    EXPECT_EQ(gfx::RectF(50, 0, 100, 50),                        \
+              c->MapRect(gfx::RectF(0, 0, 200, 200)));           \
   } while (false)
 
 #define EXPECT_INPUT1(c)                                                      \
   do {                                                                        \
-    EXPECT_EQ(FloatRect(kInput1Rect), c->MapRect(FloatRect()));               \
-    EXPECT_EQ(FloatRect(kInput1Rect), c->MapRect(FloatRect(0, 0, 50, 50)));   \
-    EXPECT_EQ(FloatRect(kInput1Rect), c->MapRect(FloatRect(0, 0, 200, 200))); \
+    EXPECT_EQ(gfx::RectF(kInput1Rect), c->MapRect(gfx::RectF()));             \
+    EXPECT_EQ(gfx::RectF(kInput1Rect), c->MapRect(gfx::RectF(0, 0, 50, 50))); \
+    EXPECT_EQ(gfx::RectF(kInput1Rect),                                        \
+              c->MapRect(gfx::RectF(0, 0, 200, 200)));                        \
   } while (false)
 
-#define EXPECT_INPUT2(c)                                                     \
-  do {                                                                       \
-    EXPECT_TRUE(c->MapRect(FloatRect()).IsEmpty());                          \
-    EXPECT_EQ(FloatRect(0, 0, 50, 50), c->MapRect(FloatRect(0, 0, 50, 50))); \
-    EXPECT_EQ(FloatRect(0, 0, 200, 200),                                     \
-              c->MapRect(FloatRect(0, 0, 200, 200)));                        \
+#define EXPECT_INPUT2(c)                                                       \
+  do {                                                                         \
+    EXPECT_TRUE(c->MapRect(gfx::RectF()).IsEmpty());                           \
+    EXPECT_EQ(gfx::RectF(0, 0, 50, 50), c->MapRect(gfx::RectF(0, 0, 50, 50))); \
+    EXPECT_EQ(gfx::RectF(0, 0, 200, 200),                                      \
+              c->MapRect(gfx::RectF(0, 0, 200, 200)));                         \
   } while (false)
 
-#define EXPECT_UNION(c)                                         \
-  do {                                                          \
-    EXPECT_EQ(FloatRect(kInput1Rect), c->MapRect(FloatRect())); \
-    EXPECT_EQ(FloatRect(0, -50, 150, 100),                      \
-              c->MapRect(FloatRect(0, 0, 50, 50)));             \
-    EXPECT_EQ(FloatRect(0, -50, 200, 250),                      \
-              c->MapRect(FloatRect(0, 0, 200, 200)));           \
-  } while (false)
-
-#define EXPECT_EMPTY(c)                                           \
+#define EXPECT_UNION(c)                                           \
   do {                                                            \
-    EXPECT_TRUE(c->MapRect(FloatRect()).IsEmpty());               \
-    EXPECT_TRUE(c->MapRect(FloatRect(0, 0, 50, 50)).IsEmpty());   \
-    EXPECT_TRUE(c->MapRect(FloatRect(0, 0, 200, 200)).IsEmpty()); \
+    EXPECT_EQ(gfx::RectF(kInput1Rect), c->MapRect(gfx::RectF())); \
+    EXPECT_EQ(gfx::RectF(0, -50, 150, 100),                       \
+              c->MapRect(gfx::RectF(0, 0, 50, 50)));              \
+    EXPECT_EQ(gfx::RectF(0, -50, 200, 250),                       \
+              c->MapRect(gfx::RectF(0, 0, 200, 200)));            \
+  } while (false)
+
+#define EXPECT_EMPTY(c)                                            \
+  do {                                                             \
+    EXPECT_TRUE(c->MapRect(gfx::RectF()).IsEmpty());               \
+    EXPECT_TRUE(c->MapRect(gfx::RectF(0, 0, 50, 50)).IsEmpty());   \
+    EXPECT_TRUE(c->MapRect(gfx::RectF(0, 0, 200, 200)).IsEmpty()); \
   } while (false)
 
 TEST_F(FECompositeTest, MapRectIn) {
@@ -126,10 +127,10 @@ TEST_F(FECompositeTest, MapRectArithmeticK4Clipped) {
   // subregion.
   auto* c = CreateComposite(FECOMPOSITE_OPERATOR_ARITHMETIC, 1, 1, 1, 1);
   c->SetClipsToBounds(true);
-  FloatRect bounds(222, 333, 444, 555);
+  gfx::RectF bounds(222, 333, 444, 555);
   c->SetFilterPrimitiveSubregion(bounds);
-  EXPECT_EQ(bounds, c->MapRect(FloatRect()));
-  EXPECT_EQ(bounds, c->MapRect(FloatRect(100, 200, 300, 400)));
+  EXPECT_EQ(bounds, c->MapRect(gfx::RectF()));
+  EXPECT_EQ(bounds, c->MapRect(gfx::RectF(100, 200, 300, 400)));
 }
 
 }  // namespace blink

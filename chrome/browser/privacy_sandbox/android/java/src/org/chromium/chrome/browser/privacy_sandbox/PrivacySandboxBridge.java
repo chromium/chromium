@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /** Bridge, providing access to the native-side Privacy Sandbox configuration. */
 public class PrivacySandboxBridge {
@@ -56,6 +61,37 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getFlocResetExplanationString();
     }
 
+    public static List<Topic> getCurrentTopTopics() {
+        return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getCurrentTopTopics()));
+    }
+
+    public static List<Topic> getBlockedTopics() {
+        return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getBlockedTopics()));
+    }
+
+    public static void setTopicAllowed(Topic topic, boolean allowed) {
+        PrivacySandboxBridgeJni.get().setTopicAllowed(
+                topic.getTopicId(), topic.getTaxonomyVersion(), allowed);
+    }
+
+    @CalledByNative
+    private static Topic createTopic(int topicId, int taxonomyVersion, String name) {
+        return new Topic(topicId, taxonomyVersion, name);
+    }
+
+    private static List<Topic> sortTopics(List<Topic> topics) {
+        Collections.sort(topics, (o1, o2) -> { return o1.getName().compareTo(o2.getName()); });
+        return topics;
+    }
+
+    public static @DialogType int getRequiredDialogType() {
+        return PrivacySandboxBridgeJni.get().getRequiredDialogType();
+    }
+
+    public static void dialogActionOccurred(@DialogAction int action) {
+        PrivacySandboxBridgeJni.get().dialogActionOccurred(action);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isPrivacySandboxEnabled();
@@ -70,5 +106,10 @@ public class PrivacySandboxBridge {
         String getFlocUpdateString();
         String getFlocDescriptionString();
         String getFlocResetExplanationString();
+        Topic[] getCurrentTopTopics();
+        Topic[] getBlockedTopics();
+        void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed);
+        int getRequiredDialogType();
+        void dialogActionOccurred(int action);
     }
 }

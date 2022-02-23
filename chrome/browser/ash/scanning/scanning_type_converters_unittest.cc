@@ -52,12 +52,16 @@ constexpr uint32_t kSecondResolution = 300;
 
 // Returns a DocumentSource object with the given |source_type|.
 lorgnette::DocumentSource CreateLorgnetteDocumentSource(
-    lorgnette::SourceType source_type) {
+    lorgnette::SourceType source_type,
+    lorgnette::ColorMode color_mode) {
   lorgnette::DocumentSource source;
   source.set_type(source_type);
   source.set_name(kDocumentSourceName);
   source.mutable_area()->set_width(kScanAreaWidthMm);
   source.mutable_area()->set_height(kScanAreaHeightMm);
+  source.add_color_modes(color_mode);
+  source.add_resolutions(kFirstResolution);
+  source.add_resolutions(kSecondResolution);
   return source;
 }
 
@@ -67,10 +71,7 @@ lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities(
     lorgnette::SourceType source_type,
     lorgnette::ColorMode color_mode) {
   lorgnette::ScannerCapabilities caps;
-  *caps.add_sources() = CreateLorgnetteDocumentSource(source_type);
-  caps.add_color_modes(color_mode);
-  caps.add_resolutions(kFirstResolution);
-  caps.add_resolutions(kSecondResolution);
+  *caps.add_sources() = CreateLorgnetteDocumentSource(source_type, color_mode);
   return caps;
 }
 
@@ -125,11 +126,11 @@ TEST_P(ScannerCapabilitiesTest, LorgnetteCapsToMojom) {
                    mojo_ipc::PageSize::kIsoA4, mojo_ipc::PageSize::kIsoB4,
                    mojo_ipc::PageSize::kLegal, mojo_ipc::PageSize::kNaLetter,
                    mojo_ipc::PageSize::kTabloid}));
-  ASSERT_EQ(mojo_caps->color_modes.size(), 1u);
-  EXPECT_EQ(mojo_caps->color_modes[0], params().mojom_color_mode);
-  ASSERT_EQ(mojo_caps->resolutions.size(), 2u);
-  EXPECT_EQ(mojo_caps->resolutions[0], kFirstResolution);
-  EXPECT_EQ(mojo_caps->resolutions[1], kSecondResolution);
+  ASSERT_EQ(mojo_caps->sources[0]->color_modes.size(), 1u);
+  EXPECT_EQ(mojo_caps->sources[0]->color_modes[0], params().mojom_color_mode);
+  ASSERT_EQ(mojo_caps->sources[0]->resolutions.size(), 2u);
+  EXPECT_THAT(mojo_caps->sources[0]->resolutions,
+              ElementsAreArray({kFirstResolution, kSecondResolution}));
 }
 
 INSTANTIATE_TEST_SUITE_P(

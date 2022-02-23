@@ -38,10 +38,10 @@ const base::Value* GetChildren(const base::Value& arg) {
 bool CheckLabel(const base::Value& arg, int l) {
   const base::DictionaryValue* dict = nullptr;
   EXPECT_TRUE(arg.GetAsDictionary(&dict));
-  int result = 0;
-  if (!dict->GetInteger("label", &result))
+  absl::optional<int> result = dict->FindIntKey("label");
+  if (!result)
     return false;
-  return l == result;
+  return l == *result;
 }
 
 // Matches every |arg| with label |label| and checks that it has no children.
@@ -102,21 +102,23 @@ namespace {
 MATCHER(Node2, "") {
   if (!CheckLabel(arg, 2))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(EmptyNode(4)));
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
+              UnorderedElementsAre(EmptyNode(4)));
   return true;
 }
 
 MATCHER(Node5, "") {
   if (!CheckLabel(arg, 5))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(), UnorderedElementsAre(Node2()));
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
+              UnorderedElementsAre(Node2()));
   return true;
 }
 
 MATCHER(Node0, "") {
   if (!CheckLabel(arg, 0))
     return false;
-  EXPECT_THAT(GetChildren(arg)->GetList(),
+  EXPECT_THAT(GetChildren(arg)->GetListDeprecated(),
               UnorderedElementsAre(EmptyNode(1), EmptyNode(3), EmptyNode(6)));
   return true;
 }

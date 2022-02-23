@@ -21,6 +21,9 @@ class MediaAppUIDelegate {
   // Returns an optional error message if unable to open the dialog or nothing
   // if the dialog was determined to have opened successfully.
   virtual absl::optional<std::string> OpenFeedbackDialog() = 0;
+
+  // Toggles fullscreen mode on the Browser* hosting this MediaApp instance.
+  virtual void ToggleBrowserFullscreenMode() = 0;
 };
 
 }  // namespace ash

@@ -7,15 +7,15 @@ package org.chromium.chrome.browser.password_check.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
+import org.chromium.chrome.browser.password_check.PasswordChangeType;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
-import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
+import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.io.UnsupportedEncodingException;
@@ -32,6 +32,7 @@ public class PasswordCheckChangePasswordHelper {
     private static final String AUTOFILL_ASSISTANT_ENABLED_KEY =
             AUTOFILL_ASSISTANT_PACKAGE + "ENABLED";
     private static final String PASSWORD_CHANGE_USERNAME_PARAMETER = "PASSWORD_CHANGE_USERNAME";
+    private static final String PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER = "PASSWORD_CHANGE_SKIP_LOGIN";
     private static final String INTENT_PARAMETER = "INTENT";
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String START_IMMEDIATELY_PARAMETER = "START_IMMEDIATELY";
@@ -65,7 +66,8 @@ public class PasswordCheckChangePasswordHelper {
         // match to open it.
         IntentUtils.safeStartActivity(mContext,
                 credential.getAssociatedApp().isEmpty()
-                        ? buildIntent(credential.getPasswordChangeUrl())
+                        ? buildIntent(
+                                credential.getPasswordChangeUrl(), PasswordChangeType.MANUAL_CHANGE)
                         : getPackageLaunchIntent(credential.getAssociatedApp()));
     }
 
@@ -88,21 +90,9 @@ public class PasswordCheckChangePasswordHelper {
      */
     public void launchCctWithScript(CompromisedCredential credential) {
         String origin = credential.getAssociatedUrl().getOrigin().getSpec();
-        Intent intent = buildIntent(origin);
+        Intent intent = buildIntent(origin, PasswordChangeType.AUTOMATED_CHANGE);
         populateAutofillAssistantExtras(intent, origin, credential.getUsername());
         IntentUtils.safeStartActivity(mContext, intent);
-    }
-
-    /**
-     * Launches a settings fragment to edit the given credential.
-     * @param credential A {@link CompromisedCredential} to change.
-     */
-    public void launchEditPage(CompromisedCredential credential) {
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putParcelable(
-                PasswordCheckEditFragmentView.EXTRA_COMPROMISED_CREDENTIAL, credential);
-        mSettingsLauncher.launchSettingsActivity(
-                mContext, PasswordCheckEditFragmentView.class, fragmentArgs);
     }
 
     private Intent getPackageLaunchIntent(String packageName) {
@@ -114,9 +104,10 @@ public class PasswordCheckChangePasswordHelper {
      * Builds an intent to launch a CCT.
      *
      * @param initialUrl Initial URL to launch a CCT.
+     * @param passwordChangeType Password change type.
      * @return {@link Intent} for CCT.
      */
-    private Intent buildIntent(String initialUrl) {
+    private Intent buildIntent(String initialUrl, @PasswordChangeType int passwordChangeType) {
         CustomTabsIntent customTabIntent =
                 new CustomTabsIntent.Builder().setShowTitle(true).build();
         customTabIntent.intent.setData(Uri.parse(initialUrl));
@@ -124,6 +115,9 @@ public class PasswordCheckChangePasswordHelper {
                 mContext, customTabIntent.intent);
         intent.setPackage(mContext.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
+        intent.putExtra(PasswordCheckUkmRecorder.PASSWORD_CHECK_PACKAGE
+                        + PasswordCheckUkmRecorder.PASSWORD_CHANGE_TYPE,
+                passwordChangeType);
         mTrustedIntentHelper.addTrustedIntentExtras(intent);
         return intent;
     }
@@ -140,6 +134,7 @@ public class PasswordCheckChangePasswordHelper {
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + INTENT_PARAMETER, INTENT);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + START_IMMEDIATELY_PARAMETER, true);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + CALLER_PARAMETER, IN_CHROME_CALLER);
+        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + PASSWORD_CHANGE_SKIP_LOGIN_PARAMETER, false);
         // Note: All string-typed parameters must be URL-encoded, because the
         // corresponding extraction logic will URL-*de*code them before use,
         // see TriggerContext.java.

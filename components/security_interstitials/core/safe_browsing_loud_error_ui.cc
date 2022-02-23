@@ -140,7 +140,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
         break;
       }
       // If the user can't proceed, fall through to CMD_DONT_PROCEED.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case CMD_DONT_PROCEED: {
       // User pressed on the button to return to safety.

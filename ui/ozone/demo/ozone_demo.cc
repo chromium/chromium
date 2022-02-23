@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
   logging::LoggingSettings settings;
 
 // Logs to system debug by default on POSIX.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   settings.log_file_path = FILE_PATH_LITERAL("ozone_demo.log");
 #endif
 

@@ -13,6 +13,7 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/image_model_utils.h"
@@ -136,7 +137,7 @@ gfx::ImageSkia ImageView::GetPaintImage(float scale) {
       return image;
 
     const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-    if (rep.scale() == scale)
+    if (rep.scale() == scale || rep.unscaled())
       return image;
 
     if (scaled_image_.HasRepresentation(scale))

@@ -237,19 +237,19 @@ void UnsentLogStore::Purge() {
     local_state_->ClearPref(metadata_pref_name_);
 }
 
-void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
-  if (list_value.GetList().empty()) {
+void UnsentLogStore::ReadLogsFromPrefList(const base::Value& list_value) {
+  if (list_value.GetListDeprecated().empty()) {
     metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::LIST_EMPTY);
     return;
   }
 
-  const size_t log_count = list_value.GetList().size();
+  const size_t log_count = list_value.GetListDeprecated().size();
 
   DCHECK(list_.empty());
   list_.resize(log_count);
 
   for (size_t i = 0; i < log_count; ++i) {
-    const base::Value& value = list_value.GetList()[i];
+    const base::Value& value = list_value.GetListDeprecated()[i];
     const base::DictionaryValue* dict = nullptr;
     if (value.is_dict())
       dict = &base::Value::AsDictionaryValue(value);
@@ -335,24 +335,23 @@ void UnsentLogStore::TrimLogs() {
   }
 }
 
-void UnsentLogStore::WriteLogsToPrefList(base::ListValue* list_value) const {
+void UnsentLogStore::WriteLogsToPrefList(base::Value* list_value) const {
   list_value->ClearList();
 
   base::HistogramBase::Count unsent_samples_count = 0;
   size_t unsent_persisted_size = 0;
 
   for (auto& log : list_) {
-    std::unique_ptr<base::DictionaryValue> dict_value(
-        new base::DictionaryValue);
-    dict_value->SetString(kLogHashKey, EncodeToBase64(log->hash));
-    dict_value->SetString(kLogSignatureKey, EncodeToBase64(log->signature));
-    dict_value->SetString(kLogDataKey,
-                          EncodeToBase64(log->compressed_log_data));
-    dict_value->SetString(kLogTimestampKey, log->timestamp);
+    base::Value dict_value{base::Value::Type::DICTIONARY};
+    dict_value.SetStringKey(kLogHashKey, EncodeToBase64(log->hash));
+    dict_value.SetStringKey(kLogSignatureKey, EncodeToBase64(log->signature));
+    dict_value.SetStringKey(kLogDataKey,
+                            EncodeToBase64(log->compressed_log_data));
+    dict_value.SetStringKey(kLogTimestampKey, log->timestamp);
 
     auto user_id = log->log_metadata.user_id;
     if (user_id.has_value()) {
-      dict_value->SetString(
+      dict_value.SetStringKey(
           kLogUserIdKey, EncodeToBase64(base::NumberToString(user_id.value())));
     }
     list_value->Append(std::move(dict_value));
@@ -375,7 +374,7 @@ void UnsentLogStore::WriteToMetricsPref(
     return;
 
   DictionaryPrefUpdate update(local_state_, metadata_pref_name_);
-  base::DictionaryValue* pref_data = update.Get();
+  base::Value* pref_data = update.Get();
   pref_data->SetKey(kLogUnsentCountKey, base::Value(unsent_samples_count));
   pref_data->SetKey(kLogSentCountKey, base::Value(sent_samples_count));
   // Round up to kb.
@@ -388,8 +387,7 @@ void UnsentLogStore::RecordMetaDataMetrics() {
   if (metadata_pref_name_ == nullptr)
     return;
 
-  const base::DictionaryValue* value =
-      local_state_->GetDictionary(metadata_pref_name_);
+  const base::Value* value = local_state_->GetDictionary(metadata_pref_name_);
   if (!value)
     return;
 

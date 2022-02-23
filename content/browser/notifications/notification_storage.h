@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_NOTIFICATIONS_NOTIFICATION_STORAGE_H_
 
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 

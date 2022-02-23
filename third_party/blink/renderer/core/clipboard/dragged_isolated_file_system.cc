@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/clipboard/dragged_isolated_file_system.h"
 
+#include "base/check.h"
+
 namespace blink {
 
 DraggedIsolatedFileSystem::FileSystemIdPreparationCallback

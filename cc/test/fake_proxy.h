@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -53,7 +54,6 @@ class FakeProxy : public Proxy {
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {}
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
-  void ClearHistory() override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
   void SetEnableFrameRateThrottling(
@@ -61,7 +61,7 @@ class FakeProxy : public Proxy {
   uint32_t GetAverageThroughput() const override;
 
  private:
-  LayerTreeHost* layer_tree_host_;
+  raw_ptr<LayerTreeHost> layer_tree_host_;
 };
 
 }  // namespace cc

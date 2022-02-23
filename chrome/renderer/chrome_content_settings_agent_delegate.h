@@ -40,7 +40,6 @@ class ChromeContentSettingsAgentDelegate
   absl::optional<bool> AllowReadFromClipboard() override;
   absl::optional<bool> AllowWriteToClipboard() override;
   absl::optional<bool> AllowMutationEvents() override;
-  void PassiveInsecureContentFound(const blink::WebURL&) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeContentSettingsAgentDelegateBrowserTest,

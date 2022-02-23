@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -42,14 +42,8 @@ testcase.tabindexFocus = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-
-  let driveWelcomeLinkQuery = '#drive-welcome-link';
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
-    driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
-  }
+  await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
+  const driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
 
   // Check that the file list has the focus on launch.
   await Promise.all([
@@ -71,17 +65,10 @@ testcase.tabindexFocus = async () => {
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
-  if (isBannersFrameworkEnabled) {
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
-  } else {
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
-  }
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
@@ -94,13 +81,8 @@ testcase.tabindexFocusDownloads = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(
-        appId, 'holding-space-welcome-banner');
-  }
+  await remoteCall.isolateBannerForTesting(
+      appId, 'holding-space-welcome-banner');
 
   // Check that the file list has the focus on launch.
   await remoteCall.waitForElement(appId, ['#file-list:focus']);
@@ -121,13 +103,8 @@ testcase.tabindexFocusDownloads = async () => {
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
-  if (isBannersFrameworkEnabled) {
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
-  } else {
-    chrome.test.assertTrue(await remoteCall.checkNextTabFocus(
-        appId, 'holding-space-welcome-dismiss'));
-  }
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 };
@@ -139,14 +116,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
 
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-
-  let driveWelcomeLinkQuery = '#drive-welcome-link';
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
-    driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
-  }
+  await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
+  const driveWelcomeLinkQuery = '#banners > drive-welcome-banner:not([hidden])';
 
   // Check that the file list has the focus on launch.
   await Promise.all([
@@ -195,18 +166,10 @@ testcase.tabindexFocusDirectorySelected = async () => {
       await remoteCall.checkNextTabFocus(appId, 'sort-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'gear-button'));
-  if (isBannersFrameworkEnabled) {
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
-  } else {
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
-
-    chrome.test.assertTrue(
-        await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
-  }
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'drive-learn-more-button'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'dismiss-button'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 
@@ -282,21 +245,13 @@ testcase.tabindexOpenDialogDownloads = async () => {
   const tabindexIds = [
     'cancel-button', 'ok-button', 'directory-tree',
     /* first breadcrumb */ 'first', 'search-button', 'view-button',
-    'sort-button', 'gear-button'
+    'sort-button', 'gear-button', 'dismiss-button', 'file-list'
   ];
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-  if (isBannersFrameworkEnabled) {
-    tabindexIds.push('dismiss-button');
-  }
-  tabindexIds.push('file-list');
   return tabindexFocus(
       {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, async (appId) => {
         await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
-        if (isBannersFrameworkEnabled) {
-          await remoteCall.isolateBannerForTesting(
-              appId, 'holding-space-welcome-banner');
-        }
+        await remoteCall.isolateBannerForTesting(
+            appId, 'holding-space-welcome-banner');
       }, ['#ok-button:not([disabled])'], tabindexIds);
 };
 
@@ -306,26 +261,14 @@ testcase.tabindexOpenDialogDownloads = async () => {
  */
 testcase.tabindexOpenDialogDrive = async () => {
   const tabindexIds = [
-    'cancel-button',
-    'ok-button',
-    'search-button',
-    'view-button',
-    'sort-button',
-    'gear-button',
+    'cancel-button', 'ok-button', 'search-button', 'view-button', 'sort-button',
+    'gear-button', 'drive-learn-more-button', 'dismiss-button',
+    'directory-tree', 'file-list'
   ];
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-  if (isBannersFrameworkEnabled) {
-    tabindexIds.push('drive-learn-more-button', 'dismiss-button');
-  }
-  tabindexIds.push('directory-tree', 'file-list');
   return tabindexFocus(
       {type: 'openFile'}, 'drive', BASIC_DRIVE_ENTRY_SET, async (appId) => {
         await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
-        if (isBannersFrameworkEnabled) {
-          await remoteCall.isolateBannerForTesting(
-              appId, 'drive-welcome-banner');
-        }
+        await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
       }, ['#ok-button:not([disabled])'], tabindexIds);
 };
 

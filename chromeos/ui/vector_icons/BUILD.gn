@@ -40,6 +40,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "filetype_tini.icon",
     "filetype_video.icon",
     "filetype_word.icon",
+    "keyboard_shortcuts.icon",
     "notification_assistant.icon",
     "notification_supervised_user.icon",
     "notification_warning.icon",

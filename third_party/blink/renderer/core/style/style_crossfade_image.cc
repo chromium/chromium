@@ -64,16 +64,16 @@ bool StyleCrossfadeImage::IsAccessAllowed(String& failing_url) const {
          (!to_image_ || to_image_->IsAccessAllowed(failing_url));
 }
 
-FloatSize StyleCrossfadeImage::ImageSize(float multiplier,
-                                         const FloatSize& default_object_size,
-                                         RespectImageOrientationEnum) const {
+gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
+                                          const gfx::SizeF& default_object_size,
+                                          RespectImageOrientationEnum) const {
   if (!from_image_ || !to_image_)
-    return FloatSize();
+    return gfx::SizeF();
 
   // TODO(fs): Consider |respect_orientation|?
-  FloatSize from_image_size = from_image_->ImageSize(
+  gfx::SizeF from_image_size = from_image_->ImageSize(
       multiplier, default_object_size, kRespectImageOrientation);
-  FloatSize to_image_size = to_image_->ImageSize(
+  gfx::SizeF to_image_size = to_image_->ImageSize(
       multiplier, default_object_size, kRespectImageOrientation);
 
   // Rounding issues can cause transitions between images of equal size to
@@ -84,10 +84,10 @@ FloatSize StyleCrossfadeImage::ImageSize(float multiplier,
 
   float percentage = original_value_->Percentage().GetFloatValue();
   float inverse_percentage = 1 - percentage;
-  return FloatSize(from_image_size.width() * inverse_percentage +
-                       to_image_size.width() * percentage,
-                   from_image_size.height() * inverse_percentage +
-                       to_image_size.height() * percentage);
+  return gfx::SizeF(from_image_size.width() * inverse_percentage +
+                        to_image_size.width() * percentage,
+                    from_image_size.height() * inverse_percentage +
+                        to_image_size.height() * percentage);
 }
 
 bool StyleCrossfadeImage::HasIntrinsicSize() const {
@@ -122,12 +122,12 @@ scoped_refptr<Image> StyleCrossfadeImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& target_size) const {
+    const gfx::SizeF& target_size) const {
   if (target_size.IsEmpty())
     return nullptr;
   if (!from_image_ || !to_image_)
     return Image::NullImage();
-  const FloatSize resolved_size =
+  const gfx::SizeF resolved_size =
       ImageSize(style.EffectiveZoom(), target_size, kRespectImageOrientation);
   const ImageResourceObserver* proxy_observer =
       original_value_->GetObserverProxy();

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -290,8 +290,8 @@ class NET_EXPORT NetworkErrorLoggingService {
   NetworkErrorLoggingService();
 
   // Unowned:
-  const base::Clock* clock_;
-  ReportingService* reporting_service_;
+  raw_ptr<const base::Clock> clock_;
+  raw_ptr<ReportingService> reporting_service_;
   bool shut_down_;
 };
 

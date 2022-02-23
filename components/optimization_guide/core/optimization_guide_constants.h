@@ -33,6 +33,9 @@ extern const base::FilePath::CharType kOptimizationGuideHintStore[];
 extern const base::FilePath::CharType
     kOptimizationGuidePredictionModelAndFeaturesStore[];
 
+// The folder where the page entities metadata store will be stored on disk.
+extern const base::FilePath::CharType kPageEntitiesMetadataStore[];
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_CONSTANTS_H_

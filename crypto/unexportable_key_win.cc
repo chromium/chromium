@@ -7,6 +7,7 @@
 #include <ncrypt.h>
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/logging.h"
@@ -350,7 +351,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             MS_PLATFORM_CRYPTO_PROVIDER, /*flags=*/0))) {
       // If the operation failed then |provider| doesn't have a valid handle in
       // it and we shouldn't try to free it.
-      (void)provider.release();
+      std::ignore = provider.release();
       return absl::nullopt;
     }
 
@@ -369,7 +370,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             MS_PLATFORM_CRYPTO_PROVIDER, /*flags=*/0))) {
       // If the operation failed when |provider| doesn't have a valid handle in
       // it and we shouldn't try to free it.
-      (void)provider.release();
+      std::ignore = provider.release();
       return nullptr;
     }
 
@@ -387,7 +388,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             /*dwLegacyKeySpec=*/0, /*dwFlags=*/0))) {
       // If the operation failed then |key| doesn't have a valid handle in it
       // and we shouldn't try and free it.
-      (void)key.release();
+      std::ignore = key.release();
       return nullptr;
     }
 
@@ -435,7 +436,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             MS_PLATFORM_CRYPTO_PROVIDER, /*flags=*/0))) {
       // If the operation failed when |provider| doesn't have a valid handle in
       // it and we shouldn't try to free it.
-      (void)provider.release();
+      std::ignore = provider.release();
       return nullptr;
     }
 
@@ -447,7 +448,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
             /*dwFlags=*/NCRYPT_SILENT_FLAG))) {
       // If the operation failed then |key| doesn't have a valid handle in it
       // and we shouldn't try and free it.
-      (void)key.release();
+      std::ignore = key.release();
       return nullptr;
     }
 

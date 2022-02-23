@@ -34,23 +34,11 @@
 
 namespace blink {
 
-namespace {
-// CSSSelector is one of the top types that consume renderer memory,
-// so instead of using the |WTF_HEAP_PROFILER_TYPE_NAME| macro in the
-// allocations below, pass this type name constant to allow profiling
-// in official builds.
-const char kCSSSelectorTypeName[] = "blink::CSSSelector";
-
-}  // namespace
-
 CSSSelectorList CSSSelectorList::Copy() const {
   CSSSelectorList list;
 
   unsigned length = ComputeLength();
-  list.selector_array_ =
-      reinterpret_cast<CSSSelector*>(WTF::Partitions::FastMalloc(
-          WTF::Partitions::ComputeAllocationSize(length, sizeof(CSSSelector)),
-          kCSSSelectorTypeName));
+  list.selector_array_ = std::make_unique<CSSSelector[]>(length);
   for (unsigned i = 0; i < length; ++i)
     new (&list.selector_array_[i]) CSSSelector(selector_array_[i]);
 
@@ -68,10 +56,7 @@ CSSSelectorList CSSSelectorList::AdoptSelectorVector(
   DCHECK(flattened_size);
 
   CSSSelectorList list;
-  list.selector_array_ = reinterpret_cast<CSSSelector*>(
-      WTF::Partitions::FastMalloc(WTF::Partitions::ComputeAllocationSize(
-                                      flattened_size, sizeof(CSSSelector)),
-                                  kCSSSelectorTypeName));
+  list.selector_array_ = std::make_unique<CSSSelector[]>(flattened_size);
   wtf_size_t array_index = 0;
   for (wtf_size_t i = 0; i < selector_vector.size(); ++i) {
     CSSParserSelector* current = selector_vector[i].get();
@@ -113,22 +98,10 @@ const CSSSelector* CSSSelectorList::FirstForCSSOM() const {
 unsigned CSSSelectorList::ComputeLength() const {
   if (!selector_array_)
     return 0;
-  CSSSelector* current = selector_array_;
+  const CSSSelector* current = First();
   while (!current->IsLastInSelectorList())
     ++current;
-  return static_cast<unsigned>(current - selector_array_) + 1;
-}
-
-void CSSSelectorList::DeleteSelectors() {
-  DCHECK(selector_array_);
-
-  bool finished = false;
-  for (CSSSelector* s = selector_array_; !finished; ++s) {
-    finished = s->IsLastInSelectorList();
-    s->~CSSSelector();
-  }
-
-  WTF::Partitions::FastFree(selector_array_);
+  return SelectorIndex(*current) + 1;
 }
 
 String CSSSelectorList::SelectorsText() const {

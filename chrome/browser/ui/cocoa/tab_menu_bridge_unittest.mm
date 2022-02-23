@@ -206,6 +206,23 @@ TEST_F(TabMenuBridgeTest, TracksModelUpdates) {
   ExpectDynamicTabsInMenuAre({"Tab 5", "Tab 3", "Tab 2"});
 }
 
+// Tests that dynamic menu items added by the bridge are removed on
+// bridge destruction.
+TEST_F(TabMenuBridgeTest, RemoveDynamicMenuItemsOnDestruct) {
+  std::unique_ptr<TabMenuBridge> bridge =
+      std::make_unique<TabMenuBridge>(model(), menu_root());
+  bridge->BuildMenu();
+
+  AddModelTabNamed("Tab 1");
+  AddModelTabNamed("Tab 2");
+  AddModelTabNamed("Tab 3");
+  ExpectDynamicTabsInMenuAre({"Tab 1", "Tab 2", "Tab 3"});
+
+  bridge.reset();
+
+  ExpectDynamicTabsInMenuAre({});
+}
+
 TEST_F(TabMenuBridgeTest, ClickingMenuActivatesTab) {
   TabMenuBridge bridge(model(), menu_root());
   bridge.BuildMenu();

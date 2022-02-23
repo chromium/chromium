@@ -30,7 +30,7 @@ const char* enum_names[] = {
 
 #include "ui/color/color_id_macros.inc"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/color/color_mixers.h"
 #endif
 

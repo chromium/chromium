@@ -24,7 +24,7 @@ def _get_commit_message(rev):
 def get_commit_date(rev):
   """Gets the date a commit was committed."""
   raw_date = _run_git('show', '--no-patch', '--no-notes', '--pretty=%cd',
-                      rev).strip()
+                      rev).strip().decode('utf-8')
   # The last space separate section is timezone. '%z' doesn't let us parse this
   # because python datetime (in 2.7, at least) doesn't support parsing timezones
   # by default.
@@ -50,4 +50,4 @@ def get_revisions_between(commit1, commit2):
       commit2.
   """
   lines = _run_git('log', '--format=oneline', '%s..%s' % (commit1, commit2))
-  return [l.split()[0].strip() for l in lines.splitlines()]
+  return [l.split()[0].strip().decode('utf-8') for l in lines.splitlines()]

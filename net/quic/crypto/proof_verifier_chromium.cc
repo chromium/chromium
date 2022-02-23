@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -131,17 +132,17 @@ class ProofVerifierChromium::Job {
   int CheckCTCompliance();
 
   // Proof verifier to notify when this jobs completes.
-  ProofVerifierChromium* proof_verifier_;
+  raw_ptr<ProofVerifierChromium> proof_verifier_;
 
   // The underlying verifier used for verifying certificates.
-  CertVerifier* verifier_;
+  raw_ptr<CertVerifier> verifier_;
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
 
-  CTPolicyEnforcer* policy_enforcer_;
+  raw_ptr<CTPolicyEnforcer> policy_enforcer_;
 
-  TransportSecurityState* transport_security_state_;
+  raw_ptr<TransportSecurityState> transport_security_state_;
 
-  SCTAuditingDelegate* sct_auditing_delegate_;
+  raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
 
   // |hostname| specifies the hostname for which |certs| is a valid chain.
   std::string hostname_;
@@ -422,7 +423,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         break;
       case TransportSecurityState::PKPStatus::BYPASSED:
         verify_details_->pkp_bypassed = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case TransportSecurityState::PKPStatus::OK:
         // Do nothing.
         break;
@@ -526,25 +527,6 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           CERT_STATUS_CT_COMPLIANCE_FAILED;
       verify_details_->cert_verify_result.cert_status &= ~CERT_STATUS_IS_EV;
     }
-
-    // Record the CT compliance status for connections with EV certificates,
-    // to distinguish how often EV status is being dropped due to failing CT
-    // compliance.
-    if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Net.CertificateTransparency.EVCompliance2.QUIC",
-          cert_verify_result.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
-
-  // Record the CT compliance of every connection to get an overall picture of
-  // how many connections are CT-compliant.
-  if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.CertificateTransparency.ConnectionComplianceStatus2.QUIC",
-        verify_details_->cert_verify_result.policy_compliance,
-        ct::CTPolicyCompliance::CT_POLICY_COUNT);
   }
 
   TransportSecurityState::CTRequirementsStatus ct_requirement_status =
@@ -557,22 +539,8 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           cert_verify_result.policy_compliance,
           proof_verifier_->network_isolation_key_);
-  if (ct_requirement_status != TransportSecurityState::CT_NOT_REQUIRED) {
-    if (verify_details_->cert_verify_result.is_issued_by_known_root) {
-      // Record the CT compliance of connections for which compliance is
-      // required; this helps answer the question: "Of all connections that
-      // are supposed to be serving valid CT information, how many fail to do
-      // so?"
-      UMA_HISTOGRAM_ENUMERATION(
-          "Net.CertificateTransparency.CTRequiredConnectionComplianceStatus2."
-          "QUIC",
-          cert_verify_result.policy_compliance,
-          ct::CTPolicyCompliance::CT_POLICY_COUNT);
-    }
-  }
 
-  if (sct_auditing_delegate_ &&
-      sct_auditing_delegate_->IsSCTAuditingEnabled()) {
+  if (sct_auditing_delegate_) {
     sct_auditing_delegate_->MaybeEnqueueReport(
         HostPortPair(hostname_, port_), cert_verify_result.verified_cert.get(),
         cert_verify_result.scts);

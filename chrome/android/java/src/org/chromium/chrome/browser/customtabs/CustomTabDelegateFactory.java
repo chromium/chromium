@@ -11,8 +11,6 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -20,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -95,8 +92,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
 
-        private boolean mHasActivityStarted;
-
         /**
          * Constructs a new instance of {@link CustomTabNavigationDelegate}.
          */
@@ -110,55 +105,21 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public void didStartActivity(Intent intent) {
-            mHasActivityStarted = true;
+        public boolean maybeSetTargetPackage(Intent intent) {
+            // If the client app can handle the intent, set it as the receiver.
+            if (!TextUtils.isEmpty(mClientPackageName)
+                    && isPackageSpecializedHandler(mClientPackageName, intent)) {
+                intent.setSelector(null);
+                intent.setPackage(mClientPackageName);
+                return true;
+            }
+            return false;
         }
 
         @Override
-        public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-                Intent intent, boolean proxy) {
-            // Note: This method will not be called if shouldDisableExternalIntentRequestsForUrl()
-            // returns false.
-
-            // TODO(https://crbug.com/1194706): This should probably be using intent#getData
-            // instead.
-            boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(intent.toUri(0));
-            boolean hasDefaultHandler = hasDefaultHandler(intent);
-            // For a URL chrome can handle and there is no default set, handle it ourselves.
-            if (!hasDefaultHandler) {
-                if (!TextUtils.isEmpty(mClientPackageName)
-                        && isPackageSpecializedHandler(mClientPackageName, intent)) {
-                    // Package and Selector cannot be set at the same time.
-                    intent.setSelector(null);
-                    intent.setPackage(mClientPackageName);
-                } else if (!isExternalProtocol) {
-                    return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-                }
-            }
-
-            if (proxy) {
-                dispatchAuthenticatedIntent(intent);
-                mHasActivityStarted = true;
-                return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
-            } else {
-                // Defer to ExternalNavigationHandler to call startActivityIfNeeded.
-                return StartActivityIfNeededResult.DID_NOT_HANDLE;
-            }
-        }
-
-        /**
-         * Resolve the default external handler of an intent.
-         * @return Whether the default external handler is found: if chrome turns out to be the
-         *         default handler, this method will return false.
-         */
-        private boolean hasDefaultHandler(Intent intent) {
-            ResolveInfo info =
-                    PackageManagerUtils.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-            if (info == null) return false;
-
-            final String chromePackage = mApplicationContext.getPackageName();
-            // If a default handler is found and it is not chrome itself, fire the intent.
-            return info.match != 0 && !chromePackage.equals(info.activityInfo.packageName);
+        public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+            // Don't show the disambiguation dialog if Chrome could handle the intent.
+            return UrlUtilities.isAcceptedScheme(intent.toUri(0));
         }
 
         @Override
@@ -167,14 +128,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
             return isPackageSpecializedHandler(mClientPackageName, intent);
-        }
-
-        /**
-         * @return Whether an external activity has started to handle a url. For testing only.
-         */
-        @VisibleForTesting
-        public boolean hasExternalActivityStarted() {
-            return mHasActivityStarted;
         }
 
         @Override

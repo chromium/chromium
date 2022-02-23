@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
-
 namespace web {
 class WebState;
 }
@@ -18,9 +16,16 @@ namespace chrome_test_util {
 // Opens a new tab, and does not wait for animations to complete.
 void OpenNewTab();
 
+// TODO(crbug.com/1277282): deprecate this in favor of
+// SimulateExternalAppURLOpeningWithURL() to not allow loading an external
+// page.
+//
 // Simulates opening http://www.example.com/ from another application.
 // Returns the opened URL.
 NSURL* SimulateExternalAppURLOpening();
+
+// Simulates opening |URL| from another application.
+void SimulateExternalAppURLOpeningWithURL(NSURL* URL);
 
 // Simulates opening the add account sign-in flow from the web.
 void SimulateAddAccountFromWeb();
@@ -92,10 +97,10 @@ void SaveSessionImmediately();
 void EvictOtherBrowserTabs();
 
 // Closes all normal (non-incognito) tabs. Return YES on success.
-BOOL CloseAllNormalTabs() WARN_UNUSED_RESULT;
+[[nodiscard]] BOOL CloseAllNormalTabs();
 
 // Closes all incognito tabs. Return YES on success.
-BOOL CloseAllIncognitoTabs() WARN_UNUSED_RESULT;
+[[nodiscard]] BOOL CloseAllIncognitoTabs();
 
 // Returns the number of main tabs currently evicted.
 NSUInteger GetEvictedMainTabCount();

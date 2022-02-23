@@ -25,7 +25,6 @@
 namespace ash {
 namespace {
 
-using ::chromeos::PrinterDetector;
 using ::local_discovery::FakeServiceDiscoveryDeviceLister;
 using ::local_discovery::ServiceDescription;
 using ::local_discovery::ServiceDiscoveryDeviceLister;

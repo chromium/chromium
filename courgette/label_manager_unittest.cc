@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "courgette/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

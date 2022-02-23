@@ -72,6 +72,9 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   RoutineLog* GetRoutineLog() const;
   NetworkingLog* GetNetworkingLog() const;
 
+  // Sets the task runner to use for testing.
+  void SetTaskRunnerForTesting(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   void SetWebUIForTest(content::WebUI* web_ui);
   void SetLogCreatedClosureForTest(base::OnceClosure closure);
 
@@ -95,7 +98,12 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   std::string save_session_log_callback_id_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::OnceClosure log_created_closure_;
+  // Task runner for tasks posted by save session log handler. Used to ensure
+  // posted tasks are handled while SessionLogHandler is in scope to stop
+  // heap-use-after-free error.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  base::WeakPtr<SessionLogHandler> weak_ptr_;
   base::WeakPtrFactory<SessionLogHandler> weak_factory_{this};
 };
 

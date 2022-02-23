@@ -477,7 +477,8 @@ TEST_F(OAuth2MintTokenFlowTest,
   for (const auto* required_field : kRequiredFields) {
     std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
     base::Value::ListView cookies =
-        json->FindListPath("resolutionData.browserCookies")->GetList();
+        json->FindListPath("resolutionData.browserCookies")
+            ->GetListDeprecated();
     EXPECT_TRUE(cookies[0].RemoveKey(required_field));
     RemoteConsentResolutionData resolution_data;
     EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
@@ -494,7 +495,8 @@ TEST_F(OAuth2MintTokenFlowTest,
   for (const auto* optional_field : kOptionalFields) {
     std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
     base::Value::ListView cookies =
-        json->FindListPath("resolutionData.browserCookies")->GetList();
+        json->FindListPath("resolutionData.browserCookies")
+            ->GetListDeprecated();
     EXPECT_TRUE(cookies[0].RemoveKey(optional_field));
     RemoteConsentResolutionData resolution_data;
     EXPECT_TRUE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(
@@ -509,7 +511,7 @@ TEST_F(OAuth2MintTokenFlowTest,
        ParseRemoteConsentResponse_BadCookie_BadMaxAge) {
   std::unique_ptr<base::Value> json = ParseJson(kValidRemoteConsentResponse);
   base::Value::ListView cookies =
-      json->FindListPath("resolutionData.browserCookies")->GetList();
+      json->FindListPath("resolutionData.browserCookies")->GetListDeprecated();
   cookies[0].SetStringKey("maxAgeSeconds", "not-a-number");
   RemoteConsentResolutionData resolution_data;
   EXPECT_FALSE(OAuth2MintTokenFlow::ParseRemoteConsentResponse(

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL request Picture-in-Picture consumes user gesture promise_test: Unhandled rejection with value: object "TypeError: element1.requestPictureInPicture is not a function"
+FAIL request Picture-in-Picture does not require user gesture if document.pictureInPictureElement is set promise_test: Unhandled rejection with value: object "TypeError: element.requestPictureInPicture is not a function"
+Harness: the test ran to completion.
+

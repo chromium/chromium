@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -86,8 +87,8 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
     public void setup(AccessibilityTabModelAdapterListener listener) {
         mTabIconDarkColor = AppCompatResources.getColorStateList(
                 getContext(), R.color.default_icon_color_tint_list);
-        mTabIconSelectedDarkColor = AppCompatResources.getColorStateList(
-                getContext(), R.color.default_control_color_active);
+        mTabIconSelectedDarkColor = ColorStateList.valueOf(
+                SemanticColorUtils.getDefaultControlColorActive(getContext()));
         mTabIconLightColor =
                 AppCompatResources.getColorStateList(getContext(), R.color.white_alpha_70);
         mTabIconSelectedLightColor =
@@ -168,8 +169,7 @@ public class AccessibilityTabModelWrapper extends LinearLayout {
             ApiCompatibilityUtils.setImageTintList(
                     mIncognitoButtonIcon, mTabIconSelectedLightColor);
         } else {
-            setBackgroundColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color));
+            setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mStackButtonWrapper.setSelectedTabIndicatorColor(
                     mTabIconSelectedDarkColor.getDefaultColor());
             ApiCompatibilityUtils.setImageTintList(mStandardButtonIcon, mTabIconSelectedDarkColor);

@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_ME2ME_DESKTOP_ENVIRONMENT_H_
 #define REMOTING_HOST_ME2ME_DESKTOP_ENVIRONMENT_H_
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/basic_desktop_environment.h"
 
@@ -75,6 +74,7 @@ class Me2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
   // DesktopEnvironmentFactory interface.
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       const DesktopEnvironmentOptions& options) override;
 };
 

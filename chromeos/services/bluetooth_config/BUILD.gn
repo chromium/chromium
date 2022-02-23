@@ -37,6 +37,10 @@ static_library("bluetooth_config") {
     "device_pairing_handler.h",
     "device_pairing_handler_impl.cc",
     "device_pairing_handler_impl.h",
+    "discovered_devices_provider.cc",
+    "discovered_devices_provider.h",
+    "discovered_devices_provider_impl.cc",
+    "discovered_devices_provider_impl.h",
     "discovery_session_manager.cc",
     "discovery_session_manager.h",
     "discovery_session_manager_impl.cc",
@@ -53,7 +57,9 @@ static_library("bluetooth_config") {
 
   deps = [
     "//ash/constants",
+    "//ash/services/nearby/public/cpp",
     "//base",
+    "//chromeos/dbus/power",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
     "//components/device_event_log",
@@ -62,6 +68,7 @@ static_library("bluetooth_config") {
     "//components/session_manager/core",
     "//components/user_manager",
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -82,6 +89,7 @@ component("in_process_bluetooth_config") {
 
   deps = [
     ":bluetooth_config",
+    "//components/device_event_log",
     "//device/bluetooth",
   ]
 }
@@ -110,6 +118,8 @@ static_library("test_support") {
     "fake_device_pairing_delegate.h",
     "fake_device_pairing_handler.cc",
     "fake_device_pairing_handler.h",
+    "fake_discovered_devices_provider.cc",
+    "fake_discovered_devices_provider.h",
     "fake_discovery_session_manager.cc",
     "fake_discovery_session_manager.h",
     "fake_fast_pair_delegate.cc",
@@ -147,6 +157,7 @@ source_set("unit_tests") {
     "device_name_manager_impl_unittest.cc",
     "device_operation_handler_impl_unittest.cc",
     "device_pairing_handler_impl_unittest.cc",
+    "discovered_devices_provider_impl_unittest.cc",
     "discovery_session_manager_impl_unittest.cc",
     "system_properties_provider_impl_unittest.cc",
   ]
@@ -155,8 +166,12 @@ source_set("unit_tests") {
     ":bluetooth_config",
     ":test_support",
     "//ash/constants",
+    "//ash/services/nearby/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/services/bluetooth_config/public/cpp",
+    "//chromeos/services/bluetooth_config/public/cpp:unit_tests",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",

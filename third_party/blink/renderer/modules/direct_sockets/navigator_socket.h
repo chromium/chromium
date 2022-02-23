@@ -13,8 +13,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -26,6 +25,8 @@ class LocalDOMWindow;
 class Navigator;
 class ScriptState;
 class SocketOptions;
+class TCPSocketOptions;
+class UDPSocketOptions;
 
 class MODULES_EXPORT NavigatorSocket final
     : public GarbageCollected<NavigatorSocket>,
@@ -33,6 +34,8 @@ class MODULES_EXPORT NavigatorSocket final
       public ExecutionContextLifecycleStateObserver {
  public:
   static const char kSupplementName[];
+
+  enum class ProtocolType { kTcp, kUdp };
 
   explicit NavigatorSocket(ExecutionContext*);
   ~NavigatorSocket() override = default;
@@ -47,12 +50,12 @@ class MODULES_EXPORT NavigatorSocket final
   // Navigator partial interface
   static ScriptPromise openTCPSocket(ScriptState*,
                                      Navigator&,
-                                     const SocketOptions*,
+                                     const TCPSocketOptions*,
                                      ExceptionState&);
 
   static ScriptPromise openUDPSocket(ScriptState*,
                                      Navigator&,
-                                     const SocketOptions*,
+                                     const UDPSocketOptions*,
                                      ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
@@ -66,14 +69,16 @@ class MODULES_EXPORT NavigatorSocket final
   void EnsureServiceConnected(LocalDOMWindow&);
 
   static mojom::blink::DirectSocketOptionsPtr CreateSocketOptions(
-      const SocketOptions&);
+      const SocketOptions* options,
+      NavigatorSocket::ProtocolType socket_type,
+      ExceptionState& exception_state);
 
   ScriptPromise openTCPSocket(ScriptState*,
-                              const SocketOptions*,
+                              const TCPSocketOptions*,
                               ExceptionState&);
 
   ScriptPromise openUDPSocket(ScriptState*,
-                              const SocketOptions*,
+                              const UDPSocketOptions*,
                               ExceptionState&);
 
   // Updates exception state whenever returning false.

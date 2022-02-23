@@ -5,6 +5,7 @@
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -54,7 +55,7 @@ void PrivacyScreenToastController::ShowToast() {
   // Decrease bottom and right insets to compensate for the adjustment of
   // the respective edges in Shelf::GetSystemTrayAnchorRect().
   init_params.insets = GetTrayBubbleInsets();
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
 

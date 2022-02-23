@@ -8,24 +8,26 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/login/auth/user_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace ash {
+
+class UserContext;
 
 class EncryptionMigrationScreen : public BaseScreen,
                                   public PowerManagerClient::Observer,

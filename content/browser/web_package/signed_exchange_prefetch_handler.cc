@@ -86,7 +86,8 @@ void SignedExchangePrefetchHandler::OnReceiveEarlyHints(
 }
 
 void SignedExchangePrefetchHandler::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   NOTREACHED();
 }
 

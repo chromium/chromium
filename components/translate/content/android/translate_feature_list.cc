@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/translate/content/android/jni_headers/TranslateFeatureList_jni.h"
@@ -19,7 +20,6 @@ namespace {
 // components/language/core/common/language_experiments.h.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kContentLanguagesInLanguagePicker,
-    &language::kDetectedSourceLanguageOption,
 };
 
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList

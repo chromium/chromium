@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_CONTAINER_VALUES_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 
@@ -14,22 +15,28 @@ class CSSContainerValues : public MediaValuesDynamic {
  public:
   explicit CSSContainerValues(Document& document,
                               const ComputedStyle& style,
-                              double width,
-                              double height);
+                              absl::optional<double> width,
+                              absl::optional<double> height);
 
-  double Width() const override { return width_; }
-  double Height() const override { return height_; }
+  // Returns absl::nullopt if queries on the relevant axis is not
+  // supported.
+  absl::optional<double> Width() const override { return width_; }
+  absl::optional<double> Height() const override { return height_; }
 
  protected:
   float EmSize() const override;
   float RemSize() const override;
   float ExSize() const override;
   float ChSize() const override;
+  WritingMode GetWritingMode() const override { return writing_mode_; }
 
+ private:
   // Container width in CSS pixels.
-  double width_;
+  absl::optional<double> width_;
   // Container height in CSS pixels.
-  double height_;
+  absl::optional<double> height_;
+  // The writing-mode of the container.
+  WritingMode writing_mode_;
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
 };

@@ -8,6 +8,8 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_estimate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_usage_details.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -19,7 +21,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/quota/quota_utils.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -43,13 +45,20 @@ void QueryStorageUsageAndQuotaCallback(
     int64_t quota_in_bytes,
     UsageBreakdownPtr usage_breakdown) {
   // Avoid crash on shutdown. crbug.com/971594
-  if (!resolver)
+  if (!resolver ||
+      !IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver->GetScriptState()))
     return;
+
+  ScriptState::Scope script_state_scope(resolver->GetScriptState());
+
   if (status_code != mojom::blink::QuotaStatusCode::kOk) {
     // TODO(sashab): Replace this with a switch statement, and remove the enum
     // values from QuotaStatusCode.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        static_cast<DOMExceptionCode>(status_code)));
+    // TODO(crbug.com/1293949): Add an error message.
+    resolver->Reject(V8ThrowDOMException::CreateOrDie(
+        resolver->GetScriptState()->GetIsolate(),
+        static_cast<DOMExceptionCode>(status_code), ""));
     return;
   }
 
@@ -62,9 +71,6 @@ void QueryStorageUsageAndQuotaCallback(
   // exposing obsoleted/proprietary storage systems, but also report when
   // those systems are in use.
   StorageUsageDetails* details = StorageUsageDetails::Create();
-  if (usage_breakdown->appcache) {
-    details->setApplicationCache(usage_breakdown->appcache);
-  }
   if (usage_breakdown->indexedDatabase) {
     details->setIndexedDB(usage_breakdown->indexedDatabase);
   }

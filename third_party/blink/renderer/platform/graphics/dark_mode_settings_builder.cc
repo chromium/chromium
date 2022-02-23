@@ -24,7 +24,7 @@ const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
 const constexpr DarkModeImagePolicy kDefaultDarkModeImagePolicy =
     DarkModeImagePolicy::kFilterSmart;
-const constexpr int kDefaultTextBrightnessThreshold = 150;
+const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 const constexpr float kDefaultDarkModeContrastPercent = 0.0f;
 
@@ -105,14 +105,14 @@ DarkModeImagePolicy GetImagePolicy(const SwitchParams& switch_params) {
   }
 }
 
-int GetTextBrightnessThreshold(const SwitchParams& switch_params) {
+int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
   const int flag_value = base::GetFieldTrialParamByFeatureAsInt(
       features::kForceWebContentsDarkMode,
-      features::kForceDarkTextLightnessThresholdParam.name, -1);
+      features::kForceDarkForegroundLightnessThresholdParam.name, -1);
   return flag_value >= 0 ? flag_value
                          : GetIntegerSwitchParamValue<int>(
-                               switch_params, "TextBrightnessThreshold",
-                               kDefaultTextBrightnessThreshold);
+                               switch_params, "ForegroundBrightnessThreshold",
+                               kDefaultForegroundBrightnessThreshold);
 }
 
 int GetBackgroundBrightnessThreshold(const SwitchParams& switch_params) {
@@ -154,7 +154,7 @@ DarkModeSettings BuildDarkModeSettings() {
       GetImagePolicy(switch_params), DarkModeImagePolicy::kFirst,
       DarkModeImagePolicy::kLast);
   settings.foreground_brightness_threshold =
-      Clamp<int>(GetTextBrightnessThreshold(switch_params), 0, 255);
+      Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =
       Clamp<int>(GetBackgroundBrightnessThreshold(switch_params), 0, 255);
   settings.contrast =

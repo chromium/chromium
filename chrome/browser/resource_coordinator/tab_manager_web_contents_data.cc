@@ -19,7 +19,9 @@ using content::WebContents;
 namespace resource_coordinator {
 
 TabManager::WebContentsData::WebContentsData(content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<TabManager::WebContentsData>(*web_contents) {
+}
 
 TabManager::WebContentsData::~WebContentsData() {}
 

@@ -25,7 +25,7 @@ namespace cc {
 class CC_EXPORT JankMetrics {
  public:
   JankMetrics(FrameSequenceTrackerType tracker_type,
-              FrameSequenceMetrics::ThreadType effective_thread);
+              FrameInfo::SmoothEffectDrivingThread effective_thread);
   ~JankMetrics();
 
   JankMetrics(const JankMetrics&) = delete;
@@ -55,7 +55,7 @@ class CC_EXPORT JankMetrics {
   int jank_count() const { return jank_count_; }
 
   base::TimeDelta max_staleness() const { return max_staleness_; }
-  FrameSequenceMetrics::ThreadType thread_type() const {
+  FrameInfo::SmoothEffectDrivingThread thread_type() const {
     return effective_thread_;
   }
 
@@ -65,7 +65,7 @@ class CC_EXPORT JankMetrics {
 
   // The thread that contributes to the janks detected by the current
   // JankMetrics object.
-  const FrameSequenceMetrics::ThreadType effective_thread_;
+  const FrameInfo::SmoothEffectDrivingThread effective_thread_;
 
   // Number of janks detected.
   int jank_count_ = 0;

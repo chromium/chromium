@@ -48,6 +48,11 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void WaitForServiceToBeAvailable(
+      WaitForServiceToBeAvailableCallback callback) override {
+    proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(
         cdm_oemcrypto::kCdmFactoryDaemonServiceName,

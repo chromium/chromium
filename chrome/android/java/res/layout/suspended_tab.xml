@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
     <LinearLayout
-        android:background="@color/default_bg_color"
+        android:background="@macro/default_bg_color"
         android:fillViewport="true"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"

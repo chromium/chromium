@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("screen_ai") {
+  sources = [
+    "screen_ai_service_impl.cc",
+    "screen_ai_service_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/services/screen_ai/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("screen_ai_sandbox_hook") {
+  sources = [
+    "sandbox/screen_ai_sandbox_hook_linux.cc",
+    "sandbox/screen_ai_sandbox_hook_linux.h",
+  ]
+
+  deps = [
+    "//base",
+    "//sandbox/linux:sandbox_services",
+  ]
+
+  public_deps = [ "//sandbox/policy" ]
+}

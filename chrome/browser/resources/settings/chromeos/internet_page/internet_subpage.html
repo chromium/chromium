@@ -30,7 +30,7 @@
   }
 
   #onOff[on] {
-    color: var(--cros-toggle-color);
+    color: var(--cros-text-color-prominent);
   }
 
   .vpn-header {
@@ -139,6 +139,7 @@
       <network-list id="networkList" show-buttons
           show-technology-badge="[[showTechnologyBadge_]]"
           networks="[[networkStateList_]]"
+          global-policy="[[globalPolicy]]"
           on-selected="onNetworkSelected_"
           device-state="[[deviceState]]">
       </network-list>

@@ -17,11 +17,11 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #endif
 #if BUILDFLAG(USE_VAAPI)
@@ -52,7 +52,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
   // TODO(posciak,henryhsu): improve this so that we choose a superset of
   // resolutions and other supported profile parameters.
   VideoDecodeAccelerator::Capabilities capabilities;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   capabilities.supported_profiles =
       DXVAVideoDecodeAccelerator::GetSupportedProfiles(gpu_preferences,
                                                        workarounds);
@@ -68,7 +68,7 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
       V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles(),
       &capabilities.supported_profiles);
 #endif
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   capabilities.supported_profiles =
       VTVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
 #endif
@@ -135,7 +135,7 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
                                            const gpu::GpuPreferences&,
                                            MediaLog* media_log) const;
   const CreateVDAFp create_vda_fps[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     &GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA,
 #endif
 
@@ -149,7 +149,7 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA,
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     &GpuVideoDecodeAcceleratorFactory::CreateVTVDA,
 #endif
   };
@@ -165,7 +165,7 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<VideoDecodeAccelerator>
 GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA(
     const gpu::GpuDriverBugWorkarounds& workarounds,
@@ -223,7 +223,7 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA(
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::unique_ptr<VideoDecodeAccelerator>
 GpuVideoDecodeAcceleratorFactory::CreateVTVDA(
     const gpu::GpuDriverBugWorkarounds& workarounds,

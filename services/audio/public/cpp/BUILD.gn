@@ -20,8 +20,6 @@ source_set("cpp") {
     "sounds/audio_stream_handler.h",
     "sounds/sounds_manager.cc",
     "sounds/sounds_manager.h",
-    "sounds/test_data.cc",
-    "sounds/test_data.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -42,11 +40,14 @@ source_set("test_support") {
     "fake_stream_factory.h",
     "fake_system_info.cc",
     "fake_system_info.h",
+    "sounds/test_data.cc",
+    "sounds/test_data.h",
   ]
 
   deps = [ "//testing/gmock" ]
 
   public_deps = [
+    ":cpp",
     "//base",
     "//media",
     "//services/audio",

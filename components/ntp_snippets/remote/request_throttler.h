@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REQUEST_THROTTLER_H_
 
+#include "base/memory/raw_ptr.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -77,7 +78,7 @@ class RequestThrottler {
   void SetDay(int day);
   bool HasDay() const;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   const RequestTypeInfo& type_info_;
 
   // The quotas are hardcoded, but can be overridden by variation params.
@@ -85,9 +86,9 @@ class RequestThrottler {
   int interactive_quota_;
 
   // The histograms for reporting the requests of the given |type_|.
-  base::HistogramBase* histogram_request_status_;
-  base::HistogramBase* histogram_per_day_background_;
-  base::HistogramBase* histogram_per_day_interactive_;
+  raw_ptr<base::HistogramBase> histogram_request_status_;
+  raw_ptr<base::HistogramBase> histogram_per_day_background_;
+  raw_ptr<base::HistogramBase> histogram_per_day_interactive_;
 };
 
 }  // namespace ntp_snippets

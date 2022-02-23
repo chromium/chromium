@@ -11,6 +11,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -25,7 +26,12 @@ namespace gfx {
 class ImageSkia;
 }  // namespace gfx
 
+namespace ash {
+class RemoteAppsManager;
+}
+
 namespace apps {
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of Remote apps.
 //
@@ -67,9 +73,13 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
   void DeleteApp(const std::string& app_id);
 
  private:
-  std::unique_ptr<App> CreateApp(const ash::RemoteAppsModel::AppInfo& info);
+  friend class ash::RemoteAppsManager;
+
+  AppPtr CreateApp(const ash::RemoteAppsModel::AppInfo& info);
 
   apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
+
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
@@ -78,6 +88,8 @@ class RemoteApps : public apps::PublisherBase, public AppPublisher {
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

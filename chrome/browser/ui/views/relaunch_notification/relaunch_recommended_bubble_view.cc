@@ -40,9 +40,9 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 views::Widget* RelaunchRecommendedBubbleView::ShowBubble(

@@ -100,9 +100,8 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
     num_loaded_profiles = profile_manager->GetLoadedProfiles().size();
 
     // On ChromeOS multiple profiles doesn't apply, and GetLastOpenedProfiles
-    // causes
-// crashes on ChromeOS. See https://crbug.com/1211793.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // causes crashes on ChromeOS. See https://crbug.com/1211793.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     num_open_profiles = profile_manager->GetLastOpenedProfiles().size();
 #endif
   }

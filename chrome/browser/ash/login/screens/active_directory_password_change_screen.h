@@ -13,14 +13,14 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/key.h"
 
 namespace authpolicy {
 class ActiveDirectoryAccountInfo;
 }
 
 namespace ash {
+
+class Key;
 
 // Controller for the active directory password change screen.
 class ActiveDirectoryPasswordChangeScreen : public BaseScreen {

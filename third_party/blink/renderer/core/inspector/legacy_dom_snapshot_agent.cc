@@ -284,8 +284,8 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     value->setFrameId(IdentifiersFactory::FrameId(document->GetFrame()));
     if (document->View() && document->View()->LayoutViewport()) {
       auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-      value->setScrollOffsetX(offset.width());
-      value->setScrollOffsetY(offset.height());
+      value->setScrollOffsetX(offset.x());
+      value->setScrollOffsetY(offset.y());
     }
   } else if (auto* doc_type = DynamicTo<DocumentType>(node)) {
     value->setPublicId(doc_type->publicId());

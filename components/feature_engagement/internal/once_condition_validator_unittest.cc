@@ -176,6 +176,22 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
                   .NoErrors());
 }
 
+TEST_F(OnceConditionValidatorTest, PriorityNotificationBlocksOtherIPHs) {
+  validator_.SetPriorityNotification("test_bar");
+  ConditionValidator::Result result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      availability_model_, display_lock_controller_, nullptr, 0u);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.priority_notification_ok);
+
+  validator_.SetPriorityNotification(absl::nullopt);
+  EXPECT_TRUE(validator_
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                                   event_model_, availability_model_,
+                                   display_lock_controller_, nullptr, 0u)
+                  .NoErrors());
+}
+
 TEST_F(OnceConditionValidatorTest, DoNotTriggerForInvalidConfig) {
   ConditionValidator::Result result = validator_.MeetsConditions(
       kOnceTestFeatureFoo, kInvalidFeatureConfig, event_model_,

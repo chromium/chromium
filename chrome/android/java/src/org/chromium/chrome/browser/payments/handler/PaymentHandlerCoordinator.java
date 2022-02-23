@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.TabObscuringHandlerSupplier;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -24,6 +23,7 @@ import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -139,7 +139,7 @@ public class PaymentHandlerCoordinator {
 
     private void initializeWebContents(
             WindowAndroid windowAndroid, ContentView webContentView, GURL url) {
-        mPaymentHandlerWebContents.initialize(ChromeVersionInfo.getProductVersion(),
+        mPaymentHandlerWebContents.initialize(VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(webContentView), webContentView,
                 windowAndroid, WebContents.createDefaultInternalsHolder());
 

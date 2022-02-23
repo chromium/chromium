@@ -29,7 +29,7 @@
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/views/test/button_test_api.h"
@@ -51,7 +51,7 @@ void ShowInActiveTab(Browser* browser) {
 // Test whether the zoom bubble is anchored and whether it is visible when in
 // non-immersive fullscreen.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
 
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
 #endif
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
                        MAYBE_AnchorPositionsInFullscreen) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 #endif
 
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   }
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   const bool should_show_toolbar = true;
 #else
   const bool should_show_toolbar = false;
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   ASSERT_TRUE(zoom_bubble);
   if (should_show_toolbar) {
     EXPECT_EQ(org_anchor_view, zoom_bubble->GetAnchorView());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     const ZoomBubbleView* org_zoom_bubble = zoom_bubble;
     // Hide toolbar.
     chrome::ToggleFullscreenToolbar(browser());
@@ -254,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NoWebContentsIsSafe) {
 
 // Ensure a tab switch closes the bubble.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, TabSwitchCloses) {
-  AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   ShowInActiveTab(browser());
   chrome::SelectNextTab(browser());
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
@@ -263,7 +264,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, TabSwitchCloses) {
 // Ensure the bubble is dismissed on tab closure and doesn't reference a
 // destroyed WebContents.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, DestroyedWebContents) {
-  AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   ShowInActiveTab(browser());
 
   ZoomBubbleView* bubble = ZoomBubbleView::GetZoomBubble();

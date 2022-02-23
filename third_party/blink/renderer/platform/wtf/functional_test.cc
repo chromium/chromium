@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/thread.h"
@@ -154,6 +155,19 @@ TEST(FunctionalTest, WeakPtr) {
   EXPECT_TRUE(bound.IsCancelled());
   bound.Run();
   EXPECT_EQ(1, counter);
+}
+
+int PingPong(int* i_ptr) {
+  return *i_ptr;
+}
+
+TEST(FunctionalTest, RawPtr) {
+  int i = 123;
+  raw_ptr<int> p = &i;
+
+  auto callback = WTF::BindRepeating(PingPong, WTF::Unretained(p));
+  int res = callback.Run();
+  EXPECT_EQ(123, res);
 }
 
 void MakeClosure(base::OnceClosure** closure_out) {

@@ -168,6 +168,8 @@ class AutocompleteProvider
     TYPE_MOST_VISITED_SITES = 1 << 13,
     TYPE_VERBATIM_MATCH = 1 << 14,
     TYPE_VOICE_SUGGEST = 1 << 15,
+    TYPE_HISTORY_FUZZY = 1 << 16,
+    TYPE_OPEN_TAB = 1 << 17,
   };
 
   explicit AutocompleteProvider(Type type);
@@ -189,13 +191,21 @@ class AutocompleteProvider
   // otherwise, starting each provider running would result in a flurry of
   // notifications).
   //
-  // Once Stop() has been called, usually no more notifications should be sent.
-  // (See comments on Stop() below.)
+  // Providers should invalidate any in-progress requests and make sure *not* to
+  // call the controller's OnProviderUpdate() method for invalidated requests by
+  // calling Stop(). Once Stop() has been called, usually no more notifications
+  // should be sent. (See comments on Stop() below.)
   //
   // |minimal_changes| is an optimization that lets the provider do less work
   // when the |input|'s text hasn't changed.  See the body of
   // OmniboxPopupModel::StartAutocomplete().
   virtual void Start(const AutocompleteInput& input, bool minimal_changes) = 0;
+
+  // Similar to Start(), but used to perform prefetch requests. Providers can
+  // override this method and perform a prefetch request in order to cache the
+  // response. Providers should *not* call OnProviderUpdate() after completing
+  // a prefetch request.
+  virtual void StartPrefetch(const AutocompleteInput& input) {}
 
   // Advises the provider to stop processing.  This may be called even if the
   // provider is already done.  If the provider caches any results, it should

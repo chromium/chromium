@@ -10,6 +10,7 @@
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace draw_fn {
 namespace {
@@ -65,7 +66,7 @@ class OverlaysManager::ScopedCurrentFunctorCall {
   }
 
   FunctorData& functor_;
-  ANativeWindow* native_window_;
+  raw_ptr<ANativeWindow> native_window_;
 };
 
 template <typename T>

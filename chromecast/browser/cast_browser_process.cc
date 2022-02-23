@@ -8,9 +8,11 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_network_contexts.h"
+#include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/browser/metrics/cast_browser_metrics.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
@@ -24,7 +26,7 @@
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
-#include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/graphics/cast_screen.h"
 #endif  // defined(USE_AURA)
 
@@ -41,13 +43,7 @@ CastBrowserProcess* CastBrowserProcess::GetInstance() {
   return g_instance;
 }
 
-CastBrowserProcess::CastBrowserProcess()
-    :
-#if defined(USE_AURA)
-      cast_screen_(nullptr),
-#endif
-      web_view_factory_(nullptr),
-      cast_content_browser_client_(nullptr) {
+CastBrowserProcess::CastBrowserProcess() {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -138,10 +134,10 @@ void CastBrowserProcess::SetConnectivityChecker(
   connectivity_checker_.swap(connectivity_checker);
 }
 
-void CastBrowserProcess::SetWebViewFactory(
-    CastWebViewFactory* web_view_factory) {
-  DCHECK(!web_view_factory_);
-  web_view_factory_ = web_view_factory;
+void CastBrowserProcess::SetAccessibilityService(
+    std::unique_ptr<AccessibilityServiceImpl> accessibility_service) {
+  DCHECK(!accessibility_service_);
+  accessibility_service_ = std::move(accessibility_service);
 }
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

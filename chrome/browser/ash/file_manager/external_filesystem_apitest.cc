@@ -491,9 +491,9 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -529,7 +529,7 @@ class MultiProfileDriveFileSystemExtensionApiTest :
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 
@@ -541,10 +541,8 @@ class MultiProfileDriveFileSystemExtensionApiTest :
                                        kSecondProfileGiaId),
         kSecondProfileHash, false);
     // Set up the secondary profile.
-    base::FilePath profile_dir =
-        user_data_directory.Append(
-            chromeos::ProfileHelper::GetUserProfileDir(
-                kSecondProfileHash).BaseName());
+    base::FilePath profile_dir = user_data_directory.Append(
+        ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
     second_profile_ =
         g_browser_process->profile_manager()->GetProfile(profile_dir);
 
@@ -574,9 +572,9 @@ class MultiProfileDriveFileSystemExtensionApiTest :
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -660,9 +658,9 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -752,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
       FLAGS_NONE)) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileWatch) {
+// TODO(crbug.com/1296001): Test is flaky.
+IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DISABLED_FileWatch) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/file_watcher_test",
       FILE_PATH_LITERAL("manifest.json"),

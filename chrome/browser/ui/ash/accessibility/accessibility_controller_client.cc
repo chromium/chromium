@@ -77,6 +77,9 @@ void AccessibilityControllerClient::TriggerAccessibilityAlert(
     case ash::AccessibilityAlert::WORKSPACE_FULLSCREEN_STATE_EXITED:
       msg = IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_EXITED;
       break;
+    case ash::AccessibilityAlert::DESK_TEMPLATES_MODE_ENTERED:
+      msg = IDS_A11Y_ALERT_DESK_TEMPLATES_MODE_ENTERED;
+      break;
     case ash::AccessibilityAlert::NONE:
       msg = 0;
       break;

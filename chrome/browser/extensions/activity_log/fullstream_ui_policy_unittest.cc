@@ -14,6 +14,7 @@
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -326,7 +327,7 @@ class FullStreamUIPolicyTest : public testing::Test {
   }
 
  protected:
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
   std::unique_ptr<TestingProfile> profile_;
   content::BrowserTaskEnvironment task_environment_;
 
@@ -490,8 +491,8 @@ TEST_F(FullStreamUIPolicyTest, LogWithArguments) {
   extension_service_->AddExtension(extension.get());
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->Set(0, std::make_unique<base::Value>("hello"));
-  args->Set(1, std::make_unique<base::Value>("world"));
+  args->Append("hello");
+  args->Append("world");
   scoped_refptr<Action> action = new Action(extension->id(),
                                             base::Time::Now(),
                                             Action::ACTION_API_CALL,

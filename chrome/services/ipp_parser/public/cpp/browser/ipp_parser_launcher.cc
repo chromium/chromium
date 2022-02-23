@@ -4,7 +4,6 @@
 
 #include "chrome/services/ipp_parser/public/cpp/browser/ipp_parser_launcher.h"
 
-#include "base/no_destructor.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"
 #include "content/public/browser/service_process_host.h"

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<div style="columns:2;">
+  <div contenteditable id="container" style="height:100px;"></div>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    var y = container.offsetTop;
+    eventSender.mouseMoveTo(container.offsetLeft, y);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(1000000, y);
+    eventSender.mouseUp();
+  }, "no crash or DCHECK failure");
+</script>

@@ -12,9 +12,8 @@ namespace cc {
 // Fake RasterQueryQueue that just no-ops all calls.
 class FakeRasterQueryQueue : public RasterQueryQueue {
  public:
-  FakeRasterQueryQueue(
-      viz::RasterContextProvider* const worker_context_provider,
-      bool oop_rasterization_enabled);
+  explicit FakeRasterQueryQueue(
+      viz::RasterContextProvider* const worker_context_provider);
   ~FakeRasterQueryQueue() override;
 
   // RasterQueryQueue methods.

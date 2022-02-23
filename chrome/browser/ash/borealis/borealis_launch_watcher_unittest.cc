@@ -34,8 +34,7 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsCallbackRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
@@ -63,8 +62,7 @@ TEST_F(BorealisLaunchWatcherTest, VmAlreadyStartedCallbackRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
@@ -80,8 +78,7 @@ TEST_F(BorealisLaunchWatcherTest, VmStartsMultipleCallbacksRan) {
   CallbackFactory callback_expectation;
   BorealisLaunchWatcher watcher(profile_, "FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal;
-  signal.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  signal.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal.set_vm_name("FooVm");
   signal.set_container_name("FooContainer");
 
@@ -117,8 +114,7 @@ TEST_F(BorealisLaunchWatcherTest, OtherVmsStartBorealisTimesOutCallbackRan) {
   signal1.set_owner_id("not-the-owner");
   signal1.set_vm_name("FooVm");
   vm_tools::cicerone::ContainerStartedSignal signal2;
-  signal2.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  signal2.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   signal2.set_vm_name("not-FooVm");
 
   EXPECT_CALL(callback_expectation,

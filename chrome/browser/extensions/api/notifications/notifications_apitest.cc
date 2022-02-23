@@ -41,7 +41,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -164,7 +164,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   void LaunchPlatformApp(const Extension* extension) {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
             extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
 }
 
 // Native notifications don't support (or use) observers.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/by_user");
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
                        TestPartialUpdate) {
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestOnPermissionLevelChanged) {
 }
 
 // Native notifications don't support (nor use) observers.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
   const extensions::Extension* extension =
       LoadExtensionAndWait("notifications/api/user_gesture");
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestUserGesture) {
 
   ASSERT_FALSE(GetNotificationForExtension(extension));
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestRequireInteraction) {
   const extensions::Extension* extension =
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayNormal) {
 
 // Full screen related tests don't run on Mac as native notifications full
 // screen decisions are done by the OS directly.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayFullscreen) {
   ExtensionTestMessageListener notification_created_listener("created", false);
   const Extension* extension = LoadAppWithWindowState(
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayFullscreen) {
 // window when another is visible.
 // Disabled since this tests constantly fails on windows 7.
 // http://crbug.com/1202553
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestShouldDisplayMultiFullscreen) {
   // Start a fullscreen app, and then start another fullscreen app on top of the
   // first. Notifications from the first should not be displayed because it is
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest,
   EXPECT_EQ(message_center::FullscreenVisibility::OVER_USER,
             notification->fullscreen_visibility());
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   ExtensionTestMessageListener notification_created_listener("created", false);

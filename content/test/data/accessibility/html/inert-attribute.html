@@ -1,0 +1,68 @@
+<!--
+@BLINK-ALLOW:focusable
+@BLINK-ALLOW:htmlTag
+@BLINK-ALLOW:notUserSelectableStyle
+-->
+<!DOCTYPE html>
+<div inert>
+  Lorem
+  <span>ipsum</span>
+</div>
+<div id="shadow-host">
+  dolor
+  <span slot="normal">sit</span>
+  <span>amet</span>
+</div>
+<div style="content-visibility: auto; position: absolute; top: 999vh">
+  consectetur
+  <span inert>adipiscing</span>
+  <div style="display: none">
+    <span inert>tempor</span>
+  </div>
+</div>
+<canvas>
+  sed
+  <span>do</span>
+  <span inert>eiusmod</span>
+  <div>
+    <span inert>tempor</span>
+  </div>
+  <div style="display: none">
+    <span inert>incididunt</span>
+  </div>
+</canvas>
+<iframe srcdoc="
+  <div tabindex=0>Normal frame</div>
+  <iframe tabindex=0 inert srcdoc='
+    <div tabindex=0>Inert frame nested in normal frame</div>
+  '></iframe>
+"></iframe>
+<iframe inert srcdoc="
+  <div tabindex=0>Inert frame</div>
+  <iframe tabindex=0 srcdoc='
+    <div tabindex=0>Normal frame nested in inert frame</div>
+  '></iframe>
+"></iframe>
+<iframe inert sandbox srcdoc="
+  <div tabindex=0>Sandboxed inert frame</div>
+  <iframe tabindex=0 sandbox srcdoc='
+    <div tabindex=0>Sandboxed frame nested in sandboxed inert frame</div>
+  '></iframe>
+"></iframe>
+<script>
+// Check inertness with shadow DOM.
+const shadowHost = document.getElementById("shadow-host");
+const shadowRoot = shadowHost.attachShadow({mode: "open"});
+const normalSlot = document.createElement("slot");
+normalSlot.name = "normal";
+const inertSlot = document.createElement("slot");
+inertSlot.inert = true;
+shadowRoot.append(normalSlot, inertSlot);
+
+// Check interaction with focusability.
+for (let root of [document, shadowRoot]) {
+  for (let element of root.querySelectorAll("*")) {
+    element.tabIndex = 0;
+  }
+}
+</script>

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -16,10 +17,11 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #endif
 
@@ -37,13 +39,13 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 // TODO(crbug.com/1052397): Reassess whether the next block needs to be included
 // in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   syncer::SyncPrefs prefs(profile_->GetPrefs());
   if (prefs.IsLocalSyncEnabled()) {
     return "local_device";
   }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
   return GetSigninScopedDeviceIdForProfile(profile_);
@@ -51,8 +53,10 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  return send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(
-      profile_->GetPrefs());
+  return base::FeatureList::IsEnabled(syncer::kAlwaysReceiveSendTabToSelf)
+             ? true
+             : send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(
+                   profile_->GetPrefs());
 }
 
 // syncer::DeviceInfoSyncClient:
@@ -92,7 +96,7 @@ DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
 
 absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 DeviceInfoSyncClientImpl::GetPhoneAsASecurityKeyInfo() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return webauthn::authenticator::GetSyncDataIfRegistered();
 #else
   return absl::nullopt;

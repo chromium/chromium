@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -20,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -58,6 +57,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
 namespace {
 
 enum {
@@ -66,6 +72,7 @@ enum {
   SECONDARY_ACCOUNT_INDEX_START = 2,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Structure to describe an account info.
 struct TestAccountInfo {
   const char* const email;
@@ -81,6 +88,7 @@ static const TestAccountInfo kTestAccounts[] = {
     {"bob@invalid.domain", "10002", "hashbobbo", "Bob"},
     {"charlie@invalid.domain", "10003", "hashcharl", "Charlie"},
 };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
  public:
@@ -223,7 +231,8 @@ class SlowDownloadInterceptor {
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
     head->headers->GetMimeType(&head->mime_type);
-    params->client->OnReceiveResponse(std::move(head));
+    params->client->OnReceiveResponse(std::move(head),
+                                      mojo::ScopedDataPipeConsumerHandle());
   }
 
   static void SendBody(content::URLLoaderInterceptor::RequestParams* params,
@@ -288,9 +297,11 @@ class DownloadNotificationTestBase
           bool> {
  public:
   DownloadNotificationTestBase() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled());
+#endif
   }
 
   DownloadNotificationTestBase(const DownloadNotificationTestBase&) = delete;
@@ -300,6 +311,14 @@ class DownloadNotificationTestBase
   ~DownloadNotificationTestBase() override = default;
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params(crosapi::mojom::BrowserInitParams::New());
+    init_params
+        ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
+        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
+        std::move(init_params));
+#endif
     ASSERT_TRUE(embedded_test_server()->Start());
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
@@ -332,7 +351,11 @@ class DownloadNotificationTestBase
   // Returns whether holding space in-progress downloads notification
   // suppression is enabled given test parameterization.
   bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     return GetParam();
+#else
+    return false;
+#endif
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
@@ -1141,6 +1164,10 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   chrome::CloseWindow(incognito_browser());
 }
 
+// These tests have ash dependency so they are only available for ash.
+// TODO(crbug.com/1266950): Enable these tests for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 //////////////////////////////////////////////////
 // Test with multi profiles
 //////////////////////////////////////////////////
@@ -1161,14 +1188,14 @@ class MultiProfileDownloadNotificationTest
     DownloadNotificationTestBase::SetUpCommandLine(command_line);
 
     // Logs in to a dummy profile.
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     kTestAccounts[DUMMY_ACCOUNT_INDEX].email);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     kTestAccounts[DUMMY_ACCOUNT_INDEX].hash);
     // Don't require policy for our sessions - this is required because
     // this test creates a secondary profile synchronously, so we need to
     // let the policy code know not to expect cached policy.
-    command_line->AppendSwitchASCII(chromeos::switches::kProfileRequiresPolicy,
+    command_line->AppendSwitchASCII(ash::switches::kProfileRequiresPolicy,
                                     "false");
   }
 
@@ -1194,7 +1221,7 @@ class MultiProfileDownloadNotificationTest
   }
 
   Profile* GetProfileByIndex(int index) {
-    return chromeos::ProfileHelper::GetProfileByUserIdHashForTest(
+    return ash::ProfileHelper::GetProfileByUserIdHashForTest(
         kTestAccounts[index].hash);
   }
 
@@ -1209,7 +1236,7 @@ class MultiProfileDownloadNotificationTest
         AccountId::FromUserEmailGaiaId(info.email, info.gaia_id),
         base::UTF8ToUTF16(info.display_name));
     Profile* profile =
-        chromeos::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
+        ash::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
@@ -1395,3 +1422,4 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
               notification.type());
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

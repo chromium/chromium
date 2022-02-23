@@ -30,6 +30,8 @@
 #include "testing/status_matchers.h"
 #include "testing/status_testing.h"
 #include "testing/testing_prng.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
+#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
 
 namespace rlwe {
 namespace {
@@ -65,7 +67,7 @@ uint256 GenerateRandom(unsigned int* seed) {
 }
 
 template <typename T>
-class MontgomeryTest : public ::testing::Test {};
+class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryTest : public ::testing::Test {};
 TYPED_TEST_SUITE(MontgomeryTest, testing::ModularIntTypes);
 
 TYPED_TEST(MontgomeryTest, ModulusTooLarge) {
@@ -766,7 +768,7 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
       std::vector<TypeParam> expected_add, expected_sub, expected_mul;
       TypeParam scalar =
           TypeParam::ImportRandom(prng.get(), modulus_params.get())
-              .ValueOrDie();
+              .value();
       auto scalar_constants_tuple = scalar.GetConstant(modulus_params.get());
       auto scalar_constant = std::get<0>(scalar_constants_tuple);
       auto scalar_constant_barrett = std::get<1>(scalar_constants_tuple);
@@ -774,9 +776,9 @@ TYPED_TEST(MontgomeryTest, BatchOperations) {
           expected_mul_scalar;
       for (size_t i = 0; i < length; i++) {
         a.push_back(TypeParam::ImportRandom(prng.get(), modulus_params.get())
-                        .ValueOrDie());
+                        .value());
         b.push_back(TypeParam::ImportRandom(prng.get(), modulus_params.get())
-                        .ValueOrDie());
+                        .value());
         auto constants_tuple = b[i].GetConstant(modulus_params.get());
         auto constant = std::get<0>(constants_tuple);
         auto constant_barrett = std::get<1>(constants_tuple); 

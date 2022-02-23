@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -59,7 +60,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/account_id/account_id.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #endif
@@ -497,7 +499,7 @@ class ActiveTabDelegateTest : public ActiveTabTest {
     ActiveTabPermissionGranter::SetPlatformDelegate(nullptr);
   }
 
-  ActiveTabPermissionGranterTestDelegate* test_delegate_;
+  raw_ptr<ActiveTabPermissionGranterTestDelegate> test_delegate_;
 };
 
 // Test that the custom platform delegate works as expected.
@@ -531,13 +533,16 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
   void SetUp() override {
     ActiveTabTest::SetUp();
 
+    // These tests need a real user manager.
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        ash::ChromeUserManagerImpl::CreateChromeUserManager());
+
     // Necessary to prevent instantiation of SyncService, which messes
     // with our signin state below.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableSync);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
     // Necessary because no ProfileManager instance exists in this test.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+        ash::switches::kIgnoreUserProfileMappingForTests);
     // Necessary to skip cryptohome/profile sanity check in
     // ChromeUserManagerImpl for fake user login.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
@@ -548,8 +553,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(user_email, user_id);
     const std::string user_id_hash =
-        chromeos::ProfileHelper::Get()->GetUserIdHashByUserIdForTesting(
-            user_id);
+        ash::ProfileHelper::Get()->GetUserIdHashByUserIdForTesting(user_id);
 
     local_state_ = std::make_unique<ScopedTestingLocalState>(
         TestingBrowserProcess::GetGlobal());
@@ -577,9 +581,12 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     ash::ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting();
     ash::ChromeUserManager::Get()->Shutdown();
 
+    scoped_user_manager_.reset();
+
     ActiveTabTest::TearDown();
   }
 
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

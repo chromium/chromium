@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_mediator_delegate.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -84,7 +85,7 @@ class SyncScreenMediatorTest : public PlatformTest {
     // Identity services.
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    authentication_service->SignIn(identity_);
+    authentication_service->SignIn(identity_, nil);
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForBrowserState(browser_state_.get());
     consent_auditor::ConsentAuditor* consent_auditor =
@@ -122,10 +123,10 @@ class SyncScreenMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   SyncScreenMediator* mediator_;
   FakeChromeIdentity* identity_;
   FakeSyncScreenConsumer* consumer_;
-  std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   SyncSetupServiceMock* sync_setup_service_mock_;
   syncer::MockSyncService* sync_service_mock_;
@@ -160,7 +161,7 @@ TEST_F(SyncScreenMediatorTest, TestStartSyncService) {
 TEST_F(SyncScreenMediatorTest, TestAuthenticationFlow) {
   mediator_.consumer = consumer_;
   consumer_.UIEnabled = YES;
-  TestBrowser browser;
+  TestBrowser browser(browser_state_.get());
 
   id mock_delegate = OCMProtocolMock(@protocol(SyncScreenMediatorDelegate));
   id mock_flow = OCMClassMock([AuthenticationFlow class]);

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_DOWNLOAD_MANAGER_DELEGATE_H_
 #define CHROMECAST_BROWSER_CAST_DOWNLOAD_MANAGER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/download_manager_delegate.h"
 

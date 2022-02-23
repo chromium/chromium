@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -295,15 +296,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
     case FeatureEnabledType::kDefault:
       // Currently blink::features::kPrerender2 is default-enabled only on
       // Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
         CheckFeatureEnabled(true);
       } else {
         CheckFeatureDisabled();
       }
-#else   // OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
       CheckFeatureDisabled();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       break;
   }
 }
@@ -327,26 +328,26 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
     case FeatureEnabledType::kEnabled:
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kDisabled) {
         // Currently Origin Trial for Prerender2 is available only on Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
         CheckFeatureEnabled(false);
-#else   // OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
         CheckFeatureDisabled();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       } else {
         CheckFeatureEnabled(true);
       }
       break;
     case FeatureEnabledType::kDefault:
       // Currently Origin Trial for Prerender2 is available only on Android.
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
       if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
         CheckFeatureEnabled(true);
       } else {
         CheckFeatureEnabled(false);
       }
-#else   // OS_ANDROID
+#else   // BUILDFLAG(IS_ANDROID)
       CheckFeatureDisabled();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
       break;
   }
 }

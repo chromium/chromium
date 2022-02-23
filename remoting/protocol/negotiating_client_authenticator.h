@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/client_authentication_config.h"

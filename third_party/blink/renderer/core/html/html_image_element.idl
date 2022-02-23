@@ -45,6 +45,9 @@
     [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
     [RuntimeEnabled=LazyImageLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
+    // Attribution Reporting
+    [RuntimeEnabled=ConversionMeasurement, CEReactions,Reflect] attribute USVString attributionSrc;
+
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLImageElement-partial
     [CEReactions, Reflect] attribute DOMString name;

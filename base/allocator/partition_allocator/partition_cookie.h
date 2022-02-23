@@ -9,8 +9,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/compiler_specific.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 static constexpr size_t kCookieSize = 16;
 
@@ -23,14 +22,12 @@ static constexpr unsigned char kCookieValue[kCookieSize] = {
 
 constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {
-  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(ptr);
+ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     PA_DCHECK(*cookie_ptr == kCookieValue[i]);
 }
 
-ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {
-  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(ptr);
+ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     *cookie_ptr = kCookieValue[i];
 }
@@ -39,12 +36,26 @@ ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {
 
 constexpr size_t kPartitionCookieSizeAdjustment = 0;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {}
+ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address) {}
 
-ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {}
+ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
+
 #endif  // DCHECK_IS_ON()
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::kCookieSize;
+using ::partition_alloc::internal::kPartitionCookieSizeAdjustment;
+using ::partition_alloc::internal::PartitionCookieCheckValue;
+using ::partition_alloc::internal::PartitionCookieWriteValue;
+#if DCHECK_IS_ON()
+using ::partition_alloc::internal::kCookieValue;
+#endif  // DCHECK_IS_ON()
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_COOKIE_H_

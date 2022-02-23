@@ -8,11 +8,10 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 

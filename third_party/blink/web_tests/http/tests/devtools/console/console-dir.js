@@ -38,7 +38,7 @@
 
     // Test big typed array: should be no crash or timeout.
     var bigTypedArray = new Uint8Array(new ArrayBuffer(400 * 1000 * 1000));
-    bigTypedArray["FAIL"] = "FAIL: Object.getOwnPropertyNames() should not have been run";
+    bigTypedArray.PASS = "Non-element properties should be displayed.";
     console.dir(bigTypedArray);
 
     // document.createEvent("Event") has a special property "isTrusted" flagged "LegacyUnforgeable".

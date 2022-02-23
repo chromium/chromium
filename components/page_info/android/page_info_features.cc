@@ -4,7 +4,7 @@
 
 #include "base/android/jni_string.h"
 #include "components/page_info/android/jni_headers/PageInfoFeatures_jni.h"
-#include "components/page_info/features.h"
+#include "components/page_info/core/features.h"
 
 namespace page_info {
 

@@ -6,6 +6,9 @@
 
 namespace password_manager {
 
+MockPasswordBackendSyncDelegate::MockPasswordBackendSyncDelegate() = default;
+MockPasswordBackendSyncDelegate::~MockPasswordBackendSyncDelegate() = default;
+
 MockPasswordStoreBackend::MockPasswordStoreBackend() = default;
 
 MockPasswordStoreBackend::~MockPasswordStoreBackend() = default;

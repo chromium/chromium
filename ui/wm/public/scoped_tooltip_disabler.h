@@ -5,6 +5,7 @@
 #ifndef UI_WM_PUBLIC_SCOPED_TOOLTIP_DISABLER_H_
 #define UI_WM_PUBLIC_SCOPED_TOOLTIP_DISABLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/wm_public_export.h"
 
@@ -32,7 +33,7 @@ class WM_PUBLIC_EXPORT ScopedTooltipDisabler : aura::WindowObserver {
 
   // The RootWindow to disable Tooltips on; nullptr if the Window passed to the
   // constructor was not in a root or the root has been destroyed.
-  aura::Window* root_;
+  raw_ptr<aura::Window> root_;
 };
 
 }  // namespace wm

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -127,6 +128,11 @@ void AuthenticatorSheetModelBase::OnModelDestroyed(
 
 // AuthenticatorMechanismSelectorSheetModel -----------------------------------
 
+AuthenticatorMechanismSelectorSheetModel::
+    AuthenticatorMechanismSelectorSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model) {}
+
 bool AuthenticatorMechanismSelectorSheetModel::IsBackButtonVisible() const {
   return false;
 }
@@ -147,6 +153,28 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
     const {
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_TRANSPORT_SELECTION_DESCRIPTION);
+}
+
+bool AuthenticatorMechanismSelectorSheetModel::IsManageDevicesButtonVisible()
+    const {
+  // If any phones are shown then also show a button that goes to the settings
+  // page to manage them.
+  return base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) &&
+         std::any_of(
+             dialog_model()->mechanisms().begin(),
+             dialog_model()->mechanisms().end(),
+             [](const AuthenticatorRequestDialogModel::Mechanism& mechanism)
+                 -> bool {
+               return absl::holds_alternative<
+                   AuthenticatorRequestDialogModel::Mechanism::Phone>(
+                   mechanism.type);
+             });
+}
+
+void AuthenticatorMechanismSelectorSheetModel::OnManageDevices() {
+  if (dialog_model()) {
+    dialog_model()->ManageDevices();
+  }
 }
 
 // AuthenticatorInsertAndActivateUsbSheetModel ----------------------
@@ -1179,11 +1207,9 @@ const gfx::VectorIcon& AuthenticatorQRSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
-  // TODO: i18n once final strings are ready.
-  return u"Use your phone";
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
 }
 
 std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
-  // TODO: i18n once final strings are ready.
-  return u"Scan this QR Code with your Android phone.";
+  return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP);
 }

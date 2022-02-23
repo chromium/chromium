@@ -14,7 +14,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 PP_Var GetLinkAtPosition(PP_Instance instance, PP_Point point) {
   // This isn't implemented in the out of process case.
   return PP_MakeUndefined();

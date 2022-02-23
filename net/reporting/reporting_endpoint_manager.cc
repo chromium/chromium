@@ -12,7 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/time/tick_clock.h"
@@ -143,10 +143,10 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
  private:
   using EndpointBackoffKey = std::pair<NetworkIsolationKey, GURL>;
 
-  const ReportingPolicy* const policy_;
-  const base::TickClock* const tick_clock_;
-  const ReportingDelegate* const delegate_;
-  ReportingCache* const cache_;
+  const raw_ptr<const ReportingPolicy> policy_;
+  const raw_ptr<const base::TickClock> tick_clock_;
+  const raw_ptr<const ReportingDelegate> delegate_;
+  const raw_ptr<ReportingCache> cache_;
 
   RandIntCallback rand_callback_;
 

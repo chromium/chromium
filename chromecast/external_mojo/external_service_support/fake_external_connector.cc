@@ -87,6 +87,11 @@ FakeExternalConnector::Clone() {
   return std::make_unique<FakeExternalConnector>(std::move(remote));
 }
 
+mojo::PendingRemote<external_mojo::mojom::ExternalConnector>
+FakeExternalConnector::RequestConnector() {
+  return mojo::PendingRemote<external_mojo::mojom::ExternalConnector>();
+}
+
 void FakeExternalConnector::SendChromiumConnectorRequest(
     mojo::ScopedMessagePipeHandle request) {}
 

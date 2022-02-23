@@ -465,16 +465,16 @@ export const MechanicalLayout = ash.diagnostics.mojom.MechanicalLayout;
 export const NumberPadPresence = ash.diagnostics.mojom.NumberPadPresence;
 
 /**
+ * Type alias for TopRowKey.
+ * @typedef {ash.diagnostics.mojom.TopRowKey}
+ */
+export const TopRowKey = ash.diagnostics.mojom.TopRowKey;
+
+/**
  * Type alias for KeyboardInfo.
  * @typedef {ash.diagnostics.mojom.KeyboardInfo}
  */
 export const KeyboardInfo = ash.diagnostics.mojom.KeyboardInfo;
-
-/**
- * Type alias for KeyGlyphSet.
- * @typedef {ash.diagnostics.mojom.KeyGlyphSet}
- */
-export const KeyGlyphSet = ash.diagnostics.mojom.KeyGlyphSet;
 
 /**
  * Type alias for TouchDeviceType.
@@ -515,6 +515,33 @@ export const ConnectedDevicesObserverInterface =
 export const ConnectedDevicesObserverReceiver =
     ash.diagnostics.mojom.ConnectedDevicesObserverReceiver;
 
+/**
+ * Type alias for KeyboardObserver.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserver}
+ */
+export const KeyboardObserver = ash.diagnostics.mojom.CpuUsageObserver;
+
+/**
+ * Type alias for KeyboardObserverRemote.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverRemote}
+ */
+export const KeyboardObserverRemote =
+    ash.diagnostics.mojom.KeyboardObserverRemote;
+
+/**
+ * Type alias for KeyboardObserverInterface.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverInterface}
+ */
+export const KeyboardObserverInterface =
+    ash.diagnostics.mojom.KeyboardObserverInterface;
+
+/**
+ * Type alias for KeyboardObserverReceiver.
+ * @typedef {ash.diagnostics.mojom.KeyboardObserverReceiver}
+ */
+export const KeyboardObserverReceiver =
+    ash.diagnostics.mojom.KeyboardObserverReceiver;
+
 
 /**
  * Type alias for the the response from InputDataProvider.GetConnectedDevices.
@@ -524,14 +551,20 @@ export const ConnectedDevicesObserverReceiver =
 export let GetConnectedDevicesResponse;
 
 /**
- * Type alias for the response from InputDataProvider.GetKeyboardVisualLayout.
- * @typedef {{layout: !Object<number, !KeyGlyphSet>}}
- */
-export let GetKeyboardVisualLayoutResponse;
-
-/**
  * Type alias for InputDataProviderInterface.
  * @typedef {ash.diagnostics.mojom.InputDataProviderInterface}
  */
 export const InputDataProviderInterface =
     ash.diagnostics.mojom.InputDataProviderInterface;
+
+/**
+ * Type alias for KeyEvent.
+ * @typedef {ash.diagnostics.mojom.KeyEvent}
+ */
+export const KeyEvent = ash.diagnostics.mojom.KeyEvent;
+
+/**
+ * Type alias for KeyEventType.
+ * @typedef {ash.diagnostics.mojom.KeyEvent}
+ */
+export const KeyEventType = ash.diagnostics.mojom.KeyEventType;

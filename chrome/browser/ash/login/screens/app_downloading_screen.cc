@@ -32,6 +32,11 @@ AppDownloadingScreen::~AppDownloadingScreen() {
     view_->Bind(nullptr);
 }
 
+void AppDownloadingScreen::OnViewDestroyed(AppDownloadingScreenView* view) {
+  if (view_ == view)
+    view_ = nullptr;
+}
+
 void AppDownloadingScreen::ShowImpl() {
   // Show the screen.
   view_->Show();

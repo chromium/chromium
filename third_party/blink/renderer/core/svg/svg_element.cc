@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -306,7 +306,7 @@ AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
 
 bool SVGElement::HasTransform(
     ApplyMotionTransform apply_motion_transform) const {
-  return (GetLayoutObject() && GetLayoutObject()->StyleRef().HasTransform()) ||
+  return (GetLayoutObject() && GetLayoutObject()->HasTransform()) ||
          (apply_motion_transform == kIncludeMotionTransform &&
           HasSVGRareData());
 }
@@ -316,7 +316,7 @@ AffineTransform SVGElement::CalculateTransform(
   const LayoutObject* layout_object = GetLayoutObject();
 
   AffineTransform matrix;
-  if (layout_object && layout_object->StyleRef().HasTransform()) {
+  if (layout_object && layout_object->HasTransform()) {
     matrix = TransformHelper::ComputeTransform(
         *layout_object, ComputedStyle::kIncludeTransformOrigin);
   }

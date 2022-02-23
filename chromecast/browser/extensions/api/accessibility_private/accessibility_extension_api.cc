@@ -137,51 +137,48 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
+  // Translate the mouse event to touch event so that touch exploration
+  // controller can handle them.
   std::unique_ptr<accessibility_private::SendSyntheticMouseEvent::Params>
       params = accessibility_private::SendSyntheticMouseEvent::Params::Create(
           args());
   EXTENSION_FUNCTION_VALIDATE(params);
   accessibility_private::SyntheticMouseEvent* mouse_data = &params->mouse_event;
 
-  if (mouse_data->type ==
-          accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE &&
-      mouse_data->mouse_button ==
-          accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_LEFT) {
-    // ui::ET_TOUCH_PRESSED and ui::ET_TOUCH_RELEASED is sent for synthetic
-    // mouse event left button click.
-    ui::PointerDetails pointer_details;
-    pointer_details.pointer_type = ui::EventPointerType::kTouch;
-
-    gfx::Point location(mouse_data->x, mouse_data->y);
-
-    auto* host = chromecast::shell::CastBrowserProcess::GetInstance()
-                     ->accessibility_manager()
-                     ->window_tree_host();
-    DCHECK(host);
-
-    std::unique_ptr<ui::TouchEvent> touch_press =
-        std::make_unique<ui::TouchEvent>(ui::ET_TOUCH_PRESSED, gfx::Point(),
-                                         ui::EventTimeForNow(),
-                                         pointer_details);
-    touch_press->set_location(location);
-    touch_press->set_root_location(location);
-    touch_press->UpdateForRootTransform(
-        host->GetRootTransform(),
-        host->GetRootTransformForLocalEventCoordinates());
-    host->DeliverEventToSink(touch_press.get());
-
-    std::unique_ptr<ui::TouchEvent> touch_release =
-        std::make_unique<ui::TouchEvent>(ui::ET_TOUCH_RELEASED, gfx::Point(),
-                                         ui::EventTimeForNow(),
-                                         pointer_details);
-    touch_release->set_location(location);
-    touch_release->set_root_location(location);
-    touch_release->UpdateForRootTransform(
-        host->GetRootTransform(),
-        host->GetRootTransformForLocalEventCoordinates());
-    host->DeliverEventToSink(touch_release.get());
+  ui::EventType type = ui::ET_UNKNOWN;
+  switch (mouse_data->type) {
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS:
+      type = ui::ET_TOUCH_PRESSED;
+      break;
+    case accessibility_private::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE:
+      type = ui::ET_TOUCH_RELEASED;
+      break;
+    default:
+      // skip other gestures.
+      return RespondNow(NoArguments());
   }
 
+  // Locations are assumed to be in screen coordinates.
+  gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
+  auto* host = chromecast::shell::CastBrowserProcess::GetInstance()
+                   ->accessibility_manager()
+                   ->window_tree_host();
+  DCHECK(host);
+
+  ui::PointerDetails pointer_details;
+  pointer_details.pointer_type = ui::EventPointerType::kTouch;
+  gfx::Point location(mouse_data->x, mouse_data->y);
+
+  std::unique_ptr<ui::TouchEvent> touch_event =
+      std::make_unique<ui::TouchEvent>(type, gfx::Point(),
+                                       ui::EventTimeForNow(), pointer_details);
+  touch_event->set_location(location);
+  touch_event->set_root_location(location);
+  touch_event->UpdateForRootTransform(
+      host->GetRootTransform(),
+      host->GetRootTransformForLocalEventCoordinates());
+  // Still go through the event rewriters.
+  host->SendEventToSink(touch_event.get());
   return RespondNow(NoArguments());
 }
 

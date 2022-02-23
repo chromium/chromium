@@ -8,10 +8,11 @@
 #import <Foundation/Foundation.h>
 
 class AuthenticationService;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 class PrefService;
 
 // Configuration object used by the DiscoverFeedProvider.
+// TODO(crbug.com/1277504): Rename this to FeedConfiguration.
 @interface DiscoverFeedConfiguration : NSObject
 
 // AuthenticationService used by DiscoverFeedProvider.
@@ -20,8 +21,8 @@ class PrefService;
 // PrefService used by DiscoverFeedProvider.
 @property(nonatomic, assign) PrefService* prefService;
 
-// DiscoverFeed metrics recorder used by DiscoverFeedProvider.
-@property(nonatomic, strong) DiscoverFeedMetricsRecorder* metricsRecorder;
+// Feed metrics recorder used by DiscoverFeedProvider.
+@property(nonatomic, strong) FeedMetricsRecorder* metricsRecorder;
 
 @end
 

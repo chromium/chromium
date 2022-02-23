@@ -70,7 +70,7 @@ enum class VideoCaptureError {
       1,
   kVideoCaptureControllerIsAlreadyInErrorState = 2,
   kVideoCaptureManagerDeviceConnectionLost = 3,
-  kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError = 4,
+  kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError = 4,
   kFrameSinkVideoCaptureDeviceEncounteredFatalError = 5,
   kV4L2FailedToOpenV4L2DeviceDriverFile = 6,
   kV4L2ThisIsNotAV4L2VideoCaptureDevice = 7,
@@ -192,7 +192,11 @@ enum class VideoCaptureError {
   kDesktopCaptureDeviceMacFailedStreamCreate = 124,
   kDesktopCaptureDeviceMacFailedStreamStart = 125,
   kCrosHalV3BufferManagerFailedToReserveBuffers = 126,
-  kMaxValue = 126
+  kWinMediaFoundationSystemPermissionDenied = 127,
+  kVideoCaptureImplTimedOutOnStart = 128,
+  kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError = 129,
+  kLacrosVideoCaptureDeviceProxyEncounteredFatalError = 130,
+  kMaxValue = 130
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

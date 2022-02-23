@@ -9,10 +9,10 @@ if ((typeof mojo === 'undefined') || !mojo.bindingsLibraryInitialized) {
 }
 mojo.config.autoLoadMojomDeps = false;
 
-loadScript('chromeos.ime.mojom.ime_service.mojom');
-loadScript('chromeos.ime.mojom.input_engine.mojom');
-loadScript('chromeos.ime.mojom.input_method.mojom');
-loadScript('chromeos.ime.mojom.input_method_host.mojom');
+loadScript('ash.ime.mojom.ime_service.mojom');
+loadScript('ash.ime.mojom.input_engine.mojom');
+loadScript('ash.ime.mojom.input_method.mojom');
+loadScript('ash.ime.mojom.input_method_host.mojom');
 
 /**
  * Empty result to keep Mojo pipe from disconnection.
@@ -31,7 +31,7 @@ var IME_CHANNEL_EMPTY_EXTRA = new Uint8Array(0);
 /*
  * Represents the js-side of the InputChannel.
  * Routes calls from IME service to the IME extension.
- * @implements {chromeos.ime.mojom.InputChannel}
+ * @implements {ash.ime.mojom.InputChannel}
  */
 class ImeExtensionChannel {
   constructor() {
@@ -39,11 +39,11 @@ class ImeExtensionChannel {
      * @private @const
      * @type {!mojo.Binding}
      * */
-    this.binding_ = new mojo.Binding(chromeos.ime.mojom.InputChannel, this);
+    this.binding_ = new mojo.Binding(ash.ime.mojom.InputChannel, this);
 
     /**
      * @private
-     * @type {chromeos.ime.mojom.InputChannelPtr}
+     * @type {ash.ime.mojom.InputChannelPtr}
      */
     this.channelPtr_ = undefined;
 
@@ -68,7 +68,7 @@ class ImeExtensionChannel {
    * Get a cached bound InterfacePtr for this InputChannel impl.
    * Create one the ptr if it's not bound yet.
    *
-   * @return {!chromeos.ime.mojom.InputChannelPtr}.
+   * @return {!ash.ime.mojom.InputChannelPtr}.
    */
   getChannelPtr() {
     return this.binding_.createInterfacePtrAndBind()
@@ -142,13 +142,13 @@ class ImeExtensionChannel {
  * The main entry point to the IME Mojo service.
  */
 class ImeService {
-  /** @param {!chromeos.ime.mojom.InputEngineManagerPtr} */
+  /** @param {!ash.ime.mojom.InputEngineManagerPtr} */
   constructor(manager) {
     /**
      * The IME Mojo service. Allows extension code to fetch an engine instance
      * implemented in the connected IME service.
      * @private
-     * @type {!chromeos.ime.mojom.InputEngineManagerPtr}
+     * @type {!ash.ime.mojom.InputEngineManagerPtr}
      */
     this.manager_ = manager;
 
@@ -165,7 +165,7 @@ class ImeService {
      * An active IME Engine proxy. Allows extension code to make calls on the
      * connected InputEngine that resides in the IME service.
      * @private
-     * @type {!chromeos.ime.mojom.InputChannelPtr}
+     * @type {!ash.ime.mojom.InputChannelPtr}
      */
     this.activeEngine_ = null;
 
@@ -195,7 +195,7 @@ class ImeService {
   }
 
   /**
-   * @return {?chromeos.ime.mojom.InputChannelPtr} A bound IME engine instance
+   * @return {?ash.ime.mojom.InputChannelPtr} A bound IME engine instance
    * or null if no IME Engine is bound.
    */
   getActiveEngine() {
@@ -244,7 +244,7 @@ class ImeService {
       // TODO(crbug.com/837156): Try to reuse the current engine if possible.
       // Disconnect the current active engine and make a new one.
       this.deactivateIME();
-      this.activeEngine_ = new chromeos.ime.mojom.InputChannelPtr;
+      this.activeEngine_ = new ash.ime.mojom.InputChannelPtr;
 
       // Null value will cause a disconnection on the Mojo pipe.
       extra = extra ? extra : IME_CHANNEL_EMPTY_EXTRA;
@@ -282,8 +282,8 @@ class ImeService {
 }
 
 (function() {
-  let ptr = new chromeos.ime.mojom.InputEngineManagerPtr;
+  let ptr = new ash.ime.mojom.InputEngineManagerPtr;
   Mojo.bindInterface(
-      chromeos.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
+      ash.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
   exports.$set('returnValue', new ImeService(ptr));
 })();

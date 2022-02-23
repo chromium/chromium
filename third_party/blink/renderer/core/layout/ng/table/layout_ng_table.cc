@@ -223,7 +223,7 @@ PhysicalRect LayoutNGTable::OverflowClipRect(
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
     clip_rect = PhysicalRect(location, Size());
     const auto overflow_clip = GetOverflowClipAxes();
-    IntRect infinite_rect = PhysicalRect::InfiniteIntRect();
+    gfx::Rect infinite_rect = PhysicalRect::InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
       clip_rect.offset.left = LayoutUnit(infinite_rect.x());
       clip_rect.size.width = LayoutUnit(infinite_rect.width());

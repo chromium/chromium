@@ -6,9 +6,13 @@
 #define NET_SOCKET_TRANSPORT_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -17,11 +21,13 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -42,11 +48,14 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   // |host_resolution_callback| will be invoked after the the hostname is
   // resolved. |network_isolation_key| is passed to the HostResolver to prevent
   // cross-NIK leaks. If |host_resolution_callback| does not return OK, then the
-  // connection will be aborted with that value.
+  // connection will be aborted with that value. |supported_alpns| specifies
+  // ALPN protocols for selecting HTTPS/SVCB records. If empty, addresses from
+  // HTTPS/SVCB records will be ignored and only A/AAAA will be used.
   TransportSocketParams(Endpoint destination,
                         NetworkIsolationKey network_isolation_key,
                         SecureDnsPolicy secure_dns_policy,
-                        OnHostResolutionCallback host_resolution_callback);
+                        OnHostResolutionCallback host_resolution_callback,
+                        base::flat_set<std::string> supported_alpns);
 
   TransportSocketParams(const TransportSocketParams&) = delete;
   TransportSocketParams& operator=(const TransportSocketParams&) = delete;
@@ -59,6 +68,9 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const OnHostResolutionCallback& host_resolution_callback() const {
     return host_resolution_callback_;
   }
+  const base::flat_set<std::string>& supported_alpns() const {
+    return supported_alpns_;
+  }
 
  private:
   friend class base::RefCounted<TransportSocketParams>;
@@ -68,6 +80,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const NetworkIsolationKey network_isolation_key_;
   const SecureDnsPolicy secure_dns_policy_;
   const OnHostResolutionCallback host_resolution_callback_;
+  const base::flat_set<std::string> supported_alpns_;
 };
 
 // TransportConnectJob handles the host resolution necessary for socket creation
@@ -80,15 +93,6 @@ class NET_EXPORT_PRIVATE TransportSocketParams
 // a headstart) and return the one that completes first to the socket pool.
 class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
  public:
-  // For recording the connection time in the appropriate bucket.
-  enum RaceResult {
-    RACE_UNKNOWN,
-    RACE_IPV4_WINS,
-    RACE_IPV4_SOLO,
-    RACE_IPV6_WINS,
-    RACE_IPV6_SOLO,
-  };
-
   class NET_EXPORT_PRIVATE Factory {
    public:
     Factory() = default;
@@ -141,6 +145,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   bool HasEstablishedConnection() const override;
   ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
+  const ConnectionEndpointMetadata& GetEndpointMetadata() const override;
 
   // Rolls |addrlist| forward until the first IPv4 address, if any.
   // WARNING: this method should only be used to implement the prefer-IPv4 hack.
@@ -149,8 +154,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // Record the histograms Net.DNS_Resolution_And_TCP_Connection_Latency2 and
   // Net.TCP_Connection_Latency and return the connect duration.
   static void HistogramDuration(
-      const LoadTimingInfo::ConnectTiming& connect_timing,
-      RaceResult race_result);
+      const LoadTimingInfo::ConnectTiming& connect_timing);
 
   static base::TimeDelta ConnectionTimeout();
 
@@ -158,8 +162,10 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   enum State {
     STATE_RESOLVE_HOST,
     STATE_RESOLVE_HOST_COMPLETE,
+    STATE_RESOLVE_HOST_CALLBACK_COMPLETE,
     STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
+    STATE_FALLBACK_CONNECT_COMPLETE,
     STATE_NONE,
   };
 
@@ -168,12 +174,13 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   int DoResolveHost();
   int DoResolveHostComplete(int result);
+  int DoResolveHostCallbackComplete();
   int DoTransportConnect();
-  int DoTransportConnectComplete(int result);
+  int DoTransportConnectComplete(bool is_fallback, int result);
 
   // Not part of the state machine.
-  void DoIPv6FallbackTransportConnect();
-  void DoIPv6FallbackTransportConnectComplete(int result);
+  void OnIPv6FallbackTimerComplete();
+  void OnIPv6FallbackConnectComplete(int rv);
 
   // Begins the host resolution and the TCP connect.  Returns OK on success
   // and ERR_IO_PENDING if it cannot immediately service the request.
@@ -184,17 +191,35 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // resolver request.
   void ChangePriorityInternal(RequestPriority priority) override;
 
-  void CopyConnectionAttemptsFromSockets();
+  // Returns whether the client should be SVCB-optional when connecting to
+  // `results`.
+  bool IsSvcbOptional(
+      base::span<const HostResolverEndpointResult> results) const;
+
+  // Returns whether `result` is usable for this connection. If `svcb_optional`
+  // is true, the non-HTTPS/SVCB fallback is allowed.
+  bool IsEndpointResultUsable(const HostResolverEndpointResult& result,
+                              bool svcb_optional) const;
+
+  // Returns an `AddressList` containing the IP endpoints for the current route.
+  // May only be called if the current route is usable for this connection.
+  AddressList GetCurrentAddressList() const;
+
+  // Appends connection attempts from `socket` to `connection_attempts_`. Should
+  // be called when discarding a failed socket.
+  void SaveConnectionAttempts(const StreamSocket& socket);
 
   scoped_refptr<TransportSocketParams> params_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
+  std::vector<HostResolverEndpointResult> endpoint_results_;
+  size_t current_endpoint_result_ = 0;
+  std::set<std::string> dns_aliases_;
 
   State next_state_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
 
   std::unique_ptr<StreamSocket> fallback_transport_socket_;
-  std::unique_ptr<AddressList> fallback_addresses_;
   base::TimeTicks fallback_connect_start_time_;
   base::OneShotTimer fallback_timer_;
 
@@ -207,7 +232,6 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // attempts are copied from the other socket, if one exists, into it before
   // it is returned.)
   ConnectionAttempts connection_attempts_;
-  ConnectionAttempts fallback_connection_attempts_;
 
   base::WeakPtrFactory<TransportConnectJob> weak_ptr_factory_{this};
 };

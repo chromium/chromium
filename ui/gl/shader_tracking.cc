@@ -5,13 +5,15 @@
 #include "ui/gl/shader_tracking.h"
 
 #include "base/check.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_switches.h"
 
 namespace gl {
 
 // static
 ShaderTracking* ShaderTracking::GetInstance() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Shaders can only be reliably retrieved with ANGLE backend. Therefore,
   // limit to Windows platform only.
   static bool enabled =
@@ -20,7 +22,7 @@ ShaderTracking* ShaderTracking::GetInstance() {
     static base::NoDestructor<ShaderTracking> instance;
     return instance.get();
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   return nullptr;
 }
 

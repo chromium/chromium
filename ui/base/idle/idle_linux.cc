@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_internal.h"
 #include "ui/display/screen.h"

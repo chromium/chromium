@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -28,6 +29,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/passwords/ios_chrome_password_change_success_tracker_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_reuse_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/passwords/ios_password_requirements_service_factory.h"
@@ -200,6 +202,12 @@ IOSChromePasswordManagerClient::GetPasswordScriptsFetcher() {
   return nullptr;
 }
 
+password_manager::PasswordChangeSuccessTracker*
+IOSChromePasswordManagerClient::GetPasswordChangeSuccessTracker() {
+  return IOSChromePasswordChangeSuccessTrackerFactory::GetForBrowserState(
+      bridge_.browserState);
+}
+
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
@@ -228,7 +236,9 @@ void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username) {
-  [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
+  [bridge_ showPasswordBreachForLeakType:leak_type
+                                     URL:origin
+                                username:username];
 }
 
 bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
@@ -280,8 +290,7 @@ ukm::SourceId IOSChromePasswordManagerClient::GetUkmSourceId() {
 PasswordManagerMetricsRecorder*
 IOSChromePasswordManagerClient::GetMetricsRecorder() {
   if (!metrics_recorder_) {
-    metrics_recorder_.emplace(GetUkmSourceId(),
-                              /*navigation_metric_recorder=*/nullptr);
+    metrics_recorder_.emplace(GetUkmSourceId());
   }
   return base::OptionalOrNullptr(metrics_recorder_);
 }

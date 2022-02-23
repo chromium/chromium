@@ -104,7 +104,7 @@ void AccountsCookieMutatorImpl::TriggerCookieJarUpdate() {
   gaia_cookie_manager_service_->TriggerListAccounts();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void AccountsCookieMutatorImpl::ForceTriggerOnCookieChange() {
   gaia_cookie_manager_service_->ForceOnCookieChangeProcessing();
 }

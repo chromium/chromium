@@ -8,14 +8,14 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<ash::shimless_rma::mojom::RmaState,
-                  rmad::RmadState::StateCase> {
-  static ash::shimless_rma::mojom::RmaState ToMojom(
+struct EnumTraits<ash::shimless_rma::mojom::State, rmad::RmadState::StateCase> {
+  static ash::shimless_rma::mojom::State ToMojom(
       rmad::RmadState::StateCase key_status);
 };
 
@@ -63,6 +63,27 @@ struct EnumTraits<ash::shimless_rma::mojom::OsUpdateOperation,
 };
 
 template <>
+struct EnumTraits<ash::shimless_rma::mojom::UpdateErrorCode,
+                  update_engine::ErrorCode> {
+  static ash::shimless_rma::mojom::UpdateErrorCode ToMojom(
+      update_engine::ErrorCode error_code);
+
+  static bool FromMojom(ash::shimless_rma::mojom::UpdateErrorCode input,
+                        update_engine::ErrorCode* out);
+};
+
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::WriteProtectDisableCompleteAction,
+                  rmad::WriteProtectDisableCompleteState::Action> {
+  static ash::shimless_rma::mojom::WriteProtectDisableCompleteAction ToMojom(
+      rmad::WriteProtectDisableCompleteState::Action action);
+
+  static bool FromMojom(
+      ash::shimless_rma::mojom::WriteProtectDisableCompleteAction input,
+      rmad::WriteProtectDisableCompleteState::Action* out);
+};
+
+template <>
 struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStatus,
                   rmad::ProvisionStatus::Status> {
   static ash::shimless_rma::mojom::ProvisioningStatus ToMojom(
@@ -85,6 +106,9 @@ class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
       const rmad::ComponentsRepairState_ComponentRepairStatus& component) {
     return component.repair_status();
   }
+
+  static const std::string& identifier(
+      const rmad::ComponentsRepairState_ComponentRepairStatus& component);
 
   static bool Read(ash::shimless_rma::mojom::ComponentDataView data,
                    rmad::ComponentsRepairState_ComponentRepairStatus* out);
@@ -154,6 +178,16 @@ class StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
   static bool Read(
       ash::shimless_rma::mojom::CalibrationComponentStatusDataView data,
       rmad::CalibrationComponentStatus* out);
+};
+
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::UpdateRoFirmwareStatus,
+                  rmad::UpdateRoFirmwareStatus> {
+  static ash::shimless_rma::mojom::UpdateRoFirmwareStatus ToMojom(
+      rmad::UpdateRoFirmwareStatus status);
+
+  static bool FromMojom(ash::shimless_rma::mojom::UpdateRoFirmwareStatus input,
+                        rmad::UpdateRoFirmwareStatus* out);
 };
 
 }  // namespace mojo

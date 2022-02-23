@@ -11,6 +11,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -98,6 +102,17 @@ class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& path,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      MultipartUploadRequest::Callback callback) override {
+    return std::make_unique<FakeMultipartUploadRequest>(
+        should_succeed_, response_, std::move(callback));
+  }
+
+  std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(
@@ -219,8 +234,9 @@ class BinaryUploadServiceTest : public testing::Test {
             Invoke([](BinaryUploadService::Request::DataCallback callback) {
               BinaryUploadService::Request::Data data;
               data.contents = "contents";
+              data.size = data.contents.size();
               std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
-                                      data);
+                                      std::move(data));
             }));
     return request;
   }
@@ -239,7 +255,7 @@ class BinaryUploadServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BinaryUploadService> service_;
-  MockBinaryFCMService* fcm_service_;
+  raw_ptr<MockBinaryFCMService> fcm_service_;
   FakeMultipartUploadRequestFactory fake_factory_;
 };
 
@@ -255,7 +271,7 @@ TEST_F(BinaryUploadServiceTest, FailsForLargeFile) {
           Invoke([](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
             std::move(callback).Run(BinaryUploadService::Result::FILE_TOO_LARGE,
-                                    data);
+                                    std::move(data));
           }));
   UploadForDeepScanning(std::move(request));
 
@@ -288,12 +304,22 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
 
   ExpectInstanceID(BinaryFCMService::kInvalidId);
 
+  // The auth request never requests an instance ID, so it should get a normal
+  // response.
+  base::RunLoop run_loop;
+  service_->IsAuthorized(
+      GURL(), base::BindLambdaForTesting([&run_loop](bool authorized) {
+        EXPECT_TRUE(authorized);
+        run_loop.Quit();
+      }),
+      "fake_device_token",
+      enterprise_connectors::AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED);
+  run_loop.Run();
+
   service_->MaybeUploadForDeepScanning(std::move(request));
   content::RunAllTasksUntilIdle();
 
-  // The auth request not getting an instance ID means that the result for the
-  // real request is UNAUTHORIZED.
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
 TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
@@ -318,7 +344,6 @@ TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
   std::unique_ptr<MockRequest> request =
       MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
 
-  ExpectInstanceID("valid id");
   ExpectNetworkResponse(false,
                         enterprise_connectors::ContentAnalysisResponse());
 
@@ -415,37 +440,6 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   // Expect nothing to change if the InstanceID returns after the timeout.
   std::move(instance_id_callback).Run("valid id");
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
-}
-
-TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout_Authentication) {
-  BinaryUploadService::Result scanning_result =
-      BinaryUploadService::Result::UNKNOWN;
-  enterprise_connectors::ContentAnalysisResponse scanning_response;
-  std::unique_ptr<MockRequest> request =
-      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
-  request->add_tag("dlp");
-  request->add_tag("malware");
-
-  BinaryFCMService::GetInstanceIDCallback instance_id_callback;
-  ON_CALL(*fcm_service_, GetInstanceID(_))
-      .WillByDefault(
-          Invoke([&instance_id_callback](
-                     BinaryFCMService::GetInstanceIDCallback callback) {
-            instance_id_callback = std::move(callback);
-          }));
-
-  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
-  service_->MaybeUploadForDeepScanning(std::move(request));
-  content::RunAllTasksUntilIdle();
-  task_environment_.FastForwardBy(base::Seconds(300));
-
-  // The auth request timing out means that the result for the real request is
-  // UNAUTHORIZED.
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
-
-  // Expect nothing to change if the InstanceID returns after the timeout.
-  std::move(instance_id_callback).Run("valid id");
-  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
 TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
@@ -615,7 +609,8 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
             ANALYSIS_CONNECTOR_UNSPECIFIED,
         enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED}) {
+        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+        enterprise_connectors::AnalysisConnector::PRINT}) {
     service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
                              EXPECT_TRUE(authorized);
                            }),
@@ -914,6 +909,33 @@ TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
         "wp-max-parallel-active-requests", "-1");
     EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
   }
+}
+
+TEST_F(BinaryUploadServiceTest, EmptyFileRequest) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+
+  ExpectInstanceID("valid id");
+  ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<FileAnalysisRequest> request =
+      std::make_unique<FileAnalysisRequest>(
+          enterprise_connectors::AnalysisSettings(), file_path,
+          file_path.BaseName(), "fake/mimetype", false,
+          base::BindLambdaForTesting(
+              [&run_loop](
+                  BinaryUploadService::Result result,
+                  enterprise_connectors::ContentAnalysisResponse response) {
+                ASSERT_EQ(BinaryUploadService::Result::SUCCESS, result);
+                run_loop.Quit();
+              }));
+  request->set_device_token("fake_device_token");
+
+  UploadForDeepScanning(std::move(request));
+  run_loop.Run();
 }
 
 }  // namespace safe_browsing

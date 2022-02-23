@@ -128,13 +128,14 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
   return ExtensionAction::ACTION_NONE;
 }
 
-void ExtensionActionRunner::HandlePageAccessModified(const Extension* extension,
-                                                     PageAccess current_access,
-                                                     PageAccess new_access) {
+void ExtensionActionRunner::HandlePageAccessModified(
+    const Extension* extension,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
 
   // If we are restricting page access, just change permissions.
-  if (new_access == PageAccess::RUN_ON_CLICK) {
+  if (new_access == SitePermissionsHelper::SiteAccess::kOnClick) {
     UpdatePageAccessSettings(extension, current_access, new_access);
     return;
   }
@@ -265,9 +266,10 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
 
   content::NavigationEntry* visible_entry =
       web_contents()->GetController().GetVisibleEntry();
-  // Refuse to run if there's no visible entry, because we have no idea of
-  // determining if it's the proper page. This should rarely, if ever, happen.
-  if (!visible_entry)
+  // Refuse to run if there's no visible entry that is not the initial
+  // NavigationEntry, because we have no way of determining if it's the proper
+  // page. This should rarely, if ever, happen.
+  if (!visible_entry || visible_entry->IsInitialEntry())
     return;
 
   // We add this to the list of permitted extensions and erase pending entries
@@ -398,12 +400,12 @@ void ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed(
 void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
     const std::string& extension_id,
     const GURL& page_url,
-    PageAccess current_access,
-    PageAccess new_access,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access,
     ToolbarActionsBarBubbleDelegate::CloseAction action) {
-  DCHECK(new_access == PageAccess::RUN_ON_SITE ||
-         new_access == PageAccess::RUN_ON_ALL_SITES);
-  DCHECK_EQ(PageAccess::RUN_ON_CLICK, current_access);
+  DCHECK(new_access == SitePermissionsHelper::SiteAccess::kOnSite ||
+         new_access == SitePermissionsHelper::SiteAccess::kOnAllSites);
+  DCHECK_EQ(SitePermissionsHelper::SiteAccess::kOnClick, current_access);
 
   // Don't change permissions if the user chose to not refresh the page.
   if (action != ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE)
@@ -423,9 +425,10 @@ void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
-void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
-                                                     PageAccess current_access,
-                                                     PageAccess new_access) {
+void ExtensionActionRunner::UpdatePageAccessSettings(
+    const Extension* extension,
+    SitePermissionsHelper::SiteAccess current_access,
+    SitePermissionsHelper::SiteAccess new_access) {
   DCHECK_NE(current_access, new_access);
 
   const GURL& url = web_contents()->GetLastCommittedURL();
@@ -433,7 +436,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
   DCHECK(modifier.CanAffectExtension());
 
   switch (new_access) {
-    case PageAccess::RUN_ON_CLICK:
+    case SitePermissionsHelper::SiteAccess::kOnClick:
       if (modifier.HasBroadGrantedHostPermissions())
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -442,7 +445,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
       if (modifier.HasGrantedHostPermission(url))
         modifier.RemoveGrantedHostPermission(url);
       break;
-    case PageAccess::RUN_ON_SITE:
+    case SitePermissionsHelper::SiteAccess::kOnSite:
       if (modifier.HasBroadGrantedHostPermissions())
         modifier.RemoveBroadGrantedHostPermissions();
       // Note: SetWithholdHostPermissions() is a no-op if host permissions are
@@ -451,7 +454,7 @@ void ExtensionActionRunner::UpdatePageAccessSettings(const Extension* extension,
       if (!modifier.HasGrantedHostPermission(url))
         modifier.GrantHostPermission(url);
       break;
-    case PageAccess::RUN_ON_ALL_SITES:
+    case SitePermissionsHelper::SiteAccess::kOnAllSites:
       modifier.SetWithholdHostPermissions(false);
       break;
   }
@@ -482,21 +485,20 @@ void ExtensionActionRunner::DidFinishNavigation(
   declarative_net_request::RulesMonitorService* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context_);
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  const bool is_main_frame = navigation_handle->IsInPrimaryMainFrame();
   const bool has_committed = navigation_handle->HasCommitted();
 
-  if (is_main_frame && !has_committed && rules_monitor_service) {
+  if (navigation_handle->IsInMainFrame() && !has_committed &&
+      rules_monitor_service) {
     // Clean up any pending actions recorded in the action tracker for this
     // navigation.
     rules_monitor_service->action_tracker().ClearPendingNavigation(
         navigation_handle->GetNavigationId());
   }
 
-  if (!is_main_frame || !has_committed || navigation_handle->IsSameDocument())
+  if (!navigation_handle->IsInPrimaryMainFrame() || !has_committed ||
+      navigation_handle->IsSameDocument()) {
     return;
+  }
 
   LogUMA();
   num_page_requests_ = 0;

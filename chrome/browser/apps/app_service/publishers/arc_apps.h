@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/callback.h"
@@ -24,13 +25,13 @@
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -46,6 +47,7 @@ namespace apps {
 
 class PublisherTest;
 class WebApkManager;
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
@@ -75,6 +77,8 @@ class ArcApps : public KeyedService,
     return arc_icon_once_loader_;
   }
 
+  WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
+
  private:
   friend class ArcAppsFactory;
   friend class PublisherTest;
@@ -95,6 +99,8 @@ class ArcApps : public KeyedService,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -169,10 +175,10 @@ class ArcApps : public KeyedService,
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
       const absl::optional<std::string>& package_name) override;
-  void OnPreferredAppsChanged() override;
   void OnArcSupportedLinksChanged(
       const std::vector<arc::mojom::SupportedLinksPtr>& added,
-      const std::vector<arc::mojom::SupportedLinksPtr>& removed) override;
+      const std::vector<arc::mojom::SupportedLinksPtr>& removed,
+      arc::mojom::SupportedLinkChangeSource source) override;
 
   // ash::ArcNotificationsHostInitializer::Observer overrides.
   void OnSetArcNotificationsInstance(
@@ -197,10 +203,10 @@ class ArcApps : public KeyedService,
                          IconEffects icon_effects,
                          apps::LoadIconCallback callback);
 
-  std::unique_ptr<App> CreateApp(ArcAppListPrefs* prefs,
-                                 const std::string& app_id,
-                                 const ArcAppListPrefs::AppInfo& app_info,
-                                 bool update_icon = true);
+  AppPtr CreateApp(ArcAppListPrefs* prefs,
+                   const std::string& app_id,
+                   const ArcAppListPrefs::AppInfo& app_info,
+                   bool update_icon = true);
   apps::mojom::AppPtr Convert(ArcAppListPrefs* prefs,
                               const std::string& app_id,
                               const ArcAppListPrefs::AppInfo& app_info,
@@ -230,7 +236,6 @@ class ArcApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  AppServiceProxy* const proxy_;
   Profile* const profile_;
   ArcIconOnceLoader arc_icon_once_loader_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;

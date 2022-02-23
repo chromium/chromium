@@ -27,6 +27,8 @@ extern const base::FeatureParam<int> kTimeoutDurationSeconds;
 extern const base::FeatureParam<bool> kThrottleBackgroundFetches;
 extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 
+// TODO(b/213622639): The following two features are obsolete and should be
+// removed.
 // Determines whether conditions should be reached before enabling the upload of
 // click and view actions in the feed (e.g., the user needs to view X cards).
 // For example, this is needed when the notice card is at the second position in
@@ -36,7 +38,7 @@ extern const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload;
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 extern const base::Feature kInterestFeedNoticeCardAutoDismiss;
 #endif
 
@@ -80,10 +82,6 @@ extern const base::Feature kFeedClearImageMemoryCache;
 // feeds quickly.
 extern const base::Feature kFeedBackToTop;
 
-// Feature that enables the 'X' in the signin promo in the Feed. Without the 'X'
-// the signin promo is not dismissible without opting to sign in.
-extern const base::Feature kFeedSignInPromoDismiss;
-
 // Feature that enables StAMP cards in the feed.
 extern const base::Feature kFeedStamp;
 
@@ -93,6 +91,11 @@ extern const base::Feature kWebFeedSort;
 // Feature that causes the "open in new tab" menu item to appear on feed items
 // on Start Surface.
 extern const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed;
+
+// Feature that causes the WebUI version of the Feed to be enabled.
+extern const base::Feature kWebUiFeed;
+extern const base::FeatureParam<std::string> kWebUiScriptFetchUrl;
+extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
 
 std::string GetFeedReferrerUrl();
 

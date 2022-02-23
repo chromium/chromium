@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -52,7 +53,7 @@ class UploadObserver {
   base::OnceClosure on_complete_callback_;
 };
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 void RemovePermissions(const base::FilePath& path, int removed_permissions) {
   int permissions;
   ASSERT_TRUE(base::GetPosixFilePermissions(path, &permissions));
@@ -66,7 +67,7 @@ void RemoveReadPermissions(const base::FilePath& path) {
                                    base::FILE_PERMISSION_READ_BY_OTHERS;
   RemovePermissions(path, read_permissions);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }  // namespace
 
 class WebRtcEventLogUploaderImplTest : public ::testing::Test {
@@ -196,7 +197,7 @@ class WebRtcEventLogUploaderImplTest : public ::testing::Test {
 
   base::ScopedTempDir profiles_dir_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* testing_profile_;  // |testing_profile_manager_| owns.
+  raw_ptr<TestingProfile> testing_profile_;  // |testing_profile_manager_| owns.
   BrowserContextId browser_context_id_;
 
   base::FilePath log_file_;
@@ -235,7 +236,7 @@ TEST_F(WebRtcEventLogUploaderImplTest, UnsuccessfulUploadReportedToObserver2) {
   EXPECT_FALSE(base::PathExists(log_file_));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcEventLogUploaderImplTest, FailureToReadFileReportedToObserver) {
   // Show the failure was independent of the URLLoaderFactory's primed return
   // value.
@@ -255,7 +256,7 @@ TEST_F(WebRtcEventLogUploaderImplTest, NonExistentFileReportedToObserver) {
   EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
   StartAndWaitForUpload();
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogUploaderImplTest, FilesUpToMaxSizeUploaded) {
   int64_t log_file_size_bytes;

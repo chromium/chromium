@@ -18,15 +18,42 @@ source_set("mixers") {
     "chrome_color_mixers.h",
     "chrome_color_provider_utils.cc",
     "chrome_color_provider_utils.h",
+    "native_chrome_color_mixer.cc",
+    "native_chrome_color_mixer.h",
     "omnibox_color_mixer.cc",
     "omnibox_color_mixer.h",
+    "tab_strip_color_mixer.cc",
+    "tab_strip_color_mixer.h",
   ]
 
   deps = [
     ":color_headers",
+    "//build:branding_buildflags",
+    "//chrome/browser:theme_properties",
     "//ui/color:color",
     "//ui/color:mixers",
   ]
+
+  if (is_linux) {
+    sources += [ "linux/native_chrome_color_mixer_linux.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "mac/native_chrome_color_mixer_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "win/native_chrome_color_mixer_win.cc" ]
+    deps += [
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser:browser_themes",
+      "//chrome/browser:titlebar_config",
+      "//ui/base",
+      "//ui/color:accent_color_observer",
+      "//ui/native_theme",
+      "//ui/views",
+    ]
+  }
 }
 
 if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
@@ -59,6 +86,9 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
         "//chrome/chrome_elf:test_stubs",
         "//components/crash/core/app:crash_export_thunks",
       ]
+    }
+    if (is_chromeos_ash) {
+      deps += [ "//components/exo/wayland:weston_test_stub" ]
     }
   }
 }

@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 namespace android {
 class TabWebContentsDelegateAndroid;
@@ -25,7 +25,7 @@ namespace chrome {
 class BrowserTabStripModelDelegate;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -48,7 +48,7 @@ class ChromeNoStatePrefetchContentsDelegate;
 // only Browser and BrowserTabStripModelDelegate.)
 class TabHelpers {
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // ThinWebView is used to host WebContents on non-tab UIs in Android. Most
   // clients of ThinWebView will need a major subset of the tab helpers.
   friend class thin_webview::android::ChromeThinWebViewInitializer;
@@ -58,7 +58,7 @@ class TabHelpers {
 #else
   friend class Browser;
   friend class chrome::BrowserTabStripModelDelegate;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // chrome::Navigate creates WebContents that are destined for the tab strip,
   // and that might have WebUI that immediately calls back into random tab

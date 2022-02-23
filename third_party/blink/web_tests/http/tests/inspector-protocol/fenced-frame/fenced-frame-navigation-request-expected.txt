@@ -1,0 +1,5 @@
+Tests that network events for a newly created fenced frame can be observed after auto-attach.
+FF navigation request sent for url: http://127.0.0.1:8000/inspector-protocol/fenced-frame/resources/page-with-title.php
+Response received for FF navigation request: 200
+Loading finished for FF.
+

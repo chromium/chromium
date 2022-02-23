@@ -10,7 +10,7 @@
       addManifestLinkTag();
     </script>
 </head>
-<body onload="startWorker('service_worker.js')">
+<body onload="startWorker('../service_worker.js', { scope: '/web_apps/site_a/' })">
   <h1>Site A Bar</h1>
   Service worker returns a response object if it's offline, so the page
   supports the offline environment.

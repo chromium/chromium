@@ -6,6 +6,8 @@ rootWebArea
 ++++++++++button ignored invisible
 ++++++++++++staticText ignored invisible name='expect invisible subtree'
 ++++++++genericContainer invisible
+++++++++++button ignored invisible
+++++++++++++staticText ignored invisible name='expect invisible subtree'
 ++++++++genericContainer ignored invisible
 ++++++++++button invisible name='expect invisible subtree'
 ++++++++++++staticText ignored invisible name='expect invisible subtree'

@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_GET_UPDATES_PROCESSOR_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/model_type_registry.h"
@@ -81,7 +82,7 @@ class GetUpdatesProcessor {
   // A map of 'update handlers', one for each enabled type.
   // This must be kept in sync with the routing info.  Our temporary solution to
   // that problem is to initialize this map in set_routing_info().
-  UpdateHandlerMap* update_handler_map_;
+  raw_ptr<UpdateHandlerMap> update_handler_map_;
 
   const GetUpdatesDelegate& delegate_;
 };

@@ -59,7 +59,7 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
 
         Resources res = layout.getResources();
         prompt.setText(mMessageText);
-        ApiCompatibilityUtils.setTextAppearance(prompt, R.style.TextAppearance_TextLarge_Blue);
+        ApiCompatibilityUtils.setTextAppearance(prompt, R.style.TextAppearance_TextLarge_Link);
         prompt.setGravity(Gravity.CENTER_VERTICAL);
         prompt.setOnClickListener(this);
 

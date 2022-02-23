@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
@@ -75,18 +76,15 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    bool grant_tab_permissions,
-    ExtensionActionViewController::PopupShowAction show_action) {
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
   // TOP_RIGHT is correct for both RTL and LTR, because the views platform
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  ExtensionPopup::ShowAction popup_show_action =
-      show_action == ExtensionActionViewController::SHOW_POPUP ?
-          ExtensionPopup::SHOW : ExtensionPopup::SHOW_AND_INSPECT;
   ExtensionPopup::ShowPopup(std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
-                            arrow, popup_show_action);
+                            arrow, show_action, std::move(callback));
 }
 
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
@@ -137,8 +135,8 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
   if (controller_->IsShowingPopup()) {
     controller_->HidePopup();
   } else {
-    controller_->ExecuteAction(
-        true, ToolbarActionViewController::InvocationSource::kCommand);
+    controller_->ExecuteUserAction(
+        ToolbarActionViewController::InvocationSource::kCommand);
   }
 
   return true;

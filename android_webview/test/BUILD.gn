@@ -40,7 +40,6 @@ if (android_64bit_target_cpu) {
 script_test("system_webview_crx_smoke_tests") {
   script =
       "//android_webview/test/components/run_webview_component_smoketest.py"
-  run_under_python2 = true
   args = [ "--webview-package-name=$system_webview_package_name" ]
   data = [ "//android_webview/test/components/crx_smoke_tests.py" ]
   data_deps = [
@@ -73,6 +72,7 @@ script_test("system_webview_wpt") {
     "//chrome/test/chromedriver:chromedriver($host_toolchain)",
     "//testing:wpt_android_lib",
     "//third_party/blink/tools:wpt_tests_android_isolate",
+    "//tools/imagediff",
   ]
 }
 
@@ -164,8 +164,7 @@ android_assets("webview_instrumentation_apk_assets") {
 
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  }
-  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+  } else {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }
@@ -273,6 +272,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public/common:common_java",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
@@ -313,6 +313,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwContentsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwDarkModeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwDisplayCutoutTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AwFileChooserTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwFormDatabaseTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwImeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwJavaBridgeTest.java",
@@ -327,6 +328,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AwQuotaManagerBridgeTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwSecondBrowserProcessTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwServiceWorkerClientTest.java",
+    "../javatests/src/org/chromium/android_webview/test/AwServiceWorkerSettingsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwSettingsTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwUncaughtExceptionTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwVariationsSeedFetcherTest.java",
@@ -374,6 +376,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/TestAwContentsClient.java",
     "../javatests/src/org/chromium/android_webview/test/TestAwServiceWorkerClient.java",
     "../javatests/src/org/chromium/android_webview/test/UserAgentTest.java",
+    "../javatests/src/org/chromium/android_webview/test/VariationsHeadersTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedHolderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsSeedLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/VariationsTest.java",
@@ -533,12 +536,15 @@ test("android_webview_unittests") {
     "//components/component_updater",
     "//components/component_updater/android:embedded_component_loader",
     "//components/embedder_support/android:util",
+    "//components/embedder_support/android/metrics:metrics",
     "//components/flags_ui:flags_ui",
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/optimization_guide/core:bloomfilter",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/common",
     "//components/update_client",
     "//components/viz/service:service",
     "//content:content",
@@ -579,9 +585,11 @@ test("android_webview_unittests") {
     "../browser/permission/media_access_permission_request_unittest.cc",
     "../browser/permission/permission_request_handler_unittest.cc",
     "../browser/renderer_host/auto_login_parser_unittest.cc",
+    "../browser/safe_browsing/aw_ping_manager_unittest.cc",
     "../browser/safe_browsing/aw_safe_browsing_allowlist_manager_unittest.cc",
     "../browser/scoped_add_feature_flags_unittests.cc",
     "../browser/state_serializer_unittest.cc",
+    "../browser/tracing/aw_background_tracing_metrics_provider_unittest.cc",
     "../lib/webview_tests.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_shim_unittest.cc",
     "../nonembedded/component_updater/aw_component_installer_policy_unittest.cc",
@@ -592,8 +600,7 @@ test("android_webview_unittests") {
 
   if (use_v8_context_snapshot) {
     deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-  }
-  if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+  } else {
     deps += [ "//v8:v8_external_startup_data_assets" ]
   }
 }

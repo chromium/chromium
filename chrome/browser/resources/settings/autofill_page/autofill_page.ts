@@ -14,27 +14,28 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {getTemplate} from './autofill_page.html.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
     PrefsMixin(PasswordCheckMixin(BaseMixin(PolymerElement)));
 
-class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
+export class SettingsAutofillPageElement extends
+    SettingsAutofillPageElementBase {
   static get is() {
     return 'settings-autofill-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -98,6 +99,12 @@ class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
   private computePasswordManagerSubLabel_(): string {
     return this.leakedPasswords.length > 0 ? this.compromisedPasswordsCount :
                                              '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-autofill-page': SettingsAutofillPageElement;
   }
 }
 

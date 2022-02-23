@@ -42,7 +42,7 @@ GURL GetTargetTabUrl(SessionID session_id, int index) {
         }
       }
       if (target_tab)
-        return target_tab->GetURL();
+        return target_tab->GetLastCommittedURL();
     }
   }
 

@@ -64,7 +64,7 @@ public class OptimizationGuidePushNotificationManager {
     /** A sentinel Set that is set when the pref for a specific OptimizationType overflows. */
     private static final Set<String> OVERFLOW_SENTINEL_SET = Set.of("__overflow");
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /** The default cache size in Java for push notification. */
     public static final IntCachedFieldTrialParameter MAX_CACHE_SIZE =
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);

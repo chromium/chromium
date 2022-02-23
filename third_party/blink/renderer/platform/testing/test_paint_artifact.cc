@@ -6,11 +6,11 @@
 
 #include <memory>
 #include "cc/layers/layer.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -33,7 +33,9 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
   // invalidation rects of chunks. The actual values don't matter. If the chunk
   // has display items, we will recalculate the bounds from the display items
   // when constructing the PaintArtifact.
-  Bounds(gfx::Rect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
+  gfx::Rect bounds(id * 110, id * 220, id * 220 + 200, id * 110 + 200);
+  Bounds(bounds);
+  DrawableBounds(bounds);
   return *this;
 }
 
@@ -90,7 +92,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
   if (!bounds.IsEmpty()) {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     flags.setColor(color.Rgb());
     canvas->drawRect(gfx::RectToSkRect(bounds), flags);
   }
@@ -153,7 +155,6 @@ TestPaintArtifact& TestPaintArtifact::EffectivelyInvisible() {
 TestPaintArtifact& TestPaintArtifact::Bounds(const gfx::Rect& bounds) {
   auto& chunk = paint_artifact_->PaintChunks().back();
   chunk.bounds = bounds;
-  chunk.drawable_bounds = bounds;
   return *this;
 }
 

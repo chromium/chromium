@@ -44,6 +44,9 @@ class FakeBrowserManager : public BrowserManager {
                            NewFullscreenWindowCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
 
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
  private:
   // State indicating Lacros is running or not.
   bool is_running_ = false;

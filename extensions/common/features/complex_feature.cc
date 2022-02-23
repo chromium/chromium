@@ -37,16 +37,17 @@ Feature::Availability ComplexFeature::IsAvailableToManifest(
     Manifest::Type type,
     mojom::ManifestLocation location,
     int manifest_version,
-    Platform platform) const {
+    Platform platform,
+    int context_id) const {
   Feature::Availability first_availability =
-      features_[0]->IsAvailableToManifest(hashed_id, type, location,
-                                          manifest_version, platform);
+      features_[0]->IsAvailableToManifest(
+          hashed_id, type, location, manifest_version, platform, context_id);
   if (first_availability.is_available())
     return first_availability;
 
   for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
     Availability availability = (*it)->IsAvailableToManifest(
-        hashed_id, type, location, manifest_version, platform);
+        hashed_id, type, location, manifest_version, platform, context_id);
     if (availability.is_available())
       return availability;
   }
@@ -55,19 +56,22 @@ Feature::Availability ComplexFeature::IsAvailableToManifest(
   return first_availability;
 }
 
-Feature::Availability ComplexFeature::IsAvailableToContext(
+Feature::Availability ComplexFeature::IsAvailableToContextImpl(
     const Extension* extension,
     Context context,
     const GURL& url,
-    Platform platform) const {
+    Platform platform,
+    int context_id,
+    bool check_developer_mode) const {
   Feature::Availability first_availability =
-      features_[0]->IsAvailableToContext(extension, context, url, platform);
+      features_[0]->IsAvailableToContextImpl(extension, context, url, platform,
+                                             context_id, check_developer_mode);
   if (first_availability.is_available())
     return first_availability;
 
   for (auto it = features_.cbegin() + 1; it != features_.cend(); ++it) {
-    Availability availability =
-        (*it)->IsAvailableToContext(extension, context, url, platform);
+    Availability availability = (*it)->IsAvailableToContextImpl(
+        extension, context, url, platform, context_id, check_developer_mode);
     if (availability.is_available())
       return availability;
   }
@@ -76,14 +80,15 @@ Feature::Availability ComplexFeature::IsAvailableToContext(
   return first_availability;
 }
 
-Feature::Availability ComplexFeature::IsAvailableToEnvironment() const {
+Feature::Availability ComplexFeature::IsAvailableToEnvironment(
+    int context_id) const {
   Feature::Availability first_availability =
-      features_[0]->IsAvailableToEnvironment();
+      features_[0]->IsAvailableToEnvironment(context_id);
   if (first_availability.is_available())
     return first_availability;
 
   for (auto iter = features_.cbegin() + 1; iter != features_.cend(); ++iter) {
-    Availability availability = (*iter)->IsAvailableToEnvironment();
+    Availability availability = (*iter)->IsAvailableToEnvironment(context_id);
     if (availability.is_available())
       return availability;
   }

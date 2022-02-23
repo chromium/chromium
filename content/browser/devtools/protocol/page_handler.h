@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/page.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_widget_host.h"
@@ -64,7 +64,8 @@ class PageHandler : public DevToolsDomainHandler,
  public:
   PageHandler(EmulationHandler* emulation_handler,
               BrowserHandler* browser_handler,
-              bool allow_unsafe_operations);
+              bool allow_unsafe_operations,
+              absl::optional<url::Origin> navigation_initiator_origin);
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
@@ -104,7 +105,8 @@ class PageHandler : public DevToolsDomainHandler,
   bool ShouldBypassCSP();
   void BackForwardCacheNotUsed(
       const NavigationRequest* nav_request,
-      const BackForwardCacheCanStoreDocumentResult* result);
+      const BackForwardCacheCanStoreDocumentResult* result,
+      const BackForwardCacheCanStoreTreeResult* tree_result);
 
   Response Enable() override;
   Response Disable() override;
@@ -210,6 +212,7 @@ class PageHandler : public DevToolsDomainHandler,
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
   const bool allow_unsafe_operations_;
+  const absl::optional<url::Origin> navigation_initiator_origin_;
 
   bool enabled_;
   bool bypass_csp_ = false;

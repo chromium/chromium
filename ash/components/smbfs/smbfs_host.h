@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "ash/components/disks/mount_point.h"
 #include "ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "chromeos/disks/mount_point.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
     virtual void RequestCredentials(RequestCredentialsCallback callback) = 0;
   };
 
-  SmbFsHost(std::unique_ptr<chromeos::disks::MountPoint> mount_point,
+  SmbFsHost(std::unique_ptr<ash::disks::MountPoint> mount_point,
             Delegate* delegate,
             mojo::Remote<mojom::SmbFs> smbfs_remote,
             mojo::PendingReceiver<mojom::SmbFsDelegate> delegate_receiver);
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
   void OnDeleteRecursivelyDone(DeleteRecursivelyCallback callback,
                                smbfs::mojom::DeleteRecursivelyError error);
 
-  const std::unique_ptr<chromeos::disks::MountPoint> mount_point_;
+  const std::unique_ptr<ash::disks::MountPoint> mount_point_;
   Delegate* const delegate_;
 
   mojo::Remote<mojom::SmbFs> smbfs_;

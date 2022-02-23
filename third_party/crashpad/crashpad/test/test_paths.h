@@ -49,14 +49,14 @@ class TestPaths {
     //!     architecture as the running process.
     kDefault = 0,
 
-#if (defined(OS_WIN) && defined(ARCH_CPU_64_BITS)) || DOXYGEN
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || DOXYGEN
     //! \brief The 32-bit variant is requested.
     //!
     //! On Windows, when running 64-bit code, the 32-bit variant can be
     //! requested. Before doing so, Has32BitBuildArtifacts() must be called and
     //! must return `true`. Otherwise, execution will be aborted.
     k32Bit,
-#endif  // OS_WIN && ARCH_CPU_64_BITS
+#endif  // BUILDFLAG(IS_WIN) && ARCH_CPU_64_BITS
   };
 
   TestPaths() = delete;
@@ -128,7 +128,7 @@ class TestPaths {
       FileType file_type,
       Architecture architecture = Architecture::kDefault);
 
-#if (defined(OS_WIN) && defined(ARCH_CPU_64_BITS)) || DOXYGEN
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || DOXYGEN
   //! \return `true` if 32-bit build artifacts are available.
   //!
   //! Tests that require the use of 32-bit build output should call this
@@ -142,7 +142,7 @@ class TestPaths {
   //! can be found its own directory, and located by calling BuildArtifact()
   //! with Architecture::kDefault.
   static bool Has32BitBuildArtifacts();
-#endif  // OS_WIN && ARCH_CPU_64_BITS
+#endif  // BUILDFLAG(IS_WIN) && ARCH_CPU_64_BITS
 };
 
 }  // namespace test

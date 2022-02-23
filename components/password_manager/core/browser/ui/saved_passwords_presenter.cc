@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
@@ -71,9 +72,12 @@ SavedPasswordsPresenter::~SavedPasswordsPresenter() {
 }
 
 void SavedPasswordsPresenter::Init() {
-  profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
-  if (account_store_)
-    account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+  profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
+  if (account_store_) {
+    account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
+        weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
@@ -114,6 +118,9 @@ bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
     account_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
 
   GetStoreFor(form).AddLogin(form);
+  metrics_util::LogUserInteractionsWhenAddingCredentialFromSettings(
+      metrics_util::AddCredentialFromSettingsUserInteractions::
+          kCredentialAdded);
   return true;
 }
 
@@ -257,13 +264,15 @@ void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
 void SavedPasswordsPresenter::OnLoginsChanged(
     PasswordStoreInterface* store,
     const PasswordStoreChangeList& changes) {
-  store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SavedPasswordsPresenter::OnLoginsRetained(
     PasswordStoreInterface* store,
     const std::vector<PasswordForm>& retained_passwords) {
-  store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(

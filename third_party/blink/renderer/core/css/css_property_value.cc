@@ -74,7 +74,7 @@ CSSPropertyName CSSPropertyValueMetadata::Name() const {
 }
 
 bool CSSPropertyValue::operator==(const CSSPropertyValue& other) const {
-  return DataEquivalent(value_, other.value_) &&
+  return base::ValuesEquivalent(value_, other.value_) &&
          IsImportant() == other.IsImportant();
 }
 

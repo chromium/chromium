@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -150,41 +149,6 @@ TEST_F(SyncTabNodePoolTest, AssociateWithFreeTabNode) {
   EXPECT_EQ(1, pool_.GetTabNodeIdFromTabId(kTabId2));
   pool_.FreeTab(kTabId1);
   EXPECT_EQ(0, pool_.AssociateWithFreeTabNode(kTabId3));
-}
-
-TEST_F(SyncTabNodePoolTest, TabPoolFreeNodeWatermarkLimits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kTabNodePoolImmediateDeletion);
-
-  // Allocate TabNodePool::kFreeNodesHighWatermark + 1 nodes and verify that
-  // freeing the last node reduces the free node pool size to
-  // kFreeNodesLowWatermark.
-  std::vector<int> used_sync_ids;
-  for (size_t i = 1; i <= TabNodePool::kFreeNodesHighWatermark + 1; ++i) {
-    used_sync_ids.push_back(
-        pool_.AssociateWithFreeTabNode(SessionID::FromSerializedValue(i)));
-  }
-
-  // Free all except one node.
-  used_sync_ids.pop_back();
-
-  for (size_t i = 1; i <= used_sync_ids.size(); ++i) {
-    pool_.FreeTab(SessionID::FromSerializedValue(i));
-    EXPECT_THAT(pool_.CleanupFreeTabNodes(), IsEmpty());
-  }
-
-  // Freeing the last sync node should drop the free nodes to
-  // kFreeNodesLowWatermark.
-  pool_.FreeTab(
-      SessionID::FromSerializedValue(TabNodePool::kFreeNodesHighWatermark + 1));
-  std::set<int> deleted_node_ids = pool_.CleanupFreeTabNodes();
-  EXPECT_EQ(deleted_node_ids.size(), TabNodePool::kFreeNodesHighWatermark + 1 -
-                                         TabNodePool::kFreeNodesLowWatermark);
-  // Make sure the highest ones are deleted.
-  EXPECT_EQ(0U,
-            deleted_node_ids.count(TabNodePool::kFreeNodesLowWatermark - 1));
-  EXPECT_NE(0U, deleted_node_ids.count(TabNodePool::kFreeNodesLowWatermark));
-  EXPECT_NE(0U, deleted_node_ids.count(TabNodePool::kFreeNodesHighWatermark));
 }
 
 TEST_F(SyncTabNodePoolTest, AssociateWithFreeTabNodesContiguous) {

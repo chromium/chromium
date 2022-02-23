@@ -12,6 +12,8 @@ namespace base {
 
 DefaultDelayedTaskHandleDelegate::DefaultDelayedTaskHandleDelegate() = default;
 
+DefaultDelayedTaskHandleDelegate::~DefaultDelayedTaskHandleDelegate() = default;
+
 bool DefaultDelayedTaskHandleDelegate::IsValid() const {
   return weak_ptr_factory_.HasWeakPtrs();
 }
@@ -26,8 +28,6 @@ OnceClosure DefaultDelayedTaskHandleDelegate::BindCallback(
   return BindOnce(&DefaultDelayedTaskHandleDelegate::RunTask,
                   weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 }
-
-DefaultDelayedTaskHandleDelegate::~DefaultDelayedTaskHandleDelegate() = default;
 
 void DefaultDelayedTaskHandleDelegate::RunTask(OnceClosure user_task) {
   // Invalidate the weak pointer first so that the task handle is considered

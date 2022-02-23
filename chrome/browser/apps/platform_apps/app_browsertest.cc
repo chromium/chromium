@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -49,9 +49,9 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/overlay_window.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -75,6 +75,10 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
 using content::WebContents;
@@ -184,7 +188,7 @@ class ScopedPreviewTestDelegate : printing::PrintPreviewUI::TestDelegate {
 
 #endif  // ENABLE_PRINT_PREVIEW
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
                                     const base::FilePath& temp_dir,
                                     const char* filename,
@@ -197,7 +201,7 @@ bool CopyTestDataAndGetTestFilePath(const base::FilePath& test_data_file,
   *file_path = path;
   return true;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 
 class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
  public:
@@ -271,7 +275,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParamsForTesting(std::move(params));
 
     if (!catcher.GetNextResult()) {
       message_ = catcher.message();
@@ -393,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
 }
 
 // Flaky on Mac10.13 Tests (dbg). See https://crbug.com/1155013
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_AppWithContextMenuTextField DISABLED_AppWithContextMenuTextField
 #else
 #define MAYBE_AppWithContextMenuTextField AppWithContextMenuTextField
@@ -508,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // Failing on some Win and Linux buildbots.  See crbug.com/354425.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Iframes DISABLED_Iframes
 #else
 #define MAYBE_Iframes Iframes
@@ -570,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
 }
 
 // See crbug.com/248441
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ExtensionWindowingApis DISABLED_ExtensionWindowingApis
 #else
 #define MAYBE_ExtensionWindowingApis ExtensionWindowingApis
@@ -674,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
       << message_;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // Tests that launch data is sent through for a file with an empty extension if
 // a handler accepts "".
 IN_PROC_BROWSER_TEST_F(PlatformAppWithFileBrowserTest,
@@ -841,8 +845,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MutationEventsDisabled) {
 
 // This appears to be unreliable.
 // TODO(stevenjb): Investigate and enable
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AppWindowRestoreState DISABLED_AppWindowRestoreState
 #else
 #define MAYBE_AppWindowRestoreState AppWindowRestoreState
@@ -943,8 +947,8 @@ void PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
         content::NotificationService::AllSources());
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
-            extension->id(), LaunchContainer::kLaunchContainerNone,
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
@@ -970,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppDevToolsBrowserTest, ReOpenedWithURL) {
 
 // Test that showing a permission request as a constrained window works and is
 // correctly parented.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ConstrainedWindowRequest DISABLED_ConstrainedWindowRequest
 #else
 // TODO(sail): Enable this on other platforms once http://crbug.com/95455 is
@@ -1062,7 +1066,7 @@ class CheckExtensionInstalledObserver
 
  private:
   bool seen_;
-  extensions::ExtensionRegistry* registry_;
+  raw_ptr<extensions::ExtensionRegistry> registry_;
 };
 
 }  // namespace
@@ -1092,8 +1096,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), LaunchContainer::kLaunchContainerNone,
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1117,8 +1121,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), LaunchContainer::kLaunchContainerNone,
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1134,10 +1138,10 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
 
   DictionaryPrefUpdate update(extension_prefs->pref_service(),
                               extensions::pref_names::kExtensions);
-  base::DictionaryValue* dict = update.Get();
+  base::Value* dict = update.Get();
   std::string key(extension->id());
   key += ".manifest.version";
-  dict->SetString(key, "1");
+  dict->SetStringPath(key, "1");
 }
 
 // Component App Test 3 of 3: simulate a component extension upgrade that
@@ -1158,8 +1162,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   ExtensionTestMessageListener launched_listener("Launched", false);
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), LaunchContainer::kLaunchContainerNone,
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 
@@ -1186,8 +1190,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
     ExtensionTestMessageListener launched_listener("Launched", false);
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(apps::AppLaunchParams(
-            extension->id(), LaunchContainer::kLaunchContainerNone,
+        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW,
             apps::mojom::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
@@ -1208,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 
 // Fails on Win7. http://crbug.com/171450
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Messaging DISABLED_Messaging
 #else
 #define MAYBE_Messaging Messaging
@@ -1234,8 +1238,16 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_WebContentsHasFocus) {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+// Test is highly flaky on Windows.  https://crbug.com/1082010
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WindowDotPrintShouldBringUpPrintPreview \
+  DISABLED_WindowDotPrintShouldBringUpPrintPreview
+#else
+#define MAYBE_WindowDotPrintShouldBringUpPrintPreview \
+  WindowDotPrintShouldBringUpPrintPreview
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
-                       WindowDotPrintShouldBringUpPrintPreview) {
+                       MAYBE_WindowDotPrintShouldBringUpPrintPreview) {
   ScopedPreviewTestDelegate preview_delegate;
   ASSERT_TRUE(RunExtensionTest("platform_apps/print_api",
                                {.launch_as_platform_app = true}))
@@ -1293,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                        MAYBE_IncognitoComponentApp) {
   // Get the file manager app.
   const Extension* file_manager = extension_registry()->GetExtensionById(
-      "hhaomjibdihmijegdhdafkllkbggdgoj", ExtensionRegistry::ENABLED);
+      extension_misc::kFilesManagerAppId, ExtensionRegistry::ENABLED);
   ASSERT_TRUE(file_manager != NULL);
   Profile* incognito_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
@@ -1500,20 +1512,20 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 // TODO(crbug.com/961017): Fix memory leaks in tests and re-enable on LSAN.
 #if defined(LEAK_SANITIZER)
-#define MAYBE_PictureInPicture DISABLED_PictureInPicture
+#define MAYBE_VideoPictureInPicture DISABLED_VideoPictureInPicture
 #else
-#define MAYBE_PictureInPicture PictureInPicture
+#define MAYBE_VideoPictureInPicture VideoPictureInPicture
 #endif
 
-// Tests that platform apps can enter and exit Picture-in-Picture.
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_PictureInPicture) {
+// Tests that platform apps can enter and exit video Picture-in-Picture.
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_VideoPictureInPicture) {
   LoadAndLaunchPlatformApp("picture_in_picture", "Launched");
 
   WebContents* web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(web_contents);
-  content::PictureInPictureWindowController* window_controller =
-      content::PictureInPictureWindowController::GetOrCreateForWebContents(
-          web_contents);
+  content::VideoPictureInPictureWindowController* window_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateVideoPictureInPictureController(web_contents);
   ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
 

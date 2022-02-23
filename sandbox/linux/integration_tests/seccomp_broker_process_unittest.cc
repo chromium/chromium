@@ -19,7 +19,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -148,7 +148,7 @@ class DenyOpenPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  InitializedOpenBroker* iob_;
+  raw_ptr<InitializedOpenBroker> iob_;
 };
 
 // We use a InitializedOpenBroker class, so that we can run unsandboxed
@@ -305,12 +305,13 @@ class IPCSyscaller : public Syscaller {
   }
 
  private:
-  BrokerProcess* broker_;
+  raw_ptr<BrokerProcess> broker_;
 };
 
 // Only use syscall(...) on x64 to avoid having to reimplement a libc-like
 // layer that uses different syscalls on different architectures.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_ANDROID)) &&                        \
     defined(__x86_64__)
 #define DIRECT_SYSCALLER_ENABLED
 #endif
@@ -528,7 +529,7 @@ class HandleFilesystemViaBrokerPolicy : public bpf_dsl::Policy {
   }
 
  private:
-  BrokerProcess* broker_process_;
+  raw_ptr<BrokerProcess> broker_process_;
   int denied_errno_;
 };
 }  // namespace syscall_broker
@@ -595,7 +596,7 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
 
  private:
   bool fast_check_in_client_;
-  BrokerTestDelegate* broker_test_delegate_;
+  raw_ptr<BrokerTestDelegate> broker_test_delegate_;
   SyscallerType syscaller_type_;
   BrokerType broker_type_;
 

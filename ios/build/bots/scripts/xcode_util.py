@@ -32,7 +32,8 @@ def _using_new_mac_toolchain(mac_toolchain):
       mac_toolchain,
       'help',
   ]
-  output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  output = subprocess.check_output(
+      cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
   # "install-runtime" presents as a command line switch in help output in the
   # new mac_toolchain.
@@ -168,6 +169,16 @@ def move_runtime(runtime_cache_folder, xcode_app_path, into_xcode):
   return
 
 
+def remove_runtimes(xcode_app_path):
+  """Removes all runtimes in given xcode path."""
+  runtimes = glob.glob(
+      os.path.join(xcode_app_path, XcodeIOSSimulatorRuntimeRelPath,
+                   '*.simruntime'))
+  for runtime in runtimes:
+    LOGGER.warning('Removing existing %s in xcode.', runtime)
+    shutil.rmtree(runtime)
+
+
 def select(xcode_app_path):
   """Invokes sudo xcode-select -s {xcode_app_path}
 
@@ -181,12 +192,14 @@ def select(xcode_app_path):
       xcode_app_path,
   ]
   LOGGER.debug('Selecting XCode with command %s and "xcrun simctl list".' % cmd)
-  output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  output = subprocess.check_output(
+      cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
   # This is to avoid issues caused by mixed usage of different Xcode versions on
   # one machine.
   xcrun_simctl_cmd = ['xcrun', 'simctl', 'list']
-  output += subprocess.check_output(xcrun_simctl_cmd, stderr=subprocess.STDOUT)
+  output += subprocess.check_output(
+      xcrun_simctl_cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
   return output
 
@@ -316,15 +329,15 @@ def version():
   ]
   LOGGER.debug('Checking XCode version with command: %s' % cmd)
 
-  output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  output = subprocess.check_output(cmd).decode('utf-8')
   output = output.splitlines()
   # output sample:
   # Xcode 12.0
   # Build version 12A6159
   LOGGER.info(output)
 
-  version = output[0].decode('UTF-8').split(' ')[1]
-  build_version = output[1].decode('UTF-8').split(' ')[2].lower()
+  version = output[0].split(' ')[1]
+  build_version = output[1].split(' ')[2].lower()
 
   return version, build_version
 

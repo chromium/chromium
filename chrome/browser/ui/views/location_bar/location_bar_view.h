@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -44,7 +44,7 @@
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class GURL;
-class KeywordHintView;
+class IntentChipButton;
 class LocationIconView;
 enum class OmniboxPart;
 class OmniboxPopupView;
@@ -198,6 +198,8 @@ class LocationBarView : public LocationBar,
   // Removes previously displayed PermissionChip.
   void FinalizeChip();
 
+  IntentChipButton* intent_chip() { return intent_chip_; }
+
   // LocationBar:
   void FocusLocation(bool is_user_initiated) override;
   void Revert() override;
@@ -274,7 +276,7 @@ class LocationBarView : public LocationBar,
                            IMEInlineAutocompletePosition);
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Manage a subscription to GeolocationManager, which may
   // outlive this object.
   base::ScopedObservation<device::GeolocationManager,
@@ -319,8 +321,6 @@ class LocationBarView : public LocationBar,
 
   // Gets the OmniboxPopupView associated with the model in |omnibox_view_|.
   OmniboxPopupView* GetOmniboxPopupView();
-
-  void KeywordHintViewPressed(const ui::Event& event);
 
   // Called when the page info bubble is closed.
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
@@ -419,37 +419,37 @@ class LocationBarView : public LocationBar,
   // The Browser this LocationBarView is in.  Note that at least
   // ash::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // May be nullptr in tests.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
-  OmniboxViewViews* omnibox_view_ = nullptr;
+  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 
   // Our delegate.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // A view that contains a chip button that shows a permission request.
-  PermissionChip* chip_ = nullptr;
+  raw_ptr<PermissionChip> chip_ = nullptr;
 
   // An icon to the left of the edit field: the HTTPS lock, blank page icon,
   // search icon, EV HTTPS bubble, etc.
-  LocationIconView* location_icon_view_ = nullptr;
+  raw_ptr<LocationIconView> location_icon_view_ = nullptr;
 
   // Views to show inline autocompletion when an IME is active.  In this case,
   // we shouldn't change the text or selection inside the OmniboxView itself,
   // since this will conflict with the IME's control over the text.  So instead
   // we show any autocompletion in a separate field after the OmniboxView.
-  views::Label* ime_prefix_autocomplete_view_ = nullptr;
-  views::Label* ime_inline_autocomplete_view_ = nullptr;
+  raw_ptr<views::Label> ime_prefix_autocomplete_view_ = nullptr;
+  raw_ptr<views::Label> ime_inline_autocomplete_view_ = nullptr;
 
   // The complementary omnibox label displaying the selected suggestion's title
   // or URL when the omnibox view is displaying the other and when user input is
   // in progress. Will remain a nullptr if the rich autocompletion
   // feature flag is disabled.
-  views::Label* omnibox_additional_text_view_ = nullptr;
+  raw_ptr<views::Label> omnibox_additional_text_view_ = nullptr;
 
   // The following views are used to provide hints and remind the user as to
   // what is going in the edit. They are all added a children of the
@@ -458,23 +458,22 @@ class LocationBarView : public LocationBar,
   // These autocollapse when the edit needs the room.
 
   // Shown if the user has selected a keyword.
-  SelectedKeywordView* selected_keyword_view_ = nullptr;
+  raw_ptr<SelectedKeywordView> selected_keyword_view_ = nullptr;
 
-  // Shown if the selected url has a corresponding keyword.
-  KeywordHintView* keyword_hint_view_ = nullptr;
+  raw_ptr<IntentChipButton> intent_chip_ = nullptr;
 
   // The content setting views.
   ContentSettingViews content_setting_views_;
 
   // The controller for page action icons.
-  PageActionIconController* page_action_icon_controller_ = nullptr;
+  raw_ptr<PageActionIconController> page_action_icon_controller_ = nullptr;
 
   // The container for page action icons.
-  PageActionIconContainerView* page_action_icon_container_ = nullptr;
+  raw_ptr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
 
   // An [x] that appears in touch mode (when the OSK is visible) and allows the
   // user to clear all text.
-  views::ImageButton* clear_all_button_ = nullptr;
+  raw_ptr<views::ImageButton> clear_all_button_ = nullptr;
 
   // Animation to change whole location bar background color on hover.
   gfx::SlideAnimation hover_animation_{this};

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -95,7 +96,7 @@ class ContentSubresourceFilterThrottleManager
     : public base::SupportsUserData::Data,
       public mojom::SubresourceFilterHost {
  public:
-  static constexpr int kUserDataKey = 0;
+  static const int kUserDataKey = 0;
 
   // Binds a remote in the given RenderFrame to the correct
   // ContentSubresourceFilterThrottleManager in the browser.
@@ -164,6 +165,10 @@ class ContentSubresourceFilterThrottleManager
       std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles);
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }
+
+  ProfileInteractionManager* profile_interaction_manager_for_testing() {
+    return profile_interaction_manager_.get();
+  }
 
   VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
@@ -378,7 +383,7 @@ class ContentSubresourceFilterThrottleManager
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
   // This member outlives this class.
-  VerifiedRulesetDealer::Handle* dealer_handle_;
+  raw_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
@@ -389,7 +394,7 @@ class ContentSubresourceFilterThrottleManager
   // transferred to Page once it is created. Once the Page is created and this
   // class transferred onto it (in ContentSubresourceFilterWebContentsHelper)
   // we'll set this member to point to it.
-  content::Page* page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // The helper class is attached to the WebContents so it is guaranteed to
   // outlive this class which is owned by either a Page or NavigationHandle in

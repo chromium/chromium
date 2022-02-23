@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"

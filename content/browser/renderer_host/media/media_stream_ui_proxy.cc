@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -56,7 +56,10 @@ class MediaStreamUIProxy::Core {
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id);
 
-#if !defined(OS_ANDROID)
+  void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect);
+
+#if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const DesktopMediaID& media_id,
                 bool focus,
                 bool is_from_microtask,
@@ -93,7 +96,7 @@ class MediaStreamUIProxy::Core {
   std::unique_ptr<MediaStreamUI> ui_;
 
   bool tests_use_fake_render_frame_hosts_;
-  RenderFrameHostDelegate* const test_render_delegate_;
+  const raw_ptr<RenderFrameHostDelegate> test_render_delegate_;
 
   base::WeakPtr<Core> weak_this_;
 
@@ -158,8 +161,8 @@ void MediaStreamUIProxy::Core::OnStarted(
   }
 
   *window_id =
-      ui_->OnStarted(base::BindOnce(&Core::ProcessStopRequestFromUI,
-                                    weak_factory_for_ui_.GetWeakPtr()),
+      ui_->OnStarted(base::BindRepeating(&Core::ProcessStopRequestFromUI,
+                                         weak_factory_for_ui_.GetWeakPtr()),
                      device_change_cb, label, screen_share_ids,
                      base::BindRepeating(&Core::ProcessStateChangeFromUI,
                                          weak_factory_for_ui_.GetWeakPtr()));
@@ -173,7 +176,15 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
   }
 }
 
-#if !defined(OS_ANDROID)
+void MediaStreamUIProxy::Core::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rec) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ui_) {
+    ui_->OnRegionCaptureRectChanged(region_capture_rec);
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::Core::SetFocus(const DesktopMediaID& media_id,
                                         bool focus,
                                         bool is_from_microtask,
@@ -339,7 +350,16 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
                                 label, media_id));
 }
 
-#if !defined(OS_ANDROID)
+void MediaStreamUIProxy::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rec) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Core::OnRegionCaptureRectChanged,
+                                core_->GetWeakPtr(), region_capture_rec));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamUIProxy::SetFocus(const DesktopMediaID& media_id,
                                   bool focus,
                                   bool is_from_microtask,
@@ -363,6 +383,10 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Careful when changing the following lines: upstream, this function is
+  // wrapped into a RepeatingClosure, which allows duplicating it and enabling
+  // multiple potentital sources to stop the stream; however only the first
+  // invocation should actually stop the stream.
   if (stop_callback_)
     std::move(stop_callback_).Run();
 }

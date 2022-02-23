@@ -57,7 +57,7 @@
         <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
             android:exported="true"/>
 
-        <activity android:name="org.chromium.ui.test.util.DummyUiActivity"
+        <activity android:name="org.chromium.ui.test.util.BlankUiTestActivity"
             android:theme="@style/Theme.Chromium.Activity"
             android:exported="true"/>
 

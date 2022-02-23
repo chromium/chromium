@@ -134,8 +134,8 @@ std::string SyncError::ToString() const {
   if (!IsSet()) {
     return std::string();
   }
-  return location_->ToString() + ", " + ModelTypeToString(model_type_) + " " +
-         GetMessagePrefix() + message_;
+  return location_->ToString() + ", " + ModelTypeToDebugString(model_type_) +
+         " " + GetMessagePrefix() + message_;
 }
 
 void SyncError::PrintLogError() const {
@@ -147,7 +147,7 @@ void SyncError::PrintLogError() const {
                                   location_->line_number(), logSeverity)
                   .stream(),
               logSeverity >= ::logging::GetMinLogLevel())
-      << ModelTypeToString(model_type_) << " " << GetMessagePrefix()
+      << ModelTypeToDebugString(model_type_) << " " << GetMessagePrefix()
       << message_;
 }
 

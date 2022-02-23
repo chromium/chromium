@@ -1,0 +1,73 @@
+<style>
+  #themeLabel > p {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+  }
+
+  cr-button {
+    background-color: var(--cros-tab-slider-track-color);
+    border-radius: 16px;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 60px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  cr-button .text {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-2-font);
+  }
+  cr-button[aria-pressed=true],
+  cr-button[aria-selected=true] {
+    background-color: var(--cros-button-background-color-primary);
+    border: 0;
+  }
+  cr-button[aria-pressed=true] .text,
+  cr-button[aria-selected=true] .text {
+    color: var(--cros-button-label-color-primary);
+  }
+  cr-button:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+  cr-button:hover {
+    background-color: rgba(var(--cros-ripple-color-rgb),
+        var(--cros-button-primary-ripple-opacity));
+  }
+  cr-button:hover .text {
+    color: var(--cros-text-color-secondary);
+  }
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+  #buttonContainer {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: auto auto auto;
+  }
+</style>
+<div id="container">
+  <div id="themeLabel">
+    <p>$i18n{themeLabel}</p>
+  </div>
+  <div id="buttonContainer">
+    <cr-button id="lightMode" data-color-mode="LIGHT"
+        on-click="onClickColorModeButton_"
+        aria-pressed$="[[getLightAriaPressed_(darkModeEnabled_)]]">
+      <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{lightColorMode}</div>
+    </cr-button>
+    <cr-button id="darkMode" data-color-mode="DARK"
+        on-click="onClickColorModeButton_"
+        aria-pressed$="[[getDarkAriaPressed_(darkModeEnabled_)]]">
+      <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{darkColorMode}</div>
+    </cr-button>
+    <cr-button id="autoMode" aria-pressed$="[[getAutoAriaPressed_()]]">
+      <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{autoColorMode}</div>
+    </cr-button>
+  </div>
+</div>

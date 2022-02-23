@@ -4,12 +4,15 @@
 
 #include "ui/lottie/animation.h"
 
+#include "base/bind.h"
+#include "base/check.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -39,8 +42,8 @@ void Animation::TimerControl::Step(const base::TimeTicks& timestamp) {
   base::TimeDelta completed_cycles_duration =
       completed_cycles_ * cycle_duration_;
   if (progress_ >= completed_cycles_duration + cycle_duration_) {
-    completed_cycles_++;
-    completed_cycles_duration += cycle_duration_;
+    completed_cycles_ = base::ClampFloor(progress_ / cycle_duration_);
+    completed_cycles_duration = cycle_duration_ * completed_cycles_;
   }
 
   current_cycle_progress_ =
@@ -67,8 +70,30 @@ double Animation::TimerControl::GetNormalizedEndOffset() const {
   return end_offset_ / total_duration_;
 }
 
-Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie)
-    : skottie_(skottie) {}
+Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
+                     cc::SkottieColorMap color_map,
+                     cc::SkottieFrameDataProvider* frame_data_provider)
+    : skottie_(skottie), color_map_(std::move(color_map)) {
+  DCHECK(skottie_);
+  bool animation_has_image_assets =
+      !skottie_->GetImageAssetMetadata().asset_storage().empty();
+  if (animation_has_image_assets) {
+    DCHECK(frame_data_provider)
+        << "SkottieFrameDataProvider required for animations with image assets";
+    for (const auto& asset_metadata_pair :
+         skottie_->GetImageAssetMetadata().asset_storage()) {
+      const std::string& asset_id = asset_metadata_pair.first;
+      const cc::SkottieResourceMetadataMap::ImageAssetMetadata& asset_metadata =
+          asset_metadata_pair.second;
+      scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset> new_asset =
+          frame_data_provider->LoadImageAsset(
+              asset_id, asset_metadata.resource_path, asset_metadata.size);
+      DCHECK(new_asset);
+      image_assets_.emplace(cc::HashSkottieResourceId(asset_id),
+                            std::move(new_asset));
+    }
+  }
+}
 
 Animation::~Animation() = default;
 
@@ -199,7 +224,33 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                            const gfx::Size& size) {
   DCHECK_GE(t, 0.f);
   DCHECK_LE(t, 1.f);
-  canvas->DrawSkottie(skottie(), gfx::Rect(size), t, cc::SkottieFrameDataMap());
+  // Not all of the image assets necessarily appear in the frame at time |t|. To
+  // determine which assets are actually needed, Seek() and capture the set of
+  // images in the frame. Seek() without rendering is a cheap operation.
+  cc::SkottieFrameDataMap all_frame_data;
+  // Using Unretained is safe because the callback is guaranteed to be invoked
+  // synchronously within Seek().
+  skottie_->Seek(t, base::BindRepeating(&Animation::LoadImageForAsset,
+                                        base::Unretained(this), canvas,
+                                        std::ref(all_frame_data)));
+  canvas->DrawSkottie(skottie(), gfx::Rect(size), t, std::move(all_frame_data),
+                      color_map_, cc::SkottieTextPropertyValueMap());
+}
+
+cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
+    gfx::Canvas* canvas,
+    cc::SkottieFrameDataMap& all_frame_data,
+    cc::SkottieResourceIdHash asset_id,
+    float t,
+    sk_sp<SkImage>&,
+    SkSamplingOptions&) {
+  cc::SkottieFrameDataProvider::ImageAsset& image_asset =
+      *image_assets_.at(asset_id);
+  all_frame_data.emplace(asset_id,
+                         image_asset.GetFrameData(t, canvas->image_scale()));
+  // Since this callback is only used for Seek() and not rendering, the output
+  // arguments can be ignored and NO_UPDATE can be returned.
+  return cc::SkottieWrapper::FrameDataFetchResult::NO_UPDATE;
 }
 
 void Animation::InitTimer(const base::TimeTicks& timestamp) {

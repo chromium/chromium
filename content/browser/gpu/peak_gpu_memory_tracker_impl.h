@@ -8,7 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 
 namespace content {
@@ -22,7 +21,7 @@ namespace content {
 // GPU connection.
 //
 // This is instaniated via PeakGpuMemoryTracker::Create.
-class CONTENT_EXPORT PeakGpuMemoryTrackerImpl : public PeakGpuMemoryTracker {
+class PeakGpuMemoryTrackerImpl : public PeakGpuMemoryTracker {
  public:
   // Requests the GPU service to begin peak memory tracking.
   PeakGpuMemoryTrackerImpl(PeakGpuMemoryTracker::Usage usage);

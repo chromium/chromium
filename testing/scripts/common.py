@@ -16,6 +16,8 @@ import tempfile
 import time
 import traceback
 
+logging.basicConfig(level=logging.INFO)
+
 # Add src/testing/ into sys.path for importing xvfb and test_env.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import test_env
@@ -466,11 +468,13 @@ class BaseIsolatedScriptArgsAdapter(object):
       env['CHROME_HEADLESS'] = '1'
       print('Running command: %s\nwith env: %r' % (
           ' '.join(cmd), env))
+      sys.stdout.flush()
       if self.options.xvfb and sys.platform.startswith('linux'):
         exit_code = xvfb.run_executable(cmd, env)
       else:
-        exit_code = test_env.run_command(cmd, env=env)
+        exit_code = test_env.run_command(cmd, env=env, log=False)
       print('Command returned exit code %d' % exit_code)
+      sys.stdout.flush()
       self.do_post_test_run_tasks()
       return exit_code
     except Exception:

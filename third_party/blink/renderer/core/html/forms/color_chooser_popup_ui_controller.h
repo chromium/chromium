@@ -66,9 +66,12 @@ class CORE_EXPORT ColorChooserPopupUIController final
   Element& OwnerElement() override;
   void DidClosePopup() override;
   PagePopupController* CreatePagePopupController(Page&, PagePopup&) override;
+  void AdjustSettings(Settings& popup_settings) override;
 
   void OpenEyeDropper();
   void EyeDropperResponseHandler(bool success, uint32_t color);
+
+  void OpenSystemColorChooser();
 
  private:
   ChromeClient& GetChromeClient() override;

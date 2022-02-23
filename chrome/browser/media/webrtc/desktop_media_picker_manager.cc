@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 
 // static
 DesktopMediaPickerManager* DesktopMediaPickerManager::Get() {

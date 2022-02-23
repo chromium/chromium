@@ -12,14 +12,15 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {deselectItems, setSearchTerm} from './actions.js';
+import {setSearchTerm} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {Command, MenuSource} from './constants.js';
 import {StoreClientMixin} from './store_client_mixin.js';
+import {getTemplate} from './toolbar.html.js';
 
 const BookmarksToolbarElementBase = StoreClientMixin(PolymerElement);
 
@@ -29,7 +30,7 @@ export class BookmarksToolbarElement extends BookmarksToolbarElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

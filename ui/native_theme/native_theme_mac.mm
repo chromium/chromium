@@ -12,12 +12,12 @@
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_block.h"
+#include "base/no_destructor.h"
 #include "cc/paint/paint_shader.h"
-#import "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
-#include "ui/color/mac/system_color_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -137,58 +137,6 @@ NativeThemeMac* NativeThemeMac::instance() {
   return s_native_theme.get();
 }
 
-// static
-SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
-  return ui::IsSystemGraphiteTinted() ? ui::ColorToGrayscale(color) : color;
-}
-
-SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  if (GetPreferredContrast() == PreferredContrast::kMore) {
-    switch (color_id) {
-      case kColorId_FocusedMenuItemBackgroundColor:
-        return color_scheme == ColorScheme::kDark ? SK_ColorLTGRAY
-                                                  : SK_ColorDKGRAY;
-      default:
-        break;
-    }
-  }
-
-  absl::optional<SkColor> os_color = GetOSColor(color_id, color_scheme);
-  if (os_color.has_value())
-    return os_color.value();
-
-  SkColor color = NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
-                                                        apply_processing);
-  return apply_processing ? ApplySystemControlTint(color) : color;
-}
-
-absl::optional<SkColor> NativeThemeMac::GetOSColor(
-    ColorId color_id,
-    ColorScheme color_scheme) const {
-  ScopedCurrentNSAppearance scoped_nsappearance(
-      color_scheme == ColorScheme::kDark,
-      GetPreferredContrast() == PreferredContrast::kMore);
-
-  // Even with --secondary-ui-md, menus use the platform colors and styling, and
-  // Mac has a couple of specific color overrides, documented below.
-  switch (color_id) {
-    case kColorId_MenuSeparatorColor:
-      return color_scheme == ColorScheme::kDark
-                 ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                 : SkColorSetA(SK_ColorBLACK, 0x26);
-
-    case kColorId_FocusedBorderColor:
-      return SkColorSetA(
-          skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
-          0x66);
-
-    default:
-      return absl::nullopt;
-  }
-}
-
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
     const {
   return IsHighContrast() ? NativeThemeAura::PreferredContrast::kMore
@@ -196,6 +144,7 @@ NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()
 }
 
 void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
+                           const ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,
@@ -225,8 +174,8 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                                      rect, color_scheme_updated, true);
       break;
     default:
-      NativeThemeBase::Paint(canvas, part, state, rect, extra, color_scheme,
-                             accent_color);
+      NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
+                             color_scheme, accent_color);
       break;
   }
 }
@@ -517,12 +466,14 @@ SkColor NativeThemeMac::GetSystemButtonPressedColor(SkColor base_color) const {
 
 void NativeThemeMac::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetSystemColor(kColorId_MenuBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuBackground));
   const SkScalar radius = SkIntToScalar(menu_background.corner_radius);
   SkRect rect = gfx::RectToSkRect(gfx::Rect(size));
   canvas->drawRoundRect(rect, radius, radius, flags);
@@ -530,6 +481,7 @@ void NativeThemeMac::PaintMenuPopupBackground(
 
 void NativeThemeMac::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -540,7 +492,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       // Draw nothing over the regular background.
       break;
     case NativeTheme::kHovered:
-      PaintSelectedMenuItem(canvas, rect, color_scheme);
+      PaintSelectedMenuItem(canvas, color_provider, rect);
       break;
     default:
       NOTREACHED();
@@ -589,12 +541,12 @@ NativeThemeMac::~NativeThemeMac() {
 }
 
 void NativeThemeMac::PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                                           const gfx::Rect& rect,
-                                           ColorScheme color_scheme) const {
+                                           const ColorProvider* color_provider,
+                                           const gfx::Rect& rect) const {
+  DCHECK(color_provider);
   // Draw the background.
   cc::PaintFlags flags;
-  flags.setColor(
-      GetSystemColor(kColorId_FocusedMenuItemBackgroundColor, color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
   canvas->drawRect(gfx::RectToSkRect(rect), flags);
 }
 

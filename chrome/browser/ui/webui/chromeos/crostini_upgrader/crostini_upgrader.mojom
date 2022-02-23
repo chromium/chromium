@@ -11,8 +11,6 @@ enum UpgradePrecheckStatus {
   NETWORK_FAILURE,
   // Battery is low and not charging
   LOW_POWER,
-  // Not enough space to do the upgrade
-  INSUFFICIENT_SPACE
 };
 
 
@@ -89,4 +87,6 @@ interface Page {
   // Informs the page that it should be closed. The page should respond with
   // PageHandler::OnPageClosed() to indicate it is ready to be closed.
   RequestClose();
+  // Tell the page where the log messages are being stored.
+  OnLogFileCreated(string path);
 };

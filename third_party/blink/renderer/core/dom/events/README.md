@@ -1,6 +1,6 @@
 # DOM Events
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/dom/events/README.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/dom/events/README.md)
 
 The `renderer/core/dom/events` directory contains the implementation of [DOM Events].
 

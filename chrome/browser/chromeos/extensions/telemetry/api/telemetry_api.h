@@ -66,6 +66,44 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   void OnResult(ash::health::mojom::OemDataPtr ptr);
 };
 
+class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",
+                             OS_TELEMETRY_GETMEMORYINFO)
+
+  OsTelemetryGetMemoryInfoFunction();
+  OsTelemetryGetMemoryInfoFunction(const OsTelemetryGetMemoryInfoFunction&) =
+      delete;
+  OsTelemetryGetMemoryInfoFunction& operator=(
+      const OsTelemetryGetMemoryInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetMemoryInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
+class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getCpuInfo", OS_TELEMETRY_GETCPUINFO)
+
+  OsTelemetryGetCpuInfoFunction();
+  OsTelemetryGetCpuInfoFunction(const OsTelemetryGetCpuInfoFunction&) = delete;
+  OsTelemetryGetCpuInfoFunction& operator=(
+      const OsTelemetryGetCpuInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetCpuInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_API_H_

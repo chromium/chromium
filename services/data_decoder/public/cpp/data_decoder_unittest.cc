@@ -7,8 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/parsing_buildflags.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,5 +65,32 @@ TEST_F(DataDecoderTest, Isolation) {
   EXPECT_TRUE(parser2.is_connected());
   EXPECT_EQ(2u, service().receivers().size());
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
+
+class DataDecoderMultiThreadTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
+  // Test basic JSON decoding. We test only on Android or if Rust
+  // is enabled, because otherwise this would result in spawning
+  // a process.
+  base::RunLoop run_loop;
+  DataDecoder decoder;
+  absl::optional<base::Value> result;
+  decoder.ParseJson(
+      "[ 42 ]",
+      base::BindLambdaForTesting(
+          [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
+            result = std::move(value_or_error.value);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(result);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_PARSER)
 
 }  // namespace data_decoder

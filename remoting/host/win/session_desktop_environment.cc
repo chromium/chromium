@@ -11,8 +11,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/screen_controls.h"
 #include "remoting/host/input_injector.h"
-#include "remoting/host/screen_controls.h"
 #include "remoting/host/win/session_action_executor.h"
 #include "remoting/host/win/session_input_injector.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -77,6 +77,7 @@ SessionDesktopEnvironmentFactory::~SessionDesktopEnvironmentFactory() = default;
 
 std::unique_ptr<DesktopEnvironment> SessionDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 

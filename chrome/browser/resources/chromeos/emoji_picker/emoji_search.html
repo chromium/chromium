@@ -2,6 +2,10 @@
   :host {
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
+    --emoji-picker-top-bar-bottom-padding: 8px;
+    --v2-emoji-picker-top-bar-bottom-padding: 16px;
+    --v2-search-content-width:
+      calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -28,7 +32,6 @@
     border: 2px solid transparent;
     border-radius: 40px;
     height: var(--emoji-picker-search-height);
-    margin-bottom: 8px;
   }
 
   cr-search-field:focus-within {
@@ -86,11 +89,20 @@
     background-color: var(--cros-bg-color);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
+    padding-bottom: var(--emoji-picker-top-bar-bottom-padding);
     padding-inline-end: var(--emoji-picker-side-padding);
     padding-inline-start: var(--emoji-picker-side-padding);
     position: sticky;
     top:0;
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+  }
+
+  :host([v2-enabled]) #search-shadow {
+    box-shadow: var(--cr-elevation-2);
+    display: flex;
+    margin-bottom: 7px;
+    padding-bottom: var(--v2-emoji-picker-top-bar-bottom-padding);
+    width: var(--v2-search-content-width);
   }
 
   #results {
@@ -100,13 +112,54 @@
     padding-bottom: var(--emoji-picker-bottom-padding);
   }
 
+  :host([v2-enabled]) #results {
+    padding-top: 13px;
+  }
+
   #no-emoji-image {
     display: block;
+  }
+
+  #category-button-group {
+    align-items: center;
+    display: flex;
+    /* 
+     * TODO(b/213141035): Change to space-between when symbol category is
+     * re-introduced.
+     */
+    justify-content: space-evenly;
+    margin-inline-start: 20px;
+    width: 120px;
+  }
+
+  :host([v2-enabled]) #search {
+    width: 240px;
+  }
+
+  #emoji-result {
+    width: var(--v2-search-content-width);
+  }
+
+  #emoticon-result {
+    margin-top: 12px;
+    width: var(--v2-search-content-width);
   }
 </style>
 
 <div id="search-shadow">
-<cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+  <cr-search-field id="search" label="Search" autofocus="true">
+  </cr-search-field>
+  <template is="dom-if" if="[[v2Enabled]]">
+    <div id="category-button-group">
+      <template is="dom-repeat" items="[[categoryMetadata]]">
+          <emoji-category-button
+            active="[[item.active]]"
+            name="[[item.name]]"
+            icon="[[item.icon]]">
+          </emoji-category-button>
+      </template>
+    </div>
+  </template>
 </div>
 
 <template is="dom-if" if="[[search]]">
@@ -114,24 +167,42 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <template is="dom-repeat" items="[[results]]">
-      <div class="result" tabindex="0" on-click="onResultClick">
-        <emoji-button tabindex="-1"
-            emoji="[[item.item.base.string]]"
-            variants="[[item.item.alternates]]">
-        </emoji-button>
-        <div class="name">[[item.item.base.name]]</div>
+    <template is="dom-if" if="[[!v2Enabled]]">
+      <template is="dom-repeat" items="[[emojiResults]]">
+        <div class="result" tabindex="0" on-click="onResultClick">
+          <emoji-button tabindex="-1"
+              emoji="[[item.base.string]]"
+              variants="[[item.alternates]]">
+          </emoji-button>
+          <div class="name">[[item.base.name]]</div>
+        </div>
+      </template>
+    </template>
+    <template is="dom-if" if="[[v2Enabled]]">
+      <div id="emoji-result">  
+        <emoji-group data="[[emojiResults]]" preferred="{}">
+        </emoji-group>
+      </div>
+      <div id="emoticon-result">
+        <emoticon-group id="emoticon-result" data="[[emoticonResults]]">
+        </emoticon-group>
       </div>
     </template>
-    <template is="dom-if" if="[[!results.length]]">
+    <template is="dom-if"
+      if="[[isSearchResultEmpty(emojiResults, emoticonResults)]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"
               media="(prefers-color-scheme: dark)">
           <img src="no_results.svg" id = "no-emoji-image">
         </picture>
-        No emoji found
-        </div>
+        <template is="dom-if" if="[[!v2Enabled]]">
+          No emoji found
+        </template>
+        <template is="dom-if" if="[[v2Enabled]]">
+          No result found
+        </template>
+      </div>
     </template>
   </div>
 </template>

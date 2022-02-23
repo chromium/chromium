@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_provider.h"
 #include "chromecast/media/audio/cast_audio_bus.h"

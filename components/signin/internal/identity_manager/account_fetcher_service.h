@@ -13,6 +13,7 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,7 +29,7 @@ class ProfileOAuth2TokenService;
 class PrefRegistrySimple;
 class SigninClient;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class ChildAccountInfoFetcherAndroid;
 #endif
 
@@ -100,7 +101,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // force-enable off.
   void EnableAccountCapabilitiesFetcherForTest(bool enabled);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Refresh the AccountInfo if the existing one is stale
   void RefreshAccountInfoIfStale(const CoreAccountId& account_id);
 
@@ -120,7 +121,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Called on all account state changes. Decides whether to fetch new child
   // status information or reset old values that aren't valid now.
   void UpdateChildInfo();
@@ -132,7 +133,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Further the two fetches are managed by a different refresh logic and
   // thus, can not be combined.
   void StartFetchingUserInfo(const CoreAccountId& account_id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void StartFetchingChildInfo(const CoreAccountId& account_id);
 
   // Resets the child status to false if it is true. If there is more than one
@@ -140,7 +141,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void ResetChildInfo();
 #endif
 
-  bool IsAccountCapabilitiesFetcherEnabled();
+  bool IsAccountCapabilitiesFetchingEnabled();
   void StartFetchingAccountCapabilities(const CoreAccountId& account_id);
 
   // Refreshes the AccountInfo associated with |account_id|.
@@ -168,9 +169,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
                       const gfx::Image& image,
                       const image_fetcher::RequestMetadata& image_metadata);
 
-  AccountTrackerService* account_tracker_service_ = nullptr;  // Not owned.
-  ProfileOAuth2TokenService* token_service_ = nullptr;        // Not owned.
-  SigninClient* signin_client_ = nullptr;                     // Not owned.
+  raw_ptr<AccountTrackerService> account_tracker_service_ =
+      nullptr;                                                  // Not owned.
+  raw_ptr<ProfileOAuth2TokenService> token_service_ = nullptr;  // Not owned.
+  raw_ptr<SigninClient> signin_client_ = nullptr;               // Not owned.
   bool network_fetches_enabled_ = false;
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
@@ -178,7 +180,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool enable_account_capabilities_fetcher_for_test_ = false;
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CoreAccountId child_request_account_id_;
   std::unique_ptr<ChildAccountInfoFetcherAndroid> child_info_request_;
 #endif

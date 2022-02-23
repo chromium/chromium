@@ -97,9 +97,9 @@ namespace {
 
 class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
  public:
-  static CrOSDataSource* GetInstance() {
+  static CrOSDataSource& GetInstance() {
     static base::NoDestructor<CrOSDataSource> instance;
-    return instance.get();
+    return *instance;
   }
 
   CrOSDataSource(const CrOSDataSource&) = delete;
@@ -229,7 +229,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
 CrOSTracingAgent::CrOSTracingAgent() {
   tracing::PerfettoTracedProcess::Get()->AddDataSource(
-      CrOSDataSource::GetInstance());
+      &CrOSDataSource::GetInstance());
 }
 
 CrOSTracingAgent::~CrOSTracingAgent() = default;

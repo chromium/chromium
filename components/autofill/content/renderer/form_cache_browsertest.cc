@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
@@ -771,7 +772,13 @@ TEST_P(FormCacheIframeBrowserTest, FrameLimit) {
 // - the forms [kMaxParseableChildFrames, kMaxParseableFields) should have
 //   empty FormData::child_frames,
 // - the forms [kMaxParseableFields, end) should be skipped.
-TEST_P(FormCacheIframeBrowserTest, FieldAndFrameLimit) {
+// TODO(https://crbug.com/1287782): Flaky on android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
+#else
+#define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
+#endif
+TEST_P(FormCacheIframeBrowserTest, MAYBE_FieldAndFrameLimit) {
   ASSERT_LE(kMaxParseableChildFrames, kMaxParseableFields);
 
   std::string html;

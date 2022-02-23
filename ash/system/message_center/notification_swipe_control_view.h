@@ -52,16 +52,17 @@ class ASH_EXPORT NotificationSwipeControlView : public views::View {
                            DeleteOnSettingsButtonPressed);
   FRIEND_TEST_ALL_PREFIXES(NotificationSwipeControlViewTest,
                            DeleteOnSnoozeButtonPressed);
-
+  FRIEND_TEST_ALL_PREFIXES(NotificationSwipeControlViewTest,
+                           SettingsButtonVisibility);
   enum class ButtonId {
     kSettings,
     kSnooze,
   };
 
-  // Change the visibility of the settings button.
+  // Change the visibility of the settings and snooze button.
   void ShowButtons(ButtonPosition button_position,
-                   bool has_settings,
-                   bool has_snooze);
+                   bool show_settings,
+                   bool show_snooze);
   void HideButtons();
 
   // Change the visibility of the settings button. True to show, false to hide.

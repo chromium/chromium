@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"
@@ -51,6 +51,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       scenic_window_delegate_(properties.scenic_window_delegate),
       window_id_(manager_->AddWindow(this)),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
+      view_controller_(std::move(properties.view_controller)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
       safe_presenter_(&scenic_session_),
@@ -63,6 +64,11 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       input_node_(&scenic_session_),
       render_node_(&scenic_session_),
       bounds_(properties.bounds) {
+  if (view_controller_) {
+    view_controller_.set_error_handler(
+        fit::bind_member(this, &ScenicWindow::OnViewControllerDisconnected));
+  }
+
   scenic_session_.set_error_handler(
       fit::bind_member(this, &ScenicWindow::OnScenicError));
   scenic_session_.set_event_handler(
@@ -143,6 +149,10 @@ void ScenicWindow::Hide() {
 }
 
 void ScenicWindow::Close() {
+  if (view_controller_) {
+    view_controller_->Dismiss();
+    view_controller_ = nullptr;
+  }
   Hide();
   delegate_->OnClosed();
 }
@@ -276,7 +286,7 @@ void ScenicWindow::DispatchEvent(ui::Event* event) {
 
 void ScenicWindow::OnScenicError(zx_status_t status) {
   LOG(ERROR) << "scenic::Session failed with code " << status << ".";
-  delegate_->OnClosed();
+  delegate_->OnCloseRequest();
 }
 
 void ScenicWindow::OnScenicEvents(
@@ -303,6 +313,21 @@ void ScenicWindow::OnScenicEvents(
         case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
           DCHECK(event.gfx().view_detached_from_scene().view_id == view_.id());
           OnViewAttachedChanged(false);
+
+          // Detach the surface view. This is necessary to ensure that the
+          // current content doesn't become visible when the view is attached
+          // again.
+          render_node_.DetachChildren();
+          surface_view_holder_.reset();
+          safe_presenter_.QueuePresent();
+
+          // Destroy and recreate AcceleratedWidget. This will force the
+          // compositor drop the current LayerTreeFrameSink together with the
+          // corresponding ScenicSurface. They will be created again only after
+          // the window becomes visible again.
+          delegate_->OnAcceleratedWidgetDestroyed();
+          delegate_->OnAcceleratedWidgetAvailable(window_id_);
+
           break;
         }
         default:
@@ -345,7 +370,7 @@ void ScenicWindow::OnInputEvent(const fuchsia::ui::input::InputEvent& event) {
   } else {
     // Scenic doesn't care if the input event was handled, so ignore the
     // "handled" status.
-    ignore_result(event_dispatcher_.ProcessEvent(event));
+    std::ignore = event_dispatcher_.ProcessEvent(event);
   }
 }
 
@@ -398,6 +423,11 @@ bool ScenicWindow::UpdateRootNodeVisibility() {
       node_.Detach();
   }
   return is_root_node_shown_;
+}
+
+void ScenicWindow::OnViewControllerDisconnected(zx_status_t status) {
+  view_controller_ = nullptr;
+  delegate_->OnCloseRequest();
 }
 
 }  // namespace ui

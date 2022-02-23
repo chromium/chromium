@@ -6,7 +6,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
 #else
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,8 +23,9 @@ ChromeSettingsPageHelper::CreateChromeSettingsPageHelper() {
 
 void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
     content::WebContents* web_contents) const {
-#if defined(OS_ANDROID)
-  safe_browsing::ShowSafeBrowsingSettings(web_contents);
+#if BUILDFLAG(IS_ANDROID)
+  safe_browsing::ShowSafeBrowsingSettings(
+      web_contents, safe_browsing::SettingsAccessPoint::kSecurityInterstitial);
 #else
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.

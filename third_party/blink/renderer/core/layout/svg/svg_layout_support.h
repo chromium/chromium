@@ -127,8 +127,6 @@ class CORE_EXPORT SVGLayoutSupport {
   // This returns a LayoutSVGText, a LayoutNGSVGText, or nullptr.
   static LayoutObject* FindClosestLayoutSVGText(const LayoutObject*,
                                                 const gfx::PointF&);
-
-  static void NotifySVGRootOfChangedCompositingReasons(const LayoutObject*);
 };
 
 class SubtreeContentTransformScope {

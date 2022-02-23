@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -24,7 +25,7 @@ class UpdateServiceImplInactive : public UpdateService {
 
   // Overrides for updater::UpdateService.
   void GetVersion(
-      base::OnceCallback<void(const base::Version&)> callback) const override {
+      base::OnceCallback<void(const base::Version&)> callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), base::Version()));
   }
@@ -35,6 +36,13 @@ class UpdateServiceImplInactive : public UpdateService {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RegistrationResponse(-1)));
+  }
+
+  void GetAppStates(base::OnceCallback<void(const std::vector<AppState>&)>
+                        callback) override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::vector<AppState>()));
   }
 
   void RunPeriodicTasks(base::OnceClosure callback) override {
@@ -48,8 +56,9 @@ class UpdateServiceImplInactive : public UpdateService {
   }
 
   void Update(const std::string& app_id,
-              Priority priority,
-              StateChangeCallback state_update,
+              Priority /*priority*/,
+              PolicySameVersionUpdate /*policy_same_version_update*/,
+              StateChangeCallback /*state_update*/,
               Callback callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

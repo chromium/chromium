@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Enrollment" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Signin" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Supervised" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.ErrorScreensTime.Update" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
-    enum="GaiaPasswordChangedScreenUserAction" expires_after="2022-02-01">
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.BackendConnector"
-    enum="MarketingOptInBackendConnectorEvent" expires_after="2021-10-04">
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2022-11-30">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -191,21 +191,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2021-08-01">
+    enum="MarketingOptInGeolocationEvent" expires_after="2022-11-30">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Records whether the user's geolocation was resolved successfully.
-  </summary>
-</histogram>
-
-<histogram name="OOBE.MarketingOptInScreen.GeolocationResolveLength"
-    units="chars" expires_after="2021-08-09">
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the length of the country code that was returned when determining
-    the user's geolocation.
   </summary>
 </histogram>
 
@@ -241,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="apps"
-    expires_after="2022-02-01">
+    expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -249,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.DownloadTime" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -257,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseCode"
-    enum="HttpResponseCode" expires_after="2022-02-01">
+    enum="HttpResponseCode" expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -265,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseParseResult"
-    enum="RecommendAppsResponseParseResult" expires_after="2022-04-24">
+    enum="RecommendAppsResponseParseResult" expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -273,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.Action"
-    enum="RecommendAppsScreenAction" expires_after="2022-04-17">
+    enum="RecommendAppsScreenAction" expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -281,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedAppCount" units="apps"
-    expires_after="2022-04-24">
+    expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -289,7 +279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2022-02-01">
+    units="%" expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -297,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.State"
-    enum="RecommendAppsScreenState" expires_after="2022-04-17">
+    enum="RecommendAppsScreenState" expires_after="2023-02-08">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
@@ -417,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Download" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -427,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Finalize" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -437,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.Verify" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -447,7 +437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.UpdateDownloadingTime" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -467,18 +457,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.WebUIToViewsSwitch.Duration" units="ms"
-    expires_after="2021-11-21">
-  <obsolete>
-    Removed in M97.
-  </obsolete>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Measures time spent by switch between WebUI and Views-based display hosts.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.WelcomeScreen.A11yUserActions"
     enum="WelcomeScreenA11yUserAction" expires_after="2022-04-24">
   <owner>dkuzmin@google.com</owner>
@@ -491,7 +469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.AcceptChromeVoxHint" enum="BooleanEnabled"
-    expires_after="2022-01-01">
+    expires_after="2022-07-01">
   <owner>akihiroota@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -501,7 +479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.WelcomeScreen.ChromeVoxHintSpokenSuccess"
-    enum="BooleanEnabled" expires_after="2022-01-01">
+    enum="BooleanEnabled" expires_after="2022-07-01">
   <owner>akihiroota@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

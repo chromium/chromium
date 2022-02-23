@@ -23,7 +23,6 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
 #include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -166,29 +165,28 @@ const NSString* kDocumentMimeType = @"application/pdf";
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(webState)->tab_id()];
+  [self removeTabId:webState->GetStableIdentifier()];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(oldWebState)->tab_id()];
+  [self removeTabId:oldWebState->GetStableIdentifier()];
 }
 
 #pragma mark - CRWWebStateObserver protocol
 
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
-  NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
-  [self closingDocumentInTab:tabID];
+  [self closingDocumentInTab:webState->GetStableIdentifier()];
 }
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
   if (!loadSuccess || webState->GetContentsMimeType() != "application/pdf")
     return;
-  NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
+  NSString* tabID = webState->GetStableIdentifier();
   NSString* oldMime = (NSString*)[self tabInfo:@"mime" forTab:tabID];
   if ([kDocumentMimeType isEqualToString:oldMime])
     return;

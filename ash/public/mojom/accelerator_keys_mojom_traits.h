@@ -12,11 +12,10 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<ash::accelerator_keys::mojom::VKey, ::ui::KeyboardCode> {
-  static ash::accelerator_keys::mojom::VKey ToMojom(::ui::KeyboardCode);
+struct EnumTraits<ash::mojom::VKey, ::ui::KeyboardCode> {
+  static ash::mojom::VKey ToMojom(::ui::KeyboardCode);
 
-  static bool FromMojom(::ash::accelerator_keys::mojom::VKey input,
-                        ::ui::KeyboardCode* out);
+  static bool FromMojom(::ash::mojom::VKey input, ::ui::KeyboardCode* out);
 };
 
 }  // namespace mojo

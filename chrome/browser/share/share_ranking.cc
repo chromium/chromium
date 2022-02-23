@@ -15,7 +15,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -204,7 +204,7 @@ ShareRanking::Ranking AppendUpToLength(
   return result;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
                         JNIEnv* env,
                         absl::optional<ShareRanking::Ranking> ranking) {
@@ -529,7 +529,7 @@ void ShareRanking::OnRankGetOldRankingDone(
 
 ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
     const std::string& type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, just use the app's default locale string - we don't have a pref
   // locale to consult regardless, and l10n_util::GetApplicationLocale can do
   // blocking disk IO (!) while it checks whether we have a string pack for the
@@ -545,7 +545,7 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 
 }  // namespace sharing
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                                  const JavaParamRef<jobject>& jprofile,
@@ -586,4 +586,4 @@ void JNI_ShareRankingBridge_Rank(JNIEnv* env,
                      base::Unretained(env)));
 }
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

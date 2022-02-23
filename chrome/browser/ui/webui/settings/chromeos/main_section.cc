@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
@@ -162,11 +161,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isKioskModeActive",
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
-  html_source->AddBoolean("isSupervised", profile()->IsSupervised());
+  html_source->AddBoolean("isChildAccount", profile()->IsChild());
 
-  html_source->AddBoolean(
-      "appManagementIntentSettingsEnabled",
-      base::FeatureList::IsEnabled(::features::kAppManagementIntentSettings));
+  html_source->AddBoolean("isPersonalizationHubEnabled",
+                          ash::features::IsPersonalizationHubEnabled());
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);

@@ -61,6 +61,8 @@ int64_t GetLinearBucketMin(double sample, int32_t bucket_size) {
 }
 
 int64_t METRICS_EXPORT GetSemanticBucketMinForDurationTiming(int64_t sample) {
+  if (sample == 0)
+    return 0;
   DCHECK(sample > 0);
   const int64_t kMillisecondsPerMinute = 60 * 1000;
   const int64_t kMillisecondsPerTenMinutes = 10 * kMillisecondsPerMinute;

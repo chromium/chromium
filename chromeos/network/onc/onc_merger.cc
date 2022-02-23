@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/network/policy_util.h"
 #include "components/onc/onc_constants.h"
 
@@ -52,7 +52,7 @@ void MarkRecommendedFieldnames(const base::Value& policy, base::Value* result) {
       policy.FindListKey(::onc::kRecommended);
   if (!recommended_value)
     return;
-  for (const auto& value : recommended_value->GetList()) {
+  for (const auto& value : recommended_value->GetListDeprecated()) {
     if (value.is_string())
       result->SetBoolKey(value.GetString(), true);
   }

@@ -11,6 +11,7 @@ import android.animation.Animator;
 import android.app.Activity;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,8 +33,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Tests for {@link SingleActionMessage}.
@@ -44,8 +45,8 @@ public class SingleActionMessageTest {
     public static DisableAnimationsTestRule sDisableAnimationsRule =
             new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
 
@@ -56,7 +57,7 @@ public class SingleActionMessageTest {
         }
 
         @Override
-        public long get(long extension) {
+        public long get(int id, long extension) {
             return mDuration;
         }
     }
@@ -175,6 +176,29 @@ public class SingleActionMessageTest {
         final MessageBannerView view = new MessageBannerView(sActivity, null);
         SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
         executeAndVerifyRepeatedButtonClicks(false, model, message, view);
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldShowDefault() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertTrue("#shouldShow should be true by default.", message.shouldShow());
+    }
+
+    @Test
+    @SmallTest
+    public void testMessageShouldNotShow() {
+        MessageContainer container = new MessageContainer(sActivity, null);
+        PropertyModel model = createBasicSingleActionMessageModel();
+        model.set(MessageBannerProperties.ON_STARTED_SHOWING, () -> false);
+        final MessageBannerView view = new MessageBannerView(sActivity, null);
+        SingleActionMessage message = createAndShowSingleActionMessage(container, model, view);
+        Assert.assertFalse(
+                "#shouldShow should be false when the ON_STARTED_SHOWING supplier returns false.",
+                message.shouldShow());
     }
 
     private void executeAndVerifyRepeatedButtonClicks(boolean isPrimaryButtonClickedFirst,

@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.search_engines.settings;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -35,15 +32,10 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.location.LocationUtils;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -411,17 +403,6 @@ public class SearchEngineAdapter extends BaseAdapter
             }
         });
 
-        TextView link = (TextView) view.findViewById(R.id.location_permission);
-        link.setVisibility(View.GONE);
-        if (TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
-                    templateUrl.getKeyword())
-                == null) {
-            Log.e(TAG, "Invalid template URL found: %s", templateUrl);
-            assert false;
-        } else if (selected) {
-            setupPermissionsLink(templateUrl, link);
-        }
-
         return view;
     }
 
@@ -443,11 +424,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     @Override
     public void onClick(View view) {
-        if (view.getTag() == null) {
-            onPermissionsLinkClicked();
-        } else {
-            searchEngineSelected((int) view.getTag());
-        }
+        searchEngineSelected((int) view.getTag());
     }
 
     private String searchEngineSelected(int position) {
@@ -467,25 +444,6 @@ public class SearchEngineAdapter extends BaseAdapter
         return keyword;
     }
 
-    private void onPermissionsLinkClicked() {
-        mIsLocationPermissionChanged = true;
-        String url = TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
-                toKeyword(mSelectedSearchEnginePosition));
-        int linkBeingShown = getPermissionsLinkMessage(url);
-        assert linkBeingShown != 0;
-        // If notifications are off and location is on but system location is off, it's a special
-        // case where we link directly to Android Settings.
-        if (linkBeingShown == R.string.search_engine_system_location_disabled) {
-            mContext.startActivity(LocationUtils.getInstance().getSystemLocationSettingsIntent());
-        } else {
-            // |mSettingsLauncher| should be set in advance, right after this adapter gets
-            // attached to SettingsActivity.
-            assert mSettingsLauncher != null;
-            mSettingsLauncher.launchSettingsActivity(mContext, SingleWebsiteSettings.class,
-                    SingleWebsiteSettings.createFragmentArgsForSite(url));
-        }
-    }
-
     private String getSearchEngineUrl(TemplateUrl templateUrl) {
         if (templateUrl == null) {
             Log.e(TAG, "Invalid null template URL found");
@@ -502,70 +460,6 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         return url;
-    }
-
-    @StringRes
-    private int getPermissionsLinkMessage(String url) {
-        if (url == null) return 0;
-
-        Profile profile = Profile.getLastUsedRegularProfile();
-        PermissionInfo settings =
-                new PermissionInfo(ContentSettingsType.NOTIFICATIONS, url, null, false);
-        boolean notificationsAllowed =
-                settings.getContentSetting(profile) == ContentSettingValues.ALLOW
-                && WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        profile, ContentSettingsType.NOTIFICATIONS, url);
-
-        settings = new PermissionInfo(ContentSettingsType.GEOLOCATION, url, null, false);
-        boolean locationAllowed = settings.getContentSetting(profile) == ContentSettingValues.ALLOW
-                && WebsitePreferenceBridge.isPermissionControlledByDSE(
-                        profile, ContentSettingsType.GEOLOCATION, url);
-
-        boolean systemLocationAllowed =
-                LocationUtils.getInstance().isSystemLocationSettingEnabled();
-
-        // Cases where location is fully enabled.
-        if (locationAllowed && systemLocationAllowed) {
-            if (notificationsAllowed) {
-                return R.string.search_engine_location_and_notifications_allowed;
-            }
-            return R.string.search_engine_location_allowed;
-        }
-
-        // Cases where the user has allowed location for the site
-        // but it's disabled at the system level.
-        if (locationAllowed) {
-            return notificationsAllowed
-                    ? R.string.search_engine_notifications_allowed_system_location_disabled
-                    : R.string.search_engine_system_location_disabled;
-        }
-
-        // Cases where the user has not allowed location.
-        if (notificationsAllowed) return R.string.search_engine_notifications_allowed;
-
-        return 0;
-    }
-
-    private void setupPermissionsLink(TemplateUrl templateUrl, TextView link) {
-        int message = getPermissionsLinkMessage(getSearchEngineUrl(templateUrl));
-        if (message == 0) return;
-
-        ForegroundColorSpan linkSpan = new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.default_text_color_link));
-        link.setVisibility(View.VISIBLE);
-        link.setOnClickListener(this);
-
-        // If notifications are off and location is on but system location is off, it's a special
-        // case where we link directly to Android Settings. So we only highlight that part of the
-        // link to make it clearer.
-        if (message == R.string.search_engine_system_location_disabled) {
-            link.setText(SpanApplier.applySpans(
-                    mContext.getString(message), new SpanInfo("<link>", "</link>", linkSpan)));
-        } else {
-            SpannableString messageWithLink = new SpannableString(mContext.getString(message));
-            messageWithLink.setSpan(linkSpan, 0, messageWithLink.length(), 0);
-            link.setText(messageWithLink);
-        }
     }
 
     private boolean locationEnabled(TemplateUrl templateUrl) {

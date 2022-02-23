@@ -351,13 +351,11 @@ class MetricProviderSyncSettingsTest : public testing::Test {
   }
 
   void EnableOSAppSync(TestSyncService* sync_service) {
-    sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
     sync_service->GetUserSettings()->SetSelectedOsTypes(
         /*sync_all_os_types=*/false, {syncer::UserSelectableOsType::kOsApps});
   }
 
   void DisableOSAppSync(TestSyncService* sync_service) {
-    sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
     sync_service->GetUserSettings()->SetSelectedOsTypes(
         /*sync_all_os_types=*/false, {});
   }

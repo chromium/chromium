@@ -1,5 +1,5 @@
 error: const extern function is not supported
- --> $DIR/const_fn.rs:4:9
+ --> tests/ui/const_fn.rs:4:9
   |
 4 |         const fn f();
   |         ^^^^^^^^^^^^^

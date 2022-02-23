@@ -58,8 +58,5 @@ CWVCertStatus CWVCertStatusFromNetCertStatus(net::CertStatus cert_status) {
   if (cert_status & net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED) {
     cwv_status |= CWVCertStatusKnownInterceptionBlocked;
   }
-  if (cert_status & net::CERT_STATUS_LEGACY_TLS) {
-    cwv_status |= CWVCertStatusLegacyTLS;
-  }
   return cwv_status;
 }

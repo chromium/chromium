@@ -13,7 +13,9 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/messages/android/message_enums.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/messages/android/test/messages_test_helper.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -36,16 +38,15 @@ const char kAdsInterventionRecordedHistogram[] =
 
 }  // namespace
 
-class AdDensityViolationBrowserTest
+class AdDensityViolationBrowserTestInfobarUi
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
-  AdDensityViolationBrowserTest() = default;
+  AdDensityViolationBrowserTestInfobarUi() = default;
 
   void SetUp() override {
     std::vector<base::Feature> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    // TODO (crbug.com/1261346): Rewrite tests for messages.
     std::vector<base::Feature> disabled = {
         messages::kMessagesForAndroidAdsBlocked};
 
@@ -64,8 +65,8 @@ class AdDensityViolationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    AdDensityViolationBrowserTest,
-    MobilePageAdDensityByHeightAbove30_AdInterventionTriggered) {
+    AdDensityViolationBrowserTestInfobarUi,
+    MobilePageAdDensityByHeightAbove30_AdInterventionTriggered_InfobarUi) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -117,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    AdDensityViolationBrowserTest,
-    MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered) {
+    AdDensityViolationBrowserTestInfobarUi,
+    MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_InfobarUi) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -164,6 +165,135 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
 }
 
+class AdDensityViolationBrowserTestMessagesUi
+    : public subresource_filter::SubresourceFilterBrowserTest {
+ public:
+  AdDensityViolationBrowserTestMessagesUi() = default;
+
+  void SetUp() override {
+    std::vector<base::Feature> enabled = {
+        subresource_filter::kAdTagging,
+        subresource_filter::kAdsInterventionsEnforced,
+        messages::kMessagesForAndroidAdsBlocked};
+    std::vector<base::Feature> disabled = {};
+
+    feature_list_.InitWithFeatures(enabled, disabled);
+    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    SubresourceFilterBrowserTest::SetUpOnMainThread();
+    SetRulesetWithRules(
+        {subresource_filter::testing::CreateSuffixRule("ad_iframe_writer.js")});
+  }
+
+  messages::MessagesTestHelper messages_test_helper;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AdDensityViolationBrowserTestMessagesUi,
+    MobilePageAdDensityByHeightAbove30_AdInterventionTriggered_MessagesUi) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents);
+  const GURL url(embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html"));
+
+  waiter->SetMainFrameIntersectionExpectation();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  waiter->Wait();
+
+  int document_height = page_load_metrics::GetDocumentHeight(web_contents);
+
+  int frame_width = 100;  // Ad density by height is independent of frame width.
+  int frame_height = document_height * 0.45;
+
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  page_load_metrics::CreateAndWaitForIframeAtRect(
+      web_contents, waiter.get(),
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"),
+      gfx::Rect(0, 0, frame_width, frame_height));
+
+  // Delete the page load metrics test waiter instead of reinitializing it
+  // for the next page load.
+  waiter.reset();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+
+  // blank_with_adiframe_writer loads a script tagged as an ad, verify it is not
+  // loaded and the subresource filter UI for ad blocking is shown.
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  EXPECT_EQ(messages_test_helper.GetMessageCount(
+                web_contents->GetTopLevelNativeWindow()),
+            1);
+  EXPECT_EQ(messages_test_helper.GetMessageIdentifier(
+                web_contents->GetTopLevelNativeWindow(), 0),
+            static_cast<int>(messages::MessageIdentifier::ADS_BLOCKED));
+
+  histogram_tester.ExpectBucketCount(
+      kAdsInterventionRecordedHistogram,
+      static_cast<int>(subresource_filter::mojom::AdsViolation::
+                           kMobileAdDensityByHeightAbove30),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AdDensityViolationBrowserTestMessagesUi,
+    MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_MessagesUi) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents);
+  const GURL url(embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/blank_with_adiframe_writer.html"));
+
+  waiter->SetMainFrameIntersectionExpectation();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  waiter->Wait();
+
+  int document_height = page_load_metrics::GetDocumentHeight(web_contents);
+
+  int frame_width = 100;  // Ad density by height is independent of frame width.
+  int frame_height = document_height * 0.25;
+
+  // Create the frame with b.com as origin to not get caught by
+  // restricted ad tagging.
+  page_load_metrics::CreateAndWaitForIframeAtRect(
+      web_contents, waiter.get(),
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"),
+      gfx::Rect(0, 0, frame_width, frame_height));
+
+  // Delete the page load metrics test waiter instead of reinitializing it
+  // for the next page load.
+  waiter.reset();
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+
+  // blank_with_adiframe_writer loads a script tagged as an ad, verify it is
+  // loaded as ads are not blocked and the subresource filter UI is not
+  // shown.
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  // No ads blocked message should be shown as we have not triggered the
+  // intervention.
+  EXPECT_EQ(messages_test_helper.GetMessageCount(
+                web_contents->GetTopLevelNativeWindow()),
+            0);
+  histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
+}
+
 class AdDensityViolationBrowserTestWithoutEnforcement
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
@@ -183,6 +313,8 @@ class AdDensityViolationBrowserTestWithoutEnforcement
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_iframe_writer.js")});
   }
+
+  messages::MessagesTestHelper messages_test_helper;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -227,11 +359,14 @@ IN_PROC_BROWSER_TEST_F(
   // as expected without subresource filter UI.
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
 
-  // No ads blocked infobar should be shown as we have not triggered the
+  // No ads blocked prompt should be shown as we have not triggered the
   // intervention.
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents)
                 ->infobar_count(),
             0u);
+  EXPECT_EQ(messages_test_helper.GetMessageCount(
+                web_contents->GetTopLevelNativeWindow()),
+            0);
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(subresource_filter::mojom::AdsViolation::

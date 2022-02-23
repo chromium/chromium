@@ -7,11 +7,10 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -49,7 +47,11 @@ class MockDiceWebSigninInterceptorDelegate
                const BubbleParameters& bubble_parameters,
                base::OnceCallback<void(SigninInterceptionResult)> callback),
               (override));
-  void ShowProfileCustomizationBubble(Browser* browser) override {}
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {}
 };
 
 // Matches BubbleParameters fields excepting the color. This is useful in the
@@ -74,12 +76,14 @@ MatchBubbleParameters(
 
 // If the account info is valid, does nothing. Otherwise fills the extended
 // fields with default values.
-void MakeValidAccountInfo(AccountInfo* info) {
+void MakeValidAccountInfo(
+    AccountInfo* info,
+    const std::string& hosted_domain = kNoHostedDomainFound) {
   if (info->IsValid())
     return;
   info->full_name = "fullname";
   info->given_name = "givenname";
-  info->hosted_domain = kNoHostedDomainFound;
+  info->hosted_domain = hosted_domain;
   info->locale = "en";
   info->picture_url = "https://example.com";
   DCHECK(info->IsValid());
@@ -189,11 +193,6 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
 
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL("http://foo/1"));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-      GTEST_SKIP();
-#endif
   }
 
   void TearDown() override {
@@ -217,7 +216,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
-  MockDiceWebSigninInterceptorDelegate* mock_delegate_ = nullptr;
+  raw_ptr<MockDiceWebSigninInterceptorDelegate> mock_delegate_ = nullptr;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
@@ -257,8 +256,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
 TEST_F(DiceWebSigninInterceptorTest, NoBubbleWithSingleAccount) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Without UPA.
@@ -317,18 +315,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   EXPECT_TRUE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 }
 
-class DiceWebSigninInterceptorForcedSeparationTest
-    : public DiceWebSigninInterceptorTest {
- public:
-  DiceWebSigninInterceptorForcedSeparationTest()
-      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       ShouldEnforceEnterpriseProfileSeparation) {
+TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -365,7 +352,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        ShouldEnforceEnterpriseProfileSeparationWithoutUPA) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
@@ -385,7 +372,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info_1));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        ShouldEnforceEnterpriseProfileSeparationReauth) {
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account_strict");
@@ -411,8 +398,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       primary_account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       EnforceManagedAccountAsPrimaryReauth) {
+TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryReauth) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -422,8 +408,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account");
@@ -442,12 +427,10 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       EnforceManagedAccountAsPrimaryManaged) {
+TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryManaged) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -466,12 +449,11 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        EnforceManagedAccountAsPrimaryProfileSwitch) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   profile()->GetPrefs()->SetBoolean(
@@ -556,6 +538,8 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterception) {
   // Setup for profile switch interception.
   std::string email = "bob@example.com";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   Profile* profile_2 = CreateTestingProfile("Profile 2");
   ProfileAttributesEntry* entry =
       profile_attributes_storage()->GetProfileAttributesWithPath(
@@ -592,6 +576,9 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterception) {
 TEST_F(DiceWebSigninInterceptorTest, HeuristicAccountNotAdded) {
   // Setup for profile switch interception.
   std::string email = "bob@example.com";
+  AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   Profile* profile_2 = CreateTestingProfile("Profile 2");
   ProfileAttributesEntry* entry =
       profile_attributes_storage()->GetProfileAttributesWithPath(
@@ -621,12 +608,6 @@ TEST_F(DiceWebSigninInterceptorTest, HeuristicDefaultsToGmail) {
                 /*is_new_account=*/true, /*is_sync_signin=*/false, "bob",
                 /*entry=*/nullptr),
             SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  // Using wrong domain does not trigger the interception.
-  EXPECT_EQ(
-      interceptor()->GetHeuristicOutcome(
-          /*is_new_account=*/true, /*is_sync_signin=*/false, "bob@example.com",
-          /*entry=*/nullptr),
-      SigninInterceptionHeuristicOutcome::kAbortSingleAccount);
 }
 
 // Checks that no heuristic is returned if signin interception is disabled.
@@ -666,6 +647,8 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {
   // Setup for profile switch interception.
   std::string email = "bob@example.com";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   Profile* profile_2 = CreateTestingProfile("Profile 2");
   ProfileAttributesEntry* entry =
       profile_attributes_storage()->GetProfileAttributesWithPath(
@@ -720,8 +703,7 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
           "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   const int kMaxProfileCreationDeclinedCount = 2;
@@ -777,6 +759,8 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineSwitchRepeatedly_NoLimit) {
   // Setup for profile switch interception.
   std::string email = "bob@example.com";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   Profile* profile_2 = CreateTestingProfile("Profile 2");
   ProfileAttributesEntry* entry =
       profile_attributes_storage()->GetProfileAttributesWithPath(
@@ -828,7 +812,7 @@ TEST_F(DiceWebSigninInterceptorTest, PersistentHash) {
 TEST_F(DiceWebSigninInterceptorTest, NoInterceptionWithOneAccount) {
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("bob@example.com");
+      identity_test_env()->MakeAccountAvailable("bob@gmail.com");
   // Interception aborts even if the account info is not available.
   ASSERT_FALSE(identity_test_env()
                    ->identity_manager()
@@ -848,8 +832,12 @@ TEST_F(DiceWebSigninInterceptorTest, ProfileCreationDisallowed) {
   // Setup for profile switch interception.
   std::string email = "bob@example.com";
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
   AccountInfo other_account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&other_account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(other_account_info);
   Profile* profile_2 = CreateTestingProfile("Profile 2");
   ProfileAttributesEntry* entry =
       profile_attributes_storage()->GetProfileAttributesWithPath(
@@ -899,8 +887,7 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoAvailable) {
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   histogram_tester.ExpectTotalCount("Signin.Intercept.AccountInfoFetchDuration",
                                     1);
@@ -913,8 +900,7 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoAlreadyAvailable) {
           "bob@example.com", signin::ConsentLevel::kSignin);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
-  MakeValidAccountInfo(&account_info);
-  account_info.hosted_domain = "example.com";
+  MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   // Account info is already available, interception happens immediately.

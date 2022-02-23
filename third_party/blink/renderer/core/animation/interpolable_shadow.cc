@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 namespace {
@@ -142,7 +142,7 @@ ShadowData InterpolableShadow::CreateShadowData(
   DCHECK(shadow_x.IsFixed() && shadow_y.IsFixed() && shadow_blur.IsFixed() &&
          shadow_spread.IsFixed());
   return ShadowData(
-      FloatPoint(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
+      gfx::PointF(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
       shadow_spread.Value(), shadow_style_,
       StyleColor(
           CSSColorInterpolationType::ResolveInterpolableColor(*color_, state)));

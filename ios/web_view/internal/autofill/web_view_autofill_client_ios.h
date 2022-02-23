@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -109,6 +108,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() override;
+  bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;

@@ -308,16 +308,10 @@ def _GenerateSettingsGradle(subproject_dirs, settings_template_path,
 
 
 def _BuildGradleCmd(build_android_deps_dir, task):
-    cmd = [
-        _GRADLEW, '-b',
-        os.path.join(build_android_deps_dir, _BUILD_GRADLE), '--stacktrace',
-        task
+    return [
+        _GRADLEW, '-p', build_android_deps_dir, '--stacktrace',
+        '--warning-mode', 'all', task
     ]
-    settings_gradle_path = os.path.join(build_android_deps_dir,
-                                        'settings.gradle')
-    if os.path.exists(settings_gradle_path):
-        cmd += ['-c', os.path.abspath(settings_gradle_path)]
-    return cmd
 
 
 def _CheckVulnerabilities(build_android_deps_dir, report_dst):
@@ -426,6 +420,20 @@ def _CreateAarInfos(aar_files):
 
         logging.debug('- %s', aar_info_name)
         cmd = [_AAR_PY, 'list', aar_file, '--output', aar_info_path]
+
+        if aar_info_name == 'com_google_android_material_material.info':
+            # Keep in sync with copy in BuildConfigGenerator.groovy.
+            resource_exclusion_glbos = [
+                'res/layout*/*calendar*',
+                'res/layout*/*chip_input*',
+                'res/layout*/*clock*',
+                'res/layout*/*picker*',
+                'res/layout*/*time*',
+            ]
+            cmd += [
+                '--resource-exclusion-globs',
+                repr(resource_exclusion_glbos).replace("'", '"')
+            ]
         proc = subprocess.Popen(cmd)
         jobs.append((cmd, proc))
 
@@ -519,8 +527,6 @@ def main():
 
         subprocess.run(gradle_cmd, check=True)
 
-        build_libs_dir = os.path.join(build_android_deps_dir, _LIBS_DIR)
-
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
         gn_args = [
@@ -530,6 +536,7 @@ def main():
         ]
         RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
 
+        build_libs_dir = os.path.join(build_android_deps_dir, _LIBS_DIR)
         aar_files = FindInDirectory(build_libs_dir, '*.aar')
 
         logging.info('# Generate Android .aar info files.')
@@ -566,7 +573,6 @@ def main():
         new_packages = sorted(set(build_packages) - set(existing_packages))
 
         # Copy updated DEPS and BUILD.gn to build directory.
-        update_cmds = []
         Copy(build_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              args.android_deps_dir,

@@ -39,7 +39,7 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
   if (!profile_prefs)
     return nullptr;
 
-  const base::DictionaryValue* platform_keys =
+  const base::Value* platform_keys =
       profile_prefs->GetDictionary(prefs::kPlatformKeys);
   if (!platform_keys)
     return nullptr;
@@ -72,11 +72,10 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
 
   DictionaryPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
 
-  auto new_pref_entry = std::make_unique<base::DictionaryValue>();
-  new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));
+  base::Value new_pref_entry(base::Value::Type::DICTIONARY);
+  new_pref_entry.SetStringKey(kPrefKeyUsage, kPrefKeyUsageCorporate);
 
-  update->SetKey(public_key_spki_der_b64,
-                 base::Value::FromUniquePtrValue(std::move(new_pref_entry)));
+  update->SetKey(public_key_spki_der_b64, std::move(new_pref_entry));
 }
 
 }  // namespace internal

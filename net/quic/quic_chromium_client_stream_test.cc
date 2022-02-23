@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
@@ -187,7 +188,7 @@ class QuicChromiumClientStreamTest
             version_.transport_version, 0),
         &session_, quic::BIDIRECTIONAL, NetLogWithSource(),
         TRAFFIC_ANNOTATION_FOR_TESTS);
-    session_.ActivateStream(base::WrapUnique(stream_));
+    session_.ActivateStream(base::WrapUnique(stream_.get()));
     handle_ = stream_->CreateHandle();
     helper_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
     session_.connection()->SetEncrypter(
@@ -294,7 +295,7 @@ class QuicChromiumClientStreamTest
   quic::test::MockQuicConnectionHelper helper_;
   quic::test::MockAlarmFactory alarm_factory_;
   MockQuicClientSessionBase session_;
-  QuicChromiumClientStream* stream_;
+  raw_ptr<QuicChromiumClientStream> stream_;
   spdy::Http2HeaderBlock headers_;
   spdy::Http2HeaderBlock trailers_;
   quic::QuicClientPushPromiseIndex push_promise_index_;

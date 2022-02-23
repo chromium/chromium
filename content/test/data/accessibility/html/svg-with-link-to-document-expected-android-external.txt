@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++Image text:"svg" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
+++++++View text:"null" contentDescription:"svg-with-link-to-document" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/svg-with-link-to-document.html#"]

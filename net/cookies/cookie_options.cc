@@ -6,6 +6,8 @@
 
 #include "net/cookies/cookie_options.h"
 
+#include <tuple>
+
 #include "base/metrics/histogram_functions.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"
@@ -68,7 +70,10 @@ bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
 bool operator==(
     const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
     const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
-  return lhs.cross_site_redirect_downgrade == rhs.cross_site_redirect_downgrade;
+  return std::tie(lhs.cross_site_redirect_downgrade,
+                  lhs.redirect_type_bug_1221316) ==
+         std::tie(rhs.cross_site_redirect_downgrade,
+                  rhs.redirect_type_bug_1221316);
 }
 
 bool operator!=(

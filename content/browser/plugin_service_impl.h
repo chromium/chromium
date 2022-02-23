@@ -8,6 +8,7 @@
 #ifndef CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ppapi/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
@@ -17,7 +18,6 @@
 #include <map>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
@@ -54,9 +54,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
                           std::vector<WebPluginInfo>* info,
                           std::vector<std::string>* actual_mime_types) override;
   bool GetPluginInfo(int render_process_id,
-                     int render_frame_id,
                      const GURL& url,
-                     const url::Origin& main_frame_origin,
                      const std::string& mime_type,
                      bool allow_wildcard,
                      bool* is_stale,
@@ -138,7 +136,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
   // Weak pointer; set during the startup on UI thread and must outlive us.
-  PluginServiceFilter* filter_ = nullptr;
+  raw_ptr<PluginServiceFilter> filter_ = nullptr;
 
   // Used to load plugins from disk.
   scoped_refptr<base::SequencedTaskRunner> plugin_list_task_runner_;

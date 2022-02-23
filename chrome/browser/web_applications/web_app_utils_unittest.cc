@@ -11,7 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -84,7 +84,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager.CreateTestingProfile(
-      chromeos::ProfileHelper::GetLockScreenAppProfileName());
+      ash::ProfileHelper::GetLockScreenAppProfileName());
   EXPECT_FALSE(AreWebAppsEnabled(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsEnabled(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
@@ -149,7 +149,7 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
       signin_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
   Profile* lock_screen_profile = profile_manager.CreateTestingProfile(
-      chromeos::ProfileHelper::GetLockScreenAppProfileName());
+      ash::ProfileHelper::GetLockScreenAppProfileName());
   EXPECT_FALSE(AreWebAppsUserInstallable(lock_screen_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
@@ -157,6 +157,10 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   Profile* regular_profile = profile();
 
   EXPECT_EQ(regular_profile, GetBrowserContextForWebApps(regular_profile));

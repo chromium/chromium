@@ -15,10 +15,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.util.Rational;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -195,8 +198,10 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @Override
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onPictureInPictureModeChanged(
             boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
         if (!isInPictureInPictureMode) this.finish();
     }
 

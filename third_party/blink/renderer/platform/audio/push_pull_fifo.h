@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT PushPullFIFO {
 
   void SetEarmarkFrames(size_t earmark_frames) {
     DCHECK(IsMainThread());
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     earmark_frames_ = earmark_frames;
   }
 
@@ -91,12 +92,12 @@ class PLATFORM_EXPORT PushPullFIFO {
   }
 
   AudioBus* GetFIFOBusForTest() {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     return fifo_bus_.get();
   }
 
   size_t GetEarmarkFramesForTest() {
-    MutexLocker locker(lock_);
+    base::AutoLock locker(lock_);
     return earmark_frames_;
   }
 
@@ -117,7 +118,7 @@ class PLATFORM_EXPORT PushPullFIFO {
   unsigned overflow_count_ = 0;
   unsigned underflow_count_ = 0;
 
-  Mutex lock_;
+  base::Lock lock_;
 
   // To adapt the unstable callback timing. Every buffer underrun from
   // PullAndUpdateEarmark() will increase this number.

@@ -82,6 +82,11 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isSyncFeatureEnabled() {
+        return SyncServiceImplJni.get().isSyncFeatureEnabled(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean isSyncFeatureActive() {
         return SyncServiceImplJni.get().isSyncFeatureActive(mSyncServiceAndroidBridge);
     }
@@ -108,17 +113,6 @@ public class SyncServiceImpl extends SyncService {
     @Override
     public boolean requiresClientUpgrade() {
         return SyncServiceImplJni.get().requiresClientUpgrade(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public void setDecoupledFromAndroidMasterSync() {
-        SyncServiceImplJni.get().setDecoupledFromAndroidMasterSync(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean getDecoupledFromAndroidMasterSync() {
-        return SyncServiceImplJni.get().getDecoupledFromAndroidMasterSync(
-                mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -226,16 +220,6 @@ public class SyncServiceImpl extends SyncService {
         for (SyncStateChangedListener listener : mListeners) {
             listener.syncStateChanged();
         }
-    }
-
-    @Override
-    public boolean isSyncAllowedByPlatform() {
-        return SyncServiceImplJni.get().isSyncAllowedByPlatform(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public void setSyncAllowedByPlatform(boolean allowed) {
-        SyncServiceImplJni.get().setSyncAllowedByPlatform(mSyncServiceAndroidBridge, allowed);
     }
 
     @Override
@@ -399,8 +383,7 @@ public class SyncServiceImpl extends SyncService {
         boolean isSyncRequested(long nativeSyncServiceAndroidBridge);
         void setSyncRequested(long nativeSyncServiceAndroidBridge, boolean requested);
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
-        boolean isSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge);
-        void setSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge, boolean allowed);
+        boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
@@ -428,8 +411,6 @@ public class SyncServiceImpl extends SyncService {
         int getAuthError(long nativeSyncServiceAndroidBridge);
         boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
         boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
-        void setDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
-        boolean getDecoupledFromAndroidMasterSync(long nativeSyncServiceAndroidBridge);
         @Nullable
         CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);

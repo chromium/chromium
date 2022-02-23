@@ -17,20 +17,30 @@ double Scoring::FinalScore() const {
   // them in an anonymous namespace above.
   if (filter)
     return -1.0;
-
-  return normalized_relevance + category_item_score * 10.0 +
-         category_usage_score * 10.0 + usage_score * 10.0 +
-         (top_match ? 1000.0 : 0.0);
+  return ftrl_result_score;
 }
 
 ::std::ostream& operator<<(::std::ostream& os, const Scoring& scoring) {
   if (scoring.filter)
     return os << "{" << scoring.FinalScore() << " | filtered}";
   return os << base::StringPrintf(
-             "{%.2f | nr:%.2f ci:%.2f cu:%.2f u:%.2f tm:%d}",
-             scoring.FinalScore(), scoring.normalized_relevance,
-             scoring.category_item_score, scoring.category_usage_score,
-             scoring.usage_score, scoring.top_match);
+             "{%.2f | nr:%.2f rs:%.2f bm:%d cr:%d bi:%d}", scoring.FinalScore(),
+             scoring.normalized_relevance, scoring.ftrl_result_score,
+             scoring.best_match_rank, scoring.continue_rank,
+             scoring.burnin_iteration);
+}
+
+CategoriesList CreateAllCategories() {
+  CategoriesList res({{.category = Category::kApps},
+                      {.category = Category::kAppShortcuts},
+                      {.category = Category::kWeb},
+                      {.category = Category::kFiles},
+                      {.category = Category::kSettings},
+                      {.category = Category::kHelp},
+                      {.category = Category::kPlayStore},
+                      {.category = Category::kSearchAndAssistant}});
+  DCHECK_EQ(res.size(), static_cast<size_t>(Category::kMaxValue));
+  return res;
 }
 
 }  // namespace app_list

@@ -7,7 +7,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -30,8 +30,8 @@ void SuggestedContentInfoView::CloseButtonPressed() {
 void SuggestedContentInfoView::LinkClicked() {
   view_delegate_->MarkSuggestedContentInfoDismissed();
   constexpr char url[] = "chrome://os-settings/osPrivacy";
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(url),
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 }  // namespace ash

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.SmallTest;
 
+import com.google.flatbuffers.FlatBufferBuilder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -31,8 +33,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
+import org.chromium.chrome.browser.tab.flatbuffer.CriticalPersistedTabDataFlatBuffer;
+import org.chromium.chrome.browser.tab.flatbuffer.LaunchTypeAtCreation;
+import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -68,6 +73,8 @@ public class CriticalPersistedTabDataTest {
     private static final String OPENER_APP_ID = "OpenerAppId";
     private static final int THEME_COLOR = 5;
     private static final Integer LAUNCH_TYPE_AT_CREATION = 3;
+    private static final @TabUserAgent int USER_AGENT_A = TabUserAgent.MOBILE;
+    private static final @TabUserAgent int USER_AGENT_B = TabUserAgent.DESKTOP;
     private static final String TITLE_A = "original title";
     private static final String TITLE_B = "new title";
     private static final GURL URL_A = new GURL("https://a.com");
@@ -149,7 +156,7 @@ public class CriticalPersistedTabDataTest {
             CriticalPersistedTabData criticalPersistedTabData =
                     new CriticalPersistedTabData(mockTab(TAB_ID, isEncrypted), "", "", PARENT_ID,
                             ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
-                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
             criticalPersistedTabData.setShouldSaveForTesting(true);
             mStorage.setSemaphore(saveSemaphore);
             ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
@@ -173,6 +180,7 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
                                          mCriticalPersistedTabData.getWebContentsState().buffer()),
                 WEB_CONTENTS_STATE_BYTES);
+        Assert.assertEquals(mCriticalPersistedTabData.getUserAgent(), USER_AGENT_A);
         Semaphore deleteSemaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mStorage.setSemaphore(deleteSemaphore);
@@ -284,7 +292,7 @@ public class CriticalPersistedTabDataTest {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
-                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
         ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
@@ -301,26 +309,48 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
                 CriticalPersistedTabData.getContentStateByteArray(
                         deserialized.getWebContentsState().buffer()));
+        Assert.assertEquals(USER_AGENT_A, deserialized.getUserAgent());
     }
 
     @SmallTest
     @Test
     public void testWebContentsStateBug_crbug_1220839() throws InterruptedException {
+        PersistedTabDataConfiguration.setUseTestConfig(false);
         String url = mTestServer.getURL("/chrome/test/data/browsing_data/e.html");
         Tab tab = sActivityTestRule.loadUrlInNewTab(url);
+        final Semaphore semaphore = new Semaphore(0);
+        // Saving serialized CriticalPersistedTabData ensures we get a direct ByteBuffer
+        // which is assumed in the rest of Clank. See crbug.com/1220839 for more details.
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData criticalPersistedTabData =
-                    new CriticalPersistedTabData(tab, "", "", PARENT_ID, ROOT_ID, TIMESTAMP,
-                            TabStateExtractor.getWebContentsState(tab), CONTENT_STATE_VERSION,
-                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
-            ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
-            PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
-                    ShoppingPersistedTabData.class, tab.isIncognito());
-            CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
-                    tab, serialized, config.getStorage(), config.getId());
-            Assert.assertEquals(
-                    EXPECTED_TITLE, deserialized.getWebContentsState().getDisplayTitleFromState());
-            Assert.assertEquals(url, deserialized.getWebContentsState().getVirtualUrlFromState());
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+                CriticalPersistedTabData criticalPersistedTabData =
+                        new CriticalPersistedTabData(tab, "", "", PARENT_ID, ROOT_ID, TIMESTAMP,
+                                TabStateExtractor.getWebContentsState(tab), CONTENT_STATE_VERSION,
+                                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
+                PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                        CriticalPersistedTabData.class, tab.isIncognito());
+                FilePersistedTabDataStorage persistedTabDataStorage =
+                        new FilePersistedTabDataStorage();
+                persistedTabDataStorage.save(tab.getId(), config.getId(), () -> {
+                    return criticalPersistedTabData.getSerializeSupplier().get();
+                }, semaphore::release);
+            }
+        });
+        semaphore.acquire();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+                PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                        CriticalPersistedTabData.class, tab.isIncognito());
+
+                SerializedCriticalPersistedTabData serialized =
+                        CriticalPersistedTabData.restore(tab.getId(), tab.isIncognito());
+                CriticalPersistedTabData deserialized =
+                        new CriticalPersistedTabData(tab, serialized);
+                Assert.assertEquals(EXPECTED_TITLE,
+                        deserialized.getWebContentsState().getDisplayTitleFromState());
+                Assert.assertEquals(
+                        url, deserialized.getWebContentsState().getVirtualUrlFromState());
+            }
         });
     }
 
@@ -331,7 +361,7 @@ public class CriticalPersistedTabDataTest {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
-                THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
+                THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
         ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
@@ -539,6 +569,31 @@ public class CriticalPersistedTabDataTest {
         }
     }
 
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testUserAgentSavedWhenNecessary() {
+        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+            CriticalPersistedTabData spyCriticalPersistedTabData =
+                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
+            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
+            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
+            verify(spyCriticalPersistedTabData, times(1)).save();
+
+            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
+            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
+            verify(spyCriticalPersistedTabData, times(1)).save();
+
+            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_B);
+            Assert.assertEquals(USER_AGENT_B, spyCriticalPersistedTabData.getUserAgent());
+            verify(spyCriticalPersistedTabData, times(2)).save();
+
+            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
+            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
+            verify(spyCriticalPersistedTabData, times(3)).save();
+        }
+    }
+
     @SmallTest
     @Test
     public void testConvertTabLaunchTypeToProtoLaunchType() {
@@ -551,10 +606,107 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testConvertProtoLaunchTypeToTabLaunchType() {
-        for (CriticalPersistedTabDataProto.LaunchTypeAtCreation type :
-                CriticalPersistedTabDataProto.LaunchTypeAtCreation.values()) {
-            if (type == CriticalPersistedTabDataProto.LaunchTypeAtCreation.UNKNOWN) continue;
+        for (int type = LaunchTypeAtCreation.SIZE;
+                type < LaunchTypeAtCreation.names.length + LaunchTypeAtCreation.SIZE; type++) {
+            if (type == LaunchTypeAtCreation.UNKNOWN) continue;
             CriticalPersistedTabData.getLaunchType(type);
         }
+    }
+
+    @SmallTest
+    @Test
+    public void testConvertTabUserAgentToProtoUserAgentType() {
+        for (@TabUserAgent int tabUserAgent = 0; tabUserAgent <= TabUserAgent.SIZE;
+                tabUserAgent++) {
+            int flatBufferUserAgentType = CriticalPersistedTabData.getUserAgentType(tabUserAgent);
+            Assert.assertNotEquals("TabUserAgent value is invalid.", flatBufferUserAgentType,
+                    UserAgentType.USER_AGENT_UNKNOWN);
+            if (tabUserAgent != TabUserAgent.SIZE) continue;
+            Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
+                    flatBufferUserAgentType, UserAgentType.USER_AGENT_SIZE);
+        }
+    }
+
+    @SmallTest
+    @Test
+    public void testConvertProtoUserAgentTypeToTabUserAgent() {
+        for (int type = 0; type < UserAgentType.names.length; type++) {
+            if (type == UserAgentType.USER_AGENT_UNKNOWN) continue;
+            @TabUserAgent
+            int tabUserAgent = CriticalPersistedTabData.getTabUserAgentType(type);
+            Assert.assertNotNull("ProtoUserAgentType value is invalid.", tabUserAgent);
+            if (type != UserAgentType.USER_AGENT_SIZE) continue;
+            Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
+                    tabUserAgent, TabUserAgent.SIZE);
+        }
+    }
+
+    @SmallTest
+    @Test
+    public void testFlatBufferValuesUnchanged() {
+        // FlatBuffer enum values should not be changed as they are persisted across restarts.
+        // Changing them would cause backward compatibility issues crbug.com/1286984.
+        Assert.assertEquals(-2, LaunchTypeAtCreation.SIZE);
+        Assert.assertEquals(-1, LaunchTypeAtCreation.UNKNOWN);
+        Assert.assertEquals(0, LaunchTypeAtCreation.FROM_LINK);
+        Assert.assertEquals(1, LaunchTypeAtCreation.FROM_EXTERNAL_APP);
+        Assert.assertEquals(2, LaunchTypeAtCreation.FROM_CHROME_UI);
+        Assert.assertEquals(3, LaunchTypeAtCreation.FROM_RESTORE);
+        Assert.assertEquals(4, LaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND);
+        Assert.assertEquals(5, LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND);
+        Assert.assertEquals(6, LaunchTypeAtCreation.FROM_REPARENTING);
+        Assert.assertEquals(7, LaunchTypeAtCreation.FROM_LAUNCHER_SHORTCUT);
+        Assert.assertEquals(8, LaunchTypeAtCreation.FROM_SPECULATIVE_BACKGROUND_CREATION);
+        Assert.assertEquals(9, LaunchTypeAtCreation.FROM_BROWSER_ACTIONS);
+        Assert.assertEquals(10, LaunchTypeAtCreation.FROM_LAUNCH_NEW_INCOGNITO_TAB);
+        Assert.assertEquals(11, LaunchTypeAtCreation.FROM_STARTUP);
+        Assert.assertEquals(12, LaunchTypeAtCreation.FROM_START_SURFACE);
+        Assert.assertEquals(13, LaunchTypeAtCreation.FROM_TAB_GROUP_UI);
+        Assert.assertEquals(14, LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
+        Assert.assertEquals(15, LaunchTypeAtCreation.FROM_APP_WIDGET);
+        Assert.assertEquals(
+                "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
+                        + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
+                18, LaunchTypeAtCreation.names.length);
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testNullWebContentsState_1() {
+        Tab tab = new MockTab(1, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab,
+                CriticalPersistedTabData.getMapperForTesting().map(
+                        getFlatBufferWithNoWebContentsState()));
+        Assert.assertEquals(0, criticalPersistedTabData.getWebContentsState().buffer().limit());
+    }
+
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testNullWebContentsState_2() {
+        Tab tab = new MockTab(1, false);
+        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab);
+        criticalPersistedTabData.deserialize(getFlatBufferWithNoWebContentsState());
+        Assert.assertEquals(0, criticalPersistedTabData.getWebContentsState().buffer().limit());
+    }
+
+    private static final ByteBuffer getFlatBufferWithNoWebContentsState() {
+        FlatBufferBuilder fbb = new FlatBufferBuilder();
+        int oaid = fbb.createString(OPENER_APP_ID);
+        CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);
+        CriticalPersistedTabDataFlatBuffer.addParentId(fbb, PARENT_ID);
+        CriticalPersistedTabDataFlatBuffer.addRootId(fbb, ROOT_ID);
+        CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, TIMESTAMP);
+        // WebContentsState intentionally left out
+        CriticalPersistedTabDataFlatBuffer.addContentStateVersion(fbb, CONTENT_STATE_VERSION);
+        CriticalPersistedTabDataFlatBuffer.addOpenerAppId(fbb, oaid);
+        CriticalPersistedTabDataFlatBuffer.addThemeColor(fbb, THEME_COLOR);
+        CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(
+                fbb, LaunchTypeAtCreation.FROM_LINK);
+        CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, UserAgentType.DEFAULT);
+        int r = CriticalPersistedTabDataFlatBuffer.endCriticalPersistedTabDataFlatBuffer(fbb);
+        fbb.finish(r);
+        return fbb.dataBuffer();
     }
 }

@@ -31,6 +31,9 @@ bool PolicyMerger::EntriesCanBeMerged(
     const PolicyMap::Entry& entry_1,
     const PolicyMap::Entry& entry_2,
     const bool is_user_cloud_merging_enabled) {
+  if (entry_1.value()->type() != entry_2.value()->type())
+    return false;
+
   if (entry_1.ignored() || entry_2.ignored() ||
       entry_1.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
       entry_2.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
@@ -132,7 +135,7 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       compare_value_ptr);
   bool value_changed = false;
 
-  for (const base::Value& val : policy->value()->GetList()) {
+  for (const base::Value& val : policy->value()->GetListDeprecated()) {
     if (duplicates.find(&val) != duplicates.end())
       continue;
     duplicates.insert(&val);
@@ -147,7 +150,7 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
       continue;
     }
 
-    for (const base::Value& val : it.entry().value()->GetList()) {
+    for (const base::Value& val : it.entry().value()->GetListDeprecated()) {
       if (duplicates.find(&val) != duplicates.end())
         continue;
       duplicates.insert(&val);

@@ -7,15 +7,20 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace content {
@@ -66,15 +71,116 @@ GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
   return GURL(scheme + url::kStandardSchemeSeparator + host);
 }
 
+// Strings used to encode blob url fallback mode in guest site URLs.
+constexpr char kNoFallback[] = "nofallback";
+constexpr char kInMemoryFallback[] = "inmemoryfallback";
+constexpr char kOnDiskFallback[] = "ondiskfallback";
+
+// SiteInstances for <webview> guests currently use a special site URL that
+// encodes that guest's StoragePartition configuration, including the partition
+// name and whether the storage for that partition should be persisted. This
+// helper translates a guest's StoragePartitionConfig into a site URL, and
+// GetGuestPartitionConfigForSite below performs the opposite translation.
+// The format for a guest site URL is:
+// chrome-guest://partition_domain/persist?partition_name
+// The `partition_domain` (i.e., the site URL's host) identifies the guest's
+// embedder.
+//
+// TODO(alexmos): Guest site URLs are deprecated and will be removed once
+// <webview> guests support site isolation.  See https://crbug.com/1267977.
+GURL GetSiteURLForGuestPartitionConfig(
+    const StoragePartitionConfig& storage_partition_config) {
+  DCHECK(!storage_partition_config.is_default());
+  std::string url_encoded_partition = net::EscapeQueryParamValue(
+      storage_partition_config.partition_name(), false);
+  const char* fallback = "";
+  switch (
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
+    case StoragePartitionConfig::FallbackMode::kNone:
+      fallback = kNoFallback;
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk:
+      fallback = kOnDiskFallback;
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory:
+      fallback = kInMemoryFallback;
+      break;
+  }
+  return GURL(
+      base::StringPrintf("%s://%s/%s?%s#%s", kGuestScheme,
+                         storage_partition_config.partition_domain().c_str(),
+                         storage_partition_config.in_memory() ? "" : "persist",
+                         url_encoded_partition.c_str(), fallback));
+}
+
+// Opposite of GetSiteURLForGuestPartitionConfig. Converts the provided site
+// URL of a <webview> guest into a StoragePartitionConfig.  The return value
+// indicates whether the translation succeeded.
+bool GetGuestPartitionConfigForSite(
+    BrowserContext* browser_context,
+    const GURL& site,
+    StoragePartitionConfig* storage_partition_config) {
+  if (!site.SchemeIs(kGuestScheme))
+    return false;
+
+  // The partition name is user supplied value, which we have encoded when the
+  // URL was created, so it needs to be decoded. Since it was created via
+  // EscapeQueryParamValue(), it should have no path separators or control codes
+  // when unescaped, but safest to check for that and fail if it does.
+  std::string partition_name;
+  if (!net::UnescapeBinaryURLComponentSafe(site.query_piece(),
+                                           true /* fail_on_path_separators */,
+                                           &partition_name)) {
+    return false;
+  }
+
+  // The host must contain an ID for the guest's embedder (e.g., packaged app's
+  // ID or WebUI host).
+  CHECK(site.has_host());
+
+  // Since persistence is optional, the path must either be empty or the
+  // literal string.
+  bool in_memory = (site.path() != "/persist");
+
+  *storage_partition_config = StoragePartitionConfig::Create(
+      browser_context, site.host(), partition_name, in_memory);
+
+  // A <webview> guest inside an embedder needs to be able to resolve Blob URLs
+  // that were created by the embedder (such as a Chrome app). The embedder has
+  // the same partition_domain but empty partition_name. Setting this flag on
+  // the partition config causes it to be used as fallback for the purpose of
+  // resolving blob URLs.
+  //
+  // Default to having the fallback partition on disk, as that matches most
+  // closely what we would have done before fallback behavior started being
+  // encoded in the site URL.
+  StoragePartitionConfig::FallbackMode fallback_mode =
+      StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  if (site.ref() == kNoFallback) {
+    fallback_mode = StoragePartitionConfig::FallbackMode::kNone;
+  } else if (site.ref() == kInMemoryFallback) {
+    fallback_mode =
+        StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory;
+  } else if (site.ref() == kOnDiskFallback) {
+    fallback_mode =
+        StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+  }
+  storage_partition_config->set_fallback_to_partition_domain_for_blob_urls(
+      fallback_mode);
+
+  return true;
+}
+
 }  // namespace
 
 // static
 SiteInfo SiteInfo::CreateForErrorPage(
-    const StoragePartitionConfig storage_partition_config) {
+    const StoragePartitionConfig storage_partition_config,
+    bool is_guest) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
-                  false /* is_origin_keyed */, storage_partition_config,
-                  WebExposedIsolationInfo::CreateNonIsolated(),
-                  false /* is_guest */,
+                  false /* requires_origin_keyed_process */,
+                  false /* is_sandboxed */, storage_partition_config,
+                  WebExposedIsolationInfo::CreateNonIsolated(), is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
                   false /* is_jit_disabled */, false /* is_pdf */);
 }
@@ -91,22 +197,38 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
 
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
-                  false /* is_origin_keyed */, storage_partition_config,
+                  false /* requires_origin_keyed_process */,
+                  false /* is_sandboxed */, storage_partition_config,
                   web_exposed_isolation_info, false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
                   is_jit_disabled, false /* is_pdf */);
 }
 
 // static
-SiteInfo SiteInfo::CreateForGuest(BrowserContext* browser_context,
-                                  const GURL& guest_site_url) {
-  // Setting site and lock directly without the site URL conversions we
-  // do for user provided URLs. Callers expect GetSiteURL() to return the
-  // value they provide in |guest_site_url|.
+SiteInfo SiteInfo::CreateForGuest(
+    BrowserContext* browser_context,
+    const StoragePartitionConfig& partition_config) {
+  // Traditionally, site URLs for guests were expected to have a special value
+  // that encodes the StoragePartition information. With site isolation for
+  // guests, however, this is no longer the case, and guests may use regular
+  // site and lock URLs, and the StoragePartition information is maintained in
+  // a separate SiteInfo field.  See https://crbug.com/1267977 for more info.
+  //
+  // Thus, when site isolation for guests is not used, set the site and lock
+  // URLs to the legacy value.  Otherwise, leave them as empty for now; this
+  // function is called when a guest SiteInstance is first created (prior to
+  // any navigations), so there is no URL at this point to compute proper site
+  // and lock URLs.  Future navigations (if any) in the guest, will follow the
+  // normal process selection paths and use SiteInstances with real site and
+  // lock URLs.
+  GURL guest_site_url =
+      SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()
+          ? GURL()
+          : GetSiteURLForGuestPartitionConfig(partition_config);
+
   return SiteInfo(
-      guest_site_url, guest_site_url, false /* is_origin_keyed */,
-      GetStoragePartitionConfigForUrl(browser_context, guest_site_url,
-                                      /*is_site_url=*/true),
+      guest_site_url, guest_site_url, false /* requires_origin_keyed_process */,
+      false /* is_sandboxed */, partition_config,
       WebExposedIsolationInfo::CreateNonIsolated(), true /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */);
@@ -166,31 +288,56 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
     // Error pages should never be cross origin isolated.
-    DCHECK(!url_info.web_exposed_isolation_info.is_isolated());
-    return CreateForErrorPage(storage_partition_config.value());
+    DCHECK(!url_info.IsIsolated());
+    return CreateForErrorPage(storage_partition_config.value(),
+                              /*is_guest=*/isolation_context.is_guest());
   }
-  // We should only set |is_origin_keyed| if we are actually creating separate
-  // SiteInstances for OAC isolation. When we do same-process OAC, we don't do
-  // that at present.
+  // We should only set |requires_origin_keyed_process| if we are actually
+  // creating separate SiteInstances for OAC isolation. When we do same-process
+  // OAC, we don't do that at present.
   // TODO(wjmaclean): Once SiteInstanceGroups are fully implemented, we should
   // be able to give spOAC origins their own SiteInstance.
   // https://crbug.com/1195535
-  bool is_origin_keyed =
-      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled() &&
-      ChildProcessSecurityPolicyImpl::GetInstance()
-          ->ShouldOriginGetOptInIsolation(
-              isolation_context, url::Origin::Create(url_info.url),
-              url_info.requests_origin_agent_cluster_isolation());
+  OriginAgentClusterIsolationState requested_isolation_state =
+      url_info.requests_origin_agent_cluster()
+          ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                url_info.requests_origin_keyed_process())
+          : OriginAgentClusterIsolationState::CreateNonIsolated();
 
-  // If there is a COOP isolation request, propagate it to SiteInfo.  This will
-  // be used later when determining a suitable SiteInstance and
-  // BrowsingInstance for this SiteInfo.
+  bool requires_origin_keyed_process = false;
+  if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    requires_origin_keyed_process =
+        policy
+            ->DetermineOriginAgentClusterIsolation(
+                isolation_context, url::Origin::Create(url_info.url),
+                requested_isolation_state)
+            .requires_origin_keyed_process();
+  }
+
+  // If there is a COOP isolation request, propagate it to SiteInfo.
+  // This will be used later when determining a suitable SiteInstance
+  // and BrowsingInstance for this SiteInfo.
   bool does_site_request_dedicated_process_for_coop =
       url_info.requests_coop_isolation();
 
-  return SiteInfo(site_url, lock_url, is_origin_keyed,
-                  storage_partition_config.value(),
-                  url_info.web_exposed_isolation_info, false /* is_guest */,
+  // Note: Well-formed UrlInfos can arrive here with null
+  // WebExposedIsolationInfo. One example is, going through the process model
+  // prior to having received response headers that determine the final
+  // WebExposedIsolationInfo, and creating a new speculative SiteInstance. In
+  // these cases we consider the SiteInfo to be non-isolated.
+  //
+  // Sometimes SiteInfos are built from UrlInfos for the purpose of using
+  // SiteInfo comparisons. Sometimes we only want to compare some attributes and
+  // do not care about WebExposedIsolationInfo. These cases should not rely on
+  // the default WebExposedIsolationInfo value. Callers should specify why it is
+  // appropriate to disregard WebExposedIsolationInfo and override it manually
+  // to what they expect the other value to be.
+  return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
+                  url_info.is_sandboxed, storage_partition_config.value(),
+                  url_info.web_exposed_isolation_info.value_or(
+                      WebExposedIsolationInfo::CreateNonIsolated()),
+                  isolation_context.is_guest(),
                   does_site_request_dedicated_process_for_coop, is_jitless,
                   url_info.is_pdf);
 }
@@ -203,7 +350,8 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 
 SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
-                   bool is_origin_keyed,
+                   bool requires_origin_keyed_process,
+                   bool is_sandboxed,
                    const StoragePartitionConfig storage_partition_config,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
@@ -212,7 +360,8 @@ SiteInfo::SiteInfo(const GURL& site_url,
                    bool is_pdf)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
-      is_origin_keyed_(is_origin_keyed),
+      requires_origin_keyed_process_(requires_origin_keyed_process),
+      is_sandboxed_(is_sandboxed),
       storage_partition_config_(storage_partition_config),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
@@ -228,7 +377,8 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
     : SiteInfo(
           /*site_url=*/GURL(),
           /*process_lock_url=*/GURL(),
-          /*is_origin_keyed=*/false,
+          /*requires_origin_keyed_process=*/false,
+          /*is_sandboxed*/ false,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(),
           /*is_guest=*/false,
@@ -246,10 +396,68 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // COOP isolation request.
   return std::tie(site_info.site_url_.possibly_invalid_spec(),
                   site_info.process_lock_url_.possibly_invalid_spec(),
-                  site_info.is_origin_keyed_,
-                  site_info.storage_partition_config_,
+                  // Here we only compare |requires_origin_keyed_process_| since
+                  // we currently don't create SiteInfos where
+                  // |is_origin_agent_cluster_| differs from
+                  // |requires_origin_keyed_process_|. In fact, we don't even
+                  // have |is_origin_agent_cluster| in SiteInfo at this time,
+                  // but that could change.
+                  // TODO(wjmaclean): Update this if we ever start to create
+                  // separate SiteInfos for same-process OriginAgentCluster.
+                  site_info.requires_origin_keyed_process_,
+                  site_info.is_sandboxed_, site_info.storage_partition_config_,
                   site_info.web_exposed_isolation_info_, site_info.is_guest_,
                   site_info.is_jit_disabled_, site_info.is_pdf_);
+}
+
+SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
+    const IsolationContext& isolation_context) const {
+  SiteInfo non_oac_site_info(*this);
+  if (requires_origin_keyed_process()) {
+    DCHECK(process_lock_url_.SchemeIs(url::kHttpsScheme));
+    non_oac_site_info.requires_origin_keyed_process_ = false;
+
+    // TODO(wjmaclean): It would probably be better if we just changed
+    // SiteInstanceImpl::original_url_ to be SiteInfo::original_url_info_ and
+    // use that to recreate the SiteInfo with origin keying turned off. But
+    // that's a largish refactor in its own, since it would require making all
+    // SiteInfo creation go through SiteInfo::CreateInternal.
+    // We'll do the following for now and do the refactor separately.
+    // The code below creates a simple non-origin-keyed equivalent for this
+    // SiteInfo by (1) Converting the process lock to its equivalent by either
+    // seeing if it has a command-line isolated-origin it should use, and if not
+    // then just using GetSiteForOrigin to convert it, and (2) doing the same
+    // for the SiteUrl, but only if the SiteUrl and ProcessLockUrl match
+    // prior to the conversion, otherwise leave the SiteUrl as is.
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    url::Origin result_origin;
+    // We need to make the following call with a 'null' IsolationContext,
+    // otherwise the OAC history will just opt us back into an origin-keyed
+    // SiteInfo.
+    if (policy->GetMatchingProcessIsolatedOrigin(
+            IsolationContext(BrowsingInstanceId(0),
+                             isolation_context.browser_or_resource_context(),
+                             isolation_context.is_guest()),
+            url::Origin::Create(process_lock_url_),
+            false /* origin_requests_isolation */, &result_origin)) {
+      non_oac_site_info.process_lock_url_ = result_origin.GetURL();
+    } else {
+      non_oac_site_info.process_lock_url_ =
+          GetSiteForOrigin(url::Origin::Create(process_lock_url_));
+    }
+    // Only convert the site_url_ if it matches the process_lock_url_, otherwise
+    // leave it alone. This will only matter for hosted apps, and we only expect
+    // them to differ if an effective URL is defined.
+    if (site_url_ == process_lock_url_)
+      non_oac_site_info.site_url_ = non_oac_site_info.process_lock_url_;
+  }
+  return non_oac_site_info;
+}
+
+SiteInfo SiteInfo::SandboxedClone() const {
+  SiteInfo sandboxed_copy(*this);
+  sandboxed_copy.is_sandboxed_ = true;
+  return sandboxed_copy;
 }
 
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
@@ -262,7 +470,8 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
   bool is_match =
       site_url_ == other.site_url_ &&
       process_lock_url_ == other.process_lock_url_ &&
-      is_origin_keyed_ == other.is_origin_keyed_ &&
+      requires_origin_keyed_process_ == other.requires_origin_keyed_process_ &&
+      is_sandboxed_ == other.is_sandboxed_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
       is_guest_ == other.is_guest_ &&
@@ -277,6 +486,30 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
     DCHECK(IsSamePrincipalWith(other));
   }
   return is_match;
+}
+
+auto SiteInfo::MakeProcessLockComparisonKey() const {
+  // As we add additional features to SiteInfo, we'll expand this comparison.
+  // Note that this should *not* compare site_url() values from the SiteInfo,
+  // since those include effective URLs which may differ even if the actual
+  // document origins match. We use process_lock_url() comparisons to account
+  // for this.
+  //
+  // TODO(wjmaclean, alexmos): Figure out why including `is_jit_disabled_` here
+  // leads to crashes in https://crbug.com/1279453.
+  return std::tie(process_lock_url_, requires_origin_keyed_process_,
+                  is_sandboxed_, is_pdf_, is_guest_,
+                  web_exposed_isolation_info_, storage_partition_config_);
+}
+
+int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
+  auto a = MakeProcessLockComparisonKey();
+  auto b = other.MakeProcessLockComparisonKey();
+  if (a < b)
+    return -1;
+  if (b < a)
+    return 1;
+  return 0;
 }
 
 bool SiteInfo::operator==(const SiteInfo& other) const {
@@ -300,8 +533,11 @@ std::string SiteInfo::GetDebugString() const {
   else if (process_lock_url_ != site_url_)
     debug_string += ", locked to " + process_lock_url_.possibly_invalid_spec();
 
-  if (is_origin_keyed_)
+  if (requires_origin_keyed_process_)
     debug_string += ", origin-keyed";
+
+  if (is_sandboxed_)
+    debug_string += ", sandboxed";
 
   if (web_exposed_isolation_info_.is_isolated()) {
     debug_string += ", cross-origin isolated";
@@ -357,9 +593,17 @@ bool SiteInfo::RequiresDedicatedProcess(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->IsIsolatedOrigin(isolation_context,
                                url::Origin::Create(site_url_),
-                               is_origin_keyed_)) {
+                               requires_origin_keyed_process_)) {
     return true;
   }
+
+  // Require a dedicated process for all sandboxed frames. Note: If this
+  // SiteInstance is a sandboxed child of a sandboxed parent, then the logic in
+  // RenderFrameHostManager::CanUseSourceSiteInstance will assign the child to
+  // the parent's SiteInstance, so we don't need to worry about the parent's
+  // sandbox status here.
+  if (is_sandboxed_)
+    return true;
 
   // Error pages in main frames do require isolation, however since this is
   // missing the context whether this is for a main frame or not, that part
@@ -401,15 +645,11 @@ bool SiteInfo::ShouldLockProcessToSite(
   if (!RequiresDedicatedProcess(isolation_context))
     return false;
 
-  // Guest processes cannot be locked to a specific site because guests always
-  // use a single SiteInstance for all URLs it loads. The SiteInfo for those
-  // URLs do not match the SiteInfo of the guest SiteInstance so we skip
-  // locking the guest process.
-  // TODO(acolwell): Revisit this once we have the ability to store guest state
-  // and StoragePartition information in SiteInfo instead of packing this info
-  // into the guest site URL. Once we have these capabilities we won't need to
-  // restrict guests to a single SiteInstance.
-  if (is_guest_)
+  // Legacy guest processes without site isolation support cannot be locked to
+  // a specific site, because those guests always use a single SiteInstance for
+  // all URLs they load. The SiteInfo for those URLs do not match the SiteInfo
+  // of the guest SiteInstance so we skip locking these guest processes.
+  if (is_guest_ && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
     return false;
 
   // Most WebUI processes should be locked on all platforms.  The only exception
@@ -421,8 +661,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   }
 
   // Allow the embedder to prevent process locking so that multiple sites
-  // can share a process. For example, this is how Chrome allows ordinary
-  // extensions to share a process.
+  // can share a process.
   if (!GetContentClient()->browser()->ShouldLockProcessToSite(browser_context,
                                                               site_url_)) {
     return false;
@@ -452,14 +691,6 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
                                                                 site_url_);
 }
 
-StoragePartitionId SiteInfo::GetStoragePartitionId(
-    BrowserContext* browser_context) const {
-  if (site_url().is_empty())
-    return StoragePartitionId(browser_context);
-
-  return StoragePartitionId(site_url().spec(), storage_partition_config());
-}
-
 // static
 StoragePartitionConfig SiteInfo::GetStoragePartitionConfigForUrl(
     BrowserContext* browser_context,
@@ -468,16 +699,19 @@ StoragePartitionConfig SiteInfo::GetStoragePartitionConfigForUrl(
   if (url.is_empty())
     return StoragePartitionConfig::CreateDefault(browser_context);
 
-  if (!is_site_url && url.SchemeIs(kGuestScheme)) {
-    // Guest schemes should only appear in site URLs. Generate a crash
-    // dump to help debug unexpected callers that might not be setting
-    // |is_site_url| correctly.
-    // TODO(acolwell): Once we have confidence all callers are setting
-    // |is_site_url| correctly, replace crash reporting with code that returns a
-    // default config for this scheme in the non-site URL case.
-    SCOPED_CRASH_KEY_STRING256("StoragePartitionConfigForUrl", "guest_url",
-                               url.possibly_invalid_spec());
-    base::debug::DumpWithoutCrashing();
+  if (url.SchemeIs(kGuestScheme)) {
+    StoragePartitionConfig storage_partition_config =
+        StoragePartitionConfig::CreateDefault(browser_context);
+    // Guest schemes should only appear in site URLs.
+    DCHECK(is_site_url);
+
+    // This should only ever see guest site URLs generated within SiteInfo, so
+    // it shouldn't ever fail.
+    bool success = GetGuestPartitionConfigForSite(browser_context, url,
+                                                  &storage_partition_config);
+    DCHECK(success);
+
+    return storage_partition_config;
   }
 
   return GetContentClient()->browser()->GetStoragePartitionConfigForSite(
@@ -488,12 +722,13 @@ void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("site_url", site_url());
   dict.Add("process_lock_url", process_lock_url());
-  dict.Add("is_origin_keyed", is_origin_keyed_);
+  dict.Add("requires_origin_keyed_process", requires_origin_keyed_process_);
+  dict.Add("is_sandboxed", is_sandboxed_);
   dict.Add("is_guest", is_guest_);
 }
 
 bool SiteInfo::is_error_page() const {
-  return !is_guest_ && site_url_ == GetErrorPageSiteAndLockURL();
+  return site_url_ == GetErrorPageSiteAndLockURL();
 }
 
 // static
@@ -583,7 +818,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     url::Origin isolated_origin;
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin,
-            real_url_info.requests_origin_agent_cluster_isolation(), site_url,
+            real_url_info.requests_origin_keyed_process(), site_url,
             &isolated_origin)) {
       return isolated_origin.GetURL();
     }

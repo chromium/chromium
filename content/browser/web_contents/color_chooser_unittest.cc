@@ -66,7 +66,7 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
 
 class ColorChooserUnitTest : public RenderViewHostImplTestHarness {};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
   GURL kUrl1("https://foo.com");
@@ -121,7 +121,7 @@ class ColorChooserTestWithBackForwardCache : public ColorChooserUnitTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserTestWithBackForwardCache,
        ColorChooserCallsEndOnEnteringBackForwardCache) {

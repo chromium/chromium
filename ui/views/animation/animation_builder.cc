@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -292,7 +293,7 @@ void AnimationBuilder::TerminateSequence(
 std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
   DCHECK(!abort_handle_) << "An abort handle is already created.";
   abort_handle_ = new AnimationAbortHandle(GetObserver());
-  return base::WrapUnique(abort_handle_);
+  return base::WrapUnique(abort_handle_.get());
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {

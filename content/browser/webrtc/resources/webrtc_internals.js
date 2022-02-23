@@ -13,6 +13,7 @@ import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js
 import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
+import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 
 const USER_MEDIA_TAB_ID = 'user-media-tab-id';
 
@@ -121,6 +122,7 @@ function initialize() {
   addWebUIListener('add-standard-stats', addStandardStats);
   addWebUIListener('add-legacy-stats', addLegacyStats);
   addWebUIListener('add-get-user-media', addGetUserMedia);
+  addWebUIListener('update-get-user-media', updateGetUserMedia);
   addWebUIListener(
       'remove-get-user-media-for-renderer', removeGetUserMediaForRenderer);
   addWebUIListener(
@@ -295,7 +297,6 @@ function removePeerConnection(data) {
   }
 }
 
-
 /**
  * Adds a peer connection.
  *
@@ -395,6 +396,7 @@ function addPeerConnection(data) {
   candidatePair.appendChild(document.createElement('span'));
   peerConnectionElement.appendChild(candidatePair);
 
+  createIceCandidateGrid(peerConnectionElement);
   return peerConnectionElement;
 }
 
@@ -518,6 +520,8 @@ function addStandardStats(data) {
   } else {
     candidateElement.innerText = '(not connected)';
   }
+
+  updateIceCandidateGrid(peerConnectionElement, r.statsById);
 }
 
 /**
@@ -545,12 +549,11 @@ function addLegacyStats(data) {
   }
 }
 
-
 /**
  * Adds a getUserMedia request.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     origin {string}, audio {string}, video {string}.
+ *     origin {string}, request_id {number}, audio {string}, video {string}.
  */
 function addGetUserMedia(data) {
   userMediaRequests.push(data);
@@ -561,21 +564,81 @@ function addGetUserMedia(data) {
 
   const requestDiv = document.createElement('div');
   requestDiv.className = 'user-media-request-div-class';
+  requestDiv.id = ['gum', data.rid, data.pid, data.request_id].join('-');
   requestDiv.rid = data.rid;
   $(USER_MEDIA_TAB_ID).appendChild(requestDiv);
 
   appendChildWithText(requestDiv, 'div', 'Caller origin: ' + data.origin);
   appendChildWithText(requestDiv, 'div', 'Caller process id: ' + data.pid);
-  appendChildWithText(requestDiv, 'div', 'Time: ' + (new Date(data.timestamp)));
-  appendChildWithText(requestDiv, 'span', 'Audio Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.audio);
-
-  appendChildWithText(requestDiv, 'span', 'Video Constraints')
-      .style.fontWeight = 'bold';
-  appendChildWithText(requestDiv, 'div', data.video);
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia call');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  if (data.audio !== undefined) {
+    appendChildWithText(el, 'div', 'Audio constraints: ' +
+      (data.audio || 'true'))
+      .style.fontWeight = 'normal';
+  }
+  if (data.video !== undefined) {
+    appendChildWithText(el, 'div', 'Video constraints: ' +
+      (data.video || 'true'))
+      .style.fontWeight = 'normal';
+  }
 }
 
+/**
+ * Update a getUserMedia request with a result or error.
+ *
+ * @param {!Object} data The object containing rid {number}, pid {number},
+ *     request_id {number}. For getUserMedia results there is also the
+ *     stream_id {string}, audio_track_info {string} and
+ *     video_track_info {string}. For errors the error {string} and
+ *     error_message {string} fields are set.
+ */
+function updateGetUserMedia(data) {
+  userMediaRequests.push(data);
+
+  if (!$(USER_MEDIA_TAB_ID)) {
+    tabView.addTab(USER_MEDIA_TAB_ID, 'GetUserMedia Requests');
+  }
+
+  const requestDiv = document.getElementById(
+    ['gum', data.rid, data.pid, data.request_id].join('-'));
+  if (!requestDiv) {
+    console.error('Could not update getUserMedia request', data);
+    return;
+  }
+
+  if (data.error) {
+    const el = appendChildWithText(requestDiv, 'span', 'Error');
+    el.style.fontWeight = 'bold';
+    appendChildWithText(el, 'div', 'Time: ' +
+      (new Date(data.timestamp).toTimeString()))
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error: ' + data.error)
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error message: ' + data.error_message)
+      .style.fontWeight = 'normal';
+    return;
+  }
+
+  const el = appendChildWithText(requestDiv, 'span', 'getUserMedia result');
+  el.style.fontWeight = 'bold';
+  appendChildWithText(el, 'div', 'Time: ' +
+    (new Date(data.timestamp).toTimeString()))
+    .style.fontWeight = 'normal';
+  appendChildWithText(el, 'div', 'Stream id: ' + data.stream_id)
+    .style.fontWeight = 'normal';
+  if (data.audio_track_info) {
+    appendChildWithText(el, 'div', 'Audio track: ' + data.audio_track_info)
+        .style.fontWeight = 'normal';
+  }
+  if (data.video_track_info) {
+    appendChildWithText(el, 'div', 'Video track: ' + data.video_track_info)
+        .style.fontWeight = 'normal';
+  }
+}
 
 /**
  * Removes the getUserMedia requests from the specified |rid|.

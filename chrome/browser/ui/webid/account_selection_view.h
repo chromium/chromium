@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/callback_forward.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -30,6 +31,8 @@ class AccountSelectionView {
   };
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);
+  static int GetBrandIconMinimumSize();
+  static int GetBrandIconIdealSize();
 
   explicit AccountSelectionView(Delegate* delegate) : delegate_(delegate) {}
   AccountSelectionView(const AccountSelectionView&) = delete;
@@ -37,20 +40,20 @@ class AccountSelectionView {
   virtual ~AccountSelectionView() = default;
 
   // Instructs the view to show the provided |accounts| to the user.
-  // |rp_url| is the relying party's url which is normally the current page's
-  // url, and |idp_url| is the identity provider's url that is providing
-  // the accounts. |sign_in_mode| represents whether this is an auto sign in
-  // flow. After user interaction either OnAccountSelected() or
-  // OnDismiss() gets invoked.
-  virtual void Show(const GURL& rp_url,
-                    const GURL& idp_url,
+  // |rp_etld_plus_one| is the relying party's ETLD+1 which is normally the
+  // current page's domain, and |idp_etld_plus_one| is the identity provider's
+  // ETLD+1 that is providing the accounts. |sign_in_mode| represents whether
+  // this is an auto sign in flow. After user interaction either
+  // OnAccountSelected() or OnDismiss() gets invoked.
+  virtual void Show(const std::string& rp_etld_plus_one,
+                    const std::string& idp_etld_plus_one,
                     base::span<const Account> accounts,
                     const content::IdentityProviderMetadata& idp_metadata,
                     const content::ClientIdData& client_data,
                     Account::SignInMode sign_in_mode) = 0;
 
  protected:
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_ACCOUNT_SELECTION_VIEW_H_

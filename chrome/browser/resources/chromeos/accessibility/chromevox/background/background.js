@@ -187,13 +187,14 @@ export class Background extends ChromeVoxState {
    * @param {!cursors.Range} range The new range.
    * @param {boolean=} opt_focus Focus the range; defaults to true.
    * @param {Object=} opt_speechProps Speech properties.
-   * @param {boolean=} opt_shouldSetSelection If true, does set
-   *     the selection.
+   * @param {boolean=} opt_skipSettingSelection If true, does not set
+   *     the selection, otherwise it does by default.
    * @override
    */
-  navigateToRange(range, opt_focus, opt_speechProps, opt_shouldSetSelection) {
+  navigateToRange(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
     opt_focus = opt_focus === undefined ? true : opt_focus;
     opt_speechProps = opt_speechProps || {};
+    opt_skipSettingSelection = opt_skipSettingSelection || false;
     const prevRange = this.currentRange_;
 
     // Specialization for math output.
@@ -213,7 +214,8 @@ export class Background extends ChromeVoxState {
     let selectedRange;
     let msg;
 
-    if (this.pageSel_ && this.pageSel_.isValid() && range.isValid()) {
+    if (this.pageSel_ && this.pageSel_.isValid() && range.isValid() &&
+        !opt_skipSettingSelection) {
       // Suppress hints.
       o.withoutHints();
 
@@ -256,7 +258,7 @@ export class Background extends ChromeVoxState {
           this.pageSel_.select();
         }
       }
-    } else if (opt_shouldSetSelection) {
+    } else if (!opt_skipSettingSelection) {
       // Ensure we don't select the editable when we first encounter it.
       let lca = null;
       if (range.start.node && prevRange.start.node) {

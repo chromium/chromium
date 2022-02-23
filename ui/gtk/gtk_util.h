@@ -244,9 +244,6 @@ float GetDeviceScaleFactor();
 // This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
-// Gets the GTK theme color for a given `color_id`.
-absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id);
-
 }  // namespace gtk
 
 #endif  // UI_GTK_GTK_UTIL_H_

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/location_bar/star_menu_model.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -42,6 +41,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
@@ -126,15 +126,9 @@ void StarView::ExecuteCommand(ExecuteSource source) {
   if (reading_list::switches::IsReadingListEnabled() &&
       !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) &&
       !base::FeatureList::IsEnabled(features::kSidePanel)) {
-    FeaturePromoController* feature_promo_controller =
-        browser_->window()->GetFeaturePromoController();
-    if (feature_promo_controller &&
-        feature_promo_controller->BubbleIsShowing(
-            feature_engagement::kIPHReadingListEntryPointFeature)) {
-      reading_list_entry_point_promo_handle_ =
-          feature_promo_controller->CloseBubbleAndContinuePromo(
-              feature_engagement::kIPHReadingListEntryPointFeature);
-    }
+    reading_list_entry_point_promo_handle_ =
+        browser_->window()->CloseFeaturePromoAndContinue(
+            feature_engagement::kIPHReadingListEntryPointFeature);
     menu_model_ = std::make_unique<StarMenuModel>(
         this, GetActive(), chrome::CanMoveActiveTabToReadLater(browser_),
         chrome::IsCurrentTabUnreadInReadLater(browser_));
@@ -197,7 +191,7 @@ void StarView::MenuClosed(ui::SimpleMenuModel* source) {
       !GetBubble()->GetWidget()->IsVisible()) {
     SetHighlighted(false);
   }
-  reading_list_entry_point_promo_handle_.reset();
+  reading_list_entry_point_promo_handle_.Release();
   menu_runner_.reset();
 }
 

@@ -25,7 +25,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/version.h"
 #include "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -116,35 +118,28 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
   return (permissions & kExecutableMask) == kExecutableMask;
 }
 
-struct ExecutableFile {
-  // The file basename to execute.
-  std::string name;
-
-  // True if and only if installation should fail if the file is missing.
-  bool is_required = false;
-};
-
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
+                  const UpdaterScope& scope,
+                  const base::Version& pv,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
     return static_cast<int>(InstallErrors::kMountedDmgPathDoesNotExist);
   }
-  for (const auto& executable : std::vector<ExecutableFile>{
-           {".preinstall", false},
-           {".install", true},
-           {".postinstall", false},
+  int run_executables = 0;
+  for (const char* executable : {
+           ".preinstall",
+           ".keystone_preinstall",
+           ".install",
+           ".keystone_install",
+           ".postinstall",
+           ".keystone_postinstall",
        }) {
-    base::FilePath executable_file_path = unpacked_path.Append(executable.name);
-    if (!base::PathExists(executable_file_path)) {
-      if (!executable.is_required)
-        continue;
-      VLOG(1) << "Executable file path (" << executable_file_path
-              << ") does not exist.";
-      return static_cast<int>(InstallErrors::kExecutableFilePathDoesNotExist);
-    }
+    base::FilePath executable_file_path = unpacked_path.Append(executable);
+    if (!base::PathExists(executable_file_path))
+      continue;
 
     if (!IsInstallScriptExecutable(executable_file_path)) {
       VLOG(1) << "Executable file path (" << executable_file_path
@@ -152,42 +147,41 @@ int RunExecutable(const base::FilePath& existence_checker_path,
       return static_cast<int>(InstallErrors::kExecutablePathNotExecutable);
     }
 
-    // TODO(crbug.com/1056818): Improve the way we parse args for CommandLine
-    // object.
     base::CommandLine command(executable_file_path);
     command.AppendArgPath(unpacked_path);
-    if (!arguments.empty()) {
-      base::CommandLine::StringVector argv =
-          base::SplitString(arguments, base::kWhitespaceASCII,
-                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      argv.insert(argv.begin(), existence_checker_path.value());
-      argv.insert(argv.begin(), unpacked_path.value());
-      argv.insert(argv.begin(), executable_file_path.value());
-      command = base::CommandLine(argv);
-    }
+    command.AppendArgPath(existence_checker_path);
+    command.AppendArg(pv.GetString());
 
     std::string env_path = "/bin:/usr/bin";
     absl::optional<base::FilePath> ksadmin_path =
         GetKSAdminPath(GetUpdaterScope());
     if (ksadmin_path) {
-      env_path = base::StrCat({env_path, ":", (*ksadmin_path).value()});
+      env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
     }
 
     base::LaunchOptions options;
     options.current_directory = unpacked_path;
     options.clear_environment = true;
     options.environment = {
-        {"PATH", env_path},
-        {"KS_TICKET_XC_PATH", existence_checker_path.value()},
         {"KS_TICKET_AP", ap},
+        {"KS_TICKET_XC_PATH", existence_checker_path.value()},
+        {"PATH", env_path},
+        {"PREVIOUS_VERSION", pv.GetString()},
+        {"SERVER_ARGS", arguments},
+        {"UPDATE_IS_MACHINE", scope == UpdaterScope::kSystem ? "1" : "0"},
+        {"UNPACK_DIR", unpacked_path.value()},
     };
     int exit_code = 0;
+    VLOG(1) << "Running " << command.GetCommandLineString();
     if (!base::LaunchProcess(command, options).WaitForExit(&exit_code))
       return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
     if (exit_code != 0)
       return exit_code;
+    ++run_executables;
   }
-  return 0;
+  return run_executables > 0
+             ? 0
+             : static_cast<int>(InstallErrors::kExecutableFilePathDoesNotExist);
 }
 
 base::FilePath AlterFileExtension(const base::FilePath& path,
@@ -313,6 +307,8 @@ int InstallFromApp(const base::FilePath& app_file_path,
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
                        const std::string& ap,
+                       const UpdaterScope& scope,
+                       const base::Version& pv,
                        const std::string& arguments) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
@@ -327,7 +323,7 @@ int InstallFromArchive(const base::FilePath& file_path,
     if (base::PathExists(new_path)) {
       return entry.second(
           new_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,
-                                   arguments));
+                                   arguments, scope, pv));
     }
   }
 

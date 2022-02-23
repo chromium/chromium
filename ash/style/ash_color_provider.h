@@ -58,12 +58,15 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetBaseLayerColor(BaseLayerType type) const override;
   SkColor GetControlsLayerColor(ControlsLayerType type) const override;
   SkColor GetContentLayerColor(ContentLayerType type) const override;
+  SkColor GetActiveDialogTitleBarColor() const override;
+  SkColor GetInactiveDialogTitleBarColor() const override;
   std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;
   void RemoveObserver(ColorModeObserver* observer) override;
   // TODO(minch): Rename to ShouldUseDarkColors.
   bool IsDarkModeEnabled() const override;
+  void SetDarkModeEnabledForTest(bool enabled) override;
 
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is
@@ -80,6 +83,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Same as above, but returns the color based on the current inverted color
   // mode and color theme.
   SkColor GetInvertedBackgroundColor() const;
+  // Gets the background color in the desired color mode dark/light.
+  SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.

@@ -20,7 +20,7 @@
 #include "ppapi/shared_impl/ppb_input_event_shared.h"
 #include "ppapi/shared_impl/var.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "base/win/windows_version.h"
 #endif
@@ -119,7 +119,7 @@ PP_Resource ResourceCreationImpl::CreateImageData(PP_Instance instance,
                                                   PP_ImageDataFormat format,
                                                   const PP_Size* size,
                                                   PP_Bool init_to_zero) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // If Win32K lockdown mitigations are enabled for Windows 8 and beyond,
   // we use the SIMPLE image data type as the PLATFORM image data type
   // calls GDI functions to create DIB sections etc which fail in Win32K

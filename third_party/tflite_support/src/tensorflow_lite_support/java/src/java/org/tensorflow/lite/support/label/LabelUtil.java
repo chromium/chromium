@@ -18,7 +18,7 @@ package org.tensorflow.lite.support.label;
 import android.util.Log;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tensorflow.lite.support.common.SupportPreconditions;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.util.ArrayList;
@@ -32,14 +32,15 @@ public class LabelUtil {
      * dictionary. Example: if the given tensor is [3, 1, 0], and given labels is ["background",
      * "apple", "banana", "cherry", "date"], the result will be ["date", "banana", "apple"].
      *
-     * @param tensorBuffer: A tensor with index values. The values should be non-negative integers,
-     *     and each value {@code x} will be converted to {@code labels[x + offset]}. If the tensor
-     * is given as a float {@link TensorBuffer}, values will be cast to integers. All values that
+     * @param tensorBuffer A tensor with index values. The values should be non-negative integers,
+     *         and
+     *     each value {@code x} will be converted to {@code labels[x + offset]}. If the tensor is
+     *     given as a float {@link TensorBuffer}, values will be cast to integers. All values that
      * are out of bound will map to empty string.
-     * @param labels: A list of strings, used as a dictionary to look up. The index of the array
+     * @param labels A list of strings, used as a dictionary to look up. The index of the array
      *     element will be used as the key. To get better performance, use an object that implements
      *     RandomAccess, such as {@link ArrayList}.
-     * @param offset: The offset value when look up int values in the {@code labels}.
+     * @param offset The offset value when look up int values in the {@code labels}.
      * @return the mapped strings. The length of the list is {@link TensorBuffer#getFlatSize}.
      * @throws IllegalArgumentException if {@code tensorBuffer} or {@code labels} is null.
      */

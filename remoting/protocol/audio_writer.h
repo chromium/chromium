@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 

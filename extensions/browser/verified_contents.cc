@@ -51,7 +51,7 @@ const base::Value* FindDictionaryWithValue(const base::Value& list,
                                            const std::string& key,
                                            const std::string& value) {
   DCHECK(list.is_list());
-  for (const base::Value& item : list.GetList()) {
+  for (const base::Value& item : list.GetListDeprecated()) {
     if (!item.is_dict())
       continue;
     // Finds a path because the |key| may include '.'.
@@ -143,7 +143,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!hashes_list)
     return nullptr;
 
-  for (const base::Value& hashes : hashes_list->GetList()) {
+  for (const base::Value& hashes : hashes_list->GetListDeprecated()) {
     if (!hashes.is_dict())
       return nullptr;
 
@@ -167,7 +167,7 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (!files)
       return nullptr;
 
-    for (const base::Value& data : files->GetList()) {
+    for (const base::Value& data : files->GetListDeprecated()) {
       if (!data.is_dict())
         return nullptr;
 

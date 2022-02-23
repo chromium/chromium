@@ -1,23 +1,13 @@
 <!DOCTYPE html>
 <html dir="rtl">
-<head>
-<script>
-window.enablePixelTesting = true;
-if (window.internals)
-    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <input type=date id=date value="1800-05-12" lang="ar-AE">
 
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
 <script>
-openPickerAppearanceOnly(document.getElementById('date'), finishJSTest);
+  window.onload = () => {
+    openPickerAppearanceOnly(document.querySelector('input'));
+  };
 </script>
-</body>
-</html>

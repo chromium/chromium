@@ -13,7 +13,7 @@
         android:id="@+id/action_bar_bg"
         android:layout_width="match_parent"
         android:layout_height="@dimen/selectable_list_toolbar_height"
-        android:background="@color/toolbar_background_primary" />
+        android:background="@macro/toolbar_background_primary" />
 
     <org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar
         android:id="@+id/download_toolbar"

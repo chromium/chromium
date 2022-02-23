@@ -121,7 +121,7 @@ void MemoryKillsMonitor::CheckOOMKillImpl(unsigned long current_oom_kills) {
 
   VLOG(1) << "OOM_KILLS " << oom_kills_delta << " times";
 
-  for (int i = 0; i < oom_kills_delta; ++i) {
+  for (size_t i = 0; i < oom_kills_delta; ++i) {
     ++oom_kills_count_;
 
     // Report the cumulative count of killed process in one login session. For
@@ -169,7 +169,7 @@ void MemoryKillsMonitor::LogArcOOMKillImpl(unsigned long current_oom_kills) {
 
   VLOG(1) << "ARC_OOM_KILLS " << oom_kills_delta << " times";
 
-  for (int i = 0; i < oom_kills_delta; ++i) {
+  for (size_t i = 0; i < oom_kills_delta; ++i) {
     ++oom_kills_count_;
     // Report cumulative count of killed processes in one login session.
     base::UmaHistogramCustomCounts("Memory.OOMKills.Count", oom_kills_count_, 1,

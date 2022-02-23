@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,14 +21,14 @@
 #include "weblayer/public/navigation_observer.h"
 #include "weblayer/public/tab_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #elif defined(USE_AURA)
 namespace views {
 class Widget;
 class ViewsDelegate;
 }  // namespace views
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace display {
 class Screen;
 }
@@ -62,7 +63,7 @@ class Shell : public TabObserver,
   // Do one time initialization at application startup.
   static void Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static Shell* CreateNewWindow(const GURL& url, const gfx::Size& initial_size);
 #else
   static Shell* CreateNewWindow(Profile* web_profile,
@@ -101,7 +102,7 @@ class Shell : public TabObserver,
   void DisplayedUrlChanged(const GURL& url) override;
 
   // NavigationObserver implementation:
-  void LoadStateChanged(bool is_loading, bool to_different_document) override;
+  void LoadStateChanged(bool is_loading, bool should_show_loading_ui) override;
   void LoadProgressChanged(double progress) override;
 
   // DownloadDelegate implementation:
@@ -162,7 +163,7 @@ class Shell : public TabObserver,
 
   gfx::Size content_size_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 #elif defined(USE_AURA)
   static wm::WMState* wm_state_;
@@ -170,7 +171,7 @@ class Shell : public TabObserver,
 #if defined(TOOLKIT_VIEWS)
   static views::ViewsDelegate* views_delegate_;
 
-  views::Widget* window_widget_;
+  raw_ptr<views::Widget> window_widget_;
 #endif  // defined(TOOLKIT_VIEWS)
 #endif  // defined(USE_AURA)
 

@@ -18,6 +18,10 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
@@ -89,13 +93,13 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   void OnAppAvailable(const AppId& app_id) override;
   void OnAppBlocked(const AppId& app_id) override;
   void OnAppActive(const AppId& app_id,
-                   const apps::Instance::InstanceKey& instance_key,
+                   const base::UnguessableToken& instance_id,
                    base::Time timestamp) override;
   void OnAppInactive(const AppId& app_id,
-                     const apps::Instance::InstanceKey& instance_key,
+                     const base::UnguessableToken& instance_id,
                      base::Time timestamp) override;
   void OnAppDestroyed(const AppId& app_id,
-                      const apps::Instance::InstanceKey& instance_key,
+                      const base::UnguessableToken& instance_id,
                       base::Time timestamp) override;
 
   bool IsAppInstalled(const AppId& app_id) const;
@@ -206,11 +210,11 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     AppActivity activity{AppState::kAvailable};
 
     // Contains the set of active instances for the application.
-    std::set<apps::Instance::InstanceKey> active_instances;
+    std::set<base::UnguessableToken> active_instances;
 
     // The set of instances AppActivityRegistry has requested to be paused, but
     // which have not been paused yet.
-    std::set<apps::Instance::InstanceKey> paused_instances;
+    std::set<base::UnguessableToken> paused_instances;
 
     // Contains information about restriction set for the app.
     absl::optional<AppLimit> limit;

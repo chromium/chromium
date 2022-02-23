@@ -9,6 +9,7 @@ import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import '/app-management/file_path.mojom-lite.js';
 import '/app-management/image.mojom-lite.js';
+import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
@@ -105,7 +106,9 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   connectedCallback() {
     super.connectedCallback();
     this.startObservingAppNotifications_();
-    this.mojoInterfaceProvider_.notifyPageReady();
+    this.mojoInterfaceProvider_.getQuietMode().then((result) => {
+      this.isDndEnabled_ = result.enabled;
+    });
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appList_ = result.apps;
     });

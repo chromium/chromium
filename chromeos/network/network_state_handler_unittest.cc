@@ -12,12 +12,14 @@
 #include <set>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -2144,9 +2146,9 @@ TEST_F(NetworkStateHandlerTest, IPConfigChanged) {
   ShillIPConfigClient::TestInterface* ip_config_test =
       ShillIPConfigClient::Get()->GetTestInterface();
   const std::string kIPConfigPath = "test_ip_config";
-  base::DictionaryValue ip_config_properties;
+  base::Value ip_config_properties(base::Value::Type::DICTIONARY);
   ip_config_test->AddIPConfig(kIPConfigPath, ip_config_properties);
-  base::ListValue device_ip_configs;
+  base::Value device_ip_configs(base::Value::Type::LIST);
   device_ip_configs.Append(kIPConfigPath);
   device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
                                   shill::kIPConfigsProperty, device_ip_configs,
@@ -2439,6 +2441,49 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
   EXPECT_TRUE(cellular2->blocked_by_policy());
 }
 
+TEST_F(NetworkStateHandlerTest,
+       UpdateBlockedCellularNetworkAfterUpdateManagedList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
+  const char kTestCellularServicePath2[] = "test_cellular_service_path2";
+  const char kTestCellularServiceGuid2[] = "test_cellular_guid2";
+  const char kTestCellularServiceName2[] = "test_cellular2";
+  AddService(kTestCellularServicePath2, kTestCellularServiceGuid2,
+             kTestCellularServiceName2, shill::kTypeCellular,
+             shill::kStateIdle);
+  base::RunLoop().RunUntilIdle();
+
+  NetworkState* cellular1 = network_state_handler_->GetModifiableNetworkState(
+      kShillManagerClientStubCellular);
+  NetworkState* cellular2 = network_state_handler_->GetModifiableNetworkState(
+      kTestCellularServicePath2);
+  EXPECT_FALSE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_FALSE(cellular2->blocked_by_policy());
+
+  network_state_handler_->allow_only_policy_cellular_networks_to_connect_ =
+      true;
+  network_state_handler_->UpdateManagedList(
+      ManagedState::ManagedType::MANAGED_TYPE_NETWORK,
+      manager_test_->GetEnabledServiceList());
+  EXPECT_TRUE(cellular1->blocked_by_policy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+
+  // Emulate 'cellular1' being a managed network.
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  base::Value properties(base::Value::Type::DICTIONARY);
+  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
+  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  SetProperties(cellular1, properties);
+
+  EXPECT_TRUE(cellular1->IsManagedByPolicy());
+  EXPECT_FALSE(cellular1->blocked_by_policy());
+  EXPECT_FALSE(cellular2->IsManagedByPolicy());
+  EXPECT_TRUE(cellular2->blocked_by_policy());
+}
+
 TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   NetworkState* wifi1 = network_state_handler_->GetModifiableNetworkState(
       kShillManagerClientStubDefaultWifi);
@@ -2606,7 +2651,7 @@ TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
   // ManagedStateListChanged call.
   network_state_handler_->UpdateManagedList(
       ManagedState::ManagedType::MANAGED_TYPE_NETWORK,
-      base::Value::AsListValue(manager_test_->GetEnabledServiceList()));
+      manager_test_->GetEnabledServiceList());
   base::RunLoop().RunUntilIdle();
   network_state_handler_->GetNetworkListByType(
       NetworkTypePattern::Cellular(), /*configured_only=*/false,

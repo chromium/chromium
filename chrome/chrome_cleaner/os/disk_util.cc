@@ -296,10 +296,8 @@ void CollectMatchingPaths(const base::FilePath& root_path,
   DCHECK(matches);
 
   if (PathContainsWildcards(root_path)) {
-    std::vector<base::FilePath::StringType> components;
-    root_path.GetComponents(&components);
-    base::FilePath empty_path;
-    CollectMatchingPathsRecursive(empty_path, components, 0, matches);
+    CollectMatchingPathsRecursive(base::FilePath(), root_path.GetComponents(),
+                                  0, matches);
   } else if (base::PathExists(root_path)) {
     matches->push_back(root_path);
   }
@@ -336,7 +334,7 @@ bool PathHasActiveExtension(const base::FilePath& file_path) {
 
 void InitializeDiskUtil() {
   // Only do this once.
-  static bool init_once = []() -> bool {
+  [[maybe_unused]] static bool init_once = []() -> bool {
     // Initialize the binary extension, so it can be used from different threads
     // without the initial creation race.
     DCHECK(g_active_extensions.empty());
@@ -346,7 +344,6 @@ void InitializeDiskUtil() {
     DCHECK(!g_active_extensions.empty());
     return true;
   }();
-  ANALYZER_ALLOW_UNUSED(init_once);
 }
 
 bool ExpandEnvPath(const base::FilePath& path, base::FilePath* expanded_path) {
@@ -529,7 +526,7 @@ bool ComputeSHA256DigestOfPath(const base::FilePath& path,
   DCHECK(digest);
 
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid())
     return false;
 

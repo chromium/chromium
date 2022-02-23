@@ -5,12 +5,14 @@
 #ifndef CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
 #include <set>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -55,8 +57,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
              MountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
-  void Rename(const ::user_data_auth::RenameRequest& request,
-              RenameCallback callback) override;
   void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
                   GetKeyDataCallback callback) override;
   void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
@@ -103,6 +103,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     cryptohome_error_ = error;
   }
   // Get the MountRequest to last Mount().
+  int get_mount_request_count() const { return mount_request_count_; }
   const ::user_data_auth::MountRequest& get_last_mount_request() const {
     return last_mount_request_;
   }
@@ -170,6 +171,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_migrate_to_dircrypto_request_.minimal_migration();
   }
 
+  // AuthenticateAuthSession() related:
+  const ::cryptohome::AuthorizationRequest&
+  get_last_authenticate_auth_session_authorization() {
+    return last_authenticate_auth_session_request_.authorization();
+  }
+
   // WaitForServiceToBeAvailable() related:
 
   // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
@@ -191,6 +198,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Calls LowDiskSpace() on Observer instances.
   void NotifyLowDiskSpace(uint64_t disk_free_bytes);
 
+  void AddExistingUser(const cryptohome::AccountIdentifier& account_id);
+
+  void set_user_data_dir(base::FilePath path) { user_data_dir_ = path; }
+
  private:
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
@@ -209,9 +220,17 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const std::map<std::string, cryptohome::Key>& keys,
       const std::string& label);
 
+  // Returns a path to home directory for account.
+  base::FilePath GetUserProfileDir(
+      const cryptohome::AccountIdentifier& account_id) const;
+
+  // Check whether user with given id exists
+  bool UserExists(const cryptohome::AccountIdentifier& account_id) const;
+
   // Mount() related fields.
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  int mount_request_count_ = 0;
   ::user_data_auth::MountRequest last_mount_request_;
   bool mount_create_required_ = false;
 
@@ -253,6 +272,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // AuthSession related fields:
 
+  // The AuthenticateAuthSessionRequest passed in for the last
+  // AuthenticateAuthSession() call.
+  ::user_data_auth::AuthenticateAuthSessionRequest
+      last_authenticate_auth_session_request_;
+
   // The auth sessions on file.
   base::flat_map<std::string, AuthSessionData> auth_sessions_;
 
@@ -274,6 +298,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       pending_wait_for_service_to_be_available_callbacks_;
 
   // Other stuff/miscellaneous:
+
+  // The users that have already logged in at least once
+  std::set<cryptohome::AccountIdentifier> existing_users_;
+
+  //
+  base::FilePath user_data_dir_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,6 +54,7 @@ class TestBrowserClient : public ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      content::RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override {
     EXPECT_FALSE(observed_url_.has_value());
@@ -121,9 +123,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest,
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    ElementType element_type;
-    UuidScheme uuid_scheme;
-    std::tie(element_type, uuid_scheme) = info.param;
+    auto [element_type, uuid_scheme] = info.param;
     return base::StringPrintf(
         "%sElementWith%sScheme",
         element_type == ElementType::Link ? "Link" : "Script",
@@ -338,7 +338,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest,
 
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{
@@ -348,12 +348,12 @@ class WebBundleElementBrowserTest : public ContentBrowserTest,
   base::Lock lock_;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1263334): Flakes on macOS.
 #define MAYBE_ChangeLinkElementHref DISABLED_ChangeLinkElementHref
 #else
 #define MAYBE_ChangeLinkElementHref ChangeLinkElementHref
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
                        MAYBE_ChangeLinkElementHref) {
   // This test is only for the <link> element.
@@ -405,12 +405,12 @@ IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest,
   EXPECT_EQ("\"webbundle loaded after change\"", message);
 }
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1263334): Flakes on macOS and Windows.
 #define MAYBE_RemoveLinkElement DISABLED_RemoveLinkElement
 #else
 #define MAYBE_RemoveLinkElement RemoveLinkElement
-#endif  // defined(OS_MAC)
+#endif
 IN_PROC_BROWSER_TEST_P(WebBundleElementBrowserTest, MAYBE_RemoveLinkElement) {
   // This test is only for the <link> element.
   if (GetElementType() == ElementType::Script)

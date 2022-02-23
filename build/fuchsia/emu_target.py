@@ -4,17 +4,23 @@
 
 """Implements commands for running/interacting with Fuchsia on an emulator."""
 
-import pkg_repo
-import boot_data
+import json
 import logging
 import os
 import subprocess
 import sys
-import target
 import tempfile
+
+import boot_data
+import common
+import ffx_session
+import pkg_repo
+import target
 
 
 class EmuTarget(target.Target):
+  LOCAL_ADDRESS = '127.0.0.1'
+
   def __init__(self, out_dir, target_cpu, logs_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the emulator deployment.
@@ -24,6 +30,8 @@ class EmuTarget(target.Target):
     super(EmuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._emu_process = None
     self._pkg_repo = None
+    self._target_context = None
+    self._ffx_target = None
 
   def __enter__(self):
     return self
@@ -36,6 +44,15 @@ class EmuTarget(target.Target):
     return os.environ.copy()
 
   def Start(self):
+    if common.IsRunningUnattended():
+      # On the bots, we sometimes find that a previous ffx daemon instance is
+      # wedged, leading to failures. Reach out and stop an old daemon if there
+      # happens to be one.
+      self._ffx_runner.stop_daemon()
+      # Bots may accumulate stale manually-added targets with the same address
+      # as the one to be added here. Preemtively remove any unknown targets at
+      # this address before starting the emulator and adding it as a target.
+      self._ffx_runner.remove_stale_targets(self.LOCAL_ADDRESS)
     emu_command = self._BuildCommand()
     logging.debug(' '.join(emu_command))
 
@@ -60,19 +77,24 @@ class EmuTarget(target.Target):
                                          stderr=subprocess.STDOUT,
                                          env=self._SetEnv())
     try:
-      self._WaitUntilReady()
+      self._ConnectToTarget()
       self.LogProcessStatistics('proc_stat_ready_log')
     except target.FuchsiaTargetException:
+      self._DisconnectFromTarget()
       if temporary_log_file:
         logging.info('Kernel logs:\n' +
                      open(temporary_log_file.name, 'r').read())
       raise
 
+  def GetFfxTarget(self):
+    assert self._ffx_target
+    return self._ffx_target
+
   def Stop(self):
     try:
-      super(EmuTarget, self).Stop()
-    finally:
       self.Shutdown()
+    finally:
+      super(EmuTarget, self).Stop()
 
   def GetPkgRepo(self):
     if not self._pkg_repo:
@@ -84,6 +106,8 @@ class EmuTarget(target.Target):
     if not self._emu_process:
       logging.error('%s did not start' % (self.EMULATOR_NAME))
       return
+    if common.IsRunningUnattended():
+      self._ffx_runner.stop_daemon()
     returncode = self._emu_process.poll()
     if returncode == None:
       logging.info('Shutting down %s' % (self.EMULATOR_NAME))
@@ -99,7 +123,7 @@ class EmuTarget(target.Target):
 
     self.LogProcessStatistics('proc_stat_end_log')
     self.LogSystemStatistics('system_statistics_end_log')
-
+    self._DisconnectFromTarget()
 
   def _IsEmuStillRunning(self):
     if not self._emu_process:
@@ -109,7 +133,23 @@ class EmuTarget(target.Target):
   def _GetEndpoint(self):
     if not self._IsEmuStillRunning():
       raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
-    return ('localhost', self._host_ssh_port)
+    return (self.LOCAL_ADDRESS, self._host_ssh_port)
+
+  def _ConnectToTarget(self):
+    logging.info('Connecting to Fuchsia using ffx.')
+    host, port = self._GetEndpoint()
+    # The target is a freshly-started emulator, so add it as a target to ffx.
+    self._target_context = self._ffx_runner.scoped_target_context(host, port)
+    self._ffx_target = self._target_context.__enter__()
+    self._ffx_target.wait(common.ATTACH_RETRY_SECONDS)
+    return super(EmuTarget, self)._ConnectToTarget()
+
+  def _DisconnectFromTarget(self):
+    super(EmuTarget, self)._DisconnectFromTarget()
+    if self._target_context:
+      self._ffx_target = None
+      self._target_context.__exit__(None, None, None)
+      self._target_context = None
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()

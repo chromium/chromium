@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/browser/general_audience_browsing/mojom/general_audience_browsing.mojom.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"

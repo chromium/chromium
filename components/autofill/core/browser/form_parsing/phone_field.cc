@@ -162,7 +162,8 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   AutofillField* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
-  if (!MatchesFormControlType(field->form_control_type, MATCH_SELECT))
+  if (!MatchesFormControlType(field->form_control_type,
+                              {MatchFieldType::kSelect}))
     return false;
 
   // If the number of the options is less than the minimum limit or more than
@@ -453,10 +454,14 @@ bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
                                  const bool is_country_code_field,
                                  const std::string& json_field_type,
                                  const LanguageCode& page_language) {
-  int match_type = MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
+  MatchParams match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
+                                                   MatchFieldType::kNumber>;
   // Include the selection boxes too for the matching of the phone country code.
-  if (is_country_code_field)
-    match_type |= MATCH_SELECT;
+  if (is_country_code_field) {
+    match_type = kDefaultMatchParamsWith<MatchFieldType::kTelephone,
+                                         MatchFieldType::kNumber,
+                                         MatchFieldType::kSelect>;
+  }
 
   const std::vector<MatchingPattern>& patterns =
       PatternProvider::GetInstance().GetMatchPatterns(json_field_type,

@@ -70,7 +70,7 @@ class GpuChannelManagerDelegate {
   // Returns GPU Scheduler
   virtual gpu::Scheduler* GetGpuScheduler() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Tells the delegate that overlay info was updated.
   virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
 

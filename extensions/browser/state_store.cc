@@ -76,17 +76,20 @@ StateStore::StateStore(
     case BackendType::RULES:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kRulesStoreName),
-          kRulesDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kRulesDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
     case BackendType::STATE:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kStateStoreName),
-          kStateDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kStateDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
     case BackendType::SCRIPTS:
       store_ = std::make_unique<value_store::ValueStoreFrontend>(
           store_factory, base::FilePath(kScriptsStoreName),
-          kScriptsDatabaseUMAClientName, GetExtensionFileTaskRunner());
+          kScriptsDatabaseUMAClientName, content::GetUIThreadTaskRunner({}),
+          GetExtensionFileTaskRunner());
       break;
   }
 

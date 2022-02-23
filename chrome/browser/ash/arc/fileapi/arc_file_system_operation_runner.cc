@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -15,8 +17,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

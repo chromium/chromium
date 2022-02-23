@@ -9,12 +9,12 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
-import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
@@ -28,8 +28,6 @@ import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
-import "services/network/public/mojom/url_loader.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -45,10 +43,10 @@ import "services/network/public/mojom/ct_log_info.mojom";
 
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
-  // List of supported auth schemes. Unrecognized schemes are ignored.
+  // List of allowed auth schemes. Unrecognized schemes are ignored.
   // The default value of this field (an empty list) does not match default
   // behavior of NetworkService when no HttpAuthStaticParams is specified.
-  array<string> supported_schemes;
+  array<string> allowed_schemes;
 
   // File name the GSSAPI library to load. Only supported on platforms where an
   // external GSSAPI library is necessary for Kerberos/SPNEGO support. See the
@@ -59,6 +57,15 @@ struct HttpAuthStaticParams {
 
 // Values for configurating HTTP authentication that can be changed as needed.
 struct HttpAuthDynamicParams {
+  // List of allowed auth schemes. Unrecognized schemes are ignored.
+  array<string>? allowed_schemes;
+
+  // List of origins patterns that are allowed the use of all the HTTP auth
+  // schemes recognized and supported by the browser regardless of
+  // `allowed_schemes`. The accepted format is documented at
+  // http://www.chromium.org/administrators/url-blocklist-filter-format.
+  array<string> patterns_allowed_to_use_all_schemes;
+
   // Comma / semi-colon delimited allowlist of server origins which the network
   // service may send the default credentials for NTLM or Negotiate
   // authentication.
@@ -95,29 +102,6 @@ struct HttpAuthDynamicParams {
   bool basic_over_http_enabled = true;
 };
 
-// Values for configuring OSCrypt.
-[EnableIf=needs_crypt_config]
-struct CryptConfig {
-  // Force OSCrypt to use a specific linux password store.
-  string store;
-
-  // The product name to use for permission prompts.
-  string product_name;
-
-  // The application name to store the crypto key against. For Chromium/Chrome
-  // builds leave this unset and it will default correctly.  This config option
-  // is for embedders to provide their application name in place of "Chromium".
-  // Only used when the allow_runtime_configurable_key_storage feature is
-  // enabled
-  string application_name;
-
-  // Controls whether preference on using or ignoring backends is used.
-  bool should_use_preference;
-
-  // Preferences are stored in a separate file in the user data directory.
-  mojo_base.mojom.FilePath user_data_path;
-};
-
 // Represents the value of a single environment variable.
 struct EnvironmentVariable {
   string name;
@@ -136,6 +120,10 @@ struct NetworkServiceParams {
   // An URLLoaderFactory can provide its own URLLoaderNetworkServiceObserver
   // but if it does not, this default will be used.
   pending_remote<URLLoaderNetworkServiceObserver> default_observer;
+
+  // A boolean provided by the Browser Process in order to plumb into the
+  // First-Party Sets attribute during NetworkService::Initialize().
+  bool first_party_sets_enabled;
 };
 
 // Information about how logging should be configured.
@@ -196,7 +184,7 @@ interface NetworkService {
   // https://tools.ietf.org/html/rfc1034#section-5.3.1 for definition of a stub
   // resolver.
   //
-  // `dns_over_https_servers` is an optional list of DNS over HTTPS servers.
+  // `dns_over_https_config` provides zero or more DNS over HTTPS servers.
   // DnsTransactions will by default follow the behavior of `secure_dns_mode`.
   // In SECURE mode, only DoH lookups will be performed. In AUTOMATIC mode,
   // DoH lookups to available servers will be performed first, and insecure
@@ -217,7 +205,7 @@ interface NetworkService {
   // Secure DNS which always allows additional types.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             SecureDnsMode secure_dns_mode,
-                            array<DnsOverHttpsServer>? dns_over_https_servers,
+                            DnsOverHttpsConfig dns_over_https_config,
                             bool additional_dns_types_enabled);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
@@ -281,17 +269,7 @@ interface NetworkService {
   // Notification that the certificate database has been modified.
   OnCertDBChanged();
 
-  // Sets up OSCrypt for the network service process. Must be called before
-  // encrypted cookies can be read or set.
-  [EnableIf=needs_crypt_config]
-  SetCryptConfig(CryptConfig crypt_config);
-
   // Send the encryption key to the network service to use for AES encryption.
-  [EnableIf=is_mac]
-  SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
-
-  // Send the encryption key to the network service to use for AES encryption.
-  [EnableIf=is_win]
   SetEncryptionKey(mojo_base.mojom.ByteString encryption_key);
 
   // Notifies |request_initiator_origin_lock| enforcement code that |process_id|
@@ -335,17 +313,19 @@ interface NetworkService {
   ClearSCTAuditingCache();
 
   // Configures SCT auditing.
-  // This allows the embedder to specify whether SCT auditing should be enabled,
-  // what sampling rate to use on reports, and which URLLoaderFactory to use for
-  // sending reports.
-  // TODO(cthomp): Document what happens if the URLLoaderFactory is destroyed.
+  // This allows the embedder to specify what sampling rate to use on SCT
+  // auditing reports, how long to wait before assuming an SCT is ingested,
+  // where reports and lookup queries should be sent, and the traffic annotation
+  // to use.
   [EnableIf=is_ct_supported]
-  ConfigureSCTAuditing(bool enabled,
-                       double sampling_rate,
-                       url.mojom.Url report_uri,
-                       MutableNetworkTrafficAnnotationTag traffic_annotation,
-                       pending_remote<network.mojom.URLLoaderFactory> factory);
-
+  ConfigureSCTAuditing(
+      double sampling_rate,
+      mojo_base.mojom.TimeDelta log_expected_ingestion_delay,
+      mojo_base.mojom.TimeDelta log_max_ingestion_random_delay,
+      url.mojom.Url report_uri,
+      url.mojom.Url hashdance_lookup_uri,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation);
 
   // Updates the log list used for CT verification. `update_time` should
   // contain the timestamp that the log list was considered fresh/current, in
@@ -353,6 +333,10 @@ interface NetworkService {
   // date.
   [EnableIf=is_ct_supported]
   UpdateCtLogList(array<CTLogInfo> log_list, mojo_base.mojom.Time update_time);
+
+  // Updates the list of popular SCTs queried during CT hashdance auditing.
+  [EnableIf=is_ct_supported]
+  UpdateCtKnownPopularSCTs(array<array<uint8>> sct_hashes);
 
   // Disables or enables CT Enforcement.
   [EnableIf=is_ct_supported]
@@ -368,14 +352,19 @@ interface NetworkService {
   // environments.
   BindTestInterface(pending_receiver<NetworkServiceTest> receiver);
 
-  // Sets the First-Party Sets data. |raw_sets| is the JSON-encoded
-  // string representation of a collection of set declarations according to the
-  // format specified in this document:
-  // https://github.com/privacycg/first-party-sets
-  // Note that by setting the First-Party Sets, any previous notion of
-  // First-Party Sets is cleared. On any kind of error, all First-Party Sets are
-  // cleared (except for the manually-specified set, if one exists).
-  SetFirstPartySets(string raw_sets);
+  // Sets the First-Party Sets data. |sets_file| is the file containing a
+  // collection of set declarations according to the format specified in this
+  // document: https://github.com/privacycg/first-party-sets. The collection may
+  // either be a single JSON array of such records, or a sequence of
+  // newline-delimited JSON objects (one per line). Note that only the first
+  // invocation will have any effect. On any kind of error, this method has no
+  // effect.
+  //
+  // |sets_file| may be invalid ("nullopt"), if no such file exists on the
+  // client's device (i.e. if the First-Party Sets component has not been
+  // installed yet).  Such a case is considered the same as if the file's
+  // contents were empty.
+  SetFirstPartySets(mojo_base.mojom.ReadOnlyFile? sets_file);
 
   // Sets the First-Party Sets data that was persisted to compare it with the
   // current First-Party Sets data set by `SetFirstPartySets()`, which is
@@ -395,7 +384,7 @@ interface NetworkService {
   // when the raw headers represent untrustworthy input and the URLLoader used
   // lives in a non-sandboxed process. It can also happen from some exotic
   // URLLoader where parsing hasn't been implemented.
-  // In particular, this is used for request served from AppCache, WebBundle,
+  // In particular, this is used for request served from WebBundle,
   // Extensions, etc.
   ParseHeaders(url.mojom.Url url, HttpResponseHeaders headers)
       => (ParsedHeaders parsed_headers);

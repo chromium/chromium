@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -18,13 +19,17 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_mechanism.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/http_auth_negotiate_android.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "net/http/http_auth_sspi_win.h"
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include "net/http/http_auth_gssapi_posix.h"
 #endif
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -37,9 +42,9 @@ class HttpAuthPreferences;
 
 class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef SSPILibrary AuthLibrary;
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   typedef GSSAPILibrary AuthLibrary;
 #endif
 
@@ -48,24 +53,24 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     explicit Factory(HttpAuthMechanismFactory negotiate_auth_system_factory);
     ~Factory() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Sets the system library to use, thereby assuming ownership of
     // |auth_library|.
     void set_library(std::unique_ptr<AuthLibrary> auth_provider) {
       auth_library_ = std::move(auth_provider);
     }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     const std::string& GetLibraryNameForTesting() const;
-#endif  // defined(OS_POSIX)
-#endif  // !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // HttpAuthHandlerFactory overrides
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int digest_nonce_count,
                           const NetLogWithSource& net_log,
@@ -75,9 +80,9 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
    private:
     HttpAuthMechanismFactory negotiate_auth_system_factory_;
     bool is_unsupported_ = false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     std::unique_ptr<AuthLibrary> auth_library_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   };
 
   HttpAuthHandlerNegotiate(std::unique_ptr<HttpAuthMechanism> auth_system,
@@ -114,7 +119,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     STATE_NONE,
   };
 
-  std::string CreateSPN(const std::string& server, const GURL& orign);
+  std::string CreateSPN(const std::string& server,
+                        const url::SchemeHostPort& scheme_host_port);
 
   void OnIOComplete(int result);
   void DoCallback(int result);
@@ -127,7 +133,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   HttpAuth::DelegationType GetDelegationType() const;
 
   std::unique_ptr<HttpAuthMechanism> auth_system_;
-  HostResolver* const resolver_;
+  const raw_ptr<HostResolver> resolver_;
 
   NetworkIsolationKey network_isolation_key_;
 
@@ -143,11 +149,11 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
 
   // Things which vary each round.
   CompletionOnceCallback callback_;
-  std::string* auth_token_;
+  raw_ptr<std::string> auth_token_;
 
   State next_state_;
 
-  const HttpAuthPreferences* http_auth_preferences_;
+  raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
 };
 
 }  // namespace net

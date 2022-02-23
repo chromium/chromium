@@ -39,7 +39,7 @@ class TestOptions():
 class SymbolizeTraceTestCase(unittest.TestCase):
   def side_effect(self, cmd, env, stdout):
     if cmd and env:
-      stdout.write('Symbol data.')
+      stdout.write(b'Symbol data.')
 
   def setUp(self):
     self.options = TestOptions()
@@ -55,6 +55,11 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     symbol_fetcher.GetTraceBreakpadSymbols = mock.MagicMock()
     metadata_extractor.MetadataExtractor = mock.MagicMock()
     breakpad_file_extractor.ExtractBreakpadFiles = mock.MagicMock()
+
+    dump_syms_dir = tempfile.mkdtemp()
+    self.options.dump_syms_path = os.path.join(dump_syms_dir, 'dump_syms')
+    with open(self.options.dump_syms_path, 'w') as _:
+      pass
 
     with tempfile.NamedTemporaryFile(mode='w+',
                                      delete=False) as test_trace_file:
@@ -157,6 +162,24 @@ class SymbolizeTraceTestCase(unittest.TestCase):
     with self.assertRaises(Exception) as e:
       symbolize_trace.SymbolizeTrace(self.trace_file, self.options)
     self.assertIn(exception_msg, str(e.exception))
+
+  def testFailWhenNoDumpSyms(self):
+    self.options.dump_syms_path = None
+
+    exception_msg = 'dump_syms binary not found.'
+    with self.assertRaises(Exception) as e:
+      symbolize_trace.SymbolizeTrace(self.trace_file, self.options)
+    self.assertIn(exception_msg, str(e.exception))
+
+  def testFindDumpSymsInBuild(self):
+    self.options.local_build_dir = tempfile.mkdtemp()
+    self.options.dump_syms_path = None
+    dump_syms_path = os.path.join(self.options.local_build_dir, 'dump_syms')
+    with open(dump_syms_path, 'w') as _:
+      pass
+
+    # Throws no exception
+    symbolize_trace.SymbolizeTrace(self.trace_file, self.options)
 
   def testValidLocalBreakpadDir(self):
     self.options.local_breakpad_dir = tempfile.mkdtemp()

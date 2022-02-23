@@ -53,7 +53,7 @@ void ElementAnimations::Trace(Visitor* visitor) const {
 }
 
 bool ElementAnimations::UpdateBoxSizeAndCheckTransformAxisAlignment(
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   bool preserves_axis_alignment = true;
   for (auto& entry : animations_) {
     Animation& animation = *entry.key;

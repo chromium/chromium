@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -140,6 +141,12 @@ public interface TabSwitcher {
          */
         @VisibleForTesting
         default void showTabSelectionEditor(List<Tab> tabs) {}
+
+        /**
+         * Returns the tab switcher type.
+         */
+        @TabSwitcherType
+        int getTabSwitcherType();
     }
 
     /**

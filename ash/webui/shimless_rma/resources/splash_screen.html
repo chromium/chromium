@@ -1,20 +1,27 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .large-icon {
-    height: 200px;
-    width: 300px;
+  .busy-icon {
+    float: left;
+  }
+  .loading-message {
+    float: left;
   }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
-    <h1>[[i18n('shimlessSplashMessage')]]</h1>
-    <div>
+<base-page>
+  <div slot="left-pane">
+    <div class="busy-icon">
       <paper-spinner-lite id="busyIcon" active></paper-spinner-lite>
     </div>
+    <br> <!-- div is not enough to make a new line after the spinner. -->
+    <div class="splash-title">
+      <h1>[[i18n('shimlessSplashTitle')]]</h1>
+    </div>
+    <div class="loading-message">
+      <div>[[i18n('shimlessSplashRemembering')]]</div>
+      <div>[[i18n('shimlessSplashLoading')]]</div>
+    </div>
   </div>
-  <div slot="body">
-    <!-- TODO(gavindodd): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder" class="large-icon">
-    </iron-icon>
+  <div slot="right-pane">
+    <img src="illustrations/repair_start.svg">
   </div>
 </base-page>

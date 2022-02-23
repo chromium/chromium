@@ -16,13 +16,13 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/parental_controls.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/partner_browser_customizations.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
@@ -62,7 +62,7 @@ void IncognitoModePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability,
                                 static_cast<int>(kDefaultAvailability));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kIncognitoReauthenticationForAndroid,
                                 false);
 #endif
@@ -82,8 +82,6 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
           IncognitoModePrefs::Availability::kForced;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* init_params = chromeos::LacrosService::Get()->init_params();
-  // TODO(https://crbug.com/1194304): Remove in M93.
-  should_use_incognito |= init_params->is_incognito_deprecated;
   should_use_incognito |=
       init_params->initial_browser_action ==
       crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
@@ -112,10 +110,17 @@ bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
 }
 
 // static
+bool IncognitoModePrefs::IsIncognitoAllowed(Profile* profile) {
+  return !profile->IsGuestSession() &&
+         IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+             IncognitoModePrefs::Availability::kDisabled;
+}
+
+// static
 bool IncognitoModePrefs::ArePlatformParentalControlsEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetWinParentalControls().logging_required;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return chrome::android::PartnerBrowserCustomizations::IsIncognitoDisabled();
 #else
   return false;

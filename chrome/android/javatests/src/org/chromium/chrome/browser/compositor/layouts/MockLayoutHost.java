@@ -5,14 +5,11 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.resources.ResourceManager;
 
 /**
@@ -27,21 +24,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     private final Context mContext;
     private boolean mPortrait = true;
     private final BrowserControlsManager mBrowserControlsManager;
-
-    static class MockTitleCache implements TitleCache {
-        @Override
-        public String getUpdatedTitle(Tab tab, String defaultTitle) {
-            return null;
-        }
-
-        @Override
-        public void remove(int tabId) {}
-
-        @Override
-        public void clearExcept(int tabId) {}
-    }
-
-    private final MockTitleCache mMockTitleCache = new MockTitleCache();
 
     MockLayoutHost(Context context) {
         mContext = context;
@@ -132,11 +114,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public void setContentOverlayVisibility(boolean visible, boolean canBeFocusable) {}
 
     @Override
-    public TitleCache getTitleCache() {
-        return mMockTitleCache;
-    }
-
-    @Override
     public BrowserControlsManager getBrowserControlsManager() {
         return mBrowserControlsManager;
     }
@@ -156,11 +133,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
 
     @Override
     public void onContentChanged() {}
-
-    @Override
-    public int getBrowserControlsBackgroundColor(Resources res) {
-        return 0;
-    }
 
     @Override
     public void hideKeyboard(Runnable postHideTask) {

@@ -120,9 +120,13 @@ OutputController::OutputController(
     OutputStreamActivityMonitor* activity_monitor,
     const media::AudioParameters& params,
     const std::string& output_device_id,
-    SyncReader* sync_reader)
+    SyncReader* sync_reader,
+    ManagedDeviceOutputStreamCreateCallback
+        managed_device_output_stream_create_callback)
     : audio_manager_(audio_manager),
       params_(params),
+      managed_device_output_stream_create_callback_(
+          std::move(managed_device_output_stream_create_callback)),
       handler_(handler),
       activity_monitor_(activity_monitor),
       task_runner_(audio_manager->GetTaskRunner()),
@@ -223,6 +227,11 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
     stream_ = audio_manager_->MakeAudioOutputStream(
         mute_params, std::string(),
         /*log_callback, not used*/ base::DoNothing());
+  } else if (managed_device_output_stream_create_callback_) {
+    stream_ = managed_device_output_stream_create_callback_.Run(
+        output_device_id_, params_,
+        base::BindRepeating(&OutputController::ProcessDeviceChange,
+                            base::Unretained(this)));
   } else {
     media::AudioOutputStream* stream =
         audio_manager_->MakeAudioOutputStreamProxy(params_, output_device_id_);

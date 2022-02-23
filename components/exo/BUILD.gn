@@ -13,10 +13,7 @@ import("//ui/base/ui_features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_COLOR_MANAGER=$enable_color_manager",
-    "ENABLE_WESTON_TEST=$enable_weston_test",
-  ]
+  flags = [ "ENABLE_COLOR_MANAGER=$enable_color_manager" ]
 }
 
 if (use_xkbcommon) {
@@ -64,6 +61,7 @@ static_library("exo") {
     "pointer.h",
     "pointer_constraint_delegate.h",
     "pointer_delegate.h",
+    "protected_native_pixmap_query_delegate.h",
     "seat.cc",
     "seat.h",
     "seat_observer.h",
@@ -73,6 +71,7 @@ static_library("exo") {
     "shell_surface_util.h",
     "sub_surface.cc",
     "sub_surface.h",
+    "sub_surface_observer.h",
     "surface.cc",
     "surface.h",
     "surface_delegate.h",
@@ -106,7 +105,7 @@ static_library("exo") {
     "//third_party/blink/public/common",
     "//ui/accessibility:ax_base",
     "//ui/aura",
-    "//ui/base/cursor",
+    "//ui/aura/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
@@ -127,13 +126,14 @@ static_library("exo") {
   ]
 
   assert_no_deps = [
+    "//ash/components/arc",
     "//components/arc",
     "//content/public/browser",
     "//content/public/common",
   ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/dragdrop/mojom:mojom_headers",
   ]
@@ -144,6 +144,7 @@ static_library("exo") {
       "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//ash/resources/vector_icons",
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
@@ -259,6 +260,7 @@ source_set("test_support") {
       "//ash:test_support",
       "//ash/public/cpp",
       "//chromeos/ui/base",
+      "//components/exo/wayland:weston_test_stub",
     ]
   }
 }
@@ -323,6 +325,8 @@ source_set("unit_tests") {
       "shell_surface_unittest.cc",
       "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
+      "surface_test_util.cc",
+      "surface_test_util.h",
       "surface_unittest.cc",
       "text_input_unittest.cc",
       "toast_surface_unittest.cc",

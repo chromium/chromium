@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/upload_data_stream.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
@@ -48,7 +48,7 @@ class ThrottlingUploadDataStream : public net::UploadDataStream {
   ThrottlingNetworkInterceptor::ThrottleCallback throttle_callback_;
   int64_t throttled_byte_count_;
 
-  net::UploadDataStream* upload_data_stream_;
+  raw_ptr<net::UploadDataStream> upload_data_stream_;
   base::WeakPtr<ThrottlingNetworkInterceptor> interceptor_;
 };
 

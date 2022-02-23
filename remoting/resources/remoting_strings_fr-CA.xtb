@@ -26,7 +26,6 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="225614027745146050">Bienvenue</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
 <translation id="2329392777730037872">Impossible d'ouvrir <ph name="URL" /> sur le client.</translation>
-<translation id="2333212046079545895">Droits d'auteur 2021 Google LLC. Tous droits réservés.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2366718077645204424">Impossible d'accéder à l'hôte, probablement en raison de la configuration réseau que vous utilisez.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Dernière connexion <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="2599300881200251572">Ce service permet les connexions entrantes de clients de Bureau à distance Chrome.</translation>
 <translation id="2647232381348739934">Service Chromoting</translation>
 <translation id="2676780859508944670">Opération en cours...</translation>
+<translation id="2692522824157224199">© 2022 Google LLC. Tous droits réservés.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Une erreur s'est produite lors de l'authentification, veuillez vous reconnecter.</translation>
 <translation id="2803375539583399270">Entrer le NIP</translation>
@@ -73,10 +73,10 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4257751272692708833">Transfert d'URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Le code d'accès n'est pas valide. Veuillez réessayer.</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
+<translation id="4372650392690220936">© 2022 Les auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="4405930547258349619">Bibliothèque principale</translation>
 <translation id="443560535555262820">Ouvrir les préférences d'accessibilité</translation>
 <translation id="4450893287417543264">Ne plus afficher</translation>
-<translation id="4512952200932940229">© 2021 Les auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4563926062592110512">Déconnexion du client : <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> n'est pas configuré correctement. Veuillez choisir un autre navigateur Web par défaut, puis réactivez le transfert d'URL.</translation>

@@ -42,6 +42,14 @@ namespace autofillPrivate {
     // For credit cards, whether this is migratable (both the card number and
     // expiration date valid and does not have the duplicated server card).
     boolean? isMigratable;
+
+    // For credit cards. Indicates whether a card is eligible for virtual cards
+    // enrollment.
+    boolean? isVirtualCardEnrollmentEligible;
+
+    // For credit cards. Indicates whether a card has been enrolled in virtual
+    // cards if it is eligible.
+    boolean? isVirtualCardEnrolled;
   };
 
   // An address entry which can be saved in the autofill section of the
@@ -168,6 +176,9 @@ namespace autofillPrivate {
     // Credit card's nickname.
     DOMString? nickname;
 
+    // Credit card's network.
+    DOMString? network;
+
     AutofillMetadata? metadata;
   };
 
@@ -259,6 +270,17 @@ namespace autofillPrivate {
     // Gets the list of UPI IDs (a.k.a. Virtual Payment Addresses).
     // |callback|: Callback which will be called with the list of UPI IDs.
     [supportsPromises] static void getUpiIdList(GetUpiIdListCallback callback);
+
+    // Enrolls a credit card into virtual cards.
+    // |cardId|: The server side id of the credit card to be enrolled. Note it
+    // refers to the legacy server id of credit cards, not the instrument ids.
+    static void addVirtualCard(DOMString cardId);
+
+    // Unenrolls a credit card from virtual cards.
+    // |cardId|: The server side id of the credit card to be unenrolled. Note
+    // it refers to the legacy server id of credit cards, not the instrument
+    // ids.
+    static void removeVirtualCard(DOMString cardId);
   };
 
   interface Events {

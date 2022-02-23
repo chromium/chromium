@@ -11,7 +11,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {SecureDnsMode, SecureDnsUiManagementMode, Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {SecureDnsMode, SecureDnsUiManagementMode, Router, routes, PeripheralDataAccessBrowserProxyImpl, DataAccessPolicyState, MetricsConsentBrowserProxyImpl, MetricsConsentState} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.m.js';
 // #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
@@ -19,6 +19,8 @@
 const crosSettingPrefName = 'cros.device.peripheral_data_access_enabled';
 const localStatePrefName =
     'settings.local_state_device_pci_data_access_enabled';
+const deviceMetricsConsentPrefName = 'cros.metrics.reportingEnabled';
+const userMetricsConsentPrefName = 'metrics.user_consent';
 
 /**
  * @implements {settings.PeripheralDataAccessBrowserProxy}
@@ -59,6 +61,45 @@ class TestPeripheralDataAccessBrowserProxy extends TestBrowserProxy {
   }
 }
 
+/**
+ * @implements {settings.MetricsConsentBrowserProxy}
+ */
+class TestMetricsConsentBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super([
+      'getMetricsConsentState',
+      'updateMetricsConsent',
+    ]);
+
+    /** @type {MetricsConsentState} */
+    this.state_ = {
+      prefName: deviceMetricsConsentPrefName,
+      isConfigurable: false
+    };
+  }
+
+  /** @override */
+  getMetricsConsentState() {
+    this.methodCalled('getMetricsConsentState');
+    return Promise.resolve(this.state_);
+  }
+
+  /** @override */
+  updateMetricsConsent(consent) {
+    this.methodCalled('updateMetricsConsent');
+    return Promise.resolve(consent);
+  }
+
+  /**
+   * @param {String} prefName
+   * @param {Boolean} isConfigurable
+   */
+  setMetricsConsentState(prefName, isConfigurable) {
+    this.state_.prefName = prefName;
+    this.state_.isConfigurable = isConfigurable;
+  }
+}
+
 suite('PrivacyPageTests', function() {
   /** @type {SettingsPrivacyPageElement} */
   let privacyPage = null;
@@ -70,7 +111,7 @@ suite('PrivacyPageTests', function() {
           value: true,
         }
       }
-    },
+    }
   };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
@@ -95,6 +136,19 @@ suite('PrivacyPageTests', function() {
     privacyPage.remove();
     settings.Router.getInstance().resetRouteForTesting();
   });
+
+  /**
+   * Returns true if the element exists and has not been 'removed' by the
+   * Polymer template system.
+   * @param {string} selector The ID of the element about which to query.
+   * @return {boolean} Whether or not the element has been masked by the
+   *                   template system.
+   * @private
+   */
+  function elementExists(selector) {
+    const el = privacyPage.$$(selector);
+    return (el !== null) && (el.style.display !== 'none');
+  }
 
   test('Suggested content, pref disabled', async () => {
     privacyPage = document.createElement('os-settings-privacy-page');
@@ -187,6 +241,49 @@ suite('PrivacyPageTests', function() {
         'Allow guest browsing should be focused for settingId=1105.');
   });
 
+  test('Deep link to snooping protection on smart privacy page', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+    });
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1114');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_PRIVACY, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        privacyPage.$$('settings-smart-privacy-page')
+            .shadowRoot.querySelector('#snoopingProtectionToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Snooping protection should be focused for settingId=1114.');
+  });
+
+  test('Deep link to quick dim on smart privacy page', async () => {
+    loadTimeData.overrideValues({
+      isQuickDimEnabled: true,
+    });
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1115');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_PRIVACY, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = privacyPage.$$('settings-smart-privacy-page')
+                                .shadowRoot.querySelector('#quickDimToggle')
+                                .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Quick dim should be focused for settingId=1115.');
+  });
+
   test('Fingerprint dialog closes when token expires', async () => {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
@@ -240,6 +337,52 @@ suite('PrivacyPageTests', function() {
         settings.routes.FINGERPRINT);
     assertTrue(privacyPage.showPasswordPromptDialog_);
   });
+
+
+  test('Smart privacy hidden when both features disabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: false,
+      isQuickDimEnabled: false,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertFalse(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  test('Smart privacy shown when only quick dim enabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: false,
+      isQuickDimEnabled: true,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertTrue(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  test('Smart privacy shown if only snooping protection enabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+      isQuickDimEnabled: false,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertTrue(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  // TODO(crbug.com/1262869): add a test for deep linking to snopping setting
+  //                          once it has been added.
 });
 
 suite('PrivacePageTest_OfficialBuild', async () => {
@@ -252,27 +395,54 @@ suite('PrivacePageTest_OfficialBuild', async () => {
         'peripheral_data_access_enabled': {
           value: true,
         }
+      },
+      'metrics': {
+        'reportingEnabled': {
+          value: true,
+        }
       }
     },
-   };
+    'metrics': {
+      'user_consent': {
+        value: false,
+      }
+    },
+  };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;
 
+  /** @type {?TestMetricsConsentBrowserProxy} */
+  let metricsConsentBrowserProxy = null;
+
   setup(async () => {
+    privacyPage = document.createElement('os-settings-privacy-page');
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
+    PolymerTest.clearBody();
+
     settings.PeripheralDataAccessBrowserProxyImpl.instance_ = browserProxy;
+
+    metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
+    settings.MetricsConsentBrowserProxyImpl.instance_ =
+        metricsConsentBrowserProxy;
+
     loadTimeData.overrideValues({
       pciguardUiEnabled: false,
     });
+  });
 
-    PolymerTest.clearBody();
+  async function setUpPage(prefName, isConfigurable) {
+    metricsConsentBrowserProxy.setMetricsConsentState(prefName, isConfigurable);
+
     privacyPage = document.createElement('os-settings-privacy-page');
+    privacyPage.prefs = Object.assign({}, prefs_);
     document.body.appendChild(privacyPage);
     Polymer.dom.flush();
 
-    await browserProxy.whenCalled('isThunderboltSupported');
-  });
+    await metricsConsentBrowserProxy.whenCalled('getMetricsConsentState');
+    await test_util.waitAfterNextRender();
+    Polymer.dom.flush();
+  }
 
   teardown(function() {
     privacyPage.remove();
@@ -280,6 +450,8 @@ suite('PrivacePageTest_OfficialBuild', async () => {
   });
 
   test('Deep link to send usage stats', async () => {
+    await setUpPage(deviceMetricsConsentPrefName, /*isConfigurable=*/ true);
+
     const params = new URLSearchParams;
     params.append('settingId', '1103');
     settings.Router.getInstance().navigateTo(
@@ -293,6 +465,62 @@ suite('PrivacePageTest_OfficialBuild', async () => {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Send usage stats toggle should be focused for settingId=1103.');
+  });
+
+  test('Toggle disabled if metrics consent is not configurable', async () => {
+    await setUpPage(deviceMetricsConsentPrefName, /*isConfigurable=*/ false);
+
+    const toggle =
+        privacyPage.$$('#enable-logging').shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(toggle);
+
+    // The pref is true, so the toggle should be on.
+    assertTrue(toggle.checked);
+
+    // Not configurable, so toggle should be disabled.
+    assertTrue(toggle.disabled);
+  });
+
+  test('Toggle enabled if metrics consent is configurable', async () => {
+    await setUpPage(deviceMetricsConsentPrefName, /*is_configurable=*/ true);
+
+    const toggle =
+        privacyPage.$$('#enable-logging').shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(toggle);
+
+    // The pref is true, so the toggle should be on.
+    assertTrue(toggle.checked);
+
+    // Configurable, so toggle should be enabled.
+    assertFalse(toggle.disabled);
+
+    // Toggle.
+    toggle.click();
+    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
+
+    // Pref should be off now.
+    assertFalse(toggle.checked);
+  });
+
+  test('Correct pref displayed', async () => {
+    await setUpPage(userMetricsConsentPrefName, /*is_configurable=*/ true);
+
+    const toggle =
+        privacyPage.$$('#enable-logging').shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(toggle);
+
+    // The user consent pref is false, so the toggle should not be checked.
+    assertFalse(toggle.checked);
+
+    // Configurable, so toggle should be enabled.
+    assertFalse(toggle.disabled);
+
+    // Toggle.
+    toggle.click();
+    await metricsConsentBrowserProxy.whenCalled('updateMetricsConsent');
+
+    // Pref should be on now.
+    assertTrue(toggle.checked);
   });
 });
 
@@ -310,15 +538,9 @@ suite('PeripheralDataAccessTest', function() {
       }
     },
     'settings': {'local_state_device_pci_data_access_enabled': {value: false}},
-    'dns_over_https': {
-      'mode': {
-        value: SecureDnsMode.AUTOMATIC
-      },
-      'templates': {
-        value: ''
-      }
-     },
-   };
+    'dns_over_https':
+        {'mode': {value: SecureDnsMode.AUTOMATIC}, 'templates': {value: ''}},
+  };
 
   /** @type {?TestPeripheralDataAccessBrowserProxy} */
   let browserProxy = null;

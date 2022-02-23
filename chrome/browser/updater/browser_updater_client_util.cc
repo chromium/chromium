@@ -7,3 +7,4 @@
 #include "chrome/updater/updater_branding.h"
 
 const char kUpdaterName[] = PRODUCT_FULLNAME_STRING;
+const char kPrivilegedHelperName[] = PRIVILEGED_HELPER_NAME;

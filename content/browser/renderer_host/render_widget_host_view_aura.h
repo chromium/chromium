@@ -15,8 +15,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -48,7 +48,12 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/selection_bound.h"
+#include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
+
+namespace aura_extra {
+class WindowPositionInRootMonitor;
+}
 
 namespace wm {
 class ScopedTooltipDisabler;
@@ -67,7 +72,7 @@ class LocatedEvent;
 }
 
 namespace content {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class LegacyRenderWidgetHostHWND;
 class DirectManipulationBrowserTestBase;
 #endif
@@ -91,6 +96,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       public aura::WindowTreeHostObserver,
       public aura::WindowDelegate,
       public wm::ActivationDelegate,
+      public wm::ActivationChangeObserver,
       public aura::client::FocusChangeObserver,
       public aura::client::CursorClientObserver {
  public:
@@ -172,6 +178,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
+  void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   bool RequestRepaintForTesting() override;
   void DidStopFlinging() override;
@@ -199,6 +206,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // TODO(lanwei): Use TestApi interface to write functions that are used in
   // tests and remove FRIEND_TEST_ALL_PREFIXES.
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override;
+  bool IsInActiveWindow() const override;
 
   // Overridden from ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;
@@ -235,7 +243,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
@@ -252,7 +260,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const std::vector<ui::GrammarFragment>& fragments) override;
 #endif
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Returns the control and selection bounds of the EditContext or control
   // bounds of the active editable element. This is used to report the layout
   // bounds of the text input control to TSF on Windows.
@@ -261,7 +269,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       absl::optional<gfx::Rect>* selection_bounds) override;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // API to notify accessibility whether there is an active composition
   // from TSF or not.
   // It notifies the composition range, composition text and whether the
@@ -309,8 +317,16 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Overridden from wm::ActivationDelegate:
   bool ShouldActivate() const override;
 
+  // Overridden from wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
   // Overridden from aura::client::CursorClientObserver:
   void OnCursorVisibilityChanged(bool is_visible) override;
+
+  // Overridden from aura::client::CursorClientObserver:
+  void OnSystemCursorSizeChanged(const gfx::Size& cursor_size) override;
 
   // Overridden from aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
@@ -329,7 +345,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnLocalSurfaceIdChanged(
       const cc::RenderFrameMetadata& metadata) override {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Gets the HWND of the host window.
   HWND GetHostWindowHWND() const;
 
@@ -414,7 +430,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   friend class RenderWidgetHostViewAuraDevtoolsBrowserTest;
   friend class RenderWidgetHostViewAuraCopyRequestTest;
   friend class TestInputMethodObserver;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class AccessibilityTreeLinkageWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
@@ -510,8 +526,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   class WindowObserver;
   friend class WindowObserver;
 
-  class WindowAncestorObserver;
-  friend class WindowAncestorObserver;
   friend void VerifyStaleContentOnFrameEviction(
       RenderWidgetHostView* render_widget_host_view);
 
@@ -542,7 +556,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Update the insets for bounds change when the virtual keyboard is shown.
   void UpdateInsetsWithVirtualKeyboardEnabled();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Creates and/or updates the legacy dummy window which corresponds to
   // the bounds of the webcontents. It is needed for accessibility and
   // for scrolling to work in legacy drivers for trackpoints/trackpads, etc.
@@ -593,8 +607,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Converts |rect| from screen coordinate to window coordinate.
   gfx::Rect ConvertRectFromScreen(const gfx::Rect& rect) const;
 
-  // Called when the parent window bounds change.
-  void HandleParentBoundsChanged();
+  // Called when the bounds of `window_` relative to the root change.
+  void HandleBoundsInRootChanged();
 
   // Called when the parent window hierarchy for our window changes.
   void ParentHierarchyChanged();
@@ -627,7 +641,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   void SetTooltipText(const std::u16string& tooltip_text);
 
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
   // NOTE: this may be null during destruction.
@@ -636,7 +650,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::unique_ptr<WindowObserver> window_observer_;
 
   // Tracks the ancestors of the RWHVA window for window location changes.
-  std::unique_ptr<WindowAncestorObserver> ancestor_window_observer_;
+  std::unique_ptr<aura_extra::WindowPositionInRootMonitor>
+      position_in_root_observer_;
 
   // Are we in the process of closing?  Tracked so we don't try to shutdown
   // again while inside shutdown, causing a double-free.
@@ -646,10 +661,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool in_bounds_changed_;
 
   // Our parent host view, if this is a popup.  NULL otherwise.
-  RenderWidgetHostViewAura* popup_parent_host_view_;
+  raw_ptr<RenderWidgetHostViewAura> popup_parent_host_view_;
 
   // Our child popup host. NULL if we do not have a child popup.
-  RenderWidgetHostViewAura* popup_child_host_view_;
+  raw_ptr<RenderWidgetHostViewAura> popup_child_host_view_;
 
   class EventObserverForPopupExit;
   std::unique_ptr<EventObserverForPopupExit> event_observer_for_popup_exit_;
@@ -678,7 +693,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   };
   CursorVisibilityState cursor_visibility_state_in_renderer_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The LegacyRenderWidgetHostHWND class provides a dummy HWND which is used
   // for accessibility, as the container for windowless plugins like
   // Flash/Silverlight, etc and for legacy drivers for trackpoints/trackpads,
@@ -686,7 +701,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // The LegacyRenderWidgetHostHWND instance is created during the first call
   // to RenderWidgetHostViewAura::InternalSetBounds. The instance is destroyed
   // when the LegacyRenderWidgetHostHWND hwnd is destroyed.
-  content::LegacyRenderWidgetHostHWND* legacy_render_widget_host_HWND_;
+  raw_ptr<content::LegacyRenderWidgetHostHWND> legacy_render_widget_host_HWND_;
 
   // Set to true if the legacy_render_widget_host_HWND_ instance was destroyed
   // by Windows. This could happen if the browser window was destroyed by
@@ -763,6 +778,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   absl::optional<DisplayFeature> display_feature_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  bool is_in_active_window_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };

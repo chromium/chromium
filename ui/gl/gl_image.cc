@@ -4,9 +4,11 @@
 
 #include "ui/gl/gl_image.h"
 
+#include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #endif
 
@@ -117,7 +119,7 @@ GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 GLImage::GetAHardwareBuffer() {
   return nullptr;

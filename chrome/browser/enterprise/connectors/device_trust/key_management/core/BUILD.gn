@@ -19,7 +19,6 @@ source_set("core") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
     "//components/policy/proto",
     "//crypto",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 

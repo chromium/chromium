@@ -34,8 +34,8 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;

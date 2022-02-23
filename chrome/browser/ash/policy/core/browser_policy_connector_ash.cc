@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_adaptive.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/settings/timezone_settings.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
+#include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -55,7 +58,6 @@
 #include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
-#include "chrome/browser/ash/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
@@ -67,10 +69,9 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
+#include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
@@ -116,9 +117,8 @@ bool IsForcedReEnrollmentEnabled() {
   return ash::AutoEnrollmentController::IsFREEnabled();
 }
 
-std::unique_ptr<chromeos::attestation::AttestationFlow>
-CreateAttestationFlow() {
-  return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
+std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
+  return std::make_unique<ash::attestation::AttestationFlowAdaptive>(
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
@@ -159,8 +159,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
           chromeos::SessionManagerClient::Get());
 
       const base::FilePath device_policy_external_data_path =
-          base::PathService::CheckedGet(
-              chromeos::DIR_DEVICE_POLICY_EXTERNAL_DATA);
+          base::PathService::CheckedGet(ash::DIR_DEVICE_POLICY_EXTERNAL_DATA);
 
       auto external_data_manager =
           std::make_unique<DevicePolicyCloudExternalDataManager>(
@@ -216,8 +215,8 @@ void BrowserPolicyConnectorAsh::Init(
             CreateBackgroundTaskRunner(), url_loader_factory);
     device_local_account_policy_service_->Connect(device_management_service());
   } else if (IsForcedReEnrollmentEnabled()) {
-    // Initialize state keys upload mechanism to DM Server in Active Directory
-    // mode.
+    // Initialize state keys and enrollment ID upload mechanisms to DM Server in
+    // Active Directory mode.
     state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
         chromeos::SessionManagerClient::Get());
     active_directory_device_state_uploader_ =
@@ -227,6 +226,12 @@ void BrowserPolicyConnectorAsh::Init(
             url_loader_factory, std::make_unique<DMTokenStorage>(local_state),
             local_state);
     active_directory_device_state_uploader_->Init();
+
+    // Initialize the manager that will start the migration of Chromad devices
+    // into cloud management, when all pre-requisites are met.
+    active_directory_migration_manager_ =
+        std::make_unique<ActiveDirectoryMigrationManager>(local_state);
+    active_directory_migration_manager_->Init();
   }
 
   if (device_cloud_policy_manager_) {
@@ -245,13 +250,13 @@ void BrowserPolicyConnectorAsh::Init(
   SetTimezoneIfPolicyAvailable();
 
   device_network_configuration_updater_ =
-      DeviceNetworkConfigurationUpdater::CreateForDevicePolicy(
+      DeviceNetworkConfigurationUpdaterAsh::CreateForDevicePolicy(
           GetPolicyService(),
           chromeos::NetworkHandler::Get()
               ->managed_network_configuration_handler(),
           chromeos::NetworkHandler::Get()->network_device_handler(),
           ash::CrosSettings::Get(),
-          DeviceNetworkConfigurationUpdater::DeviceAssetIDFetcher());
+          DeviceNetworkConfigurationUpdaterAsh::DeviceAssetIDFetcher());
   // NetworkCertLoader may be not initialized in tests.
   if (chromeos::NetworkCertLoader::IsInitialized()) {
     chromeos::NetworkCertLoader::Get()->SetDevicePolicyCertificateProvider(
@@ -352,6 +357,9 @@ void BrowserPolicyConnectorAsh::Shutdown() {
 
   if (active_directory_device_state_uploader_)
     active_directory_device_state_uploader_->Shutdown();
+
+  if (active_directory_migration_manager_)
+    active_directory_migration_manager_->Shutdown();
 
   if (device_cloud_policy_initializer_)
     device_cloud_policy_initializer_->Shutdown();
@@ -492,7 +500,7 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
 }
 
 void BrowserPolicyConnectorAsh::SetAttestationFlowForTesting(
-    std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow) {
+    std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow) {
   attestation_flow_ = std::move(attestation_flow);
 }
 

@@ -45,7 +45,8 @@ public class FeedFeedbackCollector
 
     @VisibleForTesting
     @Override
-    protected List<FeedbackSource> buildSynchronousFeedbackSources(InitParams initParams) {
+    protected List<FeedbackSource> buildSynchronousFeedbackSources(
+            Activity activity, InitParams initParams) {
         List<FeedbackSource> sources = new ArrayList<>();
 
         // Since Interest feed feedback goes to a different destiation, we don't include other PSD

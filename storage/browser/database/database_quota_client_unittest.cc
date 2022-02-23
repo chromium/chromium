@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -20,13 +22,17 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/database/database_quota_client.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/database/database_util.h"
+#include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
@@ -46,11 +52,13 @@ static const blink::mojom::StorageType kTemp =
 // Mocks DatabaseTracker methods used by DatabaseQuotaClient.
 class MockDatabaseTracker : public DatabaseTracker {
  public:
-  MockDatabaseTracker()
-      : DatabaseTracker(base::FilePath(),
-                        /*is_incognito=*/false,
+  MockDatabaseTracker(const base::FilePath& path,
+                      bool is_incognito,
+                      scoped_refptr<QuotaManagerProxy> quota_manager_proxy)
+      : DatabaseTracker(path,
+                        is_incognito,
                         /*special_storage_policy=*/nullptr,
-                        /*quota_manager_proxy=*/nullptr,
+                        quota_manager_proxy,
                         DatabaseTracker::CreatePassKey()) {}
 
   bool GetOriginInfo(const std::string& origin_identifier,
@@ -126,20 +134,28 @@ class MockDatabaseTracker : public DatabaseTracker {
 };
 
 // Base class for our test fixtures.
-class DatabaseQuotaClientTest : public testing::Test {
+class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
  public:
   const blink::StorageKey kStorageKeyA;
   const blink::StorageKey kStorageKeyB;
-  const blink::StorageKey kStorageKeyOther;
 
   DatabaseQuotaClientTest()
       : kStorageKeyA(
             blink::StorageKey::CreateFromStringForTesting("http://host")),
         kStorageKeyB(
-            blink::StorageKey::CreateFromStringForTesting("http://host:8000")),
-        kStorageKeyOther(
-            blink::StorageKey::CreateFromStringForTesting("http://other")),
-        mock_tracker_(base::MakeRefCounted<MockDatabaseTracker>()) {}
+            blink::StorageKey::CreateFromStringForTesting("http://host:8000")) {
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
+    quota_manager_ = base::MakeRefCounted<QuotaManager>(
+        /*is_incognito_=*/false, data_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(),
+        /*quota_change_callback=*/base::DoNothing(),
+        /*special_storage_policy=*/nullptr, GetQuotaSettingsFunc());
+    mock_tracker_ = base::MakeRefCounted<MockDatabaseTracker>(
+        data_dir_.GetPath(), is_incognito(), quota_manager_->proxy());
+  }
 
   void TearDown() override {
     base::RunLoop run_loop;
@@ -151,19 +167,26 @@ class DatabaseQuotaClientTest : public testing::Test {
     run_loop.Run();
   }
 
-  static int64_t GetStorageKeyUsage(mojom::QuotaClient& client,
-                                    const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type) {
-    int result = -1;
-    base::RunLoop loop;
-    client.GetStorageKeyUsage(storage_key, type,
-                              base::BindLambdaForTesting([&](int64_t usage) {
-                                result = usage;
-                                loop.Quit();
-                              }));
-    loop.Run();
-    EXPECT_GT(result, -1);
-    return result;
+  bool is_incognito() const { return GetParam(); }
+
+  BucketLocator CreateBucketForTesting(const blink::StorageKey& storage_key,
+                                       const std::string& name,
+                                       blink::mojom::StorageType type) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+        bucket_future;
+    quota_manager_->proxy()->CreateBucketForTesting(
+        storage_key, name, type, base::SequencedTaskRunnerHandle::Get(),
+        bucket_future.GetCallback());
+    auto bucket = bucket_future.Take();
+    EXPECT_TRUE(bucket.ok());
+    return bucket->ToBucketLocator();
+  }
+
+  int64_t GetBucketUsage(mojom::QuotaClient& client,
+                         const BucketLocator& bucket) {
+    base::test::TestFuture<int64_t> usage_future;
+    client.GetBucketUsage(bucket, usage_future.GetCallback());
+    return usage_future.Get();
   }
 
   static std::vector<blink::StorageKey> GetStorageKeysForType(
@@ -181,85 +204,36 @@ class DatabaseQuotaClientTest : public testing::Test {
     return result;
   }
 
-  static std::vector<blink::StorageKey> GetStorageKeysForHost(
-      mojom::QuotaClient& client,
-      blink::mojom::StorageType type,
-      const std::string& host) {
-    std::vector<blink::StorageKey> result;
-    base::RunLoop loop;
-    client.GetStorageKeysForHost(
-        type, host,
-        base::BindLambdaForTesting(
-            [&](const std::vector<blink::StorageKey>& storage_keys) {
-              result = storage_keys;
-              loop.Quit();
-            }));
-    loop.Run();
-    return result;
+  blink::mojom::QuotaStatusCode DeleteBucketData(mojom::QuotaClient& client,
+                                                 const BucketLocator& bucket) {
+    base::test::TestFuture<blink::mojom::QuotaStatusCode> delete_future;
+    client.DeleteBucketData(bucket, delete_future.GetCallback());
+    return delete_future.Get();
   }
 
-  static blink::mojom::QuotaStatusCode DeleteStorageKeyData(
-      mojom::QuotaClient& client,
-      blink::mojom::StorageType type,
-      const blink::StorageKey& storage_key) {
-    blink::mojom::QuotaStatusCode result =
-        blink::mojom::QuotaStatusCode::kUnknown;
-    base::RunLoop loop;
-    client.DeleteStorageKeyData(
-        storage_key, type,
-        base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode code) {
-          result = code;
-          loop.Quit();
-        }));
-    loop.Run();
-    return result;
-  }
-
+  base::ScopedTempDir data_dir_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockDatabaseTracker> mock_tracker_;
+  scoped_refptr<QuotaManager> quota_manager_;
   base::WeakPtrFactory<DatabaseQuotaClientTest> weak_factory_{this};
 };
 
-TEST_F(DatabaseQuotaClientTest, GetStorageKeyUsage) {
+TEST_P(DatabaseQuotaClientTest, GetBucketUsage) {
   DatabaseQuotaClient client(*mock_tracker_);
+  auto bucket_a =
+      CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp);
+  auto bucket_b =
+      CreateBucketForTesting(kStorageKeyB, kDefaultBucketName, kTemp);
 
-  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
 
   mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
-  EXPECT_EQ(1000, GetStorageKeyUsage(client, kStorageKeyA, kTemp));
+  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
 
-  EXPECT_EQ(0, GetStorageKeyUsage(client, kStorageKeyB, kTemp));
+  EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
 }
 
-TEST_F(DatabaseQuotaClientTest, GetStorageKeysForHost) {
-  DatabaseQuotaClient client(*mock_tracker_);
-
-  EXPECT_EQ(kStorageKeyA.origin().host(), kStorageKeyB.origin().host());
-  EXPECT_NE(kStorageKeyA.origin().host(), kStorageKeyOther.origin().host());
-
-  std::vector<blink::StorageKey> storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_TRUE(storage_keys.empty());
-
-  mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 1ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-
-  mock_tracker_->AddMockDatabase(kStorageKeyB.origin(), "barDB", 1000);
-  storage_keys =
-      GetStorageKeysForHost(client, kTemp, kStorageKeyA.origin().host());
-  EXPECT_EQ(storage_keys.size(), 2ul);
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
-  EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyB));
-
-  EXPECT_TRUE(
-      GetStorageKeysForHost(client, kTemp, kStorageKeyOther.origin().host())
-          .empty());
-}
-
-TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {
+TEST_P(DatabaseQuotaClientTest, GetStorageKeysForType) {
   DatabaseQuotaClient client(*mock_tracker_);
 
   EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
@@ -271,18 +245,34 @@ TEST_F(DatabaseQuotaClientTest, GetStorageKeysForType) {
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 }
 
-TEST_F(DatabaseQuotaClientTest, DeleteStorageKeyData) {
+TEST_P(DatabaseQuotaClientTest, DeleteBucketData) {
   DatabaseQuotaClient client(*mock_tracker_);
+  auto bucket_a =
+      CreateBucketForTesting(kStorageKeyA, kDefaultBucketName, kTemp);
 
   mock_tracker_->set_async_delete(false);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteStorageKeyData(client, kTemp, kStorageKeyA));
+            DeleteBucketData(client, bucket_a));
   EXPECT_EQ(1, mock_tracker_->delete_called_count());
 
   mock_tracker_->set_async_delete(true);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
-            DeleteStorageKeyData(client, kTemp, kStorageKeyA));
+            DeleteBucketData(client, bucket_a));
   EXPECT_EQ(2, mock_tracker_->delete_called_count());
 }
+
+TEST_P(DatabaseQuotaClientTest, NonDefaultBucket) {
+  DatabaseQuotaClient client(*mock_tracker_);
+  auto bucket = CreateBucketForTesting(kStorageKeyA, "inbox_bucket", kTemp);
+  ASSERT_FALSE(bucket.is_default);
+
+  EXPECT_EQ(0, GetBucketUsage(client, bucket));
+  EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
+            DeleteBucketData(client, bucket));
+}
+
+INSTANTIATE_TEST_SUITE_P(DatabaseQuotaClientTests,
+                         DatabaseQuotaClientTest,
+                         testing::Bool());
 
 }  // namespace storage

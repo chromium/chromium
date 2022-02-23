@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 
+#include "base/no_destructor.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 
 namespace content {

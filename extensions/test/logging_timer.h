@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_TEST_LOGGING_TIMER_H_
 #define EXTENSIONS_TEST_LOGGING_TIMER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 

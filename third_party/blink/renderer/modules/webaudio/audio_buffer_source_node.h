@@ -146,8 +146,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
 
   bool DidSetLooping() const { return did_set_looping_; }
   void SetDidSetLooping(bool loop) {
-    if (loop)
+    if (loop) {
       did_set_looping_ = true;
+    }
   }
 
   // If m_isLooping is false, then this node will be done playing and become
@@ -201,7 +202,7 @@ class AudioBufferSourceNode final : public AudioScheduledSourceNode {
   static AudioBufferSourceNode* Create(BaseAudioContext*,
                                        AudioBufferSourceOptions*,
                                        ExceptionState&);
-  AudioBufferSourceNode(BaseAudioContext&);
+  explicit AudioBufferSourceNode(BaseAudioContext&);
   void Trace(Visitor*) const override;
   AudioBufferSourceHandler& GetAudioBufferSourceHandler() const;
 

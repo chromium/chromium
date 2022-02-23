@@ -1,40 +1,21 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
-
 <base-page>
-  <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1 hidden$="[[!reimageRequired_]]">Select an option for firmware reimaging</h1>
-    <h1 hidden$="[[reimageRequired_]]">
-      This device doesn't require firmware reimaging.
-      Would you like to reimage the firmware anyway?
-    </h1>
+  <iron-icon slot="optional-icon" icon="shimless-icon:warning"
+      class="warning-icon" hidden="[[!shouldShowWarning_]]">
+  </iron-icon>
+  <div slot="left-pane">
+    <h1>[[i18n('firmwareUpdatePageTitleText')]]</h1>
+    <div id="firmwareUpdateStatus" class="instructions">
+      [[getStatusString_(status_)]]
+    </div>
   </div>
-  <div slot="body">
-    <cr-radio-group
-        id="firmwareReimageOptions"
-        on-selected-changed="onFirmwareReimageSelectionChanged_">
-      <cr-radio-button
-          name="firmwareReimageDownload"
-          id="firmwareReimageDownload">
-        [[firmwareReimageDownloadMessage_(reimageRequired_)]]
-      </cr-radio-button>
-      <p class="indented-description">Requires internet access</p>
-      <cr-radio-button
-          name="firmwareReimageUsb"
-          id="firmwareReimageUsb">
-        [[firmwareReimageUsbMessage_(reimageRequired_)]]
-      </cr-radio-button>
-      <p class="indented-description">
-        Requires a Thumbdrive configured for
-        <a href="#" on-click="linkToRecoveryClicked_">Chromebook Recovery</a>
-      </p>
-      <cr-radio-button
-          name="firmwareReimageSkip"
-          id="firmwareReimageSkip"
-          hidden$="[[reimageRequired_]]">
-        No, skip it for now.
-      </cr-radio-button>
-    </cr-radio-group>
+  <div slot="right-pane">
+    <div class="illustration-wrapper">
+      <img class="illustration" src="[[getImgSrc_(status_)]]" hidden$="[[shouldShowSpinner_]]">
+      <paper-spinner-lite class="large-spinner" hidden$="[[!shouldShowSpinner_]]"
+          active>
+      </paper-spinner-lite>
+    </div>
   </div>
 </base-page>

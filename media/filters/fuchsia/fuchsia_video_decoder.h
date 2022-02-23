@@ -74,9 +74,9 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
  private:
   class OutputMailbox;
 
-  StatusCode InitializeSysmemBufferStream(bool is_encrypted,
-                                          CdmContext* cdm_context,
-                                          bool* secure_mode);
+  DecoderStatus InitializeSysmemBufferStream(bool is_encrypted,
+                                             CdmContext* cdm_context,
+                                             bool* secure_mode);
 
   // SysmemBufferStream::Sink implementation.
   void OnSysmemBufferStreamBufferCollectionToken(
@@ -104,7 +104,7 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
 
   // Drops all pending input buffers and then calls all pending DecodeCB with
   // |status|. Returns true if the decoder still exists.
-  bool DropInputQueue(DecodeStatus status);
+  bool DropInputQueue(DecoderStatus status);
 
   // Called on errors to shutdown the decoder and notify the client.
   void OnError();

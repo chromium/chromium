@@ -6,6 +6,7 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -55,11 +56,6 @@ class SharedImageRepresentationOverlayScopedHardwareBufferFenceSync
         backing());
   }
 
-  void NotifyOverlayPromotion(bool promotion,
-                              const gfx::Rect& bounds) override {
-    NOTREACHED();
-  }
-
   bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     gfx::GpuFenceHandle begin_read_handle;
     hardware_buffer_ = ahb_backing()->BeginOverlayAccess(begin_read_handle);
@@ -80,7 +76,7 @@ class SharedImageRepresentationOverlayScopedHardwareBufferFenceSync
     return nullptr;
   }
 
-  AHardwareBuffer* hardware_buffer_ = nullptr;
+  raw_ptr<AHardwareBuffer> hardware_buffer_ = nullptr;
 };
 
 SharedImageBackingScopedHardwareBufferFenceSync::
@@ -212,7 +208,7 @@ class SharedImageRepresentationGLTextureScopedHardwareBufferFenceSync
     return ahb_backing;
   }
 
-  gles2::Texture* texture_;
+  raw_ptr<gles2::Texture> texture_;
 };
 
 class SharedImageRepresentationGLTexturePassthroughScopedHardwareBufferFenceSync

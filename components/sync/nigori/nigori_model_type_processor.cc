@@ -4,10 +4,10 @@
 
 #include "components/sync/nigori/nigori_model_type_processor.h"
 
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -263,9 +263,9 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node.
-  root_node->SetString("PARENT_ID", "r");
-  root_node->SetString("UNIQUE_SERVER_TAG", "Nigori");
-  root_node->SetString("modelType", ModelTypeToString(NIGORI));
+  root_node->SetStringKey("PARENT_ID", "r");
+  root_node->SetStringKey("UNIQUE_SERVER_TAG", "Nigori");
+  root_node->SetStringKey("modelType", ModelTypeToDebugString(NIGORI));
 
   auto all_nodes = std::make_unique<base::ListValue>();
   all_nodes->Append(std::move(root_node));
@@ -422,24 +422,12 @@ void NigoriModelTypeProcessor::ConnectIfReady() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncNigoriRemoveMetadataOnCacheGuidMismatch)) {
-    if (model_type_state_.initial_sync_done() &&
-        model_type_state_.cache_guid() != activation_request_.cache_guid) {
-      ClearMetadataAndReset();
-      DCHECK(model_ready_to_sync_);
-    }
-
-    model_type_state_.set_cache_guid(activation_request_.cache_guid);
-  } else {
-    // Legacy logic.
-    if (!model_type_state_.has_cache_guid()) {
-      model_type_state_.set_cache_guid(activation_request_.cache_guid);
-    } else if (model_type_state_.cache_guid() !=
-               activation_request_.cache_guid) {
-      // Not implemented in legacy codepath.
-    }
+  if (model_type_state_.initial_sync_done() &&
+      model_type_state_.cache_guid() != activation_request_.cache_guid) {
+    ClearMetadataAndReset();
+    DCHECK(model_ready_to_sync_);
   }
+  model_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
   model_type_state_.set_authenticated_account_id(

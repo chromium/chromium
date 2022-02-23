@@ -37,12 +37,15 @@ mojom("mojom_platform") {
     "choosers/date_time_chooser.mojom",
     "choosers/file_chooser.mojom",
     "choosers/popup_menu.mojom",
+    "chromeos/system_extensions/hid/cros_hid.mojom",
+    "chromeos/system_extensions/window_management/cros_window_management.mojom",
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
     "compute_pressure/compute_pressure.mojom",
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
+    "conversions/attribution_data_host.mojom",
     "conversions/conversions.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
@@ -63,7 +66,6 @@ mojom("mojom_platform") {
     "drag/drag.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
-    "federated_learning/floc.mojom",
     "fenced_frame/fenced_frame.mojom",
     "fetch/fetch_api_request.mojom",
     "fetch/fetch_api_response.mojom",
@@ -112,9 +114,11 @@ mojom("mojom_platform") {
     "loader/same_document_navigation_type.mojom",
     "loader/transferrable_url_loader.mojom",
     "loader/url_loader_factory_bundle.mojom",
+    "lock_screen/lock_screen.mojom",
     "locks/lock_manager.mojom",
     "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",
+    "manifest/handle_links.mojom",
     "manifest/manifest.mojom",
     "manifest/manifest_manager.mojom",
     "manifest/manifest_observer.mojom",
@@ -127,6 +131,7 @@ mojom("mojom_platform") {
     "mediastream/media_stream.mojom",
     "mime/mime_registry.mojom",
     "native_io/native_io.mojom",
+    "navigation/app_history_entry_arrays.mojom",
     "navigation/navigation_policy.mojom",
     "navigation/prefetched_signed_exchange_info.mojom",
     "navigation/renderer_eviction_reason.mojom",
@@ -134,6 +139,7 @@ mojom("mojom_platform") {
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
     "oom_intervention/oom_intervention.mojom",
+    "parakeet/ad_request.mojom",
     "payments/payment_app.mojom",
     "peerconnection/peer_connection_tracker.mojom",
     "performance_manager/v8_detailed_memory_reporter.mojom",
@@ -184,8 +190,9 @@ mojom("mojom_platform") {
     "speech/speech_recognizer.mojom",
     "speech/speech_synthesis.mojom",
     "storage_access/storage_access_automation.mojom",
+    "storage_key/ancestor_chain_bit.mojom",
     "storage_key/storage_key.mojom",
-    "subapps/sub_apps_provider.mojom",
+    "subapps/sub_apps_service.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "timing/worker_timing_container.mojom",
@@ -193,7 +200,6 @@ mojom("mojom_platform") {
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
     "wake_lock/wake_lock.mojom",
-    "web_launch/file_handling_expiry.mojom",
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
     "webdatabase/web_database.mojom",
@@ -306,6 +312,9 @@ mojom("mojom_platform") {
   }
   if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
+  }
+  if (is_android || is_mac) {
+    enabled_features += [ "is_using_open_color_chooser" ]
   }
 
   shared_cpp_typemaps = [
@@ -483,6 +492,20 @@ mojom("mojom_platform") {
       ]
       traits_headers = [ "//third_party/blink/public/common/navigation/prefetched_signed_exchange_info_mojom_traits.h" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.LinkGenerationError"
+          cpp = "::shared_highlighting::LinkGenerationError"
+        },
+        {
+          mojom = "blink.mojom.LinkGenerationReadyStatus"
+          cpp = "::shared_highlighting::LinkGenerationReadyStatus"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/link_to_text/link_to_text_mojom_traits.h" ]
+      traits_public_deps = [ "//components/shared_highlighting/core/common" ]
+    },
   ]
   cpp_typemaps = [
     {
@@ -596,6 +619,11 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.ManifestShortcutItem"
           cpp = "::blink::Manifest::ShortcutItem"
+        },
+
+        {
+          mojom = "blink.mojom.ManifestTranslationItem"
+          cpp = "::blink::Manifest::TranslationItem"
         },
       ]
       traits_headers = [
@@ -780,6 +808,7 @@ mojom("android_mojo_bindings") {
     "//mojo/public/mojom/base",
     "//services/media_session/public/mojom",
     "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_schemeful_site",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -980,7 +1009,6 @@ mojom("mojom_core") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/service_worker:storage",
-    "//ui/base/cursor/mojom",
     "//ui/base/dragdrop/mojom",
     "//ui/base/mojom",
     "//ui/display/mojom",
@@ -1258,27 +1286,7 @@ mojom("web_bluetooth_mojo_bindings") {
 
   public_deps = [ "//device/bluetooth/public/mojom" ]
 
-  blink_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "blink.mojom.WebBluetoothDeviceId"
-          cpp = "::WTF::String"
-        },
-        {
-          mojom = "bluetooth.mojom.UUID"
-          cpp = "::WTF::String"
-          nullable_is_same_type = true
-        },
-      ]
-      traits_headers = [
-        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//device/bluetooth" ]
-    },
-  ]
-
-  cpp_typemaps = [
+  shared_cpp_typemaps = [
     {
       types = [
         {
@@ -1289,6 +1297,26 @@ mojom("web_bluetooth_mojo_bindings") {
       traits_headers = [ "//third_party/blink/public/common/bluetooth/web_bluetooth_device_id_mojom_traits.h" ]
     },
   ]
+
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "bluetooth.mojom.UUID"
+          cpp = "::WTF::String"
+          nullable_is_same_type = true
+        },
+      ]
+      traits_private_headers = [
+        "//third_party/blink/renderer/platform/mojo/bluetooth_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//device/bluetooth" ]
+    },
+  ]
+
+  blink_cpp_typemaps += shared_cpp_typemaps
+
+  cpp_typemaps = shared_cpp_typemaps
 
   # The chromium variant must be linked with content and use the same export
   # settings in component build because of the WebBluetoothDeviceId typemap

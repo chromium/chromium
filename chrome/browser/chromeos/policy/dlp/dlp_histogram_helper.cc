@@ -19,6 +19,13 @@ void DlpBooleanHistogram(const std::string& suffix, bool value) {
   base::UmaHistogramBoolean(GetDlpHistogramPrefix() + suffix, value);
 }
 
+void DlpConfidentialContentsCountHistogram(const std::string& suffix,
+                                           int sample,
+                                           int max) {
+  base::UmaHistogramExactLinear(GetDlpHistogramPrefix() + suffix, sample,
+                                max + 1);
+}
+
 void DlpRestrictionConfiguredHistogram(DlpRulesManager::Restriction value) {
   base::UmaHistogramEnumeration(
       GetDlpHistogramPrefix() + "RestrictionConfigured", value);

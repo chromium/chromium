@@ -441,17 +441,14 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FONT_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the fonts permission is in the ask state and the site can prompt the user to ask if they allow the site to use fonts installed on your device.">
       Can ask to use fonts installed on your device
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_HANDLING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file handling permission is in the ask state and the site can prompt the user to ask if they allow the site to open types of files.">
-      Can ask to open types of files
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_SERIAL_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the serial permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to serial ports.">
       Can ask to connect to serial ports
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the idle detection permission is in the ask state and the site can prompt the user to ask if they allow the site to know when you're actively using this device.">
       Can ask to know when you're actively using this device
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_WINDOW_PLACEMENT_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the window placement permission is in the ask state and the site can prompt the user to ask if they allow the site to open and place windows on your screens.">
-      Can ask to open and place windows on your screens
+    <message name="IDS_PAGE_INFO_STATE_TEXT_WINDOW_PLACEMENT_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the window placement permission is in the ask state and the site can prompt the user to ask if they allow the site to use info about your screens to open and place windows.">
+      Can ask to use info about your screens
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
       Can ask to discover nearby Bluetooth devices
@@ -485,6 +482,9 @@
     <message name="IDS_PAGE_INFO_HID_DEVICE_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the permission listed refers to a HID device.">
       HID device
     </message>
+    <message name="IDS_PAGE_INFO_HID_DEVICE_ALLOWED_BY_POLICY_LABEL" desc="The label displayed underneath the device name to inform the user that the item listed is refering to a HID device explicitly allowed by the user's enterprise policy.">
+      HID device allowed by your administrator
+    </message>
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access
     </message>
@@ -495,12 +495,6 @@
     </message>
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
       Go to site settings
-    </message>
-    <message name="IDS_PAGE_INFO_APP_SETTINGS_LINK" desc="This is the text of the link pointing to the App Settings page. This appears at the bottom of the Permissions pane of the Page Information Window for app windows (in place of 'Site settings').">
-      App settings
-    </message>
-    <message name="IDS_PAGE_INFO_APP_SETTINGS_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_SITE_SETTINGS_LINK.">
-      Go to app settings
     </message>
 
     <!-- Permission decision strings -->
@@ -696,12 +690,41 @@
 
   <!-- About this site strings -->
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER" desc="The header label of the 'About this site' subpage in Page Info bubble.">
-    About this site
+    From the web
   </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP" desc="The tooltip of the button that opens 'About this site' subpage in Page Info bubble.">
-    Show information about this site
+    Show information from the web
   </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
     From <ph name="SOURCE_NAME">$1<ex>Wikipedia</ex></ph>
+  </message>
+
+  <!-- History strings -->
+  <message name="IDS_PAGE_INFO_HISTORY" desc="The button label of the 'History' row in Page Info bubble. The button opens history page for the site.">
+    History
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+    Last visited today
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+    Last visited yesterday
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+    Last visited <ph name="NUM_DAYS">$1<ex>2</ex></ph> days ago
+  </message>
+  <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+    Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
+  </message>
+
+  <!-- Ad personalization strings -->
+  <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER" translateable="false" desc="The header label of the 'Ad personalization' subpage in Page Info bubble.">
+    Ad personalization
+  </message>
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+    This site defines interests other sites can use to show you ads
+  </message>
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON" translateable="false" desc="The text on the button, that opens privacy sandbox settings page, in 'Ad personalization' subpage in page info bubble. ">
+    Manage interests
   </message>
 </grit-part>

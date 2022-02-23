@@ -94,8 +94,8 @@ class NavigationItem : public base::SupportsUserData {
   virtual ui::PageTransition GetTransitionType() const = 0;
 
   // The favicon data and tracking information. See web::FaviconStatus.
-  virtual const FaviconStatus& GetFavicon() const = 0;
-  virtual FaviconStatus& GetFavicon() = 0;
+  virtual const FaviconStatus& GetFaviconStatus() const = 0;
+  virtual void SetFaviconStatus(const FaviconStatus& favicon_status) = 0;
 
   // All the SSL flags and state. See web::SSLStatus.
   virtual const SSLStatus& GetSSL() const = 0;

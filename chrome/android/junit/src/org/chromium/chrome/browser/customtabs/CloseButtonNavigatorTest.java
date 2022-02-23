@@ -104,8 +104,8 @@ public class CloseButtonNavigatorTest {
         NavigationHistory history = new NavigationHistory();
 
         for (GURL url : urls) {
-            history.addEntry(new NavigationEntry(
-                    0, url, GURL.emptyGURL(), GURL.emptyGURL(), GURL.emptyGURL(), "", null, 0, 0));
+            history.addEntry(new NavigationEntry(0, url, GURL.emptyGURL(), GURL.emptyGURL(),
+                    GURL.emptyGURL(), "", null, 0, 0, /* isInitialEntry=*/false));
         }
 
         // Point to the most recent entry in history.

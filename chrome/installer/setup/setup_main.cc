@@ -922,33 +922,27 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     // patch to current exe, and store the resulting binary in the path
     // specified by --new-setup-exe. But we need to first unpack the file
     // given in --update-setup-exe.
-    base::ScopedTempDir temp_path;
-    if (!temp_path.CreateUniqueTempDir()) {
-      PLOG(ERROR) << "Could not create temporary path.";
-    } else {
-      base::FilePath compressed_archive(
-          cmd_line.GetSwitchValuePath(installer::switches::kUpdateSetupExe));
-      VLOG(1) << "Opening archive " << compressed_archive.value();
-      // The top unpack failure result with 28 days aggregation (>=0.01%)
-      // Setup.Install.LzmaUnPackResult_SetupExePatch
-      // 0.02% PATH_NOT_FOUND
-      //
-      // More information can also be found with metric:
-      // Setup.Install.LzmaUnPackNTSTATUS_SetupExePatch
-      if (installer::ArchivePatchHelper::UncompressAndPatch(
-              temp_path.GetPath(), compressed_archive, setup_exe,
-              cmd_line.GetSwitchValuePath(installer::switches::kNewSetupExe),
-              installer::UnPackConsumer::SETUP_EXE_PATCH)) {
-        status = installer::NEW_VERSION_UPDATED;
-      }
-      if (!temp_path.Delete()) {
-        // PLOG would be nice, but Delete() doesn't leave a meaningful value in
-        // the Windows last-error code.
-        LOG(WARNING) << "Scheduling temporary path "
-                     << temp_path.GetPath().value()
-                     << " for deletion at reboot.";
-        ScheduleDirectoryForDeletion(temp_path.GetPath());
-      }
+
+    const base::FilePath compressed_archive(
+        cmd_line.GetSwitchValuePath(installer::switches::kUpdateSetupExe));
+    VLOG(1) << "Opening archive " << compressed_archive.value();
+    // The top unpack failure result with 28 days aggregation (>=0.01%)
+    // Setup.Install.LzmaUnPackResult_SetupExePatch
+    // 0.02% PATH_NOT_FOUND
+    //
+    // More information can also be found with metric:
+    // Setup.Install.LzmaUnPackNTSTATUS_SetupExePatch
+
+    // We use the `new_setup_exe` directory as the working directory for
+    // `ArchivePatchHelper::UncompressAndPatch`. For System installs, this
+    // directory would be under %ProgramFiles% (a directory that only admins can
+    // write to by default) and hence a secure location.
+    const base::FilePath new_setup_exe(
+        cmd_line.GetSwitchValuePath(installer::switches::kNewSetupExe));
+    if (installer::ArchivePatchHelper::UncompressAndPatch(
+            new_setup_exe.DirName(), compressed_archive, setup_exe,
+            new_setup_exe, installer::UnPackConsumer::SETUP_EXE_PATCH)) {
+      status = installer::NEW_VERSION_UPDATED;
     }
 
     *exit_code = InstallUtil::GetInstallReturnCode(status);
@@ -1165,12 +1159,19 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     auto nonce = installer::DecodeNonceSwitchValue(
         cmd_line.GetSwitchValueASCII(installer::switches::kNonce));
 
-    // RotateDeviceTrustKey() expects a single threaded task runner so
-    // creating one here.
+    // In a stable build the rotate command should only permit a prod hostname.
+    const char* dm_server_host_name =
+        install_static::GetDeviceManagementServerHostName();
+    const bool is_valid_command =
+        !*dm_server_host_name ||
+        (dm_server_url.host_piece() == dm_server_host_name);
+
+    // RotateDeviceTrustKey() expects a single
+    // threaded task runner so creating one here.
     base::SingleThreadTaskExecutor executor;
 
     *exit_code =
-        token && nonce && dm_server_url.is_valid() &&
+        token && nonce && dm_server_url.is_valid() && is_valid_command &&
                 dm_server_url.SchemeIsHTTPOrHTTPS() &&
                 installer::RotateDeviceTrustKey(
                     enterprise_connectors::KeyRotationManager::Create(),

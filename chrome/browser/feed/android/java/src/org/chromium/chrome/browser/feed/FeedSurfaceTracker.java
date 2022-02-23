@@ -30,18 +30,7 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     // the correct sign-in state is used if attaching the surface triggers a fetch.
     private boolean mStartupCalled;
 
-    private boolean mSetServiceBridgeDelegate;
     private ObserverList<Observer> mObservers = new ObserverList<>();
-
-    /**
-     * Initializes the FeedServiceBridge. We do this once at startup, either in startup(), or
-     * in FeedStreamSurface's constructor, whichever comes first.
-     */
-    void initServiceBridge(FeedServiceBridge.Delegate delegate) {
-        if (mSetServiceBridgeDelegate) return;
-        mSetServiceBridgeDelegate = true;
-        FeedServiceBridge.setDelegate(delegate);
-    }
 
     // Tracks all the instances of FeedSurfaceCoordinator.
     @VisibleForTesting
@@ -136,6 +125,5 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     @VisibleForTesting
     public void resetForTest() {
         mStartupCalled = false;
-        mSetServiceBridgeDelegate = false;
     }
 }

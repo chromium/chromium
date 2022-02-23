@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/bus.h"
@@ -20,6 +21,7 @@
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace floss {
 
@@ -128,7 +130,7 @@ void FlossManagerClient::SetFlossEnabled(bool enabled) {
   writer.AppendBool(enabled);
 
   object_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      &method_call, kDBusTimeoutMs,
       base::BindOnce(&FlossManagerClient::DefaultResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      "FlossManagerClient::SetFlossEnabled"));
@@ -153,7 +155,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
   writer.AppendInt32(adapter);
 
   object_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      &method_call, kDBusTimeoutMs,
       base::BindOnce(&FlossManagerClient::DefaultResponseWithCallback<Void>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -169,7 +171,7 @@ void FlossManagerClient::RegisterWithManager() {
   dbus::MethodCall method_call(kManagerInterface,
                                manager::kGetAvailableAdapters);
   object_proxy->CallMethodWithErrorResponse(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      &method_call, kDBusTimeoutMs,
       base::BindOnce(&FlossManagerClient::HandleGetAvailableAdapters,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -180,7 +182,7 @@ void FlossManagerClient::RegisterWithManager() {
   writer.AppendObjectPath(dbus::ObjectPath(kExportedCallbacksPath));
 
   object_proxy->CallMethodWithErrorResponse(
-      &register_callback, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      &register_callback, kDBusTimeoutMs,
       base::BindOnce(&FlossManagerClient::DefaultResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      manager::kRegisterCallback));
@@ -259,6 +261,8 @@ void FlossManagerClient::Init(dbus::Bus* bus,
 
   // Get manager ready.
   RegisterWithManager();
+
+  SetFlossEnabled(base::FeatureList::IsEnabled(floss::features::kFlossEnabled));
 }
 
 void FlossManagerClient::HandleGetAvailableAdapters(

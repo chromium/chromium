@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -16,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/media/media_tray.h"
@@ -132,6 +134,13 @@ void StatusAreaWidget::Initialize() {
   stop_recording_button_tray_ = stop_recording_button_tray.get();
   AddTrayButton(std::move(stop_recording_button_tray));
 
+  if (features::IsProjectorAnnotatorEnabled()) {
+    auto projector_annotation_tray =
+        std::make_unique<ProjectorAnnotationTray>(shelf_);
+    projector_annotation_tray_ = projector_annotation_tray.get();
+    AddTrayButton(std::move(projector_annotation_tray));
+  }
+
   auto palette_tray = std::make_unique<PaletteTray>(shelf_);
   palette_tray_ = palette_tray.get();
   AddTrayButton(std::move(palette_tray));
@@ -146,6 +155,12 @@ void StatusAreaWidget::Initialize() {
     auto phone_hub_tray = std::make_unique<PhoneHubTray>(shelf_);
     phone_hub_tray_ = phone_hub_tray.get();
     AddTrayButton(std::move(phone_hub_tray));
+  }
+
+  if (chromeos::features::IsEcheCustomWidgetEnabled()) {
+    auto eche_tray = std::make_unique<EcheTray>(shelf_);
+    eche_tray_ = eche_tray.get();
+    AddTrayButton(std::move(eche_tray));
   }
 
   auto unified_system_tray = std::make_unique<UnifiedSystemTray>(shelf_);
@@ -440,8 +455,12 @@ void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
 }
 
 void StatusAreaWidget::EnsureTrayOrder() {
-  status_area_widget_delegate_->ReorderChildView(stop_recording_button_tray_,
-                                                 1);
+  if (projector_annotation_tray_) {
+    status_area_widget_delegate_->ReorderChildView(projector_annotation_tray_,
+                                                   1);
+  }
+  status_area_widget_delegate_->ReorderChildView(
+      stop_recording_button_tray_, projector_annotation_tray_ ? 2 : 1);
 }
 
 StatusAreaWidget::CollapseState StatusAreaWidget::CalculateCollapseState()

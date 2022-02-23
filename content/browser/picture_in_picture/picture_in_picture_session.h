@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_SESSION_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -18,15 +19,16 @@
 namespace content {
 
 class PictureInPictureServiceImpl;
-class PictureInPictureWindowControllerImpl;
+class VideoPictureInPictureWindowControllerImpl;
 class WebContentsImpl;
 
-// The PicutreInPictureSession communicates with the
-// PictureInPictureWindowController and the WebContents. It is created by the
-// PictureInPictureWindowControllerImpl which also deletes it. When created, the
-// session will be expected to be active (in Picture-in-Picture) and when
-// deleted, it will automatically exit Picture-in-Picture unless another session
-// became active.
+// The PictureInPictureSession is used for video Picture-in-Picture mode. It
+// communicates with the PictureInPictureWindowController and the
+// WebContents. It is created by the VideoPictureInPictureWindowControllerImpl
+// which also deletes it. When created, the session will be expected to be
+// active (in Picture-in-Picture) and when deleted, it will automatically exit
+// Picture-in-Picture unless another session became active.
+//
 // The session MUST be stopped before its dtor runs to avoid unexpected
 // deletion.
 class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
@@ -90,12 +92,12 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
 
   // Returns the Picture-in-Picture window controller associated with the
   // session.
-  PictureInPictureWindowControllerImpl& GetController();
+  VideoPictureInPictureWindowControllerImpl& GetController();
 
-  // Will notified The PictureInPictureWindowControllerImpl who owns |this| when
-  // it gets destroyed in order for |this| to be destroyed too. Indirectly owns
-  // |this|.
-  PictureInPictureServiceImpl* service_;
+  // Will notified The VideoPictureInPictureWindowControllerImpl who owns |this|
+  // when it gets destroyed in order for |this| to be destroyed too. Indirectly
+  // owns |this|.
+  raw_ptr<PictureInPictureServiceImpl> service_;
 
   mojo::Receiver<blink::mojom::PictureInPictureSession> receiver_;
 

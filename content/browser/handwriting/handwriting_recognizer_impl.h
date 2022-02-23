@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_H_
 #define CONTENT_BROWSER_HANDWRITING_HANDWRITING_RECOGNIZER_IMPL_H_
 
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/handwriting/handwriting.mojom.h"
@@ -20,7 +19,7 @@ namespace content {
 // This class will not return any prediction. But it has the ability to
 // set up and hold a mojo pipe with renderer, which can be used by the derived
 // classes.
-class CONTENT_EXPORT HandwritingRecognizerImpl
+class HandwritingRecognizerImpl
     : public handwriting::mojom::HandwritingRecognizer {
  public:
   // The interface to create an object, called by handwriting service.

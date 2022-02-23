@@ -5,6 +5,7 @@
 #ifndef SERVICES_TRACING_TRACING_SERVICE_H_
 #define SERVICES_TRACING_TRACING_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,14 +27,14 @@ class TracingService : public mojom::TracingService {
   // mojom::TracingService implementation:
   void Initialize(std::vector<mojom::ClientInfoPtr> clients) override;
   void AddClient(mojom::ClientInfoPtr client) override;
-#if !defined(OS_NACL) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
   void BindConsumerHost(
       mojo::PendingReceiver<mojom::ConsumerHost> receiver) override;
 #endif
 
  private:
   mojo::Receiver<mojom::TracingService> receiver_{this};
-  PerfettoService* perfetto_service_;
+  raw_ptr<PerfettoService> perfetto_service_;
 };
 
 }  // namespace tracing

@@ -81,7 +81,7 @@ bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
     return false;
   }
 
@@ -218,7 +218,8 @@ LoadingPredictorTabHelper::NavigationPageDataHolder::
 
 LoadingPredictorTabHelper::LoadingPredictorTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoadingPredictorTabHelper>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* predictor = LoadingPredictorFactory::GetForProfile(profile);
@@ -396,13 +397,12 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
       page_data->navigation_id_, resource_load_info);
 }
 
-void LoadingPredictorTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!predictor_)
     return;
 
-  auto* page_data = PageData::GetForDocument(*render_frame_host);
+  auto* page_data = PageData::GetForDocument(*web_contents()->GetMainFrame());
   if (!page_data)
     return;
 

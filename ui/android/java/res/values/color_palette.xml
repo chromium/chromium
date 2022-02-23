@@ -68,9 +68,12 @@
     <color name="baseline_secondary_300">#5AB3F0</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_700">#004A77</color>
     <color name="baseline_secondary_900">#001D35</color>
+    <color name="baseline_tertiary_100">#C4EED0</color>
     <color name="baseline_tertiary_200">#6DD58C</color>
     <color name="baseline_tertiary_600">#146C2E</color>
+    <color name="baseline_tertiary_700">#0F5223</color>
 
     <!-- Remapped to 2021 color palette. Do not add new references to these. -->
     <color name="modern_white">@color/baseline_neutral_0</color>
@@ -85,6 +88,7 @@
     <color name="modern_blue_600_alpha_65" tools:ignore="UnusedResources">@color/baseline_primary_600_alpha_65</color>
     <color name="modern_blue_700">@color/baseline_primary_700</color>
     <color name="modern_blue_800" tools:ignore="UnusedResources">@color/baseline_primary_800</color>
+
     <color name="google_green_300">@color/baseline_tertiary_200</color>
     <color name="google_green_600">@color/baseline_tertiary_600</color>
     <color name="modern_grey_50" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
@@ -110,9 +114,11 @@
     <color name="google_red_600">@color/baseline_error_600</color>
 
     <!-- No 2021 color palette mapping exists. -->
+    <color name="black_alpha_5">#0D000000</color>
     <color name="black_alpha_11" tools:ignore="UnusedResources">#1D000000</color>
     <color name="black_alpha_38" tools:ignore="UnusedResources">#61000000</color>
     <color name="black_alpha_65" tools:ignore="UnusedResources">#A6000000</color>
+    <color name="white_alpha_5">#0DFFFFFF</color>
     <color name="white_alpha_6">#0FFFFFFF</color>
     <color name="white_alpha_8" tools:ignore="UnusedResources">#14FFFFFF</color>
     <color name="white_alpha_12" tools:ignore="UnusedResources">#1FFFFFFF</color>
@@ -121,6 +127,7 @@
     <color name="white_alpha_32" tools:ignore="UnusedResources">#51FFFFFF</color>
     <color name="white_alpha_38" tools:ignore="UnusedResources">#61FFFFFF</color>
     <color name="white_alpha_50">#80FFFFFF</color>
+    <color name="white_alpha_60">#99FFFFFF</color>
     <color name="white_alpha_70">#B3FFFFFF</color>
     <color name="modern_yellow_300">#FDD663</color>
     <color name="modern_yellow_500">#FBBC04</color>

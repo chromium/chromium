@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "build/build_config.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 
 const size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
@@ -68,22 +67,11 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
     case KEYWORD_MODE:
       return match.associated_keyword != nullptr;
     case FOCUSED_BUTTON_TAB_SWITCH:
-      // Buttons are suppressed for matches with an associated keyword, unless
-      // dedicated button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-        return match.has_tab_match.value_or(false);
-      else
-        return match.has_tab_match.value_or(false) && !match.associated_keyword;
+      return match.has_tab_match.value_or(false);
     case FOCUSED_BUTTON_ACTION:
       return match.action != nullptr;
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      // Remove suggestion buttons are suppressed for matches with an associated
-      // keyword, unless the feature that moves it to the button row is enabled.
-      if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-        return match.SupportsDeletion();
-      } else {
-        return !match.associated_keyword && match.SupportsDeletion();
-      }
+      return match.SupportsDeletion();
     default:
       break;
   }
@@ -178,16 +166,9 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
       all_states.push_back(FOCUSED_BUTTON_HEADER);
 
     all_states.push_back(NORMAL);
-
-    // Keyword mode is accessible if the keyword search button is enabled. If
-    // not, then keyword mode is only accessible by tabbing forward.
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled() ||
-        (direction == kForward && step == kStateOrLine)) {
-      all_states.push_back(KEYWORD_MODE);
-    }
-
+    all_states.push_back(KEYWORD_MODE);
     all_states.push_back(FOCUSED_BUTTON_TAB_SWITCH);
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
     all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);

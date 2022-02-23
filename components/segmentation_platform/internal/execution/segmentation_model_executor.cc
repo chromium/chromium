@@ -16,26 +16,31 @@ SegmentationModelExecutor::SegmentationModelExecutor() = default;
 
 SegmentationModelExecutor::~SegmentationModelExecutor() = default;
 
-absl::Status SegmentationModelExecutor::Preprocess(
+bool SegmentationModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const std::vector<float>& input) {
   // The model must have a single float input tensor, and the length of the
   // input data must match the length of the tensor.
-  if (input_tensors.size() != 1u)
-    return absl::InvalidArgumentError("input tensor size not 1");
-  if (kTfLiteFloat32 != input_tensors[0]->type)
-    return absl::InvalidArgumentError("input tensor type is not float");
+  if (input_tensors.size() != 1u) {
+    LOG(ERROR) << "input tensor size not 1";
+    return false;
+  }
+  if (kTfLiteFloat32 != input_tensors[0]->type) {
+    LOG(ERROR) << "input tensor type is not float";
+    return false;
+  }
   if (input_tensors[0]->bytes / sizeof(input_tensors[0]->type) !=
       input.size()) {
-    return absl::InvalidArgumentError(
-        "length of input data does not match length of tensor");
+    LOG(ERROR) << "length of input data does not match length of tensor";
+    return false;
   }
 
-  tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
-  return absl::OkStatus();
+  absl::Status status =
+      tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
+  return status.ok();
 }
 
-float SegmentationModelExecutor::Postprocess(
+absl::optional<float> SegmentationModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   // The output must be a single tensor with a single float element.
   DCHECK_EQ(1u, output_tensors.size());
@@ -43,7 +48,12 @@ float SegmentationModelExecutor::Postprocess(
   DCHECK_EQ(1u, output_tensors[0]->bytes / sizeof(output_tensors[0]->type));
 
   std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  absl::Status status =
+      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  if (!status.ok()) {
+    NOTREACHED();
+    return absl::nullopt;
+  }
   DCHECK_EQ(1u, data.size());
   return data[0];
 }

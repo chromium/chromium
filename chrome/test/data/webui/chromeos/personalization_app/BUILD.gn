@@ -1,0 +1,65 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_chromeos_personalization_app"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "chromeos/personalization_app"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://personalization/*|" +
+        rebase_path(
+            "$root_gen_dir/ash/webui/personalization_app/resources/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "ambient_subpage_element_test.ts",
+    "avatar_camera_element_test.ts",
+    "avatar_list_element_test.ts",
+    "google_photos_albums_element_test.ts",
+    "google_photos_collection_element_test.ts",
+    "google_photos_photos_by_album_id_element_test.ts",
+    "google_photos_photos_element_test.ts",
+    "local_images_element_test.ts",
+    "personalization_app_component_test.ts",
+    "personalization_app_controller_test.ts",
+    "personalization_app_test_utils.ts",
+    "personalization_breadcrumb_element_test.ts",
+    "personalization_main_element_test.ts",
+    "personalization_router_element_test.ts",
+    "personalization_theme_element_test.ts",
+    "personalization_toast_element_test.ts",
+    "test_ambient_interface_provider.ts",
+    "test_personalization_store.ts",
+    "test_theme_interface_provider.ts",
+    "test_user_interface_provider.ts",
+    "test_wallpaper_interface_provider.ts",
+    "user_preview_element_test.ts",
+    "user_subpage_element_test.ts",
+    "wallpaper_collections_element_test.ts",
+    "wallpaper_fullscreen_element_test.ts",
+    "wallpaper_grid_item_element_test.ts",
+    "wallpaper_images_element_test.ts",
+    "wallpaper_observer_test.ts",
+    "wallpaper_preview_element_test.ts",
+    "wallpaper_selected_element_test.ts",
+  ]
+  deps = [ "//ash/webui/personalization_app/resources:build_ts" ]
+  extra_deps = [ "../..:generate_definitions" ]
+}

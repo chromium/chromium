@@ -8,7 +8,7 @@
 #include <bitset>
 
 #include "device/gamepad/public/cpp/gamepads.h"
-#include "third_party/blink/renderer/modules/gamepad/gamepad_list.h"
+#include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -19,8 +19,8 @@ class MODULES_EXPORT GamepadStateCompareResult {
   STACK_ALLOCATED();
 
  public:
-  GamepadStateCompareResult(GamepadList* old_gamepads,
-                            GamepadList* new_gamepads,
+  GamepadStateCompareResult(const HeapVector<Member<Gamepad>> old_gamepads,
+                            const HeapVector<Member<Gamepad>> new_gamepads,
                             bool compare_all_axes,
                             bool compare_all_buttons);
   ~GamepadStateCompareResult() = default;
@@ -37,8 +37,8 @@ class MODULES_EXPORT GamepadStateCompareResult {
   bool IsButtonUp(size_t pad_index, size_t button_index) const;
 
  private:
-  bool CompareGamepads(GamepadList* old_gamepads,
-                       GamepadList* new_gamepads,
+  bool CompareGamepads(const HeapVector<Member<Gamepad>> old_gamepads,
+                       const HeapVector<Member<Gamepad>> new_gamepads,
                        bool compare_all_axes,
                        bool compare_all_buttons);
   bool CompareAxes(Gamepad* old_gamepad,
@@ -69,7 +69,7 @@ class MODULES_EXPORT GamepadComparisons {
  public:
   // Inspect the gamepad state in |gamepads| and return true if any gamepads
   // have a user activation gesture.
-  static bool HasUserActivation(GamepadList* gamepads);
+  static bool HasUserActivation(const HeapVector<Member<Gamepad>> gamepads);
 
   // Given the connection state of a gamepad in consecutive samples and whether
   // the ID string changed, return whether the gamepad was newly connected in
@@ -84,10 +84,11 @@ class MODULES_EXPORT GamepadComparisons {
   // sample in |new_gamepads|. If |compare_all_axes| or |compare_all_buttons|
   // is true, all axes or buttons will be compared. Otherwise, the comparison
   // will short-circuit after the first difference.
-  static GamepadStateCompareResult Compare(GamepadList* old_gamepads,
-                                           GamepadList* new_gamepads,
-                                           bool compare_all_axes,
-                                           bool compare_all_buttons);
+  static GamepadStateCompareResult Compare(
+      const HeapVector<Member<Gamepad>> old_gamepads,
+      const HeapVector<Member<Gamepad>> new_gamepads,
+      bool compare_all_axes,
+      bool compare_all_buttons);
 };
 
 }  // namespace blink

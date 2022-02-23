@@ -10,6 +10,8 @@
 
 #include "net/base/net_export.h"
 
+class GURL;
+
 namespace net {
 
 class WindowsSystemProxyResolutionRequest;
@@ -35,10 +37,10 @@ class NET_EXPORT WindowsSystemProxyResolver {
       delete;
   virtual ~WindowsSystemProxyResolver() = default;
 
-  // Asynchronously finds a proxy for |url|. The |callback_target| will be
-  // provided with the proxy resolution result.
+  // Asynchronously finds a proxy for `url`. The `callback_target` must outlive
+  // `this`.
   virtual std::unique_ptr<Request> GetProxyForUrl(
-      const std::string& url,
+      const GURL& url,
       WindowsSystemProxyResolutionRequest* callback_target) = 0;
 };
 

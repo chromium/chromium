@@ -64,7 +64,7 @@ public class TabObserverRegistrarTest {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1269017")
+    @FlakyTest(message = "crbug.com/1269017")
     public void testObserveActiveTab() throws Throwable {
         EmbeddedTestServer testServer = mCustomTabActivityTestRule.getTestServer();
         final String windowOpenUrl =

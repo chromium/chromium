@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/bind.h"
 #include "base/ios/scoped_critical_action.h"
 #endif
@@ -21,7 +21,7 @@ namespace base {
 
 namespace internal {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Returns true if multi-tasking is supported on this iOS device.
 bool IsMultiTaskingSupported();
 
@@ -40,7 +40,7 @@ class CriticalClosure {
   ios::ScopedCriticalAction critical_action_;
   OnceClosure closure_;
 };
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace internal
 
@@ -59,7 +59,7 @@ class CriticalClosure {
 // background running time, |MakeCriticalClosure| should be applied on them
 // before posting. |task_name| is used by the platform to identify any tasks
 // that do not complete in time for suspension.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure) {
   DCHECK(internal::IsMultiTaskingSupported());
@@ -73,7 +73,7 @@ inline OnceClosure MakeCriticalClosure(const Location& posted_from,
   return MakeCriticalClosure(posted_from.ToString(), std::move(closure));
 }
 
-#else  // defined(OS_IOS)
+#else  // BUILDFLAG(IS_IOS)
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure) {
   // No-op for platforms where the application does not need to acquire
@@ -86,7 +86,7 @@ inline OnceClosure MakeCriticalClosure(const Location& posted_from,
   return closure;
 }
 
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace base
 

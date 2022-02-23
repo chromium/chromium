@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -64,7 +65,7 @@ class TestTabStripModelObserver : public TabStripModelObserver {
       run_loop_.Quit();
   }
 
-  TabStripModel* model_;
+  raw_ptr<TabStripModel> model_;
   int desired_count_;
   base::RunLoop run_loop_;
 };

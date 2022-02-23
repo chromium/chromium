@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
 
@@ -19,7 +19,6 @@ class DictionaryValue;
 
 namespace extensions {
 class ListenerTracker;
-struct EventFilteringInfo;
 
 // A base class to hold listeners for a given event. This allows for adding,
 // removing, and querying listeners in the list, and calling a callback when
@@ -76,7 +75,7 @@ class APIEventListeners {
 
   // Returns the listeners that should be notified for the given |filter|.
   virtual std::vector<v8::Local<v8::Function>> GetListeners(
-      const EventFilteringInfo* filter,
+      mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) = 0;
 
   // Invalidates the list.
@@ -111,7 +110,7 @@ class UnfilteredEventListeners final : public APIEventListeners {
   bool HasListener(v8::Local<v8::Function> listener) override;
   size_t GetNumListeners() override;
   std::vector<v8::Local<v8::Function>> GetListeners(
-      const EventFilteringInfo* filter,
+      mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) override;
   void Invalidate(v8::Local<v8::Context> context) override;
 
@@ -186,7 +185,7 @@ class FilteredEventListeners final : public APIEventListeners {
   bool HasListener(v8::Local<v8::Function> listener) override;
   size_t GetNumListeners() override;
   std::vector<v8::Local<v8::Function>> GetListeners(
-      const EventFilteringInfo* filter,
+      mojom::EventFilteringInfoPtr filter,
       v8::Local<v8::Context> context) override;
   void Invalidate(v8::Local<v8::Context> context) override;
 

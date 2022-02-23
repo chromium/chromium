@@ -119,7 +119,8 @@ void SingleClientVideoCaptureHost::Stop(
     OnFinishedConsumingBuffer(buffer_id, media::VideoCaptureFeedback());
   }
   DCHECK(buffer_context_map_.empty());
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::ENDED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::ENDED));
   observer_.reset();
   weak_factory_.InvalidateWeakPtrs();
   launched_device_ = nullptr;
@@ -141,14 +142,6 @@ void SingleClientVideoCaptureHost::Resume(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launched_device_)
     launched_device_->ResumeDevice();
-}
-
-void SingleClientVideoCaptureHost::Crop(const base::UnguessableToken& device_id,
-                                        const base::Token& crop_id,
-                                        CropCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1247761): Implement.
-  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 
 void SingleClientVideoCaptureHost::RequestRefreshFrame(
@@ -189,6 +182,11 @@ void SingleClientVideoCaptureHost::GetDeviceFormatsInUse(
 void SingleClientVideoCaptureHost::OnFrameDropped(
     const base::UnguessableToken& device_id,
     media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Ignore this call.
+}
+
+void SingleClientVideoCaptureHost::OnFrameWithEmptyRegionCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore this call.
 }
@@ -253,11 +251,12 @@ void SingleClientVideoCaptureHost::OnBufferRetired(int buffer_id) {
   }
 }
 
-void SingleClientVideoCaptureHost::OnError(media::VideoCaptureError) {
+void SingleClientVideoCaptureHost::OnError(media::VideoCaptureError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   if (observer_)
-    observer_->OnStateChanged(media::mojom::VideoCaptureState::FAILED);
+    observer_->OnStateChanged(
+        media::mojom::VideoCaptureResult::NewErrorCode(error));
 }
 
 void SingleClientVideoCaptureHost::OnFrameDropped(
@@ -274,7 +273,8 @@ void SingleClientVideoCaptureHost::OnStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
   DCHECK(observer_);
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::STARTED));
 }
 
 void SingleClientVideoCaptureHost::OnStartedUsingGpuDecode() {

@@ -107,7 +107,7 @@ class WaylandZwpLinuxDmabuf
 
   // Contains callbacks for requests to create |wl_buffer|s using
   // |zwp_linux_dmabuf_| factory.
-  base::flat_map<struct zwp_linux_buffer_params_v1*,
+  base::flat_map<wl::Object<zwp_linux_buffer_params_v1>,
                  wl::OnRequestBufferCallback>
       pending_params_;
 };

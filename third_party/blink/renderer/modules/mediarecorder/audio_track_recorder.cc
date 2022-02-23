@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/bind_to_current_loop.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 // Note that this code follows the Chrome media convention of defining a "frame"
 // as "one multi-channel sample" as opposed to another common definition meaning
@@ -43,7 +43,7 @@ namespace blink {
 const int kMaxChunkedBufferDurationMs = 60;
 
 AudioTrackRecorder::CodecId AudioTrackRecorder::GetPreferredCodecId() {
-  return CodecId::OPUS;
+  return CodecId::kOpus;
 }
 
 AudioTrackRecorder::AudioTrackRecorder(
@@ -82,7 +82,7 @@ scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
     OnEncodedAudioCB on_encoded_audio_cb,
     int32_t bits_per_second,
     BitrateMode bitrate_mode) {
-  if (codec == CodecId::PCM) {
+  if (codec == CodecId::kPcm) {
     return base::MakeRefCounted<AudioTrackPcmEncoder>(
         media::BindToCurrentLoop(std::move(on_encoded_audio_cb)));
   }
@@ -90,7 +90,7 @@ scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
   // All other paths will use the AudioTrackOpusEncoder.
   return base::MakeRefCounted<AudioTrackOpusEncoder>(
       media::BindToCurrentLoop(std::move(on_encoded_audio_cb)), bits_per_second,
-      bitrate_mode == BitrateMode::VARIABLE);
+      bitrate_mode == BitrateMode::kVariable);
 }
 
 void AudioTrackRecorder::OnSetFormat(const media::AudioParameters& params) {

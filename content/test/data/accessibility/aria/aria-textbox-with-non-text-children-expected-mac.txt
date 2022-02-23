@@ -1,5 +1,5 @@
 AXWebArea
-++AXTextField AXDescription='not editable' AXValue='focusable: ok link name: '
+++AXTextField AXDescription='not editable' AXValue='focusable: oklink name: <newline>'
 ++++AXStaticText AXValue='focusable: '
 ++++AXButton AXTitle='ok'
 ++++AXLink AXDescription='link'
@@ -8,7 +8,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='name: '
 ++++++AXTextField AXTitle='name:'
-++AXTextArea AXDescription='editable' AXValue='focusable: ok link name: '
+++AXTextArea AXDescription='editable' AXValue='focusable: oklink name: <newline>'
 ++++AXStaticText AXValue='focusable: '
 ++++AXButton AXTitle='ok'
 ++++AXLink AXDescription='link'
@@ -17,7 +17,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='name: '
 ++++++AXTextField AXTitle='name:'
-++AXTextField AXDescription='not editable or focusable' AXValue='focusable: ok link name: '
+++AXTextField AXDescription='not editable or focusable' AXValue='focusable: oklink name: <newline>'
 ++++AXStaticText AXValue='focusable: '
 ++++AXButton AXTitle='ok'
 ++++AXLink AXDescription='link'

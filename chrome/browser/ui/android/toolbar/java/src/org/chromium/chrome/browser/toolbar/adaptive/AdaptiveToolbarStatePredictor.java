@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformSer
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /**
  * Central class that determines the state of the toolbar button based on finch configuration,

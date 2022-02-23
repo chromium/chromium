@@ -138,9 +138,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   void AssertWebUIEventFired(const content::TestWebUI::CallData& data,
                              const std::string& event_id) {
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event_fired;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_fired));
-    EXPECT_EQ(event_id, event_fired);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ(event_id, data.arg1()->GetString());
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
@@ -228,12 +227,12 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   crosapi::mojom::PrintServersConfigPtr config =
       crosapi::mojom::PrintServersConfig::New();
   config->print_servers = std::move(servers);
-  config->fetching_mode = chromeos::ServerPrintersFetchingMode::kStandard;
+  config->fetching_mode = ash::ServerPrintersFetchingMode::kStandard;
   ChangePrintServersConfig(std::move(config));
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");
   base::Value::ConstListView printer_list =
-      call_data->arg2()->FindListKey("printServers")->GetList();
+      call_data->arg2()->FindListKey("printServers")->GetListDeprecated();
   bool is_single_server_fetching_mode =
       call_data->arg2()->FindBoolKey("isSingleServerFetchingMode").value();
 

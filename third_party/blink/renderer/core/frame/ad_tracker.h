@@ -8,13 +8,15 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -25,6 +27,7 @@ class LocalFrame;
 enum class ResourceType : uint8_t;
 
 namespace probe {
+class AsyncTaskContext;
 class CallFunction;
 class ExecuteScript;
 }  // namespace probe
@@ -38,6 +41,19 @@ CORE_EXPORT extern const base::Feature kAsyncStackAdTagging;
 class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
  public:
   enum class StackType { kBottomOnly, kBottomAndTop };
+
+  // Together these two values can be used to unqiuely identify the bottom-most
+  // ad script on the stack.
+  struct AdScriptIdentifier {
+    AdScriptIdentifier(const v8_inspector::V8DebuggerId& context_id, int id);
+
+    // v8's debugging id for the v8::Context.
+    v8_inspector::V8DebuggerId context_id;
+
+    // The script's v8 identifier.
+    int id;
+  };
+
   // Finds an AdTracker for a given ExecutionContext.
   static AdTracker* FromExecutionContext(ExecutionContext*);
 
@@ -69,22 +85,26 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   // Called when an async task is created. Check at this point for ad script on
   // the stack and annotate the task if so.
-  void DidCreateAsyncTask(probe::AsyncTaskId* task);
+  void DidCreateAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Called when an async task is eventually run.
-  void DidStartAsyncTask(probe::AsyncTaskId* task);
+  void DidStartAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Called when the task has finished running.
-  void DidFinishAsyncTask(probe::AsyncTaskId* task);
+  void DidFinishAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Returns true if any script in the pseudo call stack has previously been
   // identified as an ad resource, if the current ExecutionContext is a known ad
   // execution context, or if the script at the top of isolate's
   // stack is ad script. Whether to look at just the bottom of the
-  // stack or the top and bottom is indicated by |stack_type|. kBottomAndTop is
+  // stack or the top and bottom is indicated by `stack_type`. kBottomAndTop is
   // generally best as it catches more ads, but if you're calling very
   // frequently then consider just the bottom of the stack for performance sake.
-  bool IsAdScriptInStack(StackType stack_type);
+  // If `out_ad_script` is non-null and there is ad script in the stack, the
+  // bottom-most known ad script on the stack will be copied to the address.
+  bool IsAdScriptInStack(
+      StackType stack_type,
+      absl::optional<AdScriptIdentifier>* out_ad_script = nullptr);
 
   virtual void Trace(Visitor*) const;
 
@@ -108,6 +128,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // no src attribute set. |script_id| won't be set for module scripts in an
   // errored state or for non-source text modules.
   void WillExecuteScript(ExecutionContext*,
+                         const v8::Local<v8::Context>& v8_context,
                          const String& script_name,
                          int script_id);
   void DidExecuteScript();
@@ -122,6 +143,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   Vector<bool> stack_frame_is_ad_;
 
   int num_ads_in_stack_ = 0;
+
+  // Indicates the bottom-most ad script on the stack or `absl::nullopt` if
+  // there isn't one. A non-null value implies `num_ads_in_stack > 0`.
+  absl::optional<AdScriptIdentifier> bottom_most_ad_script_;
 
   // The set of ad scripts detected outside of ad-frame contexts. Scripts are
   // identified by name (i.e. resource URL). Scripts with no name (i.e. inline

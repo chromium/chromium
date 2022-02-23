@@ -23,6 +23,7 @@
 #include "net/http/http_auth_handler_basic.h"
 #include "net/http/http_auth_handler_digest.h"
 #include "net/http/http_auth_handler_factory.h"
+#include "net/http/http_auth_preferences.h"
 #include "net/http/http_auth_scheme.h"
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
@@ -50,11 +51,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // make system calls, which doesn't seem like a great idea.
   net::HttpAuthCache auth_cache(
       false /* key_server_entries_by_network_isolation_key */);
-  net::HttpAuthHandlerRegistryFactory auth_handler_factory;
-  auth_handler_factory.RegisterSchemeFactory(
-      net::kBasicAuthScheme, new net::HttpAuthHandlerBasic::Factory());
-  auth_handler_factory.RegisterSchemeFactory(
-      net::kDigestAuthScheme, new net::HttpAuthHandlerDigest::Factory());
+  net::HttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.set_allowed_schemes(
+      std::set<std::string>{net::kBasicAuthScheme, net::kDigestAuthScheme});
+  net::HttpAuthHandlerRegistryFactory auth_handler_factory(
+      &http_auth_preferences);
 
   scoped_refptr<net::HttpAuthController> auth_controller(
       base::MakeRefCounted<net::HttpAuthController>(
@@ -67,8 +68,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       std::move(fuzzed_socket), "Bond/007", net::HostPortPair("foo", 80),
       net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
                        net::HostPortPair("proxy", 42)),
-      auth_controller.get(), true /* tunnel */, false /* using_spdy */,
-      net::kProtoUnknown, nullptr /* proxy_delegate */,
+      auth_controller.get(), nullptr /* proxy_delegate */,
       TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   result = callback.GetResult(result);

@@ -7,18 +7,15 @@
  *     chrome://bluetooth-internals/.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './uuid.mojom-lite.js';
-import './device.mojom-lite.js';
-import './adapter.mojom-lite.js';
-import './bluetooth_internals.mojom-lite.js';
-
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {DiscoverySessionRemote} from './adapter.mojom-webui.js';
 import {AdapterBroker, AdapterProperty, getAdapterBroker} from './adapter_broker.js';
 import {AdapterPage} from './adapter_page.js';
+import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {DebugLogPage} from './debug_log_page.js';
+import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {DeviceDetailsPage} from './device_details_page.js';
 import {DevicesPage, ScanStatus} from './devices_page.js';
@@ -49,14 +46,14 @@ let devicesPage = null;
 /** @type {DebugLogPage} */
 let debugLogPage = null;
 
-/** @type {bluetooth.mojom.DiscoverySessionRemote} */
+/** @type {DiscoverySessionRemote} */
 let discoverySession = null;
 
 /** @type {boolean} */
 let userRequestedScanStop = false;
 
-/** @type {!mojom.BluetoothInternalsHandlerRemote} */
-const bluetoothInternalsHandler = mojom.BluetoothInternalsHandler.getRemote();
+/** @type {!BluetoothInternalsHandlerRemote} */
+const bluetoothInternalsHandler = BluetoothInternalsHandler.getRemote();
 
 /**
  * Observer for page changes. Used to update page title header.
@@ -105,7 +102,7 @@ function removeDeviceDetailsPage(address) {
  * '#page-container', and adds a sidebar item to show the new page. If a
  * page exists that matches |deviceInfo.address|, nothing is created and the
  * existing page is returned.
- * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+ * @param {!DeviceInfo} deviceInfo
  * @return {!DeviceDetailsPage}
  */
 function makeDeviceDetailsPage(deviceInfo) {

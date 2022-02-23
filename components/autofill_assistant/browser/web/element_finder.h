@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -19,12 +20,17 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element.h"
-#include "components/autofill_assistant/browser/web/js_snippets.h"
+#include "components/autofill_assistant/browser/web/js_filter_builder.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/node_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebContents;
 class RenderFrameHost;
+struct GlobalRenderFrameHostId;
 }  // namespace content
 
 namespace autofill_assistant {
@@ -67,7 +73,7 @@ class ElementFinder : public WebControllerWorker {
     DomObjectFrameStack dom_object;
 
     // The render frame host contains the element.
-    content::RenderFrameHost* container_frame_host = nullptr;
+    raw_ptr<content::RenderFrameHost> container_frame_host = nullptr;
 
     const std::string& object_id() const {
       return dom_object.object_data.object_id;
@@ -87,11 +93,13 @@ class ElementFinder : public WebControllerWorker {
   };
 
   // |web_contents|, |devtools_client| and |user_data| must be valid for the
-  // lifetime of the instance.
+  // lifetime of the instance. If |annotate_dom_model_service| is not nullptr,
+  // must be valid for the lifetime of the instance.
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
                 const UserData* user_data,
                 ProcessedActionStatusDetailsProto* log_info,
+                AnnotateDomModelService* annotate_dom_model_service,
                 const Selector& selector,
                 ResultType result_type);
   ~ElementFinder() override;
@@ -104,87 +112,24 @@ class ElementFinder : public WebControllerWorker {
   void Start(const Result& start_element, Callback callback);
 
  private:
-  // Helper for building JavaScript functions.
-  //
-  // TODO(b/155264465): extract this into a top-level class in its own file, so
-  // it can be tested.
-  class JsFilterBuilder {
-   public:
-    JsFilterBuilder();
-    ~JsFilterBuilder();
-
-    // Builds the argument list for the function.
-    std::vector<std::unique_ptr<runtime::CallArgument>> BuildArgumentList()
-        const;
-
-    // Return the JavaScript function.
-    std::string BuildFunction() const;
-
-    // Adds a filter, if possible.
-    bool AddFilter(const SelectorProto::Filter& filter);
-
-   private:
-    std::vector<std::string> arguments_;
-    JsSnippet snippet_;
-    bool defined_query_all_deduplicated_ = false;
-
-    // A number that's increased by each call to DeclareVariable() to make sure
-    // we generate unique variables.
-    int variable_counter_ = 0;
-
-    // Adds a regexp filter.
-    void AddRegexpFilter(const TextFilter& filter, const std::string& property);
-
-    // Declares and initializes a variable containing a RegExp object that
-    // correspond to |filter| and returns the variable name.
-    std::string AddRegexpInstance(const TextFilter& filter);
-
-    // Returns the name of a new unique variable.
-    std::string DeclareVariable();
-
-    // Adds an argument to the argument list and returns its JavaScript
-    // representation.
-    //
-    // This allows passing strings to the JavaScript code without having to
-    // hardcode and escape them - this helps avoid XSS issues.
-    std::string AddArgument(const std::string& value);
-
-    // Adds a line of JavaScript code to the function, between the header and
-    // footer. At that point, the variable "elements" contains the current set
-    // of matches, as an array of nodes. It should be updated to contain the new
-    // set of matches.
-    //
-    // IMPORTANT: Only pass strings that originate from hardcoded strings to
-    // this method.
-    void AddLine(const std::string& line) { snippet_.AddLine(line); }
-
-    // Adds a line of JavaScript code to the function that's made up of multiple
-    // parts to be concatenated together.
-    //
-    // IMPORTANT: Only pass strings that originate from hardcoded strings to
-    // this method.
-    void AddLine(const std::vector<std::string>& line) {
-      snippet_.AddLine(line);
-    }
-
-    // Define a |queryAllDeduplicated(roots, selector)| JS function that calls
-    // querySelectorAll(selector) on all |roots| (in order) and returns a
-    // deduplicated list of the matching elements.
-    // Calling this function a second time does not do anything; the function
-    // will be defined only once.
-    void DefineQueryAllDeduplicated();
-  };
-
   // Update the log info with details about the current run.
-  void UpdateLogInfo(const ClientStatus& status);
+  void UpdateLogInfo(const Result& result, const ClientStatus& status);
 
-  // Sends a result with the given status and no data. This expects an error
-  // status and will add details to |log_info_|.
-  void SendErrorResult(const ClientStatus& status);
+  // Eventually returns the given status and no element. This expects an error
+  // status.
+  void GiveUpElementResolutionWithError(const ClientStatus& status);
 
-  // Builds a result from the current state of the finder and returns it. This
-  // will add details to |log_info_|.
-  void SendSuccessResult(const std::string& object_id);
+  // Builds a result from the current state of the finder and eventually
+  // returns it with an ok status.
+  void ResultFound(const std::string& object_id);
+
+  // Call |callback_| with the |status| and |result|.
+  void SendResult(const ClientStatus& status, const Result& result);
+
+  // Calls |SendResult| with a the |result_status_| and |result_| if all tasks
+  // are complete. This includes waiting for the CSS selector resolution and
+  // the annotate DOM model inference (if applicable).
+  void SendCollectedResultIfAny();
 
   // Report |object_id| as result in |result| and initialize the frame-related
   // fields of |result| from the current state. Leaves the frame stack empty.
@@ -322,10 +267,29 @@ class ElementFinder : public WebControllerWorker {
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
 
-  content::WebContents* const web_contents_;
-  DevtoolsClient* const devtools_client_;
-  const UserData* const user_data_;
-  ProcessedActionStatusDetailsProto* const log_info_;
+  // Helpers for running the annotate DOM model on all frames. The results will
+  // be compared against |result_| and logged to |log_info_|.
+  void DescribeNodeForAnnotateDom();
+  void OnDescribeNodeForAnnotateDom(
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<dom::DescribeNodeResult> node_result);
+  void RunAnnotateDomModel();
+  void RunAnnotateDomModelOnFrame(
+      const content::GlobalRenderFrameHostId& host_id,
+      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback);
+  void OnRunAnnotateDomModelOnFrame(
+      const content::GlobalRenderFrameHostId& host_id,
+      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
+      mojom::NodeDataStatus status,
+      const std::vector<NodeData>& node_data);
+  void OnRunAnnotateDomModel(
+      const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
+
+  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<DevtoolsClient> devtools_client_;
+  const raw_ptr<const UserData> user_data_;
+  const raw_ptr<ProcessedActionStatusDetailsProto> log_info_;
+  const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
@@ -344,7 +308,7 @@ class ElementFinder : public WebControllerWorker {
   int current_filter_index_range_start_ = -1;
 
   // Pointer to the current frame
-  content::RenderFrameHost* current_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> current_frame_ = nullptr;
 
   // The frame id to use to execute devtools Javascript calls within the
   // context of the frame. Might be empty if no frame id needs to be
@@ -368,6 +332,25 @@ class ElementFinder : public WebControllerWorker {
   std::vector<std::unique_ptr<std::vector<std::string>>> tasks_results_;
 
   std::vector<JsObjectIdentifier> frame_stack_;
+
+  // The status of finding the element.
+  ClientStatus result_status_;
+
+  // The successful result when the element has been found. In the case where
+  // |selector_| contains |SemanticInformation| this is only filled once the
+  // backend node id has been resolved.
+  Result result_ = Result::EmptyResult();
+  // The backend node id (stable id of DevTools) for the |result_|. Only
+  // filled if the |selector_| contains |SemanticInformation|.
+  // TODO(b/217160707): Always fill this.
+  absl::optional<int> result_backend_node_id_;
+  bool css_result_done_ = false;
+
+  // Elements gathered through all frames. Unused if the |selector_| does not
+  // contain |SemanticInformation|.
+  std::vector<GlobalBackendNodeId> semantic_node_results_;
+  std::vector<mojom::NodeDataStatus> node_data_frame_status_;
+  bool semantic_result_done_ = false;
 
   // Finder for the target of the current proximity filter.
   std::unique_ptr<ElementFinder> proximity_target_filter_;

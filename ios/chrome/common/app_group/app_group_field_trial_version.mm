@@ -14,3 +14,5 @@ NSString* const kFieldTrialVersionKey = @"FieldTrialVersion";
 const int kPasswordCreationFeatureVersion = 0;
 
 const int kCredentialProviderExtensionPromoFeatureVersion = 0;
+
+const int kPasswordManagerBrandingUpdateFeatureVersion = 0;

@@ -14,12 +14,13 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace device {
 
@@ -80,7 +81,7 @@ BluetoothUUID::BluetoothUUID(const std::string& uuid) {
   GetCanonicalUuid(uuid, &value_, &canonical_value_, &format_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BluetoothUUID::BluetoothUUID(GUID uuid) {
   auto buffer = base::win::WStringFromGUID(uuid);
   DCHECK_EQ('{', buffer[0]);
@@ -90,13 +91,13 @@ BluetoothUUID::BluetoothUUID(GUID uuid) {
                    &canonical_value_, &format_);
   DCHECK_EQ(kFormat128Bit, format_);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 BluetoothUUID::BluetoothUUID() : format_(kFormatInvalid) {}
 
 BluetoothUUID::~BluetoothUUID() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
   DCHECK_EQ(36u, uuid.size());
@@ -105,7 +106,7 @@ GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
   CHECK_EQ(NOERROR, ::CLSIDFromString(base::as_wcstr(braced_uuid), &guid));
   return guid;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool BluetoothUUID::IsValid() const {
   return format_ != kFormatInvalid;
@@ -150,8 +151,8 @@ bool BluetoothUUID::operator!=(const BluetoothUUID& uuid) const {
   return canonical_value_ != uuid.canonical_value_;
 }
 
-void PrintTo(const BluetoothUUID& uuid, std::ostream* out) {
-  *out << uuid.canonical_value();
+std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid) {
+  return os << uuid.canonical_value();
 }
 
 }  // namespace device

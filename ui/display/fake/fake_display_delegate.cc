@@ -196,7 +196,11 @@ bool FakeDisplayDelegate::SetGammaCorrection(
   return false;
 }
 
-void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id, bool enabled) {}
+void FakeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
+                                           bool enabled,
+                                           SetPrivacyScreenCallback callback) {
+  std::move(callback).Run(false);
+}
 
 void FakeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {
   observers_.AddObserver(observer);

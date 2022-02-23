@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -59,7 +60,7 @@ struct MockCredential {
 };
 
 struct MockContext {
-  MockCredential* credential = nullptr;
+  raw_ptr<MockCredential> credential = nullptr;
   std::u16string target_principal;
   int uniquifier = ++uniquifier_;
   int rounds = 0;

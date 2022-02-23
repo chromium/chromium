@@ -16,7 +16,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -95,7 +94,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationHandle handle) {
         return false;
     }
 
@@ -120,11 +119,11 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public void onNavigationStarted(NavigationParams params) {}
+    public void onNavigationStarted(NavigationHandle handle) {}
 
     @Override
     public void onDecisionReachedForNavigation(
-            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult) {}
+            NavigationHandle handle, OverrideUrlLoadingResult overrideUrlLoadingResult) {}
 
     public void initializeWithDelegate(InterceptNavigationDelegateImpl delegate) {
         mInterceptNavigationDelegate = delegate;

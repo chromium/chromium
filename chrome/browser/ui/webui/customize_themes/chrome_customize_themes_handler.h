@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,10 +61,10 @@ class ChromeCustomizeThemesHandler
   mojo::Remote<customize_themes::mojom::CustomizeThemesClient> remote_client_;
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandler> receiver_;
 
-  content::WebContents* const web_contents_;
-  Profile* const profile_;
-  chrome_colors::ChromeColorsService* const chrome_colors_service_;
-  ThemeService* const theme_service_;
+  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<chrome_colors::ChromeColorsService> chrome_colors_service_;
+  const raw_ptr<ThemeService> theme_service_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CUSTOMIZE_THEMES_CHROME_CUSTOMIZE_THEMES_HANDLER_H_

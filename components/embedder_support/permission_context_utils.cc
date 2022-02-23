@@ -19,14 +19,14 @@
 #include "components/permissions/contexts/wake_lock_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/permissions/contexts/geolocation_permission_context_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace embedder_support {
 
@@ -47,9 +47,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
 
   DCHECK(delegates.camera_pan_tilt_zoom_permission_context_delegate);
   DCHECK(delegates.geolocation_permission_context_delegate);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   DCHECK(delegates.geolocation_manager);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   DCHECK(delegates.media_stream_device_enumerator);
   DCHECK(delegates.nfc_permission_context_delegate);
 
@@ -72,12 +72,12 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
       std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
           browser_context);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextMac>(
           browser_context,
@@ -94,7 +94,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
   permission_contexts[ContentSettingsType::MIDI_SYSEX] =
       std::make_unique<permissions::MidiSysexPermissionContext>(
           browser_context);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::NFC] =
       std::make_unique<permissions::NfcPermissionContextAndroid>(
           browser_context,
@@ -104,7 +104,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
       std::make_unique<permissions::NfcPermissionContext>(
           browser_context,
           std::move(delegates.nfc_permission_context_delegate));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
       std::make_unique<payments::PaymentHandlerPermissionContext>(
           browser_context);

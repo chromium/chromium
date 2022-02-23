@@ -13,6 +13,9 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #include "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
@@ -25,6 +28,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/element_selector.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,9 +51,9 @@ using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
-using chrome_test_util::TurnSettingsSwitchOn;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
+using chrome_test_util::TurnTableViewSwitchOn;
 
 namespace {
 
@@ -64,11 +69,12 @@ NSString* GetTextFieldForID(int category_id) {
 
 // Returns the GREYElementInteraction* for the item on the password list with
 // the given |matcher|. It scrolls in |direction| if necessary to ensure that
-// the matched item is interactable.
+// the matched item is sufficiently visible, thus interactable.
 GREYElementInteraction* GetInteractionForListItem(id<GREYMatcher> matcher,
                                                   GREYDirection direction) {
   return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
+      selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
+                                          nil)]
          usingSearchAction:grey_scrollInDirection(direction, kScrollAmount)
       onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
 }
@@ -231,6 +237,52 @@ id<GREYMatcher> DuplicateCredentialViewPasswordButton() {
                     nullptr);
 }
 
+// Matcher for the "Set up…"
+GREYElementInteraction* SetUpTrustedVaultLink() {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kOnDeviceEncryptionSetUpId),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+}
+
+// Matcher for the link allowing to learn more about
+// on device encryption. Only present when the user has opted-in.
+GREYElementInteraction* OptedInTrustedVaultLink() {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kOnDeviceEncryptionLearnMoreId),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+}
+
+// Matcher for the link explaining Trusted Vault.
+// Only present when the user has opted-in.
+GREYElementInteraction* OptedInTrustedVaultText() {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kOnDeviceEncryptionOptedInTextId),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+}
+
+// Matcher for the text offering the user to opt-in trusted vault.
+GREYElementInteraction* OptInTrustedVaultLink() {
+  return [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kOnDeviceEncryptionOptInId),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+}
+
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
@@ -254,6 +306,11 @@ id<GREYMatcher> AddPasswordButton() {
 // Returns matcher for the "Save" button in the "Add Password" view.
 id<GREYMatcher> AddPasswordSaveButton() {
   return grey_accessibilityID(kPasswordsAddPasswordSaveButtonId);
+}
+
+// Matcher for the toolbar's edit done button.
+id<GREYMatcher> SettingToolbarEditDoneButton() {
+  return grey_accessibilityID(kSettingsToolbarEditDoneButtonId);
 }
 
 // Saves an example form in the store.
@@ -317,6 +374,13 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 }
 
+id<GREYMatcher> EditDoneButton() {
+  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
+    return SettingToolbarEditDoneButton();
+  }
+  return NavigationBarDoneButton();
+}
+
 }  // namespace
 
 // Various tests for the Save Passwords section of the settings.
@@ -339,15 +403,14 @@ void CopyPasswordDetailWithID(int detail_id) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  // Password Editing Feature is enabled by test name. This is done because it
-  // is inefficient to use ensureAppLaunchedWithConfiguration for each test.
-  // This should be removed once test config is modified.
-  if ([self isRunningTest:@selector(testEditUsername)] ||
-      [self isRunningTest:@selector(testEditUsernameFails)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEditPasswordsInSettings);
+  if ([self isRunningTest:@selector
+            (testNoOndeviceEncryptionSetupWhenSignedOut)]) {
+    config.features_enabled.push_back(syncer::kSyncTrustedVaultPassphrasePromo);
   }
-
+  if ([self isRunningTest:@selector(testNoOndeviceEncryptionWithoutFlag)]) {
+    config.features_disabled.push_back(
+        syncer::kSyncTrustedVaultPassphrasePromo);
+  }
   if ([self isRunningTest:@selector(testToolbarAddPasswordButton)] ||
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
       [self isRunningTest:@selector(testAddNewPasswordCredential)] ||
@@ -362,6 +425,30 @@ void CopyPasswordDetailWithID(int detail_id) {
   return config;
 }
 
+// Verifies that a signed out account has no option related to
+// on device encryption.
+- (void)testNoOndeviceEncryptionWithoutFlag {
+  OpenPasswordSettings();
+
+  // Check that the menus related to on-device encryptions are not displayed.
+  [OptedInTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
+  [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
+}
+
+// Check that a user which is not logged in any account do not get
+// offered to use trusted vault.
+- (void)testNoOndeviceEncryptionSetupWhenSignedOut {
+  OpenPasswordSettings();
+
+  // Check that the menus related to on-device encryptions are not displayed.
+  [OptedInTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [OptedInTrustedVaultText() assertWithMatcher:grey_nil()];
+  [OptInTrustedVaultLink() assertWithMatcher:grey_nil()];
+  [SetUpTrustedVaultLink() assertWithMatcher:grey_nil()];
+}
+
 // Verifies the UI elements are accessible on the Passwords page.
 - (void)testAccessibilityOnPasswords {
   // Saving a form is needed for using the "password details" view.
@@ -372,7 +459,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   TapEdit();
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   // Inspect "password details" view.
@@ -770,7 +857,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   TapEdit();
 
   // Check that the "Save Passwords" switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kSavePasswordSwitchTableViewId, YES,
                                           NO)] assertWithMatcher:grey_notNil()];
 
@@ -990,14 +1077,14 @@ void CopyPasswordDetailWithID(int detail_id) {
     // Toggle the switch. It is located near the top, so if not interactable,
     // try scrolling up.
     [GetInteractionForListItem(
-        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
-                                             expected_state),
-        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!expected_state)];
+        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
+                                              expected_state),
+        kGREYDirectionUp) performAction:TurnTableViewSwitchOn(!expected_state)];
 
     // Check that the switch has been modified.
     [GetInteractionForListItem(
-        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
-                                             !expected_state),
+        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
+                                              !expected_state),
         kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
 
     // Check the stored items. Scroll down if needed.
@@ -1020,10 +1107,10 @@ void CopyPasswordDetailWithID(int detail_id) {
   // preferences.
   constexpr BOOL kExpectedState[] = {YES, NO};
   for (BOOL expected_initial_state : kExpectedState) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                             kSavePasswordSwitchTableViewId,
                                             expected_initial_state)]
-        performAction:TurnSettingsSwitchOn(!expected_initial_state)];
+        performAction:TurnTableViewSwitchOn(!expected_initial_state)];
     const bool expected_final_state = !expected_initial_state;
     GREYAssertEqual(expected_final_state,
                     [PasswordSettingsAppInterface isCredentialsServiceEnabled],
@@ -1237,9 +1324,13 @@ void CopyPasswordDetailWithID(int detail_id) {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_EXPORT_PASSWORDS)]
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                 IDS_IOS_EXPORT_PASSWORDS),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                  kScrollAmount)
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
       performAction:grey_tap()];
 
   [GetInteractionForPasswordsExportConfirmAlert(
@@ -1314,7 +1405,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_typeText(@"2")];
 
   // Check that the "Save Passwords" switch is hidden.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kSavePasswordSwitchTableViewId, YES)]
       assertWithMatcher:grey_nil()];
 
@@ -1421,7 +1512,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   //      assertWithMatcher:grey_nil()];
 
   // Get out of edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   // Remove filter search term.
@@ -1458,14 +1549,14 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
                                    grey_not(grey_enabled()), nil)];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]
@@ -1509,7 +1600,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]
@@ -1523,7 +1614,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]
@@ -1580,7 +1671,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"concrete username2")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
                                    grey_not(grey_enabled()), nil)];
 
@@ -1691,17 +1782,17 @@ void CopyPasswordDetailWithID(int detail_id) {
     // Toggle the switch. It is located near the top, so if not interactable,
     // try scrolling up.
     [GetInteractionForListItem(
-        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
-                                             expectedState),
-        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!expectedState)];
+        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
+                                              expectedState),
+        kGREYDirectionUp) performAction:TurnTableViewSwitchOn(!expectedState)];
 
     // Check that the switch has been modified.
     [GetInteractionForListItem(
-        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
-                                             !expectedState),
+        chrome_test_util::TableViewSwitchCell(kSavePasswordSwitchTableViewId,
+                                              !expectedState),
         kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
 
-      // Expect the button to be enabled.
+    // Expect the button to be enabled.
     [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
@@ -1846,7 +1937,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:EditConfirmationButton()]

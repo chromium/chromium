@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -18,9 +19,9 @@
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -141,16 +142,17 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
     const auto& users = login_manager_mixin_.users();
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     // User with expired offline login timeout.
-    user_manager::known_user::SetLastOnlineSignin(users[0].account_id,
-                                                  now - kLoginOnlineLongDelay);
-    user_manager::known_user::SetOfflineSigninLimit(users[0].account_id,
-                                                    kLoginOnlineShortDelay);
+    known_user.SetLastOnlineSignin(users[0].account_id,
+                                   now - kLoginOnlineLongDelay);
+    known_user.SetOfflineSigninLimit(users[0].account_id,
+                                     kLoginOnlineShortDelay);
 
     // User withoin offline login timeout.
-    user_manager::known_user::SetLastOnlineSignin(users[1].account_id, now);
-    user_manager::known_user::SetOfflineSigninLimit(users[1].account_id,
-                                                    kLoginOnlineShortDelay);
+    known_user.SetLastOnlineSignin(users[1].account_id, now);
+    known_user.SetOfflineSigninLimit(users[1].account_id,
+                                     kLoginOnlineShortDelay);
   }
 
  protected:
@@ -183,15 +185,15 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   void SetUpLocalState() override {
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
-    user_manager::known_user::SetLastOnlineSignin(
-        test_user_over_the_limit_.account_id, now - kLoginOnlineLongDelay);
-    user_manager::known_user::SetOfflineSigninLimit(
-        test_user_over_the_limit_.account_id, kLoginOnlineShortDelay);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetLastOnlineSignin(test_user_over_the_limit_.account_id,
+                                   now - kLoginOnlineLongDelay);
+    known_user.SetOfflineSigninLimit(test_user_over_the_limit_.account_id,
+                                     kLoginOnlineShortDelay);
 
-    user_manager::known_user::SetLastOnlineSignin(
-        test_user_under_the_limit_.account_id, now);
-    user_manager::known_user::SetOfflineSigninLimit(
-        test_user_under_the_limit_.account_id, kLoginOnlineShortDelay);
+    known_user.SetLastOnlineSignin(test_user_under_the_limit_.account_id, now);
+    known_user.SetOfflineSigninLimit(test_user_under_the_limit_.account_id,
+                                     kLoginOnlineShortDelay);
   }
 
  protected:

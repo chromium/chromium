@@ -4,11 +4,12 @@
 
 package org.chromium.components.autofill_public;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.autofill.AutofillId;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnO;
 
@@ -18,7 +19,7 @@ import org.chromium.base.annotations.VerifiesOnO;
  * components/autofill/core/browser/field_types.cc. Note that the list of possibly returned strings
  * can and will change in the future.
  */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 @VerifiesOnO
 public class ViewType implements Parcelable {
     /**

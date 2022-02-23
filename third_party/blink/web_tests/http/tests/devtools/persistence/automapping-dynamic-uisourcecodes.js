@@ -9,7 +9,7 @@
   var foo_js = {content: 'console.log(\'foo.js!\');', time: new Date('December 1, 1989')};
 
   var automappingTest = new BindingsTestRunner.AutomappingTest(new Workspace.Workspace());
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   fs.reportCreated(onFileSystemCreated);
 
   function onFileSystemCreated() {

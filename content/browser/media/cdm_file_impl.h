@@ -15,6 +15,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "media/cdm/cdm_type.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "url/origin.h"
@@ -36,7 +37,7 @@ class CdmFileImpl final : public media::mojom::CdmFile {
 
   CdmFileImpl(const std::string& file_name,
               const url::Origin& origin,
-              const std::string& file_system_id,
+              const media::CdmType& cdm_type,
               const std::string& file_system_root_uri,
               scoped_refptr<storage::FileSystemContext> file_system_context);
 
@@ -94,10 +95,12 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   const std::string file_name_;
   const std::string temp_file_name_;
 
+  // TODO(crbug.com/1231162): Remove some of these fields and update this
+  // comment when we migrate off of the PluginPrivateFileSystem.
   // Files are stored in the PluginPrivateFileSystem. The following are needed
   // to access files.
   const url::Origin origin_;
-  const std::string file_system_id_;
+  const media::CdmType cdm_type_;
   const std::string file_system_root_uri_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 

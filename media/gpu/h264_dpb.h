@@ -119,8 +119,8 @@ class H264DPB {
   // and free it.
   void DeleteUnused();
 
-  // Remove a picture by its pic_order_cnt and free it.
-  void DeleteByPOC(int poc);
+  // Remove a picture from DPB and free it.
+  void Delete(scoped_refptr<H264Picture> pic);
 
   // Clear DPB.
   void Clear();

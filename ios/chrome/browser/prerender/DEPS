@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^prerender_service_impl.mm": [
+    "+ios/chrome/browser/ui/ntp/ntp_util.h",
+  ],
+}
+

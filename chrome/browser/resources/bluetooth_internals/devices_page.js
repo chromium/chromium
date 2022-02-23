@@ -7,6 +7,7 @@
  *     chrome://bluetooth-internals/.
  */
 
+import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {DeviceTable} from './device_table.js';
 import {Page} from './page.js';
@@ -48,7 +49,7 @@ export class DevicesPage extends Page {
 
   /**
    * Updates the inspect status of the given |deviceInfo| in the device table.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    * @param {boolean} isInspecting
    */
   setInspecting(deviceInfo, isInspecting) {

@@ -28,6 +28,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/system/toast_catalog.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace policy {
 
 namespace {
@@ -71,8 +75,12 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
                void(const std::u16string& text,
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
-  MOCK_CONST_METHOD2(ShowToast,
-                     void(const std::string& id, const std::u16string& text));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MOCK_CONST_METHOD3(ShowToast,
+                     void(const std::string& id,
+                          ash::ToastCatalogName catalog_name,
+                          const std::u16string& text));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD2(CloseWidget,
                void(views::Widget* widget, views::Widget::ClosedReason reason));
 
@@ -127,8 +135,10 @@ INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
                          ClipboardBubbleTestWithParam,
                          ::testing::Values(absl::nullopt,
                                            ui::EndpointType::kDefault,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUrl));
 
 class ClipboardBubbleButtonsTestWithParam
@@ -171,8 +181,10 @@ TEST_P(ClipboardBubbleButtonsTestWithParam, CancelPressed) {
 INSTANTIATE_TEST_SUITE_P(DlpClipboardNotifierTest,
                          ClipboardBubbleButtonsTestWithParam,
                          ::testing::Values(ui::EndpointType::kDefault,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUnknownVm,
                                            ui::EndpointType::kBorealis,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                            ui::EndpointType::kUrl));
 
 class DlpClipboardNotifierTest : public testing::Test {
@@ -259,63 +271,96 @@ TEST_F(DlpClipboardNotifierTest, ProceedSavedHistory) {
   const ui::DataTransferEndpoint url_dst(
       url::Origin::Create(GURL(kExampleUrl)));
   const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kAcceptButtonClicked))
+      .Times(2);
+
+  notifier.ProceedPressed(url_dst, nullptr);
+  notifier.ProceedPressed(default_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&default_dst));
+
+  notifier.ResetUserWarnSelection();
+
+  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&default_dst));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DlpClipboardNotifierTest, ProceedSavedHistoryVMs) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
 
   EXPECT_CALL(notifier,
               CloseWidget(testing::_,
                           views::Widget::ClosedReason::kAcceptButtonClicked))
-      .Times(4);
+      .Times(2);
 
-  notifier.ProceedPressed(url_dst, nullptr);
-  notifier.ProceedPressed(default_dst, nullptr);
   notifier.ProceedPressed(arc_dst, nullptr);
   notifier.ProceedPressed(crostini_dst, nullptr);
 
-  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst));
-  EXPECT_TRUE(notifier.DidUserApproveDst(&default_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&arc_dst));
   EXPECT_TRUE(notifier.DidUserApproveDst(&crostini_dst));
 
   notifier.ResetUserWarnSelection();
 
-  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst));
-  EXPECT_FALSE(notifier.DidUserApproveDst(&default_dst));
   EXPECT_FALSE(notifier.DidUserApproveDst(&arc_dst));
   EXPECT_FALSE(notifier.DidUserApproveDst(&crostini_dst));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DlpClipboardNotifierTest, CancelSavedHistory) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   const ui::DataTransferEndpoint url_dst(
       url::Origin::Create(GURL(kExampleUrl)));
   const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
+
+  EXPECT_CALL(notifier,
+              CloseWidget(testing::_,
+                          views::Widget::ClosedReason::kCancelButtonClicked))
+      .Times(2);
+
+  notifier.CancelWarningPressed(url_dst, nullptr);
+  notifier.CancelWarningPressed(default_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserCancelDst(&url_dst));
+  EXPECT_TRUE(notifier.DidUserCancelDst(&default_dst));
+
+  notifier.ResetUserWarnSelection();
+
+  EXPECT_FALSE(notifier.DidUserCancelDst(&url_dst));
+  EXPECT_FALSE(notifier.DidUserCancelDst(&default_dst));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DlpClipboardNotifierTest, CancelSavedHistoryVMs) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
 
   EXPECT_CALL(notifier,
               CloseWidget(testing::_,
                           views::Widget::ClosedReason::kCancelButtonClicked))
-      .Times(4);
+      .Times(2);
 
-  notifier.CancelWarningPressed(url_dst, nullptr);
-  notifier.CancelWarningPressed(default_dst, nullptr);
   notifier.CancelWarningPressed(arc_dst, nullptr);
   notifier.CancelWarningPressed(crostini_dst, nullptr);
 
-  EXPECT_TRUE(notifier.DidUserCancelDst(&url_dst));
-  EXPECT_TRUE(notifier.DidUserCancelDst(&default_dst));
   EXPECT_TRUE(notifier.DidUserCancelDst(&arc_dst));
   EXPECT_TRUE(notifier.DidUserCancelDst(&crostini_dst));
 
   notifier.ResetUserWarnSelection();
 
-  EXPECT_FALSE(notifier.DidUserCancelDst(&url_dst));
-  EXPECT_FALSE(notifier.DidUserCancelDst(&default_dst));
   EXPECT_FALSE(notifier.DidUserCancelDst(&arc_dst));
   EXPECT_FALSE(notifier.DidUserCancelDst(&crostini_dst));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class ToastTestWithParam : public ::testing::TestWithParam<ToastTest> {
  public:
   ToastTestWithParam() = default;
@@ -338,7 +383,10 @@ TEST_P(ToastTestWithParam, BlockToast) {
       base::UTF8ToUTF16(origin.host()),
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 
-  EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
+  EXPECT_CALL(
+      notifier,
+      ShowToast(testing::_, ash::ToastCatalogName::kClipboardBlockedAction,
+                expected_toast_str));
 
   notifier.NotifyBlockedAction(&data_src, &data_dst);
 }
@@ -353,7 +401,9 @@ TEST_P(ToastTestWithParam, WarnToast) {
       IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM,
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 
-  EXPECT_CALL(notifier, ShowToast(testing::_, expected_toast_str));
+  EXPECT_CALL(notifier, ShowToast(testing::_,
+                                  ash::ToastCatalogName::kClipboardWarnOnPaste,
+                                  expected_toast_str));
 
   EXPECT_CALL(notifier, CloseWidget(testing::_,
                                     views::Widget::ClosedReason::kUnspecified));
@@ -367,5 +417,6 @@ INSTANTIATE_TEST_SUITE_P(
         ToastTest(ui::EndpointType::kCrostini, IDS_CROSTINI_LINUX),
         ToastTest(ui::EndpointType::kPluginVm, IDS_PLUGIN_VM_APP_NAME),
         ToastTest(ui::EndpointType::kArc, IDS_POLICY_DLP_ANDROID_APPS)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

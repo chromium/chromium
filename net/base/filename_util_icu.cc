@@ -34,8 +34,7 @@ bool IsSafePortablePathComponent(const base::FilePath& component) {
 bool IsSafePortableRelativePath(const base::FilePath& path) {
   if (path.empty() || path.IsAbsolute() || path.EndsWithSeparator())
     return false;
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.empty())
     return false;
   for (size_t i = 0; i < components.size() - 1; ++i) {

@@ -2,6 +2,7 @@ include_rules = [
   "+ash/components/account_manager",
   "+ash/components/audio",
   "+ash/webui/os_feedback_ui",
+  "+components/app_constants",
   "+components/browser_ui/share/android",
   "+components/services/app_service/public",
   "+device/bluetooth",

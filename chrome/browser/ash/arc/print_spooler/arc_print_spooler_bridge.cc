@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 #include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -66,17 +66,6 @@ ArcPrintSpoolerBridge::ArcPrintSpoolerBridge(content::BrowserContext* context,
 ArcPrintSpoolerBridge::~ArcPrintSpoolerBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->print_spooler()->SetHost(nullptr);
-}
-
-void ArcPrintSpoolerBridge::StartPrintInCustomTabDeprecated(
-    mojo::ScopedHandle scoped_handle,
-    int32_t task_id,
-    int32_t surface_id,
-    int32_t top_margin,
-    mojo::PendingRemote<mojom::PrintSessionInstance> instance,
-    StartPrintInCustomTabCallback callback) {
-  StartPrintInCustomTab(std::move(scoped_handle), task_id, std::move(instance),
-                        std::move(callback));
 }
 
 void ArcPrintSpoolerBridge::StartPrintInCustomTab(

@@ -31,6 +31,11 @@ Dumping matched rules:
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
 Dumping inherited rules: 
 
 Running test: testBasicPropertyChange
@@ -64,6 +69,11 @@ Running test: testBasicPropertyChange
         padding-left: 101px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
 
 Running test: testChangePropertyInShortHand
 {
@@ -95,6 +105,11 @@ Running test: testChangePropertyInShortHand
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
     }
 
 Running test: testChangeImportantProperty
@@ -128,6 +143,11 @@ Running test: testChangeImportantProperty
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
 
 Running test: testChangeInlineProperty
 {
@@ -160,6 +180,11 @@ Running test: testChangeInlineProperty
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
     }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
+    }
 
 Running test: testChangeInlineImportantProperty
 {
@@ -191,6 +216,11 @@ Running test: testChangeInlineImportantProperty
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
     }
 
 Running test: testChangeMissingProperty
@@ -225,6 +255,11 @@ Running test: testChangeMissingProperty
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
     }
 
 Running test: testAppendWithSeparator
@@ -273,5 +308,10 @@ Running test: testChangeCustomProperty
         margin-left: 20px; @[undefined-undefined]
         padding-left: 10px; @[undefined-undefined]
         margin-top: 15px !important; @[undefined-undefined]
+    }
+@supports (display: grid) or (display: inline-grid)
+    *#inspected* {    regular
+        display: grid; @[32:8-32:22]
+        display: grid; @[undefined-undefined]
     }
 

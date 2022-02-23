@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/browser/media/router/test/mock_dns_sd_registry.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
@@ -61,64 +63,6 @@ media_router::DnsSdService CreateDnsService(int num, int capabilities) {
 
 namespace media_router {
 
-class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
- public:
-  MockCastMediaSinkServiceImpl(
-      const OnSinksDiscoveredCallback& callback,
-      cast_channel::CastSocketService* cast_socket_service,
-      DiscoveryNetworkMonitor* network_monitor,
-      MediaSinkServiceBase* dial_media_sink_service)
-      : CastMediaSinkServiceImpl(callback,
-                                 cast_socket_service,
-                                 network_monitor,
-                                 dial_media_sink_service,
-                                 /* allow_all_ips */ false),
-        sinks_discovered_cb_(callback) {}
-  ~MockCastMediaSinkServiceImpl() override {}
-
-  void Start() override { DoStart(); }
-  MOCK_METHOD0(DoStart, void());
-  MOCK_METHOD2(OpenChannels,
-               void(const std::vector<MediaSinkInternal>& cast_sinks,
-                    CastMediaSinkServiceImpl::SinkSource sink_source));
-
-  OnSinksDiscoveredCallback sinks_discovered_cb() {
-    return sinks_discovered_cb_;
-  }
-
- private:
-  OnSinksDiscoveredCallback sinks_discovered_cb_;
-};
-
-class TestCastMediaSinkService : public CastMediaSinkService {
- public:
-  TestCastMediaSinkService(cast_channel::CastSocketService* cast_socket_service,
-                           DiscoveryNetworkMonitor* network_monitor)
-      : cast_socket_service_(cast_socket_service),
-        network_monitor_(network_monitor) {}
-  ~TestCastMediaSinkService() override = default;
-
-  std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
-  CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-             MediaSinkServiceBase* dial_media_sink_service) override {
-    auto mock_impl = std::unique_ptr<MockCastMediaSinkServiceImpl,
-                                     base::OnTaskRunnerDeleter>(
-        new NiceMock<MockCastMediaSinkServiceImpl>(
-            sinks_discovered_cb, cast_socket_service_, network_monitor_,
-            dial_media_sink_service),
-        base::OnTaskRunnerDeleter(cast_socket_service_->task_runner()));
-    mock_impl_ = mock_impl.get();
-    return mock_impl;
-  }
-
-  MockCastMediaSinkServiceImpl* mock_impl() { return mock_impl_; }
-
- private:
-  cast_channel::CastSocketService* const cast_socket_service_;
-  DiscoveryNetworkMonitor* const network_monitor_;
-  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
-};
-
 class CastMediaSinkServiceTest : public ::testing::Test {
  public:
   CastMediaSinkServiceTest()
@@ -165,7 +109,7 @@ class CastMediaSinkServiceTest : public ::testing::Test {
       mock_cast_socket_service_;
 
   std::unique_ptr<TestCastMediaSinkService> media_sink_service_;
-  MockCastMediaSinkServiceImpl* mock_impl_ = nullptr;
+  raw_ptr<MockCastMediaSinkServiceImpl> mock_impl_ = nullptr;
   MockDnsSdRegistry test_dns_sd_registry_;
 };
 

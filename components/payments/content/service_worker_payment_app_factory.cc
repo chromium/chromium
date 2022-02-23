@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/browser/supported_delegations.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace payments {
 namespace {
@@ -169,7 +171,7 @@ class ServiceWorkerPaymentAppCreator {
     owner_->DeleteCreator(this);
   }
 
-  ServiceWorkerPaymentAppFactory* owner_;
+  raw_ptr<ServiceWorkerPaymentAppFactory> owner_;
   base::WeakPtr<PaymentAppFactory::Delegate> delegate_;
   std::map<PaymentApp*, std::unique_ptr<PaymentApp>> available_apps_;
   DeveloperConsoleLogger log_;
@@ -185,8 +187,11 @@ ServiceWorkerPaymentAppFactory::~ServiceWorkerPaymentAppFactory() {}
 
 void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   auto* rfh = delegate->GetInitiatorRenderFrameHost();
-  if (!rfh || !rfh->IsActive() || !delegate->GetWebContents())
-    return;  // The frame or page is being unloaded.
+  // Exit if frame or page is being unloaded or payments are otherwise
+  // disallowed.
+  if (!rfh || !rfh->IsActive() || !delegate->GetWebContents() ||
+      !rfh->IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment))
+    return;
 
   auto creator = std::make_unique<ServiceWorkerPaymentAppCreator>(
       /*owner=*/this, delegate);

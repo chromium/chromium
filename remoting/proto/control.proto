@@ -88,7 +88,7 @@ message ExtensionMessage {
 
 message VideoTrackLayout {
   // Unique display identifier.
-  optional int32 id = 8;
+  optional int64 id = 8;
 
   // Name of the video track.
   optional string track_name = 1;
@@ -123,7 +123,7 @@ message SelectDesktopDisplayRequest {
 
 message DesktopDisplayInfo {
   // Unique display identifier.
-  optional int32 id = 1;
+  optional int64 id = 1;
 
   // Position of the top left corner of this display (in pixels).
   optional int32 x = 2;

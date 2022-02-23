@@ -108,6 +108,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_crash_report_info(enable_reporting);
     proto->set_report_os_update_status(enable_reporting);
     proto->set_report_running_kiosk_app(enable_reporting);
+    proto->set_report_peripherals(enable_reporting);
     proto->set_report_power_status(enable_reporting);
     proto->set_report_security_status(enable_reporting);
     proto->set_report_storage_status(enable_reporting);
@@ -115,9 +116,11 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_app_info(enable_reporting);
     proto->set_report_print_jobs(enable_reporting);
     proto->set_report_login_logout(enable_reporting);
+    proto->set_report_crd_sessions(enable_reporting);
     proto->set_report_network_telemetry_collection_rate_ms(frequency);
     proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
+    proto->set_report_device_audio_status_checking_rate_ms(frequency);
     BuildAndInstallDevicePolicy();
   }
 
@@ -191,6 +194,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         kReportDeviceNetworkStatus,
         kReportDeviceUsers,
         kReportDeviceHardwareStatus,
+        kReportDevicePeripherals,
         kReportDevicePowerStatus,
         kReportDeviceStorageStatus,
         kReportDeviceSessionStatus,
@@ -214,6 +218,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         kReportUploadFrequency,
         kReportDeviceNetworkTelemetryCollectionRateMs,
         kReportDeviceNetworkTelemetryEventCheckingRateMs,
+        kReportDeviceAudioStatusCheckingRateMs,
     };
     const base::Value expected_frequency_value(expected_frequency);
     for (auto* frequency_setting : reporting_frequency_settings) {
@@ -387,11 +392,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_access_mode(access_mode);
   }
 
-  void SetNativeDevicePrintersBlacklist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersBlacklistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_blacklist();
+  void SetNativeDevicePrintersBlacklist(  // nocheck
+      std::vector<std::string>& values) {
+    em::DeviceNativePrintersBlacklistProto* proto =  // nocheck
+        device_policy_->payload()
+            .mutable_native_device_printers_blacklist();  // nocheck
     for (auto const& value : values) {
-      proto->add_blacklist(value);
+      proto->add_blacklist(value);  // nocheck
     }
   }
 
@@ -403,11 +410,13 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     }
   }
 
-  void SetNativeDevicePrintersWhitelist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersWhitelistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_whitelist();
+  void SetNativeDevicePrintersWhitelist(  // nocheck
+      std::vector<std::string>& values) {
+    em::DeviceNativePrintersWhitelistProto* proto =  // nocheck
+        device_policy_->payload()
+            .mutable_native_device_printers_whitelist();  // nocheck
     for (auto const& value : values) {
-      proto->add_whitelist(value);
+      proto->add_whitelist(value);  // nocheck
     }
   }
 
@@ -632,7 +641,7 @@ TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {
 
   // Verify the second change has been applied.
   const base::Value* saved_value = provider_->Get(kReleaseChannel);
-  EXPECT_TRUE(value2.Equals(saved_value));
+  EXPECT_EQ(value2, *saved_value);
 
   Mock::VerifyAndClearExpectations(this);
 }
@@ -757,10 +766,10 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   base::ListValue expected_accounts;
   std::unique_ptr<base::DictionaryValue> entry_dict(
       new base::DictionaryValue());
-  entry_dict->SetString(kAccountsPrefDeviceLocalAccountsKeyId,
-                        policy::PolicyBuilder::kFakeUsername);
-  entry_dict->SetInteger(kAccountsPrefDeviceLocalAccountsKeyType,
-                         policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  entry_dict->SetStringKey(kAccountsPrefDeviceLocalAccountsKeyId,
+                           policy::PolicyBuilder::kFakeUsername);
+  entry_dict->SetIntKey(kAccountsPrefDeviceLocalAccountsKeyType,
+                        policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
@@ -1084,9 +1093,9 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_empty) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_native) {
-  // WHITELIST => ALLOWLIST
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_WHITELIST);
+  // WHITELIST => ALLOWLIST  // nocheck
+  SetNativeDevicePrinterAccessMode(em::DeviceNativePrintersAccessModeProto::
+                                       ACCESS_MODE_WHITELIST);  // nocheck
   BuildAndInstallDevicePolicy();
   base::Value expected_value(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
@@ -1104,8 +1113,8 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_accessmode) {
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_both) {
   // If both are set use the DevicePrintersAccessMode
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_BLACKLIST);
+  SetNativeDevicePrinterAccessMode(em::DeviceNativePrintersAccessModeProto::
+                                       ACCESS_MODE_BLACKLIST);  // nocheck
   SetDevicePrinterAccessMode(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
   BuildAndInstallDevicePolicy();
@@ -1119,11 +1128,12 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_empty) {
   VerifyPolicyValue(kDevicePrintersBlocklist, nullptr);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blacklist) {
+TEST_F(DeviceSettingsProviderTest,
+       DevicePrintersBlocklist_blacklist) {  // nocheck
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersBlacklist(values);
+  // If the blacklist only is set, use that.  // nocheck
+  SetNativeDevicePrintersBlacklist(values);  // nocheck
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
 }
@@ -1142,7 +1152,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_both) {
   std::vector<std::string> other_values = {"baz"};
 
   // If both are set use the blocklist
-  SetNativeDevicePrintersBlacklist(other_values);
+  SetNativeDevicePrintersBlacklist(other_values);  // nocheck
   SetDevicePrintersBlocklist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
@@ -1153,11 +1163,12 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_empty) {
   VerifyPolicyValue(kDevicePrintersAllowlist, nullptr);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_whitelist) {
+TEST_F(DeviceSettingsProviderTest,
+       DevicePrintersAllowlist_whitelist) {  // nocheck
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersWhitelist(values);
+  // If the whitelist only is set, use that.  // nocheck
+  SetNativeDevicePrintersWhitelist(values);  // nocheck
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
 }
@@ -1165,7 +1176,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_whitelist) {
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_allowlist) {
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blocklist only is set, use that.
+  // If the allowlist only is set, use that.
   SetDevicePrintersAllowlist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
@@ -1175,8 +1186,8 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_both) {
   std::vector<std::string> values = {"foo", "bar"};
   std::vector<std::string> other_values = {"baz"};
 
-  // If both are set use the blocklist
-  SetNativeDevicePrintersWhitelist(other_values);
+  // If both are set use the allowlist
+  SetNativeDevicePrintersWhitelist(other_values);  // nocheck
   SetDevicePrintersAllowlist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
@@ -1365,6 +1376,24 @@ TEST_F(DeviceSettingsProviderTest, KioskCRXManigestUpdateURLIngoredDisabled) {
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(false),
             *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineEnabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineDisabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
 }
 
 }  // namespace ash

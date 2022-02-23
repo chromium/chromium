@@ -6,9 +6,12 @@ INPUT:Filter Styles
 BUTTON:Toggle Element State
 BUTTON:Element Classes
 BUTTON:New Style Rule
-DIV:element.style {}
+BUTTON:Show Computed Styles sidebar
 BUTTON:Select an element in the page to inspect it
 DIV#tab-elements:Elements
+DIV:More tabs
+BUTTON:Open Issues to view 1 issue: 1 possible improvement
+BUTTON:Settings
 BUTTON:Customize and control DevTools
 LI:<span id="node-to-select">​</span>​
 
@@ -17,9 +20,12 @@ Shift+Tab:
 DIV#tab-Styles:Styles
 LI:<span id="node-to-select">​</span>​
 BUTTON:Customize and control DevTools
+BUTTON:Settings
+BUTTON:Open Issues to view 1 issue: 1 possible improvement
+DIV:More tabs
 DIV#tab-elements:Elements
 BUTTON:Select an element in the page to inspect it
-DIV:element.style {}
+BUTTON:Show Computed Styles sidebar
 BUTTON:New Style Rule
 BUTTON:Element Classes
 BUTTON:Toggle Element State

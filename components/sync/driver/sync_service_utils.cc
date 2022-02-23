@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -118,9 +118,8 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
         return false;
       }
       return base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphraseRecovery) &&
-             base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphrasePromo);
+                 kSyncTrustedVaultPassphraseRecovery) &&
+             base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
   }
 }
 

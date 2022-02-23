@@ -9,8 +9,9 @@
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
-#include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
+#include "components/autofill_assistant/browser/mock_execution_delegate.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +23,8 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Property;
+using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::StrEq;
 namespace {
 DateProto CreateDateProto(int year, int month, int day) {
@@ -34,13 +37,23 @@ DateProto CreateDateProto(int year, int month, int day) {
 }  // namespace
 
 class BasicInteractionsTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ON_CALL(execution_delegate_, GetClientSettings)
+        .WillByDefault(ReturnRef(settings_));
+    ON_CALL(execution_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
+  }
+
  protected:
-  BasicInteractionsTest() { delegate_.SetUserModel(&user_model_); }
+  BasicInteractionsTest() {}
   ~BasicInteractionsTest() override {}
 
-  FakeScriptExecutorDelegate delegate_;
+  FakeScriptExecutorUiDelegate ui_delegate_;
+  MockExecutionDelegate execution_delegate_;
+  ClientSettings settings_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{&delegate_};
+  BasicInteractions basic_interactions_{&ui_delegate_, &execution_delegate_};
 };
 
 TEST_F(BasicInteractionsTest, SetValue) {
@@ -659,6 +672,33 @@ TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponse) {
   EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
 }
 
+TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponseWithTag) {
+  ComputeValueProto proto;
+  proto.mutable_create_login_option_response();
+
+  // Missing fields.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.mutable_create_login_option_response()
+      ->mutable_value()
+      ->set_model_identifier("value");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.set_result_model_identifier("result");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  ValueProto value;
+  value.mutable_login_options()->add_values()->set_tag("tag");
+  value.set_is_client_side_only(true);
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+
+  // LoginOptionResponseProto is allowed to extract the payload from
+  // client-only values.
+  ValueProto expected_response_value;
+  expected_response_value.mutable_strings()->add_values("tag");
+  expected_response_value.set_is_client_side_only(false);
+  EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
+}
+
 TEST_F(BasicInteractionsTest, ComputeStringEmpty) {
   ComputeValueProto proto;
   proto.set_result_model_identifier("result");
@@ -779,11 +819,10 @@ TEST_F(BasicInteractionsTest, RunConditionalCallback) {
 }
 
 TEST_F(BasicInteractionsTest, GetClientSettings) {
-  ClientSettings* client_settings = delegate_.GetMutableSettings();
-  client_settings->display_strings_locale = "hi-IN";
+  settings_.display_strings_locale = "hi-IN";
   EXPECT_EQ(basic_interactions_.GetClientSettings().display_strings_locale,
             "hi-IN");
-  client_settings->display_strings_locale = "";
+  settings_.display_strings_locale = "";
   EXPECT_TRUE(
       basic_interactions_.GetClientSettings().display_strings_locale.empty());
 }

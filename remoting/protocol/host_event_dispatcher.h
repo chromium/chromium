@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_event_timestamps.h"
 
@@ -49,7 +49,7 @@ class HostEventDispatcher : public ChannelDispatcherBase {
 
   scoped_refptr<InputEventTimestampsSourceImpl> event_timestamps_source_;
 
-  InputStub* input_stub_ = nullptr;
+  raw_ptr<InputStub> input_stub_ = nullptr;
 };
 
 }  // namespace protocol

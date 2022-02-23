@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      function reportEmbeddingSuccess() {
+        window.domAutomationController.send("embedding-done");
+      }
+
+      async function produceCropId(elementId) {
+        const element = document.getElementById(elementId);
+        let cropId;
+        try {
+          try {
+            cropId = await navigator.mediaDevices.produceCropId(element);
+          } catch (e) {
+            window.domAutomationController.send("embedded-produce-crop-id-error");
+            return;
+          }
+          // Explicitly note emptiness to make it clear this is genuine emptiness
+          // and not a test error on the C++/JS boundary.
+          window.domAutomationController.send(
+              cropId == "" ? "empty-crop-id" : cropId);
+        } catch (e) {
+          window.domAutomationController.send("produce-crop-id-embedded-failure");
+        }
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data.startsWith("produce-crop-id:")) {
+          produceCropId(event.data.substr("produce-crop-id:".length));
+        } else {
+          window.domAutomationController.send("unrecognized-message");
+        }
+      });
+    </script>
+  </head>
+  <body onload="reportEmbeddingSuccess();">
+    <div id="div">
+      <!-- This DIV is just a convenient target for produceCropId. -->
+      <h1>Region Capture Test - Page 2 (Embedded)</h1>
+    </div>
+  </body>
+</html>

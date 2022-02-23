@@ -4,8 +4,12 @@
 
 #include "components/autofill_assistant/browser/service/service_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/mock_client_context.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -25,7 +29,11 @@ namespace {
 
 const char kScriptServerUrl[] = "https://www.fake.backend.com/script_server";
 const char kActionServerUrl[] = "https://www.fake.backend.com/action_server";
+const char kUserDataServerUrl[] =
+    "https://www.fake.backend.com/user_data_server";
 
+// TODO(b/207744539): In all tests, check that protocol utils is called with
+// the correct parameters.
 class ServiceImplTest : public testing::Test {
  public:
   ServiceImplTest() {
@@ -37,41 +45,42 @@ class ServiceImplTest : public testing::Test {
     mock_request_sender_ = mock_request_sender.get();
 
     service_ = std::make_unique<ServiceImpl>(
-        std::move(mock_request_sender), GURL(kScriptServerUrl),
-        GURL(kActionServerUrl), std::move(mock_client_context));
+        &mock_client_, std::move(mock_request_sender), GURL(kScriptServerUrl),
+        GURL(kActionServerUrl), GURL(kUserDataServerUrl),
+        std::move(mock_client_context));
   }
   ~ServiceImplTest() override = default;
 
  protected:
   base::MockCallback<Service::ResponseCallback> mock_response_callback_;
-  NiceMock<MockClientContext>* mock_client_context_;
-  NiceMock<MockServiceRequestSender>* mock_request_sender_;
+  NiceMock<MockClient> mock_client_;
+  raw_ptr<NiceMock<MockClientContext>> mock_client_context_;
+  raw_ptr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
   std::unique_ptr<ServiceImpl> service_;
 };
 
 TEST_F(ServiceImplTest, GetScriptsForUrl) {
-  EXPECT_CALL(*mock_client_context_, Update).Times(1);
-  // TODO(b/158998456), here and in other tests of service_impl: check that
-  // protocol utils is called with the correct parameters.
-  EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kScriptServerUrl), _, _))
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kScriptServerUrl), _, _,
+                                                   RpcType::SUPPORTS_SCRIPT))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")))
-      .Times(1);
+              Run(net::HTTP_OK, std::string("response")));
 
   service_->GetScriptsForUrl(GURL("https://www.example.com"), TriggerContext(),
                              mock_response_callback_.Get());
 }
 
 TEST_F(ServiceImplTest, GetActions) {
-  EXPECT_CALL(*mock_client_context_, Update).Times(1);
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(mock_client_, FetchPaymentsClientToken)
+      .WillOnce(RunOnceCallback<0>("token"));
+  EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken("token"));
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")))
-      .Times(1);
+              Run(net::HTTP_OK, std::string("response")));
 
   service_->GetActions(
       std::string("fake_script_path"), GURL("https://www.example.com"),
@@ -80,7 +89,10 @@ TEST_F(ServiceImplTest, GetActions) {
 }
 
 TEST_F(ServiceImplTest, GetActionsForwardsScriptStoreConfig) {
-  EXPECT_CALL(*mock_client_context_, Update).Times(1);
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(mock_client_, FetchPaymentsClientToken)
+      .WillOnce(RunOnceCallback<0>("token"));
+  EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken("token"));
 
   ScriptActionRequestProto expected_get_actions;
   ScriptStoreConfig* config = expected_get_actions.mutable_initial_request()
@@ -90,7 +102,7 @@ TEST_F(ServiceImplTest, GetActionsForwardsScriptStoreConfig) {
 
   std::string get_actions_request;
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(SaveArg<1>(&get_actions_request));
 
   ScriptStoreConfig set_config;
@@ -113,20 +125,71 @@ TEST_F(ServiceImplTest, GetActionsForwardsScriptStoreConfig) {
                     .bundle_version());
 }
 
-TEST_F(ServiceImplTest, GetNextActions) {
-  EXPECT_CALL(*mock_client_context_, Update).Times(1);
+TEST_F(ServiceImplTest, GetActionsWithoutClientToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAssistantGetPaymentsClientToken);
+
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(mock_client_, FetchPaymentsClientToken).Times(0);
+  EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken).Times(0);
   EXPECT_CALL(*mock_request_sender_,
-              OnSendRequest(GURL(kActionServerUrl), _, _))
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
   EXPECT_CALL(mock_response_callback_,
-              Run(net::HTTP_OK, std::string("response")))
-      .Times(1);
+              Run(net::HTTP_OK, std::string("response")));
+
+  service_->GetActions(
+      std::string("fake_script_path"), GURL("https://www.example.com"),
+      TriggerContext(), std::string("fake_global_payload"),
+      std::string("fake_script_payload"), mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, GetActionsDoesNotReloadClientToken) {
+  ClientContextProto client_context_proto;
+  client_context_proto.set_payments_client_token("token");
+  ON_CALL(*mock_client_context_, AsProto)
+      .WillByDefault(Return(client_context_proto));
+
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(mock_client_, FetchPaymentsClientToken).Times(0);
+  EXPECT_CALL(*mock_client_context_, SetPaymentsClientToken).Times(0);
+  EXPECT_CALL(*mock_request_sender_,
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, std::string("response")));
+
+  service_->GetActions(
+      std::string("fake_script_path"), GURL("https://www.example.com"),
+      TriggerContext(), std::string("fake_global_payload"),
+      std::string("fake_script_payload"), mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, GetNextActions) {
+  EXPECT_CALL(*mock_client_context_, Update);
+  EXPECT_CALL(*mock_request_sender_,
+              OnSendRequest(GURL(kActionServerUrl), _, _, RpcType::GET_ACTIONS))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, std::string("response")));
 
   service_->GetNextActions(
       TriggerContext(), std::string("fake_previous_global_payload"),
       std::string("fake_previous_script_payload"), /* processed_actions = */ {},
       /* timing_stats = */ RoundtripTimingStats(),
       mock_response_callback_.Get());
+}
+
+TEST_F(ServiceImplTest, GetUserData) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kUserDataServerUrl), _,
+                                                   _, RpcType::GET_USER_DATA))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, std::string("response")));
+  EXPECT_CALL(mock_response_callback_,
+              Run(net::HTTP_OK, std::string("response")));
+
+  service_->GetUserData(CollectUserDataOptions(),
+                        mock_response_callback_.Get());
 }
 
 }  // namespace

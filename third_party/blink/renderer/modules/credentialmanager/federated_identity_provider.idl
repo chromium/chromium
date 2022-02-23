@@ -6,7 +6,7 @@
 
 dictionary FederatedIdentityProvider {
   // URL for the Identity Provider.
-  required USVString provider;
-  USVString clientId;
+  required USVString url;
+  required USVString clientId;
   USVString nonce;
 };

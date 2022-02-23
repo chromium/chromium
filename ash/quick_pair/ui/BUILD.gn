@@ -10,15 +10,14 @@ assert(is_chromeos_ash,
 source_set("ui") {
   output_name = "quick_pair_ui"
 
-  defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
-
   sources = [
     "actions.cc",
     "actions.h",
     "fast_pair/fast_pair_notification_controller.cc",
     "fast_pair/fast_pair_notification_controller.h",
-    "fast_pair/fast_pair_presenter.cc",
     "fast_pair/fast_pair_presenter.h",
+    "fast_pair/fast_pair_presenter_impl.cc",
+    "fast_pair/fast_pair_presenter_impl.h",
     "ui_broker.h",
     "ui_broker_impl.cc",
     "ui_broker_impl.h",
@@ -56,5 +55,40 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_pair/fast_pair_notification_controller_unittest.cc",
+    "fast_pair/fast_pair_presenter_impl_unittest.cc",
+    "ui_broker_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":ui",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp:test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository:repository",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
+    "//ash/services/quick_pair/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center",
+    "//ui/message_center:test_support",
   ]
 }

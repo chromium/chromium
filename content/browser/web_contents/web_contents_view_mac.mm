@@ -111,13 +111,17 @@ gfx::NativeView WebContentsViewMac::GetNativeView() const {
 gfx::NativeView WebContentsViewMac::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv)
-    return NULL;
+    return nullptr;
   return rwhv->GetNativeView();
 }
 
 gfx::NativeWindow WebContentsViewMac::GetTopLevelNativeWindow() const {
   NSWindow* window = [GetInProcessNSView() window];
-  return window ? window : delegate_->GetNativeWindow();
+  if (window)
+    return window;
+  if (delegate_)
+    return delegate_->GetNativeWindow();
+  return nullptr;
 }
 
 gfx::Rect WebContentsViewMac::GetContainerBounds() const {

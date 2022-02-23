@@ -105,7 +105,7 @@ js2gtest("select_to_speak_extjs_tests") {
   gen_include_files = [
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
-    "mock_storage.js",
+    "../common/testing/mock_storage.js",
     "mock_tts.js",
     "select_to_speak_e2e_test_base.js",
     "pipe.jpg",

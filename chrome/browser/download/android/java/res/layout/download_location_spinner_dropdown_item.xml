@@ -6,7 +6,7 @@
 <!-- Note: Nested layouts are used because the styling was being overwritten,
      likely because of the behavior of the Android Spinner class. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 

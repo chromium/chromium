@@ -15,7 +15,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -35,12 +35,12 @@ struct GPU_EXPORT
     return input.device_id;
   }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   static uint32_t revision(const gpu::GPUInfo::GPUDevice& input) {
     return input.revision;
   }
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static uint32_t sub_sys_id(const gpu::GPUInfo::GPUDevice& input) {
     return input.sub_sys_id;
   }
@@ -48,7 +48,7 @@ struct GPU_EXPORT
   static const CHROME_LUID luid(const gpu::GPUInfo::GPUDevice& input) {
     return input.luid;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   static bool active(const gpu::GPUInfo::GPUDevice& input) {
     return input.active;
@@ -216,7 +216,7 @@ struct GPU_EXPORT
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::OverlaySupport, gpu::OverlaySupport> {
   static gpu::mojom::OverlaySupport ToMojom(gpu::OverlaySupport support);
@@ -358,13 +358,13 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.can_support_threaded_texture_mailbox;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static uint32_t macos_specific_texture_target(const gpu::GPUInfo& input) {
     return input.macos_specific_texture_target;
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const gpu::DxDiagNode& dx_diagnostics(const gpu::GPUInfo& input) {
     return input.dx_diagnostics;
   }
@@ -404,10 +404,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   static std::vector<gpu::ImageDecodeAcceleratorSupportedProfile>
   image_decode_accelerator_supported_profiles(const gpu::GPUInfo& input) {
     return input.image_decode_accelerator_supported_profiles;
-  }
-
-  static bool oop_rasterization_supported(const gpu::GPUInfo& input) {
-    return input.oop_rasterization_supported;
   }
 
   static bool subpixel_font_rendering(const gpu::GPUInfo& input) {

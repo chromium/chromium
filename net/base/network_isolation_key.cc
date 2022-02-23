@@ -139,7 +139,7 @@ bool NetworkIsolationKey::FromValue(
   if (!value.is_list())
     return false;
 
-  base::Value::ConstListView list = value.GetList();
+  base::Value::ConstListView list = value.GetListDeprecated();
   if (list.empty()) {
     *network_isolation_key = NetworkIsolationKey();
     return true;

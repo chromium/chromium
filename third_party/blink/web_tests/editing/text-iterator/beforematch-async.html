@@ -6,24 +6,15 @@
 .spacer {
   height: 2000px;
 }
-.hidden-matchable {
-  content-visibility: hidden-matchable;
-}
 </style>
 
 <div class="spacer"></div>
-<div id=hiddendiv class="hidden-matchable">
+<div id=hiddendiv hidden=until-found>
   <div class="spacer"></div>
   <div id=hiddentext>hiddentext</div>
 </div>
 
 <script>
-hiddentext.addEventListener('beforematch', () => {
-  setTimeout(() => {
-    hiddendiv.classList.remove('hidden-matchable');
-  }, 0);
-});
-
 async_test(t => {
   testRunner.findString('hiddentext', ['Async']);
 

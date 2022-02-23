@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 
 copy("annotations_xml") {
-  sources = [ "annotations.xml" ]
-  outputs = [ "$target_out_dir/annotations.xml" ]
+  # This rule is referenced by src/BUILD.gn, and auditor.py runs on CQ if any of
+  # these files are modified:
+  sources = [
+    "annotations.xml",
+    "grouping.xml",
+  ]
+  outputs = [ "$target_out_dir/{{source_file_part}}" ]
 }

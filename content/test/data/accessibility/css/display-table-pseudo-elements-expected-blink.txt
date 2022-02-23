@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++heading name='Heading'
+++++++++heading name='1 Heading 1'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored
@@ -20,7 +20,7 @@ rootWebArea
 ++++++++staticText name='\nParagraph'
 ++++++++++inlineTextBox name='\nParagraph'
 ++++++genericContainer ignored
-++++++++heading name='Heading'
+++++++++heading name='2 Heading 2'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer
@@ -36,7 +36,7 @@ rootWebArea
 ++++++++staticText name='\nParagraph'
 ++++++++++inlineTextBox name='\nParagraph'
 ++++++genericContainer ignored
-++++++++heading name='Heading'
+++++++++heading name='3 Heading 3'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
 ++++++++++++++staticText name='3'

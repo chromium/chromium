@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-class GURL;
+@class CrURL;
 @class FaviconAttributes;
 
 // Protocol that Tableview UI uses to retrieve favicons for its cells.
@@ -19,7 +19,7 @@ class GURL;
 // returned synchronously and the actual favicon returned asynchronously. In
 // another example, the image returned synchronously may be the actual favicon,
 // so there is no need to call the completion block.
-- (void)faviconForURL:(const GURL&)URL
+- (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion;
 @end
 

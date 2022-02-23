@@ -2,25 +2,28 @@ Test CSS.getContainerForNode method for node with container queries
 {
     id : <number>
     result : {
+        nodeId : <number>
     }
     sessionId : <string>
 }
 Is the returned container the expected named container?
-false
+true
 {
     id : <number>
     result : {
+        nodeId : <number>
     }
     sessionId : <string>
 }
 Is the returned container the expected unnamed container?
-false
+true
 {
     id : <number>
     result : {
+        nodeId : <number>
     }
     sessionId : <string>
 }
 Is the returned container the expected dynamic container?
-false
+true
 

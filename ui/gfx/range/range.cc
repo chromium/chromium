@@ -6,8 +6,6 @@
 
 #include <inttypes.h>
 
-#include <algorithm>
-
 #include "base/strings/stringprintf.h"
 
 namespace gfx {

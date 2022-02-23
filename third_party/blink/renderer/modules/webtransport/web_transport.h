@@ -19,8 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -142,6 +141,8 @@ class MODULES_EXPORT WebTransport final
                                            mojo::ScopedDataPipeConsumerHandle,
                                            bool succeeded,
                                            uint32_t stream_id);
+
+  bool DoesSubresourceFilterBlockConnection(const KURL& url);
 
   Member<DatagramDuplexStream> datagrams_;
 

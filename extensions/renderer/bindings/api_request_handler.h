@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
@@ -148,7 +147,7 @@ class APIRequestHandler {
   // requires an asynchronous response, otherwise returns null. Also populates
   // |promise_out| with the associated promise if this is a promise based
   // request.
-  static std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
+  std::unique_ptr<AsyncResultHandler> GetAsyncResultHandler(
       v8::Local<v8::Context> context,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,

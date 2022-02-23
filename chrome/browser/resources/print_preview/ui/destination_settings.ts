@@ -8,13 +8,13 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 // <if expr="not chromeos and not lacros">
 import './destination_dialog.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import './destination_dialog_cros.js';
 // </if>
 // <if expr="not chromeos and not lacros">
 import './destination_select.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import './destination_select_cros.js';
 // </if>
 import './print_preview_shared_css.js';
@@ -25,16 +25,15 @@ import '../data/user_manager.js';
 import '../strings.m.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
-// <if expr="chromeos or lacros">
+import {createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
+// <if expr="chromeos_ash or chromeos_lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
@@ -44,15 +43,16 @@ import {Error, State} from '../data/state.js';
 // <if expr="not chromeos and not lacros">
 import {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {PrintPreviewDestinationDialogCrosElement} from './destination_dialog_cros.js';
 // </if>
 // <if expr="not chromeos and not lacros">
 import {PrintPreviewDestinationSelectElement} from './destination_select.js';
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {PrintPreviewDestinationSelectCrosElement} from './destination_select_cros.js';
 // </if>
+import {getTemplate} from './destination_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export enum DestinationState {
@@ -67,7 +67,7 @@ export enum DestinationState {
 // <if expr="not chromeos and not lacros">
 export const NUM_PERSISTED_DESTINATIONS: number = 5;
 // </if>
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 export const NUM_PERSISTED_DESTINATIONS: number = 10;
 // </if>
 
@@ -84,7 +84,7 @@ export interface PrintPreviewDestinationSettingsElement {
         CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
     destinationSelect: PrintPreviewDestinationSelectElement,
     // </if>
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogCrosElement>,
     destinationSelect: PrintPreviewDestinationSelectCrosElement,
@@ -102,7 +102,7 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -151,7 +151,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
       displayedDestinations_: Array,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       driveDestinationKey_: {
         type: String,
         value: '',
@@ -197,7 +197,7 @@ export class PrintPreviewDestinationSettingsElement extends
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private driveDestinationKey_: string;
   private hasPinSetting_: boolean;
   // </if>
@@ -232,11 +232,10 @@ export class PrintPreviewDestinationSettingsElement extends
     // but they should not be displayed in the dropdown until they have been
     // fetched by the DestinationStore, to ensure that they still exist.
     this.tracker_.add(
-        assert(this.destinationStore_),
-        DestinationStoreEventType.DESTINATIONS_INSERTED,
+        this.destinationStore_, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.tracker_.add(
         this.destinationStore_,
         DestinationStoreEventType.DESTINATION_EULA_READY,
@@ -309,7 +308,7 @@ export class PrintPreviewDestinationSettingsElement extends
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.driveDestinationKey_ =
         isDriveMounted ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY : '';
     // </if>
@@ -427,7 +426,7 @@ export class PrintPreviewDestinationSettingsElement extends
    * @return Whether the destination is Save as PDF or Save to Drive.
    */
   private destinationIsDriveOrPdf_(destination: RecentDestination): boolean {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
@@ -443,7 +442,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
     // Determine if this destination is already in the recent destinations,
     // where in the array it is located, and whether or not it is visible.
-    const newDestination = makeRecentDestination(assert(this.destination));
+    const newDestination = makeRecentDestination(this.destination);
     const recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
     let indexFound = -1;
@@ -537,7 +536,7 @@ export class PrintPreviewDestinationSettingsElement extends
               PrinterType.PDF_PRINTER));
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private computeHasPinSetting_(): boolean {
     return this.getSetting('pin').available;
   }
@@ -600,10 +599,11 @@ export class PrintPreviewDestinationSettingsElement extends
   }
 
   getDestinationStoreForTest(): DestinationStore {
-    return assert(this.destinationStore_!);
+    assert(this.destinationStore_);
+    return this.destinationStore_;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * @param e Event containing the current destination's EULA URL.
    */
@@ -616,6 +616,13 @@ export class PrintPreviewDestinationSettingsElement extends
     this.notifyPath('destination.eulaUrl');
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-settings':
+        PrintPreviewDestinationSettingsElement;
+  }
 }
 
 customElements.define(

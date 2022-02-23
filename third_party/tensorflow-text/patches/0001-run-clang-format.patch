@@ -1,0 +1,3432 @@
+From ac56f05dfa07e5e2099f964ef87933d09c0d0f7f Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Wed, 8 Dec 2021 10:44:09 -0800
+Subject: [PATCH 1/5] run clang format
+
+---
+ .../core/kernels/constrained_sequence.cc      | 71 ++++++++------
+ .../core/kernels/constrained_sequence.h       | 34 ++++---
+ .../kernels/constrained_sequence_kernel.cc    | 44 +++++----
+ .../core/kernels/darts_clone_trie_builder.cc  |  3 +-
+ .../core/kernels/darts_clone_trie_builder.h   |  3 +-
+ .../core/kernels/darts_clone_trie_wrapper.h   |  3 +-
+ .../core/kernels/disjoint_set_forest.h        | 23 +++--
+ .../core/kernels/disjoint_set_forest_test.cc  | 21 ++--
+ .../core/kernels/edit_changes.proto           |  1 -
+ .../core/kernels/fast_wordpiece_tokenizer.cc  | 58 +++++++----
+ .../core/kernels/fast_wordpiece_tokenizer.h   | 37 ++++---
+ ...fast_wordpiece_tokenizer_kernel_template.h | 10 +-
+ .../fast_wordpiece_tokenizer_model_builder.cc | 38 +++++---
+ .../fast_wordpiece_tokenizer_model_builder.h  |  9 +-
+ .../kernels/fast_wordpiece_tokenizer_test.cc  |  6 +-
+ .../kernels/fast_wordpiece_tokenizer_utils.h  |  6 +-
+ .../fast_wordpiece_tokenizer_utils_test.cc    |  3 +-
+ ...iterbi_constrained_sequence_kernel_test.cc |  1 -
+ .../core/kernels/mst_op_kernels.cc            | 20 ++--
+ .../tensorflow_text/core/kernels/mst_solver.h | 72 ++++++++------
+ .../mst_solver_random_comparison_test.cc      | 35 ++++---
+ .../core/kernels/mst_solver_test.cc           | 16 ++--
+ .../core/kernels/ngrams_kernel_template.h     |  9 +-
+ .../core/kernels/ngrams_tflite_test.cc        |  9 +-
+ .../kernels/ragged_tensor_to_tensor_tflite.cc | 49 ++++++----
+ .../ragged_tensor_to_tensor_tflite_test.cc    |  6 +-
+ .../core/kernels/regex_split.cc               | 14 ++-
+ .../core/kernels/regex_split.h                | 10 +-
+ .../core/kernels/regex_split_kernels.cc       |  3 +-
+ .../core/kernels/rouge_l_kernel.cc            | 61 ++++++------
+ .../core/kernels/rouge_l_kernel_test.cc       |  3 +-
+ .../core/kernels/sentence_breaking_kernels.cc |  3 +-
+ .../core/kernels/sentence_breaking_utils.cc   | 24 +++--
+ .../kernels/sentence_breaking_utils_test.cc   | 15 ++-
+ .../core/kernels/sentence_fragmenter.cc       | 73 +++++++-------
+ .../core/kernels/sentence_fragmenter.h        | 44 +++++----
+ .../core/kernels/sentence_fragmenter_v2.cc    |  9 +-
+ .../core/kernels/sentence_fragmenter_v2.h     |  6 +-
+ .../kernels/sentence_fragmenter_v2_test.cc    | 18 ++--
+ .../core/kernels/sentencepiece_kernels.cc     | 16 ++--
+ .../core/kernels/spanning_tree_iterator.cc    | 39 +++++---
+ .../core/kernels/spanning_tree_iterator.h     |  8 +-
+ .../kernels/spanning_tree_iterator_test.cc    | 13 ++-
+ .../kernels/split_merge_tokenize_kernel.cc    | 10 +-
+ .../core/kernels/text_kernels_test_util.cc    |  6 +-
+ .../core/kernels/text_kernels_test_util.h     |  3 +-
+ .../kernels/tokenizer_from_logits_kernel.cc   | 41 ++++----
+ .../unicode_script_tokenize_kernel_test.cc    |  6 +-
+ .../whitespace_tokenize_kernel_test.cc        |  9 +-
+ .../core/kernels/whitespace_tokenizer.cc      | 13 ++-
+ .../core/kernels/whitespace_tokenizer.h       |  3 +-
+ .../whitespace_tokenizer_config_builder.h     |  1 -
+ .../whitespace_tokenizer_kernel_template.h    | 36 ++++---
+ .../core/kernels/whitespace_tokenizer_test.cc |  4 +-
+ .../core/kernels/wordpiece_kernel.cc          | 12 ++-
+ .../core/kernels/wordpiece_kernel_test.cc     |  2 +-
+ .../core/kernels/wordpiece_tokenizer.cc       | 96 ++++++++++++-------
+ .../core/kernels/wordpiece_tokenizer.h        | 35 ++++---
+ .../src/tensorflow_text/core/ops/mst_ops.cc   |  2 +-
+ .../tensorflow_text/core/ops/rouge_l_op.cc    |  4 +-
+ .../core/ops/split_merge_tokenize_op.cc       |  2 +-
+ .../core/ops/tokenizer_from_logits_op.cc      |  2 +-
+ .../tensorflow_text/core/ops/wordpiece_op.cc  | 10 +-
+ ...rap_whitespace_tokenizer_config_builder.cc | 11 +--
+ .../core/pybinds/tflite_registrar.cc          |  8 +-
+ 65 files changed, 732 insertions(+), 530 deletions(-)
+
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.cc
+index 261f293a9da6b..07c1e68bc70d7 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.cc
+@@ -33,8 +33,8 @@ namespace text {
+ // transition.
+ constexpr int kErrorState = -1;
+ 
+-ScoreAccessor::ScoreAccessor(const Tensor &score_tensor,
+-                             const Tensor &lengths_tensor) {
++ScoreAccessor::ScoreAccessor(const Tensor& score_tensor,
++                             const Tensor& lengths_tensor) {
+   data_ = score_tensor.flat<float>().data();
+   if (lengths_tensor.dtype() == DT_INT64) {
+     use_long_lengths_ = true;
+@@ -58,7 +58,8 @@ ScoreAccessor::ScoreAccessor(const Tensor &score_tensor,
+ }
+ 
+ // Get a score out of the data tensor.
+-float ScoreAccessor::GetScore(int batch_idx, int step_idx,
++float ScoreAccessor::GetScore(int batch_idx,
++                              int step_idx,
+                               int score_idx) const {
+   DCHECK_LE(batch_idx, batch_size_);
+   DCHECK_LE(step_idx, num_steps_);
+@@ -75,18 +76,28 @@ int64 ScoreAccessor::GetLength(int batch_idx) const {
+   }
+ }
+ 
+-int ScoreAccessor::batch_size() const { return batch_size_; }
+-int ScoreAccessor::num_steps() const { return num_steps_; }
+-int ScoreAccessor::num_scores() const { return num_scores_; }
+-bool ScoreAccessor::has_explicit_batch() const { return has_explicit_batch_; }
++int ScoreAccessor::batch_size() const {
++  return batch_size_;
++}
++int ScoreAccessor::num_steps() const {
++  return num_steps_;
++}
++int ScoreAccessor::num_scores() const {
++  return num_scores_;
++}
++bool ScoreAccessor::has_explicit_batch() const {
++  return has_explicit_batch_;
++}
+ 
+ // Perform Viterbi analysis on a single batch item.
+ void ViterbiAnalysis(
+-    const ScoreAccessor &scores,
+-    const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-    const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-    const int batch, bool use_log_space, bool use_start_end_states,
+-    int32 *output_data) {
++    const ScoreAccessor& scores,
++    const tensorflow::TTypes<const float>::Matrix& transition_weights,
++    const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++    const int batch,
++    bool use_log_space,
++    bool use_start_end_states,
++    int32* output_data) {
+   VLOG(2) << "Analyzing batch " << batch;
+   const bool has_transition_weights = transition_weights.size() != 0;
+   const bool has_allowed_transitions = allowed_transitions.size() != 0;
+@@ -109,12 +120,12 @@ void ViterbiAnalysis(
+       num_steps, std::vector<int>(num_states, kErrorState));
+ 
+   // Set current and previous references for step 0
+-  std::vector<double> *previous_scores = &scores_a;
+-  std::vector<double> *current_scores = &scores_b;
++  std::vector<double>* previous_scores = &scores_a;
++  std::vector<double>* current_scores = &scores_b;
+ 
+   const bool vlog3 = VLOG_IS_ON(3);
+   for (int curr_state = 0; curr_state < num_states; ++curr_state) {
+-    std::vector<int> &current_bps = backpointers[0];
++    std::vector<int>& current_bps = backpointers[0];
+     if (use_start_end_states) {
+       // Initialize the zeroth step BPs to kOutOfBoundsIndex for all states
+       // where the OOB->state transition is valid, and set scores as needed.
+@@ -174,19 +185,20 @@ void ViterbiAnalysis(
+     const double max_score =
+         *std::max_element(current_scores->begin(), current_scores->end());
+     if (max_score > 0) {
+-      for (double &score : *current_scores) score /= max_score;
++      for (double& score : *current_scores)
++        score /= max_score;
+     }
+   }
+ 
+   // Swap current and previous score arrays, as we are advancing a step.
+-  std::vector<double> *tmp = previous_scores;
++  std::vector<double>* tmp = previous_scores;
+   previous_scores = current_scores;
+   current_scores = tmp;
+ 
+   // Handle all steps save for the first and last in this loop.
+   for (int step = 1; step < num_steps; ++step) {
+-    const std::vector<int> &previous_bps = backpointers[step - 1];
+-    std::vector<int> &current_bps = backpointers[step];
++    const std::vector<int>& previous_bps = backpointers[step - 1];
++    std::vector<int>& current_bps = backpointers[step];
+ 
+     for (int curr_state = 0; curr_state < num_states; ++curr_state) {
+       int best_source_state = kErrorState;
+@@ -206,7 +218,7 @@ void ViterbiAnalysis(
+             !allowed_transitions(prev_state, curr_state)) {
+           if (vlog3) {
+             LOG(INFO) << "(" << batch << ", " << step << ", " << prev_state
+-                       << "->" << curr_state << "): disallowed.";
++                      << "->" << curr_state << "): disallowed.";
+           }
+           continue;
+         }
+@@ -258,20 +270,21 @@ void ViterbiAnalysis(
+       const double max_score =
+           *std::max_element(current_scores->begin(), current_scores->end());
+       if (max_score > 0) {
+-        for (double &score : *current_scores) score /= max_score;
++        for (double& score : *current_scores)
++          score /= max_score;
+       }
+     }
+ 
+     // After each step, switch the current scores to the previous scores and
+     // use the previous previous scores as the current scores.
+-    std::vector<double> *tmp = previous_scores;
++    std::vector<double>* tmp = previous_scores;
+     previous_scores = current_scores;
+     current_scores = tmp;
+   }
+ 
+   // Handle the final transition out of the sequence.
+   int final_state = out_of_bounds_index;
+-  const std::vector<int> &previous_bps = backpointers[num_steps - 1];
++  const std::vector<int>& previous_bps = backpointers[num_steps - 1];
+   int best_source_state = kErrorState;
+   float final_score = std::numeric_limits<float>::lowest();
+ 
+@@ -354,11 +367,13 @@ void ViterbiAnalysis(
+ }
+ 
+ void GreedyAnalysis(
+-    const ScoreAccessor &scores,
+-    const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-    const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-    int batch, bool use_log_space, bool use_start_end_states,
+-    int32 *output_data) {
++    const ScoreAccessor& scores,
++    const tensorflow::TTypes<const float>::Matrix& transition_weights,
++    const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++    int batch,
++    bool use_log_space,
++    bool use_start_end_states,
++    int32* output_data) {
+   const bool has_transition_weights = transition_weights.size() != 0;
+   const bool has_allowed_transitions = allowed_transitions.size() != 0;
+   const int num_states = scores.num_scores();
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.h
+index e9821489ad2a3..6e473af728f77 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence.h
+@@ -24,8 +24,8 @@ namespace text {
+ 
+ class ScoreAccessor {
+  public:
+-  explicit ScoreAccessor(const Tensor &score_tensor,
+-                         const Tensor &lengths_tensor);
++  explicit ScoreAccessor(const Tensor& score_tensor,
++                         const Tensor& lengths_tensor);
+ 
+   // Get a score out of the data tensor.
+   float GetScore(int batch_idx, int step_idx, int score_idx) const;
+@@ -39,11 +39,11 @@ class ScoreAccessor {
+ 
+  private:
+   // A pointer into the underlying data of the score tensor. Not owned.
+-  const float *data_;
++  const float* data_;
+ 
+   // A pointer into the underlying data of the lengths tensor. Not owned.
+-  const int *lengths_;
+-  const int64 *long_lengths_;
++  const int* lengths_;
++  const int64* long_lengths_;
+ 
+   // Whether the passed lengths tensor is int32 or int64.
+   bool use_long_lengths_;
+@@ -72,19 +72,23 @@ class ScoreAccessor {
+ 
+ // Perform Viterbi analysis on a single batch item.
+ void ViterbiAnalysis(
+-    const ScoreAccessor &scores,
+-    const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-    const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-    const int batch, bool use_log_space, bool use_start_end_states,
+-    int32 *output_data);
++    const ScoreAccessor& scores,
++    const tensorflow::TTypes<const float>::Matrix& transition_weights,
++    const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++    const int batch,
++    bool use_log_space,
++    bool use_start_end_states,
++    int32* output_data);
+ 
+ // Perform a greedy analysis on a single batch item.
+ void GreedyAnalysis(
+-    const ScoreAccessor &scores,
+-    const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-    const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-    int batch, bool use_log_space, bool use_start_end_states,
+-    int32 *output_data);
++    const ScoreAccessor& scores,
++    const tensorflow::TTypes<const float>::Matrix& transition_weights,
++    const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++    int batch,
++    bool use_log_space,
++    bool use_start_end_states,
++    int32* output_data);
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence_kernel.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence_kernel.cc
+index c2b2528bd6ebf..869a5c3e59371 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence_kernel.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/constrained_sequence_kernel.cc
+@@ -57,10 +57,10 @@ namespace {
+ 
+ // Validate that a given constraint tensor is the proper shape (dimension
+ // 2, with shape [num_states + 1, num_states + 1].
+-tensorflow::Status ValidateConstraintTensor(const Tensor &tensor,
++tensorflow::Status ValidateConstraintTensor(const Tensor& tensor,
+                                             const int num_states,
+                                             const bool use_start_end_states,
+-                                            const string &name) {
++                                            const string& name) {
+   if (tensor.shape().dims() != 2) {
+     return InvalidArgument(
+         tensorflow::strings::StrCat(name, " must be of rank 2"));
+@@ -86,7 +86,7 @@ tensorflow::Status ValidateConstraintTensor(const Tensor &tensor,
+ template <typename Tin, typename Tsplits>
+ class ConstrainedSequence : public OpKernel {
+  public:
+-  explicit ConstrainedSequence(OpKernelConstruction *context)
++  explicit ConstrainedSequence(OpKernelConstruction* context)
+       : OpKernel(context) {
+     OP_REQUIRES_OK(context, context->GetAttr("use_viterbi", &use_viterbi_));
+     OP_REQUIRES_OK(context, context->GetAttr("use_log_space", &use_log_space_));
+@@ -94,13 +94,13 @@ class ConstrainedSequence : public OpKernel {
+                                              &use_start_end_states_));
+   }
+ 
+-  void Compute(OpKernelContext *context) override {
+-    const auto &score_tensor = context->input(0);
++  void Compute(OpKernelContext* context) override {
++    const auto& score_tensor = context->input(0);
+     OP_REQUIRES(context,
+                 (score_tensor.shape().dims() == 2) ||
+                     (score_tensor.shape().dims() == 3),
+                 InvalidArgument("The score tensor must be of rank 2 or 3."));
+-    const auto &lengths_tensor = context->input(1);
++    const auto& lengths_tensor = context->input(1);
+ 
+     ScoreAccessor scores(score_tensor, lengths_tensor);
+ 
+@@ -137,7 +137,7 @@ class ConstrainedSequence : public OpKernel {
+             "The scores tensor is too short for the longest sequence length."));
+ 
+     // Validate the constraint tensors.
+-    const auto &allowed_transitions_tensor = context->input(2);
++    const auto& allowed_transitions_tensor = context->input(2);
+     bool has_allowed_transitions =
+         allowed_transitions_tensor.NumElements() != 0;
+     VLOG(4) << allowed_transitions_tensor.NumElements();
+@@ -148,7 +148,7 @@ class ConstrainedSequence : public OpKernel {
+                                               "allowed_transitions"));
+     }
+ 
+-    const auto &transition_weights_tensor = context->input(3);
++    const auto& transition_weights_tensor = context->input(3);
+ 
+     VLOG(4) << transition_weights_tensor.NumElements();
+     bool has_transition_weights = transition_weights_tensor.NumElements() != 0;
+@@ -171,23 +171,23 @@ class ConstrainedSequence : public OpKernel {
+     const tensorflow::Tensor empty_float(DT_FLOAT, TensorShape({0, 0}));
+     const tensorflow::Tensor empty_bool(DT_BOOL, TensorShape({0, 0}));
+ 
+-    const auto &transition_weights =
++    const auto& transition_weights =
+         has_transition_weights ? transition_weights_tensor.matrix<float>()
+                                : empty_float.matrix<float>();
+ 
+-    const auto &allowed_transitions =
++    const auto& allowed_transitions =
+         has_allowed_transitions ? allowed_transitions_tensor.matrix<bool>()
+                                 : empty_bool.matrix<bool>();
+ 
+-    Tensor *output;
++    Tensor* output;
+     OP_REQUIRES_OK(context, context->allocate_output(
+                                 0, TensorShape({total_length}), &output));
+-    int32 *output_data = output->flat<int32>().data();
++    int32* output_data = output->flat<int32>().data();
+ 
+-    Tensor *offsets;
++    Tensor* offsets;
+     OP_REQUIRES_OK(context, context->allocate_output(
+                                 1, TensorShape({batch_size + 1}), &offsets));
+-    Tsplits *offset_data = offsets->flat<Tsplits>().data();
++    Tsplits* offset_data = offsets->flat<Tsplits>().data();
+     offset_data[0] = 0;
+ 
+     for (int batch = 0; batch < batch_size; ++batch) {
+@@ -207,18 +207,22 @@ class ConstrainedSequence : public OpKernel {
+  private:
+   // Perform Viterbi analysis on a single batch item.
+   void DoViterbiAnalysis(
+-      const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-      const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-      const int batch, const ScoreAccessor &scores, int32 *output_data) {
++      const tensorflow::TTypes<const float>::Matrix& transition_weights,
++      const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++      const int batch,
++      const ScoreAccessor& scores,
++      int32* output_data) {
+     ViterbiAnalysis(scores, transition_weights, allowed_transitions, batch,
+                     use_log_space_, use_start_end_states_, output_data);
+   }
+ 
+   // Perform a greedy analysis on a single batch item.
+   void DoGreedyAnalysis(
+-      const tensorflow::TTypes<const float>::Matrix &transition_weights,
+-      const tensorflow::TTypes<const bool>::Matrix &allowed_transitions,
+-      int batch, const ScoreAccessor &scores, int32 *output_data) {
++      const tensorflow::TTypes<const float>::Matrix& transition_weights,
++      const tensorflow::TTypes<const bool>::Matrix& allowed_transitions,
++      int batch,
++      const ScoreAccessor& scores,
++      int32* output_data) {
+     GreedyAnalysis(scores, transition_weights, allowed_transitions, batch,
+                    use_log_space_, use_start_end_states_, output_data);
+   }
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.cc
+index c1a1887da7467..87035a835ae5e 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.cc
+@@ -32,7 +32,8 @@ absl::StatusOr<std::vector<uint32_t>> BuildDartsCloneTrie(
+ }
+ 
+ absl::StatusOr<std::vector<uint32_t>> BuildDartsCloneTrie(
+-    const std::vector<std::string>& keys, const std::vector<int>& values) {
++    const std::vector<std::string>& keys,
++    const std::vector<int>& values) {
+   if (keys.size() != values.size()) {
+     return absl::InvalidArgumentError(absl::StrCat(
+         "The sizes of 'keys' and 'values' must be equal! Keys size: ",
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.h
+index 171bd4f8d9b78..9b47debd0a2f4 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_builder.h
+@@ -39,7 +39,8 @@ namespace trie_utils {
+ // addition, the empty string "" should not be in `keys`, because darts_clone
+ // does not support that. Furthermore, all `values` should be non-negative.
+ absl::StatusOr<std::vector<uint32_t>> BuildDartsCloneTrie(
+-    const std::vector<std::string>& keys, const std::vector<int>& values);
++    const std::vector<std::string>& keys,
++    const std::vector<int>& values);
+ 
+ // A variant where the values are indexes in the keys: i.e., the value for
+ // `keys[i]` is the index `i`.
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h
+index a51bcec6d87e1..fce263372e8a4 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h
+@@ -120,7 +120,8 @@ class DartsCloneTrieWrapper {
+       : trie_array_(trie_array) {}
+ 
+   // The actual implementation of TryTraverseSeveralSteps.
+-  bool TryTraverseSeveralSteps(TraversalCursor& cursor, const char* ptr,
++  bool TryTraverseSeveralSteps(TraversalCursor& cursor,
++                               const char* ptr,
+                                int size) const {
+     uint32_t cur_id = cursor.node_id;
+     uint32_t cur_unit = cursor.unit;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest.h
+index fcf5091434804..deff86c9f1f19 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest.h
+@@ -92,19 +92,21 @@ template <class Index, bool kUseUnionByRank>
+ void DisjointSetForest<Index, kUseUnionByRank>::Init(Index size) {
+   size_ = size;
+   parents_.resize(size_);
+-  if (kUseUnionByRank) ranks_.resize(size_);
++  if (kUseUnionByRank)
++    ranks_.resize(size_);
+ 
+   // Create singleton sets.
+   for (Index i = 0; i < size_; ++i) {
+     parents_[i] = i;
+-    if (kUseUnionByRank) ranks_[i] = 0;
++    if (kUseUnionByRank)
++      ranks_[i] = 0;
+   }
+ }
+ 
+ template <class Index, bool kUseUnionByRank>
+ Index DisjointSetForest<Index, kUseUnionByRank>::FindRoot(Index element) {
+   DCHECK_LT(element, size());
+-  Index *const __restrict parents = parents_.data();
++  Index* const __restrict parents = parents_.data();
+ 
+   // Walk up to the root of the |element|.  Unroll the first two comparisons
+   // because path compression ensures most FindRoot() calls end there.  In
+@@ -112,11 +114,13 @@ Index DisjointSetForest<Index, kUseUnionByRank>::FindRoot(Index element) {
+   // path compression updates can be skipped.
+   Index current = element;
+   Index parent = parents[current];
+-  if (current == parent) return current;  // |element| is a root
++  if (current == parent)
++    return current;  // |element| is a root
+   current = parent;
+   parent = parents[current];
+-  if (current == parent) return current;  // |element| is the child of a root
+-  do {  // otherwise, continue upwards until root
++  if (current == parent)
++    return current;  // |element| is the child of a root
++  do {               // otherwise, continue upwards until root
+     current = parent;
+     parent = parents[current];
+   } while (current != parent);
+@@ -147,12 +151,13 @@ void DisjointSetForest<Index, kUseUnionByRank>::UnionOfRoots(Index root1,
+   DCHECK_LT(root2, size());
+   DCHECK_EQ(root1, parents_[root1]);
+   DCHECK_EQ(root2, parents_[root2]);
+-  if (root1 == root2) return;  // already merged
+-  Index *const __restrict parents = parents_.data();
++  if (root1 == root2)
++    return;  // already merged
++  Index* const __restrict parents = parents_.data();
+ 
+   if (kUseUnionByRank) {
+     // Attach the lesser-rank root to the higher-rank root.
+-    Index *const __restrict ranks = ranks_.data();
++    Index* const __restrict ranks = ranks_.data();
+     const Index rank1 = ranks[root1];
+     const Index rank2 = ranks[root2];
+     if (rank2 < rank1) {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest_test.cc
+index a93e31d213f3f..2d3e09bd2fd85 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/disjoint_set_forest_test.cc
+@@ -36,10 +36,10 @@ class DisjointSetForestTest : public ::testing::Test {
+   using Index = typename Forest::IndexType;
+ 
+   // Expects that the |expected_sets| and |forest| match.
+-  void ExpectSets(const std::set<std::set<Index>> &expected_sets,
+-                  Forest *forest) {
++  void ExpectSets(const std::set<std::set<Index>>& expected_sets,
++                  Forest* forest) {
+     std::set<std::pair<Index, Index>> expected_pairs;
+-    for (const auto &expected_set : expected_sets) {
++    for (const auto& expected_set : expected_sets) {
+       for (auto it = expected_set.begin(); it != expected_set.end(); ++it) {
+         for (auto jt = expected_set.begin(); jt != expected_set.end(); ++jt) {
+           expected_pairs.emplace(*it, *jt);
+@@ -61,11 +61,14 @@ class DisjointSetForestTest : public ::testing::Test {
+   }
+ };
+ 
+-using Forests = ::testing::Types<
+-    DisjointSetForest<uint8, false>, DisjointSetForest<uint8, true>,
+-    DisjointSetForest<uint16, false>, DisjointSetForest<uint16, true>,
+-    DisjointSetForest<uint32, false>, DisjointSetForest<uint32, true>,
+-    DisjointSetForest<uint64, false>, DisjointSetForest<uint64, true>>;
++using Forests = ::testing::Types<DisjointSetForest<uint8, false>,
++                                 DisjointSetForest<uint8, true>,
++                                 DisjointSetForest<uint16, false>,
++                                 DisjointSetForest<uint16, true>,
++                                 DisjointSetForest<uint32, false>,
++                                 DisjointSetForest<uint32, true>,
++                                 DisjointSetForest<uint64, false>,
++                                 DisjointSetForest<uint64, true>>;
+ TYPED_TEST_SUITE(DisjointSetForestTest, Forests);
+ 
+ TYPED_TEST(DisjointSetForestTest, DefaultEmpty) {
+@@ -114,7 +117,7 @@ class DisjointSetForestNoUnionByRankTest : public ::testing::Test {
+   using Forest = DisjointSetForest<uint32, false>;
+ 
+   // Expects that the roots of the |forest| match |expected_roots|.
+-  void ExpectRoots(const std::vector<uint32> &expected_roots, Forest *forest) {
++  void ExpectRoots(const std::vector<uint32>& expected_roots, Forest* forest) {
+     ASSERT_EQ(expected_roots.size(), forest->size());
+     for (uint32 i = 0; i < forest->size(); ++i) {
+       EXPECT_EQ(expected_roots[i], forest->FindRoot(i));
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/edit_changes.proto b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/edit_changes.proto
+index 62d622b7a7c2d..08f62778c4f46 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/edit_changes.proto
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/edit_changes.proto
+@@ -12,4 +12,3 @@ message EditChanges {
+ 
+   repeated Change change = 1;
+ }
+-
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc
+index c1f0e4ea48c90..9dede81af00da 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.cc
+@@ -155,7 +155,8 @@ absl::StatusOr<std::string> FastWordpieceTokenizer::Detokenize(
+ }
+ 
+ int FastWordpieceTokenizer::SkipTheRemainingOfWordAndTrailingWhiteSpaces(
+-    absl::string_view input, int& cur_pos) const {
++    absl::string_view input,
++    int& cur_pos) const {
+   const int input_size = input.size();
+   UChar32 cur_unicode_char;
+   int next_pos;
+@@ -182,8 +183,10 @@ int FastWordpieceTokenizer::SkipTheRemainingOfWordAndTrailingWhiteSpaces(
+ 
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ void FastWordpieceTokenizer::TokenizeTextImpl(
+-    absl::string_view input_text, std::vector<std::string>* output_pieces,
+-    std::vector<int>* output_ids, std::vector<int>* output_start_offsets,
++    absl::string_view input_text,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
++    std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   static_assert(kGetPieces || kGetIds,
+                 "At least one of `kGetPieces` and `kGetIds` should be true.");
+@@ -266,7 +269,8 @@ void FastWordpieceTokenizer::TokenizeTextImpl(
+           cur_offset_in_input_word, output_pieces, output_ids,
+           output_start_offsets, output_end_offsets);
+       // Skip the whitespace.
+-      if (is_white_space) cur_pos = next_pos;
++      if (is_white_space)
++        cur_pos = next_pos;
+       // Continue in the outer while loop to process the remaining input.
+       continue;
+     }
+@@ -336,8 +340,10 @@ void FastWordpieceTokenizer::TokenizeTextImpl(
+ //    immediately identifies the next matching token as "##efz".
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ void FastWordpieceTokenizer::TokenizeSingleWordImpl(
+-    absl::string_view input_word, int input_word_offset_in_text,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    absl::string_view input_word,
++    int input_word_offset_in_text,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   static_assert(kGetPieces || kGetIds,
+@@ -480,10 +486,12 @@ void FastWordpieceTokenizer::TokenizeSingleWordImpl(
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ ABSL_ATTRIBUTE_ALWAYS_INLINE bool
+ FastWordpieceTokenizer::TryFollowFailureLinkAndCollectTokens(
+-    absl::string_view input_word, int input_word_offset_in_text,
++    absl::string_view input_word,
++    int input_word_offset_in_text,
+     int& cur_offset_in_input_word,
+     trie_utils::DartsCloneTrieWrapper::TraversalCursor& node,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   int cur_node_data;
+@@ -531,9 +539,12 @@ FastWordpieceTokenizer::TryFollowFailureLinkAndCollectTokens(
+ 
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ void FastWordpieceTokenizer::AppendTokenToOutput(
+-    absl::string_view input_word, int input_word_offset_in_text,
+-    int& cur_offset_in_input_word, int encoded_token_value,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    absl::string_view input_word,
++    int input_word_offset_in_text,
++    int& cur_offset_in_input_word,
++    int encoded_token_value,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   auto token_id =
+@@ -584,10 +595,13 @@ void FastWordpieceTokenizer::AppendTokenToOutput(
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ ABSL_ATTRIBUTE_ALWAYS_INLINE void
+ FastWordpieceTokenizer::HandleTheRemainingStringOnTriePath(
+-    absl::string_view input_word, int input_word_offset_in_text,
++    absl::string_view input_word,
++    int input_word_offset_in_text,
+     trie_utils::DartsCloneTrieWrapper::TraversalCursor& cur_node,
+-    int& original_num_tokens, int& cur_offset_in_input_word,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    int& original_num_tokens,
++    int& cur_offset_in_input_word,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   if (cur_node.node_id == trie_utils::DartsCloneTrieWrapper::kRootNodeId) {
+@@ -642,8 +656,11 @@ FastWordpieceTokenizer::HandleTheRemainingStringOnTriePath(
+ 
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ void FastWordpieceTokenizer::ResetOutputAppendUnknownToken(
+-    int input_word_offset_in_text, int input_size, int& original_num_tokens,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    int input_word_offset_in_text,
++    int input_size,
++    int& original_num_tokens,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   if constexpr (kGetPieces) {
+@@ -669,10 +686,13 @@ void FastWordpieceTokenizer::ResetOutputAppendUnknownToken(
+ template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+ ABSL_ATTRIBUTE_ALWAYS_INLINE bool
+ FastWordpieceTokenizer::TryHandleTheInputWordBeingSuffixIndicatorItself(
+-    absl::string_view input_word, int input_word_offset_in_text,
++    absl::string_view input_word,
++    int input_word_offset_in_text,
+     const trie_utils::DartsCloneTrieWrapper::TraversalCursor& cur_node,
+-    int& cur_offset_in_input_word, int original_num_tokens,
+-    std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++    int& cur_offset_in_input_word,
++    int original_num_tokens,
++    std::vector<std::string>* output_pieces,
++    std::vector<int>* output_ids,
+     std::vector<int>* output_start_offsets,
+     std::vector<int>* output_end_offsets) const {
+   // Handle the special case where the input word is the suffix indicator (e.g.,
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h
+index c998f9567488e..4ab48f5537f0d 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer.h
+@@ -81,13 +81,15 @@ class FastWordpieceTokenizer {
+                 int input_word_offset_in_text = 0) const;
+ 
+   // An override not returning `output_pieces`.
+-  void Tokenize(absl::string_view input, std::vector<int>* output_ids,
++  void Tokenize(absl::string_view input,
++                std::vector<int>* output_ids,
+                 std::vector<int>* output_start_offsets,
+                 std::vector<int>* output_end_offsets,
+                 int input_word_offset_in_text = 0) const;
+ 
+   // An override only returning `output_ids`.
+-  void Tokenize(absl::string_view input, std::vector<int>* output_ids,
++  void Tokenize(absl::string_view input,
++                std::vector<int>* output_ids,
+                 int input_word_offset_in_text = 0) const;
+ 
+   // Detokenizes wordpiece ids into a vector of tokens.
+@@ -151,10 +153,12 @@ class FastWordpieceTokenizer {
+   //    after the new word piece tokens have been appended to the output.
+   template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+   bool TryFollowFailureLinkAndCollectTokens(
+-      absl::string_view input_word, int input_word_offset_in_text,
++      absl::string_view input_word,
++      int input_word_offset_in_text,
+       int& cur_offset_in_input_word,
+       trie_utils::DartsCloneTrieWrapper::TraversalCursor& node,
+-      std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++      std::vector<std::string>* output_pieces,
++      std::vector<int>* output_ids,
+       std::vector<int>* output_start_offsets,
+       std::vector<int>* output_end_offsets) const;
+ 
+@@ -200,10 +204,13 @@ class FastWordpieceTokenizer {
+   // outputs and appends unk_token at the end as expected.
+   template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+   void HandleTheRemainingStringOnTriePath(
+-      absl::string_view input_word, int input_word_offset_in_text,
++      absl::string_view input_word,
++      int input_word_offset_in_text,
+       trie_utils::DartsCloneTrieWrapper::TraversalCursor& cur_node,
+-      int& original_num_tokens, int& cur_offset_in_input_word,
+-      std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++      int& original_num_tokens,
++      int& cur_offset_in_input_word,
++      std::vector<std::string>* output_pieces,
++      std::vector<int>* output_ids,
+       std::vector<int>* output_start_offsets,
+       std::vector<int>* output_end_offsets) const;
+ 
+@@ -222,8 +229,11 @@ class FastWordpieceTokenizer {
+   //    after this method.
+   template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+   void ResetOutputAppendUnknownToken(
+-      int input_word_offset_in_text, int input_size, int& original_num_tokens,
+-      std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++      int input_word_offset_in_text,
++      int input_size,
++      int& original_num_tokens,
++      std::vector<std::string>* output_pieces,
++      std::vector<int>* output_ids,
+       std::vector<int>* output_start_offsets,
+       std::vector<int>* output_end_offsets) const;
+ 
+@@ -232,10 +242,13 @@ class FastWordpieceTokenizer {
+   // output_ids, and returns true. Otherwise, it does nothing and returns false.
+   template <bool kGetPieces, bool kGetIds, bool kGetOffsets>
+   bool TryHandleTheInputWordBeingSuffixIndicatorItself(
+-      absl::string_view input_word, int input_word_offset_in_text,
++      absl::string_view input_word,
++      int input_word_offset_in_text,
+       const trie_utils::DartsCloneTrieWrapper::TraversalCursor& cur_node,
+-      int& cur_offset_in_input_word, int original_num_tokens,
+-      std::vector<std::string>* output_pieces, std::vector<int>* output_ids,
++      int& cur_offset_in_input_word,
++      int original_num_tokens,
++      std::vector<std::string>* output_pieces,
++      std::vector<int>* output_ids,
+       std::vector<int>* output_start_offsets,
+       std::vector<int>* output_end_offsets) const;
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
+index 446edf835853e..d71b9bc98e466 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_kernel_template.h
+@@ -383,12 +383,12 @@ absl::Status FastWordpieceDetokenizeOp<Rt>::ShapeInference(
+   return absl::OkStatus();
+ }
+ 
+-  template <tflite::shim::Runtime Rt>
+-  const char FastWordpieceDetokenizeOp<Rt>::kOpName[] =
+-      "TFText>FastWordpieceDetokenize";
++template <tflite::shim::Runtime Rt>
++const char FastWordpieceDetokenizeOp<Rt>::kOpName[] =
++    "TFText>FastWordpieceDetokenize";
+ 
+-  template <tflite::shim::Runtime Rt>
+-  const char FastWordpieceDetokenizeOp<Rt>::kDoc[] = R"doc(
++template <tflite::shim::Runtime Rt>
++const char FastWordpieceDetokenizeOp<Rt>::kDoc[] = R"doc(
+   Detokenizes sub-word ids into sentences.
+ 
+   ### Example:
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.cc
+index a7a939e8f528b..0f4d213547f83 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.cc
+@@ -31,12 +31,12 @@
+ #include "icu4c/source/common/unicode/umachine.h"
+ #include "icu4c/source/common/unicode/utf8.h"
+ #include "tensorflow/lite/kernels/shim/status_macros.h"
+-#include "tensorflow_text/core/kernels/sentence_fragmenter_v2.h"
+-#include "tensorflow_text/core/kernels/wordpiece_tokenizer.h"
+ #include "tensorflow_text/core/kernels/darts_clone_trie_builder.h"
+ #include "tensorflow_text/core/kernels/darts_clone_trie_wrapper.h"
+ #include "tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_generated.h"
+ #include "tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h"
++#include "tensorflow_text/core/kernels/sentence_fragmenter_v2.h"
++#include "tensorflow_text/core/kernels/wordpiece_tokenizer.h"
+ 
+ namespace tensorflow {
+ namespace text {
+@@ -49,7 +49,8 @@ static constexpr char kInvalidControlChar = 0x11;
+ // A wrapper of vocab tokens that will be used to build the trie.
+ class TrieVocabToken {
+  public:
+-  TrieVocabToken(absl::string_view token, int token_id,
++  TrieVocabToken(absl::string_view token,
++                 int token_id,
+                  absl::string_view suffix_indicator)
+       : token_(std::string(token)), token_id_(token_id) {
+     if (!suffix_indicator.empty() && token_ != suffix_indicator &&
+@@ -293,9 +294,12 @@ class FastWordpieceBuilder {
+ };
+ 
+ absl::Status FastWordpieceBuilder::BuildModel(
+-    const std::vector<std::string>& vocab, int max_bytes_per_token,
+-    absl::string_view suffix_indicator, absl::string_view unk_token,
+-    bool no_pretokenization, bool support_detokenization) {
++    const std::vector<std::string>& vocab,
++    int max_bytes_per_token,
++    absl::string_view suffix_indicator,
++    absl::string_view unk_token,
++    bool no_pretokenization,
++    bool support_detokenization) {
+   unk_token_ = std::string(unk_token);
+   suffix_indicator_ = std::string(suffix_indicator);
+   max_bytes_per_token_ = max_bytes_per_token;
+@@ -781,7 +785,8 @@ absl::Status FastWordpieceBuilder::BuildFailureStructure(
+ }
+ 
+ absl::Status FastWordpieceBuilder::AssignFailureLinkAndPops(
+-    uint32_t cur_node, uint32_t failure_link,
++    uint32_t cur_node,
++    uint32_t failure_link,
+     const std::vector<int>& one_step_pops,
+     int parent_failure_pops_offset_length) {
+   if (failure_link == fast_wordpiece_tokenizer_utils::kNullNode) {
+@@ -833,7 +838,8 @@ absl::Status FastWordpieceBuilder::AssignFailureLinkAndPops(
+ }
+ 
+ void FastWordpieceBuilder::GetFailurePopsAndAppendToOut(
+-    uint32_t failure_pops_offset_length, std::vector<int>& out_failure_pops) {
++    uint32_t failure_pops_offset_length,
++    std::vector<int>& out_failure_pops) {
+   if (failure_pops_offset_length ==
+       fast_wordpiece_tokenizer_utils::kNullFailurePopsList) {
+     return;
+@@ -950,14 +956,16 @@ absl::StatusOr<std::string> FastWordpieceBuilder::ExportToFlatBuffer() const {
+ }  // namespace
+ 
+ absl::StatusOr<std::string> BuildModelAndExportToFlatBuffer(
+-    const std::vector<std::string>& vocab, int max_bytes_per_token,
+-    absl::string_view suffix_indicator, absl::string_view unk_token,
+-    bool no_pretokenization, bool support_detokenization) {
++    const std::vector<std::string>& vocab,
++    int max_bytes_per_token,
++    absl::string_view suffix_indicator,
++    absl::string_view unk_token,
++    bool no_pretokenization,
++    bool support_detokenization) {
+   FastWordpieceBuilder builder;
+-  SH_RETURN_IF_ERROR(builder.BuildModel(vocab, max_bytes_per_token,
+-                                        suffix_indicator, unk_token,
+-                                        no_pretokenization,
+-                                        support_detokenization));
++  SH_RETURN_IF_ERROR(builder.BuildModel(
++      vocab, max_bytes_per_token, suffix_indicator, unk_token,
++      no_pretokenization, support_detokenization));
+   SH_ASSIGN_OR_RETURN(std::string flatbuffer, builder.ExportToFlatBuffer());
+   return flatbuffer;
+ }
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.h
+index 808dfb7bf92ba..769e66c1460f3 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_model_builder.h
+@@ -44,9 +44,12 @@ namespace text {
+ // Returns:
+ //  The bytes of the flatbuffer that stores the model.
+ absl::StatusOr<std::string> BuildModelAndExportToFlatBuffer(
+-    const std::vector<std::string>& vocab, int max_bytes_per_token,
+-    absl::string_view suffix_indicator, absl::string_view unk_token,
+-    bool no_pretokenization = false, bool support_detokenization = false);
++    const std::vector<std::string>& vocab,
++    int max_bytes_per_token,
++    absl::string_view suffix_indicator,
++    absl::string_view unk_token,
++    bool no_pretokenization = false,
++    bool support_detokenization = false);
+ }  // namespace text
+ }  // namespace tensorflow
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_test.cc
+index 5198348775315..8aa05e86531ad 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_test.cc
+@@ -1228,7 +1228,8 @@ TEST_P(TestTokenizeSingleWord, TestNoOutputPiecesWithPositiveSentenceOffsets) {
+ }
+ 
+ INSTANTIATE_TEST_SUITE_P(
+-    FastWordpieceTokenizerParameterizedTest, TestTokenizeSingleWord,
++    FastWordpieceTokenizerParameterizedTest,
++    TestTokenizeSingleWord,
+     testing::ValuesIn(GetTestSpecsForTokenizeSingleWord()));
+ 
+ // Test End-to-end FastWordPieceTokenization for tokenizing general texts.
+@@ -2479,7 +2480,8 @@ TEST_P(TestTokenizeDetokenize, Test) {
+ }
+ 
+ INSTANTIATE_TEST_SUITE_P(
+-    FastWordpieceTokenizerDetokenizeParameterizedTest, TestTokenizeDetokenize,
++    FastWordpieceTokenizerDetokenizeParameterizedTest,
++    TestTokenizeDetokenize,
+     testing::ValuesIn(GetTestSpecsForTokenizeDetokenize()));
+ 
+ }  // namespace
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h
+index 9f0122c85a3e0..ba2cf6ab40cf6 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils.h
+@@ -133,7 +133,8 @@ static constexpr uint32_t kMaskToEncodeVocabTokenId =
+ // Encodes a token into the encoded value. `token_length` is without the suffix
+ // indicator. The result is always a non-negative integer. Only used in building
+ // the model (in flatbuffer), not in doing WordPiece tokenization.
+-inline absl::StatusOr<int> EncodeToken(int token_id, int token_length,
++inline absl::StatusOr<int> EncodeToken(int token_id,
++                                       int token_length,
+                                        bool is_suffix_token) {
+   const int encoded_value = (is_suffix_token << kBitToIndicateSuffixToken) |
+                             (token_id << kBitsToEncodeVocabTokenLength) |
+@@ -227,7 +228,8 @@ inline uint32_t EncodeFailurePopList(int offset, int length) {
+ // Decodes the offset (in the failure pop pool) and the length of a failure pop
+ // list from the compact representation (an integer).
+ inline void GetFailurePopsOffsetAndLength(uint32_t offset_and_length,
+-                                          int& out_offset, int& out_length) {
++                                          int& out_offset,
++                                          int& out_length) {
+   out_offset = offset_and_length >> kBitsToEncodeFailurePopsListSize;
+   out_length = (offset_and_length & kMaskToEncodeFailurePopsListSize) + 1;
+ }
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils_test.cc
+index cc160dbf8eaa0..931438e6d7ab1 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/fast_wordpiece_tokenizer_utils_test.cc
+@@ -90,7 +90,8 @@ TEST_P(TokenEncodingDecodingTest, GeneralTest) {
+   EXPECT_THAT(IsSuffixToken(encoded_value), spec.is_suffix_token);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(TestTokenEncodingDecoding, TokenEncodingDecodingTest,
++INSTANTIATE_TEST_SUITE_P(TestTokenEncodingDecoding,
++                         TokenEncodingDecodingTest,
+                          testing::ValuesIn(GetTokenSpecs()));
+ 
+ struct FailurePopListSpec {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/log_viterbi_constrained_sequence_kernel_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/log_viterbi_constrained_sequence_kernel_test.cc
+index f789c094cf383..b7db6069ebeca 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/log_viterbi_constrained_sequence_kernel_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/log_viterbi_constrained_sequence_kernel_test.cc
+@@ -37,7 +37,6 @@ using tensorflow::TensorShape;
+ using tensorflow::text_kernels_test_util::MatrixEq;
+ using tensorflow::text_kernels_test_util::VectorEq;
+ 
+-
+ // TODO(b/122968457): There are a bunch of tests that only validate !ok instead
+ // of looking for specific error messages; fix that.
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_op_kernels.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_op_kernels.cc
+index dc0adedecc8f4..d6b3a91dd4067 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_op_kernels.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_op_kernels.cc
+@@ -33,14 +33,14 @@ namespace text {
+ template <class Index, class Score>
+ class MaxSpanningTreeOpKernel : public tensorflow::OpKernel {
+  public:
+-  explicit MaxSpanningTreeOpKernel(tensorflow::OpKernelConstruction *context)
++  explicit MaxSpanningTreeOpKernel(tensorflow::OpKernelConstruction* context)
+       : tensorflow::OpKernel(context) {
+     OP_REQUIRES_OK(context, context->GetAttr("forest", &forest_));
+   }
+ 
+-  void Compute(tensorflow::OpKernelContext *context) override {
+-    const tensorflow::Tensor &num_nodes_tensor = context->input(0);
+-    const tensorflow::Tensor &scores_tensor = context->input(1);
++  void Compute(tensorflow::OpKernelContext* context) override {
++    const tensorflow::Tensor& num_nodes_tensor = context->input(0);
++    const tensorflow::Tensor& scores_tensor = context->input(1);
+ 
+     // Check ranks.
+     OP_REQUIRES(context, num_nodes_tensor.dims() == 1,
+@@ -73,8 +73,8 @@ class MaxSpanningTreeOpKernel : public tensorflow::OpKernel {
+             " but expected ", shape_bxmxm.DebugString()));
+ 
+     // Create outputs.
+-    tensorflow::Tensor *max_scores_tensor = nullptr;
+-    tensorflow::Tensor *argmax_sources_tensor = nullptr;
++    tensorflow::Tensor* max_scores_tensor = nullptr;
++    tensorflow::Tensor* argmax_sources_tensor = nullptr;
+     OP_REQUIRES_OK(context,
+                    context->allocate_output(0, shape_b, &max_scores_tensor));
+     OP_REQUIRES_OK(context, context->allocate_output(1, shape_bxm,
+@@ -97,7 +97,7 @@ class MaxSpanningTreeOpKernel : public tensorflow::OpKernel {
+                                           max_scores_b, argmax_sources_bxm);
+           }
+         });
+-    for (const tensorflow::Status &status : statuses) {
++    for (const tensorflow::Status& status : statuses) {
+       OP_REQUIRES_OK(context, status);
+     }
+   }
+@@ -112,7 +112,8 @@ class MaxSpanningTreeOpKernel : public tensorflow::OpKernel {
+   // at index |problem| in |num_nodes_b| and |scores_bxmxm|.  On success, sets
+   // the values at index |problem| in |max_scores_b| and |argmax_sources_bxm|.
+   // On error, returns non-OK.
+-  tensorflow::Status RunSolver(int problem, BatchedSizes num_nodes_b,
++  tensorflow::Status RunSolver(int problem,
++                               BatchedSizes num_nodes_b,
+                                BatchedScores scores_bxmxm,
+                                BatchedMaxima max_scores_b,
+                                BatchedSources argmax_sources_bxm) const {
+@@ -140,7 +141,8 @@ class MaxSpanningTreeOpKernel : public tensorflow::OpKernel {
+     for (Index target = 0; target < num_nodes_index; ++target) {
+       for (Index source = 0; source < num_nodes_index; ++source) {
+         const Score score = scores_bxmxm(problem, target, source);
+-        if (!std::isfinite(static_cast<double>(score))) continue;
++        if (!std::isfinite(static_cast<double>(score)))
++          continue;
+         if (source == target) {  // root
+           solver.AddRoot(target, score);
+         } else {  // arc
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h
+index b1ced8eab69c9..7d73435f9fa14 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h
+@@ -187,7 +187,8 @@ class MstSolver {
+ 
+     // Returns a string representation of this arc.
+     std::string DebugString() const {
+-      if (!Exists()) return "[null]";
++      if (!Exists())
++        return "[null]";
+       if (IsRoot()) {
+         return absl::StrCat("[*->", target, "=", score, "]");
+       }
+@@ -213,7 +214,7 @@ class MstSolver {
+   void MaybePenalizeRootScoresForTree();
+ 
+   // Returns the maximum inbound arc of the |node|, or null if there is none.
+-  const Arc *MaximumInboundArc(Index node) const;
++  const Arc* MaximumInboundArc(Index node) const;
+ 
+   // Merges the inbound arcs of the |cycle_node| into the inbound arcs of the
+   // |contracted_node|.  Arcs are merged as follows:
+@@ -225,7 +226,8 @@ class MstSolver {
+   //   |contracted_node| has the better-scoring arc.
+   // The |score_offset| is added to the arc scores of the |cycle_node| before
+   // they are merged into the |contracted_node|.
+-  void MergeInboundArcs(Index cycle_node, Score score_offset,
++  void MergeInboundArcs(Index cycle_node,
++                        Score score_offset,
+                         Index contracted_node);
+ 
+   // Contracts the cycle in |argmax_arcs_| that contains the |node|.
+@@ -293,11 +295,11 @@ class MstSolver {
+ 
+   // The maximum inbound arc for each node.  The first element is null because
+   // the artificial root has no inbound arcs.
+-  std::vector<const Arc *> argmax_arcs_;
++  std::vector<const Arc*> argmax_arcs_;
+ 
+   // Workspace for ContractCycle(), which records the nodes and arcs in the
+   // cycle being contracted.
+-  std::vector<std::pair<Index, const Arc *>> cycle_;
++  std::vector<std::pair<Index, const Arc*>> cycle_;
+ };
+ 
+ // Implementation details below.
+@@ -344,7 +346,7 @@ template <class Index, class Score>
+ void MstSolver<Index, Score>::AddArc(Index source, Index target, Score score) {
+   DCHECK_NE(source, target);
+   DCHECK(std::isfinite(score));
+-  Arc &arc = arcs_[ArcIndex(source + 1, target + 1)];
++  Arc& arc = arcs_[ArcIndex(source + 1, target + 1)];
+   arc.score = score;
+   arc.source = source + 1;
+   arc.target = target + 1;
+@@ -353,7 +355,7 @@ void MstSolver<Index, Score>::AddArc(Index source, Index target, Score score) {
+ template <class Index, class Score>
+ void MstSolver<Index, Score>::AddRoot(Index root, Score score) {
+   DCHECK(std::isfinite(score));
+-  Arc &arc = arcs_[ArcIndex(0, root + 1)];
++  Arc& arc = arcs_[ArcIndex(0, root + 1)];
+   arc.score = score;
+   arc.source = 0;
+   arc.target = root + 1;
+@@ -361,14 +363,14 @@ void MstSolver<Index, Score>::AddRoot(Index root, Score score) {
+ 
+ template <class Index, class Score>
+ Score MstSolver<Index, Score>::ArcScore(Index source, Index target) const {
+-  const Arc &arc = arcs_[ArcIndex(source + 1, target + 1)];
++  const Arc& arc = arcs_[ArcIndex(source + 1, target + 1)];
+   DCHECK(arc.Exists());
+   return arc.score;
+ }
+ 
+ template <class Index, class Score>
+ Score MstSolver<Index, Score>::RootScore(Index root) const {
+-  const Arc &arc = arcs_[ArcIndex(0, root + 1)];
++  const Arc& arc = arcs_[ArcIndex(0, root + 1)];
+   DCHECK(arc.Exists());
+   return arc.score;
+ }
+@@ -391,7 +393,8 @@ inline size_t MstSolver<Index, Score>::ArcIndex(size_t source,
+ 
+ template <class Index, class Score>
+ void MstSolver<Index, Score>::MaybePenalizeRootScoresForTree() {
+-  if (forest_) return;
++  if (forest_)
++    return;
+   DCHECK_EQ(num_current_nodes_, num_initial_nodes_)
+       << "Root penalties must be applied before starting the algorithm.";
+ 
+@@ -399,36 +402,40 @@ void MstSolver<Index, Score>::MaybePenalizeRootScoresForTree() {
+   // of possible tree scores.
+   Score max_score = std::numeric_limits<Score>::lowest();
+   Score min_score = std::numeric_limits<Score>::max();
+-  for (const Arc &arc : arcs_) {
+-    if (!arc.Exists()) continue;
++  for (const Arc& arc : arcs_) {
++    if (!arc.Exists())
++      continue;
+     max_score = std::max(max_score, arc.score);
+     min_score = std::min(min_score, arc.score);
+   }
+ 
+   // Nothing to do, no existing arcs.
+-  if (max_score < min_score) return;
++  if (max_score < min_score)
++    return;
+ 
+   // A spanning tree or forest contains n arcs.  The penalty below ensures that
+   // every structure with one root has a higher score than every structure with
+   // two roots, and so on.
+   const Score root_penalty = 1 + num_initial_nodes_ * (max_score - min_score);
+   for (Index root = 1; root < num_initial_nodes_; ++root) {
+-    Arc &arc = arcs_[ArcIndex(0, root)];
+-    if (!arc.Exists()) continue;
++    Arc& arc = arcs_[ArcIndex(0, root)];
++    if (!arc.Exists())
++      continue;
+     arc.score -= root_penalty;
+   }
+ }
+ 
+ template <class Index, class Score>
+-const typename MstSolver<Index, Score>::Arc *
++const typename MstSolver<Index, Score>::Arc*
+ MstSolver<Index, Score>::MaximumInboundArc(Index node) const {
+-  const Arc *__restrict arc = &arcs_[ArcIndex(0, node)];
+-  const Arc *arc_end = arc + num_initial_nodes_;
++  const Arc* __restrict arc = &arcs_[ArcIndex(0, node)];
++  const Arc* arc_end = arc + num_initial_nodes_;
+ 
+   Score max_score = std::numeric_limits<Score>::lowest();
+-  const Arc *argmax_arc = nullptr;
++  const Arc* argmax_arc = nullptr;
+   for (; arc < arc_end; ++arc) {
+-    if (!arc->Exists()) continue;
++    if (!arc->Exists())
++      continue;
+     const Score score = arc->score;
+     if (max_score <= score) {
+       max_score = score;
+@@ -442,12 +449,13 @@ template <class Index, class Score>
+ void MstSolver<Index, Score>::MergeInboundArcs(Index cycle_node,
+                                                Score score_offset,
+                                                Index contracted_node) {
+-  const Arc *__restrict cycle_arc = &arcs_[ArcIndex(0, cycle_node)];
+-  const Arc *cycle_arc_end = cycle_arc + num_initial_nodes_;
+-  Arc *__restrict contracted_arc = &arcs_[ArcIndex(0, contracted_node)];
++  const Arc* __restrict cycle_arc = &arcs_[ArcIndex(0, cycle_node)];
++  const Arc* cycle_arc_end = cycle_arc + num_initial_nodes_;
++  Arc* __restrict contracted_arc = &arcs_[ArcIndex(0, contracted_node)];
+ 
+   for (; cycle_arc < cycle_arc_end; ++cycle_arc, ++contracted_arc) {
+-    if (!cycle_arc->Exists()) continue;  // nothing to merge
++    if (!cycle_arc->Exists())
++      continue;  // nothing to merge
+ 
+     // Skip self-loops; they are useless because they cannot be used to break
+     // the cycle represented by the |contracted_node|.
+@@ -480,7 +488,7 @@ void MstSolver<Index, Score>::ContractCycle(Index node) {
+   Index cycle_node = node;
+   do {
+     // Gather the nodes and arcs in |cycle_| for the second pass.
+-    const Arc *cycle_arc = argmax_arcs_[cycle_node];
++    const Arc* cycle_arc = argmax_arcs_[cycle_node];
+     DCHECK(!cycle_arc->IsRoot()) << cycle_arc->DebugString();
+     cycle_.emplace_back(cycle_node, cycle_arc);
+ 
+@@ -500,7 +508,7 @@ void MstSolver<Index, Score>::ContractCycle(Index node) {
+   } while (cycle_node != contracted_node);
+ 
+   // Merge the inbound arcs of each cycle node into the |contracted_node|.
+-  for (const auto &node_and_arc : cycle_) {
++  for (const auto& node_and_arc : cycle_) {
+     // Set the |score_offset| to the cost of breaking the cycle by replacing the
+     // arc currently directed into the |cycle_node|.
+     const Index cycle_node = node_and_arc.first;
+@@ -514,7 +522,7 @@ tensorflow::Status MstSolver<Index, Score>::ContractionPhase() {
+   // Skip the artificial root since it has no inbound arcs.
+   for (Index target = 1; target < num_current_nodes_; ++target) {
+     // Find the maximum inbound arc for the current |target|, if any.
+-    const Arc *arc = MaximumInboundArc(target);
++    const Arc* arc = MaximumInboundArc(target);
+     if (arc == nullptr) {
+       return tensorflow::errors::FailedPrecondition("Infeasible digraph");
+     }
+@@ -522,7 +530,8 @@ tensorflow::Status MstSolver<Index, Score>::ContractionPhase() {
+ 
+     // The articifial root cannot be part of a cycle, so we do not need to check
+     // for cycles or even update its membership in the connected components.
+-    if (arc->IsRoot()) continue;
++    if (arc->IsRoot())
++      continue;
+ 
+     // Since every node has at most one selected inbound arc, cycles can be
+     // detected using weakly-connected components.
+@@ -555,11 +564,12 @@ tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
+   // this loop, entries [1,n] of |argmax_arcs_| provide the arcs of the maximum
+   // spanning tree.
+   for (Index i = num_current_nodes_ - 1; i >= num_initial_nodes_; --i) {
+-    if (contracted_into_[i] == kNullIndex) continue;  // already deleted
++    if (contracted_into_[i] == kNullIndex)
++      continue;            // already deleted
+     const Index root = i;  // if not deleted, must be a root due to toposorting
+ 
+     // Copy the cycle-breaking arc to its specified target.
+-    const Arc *arc = argmax_arcs_[root];
++    const Arc* arc = argmax_arcs_[root];
+     argmax_arcs_[arc->target] = arc;
+ 
+     // The |arc| not only breaks the cycle associated with the |root|, but also
+@@ -577,7 +587,7 @@ tensorflow::Status MstSolver<Index, Score>::ExpansionPhase(
+   // for validation below.
+   Index num_roots = 0;
+   for (Index target = 0; target < num_original_nodes_; ++target) {
+-    const Arc &arc = *argmax_arcs_[target + 1];
++    const Arc& arc = *argmax_arcs_[target + 1];
+     DCHECK_EQ(arc.target, target + 1) << arc.DebugString();
+     if (arc.IsRoot()) {
+       ++num_roots;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_random_comparison_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_random_comparison_test.cc
+index d345ce201b3a8..69e48c25ab245 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_random_comparison_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_random_comparison_test.cc
+@@ -25,7 +25,9 @@
+ #include "tensorflow_text/core/kernels/mst_solver.h"
+ #include "tensorflow_text/core/kernels/spanning_tree_iterator.h"
+ 
+-ABSL_FLAG(int64, seed, 0,
++ABSL_FLAG(int64,
++          seed,
++          0,
+           "Seed for random comparison tests, or 0 for a weak random seed.");
+ ABSL_FLAG(int, num_trials, 3, "Number of trials for random comparison tests.");
+ 
+@@ -35,10 +37,14 @@ namespace text {
+ using ::testing::Contains;
+ 
+ // Returns the random seed, or 0 for a weak random seed.
+-int64 GetSeed() { return absl::GetFlag(FLAGS_seed); }
++int64 GetSeed() {
++  return absl::GetFlag(FLAGS_seed);
++}
+ 
+ // Returns the number of trials to run for each random comparison.
+-int64 GetNumTrials() { return absl::GetFlag(FLAGS_num_trials); }
++int64 GetNumTrials() {
++  return absl::GetFlag(FLAGS_num_trials);
++}
+ 
+ // Testing rig.  Runs a comparison between a brute-force MST solver and the
+ // MstSolver<> on random digraphs.  When the first test parameter is true,
+@@ -64,7 +70,7 @@ class MstSolverRandomComparisonTest
+   uint32 num_nodes() const { return ::testing::get<1>(GetParam()); }
+ 
+   // Returns the score of the arcs in |sources| based on the |scores|.
+-  int32 ScoreArcs(const ScoreMatrix &scores, const SourceList &sources) const {
++  int32 ScoreArcs(const ScoreMatrix& scores, const SourceList& sources) const {
+     CHECK_EQ(num_nodes() * num_nodes(), scores.size());
+     int32 score = 0;
+     for (uint32 target = 0; target < num_nodes(); ++target) {
+@@ -77,13 +83,13 @@ class MstSolverRandomComparisonTest
+   // Returns the score of the maximum spanning tree (or forest, if the first
+   // test parameter is true) of the dense digraph defined by the |scores|, and
+   // sets |argmax_trees| to contain all maximal trees.
+-  int32 RunBruteForceMstSolver(const ScoreMatrix &scores,
+-                               std::set<SourceList> *argmax_trees) {
++  int32 RunBruteForceMstSolver(const ScoreMatrix& scores,
++                               std::set<SourceList>* argmax_trees) {
+     CHECK_EQ(num_nodes() * num_nodes(), scores.size());
+     int32 max_score;
+     argmax_trees->clear();
+ 
+-    iterator_.ForEachTree(num_nodes(), [&](const SourceList &sources) {
++    iterator_.ForEachTree(num_nodes(), [&](const SourceList& sources) {
+       const int32 score = ScoreArcs(scores, sources);
+       if (argmax_trees->empty() || max_score < score) {
+         max_score = score;
+@@ -98,7 +104,7 @@ class MstSolverRandomComparisonTest
+   }
+ 
+   // As above, but uses the |solver_| and extracts only one |argmax_tree|.
+-  int32 RunMstSolver(const ScoreMatrix &scores, SourceList *argmax_tree) {
++  int32 RunMstSolver(const ScoreMatrix& scores, SourceList* argmax_tree) {
+     CHECK_EQ(num_nodes() * num_nodes(), scores.size());
+     TF_CHECK_OK(solver_.Init(forest(), num_nodes()));
+ 
+@@ -123,7 +129,8 @@ class MstSolverRandomComparisonTest
+   // Returns a random ScoreMatrix spanning num_nodes() nodes.
+   ScoreMatrix RandomScores() {
+     ScoreMatrix scores(num_nodes() * num_nodes());
+-    for (int32 &value : scores) value = static_cast<int32>(prng_() % 201) - 100;
++    for (int32& value : scores)
++      value = static_cast<int32>(prng_() % 201) - 100;
+     return scores;
+   }
+ 
+@@ -133,7 +140,8 @@ class MstSolverRandomComparisonTest
+     // Seed the PRNG, possibly non-deterministically.  Log the seed value so the
+     // test results can be reproduced, even when the seed is non-deterministic.
+     uint32 seed = GetSeed();
+-    if (seed == 0) seed = time(nullptr);
++    if (seed == 0)
++      seed = time(nullptr);
+     prng_.seed(seed);
+     LOG(INFO) << "seed = " << seed;
+ 
+@@ -166,11 +174,14 @@ class MstSolverRandomComparisonTest
+   std::mt19937 prng_;
+ };
+ 
+-INSTANTIATE_TEST_SUITE_P(AllowForest, MstSolverRandomComparisonTest,
++INSTANTIATE_TEST_SUITE_P(AllowForest,
++                         MstSolverRandomComparisonTest,
+                          ::testing::Combine(::testing::Bool(),
+                                             ::testing::Range<uint32>(1, 9)));
+ 
+-TEST_P(MstSolverRandomComparisonTest, Comparison) { RunComparison(); }
++TEST_P(MstSolverRandomComparisonTest, Comparison) {
++  RunComparison();
++}
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_test.cc
+index 6d67b08081359..ef5327fe535e7 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver_test.cc
+@@ -40,7 +40,8 @@ class MstSolverTest : public ::testing::Test {
+   void AddAllArcs(Index num_nodes, Score score) {
+     for (Index source = 0; source < num_nodes; ++source) {
+       for (Index target = 0; target < num_nodes; ++target) {
+-        if (source == target) continue;
++        if (source == target)
++          continue;
+         solver_.AddArc(source, target, score);
+       }
+     }
+@@ -57,7 +58,7 @@ class MstSolverTest : public ::testing::Test {
+   // Runs the |solver_| using an argmax array of size |argmax_array_size| and
+   // expects it to fail with an error message that matches |error_substr|.
+   void SolveAndExpectError(int argmax_array_size,
+-                           const std::string &error_message_substr) {
++                           const std::string& error_message_substr) {
+     std::vector<Index> argmax(argmax_array_size);
+     EXPECT_TRUE(absl::StrContains(solver_.Solve(&argmax).error_message(),
+                                   error_message_substr));
+@@ -72,7 +73,7 @@ class MstSolverTest : public ::testing::Test {
+ 
+   // As above, but expects the solution to be |expected_argmax| and infers the
+   // argmax array size.
+-  void SolveAndExpectArgmax(const std::vector<Index> &expected_argmax) {
++  void SolveAndExpectArgmax(const std::vector<Index>& expected_argmax) {
+     std::vector<Index> actual_argmax(expected_argmax.size());
+     TF_ASSERT_OK(solver_.Solve(&actual_argmax));
+     EXPECT_EQ(expected_argmax, actual_argmax);
+@@ -83,10 +84,11 @@ class MstSolverTest : public ::testing::Test {
+   Solver solver_;
+ };
+ 
+-using Solvers =
+-    ::testing::Types<MstSolver<uint8, int16>, MstSolver<uint16, int32>,
+-                     MstSolver<uint32, int64>, MstSolver<uint16, float>,
+-                     MstSolver<uint32, double>>;
++using Solvers = ::testing::Types<MstSolver<uint8, int16>,
++                                 MstSolver<uint16, int32>,
++                                 MstSolver<uint32, int64>,
++                                 MstSolver<uint16, float>,
++                                 MstSolver<uint32, double>>;
+ TYPED_TEST_SUITE(MstSolverTest, Solvers);
+ 
+ TYPED_TEST(MstSolverTest, FailIfNoNodes) {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_kernel_template.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_kernel_template.h
+index 790ebce2a67c6..c6f45988924fb 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_kernel_template.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_kernel_template.h
+@@ -191,7 +191,8 @@ class NGramsStrJoin : public tflite::shim::OpKernelShim<NGramsStrJoin, Rt> {
+       std::vector<tensorflow::tstring> tokens;
+       for (int j = input_row_splits[i]; j < input_row_splits[i + 1]; ++j) {
+         tokens.emplace_back(input_values_data.at(j));
+-        if (tokens.size() < width_) continue;
++        if (tokens.size() < width_)
++          continue;
+         tokens.erase(tokens.begin(), tokens.begin() + tokens.size() - width_);
+         buffer.push_back(absl::StrJoin(tokens, string_separator_));
+       }
+@@ -206,11 +207,13 @@ class NGramsStrJoin : public tflite::shim::OpKernelShim<NGramsStrJoin, Rt> {
+       output_values_or =
+           ctx->GetOutput(kValues, Shape({static_cast<int>(buffer.size())}));
+     }
+-    if (!output_values_or.ok()) return output_values_or.status();
++    if (!output_values_or.ok())
++      return output_values_or.status();
+     auto& output_buffer =
+         output_values_or.value()->template Data<tensorflow::tstring>();
+     int i = 0;
+-    for (const auto& v : buffer) output_buffer[i++] = v;
++    for (const auto& v : buffer)
++      output_buffer[i++] = v;
+     return absl::OkStatus();
+   }
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_tflite_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_tflite_test.cc
+index 7c98100d400b9..3c97969eb4e36 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_tflite_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ngrams_tflite_test.cc
+@@ -51,7 +51,8 @@ using ::testing::ElementsAreArray;
+ class NgramsModel : public SingleOpModel {
+  public:
+   // Constructor for testing the op with a tf.Tensor
+-  NgramsModel(int width, const std::string& string_separator,
++  NgramsModel(int width,
++              const std::string& string_separator,
+               const std::vector<std::string>& input_values,
+               const std::vector<int>& input_shape) {
+     input_values_ = AddInput(TensorType_STRING);
+@@ -67,7 +68,8 @@ class NgramsModel : public SingleOpModel {
+   // Constructor for the op with a tf.RaggedTensor
+   // Note: This interface uses row_lengths, as they're closer to the
+   // dimensions in a TensorShape, but internally everything is row_splits.
+-  NgramsModel(int width, const std::string& string_separator,
++  NgramsModel(int width,
++              const std::string& string_separator,
+               const std::vector<std::string>& input_values,
+               const std::vector<std::vector<int64_t>> nested_row_lengths) {
+     std::vector<std::vector<int>> input_shapes;
+@@ -214,8 +216,7 @@ TEST(NgramsTest, TensorMultidimensionalInputWidthTwo) {
+ TEST(NgramsTest, RaggedTensorSingleSequenceWidthTwo) {
+   std::vector<std::vector<int64_t>> nested_row_lengths;
+   nested_row_lengths.push_back({4});
+-  NgramsModel m(2, " ", {"this", "is", "a", "test"},
+-                nested_row_lengths);
++  NgramsModel m(2, " ", {"this", "is", "a", "test"}, nested_row_lengths);
+   EXPECT_THAT(m.GetValuesTensorShape(), ElementsAre(3));
+   EXPECT_THAT(m.ExtractValuesTensorVector(),
+               ElementsAre("this is", "is a", "a test"));
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite.cc
+index d68276f91d90b..a44e18f8e0534 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite.cc
+@@ -33,9 +33,9 @@ limitations under the License.
+ #include "flatbuffers/flexbuffers.h"
+ #include "tensorflow/core/util/ragged_to_dense_util_common.h"
+ #include "tensorflow/lite/c/common.h"
+-#include "tensorflow/lite/mutable_op_resolver.h"
+ #include "tensorflow/lite/kernels/internal/types.h"
+ #include "tensorflow/lite/kernels/kernel_util.h"
++#include "tensorflow/lite/mutable_op_resolver.h"
+ 
+ namespace tflite {
+ namespace ops {
+@@ -176,8 +176,10 @@ RuntimeShape TensorShapeFromTensor(const TfLiteTensor& tensor) {
+ }
+ 
+ const TfLiteTensor* GetRowPartitionTensor(
+-    const ConversionAttributes& conversion_attributes, TfLiteContext* context,
+-    TfLiteNode* node, int dimension) {
++    const ConversionAttributes& conversion_attributes,
++    TfLiteContext* context,
++    TfLiteNode* node,
++    int dimension) {
+   if (conversion_attributes.partition_types.front() ==
+       tensorflow::RowPartitionType::FIRST_DIM_SIZE) {
+     return &context->tensors[node->inputs->data[kFirstPartitionInputIndex + 1 +
+@@ -247,7 +249,9 @@ int GetMaxWidthRowSplit(const TfLiteTensor* tensor) {
+ }
+ 
+ int GetMaxWidth(const ConversionAttributes& conversion_attributes,
+-                TfLiteContext* context, TfLiteNode* node, int dimension) {
++                TfLiteContext* context,
++                TfLiteNode* node,
++                int dimension) {
+   const TfLiteTensor* tensor = GetRowPartitionTensor(
+       conversion_attributes, context, node, dimension - 1);
+   switch (conversion_attributes.GetRowPartitionTypeByDimension(dimension - 1)) {
+@@ -262,7 +266,8 @@ int GetMaxWidth(const ConversionAttributes& conversion_attributes,
+ }
+ 
+ RuntimeShape CombineRaggedTensorToTensorShapes(
+-    int ragged_rank, const RuntimeShape& output_shape,
++    int ragged_rank,
++    const RuntimeShape& output_shape,
+     const RuntimeShape& value_shape) {
+   // TODO(mgubin): No checks, see
+   // third_party/tensorflow/core/ops/ragged_to_dense_util.cc
+@@ -283,9 +288,13 @@ RuntimeShape CombineRaggedTensorToTensorShapes(
+ }
+ 
+ RuntimeShape CalculateOutputSize(
+-    const ConversionAttributes& conversion_attributes, TfLiteContext* context,
+-    TfLiteNode* node, int first_dimension, int ragged_rank,
+-    const TfLiteTensor& values, const TfLiteTensor& default_value,
++    const ConversionAttributes& conversion_attributes,
++    TfLiteContext* context,
++    TfLiteNode* node,
++    int first_dimension,
++    int ragged_rank,
++    const TfLiteTensor& values,
++    const TfLiteTensor& default_value,
+     const TfLiteTensor& output_shape) {
+   RuntimeShape values_shape(values.dims->size, values.dims->data);
+   RuntimeShape default_value_shape(default_value.dims->size,
+@@ -367,7 +376,8 @@ void CalculateFirstParentOutputIndex(int first_dimension,
+ void CalculateOutputIndexValueRowID(const TfLiteTensor& value_rowids,
+                                     const std::vector<int>& parent_output_index,
+                                     int output_index_multiplier,
+-                                    int output_size, std::vector<int>* result) {
++                                    int output_size,
++                                    std::vector<int>* result) {
+   const RuntimeShape tensor_shape(value_rowids.dims->size,
+                                   value_rowids.dims->data);
+   const int index_size = tensor_shape.FlatSize();
+@@ -416,7 +426,8 @@ void CalculateOutputIndexValueRowID(const TfLiteTensor& value_rowids,
+ 
+ void CalculateOutputIndexRowSplit(const TfLiteTensor& row_split,
+                                   const std::vector<int>& parent_output_index,
+-                                  int output_index_multiplier, int output_size,
++                                  int output_index_multiplier,
++                                  int output_size,
+                                   std::vector<int>* result) {
+   const RuntimeShape row_split_shape(row_split.dims->size,
+                                      row_split.dims->data);
+@@ -457,10 +468,14 @@ void CalculateOutputIndexRowSplit(const TfLiteTensor& row_split,
+ }
+ 
+ TfLiteStatus CalculateOutputIndex(
+-    const ConversionAttributes& conversion_attributes, TfLiteContext* context,
+-    TfLiteNode* node, int dimension,
+-    const std::vector<int>& parent_output_index, int output_index_multiplier,
+-    int output_size, std::vector<int>* result) {
++    const ConversionAttributes& conversion_attributes,
++    TfLiteContext* context,
++    TfLiteNode* node,
++    int dimension,
++    const std::vector<int>& parent_output_index,
++    int output_index_multiplier,
++    int output_size,
++    std::vector<int>* result) {
+   const TfLiteTensor* row_partition_tensor =
+       GetRowPartitionTensor(conversion_attributes, context, node, dimension);
+   auto partition_type =
+@@ -483,7 +498,8 @@ TfLiteStatus CalculateOutputIndex(
+ }
+ 
+ template <typename VALUE_TYPE>
+-void SetOutputT(TfLiteContext* context, int ragged_rank,
++void SetOutputT(TfLiteContext* context,
++                int ragged_rank,
+                 const std::vector<int>& output_index,
+                 const TfLiteTensor& values_tensor,
+                 const TfLiteTensor& default_value_tensor,
+@@ -558,7 +574,8 @@ void SetOutputT(TfLiteContext* context, int ragged_rank,
+   }
+ }
+ 
+-void SetOutput(TfLiteContext* context, int ragged_rank,
++void SetOutput(TfLiteContext* context,
++               int ragged_rank,
+                const std::vector<int>& output_index,
+                const TfLiteTensor& values_tensor,
+                const TfLiteTensor& default_value_tensor,
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite_test.cc
+index 9044797e70568..5f74f683c4e36 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/ragged_tensor_to_tensor_tflite_test.cc
+@@ -98,7 +98,8 @@ class RaggedTensorToTensorOpModel : public SingleOpModel {
+   std::vector<int32> GetOutputInt() { return ExtractVector<int32>(output_); }
+ 
+   void InvokeFloat(const std::vector<int>& shape,
+-                   const std::vector<float>& values, float default_value,
++                   const std::vector<float>& values,
++                   float default_value,
+                    const std::vector<std::vector<int>>& partition_values) {
+     PopulateTensor(input_shape_, shape);
+     PopulateTensor(input_values_, values);
+@@ -109,7 +110,8 @@ class RaggedTensorToTensorOpModel : public SingleOpModel {
+     SingleOpModel::Invoke();
+   }
+   void InvokeInt(const std::vector<int>& shape,
+-                 const std::vector<int32>& values, int32 default_value,
++                 const std::vector<int32>& values,
++                 int32 default_value,
+                  const std::vector<std::vector<int>>& partition_values) {
+     PopulateTensor(input_shape_, shape);
+     PopulateTensor(input_values_, values);
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
+index 311dc52e7b3dc..aa17d772dcfc3 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.cc
+@@ -21,8 +21,10 @@ namespace text {
+ namespace {
+ 
+ template <typename T>
+-void RegexSplitImpl(absl::string_view input, const RE2& re2,
+-                    bool include_delimiter, const RE2& include_delim_regex,
++void RegexSplitImpl(absl::string_view input,
++                    const RE2& re2,
++                    bool include_delimiter,
++                    const RE2& include_delim_regex,
+                     std::vector<absl::string_view>* tokens,
+                     std::vector<T>* begin_offsets,
+                     std::vector<T>* end_offsets) {
+@@ -68,7 +70,9 @@ void RegexSplitImpl(absl::string_view input, const RE2& re2,
+ 
+ }  // namespace
+ 
+-void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
++void RegexSplit(absl::string_view input,
++                const RE2& re2,
++                bool include_delimiter,
+                 const RE2& include_delim_regex,
+                 std::vector<absl::string_view>* tokens,
+                 std::vector<long>* begin_offsets,  // NOLINT
+@@ -77,7 +81,9 @@ void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
+                  begin_offsets, end_offsets);
+ }
+ 
+-void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
++void RegexSplit(absl::string_view input,
++                const RE2& re2,
++                bool include_delimiter,
+                 const RE2& include_delim_regex,
+                 std::vector<absl::string_view>* tokens,
+                 std::vector<long long>* begin_offsets,  // NOLINT
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.h
+index de7294ce535b9..e9df4727594df 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split.h
+@@ -24,17 +24,21 @@
+ namespace tensorflow {
+ namespace text {
+ 
+-void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
++void RegexSplit(absl::string_view input,
++                const RE2& re2,
++                bool include_delimiter,
+                 const RE2& include_delim_regex,
+                 std::vector<absl::string_view>* tokens,
+                 std::vector<long>* begin_offsets,  // NOLINT
+                 std::vector<long>* end_offsets);   // NOLINT
+ 
+-void RegexSplit(absl::string_view input, const RE2& re2, bool include_delimiter,
++void RegexSplit(absl::string_view input,
++                const RE2& re2,
++                bool include_delimiter,
+                 const RE2& include_delim_regex,
+                 std::vector<absl::string_view>* tokens,
+                 std::vector<long long>* begin_offsets,  // NOLINT
+-                std::vector<long long>* end_offsets);  // NOLINT
++                std::vector<long long>* end_offsets);   // NOLINT
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split_kernels.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split_kernels.cc
+index b563482d1be08..f7ee942676bc3 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split_kernels.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/regex_split_kernels.cc
+@@ -193,7 +193,8 @@ class RegexSplitOp : public tensorflow::OpKernel {
+ };
+ 
+ REGISTER_KERNEL_BUILDER(
+-    Name("RegexSplitWithOffsets").Device(tensorflow::DEVICE_CPU), RegexSplitOp);
++    Name("RegexSplitWithOffsets").Device(tensorflow::DEVICE_CPU),
++    RegexSplitOp);
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel.cc
+index b30d4bc89a216..db53bc9326b81 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel.cc
+@@ -32,9 +32,7 @@
+ namespace tensorflow {
+ namespace text {
+ 
+-namespace {
+-}  // namespace
+-
++namespace {}  // namespace
+ 
+ // ROUGE-L implementation based on
+ // https://www.microsoft.com/en-us/research/publication/
+@@ -110,15 +108,12 @@ class RougeLOp : public OpKernel {
+     // Iterate over the splits, skipping the first split as it is always zero.
+     for (int i = 1; i < hyp_splits_flat.size(); i++) {
+       // Length of hyp and ref.
+-      SPLITS_TYPE lhyp = hyp_splits_flat(i) - hyp_splits_flat(i-1);
+-      SPLITS_TYPE lref = ref_splits_flat(i) - ref_splits_flat(i-1);
++      SPLITS_TYPE lhyp = hyp_splits_flat(i) - hyp_splits_flat(i - 1);
++      SPLITS_TYPE lref = ref_splits_flat(i) - ref_splits_flat(i - 1);
+       // Length of longest common substring.
+-      int32 llcs = LongestCommonSubsequenceLength(hyp_splits_flat(i-1),
+-                                                  hyp_splits_flat(i),
+-                                                  hyp_tensor_flat,
+-                                                  ref_splits_flat(i-1),
+-                                                  ref_splits_flat(i),
+-                                                  ref_tensor_flat);
++      int32 llcs = LongestCommonSubsequenceLength(
++          hyp_splits_flat(i - 1), hyp_splits_flat(i), hyp_tensor_flat,
++          ref_splits_flat(i - 1), ref_splits_flat(i), ref_tensor_flat);
+       auto measures = ComputeMeasures(lhyp, lref, llcs, alpha);
+       f_measures_flat(i - 1) = std::get<0>(measures);
+       p_measures_flat(i - 1) = std::get<1>(measures);
+@@ -129,13 +124,12 @@ class RougeLOp : public OpKernel {
+  private:
+   // By using LCS, the ROUGE-L algorithm does not require consecutive matches
+   // but rather credits the order of N-grams.
+-  int32 LongestCommonSubsequenceLength(
+-      const SPLITS_TYPE hyp_i,
+-      const SPLITS_TYPE hyp_j,
+-      const ConstFlatValues& hyp,
+-      const SPLITS_TYPE ref_i,
+-      const SPLITS_TYPE ref_j,
+-      const ConstFlatValues& ref) {
++  int32 LongestCommonSubsequenceLength(const SPLITS_TYPE hyp_i,
++                                       const SPLITS_TYPE hyp_j,
++                                       const ConstFlatValues& hyp,
++                                       const SPLITS_TYPE ref_i,
++                                       const SPLITS_TYPE ref_j,
++                                       const ConstFlatValues& ref) {
+     SPLITS_TYPE lhyp = hyp_j - hyp_i;
+     SPLITS_TYPE lref = ref_j - ref_i;
+     // Create a scratch matrix to keep track of the LCS seen so far using DP.
+@@ -149,7 +143,8 @@ class RougeLOp : public OpKernel {
+         if (a == 0 || b == 0) {
+           // If in first row or column, we write a zero to the table.
+           scratch2d(a, b) = 0;
+-        } else if (x == hyp_j+1 || y == ref_j+1 || hyp(x-1) != ref(y-1)) {
++        } else if (x == hyp_j + 1 || y == ref_j + 1 ||
++                   hyp(x - 1) != ref(y - 1)) {
+           // If in the last row or column, or if the tokens are not equal,
+           // carry the largest score seen in the cell above or to the left of
+           // the current cell.
+@@ -176,9 +171,8 @@ class RougeLOp : public OpKernel {
+     const float r_lcs = llcs / (lref + 1e-12);
+     // Use the tensor2tensor formulation if the alpha value is <0,
+     // which does not make sense as a weighted average term.
+-    const float f_lcs = alpha < 0 ?
+-        ComputeTensor2TensorF(p_lcs, r_lcs) :
+-        ComputeOfficialF(p_lcs, r_lcs, alpha);
++    const float f_lcs = alpha < 0 ? ComputeTensor2TensorF(p_lcs, r_lcs)
++                                  : ComputeOfficialF(p_lcs, r_lcs, alpha);
+     return std::make_tuple(f_lcs, p_lcs, r_lcs);
+   }
+ 
+@@ -192,7 +186,8 @@ class RougeLOp : public OpKernel {
+     return 0;
+   }
+ 
+-  float ComputeOfficialF(const float p_lcs, const float r_lcs,
++  float ComputeOfficialF(const float p_lcs,
++                         const float r_lcs,
+                          const float alpha) {
+     float denominator = (alpha * r_lcs + (1 - alpha) * p_lcs);
+     if (denominator > 0) {
+@@ -204,16 +199,16 @@ class RougeLOp : public OpKernel {
+   TF_DISALLOW_COPY_AND_ASSIGN(RougeLOp);
+ };
+ 
+-#define REGISTER(VALUES_TYPE)                                           \
+-  REGISTER_KERNEL_BUILDER(Name("RougeL")                        \
+-                              .Device(DEVICE_CPU)                       \
+-                              .TypeConstraint<int32>("Tsplits")         \
+-                              .TypeConstraint<VALUES_TYPE>("Tvalues"),  \
+-                          RougeLOp<int32, VALUES_TYPE>);        \
+-  REGISTER_KERNEL_BUILDER(Name("RougeL")                        \
+-                              .Device(DEVICE_CPU)                       \
+-                              .TypeConstraint<int64>("Tsplits")         \
+-                              .TypeConstraint<VALUES_TYPE>("Tvalues"),  \
++#define REGISTER(VALUES_TYPE)                                          \
++  REGISTER_KERNEL_BUILDER(Name("RougeL")                               \
++                              .Device(DEVICE_CPU)                      \
++                              .TypeConstraint<int32>("Tsplits")        \
++                              .TypeConstraint<VALUES_TYPE>("Tvalues"), \
++                          RougeLOp<int32, VALUES_TYPE>);               \
++  REGISTER_KERNEL_BUILDER(Name("RougeL")                               \
++                              .Device(DEVICE_CPU)                      \
++                              .TypeConstraint<int64>("Tsplits")        \
++                              .TypeConstraint<VALUES_TYPE>("Tvalues"), \
+                           RougeLOp<int64, VALUES_TYPE>);
+ 
+ TF_CALL_int32(REGISTER);
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel_test.cc
+index bfc748b7638db..e218b416ba826 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/rouge_l_kernel_test.cc
+@@ -38,8 +38,7 @@ TEST(RougeLFMeasureOpTest, ShapeFn) {
+   INFER_OK(op, "?;?;?;?;?", "[?];[?];[?]");
+   INFER_ERROR("Dimension 0 in both shapes must be equal, but are 3 and 2.", op,
+               "[5];[3];[8];[2];[]");
+-  INFER_ERROR("Shape must be rank 0 but is rank 1", op,
+-              "[5];[3];[8];[3];[1]");
++  INFER_ERROR("Shape must be rank 0 but is rank 1", op, "[5];[3];[8];[3];[1]");
+ }
+ 
+ }  // namespace
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_kernels.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_kernels.cc
+index 77e583418446c..180a82cba9895 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_kernels.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_kernels.cc
+@@ -120,7 +120,8 @@ Status GetErrorOptions(OpKernelConstruction* context, ErrorOptions* out) {
+ }
+ 
+ inline bool ShouldHandleFormatError(const ErrorOptions& error_options,
+-                                    UChar32 ch, bool format_error) {
++                                    UChar32 ch,
++                                    bool format_error) {
+   return ((error_options.replace_control_chars && ch <= 0x1F) || format_error);
+ }
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils.cc
+index 7131cbcf4d383..2937fe2f12316 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils.cc
+@@ -59,13 +59,16 @@ Status UnicodeUtil::IsTerminalPunc(const absl::string_view& input,
+   *result = false;
+   const auto& ellipsis_status = IsEllipsis(input, result);
+   // If there was a error decoding, or if we found an ellipsis, then return.
+-  if (!ellipsis_status.ok()) return ellipsis_status;
+-  if (*result) return Status::OK();
++  if (!ellipsis_status.ok())
++    return ellipsis_status;
++  if (*result)
++    return Status::OK();
+ 
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+@@ -100,7 +103,8 @@ Status UnicodeUtil::IsClosePunc(const absl::string_view& input,
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+@@ -134,7 +138,8 @@ Status UnicodeUtil::IsOpenParen(const absl::string_view& input,
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+@@ -161,7 +166,8 @@ Status UnicodeUtil::IsCloseParen(const absl::string_view& input,
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+@@ -189,7 +195,8 @@ Status UnicodeUtil::IsPunctuationWord(const absl::string_view& input,
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+@@ -224,7 +231,8 @@ Status UnicodeUtil::IsEllipsis(const absl::string_view& input,
+   bool has_more_than_one_char = false;
+   UChar32 char_value;
+   const auto& status = GetOneUChar(input, &has_more_than_one_char, &char_value);
+-  if (!status.ok()) return status;
++  if (!status.ok())
++    return status;
+   if (has_more_than_one_char) {
+     *result = false;
+     return Status::OK();
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils_test.cc
+index 6c12cbff55264..14fc095d0cccb 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_breaking_utils_test.cc
+@@ -121,7 +121,8 @@ TEST_P(IsTerminalPuncParamTest, IsTerminalPunc) {
+   EXPECT_TRUE(result);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsTerminalPuncTest, IsTerminalPuncParamTest,
++INSTANTIATE_TEST_SUITE_P(IsTerminalPuncTest,
++                         IsTerminalPuncParamTest,
+                          ::testing::ValuesIn(is_terminal_punc_test_cases));
+ 
+ TEST_F(IsTerminalPuncTest, IsMultiCharEllipseTerminalPunc) {
+@@ -220,7 +221,8 @@ TEST_P(ClosePuncParamTest, IsClosePunc) {
+   EXPECT_TRUE(result);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsClosePuncParamTest, ClosePuncParamTest,
++INSTANTIATE_TEST_SUITE_P(IsClosePuncParamTest,
++                         ClosePuncParamTest,
+                          ::testing::ValuesIn(close_punc_test_cases));
+ 
+ class OpenParenParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -269,7 +271,8 @@ TEST_P(OpenParenParamTest, IsOpenParen) {
+   EXPECT_TRUE(result);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsOpenParenParamTest, OpenParenParamTest,
++INSTANTIATE_TEST_SUITE_P(IsOpenParenParamTest,
++                         OpenParenParamTest,
+                          ::testing::ValuesIn(open_paren_test_cases));
+ 
+ class CloseParenParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -318,7 +321,8 @@ TEST_P(CloseParenParamTest, IsCloseParen) {
+   EXPECT_TRUE(result);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsCloseParenParamTest, CloseParenParamTest,
++INSTANTIATE_TEST_SUITE_P(IsCloseParenParamTest,
++                         CloseParenParamTest,
+                          ::testing::ValuesIn(close_paren_test_cases));
+ 
+ class IsPunctuationWordParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -543,7 +547,8 @@ TEST_P(IsPunctuationWordParamTest, IsPunctuation) {
+   EXPECT_TRUE(result);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsPuncWordParamTest, IsPunctuationWordParamTest,
++INSTANTIATE_TEST_SUITE_P(IsPuncWordParamTest,
++                         IsPunctuationWordParamTest,
+                          ::testing::ValuesIn(punc_word_test_cases));
+ 
+ class IsEllipsisTest : public SentenceBreakingUtilsTest,
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.cc
+index 99a16b7c2914a..e0224f606015c 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.cc
+@@ -25,27 +25,28 @@ namespace {
+ 
+ // Sets a property of a sentence fragment.
+ void SetFragmentProperty(SentenceFragment::Property property,
+-                         SentenceFragment *fragment) {
++                         SentenceFragment* fragment) {
+   fragment->properties = fragment->properties | property;
+ }
+ 
+ // Returns true iff a token has any of the given properties.
+-bool TokenHasProperty(uint32 properties, const Token &token) {
++bool TokenHasProperty(uint32 properties, const Token& token) {
+   return token.text_properties() & properties;
+ }
+ 
+ // Returns true iff a token has the ACRONYM text property and token.word()
+ // ends with a period.
+-bool IsPeriodSeparatedAcronym(const Token &token) {
++bool IsPeriodSeparatedAcronym(const Token& token) {
+   return TokenHasProperty(Token::ACRONYM, token) &&
+          (!token.word().empty() && token.word().back() == '.');
+ }
+ 
+ // Returns true iff the token can appear after a space in a sentence-terminal
+ // token sequence.
+-Status SpaceAllowedBeforeToken(const UnicodeUtil *util, const Token &token,
+-                               bool *result) {
+-  const tstring &word = token.word();
++Status SpaceAllowedBeforeToken(const UnicodeUtil* util,
++                               const Token& token,
++                               bool* result) {
++  const tstring& word = token.word();
+   bool is_ellipsis = false;
+   TF_RETURN_IF_ERROR(util->IsEllipsis(word, &is_ellipsis));
+ 
+@@ -63,9 +64,7 @@ Status SpaceAllowedBeforeToken(const UnicodeUtil *util, const Token &token,
+ 
+ class SentenceFragmenter::FragmentBoundaryMatch {
+  public:
+-  FragmentBoundaryMatch() {
+-    Reset();
+-  }
++  FragmentBoundaryMatch() { Reset(); }
+ 
+   // Goes to initial state.
+   void Reset() {
+@@ -77,10 +76,12 @@ class SentenceFragmenter::FragmentBoundaryMatch {
+ 
+   // Follows the state transition for the token at the given index. Returns
+   // true for success, or false if there was no valid transition.
+-  Status Advance(const UnicodeUtil *util, const Document &document, int index,
+-                 bool *result) {
+-    const Token &token = document.tokens()[index];
+-    const tstring &word = token.word();
++  Status Advance(const UnicodeUtil* util,
++                 const Document& document,
++                 int index,
++                 bool* result) {
++    const Token& token = document.tokens()[index];
++    const tstring& word = token.word();
+     bool no_transition = false;
+ 
+     bool is_terminal_punc = false;
+@@ -141,20 +142,12 @@ class SentenceFragmenter::FragmentBoundaryMatch {
+ 
+   // Returns true iff we have matched at least one terminal punctuation
+   // character.
+-  bool GotTerminalPunc() const {
+-    return first_terminal_punc_index_ >= 0;
+-  }
++  bool GotTerminalPunc() const { return first_terminal_punc_index_ >= 0; }
+ 
+   // Field accessors.
+-  int first_terminal_punc_index() const {
+-    return first_terminal_punc_index_;
+-  }
+-  int first_close_punc_index() const {
+-    return first_close_punc_index_;
+-  }
+-  int limit_index() const {
+-    return limit_index_;
+-  }
++  int first_terminal_punc_index() const { return first_terminal_punc_index_; }
++  int first_close_punc_index() const { return first_close_punc_index_; }
++  int limit_index() const { return limit_index_; }
+ 
+  private:
+   // Match state.
+@@ -177,7 +170,7 @@ class SentenceFragmenter::FragmentBoundaryMatch {
+ };
+ 
+ Status SentenceFragmenter::FindFragments(
+-    std::vector<SentenceFragment> *result) {
++    std::vector<SentenceFragment>* result) {
+   // Partition tokens into sentence fragments.
+   for (int i_start = 0; i_start < document_->tokens().size();) {
+     SentenceFragment fragment;
+@@ -216,12 +209,13 @@ Status SentenceFragmenter::FindFragments(
+ // time, we'll fail again this time and therefore continue past "y" to find the
+ // next boundary. We will not try to scan "!!!" a third time.
+ Status SentenceFragmenter::FindNextFragmentBoundary(
+-    int i_start, SentenceFragmenter::FragmentBoundaryMatch *result) const {
++    int i_start,
++    SentenceFragmenter::FragmentBoundaryMatch* result) const {
+   FragmentBoundaryMatch current_match;
+   FragmentBoundaryMatch previous_match;
+ 
+   for (int i = i_start; i < static_cast<int>(document_->tokens().size()); ++i) {
+-    const auto &token = document_->tokens()[i];
++    const auto& token = document_->tokens()[i];
+     if (current_match.GotTerminalPunc() && i > i_start &&
+         token.break_level() >= Token::SPACE_BREAK) {
+       // Got terminal punctuation and a space delimiter, so match is valid.
+@@ -279,7 +273,7 @@ Status SentenceFragmenter::FindNextFragmentBoundary(
+ Status SentenceFragmenter::UpdateLatestOpenParenForFragment(int i_start,
+                                                             int i_end) {
+   for (int i = i_end; i > i_start; --i) {
+-    const auto &token = document_->tokens()[i - 1];
++    const auto& token = document_->tokens()[i - 1];
+     bool is_open_paren = false;
+     TF_RETURN_IF_ERROR(util_->IsOpenParen(token.word(), &is_open_paren));
+     if (is_open_paren) {
+@@ -294,8 +288,9 @@ Status SentenceFragmenter::UpdateLatestOpenParenForFragment(int i_start,
+ }
+ 
+ Status SentenceFragmenter::FillInFragmentFields(
+-    int i_start, const FragmentBoundaryMatch &match,
+-    SentenceFragment *fragment) const {
++    int i_start,
++    const FragmentBoundaryMatch& match,
++    SentenceFragment* fragment) const {
+   // Set the fragment's boundaries.
+   fragment->start = i_start;
+   fragment->limit = match.limit_index();
+@@ -344,7 +339,8 @@ Status SentenceFragmenter::FillInFragmentFields(
+ // We treat "!" as the first terminal punctuation mark; the ellipsis acts as
+ // left context.
+ Status SentenceFragmenter::GetAdjustedFirstTerminalPuncIndex(
+-    const FragmentBoundaryMatch &match, int *result) const {
++    const FragmentBoundaryMatch& match,
++    int* result) const {
+   // Get terminal punctuation span.
+   int i1 = match.first_terminal_punc_index();
+   if (i1 < 0) {
+@@ -354,7 +350,7 @@ Status SentenceFragmenter::GetAdjustedFirstTerminalPuncIndex(
+   int i2 = match.first_close_punc_index();
+ 
+   for (int i = i2; i > i1; --i) {
+-    const auto &token = document_->tokens()[i - 1];
++    const auto& token = document_->tokens()[i - 1];
+     bool is_ellipsis = false;
+     TF_RETURN_IF_ERROR(util_->IsEllipsis(token.word(), &is_ellipsis));
+     if (is_ellipsis || TokenHasProperty(Token::EMOTICON, token)) {
+@@ -386,7 +382,8 @@ Status SentenceFragmenter::GetAdjustedFirstTerminalPuncIndex(
+ // (.!?), as ambiguous ones (ellipsis/emoticon) do not necessarily imply a
+ // sentence boundary.
+ Status SentenceFragmenter::HasUnattachableTerminalPunc(
+-    const FragmentBoundaryMatch &match, bool *result) const {
++    const FragmentBoundaryMatch& match,
++    bool* result) const {
+   *result = false;
+   // Get terminal punctuation span.
+   int i1 = match.first_terminal_punc_index();
+@@ -398,7 +395,7 @@ Status SentenceFragmenter::HasUnattachableTerminalPunc(
+ 
+   // Iterate over the second and later punctuation marks.
+   for (int i = i1 + 1; i < i2; ++i) {
+-    const auto &token = document_->tokens()[i];
++    const auto& token = document_->tokens()[i];
+     bool is_punctuation = false;
+     TF_RETURN_IF_ERROR(util_->IsPunctuationWord(token.word(), &is_punctuation));
+     bool is_ellipsis = false;
+@@ -415,8 +412,8 @@ Status SentenceFragmenter::HasUnattachableTerminalPunc(
+   return Status::OK();
+ }
+ 
+-Status SentenceFragmenter::HasCloseParen(const FragmentBoundaryMatch &match,
+-                                         bool *result) const {
++Status SentenceFragmenter::HasCloseParen(const FragmentBoundaryMatch& match,
++                                         bool* result) const {
+   *result = false;
+   // Get close punctuation span.
+   int i1 = match.first_close_punc_index();
+@@ -427,7 +424,7 @@ Status SentenceFragmenter::HasCloseParen(const FragmentBoundaryMatch &match,
+   int i2 = match.limit_index();
+ 
+   for (int i = i1; i < i2; ++i) {
+-    const auto &token = document_->tokens()[i];
++    const auto& token = document_->tokens()[i];
+     bool is_close_paren = false;
+     TF_RETURN_IF_ERROR(util_->IsCloseParen(token.word(), &is_close_paren));
+     if (is_close_paren) {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.h
+index 8ca5acd2197fe..88b81988e601d 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter.h
+@@ -106,7 +106,10 @@ class Token {
+     HYPERLINK = 0x200,
+   };
+ 
+-  Token(const tstring &word, uint32 start, uint32 end, BreakLevel break_level,
++  Token(const tstring& word,
++        uint32 start,
++        uint32 end,
++        BreakLevel break_level,
+         TextProperty text_properties)
+       : word_(word),
+         start_(start),
+@@ -114,14 +117,14 @@ class Token {
+         break_level_(break_level),
+         text_properties_(text_properties) {}
+ 
+-  const tstring &word() const { return word_; }
++  const tstring& word() const { return word_; }
+   const uint32 start() const { return start_; }
+   const uint32 end() const { return end_; }
+   const BreakLevel break_level() const { return break_level_; }
+   const TextProperty text_properties() const { return text_properties_; }
+ 
+  private:
+-  const tstring &word_;
++  const tstring& word_;
+   uint32 start_;
+   uint32 end_;
+   BreakLevel break_level_;
+@@ -131,19 +134,21 @@ class Token {
+ class Document {
+  public:
+   // Does NOT take ownership of 'tokens'.
+-  Document(std::vector<Token> *tokens) : tokens_(tokens) {}
++  Document(std::vector<Token>* tokens) : tokens_(tokens) {}
+ 
+-  void AddToken(const tstring &word, uint32 start, uint32 end,
++  void AddToken(const tstring& word,
++                uint32 start,
++                uint32 end,
+                 Token::BreakLevel break_level,
+                 Token::TextProperty text_properties) {
+     tokens_->emplace_back(word, start, end, break_level, text_properties);
+   }
+ 
+-  const std::vector<Token> &tokens() const { return *tokens_; }
++  const std::vector<Token>& tokens() const { return *tokens_; }
+ 
+  private:
+   // not owned
+-  std::vector<Token> *tokens_;
++  std::vector<Token>* tokens_;
+ };
+ 
+ struct SentenceFragment {
+@@ -165,12 +170,12 @@ struct SentenceFragment {
+ class SentenceFragmenter {
+  public:
+   // Constructs a fragmenter to process a specific part of a document.
+-  SentenceFragmenter(const Document *document, UnicodeUtil *util)
++  SentenceFragmenter(const Document* document, UnicodeUtil* util)
+       : document_(document), util_(util) {}
+ 
+   // Finds sentence fragments in the [start_, limit_) range of the associated
+   // document.
+-  ::tensorflow::Status FindFragments(std::vector<SentenceFragment> *result);
++  ::tensorflow::Status FindFragments(std::vector<SentenceFragment>* result);
+ 
+  private:
+   // State for matching a fragment-boundary regexp against a token sequence.
+@@ -181,7 +186,8 @@ class SentenceFragmenter {
+   // 'i_start'. Returns the longest match found; will be non-empty as long as
+   // 'i_start' was not already at the end of the associated token range.
+   ::tensorflow::Status FindNextFragmentBoundary(
+-      int i_start, FragmentBoundaryMatch *result) const;
++      int i_start,
++      FragmentBoundaryMatch* result) const;
+ 
+   // Updates 'latest_open_paren_is_sentential_' for the tokens in the given
+   // fragment.
+@@ -190,30 +196,32 @@ class SentenceFragmenter {
+   // Populates a sentence fragment with the tokens from 'i_start' to the end
+   // of the given FragmentBoundaryMatch.
+   ::tensorflow::Status FillInFragmentFields(int i_start,
+-                                            const FragmentBoundaryMatch &match,
+-                                            SentenceFragment *fragment) const;
++                                            const FragmentBoundaryMatch& match,
++                                            SentenceFragment* fragment) const;
+ 
+   // Returns the adjusted first terminal punctuation index in a
+   // FragmentBoundaryMatch.
+   ::tensorflow::Status GetAdjustedFirstTerminalPuncIndex(
+-      const FragmentBoundaryMatch &match, int *result) const;
++      const FragmentBoundaryMatch& match,
++      int* result) const;
+ 
+   // Returns true iff a FragmentBoundaryMatch has an "unattachable" terminal
+   // punctuation mark.
+   ::tensorflow::Status HasUnattachableTerminalPunc(
+-      const FragmentBoundaryMatch &match, bool *result) const;
++      const FragmentBoundaryMatch& match,
++      bool* result) const;
+ 
+   // Returns true iff a FragmentBoundaryMatch has a close paren in its closing
+   // punctuation.
+-  ::tensorflow::Status HasCloseParen(const FragmentBoundaryMatch &match,
+-                                     bool *result) const;
++  ::tensorflow::Status HasCloseParen(const FragmentBoundaryMatch& match,
++                                     bool* result) const;
+ 
+   // Whether the latest open paren seen so far appears to be sentence-initial.
+   // See UpdateLatestOpenParenForFragment() in the .cc file for details.
+   bool latest_open_paren_is_sentential_ = false;
+ 
+-  const Document *document_ = nullptr;  // not owned
+-  UnicodeUtil *util_ = nullptr;         // not owned
++  const Document* document_ = nullptr;  // not owned
++  UnicodeUtil* util_ = nullptr;         // not owned
+ 
+   // TODO(thuang513): DISALLOW_COPY_AND_ASSIGN(SentenceFragmenter);
+ };
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.cc
+index 33a8ccbcd84cd..6c6786d83d795 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.cc
+@@ -25,7 +25,8 @@
+ namespace tensorflow {
+ namespace text {
+ 
+-void ConsumeOneUChar(const absl::string_view& input, UChar32* result,
++void ConsumeOneUChar(const absl::string_view& input,
++                     UChar32* result,
+                      int* offset) {
+   const char* source = input.data();
+ 
+@@ -36,7 +37,8 @@ void ConsumeOneUChar(const absl::string_view& input, UChar32* result,
+ bool IsTerminalPunc(const absl::string_view& input, int* offset) {
+   *offset = 0;
+   bool is_ellipsis = IsEllipsis(input, offset);
+-  if (is_ellipsis) return true;
++  if (is_ellipsis)
++    return true;
+ 
+   *offset = 0;
+   UChar32 char_value;
+@@ -561,7 +563,8 @@ void SentenceFragmenterV2::UpdateLatestOpenParenForFragment(int i_start,
+ }
+ 
+ void SentenceFragmenterV2::FillInFragmentFields(
+-    int i_start, const FragmentBoundaryMatch& match,
++    int i_start,
++    const FragmentBoundaryMatch& match,
+     SentenceFragment* fragment) const {
+   // Set the fragment's boundaries.
+   fragment->start = i_start;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.h
+index 2a63b13055d0b..94903e36022e6 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2.h
+@@ -73,7 +73,8 @@ bool IsEmoticon(const absl::string_view& input, int* offset);
+ 
+ bool SpaceAllowedBeforeChar(const absl::string_view& input);
+ 
+-void ConsumeOneUChar(const absl::string_view& input, UChar32* result,
++void ConsumeOneUChar(const absl::string_view& input,
++                     UChar32* result,
+                      int* offset);
+ 
+ // Returns true iff a string is white space.
+@@ -168,7 +169,8 @@ class SentenceFragmenterV2 {
+ 
+   // Populates a sentence fragment with the text from 'i_start' to the end
+   // of the given FragmentBoundaryMatch.
+-  void FillInFragmentFields(int i_start, const FragmentBoundaryMatch& match,
++  void FillInFragmentFields(int i_start,
++                            const FragmentBoundaryMatch& match,
+                             SentenceFragment* fragment) const;
+ 
+   // Returns the adjusted first terminal punctuation index in a
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2_test.cc
+index e5942d77cd1b4..32f45ea952439 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentence_fragmenter_v2_test.cc
+@@ -89,7 +89,8 @@ TEST_P(IsTerminalPuncParamTest, IsTerminalPunc) {
+   EXPECT_TRUE(IsTerminalPunc(test_string, &offset));
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsTerminalPuncTest, IsTerminalPuncParamTest,
++INSTANTIATE_TEST_SUITE_P(IsTerminalPuncTest,
++                         IsTerminalPuncParamTest,
+                          ::testing::ValuesIn(is_terminal_punc_test_cases));
+ 
+ TEST_F(IsTerminalPuncTest, IsMultiCharEllipseTerminalPunc) {
+@@ -194,7 +195,8 @@ TEST_P(ClosePuncParamTest, IsClosePunc) {
+   EXPECT_EQ(offset, expected_offset);
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsClosePuncParamTest, ClosePuncParamTest,
++INSTANTIATE_TEST_SUITE_P(IsClosePuncParamTest,
++                         ClosePuncParamTest,
+                          ::testing::ValuesIn(close_punc_test_cases));
+ 
+ class OpenParenParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -240,7 +242,8 @@ TEST_P(OpenParenParamTest, IsOpenParen) {
+   EXPECT_TRUE(IsOpenParen(test_string));
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsOpenParenParamTest, OpenParenParamTest,
++INSTANTIATE_TEST_SUITE_P(IsOpenParenParamTest,
++                         OpenParenParamTest,
+                          ::testing::ValuesIn(open_paren_test_cases));
+ 
+ class CloseParenParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -286,7 +289,8 @@ TEST_P(CloseParenParamTest, IsCloseParen) {
+   EXPECT_TRUE(IsCloseParen(test_string));
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsCloseParenParamTest, CloseParenParamTest,
++INSTANTIATE_TEST_SUITE_P(IsCloseParenParamTest,
++                         CloseParenParamTest,
+                          ::testing::ValuesIn(close_paren_test_cases));
+ 
+ class IsPunctuationWordParamTest : public SentenceBreakingUtilsParamTest {};
+@@ -508,7 +512,8 @@ TEST_P(IsPunctuationWordParamTest, IsPunctuation) {
+   EXPECT_TRUE(IsPunctuationWord(test_string));
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsPuncWordParamTest, IsPunctuationWordParamTest,
++INSTANTIATE_TEST_SUITE_P(IsPuncWordParamTest,
++                         IsPunctuationWordParamTest,
+                          ::testing::ValuesIn(punc_word_test_cases));
+ 
+ class IsEllipsisTest : public ::testing::Test {};
+@@ -718,7 +723,8 @@ TEST_P(EmoticonParamTest, IsEmoticon) {
+   EXPECT_TRUE(IsEmoticon(GetParam(), &offset));
+ }
+ 
+-INSTANTIATE_TEST_SUITE_P(IsEmoticonParamTest, EmoticonParamTest,
++INSTANTIATE_TEST_SUITE_P(IsEmoticonParamTest,
++                         EmoticonParamTest,
+                          ::testing::ValuesIn(emoticon_test_cases));
+ 
+ class IsEmoticonTest : public ::testing::Test {};
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentencepiece_kernels.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentencepiece_kernels.cc
+index 887b51d29ebad..a7ee974174bd6 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentencepiece_kernels.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/sentencepiece_kernels.cc
+@@ -20,8 +20,8 @@
+ #include "absl/strings/string_view.h"
+ #include "absl/synchronization/mutex.h"
+ #include "absl/types/span.h"
+-#include "src/sentencepiece_model.pb.h"
+ #include "src/sentencepiece.pb.h"
++#include "src/sentencepiece_model.pb.h"
+ #include "src/sentencepiece_processor.h"
+ #include "tensorflow/core/framework/bounds_check.h"
+ #include "tensorflow/core/framework/dataset_stateful_op_allowlist.h"
+@@ -77,12 +77,11 @@ struct SentencepieceResource : public ResourceBase {
+     std::string unique_node_name = strings::StrCat(
+         "SentencepieceResourceFromGraphDef", "/", counter.fetch_add(1));
+     std::string model = processor.model_proto().SerializeAsString();
+-    *out = ops::SourceOp(
+-        "SentencepieceOp",
+-        builder->opts()
+-            .WithName(unique_node_name)
+-            .WithAttr("model", model)
+-            .WithAttr("use_node_name_sharing", true));
++    *out = ops::SourceOp("SentencepieceOp",
++                         builder->opts()
++                             .WithName(unique_node_name)
++                             .WithAttr("model", model)
++                             .WithAttr("use_node_name_sharing", true));
+     return Status::OK();
+   }
+ };
+@@ -94,7 +93,8 @@ struct SentencepieceResource : public ResourceBase {
+ constexpr int64 kCostPerUnit = 10000;
+ 
+ ::tensorflow::Status ToTFStatus(const ::util::Status& s) {
+-  if (s.ok()) return ::tensorflow::Status();
++  if (s.ok())
++    return ::tensorflow::Status();
+   return ::tensorflow::Status(static_cast<::tensorflow::error::Code>(s.code()),
+                               ::tensorflow::string(s.message()));
+ }
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.cc
+index ea54de5fa5fdf..1cae7680ba838 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.cc
+@@ -19,7 +19,7 @@ namespace text {
+ 
+ SpanningTreeIterator::SpanningTreeIterator(bool forest) : forest_(forest) {}
+ 
+-bool SpanningTreeIterator::HasCycle(const SourceList &sources) {
++bool SpanningTreeIterator::HasCycle(const SourceList& sources) {
+   // Flags for whether each node has already been searched.
+   searched_.assign(sources.size(), false);
+ 
+@@ -31,30 +31,35 @@ bool SpanningTreeIterator::HasCycle(const SourceList &sources) {
+     // Search upwards to try to find a cycle.
+     uint32 current_node = initial_node;
+     while (true) {
+-      if (searched_[current_node]) break;        // already searched
+-      if (visiting_[current_node]) return true;  // revisiting implies cycle
++      if (searched_[current_node])
++        break;  // already searched
++      if (visiting_[current_node])
++        return true;                   // revisiting implies cycle
+       visiting_[current_node] = true;  // mark as being currently visited
+       const uint32 source_node = sources[current_node];
+-      if (source_node == current_node) break;  // self-loops are roots
+-      current_node = source_node;              // advance upwards
++      if (source_node == current_node)
++        break;                     // self-loops are roots
++      current_node = source_node;  // advance upwards
+     }
+ 
+     // No cycle; search upwards again to update flags.
+     current_node = initial_node;
+     while (true) {
+-      if (searched_[current_node]) break;  // already searched
++      if (searched_[current_node])
++        break;  // already searched
+       searched_[current_node] = true;
+       visiting_[current_node] = false;
+       const uint32 source_node = sources[current_node];
+-      if (source_node == current_node) break;  // self-loops are roots
+-      current_node = source_node;              // advance upwards
++      if (source_node == current_node)
++        break;                     // self-loops are roots
++      current_node = source_node;  // advance upwards
+     }
+   }
+ 
+   return false;
+ }
+ 
+-uint32 SpanningTreeIterator::NumRoots(const SourceList &sources) {
++uint32 SpanningTreeIterator::NumRoots(const SourceList& sources) {
+   uint32 num_roots = 0;
+   for (uint32 node = 0; node < sources.size(); ++node) {
+     num_roots += (node == sources[node]);
+@@ -62,29 +67,33 @@ uint32 SpanningTreeIterator::NumRoots(const SourceList &sources) {
+   return num_roots;
+ }
+ 
+-bool SpanningTreeIterator::NextSourceList(SourceList *sources) {
++bool SpanningTreeIterator::NextSourceList(SourceList* sources) {
+   const uint32 num_nodes = sources->size();
+   for (uint32 i = 0; i < num_nodes; ++i) {
+     const uint32 new_source = ++(*sources)[i];
+-    if (new_source < num_nodes) return true;  // absorbed in this digit
++    if (new_source < num_nodes)
++      return true;      // absorbed in this digit
+     (*sources)[i] = 0;  // overflowed this digit, carry to next digit
+   }
+   return false;  // overflowed the last digit
+ }
+ 
+-bool SpanningTreeIterator::NextTree(SourceList *sources) {
++bool SpanningTreeIterator::NextTree(SourceList* sources) {
+   // Iterate source lists, skipping non-trees.
+   while (NextSourceList(sources)) {
+     // Check the number of roots.
+     const uint32 num_roots = NumRoots(*sources);
+     if (forest_) {
+-      if (num_roots == 0) continue;
++      if (num_roots == 0)
++        continue;
+     } else {
+-      if (num_roots != 1) continue;
++      if (num_roots != 1)
++        continue;
+     }
+ 
+     // Check for cycles.
+-    if (HasCycle(*sources)) continue;
++    if (HasCycle(*sources))
++      continue;
+ 
+     // Acyclic and rooted, therefore tree.
+     return true;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.h
+index ef7543e91a82b..89edc95a72fe2 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator.h
+@@ -51,18 +51,18 @@ class SpanningTreeIterator {
+ 
+  private:
+   // Returns true if the |sources| contains a cycle.
+-  bool HasCycle(const SourceList &sources);
++  bool HasCycle(const SourceList& sources);
+ 
+   // Returns the number of roots in the |sources|.
+-  static uint32 NumRoots(const SourceList &sources);
++  static uint32 NumRoots(const SourceList& sources);
+ 
+   // Advances |sources| to the next source list, or returns false if there are
+   // no more source lists.
+-  static bool NextSourceList(SourceList *sources);
++  static bool NextSourceList(SourceList* sources);
+ 
+   // Advances |sources| to the next tree (or forest, if |forest_| is true), or
+   // returns false if there are no more trees.
+-  bool NextTree(SourceList *sources);
++  bool NextTree(SourceList* sources);
+ 
+   // If true, iterate over spanning forests instead of spanning trees.
+   const bool forest_;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator_test.cc
+index ddd7bfc1a83cb..4000117bad460 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/spanning_tree_iterator_test.cc
+@@ -45,7 +45,7 @@ class SpanningTreeIteratorTest : public ::testing::TestWithParam<bool> {
+   void ExpectNumTrees(int num_nodes, int expected_num_trees) {
+     int actual_num_trees = 0;
+     iterator_.ForEachTree(
+-        num_nodes, [&](const SourceList &sources) { ++actual_num_trees; });
++        num_nodes, [&](const SourceList& sources) { ++actual_num_trees; });
+     LOG(INFO) << "num_nodes=" << num_nodes
+               << " expected_num_trees=" << expected_num_trees
+               << " actual_num_trees=" << actual_num_trees;
+@@ -54,9 +54,9 @@ class SpanningTreeIteratorTest : public ::testing::TestWithParam<bool> {
+ 
+   // Expects that the set of possible spanning trees for a complete digraph of
+   // |num_nodes| nodes is |expected_trees|.
+-  void ExpectTrees(int num_nodes, const std::set<SourceList> &expected_trees) {
++  void ExpectTrees(int num_nodes, const std::set<SourceList>& expected_trees) {
+     std::set<SourceList> actual_trees;
+-    iterator_.ForEachTree(num_nodes, [&](const SourceList &sources) {
++    iterator_.ForEachTree(num_nodes, [&](const SourceList& sources) {
+       CHECK(actual_trees.insert(sources).second);
+     });
+     EXPECT_EQ(expected_trees, actual_trees);
+@@ -66,7 +66,8 @@ class SpanningTreeIteratorTest : public ::testing::TestWithParam<bool> {
+   SpanningTreeIterator iterator_{GetParam()};
+ };
+ 
+-INSTANTIATE_TEST_SUITE_P(AllowForest, SpanningTreeIteratorTest,
++INSTANTIATE_TEST_SUITE_P(AllowForest,
++                         SpanningTreeIteratorTest,
+                          ::testing::Bool());
+ 
+ TEST_P(SpanningTreeIteratorTest, NumberOfTrees) {
+@@ -94,7 +95,9 @@ TEST_P(SpanningTreeIteratorTest, NumberOfTrees) {
+   }
+ }
+ 
+-TEST_P(SpanningTreeIteratorTest, OneNodeDigraph) { ExpectTrees(1, {{0}}); }
++TEST_P(SpanningTreeIteratorTest, OneNodeDigraph) {
++  ExpectTrees(1, {{0}});
++}
+ 
+ TEST_P(SpanningTreeIteratorTest, TwoNodeDigraph) {
+   if (GetParam()) {                            // forest
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/split_merge_tokenize_kernel.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/split_merge_tokenize_kernel.cc
+index 8a1e1a7f0c2f6..b0ab1dffafbe0 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/split_merge_tokenize_kernel.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/split_merge_tokenize_kernel.cc
+@@ -69,7 +69,8 @@ Status TokenizeByLabel(const absl::string_view& text,
+                        bool force_split_at_break_character,
+                        std::vector<std::string>* tokens,
+                        std::vector<int>* begin_offset,
+-                       std::vector<int>* end_offset, int* num_tokens) {
++                       std::vector<int>* end_offset,
++                       int* num_tokens) {
+   std::vector<absl::string_view> chars;
+   if (!GetUTF8Chars(text, &chars)) {
+     return Status(error::Code::INVALID_ARGUMENT,
+@@ -130,10 +131,9 @@ class SplitMergeTokenizeWithOffsetsOp : public OpKernel {
+     const Tensor* row_splits;
+     OP_REQUIRES_OK(ctx, ctx->input("row_splits", &row_splits));
+     OP_REQUIRES(ctx, input_values->dim_size(0) == row_splits->dim_size(0) - 1,
+-                errors::InvalidArgument("Expecting row_splits have ",
+-                                        input_values->dim_size(0) + 1,
+-                                        " elements, got ",
+-                                        row_splits->dim_size(0)));
++                errors::InvalidArgument(
++                    "Expecting row_splits have ", input_values->dim_size(0) + 1,
++                    " elements, got ", row_splits->dim_size(0)));
+ 
+     std::vector<string> tokens;
+     std::vector<int> begin_offset;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.cc
+index 39c7d832c8671..f0f5e9931185c 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.cc
+@@ -22,7 +22,8 @@ namespace tensorflow {
+ namespace text_kernels_test_util {
+ 
+ bool TensorEqMatcher::MatchAndExplain(
+-    Tensor actual, ::testing::MatchResultListener* listener) const {
++    Tensor actual,
++    ::testing::MatchResultListener* listener) const {
+   string expect_values = expect_.SummarizeValue(expect_.NumElements());
+   string actual_values = actual.SummarizeValue(actual.NumElements());
+   if (expect_.dtype() != actual.dtype() || expect_.shape() != actual.shape() ||
+@@ -47,7 +48,8 @@ void TensorEqMatcher::DescribeNegationTo(::std::ostream* gmock_os) const {
+ }
+ 
+ bool TensorHasShapeMatcher::MatchAndExplain(
+-    Tensor actual, ::testing::MatchResultListener* listener) const {
++    Tensor actual,
++    ::testing::MatchResultListener* listener) const {
+   if (expect_ != actual.shape()) {
+     *listener << "\n          shape=" << actual.shape().DebugString();
+     return false;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.h
+index 9e2194cf8d264..89b885b1725e8 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/text_kernels_test_util.h
+@@ -63,7 +63,8 @@ class TensorHasShapeMatcher : public ::testing::MatcherInterface<Tensor> {
+ //               TensorHasShapeAndValues<int64>({3, 2}, {1, 2, 3, 4, 5, 6});
+ template <typename DTYPE>
+ ::testing::Matcher<Tensor> TensorHasShapeAndValues(
+-    const TensorShape& shape, const std::vector<DTYPE>& values) {
++    const TensorShape& shape,
++    const std::vector<DTYPE>& values) {
+   Tensor expect = test::AsTensor<DTYPE>(values, shape);
+   // MakeMatcher takes ownership of the TensorEqMatcher.
+   return ::testing::MakeMatcher(new TensorEqMatcher(expect));
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/tokenizer_from_logits_kernel.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/tokenizer_from_logits_kernel.cc
+index b4bcbdb2ed704..65099251edc22 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/tokenizer_from_logits_kernel.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/tokenizer_from_logits_kernel.cc
+@@ -74,7 +74,8 @@ Status TokenizeByLogits(const absl::string_view& text,
+                         bool force_split_at_break_character,
+                         std::vector<std::string>* tokens,
+                         std::vector<int>* begin_offset,
+-                        std::vector<int>* end_offset, int* num_tokens) {
++                        std::vector<int>* end_offset,
++                        int* num_tokens) {
+   std::vector<absl::string_view> chars;
+   if (!GetUTF8Chars(text, &chars)) {
+     return Status(error::Code::INVALID_ARGUMENT,
+@@ -84,8 +85,7 @@ Status TokenizeByLogits(const absl::string_view& text,
+   if (chars.size() > logits.dimension(1)) {
+     return Status(error::Code::INVALID_ARGUMENT,
+                   absl::StrCat("Number of logits, ", logits.dimension(1),
+-                               ", is insufficient for text \"", text,
+-                               "\""));
++                               ", is insufficient for text \"", text, "\""));
+   }
+ 
+   bool last_character_is_break_character = false;
+@@ -96,8 +96,7 @@ Status TokenizeByLogits(const absl::string_view& text,
+     if (!is_break_character) {
+       const float logit_split = logits(batch_index, i, 0);
+       const float logit_merge = logits(batch_index, i, 1);
+-      if ((logit_split > logit_merge) ||
+-          !has_new_token_generated_for_text ||
++      if ((logit_split > logit_merge) || !has_new_token_generated_for_text ||
+           (last_character_is_break_character &&
+            force_split_at_break_character)) {
+         tokens->emplace_back(chars[i].data(), chars[i].length());
+@@ -122,8 +121,7 @@ Status TokenizeByLogits(const absl::string_view& text,
+ 
+ class TokenizerFromLogitsOp : public OpKernel {
+  public:
+-  explicit TokenizerFromLogitsOp(OpKernelConstruction* ctx)
+-      : OpKernel(ctx) {}
++  explicit TokenizerFromLogitsOp(OpKernelConstruction* ctx) : OpKernel(ctx) {}
+ 
+   void Compute(OpKernelContext* ctx) override {
+     const Tensor* strings;
+@@ -132,8 +130,7 @@ class TokenizerFromLogitsOp : public OpKernel {
+     OP_REQUIRES_OK(ctx, ctx->input("logits", &logits));
+     OP_REQUIRES(ctx, strings->dim_size(0) == logits->dim_size(0),
+                 errors::InvalidArgument("Expecting logits to have ",
+-                                        strings->dim_size(0),
+-                                        " rows, got ",
++                                        strings->dim_size(0), " rows, got ",
+                                         logits->dim_size(0)));
+     const Tensor* force_split_at_break_character;
+     OP_REQUIRES_OK(ctx, ctx->input("force_split_at_break_character",
+@@ -153,9 +150,9 @@ class TokenizerFromLogitsOp : public OpKernel {
+     // Iterate through all the values and tokenize them.
+     const auto& strings_vec = strings->flat<tstring>();
+     OP_REQUIRES(ctx, logits_tensor.dimension(0) >= strings_vec.size(),
+-                errors::Internal("Bad logits dimension #0: ",
+-                                 logits_tensor.dimension(0), " < ",
+-                                 strings_vec.size()));
++                errors::Internal(
++                    "Bad logits dimension #0: ", logits_tensor.dimension(0),
++                    " < ", strings_vec.size()));
+     // Dimension #1 of logits will be checked inside TokenizeByLogits.
+     OP_REQUIRES(ctx, logits_tensor.dimension(2) == 2,
+                 errors::Internal("Bad logits dimension #2: ",
+@@ -164,11 +161,9 @@ class TokenizerFromLogitsOp : public OpKernel {
+       // Tokenize into tokens and record the offset locations.
+       int num_tokens = 0;
+       OP_REQUIRES_OK(
+-          ctx, TokenizeByLogits(
+-                   strings_vec(i),
+-                   logits_tensor, i,
+-                   force_split_at_break_character_bool,
+-                   &tokens, &begin_offset, &end_offset, &num_tokens));
++          ctx, TokenizeByLogits(strings_vec(i), logits_tensor, i,
++                                force_split_at_break_character_bool, &tokens,
++                                &begin_offset, &end_offset, &num_tokens));
+ 
+       // Record the row splits.
+       output_row_splits.push_back(num_tokens + output_row_splits.back());
+@@ -187,10 +182,9 @@ class TokenizerFromLogitsOp : public OpKernel {
+     auto output_values_vec = output_values->vec<tstring>();
+ 
+     Tensor* output_row_splits_tensor;
+-    OP_REQUIRES_OK(ctx,
+-                   ctx->allocate_output("row_splits",
+-                                        TensorShape(output_row_splits_shape),
+-                                        &output_row_splits_tensor));
++    OP_REQUIRES_OK(ctx, ctx->allocate_output(
++                            "row_splits", TensorShape(output_row_splits_shape),
++                            &output_row_splits_tensor));
+     auto output_row_splits_vec = output_row_splits_tensor->vec<int64>();
+ 
+     Tensor* start_values;
+@@ -226,9 +220,8 @@ class TokenizerFromLogitsOp : public OpKernel {
+   TF_DISALLOW_COPY_AND_ASSIGN(TokenizerFromLogitsOp);
+ };
+ 
+-REGISTER_KERNEL_BUILDER(
+-    Name("TokenizerFromLogits").Device(DEVICE_CPU),
+-    TokenizerFromLogitsOp);
++REGISTER_KERNEL_BUILDER(Name("TokenizerFromLogits").Device(DEVICE_CPU),
++                        TokenizerFromLogitsOp);
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/unicode_script_tokenize_kernel_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/unicode_script_tokenize_kernel_test.cc
+index 310f8f77ab439..ec712e85adddc 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/unicode_script_tokenize_kernel_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/unicode_script_tokenize_kernel_test.cc
+@@ -39,9 +39,9 @@ class UnicodeScriptTokenizeWithOffsetsKernelTest
+  public:
+   void MakeOp() {
+     TF_ASSERT_OK(NodeDefBuilder("tested_op", "UnicodeScriptTokenizeWithOffsets")
+-                 .Input(FakeInput())
+-                 .Input(FakeInput())
+-                 .Finalize(node_def()));
++                     .Input(FakeInput())
++                     .Input(FakeInput())
++                     .Finalize(node_def()));
+     TF_ASSERT_OK(InitOp());
+   }
+ };
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenize_kernel_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenize_kernel_test.cc
+index c1670263fa278..86a3be8198e1c 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenize_kernel_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenize_kernel_test.cc
+@@ -34,14 +34,13 @@ using tensorflow::Status;
+ using tensorflow::TensorShape;
+ using tensorflow::text_kernels_test_util::VectorEq;
+ 
+-class WhitespaceTokenizeWithOffsetsKernelTest
+-    : public tensorflow::OpsTestBase {
++class WhitespaceTokenizeWithOffsetsKernelTest : public tensorflow::OpsTestBase {
+  public:
+   void MakeOp() {
+     TF_ASSERT_OK(NodeDefBuilder("tested_op", "WhitespaceTokenizeWithOffsets")
+-                 .Input(FakeInput())
+-                 .Input(FakeInput())
+-                 .Finalize(node_def()));
++                     .Input(FakeInput())
++                     .Input(FakeInput())
++                     .Finalize(node_def()));
+     TF_ASSERT_OK(InitOp());
+   }
+ };
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.cc
+index 45503fe3d08ac..10aed7da5c882 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.cc
+@@ -19,7 +19,12 @@
+ 
+ #include "absl/strings/string_view.h"
+ #include "icu4c/source/common/unicode/appendable.h"
++#include "icu4c/source/common/unicode/bytestream.h"
++#include "icu4c/source/common/unicode/edits.h"
++#include "icu4c/source/common/unicode/normalizer2.h"
+ #include "icu4c/source/common/unicode/schriter.h"
++#include "icu4c/source/common/unicode/stringoptions.h"
++#include "icu4c/source/common/unicode/stringpiece.h"
+ #include "icu4c/source/common/unicode/uchar.h"
+ #include "icu4c/source/common/unicode/ucnv.h"
+ #include "icu4c/source/common/unicode/ucnv_err.h"
+@@ -27,15 +32,9 @@
+ #include "icu4c/source/common/unicode/uniset.h"
+ #include "icu4c/source/common/unicode/unistr.h"
+ #include "icu4c/source/common/unicode/uset.h"
+-#include "icu4c/source/common/unicode/utypes.h"
+-#include "icu4c/source/common/unicode/bytestream.h"
+-#include "icu4c/source/common/unicode/edits.h"
+-#include "icu4c/source/common/unicode/normalizer2.h"
+-#include "icu4c/source/common/unicode/stringoptions.h"
+-#include "icu4c/source/common/unicode/stringpiece.h"
+ #include "icu4c/source/common/unicode/utf.h"
+ #include "icu4c/source/common/unicode/utf8.h"
+-
++#include "icu4c/source/common/unicode/utypes.h"
+ 
+ namespace tensorflow {
+ namespace text {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.h
+index 26fcf20c1d862..4fd41d5caef93 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer.h
+@@ -61,8 +61,7 @@ class WhitespaceTokenizer {
+   // Args:
+   //  * config: A WhitespaceTokenizerConfig which should be created using the
+   //    WhitespaceTokenizerConfigBuilder
+-  WhitespaceTokenizer(const WhitespaceTokenizerConfig& cfg)
+-      : config_(cfg) { }
++  WhitespaceTokenizer(const WhitespaceTokenizerConfig& cfg) : config_(cfg) {}
+ 
+   // Tokenizes a string (or series of character codepoints) by whitespace.
+   //
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h
+index 353bcddb644a3..1d41210c248e7 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h
+@@ -17,7 +17,6 @@
+ 
+ #include <string>
+ 
+-
+ namespace tensorflow {
+ namespace text {
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_kernel_template.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_kernel_template.h
+index db6b1ac094b66..6a8b7c06e6d1b 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_kernel_template.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_kernel_template.h
+@@ -34,10 +34,7 @@ template <tflite::shim::Runtime Rt>
+ class WhitespaceTokenizeWithOffsetsV2Op
+     : public tflite::shim::OpKernelShim<WhitespaceTokenizeWithOffsetsV2Op, Rt> {
+  private:
+-  enum Inputs {
+-    kInputValues = 0,
+-    kInputConfig
+-  };
++  enum Inputs { kInputValues = 0, kInputConfig };
+   enum Outputs {
+     kOutputTokens = 0,
+     kOutputRowSplits,
+@@ -114,8 +111,8 @@ absl::Status WhitespaceTokenizeWithOffsetsV2Op<Rt>::ShapeInference(
+ }
+ 
+ template <tflite::shim::Runtime Rt>
+-    absl::Status WhitespaceTokenizeWithOffsetsV2Op<Rt>
+-        ::Invoke(InvokeContext* context) {
++absl::Status WhitespaceTokenizeWithOffsetsV2Op<Rt>::Invoke(
++    InvokeContext* context) {
+   // Inputs
+   const auto values_statusor = context->GetInput(kInputValues);
+   if (!values_statusor.ok()) {
+@@ -151,15 +148,12 @@ template <tflite::shim::Runtime Rt>
+   // Allocate output & fill output tensors.
+   SH_RETURN_IF_ERROR(FillOutputTensor<std::string, tensorflow::tstring>(
+       tokens, kOutputTokens, context));
+-  SH_RETURN_IF_ERROR(FillOutputTensor<int64_t, int64_t>(row_splits,
+-                                                        kOutputRowSplits,
+-                                                        context));
+-  SH_RETURN_IF_ERROR(FillOutputTensor<int32_t, int32_t>(start_offsets,
+-                                                        kOutputStartOffsets,
+-                                                        context));
+-  SH_RETURN_IF_ERROR(FillOutputTensor<int32_t, int32_t>(end_offsets,
+-                                                        kOutputEndOffsets,
+-                                                        context));
++  SH_RETURN_IF_ERROR(FillOutputTensor<int64_t, int64_t>(
++      row_splits, kOutputRowSplits, context));
++  SH_RETURN_IF_ERROR(FillOutputTensor<int32_t, int32_t>(
++      start_offsets, kOutputStartOffsets, context));
++  SH_RETURN_IF_ERROR(FillOutputTensor<int32_t, int32_t>(
++      end_offsets, kOutputEndOffsets, context));
+ 
+   return absl::OkStatus();
+ }
+@@ -167,13 +161,17 @@ template <tflite::shim::Runtime Rt>
+ template <tflite::shim::Runtime Rt>
+ template <typename BufferType, typename DType>
+ absl::Status WhitespaceTokenizeWithOffsetsV2Op<Rt>::FillOutputTensor(
+-    const std::vector<BufferType>& buffer, const int index,
++    const std::vector<BufferType>& buffer,
++    const int index,
+     InvokeContext* context) {
+-  SH_ASSIGN_OR_RETURN(const auto tensorview, context->GetOutput(
+-      index, tflite::shim::Shape({static_cast<int>(buffer.size())})));
++  SH_ASSIGN_OR_RETURN(
++      const auto tensorview,
++      context->GetOutput(
++          index, tflite::shim::Shape({static_cast<int>(buffer.size())})));
+   auto data = tensorview->template As<DType, 1>();
+   // TODO(broken): investigate using memcpy like previous WST
+-  for (int i = 0; i < buffer.size(); ++i) data(i) = buffer.at(i);
++  for (int i = 0; i < buffer.size(); ++i)
++    data(i) = buffer.at(i);
+   return absl::OkStatus();
+ }
+ 
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_test.cc
+index 8030d410b45c7..e7be52e8b305d 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/whitespace_tokenizer_test.cc
+@@ -17,10 +17,10 @@
+ #include <gmock/gmock.h>
+ #include <gtest/gtest.h>
+ #include "absl/flags/flag.h"
+-#include "tensorflow/core/platform/env.h"
+-#include "tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h"
+ #include "absl/status/status.h"
+ #include "absl/status/statusor.h"
++#include "tensorflow/core/platform/env.h"
++#include "tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h"
+ 
+ namespace tensorflow {
+ namespace text {
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel.cc
+index 4042f1855c4d1..535c69559c8a5 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel.cc
+@@ -81,8 +81,10 @@ bool GetSplitUnknownCharacters(OpKernelConstruction* ctx) {
+   return split_unknown_characters;
+ }
+ 
+-Status GetTableHandle(const string& input_name, OpKernelContext* ctx,
+-                      string* container, string* table_handle) {
++Status GetTableHandle(const string& input_name,
++                      OpKernelContext* ctx,
++                      string* container,
++                      string* table_handle) {
+   {
+     mutex* mu;
+     TF_RETURN_IF_ERROR(ctx->input_ref_mutex(input_name, &mu));
+@@ -104,7 +106,8 @@ Status GetTableHandle(const string& input_name, OpKernelContext* ctx,
+ // Gets the LookupTable stored in the ctx->resource_manager() with key
+ // passed by attribute with name input_name, returns null if the table
+ // doesn't exist.
+-Status GetLookupTable(const string& input_name, OpKernelContext* ctx,
++Status GetLookupTable(const string& input_name,
++                      OpKernelContext* ctx,
+                       lookup::LookupInterface** table) {
+   string container;
+   string table_handle;
+@@ -159,7 +162,8 @@ LookupStatus LookupTableVocab::Contains(const absl::string_view key,
+   keys.flat<tstring>()(0) = tstring(key.data(), key.size());
+   Tensor values(DT_INT64, TensorShape({1}));
+   auto status = table_->Find(ctx_, keys, &values, default_value_);
+-  if (!status.ok()) return LookupStatus(status.error_message());
++  if (!status.ok())
++    return LookupStatus(status.error_message());
+ 
+   if (static_cast<int64>(values.flat<int64>()(0)) != kOutOfVocabValue) {
+     *value = true;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel_test.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel_test.cc
+index b063da82b52e4..31bf958dadad0 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel_test.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_kernel_test.cc
+@@ -29,7 +29,7 @@ TEST(WordpieceTokenizeWithOffsetsOpTest, ShapeFn) {
+   // WordpieceTokenizeWithOffsets(input_values, vocab_lookup_table) ->
+   //     [output_values, output_row_lengths, start_values, limit_values]
+   ShapeInferenceTestOp op("WordpieceTokenizeWithOffsets");
+-  auto &attr = *op.node_def.mutable_attr();
++  auto& attr = *op.node_def.mutable_attr();
+ 
+   attr["output_row_partition_type"].set_s("row_lengths");
+   INFER_OK(op, "?;?", "[?];[?];[?];[?]");
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
+index a5a0690618161..e1a791b7963ab 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.cc
+@@ -24,10 +24,12 @@ namespace text {
+ 
+ namespace {
+ 
+-LookupStatus Lookup(int byte_start, int byte_end,
++LookupStatus Lookup(int byte_start,
++                    int byte_end,
+                     const absl::string_view& token,
+                     const std::string& suffix_indicator,
+-                    const WordpieceVocab* vocab_map, bool* in_vocab) {
++                    const WordpieceVocab* vocab_map,
++                    bool* in_vocab) {
+   int byte_len = byte_end - byte_start;
+   absl::string_view substr(token.data() + byte_start, byte_len);
+   std::string lookup_value;
+@@ -45,11 +47,15 @@ LookupStatus Lookup(int byte_start, int byte_end,
+ // 2) is in the vocab OR if split_unknown_characters is true, is a single
+ //    UTF8 character.
+ // If no match is found, found_match is set to false.
+-LookupStatus LongestMatchStartingAt(
+-    int byte_start, const absl::string_view& token,
+-    const std::string& suffix_indicator, const int max_chars_per_subtoken,
+-    bool split_unknown_characters, const WordpieceVocab* vocab_map,
+-    int* byte_end, bool* found_match, bool* match_is_unknown_character) {
++LookupStatus LongestMatchStartingAt(int byte_start,
++                                    const absl::string_view& token,
++                                    const std::string& suffix_indicator,
++                                    const int max_chars_per_subtoken,
++                                    bool split_unknown_characters,
++                                    const WordpieceVocab* vocab_map,
++                                    int* byte_end,
++                                    bool* found_match,
++                                    bool* match_is_unknown_character) {
+   *match_is_unknown_character = false;
+   *found_match = false;
+   const char* token_bytes = token.data();
+@@ -72,7 +78,8 @@ LookupStatus LongestMatchStartingAt(
+     bool in_vocab;
+     auto status = Lookup(byte_start, byte_ends[i], token, suffix_indicator,
+                          vocab_map, &in_vocab);
+-    if (!status.success) return status;
++    if (!status.success)
++      return status;
+     if (in_vocab) {
+       *byte_end = byte_ends[i];
+       *found_match = true;
+@@ -95,7 +102,8 @@ LookupStatus NoTokenFound(const absl::string_view& token,
+                           const std::string& unknown_token,
+                           std::vector<std::string>* subwords,
+                           std::vector<int>* begin_offset,
+-                          std::vector<int>* end_offset, int* num_word_pieces) {
++                          std::vector<int>* end_offset,
++                          int* num_word_pieces) {
+   begin_offset->push_back(0);
+   if (use_unknown_token) {
+     subwords->push_back(unknown_token);
+@@ -111,9 +119,12 @@ LookupStatus NoTokenFound(const absl::string_view& token,
+ 
+ // When a subword is found, this helper function will add the outputs to
+ // 'subwords', 'begin_offset' and 'end_offset'.
+-void AddWord(const absl::string_view& token, int byte_start, int byte_end,
++void AddWord(const absl::string_view& token,
++             int byte_start,
++             int byte_end,
+              const std::string& suffix_indicator,
+-             std::vector<std::string>* subwords, std::vector<int>* begin_offset,
++             std::vector<std::string>* subwords,
++             std::vector<int>* begin_offset,
+              std::vector<int>* end_offset) {
+   begin_offset->push_back(byte_start);
+   int len = byte_end - byte_start;
+@@ -130,8 +141,10 @@ void AddWord(const absl::string_view& token, int byte_start, int byte_end,
+ 
+ // Adds a single unknown character subword, found when split_unknown_characters
+ // is true.
+-void AddUnknownCharacter(const absl::string_view& token, int byte_start,
+-                         int byte_end, const std::string& suffix_indicator,
++void AddUnknownCharacter(const absl::string_view& token,
++                         int byte_start,
++                         int byte_end,
++                         const std::string& suffix_indicator,
+                          bool use_unknown_token,
+                          const std::string& unknown_token,
+                          std::vector<std::string>* subwords,
+@@ -158,13 +171,18 @@ void AddUnknownCharacter(const absl::string_view& token, int byte_start,
+   }
+ }
+ 
+-LookupStatus TokenizeL2RGreedy(
+-    const absl::string_view& token, const int max_bytes_per_token,
+-    const int max_chars_per_subtoken, const std::string& suffix_indicator,
+-    bool use_unknown_token, const std::string& unknown_token,
+-    bool split_unknown_characters, const WordpieceVocab* vocab_map,
+-    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+-    std::vector<int>* end_offset, int* num_word_pieces) {
++LookupStatus TokenizeL2RGreedy(const absl::string_view& token,
++                               const int max_bytes_per_token,
++                               const int max_chars_per_subtoken,
++                               const std::string& suffix_indicator,
++                               bool use_unknown_token,
++                               const std::string& unknown_token,
++                               bool split_unknown_characters,
++                               const WordpieceVocab* vocab_map,
++                               std::vector<std::string>* subwords,
++                               std::vector<int>* begin_offset,
++                               std::vector<int>* end_offset,
++                               int* num_word_pieces) {
+   std::vector<std::string> candidate_subwords;
+   std::vector<int> candidate_begin_offsets;
+   std::vector<int> candidate_end_offsets;
+@@ -177,7 +195,8 @@ LookupStatus TokenizeL2RGreedy(
+         byte_start, token, suffix_indicator, max_chars_per_subtoken,
+         split_unknown_characters, vocab_map, &byte_end, &found_subword,
+         &match_is_unknown_character);
+-    if (!status.success) return status;
++    if (!status.success)
++      return status;
+     if (found_subword) {
+       if (match_is_unknown_character) {
+         AddUnknownCharacter(token, byte_start, byte_end, suffix_indicator,
+@@ -208,13 +227,18 @@ LookupStatus TokenizeL2RGreedy(
+ 
+ }  // namespace
+ 
+-LookupStatus WordpieceTokenize(
+-    const absl::string_view& token, const int max_bytes_per_token,
+-    const int max_chars_per_subtoken, const std::string& suffix_indicator,
+-    bool use_unknown_token, const std::string& unknown_token,
+-    bool split_unknown_characters, const WordpieceVocab* vocab_map,
+-    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+-    std::vector<int>* end_offset, int* num_word_pieces) {
++LookupStatus WordpieceTokenize(const absl::string_view& token,
++                               const int max_bytes_per_token,
++                               const int max_chars_per_subtoken,
++                               const std::string& suffix_indicator,
++                               bool use_unknown_token,
++                               const std::string& unknown_token,
++                               bool split_unknown_characters,
++                               const WordpieceVocab* vocab_map,
++                               std::vector<std::string>* subwords,
++                               std::vector<int>* begin_offset,
++                               std::vector<int>* end_offset,
++                               int* num_word_pieces) {
+   int token_len = token.size();
+   if (token_len > max_bytes_per_token) {
+     begin_offset->push_back(0);
+@@ -234,12 +258,16 @@ LookupStatus WordpieceTokenize(
+                            begin_offset, end_offset, num_word_pieces);
+ }
+ 
+-LookupStatus WordpieceTokenize(
+-    const absl::string_view& token, const int max_bytes_per_token,
+-    const std::string& suffix_indicator, bool use_unknown_token,
+-    const std::string& unknown_token, const WordpieceVocab* vocab_map,
+-    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+-    std::vector<int>* end_offset, int* num_word_pieces) {
++LookupStatus WordpieceTokenize(const absl::string_view& token,
++                               const int max_bytes_per_token,
++                               const std::string& suffix_indicator,
++                               bool use_unknown_token,
++                               const std::string& unknown_token,
++                               const WordpieceVocab* vocab_map,
++                               std::vector<std::string>* subwords,
++                               std::vector<int>* begin_offset,
++                               std::vector<int>* end_offset,
++                               int* num_word_pieces) {
+   return WordpieceTokenize(token, max_bytes_per_token,
+                            /* max_chars_per_subtoken= */ 0, suffix_indicator,
+                            use_unknown_token, unknown_token,
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.h b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.h
+index 0547198a50f5b..464386c7db2b1 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.h
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/kernels/wordpiece_tokenizer.h
+@@ -39,22 +39,31 @@ class WordpieceVocab {
+                                 bool* value) const = 0;
+ };
+ 
+-LookupStatus WordpieceTokenize(
+-    const absl::string_view& token, const int max_bytes_per_token,
+-    const int max_chars_per_subtoken, const std::string& suffix_indicator,
+-    bool use_unknown_token, const std::string& unknown_token,
+-    bool split_unknown_characters, const WordpieceVocab* vocab_map,
+-    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+-    std::vector<int>* end_offset, int* num_word_pieces);
++LookupStatus WordpieceTokenize(const absl::string_view& token,
++                               const int max_bytes_per_token,
++                               const int max_chars_per_subtoken,
++                               const std::string& suffix_indicator,
++                               bool use_unknown_token,
++                               const std::string& unknown_token,
++                               bool split_unknown_characters,
++                               const WordpieceVocab* vocab_map,
++                               std::vector<std::string>* subwords,
++                               std::vector<int>* begin_offset,
++                               std::vector<int>* end_offset,
++                               int* num_word_pieces);
+ 
+ // As above but with `max_bytes_per_subtoken` unknown,
+ // and split_unknown_characters=false. (For backwards compatability.)
+-LookupStatus WordpieceTokenize(
+-    const absl::string_view& token, const int max_bytes_per_token,
+-    const std::string& suffix_indicator, bool use_unknown_token,
+-    const std::string& unknown_token, const WordpieceVocab* vocab_map,
+-    std::vector<std::string>* subwords, std::vector<int>* begin_offset,
+-    std::vector<int>* end_offset, int* num_word_pieces);
++LookupStatus WordpieceTokenize(const absl::string_view& token,
++                               const int max_bytes_per_token,
++                               const std::string& suffix_indicator,
++                               bool use_unknown_token,
++                               const std::string& unknown_token,
++                               const WordpieceVocab* vocab_map,
++                               std::vector<std::string>* subwords,
++                               std::vector<int>* begin_offset,
++                               std::vector<int>* end_offset,
++                               int* num_word_pieces);
+ 
+ }  // namespace text
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/ops/mst_ops.cc b/third_party/tensorflow-text/src/tensorflow_text/core/ops/mst_ops.cc
+index 0d51b4d60f89d..1c271abc32858 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/ops/mst_ops.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/ops/mst_ops.cc
+@@ -25,7 +25,7 @@ REGISTER_OP("MaxSpanningTree")
+     .Input("scores: T")
+     .Output("max_scores: T")
+     .Output("argmax_sources: int32")
+-    .SetShapeFn([](tensorflow::shape_inference::InferenceContext *context) {
++    .SetShapeFn([](tensorflow::shape_inference::InferenceContext* context) {
+       tensorflow::shape_inference::ShapeHandle num_nodes;
+       tensorflow::shape_inference::ShapeHandle scores;
+       TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 1, &num_nodes));
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/ops/rouge_l_op.cc b/third_party/tensorflow-text/src/tensorflow_text/core/ops/rouge_l_op.cc
+index b896a47f94cbe..ac9a3ff90175b 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/ops/rouge_l_op.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/ops/rouge_l_op.cc
+@@ -84,8 +84,8 @@ Status RougeLShapeFn(InferenceContext* c) {
+   TF_RETURN_IF_ERROR(c->WithRank(beta_shape, 0, &unused));
+ 
+   ShapeHandle output_nrows_plus_one;
+-  TF_RETURN_IF_ERROR(c->Merge(hyp_splits_shape, ref_splits_shape,
+-                              &output_nrows_plus_one));
++  TF_RETURN_IF_ERROR(
++      c->Merge(hyp_splits_shape, ref_splits_shape, &output_nrows_plus_one));
+ 
+   // Output shape is a 1-D tensor with size equal to number of splits minus 1.
+   DimensionHandle dim;
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/ops/split_merge_tokenize_op.cc b/third_party/tensorflow-text/src/tensorflow_text/core/ops/split_merge_tokenize_op.cc
+index f04bf70b6a701..718ca926375d9 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/ops/split_merge_tokenize_op.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/ops/split_merge_tokenize_op.cc
+@@ -86,7 +86,7 @@ Status SplitMergeTokenizeWithOffsetsShapeFn(InferenceContext* c) {
+   c->set_output(0, c->UnknownShapeOfRank(1));  // output_values
+   DimensionHandle num_splits;
+   TF_RETURN_IF_ERROR(c->Add(num_input_values, 1, &num_splits));
+-  c->set_output(1, c->Vector(num_splits));  // row_splits
++  c->set_output(1, c->Vector(num_splits));     // row_splits
+   c->set_output(2, c->UnknownShapeOfRank(1));  // start_values
+   c->set_output(3, c->UnknownShapeOfRank(1));  // limit_values
+   return Status::OK();
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/ops/tokenizer_from_logits_op.cc b/third_party/tensorflow-text/src/tensorflow_text/core/ops/tokenizer_from_logits_op.cc
+index b34a46e71ae93..93971119f22b4 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/ops/tokenizer_from_logits_op.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/ops/tokenizer_from_logits_op.cc
+@@ -112,7 +112,7 @@ Status TokenizerFromLogitsShapeFn(InferenceContext* c) {
+   c->set_output(0, c->UnknownShapeOfRank(1));  // output_values
+   DimensionHandle num_splits;
+   TF_RETURN_IF_ERROR(c->Add(num_strings, 1, &num_splits));
+-  c->set_output(1, c->Vector(num_splits));  // row_splits
++  c->set_output(1, c->Vector(num_splits));     // row_splits
+   c->set_output(2, c->UnknownShapeOfRank(1));  // start_values
+   c->set_output(3, c->UnknownShapeOfRank(1));  // limit_values
+   return Status::OK();
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/ops/wordpiece_op.cc b/third_party/tensorflow-text/src/tensorflow_text/core/ops/wordpiece_op.cc
+index 6a34995237fdc..aac35a6d6f7ca 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/ops/wordpiece_op.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/ops/wordpiece_op.cc
+@@ -32,8 +32,9 @@ REGISTER_OP("WordpieceTokenizeWithOffsets")
+     .Attr("use_unknown_token: bool")
+     .Attr("unknown_token: string")
+     .Attr("split_unknown_characters: bool = false")
+-    .Attr("output_row_partition_type: {'row_lengths', 'row_splits'}"
+-          " = 'row_lengths'")
++    .Attr(
++        "output_row_partition_type: {'row_lengths', 'row_splits'}"
++        " = 'row_lengths'")
+     .Output("output_values: string")
+     .Output("output_row_lengths: int64")
+     .Output("start_values: int64")
+@@ -96,8 +97,8 @@ Status WordpieceTokenizeWithOffsetsShapeFn(InferenceContext* c) {
+   string output_row_partition_type;
+   TF_RETURN_IF_ERROR(c->WithRank(input_values, 1, &input_values));
+   TF_RETURN_IF_ERROR(c->WithRank(vocab_lookup_table, 0, &vocab_lookup_table));
+-  TF_RETURN_IF_ERROR(c->GetAttr("output_row_partition_type",
+-                                &output_row_partition_type));
++  TF_RETURN_IF_ERROR(
++      c->GetAttr("output_row_partition_type", &output_row_partition_type));
+   DimensionHandle num_input_values = c->Dim(input_values, 0);
+   c->set_output(0, c->UnknownShapeOfRank(1));  // output_values
+   if (output_row_partition_type == "row_lengths") {
+@@ -112,5 +113,4 @@ Status WordpieceTokenizeWithOffsetsShapeFn(InferenceContext* c) {
+   return Status::OK();
+ }
+ 
+-
+ }  // namespace tensorflow
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/pywrap_whitespace_tokenizer_config_builder.cc b/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/pywrap_whitespace_tokenizer_config_builder.cc
+index 116d420dad2d5..6cd95d3eb865f 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/pywrap_whitespace_tokenizer_config_builder.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/pywrap_whitespace_tokenizer_config_builder.cc
+@@ -12,8 +12,8 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-#include <stdexcept>
+ #include <iostream>
++#include <stdexcept>
+ #include "include/pybind11/pybind11.h"
+ #include "include/pybind11/stl.h"
+ #include "tensorflow_text/core/kernels/whitespace_tokenizer_config_builder.h"
+@@ -24,11 +24,10 @@ namespace text {
+ namespace py = pybind11;
+ 
+ PYBIND11_MODULE(pywrap_whitespace_tokenizer_config_builder, m) {
+-  m.def("build_whitespace_tokenizer_config",
+-        []() {
+-          const auto result = BuildWhitespaceTokenizerConfig();
+-          return py::bytes(result);
+-        });
++  m.def("build_whitespace_tokenizer_config", []() {
++    const auto result = BuildWhitespaceTokenizerConfig();
++    return py::bytes(result);
++  });
+ }
+ 
+ }  // namespace text
+diff --git a/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/tflite_registrar.cc b/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/tflite_registrar.cc
+index 4b7792058367d..138ef9c3c542b 100644
+--- a/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/tflite_registrar.cc
++++ b/third_party/tensorflow-text/src/tensorflow_text/core/pybinds/tflite_registrar.cc
+@@ -12,7 +12,6 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
+-
+ #include "include/pybind11/pybind11.h"
+ #include "include/pybind11/pytypes.h"
+ #include "tensorflow_text/core/kernels/fast_wordpiece_tokenizer_tflite.h"
+@@ -26,11 +25,8 @@ PYBIND11_MODULE(tflite_registrar, m) {
+     A module with a Python wrapper for TFLite TFText ops.
+   )pbdoc";
+   m.attr("_allowed_symbols") = pybind11::make_tuple(
+-      "AddFastWordpieceTokenize",
+-      "AddFastWordpieceDetokenize",
+-      "AddNgramsStringJoin",
+-      "AddRaggedTensorToTensor",
+-      "AddWhitespaceTokenize",
++      "AddFastWordpieceTokenize", "AddFastWordpieceDetokenize",
++      "AddNgramsStringJoin", "AddRaggedTensorToTensor", "AddWhitespaceTokenize",
+       "SELECT_TFTEXT_OPS");
+   m.def(
+       "AddFastWordpieceTokenize",
+-- 
+2.34.1.400.ga245620fadb-goog
+

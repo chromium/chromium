@@ -8,6 +8,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 
 namespace login_detection {
 
@@ -15,10 +16,9 @@ PasswordStoreSites::PasswordStoreSites(
     password_manager::PasswordStoreInterface* password_store)
     : password_store_(password_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (password_store_) {
-    password_store_->AddObserver(this);
-    password_store_->GetAllLogins(this);
-  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreSites::DoDeferredInitialization,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordStoreSites::~PasswordStoreSites() {
@@ -27,20 +27,33 @@ PasswordStoreSites::~PasswordStoreSites() {
     password_store_->RemoveObserver(this);
 }
 
+void PasswordStoreSites::DoDeferredInitialization() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (password_store_) {
+    password_store_->AddObserver(this);
+    password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  }
+}
+
 void PasswordStoreSites::OnLoginsChanged(
     password_manager::PasswordStoreInterface* /*store*/,
     const password_manager::PasswordStoreChangeList& /*changes*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Fetch the login list again.
-  password_store_->GetAllLogins(this);
+  password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PasswordStoreSites::OnLoginsRetained(
     password_manager::PasswordStoreInterface* /*store*/,
-    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
+    const std::vector<password_manager::PasswordForm>& retained_passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Fetch the login list again.
-  password_store_->GetAllLogins(this);
+  password_sites_ = std::set<std::string>();
+  for (const auto& entry : retained_passwords) {
+    if (!entry.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    password_sites_->insert(GetSiteNameForURL(entry.url));
+  }
 }
 
 void PasswordStoreSites::OnGetPasswordStoreResults(

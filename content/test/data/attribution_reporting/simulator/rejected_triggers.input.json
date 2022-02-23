@@ -1,0 +1,68 @@
+{
+  "sources": [
+    {
+      "source_time": 1643235573,
+      "source_origin": "https://s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "registration_config": {
+        "destination": "https://d.test",
+        "source_event_id": "123"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "trigger_time": 1643235572,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "1"
+      }
+    },
+    {
+      "trigger_time": 1643235574,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "2",
+	"dedup_key": "22"
+      }
+    },
+    {
+      "trigger_time": 1643235575,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "3",
+	"dedup_key": "22"
+      }
+    },
+    {
+      "trigger_time": 1643235576,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "4",
+	"priority": "100"
+      }
+    },
+    {
+      "trigger_time": 1643235577,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "5",
+	"priority": "100"
+      }
+    },
+    {
+      "trigger_time": 1643235578,
+      "reporting_origin": "https://r.test",
+      "destination": "https://d.test",
+      "registration_config": {
+        "trigger_data": "6"
+      }
+    }
+  ]
+}

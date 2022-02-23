@@ -1,0 +1,107 @@
+<template>
+  <style include="cr-shared-style settings-shared">
+    :host {
+      display: block;
+      flex: 1;
+      padding: 0 24px;
+    }
+
+    .headline-container {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .headline {
+      color: var(--google-grey-800);
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    .description-column {
+      width: 50%;
+    }
+
+    .description-column-first {
+      padding-inline-end: 12px;
+    }
+
+    .description-header {
+      color: var(--google-blue-600);
+      font-weight: 400;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .description-header {
+        color: var(--google-blue-300);
+      }
+    }
+
+    .description-wrapper {
+      padding: 16px;
+    }
+
+    .description-wrapper-radio {
+      padding: 4px 0 16px 0;
+    }
+
+    settings-collapse-radio-button:not(:first-of-type) {
+      --settings-collapse-separator-line: var(--cr-separator-line);
+    }
+
+    .header {
+      align-items: center;
+      column-gap: 16px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      outline: none;
+      padding: 24px 0 16px 0;
+    }
+
+    .header-label {
+      align-self: normal;
+      color: var(--cr-primary-text-color);
+      flex: 1;
+      font-size: 123%;  /* Should be 16px when 100% is 13px. */
+      font-weight: 400;
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .headline {
+        color: var(--google-grey-200);
+      }
+    }
+
+    .embedded-setting-wrapper {
+      border: 1px solid var(--google-grey-300);
+      border-radius: 4px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .embedded-setting-wrapper {
+        border-color: var(--google-grey-700);
+      }
+    }
+
+    .two-column {
+      display: flex;
+    }
+
+    settings-toggle-button {
+      padding-bottom: 8px;
+      padding-top: 8px;
+    }
+
+    picture {
+      align-items: center;
+      display: flex;
+    }
+  </style>
+</template>

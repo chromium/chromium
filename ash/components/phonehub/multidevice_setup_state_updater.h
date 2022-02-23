@@ -6,12 +6,12 @@
 #define ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_
 
 #include "ash/components/phonehub/notification_access_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // This class waits until a multi-device host phone is verified before enabling
@@ -53,6 +53,6 @@ class MultideviceSetupStateUpdater
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_

@@ -15,8 +15,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
-#include "net/cert/x509_cert_types.h"
 
 namespace net {
 

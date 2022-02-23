@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, ContentScripts) {
 }
 
 // crbug.com/897059 tracks test flakiness.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ContentScriptsInLocales DISABLED_ContentScriptsInLocales
 #else
 #define MAYBE_ContentScriptsInLocales ContentScriptsInLocales
@@ -465,10 +465,8 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
         test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx));
   }
 
-  PendingExtensionManager* pending_extension_manager() {
-    return ExtensionSystem::Get(profile())
-        ->extension_service()
-        ->pending_extension_manager();
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() {
+    return extension_service()->corrupted_extension_reinstaller();
   }
 };
 
@@ -515,8 +513,9 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
 
   // The extension should be disabled and not be in expected to be repaired yet.
-  EXPECT_FALSE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-      kStoragePermissionExtensionId));
+  EXPECT_FALSE(
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
   EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
             ExtensionPrefs::Get(profile())->GetDisableReasons(
                 kStoragePermissionExtensionId));
@@ -536,15 +535,17 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   // such as the build waterfall / trybots). If the reinstall didn't already
   // happen, wait for it.
   if (disable_reasons & disable_reason::DISABLE_CORRUPTED) {
-    EXPECT_TRUE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-        kStoragePermissionExtensionId));
+    EXPECT_TRUE(
+        corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+            kStoragePermissionExtensionId));
     TestExtensionRegistryObserver registry_observer(
         registry, kStoragePermissionExtensionId);
     ASSERT_TRUE(registry_observer.WaitForExtensionInstalled());
     disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
   }
-  EXPECT_FALSE(pending_extension_manager()->IsReinstallForCorruptionExpected(
-      kStoragePermissionExtensionId));
+  EXPECT_FALSE(
+      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+          kStoragePermissionExtensionId));
   EXPECT_EQ(disable_reason::DISABLE_NONE, disable_reasons);
   const Extension* extension =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
@@ -879,7 +880,14 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, PolicyCorruptedOnStartup) {
+// TODO(crbug.com/1271946): Flaky on mac arm64.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
+#else
+#define MAYBE_PolicyCorruptedOnStartup PolicyCorruptedOnStartup
+#endif
+IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
+                       MAYBE_PolicyCorruptedOnStartup) {
   // Depdending on timing, the extension may have already been reinstalled
   // between SetUpInProcessBrowserTestFixture and now (usually not during local
   // testing on a developer machine, but sometimes on a heavily loaded system

@@ -37,8 +37,7 @@ class MockComponentUpdateService : public ComponentUpdateService {
       void(Observer* observer));
   MOCK_METHOD1(RemoveObserver,
       void(Observer* observer));
-  MOCK_METHOD1(RegisterComponent,
-      bool(const CrxComponent& component));
+  MOCK_METHOD1(RegisterComponent, bool(const ComponentRegistration& component));
   MOCK_METHOD1(UnregisterComponent,
       bool(const std::string& id));
   MOCK_CONST_METHOD0(GetComponentIDs,

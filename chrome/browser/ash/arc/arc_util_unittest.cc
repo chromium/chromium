@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
@@ -33,8 +35,6 @@
 #include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -288,9 +288,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryEnabled) {
       GetFakeUserManager(),
       AccountId::AdFromObjGuid("f04557de-5da2-40ce-ae9d-b8874d8da96e"),
       user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -300,9 +299,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryDisabled) {
       GetFakeUserManager(),
       AccountId::AdFromObjGuid("f04557de-5da2-40ce-ae9d-b8874d8da96e"),
       user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -311,9 +309,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcNotAvailable) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -323,9 +320,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcInstalled) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -335,9 +331,8 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcSupported) {
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail(profile()->GetProfileUserName()),
                     user_manager::USER_TYPE_ARC_KIOSK_APP);
-  EXPECT_FALSE(chromeos::ProfileHelper::Get()
-                   ->GetUserByProfile(profile())
-                   ->HasGaiaAccount());
+  EXPECT_FALSE(
+      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
@@ -398,25 +393,25 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
       profile()->GetProfileUserName(), kTestGaiaId));
   ScopedLogIn login(GetFakeUserManager(), id);
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile());
+      ash::ProfileHelper::Get()->GetUserByProfile(profile());
 
   // Unconfirmed
   EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // Old FS
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen, kFileSystemIncompatible);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemIncompatible);
   EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));
 
   // New FS
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen, kFileSystemCompatible);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemCompatible);
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
 
   // New FS (User notified)
-  user_manager::known_user::SetIntegerPref(
-      id, prefs::kArcCompatibleFilesystemChosen,
-      kFileSystemCompatibleAndNotifiedDeprecated);
+  known_user.SetIntegerPref(id, prefs::kArcCompatibleFilesystemChosen,
+                            kFileSystemCompatibleAndNotifiedDeprecated);
   EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
 }
 

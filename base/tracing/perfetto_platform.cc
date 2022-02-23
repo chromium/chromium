@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 #endif
 
@@ -59,7 +59,7 @@ std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
     const CreateTaskRunnerArgs&) {
   switch (task_runner_type_) {
     case TaskRunnerType::kBuiltin:
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       return std::make_unique<perfetto::base::ThreadTaskRunner>(
           perfetto::base::ThreadTaskRunner::CreateAndStart());
 #else

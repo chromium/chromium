@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Manual;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * These tests only work on R+.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class InputEventValidatorManualTest extends DummyUiActivityTestCase {
+public class InputEventValidatorManualTest extends BlankUiTestActivityTestCase {
     private String mPackageName = "com.android.packageName";
     private byte mPackageMac[];
 

@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
         MobileFreProgress.STARTED,
         MobileFreProgress.WELCOME_SHOWN,
-        MobileFreProgress.DATA_SAVER_SHOWN,
+        MobileFreProgress.DEPRECATED_DATA_SAVER_SHOWN,
         MobileFreProgress.SYNC_CONSENT_SHOWN,
         MobileFreProgress.SYNC_CONSENT_ACCEPTED,
         MobileFreProgress.SYNC_CONSENT_DISMISSED,
@@ -33,7 +33,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MobileFreProgress {
     int STARTED = 0;
     int WELCOME_SHOWN = 1;
-    int DATA_SAVER_SHOWN = 2;
+    int DEPRECATED_DATA_SAVER_SHOWN = 2;
     int SYNC_CONSENT_SHOWN = 3;
     /** The user clicked on the continue button to continue with sync consent. */
     int SYNC_CONSENT_ACCEPTED = 4;

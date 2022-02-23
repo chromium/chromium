@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/digital-goods/blob/master/explainer.md
+// https://github.com/WICG/digital-goods/blob/main/explainer.md
 dictionary ItemDetails {
   required DOMString itemId;
   required DOMString title;

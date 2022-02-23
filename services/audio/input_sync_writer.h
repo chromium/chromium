@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
@@ -21,10 +20,6 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
-
-#if defined(OS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
 
 namespace audio {
 

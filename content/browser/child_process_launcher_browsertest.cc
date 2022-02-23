@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -36,11 +37,11 @@ class MockChildProcessLauncherClient
     client_->OnProcessLaunchFailed(error_code);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool CanUseWarmUpConnection() override { return true; }
 #endif
 
-  content::ChildProcessLauncher::Client* client_;
+  raw_ptr<content::ChildProcessLauncher::Client> client_;
   bool simulate_failure_;
 };
 
@@ -70,8 +71,8 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   delete client;
   NavigationEntry* last_entry =
       shell()->web_contents()->GetController().GetLastCommittedEntry();
-  // Make sure we didn't navigate.
-  EXPECT_FALSE(last_entry);
+  // Make sure we didn't commit any navigation.
+  EXPECT_TRUE(!last_entry || last_entry->IsInitialEntry());
 
   // Navigate again and let the process spawn correctly.
   TestNavigationObserver nav_observer2(window->web_contents(), 1);
@@ -79,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   nav_observer2.Wait();
   last_entry = shell()->web_contents()->GetController().GetLastCommittedEntry();
   // Make sure that we navigated to the proper URL.
-  ASSERT_TRUE(last_entry);
+  ASSERT_FALSE(last_entry->IsInitialEntry());
   EXPECT_EQ(last_entry->GetPageType(), PAGE_TYPE_NORMAL);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url);
 
@@ -90,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
   nav_observer3.Wait();
   last_entry = shell()->web_contents()->GetController().GetLastCommittedEntry();
   // Make sure that we navigated to the proper URL.
-  ASSERT_TRUE(last_entry);
+  ASSERT_FALSE(last_entry->IsInitialEntry());
   EXPECT_EQ(last_entry->GetPageType(), PAGE_TYPE_NORMAL);
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url);
 }

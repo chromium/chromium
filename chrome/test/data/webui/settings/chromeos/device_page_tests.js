@@ -58,6 +58,7 @@ cr.define('device_page_tests', function() {
       cr.webUIListenerCallback('has-mouse-changed', true);
       cr.webUIListenerCallback('has-pointing-stick-changed', true);
       cr.webUIListenerCallback('has-touchpad-changed', true);
+      cr.webUIListenerCallback('has-haptic-touchpad-changed', true);
     },
 
     /** override */
@@ -336,6 +337,16 @@ cr.define('device_page_tests', function() {
           },
           scroll_sensitivity: {
             key: 'settings.touchpad.scroll_sensitivity',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: 3,
+          },
+          haptic_feedback: {
+            key: 'settings.touchpad.haptic_feedback',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: true,
+          },
+          haptic_click_sensitivity: {
+            key: 'settings.touchpad.haptic_click_sensitivity',
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: 3,
           },
@@ -771,6 +782,24 @@ cr.define('device_page_tests', function() {
 
         pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
         expectEquals(2, slider.pref.value);
+      });
+
+      test('haptic touchpad', function() {
+        expectTrue(pointersPage.$$('#touchpadHapticFeedbackToggle').checked);
+
+        const slider =
+            assert(pointersPage.$$('#touchpadHapticClickSensitivity'));
+        expectEquals(3, slider.pref.value);
+        MockInteractions.pressAndReleaseKeyOn(
+            slider.shadowRoot.querySelector('cr-slider'), 39 /* right */, [],
+            'ArrowRight');
+        expectEquals(
+            5,
+            devicePage.prefs.settings.touchpad.haptic_click_sensitivity.value);
+
+        pointersPage.set(
+            'prefs.settings.touchpad.haptic_click_sensitivity.value', 1);
+        expectEquals(1, slider.pref.value);
       });
 
       test('link doesn\'t activate control', function() {

@@ -52,8 +52,9 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
   PCScanInternal::Instance().PerformScanIfNeeded(invocation_mode);
 }
 
-void PCScan::PerformDelayedScan(TimeDelta delay) {
-  PCScanInternal::Instance().PerformDelayedScan(delay);
+void PCScan::PerformDelayedScan(int64_t delay_in_microseconds) {
+  PCScanInternal::Instance().PerformDelayedScan(
+      Microseconds(delay_in_microseconds));
 }
 
 void PCScan::JoinScan() {

@@ -1,0 +1,30 @@
+<style>
+  :host {
+    height: var(--v2-emoji-size);
+    width: var(--v2-emoji-size);
+  }
+
+  #category-button {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    border-radius: 50%;
+    display: block;
+    height: 100%;
+    /* cancel internal margin-inline-start of cr-icon-button */
+    margin: 0;
+    width: 100%;
+  }
+
+  #category-button.category-button-active {
+    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+    background-color: var(--cros-highlight-color);
+  }
+</style>
+
+
+<cr-icon-button
+  id="category-button"
+  class$="[[_className(active)]]"
+  iron-icon="[[icon]]"
+  on-click="handleClick"
+>
+</cr-icon-button>

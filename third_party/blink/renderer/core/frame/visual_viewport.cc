@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -63,8 +65,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -73,6 +73,9 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -221,8 +224,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 
   {
     ScrollPaintPropertyNode::State state;
-    state.container_rect = gfx::Rect(ToGfxSize(size_));
-    state.contents_size = ToGfxSize(ContentsSize());
+    state.container_rect = gfx::Rect(size_);
+    state.contents_size = ContentsSize();
 
     state.user_scrollable_horizontal =
         UserInputScrollable(kHorizontalScrollbar);
@@ -266,9 +269,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   }
 
   {
-    ScrollOffset scroll_position = GetScrollOffset();
-    TransformPaintPropertyNode::State state{
-        gfx::Vector2dF(-scroll_position.width(), -scroll_position.height())};
+    TransformPaintPropertyNode::State state{-GetScrollOffset()};
     state.scroll = scroll_node_;
     state.direct_compositing_reasons = CompositingReason::kViewport;
     if (!scroll_translation_node_) {
@@ -297,7 +298,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (Platform::Current()->IsElasticOverscrollEnabled() &&
       base::GetFieldTrialParamValueByFeature(
           ::features::kElasticOverscroll, ::features::kElasticOverscrollType) ==
@@ -397,7 +398,7 @@ void VisualViewport::EnqueueResizeEvent() {
     document->EnqueueVisualViewportResizeEvent();
 }
 
-void VisualViewport::SetSize(const IntSize& size) {
+void VisualViewport::SetSize(const gfx::Size& size) {
   if (size_ == size)
     return;
 
@@ -424,7 +425,7 @@ void VisualViewport::SetSize(const IntSize& size) {
 }
 
 void VisualViewport::Reset() {
-  SetScaleAndLocation(1, is_pinch_gesture_active_, FloatPoint());
+  SetScaleAndLocation(1, is_pinch_gesture_active_, gfx::PointF());
 }
 
 void VisualViewport::MainFrameDidChangeSize() {
@@ -432,43 +433,44 @@ void VisualViewport::MainFrameDidChangeSize() {
 
   // In unit tests we may not have initialized the layer tree.
   if (scroll_layer_)
-    scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
+    scroll_layer_->SetBounds(ContentsSize());
 
   needs_paint_property_update_ = true;
   ClampToBoundaries();
 }
 
-FloatRect VisualViewport::VisibleRect(
+gfx::RectF VisualViewport::VisibleRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  FloatSize visible_size(size_);
+  gfx::SizeF visible_size(size_);
 
   if (scrollbar_inclusion == kExcludeScrollbars)
-    visible_size = FloatSize(ExcludeScrollbars(size_));
+    visible_size = gfx::SizeF(ExcludeScrollbars(size_));
 
   visible_size.Enlarge(0, browser_controls_adjustment_);
   visible_size.Scale(1 / scale_);
 
-  return FloatRect(FloatPoint(GetScrollOffset()), visible_size);
+  return gfx::RectF(ScrollPosition(), visible_size);
 }
 
-FloatPoint VisualViewport::ViewportCSSPixelsToRootFrame(
-    const FloatPoint& point) const {
+gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
+    const gfx::PointF& point) const {
   // Note, this is in CSS Pixels so we don't apply scale.
-  FloatPoint point_in_root_frame = point;
-  point_in_root_frame.Offset(GetScrollOffset());
+  gfx::PointF point_in_root_frame = point;
+  point_in_root_frame += GetScrollOffset();
   return point_in_root_frame;
 }
 
-void VisualViewport::SetLocation(const FloatPoint& new_location) {
+void VisualViewport::SetLocation(const gfx::PointF& new_location) {
   SetScaleAndLocation(scale_, is_pinch_gesture_active_, new_location);
 }
 
 void VisualViewport::Move(const ScrollOffset& delta) {
-  SetLocation(FloatPoint(offset_ + delta));
+  SetLocation(gfx::PointAtOffsetFromOrigin(offset_ + delta));
 }
 
 void VisualViewport::SetScale(float scale) {
-  SetScaleAndLocation(scale, is_pinch_gesture_active_, FloatPoint(offset_));
+  SetScaleAndLocation(scale, is_pinch_gesture_active_,
+                      gfx::PointAtOffsetFromOrigin(offset_));
 }
 
 double VisualViewport::OffsetLeft() const {
@@ -505,7 +507,7 @@ double VisualViewport::ScaleForVisualViewport() const {
 
 void VisualViewport::SetScaleAndLocation(float scale,
                                          bool is_pinch_gesture_active,
-                                         const FloatPoint& location) {
+                                         const gfx::PointF& location) {
   if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location)) {
     NotifyRootFrameViewport();
     Document* document = LocalMainFrame()->GetDocument();
@@ -535,7 +537,7 @@ double VisualViewport::VisibleHeightCSSPx() const {
 
 bool VisualViewport::DidSetScaleOrLocation(float scale,
                                            bool is_pinch_gesture_active,
-                                           const FloatPoint& location) {
+                                           const gfx::PointF& location) {
   if (!LocalMainFrame()) {
     is_pinch_gesture_active_ = is_pinch_gesture_active;
     // The VisualViewport for a remote mainframe must always be 1.0 or else
@@ -566,15 +568,14 @@ bool VisualViewport::DidSetScaleOrLocation(float scale,
   if (notify_page_scale_factor_changed)
     GetPage().GetChromeClient().PageScaleFactorChanged();
 
-  ScrollOffset clamped_offset = ClampScrollOffset(ToScrollOffset(location));
+  ScrollOffset clamped_offset = ClampScrollOffset(location.OffsetFromOrigin());
 
   // TODO(bokan): If the offset is invalid, we might end up in an infinite
   // recursion as we reenter this function on clamping. It would be cleaner to
   // avoid reentrancy but for now just prevent the stack overflow.
   // crbug.com/702771.
-  if (std::isnan(clamped_offset.width()) ||
-      std::isnan(clamped_offset.height()) ||
-      std::isinf(clamped_offset.width()) || std::isinf(clamped_offset.height()))
+  if (std::isnan(clamped_offset.x()) || std::isnan(clamped_offset.y()) ||
+      std::isinf(clamped_offset.x()) || std::isinf(clamped_offset.y()))
     return false;
 
   if (clamped_offset != offset_) {
@@ -624,8 +625,8 @@ void VisualViewport::CreateLayers() {
 
   // TODO(crbug.com/1015625): Avoid scroll_layer_.
   scroll_layer_ = cc::Layer::Create();
-  scroll_layer_->SetScrollable(ToGfxSize(size_));
-  scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
+  scroll_layer_->SetScrollable(size_);
+  scroll_layer_->SetBounds(ContentsSize());
   scroll_layer_->SetElementId(GetScrollElementId());
 
   InitializeScrollbars();
@@ -781,18 +782,18 @@ PhysicalRect VisualViewport::ScrollIntoView(
 }
 
 int VisualViewport::ScrollSize(ScrollbarOrientation orientation) const {
-  IntSize scroll_dimensions =
+  gfx::Vector2d scroll_dimensions =
       MaximumScrollOffsetInt() - MinimumScrollOffsetInt();
-  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.width()
-                                               : scroll_dimensions.height();
+  return (orientation == kHorizontalScrollbar) ? scroll_dimensions.x()
+                                               : scroll_dimensions.y();
 }
 
-IntSize VisualViewport::MinimumScrollOffsetInt() const {
-  return IntSize();
+gfx::Vector2d VisualViewport::MinimumScrollOffsetInt() const {
+  return gfx::Vector2d();
 }
 
-IntSize VisualViewport::MaximumScrollOffsetInt() const {
-  return FlooredIntSize(MaximumScrollOffset());
+gfx::Vector2d VisualViewport::MaximumScrollOffsetInt() const {
+  return gfx::ToFlooredVector2d(MaximumScrollOffset());
 }
 
 ScrollOffset VisualViewport::MaximumScrollOffset() const {
@@ -801,7 +802,7 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
 
   // TODO(bokan): We probably shouldn't be storing the bounds in a float.
   // crbug.com/470718.
-  FloatSize frame_view_size(ContentsSize());
+  gfx::SizeF frame_view_size(ContentsSize());
 
   if (browser_controls_adjustment_) {
     float min_scale =
@@ -810,14 +811,14 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
   }
 
   frame_view_size.Scale(scale_);
-  frame_view_size = FloatSize(FlooredIntSize(frame_view_size));
+  frame_view_size = gfx::SizeF(ToFlooredSize(frame_view_size));
 
-  FloatSize viewport_size(size_);
+  gfx::SizeF viewport_size(size_);
   viewport_size.Enlarge(0, ceilf(browser_controls_adjustment_));
 
-  FloatSize max_position = frame_view_size - viewport_size;
+  gfx::SizeF max_position = frame_view_size - viewport_size;
   max_position.Scale(1 / scale_);
-  return ScrollOffset(max_position);
+  return ScrollOffset(max_position.width(), max_position.height());
 }
 
 gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
@@ -827,20 +828,21 @@ gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
 
   LocalFrameView* view = LocalMainFrame()->View();
 
-  FloatSize scaled_size(ExcludeScrollbars(size_));
+  gfx::SizeF scaled_size(ExcludeScrollbars(size_));
   scaled_size.Scale(1 / scale);
 
-  IntSize visual_viewport_max =
-      FlooredIntSize(FloatSize(ContentsSize()) - scaled_size);
-  IntSize max =
-      view->LayoutViewport()->MaximumScrollOffsetInt() + visual_viewport_max;
-  IntSize min =
+  gfx::Size visual_viewport_max =
+      gfx::ToFlooredSize(gfx::SizeF(ContentsSize()) - scaled_size);
+  gfx::Vector2d max =
+      view->LayoutViewport()->MaximumScrollOffsetInt() +
+      gfx::Vector2d(visual_viewport_max.width(), visual_viewport_max.height());
+  gfx::Vector2d min =
       view->LayoutViewport()
           ->MinimumScrollOffsetInt();  // VisualViewportMin should be (0, 0)
 
   gfx::Point clamped = offset;
-  clamped.SetToMin(ToGfxPoint(max));
-  clamped.SetToMax(ToGfxPoint(min));
+  clamped.SetToMin(gfx::PointAtOffsetFromOrigin(max));
+  clamped.SetToMax(gfx::PointAtOffsetFromOrigin(min));
   return clamped;
 }
 
@@ -870,17 +872,17 @@ bool VisualViewport::UserInputScrollable(ScrollbarOrientation) const {
   return true;
 }
 
-IntSize VisualViewport::ContentsSize() const {
+gfx::Size VisualViewport::ContentsSize() const {
   LocalFrame* frame = LocalMainFrame();
   if (!frame || !frame->View())
-    return IntSize();
+    return gfx::Size();
 
   return frame->View()->Size();
 }
 
-IntRect VisualViewport::VisibleContentRect(
+gfx::Rect VisualViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  return EnclosingIntRect(VisibleRect(scrollbar_inclusion));
+  return ToEnclosingRect(VisibleRect(scrollbar_inclusion));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
@@ -899,7 +901,7 @@ mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         mojom::blink::ScrollType scroll_type) {
   if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
-                             FloatPoint(position))) {
+                             gfx::PointAtOffsetFromOrigin(position))) {
     return;
   }
   if (IsExplicitScrollType(scroll_type))
@@ -931,8 +933,8 @@ LocalFrame* VisualViewport::LocalMainFrame() const {
              : nullptr;
 }
 
-IntSize VisualViewport::ExcludeScrollbars(const IntSize& size) const {
-  IntSize excluded_size = size;
+gfx::Size VisualViewport::ExcludeScrollbars(const gfx::Size& size) const {
+  gfx::Size excluded_size = size;
   if (RootFrameViewport* root_frame_viewport = GetRootFrameViewport()) {
     excluded_size.Enlarge(-root_frame_viewport->VerticalScrollbarWidth(),
                           -root_frame_viewport->HorizontalScrollbarHeight());
@@ -946,65 +948,65 @@ bool VisualViewport::ScheduleAnimation() {
 }
 
 void VisualViewport::ClampToBoundaries() {
-  SetLocation(FloatPoint(offset_));
+  SetLocation(gfx::PointAtOffsetFromOrigin(offset_));
 }
 
-FloatRect VisualViewport::ViewportToRootFrame(
-    const FloatRect& rect_in_viewport) const {
-  FloatRect rect_in_root_frame = rect_in_viewport;
+gfx::RectF VisualViewport::ViewportToRootFrame(
+    const gfx::RectF& rect_in_viewport) const {
+  gfx::RectF rect_in_root_frame = rect_in_viewport;
   rect_in_root_frame.Scale(1 / Scale());
   rect_in_root_frame.Offset(GetScrollOffset());
   return rect_in_root_frame;
 }
 
-IntRect VisualViewport::ViewportToRootFrame(
-    const IntRect& rect_in_viewport) const {
+gfx::Rect VisualViewport::ViewportToRootFrame(
+    const gfx::Rect& rect_in_viewport) const {
   // FIXME: How to snap to pixels?
-  return EnclosingIntRect(ViewportToRootFrame(FloatRect(rect_in_viewport)));
+  return ToEnclosingRect(ViewportToRootFrame(gfx::RectF(rect_in_viewport)));
 }
 
-FloatRect VisualViewport::RootFrameToViewport(
-    const FloatRect& rect_in_root_frame) const {
-  FloatRect rect_in_viewport = rect_in_root_frame;
+gfx::RectF VisualViewport::RootFrameToViewport(
+    const gfx::RectF& rect_in_root_frame) const {
+  gfx::RectF rect_in_viewport = rect_in_root_frame;
   rect_in_viewport.Offset(-GetScrollOffset());
   rect_in_viewport.Scale(Scale());
   return rect_in_viewport;
 }
 
-IntRect VisualViewport::RootFrameToViewport(
-    const IntRect& rect_in_root_frame) const {
+gfx::Rect VisualViewport::RootFrameToViewport(
+    const gfx::Rect& rect_in_root_frame) const {
   // FIXME: How to snap to pixels?
-  return EnclosingIntRect(RootFrameToViewport(FloatRect(rect_in_root_frame)));
+  return ToEnclosingRect(RootFrameToViewport(gfx::RectF(rect_in_root_frame)));
 }
 
-FloatPoint VisualViewport::ViewportToRootFrame(
-    const FloatPoint& point_in_viewport) const {
-  FloatPoint point_in_root_frame = point_in_viewport;
-  point_in_root_frame.Scale(1 / Scale(), 1 / Scale());
-  point_in_root_frame.Offset(GetScrollOffset());
+gfx::PointF VisualViewport::ViewportToRootFrame(
+    const gfx::PointF& point_in_viewport) const {
+  gfx::PointF point_in_root_frame = point_in_viewport;
+  point_in_root_frame.Scale(1 / Scale());
+  point_in_root_frame += GetScrollOffset();
   return point_in_root_frame;
 }
 
-FloatPoint VisualViewport::RootFrameToViewport(
-    const FloatPoint& point_in_root_frame) const {
-  FloatPoint point_in_viewport = point_in_root_frame;
-  point_in_viewport.Offset(-GetScrollOffset());
-  point_in_viewport.Scale(Scale(), Scale());
+gfx::PointF VisualViewport::RootFrameToViewport(
+    const gfx::PointF& point_in_root_frame) const {
+  gfx::PointF point_in_viewport = point_in_root_frame;
+  point_in_viewport -= GetScrollOffset();
+  point_in_viewport.Scale(Scale());
   return point_in_viewport;
 }
 
 gfx::Point VisualViewport::ViewportToRootFrame(
     const gfx::Point& point_in_viewport) const {
   // FIXME: How to snap to pixels?
-  return FlooredIntPoint(
-      FloatPoint(ViewportToRootFrame(FloatPoint(point_in_viewport))));
+  return gfx::ToFlooredPoint(
+      ViewportToRootFrame(gfx::PointF(point_in_viewport)));
 }
 
 gfx::Point VisualViewport::RootFrameToViewport(
     const gfx::Point& point_in_root_frame) const {
   // FIXME: How to snap to pixels?
-  return FlooredIntPoint(
-      FloatPoint(RootFrameToViewport(FloatPoint(point_in_root_frame))));
+  return gfx::ToFlooredPoint(
+      RootFrameToViewport(gfx::PointF(point_in_root_frame)));
 }
 
 void VisualViewport::StartTrackingPinchStats() {
@@ -1100,7 +1102,7 @@ PaintArtifactCompositor* VisualViewport::GetPaintArtifactCompositor() const {
 
 std::unique_ptr<TracedValue> VisualViewport::ViewportToTracedValue() const {
   auto value = std::make_unique<TracedValue>();
-  IntRect viewport = VisibleContentRect();
+  gfx::Rect viewport = VisibleContentRect();
   value->SetInteger("x", ClampTo<int>(roundf(viewport.x())));
   value->SetInteger("y", ClampTo<int>(roundf(viewport.y())));
   value->SetInteger("width", ClampTo<int>(roundf(viewport.width())));
@@ -1160,6 +1162,11 @@ void VisualViewport::Paint(GraphicsContext& context) const {
         DisplayItem::kForeignLayerViewportScrollbar, scrollbar_layer_vertical_,
         gfx::Point(size_.width() - ScrollbarThickness(), 0), &state);
   }
+}
+
+void VisualViewport::UsedColorSchemeChanged() {
+  // The scrollbar overlay color theme depends on the used color scheme.
+  RecalculateScrollbarOverlayColorTheme();
 }
 
 }  // namespace blink

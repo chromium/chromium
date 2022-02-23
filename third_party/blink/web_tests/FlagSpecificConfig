@@ -4,12 +4,8 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
-    "name": "composite-after-paint",
-    "args": ["--enable-blink-features=CompositeAfterPaint"]
-  },
-  {
     "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG"]
+    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
   },
   {
     "name": "disable-site-isolation-trials",
@@ -57,7 +53,6 @@
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer",
           "--use-gl=any",
-          "--enable-oop-rasterization",
           "--disable-software-compositing-fallback",
           "--disable-headless-mode"
     ]
@@ -68,7 +63,6 @@
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer,Vulkan",
           "--use-gl=any",
-          "--enable-oop-rasterization",
           "--disable-software-compositing-fallback",
           "--use-vulkan=native",
           "--disable-vulkan-fallback-to-gl-for-testing",
@@ -80,7 +74,6 @@
     "args": [
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer,Vulkan",
-          "--enable-oop-rasterization",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ]
@@ -133,4 +126,3 @@
     ]
   }
 ]
-

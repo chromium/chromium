@@ -19,7 +19,7 @@ namespace filename_generation {
 
 #define FPL FILE_PATH_LITERAL
 #define HTML_EXTENSION ".html"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define FPL_HTML_EXTENSION L".html"
 #else
 #define FPL_HTML_EXTENSION ".html"
@@ -58,7 +58,7 @@ static const struct {
 };
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestEnsureHtmlExtension DISABLED_TestEnsureHtmlExtension
 #else
 #define MAYBE_TestEnsureHtmlExtension TestEnsureHtmlExtension
@@ -75,7 +75,7 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureHtmlExtension) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestEnsureMimeExtension DISABLED_TestEnsureMimeExtension
 #else
 #define MAYBE_TestEnsureMimeExtension TestEnsureMimeExtension
@@ -89,11 +89,11 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
     {FPL("filename.html"), FPL("filename.html"), "text/html"},
     {FPL("filename.htm"), FPL("filename.htm"), "text/html"},
     {FPL("filename.xhtml"), FPL("filename.xhtml"), "text/html"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {FPL("filename"), FPL("filename.htm"), "text/html"},
-#else  // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
     {FPL("filename"), FPL("filename.html"), "text/html"},
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     {FPL("filename.html"), FPL("filename.html"), "text/xml"},
     {FPL("filename.xml"), FPL("filename.xml"), "text/xml"},
     {FPL("filename"), FPL("filename.xml"), "text/xml"},
@@ -160,7 +160,7 @@ static const struct GenerateFilenameTestCase {
 };
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestGenerateFilename DISABLED_TestGenerateFilename
 #else
 #define MAYBE_TestGenerateFilename TestGenerateFilename
@@ -190,7 +190,7 @@ TEST(FilenameGenerationTest, TestBasicTruncation) {
 
 // The file path will only be truncated o the platforms that have known
 // encoding. Otherwise no truncation will be performed.
-#if defined(OS_WIN) || defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
   // The file name length is truncated to max_length.
   EXPECT_TRUE(TruncateFilename(&truncated_path, max_length));
   EXPECT_EQ(size_t(max_length), truncated_path.BaseName().value().size());

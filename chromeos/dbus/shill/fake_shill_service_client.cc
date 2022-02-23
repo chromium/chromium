@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
@@ -140,7 +141,9 @@ constexpr const char* kIntrinsicServiceProperties[] = {
 
 }  // namespace
 
-FakeShillServiceClient::FakeShillServiceClient() {}
+FakeShillServiceClient::FakeShillServiceClient() {
+  SetDefaultFakeTrafficCounters();
+}
 
 FakeShillServiceClient::~FakeShillServiceClient() = default;
 
@@ -389,6 +392,11 @@ void FakeShillServiceClient::ResetTrafficCounters(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   fake_traffic_counters_.ClearList();
+  base::Time reset_time =
+      !time_getter_.is_null() ? time_getter_.Run() : base::Time::Now();
+  SetServiceProperty(
+      service_path.value(), shill::kTrafficCounterResetTimeProperty,
+      base::Value(reset_time.ToDeltaSinceWindowsEpoch().InMillisecondsF()));
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
@@ -814,6 +822,24 @@ void FakeShillServiceClient::ContinueConnect(const std::string& service_path) {
   }
 }
 
+void FakeShillServiceClient::SetDefaultFakeTrafficCounters() {
+  base::Value traffic_counters(base::Value::Type::LIST);
+
+  base::Value chrome_dict(base::Value::Type::DICTIONARY);
+  chrome_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceChrome));
+  chrome_dict.SetKey("rx_bytes", base::Value(1000));
+  chrome_dict.SetKey("tx_bytes", base::Value(2000.5));
+  traffic_counters.Append(std::move(chrome_dict));
+
+  base::Value user_dict(base::Value::Type::DICTIONARY);
+  user_dict.SetKey("source", base::Value(shill::kTrafficCounterSourceUser));
+  user_dict.SetKey("rx_bytes", base::Value(45));
+  user_dict.SetKey("tx_bytes", base::Value(55));
+  traffic_counters.Append(std::move(user_dict));
+
+  SetFakeTrafficCounters(traffic_counters.Clone());
+}
+
 void FakeShillServiceClient::SetFakeTrafficCounters(
     base::Value fake_traffic_counters) {
   if (!fake_traffic_counters.is_list()) {
@@ -821,6 +847,11 @@ void FakeShillServiceClient::SetFakeTrafficCounters(
     return;
   }
   fake_traffic_counters_ = std::move(fake_traffic_counters);
+}
+
+void FakeShillServiceClient::SetTimeGetterForTest(
+    base::RepeatingCallback<base::Time()> time_getter) {
+  time_getter_ = std::move(time_getter);
 }
 
 }  // namespace chromeos

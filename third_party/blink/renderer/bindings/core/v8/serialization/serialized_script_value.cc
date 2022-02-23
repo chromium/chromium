@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -664,10 +664,7 @@ static_assert(kSerializedScriptValueVersion ==
               "Update WebSerializedScriptValueVersion.h.");
 
 bool SerializedScriptValue::IsOriginCheckRequired() const {
-  return file_system_access_tokens_.size() > 0 ||
-         (!RuntimeEnabledFeatures::
-              CrossOriginWebAssemblyModuleSharingAllowedEnabled() &&
-          wasm_modules_.size() > 0);
+  return file_system_access_tokens_.size() > 0 || wasm_modules_.size() > 0;
 }
 
 }  // namespace blink

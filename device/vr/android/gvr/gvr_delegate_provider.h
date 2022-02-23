@@ -5,7 +5,6 @@
 #ifndef DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_H_
 #define DEVICE_VR_ANDROID_GVR_GVR_DELEGATE_PROVIDER_H_
 
-#include "base/macros.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"

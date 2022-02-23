@@ -58,6 +58,34 @@ backwards compatibility, WebView crashes the browser process if the app has not
 overridden this callback. Therefore, unlike in Chrome, renderer crashes are
 often non-recoverable.
 
+### Toggling multiprocess for debugging
+
+On Android Oreo and above, you can toggle WebView multiprocess mode via adb:
+
+```shell
+# To disable:
+$ adb shell cmd webviewupdate disable-multiprocess
+
+# To re-enable:
+$ adb shell cmd webviewupdate enable-multiprocess
+```
+
+Then you can check the multiprocess state by running:
+
+```shell
+$ adb shell dumpsys webviewupdate | grep 'Multiprocess'
+  Multiprocess enabled: false
+```
+
+*** note
+**Warning:** this setting is persistent! Remember to re-enable multiprocess mode
+after you're done testing.
+
+Changing this setting will immediately kill all WebView-based apps running on
+the device (similar to what happens when you install a WebView update or change
+the system's WebView provider).
+***
+
 ## Multiple renderers
 
 WebView does not support multiple renderer processes, but this may be supported

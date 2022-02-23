@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -72,6 +73,16 @@ class PasswordCheckDelegate
   // Attempts to remove |credential| from the password store. Returns whether
   // the remove succeeded.
   bool RemoveInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential);
+
+  // Attempts to mute |credential| from the password store. Returns whether
+  // the mute succeeded.
+  bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential);
+
+  // Attempts to unmute |credential| from the password store. Returns whether
+  // the unmute succeeded.
+  bool UnmuteInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
   // Requests to start a check for insecure passwords. Invokes |callback| once a
@@ -141,12 +152,12 @@ class PasswordCheckDelegate
       const password_manager::CredentialWithPassword& credential);
 
   // Raw pointer to the underlying profile. Needs to outlive this instance.
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Used by |insecure_credentials_manager_| to obtain the list of saved
   // passwords.
-  password_manager::SavedPasswordsPresenter* saved_passwords_presenter_ =
-      nullptr;
+  raw_ptr<password_manager::SavedPasswordsPresenter>
+      saved_passwords_presenter_ = nullptr;
 
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_;

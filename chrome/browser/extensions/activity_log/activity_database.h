@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -178,7 +179,7 @@ class ActivityDatabase {
 
   // A reference a Delegate for policy-specific database behavior.  See the
   // top-level comment for ActivityDatabase for comments on cleanup.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   sql::Database db_;
   bool valid_db_;

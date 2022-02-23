@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_plugin/browser_plugin_embedder.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -26,7 +25,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/browser/browser_plugin/browser_plugin_popup_menu_helper_mac.h"
 #endif
 
@@ -196,7 +195,7 @@ void BrowserPluginGuest::DidFinishNavigation(
 void BrowserPluginGuest::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   switch (status) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
@@ -217,7 +216,7 @@ void BrowserPluginGuest::PrimaryMainFrameRenderProcessGone(
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void BrowserPluginGuest::ShowPopupMenu(
     RenderFrameHost* render_frame_host,
     mojo::PendingRemote<blink::mojom::PopupMenuClient>* popup_client,

@@ -70,6 +70,9 @@ class ReadingListModel;
 // Sends notification to focus the accessibility of the omnibox.
 - (void)focusAccessibilityOnOmnibox;
 
+// Returns the height of the entire header.
+- (CGFloat)headerHeight;
+
 // Identity disc shown in this ViewController.
 // TODO(crbug.com/1170995): Remove once the Feed header properly supports
 // ContentSuggestions.

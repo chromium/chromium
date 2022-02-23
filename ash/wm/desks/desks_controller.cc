@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -19,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
@@ -54,12 +56,14 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -114,8 +118,11 @@ constexpr int kDeskDefaultNameIds[] = {
 void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
   DCHECK(Shell::Get()->overview_controller()->InOverviewSession());
 
+  // TODO(dandersson): See if we can remove this code and just let
+  // OverviewSession do its thing when the windows are moved to the new desk.
   auto* overview_session =
       Shell::Get()->overview_controller()->overview_session();
+  overview_session->set_auto_add_windows_enabled(false);
   for (auto* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (!base::Contains(windows, window) ||
@@ -125,6 +132,7 @@ void AppendWindowsToOverview(const std::vector<aura::Window*>& windows) {
 
     overview_session->AppendItem(window, /*reposition=*/true, /*animate=*/true);
   }
+  overview_session->set_auto_add_windows_enabled(true);
 }
 
 // Removes all the items that currently exist in overview.
@@ -556,6 +564,13 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     return;
   }
 
+  if (source == DesksSwitchSource::kLaunchTemplate) {
+    // Desk switch due to launching a template will immediately activate the new
+    // desk without animation.
+    ActivateDeskInternal(desk, /*update_window_activation=*/true);
+    return;
+  }
+
   // When switching desks we want to update window activation when leaving
   // overview or if nothing was active prior to switching desks. This will
   // ensure that after switching desks, we will try to focus a candidate window.
@@ -603,6 +618,12 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
   if (desk_to_activate) {
     ActivateDesk(desk_to_activate, source);
   } else {
+    // Fire a haptic event if necessary.
+    if (source == DesksSwitchSource::kDeskSwitchTouchpad) {
+      haptics_util::PlayHapticTouchpadEffect(
+          ui::HapticTouchpadEffect::kKnock,
+          ui::HapticTouchpadEffectStrength::kMedium);
+    }
     for (auto* root : Shell::GetAllRootWindows())
       desks_animations::PerformHitTheWallAnimation(root, going_left);
   }
@@ -639,7 +660,9 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (!base::Contains(active_desk_->windows(), window))
     return false;
 
-  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+  const bool visible_on_all_desks =
+      desks_util::IsWindowVisibleOnAllWorkspaces(window);
+  if (visible_on_all_desks) {
     if (source == DesksMoveWindowFromActiveDeskSource::kDragAndDrop) {
       // Since a visible on all desks window is on all desks, prevent users from
       // moving them manually in overview.
@@ -665,12 +688,17 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (in_overview) {
     auto* overview_session = overview_controller->overview_session();
     auto* item = overview_session->GetOverviewItemForWindow(window);
-    // |item| can be null when we are switching users and we're moving visible
-    // on all desks windows, so skip if |item| is null.
+    // `item` can be null when we are switching users.
     if (item) {
       item->OnMovingWindowToAnotherDesk();
       // The item no longer needs to be in the overview grid.
       overview_session->RemoveItem(item);
+    } else if (visible_on_all_desks) {
+      // Create an item for a visible on all desks window if it doesn't have one
+      // already. This can happen when launching a template. When we are in the
+      // templates grid, there are no items.
+      overview_session->AppendItem(window,
+                                   /*reposition=*/true, /*animate=*/true);
     }
   }
 
@@ -686,8 +714,12 @@ bool DesksController::MoveWindowFromActiveDeskTo(
           IDS_ASH_VIRTUAL_DESKS_ALERT_WINDOW_MOVED_FROM_ACTIVE_DESK,
           window->GetTitle(), active_desk_->name(), target_desk->name()));
 
-  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks)
+  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks) {
+    // A visible on all desks window is moved from the active desk to the next
+    // active desk during desk switch so we log its usage (when a user pins a
+    // window to all desks) in other locations.
     UMA_HISTOGRAM_ENUMERATION(kMoveWindowFromActiveDeskHistogramName, source);
+  }
   ReportNumberOfWindowsPerDeskHistogram();
 
   // A window moving out of the active desk cannot be active.
@@ -707,15 +739,21 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
     return;
   wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
   NotifyAllDesksForContentChanged();
-  UMA_HISTOGRAM_ENUMERATION(
-      kMoveWindowFromActiveDeskHistogramName,
-      DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks);
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_VIRTUAL_DESKS_ASSIGNED_TO_ALL_DESKS, window->GetTitle()));
 }
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     NotifyAllDesksForContentChanged();
+    Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS, window->GetTitle(),
+            active_desk_->name()));
   }
 }
 
@@ -864,7 +902,8 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 }
 
 void DesksController::CaptureActiveDeskAsTemplate(
-    GetDeskTemplateCallback callback) const {
+    GetDeskTemplateCallback callback,
+    aura::Window* root_window_to_show) const {
   DCHECK(current_account_id_.is_valid());
 
   // Construct |restore_data| for |desk_template|.
@@ -872,23 +911,28 @@ void DesksController::CaptureActiveDeskAsTemplate(
   auto* shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* shell_delegate = shell->shell_delegate();
+  auto* delegate = shell->desks_templates_delegate();
   std::vector<aura::Window*> unsupported_apps;
   for (auto* window : mru_windows) {
-    if (!shell_delegate->IsWindowSupportedForDeskTemplate(window) &&
+    if (!delegate->IsWindowSupportedForDeskTemplate(window) &&
         !wm::GetTransientParent(window)) {
       unsupported_apps.push_back(window);
       continue;
     }
 
+    // Exclude window that does not asscociate with a full restore app id,
+    // silently omitting them.
+    const std::string app_id = full_restore::GetAppId(window);
+    if (app_id.empty())
+      continue;
+
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
-        shell_delegate->GetAppLaunchDataForDeskTemplate(window);
+        delegate->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
       continue;
 
     // We need to copy |app_launch_info->app_id| to |app_id| as the below
     // function AddAppLaunchInfo() will destroy |app_launch_info|.
-    const std::string app_id = app_launch_info->app_id;
     const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
@@ -911,8 +955,9 @@ void DesksController::CaptureActiveDeskAsTemplate(
       shell->overview_controller()->InOverviewSession()) {
     // There were some unsupported apps in the active desk so open up a dialog
     // to let the user know.
+    DCHECK(root_window_to_show);
     DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
-        shell->GetPrimaryRootWindow(), unsupported_apps, std::move(callback),
+        root_window_to_show, unsupported_apps, std::move(callback),
         std::move(desk_template));
     return;
   }
@@ -949,13 +994,35 @@ void DesksController::CreateAndActivateNewDeskForTemplate(
   desk->SetName(desk_name, /*set_by_user=*/true);
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  // We're staying in overview mode, so move desks bar window and the save
+  // template button to the new desk. They would otherwise disappear when the
+  // new desk is activated.
+  DCHECK(active_desk_);
+
+  // Since we're going to move certain windows from the currently active desk,
+  // this is going to implicitly modify that list. We therefore grab a copy of
+  // it to avoid issues with concurrent iteration and modification of the list.
+  auto active_desk_windows = active_desk_->windows();
+  for (aura::Window* window : active_desk_windows) {
+    if (window->GetId() == kShellWindowId_DesksBarWindow ||
+        window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
+      aura::Window* destination_container =
+          desk->GetDeskContainerForRoot(window->GetRootWindow());
+      destination_container->AddChild(window);
+    }
+  }
+
+  if (auto* session = Shell::Get()->overview_controller()->overview_session()) {
+    session->HideDesksTemplatesGrids();
+    for (auto& grid : session->grid_list())
+      grid->RemoveAllItemsForDesksTemplatesLaunch();
+  }
+
   ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
-  DCHECK(animation_);
-  animation_->set_finished_callback(base::BindOnce(
-      [](base::OnceCallback<void(bool)> passed_callback) {
-        std::move(passed_callback).Run(/*success=*/true);
-      },
-      std::move(callback)));
+  DCHECK(!animation_);
+
+  std::move(callback).Run(/*success=*/true);
 }
 
 bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
@@ -994,7 +1061,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromTemplate(
           existing_app_instance_window)) {
     DCHECK(src_desk);
     DCHECK_NE(src_desk, active_desk_);
-    DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+
     base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
     src_desk->MoveWindowToDesk(existing_app_instance_window, active_desk_,
                                existing_app_instance_window->GetRootWindow(),
@@ -1151,6 +1218,15 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   DCHECK(old_active);
   old_active->Deactivate(update_window_activation);
   active_desk_->Activate(update_window_activation);
+
+  // Content is normally updated in
+  // `MoveVisibleOnAllDesksWindowsFromActiveDeskTo`. However, the layers for a
+  // visible on all desk window aren't mirrored for the active desk. When
+  // `MoveVisibleOnAllDesksWindowFromActiveDeskTo` is called, `desk` is not
+  // considered the active desk, so we force an update here to apply the changes
+  // for a visible on all desk window.
+  if (!visible_on_all_desks_windows_.empty())
+    old_active->NotifyContentChanged();
 
   MaybeUpdateShelfItems(old_active->windows(), active_desk_->windows());
 

@@ -18,8 +18,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/ec_private_key.h"
@@ -58,13 +58,13 @@ class LocalSyncTest : public InProcessBrowserTest {
     // By default on Window OS local sync backend uses roaming profile. It can
     // lead to problems if some tests run simultaneously and use the same
     // roaming profile.
-    auto file = local_sync_backend_dir_.GetPath().Append(
+    base::FilePath file = local_sync_backend_dir_.GetPath().Append(
         FILE_PATH_LITERAL("profile.pb"));
     command_line->AppendSwitchASCII(switches::kLocalSyncBackendDir,
                                     file.MaybeAsASCII());
     command_line->AppendSwitch(switches::kEnableLocalSyncBackend);
-    command_line->AppendSwitchASCII(
-        switches::kSyncDeferredStartupTimeoutSeconds, "1");
+    command_line->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds,
+                                    "1");
   }
 
  private:
@@ -75,8 +75,8 @@ class LocalSyncTest : public InProcessBrowserTest {
 // TODO(crbug.com/1052397): Reassess whether the following block needs to be
 // included in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfile(browser()->profile());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // in lacros-chrome once build flag switch of lacros-chrome is
   // complete.
 
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
 
@@ -126,9 +126,9 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SECURITY_EVENTS));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
-  EXPECT_FALSE(send_tab_to_self::IsUserSyncTypeActive(browser()->profile()));
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 }  // namespace

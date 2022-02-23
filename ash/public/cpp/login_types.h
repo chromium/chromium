@@ -5,13 +5,14 @@
 #ifndef ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
+#include "ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "ash/components/security_token_pin/constants.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/token.h"
-#include "chromeos/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {
@@ -264,6 +265,10 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // The initial fingerprint state. There are other methods (ie,
   // LoginScreenModel::SetFingerprintState) which update the current state.
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
+
+  // The initial Smart Lock state. There are other methods (i.e.,
+  // LoginScreenModel::SetSmartLockState) which update the current state.
+  SmartLockState smart_lock_state = SmartLockState::kDisabled;
 
   // True if multi-profiles sign in is allowed for this user.
   bool is_multiprofile_allowed = false;

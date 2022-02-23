@@ -93,9 +93,12 @@
       type_name: "bool",
       inherited: true,
     },
-    // Whether we're inside an NG block fragmentation context.
+    // Whether we're inside (or at) a block fragmentation context that may
+    // switch between legacy and NG layout, depending on the contents.
+    // This can be removed when we have got rid of the legacy engine.
+    // See crbug.com/1229581
     {
-      name: "InsideNGFragmentationContext",
+      name: "InsideFragmentationContextWithNondeterministicEngine",
       field_template: "primitive",
       default_value: "false",
       type_name: "bool",
@@ -140,17 +143,26 @@
     },
     // Whether this style is related with :has() pseudo-class
     {
-      name: "AffectedByHas",
+      name: "AffectedBySubjectHas",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
     },
     {
-      name: "AncestorsAffectedByHas",
-      field_template: "primitive",
+      name: "AffectedByPseudoInSubjectHas",
+      field_template: "monotonic_flag",
       default_value: "false",
-      type_name: "bool",
+      custom_copy: true,
+      custom_compare: true,
+    },
+    {
+      name: "DynamicRestyleFlagsForSubjectHas",
+      field_template: "primitive",
+      field_group: "*",
+      field_size: 4,
+      default_value: "0",
+      type_name: "unsigned",
       inherited: true,
     },
     // A non-inherited property references a variable or @apply is used
@@ -192,13 +204,12 @@
       default_value: "false",
     },
     // These are set if we used viewport or rem units when resolving a length.
-    // FIXME: HasViewportUnits should be a monotonic_flag.
     {
-      name: "HasViewportUnits",
+      name: "ViewportUnitFlags",
       field_template: "primitive",
-      default_value: "false",
-      type_name: "bool",
-      custom_compare: true,
+      field_size: 2,
+      default_value: "0",
+      type_name: "unsigned",
     },
     {
       name: "HasRemUnits",
@@ -263,6 +274,18 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
+    },
+    {
+      name: "CustomHighlightNames",
+      field_template: "external",
+      field_group: "*",
+      include_paths: ["third_party/blink/renderer/platform/wtf/hash_set.h",
+                      "third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
+      type_name: "HashSet<AtomicString>",
+      wrapper_pointer_name: "std::unique_ptr",
+      default_value: "nullptr",
+      computed_style_custom_functions: ["setter", "getter"],
+      custom_copy: true,
     },
     // True if 'underline solid' is the only text decoration on this element.
     {
@@ -580,10 +603,10 @@
     {
       name: "PageSize",
       field_template: "external",
-      type_name: "FloatSize",
+      type_name: "gfx::SizeF",
       field_group: "*",
-      default_value: "FloatSize()",
-      include_paths: ["third_party/blink/renderer/platform/geometry/float_size.h"],
+      default_value: "gfx::SizeF()",
+      include_paths: ["ui/gfx/geometry/size_f.h"],
     },
     {
       name: "OutlineStyleIsAuto",
@@ -810,70 +833,6 @@
       computed_style_custom_functions: ["setter"],
     },
     {
-      name: "NamedGridColumnLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "NamedGridRowLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "OrderedNamedGridColumnLines",
-      field_template: "external",
-      type_name: "OrderedNamedGridLines",
-      field_group: "*->grid",
-      default_value: "OrderedNamedGridLines()",
-      include_paths: ["third_party/blink/renderer/core/style/ordered_named_grid_lines.h"],
-    },
-    {
-      name: "OrderedNamedGridRowLines",
-      field_template: "external",
-      type_name: "OrderedNamedGridLines",
-      field_group: "*->grid",
-      default_value: "OrderedNamedGridLines()",
-      include_paths: ["third_party/blink/renderer/core/style/ordered_named_grid_lines.h"],
-    },
-    {
-      name: "AutoRepeatNamedGridColumnLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "AutoRepeatNamedGridRowLines",
-      field_template: "external",
-      type_name: "NamedGridLinesMap",
-      field_group: "*->grid",
-      default_value: "NamedGridLinesMap()",
-      include_paths: ["third_party/blink/renderer/core/style/named_grid_lines_map.h"],
-    },
-    {
-      name: "AutoRepeatOrderedNamedGridColumnLines",
-      field_template: "external",
-      type_name: "OrderedNamedGridLines",
-      field_group: "*->grid",
-      default_value: "OrderedNamedGridLines()",
-      include_paths: ["third_party/blink/renderer/core/style/ordered_named_grid_lines.h"],
-    },
-    {
-      name: "AutoRepeatOrderedNamedGridRowLines",
-      field_template: "external",
-      type_name: "OrderedNamedGridLines",
-      field_group: "*->grid",
-      default_value: "OrderedNamedGridLines()",
-      include_paths: ["third_party/blink/renderer/core/style/ordered_named_grid_lines.h"],
-    },
-    {
       name: "ImplicitNamedGridColumnLines",
       field_template: "external",
       type_name: "NamedGridLinesMap",
@@ -910,54 +869,6 @@
       type_name: "wtf_size_t",
       field_group: "*->grid",
       default_value: "0",
-    },
-    {
-      name: "GridAutoRepeatColumns",
-      field_template: "external",
-      type_name: "Vector<GridTrackSize, 1>",
-      field_group: "*->grid",
-      default_value: "Vector<GridTrackSize, 1>()",
-      include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
-                      "third_party/blink/renderer/core/style/grid_track_size.h"],
-    },
-    {
-      name: "GridAutoRepeatRows",
-      field_template: "external",
-      type_name: "Vector<GridTrackSize, 1>",
-      field_group: "*->grid",
-      default_value: "Vector<GridTrackSize, 1>()",
-      include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
-                      "third_party/blink/renderer/core/style/grid_track_size.h"],
-    },
-    {
-      name: "GridAutoRepeatColumnsInsertionPoint",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
-    {
-      name: "GridAutoRepeatRowsInsertionPoint",
-      field_template: "primitive",
-      type_name: "wtf_size_t",
-      field_group: "*->grid",
-      default_value: "0",
-    },
-    {
-      name: "GridAutoRepeatColumnsType",
-      field_template: "keyword",
-      type_name: "AutoRepeatType",
-      field_group: "*->grid",
-      keywords: ["no-auto-repeat", "auto-fill", "auto-fit"],
-      default_value: "no-auto-repeat",
-    },
-    {
-      name: "GridAutoRepeatRowsType",
-      field_template: "keyword",
-      type_name: "AutoRepeatType",
-      field_group: "*->grid",
-      keywords: ["no-auto-repeat", "auto-fill", "auto-fit"],
-      default_value: "no-auto-repeat",
     },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
@@ -1166,6 +1077,25 @@
       name: "SkipsContents",
       field_template: "monotonic_flag",
       default_value: "false",
+    },
+    {
+      // https://html.spec.whatwg.org/multipage/interaction.html#inert
+      // The inertness is represented with one of these values:
+      // - 'none' means that the node is not inert (the default).
+      // - 'overridable' means that the node is inert, and descendants will
+      //    inherit by default, but may change their inertness to e.g. 'none'.
+      // - 'forced' means that that the node is inert, and its decendants
+      //   won't be able to change their inertness to something else.
+      // ComputedStyle doesn't directly expose the inertness. Instead, use
+      // IsInert(), SetIsInert(bool), IsForcedInert() or SetIsForcedInert().
+      name: "Inertness",
+      inherited: true,
+      field_template: "keyword",
+      type_name: "Inertness",
+      keywords: ["none", "overridable", "forced"],
+      default_value: "none",
+      field_group: "*",
+      computed_style_custom_functions: ["getter", "setter"],
     },
   ],
 }

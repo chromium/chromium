@@ -61,7 +61,8 @@ class CORE_EXPORT DeleteSelectionCommand final : public CompositeEditCommand {
   void SaveTypingStyleState();
   bool HandleSpecialCaseBRDelete(EditingState*);
   void HandleGeneralDelete(EditingState*);
-  void FixupWhitespace();
+  // Replace collapsed space at |position| to U+00A0.
+  void FixupWhitespace(const Position& position);
   void MergeParagraphs(EditingState*);
   void RemovePreviouslySelectedEmptyTableRows(EditingState*);
   void CalculateTypingStyleAfterDelete();

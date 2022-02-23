@@ -139,10 +139,11 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   }
 
   void AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                  Vector<FloatQuad>&,
+                                  Vector<gfx::QuadF>&,
                                   MapCoordinatesFlags mode = 0);
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;
 

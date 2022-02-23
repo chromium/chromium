@@ -9,11 +9,13 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
-#include "chrome/browser/ui/views/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_entrypoints.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
@@ -66,12 +68,18 @@ LensSidePanelController::~LensSidePanelController() = default;
 void LensSidePanelController::OpenWithURL(
     const content::OpenURLParams& params) {
   // Hide Chrome side panel (Reading List/Bookmarks) if enabled and showing.
-  if (browser_view_->toolbar()->read_later_button() &&
+  if (browser_view_->toolbar()->side_panel_button() &&
       browser_view_->right_aligned_side_panel()->GetVisible()) {
     base::RecordAction(
         base::UserMetricsAction("LensSidePanel.HideChromeSidePanel"));
-    browser_view_->toolbar()->read_later_button()->HideSidePanel();
+    browser_view_->toolbar()->side_panel_button()->HideSidePanel();
   }
+
+  if (browser_view_->toolbar()->side_panel_button()) {
+    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  }
+
   side_panel_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   if (side_panel_->GetVisible()) {
@@ -97,6 +105,10 @@ void LensSidePanelController::Close() {
         std::string());
     side_panel_->SetVisible(false);
     base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
+  }
+  if (browser_view_->toolbar()->side_panel_button()) {
+    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
   std::move(close_callback_).Run();
 }
@@ -148,6 +160,14 @@ void LensSidePanelController::DidOpenRequestedURL(
 void LensSidePanelController::CloseButtonClicked() {
   base::RecordAction(base::UserMetricsAction("LensSidePanel.CloseButtonClick"));
   Close();
+}
+
+void LensSidePanelController::LoadProgressChanged(double progress) {
+  if(progress == 1.0) {
+    side_panel_view_->SetContentVisible(true);
+  } else {
+    side_panel_view_->SetContentVisible(false);
+  }
 }
 
 }  // namespace lens

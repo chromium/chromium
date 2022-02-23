@@ -32,13 +32,14 @@ VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
 VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid() = default;
 VideoCaptureDeviceFactoryAndroid::~VideoCaptureDeviceFactoryAndroid() = default;
 
-std::unique_ptr<VideoCaptureDevice>
-VideoCaptureDeviceFactoryAndroid::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryAndroid::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   int id;
   if (!base::StringToInt(device_descriptor.device_id, &id))
-    return nullptr;
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 
   std::unique_ptr<VideoCaptureDeviceAndroid> video_capture_device(
       new VideoCaptureDeviceAndroid(device_descriptor));
@@ -46,11 +47,12 @@ VideoCaptureDeviceFactoryAndroid::CreateDevice(
   if (video_capture_device->Init()) {
     if (test_mode_)
       video_capture_device->ConfigureForTesting();
-    return std::move(video_capture_device);
+    return VideoCaptureErrorOrDevice(std::move(video_capture_device));
   }
 
   DLOG(ERROR) << "Error creating Video Capture Device.";
-  return nullptr;
+  return VideoCaptureErrorOrDevice(
+      VideoCaptureError::kAndroidApi2ErrorConfiguringCamera);
 }
 
 void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(

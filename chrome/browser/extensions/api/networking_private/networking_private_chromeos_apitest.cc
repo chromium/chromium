@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/networking_private/networking_private_ui_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
@@ -28,17 +28,15 @@
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -149,10 +147,10 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     // uses the ProfileHelper to obtain the userhash crbug/238623.
     cryptohome::AccountIdentifier login_user;
     login_user.set_account_id(user_manager::CanonicalizeUserID(
-        command_line->GetSwitchValueNative(chromeos::switches::kLoginUser)));
+        command_line->GetSwitchValueNative(ash::switches::kLoginUser)));
     const std::string sanitized_user =
         UserDataAuthClient::GetStubSanitizedUsername(login_user);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile,
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                     sanitized_user);
   }
 
@@ -186,9 +184,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                              "stub_cellular_device1");
     base::DictionaryValue home_provider;
-    home_provider.SetString("name", "Cellular1_Provider");
-    home_provider.SetString("code", "000000");
-    home_provider.SetString("country", "us");
+    home_provider.SetStringKey("name", "Cellular1_Provider");
+    home_provider.SetStringKey("code", "000000");
+    home_provider.SetStringKey("country", "us");
     SetDeviceProperty(kCellularDevicePath, shill::kHomeProviderProperty,
                       home_provider);
     SetDeviceProperty(kCellularDevicePath, shill::kTechnologyFamilyProperty,
@@ -212,6 +210,9 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     // Add the Cellular Service.
     AddService(kCellular1ServicePath, "cellular1", shill::kTypeCellular,
                shill::kStateIdle);
+    service_test()->SetServiceProperty(kCellular1ServicePath,
+                                       shill::kCellularAllowRoamingProperty,
+                                       base::Value(false));
     service_test()->SetServiceProperty(
         kCellular1ServicePath, shill::kAutoConnectProperty, base::Value(true));
     service_test()->SetServiceProperty(kCellular1ServicePath,
@@ -393,17 +394,13 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
         base::Value("third_party_provider_extension_id"));
     profile_test()->AddService(kUser1ProfilePath, "stub_vpn2");
 
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
+    network_handler_test_helper_->RegisterPrefs(user_prefs_.registry(),
+                                                local_state_.registry());
 
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&user_prefs_,
-                                                            &local_state_);
+    network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
+
     content::RunAllPendingInMessageLoop();
   }
 

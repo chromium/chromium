@@ -12,13 +12,10 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
-#include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/tabgroup_content_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
-#include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
@@ -35,10 +32,9 @@ namespace android {
 scoped_refptr<TabLayer> TabLayer::Create(
     bool incognito,
     ui::ResourceManager* resource_manager,
-    LayerTitleCache* layer_title_cache,
     TabContentManager* tab_content_manager) {
-  return base::WrapRefCounted(new TabLayer(
-      incognito, resource_manager, layer_title_cache, tab_content_manager));
+  return base::WrapRefCounted(
+      new TabLayer(incognito, resource_manager, tab_content_manager));
 }
 
 // static
@@ -97,15 +93,11 @@ void TabLayer::SetProperties(int id,
                              const std::vector<int>& ids,
                              bool can_use_live_layer,
                              int toolbar_resource_id,
-                             int close_button_resource_id,
                              int shadow_resource_id,
                              int contour_resource_id,
-                             int back_logo_resource_id,
                              int border_resource_id,
                              int border_inner_shadow_resource_id,
                              int default_background_color,
-                             int back_logo_color,
-                             bool close_button_on_right,
                              float x,
                              float y,
                              float width,
@@ -114,21 +106,14 @@ void TabLayer::SetProperties(int id,
                              float shadow_y,
                              float shadow_width,
                              float shadow_height,
-                             float pivot_x,
-                             float pivot_y,
-                             float rotation_x,
-                             float rotation_y,
                              float alpha,
                              float border_alpha,
                              float border_inner_shadow_alpha,
                              float contour_alpha,
                              float shadow_alpha,
-                             float close_alpha,
                              float border_scale,
                              float saturation,
                              float brightness,
-                             float close_btn_width,
-                             float close_btn_asset_size,
                              float static_to_view_blend,
                              float content_width,
                              float content_height,
@@ -136,9 +121,7 @@ void TabLayer::SetProperties(int id,
                              bool show_toolbar,
                              int default_theme_color,
                              int toolbar_background_color,
-                             int close_button_color,
                              bool anonymize_toolbar,
-                             bool show_tab_title,
                              int toolbar_textbox_resource_id,
                              int toolbar_textbox_background_color,
                              float toolbar_alpha,
@@ -166,12 +149,6 @@ void TabLayer::SetProperties(int id,
   ui::NinePatchResource* contour_resource =
       ui::NinePatchResource::From(resource_manager_->GetResource(
           ui::ANDROID_RESOURCE_TYPE_STATIC, contour_resource_id));
-  ui::Resource* close_btn_resource =
-      resource_manager_->GetStaticResourceWithTint(close_button_resource_id,
-                                                   close_button_color);
-  ui::Resource* back_logo_resource = nullptr;
-
-  DecorationTitle* title_layer = nullptr;
 
   //----------------------------------------------------------------------------
   // Handle Border Scaling (Upscale/Downscale everything until final scaling)
@@ -191,9 +168,6 @@ void TabLayer::SetProperties(int id,
       border_inner_shadow_resource->padding());
   const gfx::RectF shadow_padding(shadow_resource->padding());
   const gfx::RectF contour_padding(contour_resource->padding());
-
-  const bool back_visible = cos(rotation_x * SK_ScalarPI / 180.0f) < 0 ||
-                            cos(rotation_y * SK_ScalarPI / 180.0f) < 0;
 
   const float content_scale = width / content_width;
   gfx::RectF content_area(0.f, 0.f, content_width, content_height);
@@ -220,8 +194,6 @@ void TabLayer::SetProperties(int id,
       contour_resource->size().width() - contour_padding.width(),
       contour_resource->size().height() - contour_padding.height());
 
-  const float close_btn_effective_width = close_btn_width * close_alpha;
-
   //--------------------------------------------------------------------------
   // Update Resource Ids For Layers That Impact Layout
   //--------------------------------------------------------------------------
@@ -234,7 +206,7 @@ void TabLayer::SetProperties(int id,
   toolbar_layer_->UpdateProgressBar(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   float toolbar_impact_height = 0;
-  if (show_toolbar && !back_visible)
+  if (show_toolbar)
     toolbar_impact_height = content_offset;
 
   //----------------------------------------------------------------------------
@@ -243,13 +215,7 @@ void TabLayer::SetProperties(int id,
   border_alpha *= alpha;
   contour_alpha *= alpha;
   shadow_alpha *= alpha;
-  close_alpha *= alpha;
   toolbar_alpha *= alpha;
-
-  if (back_visible) {
-    border_alpha = 0.f;
-    border_inner_shadow_alpha = 0.f;
-  }
 
   bool border_visible = border_alpha > 0.f;
   bool border_inner_shadow_visible = border_inner_shadow_alpha > 0.f;
@@ -269,17 +235,6 @@ void TabLayer::SetProperties(int id,
   gfx::Size contour_size(
       width + contour_padding_size.width() * side_border_scale,
       height + contour_padding_size.height());
-  gfx::Size close_button_size(close_btn_width, border_padding.y());
-  gfx::Size title_size(width - close_btn_effective_width, border_padding.y());
-  gfx::Size back_logo_size;
-  // TODO(clholgat): Figure out why the back logo is null sometimes.
-  if (back_visible) {
-    back_logo_resource =
-        resource_manager_->GetResource(ui::ANDROID_RESOURCE_TYPE_STATIC,
-                                       back_logo_resource_id);
-    if (back_logo_resource)
-      back_logo_size = back_logo_resource->size();
-  }
 
   // Store this size at a point as it might go negative during the inset
   // calculations.
@@ -305,30 +260,6 @@ void TabLayer::SetProperties(int id,
   gfx::PointF toolbar_position(
       0.f, toolbar_layer_->layer()->bounds().height() - toolbar_size.height());
   gfx::PointF content_position(0.f, toolbar_impact_height);
-  gfx::PointF back_logo_position(
-      ((descaled_local_content_area.width() - back_logo_->bounds().width()) *
-       content_scale) /
-          2.0f,
-      ((descaled_local_content_area.height() - back_logo_->bounds().height()) *
-       content_scale) /
-          2.0f);
-  gfx::PointF close_button_position;
-  gfx::PointF title_position;
-
-  close_button_position.set_y(-border_padding.y());
-  title_position.set_y(-border_padding.y());
-  if (close_button_on_right)
-    close_button_position.set_x(width - close_button_size.width());
-  else
-    title_position.set_x(close_btn_effective_width);
-
-  //----------------------------------------------------------------------------
-  // Center Specific Assets in the Rects
-  //----------------------------------------------------------------------------
-  close_button_position.Offset(
-      (close_button_size.width() - close_btn_asset_size) / 2.f,
-      (close_button_size.height() - close_btn_asset_size) / 2.f);
-  close_button_size.SetSize(close_btn_asset_size, close_btn_asset_size);
 
   //----------------------------------------------------------------------------
   // Handle Insetting the Top Border Component
@@ -349,8 +280,6 @@ void TabLayer::SetProperties(int id,
     border_inner_shadow_position.set_y(border_inner_shadow_position.y() +
                                        inset_diff);
     contour_position.set_y(contour_position.y() + inset_diff);
-    close_button_position.set_y(close_button_position.y() + inset_diff);
-    title_position.set_y(title_position.y() + inset_diff);
 
     // Scaled eventually, so have to descale the size difference first.
     toolbar_position.set_y(toolbar_position.y() + inset_diff / content_scale);
@@ -378,9 +307,7 @@ void TabLayer::SetProperties(int id,
   bool content_visible = desired_content_size.GetArea() > 0.f;
 
   // TODO(dtrainor): Improve these calculations to prune these layers out.
-  bool title_visible = border_alpha > 0.f && !back_visible && show_tab_title;
-  bool close_btn_visible = title_visible;
-  bool toolbar_visible = show_toolbar && toolbar_alpha > 0.f && !back_visible;
+  bool toolbar_visible = show_toolbar && toolbar_alpha > 0.f;
 
   //----------------------------------------------------------------------------
   // Fix jaggies
@@ -389,8 +316,6 @@ void TabLayer::SetProperties(int id,
   border_inner_shadow_position.Offset(0.5f, 0.5f);
   shadow_position.Offset(0.5f, 0.5f);
   contour_position.Offset(0.5f, 0.5f);
-  title_position.Offset(0.5f, 0.5f);
-  close_button_position.Offset(0.5f, 0.5f);
   toolbar_position.Offset(0.5f, 0.5f);
 
   border_size.Enlarge(-1.f, -1.f);
@@ -421,31 +346,17 @@ void TabLayer::SetProperties(int id,
   front_border_inner_shadow_->SetBorder(border_inner_shadow_resource->Border(
       border_inner_shadow_size));
 
-  side_padding_->SetBackgroundColor(back_visible ? back_logo_color
-      : default_background_color);
-  bottom_padding_->SetBackgroundColor(back_visible ? back_logo_color
-      : default_background_color);
+  side_padding_->SetBackgroundColor(default_background_color);
+  bottom_padding_->SetBackgroundColor(default_background_color);
 
-  if (title_visible && layer_title_cache_)
-    title_layer = layer_title_cache_->GetTitleLayer(id);
-  SetTitle(title_layer);
+  gfx::Rect rounded_descaled_content_area(
+      base::ClampRound(descaled_local_content_area.x()),
+      base::ClampRound(descaled_local_content_area.y()),
+      desired_content_size.width(), desired_content_size.height());
 
-  close_button_->SetUIResourceId(close_btn_resource->ui_resource()->id());
-
-  if (!back_visible) {
-    gfx::Rect rounded_descaled_content_area(
-        base::ClampRound(descaled_local_content_area.x()),
-        base::ClampRound(descaled_local_content_area.y()),
-        desired_content_size.width(), desired_content_size.height());
-
-    SetContentProperties(
-        id, ids, can_use_live_layer, static_to_view_blend, true, alpha,
-        saturation, true, rounded_descaled_content_area,
-        border_inner_shadow_resource, border_inner_shadow_alpha);
-
-  } else if (back_logo_resource) {
-    back_logo_->SetUIResourceId(back_logo_resource->ui_resource()->id());
-  }
+  SetContentProperties(id, ids, can_use_live_layer, static_to_view_blend, true,
+                       alpha, saturation, true, rounded_descaled_content_area,
+                       border_inner_shadow_resource, border_inner_shadow_alpha);
 
   //----------------------------------------------------------------------------
   // Push Size, Position, Alpha and Transformations to Layers
@@ -495,55 +406,22 @@ void TabLayer::SetProperties(int id,
     toolbar_layer_->layer()->SetBounds(toolbar_size);
   }
 
-  if (title_layer) {
-    gfx::PointF vertically_centered_position(
-        title_position.x(),
-        title_position.y() +
-            (title_size.height() - title_layer->size().height()) / 2.f);
-
-    title_->SetPosition(vertically_centered_position);
-    title_layer->setBounds(title_size);
-    title_layer->setOpacity(border_alpha);
-  }
-
-  close_button_->SetHideLayerAndSubtree(!close_btn_visible);
-  if (close_btn_visible) {
-    close_button_->SetPosition(close_button_position);
-    close_button_->SetBounds(close_button_size);
-    // Non-linear alpha looks better.
-    close_button_->SetOpacity(close_alpha * close_alpha * border_alpha);
-  }
-
   if (content_visible) {
     {
-      // content_ and back_logo_ Transforms
       gfx::Transform transform;
       transform.Scale(content_scale, content_scale);
       transform.Translate(content_position.x(), content_position.y());
       transform.Translate(descaled_local_content_area.x(),
                           descaled_local_content_area.y());
 
-      content_->layer()->SetHideLayerAndSubtree(back_visible);
-      back_logo_->SetHideLayerAndSubtree(!back_visible);
-
-      if (!back_visible) {
-        content_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
-        content_->layer()->SetTransform(transform);
-      } else {
-        back_logo_->SetPosition(back_logo_position);
-        back_logo_->SetBounds(back_logo_size);
-        back_logo_->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
-        back_logo_->SetTransform(transform);
-        // TODO: Set back logo alpha on leaf.
-      }
+      content_->layer()->SetHideLayerAndSubtree(false);
+      content_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+      content_->layer()->SetTransform(transform);
     }
 
     {
       // padding_ Transform
-      gfx::Size content_bounds;
-      if (!back_visible)
-        content_bounds = content_->ComputeSize(id);
-
+      gfx::Size content_bounds = content_->ComputeSize(id);
       gfx::Rect side_padding_rect;
       gfx::Rect bottom_padding_rect;
       if (content_bounds.width() == 0 || content_bounds.height() == 0) {
@@ -561,7 +439,6 @@ void TabLayer::SetProperties(int id,
                       alpha, content_position, descaled_local_content_area);
     }
   } else {
-    back_logo_->SetHideLayerAndSubtree(true);
     side_padding_->SetHideLayerAndSubtree(true);
     bottom_padding_->SetHideLayerAndSubtree(true);
     content_->layer()->SetHideLayerAndSubtree(true);
@@ -569,29 +446,10 @@ void TabLayer::SetProperties(int id,
 
   {
     // Global Transform
-    gfx::PointF pivot_origin(pivot_y, pivot_x);
 
     gfx::Transform transform;
-
-    if (rotation_x != 0 || rotation_y != 0) {
-      // Apply screen perspective if there are rotations.
-      transform.Translate(content_width / 2, content_height / 2);
-      transform.ApplyPerspectiveDepth(
-          content_width > content_height ? content_width : content_height);
-      transform.Translate(-content_width / 2, -content_height / 2);
-
-      // Translate to correct position on the screen
-      transform.Translate(x, y);
-
-      // Apply pivot rotations
-      transform.Translate(pivot_origin.x(), pivot_origin.y());
-      transform.RotateAboutYAxis(rotation_y);
-      transform.RotateAboutXAxis(-rotation_x);
-      transform.Translate(-pivot_origin.x(), -pivot_origin.y());
-    } else {
-      // Translate to correct position on the screen
-      transform.Translate(x, y);
-    }
+    // Translate to correct position on the screen
+    transform.Translate(x, y);
     transform.Scale(border_scale, border_scale);
     layer_->SetTransform(transform);
   }
@@ -613,35 +471,27 @@ scoped_refptr<cc::Layer> TabLayer::layer() {
 
 TabLayer::TabLayer(bool incognito,
                    ui::ResourceManager* resource_manager,
-                   LayerTitleCache* layer_title_cache,
                    TabContentManager* tab_content_manager)
     : incognito_(incognito),
       resource_manager_(resource_manager),
       tab_content_manager_(tab_content_manager),
-      layer_title_cache_(layer_title_cache),
       layer_(cc::Layer::Create()),
       toolbar_layer_(ToolbarLayer::Create(resource_manager)),
-      title_(cc::Layer::Create()),
       content_(ContentLayer::Create(tab_content_manager)),
       side_padding_(cc::SolidColorLayer::Create()),
       bottom_padding_(cc::SolidColorLayer::Create()),
-      close_button_(cc::UIResourceLayer::Create()),
       front_border_(cc::NinePatchLayer::Create()),
       front_border_inner_shadow_(cc::NinePatchLayer::Create()),
       contour_shadow_(cc::NinePatchLayer::Create()),
       shadow_(cc::NinePatchLayer::Create()),
-      back_logo_(cc::UIResourceLayer::Create()),
       brightness_(1.f) {
   layer_->AddChild(shadow_);
   layer_->AddChild(contour_shadow_);
   layer_->AddChild(side_padding_);
   layer_->AddChild(bottom_padding_);
   layer_->AddChild(content_->layer());
-  layer_->AddChild(back_logo_);
   layer_->AddChild(front_border_inner_shadow_);
   layer_->AddChild(front_border_);
-  layer_->AddChild(title_.get());
-  layer_->AddChild(close_button_);
   layer_->AddChild(toolbar_layer_->layer());
 
   contour_shadow_->SetIsDrawable(true);
@@ -650,30 +500,11 @@ TabLayer::TabLayer(bool incognito,
   front_border_->SetIsDrawable(true);
   front_border_inner_shadow_->SetIsDrawable(true);
   shadow_->SetIsDrawable(true);
-  close_button_->SetIsDrawable(true);
-  back_logo_->SetIsDrawable(true);
 
   front_border_->SetFillCenter(false);
 }
 
 TabLayer::~TabLayer() {
-}
-
-void TabLayer::SetTitle(DecorationTitle* title) {
-  scoped_refptr<cc::Layer> layer = title ? title->layer() : nullptr;
-
-  if (!layer.get()) {
-    title_->RemoveAllChildren();
-  } else {
-    const cc::LayerList& children = title_->children();
-    if (children.size() == 0 || children[0]->id() != layer->id()) {
-      title_->RemoveAllChildren();
-      title_->AddChild(layer);
-    }
-  }
-
-  if (title)
-    title->SetUIResourceIds();
 }
 
 void TabLayer::SetContentProperties(

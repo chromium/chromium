@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -49,9 +51,9 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsAccessAllowed(String&) const override { return true; }
 
-  FloatSize ImageSize(float multiplier,
-                      const FloatSize& default_object_size,
-                      RespectImageOrientationEnum) const override;
+  gfx::SizeF ImageSize(float multiplier,
+                       const gfx::SizeF& default_object_size,
+                       RespectImageOrientationEnum) const override;
   bool HasIntrinsicSize() const override { return false; }
   void AddClient(ImageResourceObserver*) override;
   void RemoveClient(ImageResourceObserver*) override;
@@ -59,11 +61,12 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size) const override;
+                                const gfx::SizeF& target_size) const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
+  bool IsUsingCurrentColor() const;
 
   void Trace(Visitor*) const override;
 

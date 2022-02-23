@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
@@ -35,7 +34,7 @@
 #include "ash/constants/ash_features.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #endif
@@ -58,7 +57,7 @@ AccountFetcherService::AccountFetcherService() = default;
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   token_service_->RemoveObserver(this);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // child_info_request_ is an invalidation handler and needs to be
   // unregistered during the lifetime of the invalidation service.
   child_info_request_.reset();
@@ -114,7 +113,7 @@ bool AccountFetcherService::AreAllAccountCapabilitiesFetched() const {
 void AccountFetcherService::OnNetworkInitialized() {
   DCHECK(!network_initialized_);
   DCHECK(!network_fetches_enabled_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DCHECK(!child_info_request_);
 #endif
   network_initialized_ = true;
@@ -149,7 +148,7 @@ void AccountFetcherService::RefreshAllAccountInfo(bool only_fetch_if_invalid) {
 // dependency on PrimaryAccountManager which we get around by only allowing a
 // single account. This is possible since we only support a single account to be
 // a child anyway.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void AccountFetcherService::RefreshAccountInfoIfStale(
     const CoreAccountId& account_id) {
   DCHECK(network_fetches_enabled_);
@@ -159,7 +158,11 @@ void AccountFetcherService::RefreshAccountInfoIfStale(
 void AccountFetcherService::UpdateChildInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<CoreAccountId> accounts = token_service_->GetAccounts();
-  if (accounts.size() == 1) {
+  if (accounts.size() >= 1) {
+    // If a child account is present then there can be only one child account,
+    // and it must be the first account on the device.
+    //
+    // TODO(crbug/1268858): consider removing this assumption.
     const CoreAccountId& candidate = accounts[0];
     if (candidate == child_request_account_id_)
       return;
@@ -182,7 +185,7 @@ void AccountFetcherService::MaybeEnableNetworkFetches() {
     repeating_timer_->Start();
   }
   RefreshAllAccountInfo(/*only_fetch_if_invalid=*/true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif
 }
@@ -207,7 +210,7 @@ void AccountFetcherService::StartFetchingUserInfo(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Starts fetching whether this is a child account. Handles refresh internally.
 void AccountFetcherService::StartFetchingChildInfo(
     const CoreAccountId& account_id) {
@@ -235,12 +238,14 @@ void AccountFetcherService::SetIsChildAccount(const CoreAccountId& account_id,
 }
 #endif
 
-bool AccountFetcherService::IsAccountCapabilitiesFetcherEnabled() {
+bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
   if (enable_account_capabilities_fetcher_for_test_)
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsMinorModeRestrictionEnabled();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(
+      switches::kEnableFetchingAccountCapabilities);
 #else
   return false;
 #endif
@@ -270,7 +275,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 
   if ((!only_fetch_if_invalid ||
        !info.capabilities.AreAllCapabilitiesKnown()) &&
-      IsAccountCapabilitiesFetcherEnabled()) {
+      IsAccountCapabilitiesFetchingEnabled()) {
     StartFetchingAccountCapabilities(account_id);
   }
 
@@ -408,7 +413,7 @@ void AccountFetcherService::OnRefreshTokenAvailable(
   if (!network_fetches_enabled_)
     return;
   RefreshAccountInfo(account_id, /*only_fetch_if_invalid=*/true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif
 }
@@ -430,7 +435,7 @@ void AccountFetcherService::OnRefreshTokenRevoked(
 
   user_info_requests_.erase(account_id);
   account_capabilities_requests_.erase(account_id);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   UpdateChildInfo();
 #endif
   account_tracker_service_->StopTrackingAccount(account_id);

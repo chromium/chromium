@@ -24,7 +24,7 @@ using BertTokenizerCPP = ::tflite::support::text::tokenizer::BertTokenizer;
   std::unique_ptr<BertTokenizerCPP> _bertTokenizer;
 }
 
-- (instancetype)initWithVocabPath:(NSString*)vocabPath {
+- (instancetype)initWithVocabPath:(NSString *)vocabPath {
   self = [super init];
   if (self) {
     _bertTokenizer = absl::make_unique<BertTokenizerCPP>(MakeString(vocabPath));
@@ -32,12 +32,12 @@ using BertTokenizerCPP = ::tflite::support::text::tokenizer::BertTokenizer;
   return self;
 }
 
-- (instancetype)initWithVocab:(NSArray<NSString*>*)vocab {
+- (instancetype)initWithVocab:(NSArray<NSString *> *)vocab {
   self = [super init];
   if (self) {
     std::vector<std::string> vocabCpp;
     vocabCpp.reserve([vocab count]);
-    for (NSString* word in vocab) {
+    for (NSString *word in vocab) {
       vocabCpp.emplace_back(MakeString(word));
     }
     _bertTokenizer = absl::make_unique<BertTokenizerCPP>(vocabCpp);
@@ -45,11 +45,11 @@ using BertTokenizerCPP = ::tflite::support::text::tokenizer::BertTokenizer;
   return self;
 }
 
-- (NSArray<NSString*>*)tokensFromInput:(NSString*)input {
+- (NSArray<NSString *> *)tokensFromInput:(NSString *)input {
   return Tokenize(_bertTokenizer.get(), input);
 }
 
-- (NSArray<NSNumber*>*)idsFromTokens:(NSArray<NSString*>*)tokens {
+- (NSArray<NSNumber *> *)idsFromTokens:(NSArray<NSString *> *)tokens {
   return ConvertTokensToIds(_bertTokenizer.get(), tokens);
 }
 

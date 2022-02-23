@@ -35,17 +35,8 @@ namespace chromeos {
 namespace {
 
 const char kRequestBatteryChargeDataCallback[] = "requestBatteryChargeData";
-const char kOnRequestBatteryChargeDataFunction[] =
-    "powerUI.showBatteryChargeData";
-
 const char kRequestCpuIdleDataCallback[] = "requestCpuIdleData";
-const char kOnRequestCpuIdleDataFunction[] =
-    "powerUI.showCpuIdleData";
-
 const char kRequestCpuFreqDataCallback[] = "requestCpuFreqData";
-const char kOnRequestCpuFreqDataFunction[] =
-    "powerUI.showCpuFreqData";
-
 const char kRequestProcessUsageDataCallback[] = "requestProcessUsageData";
 
 class PowerMessageHandler : public content::WebUIMessageHandler {
@@ -93,7 +84,9 @@ void PowerMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* args) {
+  AllowJavascript();
+
   const base::circular_deque<PowerDataCollector::PowerSupplySample>&
       power_supply = PowerDataCollector::Get()->power_supply_data();
   base::ListValue js_power_supply_data;
@@ -103,7 +96,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* value) {
     element->SetDoubleKey("batteryPercent", sample.battery_percent);
     element->SetDoubleKey("batteryDischargeRate",
                           sample.battery_discharge_rate);
-    element->SetBoolean("externalPower", sample.external_power);
+    element->SetBoolKey("externalPower", sample.external_power);
     element->SetDoubleKey("time", sample.time.ToJsTime());
 
     js_power_supply_data.Append(std::move(element));
@@ -112,12 +105,16 @@ void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* value) {
   base::ListValue js_system_resumed_data;
   GetJsSystemResumedData(&js_system_resumed_data);
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestBatteryChargeDataFunction,
-                                         js_power_supply_data,
-                                         js_system_resumed_data);
+  base::DictionaryValue data;
+  data.SetKey("powerSupplyData", std::move(js_power_supply_data));
+  data.SetKey("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* args) {
+  AllowJavascript();
+
   const CpuDataCollector& cpu_data_collector =
       PowerDataCollector::Get()->cpu_data_collector();
 
@@ -131,11 +128,16 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue* value) {
   base::ListValue js_system_resumed_data;
   GetJsSystemResumedData(&js_system_resumed_data);
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestCpuIdleDataFunction,
-                                         js_idle_data, js_system_resumed_data);
+  base::DictionaryValue data;
+  data.SetKey("idleStateData", std::move(js_idle_data));
+  data.SetKey("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* value) {
+void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* args) {
+  AllowJavascript();
+
   const CpuDataCollector& cpu_data_collector =
       PowerDataCollector::Get()->cpu_data_collector();
 
@@ -149,16 +151,18 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue* value) {
   base::ListValue js_system_resumed_data;
   GetJsSystemResumedData(&js_system_resumed_data);
 
-  web_ui()->CallJavascriptFunctionUnsafe(kOnRequestCpuFreqDataFunction,
-                                         js_freq_data, js_system_resumed_data);
+  base::DictionaryValue data;
+  data.SetKey("freqStateData", std::move(js_freq_data));
+  data.SetKey("systemResumedData", std::move(js_system_resumed_data));
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  ResolveJavascriptCallback(callback_id, data);
 }
 
 void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
+  CHECK_EQ(1U, args->GetListDeprecated().size());
 
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   const std::vector<ProcessDataCollector::ProcessUsageData>& process_list =
       ProcessDataCollector::Get()->GetProcessUsages();
@@ -167,17 +171,17 @@ void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   for (const auto& process_info : process_list) {
     std::unique_ptr<base::DictionaryValue> element =
         std::make_unique<base::DictionaryValue>();
-    element->SetInteger("pid", process_info.process_data.pid);
-    element->SetString("name", process_info.process_data.name);
-    element->SetString("cmdline", process_info.process_data.cmdline);
-    element->SetInteger("type",
-                        static_cast<int>(process_info.process_data.type));
+    element->SetIntKey("pid", process_info.process_data.pid);
+    element->SetStringKey("name", process_info.process_data.name);
+    element->SetStringKey("cmdline", process_info.process_data.cmdline);
+    element->SetIntKey("type",
+                       static_cast<int>(process_info.process_data.type));
     element->SetDoubleKey("powerUsageFraction",
                           process_info.power_usage_fraction);
     js_process_usages.Append(std::move(element));
   }
 
-  ResolveJavascriptCallback(*callback_id, js_process_usages);
+  ResolveJavascriptCallback(callback_id, js_process_usages);
 }
 
 void PowerMessageHandler::GetJsSystemResumedData(base::ListValue *data) {
@@ -208,7 +212,7 @@ void PowerMessageHandler::GetJsStateOccupancyData(
       std::unique_ptr<base::DictionaryValue> js_sample(
           new base::DictionaryValue);
       js_sample->SetDoubleKey("time", sample.time.ToJsTime());
-      js_sample->SetBoolean("cpuOnline", sample.cpu_online);
+      js_sample->SetBoolKey("cpuOnline", sample.cpu_online);
 
       base::DictionaryValue state_dict;
       for (size_t index = 0; index < sample.time_in_state.size(); ++index) {

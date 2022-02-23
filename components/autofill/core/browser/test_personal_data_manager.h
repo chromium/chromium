@@ -158,6 +158,8 @@ class TestPersonalDataManager : public PersonalDataManager {
     account_info_ = account_info;
   }
 
+  void ClearCreditCardArtImages() { credit_card_art_images_.clear(); }
+
  private:
   std::string timezone_country_code_;
   std::string default_country_code_;

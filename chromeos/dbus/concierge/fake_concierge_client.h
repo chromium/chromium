@@ -316,6 +316,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   void send_get_container_ssh_keys_response_delay(base::TimeDelta delay) {
     send_get_container_ssh_keys_response_delay_ = delay;
   }
+  void reset_get_vm_info_call_count() { get_vm_info_call_count_ = 0; }
 
   void NotifyVmStarted(const vm_tools::concierge::VmStartedSignal& signal);
   void NotifyVmStopped(const vm_tools::concierge::VmStoppedSignal& signal);

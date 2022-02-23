@@ -26,9 +26,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using blink::mojom::PermissionStatus;
 using content::PermissionType;
@@ -92,7 +92,7 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FakePermissionContextAlwaysAllow>(
           browser_context, ContentSettingsType::STORAGE_ACCESS,
           blink::mojom::PermissionsPolicyFeature::kStorageAccessAPI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   permission_contexts[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
@@ -101,7 +101,7 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
   return permission_contexts;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // See https://crbug.com/904883.
 auto GetDefaultProtectedMediaIdentifierPermissionStatus() {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
@@ -116,7 +116,7 @@ auto GetDefaultProtectedMediaIdentifierContentSetting() {
              ? CONTENT_SETTING_ALLOW
              : CONTENT_SETTING_ASK;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -273,7 +273,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDefault) {
   CheckPermissionStatus(PermissionType::MIDI_SYSEX, PermissionStatus::ASK);
   CheckPermissionStatus(PermissionType::NOTIFICATIONS, PermissionStatus::ASK);
   CheckPermissionStatus(PermissionType::GEOLOCATION, PermissionStatus::ASK);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CheckPermissionStatus(PermissionType::PROTECTED_MEDIA_IDENTIFIER,
                         GetDefaultProtectedMediaIdentifierPermissionStatus());
 #endif
@@ -290,7 +290,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusAfterSet) {
   SetPermission(ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
   CheckPermissionStatus(PermissionType::MIDI_SYSEX, PermissionStatus::GRANTED);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetPermission(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
                 CONTENT_SETTING_ALLOW);
   CheckPermissionStatus(PermissionType::PROTECTED_MEDIA_IDENTIFIER,
@@ -305,7 +305,7 @@ TEST_F(PermissionManagerTest, CheckPermissionResultDefault) {
                         PermissionStatusSource::UNSPECIFIED);
   CheckPermissionResult(ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ASK,
                         PermissionStatusSource::UNSPECIFIED);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   CheckPermissionResult(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
                         GetDefaultProtectedMediaIdentifierContentSetting(),
                         PermissionStatusSource::UNSPECIFIED);
@@ -326,7 +326,7 @@ TEST_F(PermissionManagerTest, CheckPermissionResultAfterSet) {
   CheckPermissionResult(ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW,
                         PermissionStatusSource::UNSPECIFIED);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SetPermission(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
                 CONTENT_SETTING_ALLOW);
   CheckPermissionResult(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
@@ -684,7 +684,7 @@ TEST_F(PermissionManagerTest, InsecureOriginIsNotOverridable) {
 
 TEST_F(PermissionManagerTest, MissingContextIsNotOverridable) {
   // Permissions that are not implemented should be denied overridability.
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(
       GetPermissionControllerDelegate()->IsPermissionOverridableByDevTools(
           PermissionType::PROTECTED_MEDIA_IDENTIFIER,
@@ -756,7 +756,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
       PermissionRequestManager::FromWebContents(web_contents());
   auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
   prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
-  prompt_factory->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  prompt_factory->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   RequestPermission(PermissionType::GEOLOCATION, child, GURL(kOrigin2));
 

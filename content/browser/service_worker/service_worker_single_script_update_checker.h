@@ -12,7 +12,7 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
 
 namespace network {
 class MojoToNetPendingBuffer;
@@ -149,8 +149,8 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
 
   // network::mojom::URLLoaderClient override:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle consumer) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;

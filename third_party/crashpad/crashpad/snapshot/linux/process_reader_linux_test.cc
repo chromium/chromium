@@ -53,7 +53,7 @@
 #include "util/misc/memory_sanitizer.h"
 #include "util/synchronization/semaphore.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #include <android/set_abort_message.h>
 #include "dlfcn_internal.h"
@@ -492,7 +492,7 @@ TEST(ProcessReaderLinux, MAYBE_ChildWithSplitStack) {
 }
 
 // Android doesn't provide dl_iterate_phdr on ARM until API 21.
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
 int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   SCOPED_TRACE(
       base::StringPrintf("module %s at 0x%" PRIx64 " phdrs 0x%" PRIx64,
@@ -502,8 +502,7 @@ int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   auto modules =
       reinterpret_cast<const std::vector<ProcessReaderLinux::Module>*>(data);
 
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Prior to API 27, Bionic includes a null entry for /system/bin/linker.
   if (!info->dlpi_name) {
     EXPECT_EQ(info->dlpi_addr, 0u);
@@ -532,7 +531,7 @@ int ExpectFindModule(dl_phdr_info* info, size_t size, void* data) {
   EXPECT_TRUE(found);
   return 0;
 }
-#endif  // !OS_ANDROID || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
+#endif  // !BUILDFLAG(IS_ANDROID) || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
 
 void ExpectModulesFromSelf(
     const std::vector<ProcessReaderLinux::Module>& modules) {
@@ -542,14 +541,14 @@ void ExpectModulesFromSelf(
   }
 
 // Android doesn't provide dl_iterate_phdr on ARM until API 21.
-#if !defined(OS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
+#if !BUILDFLAG(IS_ANDROID) || !defined(ARCH_CPU_ARMEL) || __ANDROID_API__ >= 21
   EXPECT_EQ(
       dl_iterate_phdr(
           ExpectFindModule,
           reinterpret_cast<void*>(
               const_cast<std::vector<ProcessReaderLinux::Module>*>(&modules))),
       0);
-#endif  // !OS_ANDROID || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
+#endif  // !BUILDFLAG(IS_ANDROID) || !ARCH_CPU_ARMEL || __ANDROID_API__ >= 21
 }
 
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER)
@@ -641,7 +640,7 @@ TEST(ProcessReaderLinux, ChildModules) {
   test.Run();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kTestAbortMessage[] = "test abort message";
 
 TEST(ProcessReaderLinux, AbortMessage) {

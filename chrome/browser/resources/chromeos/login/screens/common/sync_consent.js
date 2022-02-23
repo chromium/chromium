@@ -51,14 +51,18 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
        */
       isChildAccount_: Boolean,
 
-      /** @private */
-      syncConsentOptionalEnabled_: Boolean,
-
       /**
        * Indicates whether user is minor mode user (e.g. under age of 18).
        * @private
        */
       isMinorMode_: Boolean,
+
+      /**
+       * Indicates whether ArcAccountRestrictions and LacrosSupport features are
+       * enabled.
+       * @private
+       */
+      isArcRestricted_: Boolean,
 
       /**
        * The text key for the opt-in button (it could vary based on whether
@@ -77,8 +81,8 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.UI_STEPS = SyncUIState;
 
     this.isChildAccount_ = false;
-    this.syncConsentOptionalEnabled_ = false;
     this.isMinorMode_ = false;
+    this.isArcRestricted_ = false;
   }
 
   get EXTERNAL_API() {
@@ -96,7 +100,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onBeforeShow(data) {
     this.setIsChildAccount(data['isChildAccount']);
-    this.syncConsentOptionalEnabled_ = data['syncConsentOptionalEnabled'];
+    this.isArcRestricted_ = data['isArcRestricted'];
   }
 
   /**
@@ -124,6 +128,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.initializeLoginScreen('SyncConsentScreen', {
       resetAllowed: true,
     });
+
+    if (this.locale === '') {
+      // Update the locale just in case the locale switched between the element
+      // loading start and `ready()` event (see https://crbug.com/1289095).
+      this.i18nUpdateLocale();
+    }
   }
 
   /**
@@ -160,8 +170,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   getDefaultUIStep_() {
-    return this.syncConsentOptionalEnabled_ ? SyncUIState.SPLIT :
-                                              SyncUIState.NO_SPLIT;
+    return SyncUIState.NO_SPLIT;
   }
 
   /**
@@ -170,7 +179,6 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    */
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.path);
-    assert(!this.syncConsentOptionalEnabled_);
     chrome.send('login.SyncConsentScreen.nonSplitSettingsContinue', [
       opted_in, this.$.reviewSettingsBox.checked, this.getConsentDescription_(),
       this.getConsentConfirmation_(e.path)
@@ -191,11 +199,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   onAcceptTap_(event) {
-    assert(this.syncConsentOptionalEnabled_);
-    assert(event.path);
-    chrome.send('login.SyncConsentScreen.acceptAndContinue', [
-      this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
-    ]);
+    // TODO(https://crbug.com/1278325): Remove this.
   }
 
   /**
@@ -204,11 +208,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
    * @private
    */
   onDeclineTap_(event) {
-    assert(this.syncConsentOptionalEnabled_);
-    assert(event.path);
-    chrome.send('login.SyncConsentScreen.declineAndContinue', [
-      this.getConsentDescription_(), this.getConsentConfirmation_(event.path)
-    ]);
+    // TODO(https://crbug.com/1278325): Remove this.
   }
 
   /**
@@ -249,6 +249,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
             .map(element => element.innerHTML.trim());
     assert(consentDescription);
     return consentDescription;
+  }
+
+  getReviewSettingText_(locale, isArcRestricted) {
+    if (isArcRestricted)
+      return this.i18n('syncConsentReviewSyncOptionsWithArcRestrictedText');
+    return this.i18n('syncConsentReviewSyncOptionsText');
   }
 
   /**

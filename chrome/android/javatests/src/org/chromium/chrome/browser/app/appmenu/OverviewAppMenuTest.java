@@ -21,6 +21,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -46,8 +48,8 @@ public class OverviewAppMenuTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getLayoutManager().showOverview(true); });
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
     }
 
     @Test
@@ -220,7 +222,8 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+                    + "/allow_disable_price_annotations/true"})
     public void
     testTrackPriceOnTabsIsEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -238,7 +241,8 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+                    + "/allow_disable_price_annotations/true"})
     public void
     testTrackPriceOnTabsIsDisabledInIncognitoMode() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -257,11 +261,31 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+                    + "/allow_disable_price_annotations/true"})
     public void
     testTrackPriceOnTabsIsDisabledIfSyncDisabledOrNotSignedIn() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.track_prices_row_menu_id));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    @Features.EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
+    @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+                    + "/allow_disable_price_annotations/false/enable_price_notification/false"})
+    public void
+    testTrackPriceOnTabsIsDisabledIfNoSettingsAvailable() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
 
@@ -293,7 +317,8 @@ public class OverviewAppMenuTest {
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
             ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
+                    + "/allow_disable_price_annotations/true"})
     public void
     testTrackPriceOnTabsIsEnabledWithStartSurface() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {

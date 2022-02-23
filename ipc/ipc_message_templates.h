@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
+#include "ipc/ipc_sync_message.h"
 
 namespace IPC {
 

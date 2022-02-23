@@ -24,16 +24,17 @@ AppFetcherManager::~AppFetcherManager() = default;
 
 void AppFetcherManager::GetApps(ResultType result_type,
                                 ResultCallback callback) {
-  if (g_test_fetcher_) {
-    g_test_fetcher_->GetApps(std::move(callback));
-    return;
-  }
-
   switch (result_type) {
+    case ResultType::kTestType:
+      DCHECK(g_test_fetcher_);
+      g_test_fetcher_->GetApps(std::move(callback));
+      return;
     case ResultType::kRecommendedArcApps:
+      DCHECK(recommended_arc_app_fetcher_);
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
     case ResultType::kRemoteUrlSearch:
+      DCHECK(remote_url_fetcher_);
       remote_url_fetcher_->GetApps(std::move(callback));
       return;
   }

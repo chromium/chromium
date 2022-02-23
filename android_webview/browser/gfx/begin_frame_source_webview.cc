@@ -6,6 +6,7 @@
 
 #include "android_webview/browser_jni_headers/RootBeginFrameSourceWebView_jni.h"
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "components/power_scheduler/power_mode.h"
@@ -35,7 +36,7 @@ class BeginFrameSourceWebView::BeginFrameObserver
   bool WantsAnimateOnlyBeginFrames() const override { return true; }
 
  private:
-  BeginFrameSourceWebView* const owner_;
+  const raw_ptr<BeginFrameSourceWebView> owner_;
   viz::BeginFrameArgs last_used_begin_frame_args_;
 };
 
@@ -125,7 +126,9 @@ RootBeginFrameSourceWebView* RootBeginFrameSourceWebView::GetInstance() {
 }
 
 RootBeginFrameSourceWebView::RootBeginFrameSourceWebView()
-    : begin_frame_source_(kNotRestartableId, 60.0f),
+    : begin_frame_source_(kNotRestartableId,
+                          60.0f,
+                          /*requires_align_with_java=*/true),
       j_object_(Java_RootBeginFrameSourceWebView_Constructor(
           base::android::AttachCurrentThread(),
           reinterpret_cast<jlong>(this))) {

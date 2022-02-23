@@ -9,6 +9,7 @@
 #define CHROME_BROWSER_BROWSER_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -22,44 +23,48 @@ extern const base::Feature kClosedTabCache;
 extern const base::Feature kColorProviderRedirectionForThemeProvider;
 
 extern const base::Feature kDestroyProfileOnBrowserClose;
+extern const base::Feature kDestroySystemProfiles;
+
+extern const base::Feature kNukeProfileBeforeCreateMultiAsync;
 
 extern const base::Feature kPromoBrowserCommands;
 extern const char kBrowserCommandIdParam[];
+
+extern const base::Feature kUseManagementService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kDoubleTapToZoomInTabletMode;
 extern const base::Feature kQuickSettingsPWANotifications;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 extern const base::Feature kEnableUniveralLinks;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 extern const base::Feature kCopyLinkToText;
 extern const base::Feature kMuteNotificationSnoozeAction;
 #endif
 
-extern const base::Feature kPwaUpdateDialogForNameAndIcon;
-
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kUserDataSnapshot;
+#if BUILDFLAG(IS_WIN)
+extern const base::Feature kPrewarmSearchResultsPageFonts;
 #endif
+
+extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 
 extern const base::Feature kSandboxExternalProtocolBlocked;
 extern const base::Feature kTriggerNetworkDataMigration;
 
-// Returns true if network context data should be migrated to the new data path.
-// Prefer using this function over querying the kTriggerNetworkDataMigration
-// feature directly, as there might be other platform specific factors that
-// determine whether data migration should occur or not.
-bool ShouldTriggerNetworkDataMigration();
-
 extern const base::Feature kWebUsbDeviceDetection;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const base::Feature kCertificateTransparencyAndroid;
 #endif
+
+extern const base::Feature kLargeFaviconFromGoogle;
+extern const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip;
+
+extern const base::Feature kObserverBasedPostProfileInit;
 
 }  // namespace features
 

@@ -209,6 +209,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   AuthenticationServiceFake* auth_service_;

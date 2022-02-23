@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -52,10 +53,9 @@ KeyedService* OptimizationGuideKeyedServiceFactory::BuildServiceInstanceFor(
   // are required are not available when the browser context for the signin
   // profile is created.
   Profile* profile = Profile::FromBrowserContext(context);
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
-
   return new OptimizationGuideKeyedService(context);
 }
 

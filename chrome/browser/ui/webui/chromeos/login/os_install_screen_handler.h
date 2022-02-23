@@ -13,6 +13,10 @@ namespace ash {
 class OsInstallScreen;
 }
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace login {
 class LocalizedValuesBuilder;
 }  // namespace login
@@ -40,7 +44,7 @@ class OsInstallScreenView {
   virtual void ShowStep(const char* step) = 0;
   virtual void SetStatus(OsInstallClient::Status status) = 0;
   virtual void SetServiceLogs(const std::string& service_log) = 0;
-  virtual void UpdateCountdownStringWithTime(int64_t time_left) = 0;
+  virtual void UpdateCountdownStringWithTime(base::TimeDelta time_left) = 0;
 };
 
 class OsInstallScreenHandler : public BaseScreenHandler,
@@ -66,7 +70,7 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void ShowStep(const char* step) override;
   void SetStatus(OsInstallClient::Status status) override;
   void SetServiceLogs(const std::string& service_log) override;
-  void UpdateCountdownStringWithTime(int64_t time_left) override;
+  void UpdateCountdownStringWithTime(base::TimeDelta time_left) override;
 
   ash::OsInstallScreen* screen_ = nullptr;
 

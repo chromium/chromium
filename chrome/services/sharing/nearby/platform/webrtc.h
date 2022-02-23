@@ -5,16 +5,16 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_
 
-#include "third_party/nearby/src/cpp/platform/api/webrtc.h"
+#include "third_party/nearby/src/internal/platform/implementation/webrtc.h"
 
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/p2p.mojom.h"

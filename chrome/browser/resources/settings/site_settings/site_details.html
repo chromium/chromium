@@ -46,11 +46,13 @@
         [[i18n('siteSettingsSiteClearStorageConfirmationNew', pageTitle)]]
         <div class="detail-list">
           <div class="detail">
-            <iron-icon icon="all-sites:logout"></iron-icon>
+            <iron-icon icon="all-sites:logout" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageSignOut}
           </div>
           <div class="detail">
-            <iron-icon icon="all-sites:offline"></iron-icon>
+            <iron-icon icon="all-sites:offline" aria-hidden="true"
+              role="presentation"></iron-icon>
             $i18n{siteSettingsSiteClearStorageOfflineData}
           </div>
         </div>
@@ -77,11 +79,15 @@
         <div class="list-item" id="storage"
             hidden$="[[!hasUsage_(storedData_, numCookies_)]]">
           <div class="start" id="storageText">
-            <div hidden$="[[!storedData_]]">[[storedData_]]</div>
+            <div id="storedData" hidden$="[[!storedData_]]">
+              [[storedData_]]
+            </div>
             <div hidden$="[[!hasDataAndCookies_(storedData_, numCookies_)]]">
               &nbsp;&middot;&nbsp;
             </div>
-            <div hidden$="[[!numCookies_]]">[[numCookies_]]</div>
+            <div id="numCookies" hidden$="[[!numCookies_]]">
+              [[numCookies_]]
+            </div>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"
@@ -211,10 +217,5 @@
       <site-details-permission
           category="[[contentSettingsTypesEnum_.FONT_ACCESS]]"
           icon="settings:font-access" label="$i18n{fonts}">
-      </site-details-permission>
-      <site-details-permission
-          category="[[contentSettingsTypesEnum_.FILE_HANDLING]]"
-          icon="settings:file-handling"
-          label="$i18n{siteSettingsFileHandling}">
       </site-details-permission>
     </div>

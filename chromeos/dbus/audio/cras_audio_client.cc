@@ -126,6 +126,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for CRAS to trigger an audio related survey.
+    // The HaTS survey framework lives in Chrome and we use this signal as an
+    // interface for CRAS to suggest when is proper to trigger the survey from
+    // the system's perspective.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kSurveyTrigger,
+        base::BindRepeating(&CrasAudioClientImpl::SurveyTriggerReceived,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
@@ -689,6 +700,56 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(std::move(volume_state));
   }
 
+  bool PopSurveyKeyValue(dbus::MessageReader* array_reader,
+                         std::string* key,
+                         std::string* val) {
+    dbus::MessageReader dict_entry_reader(nullptr);
+
+    if (!array_reader->HasMoreData() ||
+        !array_reader->PopDictEntry(&dict_entry_reader) ||
+        !dict_entry_reader.PopString(key) ||
+        !dict_entry_reader.PopVariantOfString(val)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void SurveyTriggerReceived(dbus::Signal* signal) {
+    dbus::MessageReader signal_reader(signal);
+    dbus::MessageReader array_reader(nullptr);
+    base::flat_map<std::string, std::string> res;
+
+    while (signal_reader.HasMoreData()) {
+      if (!signal_reader.PopArray(&array_reader)) {
+        LOG(ERROR) << "Error reading signal from cras: " << signal->ToString();
+        return;
+      }
+
+      // Chrome HaTS survey system supports logging a map of survey specific
+      // data for better data interpretation.
+      // For general audio satisfaction survey as an example, we shall get the
+      // snapshot of stream type, client type and also active node type pair
+      // when the user closes a stream living longer than a specified perioid
+      // of time. We can use the data to identify the user scenario we'd like to
+      // improve, such as voice communication on Chrome through Bluetooth.
+      std::string key;
+      std::string val;
+      while (array_reader.HasMoreData()) {
+        if (!PopSurveyKeyValue(&array_reader, &key, &val)) {
+          LOG(ERROR) << "Error reading key value pairs of the data from cras: "
+                     << signal->ToString();
+          return;
+        }
+
+        res[key] = val;
+      }
+    }
+
+    for (auto& observer : observers_)
+      observer.SurveyTriggered(res);
+  }
+
   void OnGetDefaultOutputBufferSize(DBusMethodCallback<int> callback,
                                     dbus::Response* response) {
     if (!response) {
@@ -1051,6 +1112,9 @@ void CrasAudioClient::Observer::BluetoothBatteryChanged(
 
 void CrasAudioClient::Observer::NumberOfInputStreamsWithPermissionChanged(
     const base::flat_map<std::string, uint32_t>& num_input_streams) {}
+
+void CrasAudioClient::Observer::SurveyTriggered(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

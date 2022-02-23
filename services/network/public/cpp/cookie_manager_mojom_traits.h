@@ -15,9 +15,10 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_keychain.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/same_party_context.h"
-#include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -78,6 +79,19 @@ struct EnumTraits<network::mojom::CookieSameSiteContextMetadataDowngradeType,
 };
 
 template <>
+struct EnumTraits<network::mojom::ContextRedirectTypeBug1221316,
+                  net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                      ContextRedirectTypeBug1221316> {
+  static network::mojom::ContextRedirectTypeBug1221316 ToMojom(
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316 input);
+  static bool FromMojom(
+      network::mojom::ContextRedirectTypeBug1221316 input,
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316* output);
+};
+
+template <>
 struct EnumTraits<network::mojom::CookieSourceScheme, net::CookieSourceScheme> {
   static network::mojom::CookieSourceScheme ToMojom(
       net::CookieSourceScheme input);
@@ -104,6 +118,13 @@ struct StructTraits<
       cross_site_redirect_downgrade(
           const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
     return m.cross_site_redirect_downgrade;
+  }
+
+  static net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+      ContextRedirectTypeBug1221316
+      redirect_type_bug_1221316(
+          const net::CookieOptions::SameSiteCookieContext::ContextMetadata& m) {
+    return m.redirect_type_bug_1221316;
   }
 
   static bool Read(network::mojom::CookieSameSiteContextMetadataDataView,
@@ -189,22 +210,28 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
     return cpk.from_script();
   }
 
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const net::CookiePartitionKey& cpk) {
+    return cpk.nonce();
+  }
+
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
                    net::CookiePartitionKey* out);
 };
 
 template <>
-struct StructTraits<network::mojom::CookiePartitionKeychainDataView,
-                    net::CookiePartitionKeychain> {
+struct StructTraits<network::mojom::CookiePartitionKeyCollectionDataView,
+                    net::CookiePartitionKeyCollection> {
   static bool contains_all_partitions(
-      const net::CookiePartitionKeychain& keychain) {
-    return keychain.ContainsAllKeys();
+      const net::CookiePartitionKeyCollection& key_collection) {
+    return key_collection.ContainsAllKeys();
   }
   static const std::vector<net::CookiePartitionKey> keys(
-      const net::CookiePartitionKeychain& keychain);
+      const net::CookiePartitionKeyCollection& key_collection);
 
-  static bool Read(network::mojom::CookiePartitionKeychainDataView keychain,
-                   net::CookiePartitionKeychain* out);
+  static bool Read(network::mojom::CookiePartitionKeyCollectionDataView
+                       key_collection_data_view,
+                   net::CookiePartitionKeyCollection* out);
 };
 
 template <>

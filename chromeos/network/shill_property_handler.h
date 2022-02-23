@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_NETWORK_SHILL_PROPERTY_HANDLER_H_
 #define CHROMEOS_NETWORK_SHILL_PROPERTY_HANDLER_H_
 
-#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -46,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
    public:
     // Called when the entries in a managed list have changed.
     virtual void UpdateManagedList(ManagedState::ManagedType type,
-                                   const base::ListValue& entries) = 0;
+                                   const base::Value& entries) = 0;
 
     // Called when the properties for a managed state have changed.
     // |properties| is expected to be of type DICTIONARY.
@@ -191,17 +190,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
 
   // Requests properties for new entries in the list for |type|.
   void UpdateProperties(ManagedState::ManagedType type,
-                        const base::ListValue& entries);
+                        const base::Value& entries);
 
   // Updates the Shill property observers to observe any entries for |type|.
   void UpdateObserved(ManagedState::ManagedType type,
-                      const base::ListValue& entries);
-
+                      const base::Value& entries);
 
   // Sets |*_technologies_| to contain only entries in |technologies|.
-  void UpdateAvailableTechnologies(const base::ListValue& technologies);
-  void UpdateEnabledTechnologies(const base::ListValue& technologies);
-  void UpdateUninitializedTechnologies(const base::ListValue& technologies);
+  void UpdateAvailableTechnologies(const base::Value& technologies);
+  void UpdateEnabledTechnologies(const base::Value& technologies);
+  void UpdateUninitializedTechnologies(const base::Value& technologies);
   void UpdateProhibitedTechnologies(const std::string& technologies);
 
   void EnableTechnologyFailed(const std::string& technology,

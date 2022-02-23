@@ -8,18 +8,30 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ComponentTypeToName} from './data.js';
+import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, CalibrationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
  * 'reimaging-calibration-page' is for recalibration of the
  * various components during the reimaging process.
  */
-export class ReimagingCalibrationRunPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingCalibrationRunPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingCalibrationRunPage extends
+    ReimagingCalibrationRunPageBase {
   static get is() {
     return 'reimaging-calibration-run-page';
   }
@@ -43,8 +55,7 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
        */
       calibrationStatusMessage_: {
         type: String,
-        // TODO(gavindodd): update for i18n
-        value: 'Calibration starting...',
+        value: '',
       }
     };
   }
@@ -59,6 +70,8 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
 
     this.shimlessRmaService_.observeCalibrationProgress(
         this.calibrationObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    this.calibrationStatusMessage_ = this.i18n('runCalibrationStartingText');
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -85,6 +98,8 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
   onCalibrationStepComplete(status) {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
+        this.calibrationStatusMessage_ =
+            this.i18n('runCalibrationCompleteText');
         this.calibrationComplete_ = true;
         this.dispatchEvent(new CustomEvent(
             'disable-next-button',
@@ -109,28 +124,15 @@ export class ReimagingCalibrationRunPageElement extends PolymerElement {
   }
 
   /**
-   * @private
-   * @return {string}
    * @param {!CalibrationComponentStatus} status
+   * @return {string}
+   * @private
    */
   getCalibrationStatusString_(status) {
-    const componentType = ComponentTypeToName[status.component];
-    const percent = Math.round(status.progress * 100.0);
-    // TODO(gavindodd): update for i18n
-    const statusMessage = {
-      [CalibrationStatus.kCalibrationWaiting]:
-          `Waiting to calibrate ${componentType}`,
-      [CalibrationStatus.kCalibrationInProgress]:
-          `Calibrating ${componentType} ${percent}% complete`,
-      [CalibrationStatus.kCalibrationComplete]: `Calibrated ${componentType}`,
-      [CalibrationStatus.kCalibrationFailed]:
-          `Failed to calibrated ${componentType}`,
-      [CalibrationStatus.kCalibrationFailed]:
-          `Skipped calibrating ${componentType}`,
-    };
-    return statusMessage[status.status];
+    const componentType = this.i18n(ComponentTypeToId[status.component]);
+    return this.i18n('runCalibrationCalibratingComponent', componentType);
   }
 }
 
 customElements.define(
-    ReimagingCalibrationRunPageElement.is, ReimagingCalibrationRunPageElement);
+    ReimagingCalibrationRunPage.is, ReimagingCalibrationRunPage);

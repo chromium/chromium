@@ -165,7 +165,7 @@ TEST_F(SharedGpuContextTest, Canvas2DLayerBridgeAutoRecovery) {
   // Canvas2DLayerBridge will restore the context and succeed.
   gl_.SetIsContextLost(true);
   EXPECT_FALSE(SharedGpuContext::IsValidWithoutRestoring());
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsAccelerated());

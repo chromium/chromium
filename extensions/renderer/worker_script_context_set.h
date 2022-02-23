@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_local.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/renderer/script_context_set_iterable.h"

@@ -19,7 +19,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   ~MockXRDeviceHookBase() override;
 
   // device_test::mojom::XRTestHook
-  void OnFrameSubmitted(device_test::mojom::SubmittedFrameDataPtr frame_data,
+  void OnFrameSubmitted(std::vector<device_test::mojom::ViewDataPtr> views,
                         device_test::mojom::XRTestHook::OnFrameSubmittedCallback
                             callback) override;
   void WaitGetDeviceConfig(

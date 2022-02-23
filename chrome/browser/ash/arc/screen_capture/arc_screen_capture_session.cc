@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/notifications/screen_capture_notification_ui_ash.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -184,8 +184,26 @@ void ArcScreenCaptureSession::NotificationStop() {
   Close();
 }
 
+void ArcScreenCaptureSession::SetOutputBufferDeprecated(
+    mojo::ScopedHandle graphics_buffer,
+    uint32_t stride,
+    SetOutputBufferDeprecatedCallback callback) {
+  // Defined locally to avoid having to add a dependency on drm_fourcc.h
+  constexpr uint64_t DRM_FORMAT_MOD_LINEAR = 0;
+
+  SetOutputBuffer(std::move(graphics_buffer), gfx::BufferFormat::RGBX_8888,
+                  DRM_FORMAT_MOD_LINEAR, stride,
+                  base::BindOnce(
+                      [](base::OnceCallback<void()> callback) {
+                        std::move(callback).Run();
+                      },
+                      std::move(callback)));
+}
+
 void ArcScreenCaptureSession::SetOutputBuffer(
     mojo::ScopedHandle graphics_buffer,
+    gfx::BufferFormat buffer_format,
+    uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -203,8 +221,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
-  // Dummy modifier.
-  handle.native_pixmap_handle.modifier = 0;
+  handle.native_pixmap_handle.modifier = buffer_format_modifier;
   base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
@@ -219,7 +236,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
           client_native_pixmap_factory_.get(), std::move(handle), size_,
-          gfx::BufferFormat::RGBX_8888, gfx::BufferUsage::SCANOUT,
+          buffer_format, gfx::BufferUsage::SCANOUT,
           gpu::GpuMemoryBufferImpl::DestructionCallback());
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed creating GpuMemoryBuffer";
@@ -307,7 +324,7 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   // The returned texture will later be bound to GL_TEXTURE_2D target, verify it
   // here:
   DCHECK_EQ(result->GetTextureResult()->planes[0].texture_target,
-            GL_TEXTURE_2D);
+            static_cast<uint32_t>(GL_TEXTURE_2D));
 
   std::unique_ptr<DesktopTexture> desktop_texture =
       std::make_unique<DesktopTexture>(src_texture, result->size(),

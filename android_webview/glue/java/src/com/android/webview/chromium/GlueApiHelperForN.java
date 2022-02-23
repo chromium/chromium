@@ -4,7 +4,6 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -13,6 +12,8 @@ import android.os.UserManager;
 import android.webkit.ServiceWorkerController;
 import android.webkit.WebView;
 import android.webkit.WebViewDelegate;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnN;
 
@@ -24,7 +25,7 @@ import org.chromium.base.annotations.VerifiesOnN;
  * specific to glue layer.
  */
 @VerifiesOnN
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public final class GlueApiHelperForN {
     private GlueApiHelperForN() {}
 

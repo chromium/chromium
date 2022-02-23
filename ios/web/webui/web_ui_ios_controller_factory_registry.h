@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 

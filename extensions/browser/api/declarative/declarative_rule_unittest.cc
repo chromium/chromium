@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -36,7 +37,7 @@ std::unique_ptr<base::DictionaryValue> SimpleManifest() {
 struct RecordingCondition {
   typedef int MatchData;
 
-  URLMatcherConditionFactory* factory;
+  raw_ptr<URLMatcherConditionFactory> factory;
   std::unique_ptr<base::Value> value;
 
   void GetURLMatcherConditionSets(
@@ -50,14 +51,14 @@ struct RecordingCondition {
       const base::Value& condition,
       std::string* error) {
     const base::DictionaryValue* dict = nullptr;
-    if (condition.GetAsDictionary(&dict) && dict->HasKey("bad_key")) {
+    if (condition.GetAsDictionary(&dict) && dict->FindKey("bad_key")) {
       *error = "Found error key";
       return nullptr;
     }
 
     std::unique_ptr<RecordingCondition> result(new RecordingCondition());
     result->factory = url_matcher_condition_factory;
-    result->value.reset(condition.DeepCopy());
+    result->value = base::Value::ToUniquePtrValue(condition.Clone());
     return result;
   }
 };
@@ -91,8 +92,8 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   EXPECT_EQ(2u, result->conditions().size());
 
   EXPECT_EQ(matcher.condition_factory(), result->conditions()[0]->factory);
-  EXPECT_TRUE(ParseJsonDeprecated("{\"key\": 1}")
-                  ->Equals(result->conditions()[0]->value.get()));
+  EXPECT_EQ(*ParseJsonDeprecated("{\"key\": 1}"),
+            *result->conditions()[0]->value);
 }
 
 struct FulfillableCondition {
@@ -219,11 +220,11 @@ class SummingAction : public base::RefCounted<SummingAction> {
       bool* bad_message) {
     const base::DictionaryValue* dict = nullptr;
     EXPECT_TRUE(action.GetAsDictionary(&dict));
-    if (dict->HasKey("error")) {
+    if (dict->FindKey("error")) {
       EXPECT_TRUE(dict->GetString("error", error));
       return nullptr;
     }
-    if (dict->HasKey("bad")) {
+    if (dict->FindKey("bad")) {
       *bad_message = true;
       return nullptr;
     }

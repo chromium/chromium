@@ -81,7 +81,7 @@ proto::ElementType ToElementType(
 WebLoadPolicy ToWebLoadPolicy(LoadPolicy load_policy) {
   switch (load_policy) {
     case LoadPolicy::EXPLICITLY_ALLOW:
-      FALLTHROUGH;
+      [[fallthrough]];
     case LoadPolicy::ALLOW:
       return WebLoadPolicy::kAllow;
     case LoadPolicy::DISALLOW:
@@ -124,6 +124,12 @@ WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebSocketConnect(
     const blink::WebURL& url) {
   DCHECK(url.ProtocolIs("ws") || url.ProtocolIs("wss"));
   return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBSOCKET);
+}
+
+WebLoadPolicy
+WebDocumentSubresourceFilterImpl::GetLoadPolicyForWebTransportConnect(
+    const blink::WebURL& url) {
+  return getLoadPolicyImpl(url, proto::ELEMENT_TYPE_WEBTRANSPORT);
 }
 
 void WebDocumentSubresourceFilterImpl::ReportDisallowedLoad() {

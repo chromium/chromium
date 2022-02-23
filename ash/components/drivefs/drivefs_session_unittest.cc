@@ -6,16 +6,18 @@
 
 #include <utility>
 
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,8 +51,9 @@ class DriveFsDiskMounterTest : public testing::Test {
                       testing::Contains(
                           "datadir=/path/to/profile/GCache/v2/salt-g-ID"),
                       testing::Contains("myfiles=/path/to/profile/MyFiles")),
-                  _, chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-        .WillOnce(testing::SaveArg<0>(&source));
+                  _, chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+        .WillOnce(testing::DoAll(testing::SaveArg<0>(&source),
+                                 MoveArg<6>(&mount_callback_)));
 
     mounter->Mount(token, base::FilePath(kExpectedDataDir),
                    base::FilePath(kExpectedMyFilesDir), kExpectedMountDir,
@@ -60,17 +63,11 @@ class DriveFsDiskMounterTest : public testing::Test {
     return source.substr(strlen("drivefs://"));
   }
 
-  void DispatchMountEvent(
-      chromeos::disks::DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
-      const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
-    disk_manager_.NotifyMountEvent(event, error_code, mount_info);
-  }
-
   MOCK_METHOD1(OnCompleted, void(base::FilePath));
 
   base::test::TaskEnvironment task_environment_;
-  chromeos::disks::MockDiskMountManager disk_manager_;
+  ash::disks::MockDiskMountManager disk_manager_;
+  ash::disks::DiskMountManager::MountPathCallback mount_callback_;
 };
 
 TEST_F(DriveFsDiskMounterTest, MountUnmount) {
@@ -79,12 +76,11 @@ TEST_F(DriveFsDiskMounterTest, MountUnmount) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnCompleted(base::FilePath(kExpectedMountPath)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_NONE,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
+  std::move(mount_callback_)
+      .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
+                                        kExpectedMountPath,
+                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                                        {}});
   run_loop.Run();
 
   EXPECT_CALL(disk_manager_, UnmountPath(kExpectedMountPath, _));
@@ -97,12 +93,11 @@ TEST_F(DriveFsDiskMounterTest, DestroyAfterMounted) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnCompleted(base::FilePath(kExpectedMountPath)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_NONE,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
+  std::move(mount_callback_)
+      .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
+                                        kExpectedMountPath,
+                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                                        {}});
   run_loop.Run();
 
   EXPECT_CALL(disk_manager_, UnmountPath(kExpectedMountPath, _));
@@ -122,41 +117,12 @@ TEST_F(DriveFsDiskMounterTest, MountError) {
   base::RunLoop run_loop;
   EXPECT_CALL(*this, OnCompleted(base::FilePath()))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
-  run_loop.Run();
-}
-
-// DiskMountManager sometimes sends mount events for all existing mount points.
-// Mount events beyond the first should be ignored.
-TEST_F(DriveFsDiskMounterTest, MultipleMountNotifications) {
-  auto mounter = DiskMounter::Create(&disk_manager_);
-  auto token = StartMount(mounter.get());
-  base::RunLoop run_loop;
-  EXPECT_CALL(*this, OnCompleted(base::FilePath(kExpectedMountPath)))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_NONE,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_NONE,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_NONE,
-                     {base::StrCat({"drivefs://", token}),
-                      kExpectedMountPath,
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
+  std::move(mount_callback_)
+      .Run(chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
+           {base::StrCat({"drivefs://", token}),
+            kExpectedMountPath,
+            chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+            {}});
   run_loop.Run();
 }
 

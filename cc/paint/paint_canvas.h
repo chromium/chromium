@@ -6,12 +6,15 @@
 #define CC_PAINT_PAINT_CANVAS_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_text_property_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
 class SkTextBlob;
@@ -79,6 +82,7 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual void restoreToCount(int save_count) = 0;
   virtual void translate(SkScalar dx, SkScalar dy) = 0;
   virtual void scale(SkScalar sx, SkScalar sy) = 0;
+  void scale(SkScalar s) { scale(s, s); }
   virtual void rotate(SkScalar degrees) = 0;
   // TODO(aaronhk): crbug.com/1153330 deprecate these in favor of the SkM44
   // versions.
@@ -188,7 +192,9 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                            const SkRect& dst,
                            float t,
-                           SkottieFrameDataMap images) = 0;
+                           SkottieFrameDataMap images,
+                           const SkottieColorMap& color_map,
+                           SkottieTextPropertyValueMap text_map) = 0;
 
   virtual void drawTextBlob(sk_sp<SkTextBlob> blob,
                             SkScalar x,
@@ -267,7 +273,7 @@ class CC_PAINT_EXPORT PaintCanvasAutoRestore {
   }
 
  private:
-  PaintCanvas* canvas_ = nullptr;
+  raw_ptr<PaintCanvas> canvas_ = nullptr;
   int save_count_ = 0;
 };
 

@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -16,7 +18,12 @@
 
 namespace blink {
 
-TEST(ResourceTest, RevalidateWithFragment) {
+class ResourceTest : public testing::Test {
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(ResourceTest, RevalidateWithFragment) {
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -33,7 +40,7 @@ TEST(ResourceTest, RevalidateWithFragment) {
   resource->ResponseReceived(revalidating_response);
 }
 
-TEST(ResourceTest, Vary) {
+TEST_F(ResourceTest, Vary) {
   const KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -88,7 +95,7 @@ TEST(ResourceTest, Vary) {
   EXPECT_FALSE(resource->MustReloadDueToVaryHeader(new_request));
 }
 
-TEST(ResourceTest, RevalidationFailed) {
+TEST_F(ResourceTest, RevalidationFailed) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   const KURL url("http://test.example.com/");
@@ -129,7 +136,7 @@ TEST(ResourceTest, RevalidationFailed) {
   EXPECT_FALSE(resource->IsAlive());
 }
 
-TEST(ResourceTest, RevalidationSucceeded) {
+TEST_F(ResourceTest, RevalidationSucceeded) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   const KURL url("http://test.example.com/");
@@ -165,7 +172,7 @@ TEST(ResourceTest, RevalidationSucceeded) {
   EXPECT_FALSE(client->NotifyFinishedCalled());
 }
 
-TEST(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
+TEST_F(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   const KURL url("http://test.example.com/");
@@ -197,7 +204,7 @@ TEST(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   EXPECT_FALSE(client->NotifyFinishedCalled());
 }
 
-TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
+TEST_F(ResourceTest, RevalidationSucceededUpdateHeaders) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   const KURL url("http://test.example.com/");
@@ -273,7 +280,7 @@ TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
   EXPECT_FALSE(client->NotifyFinishedCalled());
 }
 
-TEST(ResourceTest, RedirectDuringRevalidation) {
+TEST_F(ResourceTest, RedirectDuringRevalidation) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   const KURL url("http://test.example.com/1");
@@ -358,7 +365,7 @@ class ScopedResourceMockClock {
   ~ScopedResourceMockClock() { Resource::SetClockForTesting(nullptr); }
 };
 
-TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
+TEST_F(ResourceTest, StaleWhileRevalidateCacheControl) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler> mock;
   ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
@@ -386,7 +393,7 @@ TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
   EXPECT_TRUE(resource->ShouldRevalidateStaleResponse());
 }
 
-TEST(ResourceTest, StaleWhileRevalidateCacheControlWithRedirect) {
+TEST_F(ResourceTest, StaleWhileRevalidateCacheControlWithRedirect) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler> mock;
   ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
@@ -427,13 +434,13 @@ TEST(ResourceTest, StaleWhileRevalidateCacheControlWithRedirect) {
 }
 
 // This is a regression test for https://crbug.com/1062837.
-TEST(ResourceTest, DefaultOverheadSize) {
+TEST_F(ResourceTest, DefaultOverheadSize) {
   const KURL url("http://127.0.0.1:8000/foo.html");
   auto* resource = MakeGarbageCollected<MockResource>(url);
   EXPECT_EQ(resource->CalculateOverheadSizeForTest(), resource->OverheadSize());
 }
 
-TEST(ResourceTest, SetIsAdResource) {
+TEST_F(ResourceTest, SetIsAdResource) {
   const KURL url("http://127.0.0.1:8000/foo.html");
   auto* resource = MakeGarbageCollected<MockResource>(url);
   EXPECT_FALSE(resource->GetResourceRequest().IsAdResource());
@@ -441,7 +448,7 @@ TEST(ResourceTest, SetIsAdResource) {
   EXPECT_TRUE(resource->GetResourceRequest().IsAdResource());
 }
 
-TEST(ResourceTest, GarbageCollection) {
+TEST_F(ResourceTest, GarbageCollection) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   const KURL url("http://test.example.com/");

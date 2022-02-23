@@ -1,10 +1,10 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
-load("@org_tensorflow//tensorflow/lite/experimental/ios:ios.bzl", "TFL_DEFAULT_TAGS", "TFL_DISABLED_SANITIZER_TAGS", "TFL_MINIMUM_OS_VERSION")
+load("@org_tensorflow//tensorflow/lite/ios:ios.bzl", "TFL_DEFAULT_TAGS", "TFL_DISABLED_SANITIZER_TAGS", "TFL_MINIMUM_OS_VERSION")
 load("@build_bazel_rules_apple//apple:ios.bzl", "ios_unit_test")
 load("@org_tensorflow//tensorflow/lite:special_rules.bzl", "tflite_ios_lab_runner")
 
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -13,8 +13,9 @@ objc_library(
     srcs = ["Sources/TFLBertNLClassifier.m"],
     hdrs = ["Sources/TFLBertNLClassifier.h"],
     module_name = "TFLBertNLClassifier",
+    visibility = ["//tensorflow_lite_support:internal"],
     deps = [
-        "//tensorflow_lite_support/cc/task/text/nlclassifier:bert_nl_classifier_c_api",
+        "//tensorflow_lite_support/c/task/text:bert_nl_classifier",
         "@google_toolbox_for_mac//:GTM_Defines",
     ],
 )
@@ -24,12 +25,11 @@ swift_library(
     testonly = 1,
     srcs = ["Tests/TFLBertNLClassifierTest.swift"],
     data = [
-        "//tensorflow_lite_support/cc/test/testdata/task/text:nl_classifier_models",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:bert_nl_classifier_models",
     ],
     tags = TFL_DEFAULT_TAGS,
     deps = [
         ":TFLBertNLClassifier",
-        "//third_party/swift/xctest",
     ],
 )
 
@@ -48,7 +48,7 @@ objc_library(
     testonly = 1,
     srcs = ["Tests/TFLBertNLClassifierTest.m"],
     data = [
-        "//tensorflow_lite_support/cc/test/testdata/task/text:nl_classifier_models",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:bert_nl_classifier_models",
     ],
     tags = TFL_DEFAULT_TAGS,
     deps = [
@@ -71,8 +71,9 @@ objc_library(
     srcs = ["Sources/TFLNLClassifier.m"],
     hdrs = ["Sources/TFLNLClassifier.h"],
     module_name = "TFLNLClassifier",
+    visibility = ["//tensorflow_lite_support:internal"],
     deps = [
-        "//tensorflow_lite_support/cc/task/text/nlclassifier:nl_classifier_c_api",
+        "//tensorflow_lite_support/c/task/text:nl_classifier",
         "@google_toolbox_for_mac//:GTM_Defines",
     ],
 )
@@ -87,7 +88,6 @@ swift_library(
     tags = TFL_DEFAULT_TAGS,
     deps = [
         ":TFLNLClassifier",
-        "//third_party/swift/xctest",
     ],
 )
 

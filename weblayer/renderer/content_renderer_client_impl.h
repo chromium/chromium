@@ -5,8 +5,8 @@
 #ifndef WEBLAYER_RENDERER_CONTENT_RENDERER_CLIENT_IMPL_H_
 #define WEBLAYER_RENDERER_CONTENT_RENDERER_CLIENT_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
@@ -42,13 +42,13 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
   void PrepareErrorPage(content::RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,
+                        content::mojom::AlternativeErrorPageOverrideInfoPtr
+                            alternative_error_page_info,
                         std::string* error_html) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType provider_type) override;
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
   bool IsPrefetchOnly(content::RenderFrame* render_frame) override;
   bool DeferMediaLoad(content::RenderFrame* render_frame,
@@ -56,7 +56,7 @@ class ContentRendererClientImpl : public content::ContentRendererClient {
                       base::OnceClosure closure) override;
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<service_manager::LocalInterfaceProvider>
       local_interface_provider_;
   std::unique_ptr<SpellCheck> spellcheck_;

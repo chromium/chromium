@@ -5,7 +5,6 @@
 #ifndef MOJO_CORE_BROKER_H_
 #define MOJO_CORE_BROKER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/synchronization/lock.h"

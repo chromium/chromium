@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/system_node_impl.h"
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -74,7 +75,7 @@ class LenientMockObserver : public SystemNodeImpl::Observer {
   }
 
  private:
-  const SystemNode* notified_system_node_ = nullptr;
+  raw_ptr<const SystemNode> notified_system_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

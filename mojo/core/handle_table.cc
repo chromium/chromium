@@ -65,13 +65,19 @@ bool HandleTable::AddDispatchersFromTransit(
     const std::vector<Dispatcher::DispatcherInTransit>& dispatchers,
     MojoHandle* handles) {
   // Oops, we're out of handles.
-  if (next_available_handle_ == MOJO_HANDLE_INVALID)
+  if (next_available_handle_ == MOJO_HANDLE_INVALID) {
     return false;
+  }
 
-  DCHECK_LE(dispatchers.size(), std::numeric_limits<uint32_t>::max());
+  // MOJO_HANDLE_INVALID is zero.
+  DCHECK_GE(next_available_handle_, 1u);
+
   // If this insertion would cause handle overflow, we're out of handles.
-  if (next_available_handle_ + dispatchers.size() < next_available_handle_)
+  const uint32_t num_handles_available =
+      std::numeric_limits<uint32_t>::max() - next_available_handle_ + 1;
+  if (num_handles_available < dispatchers.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < dispatchers.size(); ++i) {
     MojoHandle handle = MOJO_HANDLE_INVALID;

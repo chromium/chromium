@@ -5,7 +5,6 @@
 #ifndef NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_LISTENER_H_
 #define NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_LISTENER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 

@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_COMMON_SHELL_CONTENT_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/common/content_client.h"
 #include "url/url_util.h"
 

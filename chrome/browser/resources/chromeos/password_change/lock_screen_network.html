@@ -58,7 +58,7 @@
         }
 
         [slot='button-container'] {
-          bottom: 20px;
+          bottom: 10px;
           position: absolute;
           right: 20px;
         }
@@ -76,6 +76,10 @@
           max-height: 300px;
           overflow-y: scroll;
           width: 100%;
+        }
+
+        cr-button {
+          border-radius: 16px;
         }
 
         network-select {
@@ -115,7 +119,7 @@
 </head>
 
 <body>
-  <lock-screen-network-ui></lock-screen-network-ui>
+  <lock-screen-network-ui id="network-ui"></lock-screen-network-ui>
 </body>
 
 </html>

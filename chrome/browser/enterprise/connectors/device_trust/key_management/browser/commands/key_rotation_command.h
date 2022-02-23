@@ -7,12 +7,26 @@
 
 #include <string>
 
+#include "base/callback.h"
+
 namespace enterprise_connectors {
 
 // Interface for classes that handle kicking-off device trust key rotation
 // commands. There is an implementation for each platform.
 class KeyRotationCommand {
  public:
+  // Completion status of the rotate command, passed as an argument to the
+  // trigger callback.
+  enum class Status {
+    SUCCEEDED,
+    FAILED,
+    TIMED_OUT,
+  };
+
+  // Trigger completion callback.  The single argument is the status of the
+  // rotate command.
+  using Callback = base::OnceCallback<void(Status)>;
+
   virtual ~KeyRotationCommand() = default;
 
   struct Params {
@@ -22,8 +36,8 @@ class KeyRotationCommand {
   };
 
   // Kicks off a platform-specific key rotation command using the given
-  // `params`.
-  virtual bool Trigger(const Params& params) = 0;
+  // `params`.  Invokes `callback` upon completion.
+  virtual void Trigger(const Params& params, Callback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

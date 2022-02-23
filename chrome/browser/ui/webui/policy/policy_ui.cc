@@ -69,7 +69,7 @@ content::WebUIDataSource* CreatePolicyUIHtmlSource() {
     {"status", IDS_POLICY_STATUS},
     {"statusDevice", IDS_POLICY_STATUS_DEVICE},
     {"statusMachine", IDS_POLICY_STATUS_MACHINE},
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"statusUpdater", IDS_POLICY_STATUS_UPDATER},
 #endif
     {"statusUser", IDS_POLICY_STATUS_USER},

@@ -42,8 +42,8 @@ v8::Local<v8::Value> BuildDetails(
         secure_payment_confirmation->credential_info->id,
         DOMArrayBuffer::Create(static_cast<const void*>(info->raw_id.data()),
                                info->raw_id.size()),
-        authenticator_response, secure_payment_confirmation->has_transport,
-        secure_payment_confirmation->transport,
+        authenticator_response,
+        secure_payment_confirmation->authenticator_attachment,
         AuthenticationExtensionsClientOutputs::Create());
     return result->Wrap(script_state).ToLocalChecked();
   }

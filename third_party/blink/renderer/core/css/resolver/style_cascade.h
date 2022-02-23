@@ -19,7 +19,9 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_priority.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -242,15 +244,18 @@ class CORE_EXPORT StyleCascade {
     bool IsAnimationTainted() const { return is_animation_tainted_; }
     CSSParserTokenRange TokenRange() const { return tokens_; }
 
-    void Append(const TokenSequence&);
-    void Append(const CSSVariableData*);
+    bool Append(const TokenSequence&, wtf_size_t);
+    bool Append(CSSVariableData* data,
+                wtf_size_t limit = std::numeric_limits<wtf_size_t>::max());
     void Append(const CSSParserToken&);
 
     scoped_refptr<CSSVariableData> BuildVariableData();
 
    private:
+    bool AppendTokens(const Vector<CSSParserToken>&, wtf_size_t);
+
     Vector<CSSParserToken> tokens_;
-    Vector<String> backing_strings_;
+    Vector<scoped_refptr<const CSSVariableData>> variable_data_;
     // https://drafts.csswg.org/css-variables/#animation-tainted
     bool is_animation_tainted_ = false;
     // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles

@@ -1,0 +1,76 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a list of histograms for the privacy
+budget project along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PrivacyBudget.ClockSkew.FetchLatency" units="ms"
+    expires_after="2023-01-14">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the duration of the network round-trip performed to fetch the time
+    from the network server. Only recorded for background fetches, which are
+    enabled only via a feature parameter (and disabled by default).
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.ClockSkew.FetchLatencyJitter" units="ms"
+    expires_after="2023-01-14">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the standard deviation of the last three fetch latencies (i.e. the
+    durations of the last three network round-trip performed to fetch the time
+    from the network server). Only recorded for background fetches, which are
+    enabled only via a feature parameter (and disabled by default).
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.ClockSkew.Magnitude.Negative" units="ms"
+    expires_after="2023-01-14">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the absolute value of the computed clock skew (local clock - remote
+    clock), when negative. Only recorded for background fetches, which are
+    enabled only via a feature parameter (and disabled by default).
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.ClockSkew.Magnitude.Positive" units="ms"
+    expires_after="2023-01-14">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records the computed clock skew (local clock - remote clock), when positive.
+    Only recorded for background fetches, which are enabled only via a feature
+    parameter (and disabled by default).
+  </summary>
+</histogram>
+
+<histogram name="PrivacyBudget.Identifiability.FinchConfigValidationResult"
+    enum="BooleanSuccess" expires_after="2022-10-12">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>hasanka@chromium.org</owner>
+  <summary>
+    Indicates whether the Finch configuration for the privacy budget
+    identifiability study was validated successfully.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

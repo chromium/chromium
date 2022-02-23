@@ -147,11 +147,12 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
 JsonPrefStore::JsonPrefStore(
     const base::FilePath& pref_filename,
     std::unique_ptr<PrefFilter> pref_filter,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    bool read_only)
     : path_(pref_filename),
       file_task_runner_(std::move(file_task_runner)),
       prefs_(new base::DictionaryValue()),
-      read_only_(false),
+      read_only_(read_only),
       writer_(pref_filename,
               file_task_runner_,
               GetHistogramSuffix(pref_filename)),
@@ -168,8 +169,8 @@ bool JsonPrefStore::GetValue(const std::string& key,
                              const base::Value** result) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value* tmp = nullptr;
-  if (!prefs_->Get(key, &tmp))
+  base::Value* tmp = prefs_->FindPath(key);
+  if (!tmp)
     return false;
 
   if (result)
@@ -208,7 +209,13 @@ bool JsonPrefStore::GetMutableValue(const std::string& key,
                                     base::Value** result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return prefs_->Get(key, result);
+  base::Value* tmp = prefs_->FindPath(key);
+  if (!tmp)
+    return false;
+
+  if (result)
+    *result = tmp;
+  return true;
 }
 
 void JsonPrefStore::SetValue(const std::string& key,
@@ -217,8 +224,7 @@ void JsonPrefStore::SetValue(const std::string& key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(value);
-  base::Value* old_value = nullptr;
-  prefs_->Get(key, &old_value);
+  base::Value* old_value = prefs_->FindPath(key);
   if (!old_value || *value != *old_value) {
     prefs_->SetPath(key, std::move(*value));
     ReportValueChanged(key, flags);
@@ -231,8 +237,7 @@ void JsonPrefStore::SetValueSilently(const std::string& key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(value);
-  base::Value* old_value = nullptr;
-  prefs_->Get(key, &old_value);
+  base::Value* old_value = prefs_->FindPath(key);
   if (!old_value || *value != *old_value) {
     prefs_->SetPath(key, std::move(*value));
     ScheduleWrite(flags);

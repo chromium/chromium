@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_CLIENTS_WIN_MEDIA_FOUNDATION_RENDERER_CLIENT_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/media_resource.h"
@@ -91,7 +92,8 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   void OnSetOutputRectDone(const gfx::Size& output_size, bool success);
   void InitializeDCOMPRenderingIfNeeded();
   void OnDCOMPSurfaceReceived(
-      const absl::optional<base::UnguessableToken>& token);
+      const absl::optional<base::UnguessableToken>& token,
+      const std::string& error);
   void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCdmAttached(bool success);
@@ -105,11 +107,11 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   std::unique_ptr<MojoRenderer> mojo_renderer_;
   mojo::PendingRemote<RendererExtension> pending_renderer_extension_;
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
-  VideoRendererSink* sink_ = nullptr;
+  raw_ptr<VideoRendererSink> sink_ = nullptr;
 
   mojo::Remote<RendererExtension> renderer_extension_;
 
-  RendererClient* client_ = nullptr;
+  raw_ptr<RendererClient> client_ = nullptr;
   bool dcomp_rendering_initialized_ = false;
   gfx::Size natural_size_;  // video's native size.
   gfx::Size output_size_;   // video's output size (the on-screen video size).
@@ -119,7 +121,7 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   scoped_refptr<VideoFrame> dcomp_video_frame_;
 
   PipelineStatusCallback init_cb_;
-  CdmContext* cdm_context_ = nullptr;
+  raw_ptr<CdmContext> cdm_context_ = nullptr;
   CdmAttachedCB cdm_attached_cb_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

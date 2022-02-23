@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.InitialDisplayTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPreview"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-08-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Cloud"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-08-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.Initialization.GetPrinters.Local"
-    enum="PrintPreviewInitializationEvents" expires_after="2022-06-15">
+    enum="PrintPreviewInitializationEvents" expires_after="2022-08-14">
   <owner>gavinwill@chromium.org</owner>
   <owner>chrome-print@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -160,32 +160,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PrintPreview.PrintDocumentSize.HTML" units="KB"
-    expires_after="2021-03-07">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is HTML.
-  </summary>
-</histogram>
-
-<histogram name="PrintPreview.PrintDocumentSize.PDF" units="KB"
-    expires_after="2020-12-31">
-  <obsolete>
-    XXX Removed 10/2020 as it is launched and no longer needed for analysis.
-  </obsolete>
-  <owner>thestig@chromium.org</owner>
-  <owner>dhoss@chromium.org</owner>
-  <summary>
-    The average size of a page in the printed document when the source is PDF.
-  </summary>
-</histogram>
-
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-04-17">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2022-08-21">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -225,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2022-03-20">
+    expires_after="2022-07-31">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -298,7 +274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2022-04-24">
+    expires_after="2022-07-03">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -314,14 +290,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.RenderToPDFTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>Time taken to render to PDF for print preview.</summary>
 </histogram>
 
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

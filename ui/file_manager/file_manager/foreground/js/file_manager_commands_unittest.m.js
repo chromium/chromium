@@ -8,6 +8,7 @@ import {assertArrayEquals, assertEquals, assertNotEquals, assertTrue} from 'chro
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
+import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 import {CommandHandler} from './file_manager_commands.js';
@@ -16,10 +17,12 @@ import {CommandHandler} from './file_manager_commands.js';
  * Checks that the `toggle-holding-space` command is appropriately enabled/
  * disabled given the current selection state and executes as expected.
  */
-export function testToggleHoldingSpaceCommand() {
+export async function testToggleHoldingSpaceCommand(done) {
   // Verify `toggle-holding-space` command exists.
   const command = CommandHandler.getCommand('toggle-holding-space');
   assertNotEquals(command, undefined);
+
+  let getHoldingSpaceStateCalled = false;
 
   // Enable the holding space feature and provide strings.
   loadTimeData.resetForTesting({
@@ -39,8 +42,11 @@ export function testToggleHoldingSpaceCommand() {
     fileManagerPrivate: {
       getHoldingSpaceState: (callback) => {
         callback({itemUrls: []});
+        getHoldingSpaceStateCalled = true;
       },
     },
+
+    runtime: {},
   };
   installMockChrome(mockChrome);
 
@@ -204,7 +210,14 @@ export function testToggleHoldingSpaceCommand() {
     };
 
     // Verify `command.canExecute()` results in expected `event` state.
+    getHoldingSpaceStateCalled = false;
     command.canExecute(event, fileManager);
+    if (testCase.expect.canExecute) {
+      await waitUntil(() => getHoldingSpaceStateCalled);
+      // Wait for the command.checkHoldingSpaceState() promise to finish.
+      await new Promise(resolve => setTimeout(resolve));
+    }
+
     assertEquals(event.canExecute, testCase.expect.canExecute);
     assertEquals(event.command.hidden, testCase.expect.hidden);
 
@@ -224,4 +237,6 @@ export function testToggleHoldingSpaceCommand() {
     command.execute(event, fileManager);
     assertTrue(didInteractWithMockPrivateApi);
   }
+
+  done();
 }

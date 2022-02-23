@@ -2,17 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/js2gtest.gni")
 
-assert(is_chromeos, "Personalization App is Chrome OS only")
+assert(is_chromeos_ash, "Personalization App is ash-chrome only")
 
 static_library("personalization_app") {
   sources = [
+    "personalization_app_ambient_provider.h",
+    "personalization_app_theme_provider.h",
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
-    "personalization_app_ui_delegate.h",
     "personalization_app_url_constants.cc",
     "personalization_app_url_constants.h",
+    "personalization_app_user_provider.h",
+    "personalization_app_wallpaper_provider.h",
     "untrusted_personalization_app_ui_config.cc",
     "untrusted_personalization_app_ui_config.h",
   ]
@@ -25,7 +29,7 @@ static_library("personalization_app") {
     "//ash/webui/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
-    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
@@ -45,8 +49,14 @@ js2gtest("browser_tests_js") {
 source_set("browser_test_support") {
   testonly = true
   sources = [
-    "test/fake_personalization_app_ui_delegate.cc",
-    "test/fake_personalization_app_ui_delegate.h",
+    "test/fake_personalization_app_ambient_provider.cc",
+    "test/fake_personalization_app_ambient_provider.h",
+    "test/fake_personalization_app_theme_provider.cc",
+    "test/fake_personalization_app_theme_provider.h",
+    "test/fake_personalization_app_user_provider.cc",
+    "test/fake_personalization_app_user_provider.h",
+    "test/fake_personalization_app_wallpaper_provider.cc",
+    "test/fake_personalization_app_wallpaper_provider.h",
     "test/personalization_app_browsertest_fixture.cc",
     "test/personalization_app_browsertest_fixture.h",
   ]

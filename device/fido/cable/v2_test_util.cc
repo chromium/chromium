@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -27,6 +28,7 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_network_context.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 
 namespace device {
@@ -333,7 +335,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     size_t buffer_i_ = 0;
     mojo::SimpleWatcher in_watcher_;
     mojo::SimpleWatcher out_watcher_;
-    Connection* peer_ = nullptr;
+    raw_ptr<Connection> peer_ = nullptr;
     mojo::Remote<network::mojom::WebSocketHandshakeClient> handshake_client_;
     mojo::Remote<network::mojom::WebSocketClient> client_receiver_;
     mojo::Receiver<network::mojom::WebSocket> socket_{this};
@@ -359,25 +361,16 @@ class TestPlatform : public authenticator::Platform {
       : ble_advert_callback_(ble_advert_callback),
         ctap2_device_(ctap2_device) {}
 
-  void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
-    std::vector<device::PublicKeyCredentialParams::CredentialInfo> cred_infos;
-    for (const auto& algo : params->algorithms) {
-      device::PublicKeyCredentialParams::CredentialInfo cred_info;
-      cred_info.algorithm = algo;
-      cred_infos.push_back(cred_info);
-    }
-
+  void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
+      MakeCredentialCallback callback) override {
     device::CtapMakeCredentialRequest request(
-        /*client_data_json=*/"",
-        device::PublicKeyCredentialRpEntity(params->rp_id),
-        device::PublicKeyCredentialUserEntity(
-            device::fido_parsing_utils::Materialize(params->user_id),
-            /*name=*/absl::nullopt, /*display_name=*/absl::nullopt,
-            /*icon_url=*/absl::nullopt),
-        device::PublicKeyCredentialParams(std::move(cred_infos)));
-    CHECK_EQ(request.client_data_hash.size(), params->client_data_hash.size());
-    memcpy(request.client_data_hash.data(), params->client_data_hash.data(),
-           params->client_data_hash.size());
+        /*client_data_json=*/"", std::move(params->relying_party),
+        std::move(params->user),
+        PublicKeyCredentialParams(std::move(params->public_key_parameters)));
+    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
+    memcpy(request.client_data_hash.data(), params->challenge.data(),
+           params->challenge.size());
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
         request_cbor = AsCTAPRequestValuePair(request);
@@ -385,12 +378,26 @@ class TestPlatform : public authenticator::Platform {
     ctap2_device_->DeviceTransact(
         ToCTAP2Command(std::move(request_cbor)),
         base::BindOnce(&TestPlatform::OnMakeCredentialResult,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(params->callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetAssertion(std::unique_ptr<GetAssertionParams> params) override {
-    NOTREACHED();
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
+                    GetAssertionCallback callback) override {
+    device::CtapGetAssertionRequest request(std::move(params->relying_party_id),
+                                            /* client_data_json= */ "");
+    request.allow_list = std::move(params->allow_credentials);
+
+    CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
+    memcpy(request.client_data_hash.data(), params->challenge.data(),
+           params->challenge.size());
+
+    std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>
+        request_cbor = AsCTAPRequestValuePair(request);
+
+    ctap2_device_->DeviceTransact(
+        ToCTAP2Command(std::move(request_cbor)),
+        base::BindOnce(&TestPlatform::OnGetAssertionResult,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void OnStatus(Status status) override {}
@@ -460,8 +467,51 @@ class TestPlatform : public authenticator::Platform {
         *attestation_obj);
   }
 
+  void OnGetAssertionResult(GetAssertionCallback callback,
+                            absl::optional<std::vector<uint8_t>> result) {
+    if (!result || result->empty()) {
+      std::move(callback).Run(
+          static_cast<uint32_t>(device::CtapDeviceResponseCode::kCtap2ErrOther),
+          nullptr);
+      return;
+    }
+    const base::span<const uint8_t> payload = *result;
+
+    if (payload.size() == 1 ||
+        payload[0] !=
+            static_cast<uint8_t>(device::CtapDeviceResponseCode::kSuccess)) {
+      std::move(callback).Run(payload[0], nullptr);
+      return;
+    }
+
+    auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
+    response->info = blink::mojom::CommonCredentialInfo::New();
+
+    absl::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    const cbor::Value::MapValue& in_map = v->GetMap();
+
+    auto cred_id_it = in_map.find(cbor::Value(1));
+    response->info->raw_id = cred_id_it->second.GetMap()
+                                 .find(cbor::Value("id"))
+                                 ->second.GetBytestring();
+    response->info->authenticator_data =
+        in_map.find(cbor::Value(2))->second.GetBytestring();
+    response->signature = in_map.find(cbor::Value(3))->second.GetBytestring();
+
+    auto user_it = in_map.find(cbor::Value(4));
+    if (user_it != in_map.end()) {
+      response->user_handle = user_it->second.GetMap()
+                                  .find(cbor::Value("id"))
+                                  ->second.GetBytestring();
+    }
+
+    std::move(callback).Run(
+        static_cast<uint32_t>(device::CtapDeviceResponseCode::kSuccess),
+        std::move(response));
+  }
+
   Discovery::AdvertEventStream::Callback ble_advert_callback_;
-  device::VirtualCtap2Device* const ctap2_device_;
+  const raw_ptr<device::VirtualCtap2Device> ctap2_device_;
   base::WeakPtrFactory<TestPlatform> weak_factory_{this};
 };
 

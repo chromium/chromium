@@ -30,7 +30,7 @@ class UsbDeviceHandleAndroid : public UsbDeviceHandleUsbfs {
   ~UsbDeviceHandleAndroid() override;
 
   // UsbDeviceHandleUsbfs:
-  void CloseBlocking() override;
+  void FinishClose() override;
 
   void CloseConnection();
 

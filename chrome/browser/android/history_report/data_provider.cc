@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "chrome/browser/android/history_report/delta_file_service.h"
@@ -37,8 +38,8 @@ static bool g_is_debug = false;
 using BookmarkMap = std::map<std::string, UrlAndTitle*>;
 
 struct Context {
-  history::HistoryService* history_service;
-  base::CancelableTaskTracker* history_task_tracker;
+  raw_ptr<history::HistoryService> history_service;
+  raw_ptr<base::CancelableTaskTracker> history_task_tracker;
   base::WaitableEvent finished;
 
   Context(history::HistoryService* hservice,

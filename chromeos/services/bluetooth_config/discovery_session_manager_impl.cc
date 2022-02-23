@@ -5,6 +5,7 @@
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
 
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 
 namespace chromeos {
@@ -18,8 +19,9 @@ const char kDiscoveryClientName[] = "CrosBluetoothConfig API";
 DiscoverySessionManagerImpl::DiscoverySessionManagerImpl(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceCache* device_cache)
-    : DiscoverySessionManager(adapter_state_controller, device_cache),
+    DiscoveredDevicesProvider* discovered_devices_provider)
+    : DiscoverySessionManager(adapter_state_controller,
+                              discovered_devices_provider),
       bluetooth_adapter_(std::move(bluetooth_adapter)) {
   adapter_observation_.Observe(bluetooth_adapter_.get());
 }
@@ -53,6 +55,8 @@ void DiscoverySessionManagerImpl::AdapterDiscoveringChanged(
     return;
 
   // |discovery_session_| is no longer operational, so destroy it.
+  BLUETOOTH_LOG(EVENT) << "Adapter discovering became false during an active "
+                          "discovery session, destroying session";
   DestroyDiscoverySession();
 }
 
@@ -70,9 +74,13 @@ void DiscoverySessionManagerImpl::UpdateDiscoveryState() {
 }
 
 void DiscoverySessionManagerImpl::AttemptDiscovery() {
-  if (is_discovery_attempt_in_progress_)
+  if (is_discovery_attempt_in_progress_) {
+    BLUETOOTH_LOG(EVENT) << "Not attempting to start discovery because a "
+                            "discovery attempt is already in progress";
     return;
+  }
 
+  BLUETOOTH_LOG(EVENT) << "Starting discovery session";
   is_discovery_attempt_in_progress_ = true;
   bluetooth_adapter_->StartDiscoverySession(
       kDiscoveryClientName,
@@ -84,6 +92,7 @@ void DiscoverySessionManagerImpl::AttemptDiscovery() {
 
 void DiscoverySessionManagerImpl::OnDiscoverySuccess(
     std::unique_ptr<device::BluetoothDiscoverySession> discovery_session) {
+  BLUETOOTH_LOG(EVENT) << "Starting discovery session succeeded";
   is_discovery_attempt_in_progress_ = false;
   discovery_session_ = std::move(discovery_session);
   NotifyDiscoveryStarted();
@@ -99,6 +108,7 @@ void DiscoverySessionManagerImpl::OnDiscoverySuccess(
 }
 
 void DiscoverySessionManagerImpl::OnDiscoveryError() {
+  BLUETOOTH_LOG(ERROR) << "Failed to start discovery session, retrying";
   is_discovery_attempt_in_progress_ = false;
 
   // Retry discovery. Note that we choose not to set a limit on the number of
@@ -107,6 +117,8 @@ void DiscoverySessionManagerImpl::OnDiscoveryError() {
 }
 
 void DiscoverySessionManagerImpl::DestroyDiscoverySession() {
+  BLUETOOTH_LOG(EVENT) << "Destroying discovery session";
+
   discovery_session_.reset();
   NotifyDiscoveryStoppedAndClearActiveClients();
 }

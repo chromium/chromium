@@ -15,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
 
@@ -97,9 +97,9 @@ base::File::Error ValidatePath(const std::string& raw_path,
   if (!base::IsStringUTF8(raw_path))
     return base::File::Error::FILE_ERROR_INVALID_OPERATION;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath::StringType path = base::UTF8ToWide(raw_path);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath::StringType path = raw_path;
 #endif
 

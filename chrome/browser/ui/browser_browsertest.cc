@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -130,13 +132,13 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "chrome/browser/ui/cocoa/test/run_loop_testing.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/i18n/rtl.h"
 #include "chrome/browser/browser_process.h"
 #endif
@@ -168,7 +170,7 @@ const base::FilePath::CharType* kTitle2File = FILE_PATH_LITERAL("title2.html");
 
 // Given a page title, returns the expected window caption string.
 std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, we don't want to suffix the page title with the application name.
   if (page_title.empty())
     return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
@@ -313,7 +315,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
   // Enlarge WebContentsView by this size insets in
   // DidStartNavigation.
   gfx::Size wcv_resize_insets_;
-  BrowserWindow* browser_window_;  // Weak ptr.
+  raw_ptr<BrowserWindow> browser_window_;  // Weak ptr.
 };
 
 }  // namespace
@@ -330,7 +332,7 @@ class BrowserTest : public extensions::ExtensionBrowserTest {
   std::u16string LocaleWindowCaptionFromPageTitle(
       const std::u16string& expected_title) {
     std::u16string page_title = WindowCaptionFromPageTitle(expected_title);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::string locale = g_browser_process->GetApplicationLocale();
     if (base::i18n::GetTextDirectionForLocale(locale.c_str()) ==
         base::i18n::RIGHT_TO_LEFT) {
@@ -472,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -523,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
 // Warning: this test can take >30 seconds when running on a slow (low
 // memory?) Mac builder.
 // Test is flaky on Win, Linux, Mac: https://crbug.com/1099186.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_ThirtyFourTabs DISABLED_ThirtyFourTabs
 #else
 #define MAYBE_ThirtyFourTabs ThirtyFourTabs
@@ -772,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DownloadDoesntDismissDialog) {
   EXPECT_FALSE(contents->GetMainFrame()->GetProcess()->IsBlocked());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Flaky on Mac 10.11 CI builder. See https://crbug.com/1251684.
 #define MAYBE_SadTabCancelsDialogs DISABLED_SadTabCancelsDialogs
 #else
@@ -963,6 +965,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
 
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        SecondNewTabFromLinkWithSameDomainCreatesGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a tab not in a group.
@@ -1024,6 +1027,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
 
 // TODO(crbug.com/997344): Test this with implicitly-created links.
 IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.
@@ -1044,6 +1048,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NewTabFromLinkInGroupedTabOpensInGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.
@@ -1097,7 +1102,7 @@ class BeforeUnloadAtQuitWithTwoWindows : public InProcessBrowserTest {
   // loop. It also drains the NSAutoreleasePool.
   void CycleRunLoops() {
     content::RunAllPendingInMessageLoop();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     chrome::testing::NSRunLoopRunAllPending();
     AutoreleasePool()->Recycle();
 #endif
@@ -1241,8 +1246,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_EQ(expected_favicon_url.spec(), entry->GetFavicon().url.spec());
 }
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
 // http://crbug.com/83828. On Mac 10.6, the failure rate is 14%
 #define MAYBE_FaviconChange DISABLED_FaviconChange
 #else
@@ -1333,8 +1338,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, AppIdSwitch) {
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
 
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
-      browser()->profile(), {}));
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   tab_waiter.Wait();
 
@@ -1391,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
               apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
@@ -1512,10 +1517,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   // Launch again with the same profile.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.Launch(browser()->profile(), false, nullptr);
+  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
+                nullptr);
 
   // The launch should have created a new browser.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
@@ -1561,7 +1567,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_CloseWithAppMenuOpen) {
       FROM_HERE, base::BindOnce(&RunCloseWithAppMenuCallback, browser()));
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1574,7 +1580,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               extension_app->id(),
               apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::NEW_WINDOW,
@@ -1607,7 +1613,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   EXPECT_NE(app_name.find(extension_app->id()), std::string::npos)
       << "Name " << app_name << " should contain id " << extension_app->id();
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Makes sure the browser doesn't crash when
 // set_show_state(ui::SHOW_STATE_MAXIMIZED) has been invoked.
@@ -2015,7 +2021,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose1) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test1");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";
@@ -2032,7 +2038,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test2");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";
@@ -2045,7 +2051,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
 // Disabled because of timeouts in several builders.
 // https://crbug.com/1129313
 IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
 #endif
@@ -2055,7 +2061,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test3");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";
@@ -2069,13 +2075,14 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
 // Mac disabled: http://crbug.com/169820
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !defined(OS_MAC) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_MAC) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(BrowserTest, FullscreenBookmarkBar) {
   chrome::ToggleBookmarkBar(browser());
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
   chrome::ToggleFullscreenMode(browser());
   EXPECT_TRUE(browser()->window()->IsFullscreen());
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Mac and Chrome OS both have an "immersive style" fullscreen where the
   // bookmark bar is visible when the top views slide down.
   EXPECT_EQ(BookmarkBar::SHOW, browser()->bookmark_bar_state());
@@ -2100,7 +2107,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
 
 class KioskModeTest : public BrowserTest {
  public:
-  KioskModeTest() {}
+  KioskModeTest() = default;
+
+  void SetUpOnMainThread() override {
+    BrowserTest::SetUpOnMainThread();
+    browser()->window()->SetForceFullscreen(true);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kKioskMode);
@@ -2109,7 +2121,7 @@ class KioskModeTest : public BrowserTest {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_MAC) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // Mac: http://crbug.com/103912
 // Linux: http://crbug.com/163931
 #define MAYBE_EnableKioskModeTest DISABLED_EnableKioskModeTest
@@ -2122,7 +2134,24 @@ IN_PROC_BROWSER_TEST_F(KioskModeTest, MAYBE_EnableKioskModeTest) {
   ASSERT_FALSE(browser()->window()->IsFullscreenBubbleVisible());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotExitFullscreen) {
+  browser()->window()->GetExclusiveAccessContext()->ExitFullscreen();
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotChangeBounds) {
+  gfx::Rect old_bounds = browser()->window()->GetBounds();
+
+  browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
+  gfx::Rect new_bounds = browser()->window()->GetBounds();
+
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_EQ(old_bounds, new_bounds);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
 // This test verifies that Chrome can be launched with a user-data-dir path
 // which contains non ASCII characters.
 class LaunchBrowserWithNonAsciiUserDatadir : public BrowserTest {
@@ -2152,9 +2181,9 @@ IN_PROC_BROWSER_TEST_F(LaunchBrowserWithNonAsciiUserDatadir,
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This test verifies that Chrome can be launched with a user-data-dir path
 // which trailing slashes.
 class LaunchBrowserWithTrailingSlashDatadir : public BrowserTest {
@@ -2184,7 +2213,7 @@ IN_PROC_BROWSER_TEST_F(LaunchBrowserWithTrailingSlashDatadir,
                     ->GetProfileAttributesStorage()
                     .GetNumberOfProfiles());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 // Tests to ensure that the browser continues running in the background after
@@ -2393,7 +2422,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenShiftClickTest) {
 // Control-clicks open in a background tab.
 // On OSX meta [the command key] takes the place of control.
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlClickTest) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int modifiers = blink::WebInputEvent::kMetaKey;
 #else
   int modifiers = blink::WebInputEvent::kControlKey;
@@ -2406,7 +2435,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlClickTest) {
 // Control-shift-clicks open in a foreground tab.
 // On OSX meta [the command key] takes the place of control.
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, WindowOpenControlShiftClickTest) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int modifiers = blink::WebInputEvent::kMetaKey;
 #else
   int modifiers = blink::WebInputEvent::kControlKey;
@@ -2440,7 +2469,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefShiftClickTest) {
 // Control-clicks open in a background tab.
 // On OSX meta [the command key] takes the place of control.
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlClickTest) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int modifiers = blink::WebInputEvent::kMetaKey;
 #else
   int modifiers = blink::WebInputEvent::kControlKey;
@@ -2453,7 +2482,7 @@ IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlClickTest) {
 // Control-shift-clicks open in a foreground tab.
 // On OSX meta [the command key] takes the place of control.
 IN_PROC_BROWSER_TEST_F(ClickModifierTest, HrefControlShiftClickTest) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   int modifiers = blink::WebInputEvent::kMetaKey;
 #else
   int modifiers = blink::WebInputEvent::kControlKey;
@@ -2540,7 +2569,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
 // In OSX, the wcv does not change size until after the commit, when the
 // bookmark bar disappears (correct).
 // In views, the wcv changes size at commit time.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(gfx::Size(wcv_commit_size0.width(), wcv_commit_size0.height()),
             web_contents->GetContainerBounds().size());
 #else
@@ -2593,7 +2622,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
             rwhv_create_size2);
   gfx::Size exp_commit_size(initial_wcv_size);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   exp_commit_size.Enlarge(wcv_resize_insets.width(),
                           wcv_resize_insets.height());
 #else
@@ -2616,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
 
   int active_index = browser()->tab_strip_model()->active_index();
   EXPECT_EQ(0, active_index);

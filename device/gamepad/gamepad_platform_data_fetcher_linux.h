@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_device_linux.h"
 #include "device/gamepad/public/cpp/gamepads.h"

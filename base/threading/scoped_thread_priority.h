@@ -10,7 +10,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,10 +81,10 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
   ~ScopedMayLoadLibraryAtBackgroundPriority();
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The original priority when invoking entering the scope().
   absl::optional<ThreadPriority> original_thread_priority_;
-  std::atomic_bool* const already_loaded_;
+  const raw_ptr<std::atomic_bool> already_loaded_;
 #endif
 };
 

@@ -145,10 +145,10 @@ bool IvfWriter::WriteFrame(uint32_t data_size,
 }
 
 EncodedDataHelper::EncodedDataHelper(const std::vector<uint8_t>& stream,
-                                     VideoCodecProfile profile)
+                                     VideoCodec codec)
     : data_(std::string(reinterpret_cast<const char*>(stream.data()),
                         stream.size())),
-      profile_(profile) {}
+      codec_(codec) {}
 
 EncodedDataHelper::~EncodedDataHelper() {
   base::STLClearObject(&data_);
@@ -160,7 +160,7 @@ bool EncodedDataHelper::IsNALHeader(const std::string& data, size_t pos) {
 }
 
 scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
-  switch (VideoCodecProfileToVideoCodec(profile_)) {
+  switch (codec_) {
     case VideoCodec::kH264:
     case VideoCodec::kHEVC:
       return GetNextFragment();
@@ -214,11 +214,11 @@ size_t EncodedDataHelper::GetBytesForNextNALU(size_t start_pos) {
 bool EncodedDataHelper::LookForSPS(size_t* skipped_fragments_count) {
   *skipped_fragments_count = 0;
   while (next_pos_to_decode_ + 4 < data_.size()) {
-    if ((profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) &&
-        ((data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7)) {
+    if (codec_ == VideoCodec::kH264 &&
+        (data_[next_pos_to_decode_ + 4] & 0x1f) == 0x7) {
       return true;
-    } else if ((profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) &&
-               ((data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42)) {
+    } else if (codec_ == VideoCodec::kHEVC &&
+               (data_[next_pos_to_decode_ + 4] & 0x7e) == 0x42) {
       return true;
     }
     *skipped_fragments_count += 1;
@@ -245,34 +245,39 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
     next_pos_to_decode_ = kIvfFileHeaderSize;  // Skip IVF header.
   }
 
-  // Group IVF data whose timestamps are the same. Spatial layers in a
-  // spatial-SVC stream may separately be stored in IVF data, where the
-  // timestamps of the IVF frame headers are the same. However, it is necessary
-  // for VD(A) to feed the spatial layers by a single DecoderBuffer. So this
-  // grouping is required.
   std::vector<IvfFrame> ivf_frames;
-  while (!ReachEndOfStream()) {
-    auto frame_header = GetNextIvfFrameHeader();
-    if (!frame_header)
-      return nullptr;
-
-    // Timestamp is different from the current one. The next IVF data must be
-    // grouped in the next group.
-    if (!ivf_frames.empty() &&
-        frame_header->timestamp != ivf_frames[0].header.timestamp) {
-      break;
-    }
-
-    auto frame_data = ReadNextIvfFrame();
-    if (!frame_data)
-      return nullptr;
-
-    ivf_frames.push_back(*frame_data);
-  }
-
-  if (ivf_frames.empty()) {
+  auto frame_data = ReadNextIvfFrame();
+  if (!frame_data) {
     LOG(ERROR) << "No IVF frame is available";
     return nullptr;
+  }
+  ivf_frames.push_back(*frame_data);
+
+  if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
+    // Group IVF data whose timestamps are the same in VP9 and AV1. Spatial
+    // layers in a spatial-SVC stream may separately be stored in IVF data,
+    // where the timestamps of the IVF frame headers are the same. However, it
+    // is necessary for VD(A) to feed the spatial layers by a single
+    // DecoderBuffer. So this grouping is required.
+    while (!ReachEndOfStream()) {
+      auto frame_header = GetNextIvfFrameHeader();
+      if (!frame_header) {
+        LOG(ERROR) << "No IVF frame header is available";
+        return nullptr;
+      }
+
+      // Timestamp is different from the current one. The next IVF data must be
+      // grouped in the next group.
+      if (frame_header->timestamp != ivf_frames[0].header.timestamp)
+        break;
+
+      frame_data = ReadNextIvfFrame();
+      if (!frame_data) {
+        LOG(ERROR) << "No IVF frame is available";
+        return nullptr;
+      }
+      ivf_frames.push_back(*frame_data);
+    }
   }
 
   // Standard stream case.
@@ -350,35 +355,10 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
     return IsH264SPSNALU(data, size);
   } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
     return IsHevcSPSNALU(data, size);
-  } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    Vp8Parser parser;
-    Vp8FrameHeader frame_header;
-    if (!parser.ParseFrame(data, size, &frame_header)) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp8.
-    return frame_header.IsKeyframe();
-  } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    Vp9Parser parser(false);
-    parser.SetStream(data, size, nullptr);
-    Vp9FrameHeader frame_header;
-    std::unique_ptr<DecryptConfig> null_config;
-    gfx::Size allocated_size;
-    Vp9Parser::Result result =
-        parser.ParseNextFrame(&frame_header, &allocated_size, &null_config);
-    if (result != Vp9Parser::kOk) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp9.
-    return frame_header.IsKeyframe();
-  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    // TODO(hiroh): Implement this.
-    return false;
   }
-  // Shouldn't happen at this point.
-  LOG(FATAL) << "Invalid profile: " << GetProfileName(profile);
+
+  LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
+             << GetProfileName(profile);
   return false;
 }
 

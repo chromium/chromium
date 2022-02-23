@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
-#include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -248,37 +248,37 @@ std::u16string GetAccessibleNameForKeyboardCode(ui::KeyboardCode key_code) {
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
   switch (key_code) {
     case ui::VKEY_BROWSER_BACK:
-      return &kKsvBrowserBackIcon;
+      return &ash::kKsvBrowserBackIcon;
     case ui::VKEY_BROWSER_FORWARD:
-      return &kKsvBrowserForwardIcon;
+      return &ash::kKsvBrowserForwardIcon;
     case ui::VKEY_BROWSER_REFRESH:
-      return &kKsvReloadIcon;
+      return &ash::kKsvReloadIcon;
     case ui::VKEY_ZOOM:
-      return &kKsvFullscreenIcon;
+      return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
-      return &kKsvOverviewIcon;
+      return &ash::kKsvOverviewIcon;
     case ui::VKEY_BRIGHTNESS_DOWN:
-      return &kKsvBrightnessDownIcon;
+      return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
-      return &kKsvBrightnessUpIcon;
+      return &ash::kKsvBrightnessUpIcon;
     case ui::VKEY_VOLUME_MUTE:
-      return &kKsvMuteIcon;
+      return &ash::kKsvMuteIcon;
     case ui::VKEY_VOLUME_DOWN:
-      return &kKsvVolumeDownIcon;
+      return &ash::kKsvVolumeDownIcon;
     case ui::VKEY_VOLUME_UP:
-      return &kKsvVolumeUpIcon;
+      return &ash::kKsvVolumeUpIcon;
     case ui::VKEY_UP:
-      return &kKsvArrowUpIcon;
+      return &ash::kKsvArrowUpIcon;
     case ui::VKEY_DOWN:
-      return &kKsvArrowDownIcon;
+      return &ash::kKsvArrowDownIcon;
     case ui::VKEY_LEFT:
-      return &kKsvArrowLeftIcon;
+      return &ash::kKsvArrowLeftIcon;
     case ui::VKEY_RIGHT:
-      return &kKsvArrowRightIcon;
+      return &ash::kKsvArrowRightIcon;
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
-      return &kKsvPrivacyScreenToggleIcon;
+      return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:
-      return &kKsvSnapshotIcon;
+      return &ash::kKsvSnapshotIcon;
     default:
       return nullptr;
   }
@@ -1585,6 +1585,20 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
 
       item_list->emplace_back(indexed_activation_shortcut);
       item_list->emplace_back(toggle_all_desks_shortcut);
+    }
+
+    if (ash::features::IsCalendarViewEnabled()) {
+      const ash::KeyboardShortcutItem toggle_calendar = {
+          // |categories|
+          {ShortcutCategory::kSystemAndDisplay},
+          IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR,
+          {},
+          // |accelerator_ids|
+          {},
+          // |shortcut_key_codes|
+          {{ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_C}}};
+
+      item_list->emplace_back(toggle_calendar);
     }
 
     for (auto& item : *item_list) {

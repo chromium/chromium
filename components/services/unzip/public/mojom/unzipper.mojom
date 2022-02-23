@@ -20,14 +20,17 @@ interface UnzipFilter {
 interface Unzipper {
   // Unzip |zip_file| into |output_dir|.
   // Returns true on success, false otherwise.
-  Unzip(mojo_base.mojom.ReadOnlyFile zip_file,
-        pending_remote<filesystem.mojom.Directory> output_dir)
-       => (bool result);
-
-  // Same as |unzip| but only includes the files for which |filter| returns
-  // true. Note that this incurs one IPC for each file of the archive.
-  UnzipWithFilter(
+  // If provided, |filter| is called for each entry of the archive (which incurs
+  // one IPC for each entry) and only the entries for which it returns true are
+  // extracted.
+  Unzip(
       mojo_base.mojom.ReadOnlyFile zip_file,
       pending_remote<filesystem.mojom.Directory> output_dir,
-      pending_remote<UnzipFilter> filter) => (bool result);
+      pending_remote<UnzipFilter>? filter) => (bool result);
+
+  // Detects the encoding of filenames stored in the ZIP archive.
+  // Returns an Encoding as defined in
+  // third_party/ced/src/util/encodings/encodings.pb.h
+  // or UNKNOWN_ENCODING in case of error.
+  DetectEncoding(mojo_base.mojom.ReadOnlyFile zip_file) => (int32 encoding);
 };

@@ -12,23 +12,32 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "extensions/common/constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #include "ui/gfx/paint_vector_icon.h"
 
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// GN doesn't understand conditional includes, so we need nogncheck here.
+#include "extensions/common/constants.h"  // nogncheck
 #endif
 
 namespace {
@@ -49,8 +58,8 @@ OmniboxView::State::State(const State& state) = default;
 
 // static
 std::u16string OmniboxView::StripJavascriptSchemas(const std::u16string& text) {
-  const std::u16string kJsPrefix(base::ASCIIToUTF16(url::kJavaScriptScheme) +
-                                 u":");
+  const std::u16string kJsPrefix(
+      base::StrCat({url::kJavaScriptScheme16, u":"}));
 
   bool found_JavaScript = false;
   size_t i = 0;
@@ -181,7 +190,7 @@ bool OmniboxView::IsEditingOrEmpty() const {
 ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color,
                                     IconFetchedCallback on_icon_fetched) const {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
   NOTREACHED();
   return ui::ImageModel();
@@ -229,7 +238,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
 
   return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void OmniboxView::SetUserText(const std::u16string& text) {
@@ -252,6 +261,11 @@ void OmniboxView::RevertAll() {
 void OmniboxView::CloseOmniboxPopup() {
   if (model_)
     model_->StopAutocomplete();
+}
+
+void OmniboxView::StartPrefetch(const AutocompleteInput& input) {
+  if (model_)
+    model_->autocomplete_controller()->StartPrefetch(input);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {
@@ -358,14 +372,22 @@ void OmniboxView::UpdateTextStyle(
 
   const std::u16string url_scheme =
       display_text.substr(scheme.begin, scheme.len);
+
+  const bool is_extension_url =
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme);
+#else
+      false;
+#endif
+
   // Extension IDs are not human-readable, so deemphasize everything to draw
   // attention to the human-readable name in the location icon text.
   // Data URLs are rarely human-readable and can be used for spoofing, so draw
   // attention to the scheme to emphasize "this is just a bunch of data".
   // For normal URLs, the host is the best proxy for "identity".
-  if (url_scheme == base::UTF8ToUTF16(extensions::kExtensionScheme))
+  if (is_extension_url)
     deemphasize = EVERYTHING;
-  else if (url_scheme == base::UTF8ToUTF16(url::kDataScheme))
+  else if (url_scheme == url::kDataScheme16)
     deemphasize = ALL_BUT_SCHEME;
   else if (host.is_nonempty())
     deemphasize = ALL_BUT_HOST;

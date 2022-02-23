@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-import org.chromium.chrome.browser.base.SplitCompatUtils;
+import org.chromium.base.BundleUtils;
 
 /** Utilities for dealing with layouts and inflation. */
 public class LayoutUtils {
@@ -19,6 +19,6 @@ public class LayoutUtils {
      */
     public static LayoutInflater createInflater(Context context) {
         return LayoutInflater.from(
-                SplitCompatUtils.createContextForInflation(context, ASSISTANT_SPLIT_NAME));
+                BundleUtils.createContextForInflation(context, ASSISTANT_SPLIT_NAME));
     }
 }

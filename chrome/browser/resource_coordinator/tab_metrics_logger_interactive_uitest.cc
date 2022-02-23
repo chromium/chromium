@@ -45,7 +45,7 @@ class TabMetricsLoggerTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, the browser window needs to be forced to the front. This will
     // create a UKM entry for the activation because it happens after the
     // WindowActivityWatcher creation. On other platforms, activation happens
@@ -94,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTest) {
   // Updated metrics after adding tabs.
   {
     SCOPED_TRACE("");
-    AddTabAtIndex(1, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);
+    ASSERT_FALSE(AddTabAtIndex(1, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK));
     expected_metrics.tab_count++;
     EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(browser()),
               expected_metrics);
   }
   {
     SCOPED_TRACE("");
-    AddTabAtIndex(0, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);
+    ASSERT_FALSE(AddTabAtIndex(0, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK));
     expected_metrics.tab_count++;
     EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(browser()),
               expected_metrics);
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTest) {
 IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, GetDiscardCount) {
   // We need at least two tabs because "transition from DISCARDED to DISCARDED
   // is not allowed".
-  AddTabAtIndex(1, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(AddTabAtIndex(1, GURL(kTestUrl), ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(CurrentTabFeatures(0).discard_count, 0);
   DiscardTabAt(0);
   EXPECT_EQ(CurrentTabFeatures(0).discard_count, 1);
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, GetDiscardCount) {
 }
 
 // TODO(https://crbug.com/51364): Implement BrowserWindow::Deactivate() on Mac.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Tests WindowMetrics by activating/deactivating the window.
 IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest,
                        CreateWindowFeaturesTestWindowActivation) {
@@ -239,4 +239,4 @@ IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest,
   }
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)

@@ -8,6 +8,7 @@
 #include <deque>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -118,11 +119,8 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // with the old hit-test data. If there is no change, we do not send the
   // hit-test data. False positives are allowed. The value of
   // |hit_test_data_changed| should remain constant in the caller.
-  // |show_hit_test_borders| controls whether viz will insert debug borders over
-  // hit-test data and is passed from LayerTreeDebugState.
   virtual void SubmitCompositorFrame(viz::CompositorFrame frame,
-                                     bool hit_test_data_changed,
-                                     bool show_hit_test_borders) = 0;
+                                     bool hit_test_data_changed) = 0;
 
   // Signals that a BeginFrame issued by the viz::BeginFrameSource provided to
   // the client did not lead to a CompositorFrame submission.
@@ -140,12 +138,12 @@ class CC_EXPORT LayerTreeFrameSink : public viz::SharedBitmapReporter,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  LayerTreeFrameSinkClient* client_ = nullptr;
+  raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::ContextProvider> context_provider_;
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;
 

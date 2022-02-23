@@ -19,17 +19,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PlatformCredentialStore {
   virtual ~PlatformCredentialStore() = default;
 
   // DeleteCredentials deletes WebAuthn credentials that were created within the
-  // given time interval from local storage.
-  //
-  // Returns false if any attempt to delete a credential failed (but others may
-  // still have succeeded), and true otherwise.
-  virtual bool DeleteCredentials(base::Time created_not_before,
-                                 base::Time created_not_after) = 0;
+  // given time interval from local storage and runs the callback when
+  // finished.
+  virtual void DeleteCredentials(base::Time created_not_before,
+                                 base::Time created_not_after,
+                                 base::OnceClosure callback) = 0;
 
-  // CountCredentials returns the number of credentials that would get deleted
-  // by a call to |DeleteCredentials| with identical arguments.
-  virtual size_t CountCredentials(base::Time created_not_before,
-                                  base::Time created_not_after) = 0;
+  // CountCredentials calculates the number of credentials that would get
+  // deleted by a call to |DeleteCredentials| with identical arguments, and runs
+  // the callback with the number as parameter.
+  virtual void CountCredentials(base::Time created_not_before,
+                                base::Time created_not_after,
+                                base::OnceCallback<void(size_t)> callback) = 0;
 };
 
 }  // namespace fido

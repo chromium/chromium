@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/hierarchy.h"
-#include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/app_notification_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"

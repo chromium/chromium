@@ -34,8 +34,8 @@ class DisplayRotationDefaultTest
       public testing::WithParamInterface<display::Display::Rotation> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
   }
 
   void SetRotationPolicy(int rotation) {

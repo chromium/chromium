@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -104,7 +105,7 @@ class DocumentProviderTest : public testing::Test,
 
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<DocumentProvider> provider_;
-  TemplateURL* default_template_url_;
+  raw_ptr<TemplateURL> default_template_url_;
 };
 
 DocumentProviderTest::DocumentProviderTest() {}
@@ -744,7 +745,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsWithBadResponse) {
 
 // This test is affected by an iOS 10 simulator bug: https://crbug.com/782033
 // and may get wrong timezone on Win7: https://crbug.com/856119
-#if !defined(OS_IOS) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
 TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
   base::Time::Exploded local_exploded = {0};
   local_exploded.year = 2018;
@@ -772,7 +773,7 @@ TEST_F(DocumentProviderTest, GenerateLastModifiedString) {
                 base::TimeToISO8601(modified_last_year), local_now),
             u"8/27/17");
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_WIN)
 
 TEST_F(DocumentProviderTest, GetURLForDeduping) {
   // Checks that |url_string| is a URL for opening |expected_id|. An empty ID

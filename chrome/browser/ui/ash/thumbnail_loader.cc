@@ -15,9 +15,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -26,11 +25,14 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "net/base/data_url.h"
+#include "net/base/mime_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -44,6 +46,132 @@ namespace {
 // The native host name that will identify the thumbnail loader to the image
 // loader extension.
 constexpr char kNativeMessageHostName[] = "com.google.ash_thumbnail_loader";
+
+// Returns whether the given `file_path` is supported by the `ThumbnailLoader`.
+bool IsSupported(const base::FilePath& file_path) {
+  constexpr std::array<std::pair<const char*, const char*>, 24>
+      kFileMatchPatterns = {{
+          // Document types ----------------------------------------------------
+          {
+              /*extension=*/"(?i)\\.pdf$",
+              /*mime_type=*/"(?i)application\\/pdf",
+          },
+          // Image types -------------------------------------------------------
+          {
+              /*extension=*/"(?i)\\.jpe?g$",
+              /*mime_type=*/"(?i)image\\/jpeg",
+          },
+          {
+              /*extension=*/"(?i)\\.bmp$",
+              /*mime_type=*/"(?i)image\\/bmp",
+          },
+          {
+              /*extension=*/"(?i)\\.gif$",
+              /*mime_type=*/"(?i)image\\/gif",
+          },
+          {
+              /*extension=*/"(?i)\\.ico$",
+              /*mime_type=*/"(?i)image\\/x\\-icon",
+          },
+          {
+              /*extension=*/"(?i)\\.png$",
+              /*mime_type=*/"(?i)image\\/png",
+          },
+          {
+              /*extension=*/"(?i)\\.webp$",
+              /*mime_type=*/"(?i)image\\/webp",
+          },
+          {
+              /*extension=*/"(?i)\\.tiff?$",
+              /*mime_type=*/"(?i)image\\/tiff",
+          },
+          {
+              /*extension=*/"(?i)\\.svg$",
+              /*mime_type=*/"(?i)image\\/svg\\+xml",
+          },
+          // Raw types ---------------------------------------------------------
+          {
+              /*extension=*/"(?i)\\.arw$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.cr2$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.dng$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.nef$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.nrw$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.orf$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.raf$",
+              /*mime_type=*/nullptr,
+          },
+          {
+              /*extension=*/"(?i)\\.rw2$",
+              /*mime_type=*/nullptr,
+          },
+          // Video types -------------------------------------------------------
+          {
+              /*extension=*/"(?i)\\.3gpp?$",
+              /*mime_type=*/"(?i)video\\/3gpp",
+          },
+          {
+              /*extension=*/"(?i)\\.avi$",
+              /*mime_type=*/"(?i)video\\/x\\-msvideo",
+          },
+          {
+              /*extension=*/"(?i)\\.mov$",
+              /*mime_type=*/"(?i)video\\/quicktime",
+          },
+          {
+              /*extension=*/"\\.mkv$",
+              /*mime_type=*/"video\\/x\\-matroska",
+          },
+          {
+              /*extension=*/"(?i)\\.m(p4|4v|pg|peg|pg4|peg4)$",
+              /*mime_type=*/"(?i)video\\/mp(4|eg)",
+          },
+          {
+              /*extension=*/"(?i)\\.og(m|v|x)$",
+              /*mime_type=*/"(?i)(application|video)\\/ogg",
+          },
+          {
+              /*extension=*/"(?i)\\.webm$",
+              /*mime_type=*/"(?i)video\\/webm",
+          },
+      }};
+
+  // First attempt to match based on `mime_type`.
+  std::string mime_type;
+  if (net::GetMimeTypeFromFile(file_path, &mime_type)) {
+    for (const auto& file_match_pattern : kFileMatchPatterns) {
+      if (file_match_pattern.second &&
+          re2::RE2::FullMatch(mime_type, file_match_pattern.second)) {
+        return true;
+      }
+    }
+  }
+
+  // Then attempt to match based on `file_path` extension.
+  for (const auto& file_match_pattern : kFileMatchPatterns) {
+    if (re2::RE2::FullMatch(file_path.Extension(), file_match_pattern.first))
+      return true;
+  }
+
+  return false;
+}
 
 using ThumbnailDataCallback = base::OnceCallback<void(const std::string& data)>;
 
@@ -136,22 +264,26 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
 }  // namespace
 
 // Converts a data URL to bitmap.
-class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
+class ThumbnailLoader::ThumbnailDecoder : public ImageDecoder::ImageRequest {
  public:
-  explicit ThumbnailDecoder(Profile* profile) : profile_(profile) {}
+  ThumbnailDecoder() = default;
 
   ThumbnailDecoder(const ThumbnailDecoder&) = delete;
   ThumbnailDecoder& operator=(const ThumbnailDecoder&) = delete;
   ~ThumbnailDecoder() override = default;
 
-  // BitmapFetcherDelegate:
-  void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override {
-    std::move(callback_).Run(bitmap, base::File::FILE_OK);
+  // ImageDecoder::ImageRequest:
+  void OnImageDecoded(const SkBitmap& bitmap) override {
+    std::move(callback_).Run(&bitmap, base::File::FILE_OK);
+  }
+
+  // ImageDecoder::ImageRequest:
+  void OnDecodeImageFailed() override {
+    std::move(callback_).Run(/*bitmap=*/nullptr, base::File::FILE_ERROR_FAILED);
   }
 
   void Start(const std::string& data, ThumbnailLoader::ImageCallback callback) {
     DCHECK(!callback_);
-    DCHECK(!bitmap_fetcher_);
 
     // The data sent from the image loader extension should be in form of a data
     // URL.
@@ -162,24 +294,19 @@ class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
       return;
     }
 
+    std::string mime_type, charset, image_data;
+    if (!net::DataURL::Parse(data_url, &mime_type, &charset, &image_data)) {
+      std::move(callback).Run(/*bitmap=*/nullptr,
+                              base::File::FILE_ERROR_FAILED);
+      return;
+    }
+
     callback_ = std::move(callback);
-
-    // Note that the image downloader will not use network traffic for data
-    // URLs.
-    bitmap_fetcher_ = std::make_unique<BitmapFetcher>(
-        data_url, this, MISSING_TRAFFIC_ANNOTATION);
-
-    bitmap_fetcher_->Init(
-        /*referrer=*/std::string(), net::ReferrerPolicy::NEVER_CLEAR,
-        network::mojom::CredentialsMode::kOmit);
-
-    bitmap_fetcher_->Start(profile_->GetURLLoaderFactory().get());
+    ImageDecoder::Start(this, std::move(image_data));
   }
 
  private:
-  Profile* const profile_;
   ThumbnailLoader::ImageCallback callback_;
-  std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 };
 
 ThumbnailLoader::ThumbnailLoader(Profile* profile) : profile_(profile) {}
@@ -193,9 +320,9 @@ ThumbnailLoader::~ThumbnailLoader() {
 }
 
 ThumbnailLoader::ThumbnailRequest::ThumbnailRequest(
-    const base::FilePath& item_path,
+    const base::FilePath& file_path,
     const gfx::Size& size)
-    : item_path(item_path), size(size) {}
+    : file_path(file_path), size(size) {}
 
 ThumbnailLoader::ThumbnailRequest::~ThumbnailRequest() = default;
 
@@ -205,14 +332,14 @@ base::WeakPtr<ThumbnailLoader> ThumbnailLoader::GetWeakPtr() {
 
 void ThumbnailLoader::Load(const ThumbnailRequest& request,
                            ImageCallback callback) {
-  // Get the item's last modified time - this will be used for cache lookup in
+  // Get the file's last modified time - this will be used for cache lookup in
   // the image loader extension.
   GURL source_url = extensions::Extension::GetBaseURLFromExtensionId(
       file_manager::kImageLoaderExtensionId);
   file_manager::util::GetMetadataForPath(
       file_manager::util::GetFileSystemContextForSourceURL(profile_,
                                                            source_url),
-      request.item_path,
+      request.file_path,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
           storage::FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED,
       base::BindOnce(&ThumbnailLoader::LoadForFileWithMetadata,
@@ -238,9 +365,15 @@ void ThumbnailLoader::LoadForFileWithMetadata(
     return;
   }
 
+  // Short-circuit if unsupported.
+  if (!IsSupported(request.file_path)) {
+    std::move(callback).Run(/*bitmap=*/nullptr, base::File::FILE_ERROR_ABORT);
+    return;
+  }
+
   GURL thumbnail_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile_, request.item_path,
+          profile_, request.file_path,
           extensions::Extension::GetBaseURLFromExtensionId(
               file_manager::kImageLoaderExtensionId),
           &thumbnail_url)) {
@@ -312,7 +445,7 @@ void ThumbnailLoader::OnThumbnailLoaded(
     return;
   }
 
-  auto thumbnail_decoder = std::make_unique<ThumbnailDecoder>(profile_);
+  auto thumbnail_decoder = std::make_unique<ThumbnailDecoder>();
   ThumbnailDecoder* thumbnail_decoder_ptr = thumbnail_decoder.get();
   thumbnail_decoders_.emplace(request_id, std::move(thumbnail_decoder));
   thumbnail_decoder_ptr->Start(

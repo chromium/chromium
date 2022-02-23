@@ -6,7 +6,30 @@
  * @fileoverview 'os-settings-change-device-language-dialog' is a dialog for
  * changing device language.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import './shared_style.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import './languages.js';
+import '../../settings_shared_css.js';
+
+import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+
+import {InputsShortcutReminderState, LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
+import {LanguageHelper, LanguagesModel} from './languages_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-change-device-language-dialog',
 
   behaviors: [
@@ -148,10 +171,10 @@ Polymer({
       this.languageHelper.enableLanguage(languageCode);
       this.languageHelper.moveLanguageToFront(languageCode);
     }
-    settings.recordSettingChange();
-    settings.LanguagesMetricsProxyImpl.getInstance().recordInteraction(
-        settings.LanguagesPageInteraction.RESTART);
-    settings.LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
+    recordSettingChange();
+    LanguagesMetricsProxyImpl.getInstance().recordInteraction(
+        LanguagesPageInteraction.RESTART);
+    LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
   },
 
   /**

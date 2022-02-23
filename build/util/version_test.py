@@ -95,7 +95,7 @@ class _VersionTest(unittest.TestCase):
     result = {}
     version.FetchValuesFromFile(result, self._CHROME_VERSION_FILE)
 
-    for key, val in result.iteritems():
+    for key, val in result.items():
       self.assertIsInstance(key, str)
       self.assertIsInstance(val, str)
 

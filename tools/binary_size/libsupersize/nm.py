@@ -81,7 +81,7 @@ def _IsRelevantObjectFileName(name):
   return name not in ('CSWTCH', 'lock', '__compound_literal', 'table')
 
 
-def CollectAliasesByAddress(elf_path, tool_prefix):
+def CollectAliasesByAddress(elf_path):
   """Runs nm on |elf_path| and returns a dict of address->[names]"""
   # Constructors often show up twice, so use sets to ensure no duplicates.
   names_by_address = collections.defaultdict(set)
@@ -101,8 +101,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
 
   # About 60mb of output, but piping takes ~30s, and loading it into RAM
   # directly takes 3s.
-  args = [path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only',
-          elf_path]
+  args = [path_util.GetNmPath(), '--no-sort', '--defined-only', elf_path]
   # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(args,
                           stdout=subprocess.PIPE,
@@ -138,7 +137,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
     names_by_address[address].add(name)
 
   # Demangle all names.
-  demangle.DemangleSetsInDictsInPlace(names_by_address, tool_prefix)
+  demangle.DemangleSetsInDictsInPlace(names_by_address)
 
   # Since this is run in a separate process, minimize data passing by returning
   # only aliased symbols.
@@ -150,7 +149,7 @@ def CollectAliasesByAddress(elf_path, tool_prefix):
   }
 
 
-def CreateUniqueSymbols(elf_path, tool_prefix, section_ranges):
+def CreateUniqueSymbols(elf_path, section_ranges):
   """Creates symbols from nm --print-size output.
 
   Creates only one symbol for each address (does not create symbol aliases).
@@ -164,8 +163,8 @@ def CreateUniqueSymbols(elf_path, tool_prefix, section_ranges):
   max_address = sum(section_ranges[-1][1])
 
   args = [
-      path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only',
-      '--print-size', elf_path
+      path_util.GetNmPath(), '--no-sort', '--defined-only', '--print-size',
+      elf_path
   ]
   # pylint: disable=unexpected-keyword-arg
   stdout = subprocess.check_output(args,
@@ -292,19 +291,18 @@ def CreateUniqueSymbols(elf_path, tool_prefix, section_ranges):
   return raw_symbols
 
 
-def _CollectAliasesByAddressAsyncHelper(elf_path, tool_prefix):
-  result = CollectAliasesByAddress(elf_path, tool_prefix)
+def _CollectAliasesByAddressAsyncHelper(elf_path):
+  result = CollectAliasesByAddress(elf_path)
   return parallel.EncodeDictOfLists(result, key_transform=str)
 
 
-def CollectAliasesByAddressAsync(elf_path, tool_prefix):
+def CollectAliasesByAddressAsync(elf_path):
   """Calls CollectAliasesByAddress in a helper process. Returns a Result."""
   def decode(encoded):
     return parallel.DecodeDictOfLists(encoded, key_transform=int)
 
-  return parallel.ForkAndCall(
-      _CollectAliasesByAddressAsyncHelper, (elf_path, tool_prefix),
-      decode_func=decode)
+  return parallel.ForkAndCall(_CollectAliasesByAddressAsyncHelper, (elf_path, ),
+                              decode_func=decode)
 
 
 def _ParseOneObjectFileNmOutput(lines):
@@ -332,19 +330,18 @@ def _ParseOneObjectFileNmOutput(lines):
 
 
 # This is a target for BulkForkAndCall().
-def RunNmOnIntermediates(target, tool_prefix, output_directory):
+def RunNmOnIntermediates(target, output_directory):
   """Returns encoded_symbol_names_by_path, encoded_string_addresses_by_path.
 
   Args:
     target: Either a single path to a .a (as a string), or a list of .o paths.
   """
   is_archive = isinstance(target, str)
-  args = [path_util.GetNmPath(tool_prefix), '--no-sort', '--defined-only']
+  args = [path_util.GetNmPath(), '--no-sort', '--defined-only']
   if is_archive:
     args.append(target)
   else:
     args.extend(target)
-  # pylint: disable=unexpected-keyword-arg
   proc = subprocess.Popen(
       args,
       cwd=output_directory,
@@ -392,7 +389,6 @@ def RunNmOnIntermediates(target, tool_prefix, output_directory):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--tool-prefix', required=True)
   parser.add_argument('--output-directory', required=True)
   parser.add_argument('elf_path', type=os.path.realpath)
 
@@ -401,8 +397,8 @@ def main():
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   # Other functions in this file have test entrypoints in object_analyzer.py.
-  section_ranges = readelf.SectionInfoFromElf(args.elf_path, args.tool_prefix)
-  symbols = CreateUniqueSymbols(args.elf_path, args.tool_prefix, section_ranges)
+  section_ranges = readelf.SectionInfoFromElf(args.elf_path)
+  symbols = CreateUniqueSymbols(args.elf_path, section_ranges)
   for s in symbols:
     print(s)
   logging.warning('Printed %d symbols', len(symbols))

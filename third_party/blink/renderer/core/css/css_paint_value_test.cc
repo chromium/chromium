@@ -83,7 +83,7 @@ TEST_P(CSSPaintValueTest, ReportingCompositedUMA) {
           CSSPaintImageGenerator::GetCreateFunctionForTesting(),
           ProvideOverrideGenerator);
 
-  const FloatSize target_size(100, 100);
+  const gfx::SizeF target_size(100, 100);
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
@@ -130,7 +130,7 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
           CSSPaintImageGenerator::GetCreateFunctionForTesting(),
           ProvideOverrideGenerator);
 
-  const FloatSize target_size(100, 100);
+  const gfx::SizeF target_size(100, 100);
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
@@ -179,7 +179,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
           CSSPaintImageGenerator::GetCreateFunctionForTesting(),
           ProvideOverrideGenerator);
 
-  const FloatSize target_size(100, 100);
+  const gfx::SizeF target_size(100, 100);
 
   SetBodyInnerHTML(R"HTML(
     <div id="target"></div>
@@ -214,7 +214,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
 // on a new document. This test simulates the situation by having two different
 // documents and call GetImage on different ones.
 TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
-  const FloatSize target_size(100, 100);
+  const gfx::SizeF target_size(100, 100);
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
@@ -228,7 +228,7 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
   // A new generator should be created if there is no generator exists.
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 1u);
 
-  auto new_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   // Call GetImage on a new Document should not crash.
   paint_value->GetImage(*target, new_page_holder->GetDocument(), style,
                         target_size);
@@ -270,7 +270,7 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
           CSSPaintImageGenerator::GetCreateFunctionForTesting(),
           ProvideOverrideGenerator);
 
-  const FloatSize target_size(100, 100);
+  const gfx::SizeF target_size(100, 100);
 
   SetBodyInnerHTML(R"HTML(
     <div id="target"></div>
@@ -322,7 +322,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintForLink) {
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
-                                     FloatSize(100, 100)));
+                                     gfx::SizeF(100, 100)));
 }
 
 // Regression test for https://crbug.com/835589.
@@ -350,7 +350,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintWhenAncestorHasLink) {
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
-                                     FloatSize(100, 100)));
+                                     gfx::SizeF(100, 100)));
 }
 
 TEST_P(CSSPaintValueTest, BuildInputArgumentValuesNotCrash) {

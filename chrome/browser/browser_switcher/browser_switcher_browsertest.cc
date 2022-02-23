@@ -42,7 +42,7 @@ namespace {
 const char kTestUrl[] = "http://example.com/foobar";
 const char kTestUrlWithSpaces[] = "http://example.com/foobar baz";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Only referenced on Windows.
 const char kTestUrlWithQuotes[] = "http://example.com/?q='world'";
 #endif
@@ -52,13 +52,13 @@ const char kOtherUrl[] = "http://google.com/";
 
 // |echo| adds a newline at the end of the file. CRLF on Windows, but just LF on
 // POSIX systems.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kTestUrlWithLineEnding[] = "http://example.com/foobar\r\n";
 #else
 const char kTestUrlWithLineEnding[] = "http://example.com/foobar\n";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::string NativeToUTF8(const std::wstring& native) {
   return base::WideToUTF8(native);
 }
@@ -106,7 +106,7 @@ void InitPolicies(policy::MockConfigurationPolicyProvider* provider,
 // the navigation URL and |output_file| don't contain any special characters or
 // whitespace.
 base::CommandLine GenerateEchoCommandLine(const base::FilePath& output_file) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // cmd.exe /C echo ${url} > "output_file"
   std::vector<std::wstring> args = {
       L"cmd.exe", L"/C", L"echo", L"${url}>", output_file.value().c_str(),
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
   EXPECT_TRUE(base::Contains(output, "%20"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // IE has some quirks with quote characters. Make sure IE doesn't receive them
 // percent-encoded.
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, UnencodesSingleQUotes) {

@@ -21,13 +21,15 @@ goog.provide('__crWeb.allFramesContextMenu');
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
  *                     {@code innerText} The inner text of the link.
+ *                     {@code boundingBox} The bounding box of the element.
  *                   }.
  */
 var getResponseForLinkElement = function(element) {
   return {
     href: getElementHref_(element),
     referrerPolicy: getReferrerPolicy_(element),
-    innerText: element.innerText
+    innerText: element.innerText,
+    boundingBox: getElementBoundingBox_(element)
   };
 };
 
@@ -38,14 +40,23 @@ var getResponseForLinkElement = function(element) {
  *                     {@code src} The src of the image.
  *                     {@code referrerPolicy} The referrer policy to use for
  *                         navigations away from the current page.
+ *                     {@code boundingBox} The bounding box of the element.
  *                     {@code title} (optional) The title of the image, if one
  *                         exists.
  *                     {@code href} (optional) The URL of the link, if one
  *                         exists.
+ *                     {@code naturalWidth} (optional) The natural width of
+ *                         the image, if one exists.
+ *                     {@code naturalHeight} (optional) The natural height of
+ *                         the image, if one exists.
  *                   }.
  */
 var getResponseForImageElement = function(element) {
-  var result = {src: element.src, referrerPolicy: getReferrerPolicy_()};
+  var result = {
+    src: element.currentSrc,
+    referrerPolicy: getReferrerPolicy_(),
+    boundingBox: getElementBoundingBox_(element)
+  };
   var parent = element.parentNode;
   // Copy the title, if any.
   if (element.title) {
@@ -72,6 +83,14 @@ var getResponseForImageElement = function(element) {
       break;
     }
   parent = parent.parentNode;
+  }
+  // Copy the image natural width, if any.
+  if (element.naturalWidth) {
+    result.naturalWidth = element.naturalWidth;
+  }
+  // Copy the image natural height, if any.
+  if (element.naturalHeight) {
+    result.naturalHeight = element.naturalHeight;
   }
   return result;
 };
@@ -142,7 +161,7 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
           return;
         }
 
-        if (tagName === 'img' && element.src) {
+        if (tagName === 'img' && element.currentSrc) {
           sendFindElementAtPointResponse(requestId,
                                          getResponseForImageElement(element));
           return;
@@ -343,6 +362,31 @@ var getElementHref_ = function(element) {
     return href.animVal
   }
   return href
+};
+
+  /**
+   * Returns the client bounding box of the given element.
+   * @param {HTMLElement} element to retrieve the bounding box
+   * @return {!Object} An object of the form {
+   *                     {@code x} The x coordinate of the bounding box origin.
+   *                     {@code y} The y coordinate of the bounding box origin.
+   *                     {@code width} The width of the bounding box size.
+   *                     {@code height} The height of the bounding box size.
+   *                   }.
+   */
+var getElementBoundingBox_ = function(element) {
+  var boundingBox = element.getBoundingClientRect();
+  if (boundingBox) {
+    return {
+      x: boundingBox.x,
+      y: boundingBox.y,
+      width: boundingBox.width,
+      height: boundingBox.height
+    };
+  }
+  else {
+    return null;
+  }
 };
 
 /**

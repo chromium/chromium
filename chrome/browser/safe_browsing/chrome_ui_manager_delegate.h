@@ -39,8 +39,7 @@ class ChromeSafeBrowsingUIManagerDelegate
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   history::HistoryService* GetHistoryService(
       content::BrowserContext* browser_context) override;
-  PingManager* GetPingManagerIfExists() override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+  PingManager* GetPingManager(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
   bool IsSendingOfHitReportsEnabled() override;

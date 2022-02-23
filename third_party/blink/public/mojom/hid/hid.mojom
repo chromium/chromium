@@ -94,4 +94,8 @@ interface HidService {
   // device could not be opened.
   Connect(string device_guid, pending_remote<device.mojom.HidConnectionClient> client)
       => (pending_remote<device.mojom.HidConnection>? connection);
+
+  // Attempts to revoke the permission to the device matching |device_info|.
+  // It will fail silently if the permission cannot be revoked.
+  Forget(device.mojom.HidDeviceInfo device_info) => ();
 };

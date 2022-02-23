@@ -28,6 +28,8 @@
 //  class Worker {
 //   public:
 //    static void StartNew(WeakPtr<Controller> controller) {
+//      // Move WeakPtr when possible to avoid atomic refcounting churn on its
+//      // internal state.
 //      Worker* worker = new Worker(std::move(controller));
 //      // Kick off asynchronous processing...
 //    }
@@ -75,8 +77,8 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
@@ -92,7 +94,7 @@ namespace internal {
 // These classes are part of the WeakPtr implementation.
 // DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
-class BASE_EXPORT WeakReference {
+class BASE_EXPORT TRIVIAL_ABI WeakReference {
  public:
   // Although Flag is bound to a specific SequencedTaskRunner, it may be
   // deleted from another via base::WeakPtr::~WeakPtr().
@@ -153,7 +155,7 @@ class BASE_EXPORT WeakReferenceOwner {
 // constructor by avoiding the need for a public accessor for ref_.  A
 // WeakPtr<T> cannot access the private members of WeakPtr<U>, so this
 // base class gives us a way to access ref_ in a protected fashion.
-class BASE_EXPORT WeakPtrBase {
+class BASE_EXPORT TRIVIAL_ABI WeakPtrBase {
  public:
   WeakPtrBase();
   ~WeakPtrBase();
@@ -232,7 +234,7 @@ template <typename T> class WeakPtrFactory;
 //     foo->method();
 //
 template <typename T>
-class WeakPtr : public internal::WeakPtrBase {
+class TRIVIAL_ABI WeakPtr : public internal::WeakPtrBase {
  public:
   WeakPtr() = default;
   WeakPtr(std::nullptr_t) {}
@@ -260,11 +262,11 @@ class WeakPtr : public internal::WeakPtrBase {
 
   T& operator*() const {
     CHECK(ref_.IsValid());
-    return *get();
+    return *reinterpret_cast<T*>(ptr_);
   }
   T* operator->() const {
     CHECK(ref_.IsValid());
-    return get();
+    return reinterpret_cast<T*>(ptr_);
   }
 
   // Allow conditionals to test validity, e.g. if (weak_ptr) {...};

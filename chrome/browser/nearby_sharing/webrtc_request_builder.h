@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_NEARBY_SHARING_WEBRTC_REQUEST_BUILDER_H_
 
 #include <string>
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+
+#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 
 namespace chrome_browser_nearby_sharing_instantmessaging {
 

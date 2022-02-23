@@ -1,5 +1,0 @@
-include_rules = [
-  "+third_party/expat",
-  "+third_party/webrtc/rtc_base/third_party/base64",
-  "+third_party/webrtc/rtc_base/third_party/sigslot",
-]

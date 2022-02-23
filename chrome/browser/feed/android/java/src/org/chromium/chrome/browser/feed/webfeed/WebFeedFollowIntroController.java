@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -155,7 +156,9 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.i(TAG, "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS");
+                    Log.i(TAG,
+                            "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS"
+                                    + url.getValidSpecOrEmpty());
                     return;
                 }
                 mRecommendationFetcher.beginFetch(tab, url, result -> {
@@ -259,7 +262,7 @@ public class WebFeedFollowIntroController {
         mWebFeedFollowIntroView.showLoadingUI();
         Tab currentTab = mTabSupplier.get();
         FeedServiceBridge.reportOtherUserAction(
-                FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
+                StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
         GURL url = currentTab.getUrl();
         WebFeedBridge.followFromUrl(currentTab, url,
                 results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
@@ -414,9 +417,9 @@ public class WebFeedFollowIntroController {
                 return;
             }
 
-            WebFeedBridge.getWebFeedMetadataForPage(request.tab, request.url, result -> {
-                // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it
-                // is already followed.
+            Callback<WebFeedBridge.WebFeedMetadata> metadata_callback = result -> {
+                // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it is
+                // already followed.
                 if (result != null && result.id != null && result.id.length > 0
                         && result.isRecommended
                         && result.subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
@@ -438,7 +441,10 @@ public class WebFeedFollowIntroController {
 
                     sendResult(request, null);
                 }
-            });
+            };
+
+            WebFeedBridge.getWebFeedMetadataForPage(request.tab, request.url,
+                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION, metadata_callback);
         }
         private void sendResult(Request request, RecommendedWebFeedInfo result) {
             if (mRequest == request) {

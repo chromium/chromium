@@ -8,6 +8,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/value_store/testing_value_store.h"
@@ -57,14 +58,14 @@ class ExtensionSettingsQuotaTest : public testing::Test {
     SettingsStorageQuotaEnforcer::Limits limits =
         { quota_bytes, quota_bytes_per_item, max_items };
     storage_ = std::make_unique<SettingsStorageQuotaEnforcer>(
-        limits, base::WrapUnique(delegate_));
+        limits, base::WrapUnique(delegate_.get()));
   }
 
   // Returns whether the settings in |storage_| and |delegate_| are the same as
   // |settings|.
   bool SettingsEqual(const base::DictionaryValue& settings) {
-    return settings.Equals(&storage_->Get().settings()) &&
-           settings.Equals(&delegate_->Get().settings());
+    return settings == storage_->Get().settings() &&
+           settings == delegate_->Get().settings();
   }
 
   // Values with different serialized sizes.
@@ -76,7 +77,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   std::unique_ptr<SettingsStorageQuotaEnforcer> storage_;
 
   // In-memory storage area being delegated to.  Always owned by |storage_|.
-  value_store::TestingValueStore* delegate_;
+  raw_ptr<value_store::TestingValueStore> delegate_;
 };
 
 TEST_F(ExtensionSettingsQuotaTest, ZeroQuotaBytes) {
@@ -102,7 +103,7 @@ TEST_F(ExtensionSettingsQuotaTest, SmallByteQuota) {
   CreateStorage(8u, UINT_MAX, UINT_MAX);
 
   EXPECT_TRUE(storage_->Set(DEFAULTS, "a", byte_value_1_).status().ok());
-  settings.Set("a", byte_value_1_.CreateDeepCopy());
+  settings.SetKey("a", byte_value_1_.Clone());
   EXPECT_TRUE(SettingsEqual(settings));
 
   EXPECT_FALSE(storage_->Set(DEFAULTS, "b", byte_value_16_).status().ok());
@@ -243,7 +244,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingNonexistentSettings) {
   EXPECT_TRUE(SettingsEqual(settings));
 
   // Max out key count.
-  to_set.Clear();
+  to_set.DictClear();
   to_set.SetKey("b1", byte_value_1_.Clone());
   to_set.SetKey("b2", byte_value_1_.Clone());
   storage_->Set(DEFAULTS, to_set);

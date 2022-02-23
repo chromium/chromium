@@ -41,12 +41,9 @@ export const PrefControlMixin = dedupingMixin(
         private validatePref_() {
           CrSettingsPrefs.initialized.then(() => {
             if (this.pref === undefined) {
-              let error = 'Pref not found for element ' + this.tagName;
-              if (this.id) {
-                error += '#' + this.id;
-              }
-              error += ' in ' + (this.getRootNode() as ShadowRoot).host.tagName;
-              console.error(error);
+              console.error(this.getErrorInfo('not found'));
+            } else if (typeof this.pref === 'string') {
+              console.error(this.getErrorInfo('incorrect type string'));
             } else if (
                 this.pref.enforcement ===
                 chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {
@@ -54,6 +51,19 @@ export const PrefControlMixin = dedupingMixin(
                   'PARENT_SUPERVISED is not enforced by pref controls');
             }
           });
+        }
+
+        /**
+         * Produce an error message with additional information about the
+         * element and host causing the error.
+         */
+        private getErrorInfo(message: string): string {
+          let error = `Pref error [${message}] for element ${this.tagName}`;
+          if (this.id) {
+            error += `#${this.id}`;
+          }
+          error += ` in ${(this.getRootNode() as ShadowRoot).host.tagName}`;
+          return error;
         }
       }
 

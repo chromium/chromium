@@ -112,6 +112,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     public void startMainActivityFromIntent(Intent intent, String url) {
         prepareUrlIntent(intent, url);
         startActivityCompletely(intent);
+        waitForFirstFrame();
     }
 
     /**

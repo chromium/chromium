@@ -18,9 +18,10 @@ limitations under the License.
 
 #include <memory>
 
-#include "absl/container/flat_hash_set.h"
-#include "absl/status/status.h"
+#include "absl/container/flat_hash_set.h"  // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
 #include "tensorflow/lite/core/api/op_resolver.h"
+#include "tensorflow/lite/core/shims/cc/kernels/register.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 #include "tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h"
@@ -28,6 +29,7 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/task/vision/core/label_map_item.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/detections_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/object_detector_options_proto_inc.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/score_calibration.h"
 
 namespace tflite {
 namespace task {
@@ -84,7 +86,7 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   CreateFromOptions(
       const ObjectDetectorOptions& options,
       std::unique_ptr<tflite::OpResolver> resolver =
-          absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>());
+          absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>());
 
   // Performs actual detection on the provided FrameBuffer.
   //
@@ -134,6 +136,9 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   // Performs pre-initialization actions.
   virtual absl::Status PreInit();
 
+  // Performs post-initialization actions.
+  virtual absl::Status PostInit();
+
  private:
   // Performs sanity checks on the model outputs and extracts their metadata.
   absl::Status CheckAndSetOutputs();
@@ -146,6 +151,10 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   // case a whitelist is provided or not blacklisted if a blacklist is provided.
   // Always returns true if no whitelist or blacklist were provided.
   bool IsClassIndexAllowed(int class_index);
+
+  // Initializes the score calibration parameters based on corresponding TFLite
+  // Model Metadata, if any.
+  absl::Status InitScoreCalibrations();
 
   // Given a DetectionResult object containing class indices, fills the name and
   // display name from the label map.
@@ -178,6 +187,15 @@ class ObjectDetector : public BaseVisionTaskApi<DetectionResult> {
   // discarded. If none is provided via metadata or options, -FLT_MAX is set as
   // default value.
   float score_threshold_;
+
+  // List of score calibration parameters, if any. Built from TFLite Model
+  // Metadata.
+  std::unique_ptr<ScoreCalibration> score_calibration_;
+
+  // Indices of the output tensors to match the output tensors to the correct
+  // index order of the output tensors: [location, categories, scores,
+  // num_detections].
+  std::vector<int> output_indices_;
 };
 
 }  // namespace vision

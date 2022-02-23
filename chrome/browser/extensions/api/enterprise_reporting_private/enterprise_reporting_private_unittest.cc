@@ -28,7 +28,7 @@
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <netfw.h>
 #include <windows.h>
 #include <wrl/client.h>
@@ -36,7 +36,7 @@
 #include "base/test/test_reg_util_win.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
 #endif
 
@@ -47,7 +47,7 @@ using SettingValue = enterprise_signals::SettingValue;
 
 namespace extensions {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -124,7 +124,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetList().size());
+  EXPECT_EQ(0u, function->GetResultList()->GetListDeprecated().size());
   EXPECT_TRUE(function->GetError().empty());
 }
 
@@ -137,14 +137,13 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(1u, function->GetResultList()->GetList().size());
+  EXPECT_EQ(1u, function->GetResultList()->GetListDeprecated().size());
   EXPECT_TRUE(function->GetError().empty());
 
-  const base::Value* single_result = nullptr;
-  EXPECT_TRUE(function->GetResultList()->Get(0, &single_result));
-  ASSERT_TRUE(single_result);
-  ASSERT_TRUE(single_result->is_blob());
-  EXPECT_EQ(base::Value::BlobStorage(), single_result->GetBlob());
+  const base::Value& single_result =
+      function->GetResultList()->GetListDeprecated()[0];
+  ASSERT_TRUE(single_result.is_blob());
+  EXPECT_EQ(base::Value::BlobStorage(), single_result.GetBlob());
 }
 
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
@@ -169,7 +168,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetList().size());
+  EXPECT_EQ(0u, function->GetResultList()->GetListDeprecated().size());
   EXPECT_FALSE(function->GetError().empty());
 }
 
@@ -193,13 +192,12 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   extension_function_test_utils::RunFunction(get_function.get(),
                                              std::move(values), browser(),
                                              extensions::api_test_utils::NONE);
-  const base::Value* single_result = nullptr;
   ASSERT_TRUE(get_function->GetResultList());
-  EXPECT_TRUE(get_function->GetResultList()->Get(0, &single_result));
+  const base::Value& single_result =
+      get_function->GetResultList()->GetListDeprecated()[0];
   EXPECT_TRUE(get_function->GetError().empty());
-  ASSERT_TRUE(single_result);
-  ASSERT_TRUE(single_result->is_blob());
-  EXPECT_EQ(base::Value::BlobStorage({1, 2, 3}), single_result->GetBlob());
+  ASSERT_TRUE(single_result.is_blob());
+  EXPECT_EQ(base::Value::BlobStorage({1, 2, 3}), single_result.GetBlob());
 
   // Clear the data and check that it is gone.
   auto set_function2 =
@@ -221,17 +219,17 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
                                              std::move(values2), browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(get_function2->GetResultList());
-  EXPECT_EQ(1u, get_function2->GetResultList()->GetList().size());
+  EXPECT_EQ(1u, get_function2->GetResultList()->GetListDeprecated().size());
   EXPECT_TRUE(get_function2->GetError().empty());
 
-  EXPECT_TRUE(get_function2->GetResultList()->Get(0, &single_result));
-  ASSERT_TRUE(single_result);
-  ASSERT_TRUE(single_result->is_blob());
-  EXPECT_EQ(base::Value::BlobStorage(), single_result->GetBlob());
+  const base::Value& single_result2 =
+      get_function2->GetResultList()->GetListDeprecated()[0];
+  ASSERT_TRUE(single_result2.is_blob());
+  EXPECT_EQ(base::Value::BlobStorage(), single_result2.GetBlob());
 }
 
 // TODO(pastarmovj): Remove once implementation for the other platform exists.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Test for API enterprise.reportingPrivate.getDeviceId
 class EnterpriseReportingPrivateGetPersistentSecretFunctionTest
@@ -248,14 +246,14 @@ class EnterpriseReportingPrivateGetPersistentSecretFunctionTest
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 #endif
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
 };
@@ -313,7 +311,7 @@ TEST_F(EnterpriseReportingPrivateGetPersistentSecretFunctionTest, GetSecret) {
   ASSERT_NE(generated_blob, result5->GetBlob());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 using EnterpriseReportingPrivateGetDeviceInfoTest = ExtensionApiUnittest;
 
@@ -326,12 +324,12 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   enterprise_reporting_private::DeviceInfo info;
   ASSERT_TRUE(enterprise_reporting_private::DeviceInfo::Populate(
       *device_info_value, &info));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ("macOS", info.os_name);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   EXPECT_EQ("windows", info.os_name);
   EXPECT_FALSE(info.device_model.empty());
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   env->SetVar(base::nix::kXdgCurrentDesktopEnvVar, "XFCE");
   EXPECT_EQ("linux", info.os_name);
@@ -379,7 +377,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfoConversion) {
   EXPECT_EQ(*info.windows_user_domain, "USER_DOMAIN");
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class EnterpriseReportingPrivateGetContextInfoTest
     : public ExtensionApiUnittest {
@@ -409,7 +407,7 @@ class EnterpriseReportingPrivateGetContextInfoTest
   }
 
   bool BuiltInDnsClientPlatformDefault() {
-#if defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     return true;
 #else
     return false;
@@ -418,7 +416,7 @@ class EnterpriseReportingPrivateGetContextInfoTest
 
   void ExpectDefaultChromeCleanupEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_TRUE(*info.chrome_cleanup_enabled);
 #else
     EXPECT_EQ(nullptr, info.chrome_cleanup_enabled.get());
@@ -426,7 +424,7 @@ class EnterpriseReportingPrivateGetContextInfoTest
   }
   void ExpectDefaultThirdPartyBlockingEnabled(
       const enterprise_reporting_private::ContextInfo& info) {
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     EXPECT_TRUE(*info.third_party_blocking_enabled);
 #else
     EXPECT_EQ(info.third_party_blocking_enabled, nullptr);
@@ -460,7 +458,7 @@ TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
   ExpectDefaultThirdPartyBlockingEnabled(info);
 }
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
       public testing::WithParamInterface<bool> {};
@@ -495,7 +493,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     EnterpriseReportingPrivateGetContextInfoThirdPartyBlockingTest,
     testing::Bool());
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class EnterpriseReportingPrivateGetContextInfoSafeBrowsingTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -645,7 +643,7 @@ INSTANTIATE_TEST_SUITE_P(
                     enterprise_reporting_private::
                         PASSWORD_PROTECTION_TRIGGER_PHISHING_REUSE));
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 class EnterpriseReportingPrivateGetContextOSFirewallLinuxTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
       public testing::WithParamInterface<
@@ -745,9 +743,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(enterprise_reporting_private::SETTING_VALUE_ENABLED,
                     enterprise_reporting_private::SETTING_VALUE_DISABLED,
                     enterprise_reporting_private::SETTING_VALUE_UNKNOWN));
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class EnterpriseReportingPrivateGetContextInfoChromeCleanupTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
       public testing::WithParamInterface<bool> {};
@@ -784,7 +782,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     EnterpriseReportingPrivateGetContextInfoChromeCleanupTest,
     testing::Bool());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
@@ -870,7 +868,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "google.com",
                     "https://*"));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
     : public EnterpriseReportingPrivateGetContextInfoTest,
       public testing::WithParamInterface<SettingValue> {
@@ -966,7 +964,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(SettingValue::DISABLED,
                                          SettingValue::ENABLED));
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 class EnterpriseReportingPrivateGetContextInfoRealTimeURLCheckTest
     : public EnterpriseReportingPrivateGetContextInfoTest,

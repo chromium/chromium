@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_ASH_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_DEVICE_ATTRIBUTES_ENTERPRISE_DEVICE_ATTRIBUTES_API_ASH_H_
 
+#include <memory>
+
+#include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -57,6 +60,8 @@ class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
     : public ExtensionFunction {
  public:
   EnterpriseDeviceAttributesGetDeviceAssetIdFunction();
+  explicit EnterpriseDeviceAttributesGetDeviceAssetIdFunction(
+      std::unique_ptr<policy::DeviceAttributes> attributes);
 
  protected:
   ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() override;
@@ -64,6 +69,8 @@ class EnterpriseDeviceAttributesGetDeviceAssetIdFunction
   ResponseAction Run() override;
 
  private:
+  std::unique_ptr<policy::DeviceAttributes> attributes_;
+
   DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDeviceAssetId",
                              ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEASSETID)
 };

@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -60,7 +57,6 @@ import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * This is a utility class for managing experiments related to returning to Chrome.
@@ -71,6 +67,9 @@ public final class ReturnToChromeExperimentsUtil {
     @VisibleForTesting
     public static final long INVALID_DECISION_TIMESTAMP = -1L;
     public static final long MILLISECONDS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
+    @VisibleForTesting
+    public static final String LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
+            "Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
 
@@ -470,22 +469,17 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
-     *
-     * @param context The activity context.
      * @param tabModelSelector The tab model selector.
      * @return the total tab count, and works before native initialization.
      */
-    public static int getTotalTabCount(Context context, TabModelSelector tabModelSelector) {
-        if ((CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                    || CachedFeatureFlags.isEnabled(
-                            ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP))
-                && !tabModelSelector.isTabStateInitialized()) {
-            List<PseudoTab> allTabs;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                allTabs = PseudoTab.getAllPseudoTabsFromStateFile(context);
-            }
-            return allTabs != null ? allTabs.size() : 0;
+    public static int getTotalTabCount(TabModelSelector tabModelSelector) {
+        if (!tabModelSelector.isTabStateInitialized()) {
+            return SharedPreferencesManager.getInstance().readInt(
+                           ChromePreferenceKeys.REGULAR_TAB_COUNT)
+                    + SharedPreferencesManager.getInstance().readInt(
+                            ChromePreferenceKeys.INCOGNITO_TAB_COUNT);
         }
+
         return tabModelSelector.getTotalTabCount();
     }
 
@@ -498,9 +492,7 @@ public final class ReturnToChromeExperimentsUtil {
         // If Chrome is launched by tapping the New Tab Item from the launch icon and
         // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
         // shown on Startup.
-        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) {
-            return false;
-        }
+        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) return false;
 
         // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
         // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,
@@ -512,12 +504,18 @@ public final class ReturnToChromeExperimentsUtil {
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)
-                && IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeExperimentsUtil.getTotalTabCount(context, tabModelSelector) <= 0) {
-            // Handle initial tab creation.
+
+        boolean isStartSurfaceEnabled =
+                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
+
+        // If Start surface is enabled and there's no tab existing, handle the initial tab creation.
+        if (isStartSurfaceEnabled && IntentUtils.isMainIntentFromLauncher(intent)
+                && ReturnToChromeExperimentsUtil.getTotalTabCount(tabModelSelector) <= 0) {
             return true;
         }
+
+        // Checks whether to hide Start surface when last visited tab is a search result page.
+        if (isStartSurfaceEnabled && shouldHideStartSurfaceWhenLastVisitedTabIsSRP()) return false;
 
         // Checks whether to show the Start surface / grid Tab switcher due to feature flag
         // TAB_SWITCHER_ON_RETURN_MS.
@@ -528,7 +526,7 @@ public final class ReturnToChromeExperimentsUtil {
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;
 
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)) {
+        if (isStartSurfaceEnabled) {
             if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
                 // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP
                 // and the Start surface are both enabled.
@@ -889,6 +887,17 @@ public final class ReturnToChromeExperimentsUtil {
         onUIClicked(ChromePreferenceKeys.TAP_MV_TILES_COUNT);
     }
 
+    /**
+     * Record whether the last visited tab shown in the single tab switcher or carousel tab switcher
+     * is a search result page or not. This should be called when Start surface is shown at startup.
+     */
+    public static void recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch() {
+        RecordHistogram.recordBooleanHistogram(
+                LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
+                SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
+    }
+
     @VisibleForTesting
     public static String getBehaviourTypeKeyForTesting(String key) {
         return getBehaviourType(key);
@@ -898,5 +907,14 @@ public final class ReturnToChromeExperimentsUtil {
     public static void setSyncForTesting(boolean isSyncing) {
         SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         manager.writeBoolean(ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isSyncing);
+    }
+
+    /**
+     * Returns whether Start surface should be hidden when last visited tab is a search result page.
+     */
+    private static boolean shouldHideStartSurfaceWhenLastVisitedTabIsSRP() {
+        return StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP.getValue()
+                && SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false);
     }
 }

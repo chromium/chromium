@@ -6,9 +6,19 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionConstants.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandler.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionParameters.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/BackgroundAttributionFlusher.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps = [
+    ":internal_factory_java",
+    "//base:base_java",
+    "//base:jni_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
 
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/attribution_reporting/BackgroundAttributionFlusher.java" ]
 }
 
 android_library_factory("factory_java") {
@@ -22,4 +32,14 @@ android_library_factory("factory_java") {
     "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
     "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingJobFactory.java",
   ]
+}
+
+android_library_factory("internal_factory_java") {
+  deps = [
+    "//base:base_java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
+    "//components/background_task_scheduler:public_java",
+  ]
+
+  sources = [ "internal/java/src/org/chromium/chrome/browser/attribution_reporting/BackgroundAttributionFlusherImpl.java" ]
 }

@@ -1,62 +1,125 @@
 <style include="cr-shared-style shimless-rma-shared">
   #shimlessRMAContainer {
-    padding: 50px;
+    align-items: stretch;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-inline-end: 40px;
+    padding-inline-start: 40px;
+    width: 100%;
+  }
+
+  #contentContainer {
+    flex-grow: 1;
+  }
+
+  .shimless-content {
+    height: 100%;
+    width: 100%;
   }
 
   .shimless-footer {
-    text-align: right;
-    margin-top: 10px;
+    height: var(--footer-height);
+    text-align: end;
   }
 
-  cr-button {
-    border-radius: 15px;
+  .shimless-header {
+    height: 80px;
   }
 
   #back {
     border: 0;
-    margin-left: -15px;
+    height: 100%;
   }
 
-  #back::before {
-    content: "<";
-    padding-right: 5px;
+  #next {
+    margin-inline-end: -13px;
+    top: 24px;
   }
 
   #cancel {
-    margin-right: 5px;
+    margin-inline-end: 8px;
+    top: 24px;
   }
 
-  #next::after {
-    content: ">";
-    padding-left: 5px;
+  .busy-icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  #cancelButtonSpinner,
+  #nextButtonCaret,
+  #nextButtonSpinner {
+    margin-inline-start: 5px;
+  }
+
+  #backButtonCaret,
+  #backButtonSpinner {
+    margin-inline-end: 5px;
+  }
+
+  #busyStateOverlay {
+    background-color: white;
+    display: none;
+    height: 100vh;
+    opacity: .4;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+  }
+
+  :host([all-buttons-disabled_]) #busyStateOverlay {
+    display: block;
   }
 </style>
 
 <div id="shimlessRMAContainer">
+  <div id="busyStateOverlay"></div>
   <div class="shimless-header">
     <cr-button
       id="back" on-click="onBackButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
-      Back
+      <paper-spinner-lite id="backButtonSpinner" class="busy-icon"
+          hidden$="[[!backButtonClicked_]]" active>
+      </paper-spinner-lite>
+      <span id="backButtonCaret" hidden$="[[backButtonClicked_]]">
+        &#60;
+      </span>
+      <span id="backButtonLabel">
+        [[i18n('backButtonLabel')]]
+      </span>
     </cr-button>
   </div>
-  <!-- TODO(joonbug): i18n button labels -->
   <div id="contentContainer"></div>
   <div class="shimless-footer">
     <cr-button
-      id="cancel" on-click="onCancelButtonClicked_"
+      id="cancel" class="pill" on-click="onCancelButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
-      Cancel
+      <span id="cancelButtonLabel">
+        [[i18n('cancelButtonLabel')]]
+      </span>
+      <paper-spinner-lite id="cancelButtonSpinner" class="busy-icon"
+          hidden$="[[!cancelButtonClicked_]]" active>
+      </paper-spinner-lite>
     </cr-button>
     <cr-button
-      id="next" on-click="onNextButtonClicked_"
+      id="next" class="action-button" on-click="onNextButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
-      Next
+      <span id="nextButtonLabel">
+        [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
+      </span>
+      <paper-spinner-lite id="nextButtonSpinner" class="busy-icon"
+          hidden$="[[!nextButtonClicked_]]" active>
+      </paper-spinner-lite>
+      <span id="nextButtonCaret" hidden$="[[nextButtonClicked_]]">
+        &#62;
+      </span>
     </cr-button>
   </div>
   <!-- TODO(gavindodd): Debug only. Remove this before shipping. -->
-  <p>[[errorMessage_]]</p>
+  <div>[[errorMessage_]]</div>
 </div>

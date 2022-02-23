@@ -9,8 +9,5 @@ js_type_check("closure_compile") {
 }
 
 js_library("browser_switch_internals") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }

@@ -26,7 +26,23 @@ interface SharedStorageDocumentService {
   // registered by registerOperation() with matching `name`. `serialized_data`
   // is the serialization result of JavaScript value
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
-  // Verification is not necessary at mojo boundary as the data will be consumed
-  // in an environment in control by the same origin.
+  // There's no need to sanitize `serialized_data` at the browser process as the
+  // data will be only consumed in an environment (i.e. the worklet) in control
+  // by the same origin.
   RunOperationOnWorklet(string name, array<uint8> serialized_data);
+
+  // Handle sharedStorage.runURLSelectionOperation(): run the operation
+  // previously registered by registerURLSelectionOperation() with matching
+  // `name`. The length of the `urls` array should be checked at the renderer
+  // and be enforced at the browser to ensure it's below the configured limit
+  // number `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
+  // `serialized_data` is the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
+  // There's no need to sanitize `serialized_data` at the browser process as the
+  // data will be only consumed in an environment (i.e. the worklet) in control
+  // by the same origin.
+  RunURLSelectionOperationOnWorklet(string name,
+                                    array<url.mojom.Url> urls,
+                                    array<uint8> serialized_data)
+    => (bool success, string error_message, url.mojom.Url opaque_url);
 };

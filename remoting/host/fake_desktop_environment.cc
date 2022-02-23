@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
@@ -87,13 +88,12 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
 
 std::unique_ptr<webrtc::DesktopCapturer>
 FakeDesktopEnvironment::CreateVideoCapturer() {
-  std::unique_ptr<protocol::FakeDesktopCapturer> fake_capturer(
-      new protocol::FakeDesktopCapturer());
+  auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null())
     fake_capturer->set_frame_generator(frame_generator_);
 
-  std::unique_ptr<DesktopCapturerProxy> result(
-      new DesktopCapturerProxy(capture_thread_, capture_thread_, nullptr));
+  auto result =
+      std::make_unique<DesktopCapturerProxy>(capture_thread_, capture_thread_);
   result->set_capturer(std::move(fake_capturer));
   return std::move(result);
 }
@@ -125,7 +125,7 @@ std::string FakeDesktopEnvironment::GetCapabilities() const {
 void FakeDesktopEnvironment::SetCapabilities(const std::string& capabilities) {}
 
 uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
-  return UINT32_MAX;
+  return desktop_session_id_;
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
@@ -146,10 +146,12 @@ FakeDesktopEnvironmentFactory::~FakeDesktopEnvironmentFactory() = default;
 // DesktopEnvironmentFactory implementation.
 std::unique_ptr<DesktopEnvironment> FakeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   std::unique_ptr<FakeDesktopEnvironment> result(
       new FakeDesktopEnvironment(capture_thread_, options));
   result->set_frame_generator(frame_generator_);
+  result->set_desktop_session_id(desktop_session_id_);
   last_desktop_environment_ = result->weak_factory_.GetWeakPtr();
   return std::move(result);
 }

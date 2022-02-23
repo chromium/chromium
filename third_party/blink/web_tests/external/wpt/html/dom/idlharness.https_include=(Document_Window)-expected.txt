@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 984 tests; 968 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 984 tests; 980 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -227,9 +227,9 @@ PASS Window interface: attribute oncanplaythrough
 PASS Window interface: attribute onchange
 PASS Window interface: attribute onclick
 PASS Window interface: attribute onclose
-FAIL Window interface: attribute oncontextlost assert_own_property: The global object must have a property "oncontextlost" expected property "oncontextlost" missing
+PASS Window interface: attribute oncontextlost
 PASS Window interface: attribute oncontextmenu
-FAIL Window interface: attribute oncontextrestored assert_own_property: The global object must have a property "oncontextrestored" expected property "oncontextrestored" missing
+PASS Window interface: attribute oncontextrestored
 PASS Window interface: attribute oncuechange
 PASS Window interface: attribute ondblclick
 PASS Window interface: attribute ondrag
@@ -382,9 +382,9 @@ PASS Window interface: window must inherit property "oncanplaythrough" with the 
 PASS Window interface: window must inherit property "onchange" with the proper type
 PASS Window interface: window must inherit property "onclick" with the proper type
 PASS Window interface: window must inherit property "onclose" with the proper type
-FAIL Window interface: window must inherit property "oncontextlost" with the proper type assert_own_property: expected property "oncontextlost" missing
+PASS Window interface: window must inherit property "oncontextlost" with the proper type
 PASS Window interface: window must inherit property "oncontextmenu" with the proper type
-FAIL Window interface: window must inherit property "oncontextrestored" with the proper type assert_own_property: expected property "oncontextrestored" missing
+PASS Window interface: window must inherit property "oncontextrestored" with the proper type
 PASS Window interface: window must inherit property "oncuechange" with the proper type
 PASS Window interface: window must inherit property "ondblclick" with the proper type
 PASS Window interface: window must inherit property "ondrag" with the proper type
@@ -540,9 +540,9 @@ PASS Document interface: attribute oncanplaythrough
 PASS Document interface: attribute onchange
 PASS Document interface: attribute onclick
 PASS Document interface: attribute onclose
-FAIL Document interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
+PASS Document interface: attribute oncontextlost
 PASS Document interface: attribute oncontextmenu
-FAIL Document interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
+PASS Document interface: attribute oncontextrestored
 PASS Document interface: attribute oncuechange
 PASS Document interface: attribute ondblclick
 PASS Document interface: attribute ondrag
@@ -667,9 +667,9 @@ PASS Document interface: iframe.contentDocument must inherit property "oncanplay
 PASS Document interface: iframe.contentDocument must inherit property "onchange" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onclick" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "onclose" with the proper type
-FAIL Document interface: iframe.contentDocument must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" not found in prototype chain
+PASS Document interface: iframe.contentDocument must inherit property "oncontextlost" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "oncontextmenu" with the proper type
-FAIL Document interface: iframe.contentDocument must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" not found in prototype chain
+PASS Document interface: iframe.contentDocument must inherit property "oncontextrestored" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "oncuechange" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondblclick" with the proper type
 PASS Document interface: iframe.contentDocument must inherit property "ondrag" with the proper type
@@ -794,9 +794,9 @@ PASS Document interface: new Document() must inherit property "oncanplaythrough"
 PASS Document interface: new Document() must inherit property "onchange" with the proper type
 PASS Document interface: new Document() must inherit property "onclick" with the proper type
 PASS Document interface: new Document() must inherit property "onclose" with the proper type
-FAIL Document interface: new Document() must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" not found in prototype chain
+PASS Document interface: new Document() must inherit property "oncontextlost" with the proper type
 PASS Document interface: new Document() must inherit property "oncontextmenu" with the proper type
-FAIL Document interface: new Document() must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" not found in prototype chain
+PASS Document interface: new Document() must inherit property "oncontextrestored" with the proper type
 PASS Document interface: new Document() must inherit property "oncuechange" with the proper type
 PASS Document interface: new Document() must inherit property "ondblclick" with the proper type
 PASS Document interface: new Document() must inherit property "ondrag" with the proper type
@@ -921,9 +921,9 @@ PASS Document interface: documentWithHandlers must inherit property "oncanplayth
 PASS Document interface: documentWithHandlers must inherit property "onchange" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onclick" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "onclose" with the proper type
-FAIL Document interface: documentWithHandlers must inherit property "oncontextlost" with the proper type assert_inherits: property "oncontextlost" found on object expected in prototype chain
+PASS Document interface: documentWithHandlers must inherit property "oncontextlost" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "oncontextmenu" with the proper type
-FAIL Document interface: documentWithHandlers must inherit property "oncontextrestored" with the proper type assert_inherits: property "oncontextrestored" found on object expected in prototype chain
+PASS Document interface: documentWithHandlers must inherit property "oncontextrestored" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "oncuechange" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondblclick" with the proper type
 PASS Document interface: documentWithHandlers must inherit property "ondrag" with the proper type

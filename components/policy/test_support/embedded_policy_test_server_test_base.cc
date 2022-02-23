@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,7 +35,7 @@ void EmbeddedPolicyTestServerTestBase::SetUp() {
   test_server_.Start();
 
   resource_request_ = std::make_unique<network::ResourceRequest>();
-  resource_request_->method = "POST";
+  resource_request_->method = net::HttpRequestHeaders::kPostMethod;
   resource_request_->url = test_server_.GetServiceURL();
 }
 
@@ -46,6 +47,14 @@ void EmbeddedPolicyTestServerTestBase::AddQueryParam(const std::string& key,
 
   resource_request_->url =
       net::AppendQueryParameter(resource_request_->url, key, value);
+}
+
+void EmbeddedPolicyTestServerTestBase::SetURL(const GURL& url) {
+  resource_request_->url = url;
+}
+
+void EmbeddedPolicyTestServerTestBase::SetMethod(const std::string& method) {
+  resource_request_->method = method;
 }
 
 void EmbeddedPolicyTestServerTestBase::SetAppType(const std::string& app_type) {
@@ -60,6 +69,11 @@ void EmbeddedPolicyTestServerTestBase::SetDeviceIdParam(
 void EmbeddedPolicyTestServerTestBase::SetDeviceType(
     const std::string& device_type) {
   AddQueryParam(dm_protocol::kParamDeviceType, device_type);
+}
+
+void EmbeddedPolicyTestServerTestBase::SetOAuthToken(
+    const std::string& oauth_token) {
+  AddQueryParam(dm_protocol::kParamOAuthToken, oauth_token);
 }
 
 void EmbeddedPolicyTestServerTestBase::SetRequestTypeParam(

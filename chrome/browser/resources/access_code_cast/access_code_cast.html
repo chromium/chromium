@@ -1,0 +1,79 @@
+<style include="cr-shared-style">
+  .body-1 {
+    font-size: 14px;
+  }
+
+  .title-1 {
+    font-size: 16px;
+  }
+
+  .button-image {
+    margin-inline-end: 8px;
+  }
+
+  .center-content {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .space {
+    height: 32px;
+  }
+
+  .text-button:not(:focus) {
+    border: none;
+    box-shadow: none;
+  }
+
+  .text-button:hover {
+    background-color: transparent;
+  }
+
+  cr-dialog::part(dialog) {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  cr-dialog [slot=body] {
+    height: 480px;
+  }
+</style>
+<cr-dialog id="dialog">
+  <div slot="title" class="title-1">$i18n{dialogTitle}</div>
+  <div slot="body">
+    <div id="codeInputView">
+      <div class="body-1">$i18n{accessCodeMessage}</div>
+      <div class="space"></div>
+      <div class="center-content">
+        <c2c-code-input length="6" value="" id="codeInput"
+          disabled="[[!canCast]]"></c2c-code-input>
+      </div>
+      <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
+        <div class="center-content">
+          <cr-button on-click="switchToQrInput" class="center text-button">
+            <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+            $i18n{useCamera}
+          </cr-button>
+        </div>
+      </template>
+    </div>
+    <div id="qrInputView">
+      <div>Camera input view</div>
+    </div>
+    <c2c-error-message id="errorMessage"></c2c-error-message>
+  </div>
+  <div slot="button-container">
+    <cr-button on-click="close" class="cancel-button">$i18n{cancel}</cr-button>
+    <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
+      disabled="[[castButtonDisabled(accessCode, canCast)]]">
+      $i18n{submit}
+    </cr-button>
+    <cr-button id="backButton" on-click="switchToCodeInput"
+      class="action-button">
+      $i18n{back}
+    </cr-button>
+  </div>
+</cr-dialog>

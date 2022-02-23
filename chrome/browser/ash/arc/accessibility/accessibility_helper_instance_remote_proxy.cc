@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/connection_holder.h"
 
 namespace arc {
 

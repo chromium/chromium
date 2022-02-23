@@ -14,11 +14,16 @@
         return new Promise((resolve) => {
           const ws = new WebSocket('ws://localhost:8880/echo');
           let startTime;
+          let numMessages = 0;
           ws.onopen = () => {
             startTime = performance.now();
-            ws.send('x'.repeat(2000));
+            ws.send('x'.repeat(1000));
+            ws.send('x'.repeat(1000));
           };
-          ws.onmessage = () => { resolve(performance.now() - startTime); }
+          ws.onmessage = () => {
+            ++numMessages;
+            if (numMessages == 2) resolve(performance.now() - startTime);
+          }
           ws.onerror = () => log += 'onerror ';
           ws.onclose = () => log += 'onclose ';
         });

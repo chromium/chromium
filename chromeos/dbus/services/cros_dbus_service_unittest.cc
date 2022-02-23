@@ -27,12 +27,16 @@ using ::testing::Return;
 
 namespace chromeos {
 
+namespace {
+
 class MockProxyResolutionService
     : public CrosDBusService::ServiceProviderInterface {
  public:
   MOCK_METHOD1(Start, void(scoped_refptr<dbus::ExportedObject>
                            exported_object));
 };
+
+}  // namespace
 
 class CrosDBusServiceTest : public testing::Test {
  public:

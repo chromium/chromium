@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/clip_node.h"
@@ -126,8 +127,7 @@ class LayerTreePixelTest : public LayerTreeTest {
 
   TestRasterType raster_type() const { return raster_type_; }
   bool use_accelerated_raster() const {
-    return raster_type_ == TestRasterType::kGpu ||
-           raster_type_ == TestRasterType::kOop;
+    return raster_type_ == TestRasterType::kGpu;
   }
 
   // Common CSS colors defined for tests to use.
@@ -141,7 +141,7 @@ class LayerTreePixelTest : public LayerTreeTest {
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   std::unique_ptr<PixelComparator> pixel_comparator_;
   scoped_refptr<Layer> content_root_;  // Not used in layer list mode.
-  Layer* readback_target_;
+  raw_ptr<Layer> readback_target_;
   base::FilePath ref_file_;
   SkBitmap expected_bitmap_;
   std::unique_ptr<SkBitmap> result_bitmap_;

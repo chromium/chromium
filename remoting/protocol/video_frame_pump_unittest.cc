@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -141,7 +141,7 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  webrtc::DesktopCapturer::Callback* callback_;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 };
 
 class VideoFramePumpTest : public testing::Test {

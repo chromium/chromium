@@ -11,11 +11,11 @@
   }
 
   .delete-enabled {
-    --iron-icon-fill-color: rgb(26,115,232);
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
   }
 
   .delete-disabled {
-    --iron-icon-fill-color: var(--google-grey-500);
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
   }
 
   .main-container {
@@ -37,15 +37,15 @@
   }
 
   #enterpriseIcon {
-    --iron-icon-fill-color: var(--google-grey-refresh-700);
-    --iron-icon-stroke-color: var(--google-grey-refresh-700);
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-stroke-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 13px;
     --iron-icon-width: 13px;
     margin-inline-start: 8px;
   }
 
   #headerContainer {
-    border-bottom: 1px solid rgba(0,0,0,0.14); /* 14% black */
+    border-bottom: 1px solid var(--cros-separator-color);
     display: flex;
     justify-content: space-between;
     padding-bottom: 20px;
@@ -53,8 +53,8 @@
   }
 
   #infoIcon {
-    --iron-icon-fill-color: var(--google-grey-700);
-    --iron-icon-stroke-color: var(--google-grey-700);
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    --iron-icon-stroke-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 13px;
     --iron-icon-width: 13px;
     margin-inline-start: 8px;
@@ -68,7 +68,7 @@
   }
 
   #ongoingEmptyState {
-    color: var(--google-grey-600);
+    color: var(--cros-text-color-disabled);
     margin-inline-start: 12px;
     padding-bottom: 24px;
     padding-top: 24px;

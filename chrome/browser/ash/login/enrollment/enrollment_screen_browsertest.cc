@@ -1,9 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
@@ -48,6 +52,20 @@ class EnrollmentScreenTest : public OobeBaseTest {
   ~EnrollmentScreenTest() override = default;
 
   // OobeBaseTest:
+  bool SetUpUserDataDirectory() override {
+    if (!OobeBaseTest::SetUpUserDataDirectory())
+      return false;
+
+    // Make sure chrome paths are overridden before proceeding - this is usually
+    // done in chrome main, which has not happened yet.
+    base::FilePath user_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    ash::RegisterStubPathOverrides(user_data_dir);
+
+    return true;
+  }
+
+  // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
     LoginDisplayHost::default_host()->StartWizard(
@@ -65,6 +83,107 @@ class EnrollmentScreenTest : public OobeBaseTest {
 
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
 };
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
+  enrollment_ui_.SetExitHandler();
+  enrollment_screen()->OnCancel();
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
+  WizardController::SkipEnrollmentPromptsForTesting();
+  enrollment_ui_.SetExitHandler();
+  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
+  EnrollmentScreenView* view = enrollment_screen()->GetView();
+  ASSERT_TRUE(view);
+
+  // Run through the flow
+  view->Show();
+  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+
+  view->ShowEnrollmentWorkingScreen();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepWorking);
+
+  view->ShowEnrollmentSuccessScreen();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+}
+
+class EnrollmentScreenHandsOffTest : public EnrollmentScreenTest {
+ public:
+  EnrollmentScreenHandsOffTest() = default;
+  ~EnrollmentScreenHandsOffTest() override = default;
+
+  EnrollmentScreenHandsOffTest(const EnrollmentScreenHandsOffTest&) = delete;
+  EnrollmentScreenHandsOffTest& operator=(const EnrollmentScreenHandsOffTest&) =
+      delete;
+
+  // EnrollmentScreenTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnrollmentScreenTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenHandsOffTest,
+                       SkipEnrollmentCompleteScreen) {
+  enrollment_ui_.SetExitHandler();
+  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+class EnrollmentScreenChromadMigrationTest : public EnrollmentScreenTest {
+ public:
+  EnrollmentScreenChromadMigrationTest() = default;
+  ~EnrollmentScreenChromadMigrationTest() override = default;
+
+  EnrollmentScreenChromadMigrationTest(
+      const EnrollmentScreenChromadMigrationTest&) = delete;
+  EnrollmentScreenChromadMigrationTest& operator=(
+      const EnrollmentScreenChromadMigrationTest&) = delete;
+
+  // EnrollmentScreenTest:
+  bool SetUpUserDataDirectory() override {
+    if (!EnrollmentScreenTest::SetUpUserDataDirectory())
+      return false;
+
+    base::FilePath preinstalled_components_dir;
+    EXPECT_TRUE(base::PathService::Get(ash::DIR_PREINSTALLED_COMPONENTS,
+                                       &preinstalled_components_dir));
+
+    base::FilePath preserve_dir =
+        preinstalled_components_dir.AppendASCII("preserve/");
+    EXPECT_TRUE(base::CreateDirectory(preserve_dir));
+    EXPECT_TRUE(base::WriteFile(
+        preserve_dir.AppendASCII("chromad_migration_skip_oobe"), "1"));
+
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenChromadMigrationTest,
+                       SkipEnrollmentCompleteScreen) {
+  enrollment_ui_.SetExitHandler();
+  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
+  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
+  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
 
 // Class to test TPM pre-enrollment check that happens only with
 // --tpm-is-dynamic switch enabled. Test parameter represents take TPM
@@ -161,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(EnrollmentScreenDynamicTPMTest, TPMCheckCanceled) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
   test::OobeJS().TapOnPath(kEnrollmentTPMCheckCancelButton);
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(screen_result, EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(screen_result, EnrollmentScreen::Result::BACK);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -170,23 +289,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            ::tpm_manager::STATUS_DEVICE_ERROR,
                                            ::tpm_manager::STATUS_NOT_AVAILABLE,
                                            ::tpm_manager::STATUS_DBUS_ERROR));
-
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
-}
-
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
-  WizardController::SkipEnrollmentPromptsForTesting();
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
-
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
 
 class AttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
  public:
@@ -212,23 +314,7 @@ IN_PROC_BROWSER_TEST_F(AttestationAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
-}
-
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
-  EnrollmentScreenView* view = enrollment_screen()->GetView();
-  ASSERT_TRUE(view);
-
-  // Run through the flow
-  view->Show();
-  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-
-  view->ShowEnrollmentWorkingScreen();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepWorking);
-
-  view->ShowEnrollmentSuccessScreen();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 }
 
 class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -256,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            screen_result);
 }
 
 class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -289,7 +376,8 @@ IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            screen_result);
 }
 
 class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
@@ -320,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(ProvisionedEnrollmentScreenTest, TestBackButton) {
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            screen_result);
 }
 
 class OobeCompletedUnownedTest : public OobeBaseTest {

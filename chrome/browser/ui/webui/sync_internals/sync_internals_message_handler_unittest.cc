@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -24,8 +25,6 @@
 #include "content/public/test/test_web_ui.h"
 
 using base::DictionaryValue;
-using base::ListValue;
-using base::Value;
 using sync_pb::UserEventSpecifics;
 using syncer::FakeUserEventService;
 using syncer::SyncService;
@@ -104,7 +103,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    about_information_.SetString("some_sync_state", "some_value");
+    about_information_.SetStringKey("some_sync_state", "some_value");
 
     web_ui_.set_web_contents(web_contents());
     test_sync_service_ = static_cast<TestSyncService*>(
@@ -195,20 +194,19 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   content::TestWebUI web_ui_;
-  TestSyncService* test_sync_service_;
-  FakeUserEventService* fake_user_event_service_;
+  raw_ptr<TestSyncService> test_sync_service_;
+  raw_ptr<FakeUserEventService> fake_user_event_service_;
   std::unique_ptr<TestableSyncInternalsMessageHandler> handler_;
   int about_sync_data_delegate_call_count_ = 0;
-  SyncService* last_delegate_sync_service_ = nullptr;
+  raw_ptr<SyncService> last_delegate_sync_service_ = nullptr;
   // Fake return value for sync_ui_util::ConstructAboutInformation().
   base::DictionaryValue about_information_;
 };
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
-  ListValue empty_list;
-
   EXPECT_EQ(0, test_sync_service()->add_observer_count());
-  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(
+      base::Value::ConstListView());
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
@@ -220,10 +218,9 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObservers) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversDisallowJavascript) {
-  ListValue empty_list;
-
   EXPECT_EQ(0, test_sync_service()->add_observer_count());
-  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(
+      base::Value::ConstListView());
   EXPECT_EQ(1, test_sync_service()->add_observer_count());
 
   EXPECT_EQ(0, test_sync_service()->remove_observer_count());
@@ -241,8 +238,8 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
-  ListValue empty_list;
-  handler()->HandleRequestDataAndRegisterForUpdates(&empty_list);
+  handler()->HandleRequestDataAndRegisterForUpdates(
+      base::Value::ConstListView());
   handler()->DisallowJavascript();
   // Cannot verify observer methods on sync services were not called, because
   // there is no sync service. Rather, we're just making sure the handler hasn't
@@ -250,28 +247,28 @@ TEST_F(SyncInternalsMessageHandlerTest, AddRemoveObserversSyncDisabled) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, HandleGetAllNodes) {
-  ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("getAllNodes_0");
-  handler()->HandleGetAllNodes(&args);
+  handler()->HandleGetAllNodes(args.GetListDeprecated());
   test_sync_service()->get_all_nodes_callback().Run(
-      std::make_unique<ListValue>());
+      std::make_unique<base::ListValue>());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
-  ListValue args2;
+  base::Value args2(base::Value::Type::LIST);
   args2.Append("getAllNodes_1");
-  handler()->HandleGetAllNodes(&args2);
+  handler()->HandleGetAllNodes(args2.GetListDeprecated());
   // This  breaks the weak ref the callback is hanging onto. Which results in
   // the call count not incrementing.
   handler()->DisallowJavascript();
   test_sync_service()->get_all_nodes_callback().Run(
-      std::make_unique<ListValue>());
+      std::make_unique<base::ListValue>());
   EXPECT_EQ(1, CallCountWithName("cr.webUIResponse"));
 
-  ListValue args3;
+  base::Value args3(base::Value::Type::LIST);
   args3.Append("getAllNodes_2");
-  handler()->HandleGetAllNodes(&args3);
+  handler()->HandleGetAllNodes(args3.GetListDeprecated());
   test_sync_service()->get_all_nodes_callback().Run(
-      std::make_unique<ListValue>());
+      std::make_unique<base::ListValue>());
   EXPECT_EQ(2, CallCountWithName("cr.webUIResponse"));
 }
 
@@ -296,10 +293,10 @@ TEST_F(SyncInternalsMessageHandlerTest, SendAboutInfoSyncDisabled) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
-  ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("1000000000000000000");
   args.Append("-1");
-  handler()->HandleWriteUserEvent(&args);
+  handler()->HandleWriteUserEvent(args.GetListDeprecated());
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -310,10 +307,10 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEvent) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
-  ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("123abc");
   args.Append("abcdefghijklmnopqrstuvwxyz");
-  handler()->HandleWriteUserEvent(&args);
+  handler()->HandleWriteUserEvent(args.GetListDeprecated());
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -324,10 +321,10 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBadParse) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
-  ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("");
   args.Append("");
-  handler()->HandleWriteUserEvent(&args);
+  handler()->HandleWriteUserEvent(args.GetListDeprecated());
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =
@@ -341,10 +338,10 @@ TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventBlank) {
 }
 
 TEST_F(SyncInternalsMessageHandlerTest, WriteUserEventZero) {
-  ListValue args;
+  base::Value args(base::Value::Type::LIST);
   args.Append("0");
   args.Append("0");
-  handler()->HandleWriteUserEvent(&args);
+  handler()->HandleWriteUserEvent(args.GetListDeprecated());
 
   ASSERT_EQ(1u, fake_user_event_service()->GetRecordedUserEvents().size());
   const UserEventSpecifics& event =

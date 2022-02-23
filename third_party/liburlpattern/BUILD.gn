@@ -39,6 +39,7 @@ test("liburlpattern_unittests") {
     "//base/test:run_all_unittests",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
+    "//third_party/icu:icu",
   ]
 
   # Note, also update the local modifications in README.chromium.

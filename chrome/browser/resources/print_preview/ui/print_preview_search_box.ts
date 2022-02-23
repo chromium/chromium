@@ -12,7 +12,8 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m
 import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './print_preview_search_box.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -42,7 +43,7 @@ export class PrintPreviewSearchBoxElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

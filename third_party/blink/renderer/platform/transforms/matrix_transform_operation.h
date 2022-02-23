@@ -69,7 +69,8 @@ class PLATFORM_EXPORT MatrixTransformOperation final
            e_ == m->e_ && f_ == m->f_;
   }
 
-  void Apply(TransformationMatrix& transform, const FloatSize&) const override {
+  void Apply(TransformationMatrix& transform,
+             const gfx::SizeF&) const override {
     TransformationMatrix matrix(a_, b_, c_, d_, e_, f_);
     transform.Multiply(matrix);
   }

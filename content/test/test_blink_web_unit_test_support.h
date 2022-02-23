@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -48,6 +47,7 @@ class TestBlinkWebUnitTestSupport : public BlinkPlatformImpl {
   ~TestBlinkWebUnitTestSupport() override;
 
   blink::WebString UserAgent() override;
+  blink::WebString FullUserAgent() override;
   blink::WebString ReducedUserAgent() override;
   blink::WebString QueryLocalizedString(int resource_id) override;
   blink::WebString QueryLocalizedString(int resource_id,

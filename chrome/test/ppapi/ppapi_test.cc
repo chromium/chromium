@@ -198,7 +198,7 @@ GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
 
   GURL::Replacements replacements;
   std::string query = BuildQuery(std::string(), test_case);
-  replacements.SetQuery(query.c_str(), url::Component(0, query.size()));
+  replacements.SetQueryStr(query);
   return test_url.ReplaceComponents(replacements);
 }
 
@@ -315,7 +315,7 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // See crbug.com/1231528 for context.
   if (test_case == "Printing")
     return;
@@ -462,27 +462,6 @@ std::string PPAPINaClPNaClTest::BuildQuery(const std::string& base,
 void PPAPIPrivateNaClPNaClTest::SetUpCommandLine(
     base::CommandLine* command_line) {
   PPAPINaClPNaClTest::SetUpCommandLine(command_line);
-  AddPrivateSwitches(command_line);
-}
-
-void PPAPINaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(ENABLE_NACL)
-  command_line->AppendSwitch(switches::kEnableNaClNonSfiMode);
-#endif
-}
-
-std::string PPAPINaClPNaClNonSfiTest::BuildQuery(
-    const std::string& base,
-    const std::string& test_case) {
-  return base::StringPrintf("%smode=nacl_pnacl_nonsfi&testcase=%s",
-                            base.c_str(), test_case.c_str());
-}
-
-void PPAPIPrivateNaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClPNaClNonSfiTest::SetUpCommandLine(command_line);
   AddPrivateSwitches(command_line);
 }
 

@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "components/cbor/reader.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +73,36 @@ TEST(CTAPRequestTest, TestConstructGetAssertionRequest) {
   EXPECT_THAT(serialized_data,
               ::testing::ElementsAreArray(
                   test_data::kTestComplexCtapGetAssertionRequest));
+}
+
+// Regression test for https://crbug.com/1270757.
+TEST(CTAPRequestTest, PublicKeyCredentialDescriptorAsCBOR_1270757) {
+  PublicKeyCredentialDescriptor descriptor(
+      CredentialType::kPublicKey, {{1, 2, 3}},
+      {FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  cbor::Value value = AsCBOR(descriptor);
+  const cbor::Value::MapValue& map = value.GetMap();
+  EXPECT_FALSE(base::Contains(map, cbor::Value("transports")));
+}
+
+// Also for https://crbug.com/1270757: check that
+// |PublicKeyCredentialDescriptor| notices when extra keys are present. The
+// |VirtualCtap2Device| will reject such requests.
+TEST(CTAPRequestTest, PublicKeyCredentialDescriptorNoticesExtraKeys) {
+  for (const bool extra_key : {false, true}) {
+    SCOPED_TRACE(extra_key);
+    cbor::Value::MapValue map;
+    map.emplace("type", "public-key");
+    map.emplace("id", std::vector<uint8_t>({1, 2, 3, 4}));
+    if (extra_key) {
+      map.emplace("unexpected", "value");
+    }
+    const absl::optional<PublicKeyCredentialDescriptor> descriptor(
+        PublicKeyCredentialDescriptor::CreateFromCBORValue(
+            cbor::Value(std::move(map))));
+    ASSERT_TRUE(descriptor);
+    EXPECT_EQ(extra_key, descriptor->had_other_keys);
+  }
 }
 
 }  // namespace device

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">හැන්ගුල් ආමතේ</translation>
 <translation id="1155759005174418845">කැටලන්</translation>
 <translation id="1168100932582989117">Google නම් සේවාදායක</translation>
+<translation id="1171082344678443012">XZ සම්පීඩිත සංරක්ෂිත</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> පමණ ඉතිරියි</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
 <translation id="2025955442973426285">ටිග්රින්යා</translation>
 <translation id="2028997212275086731">RAR සංරක්ශණය</translation>
+<translation id="2036414735548252477">LZMA සම්පීඩිත tar සංරක්ෂිත</translation>
 <translation id="2037845485764049925">රුසියානු</translation>
 <translation id="2044023416777079300">මොඩමය ලියාපදිංචි කර නැත</translation>
 <translation id="2046702855113914483">රාමෙන්</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> සමඟ බෙදාගන්න</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS සංග්‍රාහක</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="3113153474486991170">මෙම ස්ථානයෙන් "<ph name="PATH" />" විවෘත කළ නොහැකි විය. කරුණාකර විවෘත කිරීමට "මගේ ගොනු" වෙත පිටපත් කරන්න.</translation>
 <translation id="3113592018909187986">ඔබට උත්සාහයන් 1ක් ඉතිරිව ඇත. ඔබ නව PIN එකක් පිහිටුවන තුරු ඔබට මෙම ජාලය භාවිත කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="3124404833828281817">දවල් සිහින දකින පුද්ගලයා</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">ජාත්‍යන්තර PC යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="3567221313191587603">ගොනුවක් තෝරා, ඔබගේ ගොනුවලට නොබැඳි පිවිසීම සඳහා <ph name="OFFLINE_CHECKBOX_NAME" /> ටොගල ක්‍රියාත්මක කරන්න.</translation>
 <translation id="357479282490346887">ලිතුවේනියානු</translation>
+<translation id="3587482841069643663">සියළු</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කළ නොහැකි විය</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">කැනේඩියානු ප්‍රංශ</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">සියල්ල උපස්ථ කර ඇත!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="3645233063072417428">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් ගෙන යන ලදී.</translation>
-<translation id="3645531960514756307">ෆෝල්ඩරය නොඅමුණන්න</translation>
 <translation id="3685122418104378273">ජංගම දත්ත භාවිතා කරන විට, Google Drive සමමුහුර්තය සුපුරුද්දෙන් අබල කර ඇත.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> අවලංගු කරන්න.</translation>
 <translation id="3690128548376345212">ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, සක්‍රිය නොකළ, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3691184985318546178">සිංහල</translation>
 <translation id="3726463242007121105">ගොනුවේ ගොනුරටාව ආධාරක නොවන බැවින් උපාංගය විවෘත කළ නොහැක.</translation>
 <translation id="3727148787322499904">මෙම සැකසීම වෙනස් කිරීම සියලු බෙදා ගත් ජාලවලට බලපානු ඇත</translation>
+<translation id="3737576078404241332">පැති තීරුව වෙතින් ඉවත් කරන්න</translation>
 <translation id="3741243925913727067">ඔබගේ මාධ්‍ය උපාංගයේ ඡායාරූප සහ වීඩියෝ Google Drive වෙත උපස්ථ කරන්න.</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
 <translation id="3780536599611287598">'<ph name="FOLDER_NAME" />' වෙත ගොනු මාරු කිරීමට ඔබට අවසර නොමැත.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">උද්භිද විද්‍යාඥයා</translation>
 <translation id="4326192123064055915">කෝපි</translation>
 <translation id="4336032328163998280">පිටපත් කිරීමේ කාර්යය අසාර්ථකයි. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">පැති තීරුව වෙත එක් කරන්න</translation>
 <translation id="4348495354623233847">අරාබි-පාදක යතුරුපුවරුව සමග සෝරානි කුර්දිෂ්</translation>
 <translation id="4363958938297989186">ශබ්දිම යතුරුපුවරුව සමග රුසියානු</translation>
 <translation id="4364327530094270451">කොමඩු</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291">බයිට් <ph name="NUMBER_OF_BYTES" /></translation>
 <translation id="4880214202172289027">හඬ සර්පණය</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
+<translation id="4886199584824489598">Bzip2 සම්පීඩිත සංරක්ෂිත</translation>
 <translation id="4900532980794411603">Parallels Desktop සමග බෙදා ගන්න</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> උපස්ථ කිරීමට සූදානම්</translation>
@@ -583,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ජාලය, සම්බන්ධ කර නැත</translation>
 <translation id="6074825444536523002">Google පෝරමය</translation>
 <translation id="6079871810119356840">Qwerty යතුරුපුවරුව සමග හංගේරියානු</translation>
+<translation id="6082256976217156453">LZMA සම්පීඩිත සංරක්ෂිත</translation>
 <translation id="6096979789310008754">සෙවුම් පාඨය හිස් කළා, සියලුම ගොනු සහ ෆෝල්ඩර පෙන්වනු ලැබේ.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත ගෙන යාම</translation>
 <translation id="6129953537138746214">හිඩස</translation>
@@ -678,6 +685,7 @@
 <translation id="6935521024859866267">යටිකුරු</translation>
 <translation id="6943836128787782965">HTTP අසාර්ථක විය</translation>
 <translation id="6949408524333579394">සර්බියානු අක්ෂර පරිවර්තනය</translation>
+<translation id="6954309393500027528">මෙම ගොනුව ඇලවීම ඔබගේ පරිපාලක විසින් අවහිර කර ඇත</translation>
 <translation id="6960565108681981554">සක්‍රිය කර නැත. ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="696203921837389374">ජංගම දත්ත ඔස්සේ සමමුහුර්ත කිරීම සබල කරන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
@@ -838,6 +846,7 @@
 <translation id="8297012244086013755">හැන්ගුල් කට්ටල 3 (Shift නැති)</translation>
 <translation id="8299269255470343364">ජපන්</translation>
 <translation id="8300849813060516376">OTASP අසාර්ථක විය</translation>
+<translation id="8308481408797647857">XZ සම්පීඩිත tar සංරක්ෂිත</translation>
 <translation id="8312871300878166382">ෆෝල්ඩරය තුළ අලවන්න</translation>
 <translation id="8329978297633540474">සරල පෙළ</translation>
 <translation id="8335587457941836791">රාක්කයෙන් ඉවත්කරන්න</translation>
@@ -874,6 +883,7 @@
 <translation id="8551494947769799688">ලැට්වියානු</translation>
 <translation id="8560515948038859357">කැන්ටොනීස්</translation>
 <translation id="8561206103590473338">අලියා</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="8569764466147087991">විවෘත කිරීමට ගොනුවක් තෝරන්න</translation>
 <translation id="8577897833047451336">ක්‍රොඒෂියානු</translation>
 <translation id="8578308463707544055">ඉන්දුනීසියානු</translation>
@@ -926,7 +936,6 @@
 <translation id="9110990317705400362">අපි නිරන්තරයෙන්ම ඔබගේ පිරික්සීම වඩාත් ආරක්ෂිත කිරීමට ක්‍රම සොයමින් සිටිමු. කලින්, ඕනෑම වෙබ් අඩවියකට ඔබගේ බ්‍රවුසරය වෙත දිගුවක් එක් කිරීමට ඔබව පෙළඹවීය හැකි විය. Google Chrome නවතම අනුවාදයේ දී, ඔබ ඒවා දිගු පිටුව හරහා එක් කිරීමෙන් මෙම දිගු ස්ථාපනය කිරීමට අවශ්‍ය බව Chrome හට ප්‍රකාශිතවම පැවසිය යුතුයි. <ph name="BEGIN_LINK" />වැඩිදුර හදාරන්න<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">අගුලු හරන්න</translation>
 <translation id="912419004897138677">කොඩෙක්</translation>
-<translation id="9129931661813833980">ෆෝල්ඩරය අමුණන්න</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම වෙත ප්‍රවේශය ලැබෙනු ඇත.</translation>
 <translation id="9131598836763251128">ගොනු එකක් හෝ කිහිපයක් තෝරන්න</translation>
 <translation id="9133055936679483811">සිප් කිරීම අසාර්තකයි. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +956,7 @@
 <translation id="943972244133411984">වෙනස් කරන ලද්දේ</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> සිට <ph name="TO_ENTRY_NAME" /> දක්වා <ph name="ENTRY_COUNT" /> ඇතුළත් කිරීම් පරාසයක් තේරිණි.</translation>
+<translation id="961973045258256291">Gzip සම්පීඩිත සංරක්ෂිත</translation>
 <translation id="965477715979482472">ඉංග්‍රීසි (දකුණු අප්‍රිකාව)</translation>
 <translation id="981121421437150478">ඕෆ්ලයින්</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" නමැති ෆෝල්ඩරයක් දැනටමත් පවතියි. ඔබට එය ප්‍රතිස්ථාපන කළ යුතුද?</translation>

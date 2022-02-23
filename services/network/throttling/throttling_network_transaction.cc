@@ -4,7 +4,6 @@
 
 #include "services/network/throttling/throttling_network_transaction.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -205,8 +204,6 @@ bool ThrottlingNetworkTransaction::IsReadyToRestartForAuth() {
 int ThrottlingNetworkTransaction::Read(net::IOBuffer* buf,
                                        int buf_len,
                                        net::CompletionOnceCallback callback) {
-  constexpr int kPacketSize = 1500;
-
   if (CheckFailed())
     return net::ERR_INTERNET_DISCONNECTED;
   if (!interceptor_)
@@ -214,7 +211,7 @@ int ThrottlingNetworkTransaction::Read(net::IOBuffer* buf,
 
   callback_ = std::move(callback);
   int result = network_transaction_->Read(
-      buf, std::min(buf_len, kPacketSize),
+      buf, interceptor_->GetReadBufLen(buf_len),
       base::BindOnce(&ThrottlingNetworkTransaction::IOCallback,
                      base::Unretained(this), false));
   // URLRequestJob relies on synchronous end-of-stream notification.

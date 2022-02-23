@@ -160,10 +160,10 @@ interface WilcoDtcSupportdClient {
   // Binds |service| to an implementation of CrosHealthdDiagnsticsService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdDiagnosticsService@4(
-      chromeos.cros_healthd.mojom.CrosHealthdDiagnosticsService& service);
+      pending_receiver<chromeos.cros_healthd.mojom.CrosHealthdDiagnosticsService> service);
 
   // Binds |service| to an implementation of CrosHealthdProbeService. In
   // production, this implementation is provided by cros_healthd.
   GetCrosHealthdProbeService@5(
-      chromeos.cros_healthd.mojom.CrosHealthdProbeService& service);
+      pending_receiver<chromeos.cros_healthd.mojom.CrosHealthdProbeService> service);
 };

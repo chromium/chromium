@@ -36,8 +36,7 @@ class TestRunner {
     videoElement.autoplay = true;
     $('body').appendChild(videoElement);
     this.videoElements.push(videoElement);
-    this.peerConnections.push(
-        new PeerConnection(videoElement, RESOLUTIONS, false));
+    this.peerConnections.push(new PeerConnection(videoElement, RESOLUTIONS));
   }
 
   runTest() {

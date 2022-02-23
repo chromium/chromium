@@ -18,7 +18,7 @@
 #include "chrome/common/chrome_paths.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/base_paths_android.h"
 #endif
 
@@ -36,7 +36,7 @@ bool IsAccessAllowed(const std::string& path,
 
 TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_ANDROID)
+    BUILDFLAG(IS_ANDROID)
   // Chrome OS and Android don't have access to random files.
   EXPECT_FALSE(IsAccessAllowed("/", ""));
   EXPECT_FALSE(IsAccessAllowed("/foo.txt", ""));
@@ -117,7 +117,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2", "/profile"));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/GCache/v2/id/Logs", ""));
 
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Android allows the following directories.
   EXPECT_TRUE(IsAccessAllowed("/sdcard", ""));
   EXPECT_TRUE(IsAccessAllowed("/mnt/sdcard", ""));

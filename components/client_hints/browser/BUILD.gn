@@ -12,8 +12,23 @@ source_set("browser") {
     "//components/client_hints/common",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/embedder_support:browser_util",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("in_memory") {
+  sources = [
+    "in_memory_client_hints_controller_delegate.cc",
+    "in_memory_client_hints_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common:headers",
+    "//url",
   ]
 }

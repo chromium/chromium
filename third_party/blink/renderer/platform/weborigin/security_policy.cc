@@ -311,7 +311,7 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
   return true;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 namespace {
 std::vector<url::Origin> GetSharedArrayBufferOrigins() {
   std::string switch_value =
@@ -332,12 +332,12 @@ std::vector<url::Origin> GetSharedArrayBufferOrigins() {
   return result;
 }
 }  // namespace
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // static
 bool SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
     const SecurityOrigin* security_origin) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
       GetSharedArrayBufferOrigins());
   url::Origin origin = security_origin->ToUrlOrigin();

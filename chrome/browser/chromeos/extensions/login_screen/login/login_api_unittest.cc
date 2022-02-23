@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -24,17 +26,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/errors.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/shared_session_handler.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -56,8 +56,6 @@ namespace {
 
 const char kEmail[] = "email@test";
 const char kGaiaId[] = "gaia@test";
-const char kExtensionName[] = "extension_name";
-const char kExtensionId[] = "abcdefghijklmnopqrstuvwxyzabcdef";
 
 class MockExistingUserController : public ash::ExistingUserController {
  public:
@@ -71,7 +69,7 @@ class MockExistingUserController : public ash::ExistingUserController {
   ~MockExistingUserController() override = default;
 
   MOCK_METHOD2(Login,
-               void(const chromeos::UserContext&, const ash::SigninSpecifics&));
+               void(const ash::UserContext&, const ash::SigninSpecifics&));
   MOCK_CONST_METHOD0(IsSigninInProgress, bool());
 };
 
@@ -91,7 +89,7 @@ class MockLoginApiLockHandler : public chromeos::LoginApiLockHandler {
 
   MOCK_METHOD0(RequestLockScreen, void());
   MOCK_METHOD2(Authenticate,
-               void(const chromeos::UserContext& user_context,
+               void(const ash::UserContext& user_context,
                     base::OnceCallback<void(bool auth_success)> callback));
   MOCK_CONST_METHOD0(IsUnlockInProgress, bool());
 };
@@ -118,16 +116,9 @@ class ScopedTestingProfile {
   TestingProfileManager* const profile_manager_;
 };
 
-chromeos::UserContext GetPublicUserContext(const std::string& email) {
-  return chromeos::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                               AccountId::FromUserEmail(email));
-}
-
-void SetLoginExtensionApiLaunchExtensionIdPref(
-    Profile* profile,
-    const std::string& extension_id) {
-  profile->GetPrefs()->SetString(prefs::kLoginExtensionApiLaunchExtensionId,
-                                 extension_id);
+ash::UserContext GetPublicUserContext(const std::string& email) {
+  return ash::UserContext(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                          AccountId::FromUserEmail(email));
 }
 
 }  // namespace
@@ -156,7 +147,10 @@ class LoginApiUnittest : public ExtensionApiUnittest {
         std::make_unique<MockExistingUserController>();
     mock_lock_handler_ = std::make_unique<MockLoginApiLockHandler>();
     // Set `LOGIN_PRIMARY` as the default state.
-    session_manager_.SetSessionState(
+
+    // SessionManager is created by
+    // |AshTestHelper::bluetooth_config_test_helper()|.
+    session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 
     EXPECT_CALL(*mock_login_display_host_, GetExistingUserController())
@@ -175,22 +169,13 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     ExtensionApiUnittest::TearDown();
   }
 
-  void SetExtensionWithId(const std::string& extension_id) {
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder(kExtensionName)
-            .SetID(extension_id)
-            .Build();
-    set_extension(extension);
-  }
-
   std::unique_ptr<ScopedTestingProfile> AddPublicAccountUser(
       const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
     user_manager::User* user =
         fake_chrome_user_manager_->AddPublicAccountUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                      profile);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
@@ -200,8 +185,6 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
-  // Sets up the global `SessionManager` instance.
-  session_manager::SessionManager session_manager_;
 };
 
 MATCHER_P(MatchSigninSpecifics, expected, "") {
@@ -239,8 +222,8 @@ TEST_F(LoginApiUnittest, LaunchManagedGuestSession) {
 // `ExistingUserController`.
 TEST_F(LoginApiUnittest, LaunchManagedGuestSessionWithPassword) {
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
-  chromeos::UserContext user_context = GetPublicUserContext(kEmail);
-  user_context.SetKey(chromeos::Key("password"));
+  ash::UserContext user_context = GetPublicUserContext(kEmail);
+  user_context.SetKey(ash::Key("password"));
   EXPECT_CALL(*mock_existing_user_controller_,
               Login(user_context, MatchSigninSpecifics(ash::SigninSpecifics())))
       .Times(1);
@@ -358,7 +341,7 @@ TEST_F(LoginApiUnittest, LockManagedGuestSession) {
 }
 
 TEST_F(LoginApiUnittest, LockManagedGuestSessionNoActiveUser) {
-  ASSERT_EQ(login_api_errors::kNoPermissionToLock,
+  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -368,7 +351,7 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->AddUser(account_id);
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
-  ASSERT_EQ(login_api_errors::kNoPermissionToLock,
+  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -378,7 +361,7 @@ TEST_F(LoginApiUnittest, LockManagedGuestSessionUserCannotLock) {
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
   fake_chrome_user_manager_->set_current_user_can_lock(false);
 
-  ASSERT_EQ(login_api_errors::kNoPermissionToLock,
+  ASSERT_EQ(login_api_errors::kNoLockableManagedGuestSession,
             RunFunctionAndReturnError(
                 new LoginLockManagedGuestSessionFunction(), "[]"));
 }
@@ -399,12 +382,10 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
   base::TimeTicks now_ = base::TimeTicks::Now();
   ui::UserActivityDetector::Get()->set_now_for_test(now_);
 
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
 
@@ -412,7 +393,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
-      .WillOnce([](chromeos::UserContext user_context,
+      .WillOnce([](ash::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
         std::move(callback).Run(/*auth_success=*/true);
       });
@@ -426,7 +407,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSession) {
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNoActiveUser) {
   ASSERT_EQ(
-      login_api_errors::kNoPermissionToUnlock,
+      login_api_errors::kNoUnlockableManagedGuestSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
@@ -437,31 +418,26 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionNotManagedGuestSession) {
   fake_chrome_user_manager_->SwitchActiveUser(account_id);
 
   ASSERT_EQ(
-      login_api_errors::kNoPermissionToUnlock,
+      login_api_errors::kNoUnlockableManagedGuestSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
 
-TEST_F(LoginApiUnittest, UnlockManagedGuestSessionWrongExtensionId) {
-  SetExtensionWithId(kExtensionId);
+TEST_F(LoginApiUnittest, UnlockManagedGuestSessionCannotUnlock) {
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            "wrong_extension_id");
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
 
   ASSERT_EQ(
-      login_api_errors::kNoPermissionToUnlock,
+      login_api_errors::kNoUnlockableManagedGuestSession,
       RunFunctionAndReturnError(new LoginUnlockManagedGuestSessionFunction(),
                                 "[\"password\"]"));
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionSessionNotLocked) {
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
 
   ASSERT_EQ(
@@ -471,11 +447,9 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionSessionNotLocked) {
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionUnlockInProgress) {
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
@@ -489,11 +463,9 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionUnlockInProgress) {
 }
 
 TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   fake_chrome_user_manager_->SwitchActiveUser(AccountId::FromUserEmail(kEmail));
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
@@ -502,7 +474,7 @@ TEST_F(LoginApiUnittest, UnlockManagedGuestSessionAuthenticationFailed) {
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_lock_handler_,
               Authenticate(MatchUserContextSecret("password"), _))
-      .WillOnce([](chromeos::UserContext user_context,
+      .WillOnce([](ash::UserContext user_context,
                    base::OnceCallback<void(bool auth_success)> callback) {
         std::move(callback).Run(/*auth_success=*/false);
       });
@@ -584,7 +556,6 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
   }
 
   void LaunchSharedManagedGuestSession(const std::string& password) {
-    SetExtensionWithId(kExtensionId);
     EXPECT_CALL(*mock_existing_user_controller_,
                 Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
         .Times(1);
@@ -594,8 +565,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(),
                 "[\"" + password + "\"]");
 
-    SetLoginExtensionApiLaunchExtensionIdPref(testing_profile_->profile(),
-                                              kExtensionId);
+    fake_chrome_user_manager_->set_current_user_can_lock(true);
     fake_chrome_user_manager_->SwitchActiveUser(
         AccountId::FromUserEmail(kEmail));
 
@@ -609,7 +579,7 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
     EXPECT_CALL(*mock_lock_handler_,
                 Authenticate(MatchUserContextSecret(session_secret), _))
         .WillOnce([auth_success](
-                      chromeos::UserContext user_context,
+                      ash::UserContext user_context,
                       base::OnceCallback<void(bool auth_success)> callback) {
           std::move(callback).Run(/*auth_success=*/auth_success);
         });
@@ -624,17 +594,15 @@ class LoginApiSharedSessionUnittest : public LoginApiUnittest {
 TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
   base::TimeTicks now_ = base::TimeTicks::Now();
   ui::UserActivityDetector::Get()->set_now_for_test(now_);
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> profile = AddPublicAccountUser(kEmail);
-  chromeos::UserContext user_context;
+  ash::UserContext user_context;
   EXPECT_CALL(*mock_existing_user_controller_,
               Login(_, MatchSigninSpecifics(chromeos::SigninSpecifics())))
       .WillOnce(SaveArg<0>(&user_context));
 
   RunFunction(new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]");
 
-  EXPECT_EQ(user_context.GetManagedGuestSessionLaunchExtensionId(),
-            kExtensionId);
+  EXPECT_TRUE(user_context.CanLockManagedGuestSession());
   chromeos::SharedSessionHandler* handler =
       chromeos::SharedSessionHandler::Get();
   const std::string& session_secret = handler->GetSessionSecretForTesting();
@@ -655,7 +623,7 @@ TEST_F(LoginApiSharedSessionUnittest,
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(
-      login_api_errors::kNoPermissionToUseApi,
+      login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
       RunFunctionAndReturnError(
           new LoginLaunchSharedManagedGuestSessionFunction(), "[\"foo\"]"));
 }
@@ -714,11 +682,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSession) {
 // Test that calling `login.unlockSharedSession()` returns an error when the
 // session is not locked.
 TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNotLocked) {
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   ASSERT_EQ(login_api_errors::kSessionIsNotLocked,
             RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
                                       "[\"foo\"]"));
@@ -727,11 +693,9 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNotLocked) {
 // Test that calling `login.unlockSharedSession()` returns an error when there
 // is no shared MGS launched.
 TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionNoSharedMGS) {
-  SetExtensionWithId(kExtensionId);
   std::unique_ptr<ScopedTestingProfile> scoped_profile =
       AddPublicAccountUser(kEmail);
-  SetLoginExtensionApiLaunchExtensionIdPref(scoped_profile->profile(),
-                                            kExtensionId);
+  fake_chrome_user_manager_->set_current_user_can_lock(true);
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
   ASSERT_EQ(login_api_errors::kNoSharedMGSFound,
@@ -779,30 +743,15 @@ TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionUnlockFailed) {
                                       "[\"foo\"]"));
 }
 
-// Test that calling `login.unlockSharedSession()` returns an error when it is
-// called by an extension with a different ID.
-TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionWrongExtension) {
-  LaunchSharedManagedGuestSession("foo");
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOCKED);
-  SetExtensionWithId("wrong_extension_id");
-
-  ASSERT_EQ(login_api_errors::kNoPermissionToUnlock,
-            RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
-                                      "[\"foo\"]"));
-}
-
 // Test that calling `login.unlockSharedSession()` returns an error when the
-// extension ID does not match the `kLoginExtensionApiLaunchExtensionId` pref.
-TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionWrongExtensionId) {
+// MGS cannot be unlocked.
+TEST_F(LoginApiSharedSessionUnittest, UnlockSharedSessionCannotUnlock) {
   LaunchSharedManagedGuestSession("foo");
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
+  fake_chrome_user_manager_->set_current_user_can_lock(false);
 
-  SetLoginExtensionApiLaunchExtensionIdPref(testing_profile_->profile(),
-                                            "wrong_extension_id");
-
-  ASSERT_EQ(login_api_errors::kNoPermissionToUnlock,
+  ASSERT_EQ(login_api_errors::kNoUnlockableManagedGuestSession,
             RunFunctionAndReturnError(new LoginUnlockSharedSessionFunction(),
                                       "[\"foo\"]"));
 }
@@ -935,7 +884,7 @@ TEST_F(LoginApiSharedSessionUnittest,
   GetCrosSettingsHelper()->SetBoolean(
       ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
-  ASSERT_EQ(login_api_errors::kNoPermissionToUseApi,
+  ASSERT_EQ(login_api_errors::kDeviceRestrictedManagedGuestSessionNotEnabled,
             RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),
                                       "[\"foo\"]"));
 }

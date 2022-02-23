@@ -1330,7 +1330,7 @@ TEST_F(SyntheticPointerActionTest, PointerMouseActionIncreaseClickCount) {
   buttons.pop_back();
 
   int click_count = 4;
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   click_count = 1;
 #endif
   ForwardSyntheticPointerAction();

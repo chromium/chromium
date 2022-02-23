@@ -43,7 +43,7 @@ TitleWithBackButtonView::TitleWithBackButtonView(
           views::Builder<views::ImageButton>(
               views::CreateVectorImageButtonWithNativeTheme(
                   std::move(back_callback), vector_icons::kBackArrowIcon))
-              .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK))
+              .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
               .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
               .CustomConfigure(base::BindOnce([](views::ImageButton* view) {
                 view->SizeToPreferredSize();

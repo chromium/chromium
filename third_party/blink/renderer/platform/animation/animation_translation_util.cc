@@ -42,7 +42,7 @@ namespace blink {
 void ToCompositorTransformOperations(
     const TransformOperations& transform_operations,
     CompositorTransformOperations* out_transform_operations,
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   // We need to do a deep copy the transformOperations may contain ref pointers
   // to TransformOperation objects.
   for (const auto& operation : transform_operations.Operations()) {
@@ -104,17 +104,15 @@ void ToCompositorTransformOperations(
       case TransformOperation::kMatrix: {
         auto* transform =
             static_cast<const MatrixTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kMatrix3D: {
         auto* transform =
             static_cast<const Matrix3DTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kPerspective: {
@@ -127,8 +125,7 @@ void ToCompositorTransformOperations(
       case TransformOperation::kInterpolated: {
         TransformationMatrix m;
         operation->Apply(m, box_size);
-        out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+        out_transform_operations->AppendMatrix(m.ToTransform());
         break;
       }
       default:

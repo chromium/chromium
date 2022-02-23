@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.clearInvocations;
@@ -66,8 +65,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
-import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -245,37 +244,12 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
     public void testOnEditRecordsEditClick() {
         mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
         assertThat(RecordHistogram.getHistogramValueCountForTesting(
                            PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
                            PasswordCheckUserAction.EDIT_PASSWORD_CLICK),
                 is(1));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testEditTriggersCanReauthenticate() {
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper).canReauthenticate();
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testCannotReauthenticateDoesNothing() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(false);
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper, never()).reauthenticate(anyInt(), any(Callback.class));
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testCanReauthenticateTriggersReauthenticate() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mReauthenticationHelper)
-                .reauthenticate(eq(ReauthReason.EDIT_PASSWORD), any(Callback.class));
     }
 
     @Test
@@ -722,22 +696,6 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
-    public void testOnEditPasswordButtonClick() {
-        when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        doAnswer(invocation -> {
-            Callback<Boolean> cb = invocation.getArgument(1);
-            cb.onResult(true);
-            return true;
-        })
-                .when(mReauthenticationHelper)
-                .reauthenticate(anyInt(), notNull());
-        mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        verify(mChangePasswordDelegate).launchEditPage(eq(ANA));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
     public void testOnEditTriggersDelegateWhenNewEditEnabled() {
         mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
         verify(mDelegate).onEditCredential(ANA, ApplicationProvider.getApplicationContext());

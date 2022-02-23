@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -68,7 +69,7 @@ using testing::Contains;
 using testing::Eq;
 using testing::Field;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 
 #include <windows.h>
@@ -120,7 +121,7 @@ std::unique_ptr<disk_cache::BackendImpl> CreateExistingEntryCache(
   return cache;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Load tests with large numbers of file descriptors perform poorly on
 // virtualized test execution environments.
 // TODO(807882): Remove this workaround when virtualized test performance
@@ -904,7 +905,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingFileIO(bool fast) {
 
   base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Wait for the actual operation to complete, or we'll keep a file handle that
   // may cause issues later. Note that on iOS systems even though this test
   // uses a single thread, the actual IO is posted to a worker thread and the
@@ -930,7 +931,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingFileIO_Fast) {
 #endif
 
 // See crbug.com/330074
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Tests that one cache instance is not affected by another one going away.
 TEST_F(DiskCacheBackendTest, MultipleInstancesWithPendingFileIO) {
   base::ScopedTempDir store;
@@ -1078,7 +1079,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingDoom) {
 
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheTest, TruncatedIndex) {
   ASSERT_TRUE(CleanupCacheDir());
   base::FilePath index = cache_path_.AppendASCII("index");
@@ -2444,7 +2445,7 @@ void DiskCacheBackendTest::BackendRecoverRemove() {
   ASSERT_TRUE(success_) << "remove_head4";
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/396392
 #define MAYBE_RecoverRemove DISABLED_RecoverRemove
 #else
@@ -2454,7 +2455,7 @@ TEST_F(DiskCacheBackendTest, MAYBE_RecoverRemove) {
   BackendRecoverRemove();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/396392
 #define MAYBE_NewEvictionRecoverRemove DISABLED_NewEvictionRecoverRemove
 #else
@@ -2503,7 +2504,7 @@ TEST_F(DiskCacheTest, WrongVersion) {
 // existing cache in favour of a new empty cache.
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheTest, SimpleCacheControlJoin) {
   std::unique_ptr<disk_cache::BackendImpl> cache =
       CreateExistingEntryCache(cache_path_);
@@ -2595,7 +2596,7 @@ TEST_F(DiskCacheTest, SimpleCacheControlLeave) {
 // Tests that the cache is properly restarted on recovery error.
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheBackendTest, DeleteOld) {
   ASSERT_TRUE(CopyTestCache("wrong_version"));
   SetNewEviction();
@@ -3861,7 +3862,7 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
   scoped_refptr<disk_cache::File> file(new disk_cache::File(false));
   file->Init(name);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE;
   DWORD access = GENERIC_READ | GENERIC_WRITE;
   base::win::ScopedHandle file2(CreateFile(name.value().c_str(), access,
@@ -4266,8 +4267,6 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationDestruction) {
 // Test has races, disabling until fixed: https://crbug.com/853283
 TEST_F(DiskCacheBackendTest, DISABLED_SimpleCachePrioritizedEntryOrder) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      disk_cache::SimpleBackendImpl::kPrioritizedSimpleCacheTasks);
   SetSimpleCacheMode();
   InitCache();
 
@@ -4352,98 +4351,6 @@ TEST_F(DiskCacheBackendTest, DISABLED_SimpleCachePrioritizedEntryOrder) {
   entry3->Close();
 }
 
-// Verify that tasks run in FIFO order when the prioritization experiment is
-// disabled.
-// TOOD(jkarlin): Delete this test if/when kPrioritizedSimpleCacheTasks is
-// enabled by default.
-TEST_F(DiskCacheBackendTest, SimpleCacheFIFOEntryOrder) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      disk_cache::SimpleBackendImpl::kPrioritizedSimpleCacheTasks);
-  SetSimpleCacheMode();
-  InitCache();
-
-  // Set the SimpleCache's worker pool to a sequenced type for testing
-  // priority order.
-  disk_cache::SimpleBackendImpl* simple_cache =
-      static_cast<disk_cache::SimpleBackendImpl*>(cache_.get());
-  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
-  simple_cache->SetTaskRunnerForTesting(task_runner);
-
-  // Create three entries. If their priority was honored, they'd run in order
-  // 3, 1, 2.
-  disk_cache::Entry* entry1 = nullptr;
-  disk_cache::Entry* entry2 = nullptr;
-  disk_cache::Entry* entry3 = nullptr;
-  ASSERT_THAT(CreateEntryWithPriority("first", net::LOWEST, &entry1), IsOk());
-  ASSERT_THAT(CreateEntryWithPriority("second", net::LOWEST, &entry2), IsOk());
-  ASSERT_THAT(CreateEntryWithPriority("third", net::HIGHEST, &entry3), IsOk());
-
-  // Write some data to the entries.
-  const int kSize = 10;
-  scoped_refptr<net::IOBuffer> buf1 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-  scoped_refptr<net::IOBuffer> buf2 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-  scoped_refptr<net::IOBuffer> buf3 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-  CacheTestFillBuffer(buf1->data(), kSize, false);
-  CacheTestFillBuffer(buf2->data(), kSize, false);
-  CacheTestFillBuffer(buf3->data(), kSize, false);
-
-  // Write to stream 2 because it's the only stream that can't be read from
-  // synchronously.
-  EXPECT_EQ(kSize, WriteData(entry1, 2, 0, buf1.get(), kSize, true));
-  EXPECT_EQ(kSize, WriteData(entry2, 2, 0, buf1.get(), kSize, true));
-  EXPECT_EQ(kSize, WriteData(entry3, 2, 0, buf1.get(), kSize, true));
-
-  // Wait until the task_runner's queue is empty (WriteData might have
-  // optimistically returned synchronously but still had some tasks to run in
-  // the worker pool.
-  base::RunLoop run_loop;
-  task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                                run_loop.QuitClosure());
-  run_loop.Run();
-
-  std::vector<int> finished_read_order;
-  auto finished_callback = [](std::vector<int>* finished_read_order,
-                              int entry_number, base::OnceClosure quit_closure,
-                              int rv) {
-    finished_read_order->push_back(entry_number);
-    if (quit_closure)
-      std::move(quit_closure).Run();
-  };
-
-  scoped_refptr<net::IOBuffer> read_buf1 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-  scoped_refptr<net::IOBuffer> read_buf2 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-  scoped_refptr<net::IOBuffer> read_buf3 =
-      base::MakeRefCounted<net::IOBuffer>(kSize);
-
-  // Read from the entries in order 2, 3, 1. They should complete in that
-  // order.
-  base::RunLoop read_run_loop;
-
-  entry2->ReadData(2, 0, read_buf2.get(), kSize,
-                   base::BindOnce(finished_callback, &finished_read_order, 2,
-                                  base::OnceClosure()));
-  entry3->ReadData(2, 0, read_buf3.get(), kSize,
-                   base::BindOnce(finished_callback, &finished_read_order, 3,
-                                  base::OnceClosure()));
-  entry1->ReadData(2, 0, read_buf1.get(), kSize,
-                   base::BindOnce(finished_callback, &finished_read_order, 1,
-                                  read_run_loop.QuitClosure()));
-  EXPECT_EQ(0u, finished_read_order.size());
-
-  read_run_loop.Run();
-  EXPECT_EQ((std::vector<int>{2, 3, 1}), finished_read_order);
-  entry1->Close();
-  entry2->Close();
-  entry3->Close();
-}
-
 // Tests that enumerations include entries with long keys.
 TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationLongKeys) {
   SetSimpleCacheMode();
@@ -4489,11 +4396,11 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
   // Ensure that the directory mtime is flushed to disk before serializing the
   // index.
   disk_cache::FlushCacheThreadForTesting();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::File cache_dir(cache_path_,
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_TRUE(cache_dir.Flush());
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   cache_.reset();
   disk_cache::FlushCacheThreadForTesting();
 
@@ -4640,7 +4547,7 @@ TEST_F(DiskCacheBackendTest, SimpleFdLimit) {
   disk_cache::Entry* alt_entry;
   ASSERT_THAT(CreateEntry(keys[0], &alt_entry), IsOk());
 
-  // One more file closure here to accomodate for alt_entry.
+  // One more file closure here to accommodate for alt_entry.
   histogram_tester.ExpectBucketCount("SimpleCache.FileDescriptorLimiterAction",
                                      disk_cache::FD_LIMIT_CLOSE_FILE,
                                      kLargeNumEntries - 64 + 1);
@@ -5018,7 +4925,7 @@ TEST_F(DiskCacheBackendTest, SimpleOwnershipTransferBackendDestroyRace) {
       *ran_ptr = true;
     }
 
-    bool* ran_ptr;
+    raw_ptr<bool> ran_ptr;
   };
 
   const char kKey[] = "skeleton";
@@ -5166,7 +5073,7 @@ TEST_F(DiskCacheBackendTest, SimpleCancelOpPendingDoom) {
     explicit CleanupContext(bool* ran_ptr) : ran_ptr(ran_ptr) {}
     ~CleanupContext() { *ran_ptr = true; }
 
-    bool* ran_ptr;
+    raw_ptr<bool> ran_ptr;
   };
 
   const char kKey[] = "skeleton";

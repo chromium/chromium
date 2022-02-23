@@ -56,7 +56,7 @@ enum Subpage {
   // People section.
   kMyAccounts = 300,
   kSync = 301,
-  kSyncDeprecated = 302,  // Used if split-sync flag is off.
+  kSyncSetup = 302,
   kSyncDeprecatedAdvanced = 303,  // Used if split-sync flag is off.
   // Note: Value 304 was for kSecurityAndSignIn. Do not reuse.
   // Note: Value 305 was for kFingerprint. Do not reuse.
@@ -98,6 +98,7 @@ enum Subpage {
   kPluginVmUsbPreferences = 704,
   // Note: Value 705 was for deprecated kOnStartup. Do not reuse.
   kAppNotifications = 706,
+  kArcVmUsbPreferences = 707,
 
   // Crostini section.
   kCrostiniDetails = 800,
@@ -177,7 +178,7 @@ const string kNearbyShareSubpagePath = "multidevice/nearbyshare";
 const string kPeopleSectionPath = "osPeople";
 const string kMyAccountsSubpagePath = "accountManager";
 const string kSyncSubpagePath = "osSync";
-const string kSyncDeprecatedSubpagePath = "syncSetup";
+const string kSyncSetupSubpagePath = "osSyncSetup";
 const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
 
 // Device section.
@@ -215,6 +216,8 @@ const string kPluginVmSharedPathsSubpagePath =
     "app-management/pluginVm/sharedPaths";
 const string kPluginVmUsbPreferencesSubpagePath =
     "app-management/pluginVm/sharedUsbDevices";
+const string kArcVmUsbPreferencesSubpagePath =
+     "androidAppsDetails/sharedUsbDevices";
 
 // Crostini section.
 const string kCrostiniSectionPath = "crostini";

@@ -22,10 +22,10 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
@@ -58,6 +58,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 using content::BrowserThread;
@@ -171,7 +175,9 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
   return new_tab_guest_html_.get();
 }
 
-base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
+base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
+    WindowType win_type,
+    const content::WebContents::Getter& wc_getter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   switch (win_type) {
     case GUEST:
@@ -179,7 +185,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
 
     case INCOGNITO:
       if (!new_tab_incognito_html_)
-        CreateNewTabIncognitoHTML();
+        CreateNewTabIncognitoHTML(wc_getter);
       return new_tab_incognito_html_.get();
 
     case NON_PRIMARY_OTR:
@@ -198,7 +204,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
     WindowType win_type,
-    content::WebContents::Getter wc_getter) {
+    const content::WebContents::Getter& wc_getter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Guest mode doesn't have theme-related CSS.
@@ -247,7 +253,8 @@ void NTPResourceCache::Invalidate() {
   new_tab_guest_html_ = nullptr;
 }
 
-void NTPResourceCache::CreateNewTabIncognitoHTML() {
+void NTPResourceCache::CreateNewTabIncognitoHTML(
+    const content::WebContents::Getter& wc_getter) {
   ui::TemplateReplacements replacements;
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
@@ -280,6 +287,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
         IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION);
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
+    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE);
+    replacements["cookieControlsDescription"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   } else {
     replacements["incognitoTabHeading"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
@@ -289,6 +300,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
+    replacements["cookieControlsTitle"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+    replacements["cookieControlsDescription"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
@@ -297,10 +312,6 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
           features::kUpdateHistoryEntryPointsInIncognito)
           ? IDS_NEW_INCOGNITO_TAB_TITLE
           : IDS_NEW_TAB_TITLE);
-  replacements["cookieControlsTitle"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-  replacements["cookieControlsDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   replacements["cookieControlsToggleChecked"] =
       cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
   replacements["hideTooltipIcon"] =
@@ -311,14 +322,14 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   replacements["cookieControlsTooltipText"] = l10n_util::GetStringUTF8(
       IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT);
 
-  // The ThemeProvider can have different behavior depending on regular or
-  // Incognito profile. Therefore, making use of Incognito profile explicitly
-  // here.
-  const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(incognito_profile);
+  // Requesting the incognito HTML is only done from within incognito browser
+  // windows. The ThemeProvider associated with the requesting WebContents will
+  // wrap the relevant incognito bits.
+  const ui::ThemeProvider* tp = webui::GetThemeProvider(wc_getter.Run());
+  DCHECK(tp);
 
   replacements["hasCustomBackground"] =
-      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      tp->HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
@@ -340,8 +351,8 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
 
 void NTPResourceCache::CreateNewTabGuestHTML() {
   base::DictionaryValue localized_strings;
-  localized_strings.SetString("title",
-                              l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  localized_strings.SetStringKey("title",
+                                 l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   const char* guest_tab_link = kLearnMoreGuestSessionUrl;
   int guest_tab_idr = IDR_GUEST_TAB_HTML;
   int guest_tab_description_ids = IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION;
@@ -355,11 +366,11 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
   if (connector->IsDeviceEnterpriseManaged()) {
-    localized_strings.SetString("enterpriseInfoVisible", "true");
-    localized_strings.SetString("enterpriseLearnMore",
-                                l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    localized_strings.SetString("enterpriseInfoHintLink",
-                                chrome::kLearnMoreEnterpriseURL);
+    localized_strings.SetStringKey("enterpriseInfoVisible", "true");
+    localized_strings.SetStringKey("enterpriseLearnMore",
+                                   l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+    localized_strings.SetStringKey("enterpriseInfoHintLink",
+                                   chrome::kLearnMoreEnterpriseURL);
     std::u16string enterprise_info;
     if (connector->IsCloudManaged()) {
       const std::string enterprise_domain_manager =
@@ -373,23 +384,23 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
     } else {
       NOTREACHED() << "Unknown management type";
     }
-    localized_strings.SetString("enterpriseInfoMessage", enterprise_info);
+    localized_strings.SetStringKey("enterpriseInfoMessage", enterprise_info);
   } else {
-    localized_strings.SetString("enterpriseInfoVisible", "false");
-    localized_strings.SetString("enterpriseInfoMessage", "");
-    localized_strings.SetString("enterpriseLearnMore", "");
-    localized_strings.SetString("enterpriseInfoHintLink", "");
+    localized_strings.SetStringKey("enterpriseInfoVisible", "false");
+    localized_strings.SetStringKey("enterpriseInfoMessage", "");
+    localized_strings.SetStringKey("enterpriseLearnMore", "");
+    localized_strings.SetStringKey("enterpriseInfoHintLink", "");
   }
 #endif
 
-  localized_strings.SetString(
+  localized_strings.SetStringKey(
       "guestTabDescription",
       l10n_util::GetStringUTF16(guest_tab_description_ids));
-  localized_strings.SetString("guestTabHeading",
-                              l10n_util::GetStringUTF16(guest_tab_heading_ids));
-  localized_strings.SetString("learnMore",
-                              l10n_util::GetStringUTF16(guest_tab_link_ids));
-  localized_strings.SetString("learnMoreLink", guest_tab_link);
+  localized_strings.SetStringKey(
+      "guestTabHeading", l10n_util::GetStringUTF16(guest_tab_heading_ids));
+  localized_strings.SetStringKey("learnMore",
+                                 l10n_util::GetStringUTF16(guest_tab_link_ids));
+  localized_strings.SetStringKey("learnMoreLink", guest_tab_link);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
@@ -408,10 +419,16 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
 }
 
 void NTPResourceCache::CreateNewTabIncognitoCSS(
-    const content::WebContents::Getter wc_getter) {
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(wc_getter.Run());
-  const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
-      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    const content::WebContents::Getter& wc_getter) {
+  auto* web_contents = wc_getter.Run();
+  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  DCHECK(native_theme);
+
+  // Requesting the incognito CSS is only done from within incognito browser
+  // windows. The ThemeProvider associated with the requesting WebContents will
+  // wrap the relevant incognito bits.
+  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
+  DCHECK(tp);
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
@@ -422,9 +439,9 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
 
   // Colors.
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND));
-  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
-  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_BACKGROUND));
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
+  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
 
   // Get our template.
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
@@ -441,21 +458,24 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
 }
 
 void NTPResourceCache::CreateNewTabCSS(
-    const content::WebContents::Getter wc_getter) {
-  const ui::NativeTheme* native_theme = webui::GetNativeTheme(wc_getter.Run());
-  const ui::ThemeProvider& tp =
-      ThemeService::GetThemeProviderForProfile(profile_);
+    const content::WebContents::Getter& wc_getter) {
+  auto* web_contents = wc_getter.Run();
+  const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
+  DCHECK(native_theme);
+
+  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
+  DCHECK(tp);
 
   // Get our theme colors.
   SkColor color_background =
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_BACKGROUND);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_BACKGROUND);
   SkColor color_text =
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_TEXT);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_TEXT);
   SkColor color_text_light =
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_TEXT_LIGHT);
 
   SkColor color_header =
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_HEADER);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_HEADER);
   // Generate a lighter color for the header gradients.
   color_utils::HSL header_lighter;
   color_utils::SkColorToHSL(color_header, &header_lighter);
@@ -479,9 +499,9 @@ void NTPResourceCache::CreateNewTabCSS(
   substitutions["colorBackground"] =
       color_utils::SkColorToRgbaString(color_background);
   substitutions["colorLink"] = color_utils::SkColorToRgbString(
-      GetThemeColor(native_theme, tp, ThemeProperties::COLOR_NTP_LINK));
-  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
-  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
+      GetThemeColor(native_theme, *tp, ThemeProperties::COLOR_NTP_LINK));
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
+  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
   substitutions["colorTextRgba"] = color_utils::SkColorToRgbaString(color_text);
   substitutions["colorTextLight"] =
       color_utils::SkColorToRgbaString(color_text_light);
@@ -492,7 +512,7 @@ void NTPResourceCache::CreateNewTabCSS(
   // For themes that right-align the background, we flip the attribution to the
   // left to avoid conflicts.
   int alignment =
-      tp.GetDisplayProperty(ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
+      tp->GetDisplayProperty(ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
   if (alignment & ThemeProperties::ALIGN_RIGHT) {
     substitutions["leftAlignAttribution"] = "0";
     substitutions["rightAlignAttribution"] = "auto";
@@ -504,7 +524,7 @@ void NTPResourceCache::CreateNewTabCSS(
   }
 
   substitutions["displayAttribution"] =
-      tp.HasCustomImage(IDR_THEME_NTP_ATTRIBUTION) ? "inline" : "none";
+      tp->HasCustomImage(IDR_THEME_NTP_ATTRIBUTION) ? "inline" : "none";
 
   // Get our template.
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>

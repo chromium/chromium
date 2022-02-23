@@ -10,7 +10,9 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
@@ -41,7 +43,7 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
@@ -61,7 +63,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     bool supports_gles2_interface,
     bool supports_raster_interface,
     bool supports_grcontext,
-    bool supports_oop_rasterization,
+    bool supports_gpu_rasterization,
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
@@ -76,7 +78,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   attributes.buffer_preserved = false;
   attributes.enable_gles2_interface = supports_gles2_interface;
   attributes.enable_raster_interface = supports_raster_interface;
-  attributes.enable_oop_rasterization = supports_oop_rasterization;
+  attributes.enable_oop_rasterization = supports_gpu_rasterization;
 
   gpu::SharedMemoryLimits memory_limits =
       gpu::SharedMemoryLimits::ForDisplayCompositor();
@@ -102,9 +104,7 @@ bool IsWorkerContextLost(viz::RasterContextProvider* context_provider) {
 class HostDisplayClient : public viz::HostDisplayClient {
  public:
   explicit HostDisplayClient(ui::Compositor* compositor)
-      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {
-    ANALYZER_ALLOW_UNUSED(compositor_);
-  }
+      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {}
   ~HostDisplayClient() override = default;
   HostDisplayClient(const HostDisplayClient&) = delete;
   HostDisplayClient& operator=(const HostDisplayClient&) = delete;
@@ -112,14 +112,14 @@ class HostDisplayClient : public viz::HostDisplayClient {
   // viz::HostDisplayClient:
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override {
     compositor_->OnCompleteSwapWithNewSize(size);
   }
 #endif
 
  private:
-  ui::Compositor* const compositor_;
+  [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
 };
 
 }  // namespace
@@ -182,7 +182,7 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
 
 void VizProcessTransportFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
       compositor->widget());
 #endif
@@ -228,7 +228,7 @@ VizProcessTransportFactory::SharedMainThreadRasterContextProvider() {
 }
 
 void VizProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
       compositor->widget());
 #endif
@@ -270,7 +270,6 @@ ui::ContextFactory* VizProcessTransportFactory::GetContextFactory() {
 void VizProcessTransportFactory::DisableGpuCompositing(
     ui::Compositor* guilty_compositor) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ALLOW_UNUSED_LOCAL(compositing_mode_reporter_);
   // A fatal error has occurred and we can't fall back to software compositing
   // on CrOS. These can be unrecoverable hardware errors, or bugs that should
   // not happen. Crash the browser process to reset everything.
@@ -365,7 +364,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     worker_context_provider = worker_context_provider_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->RegisterParent(
       compositor->widget());
 #endif
@@ -406,10 +405,10 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
 
   root_params->use_preferred_interval_for_video =
       features::IsUsingPreferredIntervalForVideo();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   root_params->set_present_duration_allowed =
       features::ShouldUseSetPresentDuration();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // browser compositor may request a new CompositorFrameSink on context loss,
@@ -436,7 +435,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
         compositor_data.external_begin_frame_controller.get());
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows using the ANGLE D3D backend for compositing needs to disable swap
   // on resize to avoid D3D scaling the framebuffer texture. This isn't a
   // problem with software compositing or ANGLE D3D with direct composition.
@@ -470,21 +469,18 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
       IsWorkerContextLost(worker_context_provider_.get()))
     worker_context_provider_.reset();
 
-  bool enable_oop_rasterization =
-      features::IsUiGpuRasterizationEnabled() &&
-      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled;
   bool enable_gpu_rasterization =
-      features::IsUiGpuRasterizationEnabled() && !enable_oop_rasterization;
+      features::IsUiGpuRasterizationEnabled() &&
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled;
 
   if (!worker_context_provider_) {
     worker_context_provider_ = CreateContextProvider(
         gpu_channel_host, GetGpuMemoryBufferManager(),
         /*supports_locking=*/true,
-        /*supports_gles2=*/enable_gpu_rasterization,
-        /*supports_raster=*/true,
-        /*supports_grcontext=*/enable_gpu_rasterization,
-        /*supports_oopr=*/enable_oop_rasterization,
+        /*supports_gles2_interface=*/false,
+        /*supports_raster_interface=*/true,
+        /*supports_grcontext=*/false, enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_WORKER);
 
     // Don't observer context loss on |worker_context_provider_| here, that is

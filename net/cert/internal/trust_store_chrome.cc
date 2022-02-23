@@ -14,10 +14,6 @@
 
 namespace net {
 
-struct ChromeRootCertInfo {
-  base::span<const uint8_t> root_cert_der;
-};
-
 namespace {
 
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
@@ -42,8 +38,7 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
       cert = x509_util::CreateCryptoBufferFromStaticDataUnsafe(
           cert_info.root_cert_der);
     } else {
-      cert = x509_util::CreateCryptoBuffer(cert_info.root_cert_der.data(),
-                                           cert_info.root_cert_der.size());
+      cert = x509_util::CreateCryptoBuffer(cert_info.root_cert_der);
     }
     CertErrors errors;
     auto parsed = ParsedCertificate::Create(

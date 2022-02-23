@@ -4,6 +4,8 @@
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -45,7 +47,7 @@ class BroadcastChannelService::Connection
   // Note: We use a raw pointer here because each Connection is owned by
   // BroadcastChannelService, so the lifetime of each Connection object
   // should not exceed the lifetime of `service_`.
-  BroadcastChannelService* service_;
+  raw_ptr<BroadcastChannelService> service_;
   const blink::StorageKey storage_key_;
   const std::string name_;
 };
@@ -111,5 +113,20 @@ void BroadcastChannelService::ConnectToChannel(
       base::BindRepeating(&BroadcastChannelService::UnregisterConnection,
                           base::Unretained(this), c.get()));
   connections_[storage_key].insert(std::make_pair(name, std::move(c)));
+}
+
+void BroadcastChannelService::AddReceiver(
+    std::unique_ptr<BroadcastChannelProvider> provider,
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider>
+        pending_receiver) {
+  receivers_.Add(std::move(provider), std::move(pending_receiver));
+}
+
+void BroadcastChannelService::AddAssociatedReceiver(
+    std::unique_ptr<BroadcastChannelProvider> provider,
+    mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+        pending_associated_receiver) {
+  associated_receivers_.Add(std::move(provider),
+                            std::move(pending_associated_receiver));
 }
 }  // namespace content

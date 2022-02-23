@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -232,7 +233,7 @@ class WebUsbAllowDevicesForUrlsPolicyHandlerTest
     handler_list_.AddHandler(std::move(handler));
   }
 
-  WebUsbAllowDevicesForUrlsPolicyHandler* handler_;
+  raw_ptr<WebUsbAllowDevicesForUrlsPolicyHandler> handler_;
 };
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {
@@ -486,14 +487,14 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
   ASSERT_TRUE(pref_value->is_list());
 
   // Ensure that the kManagedWebUsbAllowDevicesForUrls pref is set correctly.
-  const auto& list = pref_value->GetList();
+  const auto& list = pref_value->GetListDeprecated();
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's devices list.
   const base::Value* devices = list[0].FindKey(kDevicesKey);
   ASSERT_TRUE(devices);
 
-  const auto& first_devices_list = devices->GetList();
+  const auto& first_devices_list = devices->GetListDeprecated();
   ASSERT_EQ(2ul, first_devices_list.size());
 
   const base::Value* vendor_id = first_devices_list[0].FindKey(kVendorIdKey);
@@ -515,7 +516,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
   const base::Value* urls = list[0].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
 
-  const auto& first_urls_list = urls->GetList();
+  const auto& first_urls_list = urls->GetListDeprecated();
   ASSERT_EQ(2ul, first_urls_list.size());
   ASSERT_TRUE(first_urls_list[0].is_string());
   ASSERT_TRUE(first_urls_list[1].is_string());
@@ -527,7 +528,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
   devices = list[1].FindKey(kDevicesKey);
   ASSERT_TRUE(devices);
 
-  const auto& second_devices_list = devices->GetList();
+  const auto& second_devices_list = devices->GetListDeprecated();
   ASSERT_EQ(1ul, second_devices_list.size());
 
   vendor_id = second_devices_list[0].FindKey(kVendorIdKey);
@@ -540,7 +541,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, ApplyPolicySettings) {
   urls = list[1].FindKey(kUrlsKey);
   ASSERT_TRUE(urls);
 
-  const auto& second_urls_list = urls->GetList();
+  const auto& second_urls_list = urls->GetListDeprecated();
   ASSERT_EQ(1ul, second_urls_list.size());
   ASSERT_TRUE(second_urls_list[0].is_string());
   EXPECT_EQ("https://chromium.org,", second_urls_list[0].GetString());

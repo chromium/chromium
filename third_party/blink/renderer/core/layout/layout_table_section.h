@@ -352,15 +352,7 @@ class CORE_EXPORT LayoutTableSection final
     NOT_DESTROYED();
     return this;
   }
-  const LayoutTableSection* ToLayoutTableSection() const final {
-    NOT_DESTROYED();
-    return this;
-  }
   const LayoutObject* ToLayoutObject() const final {
-    NOT_DESTROYED();
-    return this;
-  }
-  LayoutObject* ToMutableLayoutObject() final {
     NOT_DESTROYED();
     return this;
   }

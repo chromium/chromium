@@ -242,12 +242,10 @@ def AddCommonOptions(parser):
 def ProcessCommonOptions(args):
   """Processes and handles all common options."""
   run_tests_helper.SetLogLevel(args.verbose_count, add_handler=False)
-  # pylint: disable=redefined-variable-type
   if args.verbose_count > 0:
     handler = logging_utils.ColorStreamHandler()
   else:
     handler = logging.StreamHandler(sys.stdout)
-  # pylint: enable=redefined-variable-type
   handler.setFormatter(run_tests_helper.CustomFormatter())
   logging.getLogger().addHandler(handler)
 
@@ -468,9 +466,9 @@ def AddInstrumentationTestOptions(parser):
       dest='set_asserts', action='store_false', default=True,
       help='Removes the dalvik.vm.enableassertions property')
   parser.add_argument(
-      '--enable-java-deobfuscation',
-      action='store_true',
-      help='Deobfuscate java stack traces in test output and logcat.')
+      '--proguard-mapping-path',
+      help='.mapping file to use to Deobfuscate java stack traces in test '
+      'output and logcat.')
   parser.add_argument(
       '-E', '--exclude-annotation',
       dest='exclude_annotation_str',
@@ -823,8 +821,7 @@ def RunTestsCommand(args, result_sink_client=None):
 
   if command == 'python':
     return _RunPythonTests(args)
-  else:
-    raise Exception('Unknown test type.')
+  raise Exception('Unknown test type.')
 
 
 def _SinkTestResult(test_result, test_file_name, result_sink_client):
@@ -1085,7 +1082,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             test_name=args.command,
             cs_base_url='http://cs.chromium.org',
             local_output=True)
-        results_detail_file.write(result_html_string.encode('utf-8'))
+        results_detail_file.write(result_html_string)
         results_detail_file.flush()
       logging.critical('TEST RESULTS: %s', results_detail_file.Link())
 

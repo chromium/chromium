@@ -60,6 +60,16 @@ float GetNextMagnifierScaleValue(int delta_index,
   return base::clamp(new_scale, min_scale, max_scale);
 }
 
+gfx::Rect GetViewportWidgetBoundsInRoot(aura::Window* root,
+                                        float screen_height_divisor) {
+  DCHECK(root);
+  DCHECK(root->IsRootWindow());
+
+  auto root_bounds = root->GetBoundsInRootWindow();
+  root_bounds.set_height(root_bounds.height() / screen_height_divisor);
+  return root_bounds;
+}
+
 void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen) {
   DockedMagnifierController* docked_magnifier =
       Shell::Get()->docked_magnifier_controller();

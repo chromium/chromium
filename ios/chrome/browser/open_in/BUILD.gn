@@ -35,7 +35,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ui/open_in",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//ui/base:base",

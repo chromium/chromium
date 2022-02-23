@@ -29,17 +29,16 @@
 #include <memory>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
-#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -74,15 +73,15 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
 
   bool IsSizeAvailable();
   bool HasEmbeddedColorProfile() const;
-  IntSize Size() const;
-  IntSize FrameSizeAtIndex(wtf_size_t index) const;
+  gfx::Size Size() const;
+  gfx::Size FrameSizeAtIndex(wtf_size_t index) const;
   wtf_size_t FrameCount();
   bool ImageIsHighBitDepth() const { return image_is_high_bit_depth_; }
   int RepetitionCount() const;
   bool FrameIsReceivedAtIndex(wtf_size_t index) const;
   base::TimeDelta FrameDurationAtIndex(wtf_size_t index) const;
   ImageOrientation OrientationAtIndex(wtf_size_t index) const;
-  IntSize DensityCorrectedSizeAtIndex(wtf_size_t index) const;
+  gfx::Size DensityCorrectedSizeAtIndex(wtf_size_t index) const;
   bool HotSpot(gfx::Point&) const;
   SkAlphaType AlphaType() const;
 
@@ -113,7 +112,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   std::unique_ptr<ImageDecoder> metadata_decoder_;
 
   String filename_extension_;
-  IntSize size_;
+  gfx::Size size_;
   int repetition_count_;
   bool has_embedded_color_profile_ = false;
   bool all_data_received_;

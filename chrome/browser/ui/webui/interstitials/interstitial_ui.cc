@@ -9,6 +9,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -33,7 +34,6 @@
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
-#include "components/security_interstitials/content/legacy_tls_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/origin_policy_ui.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -129,23 +129,26 @@ std::unique_ptr<SSLBlockingPage> CreateSslBlockingPage(
   bool strict_enforcement = false;
   base::Time time_triggered_ = base::Time::NowFromSystemTime();
   std::string url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
+                                 &url_param)) {
     if (GURL(url_param).is_valid()) {
       request_url = GURL(url_param);
     }
   }
   std::string overridable_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "overridable",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "overridable",
                                  &overridable_param)) {
     overridable = overridable_param == "1";
   }
   std::string strict_enforcement_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "strict_enforcement",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(),
+                                 "strict_enforcement",
                                  &strict_enforcement_param)) {
     strict_enforcement = strict_enforcement_param == "1";
   }
   std::string type_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "type", &type_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
+                                 &type_param)) {
     if (type_param == "hpkp_failure") {
       cert_error = net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN;
     } else if (type_param == "ct_failure") {
@@ -176,7 +179,7 @@ std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
   bool is_enterprise_managed = false;
 
   std::string is_enterprise_managed_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "enterprise",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "enterprise",
                                  &is_enterprise_managed_param)) {
     is_enterprise_managed = is_enterprise_managed_param == "1";
   }
@@ -203,25 +206,14 @@ CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents) {
       web_contents, cert_error, request_url, nullptr, ssl_info);
 }
 
-std::unique_ptr<LegacyTLSBlockingPage> CreateLegacyTLSBlockingPage(
-    content::WebContents* web_contents) {
-  const int cert_error = net::ERR_SSL_OBSOLETE_VERSION;
-  const GURL request_url("https://example.com");
-
-  net::SSLInfo ssl_info;
-  ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
-  ChromeSecurityBlockingPageFactory blocking_page_factory;
-  return blocking_page_factory.CreateLegacyTLSBlockingPage(
-      web_contents, cert_error, request_url, nullptr, ssl_info);
-}
-
 std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
     content::WebContents* web_contents) {
   // Set up a fake clock error.
   int cert_error = net::ERR_CERT_DATE_INVALID;
   GURL request_url("https://example.com");
   std::string url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param) &&
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
+                                 &url_param) &&
       GURL(url_param).is_valid()) {
     request_url = GURL(url_param);
   }
@@ -229,7 +221,8 @@ std::unique_ptr<BadClockBlockingPage> CreateBadClockBlockingPage(
   // Determine whether to change the clock to be ahead or behind.
   std::string clock_manipulation_param;
   ssl_errors::ClockState clock_state = ssl_errors::CLOCK_STATE_PAST;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "clock_manipulation",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(),
+                                 "clock_manipulation",
                                  &clock_manipulation_param)) {
     int time_offset;
     if (base::StringToInt(clock_manipulation_param, &time_offset)) {
@@ -252,7 +245,7 @@ std::unique_ptr<LookalikeUrlBlockingPage> CreateLookalikeInterstitialPage(
   GURL request_url("https://example.net");
   GURL safe_url("https://example.com");
   std::string url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "no-safe-url",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "no-safe-url",
                                  &url_param)) {
     safe_url = GURL();
   }
@@ -287,7 +280,8 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
+                                 &url_param)) {
     if (GURL(url_param).is_valid()) {
       request_url = GURL(url_param);
     }
@@ -296,7 +290,8 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   // TODO(mattm): add flag to change main_frame_url or add dedicated flag to
   // test subresource interstitials.
   std::string type_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "type", &type_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
+                                 &type_param)) {
     if (type_param == "malware") {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
@@ -344,14 +339,16 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url", &url_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
+                                 &url_param)) {
     if (GURL(url_param).is_valid())
       request_url = GURL(url_param);
   }
   GURL main_frame_url(request_url);
   std::string type_param;
   bool is_giant_webview = false;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "type", &type_param)) {
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
+                                 &type_param)) {
     if (type_param == "malware") {
       threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
@@ -402,24 +399,24 @@ std::unique_ptr<CaptivePortalBlockingPage> CreateCaptivePortalBlockingPage(
   std::string wifi_ssid;
 
   std::string request_url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "url",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
                                  &request_url_param)) {
     if (GURL(request_url_param).is_valid())
       request_url = GURL(request_url_param);
   }
   std::string landing_url_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "landing_page",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "landing_page",
                                  &landing_url_param)) {
     if (GURL(landing_url_param).is_valid())
       landing_url = GURL(landing_url_param);
   }
   std::string wifi_connection_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "is_wifi",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "is_wifi",
                                  &wifi_connection_param)) {
     is_wifi_connection = wifi_connection_param == "1";
   }
   std::string wifi_ssid_param;
-  if (net::GetValueForKeyInQuery(web_contents->GetURL(), "wifi_name",
+  if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "wifi_name",
                                  &wifi_ssid_param)) {
     wifi_ssid = wifi_ssid_param;
   }
@@ -505,8 +502,6 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateMITMSoftwareBlockingPage(web_contents);
   } else if (path_without_query == "/blocked-interception") {
     interstitial_delegate = CreateBlockedInterceptionBlockingPage(web_contents);
-  } else if (path_without_query == "/legacy-tls") {
-    interstitial_delegate = CreateLegacyTLSBlockingPage(web_contents);
   } else if (path_without_query == "/safebrowsing") {
     interstitial_delegate = CreateSafeBrowsingBlockingPage(web_contents);
   } else if (path_without_query == "/clock") {

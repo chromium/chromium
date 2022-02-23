@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -29,6 +32,7 @@
 #include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
+#include "device/vr/public/mojom/vr_service.mojom-shared.h"
 
 namespace {
 
@@ -271,6 +275,10 @@ void VRServiceImpl::OnInlineSessionCreated(
     SessionRequestData request,
     device::mojom::XRRuntimeSessionResultPtr session_result) {
   if (!session_result) {
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnInlineSessionCreated: no session_result",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -295,6 +303,12 @@ void VRServiceImpl::OnInlineSessionCreated(
     // UNKNOWN_FAILURE since a runtime should not return a session if there
     // exists a required feature that was not enabled - this would signify a bug
     // in the runtime.
+
+    TRACE_EVENT(
+        "xr",
+        "VRServiceImpl::OnInlineSessionCreated: required feature not granted",
+        perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_FAILURE));
@@ -314,6 +328,10 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     device::mojom::XRRuntimeSessionResultPtr session_result) {
   DCHECK(request.options);
   if (!session_result) {
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnImmersiveSessionCreated: no session_result",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -329,6 +347,12 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     // UNKNOWN_FAILURE since a runtime should not return a session if there
     // exists a required feature that was not enabled - this would signify a bug
     // in the runtime.
+
+    TRACE_EVENT("xr",
+                "VRServiceImpl::OnImmersiveSessionCreated: required feature "
+                "not granted",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_FAILURE));
@@ -389,6 +413,9 @@ void VRServiceImpl::OnSessionCreated(
   // |OnInlineSessionCreated| and |OnImmersiveSessionCreated|.
 
   UMA_HISTOGRAM_ENUMERATION("XR.RuntimeUsed", request.runtime_id);
+
+  TRACE_EVENT("xr", "VRServiceImpl::OnSessionCreated: succeeded",
+              perfetto::Flow::Global(request.options->trace_id));
 
   mojo::Remote<device::mojom::XRSessionClient> client;
   session->client_receiver = client.BindNewPipeAndPassReceiver();
@@ -476,19 +503,29 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   const std::vector<PermissionType> permissions =
       GetRequiredPermissions(request.options->mode, request.required_features,
                              request.optional_features);
+
   permission_controller->RequestPermissions(
       permissions, render_frame_host_,
       render_frame_host_->GetLastCommittedURL(), true,
       base::BindOnce(&VRServiceImpl::OnPermissionResults,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                     permissions));
 }
 
 void VRServiceImpl::OnPermissionResults(
     SessionRequestData request,
+    const std::vector<content::PermissionType>& permissions,
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
   DVLOG(2) << __func__;
+  DCHECK_EQ(permissions.size(), permission_statuses.size());
+
   bool is_consent_granted = true;
-  for (auto& permission_status : permission_statuses) {
+  for (size_t i = 0; i < permission_statuses.size(); ++i) {
+    const blink::mojom::PermissionStatus& permission_status =
+        permission_statuses[i];
+    DVLOG(3) << __func__ << ": index=" << i
+             << ", permission=" << base::to_underlying(permissions[i])
+             << ", status=" << permission_status;
     if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
       is_consent_granted = false;
       break;
@@ -563,6 +600,9 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
 
   // Ensure that it's the same runtime as the one we expect.
   if (!runtime || runtime->GetId() != request.runtime_id) {
+    TRACE_EVENT("xr", "VRServiceImpl::DoRequestSession: mismatching runtime",
+                perfetto::Flow::Global(request.options->trace_id));
+
     std::move(request.callback)
         .Run(device::mojom::RequestSessionResult::NewFailureReason(
             device::mojom::RequestSessionError::UNKNOWN_RUNTIME_ERROR));
@@ -580,7 +620,7 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   runtime_options->optional_features.assign(request.optional_features.begin(),
                                             request.optional_features.end());
 
-#if defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARCORE)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARCORE)
   if (request.runtime_id == device::mojom::XRDeviceId::ARCORE_DEVICE_ID) {
     runtime_options->render_process_id =
         render_frame_host_->GetProcess()->GetID();
@@ -638,6 +678,10 @@ void VRServiceImpl::SupportsSession(
                        std::move(options), std::move(callback)));
     return;
   }
+
+  TRACE_EVENT("xr", "VRServiceImpl::SupportsSession: received",
+              perfetto::Flow::Global(options->trace_id));
+
   runtime_manager_->SupportsSession(std::move(options), std::move(callback));
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -26,6 +27,7 @@ class ExtensionsToolbarContainer;
 class WebAppMenuButton;
 class WebAppOriginText;
 class WindowControlsOverlayToggleButton;
+class SystemAppAccessibleName;
 
 class WebAppToolbarButtonContainer : public views::View,
                                      public IconLabelBubbleView::Delegate,
@@ -138,8 +140,8 @@ class WebAppToolbarButtonContainer : public views::View,
   base::OneShotTimer icon_fade_in_delay_;
 
   // The containing browser view.
-  BrowserView* const browser_view_;
-  ToolbarButtonProvider* const toolbar_button_provider_;
+  const raw_ptr<BrowserView> browser_view_;
+  const raw_ptr<ToolbarButtonProvider> toolbar_button_provider_;
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
   SkColor background_color_ = gfx::kPlaceholderColor;
@@ -148,12 +150,13 @@ class WebAppToolbarButtonContainer : public views::View,
   int page_action_insertion_point_ = 0;
 
   // All remaining members are owned by the views hierarchy.
-  WebAppOriginText* web_app_origin_text_ = nullptr;
-  WindowControlsOverlayToggleButton* window_controls_overlay_toggle_button_ =
-      nullptr;
-  WebAppContentSettingsContainer* content_settings_container_ = nullptr;
-  ExtensionsToolbarContainer* extensions_container_ = nullptr;
-  WebAppMenuButton* web_app_menu_button_ = nullptr;
+  raw_ptr<WebAppOriginText> web_app_origin_text_ = nullptr;
+  raw_ptr<WindowControlsOverlayToggleButton>
+      window_controls_overlay_toggle_button_ = nullptr;
+  raw_ptr<WebAppContentSettingsContainer> content_settings_container_ = nullptr;
+  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
+  raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_TOOLBAR_BUTTON_CONTAINER_H_

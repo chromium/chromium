@@ -7,9 +7,10 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/soda/constants.h"
 #include "media/base/media_switches.h"
 #endif

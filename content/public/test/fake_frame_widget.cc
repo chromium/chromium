@@ -4,6 +4,8 @@
 
 #include "content/public/test/fake_frame_widget.h"
 
+#include "build/build_config.h"
+
 namespace content {
 
 FakeFrameWidget::FakeFrameWidget(
@@ -21,7 +23,7 @@ void FakeFrameWidget::SetTextDirection(base::i18n::TextDirection direction) {
   text_direction_ = direction;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void FakeFrameWidget::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                        GetStringAtPointCallback callback) {
   std::move(callback).Run(nullptr, gfx::Point());

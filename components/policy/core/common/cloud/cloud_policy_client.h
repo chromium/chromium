@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -65,7 +66,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // A callback which receives fetched remote commands.
   using RemoteCommandCallback = base::OnceCallback<void(
       DeviceManagementStatus,
-      const std::vector<enterprise_management::RemoteCommand>&,
       const std::vector<enterprise_management::SignedData>&)>;
 
   // A callback for fetching device robot OAuth2 authorization tokens.
@@ -80,6 +80,8 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback that processes response value received from the server,
   // or nullopt, if there was a failure.
+  // TODO(https://crbug.com/1297247): Change this to accept an
+  // absl::optional<base::Value::Dict> parameter.
   using ResponseCallback =
       base::OnceCallback<void(absl::optional<base::Value>)>;
 
@@ -231,7 +233,6 @@ class POLICY_EXPORT CloudPolicyClient {
   // make callees sign their data themselves.
   virtual void RegisterWithCertificate(const RegistrationParameters& parameters,
                                        const std::string& client_id,
-                                       DMAuth auth,
                                        const std::string& pem_certificate_chain,
                                        const std::string& sub_organization,
                                        SigningService* signing_service);
@@ -335,12 +336,20 @@ class POLICY_EXPORT CloudPolicyClient {
           chrome_desktop_report,
       StatusCallback callback);
 
-  // Uploads Chrome OS User report to the server. The user dm token must be set
-  // properly. |chrome_os_user_report| will be included in the upload request.
-  // The |callback| will be called when the operation completes.
+  // Uploads Chrome OS User report to the server. The user's DM token must be
+  // set. |chrome_os_user_report| will be included in the upload request. The
+  // |callback| will be called when the operation completes.
   virtual void UploadChromeOsUserReport(
       std::unique_ptr<enterprise_management::ChromeOsUserReportRequest>
           chrome_os_user_report,
+      StatusCallback callback);
+
+  // Uploads Chrome profile report to the server. The user's DM token must be
+  // set. |chrome_profile_report| will be included in the upload request. The
+  // |callback| will be called when the operation completes.
+  virtual void UploadChromeProfileReport(
+      std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
+          chrome_profile_report,
       StatusCallback callback);
 
   // Uploads a report containing enterprise connectors real-time security
@@ -350,14 +359,14 @@ class POLICY_EXPORT CloudPolicyClient {
   // |callback| will be called when the operation completes.
   virtual void UploadSecurityEventReport(content::BrowserContext* context,
                                          bool include_device_info,
-                                         base::Value report,
+                                         base::Value::Dict report,
                                          StatusCallback callback);
 
   // Uploads a report containing |merging_payload| (merged into the default
   // payload of the job). The client must be in a registered state. The
   // |callback| will be called when the operation completes.
-  virtual void UploadEncryptedReport(base::Value merging_payload,
-                                     absl::optional<base::Value> context,
+  virtual void UploadEncryptedReport(base::Value::Dict merging_payload,
+                                     absl::optional<base::Value::Dict> context,
                                      ResponseCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
@@ -366,7 +375,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding app push-install report upload is allowed.
   // In case the new push-installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadAppInstallReport(base::Value report,
+  virtual void UploadAppInstallReport(base::Value::Dict report,
                                       StatusCallback callback);
 
   // Cancels the pending app push-install status report upload, if exists.
@@ -378,7 +387,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding extension install report upload is allowed.
   // In case the new installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadExtensionInstallReport(base::Value report,
+  virtual void UploadExtensionInstallReport(base::Value::Dict report,
                                             StatusCallback callback);
 
   // Cancels the pending extension install status report upload, if exists.
@@ -631,9 +640,8 @@ class POLICY_EXPORT CloudPolicyClient {
           certificate_type,
       StatusCallback callback);
 
-  // Callback for siganture of requests.
+  // This is called when a RegisterWithCertiifcate request has been signed.
   void OnRegisterWithCertificateRequestSigned(
-      DMAuth auth,
       bool success,
       enterprise_management::SignedData signed_data);
 
@@ -806,7 +814,7 @@ class POLICY_EXPORT CloudPolicyClient {
   int64_t fetched_invalidation_version_ = 0;
 
   // Used for issuing requests to the cloud.
-  DeviceManagementService* service_ = nullptr;
+  raw_ptr<DeviceManagementService> service_ = nullptr;
 
   // Only one outstanding policy fetch or device/user registration request is
   // allowed. Using a separate job to track those requests. If multiple
@@ -819,11 +827,13 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Only one outstanding app push-install report upload is allowed, and it must
   // be accessible so that it can be canceled.
-  DeviceManagementService::Job* app_install_report_request_job_ = nullptr;
+  raw_ptr<DeviceManagementService::Job> app_install_report_request_job_ =
+      nullptr;
 
   // Only one outstanding extension install report upload is allowed, and it
   // must be accessible so that it can be canceled.
-  DeviceManagementService::Job* extension_install_report_request_job_ = nullptr;
+  raw_ptr<DeviceManagementService::Job> extension_install_report_request_job_ =
+      nullptr;
 
   // The policy responses returned by the last policy fetch operation.
   ResponseMap responses_;
@@ -844,7 +854,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // enterprise connectors are added to the request uploading the report.
   // |callback| is invoked once the report is uploaded.
   DeviceManagementService::Job* CreateNewRealtimeReportingJob(
-      base::Value report,
+      base::Value::Dict report,
       const std::string& server_url,
       bool include_device_info,
       bool add_connector_url_params,

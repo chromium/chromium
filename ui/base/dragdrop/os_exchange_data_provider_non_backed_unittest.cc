@@ -88,7 +88,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);
   EXPECT_TRUE(data_endpoint->IsUrlType());
-  EXPECT_EQ(origin, *data_endpoint->origin());
+  EXPECT_EQ(origin, *data_endpoint->GetOrigin());
 }
 
 TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {

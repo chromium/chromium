@@ -25,7 +25,8 @@ void ParserImpl::ParseJson(const std::string& json,
                            ParseJsonCallback callback) {
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSON_ALLOW_TRAILING_COMMAS |
+          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+                    base::JSON_ALLOW_TRAILING_COMMAS |
                     base::JSON_REPLACE_INVALID_CHARACTERS);
   if (parsed_json.value) {
     std::move(callback).Run(std::move(parsed_json.value), absl::nullopt);

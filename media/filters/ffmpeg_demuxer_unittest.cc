@@ -431,7 +431,7 @@ TEST_F(FFmpegDemuxerTest, Initialize_Successful) {
 }
 
 // Android has no Theora support, so this test doesn't work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
   // Open a file containing the following streams:
   //   Stream #0: Video (VP8)
@@ -660,7 +660,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNoStartTime) {
 }
 
 // Android has no Theora support, so these tests doesn't work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Bear) {
   // Many ogg files have negative starting timestamps, so ensure demuxing and
   // seeking work correctly with a negative start time.
@@ -732,7 +732,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOggDiscard_Sync) {
     event.RunAndWaitForStatus(PIPELINE_OK);
   }
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Similar to the test above, but using an opus clip with a large amount of
 // pre-skip, which ffmpeg encodes as negative timestamps.
@@ -1092,7 +1092,7 @@ TEST_F(FFmpegDemuxerTest, Mp3WithVideoStreamID3TagData) {
 // track won't even show up to the demuxer.
 //
 // Android has no Theora support, so this test doesn't work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FFmpegDemuxerTest, UnsupportedAudioSupportedVideoDemux) {
   CreateDemuxerWithStrictMediaLog("speex_audio_vorbis_video.ogv");
 

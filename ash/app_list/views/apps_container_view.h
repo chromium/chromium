@@ -12,6 +12,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
+#include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
@@ -26,11 +27,14 @@ namespace ash {
 class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
+class AppListNudgeController;
+class AppListToastContainerView;
 class ContentsView;
 class ContinueSectionView;
 class FolderBackgroundView;
 class PageSwitcher;
 class SuggestionChipContainerView;
+class GradientLayerDelegate;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the
@@ -141,7 +145,8 @@ class ASH_EXPORT AppsContainerView
                                     SearchModel* search_model) override;
 
   // AppListFolderController:
-  void ShowFolderForItemView(AppListItemView* folder_item_view) override;
+  void ShowFolderForItemView(AppListItemView* folder_item_view,
+                             bool focus_name_input) override;
   void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
@@ -149,15 +154,36 @@ class ASH_EXPORT AppsContainerView
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionChanged() override;
+  void TransitionStarted() override;
+  void TransitionEnded() override;
+  void ScrollStarted() override;
+  void ScrollEnded() override;
 
   // PagedAppsGridView::ContainerDelegate:
   bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
   bool IsPointWithinBottomDragBuffer(const gfx::Point& point,
                                      int page_flip_zone_size) const override;
+  void OnCardifiedStateStarted() override;
+  void OnCardifiedStateEnded() override;
 
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
+
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // app list container.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
+
+  // Called when the app list temporary sort order changes. If `new_order` is
+  // null, the temporary sort order is cleared.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
+  // Updates the nudge in `toast_container_` when app list visibility changes.
+  void OnAppListVisibilityChanged(bool shown);
 
   ContinueSectionView* GetContinueSection();
   RecentAppsView* GetRecentApps();
@@ -171,11 +197,16 @@ class ASH_EXPORT AppsContainerView
 
   views::View* scrollable_container_for_test() { return scrollable_container_; }
 
-  views::View* sort_button_container_for_test() {
-    return sort_button_container_;
-  }
   SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
     return suggestion_chip_container_view_;
+  }
+
+  AppListToastContainerView* toast_container_for_test() {
+    return toast_container_;
+  }
+
+  AppListNudgeController* app_list_nudge_controller() {
+    return app_list_nudge_controller_.get();
   }
 
   // Updates recent apps from app list model.
@@ -252,11 +283,43 @@ class ASH_EXPORT AppsContainerView
   // Callback returned by DisableBlur().
   void OnSuggestionChipsBlurDisablerReleased();
 
+  // Updates the bounds of the gradient mask to fit the current bounds of the
+  // `scrollable_container_`.
+  void UpdateGradientMaskBounds();
+
+  // Creates a layer mask for gradient alpha when the feature is enabled. The
+  // gradient appears at the top and bottom of the 'scrollable_container_' to
+  // create a "fade out" effect when dragging the whole page.
+  void MaybeCreateGradientMask();
+
+  // Removes the gradient mask from being set as the mask layer.
+  void MaybeRemoveGradientMask();
+
+  // Called when the animation to fade out app list items is completed.
+  // `aborted` indicates whether the fade out animation is aborted.
+  void OnAppsGridViewFadeOutAnimationEneded(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool aborted);
+
+  // Called when the animation to fade in app list items is completed.
+  // `aborted` indicates whether the fade in animation is aborted.
+  void OnAppsGridViewFadeInAnimationEnded(bool aborted);
+
+  // Called when the animation to fade in children views such as the undo toast
+  // is completed. `aborted` is true if the animation is aborted.
+  void OnFadeInChildrenAnimationEnded(bool aborted);
+
+  // While true, the gradient mask will not be removed as a mask layer until
+  // cardified state ends.
+  bool keep_gradient_mask_for_cardified_state_ = false;
+
   ContentsView* const contents_view_;
 
   // The app list config used to configure sizing and layout of apps grid items
   // within the apps container.
   std::unique_ptr<AppListConfig> app_list_config_;
+
+  std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
 
   // The number of active requests to disable blur.
   size_t suggestion_chips_blur_disabler_count_ = 0;
@@ -268,13 +331,16 @@ class ASH_EXPORT AppsContainerView
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   ContinueContainer* continue_container_ = nullptr;
+  AppListToastContainerView* toast_container_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;
   FolderBackgroundView* folder_background_view_ = nullptr;
-  views::View* sort_button_container_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
+
+  // Whether the apps container is the current active app list page.
+  bool is_active_page_ = false;
 
   // The distance between y position of suggestion chip container and apps grid
   // view. This is used in dragging to avoid duplicate calculation of apps grid
@@ -291,6 +357,16 @@ class ASH_EXPORT AppsContainerView
   // |cached_container_margins_|, provided the method arguments match the cached
   // arguments (otherwise the margins will be recalculated).
   CachedContainerMargins cached_container_margins_;
+
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
+
+  // A closure to update item positions. It should run at the end of the fade
+  // out animation when items are reordered.
+  base::OnceClosure update_position_closure_;
+
+  // The handle to abort the toast/continue section fade in animation triggered
+  // by app list reorder.
+  std::unique_ptr<views::AnimationAbortHandle> fade_in_abort_handle_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
 };

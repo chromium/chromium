@@ -79,7 +79,7 @@
       }
 
       #oobeAdvancedOptionsScreen .advanced-option-subtitle {
-        color: var(--google-grey-refresh-700);
+        color: var(--google-grey-700);
       }
     </style>
     <oobe-welcome-dialog id="welcomeScreen" role="dialog" for-step="greeting"
@@ -89,6 +89,7 @@
         on-accessibility-button-clicked="onWelcomeAccessibilityButtonClicked_"
         on-timezone-button-clicked="onWelcomeTimezoneButtonClicked_"
         on-next-button-clicked="onWelcomeNextButtonClicked_"
+        on-quick-start-clicked="onQuickStartButtonClicked_"
         on-enable-debugging-clicked="onEnableDebuggingClicked_"
         on-launch-advanced-options="onWelcomeLaunchAdvancedOptions_"
         on-chromevox-hint-accepted="onChromeVoxHintAccepted_"
@@ -104,13 +105,11 @@
         [[i18nDynamic(locale, 'languageSectionTitle')]]
       </h1>
       <p slot="subtitle">
-        <template is="dom-if" if="[[shouldShowLanguageSectionSubtitle_]]">
-          [[i18nDynamic(locale, 'languageSectionHint')]]
-          <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
-              on-click="onLanguageLearnMoreLinkClicked_">
-            [[i18nDynamic(locale, 'learnMore')]]
-          </a>
-        </template>
+        [[i18nDynamic(locale, 'languageSectionHint')]]
+        <a id="languagesLearnMore" class="oobe-local-link" is="action-link"
+            on-click="onLanguageLearnMoreLinkClicked_">
+          [[i18nDynamic(locale, 'learnMore')]]
+        </a>
       </p>
       <div id="setup-container" slot="content" class="landscape-header-aligned">
         <div id="languageDropdownContainer"

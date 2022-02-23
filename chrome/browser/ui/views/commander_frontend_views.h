@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMANDER_FRONTEND_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMANDER_FRONTEND_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/commander/commander_frontend.h"
 
 #include <memory>
@@ -71,34 +72,23 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
  private:
   // Receives view model updates from |backend_|.
   void OnViewModelUpdated(commander::CommanderViewModel view_model);
-  // Receives system profile from CreateProfileAsync()
-  void OnSystemProfileAvailable(Profile* profile, Profile::CreateStatus status);
 
-  // Creates a web_view_ to host the WebUI interface for |profile|. Should only
-  // be called once when the system profile becomes available.
-  void CreateWebView(Profile* profile);
+  // Creates a WebView to host the WebUI interface for |profile|.
+  std::unique_ptr<CommanderWebView> CreateWebView(Profile* profile);
 
   bool is_showing() { return widget_ != nullptr; }
-  bool is_web_view_created() {
-    return is_showing() || web_view_.get() != nullptr;
-  }
 
   // The controller. Must outlive this object.
-  commander::CommanderBackend* backend_;
-  // True if Show() was called before the system profile is available.
-  // If this is set, CreateWebView() will call Show().
-  bool show_requested_ = false;
-  // The widget that contains |web_view_ptr_|
-  views::Widget* widget_ = nullptr;
+  raw_ptr<commander::CommanderBackend> backend_;
+  // The widget that contains |web_view_|
+  raw_ptr<views::Widget> widget_ = nullptr;
   // |widget_|'s delegate
   std::unique_ptr<views::WidgetDelegate> widget_delegate_;
-  // The web_view_ that hosts the WebUI instance. Populated when the view
+  // The WebView that hosts the WebUI instance. Populated when the view
   // is showing and null otherwise.
-  CommanderWebView* web_view_ptr_ = nullptr;
-  // |web_view_ptr_| is held here when the widget is *not* showing.
-  std::unique_ptr<CommanderWebView> web_view_;
+  raw_ptr<CommanderWebView> web_view_ = nullptr;
   // The browser |widget_| is attached to.
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   // Whether the web UI interface is loaded and ready to accept view models.
   bool is_handler_enabled_ = false;
   // Registrar for observing app termination.

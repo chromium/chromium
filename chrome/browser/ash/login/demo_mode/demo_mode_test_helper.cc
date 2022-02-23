@@ -35,7 +35,7 @@ DemoModeTestHelper::DemoModeTestHelper()
 
   CHECK(components_temp_dir_.CreateUniqueTempDir());
   components_path_override_ = std::make_unique<base::ScopedPathOverride>(
-      chromeos::DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
+      DIR_PREINSTALLED_COMPONENTS, components_temp_dir_.GetPath());
 
   CHECK(base::CreateDirectory(GetDemoResourcesPath()));
   CHECK(base::CreateDirectory(GetPreinstalledDemoResourcesPath()));
@@ -103,7 +103,7 @@ void DemoModeTestHelper::InitializeCrosComponentManager() {
 
 void DemoModeTestHelper::FinishLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
@@ -122,7 +122,7 @@ void DemoModeTestHelper::FinishLoadingComponent() {
 
 void DemoModeTestHelper::FailLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {

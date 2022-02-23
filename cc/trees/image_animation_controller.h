@@ -11,6 +11,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -115,6 +116,7 @@ class CC_EXPORT ImageAnimationController {
   // Notifies the beginning of an impl frame with the given |args|.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args);
 
+  bool did_navigate() const { return did_navigate_; }
   void set_did_navigate() { did_navigate_ = true; }
 
   const base::flat_set<AnimationDriver*>& GetDriversForTesting(
@@ -278,8 +280,8 @@ class CC_EXPORT ImageAnimationController {
     void RequestBeginFrame();
     void RequestInvalidation();
 
-    base::SingleThreadTaskRunner* task_runner_;
-    Client* const client_;
+    raw_ptr<base::SingleThreadTaskRunner> task_runner_;
+    const raw_ptr<Client> client_;
     NowCallback now_callback_for_testing_;
 
     InvalidationState state_ = InvalidationState::kIdle;

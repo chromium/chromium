@@ -9,6 +9,10 @@
 namespace extensions {
 namespace schema_constants {
 
+// Some values below are used by the policy component to filter out policy
+// values. They must be synced with
+// components/policy/core/common/policy_loader_common.cc
+
 const char kWildcard[] = "*";
 
 const char kInstallationMode[] = "installation_mode";

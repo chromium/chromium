@@ -10,6 +10,7 @@ cwallez@chromium.org
 # WebXR
 bajones@chromium.org
 klausw@chromium.org
+per-file xr_*=file://components/webxr/OWNERS
 
 # SharedGpuContext, ImageLayerBridge, etc.
 sunnyps@chromium.org

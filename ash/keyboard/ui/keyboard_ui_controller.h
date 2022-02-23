@@ -314,7 +314,6 @@ class KEYBOARD_EXPORT KeyboardUIController
   void OnFocus() override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override;
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;
-  void OnShowVirtualKeyboardIfEnabled() override;
   void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) override;
 
   // Enables the virtual keyboard.

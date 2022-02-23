@@ -4,7 +4,6 @@
 
 #include "base/location.h"
 
-#include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/trace_event/base_tracing.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +27,7 @@ Location WhereAmI(const Location& location = Location::Current()) {
 }  // namespace
 
 TEST(LocationTest, CurrentYieldsCorrectValue) {
-  int previous_line = __LINE__;
+  [[maybe_unused]] int previous_line = __LINE__;
   Location here = WhereAmI();
   EXPECT_NE(here.program_counter(), WhereAmI().program_counter());
 #if SUPPORTS_LOCATION_BUILTINS
@@ -42,7 +41,6 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
 #elif BUILDFLAG(FROM_HERE_USES_LOCATION_BUILTINS)
 #error FROM_HERE requires location builtins to be supported.
 #endif
-  ALLOW_UNUSED_LOCAL(previous_line);
 }
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)

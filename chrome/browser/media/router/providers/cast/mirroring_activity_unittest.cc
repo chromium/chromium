@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -96,8 +97,7 @@ class MirroringActivityTest
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
     cast_data.capabilities = cast_channel::AUDIO_OUT | cast_channel::VIDEO_OUT;
-    MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_,
-                     true);
+    MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
         route, kAppId, &message_handler_, &session_tracker_, kTabId, cast_data,
@@ -123,17 +123,17 @@ class MirroringActivityTest
   }
 
   bool route_is_local_ = true;
-  MockCastMessageChannel* channel_to_service_ = nullptr;
-  MockMirroringServiceHost* mirroring_service_ = nullptr;
+  raw_ptr<MockCastMessageChannel> channel_to_service_ = nullptr;
+  raw_ptr<MockMirroringServiceHost> mirroring_service_ = nullptr;
   NiceMock<MockMojoMediaRouter> media_router_;
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
   std::unique_ptr<MirroringActivity> activity_;
 };
 
-INSTANTIATE_TEST_CASE_P(Namespaces,
-                        MirroringActivityTest,
-                        testing::Values(mirroring::mojom::kWebRtcNamespace,
-                                        mirroring::mojom::kRemotingNamespace));
+INSTANTIATE_TEST_SUITE_P(Namespaces,
+                         MirroringActivityTest,
+                         testing::Values(mirroring::mojom::kWebRtcNamespace,
+                                         mirroring::mojom::kRemotingNamespace));
 
 TEST_F(MirroringActivityTest, MirrorDesktop) {
   base::HistogramTester uma_recorder;

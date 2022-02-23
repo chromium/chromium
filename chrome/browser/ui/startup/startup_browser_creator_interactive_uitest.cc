@@ -37,7 +37,7 @@ using StartupBrowserCreatorTest = InProcessBrowserTest;
 // Chrome OS doesn't support multiprofile.
 // And BrowserWindow::IsActive() always returns false in tests on MAC.
 // And this test is useless without that functionality.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   last_opened_profiles.push_back(profile_2);
   last_opened_profiles.push_back(profile_3);
   last_opened_profiles.push_back(profile_4);
-  browser_creator.Start(dummy, profile_manager->user_data_dir(), profile_2,
+  browser_creator.Start(dummy, profile_manager->user_data_dir(),
+                        {profile_2, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
 
   while (!browser_creator.ActivatedProfile())
@@ -109,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   ASSERT_TRUE(new_browser);
   EXPECT_FALSE(new_browser->window()->IsActive());
 }
-#endif  // !OS_MAC && !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
 
 #if defined(USE_AURA)
 class StartupPagePrefSetterMainExtraParts : public ChromeBrowserMainExtraParts {

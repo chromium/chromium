@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the Timeline events for WebSocket\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function performActions()

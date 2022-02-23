@@ -66,16 +66,15 @@ class PartitionAllocPCScanMUAwareTaskBasedBackendTest : public ::testing::Test {
   }
 
   PartitionAllocPCScanMUAwareTaskBasedBackendTest()
-      : backend_(scheduler_,
-                 base::BindLambdaForTesting([this](TimeDelta delay) {
-                   delayed_scan_scheduled_count_++;
-                 })) {
+      : backend_(scheduler_, &IncrementDelayedScanScheduledCount) {
     scheduler_.SetNewSchedulingBackend(backend_);
     constexpr size_t kNoSurvivedBytes = 0;
     constexpr base::TimeDelta kZeroTimeForScan;
     backend_.UpdateScheduleAfterScan(kNoSurvivedBytes, kZeroTimeForScan,
                                      kHeapSize);
   }
+
+  void SetUp() override { delayed_scan_scheduled_count_ = 0; }
 
   PCScanScheduler& scheduler() { return scheduler_; }
   MUAwareTaskBasedBackend& backend() { return backend_; }
@@ -84,10 +83,18 @@ class PartitionAllocPCScanMUAwareTaskBasedBackendTest : public ::testing::Test {
   }
 
  private:
+  static void IncrementDelayedScanScheduledCount(
+      int64_t delay_in_microseconds) {
+    ++delayed_scan_scheduled_count_;
+  }
+
+  static size_t delayed_scan_scheduled_count_;
   PCScanScheduler scheduler_;
   MUAwareTaskBasedBackend backend_;
-  size_t delayed_scan_scheduled_count_{0};
 };
+
+size_t PartitionAllocPCScanMUAwareTaskBasedBackendTest::
+    delayed_scan_scheduled_count_ = 0;
 
 namespace {
 

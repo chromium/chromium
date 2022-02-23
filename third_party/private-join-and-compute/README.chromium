@@ -17,3 +17,4 @@ files.diff - the files deleted from the original library.
 dependencies.diff - removes all the dependencies on Abseil and other libraries replacing them with Chrome's analogues.
 compilation.diff - fixes compilation/static analyzers in Chrome.
 fix_nulls.diff - makes the presubmit happy by replacing NULL with nullptr.
+Use-absil-statusor.diff - removes existing status/statusor library's version, and uses absl::status and absl::statusor as source of truth.

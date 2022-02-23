@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
@@ -20,7 +21,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
 #endif
 
@@ -91,7 +92,7 @@ bool NonClientFrameView::GetClientMask(const gfx::Size& size,
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 gfx::Point NonClientFrameView::GetSystemMenuScreenPixelLocation() const {
   gfx::Point point(GetMirroredXInView(GetBoundsForClientView().x()),
                    GetSystemMenuY());
@@ -147,7 +148,7 @@ NonClientFrameView::NonClientFrameView() {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int NonClientFrameView::GetSystemMenuY() const {
   return GetBoundsForClientView().y();
 }
@@ -192,7 +193,7 @@ void NonClientView::SetOverlayView(View* view) {
 
   overlay_view_ = view;
   if (parent())
-    AddChildView(overlay_view_);
+    AddChildView(overlay_view_.get());
 }
 
 CloseRequestResult NonClientView::OnWindowCloseRequested() {
@@ -309,7 +310,7 @@ void NonClientView::ViewHierarchyChanged(
     AddChildViewAt(frame_view_.get(), 0);
     frame_view_->InsertClientView(client_view_);
     if (overlay_view_)
-      AddChildView(overlay_view_);
+      AddChildView(overlay_view_.get());
   }
 }
 

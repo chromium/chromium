@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -60,8 +61,9 @@
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "url/scheme_host_port.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -168,11 +170,12 @@ class MCSProbeAuthPreferences : public net::HttpAuthPreferences {
 
   bool NegotiateDisableCnameLookup() const override { return false; }
   bool NegotiateEnablePort() const override { return false; }
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override {
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return false;
   }
   net::HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const override {
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return net::HttpAuth::DelegationType::kNone;
   }
 };
@@ -349,9 +352,10 @@ void MCSProbe::InitializeNetworkState() {
   builder.set_net_log(net_log_);
   builder.set_host_resolver(
       net::HostResolver::CreateStandaloneResolver(net_log_));
-  builder.SetHttpAuthHandlerFactory(net::HttpAuthHandlerRegistryFactory::Create(
-      &http_auth_preferences_,
-      std::vector<std::string>{net::kBasicAuthScheme}));
+  http_auth_preferences_.set_allowed_schemes(
+      std::set<std::string>{net::kBasicAuthScheme});
+  builder.SetHttpAuthHandlerFactory(
+      net::HttpAuthHandlerRegistryFactory::Create(&http_auth_preferences_));
   builder.set_proxy_resolution_service(
       net::ConfiguredProxyResolutionService::CreateDirect());
 

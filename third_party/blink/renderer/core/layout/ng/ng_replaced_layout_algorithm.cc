@@ -13,7 +13,7 @@ NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();

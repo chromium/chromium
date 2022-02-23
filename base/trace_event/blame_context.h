@@ -8,7 +8,6 @@
 #include <inttypes.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_log.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"

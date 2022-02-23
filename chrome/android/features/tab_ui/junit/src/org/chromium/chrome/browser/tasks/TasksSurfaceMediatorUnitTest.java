@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -46,6 +47,9 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Arrays;
+import java.util.List;
 
 /** Tests for {@link TasksSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -91,6 +95,7 @@ public class TasksSurfaceMediatorUnitTest {
     @Test
     public void initialization() {
         verify(mPropertyModel).set(eq(IS_TAB_CAROUSEL_VISIBLE), eq(true));
+        verify(mPropertyModel).set(eq(IS_TAB_CAROUSEL_TITLE_VISIBLE), eq(true));
         verify(mPropertyModel)
                 .set(eq(FAKE_SEARCH_BOX_CLICK_LISTENER), mFakeboxClickListenerCaptor.capture());
         verify(mPropertyModel)
@@ -160,5 +165,13 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mVoiceRecognitionHandler, times(1))
                 .startVoiceRecognition(
                         eq(VoiceRecognitionHandler.VoiceInteractionSource.TASKS_SURFACE));
+    }
+
+    @Test
+    public void performSearchQuery() {
+        String queryText = "test";
+        List<String> list = Arrays.asList("tbm=nws");
+        mMediator.performSearchQuery(queryText, list);
+        verify(mOmniboxStub, times(1)).performSearchQuery(eq(queryText), eq(list));
     }
 }

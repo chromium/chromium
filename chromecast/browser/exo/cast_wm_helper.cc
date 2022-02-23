@@ -175,6 +175,11 @@ aura::client::CursorClient* CastWMHelper::GetCursorClient() {
   return nullptr;
 }
 
+aura::client::DragDropClient* CastWMHelper::GetDragDropClient() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void CastWMHelper::AddPreTargetHandler(ui::EventHandler* handler) {
   cast_window_manager_aura_->GetRootWindow()->AddPreTargetHandler(handler);
 }

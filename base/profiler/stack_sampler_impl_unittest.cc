@@ -11,11 +11,13 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier.h"
 #include "base/profiler/stack_sampler_impl.h"
+#include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
 #include "build/build_config.h"
@@ -51,7 +53,7 @@ class TestProfileBuilder : public ProfileBuilder {
   TimeTicks last_timestamp() { return last_timestamp_; }
 
  private:
-  ModuleCache* module_cache_;
+  raw_ptr<ModuleCache> module_cache_;
   TimeTicks last_timestamp_;
 };
 
@@ -134,8 +136,8 @@ class TestUnwinder : public Unwinder {
 
  private:
   size_t stack_size_;
-  std::vector<uintptr_t>* stack_copy_;
-  uintptr_t* stack_copy_bottom_;
+  raw_ptr<std::vector<uintptr_t>> stack_copy_;
+  raw_ptr<uintptr_t> stack_copy_bottom_;
 };
 
 // Records invocations of calls to OnStackCapture()/UpdateModules().
@@ -164,23 +166,6 @@ class CallRecordingUnwinder : public Unwinder {
  private:
   bool on_stack_capture_was_invoked_ = false;
   bool update_modules_was_invoked_ = false;
-};
-
-class TestModule : public ModuleCache::Module {
- public:
-  TestModule(uintptr_t base_address, size_t size, bool is_native = true)
-      : base_address_(base_address), size_(size), is_native_(is_native) {}
-
-  uintptr_t GetBaseAddress() const override { return base_address_; }
-  std::string GetId() const override { return ""; }
-  FilePath GetDebugBasename() const override { return FilePath(); }
-  size_t GetSize() const override { return size_; }
-  bool IsNative() const override { return is_native_; }
-
- private:
-  const uintptr_t base_address_;
-  const size_t size_;
-  const bool is_native_;
 };
 
 // Utility function to form a vector from a single module.
@@ -288,7 +273,7 @@ base::circular_deque<std::unique_ptr<Unwinder>> MakeUnwinderCircularDeque(
 }  // namespace
 
 // TODO(crbug.com/1001923): Fails on Linux MSan.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CopyStack DISABLED_MAYBE_CopyStack
 #else
 #define MAYBE_CopyStack CopyStack

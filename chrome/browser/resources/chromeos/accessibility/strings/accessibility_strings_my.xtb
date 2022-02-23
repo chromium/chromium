@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">လေ့ကျင့်မှုနေရာ- ဆွဲချစာရင်း</translation>
 <translation id="1195238899008218998">စာအုပ်ဖတ်ပြီးနောက် သုံးသပ်ချက်</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
+<translation id="1198865190323699001">တို့ထိမှု လက်ဟန်များ</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">နောက်ထပ် အဆင့် ၄ ခေါင်စီး မရှိပါ</translation>
@@ -257,7 +258,7 @@
 <translation id="2717271541250958000">tabpnl</translation>
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="27349076983469322">လင်းသည့်နောက်ခံ</translation>
-<translation id="2737898226590637227">နောက်ထပ် ARIA အထင်ကရနေရာ မရှိပါ</translation>
+<translation id="2737898226590637227">နောက်ထပ် ARIA အထူးနေရာ မရှိပါ</translation>
 <translation id="2749275490991666823">အမှန်ခြစ်ပြီး</translation>
 <translation id="27527859628328957">ဆုံချက်ညှိရနိုင်သည့် နောက်ထပ် အရာဆီ ခုန်သွားရန်</translation>
 <translation id="2756452585631602151">စိတ်ကြိုက်အညွှန်း ထည့်ရန်</translation>
@@ -270,7 +271,7 @@
 <translation id="2816868829355607410">လေ့ကျင့်မှုနေရာ- တိုက်ရိုက်သွားကွန်မန်းများ</translation>
 <translation id="2841013758207633010">အချိန်</translation>
 <translation id="284171465644749950">အကြောင်းအရာများ ဖွင့်ကြည့်ရန် ဘယ် (သို့) ညာဘက်သို့ လက်တစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
-<translation id="2843432675592278677">ယခင် ARIA အထင်ကရနေရာ မရှိပါ</translation>
+<translation id="2843432675592278677">ယခင် ARIA အထူးနေရာ မရှိပါ</translation>
 <translation id="2843814945404750166">သံလွင်စိမ်းအရင့်</translation>
 <translation id="2843837985843789981">ယခင် အုပ်စု</translation>
 <translation id="2864481629947106776">အရင် လင့်</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ညာကွင်း}other{# ညာကွင်းများ}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{မေးခွန်း သင်္ကေတ}other{# မေးခွန်း သင်္ကေတများ}}</translation>
+<translation id="3505359110822747654">ChromeVox မီနူးများ လျှော့ပြရန်</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{caret}other{# သင်္ကေတများ}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{အဖြူရောင် ကျည်ဖူးသင်္ကေတ}other{အဖြူရောင် ကျည်ဖူးသင်္ကေတ # ခု}}</translation>
 <translation id="352577523970648069">တည်းဖြတ်နိုင်သည့် စာသားအကွက်</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ကို ဖြတ်ယူပါ။</translation>
@@ -458,7 +461,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">အောက်သို့ လှိမ့်ရန်</translation>
 <translation id="4035381225449278841">နွေဦးရာသီ</translation>
-<translation id="4038098586530338813">ပြန်လည်လုပ်ဆောင်ရန်</translation>
+<translation id="4038098586530338813">ပြန်လုပ်ရန်</translation>
 <translation id="4047216625641135770">အမှတ်အသား</translation>
 <translation id="4047910800766704982">သင့်စက်အွန်လိုင်းဖြစ်သောအခါ လူအသံကဲ့သို့ ပင်ကိုအသံ သုံးနိုင်သည်။ စာသားကို လုပ်ဆောင်ရန် Google သို့ ပို့မည်။ ၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="4053520724192563562">သံပရာစိမ်း</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">အမြန်မိတ်ဆက်ပို့ချချက် ပြီးပါပြီ။</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">မီးခိုးမှိုင်း</translation>
+<translation id="554893713779400387">အဖွင့်၊ အပိတ် ခလုတ်</translation>
 <translation id="5549179427201066174">အသံ ပြန်စီစစ်ခြင်း (အသံသင်္ကေတများ) ကို ဖွင့်ရန် သို့မဟုတ် ပိတ်ရန်</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5561345396546889625">နောက် စာရင်း</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">နောက်ထပ် အမှန်ခြစ်ရန် အကွက်</translation>
 <translation id="5598905979683743333"><ph name="NAME" />၊ အမည်၊ ရေဒီယို ခလုပ်ကို ရွေးချယ်မထားပါ</translation>
 <translation id="5601172225407283979">ပုံသေ လုပ်ဆောင်စရာ လုပ်ကိုင်ရန်</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{လေးထောင့်ပုံ ကျည်ဖူးသင်္ကေတ}other{လေးထောင့်ပုံ ကျည်ဖူးသင်္ကေတ # ခု}}</translation>
 <translation id="5608798115546226984">လိုင်းအတွင်း အလိုအလျောက်ဖြည့်စွက်ခြင်း</translation>
 <translation id="5616029807486814372">နောက်သင်ခန်းစာ</translation>
 <translation id="561939826962581046">အချိန်</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">ဆွဲချစာရင်းများ</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> အဆုံး</translation>
 <translation id="867187640362843212">ခေါင်းစီး ၅</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{ထည့်သွင်းထားသော အဆင့် # ခု}}</translation>
 <translation id="8693391540059827073">ကျွန်ုပ်အကြိုက်ဆုံး ရာသီဥတု</translation>
 <translation id="8696284982970258155">သခွားမွှေး</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ပိုက်}other{# ဒေါင်လိုက်ပိုက်များ}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">အနီရင့်</translation>
 <translation id="923331726185079994">ChromeVox ကို အပ်ဒိတ်လုပ်ပြီးပါပြီ</translation>
 <translation id="93384979447910801">ပင်လယ်စိမ်း အရင့်</translation>
+<translation id="937605981140327129">TalkBack ကို လောလောဆယ် ထည့်သွင်းမထားပါ။ Play Store မှတစ်ဆင့် Android AccessibilitySuite ထည့်သွင်းပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="948171205378458592">စကားပြောမှု နှုန်း လျှော့ချ</translation>
 <translation id="957570623732056069">ဤသင်ခန်းစာသို့သွားရန် ဘယ် (သို့) ညာသို့ လက်တစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>
 <translation id="958854023026327378">အောက်သို့ လက်တစ်ချောင်းဖြင့် ပွတ်ဆွဲပါ</translation>

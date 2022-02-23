@@ -37,6 +37,8 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/ozone/public/overlay_manager_ozone.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
@@ -86,7 +88,14 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
     gpu::SharedImageInterface* shared_image_interface)
     : OverlayProcessorOzone(std::move(overlay_candidates),
                             available_strategies,
-                            shared_image_interface) {}
+                            shared_image_interface) {
+  // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
+  // context. May be null in tests.
+  if (ui::OzonePlatform::GetInstance()->GetOverlayManager())
+    ui::OzonePlatform::GetInstance()
+        ->GetOverlayManager()
+        ->SetContextDelegated();
+}
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
 
@@ -95,10 +104,12 @@ bool OverlayProcessorDelegated::DisableSplittingQuads() const {
   return true;
 }
 
-constexpr size_t kTooManyQuads = 128;
+constexpr size_t kTooManyQuads = 64;
+
+DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
 
 bool OverlayProcessorDelegated::AttemptWithStrategies(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -111,17 +122,17 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
   constexpr bool is_delegated_context = true;
+  delegated_status_ = DelegationStatus::kCompositedOther;
+
+  if (disable_delegation())
+    return false;
 
   if (quad_list->size() >= kTooManyQuads ||
       !render_pass_backdrop_filters.empty())
     return false;
 
-  // Wayland overlay forwarding mechanism does not (yet) support putting the
-  // same buffer on multiple surfaces. We use this |candidate_ids| for best
-  // effort service and simply skip duplicate resource id quads.
-  std::set<ResourceId> candidate_ids;
   std::vector<QuadList::Iterator> candidate_quads;
-
+  int num_quads_skipped = 0;
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     auto& transform = it->shared_quad_state->quad_to_target_transform;
@@ -132,56 +143,40 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),
         base::StringPrintf("m=%d rid=%d", static_cast<int>(it->material),
                            it->resources.begin()->value()));
-    if (OverlayCandidate::FromDrawQuad(
-            resource_provider, surface_damage_rect_list, output_color_matrix,
-            *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
-            is_delegated_context)) {
-      // Setting the |uv_rect| will eventually result in setting the
-      // |crop_rect_| in wayland. If this results in an empty pixel scale the
-      // wayland connection will be terminated. See: wayland_surface.cc
-      // 'UpdateBufferDamageRegion'
-      auto viewport_src = gfx::ToEnclosedRect(gfx::ScaleRect(
-          candidate.uv_rect, candidate.resource_size_in_pixels.width(),
-          candidate.resource_size_in_pixels.height()));
-
+    auto candidate_status = OverlayCandidate::FromDrawQuad(
+        resource_provider, surface_damage_rect_list, output_color_matrix, *it,
+        GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
+        is_delegated_context);
+    if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
       if (it->material == DrawQuad::Material::kSolidColor) {
         DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
-        continue;
-      }
-
-      if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
+      } else if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
         DBG_DRAW_RECT("delegated.overlay.aggregated", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
-        continue;
-      }
-
-      // Because of the device scale factor (2) we check against a rounded empty
-      // rect.
-      // TODO(https://crbug.com/1218678) : Move and generalize this fix in
-      // wayland host.
-      if (viewport_src.width() <= 2 || viewport_src.height() <= 2) {
-        DBG_DRAW_RECT("delegated.overlay.subpixelskip", candidate.display_rect);
-        continue;
-      }
-
-      if (candidate_ids.find(candidate.resource_id) == candidate_ids.end()) {
-        candidate_ids.insert(candidate.resource_id);
-        DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
       } else {
-        DBG_DRAW_RECT("delegated.overlay.dupskip", candidate.display_rect);
+        DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
+      }
+      candidates->push_back(candidate);
+      candidate_quads.push_back(it);
+    } else {
+      if (candidate_status == OverlayCandidate::CandidateStatus::kFailVisible) {
+        // This quad can be intentionally skipped.
+        num_quads_skipped++;
+      } else {
+        DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
       }
 
-    } else {
-      DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+      if (candidate_status ==
+          OverlayCandidate::CandidateStatus::kFailNotAxisAligned) {
+        delegated_status_ = DelegationStatus::kCompositedNotAxisAligned;
+      } else if (candidate_status ==
+                 OverlayCandidate::CandidateStatus::kFailNotOverlay) {
+        delegated_status_ = DelegationStatus::kCompositedNotOverlay;
+      }
     }
   }
 
-  if (candidates->empty() || candidates->size() != quad_list->size()) {
+  if (candidates->empty() ||
+      (candidates->size() + num_quads_skipped) != quad_list->size()) {
     candidates->clear();
     return false;
   }
@@ -197,6 +192,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   for (auto&& each : *candidates) {
     if (!each.overlay_handled) {
       candidates->clear();
+      delegated_status_ = DelegationStatus::kCompositedCheckOverlayFail;
+      DBG_DRAW_RECT("delegated.handled.failed", each.display_rect);
       return false;
     }
   }
@@ -206,6 +203,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   // the |OverlayCandidate|. As keeping with the pattern in
   // overlay_processor_mac we will also set the damage to empty on the
   // successful promotion of all quads.
+  delegated_status_ = DelegationStatus::kFullDelegation;
   return true;
 }
 
@@ -217,7 +215,7 @@ gfx::RectF OverlayProcessorDelegated::GetPrimaryPlaneDisplayRect(
 void OverlayProcessorDelegated::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -229,7 +227,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   DCHECK(candidates->empty());
   auto* render_pass = render_passes->back().get();
   bool success = false;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   RecordFDUsageUMA();
 #endif
 
@@ -263,10 +261,16 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     previous_frame_overlay_rect_ = gfx::Rect();
   }
 
+  UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
+                            delegated_status_);
   DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
+
+  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
+                       "DelegatedCompositingStatus", TRACE_EVENT_SCOPE_THREAD,
+                       "delegated_status", delegated_status_);
 }
 
 void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(

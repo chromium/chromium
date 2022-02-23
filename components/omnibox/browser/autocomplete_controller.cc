@@ -19,6 +19,7 @@
 #include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -35,6 +36,7 @@
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -42,6 +44,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
+#include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -58,23 +61,81 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 #endif
 
 namespace {
 
-// Converts the given match to a type (and possibly subtype) based on the AQS
-// specification. For more details, see
-// http://goto.google.com/binary-clients-logging.
-// Note: the |subtypes| parameter passed over to this function may be filled
-// with subtypes reported by the suggest server. This call will update this set
-// with Chrome-specific subtypes.
-// TODO(https://crbug.com/1103056): relocate subtype updates to appropriate
-// sites that construct these matches.
-void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
-                                   size_t* type,
-                                   base::flat_set<int>* subtypes) {
+// Appends available autocompletion of the given type, subtype, and number to
+// the existing available autocompletions string, encoding according to the
+// spec.
+void AppendAvailableAutocompletion(size_t type,
+                                   const base::flat_set<int>& subtypes,
+                                   int count,
+                                   std::string* autocompletions) {
+  if (!autocompletions->empty())
+    autocompletions->append("j");
+  base::StringAppendF(autocompletions, "%" PRIuS, type);
+
+  std::ostringstream subtype_str;
+  for (auto subtype : subtypes) {
+    if (subtype_str.tellp() > 0)
+      subtype_str << 'i';
+    subtype_str << subtype;
+  }
+
+  // Subtype is optional. Append only if we have subtypes to report.
+  if (subtype_str.tellp() > 0)
+    base::StringAppendF(autocompletions, "i%s", subtype_str.str().c_str());
+
+  if (count > 1)
+    base::StringAppendF(autocompletions, "l%d", count);
+}
+
+// Whether this autocomplete match type supports custom descriptions.
+bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
+      match.type == AutocompleteMatchType::CALCULATOR) {
+    return true;
+  }
+  return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
+}
+
+// Returns if rich autocompletion had (or would have had for counterfactual
+// variations) an impact; i.e. whether the top scoring rich autocompleted
+// suggestion outscores the top scoring default suggestion.
+bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
+  // Trigger rich autocompletion logging if the highest scoring match has
+  // |rich_autocompletion_triggered| set to true indicating it is, or could have
+  // been, rich autocompleted. It's not sufficient to check the default match
+  // since counterfactual variations will not allow rich autocompleted matches
+  // to be the default match.
+  if (result.empty())
+    return false;
+
+  auto get_sort_key = [](const AutocompleteMatch& match) {
+    return std::make_tuple(match.allowed_to_be_default_match ||
+                               match.rich_autocompletion_triggered,
+                           match.relevance);
+  };
+
+  auto top_match = std::max_element(
+      result.begin(), result.end(),
+      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
+        return get_sort_key(match1) < get_sort_key(match2);
+      });
+  return top_match->rich_autocompletion_triggered;
+}
+
+}  // namespace
+
+// static
+void AutocompleteController::GetMatchTypeAndExtendSubtypes(
+    const AutocompleteMatch& match,
+    size_t* type,
+    base::flat_set<int>* subtypes) {
   // This type indicates a native chrome suggestion.
   *type = 69;
 
@@ -196,70 +257,6 @@ void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
   }
 }
 
-// Appends available autocompletion of the given type, subtype, and number to
-// the existing available autocompletions string, encoding according to the
-// spec.
-void AppendAvailableAutocompletion(size_t type,
-                                   const base::flat_set<int>& subtypes,
-                                   int count,
-                                   std::string* autocompletions) {
-  if (!autocompletions->empty())
-    autocompletions->append("j");
-  base::StringAppendF(autocompletions, "%" PRIuS, type);
-
-  std::ostringstream subtype_str;
-  for (auto subtype : subtypes) {
-    if (subtype_str.tellp() > 0)
-      subtype_str << 'i';
-    subtype_str << subtype;
-  }
-
-  // Subtype is optional. Append only if we have subtypes to report.
-  if (subtype_str.tellp() > 0)
-    base::StringAppendF(autocompletions, "i%s", subtype_str.str().c_str());
-
-  if (count > 1)
-    base::StringAppendF(autocompletions, "l%d", count);
-}
-
-// Whether this autocomplete match type supports custom descriptions.
-bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
-      match.type == AutocompleteMatchType::CALCULATOR) {
-    return true;
-  }
-  return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
-}
-
-// Returns if rich autocompletion had (or would have had for counterfactual
-// variations) an impact; i.e. whether the top scoring rich autocompleted
-// suggestion outscores the top scoring default suggestion.
-bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
-  // Trigger rich autocompletion logging if the highest scoring match has
-  // |rich_autocompletion_triggered| set to true indicating it is, or could have
-  // been, rich autocompleted. It's not sufficient to check the default match
-  // since counterfactual variations will not allow rich autocompleted matches
-  // to be the default match.
-  if (result.empty())
-    return false;
-
-  auto get_sort_key = [](const AutocompleteMatch& match) {
-    return std::make_tuple(match.allowed_to_be_default_match ||
-                               match.rich_autocompletion_triggered,
-                           match.relevance);
-  };
-
-  auto top_match = std::max_element(
-      result.begin(), result.end(),
-      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
-        return get_sort_key(match1) < get_sort_key(match2);
-      });
-  return top_match->rich_autocompletion_triggered;
-}
-
-}  // namespace
-
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
     int provider_types)
@@ -284,11 +281,11 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(new HistoryQuickProvider(provider_client_.get()));
   if (provider_types & AutocompleteProvider::TYPE_KEYWORD) {
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
-    providers_.push_back(keyword_provider_);
+    providers_.push_back(keyword_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
     search_provider_ = new SearchProvider(provider_client_.get(), this);
-    providers_.push_back(search_provider_);
+    providers_.push_back(search_provider_.get());
   }
   // It's important that the HistoryURLProvider gets added after SearchProvider:
   // AutocompleteController::Start() calls each providers' Start() function
@@ -309,7 +306,7 @@ AutocompleteController::AutocompleteController(
     history_url_provider_ =
         new HistoryURLProvider(provider_client_.get(), this);
     if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
-      providers_.push_back(history_url_provider_);
+      providers_.push_back(history_url_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
@@ -317,7 +314,7 @@ AutocompleteController::AutocompleteController(
     zero_suggest_provider_ =
         ZeroSuggestProvider::Create(provider_client_.get(), this);
     if (zero_suggest_provider_)
-      providers_.push_back(zero_suggest_provider_);
+      providers_.push_back(zero_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
     providers_.push_back(
@@ -334,17 +331,17 @@ AutocompleteController::AutocompleteController(
   }
   if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
-    providers_.push_back(document_provider_);
+    providers_.push_back(document_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
     on_device_head_provider_ =
         OnDeviceHeadProvider::Create(provider_client_.get(), this);
     if (on_device_head_provider_) {
-      providers_.push_back(on_device_head_provider_);
+      providers_.push_back(on_device_head_provider_.get());
     }
   }
   if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     // On iOS, a global ClipboardRecentContent should've been created by now
     // (if enabled).  If none has been created (e.g., we're on a different
     // platform), use the generic implementation, which AutocompleteController
@@ -362,7 +359,7 @@ AutocompleteController::AutocompleteController(
       clipboard_provider_ = new ClipboardProvider(
           provider_client_.get(), this, history_url_provider_,
           ClipboardRecentContent::GetInstance());
-      providers_.push_back(clipboard_provider_);
+      providers_.push_back(clipboard_provider_.get());
     }
   }
 
@@ -372,7 +369,13 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
     voice_suggest_provider_ =
         new VoiceSuggestProvider(provider_client_.get(), this);
-    providers_.push_back(voice_suggest_provider_);
+    providers_.push_back(voice_suggest_provider_.get());
+  }
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
+    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
+  }
+  if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
+    providers_.push_back(new OpenTabProvider(provider_client_.get()));
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -497,6 +500,23 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   if (!done_) {
     StartExpireTimer();
     StartStopTimer();
+  }
+}
+
+void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
+  // Start prefetch requests iff no non-prefetch request is in progress. Though
+  // not likely, it is possible for the providers to have an active non-prefetch
+  // request when a prefetch request is about to be started. In such scenarios,
+  // starting a prefetch request will cause the providers to invalidate their
+  // active non-prefetch requests and never get a chance to notify the
+  // controller of their status; thus resulting in the controller to remain in
+  // an invalid state.
+  if (!done_) {
+    return;
+  }
+
+  for (auto provider : providers_) {
+    provider->StartPrefetch(input);
   }
 }
 
@@ -666,13 +686,17 @@ void AutocompleteController::SetMatchDestinationURL(
 
   match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
       *match->search_terms_args, template_url_service_->search_terms_data()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   match->UpdateJavaDestinationUrl();
 #endif
 }
 
-void AutocompleteController::InlineTailPrefixes() {
-  result_.InlineTailPrefixes();
+void AutocompleteController::SetTailSuggestContentPrefixes() {
+  result_.SetTailSuggestContentPrefixes();
+}
+
+void AutocompleteController::SetTailSuggestCommonPrefixes() {
+  result_.SetTailSuggestCommonPrefixes();
 }
 
 void AutocompleteController::UpdateResult(
@@ -703,7 +727,7 @@ void AutocompleteController::UpdateResult(
     result_.AppendMatches(input_, (*i)->matches());
 
   bool perform_tab_match = OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Do not look for matching tabs on Android unless we collected all the
   // suggestions. Tab matching is an expensive process with multiple JNI calls
   // involved. Run it only when all the suggestions are collected.
@@ -722,9 +746,12 @@ void AutocompleteController::UpdateResult(
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
-  // TODO(tommycli): It sure seems like this should be moved down below
-  // `TransferOldMatches()` along with all the other annotation code.
-  result_.AttachPedalsToMatches(input_, *provider_client_);
+  // Only produce Pedals for the default focus case (not on focus or on delete).
+  if (input_.focus_type() == OmniboxFocusType::DEFAULT) {
+    // TODO(tommycli): It sure seems like this should be moved down below
+    // `TransferOldMatches()` along with all the other annotation code.
+    result_.AttachPedalsToMatches(input_, *provider_client_);
+  }
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.
@@ -821,7 +848,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       match->associated_keyword = std::make_unique<AutocompleteMatch>(
           keyword_provider_->CreateVerbatimMatch(exact_keyword, exact_keyword,
                                                  input_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       match->UpdateJavaAnswer();
 #endif
       continue;
@@ -888,7 +915,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
           i->description_class.push_back(
               ACMatchClassification(0, ACMatchClassification::DIM));
         }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         i->UpdateJavaDescription();
 #endif
 

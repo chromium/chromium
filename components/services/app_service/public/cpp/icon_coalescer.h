@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,7 +53,17 @@ class IconCoalescer : public IconLoader {
   ~IconCoalescer() override;
 
   // IconLoader overrides.
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::unique_ptr<Releaser> LoadIconFromIconKey(
+      AppType app_type,
+      const std::string& app_id,
+      const IconKey& icon_key,
+      IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback) override;
+
+  // TODO(crbug.com/1253250): Will be removed soon.
   std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,
@@ -66,14 +77,17 @@ class IconCoalescer : public IconLoader {
   class RefCountedReleaser;
 
   using CallbackAndReleaser =
-      std::pair<apps::mojom::Publisher::LoadIconCallback,
-                scoped_refptr<RefCountedReleaser>>;
+      std::pair<apps::LoadIconCallback, scoped_refptr<RefCountedReleaser>>;
 
-  void OnLoadIcon(IconLoader::Key,
+  void OnLoadIcon(IconLoader::Key key,
                   uint64_t sequence_number,
-                  apps::mojom::IconValuePtr);
+                  IconValuePtr icon_value);
 
-  IconLoader* wrapped_loader_;
+  void OnLoadMojomIcon(IconLoader::Key key,
+                       uint64_t sequence_number,
+                       apps::mojom::IconValuePtr mojom_icon_value);
+
+  raw_ptr<IconLoader> wrapped_loader_;
 
   // Every incoming LoadIconFromIconKey call gets its own sequence number.
   uint64_t next_sequence_number_;
@@ -87,7 +101,7 @@ class IconCoalescer : public IconLoader {
   std::set<uint64_t> possibly_immediate_requests_;
 
   // Map from sequence number to the IconValue to give to the LoadIconCallback.
-  std::map<uint64_t, apps::mojom::IconValuePtr> immediate_responses_;
+  std::map<uint64_t, IconValuePtr> immediate_responses_;
 
   // Multimap of pending LoadIconFromIconKey calls: those calls that were not
   // resolved immediately.

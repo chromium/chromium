@@ -9,7 +9,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -44,8 +44,8 @@ TEST(WebDragDataTest, items) {
     metadata.length = 1234;
     KURL url(
         "filesystem:http://example.com/isolated/hash/visible-non-native-file");
-    data_object->Add(
-        File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible));
+    data_object->Add(File::CreateForFileSystemFile(
+        url, metadata, File::kIsUserVisible, BlobDataHandle::Create()));
   }
 
   // Not user visible file system URL file.
@@ -55,8 +55,8 @@ TEST(WebDragDataTest, items) {
     KURL url(
         "filesystem:http://example.com/isolated/hash/"
         "not-visible-non-native-file");
-    data_object->Add(
-        File::CreateForFileSystemFile(url, metadata, File::kIsNotUserVisible));
+    data_object->Add(File::CreateForFileSystemFile(
+        url, metadata, File::kIsNotUserVisible, BlobDataHandle::Create()));
   }
 
   WebDragData data = data_object->ToWebDragData();

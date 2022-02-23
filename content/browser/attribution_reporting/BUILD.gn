@@ -8,4 +8,25 @@ mojom("mojo_bindings") {
   sources = [ "attribution_internals.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_origin" ]
   webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.AttributionReportID"
+          cpp = "::content::AttributionReport::EventLevelData::Id"
+        },
+        {
+          mojom = "content.mojom.SourceType"
+          cpp = "::content::CommonSourceInfo::SourceType"
+        },
+      ]
+      traits_headers = [
+        "attribution_internals_mojom_traits.h",
+        "attribution_report.h",
+        "common_source_info.h",
+      ]
+      traits_sources = [ "attribution_internals_mojom_traits.cc" ]
+    },
+  ]
 }

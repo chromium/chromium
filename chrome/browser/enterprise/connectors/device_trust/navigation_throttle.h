@@ -6,16 +6,10 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
-
-class GURL;
-
-namespace url_matcher {
-
-class URLMatcher;
-
-}
 
 namespace enterprise_connectors {
 
@@ -56,27 +50,16 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  void OnTrustedUrlPatternsChanged(const base::ListValue& origins);
-
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
-  // Whether this throttle is deferring the navigation. Only set to true in
-  // AddHeadersIfNeeded if there is a handshake ongoing.
-  bool deferring_ = false;
-
   // Not owned.
-  DeviceTrustService* const device_trust_service_;
+  const raw_ptr<DeviceTrustService> device_trust_service_;
 
   // Set `challege_response` into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
   // IdP and resume the navigation.
-  void ReplyChallengeResponseAndResume(const std::string& challenge_response);
-
-  // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
-
-  // Subscription for trusted URL pattern changes.
-  base::CallbackListSubscription subscription_;
+  void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
+                                       const std::string& challenge_response);
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };

@@ -7,7 +7,22 @@
  * 'nearby-share-data-usage-dialog' allows editing of the data usage setting
  * when using Nearby Share.
  */
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '../../prefs/prefs.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../prefs_behavior.js';
+
+import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-data-usage-dialog',
 
   behaviors: [

@@ -23,9 +23,9 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -75,6 +75,15 @@ public class LightweightFirstRunActivity
     }
 
     @Override
+    protected void onPreCreate() {
+        super.onPreCreate();
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), () -> {
+            abortFirstRunExperience();
+            return true;
+        });
+    }
+
+    @Override
     public void triggerLayoutInflation() {
         setFinishOnTouchOutside(true);
 
@@ -86,11 +95,9 @@ public class LightweightFirstRunActivity
                     return;
                 }
 
-                @ChildAccountStatus.Status
-                int childAccountStatus =
-                        freProperties.getInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
-                                ChildAccountStatus.NOT_CHILD);
-                initializeViews(ChildAccountStatus.isChild(childAccountStatus));
+                boolean isChild = freProperties.getBoolean(
+                        SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
+                initializeViews(isChild);
             }
         };
         mFirstRunFlowSequencer.start();
@@ -107,8 +114,8 @@ public class LightweightFirstRunActivity
                 resources, (view) -> showInfoPage(R.string.google_terms_of_service_url));
         NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan = new NoUnderlineClickableSpan(
                 resources, (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
-        NoUnderlineClickableSpan clickableFamilyLinkPrivacySpan = new NoUnderlineClickableSpan(
-                resources, (view) -> showInfoPage(R.string.family_link_privacy_policy_url));
+        NoUnderlineClickableSpan clickableGooglePrivacySpan = new NoUnderlineClickableSpan(
+                resources, (view) -> showInfoPage(R.string.google_privacy_policy_url));
         String associatedAppName =
                 IntentUtils.safeGetStringExtra(getIntent(), EXTRA_ASSOCIATED_APP_NAME);
         if (associatedAppName == null) {
@@ -121,7 +128,7 @@ public class LightweightFirstRunActivity
                             associatedAppName),
                     new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
                     new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                    new SpanInfo("<LINK3>", "</LINK3>", clickableFamilyLinkPrivacySpan));
+                    new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
         } else {
             tosAndPrivacyText = SpanApplier.applySpans(
                     getString(R.string.lightweight_fre_associated_app_tos, associatedAppName),
@@ -202,11 +209,6 @@ public class LightweightFirstRunActivity
 
         mNativeInitialized = true;
         if (mTriggerAcceptAfterNativeInit) acceptTermsOfService();
-    }
-
-    @Override
-    public void onBackPressed() {
-        abortFirstRunExperience();
     }
 
     @Override

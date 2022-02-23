@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host_client.h"
@@ -65,8 +66,20 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   void SetNeedsCommit() override;
   void SetNeedsUpdateLayers() override {}
 
-  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
-      LayerTreeHostImplClient* client) override;
+  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+      LayerTreeHostImplClient* client,
+      MutatorHost* mutator_host,
+      const LayerTreeSettings& settings,
+      TaskRunnerProvider* task_runner_provider,
+      raw_ptr<RasterDarkModeFilter>& dark_mode_filter,
+      int id,
+      raw_ptr<TaskGraphRunner>& task_graph_runner,
+      scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+      LayerTreeHostSchedulingClient* scheduling_client,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
+      base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr)
+      override;
 
   // This method is exposed for tests that don't use a Proxy (the
   // initialization of which would call the overridden CreateLayerTreeHostImpl
@@ -75,6 +88,11 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   // the FakeLayerTreeHost doesn't then try to create a second
   // FakeLayerTreeHostImpl via a proxy.
   void CreateFakeLayerTreeHostImpl();
+
+  CommitState* GetPendingCommitState() { return pending_commit_state(); }
+  ThreadUnsafeCommitState& GetThreadUnsafeCommitState() {
+    return thread_unsafe_commit_state();
+  }
 
   LayerImpl* CommitAndCreateLayerImplTree();
   LayerImpl* CommitAndCreatePendingTree();
@@ -89,11 +107,10 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
     return host_impl_->pending_tree();
   }
 
+  using LayerTreeHost::InitializeForTesting;
+  using LayerTreeHost::InitializeSingleThreaded;
   using LayerTreeHost::ScheduleMicroBenchmark;
   using LayerTreeHost::SendMessageToMicroBenchmark;
-  using LayerTreeHost::InitializeSingleThreaded;
-  using LayerTreeHost::InitializeForTesting;
-  using LayerTreeHost::RecordGpuRasterizationHistogram;
   using LayerTreeHost::SetUIResourceManagerForTesting;
 
   void UpdateLayers() { LayerTreeHost::UpdateLayers(); }
@@ -110,8 +127,8 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
                     CompositorMode mode);
 
  protected:
-  FakeLayerTreeHostClient* client_ = nullptr;
-  FakeLayerTreeHostImpl* host_impl_ = nullptr;
+  raw_ptr<FakeLayerTreeHostClient> client_ = nullptr;
+  raw_ptr<FakeLayerTreeHostImpl> host_impl_ = nullptr;
 
   bool needs_commit_ = false;
 

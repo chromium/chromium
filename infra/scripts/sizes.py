@@ -448,7 +448,7 @@ def main():
     default_platform = 'win'
   elif sys.platform.startswith('darwin'):
     default_platform = 'mac'
-  elif sys.platform == 'linux2':
+  elif sys.platform.startswith('linux'):
     default_platform = 'linux'
   else:
     default_platform = None

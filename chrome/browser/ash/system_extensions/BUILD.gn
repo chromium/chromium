@@ -4,6 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+assert(is_chromeos_ash)
+
 group("system_extensions_group") {
   # Enable the "exit_time_destructors" warning here to avoid accidentally
   # adding exit time destructors and because the flag is not enabled by default.
@@ -20,6 +22,9 @@ source_set("system_extensions") {
     "system_extensions_data_source.h",
     "system_extensions_install_manager.cc",
     "system_extensions_install_manager.h",
+    "system_extensions_install_status.h",
+    "system_extensions_profile_utils.cc",
+    "system_extensions_profile_utils.h",
     "system_extensions_provider.cc",
     "system_extensions_provider.h",
     "system_extensions_provider_factory.cc",

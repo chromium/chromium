@@ -30,10 +30,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRADIENT_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -43,9 +43,12 @@
 
 class SkMatrix;
 
+namespace gfx {
+class PointF;
+}
+
 namespace blink {
 
-class FloatPoint;
 struct ImageDrawOptions;
 
 class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
@@ -65,16 +68,16 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   };
 
   static scoped_refptr<Gradient> CreateLinear(
-      const FloatPoint& p0,
-      const FloatPoint& p1,
+      const gfx::PointF& p0,
+      const gfx::PointF& p1,
       GradientSpreadMethod = kSpreadMethodPad,
       ColorInterpolation = ColorInterpolation::kUnpremultiplied,
       DegenerateHandling = DegenerateHandling::kAllow);
 
   static scoped_refptr<Gradient> CreateRadial(
-      const FloatPoint& p0,
+      const gfx::PointF& p0,
       float r0,
-      const FloatPoint& p1,
+      const gfx::PointF& p1,
       float r1,
       float aspect_ratio = 1,
       GradientSpreadMethod = kSpreadMethodPad,
@@ -82,7 +85,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
       DegenerateHandling = DegenerateHandling::kAllow);
 
   static scoped_refptr<Gradient> CreateConic(
-      const FloatPoint& position,
+      const gfx::PointF& position,
       float rotation,
       float start_angle,
       float end_angle,
@@ -109,7 +112,7 @@ class PLATFORM_EXPORT Gradient : public RefCounted<Gradient> {
   }
   void AddColorStops(const Vector<Gradient::ColorStop>&);
 
-  void ApplyToFlags(PaintFlags&,
+  void ApplyToFlags(cc::PaintFlags&,
                     const SkMatrix& local_matrix,
                     const ImageDrawOptions& draw_options);
 

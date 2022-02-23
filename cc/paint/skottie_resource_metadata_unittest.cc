@@ -7,57 +7,69 @@
 #include "base/files/file_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 namespace {
 
 using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Ne;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 TEST(SkottieResourceMetadataTest, SkottieResourceMetadataMapRegistersAssets) {
   SkottieResourceMetadataMap resource_map;
-  ASSERT_TRUE(resource_map.RegisterAsset(
-      "test-resource-path-1", "test-resource-name-1", "test-resource-id-1"));
-  ASSERT_TRUE(resource_map.RegisterAsset(
-      "test-resource-path-2", "test-resource-name-2", "test-resource-id-2"));
+  ASSERT_TRUE(
+      resource_map.RegisterAsset("test-resource-path-1", "test-resource-name-1",
+                                 "test-resource-id-1", gfx::Size(100, 100)));
+  ASSERT_TRUE(resource_map.RegisterAsset("test-resource-path-2",
+                                         "test-resource-name-2",
+                                         "test-resource-id-2", absl::nullopt));
   EXPECT_THAT(
       resource_map.asset_storage(),
       UnorderedElementsAre(
           Pair("test-resource-id-1",
-               base::FilePath(FILE_PATH_LITERAL(
-                                  "test-resource-path-1/test-resource-name-1"))
-                   .NormalizePathSeparators()),
+               FieldsAre(base::FilePath(
+                             FILE_PATH_LITERAL(
+                                 "test-resource-path-1/test-resource-name-1"))
+                             .NormalizePathSeparators(),
+                         Optional(gfx::Size(100, 100)))),
           Pair("test-resource-id-2",
-               base::FilePath(FILE_PATH_LITERAL(
-                                  "test-resource-path-2/test-resource-name-2"))
-                   .NormalizePathSeparators())));
+               FieldsAre(base::FilePath(
+                             FILE_PATH_LITERAL(
+                                 "test-resource-path-2/test-resource-name-2"))
+                             .NormalizePathSeparators(),
+                         Eq(absl::nullopt)))));
 }
 
 TEST(SkottieResourceMetadataTest,
      SkottieResourceMetadataMapRejectsDuplicateAssets) {
   SkottieResourceMetadataMap resource_map;
-  ASSERT_TRUE(resource_map.RegisterAsset(
-      "test-resource-path-1", "test-resource-name-1", "test-resource-id-1"));
-  EXPECT_FALSE(resource_map.RegisterAsset(
-      "test-resource-path-2", "test-resource-name-2", "test-resource-id-1"));
+  ASSERT_TRUE(resource_map.RegisterAsset("test-resource-path-1",
+                                         "test-resource-name-1",
+                                         "test-resource-id-1", absl::nullopt));
+  EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path-2",
+                                          "test-resource-name-2",
+                                          "test-resource-id-1", absl::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest,
      SkottieResourceMetadataMapRejectsEmptyAssets) {
   SkottieResourceMetadataMap resource_map;
-  EXPECT_FALSE(resource_map.RegisterAsset(
-      "test-resource-path", "test-resource-name", /*resource_id=*/""));
+  EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path",
+                                          "test-resource-name",
+                                          /*resource_id=*/"", absl::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest,
      SkottieResourceMetadataMapRejectsAbsoluteResourceNames) {
   SkottieResourceMetadataMap resource_map;
-  EXPECT_FALSE(resource_map.RegisterAsset(
-      "test-resource-path", "/absolute-resource-name", /*resource_id=*/""));
+  EXPECT_FALSE(resource_map.RegisterAsset("test-resource-path",
+                                          "/absolute-resource-name",
+                                          /*resource_id=*/"", absl::nullopt));
 }
 
 TEST(SkottieResourceMetadataTest, HashSkottieResourceIdReturnsMatchingHashes) {

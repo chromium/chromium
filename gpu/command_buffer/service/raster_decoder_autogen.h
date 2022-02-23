@@ -140,10 +140,6 @@ error::Error RasterDecoderImpl::HandleRasterCHROMIUM(
     const volatile void* cmd_data) {
   const volatile raster::cmds::RasterCHROMIUM& c =
       *static_cast<const volatile raster::cmds::RasterCHROMIUM*>(cmd_data);
-  if (!features().chromium_raster_transport) {
-    return error::kUnknownCommand;
-  }
-
   GLuint raster_shm_id = static_cast<GLuint>(c.raster_shm_id);
   GLuint raster_shm_offset = static_cast<GLuint>(c.raster_shm_offset);
   GLuint raster_shm_size = static_cast<GLuint>(c.raster_shm_size);

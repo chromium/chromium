@@ -121,8 +121,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size <= sizeof(size_t))
     return 0;
 
-  static Environment* env = new Environment();
-  ALLOW_UNUSED_LOCAL(env);
+  [[maybe_unused]] static Environment* env = new Environment();
   base::CommandLine::Init(0, nullptr);
 
   // Partition the data to use some bytes for populating the font cache.

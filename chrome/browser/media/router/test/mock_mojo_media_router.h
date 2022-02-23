@@ -36,11 +36,9 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
                     const std::string& media_source,
                     const std::vector<MediaSinkInternal>& internal_sinks,
                     const std::vector<url::Origin>& origins));
-  MOCK_METHOD4(OnRoutesUpdated,
+  MOCK_METHOD2(OnRoutesUpdated,
                void(mojom::MediaRouteProviderId provider_id,
-                    const std::vector<MediaRoute>& routes,
-                    const std::string& media_source,
-                    const std::vector<std::string>& joinable_route_ids));
+                    const std::vector<MediaRoute>& routes));
   MOCK_METHOD2(OnPresentationConnectionStateChanged,
                void(const std::string& route_id,
                     blink::mojom::PresentationConnectionState state));

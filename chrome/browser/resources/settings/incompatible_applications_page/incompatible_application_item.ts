@@ -38,20 +38,21 @@ import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './incompatible_application_item.html.js';
 
 import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
 const IncompatibleApplicationItemElementBase = I18nMixin(PolymerElement);
 
-class IncompatibleApplicationItemElement extends
+export class IncompatibleApplicationItemElement extends
     IncompatibleApplicationItemElementBase {
   static get is() {
     return 'incompatible-application-item';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

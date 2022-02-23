@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -930,12 +931,14 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   // Returns AUDIO + VIDEO
   std::pair<openscreen::cast::Stream, openscreen::cast::Stream>
   GetStreamsFromOffer(const Json::Value& offer_message_body) {
-    auto offer = openscreen::cast::Offer::Parse(offer_message_body["offer"]);
-    EXPECT_TRUE(offer);
-    EXPECT_LT(0u, offer.value().audio_streams.size());
-    EXPECT_LT(0u, offer.value().video_streams.size());
-    return std::make_pair(offer.value().audio_streams[0].stream,
-                          offer.value().video_streams[0].stream);
+    openscreen::cast::Offer offer;
+    EXPECT_TRUE(
+        openscreen::cast::Offer::TryParse(offer_message_body["offer"], &offer)
+            .ok());
+    EXPECT_LT(0u, offer.audio_streams.size());
+    EXPECT_LT(0u, offer.video_streams.size());
+    return std::make_pair(offer.audio_streams[0].stream,
+                          offer.video_streams[0].stream);
   }
 
   void SetSharedConfigs(const std::pair<openscreen::cast::Stream,
@@ -992,7 +995,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   int udp_port_ = -1;
   SharedSenderReceiverConfigs shared_configs_;
 
-  CastV2PerformanceTest* const parent_;
+  const raw_ptr<CastV2PerformanceTest> parent_;
   scoped_refptr<media::cast::StandaloneCastEnvironment> cast_environment_;
 };
 }  // namespace

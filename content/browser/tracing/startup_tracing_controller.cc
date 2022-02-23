@@ -28,9 +28,9 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/tracing_controller_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -123,7 +123,7 @@ class StartupTracingController::BackgroundTracer {
         perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend);
 
     if (write_mode_ == WriteMode::kStreaming) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
       OpenFile(output_file_);
       tracing_session_->Setup(trace_config, file_.TakePlatformFile());
 #else
@@ -324,7 +324,7 @@ StartupTracingController& StartupTracingController::GetInstance() {
 namespace {
 
 base::FilePath BasenameToPath(std::string basename) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return TracingControllerAndroid::GenerateTracingFilePath(basename);
 #else
   // Default to saving the startup trace into the current dir.
@@ -401,7 +401,7 @@ void StartupTracingController::StartIfNeeded() {
       tracing::TraceStartupConfig::GetInstance()->GetOutputFormat();
 
   BackgroundTracer::WriteMode write_mode;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1158482/): Perfetto does not (yet) support writing directly
   // to a file on Windows.
   write_mode = BackgroundTracer::WriteMode::kAfterStopping;
@@ -488,7 +488,7 @@ void StartupTracingController::SetDefaultBasename(
         basename += ".json";
         break;
       case tracing::TraceStartupConfig::OutputFormat::kProto:
-        basename += ".proto";
+        basename += ".pftrace";
         break;
     }
   }

@@ -6,7 +6,6 @@ package org.chromium.device.bluetooth;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -24,6 +23,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -46,7 +47,7 @@ import java.util.UUID;
  * pass through to the Android object and instead provide fake implementations.
  */
 @JNINamespace("device")
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 class Wrappers {
     private static final String TAG = "Bluetooth";
 
@@ -389,6 +390,10 @@ class Wrappers {
             mGatt.close();
         }
 
+        public boolean requestMtu(int mtu) {
+            return mGatt.requestMtu(mtu);
+        }
+
         public void discoverServices() {
             mGatt.discoverServices();
         }
@@ -485,6 +490,11 @@ class Wrappers {
         }
 
         @Override
+        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+            mWrapperCallback.onMtuChanged(mtu, status);
+        }
+
+        @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             mWrapperCallback.onServicesDiscovered(status);
         }
@@ -512,6 +522,7 @@ class Wrappers {
         public abstract void onDescriptorWrite(
                 BluetoothGattDescriptorWrapper descriptor, int status);
         public abstract void onConnectionStateChange(int status, int newState);
+        public abstract void onMtuChanged(int mtu, int status);
         public abstract void onServicesDiscovered(int status);
     }
 

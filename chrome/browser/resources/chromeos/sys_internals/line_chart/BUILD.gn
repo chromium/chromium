@@ -23,7 +23,8 @@ js_library("line_chart") {
     ":menu",
     ":scrollbar",
     ":sub_chart",
-    "//ui/webui/resources/js:util",
+    ":unit_label",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -36,10 +37,7 @@ js_library("sub_chart") {
 }
 
 js_library("scrollbar") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js:util",
-  ]
+  deps = [ "//ui/webui/resources/js:util.m" ]
 }
 
 js_library("unit_label") {
@@ -50,7 +48,7 @@ js_library("menu") {
   deps = [
     ":constants",
     ":data_series",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 

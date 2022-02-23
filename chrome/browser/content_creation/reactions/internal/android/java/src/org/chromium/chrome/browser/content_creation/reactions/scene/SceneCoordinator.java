@@ -8,6 +8,11 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.util.Size;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.Callback;
@@ -17,13 +22,19 @@ import org.chromium.chrome.browser.content_creation.reactions.LightweightReactio
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarReactionsDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,14 +44,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDelegate {
     private static final int DEFAULT_REACTION_SIZE_DP = 192;
     private static final int REACTION_OFFSET_DP = 45;
-    private static final int MAX_REACTION_COUNT = 10;
+    private static final int DEFAULT_MAX_REACTION_COUNT = 10;
+    private static final String MAX_REACTIONS_PARAM_NAME = "max_reactions";
 
     private final Activity mActivity;
     private final LightweightReactionsMediator mMediator;
     private final Set<ReactionLayout> mReactionLayouts;
+    private final Map<ReactionLayout, Integer> mInitialPositionByReaction;
+    private final List<Integer> mNumReactionsInPosition;
+    private final int mMaxReactionCount;
 
     private ReactionLayout mActiveReaction;
-    private RelativeLayout mSceneBackground;
+    private RelativeLayout mSceneView;
+    private ImageView mScreenshotView;
+    private Toast mToast;
+
+    private int mNbReactionsAdded;
+    private int mNbTypeChange;
+    private int mNbRotateScale;
+    private int mNbDuplicate;
+    private int mNbDelete;
+    private int mNbMove;
 
     /**
      * Constructs a new {@link SceneCoordinator}.
@@ -51,16 +75,31 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         mActivity = activity;
         mMediator = mediator;
         mReactionLayouts = new HashSet<>();
+        mInitialPositionByReaction = new HashMap<>();
+        mNumReactionsInPosition = new ArrayList<>();
+
+        mNbReactionsAdded = 0;
+        mNbTypeChange = 0;
+        mNbRotateScale = 0;
+        mNbDuplicate = 0;
+        mNbDelete = 0;
+        mNbMove = 0;
+
+        mMaxReactionCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.LIGHTWEIGHT_REACTIONS, MAX_REACTIONS_PARAM_NAME,
+                DEFAULT_MAX_REACTION_COUNT);
     }
 
-    public void setSceneBackground(RelativeLayout sceneBackground) {
-        mSceneBackground = sceneBackground;
-        mSceneBackground.setOnClickListener((view) -> { clearSelection(); });
+    public void setSceneViews(RelativeLayout sceneView, ImageView screenshotView) {
+        mSceneView = sceneView;
+        mSceneView.setOnClickListener((view) -> { clearSelection(); });
+        mScreenshotView = screenshotView;
     }
 
     public void addReactionInDefaultLocation(ReactionMetadata reaction) {
+        ++mNbReactionsAdded;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
-            if (mSceneBackground == null) {
+            if (mSceneView == null) {
                 return;
             }
 
@@ -69,7 +108,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
             ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                     mActivity, R.layout.reaction_layout, null);
-            reactionLayout.init(drawable, this);
+            reactionLayout.init(drawable, this, reaction.localizedName);
 
             int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE_DP);
             RelativeLayout.LayoutParams lp =
@@ -77,13 +116,24 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             Resources res = mActivity.getResources();
             int screenWidth = res.getDisplayMetrics().widthPixels;
             int screenHeight = res.getDisplayMetrics().heightPixels;
-            int leftPx = screenWidth / 2 - reactionSizePx / 2;
+            int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
+            int maxOffsetNum = Math.min((screenWidth - reactionSizePx) / 2 / offsetPx,
+                    (screenHeight - reactionSizePx) / 2 / offsetPx);
+            int offsetNum = Math.min(getFreePosition(), maxOffsetNum);
+            int leftPx = screenWidth / 2 - reactionSizePx / 2 + offsetNum * offsetPx;
             int topPx = screenHeight / 2 - reactionSizePx / 2
-                    - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
+                    - res.getDimensionPixelSize(R.dimen.toolbar_total_height)
+                    + offsetNum * offsetPx;
             int rightPx = screenWidth - (leftPx - reactionSizePx);
             int bottomPx = screenHeight - (topPx - reactionSizePx);
             lp.setMargins(leftPx, topPx, rightPx, bottomPx);
 
+            mInitialPositionByReaction.put(reactionLayout, offsetNum);
+            if (offsetNum < mNumReactionsInPosition.size()) {
+                mNumReactionsInPosition.set(offsetNum, mNumReactionsInPosition.get(offsetNum) + 1);
+            } else {
+                mNumReactionsInPosition.add(1);
+            }
             addReactionLayoutToScene(reactionLayout, lp);
         });
     }
@@ -134,24 +184,39 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     /**
-     * Gets the width of the current scene, in pixels.
+     * Gets the width of the scene view, in pixels.
      */
-    public int getWidth() {
-        return mSceneBackground.getWidth();
+    public int getSceneWidth() {
+        return mSceneView.getWidth();
     }
 
     /**
-     * Gets the height of the current scene, in pixels.
+     * Gets the height of the scene view, in pixels.
      */
-    public int getHeight() {
-        return mSceneBackground.getHeight();
+    public int getSceneHeight() {
+        return mSceneView.getHeight();
+    }
+
+    /**
+     * Gets the actual display dimensions of the screenshot image, in pixels.
+     */
+    public Size getScreenshotDisplaySize() {
+        float[] imageMatrix = new float[9];
+        mScreenshotView.getImageMatrix().getValues(imageMatrix);
+        int intrinsicWidth = mScreenshotView.getDrawable().getIntrinsicWidth();
+        int intrinsicHeight = mScreenshotView.getDrawable().getIntrinsicHeight();
+        float scaleX = imageMatrix[Matrix.MSCALE_X];
+        float scaleY = imageMatrix[Matrix.MSCALE_Y];
+        int actualWidth = Math.round(intrinsicWidth * scaleX);
+        int actualHeight = Math.round(intrinsicHeight * scaleY);
+        return new Size(actualWidth, actualHeight);
     }
 
     /**
      * Draws the scene view to the provided canvas.
      */
     public void drawScene(Canvas canvas) {
-        mSceneBackground.draw(canvas);
+        mSceneView.draw(canvas);
     }
 
     /**
@@ -161,21 +226,123 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         markActiveStatus(mActiveReaction, false);
     }
 
+    /**
+     * Returns the total number of times (across all reactions) that the user added a new reaction
+     * to the scene.
+     */
+    public int getNbReactionsAdded() {
+        return mNbReactionsAdded;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user changed an existing
+     * reaction's type.
+     */
+    public int getNbTypeChange() {
+        return mNbTypeChange;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user scaled or rotated a
+     * reaction.
+     */
+    public int getNbRotateScale() {
+        return mNbRotateScale;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user duplicated a reaction.
+     */
+    public int getNbDuplicate() {
+        return mNbDuplicate;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user deleted a reaction.
+     */
+    public int getNbDelete() {
+        return mNbDelete;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user moved a reaction.
+     */
+    public int getNbMove() {
+        return mNbMove;
+    }
+
+    /**
+     * Returns the reactions currently in the scene.
+     */
+    public Set<ReactionLayout> getReactions() {
+        return mReactionLayouts;
+    }
+
+    public void handleOrientationChange() {
+        final float previousScreenshotViewX = mScreenshotView.getX();
+        final float previousScreenshotViewWidth = mScreenshotView.getWidth();
+        final float previousScreenshotImageWidth = getScreenshotDisplaySize().getWidth();
+        final float previousScreenshotImageX = previousScreenshotViewX
+                + (previousScreenshotViewWidth - previousScreenshotImageWidth) / 2;
+
+        ViewTreeObserver vto = mSceneView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mSceneView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                float screenshotViewX = mScreenshotView.getX();
+                float screenshotViewWidth = mScreenshotView.getWidth();
+                float screenshotImageWidth = getScreenshotDisplaySize().getWidth();
+                float screenshotImageX =
+                        screenshotViewX + (screenshotViewWidth - screenshotImageWidth) / 2;
+                float screenshotImageRatio = screenshotImageWidth / previousScreenshotImageWidth;
+
+                for (ReactionLayout rl : mReactionLayouts) {
+                    // Normalize the reaction's X coordinate relative to the screenshot image's
+                    // previous absolute X coordinate, and then multiply the resulting value by the
+                    // screenshot ratio. This gives the new normalized X coordinate relative to the
+                    // image's new X coordinate. Then, convert the normalized X back to its absolute
+                    // value using the image's new absolute X coordinate.
+                    float previousNormalizedX = rl.getX() - previousScreenshotImageX;
+                    float newNormalizedX = previousNormalizedX * screenshotImageRatio;
+                    rl.setX(newNormalizedX + screenshotImageX);
+
+                    // The Y coordinate simply needs to be multiplied by the screenshot ratio,
+                    // because the screenshot view and the actual image always have Y = 0.
+                    rl.setY(rl.getY() * screenshotImageRatio);
+
+                    // Finally, scale the reaction by the screenshot ratio.
+                    RelativeLayout.LayoutParams layoutParams =
+                            (RelativeLayout.LayoutParams) rl.getLayoutParams();
+                    layoutParams.width = (int) (screenshotImageRatio * layoutParams.width);
+                    layoutParams.height = (int) (screenshotImageRatio * layoutParams.height);
+                    rl.setLayoutParams(layoutParams);
+                }
+
+                // Force a redraw of the scene to ensure the new dimensions and positions
+                // are correctly displayed.
+                mSceneView.invalidate();
+            }
+        });
+    }
+
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
-        return mReactionLayouts.size() < MAX_REACTION_COUNT;
+        return mReactionLayouts.size() < mMaxReactionCount;
     }
 
     @Override
     public void duplicateReaction(ReactionLayout reactionLayout) {
+        ++mNbDuplicate;
         ReactionMetadata reaction = reactionLayout.getReaction().getMetadata();
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             ReactionLayout newReactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                     mActivity, R.layout.reaction_layout, null);
             ReactionGifDrawable drawable =
                     new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888);
-            newReactionLayout.init(drawable, this);
+            newReactionLayout.init(drawable, this, reaction.localizedName);
 
             RelativeLayout.LayoutParams oldLayoutParams =
                     (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
@@ -199,9 +366,23 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     @Override
+    public void showMaxReactionsReachedToast() {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(mActivity,
+                mActivity.getString(R.string.lightweight_reactions_error_max_reactions_reached,
+                        mMaxReactionCount),
+                Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
+    @Override
     public void removeReaction(ReactionLayout reactionLayout) {
+        ++mNbDelete;
         markActiveStatus(reactionLayout, false);
-        mSceneBackground.removeView(reactionLayout);
+        mSceneView.removeView(reactionLayout);
+        removeReactionLayoutFromInitialPosition(reactionLayout);
         mReactionLayouts.remove(reactionLayout);
     }
 
@@ -220,28 +401,45 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         }
     }
 
+    @Override
+    public void reactionWasMoved(ReactionLayout reactionLayout) {
+        ++mNbMove;
+        removeReactionLayoutFromInitialPosition(reactionLayout);
+    }
+
+    @Override
+    public void reactionWasAdjusted() {
+        ++mNbRotateScale;
+    }
+
     // ToolbarReactionsDelegate implementation.
     @Override
     public void onToolbarReactionTapped(ReactionMetadata reaction) {
         if (mActiveReaction != null) {
             replaceActiveReaction(reaction);
         } else {
-            addReactionInDefaultLocation(reaction);
+            if (canAddReaction()) {
+                addReactionInDefaultLocation(reaction);
+            } else {
+                showMaxReactionsReachedToast();
+            }
         }
     }
 
     private void replaceActiveReaction(ReactionMetadata reaction) {
         assert mActiveReaction != null;
+        ++mNbTypeChange;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             mActiveReaction.setDrawable(
-                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888));
+                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888),
+                    reaction.localizedName);
             resetReactions(mActiveReaction);
         });
     }
 
     private void addReactionLayoutToScene(
             ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
-        mSceneBackground.addView(reactionLayout, layoutParams);
+        mSceneView.addView(reactionLayout, layoutParams);
         mReactionLayouts.add(reactionLayout);
         markActiveStatus(reactionLayout, true);
         resetReactions(reactionLayout);
@@ -253,6 +451,32 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 rl.getReaction().resetAnimation();
             }
         }
+    }
+
+    /**
+     * Starts all of the {@link ReactionLayout} animations on the scene.
+     */
+    public void startAnimations() {
+        for (ReactionLayout rl : mReactionLayouts) {
+            rl.getReaction().setSteppingEnabled(false);
+            rl.getReaction().start();
+        }
+    }
+
+    private void removeReactionLayoutFromInitialPosition(ReactionLayout reactionLayout) {
+        Integer index = mInitialPositionByReaction.remove(reactionLayout);
+        if (index != null) {
+            mNumReactionsInPosition.set(index, mNumReactionsInPosition.get(index) - 1);
+        }
+    }
+
+    private int getFreePosition() {
+        for (int i = 0; i < mNumReactionsInPosition.size(); i++) {
+            if (mNumReactionsInPosition.get(i) == 0) {
+                return i;
+            }
+        }
+        return mNumReactionsInPosition.size();
     }
 
     private boolean isOutOfBoundsToTheBottomRight(

@@ -4,19 +4,21 @@
 
 package org.chromium.chrome.browser.autofill_assistant.trigger_scripts;
 
+import android.app.Activity;
 import android.content.Context;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.AssistantDependenciesImpl;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
+import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantDependencies;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
 
@@ -26,16 +28,20 @@ import java.util.List;
  */
 @JNINamespace("autofill_assistant")
 public class AssistantTriggerScriptBridge {
-    private final AssistantDependenciesImpl mStartupDependencies;
+    private final WebContents mWebContents;
+    private final AssistantDependencies mDependencies;
 
     private final AssistantTriggerScript mTriggerScript;
     private long mNativeBridge;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     @CalledByNative
-    public AssistantTriggerScriptBridge(AssistantDependenciesImpl startupDependencies) {
-        mStartupDependencies = startupDependencies;
-        mTriggerScript = new AssistantTriggerScript(mStartupDependencies.getContext(),
+    public AssistantTriggerScriptBridge(
+            WebContents webContents, AssistantDependencies dependencies) {
+        mWebContents = webContents;
+        mDependencies = dependencies;
+
+        AssistantTriggerScript.Delegate delegate =
                 new AssistantTriggerScript.Delegate() {
                     @Override
                     public void onTriggerScriptAction(int action) {
@@ -54,17 +60,17 @@ public class AssistantTriggerScriptBridge {
 
                     @Override
                     public void onFeedbackButtonClicked() {
-                        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(
-                                TabUtils.getActivity(TabUtils.fromWebContents(
-                                        mStartupDependencies.getWebContents())),
-                                AutofillAssistantUiController.getProfile(),
-                                mStartupDependencies.getWebContents().getVisibleUrl().getSpec(),
-                                AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
+                        dependencies.createFeedbackUtil().showFeedback(dependencies.getActivity(),
+                                webContents, /* screenshotMode= */ 0, /* debugContext= */ null);
                     }
-                },
-                mStartupDependencies.getWebContents(),
-                mStartupDependencies.getBottomSheetController(),
-                mStartupDependencies.getBottomInsetProvider());
+                };
+
+        mTriggerScript = new AssistantTriggerScript(dependencies.getActivity(), delegate,
+                webContents, dependencies.getBottomSheetController(),
+                dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
+                dependencies.createProfileImageUtilOrNull(
+                        dependencies.getActivity(), R.dimen.autofill_assistant_profile_size),
+                dependencies.createSettingsUtil());
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }
@@ -81,7 +87,7 @@ public class AssistantTriggerScriptBridge {
 
     @CalledByNative
     private Context getContext() {
-        return mStartupDependencies.getContext();
+        return mDependencies.getActivity();
     }
 
     /**
@@ -96,8 +102,7 @@ public class AssistantTriggerScriptBridge {
             boolean resizeVisualViewport, boolean scrollToHide) {
         // Trigger scripts currently do not support switching activities (such as CCT->tab).
         // TODO(b/171776026): Re-inject dependencies on activity change to support CCT->tab.
-        if (TabUtils.getActivity(TabUtils.fromWebContents(mStartupDependencies.getWebContents()))
-                != mStartupDependencies.getContext()) {
+        if (getActivityFromWebContents(mWebContents) != mDependencies.getActivity()) {
             return false;
         }
 
@@ -109,9 +114,9 @@ public class AssistantTriggerScriptBridge {
 
         // Track keyboard visibility while a trigger script is being shown.
         if (shown) {
-            mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
+            mDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
-            mStartupDependencies.getKeyboardVisibilityDelegate().addKeyboardVisibilityListener(
+            mDependencies.getKeyboardVisibilityDelegate().addKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
         }
         return shown;
@@ -131,8 +136,25 @@ public class AssistantTriggerScriptBridge {
     private void clearNativePtr() {
         mNativeBridge = 0;
         mTriggerScript.destroy();
-        mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
+        mDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
+    }
+
+    /**
+     * Looks up the Activity of the given web contents. This can be null. Should never be cached,
+     * because web contents can change activities, e.g., when user selects "Open in Chrome" menu
+     * item.
+     *
+     * NOTE: {@link AssistantDependencies.getActivity()} should be preferred.
+     *
+     * @param webContents The web contents for which to lookup the Activity.
+     * @return Activity currently related to webContents. Could be <c>null</c> and could change,
+     *         therefore do not cache.
+     */
+    private static Activity getActivityFromWebContents(@Nullable WebContents webContents) {
+        if (webContents == null || webContents.isDestroyed()) return null;
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        return window != null ? window.getActivity().get() : null;
     }
 
     private void safeNativeOnTriggerScriptAction(int action) {

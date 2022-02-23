@@ -169,7 +169,7 @@ void MobileActivator::InitiateActivation(const std::string& service_path) {
 
   // We want shill to connect us after activations, so enable autoconnect.
   base::DictionaryValue auto_connect_property;
-  auto_connect_property.SetBoolean(shill::kAutoConnectProperty, true);
+  auto_connect_property.SetBoolKey(shill::kAutoConnectProperty, true);
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
       service_path_, auto_connect_property, base::DoNothing(),
       network_handler::ErrorCallback());
@@ -810,9 +810,8 @@ void MobileActivator::ChangeState(const NetworkState* network,
     case PlanActivationState::kInitiatingActivation:
     case PlanActivationState::kTryingOTASP:
     case PlanActivationState::kOTASP:
-      // This used to call Shill.Service.ActivateCellularModem, however that
-      // method is no longer implemented. Instead this just starts the timer
-      // waiting for activation state changes. https://crbug.com/1021688.
+      // Starts the timer waiting for activation state changes.
+      // https://crbug.com/1021688.
       StartOTASPTimer();
       break;
     case PlanActivationState::kPageLoading:

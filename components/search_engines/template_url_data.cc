@@ -95,7 +95,7 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
   SetURL(std::string(search_url));
   input_encodings.push_back(std::string(encoding));
   if (alternate_urls_list.is_list()) {
-    auto alternate_urls_list_view = alternate_urls_list.GetList();
+    auto alternate_urls_list_view = alternate_urls_list.GetListDeprecated();
     for (size_t i = 0; i < alternate_urls_list_view.size(); ++i) {
       const std::string* alternate_url =
           alternate_urls_list_view[i].GetIfString();

@@ -20,6 +20,9 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -158,9 +161,9 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   void SetRebootAfterUpdate(bool reboot_after_update, bool expect_reboot);
   void SetUptimeLimit(const base::TimeDelta& limit, bool expect_reboot);
   void NotifyUpdateRebootNeeded();
-  void NotifyResumed(bool expect_reboot);
   void NotifyTerminating(bool expect_reboot);
 
+  void SleepFor(const base::TimeDelta& delta, bool expect_reboot);
   void FastForwardBy(const base::TimeDelta& delta, bool expect_reboot);
   void FastForwardUntilNoTasksRemain(bool expect_reboot);
 
@@ -189,9 +192,12 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
     return is_logged_in_as_kiosk_app_ || is_logged_in_as_arc_kiosk_app_;
   }
 
-  void VerifyTimerIsStopped(const base::OneShotTimer* timer) const;
+  template <class Timer>
+  void VerifyTimerIsStopped(const Timer* timer) const;
   void VerifyTimerIsRunning(const base::OneShotTimer* timer,
                             const base::TimeDelta& delay) const;
+  void VerifyTimerIsRunning(const base::WallClockTimer* timer,
+                            const base::Time& desired_run_time) const;
   void VerifyLoginScreenIdleTimerIsRunning() const;
 
   bool is_user_logged_in_ = false;
@@ -416,13 +422,6 @@ void AutomaticRebootManagerBasicTest::NotifyUpdateRebootNeeded() {
   EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
 }
 
-void AutomaticRebootManagerBasicTest::NotifyResumed(bool expect_reboot) {
-  automatic_reboot_manager_->SuspendDone(base::Hours(1));
-  task_runner_->RunUntilIdle();
-  EXPECT_EQ(expect_reboot ? 1 : 0,
-            FakePowerManagerClient::Get()->num_request_restart_calls());
-}
-
 void AutomaticRebootManagerBasicTest::NotifyTerminating(bool expect_reboot) {
   automatic_reboot_manager_->Observe(
       chrome::NOTIFICATION_APP_TERMINATING,
@@ -437,6 +436,23 @@ void AutomaticRebootManagerBasicTest::FastForwardBy(
     const base::TimeDelta& delta,
     bool expect_reboot) {
   task_runner_->FastForwardBy(delta);
+  EXPECT_EQ(expect_reboot ? 1 : 0,
+            FakePowerManagerClient::Get()->num_request_restart_calls());
+}
+
+void AutomaticRebootManagerBasicTest::SleepFor(const base::TimeDelta& delta,
+                                               bool expect_reboot) {
+  task_runner_->AdvanceWallClock(delta);
+  automatic_reboot_manager_->SuspendDone(delta);
+  if (automatic_reboot_manager_->grace_start_timer_ &&
+      automatic_reboot_manager_->grace_start_timer_->IsRunning()) {
+    automatic_reboot_manager_->grace_start_timer_->OnResume();
+  }
+  if (automatic_reboot_manager_->grace_end_timer_ &&
+      automatic_reboot_manager_->grace_end_timer_->IsRunning()) {
+    automatic_reboot_manager_->grace_end_timer_->OnResume();
+  }
+  task_runner_->RunUntilIdle();
   EXPECT_EQ(expect_reboot ? 1 : 0,
             FakePowerManagerClient::Get()->num_request_restart_calls());
 }
@@ -470,7 +486,7 @@ void AutomaticRebootManagerBasicTest::ExpectNoRebootRequest() {
 void AutomaticRebootManagerBasicTest::CreateAutomaticRebootManager(
     bool expect_reboot) {
   automatic_reboot_manager_ = std::make_unique<AutomaticRebootManager>(
-      task_runner_->GetMockTickClock());
+      task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
   automatic_reboot_manager_observer_.Init(automatic_reboot_manager_.get());
   task_runner_->RunUntilIdle();
   EXPECT_EQ(expect_reboot ? 1 : 0,
@@ -528,10 +544,11 @@ void AutomaticRebootManagerBasicTest::VerifyNoGracePeriod() const {
 
 void AutomaticRebootManagerBasicTest::VerifyGracePeriod(
     const base::TimeDelta& start_uptime) const {
-  const base::TimeDelta start =
+  const base::TimeDelta start_delay =
       start_uptime - uptime_provider()->uptime() - uptime_processing_delay_;
-  const base::TimeDelta end = start + base::Hours(24);
-  if (start <= base::TimeDelta()) {
+  const base::Time start = task_runner_->GetMockClock()->Now() + start_delay;
+  const base::Time end = start + base::Hours(24);
+  if (start_delay <= base::TimeDelta()) {
     EXPECT_TRUE(automatic_reboot_manager_->reboot_requested_);
     VerifyTimerIsStopped(automatic_reboot_manager_->grace_start_timer_.get());
     VerifyTimerIsRunning(automatic_reboot_manager_->grace_end_timer_.get(),
@@ -564,8 +581,9 @@ void AutomaticRebootManagerBasicTest::LogIn() {
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
+template <class Timer>
 void AutomaticRebootManagerBasicTest::VerifyTimerIsStopped(
-    const base::OneShotTimer* timer) const {
+    const Timer* timer) const {
   if (timer)
     EXPECT_FALSE(timer->IsRunning());
 }
@@ -575,8 +593,15 @@ void AutomaticRebootManagerBasicTest::VerifyTimerIsRunning(
     const base::TimeDelta& delay) const {
   ASSERT_TRUE(timer);
   EXPECT_TRUE(timer->IsRunning());
-  EXPECT_EQ(delay.ToInternalValue(),
-            timer->GetCurrentDelay().ToInternalValue());
+  EXPECT_EQ(delay, timer->GetCurrentDelay());
+}
+
+void AutomaticRebootManagerBasicTest::VerifyTimerIsRunning(
+    const base::WallClockTimer* timer,
+    const base::Time& desired_run_time) const {
+  ASSERT_TRUE(timer);
+  EXPECT_TRUE(timer->IsRunning());
+  EXPECT_EQ(desired_run_time, timer->desired_run_time());
 }
 
 void AutomaticRebootManagerBasicTest::
@@ -717,7 +742,7 @@ TEST_F(AutomaticRebootManagerBasicTest, ResumeNoPolicy) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that no
   // reboot is requested and the device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
 
   // Verify that a reboot is never requested and the device never reboots.
   FastForwardUntilNoTasksRemain(false);
@@ -741,7 +766,32 @@ TEST_F(AutomaticRebootManagerBasicTest, NonKioskResumeAppNoPolicy) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that no
   // reboot is requested and the device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
+
+  // Verify that a reboot is never requested and the device never reboots.
+  FastForwardUntilNoTasksRemain(false);
+}
+
+// Chrome is on the login screen. The current uptime is 10 days.
+// Verifies that when the device is suspended and then resumes, it does not
+// immediately reboot.
+TEST_F(AutomaticRebootManagerBasicTest, LoginScreenResumeNoPolicy) {
+  session_manager_.SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  uptime_provider()->SetUptime(base::Days(10));
+
+  // Verify that no reboot is requested and the device does not reboot
+  // immediately.
+  ExpectNoRebootRequest();
+  CreateAutomaticRebootManager(false);
+  VerifyNoRebootRequested();
+
+  // Verify that no grace period has started.
+  VerifyNoGracePeriod();
+
+  // Notify that the device has resumed from 1 hour of sleep. Verify that no
+  // reboot is requested and the device does not reboot immediately.
+  SleepFor(base::Hours(1), false);
 
   // Verify that a reboot is never requested and the device never reboots.
   FastForwardUntilNoTasksRemain(false);
@@ -771,7 +821,7 @@ TEST_F(AutomaticRebootManagerBasicTest, ResumeBeforeGracePeriod) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that no
   // reboot is requested and the device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
 
   // Verify a reboot is requested and the device reboots eventually.
   ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_PERIODIC);
@@ -801,17 +851,48 @@ TEST_F(AutomaticRebootManagerBasicTest, NonKioskResumeBeforeGracePeriod) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that no
   // reboot is requested and the device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
 
   // Verify that a reboot is requested eventually but the device never reboots.
   ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_PERIODIC);
   FastForwardUntilNoTasksRemain(false);
 }
 
+// Chrome is on the login screen. The uptime limit is 24 hours. The current
+// uptime is 12 hours.
+// Verifies that when the device is suspended and then resumes, it does not
+// immediately reboot.
+TEST_F(AutomaticRebootManagerBasicTest, LoginScreenResumeBeforeGracePeriod) {
+  session_manager_.SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  uptime_provider()->SetUptime(base::Hours(12));
+
+  // Verify that no reboot is requested and the device does not reboot
+  // immediately.
+  ExpectNoRebootRequest();
+  CreateAutomaticRebootManager(false);
+  VerifyNoRebootRequested();
+
+  // Set the uptime limit. Verify that no reboot is requested and the device
+  // does not reboot immediately.
+  SetUptimeLimit(base::Hours(24), false);
+
+  // Verify that a grace period has been scheduled to start in the future.
+  VerifyGracePeriod(uptime_limit_);
+
+  // Notify that the device has resumed from 1 hour of sleep. Verify that no
+  // reboot is requested and the device does not reboot immediately.
+  SleepFor(base::Hours(1), false);
+
+  // Verify that a reboot is requested eventually but the device never reboots.
+  ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_PERIODIC);
+  FastForwardUntilNoTasksRemain(true);
+}
+
 // Chrome is running a kiosk app session. The uptime limit is 6 hours. The
 // current uptime is 12 hours.
-// Verifies that when the device is suspended and then resumes, it immediately
-// reboots.
+// Verifies that when the device is suspended and then resumes, it reboots
+// shortly after.
 TEST_F(AutomaticRebootManagerBasicTest, ResumeInGracePeriod) {
   is_logged_in_as_kiosk_app_ = true;
   LogIn();
@@ -832,8 +913,9 @@ TEST_F(AutomaticRebootManagerBasicTest, ResumeInGracePeriod) {
   VerifyGracePeriod(uptime_limit_);
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that the
-  // device reboots immediately.
-  NotifyResumed(true);
+  // device reboots after additional 1 second.
+  SleepFor(base::Hours(1), false);
+  FastForwardBy(base::Seconds(1), true);
 }
 
 // Chrome is running a non-kiosk-app session. The uptime limit is 6 hours. The
@@ -860,7 +942,7 @@ TEST_F(AutomaticRebootManagerBasicTest, NonKioskResumeInGracePeriod) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that the
   // device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
 
   // Verify that the device never reboots.
   FastForwardUntilNoTasksRemain(false);
@@ -891,7 +973,7 @@ TEST_F(AutomaticRebootManagerBasicTest, ResumeAfterGracePeriod) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that the
   // device reboots immediately.
-  NotifyResumed(true);
+  SleepFor(base::Hours(1), true);
 }
 
 // Chrome is running a non-kiosk-app session. The uptime limit is 6 hours. The
@@ -918,7 +1000,7 @@ TEST_F(AutomaticRebootManagerBasicTest, NonKioskResumeAfterGracePeriod) {
 
   // Notify that the device has resumed from 1 hour of sleep. Verify that the
   // device does not reboot immediately.
-  NotifyResumed(false);
+  SleepFor(base::Hours(1), false);
 
   // Verify that the device never reboots.
   FastForwardUntilNoTasksRemain(false);
@@ -1503,6 +1585,64 @@ TEST_P(AutomaticRebootManagerTest, UpdateBeforeMinimumUptime) {
   // session is in progress, the device eventually reboots.
   ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_OS_UPDATE);
   FastForwardUntilNoTasksRemain(!is_user_logged_in_ || is_kiosk_session());
+}
+
+// Chrome is running. The current uptime is 10 minutes.
+// Verifies that when the policy to automatically reboot after an update is
+// enabled, device is suspended for 1 hour and resumes in grace period, it
+// immediately reboots if no session is active or shortly after if non-kiosk-app
+// session is in progress.
+TEST_P(AutomaticRebootManagerTest, UpdateAndSuspendUntilInGracePeriod) {
+  uptime_provider()->SetUptime(base::Minutes(10));
+  SetRebootAfterUpdate(true, false);
+
+  // Verify that no reboot is requested and the device does not reboot
+  // immediately.
+  ExpectNoRebootRequest();
+  CreateAutomaticRebootManager(false);
+  VerifyNoRebootRequested();
+
+  // Notify that an update has been applied and a reboot is necessary. Verify
+  // that no reboot is requested and the device does not reboot immediately.
+  NotifyUpdateRebootNeeded();
+
+  // Stay idle for 2 minutes on login screen. Verify no reboot is requested.
+  if (!is_user_logged_in_)
+    FastForwardBy(base::Minutes(2), false);
+
+  // Simulate sleep for 1 hour. Verify that device immediately reboots unless a
+  // session is in progress.
+  ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_OS_UPDATE);
+  SleepFor(base::Hours(1), !is_user_logged_in_);
+
+  // Wait for 1 more second in case a session is active. Verify that device
+  // immediately reboots if it is a kiosk session.
+  if (is_user_logged_in_)
+    FastForwardBy(base::Seconds(1), is_kiosk_session());
+}
+
+// Chrome is running. The current uptime is 10 minutes.
+// Verifies that when the policy to automatically reboot after an update is
+// enabled, device is suspended for 25 hours and resumes after grace period, it
+// immediately reboots unless a non-kiosk-app session is in progress.
+TEST_P(AutomaticRebootManagerTest, UpdateAndSuspendUntilAfterGracePeriod) {
+  uptime_provider()->SetUptime(base::Minutes(10));
+  SetRebootAfterUpdate(true, false);
+
+  // Verify that no reboot is requested and the device does not reboot
+  // immediately.
+  ExpectNoRebootRequest();
+  CreateAutomaticRebootManager(false);
+  VerifyNoRebootRequested();
+
+  // Notify that an update has been applied and a reboot is necessary. Verify
+  // that no reboot is requested and the device does not reboot immediately.
+  NotifyUpdateRebootNeeded();
+
+  // Simulate sleep for 25 hours. Verify that device immediately reboots unless
+  // a non-kiosk-app session is in progress.
+  ExpectRebootRequest(AutomaticRebootManagerObserver::REBOOT_REASON_OS_UPDATE);
+  SleepFor(base::Hours(25), !is_user_logged_in_ || is_kiosk_session());
 }
 
 // Chrome is running. An update was applied and a reboot became necessary to

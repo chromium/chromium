@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -24,6 +24,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state_source.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -359,6 +360,11 @@ class NET_EXPORT TransportSecurityState {
   // and stored.
   static const base::Feature kDynamicExpectCTFeature;
 
+  // Feature that controls whether Certificate Transparency is enforced. This
+  // feature is default enabled and meant only as an emergency killswitch. It
+  // will not enable enforcement in platforms that otherwise have it disabled.
+  static const base::Feature kCertificateTransparencyEnforcement;
+
   TransportSecurityState();
 
   // Creates a TransportSecurityState object that will skip the check to force
@@ -378,7 +384,8 @@ class NET_EXPORT TransportSecurityState {
   // left to tests. The caller needs to handle the optional pinning override
   // when is_issued_by_known_root is false.
   bool ShouldSSLErrorsBeFatal(const std::string& host);
-  bool ShouldUpgradeToSSL(const std::string& host);
+  bool ShouldUpgradeToSSL(const std::string& host,
+                          const NetLogWithSource& net_log = NetLogWithSource());
   PKPStatus CheckPublicKeyPins(
       const HostPortPair& host_port_pair,
       bool is_issued_by_known_root,
@@ -607,6 +614,8 @@ class NET_EXPORT TransportSecurityState {
                         std::less<base::TimeTicks>>
       ReportCache;
 
+  base::Value NetLogUpgradeToSSLParam(const std::string& host);
+
   // IsBuildTimely returns true if the current build is new enough ensure that
   // built in security information (i.e. HSTS preloading and pinning
   // information) is timely.
@@ -709,9 +718,9 @@ class NET_EXPORT TransportSecurityState {
   PKPStateMap enabled_pkp_hosts_;
   ExpectCTStateMap enabled_expect_ct_hosts_;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
-  ReportSenderInterface* report_sender_ = nullptr;
+  raw_ptr<ReportSenderInterface> report_sender_ = nullptr;
 
   // True if static pins should be used.
   bool enable_static_pins_;
@@ -722,9 +731,9 @@ class NET_EXPORT TransportSecurityState {
   // True if public key pinning bypass is enabled for local trust anchors.
   bool enable_pkp_bypass_for_local_trust_anchors_;
 
-  ExpectCTReporter* expect_ct_reporter_ = nullptr;
+  raw_ptr<ExpectCTReporter> expect_ct_reporter_ = nullptr;
 
-  RequireCTDelegate* require_ct_delegate_ = nullptr;
+  raw_ptr<RequireCTDelegate> require_ct_delegate_ = nullptr;
 
   // Keeps track of reports that have been sent recently for
   // rate-limiting.

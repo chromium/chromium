@@ -8,14 +8,17 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -37,7 +41,6 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
-import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -47,6 +50,9 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Provides functions that map {@link AccountSelectionProperties} changes in a {@link PropertyModel}
  * to the suitable method in {@link AccountSelectionView}.
@@ -54,11 +60,52 @@ import org.chromium.ui.widget.ButtonCompat;
 class AccountSelectionViewBinder {
     private static final String TAG = "AccountSelectionView";
 
+    /**
+     * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined
+     * in https://www.w3.org/TR/appmanifest/
+     */
+    private static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
+
     private static TabCreator sTabCreatorForTesting;
 
     @VisibleForTesting
     static void setTabCreatorForTesting(TabCreator creator) {
         sTabCreatorForTesting = creator;
+    }
+
+    /**
+     * Returns bitmap with the maskable bitmap's safe zone as defined in
+     * https://www.w3.org/TR/appmanifest/ cropped in a circle.
+     * @param resources the Resources used to set initial target density.
+     * @param bitmap the maskable bitmap. It should adhere to the maskable icon spec as defined in
+     * https://www.w3.org/TR/appmanifest/
+     * @param outBitmapSize the target bitmap size in pixels.
+     * @return the cropped bitmap.
+     */
+    public static Drawable createBitmapWithMaskableIconSafeZone(
+            Resources resources, Bitmap bitmap, int outBitmapSize) {
+        int cropWidth =
+                (int) Math.floor(bitmap.getWidth() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropHeight =
+                (int) Math.floor(bitmap.getHeight() * MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);
+        int cropX = (int) Math.floor((bitmap.getWidth() - cropWidth) / 2.0f);
+        int cropY = (int) Math.floor((bitmap.getHeight() - cropHeight) / 2.0f);
+
+        Bitmap output = Bitmap.createBitmap(outBitmapSize, outBitmapSize, Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        // Fill the canvas with transparent color.
+        canvas.drawColor(Color.TRANSPARENT);
+        // Draw a white circle.
+        float radius = (float) outBitmapSize / 2;
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(radius, radius, radius, paint);
+        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, new Rect(cropX, cropY, cropWidth + cropX, cropHeight + cropY),
+                new Rect(0, 0, outBitmapSize, outBitmapSize), paint);
+        return new BitmapDrawable(resources, output);
     }
 
     /**
@@ -69,16 +116,29 @@ class AccountSelectionViewBinder {
      */
     static void bindAccountView(PropertyModel model, View view, PropertyKey key) {
         Account account = model.get(AccountProperties.ACCOUNT);
-        if (key == AccountProperties.AVATAR || key == AccountProperties.FAVICON_OR_FALLBACK) {
+        if (key == AccountProperties.AVATAR) {
             AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
-            AccountProperties.FaviconOrFallback faviconData =
-                    model.get(AccountProperties.FAVICON_OR_FALLBACK);
-            // Wait for both avatar and favicon to be available before drawing them to avoid
-            // unnecessary flashing.
-            if (avatarData == null || faviconData == null) return;
-            Drawable badgedAvatar = overlayIdpFaviconOnAvatar(view, avatarData, faviconData);
+            int avatarSize = avatarData.mAvatarSize;
+            Bitmap avatar = avatarData.mAvatar;
+
+            Resources resources = view.getContext().getResources();
+
+            // Prepare avatar or its fallback monogram.
+            if (avatar == null) {
+                int avatarMonogramTextSize = view.getResources().getDimensionPixelSize(
+                        R.dimen.account_selection_account_avatar_monogram_text_size);
+                // TODO(crbug.com/1295017): Consult UI team to determine the background color we
+                // need to use here.
+                RoundedIconGenerator roundedIconGenerator =
+                        new RoundedIconGenerator(resources, avatarSize /* iconWidthDp */,
+                                avatarSize /* iconHeightDp */, avatarSize / 2 /* cornerRadiusDp */,
+                                Color.GRAY /* backgroundColor */, avatarMonogramTextSize);
+                avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
+            }
+            Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
+
             ImageView avatarView = view.findViewById(R.id.start_icon);
-            avatarView.setImageDrawable(badgedAvatar);
+            avatarView.setImageDrawable(croppedAvatar);
         } else if (key == AccountProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(clickedView -> {
                 model.get(AccountProperties.ON_CLICK_LISTENER).onResult(account);
@@ -93,78 +153,6 @@ class AccountSelectionViewBinder {
         }
     }
 
-    /**
-     * Creates a drawable that is a combination of the User's avatar and the Identity Provider's
-     * (IdP) favicon. The final drawable is a square with avatarData.mAvatarSize dimension that
-     * contains two rounded images overlayed on top of each other like so:
-     * +------------+
-     * |            |
-     * |   Avatar   |
-     * |       +----+
-     * |       |Favi|
-     * |       |con |
-     * +-------+----+
-     *
-     * @param view The view to be bound.
-     * @param avatarData The data for the avatar. If the bitmap is null then we generate a
-     *                   placeholder monogram avatar using the name.
-     * @param faviconData The data for the favicon including its bitmap and size.
-     */
-    static Drawable overlayIdpFaviconOnAvatar(View view, AccountProperties.Avatar avatarData,
-            AccountProperties.FaviconOrFallback faviconData) {
-        int avatarSize = avatarData.mAvatarSize;
-        int badgeSize = faviconData.mIconSize;
-        int frameSize = avatarSize;
-        // Avatar touches the top/left sides of frame, badge touches bottom/right sides of the
-        // frame.
-        int avatarX = 0;
-        int avatarY = 0;
-        int badgeX = frameSize - badgeSize;
-        int badgeY = frameSize - badgeSize;
-
-        RoundedIconGenerator roundedIconGenerator =
-                FaviconUtils.createCircularIconGenerator(view.getResources());
-
-        // Prepare avatar or its fallback monogram.
-        Bitmap avatar = avatarData.mAvatar;
-        if (avatar == null) {
-            // TODO(majidvp): Consult UI team to determine the background color we need to use here.
-            roundedIconGenerator.setBackgroundColor(Color.GRAY);
-            avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
-        }
-        Drawable croppedAvatar =
-                AvatarGenerator.makeRoundAvatar(view.getResources(), avatar, avatarSize);
-        Bitmap badgedAvatar = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(badgedAvatar);
-
-        // Draw the avatar.
-        croppedAvatar.setBounds(avatarX, avatarY, avatarSize, avatarSize);
-        croppedAvatar.draw(canvas);
-
-        // Cut a transparent hole through the avatar image. This will serve as a border to the badge
-        // being overlaid.
-        int badgeRadius = badgeSize / 2;
-        int badgeCenterX = badgeX + badgeRadius;
-        int badgeCenterY = badgeY + badgeRadius;
-        int badgeBorderSize = view.getResources().getDimensionPixelSize(
-                R.dimen.account_selection_favicon_border_size);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius + badgeBorderSize, paint);
-
-        // Prepare the IDP favicon as the badge.
-        Drawable favicon = FaviconUtils.getIconDrawableWithoutFilter(faviconData.mIcon,
-                faviconData.mUrl, faviconData.mFallbackColor, roundedIconGenerator,
-                view.getResources(), badgeSize);
-
-        // Draw the badge.
-        favicon.setBounds(badgeX, badgeY, badgeX + badgeSize, badgeY + badgeSize);
-        favicon.draw(canvas);
-        return new BitmapDrawable(view.getResources(), badgedAvatar);
-    }
-
     static void openTab(String url) {
         TabCreator tabCreator = (sTabCreatorForTesting == null)
                 ? new TabDelegate(/* incognito */ false)
@@ -172,8 +160,16 @@ class AccountSelectionViewBinder {
         tabCreator.launchUrl(url, TabLaunchType.FROM_CHROME_UI);
     }
 
-    static NoUnderlineClickableSpan createLink(Resources r, String url) {
-        return new NoUnderlineClickableSpan(r, v -> { openTab(url); });
+    static SpanApplier.SpanInfo createLink(Resources r, String url, String tag) {
+        if (TextUtils.isEmpty(url)) return null;
+
+        String startTag = "<" + tag + ">";
+        String endTag = "</" + tag + ">";
+        Callback<View> onClickCallback = v -> {
+            openTab(url);
+        };
+        return new SpanApplier.SpanInfo(
+                startTag, endTag, new NoUnderlineClickableSpan(r, onClickCallback));
     }
 
     /**
@@ -188,18 +184,34 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Resources resources = view.getResources();
-            NoUnderlineClickableSpan privacyPolicyLink =
-                    createLink(resources, properties.mPrivacyPolicyUrl);
-            NoUnderlineClickableSpan termsOfServiceLink =
-                    createLink(resources, properties.mTermsOfServiceUrl);
+            SpanApplier.SpanInfo privacyPolicySpan =
+                    createLink(resources, properties.mPrivacyPolicyUrl, "link_privacy_policy");
+            SpanApplier.SpanInfo termsOfServiceSpan =
+                    createLink(resources, properties.mTermsOfServiceUrl, "link_terms_of_service");
 
-            String consentText = String.format(
-                    view.getContext().getString(R.string.account_selection_data_sharing_consent),
-                    properties.mFormattedIdpUrl, properties.mFormattedRpUrl,
-                    properties.mFormattedRpUrl);
-            SpannableString span = SpanApplier.applySpans(consentText,
-                    new SpanApplier.SpanInfo("<link1>", "</link1>", privacyPolicyLink),
-                    new SpanApplier.SpanInfo("<link2>", "</link2>", termsOfServiceLink));
+            // TODO(crbug.com/1293913): Validate string choices.
+            int consentTextId = (privacyPolicySpan == null && termsOfServiceSpan == null)
+                    ? R.string.account_selection_data_sharing_consent_no_links
+                    : R.string.account_selection_data_sharing_consent;
+            String consentText = String.format(view.getContext().getString(consentTextId),
+                    properties.mFormattedIdpEtldPlusOne);
+
+            // If the consent text includes the link for the privacy policy or the terms of service,
+            // and there is no corresponding URL, remove the link tag.
+            List<SpanApplier.SpanInfo> spans = new ArrayList<>();
+            if (privacyPolicySpan == null) {
+                consentText = consentText.replaceAll("</?link_privacy_policy>", "");
+            } else {
+                spans.add(privacyPolicySpan);
+            }
+            if (termsOfServiceSpan == null) {
+                consentText = consentText.replaceAll("</?link_terms_of_service>", "");
+            } else {
+                spans.add(termsOfServiceSpan);
+            }
+
+            SpannableString span =
+                    SpanApplier.applySpans(consentText, spans.toArray(new SpanApplier.SpanInfo[0]));
             TextView textView = view.findViewById(R.id.user_data_sharing_consent);
             textView.setText(span);
             textView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -241,10 +253,11 @@ class AccountSelectionViewBinder {
         } else if (key == ContinueButtonProperties.ACCOUNT) {
             Account account = model.get(ContinueButtonProperties.ACCOUNT);
             // Prefers to use given name if it is provided otherwise falls back to using the name.
-            String name =
-                    account.getGivenName() != null ? account.getGivenName() : account.getName();
-            String btnText =
-                    String.format(context.getString(R.string.account_selection_continue), name);
+            String givenName = account.getGivenName();
+            String displayedName =
+                    givenName != null && !givenName.isEmpty() ? givenName : account.getName();
+            String btnText = String.format(
+                    context.getString(R.string.account_selection_continue), displayedName);
             Button button = view.findViewById(R.id.account_selection_continue_btn);
             button.setText(btnText);
         } else if (key == ContinueButtonProperties.ON_CLICK_LISTENER) {
@@ -283,34 +296,63 @@ class AccountSelectionViewBinder {
      * @param key The key of the property to be bound.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == HeaderProperties.FORMATTED_RP_URL || key == HeaderProperties.TYPE) {
+        if (key == HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE
+                || key == HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE
+                || key == HeaderProperties.TYPE) {
             TextView headerTitleText = view.findViewById(R.id.header_title);
-            @StringRes
-            int titleStringId = R.string.account_selection_sheet_title_single;
-            switch (model.get(HeaderProperties.TYPE)) {
-                case SINGLE_ACCOUNT:
-                    titleStringId = R.string.account_selection_sheet_title_single;
-                    break;
-                case MULTIPLE_ACCOUNT:
-                    titleStringId = R.string.account_selection_sheet_title;
-                    break;
-                case SIGN_IN:
-                    titleStringId = R.string.sign_in_sheet_title;
-                    break;
-            }
-
-            String title = String.format(view.getContext().getString(titleStringId),
-                    model.get(HeaderProperties.FORMATTED_RP_URL));
+            HeaderProperties.HeaderType headerType = model.get(HeaderProperties.TYPE);
+            String title = computeHeaderTitle(view.getResources(), headerType,
+                    model.get(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE),
+                    model.get(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE));
             headerTitleText.setText(title);
-        } else if (key == HeaderProperties.FORMATTED_IDP_URL) {
-            String subheadingText = String.format(
-                    view.getContext().getString(R.string.account_selection_sheet_idp_subheader),
-                    model.get(HeaderProperties.FORMATTED_IDP_URL));
-            TextView headerIdpUrlText = view.findViewById(R.id.header_idp_url);
-            headerIdpUrlText.setText(subheadingText);
+
+            if (key == HeaderProperties.TYPE) {
+                boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY);
+                view.findViewById(R.id.header_progress_bar)
+                        .setVisibility(progressBarVisible ? View.VISIBLE : View.GONE);
+                view.findViewById(R.id.header_divider)
+                        .setVisibility(!progressBarVisible ? View.VISIBLE : View.GONE);
+            }
+        } else if (key == HeaderProperties.IDP_BRAND_ICON) {
+            Bitmap brandIcon = model.get(HeaderProperties.IDP_BRAND_ICON);
+            if (brandIcon != null) {
+                Resources resources = view.getResources();
+                int iconSize =
+                        resources.getDimensionPixelSize(R.dimen.account_selection_sheet_icon_size);
+                Drawable croppedBrandIcon =
+                        createBitmapWithMaskableIconSafeZone(resources, brandIcon, iconSize);
+                ImageView headerIconView = (ImageView) view.findViewById(R.id.header_idp_icon);
+                headerIconView.setImageDrawable(croppedBrandIcon);
+                headerIconView.setVisibility(View.VISIBLE);
+            }
+        } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
+            final Runnable closeOnClickRunnable =
+                    (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
+            view.findViewById(R.id.close_button).setOnClickListener(clickedView -> {
+                closeOnClickRunnable.run();
+            });
         } else {
             assert false : "Unhandled update to property:" + key;
         }
+    }
+
+    /**
+     * Returns text for the {@link HeaderType.VERIFY} header.
+     */
+    static @StringRes int getVerifyHeaderStringId() {
+        return R.string.verify_sheet_title;
+    }
+
+    private static String computeHeaderTitle(
+            Resources resources, HeaderProperties.HeaderType type, String rpUrl, String idpUrl) {
+        if (type == HeaderProperties.HeaderType.VERIFY) {
+            return resources.getString(getVerifyHeaderStringId());
+        }
+        @StringRes
+        int titleStringId = (type == HeaderProperties.HeaderType.AUTO_SIGN_IN)
+                ? R.string.account_selection_sheet_title_auto
+                : R.string.account_selection_sheet_title_explicit;
+        return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 
     private AccountSelectionViewBinder() {}

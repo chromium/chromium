@@ -4,7 +4,6 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.annotation.TargetApi;
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -27,7 +26,6 @@ import java.util.List;
  * An implementation of {@link BackgroundTaskSchedulerDelegate} that uses the system
  * {@link JobScheduler} to schedule jobs.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelegate {
     private static final String TAG = "BkgrdTaskSchedulerJS";
 

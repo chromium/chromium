@@ -6,11 +6,11 @@
 #define NET_SOCKET_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -30,6 +30,7 @@
 namespace net {
 
 class ClientSocketFactory;
+struct ConnectionEndpointMetadata;
 class HostPortPair;
 class HostResolver;
 class HttpAuthCache;
@@ -41,13 +42,13 @@ class NetLog;
 class NetLogWithSource;
 class NetworkQualityEstimator;
 class ProxyDelegate;
-class SocketPerformanceWatcherFactory;
-class StreamSocket;
-class WebSocketEndpointLockManager;
 class QuicStreamFactory;
+class SocketPerformanceWatcherFactory;
 class SocketTag;
 class SpdySessionPool;
 class SSLCertRequestInfo;
+class StreamSocket;
+class WebSocketEndpointLockManager;
 
 // Immutable socket parameters intended for shared use by all ConnectJob types.
 // Excludes priority because it can be modified over the lifetime of a
@@ -75,22 +76,22 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
 
   CommonConnectJobParams& operator=(const CommonConnectJobParams& other);
 
-  ClientSocketFactory* client_socket_factory;
-  HostResolver* host_resolver;
-  HttpAuthCache* http_auth_cache;
-  HttpAuthHandlerFactory* http_auth_handler_factory;
-  SpdySessionPool* spdy_session_pool;
-  const quic::ParsedQuicVersionVector* quic_supported_versions;
-  QuicStreamFactory* quic_stream_factory;
-  ProxyDelegate* proxy_delegate;
-  const HttpUserAgentSettings* http_user_agent_settings;
-  SSLClientContext* ssl_client_context;
-  SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
-  NetworkQualityEstimator* network_quality_estimator;
-  NetLog* net_log;
+  raw_ptr<ClientSocketFactory> client_socket_factory;
+  raw_ptr<HostResolver> host_resolver;
+  raw_ptr<HttpAuthCache> http_auth_cache;
+  raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
+  raw_ptr<SpdySessionPool> spdy_session_pool;
+  raw_ptr<const quic::ParsedQuicVersionVector> quic_supported_versions;
+  raw_ptr<QuicStreamFactory> quic_stream_factory;
+  raw_ptr<ProxyDelegate> proxy_delegate;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings;
+  raw_ptr<SSLClientContext> ssl_client_context;
+  raw_ptr<SocketPerformanceWatcherFactory> socket_performance_watcher_factory;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator;
+  raw_ptr<NetLog> net_log;
 
   // This must only be non-null for WebSockets.
-  WebSocketEndpointLockManager* websocket_endpoint_lock_manager;
+  raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If
@@ -232,6 +233,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
   virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
 
+  // Returns the `ConnectionEndpointMetadata` structure corresponding to the
+  // chosen route. Should only be called on a successful connect.
+  virtual const ConnectionEndpointMetadata& GetEndpointMetadata() const;
+
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;
   }
@@ -266,7 +271,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
 
   void SetSocket(std::unique_ptr<StreamSocket> socket,
-                 absl::optional<std::vector<std::string>> dns_aliases);
+                 absl::optional<std::set<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,
@@ -302,10 +307,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   const base::TimeDelta timeout_duration_;
   RequestPriority priority_;
   const SocketTag socket_tag_;
-  const CommonConnectJobParams* common_connect_job_params_;
+  raw_ptr<const CommonConnectJobParams> common_connect_job_params_;
   // Timer to abort jobs that take too long.
   base::OneShotTimer timer_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<StreamSocket> socket_;
   // Indicates if this is the topmost ConnectJob. The topmost ConnectJob logs an
   // extra begin and end event, to allow callers to log extra data before the

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_test.h"
@@ -24,8 +25,22 @@ class ContentCapabilitiesManifestTest : public ManifestTest {
 };
 
 TEST_F(ContentCapabilitiesManifestTest, AllowSubdomainWildcards) {
-  scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess("content_capabilities_subdomain_wildcard.json"));
+  constexpr char kSubdomainWildcard[] =
+      R"("content_capabilities": {
+           "matches": [
+             "https://*.example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         })";
+  base::Value manifest = ExtensionBuilder("subdomain wildcard")
+                             .AddJSON(kSubdomainWildcard)
+                             .BuildManifest();
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(ManifestData(std::move(manifest)));
   const ContentCapabilitiesInfo& info =
       ContentCapabilitiesInfo::Get(extension.get());
   // Make sure the wildcard subdomain is included in the pattern set.
@@ -37,9 +52,23 @@ TEST_F(ContentCapabilitiesManifestTest, AllowSubdomainWildcards) {
 }
 
 TEST_F(ContentCapabilitiesManifestTest, RejectedAllHosts) {
-  scoped_refptr<Extension> extension(LoadAndExpectWarning(
-      "content_capabilities_all_hosts.json",
-      manifest_errors::kInvalidContentCapabilitiesMatchOrigin));
+  constexpr char kAllHosts[] =
+      R"("content_capabilities": {
+           "matches": [
+             "https://*.com/",
+             "https://example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         })";
+  base::Value manifest =
+      ExtensionBuilder("all hosts").AddJSON(kAllHosts).BuildManifest();
+  scoped_refptr<Extension> extension = LoadAndExpectWarning(
+      ManifestData(std::move(manifest)),
+      manifest_errors::kInvalidContentCapabilitiesMatchOrigin);
   const ContentCapabilitiesInfo& info = ContentCapabilitiesInfo::Get(
       extension.get());
   // Make sure the wildcard is not included in the pattern set.
@@ -48,13 +77,30 @@ TEST_F(ContentCapabilitiesManifestTest, RejectedAllHosts) {
 }
 
 TEST_F(ContentCapabilitiesManifestTest, RejectedETLDWildcard) {
+  constexpr char kEtldWildcard[] =
+      R"("content_capabilities": {
+           "matches": [
+             "https://*.co.uk/",
+             "https://*.appspot.com/",
+             "<all_urls>",
+             "https://example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         })";
+
   // Note: We use LoadExtension() here (instead of
   // LoadExtensionAndExpectWarning()) because we expect multiple warnings, and
   // LoadExtensionAndExpectWarning() only expects one. We manually verify the
   // warnings.
+  base::Value manifest =
+      ExtensionBuilder("etld wildcard").AddJSON(kEtldWildcard).BuildManifest();
   std::string error;
-  scoped_refptr<Extension> extension(LoadExtension(
-      ManifestData("content_capabilities_etld_wildcard.json"), &error));
+  scoped_refptr<Extension> extension =
+      LoadExtension(ManifestData(std::move(manifest)), &error);
   ASSERT_TRUE(extension);
   EXPECT_TRUE(error.empty());
   // 3 bad patterns: *.co.uk, *.appspot.com, <all_urls>.
@@ -75,8 +121,24 @@ TEST_F(ContentCapabilitiesManifestTest, RejectedETLDWildcard) {
 }
 
 TEST_F(ContentCapabilitiesManifestTest, InvalidPermission) {
+  constexpr char kInvalidPermission[] =
+      R"("content_capabilities": {
+           "matches": [
+             "https://valid.example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage",
+             "usb"
+           ]
+         })";
+
+  base::Value manifest = ExtensionBuilder("invalid permission")
+                             .AddJSON(kInvalidPermission)
+                             .BuildManifest();
   scoped_refptr<Extension> extension(LoadAndExpectWarning(
-      "content_capabilities_invalid_permission.json",
+      ManifestData(std::move(manifest)),
       manifest_errors::kInvalidContentCapabilitiesPermission));
   const ContentCapabilitiesInfo& info = ContentCapabilitiesInfo::Get(
       extension.get());
@@ -89,18 +151,58 @@ TEST_F(ContentCapabilitiesManifestTest, InvalidPermission) {
 }
 
 TEST_F(ContentCapabilitiesManifestTest, InvalidValue) {
-  LoadAndExpectError("content_capabilities_invalid_value.json",
+  constexpr char kInvalidValue[] =
+      R"("content_capabilities": [{
+           "matches": [
+             "https://valid.example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         }])";
+  base::Value manifest =
+      ExtensionBuilder("invalid value").AddJSON(kInvalidValue).BuildManifest();
+  LoadAndExpectError(ManifestData(std::move(manifest)),
                      "expected dictionary, got list");
 }
 
 TEST_F(ContentCapabilitiesManifestTest, RejectNonHttpsUrlPatterns) {
-  LoadAndExpectError("content_capabilities_non_https_matches.json",
+  constexpr char kNonHttpsMatches[] =
+      R"("content_capabilities": {
+           "matches": [
+             "http://valid.example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         })";
+  base::Value manifest = ExtensionBuilder("non https matches")
+                             .AddJSON(kNonHttpsMatches)
+                             .BuildManifest();
+  LoadAndExpectError(ManifestData(std::move(manifest)),
                      manifest_errors::kInvalidContentCapabilitiesMatch);
 }
 
 TEST_F(ContentCapabilitiesManifestTest, Valid) {
-  scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess("content_capabilities_valid.json"));
+  constexpr char kValid[] =
+      R"("content_capabilities": {
+           "matches": [
+             "https://valid.example.com/"
+           ],
+           "permissions": [
+             "clipboardRead",
+             "clipboardWrite",
+             "unlimitedStorage"
+           ]
+         })";
+  base::Value manifest =
+      ExtensionBuilder("valid").AddJSON(kValid).BuildManifest();
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess(ManifestData(std::move(manifest)));
   const ContentCapabilitiesInfo& info = ContentCapabilitiesInfo::Get(
       extension.get());
   EXPECT_EQ(1u, info.url_patterns.size());

@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"

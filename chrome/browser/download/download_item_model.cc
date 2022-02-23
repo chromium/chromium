@@ -11,6 +11,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/observer_list.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -48,7 +50,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #endif
 
@@ -252,7 +254,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // We shouldn't get any of these due to the MightBeMalicious() test above.
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
@@ -491,6 +493,10 @@ bool DownloadItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   return download_->TimeRemaining(remaining);
 }
 
+base::Time DownloadItemModel::GetEndTime() const {
+  return download_->GetEndTime();
+}
+
 bool DownloadItemModel::GetOpened() const {
   return download_->GetOpened();
 }
@@ -578,7 +584,7 @@ void DownloadItemModel::OpenUsingPlatformHandler() {
   RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_USER_PLATFORM);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool DownloadItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
@@ -634,8 +640,8 @@ bool DownloadItemModel::IsCommandChecked(
       return download_->GetOpenWhenComplete() ||
              download_crx_util::IsExtensionDownload(*download_);
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
       if (download_commands->CanOpenPdfInSystemViewer()) {
         DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(profile());
         return prefs->ShouldOpenPdfInSystemReader();
@@ -675,8 +681,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       bool is_checked = IsCommandChecked(download_commands,
                                          DownloadCommands::ALWAYS_OPEN_TYPE);
       DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(profile());
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
       if (download_commands->CanOpenPdfInSystemViewer()) {
         prefs->SetShouldOpenPdfInSystemReader(!is_checked);
         SetShouldPreferOpeningInBrowser(is_checked);
@@ -694,7 +700,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       CompleteSafeBrowsingScan();
 #endif
-      FALLTHROUGH;
+      [[fallthrough]];
     case DownloadCommands::KEEP:
       // Order of these warning validations should be same as the order that
       // GetDesiredDownloadItemMode() method follows.
@@ -726,6 +732,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
             safe_browsing::ClientDownloadResponse::UNCOMMON);
         report->set_url(GetURL().spec());
         report->set_did_proceed(true);
+        *report->mutable_population() =
+            safe_browsing::GetUserPopulationForProfile(profile());
         std::string token =
             safe_browsing::DownloadProtectionService::GetDownloadPingToken(
                 download_);

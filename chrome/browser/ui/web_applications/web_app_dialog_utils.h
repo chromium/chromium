@@ -18,11 +18,10 @@ class WebContents;
 
 namespace webapps {
 enum class WebappInstallSource;
+enum class InstallResultCode;
 }
 
 namespace web_app {
-
-enum class InstallResultCode;
 
 // TODO(loyso): Rework these functions (API). Move all of them into
 // WebAppDialogManager.
@@ -35,7 +34,8 @@ bool CanCreateWebApp(const Browser* browser);
 bool CanPopOutWebApp(Profile* profile);
 
 using WebAppInstalledCallback =
-    base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+    base::OnceCallback<void(const AppId& app_id,
+                            webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.
 // If |force_shortcut_app| is true, the current page will be installed even if

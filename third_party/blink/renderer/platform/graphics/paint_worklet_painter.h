@@ -8,7 +8,7 @@
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/paint_worklet_job.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 

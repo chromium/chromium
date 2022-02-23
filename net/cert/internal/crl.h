@@ -42,11 +42,11 @@ enum class CRLRevocationStatus {
 //         tbsCertList          TBSCertList,
 //         signatureAlgorithm   AlgorithmIdentifier,
 //         signatureValue       BIT STRING  }
-NET_EXPORT_PRIVATE bool ParseCrlCertificateList(
+[[nodiscard]] NET_EXPORT_PRIVATE bool ParseCrlCertificateList(
     const der::Input& crl_tlv,
     der::Input* out_tbs_cert_list_tlv,
     der::Input* out_signature_algorithm_tlv,
-    der::BitString* out_signature_value) WARN_UNUSED_RESULT;
+    der::BitString* out_signature_value);
 
 // Parses a DER-encoded "TBSCertList" as specified by RFC 5280 Section 5.1.
 // Returns true on success and sets the results in |out|.
@@ -77,9 +77,9 @@ NET_EXPORT_PRIVATE bool ParseCrlCertificateList(
 //         crlExtensions           [0]  EXPLICIT Extensions OPTIONAL
 //                                       -- if present, version MUST be v2
 //                                   }
-NET_EXPORT_PRIVATE bool ParseCrlTbsCertList(const der::Input& tbs_tlv,
-                                            ParsedCrlTbsCertList* out)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT_PRIVATE bool ParseCrlTbsCertList(
+    const der::Input& tbs_tlv,
+    ParsedCrlTbsCertList* out);
 
 // Represents a CRL "Version" from RFC 5280. TBSCertList reuses the same
 // Version definition from TBSCertificate, however only v1(not present) and
@@ -181,10 +181,10 @@ enum class ContainedCertsType {
 //     onlySomeReasons            [3] ReasonFlags OPTIONAL,
 //     indirectCRL                [4] BOOLEAN DEFAULT FALSE,
 //     onlyContainsAttributeCerts [5] BOOLEAN DEFAULT FALSE }
-NET_EXPORT_PRIVATE bool ParseIssuingDistributionPoint(
+[[nodiscard]] NET_EXPORT_PRIVATE bool ParseIssuingDistributionPoint(
     const der::Input& extension_value,
     std::unique_ptr<GeneralNames>* out_distribution_point_names,
-    ContainedCertsType* out_only_contains_cert_type) WARN_UNUSED_RESULT;
+    ContainedCertsType* out_only_contains_cert_type);
 
 NET_EXPORT_PRIVATE CRLRevocationStatus
 GetCRLStatusForCert(const der::Input& cert_serial,
@@ -211,13 +211,13 @@ GetCRLStatusForCert(const der::Input& cert_serial,
 //  * |max_age|: The maximum age for a CRL, implemented as time since
 //        the |thisUpdate| field in the CRL TBSCertList. Responses older than
 //        |max_age| will be considered invalid.
-NET_EXPORT CRLRevocationStatus
+[[nodiscard]] NET_EXPORT CRLRevocationStatus
 CheckCRL(base::StringPiece raw_crl,
          const ParsedCertificateList& valid_chain,
          size_t target_cert_index,
          const ParsedDistributionPoint& cert_dp,
          const base::Time& verify_time,
-         const base::TimeDelta& max_age) WARN_UNUSED_RESULT;
+         const base::TimeDelta& max_age);
 
 }  // namespace net
 

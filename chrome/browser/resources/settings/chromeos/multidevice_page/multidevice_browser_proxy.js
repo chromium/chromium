@@ -84,6 +84,16 @@ cr.define('settings', function() {
      * Cancels the phone hub notification access setup flow.
      */
     cancelNotificationSetup() {}
+
+    /**
+     * Attempts the phone hub apps access setup flow.
+     */
+    attemptAppsSetup() {}
+
+    /**
+     * Cancels the phone hub apps access setup flow.
+     */
+    cancelAppsSetup() {}
   }
 
   /**
@@ -149,6 +159,16 @@ cr.define('settings', function() {
     /** @override */
     cancelNotificationSetup() {
       chrome.send('cancelNotificationSetup');
+    }
+
+    /** @override */
+    attemptAppsSetup() {
+      chrome.send('attemptAppsSetup');
+    }
+
+    /** @override */
+    cancelAppsSetup() {
+      chrome.send('cancelAppsSetup');
     }
   }
 

@@ -1,7 +1,7 @@
 ==== BEGIN EDITS ====
 include-user-header:::gen-macros-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
-r:::gen-macros-actual.cc:::1940:::13:::raw_ptr<struct event>
-r:::gen-macros-actual.cc:::2009:::14:::raw_ptr<struct event *>
+r:::gen-macros-actual.cc:::1940:::13:::raw_ptr<struct event> 
+r:::gen-macros-actual.cc:::2009:::14:::raw_ptr<struct event *> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 MacroTest1::ptr_field  # macro

@@ -1,0 +1,11 @@
+{ "GUID": "guid",
+  "Type": "vpn",
+  "Name": "MyIKEv2VPN",
+  "Provider.Host": "some.host.org",
+  "Provider.Type": "ikev2",
+  "IKEv2.AuthenticationType": "PSK",
+  "IKEv2.LocalIdentity": "local-id",
+  "IKEv2.PSK": "some_preshared_key",
+  "IKEv2.RemoteIdentity": "remote-id",
+  "SaveCredentials": true
+}

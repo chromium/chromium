@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -38,7 +39,7 @@ class ChromePluginServiceFilterTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetMainFrame()->GetProcess()->GetID();
   }
 
-  ChromePluginServiceFilter* filter_ = nullptr;
+  raw_ptr<ChromePluginServiceFilter> filter_ = nullptr;
 };
 
 content::WebPluginInfo GetFakePdfPluginInfo() {

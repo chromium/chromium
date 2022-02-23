@@ -16,6 +16,7 @@ import '../../settings_shared_css.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from '//resources/js/assert.m.js';
+import {hexColorToSkColor} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -135,6 +136,18 @@ class ExtraContainersElement extends ExtraContainersElementBase {
           this.lastMenuContainerInfo_.id);
     }
     this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onContainerColorChange_(event) {
+    const containerId =
+        /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);
+
+    CrostiniBrowserProxyImpl.getInstance().setContainerBadgeColor(
+        containerId, hexColorToSkColor(event.target.value));
   }
 
   /**

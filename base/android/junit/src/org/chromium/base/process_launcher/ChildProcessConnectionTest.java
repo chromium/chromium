@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ChildBindingState;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 /** Unit tests for ChildProcessConnection. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ChildProcessConnectionTest {
     private static class ChildServiceConnectionMock implements ChildServiceConnection {
         private final Intent mBindIntent;

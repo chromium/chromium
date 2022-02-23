@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -73,7 +74,7 @@ class ContentSettingsRegistry {
                 ContentSettingsInfo::OriginRestriction origin_restriction);
 
   Map content_settings_info_;
-  WebsiteSettingsRegistry* website_settings_registry_;
+  raw_ptr<WebsiteSettingsRegistry> website_settings_registry_;
 };
 
 }  // namespace content_settings

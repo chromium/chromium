@@ -65,6 +65,7 @@ class WebFeedIndex {
   int RecommendedWebFeedCount() const;
 
   std::vector<Entry> GetRecommendedEntriesForTesting() const;
+  std::vector<Entry> GetSubscribedEntriesForTesting() const;
   void DumpStateForDebugging(std::ostream& os);
 
  private:

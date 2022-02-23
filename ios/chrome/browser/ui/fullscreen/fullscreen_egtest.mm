@@ -13,6 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -173,7 +174,7 @@ void WaitforPDFExtensionView() {
                       "document.body.innerHTML += \"<meta name='viewport' "
                       "content='width=10'>\""
                       "})()";
-  [ChromeEarlGrey executeJavaScript:script];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
 
   // Scroll up to be sure the toolbar can be dismissed by scrolling down.
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -258,7 +259,7 @@ void WaitforPDFExtensionView() {
       kPageHeightEM, javaScript.c_str());
 
   web::test::SetUpSimpleHttpServer(responses);
-  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_ALLOW];
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"link1"];

@@ -101,7 +101,7 @@
 
   switch (omniboxIcon.iconType) {
     case OmniboxIconTypeImage: {
-      self.mainImageView.contentMode = UIViewContentModeScaleAspectFill;
+      self.mainImageView.contentMode = UIViewContentModeScaleAspectFit;
       __weak OmniboxIconView* weakSelf = self;
       GURL imageURL = omniboxIcon.imageURL;
       [self.imageRetriever fetchImage:imageURL

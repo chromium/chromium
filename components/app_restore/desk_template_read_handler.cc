@@ -5,12 +5,13 @@
 #include "components/app_restore/desk_template_read_handler.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/features.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -43,7 +44,7 @@ void DeskTemplateReadHandler::SetRestoreData(
 
   restore_data_ = std::move(restore_data);
 
-  if (!features::IsArcAppsForDesksTemplatesEnabled())
+  if (!ash::features::AreDesksTemplatesEnabled())
     return;
 
   arc_read_handler_.reset();
@@ -100,10 +101,6 @@ void DeskTemplateReadHandler::SetNextRestoreWindowIdForChromeApp(
     restore_data_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
-int32_t DeskTemplateReadHandler::GetArcSessionId() {
-  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
-}
-
 void DeskTemplateReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                          int32_t window_id) {
   if (arc_read_handler_)
@@ -127,13 +124,8 @@ int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
 void DeskTemplateReadHandler::OnWindowInitialized(aura::Window* window) {
   // If there isn't restore data for ARC apps, we don't need to handle ARC app
   // windows restoration.
-  if (!arc_read_handler_)
+  if (!arc_read_handler_ || !IsArcWindow(window))
     return;
-
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::ARC_APP)) {
-    return;
-  }
 
   const int32_t window_id = window->GetProperty(kRestoreWindowIdKey);
   if (window_id == app_restore::kParentToHiddenContainer ||

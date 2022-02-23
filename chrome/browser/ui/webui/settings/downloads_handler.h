@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_DOWNLOADS_HANDLER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -37,16 +38,16 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   // Callback for the "initializeDownloads" message. This starts observers and
   // retrieves the current browser state.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(base::Value::ConstListView args);
 
   void SendAutoOpenDownloadsToJavascript();
 
   // Resets the list of filetypes that are auto-opened after download.
-  void HandleResetAutoOpenFileTypes(const base::ListValue* args);
+  void HandleResetAutoOpenFileTypes(base::Value::ConstListView args);
 
   // Callback for the "selectDownloadLocation" message. This will prompt the
   // user for a destination folder using platform-specific APIs.
-  void HandleSelectDownloadLocation(const base::ListValue* args);
+  void HandleSelectDownloadLocation(base::Value::ConstListView args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -58,7 +59,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   // Callback for the "getDownloadLocationText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/Downloads => "Downloads".
-  void HandleGetDownloadLocationText(const base::ListValue* args);
+  void HandleGetDownloadLocationText(base::Value::ConstListView args);
 #endif
 
   bool IsDownloadsConnectionPolicyEnabled() const;
@@ -69,14 +70,14 @@ class DownloadsHandler : public SettingsPageUIHandler,
   // there is an existing linked account and arg is false, this removes the
   // linked account info and stored authentication tokens; otherwise, this
   // merely sends the latest stored account info.
-  void HandleSetDownloadsConnectionAccountLink(const base::ListValue* args);
+  void HandleSetDownloadsConnectionAccountLink(base::Value::ConstListView args);
   // Callback for file system connector code, since prompting the user to sign
   // in is async.
   void OnDownloadsConnectionAccountLinkSet(bool success);
   // Sends the latest stored account info to the settings page.
   void SendDownloadsConnectionInfoToJavascript();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   PrefChangeRegistrar pref_registrar_;
 

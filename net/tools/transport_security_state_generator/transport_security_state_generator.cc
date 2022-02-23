@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <iostream>
-
 #include <map>
 #include <set>
 #include <string>
@@ -14,6 +13,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "net/tools/transport_security_state_generator/input_file_parsers.h"
 #include "net/tools/transport_security_state_generator/pinsets.h"
@@ -209,7 +209,7 @@ int main(int argc, char* argv[]) {
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> args;
   base::CommandLine::StringVector wide_args = command_line.GetArgs();
   for (const auto& arg : wide_args) {

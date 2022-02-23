@@ -228,7 +228,7 @@ bool Uri::Pim::SaveQuery(
     // Process parameter name.
     auto it1 = val[i].first.begin();
     auto it2 = val[i].first.end();
-    if (!ParseString<encoded>(it1, it2, &out[i].first, true))
+    if (!ParseString<encoded>(it1, it2, &out[i].first, encoded))
       return false;
     if (out[i].first.empty()) {
       --parser_error_.parsed_strings;  // it was already counted
@@ -239,7 +239,7 @@ bool Uri::Pim::SaveQuery(
     // Process parameter value.
     it1 = val[i].second.begin();
     it2 = val[i].second.end();
-    if (!ParseString<encoded>(it1, it2, &out[i].second, true))
+    if (!ParseString<encoded>(it1, it2, &out[i].second, encoded))
       return false;
   }
   query_ = std::move(out);

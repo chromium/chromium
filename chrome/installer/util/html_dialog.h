@@ -12,6 +12,8 @@
 // other words, the dialogs use another native html rendering engine. In the
 // case of Windows it is the the Internet Explorer control.
 
+#include "base/memory/raw_ptr.h"
+
 namespace installer {
 
 // Interface for implementing a native HTML dialog.
@@ -94,7 +96,7 @@ class EulaHTMLDialog {
     void OnBeforeDisplay(void* window) override;
   };
 
-  HTMLDialog* dialog_;
+  raw_ptr<HTMLDialog> dialog_;
 };
 
 }  // namespace installer

@@ -28,10 +28,10 @@
 #include "chrome/test/chromedriver/performance_logger.h"
 #include "chrome/test/chromedriver/session.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -124,7 +124,7 @@ bool HandleLogMessage(int severity,
     std::string entry;
 
     if (readable_timestamp) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       SYSTEMTIME local_time;
       GetLocalTime(&local_time);
 
@@ -135,7 +135,7 @@ bool HandleLogMessage(int severity,
           local_time.wMilliseconds,
           level_name,
           message.c_str());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
       timeval tv;
       gettimeofday(&tv, nullptr);
       time_t t = tv.tv_sec;
@@ -196,7 +196,7 @@ WebDriverLog::WebDriverLog(const std::string& type, Log::Level min_level)
 WebDriverLog::~WebDriverLog() {
   size_t sum = 0;
   for (const std::unique_ptr<base::ListValue>& batch : batches_of_entries_)
-    sum += batch->GetList().size();
+    sum += batch->GetListDeprecated().size();
   VLOG(1) << "Log type '" << type_ << "' lost " << sum
           << " entries on destruction";
 }
@@ -216,7 +216,7 @@ std::unique_ptr<base::ListValue> WebDriverLog::GetAndClearEntries() {
 
 bool GetFirstErrorMessageFromList(const base::ListValue* list,
                                   std::string* message) {
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list->GetListDeprecated()) {
     const base::DictionaryValue* log_entry = nullptr;
     if (entry.GetAsDictionary(&log_entry)) {
       std::string level;
@@ -253,7 +253,7 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
     log_entry_dict->SetString("source", source);
   log_entry_dict->SetString("message", message);
   if (batches_of_entries_.empty() ||
-      batches_of_entries_.back()->GetList().size() >=
+      batches_of_entries_.back()->GetListDeprecated().size() >=
           internal::kMaxReturnedEntries) {
     std::unique_ptr<base::ListValue> list(new base::ListValue());
     list->Append(std::move(log_entry_dict));
@@ -294,8 +294,8 @@ bool InitLogging(uint16_t port) {
   if (cmd_line->HasSwitch("readable-timestamp")) {
     readable_timestamp = true;
   }
-#if defined(OS_WIN)
-    FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
+#if BUILDFLAG(IS_WIN)
+  FILE* redir_stderr = _wfreopen(log_path.value().c_str(), logMode, stderr);
 #else
     FILE* redir_stderr = freopen(log_path.value().c_str(), logMode, stderr);
 #endif

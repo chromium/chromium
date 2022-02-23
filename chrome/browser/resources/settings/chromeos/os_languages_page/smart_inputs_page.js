@@ -7,14 +7,29 @@
  * to provide users with assistive or expressive input options.
  */
 
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-smart-inputs-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -40,14 +55,6 @@ Polymer({
       },
     },
 
-    /** @private */
-    allowPredictiveWriting_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('allowPredictiveWriting');
-      },
-    },
-
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -57,18 +64,17 @@ Polymer({
       value: () => new Set([
         chromeos.settings.mojom.Setting.kShowPersonalInformationSuggestions,
         chromeos.settings.mojom.Setting.kShowEmojiSuggestions,
-        chromeos.settings.mojom.Setting.kShowPredictiveWriting,
       ]),
     },
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.OS_LANGUAGES_SMART_INPUTS) {
+    if (route !== routes.OS_LANGUAGES_SMART_INPUTS) {
       return;
     }
 

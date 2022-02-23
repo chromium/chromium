@@ -31,6 +31,8 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
+
   if (!is_ios) {
     deps += [
       "//services/audio:tests",
@@ -85,6 +87,7 @@ test("services_unittests") {
   if (is_fuchsia) {
     # Enable the test HTTP server for use by NetworkServiceTestWithService.*
     use_test_server = true
+    use_cfv2 = false
     additional_manifest_fragments = [
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",

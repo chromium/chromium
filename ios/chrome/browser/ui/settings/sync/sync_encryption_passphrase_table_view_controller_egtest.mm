@@ -15,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -45,7 +46,7 @@ NSString* const kPassphrase = @"hello";
 - (void)testShowSyncPassphraseAndDismiss {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
@@ -65,7 +66,7 @@ NSString* const kPassphrase = @"hello";
 
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGrey openNewWindow];
@@ -96,7 +97,7 @@ NSString* const kPassphrase = @"hello";
 - (void)testShowAddSyncPassphrphrase {
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   // Signin.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(

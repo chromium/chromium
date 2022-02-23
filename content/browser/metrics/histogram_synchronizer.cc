@@ -48,7 +48,7 @@ class HistogramSynchronizer::RequestContext {
   RequestContext(base::OnceClosure callback, int sequence_number)
       : callback_(std::move(callback)),
         sequence_number_(sequence_number),
-        received_process_group_count_(0),
+        received_process_group_count_(false),
         processes_pending_(0) {}
   ~RequestContext() {}
 

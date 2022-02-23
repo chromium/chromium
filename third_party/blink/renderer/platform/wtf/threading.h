@@ -43,7 +43,7 @@
 
 namespace WTF {
 
-#if !defined(OS_ANDROID) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 WTF_EXPORT base::PlatformThreadId CurrentThread();
 #else
 // On Android gettid(3) uses a faster TLS model than thread_local.
@@ -51,7 +51,7 @@ WTF_EXPORT base::PlatformThreadId CurrentThread();
 inline base::PlatformThreadId CurrentThread() {
   return base::PlatformThread::CurrentId();
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 
 #if DCHECK_IS_ON()
 WTF_EXPORT bool IsBeforeThreadCreated();
@@ -80,7 +80,7 @@ class WTF_EXPORT Threading {
   // Must be called on the main thread before any callers to wtfThreadData().
   static void Initialize();
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   static size_t ThreadStackSize();
 #endif
 
@@ -90,7 +90,7 @@ class WTF_EXPORT Threading {
 
   base::PlatformThreadId thread_id_;
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   size_t thread_stack_size_ = 0u;
 #endif
 

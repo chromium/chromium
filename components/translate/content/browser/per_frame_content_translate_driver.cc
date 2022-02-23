@@ -38,6 +38,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -129,10 +130,8 @@ void PerFrameContentTranslateDriver::PendingRequestStats::Report() {
 
 PerFrameContentTranslateDriver::PerFrameContentTranslateDriver(
     content::WebContents& web_contents,
-    content::NavigationController* nav_controller,
     language::UrlLanguageHistogram* url_language_histogram)
     : ContentTranslateDriver(web_contents,
-                             nav_controller,
                              url_language_histogram,
                              /*translate_model_service=*/nullptr) {}
 
@@ -323,15 +322,15 @@ void PerFrameContentTranslateDriver::DOMContentLoaded(
   // Start language detection now if not waiting for sub frames
   // to load to use for detection.
   if (!translate::IsSubFrameLanguageDetectionEnabled() &&
-      translate::IsTranslatableURL(web_contents()->GetURL())) {
+      translate::IsTranslatableURL(web_contents()->GetLastCommittedURL())) {
     StartLanguageDetection();
   }
 }
 
-void PerFrameContentTranslateDriver::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void PerFrameContentTranslateDriver::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (translate::IsSubFrameLanguageDetectionEnabled() &&
-      translate::IsTranslatableURL(web_contents()->GetURL())) {
+      translate::IsTranslatableURL(web_contents()->GetLastCommittedURL())) {
     StartLanguageDetection();
   }
 }

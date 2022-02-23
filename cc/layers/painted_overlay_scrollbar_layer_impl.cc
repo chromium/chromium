@@ -4,6 +4,9 @@
 
 #include "cc/layers/painted_overlay_scrollbar_layer_impl.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/memory/ptr_util.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -40,7 +43,7 @@ PaintedOverlayScrollbarLayerImpl::PaintedOverlayScrollbarLayerImpl(
 PaintedOverlayScrollbarLayerImpl::~PaintedOverlayScrollbarLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> PaintedOverlayScrollbarLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return PaintedOverlayScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
 }

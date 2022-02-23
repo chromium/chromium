@@ -22,10 +22,13 @@
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Set the render host waiting time to 5s on Android, that's the same
 // as an "Application Not Responding" timeout.
 const int64_t kTimerDelaySeconds = 5;
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+// linux-chromeos-dbg is failing to destroy the profile in under 1 second
+const int64_t kTimerDelaySeconds = 2;
 #else
 const int64_t kTimerDelaySeconds = 1;
 #endif
@@ -264,7 +267,7 @@ void ProfileDestroyer::DestroyProfile() {
   DCHECK(profile_->GetOriginalProfile());
   profile_->GetOriginalProfile()->DestroyOffTheRecordProfile(profile_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // It is possible on Android platform that more than one destroyer
   // is instantiated to delete a single profile. Reset the others to
   // avoid UAF. See https://crbug.com/1029677.

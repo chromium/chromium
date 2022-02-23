@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_WEB_UI_CONTROLLER_FACTORY_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_WEB_UI_CONTROLLER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 

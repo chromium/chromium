@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -99,9 +99,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       std::unique_ptr<TCPConnectedSocket> socket,
       mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver) override;
 
-  net::NetLog* const net_log_;
+  const raw_ptr<net::NetLog> net_log_;
 
-  net::ClientSocketFactory* client_socket_factory_;
+  raw_ptr<net::ClientSocketFactory> client_socket_factory_;
   TLSSocketFactory tls_socket_factory_;
   mojo::UniqueReceiverSet<mojom::UDPSocket> udp_socket_receivers_;
   mojo::UniqueReceiverSet<mojom::TCPServerSocket> tcp_server_socket_receivers_;

@@ -23,7 +23,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
 
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
@@ -50,7 +50,7 @@ class GpuMemoryBufferImplTest : public testing::Test {
     return &gpu_memory_buffer_support_;
   }
 
-#if defined(OS_WIN) || defined(USE_OZONE)
+#if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
   // Overridden from testing::Test:
   void SetUp() override { gl::GLSurfaceTestSupport::InitializeOneOff(); }
   void TearDown() override { gl::init::ShutdownGL(false); }

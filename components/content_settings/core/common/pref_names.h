@@ -36,6 +36,8 @@ extern const char kManagedDefaultFileSystemWriteGuardSetting[];
 extern const char kManagedDefaultSerialGuardSetting[];
 extern const char kManagedDefaultInsecurePrivateNetworkSetting[];
 extern const char kManagedDefaultJavaScriptJitSetting[];
+extern const char kManagedDefaultWebHidGuardSetting[];
+extern const char kManagedDefaultWindowPlacementSetting[];
 
 extern const char kManagedCookiesAllowedForUrls[];
 extern const char kManagedCookiesBlockedForUrls[];
@@ -68,12 +70,16 @@ extern const char kManagedSerialBlockedForUrls[];
 extern const char kManagedInsecurePrivateNetworkAllowedForUrls[];
 extern const char kManagedJavaScriptJitAllowedForSites[];
 extern const char kManagedJavaScriptJitBlockedForSites[];
+extern const char kManagedWebHidAskForUrls[];
+extern const char kManagedWebHidBlockedForUrls[];
+extern const char kManagedWindowPlacementAllowedForUrls[];
+extern const char kManagedWindowPlacementBlockedForUrls[];
 
 extern const char kEnableQuietNotificationPermissionUi[];
 extern const char kQuietNotificationPermissionUiEnablingMethod[];
 extern const char kQuietNotificationPermissionUiDisabledTime[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kNotificationsVibrateEnabled[];
 #endif
 

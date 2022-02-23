@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Checks Ui DevTools performance panel does not use generic tracing.\n`);
   Root.Runtime.experiments.enableForTest('timelineShowAllEvents');
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const rawTraceEvents = [

@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/detection_utils_mac.h"

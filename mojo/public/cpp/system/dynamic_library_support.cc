@@ -26,7 +26,7 @@ struct InitializationState {
       options.mojo_core_path_length = static_cast<uint32_t>(utf8_path.size());
     }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // Build a temporary reconstructed argv to pass into the library so it can
     // inspect the application command line if needed.
     for (const std::string& s : base::CommandLine::ForCurrentProcess()->argv())

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -165,7 +166,7 @@ class ScopedGeneric {
   // Release the object. The return value is the current object held by this
   // object. After this operation, this object will hold a null value, and
   // will not own the object any more.
-  element_type release() WARN_UNUSED_RESULT {
+  [[nodiscard]] element_type release() {
     element_type old_generic = data_.generic;
     data_.generic = traits_type::InvalidValue();
     TrackRelease(old_generic);
@@ -251,7 +252,7 @@ class ScopedGeneric {
 
    private:
     T value_ = Traits::InvalidValue();
-    ScopedGeneric* scoped_generic_;
+    raw_ptr<ScopedGeneric<T, Traits>> scoped_generic_;
     bool used_ = false;
   };
 

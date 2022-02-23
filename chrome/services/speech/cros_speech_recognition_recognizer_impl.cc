@@ -68,26 +68,12 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
           config_path),
       binary_path_(binary_path),
       languagepack_path_(config_path) {
-  recognition_event_callback_ = base::BindRepeating(
-      &CrosSpeechRecognitionRecognizerImpl::OnRecognitionEvent,
-      weak_factory_.GetWeakPtr());
-  // The superclass handles speech recognition when soda is not enabled.
-  if (enable_soda_) {
-    cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
-  }
+  cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
 }
 
 void CrosSpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
-  if (!enable_soda_) {
-    // This class is only expected to be used when soda is enabled; deferring to
-    // superclass.
-    SpeechRecognitionRecognizerImpl::
-        SendAudioToSpeechRecognitionServiceInternal(std::move(buffer));
-    return;
-  }
-
   // Soda is on, let's send the audio to it.
   int channel_count = buffer->channel_count;
   int sample_rate = buffer->sample_rate;
@@ -118,9 +104,22 @@ void CrosSpeechRecognitionRecognizerImpl::
         options_->enable_formatting
             ? chromeos::machine_learning::mojom::OptionalBool::kTrue
             : chromeos::machine_learning::mojom::OptionalBool::kFalse;
-    cros_soda_client_->Reset(std::move(config), recognition_event_callback_);
+    cros_soda_client_->Reset(std::move(config), recognition_event_callback(),
+                             speech_recognition_stopped_callback());
   }
   cros_soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
                               buffer_size);
 }
+
+void CrosSpeechRecognitionRecognizerImpl::MarkDone() {
+  if (cros_soda_client_ == nullptr || !cros_soda_client_->IsInitialized()) {
+    LOG(DFATAL)
+        << "No soda client or soda client is not initialized, stopping.";
+    mojo::ReportBadMessage(kNoClientError);
+    return;
+  }
+
+  cros_soda_client_->MarkDone();
+}
+
 }  // namespace speech

@@ -9,98 +9,82 @@ let frameNumber = 0;
 async function configureAndEncode(encoder, config) {
   encoder.configure(config);
 
-  let frame = await createFrame(defaultWidth, defaultHeight, ++frameNumber);
+  let frame = createFrame(defaultWidth, defaultHeight, ++frameNumber);
   encoder.encode(frame, { keyFrame : true });
   frame.close();
   return encoder.flush()
 }
 
-function cycleAvcOutputFormats(acc, desc) {
-  promise_test(async t => {
-    var output = undefined;
+promise_test(async t => {
+  var output = undefined;
 
-    let encoderInit = {
-      error: () => t.unreached_func("Unexpected error"),
-      output: (chunk, metadata) => {
-        let config = metadata.decoderConfig;
-        assert_equals(output, undefined, "output undefined sanity");
-        output = {
-          chunk: chunk,
-          config: config,
-        };
-      },
-    };
+  let encoderInit = {
+    error: () => t.unreached_func("Unexpected error"),
+    output: (chunk, metadata) => {
+      let config = metadata.decoderConfig;
+      assert_equals(output, undefined, "output undefined sanity");
+      output = {
+        chunk: chunk,
+        config: config,
+      };
+    },
+  };
 
-    let encoder = new VideoEncoder(encoderInit);
+  let encoder = new VideoEncoder(encoderInit);
 
-    let encoderConfig = {
-      codec: "avc1.42001E",
-      hardwareAcceleration: acc,
-      width: defaultWidth,
-      height: defaultHeight,
-    };
+  let encoderConfig = {
+    codec: "avc1.42001E",
+    width: defaultWidth,
+    height: defaultHeight,
+  };
 
-    // Configure an encoder with no avcOptions (should default to avc format).
-    await configureAndEncode(encoder, encoderConfig);
+  // Configure an encoder with no avcOptions (should default to avc format).
+  await configureAndEncode(encoder, encoderConfig);
 
-    // avc chunks should output a config with an avcC description.
-    assert_not_equals(output, undefined, "output default");
-    assert_not_equals(output.chunk, null, "chunk default");
-    assert_not_equals(output.config, null, "config default");
-    assert_not_equals(output.config.description, null, "desc default");
+  // avc chunks should output a config with an avcC description.
+  assert_not_equals(output, undefined, "output default");
+  assert_not_equals(output.chunk, null, "chunk default");
+  assert_not_equals(output.config, null, "config default");
+  assert_not_equals(output.config.description, null, "desc default");
 
-    output = undefined;
+  output = undefined;
 
-    // Configure with annex-b.
-    encoderConfig.avc = { format: "annexb" };
-    await configureAndEncode(encoder, encoderConfig);
+  // Configure with annex-b.
+  encoderConfig.avc = { format: "annexb" };
+  await configureAndEncode(encoder, encoderConfig);
 
-    // annexb chunks should start with a start code.
-    assert_not_equals(output, undefined, "output annexb");
-    assert_not_equals(output.chunk, null, "chunk annexb");
-    assert_greater_than(output.chunk.byteLength, 4, "chunk annexb data");
+  // annexb chunks should start with a start code.
+  assert_not_equals(output, undefined, "output annexb");
+  assert_not_equals(output.chunk, null, "chunk annexb");
+  assert_greater_than(output.chunk.byteLength, 4, "chunk annexb data");
 
-    let chunkData = new Uint8Array(output.chunk.byteLength);
-    output.chunk.copyTo(chunkData);
+  let chunkData = new Uint8Array(output.chunk.byteLength);
+  output.chunk.copyTo(chunkData);
 
-    let startCode = new Int8Array(chunkData.buffer, 0, 4);
-    assert_equals(startCode[0], 0x00, "startCode [0]");
-    assert_equals(startCode[1], 0x00, "startCode [1]");
-    assert_equals(startCode[2], 0x00, "startCode [2]");
-    assert_equals(startCode[3], 0x01, "startCode [3]");
+  let startCode = new Int8Array(chunkData.buffer, 0, 4);
+  assert_equals(startCode[0], 0x00, "startCode [0]");
+  assert_equals(startCode[1], 0x00, "startCode [1]");
+  assert_equals(startCode[2], 0x00, "startCode [2]");
+  assert_equals(startCode[3], 0x01, "startCode [3]");
 
-    // There should not be an avcC 'description' with annexb.
-    assert_not_equals(output.config, null, "config annexb");
-    assert_equals(output.config.description, undefined, "desc annexb");
+  // There should not be an avcC 'description' with annexb.
+  assert_not_equals(output.config, null, "config annexb");
+  assert_equals(output.config.description, undefined, "desc annexb");
 
-    output = undefined;
+  output = undefined;
 
-    // Configure with avc.
-    encoderConfig.avc = { format: "avc" };
-    await configureAndEncode(encoder, encoderConfig);
+  // Configure with avc.
+  encoderConfig.avc = { format: "avc" };
+  await configureAndEncode(encoder, encoderConfig);
 
-    // avc should output a config with an avcC description.
-    assert_not_equals(output, undefined, "output avc");
-    assert_not_equals(output.chunk, null, "chunk avc");
-    assert_not_equals(output.config, null, "config avc");
-    assert_not_equals(output.config.description, null, "desc avc");
+  // avc should output a config with an avcC description.
+  assert_not_equals(output, undefined, "output avc");
+  assert_not_equals(output.chunk, null, "chunk avc");
+  assert_not_equals(output.config, null, "config avc");
+  assert_not_equals(output.config.description, null, "desc avc");
 
-    encoder.close();
-  }, desc);
-}
-
-cycleAvcOutputFormats(
-    "prefer-software",
-    "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'prefer-software')");
-
-cycleAvcOutputFormats(
-    "no-preference",
-    "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'no-preference')");
-
-/* Uncomment this for manual testing, before we have GPU tests for that */
-// cycleAvcOutputFormats(
-//     "prefer-hardware",
-//     "Test AvcConfig supports 'avc' and 'annexb' (acceleration = 'prefer-hardware')");
+  encoder.close();
+}, "Test AvcConfig supports 'avc' and 'annexb'");
 
 promise_test(async t => {
   let encoder = new VideoEncoder({

@@ -6,14 +6,12 @@
 <!-- Note: hand-tweaked for foreground and background colors, not canonical icon. -->
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:fillColor="?attr/default_icon_color"
+        android:fillColor="@macro/default_icon_color"
         android:pathData="M4 6H20v12H4z" />
     <path
         android:fillColor="@android:color/white"

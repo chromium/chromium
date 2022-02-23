@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 
 #include "base/memory/weak_ptr.h"
@@ -86,11 +87,12 @@ class CreditCardAccessoryControllerImpl
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;
 
-  content::WebContents* web_contents_;
+  content::WebContents& GetWebContents() const;
+
   base::WeakPtr<ManualFillingController> mf_controller_;
-  PersonalDataManager* const personal_data_manager_;
-  autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
-  autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ptr<autofill::BrowserAutofillManager> af_manager_for_testing_ = nullptr;
+  raw_ptr<autofill::AutofillDriver> af_driver_for_testing_ = nullptr;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;

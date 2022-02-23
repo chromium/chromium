@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -146,7 +146,7 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
   bool was_ever_used_;
 
   // Used to resolve the hostname to which the SOCKS proxy will connect.
-  HostResolver* host_resolver_;
+  raw_ptr<HostResolver> host_resolver_;
   SecureDnsPolicy secure_dns_policy_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
   const HostPortPair destination_;

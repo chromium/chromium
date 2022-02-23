@@ -12,7 +12,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #include "testing/platform_test.h"
@@ -38,15 +37,13 @@ class WebSessionStateCacheTest : public PlatformTest {
 
     web::WebState::CreateParams createParams(chrome_browser_state_.get());
     web_state_ = web::WebState::Create(createParams);
-    TabIdTabHelper::CreateForWebState(web_state_.get());
 
     session_cache_directory_ = chrome_browser_state_->GetStatePath().Append(
         kWebSessionCacheDirectoryName);
   }
 
   bool StorageExists() {
-    NSString* sessionID =
-        TabIdTabHelper::FromWebState(web_state_.get())->tab_id();
+    NSString* sessionID = web_state_.get()->GetStableIdentifier();
     base::FilePath filePath =
         session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
     return base::PathExists(filePath);

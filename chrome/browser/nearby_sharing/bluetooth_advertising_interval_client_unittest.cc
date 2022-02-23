@@ -75,19 +75,19 @@ class BluetoothAdvertisingIntervalClientTest : public testing::Test {
 
   void RestoreDefaultInterval() { client_->RestoreDefaultInterval(); }
 
-  const size_t set_advertising_interval_call_count() {
+  size_t set_advertising_interval_call_count() {
     return set_advertising_interval_call_count_;
   }
 
-  const size_t set_advertising_interval_error_call_count() {
+  size_t set_advertising_interval_error_call_count() {
     return set_advertising_interval_error_call_count_;
   }
 
-  const int64_t last_advertising_interval_min() {
+  int64_t last_advertising_interval_min() {
     return last_advertising_interval_min_;
   }
 
-  const int64_t last_advertising_interval_max() {
+  int64_t last_advertising_interval_max() {
     return last_advertising_interval_max_;
   }
 

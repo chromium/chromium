@@ -17,7 +17,7 @@
 #error This file must be included after base/logging.h.
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 #define __DVLOG_0 VLOG(0)
 #define __DVLOG_1 VLOG(1)
@@ -29,7 +29,7 @@
 #define __DVLOG_1 LOG(INFO)
 #define __DVLOG_2 LOG(INFO)
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 #define __DVLOG_3 EAT_STREAM_PARAMETERS
 #define __DVLOG_4 EAT_STREAM_PARAMETERS

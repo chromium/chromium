@@ -16,8 +16,11 @@
   static SanitizerConfig getDefaultConfiguration();
 };
 
+dictionary SetHTMLOptions {
+  Sanitizer sanitizer;
+};
 partial interface Element {
-  undefined setHTML(DOMString input, Sanitizer sanitizer);
+  undefined setHTML(DOMString input, optional SetHTMLOptions options = {});
 };
 
 dictionary SanitizerConfig {

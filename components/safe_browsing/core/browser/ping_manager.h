@@ -14,8 +14,10 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -25,37 +27,47 @@ class SimpleURLLoader;
 
 namespace safe_browsing {
 
-class PingManager {
+class PingManager : public KeyedService {
  public:
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
-  virtual ~PingManager();
+  ~PingManager() override;
 
   // Create an instance of the safe browsing ping manager.
-  static std::unique_ptr<PingManager> Create(const V4ProtocolConfig& config);
+  static PingManager* Create(
+      const V4ProtocolConfig& config,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      base::RepeatingCallback<bool()> get_should_fetch_access_token);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
 
   // Report to Google when a SafeBrowsing warning is shown to the user.
   // |hit_report.threat_type| should be one of the types known by
-  // SafeBrowsingtHitUrl. Uses the given |url_loader_factory| to get the network
-  // context.
-  void ReportSafeBrowsingHit(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const safe_browsing::HitReport& hit_report);
+  // SafeBrowsingtHitUrl.
+  void ReportSafeBrowsingHit(const safe_browsing::HitReport& hit_report);
 
   // Users can opt-in on the SafeBrowsing interstitial to send detailed
   // threat reports. |report| is the serialized report.
-  void ReportThreatDetails(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& report);
+  void ReportThreatDetails(const std::string& report);
+
+  // Only used for tests
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  void SetTokenFetcherForTesting(
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
  protected:
   friend class PingManagerTest;
-  // Constructs a PingManager with the given |config|.
-  explicit PingManager(const V4ProtocolConfig& config);
+  // Constructs a PingManager with the given |config|, |url_loader_factory|, and
+  // access token fetching information.
+  explicit PingManager(
+      const V4ProtocolConfig& config,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      base::RepeatingCallback<bool()> get_should_fetch_access_token);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
@@ -74,9 +86,26 @@ class PingManager {
   // Generates URL for reporting threat details for users who opt-in.
   GURL ThreatDetailsUrl() const;
 
+  // Once the user's access_token has been fetched by ReportThreatDetails (or
+  // intentionally not fetched), attaches the token and sends the report.
+  void ReportThreatDetailsOnGotAccessToken(const std::string& report,
+                                           const std::string& access_token);
+
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
+
+  // Used to issue network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The token fetcher used for getting access token.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // Determines whether it's relevant to fetch the access token for the user
+  // based on whether they're a signed-in ESB user.
+  base::RepeatingCallback<bool()> get_should_fetch_access_token_;
+
+  base::WeakPtrFactory<PingManager> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

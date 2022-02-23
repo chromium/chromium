@@ -146,16 +146,16 @@ class UrlRuleFlatBufferConverter {
 
     DCHECK_NE(rule_.url_pattern_type(), proto::URL_PATTERN_TYPE_REGEXP);
 
-    FlatDomainsOffset domains_included_offset;
-    FlatDomainsOffset domains_excluded_offset;
-    if (rule_.domains_size()) {
-      std::vector<FlatStringOffset> domains_included;
-      std::vector<FlatStringOffset> domains_excluded;
-      // Reserve only for |domains_included| because it is expected to be the
-      // one used more frequently.
-      domains_included.reserve(rule_.domains_size());
+    FlatDomainsOffset initiator_domains_included_offset;
+    FlatDomainsOffset initiator_domains_excluded_offset;
+    if (rule_.initiator_domains_size()) {
+      std::vector<FlatStringOffset> initiator_domains_included;
+      std::vector<FlatStringOffset> initiator_domains_excluded;
+      // Reserve only for `initiator_domains_included` because it is expected to
+      // be the one used more frequently.
+      initiator_domains_included.reserve(rule_.initiator_domains_size());
 
-      for (const auto& domain_list_item : rule_.domains()) {
+      for (const auto& domain_list_item : rule_.initiator_domains()) {
         const std::string& domain = domain_list_item.domain();
 
         // Non-ascii characters in domains are unsupported.
@@ -169,15 +169,15 @@ class UrlRuleFlatBufferConverter {
             HasNoUpperAscii(domain) ? domain : base::ToLowerASCII(domain));
 
         if (domain_list_item.exclude())
-          domains_excluded.push_back(offset);
+          initiator_domains_excluded.push_back(offset);
         else
-          domains_included.push_back(offset);
+          initiator_domains_included.push_back(offset);
       }
       // The domains are stored in sorted order to support fast matching.
-      domains_included_offset =
-          SerializeDomainList(std::move(domains_included), builder, domain_map);
-      domains_excluded_offset =
-          SerializeDomainList(std::move(domains_excluded), builder, domain_map);
+      initiator_domains_included_offset = SerializeDomainList(
+          std::move(initiator_domains_included), builder, domain_map);
+      initiator_domains_excluded_offset = SerializeDomainList(
+          std::move(initiator_domains_excluded), builder, domain_map);
     }
 
     // Non-ascii characters in patterns are unsupported.
@@ -191,7 +191,8 @@ class UrlRuleFlatBufferConverter {
     return flat::CreateUrlRule(
         *builder, options_, element_types_, flat::RequestMethod_ANY,
         activation_types_, url_pattern_type_, anchor_left_, anchor_right_,
-        domains_included_offset, domains_excluded_offset, url_pattern_offset);
+        initiator_domains_included_offset, initiator_domains_excluded_offset,
+        url_pattern_offset);
   }
 
  private:
@@ -255,7 +256,7 @@ class UrlRuleFlatBufferConverter {
     switch (rule_.source_type()) {
       case proto::SOURCE_TYPE_ANY:
         options_ |= flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
-        FALLTHROUGH;
+        [[fallthrough]];
       case proto::SOURCE_TYPE_FIRST_PARTY:
         options_ |= flat::OptionFlag_APPLIES_TO_FIRST_PARTY;
         break;
@@ -423,12 +424,12 @@ void UrlPatternIndexBuilder::IndexUrlRule(UrlRuleOffset offset) {
 #if DCHECK_IS_ON()
   // Sanity check that the rule does not have fields with non-ascii characters.
   DCHECK(base::IsStringASCII(ToStringPiece(rule->url_pattern())));
-  if (rule->domains_included()) {
-    for (auto* domain : *rule->domains_included())
+  if (rule->initiator_domains_included()) {
+    for (auto* domain : *rule->initiator_domains_included())
       DCHECK(base::IsStringASCII(ToStringPiece(domain)));
   }
-  if (rule->domains_excluded()) {
-    for (auto* domain : *rule->domains_excluded())
+  if (rule->initiator_domains_excluded()) {
+    for (auto* domain : *rule->initiator_domains_excluded())
       DCHECK(base::IsStringASCII(ToStringPiece(domain)));
   }
 
@@ -610,11 +611,13 @@ const flat::UrlRule* FindMatchAmongCandidates(
       continue;
     }
 
+    if (disable_generic_rules && IsRuleGeneric(*rule))
+      continue;
+
     if (!UrlPattern(*rule).MatchesUrl(url))
       continue;
 
-    if (DoesOriginMatchDomainList(document_origin, *rule,
-                                  disable_generic_rules)) {
+    if (DoesOriginMatchInitiatorDomainList(document_origin, *rule)) {
       if (matched_rules)
         matched_rules->push_back(rule);
       else
@@ -724,25 +727,28 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
 
 }  // namespace
 
-bool DoesOriginMatchDomainList(const url::Origin& origin,
-                               const flat::UrlRule& rule,
-                               bool disable_generic_rules) {
-  const bool is_generic = !rule.domains_included();
-  DCHECK(is_generic || rule.domains_included()->size());
-  if (disable_generic_rules && is_generic)
-    return false;
+bool IsRuleGeneric(const flat::UrlRule& rule) {
+  return !rule.initiator_domains_included();
+}
 
-  // Unique |origin| matches lists of exception domains only.
+bool DoesOriginMatchInitiatorDomainList(const url::Origin& origin,
+                                        const flat::UrlRule& rule) {
+  const bool is_generic = IsRuleGeneric(rule);
+  DCHECK(is_generic || rule.initiator_domains_included()->size());
+
+  // Unique `origin` matches lists of exception domains only.
   if (origin.opaque())
     return is_generic;
 
   size_t longest_matching_included_domain_length = 1;
   if (!is_generic) {
     longest_matching_included_domain_length =
-        GetLongestMatchingSubdomain(origin, *rule.domains_included());
+        GetLongestMatchingSubdomain(origin, *rule.initiator_domains_included());
   }
-  if (longest_matching_included_domain_length && rule.domains_excluded()) {
-    return GetLongestMatchingSubdomain(origin, *rule.domains_excluded()) <
+  if (longest_matching_included_domain_length &&
+      rule.initiator_domains_excluded()) {
+    return GetLongestMatchingSubdomain(origin,
+                                       *rule.initiator_domains_excluded()) <
            longest_matching_included_domain_length;
   }
   return !!longest_matching_included_domain_length;
@@ -792,6 +798,11 @@ UrlPatternIndexMatcher::UrlPatternIndexMatcher(
     const flat::UrlPatternIndex* flat_index)
     : flat_index_(flat_index) {
   DCHECK(!flat_index || flat_index->n() == kNGramSize);
+  // Speculative investigation for crash (see crbug.com/1286207): check that we
+  // can access the ngram_index on each UrlPatternIndexMatcher without failure.
+  if (flat_index) {
+    CHECK_GT(flat_index->ngram_index()->size(), 0u);
+  }
 }
 
 UrlPatternIndexMatcher::~UrlPatternIndexMatcher() = default;

@@ -12,7 +12,15 @@ namespace prefs {
 // Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
 // enabled, but each API will respect its own enabling logic if this pref is
 // true. When this pref is false ALL Privacy Sandbox APIs are disabled.
+// TODO(crbug.com/1292898): Deprecate this preference once all users have been
+// migrated to the V2 pref.
 extern const char kPrivacySandboxApisEnabled[];
+
+// Un-synced boolean pref. This is a replacement for the synced preference
+// above. It performs the exact same functionality, but is unsynced. This
+// preference is only consulted when the kPrivacySandboxSettings3 feature is
+// enabled.
+extern const char kPrivacySandboxApisEnabledV2[];
 
 // Synced boolean that indicates if a user has manually toggled the settings
 // associated with the PrivacySandboxSettings feature.
@@ -34,6 +42,27 @@ extern const char kPrivacySandboxFlocDataAccessibleSince[];
 // Synced boolean that controls whether FLoC is enabled. Requires that the
 // kPrivacySandboxApisEnabled preference be enabled to take effect.
 extern const char kPrivacySandboxFlocEnabled[];
+
+// Dictionary of entries representing top frame origins on which the profile
+// cannot be joined to an interest group. Keys are the blocked origins, and
+// values are the time the setting was applied.
+extern const char kPrivacySandboxFledgeJoinBlocked[];
+
+// Boolean that indicates that the Privacy Sandbox notice was shown to the
+// profile.
+extern const char kPrivacySandboxNoticeDisplayed[];
+
+// Boolean that indicates that this profile has made a decision on the Privacy
+// Sandbox consent.
+extern const char kPrivacySandboxConsentDecisionMade[];
+
+// Boolean that indicates a Privacy Sandbox confirmation was not shown to the
+// profile because the profile had already disabled the Privacy Sandbox.
+extern const char kPrivacySandboxNoConfirmationSandboxDisabled[];
+
+// Boolean that indicates the user's Privacy Sandbox setting was disabled
+// automatically because they do not have the correct level of confirmation.
+extern const char kPrivacySandboxDisabledInsufficientConfirmation[];
 
 }  // namespace prefs
 

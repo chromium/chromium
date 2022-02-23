@@ -74,6 +74,12 @@ bool GrpcServicesInitializer::Start() {
   return true;
 }
 
+void GrpcServicesInitializer::AddAlarmTimerEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+        observer) {
+  alarm_timer_event_handler_driver_->AddObserver(observer);
+}
+
 void GrpcServicesInitializer::AddAssistantDisplayEventObserver(
     GrpcServicesObserver<::assistant::api::OnAssistantDisplayEventRequest>*
         observer) {
@@ -107,6 +113,11 @@ void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
   service_drivers_.emplace_back(action_handler_driver_.get());
 
   // Inits other event handler drivers.
+  alarm_timer_event_handler_driver_ = std::make_unique<
+      EventHandlerDriver<::assistant::api::AlarmTimerEventHandlerInterface>>(
+      &server_builder_, libassistant_client_.get(), assistant_service_address_);
+  service_drivers_.emplace_back(alarm_timer_event_handler_driver_.get());
+
   assistant_display_event_handler_driver_ = std::make_unique<EventHandlerDriver<
       ::assistant::api::AssistantDisplayEventHandlerInterface>>(
       &server_builder_, libassistant_client_.get(), assistant_service_address_);
@@ -144,6 +155,7 @@ void GrpcServicesInitializer::InitAssistantGrpcServer() {
 }
 
 void GrpcServicesInitializer::RegisterEventHandlers() {
+  alarm_timer_event_handler_driver_->StartRegistration();
   assistant_display_event_handler_driver_->StartRegistration();
   device_state_event_handler_driver_->StartRegistration();
 }

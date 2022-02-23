@@ -25,6 +25,7 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 

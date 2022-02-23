@@ -12,7 +12,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
@@ -81,14 +80,6 @@ class PendingAppListUpdatesObserver : public base::CheckedObserver {
 
 class ExportContainerProgressObserver {
  public:
-  // DEPCRECATED. A successfully started container export will continually fire
-  // progress events until the original callback from ExportLxdContainer is
-  // invoked with a status of SUCCESS or CONTAINER_EXPORT_FAILED.
-  virtual void OnExportContainerProgress(const ContainerId& container_id,
-                                         ExportContainerProgressStatus status,
-                                         int progress_percent,
-                                         uint64_t progress_speed) = 0;
-
   // A successfully started container export will continually fire progress
   // events until the original callback from ExportLxdContainer is invoked with
   // a status of SUCCESS or CONTAINER_EXPORT_FAILED.
@@ -200,7 +191,9 @@ class CrostiniManager : public KeyedService,
   struct RestartOptions {
     bool start_vm_only = false;
     bool stop_after_lxd_available = false;
-    // These two options only affect new containers.
+    // Paths to share with VM on startup.
+    std::vector<base::FilePath> share_paths;
+    // These four options only affect new containers.
     absl::optional<std::string> container_username;
     absl::optional<int64_t> disk_size_bytes;
     absl::optional<std::string> image_server_url;
@@ -322,6 +315,12 @@ class CrostiniManager : public KeyedService,
   // arguments are bad, or once the container has been created.
   void StartLxdContainer(ContainerId container_id,
                          CrostiniResultCallback callback);
+
+  // Checks the arguments for stopping an Lxd container via
+  // CiceroneClient::StopLxdContainer. |callback| is called immediately if the
+  // arguments are bad, or once the container has been stopped.
+  void StopLxdContainer(ContainerId container_id,
+                        CrostiniResultCallback callback);
 
   // Checks the arguments for setting up an Lxd container user via
   // CiceroneClient::SetUpLxdContainerUser. |callback| is called immediately if
@@ -459,12 +458,6 @@ class CrostiniManager : public KeyedService,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
-  // Set options for the next restart of |container_id|. The restart will
-  // consume the options.
-  // TODO(crbug:1261319): Get rid of the need for this.
-  void SetRestartOptions(ContainerId container_id,
-                         RestartOptions restart_options);
-
   // Aborts a restart. A "next" restarter with the same ContainerId will run, if
   // there is one. |callback| will be called once the restart has finished
   // aborting
@@ -551,6 +544,8 @@ class CrostiniManager : public KeyedService,
       const vm_tools::cicerone::TremplinStartedSignal& signal) override;
   void OnLxdContainerStarting(
       const vm_tools::cicerone::LxdContainerStartingSignal& signal) override;
+  void OnLxdContainerStopping(
+      const vm_tools::cicerone::LxdContainerStoppingSignal& signal) override;
   void OnExportLxdContainerProgress(
       const vm_tools::cicerone::ExportLxdContainerProgressSignal& signal)
       override;
@@ -738,6 +733,12 @@ class CrostiniManager : public KeyedService,
       CrostiniResultCallback callback,
       absl::optional<vm_tools::cicerone::StartLxdContainerResponse> response);
 
+  // Callback for CiceroneClient::StopLxdContainer.
+  void OnStopLxdContainer(
+      const ContainerId& container_id,
+      CrostiniResultCallback callback,
+      absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response);
+
   // Callback for CiceroneClient::SetUpLxdContainerUser.
   void OnSetUpLxdContainerUser(
       const ContainerId& container_id,
@@ -856,6 +857,7 @@ class CrostiniManager : public KeyedService,
 
   // Callbacks that are waiting on a signal
   std::multimap<ContainerId, CrostiniResultCallback> start_container_callbacks_;
+  std::multimap<ContainerId, CrostiniResultCallback> stop_container_callbacks_;
   std::multimap<ContainerId, base::OnceClosure> shutdown_container_callbacks_;
   std::multimap<ContainerId, CrostiniResultCallback>
       create_lxd_container_callbacks_;
@@ -863,9 +865,6 @@ class CrostiniManager : public KeyedService,
   std::map<ContainerId, ExportLxdContainerResultCallback>
       export_lxd_container_callbacks_;
   std::map<ContainerId, CrostiniResultCallback> import_lxd_container_callbacks_;
-
-  // Restart options that are required to start particular containers
-  std::map<ContainerId, RestartOptions> restart_options_;
 
   // Callbacks to run after Tremplin is started, keyed by vm_name. These are
   // used if StartTerminaVm completes but we need to wait from Tremplin to

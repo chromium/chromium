@@ -21,6 +21,9 @@ namespace pdf {
 
 class PdfInternalPluginDelegate;
 
+// Returns `true` if the current process is a PDF renderer.
+bool IsPdfRenderer();
+
 // Tries to create an instance of the internal PDF plugin, returning `nullptr`
 // if the plugin cannot be created. This function handles both the Pepper and
 // Pepper-free implementations, delegating to `content::RenderFrame` when

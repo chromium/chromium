@@ -117,6 +117,21 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   EXPECT_FALSE(DevToolsWindow::GetInstanceForInspectedWebContents(contents));
 }
 
+IN_PROC_BROWSER_TEST_F(PolicyTest,
+                       ViewSourceDisabledByDeveloperToolsAvailability) {
+  // Verifies that entry points to ViewSource can be disabled by setting the
+  // DeveloperToolsAvailability policy.
+
+  // Disable devtools via policy.
+  PolicyMap policies;
+  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
+  UpdateProviderPolicy(policies);
+  // Verify that it's not possible to ViewSource.
+  EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_VIEW_SOURCE));
+}
+
 IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
   // Verifies that when DeveloperToolsDisabled policy is set, the "dev mode"
   // in chrome://extensions is actively turned off and the checkbox

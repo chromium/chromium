@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_address_space.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
@@ -548,11 +548,11 @@ TEST(ToV8TraitsTest, NullableCallbackInterface) {
 
 TEST(ToV8TraitsTest, NullableEnumeration) {
   const V8TestingScope scope;
-  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "null", absl::nullopt);
-  const absl::optional<V8AddressSpace> v8_address_space =
-      V8AddressSpace::Create("public");
-  TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
-                   v8_address_space);
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AlignSetting>, "null", absl::nullopt);
+  const absl::optional<V8AlignSetting> v8_align_setting =
+      V8AlignSetting::Create("start");
+  TEST_TOV8_TRAITS(scope, IDLNullable<V8AlignSetting>, "start",
+                   v8_align_setting);
 }
 
 TEST(ToV8TraitsTest, NullableArray) {

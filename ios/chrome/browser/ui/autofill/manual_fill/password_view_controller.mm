@@ -8,6 +8,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
@@ -193,8 +194,9 @@ NSString* const kPasswordTableViewAccessibilityIdentifier =
       base::mac::ObjCCastStrict<ManualFillPasswordCell>(cell);
 
   NSString* itemIdentifier = passwordItem.uniqueIdentifier;
+  CrURL* crurl = [[CrURL alloc] initWithGURL:passwordItem.faviconURL];
   [self.imageDataSource
-      faviconForURL:passwordItem.faviconURL
+      faviconForURL:crurl
          completion:^(FaviconAttributes* attributes) {
            // Only set favicon if the cell hasn't been reused.
            if ([passwordCell.uniqueIdentifier isEqualToString:itemIdentifier]) {

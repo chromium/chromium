@@ -13,7 +13,7 @@ jsbundler_modules = [
   "//third_party/chromevox/third_party/closure-library/closure/bin/build/depstree.py",
   "//third_party/chromevox/third_party/closure-library/closure/bin/build/source.py",
   "//third_party/chromevox/third_party/closure-library/closure/bin/build/treescan.py",
-  "//third_party/devtools-frontend/src/scripts/build/rjsmin.py",
+  "//third_party/rjsmin/rjsmin.py",
 ]
 
 template("run_jsbundler") {

@@ -21,9 +21,9 @@ TOP_LEVEL_EXPECTATION_FILES = {
     'SlowTests',
     'TestExpectations',
     'W3CImportExpectations',
-    'WPTOverrideExpectations',
-    'WebDriverExpectations',
-    'WebGPUExpectations',
+    # WebDriver and WPTOverride omitted since we do not get ResultDB data for
+    # those suites. WebGPU omitted since that suite is currently not supported
+    # by this script.
 }
 
 
@@ -31,7 +31,7 @@ class WebTestExpectations(expectations.Expectations):
     def __init__(self):
         super(WebTestExpectations, self).__init__()
         self._expectation_filepaths = None
-        self._expectation_file_tag_header = None
+        self._expectation_file_tag_headers = {}
         self._flag_specific_expectation_files = None
 
     def GetExpectationFilepaths(self):
@@ -65,16 +65,17 @@ class WebTestExpectations(expectations.Expectations):
                     self._flag_specific_expectation_files.add(ef)
         return self._flag_specific_expectation_files
 
-    def _GetExpectationFileTagHeader(self):
-        if self._expectation_file_tag_header is None:
+    def _GetExpectationFileTagHeader(self, expectation_file):
+        if expectation_file not in self._expectation_file_tag_headers:
             # Copy all the comments and blank lines at the top of the file,
             # which constitutes the header.
-            self._expectation_file_tag_header = ''
-            with open(MAIN_EXPECTATION_FILE) as f:
+            header = ''
+            with open(expectation_file) as f:
                 contents = f.read()
             for line in contents.splitlines(True):
                 line = line.lstrip()
                 if line and not line.startswith('#'):
                     break
-                self._expectation_file_tag_header += line
-        return self._expectation_file_tag_header
+                header += line
+            self._expectation_file_tag_headers[expectation_file] = header
+        return self._expectation_file_tag_headers[expectation_file]

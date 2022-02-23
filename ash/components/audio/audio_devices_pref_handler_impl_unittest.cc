@@ -114,25 +114,25 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     {
       DictionaryPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesState);
-      base::DictionaryValue* pref = update.Get();
-      base::DictionaryValue state;
-      state.SetBoolean("active", kPresetState.active);
-      state.SetBoolean("activate_by_user", kPresetState.activate_by_user);
-      pref->SetPath(preset_key, std::move(state));
+      base::Value* pref = update.Get();
+      base::Value state(base::Value::Type::DICTIONARY);
+      state.SetBoolKey("active", kPresetState.active);
+      state.SetBoolKey("activate_by_user", kPresetState.activate_by_user);
+      pref->SetKey(preset_key, std::move(state));
     }
 
     {
       DictionaryPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesVolumePercent);
-      base::DictionaryValue* pref = update.Get();
+      base::Value* pref = update.Get();
       pref->SetDoubleKey(preset_key, kPresetState.sound_level);
     }
 
     {
       DictionaryPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesMute);
-      base::DictionaryValue* pref = update.Get();
-      pref->SetInteger(preset_key, static_cast<int>(kPresetState.mute));
+      base::Value* pref = update.Get();
+      pref->SetIntKey(preset_key, static_cast<int>(kPresetState.mute));
     }
 
     audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());

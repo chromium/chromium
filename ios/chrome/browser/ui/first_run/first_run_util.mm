@@ -99,6 +99,9 @@ void RecordFirstRunSignInMetrics(
       case first_run::SignInAttemptStatus::SKIPPED_BY_POLICY:
         sign_in_status = first_run::SIGNIN_SKIPPED_POLICY;
         break;
+      case first_run::SignInAttemptStatus::NOT_SUPPORTED:
+        sign_in_status = first_run::SIGNIN_NOT_SUPPORTED;
+        break;
     }
   }
   base::UmaHistogramEnumeration("FirstRun.SignIn", sign_in_status,

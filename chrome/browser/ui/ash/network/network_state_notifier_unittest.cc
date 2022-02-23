@@ -18,15 +18,12 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/platform_test.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -91,11 +88,10 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+    network_handler_test_helper_->RegisterPrefs(user_prefs_.registry(),
+                                                local_state_.registry());
+
+    network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
 
     SetupDefaultShillState();
     base::RunLoop().RunUntilIdle();

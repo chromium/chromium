@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.S
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.WebContents;
@@ -47,18 +46,16 @@ public class ChromePageInfo {
     /**
      * Show page info dialog.
      * @param tab Tab object containing the page whose information to be displayed.
-     * @param permission The {@link ContentSettingsType} to be highlighted on this page.
-     * @param fromStoreIcon Whether user enters page info via the store icon in omnibox, used to
-     *         determine whether to highlight the "Store info" row.
+     * @param pageInfoHighlight Providing the highlight row info related to this dialog.
      */
-    public void show(Tab tab, @ContentSettingsType int permission, boolean fromStoreIcon) {
+    public void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight) {
         WebContents webContents = tab.getWebContents();
         Activity activity = TabUtils.getActivity(tab);
         PageInfoController.show(activity, webContents, mPublisher, mSource,
                 new ChromePageInfoControllerDelegate(activity, webContents,
                         mModalDialogManagerSupplier,
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab),
-                        mStoreInfoActionHandlerSupplier, fromStoreIcon),
-                permission);
+                        mStoreInfoActionHandlerSupplier, pageInfoHighlight),
+                pageInfoHighlight);
     }
 }

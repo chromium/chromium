@@ -237,19 +237,12 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_SaveAs_Cancel) {
   RunTestViaHTTP("FileChooser_SaveAsCancel");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, tests that a file downloaded via PPAPI FileChooser API has the
 // mark-of-the-web. The PPAPI FileChooser implementation invokes QuarantineFile
 // in order to mark the file as being downloaded from the web as soon as the
 // file is created. This MotW prevents the file being opened without due
 // security warnings if the file is executable.
-//
-// This test is disabled on Mac even though quarantine support is implemented on
-// Mac. New files created on Mac only receive the MOTW if the process creating
-// them comes from an app with LSFileQuarantineEnabled in its Info.plist. Since
-// PPAPI delegates file creation to the browser process, which in browser_tests
-// is not part of an app, files downloaded by them do not receive the MOTW and
-// this test fails.
 IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Quarantine) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -269,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Quarantine) {
   ASSERT_TRUE(base::PathExists(actual_filename));
   EXPECT_TRUE(quarantine::IsFileQuarantined(actual_filename, GURL(), GURL()));
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // These tests only make sense when SafeBrowsing is enabled. They verify

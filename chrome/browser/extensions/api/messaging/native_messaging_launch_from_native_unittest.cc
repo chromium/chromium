@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
@@ -42,7 +43,7 @@ class MockEventRouter : public EventRouter {
   }
 
  private:
-  const bool* has_listener_result_;
+  raw_ptr<const bool> has_listener_result_;
 };
 
 std::unique_ptr<KeyedService> BuildMockEventRouter(

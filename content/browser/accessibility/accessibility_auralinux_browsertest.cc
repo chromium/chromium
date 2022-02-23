@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
-  const std::vector<const std::string> expected_hypertext = {
+  const std::vector<std::string> expected_hypertext = {
       "B", "e", "f", "o", "r", "e", base::UTF16ToUTF8(embedded_character),
       "a", "f", "t", "e", "r", "."};
 
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
-                       TestParagraphTextAtOffsetWithBoundarySentence) {
+                       DISABLED_TestParagraphTextAtOffsetWithBoundarySentence) {
   LoadInitialAccessibilityTreeFromHtml(std::string(
       R"HTML(<!DOCTYPE html>
           <html>
@@ -1140,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 }
 #endif  //  defined(ATK_CHECK_VERSION) && ATK_CHECK_VERSION(2, 32, 0)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Flaky on crbug.com/1026149
 #define MAYBE_TestSetSelection DISABLED_TestSetSelection
 #else

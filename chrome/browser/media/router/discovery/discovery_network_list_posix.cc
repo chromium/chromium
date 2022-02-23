@@ -18,7 +18,7 @@
 #include "chrome/browser/media/router/discovery/discovery_network_list_wifi.h"
 #include "net/base/net_errors.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include <netpacket/packet.h>
 #else
 #include <net/if_dl.h>
@@ -27,12 +27,12 @@
 namespace media_router {
 namespace {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 using sll = struct sockaddr_ll;
 #define SOCKET_ARP_TYPE(s) ((s)->sll_hatype)
 #define SOCKET_ADDRESS_LEN(s) ((s)->sll_halen)
 #define SOCKET_ADDRESS(s) ((s)->sll_addr)
-#else  // defined(OS_MAC)
+#else  // BUILDFLAG(IS_MAC)
 #define AF_PACKET AF_LINK
 using sll = struct sockaddr_dl;
 #define SOCKET_ARP_TYPE(s) ((s)->sdl_type)

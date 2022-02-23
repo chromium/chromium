@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/json/values_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -387,7 +388,7 @@ void DownloadTargetDeterminerTest::SetUp() {
   test_virtual_dir_ = test_download_dir().Append(FILE_PATH_LITERAL("virtual"));
   delegate_.SetupDefaults();
   SetUpFileTypePolicies();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   profile()->GetTestingPrefService()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::DONT_SHOW));
@@ -415,7 +416,8 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       DownloadItem::TARGET_DISPOSITION_PROMPT :
       DownloadItem::TARGET_DISPOSITION_OVERWRITE;
   EXPECT_TRUE((test_case.test_type != FORCED) || !forced_file_path.empty());
-  content::DownloadItemUtils::AttachInfo(item.get(), profile(), web_contents());
+  content::DownloadItemUtils::AttachInfoForTesting(item.get(), profile(),
+                                                   web_contents());
 
   ON_CALL(*item, GetDangerType())
       .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
@@ -472,7 +474,7 @@ void DownloadTargetDeterminerTest::SetManagedDownloadPath(
 void DownloadTargetDeterminerTest::SetPromptForDownload(bool prompt) {
   profile()->GetTestingPrefService()->
       SetBoolean(prefs::kPromptForDownload, prompt);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadPromptStatus download_prompt_status =
       prompt ? DownloadPromptStatus::SHOW_PREFERENCE
              : DownloadPromptStatus::DONT_SHOW;
@@ -685,9 +687,10 @@ TEST_F(DownloadTargetDeterminerTest, Basic) {
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   RunTestCasesWithActiveItem(kBasicTestCases, base::size(kBasicTestCases));
 }
 
@@ -821,12 +824,13 @@ TEST_F(DownloadTargetDeterminerTest, MaybeDangerousContent) {
        EXPECT_UNCONFIRMED}};
 
   // Test assumptions:
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   ASSERT_EQ(DownloadFileType::DANGEROUS,
             safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.bad"))));
+                base::FilePath(FILE_PATH_LITERAL("foo.bad")), GURL{}, nullptr));
 
   ON_CALL(*delegate(), CheckDownloadUrl_(_, _, _))
       .WillByDefault(WithArg<2>(ScheduleCallback(
@@ -1197,9 +1201,10 @@ TEST_F(DownloadTargetDeterminerTest, VisitedReferrer) {
 
   // This test assumes that the danger level of .kindabad files is
   // ALLOW_ON_USER_GESTURE.
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
 
   GURL url("http://visited.example.com/visited-link.html");
   // The time of visit is picked to be several seconds prior to the most recent
@@ -1303,15 +1308,16 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
   };
 
   // Test assumptions:
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   ASSERT_EQ(DownloadFileType::DANGEROUS,
             safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.bad"))));
+                base::FilePath(FILE_PATH_LITERAL("foo.bad")), GURL{}, nullptr));
   ASSERT_EQ(DownloadFileType::NOT_DANGEROUS,
             safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.txt"))));
+                base::FilePath(FILE_PATH_LITERAL("foo.txt")), GURL{}, nullptr));
 
   for (const auto& test_case : kTestCases) {
     // The template download test case describes what to expect if the page
@@ -1856,9 +1862,10 @@ TEST_F(DownloadTargetDeterminerTest, ResumedNoPrompt) {
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   for (size_t i = 0; i < base::size(kResumedTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Running test case " << i);
     const DownloadTestCase& test_case = kResumedTestCases[i];
@@ -1969,9 +1976,10 @@ TEST_F(DownloadTargetDeterminerTest, ResumedWithPrompt) {
       },
   };
 
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
   for (size_t i = 0; i < base::size(kResumedTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Running test case " << i);
     download_prefs()->SetSaveFilePath(test_download_dir());
@@ -2079,9 +2087,10 @@ TEST_F(DownloadTargetDeterminerTest, IntermediateNameForResumed) {
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
-  ASSERT_EQ(DownloadFileType::ALLOW_ON_USER_GESTURE,
-            safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-                base::FilePath(FILE_PATH_LITERAL("foo.kindabad"))));
+  ASSERT_EQ(
+      DownloadFileType::ALLOW_ON_USER_GESTURE,
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{}, nullptr));
 
   for (size_t i = 0; i < base::size(kIntermediateNameTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Running test case " << i);
@@ -2440,7 +2449,7 @@ void DummyGetPluginsCallback(
 }
 
 void ForceRefreshOfPlugins() {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Prevent creation of a utility process for loading plugins. Doing so breaks
   // unit_tests since /proc/self/exe can't be run as a utility process.
   content::RenderProcessHost::SetRunRendererInProcess(true);
@@ -2449,7 +2458,7 @@ void ForceRefreshOfPlugins() {
   content::PluginService::GetInstance()->GetPlugins(
       base::BindOnce(&DummyGetPluginsCallback, run_loop.QuitClosure()));
   run_loop.Run();
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif
 }
@@ -2500,14 +2509,12 @@ class ScopedRegisterInternalPlugin {
   const base::FilePath& path() { return plugin_path_; }
 
  private:
-  content::PluginService* plugin_service_;
+  raw_ptr<content::PluginService> plugin_service_;
   base::FilePath plugin_path_;
 };
 
 // We use a slightly different test fixture for tests that touch plugins. SetUp
-// needs to disable plugin discovery and we rely on the base class'
-// ShadowingAtExitManager to discard the tainted PluginService. Unfortunately,
-// PluginService carries global state.
+// needs to disable plugin discovery.
 class DownloadTargetDeterminerTestWithPlugin
     : public DownloadTargetDeterminerTest {
  public:
@@ -2530,7 +2537,7 @@ class DownloadTargetDeterminerTestWithPlugin
   }
 
  protected:
-  content::PluginServiceFilter* old_plugin_service_filter_;
+  raw_ptr<content::PluginServiceFilter> old_plugin_service_filter_;
   testing::StrictMock<MockPluginServiceFilter> mock_plugin_filter_;
 };
 

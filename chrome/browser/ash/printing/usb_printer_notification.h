@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 

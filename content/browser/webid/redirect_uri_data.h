@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/supports_user_data.h"
-#include "content/common/content_export.h"
 
 namespace content {
 
@@ -17,7 +16,7 @@ class WebContents;
 
 // This class holds on to the needed OpenID connect redirect callbacks to help
 // connect the IDP response to the appropriate RP.
-class CONTENT_EXPORT RedirectUriData : public base::SupportsUserData::Data {
+class RedirectUriData : public base::SupportsUserData::Data {
  public:
   explicit RedirectUriData(std::string redirect_uri);
   ~RedirectUriData() override;

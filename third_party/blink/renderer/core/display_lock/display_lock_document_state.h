@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -108,6 +108,12 @@ class CORE_EXPORT DisplayLockDocumentState final
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
   void EndForcedScope(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
 
+  // This is called to make sure that any of the currently forced locks allow at
+  // least the specified phase for updates. This is used when a scope is
+  // created, for example, to update StyleAndLayoutTree, but then is upgraded to
+  // update Layout instead.
+  void EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase phase);
+
   // Forces the lock on the given element, if it isn't yet forced but appears on
   // the ancestor chain for the forced element (which was set via
   // `BeginNodeForcedScope()`).
@@ -190,8 +196,8 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   // Contains all of the currently forced node infos, each of which represents
   // the node that caused the scope to be created.
-  VectorOf<ForcedNodeInfo> forced_node_infos_;
-  VectorOf<ForcedRangeInfo> forced_range_infos_;
+  HeapVector<ForcedNodeInfo> forced_node_infos_;
+  HeapVector<ForcedRangeInfo> forced_range_infos_;
 
   bool printing_ = false;
 

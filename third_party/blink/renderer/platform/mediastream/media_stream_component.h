@@ -34,10 +34,12 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
@@ -49,6 +51,7 @@ namespace blink {
 
 class MediaStreamSource;
 class WebAudioSourceProvider;
+class WebLocalFrame;
 
 // A MediaStreamComponent is a MediaStreamTrack.
 // TODO(hta): Consider merging the two classes.
@@ -105,6 +108,11 @@ class PLATFORM_EXPORT MediaStreamComponent final
   void GetSettings(MediaStreamTrackPlatform::Settings&);
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle();
 
+  WebLocalFrame* CreationFrame() { return creation_frame_; }
+  void SetCreationFrame(WebLocalFrame* creation_frame) {
+    creation_frame_ = creation_frame;
+  }
+
   String ToString() const;
 
   void Trace(Visitor*) const;
@@ -129,7 +137,7 @@ class PLATFORM_EXPORT MediaStreamComponent final
 
    private:
     WebAudioSourceProvider* web_audio_source_provider_;
-    Mutex provide_input_lock_;
+    base::Lock provide_input_lock_;
 
     // Used to wrap AudioBus to be passed into |web_audio_source_provider_|.
     WebVector<float*> web_audio_data_;
@@ -137,6 +145,7 @@ class PLATFORM_EXPORT MediaStreamComponent final
 
   AudioSourceProviderImpl source_provider_;
   Member<MediaStreamSource> source_;
+
   String id_;
   int unique_id_;
   bool enabled_ = true;
@@ -145,6 +154,8 @@ class PLATFORM_EXPORT MediaStreamComponent final
       WebMediaStreamTrack::ContentHintType::kNone;
   MediaConstraints constraints_;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
+  // Frame where the referenced platform track was created, if applicable.
+  WebLocalFrame* creation_frame_ = nullptr;
 };
 
 typedef HeapVector<Member<MediaStreamComponent>> MediaStreamComponentVector;

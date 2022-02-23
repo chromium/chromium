@@ -125,18 +125,18 @@ class CellularInhibitorTest : public testing::Test {
   }
 
   GetInhibitedPropertyResult GetInhibitedProperty() {
-    properties_.reset();
+    properties_ = {};
     helper_.network_device_handler()->GetDeviceProperties(
         kDefaultCellularDevicePath,
         base::BindOnce(&CellularInhibitorTest::GetPropertiesCallback,
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
 
-    if (!properties_)
+    if (properties_.is_none())
       return GetInhibitedPropertyResult::kOperationFailed;
 
     absl::optional<bool> inhibited =
-        properties_->FindBoolKey(shill::kInhibitedProperty);
+        properties_.FindBoolKey(shill::kInhibitedProperty);
     EXPECT_TRUE(inhibited.has_value());
     return inhibited.value() ? GetInhibitedPropertyResult::kTrue
                              : GetInhibitedPropertyResult::kFalse;
@@ -169,13 +169,7 @@ class CellularInhibitorTest : public testing::Test {
  private:
   void GetPropertiesCallback(const std::string& device_path,
                              absl::optional<base::Value> properties) {
-    if (!properties) {
-      properties_.reset();
-      return;
-    }
-
-    properties_ = base::DictionaryValue::From(
-        std::make_unique<base::Value>(std::move(*properties)));
+    properties_ = properties ? std::move(*properties) : base::Value();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -184,7 +178,7 @@ class CellularInhibitorTest : public testing::Test {
   CellularInhibitor cellular_inhibitor_;
   TestObserver observer_;
 
-  std::unique_ptr<base::DictionaryValue> properties_;
+  base::Value properties_;
 };
 
 TEST_F(CellularInhibitorTest, SuccessSingleRequest) {

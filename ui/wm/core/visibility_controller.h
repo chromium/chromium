@@ -5,7 +5,7 @@
 #ifndef UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 #define UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/visibility_client.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -62,7 +62,7 @@ class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
 
  private:
   // The window to manage.
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 
   // Whether the visibility animations on child windows were originally enabled.
   const bool original_enabled_;

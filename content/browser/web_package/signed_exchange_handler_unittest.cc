@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +40,8 @@
 #include "net/http/transport_security_state.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -338,21 +341,21 @@ class SignedExchangeHandlerTest
     return *resource_response_;
   }
 
-  // Creates a TestURLRequestContext that uses |mock_ct_policy_enforcer_|.
-  std::unique_ptr<net::TestURLRequestContext> CreateTestURLRequestContext() {
-    auto test_url_request_context =
-        std::make_unique<net::TestURLRequestContext>(
-            true /* delay_initialization */);
-    test_url_request_context->set_ct_policy_enforcer(
-        mock_ct_policy_enforcer_.get());
-    test_url_request_context->set_sct_auditing_delegate(
-        mock_sct_auditing_delegate_.get());
-    test_url_request_context->Init();
-    return test_url_request_context;
+  // Creates a URLRequestContext that uses |mock_ct_policy_enforcer_|.
+  std::unique_ptr<net::URLRequestContext> CreateTestURLRequestContext() {
+    // We consume these mock objects, so register expectations beforehand.
+    DCHECK(mock_ct_policy_enforcer_);
+    DCHECK(mock_sct_auditing_delegate_);
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_ct_policy_enforcer(
+        std::move(mock_ct_policy_enforcer_));
+    context_builder->set_sct_auditing_delegate(
+        std::move(mock_sct_auditing_delegate_));
+    return context_builder->Build();
   }
 
   void CreateSignedExchangeHandler(
-      std::unique_ptr<net::TestURLRequestContext> context) {
+      std::unique_ptr<net::URLRequestContext> context) {
     url_request_context_ = std::move(context);
     network_context_ = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote_.BindNewPipeAndPassReceiver(),
@@ -366,7 +369,8 @@ class SignedExchangeHandlerTest
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
         std::move(cert_fetcher_factory_), network_isolation_key_,
-        net::LOAD_NORMAL, net::IPEndPoint(),
+        absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
+        net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
         nullptr /* devtools_proxy */, nullptr /* reporter */,
@@ -411,11 +415,11 @@ class SignedExchangeHandlerTest
 
  protected:
   const base::HistogramTester histogram_tester_;
-  MockSignedExchangeCertFetcherFactory* mock_cert_fetcher_factory_;
+  raw_ptr<MockSignedExchangeCertFetcherFactory> mock_cert_fetcher_factory_;
   std::unique_ptr<net::CertVerifier> cert_verifier_;
   std::unique_ptr<MockCTPolicyEnforcer> mock_ct_policy_enforcer_;
   std::unique_ptr<MockSCTAuditingDelegate> mock_sct_auditing_delegate_;
-  net::MockSourceStream* source_;
+  raw_ptr<net::MockSourceStream> source_;
   std::unique_ptr<SignedExchangeHandler> handler_;
 
  private:
@@ -444,8 +448,8 @@ class SignedExchangeHandlerTest
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
-  std::unique_ptr<net::TestURLRequestContext> url_request_context_;
+  raw_ptr<ContentBrowserClient> original_client_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   const url::Origin request_initiator_;
@@ -931,7 +935,7 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 
   SetSourceStreamContents("test.example.org_test.sxg");
 
-  std::unique_ptr<net::TestURLRequestContext> url_request_context =
+  std::unique_ptr<net::URLRequestContext> url_request_context =
       CreateTestURLRequestContext();
   url_request_context->transport_security_state()->AddExpectCT(
       "test.example.org", base::Time::Now() + base::Days(1) /* expiry */,
@@ -1062,11 +1066,9 @@ TEST_P(SignedExchangeHandlerTest, CTVerifierParams) {
       .WillOnce(
           Return(net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
-  auto test_url_request_context = std::make_unique<net::TestURLRequestContext>(
-      true /* delay_initialization */);
-  test_url_request_context->set_ct_policy_enforcer(
-      mock_ct_policy_enforcer_.get());
-  test_url_request_context->Init();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_ct_policy_enforcer(std::move(mock_ct_policy_enforcer_));
+  auto test_url_request_context = context_builder->Build();
 
   // Mock a verify result including the SCTs.
   auto verify_result = CreateCertVerifyResult();

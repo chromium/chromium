@@ -167,7 +167,7 @@ bool ExtractInvocationSequenceFromManifest(
 
   // If there are no launch parameters, create a single invocation with default
   // behaviour.
-  if (!parameter_list || parameter_list->GetList().empty()) {
+  if (!parameter_list || parameter_list->GetListDeprecated().empty()) {
     base::CommandLine command_line(exe_path);
     command_line.AppendSwitchASCII(chrome_cleaner::kSessionIdSwitch,
                                    session_id);
@@ -178,7 +178,7 @@ bool ExtractInvocationSequenceFromManifest(
     return true;
   }
 
-  for (const auto& invocation_params : parameter_list->GetList()) {
+  for (const auto& invocation_params : parameter_list->GetListDeprecated()) {
     if (!invocation_params.is_dict()) {
       ReportConfigurationError(kBadParams);
       return false;
@@ -207,7 +207,7 @@ bool ExtractInvocationSequenceFromManifest(
     }
 
     std::vector<std::wstring> argv = {exe_path.value()};
-    for (const auto& value : arguments->GetList()) {
+    for (const auto& value : arguments->GetListDeprecated()) {
       if (!value.is_string()) {
         ReportConfigurationError(kBadParams);
         return false;

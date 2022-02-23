@@ -80,6 +80,11 @@ void SyncFileSystemInternalsHandler::OnSyncStateUpdated(
     const GURL& app_origin,
     sync_file_system::SyncServiceState state,
     const std::string& description) {
+  if (!IsJavascriptAllowed()) {
+    // Javascript is disallowed, either due to the page still loading, or in the
+    // process of being unloaded. Skip this update.
+    return;
+  }
   std::string state_string = chrome_apps::api::sync_file_system::ToString(
       chrome_apps::api::SyncServiceStateToExtensionEnum(state));
   if (!description.empty())
@@ -102,9 +107,9 @@ void SyncFileSystemInternalsHandler::OnLogRecorded(
     const sync_file_system::TaskLogger::TaskLog& task_log) {
   base::DictionaryValue dict;
   int64_t duration = (task_log.end_time - task_log.start_time).InMilliseconds();
-  dict.SetInteger("duration", duration);
-  dict.SetString("task_description", task_log.task_description);
-  dict.SetString("result_description", task_log.result_description);
+  dict.SetIntKey("duration", duration);
+  dict.SetStringKey("task_description", task_log.task_description);
+  dict.SetStringKey("result_description", task_log.result_description);
 
   base::ListValue details;
   for (const std::string& detail : task_log.details) {
@@ -124,7 +129,7 @@ void SyncFileSystemInternalsHandler::HandleGetServiceStatus(
     state_enum = sync_service->GetSyncServiceState();
   const std::string state_string = chrome_apps::api::sync_file_system::ToString(
       chrome_apps::api::SyncServiceStateToExtensionEnum(state_enum));
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
                             base::Value(state_string));
 }
 
@@ -137,13 +142,13 @@ void SyncFileSystemInternalsHandler::HandleGetNotificationSource(
     return;
   bool xmpp_enabled = drive_notification_manager->push_notification_enabled();
   std::string notification_source = xmpp_enabled ? "XMPP" : "Polling";
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */,
+  ResolveJavascriptCallback(args->GetListDeprecated()[0] /* callback_id */,
                             base::Value(notification_source));
 }
 
 void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
   AllowJavascript();
-  const auto& args_list = args->GetList();
+  const auto& args_list = args->GetListDeprecated();
   DCHECK_GE(args_list.size(), 1u);
   const base::Value& callback_id = args_list[0];
   const std::vector<EventLogger::Event> log =
@@ -167,7 +172,7 @@ void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
     list.Append(std::move(dict));
     last_log_id_sent = log_entry->id;
   }
-  if (list.GetList().empty())
+  if (list.GetListDeprecated().empty())
     return;
 
   ResolveJavascriptCallback(callback_id, list);

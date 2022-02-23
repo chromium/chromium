@@ -8,14 +8,12 @@
 
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
-
-using ::chromeos::CupsPrintJob;
 
 FakeCupsPrintJobManager::FakeCupsPrintJobManager(Profile* profile)
     : CupsPrintJobManager(profile) {
@@ -31,7 +29,7 @@ bool FakeCupsPrintJobManager::CreatePrintJob(
     int total_page_number,
     ::printing::PrintJob::Source source,
     const std::string& source_id,
-    const chromeos::printing::proto::PrintSettings& settings) {
+    const printing::proto::PrintSettings& settings) {
   chromeos::Printer printer(printer_id);
   printer.set_display_name(printer_id);
 
@@ -141,11 +139,9 @@ void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
       base::Milliseconds(3000));
 }
 
-}  // namespace ash
-
-namespace chromeos {
 // static
 CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
-  return new ash::FakeCupsPrintJobManager(profile);
+  return new FakeCupsPrintJobManager(profile);
 }
-}  // namespace chromeos
+
+}  // namespace ash

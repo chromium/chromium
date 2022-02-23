@@ -2,87 +2,108 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Adds filter script and css to all existing tabs.
- *
- * TODO(wnwen): Verify content scripts are not being injected multiple times.
- */
-function injectContentScripts() {
-  chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
-        if (isDisallowedUrl(url)) {
-          continue;
-        }
-        chrome.tabs.executeScript(
-            tabs[j].id,
-            {file: 'src/common.js'});
-        chrome.tabs.executeScript(
-            tabs[j].id,
-            {file: 'src/cvd.js'});
-      }
-    }
-  });
-}
+importScripts('./common.js', './cvd_type.js', './storage.js');
+Storage.initialize();
 
-/**
- * Updates all existing tabs with config values.
- */
-function updateTabs() {
-  chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
-        if (isDisallowedUrl(url)) {
-          continue;
-        }
-        var msg = {
-          'delta': getSiteDelta(siteFromUrl(url)),
-          'severity': getDefaultSeverity(),
-          'type': getDefaultType(),
-          'simulate': getDefaultSimulate(),
-          'enable': getDefaultEnable()
-        };
-        debugPrint('updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
-            siteFromUrl(url));
-        chrome.tabs.sendRequest(tabs[j].id, msg);
-      }
-    }
-  });
-}
+class Background {
+  constructor() {
+    this.init_();
+  }
 
-/**
- * Initial extension loading.
- */
-(function initialize() {
-  injectContentScripts();
-  updateTabs();
-
-  chrome.extension.onRequest.addListener(
-      function(request, sender, sendResponse) {
-        if (request['init']) {
-          var delta = getDefaultDelta();
-          if (sender.tab) {
-            delta = getSiteDelta(siteFromUrl(sender.tab.url));
+  /**
+   * @param {function(chrome.tabs.Tab)} tabCallback A function that performs
+   *     an action on each tab
+   * @private
+   */
+  forEachTab_(tabCallback) {
+    chrome.windows.getAll({'populate': true}, windows => {
+      for (const w of windows) {
+        for (const tab of w.tabs) {
+          if (Common.isDisallowedUrl(tab.url)) {
+            continue;
           }
-
-          var msg = {
-            'delta': delta,
-            'severity': getDefaultSeverity(),
-            'type': getDefaultType(),
-            'simulate': getDefaultSimulate(),
-            'enable': getDefaultEnable()
-          };
-          sendResponse(msg);
+          tabCallback(tab);
         }
-      });
+      }
+    });
+  }
 
-  //TODO(mustaq): Handle uninstall
+  /**
+   * Adds filter script and css to all existing tabs.
+   *
+   * TODO(wnwen): Verify content scripts are not being injected multiple times.
+   */
+  injectContentScripts() {
+    this.forEachTab_(tab => chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      files: [
+          'src/common.js', 'src/matrix.js', 'src/cvd_type.js', 'src/cvd.js'],
+    }));
+  }
 
-  document.addEventListener('storage', function(evt) {
-    updateTabs();
-  }, false);
-})();
+  /**
+   * Updates all existing tabs with config values.
+   * @private
+   */
+  updateTabs_() {
+    this.forEachTab_((tab) => {
+      const msg = {
+        'delta': Storage.getSiteDelta(Common.siteFromUrl(tab.url)),
+        'severity': Storage.severity,
+        'type': Storage.type,
+        'simulate': Storage.simulate,
+        'enable': Storage.enable
+      };
+      Common.debugPrint(
+          'updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
+          Common.siteFromUrl(tab.url));
+      chrome.tabs.sendMessage(tab.id, msg);
+    });
+  }
+
+  /** @private */
+  onInitReceived_(sender) {
+    let delta;
+    if (sender.tab) {
+      delta = Storage.getSiteDelta(Common.siteFromUrl(sender.tab.url));
+    } else {
+      delta = Storage.baseDelta;
+    }
+
+    return {
+      'delta': delta,
+      'severity': Storage.severity,
+      'type': Storage.type,
+      'simulate': Storage.simulate,
+      'enable': Storage.enable
+    };
+  }
+
+  /**
+   * Initial extension loading.
+   * @private
+   */
+  init_() {
+    Storage.DELTA.listeners.push(this.updateTabs_.bind(this));
+    Storage.SITE_DELTAS.listeners.push(this.updateTabs_.bind(this));
+    Storage.SEVERITY.listeners.push(this.updateTabs_.bind(this));
+    Storage.TYPE.listeners.push(this.updateTabs_.bind(this));
+    Storage.SIMULATE.listeners.push(this.updateTabs_.bind(this));
+    Storage.ENABLE.listeners.push(this.updateTabs_.bind(this));
+
+    this.updateTabs_();
+
+    chrome.runtime.onMessage.addListener(
+        (message, sender, sendResponse) => {
+          if (message === 'init') {
+            this.onInitReceived_(sender);
+            sendResponse();
+          }
+        });
+    //TODO(mustaq): Handle uninstall
+  }
+}
+
+const background = new Background();
+self.addEventListener(
+    'install', background.injectContentScripts.bind(background));

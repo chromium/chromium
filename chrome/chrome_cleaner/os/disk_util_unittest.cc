@@ -133,8 +133,7 @@ bool LaunchTestProcess(const wchar_t* executable,
 }
 
 bool DoesVolumeSupportNamedStreams(const base::FilePath& path) {
-  std::vector<std::wstring> components;
-  path.GetComponents(&components);
+  std::vector<std::wstring> components = path.GetComponents();
   DCHECK(!components.empty());
   std::wstring& drive = components[0];
   drive += L'\\';

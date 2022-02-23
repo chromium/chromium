@@ -122,9 +122,7 @@ public class ManualFillingTestHelper {
             ChromeActivity activity = mActivityTestRule.getActivity();
             mWebContentsRef.set(activity.getActivityTab().getWebContents());
             getManualFillingCoordinator().getMediatorForTesting().setInsetObserverViewSupplier(
-                    ()
-                            -> getKeyboard().createInsetObserver(
-                                    activity.getInsetObserverView().getContext()));
+                    () -> getKeyboard().createInsetObserver(activity.getApplicationContext()));
             // The TestInputMethodManagerWrapper intercepts showSoftInput so that a keyboard is
             // never brought up.
             final ImeAdapter imeAdapter = ImeAdapter.fromWebContents(mWebContentsRef.get());

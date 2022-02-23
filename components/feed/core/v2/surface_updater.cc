@@ -19,6 +19,7 @@
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/stream_surface_set.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feed {
 namespace {
@@ -135,6 +136,11 @@ StreamUpdateAndType MakeStreamUpdate(
   if (model) {
     update.stream_update.set_fetch_time_ms(
         model->GetLastAddedTime().ToDeltaSinceWindowsEpoch().InMilliseconds());
+    ToProto(model->GetLoggingParameters(),
+            *update.stream_update.mutable_logging_parameters());
+  } else {
+    ToProto(LoggingParameters{},
+            *update.stream_update.mutable_logging_parameters());
   }
 
   return update;
@@ -165,6 +171,9 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kCannotLoadFromNetworkOffline:
     case LoadStreamStatus::kCannotLoadFromNetworkThrottled:
     case LoadStreamStatus::kNetworkFetchFailed:
+    case LoadStreamStatus::kAccountTokenFetchFailedWrongAccount:
+    case LoadStreamStatus::kAccountTokenFetchTimedOut:
+    case LoadStreamStatus::kNetworkFetchTimedOut:
       return feedui::ZeroStateSlice::CANT_REFRESH;
     case LoadStreamStatus::kNotAWebFeedSubscriber:
       return feedui::ZeroStateSlice::NO_WEB_FEED_SUBSCRIPTIONS;

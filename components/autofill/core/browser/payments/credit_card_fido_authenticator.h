@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -32,6 +33,7 @@ using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
 using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
+using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 using device::AttestationConveyancePreference;
 using device::AuthenticatorAttachment;
 using device::AuthenticatorSelectionCriteria;
@@ -152,7 +154,7 @@ class CreditCardFIDOAuthenticator
   // and in the FullCardRequest if any.
   void CancelVerification();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Invoked when a Webauthn offer dialog is about to be shown.
   void OnWebauthnOfferDialogRequested(std::string card_authorization_token);
 
@@ -199,14 +201,16 @@ class CreditCardFIDOAuthenticator
   // card details.
   void OnDidGetAssertion(
       AuthenticatorStatus status,
-      GetAssertionAuthenticatorResponsePtr assertion_response);
+      GetAssertionAuthenticatorResponsePtr assertion_response,
+      WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // The callback invoked from the WebAuthn prompt including the
   // |attestation_response|, which will be sent to Google Payments to enroll the
   // credential for this user.
   void OnDidMakeCredential(
       AuthenticatorStatus status,
-      MakeCredentialAuthenticatorResponsePtr attestation_response);
+      MakeCredentialAuthenticatorResponsePtr attestation_response,
+      WebAuthnDOMExceptionDetailsPtr dom_exception_details);
 
   // Sets prefstore to enable credit card authentication if rpc was successful.
   void OnDidGetOptChangeResult(
@@ -259,7 +263,7 @@ class CreditCardFIDOAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  const CreditCard* card_;
+  raw_ptr<const CreditCard> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;
@@ -269,16 +273,16 @@ class CreditCardFIDOAuthenticator
   std::string card_authorization_token_;
 
   // The associated autofill driver. Weak reference.
-  AutofillDriver* const autofill_driver_;
+  const raw_ptr<AutofillDriver> autofill_driver_;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* const autofill_client_;
+  const raw_ptr<AutofillClient> autofill_client_;
 
   // Payments client to make requests to Google Payments.
-  payments::PaymentsClient* const payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Authenticator pointer to facilitate WebAuthn.
-  webauthn::InternalAuthenticator* authenticator_ = nullptr;
+  raw_ptr<webauthn::InternalAuthenticator> authenticator_ = nullptr;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

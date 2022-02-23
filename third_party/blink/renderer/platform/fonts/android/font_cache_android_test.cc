@@ -15,31 +15,38 @@ class FontCacheAndroidTest : public testing::Test {
   // Returns a locale-specific `serif` typeface, or `nullptr` if the system
   // does not have a locale-specific `serif`.
   sk_sp<SkTypeface> CreateSerifTypeface(const LayoutLocale* locale) {
-    FontCache* font_cache = FontCache::GetFontCache();
+    FontCache& font_cache = FontCache::Get();
     FontDescription font_description;
     font_description.SetLocale(locale);
     font_description.SetGenericFamily(FontDescription::kSerifFamily);
-    return font_cache->CreateLocaleSpecificTypeface(font_description, "serif");
+    return font_cache.CreateLocaleSpecificTypeface(font_description, "serif");
   }
 
   FontCachePurgePreventer purge_preventer;
 };
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
-  // A Latin character in the common locale system font, but not in the
-  // Chinese locale-preferred font.
-  const UChar32 kTestChar = 228;
+  // Perform the test for the default font family (kStandardFamily) and the
+  // -webkit-body font family (kWebkitBodyFamily) since they behave the same in
+  // term of font/glyph selection.
+  // TODO(crbug.com/1065468): Remove the test for kWebkitBodyFamily when
+  // -webkit-body in unshipped.
+  for (FontDescription::GenericFamilyType family_type :
+       {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily}) {
+    // A Latin character in the common locale system font, but not in the
+    // Chinese locale-preferred font.
+    const UChar32 kTestChar = 228;
 
-  FontDescription font_description;
-  font_description.SetLocale(LayoutLocale::Get("zh"));
-  ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
-  font_description.SetGenericFamily(FontDescription::kStandardFamily);
+    FontDescription font_description;
+    font_description.SetLocale(LayoutLocale::Get("zh"));
+    ASSERT_EQ(USCRIPT_SIMPLIFIED_HAN, font_description.GetScript());
+    font_description.SetGenericFamily(family_type);
 
-  FontCache* font_cache = FontCache::GetFontCache();
-  ASSERT_TRUE(font_cache);
-  scoped_refptr<SimpleFontData> font_data =
-      font_cache->FallbackFontForCharacter(font_description, kTestChar, 0);
-  EXPECT_TRUE(font_data);
+    FontCache& font_cache = FontCache::Get();
+    scoped_refptr<SimpleFontData> font_data =
+        font_cache.FallbackFontForCharacter(font_description, kTestChar, 0);
+    EXPECT_TRUE(font_data);
+  }
 }
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
@@ -54,32 +61,47 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
   FontDescription font_description;
   font_description.SetGenericFamily(FontDescription::kSerifFamily);
   font_description.SetLocale(ja);
-  FontCache* font_cache = FontCache::GetFontCache();
-  ASSERT_TRUE(font_cache);
+  FontCache& font_cache = FontCache::Get();
   const UChar32 kTestChar = 0x4E00;  // U+4E00 CJK UNIFIED IDEOGRAPH-4E00
   scoped_refptr<SimpleFontData> font_data =
-      font_cache->FallbackFontForCharacter(font_description, kTestChar,
-                                           nullptr);
+      font_cache.FallbackFontForCharacter(font_description, kTestChar, nullptr);
   EXPECT_TRUE(font_data);
   EXPECT_EQ(serif_ja_typeface.get(), font_data->PlatformData().Typeface());
 }
 
 TEST_F(FontCacheAndroidTest, LocaleSpecificTypeface) {
-  // Test is valid only if the system has a locale-specific `serif`.
-  const LayoutLocale* ja = LayoutLocale::Get("ja");
-  sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
-  if (!serif_ja_typeface)
-    return;
+  // Perform the test for the default font family (kStandardFamily) and the
+  // -webkit-body font family (kWebkitBodyFamily) since they behave the same in
+  // term of font/glyph selection.
+  // TODO(crbug.com/1065468): Remove the test for kWebkitBodyFamily when
+  // -webkit-body in unshipped.
+  for (FontDescription::GenericFamilyType family_type :
+       {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily}) {
+    // Test is valid only if the system has a locale-specific `serif`.
+    const LayoutLocale* ja = LayoutLocale::Get("ja");
+    sk_sp<SkTypeface> serif_ja_typeface = CreateSerifTypeface(ja);
+    if (!serif_ja_typeface)
+      return;
 
-  // If the system has one, it must be different from the default font.
-  FontDescription standard_ja_description;
-  standard_ja_description.SetLocale(ja);
-  standard_ja_description.SetGenericFamily(FontDescription::kStandardFamily);
-  std::string name;
-  FontCache* font_cache = FontCache::GetFontCache();
-  sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
-      standard_ja_description, FontFaceCreationParams(), name);
-  EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
+    // If the system has one, it must be different from the default font.
+    FontDescription standard_ja_description;
+    standard_ja_description.SetLocale(ja);
+    standard_ja_description.SetGenericFamily(family_type);
+    std::string name;
+    FontCache& font_cache = FontCache::Get();
+    sk_sp<SkTypeface> standard_ja_typeface = font_cache.CreateTypeface(
+        standard_ja_description, FontFaceCreationParams(), name);
+    EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
+  }
+}
+
+// Check non-CJK locales do not create locale-specific typeface.
+// TODO(crbug.com/1233315 crbug.com/1237860): Locale-specific serif is supported
+// only for CJK until these issues were fixed.
+TEST_F(FontCacheAndroidTest, LocaleSpecificTypefaceOnlyForCJK) {
+  EXPECT_EQ(CreateSerifTypeface(LayoutLocale::Get("en")), nullptr);
+  // We can't test CJK locales return non-nullptr because not all devices on all
+  // versions of Android have CJK serif fonts.
 }
 
 TEST(FontCacheAndroid, GenericFamilyNameForScript) {
@@ -88,24 +110,26 @@ TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   FontDescription chinese;
   chinese.SetLocale(LayoutLocale::Get("zh"));
 
+  AtomicString fallback = "MyGenericFamilyNameFallback";
+
   font_family_names::Init();
   // For non-CJK, getGenericFamilyNameForScript should return the given
-  // familyName.
-  EXPECT_EQ(font_family_names::kWebkitStandard,
+  // generic_family_name_fallback except monospace.
+  EXPECT_EQ(fallback,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, english));
+                font_family_names::kWebkitStandard, fallback, english));
   EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kMonospace, english));
+                font_family_names::kMonospace, fallback, english));
 
   // For CJK, getGenericFamilyNameForScript should return CJK fonts except
   // monospace.
-  EXPECT_NE(font_family_names::kWebkitStandard,
+  EXPECT_NE(fallback,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, chinese));
+                font_family_names::kWebkitStandard, fallback, chinese));
   EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kMonospace, chinese));
+                font_family_names::kMonospace, fallback, chinese));
 }
 
 }  // namespace blink

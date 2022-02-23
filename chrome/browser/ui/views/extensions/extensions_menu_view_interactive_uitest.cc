@@ -21,9 +21,9 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
@@ -52,8 +52,7 @@
 
 using ::testing::ElementsAre;
 
-class ExtensionsMenuViewInteractiveUITest
-    : public ExtensionsToolbarBrowserTest {
+class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
   static base::flat_set<ExtensionsMenuItemView*> GetExtensionsMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
@@ -63,7 +62,7 @@ class ExtensionsMenuViewInteractiveUITest
   void ShowUi(const std::string& name) override {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // The extensions menu can appear offscreen on Linux, so verifying bounds
     // makes the tests flaky.
     set_should_verify_dialog_bounds(false);
@@ -93,7 +92,8 @@ class ExtensionsMenuViewInteractiveUITest
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
           extensions::ExtensionContextMenuModel::PINNED, nullptr,
-          false /* can_show_icon_in_toolbar */);
+          /*can_show_icon_in_toolbar=*/false,
+          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
       menu_model.ExecuteCommand(
           extensions::ExtensionContextMenuModel::UNINSTALL, 0);
       ASSERT_TRUE(waiter.WaitIfNeededAndGet());
@@ -111,11 +111,11 @@ class ExtensionsMenuViewInteractiveUITest
 
     // Wait for any pending animations to finish so that correct pinned
     // extensions and dialogs are actually showing.
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    WaitForAnimation();
   }
 
   bool VerifyUi() override {
-    EXPECT_TRUE(ExtensionsToolbarBrowserTest::VerifyUi());
+    EXPECT_TRUE(ExtensionsToolbarUITest::VerifyUi());
 
     if (ui_test_name_ == "ReloadPageBubble") {
       ExtensionsToolbarContainer* const container =
@@ -158,7 +158,7 @@ class ExtensionsMenuViewInteractiveUITest
     }
 
     // Use default implementation for other tests.
-    ExtensionsToolbarBrowserTest::DismissUi();
+    ExtensionsToolbarUITest::DismissUi();
   }
 
   void DismissUninstallDialog() {
@@ -217,16 +217,9 @@ class ExtensionsMenuViewInteractiveUITest
         });
     ASSERT_TRUE(iter != menu_items.end());
 
-    ui::MouseEvent click_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                               gfx::Point(), base::TimeTicks(),
-                               ui::EF_LEFT_MOUSE_BUTTON, 0);
-    (*iter)
-        ->primary_action_button_for_testing()
-        ->button_controller()
-        ->OnMouseReleased(click_event);
+    ClickButton((*iter)->primary_action_button_for_testing());
 
-    // Wait for animations to finish.
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    WaitForAnimation();
   }
 
   void RightClickExtensionInToolbar(ToolbarActionView* extension) {
@@ -241,12 +234,9 @@ class ExtensionsMenuViewInteractiveUITest
   }
 
   void ClickExtensionsMenuButton(Browser* browser) {
-    ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->GetExtensionsButton()
-        ->OnMousePressed(click_event);
+    ClickButton(BrowserView::GetBrowserViewForBrowser(browser)
+                    ->toolbar()
+                    ->GetExtensionsButton());
   }
 
   void ClickExtensionsMenuButton() { ClickExtensionsMenuButton(browser()); }
@@ -264,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, InvokeUi_default) {
 // Invokes the UI shown when a user has to reload a page in order to run an
 // extension.
 // TODO(https://crbug.com/1184437): Very flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_ReloadPageBubble DISABLED_InvokeUi_ReloadPageBubble
 #else
 #define MAYBE_InvokeUi_ReloadPageBubble InvokeUi_ReloadPageBubble
@@ -487,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
 // Failing on Mac. https://crbug.com/1176703
 // Flaky on Linux. https://crbug.com/1202112
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PinningDisabledInIncognito DISABLED_PinningDisabledInIncognito
 #else
 #define MAYBE_PinningDisabledInIncognito PinningDisabledInIncognito
@@ -502,7 +492,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   extensions::ExtensionContextMenuModel menu(
       extensions()[0].get(), incognito_browser(),
       extensions::ExtensionContextMenuModel::PINNED, nullptr,
-      true /* can_show_icon_in_toolbar */);
+      /* can_show_icon_in_toolbar=*/true,
+      extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
   EXPECT_FALSE(menu.IsCommandIdEnabled(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY));
 
@@ -544,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   // Verify extension is pinned but not stored as the popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
@@ -560,14 +551,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
 
-  // Verify the context menu option is to unpin the extension.
+  // Verify the context menu option, when opened from the toolbar action, is to
+  // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kToolbarAction));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
@@ -587,17 +580,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   // Verify extension is visible and tbere is a popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
 
-  // Verify the context menu option is to unpin the extension.
+  // Verify the context menu option, when opened from the toolbar action, is to
+  // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
       extensions_container->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kToolbarAction));
   int visibility_index = context_menu->GetIndexOfCommandId(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
   ASSERT_GE(visibility_index, 0);
@@ -627,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/1251961): Flaky on Linux (CFI)
 #define MAYBE_ClickingContextMenuButton DISABLED_ClickingContextMenuButton
 #else
@@ -664,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ShowAndVerifyUi();
 }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1164612): Flaky on Linux and Lacros.
 #define MAYBE_InvokeUi_UninstallDialog_Accept \
   DISABLED_InvokeUi_UninstallDialog_Accept
@@ -676,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ShowAndVerifyUi();
 }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/1173344): Flaky on Linux.
 #define MAYBE_InvokeUi_UninstallDialog_Cancel \
   DISABLED_InvokeUi_UninstallDialog_Cancel
@@ -748,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   std::vector<ExtensionsMenuItemView*> active_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          ToolbarActionViewController::PageInteractionStatus::kActive);
+          extensions::SitePermissionsHelper::SiteInteraction::kActive);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -758,7 +753,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
       GetExtensionsToolbarContainer()
           ->GetActionForId(extensions()[0]->id())
-          ->GetContextMenu());
+          ->GetContextMenu(extensions::ExtensionContextMenuModel::
+                               ContextMenuSource::kMenuItem));
   ASSERT_TRUE(context_menu);
   {
     content::WindowedNotificationObserver permissions_observer(
@@ -779,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       item_button->GetTooltipText());
   std::vector<ExtensionsMenuItemView*> pending_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          ToolbarActionViewController::PageInteractionStatus::kPending);
+          extensions::SitePermissionsHelper::SiteInteraction::kPending);
   ASSERT_EQ(1u, pending_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", pending_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -803,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                 u"\n"),
             item_button->GetTooltipText());
   active_menu_items = ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-      ToolbarActionViewController::PageInteractionStatus::kActive);
+      extensions::SitePermissionsHelper::SiteInteraction::kActive);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()

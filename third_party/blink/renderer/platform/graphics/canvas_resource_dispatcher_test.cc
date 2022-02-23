@@ -86,7 +86,7 @@ class CanvasResourceDispatcherTest
     return dispatcher_->id_generator_.PeekNextValueForTesting();
   }
 
-  const IntSize& GetSize() const { return dispatcher_->size_; }
+  const gfx::Size& GetSize() const { return dispatcher_->size_; }
 
  protected:
   CanvasResourceDispatcherTest() = default;

@@ -36,6 +36,10 @@ const char kBadPassword[] = "bad_password";
 const char kCustomApnList[] = "custom_apn_list";
 const char kHasFixedHiddenNetworks[] =
     "metadata_store.has_fixed_hidden_networks";
+const char kEnableTrafficCountersAutoReset[] =
+    "enable_traffic_counters_auto_reset";
+const char kDayOfTrafficCountersAutoReset[] =
+    "day_of_traffic_counters_auto_reset";
 
 std::string GetPath(const std::string& guid, const std::string& subkey) {
   return base::StringPrintf("%s.%s", guid.c_str(), subkey.c_str());
@@ -45,13 +49,13 @@ base::Value CreateOrCloneListValue(const base::Value* list) {
   if (list)
     return list->Clone();
 
-  return base::ListValue();
+  return base::Value(base::Value::Type::LIST);
 }
 
 bool ListContains(const base::Value* list, const std::string& value) {
   if (!list)
     return false;
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   return std::find(list_view.begin(), list_view.end(), base::Value(value)) !=
          list_view.end();
 }
@@ -179,8 +183,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetBoolKey(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
-        network->path(), base::Value::AsDictionaryValue(dict),
-        base::DoNothing(),
+        network->path(), dict, base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -218,9 +221,7 @@ bool NetworkMetadataStore::HasFixedHiddenNetworks() {
   return profile_pref_service_->GetBoolean(kHasFixedHiddenNetworks);
 }
 
-void NetworkMetadataStore::OnDisableHiddenError(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkMetadataStore::OnDisableHiddenError(const std::string& error_name) {
   NET_LOG(EVENT) << "Failed to disable HiddenSSID on synced network. Error: "
                  << error_name;
 }
@@ -354,8 +355,7 @@ void NetworkMetadataStore::RemoveNetworkFromPref(
     return;
   }
 
-  const base::DictionaryValue* dict =
-      pref_service->GetDictionary(kNetworkMetadataPref);
+  const base::Value* dict = pref_service->GetDictionary(kNetworkMetadataPref);
   if (!dict || !dict->FindKey(network_guid)) {
     return;
   }
@@ -448,6 +448,29 @@ void NetworkMetadataStore::SetCustomAPNList(const std::string& network_guid,
 const base::Value* NetworkMetadataStore::GetCustomAPNList(
     const std::string& network_guid) {
   return GetPref(network_guid, kCustomApnList);
+}
+
+void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
+    const std::string& network_guid,
+    bool enable) {
+  SetPref(network_guid, kEnableTrafficCountersAutoReset, base::Value(enable));
+}
+
+void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
+    const std::string& network_guid,
+    const absl::optional<int>& day) {
+  auto value = day.has_value() ? base::Value(day.value()) : base::Value();
+  SetPref(network_guid, kDayOfTrafficCountersAutoReset, std::move(value));
+}
+
+const base::Value* NetworkMetadataStore::GetEnableTrafficCountersAutoReset(
+    const std::string& network_guid) {
+  return GetPref(network_guid, kEnableTrafficCountersAutoReset);
+}
+
+const base::Value* NetworkMetadataStore::GetDayOfTrafficCountersAutoReset(
+    const std::string& network_guid) {
+  return GetPref(network_guid, kDayOfTrafficCountersAutoReset);
 }
 
 void NetworkMetadataStore::SetPref(const std::string& network_guid,

@@ -55,26 +55,20 @@
     <cr-button class="internals-button" on-click="onClearPrefsButtonClicked_">
       Reset Nearby
     </cr-button>
-    <cr-button class="internals-button" on-click="onFastPairErrorNotificationClicked_">
-      Fast Pair Error Notification
-    </cr-button>
-    <cr-button class="internals-button" on-click="onFastPairDiscoveryNotificationClicked_">
-      Fast Pair Discovery Notification
-    </cr-button>
-    <cr-button class="internals-button" on-click="onFastPairPairingNotificationClicked_">
-      Fast Pair Pairing Notification
-    </cr-button>
     <span id="flex"></span>
     <cr-button on-click="onAcceptClicked_" class="internals-button"
-        class="trigger-button" disabled="[[!shareTargetSelectOptionList_.length]]">
+        class="trigger-button"
+        disabled="[[!shareTargetSelectOptionList_.length]]">
       Accept
     </cr-button>
     <cr-button on-click="onRejectClicked_" class="internals-button"
-        class="trigger-button" disabled="[[!shareTargetSelectOptionList_.length]]">
+        class="trigger-button"
+        disabled="[[!shareTargetSelectOptionList_.length]]">
       Reject
     </cr-button>
     <cr-button on-click="onOpenClicked_" class="internals-button"
-        class="trigger-button" disabled="[[!shareTargetSelectOptionList_.length]]">
+        class="trigger-button"
+        disabled="[[!shareTargetSelectOptionList_.length]]">
       Open
     </cr-button>
   </div>
@@ -103,16 +97,37 @@
       </template>
     </select>
     <cr-button on-click="onSendTextClicked_" class="internals-button"
-        class="trigger-button" disabled="[[!shareTargetSelectOptionList_.length]]">
+        class="trigger-button"
+        disabled="[[!shareTargetSelectOptionList_.length]]">
       Send Text
     </cr-button>
     <cr-button on-click="onCancelClicked_" class="internals-button"
-        class="trigger-button" disabled="[[!shareTargetSelectOptionList_.length]]">
+        class="trigger-button"
+        disabled="[[!shareTargetSelectOptionList_.length]]">
       Cancel
     </cr-button>
   </div>
+  <div class="buttons">
+    <cr-button class="internals-button"
+        on-click="onFastPairErrorNotificationClicked_">
+      Fast Pair Error Notification
+    </cr-button>
+    <cr-button class="internals-button"
+        on-click="onFastPairDiscoveryNotificationClicked_">
+      Fast Pair Discovery Notification
+    </cr-button>
+    <cr-button class="internals-button"
+        on-click="onFastPairPairingNotificationClicked_">
+      Fast Pair Pairing Notification
+    </cr-button>
+    <cr-button class="internals-button"
+        on-click="onFastPairAssociateAccountNotificationClicked_">
+      Fast Pair Save Account Notification
+    </cr-button>
+  </div>
 </div>
-<iron-list items="[[uiTriggerObjectList_]]" as="generic-object" id="logging-section">
+<iron-list items="[[uiTriggerObjectList_]]" as="generic-object"
+    id="logging-section">
   <template>
     <ui-trigger-object item="[[generic-object]]">
     </ui-trigger-object>

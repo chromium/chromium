@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
@@ -66,10 +67,10 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // for testing purposes.
   bool IsUnderlyingWinrtObjectValidForTesting() { return sensor_; }
 
-  bool Initialize() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize();
 
-  bool StartSensor(const PlatformSensorConfiguration& configuration) override
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartSensor(
+      const PlatformSensorConfiguration& configuration) override;
   base::TimeDelta GetMinimalReportingInterval() const override;
   void StopSensor() override;
 
@@ -96,7 +97,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
   // threads by PlatformSensorWin.
   base::Lock lock_;
   // Null if there is no client to notify, non-null otherwise.
-  Client* client_ GUARDED_BY(lock_);
+  raw_ptr<Client> client_ GUARDED_BY(lock_);
 
   // Always report the first sample received after starting the sensor.
   bool has_received_first_sample_ = false;

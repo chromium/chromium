@@ -1,14 +1,14 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-Uses dump_syms to extract breakpad symbol files
-"""
+"""Uses dump_syms to extract breakpad symbol files."""
 
-import os
-import sys
 import logging
+import os
 import subprocess
+import sys
+
+import flag_utils
 import rename_breakpad
 
 sys.path.insert(
@@ -29,12 +29,12 @@ def ExtractBreakpadFiles(dump_syms_path,
     dump_syms_path: The path to the dump_syms binary that should be run.
     build_dir: The path to the input directory containing the binaries that
       dump_syms will use.
-    breakpad_base_dir: The output directory for the breakpad symbol files
+    breakpad_output_dir: The output directory for the breakpad symbol files
       produced.
     search_unstripped: Boolean flag for whether to search for 'lib.unstripped'
-      subdirectory or not. If specified and '|build_dir|/lib.unstripped'
-      exists, dump_syms is run on this directory instead. If not specified,
-      dump_syms is run on |build_dir|.
+      subdirectory or not. If specified and '|build_dir|/lib.unstripped' exists,
+      dump_syms is run on this directory instead. If not specified, dump_syms is
+      run on |build_dir|.
     module_ids: A set of module IDs needed to symbolize the trace. Only extracts
       breakpad on symbol binaries with a module ID in this set. Extracts all
       symbols if |module_ids| is None.
@@ -48,11 +48,7 @@ def ExtractBreakpadFiles(dump_syms_path,
       directories cannot be found.
   """
   # Check to see if |dump_syms_path| is a file.
-  dump_syms_binary = _GetDumpSyms(dump_syms_path, build_dir)
-  if dump_syms_binary is None:
-    raise Exception(
-        'dump_syms is missing. you can build dump_syms in the {build_dir} by'
-        'running ninja -C {build_dir} dump_syms'.format(build_dir=build_dir))
+  dump_syms_path = EnsureDumpSymsBinary(dump_syms_path, build_dir)
 
   # Check if |build_dir| and |breakpad_base_dir| are directories.
   if not os.path.isdir(build_dir):
@@ -69,17 +65,19 @@ def ExtractBreakpadFiles(dump_syms_path,
   breakpad_file_count = 0
   for file_iter in os.listdir(symbol_dir):
     input_file_path = os.path.join(symbol_dir, file_iter)
-    if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
-      if not _IsModuleNeededForSymbolization(dump_syms_path, module_ids,
-                                             input_file_path):
+    if os.path.isfile(input_file_path) and IsValidBinaryPath(input_file_path):
+      if not IsModuleNeededForSymbolization(dump_syms_path, module_ids,
+                                            input_file_path):
         continue
       # Construct absolute file paths for input and output files.
       output_file_path = os.path.join(breakpad_output_dir,
                                       file_iter + '.breakpad')
 
-      logging.debug('Extracting breakpad file from: ' + input_file_path)
-      if _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
-        logging.debug('Extracted breakpad to: ' + output_file_path)
+      flag_utils.GetTracingLogger().debug('Extracting breakpad file from: %s',
+                                          input_file_path)
+      if _RunDumpSyms(dump_syms_path, input_file_path, output_file_path):
+        flag_utils.GetTracingLogger().debug('Extracted breakpad to: %s',
+                                            output_file_path)
         breakpad_file_count += 1
 
   # Extracting breakpad symbols should be successful with at least one file.
@@ -90,8 +88,8 @@ def ExtractBreakpadOnSubtree(symbols_root, metadata, dump_syms_path):
   """Converts symbol files in the given subtree into breakpad files.
 
   Args:
-    symbols_root: root of subtree containing symbol files to convert to
-      breakpad format.
+    symbols_root: root of subtree containing symbol files to convert to breakpad
+      format.
     metadata: trace metadata to extract module ids from.
     dump_syms_path: local path to dump_syms binary.
 
@@ -99,7 +97,7 @@ def ExtractBreakpadOnSubtree(symbols_root, metadata, dump_syms_path):
     Exception: if path to dump_syms binary not passed or no breakpad files
       could be extracted from subtree.
   """
-  logging.debug('Converting symbols to breakpad format.')
+  flag_utils.GetTracingLogger().debug('Converting symbols to breakpad format.')
   if dump_syms_path is None:
     raise Exception('Path to dump_syms binary is required for symbolizing '
                     'official Android traces. You can build dump_syms from '
@@ -130,19 +128,24 @@ def GetModuleIdsToSymbolize(metadata):
   We log the message before calling |ExtractBreakpadFiles| because otherwise
   we will repeatedly log when |ExtractBreakpadOnSubtree| recursively runs
   |ExtractBreakpadFiles|.
+
+  Args:
+    metadata: metadata extracted from the trace.
   """
   module_ids = metadata.GetModuleIds()
 
   if module_ids is None:
-    logging.info('No specified modules to extract. Converting all symbol '
-                 'binaries to breakpad.')
+    flag_utils.GetTracingLogger().info(
+        'No specified modules to extract. Converting all symbol '
+        'binaries to breakpad.')
   else:
-    logging.debug('Module IDs to symbolize: %s' % (module_ids))
+    flag_utils.GetTracingLogger().debug('Module IDs to symbolize: %s',
+                                        (module_ids))
 
   return module_ids
 
 
-def _IsModuleNeededForSymbolization(dump_syms_path, module_ids, symbol_binary):
+def IsModuleNeededForSymbolization(dump_syms_path, module_ids, symbol_binary):
   """Determines if we should extract breakpad from symbol binary.
 
   If module_ids is None, then we extract breakpad on all symbol binaries.
@@ -165,9 +168,9 @@ def _IsModuleNeededForSymbolization(dump_syms_path, module_ids, symbol_binary):
   # Only convert breakpad if binary has module ID we need to symbolize.
   module_id = _GetModuleIDFromBinary(dump_syms_path, symbol_binary)
   if module_id is None or module_id not in module_ids:
-    logging.debug('Skipping breakpad extraction for module (%s, %s) '
-                  'since trace has no frames with this ID.' %
-                  (module_id, symbol_binary))
+    flag_utils.GetTracingLogger().debug(
+        'Skipping breakpad extraction for module (%s, %s) '
+        'since trace has no frames with this ID.', module_id, symbol_binary)
     return False
   return True
 
@@ -198,10 +201,11 @@ def _RunDumpSyms(dump_syms_binary,
                  input_file_path,
                  output_file_path,
                  only_module_header=False):
-  """Runs the dump_syms binary on a file and outputs the resulting breakpad
+  """Runs the dump_syms binary on a file and outputs the resulting breakpad.
+
      symbols to the specified file.
   Args:
-    dump_syms_path: The path to the dump_syms binary that should be run.
+    dump_syms_binary: The path to the dump_syms binary that should be run.
     input_file_path: Input file path to run dump_syms on.
     output_file_path: Output file path to store result.
     only_module_header: Only extracts the module header, if specified.
@@ -218,15 +222,14 @@ def _RunDumpSyms(dump_syms_binary,
     proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
   stderr = proc.communicate()[1]
   if proc.returncode != 0:
-    logging.warning('%s', str(stderr))
-    logging.debug(
-        'Dump_syms failed to extract information from symbol binary: ' +
-        input_file_path)
+    flag_utils.GetTracingLogger().info(
+        'Dump_syms failed to extract information from symbol binary: %s. '
+        'Error: %s', input_file_path, str(stderr))
     return False
   return True
 
 
-def _GetDumpSyms(dump_syms_path, build_dir):
+def EnsureDumpSymsBinary(dump_syms_path, build_dir):
   """Checks to see if dump_syms can be found.
 
   Args:
@@ -234,18 +237,26 @@ def _GetDumpSyms(dump_syms_path, build_dir):
     build_dir: The path to a directory.
 
   Returns:
-    The path to the dump_syms binary or None if none is found.
-    """
+    The path to the dump_syms binary or raises exception.
+  """
   if dump_syms_path is not None and os.path.isfile(
       dump_syms_path) and 'dump_syms' in dump_syms_path:
     return dump_syms_path
-  path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
-  if os.path.isfile(path_to_dump_syms):
-    return path_to_dump_syms
-  return None
+
+  if build_dir is not None:
+    path_to_dump_syms = os.path.join(build_dir, 'dump_syms')
+    if os.path.isfile(path_to_dump_syms):
+      return path_to_dump_syms
+
+  if not build_dir:
+    build_dir = 'out/android'  # For error message.
+  raise Exception(
+      'dump_syms binary not found. Build a binary with '
+      'autoninja -C {build_dir} dump_syms and try again with '
+      '--dump_syms={build_dir}/dump_syms'.format(build_dir=build_dir))
 
 
-def _IsValidBinaryPath(path):
+def IsValidBinaryPath(path):
   # Get the file name from the full file path.
   file_name = os.path.basename(path)
   if file_name.endswith('partition.so') or file_name.endswith(

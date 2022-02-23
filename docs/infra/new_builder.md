@@ -399,15 +399,75 @@ by OWNERS files, so no need to worry about accidentally doing so.
 
 To add a builder to the CQ, add a `tryjob` value to the builder definition.
 
+This will add the builder to all CQ attempts (except for CLs that only contain
+files in some particular directories).
+
+The starlark config files for builders are organized by builder_group. For
+example, the linux builders are in
+//infra/config/subprojects/chromium/try/tryserver.chromium.linux.star. These
+files have default values set for all builders in each particular file.
+
+###### Regular (non-Orchestrator) CQ builders
 ```starlark
-try_.chromium_linux_builder(
+try_.builder(
     name = '$BUILDER_NAME',
     tryjob = try_.job(),
 )
 ```
 
-This will add the builder to all CQ attempts (except for CLs that only contain
-files in some particular directories).
+###### Orchestrator CQ Builders
+The Orchestrator pattern is an optimization from the old chromium_trybot CQ
+builders, where compiles are triggered to run on separate beefier machines.
+It consists of the chromium/orchestrator.py and chromium/compilator.py recipes.
+
+Builders using the Orchestrator pattern use a dedicated pool of machines to run
+their builds (often called builderful). The
+Orchestrator builder uses 2 or 4 core bots and the Compilator builder uses a
+beefier >=16 core bot. The Compilator builder name should always be the
+orchestrator name + "-compilator", like linux-rel and linux-rel-compilator.
+
+In //infra/config/subprojects/chromium/try/tryserver.chromium.linux.star:
+```starlark
+try_.orchestrator_builder(
+    name = "linux-rel",
+    compilator = "linux-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(),
+)
+
+try_.compilator_builder(
+    name = "linux-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+)
+```
+
+In infradata/config/configs/chromium-swarm/bots/chromium/chromium.star:
+(In the [infradata/config](https://chrome-internal.googlesource.com/infradata/config/) repo)
+```starlark
+try_bots({
+    "linux-rel": chrome.gce_bionic(
+        prefix = "linux-rel-orchestrator-2-core",
+        zone = "us-central1-b",
+        machine_type = "n1-standard-2",
+        lifetime = time.week,
+        amount = 80,
+    ),
+    "linux-rel-compilator": chrome.gce_bionic(
+        prefix = "linux-rel-compilator-ssd-16-core",
+        zone = "us-central1-b",
+        machine_type = "n1-standard-16",
+        lifetime = time.week,
+        amount = 25,
+        disk_gb = 100,
+        // This enables local ssd usage for this bot
+        scratch_disks = chrome.scratch_disks(count = 1, interface = "NVME"),
+    ),
+})
+```
 
 ###### Experimental CQ builders
 

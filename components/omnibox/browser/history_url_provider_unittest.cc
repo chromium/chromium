@@ -208,7 +208,7 @@ class HistoryURLProviderTest : public testing::Test,
   void TearDown() override;
 
   // Does the real setup.
-  bool SetUpImpl(bool create_history_db) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SetUpImpl(bool create_history_db);
 
   // Fills test data into the history system.
   void FillData();
@@ -651,7 +651,7 @@ TEST_F(HistoryURLProviderTest, WhatYouTyped_Exact_URLPreservesUsernameAndPasswor
 // url_formatter has per-platform logic for Windows vs POSIX, and
 // AutocompleteInput has special casing for iOS.
 TEST_F(HistoryURLProviderTest, Files) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On iOS, check that file URIs are treated like queries.
   AutocompleteInput ios_input_1(
       u"file:///foo", std::u16string::npos, std::string(),
@@ -660,9 +660,9 @@ TEST_F(HistoryURLProviderTest, Files) {
   if (!autocomplete_->done())
     base::RunLoop().Run();
   EXPECT_EQ(matches_.size(), 0u);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // For everything but iOS, fixing up "file:" should result in an inline
   // autocomplete offset of just after "file:", not just after "file://".
   const std::u16string input_1(u"file:");
@@ -670,9 +670,9 @@ TEST_F(HistoryURLProviderTest, Files) {
   ASSERT_NO_FATAL_FAILURE(
       RunTest(input_1, std::string(), false, fixup_1, base::size(fixup_1)));
   EXPECT_EQ(u"///C:/foo.txt", matches_.front().inline_autocompletion);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if defined(OS_POSIX) && !defined(OS_IOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
   // url_formatter::SegmentURLInternal does URL fixup differently depending on
   // platform. On all POSIX systems including iOS, /foo --> file:///foo.
   const std::u16string input_2(u"/foo");
@@ -680,7 +680,7 @@ TEST_F(HistoryURLProviderTest, Files) {
   ASSERT_NO_FATAL_FAILURE(
       RunTest(input_2, std::string(), false, fixup_2, base::size(fixup_2)));
   EXPECT_TRUE(matches_[0].destination_url.SchemeIsFile());
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   // However, AutocompleteInput ignores the URL fixup on iOS because it
   // treates iOS like a query.
   AutocompleteInput ios_input_2(u"/foo", std::u16string::npos, std::string(),
@@ -690,7 +690,7 @@ TEST_F(HistoryURLProviderTest, Files) {
   if (!autocomplete_->done())
     base::RunLoop().Run();
   EXPECT_EQ(matches_.size(), 0u);
-#endif  // defined(OS_POSIX) && !defined(OS_IOS)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(HistoryURLProviderTest, Fixup) {
@@ -1152,14 +1152,14 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
       "mailto://a@b.com", {0, npos, npos}, 0 },
     { "http://a%20b/x%20y", false,
       "http://a%20b/x y", {0, npos, npos}, 0 },
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     // file: URIs are treated like queries on iOS and need to be excluded from
     // this test, which assumes that all the inputs have canonical URLs.
     { "file:///x%20y/a%20b", true,
       "file:///x y/a b", {0, npos, npos}, 0 },
     { "file://x%20y/a%20b", true,
       "file://x%20y/a b", {0, npos, npos}, 0 },
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
     { "view-source:x%20y/a%20b", true,
      "view-source:x%20y/a b", {0, npos, npos}, 0 },
     { "view-source:http://x%20y/a%20b", false,

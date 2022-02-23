@@ -22,7 +22,6 @@ class BluetoothEnabledProviderTest : public testing::Test {
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     EXPECT_CALL(adapter(), AddObserver);
-    EXPECT_CALL(adapter(), IsPowered);
 
     provider_ = std::make_unique<BluetoothEnabledProvider>();
   }
@@ -49,7 +48,8 @@ TEST_F(BluetoothEnabledProviderTest, GetsEnabledWhenAdapterIsPowered) {
   base::MockCallback<base::RepeatingCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(true));
   provider_->SetCallback(callback.Get());
-  adapter().NotifyPoweredChanged(true);
+
+  adapter().SetBluetoothIsPowered(true);
   EXPECT_TRUE(provider_->is_enabled());
 }
 
@@ -64,11 +64,54 @@ TEST_F(BluetoothEnabledProviderTest, TogglesStateBasedOnAdapterIsPowered) {
 
   provider_->SetCallback(callback.Get());
 
-  adapter().NotifyPoweredChanged(true);
+  adapter().SetBluetoothIsPowered(true);
   EXPECT_TRUE(provider_->is_enabled());
-  adapter().NotifyPoweredChanged(false);
+  adapter().SetBluetoothIsPowered(false);
   EXPECT_FALSE(provider_->is_enabled());
-  adapter().NotifyPoweredChanged(true);
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
+TEST_F(BluetoothEnabledProviderTest, NoHardwareSupport) {
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kNotSupported);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_FALSE(provider_->is_enabled());
+}
+
+TEST_F(BluetoothEnabledProviderTest, HasHardwareSupport) {
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kSupported);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
+TEST_F(BluetoothEnabledProviderTest, HardwareSupportBecomesAvailable) {
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kNotSupported);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetBluetoothIsPowered(true);
+  EXPECT_FALSE(provider_->is_enabled());
+
+  adapter().SetHardwareOffloadingStatus(
+      device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus::
+          kSupported);
+  EXPECT_TRUE(provider_->is_enabled());
+}
+
+TEST_F(BluetoothEnabledProviderTest, AdapterPresentChanges) {
+  EXPECT_FALSE(provider_->is_enabled());
+  adapter().SetBluetoothIsPresent(true);
+  EXPECT_FALSE(provider_->is_enabled());
+  adapter().SetBluetoothIsPowered(true);
   EXPECT_TRUE(provider_->is_enabled());
 }
 

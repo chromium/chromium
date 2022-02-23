@@ -4,9 +4,9 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
+<link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/multi_step_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
@@ -22,7 +22,8 @@
     <style include="oobe-dialog-host-styles">
       .gesture-animation-container {
         overflow: hidden;
-        width: min(480px, var(--oobe-adaptive-dialog-content-width));
+        width: 100%;
+        height: 100%;
       }
 
       .gesture-list-item {
@@ -96,12 +97,9 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationHomeDescription')]]
       </p>
-      <div slot="content" class="content-centered">
-        <div class="gesture-animation-container">
-          <cr-lottie animation-url="gesture_go_home.json"
-                     class="gesture-animation">
-          </cr-lottie>
-        </div>
+      <div slot="content" class="content-centered gesture-animation-container">
+        <oobe-cr-lottie class="gesture-animation"
+            animation-url="animations/gesture_go_home.json">
       </div>
       <div slot="back-navigation">
         <oobe-back-button on-click="onBack_"
@@ -123,12 +121,10 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationOverviewDescription')]]
       </p>
-      <div slot="content" class="content-centered">
-        <div class="gesture-animation-container">
-          <cr-lottie animation-url="gesture_hotseat_overview.json"
-                     class="gesture-animation">
-          </cr-lottie>
-        </div>
+      <div slot="content" class="content-centered gesture-animation-container">
+        <oobe-cr-lottie class="gesture-animation"
+            animation-url="animations/gesture_hotseat_overview.json">
+        </oobe-cr-lottie>
       </div>
       <div slot="back-navigation">
         <oobe-back-button on-click="onBack_"
@@ -149,12 +145,10 @@
       <p slot="subtitle">
         [[i18nDynamic(locale, 'gestureNavigationBackDescription')]]
       </p>
-      <div slot="content" class="content-centered">
-        <div class="gesture-animation-container">
-          <cr-lottie animation-url="gesture_go_back.json"
-                      class="gesture-animation">
-          </cr-lottie>
-        </div>
+      <div slot="content" class="content-centered gesture-animation-container">
+        <oobe-cr-lottie animation-url="animations/gesture_go_back.json"
+            class="gesture-animation">
+        </oobe-cr-lottie>
       </div>
       <div slot="back-navigation">
         <oobe-back-button on-click="onBack_"

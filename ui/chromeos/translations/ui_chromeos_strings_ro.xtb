@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalană</translation>
 <translation id="1168100932582989117">Servere de nume Google</translation>
+<translation id="1171082344678443012">Arhivă comprimată XZ</translation>
 <translation id="1172970565351728681">Au mai rămas aproximativ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1173916544412572294">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arhivă RAR</translation>
+<translation id="2036414735548252477">Arhivă .tar comprimată LZMA</translation>
 <translation id="2037845485764049925">Rusă</translation>
 <translation id="2044023416777079300">Modemul nu este înregistrat</translation>
 <translation id="2046702855113914483">Supă ramen</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Permite accesul pentru <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Dispozitivele Chromebit</translation>
 <translation id="3085752524577180175">Gazdă SOCKS</translation>
+<translation id="3104793765551262433">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="3113153474486991170">Nu s-a putut deschide <ph name="PATH" /> din această locație. Copiază în Fișierele mele pentru a deschide.</translation>
 <translation id="3113592018909187986">Mai ai o încercare. Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>
 <translation id="3124404833828281817">Persoană care visează cu ochii deschiși</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Engleză (S.U.A.) cu tastatură internațională pentru PC</translation>
 <translation id="3567221313191587603">Selectează un fișier și activează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" /> pentru acces offline la fișiere.</translation>
 <translation id="357479282490346887">Lituaniană</translation>
+<translation id="3587482841069643663">Toate</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> nu a devenit disponibil offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Franceză canadiană</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">S-a făcut backup pentru tot!</translation>
 <translation id="3634507049637220048">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionată de administratorul tău, detalii</translation>
 <translation id="3645233063072417428">Elemente mutate: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Anulează fixarea dosarului</translation>
 <translation id="3685122418104378273">Sincronizarea cu Google Drive este dezactivată în mod prestabilit la folosirea datelor mobile.</translation>
 <translation id="3689865792480713551">Anulează <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="3691184985318546178">Singaleză</translation>
 <translation id="3726463242007121105">Acest dispozitiv nu poate fi deschis, deoarece sistemul său de fișiere nu este acceptat.</translation>
 <translation id="3727148787322499904">Modificarea acestei setări se va aplica tuturor rețelelor folosite în comun</translation>
+<translation id="3737576078404241332">Elimină din bara laterală</translation>
 <translation id="3741243925913727067">Fă backup pentru fotografiile și videoclipurile de pe dispozitivul media pe Google Drive.</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="3780536599611287598">Nu ai permisiunea să muți fișierele în „<ph name="FOLDER_NAME" />”.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Cafea</translation>
 <translation id="4336032328163998280">Operația de copiere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Adaugă în bara laterală</translation>
 <translation id="4348495354623233847">Tastatură kurdă sorani bazată pe arabă</translation>
 <translation id="4363958938297989186">Tastatură rusă fonetică</translation>
 <translation id="4364327530094270451">Pepene galben</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byți</translation>
 <translation id="4880214202172289027">Glisor de volum</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4886199584824489598">Arhivă comprimată Bzip2</translation>
 <translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4905417359854579806">Gata de backup pentru <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> rețea, nu este conectată</translation>
 <translation id="6074825444536523002">Formular Google</translation>
 <translation id="6079871810119356840">Maghiară cu tastatură QWERTY</translation>
+<translation id="6082256976217156453">Arhivă comprimată LZMA</translation>
 <translation id="6096979789310008754">Textul căutării a fost șters; se afișează toate fișierele și dosarele.</translation>
 <translation id="610101264611565198">Se mută <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spațiu</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Răsturnat</translation>
 <translation id="6943836128787782965">Metoda GET a protocolului HTTP nu a reușit</translation>
 <translation id="6949408524333579394">Sârbă, transliterație</translation>
+<translation id="6954309393500027528">Inserarea acestui fișier a fost blocată de administrator</translation>
 <translation id="6960565108681981554">Neactivată. Contactează operatorul.</translation>
 <translation id="696203921837389374">Activează sincronizarea prin date mobile</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Hangul setul 3 (Fără Shift)</translation>
 <translation id="8299269255470343364">Japoneză</translation>
 <translation id="8300849813060516376">OTASP nu a reușit</translation>
+<translation id="8308481408797647857">Arhivă .tar comprimată XZ</translation>
 <translation id="8312871300878166382">Inserați în dosar</translation>
 <translation id="8329978297633540474">Text simplu</translation>
 <translation id="8335587457941836791">Anulați fixarea din raft</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Letonă</translation>
 <translation id="8560515948038859357">Cantoneză</translation>
 <translation id="8561206103590473338">Elefant</translation>
+<translation id="8566466896628108558">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>
 <translation id="8578308463707544055">Indoneziană</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Google caută mereu modalități de a face navigarea mai sigură. Înainte, orice site îți putea solicita să adaugi o extensie în browser. În ultimele versiuni Google Chrome, trebuie să indici explicit că dorești să instalezi aceste extensii, adăugându-le în pagina Extensii. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Fixează dosarul</translation>
 <translation id="9130775360844693113">Membrii „<ph name="DESTINATION_NAME" />” vor obține acces la aceste articole.</translation>
 <translation id="9131598836763251128">Selectează un fișier sau mai multe</translation>
 <translation id="9133055936679483811">Arhivarea nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Modificat de</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="947144732524271678">S-au selectat o serie de <ph name="ENTRY_COUNT" /> intrări, de la <ph name="FROM_ENTRY_NAME" /> la <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Arhivă comprimată Gzip</translation>
 <translation id="965477715979482472">Engleză (Africa de Sud)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Vrei să îl înlocuiești?</translation>

@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_SKIA_GL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_SKIA_GL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gl/gl_context.h"
 
@@ -61,7 +62,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationSkiaGL
   sk_sp<SkSurface> surface_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
 #if DCHECK_IS_ON()
-  gl::GLContext* context_;
+  raw_ptr<gl::GLContext> context_;
 #endif
 };
 

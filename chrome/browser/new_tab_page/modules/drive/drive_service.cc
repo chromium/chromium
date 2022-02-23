@@ -165,7 +165,8 @@ void DriveService::GetDriveFiles(GetFilesCallback get_files_callback) {
   }
 
   // Bail if module is still dismissed.
-  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+      !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
       base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
           kDismissDuration) {
     for (auto& callback : callbacks_) {
@@ -305,17 +306,18 @@ void DriveService::OnJsonParsed(
     return;
   }
   std::vector<drive::mojom::FilePtr> document_list;
-  for (const auto& item : items->GetList()) {
+  for (const auto& item : items->GetListDeprecated()) {
     auto* title = item.FindStringPath("driveItem.title");
     auto* mime_type = item.FindStringPath("driveItem.mimeType");
     auto* justification_text_segments =
         item.FindListPath("justification.displayText.textSegment");
     if (!justification_text_segments ||
-        justification_text_segments->GetList().size() == 0) {
+        justification_text_segments->GetListDeprecated().size() == 0) {
       continue;
     }
     std::string justification_text;
-    for (auto& text_segment : justification_text_segments->GetList()) {
+    for (auto& text_segment :
+         justification_text_segments->GetListDeprecated()) {
       auto* justification_text_path = text_segment.FindStringPath("text");
       if (!justification_text_path) {
         continue;

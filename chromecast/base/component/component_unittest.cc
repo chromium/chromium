@@ -154,7 +154,7 @@ class ComponentC : public Component<ComponentC> {
 };
 
 std::string DeathRegex(const std::string& regex) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return "";
 #else
   return regex;

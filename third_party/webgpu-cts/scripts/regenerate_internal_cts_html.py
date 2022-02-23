@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors.  All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -143,17 +143,18 @@ def generate_reftest_html(check):
                         src_content = src.read()
 
                     # Find the starting html tag
-                    i = src_content.find('<html')
+                    i = src_content.find(b'<html')
                     assert i != -1
 
                     # Then find the end of the starting html tag
-                    i = src_content.find('>', i)
+                    i = src_content.find(b'>', i)
                     assert i != -1
 
                     # Bump the index just past the starting <html> tag
                     i = i + 1
 
-                    base_tag = b'\n  <base href="%s" />' % gen_base_dir
+                    base_tag = b'\n  <base href="%s" />' % gen_base_dir.encode(
+                    )
                     dst_content = src_content[:i] + base_tag + src_content[i:]
 
                     check_or_write_file(os.path.join(dst_dir, filename),

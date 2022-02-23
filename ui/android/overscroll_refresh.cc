@@ -144,10 +144,9 @@ bool OverscrollRefresh::IsAwaitingScrollUpdateAck() const {
   return scroll_consumption_state_ == AWAITING_SCROLL_UPDATE_ACK;
 }
 
-void OverscrollRefresh::OnFrameUpdated(
-    const gfx::SizeF& viewport_size,
-    const gfx::Vector2dF& content_scroll_offset,
-    bool root_overflow_y_hidden) {
+void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
+                                       const gfx::PointF& content_scroll_offset,
+                                       bool root_overflow_y_hidden) {
   viewport_width_ = viewport_size.width();
   scrolled_to_top_ = content_scroll_offset.y() == 0;
   overflow_y_hidden_ = root_overflow_y_hidden;

@@ -4,24 +4,17 @@
 
 // Custom binding for the browserAction API.
 
-var setIcon = require('setIcon').setIcon;
+var getSetIconHandler = require('setIcon').getSetIconHandler;
 var getExtensionViews = requireNative('runtime').GetExtensionViews;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setHandleRequest('setIcon', function(details, callback) {
-    setIcon(details, function(args) {
-      bindingUtil.sendRequest(
-          'browserAction.setIcon', [args, callback], undefined);
-    }.bind(this), function (errorMessage) {
-      // Propagate the error message.
-      bindingUtil.runCallbackWithLastError(errorMessage, callback);
-    }.bind(this));
-  });
+  apiFunctions.setHandleRequest(
+      'setIcon', getSetIconHandler('browserAction.setIcon'));
 
   apiFunctions.setCustomCallback('openPopup',
-      function(name, request, callback, response) {
+      function(callback, response) {
     if (!callback)
       return;
 

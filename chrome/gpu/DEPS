@@ -1,7 +1,8 @@
 include_rules = [
+  "+ash/components/arc/mojom",
+  "+ash/components/arc/video_accelerator",
   "+chromeos/components/cdm_factory_daemon",
   "+components/arc/mojom",
-  "+components/arc/video_accelerator",
   "+components/metrics",
   "+content/public/child",
   "+content/public/gpu",

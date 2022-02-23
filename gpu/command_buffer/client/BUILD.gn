@@ -115,9 +115,7 @@ source_set("gles2_cmd_helper_sources") {
     "gles2_cmd_helper_autogen.h",
   ]
 
-  configs += [
-    "//gpu:gpu_gles2_implementation",
-  ]
+  configs += [ "//gpu:gpu_gles2_implementation" ]
 
   deps = [
     ":client",
@@ -271,6 +269,7 @@ source_set("raster_sources") {
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/common:raster",
+    "//ui/base:features",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/color",
@@ -299,9 +298,9 @@ source_set("webgpu_sources") {
     ":gles2_implementation",
     ":webgpu_interface",
     "//gpu/command_buffer/common:webgpu",
-    "//third_party/dawn/src/dawn:dawn_proc",
+    "//third_party/dawn/src/dawn:proc",
   ]
-  public_deps = [ "//third_party/dawn/src/dawn:dawn_headers" ]
+  public_deps = [ "//third_party/dawn/include/dawn:headers" ]
   sources = [
     "webgpu_cmd_helper.cc",
     "webgpu_cmd_helper.h",

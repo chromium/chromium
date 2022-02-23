@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
@@ -28,7 +29,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -168,22 +168,24 @@ class TitleView : public views::View {
           AshColorProvider::ContentLayerType::kSeparatorColor));
     }
 
-    help_button_ = AddChildView(std::make_unique<TopShortcutButton>(
+    help_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             &TitleView::ButtonPressed, base::Unretained(this),
             PaletteTrayOptions::PALETTE_HELP_BUTTON,
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteHelp,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        kSystemMenuHelpIcon, IDS_ASH_STATUS_TRAY_HELP));
-    settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
+        IconButton::Type::kSmall, &kSystemMenuHelpIcon,
+        IDS_ASH_STATUS_TRAY_HELP));
+    settings_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
             &TitleView::ButtonPressed, base::Unretained(this),
             PaletteTrayOptions::PALETTE_SETTINGS_BUTTON,
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteSettings,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        kSystemMenuSettingsIcon, IDS_ASH_PALETTE_SETTINGS));
+        IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
+        IDS_ASH_PALETTE_SETTINGS));
   }
 
   TitleView(const TitleView&) = delete;

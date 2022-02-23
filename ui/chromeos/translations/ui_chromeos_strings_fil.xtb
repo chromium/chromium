@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Mga server ng pangalan ng Google</translation>
+<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">Humigit-kumulang <ph name="REMAINING_TIME" /> ang natitira</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Mga Detalye</translation>
@@ -96,7 +97,7 @@
 <translation id="1807938677607439181">Lahat ng file</translation>
 <translation id="1810764548349082891">Walang available na preview</translation>
 <translation id="1812302367230252929">Amharic Transliteration</translation>
-<translation id="1813278315230285598">Services</translation>
+<translation id="1813278315230285598">Mga Serbisyo</translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Nilo-load ang impormasyon...</translation>
 <translation id="1834290891154666894">Invalid na entry ng pagtugma ng alternatibong pangalan</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kumonekta</translation>
+<translation id="1914901738028575085">CloudReady 2.0 device</translation>
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
 <translation id="1920798810075583923">Pakwan</translation>
 <translation id="1924372192547904021">Na-format ang <ph name="DRIVE_NAME" /></translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Archive na RAR</translation>
+<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">Russian</translation>
 <translation id="2044023416777079300">Hindi nakarehistro ang modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">Ibahagi sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
+<translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
 <translation id="3113153474486991170">Hindi mabuksan ang "<ph name="PATH" />" mula sa lokasyong ito. Pakikopya sa "Aking mga file" para buksan.</translation>
 <translation id="3113592018909187986">Mayroon ka na lang 1 natitirang pagsubok. Hindi mo magagamit ang network na ito hanggang sa mag-set up ka ng bagong PIN.</translation>
 <translation id="3124404833828281817">Taong nangangarap</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">English (US) na may International PC keyboard</translation>
 <translation id="3567221313191587603">Pumili ng file, at i-on ang <ph name="OFFLINE_CHECKBOX_NAME" /> para sa offline na pag-access sa iyong mga file.</translation>
 <translation id="357479282490346887">Lithuanian</translation>
+<translation id="3587482841069643663">Lahat</translation>
 <translation id="3592251141500063301">Hindi magawang available offline ang <ph name="FILE_NAME" /></translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Canadian French</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Naka-back up na ang lahat!</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Pinapamahalaan ng iyong Administrator, Mga Detalye</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> (na) item ang inilipat.</translation>
-<translation id="3645531960514756307">I-unpin ang folder</translation>
 <translation id="3685122418104378273">Naka-disable ang Google Drive bilang default, kapag gumagamit ng mobile data.</translation>
 <translation id="3689865792480713551">Kanselahin ang <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Hindi Naka-activate, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="3691184985318546178">Sinhala</translation>
 <translation id="3726463242007121105">Hindi mabuksan ang device na ito dahil hindi sinusuportahan ang filesystem nito.</translation>
 <translation id="3727148787322499904">Maaapektuhan ang lahat ng nakabahaging network kung babaguhin ang setting na ito</translation>
+<translation id="3737576078404241332">Alisin sa sidebar</translation>
 <translation id="3741243925913727067">I-back up ang mga larawan at video ng iyong media device sa Google Drive.</translation>
 <translation id="3749289110408117711">File name</translation>
 <translation id="3780536599611287598">Wala kang pahintulot na maglipat ng mga file sa '<ph name="FOLDER_NAME" />'.</translation>
@@ -338,7 +343,7 @@
 <translation id="3906232975181435906">Ini-install ang profile ng mobile, Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3930521966936686665">I-play sa</translation>
-<translation id="3943857333388298514">Paste</translation>
+<translation id="3943857333388298514">I-paste</translation>
 <translation id="3952872973865944257">Telugu Phonetic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3966388904776714213">Audio Player</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Kape</translation>
 <translation id="4336032328163998280">Nabigo ang pagkopya. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Idagdag sa sidebar</translation>
 <translation id="4348495354623233847">Sorani Kurdish na may Arabic-based keyboard</translation>
 <translation id="4363958938297989186">Russian na may Phonetic keyboard</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Slider ng volume</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Ibahagi sa Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4905417359854579806">Handa nang i-back up ang <ph name="FILE_COUNT" /></translation>
@@ -584,6 +591,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, hindi nakakonekta</translation>
 <translation id="6074825444536523002">Form ng Google</translation>
 <translation id="6079871810119356840">Hungarian na may Qwerty keyboard</translation>
+<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">Na-clear ang text para sa paghahanap, ipinapakita ang lahat ng file at folder.</translation>
 <translation id="610101264611565198">Inililipat ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Puwang</translation>
@@ -679,6 +687,7 @@
 <translation id="6935521024859866267">Paru-paro</translation>
 <translation id="6943836128787782965">Nabigo ang pagkuha ng HTTP</translation>
 <translation id="6949408524333579394">Serbian Transliteration</translation>
+<translation id="6954309393500027528">Na-block ng iyong administrator ang pag-paste sa file na ito</translation>
 <translation id="6960565108681981554">Hindi na-activate. Makipag-ugnayan sa iyong carrier.</translation>
 <translation id="696203921837389374">I-enable ang pagsi-sync gamit ang mobile data</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +848,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (Walang Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>
 <translation id="8300849813060516376">Nabigo ang OTASP</translation>
+<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">I-paste sa loob ng folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>
@@ -875,6 +885,7 @@
 <translation id="8551494947769799688">Latvian</translation>
 <translation id="8560515948038859357">Cantonese</translation>
 <translation id="8561206103590473338">Elepante</translation>
+<translation id="8566466896628108558">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
 <translation id="8569764466147087991">Piliin ang isang file para buksan</translation>
 <translation id="8577897833047451336">Croatian</translation>
 <translation id="8578308463707544055">Indonesian</translation>
@@ -892,6 +903,7 @@
 <translation id="8714406895390098252">Bisikleta</translation>
 <translation id="8719721339511222681">Pinili ang <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>
+<translation id="873847021056608403">Mga CloudReady 2.0 device</translation>
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="8750438273876807512">Pindutin nang matagal ang isang file at i-tap ang <ph name="ICON" />, at piliin ang "I-pin sa shelf" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="8787254343425541995">Payagan ang mga proxy para sa mga nakabahaging network</translation>
@@ -927,7 +939,6 @@
 <translation id="9110990317705400362">Patuloy kaming naghahanap ng mga paraan upang gawing mas ligtas ang iyong pagba-browse. Noong nakaraan, maaari kang i-prompt ng anumang website na magdagdag ng extension sa iyong browser. Sa mga pinakabagong bersyon ng Google Chrome, dapat na tahasan mong sabihin sa Chrome na gusto mong i-install ang mga extension na ito sa pamamagitan ng pagdaragdag sa mga ito sa page ng Mga Extension. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">I-unlock</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">I-pin ang folder</translation>
 <translation id="9130775360844693113">Magkakaroon ng access ang mga miyembro ng '<ph name="DESTINATION_NAME" />' sa mga item na ito.</translation>
 <translation id="9131598836763251128">Pumili ng isa o higit pang mga file</translation>
 <translation id="9133055936679483811">Nabigo ang pag-zip. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +959,7 @@
 <translation id="943972244133411984">Binago ni</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947144732524271678">Pumili ng hanay ng <ph name="ENTRY_COUNT" /> (na) entry mula sa <ph name="FROM_ENTRY_NAME" /> hanggang <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Gusto mo ba itong palitan?</translation>

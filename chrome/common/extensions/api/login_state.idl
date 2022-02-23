@@ -29,7 +29,10 @@ namespace loginState {
     IN_SESSION,
 
     // The user is in the lock screen.
-    IN_LOCK_SCREEN
+    IN_LOCK_SCREEN,
+
+    // The device is in RMA mode, finalizing repairs.
+    IN_RMA_SCREEN
   };
 
   callback ProfileTypeCallback = void (ProfileType result);

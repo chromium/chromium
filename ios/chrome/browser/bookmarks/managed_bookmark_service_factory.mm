@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"

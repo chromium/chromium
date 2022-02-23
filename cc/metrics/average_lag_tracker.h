@@ -8,7 +8,6 @@
 #include <deque>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 

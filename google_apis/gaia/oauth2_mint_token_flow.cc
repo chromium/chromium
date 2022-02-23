@@ -363,7 +363,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
       resolution_dict->FindListKey("browserCookies");
   base::span<const base::Value> cookie_list;
   if (browser_cookies)
-    cookie_list = browser_cookies->GetList();
+    cookie_list = browser_cookies->GetListDeprecated();
 
   base::Time time_now = base::Time::Now();
   bool success = true;

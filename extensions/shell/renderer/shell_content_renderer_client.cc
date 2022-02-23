@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -31,11 +30,8 @@ using content::RenderThread;
 
 namespace extensions {
 
-ShellContentRendererClient::ShellContentRendererClient() {
-}
-
-ShellContentRendererClient::~ShellContentRendererClient() {
-}
+ShellContentRendererClient::ShellContentRendererClient() = default;
+ShellContentRendererClient::~ShellContentRendererClient() = default;
 
 void ShellContentRendererClient::RenderThreadStarted() {
   RenderThread* thread = RenderThread::Get();
@@ -48,10 +44,6 @@ void ShellContentRendererClient::RenderThreadStarted() {
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
 
   thread->AddObserver(extensions_renderer_client_->GetDispatcher());
-
-  guest_view_container_dispatcher_ =
-      std::make_unique<guest_view::GuestViewContainerDispatcher>();
-  thread->AddObserver(guest_view_container_dispatcher_.get());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(
@@ -117,6 +109,18 @@ void ShellContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
   extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
       render_frame);
+}
+
+void ShellContentRendererClient::SetClientsForTesting(
+    std::unique_ptr<ExtensionsClient> extensions_client,
+    std::unique_ptr<ShellExtensionsRendererClient> extensions_renderer_client) {
+  DCHECK(!extensions_client_);
+  extensions_client_ = std::move(extensions_client);
+  ExtensionsClient::Set(extensions_client_.get());
+
+  DCHECK(!extensions_renderer_client_);
+  extensions_renderer_client_ = std::move(extensions_renderer_client);
+  ExtensionsRendererClient::Set(extensions_renderer_client_.get());
 }
 
 ExtensionsClient* ShellContentRendererClient::CreateExtensionsClient() {

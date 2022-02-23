@@ -67,6 +67,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
@@ -232,6 +233,8 @@ class DummyKeyboardBrightnessControlDelegate
     last_accelerator_ = accelerator;
   }
 
+  void HandleToggleKeyboardBacklight() override {}
+
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
   }
@@ -253,10 +256,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
   // TestNewWindowDelegate:
   MOCK_METHOD(void, OpenCalculator, (), (override));
   MOCK_METHOD(void, ShowKeyboardShortcutViewer, (), (override));
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 };
 
 class MockAcceleratorObserver
@@ -606,9 +606,13 @@ TEST_F(AcceleratorControllerTest, WindowSnap) {
 
     controller_->PerformActionIfEnabled(TOGGLE_MAXIMIZED, {});
     EXPECT_FALSE(window_state->IsMaximized());
-    // Window gets restored to its restore bounds since side-maximized state
-    // is treated as a "maximized" state.
-    EXPECT_EQ(normal_bounds.ToString(), window->bounds().ToString());
+
+    // Window gets restored to its right snapped window bounds and its window
+    // state should also restore to the right snapped window state.
+    gfx::Rect expected_bounds = GetDefaultSnappedWindowBoundsInParent(
+        window.get(), SnapViewType::kSecondary);
+    EXPECT_EQ(expected_bounds.ToString(), window->bounds().ToString());
+    EXPECT_EQ(window_state->GetStateType(), WindowStateType::kSecondarySnapped);
 
     controller_->PerformActionIfEnabled(TOGGLE_MAXIMIZED, {});
     controller_->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
@@ -1392,7 +1396,28 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   EXPECT_FALSE(tray->IsBubbleShown());
 }
 
+TEST_F(AcceleratorControllerTest,
+       GlobalAcceleratorsToggleProductivityLauncher) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
+
+  // Search key opens the launcher.
+  EXPECT_TRUE(ProcessInController(
+      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  // Search key again closes the launcher.
+  EXPECT_TRUE(ProcessInController(
+      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(false);
+}
+
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   base::HistogramTester histogram_tester;
 
   int toggle_count_total = 0;
@@ -1564,10 +1589,10 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
   // Tests that |side_volume_button_location_| is read correctly if the location
   // file exists.
   base::DictionaryValue location;
-  location.SetString(AcceleratorControllerImpl::kVolumeButtonRegion,
-                     AcceleratorControllerImpl::kVolumeButtonRegionScreen);
-  location.SetString(AcceleratorControllerImpl::kVolumeButtonSide,
-                     AcceleratorControllerImpl::kVolumeButtonSideLeft);
+  location.SetStringKey(AcceleratorControllerImpl::kVolumeButtonRegion,
+                        AcceleratorControllerImpl::kVolumeButtonRegionScreen);
+  location.SetStringKey(AcceleratorControllerImpl::kVolumeButtonSide,
+                        AcceleratorControllerImpl::kVolumeButtonSideLeft);
   std::string json_location;
   base::JSONWriter::Write(location, &json_location);
   base::ScopedTempDir file_tmp_dir;
@@ -2448,12 +2473,9 @@ TEST_F(AcceleratorControllerStartupNotificationTest,
 
   // Setup the expectation that the learn more button opens this shortcut
   // help link.
-  EXPECT_CALL(*new_window_delegate_, OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL(kKeyboardShortcutHelpPageUrl), url);
-        EXPECT_TRUE(from_user_interaction);
-      });
-
+  EXPECT_CALL(*new_window_delegate_,
+              OpenUrl(GURL(kKeyboardShortcutHelpPageUrl),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
   // Clicking the learn more button should trigger the NewWindowDelegate and
   // complete the expectation above.
   notification->delegate()->Click(/*button_index=*/0,
@@ -2550,7 +2572,7 @@ TEST_F(DeprecatedAcceleratorTester, TestNewAccelerators) {
        SWITCH_TO_NEXT_IME},
       {true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN, SHOW_TASK_MANAGER},
       {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-       SHOW_IME_MENU_BUBBLE},
+       TOGGLE_IME_MENU_BUBBLE},
       {true, ui::VKEY_H, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
        TOGGLE_HIGH_CONTRAST},
   };

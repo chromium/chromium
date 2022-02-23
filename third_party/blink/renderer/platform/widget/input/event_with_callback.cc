@@ -49,6 +49,17 @@ void EventWithCallback::SetScrollbarManipulationHandledOnCompositorThread() {
 void EventWithCallback::CoalesceWith(EventWithCallback* other,
                                      base::TimeTicks timestamp_now) {
   event_->CoalesceWith(*other->event_);
+  auto* metrics = original_events_.empty()
+                      ? nullptr
+                      : original_events_.front().metrics_.get();
+  auto* scroll_update_metrics = metrics ? metrics->AsScrollUpdate() : nullptr;
+  auto* other_metrics = other->original_events_.empty()
+                            ? nullptr
+                            : other->original_events_.front().metrics_.get();
+  auto* other_scroll_update_metrics =
+      other_metrics ? other_metrics->AsScrollUpdate() : nullptr;
+  if (scroll_update_metrics && other_scroll_update_metrics)
+    scroll_update_metrics->CoalesceWith(*other_scroll_update_metrics);
 
   // Move original events.
   original_events_.splice(original_events_.end(), other->original_events_);

@@ -59,9 +59,9 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
@@ -112,6 +112,7 @@ const password_manager::InteractionsStats* FindStatsByUsername(
 ManagePasswordsUIController::ManagePasswordsUIController(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ManagePasswordsUIController>(*web_contents),
       are_passwords_revealed_when_next_bubble_is_opened_(false) {
   passwords_data_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));
@@ -655,7 +656,7 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
 }
 
 bool ManagePasswordsUIController::AuthenticateUser() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -689,7 +690,7 @@ void ManagePasswordsUIController::
   // updated with any edits the user made in the Save bubble. So at this point,
   // just using GetPendingCredentials() is safe.
   passwords_data_.client()->TriggerReauthForPrimaryAccount(
-      signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
+      signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble,
       base::BindOnce(&ManagePasswordsUIController::
                          MoveJustSavedPasswordAfterAccountStoreOptIn,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -847,11 +848,11 @@ void ManagePasswordsUIController::ReopenBubbleAfterAuth(
 }
 
 bool ManagePasswordsUIController::ShowAuthenticationDialog() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return password_manager_util_win::AuthenticateUser(
       web_contents()->GetNativeView(),
       password_manager::ReauthPurpose::VIEW_PASSWORD);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return password_manager_util_mac::AuthenticateUser(
       password_manager::ReauthPurpose::VIEW_PASSWORD);
 #else

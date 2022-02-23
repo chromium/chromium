@@ -1,7 +1,11 @@
-<style include="cr-shared-style action-link md-select shared-style">
+<style include="cr-shared-style action-link md-select shared-style cr-icons">
   iron-icon {
     --iron-icon-height: var(--cr-icon-size);
     --iron-icon-width: var(--cr-icon-size);
+  }
+
+  .link-icon-button {
+    margin-inline-start: 6px;
   }
 
   #section-heading {
@@ -19,7 +23,7 @@
     margin-inline-start: 6px;
   }
 
-  #host-access {
+  #hostAccess {
     margin-inline-start: 12px;
     width: 100%;
   }
@@ -32,14 +36,13 @@
 
   #hosts li {
     align-items: center;
-    border-bottom: var(--cr-separator-line);
+    border-top: var(--cr-separator-line);
     display: flex;
     height: var(--cr-section-min-height);
-    justify-content: space-between;
   }
 
-  #hosts li:last-child {
-    border-bottom: none;
+  #hosts li:first-child {
+    border-top: none;
   }
 
   #add-host {
@@ -52,32 +55,64 @@
     margin-top: 12px;
   }
 
-  cr-radio-button.multi-row {
-    align-items: normal;
+  #new-permissions-mode {
+    color: var(--cr-primary-text-color);
+    margin-top: 12px;
+    padding-inline-start: calc(
+        var(--cr-section-indent-padding) - var(--cr-section-padding));
   }
 
-  cr-icon-button {
-    margin: 0;
+  #new-section-heading {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #new-section-heading-title {
+    display: flex;
+  }
+
+  #new-section-heading-subtext {
+    color: var(--cr-secondary-text-color);
+    margin-top: 3px;
+  }
+
+  #host-access-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    width: 100%;
+  }
+
+  .site {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .site-favicon {
+    margin-inline-end: calc(
+        var(--cr-section-padding) + var(--cr-icon-ripple-margin));
   }
 </style>
-<div id="permissions-mode">
-  <div id="section-heading">
-    <div id="section-heading-heading">
-      <span id="section-heading-text">
-        [[getHostPermissionsHeading_(useNewSiteAccessPage)]]
-      </span>
-      <a class="link-icon-button" aria-label="$i18n{learnMore}"
-          href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
-          on-click="onLearnMoreClick_">
-        <iron-icon icon="cr:help-outline"></iron-icon>
-      </a>
-    </div>
-
-    <div>
-      <select id="host-access" class="md-select" on-change="onHostAccessChange_"
-          value="[[permissions.hostAccess]]"
-          aria-labelledby="section-heading-text">
-        <template is="dom-if" if="[[!useNewSiteAccessPage]]">
+<template is="dom-if" if="[[!enableEnhancedSiteControls]]">
+  <div id="permissions-mode">
+    <div id="section-heading">
+      <div id="section-heading-heading">
+        <span id="section-heading-text">
+          $i18n{hostPermissionsHeading}
+        </span>
+        <a class="link-icon-button" aria-label="$i18n{learnMore}"
+            href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
+            on-click="onLearnMoreClick_">
+          <iron-icon icon="cr:help-outline"></iron-icon>
+        </a>
+      </div>
+      <div>
+        <select id="hostAccess" class="md-select"
+            on-change="onHostAccessChange_"
+            value="[[permissions.hostAccess]]"
+            aria-labelledby="section-heading-text">
           <option value="[[HostAccess_.ON_CLICK]]">
             $i18n{hostAccessOnClick}
           </option>
@@ -87,35 +122,75 @@
           <option value="[[HostAccess_.ON_ALL_SITES]]">
             $i18n{hostAccessOnAllSites}
           </option>
-        </template>
-        <template is="dom-if" if="[[useNewSiteAccessPage]]">
-          <option value="[[HostAccess_.ON_CLICK]]">
-            $i18n{newHostAccessOnClick}
-          </option>
-          <option value="[[HostAccess_.ON_SPECIFIC_SITES]]">
-            $i18n{hostAccessCustomizeForEachSite}
-          </option>
-          <option value="[[HostAccess_.ON_ALL_SITES]]">
-            $i18n{newHostAccessOnAllSites}
-          </option>
-        </template>
-      </select>
+        </select>
+      </div>
     </div>
   </div>
-</div>
+</template>
+
+<template is="dom-if" if="[[enableEnhancedSiteControls]]">
+  <div id="new-permissions-mode">
+    <div id="new-section-heading">
+      <div id="new-section-heading-title">
+        <span id="new-section-heading-text">
+            $i18n{newHostPermissionsHeading}
+        </span>
+        <a class="link-icon-button" aria-label="$i18n{learnMore}"
+            href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
+            on-click="onLearnMoreClick_">
+          <iron-icon icon="cr:help-outline"></iron-icon>
+        </a>
+      </div>
+      <span id="new-section-heading-subtext">
+        $i18n{hostPermissionsSubHeading}
+      </span>
+      <div id="host-access-row">
+        <select id="newHostAccess" class="md-select"
+            on-change="onHostAccessChange_"
+            value="[[permissions.hostAccess]]"
+            aria-labelledby="new-section-heading-text">
+          <option value="[[HostAccess_.ON_CLICK]]">
+            $i18n{hostAccessWhenClicked}
+          </option>
+          <option value="[[HostAccess_.ON_SPECIFIC_SITES]]">
+            $i18n{hostAccessAllowOnSpecificSites}
+          </option>
+          <option value="[[HostAccess_.ON_ALL_SITES]]">
+            $i18n{hostAccessAllowOnAllSites}
+          </option>
+        </select>
+        <cr-button id="add-site-button"
+            hidden="[[!showSpecificSites_(permissions.*)]]"
+            on-click="onAddHostClick_">
+          $i18n{add}
+        </cr-button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <template is="dom-if" if="[[showSpecificSites_(permissions.*)]]">
   <ul id="hosts">
     <template is="dom-repeat"
         items="[[getRuntimeHosts_(permissions.hosts)]]">
       <li>
-        <div>[[item]]</div>
-        <cr-icon-button class="icon-more-vert edit-host"
+        <div class="site-favicon"
+            style$="background-image:[[getFaviconUrl_(item)]]"
+            hidden$="[[!enableEnhancedSiteControls]]"></div>
+        <div class="site">[[item]]</div>
+        <cr-icon-button class="icon-edit edit-host"
             on-click="onEditHostClick_"
-            title="$i18n{hostPermissionsEdit}"></cr-icon-button>
+            hidden$="[[!enableEnhancedSiteControls]]"></cr-icon-button>
+        <cr-icon-button class="icon-delete-gray remove-host"
+            on-click="onDeleteHostClick_"
+            hidden$="[[!enableEnhancedSiteControls]]"></cr-icon-button>
+        <cr-icon-button class="icon-more-vert open-edit-host"
+            on-click="onOpenEditHostClick_"
+            title="$i18n{hostPermissionsEdit}"
+            hidden$="[[enableEnhancedSiteControls]]"></cr-icon-button>
       </li>
     </template>
-    <li>
+    <li hidden$="[[enableEnhancedSiteControls]]">
       <a id="add-host" is="action-link" on-click="onAddHostClick_">
         $i18n{itemSiteAccessAddHost}
       </a>
@@ -123,9 +198,7 @@
   </ul>
 </template>
 
-<cr-action-menu id="hostActionMenu"
-    role-description="$i18n{menu}"
-    on-close="onActionMenuClose_">
+<cr-action-menu id="hostActionMenu" role-description="$i18n{menu}">
   <button class="dropdown-item" id="action-menu-edit"
       on-click="onActionMenuEditClick_">
     $i18n{hostPermissionsEdit}
@@ -143,4 +216,18 @@
       on-close="onHostDialogClose_"
       on-cancel="onHostDialogCancel_">
   </extensions-runtime-hosts-dialog>
+</template>
+<template is="dom-if" if="[[showRemoveSiteDialog_]]" restamp>
+  <cr-dialog id="removeSitesDialog" on-cancel="onRemoveSitesWarningCancel_"
+      show-on-attach>
+    <div slot="title">$i18n{removeSitesDialogTitle}</div>
+    <div slot="button-container">
+      <cr-button class="cancel-button" on-click="onRemoveSitesWarningCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button class="action-button" on-click="onRemoveSitesWarningConfirm_">
+        $i18n{remove}
+      </cr-button>
+    </div>
+  </cr-dialog>
 </template>

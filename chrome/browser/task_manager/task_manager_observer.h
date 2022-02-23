@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -46,11 +47,11 @@ enum RefreshType {
   // or backgrounded.
   REFRESH_TYPE_PRIORITY = 1 << 13,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   // For observers interested in getting the number of open file descriptors of
   // processes.
   REFRESH_TYPE_FD_COUNT = 1 << 14,
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 15,
   REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 16,
@@ -138,7 +139,7 @@ class TaskManagerObserver {
   friend class TaskManagerInterface;
 
   // The currently observed task Manager.
-  TaskManagerInterface* observed_task_manager_;
+  raw_ptr<TaskManagerInterface> observed_task_manager_;
 
   // The minimum update time of the task manager that this observer needs to
   // do its job.

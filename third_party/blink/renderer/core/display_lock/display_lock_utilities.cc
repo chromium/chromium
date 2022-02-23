@@ -4,12 +4,14 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 
 #include <set>
@@ -32,11 +35,11 @@ void WarnOnForcedUpdateInNonActivatableContext(Document& document) {
   if (!v8::Isolate::GetCurrent()->InContext())
     return;
   String message =
-      "Rendering update in content-visibility:hidden subtree precluded "
-      "rendering optimizations.";
-  // Note that this is a verbose level message, since it can happen frequently
-  // and is not necessarily a problem if the developer is accessing
-  // content-visibility: hidden subtrees intentionally.
+      "Rendering was performed in a subtree hidden by "
+      "content-visibility:hidden.";
+  // Note that this is a verbose level message, since it can happen
+  // frequently and is not necessarily a problem if the developer is
+  // accessing content-visibility: hidden subtrees intentionally.
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kVerbose, message));
@@ -326,6 +329,12 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
           .LockedDisplayLockCount() == 0)
     return;
 
+  // We can't do flat tree traversals on shadow roots - they aren't in the flat
+  // tree. However, they also can't be DisplayLocked, so just go to their host.
+  if (node->IsShadowRoot()) {
+    node = node->ParentOrShadowHostNode();
+  }
+
   // Get the right ancestor view. Only use inclusive ancestors if the node
   // itself is locked and it prevents self layout, or if |include_self| is true.
   // If self layout is not prevented, we don't need to force the subtree layout,
@@ -357,6 +366,18 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
       forced_context_set_.insert(context);
     }
   }
+}
+
+void DisplayLockUtilities::ScopedForcedUpdate::Impl::EnsureMinimumForcedPhase(
+    DisplayLockContext::ForcedPhase phase) {
+  // Our `phase_` is already at least as permissive as `phase`.
+  if (static_cast<int>(phase_) >= static_cast<int>(phase))
+    return;
+  for (auto context : forced_context_set_) {
+    context->NotifyForcedUpdateScopeEnded(phase_);
+    context->NotifyForcedUpdateScopeStarted(phase);
+  }
+  phase_ = phase;
 }
 
 void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
@@ -752,6 +773,18 @@ Element* DisplayLockUtilities::LockedAncestorPreventingStyle(const Node& node) {
   });
 }
 
+#if DCHECK_IS_ON()
+bool DisplayLockUtilities::AssertStyleAllowed(const Node& node) {
+  if (node.GetDocument().IsFlatTreeTraversalForbidden() ||
+      node.GetDocument()
+          .GetSlotAssignmentEngine()
+          .HasPendingSlotAssignmentRecalc()) {
+    return true;
+  }
+  return !LockedAncestorPreventingStyle(node);
+}
+#endif
+
 bool DisplayLockUtilities::PrePaintBlockedInParentFrame(LayoutView* view) {
   auto* owner = view->GetFrameView()->GetFrame().OwnerLayoutObject();
   if (!owner)
@@ -778,7 +811,7 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   // Since setting the open attribute fires mutation events which could mess
   // with the FlatTreeTraversal iterator, we should first iterate details
   // elements to open and then open them all.
-  VectorOf<HTMLElement> elements_to_reveal;
+  HeapVector<Member<HTMLElement>> elements_to_reveal;
 
   for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
@@ -791,11 +824,13 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   }
 
   for (HTMLElement* element : elements_to_reveal) {
-    element->removeAttribute(html_names::kHiddenAttr);
+    element->DispatchEvent(
+        *Event::CreateBubble(event_type_names::kBeforematch));
   }
 
-  // TODO(crbug.com/1055002): Fire the beforematch event here on all
-  //   |elements_to_reveal|.
+  for (HTMLElement* element : elements_to_reveal) {
+    element->removeAttribute(html_names::kHiddenAttr);
+  }
 
   return elements_to_reveal.size();
 }

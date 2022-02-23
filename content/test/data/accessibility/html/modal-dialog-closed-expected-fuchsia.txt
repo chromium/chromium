@@ -1,0 +1,14 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++STATIC_TEXT label='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++++++++UNKNOWN label='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++STATIC_TEXT hidden label='This dialog is closed and should not be in the tree'
+++++++++UNKNOWN focusable actions='{DEFAULT}' value='This should be in the tree.'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='This should be in the tree.' actions='{DEFAULT}'
+++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}' value='#000000'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden

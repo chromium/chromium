@@ -18,8 +18,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.variations.VariationsAssociatedData;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * Class that detects if the network is offline. Waits for the network to stablize before notifying
@@ -100,8 +100,8 @@ class OfflineDetector
     private long mTimeWhenLastOnline;
 
     // Set to true if adb console logging should be enabled.
-    private static final boolean sLoggingEnabled = ChromeVersionInfo.isCanaryBuild()
-            || ChromeVersionInfo.isDevBuild() || ChromeVersionInfo.isLocalBuild();
+    private static final boolean sLoggingEnabled =
+            VersionInfo.isCanaryBuild() || VersionInfo.isDevBuild() || VersionInfo.isLocalBuild();
 
     private static final String TAG = "OfflineDetector";
 

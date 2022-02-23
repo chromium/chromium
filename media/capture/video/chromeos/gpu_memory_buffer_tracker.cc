@@ -82,9 +82,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   // re-using a wrong pixmap handle in the cache.
   //
   // [1]: https://tinyurl.com/yymtv22y
-  constexpr int kInvalidId = -1;
   gfx::GpuMemoryBufferHandle handle = buffer_->CloneHandle();
-  handle.id = gfx::GpuMemoryBufferId(kInvalidId);
+  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   return handle;
 }
 

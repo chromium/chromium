@@ -20,24 +20,25 @@
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/glue/sync_engine_backend.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_bridge.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace syncer {
@@ -127,7 +128,7 @@ SyncEngineImpl::SyncEngineImpl(
       sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       sessions_invalidation_enabled_(false),
 #else
       sessions_invalidation_enabled_(true),
@@ -176,10 +177,9 @@ void SyncEngineImpl::Initialize(InitParams params) {
   // enabled, then the SyncService doesn't need to communicate with the old
   // InvalidationService anymore.
   if (invalidator_ &&
-      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
-      base::FeatureList::IsEnabled(
-          switches::kUseSyncInvalidationsForWalletAndOffer)) {
+      base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer)) {
     DCHECK(!invalidation_handler_registered_);
     invalidator_->RegisterInvalidationHandler(this);
     bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
@@ -244,18 +244,22 @@ void SyncEngineImpl::StartSyncingWithServer() {
                                 last_poll_time));
 }
 
-void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
+void SyncEngineImpl::SetEncryptionPassphrase(
+    const std::string& passphrase,
+    const KeyDerivationParams& key_derivation_params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetEncryptionPassphrase,
-                                backend_, passphrase));
+                                backend_, passphrase, key_derivation_params));
 }
 
-void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
+void SyncEngineImpl::SetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
-                                backend_, passphrase));
+      FROM_HERE,
+      base::BindOnce(&SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey,
+                     backend_, std::move(key)));
 }
 
 void SyncEngineImpl::AddTrustedVaultDecryptionKeys(
@@ -419,8 +423,14 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
 
     // Fake a state change to initialize the SyncManager's cached invalidator
     // state.
-    // TODO(crbug.com/1132868): Do this for the new invalidations as well.
     OnInvalidatorStateChange(invalidator_->GetInvalidatorState());
+  } else {
+    DCHECK(sync_invalidations_service_);
+    // TODO(crbug.com/1297919): clean up the state in OnInvalidatorStateChange
+    // once fully migrated to new invalidations. Also clean up the logic for
+    // disabled invalidations since it's not used in new invalidations anymore.
+    OnInvalidatorStateChange(
+        invalidation::InvalidatorState::INVALIDATIONS_ENABLED);
   }
 
   if (sync_invalidations_service_) {
@@ -597,10 +607,10 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
   if (!sessions_invalidation_enabled_) {
     invalidation_enabled_types.Remove(syncer::SESSIONS);
   }
-  // switches::kUseSyncInvalidations means that the new invalidations system is
+  // kUseSyncInvalidations means that the new invalidations system is
   // used for all data types except Wallet and Offer, so only keep these types.
-  if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     invalidation_enabled_types.RetainAll(
         {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }

@@ -22,6 +22,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/privileged_helper/server.h"
@@ -53,22 +54,21 @@
 }
 
 #pragma mark PrivilegedHelperServiceProtocol
-- (void)performSystemUpdaterTasksWithBrowserPath:(NSString* _Nonnull)browserPath
-                                           reply:
-                                               (void (^_Nonnull)(int rc))reply {
+- (void)setupSystemUpdaterWithBrowserPath:(NSString* _Nonnull)browserPath
+                                    reply:(void (^_Nonnull)(int rc))reply {
   auto cb = base::BindOnce(base::RetainBlock(^(const int rc) {
-    VLOG(0) << "PerformSystemUpdaterTasksWithUpdaterPath complete. Result: "
-            << rc;
-    if (reply) {
+    VLOG(0) << "SetupSystemUpdaterWithUpdaterPath complete. Result: " << rc;
+    if (reply)
       reply(rc);
-    }
+    _server->TaskCompleted();
   }));
 
+  _server->TaskStarted();
   _callbackRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &updater::PrivilegedHelperService::PerformSystemUpdaterTasks,
-          _service, base::SysNSStringToUTF8(browserPath), std::move(cb)));
+      base::BindOnce(&updater::PrivilegedHelperService::SetupSystemUpdater,
+                     _service, base::SysNSStringToUTF8(browserPath),
+                     std::move(cb)));
 }
 @end
 
@@ -84,7 +84,10 @@
   if (self = [super init]) {
     _service = service;
     _server = server;
-    _callbackRunner = base::SequencedTaskRunnerHandle::Get();
+    _callbackRunner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::WithBaseSyncPrimitives(),
+         base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
 
   return self;
@@ -110,6 +113,8 @@ namespace {
 
 constexpr base::FilePath::CharType kFrameworksPath[] = FILE_PATH_LITERAL(
     "Contents/Frameworks/" BROWSER_NAME_STRING " Framework.framework/Helpers");
+constexpr base::FilePath::CharType kProductBundleName[] =
+    FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".app");
 constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
                                  base::FILE_PERMISSION_GROUP_MASK |
                                  base::FILE_PERMISSION_READ_BY_OTHERS |
@@ -127,12 +132,14 @@ PrivilegedHelperService::PrivilegedHelperService()
 
 PrivilegedHelperService::~PrivilegedHelperService() = default;
 
-void PrivilegedHelperService::PerformSystemUpdaterTasks(
+void PrivilegedHelperService::SetupSystemUpdater(
     const std::string& browser_path,
     base::OnceCallback<void(int)> result) {
   // Get the updater path via the browser path.
   base::FilePath updater_path_exec_path = base::FilePath(browser_path)
                                               .Append(kFrameworksPath)
+                                              .Append(kProductBundleName)
+                                              .Append("Contents/MacOS")
                                               .Append(PRODUCT_FULLNAME_STRING);
 
   base::CommandLine command(updater_path_exec_path);
@@ -144,8 +151,8 @@ void PrivilegedHelperService::PerformSystemUpdaterTasks(
   std::string output;
   int exit_code = 0;
   if (!base::GetAppOutputWithExitCode(command, &output, &exit_code)) {
-    VPLOG(0) << "Something went wrong with installing the updater: "
-             << updater_path_exec_path;
+    VLOG(0) << "Something went wrong with installing the updater: "
+            << updater_path_exec_path;
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(result), kFailedToInstall));
     return;
@@ -166,8 +173,8 @@ void PrivilegedHelperService::PerformSystemUpdaterTasks(
   chown_cmd.AppendArg(browser_path);
 
   if (!base::GetAppOutputWithExitCode(chown_cmd, &output, &exit_code)) {
-    VPLOG(0) << "Something went wrong with altering the browser ownership: "
-             << browser_path;
+    VLOG(0) << "Something went wrong with altering the browser ownership: "
+            << browser_path;
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(result), kFailedToAlterBrowserOwnership));

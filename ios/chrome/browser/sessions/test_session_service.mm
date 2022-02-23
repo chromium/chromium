@@ -29,7 +29,7 @@
                             requiringSecureCoding:NO
                                             error:nil];
   if (self.performIO)
-    [self performSaveSessionData:data sessionPath:sessionPath];
+    [self performSaveSessionData:data tabContents:@{} sessionPath:sessionPath];
   _saveSessionCallsCount++;
 }
 

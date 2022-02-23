@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from page_sets.desktop_ui.browser_element_identifiers import \
+    kOmniboxElementId
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import \
     PLATFORM_ACCELERATOR, InputText, PressKey
@@ -24,7 +26,7 @@ class OmniboxStory(MultiTabStory):
   WAIT_FOR_NETWORK_QUIESCENCE = False
 
   def GetOmniboxNodeID(self):
-    return self._devtools.QueryNodes('"OmniboxViewViews"')[0]
+    return self._devtools.QueryNodes('id:%s' % kOmniboxElementId)[0]
 
   def WillStartTracing(self, chrome_trace_config):
     super(OmniboxStory, self).WillStartTracing(chrome_trace_config)

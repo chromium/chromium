@@ -28,7 +28,7 @@
 namespace crash_keys {
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // ChromeOS uses --enable-features and --disable-features more heavily than
 // most platforms, and the results don't fit into the default 64 bytes. So they
 // are listed in special, larger CrashKeys and excluded from the default
@@ -60,11 +60,11 @@ bool IsBoringSwitch(const std::string& flag) {
     // anyways. Should be switches::kGpuPreferences but we run into linking
     // errors on Windows if we try to use that directly.
     "gpu-preferences",
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     switches::kEnableFeatures,
     switches::kDisableFeatures,
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     switches::kMetricsClientID,
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
     // --crash-loop-before is a "boring" switch because it is redundant;
@@ -90,7 +90,7 @@ bool IsBoringSwitch(const std::string& flag) {
 #endif
   };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Just about everything has this, don't bother.
   if (base::StartsWith(flag, "/prefetch:", base::CompareCase::SENSITIVE))
     return true;
@@ -110,7 +110,7 @@ bool IsBoringSwitch(const std::string& flag) {
 }  // namespace
 
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   HandleEnableDisableFeatures(command_line);
 #endif
   SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);

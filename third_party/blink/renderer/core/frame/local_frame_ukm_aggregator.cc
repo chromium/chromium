@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -212,10 +213,6 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   metrics_data->prepaint = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(MetricId::kPrePaint)]
           .main_frame_count);
-  metrics_data->compositing_assignments = base::Microseconds(
-      absolute_metric_records_[static_cast<unsigned>(
-                                   MetricId::kCompositingAssignments)]
-          .main_frame_count);
   metrics_data->compositing_inputs = base::Microseconds(
       absolute_metric_records_[static_cast<unsigned>(
                                    MetricId::kCompositingInputs)]
@@ -257,6 +254,10 @@ void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,
 
 void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
+  static base::CpuReductionExperimentFilter filter;
+  if (!filter.ShouldLogHistograms())
+    return;
+
   // Always use RecordForcedLayoutSample for the kForcedStyleAndLayout
   // metric id.
   DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));
@@ -522,7 +523,6 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
       ToSample(primary_metric_.pre_fcp_aggregate));
   builder.SetMainFrame(ToSample(primary_metric_.pre_fcp_aggregate));
 
-  RECORD_METRIC(CompositingAssignments);
   RECORD_METRIC(CompositingCommit);
   RECORD_METRIC(CompositingInputs);
   RECORD_METRIC(ImplCompositorCommit);
@@ -550,6 +550,7 @@ void LocalFrameUkmAggregator::ReportPreFCPEvent() {
   RECORD_METRIC(ScrollDocumentUpdate);
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
+  RECORD_METRIC(ParseStyleSheet);
 
   builder.Record(recorder_);
 #undef RECORD_METRIC
@@ -575,7 +576,6 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   builder.SetMainFrame(current_sample_.primary_metric_count);
   builder.SetMainFrameIsBeforeFCP(fcp_state_ != kHavePassedFCP);
   builder.SetMainFrameReasons(current_sample_.trackers);
-  RECORD_METRIC(CompositingAssignments);
   RECORD_METRIC(CompositingCommit);
   RECORD_METRIC(CompositingInputs);
   RECORD_METRIC(ImplCompositorCommit);
@@ -603,6 +603,7 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
   RECORD_METRIC(ScrollDocumentUpdate);
   RECORD_METRIC(HitTestDocumentUpdate);
   RECORD_METRIC(JavascriptDocumentUpdate);
+  RECORD_METRIC(ParseStyleSheet);
 
   builder.Record(recorder_);
 #undef RECORD_METRIC

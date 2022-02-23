@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 
 namespace feature_engagement {
@@ -57,8 +58,8 @@ class ReopenTabInProductHelpTrigger {
   // Sets state as if user has not performed any actions.
   void ResetTriggerState();
 
-  feature_engagement::Tracker* const tracker_;
-  const base::TickClock* const clock_;
+  const raw_ptr<feature_engagement::Tracker> tracker_;
+  const raw_ptr<const base::TickClock> clock_;
 
   ShowHelpCallback cb_;
 

@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -19,30 +20,19 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
-#include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
-#include "chrome/browser/subresource_redirect/litepages_service_bypass_decider.h"
-#include "chrome/browser/subresource_redirect/origin_robots_rules_cache.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
-#include "components/data_reduction_proxy/core/browser/data_store.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
-#include "components/subresource_redirect/common/subresource_redirect_features.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -59,6 +49,16 @@
 
 namespace {
 
+constexpr base::FilePath::CharType kLiteVideoOptOutDBFilename[] =
+    FILE_PATH_LITERAL("lite_video_opt_out.db");
+
+const base::FilePath::CharType kHostDataUseDBName[] =
+    FILE_PATH_LITERAL("data_reduction_proxy_leveldb");
+
+void DeleteHostDataUseDatabaseOnDBThread(const base::FilePath& database_file) {
+  base::DeleteFile(database_file);
+}
+
 // Deletes Previews opt-out database file. Opt-out database is no longer needed
 // since Previews has been turned down.
 void DeletePreviewsOptOutDatabaseOnDBThread(
@@ -66,156 +66,29 @@ void DeletePreviewsOptOutDatabaseOnDBThread(
   sql::Database::Delete(previews_optout_database_file);
 }
 
-// Assume that any proxy host ending with this suffix is a Data Reduction Proxy.
-const char kDataReductionProxyDefaultHostSuffix[] = ".googlezip.net";
-
-// Searches |proxy_list| for any Data Reduction Proxies, even if they don't
-// match a currently configured Data Reduction Proxy.
-bool ContainsDataReductionProxyDefaultHostSuffix(
-    const net::ProxyList& proxy_list) {
-  for (const net::ProxyServer& proxy : proxy_list.GetAll()) {
-    if (proxy.is_valid() && !proxy.is_direct() &&
-        base::EndsWith(proxy.host_port_pair().host(),
-                       kDataReductionProxyDefaultHostSuffix,
-                       base::CompareCase::SENSITIVE)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Searches |proxy_rules| for any Data Reduction Proxies, even if they don't
-// match a currently configured Data Reduction Proxy.
-bool ContainsDataReductionProxyDefaultHostSuffix(
-    const net::ProxyConfig::ProxyRules& proxy_rules) {
-  return ContainsDataReductionProxyDefaultHostSuffix(
-             proxy_rules.proxies_for_http) ||
-         ContainsDataReductionProxyDefaultHostSuffix(
-             proxy_rules.proxies_for_https);
-}
-
-// Extract the embedded PAC script from the given |pac_url|, and store the
-// extracted script in |pac_script|. Returns true if extraction was successful,
-// otherwise returns false. |pac_script| must not be NULL.
-bool GetEmbeddedPacScript(base::StringPiece pac_url, std::string* pac_script) {
-  DCHECK(pac_script);
-  static const char kPacURLPrefix[] =
-      "data:application/x-ns-proxy-autoconfig;base64,";
-  return base::StartsWith(pac_url, kPacURLPrefix,
-                          base::CompareCase::SENSITIVE) &&
-         base::Base64Decode(pac_url.substr(base::size(kPacURLPrefix) - 1),
-                            pac_script);
+// Deletes LiteVideos opt-out database file. Opt-out database is no longer
+// needed since LiteVideos has been turned down.
+void DeleteLiteVideosOptOutDatabaseOnDBThread(
+    const base::FilePath& optout_database_file) {
+  sql::Database::Delete(optout_database_file);
 }
 
 }  // namespace
 
-// The Data Reduction Proxy has been turned into a "best effort" proxy,
-// meaning it is used only if the effective proxy configuration resolves to
-// DIRECT for a URL. It no longer can be a ProxyConfig in the proxy preference
-// hierarchy. This method removes the Data Reduction Proxy configuration from
-// prefs, if present. |proxy_pref_name| is the name of the proxy pref.
-void DataReductionProxyChromeSettings::MigrateDataReductionProxyOffProxyPrefs(
-    PrefService* prefs) {
-  ProxyPrefMigrationResult proxy_pref_status =
-      MigrateDataReductionProxyOffProxyPrefsHelper(prefs);
-  UMA_HISTOGRAM_ENUMERATION("DataReductionProxy.ProxyPrefMigrationResult",
-                            proxy_pref_status,
-                            DataReductionProxyChromeSettings::PROXY_PREF_MAX);
-}
-
-DataReductionProxyChromeSettings::ProxyPrefMigrationResult
-DataReductionProxyChromeSettings::MigrateDataReductionProxyOffProxyPrefsHelper(
-    PrefService* prefs) {
-  base::DictionaryValue* dict = (base::DictionaryValue*)prefs->GetUserPrefValue(
-      proxy_config::prefs::kProxy);
-  if (!dict)
-    return PROXY_PREF_NOT_CLEARED;
-
-  // Clear empty "proxy" dictionary created by a bug. See http://crbug/448172.
-  if (dict->DictEmpty()) {
-    prefs->ClearPref(proxy_config::prefs::kProxy);
-    return PROXY_PREF_CLEARED_EMPTY;
-  }
-
-  std::string mode;
-  if (!dict->GetString("mode", &mode))
-    return PROXY_PREF_NOT_CLEARED;
-  // Clear "system" proxy entry since this is the default. This entry was
-  // created by bug (http://crbug/448172).
-  if (ProxyModeToString(ProxyPrefs::MODE_SYSTEM) == mode) {
-    prefs->ClearPref(proxy_config::prefs::kProxy);
-    return PROXY_PREF_CLEARED_MODE_SYSTEM;
-  }
-
-  // From M36 to M40, the DRP was configured using MODE_FIXED_SERVERS in the
-  // proxy pref.
-  if (ProxyModeToString(ProxyPrefs::MODE_FIXED_SERVERS) == mode) {
-    std::string proxy_server;
-    if (!dict->GetString("server", &proxy_server))
-      return PROXY_PREF_NOT_CLEARED;
-    net::ProxyConfig::ProxyRules proxy_rules;
-    proxy_rules.ParseFromString(proxy_server);
-    // Clear the proxy pref if it matches a currently configured Data Reduction
-    // Proxy, or if the proxy host ends with ".googlezip.net", in order to
-    // ensure that any DRP in the pref is cleared even if the DRP configuration
-    // was changed. See http://crbug.com/476610.
-    ProxyPrefMigrationResult rv;
-    if (ContainsDataReductionProxyDefaultHostSuffix(proxy_rules))
-      rv = PROXY_PREF_CLEARED_GOOGLEZIP;
-    else
-      return PROXY_PREF_NOT_CLEARED;
-
-    prefs->ClearPref(proxy_config::prefs::kProxy);
-    return rv;
-  }
-
-  // Before M35, the DRP was configured using a PAC script base64 encoded into a
-  // PAC url.
-  if (ProxyModeToString(ProxyPrefs::MODE_PAC_SCRIPT) == mode) {
-    std::string pac_url;
-    std::string pac_script;
-    if (!dict->GetString("pac_url", &pac_url) ||
-        !GetEmbeddedPacScript(pac_url, &pac_script)) {
-      return PROXY_PREF_NOT_CLEARED;
-    }
-
-    // In M35 and earlier, the way of specifying the DRP in a PAC script would
-    // always include the port number after the host even if the port number
-    // could be implied, so searching for ".googlezip.net:" in the PAC script
-    // indicates whether there's a proxy in that PAC script with a host of the
-    // form "*.googlezip.net".
-    if (pac_script.find(".googlezip.net:") == std::string::npos)
-      return PROXY_PREF_NOT_CLEARED;
-
-    prefs->ClearPref(proxy_config::prefs::kProxy);
-    return PROXY_PREF_CLEARED_PAC_GOOGLEZIP;
-  }
-
-  return PROXY_PREF_NOT_CLEARED;
-}
-
 DataReductionProxyChromeSettings::DataReductionProxyChromeSettings(
     bool is_off_the_record_profile)
     : data_reduction_proxy::DataReductionProxySettings(
-          is_off_the_record_profile),
-      profile_(nullptr) {
+          is_off_the_record_profile) {
   DCHECK(!is_off_the_record_profile);
 }
 
 DataReductionProxyChromeSettings::~DataReductionProxyChromeSettings() {}
 
-void DataReductionProxyChromeSettings::Shutdown() {
-  data_reduction_proxy::DataReductionProxyService* service =
-      data_reduction_proxy_service();
-  if (service)
-    service->Shutdown();
-}
+void DataReductionProxyChromeSettings::Shutdown() {}
 
 void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
     Profile* profile,
-    std::unique_ptr<data_reduction_proxy::DataStore> store,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner) {
-  profile_ = profile;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Delete Previews OptOut database file.
@@ -227,54 +100,15 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
       base::BindOnce(DeletePreviewsOptOutDatabaseOnDBThread,
                      profile_path.Append(chrome::kPreviewsOptOutDBFilename)));
 
-#if defined(OS_ANDROID)
-  // On mobile we write Data Reduction Proxy prefs directly to the pref service.
-  // On desktop we store Data Reduction Proxy prefs in memory, writing to disk
-  // every 60 minutes and on termination. Shutdown hooks must be added for
-  // Android and iOS in order for non-zero delays to be supported.
-  // (http://crbug.com/408264)
-  base::TimeDelta commit_delay = base::TimeDelta();
-#else
-  base::TimeDelta commit_delay = base::Minutes(60);
-#endif
+  db_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(DeleteLiteVideosOptOutDatabaseOnDBThread,
+                     profile_path.Append(kLiteVideoOptOutDBFilename)));
 
-  PrefService* profile_prefs = profile->GetPrefs();
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess();
-  std::unique_ptr<data_reduction_proxy::DataReductionProxyService> service =
-      std::make_unique<data_reduction_proxy::DataReductionProxyService>(
-          this, profile_prefs, std::move(store),
-          data_use_measurement::ChromeDataUseMeasurement::GetInstance(),
-          db_task_runner, commit_delay);
-  data_reduction_proxy::DataReductionProxySettings::
-      InitDataReductionProxySettings(profile_prefs, std::move(service));
+  db_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(DeleteHostDataUseDatabaseOnDBThread,
+                                profile_path.Append(kHostDataUseDBName)));
 
   data_reduction_proxy::DataReductionProxySettings::
-      SetCallbackToRegisterSyntheticFieldTrial(base::BindRepeating(
-          &ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial));
-  // In M35 and earlier, the Data Reduction Proxy enabled/disabled setting was
-  // stored in prefs, so this setting needs to be migrated to the new way of
-  // storing the setting. Removing this migration code would cause users
-  // upgrading from M35 and earlier with the Data Reduction Proxy enabled to be
-  // unable to browse non-SSL sites for the most part (see
-  // http://crbug.com/476610).
-  MigrateDataReductionProxyOffProxyPrefs(profile_prefs);
-  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
-      subresource_redirect::ShouldEnableLoginRobotsCheckedImageCompression()) {
-    https_image_compression_infobar_decider_ =
-        std::make_unique<HttpsImageCompressionInfoBarDecider>(profile_prefs,
-                                                              this);
-  }
-  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression() ||
-      subresource_redirect::ShouldEnableLoginRobotsCheckedImageCompression() ||
-      subresource_redirect::ShouldEnableRobotsRulesFetching()) {
-    litepages_service_bypass_decider_ =
-        std::make_unique<LitePagesServiceBypassDecider>();
-  }
-  if (subresource_redirect::ShouldEnableRobotsRulesFetching()) {
-    origin_robots_rules_cache_ =
-        std::make_unique<subresource_redirect::OriginRobotsRulesCache>(
-            url_loader_factory, litepages_service_bypass_decider_->AsWeakPtr());
-  }
+      InitDataReductionProxySettings();
 }

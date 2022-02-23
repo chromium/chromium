@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionsResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.GetUserDataResponseProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportsScriptResponseProto;
 
@@ -46,6 +47,7 @@ public class AutofillAssistantTestService
     private @Nullable List<ProcessedActionProto> mProcessedActions;
     private int mNextActionsCounter;
     private int mCurrentScriptIndex;
+    private GetUserDataResponseProto mUserData;
 
     /** Default constructor which disables animations. */
     AutofillAssistantTestService(List<AutofillAssistantTestScript> scripts) {
@@ -92,6 +94,13 @@ public class AutofillAssistantTestService
      */
     void setNextActions(List<ActionProto> nextActions) {
         mNextActions = nextActions;
+    }
+
+    /**
+     * Sets the user data that will be returned with the next GetUserData request.
+     */
+    void setUserData(GetUserDataResponseProto userData) {
+        mUserData = userData;
     }
 
     @Override
@@ -214,6 +223,16 @@ public class AutofillAssistantTestService
             e.printStackTrace();
         }
         return getNextActions(globalPayload, scriptPayload, actions).toByteArray();
+    }
+
+    @CalledByNative
+    private byte[] getUserDataNative() {
+        byte[] returnValue = mUserData.toByteArray();
+        // Null the user data such that a next (unexpected) request fails to respond. If multiple
+        // requests are required, set new user data or consider adding code to allow for repeated
+        // calls.
+        mUserData = null;
+        return returnValue;
     }
 
     @NativeMethods

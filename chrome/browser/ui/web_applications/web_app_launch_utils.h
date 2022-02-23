@@ -6,12 +6,19 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
 #include <memory>
+#include <string>
 
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
+class Profile;
 class Browser;
 class GURL;
+enum class WindowOpenDisposition;
+struct NavigateParams;
 
 namespace content {
 class WebContents;
@@ -39,6 +46,12 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const AppId& app_id);
 
+// Tags `contents` with the given app id and marks it as an app. This
+// differentiates it from a `WebContents` which happens to be hosting a page
+// that is part of an app.
+void SetWebContentsActingAsApp(content::WebContents* contents,
+                               const AppId& app_id);
+
 // Set preferences that are unique to app windows.
 void SetAppPrefsForWebContents(content::WebContents* web_contents);
 
@@ -47,6 +60,33 @@ void ClearAppPrefsForWebContents(content::WebContents* web_contents);
 
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser);
+
+Browser* CreateWebApplicationWindow(
+    Profile* profile,
+    const std::string& app_id,
+    WindowOpenDisposition disposition,
+    int32_t restore_id,
+    bool omit_from_session_restore = false,
+    bool can_resize = true,
+    bool can_maximize = true,
+    const gfx::Rect initial_bounds = gfx::Rect());
+
+content::WebContents* NavigateWebApplicationWindow(
+    Browser* browser,
+    const std::string& app_id,
+    const GURL& url,
+    WindowOpenDisposition disposition);
+
+content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
+                                                NavigateParams& nav_params);
+
+void RecordAppWindowLaunch(Profile* profile, const std::string& app_id);
+
+void RecordMetrics(const AppId& app_id,
+                   apps::mojom::LaunchContainer container,
+                   extensions::AppLaunchSource launch_source,
+                   const GURL& launch_url,
+                   content::WebContents* web_contents);
 
 }  // namespace web_app
 

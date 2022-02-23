@@ -12,8 +12,7 @@ namespace content {
 
 // A singleton which holds on to all the registered WebUIControllerFactory
 // instances.
-class CONTENT_EXPORT WebUIControllerFactoryRegistry
-    : public WebUIControllerFactory {
+class WebUIControllerFactoryRegistry : public WebUIControllerFactory {
  public:
   static WebUIControllerFactoryRegistry* GetInstance();
 

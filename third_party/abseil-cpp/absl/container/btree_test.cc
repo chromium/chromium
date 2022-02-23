@@ -15,6 +15,7 @@
 #include "absl/container/btree_test.h"
 
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -1212,6 +1213,11 @@ class BtreeNodePeer {
   constexpr static bool UsesLinearNodeSearch() {
     return btree_node<typename Btree::params_type>::use_linear_search::value;
   }
+
+  template <typename Btree>
+  constexpr static bool UsesGenerations() {
+    return Btree::params_type::kEnableGenerations;
+  }
 };
 
 namespace {
@@ -1344,38 +1350,34 @@ TEST(Btree, InitializerListInsert) {
   EXPECT_EQ(++it, range.second);
 }
 
-template <typename Compare, typename K>
-void AssertKeyCompareToAdapted() {
-  using Adapted = typename key_compare_to_adapter<Compare>::type;
-  static_assert(!std::is_same<Adapted, Compare>::value,
-                "key_compare_to_adapter should have adapted this comparator.");
+template <typename Compare, typename Key>
+void AssertKeyCompareStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<absl::weak_ordering,
-                   absl::result_of_t<Adapted(const K &, const K &)>>::value,
-      "Adapted comparator should be a key-compare-to comparator.");
+      std::is_same<Adapted, StringBtreeDefaultLess>::value ||
+          std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter should have string-adapted this comparator.");
 }
-template <typename Compare, typename K>
-void AssertKeyCompareToNotAdapted() {
-  using Unadapted = typename key_compare_to_adapter<Compare>::type;
+template <typename Compare, typename Key>
+void AssertKeyCompareNotStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<Unadapted, Compare>::value,
-      "key_compare_to_adapter shouldn't have adapted this comparator.");
-  static_assert(
-      std::is_same<bool,
-                   absl::result_of_t<Unadapted(const K &, const K &)>>::value,
-      "Un-adapted comparator should return bool.");
+      !std::is_same<Adapted, StringBtreeDefaultLess>::value &&
+          !std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter shouldn't have string-adapted this comparator.");
 }
 
-TEST(Btree, KeyCompareToAdapter) {
-  AssertKeyCompareToAdapted<std::less<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::greater<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::less<absl::string_view>, absl::string_view>();
-  AssertKeyCompareToAdapted<std::greater<absl::string_view>,
-                            absl::string_view>();
-  AssertKeyCompareToAdapted<std::less<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToAdapted<std::greater<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToNotAdapted<std::less<int>, int>();
-  AssertKeyCompareToNotAdapted<std::greater<int>, int>();
+TEST(Btree, KeyCompareAdapter) {
+  AssertKeyCompareStringAdapted<std::less<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::greater<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::less<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::greater<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::less<absl::Cord>, absl::Cord>();
+  AssertKeyCompareStringAdapted<std::greater<absl::Cord>, absl::Cord>();
+  AssertKeyCompareNotStringAdapted<std::less<int>, int>();
+  AssertKeyCompareNotStringAdapted<std::greater<int>, int>();
 }
 
 TEST(Btree, RValueInsert) {
@@ -1425,11 +1427,19 @@ TEST(Btree, RValueInsert) {
   EXPECT_EQ(tracker.swaps(), 0);
 }
 
-// A btree set with a specific number of values per node.
+template <typename Cmp>
+struct CheckedCompareOptedOutCmp : Cmp, BtreeTestOnlyCheckedCompareOptOutBase {
+  using Cmp::Cmp;
+  CheckedCompareOptedOutCmp() {}
+  CheckedCompareOptedOutCmp(Cmp cmp) : Cmp(std::move(cmp)) {}  // NOLINT
+};
+
+// A btree set with a specific number of values per node. Opt out of
+// checked_compare so that we can expect exact numbers of comparisons.
 template <typename Key, int TargetValuesPerNode, typename Cmp = std::less<Key>>
 class SizedBtreeSet
     : public btree_set_container<btree<
-          set_params<Key, Cmp, std::allocator<Key>,
+          set_params<Key, CheckedCompareOptedOutCmp<Cmp>, std::allocator<Key>,
                      BtreeNodePeer::GetTargetNodeSize<Key>(TargetValuesPerNode),
                      /*Multi=*/false>>> {
   using Base = typename SizedBtreeSet::btree_set_container;
@@ -1473,8 +1483,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTracking) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -1528,8 +1540,10 @@ TEST(Btree, MovesComparisonsCopiesSwapsTrackingThreeWayCompare) {
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>(), 61);
   EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<decltype(set100)>(), 100);
   if (sizeof(void *) == 8) {
-    EXPECT_EQ(BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
-              BtreeNodePeer::GetNumSlotsPerNode<decltype(set61)>());
+    EXPECT_EQ(
+        BtreeNodePeer::GetNumSlotsPerNode<absl::btree_set<int32_t>>(),
+        // When we have generations, there is one fewer slot.
+        BtreeNodePeer::UsesGenerations<absl::btree_set<int32_t>>() ? 60 : 61);
   }
 
   // Test key insertion/deletion in random order.
@@ -2297,7 +2311,9 @@ TEST(Btree, TryEmplaceWithHintWorks) {
   };
   using Cmp = decltype(cmp);
 
-  absl::btree_map<int, int, Cmp> m(cmp);
+  // Use a map that is opted out of key_compare being adapted so we can expect
+  // strict comparison call limits.
+  absl::btree_map<int, int, CheckedCompareOptedOutCmp<Cmp>> m(cmp);
   for (int i = 0; i < 128; ++i) {
     m.emplace(i, i);
   }
@@ -2452,23 +2468,28 @@ TEST(Btree, EraseIf) {
   // Test that erase_if works with all the container types and supports lambdas.
   {
     absl::btree_set<int> s = {1, 3, 5, 6, 100};
-    erase_if(s, [](int k) { return k > 3; });
+    EXPECT_EQ(erase_if(s, [](int k) { return k > 3; }), 3);
     EXPECT_THAT(s, ElementsAre(1, 3));
   }
   {
     absl::btree_multiset<int> s = {1, 3, 3, 5, 6, 6, 100};
-    erase_if(s, [](int k) { return k <= 3; });
+    EXPECT_EQ(erase_if(s, [](int k) { return k <= 3; }), 3);
     EXPECT_THAT(s, ElementsAre(5, 6, 6, 100));
   }
   {
     absl::btree_map<int, int> m = {{1, 1}, {3, 3}, {6, 6}, {100, 100}};
-    erase_if(m, [](std::pair<const int, int> kv) { return kv.first > 3; });
+    EXPECT_EQ(
+        erase_if(m, [](std::pair<const int, int> kv) { return kv.first > 3; }),
+        2);
     EXPECT_THAT(m, ElementsAre(Pair(1, 1), Pair(3, 3)));
   }
   {
     absl::btree_multimap<int, int> m = {{1, 1}, {3, 3}, {3, 6},
                                         {6, 6}, {6, 7}, {100, 6}};
-    erase_if(m, [](std::pair<const int, int> kv) { return kv.second == 6; });
+    EXPECT_EQ(
+        erase_if(m,
+                 [](std::pair<const int, int> kv) { return kv.second == 6; }),
+        3);
     EXPECT_THAT(m, ElementsAre(Pair(1, 1), Pair(3, 3), Pair(6, 7)));
   }
   // Test that erasing all elements from a large set works and test support for
@@ -2476,14 +2497,28 @@ TEST(Btree, EraseIf) {
   {
     absl::btree_set<int> s;
     for (int i = 0; i < 1000; ++i) s.insert(2 * i);
-    erase_if(s, IsEven);
+    EXPECT_EQ(erase_if(s, IsEven), 1000);
     EXPECT_THAT(s, IsEmpty());
   }
   // Test that erase_if supports other format of function pointers.
   {
     absl::btree_set<int> s = {1, 3, 5, 6, 100};
-    erase_if(s, &IsEven);
+    EXPECT_EQ(erase_if(s, &IsEven), 2);
     EXPECT_THAT(s, ElementsAre(1, 3, 5));
+  }
+  // Test that erase_if invokes the predicate once per element.
+  {
+    absl::btree_set<int> s;
+    for (int i = 0; i < 1000; ++i) s.insert(i);
+    int pred_calls = 0;
+    EXPECT_EQ(erase_if(s,
+                       [&pred_calls](int k) {
+                         ++pred_calls;
+                         return k % 2;
+                       }),
+              500);
+    EXPECT_THAT(s, SizeIs(500));
+    EXPECT_EQ(pred_calls, 1000);
   }
 }
 
@@ -2947,6 +2982,88 @@ TEST(Btree,
 TEST(Btree, ConstructImplicitlyWithUnadaptedComparator) {
   absl::btree_set<MultiKey, MultiKeyComp> set = {{}, MultiKeyComp{}};
 }
+
+#ifndef NDEBUG
+TEST(Btree, InvalidComparatorsCaught) {
+  {
+    struct ZeroAlwaysLessCmp {
+      bool operator()(int lhs, int rhs) const {
+        if (lhs == 0) return true;
+        return lhs < rhs;
+      }
+    };
+    absl::btree_set<int, ZeroAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct ThreeWayAlwaysLessCmp {
+      absl::weak_ordering operator()(int, int) const {
+        return absl::weak_ordering::less;
+      }
+    };
+    absl::btree_set<int, ThreeWayAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct SumGreaterZeroCmp {
+      bool operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return false;
+        return lhs + rhs > 0;
+      }
+    };
+    absl::btree_set<int, SumGreaterZeroCmp> set;
+    // Note: '!' only needs to be escaped when it's the first character.
+    EXPECT_DEATH(set.insert({0, 1, 2}),
+                 R"regex(\!lhs_comp_rhs \|\| !comp\(\)\(rhs, lhs\))regex");
+  }
+  {
+    struct ThreeWaySumGreaterZeroCmp {
+      absl::weak_ordering operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return absl::weak_ordering::equivalent;
+
+        if (lhs + rhs > 0) return absl::weak_ordering::less;
+        if (lhs + rhs == 0) return absl::weak_ordering::equivalent;
+        return absl::weak_ordering::greater;
+      }
+    };
+    absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "lhs_comp_rhs < 0 -> rhs_comp_lhs > 0");
+  }
+}
+#endif
+
+#ifndef _MSC_VER
+// This test crashes on MSVC.
+TEST(Btree, InvalidIteratorUse) {
+  if (!BtreeNodePeer::UsesGenerations<absl::btree_set<int>>())
+    GTEST_SKIP() << "Generation validation for iterators is disabled.";
+
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.begin();
+    set.erase(it++);
+    EXPECT_DEATH(set.erase(it++), "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10; ++i) set.insert(i);
+    auto it = set.insert(20).first;
+    set.insert(30);
+    EXPECT_DEATH(*it, "invalidated iterator");
+  }
+  {
+    absl::btree_set<int> set;
+    for (int i = 0; i < 10000; ++i) set.insert(i);
+    auto it = set.find(5000);
+    ASSERT_NE(it, set.end());
+    set.erase(1);
+    EXPECT_DEATH(*it, "invalidated iterator");
+  }
+}
+#endif
 
 }  // namespace
 }  // namespace container_internal

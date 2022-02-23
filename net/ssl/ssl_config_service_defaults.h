@@ -5,7 +5,6 @@
 #ifndef NET_SSL_SSL_CONFIG_SERVICE_DEFAULTS_H_
 #define NET_SSL_SSL_CONFIG_SERVICE_DEFAULTS_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_config_service.h"
 

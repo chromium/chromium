@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_connection_scheduler.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeConnectionScheduler::FakeConnectionScheduler() = default;
@@ -15,4 +15,4 @@ void FakeConnectionScheduler::ScheduleConnectionNow() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

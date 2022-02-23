@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
@@ -19,6 +18,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class ChannelsInitializerTest {
     private Context mContext;
 
     @Before
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public void setUp() {
         // Not initializing the browser process is safe because
         // UrlFormatter.formatUrlForSecurityDisplay() is stand-alone.
@@ -82,7 +82,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testDeleteLegacyChannels_noopOnCurrentDefinitions() {
         assertThat(getChannelsIgnoringDefault(), is(empty()));
@@ -101,7 +101,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testInitializeStartupChannels() {
         mChannelsInitializer.initializeStartupChannels();
@@ -119,7 +119,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testInitializeStartupChannels_groupCreated() {
         mChannelsInitializer.initializeStartupChannels();
@@ -131,7 +131,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testUpdateLocale_otherChannelsDoNotThrowException() {
         NotificationChannelGroup group =
@@ -150,7 +150,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_browserChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.BROWSER);
@@ -167,7 +167,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_downloadsChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.DOWNLOADS);
@@ -185,7 +185,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_incognitoChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.INCOGNITO);
@@ -203,7 +203,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_mediaChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK);
@@ -221,7 +221,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     @DisabledTest(message = "https://crbug.com/1201250")
     public void testEnsureInitialized_sitesChannel() {
@@ -240,7 +240,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_contentSuggestionsDisabled() {
         // This test does not cover ensureInitialized() with ChannelId.CONTENT_SUGGESTIONS, because
@@ -263,7 +263,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_webappActions() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.WEBAPP_ACTIONS);
@@ -282,7 +282,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_singleOriginSiteChannel() {
         String origin = "https://example.com";
@@ -302,7 +302,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_multipleCalls() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.SITES);
@@ -313,7 +313,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_multipleIds() {
         Collection<String> groupIds =
@@ -329,7 +329,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_priceDropChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP);
@@ -347,7 +347,7 @@ public class ChannelsInitializerTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Feature({"Browser", "Notifications"})
     public void testEnsureInitialized_securityKeyChannel() {
         mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.SECURITY_KEY);
@@ -362,6 +362,24 @@ public class ChannelsInitializerTest {
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Feature({"Browser", "Notifications"})
+    public void testEnsureInitialized_tipsChannel() {
+        mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.CHROME_TIPS);
+
+        assertThat(getChannelsIgnoringDefault(), hasSize(1));
+        NotificationChannel channel = getChannelsIgnoringDefault().get(0);
+        assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.CHROME_TIPS));
+        assertThat(channel.getName().toString(),
+                is(mContext.getString(org.chromium.chrome.R.string
+                                              .feature_notification_guide_notification_title)));
+        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_HIGH));
+        assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+    }
+
     /**
      * Gets the current notification channels from the notification manager, except for any with
      * the default ID, which will be removed from the list before returning.
@@ -369,7 +387,7 @@ public class ChannelsInitializerTest {
      * (Android *might* add a default 'Misc' channel on our behalf, but we don't want to tie our
      * tests to its presence, as this could change).
      */
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private List<NotificationChannel> getChannelsIgnoringDefault() {
         List<NotificationChannel> channels = mNotificationManagerProxy.getNotificationChannels();
         for (Iterator<NotificationChannel> it = channels.iterator(); it.hasNext();) {

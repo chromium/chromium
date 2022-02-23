@@ -69,15 +69,18 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -220,6 +223,8 @@ public class LocationBarMediatorTest {
     private IdentityManager mIdentityManager;
     @Mock
     private Profile mProfile;
+    @Mock
+    private PreloadPagesSettingsBridge.Natives mPreloadPagesSettingsJni;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -245,6 +250,7 @@ public class LocationBarMediatorTest {
         doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
+        mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
         SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
@@ -336,14 +342,14 @@ public class LocationBarMediatorTest {
         verify(mPrerenderJni)
                 .initializeForProfile(123L, omniboxPrerenderCaptor.getValue(), profile);
 
-        doReturn(false).when(mPrivacyPreferencesManager).shouldPrerender();
+        doReturn(PreloadPagesState.NO_PRELOADING).when(mPreloadPagesSettingsJni).getState();
         mMediator.onSuggestionsChanged("text", true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
+        doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
         mMediator.setUrl("originalUrl", null);
-        doReturn(true).when(mPrivacyPreferencesManager).shouldPrerender();
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(456L).when(mAutocompleteCoordinator).getCurrentNativeAutocompleteResult();
@@ -657,11 +663,12 @@ public class LocationBarMediatorTest {
                 .getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
-        verify(mStatusCoordinator).setUseDarkForegroundColors(true);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.LIGHT_THEME);
+        verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -669,11 +676,12 @@ public class LocationBarMediatorTest {
         doReturn(Color.BLACK).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
-        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
+        verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -682,11 +690,11 @@ public class LocationBarMediatorTest {
         doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
-        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.INCOGNITO);
+        verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.INCOGNITO);
     }
 
     @Test
@@ -695,28 +703,29 @@ public class LocationBarMediatorTest {
         doReturn(primaryColor).when(mLocationBarDataProvider).getPrimaryColor();
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
 
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
-        verify(mStatusCoordinator).setUseDarkForegroundColors(true);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DEFAULT);
+        verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
-    public void testUpdateColors_setOmniboxTheme() {
+    public void testUpdateColors_setColorScheme() {
         String url = "https://www.google.com";
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(url).when(mLocationBarDataProvider).getCurrentUrl();
-        doReturn(true).when(mUrlCoordinator).setOmniboxTheme(anyInt());
+        doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
-        mMediator.updateOmniboxTheme();
+        mMediator.updateBrandedColorScheme();
         verify(mLocationBarLayout).setDeleteButtonTint(anyObject());
         verify(mUrlCoordinator)
                 .setUrlBarData(
                         urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
-        verify(mStatusCoordinator).setUseDarkForegroundColors(false);
-        verify(mAutocompleteCoordinator).updateVisualsForState(OmniboxTheme.DARK_THEME);
+        verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mAutocompleteCoordinator)
+                .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -741,25 +750,6 @@ public class LocationBarMediatorTest {
         mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.FAKE_BOX_TAP);
         assertTrue(mMediator.didFocusUrlFromFakebox());
         verify(mUrlCoordinator).requestFocus();
-    }
-
-    @Test
-    public void testSetUrlBarFocus_focusedFromQueryTiles() {
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
-        assertTrue(mMediator.didFocusUrlFromQueryTiles());
-        assertTrue(mMediator.didFocusUrlFromFakebox());
-        verify(mUrlCoordinator).requestFocus();
-    }
-
-    @Test
-    public void testSetUrlBarFocus_triggersObservers() {
-        mMediator.onUrlFocusChange(true);
-        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
-        mMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
-        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
-        verify(mUrlCoordinator).onUrlFocusChange(true);
-        verify(mAutocompleteCoordinator).onUrlFocusChange(true);
     }
 
     @Test

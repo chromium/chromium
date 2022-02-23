@@ -60,6 +60,8 @@ SessionRestoreDelegate::RestoredTab::RestoredTab(const RestoredTab&) = default;
 SessionRestoreDelegate::RestoredTab&
 SessionRestoreDelegate::RestoredTab::operator=(const RestoredTab&) = default;
 
+SessionRestoreDelegate::RestoredTab::~RestoredTab() = default;
+
 bool SessionRestoreDelegate::RestoredTab::operator<(
     const RestoredTab& right) const {
   // Tab with internal web UI like NTP or Settings are good choices to

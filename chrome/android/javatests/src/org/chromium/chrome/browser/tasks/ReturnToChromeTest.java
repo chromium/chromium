@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 
@@ -50,6 +51,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -68,6 +71,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -215,8 +219,9 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
             + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    public void testTabSwitcherModeTriggeredWithinThreshold_NoTab() {
+    public void testTabSwitcherModeTriggeredWithinThreshold_NoTab() throws TimeoutException {
         // clang-format on
         startMainActivityWithURLWithoutCurrentTab(null);
 
@@ -227,13 +232,15 @@ public class ReturnToChromeTest {
                                 mActivityTestRule.getActivity())));
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
 
         waitTabModelRestoration();
         assertEquals(0, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
     }
 
@@ -307,7 +314,8 @@ public class ReturnToChromeTest {
         Assert.assertTrue(
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
         assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 
     /**
@@ -327,13 +335,15 @@ public class ReturnToChromeTest {
         startMainActivityWithURLWithoutCurrentTab(null);
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
 
         waitTabModelRestoration();
         assertEquals(2, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
     }
 
@@ -452,20 +462,23 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/single"})
-    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs() {
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
+    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs() throws TimeoutException {
         // clang-format on
         // Cannot use ChromeTabbedActivityTestRule.startMainActivityFromLauncher() because
         // there's no tab.
         startMainActivityWithURLWithoutCurrentTab(null);
 
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
 
         waitTabModelRestoration();
         assertEquals(0, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
         if (!mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            LayoutTestUtils.waitForLayout(
+                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
         }
     }
 
@@ -481,7 +494,7 @@ public class ReturnToChromeTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/single"})
     @DisabledTest(message = "http://crbug.com/1027315")
-    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs_UMA() {
+    public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs_UMA() throws TimeoutException{
         // clang-format on
         testTabSwitcherModeTriggeredBeyondThreshold_NoTabs();
 

@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -440,7 +441,7 @@ class TestCompositorAnimationObserver : public CompositorAnimationObserver {
     shutdown_ = true;
   }
 
-  ui::Compositor* compositor_;
+  raw_ptr<ui::Compositor> compositor_;
   size_t animation_step_count_;
   bool shutdown_;
 };
@@ -1054,7 +1055,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1079,7 +1080,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_NE(before_layer, l1->cc_layer_for_testing());
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1104,7 +1105,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   // Show solid color instead.
   l1->SetShowSolidColorContent();
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1127,7 +1128,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   EXPECT_NE(before_layer, l1->cc_layer_for_testing());
 
   EXPECT_EQ(gfx::Point3F(), l1->cc_layer_for_testing()->transform_origin());
-  EXPECT_TRUE(l1->cc_layer_for_testing()->DrawsContent());
+  EXPECT_TRUE(l1->cc_layer_for_testing()->draws_content());
   EXPECT_TRUE(l1->cc_layer_for_testing()->contents_opaque());
   EXPECT_TRUE(l1->cc_layer_for_testing()->hide_layer_and_subtree());
   EXPECT_EQ(gfx::Size(4, 5), l1->cc_layer_for_testing()->bounds());
@@ -1764,7 +1765,7 @@ TEST_F(LayerWithRealCompositorTest, SetRootLayer) {
 // TODO(vollick): could be reorganized into compositor_unittest.cc
 // Flaky on Windows. See https://crbug.com/784563.
 // Flaky on Linux tsan. See https://crbug.com/834026.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CompositorObservers DISABLED_CompositorObservers
 #else
 #define MAYBE_CompositorObservers CompositorObservers
@@ -2068,7 +2069,7 @@ class SchedulePaintLayerDelegate : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
   int paint_count_;
-  Layer* layer_;
+  raw_ptr<Layer> layer_;
   gfx::Rect schedule_paint_rect_;
   gfx::Rect last_clip_rect_;
 };
@@ -2860,8 +2861,8 @@ class LayerRemovingLayerAnimationObserver : public LayerAnimationObserver {
   void OnLayerAnimationScheduled(LayerAnimationSequence* sequence) override {}
 
  private:
-  Layer* root_;
-  Layer* child_;
+  raw_ptr<Layer> root_;
+  raw_ptr<Layer> child_;
 };
 
 // Verifies that empty LayerAnimators are not left behind when removing child

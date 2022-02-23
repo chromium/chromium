@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/adapters.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -107,10 +108,9 @@ class PowerHandlerTest : public InProcessBrowserTest {
 
   // Returns a JSON representation of the contents of the last message sent to
   // WebUI about settings being changed.
-  std::string GetLastSettingsChangedMessage() WARN_UNUSED_RESULT {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+  [[nodiscard]] std::string GetLastSettingsChangedMessage() {
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       const base::DictionaryValue* dict = nullptr;
       if (data->function_name() != "cr.webUIListenerCallback" || !name ||
@@ -145,18 +145,18 @@ class PowerHandlerTest : public InProcessBrowserTest {
     for (auto idle_behavior : settings.possible_battery_behaviors)
       list->Append(static_cast<int>(idle_behavior));
 
-    dict.SetInteger(PowerHandler::kCurrentAcIdleBehaviorKey,
-                    static_cast<int>(settings.current_ac_behavior));
-    dict.SetInteger(PowerHandler::kCurrentBatteryIdleBehaviorKey,
-                    static_cast<int>(settings.current_battery_behavior));
-    dict.SetBoolean(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
-    dict.SetBoolean(PowerHandler::kBatteryIdleManagedKey,
+    dict.SetIntKey(PowerHandler::kCurrentAcIdleBehaviorKey,
+                   static_cast<int>(settings.current_ac_behavior));
+    dict.SetIntKey(PowerHandler::kCurrentBatteryIdleBehaviorKey,
+                   static_cast<int>(settings.current_battery_behavior));
+    dict.SetBoolKey(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
+    dict.SetBoolKey(PowerHandler::kBatteryIdleManagedKey,
                     settings.battery_idle_managed);
-    dict.SetInteger(PowerHandler::kLidClosedBehaviorKey,
-                    settings.lid_closed_behavior);
-    dict.SetBoolean(PowerHandler::kLidClosedControlledKey,
+    dict.SetIntKey(PowerHandler::kLidClosedBehaviorKey,
+                   settings.lid_closed_behavior);
+    dict.SetBoolKey(PowerHandler::kLidClosedControlledKey,
                     settings.lid_closed_controlled);
-    dict.SetBoolean(PowerHandler::kHasLidKey, settings.has_lid);
+    dict.SetBoolKey(PowerHandler::kHasLidKey, settings.has_lid);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;

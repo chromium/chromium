@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -54,6 +56,13 @@ void AddIconToIconsMap(const GURL& icon_url,
 
   std::vector<SkBitmap> bitmaps;
   bitmaps.push_back(std::move(bitmap));
+
+  icons_map->emplace(icon_url, std::move(bitmaps));
+}
+
+void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map) {
+  std::vector<SkBitmap> bitmaps;
+  bitmaps.emplace_back(SkBitmap{});
 
   icons_map->emplace(icon_url, std::move(bitmaps));
 }
@@ -211,8 +220,8 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
   return apps_icon_info;
 }
 
-void AddIconsToWebApplicationInfo(
-    WebApplicationInfo* web_application_info,
+void AddIconsToWebAppInstallInfo(
+    WebAppInstallInfo* web_application_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info) {
   for (const GeneratedIconsInfo& info : icons_info) {

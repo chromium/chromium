@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/portal/portal.h"
@@ -37,6 +39,8 @@
 
 namespace content {
 
+namespace {
+
 class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewChildFrameBrowserTest() = default;
@@ -48,8 +52,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
-
-    scoped_feature_list_.InitAndEnableFeature(blink::features::kPortals);
   }
 
   void SetUpOnMainThread() override {
@@ -129,7 +131,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{blink::features::kPortals};
   viz::FrameSinkId expected_frame_sink_id_;
 };
 
@@ -270,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // Luckily this test is verifying interactions and behaviour of
 // RenderWidgetHostImpl - RenderWidget - RenderFrameProxy -
 // CrossProcessFrameConnector, and this isn't Android-specific code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
   // Resize the top level widget to cause its |visible_viewport_size| to be
   // changed. The change should propagate down to the child RenderWidget.
@@ -392,25 +394,82 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
-  auto* child_rwh_impl =
-      root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
-  // Hide the frame and make it visible again, to force it to record the
-  // tab-switch time, which is generated from presentation-feedback.
-  child_rwh_impl->WasHidden();
-  child_rwh_impl->WasShown(blink::mojom::RecordContentToVisibleTimeRequest::New(
-      base::TimeTicks::Now(),
-      /* destination_is_loaded */ true,
-      /* show_reason_tab_switching */ true,
-      /* show_reason_unoccluded */ false,
-      /* show_reason_bfcache_restore */ false));
-  // Force the child to submit a new frame.
-  ASSERT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
-                     "document.write('Force a new frame.');"));
+  const auto trigger_subframe_tab_switch = [&root]() -> bool {
+    auto* child_rwh_impl =
+        root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
+    // Hide the frame and make it visible again, to force it to record the
+    // tab-switch time, which is generated from presentation-feedback.
+    child_rwh_impl->WasHidden();
+    child_rwh_impl->WasShown(
+        blink::mojom::RecordContentToVisibleTimeRequest::New(
+            base::TimeTicks::Now(),
+            /* destination_is_loaded */ true,
+            /* show_reason_tab_switching */ true,
+            /* show_reason_unoccluded */ false,
+            /* show_reason_bfcache_restore */ false));
+    // Force the child to submit a new frame.
+    return ExecJs(root->child_at(0)->current_frame_host(),
+                  "document.write('Force a new frame.');");
+  };
+  ASSERT_TRUE(trigger_subframe_tab_switch());
+
+  // If TabSwitchMetrics2 is enabled, both Browser.Tabs.TotalSwitchDuration.*
+  // and Browser.Tabs.TotalSwitchDuration2.* will be logged.
+  const size_t expected_histogram_count =
+      base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 2 : 1;
+
+  bool got_incomplete_tab_switch = false;
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   do {
+    if (base::TimeTicks::Now() - start_time > TestTimeouts::action_timeout()) {
+      FAIL()
+          << "Timed out waiting for Browser.Tabs.TotalSwitchDuration. Received "
+             "these histograms instead: "
+          << ::testing::PrintToString(
+                 histogram_tester.GetTotalCountsForPrefix("Browser.Tabs."));
+    }
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
-  } while (histogram_tester.GetAllSamples("MPArch.RWH_TabSwitchPaintDuration")
-               .size() != 1);
+
+    // Work around a race condition while loading the cross-site iframe.
+    //
+    // The NavigateToURLFromRenderer call above replaces the
+    // LocalFrame/LocalFrameView in renderer process A with a
+    // RemoteFrame/RemoteFrameView proxy for the frame which is now hosted in
+    // renderer process B. During initialization the RemoteFrameView sends a
+    // series of VisibilityChanged messages to the browser process, which cause
+    // CrossProcessFrameConnector to call WasHidden and then WasShown on
+    // `child_rwh_impl`. Depending on the timing these might arrive during the
+    // NavigateToURLFromRenderer call or the ExecJS call above, both of which
+    // pump the message loop. If CrossProcessFrameConnector calls WasHidden
+    // after the WasShown call above, it will cancel the simulated tab switch.
+    // This causes ContentToVisibleTimeReporter to log
+    // TotalIncompleteSwitchDuration, which is not based on
+    // PresentationFeedback, instead of TotalSwitchDuration. See
+    // crbug.com/1288560 for more details.
+    //
+    // The race condition can only cause a single incomplete tab switch, so
+    // only check for this once. If the second simulated tab switch is also
+    // cancelled something else is wrong, so the loop will time out and fail
+    // the test.
+    //
+    // TODO(crbug.com/1288560): Remove this once the race condition is
+    // fixed.
+    if (!got_incomplete_tab_switch &&
+        histogram_tester
+                .GetTotalCountsForPrefix(
+                    "Browser.Tabs.TotalIncompleteSwitchDuration")
+                .size() == expected_histogram_count) {
+      LOG(ERROR) << "Incomplete tab switch - try again.";
+      got_incomplete_tab_switch = true;
+      ASSERT_TRUE(trigger_subframe_tab_switch());
+    }
+
+    // Once the tab switch completes the PresentationFeedback should cause a
+    // single TotalSwitchDuration histogram to be logged.
+  } while (histogram_tester
+               .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
+               .size() != expected_histogram_count);
 }
 
 // Auto-resize is only implemented for Ash and GuestViews. So we need to inject
@@ -516,8 +575,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // Validate that the root widget's window segments are correctly propagated
 // via the SynchronizeVisualProperties cascade.
 // Flaky on Mac, Linux and Android (http://crbug/1089994).
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_VisualPropertiesPropagation_RootWindowSegments \
   DISABLED_VisualPropertiesPropagation_RootWindowSegments
 #else
@@ -704,5 +763,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
           .GetString();
   EXPECT_EQ(oop_input_element_dir, "rtl");
 }
+
+}  // namespace
 
 }  // namespace content

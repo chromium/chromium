@@ -78,7 +78,7 @@ LayoutSize LayoutListMarker::ImageBulletSize() const {
   // marker box.
   float bullet_width = font_data->GetFontMetrics().Ascent() / 2.0f;
   return RoundedLayoutSize(image_->ImageSize(
-      StyleRef().EffectiveZoom(), FloatSize(bullet_width, bullet_width),
+      StyleRef().EffectiveZoom(), gfx::SizeF(bullet_width, bullet_width),
       LayoutObject::ShouldRespectImageOrientation(this)));
 }
 

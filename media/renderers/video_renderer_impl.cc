@@ -565,20 +565,22 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Can happen when demuxers are preparing for a new Seek().
   switch (result.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       break;
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // TODO(liberato): This used to check specifically for the value
       // DEMUXER_READ_ABORTED, which was more specific than |kAborted|.
       // However, since it's a dcheck, this seems okay.
       return;
     default:
-      DCHECK(result.has_error());
       // Anything other than `kOk` or `kAborted` is treated as an error.
+      DCHECK(result.has_error());
+      auto status = result.code() == DecoderStatus::Codes::kDisconnected
+                        ? PIPELINE_ERROR_DISCONNECTED
+                        : PIPELINE_ERROR_DECODE;
       task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoRendererImpl::OnPlaybackError,
-                         weak_factory_.GetWeakPtr(), PIPELINE_ERROR_DECODE));
+          FROM_HERE, base::BindOnce(&VideoRendererImpl::OnPlaybackError,
+                                    weak_factory_.GetWeakPtr(), status));
       return;
   }
 

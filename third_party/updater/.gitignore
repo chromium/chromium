@@ -1,2 +1,12 @@
+/chrome_mac_universal/GoogleUpdater_test.app/
+/chrome_win_x86/UpdaterSetup_test.exe
+/chrome_win_x86_64/UpdaterSetup_test.exe
+/chromium_mac_amd64/GoogleUpdater_test.app/
+/chromium_mac_amd64/updater/
+/chromium_mac_arm64/GoogleUpdater_test.app/
+/chromium_mac_arm64/updater/
+/chromium_win_x86/UpdaterSetup_test.exe
+/chromium_win_x86_64/UpdaterSetup_test.exe
+
 # EdgeUpdater app
 /EdgeUpdater.app

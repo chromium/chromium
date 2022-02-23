@@ -93,6 +93,9 @@
             "blink_perf.webaudio": {
                 "abridged": false
             },
+            "blink_perf.webcodecs": {
+                "abridged": false
+            },
             "blink_perf.webgl": {
                 "abridged": false
             },

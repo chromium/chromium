@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "extensions/browser/extension_function.h"
 
 namespace base {

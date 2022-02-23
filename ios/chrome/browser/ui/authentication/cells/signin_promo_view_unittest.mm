@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/gtest_support.h"

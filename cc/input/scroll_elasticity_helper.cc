@@ -4,6 +4,7 @@
 
 #include "cc/input/scroll_elasticity_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -20,13 +21,13 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
   gfx::Vector2dF StretchAmount() const override;
   gfx::Size ScrollBounds() const override;
   void SetStretchAmount(const gfx::Vector2dF& stretch_amount) override;
-  gfx::Vector2dF ScrollOffset() const override;
-  gfx::Vector2dF MaxScrollOffset() const override;
+  gfx::PointF ScrollOffset() const override;
+  gfx::PointF MaxScrollOffset() const override;
   void ScrollBy(const gfx::Vector2dF& delta) override;
   void RequestOneBeginFrame() override;
 
  private:
-  LayerTreeHostImpl* host_impl_;
+  raw_ptr<LayerTreeHostImpl> host_impl_;
 };
 
 ScrollElasticityHelperImpl::ScrollElasticityHelperImpl(
@@ -65,11 +66,11 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
   host_impl_->SetFullViewportDamage();
 }
 
-gfx::Vector2dF ScrollElasticityHelperImpl::ScrollOffset() const {
+gfx::PointF ScrollElasticityHelperImpl::ScrollOffset() const {
   return host_impl_->active_tree()->TotalScrollOffset();
 }
 
-gfx::Vector2dF ScrollElasticityHelperImpl::MaxScrollOffset() const {
+gfx::PointF ScrollElasticityHelperImpl::MaxScrollOffset() const {
   return host_impl_->active_tree()->TotalMaxScrollOffset();
 }
 
@@ -79,8 +80,8 @@ void ScrollElasticityHelperImpl::ScrollBy(const gfx::Vector2dF& delta) {
                                      : host_impl_->InnerViewportScrollNode();
   if (root_scroll_node) {
     LayerTreeImpl* tree_impl = host_impl_->active_tree();
-    tree_impl->property_trees()->scroll_tree.ScrollBy(*root_scroll_node, delta,
-                                                      tree_impl);
+    tree_impl->property_trees()->scroll_tree_mutable().ScrollBy(
+        *root_scroll_node, delta, tree_impl);
   }
 }
 

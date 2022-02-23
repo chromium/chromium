@@ -35,8 +35,8 @@ per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
 
 # Pepper files.
-per-file pepper_*=bbudge@chromium.org
 per-file pepper_*=raymes@chromium.org
+per-file pepper_*=dschuff@chromium.org
 
 # Other stuff.
 per-file autocomplete_match_type.*=mpearson@chromium.org
@@ -50,6 +50,3 @@ per-file webui_url_constants.h=file://ui/webui/PLATFORM_OWNERS
 
 # Thread profiling
 per-file thread_profiler*=wittman@chromium.org
-
-# Web Applications
-per-file web_application_info.*=file://chrome/browser/web_applications/OWNERS

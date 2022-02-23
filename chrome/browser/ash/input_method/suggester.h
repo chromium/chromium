@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
 

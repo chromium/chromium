@@ -67,11 +67,6 @@ RemoteOpenUrlClientDelegateWin::RemoteOpenUrlClientDelegateWin() = default;
 
 RemoteOpenUrlClientDelegateWin::~RemoteOpenUrlClientDelegateWin() = default;
 
-bool RemoteOpenUrlClientDelegateWin::IsInRemoteDesktopSession() {
-  NOTIMPLEMENTED();
-  return true;
-}
-
 void RemoteOpenUrlClientDelegateWin::OpenUrlOnFallbackBrowser(const GURL& url) {
   std::wstring fallback_browser_prog_id =
       base::UTF8ToWide(UserSettings::GetInstance()->GetString(

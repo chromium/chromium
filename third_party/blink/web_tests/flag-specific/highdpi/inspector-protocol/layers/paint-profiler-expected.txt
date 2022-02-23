@@ -1,0 +1,50 @@
+Sanity test for DevTools Paint Profiler.
+matchingLayers.length: 1
+Profile array length: 4
+Profile subarray 0 length: 10
+Profile timing [0][0] is a number: true
+Profile timing [0][1] is a number: true
+Profile timing [0][2] is a number: true
+Profile timing [0][3] is a number: true
+Profile timing [0][4] is a number: true
+Profile timing [0][5] is a number: true
+Profile timing [0][6] is a number: true
+Profile timing [0][7] is a number: true
+Profile timing [0][8] is a number: true
+Profile timing [0][9] is a number: true
+Profile subarray 1 length: 10
+Profile timing [1][0] is a number: true
+Profile timing [1][1] is a number: true
+Profile timing [1][2] is a number: true
+Profile timing [1][3] is a number: true
+Profile timing [1][4] is a number: true
+Profile timing [1][5] is a number: true
+Profile timing [1][6] is a number: true
+Profile timing [1][7] is a number: true
+Profile timing [1][8] is a number: true
+Profile timing [1][9] is a number: true
+Profile subarray 2 length: 10
+Profile timing [2][0] is a number: true
+Profile timing [2][1] is a number: true
+Profile timing [2][2] is a number: true
+Profile timing [2][3] is a number: true
+Profile timing [2][4] is a number: true
+Profile timing [2][5] is a number: true
+Profile timing [2][6] is a number: true
+Profile timing [2][7] is a number: true
+Profile timing [2][8] is a number: true
+Profile timing [2][9] is a number: true
+Profile subarray 3 length: 10
+Profile timing [3][0] is a number: true
+Profile timing [3][1] is a number: true
+Profile timing [3][2] is a number: true
+Profile timing [3][3] is a number: true
+Profile timing [3][4] is a number: true
+Profile timing [3][5] is a number: true
+Profile timing [3][6] is a number: true
+Profile timing [3][7] is a number: true
+Profile timing [3][8] is a number: true
+Profile timing [3][9] is a number: true
+LayerTree.replaySnapshot returned valid image: true
+DONE!
+

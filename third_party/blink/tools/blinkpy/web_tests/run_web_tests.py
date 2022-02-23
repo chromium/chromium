@@ -60,6 +60,8 @@ def main(argv, stderr):
     else:
         host = Host()
 
+    if six.PY3 and stderr.isatty():
+        stderr.reconfigure(write_through=True)
     printer = printing.Printer(host, options, stderr)
 
     try:
@@ -326,6 +328,11 @@ def parse_args(args):
                 dest='build',
                 action='store_false',
                 help="Don't check to see if the build is up to date."),
+            optparse.make_option(
+                '--no-virtual-tests',
+                action='store_true',
+                default=False,
+                help=('Do not run virtual tests.')),
             optparse.make_option('--child-processes',
                                  '--jobs',
                                  '-j',
@@ -552,7 +559,7 @@ def parse_args(args):
                 help='A colon-separated list of tests to run. Wildcards are '
                 'NOT supported. It is the same as listing the tests as '
                 'positional arguments.'),
-            optparse.make_option('--time-out-ms',
+            optparse.make_option('--timeout-ms',
                                  help='Set the timeout for each test'),
             optparse.make_option(
                 '--initialize-webgpu-adapter-at-startup-timeout-ms',
@@ -691,10 +698,10 @@ def _set_up_derived_options(port, options, args):
     if not options.configuration:
         options.configuration = port.default_configuration()
 
-    if not options.time_out_ms:
-        options.time_out_ms = str(port.timeout_ms())
+    if not options.timeout_ms:
+        options.timeout_ms = str(port.timeout_ms())
 
-    options.slow_time_out_ms = str(5 * int(options.time_out_ms))
+    options.slow_timeout_ms = str(5 * int(options.timeout_ms))
 
     if options.additional_platform_directory:
         additional_platform_directories = []

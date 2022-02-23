@@ -111,17 +111,6 @@ public interface ContextMenuItemDelegate {
     void onOpenImageInNewTab(GURL url, Referrer referrer);
 
     /**
-     * Called when the original image should be loaded.
-     */
-    void onLoadOriginalImage();
-
-    /**
-     * Returns whether the load image has been requested on a Lo-Fi image for the current page load.
-     * @return true if load image has been requested for the current page load.
-     */
-    boolean wasLoadOriginalImageRequestedForPageLoad();
-
-    /**
      * Called when the {@code text} should be saved to the clipboard.
      * @param text The text to save to the clipboard.
      * @param clipboardType The type of data in {@code text}.
@@ -222,9 +211,4 @@ public interface ContextMenuItemDelegate {
      * @param title The title text to be shown for this item in the reading list.
      */
     void onReadLater(GURL url, String title);
-
-    /**
-     * Removes all text fragment highlights from all frames on the page.
-     */
-    void removeHighlighting();
 }

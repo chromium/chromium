@@ -248,13 +248,12 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     return;
 
   // Call backend to expire history of directives in each group.
-  for (GlobalIdTimesGroup::const_iterator group_it = id_times_group.begin();
-       group_it != id_times_group.end(); ++group_it) {
+  for (const auto& [begin_and_end_times, times] : id_times_group) {
+    const auto& [begin_time, end_time] = begin_and_end_times;
     // Add 1us to cover history entries visited at the end time because time
     // range in directive is inclusive.
-    history_backend->ExpireHistoryForTimes(
-        group_it->second, group_it->first.first,
-        group_it->first.second + base::Microseconds(1));
+    history_backend->ExpireHistoryForTimes(times, begin_time,
+                                           end_time + base::Microseconds(1));
   }
 }
 
@@ -348,8 +347,7 @@ void DeleteDirectiveHandler::OnBackendLoaded() {
     std::move(wait_until_ready_to_sync_cb_).Run();
 }
 
-bool DeleteDirectiveHandler::CreateDeleteDirectives(
-    const std::set<int64_t>& global_ids,
+bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(
     base::Time begin_time,
     base::Time end_time) {
   base::Time now = base::Time::Now();
@@ -365,20 +363,11 @@ bool DeleteDirectiveHandler::CreateDeleteDirectives(
   // -1 because end time in delete directives is inclusive.
   int64_t end_time_usecs = TimeToUnixUsec(end) - 1;
 
-  if (global_ids.empty()) {
-    sync_pb::TimeRangeDirective* time_range_directive =
-        delete_directive.mutable_time_range_directive();
-    time_range_directive->set_start_time_usec(begin_time_usecs);
-    time_range_directive->set_end_time_usec(end_time_usecs);
-  } else {
-    for (auto it = global_ids.begin(); it != global_ids.end(); ++it) {
-      sync_pb::GlobalIdDirective* global_id_directive =
-          delete_directive.mutable_global_id_directive();
-      global_id_directive->add_global_id(*it);
-      global_id_directive->set_start_time_usec(begin_time_usecs);
-      global_id_directive->set_end_time_usec(end_time_usecs);
-    }
-  }
+  sync_pb::TimeRangeDirective* time_range_directive =
+      delete_directive.mutable_time_range_directive();
+  time_range_directive->set_start_time_usec(begin_time_usecs);
+  time_range_directive->set_end_time_usec(end_time_usecs);
+
   absl::optional<syncer::ModelError> error =
       ProcessLocalDeleteDirective(delete_directive);
   return !error.has_value();

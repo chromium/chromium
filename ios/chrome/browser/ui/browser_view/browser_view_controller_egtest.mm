@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <tuple>
 
 #include "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -33,12 +33,6 @@
 
 @implementation BrowserViewControllerTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(kStartSurface);
-  return config;
-}
-
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
@@ -53,7 +47,7 @@
                                                             block:^BOOL {
                                                               return NO;
                                                             }];
-    ignore_result([myCondition waitWithTimeout:0.05]);
+    std::ignore = [myCondition waitWithTimeout:0.05];
 
     [ChromeEarlGrey openNewTab];
   }  // End of the sync disabler scope.

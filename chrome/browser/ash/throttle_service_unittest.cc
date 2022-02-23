@@ -14,14 +14,17 @@ namespace ash {
 
 namespace {
 
+constexpr const char kFirstObserverName[] = "o1";
+constexpr const char kSecondObserverName[] = "o2";
+
 class TestObserver : public ThrottleService::ServiceObserver {
  public:
   TestObserver() = default;
   ~TestObserver() override = default;
 
   // ThrottleService::Observer:
-  void OnThrottle(ThrottleObserver::PriorityLevel level) override {
-    last_level_ = level;
+  void OnThrottle(bool was_throttled) override {
+    last_was_throttled_ = was_throttled;
     ++update_count_;
   }
 
@@ -31,12 +34,11 @@ class TestObserver : public ThrottleService::ServiceObserver {
     return update_count;
   }
 
-  ThrottleObserver::PriorityLevel last_level() const { return last_level_; }
+  bool last_was_throttled() const { return last_was_throttled_; }
 
  private:
   int update_count_ = 0;
-  ThrottleObserver::PriorityLevel last_level_ =
-      ThrottleObserver::PriorityLevel::UNKNOWN;
+  bool last_was_throttled_ = false;
 
   TestObserver(TestObserver const&) = delete;
   TestObserver& operator=(TestObserver const&) = delete;
@@ -52,18 +54,16 @@ class TestThrottleService : public ThrottleService {
 
   size_t uma_count() { return record_uma_counter_; }
 
-  ThrottleObserver::PriorityLevel last_throttle_level() const {
-    return last_throttle_level_;
-  }
+  bool last_should_throttle() const { return last_should_throttle_; }
 
   const std::string& last_recorded_observer_name() {
     return last_recorded_observer_name_;
   }
 
  private:
-  void ThrottleInstance(ThrottleObserver::PriorityLevel level) override {
+  void ThrottleInstance(bool should_throttle) override {
     ++throttle_instance_count_;
-    last_throttle_level_ = level;
+    last_should_throttle_ = should_throttle;
   }
 
   void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
@@ -75,97 +75,63 @@ class TestThrottleService : public ThrottleService {
   size_t throttle_instance_count_{0};
   size_t record_uma_counter_{0};
   std::string last_recorded_observer_name_;
-  ThrottleObserver::PriorityLevel last_throttle_level_{
-      ThrottleObserver::PriorityLevel::UNKNOWN};
+  bool last_should_throttle_ = false;
 };
 
 class ThrottleServiceTest : public testing::Test {
  public:
   ThrottleServiceTest() : service_(&profile_) {
     std::vector<std::unique_ptr<ThrottleObserver>> observers;
-    observers.push_back(std::make_unique<TestCriticalObserver>(this));
-    observers.push_back(std::make_unique<TestLowObserver>(this));
+    observers.push_back(std::make_unique<ThrottleObserver>(kFirstObserverName));
+    observers.push_back(
+        std::make_unique<ThrottleObserver>(kSecondObserverName));
     service_.SetObserversForTesting(std::move(observers));
   }
 
   ThrottleServiceTest(const ThrottleServiceTest&) = delete;
   ThrottleServiceTest& operator=(const ThrottleServiceTest&) = delete;
 
-  void set_critical_observer(ThrottleObserver* observer) {
-    critical_observer_ = observer;
-  }
-
-  void set_low_observer(ThrottleObserver* observer) {
-    low_observer_ = observer;
-  }
-
  protected:
   TestThrottleService* service() { return &service_; }
 
-  ThrottleObserver* critical_observer() { return critical_observer_; }
-
-  ThrottleObserver* low_observer() { return low_observer_; }
-
  private:
-  class TestCriticalObserver : public ThrottleObserver {
-   public:
-    explicit TestCriticalObserver(ThrottleServiceTest* test)
-        : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                           "CriticalObserver"),
-          test_(test) {
-      test_->set_critical_observer(this);
-    }
-    ~TestCriticalObserver() override { test_->set_critical_observer(nullptr); }
-
-   private:
-    ThrottleServiceTest* test_;
-  };
-  class TestLowObserver : public ThrottleObserver {
-   public:
-    explicit TestLowObserver(ThrottleServiceTest* test)
-        : ThrottleObserver(ThrottleObserver::PriorityLevel::LOW, "LowObserver"),
-          test_(test) {
-      test_->set_low_observer(this);
-    }
-    ~TestLowObserver() override { test_->set_low_observer(nullptr); }
-
-   private:
-    ThrottleServiceTest* test_;
-  };
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   TestThrottleService service_;
-  ThrottleObserver* critical_observer_{nullptr};
-  ThrottleObserver* low_observer_{nullptr};
 };
 
 TEST_F(ThrottleServiceTest, TestConstructDestruct) {}
 
-// Tests that the ThrottleService calls ThrottleInstance with the correct level
-// when there is a change in observers, but skips the call if new level is same
-// as before.
+// Tests that the ThrottleService calls ThrottleInstance with the correct
+// throttling when there is a change in observers, but skips the call if new
+// throttling is same as before.
 TEST_F(ThrottleServiceTest, TestOnObserverStateChanged) {
   EXPECT_EQ(0U, service()->throttle_instance_count());
 
+  // Initially, it is throttled.
   service()->NotifyObserverStateChangedForTesting();
   EXPECT_EQ(1U, service()->throttle_instance_count());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW,
-            service()->last_throttle_level());
+  EXPECT_TRUE(service()->last_should_throttle());
 
-  // ThrottleService level is already LOW, expect no change.
-  low_observer()->SetActive(true);
-  EXPECT_EQ(1U, service()->throttle_instance_count());
-
-  critical_observer()->SetActive(true);
+  // Activate one of two observers. Verify it is unthrottled.
+  service()->observers_for_testing()[0]->SetActive(true);
   EXPECT_EQ(2U, service()->throttle_instance_count());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
-            service()->last_throttle_level());
+  EXPECT_FALSE(service()->last_should_throttle());
 
-  critical_observer()->SetActive(false);
+  // Activate the other observer too. Verify ThrottleInstance() is not called.
+  service()->observers_for_testing()[1]->SetActive(true);
+  EXPECT_EQ(2U, service()->throttle_instance_count());
+  EXPECT_FALSE(service()->last_should_throttle());
+
+  // Deactivate one observer. Verify ThrottleInstance() is not called.
+  service()->observers_for_testing()[1]->SetActive(false);
+  EXPECT_EQ(2U, service()->throttle_instance_count());
+  EXPECT_FALSE(service()->last_should_throttle());
+
+  // Deactivate the other observer too. Verify ThrottleInstance() is called.
+  service()->observers_for_testing()[0]->SetActive(false);
   EXPECT_EQ(3U, service()->throttle_instance_count());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW,
-            service()->last_throttle_level());
+  EXPECT_TRUE(service()->last_should_throttle());
 }
 
 // Tests that ArcInstanceThrottle records the duration that the effective
@@ -173,76 +139,96 @@ TEST_F(ThrottleServiceTest, TestOnObserverStateChanged) {
 TEST_F(ThrottleServiceTest, RecordCpuRestrictionDisabledUMA) {
   EXPECT_EQ(0U, service()->uma_count());
 
-  // The effective observer transitions from null to critical_observer; no UMA
+  // The effective observer transitions from null to the first one; no UMA
   // is recorded yet.
-  critical_observer()->SetActive(true);
-  EXPECT_EQ(0U, service()->uma_count());
-  low_observer()->SetActive(true);
+  service()->observers_for_testing()[0]->SetActive(true);
   EXPECT_EQ(0U, service()->uma_count());
 
-  // The effective observer transitions from critical_observer to low_observer;
-  // UMA should be recorded for critical_observer.
-  critical_observer()->SetActive(false);
+  // The effective observer is still the first one.
+  service()->observers_for_testing()[1]->SetActive(true);
+  EXPECT_EQ(0U, service()->uma_count());
+
+  // The effective observer transitions from the first one to the second one.
+  // UMA should be recorded for the first one.
+  service()->observers_for_testing()[0]->SetActive(false);
   EXPECT_EQ(1U, service()->uma_count());
-  EXPECT_EQ(critical_observer()->name(),
+  EXPECT_EQ(service()->observers_for_testing()[0]->name(),
             service()->last_recorded_observer_name());
 
-  // Effective observer transitions from low_observer to critical_observer; UMA
-  // should be recorded for low_observer.
-  critical_observer()->SetActive(true);
+  // Effective observer transitions from the second one to the first one. UMA
+  // should be recorded for the second one.
+  service()->observers_for_testing()[0]->SetActive(true);
   EXPECT_EQ(2U, service()->uma_count());
-  EXPECT_EQ(low_observer()->name(), service()->last_recorded_observer_name());
+  EXPECT_EQ(service()->observers_for_testing()[1]->name(),
+            service()->last_recorded_observer_name());
 
-  // Effective observer transitions from critical_observer to null; UMA should
+  // Effective observer transitions from the first one to null; UMA should
   // be recorded for critical_observer.
-  low_observer()->SetActive(false);
-  critical_observer()->SetActive(false);
+  service()->observers_for_testing()[1]->SetActive(false);
+  service()->observers_for_testing()[0]->SetActive(false);
   EXPECT_EQ(3U, service()->uma_count());
-  EXPECT_EQ(critical_observer()->name(),
+  EXPECT_EQ(service()->observers_for_testing()[0]->name(),
             service()->last_recorded_observer_name());
 }
 
 // Tests that verifies enforcement mode.
 TEST_F(ThrottleServiceTest, TestEnforced) {
-  low_observer()->SetActive(true);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
-  service()->SetEnforced(ThrottleObserver::PriorityLevel::NORMAL);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::NORMAL, service()->level());
-  service()->SetEnforced(ThrottleObserver::PriorityLevel::UNKNOWN);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  service()->observers_for_testing()[0]->SetActive(false);
+  service()->observers_for_testing()[1]->SetActive(true);
+  EXPECT_FALSE(service()->should_throttle());
 
-  low_observer()->SetActive(false);
-  critical_observer()->SetActive(true);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
-            service()->last_throttle_level());
-  service()->SetEnforced(ThrottleObserver::PriorityLevel::LOW);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
-  service()->SetEnforced(ThrottleObserver::PriorityLevel::UNKNOWN);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL, service()->level());
+  // Enforce the first observer which is not active. Verify the service is
+  // throttled.
+  service()->observers_for_testing()[0]->SetEnforced(true);
+  EXPECT_TRUE(service()->should_throttle());
+
+  // Stop enforcing it and verify the service is the service is unthrottled.
+  service()->observers_for_testing()[0]->SetEnforced(false);
+  EXPECT_FALSE(service()->should_throttle());
 }
 
 // Tests that verifies observer notifications.
 TEST_F(ThrottleServiceTest, TestObservers) {
   TestObserver test_observer;
   service()->AddServiceObserver(&test_observer);
+
+  // Activate the second observer. Verify that OnThrottle() is called.
   EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
-  low_observer()->SetActive(true);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, test_observer.last_level());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  service()->observers_for_testing()[1]->SetActive(true);
+  EXPECT_FALSE(service()->should_throttle());
+  EXPECT_FALSE(test_observer.last_was_throttled());
   EXPECT_EQ(1, test_observer.GetUpdateCountAndReset());
-  low_observer()->SetActive(false);
-  critical_observer()->SetActive(true);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
-            test_observer.last_level());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL, service()->level());
+
+  // Activate the first observer too. Verify that OnThrottle() is NOT called
+  // because the throttling is not changed.
+  service()->observers_for_testing()[0]->SetActive(true);
+  EXPECT_FALSE(service()->should_throttle());
+  EXPECT_FALSE(test_observer.last_was_throttled());
+  EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
+
+  // Deactivate both. Verify that OnThrottle() is called.
+  service()->observers_for_testing()[0]->SetActive(false);
+  EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());  // not yet called
+  service()->observers_for_testing()[1]->SetActive(false);
+  EXPECT_TRUE(service()->should_throttle());
+  EXPECT_TRUE(test_observer.last_was_throttled());
   EXPECT_EQ(1, test_observer.GetUpdateCountAndReset());
+
+  // Remove the observer. Verify that OnThrottle() is no longer called.
   service()->RemoveServiceObserver(&test_observer);
-  critical_observer()->SetActive(false);
-  low_observer()->SetActive(true);
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::CRITICAL,
-            test_observer.last_level());
-  EXPECT_EQ(ThrottleObserver::PriorityLevel::LOW, service()->level());
+  service()->observers_for_testing()[1]->SetActive(true);
+  EXPECT_FALSE(service()->should_throttle());
   EXPECT_EQ(0, test_observer.GetUpdateCountAndReset());
+}
+
+// Tests that getting an observer by its name works.
+TEST_F(ThrottleServiceTest, TestGetObserverByName) {
+  auto* first_observer = service()->GetObserverByName(kFirstObserverName);
+  auto* second_observer = service()->GetObserverByName(kSecondObserverName);
+  EXPECT_NE(nullptr, first_observer);
+  EXPECT_NE(nullptr, second_observer);
+  EXPECT_NE(first_observer, second_observer);
+  EXPECT_EQ(nullptr, service()->GetObserverByName("NonExistentObserverName"));
 }
 
 }  // namespace ash

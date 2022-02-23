@@ -21,7 +21,8 @@ namespace printing {
 #if !defined(USE_CUPS)
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
+    Delegate* delegate,
+    bool skip_system_calls) {
   return std::make_unique<PrintingContextNoSystemDialog>(delegate);
 }
 #endif  // !defined(USE_CUPS)
@@ -80,10 +81,8 @@ gfx::Size PrintingContextNoSystemDialog::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextNoSystemDialog::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
 
   if (settings_->dpi() == 0)
     UseDefaultSettings();
@@ -99,17 +98,10 @@ mojom::ResultCode PrintingContextNoSystemDialog::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextNoSystemDialog::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextNoSystemDialog::PageDone() {
+mojom::ResultCode PrintingContextNoSystemDialog::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);

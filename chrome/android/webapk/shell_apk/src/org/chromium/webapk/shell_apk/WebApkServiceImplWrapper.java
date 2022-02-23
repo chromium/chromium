@@ -4,7 +4,6 @@
 
 package org.chromium.webapk.shell_apk;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,6 +14,8 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 
@@ -149,7 +150,7 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
     }
 
     /** Rebuilds a notification with channel ID from the given notification object. */
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static Notification rebuildNotificationWithChannelId(
             Context context, Notification notification) {
         Notification.Builder builder = Notification.Builder.recoverBuilder(context, notification);

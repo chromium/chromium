@@ -151,7 +151,7 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
     base::i18n::TextDirection focus_dir,
     const gfx::Rect& bounding_box,
     bool is_anchor_first) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (GetTextInputManager())
     GetTextInputManager()->SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
@@ -202,6 +202,10 @@ bool RenderWidgetHostViewBase::IsInVR() const {
   return false;
 }
 
+bool RenderWidgetHostViewBase::IsInActiveWindow() const {
+  return true;
+}
+
 viz::FrameSinkId RenderWidgetHostViewBase::GetRootFrameSinkId() {
   return viz::FrameSinkId();
 }
@@ -222,7 +226,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
   if (!main_host || !main_frame_host)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
@@ -303,7 +307,8 @@ std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
       GetHostFrameSinkManager()->CreateVideoCapturer();
-  video_capturer->ChangeTarget(GetFrameSinkId(), nullptr);
+  video_capturer->ChangeTarget(viz::VideoCaptureTarget(GetFrameSinkId()),
+                               /*crop_version=*/0);
   return video_capturer;
 }
 
@@ -505,6 +510,13 @@ void RenderWidgetHostViewBase::ProcessAckedTouchEvent(
     const TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   NOTREACHED();
+}
+
+// Send system cursor size to the renderer via UpdateScreenInfo().
+void RenderWidgetHostViewBase::UpdateSystemCursorSize(
+    const gfx::Size& cursor_size) {
+  system_cursor_size_ = cursor_size;
+  UpdateScreenInfo();
 }
 
 void RenderWidgetHostViewBase::UpdateScreenInfo() {
@@ -803,16 +815,24 @@ display::ScreenInfos RenderWidgetHostViewBase::GetNewScreenInfosForUpdate() {
   // RWHVChildFrame gets its ScreenInfos from the CrossProcessFrameConnector.
   DCHECK(!IsRenderWidgetHostViewChildFrame());
 
+  display::ScreenInfos screen_infos;
+
   if (auto* screen = display::Screen::GetScreen()) {
     gfx::NativeView native_view = GetNativeView();
     const auto& display = native_view
                               ? screen->GetDisplayNearestView(native_view)
                               : screen->GetPrimaryDisplay();
-    return screen->GetScreenInfosNearestDisplay(display.id());
+    screen_infos = screen->GetScreenInfosNearestDisplay(display.id());
+  } else {
+    // If there is no Screen, create fake ScreenInfos (for tests).
+    screen_infos = display::ScreenInfos(display::ScreenInfo());
   }
 
-  // If there is no Screen, create fake ScreenInfos (for tests).
-  return display::ScreenInfos(display::ScreenInfo());
+  // Set system cursor size separately as it's not a property of screen or
+  // display.
+  screen_infos.system_cursor_size = system_cursor_size_;
+
+  return screen_infos;
 }
 
 void RenderWidgetHostViewBase::DidNavigate() {

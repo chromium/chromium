@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.display_cutout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -22,12 +24,23 @@ public class ActivityDisplayCutoutModeSupplier extends UnownedUserDataSupplier<I
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<ActivityDisplayCutoutModeSupplier> KEY =
             new UnownedUserDataKey<>(ActivityDisplayCutoutModeSupplier.class);
+    private static ObservableSupplierImpl<Integer> sInstanceForTesting;
 
     public static @Nullable ObservableSupplier<Integer> from(@NonNull WindowAndroid window) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
 
     public ActivityDisplayCutoutModeSupplier() {
         super(KEY);
+    }
+
+    /** Sets an instance for testing. */
+    @VisibleForTesting
+    public static void setInstanceForTesting(Integer mode) {
+        if (sInstanceForTesting == null) {
+            sInstanceForTesting = new ObservableSupplierImpl<>();
+        }
+        sInstanceForTesting.set(mode);
     }
 }

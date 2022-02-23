@@ -9,7 +9,6 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -27,9 +26,6 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
 
   // blink::mojom::ResourceLoadInfoNotifier overrides, these methods should be
   // called from the same thread.
-#if defined(OS_ANDROID)
-  void NotifyUpdateUserGestureCarryoverInfo() override;
-#endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;
@@ -37,8 +33,7 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
       int64_t request_id,
       const GURL& final_url,
       network::mojom::URLResponseHeadPtr response_head,
-      network::mojom::RequestDestination request_destination,
-      int32_t previews_state) override;
+      network::mojom::RequestDestination request_destination) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,
                                          int32_t transfer_size_diff) override;
   void NotifyResourceLoadCompleted(

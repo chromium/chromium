@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
@@ -21,6 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -89,7 +89,8 @@ class NearbyShareSettingsTest : public ::testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kNearbySharing,
                               features::kNearbySharingBackgroundScanning,
-                              ash::features::kBluetoothAdvertisementMonitoring},
+                              chromeos::features::
+                                  kBluetoothAdvertisementMonitoring},
         /*disabled_features=*/{});
 
     RegisterNearbySharingPrefs(pref_service_.registry());

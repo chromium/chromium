@@ -13,8 +13,6 @@
 
 namespace blink {
 
-CORE_EXPORT extern const base::Feature kFirstInputDelayWithoutEventListener;
-
 class Event;
 
 // Event timing collects and records the event start time, processing start time

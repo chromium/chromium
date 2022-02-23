@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.View;
 import android.webkit.ValueCallback;
 
@@ -98,17 +99,21 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     private boolean mViewAttachedToWindow;
     private boolean mNotifyOnBrowserControlsOffsetsChanged;
 
-    // Created in the constructor from saved state and used in setClient().
-    private PersistenceInfo mPersistenceInfo;
+    // Created in the constructor from saved state.
+    private FullPersistenceInfo mFullPersistenceInfo;
+    private MinimalPersistenceInfo mMinimalPersistenceInfo;
 
     private int mMinimumSurfaceWidth;
     private int mMinimumSurfaceHeight;
 
-    private static final class PersistenceInfo {
+    // This persistence state is saved to disk, and loaded async.
+    private static final class FullPersistenceInfo {
         String mPersistenceId;
         byte[] mCryptoKey;
-        byte[] mMinimalPersistenceState;
     };
+
+    // This persistence state is saved to a bundle, and loaded synchronously.
+    private static final class MinimalPersistenceInfo { byte[] mState; };
 
     /**
      * @param windowAndroid a window that was created by a {@link BrowserFragmentImpl}. It's not
@@ -140,15 +145,19 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         profile.checkNotDestroyed();
         mProfile = profile;
 
-        mPersistenceInfo = new PersistenceInfo();
-        mPersistenceInfo.mPersistenceId = persistenceId;
-        mPersistenceInfo.mCryptoKey = savedInstanceState != null
-                ? savedInstanceState.getByteArray(SAVED_STATE_SESSION_SERVICE_CRYPTO_KEY)
-                : null;
-        mPersistenceInfo.mMinimalPersistenceState =
-                (savedInstanceState != null && (persistenceId == null || persistenceId.isEmpty()))
-                ? savedInstanceState.getByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY)
-                : null;
+        if (!TextUtils.isEmpty(persistenceId)) {
+            mFullPersistenceInfo = new FullPersistenceInfo();
+            mFullPersistenceInfo.mPersistenceId = persistenceId;
+            mFullPersistenceInfo.mCryptoKey = savedInstanceState != null
+                    ? savedInstanceState.getByteArray(SAVED_STATE_SESSION_SERVICE_CRYPTO_KEY)
+                    : null;
+        } else if (savedInstanceState != null
+                && savedInstanceState.getByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY)
+                        != null) {
+            mMinimalPersistenceInfo = new MinimalPersistenceInfo();
+            mMinimalPersistenceInfo.mState =
+                    savedInstanceState.getByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY);
+        }
 
         IntentRequestTracker tracker = windowAndroid.getIntentRequestTracker();
         assert tracker != null : "FragmentWindowAndroid must have an IntentRequestTracker";
@@ -208,7 +217,8 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
                     BrowserImplJni.get().getBrowserPersisterCryptoKey(mNativeBrowser));
         } else if (!hasPersistenceId) {
             outState.putByteArray(SAVED_STATE_MINIMAL_PERSISTENCE_STATE_KEY,
-                    BrowserImplJni.get().getMinimalPersistenceState(mNativeBrowser));
+                    BrowserImplJni.get().getMinimalPersistenceState(mNativeBrowser,
+                            WebLayerImpl.getMaxNavigationsPerTabForInstanceState()));
         }
 
         if (mWindowAndroid != null) {
@@ -368,12 +378,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
             boolean newEnabled = getDarkThemeEnabled();
             changed = changed || oldEnabled != newEnabled;
         }
-        if (mFontScale != null) {
-            float oldFontScale = mFontScale;
-            mFontScale = null;
-            float newFontScale = getFontScale();
-            changed = changed || oldFontScale != newFontScale;
-        }
         if (changed) {
             BrowserImplJni.get().webPreferencesChanged(mNativeBrowser);
         }
@@ -401,16 +405,6 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
                     (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         }
         return mDarkThemeEnabled;
-    }
-
-    @CalledByNative
-    private float getFontScale() {
-        Context context = getContext();
-        if (context == null) return 1.0f;
-        if (mFontScale == null) {
-            mFontScale = context.getResources().getConfiguration().fontScale;
-        }
-        return mFontScale;
     }
 
     Context getEmbedderActivityContext() {
@@ -479,25 +473,23 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     @Override
     public void setClient(IBrowserClient client) {
-        StrictModeWorkaround.apply();
-        mClient = client;
-
         // This function is called from the client once everything has been setup (meaning all the
         // client classes have been created and AIDL interfaces established in both directions).
         // This function is called immediately after the constructor of BrowserImpl from the client.
-        assert mPersistenceInfo != null;
-        PersistenceInfo persistenceInfo = mPersistenceInfo;
-        mPersistenceInfo = null;
-        BrowserImplJni.get().restoreStateIfNecessary(mNativeBrowser, persistenceInfo.mPersistenceId,
-                persistenceInfo.mCryptoKey, persistenceInfo.mMinimalPersistenceState);
 
-        if (getTabs().size() > 0) {
-            updateAllTabsAndSetActive();
-        } else if (persistenceInfo.mPersistenceId == null
-                || persistenceInfo.mPersistenceId.isEmpty()) {
+        StrictModeWorkaround.apply();
+        mClient = client;
+
+        if (mFullPersistenceInfo != null) {
+            FullPersistenceInfo persistenceInfo = mFullPersistenceInfo;
+            mFullPersistenceInfo = null;
+            BrowserImplJni.get().restoreStateIfNecessary(
+                    mNativeBrowser, persistenceInfo.mPersistenceId, persistenceInfo.mCryptoKey);
+        } else if (mMinimalPersistenceInfo == null) {
             boolean setActiveResult = setActiveTab(createTab());
             assert setActiveResult;
-        } // else case is session restore, which will asynchronously create tabs.
+        } // else case is minimal state, which is restored in onFragmentStart(). See comment in
+          //   onFragmentStart() for details on this scenario.
     }
 
     @Override
@@ -550,7 +542,12 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     @Override
     public boolean isRestoringPreviousState() {
-        return BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
+        // In the case of minimal restore, the C++ side will return true if actively restoring
+        // minimal state. By returning true if mMinimalPersistenceInfo is non-null,
+        // isRestoringPreviousState() will return true from the the time the fragment is created
+        // until start.
+        return mMinimalPersistenceInfo != null
+                || BrowserImplJni.get().isRestoringPreviousState(mNativeBrowser);
     }
 
     @CalledByNative
@@ -581,8 +578,35 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         }
     }
 
+    private void restoreMinimalStateIfNecessary() {
+        if (mMinimalPersistenceInfo == null) return;
+
+        final MinimalPersistenceInfo minimalPersistenceInfo = mMinimalPersistenceInfo;
+        mMinimalPersistenceInfo = null;
+        BrowserImplJni.get().restoreMinimalState(mNativeBrowser, minimalPersistenceInfo.mState);
+        if (getTabs().size() > 0) {
+            updateAllTabsAndSetActive();
+        } else {
+            boolean setActiveResult = setActiveTab(createTab());
+            assert setActiveResult;
+        }
+        try {
+            onRestoreCompleted();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     public void onFragmentStart() {
         mFragmentStarted = true;
+
+        // Minimal state is synchronously restored. To ensure the embedder has a chance to install
+        // the necessary callbacks restore is started here. OTOH, if this was done from the
+        // constructor, the embedder would not be able to install callbacks before restore
+        // completed. This would mean the embedder could not correctly install state when
+        // navigations are started.
+        restoreMinimalStateIfNecessary();
+
         if (mViewAttachedToWindow) {
             mInConfigurationChangeAndWasAttached = false;
             mForcedVisible = false;
@@ -600,7 +624,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
 
     public void onFragmentResume() {
         mFragmentResumed = true;
-        WebLayerAccessibilityUtil.get().onBrowserResumed();
+        WebLayerAccessibilityUtil.get().onBrowserResumed(mProfile);
         BrowserImplJni.get().onFragmentResume(mNativeBrowser);
     }
 
@@ -716,9 +740,10 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         String getPersistenceId(long nativeBrowserImpl);
         void saveBrowserPersisterIfNecessary(long nativeBrowserImpl);
         byte[] getBrowserPersisterCryptoKey(long nativeBrowserImpl);
-        byte[] getMinimalPersistenceState(long nativeBrowserImpl);
-        void restoreStateIfNecessary(long nativeBrowserImpl, String persistenceId,
-                byte[] persistenceCryptoKey, byte[] minimalPersistenceState);
+        byte[] getMinimalPersistenceState(long nativeBrowserImpl, int maxNavigationsPerTab);
+        void restoreStateIfNecessary(
+                long nativeBrowserImpl, String persistenceId, byte[] persistenceCryptoKey);
+        void restoreMinimalState(long nativeBrowserImpl, byte[] minimalPersistenceState);
         void webPreferencesChanged(long nativeBrowserImpl);
         void onFragmentStart(long nativeBrowserImpl);
         void onFragmentResume(long nativeBrowserImpl);

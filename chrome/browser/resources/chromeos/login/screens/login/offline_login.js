@@ -182,7 +182,7 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   proceedToPasswordPage() {
-    this.switchToPasswordCard(this.email_, true /* animated */);
+    this.switchToPasswordCard(true /* animated */);
   }
 
   showOnlineRequiredDialog() {
@@ -231,19 +231,9 @@ class OfflineLogin extends OfflineLoginBase {
   }
 
   /**
-   * @param {string} email
    * @param {boolean} animated
    */
-  switchToPasswordCard(email, animated) {
-    this.email_ = email;
-    if (email.indexOf('@') === -1) {
-      if (this.emailDomain)
-        email = email + this.emailDomain;
-      else
-        email = email + DEFAULT_EMAIL_DOMAIN;
-    }
-    this.fullEmail_ = email;
-
+  switchToPasswordCard(animated) {
     if (!this.isEmailSectionActive_())
       return;
 
@@ -258,7 +248,8 @@ class OfflineLogin extends OfflineLoginBase {
 
   onEmailSubmitted_() {
     if (this.$.emailInput.validate()) {
-      chrome.send('OfflineLogin.onEmailSubmitted', [this.email_]);
+      this.fullEmail_ = this.computeFullEmail_(this.email_);
+      chrome.send('OfflineLogin.onEmailSubmitted', [this.fullEmail_]);
     } else {
       this.$.emailInput.focusInput();
     }
@@ -296,6 +287,19 @@ class OfflineLogin extends OfflineLoginBase {
     if (email && email.indexOf('@') !== -1)
       return '';
     return domain;
+  }
+
+  /**
+   * @param {string} email
+   */
+  computeFullEmail_(email) {
+    if (email.indexOf('@') === -1) {
+      if (this.emailDomain)
+        email = email + this.emailDomain;
+      else
+        email = email + DEFAULT_EMAIL_DOMAIN;
+    }
+    return email;
   }
 
   showPasswordMismatchMessage() {

@@ -50,6 +50,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
 
  private:
   friend class WorkspaceWindowResizerTest;
+  FRIEND_TEST_ALL_PREFIXES(HapticsUtilTest, HapticFeedbackForNormalWindowSnap);
 
   WorkspaceWindowResizer(WindowState* window_state,
                          const std::vector<aura::Window*>& attached_windows);
@@ -169,10 +170,10 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   WindowState* window_state() { return window_state_; }
   const WindowState* window_state() const { return window_state_; }
 
-  const std::vector<aura::Window*> attached_windows_;
-
   // Returns the currently used instance for test.
   static WorkspaceWindowResizer* GetInstanceForTest();
+
+  const std::vector<aura::Window*> attached_windows_;
 
   bool did_lock_cursor_ = false;
 
@@ -230,7 +231,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   gfx::Rect restore_bounds_for_gesture_;
 
   // Presentation time recorder for tab dragging in clamshell mode.
-  std::unique_ptr<PresentationTimeRecorder> tab_dragging_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> tab_dragging_recorder_;
 
   // Used to determine if this has been deleted during a drag such as when a tab
   // gets dragged into another browser window.

@@ -80,7 +80,7 @@ class CAPTURE_EXPORT FakeVideoCaptureDeviceFactory
       const std::vector<FakeVideoCaptureDeviceSettings>& config);
 
   // VideoCaptureDeviceFactory implementation:
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 

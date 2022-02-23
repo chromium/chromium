@@ -12,15 +12,14 @@
 #include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
@@ -144,8 +143,10 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
       rfh->RemoveServiceWorkerContainerHost(client_uuid());
   }
 
-  if (IsContainerForClient() && controller_)
+  if (controller_) {
+    DCHECK(IsContainerForClient());
     controller_->Uncontrol(client_uuid());
+  }
 
   // Remove |this| as an observer of ServiceWorkerRegistrations.
   // TODO(falken): Use base::ScopedObservation instead of this explicit call.
@@ -185,7 +186,8 @@ void ServiceWorkerContainerHost::Register(
   }
 
   std::vector<GURL> urls = {url_, options->scope, script_url};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageImproperOrigins);
     // ReportBadMessage() will kill the renderer process, but Mojo complains if
     // the callback is not run. Just run it with nonsense arguments.
@@ -382,10 +384,12 @@ void ServiceWorkerContainerHost::EnsureFileAccess(
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
     for (const auto& file : file_paths) {
-      if (!policy->CanReadFile(GetProcessId(), file))
+      if (!policy->CanReadFile(GetProcessId(), file)) {
         mojo::ReportBadMessage(
             "The renderer doesn't have access to the file "
             "but it tried to grant access to the controller.");
+        return;
+      }
 
       if (!policy->CanReadFile(controller_process_id, file))
         policy->GrantReadFile(controller_process_id, file);
@@ -905,8 +909,6 @@ void ServiceWorkerContainerHost::UpdateUrls(
       fetch_request_window_id_ = base::UnguessableToken::Create();
   }
 
-  auto previous_origin = url::Origin::Create(previous_url);
-  auto new_origin = url::Origin::Create(url);
   // Update client id on cross origin redirects. This corresponds to the HTML
   // standard's "process a navigation fetch" algorithm's step for discarding
   // |reservedEnvironment|.
@@ -915,8 +917,7 @@ void ServiceWorkerContainerHost::UpdateUrls(
   // same as |reservedEnvironment|'s creation URL's origin, then:
   //    1. Run the environment discarding steps for |reservedEnvironment|.
   //    2. Set |reservedEnvironment| to null."
-  if (previous_url.is_valid() &&
-      !new_origin.IsSameOriginWith(previous_origin)) {
+  if (previous_url.is_valid() && !url::IsSameOriginWith(previous_url, url)) {
     // Remove old controller since we know the controller is definitely
     // changed. We need to remove |this| from |controller_|'s controllee before
     // updating UUID since ServiceWorkerVersion has a map from uuid to provider
@@ -1157,8 +1158,11 @@ void ServiceWorkerContainerHost::EvictFromBackForwardCache(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(IsContainerForWindowClient());
+  DCHECK(IsContainerForClient());
   is_in_back_forward_cache_ = false;
+
+  if (!IsContainerForWindowClient())
+    return;
 
   auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
   // |rfh| could be evicted before this function is called.
@@ -1169,7 +1173,7 @@ void ServiceWorkerContainerHost::EvictFromBackForwardCache(
 void ServiceWorkerContainerHost::OnEnterBackForwardCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(IsContainerForWindowClient());
+  DCHECK(IsContainerForClient());
   if (controller_)
     controller_->MoveControlleeToBackForwardCacheMap(client_uuid());
   is_in_back_forward_cache_ = true;
@@ -1178,7 +1182,7 @@ void ServiceWorkerContainerHost::OnEnterBackForwardCache() {
 void ServiceWorkerContainerHost::OnRestoreFromBackForwardCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(IsContainerForWindowClient());
+  DCHECK(IsContainerForClient());
   if (controller_)
     controller_->RestoreControlleeFromBackForwardCacheMap(client_uuid());
   is_in_back_forward_cache_ = false;
@@ -1581,7 +1585,8 @@ bool ServiceWorkerContainerHost::IsValidGetRegistrationMessage(
     return false;
   }
   std::vector<GURL> urls = {url_, client_url};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     *out_error = ServiceWorkerConsts::kBadMessageImproperOrigins;
     return false;
   }
@@ -1664,7 +1669,7 @@ bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
 blink::StorageKey
 ServiceWorkerContainerHost::GetCorrectStorageKeyForWebSecurityState(
     const GURL& url) const {
-  if (ServiceWorkerUtils::IsWebSecurityDisabled()) {
+  if (service_worker_security_utils::IsWebSecurityDisabled()) {
     url::Origin other_origin = url::Origin::Create(url);
 
     if (key_.origin() != other_origin)

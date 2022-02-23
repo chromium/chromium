@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -287,9 +287,9 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
 
   // The following fields are used only on the IO thread.
   // Non-owning ptr.
-  BrowserPpapiHostImpl* host_;
+  raw_ptr<BrowserPpapiHostImpl> host_;
   // Non-owning ptr.
-  ContentBrowserPepperHostFactory* factory_;
+  raw_ptr<ContentBrowserPepperHostFactory> factory_;
   PP_Instance instance_;
 
   // The following fields are used only on the UI thread.

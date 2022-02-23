@@ -18,17 +18,17 @@ namespace {
 
 static const V8PrivateProperty::SymbolKey kCountQueuingStrategySizeFunction;
 
-class CountQueuingStrategySizeFunction final : public ScriptFunction {
+class CountQueuingStrategySizeFunction final : public ScriptFunction::Callable {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    CountQueuingStrategySizeFunction* self =
-        MakeGarbageCollected<CountQueuingStrategySizeFunction>(script_state);
+    auto* self = MakeGarbageCollected<ScriptFunction>(
+        script_state, MakeGarbageCollected<CountQueuingStrategySizeFunction>());
 
     // https://streams.spec.whatwg.org/#count-queuing-strategy-size-function
     // 2. Let F be ! CreateBuiltinFunction(steps, « », globalObject’s relevant
     //    Realm).
     // 4. Perform ! SetFunctionLength(F, 0).
-    v8::Local<v8::Function> function = self->BindToV8Function(/*length=*/0);
+    v8::Local<v8::Function> function = self->V8Function();
 
     // 3. Perform ! SetFunctionName(F, "size").
     function->SetName(V8String(script_state->GetIsolate(), "size"));
@@ -36,16 +36,14 @@ class CountQueuingStrategySizeFunction final : public ScriptFunction {
     return function;
   }
 
-  explicit CountQueuingStrategySizeFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  CountQueuingStrategySizeFunction() = default;
 
- private:
-  void CallRaw(const v8::FunctionCallbackInfo<v8::Value>& args) override {
+  void CallRaw(ScriptState* script_state,
+               const v8::FunctionCallbackInfo<v8::Value>& args) override {
     // https://streams.spec.whatwg.org/#count-queuing-strategy-size-function
     // 1. Let steps be the following steps:
     //   1. Return 1.
-    args.GetReturnValue().Set(
-        v8::Integer::New(GetScriptState()->GetIsolate(), 1));
+    args.GetReturnValue().Set(v8::Integer::New(script_state->GetIsolate(), 1));
   }
 };
 

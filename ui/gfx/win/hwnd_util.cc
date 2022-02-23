@@ -114,6 +114,29 @@ void* GetWindowUserData(HWND hwnd) {
   return reinterpret_cast<void*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 }
 
+absl::optional<bool> IsWindowOnCurrentVirtualDesktop(
+    HWND window,
+    Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager) {
+  BOOL on_current_desktop;
+  if (FAILED(virtual_desktop_manager->IsWindowOnCurrentVirtualDesktop(
+          window, &on_current_desktop))) {
+    return absl::nullopt;
+  }
+  if (on_current_desktop)
+    return true;
+
+  // IsWindowOnCurrentVirtualDesktop() is flaky for newly opened windows,
+  // which causes test flakiness. Occasionally, it incorrectly says a window
+  // is not on the current virtual desktop when it is. In this situation,
+  // it also returns GUID_NULL for the desktop id.
+  GUID workspace_guid;
+  if (FAILED(virtual_desktop_manager->GetWindowDesktopId(window,
+                                                         &workspace_guid))) {
+    return absl::nullopt;
+  }
+  return workspace_guid == GUID_NULL;
+}
+
 #pragma warning(pop)
 
 bool DoesWindowBelongToActiveWindow(HWND window) {

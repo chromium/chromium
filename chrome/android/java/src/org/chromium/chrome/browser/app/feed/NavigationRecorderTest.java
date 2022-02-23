@@ -8,28 +8,27 @@ import static junit.framework.Assert.assertNull;
 
 import static org.junit.Assert.assertEquals;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -39,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NavigationRecorderTest {
+    private static final String TAG = "NavRecorderTest";
     @Rule
     public ChromeTabbedActivityTestRule mTestSetupRule = new ChromeTabbedActivityTestRule();
 
@@ -48,20 +48,28 @@ public class NavigationRecorderTest {
 
     @Before
     public void setUp() {
-        mTestSetupRule.startMainActivityWithURL(UrlConstants.NTP_URL);
-
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        mTestServer = mTestSetupRule.getEmbeddedTestServerRule().getServer();
         mNavUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
+        mTestSetupRule.startMainActivityOnBlankPage();
 
-        mInitialTab = mTestSetupRule.getActivity().getActivityTab();
-    }
-
-    @After
-    public void tearDown() {
-        // If setUp() fails, tearDown() still needs to be able to execute without exceptions.
-        if (mTestServer != null) {
-            mTestServer.stopAndDestroyServer();
-        }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mInitialTab = mTestSetupRule.getActivity().getActivityTab();
+            // Add logging to debug flaky test: crbug.com/1297086.
+            mInitialTab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onPageLoadStarted(Tab tab, GURL url) {
+                    Log.e(TAG, "onPageLoadStarted " + url.getSpec());
+                }
+                @Override
+                public void onPageLoadFinished(Tab tab, GURL url) {
+                    Log.e(TAG, "onPageLoadFinished " + url.getSpec());
+                }
+                @Override
+                public void onPageLoadFailed(Tab tab, int errorCode) {
+                    Log.e(TAG, "onPageLoadFailed " + errorCode);
+                }
+            });
+        });
     }
 
     @Test
@@ -72,7 +80,7 @@ public class NavigationRecorderTest {
             @Override
             public void onResult(NavigationRecorder.VisitData visit) {
                 // When the tab is hidden we receive a notification with no end URL.
-                assertEquals(UrlConstants.NTP_URL, visit.endUrl.getSpec());
+                assertEquals("about:blank", visit.endUrl.getSpec());
                 callback.notifyCalled();
             }
         });
@@ -113,7 +121,7 @@ public class NavigationRecorderTest {
             }
         });
 
-        mTestSetupRule.loadUrl((String) null);
+        mTestSetupRule.loadUrl(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         callback.waitForCallback(0);
     }
 
@@ -121,7 +129,8 @@ public class NavigationRecorderTest {
     private void loadUrlAndRecordVisit(
             final String url, Callback<NavigationRecorder.VisitData> visitCallback) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mInitialTab.loadUrl(new LoadUrlParams(url));
+            int status = mInitialTab.loadUrl(new LoadUrlParams(url));
+            Log.e(TAG, "loadUrl status=" + status);
             NavigationRecorder.record(mInitialTab, visitCallback);
         });
     }

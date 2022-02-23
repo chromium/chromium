@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
@@ -16,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.textclassifier.TextClassification;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.VerifiesOnP;
@@ -32,7 +33,7 @@ import java.util.Map;
  * errors (on older Android versions) which would require a slow re-verification at runtime.
  */
 @VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvider {
     private static final String TAG = "MenuItemProvider";
     // We want the secondary assist actions to come after the default actions but before the text

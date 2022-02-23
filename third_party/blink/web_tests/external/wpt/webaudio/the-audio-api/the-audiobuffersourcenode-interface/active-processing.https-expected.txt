@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "Setup graph"
+PASS Executing "verify count change"
+PASS Audit report
+PASS > [Setup graph] 
+PASS   AudioWorklet and graph construction resolved correctly.
+PASS < [Setup graph] All assertions passed. (total 1 assertions)
+PASS > [verify count change] 
+FAIL X Number of channels changed is not true. Got false. assert_true: expected true got false
+PASS   Index where input channel count changed is less than or equal to 1280.
+FAIL X Number of channels in input[0:-2]: Expected 7 for all values but found 1023 unexpected values: 
+	Index	Actual
+	[256]	0
+	[257]	0
+	[258]	0
+	[259]	0
+	...and 1019 more errors. assert_true: expected true got false
+FAIL X Number of channels in input[-1:]: Expected 1 for all values but found 1 unexpected values: 
+	Index	Actual
+	[0]	0 assert_true: expected true got false
+FAIL < [verify count change] 3 out of 4 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 2 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+

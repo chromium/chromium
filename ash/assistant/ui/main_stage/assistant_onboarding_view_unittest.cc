@@ -17,7 +17,6 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
@@ -31,6 +30,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -166,8 +166,6 @@ class AssistantOnboardingViewTest : public AssistantAshTestBase {
  private:
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
 };
-
-}  // namespace
 
 // Tests -----------------------------------------------------------------------
 
@@ -468,10 +466,11 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
 }
 
 TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
   ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
 
   ShowAssistantUi();
@@ -496,12 +495,20 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
+
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   ShowAssistantUi();
 
   EXPECT_EQ(greeting_label()->GetEnabledColor(), kTextColorPrimary);
   EXPECT_EQ(intro_label()->GetEnabledColor(), kTextColorPrimary);
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
 
+}  // namespace
 }  // namespace ash

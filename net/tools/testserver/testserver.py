@@ -10,8 +10,6 @@ It supports several test URLs, as specified by the handlers in TestPageHandler.
 By default, it listens on an ephemeral port and sends the port number back to
 the originating process over a pipe. The originating process can specify an
 explicit port if necessary.
-It can use https if you specify the flag --https=CERT where CERT is the path
-to a pem file containing the certificate and private key that should be used.
 """
 
 from __future__ import print_function
@@ -33,15 +31,11 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
 # unconditionally (since they contain modifications from anything that might be
 # obtained from e.g. PyPi).
 sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party', 'pywebsocket3', 'src'))
-sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party', 'tlslite'))
 
 import mod_pywebsocket.standalone
 from mod_pywebsocket.standalone import WebSocketServer
 # import manually
 mod_pywebsocket.standalone.ssl = ssl
-
-import tlslite
-import tlslite.api
 
 import testserver_base
 
@@ -91,86 +85,6 @@ class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
   should only be used with handlers that are known to be threadsafe."""
 
   pass
-
-
-class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
-                  testserver_base.ClientRestrictingServerMixIn,
-                  testserver_base.BrokenPipeHandlerMixIn,
-                  testserver_base.StoppableHTTPServer):
-  """This is a specialization of StoppableHTTPServer that add https support and
-  client verification."""
-
-  def __init__(self, server_address, request_hander_class, pem_cert_and_key,
-               ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
-               tls_intolerant, tls_intolerance_type, alert_after_handshake,
-               simulate_tls13_downgrade, simulate_tls12_downgrade,
-               tls_max_version):
-    self.cert_chain = tlslite.api.X509CertChain()
-    self.cert_chain.parsePemList(pem_cert_and_key)
-    # Force using only python implementation - otherwise behavior is different
-    # depending on whether m2crypto Python module is present (error is thrown
-    # when it is). m2crypto uses a C (based on OpenSSL) implementation under
-    # the hood.
-    self.private_key = tlslite.api.parsePEMKey(pem_cert_and_key,
-                                               private=True,
-                                               implementations=['python'])
-    self.ssl_client_auth = ssl_client_auth
-    self.ssl_client_cas = []
-    self.ssl_client_cert_types = []
-
-    if ssl_client_auth:
-      for ca_file in ssl_client_cas:
-        s = open(ca_file).read()
-        x509 = tlslite.api.X509()
-        x509.parse(s)
-        self.ssl_client_cas.append(x509.subject)
-
-      for cert_type in ssl_client_cert_types:
-        self.ssl_client_cert_types.append({
-            "rsa_sign": tlslite.api.ClientCertificateType.rsa_sign,
-            "ecdsa_sign": tlslite.api.ClientCertificateType.ecdsa_sign,
-            }[cert_type])
-
-    self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
-    # Enable SSLv3 for testing purposes.
-    self.ssl_handshake_settings.minVersion = (3, 0)
-    if tls_intolerant != 0:
-      self.ssl_handshake_settings.tlsIntolerant = (3, tls_intolerant)
-      self.ssl_handshake_settings.tlsIntoleranceType = tls_intolerance_type
-    if alert_after_handshake:
-      self.ssl_handshake_settings.alertAfterHandshake = True
-    if simulate_tls13_downgrade:
-      self.ssl_handshake_settings.simulateTLS13Downgrade = True
-    if simulate_tls12_downgrade:
-      self.ssl_handshake_settings.simulateTLS12Downgrade = True
-    if tls_max_version != 0:
-      self.ssl_handshake_settings.maxVersion = (3, tls_max_version)
-
-    self.session_cache = tlslite.api.SessionCache()
-    testserver_base.StoppableHTTPServer.__init__(self,
-                                                 server_address,
-                                                 request_hander_class)
-
-  def handshake(self, tlsConnection):
-    """Creates the SSL connection."""
-
-    try:
-      self.tlsConnection = tlsConnection
-      tlsConnection.handshakeServer(certChain=self.cert_chain,
-                                    privateKey=self.private_key,
-                                    sessionCache=self.session_cache,
-                                    reqCert=self.ssl_client_auth,
-                                    settings=self.ssl_handshake_settings,
-                                    reqCAs=self.ssl_client_cas,
-                                    reqCertTypes=self.ssl_client_cert_types)
-      tlsConnection.ignoreAbruptClose = True
-      return True
-    except tlslite.api.TLSAbruptCloseError:
-      # Ignore abrupt close.
-      return True
-    except tlslite.api.TLSError as error:
-      print("Handshake failure:", str(error))
-      return False
 
 
 class TestPageHandler(testserver_base.BasePageHandler):
@@ -394,35 +308,9 @@ class ServerRunner(testserver_base.TestServerRunner):
       dns_sans = [host]
 
     if self.options.server_type == SERVER_HTTP:
-      if self.options.https:
-        if not self.options.cert_and_key_file:
-          raise testserver_base.OptionError('server cert file not specified')
-        if not os.path.isfile(self.options.cert_and_key_file):
-          raise testserver_base.OptionError(
-              'specified server cert file not found: ' +
-              self.options.cert_and_key_file + ' exiting...')
-        pem_cert_and_key = open(self.options.cert_and_key_file, 'r').read()
-
-        for ca_cert in self.options.ssl_client_ca:
-          if not os.path.isfile(ca_cert):
-            raise testserver_base.OptionError(
-                'specified trusted client CA file not found: ' + ca_cert +
-                ' exiting...')
-
-        server = HTTPSServer(
-            (host, port), TestPageHandler, pem_cert_and_key,
-            self.options.ssl_client_auth, self.options.ssl_client_ca,
-            self.options.ssl_client_cert_type, self.options.tls_intolerant,
-            self.options.tls_intolerance_type,
-            self.options.alert_after_handshake,
-            self.options.simulate_tls13_downgrade,
-            self.options.simulate_tls12_downgrade, self.options.tls_max_version)
-        print('HTTPS server started on https://%s:%d...' %
-              (host, server.server_port))
-      else:
-        server = HTTPServer((host, port), TestPageHandler)
-        print('HTTP server started on http://%s:%d...' %
-              (host, server.server_port))
+      server = HTTPServer((host, port), TestPageHandler)
+      print('HTTP server started on http://%s:%d...' %
+            (host, server.server_port))
 
       server.data_dir = self.__make_data_dir()
       server.file_root_url = self.options.file_root_url
@@ -495,29 +383,11 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   const=SERVER_WEBSOCKET, default=SERVER_HTTP,
                                   dest='server_type',
                                   help='start up a WebSocket server.')
-    self.option_parser.add_option('--https', action='store_true',
-                                  dest='https', help='Specify that https '
-                                  'should be used.')
     self.option_parser.add_option('--cert-and-key-file',
                                   dest='cert_and_key_file', help='specify the '
                                   'path to the file containing the certificate '
                                   'and private key for the server in PEM '
                                   'format')
-    self.option_parser.add_option('--tls-intolerant', dest='tls_intolerant',
-                                  default='0', type='int',
-                                  help='If nonzero, certain TLS connections '
-                                  'will be aborted in order to test version '
-                                  'fallback. 1 means all TLS versions will be '
-                                  'aborted. 2 means TLS 1.1 or higher will be '
-                                  'aborted. 3 means TLS 1.2 or higher will be '
-                                  'aborted. 4 means TLS 1.3 or higher will be '
-                                  'aborted.')
-    self.option_parser.add_option('--tls-intolerance-type',
-                                  dest='tls_intolerance_type',
-                                  default="alert",
-                                  help='Controls how the server reacts to a '
-                                  'TLS version it is intolerant to. Valid '
-                                  'values are "alert", "close", and "reset".')
     self.option_parser.add_option('--ssl-client-auth', action='store_true',
                                   help='Require SSL client auth on every '
                                   'connection.')
@@ -529,34 +399,12 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'file. This option may appear multiple '
                                   'times, indicating multiple CA names should '
                                   'be sent in the request.')
-    self.option_parser.add_option('--ssl-client-cert-type', action='append',
-                                  default=[], help='Specify that the client '
-                                  'certificate request should include the '
-                                  'specified certificate_type value. This '
-                                  'option may appear multiple times, '
-                                  'indicating multiple values should be send '
-                                  'in the request. Valid values are '
-                                  '"rsa_sign", "dss_sign", and "ecdsa_sign". '
-                                  'If omitted, "rsa_sign" will be used.')
     self.option_parser.add_option('--file-root-url', default='/files/',
                                   help='Specify a root URL for files served.')
     # TODO(ricea): Generalize this to support basic auth for HTTP too.
     self.option_parser.add_option('--ws-basic-auth', action='store_true',
                                   dest='ws_basic_auth',
                                   help='Enable basic-auth for WebSocket')
-    self.option_parser.add_option('--alert-after-handshake',
-                                  dest='alert_after_handshake',
-                                  default=False, action='store_true',
-                                  help='If set, the server will send a fatal '
-                                  'alert immediately after the handshake.')
-    self.option_parser.add_option('--simulate-tls13-downgrade',
-                                  action='store_true')
-    self.option_parser.add_option('--simulate-tls12-downgrade',
-                                  action='store_true')
-    self.option_parser.add_option('--tls-max-version', default='0', type='int',
-                                  help='If non-zero, the maximum TLS version '
-                                  'to support. 1 means TLS 1.0, 2 means '
-                                  'TLS 1.1, and 3 means TLS 1.2.')
     self.option_parser.add_option('--redirect-connect-to-localhost',
                                   dest='redirect_connect_to_localhost',
                                   default=False, action='store_true',

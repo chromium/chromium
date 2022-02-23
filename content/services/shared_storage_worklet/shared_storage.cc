@@ -46,7 +46,7 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  std::string arg0_key;
+  std::u16string arg0_key;
   if (!args->GetNext(&arg0_key)) {
     resolver
         ->Reject(
@@ -58,7 +58,7 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
     return promise;
   }
 
-  std::string arg1_value;
+  std::u16string arg1_value;
   if (!args->GetNext(&arg1_value)) {
     resolver
         ->Reject(
@@ -106,7 +106,7 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  std::string arg0_key;
+  std::u16string arg0_key;
   if (!args->GetNext(&arg0_key)) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -117,7 +117,7 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
     return promise;
   }
 
-  std::string arg1_value;
+  std::u16string arg1_value;
   if (!args->GetNext(&arg1_value)) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -146,7 +146,7 @@ v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  std::string arg0_key;
+  std::u16string arg0_key;
   if (!args->GetNext(&arg0_key)) {
     resolver
         ->Reject(args->GetHolderCreationContext(),
@@ -191,7 +191,7 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  std::string arg0_key;
+  std::u16string arg0_key;
   if (!args->GetNext(&arg0_key)) {
     resolver
         ->Reject(
@@ -247,7 +247,7 @@ void SharedStorage::OnVoidOperationFinished(
     const std::string& error_message) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
-  v8::Local<v8::Context> context = resolver->CreationContext();
+  v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
 
   if (success) {
     resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
@@ -263,13 +263,13 @@ void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Global<v8::Promise::Resolver> global_resolver,
     bool success,
     const std::string& error_message,
-    const std::string& result) {
+    const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
-  v8::Local<v8::Context> context = resolver->CreationContext();
+  v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
 
   if (success) {
-    resolver->Resolve(context, gin::StringToV8(isolate, result)).ToChecked();
+    resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
     return;
   }
 
@@ -285,7 +285,7 @@ void SharedStorage::OnLengthOperationFinished(
     uint32_t length) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
-  v8::Local<v8::Context> context = resolver->CreationContext();
+  v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
 
   if (success) {
     resolver->Resolve(context, gin::Converter<uint32_t>::ToV8(isolate, length))

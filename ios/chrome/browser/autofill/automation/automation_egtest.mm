@@ -122,7 +122,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
       recipeRoot.FindKeyOfType("actions", base::Value::Type::LIST);
   GREYAssert(actionValue, @"Test file is missing actions.");
 
-  base::Value::ConstListView actionsValues(actionValue->GetList());
+  base::Value::ConstListView actionsValues(actionValue->GetListDeprecated());
   GREYAssert(actionsValues.size(), @"Test file has empty actions.");
 
   _actions = [[NSMutableArray alloc] initWithCapacity:actionsValues.size()];

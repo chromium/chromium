@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -24,7 +25,9 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
   explicit DlpPolicyEventMatcher(const DlpPolicyEvent& event)
       : source_url_(event.source().url()),
         destination_url_(event.destination().url()),
-        destination_component_(event.destination().component()) {}
+        destination_component_(event.destination().component()),
+        restriction_(event.restriction()),
+        mode_(event.mode()) {}
 
   bool MatchAndExplain(const DlpPolicyEvent& event,
                        MatchResultListener* listener) const override {
@@ -42,9 +45,17 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
       *listener << " |destination_component| is "
                 << event.destination().component();
     }
+    bool restriction_equals = event.restriction() == restriction_;
+    if (!restriction_equals) {
+      *listener << " |restriction| is " << event.restriction();
+    }
+    bool mode_equals = event.mode() == mode_;
+    if (!mode_equals) {
+      *listener << " |mode| is " << event.mode();
+    }
 
     return source_url_equals && destination_url_equals &&
-           destination_component_equals;
+           destination_component_equals && restriction_equals && mode_equals;
   }
 
   void DescribeTo(::std::ostream* os) const override {}
@@ -53,16 +64,23 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
   const std::string source_url_;
   const std::string destination_url_;
   const int destination_component_;
+  const int restriction_;
+  const int mode_;
 };
 
 Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
   return Matcher<const DlpPolicyEvent&>(new DlpPolicyEventMatcher(event));
 }
 
-void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
-                                       std::vector<DlpPolicyEvent>& events) {
-  auto report_queue = std::make_unique<reporting::MockReportQueue>();
-  EXPECT_CALL(*report_queue.get(), AddRecord)
+void SetReportQueueForReportingManager(
+    policy::DlpReportingManager* manager,
+    std::vector<DlpPolicyEvent>& events,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  auto report_queue =
+      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::reporting::MockReportQueue(),
+          base::OnTaskRunnerDeleter(std::move(task_runner)));
+  EXPECT_CALL(*report_queue, AddRecord)
       .WillRepeatedly(
           [&events](base::StringPiece record, reporting::Priority priority,
                     reporting::ReportQueue::EnqueueCallback callback) {
@@ -73,7 +91,7 @@ void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
             events.push_back(event);
             std::move(callback).Run(reporting::Status::StatusOK());
           });
-  manager->GetReportQueueSetter().Run(std::move(report_queue));
+  manager->SetReportQueueForTest(std::move(report_queue));
 }
 
 }  // namespace policy

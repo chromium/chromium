@@ -60,7 +60,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 #endif
@@ -435,11 +435,8 @@ bool AppWindow::TakeFocus(WebContents* source, bool reverse) {
 }
 
 content::PictureInPictureResult AppWindow::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return app_delegate_->EnterPictureInPicture(web_contents, surface_id,
-                                              natural_size);
+    content::WebContents* web_contents) {
+  return app_delegate_->EnterPictureInPicture(web_contents);
 }
 
 void AppWindow::ExitPictureInPicture() {
@@ -447,11 +444,11 @@ void AppWindow::ExitPictureInPicture() {
 }
 
 bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool AppWindow::OnMessageReceived(const IPC::Message& message,
@@ -509,7 +506,7 @@ void AppWindow::OnNativeWindowChanged() {
   if (!native_app_window_)
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac the user can change the window's fullscreen state. If that has
   // happened, update AppWindow's internal state.
   if (native_app_window_->IsFullscreen()) {
@@ -524,7 +521,7 @@ void AppWindow::OnNativeWindowChanged() {
 
   SaveWindowPosition();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (cached_always_on_top_ && !IsFullscreen() &&
       !native_app_window_->IsMaximized() &&
       !native_app_window_->IsMinimized()) {
@@ -615,7 +612,7 @@ void AppWindow::SetFullscreen(FullscreenType type, bool enable) {
   DCHECK_NE(FULLSCREEN_TYPE_NONE, type);
 
   if (enable) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // Do not enter fullscreen mode if disallowed by pref.
     // TODO(bartfab): Add a test once it becomes possible to simulate a user
     // gesture. http://crbug.com/174178
@@ -837,7 +834,7 @@ void AppWindow::SetNativeWindowFullscreen() {
 }
 
 bool AppWindow::IntersectsWithTaskbar() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect window_bounds = native_app_window_->GetRestoredBounds();
   std::vector<display::Display> displays = screen->GetAllDisplays();

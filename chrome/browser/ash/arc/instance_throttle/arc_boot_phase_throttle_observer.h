@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_BOOT_PHASE_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_BOOT_PHASE_THROTTLE_OBSERVER_H_
 
-#include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
@@ -18,10 +21,12 @@ namespace arc {
 
 // This class observes phases of ARC boot and unthrottles the container
 // when ARC is booting or restarting.
-class ArcBootPhaseThrottleObserver : public ash::ThrottleObserver,
-                                     public ArcSessionManagerObserver,
-                                     public ArcBootPhaseMonitorBridge::Observer,
-                                     public SessionRestoreObserver {
+class ArcBootPhaseThrottleObserver
+    : public ash::ThrottleObserver,
+      public ArcSessionManagerObserver,
+      public SessionRestoreObserver,
+      public arc::ConnectionObserver<arc::mojom::AppInstance>,
+      public arc::ConnectionObserver<arc::mojom::IntentHelperInstance> {
  public:
   ArcBootPhaseThrottleObserver();
 
@@ -29,7 +34,7 @@ class ArcBootPhaseThrottleObserver : public ash::ThrottleObserver,
   ArcBootPhaseThrottleObserver& operator=(const ArcBootPhaseThrottleObserver&) =
       delete;
 
-  ~ArcBootPhaseThrottleObserver() override = default;
+  ~ArcBootPhaseThrottleObserver() override;
 
   // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext* context,
@@ -41,22 +46,28 @@ class ArcBootPhaseThrottleObserver : public ash::ThrottleObserver,
   void OnArcInitialStart() override;
   void OnArcSessionRestarting() override;
 
-  // ArcBootPhaseMonitorBridge::Observer:
-  void OnBootCompleted() override;
-
   // SessionRestoreObserver:
   void OnSessionRestoreStartedLoadingTabs() override;
   void OnSessionRestoreFinishedLoadingTabs() override;
 
+  // arc::ConnectionObserver<arc::mojom::AppInstance> overrides.
+  // arc::ConnectionObserver<arc::mojom::IntentHelperInstance> overrides.
+  void OnConnectionReady() override;
+
+  static const base::TimeDelta& GetThrottleDelayForTesting();
+
  private:
+  void ThrottleArc();
+
   // Enables lock if ARC is booting unless session restore is currently in
   // progress. If ARC was started for opt-in or by enterprise policy, always
   // enable since in these cases ARC should always be unthrottled during boot.
   void MaybeSetActive();
 
-  ArcBootPhaseMonitorBridge* boot_phase_monitor_ = nullptr;
   bool session_restore_loading_ = false;
   bool arc_is_booting_ = false;
+
+  base::WeakPtrFactory<ArcBootPhaseThrottleObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

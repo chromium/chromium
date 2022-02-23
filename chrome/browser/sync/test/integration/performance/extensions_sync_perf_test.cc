@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSyncPerfTest, P0) {
   int num_default_extensions = GetExtensionCount(0);
   int expected_extension_count = num_default_extensions + kNumExtensions;
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumExtensions) + "_extensions");
   AddExtensions(0, kNumExtensions);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));

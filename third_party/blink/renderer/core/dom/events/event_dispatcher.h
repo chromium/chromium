@@ -32,7 +32,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -40,6 +40,7 @@ class Event;
 class EventDispatchHandlingState;
 class LocalFrameView;
 class Node;
+class HTMLInputElement;
 
 class EventDispatchHandlingState
     : public GarbageCollected<EventDispatchHandlingState> {
@@ -59,6 +60,7 @@ class EventDispatcher {
   static void DispatchSimulatedClick(Node&,
                                      const Event* underlying_event,
                                      SimulatedClickCreationScope);
+  static void DispatchSimulatedEnterEvent(HTMLInputElement& input_element);
 
   DispatchEventResult Dispatch();
   Node& GetNode() const { return *node_; }

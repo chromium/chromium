@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const AutomationNode = chrome.automation.AutomationNode;
+const AutomationEvent = chrome.automation.AutomationEvent;
+const EventType = chrome.automation.EventType;
+const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
+
 /**
  * InputController handles interaction with input fields for Dictation.
  */
@@ -29,6 +34,15 @@ export class InputController {
     /** @private {?function():void} */
     this.onConnectCallback_ = null;
 
+    /**
+     * The currently focused editable node.
+     * @private {?AutomationNode}
+     */
+    this.editableNode_ = null;
+
+    /** @private {?EventHandler} */
+    this.focusHandler_ = null;
+
     this.initialize_();
   }
 
@@ -42,6 +56,16 @@ export class InputController {
         (context) => this.onImeFocus_(context));
     chrome.input.ime.onBlur.addListener(
         (contextId) => this.onImeBlur_(contextId));
+
+    // IME focus and blur listeners do not tell us which AutomationNode is
+    // currently focused. Register a focus event handler that will give us this
+    // information.
+    this.focusHandler_ = new EventHandler(
+        [], EventType.FOCUS, event => this.onFocusChanged_(event));
+    chrome.automation.getDesktop((desktop) => {
+      this.focusHandler_.setNodes(desktop);
+      this.focusHandler_.start();
+    });
   }
 
   /**
@@ -73,7 +97,7 @@ export class InputController {
    */
   saveCurrentInputMethodAndStart_(method) {
     this.previousImeEngineId_ = method;
-    // Add AccessibilityCommon as an input method and active it.
+    // Add AccessibilityCommon as an input method and activate it.
     chrome.languageSettingsPrivate.addInputMethod(
         InputController.IME_ENGINE_ID);
     chrome.inputMethodPrivate.setCurrentInputMethod(
@@ -104,32 +128,24 @@ export class InputController {
   }
 
   /**
-   * Sets the composition text for the current IME context.
-   * @param {string} text
+   * TODO(crbug.com/1247299): Remove this unused method once Dictation commands
+   * are successfully launched.
+   * Displays current composition text for the current IME context.
    */
-  setCompositionText(text) {
+  displayCurrentComposition() {
     if (!this.isActive()) {
       return;
     }
+
     // Set the composition text for interim results.
     // Later we will do this in Chrome OS UI so that if the
     // result will become a command it will not appear and
     // disappear from the composition text.
-    chrome.input.ime.setComposition(
-        {contextID: this.activeImeContextId_, cursor: text.length, text});
-    this.currentComposition_ = text;
-  }
-
-  /**
-   * Clears the current composition.
-   * @param {function():void} callback
-   */
-  clearCompositionText(callback) {
-    if (!this.isActive()) {
-      return;
-    }
-    chrome.input.ime.clearComposition(
-        {contextID: this.activeImeContextId_}, callback);
+    chrome.input.ime.setComposition({
+      contextID: this.activeImeContextId_,
+      cursor: this.currentComposition_.length,
+      text: this.currentComposition_
+    });
   }
 
   /**
@@ -140,46 +156,10 @@ export class InputController {
     if (!this.isActive()) {
       return;
     }
+
+    text = this.adjustCommitText_(text);
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});
-    this.currentComposition_ = '';
-  }
-
-  /**
-   * Shows an annotation in the candidate window.
-   * TODO(crbug.com/1252037): After implementing final UX design, remove
-   * this method from InputController.
-   * @param {string} annotation
-   */
-  showAnnotation(annotation) {
-    chrome.input.ime.setCandidateWindowProperties({
-      engineID: InputController.IME_ENGINE_ID,
-      properties: {
-        cursorVisible: true,
-        currentCandidateIndex: 0,
-        vertical: false,
-        visible: true,
-        windowPosition: 'cursor',
-        pageSize: 1
-      }
-    });
-    chrome.input.ime.setCandidates(
-        {
-          candidates: [{candidate: '', annotation, id: 1}],
-          contextID: this.activeImeContextId_,
-        },
-        (success) => {});
-  }
-
-  /**
-   * Hides the annotation and candidate window.
-   * TODO(crbug.com/1252037): After implementing final UX design, remove
-   * this method from InputController.
-   */
-  hideAnnotation() {
-    chrome.input.ime.setCandidateWindowProperties({
-      engineID: InputController.IME_ENGINE_ID,
-      properties: {visible: false}
-    });
+    this.setCurrentComposition('');
   }
 
   /**
@@ -211,6 +191,54 @@ export class InputController {
       this.stopDictationCallback_();
     }
   }
+
+  /**
+   * @param {!AutomationEvent} event
+   * @private
+   */
+  onFocusChanged_(event) {
+    const node = event.target;
+    if (!node || !AutomationPredicate.editText(node)) {
+      this.editableNode_ = null;
+      return;
+    }
+
+    this.editableNode_ = node;
+  }
+
+  /** @param {string} text */
+  setCurrentComposition(text) {
+    this.currentComposition_ = text;
+  }
+
+  /**
+   * @param {string} text
+   * @return {string}
+   */
+  adjustCommitText_(text) {
+    // There is currently a bug in SODA (b/213934503) where final speech results
+    // do not start with a space. This results in a Dictation bug
+    // (crbug.com/1294050), where final speech results are not separated by a
+    // space when committed to a text field. This is a temporary workaround
+    // until the blocking SODA bug can be fixed. Note, a similar strategy
+    // already exists in Dictation::OnSpeechResult().
+    if (!this.editableNode_ ||
+        InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(text)) {
+      return text;
+    }
+
+    const value = this.editableNode_.value;
+    const selStart = this.editableNode_.textSelStart;
+    const selEnd = this.editableNode_.textSelEnd;
+    // Prepend a space to `text` if there is text directly left of the cursor.
+    if (!selStart || selStart !== selEnd || !value ||
+        InputController.BEGINS_WITH_WHITESPACE_REGEX_.test(
+            value[selStart - 1])) {
+      return text;
+    }
+
+    return ' ' + text;
+  }
 }
 
 /**
@@ -225,3 +253,9 @@ InputController.IME_ENGINE_ID =
  * @const
  */
 InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
+
+/**
+ * @private {!RegExp}
+ * @const
+ */
+InputController.BEGINS_WITH_WHITESPACE_REGEX_ = /^\s/;

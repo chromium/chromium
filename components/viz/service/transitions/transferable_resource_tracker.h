@@ -118,7 +118,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
     TransferableResource resource;
     ResourceReleaseCallback release_callback;
-    uint8_t ref_count = 0u;
+    int ref_count = 0;
   };
 
   std::map<ResourceId, TransferableResourceHolder> managed_resources_;

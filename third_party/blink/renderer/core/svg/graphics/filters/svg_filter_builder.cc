@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_alpha.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -105,8 +105,8 @@ void SVGFilterGraphNodeMap::Trace(Visitor* visitor) const {
 
 SVGFilterBuilder::SVGFilterBuilder(FilterEffect* source_graphic,
                                    SVGFilterGraphNodeMap* node_map,
-                                   const PaintFlags* fill_flags,
-                                   const PaintFlags* stroke_flags)
+                                   const cc::PaintFlags* fill_flags,
+                                   const cc::PaintFlags* stroke_flags)
     : node_map_(node_map) {
   builtin_effects_.insert(FilterInputKeywords::GetSourceGraphic(),
                           source_graphic);
@@ -163,7 +163,7 @@ InterpolationSpace SVGFilterBuilder::ResolveInterpolationSpace(
 
 void SVGFilterBuilder::BuildGraph(Filter* filter,
                                   SVGFilterElement& filter_element,
-                                  const FloatRect& reference_box) {
+                                  const gfx::RectF& reference_box) {
   EColorInterpolation filter_color_interpolation =
       ColorInterpolationForElement(filter_element, EColorInterpolation::kAuto);
   SVGUnitTypes::SVGUnitType primitive_units =

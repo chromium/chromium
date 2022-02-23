@@ -645,6 +645,30 @@ TEST_F(ServiceWorkerRegistryTest, CreateNewRegistration) {
   EXPECT_GT(result->id.value(), 0);
 }
 
+TEST_F(ServiceWorkerRegistryTest, GetOrCreateBucketError) {
+  const GURL kScope("http://www.test.not/scope/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+
+  scoped_refptr<ServiceWorkerRegistration> registration;
+
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = kScope;
+
+  helper()->quota_manager()->SetDisableDatabase(true);
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy());
+
+  base::RunLoop loop;
+  registry()->CreateNewRegistration(
+      std::move(options), kKey,
+      base::BindLambdaForTesting(
+          [&](scoped_refptr<ServiceWorkerRegistration> new_registration) {
+            EXPECT_EQ(new_registration, nullptr);
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
 TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
   const GURL kScope("http://www.test.not/scope/");
   const blink::StorageKey kKey(url::Origin::Create(kScope));
@@ -2416,10 +2440,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
   // Promote the worker to active and add a controllee.
   registration_->SetActiveVersion(registration_->waiting_version());
   registration_->active_version()->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  registry()->UpdateToActiveState(
-      registration_->id(),
-      blink::StorageKey(url::Origin::Create(registration_->scope())),
-      base::DoNothing());
+  registry()->UpdateToActiveState(registration_->id(), registration_->key(),
+                                  base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(

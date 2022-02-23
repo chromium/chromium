@@ -12,7 +12,7 @@
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
-#include "third_party/nearby/src/cpp/platform/api/submittable_executor.h"
+#include "third_party/nearby/src/internal/platform/implementation/submittable_executor.h"
 
 namespace location {
 namespace nearby {

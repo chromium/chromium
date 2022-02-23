@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/base/aligned_buffer.h"
 #include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "chromecast/media/cma/backend/mixer/post_processor_factory.h"

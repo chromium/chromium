@@ -250,6 +250,12 @@ void OfflineContentAggregator::OnItemsAdded(const OfflineItemList& items) {
 
 void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!pending_providers_.empty()) {
+    auto item = std::find_if(aggregated_items_.begin(), aggregated_items_.end(),
+                             [id](const OfflineItem& p) { return p.id == id; });
+    aggregated_items_.erase(item);
+  }
   NotifyItemRemoved(id);
 }
 
@@ -257,6 +263,14 @@ void OfflineContentAggregator::OnItemUpdated(
     const OfflineItem& item,
     const absl::optional<UpdateDelta>& update_delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_providers_.empty()) {
+    for (auto& offline_item : aggregated_items_) {
+      if (offline_item.id == item.id) {
+        offline_item = item;
+        break;
+      }
+    }
+  }
   NotifyItemUpdated(item, update_delta);
 }
 

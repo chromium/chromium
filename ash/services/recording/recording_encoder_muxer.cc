@@ -4,17 +4,20 @@
 
 #include "ash/services/recording/recording_encoder_muxer.h"
 
-#include "ash/services/recording/public/mojom/recording_service.mojom-shared.h"
+#include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "ash/services/recording/recording_service_constants.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/muxers/file_webm_muxer_delegate.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace recording {
 
@@ -59,12 +62,15 @@ constexpr int64_t kMinNumBytesBetweenDiskSpaceChecks = 10 * 1024 * 1024;
 class RecordingEncoderMuxer::RecordingMuxerDelegate
     : public media::FileWebmMuxerDelegate {
  public:
-  RecordingMuxerDelegate(const base::FilePath& webm_file_path,
-                         RecordingEncoderMuxer* muxer_owner)
+  RecordingMuxerDelegate(
+      const base::FilePath& webm_file_path,
+      RecordingEncoderMuxer* muxer_owner,
+      mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate)
       : FileWebmMuxerDelegate(base::File(
             webm_file_path,
             base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)),
         muxer_owner_(muxer_owner),
+        drive_fs_quota_delegate_remote_(std::move(drive_fs_quota_delegate)),
         webm_file_path_(webm_file_path) {
     DCHECK(muxer_owner_);
   }
@@ -84,25 +90,73 @@ class RecordingEncoderMuxer::RecordingMuxerDelegate
       return result;
     }
 
-    if (num_bytes_till_next_disk_space_check_ <= 0) {
-      num_bytes_till_next_disk_space_check_ =
-          kMinNumBytesBetweenDiskSpaceChecks;
-      const int64_t remaining_disk_bytes =
-          base::SysInfo::AmountOfFreeDiskSpace(webm_file_path_);
-      if (remaining_disk_bytes >= 0 &&
-          remaining_disk_bytes < kLowDiskSpaceThresholdInBytes) {
-        muxer_owner_->NotifyFailure(mojom::RecordingStatus::kLowDiskSpace);
-      }
-    }
+    MaybeCheckRemainingSpace();
 
     return result;
   }
 
  private:
+  // Returns true if the video file is being written to a path `webm_file_path_`
+  // that exists in DriveFS, false if it's a local file.
+  bool IsDriveFsFile() const {
+    return drive_fs_quota_delegate_remote_.is_bound();
+  }
+
+  // Checks the remaining free space (whether for a local file, or a DriveFS
+  // file) once `num_bytes_till_next_disk_space_check_` goes below zero.
+  void MaybeCheckRemainingSpace() {
+    if (num_bytes_till_next_disk_space_check_ > 0)
+      return;
+
+    if (!IsDriveFsFile()) {
+      OnGotRemainingFreeSpace(
+          mojom::RecordingStatus::kLowDiskSpace,
+          base::SysInfo::AmountOfFreeDiskSpace(webm_file_path_));
+      return;
+    }
+
+    if (waiting_for_drive_fs_delegate_)
+      return;
+
+    DCHECK(drive_fs_quota_delegate_remote_);
+    waiting_for_drive_fs_delegate_ = true;
+    drive_fs_quota_delegate_remote_->GetDriveFsFreeSpaceBytes(
+        base::BindOnce(&RecordingMuxerDelegate::OnGotRemainingFreeSpace,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       mojom::RecordingStatus::kLowDriveFsQuota));
+  }
+
+  // Called to test the `remaining_free_space_bytes` against the minimum
+  // threshold below which we end the recording with a failure. The failure type
+  // that will be propagated to the client is the given `status`.
+  void OnGotRemainingFreeSpace(mojom::RecordingStatus status,
+                               int64_t remaining_free_space_bytes) {
+    waiting_for_drive_fs_delegate_ = false;
+    num_bytes_till_next_disk_space_check_ = kMinNumBytesBetweenDiskSpaceChecks;
+
+    if (remaining_free_space_bytes < 0) {
+      // A negative value (e.g. -1) indicates a failure in computing the free
+      // space.
+      return;
+    }
+
+    if (remaining_free_space_bytes < kLowDiskSpaceThresholdInBytes) {
+      LOG(WARNING) << "Ending recording due to " << status
+                   << ", and remaining free space of "
+                   << base::FormatBytesUnlocalized(remaining_free_space_bytes);
+      muxer_owner_->NotifyFailure(status);
+    }
+  }
+
   // A reference to the owner of the WebmMuxer instance that owns |this|. It is
   // used to notify with any IO or disk space errors while writing the webm
   // chunks.
   RecordingEncoderMuxer* const muxer_owner_;  // Not owned.
+
+  // A remote end to the DriveFS delegate that can calculate the remaining free
+  // space in Drive. This is bound only when the `webm_file_path_` points to a
+  // file in DriveFS. Being unbound means the file is a local disk file.
+  mojo::Remote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate_remote_;
 
   // The path of the webm file to which the muxer output will be written.
   const base::FilePath webm_file_path_;
@@ -111,6 +165,11 @@ class RecordingEncoderMuxer::RecordingMuxerDelegate
   // Initialized to 0, so that we poll the disk space on the very first write
   // operation.
   int64_t num_bytes_till_next_disk_space_check_ = 0;
+
+  // True when we're waiting for a reply from the remote DriveFS quota delegate.
+  bool waiting_for_drive_fs_delegate_ = false;
+
+  base::WeakPtrFactory<RecordingMuxerDelegate> weak_ptr_factory_{this};
 };
 
 // -----------------------------------------------------------------------------
@@ -131,11 +190,13 @@ base::SequenceBound<RecordingEncoderMuxer> RecordingEncoderMuxer::Create(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const media::VideoEncoder::Options& video_encoder_options,
     const media::AudioParameters* audio_input_params,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     OnFailureCallback on_failure_callback) {
   return base::SequenceBound<RecordingEncoderMuxer>(
       std::move(blocking_task_runner), video_encoder_options,
-      audio_input_params, webm_file_path, std::move(on_failure_callback));
+      audio_input_params, std::move(drive_fs_quota_delegate), webm_file_path,
+      std::move(on_failure_callback));
 }
 
 void RecordingEncoderMuxer::InitializeVideoEncoder(
@@ -153,7 +214,7 @@ void RecordingEncoderMuxer::InitializeVideoEncoder(
         // Holds on to the old encoder until it flushes its buffers, then
         // destroys it.
         [](std::unique_ptr<media::VpxVideoEncoder> old_encoder,
-           media::Status status) {},
+           media::EncoderStatus status) {},
         std::move(video_encoder_)));
   }
 
@@ -215,25 +276,29 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
         base::BindOnce(&RecordingEncoderMuxer::OnAudioEncoderFlushed,
                        weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
   } else {
-    OnAudioEncoderFlushed(std::move(on_done), media::OkStatus());
+    OnAudioEncoderFlushed(std::move(on_done), media::EncoderStatus::Codes::kOk);
   }
 }
 
 RecordingEncoderMuxer::RecordingEncoderMuxer(
     const media::VideoEncoder::Options& video_encoder_options,
     const media::AudioParameters* audio_input_params,
+    mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& webm_file_path,
     OnFailureCallback on_failure_callback)
     : on_failure_callback_(std::move(on_failure_callback)),
-      webm_muxer_(
-          media::AudioCodec::kOpus,
-          /*has_video_=*/true,
-          /*has_audio_=*/!!audio_input_params,
-          std::make_unique<RecordingMuxerDelegate>(webm_file_path, this)) {
+      webm_muxer_(media::AudioCodec::kOpus,
+                  /*has_video_=*/true,
+                  /*has_audio_=*/!!audio_input_params,
+                  std::make_unique<RecordingMuxerDelegate>(
+                      webm_file_path,
+                      this,
+                      std::move(drive_fs_quota_delegate))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_input_params) {
     media::AudioEncoder::Options audio_encoder_options;
+    audio_encoder_options.codec = media::AudioCodec::kOpus;
     audio_encoder_options.channels = audio_input_params->channels();
     audio_encoder_options.sample_rate = audio_input_params->sample_rate();
     InitializeAudioEncoder(audio_encoder_options);
@@ -260,7 +325,8 @@ void RecordingEncoderMuxer::InitializeAudioEncoder(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void RecordingEncoderMuxer::OnAudioEncoderInitialized(media::Status status) {
+void RecordingEncoderMuxer::OnAudioEncoderInitialized(
+    media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
@@ -278,7 +344,7 @@ void RecordingEncoderMuxer::OnAudioEncoderInitialized(media::Status status) {
 
 void RecordingEncoderMuxer::OnVideoEncoderInitialized(
     media::VpxVideoEncoder* encoder,
-    media::Status status) {
+    media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore initialization of encoders that were removed as part of
@@ -362,7 +428,7 @@ void RecordingEncoderMuxer::OnAudioEncoded(
 }
 
 void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
-                                                  media::Status status) {
+                                                  media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok())
@@ -375,7 +441,7 @@ void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
 }
 
 void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
-                                                  media::Status status) {
+                                                  media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
@@ -388,7 +454,7 @@ void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
 }
 
 void RecordingEncoderMuxer::OnEncoderStatus(bool for_video,
-                                            media::Status status) {
+                                            media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status.is_ok())

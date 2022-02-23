@@ -40,12 +40,12 @@ class MockWebAppLaunchManager : public WebAppLaunchManager {
               (override));
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kCurrentDirectory[] =
     FILE_PATH_LITERAL("\\path");
 #else
 const base::FilePath::CharType kCurrentDirectory[] = FILE_PATH_LITERAL("/path");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char kTestAppId[] = "test_app_id";
 
@@ -220,92 +220,6 @@ TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_ProtocolDisallowed) {
 
   apps::AppLaunchParams expected_results =
       CreateLaunchParams(command_line, {}, absl::nullopt, absl::nullopt);
-
-  testing::StrictMock<MockWebAppLaunchManager> manager(profile());
-  EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](apps::AppLaunchParams&& params,
-              base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
-                  callback) {
-            ValidateLaunchParams(params, expected_results);
-            run_loop.Quit();
-          }));
-
-  manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, {}, base::DoNothing());
-  run_loop.Run();
-}
-
-TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileFullPath) {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    // With this flag enabled, this test has no value because the file paths are
-    // not parsed by WebAppLaunchManager.
-    return;
-  }
-
-#if defined(OS_WIN)
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("c:\\test_app_path\\test_app_file.txt");
-#else
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("/test_app_path/test_app_file.txt");
-#endif  // defined(OS_WIN)
-
-  base::RunLoop run_loop;
-  base::FilePath test_path(kTestPath);
-  base::CommandLine command_line = CreateCommandLine();
-
-  command_line.AppendArgPath(test_path);
-
-  apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {test_path}, absl::nullopt, absl::nullopt);
-
-  testing::StrictMock<MockWebAppLaunchManager> manager(profile());
-  EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](apps::AppLaunchParams&& params,
-              base::OnceCallback<void(Browser * browser,
-                                      apps::mojom::LaunchContainer container)>
-                  callback) {
-            ValidateLaunchParams(params, expected_results);
-            run_loop.Quit();
-          }));
-
-  manager.LaunchApplication(kTestAppId, command_line,
-                            base::FilePath(kCurrentDirectory), absl::nullopt,
-                            absl::nullopt, {}, base::DoNothing());
-  run_loop.Run();
-}
-
-TEST_F(WebAppLaunchManagerUnitTest, LaunchApplication_FileRelativePath) {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    // With this flag enabled, this test has no value because the file paths are
-    // not parsed by WebAppLaunchManager.
-    return;
-  }
-
-#if defined(OS_WIN)
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("test_app_path\\test_app_file.txt");
-#else
-  const base::FilePath::CharType kTestPath[] =
-      FILE_PATH_LITERAL("test_app_path/test_app_file.txt");
-#endif  // defined(OS_WIN)
-
-  base::RunLoop run_loop;
-  base::FilePath test_path(kTestPath);
-  base::CommandLine command_line = CreateCommandLine();
-
-  command_line.AppendArgPath(test_path);
-
-  apps::AppLaunchParams expected_results = CreateLaunchParams(
-      command_line, {test_path}, absl::nullopt, absl::nullopt);
 
   testing::StrictMock<MockWebAppLaunchManager> manager(profile());
   EXPECT_CALL(manager, LaunchWebApplication(testing::_, testing::_))

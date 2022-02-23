@@ -55,11 +55,11 @@ package %s;
 import org.junit.runner.RunWith;
 
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Instrumentation tests for {@link %s}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class %sInstrumentationTest extends DummyUiActivityTestCase {
+public class %sInstrumentationTest extends BlankUiTestActivityTestCase {
 
 }
 '''

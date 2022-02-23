@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++CHECK_BOX focusable label='Title0' actions='{DEFAULT}' checked_state='UNCHECKED'
+++++++CHECK_BOX focusable label='Label1' actions='{DEFAULT}' secondary_label='Title1' checked_state='UNCHECKED'
+++++++CHECK_BOX focusable label='AriaLabel2' actions='{DEFAULT}' secondary_label='Title2' checked_state='UNCHECKED'
+++++++CHECK_BOX focusable label='LabelledBy3' actions='{DEFAULT}' secondary_label='Title3' checked_state='UNCHECKED'
+++++++CHECK_BOX focusable label='LabelledBy4' actions='{DEFAULT}' secondary_label='DescribedBy4' checked_state='UNCHECKED'
+++++++CHECK_BOX focusable actions='{DEFAULT}' secondary_label='DescribedBy5' checked_state='UNCHECKED'

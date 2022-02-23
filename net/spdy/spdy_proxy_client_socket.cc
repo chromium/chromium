@@ -40,8 +40,7 @@ SpdyProxyClientSocket::SpdyProxyClientSocket(
     const NetLogWithSource& source_net_log,
     HttpAuthController* auth_controller,
     ProxyDelegate* proxy_delegate)
-    : next_state_(STATE_DISCONNECTED),
-      spdy_stream_(spdy_stream),
+    : spdy_stream_(spdy_stream),
       endpoint_(endpoint),
       auth_(auth_controller),
       proxy_server_(proxy_server),
@@ -85,14 +84,6 @@ int SpdyProxyClientSocket::RestartWithAuth(CompletionOnceCallback callback) {
   // created (possibly on top of the same SPDY Session).
   next_state_ = STATE_DISCONNECTED;
   return ERR_UNABLE_TO_REUSE_CONNECTION_FOR_PROXY_AUTH;
-}
-
-bool SpdyProxyClientSocket::IsUsingSpdy() const {
-  return true;
-}
-
-NextProto SpdyProxyClientSocket::GetProxyNegotiatedProtocol() const {
-  return spdy_stream_->GetNegotiatedProtocol();
 }
 
 // Ignore priority changes, just use priority of initial request. Since multiple
@@ -165,15 +156,24 @@ bool SpdyProxyClientSocket::WasEverUsed() const {
 }
 
 bool SpdyProxyClientSocket::WasAlpnNegotiated() const {
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
+  // with the proxy, this object represents the tunneled TCP connection to the
+  // origin.
   return false;
 }
 
 NextProto SpdyProxyClientSocket::GetNegotiatedProtocol() const {
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` negotiated ALPN
+  // with the proxy, this object represents the tunneled TCP connection to the
+  // origin.
   return kProtoUnknown;
 }
 
 bool SpdyProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
-  return spdy_stream_->GetSSLInfo(ssl_info);
+  // Do not delegate to `spdy_stream_`. While `spdy_stream_` connected to the
+  // proxy with TLS, this object represents the tunneled TCP connection to the
+  // origin.
+  return false;
 }
 
 void SpdyProxyClientSocket::GetConnectionAttempts(
@@ -284,9 +284,15 @@ int SpdyProxyClientSocket::GetLocalAddress(IPEndPoint* address) const {
   return spdy_stream_->GetLocalAddress(address);
 }
 
-void SpdyProxyClientSocket::RunCallback(CompletionOnceCallback callback,
-                                        int result) const {
+void SpdyProxyClientSocket::RunWriteCallback(CompletionOnceCallback callback,
+                                             int result) const {
   std::move(callback).Run(result);
+
+  if (end_stream_state_ == EndStreamState::kEndStreamReceived) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::MaybeSendEndStream,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
 void SpdyProxyClientSocket::OnIOComplete(int result) {
@@ -469,7 +475,7 @@ void SpdyProxyClientSocket::OnHeadersReceived(
   OnIOComplete(OK);
 }
 
-// Called when data is received or on EOF (if |buffer| is NULL).
+// Called when data is received or on EOF (if `buffer is nullptr).
 void SpdyProxyClientSocket::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   if (buffer) {
     net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_RECEIVED,
@@ -479,6 +485,14 @@ void SpdyProxyClientSocket::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   } else {
     net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_RECEIVED, 0,
                                   nullptr);
+
+    if (end_stream_state_ == EndStreamState::kNone) {
+      // The peer sent END_STREAM. Schedule a DATA frame with END_STREAM.
+      end_stream_state_ = EndStreamState::kEndStreamReceived;
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::MaybeSendEndStream,
+                                    weak_factory_.GetWeakPtr()));
+    }
   }
 
   if (read_callback_) {
@@ -495,7 +509,12 @@ void SpdyProxyClientSocket::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
   }
 }
 
-void SpdyProxyClientSocket::OnDataSent()  {
+void SpdyProxyClientSocket::OnDataSent() {
+  if (end_stream_state_ == EndStreamState::kEndStreamSent) {
+    CHECK(write_callback_.is_null());
+    return;
+  }
+
   DCHECK(!write_callback_.is_null());
 
   int rv = write_buffer_len_;
@@ -504,7 +523,7 @@ void SpdyProxyClientSocket::OnDataSent()  {
   // Proxy write callbacks result in deep callback chains. Post to allow the
   // stream's write callback chain to unwind (see crbug.com/355511).
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::RunCallback,
+      FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::RunWriteCallback,
                                 write_callback_weak_factory_.GetWeakPtr(),
                                 std::move(write_callback_), rv));
 }
@@ -550,6 +569,23 @@ bool SpdyProxyClientSocket::CanGreaseFrameType() const {
 
 NetLogSource SpdyProxyClientSocket::source_dependency() const {
   return source_dependency_;
+}
+
+void SpdyProxyClientSocket::MaybeSendEndStream() {
+  DCHECK_NE(end_stream_state_, EndStreamState::kNone);
+  if (end_stream_state_ == EndStreamState::kEndStreamSent)
+    return;
+
+  if (!spdy_stream_)
+    return;
+
+  // When there is a pending write, wait until the write completes.
+  if (write_callback_)
+    return;
+
+  auto buffer = base::MakeRefCounted<IOBuffer>(/*buffer_size=*/0);
+  spdy_stream_->SendData(buffer.get(), /*length=*/0, NO_MORE_DATA_TO_SEND);
+  end_stream_state_ = EndStreamState::kEndStreamSent;
 }
 
 }  // namespace net

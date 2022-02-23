@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
                          ->GetNativeViewAccessible());
 
   GURL url(url::kAboutBlankURL);
-  AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_LINK));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
 // Tests that the embedded relationship is set on the main web contents when
 // the DevTools is opened.
 // This fails on Linux : http://crbug.com/1223047
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_EmbeddedRelationshipWithDevTools \
   DISABLED_EmbeddedRelationshipWithDevTools
 #else

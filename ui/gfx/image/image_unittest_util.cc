@@ -12,16 +12,18 @@
 #include <cmath>
 #include <memory>
 
+#include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
@@ -204,7 +206,7 @@ bool IsEmpty(const gfx::Image& image) {
 
 PlatformImage CreatePlatformImage() {
   SkBitmap bitmap(CreateBitmap(25, 25));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   float scale = ImageSkia::GetMaxSupportedScale();
 
   if (scale > 1.0) {
@@ -218,7 +220,7 @@ PlatformImage CreatePlatformImage() {
   UIImage* image =
       skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space);
   return image;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
       bitmap, base::mac::GetGenericRGBColorSpace());
   return image;
@@ -228,9 +230,9 @@ PlatformImage CreatePlatformImage() {
 }
 
 gfx::Image::RepresentationType GetPlatformRepresentationType() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return gfx::Image::kImageRepCocoaTouch;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return gfx::Image::kImageRepCocoa;
 #else
   return gfx::Image::kImageRepSkia;
@@ -238,9 +240,9 @@ gfx::Image::RepresentationType GetPlatformRepresentationType() {
 }
 
 PlatformImage ToPlatformType(const gfx::Image& image) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return image.ToUIImage();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return image.ToNSImage();
 #else
   return image.AsImageSkia();
@@ -248,16 +250,16 @@ PlatformImage ToPlatformType(const gfx::Image& image) {
 }
 
 gfx::Image CopyViaPlatformType(const gfx::Image& image) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return gfx::Image(image.ToUIImage());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return gfx::Image(image.ToNSImage());
 #else
   return gfx::Image(image.AsImageSkia());
 #endif
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // Defined in image_unittest_util_mac.mm.
 #else
 SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
@@ -274,7 +276,7 @@ void CheckIsTransparent(SkColor color) {
 }
 
 bool IsPlatformImageValid(PlatformImage image) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   return image != NULL;
 #else
   return !image.isNull();
@@ -282,7 +284,7 @@ bool IsPlatformImageValid(PlatformImage image) {
 }
 
 bool PlatformImagesEqual(PlatformImage image1, PlatformImage image2) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   return image1 == image2;
 #else
   return image1.BackedBySameObjectAs(image2);

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -136,14 +137,12 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
     const NGFragmentItem& item = *items[info.item_index];
     const LogicalOffset logical_offset = items[info.item_index].offset;
     LayoutUnit ascent;
-    if (const auto* font_data = To<LayoutSVGInlineText>(item.GetLayoutObject())
-                                    ->ScaledFont()
-                                    .PrimaryFont()) {
+    if (const auto* font_data = item.ScaledFont().PrimaryFont()) {
       ascent = font_data->GetFontMetrics().FixedAscent(
           item.Style().GetFontBaseline());
     }
-    FloatPoint offset(logical_offset.inline_offset,
-                      logical_offset.block_offset + ascent);
+    gfx::PointF offset(logical_offset.inline_offset,
+                       logical_offset.block_offset + ascent);
     if (!horizontal_)
       offset.SetPoint(-offset.y(), offset.x());
     css_positions_.push_back(offset);
@@ -174,7 +173,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   // attributes, initialized to (0,0).
   // TODO(crbug.com/1179585): Report a specification bug on "'x' and 'y'
   // attributes".
-  FloatPoint shift;
+  gfx::PointF shift;
   // 2. For each array element with index i in result:
   ResolvedTextLayoutAttributesIterator iterator(
       inline_node_.SvgCharacterDataList());
@@ -392,7 +391,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
 
   // 1. Let shift be the current adjustment due to the ‘x’ and ‘y’ attributes,
   // initialized to (0,0).
-  FloatPoint shift;
+  gfx::PointF shift;
   // 2. Set index = 1.
   // 3. While index < count:
   // 3.5. Set index to index + 1.
@@ -520,7 +519,7 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
       switch (style.TextAnchor()) {
         default:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         case ETextAnchor::kStart:
           shift = is_ltr ? shift - min_position : shift - max_position;
           break;
@@ -553,6 +552,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
     return;
 
   wtf_size_t range_index = 0;
+  wtf_size_t in_path_index = WTF::kNotFound;
   std::unique_ptr<PathPositionMapper> path_mapper;
 
   // 2. Set the "in path" flag to false.
@@ -573,13 +573,14 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
     if (range_index < ranges.size() &&
         index >= ranges[range_index].start_index &&
         index <= ranges[range_index].end_index) {
-      if (!in_path) {
+      if (!in_path || in_path_index != range_index) {
         path_mapper =
             To<LayoutSVGTextPath>(ranges[range_index].layout_object.Get())
                 ->LayoutPath();
       }
       // 5.1.1. Set "in path" flag to true.
       in_path = true;
+      in_path_index = range_index;
       info.in_text_path = true;
       // 5.1.2. If the "middle" flag of result[index] is false, then:
       if (!info.middle) {

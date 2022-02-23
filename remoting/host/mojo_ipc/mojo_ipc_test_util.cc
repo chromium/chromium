@@ -18,7 +18,7 @@ namespace test {
 
 mojo::NamedPlatformChannel::ServerName GenerateRandomServerName() {
   std::string temp_path;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Posix server names should start with the temp directory path. Otherwise the
   // socket file will be created under the current working directory.
   base::FilePath temp_file_path;

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -24,34 +25,7 @@
 
 namespace blink {
 
-class CSSStyleSheetTest : public PageTestBase {
- protected:
-  void SetUp() override {
-    PageTestBase::SetUp();
-  }
-
-  class FunctionForTest : public ScriptFunction {
-   public:
-    static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                  ScriptValue* output) {
-      FunctionForTest* self =
-          MakeGarbageCollected<FunctionForTest>(script_state, output);
-      return self->BindToV8Function();
-    }
-
-    FunctionForTest(ScriptState* script_state, ScriptValue* output)
-        : ScriptFunction(script_state), output_(output) {}
-
-   private:
-    ScriptValue Call(ScriptValue value) override {
-      DCHECK(!value.IsEmpty());
-      *output_ = value;
-      return value;
-    }
-
-    ScriptValue* output_;
-  };
-};
+using CSSStyleSheetTest = PageTestBase;
 
 TEST_F(CSSStyleSheetTest,
        CSSStyleSheetConstructionWithNonEmptyCSSStyleSheetInit) {
@@ -92,17 +66,17 @@ TEST_F(CSSStyleSheetTest,
 
   HeapVector<Member<CSSStyleSheet>> adopted_sheets;
   adopted_sheets.push_back(sheet);
-  shadow_a.SetAdoptedStyleSheets(adopted_sheets);
-  shadow_b.SetAdoptedStyleSheets(adopted_sheets);
+  shadow_a.SetAdoptedStyleSheetsForTesting(adopted_sheets);
+  shadow_b.SetAdoptedStyleSheetsForTesting(adopted_sheets);
 
   EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 2u);
-  EXPECT_EQ(shadow_a.AdoptedStyleSheets().size(), 1u);
-  EXPECT_EQ(shadow_b.AdoptedStyleSheets().size(), 1u);
+  EXPECT_EQ(shadow_a.AdoptedStyleSheets()->size(), 1u);
+  EXPECT_EQ(shadow_b.AdoptedStyleSheets()->size(), 1u);
 
   host_a->remove();
   WebHeap::CollectAllGarbageForTesting();
   EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 1u);
-  EXPECT_EQ(shadow_b.AdoptedStyleSheets().size(), 1u);
+  EXPECT_EQ(shadow_b.AdoptedStyleSheets()->size(), 1u);
 }
 
 TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
@@ -119,11 +93,10 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
       "(prefers-reduced-motion: reduce) {#blue{color:blue}}",
       ASSERT_NO_EXCEPTION);
 
-  HeapVector<Member<CSSStyleSheet>> empty_adopted_sheets;
   HeapVector<Member<CSSStyleSheet>> adopted_sheets;
   adopted_sheets.push_back(sheet);
 
-  GetDocument().SetAdoptedStyleSheets(adopted_sheets);
+  GetDocument().SetAdoptedStyleSheetsForTesting(adopted_sheets);
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(sheet->Contents());
@@ -133,7 +106,7 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
   EXPECT_EQ(Color::kBlack, green->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
 
-  GetDocument().SetAdoptedStyleSheets(empty_adopted_sheets);
+  GetDocument().ClearAdoptedStyleSheets();
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(sheet->Contents()->HasRuleSet());
@@ -142,10 +115,10 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
                                GetCSSPropertyColor()));
 
   GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
-  GetDocument().View()->SetLayoutSize(IntSize(200, 500));
+  GetDocument().View()->SetLayoutSize(gfx::Size(200, 500));
   UpdateAllLifecyclePhasesForTest();
 
-  GetDocument().SetAdoptedStyleSheets(adopted_sheets);
+  GetDocument().SetAdoptedStyleSheetsForTesting(adopted_sheets);
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(sheet->Contents()->HasRuleSet());
@@ -156,7 +129,7 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
   EXPECT_EQ(Color::kBlack, blue->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
 
-  GetDocument().SetAdoptedStyleSheets(empty_adopted_sheets);
+  GetDocument().ClearAdoptedStyleSheets();
   GetDocument().GetSettings()->SetPrefersReducedMotion(true);
   UpdateAllLifecyclePhasesForTest();
 
@@ -165,7 +138,7 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
   EXPECT_EQ(Color::kBlack, blue->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
 
-  GetDocument().SetAdoptedStyleSheets(adopted_sheets);
+  GetDocument().SetAdoptedStyleSheetsForTesting(adopted_sheets);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(

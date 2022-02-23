@@ -78,6 +78,27 @@ class WmDesksPrivateGetSavedDeskTemplatesFunction : public ExtensionFunction {
       std::string error_string);
 };
 
+class WmDesksPrivateGetDeskTemplateJsonFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateGetDeskTemplateJsonFunction();
+  WmDesksPrivateGetDeskTemplateJsonFunction(
+      const WmDesksPrivateGetDeskTemplateJsonFunction&) = delete;
+  WmDesksPrivateGetDeskTemplateJsonFunction& operator=(
+      const WmDesksPrivateGetDeskTemplateJsonFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.getDeskTemplateJson",
+                             WMDESKSPRIVATE_GETDESKTEMPLATEJSON)
+
+ protected:
+  ~WmDesksPrivateGetDeskTemplateJsonFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnGetDeskTemplateJson(const std::string& template_json,
+                             std::string error_string);
+};
+
 class WmDesksPrivateDeleteDeskTemplateFunction : public ExtensionFunction {
  public:
   WmDesksPrivateDeleteDeskTemplateFunction();

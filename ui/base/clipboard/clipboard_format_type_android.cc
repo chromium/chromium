@@ -4,6 +4,7 @@
 
 #include "ui/base/clipboard/clipboard_format_type.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

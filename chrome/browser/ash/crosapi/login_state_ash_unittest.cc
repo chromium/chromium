@@ -83,6 +83,7 @@ TEST_F(LoginStateAshTest, GetSessionState) {
       {session_manager::SessionState::ACTIVE, mojom::SessionState::kInSession},
       {session_manager::SessionState::LOCKED,
        mojom::SessionState::kInLockScreen},
+      {session_manager::SessionState::RMA, mojom::SessionState::kInRmaScreen},
   };
 
   for (const auto& test : kTestCases) {

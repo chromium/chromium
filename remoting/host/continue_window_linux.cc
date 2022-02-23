@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/string_resources.h"
 #include "ui/base/glib/glib_signal.h"

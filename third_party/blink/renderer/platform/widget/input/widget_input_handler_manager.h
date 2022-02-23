@@ -16,9 +16,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy.h"
-#include "third_party/blink/public/platform/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
+#include "third_party/blink/renderer/platform/widget/input/input_handler_proxy_client.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 
 namespace cc {
@@ -93,6 +93,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool HandleInputEvent(const WebCoalescedInputEvent& event,
                         std::unique_ptr<cc::EventMetrics> metrics,
                         HandledEventCallback handled_callback) override;
+  void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
 
   // InputHandlerProxyClient overrides.
@@ -127,7 +128,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   mojom::blink::WidgetInputHandlerHost* GetWidgetInputHandlerHost();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>
           control_host,
@@ -346,7 +347,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   unsigned dropped_pointer_down_ = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SynchronousCompositorProxyRegistry>
       synchronous_compositor_registry_;
 #endif

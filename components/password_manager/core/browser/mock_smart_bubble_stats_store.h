@@ -20,7 +20,7 @@ class MockSmartBubbleStatsStore : public SmartBubbleStatsStore {
   MOCK_METHOD(void, RemoveSiteStats, (const GURL&), (override));
   MOCK_METHOD(void,
               GetSiteStats,
-              (const GURL&, PasswordStoreConsumer*),
+              (const GURL&, base::WeakPtr<PasswordStoreConsumer>),
               (override));
   MOCK_METHOD(void,
               RemoveStatisticsByOriginAndTime,

@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/content/payment_event_response_util.h"
@@ -204,6 +205,8 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
+  base::UmaHistogramBoolean("PaymentRequest.EventResponse.CanMakePayment",
+                            response->can_make_payment);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
@@ -448,7 +451,7 @@ bool ServiceWorkerPaymentApp::IsValidForModifier(
     return true;
 
   if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-    return true;
+    return false;
 
   // Checking the capabilities of this app against the modifier.
   // Return true if card networks are not specified in the  modifier.

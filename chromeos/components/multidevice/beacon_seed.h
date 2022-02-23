@@ -72,6 +72,7 @@ namespace multidevice {
 using ::chromeos::multidevice::BeaconSeed;
 using ::chromeos::multidevice::FromCryptAuthSeedList;
 using ::chromeos::multidevice::ToCryptAuthSeed;
+using ::chromeos::multidevice::ToCryptAuthSeedList;
 }  // namespace multidevice
 }  // namespace ash
 

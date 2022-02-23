@@ -39,9 +39,8 @@ std::vector<OverlayStatus>
 DrmOverlayManagerGpu::SendOverlayValidationRequestSync(
     const std::vector<OverlaySurfaceCandidate>& candidates,
     gfx::AcceleratedWidget widget) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequestSync",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT0("hwoverlays",
+               "DrmOverlayManagerGpu::SendOverlayValidationRequestSync");
   SetClearCacheCallbackIfNecessary();
   return drm_thread_proxy_->CheckOverlayCapabilitiesSync(widget, candidates);
 }

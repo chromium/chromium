@@ -46,18 +46,21 @@ dictionary WebTransportOptions {
 };
 
 dictionary WebTransportCloseInfo {
-  unsigned long closeCode;
-  DOMString reason;
+  unsigned long closeCode = 0;
+  DOMString reason = "";
 };
 
 dictionary WebTransportStats {
   DOMHighResTimeStamp timestamp;
   unsigned long long bytesSent;
   unsigned long long packetsSent;
+  unsigned long long packetsLost;
   unsigned long numOutgoingStreamsCreated;
   unsigned long numIncomingStreamsCreated;
   unsigned long long bytesReceived;
   unsigned long long packetsReceived;
+  DOMHighResTimeStamp smoothedRtt;
+  DOMHighResTimeStamp rttVariation;
   DOMHighResTimeStamp minRtt;
   unsigned long numReceivedDatagramsDropped;
 };

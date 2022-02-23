@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Tika pievienota vietne <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
+<translation id="1409426117486808224">Vienkāršots atvērtu ciļņu skatījums</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1446450296470737166">Pilnīga MIDI ierīču pārvaldība</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">Atļaut sīkfailus</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Tikai vienreiz</translation>
+<translation id="2253414712144136228">Noņemt vienumu “<ph name="NAME_OF_LIST_ITEM" />”</translation>
 <translation id="2289270750774289114">Vaicāt, ja vietne vēlas redzēt tuvumā esošās Bluetooth ierīces (ieteicams)</translation>
 <translation id="2315043854645842844">Operētājsistēma neatbalsta klienta puses sertifikāta atlasi.</translation>
+<translation id="2321958826496381788">Velciet slīdni, kamēr varat ērti lasīt. Pēc dubultskāriena rindkopai tekstam ir jābūt vismaz šādā lielumā.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2379925928934107488">Lietojiet tumšo motīvu vietnēs, kad tumšais motīvs tiek izmantots pārlūkā Chrome (ja iespējams)</translation>
+<translation id="2387895666653383613">Teksta mērogošana</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Atļautas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Lejupielāde pabeigta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Vienmēr pieprasīt datora vietni</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
 <translation id="2490684707762498678">Pārvalda <ph name="APP_NAME" /></translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">Rādīt informāciju</translation>
 <translation id="3123473560110926937">Bloķētas dažās vietnēs</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saglabātu datu</translation>
+<translation id="3203366800380907218">No tīmekļa</translation>
 <translation id="321187648315454507">Lai atļautu lietotnei <ph name="APP_NAME" /> sūtīt jums paziņojumus, ieslēdziet paziņojumus arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3277252321222022663">Atļaut vietnēm piekļūt sensoriem (ieteicams)</translation>
@@ -109,6 +115,7 @@
 <translation id="3835233591525155343">Jūsu ierīces lietojums</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3859306556332390985">Pārtīt uz priekšu</translation>
+<translation id="3895926599014793903">Tālummaiņas piespiedu iespējošana</translation>
 <translation id="3955193568934677022">Atļaut vietnēm atskaņot aizsargātu saturu (ieteicams)</translation>
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3987993985790029246">Saites kopēšana</translation>
@@ -116,7 +123,9 @@
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4008040567710660924">Atļaut sīkfailus konkrētai vietnei.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
+<translation id="4149994727733219643">Vienkāršots tīmekļa lapu skatījums</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
+<translation id="4194328954146351878">Vaicāt, pirms ļaut vietnēm NFC ierīcēs piekļūt informācijai un to mainīt (ieteicams)</translation>
 <translation id="4200726100658658164">Atvērt atrašanās vietu iestatījumus</translation>
 <translation id="4226663524361240545">Saņemot paziņojumu, ierīce var vibrēt.</translation>
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
@@ -125,6 +134,7 @@
 <translation id="42981349822642051">Izvērst</translation>
 <translation id="4336434711095810371">Notīrīt visus datus</translation>
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
+<translation id="4428065317363009941">Reklāmu personalizēšana</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="445467742685312942">Ļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="4468959413250150279">Izslēgt skaņu noteiktai vietnei</translation>
@@ -148,11 +158,14 @@
 <translation id="5048398596102334565">Atļaut vietnēm piekļūt kustību sensoriem (ieteicams)</translation>
 <translation id="5050380848339752099">Šī vietne tūlīt kopīgos informāciju ar lietotni, kas nav inkognito režīmā.</translation>
 <translation id="5063480226653192405">Lietojums</translation>
+<translation id="509133520954049755">Pieprasīt skatu datorā</translation>
 <translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
+<translation id="5134599672855298214">Pieprasīt skatu mobilajā ierīcē (ieteicams)</translation>
 <translation id="5186036860380548585">Opcija pieejama ekrāna augšdaļā</translation>
 <translation id="5197729504361054390">Atlasīto kontaktpersonu dati tiks kopīgoti ar vietni <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Pēdējoreiz apmeklēta šodien</translation>
+<translation id="5264323282659631142">Noņemt žetonu <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Lai izietu no pilnekrāna režīma, velciet no augšas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5301954838959518834">Labi, sapratu</translation>
@@ -174,10 +187,10 @@
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5649053991847567735">Automātiskās lejupielādes</translation>
+<translation id="5668404140385795438">Ignorēt vietnes pieprasījumu, lai novērstu tuvināšanu</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
 <translation id="5689516760719285838">Atrašanās vieta</translation>
 <translation id="5690795753582697420">Android iestatījumos ir izslēgta kameras atļauja</translation>
-<translation id="5710871682236653961">Vaicāt, pirms atļaut vietnēm sūtīt un saņemt informāciju, kad ar ierīci pieskaraties citai NFC ierīcei (ieteicams)</translation>
 <translation id="5719847187258001597">Tiks dzēsti visi dati un sīkfaili, ko glabā vietne <ph name="ORIGIN" /> vai tās lietotne jūsu sākuma ekrānā.</translation>
 <translation id="5771720122942595109">Bloķēta: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Atļaujas</translation>
@@ -227,16 +240,16 @@
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6818926723028410516">Vienumu atlase</translation>
 <translation id="6864395892908308021">Šī ierīce nevar lasīt NFC</translation>
-<translation id="6910211073230771657">Dzēsts</translation>
 <translation id="6912998170423641340">Bloķēt vietņu piekļuvi teksta un attēlu lasīšanai no starpliktuves</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6965382102122355670">Labi</translation>
+<translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6992289844737586249">Jautāt, pirms atļaut vietnēm izmantot jūsu mikrofonu (ieteicams)</translation>
 <translation id="7000754031042624318">Izslēgta Android iestatījumos</translation>
 <translation id="7016516562562142042">Atļauta pašreizējai meklētājprogrammai</translation>
+<translation id="702463548815491781">Ieteicams, ja ir ieslēgta lietotne TalkBack vai slēdžu piekļuves funkcija.</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Atlasīts 1 vienums}zero{Atlasīti # vienumi}one{Atlasīts # vienums}other{Atlasīti # vienumi}}</translation>
-<translation id="7070090581017165256">Par šo vietni</translation>
 <translation id="7087918508125750058">Atlasīti vienumi: <ph name="ITEM_COUNT" />. Opcijas ir pieejamas ekrāna augšdaļā.</translation>
 <translation id="7141896414559753902">Neļaut vietnēm novirzīt un rādīt uznirstošos elementus (ieteicams)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -251,8 +264,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
-<translation id="7572498721684305250">Bloķēt informācijas sūtīšanu uz vietnēm un saņemšanu no vietnēm, kad ar ierīci pieskaraties citai NFC ierīcei</translation>
 <translation id="757524316907819857">Neļaut vietnēm atskaņot aizsargātu saturu</translation>
+<translation id="7577900504646297215">Pārvaldīt intereses</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7781829728241885113">Vakar</translation>
@@ -285,6 +298,7 @@
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
 <translation id="8249310407154411074">Pārvietot uz augšdaļu</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="8284326494547611709">Subtitri</translation>
 <translation id="8300705686683892304">Pārvalda lietotne</translation>
 <translation id="8324158725704657629">Nejautāt atkārtoti</translation>
 <translation id="8372893542064058268">Atļaut sinhronizāciju fonā konkrētai vietnei</translation>
@@ -298,6 +312,7 @@
 <translation id="8447861592752582886">Atsaukt ierīces atļauju</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Tiek izmantots viens sīkfails}zero{Tiek izmantoti # sīkfaili}one{Tiek izmantots # sīkfails}other{Tiek izmantoti # sīkfaili}}</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
+<translation id="848952951823693243">Vienmēr pieprasīt vietni mobilajām ierīcēm</translation>
 <translation id="851751545965956758">Neļaut vietnēm izveidot savienojumu ar ierīci</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
@@ -317,6 +332,7 @@
 <translation id="8903921497873541725">Tuvināt</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Šajā ierīcē tehnoloģija NFC ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Liegt vietnēm NFC ierīcēs piekļūt informācijai un to mainīt</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloķēt sīkfailus konkrētai vietnei.</translation>
 <translation id="8959122750345127698">Navigācija nav sasniedzama: <ph name="URL" /></translation>

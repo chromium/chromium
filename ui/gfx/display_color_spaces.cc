@@ -189,7 +189,9 @@ bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {
     if (buffer_formats_[i] != other.buffer_formats_[i])
       return false;
   }
-  if (sdr_white_level_ != other.sdr_white_level_)
+  if (sdr_max_luminance_nits_ != other.sdr_max_luminance_nits_)
+    return false;
+  if (hdr_max_luminance_relative_ != other.hdr_max_luminance_relative_)
     return false;
 
   return true;

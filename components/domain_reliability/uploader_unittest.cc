@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -21,8 +22,11 @@
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/url_request/url_request.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_interceptor.h"
 #include "net/url_request/url_request_job.h"
@@ -95,7 +99,7 @@ class UploadMockURLRequestJob : public net::URLRequestJob {
     info->headers = result_.response_headers;
   }
 
-  net::UploadDataStream* upload_stream_;
+  raw_ptr<net::UploadDataStream> upload_stream_;
   scoped_refptr<net::IOBufferWithSize> upload_buffer_;
   std::string upload_data_;
   MockUploadResult result_;
@@ -180,8 +184,11 @@ class TestUploadCallback {
 class DomainReliabilityUploaderTest : public testing::Test {
  protected:
   DomainReliabilityUploaderTest()
-      : uploader_(
-            DomainReliabilityUploader::Create(&time_, &url_request_context_)) {
+      : url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        uploader_(
+            DomainReliabilityUploader::Create(&time_,
+                                              url_request_context_.get())) {
     auto interceptor =
         std::make_unique<UploadInterceptor>(expected_isolation_info_);
     interceptor_ = interceptor.get();
@@ -196,8 +203,8 @@ class DomainReliabilityUploaderTest : public testing::Test {
 
   DomainReliabilityUploader* uploader() const { return uploader_.get(); }
   UploadInterceptor* interceptor() const { return interceptor_; }
-  net::TestURLRequestContext* url_request_context() {
-    return &url_request_context_;
+  net::URLRequestContext* url_request_context() {
+    return url_request_context_.get();
   }
 
   const net::NetworkIsolationKey& network_isolation_key() const {
@@ -211,8 +218,8 @@ class DomainReliabilityUploaderTest : public testing::Test {
   const net::IsolationInfo expected_isolation_info_ =
       net::IsolationInfo::CreateTransient();
 
-  net::TestURLRequestContext url_request_context_;
-  UploadInterceptor* interceptor_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
+  raw_ptr<UploadInterceptor> interceptor_;
   MockTime time_;
   std::unique_ptr<DomainReliabilityUploader> uploader_;
 };

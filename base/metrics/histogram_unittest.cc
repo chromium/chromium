@@ -15,6 +15,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/dummy_histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -117,7 +118,7 @@ class HistogramTest : public testing::TestWithParam<bool> {
 
   std::unique_ptr<StatisticsRecorder> statistics_recorder_;
   std::unique_ptr<char[]> allocator_memory_;
-  PersistentMemoryAllocator* allocator_ = nullptr;
+  raw_ptr<PersistentMemoryAllocator> allocator_ = nullptr;
 };
 
 // Run all HistogramTest cases with both heap and persistent memory.
@@ -931,7 +932,7 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   EXPECT_EQ(1440, count_and_data_bucket.sum);
 
   const base::Value::ConstListView buckets_list =
-      count_and_data_bucket.buckets.GetList();
+      count_and_data_bucket.buckets.GetListDeprecated();
   ASSERT_EQ(2u, buckets_list.size());
 
   // Check the first bucket.

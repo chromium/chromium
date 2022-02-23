@@ -108,10 +108,6 @@ PASS window.cached_performance_timing.secureConnectionStart is 0
 PASS window.cached_performance_timing.unloadEventEnd is 0
 PASS window.cached_performance_timing.unloadEventStart is 0
 PASS window.cached_personalbar.visible is false
-PASS window.cached_scheduler_currentTaskSignal.aborted is false
-PASS window.cached_scheduler_currentTaskSignal.onabort is null
-PASS window.cached_scheduler_currentTaskSignal.onprioritychange is null
-PASS window.cached_scheduler_currentTaskSignal.priority is 'user-visible'
 PASS window.cached_screen.availHeight is 0
 PASS window.cached_screen.availLeft is 0
 PASS window.cached_screen.availTop is 0

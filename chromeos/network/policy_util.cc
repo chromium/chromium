@@ -10,13 +10,15 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_signature.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_profile.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/onc/onc_merger.h"
 #include "chromeos/network/onc/onc_normalizer.h"
-#include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_translator.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/shill_property_util.h"
 #include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -69,50 +71,6 @@ void RemoveFakeCredentials(const onc::OncValueSignature& signature,
   }
   for (auto field_name : entries_to_remove)
     onc_object->RemoveKey(field_name);
-}
-
-// Returns true if |policy| matches |actual_network|, which must be part of a
-// ONC NetworkConfiguration. This should be the only such matching function
-// within Chrome. Shill does such matching in several functions for network
-// identification. For compatibility, we currently should stick to Shill's
-// matching behavior.
-bool IsPolicyMatching(const base::Value& policy,
-                      const base::Value& actual_network) {
-  std::string policy_type = GetString(policy, ::onc::network_config::kType);
-  std::string actual_network_type =
-      GetString(actual_network, ::onc::network_config::kType);
-  if (policy_type != actual_network_type)
-    return false;
-
-  if (actual_network_type == ::onc::network_type::kEthernet) {
-    const base::Value* policy_ethernet =
-        policy.FindDictKey(::onc::network_config::kEthernet);
-    const base::Value* actual_ethernet =
-        actual_network.FindDictKey(::onc::network_config::kEthernet);
-    if (!policy_ethernet || !actual_ethernet)
-      return false;
-
-    std::string policy_auth =
-        GetString(*policy_ethernet, ::onc::ethernet::kAuthentication);
-    std::string actual_auth =
-        GetString(*actual_ethernet, ::onc::ethernet::kAuthentication);
-    return policy_auth == actual_auth;
-  }
-
-  if (actual_network_type == ::onc::network_type::kWiFi) {
-    const base::Value* policy_wifi =
-        policy.FindDictKey(::onc::network_config::kWiFi);
-    const base::Value* actual_wifi =
-        actual_network.FindDictKey(::onc::network_config::kWiFi);
-    if (!policy_wifi || !actual_wifi)
-      return false;
-
-    std::string policy_ssid = GetString(*policy_wifi, ::onc::wifi::kHexSSID);
-    std::string actual_ssid = GetString(*actual_wifi, ::onc::wifi::kHexSSID);
-    return (policy_ssid == actual_ssid);
-  }
-
-  return false;
 }
 
 // Returns true if AutoConnect is enabled by |policy| (as mandatory or
@@ -313,16 +271,12 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
 
   // Remove irrelevant fields.
   onc::Normalizer normalizer(true /* remove recommended fields */);
-  std::unique_ptr<base::DictionaryValue> normalized_network =
-      normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
-                                 effective);
-  effective = std::move(*normalized_network);
+  effective = normalizer.NormalizeObject(&onc::kNetworkConfigurationSignature,
+                                         effective);
 
-  std::unique_ptr<base::DictionaryValue> shill_dictionary(
-      onc::TranslateONCObjectToShill(&onc::kNetworkConfigurationSignature,
-                                     effective));
-
-  shill_dictionary->SetKey(shill::kProfileProperty, base::Value(profile.path));
+  base::Value shill_dictionary = onc::TranslateONCObjectToShill(
+      &onc::kNetworkConfigurationSignature, effective);
+  shill_dictionary.SetKey(shill::kProfileProperty, base::Value(profile.path));
 
   // If AutoConnect is enabled by policy, set the ManagedCredentials property to
   // indicate to Shill that this network can be used for autoconnect even
@@ -335,14 +289,14 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
   if (network_policy && IsAutoConnectEnabledInPolicy(*network_policy)) {
     VLOG(1) << "Enable ManagedCredentials for managed network with GUID "
             << guid;
-    shill_dictionary->SetKey(shill::kManagedCredentialsProperty,
-                             base::Value(true));
+    shill_dictionary.SetKey(shill::kManagedCredentialsProperty,
+                            base::Value(true));
   }
 
   if (!network_policy && global_policy) {
     // The network isn't managed. Global network policies have to be applied.
-    SetShillPropertiesForGlobalPolicy(*shill_dictionary, *global_policy,
-                                      shill_dictionary.get());
+    SetShillPropertiesForGlobalPolicy(shill_dictionary, *global_policy,
+                                      &shill_dictionary);
   }
 
   std::unique_ptr<NetworkUIData> ui_data(
@@ -362,31 +316,76 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
     // time they're viewed (instead of masked-out-placeholders, which would
     // suggest that a credential has been saved).
     const bool saving_credentials =
-        shill_dictionary->FindBoolKey(shill::kSaveCredentialsProperty)
+        shill_dictionary.FindBoolKey(shill::kSaveCredentialsProperty)
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
-    std::unique_ptr<base::Value> sanitized_user_settings =
-        base::Value::ToUniquePtrValue(
-            onc::MaskCredentialsInOncObject(onc::kNetworkConfigurationSignature,
-                                            *user_settings, credential_mask));
+    base::Value sanitized_user_settings = onc::MaskCredentialsInOncObject(
+        onc::kNetworkConfigurationSignature, *user_settings, credential_mask);
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 
-  shill_property_util::SetUIDataAndSource(*ui_data, shill_dictionary.get());
+  shill_property_util::SetUIDataAndSource(*ui_data, &shill_dictionary);
+  shill_property_util::SetRandomMACPolicy(ui_data->onc_source(),
+                                          &shill_dictionary);
 
-  VLOG(2) << "Created Shill properties: " << *shill_dictionary;
+  VLOG(2) << "Created Shill properties: " << shill_dictionary;
 
-  return std::move(*shill_dictionary);
+  return shill_dictionary;
 }
 
-const base::Value* FindMatchingPolicy(const GuidToPolicyMap& policies,
-                                      const base::Value& actual_network) {
-  for (auto it = policies.begin(); it != policies.end(); ++it) {
-    if (IsPolicyMatching(*it->second, actual_network))
-      return it->second.get();
+bool IsPolicyMatching(const base::Value& policy,
+                      const base::Value& actual_network) {
+  std::string policy_type = GetString(policy, ::onc::network_config::kType);
+  std::string actual_network_type =
+      GetString(actual_network, ::onc::network_config::kType);
+  if (policy_type != actual_network_type)
+    return false;
+
+  if (actual_network_type == ::onc::network_type::kEthernet) {
+    const base::Value* policy_ethernet =
+        policy.FindDictKey(::onc::network_config::kEthernet);
+    const base::Value* actual_ethernet =
+        actual_network.FindDictKey(::onc::network_config::kEthernet);
+    if (!policy_ethernet || !actual_ethernet)
+      return false;
+
+    std::string policy_auth =
+        GetString(*policy_ethernet, ::onc::ethernet::kAuthentication);
+    std::string actual_auth =
+        GetString(*actual_ethernet, ::onc::ethernet::kAuthentication);
+    return policy_auth == actual_auth;
   }
-  return nullptr;
+
+  if (actual_network_type == ::onc::network_type::kWiFi) {
+    const base::Value* policy_wifi =
+        policy.FindDictKey(::onc::network_config::kWiFi);
+    const base::Value* actual_wifi =
+        actual_network.FindDictKey(::onc::network_config::kWiFi);
+    if (!policy_wifi || !actual_wifi)
+      return false;
+
+    std::string policy_ssid = GetString(*policy_wifi, ::onc::wifi::kHexSSID);
+    std::string actual_ssid = GetString(*actual_wifi, ::onc::wifi::kHexSSID);
+    return (policy_ssid == actual_ssid);
+  }
+
+  if (actual_network_type == ::onc::network_type::kCellular) {
+    const base::Value* policy_cellular =
+        policy.FindDictKey(::onc::network_config::kCellular);
+    const base::Value* actual_cellular =
+        actual_network.FindDictKey(::onc::network_config::kCellular);
+    if (!policy_cellular || !actual_cellular)
+      return false;
+
+    std::string policy_iccid =
+        GetString(*policy_cellular, ::onc::cellular::kICCID);
+    std::string actual_iccid =
+        GetString(*actual_cellular, ::onc::cellular::kICCID);
+    return (policy_iccid == actual_iccid && !policy_iccid.empty());
+  }
+
+  return false;
 }
 
 }  // namespace policy_util

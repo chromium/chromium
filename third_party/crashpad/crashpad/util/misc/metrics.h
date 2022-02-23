@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "util/ios/ios_intermediate_dump_format.h"
 #endif
 
@@ -88,6 +88,10 @@ class Metrics {
     //! \brief There was an error between accessing the report from the database
     //!     and uploading it to the crash server.
     kPrepareForUploadFailed = 5,
+
+    //! \brief The upload of the crash failed during communication with the
+    //!     server, but the upload can be retried later.
+    kUploadFailedButCanRetry = 6,
 
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
@@ -203,7 +207,7 @@ class Metrics {
   //! This is currently only reported on Windows.
   static void HandlerCrashed(uint32_t exception_code);
 
-#if defined(OS_IOS) || DOXYGEN
+#if BUILDFLAG(IS_IOS) || DOXYGEN
   //! \brief Records a missing key from an intermediate dump.
   static void MissingIntermediateDumpKey(
       const internal::IntermediateDumpKey& key);

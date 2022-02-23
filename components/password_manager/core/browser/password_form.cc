@@ -214,9 +214,14 @@ PasswordForm& PasswordForm::operator=(const PasswordForm& form) = default;
 
 PasswordForm& PasswordForm::operator=(PasswordForm&& form) = default;
 
+bool PasswordForm::IsLikelySignupForm() const {
+  return HasNewPasswordElement() && HasUsernameElement() &&
+         !HasPasswordElement();
+}
+
 bool PasswordForm::IsLikelyChangePasswordForm() const {
-  return HasNewPasswordElement() && (username_element_renderer_id.is_null() ||
-                                     !password_element_renderer_id.is_null());
+  return HasNewPasswordElement() &&
+         (!HasUsernameElement() || HasPasswordElement());
 }
 
 bool PasswordForm::HasUsernameElement() const {
@@ -275,8 +280,6 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.password_element_renderer_id == rhs.password_element_renderer_id &&
          lhs.password_value == rhs.password_value &&
          lhs.new_password_element == rhs.new_password_element &&
-         lhs.confirmation_password_element_renderer_id ==
-             rhs.confirmation_password_element_renderer_id &&
          lhs.confirmation_password_element ==
              rhs.confirmation_password_element &&
          lhs.confirmation_password_element_renderer_id ==

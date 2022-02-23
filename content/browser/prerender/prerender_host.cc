@@ -5,12 +5,12 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
+#include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -36,15 +36,6 @@
 namespace content {
 
 namespace {
-
-struct ActivateResult {
-  ActivateResult(PrerenderHost::FinalStatus status,
-                 std::unique_ptr<StoredPage> page)
-      : status(status), page(std::move(page)) {}
-
-  PrerenderHost::FinalStatus status = PrerenderHost::FinalStatus::kActivated;
-  std::unique_ptr<StoredPage> page;
-};
 
 bool AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
@@ -89,17 +80,17 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
         SiteInstance::Create(web_contents.GetBrowserContext());
     frame_tree_->Init(site_instance.get(),
                       /*renderer_initiated_creation=*/false,
-                      /*main_frame_name=*/"");
+                      /*main_frame_name=*/"", /*opener=*/nullptr,
+                      /*frame_policy=*/blink::FramePolicy());
 
-    const auto& site_info =
-        static_cast<SiteInstanceImpl*>(site_instance.get())->GetSiteInfo();
     // Use the same SessionStorageNamespace as the primary page for the
     // prerendering page.
     frame_tree_->controller().SetSessionStorageNamespace(
-        site_info.GetStoragePartitionId(site_instance->GetBrowserContext()),
+        site_instance->GetStoragePartitionConfig(),
         web_contents_.GetPrimaryFrameTree()
             .controller()
-            .GetSessionStorageNamespace(site_info));
+            .GetSessionStorageNamespace(
+                site_instance->GetStoragePartitionConfig()));
 
     // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
@@ -126,7 +117,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   // distinguish between the different FrameTrees.
 
   void DidStartLoading(FrameTreeNode* frame_tree_node,
-                       bool to_different_document) override {}
+                       bool should_show_loading_ui) override {}
 
   void DidStopLoading() override {
     if (on_wait_loading_finished_) {
@@ -137,6 +128,12 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   void DidChangeLoadProgress() override {}
   bool IsHidden() override { return true; }
+  FrameTree* LoadingTree() override {
+    // For prerendering loading tree is the same as its frame tree as loading is
+    // done at a frame tree level in the background, unlike the loading visible
+    // to the user where we account for nested frame tree loading state.
+    return frame_tree_.get();
+  }
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override {
     // A prerendered FrameTree is not "inner to" or "nested inside" another
@@ -146,6 +143,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // the invalid ID here.
     return FrameTreeNode::kFrameTreeNodeInvalidId;
   }
+  bool IsPortal() override { return false; }
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}
@@ -172,7 +170,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     return web_contents_.GetPrimaryFrameTree();
   }
 
-  ActivateResult Activate(NavigationRequest& navigation_request) {
+  std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request) {
     // There should be no ongoing main-frame navigation during activation.
     // TODO(https://crbug.com/1190644): Make sure sub-frame navigations are
     // fine.
@@ -259,7 +257,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     frame_tree_->Shutdown();
     frame_tree_.reset();
 
-    return ActivateResult(FinalStatus::kActivated, std::move(page));
+    return page;
   }
 
   PrerenderHost::LoadingOutcome WaitForLoadCompletionForTesting() {
@@ -318,7 +316,8 @@ PrerenderHost::~PrerenderHost() {
     observer.OnHostDestroyed();
 
   if (!final_status_)
-    RecordFinalStatus(FinalStatus::kDestroyed);
+    RecordFinalStatus(FinalStatus::kDestroyed, attributes_.initiator_ukm_id,
+                      ukm::kInvalidSourceId);
 }
 
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
@@ -336,6 +335,9 @@ bool PrerenderHost::StartPrerendering() {
   load_url_params.initiator_origin = attributes_.initiator_origin;
   load_url_params.initiator_process_id = attributes_.initiator_process_id;
   load_url_params.initiator_frame_token = attributes_.initiator_frame_token;
+  load_url_params.is_renderer_initiated = !attributes_.IsBrowserInitiated();
+  load_url_params.transition_type =
+      ui::PageTransitionFromInt(attributes_.transition_type);
 
   // Just use the referrer from attributes, as NoStatePrefetch does.
   // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
@@ -455,17 +457,17 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
-  ActivateResult result = page_holder_->Activate(navigation_request);
-  if (result.status != FinalStatus::kActivated) {
-    RecordFinalStatus(result.status);
-    return nullptr;
-  }
+  std::unique_ptr<StoredPage> page = page_holder_->Activate(navigation_request);
 
   for (auto& observer : observers_)
     observer.OnActivated();
 
-  RecordFinalStatus(FinalStatus::kActivated);
-  return std::move(result.page);
+  // TODO(crbug.com/1299330): Replace
+  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
+  // source ID.
+  RecordFinalStatus(FinalStatus::kActivated, attributes_.initiator_ukm_id,
+                    navigation_request.GetNextPageUkmSourceId());
+  return page;
 }
 
 // Ensure that the frame policies are compatible between primary main frame and
@@ -638,29 +640,19 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // initial and activation prerender navigations, as the PrerenderHost
   // selection would have already checked for matching values. Adding a DCHECK
   // here to be safe.
-  DCHECK_EQ(potential_activation.url, common_params_->url);
-
+  if (attributes_.url_match_predicate) {
+    DCHECK(
+        attributes_.url_match_predicate.value().Run(potential_activation.url));
+  } else {
+    DCHECK_EQ(potential_activation.url, common_params_->url);
+  }
   if (potential_activation.initiator_origin !=
       common_params_->initiator_origin) {
     return false;
   }
 
-  // The initial navigation value is set to 0 as this is the default for
-  // LoadURLParams.
-  // TODO(crbug.com/1234291): update this check when omnibox
-  // prerendering is implemented. Currently, browser initiated prerendering
-  // will skip this check as short-termed workaround, since the implementation
-  // of updating transition is still absent. This workaround will be removed
-  // once the update mechanism is done.
-  if (!IsBrowserInitiated()) {
-    DCHECK(ui::PageTransitionCoreTypeIs(
-        ui::PageTransitionFromInt(common_params_->transition),
-        ui::PAGE_TRANSITION_FIRST));
-    if (!ui::PageTransitionCoreTypeIs(
-            ui::PageTransitionFromInt(potential_activation.transition),
-            ui::PageTransitionFromInt(common_params_->transition))) {
-      return false;
-    }
+  if (potential_activation.transition != common_params_->transition) {
+    return false;
   }
 
   DCHECK_EQ(common_params_->navigation_type,
@@ -768,7 +760,8 @@ FrameTree& PrerenderHost::GetPrerenderFrameTree() {
 
 void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
                                       FinalStatus status) {
-  RecordFinalStatus(status);
+  RecordFinalStatus(status, attributes_.initiator_ukm_id,
+                    ukm::kInvalidSourceId);
 }
 
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
@@ -781,11 +774,14 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
   return page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
 }
 
-void PrerenderHost::RecordFinalStatus(FinalStatus status) {
+void PrerenderHost::RecordFinalStatus(FinalStatus status,
+                                      ukm::SourceId initiator_ukm_id,
+                                      ukm::SourceId prerendered_ukm_id) {
   DCHECK(!final_status_);
   final_status_ = status;
-  base::UmaHistogramEnumeration(
-      "Prerender.Experimental.PrerenderHostFinalStatus", status);
+  RecordPrerenderHostFinalStatus(status, trigger_type(),
+                                 embedder_histogram_suffix(), initiator_ukm_id,
+                                 prerendered_ukm_id);
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {
@@ -809,6 +805,18 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
   initial_navigation_id_ = navigation->GetNavigationId();
   begin_params_ = navigation->begin_params().Clone();
   common_params_ = navigation->common_params().Clone();
+}
+
+bool PrerenderHost::IsUrlMatch(const GURL& url) const {
+  // If the trigger defines its predicate, respect it.
+  if (attributes_.url_match_predicate) {
+    // Triggers are not allowed to treat a cross-origin url as a matched url. It
+    // would cause security risks.
+    if (!url::IsSameOriginWith(attributes_.prerendering_url, url))
+      return false;
+    return attributes_.url_match_predicate.value().Run(url);
+  }
+  return GetInitialUrl() == url;
 }
 
 void PrerenderHost::Cancel(FinalStatus status) {

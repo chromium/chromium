@@ -6,6 +6,7 @@
     <output filename="grit/chromeos_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="chromeos_strings_af.pak" type="data_package" lang="af" />
     <output filename="chromeos_strings_am.pak" type="data_package" lang="am" />
     <output filename="chromeos_strings_ar.pak" type="data_package" lang="ar" />
     <output filename="chromeos_strings_bg.pak" type="data_package" lang="bg" />
@@ -62,6 +63,7 @@
     <output filename="chromeos_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="chromeos_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="chromeos_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="chromeos_strings_zu.pak" type="data_package" lang="zu" />
 
     <!-- Pseudolocales -->
     <output filename="chromeos_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
@@ -173,6 +175,14 @@ Try tapping the mic to ask me anything.
       <!-- Managed user session warning -->
       <message name="IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING" desc="Text shown in the user pod in case the user is managed. MANAGER can be a domain or an email address.">
         <ph name="MANAGER">$1<ex>example.com</ex></ph> manages this user and may remotely manage settings and monitor user activity.
+      </message>
+
+      <!-- Time out sign-in with camera screen -->
+      <message name="IDS_ASH_LOGIN_CAMERA_TIME_OUT_TITLE" desc="Text shown on camera usage timeout after the third-party SAML dialog is dismissed.">
+        Sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_ASH_LOGIN_CAMERA_TIME_OUT_SUBTITLE" desc="Description shown above the button that leads to login dialog. Shown on camera usage timeout after the third-party SAML dialog is dismissed.">
+        Enter your username and password or scan your QR code
       </message>
 
       <!-- Pop-up enterprise management. -->
@@ -545,7 +555,7 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_PNG_OPTION_TEXT" desc="The text displayed for the PNG file type option.">
         PNG
       </message>
-      <!-- TODO (kmoed): Remove "translateable="false"" once string is confirmed. -->
+      <!-- TODO (gavinwill): Remove "translateable="false"" once string is confirmed. -->
       <message translateable="false" name="IDS_SCANNING_APP_SEARCHABLE_PDF_OPTION_TEXT" desc="The text displayed for the Searchable PDF file type option. This option utilizes the Object Character Recognition (OCR) service to generate a PDF file whose text has been added as a searchable layer.">
         Searchable PDF
       </message>
@@ -1197,8 +1207,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_TYPE_VPN" desc="Label for VPN networks.">
         VPN
       </message>
-      <message name="IDS_NETWORK_TYPE_VPN_BUILTIN" desc="The built-in VPN types (Open VPN and L2TP/IPSec).">
-        OpenVPN / L2TP
+      <message name="IDS_NETWORK_TYPE_VPN_BUILTIN" desc="Label for the built-in VPN types.">
+        Built-in VPN
       </message>
       <message name="IDS_NETWORK_TYPE_WIRELESS" desc="Label for wireless networks (Cellular, Tether, and WiFi.).">
         Wireless
@@ -1295,8 +1305,23 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME" desc="ONC Property label for VPN.ThirdPartyVPN.ProviderName">
         Provider name
       </message>
+      <message name="IDS_ONC_VPN_OPENVPN_AUTH" desc="Settings > Network > OpenVPN Network Detail Page > label for the message digest algorithm used to authenticate data chanel packets.">
+        Authentication algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_CIPHER" desc="Settings > Network > OpenVPN Network Detail Page > label for the cipher algorithm used to encrypt data chanel packets.">
+        Encryption algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_COMPRESSION_ALGORITHM" desc="Settings > Network > OpenVPN Network Detail Page > label for the compression algorithm used to compress packets.">
+        Compression algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_KEY_DIRECTION" desc="Settings > Network > OpenVPN Network Detail Page > label for the direction (server to client, or reverse) of the TLS authentication key.">
+        Key direction
+      </message>
       <message name="IDS_ONC_VPN_OPENVPN_OTP" desc="ONC Property label for VPN.OpenVPN.OTP">
         OTP
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_TLS_AUTH_CONTENTS" desc="Settings > Network > OpenVPN Network Detail Page > label for the key used to sign TLS control channel packets.">
+        TLS authentication key
       </message>
       <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC" desc="ONC Property label for VPN.Type.L2TP-IPSec">
         L2TP/IPsec
@@ -1871,7 +1896,10 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Personalization App -->
-      <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
+      <message name="IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
+        Personalization
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_WALLPAPER_LABEL" desc="Label for wallpaper element in personalization hub">
         Wallpaper
       </message>
       <message name="IDS_PERSONALIZATION_APP_BACK_BUTTON" desc="Aria label for the back button to return to a prior page">
@@ -1891,6 +1919,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB" desc="Label for the Photos tab in the Google Photos page in the wallpaper app.">
         Photos
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE" desc="Message shown in the Google Photos page in the wallpaper app when the user has no photos.">
+        No image available. To add photos, go to <ph name="LINK">$1<ex>photos.google.com</ex></ph>
       </message>
       <message name="IDS_PERSONALIZATION_APP_MY_IMAGES" desc="Label for the local images page in wallpaper app.">
         My Images
@@ -1956,7 +1987,81 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER" desc="Label for the button to confirm preview wallpaper">
         Set as wallpaper
       </message>
-
+      <message name="IDS_PERSONALIZATION_APP_THEME_LABEL" desc="Label for theme element in personalization hub">
+        Theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE" desc="Label for dark color mode setting">
+        Dark
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE" desc="Label for light color mode setting">
+        Light
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE" desc="Label for auto color mode setting">
+        Auto
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
+        Avatar
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO" desc="Label for the button to take a webcam photo">
+        Take a photo
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO" desc="Label for the button to take a short webcam video">
+        Create a looping video
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO" desc="Label for the button to confirm webcam photo">
+        Use this photo
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO" desc="Label for the button to confirm webcam video">
+        Use this video 
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
+        Retake
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
+        Screensaver
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
+        When your screen is idle, show photos, time, weather, and media info.
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON" desc="Label for the toggle row in ambient mode settings page when it is enabled.">
+        On
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_OFF" desc="Label for the toggle row in ambient mode settings page when it is disabled.">
+        Off
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
+       Image source
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS" desc="Label for the radio button to choose the topic source from Google Photos. The radio button allows the user to set Google Photos for ambient mode, which shows photos to the user when their device is idle.">
+        Google Photos
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC" desc="Description for the radio button to choose the topic source from Google Photos. The radio button allows the user to set Google Photos for ambient mode, which shows photos to the user when their device is idle.">
+        Choose your favorite photos and albums
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC_NO_ALBUM" desc="Description for the radio button to choose the topic source from Google Photos when there is no album. The radio button allows the user to set Google Photos for ambient mode, which shows photos to the user when their device is idle.">
+        To create albums, go to Google Photos
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY" desc="Label for the radio button to choose the topic source from art gallery. The radio button allows the user to set Art gallery for ambient mode, which shows photos to the user when their device is idle.">
+        Art gallery
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION" desc="Description for the radio button to choose the topic source from art gallery. The radio button allows the user to set Art gallery for ambient mode, which shows photos to the user when their device is idle.">
+        Select curated artwork and images
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW" desc="A11y label for the selected topic source row in ambient mode.">
+        <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> <ph name="TOPIC_SOURCE_DESC">$2<ex>Select your memories</ex></ph> selected, press Enter to select <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> albums
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW" desc="A11y label for the unselected topic source row in ambient mode.">
+        Select <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> <ph name="TOPIC_SOURCE_DESC">$2<ex>Select your memories</ex></ph>
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_TITLE" desc="Label for the radio button group of ambient mode weather unit.">
+        Weather
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT" desc="Label for the radio button to choose weather unit as Fahrenheit.">
+        Fahrenheit
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_CELSIUS" desc="Label for the radio button group of choose weather unit as Celsius.">
+        Celsius
+      </message>
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">
         Unknown
@@ -2004,12 +2109,96 @@ Try tapping the mic to ask me anything.
         Traffic Counters
       </message>
 
+      <!-- Traffic Counters in Settings UI -->
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, label to display data usage section">
+        Data usage
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_SINCE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to display currenet data usage">
+          Data usage since <ph name="FRIENDLY_DATE">$1<ex>Wednesday, February 9, 2022</ex></ph>
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_BUTTON_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, label to reset data usage">
+        Reset
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Manually reset data usage
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LAST_RESET_DATE_UNAVAILABLE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to show missing last reset information">
+        Date of last data reset is unavailable
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Enable automatic monthly reset
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_SUBLABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Automatically resets data usage every month on a selected day
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Day of month for reset
+      </message>
+
       <!-- Bluetooth -->
       <message name="IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that are currently connected.">
         Currently connected
       </message>
       <message name="IDS_BLUETOOTH_DEVICE_LIST_PREVIOUSLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that have previously been connected.">
         Previously connected
+      </message>
+      <message name="IDS_BLUETOOTH_DEVICE_LIST_NO_CONNECTED_DEVICES" desc="Text displayed indicating there are currently no paired Bluetooth devices.">
+        No device connected
+      </message>
+      <!-- Connection statuses -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_CONNECTED" desc="Accessibility text for the connection status of a device that is connected.">
+        Device is connected.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_CONNECTING" desc="Accessibility text for the connection status of a device that is connecting.">
+        Device is connecting.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_NOT_CONNECTED" desc="Accessibility text for the connection status of a device that is not connected.">
+        Device is not connected.
+      </message>
+      <!-- Device types -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_UNKNOWN" desc="Accessibility text for the type of a device whose type is unknown.">
+        Device type is unknown.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_COMPUTER" desc="Accessibility text for the type of a device that is a computer.">
+        Device is a computer.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_PHONE" desc="Accessibility text for the type of a device that is a phone.">
+        Device is a phone.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_HEADSET" desc="Accessibility text for the type of a device that is an audio device.">
+        Device is an audio device.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_VIDEO_CAMERA" desc="Accessibility text for the type of a device that is a video camera.">
+        Device is a video camera.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_GAME_CONTROLLER" desc="Accessibility text for the type of a device that is a game controller.">
+        Device is a game controller.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD" desc="Accessibility text for the type of a device that is a keyboard.">
+        Device is a keyboard.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE" desc="Accessibility text for the type of a device that is a mouse.">
+        Device is a mouse.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_TABLET" desc="Accessibility text for the type of a device that is a tablet.">
+        Device is a tablet.
+      </message>
+      <!-- Battery information -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_BATTERY_INFO" desc="Accessibility text for the battery of a device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_LEFT_BUD" desc="Accessibility text for the left bud battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% left bud battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_CASE" desc="Accessibility text for the case battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% case battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_RIGHT_BUD" desc="Accessibility text for the right bud battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% right bud battery.
+      </message>
+      <!-- Formattable strings -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAME" desc="Label to display the name of a device item within a device list.">
+        Device <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>15</ex></ph> named <ph name="NAME">$3<ex>Beats</ex></ph>.
       </message>
 
       <!-- Shimless RMA -->
@@ -2078,16 +2267,40 @@ Try tapping the mic to ask me anything.
         Power Button
       </message>
       <!-- Splash screen -->
-      <message name="IDS_SHIMLESS_RMA_SPLASH_MESSAGE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
-        Entering RMA
+      <message name="IDS_SHIMLESS_RMA_SPLASH_TITLE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
+        Chromebook repair
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SPLASH_REMEMBERING" translateable="false" desc="Message that lets the user know that we are resuming repair.">
+        Remembering where you left off...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SPLASH_LOADING" translateable="false" desc="Message that lets the user know that we are loading the previous repair state.">
+        Loading state... may last ~10 seconds
+      </message>
+      <!-- Common buttons -->
+      <message name="IDS_SHIMLESS_RMA_CANCEL_BUTTON" desc="Button used to cancel RMA finalization, when allowed.">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_BACK_BUTTON" desc="Button used to go back to the previous step of RMA finalization, when allowed.">
+        Back
+      </message>
+      <message name="IDS_SHIMLESS_RMA_NEXT_BUTTON" desc="Default text for the button used to progress to the next step of RMA finalization.">
+        Next
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SKIP_BUTTON" desc="Default text for the button used to skip to the next step of RMA finalization.">
+        Skip
+      </message>
+      <message name="IDS_SHIMLESS_RMA_OK_BUTTON" desc="Default text for OK button used to acknowledge and close dialogs.">
+        OK
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RETRY_BUTTON" desc="Default text for Retry button used to retry an action.">
+        Retry
       </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair
       </message>
       <message name="IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING" translateable="false" desc="Warning that RMA is only for qualified technicians.">
-        This repair process is intended for a trained repair technicians.
-        Start only after replacing the malfunctioning components.
+        This repair process is intended for a trained repair technicians. Start only after replacing the malfunctioning components.
       </message>
       <message name="IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS" translateable="false" desc="Checking that device components are approved for this device.">
         Validating components...
@@ -2096,16 +2309,20 @@ Try tapping the mic to ask me anything.
         Components are installed correctly.
       </message>
       <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL" translateable="false" desc="Validation check found that device components are NOT approved for this device.">
-        Components could not be validated. If you are certain you are using
-        qualified components updating Chrome OS may resolve this issue.
+        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified components are identified, update your ChromeOS to the latest version.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" desc="The label for the button to start the RMA process.">
+        Get started
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UNQUALIFIED_COMPONENTS_TITLE" desc="The title for the dialog showing the list of components unqualfiied by Chrome OS.">
+        Unqualified components
       </message>
       <!-- Network connect page -->
       <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE" desc="Title for the connect to wifi page.">
         Get connected
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_DESCRIPTION" desc="Description for the connect to wifi page.">
-        Connecting to Wi-Fi is recommended to make the repair process easier.
-        Your network will be saved.
+        Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME" desc="Title for the network configuration dialog for an existing network.">
         Configure <ph name="NAME">$1<ex>My WiFi network</ex></ph>
@@ -2134,52 +2351,197 @@ Try tapping the mic to ask me anything.
         Device will go to the same owner
       </message>
       <message name="IDS_SHIMLESS_RMA_SAME_OWNER_DESCRIPTION" desc="Detailed description of when to choose return to same owner.">
-        Select this option if the ownership of the device isn't changing.
-        For example, the device is being transferred to a different person
-        within an organization.
+        Select this option if the ownership of the device isn't changing. For example, the device is being transferred to a different person within an organization.
       </message>
       <message name="IDS_SHIMLESS_RMA_NEW_OWNER" desc="Text shown next to the return to a new owner radio button.">
         Device will go to a different owner
       </message>
       <message name="IDS_SHIMLESS_RMA_NEW_OWNER_DESCRIPTION" desc="Detailed description of when to choose return to a new owner.">
-        Select this option if the device is being restocked or refurbished for
-        distribution to a new customer.
+        Select this option if the device is being restocked or refurbished for distribution to a new customer.
+      </message>
+      <!-- Choose write protect disable method page -->
+      <message name="IDS_SHIMLESS_RMA_CHOOSE_WP_DISABLE_METHOD_PAGE_TITLE" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Select how you would like to disable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_OPTION"  translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Manually disable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUAL_WP_DISABLE_METHOD_DESCRIPTION" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Once you disable write-protect, you can immediately enable it again. You will see instructions for disabling write-protect on this Chromebook on the next screen.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_OPTION"  translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        Perform RMA Server Unlock (RSU)
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_WP_DISABLE_METHOD_DESCRIPTION" translateable="false" desc="Title for the page offering the options for disabling write protect on this device. Disabling write protection allows the new components to be calibrated and the system to be updated with information about them.">
+        This requires an RSU-enabled Security Key, a QR code scanner, and a second device with internet connectivity.
       </message>
       <!-- Enter RSU code page -->
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE" desc="Title for the RSU challenge page.">
         Perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
-        Get your unlock code by scanning the QR code or going to the RSU web site and entering the challenge key.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_LABEL" translateable="false" desc="Label for the formatted RSU challenge key.">
-        Challenge:
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_HWID" translateable="false" desc="Label that shows to display the device hardware ID.">
-        HWID:  <ph name="HARDWARE_ID">$1<ex>SAMUSTEST_2082</ex></ph>
+        Use the QR code or <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this link<ph name="LINK_END">&lt;/a&gt;</ph> to retrieve an 8 character unlock code to perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" desc="Label for the RSU code input box.">
-        Enter the unlock code:
+        Enter the 8-character unlock code
       </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER" translateable="false" desc="Placeholder text for empty RSU code input box.">
-        Enter RSU Code
+      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog that shows the RSU challenge code link.">
+        Go to this link for your RSU unlock code
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_DONE_BUTTON" desc="Label for the button that closes the dialog.">
+        Done
+      </message>
+      <!-- Manual write protect disable complete page -->
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" translateable="false" desc="Title for the write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">
+        Write Protect is turned off
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_SKIPPED_MESSAGE" translateable="false" desc="If the device already had write protection disabled before reaching the 'choose method' page the flow skips straight to this page and informs the user they can manually re-enable if it is currently manually disabled. It is not possible for the device to determine this automatically, so the instructions must cover both cases.">
+        Write protection is already disabled. If the device is disassembled you may reassemble it now.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_REASSEMBLE_NOW_MESSAGE" translateable="false" desc="If the device does not need write protection to be disabled for the remainder of RMA then inform user they can enable now.">
+        Write protection disable complete, you can reassemble the device.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WP_DISABLE_LEAVE_DISASSEMBLED_MESSAGE" translateable="false" desc="If the device needs write protection to remain disabled for the remainder of RMA then inform user they can must leave it disabled.">
+        Write protection disable complete, you must keep the device disassembled.
+      </message>
+      <!-- Check calibration page -->
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_PAGE_TITLE" translateable="false" desc="Title for the page shown when confirming components to calibrate after calibration fails.">
+        Some components have failed to calibrate
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_INSTRUCTIONS" translateable="false" desc="The text instructions shown when confirming components to calibrate after calibration fails.">
+        You may select certain or all components to try again, or move forward without calibration.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry calibrating.">
+        Retry calibration
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TITLE" translateable="false" desc="The title for the dialog warning users they have components that failed calibration.">
+        Proceed with failed calibrations?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_DIALOG_TEXT" translateable="false" desc="The text in the dialog warning users the consequences of proceeding with components that failed calibration.">
+        Components may not work correctly unless calibrated
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_SKIP_CALIBRATION_LABEL" translateable="false" desc="The label for the button letting the user skip component calibration.">
+        Skip calibration
+      </message>
+      <!-- Setup calibration page -->
+      <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page that displays specific instructions required for some calibration steps.">
+        Prepare to calibrate device components
+      </message>
+      <message name="IDS_SHIMLESS_RMA_BASE_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the base of the device.">
+        Please place the device on a flat surface before proceeding.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
+        Please place the lid of the device on a flat surface before proceeding.
+      </message>
+      <!-- Finalize device page -->
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE" translateable="false" desc="Title for the page shown when finalizing the device. Finalizing is the process of confirming the device is ready to return to the owner.">
+        Finalizing repair
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_PROGRESS" translateable="false" desc="Message to display current progress of finalization.">
+        Finalizing the device. Do not turn off power.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_COMPLETE" translateable="false" desc="Message to display when finalization is complete.">
+        Complete.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_BLOCKING" translateable="false" desc="Message to display when finalization failed and RMA cannot complete.">
+        Failed, blocking.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when finalization failed, but RMA can continue.">
+        Failed, non blocking.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FINALIZE_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry finalization.">
+        Retry finalization
+      </message>
+      <!-- Device provisioning page -->
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_TITLE" translateable="false" desc="Title for the device provisioning page. Provisioning is when component specific data is set e.g. erasing fingerprint data from the thumb reader or regenerating the device stable secret before returning the device to a new owner.">
+        Provisioning the device...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_PROGRESS" translateable="false" desc="Message to display current progress of provisioning.">
+        Progress <ph name="PROGRESS_PERCENT">$1<ex>25</ex></ph>%.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_COMPLETE" translateable="false" desc="Message to display when provisioning is complete.">
+        Complete.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_BLOCKING" translateable="false" desc="Message to display when provisioning failed and RMA cannot complete.">
+        Failed, blocking.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_NON_BLOCKING" translateable="false" desc="Message to display when provisioning failed, but RMA can continue.">
+        Failed, non blocking.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_PROVISIONING_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry provisioning.">
+        Retry provisioning
       </message>
       <!-- Repair complete page -->
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED" desc="Title for the page shown when the RMA process repair process is completed.">
         Repair completed
       </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DESCRIPTION" translateable="false" desc="Notice for the user that repair is complete and they can shutdown when ready or run diagnostics/view logs.">
+        Your repair was successful. You can exit or take some additional actions.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_BUTTON" translateable="false" desc="Label of the button that launches the post-boot diagnostics SWA.">
+        Run Diagnostics
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_DIAGNOSTICS_DESCRIPTION" translateable="false" desc="Description of what the diagnostics SWA is for">
+        Confirm everything's in the right place and make a diagnostic report.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_BUTTON" translateable="false" desc="Label for the button that opens the view/save logs dialog">
+        See RMA Logs
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_LOGS_DESCRIPTION" translateable="false" desc="Description of what the logs dialog is used for.">
+        Review what's been fixed and results of diagnostic tests, and save the logs to a USB storage device.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_BUTTON" translateable="false" desc="Label of the button that triggers a shutdown with battery cutoff.">
+        Battery Cutoff
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_DESCRIPTION" translateable="false" desc="Explanation of why user would choose battery cutoff.">
+        Perform battery cutoff for devices being shipped or stored.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_INSTRUCTIONS" translateable="false" desc="Instructions for battery cutoff. These instructions will display when a power cable is attached and the button is disabled.">
+        Remove power cable to enable this option.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_SHUT_DOWN_BUTTON_LABEL" translateable="false" desc="Label for the shutdown button.">
+        Shut down
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_REBOOT_BUTTON_LABEL" translateable="false" desc="Label for the reboot button.">
+        Reboot
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_TITLE" translateable="false" desc="Title for the logs dialog displayed on repair complete page">
+        RMA Logs
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON" translateable="false" desc="Label for the logs dialog cancel button">
+        Cancel
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON" translateable="false" desc="Label for the logs dialog save to USB button. This triggers saving to the root of a USB drive with no option to select location or title of the logs. It is automatic as the file browser is not available to the shimless RMA app.">
+        Save to USB
+      </message>
+      <message name="IDS_SHIMLESS_BATTERY_SHUTOFF_TOOLTIP_TEXT" translateable="false" desc="Label for the battery shutoff tooltip.">
+        Unplug power to perform battery cutoff
+      </message>
+      <!-- Run calibration page -->
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when running component calibration steps.">
+        Calibrating device components
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE" translateable="false" desc="Message to display when all component calibration steps are complete.">
+        Completed
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING" translateable="false" desc="Message to display when when waiting for calibration to start.">
+        Calibration starting...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATING_COMPONENT" translateable="false" desc="Status message for a single component while it's being calibrated.">
+        Calibrating <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>...
+      </message>
       <!-- OS update page -->
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of Chrome OS update page.">
         Make sure Chrome OS is up to date
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_INVALID_COMPONENTS" translateable="false" desc="Description when components could not be validated.">
-        An unrecognized component has been found. Unrecognized devices will not
-        be configured correctly and may be unusable. Updating to the latest
-        version of Chrome OS may resolve this issue.
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_TOP" translateable="false" desc="Description when components not qualified for Chrome OS are detected.">
+        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified componets are identified, update your Chrome OS to the latest version.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_BOTTOM" translateable="false" desc="Description when components not qualified for Chrome OS are detected.">
+        If you still see the issue after the update, it's possible the component is newly qualified and hasn't made it to the database yet.
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is too many versions behind the update.">
-        If Chrome OS is out of date, Shimless RMA process may have been updated
-        since this version was installed.
+        Chrome OS needs an additional update to get fully up to date
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is not the most recent available.">
         Chrome OS needs an additional update to get fully up to date.
@@ -2199,15 +2561,305 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE" translateable="false" desc="Label that shows the when the currently installed version of Chrome OS is up to date.">
         Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph> is up to date
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" desc="Label for the button that updates the device to the latest version of Chrome OS then restarts the device.">
-        Update version &#38; restart
+      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" translateable="false" desc="Label for the button that updates the device to the latest version of Chrome OS then restarts the device.">
+        Update to <ph name="VERSION_NUMBER">$1</ph> &#38; restart
       </message>
       <!-- Manually disable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions for how to manually disable write-protect on the device.">
-        Disable write-protect to continue to the next screen. Learn how to disable write-proect for this device by viewing the instructions at <ph name="HELP_LINK">$1<ex>g.co/help</ex></ph> or scanning the QR code. Once you disable write-protect, you will need to leave it disabled until the repair process is finished.
+        Disable write-protect to continue to the next screen. Learn how to disable write-protect for this device by viewing the instructions at the device manufacturer's support page. Once you disable write-protect, you will need to leave it disabled until the repair process is finished. Please expect a reboot after disabling write protection.
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE" translateable="false" desc="The title for the page to manually disable write-protect on the device.">
         Manually disable write-protect
+      </message>
+      <!-- Restock mainboard page -->
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" translateable="false" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
+        [Shimless RMA]
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS" translateable="false" desc="Instructions for what to do in the restock state. As the device will return to this state when rebooted after restocking the user can shutdown or continue RMA">
+        Continue where you left off, or shut down to restock the board.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button that triggers device shutdown on the restock page.">
+        Shutdown
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" translateable="false" desc="Label for the continue button on the restock page.">
+        Continue
+      </message>
+      <!-- Manually enable wp page -->
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE" translateable="false" desc="The title for the page to manually enable write-protect on the device, afer device provisioning completes.">
+        Manually enable write-protect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions to manually enable write-protect on the device.">
+        Enable write-protect to continue to the next screen. Learn how to enable write-protect for this device by viewing the manufacturer's instructions.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLED_WP_MESSAGE" translateable="false" desc="Message to inform user hardware write protection has been enabled and RMA is ready to continue.">
+        Hardware write protection enabled. Click 'Next' to continue.
+      </message>
+      <!-- Confirm device information page -->
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_TITLE" translateable="false" desc="The title for the page for confirming the device info.">
+        Please confirm device information
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_INSTRUCTIONS" translateable="false" desc="The instructions for the page for confirming the device info.">
+        Change device information as needed.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SERIAL_NUMBER_LABEL" translateable="false" desc="The label for the text input showing the device's serial number.">
+        Serial number
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_REGION_LABEL" translateable="false" desc="The label for the text input showing the device's current region.">
+        Region
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_WHITE_LABEL_LABEL" translateable="false" desc="The label for the text input showing the device's white-label.">
+        White-label
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_EMPTY_WHITE_LABEL_LABEL" translateable="false" desc="The label for the selection option that clears the device's white-label.">
+        --no white-label--
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_LABEL" translateable="false" desc="The label for the text input showing the device's SKU.">
+        SKU
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_RESET_BUTTON_LABEL" translateable="false" desc="The label for the button that resets the text input.">
+        Reset
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING" translateable="false" desc="The text warning explaining when the device's SKU should be changed.">
+        The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DRAM_PART_NUMBER_LABEL" translateable="false" desc="The label for the text input showing the device's dram part number.">
+        DRAM part number
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DRAM_PART_NUMBER_PLACEHOLDER_LABEL" translateable="false" desc="The placeholder label for the text input box for the device's dram part number.">
+        Enter DRAM part number
+      </message>
+      <!-- RO firmware reimaging page -->
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_TITLE" translateable="false" desc="The title for the page when reimaging is in progress.">
+      Install firmware image
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_WAIT_FOR_USB" translateable="false" desc="The prompt to insert a thumb drive with the recovery image for this device.">
+        Insert your thumb drive with the downloaded recovery image.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_FILE_NOT_FOUND" translateable="false" desc="The message when a thumb drive is detected but it does not conatin a valid recovery image for this device.">
+        No image found. Insert a valid USB thumb drive
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATING" translateable="false" desc="The message when the firmware is being installed.">
+      Installing firmware...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_REBOOT" translateable="false" desc="The message when firmware is installed and the required reboot is about to take place.">
+      About to reboot...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE" translateable="false" desc="The message when firmware installation is complete and the device has rebooted.">
+      Installation complete.
+      </message>
+      <!-- Onboarding update page -->
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT" translateable="false" desc="The message that you can connect to the internet on the prevous page.">
+        To check if OS is up to date, connect to the internet in previous screen
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS" translateable="false" desc="The update progress label.">
+        OS update progress received <ph name="OPERATION_NAME">$1</ph> <ph name="PROGRESS">$2</ph>%
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_IDLE" translateable="false" desc="The idle operation name.">
+        Not updating
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CHECKING" translateable="false" desc="The checking for updates operation name.">
+        checking for update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_AVAILABLE" translateable="false" desc="The update available operation name.">
+        update found
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DOWNLOADING" translateable="false" desc="The update download operation name.">
+        downloading update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_VERIFYING" translateable="false" desc="The update verification operation name.">
+        verifying update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_FINALIZING" translateable="false" desc="The update finalization operation name.">
+        installing update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_REBOOT" translateable="false" desc="The reboot operation name.">
+        need reboot
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ERROR" translateable="false" desc="The update error operation name.">
+        error updating
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ROLLBACK" translateable="false" desc="The update rollback operation name.">
+        attempting rollback
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DISABLED" translateable="false" desc="The update disabled operation name.">
+        update disabled
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION" translateable="false" desc="The update permission required operation name.">
+        need permission to update
+      </message>
+      <!-- Critical error page -->
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" translateable="false" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
+        Error
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
+        We're running into errors. Try rebooting or return to the login screen.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_BUTTON" translateable="false" desc="Label for the exit button on the error page.">
+        Exit repair
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and reboot the device.">
+        Reboot
+      </message>
+      <!-- Wipe device page -->
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_TITLE" translateable="false" desc="Title for the page where the user chooses whether to erase the data or keep/preserve the data on the device.">
+        Preserve Device Data
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION" translateable="false" desc="Label for the option to wipe/erase the data on the device.">
+        Wipe device
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_REMOVE_DATA_OPTION_DESCRIPTION" translateable="false" desc="Description for the option to wipe/erase the data on the device.">
+        Remove the data
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION" translateable="false" desc="Label for the option to preserve/save the data on the device.">
+        Don't wipe the device
+      </message>
+      <message name="IDS_SHIMLESS_RMA_WIPE_DEVICE_PRESERVE_DATA_OPTION_DESCRIPTION" translateable="false" desc="Description for the option to preserve/save the data on the device.">
+        Preserve the data
+      </message>
+
+      <!-- Peripheral Firmware Update -->
+      <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
+        Firmware updates for external devices
+      </message>
+      <message name="IDS_FIRMWARE_CRITICAL_UPDATE_TEXT" desc="The text shown when an update is deemed critcal.">
+        Critical update
+      </message>
+      <message name="IDS_FIRMWARE_PREPARE_DEVICE_TEXT" desc="Title of the dialog that explains how to prepare the device to be updated.">
+        Prepare your device
+      </message>
+      <message name="IDS_FIRMWARE_NEXT_BUTTON_TEXT" desc="Label for button that transitions the user to the firmware update dialog.">
+        Next
+      </message>
+      <message name="IDS_FIRMWARE_CANCEL_BUTTON_TEXT" desc="Label for the button that cancels the dialog.">
+        Cancel
+      </message>
+      <message name="IDS_FIRMWARE_DONE_BUTTON_TEXT" desc="Label for button shown when the firmware update is completed.">
+        Done
+      </message>
+      <message name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
+        Update
+      </message>
+      <message name="IDS_FIRMWARE_UPDATE_BUTTON_A11Y_LABEL" desc="A11y Label for button to start the firmware update.">
+        Update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_OK_BUTTON_TEXT" desc="Label for button shown when an install fails.">
+        OK
+      </message>
+      <message name="IDS_FIRMWARE_UPDATING_TEXT" desc="Label for showing that a device is being updated.">
+        Updating firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
+        Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is now up to date
+      </message>
+      <message name="IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT" desc="Label for displaying which version the device has been updated to.">
+        Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
+        While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
+      </message>
+      <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
+        Updating (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>% complete)
+      </message>
+      <message name="IDS_FIRMWARE_UP_TO_DATE_TEXT" desc="Label shown when no firmware updates are available.">
+        All firmware is up to date
+      </message>
+      <message name="IDS_FIRMWARE_VERSION_TEXT" desc="Label for the update's version.">
+        Version <ph name="VERSION">$1<ex>3.0.2</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_RESTARTING_TITLE_TEXT" desc="Label for showing that a device is being restarted.">
+        Restarting <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_RESTARTING_BODY_TEXT" desc="Label for communicating information about what actions a user can take during a device restart.">
+        While restarting, do not unplug this external device or shut down your computer. You can minimize this window. This may take a few minutes and your external device may not work during this time.
+      </message>
+      <message name="IDS_FIRMWARE_RESTARTING_FOOTER_TEXT" desc="Label shown when a device is being restarted.">
+        Restarting...
+      </message>
+      <message name="IDS_FIRMWARE_UPDATE_FAILED_TITLE_TEXT" desc="Label shown when an update fails.">
+        Can't update <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_UPDATE_FAILED_BODY_TEXT" desc="Label for communicating information about why an update failed.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_CONFIRMATION_TITLE_TEXT" desc="Label for the confirmation dialog title.">
+        Update firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message name="IDS_FIRMWARE_NUM_AVAILABLE_UPDATES_TEXT" desc="Message annouced in aria-live when we receive a list of available firmware updates.">
+        Update firmware for external devices window is open. <ph name="NUM_UPDATES">$1<ex>3</ex></ph> updates available.
+      </message>
+      <message name="IDS_FIRMWARE_PROCEED_UPDATE_CONFIRMATION" desc="Information text to users that to proceed with the firmware update that they need to click on the Next button.">
+        To proceed with the update, click Next.
+      </message>
+
+      <!-- Quick Answers -->
+      <message name="IDS_ASH_QUICK_ANSWERS_SETTINGS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the settings-button in Quick-Answers related views.">
+        Quick answers settings
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the phonetics-button in Quick-Answers related views.">
+        Listen
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_DEFINITION_INTENT" desc="Display text of definition intent. This is used in the title of Quick Answers user consent dialog.">
+        definition
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_TRANSLATION_INTENT" desc="Display text of translation intent. This is used in the title of Quick Answers user consent dialog.">
+        translation
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_UNIT_CONVERSION_INTENT" desc="Display text of unit conversion intent. This is used in the title of Quick Answers user consent dialog.">
+        conversion
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Get info related to your selection
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers user notice view.">
+        New feature available, use Up arrow key to learn more.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE" desc="A11y description template for the Quick Answers user notice view.">
+        <ph name="DESC_TEXT">$1<ex>With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</ex></ph> Use Left or Right arrow keys to manage this feature.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when supported intent is generated.">
+        Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>" and more
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON" desc="Display text on the no thanks button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        No thanks
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON" desc="Display text on the allow button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
+        Allow
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_LOADING" desc="Display text when the Quick Answers view is loading.">
+        Loading...
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_NETWORK_ERROR" desc="Display text when network error occurs in the Quick Answers view.">
+        Cannot connect to internet.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_RETRY" desc="Display text when the Quick Answers view is retry.">
+        Retry
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2" desc="Display text when the Quick Answers view receives no result (V2 version).">
+        See result in Google Search
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT" desc="A11y alert text for the Quick Answers view.">
+        Info related to your selection available. Use Up arrow key to access.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2" desc="A11y description template for the Quick Answers view (V2 version).">
+        <ph name="QUERY_TEXT">$1<ex>interested</ex></ph>; <ph name="RESULT_TEXT">$2<ex>showing curiosity or concern about something or someone; having a feeling of interest.</ex></ph>; Press Search plus Space to see result in Google Search.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT" desc="A11y name text for the Quick Answers view.">
+        Info related to your selection
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC" desc="A11y retry label description for the Quick Answers view.">
+        Cannot connect to the internet. Click to try again.
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
+        <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL" desc="Description text of the report query button for the Quick Answers view.">
+        Internal only
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
+        Report this query
       </message>
     </messages>
   </release>

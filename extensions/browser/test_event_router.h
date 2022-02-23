@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"

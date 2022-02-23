@@ -44,6 +44,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -87,11 +88,12 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
     return GURL(kChromeUINewTabURL);
   // Users cannot bookmark Reader Mode pages directly, so the bookmark
   // interaction is as if it were with the original page.
-  if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
+  if (dom_distiller::url_utils::IsDistilledPage(
+          web_contents->GetVisibleURL())) {
     return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-        web_contents->GetURL());
+        web_contents->GetVisibleURL());
   }
-  return web_contents->GetURL();
+  return web_contents->GetVisibleURL();
 }
 
 bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
@@ -101,12 +103,13 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   if (!u.is_valid())
     return false;
   *url = u;
-  if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
+  if (dom_distiller::url_utils::IsDistilledPage(
+          web_contents->GetVisibleURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
     // is added for the original page and original title.
     *title =
         base::UTF8ToUTF16(dom_distiller::url_utils::GetTitleFromDistillerUrl(
-            web_contents->GetURL()));
+            web_contents->GetVisibleURL()));
   } else {
     *title = web_contents->GetTitle();
   }
@@ -275,7 +278,7 @@ ui::ImageModel GetBookmarkFolderIcon(
     BookmarkFolderIconType icon_type,
     absl::variant<ui::ColorId, SkColor> color) {
   int default_id = IDR_FOLDER_CLOSED;
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // This block must be #ifdefed because only these platforms actually have this
   // resource ID.
   if (icon_type == BookmarkFolderIconType::kManaged)
@@ -285,11 +288,11 @@ ui::ImageModel GetBookmarkFolderIcon(
                             absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(bsep): vectorize the Windows versions: crbug.com/564112
     folder =
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     SkColor sk_color;
     if (absl::holds_alternative<SkColor>(color)) {
       sk_color = absl::get<SkColor>(color);

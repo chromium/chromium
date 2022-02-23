@@ -17,9 +17,8 @@ namespace multi_user_util {
 AccountId GetAccountIdFromProfile(const Profile* profile) {
   // This will guarantee an nonempty AccountId be returned if a valid profile is
   // provided.
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          profile->GetOriginalProfile());
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      profile->GetOriginalProfile());
   return user ? user->GetAccountId() : EmptyAccountId();
 }
 
@@ -33,8 +32,7 @@ AccountId GetAccountIdFromEmail(const std::string& email) {
 Profile* GetProfileFromAccountId(const AccountId& account_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  return user ? chromeos::ProfileHelper::Get()->GetProfileByUser(user)
-              : nullptr;
+  return user ? ash::ProfileHelper::Get()->GetProfileByUser(user) : nullptr;
 }
 
 Profile* GetProfileFromWindow(aura::Window* window) {

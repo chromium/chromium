@@ -145,19 +145,18 @@ class MetadataExtractor:
 
     if raw_os_name == 'Android':
       return OSName.ANDROID
-    elif raw_os_name == 'Linux':
+    if raw_os_name == 'Linux':
       return OSName.LINUX
-    elif raw_os_name == 'Mac OS X':
+    if raw_os_name == 'Mac OS X':
       return OSName.MAC
-    elif raw_os_name == 'Windows NT':
+    if raw_os_name == 'Windows NT':
       return OSName.WINDOWS
-    elif raw_os_name == 'CrOS':
+    if raw_os_name == 'CrOS':
       return OSName.CROS
-    elif raw_os_name == 'Fuschia':
+    if raw_os_name == 'Fuschia':
       return OSName.FUSCHIA
-    else:
-      raise Exception('OS name "%s" not recognized: %s' %
-                      (raw_os_name, self._trace_file))
+    raise Exception('OS name "%s" not recognized: %s' %
+                    (raw_os_name, self._trace_file))
 
   def InitializeForTesting(self,
                            version_number=None,

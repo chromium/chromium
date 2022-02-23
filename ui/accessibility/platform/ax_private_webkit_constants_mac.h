@@ -62,6 +62,8 @@ NSString* const NSAccessibilityLiveRegionChangedNotification =
 NSString* const NSAccessibilityExpandedChanged = @"AXExpandedChanged";
 NSString* const NSAccessibilityMenuItemSelectedNotification =
     @"AXMenuItemSelected";
+NSString* const NSAccessibilityElementBusyChangedNotification =
+    @"AXElementBusyChanged";
 
 // The following native mac notifications are not fired:
 // AXLayoutComplete: Voiceover does not use this, it is considered too spammy.

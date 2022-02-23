@@ -50,11 +50,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
-import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
-import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -82,9 +81,13 @@ import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -123,7 +126,6 @@ public class MainSettingsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
                                                           .setRevision(RENDER_TEST_REVISION)
                                                           .build();
-
     @Mock
     public TemplateUrlService mMockTemplateUrlService;
     @Mock
@@ -239,8 +241,6 @@ public class MainSettingsFragmentTest {
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
         assertSettingsExists("languages", LanguageSettings.class);
-        assertSettingsExists(
-                MainSettings.PREF_DATA_REDUCTION, DataReductionPreferenceFragment.class);
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
@@ -426,6 +426,32 @@ public class MainSettingsFragmentTest {
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
         Assert.assertEquals(1, showCountHistogram.getDelta());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @Policies.Add({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
+    public void testPasswordsItemDisabledWhenManaged() {
+        launchSettingsActivity();
+        Assert.assertFalse(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testPasswordsItemEnabledWhenNotManaged() throws InterruptedException {
+        launchSettingsActivity();
+        Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    @Policies.Add({ @Policies.Item(key = "PasswordManagerEnabled", string = "false") })
+    public void testPasswordsItemEnabledWhenManagedWithoutUPM() {
+        launchSettingsActivity();
+        Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
     private void launchSettingsActivity() {

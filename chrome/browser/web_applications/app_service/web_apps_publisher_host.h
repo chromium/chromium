@@ -13,15 +13,20 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 
 class Profile;
 
@@ -61,6 +66,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, OpenNativeSettings);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, WindowMode);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, Launch);
+  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, LaunchWithFiles);
 
   void OnReady();
 
@@ -74,13 +80,13 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
+                apps::IconKeyPtr icon_key,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
+                     apps::WindowMode window_mode) override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
               LaunchCallback callback) override;
   void ExecuteContextMenuCommand(
@@ -89,15 +95,18 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       ExecuteContextMenuCommandCallback callback) override;
   void StopApp(const std::string& app_id) override;
   void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
+                     apps::PermissionPtr permission) override;
 
   // WebAppPublisherHelper::Delegate:
-  void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
-  void PublishWebApp(apps::mojom::AppPtr app) override;
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override;
+  void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       absl::optional<bool> accessing_camera,
       absl::optional<bool> accessing_microphone) override;
+
+  void ReturnLaunchResult(LaunchCallback callback,
+                          content::WebContents* web_contents);
 
   const WebApp* GetWebApp(const AppId& app_id) const;
 

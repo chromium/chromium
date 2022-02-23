@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EMPTY_NODE_LIST_H_
 
 #include "third_party/blink/renderer/core/dom/node_list.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

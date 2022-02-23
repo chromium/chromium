@@ -23,13 +23,13 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
                const gfx::Size& natural_size,
                base::TimeDelta timestamp));
 
-  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
-              CreateTemporaryFrame,
-              (media::VideoPixelFormat format,
-               const gfx::Size& coded_size,
-               const gfx::Rect& visible_rect,
-               const gfx::Size& natural_size,
-               base::TimeDelta timestamp));
+  MOCK_METHOD(std::unique_ptr<std::vector<uint8_t>>,
+              CreateTemporaryVectorBuffer,
+              ());
+
+  MOCK_METHOD(void,
+              ReleaseTemporaryVectorBuffer,
+              (std::unique_ptr<std::vector<uint8_t>>));
 
   MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
               GetRasterContextProvider,
@@ -54,16 +54,21 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
             }));
   }
 
-  void ExpectCreateTemporaryFrameWithRealImplementation() {
-    EXPECT_CALL(*this, CreateTemporaryFrame)
-        .WillOnce(testing::Invoke([this](media::VideoPixelFormat format,
-                                         const gfx::Size& coded_size,
-                                         const gfx::Rect& visible_rect,
-                                         const gfx::Size& natural_size,
-                                         base::TimeDelta timestamp) {
-          return WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
-              format, coded_size, visible_rect, natural_size, timestamp);
+  void ExpectCreateTemporaryVectorBufferWithRealImplementation() {
+    EXPECT_CALL(*this, CreateTemporaryVectorBuffer)
+        .WillOnce(testing::Invoke([this]() {
+          return WebRtcVideoFrameAdapter::SharedResources::
+              CreateTemporaryVectorBuffer();
         }));
+  }
+
+  void ExpectReleaseTemporaryVectorBufferWithRealImplementation() {
+    EXPECT_CALL(*this, ReleaseTemporaryVectorBuffer)
+        .WillOnce(testing::Invoke(
+            [this](std::unique_ptr<std::vector<uint8_t>> buffer) {
+              return WebRtcVideoFrameAdapter::SharedResources::
+                  ReleaseTemporaryVectorBuffer(std::move(buffer));
+            }));
   }
 
  private:

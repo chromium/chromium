@@ -21,7 +21,7 @@
 namespace ui_devtools {
 
 // TODO(lgrey): Hopefully temporary while we figure out why this doesn't work.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_ConnectionToViewsServer DISABLED_ConnectionToViewsServer
 #else
 #define MAYBE_ConnectionToViewsServer ConnectionToViewsServer

@@ -67,7 +67,13 @@ void LayoutListItem::StyleDidChange(StyleDifference diff,
     // LayoutObject. Check that this happens during style recalc.
     DCHECK(GetDocument().InStyleRecalc());
     DCHECK(!GetDocument().GetStyleEngine().InRebuildLayoutTree());
-    NotifyOfSubtreeChange();
+    // We may enter here when propagating writing-mode and direction from body
+    // to the root element after layout tree rebuild. Skip NotifyOfSubtreeChange
+    // for that case.
+    if (GetDocument().documentElement() != GetNode() ||
+        GetDocument().GetStyleEngine().NeedsStyleRecalc()) {
+      NotifyOfSubtreeChange();
+    }
   }
 
   LayoutObject* marker = Marker();

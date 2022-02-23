@@ -91,7 +91,7 @@ class BiquadFilterNode final : public AudioNode {
                                   const BiquadFilterOptions*,
                                   ExceptionState&);
 
-  BiquadFilterNode(BaseAudioContext&);
+  explicit BiquadFilterNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

@@ -1,0 +1,14 @@
+{
+  program: {
+    runner: "elf_test_runner",
+  },
+  capabilities: [
+    { protocol: "fuchsia.test.Suite" },
+  ],
+  expose: [
+    {
+      protocol: "fuchsia.test.Suite",
+      from: "self",
+    },
+  ],
+}

@@ -14,7 +14,7 @@
 
 namespace blink {
 
-class CORE_EXPORT DOMArrayBuffer final : public DOMArrayBufferBase {
+class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   DEFINE_WRAPPERTYPEINFO();
   static const WrapperTypeInfo wrapper_type_info_body_;
 

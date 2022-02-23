@@ -18,6 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -25,6 +27,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -117,6 +120,71 @@ ConvertStyle(uint32_t style) {
       VLOG(1) << "Unsupported style. Skipped: " << style;
   }
   return absl::nullopt;
+}
+
+// Converts Chrome's TextInputType into wayland's content_purpose.
+// Some of TextInputType values do not have clearly corresponding wayland value,
+// and they fallback to closer type.
+uint32_t InputTypeToContentPurpose(TextInputType input_type) {
+  switch (input_type) {
+    case TEXT_INPUT_TYPE_NONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_TEXT:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_PASSWORD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD;
+    case TEXT_INPUT_TYPE_SEARCH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_EMAIL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_EMAIL;
+    case TEXT_INPUT_TYPE_NUMBER:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NUMBER;
+    case TEXT_INPUT_TYPE_TELEPHONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PHONE;
+    case TEXT_INPUT_TYPE_URL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL;
+    case TEXT_INPUT_TYPE_DATE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_DATE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_MONTH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_TIME;
+    case TEXT_INPUT_TYPE_WEEK:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TEXT_AREA:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_CONTENT_EDITABLE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_DATE_TIME_FIELD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_NULL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+  }
+}
+
+// Converts Chrome's TextInputType into wayland's content_hint.
+uint32_t InputFlagsToContentHint(int input_flags) {
+  uint32_t hint = 0;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  // No good match. Fallback to AUTO_CORRECTION.
+  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_UPPERCASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_TITLECASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CAPITALIZATION;
+  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_PASSWORD;
+  return hint;
 }
 
 }  // namespace
@@ -319,6 +387,52 @@ void WaylandInputMethodContext::SetSurroundingText(
   text_input_->SetSurroundingText(truncated_text, relocated_selection_range);
 }
 
+void WaylandInputMethodContext::SetContentType(TextInputType input_type,
+                                               int input_flags) {
+  if (!text_input_)
+    return;
+
+  uint32_t content_purpose = InputTypeToContentPurpose(input_type);
+  uint32_t content_hint = InputFlagsToContentHint(input_flags);
+  text_input_->SetContentType(content_hint, content_purpose);
+}
+
+VirtualKeyboardController*
+WaylandInputMethodContext::GetVirtualKeyboardController() {
+  if (!text_input_)
+    return nullptr;
+  return this;
+}
+
+bool WaylandInputMethodContext::DisplayVirtualKeyboard() {
+  if (!text_input_)
+    return false;
+
+  text_input_->ShowInputPanel();
+  return true;
+}
+
+void WaylandInputMethodContext::DismissVirtualKeyboard() {
+  if (!text_input_)
+    return;
+
+  text_input_->HideInputPanel();
+}
+
+void WaylandInputMethodContext::AddObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void WaylandInputMethodContext::RemoveObserver(
+    VirtualKeyboardControllerObserver* observer) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+bool WaylandInputMethodContext::IsKeyboardVisible() {
+  return virtual_keyboard_visible_;
+}
+
 void WaylandInputMethodContext::OnPreeditString(
     base::StringPiece text,
     const std::vector<SpanStyle>& spans,
@@ -411,15 +525,15 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   if (!layout_engine)
     return;
 
-  // TODO(crbug.com/1079353): Handle modifiers.
   DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
-                         ->GetDomCodeByKeysym(keysym);
+                         ->GetDomCodeByKeysym(keysym, modifiers);
   if (dom_code == DomCode::NONE)
     return;
 
   // Keyboard might not exist.
-  int device_id =
-      connection_->keyboard() ? connection_->keyboard()->device_id() : 0;
+  int device_id = connection_->seat()->keyboard()
+                      ? connection_->seat()->keyboard()->device_id()
+                      : 0;
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
@@ -492,6 +606,14 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
                                     ime_text_spans);
 }
 
+void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {
+  virtual_keyboard_visible_ = (state & 1) != 0;
+  // Note: Currently there's no support of VirtualKeyboardControllerObserver.
+  // In the future, we may need to support it. Specifically,
+  // RenderWidgetHostViewAura would like to know the VirtualKeyboard's
+  // region somehow.
+}
+
 void WaylandInputMethodContext::OnKeyboardFocusedWindowChanged() {
   MaybeUpdateActivated();
 }
@@ -502,9 +624,13 @@ void WaylandInputMethodContext::MaybeUpdateActivated() {
 
   WaylandWindow* window =
       connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
+  if (!window && !connection_->seat()->keyboard())
+    window = connection_->wayland_window_manager()->GetCurrentActiveWindow();
   // Activate Wayland IME only if 1) InputMethod in Chrome has some
   // TextInputClient connected, and 2) the actual keyboard focus of Wayland
   // is given to Chrome, which is notified via wl_keyboard::enter.
+  // If no keyboard is connected, the current active window is used for 2)
+  // instead (https://crbug.com/1168411).
   bool activated = focused_ && window;
   if (activated_ == activated)
     return;

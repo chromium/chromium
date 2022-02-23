@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/crash/core/app/client_upload_info.h"
+
+#include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 namespace crash_reporter {
@@ -11,7 +13,7 @@ bool GetClientCollectStatsConsent() {
   return GetCrashReporterClient()->GetCollectStatsConsent();
 }
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 void GetClientProductNameAndVersion(std::string* product,
                                     std::string* version,
                                     std::string* channel) {

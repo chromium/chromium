@@ -11,13 +11,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace speech {
 
 // Implements the SpeechRecognitionService with SODA on-device speech
-// recognition. For debugging only, English speech recognition with web speech
-// be used as a fallback using the flag media::kUseSodaForLiveCaption.
+// recognition.
 class SpeechRecognitionServiceImpl
     : public media::mojom::SpeechRecognitionService,
       public media::mojom::SpeechRecognitionContext {
@@ -34,16 +32,8 @@ class SpeechRecognitionServiceImpl
   // media::mojom::SpeechRecognitionService
   void BindContext(mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                        context) override;
-  void SetUrlLoaderFactory(mojo::PendingRemote<network::mojom::URLLoaderFactory>
-                               url_loader_factory) override;
   void SetSodaPath(const base::FilePath& binary_path,
                    const base::FilePath& config_path) override;
-  void BindSpeechRecognitionServiceClient(
-      mojo::PendingRemote<media::mojom::SpeechRecognitionServiceClient> client)
-      override;
-
-  virtual mojo::PendingRemote<network::mojom::URLLoaderFactory>
-  GetUrlLoaderFactory();
 
   // media::mojom::SpeechRecognitionContext
   void BindRecognizer(
@@ -67,10 +57,6 @@ class SpeechRecognitionServiceImpl
   // The set of receivers used to receive messages from the renderer clients.
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
-
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
-
-  mojo::Remote<media::mojom::SpeechRecognitionServiceClient> client_;
 
   base::FilePath binary_path_ = base::FilePath();
   base::FilePath config_path_ = base::FilePath();

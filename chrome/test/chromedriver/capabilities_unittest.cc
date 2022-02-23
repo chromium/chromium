@@ -182,7 +182,7 @@ TEST(ParseCapabilities, Prefs) {
   caps.SetPath({"goog:chromeOptions", "prefs"}, prefs.Clone());
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
-  ASSERT_TRUE(capabilities.prefs->Equals(&prefs));
+  ASSERT_TRUE(*capabilities.prefs == prefs);
 }
 
 TEST(ParseCapabilities, LocalState) {
@@ -194,7 +194,7 @@ TEST(ParseCapabilities, LocalState) {
   caps.SetPath({"goog:chromeOptions", "localState"}, local_state.Clone());
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
-  ASSERT_TRUE(capabilities.local_state->Equals(&local_state));
+  ASSERT_TRUE(*capabilities.local_state == local_state);
 }
 
 TEST(ParseCapabilities, Extensions) {

@@ -15,8 +15,8 @@
 namespace cc {
 
 ScrollNode::ScrollNode()
-    : id(ScrollTree::kInvalidNodeId),
-      parent_id(ScrollTree::kInvalidNodeId),
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
       main_thread_scrolling_reasons(
           MainThreadScrollingReason::kNotScrollingOnMain),
       scrollable(false),

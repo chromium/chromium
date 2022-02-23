@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -201,12 +202,12 @@ class PasswordsPrivateDelegateImplTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  extensions::TestEventRouter* event_router_ = nullptr;
+  raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
   scoped_refptr<TestPasswordStore> store_ =
       CreateAndUseTestPasswordStore(&profile_);
   scoped_refptr<TestPasswordStore> account_store_ =
       CreateAndUseTestAccountPasswordStore(&profile_);
-  ui::TestClipboard* test_clipboard_ =
+  raw_ptr<ui::TestClipboard> test_clipboard_ =
       ui::TestClipboard::CreateForCurrentThread();
 
  private:

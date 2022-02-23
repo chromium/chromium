@@ -8,12 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/api/content_settings/content_settings_store.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
@@ -52,7 +53,7 @@ class PreferenceEventRouter : public ProfileObserver {
   std::unique_ptr<PrefChangeRegistrar> incognito_registrar_;
 
   // Weak, owns us (transitively via ExtensionService).
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};
@@ -142,7 +143,7 @@ class PreferenceAPI : public PreferenceAPIBase,
   ExtensionPrefValueMap* extension_pref_value_map() override;
   scoped_refptr<ContentSettingsStore> content_settings_store() override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

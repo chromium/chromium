@@ -124,7 +124,7 @@ const char kVModule[] = "vmodule";
 // Will wait for 60 seconds for a debugger to come to attach to the process.
 const char kWaitForDebugger[] = "wait-for-debugger";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Disable high-resolution timer on Windows.
 const char kDisableHighResTimer[] = "disable-highres-timer";
 
@@ -134,7 +134,7 @@ const char kDisableUsbKeyboardDetect[]      = "disable-usb-keyboard-detect";
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 // The /dev/shm partition is too small in certain VM environments, causing
 // Chrome to fail or crash (see http://crbug.com/715363). Use this flag to
@@ -143,14 +143,14 @@ const char kDisableUsbKeyboardDetect[]      = "disable-usb-keyboard-detect";
 const char kDisableDevShmUsage[] = "disable-dev-shm-usage";
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Used for turning on Breakpad crash reporting in a debug environment where
 // crash reporting is typically compiled but disabled.
 const char kEnableCrashReporterForTesting[] =
     "enable-crash-reporter-for-testing";
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Enables the reached code profiler that samples all threads in all processes
 // to determine which functions are almost never executed.
 const char kEnableReachedCodeProfiler[] = "enable-reached-code-profiler";
@@ -170,7 +170,7 @@ const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Controls whether or not retired instruction counts are surfaced for threads
 // in trace events on Linux.
 //

@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/heavy_ad_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"

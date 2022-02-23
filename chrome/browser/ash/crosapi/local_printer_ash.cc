@@ -18,21 +18,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
+#include "chrome/browser/ash/printing/print_server.h"
+#include "chrome/browser/ash/printing/print_servers_manager.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_setup_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chrome/browser/chromeos/printing/print_server.h"
-#include "chrome/browser/chromeos/printing/print_servers_manager.h"
-#include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chrome/browser/printing/prefs_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -70,13 +70,13 @@ GURL GenerateEulaUrl(scoped_refptr<chromeos::PpdProvider>,
       license.empty()) {
     return GURL();
   }
-  return chromeos::PrinterConfigurer::GeneratePrinterEulaUrl(license);
+  return ash::PrinterConfigurer::GeneratePrinterEulaUrl(license);
 }
 
 // Destroys the PrinterConfigurer object once the callback has finished
 // running.
 mojom::CapabilitiesResponsePtr OnSetUpPrinter(
-    std::unique_ptr<chromeos::PrinterConfigurer>,
+    std::unique_ptr<ash::PrinterConfigurer>,
     PrefService* prefs,
     const chromeos::Printer& printer,
     const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
@@ -105,10 +105,10 @@ LocalPrinterAsh::~LocalPrinterAsh() {
 
 // static
 mojom::PrintServersConfigPtr LocalPrinterAsh::ConfigToMojom(
-    const chromeos::PrintServersConfig& config) {
+    const ash::PrintServersConfig& config) {
   mojom::PrintServersConfigPtr ptr = mojom::PrintServersConfig::New();
   ptr->fetching_mode = config.fetching_mode;
-  for (const chromeos::PrintServer& server : config.print_servers) {
+  for (const ash::PrintServer& server : config.print_servers) {
     ptr->print_servers.push_back(mojom::PrintServer::New(
         server.GetId(), server.GetUrl(), server.GetName()));
   }
@@ -151,7 +151,7 @@ void LocalPrinterAsh::OnProfileAdded(Profile*) {
   if (!profile)
     return;
   auto* printers_manager_factory =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   // In unit tests, `printers_manager_factory` can be null.
   if (!printers_manager_factory) {
     LOG(ERROR) << "CupsPrintersManagerFactory object not found";
@@ -172,7 +172,7 @@ void LocalPrinterAsh::OnProfileAdded(Profile*) {
     LOG(ERROR) << "PrintServersManager object not found";
   }
   auto* print_job_manager =
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
   print_job_manager->AddObserver(this);
 }
 
@@ -181,49 +181,42 @@ void LocalPrinterAsh::OnProfileManagerDestroying() {
   profile_manager_ = nullptr;
 }
 
-void LocalPrinterAsh::OnPrintJobCreated(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobCreated(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kCreated);
 }
 
-void LocalPrinterAsh::OnPrintJobStarted(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobStarted(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kStarted);
 }
 
-void LocalPrinterAsh::OnPrintJobUpdated(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobUpdated(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kUpdated);
 }
 
 void LocalPrinterAsh::OnPrintJobSuspended(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kSuspended);
 }
 
-void LocalPrinterAsh::OnPrintJobResumed(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobResumed(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kResumed);
 }
 
-void LocalPrinterAsh::OnPrintJobDone(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobDone(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kDone);
 }
 
-void LocalPrinterAsh::OnPrintJobError(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void LocalPrinterAsh::OnPrintJobError(base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kError);
 }
 
 void LocalPrinterAsh::OnPrintJobCancelled(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<ash::CupsPrintJob> job) {
   NotifyPrintJobUpdate(job, mojom::PrintJobStatus::kCancelled);
 }
 
-void LocalPrinterAsh::NotifyPrintJobUpdate(
-    base::WeakPtr<chromeos::CupsPrintJob> job,
-    mojom::PrintJobStatus status) {
+void LocalPrinterAsh::NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
+                                           mojom::PrintJobStatus status) {
   if (!job) {
     LOG(WARNING) << "Ignoring invalid print job";
     return;
@@ -237,13 +230,13 @@ void LocalPrinterAsh::NotifyPrintJobUpdate(
 }
 
 void LocalPrinterAsh::OnPrintServersChanged(
-    const chromeos::PrintServersConfig& config) {
+    const ash::PrintServersConfig& config) {
   for (auto& remote : print_server_remotes_)
     remote->OnPrintServersChanged(LocalPrinterAsh::ConfigToMojom(config));
 }
 
 void LocalPrinterAsh::OnServerPrintersChanged(
-    const std::vector<chromeos::PrinterDetector::DetectedPrinter>&) {
+    const std::vector<ash::PrinterDetector::DetectedPrinter>&) {
   for (auto& remote : print_server_remotes_)
     remote->OnServerPrintersChanged();
 }
@@ -253,8 +246,8 @@ void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
   DCHECK(profile);
   // Printing is not allowed during OOBE.
   DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
-  chromeos::CupsPrintersManager* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   std::vector<mojom::LocalDestinationInfoPtr> printers;
   for (chromeos::PrinterClass pc :
        {chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
@@ -272,8 +265,8 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
                                     GetCapabilityCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::CupsPrintersManager* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   absl::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
@@ -281,9 +274,9 @@ void LocalPrinterAsh::GetCapability(const std::string& printer_id,
     std::move(callback).Run(nullptr);
     return;
   }
-  std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer =
+  std::unique_ptr<ash::PrinterConfigurer> printer_configurer =
       CreatePrinterConfigurer(profile);
-  chromeos::PrinterConfigurer* ptr = printer_configurer.get();
+  ash::PrinterConfigurer* ptr = printer_configurer.get();
   ash::printing::SetUpPrinter(
       printers_manager, ptr, *printer,
       base::BindOnce(OnSetUpPrinter, std::move(printer_configurer),
@@ -295,8 +288,8 @@ void LocalPrinterAsh::GetEulaUrl(const std::string& printer_id,
                                  GetEulaUrlCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::CupsPrintersManager* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   absl::optional<chromeos::Printer> printer =
       printers_manager->GetPrinter(printer_id);
   if (!printer) {
@@ -315,8 +308,8 @@ void LocalPrinterAsh::GetStatus(const std::string& printer_id,
                                 GetStatusCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::CupsPrintersManager* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
   printers_manager->FetchPrinterStatus(
       printer_id, base::BindOnce(StatusToMojom).Then(std::move(callback)));
 }
@@ -334,18 +327,18 @@ void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
                                      CreatePrintJobCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::CupsPrintJobManager* print_job_manager =
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
-  chromeos::printing::proto::PrintSettings settings;
+  ash::CupsPrintJobManager* print_job_manager =
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  ash::printing::proto::PrintSettings settings;
   settings.set_color(
       printing::IsColorModelSelected(job->color_mode)
-          ? chromeos::printing::proto::PrintSettings_ColorMode_COLOR
-          : chromeos::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
+          ? ash::printing::proto::PrintSettings_ColorMode_COLOR
+          : ash::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
   settings.set_duplex(
-      static_cast<chromeos::printing::proto::PrintSettings_DuplexMode>(
+      static_cast<ash::printing::proto::PrintSettings_DuplexMode>(
           job->duplex_mode));
   settings.set_copies(job->copies);
-  chromeos::printing::proto::MediaSize media_size;
+  ash::printing::proto::MediaSize media_size;
   media_size.set_width(job->media_size.width());
   media_size.set_height(job->media_size.height());
   media_size.set_vendor_id(job->media_vendor_id);
@@ -363,17 +356,16 @@ void LocalPrinterAsh::CancelPrintJob(const std::string& printer_id,
   DCHECK(profile);
   ash::printing::print_management::PrintingManagerFactory::GetForProfile(
       profile)
-      ->CancelPrintJob(
-          chromeos::CupsPrintJob::CreateUniqueId(printer_id, job_id),
-          std::move(callback));
+      ->CancelPrintJob(ash::CupsPrintJob::CreateUniqueId(printer_id, job_id),
+                       std::move(callback));
 }
 
 void LocalPrinterAsh::GetPrintServersConfig(
     GetPrintServersConfigCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::PrintServersManager* print_servers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile)
+  ash::PrintServersManager* print_servers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile)
           ->GetPrintServersManager();
   std::move(callback).Run(
       ConfigToMojom(print_servers_manager->GetPrintServersConfig()));
@@ -384,8 +376,8 @@ void LocalPrinterAsh::ChoosePrintServers(
     ChoosePrintServersCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::PrintServersManager* print_servers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(profile)
+  ash::PrintServersManager* print_servers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile)
           ->GetPrintServersManager();
   print_servers_manager->ChoosePrintServer(print_server_ids);
   std::move(callback).Run();
@@ -494,8 +486,9 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
     return;
   }
 
-  deny_list.reserve(deny_list_from_prefs->GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
+  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
+  for (const base::Value& deny_list_value :
+       deny_list_from_prefs->GetListDeprecated()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     printing::mojom::PrinterType printer_type;
     if (deny_list_str == "privet")
@@ -540,9 +533,9 @@ scoped_refptr<chromeos::PpdProvider> LocalPrinterAsh::CreatePpdProvider(
   return ash::CreatePpdProvider(profile);
 }
 
-std::unique_ptr<chromeos::PrinterConfigurer>
+std::unique_ptr<ash::PrinterConfigurer>
 LocalPrinterAsh::CreatePrinterConfigurer(Profile* profile) {
-  return chromeos::PrinterConfigurer::Create(profile);
+  return ash::PrinterConfigurer::Create(profile);
 }
 
 }  // namespace crosapi

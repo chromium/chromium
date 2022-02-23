@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
 namespace web {

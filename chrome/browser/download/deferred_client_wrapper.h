@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/download/public/background_service/client.h"
@@ -80,9 +81,9 @@ class DeferredClientWrapper : public Client {
   std::unique_ptr<download::Client> wrapped_client_;
   std::vector<base::OnceClosure> deferred_closures_;
   ClientFactory client_factory_;
-  SimpleFactoryKey* key_;
+  raw_ptr<SimpleFactoryKey> key_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is needed to record UMA for when DownloadClientWrapper requests a full
   // browser start while the browser is running in reduced mode. Reduced mode is
   // only on Android so it is ifdefed out on other platforms to prevent the

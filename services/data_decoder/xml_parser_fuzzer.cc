@@ -38,6 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::SingleThreadTaskExecutor main_thread_task_executor;
   base::RunLoop run_loop;
   xml_parser.Parse(std::string(data_ptr, size),
+                   data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
                    base::BindOnce(&OnParseXml, run_loop.QuitClosure()));
   run_loop.Run();
 

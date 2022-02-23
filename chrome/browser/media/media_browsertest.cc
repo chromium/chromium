@@ -34,7 +34,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
   std::vector<base::Feature> enabled_features = {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
   };
@@ -44,7 +44,7 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // the fallback path.
     media::kFallbackAfterDecodeError,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Disable out of process audio on Linux due to process spawn
     // failures. http://crbug.com/986021
     features::kAudioServiceOutOfProcess,

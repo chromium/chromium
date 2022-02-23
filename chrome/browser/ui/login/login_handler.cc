@@ -408,8 +408,8 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
     dialog_form.scheme = PasswordForm::Scheme::kOther;
   }
   dialog_form.url = auth_info.challenger.GetURL();
-  DCHECK(auth_info.is_proxy || auth_info.challenger.IsSameOriginWith(
-                                   url::Origin::Create(request_url)));
+  DCHECK(auth_info.is_proxy ||
+         auth_info.challenger.IsSameOriginWith(request_url));
   dialog_form.signon_realm = GetSignonRealm(dialog_form.url, auth_info);
   return dialog_form;
 }
@@ -429,7 +429,7 @@ void LoginHandler::GetDialogStrings(const GURL& request_url,
     authority_url = auth_info.challenger.GetURL();
   } else {
     *authority = url_formatter::FormatUrlForSecurityDisplay(request_url);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android concatenates with a space rather than displaying on two separate
     // lines, so it needs some surrounding text.
     *authority =

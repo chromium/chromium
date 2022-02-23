@@ -29,7 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #endif
 
@@ -66,7 +66,7 @@ void CreateSafeBrowsingUserInteractionObserver(
     ui_manager->StartDisplayingBlockingPage(resource);
     return;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Don't delay the interstitial for Chrome Custom Tabs.
   auto* tab_android = TabAndroid::FromWebContents(web_contents);
   if (tab_android && tab_android->IsCustomTab()) {

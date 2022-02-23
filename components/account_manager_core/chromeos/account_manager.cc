@@ -51,6 +51,9 @@ constexpr int kTokensFileMaxSizeInBytes = 100000;  // ~100 KB.
 constexpr char kNumAccountsMetricName[] = "AccountManager.NumAccounts";
 constexpr int kMaxNumAccountsMetric = 10;
 
+// The value `all` means that all usages of managed accounts are allowed.
+constexpr char kDefaultSecondaryGoogleAccountUsage[] = "all";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Note: Enums labels are at |AccountManagerTokenLoadStatus|.
@@ -275,7 +278,9 @@ AccountManager::AccountManager() = default;
 void AccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
-      true /* default_value */);
+      /*default_value=*/true);
+  registry->RegisterStringPref(prefs::kSecondaryGoogleAccountUsage,
+                               kDefaultSecondaryGoogleAccountUsage);
 }
 
 void AccountManager::SetPrefService(PrefService* pref_service) {
@@ -472,38 +477,36 @@ void AccountManager::RunOnInitialization(base::OnceClosure closure) {
 }
 
 void AccountManager::GetAccounts(AccountListCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::GetAccountsInternal,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::GetAccounts, weak_factory_.GetWeakPtr(),
+                       std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::GetAccountsInternal(AccountListCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  std::move(callback).Run(GetAccounts());
+  std::move(callback).Run(GetAccountsView());
 }
 
 void AccountManager::GetAccountEmail(
     const ::account_manager::AccountKey& account_key,
     base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure = base::BindOnce(
-      &AccountManager::GetAccountEmailInternal, weak_factory_.GetWeakPtr(),
-      account_key, std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::GetAccountEmail, weak_factory_.GetWeakPtr(),
+        account_key, std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::GetAccountEmailInternal(
-    const ::account_manager::AccountKey& account_key,
-    base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     std::move(callback).Run(std::string());
@@ -515,19 +518,18 @@ void AccountManager::GetAccountEmailInternal(
 
 void AccountManager::RemoveAccount(
     const ::account_manager::AccountKey& account_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::RemoveAccountInternal,
-                     weak_factory_.GetWeakPtr(), account_key);
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::RemoveAccount,
+                       weak_factory_.GetWeakPtr(), account_key);
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::RemoveAccountInternal(
-    const ::account_manager::AccountKey& account_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     return;
@@ -540,28 +542,6 @@ void AccountManager::RemoveAccountInternal(
   NotifyAccountRemovalObservers(
       ::account_manager::Account{account_key, raw_email});
   MaybeRevokeTokenOnServer(account_key, old_token);
-}
-
-void AccountManager::RemoveAccount(const std::string& email) {
-  DCHECK_NE(init_state_, InitializationState::kNotStarted);
-
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::RemoveAccountByEmailInternal,
-                     weak_factory_.GetWeakPtr(), email);
-  RunOnInitialization(std::move(closure));
-}
-
-void AccountManager::RemoveAccountByEmailInternal(const std::string& email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  for (const std::pair<::account_manager::AccountKey, AccountInfo> account :
-       accounts_) {
-    if (gaia::AreEmailsSame(account.second.raw_email, email)) {
-      RemoveAccountInternal(account.first /* account_key */);
-      return;
-    }
-  }
 }
 
 void AccountManager::UpsertAccount(
@@ -580,6 +560,7 @@ void AccountManager::UpsertAccount(
 void AccountManager::UpdateToken(
     const ::account_manager::AccountKey& account_key,
     const std::string& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
   if (account_key.account_type() ==
@@ -587,46 +568,19 @@ void AccountManager::UpdateToken(
     DCHECK_EQ(token, kActiveDirectoryDummyToken);
   }
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::UpdateTokenInternal,
-                     weak_factory_.GetWeakPtr(), account_key, token);
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::UpdateToken, weak_factory_.GetWeakPtr(),
+                       account_key, token);
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::UpdateTokenInternal(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   DCHECK(it != accounts_.end())
       << "UpdateToken cannot be used for adding accounts";
   UpsertAccountInternal(account_key, AccountInfo{it->second.raw_email, token});
-}
-
-void AccountManager::UpdateEmail(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& raw_email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(init_state_, InitializationState::kNotStarted);
-
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::UpdateEmailInternal,
-                     weak_factory_.GetWeakPtr(), account_key, raw_email);
-  RunOnInitialization(std::move(closure));
-}
-
-void AccountManager::UpdateEmailInternal(
-    const ::account_manager::AccountKey& account_key,
-    const std::string& raw_email) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
-  auto it = accounts_.find(account_key);
-  DCHECK(it != accounts_.end())
-      << "UpdateEmail cannot be used for adding accounts";
-  UpsertAccountInternal(account_key, AccountInfo{raw_email, it->second.token});
 }
 
 void AccountManager::UpsertAccountInternal(
@@ -704,7 +658,9 @@ std::string AccountManager::GetSerializedAccounts() {
   return accounts_proto.SerializeAsString();
 }
 
-std::vector<::account_manager::Account> AccountManager::GetAccounts() {
+std::vector<::account_manager::Account> AccountManager::GetAccountsView() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::vector<::account_manager::Account> accounts;
   accounts.reserve(accounts_.size());
 
@@ -773,20 +729,18 @@ bool AccountManager::IsTokenAvailable(
 void AccountManager::HasDummyGaiaToken(
     const ::account_manager::AccountKey& account_key,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure = base::BindOnce(
-      &AccountManager::HasDummyGaiaTokenInternal, weak_factory_.GetWeakPtr(),
-      account_key, std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure = base::BindOnce(
+        &AccountManager::HasDummyGaiaToken, weak_factory_.GetWeakPtr(),
+        account_key, std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::HasDummyGaiaTokenInternal(
-    const ::account_manager::AccountKey& account_key,
-    base::OnceCallback<void(bool)> callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   auto it = accounts_.find(account_key);
   std::move(callback).Run(it != accounts_.end() &&
                           it->second.token == kInvalidToken);
@@ -796,21 +750,18 @@ void AccountManager::CheckDummyGaiaTokenForAllAccounts(
     base::OnceCallback<
         void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::CheckDummyGaiaTokenForAllAccountsInternal,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::CheckDummyGaiaTokenForAllAccounts,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::CheckDummyGaiaTokenForAllAccountsInternal(
-    base::OnceCallback<
-        void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   std::vector<std::pair<::account_manager::Account, bool>> accounts_list;
   accounts_list.reserve(accounts_.size());
 

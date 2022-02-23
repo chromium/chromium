@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/constants.h"
@@ -72,7 +73,7 @@ class LiveCaptionController : public KeyedService,
   // Mac and ChromeOS move the fullscreened window into a new workspace. When
   // the WebContents associated with the CaptionBubbleContext goes
   // fullscreen, ensure that the Live Caption bubble moves to the new workspace.
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   void OnToggleFullscreen(CaptionBubbleContext* caption_bubble_context);
 #endif
 
@@ -98,8 +99,8 @@ class LiveCaptionController : public KeyedService,
   void CreateUI();
   void DestroyUI();
 
-  PrefService* profile_prefs_;
-  PrefService* global_prefs_;
+  raw_ptr<PrefService> profile_prefs_;
+  raw_ptr<PrefService> global_prefs_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
   absl::optional<ui::CaptionStyle> caption_style_;

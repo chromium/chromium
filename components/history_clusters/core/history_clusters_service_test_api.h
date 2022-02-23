@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -49,12 +50,23 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->backend_ = std::move(backend);
   }
 
+  void SetAllKeywordsCacheTimestamp(base::Time time) {
+    history_clusters_service_->all_keywords_cache_timestamp_ = time;
+  }
+
+  void SetShortKeywordCacheTimestamp(base::Time time) {
+    history_clusters_service_->short_keyword_cache_timestamp_ = time;
+  }
+
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };
 
 // Fetches two hardcoded test visits.
 std::vector<history::AnnotatedVisit> GetHardcodedTestVisits();
+
+// Fetches the hardcoded `ClusterVisit` with ID `visit_id`.
+history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id);
 
 }  // namespace history_clusters
 

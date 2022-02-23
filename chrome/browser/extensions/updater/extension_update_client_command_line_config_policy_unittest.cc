@@ -17,7 +17,7 @@ TEST(ExtensionUpdateClientCommandLineConfigPolicyTest, CommandLine) {
   {
     const ExtensionUpdateClientCommandLineConfigPolicy config_policy(&cmdline);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_TRUE(config_policy.BackgroundDownloadsEnabled());
 #else
     EXPECT_FALSE(config_policy.BackgroundDownloadsEnabled());

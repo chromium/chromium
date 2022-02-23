@@ -70,9 +70,6 @@ class SafeBrowsingTabObserver
   // Handles IPCs.
   std::unique_ptr<ClientSideDetectionHost> safebrowsing_detection_host_;
 
-  // Our owning WebContents.
-  content::WebContents* web_contents_;
-
   std::unique_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;

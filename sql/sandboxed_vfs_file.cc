@@ -11,6 +11,8 @@
 
 #include "base/check_op.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -129,12 +131,19 @@ const sqlite3_io_methods* GetSqliteIoMethods() {
 // static
 void SandboxedVfsFile::Create(base::File file,
                               base::FilePath file_path,
+#if DCHECK_IS_ON()
+                              SandboxedVfsFileType file_type,
+#endif  // DCHECK_IS_ON()
                               SandboxedVfs* vfs,
                               sqlite3_file& buffer) {
   SandboxedVfsFileSqliteBridge& bridge =
       SandboxedVfsFileSqliteBridge::FromSqliteFile(buffer);
   bridge.sandboxed_vfs_file =
-      new SandboxedVfsFile(std::move(file), std::move(file_path), vfs);
+      new SandboxedVfsFile(std::move(file), std::move(file_path),
+#if DCHECK_IS_ON()
+                           file_type,
+#endif  // DCHECK_IS_ON()
+                           vfs);
   bridge.sqlite_file.pMethods = GetSqliteIoMethods();
 }
 
@@ -154,6 +163,21 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   DCHECK(buffer);
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
+
+#if DCHECK_IS_ON()
+  constexpr int kSqliteDatabaseHeaderOffset = 0;
+  constexpr int kSqliteDatabaseHeaderSize = 100;
+  // SQLite's locking protocol only acquires locks on the database file. The
+  // journal and the WAL file are always unlocked. Also, as an optimization,
+  // SQLite first reads the database header without locking the file.
+  DCHECK(sqlite_lock_mode_ > SQLITE_LOCK_NONE ||
+         file_type_ != SandboxedVfsFileType::kDatabase ||
+         (offset == kSqliteDatabaseHeaderOffset &&
+          size == kSqliteDatabaseHeaderSize))
+      << "Read from database file with lock mode " << sqlite_lock_mode_
+      << "of size" << size << " at offset " << offset;
+#endif  // DCHECK_IS_ON()
+
   char* data = reinterpret_cast<char*>(buffer);
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
@@ -165,18 +189,18 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   if (bytes_read == size)
     return SQLITE_OK;
 
-  // SQLite first reads the database header without locking the file. On
-  // Windows, this read will fail if there is an exclusive lock on the file,
-  // even if the current process owns that lock.
-  if (sqlite_lock_mode_ == SQLITE_LOCK_NONE) {
-    // The unlocked read is considered an optimization. SQLite can continue even
-    // if the read fails, as long as failure is communicated by zeroing out the
-    // output buffer.
-    std::memset(data, 0, size);
-    return SQLITE_OK;
-  }
-
   if (bytes_read < 0) {
+    // SQLite first reads the database header without locking the file. On
+    // Windows, this read will fail if there is an exclusive lock on the file,
+    // even if the current process owns that lock.
+    if (sqlite_lock_mode_ == SQLITE_LOCK_NONE) {
+      // The unlocked read is considered an optimization. SQLite can continue
+      // even if the read fails, as long as failure is communicated by zeroing
+      // out the output buffer.
+      std::memset(data, 0, size);
+      return SQLITE_OK;
+    }
+
     vfs_->SetLastError(base::File::GetLastFileError());
     return SQLITE_IOERR_READ;
   }
@@ -192,6 +216,15 @@ int SandboxedVfsFile::Write(const void* buffer,
   DCHECK(buffer);
   DCHECK_GE(size, 0);
   DCHECK_GE(offset, 0);
+
+#if DCHECK_IS_ON()
+  // SQLite's locking protocol only acquires locks on the database file. The
+  // journal and the WAL file are always unlocked.
+  DCHECK(sqlite_lock_mode_ == SQLITE_LOCK_EXCLUSIVE ||
+         file_type_ != SandboxedVfsFileType::kDatabase)
+      << "Write to database file with lock mode " << sqlite_lock_mode_;
+#endif  // DCHECK_IS_ON()
+
   const char* data = reinterpret_cast<const char*>(buffer);
 
   // If we supported mmap()ed files, we'd check for a memory mapping here,
@@ -286,7 +319,11 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
 }  // namespace
 
 int SandboxedVfsFile::Lock(int mode) {
-#if defined(OS_FUCHSIA)
+  DCHECK_GT(mode, sqlite_lock_mode_)
+      << "SQLite asked the VFS to lock the file up to mode " << mode
+      << " but the file is already locked at mode " << sqlite_lock_mode_;
+
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_LOCK;
 #else
   base::File::LockMode file_lock_mode = base::File::LockMode::kExclusive;
@@ -309,18 +346,20 @@ int SandboxedVfsFile::Lock(int mode) {
       break;
 
     case SQLITE_LOCK_PENDING:
-      // A SHARED lock is required before a PENDING lock is acquired. The caller
-      // may have a RESERVED lock.
-      if (sqlite_lock_mode_ == SQLITE_LOCK_RESERVED) {
-        sqlite_lock_mode_ = mode;
-        return SQLITE_OK;
-      }
+      NOTREACHED() << "SQLite never directly asks for PENDING locks";
 
-      DCHECK_EQ(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
-      file_lock_mode = base::File::LockMode::kExclusive;
-      break;
+      // Should we ever receive PENDING lock requests, the handler for
+      // EXCLUSIVE lock requests below happens to work perfectly.
+      [[fallthrough]];
 
     case SQLITE_LOCK_EXCLUSIVE:
+      // A SHARED lock is required before an EXCLUSIVE lock is acquired.
+      //
+      // No higher level is required. In fact, SQLite upgrades the lock directly
+      // from SHARED to EXCLUSIVE when rolling back a transaction, to avoid
+      // having other readers queue up in the RESERVED state.
+      DCHECK_GE(sqlite_lock_mode_, SQLITE_LOCK_SHARED);
+
       if (IsExclusiveLockMode(sqlite_lock_mode_)) {
         sqlite_lock_mode_ = mode;
         return SQLITE_OK;
@@ -356,15 +395,23 @@ int SandboxedVfsFile::Lock(int mode) {
 
   sqlite_lock_mode_ = mode;
   return SQLITE_OK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::Unlock(int mode) {
+  // The 2nd term in the DCHECK predicate is there because SQLite occasionally
+  // attempts to unlock (to SQLITE_LOCK_NONE) a file that was already unlocked.
+  // We're not aware of any other case of no-op VFS unlock calls.
+  DCHECK(mode < sqlite_lock_mode_ ||
+         (mode == sqlite_lock_mode_ && mode == SQLITE_LOCK_NONE))
+      << "SQLite asked the VFS to unlock the file down to mode " << mode
+      << " but the file is already at mode " << sqlite_lock_mode_;
+
   // No-op if we're already unlocked or at the requested mode.
   if (sqlite_lock_mode_ == mode || sqlite_lock_mode_ == SQLITE_LOCK_NONE)
     return SQLITE_OK;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_UNLOCK;
 #else
   // On POSIX, it is possible to downgrade atomically from an exclusive lock to
@@ -393,7 +440,7 @@ int SandboxedVfsFile::Unlock(int mode) {
   vfs_->SetLastError(base::File::GetLastFileError());
   sqlite_lock_mode_ = SQLITE_LOCK_NONE;
   return SQLITE_IOERR_UNLOCK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
@@ -410,7 +457,7 @@ int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
     return SQLITE_OK;
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_CHECKRESERVEDLOCK;
 #else
   // On POSIX, it's possible to query the existing lock state of a file. The
@@ -430,7 +477,7 @@ int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
   // We acquired a shared lock that we can't get rid of.
   sqlite_lock_mode_ = SQLITE_LOCK_SHARED;
   return SQLITE_IOERR_CHECKRESERVEDLOCK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::FileControl(int opcode, void* data) {
@@ -449,13 +496,13 @@ int SandboxedVfsFile::SectorSize() {
 
 int SandboxedVfsFile::DeviceCharacteristics() {
   // TODO(pwnall): Figure out if we can get away with returning 0 on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN;
 #else
   // NOTE: SQLite's unix VFS attempts to detect the underlying filesystem and
   // sets some flags based on the result.
   return 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 int SandboxedVfsFile::ShmMap(int page_index,
@@ -535,11 +582,18 @@ int SandboxedVfsFile::Unfetch(sqlite3_int64 offset, void* fetch_result) {
 
 SandboxedVfsFile::SandboxedVfsFile(base::File file,
                                    base::FilePath file_path,
+#if DCHECK_IS_ON()
+                                   SandboxedVfsFileType file_type,
+#endif  // DCHECK_IS_ON()
                                    SandboxedVfs* vfs)
     : file_(std::move(file)),
       sqlite_lock_mode_(SQLITE_LOCK_NONE),
       vfs_(vfs),
-      file_path_(std::move(file_path)) {}
+#if DCHECK_IS_ON()
+      file_type_(file_type),
+#endif  // DCHECK_IS_ON()
+      file_path_(std::move(file_path)) {
+}
 
 SandboxedVfsFile::~SandboxedVfsFile() = default;
 

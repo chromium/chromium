@@ -228,8 +228,6 @@ bool ExtensionDownloader::FetchDataGroupKey::operator<(
          std::tie(other.request_id, other.update_url, other.is_force_installed);
 }
 
-ExtensionDownloader::ExtraParams::ExtraParams() : is_corrupt_reinstall(false) {}
-
 ExtensionDownloader::ExtensionDownloader(
     ExtensionDownloaderDelegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -255,43 +253,54 @@ ExtensionDownloader::ExtensionDownloader(
 
 ExtensionDownloader::~ExtensionDownloader() = default;
 
-bool ExtensionDownloader::AddPendingExtension(
-    const std::string& id,
-    const GURL& update_url,
-    mojom::ManifestLocation install_location,
-    bool is_corrupt_reinstall,
-    int request_id,
-    ManifestFetchData::FetchPriority fetch_priority) {
-  // Use a zero version to ensure that a pending extension will always
-  // be updated, and thus installed (assuming all extensions have
-  // non-zero versions).
-  return AddPendingExtensionWithVersion(
-      id, update_url, install_location, is_corrupt_reinstall, request_id,
-      fetch_priority, base::Version("0.0.0.0"), Manifest::TYPE_UNKNOWN,
-      std::string());
-}
-
-bool ExtensionDownloader::AddPendingExtensionWithVersion(
-    const std::string& id,
-    const GURL& update_url,
+ExtensionDownloaderTask::ExtensionDownloaderTask(
+    std::string id,
+    GURL update_url,
     mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority,
     base::Version version,
     Manifest::Type type,
-    const std::string& update_url_data) {
-  DCHECK(version.IsValid());
-  ExtraParams extra;
-  if (is_corrupt_reinstall)
-    extra.is_corrupt_reinstall = true;
-  if (!update_url_data.empty())
-    extra.update_url_data = update_url_data;
+    std::string update_url_data)
+    : id(std::move(id)),
+      update_url(std::move(update_url)),
+      install_location(install_location),
+      is_corrupt_reinstall(is_corrupt_reinstall),
+      request_id(request_id),
+      fetch_priority(fetch_priority),
+      version(std::move(version)),
+      type(type),
+      update_url_data(std::move(update_url_data)) {
+  DCHECK(this->version.IsValid());
+}
 
+ExtensionDownloaderTask::ExtensionDownloaderTask(
+    std::string id,
+    GURL update_url,
+    mojom::ManifestLocation install_location,
+    bool is_corrupt_reinstall,
+    int request_id,
+    ManifestFetchData::FetchPriority fetch_priority)
+    : id(std::move(id)),
+      update_url(std::move(update_url)),
+      install_location(install_location),
+      is_corrupt_reinstall(is_corrupt_reinstall),
+      request_id(request_id),
+      fetch_priority(fetch_priority) {
+  DCHECK(this->version.IsValid());
+}
+
+ExtensionDownloaderTask::ExtensionDownloaderTask(ExtensionDownloaderTask&&) =
+    default;
+ExtensionDownloaderTask& ExtensionDownloaderTask::operator=(
+    ExtensionDownloaderTask&&) = default;
+ExtensionDownloaderTask::~ExtensionDownloaderTask() = default;
+
+bool ExtensionDownloader::AddPendingExtension(ExtensionDownloaderTask task) {
   delegate_->OnExtensionDownloadStageChanged(
-      id, ExtensionDownloaderDelegate::Stage::PENDING);
-  return AddExtensionData(id, version, type, install_location, update_url,
-                          extra, request_id, fetch_priority);
+      task.id, ExtensionDownloaderDelegate::Stage::PENDING);
+  return AddExtensionData(task);
 }
 
 void ExtensionDownloader::StartAllPending(ExtensionCache* cache) {
@@ -334,44 +343,12 @@ void ExtensionDownloader::SetBackoffPolicyForTesting(
   manifests_queue_.set_backoff_policy(backoff_policy);
 }
 
-bool ExtensionDownloader::AddExtensionData(
-    const std::string& id,
-    const base::Version& version,
-    Manifest::Type extension_type,
-    mojom::ManifestLocation extension_location,
-    const GURL& extension_update_url,
-    const ExtraParams& extra,
-    int request_id,
-    ManifestFetchData::FetchPriority fetch_priority) {
-  GURL update_url(extension_update_url);
-  // Skip extensions with non-empty invalid update URLs.
-  if (!update_url.is_empty() && !update_url.is_valid()) {
-    DLOG(WARNING) << "Extension " << id << " has invalid update url "
-                  << update_url;
-    delegate_->OnExtensionDownloadStageChanged(
-        id, ExtensionDownloaderDelegate::Stage::FINISHED);
-    return false;
-  }
-
-  // Make sure we use SSL for store-hosted extensions.
-  if (extension_urls::IsWebstoreUpdateUrl(update_url) &&
-      !update_url.SchemeIsCryptographic())
-    update_url = extension_urls::GetWebstoreUpdateUrl();
-
-  // Skip extensions with empty IDs.
-  if (id.empty()) {
-    DLOG(WARNING) << "Found extension with empty ID";
-    delegate_->OnExtensionDownloadStageChanged(
-        id, ExtensionDownloaderDelegate::Stage::FINISHED);
-    return false;
-  }
-
+void ExtensionDownloader::UpdateURLStats(const GURL& update_url,
+                                         Manifest::Type extension_type) {
   if (update_url.DomainIs(kGoogleDotCom)) {
     url_stats_.google_url_count++;
   } else if (update_url.is_empty()) {
     url_stats_.no_url_count++;
-    // Fill in default update URL.
-    update_url = extension_urls::GetWebstoreUpdateUrl();
   } else {
     url_stats_.other_url_count++;
   }
@@ -396,6 +373,38 @@ bool ExtensionDownloader::AddExtensionData(
       ++url_stats_.pending_count;
       break;
   }
+}
+
+bool ExtensionDownloader::AddExtensionData(
+    const ExtensionDownloaderTask& task) {
+  GURL update_url(task.update_url);
+  // Skip extensions with non-empty invalid update URLs.
+  if (!update_url.is_empty() && !update_url.is_valid()) {
+    DLOG(WARNING) << "Extension " << task.id << " has invalid update url "
+                  << update_url;
+    delegate_->OnExtensionDownloadStageChanged(
+        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+    return false;
+  }
+
+  // Make sure we use SSL for store-hosted extensions.
+  if (extension_urls::IsWebstoreUpdateUrl(update_url) &&
+      !update_url.SchemeIsCryptographic())
+    update_url = extension_urls::GetWebstoreUpdateUrl();
+
+  // Skip extensions with empty IDs.
+  if (task.id.empty()) {
+    DLOG(WARNING) << "Found extension with empty ID";
+    delegate_->OnExtensionDownloadStageChanged(
+        task.id, ExtensionDownloaderDelegate::Stage::FINISHED);
+    return false;
+  }
+
+  UpdateURLStats(update_url, task.type);
+  if (update_url.is_empty()) {
+    // Fill in default update URL.
+    update_url = extension_urls::GetWebstoreUpdateUrl();
+  }
 
   DCHECK(!update_url.is_empty());
   DCHECK(update_url.is_valid());
@@ -403,43 +412,45 @@ bool ExtensionDownloader::AddExtensionData(
   std::string install_source = extension_urls::IsWebstoreUpdateUrl(update_url)
                                    ? kDefaultInstallSource
                                    : kNotFromWebstoreInstallSource;
-  if (extra.is_corrupt_reinstall)
+  if (task.is_corrupt_reinstall)
     install_source = kReinstallInstallSource;
 
   ManifestFetchData::PingData ping_data;
-  ManifestFetchData::PingData* optional_ping_data = NULL;
-  if (delegate_->GetPingDataForExtension(id, &ping_data))
+  ManifestFetchData::PingData* optional_ping_data = nullptr;
+  if (delegate_->GetPingDataForExtension(task.id, &ping_data))
     optional_ping_data = &ping_data;
 
   // Find or create a ManifestFetchData to add this extension to.
   bool added = false;
   bool is_new_extension_force_installed =
-      extension_location == mojom::ManifestLocation::kExternalPolicyDownload;
-  FetchDataGroupKey key(request_id, update_url,
+      task.install_location == mojom::ManifestLocation::kExternalPolicyDownload;
+  FetchDataGroupKey key(task.request_id, update_url,
                         is_new_extension_force_installed);
   auto existing_iter = fetches_preparing_.find(key);
   if (existing_iter != fetches_preparing_.end() &&
       !existing_iter->second.empty()) {
     // Try to add to the ManifestFetchData at the end of the list.
     ManifestFetchData* existing_fetch = existing_iter->second.back().get();
-    if (existing_fetch->AddExtension(
-            id, version.GetString(), optional_ping_data, extra.update_url_data,
-            install_source, extension_location, fetch_priority)) {
+    if (existing_fetch->AddExtension(task.id, task.version.GetString(),
+                                     optional_ping_data, task.update_url_data,
+                                     install_source, task.install_location,
+                                     task.fetch_priority)) {
       added = true;
     }
   }
   if (!added) {
     // Otherwise add a new element to the list, if the list doesn't exist or
     // if its last element is already full.
-    std::unique_ptr<ManifestFetchData> fetch(
-        CreateManifestFetchData(update_url, request_id, fetch_priority));
+    std::unique_ptr<ManifestFetchData> fetch(CreateManifestFetchData(
+        update_url, task.request_id, task.fetch_priority));
     ManifestFetchData* fetch_ptr = fetch.get();
     if (is_new_extension_force_installed)
       fetch_ptr->set_is_all_external_policy_download();
     fetches_preparing_[key].push_back(std::move(fetch));
-    added = fetch_ptr->AddExtension(id, version.GetString(), optional_ping_data,
-                                    extra.update_url_data, install_source,
-                                    extension_location, fetch_priority);
+    added = fetch_ptr->AddExtension(task.id, task.version.GetString(),
+                                    optional_ping_data, task.update_url_data,
+                                    install_source, task.install_location,
+                                    task.fetch_priority);
     DCHECK(added);
   }
 
@@ -1238,9 +1249,9 @@ void ExtensionDownloader::StartExtensionLoader() {
             "This feature cannot be disabled. It is only enabled when the user "
             "has installed extensions and it needs updating."
           chrome_policy {
-            ExtensionInstallBlacklist {
+            ExtensionInstallBlocklist {
               policy_options {mode: MANDATORY}
-              ExtensionInstallBlacklist: {
+              ExtensionInstallBlocklist: {
                 entries: '*'
               }
             }

@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
-#include "components/arc/mojom/app.mojom-forward.h"
 
 namespace arc {
 

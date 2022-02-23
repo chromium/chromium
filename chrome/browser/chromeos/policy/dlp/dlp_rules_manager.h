@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "url/gurl.h"
 
 class GURL;
 
@@ -29,9 +30,8 @@ class DlpRulesManager : public KeyedService {
     kUnknownRestriction = 0,
     kClipboard = 1,      // Restricts sharing the data via clipboard and
                          // drag-n-drop.
-    kScreenshot = 2,     // Restricts taking screenshots of confidential screen
-                         // content.
-                         // TODO(crbug/1145100): Update to include video capture
+    kScreenshot = 2,     // Restricts taking screenshots and video captures of
+                         // confidential screen content.
     kPrinting = 3,       // Restricts printing confidential screen content.
     kPrivacyScreen = 4,  // Enforces the Eprivacy screen when there's
                          // confidential content on the screen.
@@ -49,7 +49,9 @@ class DlpRulesManager : public KeyedService {
     kArc,       // ARC++ as a Guest OS.
     kCrostini,  // Crostini as a Guest OS.
     kPluginVm,  // Plugin VM (Parallels/Windows) as a Guest OS.
-    kMaxValue = kPluginVm
+    kUsb,       // Removable disk.
+    kDrive,     // Google drive for file storage.
+    kMaxValue = kDrive
   };
 
   // The enforcement level of the restriction set by DataLeakPreventionRulesList
@@ -61,6 +63,20 @@ class DlpRulesManager : public KeyedService {
     kBlock = 3,   // Restriction level to block the user on every action.
     kAllow = 4,   // Restriction level to allow (no restriction).
     kMaxValue = kAllow
+  };
+
+  // Represents file metadata.
+  struct FileMetadata {
+    FileMetadata(uint64_t inode, const GURL& source)
+        : inode(inode), source(source) {}
+    FileMetadata(uint64_t inode, const std::string& source)
+        : inode(inode), source(source) {}
+    FileMetadata(const FileMetadata&) = default;
+    FileMetadata& operator=(const FileMetadata&) = default;
+    ~FileMetadata() = default;
+
+    uint64_t inode;  // File inode number.
+    GURL source;     // File source URL.
   };
 
   ~DlpRulesManager() override = default;
@@ -122,7 +138,7 @@ class DlpRulesManager : public KeyedService {
 
   // Returns the admin-configured limit for the minimal size of data in the
   // clipboard to be checked against DLP rules.
-  virtual int GetClipboardCheckSizeLimitInBytes() const = 0;
+  virtual size_t GetClipboardCheckSizeLimitInBytes() const = 0;
 };
 
 }  // namespace policy

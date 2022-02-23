@@ -56,7 +56,7 @@ DecoderPriority NormalDecoderPriority(const ConfigT& config,
 
 DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
                                                const VideoDecoder& decoder) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
@@ -321,9 +321,10 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
+void DecoderSelector<StreamType>::OnDecoderInitializeDone(
+    DecoderStatus status) {
   DVLOG(2) << __func__ << ": " << decoder_->GetDecoderType()
-           << " success=" << std::hex << status.code();
+           << " success=" << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {

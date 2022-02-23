@@ -10,9 +10,17 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
+namespace {
+
+bool ShouldUseSessionServiceForProfile(const Profile& profile) {
+  return profile.IsRegularProfile();
+}
+
+}  // namespace
+
 // static
 SessionService* SessionServiceFactory::GetForProfile(Profile* profile) {
-  if (profile->IsOffTheRecord() || profile->IsGuestSession())
+  if (!ShouldUseSessionServiceForProfile(*profile))
     return nullptr;
 
   return static_cast<SessionService*>(
@@ -41,6 +49,9 @@ SessionService* SessionServiceFactory::GetForProfileForSessionRestore(
 
 // static
 void SessionServiceFactory::ShutdownForProfile(Profile* profile) {
+  if (!ShouldUseSessionServiceForProfile(*profile))
+    return;
+
   if (SessionDataServiceFactory::GetForProfile(profile))
     SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
 
@@ -73,6 +84,9 @@ SessionServiceFactory::~SessionServiceFactory() = default;
 
 KeyedService* SessionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
+  if (!ShouldUseSessionServiceForProfile(*static_cast<Profile*>(profile)))
+    return nullptr;
+
   SessionService* service = new SessionService(static_cast<Profile*>(profile));
   service->ResetFromCurrentBrowsers();
   return service;

@@ -48,6 +48,7 @@ EventReaderLibevdevCros::EventReaderLibevdevCros(
       has_touchpad_(devinfo.HasTouchpad()),
       has_stylus_switch_(devinfo.HasSwEvent(SW_PEN_INSERTED)),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
+      touch_count_(0),
       delegate_(std::move(delegate)) {
   // This class assumes it does not deal with internal keyboards.
   CHECK(!has_keyboard_ || type() != INPUT_DEVICE_INTERNAL);
@@ -65,7 +66,13 @@ EventReaderLibevdevCros::EventReaderLibevdevCros(
 
   Event_Open(&evdev_);
 
+  haptic_touchpad_handler_ = HapticTouchpadHandler::Create(fd_, devinfo);
   delegate_->OnLibEvdevCrosOpen(&evdev_, &evstate_);
+  if (haptic_touchpad_handler_) {
+    delegate_->SetupHapticButtonGeneration(
+        base::BindRepeating(&HapticTouchpadHandler::OnGestureClick,
+                            base::Unretained(haptic_touchpad_handler_.get())));
+  }
 }
 
 EventReaderLibevdevCros::~EventReaderLibevdevCros() {
@@ -105,6 +112,39 @@ bool EventReaderLibevdevCros::HasTouchpad() const {
   return has_touchpad_;
 }
 
+bool EventReaderLibevdevCros::HasHapticTouchpad() const {
+  return haptic_touchpad_handler_ != nullptr;
+}
+
+bool EventReaderLibevdevCros::CanHandleHapticFeedback() {
+  return haptic_touchpad_handler_ && haptic_feedback_enabled_ &&
+         touch_count_ > 0;
+}
+
+void EventReaderLibevdevCros::PlayHapticTouchpadEffect(
+    HapticTouchpadEffect effect,
+    HapticTouchpadEffectStrength strength) {
+  if (CanHandleHapticFeedback())
+    haptic_touchpad_handler_->PlayEffect(effect, strength);
+}
+
+void EventReaderLibevdevCros::SetHapticTouchpadEffectForNextButtonRelease(
+    HapticTouchpadEffect effect,
+    HapticTouchpadEffectStrength strength) {
+  if (CanHandleHapticFeedback())
+    haptic_touchpad_handler_->SetEffectForNextButtonRelease(effect, strength);
+}
+
+void EventReaderLibevdevCros::ApplyDeviceSettings(
+    const InputDeviceSettingsEvdev& settings) {
+  if (haptic_touchpad_handler_) {
+    haptic_touchpad_handler_->SetClickStrength(
+        static_cast<HapticTouchpadEffectStrength>(
+            settings.touchpad_haptic_click_sensitivity));
+  }
+  haptic_feedback_enabled_ = settings.touchpad_haptic_feedback_enabled;
+}
+
 bool EventReaderLibevdevCros::HasCapsLockLed() const {
   return has_caps_lock_led_;
 }
@@ -125,6 +165,7 @@ void EventReaderLibevdevCros::OnSynReport(void* data,
   if (!reader->IsEnabled())
     return;
 
+  reader->touch_count_ = Event_Get_Touch_Count(&reader->evdev_);
   reader->delegate_->OnLibEvdevCrosEvent(&reader->evdev_, evstate, *tv);
 }
 

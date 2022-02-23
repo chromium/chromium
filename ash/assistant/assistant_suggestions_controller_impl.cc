@@ -106,12 +106,6 @@ void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
   // Always show the "What can you do?" conversation starter.
   AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHAT_CAN_YOU_DO);
 
-  // If enabled, always show the "What's on my screen?" conversation starter.
-  if (AssistantState::Get()->context_enabled().value_or(false)) {
-    AddConversationStarter(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_SCREEN,
-                           assistant::util::CreateWhatsOnMyScreenDeepLink());
-  }
-
   // The rest of the conversation starters will be shuffled...
   std::vector<int> shuffled_message_ids;
 
@@ -120,6 +114,7 @@ void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_PLAY_MUSIC);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SEND_AN_EMAIL);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_SET_A_REMINDER);
+  shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_TELL_ME_A_JOKE);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_CALENDAR);
   shuffled_message_ids.push_back(IDS_ASH_ASSISTANT_CHIP_WHATS_THE_WEATHER);
 

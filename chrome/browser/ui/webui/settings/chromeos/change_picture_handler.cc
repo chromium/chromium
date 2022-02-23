@@ -58,28 +58,6 @@ using ::ash::AccessibilityManager;
 using ::ash::PlaySoundOption;
 using ::content::BrowserThread;
 
-// Returns info about extensions for files we support as user images.
-ui::SelectFileDialog::FileTypeInfo GetUserImageFileTypeInfo() {
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(1);
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("bmp"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("jpg"));
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("jpeg"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("png"));
-
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("tif"));
-  file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("tiff"));
-
-  file_type_info.extension_description_overrides.resize(1);
-  file_type_info.extension_description_overrides[0] =
-      l10n_util::GetStringUTF16(IDS_IMAGE_FILES);
-
-  return file_type_info;
-}
-
 void RecordUserImageChanged(int sample) {
   // Although |ChangePictureHandler::kUserImageChangedHistogramName| is an
   // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
@@ -106,31 +84,28 @@ ChangePictureHandler::ChangePictureHandler()
                       bundle.GetRawDataResource(IDR_SOUND_CAMERA_SNAP_WAV));
 }
 
-ChangePictureHandler::~ChangePictureHandler() {
-  if (select_file_dialog_.get())
-    select_file_dialog_->ListenerDestroyed();
-}
+ChangePictureHandler::~ChangePictureHandler() = default;
 
 void ChangePictureHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "chooseFile", base::BindRepeating(&ChangePictureHandler::HandleChooseFile,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "photoTaken", base::BindRepeating(&ChangePictureHandler::HandlePhotoTaken,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "discardPhoto",
       base::BindRepeating(&ChangePictureHandler::HandleDiscardPhoto,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onChangePicturePageInitialized",
       base::BindRepeating(&ChangePictureHandler::HandlePageInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "selectImage",
       base::BindRepeating(&ChangePictureHandler::HandleSelectImage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestSelectedImage",
       base::BindRepeating(&ChangePictureHandler::HandleRequestSelectedImage,
                           base::Unretained(this)));
@@ -150,56 +125,44 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
       CameraPresenceNotifier::GetInstance()));
   camera_observation_.Reset();
 
-  if (select_file_dialog_.get())
-    select_file_dialog_->ListenerDestroyed();
+  user_image_file_selector_.reset();
 }
 
 void ChangePictureHandler::SendDefaultImages() {
   base::DictionaryValue result;
   std::unique_ptr<base::ListValue> current_default_images =
-      default_user_image::GetCurrentImageSet();
+      default_user_image::GetCurrentImageSetAsListValue();
   result.SetKey(
       "current_default_images",
       base::Value::FromUniquePtrValue(std::move(current_default_images)));
   FireWebUIListener("default-images-changed", result);
 }
 
-void ChangePictureHandler::HandleChooseFile(const base::ListValue* args) {
-  DCHECK(args && args->GetList().empty());
-  select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-
-  base::FilePath downloads_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_path)) {
-    NOTREACHED();
-    return;
-  }
-
-  // Static so we initialize it only once.
-  static base::NoDestructor<ui::SelectFileDialog::FileTypeInfo> file_type_info(
-      GetUserImageFileTypeInfo());
-
-  select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE,
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_TITLE), downloads_path,
-      file_type_info.get(), 0, FILE_PATH_LITERAL(""), GetBrowserWindow(), NULL);
+void ChangePictureHandler::HandleChooseFile(base::Value::ConstListView args) {
+  DCHECK(args.empty());
+  user_image_file_selector_ =
+      std::make_unique<ash::UserImageFileSelector>(web_ui());
+  user_image_file_selector_->SelectFile(
+      base::BindOnce(&ChangePictureHandler::FileSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChangePictureHandler::FileSelectionCanceled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangePictureHandler::HandleDiscardPhoto(const base::ListValue* args) {
-  DCHECK(args->GetList().empty());
+void ChangePictureHandler::HandleDiscardPhoto(base::Value::ConstListView args) {
+  DCHECK(args.empty());
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kObjectDelete, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
-void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
+void ChangePictureHandler::HandlePhotoTaken(base::Value::ConstListView args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
-  if (!args || args->GetList().size() != 1 || !args->GetList()[0].is_string())
+  if (args.size() != 1 || !args[0].is_string())
     NOTREACHED();
-  const std::string& image_url = args->GetList()[0].GetString();
+  const std::string& image_url = args[0].GetString();
   DCHECK(!image_url.empty());
 
   std::string raw_data;
@@ -221,8 +184,9 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   ImageDecoder::Start(this, std::move(raw_data));
 }
 
-void ChangePictureHandler::HandlePageInitialized(const base::ListValue* args) {
-  DCHECK(args && args->GetList().empty());
+void ChangePictureHandler::HandlePageInitialized(
+    base::Value::ConstListView args) {
+  DCHECK(args.empty());
 
   AllowJavascript();
 
@@ -268,7 +232,8 @@ void ChangePictureHandler::SendSelectedImage() {
       if (default_user_image::IsInCurrentImageSet(previous_image_index_)) {
         // User has image from the current set of default images.
         base::Value image_url(
-            default_user_image::GetDefaultImageUrl(previous_image_index_));
+            default_user_image::GetDefaultImageUrl(previous_image_index_)
+                .spec());
         FireWebUIListener("selected-image-changed", image_url);
       } else {
         // User has a deprecated default image, send it for preview.
@@ -277,8 +242,9 @@ void ChangePictureHandler::SendSelectedImage() {
         previous_image_format_ = user_manager::UserImage::FORMAT_UNKNOWN;
 
         base::DictionaryValue result;
-        result.SetStringPath("url", default_user_image::GetDefaultImageUrl(
-                                        previous_image_index_));
+        result.SetStringPath(
+            "url", default_user_image::GetDefaultImageUrl(previous_image_index_)
+                       .spec());
         auto source_info = default_user_image::GetDefaultImageSourceInfo(
             previous_image_index_);
         if (source_info.has_value()) {
@@ -316,14 +282,13 @@ void ChangePictureHandler::SendOldImage(std::string&& image_url) {
   FireWebUIListener("old-image-changed", base::Value(image_url));
 }
 
-void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
-  if (!args || args->GetList().size() != 2 || !args->GetList()[0].is_string() ||
-      !args->GetList()[1].is_string()) {
+void ChangePictureHandler::HandleSelectImage(base::Value::ConstListView args) {
+  if (args.size() != 2 || !args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
   }
-  const std::string& image_url = args->GetList()[0].GetString();
-  const std::string& image_type = args->GetList()[1].GetString();
+  const std::string& image_url = args[0].GetString();
+  const std::string& image_type = args[1].GetString();
   // |image_url| may be empty unless |image_type| is "default".
   DCHECK(!image_type.empty());
 
@@ -382,13 +347,11 @@ void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
 }
 
 void ChangePictureHandler::HandleRequestSelectedImage(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   SendSelectedImage();
 }
 
-void ChangePictureHandler::FileSelected(const base::FilePath& path,
-                                        int index,
-                                        void* params) {
+void ChangePictureHandler::FileSelected(const base::FilePath& path) {
   auto* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(GetUser()->GetAccountId());
 
@@ -399,7 +362,7 @@ void ChangePictureHandler::FileSelected(const base::FilePath& path,
   VLOG(1) << "Selected image from file";
 }
 
-void ChangePictureHandler::FileSelectionCanceled(void* params) {
+void ChangePictureHandler::FileSelectionCanceled() {
   SendSelectedImage();
 }
 
@@ -439,12 +402,6 @@ void ChangePictureHandler::OnUserProfileImageUpdated(
     const gfx::ImageSkia& profile_image) {
   // User profile image has been updated.
   SendProfileImage(profile_image, false);
-}
-
-gfx::NativeWindow ChangePictureHandler::GetBrowserWindow() {
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-  return browser->window()->GetNativeWindow();
 }
 
 void ChangePictureHandler::OnImageDecoded(const SkBitmap& decoded_image) {

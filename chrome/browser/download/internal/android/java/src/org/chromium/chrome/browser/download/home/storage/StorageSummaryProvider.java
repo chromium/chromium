@@ -82,6 +82,8 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
             @Override
             protected DirectoryOption doInBackground() {
                 File defaultDownloadDir = DownloadDirectoryProvider.getPrimaryDownloadDirectory();
+                if (defaultDownloadDir == null) return null;
+
                 DirectoryOption directoryOption = new DirectoryOption("",
                         defaultDownloadDir.getAbsolutePath(), defaultDownloadDir.getUsableSpace(),
                         defaultDownloadDir.getTotalSpace(),

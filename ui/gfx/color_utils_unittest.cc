@@ -182,8 +182,7 @@ TEST(ColorUtils, IsDarkDarkestColorChange) {
 
 TEST(ColorUtils, MidpointLuminanceMatches) {
   const SkColor old_darkest_color = SetDarkestColorForTesting(SK_ColorBLACK);
-  float darkest, midpoint, lightest;
-  std::tie(darkest, midpoint, lightest) = GetLuminancesForTesting();
+  auto [darkest, midpoint, lightest] = GetLuminancesForTesting();
   EXPECT_FLOAT_EQ(GetContrastRatio(darkest, midpoint),
                   GetContrastRatio(midpoint, lightest));
 

@@ -111,20 +111,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   base::TimeDelta
   TimeToPauseHeavyBrowserInitiatedRequestsAfterEndOfP2PConnections();
 
-  // Returns the maximum time for which the browser initiated traffic can be
-  // paused when the radio signal is weak.
-  const absl::optional<base::TimeDelta>& max_weak_signal_throttling_duration()
-      const {
-    return max_weak_signal_throttling_duration_;
-  }
-
-  // Returns the time for which the browser initiated traffic has a chance to
-  // run when the radio signal is weak.
-  const absl::optional<base::TimeDelta>& weak_signal_unthrottle_duration()
-      const {
-    return weak_signal_unthrottle_duration_;
-  }
-
  private:
   // The number of delayable requests in-flight for different ranges of the
   // network quality.
@@ -133,10 +119,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerParamsManager {
   const absl::optional<base::TimeDelta> max_wait_time_p2p_connections_;
 
   const std::set<int32_t> throttled_traffic_annotation_hashes_;
-
-  const absl::optional<base::TimeDelta> max_weak_signal_throttling_duration_;
-
-  const absl::optional<base::TimeDelta> weak_signal_unthrottle_duration_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

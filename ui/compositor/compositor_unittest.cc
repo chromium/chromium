@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -198,12 +199,12 @@ TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   // Set a non-identity color matrix, color space, sdr white level, vsync
   // timebase and vsync interval, and expect it to be set on the context
   // factory.
-  skia::Matrix44 color_matrix(skia::Matrix44::kIdentity_Constructor);
-  color_matrix.set(1, 1, 0.7f);
-  color_matrix.set(2, 2, 0.4f);
+  SkM44 color_matrix;
+  color_matrix.setRC(1, 1, 0.7f);
+  color_matrix.setRC(2, 2, 0.4f);
   gfx::DisplayColorSpaces display_color_spaces(
       gfx::ColorSpace::CreateDisplayP3D65());
-  display_color_spaces.SetSDRWhiteLevel(1.f);
+  display_color_spaces.SetSDRMaxLuminanceNits(1.f);
   base::TimeTicks vsync_timebase(base::TimeTicks::Now());
   base::TimeDelta vsync_interval(base::Milliseconds(250));
   compositor()->SetDisplayColorMatrix(color_matrix);
@@ -447,7 +448,7 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerInvoluntaryReport) {
   EXPECT_FALSE(tracker.Stop());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/608436): Flaky on windows trybots
 #define MAYBE_CreateAndReleaseOutputSurface \
   DISABLED_CreateAndReleaseOutputSurface
@@ -495,7 +496,7 @@ class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
                                   float new_device_scale_factor) override {}
 
  private:
-  Layer* parent_;
+  raw_ptr<Layer> parent_;
   std::vector<std::unique_ptr<Layer>> added_layers_;
   bool update_visual_state_called_ = false;
 };

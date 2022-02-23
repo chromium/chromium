@@ -18,9 +18,11 @@
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capabilities/webrtc_video_stats_db_impl.h"
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "storage/browser/file_system/external_mount_points.h"
@@ -52,13 +54,18 @@ void RegisterMediaLearningTask(
 
 }  // namespace
 
-BrowserContext::Impl::Impl(BrowserContext* self) : self_(self) {
+// static
+BrowserContextImpl* BrowserContextImpl::From(BrowserContext* self) {
+  return self->impl();
+}
+
+BrowserContextImpl::BrowserContextImpl(BrowserContext* self) : self_(self) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   background_sync_scheduler_ = base::MakeRefCounted<BackgroundSyncScheduler>();
 }
 
-BrowserContext::Impl::~Impl() {
+BrowserContextImpl::~BrowserContextImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!storage_partition_map_)
       << "StoragePartitionMap is not shut down properly";
@@ -102,19 +109,19 @@ BrowserContext::Impl::~Impl() {
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
 
   TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "shutdown", "BrowserContext::Impl::NotifyWillBeDestroyed() called.", this,
+      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
       "browser_context_impl", static_cast<void*>(this));
 }
 
-bool BrowserContext::Impl::ShutdownStarted() {
+bool BrowserContextImpl::ShutdownStarted() {
   return will_be_destroyed_soon_;
 }
 
-void BrowserContext::Impl::NotifyWillBeDestroyed() {
-  TRACE_EVENT1("shutdown", "BrowserContext::Impl::NotifyWillBeDestroyed",
+void BrowserContextImpl::NotifyWillBeDestroyed() {
+  TRACE_EVENT1("shutdown", "BrowserContextImpl::NotifyWillBeDestroyed",
                "browser_context_impl", static_cast<void*>(this));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "shutdown", "BrowserContext::Impl::NotifyWillBeDestroyed() called.", this,
+      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
       "browser_context_impl", static_cast<void*>(this));
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
@@ -144,8 +151,7 @@ void BrowserContext::Impl::NotifyWillBeDestroyed() {
   }
 }
 
-StoragePartitionImplMap*
-BrowserContext::Impl::GetOrCreateStoragePartitionMap() {
+StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!storage_partition_map_)
@@ -154,7 +160,7 @@ BrowserContext::Impl::GetOrCreateStoragePartitionMap() {
   return storage_partition_map_.get();
 }
 
-BrowsingDataRemover* BrowserContext::Impl::GetBrowsingDataRemover() {
+BrowsingDataRemover* BrowserContextImpl::GetBrowsingDataRemover() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!browsing_data_remover_) {
@@ -166,7 +172,7 @@ BrowsingDataRemover* BrowserContext::Impl::GetBrowsingDataRemover() {
   return browsing_data_remover_.get();
 }
 
-media::learning::LearningSession* BrowserContext::Impl::GetLearningSession() {
+media::learning::LearningSession* BrowserContextImpl::GetLearningSession() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!learning_session_) {
@@ -182,8 +188,7 @@ media::learning::LearningSession* BrowserContext::Impl::GetLearningSession() {
   return learning_session_.get();
 }
 
-media::VideoDecodePerfHistory*
-BrowserContext::Impl::GetVideoDecodePerfHistory() {
+media::VideoDecodePerfHistory* BrowserContextImpl::GetVideoDecodePerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!video_decode_perf_history_)
@@ -192,7 +197,33 @@ BrowserContext::Impl::GetVideoDecodePerfHistory() {
   return video_decode_perf_history_.get();
 }
 
-void BrowserContext::Impl::ShutdownStoragePartitions() {
+std::unique_ptr<media::WebrtcVideoPerfHistory>
+BrowserContextImpl::CreateWebrtcVideoPerfHistory() {
+  // TODO(https://crbug.com/1187565): Implement in memory path in
+  // off_the_record_profile_impl.cc and web_engine_browser_context.cc
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* db_provider =
+      self_->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
+
+  std::unique_ptr<media::WebrtcVideoStatsDB> stats_db =
+      media::WebrtcVideoStatsDBImpl::Create(
+          self_->GetPath().Append(FILE_PATH_LITERAL("WebrtcVideoStats")),
+          db_provider);
+
+  return std::make_unique<media::WebrtcVideoPerfHistory>(std::move(stats_db));
+}
+
+media::WebrtcVideoPerfHistory* BrowserContextImpl::GetWebrtcVideoPerfHistory() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!webrtc_video_perf_history_)
+    webrtc_video_perf_history_ = CreateWebrtcVideoPerfHistory();
+
+  return webrtc_video_perf_history_.get();
+}
+
+void BrowserContextImpl::ShutdownStoragePartitions() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // The BackgroundSyncScheduler keeps raw pointers to partitions; clear it
@@ -203,7 +234,7 @@ void BrowserContext::Impl::ShutdownStoragePartitions() {
   storage_partition_map_.reset();
 }
 
-DownloadManager* BrowserContext::Impl::GetDownloadManager() {
+DownloadManager* BrowserContextImpl::GetDownloadManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Lazily populate `download_manager_`.  This is important to
@@ -223,7 +254,7 @@ DownloadManager* BrowserContext::Impl::GetDownloadManager() {
   return download_manager_.get();
 }
 
-void BrowserContext::Impl::SetDownloadManagerForTesting(
+void BrowserContextImpl::SetDownloadManagerForTesting(
     std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (download_manager_)
@@ -231,7 +262,7 @@ void BrowserContext::Impl::SetDownloadManagerForTesting(
   download_manager_ = std::move(download_manager);
 }
 
-PermissionController* BrowserContext::Impl::GetPermissionController() {
+PermissionController* BrowserContextImpl::GetPermissionController() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!permission_controller_)
@@ -240,13 +271,13 @@ PermissionController* BrowserContext::Impl::GetPermissionController() {
   return permission_controller_.get();
 }
 
-void BrowserContext::Impl::SetPermissionControllerForTesting(
+void BrowserContextImpl::SetPermissionControllerForTesting(
     std::unique_ptr<PermissionController> permission_controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   permission_controller_ = std::move(permission_controller);
 }
 
-storage::ExternalMountPoints* BrowserContext::Impl::GetMountPoints() {
+storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
   // Ensure that these methods are called on the UI thread, except for
   // unittests where a UI thread might not have been created.
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||

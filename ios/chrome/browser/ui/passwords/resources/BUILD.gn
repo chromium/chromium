@@ -6,13 +6,26 @@ import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
 
 group("resources") {
-  deps = [ ":password_breach_illustration" ]
+  deps = [
+    ":legacy_password_breach_illustration",
+    ":password_breach_illustration",
+  ]
 }
 
 imageset("password_breach_illustration") {
   sources = [
     "password_breach_illustration.imageset/Contents.json",
-    "password_breach_illustration.imageset/illustration_dark.png",
-    "password_breach_illustration.imageset/illustration_light.png",
+    "password_breach_illustration.imageset/password_check_alert@2x.png",
+    "password_breach_illustration.imageset/password_check_alert@3x.png",
+    "password_breach_illustration.imageset/password_check_alert_dark@2x.png",
+    "password_breach_illustration.imageset/password_check_alert_dark@3x.png",
+  ]
+}
+
+imageset("legacy_password_breach_illustration") {
+  sources = [
+    "legacy_password_breach_illustration.imageset/Contents.json",
+    "legacy_password_breach_illustration.imageset/illustration_dark.png",
+    "legacy_password_breach_illustration.imageset/illustration_light.png",
   ]
 }

@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"

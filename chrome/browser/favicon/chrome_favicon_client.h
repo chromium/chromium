@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 #define CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/favicon/core/favicon_client.h"
 
 class GURL;
@@ -31,7 +32,7 @@ class ChromeFaviconClient : public favicon::FaviconClient {
       favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_

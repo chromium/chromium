@@ -66,26 +66,53 @@ std::unique_ptr<base::DictionaryValue> ParseDictionary(
   return base::DictionaryValue::From(ParseJSON(data));
 }
 
-bool GetBoolean(const base::DictionaryValue* val, const std::string& key) {
-  absl::optional<bool> result = val->FindBoolKey(key);
-  if (!result)
+bool GetBoolean(const base::Value::DictStorage& dict, const std::string& key) {
+  auto iter = dict.find(key);
+  if (iter == dict.end() || !iter->second.is_bool()) {
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
-  return result.value_or(false);
+    return false;
+  }
+  return iter->second.GetBool();
 }
 
-int GetInteger(const base::DictionaryValue* val, const std::string& key) {
-  absl::optional<int> result = val->FindIntKey(key);
-  if (!result)
+int GetInteger(const base::Value::DictStorage& dict, const std::string& key) {
+  auto iter = dict.find(key);
+  if (iter == dict.end() || !iter->second.is_int()) {
     ADD_FAILURE() << key << " does not exist or is not an integer.";
-  return result.value_or(0);
+    return 0;
+  }
+  return iter->second.GetInt();
 }
 
-std::string GetString(const base::DictionaryValue* val,
+std::string GetString(const base::Value::DictStorage& dict,
                       const std::string& key) {
-  std::string result;
-  if (!val->GetString(key, &result))
+  auto iter = dict.find(key);
+  if (iter == dict.end() || !iter->second.is_string()) {
     ADD_FAILURE() << key << " does not exist or is not a string.";
-  return result;
+    return "";
+  }
+  return iter->second.GetString();
+}
+
+std::unique_ptr<base::ListValue> GetList(const base::Value::DictStorage& dict,
+                                         const std::string& key) {
+  auto iter = dict.find(key);
+  if (iter == dict.end() || !iter->second.is_list()) {
+    ADD_FAILURE() << key << " does not exist or is not a list.";
+    return std::make_unique<base::ListValue>();
+  }
+  return base::ListValue::From(
+      base::Value::ToUniquePtrValue(iter->second.Clone()));
+}
+
+base::Value::DictStorage GetDict(const base::Value::DictStorage& dict,
+                                 const std::string& key) {
+  auto iter = dict.find(key);
+  if (iter == dict.end() || !iter->second.is_dict()) {
+    ADD_FAILURE() << key << " does not exist or is not a dict.";
+    return base::Value::DictStorage();
+  }
+  return iter->second.Clone().TakeDictDeprecated();
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
@@ -109,12 +136,13 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
                                             << function->GetError();
-  const base::Value* single_result = NULL;
-  if (function->GetResultList() != NULL &&
-      function->GetResultList()->Get(0, &single_result)) {
-    return single_result->CreateDeepCopy();
+  if (function->GetResultList() &&
+      !function->GetResultList()->GetListDeprecated().empty()) {
+    const base::Value& single_result =
+        function->GetResultList()->GetListDeprecated()[0];
+    return std::make_unique<base::Value>(single_result.Clone());
   }
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
@@ -155,7 +183,8 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
   // is no specified result.
   const base::ListValue* results = function->GetResultList();
   CHECK(results);
-  EXPECT_TRUE(results->GetList().empty()) << "Did not expect a result";
+  EXPECT_TRUE(results->GetListDeprecated().empty())
+      << "Did not expect a result";
   CHECK(function->response_type());
   EXPECT_EQ(ExtensionFunction::FAILED, *function->response_type());
   return function->GetError();

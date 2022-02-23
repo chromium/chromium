@@ -46,10 +46,10 @@ float DisplaySize::GetScalingFactor() const {
   return (float)dpi_ / (float)kDefaultDpi;
 }
 
-}  // namespace remoting
-
-std::ostream& operator<<(std::ostream& out, const remoting::DisplaySize& size) {
+std::ostream& operator<<(std::ostream& out, const DisplaySize& size) {
   out << size.WidthAsDips() << "x" << size.HeightAsDips() << " @"
       << size.GetDpi();
   return out;
 }
+
+}  // namespace remoting

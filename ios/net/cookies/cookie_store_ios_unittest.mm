@@ -154,7 +154,7 @@ class CookieStoreIOSTest : public PlatformTest {
     net::CookieOptions options;
     options.set_include_httponly();
     store_->GetCookieListWithOptionsAsync(kTestCookieURLFooBar, options,
-                                          net::CookiePartitionKeychain(),
+                                          net::CookiePartitionKeyCollection(),
                                           std::move(callback));
   }
 
@@ -349,7 +349,7 @@ TEST_F(CookieStoreIOSTest, GetAllCookies) {
   GetAllCookiesHelperCallback callback;
   cookie_store->GetCookieListWithOptionsAsync(
       kTestCookieURLFooBar, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeychain(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&GetAllCookiesHelperCallback::Run,
                      base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();

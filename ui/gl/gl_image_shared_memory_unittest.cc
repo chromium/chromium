@@ -51,7 +51,7 @@ using GLImageTestTypes = testing::Types<
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::RGBX_8888>,
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::RGBA_8888>,
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::BGRX_8888>,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Fails on Win nVidia and linux android: the test writes nothing (we read
     // back the color used to clear the buffer).
     // TODO(mcasas): enable those paltforms https://crbug.com/803451.
@@ -115,7 +115,7 @@ class GLImageSharedMemoryPoolTestDelegate : public GLImageTestDelegateBase {
 };
 
 // Disabled on Windows, see crbug.com/1036138
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageSharedMemoryPool,
                                GLImageCopyTest,
                                GLImageSharedMemoryPoolTestDelegate);

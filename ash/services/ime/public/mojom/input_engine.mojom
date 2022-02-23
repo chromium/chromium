@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.ime.mojom;
+module ash.ime.mojom;
 
 // A message channel is a paired message sender and receiver. It provides the
 // communication channel between the IME extension process and the core IME
@@ -15,7 +15,6 @@ module chromeos.ime.mojom;
 // the ProcessMessage() method. All other proto messages must be mirrored with
 // a respective mojom method here in this interface for security (see
 // ash/services/ime/decoder/system_engine.cc for an example of mirroring).
-// TODO(crbug/1194372): Investigate using libmojo within ime shared lib.
 interface InputChannel {
   // Returns a serialized protobuf result after processing a serialized
   // protobuf message.

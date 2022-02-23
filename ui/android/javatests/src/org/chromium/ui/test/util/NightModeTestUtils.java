@@ -32,10 +32,10 @@ public class NightModeTestUtils {
     }
 
     /**
-     * Sets up the night mode state for {@link DummyUiActivity}.
+     * Sets up the night mode state for {@link BlankUiTestActivity}.
      * @param nightModeEnabled Whether night mode should be enabled.
      */
-    public static void setUpNightModeForDummyUiActivity(boolean nightModeEnabled) {
+    public static void setUpNightModeForBlankUiTestActivity(boolean nightModeEnabled) {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             AppCompatDelegate.setDefaultNightMode(nightModeEnabled
                             ? AppCompatDelegate.MODE_NIGHT_YES
@@ -44,9 +44,9 @@ public class NightModeTestUtils {
     }
 
     /**
-     * Resets the night mode state for {@link DummyUiActivity}.
+     * Resets the night mode state for {@link BlankUiTestActivity}.
      */
-    public static void tearDownNightModeForDummyUiActivity() {
+    public static void tearDownNightModeForBlankUiTestActivity() {
         ThreadUtils.runOnUiThreadBlocking(() -> {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         });

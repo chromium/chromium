@@ -46,7 +46,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -94,22 +93,13 @@ public class OmniboxTest {
     @EnormousTest
     @Feature({"Omnibox"})
     public void testSimpleUse() throws InterruptedException {
-        mActivityTestRule.typeInOmnibox("aaaaaaa", false);
+        OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        omnibox.requestFocus();
+        omnibox.typeText("aaaaaaa", false);
+        omnibox.checkSuggestionsShown();
 
-        final LocationBarLayout locationBar =
-                (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
-
-        ChromeTabUtils.waitForTabPageLoadStart(
-                mActivityTestRule.getActivity().getActivityTab(), null, new Runnable() {
-                    @Override
-                    public void run() {
-                        final UrlBar urlBar =
-                                (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-                        KeyUtils.singleKeyEventView(InstrumentationRegistry.getInstrumentation(),
-                                urlBar, KeyEvent.KEYCODE_ENTER);
-                    }
-                }, 20L);
+        ChromeTabUtils.waitForTabPageLoadStart(mActivityTestRule.getActivity().getActivityTab(),
+                null, () -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER), 20L);
     }
 
     // Sanity check that no text is displayed in the omnibox when on the NTP page and that the hint

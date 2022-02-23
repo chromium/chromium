@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -35,7 +36,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "ui/gfx/image/image.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_array.h"
 #include "components/signin/public/android/jni_headers/AccountTrackerService_jni.h"
 #endif
@@ -132,10 +133,18 @@ signin::Tribool FindAccountCapabilityPath(const base::Value& value,
   }
 }
 
+void GetString(const base::Value& dict,
+               base::StringPiece key,
+               std::string& result) {
+  if (const std::string* value = dict.FindStringKey(key)) {
+    result = *value;
+  }
+}
+
 }  // namespace
 
 AccountTrackerService::AccountTrackerService() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_ref =
       signin::Java_AccountTrackerService_Constructor(
@@ -524,13 +533,13 @@ void AccountTrackerService::OnAccountImageUpdated(
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetList()[i];
+  for (size_t i = 0; i < update->GetListDeprecated().size();
+       ++i, dict = nullptr) {
+    base::Value& dict_value = update->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
-      std::string value;
-      if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_id.ToString()) {
+      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+      if (account_key && *account_key == account_id.ToString()) {
         break;
       }
     }
@@ -551,42 +560,35 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 }
 
 void AccountTrackerService::LoadFromPrefs() {
-  const base::ListValue* list = pref_service_->GetList(prefs::kAccountInfo);
+  const base::Value* list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::Value& dict_value = list->GetList()[i];
+  for (size_t i = 0; i < list->GetListDeprecated().size(); ++i) {
+    const base::Value& dict_value = list->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       const base::DictionaryValue& dict =
           base::Value::AsDictionaryValue(dict_value);
-      std::string value;
-      if (dict.GetString(kAccountKeyPath, &value)) {
+      if (const std::string* account_key =
+              dict.FindStringKey(kAccountKeyPath)) {
         // Ignore incorrectly persisted non-canonical account ids.
-        if (value.find('@') != std::string::npos &&
-            value != gaia::CanonicalizeEmail(value)) {
-          to_remove.insert(CoreAccountId::FromString(value));
+        if (account_key->find('@') != std::string::npos &&
+            *account_key != gaia::CanonicalizeEmail(*account_key)) {
+          to_remove.insert(CoreAccountId::FromString(*account_key));
           continue;
         }
 
-        CoreAccountId account_id = CoreAccountId::FromString(value);
+        CoreAccountId account_id = CoreAccountId::FromString(*account_key);
         StartTrackingAccount(account_id);
         AccountInfo& account_info = accounts_[account_id];
 
-        if (dict.GetString(kAccountGaiaPath, &value))
-          account_info.gaia = value;
-        if (dict.GetString(kAccountEmailPath, &value))
-          account_info.email = value;
-        if (dict.GetString(kAccountHostedDomainPath, &value))
-          account_info.hosted_domain = value;
-        if (dict.GetString(kAccountFullNamePath, &value))
-          account_info.full_name = value;
-        if (dict.GetString(kAccountGivenNamePath, &value))
-          account_info.given_name = value;
-        if (dict.GetString(kAccountLocalePath, &value))
-          account_info.locale = value;
-        if (dict.GetString(kAccountPictureURLPath, &value))
-          account_info.picture_url = value;
-        if (dict.GetString(kLastDownloadedImageURLWithSizePath, &value))
-          account_info.last_downloaded_image_url_with_size = value;
+        GetString(dict, kAccountGaiaPath, account_info.gaia);
+        GetString(dict, kAccountEmailPath, account_info.email);
+        GetString(dict, kAccountHostedDomainPath, account_info.hosted_domain);
+        GetString(dict, kAccountFullNamePath, account_info.full_name);
+        GetString(dict, kAccountGivenNamePath, account_info.given_name);
+        GetString(dict, kAccountLocalePath, account_info.locale);
+        GetString(dict, kAccountPictureURLPath, account_info.picture_url);
+        GetString(dict, kLastDownloadedImageURLWithSizePath,
+                  account_info.last_downloaded_image_url_with_size);
 
         if (absl::optional<bool> is_child_status =
                 dict.FindBoolKey(kDeprecatedChildStatusPath)) {
@@ -595,7 +597,7 @@ void AccountTrackerService::LoadFromPrefs() {
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributePath.
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::Value* update_dict = &update->GetList()[i];
+          base::Value* update_dict = &update->GetListDeprecated()[i];
           DCHECK(update_dict->is_dict());
           SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
                                    account_info.is_child_account);
@@ -663,23 +665,21 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    base::Value& dict_value = update->GetList()[i];
+  for (size_t i = 0; i < update->GetListDeprecated().size();
+       ++i, dict = nullptr) {
+    base::Value& dict_value = update->GetListDeprecated()[i];
     if (dict_value.is_dict()) {
       dict = static_cast<base::DictionaryValue*>(&dict_value);
-      std::string value;
-      if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_info.account_id.ToString()) {
+      const std::string* account_key = dict->FindStringKey(kAccountKeyPath);
+      if (account_key && *account_key == account_info.account_id.ToString()) {
         break;
       }
     }
   }
 
   if (!dict) {
-    dict = new base::DictionaryValue();
-    update->Append(base::WrapUnique(dict));
-    // |dict| is invalidated at this point, so it needs to be reset.
-    base::Value& dict_value = update->GetList().back();
+    update->Append(base::Value(base::Value::Type::DICTIONARY));
+    base::Value& dict_value = update->GetListDeprecated().back();
     DCHECK(dict_value.is_dict());
     dict = static_cast<base::DictionaryValue*>(&dict_value);
     dict->SetString(kAccountKeyPath, account_info.account_id.ToString());
@@ -788,7 +788,7 @@ void AccountTrackerService::RemoveAccount(const CoreAccountId& account_id) {
   StopTrackingAccount(account_id);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 AccountTrackerService::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);

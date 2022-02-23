@@ -15,6 +15,9 @@
     <includes>
       <include name="IDR_HELP_APP_HOST_INDEX_HTML" file="index.html"
           type="BINDATA" />
+      <include name="IDR_HELP_APP_HOST_INDEX_DARK_LIGHT_HTML"
+          file="index_dark_light.html"
+          type="BINDATA" />
       <include name="IDR_HELP_APP_ICON_192" file="app_icon_192.png"
           type="BINDATA" />
       <include name="IDR_HELP_APP_ICON_512" file="app_icon_512.png"

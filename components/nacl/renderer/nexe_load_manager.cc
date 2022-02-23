@@ -22,7 +22,6 @@
 #include "components/nacl/renderer/progress_event.h"
 #include "components/nacl/renderer/trusted_plugin_channel.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
@@ -87,8 +86,7 @@ NexeLoadManager::NexeLoadManager(PP_Instance pp_instance)
       is_installed_(false),
       exit_status_(-1),
       nexe_size_(0),
-      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)),
-      nonsfi_(false) {
+      plugin_instance_(content::PepperPluginInstance::Get(pp_instance)) {
   set_exit_status(-1);
   SetLastError("");
   HistogramEnumerateOsArch(GetSandboxArch());

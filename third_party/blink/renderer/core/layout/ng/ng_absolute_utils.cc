@@ -346,7 +346,7 @@ bool ComputeOutOfFlowInlineDimensions(
   const bool is_table = node.IsTable();
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node);
-  bool is_shrink_to_fit = is_table || node.ShouldBeConsideredAsReplaced();
+  bool is_shrink_to_fit = is_table;
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -446,7 +446,7 @@ bool ComputeOutOfFlowInlineDimensions(
   return depends_on_min_max_sizes;
 }
 
-scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
+const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGBoxStrut& border_padding,
@@ -456,9 +456,8 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
     NGLogicalOutOfFlowDimensions* dimensions) {
   DCHECK(dimensions);
 
-  scoped_refptr<const NGLayoutResult> result;
+  const NGLayoutResult* result = nullptr;
 
-  // NOTE: |is_shrink_to_fit| isn't symmetrical with the inline calculations.
   const auto& style = node.Style();
   const bool is_table = node.IsTable();
   bool is_shrink_to_fit = is_table;
@@ -482,7 +481,8 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
         // initial column balancing pass.
         SetupSpaceBuilderForFragmentation(
             space, node, /* fragmentainer_offset_delta */ LayoutUnit(),
-            &builder, /* is_new_fc */ true);
+            &builder, /* is_new_fc */ true,
+            /* requires_content_before_breaking */ false);
       }
       result = node.Layout(builder.ToConstraintSpace());
     }

@@ -106,8 +106,8 @@ void ViewportData::UpdateViewportDescription() {
   if (document_->GetFrame()->IsMainFrame()) {
     document_->GetPage()->GetChromeClient().DispatchViewportPropertiesDidChange(
         GetViewportDescription());
-    document_->View()->GetMobileFriendlinessChecker()->NotifyViewportUpdated(
-        GetViewportDescription());
+    if (auto* mf_checker = document_->View()->GetMobileFriendlinessChecker())
+      mf_checker->NotifyViewportUpdated(GetViewportDescription());
   }
 }
 

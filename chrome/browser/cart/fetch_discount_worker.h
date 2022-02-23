@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -40,7 +41,7 @@ class CartServiceDelegate {
   virtual void UpdateFreeListingCoupons(const CouponService::CouponsMap& map);
 
  private:
-  CartService* cart_service_;
+  raw_ptr<CartService> cart_service_;
 };
 
 // This is used to fetch discounts for active Carts in cart_db. It starts
@@ -89,11 +90,11 @@ class FetchDiscountWorker {
   // active carts, updating given cart discount, etc.
   std::unique_ptr<CartServiceDelegate> cart_service_delegate_;
   // This is used to identify whether user is a sync user.
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   // This is used to fetch the oauth token.
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
-  variations::VariationsClient* const chrome_variations_client_;
+  const raw_ptr<variations::VariationsClient> chrome_variations_client_;
 
   // This is run in the UI thread, it loads all active carts.
   void PrepareToFetch();

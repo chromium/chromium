@@ -82,7 +82,7 @@ class MockNodeChannelDelegate
               OnBroadcast,
               (const NodeName& from_node, Channel::MessagePtr message),
               (override));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MOCK_METHOD(void,
               OnRelayEventMessage,
               (const NodeName& from_node,

@@ -256,8 +256,8 @@ class AccessibilityManager
 
   // Register a callback to be notified when the status of an accessibility
   // option changes.
-  base::CallbackListSubscription RegisterCallback(
-      const AccessibilityStatusCallback& cb) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription RegisterCallback(
+      const AccessibilityStatusCallback& cb);
 
   // Notify registered callbacks of a status change in an accessibility setting.
   void NotifyAccessibilityStatusChanged(
@@ -388,6 +388,7 @@ class AccessibilityManager
   const std::set<std::string>& GetAccessibilityCommonEnabledFeaturesForTest() {
     return accessibility_common_enabled_features_;
   }
+  bool IsDisableAutoclickDialogVisibleForTest();
 
  protected:
   AccessibilityManager();

@@ -15,7 +15,7 @@
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/install_attributes.h"
@@ -34,11 +34,11 @@ ChromeVariationsServiceClient::ChromeVariationsServiceClient() = default;
 ChromeVariationsServiceClient::~ChromeVariationsServiceClient() = default;
 
 base::Version ChromeVariationsServiceClient::GetVersionForSimulation() {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   const auto* build_state = g_browser_process->GetBuildState();
   if (build_state->installed_version().has_value())
     return *build_state->installed_version();
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(asvitkine): Get the version that will be used on restart instead of
   // the current version on Android, iOS and ChromeOS.
@@ -77,7 +77,7 @@ ChromeVariationsServiceClient::GetCurrentFormFactor() {
 }
 
 bool ChromeVariationsServiceClient::IsEnterprise() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsMachineExternallyManaged();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();

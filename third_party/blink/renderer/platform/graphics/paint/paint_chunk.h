@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -110,6 +110,10 @@ struct PLATFORM_EXPORT PaintChunk {
     if (!layer_selection_data)
       layer_selection_data = std::make_unique<LayerSelectionData>();
     return *layer_selection_data;
+  }
+
+  bool DrawsContent() const {
+    return !effectively_invisible && !drawable_bounds.IsEmpty();
   }
 
   size_t MemoryUsageInBytes() const;

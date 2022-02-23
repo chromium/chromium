@@ -6,17 +6,17 @@
 
 #include <memory>
 
-#include "ash/grit/ash_sample_system_web_app_resources.h"
+#include "ash/webui/grit/ash_sample_system_web_app_resources.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUISampleSystemWebAppURL);
   info->scope = GURL(ash::kChromeUISampleSystemWebAppURL);
   // |title| should come from a resource string, but this is the sample app, and
@@ -38,15 +38,25 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
+  info->share_target = apps::ShareTarget();
+  info->share_target->action =
+      GURL("chrome://sample-system-web-app/share.html");
   {
-    WebApplicationShortcutsMenuItemInfo shortcut;
+    apps::ShareTarget::Files icon_files;
+    icon_files.name = "icons";
+    icon_files.accept.push_back("image/x-xbitmap");
+    info->share_target->params.files.push_back(std::move(icon_files));
+  }
+
+  {
+    WebAppShortcutsMenuItemInfo shortcut;
     shortcut.name = u"Inter Frame Communication Demo";
     shortcut.url =
         GURL("chrome://sample-system-web-app/inter_frame_communication.html");
     info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
   }
   {
-    WebApplicationShortcutsMenuItemInfo shortcut;
+    WebAppShortcutsMenuItemInfo shortcut;
     shortcut.name = u"Component Playground";
     shortcut.url =
         GURL("chrome://sample-system-web-app/component_playground.html");
@@ -68,7 +78,7 @@ SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
                {web_app::GetOrigin("chrome-untrusted://sample-system-web-app"),
                 {"Frobulate"}}})) {}
 
-std::unique_ptr<WebApplicationInfo> SampleSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> SampleSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForSampleSystemWebApp();
 }

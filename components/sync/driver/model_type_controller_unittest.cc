@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -31,8 +32,10 @@ namespace syncer {
 namespace {
 
 using testing::_;
+using testing::DoAll;
 using testing::NiceMock;
 using testing::NotNull;
+using testing::SaveArg;
 
 const ModelType kTestModelType = AUTOFILL;
 const char kCacheGuid[] = "SomeCacheGuid";
@@ -101,10 +104,7 @@ class ModelTypeControllerTest : public testing::Test {
 
     ModelTypeControllerDelegate::StartCallback start_callback;
     EXPECT_CALL(mock_delegate_, OnSyncStarting)
-        .WillOnce([&](const DataTypeActivationRequest& request,
-                      ModelTypeControllerDelegate::StartCallback callback) {
-          start_callback = std::move(callback);
-        });
+        .WillOnce(MoveArg<1>(&start_callback));
 
     controller_.LoadModels(MakeConfigureContext(), load_models_done.Get());
     if (!start_callback) {
@@ -144,10 +144,7 @@ TEST_F(ModelTypeControllerTest, LoadModelsOnBackendThread) {
 
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
 
   controller()->LoadModels(MakeConfigureContext(), load_models_done.Get());
   EXPECT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
@@ -192,23 +189,20 @@ TEST_F(ModelTypeControllerTest, ConnectWithInitialSyncDone) {
 }
 
 TEST_F(ModelTypeControllerTest, ConnectWithError) {
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        error_handler = request.error_handler;
-      });
+      .WillOnce(SaveArg<0>(&activation_request));
 
   base::MockCallback<DataTypeController::ModelLoadCallback> load_models_done;
   controller()->LoadModels(MakeConfigureContext(), load_models_done.Get());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
 
   base::HistogramTester histogram_tester;
   // Mimic completion for OnSyncStarting(), with an error.
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
   EXPECT_CALL(load_models_done, Run(_, ErrorIsSet()));
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
@@ -279,18 +273,15 @@ TEST_F(ModelTypeControllerTest, StopBeforeLoadModels) {
 TEST_F(ModelTypeControllerTest, StopDuringFailedState) {
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA)).Times(0);
 
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        error_handler = request.error_handler;
-      });
+      .WillOnce(SaveArg<0>(&activation_request));
 
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
   // Mimic completion for OnSyncStarting(), with an error.
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
@@ -310,10 +301,7 @@ TEST_F(ModelTypeControllerTest, StopDuringFailedState) {
 TEST_F(ModelTypeControllerTest, StopWhileStarting) {
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
 
   // A cancelled start never issues completion for the load.
   base::MockCallback<DataTypeController::ModelLoadCallback> load_models_done;
@@ -342,16 +330,13 @@ TEST_F(ModelTypeControllerTest, StopWhileStarting) {
 // wait for completion of the delegate, before stopping it. In this test,
 // loading produces an error, so the resulting state should be FAILED.
 TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        error_handler = request.error_handler;
-      });
+      .WillOnce(SaveArg<0>(&activation_request));
 
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
 
   // Stop() should be deferred until OnSyncStarting() finishes.
   base::MockCallback<base::OnceClosure> stop_completion;
@@ -365,7 +350,7 @@ TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
   // Mimic completion for OnSyncStarting(), with an error.
   EXPECT_CALL(*delegate(), OnSyncStopping).Times(0);
   EXPECT_CALL(stop_completion, Run());
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
@@ -382,18 +367,15 @@ TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
 // simultaneously to the UI stopping the datatype.
 TEST_F(ModelTypeControllerTest, StopWhileErrorInFlight) {
   ModelTypeControllerDelegate::StartCallback start_callback;
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-        error_handler = request.error_handler;
-      });
+      .WillOnce(
+          DoAll(SaveArg<0>(&activation_request), MoveArg<1>(&start_callback)));
 
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
   ASSERT_TRUE(start_callback);
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
 
   // Mimic completion for OnSyncStarting().
   std::move(start_callback).Run(std::make_unique<DataTypeActivationResponse>());
@@ -410,7 +392,7 @@ TEST_F(ModelTypeControllerTest, StopWhileErrorInFlight) {
 
   base::HistogramTester histogram_tester;
   // In the next loop iteration, the UI thread receives the error.
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
@@ -425,10 +407,7 @@ TEST_F(ModelTypeControllerTest, StopWhileErrorInFlight) {
 TEST_F(ModelTypeControllerTest, ReportErrorWhileStarting) {
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
 
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
@@ -454,10 +433,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorWhileStarting) {
 TEST_F(ModelTypeControllerTest, StopAndReportErrorWhileStarting) {
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
 
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
@@ -510,10 +486,7 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Start sync with SyncMode::kTransportOnly.
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStarting).Times(0);
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
   context.sync_mode = SyncMode::kTransportOnly;
   controller.LoadModels(context, base::DoNothing());
 
@@ -534,10 +507,7 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
   // Start sync with SyncMode::kFull.
   EXPECT_CALL(delegate_for_transport_mode, OnSyncStarting).Times(0);
   EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        start_callback = std::move(callback);
-      });
+      .WillOnce(MoveArg<1>(&start_callback));
   context.sync_mode = SyncMode::kFull;
   controller.LoadModels(context, base::DoNothing());
 
@@ -559,17 +529,14 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
 TEST_F(ModelTypeControllerTest, ReportErrorAfterLoaded) {
   base::HistogramTester histogram_tester;
   // Capture the callbacks.
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        error_handler = request.error_handler;
-        start_callback = std::move(callback);
-      });
+      .WillOnce(
+          DoAll(SaveArg<0>(&activation_request), MoveArg<1>(&start_callback)));
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
   ASSERT_TRUE(start_callback);
 
   // Mimic completion for OnSyncStarting().
@@ -577,7 +544,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterLoaded) {
   ASSERT_EQ(DataTypeController::MODEL_LOADED, controller()->state());
 
   // Now trigger the run-time error.
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();
@@ -591,17 +558,14 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterLoaded) {
 TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   base::HistogramTester histogram_tester;
   // Capture the callbacks.
-  ModelErrorHandler error_handler;
+  DataTypeActivationRequest activation_request;
   ModelTypeControllerDelegate::StartCallback start_callback;
   EXPECT_CALL(*delegate(), OnSyncStarting)
-      .WillOnce([&](const DataTypeActivationRequest& request,
-                    ModelTypeControllerDelegate::StartCallback callback) {
-        error_handler = request.error_handler;
-        start_callback = std::move(callback);
-      });
+      .WillOnce(
+          DoAll(SaveArg<0>(&activation_request), MoveArg<1>(&start_callback)));
   controller()->LoadModels(MakeConfigureContext(), base::DoNothing());
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller()->state());
-  ASSERT_TRUE(error_handler);
+  ASSERT_TRUE(activation_request.error_handler);
   ASSERT_TRUE(start_callback);
 
   // An activation response with a non-null processor is required for
@@ -618,7 +582,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterRegisteredWithBackend) {
   ASSERT_EQ(DataTypeController::RUNNING, controller()->state());
 
   // Now trigger the run-time error.
-  error_handler.Run(ModelError(FROM_HERE, "Test error"));
+  activation_request.error_handler.Run(ModelError(FROM_HERE, "Test error"));
   // TODO(mastiz): We shouldn't need RunUntilIdle() here, but
   // ModelTypeController currently uses task-posting for errors.
   base::RunLoop().RunUntilIdle();

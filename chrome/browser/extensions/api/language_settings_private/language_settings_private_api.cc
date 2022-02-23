@@ -82,7 +82,7 @@ base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
 // Returns the set of allowed UI locales.
 base::flat_set<std::string> GetAllowedLanguages(PrefService* prefs) {
   const auto& allowed_languages_values =
-      prefs->GetList(prefs::kAllowedLanguages)->GetList();
+      prefs->GetList(prefs::kAllowedLanguages)->GetListDeprecated();
   return base::MakeFlatSet<std::string>(
       allowed_languages_values, {},
       [](const auto& locale_value) { return locale_value.GetString(); });
@@ -275,7 +275,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (spellcheck::UseBrowserSpellChecker()) {
     if (!base::FeatureList::IsEnabled(
             spellcheck::kWinDelaySpellcheckServiceInit)) {
@@ -293,13 +293,13 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       return RespondLater();
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(language_list_))));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void LanguageSettingsPrivateGetLanguageListFunction::
     OnDictionariesInitialized() {
   UpdateSupportedPlatformDictionaries();
@@ -313,13 +313,13 @@ void LanguageSettingsPrivateGetLanguageListFunction::
     UpdateSupportedPlatformDictionaries() {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
-  for (auto& language_val : language_list_->GetList()) {
+  for (auto& language_val : language_list_->GetListDeprecated()) {
     if (service->UsesWindowsDictionary(*language_val.FindStringKey("code"))) {
       language_val.SetBoolKey("supportsSpellcheck", new bool(true));
     }
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 LanguageSettingsPrivateEnableLanguageFunction::
     LanguageSettingsPrivateEnableLanguageFunction() = default;

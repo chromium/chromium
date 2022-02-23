@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">አዲስ ትር ማንነት በማያሳውቅ ሁነታ ውስጥ ይክፈቱ</translation>
 <translation id="152892567002884378">ድምጽ ጨምር</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />፣ ከዚያ <ph name="ESC" /></translation>
+<translation id="1586324912145647027">ወደ ዴስክ 1 እስከ 8 ይሂዱ</translation>
 <translation id="1652741121070700329">ወደ የቀዳሚው ቃል መጀመሪያ ይውሰዱ</translation>
 <translation id="1679841710523778799">ብሩህነትን ጨምር</translation>
 <translation id="168356808214100546"><ph name="ALT" />ን ተጭነው ይያዙ፣  መክፈት የሚፈልጉትን መስኮት እስኪያገኙ ድረስ <ph name="TAB" /> መታ ያድርጉ፣ ከዚያ ይልቀቁ።</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ይጫኑ እና አገናኝ ጠቅ ያድርጉ</translation>
 <translation id="561814908794220892">ድረ-ገጹን በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="5620219513321115856">ንቁ መስኮትን በቀኝ በኩል ወደ ያለው ዴስክ ያንቀሳቅሱ</translation>
+<translation id="5699366815052349604">ገባሪ መስኮትን ለሁሉም ዴስኮች ይመድቡ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ወይም <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">አገናኙን በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="5757474750054631686">ቁልፍ ሰሌዳን ያጨልሙ (የጀርባ ብርሃን ላላቸው ቁልፍ ሰሌዳዎች ብቻ)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">ትሩን ወደ የመጀመሪያው አቀማመጡ ይመልሱ</translation>
 <translation id="6474744297082284761">አሳንስ (ሲተከል ወይም የሙሉ ማያ ገጽ ማጉያዎች ሲነቁ)</translation>
 <translation id="649811797655257835">ፋይሉን ይምረጡ፣ ከዚያ <ph name="SPACE" /> ይጫኑ</translation>
+<translation id="6515089016094047210">የቀን መቁጠሪያ መግብርን ይክፈቱ ወይም ይዝጉ።</translation>
 <translation id="6551886416582667425">ከፊል ቅጽበታዊ ገጽ እይታ ያንሱ/ይቅረጹ</translation>
 <translation id="6556040137485212400">ለረጅሙ ጊዜ ስራ ላይ ያልዋለውን መስኮት ይክፈቱ</translation>
 <translation id="666343722268997814">ለደመቀው ንጥል በቀኝ ጠቅ ምናሌን ይክፈቱ</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">በፋይሎች መተግበሪያ ውስጥ የተደበቁ ፋይሎችን አሳይ</translation>
 <translation id="8717459106217102612">ቀዳሚውን ቃል ወይም ፊደል ይምረጡ</translation>
 <translation id="8727232706774971183">የእርስዎን ማሳወቂያዎች ይመልከቱ</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> ከ1 እስከ 8</translation>
 <translation id="8855885154700222542">የሙሉ ማያ ገጽ እይታ ቁልፍ</translation>
 <translation id="8881584919399569791">ንቁ መስኮትን በግራ በኩል ወደ ያለው ዴስክ ያንቀሳቅሱ</translation>
 <translation id="88986195241502842">ገጽ ወደ ታች</translation>

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/apps_section.h"
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,13 +24,14 @@
 #include "chrome/browser/ui/webui/settings/chromeos/plugin_vm_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "components/app_restore/features.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -168,6 +172,7 @@ const std::vector<SearchConcept>& GetOnStartupSearchConcepts() {
 
 void AddAppManagementStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appManagementAppDetailsTitle", IDS_APP_MANAGEMENT_APP_DETAILS_TITLE},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
       {"appManagementCameraPermissionLabel", IDS_APP_MANAGEMENT_CAMERA},
@@ -186,6 +191,16 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TEXT_5_OR_MORE_APPS},
       {"appManagementIntentOverlapDialogTitle",
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_DIALOG_TITLE},
+      {"appManagementIntentOverlapWarningText1App",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_1_APP},
+      {"appManagementIntentOverlapWarningText2Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_2_APPS},
+      {"appManagementIntentOverlapWarningText3Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_3_APPS},
+      {"appManagementIntentOverlapWarningText4Apps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_4_APPS},
+      {"appManagementIntentOverlapWarningText5OrMoreApps",
+       IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_5_OR_MORE_APPS},
       {"appManagementIntentSettingsDialogTitle",
        IDS_APP_MANAGEMENT_INTENT_SETTINGS_DIALOG_TITLE},
       {"appManagementIntentSettingsTitle",
@@ -334,8 +349,14 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
       {"appNotificationsCountDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
+      {"appNotificationsDoNotDisturbDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean(
+      "appManagementAppDetailsEnabled",
+      base::FeatureList::IsEnabled(::features::kAppManagementAppDetails));
 
   html_source->AddString("appNotificationsBrowserSettingsURL",
                          chrome::kAppNotificationsBrowserSettingsURL);
@@ -355,6 +376,14 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showOsSettingsAppNotificationsRow",
       base::FeatureList::IsEnabled(
           chromeos::features::kOsSettingsAppNotificationsPage));
+  html_source->AddBoolean(
+      "showArcvmManageUsb",
+      arc::IsArcVmEnabled() &&
+          base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm));
+
+  html_source->AddBoolean(
+      "isAccessibilityOSSettingsVisibilityEnabled",
+      ::features::IsAccessibilityOSSettingsVisibilityEnabled());
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);
@@ -368,6 +397,9 @@ void AppsSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<chromeos::settings::AndroidAppsHandler>(
           profile(), app_service_proxy_));
+  if (arc::IsArcVmEnabled() &&
+      base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm))
+    web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
 
   if (ShowPluginVm(profile(), *pref_service_)) {
     web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
@@ -452,6 +484,13 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             kGooglePlayStoreSettings, generator);
   generator->RegisterTopLevelAltSetting(
       mojom::Setting::kManageAndroidPreferences);
+
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
+      mojom::Subpage::kArcVmUsbPreferences, mojom::Subpage::kGooglePlayStore,
+      mojom::SearchResultIcon::kGooglePlay,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kArcVmUsbPreferencesSubpagePath);
 }
 
 void AppsSection::OnAppRegistered(const std::string& app_id,
@@ -472,6 +511,8 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
       {"androidAppsDisableDialogRemove",
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
+      {"arcvmSharedUsbDevicesDescription",
+       IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",

@@ -12,7 +12,9 @@
 
 namespace net {
 
-struct ChromeRootCertInfo;
+struct ChromeRootCertInfo {
+  base::span<const uint8_t> root_cert_der;
+};
 
 // TrustStoreChrome contains the Chrome Root Store, as described at
 // https://g.co/chrome/root-policy

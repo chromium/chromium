@@ -5,12 +5,14 @@
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -33,7 +35,7 @@ const char kHistogramFromGWSFirstContentfulPaint[] =
     "NavigationToFirstContentfulPaint";
 const char kHistogramFromGWSLargestContentfulPaint[] =
     "PageLoad.Clients.FromGoogleSearch.PaintTiming."
-    "NavigationToLargestContentfulPaint";
+    "NavigationToLargestContentfulPaint2";
 const char kHistogramFromGWSParseStartToFirstContentfulPaint[] =
     "PageLoad.Clients.FromGoogleSearch.PaintTiming."
     "ParseStartToFirstContentfulPaint";
@@ -119,6 +121,10 @@ const char kHistogramFromGWSForegroundDurationNoCommit[] =
 const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[] =
     "PageLoad.Clients.FromGoogleSearch.LayoutInstability.CumulativeShiftScore."
     "MainFrame";
+
+const char kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow[] =
+    "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms"
+    ".Max5000ms2";
 
 }  // namespace internal
 
@@ -690,4 +696,15 @@ void FromGWSPageLoadMetricsLogger::LogMetricsOnComplete(
       internal::kHistogramFromGWSCumulativeLayoutShiftMainFrame,
       LayoutShiftUmaValue(
           delegate.GetMainFrameRenderData().layout_shift_score));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      delegate.GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+
+  base::UmaHistogramCustomCounts(
+      internal::kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow,
+      page_load_metrics::LayoutShiftUmaValue10000(
+          normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls),
+      1, 24000, 50);
 }

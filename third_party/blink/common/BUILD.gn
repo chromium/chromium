@@ -5,6 +5,7 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 blink_python_runner("make_generated_permissions_policy_features") {
   script = "../renderer/build/scripts/make_permissions_policy_features.py"
@@ -48,6 +49,27 @@ blink_python_runner("make_generated_document_policy_features") {
   ]
 }
 
+blink_python_runner("make_generated_origin_trials") {
+  script = "../renderer/build/scripts/make_origin_trials.py"
+
+  inputs = scripts_for_json5_files + [
+             "../renderer/build/scripts/make_origin_trials.py",
+             "../renderer/platform/runtime_enabled_features.json5",
+             "../renderer/build/scripts/templates/origin_trials.cc.tmpl",
+           ]
+  outputs = [
+    "$root_gen_dir/third_party/blink/common/origin_trials/origin_trials.cc",
+  ]
+
+  args = [
+    rebase_path("../renderer/platform/runtime_enabled_features.json5",
+                root_build_dir),
+    "--output_dir",
+    rebase_path("$root_gen_dir/third_party/blink/common/origin_trials",
+                root_build_dir),
+  ]
+}
+
 config("blink_common_implementation") {
   defines = [ "BLINK_COMMON_IMPLEMENTATION=1" ]
 }
@@ -62,10 +84,7 @@ source_set("common") {
     "//third_party/blink/public/common",
   ]
 
-  configs += [
-    ":blink_common_implementation",
-    "//build/config/compiler:noshadowing",
-  ]
+  configs += [ ":blink_common_implementation" ]
 
   sources = [
     # NOTE: Please do not add public headers that need to be referenced from
@@ -117,6 +136,7 @@ source_set("common") {
     "input/web_touch_event.cc",
     "interest_group/interest_group.cc",
     "interest_group/interest_group_mojom_traits.cc",
+    "link_to_text/link_to_text_mojom_traits.cc",
     "loader/inter_process_time_ticks_converter.cc",
     "loader/loader_constants.cc",
     "loader/mime_sniffing_throttle.cc",
@@ -149,6 +169,7 @@ source_set("common") {
     "messaging/transferable_message.cc",
     "messaging/transferable_message_mojom_traits.cc",
     "messaging/web_message_port.cc",
+    "metrics/post_message_counter.cc",
     "mime_util/mime_util.cc",
     "mobile_metrics/mobile_friendliness.cc",
     "native_io/native_io_utils.cc",
@@ -161,6 +182,7 @@ source_set("common") {
     "notifications/notification_mojom_traits.cc",
     "notifications/notification_resources.cc",
     "notifications/platform_notification_data.cc",
+    "origin_trials/navigation_origin_trial_features.cc",
     "origin_trials/trial_token.cc",
     "origin_trials/trial_token_result.cc",
     "origin_trials/trial_token_validator.cc",
@@ -203,10 +225,12 @@ source_set("common") {
   ]
 
   sources += get_target_outputs(":make_generated_document_policy_features")
+  sources += get_target_outputs(":make_generated_origin_trials")
   sources += get_target_outputs(":make_generated_permissions_policy_features")
 
   public_deps = [
     ":make_generated_document_policy_features",
+    ":make_generated_origin_trials",
     ":make_generated_permissions_policy_features",
     "//third_party/blink/common/privacy_budget:privacy_budget",
     "//third_party/blink/public/common:common_export",
@@ -274,6 +298,7 @@ test("blink_common_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
@@ -306,8 +331,10 @@ source_set("common_unittests_sources") {
     "media/watch_time_component_unittest.cc",
     "mediastream/media_devices_unittest.cc",
     "messaging/message_port_descriptor_unittest.cc",
+    "metrics/post_message_counter_unittest.cc",
     "mime_util/mime_util_unittest.cc",
     "notifications/notification_mojom_traits_unittest.cc",
+    "origin_trials/origin_trials_test.cc",
     "origin_trials/trial_token_unittest.cc",
     "origin_trials/trial_token_validator_unittest.cc",
     "page/content_to_visible_time_reporter_unittest.cc",
@@ -331,6 +358,7 @@ source_set("common_unittests_sources") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/ukm:test_support",
     "//media/capture:capture_base",
     "//mojo/core/embedder",
     "//mojo/public/cpp/test_support:test_utils",
@@ -381,4 +409,24 @@ static_library("test_support") {
   deps = [ "//third_party/blink/public:test_headers" ]
 
   visibility = [ "//third_party/blink/public:test_support" ]
+}
+
+if (use_libfuzzer) {
+  proto_library("storage_key_fuzzer_proto") {
+    testonly = true
+    proto_in_dir = "//"
+    sources = [ "storage_key/storage_key_fuzzer.proto" ]
+    proto_deps = [ "//third_party/blink/public/common:storage_key_proto" ]
+  }
+
+  fuzzer_test("storage_key_fuzzer") {
+    sources = [ "storage_key/storage_key_fuzzer.cc" ]
+    deps = [
+      ":common",
+      ":storage_key_fuzzer_proto",
+      "//base/test:test_support",
+      "//third_party/blink/public/common:storage_key_proto_converter",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

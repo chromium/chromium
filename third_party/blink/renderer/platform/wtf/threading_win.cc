@@ -100,7 +100,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #include <errno.h>
 #include <process.h>
@@ -113,16 +113,11 @@ namespace WTF {
 namespace {
 static_assert(sizeof(BLINK_CRITICAL_SECTION) == sizeof(CRITICAL_SECTION),
               "Definition mismatch.");
-static_assert(sizeof(BLINK_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),
-              "Definition mismatch.");
 
 CRITICAL_SECTION* GetCriticalSection(PlatformMutex* mutex) {
   return reinterpret_cast<CRITICAL_SECTION*>(&mutex->internal_mutex_);
 }
 
-CONDITION_VARIABLE* ToConditionVariable(BLINK_CONDITION_VARIABLE* condition) {
-  return reinterpret_cast<CONDITION_VARIABLE*>(condition);
-}
 }  // namespace
 
 MutexBase::MutexBase(bool recursive) {
@@ -147,35 +142,6 @@ void MutexBase::unlock() {
   LeaveCriticalSection(GetCriticalSection(&mutex_));
 }
 
-bool Mutex::TryLock() {
-  // This method is modeled after the behavior of pthread_mutex_trylock,
-  // which will return an error if the lock is already owned by the
-  // current thread.  Since the primitive Win32 'TryEnterCriticalSection'
-  // treats this as a successful case, it changes the behavior of several
-  // tests in WebKit that check to see if the current thread already
-  // owned this mutex (see e.g., IconDatabase::getOrCreateIconRecord)
-  DWORD result = TryEnterCriticalSection(GetCriticalSection(&mutex_));
-
-  if (result != 0) {  // We got the lock
-    // If this thread already had the lock, we must unlock and return
-    // false since this is a non-recursive mutex. This is to mimic the
-    // behavior of POSIX's pthread_mutex_trylock. We don't do this
-    // check in the lock method (presumably due to performance?). This
-    // means lock() will succeed even if the current thread has already
-    // entered the critical section.
-    DCHECK(!mutex_.recursion_count_)
-        << "WTF does not support recursive mutex acquisition!";
-    if (mutex_.recursion_count_ > 0) {
-      LeaveCriticalSection(GetCriticalSection(&mutex_));
-      return false;
-    }
-    ++mutex_.recursion_count_;
-    return true;
-  }
-
-  return false;
-}
-
 bool RecursiveMutex::TryLock() {
   // CRITICAL_SECTION is recursive/reentrant so TryEnterCriticalSection will
   // succeed if the current thread is already in the critical section.
@@ -189,29 +155,6 @@ bool RecursiveMutex::TryLock() {
   return true;
 }
 
-ThreadCondition::ThreadCondition(Mutex& mutex)
-  : condition_(CONDITION_VARIABLE_INIT), mutex_(mutex.Impl()) {}
-
-ThreadCondition::~ThreadCondition() {}
-
-void ThreadCondition::Wait() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  --mutex_.recursion_count_;
-  BOOL result = SleepConditionVariableCS(ToConditionVariable(&condition_),
-                                         GetCriticalSection(&mutex_), INFINITE);
-  DCHECK_NE(result, 0);
-  ++mutex_.recursion_count_;
-}
-
-void ThreadCondition::Signal() {
-  WakeConditionVariable(ToConditionVariable(&condition_));
-}
-
-void ThreadCondition::Broadcast() {
-  WakeAllConditionVariable(ToConditionVariable(&condition_));
-}
-
 }  // namespace WTF
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

@@ -8,7 +8,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -94,8 +93,6 @@ public class AwActionModeCallback implements ActionMode.Callback {
 
     private void processText(Intent intent) {
         RecordUserAction.record("MobileActionMode.ProcessTextIntent");
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-
         String query = ActionModeCallbackHelper.sanitizeQuery(mHelper.getSelectedText(),
                 ActionModeCallbackHelper.MAX_SEARCH_QUERY_LENGTH);
         if (TextUtils.isEmpty(query)) return;

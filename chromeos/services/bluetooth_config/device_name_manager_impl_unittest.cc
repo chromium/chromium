@@ -6,8 +6,10 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,14 +37,15 @@ class FakeObserver : public DeviceNameManager::Observer {
     return last_device_id_nickname_changed_;
   }
 
-  const std::string& last_device_nickname_changed() const {
+  const absl::optional<std::string>& last_device_nickname_changed() const {
     return last_device_nickname_changed_;
   }
 
  private:
   // DeviceNameManager::Observer:
-  void OnDeviceNicknameChanged(const std::string& device_id,
-                               const std::string& nickname) override {
+  void OnDeviceNicknameChanged(
+      const std::string& device_id,
+      const absl::optional<std::string>& nickname) override {
     ++num_device_nickname_changed_calls_;
     last_device_id_nickname_changed_ = device_id;
     last_device_nickname_changed_ = nickname;
@@ -50,7 +53,7 @@ class FakeObserver : public DeviceNameManager::Observer {
 
   size_t num_device_nickname_changed_calls_ = 0u;
   std::string last_device_id_nickname_changed_;
-  std::string last_device_nickname_changed_;
+  absl::optional<std::string> last_device_nickname_changed_;
 };
 
 }  // namespace
@@ -106,9 +109,11 @@ class DeviceNameManagerImplTest : public testing::Test {
     return fake_observer_.last_device_id_nickname_changed();
   }
 
-  const std::string& GetLastDeviceNicknameChanged() const {
+  const absl::optional<std::string>& GetLastDeviceNicknameChanged() const {
     return fake_observer_.last_device_nickname_changed();
   }
+
+  base::HistogramTester histogram_tester;
 
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
@@ -140,17 +145,34 @@ TEST_F(DeviceNameManagerImplTest, GetThenSetValidThenSetInvalid) {
   EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
   EXPECT_EQ(GetLastDeviceNicknameChanged(), kTestNickname);
 
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.SetNickname.Result",
+      device::SetNicknameResult::kInvalidNicknameFormat, 0);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kSuccess, 1);
+
   // Set an empty nickname, this should fail and the nickname should be
   // unchanged.
   manager->SetDeviceNickname(device_id, "");
   EXPECT_EQ(manager->GetDeviceNickname(device_id), kTestNickname);
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.SetNickname.Result",
+      device::SetNicknameResult::kInvalidNicknameFormat, 1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kSuccess, 1);
 
   // Set nickname above character limit, this should also fail and the nickname
   // should be unchanged.
   manager->SetDeviceNickname(device_id, "123456789012345678901234567890123");
   EXPECT_EQ(manager->GetDeviceNickname(device_id), kTestNickname);
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.SetNickname.Result",
+      device::SetNicknameResult::kInvalidNicknameFormat, 2);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kSuccess, 1);
 }
 
 TEST_F(DeviceNameManagerImplTest, NicknameIsPersistedBetweenManagerInstances) {
@@ -164,6 +186,11 @@ TEST_F(DeviceNameManagerImplTest, NicknameIsPersistedBetweenManagerInstances) {
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
   EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
   EXPECT_EQ(GetLastDeviceNicknameChanged(), kTestNickname);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.SetNickname.Result",
+      device::SetNicknameResult::kInvalidNicknameFormat, 0);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kSuccess, 1);
 
   // Create a new manager and destroy the old one.
   manager = CreateDeviceNameManager();
@@ -179,6 +206,39 @@ TEST_F(DeviceNameManagerImplTest, SetNicknameDeviceNotFound) {
   manager->SetDeviceNickname(device_id, kTestNickname);
   EXPECT_FALSE(manager->GetDeviceNickname(device_id));
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 0u);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kDeviceNotFound,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.SetNickname.Result",
+                                     device::SetNicknameResult::kSuccess, 0);
+}
+
+TEST_F(DeviceNameManagerImplTest, RemoveThenSetThenRemove) {
+  std::string device_id;
+  AddDevice(&device_id);
+  std::unique_ptr<DeviceNameManagerImpl> manager = CreateDeviceNameManager();
+  EXPECT_FALSE(manager->GetDeviceNickname(device_id));
+
+  // Nothing should happen when removing a nickname that doesn't exist.
+  manager->RemoveDeviceNickname(device_id);
+  EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 0u);
+  EXPECT_FALSE(manager->GetDeviceNickname(device_id));
+
+  manager->SetDeviceNickname(device_id, kTestNickname);
+  EXPECT_EQ(manager->GetDeviceNickname(device_id), kTestNickname);
+  EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
+  EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
+  EXPECT_EQ(GetLastDeviceNicknameChanged(), kTestNickname);
+
+  manager->RemoveDeviceNickname(device_id);
+  EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 2u);
+  EXPECT_FALSE(manager->GetDeviceNickname(device_id));
+  EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
+  EXPECT_EQ(GetLastDeviceNicknameChanged(), absl::nullopt);
+
+  // Create a new manager and destroy the old one.
+  manager = CreateDeviceNameManager();
+  EXPECT_FALSE(manager->GetDeviceNickname(device_id));
 }
 
 }  // namespace bluetooth_config

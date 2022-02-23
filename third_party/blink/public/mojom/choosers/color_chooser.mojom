@@ -11,7 +11,10 @@ struct ColorSuggestion {
 
 // A ColorChooser window is shown for <input type="color">.
 interface ColorChooserFactory {
-  [EnableIf=is_android]
+  // OpenColorChooser opens a platform specific color chooser in the browser.
+  // Enabled on platfoms that opt in using the "is_using_open_color_chooser"
+  // enabled_features option.
+  [EnableIf=is_using_open_color_chooser]
   OpenColorChooser(
       pending_receiver<ColorChooser> chooser,
       pending_remote<ColorChooserClient> client,

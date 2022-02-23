@@ -113,11 +113,9 @@ leveldb::Status TransactionalLevelDBIterator::Next() {
   CheckState();
 
   bool iterator_is_loaded = (iterator_ != nullptr);
-  std::string key_before_eviction;
-  leveldb::Status s;
-  std::tie(key_before_eviction, s) = WillUseDBIterator(/*perform_seek=*/true);
-  if (!s.ok())
-    return s;
+  auto [key_before_eviction, status] = WillUseDBIterator(/*perform_seek=*/true);
+  if (!status.ok())
+    return status;
   DCHECK(iterator_);
 
   // Exit early if not valid.

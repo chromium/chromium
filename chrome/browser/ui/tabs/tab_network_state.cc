@@ -10,7 +10,7 @@
 TabNetworkState TabNetworkStateForWebContents(content::WebContents* contents) {
   DCHECK(contents);
 
-  if (!contents->IsLoadingToDifferentDocument()) {
+  if (!contents->ShouldShowLoadingUI()) {
     content::NavigationEntry* entry =
         contents->GetController().GetLastCommittedEntry();
     if (entry && (entry->GetPageType() == content::PAGE_TYPE_ERROR))

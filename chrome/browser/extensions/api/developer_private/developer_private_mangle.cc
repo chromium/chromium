@@ -83,20 +83,20 @@ api::developer_private::ItemInfo MangleExtensionInfo(
   for (const api::developer_private::ManifestError& error :
        info.manifest_errors) {
     std::unique_ptr<base::DictionaryValue> value = error.ToValue();
-    value->SetInteger("type", static_cast<int>(ExtensionError::MANIFEST_ERROR));
-    value->SetInteger("level", static_cast<int>(logging::LOG_WARNING));
+    value->SetIntKey("type", static_cast<int>(ExtensionError::MANIFEST_ERROR));
+    value->SetIntKey("level", static_cast<int>(logging::LOG_WARNING));
     result.manifest_errors.push_back(std::move(value));
   }
   for (const api::developer_private::RuntimeError& error :
        info.runtime_errors) {
     std::unique_ptr<base::DictionaryValue> value = error.ToValue();
-    value->SetInteger("type", static_cast<int>(ExtensionError::RUNTIME_ERROR));
+    value->SetIntKey("type", static_cast<int>(ExtensionError::RUNTIME_ERROR));
     logging::LogSeverity severity = logging::LOG_INFO;
     if (error.severity == api::developer_private::ERROR_LEVEL_WARN)
       severity = logging::LOG_WARNING;
     else if (error.severity == api::developer_private::ERROR_LEVEL_ERROR)
       severity = logging::LOG_ERROR;
-    value->SetInteger("level", static_cast<int>(severity));
+    value->SetIntKey("level", static_cast<int>(severity));
     result.runtime_errors.push_back(std::move(value));
   }
   result.offline_enabled = info.offline_enabled;

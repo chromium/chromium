@@ -19,6 +19,18 @@
 #error "This file requires ARC support."
 #endif
 
+// Price drop data is logged at different stages during the user's session.
+// These identifiers enable differentiation in the metrics based on when
+// the price drop data was logged.
+// These values are used in histograms.xml. If additional values are
+// added, LocationIdentifier in histograms.xml will need to be updated.
+enum PriceDropLogId {
+  // Price Drop data is logged when the user opens the Tab Switcher.
+  TAB_SWITCHER,
+  // Price Drop data is logged at the end of a navigation.
+  NAVIGATION_COMPLETE
+};
+
 // This class acquires pricing data corresponding to the WebState's
 // URL - should the URL be for a shopping website with an offer.
 class ShoppingPersistedDataTabHelper
@@ -33,11 +45,8 @@ class ShoppingPersistedDataTabHelper
   // ShoppingPersistedDataTabHelper::WebState::URL - if it exists.
   class PriceDrop {
    public:
-    PriceDrop()
-        : current_price(nil),
-          previous_price(nil),
-          url(GURL(std::string())),
-          timestamp(base::Time::UnixEpoch()) {}
+    PriceDrop();
+    ~PriceDrop();
 
     // Current price of the offer.
     NSString* current_price;
@@ -46,6 +55,9 @@ class ShoppingPersistedDataTabHelper
 
    private:
     friend class ShoppingPersistedDataTabHelper;
+    friend class TabGridMediatorTest;
+    // Offer ID for the price drop
+    absl::optional<int64_t> offer_id;
     // URL corresponding to the price drop.
     GURL url;
     // Time price drop was acquired.
@@ -56,10 +68,14 @@ class ShoppingPersistedDataTabHelper
   // ShoppingPersistedDataTabHelper.
   const PriceDrop* GetPriceDrop();
 
+  // Log metrics for a given |price_drop_log_id|
+  void LogMetrics(PriceDropLogId price_drop_log_id);
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   friend class web::WebStateUserData<ShoppingPersistedDataTabHelper>;
   friend class ShoppingPersistedDataTabHelperTest;
+  friend class TabGridMediatorTest;
 
   explicit ShoppingPersistedDataTabHelper(web::WebState* web_state);
 
@@ -99,6 +115,11 @@ class ShoppingPersistedDataTabHelper
 
   // Resets |price_drop_| when it is determined to no longer be valid.
   void ResetPriceDrop();
+
+  // Sets the |price_drop_|. Only intended for testing purposes.
+  void SetPriceDropForTesting(std::unique_ptr<PriceDrop> price_drop) {
+    price_drop_ = std::move(price_drop);
+  }
 
   web::WebState* web_state_ = nullptr;
 

@@ -19,6 +19,7 @@
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,9 +40,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
 using ::testing::ByMove;
@@ -117,8 +118,9 @@ class MockDelegate : public DownloadItemImplDelegate {
   MOCK_METHOD1(ShouldOpenFileBasedOnExtension, bool(const base::FilePath&));
   MOCK_METHOD1(CheckForFileRemoval, void(DownloadItemImpl*));
 
-  void ResumeInterruptedDownload(std::unique_ptr<DownloadUrlParameters> params,
-                                 const GURL& site_url) override {
+  void ResumeInterruptedDownload(
+      std::unique_ptr<DownloadUrlParameters> params,
+      const std::string& serialized_embedder_download_data) override {
     MockResumeInterruptedDownload(params.get());
   }
   MOCK_METHOD1(MockResumeInterruptedDownload,
@@ -211,7 +213,7 @@ class TestDownloadItemObserver : public DownloadItem::Observer {
     item_ = nullptr;
   }
 
-  DownloadItem* item_;
+  raw_ptr<DownloadItem> item_;
   DownloadItem::DownloadState last_state_;
   bool removed_;
   bool destroyed_;
@@ -288,9 +290,8 @@ class DownloadItemTest : public testing::Test {
       const download::DownloadItemRerouteInfo& reroute_info) {
     auto item = std::make_unique<download::DownloadItemImpl>(
         mock_delegate(), kGuid, 10, base::FilePath(), base::FilePath(),
-        std::vector<GURL>(), GURL("http://example.com/a"),
+        std::vector<GURL>(), GURL("http://example.com/a"), std::string(),
         GURL("http://example.com/a"), GURL("http://example.com/a"),
-        GURL("http://example.com/a"),
         url::Origin::Create(GURL("http://example.com")),
         "application/octet-stream", "application/octet-stream",
         base::Time::Now(), base::Time::Now(), std::string(), std::string(), 10,
@@ -298,7 +299,8 @@ class DownloadItemTest : public testing::Test {
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, reason, false, false,
         false, base::Time::Now(), true,
         std::vector<download::DownloadItem::ReceivedSlice>(), reroute_info,
-        absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
+        absl::nullopt /*download_schedule*/, kInvalidRange, kInvalidRange,
+        nullptr /* download_entry */);
     return item;
   }
 
@@ -384,7 +386,7 @@ class DownloadItemTest : public testing::Test {
       const base::FilePath& new_file_path,
       DownloadInterruptReason reason) {
     bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (DownloadCollectionBridge::ShouldPublishDownload(new_file_path)) {
       use_download_collection = true;
       EXPECT_CALL(*download_file, RenameToIntermediateUri(_, _, _, _, _, _))
@@ -2420,7 +2422,7 @@ DownloadFile::RenameCompletionCallback GetRenameCompletionCallback(
     MockDownloadFile* download_file) {
   DownloadFile::RenameCompletionCallback intermediate_rename_callback;
   bool use_download_collection = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (DownloadCollectionBridge::ShouldPublishDownload(
           base::FilePath(kDummyIntermediatePath))) {
     use_download_collection = true;
@@ -2470,7 +2472,7 @@ class DownloadItemDestinationUpdateRaceTest
           FROM_HERE, base::BindOnce(action, observer));
   }
 
-  DownloadItemImpl* item_;
+  raw_ptr<DownloadItemImpl> item_;
   std::unique_ptr<MockDownloadFile> file_;
 };
 

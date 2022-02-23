@@ -5,7 +5,6 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_TARGET_H_
 #define HEADLESS_PUBLIC_HEADLESS_DEVTOOLS_TARGET_H_
 
-#include "base/macros.h"
 #include "headless/public/headless_devtools_channel.h"
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_export.h"

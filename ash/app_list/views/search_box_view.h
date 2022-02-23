@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_BOX_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_BOX_VIEW_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -15,6 +17,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class Textfield;
@@ -62,6 +66,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from SearchBoxViewBase:
   void Init(const InitParams& params) override;
+  void UpdateSearchTextfieldAccessibleNodeData(
+      ui::AXNodeData* node_data) override;
   void ClearSearch() override;
   void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void UpdateKeyboardVisibility() override;
@@ -80,6 +86,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
                                     SearchModel* search_model) override;
 
   // Overridden from views::View:
+  void OnKeyEvent(ui::KeyEvent* event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
@@ -114,14 +121,17 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clears the search query and de-activate the search box.
   void ClearSearchAndDeactivateSearchBox();
 
+  // Sets the view accessibility ID of the search box's active descendant.
+  // The active descendant should be the currently selected result view in the
+  // search results list.
+  // `nullopt` indicates no active descendant, i.e. that no result is selected.
+  void SetA11yActiveDescendant(
+      const absl::optional<int32_t>& active_descendant);
+
   void set_contents_view(ContentsView* contents_view) {
     contents_view_ = contents_view;
   }
   ContentsView* contents_view() { return contents_view_; }
-
-  void set_a11y_selection_on_search_result(bool value) {
-    a11y_selection_on_search_result_ = value;
-  }
 
   ResultSelectionController* result_selection_controller_for_test() {
     return result_selection_controller_;
@@ -209,12 +219,18 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   bool is_tablet_mode_;
 
   // Set by SearchResultPageView when the accessibility selection moves to a
-  // search result view.
-  bool a11y_selection_on_search_result_ = false;
+  // search result view - the value is the ID of the currently selected result
+  // view.
+  absl::optional<int32_t> a11y_active_descendant_;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).
   ResultSelectionController* result_selection_controller_ = nullptr;
+
+  // The timestamp taken when the search box model's query is updated by the
+  // user. Used in metrics. Metrics are only recorded for search model updates
+  // that occur after a search has been initiated.
+  base::TimeTicks user_initiated_model_update_time_;
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_model_observer_{this};

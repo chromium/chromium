@@ -30,7 +30,7 @@ namespace blink {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, assume we have the coarsest possible timer.
 static constexpr int kBaseSampleIntervalMs =
     base::Time::kMinLowResolutionThresholdMs;
@@ -38,7 +38,7 @@ static constexpr int kBaseSampleIntervalMs =
 // Default to a 10ms base sampling interval on other platforms.
 // TODO(acomminos): Reevaluate based on empirical overhead.
 static constexpr int kBaseSampleIntervalMs = 10;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -258,11 +258,11 @@ void ProfilerGroup::InitV8Profiler() {
 
   cpu_profiler_ =
       v8::CpuProfiler::New(isolate_, v8::kStandardNaming, v8::kEagerLogging);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Avoid busy-waiting on Windows, clamping us to the system clock interrupt
   // interval in the worst case.
   cpu_profiler_->SetUsePreciseSampling(false);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   cpu_profiler_->SetSamplingInterval(kBaseSampleIntervalMs *
                                      base::Time::kMicrosecondsPerMillisecond);
 }

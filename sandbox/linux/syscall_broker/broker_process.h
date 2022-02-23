@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/process/process.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"

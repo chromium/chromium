@@ -103,4 +103,32 @@ suite('SettingsSchedulerSlider', function() {
     assertEquals(slider.prefStartTime.value, kDefaultStartTimeOffsetMinutes);
     assertEquals(slider.prefEndTime.value, kDefaultEndTimeOffsetMinutes);
   });
+
+  test('pref value update aria label', function() {
+    // Test that the aria label is updated after the pref is saved.
+    assertTrue(!!slider.$$('#startKnob'));
+    assertTrue(!!slider.$$('#endKnob'));
+
+    const getStartTimeAriaLabel = () => {
+      return slider.$$('#startKnob').ariaLabel.trim();
+    };
+
+    const getEndTimeAriaLabel = () => {
+      return slider.$$('#endKnob').ariaLabel.trim();
+    };
+
+    assertEquals(slider.i18n('startTime', '1:00 AM'), getStartTimeAriaLabel());
+    assertEquals(slider.i18n('endTime', '2:00 AM'), getEndTimeAriaLabel());
+
+    slider.prefStartTime.value = 71;
+    slider.setPrefValue(
+        'ash.night_light.custom_start_time', slider.prefStartTime.value);
+    slider.prefEndTime.value = 980;
+    slider.setPrefValue(
+        'ash.night_light.custom_end_time', slider.prefEndTime.value);
+    flush();
+
+    assertEquals(slider.i18n('startTime', '1:11 AM'), getStartTimeAriaLabel());
+    assertEquals(slider.i18n('endTime', '4:20 PM'), getEndTimeAriaLabel());
+  });
 });

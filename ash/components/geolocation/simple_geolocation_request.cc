@@ -201,8 +201,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
   base::Value response_value = std::move(*response_result.value);
 
-  base::DictionaryValue* response_object = NULL;
-  if (!response_value.GetAsDictionary(&response_object)) {
+  if (!response_value.is_dict()) {
     PrintGeolocationError(
         server_url,
         "Unexpected response type : " +
@@ -213,12 +212,8 @@ bool ParseServerResponse(const GURL& server_url,
     return false;
   }
 
-  base::DictionaryValue* error_object = NULL;
-  base::DictionaryValue* location_object = NULL;
-  response_object->GetDictionaryWithoutPathExpansion(kLocationString,
-                                                     &location_object);
-  response_object->GetDictionaryWithoutPathExpansion(kErrorString,
-                                                     &error_object);
+  base::Value* error_object = response_value.FindDictKey(kErrorString);
+  base::Value* location_object = response_value.FindDictKey(kLocationString);
 
   position->timestamp = base::Time::Now();
 
@@ -257,7 +252,7 @@ bool ParseServerResponse(const GURL& server_url,
     position->longitude = longitude.value();
 
     absl::optional<double> accuracy =
-        response_object->FindDoubleKey(kAccuracyString);
+        response_value.FindDoubleKey(kAccuracyString);
     if (!accuracy) {
       PrintGeolocationError(
           server_url, "Missing 'accuracy' attribute.", position);

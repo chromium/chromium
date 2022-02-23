@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
 
@@ -43,7 +43,7 @@ class EatResolverThunk : public ResolverThunk {
 
  private:
   // The entry to patch.
-  DWORD* eat_entry_;
+  raw_ptr<DWORD> eat_entry_;
 };
 
 }  // namespace sandbox

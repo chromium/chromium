@@ -20,7 +20,7 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
 ++++++AXButton AXTitle='Image:'
-++++++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
+++++++++AXImage
 ++++++++AXStaticText AXValue='Submit'
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '

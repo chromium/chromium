@@ -9,6 +9,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -93,8 +95,8 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   }
 
  private:
-  RenderViewContextMenuViews* const parent_;
-  views::SubmenuView* const submenu_view_;
+  const raw_ptr<RenderViewContextMenuViews> parent_;
+  const raw_ptr<views::SubmenuView> submenu_view_;
   base::ScopedObservation<views::View, views::ViewObserver>
       submenu_view_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -233,10 +235,10 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       return true;
 
     case IDC_CONTENT_CONTEXT_EMOJI:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       *accel = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
       return true;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       *accel = ui::Accelerator(ui::VKEY_SPACE,
                                ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
       return true;

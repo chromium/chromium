@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
@@ -117,27 +116,27 @@ class CertVerificationContext {
 //     properties from the device certificate (Common Name).
 //   * |policy| is filled with an indication of the device certificate's policy
 //     (i.e. is it for audio-only devices or is it unrestricted?)
-CastCertError VerifyDeviceCert(
+[[nodiscard]] CastCertError VerifyDeviceCert(
     const std::vector<std::string>& certs,
     const base::Time& time,
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
-    CRLPolicy crl_policy) WARN_UNUSED_RESULT;
+    CRLPolicy crl_policy);
 
 // This is an overloaded version of VerifyDeviceCert that allows
 // the input of a custom TrustStore.
 //
 // For production use pass |trust_store| as nullptr to use the production trust
 // store.
-CastCertError VerifyDeviceCertUsingCustomTrustStore(
+[[nodiscard]] CastCertError VerifyDeviceCertUsingCustomTrustStore(
     const std::vector<std::string>& certs,
     const base::Time& time,
     std::unique_ptr<CertVerificationContext>* context,
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
     CRLPolicy crl_policy,
-    net::TrustStore* trust_store) WARN_UNUSED_RESULT;
+    net::TrustStore* trust_store);
 
 // Exposed only for unit-tests, not for use in production code.
 // Production code would get a context from VerifyDeviceCert().

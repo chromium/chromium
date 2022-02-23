@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -148,7 +149,7 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
     void RemoveFramePermissionObserver(FramePermissionObserver* observer);
 
    private:
-    BluetoothDelegateImpl* owning_delegate_;
+    raw_ptr<BluetoothDelegateImpl> owning_delegate_;
     base::ObserverList<FramePermissionObserver> observer_list_;
     std::list<FramePermissionObserver*> observers_pending_removal_;
     bool is_traversing_observers_ = false;

@@ -49,12 +49,11 @@ MojoCdmService::~MojoCdmService() {
 }
 
 void MojoCdmService::Initialize(CdmFactory* cdm_factory,
-                                const std::string& key_system,
                                 const CdmConfig& cdm_config,
                                 InitializeCB init_cb) {
   auto weak_this = weak_factory_.GetWeakPtr();
   cdm_factory->Create(
-      key_system, cdm_config,
+      cdm_config,
       base::BindRepeating(&MojoCdmService::OnSessionMessage, weak_this),
       base::BindRepeating(&MojoCdmService::OnSessionClosed, weak_this),
       base::BindRepeating(&MojoCdmService::OnSessionKeysChange, weak_this),
@@ -182,10 +181,10 @@ void MojoCdmService::OnCdmCreated(
       mojo_cdm_context->decryptor = std::move(decryptor_remote);
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     mojo_cdm_context->requires_media_foundation_renderer =
         cdm_context->RequiresMediaFoundationRenderer();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   std::move(init_cb).Run(std::move(mojo_cdm_context), "");

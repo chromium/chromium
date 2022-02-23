@@ -53,11 +53,11 @@ class FakeSpellCheck : public SpellCheck {
   // Test-only method to set the fake language counts
   void SetFakeLanguageCounts(size_t language_count, size_t enabled_count);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Test-only method to initialize SpellCheck object for the given locale.
   void InitializeSpellCheckForLocale(const std::string& language,
                                      bool use_hunspell);
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   // Returns the current number of spell check languages.
   size_t LanguageCount() override;
@@ -92,7 +92,7 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
   bool SatisfyRequestFromCache(const std::u16string& text,
                                blink::WebTextCheckingCompletion* completion);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   int AddCompletionForTest(
       std::unique_ptr<FakeTextCheckingCompletion> completion,
       SpellCheckProvider::HybridSpellCheckRequestInfo request_info);
@@ -100,7 +100,7 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
   void OnRespondTextCheck(int identifier,
                           const std::u16string& line,
                           const std::vector<SpellCheckResult>& results);
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   void ResetResult();
@@ -144,12 +144,12 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
                      CheckSpellingCallback) override;
   void FillSuggestionList(const std::u16string&,
                           FillSuggestionListCallback) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void DisconnectSessionBridge() override;
 #endif
 

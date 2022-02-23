@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env python3
 #
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -350,6 +350,18 @@ def _ParseSummaryOutput(forward_args):
   return None
 
 
+def _IsRunningOnBots(forward_args):
+  """Detects if the script is running on bots or not.
+
+  Args:
+    forward_args (list): Args to be forwarded to the test command.
+
+  Returns:
+    True if the script is running on bots. Otherwise returns False.
+  """
+  return '--test-launcher-bot-mode' in forward_args
+
+
 def _RunTestWithAshChrome(args, forward_args):
   """Runs tests with ash-chrome.
 
@@ -420,6 +432,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--user-data-dir=%s' % tmp_ash_data_dir_name,
         '--enable-wayland-server',
         '--no-startup-window',
+        '--enable-features=LacrosSupport,LacrosPrimary',
         '--ash-ready-file-path=%s' % ash_ready_file,
     ]
     if enable_mojo_crosapi:
@@ -437,9 +450,29 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     ash_process_has_started = False
     total_tries = 3
     num_tries = 0
+
+    # Create a log file if the user wanted to have one.
+    log = None
+    if args.ash_logging_path:
+      log = open(args.ash_logging_path, 'a')
+    # Ash logs can be useful. Enable ash log by default on bots.
+    elif _IsRunningOnBots(forward_args):
+      summary_file = _ParseSummaryOutput(forward_args)
+      if summary_file:
+        ash_log_path = os.path.join(os.path.dirname(summary_file),
+                                    'ash_chrome.log')
+        log = open(ash_log_path, 'a')
+
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
-      ash_process = subprocess.Popen(ash_cmd, env=ash_env)
+      if log is None:
+        ash_process = subprocess.Popen(ash_cmd, env=ash_env)
+      else:
+        ash_process = subprocess.Popen(ash_cmd,
+                                       env=ash_env,
+                                       stdout=log,
+                                       stderr=log)
+
       ash_process_has_started = _WaitForAshChromeToStart(
           tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi,
           ash_ready_file)
@@ -582,6 +615,12 @@ def Main():
       help='The same as --ash-chrome-path. But this will override '
       '--ash-chrome-path or --ash-chrome-version if any of these '
       'arguments exist.')
+  test_parser.add_argument(
+      '--ash-logging-path',
+      type=str,
+      help='File & path to ash-chrome logging output while running Lacros '
+      'browser tests. If not provided, no output will be generated.')
+
   args = arg_parser.parse_known_args()
   return args[0].func(args[0], args[1])
 

@@ -42,7 +42,7 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
   @test
   def test_AllowedUrlCanVisit(self):
-    output = self.openPage('https://youtube.com/yt/about/')
+    output = self.openPage('https://youtube.com')
     self.assertNotIn("ERR_BLOCKED_BY_ADMINISTRATOR", output)
 
   @test
@@ -52,7 +52,7 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
   @test
   def test_AllowedUrlCanVisitIncognito(self):
-    output = self.openPage('https://youtube.com/yt/about/', incognito=True)
+    output = self.openPage('https://youtube.com', incognito=True)
     self.assertNotIn("ERR_BLOCKED_BY_ADMINISTRATOR", output)
 
   @test

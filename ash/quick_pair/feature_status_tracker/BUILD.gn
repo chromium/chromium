@@ -17,6 +17,8 @@ static_library("feature_status_tracker") {
     "fast_pair_enabled_provider.h",
     "fast_pair_pref_enabled_provider.cc",
     "fast_pair_pref_enabled_provider.h",
+    "fast_pair_support_utils.cc",
+    "fast_pair_support_utils.h",
     "google_api_key_availability_provider.cc",
     "google_api_key_availability_provider.h",
     "logged_in_user_enabled_provider.cc",
@@ -46,6 +48,7 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_bluetooth_adapter.cc",
     "fake_bluetooth_adapter.h",
     "fake_feature_status_tracker.cc",
     "fake_feature_status_tracker.h",
@@ -80,6 +83,7 @@ source_set("unit_tests") {
     "base_enabled_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
+    "fast_pair_support_utils_unittest.cc",
     "logged_in_user_enabled_provider_unittest.cc",
     "screen_state_enabled_provider_unittest.cc",
   ]

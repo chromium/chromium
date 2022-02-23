@@ -17,7 +17,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -103,7 +103,7 @@ class CertVerifyProcNetLogBrowserTest : public NetLogPlatformBrowserTestBase {
     ASSERT_TRUE(events);
 
     bool found_cert_verify_proc_event = false;
-    for (const auto& event : events->GetList()) {
+    for (const auto& event : events->GetListDeprecated()) {
       absl::optional<int> event_type = event.FindIntKey("type");
       ASSERT_TRUE(event_type.has_value());
       if (event_type ==

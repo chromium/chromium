@@ -23,7 +23,7 @@
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -57,7 +57,10 @@ SVGParsingError SVGRect::Parse(const CharType*& ptr, const CharType* end) {
 }
 
 SVGParsingError SVGRect::SetValueAsString(const String& string) {
-  SetInvalid();
+  // In case the string is invalid, the rect will be treated as invalid.
+  is_valid_ = false;
+  // Also clear the existing values.
+  Set(0, 0, 0, 0);
 
   if (string.IsNull())
     return SVGParseStatus::kNoError;
@@ -136,11 +139,6 @@ float SVGRect::CalculateDistance(const SVGPropertyBase* to,
   // FIXME: Distance calculation is not possible for SVGRect right now. We need
   // the distance for every single value.
   return -1;
-}
-
-void SVGRect::SetInvalid() {
-  x_ = y_ = width_ = height_ = 0;
-  is_valid_ = false;
 }
 
 }  // namespace blink

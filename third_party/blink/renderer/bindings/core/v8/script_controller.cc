@@ -36,7 +36,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
@@ -205,9 +204,10 @@ void ScriptController::ExecuteJavaScriptURL(
   //
   // We pass |SanitizeScriptErrors::kDoNotSanitize| because |muted errors| is
   // false by default.
-  ClassicScript* script = MakeGarbageCollected<ClassicScript>(
-      ScriptSourceCode(script_source, ScriptSourceLocationType::kJavascriptUrl),
-      base_url, ScriptFetchOptions(), SanitizeScriptErrors::kDoNotSanitize);
+  ClassicScript* script = ClassicScript::Create(
+      script_source, KURL(), base_url, ScriptFetchOptions(),
+      ScriptSourceLocationType::kJavascriptUrl,
+      SanitizeScriptErrors::kDoNotSanitize);
 
   DCHECK_EQ(&window_->GetScriptController(), this);
   v8::HandleScope handle_scope(GetIsolate());

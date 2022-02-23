@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "cc/layers/layer.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
@@ -108,15 +109,13 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/peerconnection/execution_context_metronome_provider.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -444,11 +443,6 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // anonymous namespace
-
-// TODO(https://crbug.com/752720): Remove this once C++17 is adopted (and hence,
-// `inline constexpr` is supported).
-constexpr double HTMLMediaElement::kMinPlaybackRate;
-constexpr double HTMLMediaElement::kMaxPlaybackRate;
 
 // static
 MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
@@ -2118,8 +2112,6 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
     ScheduleEvent(event_type_names::kCanplaythrough);
   }
 
-  web_media_player_->SetAutoplayInitiated(
-      autoplay_policy_->WasAutoplayInitiated());
   UpdatePlayState();
 }
 
@@ -2721,6 +2713,11 @@ absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
 
 void HTMLMediaElement::PlayInternal() {
   DVLOG(3) << "playInternal(" << *this << ")";
+
+  if (web_media_player_) {
+    web_media_player_->SetWasPlayedWithUserActivation(
+        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+  }
 
   // Playback aborts any lazy loading.
   if (lazy_load_intersection_observer_) {
@@ -4291,7 +4288,6 @@ void HTMLMediaElement::SetCcLayer(cc::Layer* cc_layer) {
   if (cc_layer == cc_layer_)
     return;
 
-  // We need to update the GraphicsLayer when the cc layer changes.
   SetNeedsCompositingUpdate();
   cc_layer_ = cc_layer;
 }
@@ -4639,21 +4635,6 @@ void HTMLMediaElement::DidUseAudioServiceChange(bool uses_audio_service) {
 void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
   for (auto& observer : media_player_observer_remote_set_->Value())
     observer->OnMediaSizeChanged(size);
-}
-
-void HTMLMediaElement::DidBufferUnderflow() {
-  for (auto& observer : media_player_observer_remote_set_->Value())
-    observer->OnBufferUnderflow();
-}
-
-void HTMLMediaElement::DidSeek() {
-  // Send the seek updates to the browser process only once per second.
-  if (last_seek_update_time_.is_null() ||
-      (base::TimeTicks::Now() - last_seek_update_time_ >= base::Seconds(1))) {
-    last_seek_update_time_ = base::TimeTicks::Now();
-    for (auto& observer : media_player_observer_remote_set_->Value())
-      observer->OnSeek();
-  }
 }
 
 media::mojom::blink::MediaPlayerHost&

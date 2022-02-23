@@ -48,9 +48,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUnknownDevice[];
 
 // The default delay before Switch Access automatically moves to the next
 // element on the page that is interesting, based on the Switch Access
-// predicates.
+// predicates. This value is mostly overridden by the setup guide's default
+// value.
 constexpr base::TimeDelta kDefaultSwitchAccessAutoScanSpeed =
-    base::Milliseconds(1200);
+    base::Milliseconds(1800);
 
 // The default speed in dips per second that the gliding point scan cursor
 // in switch access moves across the screen.

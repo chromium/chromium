@@ -115,6 +115,8 @@ class AudioRendererAlgorithmTest : public testing::Test {
       format = media::AudioParameters::AUDIO_BITSTREAM_AC3;
     else if (sample_format == kSampleFormatEac3)
       format = media::AudioParameters::AUDIO_BITSTREAM_EAC3;
+    else if (sample_format == kSampleFormatDts)
+      format = media::AudioParameters::AUDIO_BITSTREAM_DTS;
 
     AudioParameters params(format, channel_layout, samples_per_second,
                            frames_per_buffer);
@@ -159,6 +161,13 @@ class AudioRendererAlgorithmTest : public testing::Test {
             sample_format_, channel_layout_,
             ChannelLayoutToChannelCount(channel_layout_), samples_per_second_,
             1, 1, frame_size, kNoTimestamp);
+        break;
+      case kSampleFormatDts:
+      case kSampleFormatDtsxP2:
+        buffer = MakeBitstreamAudioBuffer(
+            sample_format_, channel_layout_,
+            ChannelLayoutToChannelCount(channel_layout_), samples_per_second_,
+            1, 1, frame_size, kFrameSize, kNoTimestamp);
         break;
       default:
         NOTREACHED() << "Unrecognized format " << sample_format_;

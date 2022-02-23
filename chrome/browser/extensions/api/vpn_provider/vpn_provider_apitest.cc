@@ -60,10 +60,8 @@ const char* kParameterKeys[] = {shill::kAddressParameterThirdPartyVpn,
                                 shill::kBroadcastAddressParameterThirdPartyVpn,
                                 shill::kDomainSearchParameterThirdPartyVpn};
 
-void DoNothingFailureCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  EXPECT_EQ(true, false);
+void DoNothingFailureCallback(const std::string& error_name) {
+  FAIL();
 }
 
 void DoNothingSuccessCallback(const std::string& service_path,
@@ -132,7 +130,7 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
   void AddNetworkProfileForUser() {
     ShillProfileClient::Get()->GetTestInterface()->AddProfile(
         kNetworkProfilePath,
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile()));
     content::RunAllPendingInMessageLoop();
   }
 

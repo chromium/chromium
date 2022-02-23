@@ -517,8 +517,8 @@ TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
   base::FilePath dll_path = installed_path_for_version(old_version)
                                 .Append(FILE_PATH_LITERAL("Gaia1_0.dll"));
   base::File lock(dll_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                base::File::FLAG_EXCLUSIVE_READ |
-                                base::File::FLAG_EXCLUSIVE_WRITE);
+                                base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 
   logging::ResetEventSourceForTesting();
 
@@ -551,8 +551,8 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
                                 .Append(FILE_PATH_LITERAL("Gaia1_0.dll"));
   base::File locked_file(dll_path, base::File::FLAG_OPEN |
                                        base::File::FLAG_READ |
-                                       base::File::FLAG_EXCLUSIVE_READ |
-                                       base::File::FLAG_EXCLUSIVE_WRITE);
+                                       base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 
   logging::ResetEventSourceForTesting();
 

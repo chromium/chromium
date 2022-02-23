@@ -7,11 +7,9 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/url_matcher/url_matcher.h"
@@ -151,10 +149,11 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::ListValue* policy_value =
+  const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       analysis_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }
@@ -168,10 +167,11 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::ListValue* policy_value =
+  const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       reporting_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }
@@ -185,10 +185,11 @@ void ConnectorsManager::CacheFileSystemConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::ListValue* policy_value =
+  const base::Value* policy_value =
       pref_change_registrar_.prefs()->GetList(pref);
   if (policy_value && policy_value->is_list()) {
-    for (const base::Value& service_settings : policy_value->GetList())
+    for (const base::Value& service_settings :
+         policy_value->GetListDeprecated())
       file_system_connector_settings_[connector].emplace_back(
           service_settings, *service_provider_config_);
   }
@@ -286,6 +287,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   StartObservingPref(AnalysisConnector::FILE_ATTACHED);
   StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
   StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
+  StartObservingPref(AnalysisConnector::PRINT);
   StartObservingPref(ReportingConnector::SECURITY_EVENT);
   StartObservingPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }

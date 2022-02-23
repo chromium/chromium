@@ -14,7 +14,7 @@ generate_token.py http://127.0.0.1:8000 WebAppWindowControlsOverlay --expire-tim
 
 test(t => {
   OriginTrialsHelper.check_properties_exist(this, {
-    'WindowControlsOverlay': ['visible', 'getBoundingClientRect', 'ongeometrychange']
+    'WindowControlsOverlay': ['visible', 'getTitlebarAreaRect', 'ongeometrychange']
   });
 }, 'Window Controls Overlay API interfaces and properties in Origin-Trial enabled document.');
 

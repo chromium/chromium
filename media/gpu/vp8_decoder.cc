@@ -10,10 +10,6 @@
 
 namespace media {
 
-namespace {
-constexpr size_t kVP8NumFramesActive = 4;
-}
-
 VP8Decoder::VP8Accelerator::VP8Accelerator() {}
 
 VP8Decoder::VP8Accelerator::~VP8Accelerator() {}
@@ -192,12 +188,12 @@ uint8_t VP8Decoder::GetBitDepth() const {
 
 size_t VP8Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
-  return kVP8NumFramesActive + kPicsInPipeline;
+  return kNumVp8ReferenceBuffers + kPicsInPipeline;
 }
 
 size_t VP8Decoder::GetNumReferenceFrames() const {
   // Maximum number of reference frames.
-  return kVP8NumFramesActive;
+  return kNumVp8ReferenceBuffers;
 }
 
 }  // namespace media

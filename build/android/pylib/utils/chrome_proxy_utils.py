@@ -18,7 +18,7 @@ DEFAULT_DOWNLOAD_BANDWIDTH_KBPS = 72000
 DEFAULT_UPLOAD_BANDWIDTH_KBPS = 72000
 
 
-class WPRServer(object):
+class WPRServer:
   """Utils to set up a webpagereplay_go_server instance."""
 
   def __init__(self):
@@ -88,7 +88,7 @@ class WPRServer(object):
     return self._archive_path
 
 
-class ChromeProxySession(object):
+class ChromeProxySession:
   """Utils to help set up a Chrome Proxy."""
 
   def __init__(self, device_proxy_port=DEFAULT_DEVICE_PORT):

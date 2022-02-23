@@ -9,9 +9,10 @@ import static android.app.NotificationManager.IMPORTANCE_NONE;
 import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS;
 import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId.WEBAPPS_QUIET;
 
-import android.annotation.TargetApi;
 import android.app.NotificationChannel;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
@@ -85,7 +86,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
         return isChannelEnabled(WEBAPPS) && isChannelEnabled(WEBAPPS_QUIET);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private boolean isChannelEnabled(String channelId) {
         NotificationChannel channel = mNotificationManager.getNotificationChannel(channelId);
 

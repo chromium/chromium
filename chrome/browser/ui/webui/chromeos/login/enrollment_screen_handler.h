@@ -26,7 +26,7 @@ namespace chromeos {
 class CookieWaiter;
 
 // Possible error states of the Active Directory screen. Must be in the same
-// order as ACTIVE_DIRECTORY_ERROR_STATE enum values.
+// order as ActiveDirectoryErrorState ( in enterprise_enrollment.js ) values.
 enum class ActiveDirectoryErrorState {
   NONE = 0,
   MACHINE_NAME_INVALID = 1,
@@ -85,7 +85,7 @@ class EnrollmentScreenHandler
   void ShowSigninScreen() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
-  void ShowEnrollmentCloudReadyNotAllowedError() override;
+  void ShowEnrollmentDuringTrialNotAllowedError() override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,
                                  const std::string& username,
@@ -100,7 +100,6 @@ class EnrollmentScreenHandler
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
   void Shutdown() override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;

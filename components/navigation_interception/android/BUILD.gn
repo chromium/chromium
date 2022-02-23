@@ -7,12 +7,11 @@ import("//build/config/android/rules.gni")
 android_library("navigation_interception_java") {
   deps = [
     "//base:base_java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:origin_java",
   ]
-  sources = [
-    "java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java",
-    "java/src/org/chromium/components/navigation_interception/NavigationParams.java",
-  ]
+  sources = [ "java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java" ]
 }

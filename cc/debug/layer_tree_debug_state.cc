@@ -72,7 +72,6 @@ bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
       a.slow_down_raster_scale_factor == b.slow_down_raster_scale_factor &&
       a.rasterize_only_visible_content == b.rasterize_only_visible_content &&
       a.highlight_non_lcd_text_layers == b.highlight_non_lcd_text_layers &&
-      a.show_hit_test_borders == b.show_hit_test_borders &&
       a.show_web_vital_metrics == b.show_web_vital_metrics &&
       a.record_rendering_stats_ == b.record_rendering_stats_);
 }

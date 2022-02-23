@@ -19,6 +19,8 @@
 #include "media/formats/mp4/aac.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_reader.h"
+#include "media/formats/mp4/dts.h"
+#include "media/formats/mp4/dtsx.h"
 #include "media/formats/mp4/fourccs.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -378,6 +380,19 @@ struct MEDIA_EXPORT OpusSpecificBox : Box {
   uint32_t sample_rate;
 };
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+struct MEDIA_EXPORT DtsSpecificBox : Box {
+  DECLARE_BOX_METHODS(DtsSpecificBox);
+  DTS dts;
+};
+
+struct MEDIA_EXPORT DtsUhdSpecificBox : Box {
+  DECLARE_BOX_METHODS(DtsUhdSpecificBox);
+  DTSX dtsx;
+};
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
 struct MEDIA_EXPORT AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
@@ -391,6 +406,11 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
   ElementaryStreamDescriptor esds;
   FlacSpecificBox dfla;
   OpusSpecificBox dops;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  DtsSpecificBox ddts;
+  DtsUhdSpecificBox udts;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 };
 
 struct MEDIA_EXPORT SampleDescription : Box {
@@ -598,18 +618,6 @@ struct MEDIA_EXPORT MovieFragment : Box {
   MovieFragmentHeader header;
   std::vector<TrackFragment> tracks;
   std::vector<ProtectionSystemSpecificHeader> pssh;
-};
-
-struct MEDIA_EXPORT ID3v2Box : Box {
-  DECLARE_BOX_METHODS(ID3v2Box);
-
-  // Up to a maximum of the first 128 bytes of the ID3v2 box.
-  std::vector<uint8_t> id3v2_data;
-};
-
-struct MEDIA_EXPORT MetadataBox : Box {
-  DECLARE_BOX_METHODS(MetadataBox);
-  bool used_shaka_packager;
 };
 
 #undef DECLARE_BOX

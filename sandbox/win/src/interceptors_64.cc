@@ -10,16 +10,13 @@
 #include "sandbox/win/src/policy_target.h"
 #include "sandbox/win/src/process_mitigations_win32k_interception.h"
 #include "sandbox/win/src/process_thread_interception.h"
-#include "sandbox/win/src/registry_interception.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/signed_interception.h"
-#include "sandbox/win/src/sync_interception.h"
 #include "sandbox/win/src/target_interceptions.h"
 
 namespace sandbox {
 
-SANDBOX_INTERCEPT NtExports g_nt;
 SANDBOX_INTERCEPT OriginalFunctions g_originals;
 
 NTSTATUS WINAPI TargetNtMapViewOfSection64(HANDLE section,
@@ -218,44 +215,6 @@ TargetNtOpenProcessTokenEx64(HANDLE process,
                                     handle_attributes, token);
 }
 
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessW64(LPCWSTR application_name,
-                       LPWSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCWSTR current_directory,
-                       LPSTARTUPINFOW startup_info,
-                       LPPROCESS_INFORMATION process_information) {
-  CreateProcessWFunction orig_fn =
-      reinterpret_cast<CreateProcessWFunction>(g_originals[CREATE_PROCESSW_ID]);
-  return TargetCreateProcessW(
-      orig_fn, application_name, command_line, process_attributes,
-      thread_attributes, inherit_handles, flags, environment, current_directory,
-      startup_info, process_information);
-}
-
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessA64(LPCSTR application_name,
-                       LPSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCSTR current_directory,
-                       LPSTARTUPINFOA startup_info,
-                       LPPROCESS_INFORMATION process_information) {
-  CreateProcessAFunction orig_fn =
-      reinterpret_cast<CreateProcessAFunction>(g_originals[CREATE_PROCESSA_ID]);
-  return TargetCreateProcessA(
-      orig_fn, application_name, command_line, process_attributes,
-      thread_attributes, inherit_handles, flags, environment, current_directory,
-      startup_info, process_information);
-}
-
 SANDBOX_INTERCEPT HANDLE WINAPI
 TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
                      SIZE_T stack_size,
@@ -268,67 +227,6 @@ TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
   return TargetCreateThread(orig_fn, thread_attributes, stack_size,
                             start_address, parameter, creation_flags,
                             thread_id);
-}
-
-// -----------------------------------------------------------------------
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateKey64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG title_index,
-                    PUNICODE_STRING class_name,
-                    ULONG create_options,
-                    PULONG disposition) {
-  NtCreateKeyFunction orig_fn =
-      reinterpret_cast<NtCreateKeyFunction>(g_originals[CREATE_KEY_ID]);
-  return TargetNtCreateKey(orig_fn, key, desired_access, object_attributes,
-                           title_index, class_name, create_options,
-                           disposition);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKey64(PHANDLE key,
-                  ACCESS_MASK desired_access,
-                  POBJECT_ATTRIBUTES object_attributes) {
-  NtOpenKeyFunction orig_fn =
-      reinterpret_cast<NtOpenKeyFunction>(g_originals[OPEN_KEY_ID]);
-  return TargetNtOpenKey(orig_fn, key, desired_access, object_attributes);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKeyEx64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG open_options) {
-  NtOpenKeyExFunction orig_fn =
-      reinterpret_cast<NtOpenKeyExFunction>(g_originals[OPEN_KEY_EX_ID]);
-  return TargetNtOpenKeyEx(orig_fn, key, desired_access, object_attributes,
-                           open_options);
-}
-
-// -----------------------------------------------------------------------
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateEvent64(PHANDLE event_handle,
-                      ACCESS_MASK desired_access,
-                      POBJECT_ATTRIBUTES object_attributes,
-                      EVENT_TYPE event_type,
-                      BOOLEAN initial_state) {
-  NtCreateEventFunction orig_fn =
-      reinterpret_cast<NtCreateEventFunction>(g_originals[CREATE_EVENT_ID]);
-  return TargetNtCreateEvent(orig_fn, event_handle, desired_access,
-                             object_attributes, event_type, initial_state);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenEvent64(PHANDLE event_handle,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes) {
-  NtOpenEventFunction orig_fn =
-      reinterpret_cast<NtOpenEventFunction>(g_originals[OPEN_EVENT_ID]);
-  return TargetNtOpenEvent(orig_fn, event_handle, desired_access,
-                           object_attributes);
 }
 
 // -----------------------------------------------------------------------

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- This is similar to external/wpt/css/CSS2/normal-flow/overflow-scroll-paint-order.html,
+     but we use overlay scrollbars here. -->
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<style>
+  #scroller {
+    background: red;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+  }
+  #negative-margin {
+    width: 100px;
+    height: 100px;
+    background: green;
+    margin-top: -100px;
+  }
+  #foreground1 {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    background: yellow;
+  }
+  #foreground2 {
+    display: inline-block;
+    width: 20px;
+    height: 100px;
+    background: magenta;
+  }
+</style>
+<!-- The paint order should be:
+  scroller background (invisible)
+  scroller child background (invisible)
+  negative-margin background (visible)
+  foreground1 (visible)
+  scroller overlay scrollbars
+  foreground2 (visible)
+-->
+<div id="scroller">
+  <div style="background: pink">
+    <div id="foreground1"></div>
+  </div>
+</div>
+<div id="negative-margin">
+  <div id="foreground2"></div>
+</div>

@@ -31,6 +31,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/app_constants/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_prefs.h"
@@ -79,7 +80,7 @@ bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
 
 BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
     ash::ShelfModel* shelf_model)
-    : ash::ShelfItemDelegate(ash::ShelfID(extension_misc::kChromeAppId)),
+    : ash::ShelfItemDelegate(ash::ShelfID(app_constants::kChromeAppId)),
       shelf_model_(shelf_model) {
   BrowserList::AddObserver(this);
 }

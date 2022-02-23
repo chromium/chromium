@@ -96,7 +96,7 @@ void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account) {
   base::DictionaryValue data;
   data.SetKey("auth_token", base::Value(token));
-  data.SetBoolean("is_child_account", is_child_account);
+  data.SetBoolKey("is_child_account", is_child_account);
   ShowScreenWithData(kScreenId, &data);
 }
 

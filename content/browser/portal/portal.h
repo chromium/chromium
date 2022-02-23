@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
@@ -96,7 +97,7 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
 
   // WebContentsDelegate overrides.
   void LoadingStateChanged(WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void PortalWebContentsCreated(WebContents* portal_web_contents) override;
   void CloseContents(WebContents*) override;
   WebContents* GetResponsibleWebContents(WebContents* web_contents) override;
@@ -126,10 +127,11 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   blink::mojom::Portal* GetInterceptorForTesting() const {
     return interceptor_.get();
   }
-  void SetInterceptorForTesting(
+
+  [[nodiscard]] blink::mojom::Portal* SetInterceptorForTesting(
       std::unique_ptr<blink::mojom::Portal> interceptor) {
     interceptor_ = std::move(interceptor);
-    receiver_.SwapImplForTesting(interceptor_.get());
+    return receiver_.SwapImplForTesting(interceptor_.get());
   }
 
   blink::mojom::PortalClient& client() { return *(client_.get()); }
@@ -179,10 +181,10 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
 
    private:
     // The outer Portal object.
-    Portal* portal_ = nullptr;
+    raw_ptr<Portal> portal_ = nullptr;
 
     // Non-null, even when the contents is not owned.
-    WebContentsImpl* contents_ = nullptr;
+    raw_ptr<WebContentsImpl> contents_ = nullptr;
 
     // When the portal is not attached, the Portal owns its WebContents.
     // If not null, |owned_contents_| is equal to |contents_|.
@@ -197,7 +199,7 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
                     uint64_t trace_id,
                     ActivateCallback callback);
 
-  RenderFrameHostImpl* owner_render_frame_host_;
+  raw_ptr<RenderFrameHostImpl> owner_render_frame_host_;
 
   // Uniquely identifies the portal, this token is used by the browser process
   // to reference this portal when communicating with the renderer.

@@ -9,7 +9,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "content/browser/attribution_reporting/attribution_reporter_impl.h"
+#include "base/memory/raw_ptr.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -23,15 +24,14 @@ class SimpleURLLoader;
 
 namespace content {
 
+class AttributionReport;
 class StoragePartition;
-
-struct AttributionReport;
 
 // Implemented a NetworkSender capable of issuing POST requests for complete
 // conversions. Maintains a set of all ongoing UrlLoaders used for posting
 // conversion reports. Created and owned by AttributionReporterImpl.
 class CONTENT_EXPORT AttributionNetworkSenderImpl
-    : public AttributionReporterImpl::NetworkSender {
+    : public AttributionNetworkSender {
  public:
   explicit AttributionNetworkSenderImpl(StoragePartition* storage_partition);
   AttributionNetworkSenderImpl(const AttributionNetworkSenderImpl&) = delete;
@@ -68,7 +68,7 @@ class CONTENT_EXPORT AttributionNetworkSenderImpl
   UrlLoaderList loaders_in_progress_;
 
   // Must outlive |this|.
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

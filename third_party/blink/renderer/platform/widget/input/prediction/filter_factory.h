@@ -8,8 +8,8 @@
 #include <unordered_map>
 
 #include "base/feature_list.h"
-#include "third_party/blink/public/platform/input/predictor_factory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/prediction/input_filter.h"
 
 namespace blink {

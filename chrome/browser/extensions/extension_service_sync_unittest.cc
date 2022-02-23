@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -234,25 +235,6 @@ class ExtensionServiceSyncTest
     return ExtensionSystem::Get(profile());
   }
 };
-
-TEST_F(ExtensionServiceSyncTest, DeleteAllInstalledBookMarkAppsDuringSync) {
-  InitializeEmptyExtensionService();
-
-  // Install the bookmark app.
-  InstallCRX(data_dir().AppendASCII("good.crx"),
-             ManifestLocation::kExternalPref, INSTALL_NEW,
-             Extension::FROM_BOOKMARK);
-  const Extension* extension = registry()->GetInstalledExtension(good_crx);
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(extension->from_bookmark());
-  ASSERT_FALSE(extensions::util::ShouldSync(extension, profile()));
-
-  StartSyncing(syncer::EXTENSIONS);
-
-  // Should uninstall the bookmark app.
-  EXPECT_FALSE(
-      registry()->GetExtensionById(good_crx, ExtensionRegistry::EVERYTHING));
-}
 
 TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledComponent) {
   InitializeEmptyExtensionService();
@@ -1896,7 +1878,7 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
   extensions::TestBlocklist& test_blocklist() { return test_blocklist_; }
 
  private:
-  syncer::FakeSyncChangeProcessor* processor_raw_;
+  raw_ptr<syncer::FakeSyncChangeProcessor> processor_raw_;
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   extensions::TestBlocklist test_blocklist_;

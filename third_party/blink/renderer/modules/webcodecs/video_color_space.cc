@@ -52,7 +52,7 @@ VideoColorSpace::VideoColorSpace(const gfx::ColorSpace& color_space) {
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kSmpte170M);
       break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_1:
+    case gfx::ColorSpace::TransferID::SRGB:
       transfer_ = V8VideoTransferCharacteristics(
           V8VideoTransferCharacteristics::Enum::kIec6196621);
       break;
@@ -194,7 +194,7 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
         transfer = gfx::ColorSpace::TransferID::SMPTE170M;
         break;
       case V8VideoTransferCharacteristics::Enum::kIec6196621:
-        transfer = gfx::ColorSpace::TransferID::IEC61966_2_1;
+        transfer = gfx::ColorSpace::TransferID::SRGB;
         break;
     }
   }

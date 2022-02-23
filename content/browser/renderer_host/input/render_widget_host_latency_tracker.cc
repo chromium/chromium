@@ -57,6 +57,7 @@ const char* GetTraceNameFromType(blink::WebInputEvent::Type type) {
     CASE_TYPE(GestureTapCancel);
     CASE_TYPE(GestureDoubleTap);
     CASE_TYPE(GestureTwoFingerTap);
+    CASE_TYPE(GestureShortPress);
     CASE_TYPE(GestureLongPress);
     CASE_TYPE(GestureLongTap);
     CASE_TYPE(GesturePinchBegin);
@@ -155,17 +156,10 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
               ? ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT
               : ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
           original_event_timestamp);
-      latency->AddLatencyNumberWithTimestamp(
-          ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-          original_event_timestamp);
     }
 
     has_seen_first_gesture_scroll_update_ = true;
     latency->set_gesture_scroll_id(gesture_scroll_id_);
-    latency->set_scroll_update_delta(
-        static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
-    latency->set_predicted_scroll_update_delta(
-        static_cast<const WebGestureEvent&>(event).data.scroll_update.delta_y);
   } else if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollEnd) {
     latency->set_gesture_scroll_id(gesture_scroll_id_);
     gesture_scroll_id_ = -1;

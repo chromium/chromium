@@ -16,16 +16,16 @@ JSONStringValueSerializer::JSONStringValueSerializer(std::string* json_string)
 
 JSONStringValueSerializer::~JSONStringValueSerializer() = default;
 
-bool JSONStringValueSerializer::Serialize(const Value& root) {
+bool JSONStringValueSerializer::Serialize(base::ValueView root) {
   return SerializeInternal(root, false);
 }
 
 bool JSONStringValueSerializer::SerializeAndOmitBinaryValues(
-    const Value& root) {
+    base::ValueView root) {
   return SerializeInternal(root, true);
 }
 
-bool JSONStringValueSerializer::SerializeInternal(const Value& root,
+bool JSONStringValueSerializer::SerializeInternal(base::ValueView root,
                                                   bool omit_binary_values) {
   if (!json_string_)
     return false;

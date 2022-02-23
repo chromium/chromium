@@ -8,16 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace user_manager {
 class User;
@@ -29,7 +24,6 @@ namespace settings {
 
 // ChromeOS user image settings page UI handler.
 class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
-                             public ui::SelectFileDialog::Listener,
                              public user_manager::UserManager::Observer,
                              public ImageDecoder::ImageRequest,
                              public CameraPresenceNotifier::Observer {
@@ -72,38 +66,33 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Sends the previous user image from camera or file to the page.
   void SendOldImage(std::string&& image_url);
 
-  // Starts camera presence check.
-  void CheckCameraPresence();
-
   // Updates UI with camera presence state.
   void SetCameraPresent(bool present);
 
   // Opens a file selection dialog to choose user image from file.
-  void HandleChooseFile(const base::ListValue* args);
+  void HandleChooseFile(base::Value::ConstListView args);
 
   // Handles photo taken with WebRTC UI.
-  void HandlePhotoTaken(const base::ListValue* args);
+  void HandlePhotoTaken(base::Value::ConstListView args);
 
   // Handles 'discard-photo' button click.
-  void HandleDiscardPhoto(const base::ListValue* args);
+  void HandleDiscardPhoto(base::Value::ConstListView args);
 
   // Gets the list of available user images and sends it to the page.
-  void HandleGetAvailableImages(const base::ListValue* args);
+  void HandleGetAvailableImages(base::Value::ConstListView args);
 
   // Handles page initialized event.
-  void HandlePageInitialized(const base::ListValue* args);
+  void HandlePageInitialized(base::Value::ConstListView args);
 
   // Selects one of the available images as user's.
-  void HandleSelectImage(const base::ListValue* args);
+  void HandleSelectImage(base::Value::ConstListView args);
 
   // Requests the currently selected image.
-  void HandleRequestSelectedImage(const base::ListValue* args);
+  void HandleRequestSelectedImage(base::Value::ConstListView args);
 
-  // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const base::FilePath& path,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const base::FilePath& path);
+
+  void FileSelectionCanceled();
 
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
@@ -114,9 +103,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   void SetImageFromCamera(const gfx::ImageSkia& photo,
                           base::RefCountedBytes* image_bytes);
 
-  // Returns handle to browser window or NULL if it can't be found.
-  gfx::NativeWindow GetBrowserWindow();
-
   // Overriden from ImageDecoder::ImageRequest:
   void OnImageDecoded(const SkBitmap& decoded_image) override;
   void OnDecodeImageFailed() override;
@@ -124,8 +110,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Returns user related to current WebUI. If this user doesn't exist,
   // returns active user.
   const user_manager::User* GetUser();
-
-  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // Previous user image from camera/file and its data URL.
   gfx::ImageSkia previous_image_;
@@ -148,6 +132,8 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   base::ScopedObservation<CameraPresenceNotifier,
                           CameraPresenceNotifier::Observer>
       camera_observation_{this};
+
+  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 
   base::WeakPtrFactory<ChangePictureHandler> weak_ptr_factory_{this};
 };

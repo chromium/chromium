@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-
 namespace content {
 
 SavePackageSerializationHandler::SavePackageSerializationHandler(

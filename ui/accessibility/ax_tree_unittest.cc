@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -283,7 +284,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
   }
 
  private:
-  AXTree* tree_;
+  raw_ptr<AXTree> tree_;
   bool tree_data_changed_;
   bool root_changed_;
   std::vector<int32_t> deleted_ids_;
@@ -3307,36 +3308,37 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
   ASSERT_EQ(2u, tree.root()->children().size());
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1\nLine 2Link text", tree.root()->GetInnerText());
-    EXPECT_EQ(22, tree.root()->GetInnerTextLength());
+    EXPECT_EQ("Line 1\nLine 2Link text", tree.root()->GetTextContentUTF8());
+    EXPECT_EQ(22, tree.root()->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1\nLine 2Link text", tree.root()->GetInnerTextUTF16());
-    EXPECT_EQ(22, tree.root()->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1\nLine 2Link text", tree.root()->GetTextContentUTF16());
+    EXPECT_EQ(22, tree.root()->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
     EXPECT_EQ("Line 1\nLine 2",
-              tree.root()->GetChildAtIndex(0)->GetInnerText());
-    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF8());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"Line 1\nLine 2",
-              tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
-    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF16());
+    EXPECT_EQ(13, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Link text", tree.root()->GetChildAtIndex(1)->GetInnerText());
-    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+    EXPECT_EQ("Link text",
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF8());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"Link text",
-              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
-    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF16());
+    EXPECT_EQ(9, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF16());
   }
 
   //
   // Flip the ignored state of the span, the link and the line break, and delete
   // the second line in the rich text field, all of which should change their
-  // cached inner text.
+  // cached text content.
 
   // kRootWebArea
   // ++kTextField (contenteditable)
@@ -3366,29 +3368,30 @@ TEST_P(AXTreeTestWithMultipleUTFEncodings, ComputedNodeData) {
   ASSERT_EQ(2u, tree.root()->children().size());
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1span textLink text", tree.root()->GetInnerText());
-    EXPECT_EQ(24, tree.root()->GetInnerTextLength());
+    EXPECT_EQ("Line 1span textLink text", tree.root()->GetTextContentUTF8());
+    EXPECT_EQ(24, tree.root()->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1span textLink text", tree.root()->GetInnerTextUTF16());
-    EXPECT_EQ(24, tree.root()->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1span textLink text", tree.root()->GetTextContentUTF16());
+    EXPECT_EQ(24, tree.root()->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
-    EXPECT_EQ("Line 1", tree.root()->GetChildAtIndex(0)->GetInnerText());
-    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLength());
+    EXPECT_EQ("Line 1", tree.root()->GetChildAtIndex(0)->GetTextContentUTF8());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
-    EXPECT_EQ(u"Line 1", tree.root()->GetChildAtIndex(0)->GetInnerTextUTF16());
-    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetInnerTextLengthUTF16());
+    EXPECT_EQ(u"Line 1",
+              tree.root()->GetChildAtIndex(0)->GetTextContentUTF16());
+    EXPECT_EQ(6, tree.root()->GetChildAtIndex(0)->GetTextContentLengthUTF16());
   }
 
   if (GetParam() == TestEncoding::kUTF8) {
     EXPECT_EQ("span textLink text",
-              tree.root()->GetChildAtIndex(1)->GetInnerText());
-    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLength());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF8());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF8());
   } else if (GetParam() == TestEncoding::kUTF16) {
     EXPECT_EQ(u"span textLink text",
-              tree.root()->GetChildAtIndex(1)->GetInnerTextUTF16());
-    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetInnerTextLengthUTF16());
+              tree.root()->GetChildAtIndex(1)->GetTextContentUTF16());
+    EXPECT_EQ(18, tree.root()->GetChildAtIndex(1)->GetTextContentLengthUTF16());
   }
 
   const std::vector<std::string>& change_log =
@@ -3452,6 +3455,37 @@ TEST(AXTreeTest, SetSizePosInSetUnassigned) {
   tree_update.nodes[2].role = ax::mojom::Role::kListItem;
   tree_update.nodes[3].id = 4;
   tree_update.nodes[3].role = ax::mojom::Role::kListItem;
+  AXTree tree(tree_update);
+
+  AXNode* item1 = tree.GetFromId(2);
+  EXPECT_OPTIONAL_EQ(1, item1->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item1->GetSetSize());
+  AXNode* item2 = tree.GetFromId(3);
+  EXPECT_OPTIONAL_EQ(2, item2->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item2->GetSetSize());
+  AXNode* item3 = tree.GetFromId(4);
+  EXPECT_OPTIONAL_EQ(3, item3->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item3->GetSetSize());
+}
+
+// Tests that PosInSet and SetSize can be calculated for TreeGrid rows if not
+// assigned.
+TEST(AXTreeTest, SetSizePosInSetInTreeGridUnassigned) {
+  AXTreeUpdate tree_update;
+  tree_update.root_id = 1;
+  tree_update.nodes.resize(4);
+  tree_update.nodes[0].id = 1;
+  tree_update.nodes[0].role = ax::mojom::Role::kTreeGrid;
+  tree_update.nodes[0].child_ids = {2, 3, 4};
+  tree_update.nodes[1].id = 2;
+  tree_update.nodes[1].role = ax::mojom::Role::kRow;
+  tree_update.nodes[1].AddState(ax::mojom::State::kFocusable);
+  tree_update.nodes[2].id = 3;
+  tree_update.nodes[2].role = ax::mojom::Role::kRow;
+  tree_update.nodes[2].AddState(ax::mojom::State::kFocusable);
+  tree_update.nodes[3].id = 4;
+  tree_update.nodes[3].role = ax::mojom::Role::kRow;
+  tree_update.nodes[3].AddState(ax::mojom::State::kFocusable);
   AXTree tree(tree_update);
 
   AXNode* item1 = tree.GetFromId(2);
@@ -4292,13 +4326,14 @@ TEST(AXTreeTest, SetSizePosInSetSubtreeDeleted) {
 
   // These values are lazily created, so to test that they fail when
   // called in the middle of a tree update, fake the update state.
-  tree.SetTreeUpdateInProgressState(true);
-  ASSERT_FALSE(tree_node->GetPosInSet());
-  ASSERT_FALSE(tree_node->GetSetSize());
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(tree);
+    ASSERT_FALSE(tree_node->GetPosInSet());
+    ASSERT_FALSE(tree_node->GetSetSize());
 
-  // Then reset the state to make sure we have the expected values
-  // after |Unserialize|.
-  tree.SetTreeUpdateInProgressState(false);
+    // Then reset the state to make sure we have the expected values after
+    // |Unserialize|.
+  }  // tree_update_in_progress.
   ASSERT_FALSE(tree_node->GetPosInSet());
   EXPECT_OPTIONAL_EQ(1, tree_node->GetSetSize());
 }

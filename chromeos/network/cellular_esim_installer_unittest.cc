@@ -13,6 +13,7 @@
 #include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -26,6 +27,7 @@
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_ui_data.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,9 +47,25 @@ const char kInstallViaQrCodeHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.Result";
 const char kInstallViaQrCodeOperationHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.OperationResult";
+const char kInstallViaPolicyOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult";
+const char kInstallViaPolicyInitialOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
+const char kInstallViaPolicyRetryOperationHistogram[] =
+    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
+const char kInstallESimResultHistogram[] =
+    "Network.Cellular.ESim.InstallationResult";
 const char kESimProfileDownloadLatencyHistogram[] =
     "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency";
-const char kICCID[] = "1000000000000000001";
+
+base::Value GetPolicyShillProperties() {
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  new_shill_properties.SetStringKey(shill::kUIDataProperty,
+                                    ui_data->GetAsJson());
+  return new_shill_properties;
+}
 
 }  // namespace
 
@@ -120,15 +138,18 @@ class CellularESimInstallerTest : public testing::Test {
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath euicc_path,
+      base::Value new_shill_properties,
       bool wait_for_connect,
-      bool fail_connect) {
+      bool fail_connect,
+      bool is_initial_install = true) {
     HermesResponseStatus out_install_result;
     absl::optional<dbus::ObjectPath> out_esim_profile_path;
     absl::optional<std::string> out_service_path;
 
     base::RunLoop run_loop;
     cellular_esim_installer_->InstallProfileFromActivationCode(
-        activation_code, confirmation_code, euicc_path, base::DictionaryValue(),
+        activation_code, confirmation_code, euicc_path,
+        std::move(new_shill_properties),
         base::BindLambdaForTesting(
             [&](HermesResponseStatus install_result,
                 absl::optional<dbus::ObjectPath> esim_profile_path,
@@ -137,7 +158,8 @@ class CellularESimInstallerTest : public testing::Test {
               out_esim_profile_path = esim_profile_path;
               out_service_path = service_path;
               run_loop.Quit();
-            }));
+            }),
+        is_initial_install);
 
     FastForwardProfileRefreshDelay();
 
@@ -146,7 +168,7 @@ class CellularESimInstallerTest : public testing::Test {
       EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
       if (fail_connect) {
         network_connection_handler_->connect_calls().back().InvokeErrorCallback(
-            "fake_error_name", /*error_data=*/nullptr);
+            "fake_error_name");
       } else {
         network_connection_handler_->connect_calls()
             .back()
@@ -157,6 +179,23 @@ class CellularESimInstallerTest : public testing::Test {
     run_loop.Run();
     return std::make_tuple(out_install_result, out_esim_profile_path,
                            out_service_path);
+  }
+
+  absl::optional<dbus::ObjectPath> ConfigureESimService(
+      const dbus::ObjectPath euicc_path,
+      const dbus::ObjectPath& profile_path,
+      base::Value& new_shill_properties) {
+    absl::optional<dbus::ObjectPath> service_path_out;
+    base::RunLoop run_loop;
+    cellular_esim_installer_->ConfigureESimService(
+        new_shill_properties, euicc_path, profile_path,
+        base::BindLambdaForTesting(
+            [&](absl::optional<dbus::ObjectPath> service_path) {
+              service_path_out = service_path;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return service_path_out;
   }
 
   void CheckInstallSuccess(const InstallResultTuple& actual_result_tuple) {
@@ -170,7 +209,7 @@ class CellularESimInstallerTest : public testing::Test {
     const std::string* type = properties->FindStringKey(shill::kTypeProperty);
     EXPECT_EQ(shill::kTypeCellular, *type);
     const std::string* iccid = properties->FindStringKey(shill::kIccidProperty);
-    EXPECT_EQ(kICCID, *iccid);
+    EXPECT_NE(std::string(), *iccid);
   }
 
   void FastForwardProfileRefreshDelay() {
@@ -206,6 +245,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
   InstallResultTuple result_tuple = InstallProfileFromActivationCode(
       /*activation_code=*/std::string(), /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(HermesResponseStatus::kErrorInvalidActivationCode,
             std::get<0>(result_tuple));
@@ -216,10 +256,61 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
       HermesResponseStatus::kErrorInvalidActivationCode,
       /*expected_count=*/1);
   HistogramTesterPtr()->ExpectBucketCount(
-      kInstallViaQrCodeOperationHistogram,
-      CellularESimInstaller::InstallProfileViaQrCodeResult::
-          kHermesInstallFailed,
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
       /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/0);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyInitialOperationHistogram, 0);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyRetryOperationHistogram, 0);
+
+  // Verify that install from policy are handled properly
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  new_shill_properties.SetStringKey(shill::kUIDataProperty,
+                                    ui_data->GetAsJson());
+  result_tuple = InstallProfileFromActivationCode(
+      /*activation_code=*/std::string(), /*confirmation_code=*/std::string(),
+      /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      GetPolicyShillProperties(),
+      /*wait_for_connect=*/false, /*fail_connect=*/false);
+  EXPECT_EQ(HermesResponseStatus::kErrorInvalidActivationCode,
+            std::get<0>(result_tuple));
+  EXPECT_EQ(std::get<1>(result_tuple), absl::nullopt);
+  EXPECT_EQ(std::get<2>(result_tuple), absl::nullopt);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeHistogram,
+      HermesResponseStatus::kErrorInvalidActivationCode,
+      /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyInitialOperationHistogram, 1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyInitialOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyRetryOperationHistogram, 0);
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
@@ -230,14 +321,49 @@ TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
           ->GenerateFakeActivationCode(),
       /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/true, /*fail_connect=*/true);
   CheckInstallSuccess(result_tuple);
   HistogramTesterPtr()->ExpectBucketCount(kInstallViaQrCodeHistogram,
                                           HermesResponseStatus::kSuccess,
                                           /*expected_count=*/1);
   HistogramTesterPtr()->ExpectBucketCount(
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
       kInstallViaQrCodeOperationHistogram,
-      CellularESimInstaller::InstallProfileViaQrCodeResult::kSuccess,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/0);
+
+  // Verify that install from policy are handled property.
+  result_tuple = InstallProfileFromActivationCode(
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(),
+      /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      GetPolicyShillProperties(),
+      /*wait_for_connect=*/true, /*fail_connect=*/true);
+  CheckInstallSuccess(result_tuple);
+  HistogramTesterPtr()->ExpectBucketCount(kInstallViaQrCodeHistogram,
+                                          HermesResponseStatus::kSuccess,
+                                          /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
       /*expected_count=*/1);
 }
 
@@ -249,6 +375,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
           ->GenerateFakeActivationCode(),
       /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/true, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
 
@@ -258,9 +385,57 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
                                           HermesResponseStatus::kSuccess,
                                           /*expected_count=*/1);
   HistogramTesterPtr()->ExpectBucketCount(
-      kInstallViaQrCodeOperationHistogram,
-      CellularESimInstaller::InstallProfileViaQrCodeResult::kSuccess,
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
       /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/0);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyInitialOperationHistogram, 0);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyRetryOperationHistogram, 0);
+
+  // Verify install from policy works properly
+  result_tuple = InstallProfileFromActivationCode(
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(),
+      /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      GetPolicyShillProperties(),
+      /*wait_for_connect=*/true, /*fail_connect=*/false);
+  CheckInstallSuccess(result_tuple);
+  HistogramTesterPtr()->ExpectTotalCount(kESimProfileDownloadLatencyHistogram,
+                                         2);
+  HistogramTesterPtr()->ExpectBucketCount(kInstallViaQrCodeHistogram,
+                                          HermesResponseStatus::kSuccess,
+                                          /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallESimResultHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/2);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaQrCodeOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyInitialOperationHistogram, 1);
+  HistogramTesterPtr()->ExpectBucketCount(
+      kInstallViaPolicyInitialOperationHistogram,
+      CellularESimInstaller::InstallESimProfileResult::kSuccess,
+      /*expected_count=*/1);
+  HistogramTesterPtr()->ExpectTotalCount(
+      kInstallViaPolicyRetryOperationHistogram, 0);
 }
 
 TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
@@ -274,6 +449,7 @@ TEST_F(CellularESimInstallerTest, InstallProfileAlreadyConnected) {
           ->GenerateFakeActivationCode(),
       /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
 }
@@ -288,8 +464,60 @@ TEST_F(CellularESimInstallerTest, InstallProfileCreateShillConfigFailure) {
           ->GenerateFakeActivationCode(),
       /*confirmation_code=*/std::string(),
       /*euicc_path=*/dbus::ObjectPath(kTestEuiccPath),
+      /*new_shill_properties=*/base::Value(base::Value::Type::DICTIONARY),
       /*wait_for_connect=*/false, /*fail_connect=*/false);
   CheckInstallSuccess(result_tuple);
+}
+
+TEST_F(CellularESimInstallerTest, ConfigureESimService) {
+  dbus::ObjectPath profile_path =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,
+          /*activation_code=*/"",
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithoutService);
+
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  new_shill_properties.SetStringKey(shill::kUIDataProperty,
+                                    ui_data->GetAsJson());
+  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+      dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
+  EXPECT_TRUE(service_path.has_value());
+
+  HermesProfileClient::Properties* profile_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  const base::Value* service_properties =
+      ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+          service_path->value());
+  ASSERT_TRUE(service_properties);
+  const std::string* type =
+      service_properties->FindStringKey(shill::kTypeProperty);
+  EXPECT_EQ(shill::kTypeCellular, *type);
+  const std::string* iccid =
+      service_properties->FindStringKey(shill::kIccidProperty);
+  EXPECT_EQ(profile_properties->iccid().value(), *iccid);
+  const std::string* eid =
+      service_properties->FindStringKey(shill::kEidProperty);
+  EXPECT_EQ(kTestEid, *eid);
+}
+
+TEST_F(CellularESimInstallerTest, ConfigureESimServiceFailure) {
+  dbus::ObjectPath profile_path =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kInactive,
+          /*activation_code=*/"",
+          HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+              kAddProfileWithoutService);
+
+  ShillManagerClient::Get()->GetTestInterface()->SetSimulateConfigurationResult(
+      FakeShillSimulatedResult::kFailure);
+
+  base::Value new_shill_properties(base::Value::Type::DICTIONARY);
+  absl::optional<dbus::ObjectPath> service_path = ConfigureESimService(
+      dbus::ObjectPath(kTestEuiccPath), profile_path, new_shill_properties);
+  EXPECT_FALSE(service_path.has_value());
 }
 
 }  // namespace chromeos

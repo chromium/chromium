@@ -116,4 +116,64 @@ TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValue) {
   EXPECT_EQ("40px", map.at("top"));
 }
 
+TEST_F(AnimationUtilsTest, ForEachInterpolatedPropertyValueWithContainerQuery) {
+  ScopedCSSContainerQueriesForTest enable_cq(true);
+  ScopedLayoutNGForTest enable_ng(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size; }
+      @container size(min-width: 1px) {
+        #target { left: 10px; }
+      }
+      @container size(min-width: 99999px) {
+        #target { left: 10000px; }
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  Element* target = GetElementById("target");
+
+  PropertyHandleSet properties;
+  properties.insert(PropertyHandle(GetCSSPropertyLeft()));
+
+  HashMap<String, String> map;
+  ActiveInterpolationsMap interpolations_map;
+
+  base::RepeatingCallback<void(PropertyHandle, const CSSValue*)> callback =
+      WTF::BindRepeating(
+          [](HashMap<String, String>* map, PropertyHandle property,
+             const CSSValue* value) {
+            String property_name =
+                AnimationInputHelpers::PropertyHandleToKeyframeAttribute(
+                    property);
+            map->Set(property_name, value->CssText());
+          },
+          WTF::Unretained(&map));
+
+  AnimationUtils::ForEachInterpolatedPropertyValue(
+      target, properties, interpolations_map, callback);
+  EXPECT_EQ(1u, map.size());
+  EXPECT_EQ("10px", map.at("left"));
+
+  map.clear();
+
+  StringKeyframeVector keyframes;
+  StringKeyframe* fromKeyframe = AddKeyframe(keyframes, 0);
+  AddProperty(fromKeyframe, CSSPropertyID::kLeft, "30px");
+
+  StringKeyframe* toKeyframe = AddKeyframe(keyframes, 1);
+  AddProperty(toKeyframe, CSSPropertyID::kLeft, "20px");
+
+  AddInterpolation(interpolations_map, keyframes,
+                   PropertyHandle(GetCSSPropertyLeft()));
+
+  AnimationUtils::ForEachInterpolatedPropertyValue(
+      target, properties, interpolations_map, callback);
+  EXPECT_EQ(1U, map.size());
+  EXPECT_EQ("20px", map.at("left"));
+}
+
 }  // namespace blink

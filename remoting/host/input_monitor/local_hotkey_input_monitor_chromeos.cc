@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -121,8 +120,8 @@ void LocalHotkeyInputMonitorChromeos::Core::HandleKeyPressed(
     return;
   }
 
+  DCHECK(event->IsKeyEvent());
   ui::KeyEvent key_event(event);
-  DCHECK(key_event.is_char());
   if (key_event.IsControlDown() && key_event.IsAltDown() &&
       key_event.key_code() == ui::VKEY_ESCAPE) {
     caller_task_runner_->PostTask(FROM_HERE, std::move(disconnect_callback_));

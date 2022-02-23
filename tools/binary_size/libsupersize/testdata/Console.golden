@@ -4,7 +4,7 @@ Entering interactive Python shell. Quick reference:
 SizeInfo: ContainerForName, build_config, containers, metadata_legacy, native_symbols, pak_symbols, raw_symbols, section_sizes, size_path, symbols
 Symbol: FlagsString, IsBss, IsDelta, IsDex, IsGeneratedByToolchain, IsGroup, IsNameUnique, IsNative, IsOther, IsOverhead, IsPak, IsStringLiteral, IterLeafSymbols, SetName, address, aliases, component, container, container_name, container_short_name, end_address, flags, full_name, generated_source, is_anonymous, name, num_aliases, object_path, padding, padding_pss, pss, pss_without_padding, section, section_name, size, size_without_padding, source_path, template_name
 
-SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByContainer, GroupedByContainerAndSectionName, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasFlag, WhereHasPath, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsOnDemand, WhereIsPak, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
+SymbolGroup (extends Symbol): CountUniqueSymbols, Filter, GroupedBy, GroupedByAliases, GroupedByComponent, GroupedByContainer, GroupedByContainerAndSectionName, GroupedByFullName, GroupedByName, GroupedByPath, GroupedBySectionName, Inverted, IterUniqueSymbols, Sorted, SortedByAddress, SortedByCount, SortedByName, WhereAddressInRange, WhereComponentMatches, WhereFullNameMatches, WhereGeneratedByToolchain, WhereHasAnyAttribution, WhereHasComponent, WhereHasFlag, WhereHasPath, WhereInContainer, WhereInSection, WhereIsDex, WhereIsGroup, WhereIsNative, WhereIsOnDemand, WhereIsPak, WhereIsPlaceholder, WhereIsTemplate, WhereMatches, WhereNameMatches, WhereObjectPathMatches, WherePathMatches, WherePssBiggerThan, WhereSizeBiggerThan, WhereSourceIsGenerated, WhereSourcePathMatches, WhereTemplateNameMatches, index, is_default_sorted
 
 DeltaSizeInfo: ContainerForName, after, before, build_config, containers, native_symbols, pak_symbols, raw_symbols, section_sizes, symbols
 DeltaSymbol (extends Symbol): after_symbol, before_symbol, diff_status
@@ -12,7 +12,7 @@ DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, WhereDiffStatusIs, d
 
 canned_queries: CategorizeByChromeComponent, CategorizeGenerated, LargeFiles, PakByPath, StaticInitializers, TemplatesByName
 
-Functions: CheckDataQuality(), Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), SaveDeltaSizeInfo(), SaveSizeInfo(), ShowExamples(), SizeStats()
+Functions: CheckDataQuality(), Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), ReplaceWithRelocations(), SaveDeltaSizeInfo(), SaveSizeInfo(), ShowExamples(), SizeStats()
 Variables:
   printed: List of objects passed to Print().
   size_info: Loaded from {redacted}
@@ -63,6 +63,7 @@ Print(c[-1].GroupedByPath(depth=2).Sorted())
 0: (.rodata@266e600(size_without_padding=5,padding=0,full_name="Str1",object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal), b'Str1\x00')
 1: (.rodata@266e605(size_without_padding=16,padding=0,full_name="String literal2",object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android), b'String literal2\x00')
 Metadata:
+    elf_algorithm=linker_map
     elf_arch=arm
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf
@@ -70,9 +71,7 @@ Metadata:
     elf_relocations_count=394087
     git_revision=abc123
     gn_args=var1=true var2="foo"
-    linker_name=gold
     map_file_name=../../../test.map
-    tool_prefix=tools/binary_size/libsupersize/testdata/mock_toolchain/
 
 Section Sizes (Total=128.0mb (134218045 bytes)):
     .bss: 1.24mb (1300456 bytes) (not included in totals)

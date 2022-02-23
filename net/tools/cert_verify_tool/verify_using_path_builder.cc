@@ -170,7 +170,7 @@ bool VerifyUsingPathBuilder(
       2048, net::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
   net::CertPathBuilder path_builder(
       target_cert, &trust_store, &delegate, time, net::KeyPurpose::SERVER_AUTH,
-      net::InitialExplicitPolicy::kFalse, {net::AnyPolicy()},
+      net::InitialExplicitPolicy::kFalse, {net::der::Input(net::kAnyPolicyOid)},
       net::InitialPolicyMappingInhibit::kFalse,
       net::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);

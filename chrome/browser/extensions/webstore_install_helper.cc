@@ -83,7 +83,6 @@ void WebstoreInstallHelper::Start(
     icon_fetcher_ =
         std::make_unique<BitmapFetcher>(icon_url_, this, traffic_annotation);
     icon_fetcher_->Init(
-        std::string(),
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
         network::mojom::CredentialsMode::kOmit);
     icon_fetcher_->Start(loader_factory);

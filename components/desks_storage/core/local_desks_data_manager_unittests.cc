@@ -53,7 +53,7 @@ const std::string kTestFileName1 =
 const std::string kPolicyWithOneTemplate =
     "[{\"version\":1,\"uuid\":\"" + kTestUuid9 +
     "\",\"name\":\""
-    "Example Template"
+    "Admin Template 1"
     "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
     "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
@@ -209,6 +209,28 @@ class LocalDeskDataManagerTest : public testing::Test {
     testing::Test::SetUp();
   }
 
+  void AddTwoTemplates() {
+    base::RunLoop loop1;
+    data_manager_->AddOrUpdateEntry(
+        std::move(sample_desk_template_one_),
+        base::BindLambdaForTesting(
+            [&](DeskModel::AddOrUpdateEntryStatus status) {
+              EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
+              loop1.Quit();
+            }));
+    loop1.Run();
+
+    base::RunLoop loop2;
+    data_manager_->AddOrUpdateEntry(
+        std::move(sample_desk_template_two_),
+        base::BindLambdaForTesting(
+            [&](DeskModel::AddOrUpdateEntryStatus status) {
+              EXPECT_EQ(DeskModel::AddOrUpdateEntryStatus::kOk, status);
+              loop2.Quit();
+            }));
+    loop2.Run();
+  }
+
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_;
   std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_duplicate_;
@@ -256,9 +278,9 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllEntries) {
                                   base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -285,9 +307,9 @@ TEST_F(LocalDeskDataManagerTest, GetAllEntriesIncludesPolicyValues) {
   data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 4ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -325,9 +347,9 @@ TEST_F(LocalDeskDataManagerTest, CanMarkDuplicateEntryNames) {
       base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid1, entries));
@@ -363,9 +385,9 @@ TEST_F(LocalDeskDataManagerTest, AppendsDuplicateMarkingsCorrectly) {
       base::BindOnce(&VerifyEntryAddedCorrectly));
 
   base::RunLoop loop;
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 3ul);
         EXPECT_TRUE(FindUuidInUuidList(kTestUuid7, entries));
@@ -404,6 +426,27 @@ TEST_F(LocalDeskDataManagerTest, CanGetEntryByUuid) {
         EXPECT_EQ(entry->template_name(),
                   base::UTF8ToUTF16(std::string("desk_01")));
         EXPECT_EQ(entry->created_time(), kTestTime1);
+      }));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(LocalDeskDataManagerTest, GetEntryByUuidShouldReturnAdminTemplate) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  // Set admin template with UUID: kTestUuid9.
+  data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
+
+  data_manager_->GetEntryByUUID(
+      kTestUuid9,
+      base::BindLambdaForTesting([&](DeskModel::GetEntryByUuidStatus status,
+                                     std::unique_ptr<ash::DeskTemplate> entry) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
+        EXPECT_EQ(base::GUID::ParseCaseInsensitive(kTestUuid9), entry->uuid());
+        EXPECT_EQ(ash::DeskTemplateSource::kPolicy, entry->source());
+        EXPECT_EQ(base::UTF8ToUTF16(std::string("Admin Template 1")),
+                  entry->template_name());
       }));
 
   task_environment_.RunUntilIdle();
@@ -488,9 +531,9 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 0ul);
         loop.Quit();
@@ -516,14 +559,41 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteAllEntries) {
         EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager_->GetAllEntries(
-      base::BindLambdaForTesting([&](DeskModel::GetAllEntriesStatus status,
-                                     std::vector<ash::DeskTemplate*> entries) {
+  data_manager_->GetAllEntries(base::BindLambdaForTesting(
+      [&](DeskModel::GetAllEntriesStatus status,
+          const std::vector<ash::DeskTemplate*>& entries) {
         EXPECT_EQ(status, DeskModel::GetAllEntriesStatus::kOk);
         EXPECT_EQ(entries.size(), 0ul);
         loop.Quit();
       }));
   loop.Run();
+}
+
+TEST_F(LocalDeskDataManagerTest,
+       GetEntryCountShouldIncludeBothUserAndAdminTemplates) {
+  // Add two user templates.
+  AddTwoTemplates();
+
+  // Set one admin template.
+  data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
+
+  // There should be 3 templates: 2 user templates + 1 admin template.
+  EXPECT_EQ(3ul, data_manager_->GetEntryCount());
+}
+
+TEST_F(LocalDeskDataManagerTest,
+       GetMaxEntryCountShouldIncreaseWithAdminTemplates) {
+  // Add two user templates.
+  AddTwoTemplates();
+
+  std::size_t max_entry_count = data_manager_->GetMaxEntryCount();
+
+  // Set one admin template.
+  data_manager_->SetPolicyDeskTemplates(kPolicyWithOneTemplate);
+
+  // The max entry count should increase by 1 since we have set an admin
+  // template.
+  EXPECT_EQ(max_entry_count + 1ul, data_manager_->GetMaxEntryCount());
 }
 
 }  // namespace desks_storage

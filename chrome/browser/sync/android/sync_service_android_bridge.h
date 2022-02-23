@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 
@@ -41,8 +42,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jboolean IsSyncRequested(JNIEnv* env);
   void SetSyncRequested(JNIEnv* env, jboolean requested);
   jboolean CanSyncFeatureStart(JNIEnv* env);
-  jboolean IsSyncAllowedByPlatform(JNIEnv* env);
-  void SetSyncAllowedByPlatform(JNIEnv* env, jboolean allowed);
+  jboolean IsSyncFeatureEnabled(JNIEnv* env);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);
@@ -77,8 +77,6 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jint GetAuthError(JNIEnv* env);
   jboolean HasUnrecoverableError(JNIEnv* env);
   jboolean RequiresClientUpgrade(JNIEnv* env);
-  void SetDecoupledFromAndroidMasterSync(JNIEnv* env);
-  jboolean GetDecoupledFromAndroidMasterSync(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetAccountInfo(JNIEnv* env);
   jboolean HasSyncConsent(JNIEnv* env);
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
@@ -93,7 +91,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
 
  private:
   // A reference to the sync service for this profile.
-  syncer::SyncServiceImpl* const native_sync_service_;
+  const raw_ptr<syncer::SyncServiceImpl> native_sync_service_;
 
   // Java-side SyncServiceImpl object.
   const JavaObjectWeakGlobalRef java_sync_service_;

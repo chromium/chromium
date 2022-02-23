@@ -37,20 +37,20 @@ std::string PrepareHeavyAdPage(const std::string& application_locale) {
 
   // Populate load time data.
   base::DictionaryValue load_time_data;
-  load_time_data.SetString("type", "HEAVYAD");
-  load_time_data.SetString(
+  load_time_data.SetStringKey("type", "HEAVYAD");
+  load_time_data.SetStringKey(
       "heading", l10n_util::GetStringUTF16(IDS_HEAVY_AD_INTERVENTION_HEADING));
-  load_time_data.SetString(
+  load_time_data.SetStringKey(
       "openDetails",
       l10n_util::GetStringUTF16(IDS_HEAVY_AD_INTERVENTION_BUTTON_DETAILS));
-  load_time_data.SetString(
+  load_time_data.SetStringKey(
       "explanationParagraph",
       l10n_util::GetStringUTF16(IDS_HEAVY_AD_INTERVENTION_SUMMARY));
 
   // Ad frames are never the main frame, so we do not need a tab title.
-  load_time_data.SetString("tabTitle", "");
-  load_time_data.SetBoolean("overridable", false);
-  load_time_data.SetBoolean("is_giant", false);
+  load_time_data.SetStringKey("tabTitle", "");
+  load_time_data.SetBoolKey("overridable", false);
+  load_time_data.SetBoolKey("is_giant", false);
 
   webui::SetLoadTimeDataDefaults(application_locale, &load_time_data);
 

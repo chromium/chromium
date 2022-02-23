@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"

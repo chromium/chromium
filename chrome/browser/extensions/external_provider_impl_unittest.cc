@@ -50,7 +50,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif
@@ -84,7 +84,7 @@ constexpr const TestServerExtension kTestServerExtensions[] = {
 const char kExternalAppId[] = "kekdneafjmhmndejhmbcadfiiofngffo";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kExternalAppCrxPath[] =
     "external\\kekdneafjmhmndejhmbcadfiiofngffo.crx";
 const wchar_t kExternalAppRegistryKey[] =
@@ -136,7 +136,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     // Windows doesn't use the provider that installs the |kExternalAppId|
     // extension implicitly, so to test that the blocking policy works on
     // Windows it is installed through a Windows-specific registry provider.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
     EXPECT_EQ(ERROR_SUCCESS,
@@ -246,7 +246,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Registry key pointing to the external extension for Windows.
   base::win::RegKey external_extension_key_;
   registry_util::RegistryOverrideManager registry_override_manager_;

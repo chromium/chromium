@@ -28,8 +28,7 @@ ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
 
 void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
     bool success,
-    std::vector<chromeos::printing::proto::PrintJobInfo>
-        print_job_info_protos) {
+    std::vector<ash::printing::proto::PrintJobInfo> print_job_info_protos) {
   std::vector<api::printing_metrics::PrintJobInfo> print_job_infos;
   if (success) {
     for (const auto& print_job_info_proto : print_job_info_protos)

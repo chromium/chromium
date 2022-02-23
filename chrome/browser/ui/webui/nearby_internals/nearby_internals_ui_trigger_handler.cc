@@ -7,13 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
-#include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 
 namespace {
 
@@ -313,7 +313,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceForeground(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -331,7 +331,7 @@ void NearbyInternalsUiTriggerHandler::RegisterSendSurfaceBackground(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -349,7 +349,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterSendSurface(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(service_->UnregisterSendSurface(this, this),
@@ -365,7 +365,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceForeground(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -383,7 +383,7 @@ void NearbyInternalsUiTriggerHandler::RegisterReceiveSurfaceBackground(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -401,7 +401,7 @@ void NearbyInternalsUiTriggerHandler::UnregisterReceiveSurface(
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(service_->UnregisterReceiveSurface(this),
@@ -467,7 +467,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetList()[1].GetString();
+  std::string share_target_id = args->GetListDeprecated()[1].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -480,7 +480,7 @@ void NearbyInternalsUiTriggerHandler::SendText(const base::ListValue* args) {
       TextAttachment::Type::kText, kPayloadExample, /*title=*/absl::nullopt,
       /*mime_type=*/absl::nullopt));
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusCodeToDictionary(
@@ -496,7 +496,7 @@ void NearbyInternalsUiTriggerHandler::Accept(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetList()[0].GetString();
+  std::string share_target_id = args->GetListDeprecated()[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -518,7 +518,7 @@ void NearbyInternalsUiTriggerHandler::Open(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetList()[0].GetString();
+  std::string share_target_id = args->GetListDeprecated()[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -539,7 +539,7 @@ void NearbyInternalsUiTriggerHandler::Reject(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetList()[0].GetString();
+  std::string share_target_id = args->GetListDeprecated()[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -561,7 +561,7 @@ void NearbyInternalsUiTriggerHandler::Cancel(const base::ListValue* args) {
     return;
   }
 
-  std::string share_target_id = args->GetList()[0].GetString();
+  std::string share_target_id = args->GetListDeprecated()[0].GetString();
   auto it = id_to_share_target_map_.find(share_target_id);
   if (it == id_to_share_target_map_.end()) {
     NS_LOG(ERROR) << "Invalid ShareTarget ID " << share_target_id
@@ -583,7 +583,7 @@ void NearbyInternalsUiTriggerHandler::GetState(const base::ListValue* args) {
     return;
   }
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
       callback_id,
       StatusBooleansToDictionary(

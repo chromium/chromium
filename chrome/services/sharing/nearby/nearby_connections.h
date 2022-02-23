@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include <memory>
 
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
+#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -19,15 +23,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/nearby_connections_stream_buffer_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/nearby/src/cpp/core/internal/service_controller_router.h"
+#include "third_party/nearby/src/connections/implementation/service_controller_router.h"
 
 namespace location {
 namespace nearby {
@@ -84,6 +87,21 @@ class NearbyConnections : public mojom::NearbyConnections {
   const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
   webrtc_signaling_messenger() const {
     return webrtc_signaling_messenger_;
+  }
+
+  const mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>&
+  cros_network_config() const {
+    return cros_network_config_;
+  }
+
+  const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+  firewall_hole_factory() const {
+    return firewall_hole_factory_;
+  }
+
+  const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+  tcp_socket_factory() const {
+    return tcp_socket_factory_;
   }
 
   // mojom::NearbyConnections:
@@ -167,7 +185,10 @@ class NearbyConnections : public mojom::NearbyConnections {
     kMdnsResponder = 3,
     kIceConfigFetcher = 4,
     kWebRtcSignalingMessenger = 5,
-    kMaxValue = kWebRtcSignalingMessenger
+    kCrosNetworkConfig = 6,
+    kFirewallHoleFactory = 7,
+    kTcpSocketFactory = 8,
+    kMaxValue = kTcpSocketFactory
   };
 
   Core* GetCore(const std::string& service_id);
@@ -188,6 +209,11 @@ class NearbyConnections : public mojom::NearbyConnections {
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
+  mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
+  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_;
+  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> tcp_socket_factory_;
 
   std::unique_ptr<ServiceControllerRouter> service_controller_router_;
 

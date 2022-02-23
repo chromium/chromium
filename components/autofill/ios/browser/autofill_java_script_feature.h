@@ -48,31 +48,27 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // Fills a number of fields in the same named form for full-form Autofill.
   // Applies Autofill CSS (i.e. yellow background) to filled elements.
   // Only empty fields will be filled, except that field named
-  // Field identified by |forceFillFieldIdentifier|/|forceFillFieldUniqueID|
-  // will always be filled even if non-empty. |forceFillFieldIdentifier| may be
-  // null. Fields must be contained in |frame|. |completionHandler| is called
-  // after the forms are filled with the JSON string containing pairs of unique
-  // renderer ids of filled fields and corresponding filled values.
-  // |completionHandler| cannot be nil.
+  // Field identified by |forceFillFieldID| will always be filled even if
+  // non-empty. |forceFillFieldID| may be null. Fields must be contained in
+  // |frame|. |completionHandler| is called after the forms are filled with the
+  // JSON string containing pairs of unique renderer ids of filled fields and
+  // corresponding filled values. |completionHandler| cannot be nil.
   void FillForm(web::WebFrame* frame,
                 std::unique_ptr<base::Value> data,
-                NSString* forceFillFieldIdentifier,
-                autofill::FieldRendererId forceFillFieldUniqueID,
+                autofill::FieldRendererId forceFillFieldID,
                 base::OnceCallback<void(NSString*)> callback);
 
   // Clear autofilled fields of the specified form and frame. Fields that are
   // not currently autofilled are not modified. Field contents are cleared, and
   // Autofill flag and styling are removed. 'change' events are sent for fields
   // whose contents changed.
-  // |fieldIdentifier|/|fieldUniqueID| identify the field that initiated the
+  // |fieldUniqueID| identifies the field that initiated the
   // clear action. |completionHandler| is called after the forms are filled with
   // the JSON string containing a list of unique renderer ids of cleared fields.
   // |completionHandler| cannot be nil.
-  void ClearAutofilledFieldsForFormName(
+  void ClearAutofilledFieldsForForm(
       web::WebFrame* frame,
-      NSString* formName,
       autofill::FormRendererId formRendererID,
-      NSString* fieldIdentifier,
       autofill::FieldRendererId fieldRendererID,
       base::OnceCallback<void(NSString*)> callback);
 

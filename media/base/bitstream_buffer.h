@@ -58,14 +58,20 @@ class MEDIA_EXPORT BitstreamBuffer {
 
   ~BitstreamBuffer();
 
-  // Produce an equivalent DecoderBuffer. This consumes region(), even if
+  // Produce an equivalent DecoderBuffer. This may consume region(), even if
   // nullptr is returned.
   //
   // This method is only intended to be used by VDAs that are being converted to
   // use DecoderBuffer.
   //
+  // The 2 arg variant adds |offset| to the internal offset and will then use
+  // |size| bytes at that location. This is allowed to go beyond the size of the
+  // buffer specified in the constructor, but it does ensure it does not go
+  // beyond the size of the shared memory region.
+  //
   // TODO(sandersd): Remove once all VDAs are converted.
   scoped_refptr<DecoderBuffer> ToDecoderBuffer();
+  scoped_refptr<DecoderBuffer> ToDecoderBuffer(off_t offset, size_t size);
 
   // TODO(crbug.com/813845): As this is only used by Android, include
   // EncryptionScheme and optional EncryptionPattern when updating for Android.

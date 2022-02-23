@@ -436,9 +436,11 @@ TEST_F(FakeVideoCaptureDeviceFactoryTest, DeviceWithNoSupportedFormats) {
   EXPECT_EQ(1u, devices_info_.size());
   VideoCaptureFormats& supported_formats = devices_info_[0].supported_formats;
   EXPECT_EQ(0u, supported_formats.size());
-  auto device =
+
+  VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(devices_info_[0].descriptor);
-  EXPECT_TRUE(device.get());
+  ASSERT_TRUE(device_status.ok());
+  auto device = device_status.ReleaseDevice();
 
   auto client = CreateClient();
   EXPECT_CALL(*client, OnError(_, _, _));
@@ -474,9 +476,10 @@ TEST_P(FakeVideoCaptureDeviceFactoryTest,
                 supported_formats_entry.pixel_format);
     }
 
-    std::unique_ptr<VideoCaptureDevice> device =
+    VideoCaptureErrorOrDevice device_status =
         video_capture_device_factory_->CreateDevice(device_info.descriptor);
-    ASSERT_TRUE(device);
+    ASSERT_TRUE(device_status.ok());
+    std::unique_ptr<VideoCaptureDevice> device = device_status.ReleaseDevice();
 
     VideoCaptureParams capture_params;
     capture_params.requested_format.frame_size.SetSize(1280, 720);

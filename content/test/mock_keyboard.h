@@ -9,7 +9,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/test/mock_keyboard_driver_win.h"
 #endif
 
@@ -99,7 +99,7 @@ class MockKeyboard {
                     std::u16string* output);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Layout keyboard_layout_ = LAYOUT_NULL;
   Modifiers keyboard_modifiers_ = INVALID;
   MockKeyboardDriverWin driver_;

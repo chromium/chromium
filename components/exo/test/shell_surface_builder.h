@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -32,6 +32,7 @@ class ShellSurfaceBuilder {
   ~ShellSurfaceBuilder();
 
   // Sets parameters that are used when creating a test window.
+  ShellSurfaceBuilder& SetNoRootBuffer();
   ShellSurfaceBuilder& SetRootBufferFormat(gfx::BufferFormat buffer_format);
   ShellSurfaceBuilder& SetOrigin(const gfx::Point& origin);
   ShellSurfaceBuilder& SetParent(ShellSurface* shell_surface);
@@ -40,10 +41,11 @@ class ShellSurfaceBuilder {
   ShellSurfaceBuilder& SetCanMinimize(bool can_minimize);
   ShellSurfaceBuilder& SetMaximumSize(const gfx::Size& size);
   ShellSurfaceBuilder& SetDisableMovement();
+  ShellSurfaceBuilder& SetAsPopup();
   ShellSurfaceBuilder& SetCentered();
 
   // once and the object cannot be used to create multiple windows.
-  std::unique_ptr<ShellSurface> BuildShellSurface() WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<ShellSurface> BuildShellSurface();
 
   // Destroy's the root surface of the given 'shell_surface'.
   static void DestroyRootSurface(ShellSurfaceBase* shell_surface);
@@ -52,7 +54,8 @@ class ShellSurfaceBuilder {
 
  private:
   gfx::Size root_buffer_size_;
-  gfx::BufferFormat root_buffer_format_ = gfx::BufferFormat::RGBA_8888;
+  absl::optional<gfx::BufferFormat> root_buffer_format_ =
+      gfx::BufferFormat::RGBA_8888;
   gfx::Point origin_;
   gfx::Size max_size_;
   ShellSurface* parent_shell_surface_ = nullptr;
@@ -61,6 +64,7 @@ class ShellSurfaceBuilder {
   bool can_minimize_ = true;
   bool disable_movement_ = false;
   bool centered_ = false;
+  bool popup_ = false;
 
   bool built_ = false;
 };

@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/suggestion-picker-common.js"></script>
-</head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <body dir="rtl" style="padding: 0 50px;">
-<input type=month id=month list=suggestions>
+<input type=month list=suggestions>
 <datalist id=suggestions>
     <option label="This Month">2012-01</option>
     <option>2012-02</option>
@@ -32,12 +27,7 @@ window.enablePixelTesting = true;
     <option>2013-07</option>
     <option>2013-08</option>
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
+  
 <script>
-openPickerAppearanceOnly(document.getElementById('month'), finishJSTest);
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>

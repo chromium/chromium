@@ -32,6 +32,7 @@
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -42,19 +43,21 @@
 
 namespace cc {
 
-// This is used to snapshot all LayerTreeHost state that is accessed during
-// compositor commit.
+// CommitState and ThreadUnsafeCommitState contain all of the information from
+// LayerTreeHost that is needed to run compositor commit. CommitState is
+// effectively POD; the compositor gets its own copy, which it may read or write
+// without any concurrency issues.  ThreadUnsafeCommitState is shared data that
+// is *not* copied to the compositor. Main thread code must take care not to
+// modify anything reachable from ThreadUnsafeCommitState while commit is
+// running on the impl thread, typically by adding calls to
+// LayerTreeHost::WaitForCommitCompletion() before attempting to mutate state.
+
 struct CC_EXPORT CommitState {
   CommitState();
   // Note: the copy constructor only copies persistent fields
   CommitState(const CommitState&);
   CommitState& operator=(const CommitState&) = delete;
   ~CommitState();
-
-  LayerListIterator begin() const {
-    return LayerListIterator(root_layer.get());
-  }
-  LayerListIterator end() const { return LayerListIterator(nullptr); }
 
   base::flat_set<viz::SurfaceRange> SurfaceRanges() const;
   EventListenerProperties GetEventListenerProperties(EventListenerClass) const;
@@ -99,16 +102,15 @@ struct CC_EXPORT CommitState {
   LayerSelection selection;
   LayerTreeDebugState debug_state;
   OverscrollBehavior overscroll_behavior;
-  scoped_refptr<Layer> root_layer;
   SkColor background_color = SK_ColorWHITE;
   ViewportPropertyIds viewport_property_ids;
   viz::LocalSurfaceId local_surface_id_from_parent;
+  gpu::MemoryAllocation::PriorityCutoff priority_cutoff =
+      gpu::MemoryAllocation::PriorityCutoff::CUTOFF_ALLOW_EVERYTHING;
 
   // -------------------------------------------------------------------------
   // Take/reset: these values are reset on the LayerTreeHost between commits.
 
-  // Set of layers that need to push properties.
-  base::flat_set<Layer*> layers_that_should_push_properties;
   // The number of SurfaceLayers that have (fallback,primary) set to
   // viz::SurfaceRange.
   bool clear_caches_on_next_commit = false;
@@ -146,12 +148,34 @@ struct CC_EXPORT CommitState {
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
+  PropertyTreesChangeState property_trees_change_state;
+  base::flat_set<Layer*> layers_that_should_push_properties;
+};
 
-  // -------------------------------------------------------------------------
-  // These values are populated on the impl thread during commit. They are
-  // read on the main thread after commit is finished.
-  base::TimeTicks impl_commit_start_time;
-  base::TimeTicks impl_commit_finish_time;
+struct CC_EXPORT ThreadUnsafeCommitState {
+  ThreadUnsafeCommitState(MutatorHost* mh,
+                          const ProtectedSequenceSynchronizer& synchronizer);
+  ~ThreadUnsafeCommitState();
+
+  // TODO(szager/vmpstr): These methods are to support range-based 'for' loops,
+  // which is weird because ThreadUnsafeCommitState is not a collection or
+  // container. We should do something more sensible and less weird.
+  LayerListConstIterator begin() const {
+    return LayerListConstIterator(root_layer.get());
+  }
+  LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
+
+  MutatorHost* mutator_host;
+  PropertyTrees property_trees;
+  scoped_refptr<Layer> root_layer;
+};
+
+struct CC_EXPORT CommitTimestamps {
+  // Time when the compositor first became aware that a commit was requested by
+  // the main thread.
+  base::TimeTicks start;
+  // Time when the compositor finished the commit.
+  base::TimeTicks finish;
 };
 
 }  // namespace cc

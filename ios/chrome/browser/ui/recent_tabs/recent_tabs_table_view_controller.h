@@ -39,6 +39,9 @@ class DistantSession;
 // Whether the updates of the RecentTabs should be ignored. Setting this to NO
 // would trigger a reload of the TableView.
 @property(nonatomic, assign) BOOL preventUpdates;
+// Search term for filtering displayed items to those which match |searchTerm|.
+// Setting as null clears any search results and resets to showing all tabs.
+@property(nonatomic, copy) NSString* searchTerms;
 
 // Delegate to present the tab UI.
 @property(nonatomic, weak) id<RecentTabsPresentationDelegate>

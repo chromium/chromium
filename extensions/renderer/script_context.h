@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "extensions/common/features/feature.h"
@@ -269,6 +268,9 @@ class ScriptContext {
   // Gets the current stack trace as a multi-line string to be logged.
   std::string GetStackTraceAsString() const;
 
+  // Generate a unique integer value. This is only unique within this instance.
+  int32_t GetNextIdFromCounter() { return id_counter++; }
+
   // Runs |code|, labelling the script that gets created as |name| (the name is
   // used in the devtools and stack traces). |exception_handler| will be called
   // re-entrantly if an exception is thrown during the script's execution.
@@ -280,11 +282,6 @@ class ScriptContext {
           v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
 
  private:
-  // DEPRECATED.
-  v8::Local<v8::Value> CallFunction(const v8::Local<v8::Function>& function,
-                                    int argc,
-                                    v8::Local<v8::Value> argv[]) const;
-
   // Whether this context is valid.
   bool is_valid_;
 
@@ -333,6 +330,9 @@ class ScriptContext {
   GURL service_worker_scope_;
 
   int64_t service_worker_version_id_;
+
+  // A counter to generate unique IDs. IDs must start at 1.
+  int32_t id_counter = 1;
 
   base::ThreadChecker thread_checker_;
 };

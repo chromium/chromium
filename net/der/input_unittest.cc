@@ -11,7 +11,7 @@ namespace net {
 namespace der {
 namespace test {
 
-const uint8_t kInput[] = {'t', 'e', 's', 't'};
+constexpr uint8_t kInput[] = {'t', 'e', 's', 't'};
 const uint8_t kInput2[] = {'t', 'e', 'a', 'l'};
 
 TEST(InputTest, Equals) {
@@ -55,6 +55,28 @@ TEST(InputTest, StaticArray) {
 
   Input input2(kInput);
   EXPECT_EQ(input, input2);
+}
+
+TEST(InputTest, ConstExpr) {
+  constexpr Input default_input;
+  static_assert(default_input.Length() == 0);
+  static_assert(default_input.UnsafeData() == nullptr);
+
+  constexpr Input const_array_input(kInput);
+  static_assert(const_array_input.Length() == 4);
+  static_assert(const_array_input.UnsafeData() == kInput);
+  static_assert(default_input != const_array_input);
+  static_assert(!(default_input == const_array_input));
+  static_assert(default_input < const_array_input);
+
+  constexpr Input ptr_len_input(kInput, 2);
+  static_assert(ptr_len_input.Length() == 2);
+  static_assert(ptr_len_input.UnsafeData() == kInput);
+  static_assert(ptr_len_input != const_array_input);
+  static_assert(ptr_len_input < const_array_input);
+
+  Input runtime_input(kInput2, 2);
+  EXPECT_EQ(runtime_input, ptr_len_input);
 }
 
 TEST(ByteReaderTest, NoReadPastEnd) {

@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_MEDIA_CDM_CAST_CDM_FACTORY_H_
 #define CHROMECAST_MEDIA_CDM_CAST_CDM_FACTORY_H_
 
-#include "base/macros.h"
 #include "chromecast/media/base/key_systems_common.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "media/base/cdm_factory.h"
@@ -38,7 +37,6 @@ class CastCdmFactory : public ::media::CdmFactory {
 
   // ::media::CdmFactory implementation:
   void Create(
-      const std::string& key_system,
       const ::media::CdmConfig& cdm_config,
       const ::media::SessionMessageCB& session_message_cb,
       const ::media::SessionClosedCB& session_closed_cb,

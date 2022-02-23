@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,7 +46,7 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/public/activation_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -172,7 +173,7 @@ class NestedLoopCaptureView : public View {
 
   base::RunLoop run_loop_;
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 ui::WindowShowState GetWidgetShowState(const Widget* widget) {
@@ -190,7 +191,7 @@ ui::WindowShowState GetWidgetShowState(const Widget* widget) {
 // Give the OS an opportunity to process messages for an activation change, when
 // there is actually no change expected (e.g. ShowInactive()).
 void RunPendingMessagesForActiveStatusChange() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, a single spin is *usually* enough. It isn't when a widget is shown
   // and made active in two steps, so tests should follow up with a ShowSync()
   // or ActivateSync to ensure a consistent state.
@@ -217,7 +218,7 @@ void ShowSync(Widget* widget) {
 }
 
 void DeactivateSync(Widget* widget) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Deactivation of a window isn't a concept on Mac: If an application is
   // active and it has any activatable windows, then one of them is always
   // active. But we can simulate deactivation (e.g. as if another application
@@ -236,7 +237,7 @@ void DeactivateSync(Widget* widget) {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ActivatePlatformWindow(Widget* widget) {
   ::SetActiveWindow(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
@@ -288,15 +289,14 @@ class PropertyWaiter {
   base::RepeatingTimer timer_;
 };
 
-// TODO(pbos): Rewrite this to return unique_ptr.
-views::Textfield* CreateTextfield() {
+std::unique_ptr<Textfield> CreateTextfield() {
   auto textfield = std::make_unique<Textfield>();
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks, but this focusable View needs to
   // add a name so that the screen reader knows what to announce. Consider
   // adding bogus placeholder text here.
   textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
-  return textfield.release();
+  return textfield;
 }
 
 }  // namespace
@@ -312,7 +312,7 @@ class WidgetTestInteractive : public WidgetTest {
   }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Tests whether activation and focus change works correctly in Windows.
 // We test the following:-
 // 1. If the active aura window is correctly set when a top level widget is
@@ -437,7 +437,7 @@ class TouchEventHandler : public ui::EventHandler {
       ActivateViaMouse();
   }
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   base::OnceClosure quit_closure_;
 };
 
@@ -461,7 +461,7 @@ TEST_F(DesktopWidgetTestInteractive, DISABLED_TouchNoActivateWindow) {
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Tests mouse move outside of the window into the "resize controller" and back
 // will still generate an OnMouseEntered and OnMouseExited event..
@@ -554,7 +554,7 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
 
 // Test z-order of child widgets relative to their parent.
 // TODO(crbug.com/1227009): Disabled on Mac due to flake
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ChildStackedRelativeToParent DISABLED_ChildStackedRelativeToParent
 #else
 #define MAYBE_ChildStackedRelativeToParent ChildStackedRelativeToParent
@@ -626,7 +626,7 @@ TEST_F(WidgetTestInteractive, MAYBE_ChildStackedRelativeToParent) {
   EXPECT_TRUE(IsWindowStackedAbove(parent.get(), popover.get()));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Test view focus retention when a widget's HWND is disabled and re-enabled.
 TEST_F(WidgetTestInteractive, ViewFocusOnHWNDEnabledChanges) {
@@ -838,9 +838,9 @@ TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
 
   widget.CloseNow();
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 // Tests whether the focused window is set correctly when a modal window is
 // created and destroyed. When it is destroyed it should focus the owner window.
 TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
@@ -882,7 +882,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   EXPECT_EQ(gfx::kNullNativeView, focus_changes[1]);
   EXPECT_EQ(modal_native_view, focus_changes[2]);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Window modal dialogs on Mac are "sheets", which animate to close before
   // activating their parent widget.
   views::test::WidgetActivationWaiter waiter(&top_level_widget, true);
@@ -916,52 +916,42 @@ TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
 
 #if defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
-// TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
-// TODO(crbug.com/1200034): investigate fixing and enabling on Ozone/Wayland.
-#define MAYBE_TouchSelectionQuickMenuIsNotActivated \
-  DISABLED_TouchSelectionQuickMenuIsNotActivated
-#else
-#define MAYBE_TouchSelectionQuickMenuIsNotActivated \
-  TouchSelectionQuickMenuIsNotActivated
-#endif
-
 // Test that touch selection quick menu is not activated when opened.
-TEST_F(DesktopWidgetTestInteractive,
-       MAYBE_TouchSelectionQuickMenuIsNotActivated) {
+TEST_F(DesktopWidgetTestInteractive, TouchSelectionQuickMenuIsNotActivated) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   widget->SetBounds(gfx::Rect(0, 0, 200, 200));
 
-  Textfield* textfield = CreateTextfield();
-  textfield->SetBounds(0, 0, 200, 20);
-  textfield->SetText(u"some text");
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  textfield_ptr->SetBounds(0, 0, 200, 20);
+  textfield_ptr->SetText(u"some text");
+  widget->GetRootView()->AddChildView(std::move(textfield));
 
-  widget->Show();
-  textfield->RequestFocus();
-  textfield->SelectAll(true);
-  TextfieldTestApi textfield_test_api(textfield);
-
-  RunPendingMessages();
+  ShowSync(widget.get());
+  textfield_ptr->RequestFocus();
+  textfield_ptr->SelectAll(true);
+  TextfieldTestApi textfield_test_api(textfield_ptr);
 
   ui::test::EventGenerator generator(GetRootWindow(widget.get()));
-  generator.GestureTapAt(textfield->GetBoundsInScreen().origin() +
+  generator.GestureTapAt(textfield_ptr->GetBoundsInScreen().origin() +
                          gfx::Vector2d(10, 10));
+  // The touch selection controller must be created in response to tapping.
+  ASSERT_TRUE(textfield_test_api.touch_selection_controller());
   static_cast<TouchSelectionControllerImpl*>(
       textfield_test_api.touch_selection_controller())
       ->ShowQuickMenuImmediatelyForTesting();
 
-  EXPECT_TRUE(textfield->HasFocus());
+  EXPECT_TRUE(textfield_ptr->HasFocus());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
 #endif  // defined(USE_AURA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(DesktopWidgetTestInteractive, DisableViewDoesNotActivateWidget) {
 #else
 TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // Create first widget and view, activate the widget, and focus the view.
   Widget widget1;
@@ -1075,12 +1065,12 @@ TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
   anchor_widget->Show();
   waiter.Wait();
   EXPECT_TRUE(anchor_widget->IsActive());
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(anchor_widget->GetNativeWindow()->HasFocus());
 #endif
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   ShowSync(widget.get());
@@ -1096,13 +1086,13 @@ TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   EXPECT_EQ(GetWidgetShowState(widget2.get()), ui::SHOW_STATE_INACTIVE);
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 }
-#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
 // ExitFullscreenRestoreState doesn't use DesktopAura widgets. On Mac, there are
 // currently only Desktop widgets and fullscreen changes have to coordinate with
 // the OS. See BridgedNativeWidgetUITest for native Mac fullscreen tests.
 // Maximize on mac is also (intentionally) a no-op.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ExitFullscreenRestoreState DISABLED_ExitFullscreenRestoreState
 #else
 #define MAYBE_ExitFullscreenRestoreState ExitFullscreenRestoreState
@@ -1183,7 +1173,29 @@ TEST_F(DesktopWidgetTestInteractive, RestoreAfterMinimize) {
   EXPECT_TRUE(restore_waiter.Wait());
 }
 
-#if defined(OS_WIN)
+// Maximize is not implemented on macOS, see crbug.com/868599
+#if !BUILDFLAG(IS_MAC)
+// Widget::Show/ShowInactive should not restore a maximized window
+TEST_F(DesktopWidgetTestInteractive, ShowAfterMaximize) {
+  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  ShowSync(widget.get());
+  ASSERT_FALSE(widget->IsMaximized());
+
+  PropertyWaiter maximize_waiter(
+      base::BindRepeating(&Widget::IsMaximized, base::Unretained(widget.get())),
+      true);
+  widget->Maximize();
+  EXPECT_TRUE(maximize_waiter.Wait());
+
+  ShowSync(widget.get());
+  EXPECT_TRUE(widget->IsMaximized());
+
+  ShowInactiveSync(widget.get());
+  EXPECT_TRUE(widget->IsMaximized());
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
 // TODO(davidbienvenu): Get this test to pass on Linux and ChromeOS by hiding
 // the root window when desktop widget is minimized.
 // Tests that root window visibility toggles correctly when the desktop widget
@@ -1246,9 +1258,9 @@ TEST_F(DesktopWidgetTestInteractive, MinimizeAndActivateFocus) {
   EXPECT_TRUE(widget_window->CanFocus());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 // Tests that minimizing a widget causes the gesture_handler
 // to be cleared when the widget is minimized.
 TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
@@ -1268,7 +1280,7 @@ TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
 }
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     BUILDFLAG(ENABLE_DESKTOP_AURA)
 // Tests that when a desktop native widget has modal transient child, it should
 // avoid restore focused view itself as the modal transient child window will do
@@ -1282,12 +1294,13 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create a top level desktop native widget.
   WidgetAutoclosePtr top_level(CreateTopLevelNativeWidget());
 
-  Textfield* textfield = CreateTextfield();
-  textfield->SetBounds(0, 0, 200, 20);
-  top_level->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  textfield_ptr->SetBounds(0, 0, 200, 20);
+  top_level->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(top_level.get());
-  textfield->RequestFocus();
-  EXPECT_TRUE(textfield->HasFocus());
+  textfield_ptr->RequestFocus();
+  EXPECT_TRUE(textfield_ptr->HasFocus());
 
   // Create a modal dialog.
   // This instance will be destroyed when the dialog is destroyed.
@@ -1296,27 +1309,28 @@ TEST_F(DesktopWidgetTestInteractive,
   Widget* modal_dialog_widget = DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(0, 0, 100, 10));
-  Textfield* dialog_textfield = CreateTextfield();
-  dialog_textfield->SetBounds(0, 0, 50, 5);
-  modal_dialog_widget->GetRootView()->AddChildView(dialog_textfield);
+  std::unique_ptr<Textfield> dialog_textfield = CreateTextfield();
+  auto* const dialog_textfield_ptr = dialog_textfield.get();
+  dialog_textfield_ptr->SetBounds(0, 0, 50, 5);
+  modal_dialog_widget->GetRootView()->AddChildView(std::move(dialog_textfield));
   // Dialog widget doesn't need a ShowSync as it gains active status
   // synchronously.
   modal_dialog_widget->Show();
-  dialog_textfield->RequestFocus();
-  EXPECT_TRUE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  dialog_textfield_ptr->RequestFocus();
+  EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 
   DeactivateSync(top_level.get());
-  EXPECT_FALSE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_FALSE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 
   // After deactivation and activation of top level widget, only modal dialog
   // should restore focused view.
   ActivateSync(top_level.get());
-  EXPECT_TRUE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 }
-#endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 namespace {
@@ -1360,7 +1374,7 @@ class CaptureLostTrackingWidget : public Widget {
 
  private:
   // Weak. Stores whether OnMouseCaptureLost has been invoked for this widget.
-  CaptureLostState* capture_lost_state_;
+  raw_ptr<CaptureLostState> capture_lost_state_;
 };
 
 }  // namespace
@@ -1427,7 +1441,7 @@ TEST_F(WidgetCaptureTest, Capture) {
   TestCapture(false);
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 // See description in TestCapture(). Creates DesktopNativeWidget.
 TEST_F(WidgetCaptureTest, CaptureDesktopNativeWidget) {
   TestCapture(true);
@@ -1699,7 +1713,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 // Disabled on Mac. Desktop Mac doesn't have system modal windows since Carbon
 // was deprecated. It does have application modal windows, but only Ash requests
 // those.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SystemModalWindowReleasesCapture \
   DISABLED_SystemModalWindowReleasesCapture
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1754,7 +1768,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // Regression test for http://crbug.com/382421 (Linux-Aura issue).
 // TODO(pkotwicz): Make test pass on CrOS and Windows.
 // TODO(tapted): Investigate for toolkit-views on Mac http;//crbug.com/441064.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_MouseExitOnCaptureGrab DISABLED_MouseExitOnCaptureGrab
 #else
 #define MAYBE_MouseExitOnCaptureGrab MouseExitOnCaptureGrab
@@ -1795,11 +1809,11 @@ TEST_F(WidgetCaptureTest, MAYBE_MouseExitOnCaptureGrab) {
   // Instead, it uses ::TrackMouseEvent to get notified of the mouse leaving.
   // Calling SetCapture does not cause Windows to generate a WM_MOUSELEAVE
   // event. See WindowEventDispatcher::OnOtherRootGotCapture() for more info.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(0, mouse_view1->ExitedCalls());
 #else
   EXPECT_EQ(1, mouse_view1->ExitedCalls());
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 namespace {
@@ -1852,7 +1866,7 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
   child->AddObserver(&observer);
   child->Show();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, activation is asynchronous. A single trip to the runloop should be
   // sufficient. On Aura platforms, note that since the child widget isn't top-
   // level, the aura window manager gets asked whether the widget is active, not
@@ -1866,7 +1880,7 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
   child->RemoveObserver(&observer);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 // Used to verify OnMouseEvent() has been invoked.
@@ -1935,7 +1949,7 @@ TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
   EXPECT_TRUE(widget1.GetAndClearGotMouseEvent());
   EXPECT_FALSE(widget2.GetAndClearGotMouseEvent());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
  public:
@@ -1949,7 +1963,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   // testing::Test:
   void SetUp() override {
     DesktopWidgetTestInteractive::SetUp();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, Widget::Deactivate() works by activating the next topmost
     // window on the z-order stack. This only works if there is at least one
     // other window, so make sure that is the case.
@@ -1965,10 +1979,10 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   }
 
  private:
-  Widget* deactivate_widget_ = nullptr;
+  raw_ptr<Widget> deactivate_widget_ = nullptr;
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Activation DISABLED_Activation
 #else
 #define MAYBE_Activation Activation
@@ -1976,9 +1990,10 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 // Test input method focus changes affected by top window activaction.
 TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
-  textfield->RequestFocus();
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
+  textfield_ptr->RequestFocus();
 
   ShowSync(widget.get());
 
@@ -1994,26 +2009,28 @@ TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
 // Test input method focus changes affected by focus changes within 1 window.
 TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield1 = CreateTextfield();
-  Textfield* textfield2 = CreateTextfield();
-  textfield2->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  widget->GetRootView()->AddChildView(textfield1);
-  widget->GetRootView()->AddChildView(textfield2);
+  std::unique_ptr<Textfield> textfield1 = CreateTextfield();
+  auto* const textfield1_ptr = textfield1.get();
+  std::unique_ptr<Textfield> textfield2 = CreateTextfield();
+  auto* const textfield2_ptr = textfield2.get();
+  textfield2_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  widget->GetRootView()->AddChildView(std::move(textfield1));
+  widget->GetRootView()->AddChildView(std::move(textfield2));
 
   ShowSync(widget.get());
 
-  textfield1->RequestFocus();
+  textfield1_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield2->RequestFocus();
+  textfield2_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
 // Widget::Deactivate() doesn't work for CrOS, because it uses NWA instead of
 // DNWA (which just activates the last active window) and involves the
 // AuraTestHelper which sets the input method as DummyInputMethod.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
   DeactivateSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
@@ -2023,7 +2040,7 @@ TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
             widget->GetInputMethod()->GetTextInputType());
 
   DeactivateSync(widget.get());
-  textfield1->RequestFocus();
+  textfield1_ptr->RequestFocus();
   ActivateSync(widget.get());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
@@ -2041,27 +2058,29 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   child->SetBounds(gfx::Rect(0, 0, 50, 50));
   child->Show();
 
-  Textfield* textfield_parent = CreateTextfield();
-  Textfield* textfield_child = CreateTextfield();
+  std::unique_ptr<Textfield> textfield_parent = CreateTextfield();
+  auto* const textfield_parent_ptr = textfield_parent.get();
+  std::unique_ptr<Textfield> textfield_child = CreateTextfield();
+  auto* const textfield_child_ptr = textfield_child.get();
   textfield_parent->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  parent->GetRootView()->AddChildView(textfield_parent);
-  child->GetRootView()->AddChildView(textfield_child);
+  parent->GetRootView()->AddChildView(std::move(textfield_parent));
+  child->GetRootView()->AddChildView(std::move(textfield_child));
   ShowSync(parent.get());
 
   EXPECT_EQ(parent->GetInputMethod(), child->GetInputMethod());
 
-  textfield_parent->RequestFocus();
+  textfield_parent_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_child->RequestFocus();
+  textfield_child_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
 // Widget::Deactivate() doesn't work for CrOS, because it uses NWA instead of
 // DNWA (which just activates the last active window) and involves the
 // AuraTestHelper which sets the input method as DummyInputMethod.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
   DeactivateSync(parent.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             parent->GetInputMethod()->GetTextInputType());
@@ -2070,7 +2089,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_parent->RequestFocus();
+  textfield_parent_ptr->RequestFocus();
   DeactivateSync(parent.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             parent->GetInputMethod()->GetTextInputType());
@@ -2084,25 +2103,26 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 // Test input method focus changes affected by textfield's state changes.
 TEST_F(WidgetInputMethodInteractiveTest, TextField) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->RequestFocus();
+  textfield_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetReadOnly(true);
+  textfield_ptr->SetReadOnly(true);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 }
@@ -2110,21 +2130,22 @@ TEST_F(WidgetInputMethodInteractiveTest, TextField) {
 // Test input method should not work for accelerator.
 TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(widget.get());
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  textfield->RequestFocus();
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield_ptr->RequestFocus();
 
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, ui::EF_ALT_DOWN);
   ui::Accelerator accelerator(key_event);
   widget->GetFocusManager()->RegisterAccelerator(
-      accelerator, ui::AcceleratorManager::kNormalPriority, textfield);
+      accelerator, ui::AcceleratorManager::kNormalPriority, textfield_ptr);
 
   widget->OnKeyEvent(&key_event);
   EXPECT_TRUE(key_event.stopped_propagation());
 
-  widget->GetFocusManager()->UnregisterAccelerators(textfield);
+  widget->GetFocusManager()->UnregisterAccelerators(textfield_ptr);
 
   ui::KeyEvent key_event2(key_event);
   widget->OnKeyEvent(&key_event2);

@@ -46,16 +46,16 @@ ASH_EXPORT bool IsArrowKeyEvent(const ui::KeyEvent& event);
 // |VKEY_RIGHT|, |VKEY_DOWN|
 ASH_EXPORT bool IsArrowKey(const ui::KeyboardCode& key_code);
 
-// Returns true if the |item| is a folder item.
+// Returns true if the `item` is a folder item.
 ASH_EXPORT bool IsFolderItem(AppListItem* item);
 
 // Returns true if the arrow key event should move focus away from the
-// |textfield|. This is usually when the insertion point would move away from
+// `textfield`. This is usually when the insertion point would move away from
 // text.
 ASH_EXPORT bool LeftRightKeyEventShouldExitText(views::Textfield* textfield,
                                                 const ui::KeyEvent& key_event);
 
-// Processes left/right key traversal for the given |textfield|. Returns true
+// Processes left/right key traversal for the given `textfield`. Returns true
 // if focus is moved.
 ASH_EXPORT bool ProcessLeftRightKeyTraversalForTextfield(
     views::Textfield* textfield,
@@ -67,11 +67,17 @@ ASH_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
     const gfx::ImageSkia& icon,
     SkColor background_color);
 
-// Paints a rounded focus bar on |canvas| starting at |content_origin| extending
-// |height| dips vertically.
+// Paints a rounded focus bar on `canvas` starting at `content_origin` extending
+// `height` dips vertically.
 ASH_EXPORT void PaintFocusBar(gfx::Canvas* canvas,
-                              const gfx::Point content_origin,
-                              const int height);
+                              const gfx::Point& content_origin,
+                              int height);
+
+// Paints a circle on `canvas` centered at `content_origin` with inner radius
+// `radius`.
+ASH_EXPORT void PaintFocusRing(gfx::Canvas* canvas,
+                               const gfx::Point& content_origin,
+                               int outer_radius);
 
 // Sets a view as an ignored leaf node, so that it and its child views will be
 // ignored by ChromeVox.

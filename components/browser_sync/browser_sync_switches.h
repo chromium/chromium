@@ -11,19 +11,40 @@
 
 namespace switches {
 
-extern const char kDisableSyncTypes[];
-extern const char kEnableLocalSyncBackend[];
-extern const char kLocalSyncBackendDir[];
+// Enabled the local sync backend implemented by the LoopbackServer.
+inline constexpr char kEnableLocalSyncBackend[] = "enable-local-sync-backend";
 
-#if defined(OS_ANDROID)
-extern const base::Feature kSyncUseSessionsUnregisterDelay;
-#endif
+// Specifies the local sync backend directory. The name is chosen to mimic
+// user-data-dir etc. This flag only matters if the enable-local-sync-backend
+// flag is present.
+inline constexpr char kLocalSyncBackendDir[] = "local-sync-backend-dir";
+
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr base::Feature kSyncUseSessionsUnregisterDelay{
+    "SyncUseSessionsUnregisterDelay", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Sync invalidation switches.
-extern const base::Feature kSyncUseFCMRegistrationTokensList;
-extern const base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize;
-extern const base::Feature kSyncFilterOutInactiveDevicesForSingleClient;
-extern const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin;
+//
+// Enables providing the list of FCM registration tokens in the commit request.
+inline constexpr base::Feature kSyncUseFCMRegistrationTokensList{
+    "SyncUseFCMRegistrationTokensList", base::FEATURE_ENABLED_BY_DEFAULT};
+// Max size of FCM registration tokens list. If the number of active devices
+// having FCM registration tokens is higher, then the resulting list will be
+// empty meaning unknown FCM registration tokens.
+inline constexpr base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize{
+    &kSyncUseFCMRegistrationTokensList, "SyncFCMRegistrationTokensListMaxSize",
+    5};
+// Enables filtering out inactive devices which haven't sent DeviceInfo update
+// recently (depending on the device's pulse_interval and an additional margin).
+inline constexpr base::Feature kSyncFilterOutInactiveDevicesForSingleClient{
+    "SyncFilterOutInactiveDevicesForSingleClient",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+// An additional threshold to consider devices as active. It extends device's
+// pulse interval to mitigate possible latency after DeviceInfo commit.
+inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
+    &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
+    base::Minutes(30)};
 
 }  // namespace switches
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/screen_capture_frame_queue.h"
@@ -51,7 +51,7 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
  private:
   FrameGenerator frame_generator_;
 
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
 
   std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
 };

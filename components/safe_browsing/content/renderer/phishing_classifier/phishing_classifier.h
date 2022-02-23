@@ -69,7 +69,7 @@ class PhishingClassifier {
   // This must live at least as long as the PhishingClassifier.  The caller is
   // expected to cancel any pending classification before setting a phishing
   // scorer.
-  void set_phishing_scorer(const Scorer* scorer);
+  void set_phishing_scorer(Scorer* scorer);
 
   // Returns true if the classifier is ready to classify pages, i.e. it
   // has had a scorer set via set_phishing_scorer().
@@ -151,7 +151,7 @@ class PhishingClassifier {
   void Clear();
 
   content::RenderFrame* render_frame_;  // owns us
-  const Scorer* scorer_;                // owned by the caller
+  Scorer* scorer_;                      // owned by the caller
   std::unique_ptr<PhishingUrlFeatureExtractor> url_extractor_;
   std::unique_ptr<PhishingDOMFeatureExtractor> dom_extractor_;
   std::unique_ptr<PhishingTermFeatureExtractor> term_extractor_;

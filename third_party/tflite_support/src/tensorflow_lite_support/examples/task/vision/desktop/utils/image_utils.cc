@@ -23,13 +23,14 @@ limitations under the License.
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
-#include "absl/status/status.h"
-#include "absl/strings/match.h"
-#include "absl/strings/str_format.h"
-#include "stb_image.h"
-#include "stb_image_write.h"
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/match.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "stb_image.h"                // from @stblib
+#include "stb_image_write.h"          // from @stblib
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.h"
 
 namespace tflite {
 namespace task {
@@ -89,6 +90,25 @@ absl::Status EncodeImageToPngFile(const ImageData& image_data,
 
 void ImageDataFree(ImageData* image) {
   stbi_image_free(image->pixel_data);
+}
+
+tflite::support::StatusOr<std::unique_ptr<FrameBuffer>>
+CreateFrameBufferFromImageData(const ImageData& image) {
+  if (image.channels == 1) {
+    return CreateFromGrayRawBuffer(image.pixel_data,
+                                   {image.width, image.height});
+  }
+  if (image.channels == 3) {
+    return CreateFromRgbRawBuffer(image.pixel_data,
+                                  {image.width, image.height});
+  } else if (image.channels == 4) {
+    return CreateFromRgbaRawBuffer(image.pixel_data,
+                                   {image.width, image.height});
+  }
+  return absl::InvalidArgumentError(
+      absl::StrFormat("Expected image with 1 (grayscale), 3 (RGB) or 4 (RGBA) "
+                      "channels, found %d",
+                      image.channels));
 }
 
 }  // namespace vision

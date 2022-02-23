@@ -27,6 +27,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -37,8 +38,8 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/color_page_popup_controller.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -91,7 +92,7 @@ void ColorChooserPopupUIController::WriteDocument(SharedBuffer* data) {
 
 void ColorChooserPopupUIController::WriteColorPickerDocument(
     SharedBuffer* data) {
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(
@@ -111,13 +112,18 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", false, data);
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
+  if (base::FeatureList::IsEnabled(features::kSystemColorChooser)) {
+    AddProperty("isSystemColorChooserEnabled", true, data);
+    AddLocalizedProperty("systemColorChooserLabel", IDS_SYSTEM_COLOR_CHOOSER,
+                         data);
+  }
 #endif
   // We don't create PagePopups on Android, so these strings are excluded
   // from blink_strings.grd on Android to save binary size.  We have to
   // exclude them here as well to avoid an Android build break.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   AddLocalizedProperty("axColorWellLabel", IDS_AX_COLOR_WELL, data);
   AddLocalizedProperty("axColorWellRoleDescription",
                        IDS_AX_COLOR_WELL_ROLEDESCRIPTION, data);
@@ -152,7 +158,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   Vector<String> suggestion_values;
   for (auto& suggestion : client_->Suggestions())
     suggestion_values.push_back(Color(suggestion->color).Serialized());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(
@@ -176,7 +182,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   AddProperty("zoomFactor", ScaledZoomFactor(), data);
   AddProperty("shouldShowColorSuggestionPicker", true, data);
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
   PagePopupClient::AddString("};\n", data);
@@ -272,6 +278,19 @@ void ColorChooserPopupUIController::OpenEyeDropper() {
   eye_dropper_chooser_->Choose(
       WTF::Bind(&ColorChooserPopupUIController::EyeDropperResponseHandler,
                 WrapWeakPersistent(this)));
+}
+
+void ColorChooserPopupUIController::OpenSystemColorChooser() {
+#if BUILDFLAG(IS_MAC)
+  OpenColorChooser();
+#else
+  NOTREACHED() << "ColorChooserPopupUIController -> ColorChooserUIController "
+                  "should only be used on macOS";
+#endif
+}
+
+void ColorChooserPopupUIController::AdjustSettings(Settings& popup_settings) {
+  AdjustSettingsFromOwnerColorScheme(popup_settings);
 }
 
 }  // namespace blink

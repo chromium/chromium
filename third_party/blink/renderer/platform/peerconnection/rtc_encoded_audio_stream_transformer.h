@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -65,9 +66,9 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     void ClearTransformer();
     friend class RTCEncodedAudioStreamTransformer;
 
-    WTF::Mutex transformer_mutex_;
+    base::Lock transformer_lock_;
     RTCEncodedAudioStreamTransformer* transformer_
-        GUARDED_BY(transformer_mutex_);
+        GUARDED_BY(transformer_lock_);
   };
 
   explicit RTCEncodedAudioStreamTransformer(
@@ -121,11 +122,11 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
  private:
   const scoped_refptr<Broker> broker_;
   const rtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
-  mutable WTF::Mutex sink_mutex_;
+  mutable base::Lock sink_lock_;
   rtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_
-      GUARDED_BY(sink_mutex_);
-  WTF::Mutex source_mutex_;
-  TransformerCallback transformer_callback_ GUARDED_BY(source_mutex_);
+      GUARDED_BY(sink_lock_);
+  base::Lock source_lock_;
+  TransformerCallback transformer_callback_ GUARDED_BY(source_lock_);
 };
 
 }  // namespace blink

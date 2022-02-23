@@ -411,7 +411,7 @@ bool OAuthRequestSigner::SignURL(
     switch (http_method) {
       case GET_METHOD:
         signed_text = request_base_url.spec() + '?';
-        FALLTHROUGH;
+        [[fallthrough]];
       case POST_METHOD:
         signed_text += BuildBaseStringParameters(parameters);
         break;

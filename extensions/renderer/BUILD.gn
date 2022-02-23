@@ -199,6 +199,8 @@ source_set("renderer") {
     "service_worker_data.h",
     "set_icon_natives.cc",
     "set_icon_natives.h",
+    "shared_l10n_map.cc",
+    "shared_l10n_map.h",
     "source_map.h",
     "static_v8_external_one_byte_string_resource.cc",
     "static_v8_external_one_byte_string_resource.h",
@@ -248,6 +250,7 @@ source_set("renderer") {
     "//chrome:resources",
     "//components/crx_file",
     "//components/guest_view/common",
+    "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/version_info",
     "//content:content_resources",
@@ -264,7 +267,7 @@ source_set("renderer") {
     "//storage/common",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/strings:strings",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/zlib/google:compression_utils",
   ]
@@ -350,6 +353,7 @@ source_set("unit_tests") {
     "feature_cache_unittest.cc",
     "gc_callback_unittest.cc",
     "gin_port_unittest.cc",
+    "i18n_hooks_delegate_unittest.cc",
     "messaging_util_unittest.cc",
     "module_system_test.cc",
     "module_system_test.h",
@@ -384,5 +388,25 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public:blink",
     "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "script_context_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":renderer",
+    "//base",
+    "//content/public/renderer",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//extensions/shell:app_shell_lib",
+    "//extensions/shell:browser_tests",
+    "//third_party/blink/public:blink",
+    "//url",
   ]
 }

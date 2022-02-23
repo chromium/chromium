@@ -50,23 +50,15 @@ declare_args() {
   # See http://clang.llvm.org/docs/ControlFlowIntegrity.html
   #
   # TODO(pcc): Remove this flag if/when CFI is enabled in all official builds.
-  #
-  # Disable this on linux-chromeos to avoid using ThinLTO there;
-  # crbug.com/1033839. Similarly, don't use this on ARC builds.
-  #
-  # TODO(crbug.com/1159424): Reassess the validity of the next expression.
-  is_cfi =
-      is_official_build && is_clang &&
-      (((target_os == "linux" || is_chromeos_lacros) && target_cpu == "x64") ||
-       ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device))
+  is_cfi = is_official_build && is_clang &&
+           ((target_os == "linux" && target_cpu == "x64") ||
+            (is_chromeos && is_chromeos_device))
 
   # Enable checks for indirect function calls via a function pointer.
   # TODO(pcc): remove this when we're ready to add these checks by default.
   # https://crbug.com/701919
-  #
-  # TODO(crbug.com/1159424): Reassess the validity of the next expression.
-  use_cfi_icall = (target_os == "linux" || is_chromeos_lacros) &&
-                  target_cpu == "x64" && is_official_build
+  use_cfi_icall =
+      target_os == "linux" && target_cpu == "x64" && is_official_build
 
   # Print detailed diagnostics when Control Flow Integrity detects a violation.
   use_cfi_diag = false

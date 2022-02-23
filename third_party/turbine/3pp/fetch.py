@@ -9,7 +9,8 @@ import argparse
 import datetime
 import json
 import os
-import urllib
+
+from six.moves import urllib
 
 _COMMITS_URL = 'https://api.github.com/repos/google/turbine/commits?per_page=1&until={}'
 _ARCHIVE_URL = 'https://github.com/google/turbine/archive/{}.tar.gz'
@@ -25,7 +26,7 @@ def get_last_commit_of_the_week():
     end_of_last_week = today-datetime.timedelta(days=days_since_week_start)
     url = _COMMITS_URL.format(end_of_last_week.isoformat())
     # Search for the last commit until the start of this week.
-    return json.loads(urllib.urlopen(url).read().strip())[0]
+    return json.load(urllib.request.urlopen(url))[0]
 
 
 def do_latest():

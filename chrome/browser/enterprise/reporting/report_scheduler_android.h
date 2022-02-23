@@ -13,13 +13,14 @@ namespace enterprise_reporting {
 class ReportSchedulerAndroid : public ReportScheduler::Delegate {
  public:
   ReportSchedulerAndroid();
+  explicit ReportSchedulerAndroid(raw_ptr<PrefService> prefs);
   ReportSchedulerAndroid(const ReportSchedulerAndroid&) = delete;
   ReportSchedulerAndroid& operator=(const ReportSchedulerAndroid&) = delete;
 
   ~ReportSchedulerAndroid() override;
 
   // ReportScheduler::Delegate implementation.
-  PrefService* GetLocalState() override;
+  PrefService* GetPrefService() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
@@ -27,6 +28,9 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
   void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
+
+ private:
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace enterprise_reporting

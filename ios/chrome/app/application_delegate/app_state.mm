@@ -30,9 +30,9 @@
 #import "ios/chrome/app/main_application_delegate.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
+#include "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_constants.h"
-#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -57,6 +57,7 @@
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
+#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "net/url_request/url_request_context.h"
@@ -72,7 +73,7 @@ namespace {
 void PostTaskOnUIThread(base::OnceClosure closure) {
   base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(closure));
 }
-NSString* const kStartupAttemptReset = @"StartupAttempReset";
+NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Time interval used for startRecordingMemoryFootprintWithInterval:
 const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
@@ -110,7 +111,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @property(nonatomic, strong) AppStateObserverList* observers;
 
 // This method is the first to be called when user launches the application.
-// This performs the minimal amount of browser initalization that is needed by
+// This performs the minimal amount of browser initialization that is needed by
 // safe mode.
 // Depending on the background tasks history, the state of the application is
 // INITIALIZATION_STAGE_BACKGROUND so this
@@ -229,7 +230,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   }
 
   // Return YES if the First Run UI is showing.
-  return self.initStage == InitStageFirstRun &&
+  return (self.initStage == InitStageFirstRun ||
+          self.initStage == InitStageEnterprise) &&
          self.startupInformation.isFirstRun;
 }
 
@@ -252,7 +254,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // The clean-up done in |-applicationDidEnterBackground:| is only valid for
     // the case when the application is started in foreground, so there is
-    // nothing to clean up as the application was not initialized for foregound.
+    // nothing to clean up as the application was not initialized for foreground.
     //
     // From the stack trace of the crash bug http://crbug.com/437307 , it
     // seems that |-applicationDidEnterBackground:| may be called when the app
@@ -305,9 +307,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
   [[PreviousSessionInfo sharedInstance] stopRecordingMemoryFootprint];
 
-  // Turn off uploading of crash reports and metrics, in case the method of
-  // communication changes while in the background.
-  [MetricsMediator disableReporting];
+  // Turn off uploading of crash reports. This prevents failed uploads that will
+  // not be retried in Breakpad.
+  crash_helper::PauseBreakpadUploads();
 
   GetApplicationContext()->OnAppEnterBackground();
 }
@@ -375,6 +377,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         startRecordingMemoryFootprintWithInterval:
             base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
+
+  // This will be a no-op if upload already started.
+  crash_helper::UploadCrashReports();
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -411,21 +416,23 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  NSMutableArray<NSString*>* sessionIDs =
-      [NSMutableArray arrayWithCapacity:sceneSessions.count];
-  // This method is invoked by iOS to inform the application that the sessions
-  // for "closed windows" is garbage collected and that any data associated with
-  // them by the application needs to be deleted.
-  //
+  DCHECK_GE(self.initStage, InitStageBrowserObjectsForBackgroundHandlers);
+
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->ApplicationDidDiscardSceneSessions(sceneSessions);
+
   // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
   // support devices that do not support multi-window (and which use a constant
   // identifier). For devices that do not support multi-window the session is
-  // saved at a constant path, so it is harmnless to delete files at a path
+  // saved at a constant path, so it is harmless to delete files at a path
   // derived from -persistentIdentifier (since there won't be files deleted).
   // For devices that do support multi-window, there is data to delete once the
   // session is garbage collected.
   //
   // Thus it is always correct to use -persistentIdentifier here.
+  NSMutableArray<NSString*>* sessionIDs =
+      [NSMutableArray arrayWithCapacity:sceneSessions.count];
   for (UISceneSession* session in sceneSessions) {
     [sessionIDs addObject:session.persistentIdentifier];
   }
@@ -629,7 +636,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
-
 
 #pragma mark - UIBlockerManager
 

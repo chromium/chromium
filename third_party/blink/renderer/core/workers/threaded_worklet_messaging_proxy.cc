@@ -60,10 +60,14 @@ void ThreadedWorkletMessagingProxy::Initialize(
   DCHECK(csp);
 
   LocalFrameClient* frame_client = window->GetFrame()->Client();
+  // For now we should prioritize to send full UA string if opted into both
+  // Reduction and SendFullUserAgentAfterReduction Origin Trial
   const String user_agent =
-      RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
-          ? frame_client->ReducedUserAgent()
-          : frame_client->UserAgent();
+      RuntimeEnabledFeatures::SendFullUserAgentAfterReductionEnabled(window)
+          ? frame_client->FullUserAgent()
+          : (RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
+                 ? frame_client->ReducedUserAgent()
+                 : frame_client->UserAgent());
 
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(
@@ -75,7 +79,8 @@ void ThreadedWorkletMessagingProxy::Initialize(
           window->GetReferrerPolicy(), window->GetSecurityOrigin(),
           window->IsSecureContext(), window->GetHttpsState(), worker_clients,
           frame_client->CreateWorkerContentSettingsClient(),
-          window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
+          window->AddressSpace(),
+          OriginTrialContext::GetInheritedTrialFeatures(window).get(),
           base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(window->GetFrame()->GetSettings()),
           mojom::blink::V8CacheOptions::kDefault, module_responses_map,

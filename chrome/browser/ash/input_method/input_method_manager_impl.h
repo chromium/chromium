@@ -51,7 +51,7 @@ class InputMethodManagerImpl : public InputMethodManager,
               Profile* profile,
               const InputMethodDescriptor* initial_input_method = nullptr);
 
-    Profile* const GetProfile() const;
+    Profile* GetProfile() const;
 
     // Returns true if |input_method_id| is in |enabled_input_method_ids_|.
     bool InputMethodIsEnabled(const std::string& input_method_id) const;
@@ -213,8 +213,7 @@ class InputMethodManagerImpl : public InputMethodManager,
       InputMethodManager::ImeMenuObserver* observer) override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
   void ConnectInputEngineManager(
-      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)
-      override;
+      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   bool ArePositionalShortcutsUsedByCurrentInputMethod() const override;

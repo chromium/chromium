@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
@@ -54,8 +55,8 @@ class BookmarkManagerPrivateEventRouter
   // Remembers the previous meta info of a node before it was changed.
   bookmarks::BookmarkNode::MetaInfoMap prev_meta_info_;
 
-  content::BrowserContext* browser_context_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 class BookmarkManagerPrivateAPI : public BrowserContextKeyedAPI,
@@ -81,7 +82,7 @@ class BookmarkManagerPrivateAPI : public BrowserContextKeyedAPI,
   static const char* service_name() { return "BookmarkManagerPrivateAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<BookmarkManagerPrivateEventRouter> event_router_;
@@ -123,8 +124,7 @@ class BookmarkManagerPrivateDragEventRouter
                      const std::string& event_name,
                      std::vector<base::Value> args);
 
-  content::WebContents* web_contents_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bookmarks::BookmarkNodeData bookmark_drag_data_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

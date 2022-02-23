@@ -6,14 +6,13 @@
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_H_
 
 #include "ash/quick_pair/proto/fastpair.pb.h"
-#include "base/component_export.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
 namespace quick_pair {
 
 // Thin wrapper around decoded metadata for a Fast Pair device.
-class COMPONENT_EXPORT(QUICK_PAIR_REPOSITORY) DeviceMetadata {
+class DeviceMetadata {
  public:
   DeviceMetadata(const nearby::fastpair::GetObservedDeviceResponse device,
                  const gfx::Image image);

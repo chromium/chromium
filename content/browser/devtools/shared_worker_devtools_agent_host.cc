@@ -91,7 +91,7 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(),
-      base::BindRepeating([] {})));
+      base::BindRepeating([] {}), session->GetClient()->MayReadLocalFiles()));
   // TODO(crbug.com/1143100): support pushing updated loader factories down to
   // renderer.
   session->AddHandler(std::make_unique<protocol::FetchHandler>(

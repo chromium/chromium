@@ -65,7 +65,7 @@ enum {
   kMaxKeySystemLength = 256,
 
 // Minimum and maximum buffer sizes for certain audio platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   kMinAudioBufferSize = 128,
   kMaxAudioBufferSize = 4096,
 #elif defined(USE_CRAS)

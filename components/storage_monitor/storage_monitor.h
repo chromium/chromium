@@ -108,7 +108,7 @@ class StorageMonitor {
 
 // TODO(gbillock): make this either unnecessary (implementation-specific) or
 // platform-independent.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Gets the MTP device storage information specified by |storage_device_id|.
   // On success, returns true and fills in |device_location| with device
   // interface details and |storage_object_id| with the string ID that

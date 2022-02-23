@@ -28,10 +28,13 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
+namespace gfx {
+class PointF;
+class SizeF;
+}
+
 namespace blink {
 
-class FloatPoint;
-class FloatSize;
 class LayoutUnit;
 class Length;
 class LengthSize;
@@ -53,10 +56,10 @@ inline LayoutUnit MinimumValueForLength(const Length& length,
 
 PLATFORM_EXPORT LayoutUnit ValueForLength(const Length&,
                                           LayoutUnit maximum_value);
-PLATFORM_EXPORT FloatSize FloatSizeForLengthSize(const LengthSize&,
-                                                 const FloatSize& box_size);
-PLATFORM_EXPORT FloatPoint FloatPointForLengthPoint(const LengthPoint&,
-                                                    const FloatSize& box_size);
+PLATFORM_EXPORT gfx::SizeF SizeForLengthSize(const LengthSize&,
+                                             const gfx::SizeF& box_size);
+PLATFORM_EXPORT gfx::PointF PointForLengthPoint(const LengthPoint&,
+                                                const gfx::SizeF& box_size);
 
 }  // namespace blink
 

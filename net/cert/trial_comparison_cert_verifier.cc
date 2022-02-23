@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
@@ -86,7 +87,7 @@ class TrialComparisonCertVerifier::Job {
   // Called when the initial trial comparison is completed.
   void OnTrialJobCompleted(int result);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On some versions of macOS, revocation checking is always force-enabled
   // for the system. For comparing with the built-in verifier to rule out
   // "expected" differences, it's necessary to retry verification with
@@ -107,8 +108,8 @@ class TrialComparisonCertVerifier::Job {
   const CertVerifier::RequestParams params_;
   const NetLogWithSource net_log_;
 
-  TrialComparisonCertVerifier* parent_ = nullptr;  // Non-owned.
-  Request* request_ = nullptr;                     // Non-owned.
+  raw_ptr<TrialComparisonCertVerifier> parent_ = nullptr;  // Non-owned.
+  raw_ptr<Request> request_ = nullptr;                     // Non-owned.
 
   // Results from the primary verification.
   base::TimeTicks primary_start_;
@@ -159,8 +160,8 @@ class TrialComparisonCertVerifier::Job::Request : public CertVerifier::Request {
   void OnJobAborted();
 
  private:
-  TrialComparisonCertVerifier::Job* parent_;
-  CertVerifyResult* client_result_;
+  raw_ptr<TrialComparisonCertVerifier::Job> parent_;
+  raw_ptr<CertVerifyResult> client_result_;
   CompletionOnceCallback client_callback_;
 };
 
@@ -367,7 +368,7 @@ void TrialComparisonCertVerifier::Job::OnTrialJobCompleted(int result) {
     return;
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (primary_error_ == ERR_CERT_REVOKED && !config_.enable_rev_checking &&
       !(primary_result_.cert_status & CERT_STATUS_REV_CHECKING_ENABLED) &&
       !(trial_result_.cert_status &
@@ -434,7 +435,7 @@ void TrialComparisonCertVerifier::Job::OnTrialJobCompleted(int result) {
   FinishWithError();  // Note: Will delete |this|.
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void TrialComparisonCertVerifier::Job::
     OnMacRevCheckingReverificationJobCompleted(int result) {
   if (result == ERR_CERT_REVOKED) {

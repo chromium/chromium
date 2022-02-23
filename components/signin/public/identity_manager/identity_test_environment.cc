@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -50,12 +51,12 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/device_accounts_synchronizer_impl.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 #endif
 
@@ -93,9 +94,10 @@ class IdentityManagerDependenciesOwner {
   // the constructor, exactly one of these will be non-null.
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       owned_pref_service_;
-  sync_preferences::TestingPrefServiceSyncable* raw_pref_service_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> raw_pref_service_ =
+      nullptr;
   std::unique_ptr<TestSigninClient> owned_signin_client_;
-  TestSigninClient* raw_signin_client_ = nullptr;
+  raw_ptr<TestSigninClient> raw_signin_client_ = nullptr;
 };
 
 IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
@@ -141,7 +143,8 @@ IdentityManagerDependenciesOwner::pref_service() {
   DCHECK(raw_pref_service_ || owned_pref_service_);
   DCHECK(!(raw_pref_service_ && owned_pref_service_));
 
-  return raw_pref_service_ ? raw_pref_service_ : owned_pref_service_.get();
+  return raw_pref_service_ ? raw_pref_service_.get()
+                           : owned_pref_service_.get();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -161,7 +164,8 @@ TestSigninClient* IdentityManagerDependenciesOwner::signin_client() {
   DCHECK(raw_signin_client_ || owned_signin_client_);
   DCHECK(!(raw_signin_client_ && owned_signin_client_));
 
-  return raw_signin_client_ ? raw_signin_client_ : owned_signin_client_.get();
+  return raw_signin_client_ ? raw_signin_client_.get()
+                            : owned_signin_client_.get();
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(
@@ -353,7 +357,7 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
           account_tracker_service.get(), token_service.get(),
           primary_account_manager.get(), pref_service, account_consistency);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   init_params.accounts_mutator = std::make_unique<AccountsMutatorImpl>(
       token_service.get(), account_tracker_service.get(),
       primary_account_manager.get(), pref_service);
@@ -367,7 +371,7 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
           signin_client, token_service.get(), gaia_cookie_manager_service.get(),
           account_tracker_service.get());
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   init_params.device_accounts_synchronizer =
       std::make_unique<DeviceAccountsSynchronizerImpl>(
           token_service->GetDelegate());
@@ -400,7 +404,7 @@ IdentityManager* IdentityTestEnvironment::identity_manager() {
   DCHECK(raw_identity_manager_ || owned_identity_manager_);
   DCHECK(!(raw_identity_manager_ && owned_identity_manager_));
 
-  return raw_identity_manager_ ? raw_identity_manager_
+  return raw_identity_manager_ ? raw_identity_manager_.get()
                                : owned_identity_manager_.get();
 }
 

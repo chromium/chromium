@@ -14,7 +14,7 @@ class FilePath;
 // This file declares path keys for the chromeos module.  These can be used with
 // the PathService to access various special directories and files.
 
-namespace chromeos {
+namespace ash {
 
 enum {
   PATH_START = 7000,
@@ -72,28 +72,15 @@ COMPONENT_EXPORT(ASH_CONSTANTS) void RegisterPathProvider();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 void RegisterStubPathOverrides(const base::FilePath& stubs_dir);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::DIR_DEVICE_DISPLAY_PROFILES;
-using ::chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD;
-using ::chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE;
-using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_COMPONENT_POLICY;
-using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS;
-using ::chromeos::DIR_DEVICE_LOCAL_ACCOUNT_EXTERNAL_DATA;
-using ::chromeos::DIR_DEVICE_POLICY_EXTERNAL_DATA;
-using ::chromeos::DIR_PREINSTALLED_COMPONENTS;
-using ::chromeos::DIR_SIGNIN_PROFILE_COMPONENT_POLICY;
-using ::chromeos::DIR_SIGNIN_PROFILE_EXTENSIONS;
-using ::chromeos::FILE_DEFAULT_APP_ORDER;
-using ::chromeos::FILE_MACHINE_INFO;
-using ::chromeos::FILE_STARTUP_CUSTOMIZATION_MANIFEST;
-using ::chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME;
-using ::chromeos::FILE_UPTIME;
-using ::chromeos::FILE_VPD;
-using ::chromeos::PATH_END;
-using ::chromeos::PATH_START;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::DIR_DEVICE_DISPLAY_PROFILES;
+using ::ash::DIR_SIGNIN_PROFILE_EXTENSIONS;
+using ::ash::FILE_DEFAULT_APP_ORDER;
+using ::ash::FILE_MACHINE_INFO;
+using ::ash::FILE_VPD;
+}  // namespace chromeos
 
 #endif  // ASH_CONSTANTS_ASH_PATHS_H_

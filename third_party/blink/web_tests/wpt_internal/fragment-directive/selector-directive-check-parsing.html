@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>Tests the SelectorDirective type in fragmentDirective</title>
+<meta charset='utf-8'>
+<link rel='help' href='https://github.com/WICG/scroll-to-text-fragment/blob/main/EXTENSIONS.md'>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<style>
+</style>
+<body>
+  <div style='height:600px;'>some text</div>
+  <svg id='cat' width='200' height='200' xmlns='http://www.w3.org/2000/svg'>
+    <circle class='path' cx='100' cy='100' r='100' fill='red'/>
+  </svg>
+  <div style='height:600px;'>some other text</div>
+  <input type="button" value="Add to favorites">
+  <div style='height:600px;'>more text goes here</div>
+
+  <script>
+    function reset() {
+      window.location.hash = ':~:thiswillclear';
+      assert_equals(document.fragmentDirective.items.length, 0,
+                    '[PRECONDITION] reset cleared directives');
+    }
+
+    const test_cases = [
+      {
+        name: 'Basic selector test',
+        directive: ':~:selector(type=CssSelector,value=svg[id=cat])',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'value= comes before type=',
+        directive: ':~:selector(value=svg[id=cat],type=CssSelector)',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'Invalid selector directive 1',
+        directive: ':~:selector(ignorethisvalue=type=)',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Invalid selector directive 2',
+        directive: ':~:selector()',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Invalid selector directive 3',
+        directive: ':~:selector(type=,value=)',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Invalid selector directive 4',
+        directive: ':~:selector(value=,type=)',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Value is empty, technically a valid selector, though it wouldn\'t select antyhing',
+        directive: ':~:selector(value=,type=CssSelector)',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'There is a type= in css selector value',
+        directive: ':~:selector(value=input[type=button],type=CssSelector)',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'There is a type= in css selector value, value is URLEncoded',
+        // directive: ':~:selector(value=input[type=button],type=CssSelector)',
+        directive: ':~:selector(value=input%5Btype%3Dbutton%5D,type=CssSelector)',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'Should parse 2 selector directives',
+        directive: ':~:selector(type=CssSelector,value=svg[id=cat])&selector(type=CssSelector,value=input[type=button])',
+        number_successfully_parsed: 2
+      },
+      {
+        name: 'Ignore other parts, only parse type= and value=',
+        directive: ':~:selector(type=CssSelector,lorem_part,value=svg[id=cat])',
+        number_successfully_parsed: 1
+      },
+      {
+        name: 'Don\'t accept ambiguous directive, don\'t allow two type= parts',
+        directive: ':~:selector(type=CssSelector,type=SomethingElse,value=svg[id=cat])',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Don\'t accept ambiguous directive, don\'t allow two value= parts',
+        directive: ':~:selector(type=CssSelector,value=input[type=button],value=svg[id=cat])',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Should not allow multiple value= parts v1',
+        directive: ':~:selector(value=,type=CssSelector,value=img) ',
+        number_successfully_parsed: 0
+      },
+      {
+        name: 'Should not allow multiple value= parts v2',
+        directive: ':~:selector(value=img,value=,type=CssSelector) ',
+        number_successfully_parsed: 0
+      }
+    ];
+
+    onload = () => {
+      for (let test_case of test_cases) {
+        promise_test(async (t) => {
+          reset();
+
+          window.location.hash = test_case.directive;
+          assert_equals(document.fragmentDirective.items.length,
+                        test_case.number_successfully_parsed,
+                        'Expected number of selector directives parsed successfully.');
+        }, test_case.name);
+      }
+    };
+  </script>
+</body>

@@ -22,7 +22,7 @@ class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
 
   // content::BrowserMainParts overrides.
   int PreCreateThreads() override;
-  void PostProfileInit() override;
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   int PreEarlyInitialization() override;
   void PostEarlyInitialization() override;
 

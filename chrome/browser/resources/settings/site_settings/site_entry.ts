@@ -21,7 +21,7 @@ import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -30,19 +30,17 @@ import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
+import {getTemplate} from './site_entry.html.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 
-interface RepeaterEvent {
-  model: {
-    index: number,
-  },
-}
-
-interface SiteEntryElement {
+export interface SiteEntryElement {
   $: {
     expandIcon: CrIconButtonElement,
+    collapseParent: HTMLElement,
+    cookies: HTMLElement,
+    displayName: HTMLElement,
     originList: CrLazyRenderElement<IronCollapseElement>,
     toggleButton: HTMLElement,
   };
@@ -59,13 +57,13 @@ const SiteEntryElementBase =
       BaseMixinInterface
     };
 
-class SiteEntryElement extends SiteEntryElementBase {
+export class SiteEntryElement extends SiteEntryElementBase {
   static get is() {
     return 'site-entry';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -176,7 +174,8 @@ class SiteEntryElement extends SiteEntryElementBase {
       return false;
     }
     if (siteGroup.origins.length > 1 ||
-        siteGroup.numCookies > siteGroup.origins[0].numCookies) {
+        siteGroup.numCookies > siteGroup.origins[0].numCookies ||
+        siteGroup.origins.some(o => o.isPartitioned)) {
       return true;
     }
     return false;
@@ -356,7 +355,10 @@ class SiteEntryElement extends SiteEntryElementBase {
   /**
    * A handler for selecting a site (by clicking on the origin).
    */
-  private onOriginTap_(e: RepeaterEvent) {
+  private onOriginTap_(e: DomRepeatEvent<OriginInfo>) {
+    if (this.siteGroup.origins[e.model.index].isPartitioned) {
+      return;
+    }
     this.navigateToSiteDetails_(this.siteGroup.origins[e.model.index].origin);
     this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
     chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
@@ -404,6 +406,7 @@ class SiteEntryElement extends SiteEntryElementBase {
       index: this.listIndex,
       item: this.siteGroup,
       origin: (e.target as HTMLElement).dataset['origin'],
+      isPartitioned: (e.target as HTMLElement).dataset['partitioned'],
       actionScope: (e.target as HTMLElement).dataset['context'],
     });
   }
@@ -414,6 +417,8 @@ class SiteEntryElement extends SiteEntryElementBase {
       index: this.listIndex,
       item: this.siteGroup,
       origin: (e.target as HTMLElement).dataset['origin'],
+      isPartitioned:
+          (e.target as HTMLElement).dataset['partitioned'] !== undefined,
       actionScope: (e.target as HTMLElement).dataset['context'],
     });
   }
@@ -465,20 +470,32 @@ class SiteEntryElement extends SiteEntryElementBase {
       (o1: OriginInfo, o2: OriginInfo) => number {
     if (sortMethod === SortMethod.MOST_VISITED) {
       return (origin1, origin2) => {
-        return origin2.engagement - origin1.engagement;
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin2.engagement - origin1.engagement;
       };
     } else if (sortMethod === SortMethod.STORAGE) {
       return (origin1, origin2) => {
-        return origin2.usage - origin1.usage ||
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin2.usage - origin1.usage ||
             origin2.numCookies - origin1.numCookies;
       };
     } else if (sortMethod === SortMethod.NAME) {
       return (origin1, origin2) => {
-        return origin1.origin.localeCompare(origin2.origin);
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin1.origin.localeCompare(origin2.origin);
       };
     }
     assertNotReached();
     return (_origin1, _origin2) => 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-entry': SiteEntryElement;
   }
 }
 

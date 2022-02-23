@@ -37,17 +37,8 @@ void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
 
   // <foreignObject> is a replaced normal-flow stacking element.
   // See IsReplacedNormalFlowStacking in paint_layer_painter.cc.
-  PaintLayerPaintingInfo layer_painting_info(
-      layout_svg_foreign_object_.Layer(),
-      // Reset to an infinite cull rect, for simplicity. Otherwise
-      // an adjustment would be needed for ancestor scrolling, and any
-      // SVG transforms would have to be taken into account. Further,
-      // cull rects under transform are intentionally reset to infinity,
-      // to improve cache invalidation performance in the pre-paint tree
-      // walk (see https://http://crrev.com/482854).
-      CullRect::Infinite(), paint_info.GetGlobalPaintFlags(), PhysicalOffset());
   PaintLayerPainter(*layout_svg_foreign_object_.Layer())
-      .Paint(paint_info.context, layer_painting_info, paint_info.PaintFlags());
+      .Paint(paint_info.context, paint_info.GetPaintFlags());
 }
 
 void SVGForeignObjectPainter::Paint(const PaintInfo& paint_info) {

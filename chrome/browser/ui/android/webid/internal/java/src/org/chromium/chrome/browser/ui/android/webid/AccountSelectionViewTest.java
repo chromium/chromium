@@ -14,6 +14,8 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import static java.util.Arrays.asList;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -30,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -41,14 +44,14 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -73,13 +76,12 @@ public class AccountSelectionViewTest {
     private Callback<Account> mAccountCallback;
     private Runnable mAutoSignInCancelCallback;
 
-    private DummyUiActivity mActivity;
+    private BlankUiTestActivity mActivity;
     private ModelList mSheetItems;
     private View mContentView;
     @Rule
-    public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Before
     public void setUp() throws Exception {
@@ -96,12 +98,13 @@ public class AccountSelectionViewTest {
 
     @Test
     @MediumTest
-    public void testSingleAccountTitleDisplayed() {
+    public void testSignInTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SINGLE_ACCOUNT)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
+                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
@@ -109,25 +112,25 @@ public class AccountSelectionViewTest {
 
         assertEquals("Incorrect title",
                 mActivity.getString(
-                        R.string.account_selection_sheet_title_single, "www.example.org"),
+                        R.string.account_selection_sheet_title_explicit, "example.org", "idp.org"),
                 title.getText());
     }
 
     @Test
     @MediumTest
-    public void testMultiAccountTitleDisplayed() {
+    public void testVerifyingTitleDisplayed() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.MULTIPLE_ACCOUNT)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
+                            .with(HeaderProperties.TYPE, HeaderType.VERIFY)
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
 
-        assertEquals("Incorrect title",
-                mActivity.getString(R.string.account_selection_sheet_title, "www.example.org"),
+        assertEquals("Incorrect title", mActivity.getString(R.string.verify_sheet_title),
                 title.getText());
     }
 
@@ -176,7 +179,7 @@ public class AccountSelectionViewTest {
                                     .with(AccountProperties.ON_CLICK_LISTENER, null)
                                     .build());
 
-            mSheetItems.addAll(asList(account_without_callback, buildContinueButton(ANA)));
+            mSheetItems.addAll(asList(account_without_callback, buildContinueButton(ANA, null)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
 
@@ -215,33 +218,33 @@ public class AccountSelectionViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.add(new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.HEADER,
                     new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                            .with(HeaderProperties.TYPE, HeaderType.SIGN_IN)
-                            .with(HeaderProperties.FORMATTED_RP_URL, "www.example.org")
+                            .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
+                            .with(HeaderProperties.FORMATTED_RP_ETLD_PLUS_ONE, "example.org")
+                            .with(HeaderProperties.FORMATTED_IDP_ETLD_PLUS_ONE, "idp.org")
                             .build()));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         TextView title = mContentView.findViewById(R.id.header_title);
 
         assertEquals("Incorrect title",
-                mActivity.getString(R.string.sign_in_sheet_title, "www.example.org"),
+                mActivity.getString(
+                        R.string.account_selection_sheet_title_auto, "example.org", "idp.org"),
                 title.getText());
     }
 
     @Test
     @MediumTest
     public void testDataSharingConsentDisplayed() {
-        final String rpUrl = "www.rp.org";
-        final String idpUrl = "www.idp.org";
+        final String idpEtldPlusOne = "idp.org";
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetItems.addAll(
-                    Collections.singletonList(buildDataSharingConsentItem(rpUrl, idpUrl)));
+                    Collections.singletonList(buildDataSharingConsentItem(idpEtldPlusOne)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
         assertNotNull(getAccounts().getChildAt(0));
         TextView consent = mContentView.findViewById(R.id.user_data_sharing_consent);
         String expectedSharingConsentText =
-                mActivity.getString(R.string.account_selection_data_sharing_consent, "www.idp.org",
-                        "www.rp.org", "www.rp.org");
+                mActivity.getString(R.string.account_selection_data_sharing_consent, "idp.org");
         expectedSharingConsentText = expectedSharingConsentText.replaceAll("<[^>]*>", "");
         // We use toString() here because otherwise getText() returns a
         // Spanned, which is not equal to the string we get from the resources.
@@ -251,6 +254,31 @@ public class AccountSelectionViewTest {
         ClickableSpan[] spans =
                 spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
         assertEquals("Expected two clickable links", 2, spans.length);
+    }
+
+    /**
+     * Tests that the brand foreground and the brand icon are used in the "Continue" button.
+     */
+    @Test
+    @MediumTest
+    public void testContinueButtonBranding() {
+        final int expectedTextColor = Color.BLUE;
+        final int expectedIconColor = Color.RED;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Bitmap brandIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            brandIcon.eraseColor(expectedIconColor);
+            IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(
+                    expectedTextColor, /*brandBackgroundColor*/ Color.GREEN, brandIcon);
+
+            mSheetItems.addAll(Collections.singletonList(buildContinueButton(ANA, idpMetadata)));
+        });
+
+        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+
+        assertNotNull(getAccounts().getChildAt(0));
+        TextView continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
+
+        assertEquals(expectedTextColor, continueButton.getTextColors().getDefaultColor());
     }
 
     private RecyclerView getAccounts() {
@@ -278,12 +306,18 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildContinueButton(Account account) {
-        return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
+    private MVCListAdapter.ListItem buildContinueButton(
+            Account account, IdentityProviderMetadata idpMetadata) {
+        PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                         .with(ContinueButtonProperties.ACCOUNT, account)
-                        .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback)
-                        .build());
+                        .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback);
+        if (idpMetadata != null) {
+            modelBuilder.with(ContinueButtonProperties.IDP_METADATA, idpMetadata);
+        }
+
+        return new MVCListAdapter.ListItem(
+                AccountSelectionProperties.ItemType.CONTINUE_BUTTON, modelBuilder.build());
     }
 
     private MVCListAdapter.ListItem buildCancelButton() {
@@ -295,13 +329,12 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildDataSharingConsentItem(String rpUrl, String idpUrl) {
+    private MVCListAdapter.ListItem buildDataSharingConsentItem(String idpEtldPlusOne) {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
-        properties.mFormattedRpUrl = rpUrl;
-        properties.mFormattedIdpUrl = idpUrl;
-        properties.mTermsOfServiceUrl = "";
-        properties.mPrivacyPolicyUrl = "";
+        properties.mFormattedIdpEtldPlusOne = idpEtldPlusOne;
+        properties.mTermsOfServiceUrl = "https://rp.com/tos";
+        properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
 
         return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.DATA_SHARING_CONSENT,
                 new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)

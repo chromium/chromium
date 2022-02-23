@@ -51,7 +51,7 @@ class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
     should_provision = False
 
     if self._Discover():
-      self._WaitUntilReady()
+      self._ConnectToTarget()
 
       if self._os_check != 'ignore':
         if self._SDKHashMatches():

@@ -9,6 +9,7 @@
 #include <string>
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
 
 namespace liburlpattern {
 
@@ -35,6 +36,12 @@ void EscapeRegexpStringAndAppend(absl::string_view input,
 COMPONENT_EXPORT(LIBURLPATTERN)
 void EscapePatternStringAndAppend(absl::string_view input,
                                   std::string& append_target);
+
+// Return `true` if the given codepoint `c` is valid for a `:foo` name.  The
+// `first_codepoint` argument can be set if this codepoint is intended to be
+// the first codepoint in a name.  If its false, then the codepoint is treated
+// as a trailing character.
+bool IsNameCodepoint(UChar32 c, bool first_codepoint);
 
 }  // namespace liburlpattern
 

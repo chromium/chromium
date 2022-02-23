@@ -6,17 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_FEDERATED_CREDENTIAL_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_web_id_logout_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_rps_request.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 class FederatedCredentialInit;
+class FederatedIdentityProvider;
 
 class MODULES_EXPORT FederatedCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
@@ -67,9 +67,13 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
     return g_empty_string;
   }
 
-  static ScriptPromise logout(ScriptState*,
-                              const HeapVector<Member<WebIdLogoutRequest>>&);
-  static ScriptPromise revoke(ScriptState*, const String);
+  static ScriptPromise logoutRps(
+      ScriptState*,
+      const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&);
+  static ScriptPromise revoke(ScriptState*,
+                              const String&,
+                              FederatedIdentityProvider*,
+                              ExceptionState&);
 
  private:
   const scoped_refptr<const SecurityOrigin> provider_;

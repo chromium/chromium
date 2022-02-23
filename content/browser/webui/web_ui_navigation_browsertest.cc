@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
@@ -679,9 +680,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
       webui_rfh->GetProcess()->GetID()));
   EXPECT_FALSE(
       webui_site_instance->GetSiteInfo().process_lock_url().is_empty());
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   TestUntrustedDataSourceHeaders headers;
   std::vector<std::string> frame_ancestors({"chrome://web-ui"});
@@ -874,9 +874,8 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
   EXPECT_EQ(chrome_url, webui_rfh->GetLastCommittedURL());
   EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       webui_rfh->GetProcess()->GetID()));
-  EXPECT_EQ(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_EQ(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 
   GURL web_url(embedded_test_server()->GetURL("/title2.html"));
   std::string script =
@@ -893,12 +892,11 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
       root->current_frame_host()->GetSiteInstance()));
   EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
       root->current_frame_host()->GetProcess()->GetID()));
-  EXPECT_NE(ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
-                root->current_frame_host()->GetProcess()->GetID()),
-            webui_site_instance->GetProcessLock());
+  EXPECT_NE(root->current_frame_host()->GetProcess()->GetProcessLock(),
+            ProcessLock::FromSiteInfo(webui_site_instance->GetSiteInfo()));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The following tests rely on full site isolation behavior, which is not
 // present on Android.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,

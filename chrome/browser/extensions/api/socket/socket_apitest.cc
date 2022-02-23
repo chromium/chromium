@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketTCPServerUnbindOnUnload) {
 }
 
 // Fails on MacOS 11, crbug.com/1211141 .
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SocketMulticast DISABLED_SocketMulticast
 #else
 #define MAYBE_SocketMulticast SocketMulticast

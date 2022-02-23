@@ -12,8 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.webapk.lib.client.WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
-
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -38,6 +36,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.PathUtils;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -78,10 +77,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Unit tests for WebApkUpdateManager.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class, ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkUpdateManagerUnitTest {
-
     @Rule
     public MockWebappDataStorageClockRule mClockRule = new MockWebappDataStorageClockRule();
 
@@ -90,6 +88,8 @@ public class WebApkUpdateManagerUnitTest {
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "com.webapk.test_package";
+
+    private static final int REQUEST_UPDATE_FOR_SHELL_APK_VERSION = 100;
 
     /** Web Manifest URL */
     private static final String WEB_MANIFEST_URL = "manifest.json";
@@ -118,6 +118,11 @@ public class WebApkUpdateManagerUnitTest {
     /** Different name than the one used in {@link defaultManifestData()}. */
     private static final String DIFFERENT_NAME = "Different Name";
 
+    /** The histograms involved in showing the App Identity update dialog. */
+    private static final String HISTOGRAM_NOT_SHOWING = "Webapp.AppIdentityDialog.NotShowing";
+    private static final String HISTOGRAM_SHOWING = "Webapp.AppIdentityDialog.Showing";
+    private static final String HISTOGRAM_PRE_APPROVED = "Webapp.AppIdentityDialog.AlreadyApproved";
+
     /** Mock {@link WebApkUpdateDataFetcher}. */
     private static class TestWebApkUpdateDataFetcher extends WebApkUpdateDataFetcher {
         private boolean mStarted;
@@ -143,8 +148,8 @@ public class WebApkUpdateManagerUnitTest {
         @Override
         public void storeWebApkUpdateRequestToFile(String updateRequestPath, String startUrl,
                 String scope, String name, String shortName, String primaryIconUrl,
-                Bitmap primaryIcon, boolean isPrimaryIconMaskable, String splashIconUrl,
-                Bitmap splashIcon, boolean isSplashIconMaskable, String[] iconUrls,
+                String primaryIconData, boolean isPrimaryIconMaskable, String splashIconUrl,
+                String splashIconData, boolean isSplashIconMaskable, String[] iconUrls,
                 String[] iconHashes, @DisplayMode.EnumType int displayMode, int orientation,
                 long themeColor, long backgroundColor, String shareTargetAction,
                 String shareTargetParamTitle, String shareTargetParamText,
@@ -159,6 +164,11 @@ public class WebApkUpdateManagerUnitTest {
         public void updateWebApkFromFile(
                 String updateRequestPath, WebApkUpdateManager.WebApkUpdateCallback callback) {
             sUpdateCallback = callback;
+        }
+
+        @Override
+        public int getWebApkTargetShellVersion() {
+            return REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
         }
     }
 
@@ -226,7 +236,8 @@ public class WebApkUpdateManagerUnitTest {
 
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
-                String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
+                String primaryIconUrl, String primaryIconData, String splashIconUrl,
+                String splashIconData, boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported, List<Integer> updateReasons,
                 Callback<Boolean> callback) {
             mStoreUpdateRequestCallback = callback;
@@ -543,6 +554,8 @@ public class WebApkUpdateManagerUnitTest {
 
     @Before
     public void setUp() {
+        ShadowRecordHistogram.reset();
+
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
 
@@ -1354,5 +1367,85 @@ public class WebApkUpdateManagerUnitTest {
         fetchedData.shortcuts.add(new WebApkExtras.ShortcutItem(
                 "name", "shortName", "launchUrl", "iconUrl2", "iconHash", new WebappIcon()));
         assertFalse(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+    }
+
+    private void verifyHistograms(String name, int expectedCallCount) {
+        assertEquals("Histogram record count doesn't match.", expectedCallCount,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(name));
+    }
+
+    @Test
+    public void testDialogSuppressed() {
+        WebappDataStorage storage = getStorage(WEBAPK_PACKAGE_NAME);
+        ManifestData androidData = defaultManifestData();
+        ManifestData fetchedData = defaultManifestData();
+
+        // Try with unchanged manifest data.
+        assertFalse(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
+
+        // Change the app name (and pre-approve the update).
+        fetchedData.name = "foo";
+        String hash = "foo|Short Name|3|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 1);
+
+        // Also change the short name (and pre-approve the update).
+        fetchedData.shortName = "bar";
+        hash = "foo|bar|3|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 2);
+
+        // Also change the icon hash name (and pre-approve the update).
+        fetchedData.iconUrlToMurmur2HashMap.put(PRIMARY_ICON_URL, "42");
+        hash = "foo|bar|42|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 3);
+
+        // When hash is not valid, don't pre-approve.
+        hash = "foo|bar|43|NotAdaptive";
+        storage.updateLastWebApkUpdateHashAccepted(hash);
+        assertTrue(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 1);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 3);
+    }
+
+    @Test
+    public void testEmptyAppIdentityHash() {
+        // Setup the test to trigger a null mFetchedInfo within WebApkUpdateManager.
+        registerWebApk(WEBAPK_PACKAGE_NAME, defaultManifestData(),
+                REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
+        mClockRule.advance(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager();
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
+        assertTrue(updateManager.updateCheckStarted());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(updateManager.updateRequested());
+        assertEquals(NAME, updateManager.requestedUpdateName());
+
+        // Given a null mFetchedInfo (see above) this path should exercise
+        // WebApkUpdateManager#getAppIdentityHash returning a blank hash, which should not be
+        // treated as a trigger for the pre-approved path when it comes to AppIdentity updates.
+        ManifestData androidData = defaultManifestData();
+        ManifestData fetchedData = defaultManifestData();
+
+        assertFalse(checkUpdateNeededForFetchedManifest(androidData, fetchedData));
+        verifyHistograms(HISTOGRAM_NOT_SHOWING, 1);
+        verifyHistograms(HISTOGRAM_SHOWING, 0);
+        verifyHistograms(HISTOGRAM_PRE_APPROVED, 0);
     }
 }

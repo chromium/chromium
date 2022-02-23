@@ -35,10 +35,10 @@ constexpr int kSelectionTextMaxLength = 30;
 constexpr int kSelectionTextMaxDigits = 15;
 
 bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We don't support sending phone numbers from Android.
   return false;
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   // Check Chrome enterprise policy for Click to Call.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   if (profile && !profile->GetPrefs()->GetBoolean(prefs::kClickToCallEnabled))
@@ -47,7 +47,7 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
   SharingService* sharing_service =
       SharingServiceFactory::GetForBrowserContext(browser_context);
   return sharing_service != nullptr;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Returns the first possible phone number in |selection_text| given the

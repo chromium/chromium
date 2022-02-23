@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // BrandcodedDefaultSettings provides a set of default settings
 // for ProfileResetter. They are specific to Chrome distribution channels.
@@ -32,8 +33,8 @@ class BrandcodedDefaultSettings {
   std::unique_ptr<base::ListValue> GetSearchProviderOverrides() const;
 
   bool GetHomepage(std::string* homepage) const;
-  bool GetHomepageIsNewTab(bool* homepage_is_ntp) const;
-  bool GetShowHomeButton(bool* show_home_button) const;
+  absl::optional<bool> GetHomepageIsNewTab() const;
+  absl::optional<bool> GetShowHomeButton() const;
 
   // |extension_ids| is a list of extension ids.
   bool GetExtensions(std::vector<std::string>* extension_ids) const;

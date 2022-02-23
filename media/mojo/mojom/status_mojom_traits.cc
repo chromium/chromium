@@ -4,7 +4,6 @@
 
 #include "media/mojo/mojom/status_mojom_traits.h"
 
-#include "media/base/status_codes.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 
@@ -29,12 +28,14 @@ bool StructTraits<
   if (!data.ReadData(&output->data))
     return false;
 
-  std::vector<media::internal::StatusData> causes;
-  if (!data.ReadCauses(&causes))
+  absl::optional<media::internal::StatusData> cause;
+  if (!data.ReadCause(&cause))
     return false;
 
-  for (const auto& cause : causes)
-    output->causes.push_back(cause);
+  if (cause.has_value()) {
+    output->cause =
+        std::make_unique<media::internal::StatusData>(std::move(*cause));
+  }
 
   return true;
 }

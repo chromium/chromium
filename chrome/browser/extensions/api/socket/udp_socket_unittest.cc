@@ -172,7 +172,7 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
 }
 
 // TODO(https://crbug.com/1210643): Test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TestUDPMulticastRecv DISABLED_TestUDPMulticastRecv
 #else
 #define MAYBE_TestUDPMulticastRecv TestUDPMulticastRecv

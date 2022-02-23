@@ -310,8 +310,9 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
 
   WorkItem* install_service_work_item = new InstallServiceWorkItem(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(),
+      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
       base::CommandLine(elevation_service_path),
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
   install_service_work_item->set_best_effort(true);

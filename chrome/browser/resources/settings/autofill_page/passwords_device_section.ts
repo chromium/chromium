@@ -26,7 +26,8 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -38,6 +39,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {AccountStorageOptInStateChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './passwords_device_section.html.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 
 /**
@@ -53,10 +55,13 @@ function isEditable(element: Element): boolean {
             (element as HTMLInputElement).type)));
 }
 
-interface PasswordsDeviceSectionElement {
+export interface PasswordsDeviceSectionElement {
   $: {
-    toast: CrToastElement,
+    deviceAndAccountPasswordList: IronListElement,
+    deviceOnlyPasswordList: IronListElement,
+    moveMultiplePasswordsBanner: HTMLElement,
     passwordsListHandler: PasswordsListHandlerElement,
+    toast: CrToastElement,
   };
 }
 
@@ -72,13 +77,14 @@ const PasswordsDeviceSectionElementBase =
       MergePasswordsStoreCopiesMixinInterface & RouteObserverMixinInterface
     };
 
-class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
+export class PasswordsDeviceSectionElement extends
+    PasswordsDeviceSectionElementBase {
   static get is() {
     return 'passwords-device-section';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -394,6 +400,12 @@ class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
         this.currentRoute_ === routes.DEVICE_PASSWORDS) {
       Router.getInstance().navigateTo(routes.PASSWORDS);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passwords-device-section': PasswordsDeviceSectionElement;
   }
 }
 

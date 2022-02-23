@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -46,6 +46,10 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
       feature_set.Contains("timestamp-query");
   requested_device_properties.depthClamping =
       feature_set.Contains("depth-clamping");
+  requested_device_properties.depth24UnormStencil8 =
+      feature_set.Contains("depth24unorm-stencil8");
+  requested_device_properties.depth32FloatStencil8 =
+      feature_set.Contains("depth32float-stencil8");
 
   return requested_device_properties;
 }
@@ -95,6 +99,10 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
+bool GPUAdapter::isFallbackAdapter() const {
+  return adapter_properties_.adapterType == WGPUAdapterType_CPU;
+}
+
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
@@ -139,6 +147,12 @@ void GPUAdapter::InitializeFeatureNameList() {
   }
   if (adapter_properties_.depthClamping) {
     features_->AddFeatureName("depth-clamping");
+  }
+  if (adapter_properties_.depth24UnormStencil8) {
+    features_->AddFeatureName("depth24unorm-stencil8");
+  }
+  if (adapter_properties_.depth32FloatStencil8) {
+    features_->AddFeatureName("depth32float-stencil8");
   }
 }
 

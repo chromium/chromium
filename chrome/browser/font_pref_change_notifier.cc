@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names_util.h"
 #include "components/prefs/pref_service.h"

@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
+#include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8-forward.h"
 
 namespace extensions {
@@ -36,13 +36,13 @@ class I18nHooksDelegate : public APIBindingHooksDelegate {
   // Method handlers:
   APIBindingHooks::RequestResult HandleGetMessage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetUILanguage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleDetectLanguage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
 };
 
 }  // namespace extensions

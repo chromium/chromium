@@ -8,6 +8,9 @@ import {CrSearchFieldBehavior} from '../cr_search_field/cr_search_field_behavior
 
 interface CrToolbarSearchFieldElement extends CrSearchFieldBehavior,
                                               LegacyElementMixin, HTMLElement {
+  $: {
+    searchInput: HTMLInputElement,
+  };
   narrow: boolean;
   showingSearch: boolean;
   autofocus: boolean;

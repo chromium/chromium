@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -58,7 +59,7 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
  protected:
   // Publishes differential app updates to the app_service in Ash via crosapi.
   // Virtual for testing.
-  virtual void Publish(std::vector<apps::mojom::AppPtr> apps);
+  virtual void Publish(std::vector<apps::AppPtr> apps);
 
   // Notifies Ash's app window tracker of an app window construction.
   // Virtual for testing.

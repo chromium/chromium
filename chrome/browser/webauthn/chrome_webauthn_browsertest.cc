@@ -7,6 +7,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -293,7 +294,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       }
     };
 
-    WebAuthnCableSecondFactor* const parent_;
+    const raw_ptr<WebAuthnCableSecondFactor> parent_;
     base::RepeatingCallback<void(device::cablev2::PairingEvent)>
         pairing_callback_;
     base::RepeatingClosure add_authenticator_callback_;
@@ -387,7 +388,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       return phone;
     }
 
-    WebAuthnCableSecondFactor* const parent_;
+    const raw_ptr<WebAuthnCableSecondFactor> parent_;
   };
 
  protected:
@@ -397,7 +398,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
 };
 
 // TODO(https://crbug.com/1219708): this test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -418,21 +419,21 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor, MAYBE_Test) {
       kGetAssertionCredID1234, &result));
 
   constexpr char kExpectedTrace[] = R"(
-PAIRING: name2 02020202 040506
 PAIRING: aaa 03030303 040506
-PAIRING: zzz 04040404 040506
+PAIRING: name2 02020202 040506
 PAIRING: name2 01010101 040506
 PAIRING: name2 00000000 040506
+PAIRING: zzz 04040404 040506
 UINAME: aaa
 UINAME: name2
 UINAME: zzz
-CONTACT: phone_instance=0 step=0
-CONTACT: phone_instance=3 step=1
-CONTACT: phone_instance=4 step=2
-CONTACT: phone_instance=2 step=3
-CONTACT: phone_instance=1 step=4
+CONTACT: phone_instance=1 step=0
+CONTACT: phone_instance=2 step=1
+CONTACT: phone_instance=3 step=2
+CONTACT: phone_instance=4 step=3
+CONTACT: phone_instance=0 step=4
 )";
-  EXPECT_EQ(trace_.str(), kExpectedTrace);
+  EXPECT_EQ(kExpectedTrace, trace_.str());
   EXPECT_EQ("webauthn: OK", result);
 }
 

@@ -286,6 +286,23 @@ TEST_F(FrameRateDeciderTest, MinFrameSinkIntervalIsPicked) {
     frame_rate_decider_->OnSurfaceWillBeDrawn(surface2);
   }
   EXPECT_EQ(display_interval_, min_supported_interval * 2);
+
+  FrameSinkId frame_sink_id3(1u, 3u);
+  preferred_intervals_[frame_sink_id3] = min_supported_interval * 1.8;
+  auto* surface3 = CreateAndDrawSurface(frame_sink_id3);
+  UpdateFrame(surface1);
+  UpdateFrame(surface2);
+  UpdateFrame(surface3);
+  {
+    FrameRateDecider::ScopedAggregate scope(frame_rate_decider_.get());
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface1);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface2);
+    frame_rate_decider_->OnSurfaceWillBeDrawn(surface3);
+  }
+  // Even though surface3 has a frame interval that is closer to
+  // min_supported_interval * 2, we need to pick a smaller interval
+  // so that frames from that surface are not dropped.
+  EXPECT_EQ(display_interval_, min_supported_interval);
 }
 
 TEST_F(FrameRateDeciderTest, TogglesAfterMinNumOfFrames) {

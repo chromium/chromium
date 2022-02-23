@@ -110,7 +110,13 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
   }
 
  protected:
-  bool UseDocumentReporting() const { return GetParam(); }
+  bool UseDocumentReporting() const {
+#if BUILDFLAG(ENABLE_REPORTING)
+    return GetParam();
+#else
+    return false;
+#endif
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -187,7 +193,7 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
 std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
   auto parsed_payload = base::test::ParseJsonDeprecated(payload);
   // Clear out any non-reproducible fields.
-  for (auto& report : parsed_payload->GetList()) {
+  for (auto& report : parsed_payload->GetListDeprecated()) {
     report.RemoveKey("age");
     report.RemovePath("body.elapsed_time");
     auto* user_agent =
@@ -427,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReport CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #else
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
@@ -465,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
+  auto report = response->GetListDeprecated().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
 
@@ -502,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetList().begin();
+  auto report = response->GetListDeprecated().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
   auto* body = report->FindKeyOfType("body", base::Value::Type::DICTIONARY);

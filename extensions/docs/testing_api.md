@@ -328,7 +328,7 @@ URLs, as below.
 
 ```js
 chrome.test.getConfig((config) => {
-  let url = `http://example.com:${config.port}/simple.html`;
+  let url = `http://example.com:${config.testServer.port}/simple.html`;
   createTab(url);
 });
 ```

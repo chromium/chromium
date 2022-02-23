@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
@@ -82,7 +83,7 @@ namespace private_join_and_compute {
 //    ::private_join_and_compute::StatusOr<std::pair<string, string>> double_encrypted_string =
 //        cipher->ReEncryptElGamalCiphertext(elgamal_ciphertext);
 
-class ECCommutativeCipher {
+class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
  public:
   // The hash function used by the ECCommutativeCipher.
   enum HashType {

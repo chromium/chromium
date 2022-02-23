@@ -278,8 +278,7 @@ class Parser(object):
     """nonnullable_typename : basictypename
                             | array
                             | fixed_array
-                            | associative_array
-                            | interfacerequest"""
+                            | associative_array"""
     p[0] = p[1]
 
   def p_basictypename(self, p):
@@ -348,14 +347,6 @@ class Parser(object):
   def p_associative_array(self, p):
     """associative_array : MAP LANGLE identifier COMMA typename RANGLE"""
     p[0] = p[5] + "{" + p[3] + "}"
-
-  def p_interfacerequest(self, p):
-    """interfacerequest : identifier AMP
-                        | ASSOCIATED identifier AMP"""
-    if len(p) == 3:
-      p[0] = p[1] + "&"
-    else:
-      p[0] = "asso<" + p[2] + "&>"
 
   def p_ordinal_1(self, p):
     """ordinal : """

@@ -37,7 +37,7 @@ using DiagnosticsCallback =
 std::string CapitalizedBoardName() {
   const std::string uppercase = base::SysInfo::HardwareModelName();
 
-  CHECK_GE(uppercase.size(), 1);
+  CHECK_GE(uppercase.size(), 1u);
   base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
   base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
                                         uppercase.length() - 1);
@@ -123,7 +123,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
       switch (is_allowed_diagnostics.policy_configured) {
         case PolicyConfigured::kOk: {
           // Additional check for image policy. See b/185281662#comment2.
-          const base::DictionaryValue* image_policy =
+          const base::Value* image_policy =
               active_profile_->GetPrefs()->GetDictionary(prefs::kPluginVmImage);
           const base::Value* url =
               image_policy->FindKey(prefs::kPluginVmImageUrlKeyName);
@@ -184,7 +184,7 @@ class PluginVmDiagnostics : public base::RefCounted<PluginVmDiagnostics> {
 
     vm_tools::concierge::ListVmDisksRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(active_profile_));
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
 

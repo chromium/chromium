@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,17 +79,17 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
   bool IsInStartedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::STARTED;
+           MediaStreamVideoRendererSink::kStarted;
   }
   bool IsInStoppedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::STOPPED;
+           MediaStreamVideoRendererSink::kStopped;
   }
   bool IsInPausedState() const {
     RunIOUntilIdle();
     return media_stream_video_renderer_sink_->GetStateForTesting() ==
-           MediaStreamVideoRendererSink::PAUSED;
+           MediaStreamVideoRendererSink::kPaused;
   }
 
   void OnVideoFrame(scoped_refptr<media::VideoFrame> frame) {

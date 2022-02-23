@@ -10,11 +10,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -42,29 +40,6 @@ enum class Status {
   kExternalError = 2,
   kMaxValue = kExternalError
 };
-
-// Called when a network request is started for |report|, for logging metrics.
-void LogMetricsOnReportSend(const AttributionReport& report) {
-  // Reports sent from the WebUI should not log metrics.
-  if (report.report_time == base::Time::Min())
-    return;
-
-  // Use a large time range to capture users that might not open the browser for
-  // a long time while a conversion report is pending. Revisit this range if it
-  // is non-ideal for real world data.
-  base::Time now = base::Time::Now();
-  base::Time original_report_time =
-      ComputeReportTime(report.impression, report.conversion_time);
-  base::TimeDelta time_since_original_report_time = now - original_report_time;
-  base::UmaHistogramCustomTimes(
-      "Conversions.ExtraReportDelay2", time_since_original_report_time,
-      base::Seconds(1), base::Days(24), /*buckets=*/100);
-
-  base::TimeDelta time_from_conversion_to_report_send =
-      report.report_time - report.conversion_time;
-  UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
-                            time_from_conversion_to_report_send.InHours());
-}
 
 }  // namespace
 
@@ -129,8 +104,8 @@ void AttributionNetworkSenderImpl::SendReport(
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
-  std::string report_body = report.ReportBody();
-  simple_url_loader_ptr->AttachStringForUpload(report_body, "application/json");
+  simple_url_loader_ptr->AttachStringForUpload(
+      SerializeAttributionJson(report.ReportBody()), "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in
@@ -140,8 +115,6 @@ void AttributionNetworkSenderImpl::SendReport(
   int retry_mode = network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
                    network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
   simple_url_loader_ptr->SetRetryOptions(/*max_retries=*/1, retry_mode);
-
-  LogMetricsOnReportSend(report);
 
   // Unretained is safe because the URLLoader is owned by |this| and will be
   // deleted before |this|.
@@ -201,15 +174,15 @@ void AttributionNetworkSenderImpl::OnReportSent(
                    net_error == net::ERR_CONNECTION_ABORTED ||
                    net_error == net::ERR_CONNECTION_RESET);
 
-  SentReportInfo::Status report_status =
+  SendResult::Status report_status =
       (status == Status::kOk)
-          ? SentReportInfo::Status::kSent
-          : (should_retry ? SentReportInfo::Status::kTransientFailure
-                          : SentReportInfo::Status::kFailure);
+          ? SendResult::Status::kSent
+          : (should_retry ? SendResult::Status::kTransientFailure
+                          : SendResult::Status::kFailure);
 
   std::move(sent_callback)
-      .Run(SentReportInfo(std::move(report), report_status,
-                          headers ? headers->response_code() : 0));
+      .Run(std::move(report),
+           SendResult(report_status, headers ? headers->response_code() : 0));
 }
 
 }  // namespace content

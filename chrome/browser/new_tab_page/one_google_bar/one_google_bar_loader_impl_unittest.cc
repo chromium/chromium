@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_data.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -322,7 +323,7 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
 
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
   bool check_x_chrome_connected_header = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   check_x_chrome_connected_header = true;
 #endif
 
@@ -365,7 +366,7 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
 
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
   bool check_x_chrome_connected_header = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   check_x_chrome_connected_header = true;
 #endif
 

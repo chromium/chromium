@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -142,7 +141,7 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
   ::testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FakeFidoDiscoveryFactoryTest, ForgesUsbFactoryFunction) {
   auto* injected_fake_discovery =
       fake_fido_discovery_factory_.ForgeNextHidDiscovery();

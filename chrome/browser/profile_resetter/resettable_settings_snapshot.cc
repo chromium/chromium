@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader.h"
@@ -45,8 +46,8 @@ void AddPair(base::ListValue* list,
              const std::u16string& key,
              const StringType& value) {
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
-  results->SetString("key", key);
-  results->SetString("value", value);
+  results->SetStringKey("key", key);
+  results->SetStringKey("value", value);
   list->Append(std::move(results));
 }
 
@@ -136,7 +137,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
   DCHECK(!cancellation_flag_.get() && !shortcuts_determined());
 
   cancellation_flag_ = new SharedCancellationFlag;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::PostTaskAndReplyWithResult(
       base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
@@ -144,7 +145,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
       FROM_HERE, base::BindOnce(&GetChromeLaunchShortcuts, cancellation_flag_),
       base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
   // Shortcuts are only supported on Windows.
   std::vector<ShortcutCommand> no_shortcuts;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -152,7 +153,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
       base::BindOnce(&ResettableSettingsSnapshot::SetShortcutsAndReport,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(no_shortcuts)));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ResettableSettingsSnapshot::SetShortcutsAndReport(
@@ -189,6 +190,10 @@ std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
       case SessionStartupPref::URLS:
         report->set_startup_type(
             reset_report::ChromeResetReport_SessionStartupType_URLS);
+        break;
+      case SessionStartupPref::LAST_AND_URLS:
+        report->set_startup_type(
+            reset_report::ChromeResetReport_SessionStartupType_LAST_AND_URLS);
         break;
     }
   }
@@ -273,6 +278,10 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
     case SessionStartupPref::URLS:
       startup_type =
           l10n_util::GetStringUTF16(IDS_SETTINGS_ON_STARTUP_OPEN_SPECIFIC);
+      break;
+    case SessionStartupPref::LAST_AND_URLS:
+      startup_type = l10n_util::GetStringUTF16(
+          IDS_SETTINGS_ON_STARTUP_CONTINUE_AND_OPEN_SPECIFIC);
       break;
     default:
       break;

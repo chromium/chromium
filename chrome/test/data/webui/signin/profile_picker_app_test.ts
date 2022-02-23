@@ -8,15 +8,12 @@ import 'chrome://profile-picker/lazy_load.js';
 // </if>
 
 // <if expr="lacros">
-import {UnassignedAccount} from 'chrome://profile-picker/profile_picker.js';
+import {AvailableAccount} from 'chrome://profile-picker/profile_picker.js';
 // </if>
 
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// <if expr="lacros">
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
-// </if>
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender, whenCheck} from 'chrome://webui-test/test_util.js';
 
@@ -101,25 +98,21 @@ suite('ProfilePickerAppTest', function() {
   });
 
   // <if expr="lacros">
-  test('SignInPromoSignInWithUnassignedAccountLacros', async function() {
-    loadTimeData.overrideValues({
-      isMultiProfileAccountConsistentcyLacrosEnabled: true,
-    });
+  test('SignInPromoSignInWithAvailableAccountLacros', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
     const choice =
         testElement.shadowRoot!.querySelector('profile-type-choice')!;
     assertTrue(!!choice);
-    // Add unassigned account to trigger the account selection screen.
-    const unassignedAccount: UnassignedAccount = {
-      gaiaId: 'unassigned-id',
+    // Add available account to trigger the account selection screen.
+    const availableAccount: AvailableAccount = {
+      gaiaId: 'available-id',
       name: 'Account Name',
       email: 'email@gmail.com',
       accountImageUrl: 'account-image-url',
     };
-    webUIListenerCallback('unassigned-accounts-changed', [unassignedAccount]);
+    webUIListenerCallback('available-accounts-changed', [availableAccount]);
     flushTasks();
-    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
     choice!.$.signInButton.click();
     // Start Lacros signin flow.
     await waitBeforeNextRender(testElement);
@@ -127,29 +120,27 @@ suite('ProfilePickerAppTest', function() {
         testElement.shadowRoot!.querySelector('account-selection-lacros');
     assertTrue(!!accountSelectionLacros);
     // Test the back button.
-    accountSelectionLacros!.$.backButton.click();
+    const backButton =
+        accountSelectionLacros!.shadowRoot!.querySelector<HTMLElement>(
+            '#backButton');
+    assertTrue(!!backButton);
+    backButton!.click();
     await whenCheck(choice!, () => choice!.classList.contains('active'));
   });
 
   test('SignInPromoSignInWithoutAccountLacros', async function() {
-    loadTimeData.overrideValues({
-      isMultiProfileAccountConsistentcyLacrosEnabled: true,
-    });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
     assertTrue(!!choice);
     // No available account.
-    webUIListenerCallback('unassigned-accounts-changed', []);
+    webUIListenerCallback('available-accounts-changed', []);
     flushTasks();
-    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
     choice!.$.signInButton.click();
     return browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });
   // </if>
 
-  // Local profile creation is not enabled on Lacros.
-  // <if expr="not lacros">
   test('SignInPromoSignIn', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
@@ -209,7 +200,6 @@ suite('ProfilePickerAppTest', function() {
     await whenCheck(choice!, () => choice!.classList.contains('active'));
     verifyProfileCreationViewStyle(choice!);
   });
-  // </if>
 
   test('ProfileCreationNotAllowed', async function() {
     loadTimeData.overrideValues({

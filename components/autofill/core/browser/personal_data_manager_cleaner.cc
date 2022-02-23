@@ -100,9 +100,9 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
 }
 
 void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
-  // Validate profiles once per major.
-  personal_data_manager_->UpdateClientValidityStates(
-      personal_data_manager_->GetProfiles());
+  // TODO(crbug.com/1288863): Remove prefs in M102 or above.
+  pref_service_->ClearPref(prefs::kAutofillLastVersionValidated);
+  pref_service_->ClearPref(prefs::kAutofillProfileValidity);
 
   // One-time fix, otherwise NOP.
   RemoveOrphanAutofillTableRows();

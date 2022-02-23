@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -85,6 +86,16 @@ class OverloadedMockAffiliationService : public MockAffiliationService {
   void ExpectCallToTrimCacheForFacetURI(const char* expected_facet_uri_spec) {
     EXPECT_CALL(*this, TrimCacheForFacetURI(FacetURI::FromCanonicalSpec(
                            expected_facet_uri_spec)))
+        .RetiresOnSaturation();
+  }
+
+  void ExpectCallToTrimUnusedCache() {
+    EXPECT_CALL(*this, TrimUnusedCache).RetiresOnSaturation();
+  }
+
+  void ExpectKeepPrefetchForFacets(
+      const std::vector<FacetURI>& expected_facets) {
+    EXPECT_CALL(*this, KeepPrefetchForFacets(expected_facets))
         .RetiresOnSaturation();
   }
 };
@@ -181,6 +192,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
     mock_time_task_runner_->RunUntilIdle();
     ASSERT_EQ(AffiliatedMatchHelper::kInitializationDelayOnStartup,
               mock_time_task_runner_->NextPendingTaskDelay());
+    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
     mock_time_task_runner_->FastForwardBy(
         AffiliatedMatchHelper::kInitializationDelayOnStartup);
   }
@@ -347,7 +359,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
 
   scoped_refptr<TestPasswordStore> password_store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  AffiliatedMatchHelper* match_helper_;
+  raw_ptr<AffiliatedMatchHelper> match_helper_;
 
   std::unique_ptr<OverloadedMockAffiliationService> mock_affiliation_service_;
 };
@@ -567,6 +579,26 @@ TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::UnorderedElementsAre(kTestWebRealmAlpha2,
                                             kTestAndroidRealmAlpha3));
+}
+
+TEST_P(AffiliatedMatchHelperTest, OnLoginsRetained) {
+  std::vector<PasswordForm> forms = {
+      GetTestAndroidCredentials(kTestWebFacetURIAlpha1),
+      GetTestAndroidCredentials(kTestAndroidFacetURIBeta2)};
+  std::vector<FacetURI> expected_facets;
+
+  if (base::FeatureList::IsEnabled(
+          features::kFillingAcrossAffiliatedWebsites)) {
+    expected_facets = {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
+                       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
+  } else {
+    expected_facets = {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
+  }
+
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+
+  (static_cast<PasswordStoreInterface::Observer*>(match_helper()))
+      ->OnLoginsRetained(nullptr, forms);
 }
 
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,

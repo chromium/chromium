@@ -23,10 +23,6 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
   const SkColor foreground = is_dark_mode_ ? SK_ColorWHITE : SK_ColorBLACK;
   const SkColor background = is_dark_mode_ ? SK_ColorBLACK : SK_ColorWHITE;
   switch (id) {
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
-    case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
-      *color = foreground;
-      return true;
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO:
       *color = SK_ColorWHITE;
@@ -52,10 +48,9 @@ bool IncreasedContrastThemeSupplier::GetColor(int id, SkColor* color) const {
     case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
       *color = is_dark_mode_ ? SK_ColorDKGRAY : SK_ColorLTGRAY;
       return true;
-    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
-      *color = foreground;
-      return true;
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
+    case ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR:
+    case ThemeProperties::COLOR_TOOLBAR_TEXT:
       *color = foreground;
       return true;
   }

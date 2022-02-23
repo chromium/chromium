@@ -10,7 +10,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #endif
@@ -37,7 +37,7 @@ const gfx::VectorIcon& InfoBarDelegate::GetVectorIcon() const {
 }
 
 gfx::Image InfoBarDelegate::GetIcon() const {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   const gfx::VectorIcon& vector_icon = GetVectorIcon();
   if (!vector_icon.is_empty()) {
     return gfx::Image(
@@ -114,7 +114,7 @@ translate::TranslateInfoBarDelegate*
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 offline_pages::OfflinePageInfoBarDelegate*
 InfoBarDelegate::AsOfflinePageInfoBarDelegate() {
   return nullptr;

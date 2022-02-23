@@ -1,0 +1,6 @@
+tableAuto.accessibilityAttributeNames.has(AXARIAColumnCount)='yes'
+tableAuto.accessibilityAttributeValue(AXARIAColumnCount)=1
+table.accessibilityAttributeNames.has(AXARIAColumnCount)='yes'
+table.accessibilityAttributeValue(AXARIAColumnCount)=2
+div.accessibilityAttributeNames.has(AXARIAColumnCount)='no'
+div.accessibilityAttributeValue(AXARIAColumnCount)=NULL

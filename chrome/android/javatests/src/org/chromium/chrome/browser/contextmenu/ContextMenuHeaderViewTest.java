@@ -29,14 +29,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
+public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
 
@@ -46,13 +46,14 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
     private View mTitleAndUrl;
     private ImageView mImage;
     private View mCircleBg;
+    private View mImageContainer;
     private View mPerformanceInfo;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.context_menu_header);
+        BlankUiTestActivity.setTestLayout(R.layout.context_menu_header);
     }
 
     @Override
@@ -66,6 +67,7 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
             mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
             mImage = mHeaderView.findViewById(R.id.menu_header_image);
             mCircleBg = mHeaderView.findViewById(R.id.circle_background);
+            mImageContainer = mHeaderView.findViewById(R.id.menu_header_image_container);
             mPerformanceInfo = mHeaderView.findViewById(R.id.menu_header_performance_info);
             mModel = new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                              .with(ContextMenuHeaderProperties.TITLE, "")
@@ -188,6 +190,11 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat("Incorrect thumbnail bitmap.",
                 ((BitmapDrawable) mImage.getDrawable()).getBitmap(), equalTo(bitmap));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, true));
+        assertThat("Image container should be hidden.", mImageContainer.getVisibility(),
+                equalTo(View.GONE));
     }
 
     @Test

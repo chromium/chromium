@@ -49,10 +49,12 @@ namespace probe {
 class RecalculateStyle;
 }  // namespace probe
 
+class CSSContainerRule;
 class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
 class CSSStyleSheet;
+class CSSSupportsRule;
 class Document;
 class Element;
 class FontCustomPlatformData;
@@ -98,6 +100,7 @@ class CORE_EXPORT InspectorCSSAgent final
   static CSSStyleRule* AsCSSStyleRule(CSSRule*);
   static CSSMediaRule* AsCSSMediaRule(CSSRule*);
   static CSSContainerRule* AsCSSContainerRule(CSSRule*);
+  static CSSSupportsRule* AsCSSSupportsRule(CSSRule*);
 
   static void CollectAllDocumentStyleSheets(Document*,
                                             HeapVector<Member<CSSStyleSheet>>&);
@@ -193,6 +196,11 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::SourceRange>,
       const String& text,
       std::unique_ptr<protocol::CSS::CSSContainerQuery>*) override;
+  protocol::Response setSupportsText(
+      const String& style_sheet_id,
+      std::unique_ptr<protocol::CSS::SourceRange>,
+      const String& text,
+      std::unique_ptr<protocol::CSS::CSSSupports>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
                                       String* style_sheet_id) override;
   protocol::Response addRule(const String& style_sheet_id,
@@ -296,8 +304,10 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>,
       HeapVector<Member<StyleSheetAction>>* actions);
 
+  // If the |animating_element| is a pseudo element, then |element| is a
+  // reference to its originating DOM element.
   std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>
-  AnimationsForNode(Element*);
+  AnimationsForNode(Element* element, Element* animating_element);
 
   void CollectPlatformFontsForLayoutObject(
       LayoutObject*,
@@ -330,14 +340,20 @@ class CORE_EXPORT InspectorCSSAgent final
 
   // Container Queries implementation
   std::unique_ptr<protocol::CSS::CSSContainerQuery> BuildContainerQueryObject(
-      const MediaList*,
-      CSSStyleSheet*,
-      const AtomicString&);
+      CSSContainerRule*);
   void CollectContainerQueriesFromRule(
       CSSRule*,
       protocol::Array<protocol::CSS::CSSContainerQuery>*);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>
   BuildContainerQueries(CSSRule*);
+
+  // Supports at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSSupports> BuildSupportsObject(
+      CSSSupportsRule*);
+  void CollectSupportsFromRule(CSSRule*,
+                               protocol::Array<protocol::CSS::CSSSupports>*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
+  BuildSupportsList(CSSRule*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;

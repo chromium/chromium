@@ -76,8 +76,6 @@ class ReportingCacheTest : public ReportingTestBase,
 
     if (GetParam())
       store_ = std::make_unique<MockPersistentReportingStore>();
-    else
-      store_ = nullptr;
 
     UseStore(store_.get());
 
@@ -1070,8 +1068,8 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
       kNik_.ToDebugString().c_str(), kOtherNik_.ToDebugString().c_str()));
 
   // Compare disregarding order.
-  auto expected_list = std::move(expected).TakeList();
-  auto actual_list = std::move(actual).TakeList();
+  auto expected_list = std::move(expected).TakeListDeprecated();
+  auto actual_list = std::move(actual).TakeListDeprecated();
   std::sort(expected_list.begin(), expected_list.end());
   std::sort(actual_list.begin(), actual_list.end());
   EXPECT_EQ(expected_list, actual_list);
@@ -1959,6 +1957,51 @@ TEST_P(ReportingCacheTest, GetIsolationInfoForEndpoint) {
   EXPECT_EQ(isolation_info_for_network.network_isolation_key(),
             network_endpoint.group_key.network_isolation_key);
   EXPECT_TRUE(isolation_info_for_network.site_for_cookies().IsNull());
+}
+
+TEST_P(ReportingCacheTest, GetV1ReportingEndpointsForOrigin) {
+  const base::UnguessableToken reporting_source_2 =
+      base::UnguessableToken::Create();
+  LoadReportingClients();
+
+  NetworkIsolationKey network_isolation_key_1 =
+      kIsolationInfo1_.network_isolation_key();
+  NetworkIsolationKey network_isolation_key_2 =
+      kIsolationInfo2_.network_isolation_key();
+
+  // Store endpoints from different origins in cache
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(network_isolation_key_1, *kReportingSource_,
+                                kOrigin1_, kGroup1_),
+      *kReportingSource_, kIsolationInfo1_, kUrl1_);
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(network_isolation_key_1, *kReportingSource_,
+                                kOrigin1_, kGroup2_),
+      *kReportingSource_, kIsolationInfo1_, kUrl2_);
+  cache()->SetV1EndpointForTesting(
+      ReportingEndpointGroupKey(network_isolation_key_2, reporting_source_2,
+                                kOrigin2_, kGroup1_),
+      reporting_source_2, kIsolationInfo2_, kUrl2_);
+
+  // Retrieve endpoints by origin and ensure they match expectations
+  auto endpoints = cache()->GetV1ReportingEndpointsByOrigin();
+  EXPECT_EQ(2u, endpoints.size());
+  auto origin_1_endpoints = endpoints.at(kOrigin1_);
+  EXPECT_EQ(2u, origin_1_endpoints.size());
+  EXPECT_EQ(ReportingEndpointGroupKey(network_isolation_key_1,
+                                      *kReportingSource_, kOrigin1_, kGroup1_),
+            origin_1_endpoints[0].group_key);
+  EXPECT_EQ(kUrl1_, origin_1_endpoints[0].info.url);
+  EXPECT_EQ(ReportingEndpointGroupKey(network_isolation_key_1,
+                                      *kReportingSource_, kOrigin1_, kGroup2_),
+            origin_1_endpoints[1].group_key);
+  EXPECT_EQ(kUrl2_, origin_1_endpoints[1].info.url);
+  auto origin_2_endpoints = endpoints.at(kOrigin2_);
+  EXPECT_EQ(1u, origin_2_endpoints.size());
+  EXPECT_EQ(ReportingEndpointGroupKey(network_isolation_key_2,
+                                      reporting_source_2, kOrigin2_, kGroup1_),
+            origin_2_endpoints[0].group_key);
+  EXPECT_EQ(kUrl2_, origin_2_endpoints[0].info.url);
 }
 
 INSTANTIATE_TEST_SUITE_P(ReportingCacheStoreTest,

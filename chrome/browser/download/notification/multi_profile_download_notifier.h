@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -123,7 +124,7 @@ class MultiProfileDownloadNotifier
   // `client_` requires it to be.
   bool IsManagerReady(content::DownloadManager* manager);
 
-  MultiProfileDownloadNotifier::Client* const client_;
+  const raw_ptr<MultiProfileDownloadNotifier::Client> client_;
 
   const bool wait_for_manager_initialization_;
 

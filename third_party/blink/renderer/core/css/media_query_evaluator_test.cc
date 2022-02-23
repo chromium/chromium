@@ -319,7 +319,7 @@ MediaQueryEvaluatorTestCase g_dynamic_range_standard_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_high_cases[] = {
-    {"(dynamic-range: standard)", false},
+    {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", true},
     {"(dynamic-range: invalid)", false},
     {nullptr, false}  // Do not remove the terminator line.
@@ -340,7 +340,7 @@ MediaQueryEvaluatorTestCase g_video_dynamic_range_standard_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_high_cases[] = {
-    {"(video-dynamic-range: standard)", false},
+    {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", true},
     {"(video-dynamic-range: invalid)", false},
     {nullptr, false}  // Do not remove the terminator line.
@@ -437,7 +437,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 }
 
 TEST(MediaQueryEvaluatorTest, Dynamic) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
@@ -447,7 +447,7 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicNoView) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   LocalFrame* frame = &page_holder->GetFrame();
   page_holder.reset();
   ASSERT_EQ(nullptr, frame->View());
@@ -479,7 +479,7 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicImmersive) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
@@ -633,6 +633,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -650,6 +652,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -668,6 +672,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -684,6 +690,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -699,6 +707,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -714,6 +724,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
 
     // Test again with the feature disabled
     ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    ScopedCSSVideoDynamicRangeMediaQueriesForTest const disable_video_feature{
+        false};
     TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
                     media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
@@ -898,29 +910,36 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(800), MediaQueryOperator::kLt))));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(*width_lt_600.Copy()));
-  EXPECT_FALSE(media_query_evaluator.Eval(*width_lt_400.Copy()));
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator.Eval(*width_lt_600.Copy()));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(*width_lt_400.Copy()));
 
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      KleeneValue::kTrue,
       media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_600.Copy())));
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      KleeneValue::kFalse,
       media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_400.Copy())));
 
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      KleeneValue::kFalse,
       media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_600.Copy())));
-  EXPECT_TRUE(
-      media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(
+                                    MediaQueryNotExpNode(width_lt_400.Copy())));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(
-      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_800.Copy())));
-  EXPECT_FALSE(media_query_evaluator.Eval(
-      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(MediaQueryAndExpNode(
+                                    width_lt_600.Copy(), width_lt_800.Copy())));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(MediaQueryAndExpNode(
+                width_lt_600.Copy(), width_lt_400.Copy())));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(
-      MediaQueryOrExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryOrExpNode(
-      width_lt_400.Copy(),
-      std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(MediaQueryOrExpNode(
+                                    width_lt_600.Copy(), width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(MediaQueryOrExpNode(
+                width_lt_400.Copy(),
+                std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
 }
 
 TEST(MediaQueryEvaluatorTest, DependentResults) {
@@ -1095,6 +1114,109 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     ASSERT_EQ(1u, device_dependent.size());
     EXPECT_EQ(device_width_lt_600.Expression(),
               device_dependent[0].Expression());
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+  data.viewport_height = 500;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(media_values);
+
+  MediaQueryEvaluatorTestCase test_cases[] = {
+      {"(width: 1px) or (width: 2px)", false},
+      {"(width: 1px) or (width: 2px) or (width: 3px)", false},
+      {"(width: 500px) or (width: 2px) or (width: 3px)", true},
+      {"(width: 1px) or (width: 500px) or (width: 3px)", true},
+      {"(width: 1px) or (width: 2px) or (width: 500px)", true},
+      {"((width: 1px))", false},
+      {"((width: 500px))", true},
+      {"(((width: 500px)))", true},
+      {"((width: 1px) or (width: 2px)) or (width: 3px)", false},
+      {"(width: 1px) or ((width: 2px) or (width: 500px))", true},
+      {"(width = 500px)", true},
+      {"(width >= 500px)", true},
+      {"(width <= 500px)", true},
+      {"(width < 500px)", false},
+      {"(500px = width)", true},
+      {"(500px >= width)", true},
+      {"(500px <= width)", true},
+      {"(499px < width)", true},
+      {"(499px > width)", false},
+      {"(499px < width < 501px)", true},
+      {"(499px < width <= 500px)", true},
+      {"(499px < width < 500px)", false},
+      {"(500px < width < 501px)", false},
+      {"(501px > width > 499px)", true},
+      {"(500px >= width > 499px)", true},
+      {"(501px > width >= 500px)", true},
+      {"(502px > width >= 501px)", false},
+      {"not (499px > width)", true},
+      {"(not (499px > width))", true},
+      {"(width >= 500px) and (not (499px > width))", true},
+      {"(width >= 500px) and ((499px > width) or (not (width = 500px)))",
+       false},
+      {nullptr, false}  // Do not remove the terminator line.
+  };
+
+  TestMQEvaluator(test_cases, media_query_evaluator);
+}
+
+TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+  data.viewport_height = 500;
+
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(media_values);
+
+  MediaQueryEvaluatorTestCase tests[] = {
+      {"(unknown)", false},
+      {"((unknown: 1px))", false},
+      {"not (unknown: 1px)", false},
+      {"(width) or (unknown: 1px)", true},
+      {"(unknown: 1px) or (width)", true},
+      {"not ((width) or (unknown: 1px))", false},
+      {"not ((unknown: 1px) or (width))", false},
+      {"(width) and (unknown: 1px)", false},
+      {"(unknown: 1px) and (width)", false},
+      {"not ((width) and (unknown: 1px))", false},
+      {"not ((unknown: 1px) and (width))", false},
+  };
+
+  {
+    ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+    for (const MediaQueryEvaluatorTestCase& test : tests) {
+      SCOPED_TRACE(test.input);
+      String input(test.input);
+      auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
+      ASSERT_TRUE(query_set);
+      ASSERT_EQ(1u, query_set->QueryVector().size());
+      std::unique_ptr<MediaQuery> query =
+          query_set->QueryVector()[0]->CopyIgnoringUnknownForTest();
+      EXPECT_EQ(test.output, media_query_evaluator.Eval(*query));
+    }
+  }
+
+  // Run the same tests again, but avoiding CopyIgnoringUnknownForTest. This
+  // should make any MediaQuery containing "unknown" effectively behave as "not
+  // all".
+  Vector<bool> flag_values = {true, false};
+  for (bool flag : flag_values) {
+    // The runtime flag CSSMediaQueries4 should not affect the results.
+    ScopedCSSMediaQueries4ForTest media_queries_4_flag(flag);
+
+    for (const MediaQueryEvaluatorTestCase& test : tests) {
+      SCOPED_TRACE(test.input);
+      String input(test.input);
+      auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
+      ASSERT_TRUE(query_set);
+      EXPECT_FALSE(media_query_evaluator.Eval(*query_set));
+    }
   }
 }
 

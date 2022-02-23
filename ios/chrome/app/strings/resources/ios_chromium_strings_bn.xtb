@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="102360288709523007">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট পাঠিয়ে Chromium-কে আরও ভাল করে তুলতে সহায়তা করুন।</translation>
+<translation id="1047130070405668746">Chromium বেছে নিন</translation>
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1257458525759135959">ছবি সেভ করতে, সেটিংসে ট্যাপ করুন যাতে Chromium আপনার ফটো যোগ করতে পারে</translation>
 <translation id="1289216811211435351">Chromium-এ পাল্টান</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Chromium-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>
 <translation id="1584569488888892906">Chromium হল সহজ, নিরাপদ এবং এখনও পর্যন্ত উপলভ্য অন্য সব ব্রাউজারের চেয়ে দ্রুততর</translation>
 <translation id="1617663976202781617">Chromium সিঙ্ক থেকে ডেটা</translation>
+<translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="1736662517232558588">Chromium ডেটা সাফ করা হয়েছে</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">৪. Chromium বেছে নিন</translation>
 <translation id="2006345422933397527">কোনও নতুন আপডেট আছে কিনা তা Chromium-এ চেক করে দেখা যায়নি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="2054703085270098503">Chromium-এর সাহায্যে নিরাপদে থাকুন</translation>
 <translation id="2168108852149185974">কিছু অ্যাড-অনের কারণে Chromium ক্র্যাশ করতে পারে৷ দয়া করে আনইনস্টল করুন:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
-<translation id="3946918322491238254">এখনও এই ডিভাইসে আপনার সব বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্য সেটিংস দেখতে পাবেন। আপনি কোনও পরিবর্তন করলে, সেগুলি আপনার অ্যাকাউন্টে সিঙ্ক হবে না।</translation>
+<translation id="4043291146360695975">শুধুমাত্র এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="4099085513035183040">এই সুবিধা Chromium-এর বিটা ভার্সনে কাজ করে না</translation>
 <translation id="4555020257205549924">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chromium, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ করে তা সরাসরি Chromium ব্রাউজারে খুলতে পারেন।</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chrome আরও ভাল হয়েছে! একটি নতুন ভার্সন উপলব্ধ আছে৷</translation>
 <translation id="6752854822223394465">আপনার সংস্থা Chromium সেট আপ করছে...</translation>
 <translation id="6820823224820483452">Chromium সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
+<translation id="7006920032187763988">আপনার iPad-এর অন্যান্য অ্যাপে পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="7018284295775193585">Chromium আপডেট করা যাচ্ছে না</translation>
 <translation id="7045244423563602563">Chromium-এ সাইন-ইন করুন</translation>
 <translation id="7099326575020694068">Chromium আপনার ক্যামেরা বিভক্ত দৃশ্য মোডে ব্যবহার করতে পারবে না</translation>
 <translation id="7108914401277488191">Chromium ব্যবহার করে আরও অনেক কিছু করুন</translation>
 <translation id="7118091470949186573">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা বিভিন্ন লিঙ্কে ট্যাপ করে তা Chromium ব্রাউজারে খুলতে পারেন।</translation>
+<translation id="7175400662502680481">আপনার পাসওয়ার্ড কোনও হ্যাক হওয়া ডেটাবেসে প্রকাশ করা হয়েছে। পাসওয়ার্ড ম্যানেজার এখনই এটি পরিবর্তন করার সাজেশন দিচ্ছে।</translation>
 <translation id="7208566199746267865">Chromium আপনার অ্যাকাউন্টগুলিকে ওয়েবে নিয়ে এসে আপনার সময় বাঁচায়। আপনি সেটিংস থেকে অ্যাকাউন্ট জুড়তে বা সরাতে পারবেন।</translation>
 <translation id="725427773388857052">Chromium আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে।</translation>
 <translation id="7269362888766543920">কিছু অ্যাড-অনের কারণে Chromium ক্র্যাশ করতে পারে৷ অনুগ্রহ করে সেগুলিকে আনইনস্টল করে দেখুন৷</translation>
 <translation id="7313655110045230863">Chromium-কে আপনার ডিফল্ট ব্রাউজার হিসেবে সেট করতে, সেটিংস খুলুন। 'ডিফল্ট ব্রাউজার' অ্যাপে ট্যাপ করুন এবং Chromium বিকল্প বেছে নিন।</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Chromium এবং সিঙ্ক করা ডিভাইসগুলি থেকে বেছে নেওয়া ডেটা সরিয়ে ফেলা হয়েছে। আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস, যেমন বিভিন্ন Google পরিষেবায় করা সার্চ এবং অ্যাক্টিভিটির মতো তথ্য history.google.com-এ সেভ করা থাকতে পারে।</translation>
+<translation id="7395825497086981028"><ph name="EMAIL" />-এর জন্য পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
 <translation id="7400689562045506105">সব জায়গায় Chromium ব্যবহার করুন</translation>
 <translation id="766897673682622022">আপনার পাসওয়ার্ড কোনও হ্যাক হওয়া ডেটাবেসে প্রকাশ করা হয়েছে। Chromium-এর সাজেশন অনুযায়ী এখনই আপনার পাসওয়ার্ড পরিবর্তন করা উচিত।</translation>
 <translation id="7674213385180944843">সেটিংস &gt; গোপনীয়তা &gt; ক্যামেরা &gt; Chromium খুলুন এবং ক্যামেরা চালু করুন।</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">এই ডিভাইস থেকে আপনার Chromium ডেটা সরিয়ে ফেলবেন?</translation>
 <translation id="8175055321229419309">টিপ: <ph name="BEGIN_LINK" />Chromium-কে আপনার ডকে সরান<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">কোনও নতুন আপডেট আছে কিনা তা Chromium-এ চেক করে দেখা যায়নি। পরে আবার চেষ্টা করুন।</translation>
+<translation id="858114650497379505">আপনার iPhone-এর অন্যান্য অ্যাপে পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="8586442755830160949">কপিরাইট <ph name="YEAR" /> Chromium রচয়িতা৷ সর্বস্বত্ত্ব সংরক্ষিত৷</translation>
 <translation id="8663480472502753423">Chromium আপ-টু-ডেট রাখুন</translation>
 <translation id="8776843108004031667">এই অ্যাকাউন্ট ও যেকোনও সেভ না করা ডেটা Chromium থেকে সরিয়ে দেওয়া হবে।</translation>
 <translation id="894437814105052438">আপনি সাইন-আউট করলে, Chromium আপনার Google অ্যাকাউন্টে কোনও নতুন ডেটা সিঙ্ক করবে না। আগে সিঙ্ক করা ডেটা অ্যাকাউন্টে থেকে যাবে।</translation>
 <translation id="9022552996538154597">Chromium-এ সাইন-ইন করুন</translation>
+<translation id="9059693977935746710">আপনার এই পাসওয়ার্ড মনে রাখার দরকার নেই। <ph name="EMAIL" />-এর পাসওয়ার্ড ম্যানেজারে এটি সেভ করা হবে</translation>
 <translation id="9089354809943900324">Chromium পুরানো হয়ে গেছে</translation>
 <translation id="9110075932708282655">ডিফল্ট হিসেবে Chromium ব্যবহার করুন</translation>
 <translation id="921174536258924340">Chromium সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করুন।<ph name="END_LINK" /></translation>

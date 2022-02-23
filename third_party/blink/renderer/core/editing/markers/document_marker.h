@@ -25,7 +25,8 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
@@ -45,7 +46,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kActiveSuggestionMarkerIndex,
     kSuggestionMarkerIndex,
     kTextFragmentMarkerIndex,
-    kHighlightMarkerIndex,
+    kCustomHighlightMarkerIndex,
     kMarkerTypeIndexesCount
   };
 
@@ -57,7 +58,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kActiveSuggestion = 1 << kActiveSuggestionMarkerIndex,
     kSuggestion = 1 << kSuggestionMarkerIndex,
     kTextFragment = 1 << kTextFragmentMarkerIndex,
-    kHighlight = 1 << kHighlightMarkerIndex
+    kCustomHighlight = 1 << kCustomHighlightMarkerIndex
   };
 
   class MarkerTypesIterator
@@ -126,7 +127,9 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     static MarkerTypes TextMatch() { return MarkerTypes(kTextMatch); }
     static MarkerTypes Suggestion() { return MarkerTypes(kSuggestion); }
     static MarkerTypes TextFragment() { return MarkerTypes(kTextFragment); }
-    static MarkerTypes Highlight() { return MarkerTypes(kHighlight); }
+    static MarkerTypes CustomHighlight() {
+      return MarkerTypes(kCustomHighlight);
+    }
 
     bool Contains(MarkerType type) const { return mask_ & type; }
     bool Intersects(const MarkerTypes& types) const {

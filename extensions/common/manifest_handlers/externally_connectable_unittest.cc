@@ -248,24 +248,24 @@ TEST_F(ExternallyConnectableTest, WarningNoAllURLs) {
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://build.chromium.org")));
 }
 
-TEST_F(ExternallyConnectableTest, AllURLsNotWhitelisted) {
+TEST_F(ExternallyConnectableTest, AllURLsNotAllowlisted) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess(
-      "externally_connectable_all_urls_not_whitelisted.json");
+      "externally_connectable_all_urls_not_allowlisted.json");
   ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
   EXPECT_FALSE(info->matches.MatchesAllURLs());
 }
 
-TEST_F(ExternallyConnectableTest, AllHttpsURLsNotWhitelisted) {
+TEST_F(ExternallyConnectableTest, AllHttpsURLsNotAllowlisted) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess(
-      "externally_connectable_all_https_urls_not_whitelisted.json");
+      "externally_connectable_all_https_urls_not_allowlisted.json");
   ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
   EXPECT_FALSE(info->matches.MatchesAllURLs());
   EXPECT_FALSE(info->matches.MatchesURL(GURL("https://example.com")));
 }
 
-TEST_F(ExternallyConnectableTest, AllURLsWhitelisted) {
+TEST_F(ExternallyConnectableTest, AllURLsAllowlisted) {
   scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("externally_connectable_all_urls_whitelisted.json");
+      LoadAndExpectSuccess("externally_connectable_all_urls_allowlisted.json");
   ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
   EXPECT_TRUE(info->matches.MatchesAllURLs());
   URLPattern pattern(URLPattern::SCHEME_ALL, "<all_urls>");
@@ -274,9 +274,9 @@ TEST_F(ExternallyConnectableTest, AllURLsWhitelisted) {
   EXPECT_TRUE(info->matches.MatchesURL(GURL("http://build.chromium.org")));
 }
 
-TEST_F(ExternallyConnectableTest, AllHttpsURLsWhitelisted) {
+TEST_F(ExternallyConnectableTest, AllHttpsURLsAllowlisted) {
   scoped_refptr<Extension> extension = LoadAndExpectSuccess(
-      "externally_connectable_all_https_urls_whitelisted.json");
+      "externally_connectable_all_https_urls_allowlisted.json");
   ExternallyConnectableInfo* info = GetExternallyConnectableInfo(extension);
 
   URLPattern all_urls_pattern(URLPattern::SCHEME_ALL, "<all_urls>");

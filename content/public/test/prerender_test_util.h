@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -115,6 +116,15 @@ class PrerenderTestHelper {
   int AddPrerender(const GURL& prerendering_url);
   void AddPrerenderAsync(const GURL& prerendering_url);
 
+  // Starts prerendering and returns a PrerenderHandle that should be kept alive
+  // until prerender activation. Note that it returns before the completion of
+  // the prerendering navigation.
+  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
+      const GURL& prerendering_url,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
+      ui::PageTransition page_transition);
+
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 
@@ -133,8 +143,8 @@ class PrerenderTestHelper {
 
   // Confirms that, internally, appropriate subframes report that they are
   // prerendering (and that each frame tree type is kPrerender).
-  ::testing::AssertionResult VerifyPrerenderingState(const GURL& gurl)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] ::testing::AssertionResult VerifyPrerenderingState(
+      const GURL& gurl);
 
   RenderFrameHost* GetPrerenderedMainFrameHost(int host_id);
 
@@ -143,6 +153,12 @@ class PrerenderTestHelper {
 
   // Waits until the request count for `url` reaches `count`.
   void WaitForRequest(const GURL& gurl, int count);
+
+  // Generates the histogram name by appending the trigger type and the embedder
+  // suffix to the base name.
+  std::string GenerateHistogramName(const std::string& histogram_base_name,
+                                    content::PrerenderTriggerType trigger_type,
+                                    const std::string& embedder_suffix);
 
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);

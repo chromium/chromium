@@ -6,5 +6,7 @@
 	<string>${EG_MAIN_APPLICATION_DELEGATE}</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>CRIsEarlGreyTest</key>
+	<true/>
 </dict>
 </plist>

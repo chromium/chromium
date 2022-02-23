@@ -67,8 +67,10 @@ Action::~Action() {}
 scoped_refptr<Action> Action::Clone() const {
   auto clone = base::MakeRefCounted<Action>(
       extension_id(), time(), action_type(), api_name(), action_id());
-  if (args())
-    clone->set_args(args()->CreateDeepCopy());
+  if (args()) {
+    clone->set_args(
+        base::ListValue::From(base::Value::ToUniquePtrValue(args()->Clone())));
+  }
   clone->set_page_url(page_url());
   clone->set_page_title(page_title());
   clone->set_page_incognito(page_incognito());

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -13,10 +13,10 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -48,6 +48,21 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
+const char kSyncedBookmarkTitle[] = "Title";
+
+// Injects a new bookmark into the |fake_server| and returns a GUID of a created
+// entity. Note that this trigges an invalidations from the server.
+base::GUID InjectSyncedBookmark(fake_server::FakeServer* fake_server) {
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kSyncedBookmarkTitle);
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark_entity =
+      bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL));
+  base::GUID bookmark_guid = base::GUID::ParseLowercase(
+      bookmark_entity->GetSpecifics().bookmark().guid());
+  fake_server->InjectEntity(std::move(bookmark_entity));
+  return bookmark_guid;
+}
 
 MATCHER_P(HasBeenUpdatedAfter, last_updated_timestamp, "") {
   return arg.specifics().device_info().last_updated_timestamp() >
@@ -143,7 +158,7 @@ class GetUpdatesTriggeredObserver : public fake_server::FakeServer::Observer {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_;
+  const raw_ptr<fake_server::FakeServer> fake_server_;
   const syncer::ModelType type_;
 
   size_t num_nudged_get_updates_for_data_type_ = 0;
@@ -170,10 +185,9 @@ class SingleClientWithSyncSendInterestedDataTypesTest : public SyncTest {
  public:
   SingleClientWithSyncSendInterestedDataTypesTest() : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes},
-        /*disabled_features=*/{
-            switches::kUseSyncInvalidations,
-            switches::kUseSyncInvalidationsForWalletAndOffer});
+        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes},
+        /*disabled_features=*/{syncer::kUseSyncInvalidations,
+                               syncer::kUseSyncInvalidationsForWalletAndOffer});
   }
 
   SingleClientWithSyncSendInterestedDataTypesTest(
@@ -221,10 +235,9 @@ class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
  public:
   SingleClientWithUseSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations},
-        /*disabled_features=*/{
-            switches::kUseSyncInvalidationsForWalletAndOffer});
+        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                              syncer::kUseSyncInvalidations},
+        /*disabled_features=*/{syncer::kUseSyncInvalidationsForWalletAndOffer});
   }
 
   SingleClientWithUseSyncInvalidationsTest(
@@ -321,6 +334,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       ShouldProvideNotificationsEnabledInGetUpdates) {
+  ASSERT_TRUE(SetupSync());
+
+  // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
+  // GetUpdates.
+  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+
+  // Verify that the latest GetUpdates happened due to an invalidation.
+  ASSERT_EQ(message.get_updates().get_updates_origin(),
+            sync_pb::SyncEnums::GU_TRIGGER);
+  EXPECT_TRUE(message.get_updates().caller_info().notifications_enabled());
+
+  ASSERT_GT(message.get_updates().from_progress_marker_size(), 0);
+  ASSERT_TRUE(
+      message.get_updates().from_progress_marker(0).has_get_update_triggers());
+  ASSERT_TRUE(message.get_updates()
+                  .from_progress_marker(0)
+                  .get_update_triggers()
+                  .has_invalidations_out_of_sync());
+  EXPECT_FALSE(message.get_updates()
+                   .from_progress_marker(0)
+                   .get_update_triggers()
+                   .invalidations_out_of_sync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
   ASSERT_TRUE(SetupSync());
 }
@@ -394,9 +439,9 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
   SingleClientWithUseSyncInvalidationsForWalletAndOfferTest()
       : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations,
-                              switches::kUseSyncInvalidationsForWalletAndOffer},
+        /*enabled_features=*/{syncer::kSyncSendInterestedDataTypes,
+                              syncer::kUseSyncInvalidations,
+                              syncer::kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
   }
 
@@ -410,16 +455,8 @@ class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
   ~SingleClientWithUseSyncInvalidationsForWalletAndOfferTest() override =
       default;
 
-  void InjectSyncedBookmark() {
-    fake_server::BookmarkEntityBuilder bookmark_builder =
-        entity_builder_factory_.NewBookmarkEntityBuilder("My Bookmark");
-    GetFakeServer()->InjectEntity(
-        bookmark_builder.BuildBookmark(GURL(kSyncedBookmarkURL)));
-  }
-
  private:
   base::test::ScopedFeatureList override_features_;
-  fake_server::EntityBuilderFactory entity_builder_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -456,6 +493,39 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
+    ShouldProvideNotificationsEnabledInGetUpdates) {
+  ASSERT_TRUE(SetupSync());
+
+  // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
+  // GetUpdates.
+  base::GUID bookmark_guid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(
+      bookmarks_helper::BookmarksGUIDChecker(/*profile=*/0, bookmark_guid)
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
+
+  // Verify that the latest GetUpdates happened due to an invalidation.
+  ASSERT_EQ(message.get_updates().get_updates_origin(),
+            sync_pb::SyncEnums::GU_TRIGGER);
+  EXPECT_TRUE(message.get_updates().caller_info().notifications_enabled());
+
+  ASSERT_GT(message.get_updates().from_progress_marker_size(), 0);
+  ASSERT_TRUE(
+      message.get_updates().from_progress_marker(0).has_get_update_triggers());
+  ASSERT_TRUE(message.get_updates()
+                  .from_progress_marker(0)
+                  .get_update_triggers()
+                  .has_invalidations_out_of_sync());
+  EXPECT_FALSE(message.get_updates()
+                   .from_progress_marker(0)
+                   .get_update_triggers()
+                   .invalidations_out_of_sync());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
     EnableAndDisableADataType) {
   ASSERT_TRUE(SetupSync());
 
@@ -478,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(
           .Wait());
 
   // Create a bookmark on the server.
-  InjectSyncedBookmark();
+  InjectSyncedBookmark(GetFakeServer());
   // Enable BOOKMARKS again.
   ASSERT_TRUE(
       GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
@@ -495,17 +565,17 @@ IN_PROC_BROWSER_TEST_F(
 
 // ChromeOS doesn't have the concept of sign-out.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// On Lacros, signout is not supported with Mirror account consistency.
+// TODO(https://crbug.com/1260291): Enable this test once signout is supported.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SignoutAndSignin DISABLED_SignoutAndSignin
+#else
+#define MAYBE_SignoutAndSignin SignoutAndSignin
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
-    SignoutAndSignin) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, signout is not supported with Mirror account consistency.
-  // TODO(https://crbug.com/1260291): Enable this test once signout is
-  // supported.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
-#endif
-
+    MAYBE_SignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server. The FCM
@@ -544,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(
                                                 HasInstanceIdToken(new_token)))
           .Wait());
 }
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
     : public SyncTest {
@@ -552,7 +622,7 @@ class SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes
   SingleClientSyncInvalidationsTestWithPreDisabledSendInterestedDataTypes()
       : SyncTest(SINGLE_CLIENT) {
     features_override_.InitWithFeatureState(
-        switches::kSyncSendInterestedDataTypes, !content::IsPreTest());
+        syncer::kSyncSendInterestedDataTypes, !content::IsPreTest());
   }
 
   std::string GetLocalCacheGuid() {

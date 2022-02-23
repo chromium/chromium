@@ -8,15 +8,18 @@
 
 #include "base/containers/extend.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -36,21 +39,20 @@ bool IsChromeApp(const extensions::Extension* extension) {
   return extension->is_platform_app();
 }
 
-apps::mojom::InstallReason GetInstallReason(
-    const extensions::Extension* extension) {
+apps::InstallReason GetInstallReason(const extensions::Extension* extension) {
   if (extensions::Manifest::IsComponentLocation(extension->location()))
-    return apps::mojom::InstallReason::kSystem;
+    return apps::InstallReason::kSystem;
 
   if (extensions::Manifest::IsPolicyLocation(extension->location()))
-    return apps::mojom::InstallReason::kPolicy;
+    return apps::InstallReason::kPolicy;
 
   if (extension->was_installed_by_oem())
-    return apps::mojom::InstallReason::kOem;
+    return apps::InstallReason::kOem;
 
   if (extension->was_installed_by_default())
-    return apps::mojom::InstallReason::kDefault;
+    return apps::InstallReason::kDefault;
 
-  return apps::mojom::InstallReason::kUser;
+  return apps::InstallReason::kUser;
 }
 
 }  // namespace
@@ -63,7 +65,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     : public extensions::ExtensionPrefsObserver,
       public extensions::ExtensionRegistryObserver,
       public extensions::AppWindowRegistry::Observer {
-  using Readiness = apps::mojom::Readiness;
+  using Readiness = apps::Readiness;
 
  public:
   ProfileTracker(Profile* profile, LacrosExtensionAppsPublisher* publisher)
@@ -76,7 +78,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
     // Populate initial conditions [e.g. installed apps prior to starting
     // observation].
-    std::vector<apps::mojom::AppPtr> apps;
+    std::vector<apps::AppPtr> apps;
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile_);
     for (const scoped_refptr<const extensions::Extension> extension :
@@ -115,8 +117,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       const std::string& app_id,
       const base::Time& last_launch_time) override {
     const auto* extension =
-        lacros_extension_apps_utility::MaybeGetPackagedV2App(profile_, app_id);
-    if (!extension)
+        lacros_extensions_util::MaybeGetExtension(profile_, app_id);
+    if (!extension || !extension->is_platform_app())
       return;
 
     Publish(MakeApp(extension, Readiness::kReady));
@@ -133,8 +135,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
                          const extensions::Extension* extension) override {
     if (!IsChromeApp(extension))
       return;
-    apps::mojom::AppPtr app = MakeApp(extension, Readiness::kReady);
-    Publish(std::move(app));
+    Publish(MakeApp(extension, Readiness::kReady));
   }
 
   void OnExtensionUnloaded(
@@ -167,8 +168,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
       case extensions::UnloadedExtensionReason::MIGRATED_TO_COMPONENT:
         return;
     }
-    apps::mojom::AppPtr app = MakeApp(extension, readiness);
-    Publish(std::move(app));
+    Publish(MakeApp(extension, readiness));
   }
 
   void OnExtensionInstalled(content::BrowserContext* browser_context,
@@ -176,8 +176,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
                             bool is_update) override {
     if (!IsChromeApp(extension))
       return;
-    apps::mojom::AppPtr app = MakeApp(extension, Readiness::kReady);
-    Publish(std::move(app));
+    Publish(MakeApp(extension, Readiness::kReady));
   }
 
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
@@ -185,7 +184,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
                               extensions::UninstallReason reason) override {
     if (!IsChromeApp(extension))
       return;
-    apps::mojom::AppPtr app =
+    apps::AppPtr app =
         MakeApp(extension, reason == extensions::UNINSTALL_REASON_MIGRATED
                                ? Readiness::kUninstalledByMigration
                                : Readiness::kUninstalledByUser);
@@ -198,8 +197,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
 
   // AppWindowRegistry::Observer overrides.
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
-    std::string muxed_id = lacros_extension_apps_utility::MuxId(
-        profile_, app_window->GetExtension());
+    std::string muxed_id =
+        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
         app_window->GetNativeWindow());
     app_window_id_cache_[app_window] = window_id;
@@ -211,22 +210,22 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     auto it = app_window_id_cache_.find(app_window);
     DCHECK(it != app_window_id_cache_.end());
 
-    std::string muxed_id = lacros_extension_apps_utility::MuxId(
-        profile_, app_window->GetExtension());
+    std::string muxed_id =
+        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
     std::string window_id = it->second;
 
     publisher_->OnAppWindowRemoved(muxed_id, window_id);
   }
 
   // Publishes a differential update to the app service.
-  void Publish(apps::mojom::AppPtr app) {
-    std::vector<apps::mojom::AppPtr> apps;
+  void Publish(apps::AppPtr app) {
+    std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
     Publish(std::move(apps));
   }
 
   // Publishes a vector of differential updates to the app service.
-  void Publish(std::vector<apps::mojom::AppPtr> apps) {
+  void Publish(std::vector<apps::AppPtr> apps) {
     publisher_->Publish(std::move(apps));
   }
 
@@ -248,13 +247,12 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   }
 
   // Creates an AppPtr from an extension.
-  apps::mojom::AppPtr MakeApp(const extensions::Extension* extension,
-                              Readiness readiness) {
+  apps::AppPtr MakeApp(const extensions::Extension* extension,
+                       Readiness readiness) {
     DCHECK(IsChromeApp(extension));
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-
-    app->app_type = apps::mojom::AppType::kStandaloneBrowserExtension;
-    app->app_id = lacros_extension_apps_utility::MuxId(profile_, extension);
+    auto app = std::make_unique<apps::App>(
+        apps::AppType::kStandaloneBrowserChromeApp,
+        lacros_extensions_util::MuxId(profile_, extension));
     app->readiness = readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();
@@ -264,7 +262,9 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     // This bug is tracked at https://crbug.com/1248499, but given that Chrome
     // Apps is deprecated, it's unclear if we'll ever get around to implementing
     // this functionality.
-    app->icon_key = apps::mojom::IconKey::New();
+    app->icon_key =
+        apps::IconKey(/*timeline=*/0, apps::IconKey::kInvalidResourceId,
+                      apps::IconEffects::kCrOsStandardIcon);
 
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {
@@ -276,32 +276,25 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     }
 
     app->install_reason = GetInstallReason(extension);
-    app->recommendable = apps::mojom::OptionalBool::kTrue;
-    app->searchable = apps::mojom::OptionalBool::kTrue;
-    app->paused = apps::mojom::OptionalBool::kFalse;
+    app->recommendable = true;
+    app->searchable = true;
+    app->paused = false;
 
-    apps::mojom::OptionalBool show = ShouldShow(extension)
-                                         ? apps::mojom::OptionalBool::kTrue
-                                         : apps::mojom::OptionalBool::kFalse;
+    bool show = ShouldShow(extension);
     app->show_in_launcher = show;
     app->show_in_shelf = show;
     app->show_in_search = show;
-
-    app->show_in_management = extension->ShouldDisplayInAppLauncher()
-                                  ? apps::mojom::OptionalBool::kTrue
-                                  : apps::mojom::OptionalBool::kFalse;
+    app->show_in_management = extension->ShouldDisplayInAppLauncher();
     app->handles_intents = show;
 
     const extensions::ManagementPolicy* policy =
         extensions::ExtensionSystem::Get(profile_)->management_policy();
     app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
-                            !policy->MustRemainInstalled(extension, nullptr))
-                               ? apps::mojom::OptionalBool::kTrue
-                               : apps::mojom::OptionalBool::kFalse;
+                            !policy->MustRemainInstalled(extension, nullptr));
 
     // Add file_handlers.
     base::Extend(app->intent_filters,
-                 apps_util::CreateChromeAppIntentFilters(extension));
+                 apps_util::CreateIntentFiltersForChromeApp(extension));
 
     return app;
   }
@@ -374,8 +367,7 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
   return true;
 }
 
-void LacrosExtensionAppsPublisher::Publish(
-    std::vector<apps::mojom::AppPtr> apps) {
+void LacrosExtensionAppsPublisher::Publish(std::vector<apps::AppPtr> apps) {
   publisher_->OnApps(std::move(apps));
 }
 

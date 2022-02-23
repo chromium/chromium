@@ -186,7 +186,7 @@ void AddOptionalStep(OptionalStep optional_step,
   switch (optional_step) {
     case STEP_UNSPECIFIED:
       NOTREACHED() << __func__ << " unspecified optional_step";
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case SKIP_STEP:
       break;

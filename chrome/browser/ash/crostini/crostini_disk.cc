@@ -22,6 +22,8 @@
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "ui/base/text/bytes_formatting.h"
 
+using DiskImageStatus = vm_tools::concierge::DiskImageStatus;
+
 namespace {
 chromeos::ConciergeClient* GetConciergeClient() {
   return chromeos::ConciergeClient::Get();
@@ -31,11 +33,11 @@ std::string FormatBytes(const int64_t value) {
   return base::UTF16ToUTF8(ui::FormatBytes(value));
 }
 
-void EmitResizeResultMetric(vm_tools::concierge::DiskImageStatus status) {
+void EmitResizeResultMetric(DiskImageStatus status) {
   base::UmaHistogramEnumeration(
       "Crostini.DiskResize.Result", status,
-      static_cast<vm_tools::concierge::DiskImageStatus>(
-          vm_tools::concierge::DiskImageStatus_MAX + 1));
+      static_cast<DiskImageStatus>(vm_tools::concierge::DiskImageStatus_MAX +
+                                   1));
 }
 
 int64_t round_up(int64_t n, double increment) {
@@ -236,25 +238,23 @@ class Observer : public chromeos::ConciergeClient::DiskImageObserver {
   Observer(std::string uuid, base::OnceCallback<void(bool)> callback)
       : uuid_(std::move(uuid)), callback_(std::move(callback)) {}
   ~Observer() override { GetConciergeClient()->RemoveDiskImageObserver(this); }
+
+  // chromeos::ConciergeClient::DiskImageObserver:
   void OnDiskImageProgress(
       const vm_tools::concierge::DiskImageStatusResponse& signal) override {
-    if (signal.command_uuid() != uuid_) {
+    if (signal.command_uuid() != uuid_ ||
+        signal.status() == DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
       return;
     }
-    switch (signal.status()) {
-      case vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS:
-        break;
-      case vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED:
-        EmitResizeResultMetric(signal.status());
-        std::move(callback_).Run(true);
-        break;
-      default:
-        LOG(ERROR) << "Failed or unrecognised status when resizing: "
-                   << signal.status() << " " << signal.failure_reason();
-        EmitResizeResultMetric(signal.status());
-        std::move(callback_).Run(false);
-        delete this;
+
+    EmitResizeResultMetric(signal.status());
+    bool resized = signal.status() == DiskImageStatus::DISK_STATUS_RESIZED;
+    if (!resized) {
+      LOG(ERROR) << "Failed or unrecognised status when resizing: "
+                 << signal.status() << " " << signal.failure_reason();
     }
+    std::move(callback_).Run(resized);
+    delete this;
   }
 
  private:
@@ -300,15 +300,13 @@ void OnResize(
     absl::optional<vm_tools::concierge::ResizeDiskImageResponse> response) {
   if (!response) {
     LOG(ERROR) << "Got null response from concierge";
-    EmitResizeResultMetric(
-        vm_tools::concierge::DiskImageStatus::DISK_STATUS_UNKNOWN);
+    EmitResizeResultMetric(DiskImageStatus::DISK_STATUS_UNKNOWN);
     std::move(callback).Run(false);
-  } else if (response->status() ==
-             vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED) {
+  } else if (response->status() == DiskImageStatus::DISK_STATUS_RESIZED) {
     EmitResizeResultMetric(response->status());
     std::move(callback).Run(true);
-  } else if (response->status() ==
-             vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
+  } else if (response->status() == DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
+    // The newly created Observer is self-deleting.
     GetConciergeClient()->AddDiskImageObserver(
         new Observer(response->command_uuid(), std::move(callback)));
   } else {

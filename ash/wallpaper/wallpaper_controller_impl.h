@@ -5,7 +5,6 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +13,9 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
@@ -25,6 +26,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/gtest_prod_util.h"
@@ -40,6 +42,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+#include "url/gurl.h"
 
 class PrefRegistrySimple;
 
@@ -80,7 +83,8 @@ class ASH_EXPORT WallpaperControllerImpl
       public TabletModeObserver,
       public OverviewObserver,
       public ui::CompositorLockClient,
-      public ui::NativeThemeObserver {
+      public ui::NativeThemeObserver,
+      public ColorModeObserver {
  public:
   enum WallpaperResolution {
     WALLPAPER_RESOLUTION_LARGE,
@@ -99,6 +103,12 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kNewWallpaperLayoutNodeName[];
   static const char kNewWallpaperLocationNodeName[];
   static const char kNewWallpaperTypeNodeName[];
+  static const char kNewWallpaperUnitIdNodeName[];
+  static const char kNewWallpaperVariantListNodeName[];
+
+  // Names of nodes for the online wallpaper variant dictionary.
+  static const char kOnlineWallpaperTypeNodeName[];
+  static const char kOnlineWallpaperUrlNodeName[];
 
   explicit WallpaperControllerImpl(PrefService* local_state);
 
@@ -258,6 +268,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetOnlineWallpaperFromData(const OnlineWallpaperParams& params,
                                   const std::string& image_data,
                                   SetOnlineWallpaperCallback callback) override;
+  void SetGooglePhotosWallpaper(
+      const GooglePhotosWallpaperParams& params,
+      SetGooglePhotosWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(
@@ -296,7 +309,7 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsActiveUserWallpaperControlledByPolicy() override;
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
-  void SetDailyRefreshCollectionId(const AccountId& accound_id,
+  void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(
       const AccountId& account_id) const override;
@@ -326,6 +339,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -423,10 +439,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Reads image from |file_path| on disk, and calls |OnWallpaperDataRead|
   // with the result of |ReadFileToString|.
-  void ReadAndDecodeWallpaper(
-      DecodeImageCallback callback,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::FilePath& file_path);
+  void ReadAndDecodeWallpaper(DecodeImageCallback callback,
+                              const base::FilePath& file_path);
 
   // Sets wallpaper info for the user to default and saves it to local
   // state the user is not ephemeral. Returns false if this fails.
@@ -440,6 +454,13 @@ class ASH_EXPORT WallpaperControllerImpl
                                   const OnlineWallpaperParams& params,
                                   const base::FilePath& file_path);
 
+  // Used as the callback of checking that all the wallpaper variants' paths
+  // exist. If they do, set the online wallpaper from the given |params.url|.
+  void SetOnlineWallpaperFromVariantPaths(
+      SetOnlineWallpaperCallback callback,
+      const OnlineWallpaperParams& params,
+      const base::flat_map<std::string, base::FilePath>& url_to_file_path_map);
+
   // Used as the callback of decoding wallpapers of type
   // `WallpaperType::kOnline`. Saves the image to local file if `save_file` is
   // true, and shows the wallpaper immediately if `params.account_id` is the
@@ -448,6 +469,20 @@ class ASH_EXPORT WallpaperControllerImpl
                                 bool save_file,
                                 SetOnlineWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
+
+  // Used as the callback of fetching the metadata for a Google Photos photo
+  // from the unique id. Currently metadata is simply the image URL (stubbed).
+  void OnGooglePhotosMetadataFetched(const GooglePhotosWallpaperParams& params,
+                                     SetGooglePhotosWallpaperCallback callback,
+                                     const std::string& metadata);
+
+  // Used as the callback of downloading wallpapers of type
+  // `WallpaperType::kGooglePhotos`. Shows the wallpaper immediately if
+  // `params.account_id` is the active user.
+  void OnGooglePhotosWallpaperDownloaded(
+      const GooglePhotosWallpaperParams& params,
+      SetGooglePhotosWallpaperCallback callback,
+      const gfx::ImageSkia& image);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
   // |show_wallpaper| is true.
@@ -519,13 +554,13 @@ class ASH_EXPORT WallpaperControllerImpl
                           bool show_wallpaper,
                           const gfx::ImageSkia& image);
 
-  // Reloads the current wallpaper. It may change the wallpaper size based on
-  // the current display's resolution. If |clear_cache| is true, all wallpaper
-  // cache should be cleared. This is required when the display's native
-  // resolution changes to a larger resolution (e.g. when hooked up a large
-  // external display) and we need to load a larger resolution wallpaper for the
-  // display. All the previous small resolution wallpaper cache should be
-  // cleared.
+  // Reloads the current wallpaper. It may change the wallpaper size based
+  // on the current display's resolution. If |clear_cache| is true, all
+  // wallpaper cache should be cleared. This is required when the display's
+  // native resolution changes to a larger resolution (e.g. when hooked up a
+  // large external display) and we need to load a larger resolution
+  // wallpaper for the display. All the previous small resolution wallpaper
+  // cache should be cleared.
   void ReloadWallpaper(bool clear_cache);
 
   // Sets |prominent_colors_| and notifies the observers if there is a change.
@@ -599,21 +634,34 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
                                    SetOnlineWallpaperCallback callback,
                                    bool success);
+
+  // Save the downloaded |params.variants| at |current_index|.
+  void OnOnlineWallpaperVariantDownloaded(const OnlineWallpaperParams& params,
+                                          base::RepeatingClosure on_done,
+                                          size_t current_index,
+                                          const gfx::ImageSkia& image);
+
+  // Check that all variants are downloaded successfully and set the wallpaper
+  // from |params.url|.
+  void OnAllOnlineWallpaperVariantsDownloaded(
+      const OnlineWallpaperParams& params,
+      SetOnlineWallpaperCallback callback);
+
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
 
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
 
   // Callback from the client providing a url to a wallpaper from the user
-  // specified collection when daily refresh is enabled. If |image_url| is
-  // empty, fetching the url failed, and should be tried again soon.
+  // specified collection when daily refresh is enabled. If |success| is
+  // false, fetching the |image| failed, and should be tried again soon.
   void SetDailyWallpaper(const AccountId& account_id,
                          const std::string& collection_id,
                          WallpaperLayout layout,
                          bool preview_mode,
                          RefreshWallpaperCallback callback,
-                         const absl::optional<uint64_t>& asset_id,
-                         const std::string& image_url);
+                         bool success,
+                         const backdrop::Image& image);
 
   // Called after attempting to download and set a daily refresh wallpaper.
   // On failure retry again in a while.
@@ -633,8 +681,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // wallpaper set.
   base::TimeDelta GetTimeToNextDailyRefreshUpdate() const;
 
-  void SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin_path);
+  void SaveWallpaperToDriveFsAndSyncInfo(const AccountId& account_id,
+                                         const base::FilePath& origin_path);
+
+  void WallpaperSavedToDriveFS(const AccountId& account_id, bool success);
 
   void HandleCustomWallpaperInfoSyncedIn(const AccountId& account_id,
                                          WallpaperInfo info);
@@ -643,8 +693,31 @@ class ASH_EXPORT WallpaperControllerImpl
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
 
+  // This will not update a new wallpaper if the synced |info.collection_id| is
+  // the same as the user's current collection_id.
   void HandleDailyWallpaperInfoSyncedIn(const AccountId& account_id,
                                         const WallpaperInfo& info);
+
+  void HandleOnlineWallpaperInfoSyncedIn(const AccountId& account_id,
+                                         const WallpaperInfo& info);
+
+  void HandleGooglePhotosWallpaperInfoSyncedIn(const AccountId& account_id,
+                                               const WallpaperInfo& info);
+
+  // Updates the online and daily wallpaper with the correct variant based on
+  // the color mode.
+  void HandleSettingOnlineWallpaperFromWallpaperInfo(
+      const AccountId& account_id,
+      const WallpaperInfo& info);
+
+  // Find the variants for the online wallpaper with given |params.asset_id| and
+  // |params.collection_id| and determine the right variant to set based on the
+  // system's color mode.
+  void FindAndSetOnlineWallpaperVariants(
+      const OnlineWallpaperParams& params,
+      base::OnceCallback<void(bool)> callback,
+      bool success,
+      const std::vector<backdrop::Image>& images);
 
   bool locked_ = false;
 
@@ -736,6 +809,10 @@ class ASH_EXPORT WallpaperControllerImpl
   base::RepeatingClosure reload_always_on_top_wallpaper_callback_;
 
   base::FilePathWatcher drive_fs_wallpaper_watcher_;
+
+  // Used to capture wallpaper variants' url to their corresponding image.
+  // Cleared every time downloading wallpapers is initiated.
+  base::flat_map<std::string, gfx::ImageSkia> url_to_image_map_;
 
   // If true, use a solid color wallpaper as if it is the decoded image.
   bool bypass_decode_for_testing_ = false;

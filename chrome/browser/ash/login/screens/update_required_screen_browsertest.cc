@@ -57,7 +57,7 @@ const test::UIPath kUpdateRequiredSubtitle = {"update-required",
                                               "update-subtitle"};
 const test::UIPath kUpdateNowButton = {"update-required", "update-button"};
 const test::UIPath kUpdateProcessStep = {"update-required",
-                                         "checking-downloading-update"};
+                                         "downloadingUpdate"};
 const test::UIPath kUpdateRequiredEolDialog = {"update-required", "eolDialog"};
 const test::UIPath kEolAdminMessageContainer = {"update-required",
                                                 "adminMessageContainer"};
@@ -81,18 +81,17 @@ const test::UIPath kMeteredNetworkAcceptButton = {
 const test::UIPath kNoNetworkStep = {"update-required",
                                      "update-required-no-network-dialog"};
 
-// Elements in checking-downloading-update
-const test::UIPath kUpdateProcessCheckingStep = {"update-required",
-                                                 "checking-downloading-update",
-                                                 "checking-for-updates-dialog"};
+// Elements in downloadingUpdate
+const test::UIPath kUpdateProcessCheckingStep = {
+    "update-required", "downloadingUpdate", "checking-for-updates-dialog"};
 const test::UIPath kUpdateProcessUpdatingStep = {
-    "update-required", "checking-downloading-update", "updating-dialog"};
+    "update-required", "downloadingUpdate", "updating-dialog"};
 const test::UIPath kUpdateProcessCompleteStep = {
-    "update-required", "checking-downloading-update", "update-complete-dialog"};
+    "update-required", "downloadingUpdate", "update-complete-dialog"};
 const test::UIPath kCheckingForUpdatesMessage = {
-    "update-required", "checking-downloading-update", "checkingForUpdatesMsg"};
-const test::UIPath kUpdatingProgress = {
-    "update-required", "checking-downloading-update", "updating-progress"};
+    "update-required", "downloadingUpdate", "checkingForUpdatesMsg"};
+const test::UIPath kUpdatingProgress = {"update-required", "downloadingUpdate",
+                                        "updating-progress"};
 
 constexpr char kWifiServicePath[] = "/service/wifi2";
 constexpr char kCellularServicePath[] = "/service/cellular1";

@@ -40,7 +40,6 @@ suite('languages page', () => {
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
-    loadTimeData.overrideValues({imeOptionsInSettings: true});
   });
 
   setup(async () => {

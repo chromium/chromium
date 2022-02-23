@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -14,13 +15,11 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -102,7 +101,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     SystemClockClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
-    profile_.get()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    profile_->SetIsSupervisedProfile();
     arc_test_.SetUp(profile());
 
     session_manager_.CreateSession(

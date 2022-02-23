@@ -5,14 +5,13 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_DEVICE_LAUNCH_OBSERVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_VIDEO_CAPTURE_DEVICE_LAUNCH_OBSERVER_H_
 
-#include "content/common/content_export.h"
 #include "media/capture/video_capture_types.h"
 
 namespace content {
 
 class VideoCaptureController;
 
-class CONTENT_EXPORT VideoCaptureDeviceLaunchObserver {
+class VideoCaptureDeviceLaunchObserver {
  public:
   virtual ~VideoCaptureDeviceLaunchObserver() {}
   virtual void OnDeviceLaunched(VideoCaptureController* controller) = 0;

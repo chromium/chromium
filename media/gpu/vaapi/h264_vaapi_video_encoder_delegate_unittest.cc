@@ -32,7 +32,7 @@ VideoEncodeAccelerator::Config kDefaultVEAConfig(
     PIXEL_FORMAT_I420,
     gfx::Size(1280, 720),
     H264PROFILE_BASELINE,
-    Bitrate::ConstantBitrate(14000000)
+    Bitrate::ConstantBitrate(14000000u)
     /* = maximum bitrate in bits per second for level 3.1 */,
     VideoEncodeAccelerator::kDefaultFramerate,
     absl::nullopt /* gop_length */,
@@ -181,7 +181,9 @@ H264VaapiVideoEncoderDelegateTest::CreateEncodeJob(bool keyframe) {
       kDefaultVEAConfig.input_visible_size.GetArea());
 
   return std::make_unique<VaapiVideoEncoderDelegate::EncodeJob>(
-      input_frame, keyframe, va_surface, picture, std::move(scoped_va_buffer));
+      input_frame, keyframe, next_surface_id_++,
+      kDefaultVEAConfig.input_visible_size, picture,
+      std::move(scoped_va_buffer));
 }
 
 void H264VaapiVideoEncoderDelegateTest::SetUp() {

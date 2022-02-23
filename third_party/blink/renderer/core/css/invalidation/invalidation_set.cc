@@ -33,10 +33,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -82,10 +82,10 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
     const auto& other_sibling = To<SiblingInvalidationSet>(other);
     if ((this_sibling.MaxDirectAdjacentSelectors() !=
          other_sibling.MaxDirectAdjacentSelectors()) ||
-        !DataEquivalent(this_sibling.Descendants(),
-                        other_sibling.Descendants()) ||
-        !DataEquivalent(this_sibling.SiblingDescendants(),
-                        other_sibling.SiblingDescendants())) {
+        !base::ValuesEquivalent(this_sibling.Descendants(),
+                                other_sibling.Descendants()) ||
+        !base::ValuesEquivalent(this_sibling.SiblingDescendants(),
+                                other_sibling.SiblingDescendants())) {
       return false;
     }
   }
@@ -266,10 +266,11 @@ bool InvalidationSet::HasEmptyBackings() const {
 StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
   const SpaceSplitString& class_names = element.ClassNames();
   wtf_size_t size = class_names.size();
-  if (StringImpl* string_impl = classes_.GetStringImpl(backing_flags_)) {
+  if (const AtomicString& string_impl =
+          classes_.GetAtomicString(backing_flags_)) {
     for (wtf_size_t i = 0; i < size; ++i) {
-      if (Equal(string_impl, class_names[i].Impl()))
-        return string_impl;
+      if (Equal(string_impl.Impl(), class_names[i].Impl()))
+        return string_impl.Impl();
     }
   }
   if (const HashSet<AtomicString>* set = classes_.GetHashSet(backing_flags_)) {
@@ -283,9 +284,10 @@ StringImpl* InvalidationSet::FindAnyClass(Element& element) const {
 }
 
 StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
-  if (StringImpl* string_impl = attributes_.GetStringImpl(backing_flags_)) {
-    if (element.HasAttributeIgnoringNamespace(AtomicString(string_impl)))
-      return string_impl;
+  if (const AtomicString& string_impl =
+          attributes_.GetAtomicString(backing_flags_)) {
+    if (element.HasAttributeIgnoringNamespace(string_impl))
+      return string_impl.Impl();
   }
   if (const HashSet<AtomicString>* set =
           attributes_.GetHashSet(backing_flags_)) {

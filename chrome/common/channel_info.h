@@ -63,7 +63,7 @@ version_info::Channel GetChannel();
 // lack of support for extended stable on those configurations.
 bool IsExtendedStableChannel();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Because the channel information on the Mac is baked into the Info.plist file,
 // and that file may change during an update, this function must be called
 // early in startup to cache the channel info so that the correct channel info
@@ -90,15 +90,15 @@ bool IsSideBySideCapable();
 void SetChannelIdForTesting(const std::string& channel_id);
 void ClearChannelIdForTesting();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Set/clears information used in determining the browser's channel.
 void SetChannelForTesting(version_info::Channel, bool is_extended_stable);
 void ClearChannelForTesting();
-#endif  // defined(OS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns a channel-specific suffix to use when constructing the path of the
 // default user data directory, allowing multiple channels to run side-by-side.
 // In the stable channel and in unbranded builds, this returns the empty string.
@@ -107,7 +107,7 @@ std::string GetChannelSuffixForDataDir();
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the channel-specific filename of the desktop shortcut used to launch
 // the browser.
 std::string GetDesktopName(base::Environment* env);

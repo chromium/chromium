@@ -20,8 +20,8 @@ export enum ActionTypes {
 
 export type IncompatibleApplication = {
   name: string,
-  actionType: ActionTypes,
-  actionUrl: string,
+  type: ActionTypes,
+  url: string,
 };
 
 export interface IncompatibleApplicationsBrowserProxy {

@@ -27,6 +27,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -229,11 +231,14 @@ bool TimeView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void TimeView::OnGestureEvent(ui::GestureEvent* event) {
-  // Skip gesture handling happening in Button so that the container views
-  // receive and handle them properly.
-  // TODO(mohsen): Refactor TimeView/DateView classes so that they are not
-  // ActionableView anymore. Create an ActionableView as a container for when
-  // needed.
+  if (!features::IsCalendarViewEnabled())
+    return;
+
+  // Checks tap types if gesture tap.
+  if (event->type() == ui::ET_GESTURE_TAP_DOWN && callback_.has_value())
+    callback_->Run(*event);
+
+  event->StopPropagation();
 }
 
 void TimeView::UpdateText() {

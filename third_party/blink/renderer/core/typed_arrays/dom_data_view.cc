@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 
 #include "base/numerics/checked_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 

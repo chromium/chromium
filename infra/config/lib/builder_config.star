@@ -6,6 +6,7 @@
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "kinds")
+load("./args.star", "args")
 load("//project.star", "settings")
 
 # TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
@@ -48,7 +49,7 @@ def _gclient_config(*, config, apply_configs = None):
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
 
     Returns:
         A struct that can be passed to the `gclient_config` argument of
@@ -58,7 +59,7 @@ def _gclient_config(*, config, apply_configs = None):
         fail("config must be provided")
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
     )
 
 _build_config = _enum(
@@ -99,17 +100,18 @@ def _chromium_config(
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
         build_config: (build_config) The build config value to use.
         target_arch: (target_arch) The target architecture to build for.
         target_bits: (int) The target bit count to build for.
         target_platform: (target_platform) The target platform to build for.
-        target_cros_boards: (list[str]) The CROS boards to target, SDKs will
+        target_cros_boards: (list[str]|str) The CROS boards to target, SDKs will
             be downloaded for each board. Can only be specified if
             `target_platform` is `target_platform.CHROMEOS`.
-        cros_boards_with_qemu_images: (list[str]) Same as `target_cros_boards`,
-            but a VM image for the board will be downloaded as well. Can only be
-            specified if `target_platform` is `target_platform.CHROMEOS`.
+        cros_boards_with_qemu_images: (list[str]|str) Same as
+            `target_cros_boards`, but a VM image for the board will be
+            downloaded as well. Can only be specified if `target_platform` is
+            `target_platform.CHROMEOS`.
 
     Returns:
         A struct that can be passed to the `chromium_config` argument of
@@ -123,7 +125,7 @@ def _chromium_config(
         fail("unknown target_arch: {}".format(target_arch))
     if target_bits != None and target_bits not in (32, 64):
         fail("unknown target_bits: {}".format(target_bits))
-    if target_platform != None and target_platform not in _target_platform.values:
+    if target_platform != None and target_platform not in _target_platform._values:
         fail("unknown target_platform: {}".format(target_platform))
     if ((target_cros_boards or cros_boards_with_qemu_images) and
         target_platform != _target_platform.CHROMEOS):
@@ -132,13 +134,13 @@ def _chromium_config(
 
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
         build_config = build_config,
         target_arch = target_arch,
         target_bits = target_bits,
         target_platform = target_platform,
-        target_cros_boards = target_cros_boards,
-        cros_boards_with_qemu_images = cros_boards_with_qemu_images,
+        target_cros_boards = args.listify(target_cros_boards) or None,
+        cros_boards_with_qemu_images = args.listify(cros_boards_with_qemu_images) or None,
     )
 
 def _android_config(*, config, apply_configs = None):
@@ -148,7 +150,7 @@ def _android_config(*, config, apply_configs = None):
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
 
     Returns:
         A struct that can be passed to the `android_config` argument of
@@ -158,7 +160,7 @@ def _android_config(*, config, apply_configs = None):
         fail("config must be provided")
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
     )
 
 def _test_results_config(*, config):
@@ -294,8 +296,18 @@ _rts_condition = _enum(
     ALWAYS = "ALWAYS",
 )
 
-# TODO(gbeaty) Expose this to be used with try_settings
 def _rts_config(*, condition, recall = None):
+    """The details for applying RTS for the builder.
+
+    RTS (regression test selection) is an algorithm that trades off accuracy
+    against speed by skipping tests that are less likely to provide a useful
+    signal. See http://bit.ly/chromium-rts for more information.
+
+    Args:
+        condition: (rts_condition) When the RTS algorithm should be applied for
+            builds of the builder.
+        recall: (float) The recall level to use for the RTS algorithm.
+    """
     if condition not in _rts_condition._values:
         fail("unknown RTS condition: {}".format(condition))
     return _struct_with_non_none_values(
@@ -303,17 +315,35 @@ def _rts_config(*, condition, recall = None):
         recall = recall,
     )
 
-# TODO(gbeaty) Expose this function and add support to the generator
 def _try_settings(
         *,
-        include_all_triggered_testers = False,
-        is_compile_only = False,
+        # TODO(gbeaty) Add support for this value
+        # include_all_triggered_testers = False,
+        is_compile_only = None,
         analyze_names = None,
-        retry_failed_shards = True,
-        retry_without_patch = True,
+        retry_failed_shards = None,
+        retry_without_patch = None,
         rts_config = None):
+    """Settings specific to try builders.
+
+    Args:
+        is_compile_only: (bool) If true, any configured compile targets or tests
+            will be compiled, but not tests will be triggered.
+        analyze_names: (list[str]|str) Additional names to analyze in the build.
+        retry_failed_shards: (bool) Whether or not failing shards of a test will
+            be retried. If retries for all failed shards of a test succeed, the
+            test will be considered to have passed.
+        retry_without_patch: (bool) Whether or not failing tests will be retried
+            without the patch applied. If the retry for a test fails, the test
+            will be considered to have passed.
+        rts_config: (rts_config) The rts_config object for the builder.
+
+    Returns:
+        A struct that can be passed to the `try_settings` argument of the
+        builder.
+    """
     return _struct_with_non_none_values(
-        include_all_triggered_testers = include_all_triggered_testers,
+        # include_all_triggered_testers = include_all_triggered_testers,
         is_compile_only = is_compile_only,
         analyze_names = analyze_names,
         retry_failed_shards = retry_failed_shards,
@@ -342,6 +372,11 @@ builder_config = struct(
 
     # Function for defining test_results recipe module config
     test_results_config = _test_results_config,
+
+    # Function for defining try-specific settings
+    try_settings = _try_settings,
+    rts_config = _rts_config,
+    rts_condition = _rts_condition,
 )
 
 # Internal details =============================================================
@@ -426,12 +461,17 @@ def _struct_to_dict(obj):
     return json.decode(json.encode(obj))
 
 _ALLOW_LIST = (
+    ("ci", "chromeos-amd64-generic-rel"),
+    ("ci", "chromeos-arm-generic-rel"),
     ("ci", "linux-bootstrap"),
     ("ci", "linux-bootstrap-tests"),
+    ("ci", "Win x64 Builder (reclient compare)"),
+    ("try", "chromeos-amd64-generic-rel"),
+    ("try", "chromeos-arm-generic-rel"),
     ("try", "linux-bootstrap"),
 )
 
-def register_builder_config(bucket, name, builder_group, builder_spec, mirrors):
+def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, try_settings):
     """Registers the builder config so the properties can be computed.
 
     At most one of builder_spec or mirrors can be set. If neither builder_spec
@@ -443,8 +483,12 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors):
         builder_group: The name of the group the builder belongs to.
         builder_spec: The spec describing the configuration for the builder.
         mirrors: References to the builders that the builder should mirror.
+        try_settings: The object determining the try-specific settings.
     """
     if not builder_spec and not mirrors:
+        if try_settings:
+            fail("try_settings specified without builder_spec or mirrors")
+
         # TODO(gbeaty) Eventually make this a failure for the chromium
         # family of recipes
         return
@@ -466,6 +510,7 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors):
         builder_group = builder_group,
         builder_spec = _struct_to_dict(builder_spec),
         mirrors = mirrors,
+        try_settings = _struct_to_dict(try_settings),
     ))
     for ref in (name, "{}/{}".format(bucket, name)):
         ref_key = _builder_config_ref_key(ref)
@@ -643,6 +688,7 @@ def _set_builder_config_property(ctx):
                     entries = sorted(entries, key = lambda e: _builder_id_sort_key(e["builder_id"])),
                 ),
                 builder_ids = sorted(builder_ids, key = _builder_id_sort_key),
+                **(node.props.try_settings or {})
             )
 
             if builder_ids_in_scope_for_testing:
@@ -652,13 +698,10 @@ def _set_builder_config_property(ctx):
 
             mirroring_builders = _get_mirroring_builders(node)
             if mirroring_builders:
-                builder_config["mirroring_builders"] = sorted([
-                    dict(
-                        group = b.props.builder_group,
-                        builder = b.props.name,
-                    )
-                    for b in mirroring_builders
-                ])
+                builder_config["mirroring_builder_group_and_names"] = [
+                    dict(group = group, builder = builder)
+                    for group, builder in sorted([(b.props.builder_group, b.props.name) for b in mirroring_builders])
+                ]
 
             builder_properties = json.decode(builder.properties)
             builder_properties["$build/chromium_tests_builder_config"] = dict(

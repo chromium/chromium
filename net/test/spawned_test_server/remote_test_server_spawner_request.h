@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 
@@ -44,7 +43,7 @@ class RemoteTestServerSpawnerRequest {
   // Blocks until request is finished. If |response| isn't nullptr then server
   // response is copied to *response. Returns true if the request was completed
   // successfully.
-  bool WaitForCompletion(std::string* response) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitForCompletion(std::string* response);
 
  private:
   class Core;

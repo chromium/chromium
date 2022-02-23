@@ -47,6 +47,7 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     story_set.AddStory(blink_page)
     return story_set
 
+  @decorators.Disabled('chromeos')  # Flaky: https://crbug.com/1271916
   def testBlinkPerfTracingMetricsForMeasureTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://append-child-measure-time.html')
@@ -62,6 +63,7 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.assertEquals(len(update_layout_trees), 5)
     self.assertGreater(_Mean(update_layout_trees), 0.001)
 
+  @decorators.Disabled('chromeos')  # Flaky: https://crbug.com/1284873
   def testBlinkPerfTracingMetricsForMeasureFrameTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://color-changes-measure-frame-time.html')
@@ -99,7 +101,8 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.assertEquals(len(post_layout_task), 7)
     self.assertGreater(_Mean(post_layout_task), 0.001)
 
-  @decorators.Disabled('mac')  # Flaky on mac: crbug.com/960554
+  @decorators.Disabled('mac', # Flaky on mac: crbug.com/960554
+                       'chromeos') # Flaky on CrOS: crbug.com/1275110
   def testBlinkPerfTracingMetricsForMeasureAsync(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://simple-blob-measure-async.html')

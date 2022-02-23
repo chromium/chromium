@@ -33,20 +33,20 @@ struct NGLogicalLineItem {
   // bidi level and affects bidi reordering.
   explicit NGLogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
   // Create an in-flow |NGLayoutResult|.
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     const LogicalRect& rect,
                     unsigned children_count,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         rect(rect),
         children_count(children_count),
         bidi_level(bidi_level) {}
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     LogicalOffset offset,
                     LayoutUnit inline_size,
                     unsigned children_count,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         rect(offset, LogicalSize()),
         inline_size(inline_size),
         children_count(children_count),
@@ -133,10 +133,10 @@ struct NGLogicalLineItem {
   NGLogicalLineItem(LayoutObject* unpositioned_float, UBiDiLevel bidi_level)
       : unpositioned_float(unpositioned_float), bidi_level(bidi_level) {}
   // Create a positioned float.
-  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
+  NGLogicalLineItem(const NGLayoutResult* layout_result,
                     NGBfcOffset bfc_offset,
                     UBiDiLevel bidi_level)
-      : layout_result(std::move(layout_result)),
+      : layout_result(layout_result),
         bfc_offset(bfc_offset),
         bidi_level(bidi_level) {}
 
@@ -200,7 +200,9 @@ struct NGLogicalLineItem {
                           : TextDirection::kLtr;
   }
 
-  scoped_refptr<const NGLayoutResult> layout_result;
+  void Trace(Visitor*) const;
+
+  Member<const NGLayoutResult> layout_result;
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
@@ -213,12 +215,12 @@ struct NGLogicalLineItem {
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
-  UntracedMember<const LayoutObject> layout_object;
+  Member<const LayoutObject> layout_object;
   // Used only when |layout_object_| is not null.
   NGStyleVariant style_variant = NGStyleVariant::kStandard;
 
-  UntracedMember<LayoutObject> out_of_flow_positioned_box;
-  UntracedMember<LayoutObject> unpositioned_float;
+  Member<LayoutObject> out_of_flow_positioned_box;
+  Member<LayoutObject> unpositioned_float;
 
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
@@ -252,9 +254,10 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
 // A vector of Child.
 // Unlike the fragment builder, chlidren are mutable.
 // Callers can add to the fragment builder in a batch once finalized.
-class NGLogicalLineItems {
+class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
  public:
   NGLogicalLineItems() = default;
+  ~NGLogicalLineItems() { DCHECK(IsEmpty()); }
   void operator=(NGLogicalLineItems&& other) {
     children_ = std::move(other.children_);
   }
@@ -265,11 +268,13 @@ class NGLogicalLineItems {
   }
 
   wtf_size_t size() const { return children_.size(); }
+  void clear() { children_.clear(); }
   bool IsEmpty() const { return children_.IsEmpty(); }
   void ReserveInitialCapacity(unsigned capacity) {
     children_.ReserveInitialCapacity(capacity);
   }
   void Shrink(wtf_size_t size) { children_.Shrink(size); }
+  void swap(NGLogicalLineItems& other) { children_.swap(other.children_); }
 
   using iterator = Vector<NGLogicalLineItem, 16>::iterator;
   iterator begin() { return children_.begin(); }
@@ -281,7 +286,7 @@ class NGLogicalLineItems {
   reverse_iterator rbegin() { return children_.rbegin(); }
   reverse_iterator rend() { return children_.rend(); }
   using const_reverse_iterator =
-      Vector<NGLogicalLineItem, 16>::const_reverse_iterator;
+      HeapVector<NGLogicalLineItem, 16>::const_reverse_iterator;
   const_reverse_iterator rbegin() const { return children_.rbegin(); }
   const_reverse_iterator rend() const { return children_.rend(); }
 
@@ -300,7 +305,7 @@ class NGLogicalLineItems {
     children_.insert(index, item);
   }
   void InsertChild(unsigned index,
-                   scoped_refptr<const NGLayoutResult> layout_result,
+                   const NGLayoutResult* layout_result,
                    const LogicalRect& rect,
                    unsigned children_count) {
     WillInsertChild(index);
@@ -314,10 +319,12 @@ class NGLogicalLineItems {
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
 
+  void Trace(Visitor*) const;
+
  private:
   void WillInsertChild(unsigned index);
 
-  Vector<NGLogicalLineItem, 16> children_;
+  HeapVector<NGLogicalLineItem, 16> children_;
 };
 
 }  // namespace blink

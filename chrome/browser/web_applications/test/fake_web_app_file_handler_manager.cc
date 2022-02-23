@@ -9,17 +9,17 @@ namespace web_app {
 
 FakeWebAppFileHandlerManager::FakeWebAppFileHandlerManager(Profile* profile)
     : WebAppFileHandlerManager(profile) {
-  WebAppFileHandlerManager::DisableOsIntegrationForTesting();
+  WebAppFileHandlerManager::DisableOsIntegrationForTesting(base::DoNothing());
 }
 
 FakeWebAppFileHandlerManager::~FakeWebAppFileHandlerManager() = default;
 
 const apps::FileHandlers* FakeWebAppFileHandlerManager::GetAllFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id) const {
   if (!base::Contains(file_handlers_, app_id))
     return nullptr;
 
-  return &file_handlers_[app_id];
+  return &file_handlers_.at(app_id);
 }
 
 void FakeWebAppFileHandlerManager::InstallFileHandler(const AppId& app_id,

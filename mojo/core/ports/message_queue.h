@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/core/ports/event.h"
 
 namespace mojo {
@@ -46,8 +45,12 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
 
   // Gives ownership of the message. If |filter| is non-null, the next message
   // will only be retrieved if the filter successfully matches it.
+  // Need to call |MessageProcessed| after processing is finished.
   void GetNextMessage(std::unique_ptr<UserMessageEvent>* message,
                       MessageFilter* filter);
+
+  // Mark the message from |GetNextMessage| as processed.
+  void MessageProcessed();
 
   // Takes ownership of the message. Note: Messages are ordered, so while we
   // have added a message to the queue, we may still be waiting on a message

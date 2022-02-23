@@ -28,9 +28,10 @@ void LocalSyncPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
   std::string string_value;
-  if (value && value->GetAsString(&string_value)) {
+  if (value && value->is_string()) {
+    string_value = value->GetString();
     base::FilePath::StringType expanded_value =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         policy::path_parser::ExpandPathVariables(
             base::UTF8ToWide(string_value));
 #else

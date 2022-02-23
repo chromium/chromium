@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.' text_change_added_count=107
+++android.widget.EditText clickable editable_text focusable has_non_empty_value multiline name='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.' text_change_added_count=117
 ++++android.view.View
 ++++++android.widget.TextView name='A contenteditable with a '
 ++++++android.view.View role_description='link' clickable link name='link'

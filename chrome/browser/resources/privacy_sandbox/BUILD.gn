@@ -1,0 +1,79 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("privacy_sandbox.gni")
+
+assert(!is_android, "!is_android check failed")
+
+preprocess_folder = "preprocessed"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/privacy_sandbox_resources.h",
+    "grit/privacy_sandbox_resources_map.cc",
+    "grit/privacy_sandbox_resources_map.h",
+    "privacy_sandbox_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "privacy_sandbox"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "privacy_sandbox_dialog.html",
+    "images/privacy_sandbox_confirmation_banner.svg",
+    "images/privacy_sandbox_confirmation_banner_dark.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = non_web_component_files
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = web_component_files
+}
+
+html_to_js("web_components") {
+  js_files = web_component_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = non_web_component_files + web_component_files
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+}

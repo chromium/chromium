@@ -25,7 +25,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
-#include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom-forward.h"
+#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom-forward.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -33,11 +33,12 @@
 
 namespace ui {
 
-class BitmapCursorOzone;
+class BitmapCursor;
 class OSExchangeData;
 class WaylandConnection;
 class WaylandSubsurface;
 class WaylandWindowDragController;
+class WaylandFrameManager;
 class WaylandPopup;
 
 using WidgetSubsurfaceSet = base::flat_set<std::unique_ptr<WaylandSubsurface>>;
@@ -136,6 +137,8 @@ class WaylandWindow : public PlatformWindow,
   }
   void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
 
+  bool can_submit_frames() const { return can_submit_frames_; }
+
   // These are never intended to be used except in unit tests.
   void set_update_visual_size_immediately(bool update_immediately) {
     update_visual_size_immediately_ = update_immediately;
@@ -227,7 +230,8 @@ class WaylandWindow : public PlatformWindow,
   // Handles close requests.
   virtual void OnCloseRequest();
 
-  // Notifies about drag/drop session events.
+  // Notifies about drag/drop session events. |point| is in DIP as wayland
+  // sends coordinates in "surface-local" coordinates.
   virtual void OnDragEnter(const gfx::PointF& point,
                            std::unique_ptr<OSExchangeData> data,
                            int operation);
@@ -240,6 +244,10 @@ class WaylandWindow : public PlatformWindow,
 
   // Tells if the surface has already been configured.
   virtual bool IsSurfaceConfigured() = 0;
+
+  // Called by shell surfaces to indicate that this window can start submitting
+  // frames.
+  void OnSurfaceConfigureEvent();
 
   // Sets the window geometry.
   virtual void SetWindowGeometry(gfx::Rect bounds);
@@ -288,11 +296,15 @@ class WaylandWindow : public PlatformWindow,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Clears the state of the |frame_manager_| when the GPU channel is destroyed.
+  void OnChannelDestroyed();
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
 
   WaylandConnection* connection() { return connection_; }
+  const WaylandConnection* connection() const { return connection_; }
   PlatformWindowDelegate* delegate() { return delegate_; }
 
   // Sets bounds in dip.
@@ -305,6 +317,10 @@ class WaylandWindow : public PlatformWindow,
 
   // Processes the pending bounds in dip.
   void ProcessPendingBoundsDip(uint32_t serial);
+
+  // If the given |bounds_px| violate size constraints set for this window,
+  // fixes them so they wouldn't.
+  gfx::Rect AdjustBoundsToConstraintsPx(const gfx::Rect& bounds_px);
 
   // Processes the size information form visual size update and returns true if
   // any pending configure is fulfilled.
@@ -334,6 +350,8 @@ class WaylandWindow : public PlatformWindow,
   base::circular_deque<PendingConfigure> pending_configures_;
 
  private:
+  friend class WaylandBufferManagerViewportTest;
+
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSubmitOverlayPriority);
   FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest, CanSetRoundedCorners);
@@ -343,7 +361,15 @@ class WaylandWindow : public PlatformWindow,
 
   void UpdateCursorPositionFromEvent(std::unique_ptr<Event> event);
 
+  // Adjusts the |location| to account for the offset of a popup window. If this
+  // is the root window, the location is unchanged.
   gfx::PointF TranslateLocationToRootWindow(const gfx::PointF& location);
+
+  // Returns |location| in the local coordinate space, Window local pixels.
+  // |location| is assumed to be in Wayland coordinate which are DP unless
+  // surface_submission_in_pixel_coordinates is active. Also adjusts for popup
+  // offset if necessary.
+  gfx::PointF ToRootWindowPixel(const gfx::PointF& location);
 
   uint32_t DispatchEventToDelegate(const PlatformEvent& native_event);
 
@@ -361,15 +387,16 @@ class WaylandWindow : public PlatformWindow,
   friend WaylandWindowDragController;
   std::unique_ptr<WaylandSurface> TakeWaylandSurface();
 
-  void UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor);
+  void UpdateCursorShape(scoped_refptr<BitmapCursor> cursor);
 
   PlatformWindowDelegate* delegate_;
   WaylandConnection* connection_;
   WaylandWindow* parent_window_ = nullptr;
   WaylandWindow* child_window_ = nullptr;
 
-  bool should_attach_background_buffer_ = false;
-  uint32_t background_buffer_id_ = 0u;
+  std::unique_ptr<WaylandFrameManager> frame_manager_;
+  bool can_submit_frames_ = false;
+
   // |root_surface_| is a surface for the opaque background. Its z-order is
   // INT32_MIN.
   std::unique_ptr<WaylandSurface> root_surface_;
@@ -387,7 +414,7 @@ class WaylandWindow : public PlatformWindow,
   std::list<WaylandSubsurface*> subsurface_stack_below_;
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> cursor_;
+  scoped_refptr<BitmapCursor> cursor_;
 
   // Current bounds of the platform window. This is either initialized, or the
   // requested size by the Wayland compositor. When this is set in SetBounds(),

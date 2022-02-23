@@ -183,6 +183,10 @@ if (enable_java_templates) {
         if (defined(invoker.always_mangle) && invoker.always_mangle) {
           args += [ "--always_mangle" ]
         }
+        if (defined(invoker.unchecked_exceptions) &&
+            invoker.unchecked_exceptions) {
+          args += [ "--unchecked_exceptions" ]
+        }
       } else {
         assert(defined(invoker.sources))
         inputs += invoker.sources
@@ -268,6 +272,8 @@ if (enable_java_templates) {
   #     android.jar
   #   always_mangle: Mangle all generated method names. By default, the script
   #     only mangles methods that cause ambiguity due to method overload.
+  #   unchecked_exceptions: Don't CHECK() for exceptions in generated stubs.
+  #     This behaves as if every method had @CalledByNativeUnchecked.
   #   deps, public_deps: As normal
   #
   # Example
@@ -2524,9 +2530,6 @@ if (enable_java_templates) {
         assert(!defined(resource_ids_provider_dep))
         resource_ids_provider_dep = invoker.apk_under_test
 
-        include_resource =
-            get_label_info(invoker.apk_under_test, "target_out_dir") + "/" +
-            get_label_info(invoker.apk_under_test, "name") + ".ap_"
         _link_against = invoker.apk_under_test
       }
 
@@ -2535,9 +2538,6 @@ if (enable_java_templates) {
         proto_output = _proto_resources_path
 
         if (defined(invoker.base_module_target)) {
-          include_resource =
-              get_label_info(invoker.base_module_target, "target_out_dir") +
-              "/" + get_label_info(invoker.base_module_target, "name") + ".ap_"
           _link_against = invoker.base_module_target
         }
       }
@@ -3707,7 +3707,7 @@ if (enable_java_templates) {
                                "fake_modules",
                                "ignore_all_data_deps",
                                "modules",
-                               "proguard_enabled",
+                               "proguard_mapping_path",
                                "public_deps",
                                "use_webview_provider",
                              ])
@@ -3868,13 +3868,15 @@ if (enable_java_templates) {
                                "ignore_all_data_deps",
                                "modules",
                                "never_incremental",
-                               "proguard_enabled",
-                               "proguard_enable_obfuscation",
                                "public_deps",
                                "use_webview_provider",
                              ])
       android_test_apk = ":${_apk_target_name}"
       android_test_apk_name = invoker.apk_name
+      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+        proguard_mapping_path =
+            "$root_build_dir/apks/${invoker.apk_name}.apk.mapping"
+      }
     }
   }
 
@@ -4115,6 +4117,81 @@ if (enable_java_templates) {
     }
   }
 
+  # Compile a flatbuffer to java.
+  #
+  # This generates java files from flat buffers and creates an Android library
+  # containing the classes.
+  #
+  # Variables
+  #   sources (required)
+  #       Paths to .fbs files to compile.
+  #
+  #   root_dir (required)
+  #       Root directory of .fbs files.
+  #
+  #   deps (optional)
+  #       Additional dependencies. Passed through to both the action and the
+  #       android_library targets.
+  #
+  #   flatc_include_dirs (optional)
+  #       A list of extra import directories to be passed to flatc compiler.
+  #
+  #
+  # Example:
+  #  flatbuffer_java_library("foo_flatbuffer_java") {
+  #    root_dir = "src/foo"
+  #    sources = [ "$proto_path/foo.fbs" ]
+  #  }
+  template("flatbuffer_java_library") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    _template_name = target_name
+    _flatc_dep = "//third_party/flatbuffers:flatc($host_toolchain)"
+    _flatc_out_dir = get_label_info(_flatc_dep, "root_out_dir")
+    _flatc_bin = "$_flatc_out_dir/flatc"
+
+    action_with_pydeps("${_template_name}__flatc_java") {
+      _srcjar_path = "$target_gen_dir/$target_name.srcjar"
+      script = "//build/android/gyp/flatc_java.py"
+
+      deps = [ _flatc_dep ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+      inputs = [ _flatc_bin ]
+
+      sources = invoker.sources
+      outputs = [ _srcjar_path ]
+      args = [
+               "--flatc",
+               rebase_path(_flatc_bin, root_build_dir),
+               "--import-dir",
+               rebase_path(invoker.root_dir, root_build_dir),
+               "--srcjar",
+               rebase_path(_srcjar_path, root_build_dir),
+             ] + rebase_path(sources, root_build_dir)
+
+      if (defined(invoker.flatc_include_dirs)) {
+        foreach(_include_dir, invoker.flatc_include_dirs) {
+          args += [
+            "--import-dir",
+            rebase_path(_include_dir, root_build_dir),
+          ]
+        }
+      }
+    }
+
+    android_library(target_name) {
+      chromium_code = false
+      sources = []
+      srcjar_deps = [ ":${_template_name}__flatc_java" ]
+      deps = [ "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java" ]
+      if (defined(invoker.deps)) {
+        deps += invoker.deps
+      }
+    }
+  }
+
   # Declare an Android library target for a prebuilt AAR.
   #
   # This target creates an Android library containing java code and Android
@@ -4137,9 +4214,6 @@ if (enable_java_templates) {
   #   ignore_native_libraries: Whether to ignore .so files found in the .aar.
   #       See also extract_native_libraries.
   #   ignore_proguard_configs: Whether to ignore proguard configs.
-  #   ignore_info_updates: Whether to ignore the info file when
-  #       update_android_aar_prebuilts gn arg is true. However, the info file
-  #       will still be verified regardless of the value of this flag.
   #   strip_resources: Whether to ignore android resources found in the .aar.
   #   custom_package: Java package for generated R.java files.
   #   extract_native_libraries: Whether to extract .so files found in the .aar.
@@ -4189,20 +4263,25 @@ if (enable_java_templates) {
     # to keep the logic for generated 'android_aar_prebuilt' rules simple.
     not_needed(invoker, [ "resource_overlay" ])
 
-    _ignore_info_updates =
-        defined(invoker.ignore_info_updates) && invoker.ignore_info_updates
+    _aar_common_args = [ rebase_path(invoker.aar_path, root_build_dir) ]
+    if (_strip_resources) {
+      _aar_common_args += [ "--ignore-resources" ]
+    }
+    if (defined(invoker.resource_exclusion_globs)) {
+      _aar_common_args +=
+          [ "--resource-exclusion-globs=${invoker.resource_exclusion_globs}" ]
+    }
 
     # Scan the AAR file and determine the resources and jar files.
     # Some libraries might not have resources; others might have two jars.
-    if (!_ignore_info_updates && update_android_aar_prebuilts) {
+    if (update_android_aar_prebuilts) {
       print("Writing " + rebase_path(_info_path, "//"))
       exec_script("//build/android/gyp/aar.py",
                   [
-                    "list",
-                    rebase_path(invoker.aar_path, root_build_dir),
-                    "--output",
-                    rebase_path(_info_path, root_build_dir),
-                  ])
+                        "list",
+                        "--output",
+                        rebase_path(_info_path, root_build_dir),
+                      ] + _aar_common_args)
     }
 
     # If "gn gen" is failing on the following line, you need to generate an
@@ -4212,6 +4291,7 @@ if (enable_java_templates) {
     _scanned_files = read_file(_info_path, "scope")
 
     _use_scanned_assets = !_ignore_assets && _scanned_files.assets != []
+    _has_resources = _scanned_files.resources != []
 
     assert(_ignore_aidl || _scanned_files.aidl == [],
            "android_aar_prebuilt() aidl not yet supported." +
@@ -4232,30 +4312,24 @@ if (enable_java_templates) {
     action_with_pydeps(_unpack_target_name) {
       script = "//build/android/gyp/aar.py"  # Unzips the AAR
       args = [
-        "extract",
-        rebase_path(invoker.aar_path, root_build_dir),
-        "--output-dir",
-        rebase_path(_output_path, root_build_dir),
-        "--assert-info-file",
-        rebase_path(_info_path, root_build_dir),
-      ]
-      if (_strip_resources) {
-        args += [ "--ignore-resources" ]
-      }
+               "extract",
+               "--output-dir",
+               rebase_path(_output_path, root_build_dir),
+               "--assert-info-file",
+               rebase_path(_info_path, root_build_dir),
+             ] + _aar_common_args
       inputs = [ invoker.aar_path ]
       outputs = [ "${_output_path}/AndroidManifest.xml" ]
-      if (!_strip_resources && _scanned_files.has_r_text_file) {
+      outputs +=
+          get_path_info(rebase_path(_scanned_files.resources, "", _output_path),
+                        "abspath")
+      if (_scanned_files.has_r_text_file) {
         # Certain packages, in particular Play Services have no R.txt even
         # though its presence is mandated by AAR spec. Such packages cause
         # spurious rebuilds if this output is specified unconditionally.
         outputs += [ "${_output_path}/R.txt" ]
       }
 
-      if (!_strip_resources && _scanned_files.resources != []) {
-        outputs += get_path_info(
-                rebase_path(_scanned_files.resources, "", _output_path),
-                "abspath")
-      }
       if (_scanned_files.has_classes_jar) {
         outputs += [ "${_output_path}/classes.jar" ]
       }
@@ -4280,15 +4354,11 @@ if (enable_java_templates) {
       }
     }
 
-    _has_unignored_resources =
-        !_strip_resources &&
-        (_scanned_files.resources != [] || _scanned_files.has_r_text_file)
-
     _should_process_manifest =
         !_ignore_manifest && !_scanned_files.is_manifest_empty
 
     # Create the android_resources target for resources.
-    if (_has_unignored_resources || _should_process_manifest) {
+    if (_has_resources || _should_process_manifest) {
       _res_target_name = "${target_name}__resources"
       android_resources(_res_target_name) {
         forward_variables_from(invoker,
@@ -4307,11 +4377,8 @@ if (enable_java_templates) {
           custom_package = _scanned_files.manifest_package
         }
 
-        sources = []
-        if (!_strip_resources) {
-          sources = rebase_path(_scanned_files.resources, "", _output_path)
-        }
-        if (!_strip_resources && _scanned_files.has_r_text_file) {
+        sources = rebase_path(_scanned_files.resources, "", _output_path)
+        if (_scanned_files.has_r_text_file) {
           r_text_file = "${_output_path}/R.txt"
         }
       }
@@ -4875,13 +4942,16 @@ if (enable_java_templates) {
         _module_build_config_target,
       ]
     }
-    if (defined(invoker.strip_unused_resources) &&
-        invoker.strip_unused_resources) {
+    _strip_unused_resources = defined(invoker.strip_unused_resources) &&
+                              invoker.strip_unused_resources
+    if (_strip_unused_resources) {
       # Resources only live in the base module so we define the unused resources
       # target only on the base module target.
       _unused_resources_target = "${_base_target_name}__unused_resources"
       _unused_resources_config =
           "${_base_target_gen_dir}/${_base_target_name}_unused_resources.config"
+      _unused_resources_r_txt_out =
+          "${_base_target_gen_dir}/${_base_target_name}_unused_resources.R.txt"
       unused_resources(_unused_resources_target) {
         deps = _all_module_unused_resources_deps
         all_module_build_configs = _all_module_build_configs
@@ -4890,6 +4960,7 @@ if (enable_java_templates) {
           proguard_mapping_path = _proguard_mapping_path
         }
         output_config = _unused_resources_config
+        output_r_txt = _unused_resources_r_txt_out
       }
     }
 
@@ -4951,11 +5022,21 @@ if (enable_java_templates) {
       }
 
       if (_enable_language_splits) {
-        args += [
-          "--base-allowlist-rtxt-path=@FileArg(" + "${_rebased_base_module_build_config}:deps_info:base_allowlist_rtxt_path)",
-          "--base-module-rtxt-path=@FileArg(" +
-              "${_rebased_base_module_build_config}:deps_info:r_text_path)",
-        ]
+        args += [ "--base-allowlist-rtxt-path=@FileArg(" + "${_rebased_base_module_build_config}:deps_info:base_allowlist_rtxt_path)" ]
+        if (_strip_unused_resources) {
+          # Use the stripped out rtxt file to set resources that are pinned to
+          # the default language split.
+          _rebased_unused_resources_r_txt_out =
+              rebase_path(_unused_resources_r_txt_out, root_build_dir)
+          inputs += [ _unused_resources_r_txt_out ]
+          deps += [ ":$_unused_resources_target" ]
+          args +=
+              [ "--base-module-rtxt-path=$_rebased_unused_resources_r_txt_out" ]
+        } else {
+          args +=
+              [ "--base-module-rtxt-path=@FileArg(" +
+                "${_rebased_base_module_build_config}:deps_info:r_text_path)" ]
+        }
       }
       if (defined(invoker.validate_services) && invoker.validate_services) {
         args += [ "--validate-services" ]

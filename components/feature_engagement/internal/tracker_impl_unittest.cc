@@ -9,11 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
@@ -459,12 +462,12 @@ class TrackerImplTest : public ::testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TrackerImpl> tracker_;
-  TestTrackerInMemoryEventStore* event_store_;
-  TestTrackerAvailabilityModel* availability_model_;
-  TestTrackerDisplayLockController* display_lock_controller_;
-  Configuration* configuration_;
+  raw_ptr<TestTrackerInMemoryEventStore> event_store_;
+  raw_ptr<TestTrackerAvailabilityModel> availability_model_;
+  raw_ptr<TestTrackerDisplayLockController> display_lock_controller_;
+  raw_ptr<Configuration> configuration_;
   base::HistogramTester histogram_tester_;
-  TestTimeProvider* time_provider_;
+  raw_ptr<TestTimeProvider> time_provider_;
 };
 
 // A top-level test class where the store fails to initialize.
@@ -643,6 +646,85 @@ TEST_F(FailingAvailabilityModelInitTrackerImplTest, AvailabilityModelNotReady) {
   EXPECT_FALSE(tracker_->IsInitialized());
   EXPECT_TRUE(callback.invoked());
   EXPECT_FALSE(callback.success());
+}
+
+TEST_F(TrackerImplTest, TestSetPriorityNotificationBeforeRegistration) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  bool invoked = false;
+
+  // Set priority notification, and then register handler. IPH will show up
+  // immediately after registration.
+  tracker_->SetPriorityNotification(kTrackerTestFeatureFoo);
+  tracker_->RegisterPriorityNotificationHandler(
+      kTrackerTestFeatureFoo,
+      base::BindLambdaForTesting([&]() { invoked = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(invoked);
+
+  // Try registering handler once again. The IPH won't show up again since the
+  // notification has been consumed.
+  invoked = false;
+  tracker_->RegisterPriorityNotificationHandler(
+      kTrackerTestFeatureFoo,
+      base::BindLambdaForTesting([&]() { invoked = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(invoked);
+
+  // Set priority notification one more time. Now the IPH will show up.
+  tracker_->SetPriorityNotification(kTrackerTestFeatureFoo);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(invoked);
+}
+
+TEST_F(TrackerImplTest, TestSetPriorityNotificationAfterRegistration) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  bool invoked = false;
+
+  // Register the handler first, and then set priority notification.
+  tracker_->RegisterPriorityNotificationHandler(
+      kTrackerTestFeatureFoo,
+      base::BindLambdaForTesting([&]() { invoked = true; }));
+  tracker_->SetPriorityNotification(kTrackerTestFeatureFoo);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(invoked);
+
+  // Set priority notification again. The IPH won't show up again, since the
+  // handler is good for only one use.
+  invoked = false;
+  tracker_->SetPriorityNotification(kTrackerTestFeatureFoo);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(invoked);
+}
+
+TEST_F(TrackerImplTest, TestUnregisterPriorityNotification) {
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  bool invoked = false;
+
+  // Register the handler, and unregister before setting the notification. The
+  // IPH won't show up.
+  invoked = false;
+  tracker_->RegisterPriorityNotificationHandler(
+      kTrackerTestFeatureFoo,
+      base::BindLambdaForTesting([&]() { invoked = true; }));
+  tracker_->UnregisterPriorityNotificationHandler(kTrackerTestFeatureFoo);
+  tracker_->SetPriorityNotification(kTrackerTestFeatureFoo);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(invoked);
 }
 
 TEST_F(TrackerImplTest, TestTriggering) {

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL a prerendering page cannot resize its window by executing resizeTo. assert_equals: expected "PASS" but got "FAIL: Error: assert_equals: height for primary expected 599 but got 598"
+FAIL a prerendering page cannot resize its window by executing resizeBy. assert_equals: expected "PASS" but got "FAIL: Error: assert_equals: height for primary expected 599 but got 598"
+Harness: the test ran to completion.
+

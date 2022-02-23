@@ -15,5 +15,6 @@ test("profile_provider_unittest") {
     "//chromeos/dbus",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/aura",
   ]
 }

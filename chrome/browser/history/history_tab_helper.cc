@@ -19,10 +19,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -36,11 +37,11 @@ namespace {
 
 using content::NavigationEntry;
 using content::WebContents;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 using chrome::android::BackgroundTabManager;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
   feed::FeedService* feed_service =
       feed::FeedServiceFactory::GetForBrowserContext(
@@ -56,7 +57,7 @@ bool IsNavigationFromFeed(content::WebContents& web_contents, const GURL& url) {
 bool ShouldConsiderForNtpMostVisited(
     content::WebContents& web_contents,
     content::NavigationHandle* navigation_handle) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Clicks on content suggestions on the NTP should not contribute to the
   // Most Visited tiles in the NTP.
   DCHECK(!navigation_handle->GetRedirectChain().empty());
@@ -96,7 +97,8 @@ absl::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
 }  // namespace
 
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<HistoryTabHelper>(*web_contents) {}
 
 HistoryTabHelper::~HistoryTabHelper() = default;
 
@@ -134,7 +136,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // that only the origin be sent as the referrer and it matches the previous
   // main frame URL.
   GURL referrer_url = navigation_handle->GetReferrer().url;
-  if (navigation_handle->IsInMainFrame() && !referrer_url.is_empty() &&
+  if (navigation_handle->IsInPrimaryMainFrame() && !referrer_url.is_empty() &&
       referrer_url == referrer_url.DeprecatedGetOriginAsURL() &&
       referrer_url.DeprecatedGetOriginAsURL() ==
           navigation_handle->GetPreviousMainFrameURL()
@@ -190,37 +192,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
 void HistoryTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1225143): Make sure prerender does not affect
-  // browsing history. We may have to filter out navigations only in the primary
-  // frame tree, which seems not to be happening here.
-  //
-  // Calling `navigation_handle->IsInMainFrame()` here seems to work
-  // accidentally because we are getting the navigation entry from the primary
-  // NavigationController [1] on prerendering navigation, which we will try to
-  // add, which will turn into a no-op.
-  //
-  // This is very fragile. There are a few options to address:
-  //
-  // 1. Add NavigationHandle::HasCommittedInPrimaryFrameTree and check it
-  //   instead of simple HasCommitted.
-  //
-  // 2. Always return false from NavigationHandle::ShouldUpdateHistory for
-  //   navigations in non-primary frame trees.
-  //
-  // 3. Use WebContentsObserver::NavigationEntryCommitted instead of
-  //    WebContentsObserver::DidFinishNavigation (which will get notifications
-  //    only about the new entry).
-  //
-  // [1]
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/history/history_tab_helper.cc;l=194;drc=af4244de52d8521c34336470c9a4f634b1e9fd2e
-
   if (!navigation_handle->HasCommitted())
     return;
 
-  if (navigation_handle->IsInMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     is_loading_ = true;
     num_title_changes_ = 0;
-  } else if (!navigation_handle->HasSubframeNavigationEntryCommitted()) {
+  } else if (!navigation_handle->IsInMainFrame() &&
+             !navigation_handle->HasSubframeNavigationEntryCommitted()) {
     // Filter out unwanted URLs. We don't add auto-subframe URLs that don't
     // change which NavigationEntry is current. They are a large part of history
     // (think iframes for ads) and we never display them in history UI. We will
@@ -234,19 +213,14 @@ void HistoryTabHelper::DidFinishNavigation(
   if (!navigation_handle->ShouldUpdateHistory())
     return;
 
-  // Navigations in portals don't appear in history until the portal is
-  // activated.
-  if (navigation_handle->GetWebContents()->IsPortal())
-    return;
-
-  // No-state prefetchers should not update history. The prefetchers will have
-  // their own WebContents with all observers (including |this|), and go through
-  // the normal flow of a navigation, including commit.
+  // No-state prefetch should not update history. The prefetch will have its own
+  // WebContents with all observers (including |this|), and go through the
+  // normal flow of a navigation, including commit.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
   }
 
@@ -389,7 +363,7 @@ bool HistoryTabHelper::IsEligibleTab(
   if (force_eligible_tab_for_testing_)
     return true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* background_tab_manager = BackgroundTabManager::GetInstance();
   if (background_tab_manager->IsBackgroundTab(web_contents())) {
     // No history insertion is done for now since this is a tab that speculates

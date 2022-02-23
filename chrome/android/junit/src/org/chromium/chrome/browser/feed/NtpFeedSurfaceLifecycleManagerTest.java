@@ -54,6 +54,8 @@ public class NtpFeedSurfaceLifecycleManagerTest {
     private Stream mStream;
     @Mock
     private PrefService mPrefService;
+    @Mock
+    private FeedSurfaceCoordinator mCoordinator;
 
     private NtpFeedSurfaceLifecycleManager mNtpStreamLifecycleManager;
 
@@ -67,7 +69,8 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         NtpFeedSurfaceLifecycleManager.setPrefServiceForTesting(mPrefService);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        mNtpStreamLifecycleManager = new NtpFeedSurfaceLifecycleManager(mActivity, mTab, null);
+        mNtpStreamLifecycleManager =
+                new NtpFeedSurfaceLifecycleManager(mActivity, mTab, mCoordinator);
         verify(mStream, times(1)).onCreate(or(any(String.class), isNull()));
     }
 
@@ -289,5 +292,12 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         inOrder.verify(mStream).onDestroy();
         verify(mStream, times(2)).onHide();
         verify(mStream, times(1)).onDestroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testPaused() {
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
+        verify(mCoordinator).onActivityPaused();
     }
 }

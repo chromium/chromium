@@ -20,47 +20,48 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
-    return "";
+    return std::string();
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {
-    return "";
+    return std::string();
   }
 
   auto* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   if (profile->IsIncognitoProfile()) {
-    return "";
+    return std::string();
   }
 
   auto* apk_web_app_service = ash::ApkWebAppService::Get(profile);
   if (!apk_web_app_service) {
-    return "";
+    return std::string();
   }
 
   absl::optional<std::string> twa_package_name =
       apk_web_app_service->GetPackageNameForWebApp(
-          content::WebContents::FromRenderFrameHost(render_frame_host)
-              ->GetLastCommittedURL());
+          render_frame_host->GetMainFrame()->GetLastCommittedURL());
 
-  return twa_package_name.value_or("");
+  return twa_package_name.value_or(std::string());
 }
 
 std::string GetScope(content::RenderFrameHost* render_frame_host) {
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForWebApps(
-          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))
-          ->registrar();
+  web_app::WebAppProvider* provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  if (!provider) {
+    return std::string();
+  }
+
+  const web_app::WebAppRegistrar& registrar = provider->registrar();
   absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(
-      content::WebContents::FromRenderFrameHost(render_frame_host)
-          ->GetLastCommittedURL());
+      render_frame_host->GetMainFrame()->GetLastCommittedURL());
   if (!app_id) {
-    return "";
+    return std::string();
   }
 
   GURL scope = registrar.GetAppScope(app_id.value());
   if (!scope.is_valid()) {
-    return "";
+    return std::string();
   }
 
   return scope.spec();

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include <limits>
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
@@ -18,10 +19,14 @@
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/media_query_list.h"
+#include "third_party/blink/renderer/core/css/media_query_list_listener.h"
+#include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
@@ -33,17 +38,20 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/core/layout/layout_custom_scrollbar_part.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -52,24 +60,21 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
-class StyleEngineTest : public testing::Test {
+class StyleEngineTest : public PageTestBase {
  protected:
-  void SetUp() override;
-
-  Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
-  StyleEngine& GetStyleEngine() { return GetDocument().GetStyleEngine(); }
-
   bool IsDocumentStyleSheetCollectionClean() {
     return !GetStyleEngine().ShouldUpdateDocumentStyleSheetCollection();
   }
@@ -136,24 +141,26 @@ class StyleEngineTest : public testing::Test {
     return timeline->GetRule();
   }
 
- private:
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
+  void SimulateFrame() {
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
+    GetPage().Animator().ServiceScriptedAnimations(new_time);
+  }
+
+  std::unique_ptr<DummyPageHolder> DummyPageHolderWithHTML(String html) {
+    auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    holder->GetDocument().documentElement()->setInnerHTML(html);
+    holder->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    return holder;
+  }
 };
 
-// It's currently not possible to use ScopedCSSContainerQueriesForTest in
-// individual tests. CSSContainerQueries implies LayoutNGGrid, and
-// LayoutNGGrid needs to be enabled early (before StyleResolver::InitialStyle
-// is created, probably). Otherwise assumptions made by e.g.
-// GridTrackList::AssignFrom do not hold.
 class StyleEngineContainerQueryTest : public StyleEngineTest,
-                                      private ScopedCSSContainerQueriesForTest {
+                                      private ScopedCSSContainerQueriesForTest,
+                                      private ScopedLayoutNGForTest {
  public:
-  StyleEngineContainerQueryTest() : ScopedCSSContainerQueriesForTest(true) {}
+  StyleEngineContainerQueryTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 };
-
-void StyleEngineTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
-}
 
 StyleEngineTest::RuleSetInvalidation
 StyleEngineTest::ScheduleInvalidationsForRules(TreeScope& tree_scope,
@@ -421,7 +428,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
 
   // There's no @keyframes rule named dummy-animation
   ASSERT_FALSE(GetStyleEngine().GetStyleResolver().FindKeyframesRule(
-      t5, AtomicString("dummy-animation")));
+      t5, t5, AtomicString("dummy-animation")));
 
   auto* keyframes_parsed_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
@@ -435,7 +442,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   // is found with one keyframe.
   StyleRuleKeyframes* keyframes =
       GetStyleEngine().GetStyleResolver().FindKeyframesRule(
-          t5, AtomicString("dummy-animation"));
+          t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
@@ -448,7 +455,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   // Author @keyframes rules take precedence; now there are two keyframes (from
   // and to).
   keyframes = GetStyleEngine().GetStyleResolver().FindKeyframesRule(
-      t5, AtomicString("dummy-animation"));
+      t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(2u, keyframes->Keyframes().size());
 
@@ -456,7 +463,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   UpdateAllLifecyclePhases();
 
   keyframes = GetStyleEngine().GetStyleResolver().FindKeyframesRule(
-      t5, AtomicString("dummy-animation"));
+      t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
@@ -465,7 +472,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
 
   // Injected @keyframes rules are no longer available once removed.
   ASSERT_FALSE(GetStyleEngine().GetStyleResolver().FindKeyframesRule(
-      t5, AtomicString("dummy-animation")));
+      t5, t5, AtomicString("dummy-animation")));
 
   // Custom properties
 
@@ -544,7 +551,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_EQ(MakeRGB(255, 0, 0), t8->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
   ASSERT_TRUE(t8->GetComputedStyle());
   EXPECT_EQ(MakeRGB(0, 0, 0), t8->GetComputedStyle()->VisitedDependentColor(
@@ -2546,8 +2553,9 @@ TEST_F(StyleEngineTest, PseudoElementBaseComputedStyle) {
   ASSERT_TRUE(before->GetComputedStyle());
   EXPECT_TRUE(before->GetComputedStyle()->GetBaseComputedStyle());
 #if !DCHECK_IS_ON()
-  // When DCHECK is enabled, BaseComputedStyle() returns null and we repeatedly
-  // create new instances which means the pointers will be different here.
+  // When DCHECK is enabled, ShouldComputeBaseComputedStyle always returns true
+  // and we repeatedly create new instances which means the pointers will be
+  // different here.
   EXPECT_EQ(base_computed_style,
             before->GetComputedStyle()->GetBaseComputedStyle());
 #endif
@@ -2919,7 +2927,7 @@ TEST_F(StyleEngineTest,
   unsigned initial_count = GetStyleEngine().StyleForElementCount();
 
   GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
-  GetDocument().View()->SetLayoutSize(IntSize(1100, 800));
+  GetDocument().View()->SetLayoutSize(gfx::Size(1100, 800));
   UpdateAllLifecyclePhases();
 
   // Only the single div element should have its style recomputed.
@@ -3088,7 +3096,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
   EXPECT_EQ(Color::kBlack, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
@@ -3145,10 +3153,218 @@ TEST_F(StyleEngineTest, AtScrollTimelineUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScrollTimeline));
 }
 
-TEST_F(StyleEngineTest, MediaQueryAffectedByViewportSanityCheck) {
-  GetDocument().body()->setInnerHTML("<audio controls>");
+TEST_F(StyleEngineTest, CSSMatchMediaUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
   UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().MediaQueryAffectedByViewportChange());
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(min-width: 0px)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(width: 100px) or (unknown)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    // Should not be use-counted, because it's a real parse error without
+    // CSSMediaQueries4 enabled.
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(unknown: 0px)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql = GetDocument().domWindow()->matchMedia(
+        "not print and (width: 100px) and (unknown)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+}
+
+TEST_F(StyleEngineTest, CSSMediaListUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
+  UpdateAllLifecyclePhases();
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(min-width: 0px)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(width: 100px) or (unknown)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    // Should not be use-counted, because it's a real parse error without
+    // CSSMediaQueries4 enabled.
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(unknown: 0px)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+
+    media->MediaTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="not print and (width: 100px) and (unknown)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+
+    media->MediaTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+}
+
+TEST_F(StyleEngineTest, CSSOMMediaConditionUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style>
+      @media (min-width: 100px) {}
+      @media (width: 100px) or (unknown) {}
+      @media (unknown: 0px) {}
+      @media not print and (width: 100px) and (unknown) {}
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (min-width: 100px) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (width: 100px) or (unknown) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (unknown: 0px) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+
+    rule->ConditionTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media not print and (width: 100px) and (unknown) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+
+    rule->ConditionTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
 }
 
 TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {
@@ -3295,6 +3511,232 @@ TEST_F(StyleEngineTest, InternalForcedProperties) {
   }
 }
 
+TEST_F(StyleEngineTest, HasViewportUnitFlags) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  struct {
+    const char* value;
+    bool has_static;
+    bool has_dynamic;
+  } test_data[] = {
+      {"1px", false, false},
+      {"1em", false, false},
+      {"1rem", false, false},
+
+      {"1vw", true, false},
+      {"1vh", true, false},
+      {"1vi", true, false},
+      {"1vb", true, false},
+      {"1vmin", true, false},
+      {"1vmax", true, false},
+
+      {"1svw", true, false},
+      {"1svh", true, false},
+      {"1svi", true, false},
+      {"1svb", true, false},
+      {"1svmin", true, false},
+      {"1svmax", true, false},
+
+      {"1lvw", true, false},
+      {"1lvh", true, false},
+      {"1lvi", true, false},
+      {"1lvb", true, false},
+      {"1lvmin", true, false},
+      {"1lvmax", true, false},
+
+      {"1dvw", false, true},
+      {"1dvh", false, true},
+      {"1dvi", false, true},
+      {"1dvb", false, true},
+      {"1dvmin", false, true},
+      {"1dvmax", false, true},
+
+      {"calc(1vh)", true, false},
+      {"calc(1dvh)", false, true},
+      {"calc(1vh + 1dvh)", true, true},
+  };
+
+  for (const auto& data : test_data) {
+    SCOPED_TRACE(data.value);
+    auto holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    Document& document = holder->GetDocument();
+    document.body()->setInnerHTML(String::Format(R"HTML(
+      <style>
+        div { width: %s; }
+      </style>
+      <div id=target></div>
+    )HTML",
+                                                 data.value));
+    document.View()->UpdateAllLifecyclePhasesForTest();
+
+    Element* target = document.getElementById("target");
+    ASSERT_TRUE(target);
+
+    EXPECT_EQ(data.has_static,
+              target->GetComputedStyle()->HasStaticViewportUnits());
+    EXPECT_EQ(data.has_dynamic,
+              target->GetComputedStyle()->HasDynamicViewportUnits());
+    EXPECT_EQ(data.has_static, document.HasStaticViewportUnits());
+    EXPECT_EQ(data.has_dynamic, document.HasDynamicViewportUnits());
+  }
+}
+
+TEST_F(StyleEngineTest, DynamicViewportUnitInvalidation) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+  <style>
+    #target_px { width: 1px; }
+    #target_svh { width: 1svh; }
+    #target_dvh { width: 1dvh; }
+  </style>
+  <div id=target_px></div>
+  <div id=target_svh></div>
+  <div id=target_dvh></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* target_px = GetDocument().getElementById("target_px");
+  Element* target_svh = GetDocument().getElementById("target_svh");
+  Element* target_dvh = GetDocument().getElementById("target_dvh");
+  ASSERT_TRUE(target_px);
+  ASSERT_TRUE(target_svh);
+  ASSERT_TRUE(target_dvh);
+
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+
+  // Only dvh should be affected:
+  GetDocument().DynamicViewportUnitsChanged();
+  GetStyleEngine().InvalidateViewportUnitStylesIfNeeded();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_TRUE(target_dvh->NeedsStyleRecalc());
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+
+  //  svh/dvh should be affected:
+  GetDocument().LayoutViewportWasResized();
+  GetStyleEngine().InvalidateViewportUnitStylesIfNeeded();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_TRUE(target_svh->NeedsStyleRecalc());
+  EXPECT_TRUE(target_dvh->NeedsStyleRecalc());
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(target_px->NeedsStyleRecalc());
+  EXPECT_FALSE(target_svh->NeedsStyleRecalc());
+  EXPECT_FALSE(target_dvh->NeedsStyleRecalc());
+}
+
+TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  // Changes in the dynamic viewport should not affect NeedsActiveStyleUpdate
+  // when we don't use dynamic viewport units.
+  {
+    auto holder = DummyPageHolderWithHTML(R"HTML(
+        <style>
+          @media (min-width: 50vh) {
+            :root { color: green; }
+          }
+        </style>
+      )HTML");
+    Document& document = holder->GetDocument();
+
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+    document.DynamicViewportUnitsChanged();
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+  }
+
+  // NeedsActiveStyleUpdate should be set when dv* units are used.
+  {
+    auto holder = DummyPageHolderWithHTML(R"HTML(
+        <style>
+          @media (min-width: 50dvh) {
+            :root { color: green; }
+          }
+        </style>
+      )HTML");
+    Document& document = holder->GetDocument();
+
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+    document.DynamicViewportUnitsChanged();
+    EXPECT_TRUE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+  }
+
+  // Same as the first test, but with media attribute.
+  {
+    auto holder = DummyPageHolderWithHTML(R"HTML(
+        <style media="(min-width: 50vh)">
+          :root { color: green; }
+        </style>
+      )HTML");
+    Document& document = holder->GetDocument();
+
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+    document.DynamicViewportUnitsChanged();
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+  }
+
+  // // Same as the second test, but with media attribute.
+  {
+    auto holder = DummyPageHolderWithHTML(R"HTML(
+      <style media="(min-width: 50dvh)">
+        :root { color: green; }
+      </style>
+    )HTML");
+    Document& document = holder->GetDocument();
+
+    EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+    document.DynamicViewportUnitsChanged();
+    EXPECT_TRUE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+  }
+}
+
+namespace {
+
+class TestMediaQueryListListener : public MediaQueryListListener {
+ public:
+  void NotifyMediaQueryChanged() override { notified = true; }
+  bool notified = false;
+};
+
+}  // namespace
+
+TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQueryMatcher) {
+  ScopedCSSViewportUnits4ForTest flag(true);
+
+  auto& matcher = GetDocument().GetMediaQueryMatcher();
+  auto* listener = MakeGarbageCollected<TestMediaQueryListListener>();
+  matcher.AddViewportListener(listener);
+
+  // Note: SimulateFrame is responsible for eventually causing dispatch of
+  // pending events to MediaQueryListListener.
+  // See step 10.8 (call to CallMediaQueryListListeners) in
+  // ScriptedAnimationController::ServiceScriptedAnimations.
+
+  auto mq_static = MediaQuerySet::Create("(min-width: 50vh)",
+                                         GetDocument().GetExecutionContext());
+  ASSERT_TRUE(mq_static);
+  matcher.Evaluate(mq_static.get());
+  GetDocument().DynamicViewportUnitsChanged();
+  SimulateFrame();
+  EXPECT_FALSE(listener->notified);
+
+  // Evaluating a media query with dv* units will mark the MediaQueryMatcher
+  // as dependent on such units, hence we should see events when calling
+  // DynamicViewportUnitsChanged after that.
+  auto mq_dynamic = MediaQuerySet::Create("(min-width: 50dvh)",
+                                          GetDocument().GetExecutionContext());
+  ASSERT_TRUE(mq_dynamic);
+  matcher.Evaluate(mq_dynamic.get());
+  GetDocument().DynamicViewportUnitsChanged();
+  SimulateFrame();
+  EXPECT_TRUE(listener->notified);
+}
+
 class StyleEngineSimTest : public SimTest {};
 
 TEST_F(StyleEngineSimTest, OwnerColorScheme) {
@@ -3423,11 +3865,11 @@ TEST_F(StyleEngineContainerQueryTest, UpdateStyleAndLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         .affected { background-color: green; }
       }
     </style>
@@ -3484,11 +3926,11 @@ TEST_F(StyleEngineContainerQueryTest, ContainerQueriesContainmentNotApplying) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       .container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         .toggle { background-color: green; }
       }
     </style>
@@ -3544,11 +3986,11 @@ TEST_F(StyleEngineContainerQueryTest, PseudoElementContainerQueryRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #container::before { content: " " }
         span::before { content: " " }
       }
@@ -3577,11 +4019,11 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container {
-        contain: layout size style;
+        container-type: size;
         width: 100px;
         height: 100px;
       }
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #input { background-color: green; }
       }
     </style>
@@ -3643,7 +4085,7 @@ TEST_F(StyleEngineContainerQueryTest, UsesContainerQueries) {
   ASSERT_TRUE(late_style);
 
   late_style->setTextContent(R"CSS(
-      @container (min-width: 1px) {
+      @container size(min-width: 1px) {
         #a { color: green; }
       }
     )CSS");
@@ -3688,7 +4130,7 @@ TEST_F(StyleEngineContainerQueryTest,
         width: 200px;
       }
 
-      @container (min-width: 200px) {
+      @container size(min-width: 200px) {
         #a { z-index: 2; }
       }
     </style>
@@ -3725,6 +4167,7 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   )CSS";
 
   {
+    ScopedCSSContainerQueriesForTest cq_feature(false);
     ScopedCSSContainerRelativeUnitsForTest feature(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
@@ -3734,11 +4177,41 @@ TEST_F(StyleEngineTest, ContainerRelativeUnitsRuntimeFlag) {
   }
 
   {
+    ScopedCSSContainerQueriesForTest cq_feature(false);
     ScopedCSSContainerRelativeUnitsForTest feature(true);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
     ASSERT_TRUE(set);
     EXPECT_EQ(8u, set->PropertyCount());
+  }
+}
+
+TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
+  Vector<String> units = {"vi",  "vb",    "svi",   "svb",   "svw",
+                          "svh", "svmin", "svmax", "lvi",   "lvb",
+                          "lvw", "lvh",   "lvmin", "lvmax", "dvi",
+                          "dvb", "dvw",   "dvh",   "dvmin", "dvmax"};
+
+  for (const String& unit : units) {
+    String css = "top: 1" + unit;
+    SCOPED_TRACE(testing::Message() << unit);
+
+    {
+      ScopedCSSViewportUnits4ForTest flag(false);
+      const CSSPropertyValueSet* set =
+          css_test_helpers::ParseDeclarationBlock(css);
+      ASSERT_TRUE(set);
+      EXPECT_EQ(0u, set->PropertyCount());
+    }
+
+    {
+      ScopedCSSViewportUnits4ForTest flag(true);
+      const CSSPropertyValueSet* set =
+          css_test_helpers::ParseDeclarationBlock(css);
+      ASSERT_TRUE(set);
+      EXPECT_EQ(1u, set->PropertyCount());
+      EXPECT_TRUE(set->HasProperty(CSSPropertyID::kTop));
+    }
   }
 }
 
@@ -3889,7 +4362,7 @@ TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   EXPECT_TRUE(audio->GetComputedStyle());
   EXPECT_FALSE(html_audio->GetComputedStyle());
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
 
   // Also for printing.
@@ -4788,6 +5261,501 @@ TEST_F(StyleEngineTest, LegacyListItemRebuildRootCrash) {
   doc_elm->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "green");
   // Should not crash
   UpdateAllLifecyclePhases();
+}
+
+// Regression test for https://crbug.com/1270190
+TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+    .a {
+      width: 50px;
+      height: 50px;
+      background-color: magenta;
+      overflow-y: scroll;
+      margin: 5px;
+      float: left;
+    }
+
+    .b {
+      height: 100px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: green;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: red;
+    }
+    </style>
+    <div class="a" id="container">
+      <div class="b">
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  // We currently don't cache ::-webkit-scrollbar-* pseudo element styles, so
+  // the cache is always empty. If we decide to cache them, we should make sure
+  // that the cache size remains bounded.
+
+  Element* container = GetDocument().getElementById("container");
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+
+  PaintLayerScrollableArea* area =
+      container->GetLayoutBox()->GetScrollableArea();
+  Scrollbar* scrollbar = area->VerticalScrollbar();
+  CustomScrollbar* custom_scrollbar = To<CustomScrollbar>(scrollbar);
+
+  scrollbar->SetHoveredPart(kThumbPart);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+  EXPECT_EQ("#ff0000", custom_scrollbar->GetPart(kThumbPart)
+                           ->Style()
+                           ->BackgroundColor()
+                           .GetColor()
+                           .Serialized());
+
+  scrollbar->SetHoveredPart(kNoPart);
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(container->GetComputedStyle()->GetPseudoElementStyleCache());
+  EXPECT_EQ("#008000", custom_scrollbar->GetPart(kThumbPart)
+                           ->Style()
+                           ->BackgroundColor()
+                           .GetColor()
+                           .Serialized());
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantClassChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kClassAttr,
+                                                     "c");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kClassAttr,
+                                                     "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantIdChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(#b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kIdAttr, "c");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("c")->setAttribute(html_names::kIdAttr, "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationSkipIrrelevantAttributeChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has([b]) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(QualifiedName("", "c", ""),
+                                                     "C");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(QualifiedName("", "b", ""),
+                                                     "B");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationSkipIrrelevantInsertionRemoval) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3></div>
+        <div id=div4></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div5->setAttribute(html_names::kIdAttr, "div5");
+  div5->setInnerHTML(R"HTML(<div class='c'></div>)HTML");
+  GetDocument().getElementById("div3")->AppendChild(div5);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  auto* div6 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div6->setAttribute(html_names::kIdAttr, "div6");
+  div6->setInnerHTML(R"HTML(<div class='b'></div>)HTML");
+  GetDocument().getElementById("div4")->AppendChild(div6);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(3U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div3")->RemoveChild(
+      GetDocument().getElementById("div5"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->RemoveChild(
+      GetDocument().getElementById("div6"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationUniversalInArgument) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(*) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div3 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div3->setAttribute(html_names::kIdAttr, "div3");
+  GetDocument().getElementById("div2")->AppendChild(div3);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div2")->RemoveChild(
+      GetDocument().getElementById("div3"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationInsertionRemovalWithPseudoInHas) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .a:has(.b:focus) { background-color: lime; }
+      .c:has(.d) { background-color: green; }
+    </style>
+    <div id=div1>
+      <div id=div2 class='a'></div>
+      <div id=div3 class='c'></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div4 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div4->setAttribute(html_names::kIdAttr, "div4");
+  GetDocument().getElementById("div2")->AppendChild(div4);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div5->setAttribute(html_names::kIdAttr, "div5");
+  GetDocument().getElementById("div3")->AppendChild(div5);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div2")->RemoveChild(
+      GetDocument().getElementById("div4"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div3")->RemoveChild(
+      GetDocument().getElementById("div5"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationLinkInHas) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .a:has(:link) { background-color: lime; }
+    </style>
+    <div id=div1 class='a'>
+      <a href="unvisited"></a>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+  anchor->setAttribute(html_names::kIdAttr, "anchor1");
+  GetDocument().getElementById("div1")->AppendChild(anchor);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div1")->RemoveChild(
+      GetDocument().getElementById("anchor1"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationIgnoreVisitedPseudoInHas) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .a:has(:visited) { background-color: lime; }
+    </style>
+    <div id=div1 class='a'>
+      <a href="unvisited"></a>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
+  anchor->SetHref("");
+  anchor->setAttribute(html_names::kIdAttr, "anchor1");
+  GetDocument().getElementById("div1")->AppendChild(anchor);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div1")->RemoveChild(
+      GetDocument().getElementById("anchor1"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationCheckFiltering) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    div { color: grey }
+    .a:has(.b) { color: red }
+    .c:has(.d) { color: green }
+    .e:has(.f) .g { color: blue }
+    .e:has(.h) .i { color: navy }
+    .e:has(.f.h) .j { color: lightgreen }
+    </style>
+    <div class='a e'>
+      <div class=g></div>
+      <div class=i></div>
+      <div class=j></div>
+      <div id=child></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // TODO(blee@igalia.com) Should be 0U. Need additional filtering
+  // - skip invalidation of non-subject :has() rules
+  //    - .e:has(.f) .g
+  //    - .e:has(.h) .i
+  //    - .e:has(.f.h) .j
+  // - skip invalidation of the irrelevant ancestor
+  //    - .a:has(.b)
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "d");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  EXPECT_EQ(4U, element_count);
+
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "");
+  UpdateAllLifecyclePhases();
+
+  // TODO(blee@igalia.com) Should be 1U. Need additional filtering
+  // - skip invalidation of subject :has() rules
+  //    - .a:has(.b)
+  // - skip invalidation of irrelevant rules
+  //    - .e:has(.h) .i
+  // - skip invalidation of the mutation on irrelevant element
+  //    - .e:has(.f.h) .j
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("child")->setAttribute(html_names::kClassAttr,
+                                                      "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  EXPECT_EQ(4U, element_count);
+}
+
+TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(10px + 20%); }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(min(10px, 20%) + max(20px, 10%)); }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(clamp(10px, 20px, 30px)); }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(clamp(10px, 20%, 20px + 30%)); }
+    </style>
+    <div></div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+}
+
+TEST_F(StyleEngineTest, MathDepthOverflow) {
+  css_test_helpers::RegisterProperty(
+      GetDocument(), "--int16-max", "<integer>",
+      String::Format("%i", std::numeric_limits<int16_t>::max()), false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #parent1 {
+        math-style: compact;
+        math-depth: var(--int16-max);
+      }
+      #parent2 {
+        math-style: compact;
+        math-depth: 1;
+      }
+      #child1, #control1 {
+        math-depth: add(1);
+      }
+      #child2, #control2 {
+        math-depth: auto-add;
+      }
+      #child3 {
+        math-depth: calc(var(--int16-max) + 1);
+      }
+    </style>
+    <div id=parent1>
+      <div id=child1></div>
+      <div id=child2></div>
+      <div id=child3></div>
+    </div>
+    <div id=parent2>
+      <div id=control1></div>
+      <div id=control2></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* control1 = GetDocument().getElementById("control1");
+  Element* control2 = GetDocument().getElementById("control2");
+
+  ASSERT_TRUE(control1 && control1->GetComputedStyle());
+  ASSERT_TRUE(control2 && control2->GetComputedStyle());
+
+  EXPECT_EQ(2, control1->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(2, control2->GetComputedStyle()->MathDepth());
+
+  Element* child1 = GetDocument().getElementById("child1");
+  Element* child2 = GetDocument().getElementById("child2");
+  Element* child3 = GetDocument().getElementById("child3");
+
+  ASSERT_TRUE(child1 && child1->GetComputedStyle());
+  ASSERT_TRUE(child2 && child2->GetComputedStyle());
+  ASSERT_TRUE(child3 && child3->GetComputedStyle());
+
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child1->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child2->GetComputedStyle()->MathDepth());
+  EXPECT_EQ(std::numeric_limits<int16_t>::max(),
+            child3->GetComputedStyle()->MathDepth());
 }
 
 }  // namespace blink

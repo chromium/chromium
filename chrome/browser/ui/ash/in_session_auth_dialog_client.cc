@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -25,10 +26,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using chromeos::AuthStatusConsumer;
-using chromeos::ExtendedAuthenticator;
-using chromeos::Key;
-using chromeos::UserContext;
+using ::ash::AuthStatusConsumer;
+using ::ash::ExtendedAuthenticator;
+using ::ash::Key;
+using ::ash::UserContext;
 
 namespace {
 
@@ -68,7 +69,8 @@ bool InSessionAuthDialogClient::IsFingerprintAuthAvailable(
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
   return quick_unlock_storage &&
-         quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable();
+         quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable(
+             ash::quick_unlock::Purpose::kWebAuthn);
 }
 
 ExtendedAuthenticator* InSessionAuthDialogClient::GetExtendedAuthenticator() {
@@ -96,7 +98,7 @@ void InSessionAuthDialogClient::CheckPinAuthAvailability(
     base::OnceCallback<void(bool)> callback) {
   // PinBackend may be using cryptohome backend or prefs backend.
   ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      account_id, std::move(callback));
+      account_id, ash::quick_unlock::Purpose::kWebAuthn, std::move(callback));
 }
 
 void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
@@ -109,7 +111,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   DCHECK(user);
   UserContext user_context(*user);
   user_context.SetKey(
-      Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
+      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
   user_context.SetIsUsingPin(authenticated_by_pin);
   user_context.SetSyncPasswordData(password_manager::PasswordHashData(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(password),
@@ -127,6 +129,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   if (authenticated_by_pin) {
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
         user_context.GetAccountId(), *user_context.GetKey(),
+        ash::quick_unlock::Purpose::kWebAuthn,
         base::BindOnce(&InSessionAuthDialogClient::OnPinAttemptDone,
                        weak_factory_.GetWeakPtr(), user_context));
     return;
@@ -234,8 +237,7 @@ aura::Window* InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
 }
 
 // AuthStatusConsumer:
-void InSessionAuthDialogClient::OnAuthFailure(
-    const chromeos::AuthFailure& error) {
+void InSessionAuthDialogClient::OnAuthFailure(const ash::AuthFailure& error) {
   if (pending_auth_state_) {
     std::move(pending_auth_state_->callback).Run(false);
     pending_auth_state_.reset();

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -77,7 +78,8 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
   }
 
   void NotifyClientOnReceiveResponse() {
-    client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+    client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                      mojo::ScopedDataPipeConsumerHandle());
   }
 
   void NotifyClientOnReceiveRedirect() {
@@ -200,8 +202,8 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     on_received_response_called_++;
     if (on_received_response_callback_)
       std::move(on_received_response_callback_).Run();
@@ -306,7 +308,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       request->url = modify_url_in_will_start_;
 
     if (will_start_request_callback_)
-      will_start_request_callback_.Run(delegate_, defer);
+      will_start_request_callback_.Run(delegate_.get(), defer);
   }
 
   void WillRedirectRequest(
@@ -319,7 +321,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
     will_redirect_request_called_++;
     if (will_redirect_request_callback_) {
       std::move(will_redirect_request_callback_)
-          .Run(delegate_, defer, removed_headers, modified_headers,
+          .Run(delegate_.get(), defer, removed_headers, modified_headers,
                modified_cors_exempt_headers);
     }
   }
@@ -329,7 +331,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override {
     will_process_response_called_++;
     if (will_process_response_callback_)
-      will_process_response_callback_.Run(delegate_, defer);
+      will_process_response_callback_.Run(delegate_.get(), defer);
     response_url_ = response_url;
   }
 
@@ -339,7 +341,7 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
       bool* defer) override {
     before_will_process_response_called_++;
     if (before_will_process_response_callback_)
-      before_will_process_response_callback_.Run(delegate_, defer);
+      before_will_process_response_callback_.Run(delegate_.get(), defer);
   }
 
   size_t will_start_request_called_ = 0;
@@ -405,7 +407,7 @@ class ThrottlingURLLoaderTest : public testing::Test {
   TestURLLoaderClient client_;
 
   // Owned by |throttles_| or |loader_|.
-  TestURLLoaderThrottle* throttle_ = nullptr;
+  raw_ptr<TestURLLoaderThrottle> throttle_ = nullptr;
 
   base::WeakPtrFactory<ThrottlingURLLoaderTest> weak_factory_{this};
 };
@@ -1269,7 +1271,7 @@ TEST_F(ThrottlingURLLoaderTest,
   EXPECT_NE(nullptr, throttle_);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(nullptr, throttle_);
+  EXPECT_EQ(nullptr, throttle_.get());
 }
 
 // Regression test for crbug.com/833292.
@@ -1321,7 +1323,7 @@ TEST_F(ThrottlingURLLoaderTest,
   EXPECT_NE(nullptr, throttle_);
 
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(nullptr, throttle_);
+  EXPECT_EQ(nullptr, throttle_.get());
 }
 
 // Call RestartWithFlags() from a single throttle while processing

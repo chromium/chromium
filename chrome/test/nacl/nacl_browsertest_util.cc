@@ -95,8 +95,11 @@ MessageResponse LoadTestMessageHandler::HandleStructuredMessage(
     std::string message;
     if (!msg->GetString("message", &message))
       return MissingField(type, "message");
-    if (!msg->GetBoolean("passed", &test_passed_))
+    if (absl::optional<bool> passed = msg->FindBoolKey("passed")) {
+      test_passed_ = *passed;
+    } else {
       return MissingField(type, "passed");
+    }
     Log("SHUTDOWN", message);
     return DONE;
   } else {
@@ -152,8 +155,11 @@ MessageResponse NaClIntegrationMessageHandler::HandleStructuredMessage(
     std::string message;
     if (!msg->GetString("message", &message))
       return MissingField(type, "message");
-    if (!msg->GetBoolean("passed", &test_passed_))
+    if (absl::optional<bool> passed = msg->FindBoolKey("passed")) {
+      test_passed_ = *passed;
+    } else {
       return MissingField(type, "passed");
+    }
     Log(message);
     return DONE;
   } else if (type == "Ping") {
@@ -255,14 +261,18 @@ void NaClBrowserTestBase::RunNaClIntegrationTest(
     AddPnaclParm(url_fragment, &url_fragment_with_pnacl);
   }
   base::FilePath::StringType url_fragment_with_both = url_fragment_with_pnacl;
-  bool ok = RunJavascriptTest(full_url
-#if defined(OS_WIN)
-                              ? GURL(base::WideToUTF16(url_fragment_with_both))
+
+  GURL url;
+  if (full_url) {
+#if BUILDFLAG(IS_WIN)
+    url = GURL(base::WideToUTF16(url_fragment_with_both));
 #else
-                              ? GURL(url_fragment_with_both)
+    url = GURL(url_fragment_with_both);
 #endif
-                              : TestURL(url_fragment_with_both),
-                              &handler);
+  } else {
+    url = TestURL(url_fragment_with_both);
+  }
+  bool ok = RunJavascriptTest(url, &handler);
   ASSERT_TRUE(ok) << handler.error_message();
   ASSERT_TRUE(handler.test_passed()) << "Test failed.";
 }
@@ -299,16 +309,6 @@ void NaClBrowserTestPnaclSubzero::SetUpCommandLine(
   command_line->AppendSwitch(switches::kForcePNaClSubzero);
 }
 
-base::FilePath::StringType NaClBrowserTestNonSfiMode::Variant() {
-  return FILE_PATH_LITERAL("libc-free");
-}
-
-void NaClBrowserTestNonSfiMode::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  NaClBrowserTestBase::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(switches::kEnableNaClNonSfiMode);
-}
-
 base::FilePath::StringType NaClBrowserTestStatic::Variant() {
   return FILE_PATH_LITERAL("static");
 }
@@ -316,16 +316,6 @@ base::FilePath::StringType NaClBrowserTestStatic::Variant() {
 bool NaClBrowserTestStatic::GetDocumentRoot(base::FilePath* document_root) {
   *document_root = base::FilePath(FILE_PATH_LITERAL("chrome/test/data/nacl"));
   return true;
-}
-
-base::FilePath::StringType NaClBrowserTestPnaclNonSfi::Variant() {
-  return FILE_PATH_LITERAL("nonsfi");
-}
-
-void NaClBrowserTestPnaclNonSfi::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  NaClBrowserTestBase::SetUpCommandLine(command_line);
-  command_line->AppendSwitch(switches::kEnableNaClNonSfiMode);
 }
 
 void NaClBrowserTestNewlibExtension::SetUpCommandLine(

@@ -5,7 +5,9 @@
 #include "device/fido/fido_discovery_factory.h"
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -14,19 +16,20 @@
 #include "device/fido/fido_discovery_base.h"
 
 // HID is not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "device/fido/hid/fido_hid_discovery.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Winuser.h>
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #include "device/fido/mac/discovery.h"
-#endif  // defined(OSMACOSX)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/fido/cros/discovery.h"
@@ -46,6 +49,26 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
     case FidoTransportProtocol::kBluetoothLowEnergy:
       return {};
     case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+#if BUILDFLAG(IS_MAC)
+      if (!base::IsProcessSelfResponsible()) {
+        // On recent macOS a process must have listed Bluetooth metadata in
+        // its Info.plist in order to call Bluetooth APIs. Failure to do so
+        // results in the system killing with process with SIGABRT once
+        // Bluetooth calls are made.
+        //
+        // However, unless Chromium is started from the Finder, or with special
+        // posix_spawn flags, then the responsible process—the one that needs
+        // to have the right Info.plist—is one of the parent processes, often
+        // the terminal emulator. This can lead to Chromium getting killed when
+        // trying to do WebAuthn. This also affects layout tests.
+        //
+        // Thus, if the responsible process is not Chromium itself, then we
+        // disable caBLE (and thus avoid Bluetooth calls).
+        FIDO_LOG(ERROR) << "Cannot start caBLE because process is not "
+                           "self-responsible. Launch from Finder to fix.";
+        return {};
+      }
+#endif
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
         auto v1_discovery = std::make_unique<FidoCableDiscovery>(
@@ -75,7 +98,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       // TODO(https://crbug.com/825949): Add NFC support.
       return {};
     case FidoTransportProtocol::kInternal: {
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<FidoDiscoveryBase> discovery =
           MaybeCreatePlatformDiscovery();
       if (discovery) {
@@ -161,7 +184,7 @@ FidoDiscoveryFactory::SingleDiscovery(
   return ret;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void FidoDiscoveryFactory::set_win_webauthn_api(WinWebAuthnApi* api) {
   win_webauthn_api_ = api;
 }
@@ -182,9 +205,9 @@ FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
                    GetForegroundWindow(), win_webauthn_api_)
              : nullptr;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   return mac_touch_id_config_

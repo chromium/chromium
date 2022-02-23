@@ -254,12 +254,11 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!prefs_)
     return;
 
-  const base::ListValue* list =
-      prefs_->GetList(prefs::kPartnerBookmarkMappings);
+  const base::Value* list = prefs_->GetList(prefs::kPartnerBookmarkMappings);
   if (!list)
     return;
 
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list->GetListDeprecated()) {
     const base::DictionaryValue* dict = nullptr;
     if (!entry.GetAsDictionary(&dict)) {
       NOTREACHED();
@@ -291,9 +290,9 @@ void PartnerBookmarksShim::SaveNodeMapping() {
        i != node_rename_remove_map_.end();
        ++i) {
     auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetString(kMappingUrl, i->first.url().spec());
-    dict->SetString(kMappingProviderTitle, i->first.provider_title());
-    dict->SetString(kMappingTitle, i->second);
+    dict->SetStringKey(kMappingUrl, i->first.url().spec());
+    dict->SetStringKey(kMappingProviderTitle, i->first.provider_title());
+    dict->SetStringKey(kMappingTitle, i->second);
     list.Append(std::move(dict));
   }
   prefs_->Set(prefs::kPartnerBookmarkMappings, list);

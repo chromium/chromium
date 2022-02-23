@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "device/bluetooth/bluez/metrics_recorder.h"
 #endif
 
@@ -35,7 +35,7 @@ namespace {
 
 const char kMojoReceivingPipeError[] = "Failed to create receiving DataPipe.";
 const char kMojoSendingPipeError[] = "Failed to create sending DataPipe.";
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 const char kCannotConnectToDeviceError[] = "Cannot connect to device.";
 #endif
 
@@ -106,7 +106,7 @@ void Adapter::GetInfo(GetInfoCallback callback) {
   mojom::AdapterInfoPtr adapter_info = mojom::AdapterInfo::New();
   adapter_info->address = adapter_->GetAddress();
   adapter_info->name = adapter_->GetName();
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_info->system_name = adapter_->GetSystemName();
 #endif
   adapter_info->initialized = adapter_->IsInitialized();
@@ -237,7 +237,7 @@ void Adapter::ConnectToServiceInsecurely(
 
   // This device has neither been discovered, nor has it been paired/connected
   // to previously. Use the ConnectDevice() API, if available, to connect to it.
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   adapter_->ConnectDevice(
       address, /*address_type=*/absl::nullopt,
       base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
@@ -499,7 +499,7 @@ void Adapter::OnConnectToService(
   ExecuteConnectToServiceCallback(request_id,
                                   std::move(connect_to_service_result));
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   RecordConnectToServiceInsecurelyResult(
       ConnectToServiceInsecurelyResult::kSuccess);
 #endif
@@ -510,7 +510,7 @@ void Adapter::OnConnectToServiceError(int request_id,
   DLOG(ERROR) << "Failed to connect to service: '" << message << "'";
   ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   absl::optional<ConnectToServiceInsecurelyResult> result =
       ExtractResultFromErrorString(message);
   if (result) {

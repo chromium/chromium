@@ -15,8 +15,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
@@ -31,7 +33,6 @@
 #include "components/update_client/request_sender.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client.h"
-#include "components/update_client/updater_state.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
@@ -66,16 +67,15 @@ class UpdateCheckerImpl : public UpdateChecker {
       const std::vector<std::string>& ids_checked,
       const IdToComponentPtrMap& components,
       const base::flat_map<std::string, std::string>& additional_attributes,
-      bool enabled_component_updates,
       UpdateCheckCallback update_check_callback) override;
 
  private:
-  void ReadUpdaterStateAttributes();
+  UpdaterStateAttributes ReadUpdaterStateAttributes() const;
   void CheckForUpdatesHelper(
       const std::string& session_id,
       const IdToComponentPtrMap& components,
       const base::flat_map<std::string, std::string>& additional_attributes,
-      bool enabled_component_updates,
+      const UpdaterStateAttributes& updater_state_attributes,
       const std::set<std::string>& active_ids);
   void OnRequestSenderComplete(int error,
                                const std::string& response,
@@ -89,10 +89,9 @@ class UpdateCheckerImpl : public UpdateChecker {
   base::ThreadChecker thread_checker_;
 
   const scoped_refptr<Configurator> config_;
-  PersistedData* metadata_ = nullptr;
+  raw_ptr<PersistedData> metadata_ = nullptr;
   std::vector<std::string> ids_checked_;
   UpdateCheckCallback update_check_callback_;
-  std::unique_ptr<UpdaterState::Attributes> updater_state_attributes_;
   std::unique_ptr<RequestSender> request_sender_;
 };
 
@@ -109,49 +108,51 @@ void UpdateCheckerImpl::CheckForUpdates(
     const std::vector<std::string>& ids_checked,
     const IdToComponentPtrMap& components,
     const base::flat_map<std::string, std::string>& additional_attributes,
-    bool enabled_component_updates,
     UpdateCheckCallback update_check_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   ids_checked_ = ids_checked;
   update_check_callback_ = std::move(update_check_callback);
 
-  base::ThreadPool::PostTaskAndReply(
+  auto check_for_updates_invoker = base::BindOnce(
+      &UpdateCheckerImpl::CheckForUpdatesHelper, base::Unretained(this),
+      session_id, std::cref(components), additional_attributes);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&UpdateCheckerImpl::ReadUpdaterStateAttributes,
                      base::Unretained(this)),
       base::BindOnce(
-          [](base::OnceCallback<void(const std::set<std::string>&)>
-                 checkForUpdatesHelper,
-             PersistedData* metadata, std::vector<std::string> ids) {
-            metadata->GetActiveBits(ids, std::move(checkForUpdatesHelper));
+          [](base::OnceCallback<void(const UpdaterStateAttributes&,
+                                     const std::set<std::string>&)>
+                 check_for_updates_invoker,
+             PersistedData* metadata, std::vector<std::string> ids,
+             const UpdaterStateAttributes& updater_state_attributes) {
+            metadata->GetActiveBits(
+                ids, base::BindOnce(std::move(check_for_updates_invoker),
+                                    updater_state_attributes));
           },
-          base::BindOnce(&UpdateCheckerImpl::CheckForUpdatesHelper,
-                         base::Unretained(this), session_id,
-                         std::cref(components), additional_attributes,
-                         enabled_component_updates),
-          base::Unretained(metadata_), ids_checked));
+          std::move(check_for_updates_invoker), base::Unretained(metadata_),
+          ids_checked));
 }
 
 // This function runs on the blocking pool task runner.
-void UpdateCheckerImpl::ReadUpdaterStateAttributes() {
-#if defined(OS_WIN)
+UpdaterStateAttributes UpdateCheckerImpl::ReadUpdaterStateAttributes() const {
+#if BUILDFLAG(IS_WIN)
   // On Windows, the Chrome and the updater install modes are matched by design.
-  updater_state_attributes_ =
-      UpdaterState::GetState(!config_->IsPerUserInstall());
-#elif defined(OS_MAC)
-  // MacOS ignores this value in the current implementation but this may change.
-  updater_state_attributes_ = UpdaterState::GetState(false);
+  return config_->GetUpdaterStateProvider().Run(!config_->IsPerUserInstall());
+#elif BUILDFLAG(IS_MAC)
+  return config_->GetUpdaterStateProvider().Run(false);
 #else
-// Other platforms don't have updaters.
-#endif  // OS_WIN
+  return {};
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void UpdateCheckerImpl::CheckForUpdatesHelper(
     const std::string& session_id,
     const IdToComponentPtrMap& components,
     const base::flat_map<std::string, std::string>& additional_attributes,
-    bool enabled_component_updates,
+    const UpdaterStateAttributes& updater_state_attributes,
     const std::set<std::string>& active_ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -184,21 +185,17 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     else if (component->is_foreground())
       install_source = "ondemand";
 
-    const bool is_update_disabled =
-        crx_component->supports_group_policy_enable_component_updates &&
-        !enabled_component_updates;
-
-    // TODO(crbug.com/1259972): Brand is per-item for some users.
     apps.push_back(MakeProtocolApp(
-        app_id, crx_component->version, crx_component->ap, config_->GetBrand(),
+        app_id, crx_component->version, crx_component->ap, crx_component->brand,
         install_source, crx_component->install_location,
         crx_component->fingerprint, crx_component->installer_attributes,
         metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),
         metadata_->GetCohortHint(app_id), crx_component->channel,
         crx_component->disabled_reasons,
-        MakeProtocolUpdateCheck(is_update_disabled,
+        MakeProtocolUpdateCheck(!crx_component->updates_enabled,
                                 crx_component->target_version_prefix,
-                                crx_component->rollback_allowed),
+                                crx_component->rollback_allowed,
+                                crx_component->same_version_update_allowed),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
         absl::nullopt));
@@ -208,8 +205,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
       !config_->IsPerUserInstall(), session_id, config_->GetProdId(),
       config_->GetBrowserVersion().GetString(), config_->GetLang(),
       config_->GetChannel(), config_->GetOSLongName(),
-      config_->GetDownloadPreference(), additional_attributes,
-      updater_state_attributes_.get(), std::move(apps));
+      config_->GetDownloadPreference(), config_->IsMachineExternallyManaged(),
+      additional_attributes, updater_state_attributes, std::move(apps));
 
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(

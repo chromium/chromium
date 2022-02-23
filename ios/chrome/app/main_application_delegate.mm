@@ -24,8 +24,6 @@
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/web/common/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +36,7 @@ namespace {
 const int kMainIntentCheckDelay = 1;
 }  // namespace
 
-@interface MainApplicationDelegate () {
+@interface MainApplicationDelegate () <AppStateObserver> {
   MainController* _mainController;
   // Memory helper used to log the number of memory warnings received.
   MemoryWarningHelper* _memoryHelper;
@@ -53,6 +51,9 @@ const int kMainIntentCheckDelay = 1;
   id<TabOpening> _tabOpener;
   // Handles tab switcher.
   id<TabSwitching> _tabSwitcher;
+  // The set of "scene sessions" that needs to be discarded. See
+  // -applicatiopn:didDiscardSceneSessions: for details.
+  NSSet<UISceneSession*>* _sceneSessionsToDiscard;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -92,6 +93,13 @@ const int kMainIntentCheckDelay = 1;
   self.didFinishLaunching = YES;
 
   _appState.startupInformation.didFinishLaunchingTime = base::TimeTicks::Now();
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults
+      setInteger:[defaults integerForKey:
+                               metrics_mediator::
+                                   kAppDidFinishLaunchingConsecutiveCallsKey] +
+                 1
+          forKey:metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey];
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
   BOOL requiresHandling =
@@ -151,9 +159,23 @@ const int kMainIntentCheckDelay = 1;
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->ApplicationDidDiscardSceneSessions(sceneSessions);
+  // This method is invoked by iOS to inform the application that the sessions
+  // for "closed windows" is garbage collected and that any data associated with
+  // them by the application needs to be deleted.
+  //
+  // The documentation says that if the application is not running when the OS
+  // decides to discard the sessions, then it will call this method the next
+  // time the application starts up. As seen by crbug.com/1292641, this call
+  // happens before -[UIApplicationDelegate sceneWillConnect:] which means
+  // that it can happen before Chrome has properly initialized. In that case,
+  // record the list of sessions to discard and clean them once Chrome is
+  // initialized.
+  if (_appState.initStage <= InitStageBrowserObjectsForBackgroundHandlers) {
+    _sceneSessionsToDiscard = [sceneSessions copy];
+    [_appState addObserver:self];
+    return;
+  }
+
   [_appState application:application didDiscardSceneSessions:sceneSessions];
 }
 
@@ -254,11 +276,21 @@ const int kMainIntentCheckDelay = 1;
                                memoryHelper:_memoryHelper];
 }
 
-#pragma mark - optionals from UIApplicationDelegate required by ChromeInternal
+#pragma mark - AppStateObserver methods
 
-// TODO(crbug.com/1227456): Remove when fixed in ChromeInternal
-- (UIWindow*)window {
-  return GetAnyKeyWindow();
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  DCHECK_EQ(_appState, appState);
+
+  // The app transitioned to InitStageBrowserObjectsForBackgroundHandlers
+  // or past that stage.
+  if (_appState.initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
+    DCHECK(_sceneSessionsToDiscard);
+    [_appState removeObserver:self];
+    [_appState application:[UIApplication sharedApplication]
+        didDiscardSceneSessions:_sceneSessionsToDiscard];
+    _sceneSessionsToDiscard = nil;
+  }
 }
 
 #pragma mark - Testing methods

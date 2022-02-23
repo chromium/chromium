@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/web/public/download/download_controller_delegate.h"
 

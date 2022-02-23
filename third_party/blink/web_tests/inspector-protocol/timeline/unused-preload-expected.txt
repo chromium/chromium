@@ -1,0 +1,5 @@
+Tests reporting of unused preloads in traces.
+Recording started
+Tracing complete
+empty.js
+

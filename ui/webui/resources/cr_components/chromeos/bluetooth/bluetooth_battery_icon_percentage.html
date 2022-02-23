@@ -1,0 +1,30 @@
+<style include="cr-shared-style">
+  :host([is-low-battery_]) #container {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    color: var(--cros-text-color-alert);
+  }
+
+  :host([is-multiple-battery_]) #container {
+    padding-end: 6px;
+  }
+
+  :host(:not([is-low-battery_])) #container {
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    color: var(--cros-icon-color-secondary);
+  }
+
+  .battery-icon {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    margin-inline-end: -2px;
+    padding-bottom: 2px;
+  }
+</style>
+<span id="container">
+  <iron-icon id="batteryIcon" class="battery-icon"
+      icon="[[getBatteryIcon_(device, batteryType)]]">
+  </iron-icon>
+  <span id="batteryPercentage">
+    [[getBatteryPercentageString_(device, batteryType)]]
+  </span>
+</span>

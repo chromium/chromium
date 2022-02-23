@@ -20,6 +20,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
@@ -73,6 +74,67 @@ public class AutocompleteEditTextTest {
     private Verifier mVerifier;
     private ShadowAccessibilityManager mShadowAccessibilityManager;
     private boolean mIsShown;
+
+    /**
+     * A flag to tweak test expectations to deal with an OS bug.
+     *
+     * <p>{@code EditableInputConnection}, which {@link AutocompleteEditText} internally rely on,
+     * has had <a href="https://issuetracker.google.com/issues/209958658">a bug</a> that it still
+     * returns {@code true} from {@link InputConnection#endBatchEdit()} when its internal batch edit
+     * count becomes {@code 0} as a result of invocation, which clearly conflicted with the spec.
+     * There are several tests in this file that are unfortunately affected by this bug.  In order
+     * to abstract out such an OS issue from the actual test expectations, we will dynamically test
+     * if the bug still exists or not in the test execution environment or not, and set {@code true}
+     * to this flag if it is still there.</p>
+     *
+     * <p>Until a new version of Android OS with
+     * <a href="https://android-review.googlesource.com/c/platform/frameworks/base/+/1923058">the
+     * fix</a> and a corresponding version of Robolectric become available in Chromium, this flag is
+     * expected to be always {@code true}. Once they become available, you can either remove this
+     * flag with assuming it's always {@code false} or test two different OS behaviors at the same
+     * time by <a href="http://robolectric.org/configuring/">specifying multiple SDK versions</a> to
+     * the test runner</a>.</p>
+     *
+     * @see #testEditableInputConnectionEndBatchEditBug(Context)
+     * @see #assertLastBatchEdit(boolean)
+     */
+    private boolean mHasEditableInputConnectionEndBatchEditBug;
+
+    /**
+     * Test if {@code EditableInputConnection} has a bug that it still returns {@code true} from
+     * {@link InputConnection#endBatchEdit()} when its internal batch edit count becomes {@code 0}
+     * as a result of invocation.
+     *
+     * <p>See https://issuetracker.google.com/issues/209958658 for details.</p>
+     *
+     * @param context The {@link Context} to be used to initialize {@link EditText}.
+     * @return {@code true} if the bug still exists. {@code false} otherwise.
+     */
+    private static boolean testEditableInputConnectionEndBatchEditBug(Context context) {
+        EditText editText = new EditText(context);
+        EditorInfo editorInfo = new EditorInfo();
+        InputConnection editableInputConnection = editText.onCreateInputConnection(editorInfo);
+        editableInputConnection.beginBatchEdit();
+        // If this returns true, yes, the bug is still there!
+        return editableInputConnection.endBatchEdit();
+    }
+
+    /**
+     * A convenient helper method to assert the return value of
+     * {@link InputConnection#endBatchEdit()} when its internal batch edit count becomes {@code 0}.
+     *
+     * @param result The return value of {@link InputConnection#endBatchEdit()}.
+     *
+     * @see #mHasEditableInputConnectionEndBatchEditBug
+     * @see #testEditableInputConnectionEndBatchEditBug(Context)
+     */
+    private void assertLastBatchEdit(boolean result) {
+        if (mHasEditableInputConnectionEndBatchEditBug) {
+            assertTrue(result);
+        } else {
+            assertFalse(result);
+        }
+    }
 
     // Limits the target of InOrder#verify.
     private static class Verifier {
@@ -175,6 +237,9 @@ public class AutocompleteEditTextTest {
         if (DEBUG) Log.i(TAG, "setUp started.");
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
+
+        mHasEditableInputConnectionEndBatchEditBug =
+                testEditableInputConnectionEndBatchEditBug(mContext);
 
         mVerifier = spy(new Verifier());
         mAutocomplete = new TestAutocompleteEditText(mContext, null);
@@ -388,7 +453,7 @@ public class AutocompleteEditTextTest {
             assertVerifierCallCounts(0, 2);
         }
         mInOrder.verifyNoMoreInteractions();
-        assertTrue(mInputConnection.endBatchEdit());
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
 
         // Autocomplete text gets redrawn.
         assertTexts("hello ", "world");
@@ -533,7 +598,7 @@ public class AutocompleteEditTextTest {
         }
         mInOrder.verifyNoMoreInteractions();
 
-        assertTrue(mInputConnection.endBatchEdit());
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
 
         if (isUsingSpannableModel()) {
             mInOrder.verify(mVerifier).onUpdateSelection(6, 6);
@@ -905,7 +970,7 @@ public class AutocompleteEditTextTest {
         mInOrder.verifyNoMoreInteractions();
         assertVerifierCallCounts(0, 0);
 
-        assertTrue(mInputConnection.endBatchEdit());
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
         mInOrder.verify(mVerifier).onUpdateSelection(4, 4);
         mInOrder.verify(mVerifier).onUpdateSelection(5, 5);
         verifyOnPopulateAccessibilityEvent(
@@ -1339,5 +1404,15 @@ public class AutocompleteEditTextTest {
 
         assertVerifierCallCounts(2, 3);
         mInOrder.verifyNoMoreInteractions();
+    }
+
+    // crbug.com/759876
+    @Test
+    @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
+    public void testEndBatchEditCanReturnFalse() {
+        assertTrue(mInputConnection.beginBatchEdit());
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
+        // Additional endBatchEdit() must continue returning false.
+        assertFalse(mInputConnection.endBatchEdit());
     }
 }

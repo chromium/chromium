@@ -17,9 +17,9 @@
 #include "base/as_const.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -199,7 +199,7 @@ enum PropertyEffects {
 //   a callback.
 //
 //   base::CallbackListSubscription AddFrobbleChangedCallback(
-//       PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+//       PropertyChangedCallback callback);
 //
 //   Each callback uses the the existing base::Bind mechanisms which allow for
 //   various kinds of callbacks; object methods, normal functions and lambdas.
@@ -273,6 +273,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
  public:
   using Views = std::vector<View*>;
 
+  // TODO(crbug.com/1289902): The |event| parameter is being removed. Do not add
+  // new callers.
   using DropCallback =
       base::OnceCallback<void(const ui::DropTargetEvent& event,
                               ui::mojom::DragOperation& output_drag_op)>;
@@ -451,6 +453,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return base::WrapUnique(view);
   }
 
+  // Partially specialized version to directly take a raw_ptr<T>.
+  template <typename T>
+  std::unique_ptr<T> RemoveChildViewT(raw_ptr<T> view) {
+    return RemoveChildViewT(view.get());
+  }
+
   // Removes all the children from this view. This deletes all children that are
   // not set_owned_by_client(), which is deprecated.
   void RemoveAllChildViews();
@@ -582,8 +590,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above Visible property. The callback
   // will be invoked whenever the Visible property changes.
-  base::CallbackListSubscription AddVisibleChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddVisibleChangedCallback(
+      PropertyChangedCallback callback);
 
   // Returns true if this view is drawn on screen.
   virtual bool IsDrawn() const;
@@ -600,8 +608,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |Enabled| property. The callback
   // will be invoked whenever the property changes.
-  base::CallbackListSubscription AddEnabledChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddEnabledChangedCallback(
+      PropertyChangedCallback callback);
 
   // Returns the child views ordered in reverse z-order. That is, views later in
   // the returned vector have a higher z-order (are painted later) than those
@@ -615,6 +623,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Transformations -----------------------------------------------------------
 
   // Methods for setting transformations for a view (e.g. rotation, scaling).
+  // Care should be taken not to transform a view in such a way that its bounds
+  // lie outside those of its parent, or else the default ViewTargeterDelegate
+  // implementation will not pass mouse events to the view.
 
   gfx::Transform GetTransform() const;
 
@@ -790,8 +801,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |ID| property. The callback will
   // be invoked whenever the property changes.
-  base::CallbackListSubscription AddIDChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddIDChangedCallback(
+      PropertyChangedCallback callback);
 
   // A group id is used to tag views which are part of the same logical group.
   // Focus can be moved between views with the same group using the arrow keys.
@@ -803,8 +814,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Adds a callback associated with the above |Group| property. The callback
   // will be invoked whenever the property changes.
-  base::CallbackListSubscription AddGroupChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddGroupChangedCallback(
+      PropertyChangedCallback callback);
 
   // If this returns true, the views from the same group can each be focused
   // when moving focus with the Tab/Shift-Tab key.  If this returns false,
@@ -942,8 +953,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Adds a callback associated with the above FlipCanvasOnPaintForRTLUI
   // property. The callback will be invoked whenever the
   // FlipCanvasOnPaintForRTLUI property changes.
-  base::CallbackListSubscription AddFlipCanvasOnPaintForRTLUIChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription
+  AddFlipCanvasOnPaintForRTLUIChangedCallback(PropertyChangedCallback callback);
 
   // When set, this view will ignore base::l18n::IsRTL() and instead be drawn
   // according to |is_mirrored|.
@@ -1350,7 +1361,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
   // operation and the user release the mouse but the drop is held because of
-  // DataTransferPolicyController.
+  // DataTransferPolicyController. When calling, ensure that the |event|
+  // uses View local coordinates.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event);
 
   // Returns true if the mouse was dragged enough to start a drag operation.
@@ -1985,7 +1997,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  View* parent_ = nullptr;
+  raw_ptr<View> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2074,7 +2086,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  ui::NativeTheme* native_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme> native_theme_ = nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2110,7 +2122,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  FocusManager* accelerator_focus_manager_ = nullptr;
+  raw_ptr<FocusManager> accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2121,10 +2133,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  View* next_focusable_view_ = nullptr;
+  raw_ptr<View> next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  View* previous_focusable_view_ = nullptr;
+  raw_ptr<View> previous_focusable_view_ = nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2136,11 +2148,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  ContextMenuController* context_menu_controller_ = nullptr;
+  raw_ptr<ContextMenuController> context_menu_controller_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
-  DragController* drag_controller_ = nullptr;
+  raw_ptr<DragController> drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 
@@ -2157,12 +2169,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Manages the accessibility interface for this View.
   mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
 
-#if DCHECK_IS_ON()
   // Keeps track of whether accessibility checks for this View have run yet.
   // They run once inside ::OnPaint() to keep overhead low. The idea is that if
   // a View is ready to paint it should also be set up to be accessible.
   bool has_run_accessibility_paint_checks_ = false;
-#endif
 
   // Observers -----------------------------------------------------------------
 

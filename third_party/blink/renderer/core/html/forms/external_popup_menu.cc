@@ -49,9 +49,9 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -117,17 +117,18 @@ bool ExternalPopupMenu::ShowInternal() {
     if (!layout_object || !layout_object->IsBox())
       return false;
     auto* box = To<LayoutBox>(layout_object);
-    IntRect rect = EnclosingIntRect(
-        box->LocalToAbsoluteRect(box->PhysicalBorderBoxRect()));
-    IntRect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
+    gfx::Rect rect =
+        ToEnclosingRect(box->LocalToAbsoluteRect(box->PhysicalBorderBoxRect()));
+    gfx::Rect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
     float scale_for_emulation = WebLocalFrameImpl::FromFrame(local_frame_)
                                     ->LocalRootFrameWidget()
                                     ->GetEmulatorScale();
 
     // rect_in_viewport needs to be in CSS pixels.
     float dpr = GetDprForSizeAdjustment(*owner_element_);
-    if (dpr != 1.0)
-      rect_in_viewport.Scale(1 / dpr);
+    if (dpr != 1.0) {
+      rect_in_viewport = gfx::ScaleToRoundedRect(rect_in_viewport, 1 / dpr);
+    }
 
     gfx::Rect bounds =
         gfx::Rect(rect_in_viewport.x() * scale_for_emulation,
@@ -150,7 +151,7 @@ bool ExternalPopupMenu::ShowInternal() {
 void ExternalPopupMenu::Show(PopupMenu::ShowEventType) {
   if (!ShowInternal())
     return;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const WebInputEvent* current_event = CurrentInputEvent::Get();
   if (current_event &&
       current_event->GetType() == WebInputEvent::Type::kMouseDown) {

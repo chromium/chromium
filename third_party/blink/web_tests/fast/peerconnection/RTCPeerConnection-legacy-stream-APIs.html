@@ -138,7 +138,7 @@ promise_test(async t => {
 }, 'The PC stops observing the stream after removeStream().');
 
 promise_test(async t => {
-  const pc = new RTCPeerConnection({sdpSemantics:'plan-b'});
+  const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio:true});
   pc.addStream(stream);
@@ -146,11 +146,13 @@ promise_test(async t => {
   assert_equals(pc.getSenders().length, 1);
   pc.removeStream(stream);
   assert_array_equals(pc.getLocalStreams(), []);
-  assert_array_equals(pc.getSenders(), []);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_equals(pc.getSenders().length, 1);
+  assert_equals(pc.getSenders()[0].track, null);
 }, 'removeStream() after addStream() removes from local streams and senders.');
 
 promise_test(async t => {
-  const pc = new RTCPeerConnection({sdpSemantics:'plan-b'});
+  const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio:true});
   pc.addTrack(stream.getTracks()[0], stream);
@@ -158,11 +160,13 @@ promise_test(async t => {
   assert_equals(pc.getSenders().length, 1);
   pc.removeStream(stream);
   assert_array_equals(pc.getLocalStreams(), []);
-  assert_array_equals(pc.getSenders(), []);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_equals(pc.getSenders().length, 1);
+  assert_equals(pc.getSenders()[0].track, null);
 }, 'removeStream() after addTrack() removes from local streams and senders.');
 
 promise_test(async t => {
-  const pc = new RTCPeerConnection({sdpSemantics:'plan-b'});
+  const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio:true,
                                                           video:true});
@@ -172,14 +176,19 @@ promise_test(async t => {
   assert_equals(senders.length, 2);
   pc.removeTrack(senders[0]);
   assert_array_equals(pc.getLocalStreams(), [ stream ]);
-  assert_array_equals(pc.getSenders(), [ senders[1] ]);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_equals(senders.length, 2);
+  assert_equals(pc.getSenders()[0].track, null);
   pc.removeStream(stream);
   assert_array_equals(pc.getLocalStreams(), []);
-  assert_array_equals(pc.getSenders(), []);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_equals(senders.length, 2);
+  assert_equals(pc.getSenders()[0].track, null);
+  assert_equals(pc.getSenders()[1].track, null);
 }, 'removeStream() after removeTrack() removes remaining tracks.');
 
 promise_test(async t => {
-  const pc = new RTCPeerConnection({sdpSemantics:'plan-b'});
+  const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio:true});
   pc.addStream(stream);
@@ -187,11 +196,13 @@ promise_test(async t => {
   assert_equals(pc.getSenders().length, 1);
   pc.removeTrack(pc.getSenders()[0]);
   assert_array_equals(pc.getLocalStreams(), []);
-  assert_array_equals(pc.getSenders(), []);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_equals(pc.getSenders().length, 1);
+  assert_equals(pc.getSenders()[0].track, null);
 }, 'removeTrack() after addStream() removes from local streams and senders.');
 
 promise_test(async t => {
-  const pc = new RTCPeerConnection({sdpSemantics:'plan-b'});
+  const pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let stream = await navigator.mediaDevices.getUserMedia({audio:true});
   let sender = pc.addTrack(stream.getTracks()[0], stream);
@@ -199,7 +210,9 @@ promise_test(async t => {
   assert_array_equals(pc.getSenders(), [ sender ]);
   pc.removeTrack(sender);
   assert_array_equals(pc.getLocalStreams(), []);
-  assert_array_equals(pc.getSenders(), []);
+  // The sender is not removed, only its direction and streams are reset.
+  assert_array_equals(pc.getSenders(), [ sender ]);
+  assert_equals(sender.track, null);
 }, 'removeTrack() after addTrack() removes from local streams and senders.');
 
 promise_test(async t => {

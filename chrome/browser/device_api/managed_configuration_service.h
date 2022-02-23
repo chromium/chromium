@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_SERVICE_H_
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
@@ -44,7 +45,7 @@ class ManagedConfigurationServiceImpl
   void OnManagedConfigurationChanged() override;
   const url::Origin& GetOrigin() override;
 
-  content::RenderFrameHost* const host_;
+  const raw_ptr<content::RenderFrameHost> host_;
 
   mojo::Remote<blink::mojom::ManagedConfigurationObserver>
       configuration_subscription_;

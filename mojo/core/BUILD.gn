@@ -72,6 +72,7 @@ template("core_impl_source_set") {
     ]
 
     sources = [
+      "atomic_flag.cc",
       "atomic_flag.h",
       "broker.h",
       "channel.cc",
@@ -119,7 +120,7 @@ template("core_impl_source_set") {
     }
 
     if (is_posix && !is_mac) {
-      if (!is_nacl || is_nacl_nonsfi) {
+      if (!is_nacl) {
         sources += [
           "broker_posix.cc",
           "channel_posix.cc",
@@ -141,7 +142,7 @@ template("core_impl_source_set") {
       sources += [ "channel_mac.cc" ]
     }
 
-    if (!is_nacl || is_nacl_nonsfi) {
+    if (!is_nacl) {
       sources += [
         "broker_host.cc",
         "broker_host.h",
@@ -177,7 +178,6 @@ template("core_impl_source_set") {
       defines += [ "MOJO_CORE_LEGACY_PROTOCOL" ]
     }
 
-    configs += [ "//build/config/compiler:noshadowing" ]
     if (!is_debug && !optimize_for_size) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
@@ -196,7 +196,7 @@ if (is_win) {
   }
 }
 
-if (is_chromeos || is_linux || is_android || is_win) {
+if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
   core_impl_source_set("impl_for_shared_library") {
     for_shared_library = true
   }
@@ -258,7 +258,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
                             root_build_dir) ]
   }
 
-  if (is_chromeos || is_linux || is_win) {
+  if (is_chromeos || is_linux || is_win || is_fuchsia) {
     test("mojo_core_unittests") {
       sources = [
         "mojo_core_unittest.cc",

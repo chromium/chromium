@@ -112,16 +112,6 @@ declare_args() {
   }
 }
 
-declare_args() {
-  # Deprecated. Ozone/X11 is default path on Linux now. However, there are still
-  # some components like remoting, angle, webrtc (desktop capture) that relies
-  # on this gn arg and on the USE_X11 define. This will be gradually removed
-  # once all the other places are fixed.
-  # TODO(1096425): remove use_x11.
-  use_x11 =
-      ozone_platform_x11 && is_linux && !is_chromecast && !is_chromeos_lacros
-}
-
 import(ozone_extra_path)
 
 _ozone_extra_directory = get_path_info(ozone_extra_path, "dir")
@@ -148,5 +138,3 @@ ozone_platform_gbm = ozone_platform_drm
 if (ozone_platform == "gbm") {
   ozone_platform = "drm"
 }
-
-assert(use_x11 == ozone_platform_x11 || !is_linux || is_chromecast)

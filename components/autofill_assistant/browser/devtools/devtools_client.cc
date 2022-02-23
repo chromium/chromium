@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,6 +28,7 @@ DevtoolsClient::DevtoolsClient(
       dom_domain_(this),
       runtime_domain_(this),
       target_domain_(this),
+      page_domain_(this),
       next_message_id_(0),
       frame_tracker_(this) {
   browser_main_thread_ = content::GetUIThreadTaskRunner({});
@@ -53,6 +55,10 @@ runtime::Domain* DevtoolsClient::GetRuntime() {
 
 target::ExperimentalDomain* DevtoolsClient::GetTarget() {
   return &target_domain_;
+}
+
+page::ExperimentalDomain* DevtoolsClient::GetPage() {
+  return &page_domain_;
 }
 
 void DevtoolsClient::SendMessage(
@@ -148,7 +154,7 @@ void DevtoolsClient::DispatchProtocolMessage(
   bool success = message->GetAsDictionary(&message_dict);
   DCHECK(success);
 
-  success = message_dict->HasKey("id")
+  success = message_dict->FindKey("id")
                 ? DispatchMessageReply(std::move(message), *message_dict)
                 : DispatchEvent(std::move(message), *message_dict);
   if (!success)
@@ -272,16 +278,11 @@ void DevtoolsClient::DispatchEventTask(
 void DevtoolsClient::FillReplyStatusFromErrorDict(
     ReplyStatus* status,
     const base::DictionaryValue& error_dict) {
-  const base::Value* code;
-  if (error_dict.Get("code", &code) && code->is_int()) {
-    status->error_code = code->GetInt();
-  } else {
-    status->error_code = -1;  // unknown error code
-  }
+  status->error_code = error_dict.FindIntKey("code").value_or(-1);
 
-  const base::Value* message;
-  if (error_dict.Get("message", &message) && message->is_string()) {
-    status->error_message = message->GetString();
+  const std::string* message = error_dict.FindStringKey("message");
+  if (message) {
+    status->error_message = *message;
   } else {
     status->error_message = "unknown";
   }

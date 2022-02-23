@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
@@ -114,10 +115,11 @@ void SendFeedback(content::BrowserContext* browser_context,
 
   FeedbackPrivateDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
+  base::WeakPtr<feedback::FeedbackUploader> uploader =
+      base::AsWeakPtr(delegate->GetFeedbackUploaderForContext(browser_context));
   scoped_refptr<FeedbackData> feedback_data =
-      base::MakeRefCounted<FeedbackData>(
-          delegate->GetFeedbackUploaderForContext(browser_context),
-          ContentTracingManager::Get());
+      base::MakeRefCounted<FeedbackData>(std::move(uploader),
+                                         ContentTracingManager::Get());
 
   // Populate feedback data.
   feedback_data->set_description(feedback_info.description);
@@ -243,7 +245,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     info->trace_id = std::make_unique<int>(manager->RequestTrace());
   }
   info->flow = flow;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool use_system_window_frame = true;
 #else
   const bool use_system_window_frame = false;

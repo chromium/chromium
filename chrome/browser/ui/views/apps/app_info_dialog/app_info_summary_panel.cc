@@ -16,10 +16,10 @@
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/path_util.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -256,7 +256,7 @@ bool AppInfoSummaryPanel::CanSetLaunchType() const {
   // V2 apps and extensions don't have a launch type, and neither does the
   // Chrome app.
   return !app_->is_platform_app() && !app_->is_extension() &&
-         app_->id() != extension_misc::kChromeAppId;
+         app_->id() != app_constants::kChromeAppId;
 }
 
 void AppInfoSummaryPanel::ShowAppHomePage() {

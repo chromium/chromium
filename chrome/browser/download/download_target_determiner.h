@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -85,7 +86,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Returns a .crdownload intermediate path for the |suggested_path|.
   static base::FilePath GetCrDownloadPath(const base::FilePath& suggested_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns true if Adobe Reader is up to date. This information refreshed
   // only when Start() gets called for a PDF and Adobe Reader is the default
   // System PDF viewer.
@@ -256,7 +257,7 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // - STATE_CHECK_DOWNLOAD_URL.
   Result DoDetermineIfAdobeReaderUpToDate();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Callback invoked when a decision is available about whether Adobe Reader
   // is up to date.
   void DetermineIfAdobeReaderUpToDateDone(bool adobe_reader_up_to_date);
@@ -354,14 +355,14 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   std::string mime_type_;
   bool is_filetype_handled_safely_;
   download::DownloadItem::MixedContentStatus mixed_content_status_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
 #endif
 
-  download::DownloadItem* download_;
+  raw_ptr<download::DownloadItem> download_;
   const bool is_resumption_;
-  DownloadPrefs* download_prefs_;
-  DownloadTargetDeterminerDelegate* delegate_;
+  raw_ptr<DownloadPrefs> download_prefs_;
+  raw_ptr<DownloadTargetDeterminerDelegate> delegate_;
   CompletionCallback completion_callback_;
   base::CancelableTaskTracker history_tracker_;
   absl::optional<download::DownloadSchedule> download_schedule_;

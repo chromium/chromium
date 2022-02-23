@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/loader/no_state_prefetch_client.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -34,22 +34,20 @@ class MockNoStatePrefetchClient : public NoStatePrefetchClient {
 
 class HTMLDocumentParserTest
     : public PageTestBase,
-      public testing::WithParamInterface<ParserSynchronizationPolicy>,
-      private ScopedForceSynchronousHTMLParsingForTest {
+      public testing::WithParamInterface<ParserSynchronizationPolicy> {
  protected:
   HTMLDocumentParserTest()
-      : ScopedForceSynchronousHTMLParsingForTest(Policy() !=
-                                                 kAllowAsynchronousParsing),
-        original_threaded_parsing_(
-            Document::ThreadedParsingEnabledForTesting()) {
-    Document::SetThreadedParsingEnabledForTesting(Policy() !=
-                                                  kForceSynchronousParsing);
+      : original_force_synchronous_parsing_for_testing_(
+            Document::ForceSynchronousParsingForTesting()) {
+    Document::SetForceSynchronousParsingForTesting(Policy() ==
+                                                   kForceSynchronousParsing);
   }
   ~HTMLDocumentParserTest() override {
     // Finish the pending tasks which may require the runtime enabled flags,
     // before restoring the flags.
     base::RunLoop().RunUntilIdle();
-    Document::SetThreadedParsingEnabledForTesting(original_threaded_parsing_);
+    Document::SetForceSynchronousParsingForTesting(
+        original_force_synchronous_parsing_for_testing_);
   }
 
   void SetUp() override {
@@ -69,7 +67,7 @@ class HTMLDocumentParserTest
  private:
   ParserSynchronizationPolicy Policy() const { return GetParam(); }
 
-  bool original_threaded_parsing_;
+  bool original_force_synchronous_parsing_for_testing_;
 };
 
 }  // namespace

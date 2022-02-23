@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
@@ -47,7 +48,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class,
                 ShadowRecordHistogram.class})
-
+@LooperMode(LooperMode.Mode.LEGACY)
 public class NotificationIntentInterceptorTest {
     private static final String TEST_NOTIFICATION_TITLE = "Test notification title";
     private static final String TEST_NOTIFICATION_ACTION_TITLE = "Test notification action title";

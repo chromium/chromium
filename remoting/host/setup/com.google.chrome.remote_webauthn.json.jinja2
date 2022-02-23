@@ -1,0 +1,12 @@
+{
+  "name": "com.google.chrome.remote_webauthn",
+  "description": "{{ REMOTE_WEBAUTHN_DESCRIPTION }}",
+  "type": "stdio",
+  "path": "{{ REMOTE_WEBAUTHN_PATH }}",
+  "allowed_origins": [
+    {# Chrome Extension (Prod) #}
+    "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
+    {# Chrome Extension (Dev Build) #}
+    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"
+  ]
+}

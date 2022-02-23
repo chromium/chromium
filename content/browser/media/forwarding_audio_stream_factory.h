@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/audio_muting_session.h"
@@ -18,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -76,6 +78,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool enable_agc,
+        media::mojom::AudioProcessingConfigPtr processing_config,
         mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
 
@@ -126,7 +129,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
 
-    media::UserInputMonitorBase* const user_input_monitor_;
+    const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
 
     // Used for posting tasks the UI thread to communicate when a loopback
     // stream is started/stopped. Weak since |this| on the IO thread outlives

@@ -49,11 +49,11 @@ bool GPUUploadingPathSupported() {
 // and Windows is the platform that is using passthrough command buffer by
 // default.
 // TODO(shaobo.yan@intel.com): Enable test on more platforms when they're ready.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
@@ -200,7 +200,7 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
   void VerifyCopyBytesForCanvasColorParams(uint64_t width,
                                            uint64_t height,
                                            SkImageInfo info,
-                                           IntRect copy_rect,
+                                           gfx::Rect copy_rect,
                                            WGPUTextureFormat color_type) {
     const uint64_t content_length = width * height * info.bytesPerPixel();
     std::vector<uint8_t> contents(content_length, 0);
@@ -217,7 +217,7 @@ class WebGPUImageBitmapHandlerTest : public testing::Test {
   void VerifyCopyBytes(uint64_t width,
                        uint64_t height,
                        SkImageInfo info,
-                       IntRect copy_rect,
+                       gfx::Rect copy_rect,
                        WGPUTextureFormat color_type,
                        base::span<const uint8_t> contents,
                        base::span<const uint8_t> expected_value) {
@@ -271,24 +271,24 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyColorConvert) {
       WGPUTextureFormat_RGBA8UnormSrgb, WGPUTextureFormat_BGRA8UnormSrgb,
   };
 
-  const CanvasColorSpace kColorSpaces[] = {
-      CanvasColorSpace::kSRGB,
-      CanvasColorSpace::kRec2020,
-      CanvasColorSpace::kP3,
+  const PredefinedColorSpace kColorSpaces[] = {
+      PredefinedColorSpace::kSRGB,
+      PredefinedColorSpace::kRec2020,
+      PredefinedColorSpace::kP3,
   };
 
   uint64_t kImageWidth = 3;
   uint64_t kImageHeight = 2;
 
-  IntRect image_data_rect(0, 0, kImageWidth, kImageHeight);
+  gfx::Rect image_data_rect(0, 0, kImageWidth, kImageHeight);
 
   for (SkColorType src_color_type : srcSkColorFormat) {
     for (WGPUTextureFormat dst_color_type : kDstWebGPUTextureFormat) {
-      for (CanvasColorSpace color_space : kColorSpaces) {
+      for (PredefinedColorSpace color_space : kColorSpaces) {
         SkImageInfo info =
             SkImageInfo::Make(kImageWidth, kImageHeight, src_color_type,
                               SkAlphaType::kUnpremul_SkAlphaType,
-                              CanvasColorSpaceToSkColorSpace(color_space));
+                              PredefinedColorSpaceToSkColorSpace(color_space));
         VerifyCopyBytes(kImageWidth, kImageHeight, info, image_data_rect,
                         dst_color_type, GetSrcPixelContent(src_color_type),
                         GetDstContent(dst_color_type));
@@ -306,7 +306,7 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyGetWGPUResourceInfo) {
   uint32_t expected_bytes_per_row = 256;
   uint64_t expected_size = 256;
 
-  IntRect test_rect(0, 0, kImageWidth, kImageHeight);
+  gfx::Rect test_rect(0, 0, kImageWidth, kImageHeight);
   WebGPUImageUploadSizeInfo info = ComputeImageBitmapWebGPUUploadSizeInfo(
       test_rect, WGPUTextureFormat_RGBA8Unorm);
   ASSERT_EQ(expected_size, info.size_in_bytes);
@@ -321,7 +321,7 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesFromImageBitmapForWebGPU) {
       kImageWidth, kImageHeight, SkColorType::kRGBA_8888_SkColorType,
       SkAlphaType::kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
-  IntRect image_data_rect(0, 0, kImageWidth, kImageHeight);
+  gfx::Rect image_data_rect(0, 0, kImageWidth, kImageHeight);
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
                                       image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
@@ -335,7 +335,7 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesFromSubImageBitmap) {
       kImageWidth, kImageHeight, SkColorType::kRGBA_8888_SkColorType,
       SkAlphaType::kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
-  IntRect image_data_rect(2, 2, 60, 2);
+  gfx::Rect image_data_rect(2, 2, 60, 2);
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
                                       image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
@@ -349,7 +349,7 @@ TEST_F(WebGPUImageBitmapHandlerTest, VerifyCopyBytesWithPremultiplyAlpha) {
       kImageWidth, kImageHeight, SkColorType::kRGBA_8888_SkColorType,
       SkAlphaType::kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
 
-  IntRect image_data_rect(0, 0, 2, 1);
+  gfx::Rect image_data_rect(0, 0, 2, 1);
   VerifyCopyBytesForCanvasColorParams(kImageWidth, kImageHeight, info,
                                       image_data_rect,
                                       WGPUTextureFormat_RGBA8Unorm);
@@ -408,7 +408,7 @@ TEST_F(WebGPUMailboxTextureTest, VerifyAccessTexture) {
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromStaticBitmapImage(
           dawn_control_client_, fake_device_, WGPUTextureUsage_CopySrc, bitmap,
-          CanvasColorSpace::kSRGB, image_info.colorType());
+          PredefinedColorSpace::kSRGB, image_info.colorType());
 
   EXPECT_NE(mailbox_texture->GetTexture(), nullptr);
   EXPECT_EQ(mailbox_texture->GetTextureIdForTest(), 1u);

@@ -53,7 +53,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 
-#if defined(OS_FREEBSD)
+#if BUILDFLAG(IS_FREEBSD)
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #endif
@@ -823,12 +823,13 @@ bool IsX11WindowFullScreen(x11::Window window) {
   return window_rect.size() == gfx::Size(width, height);
 }
 
-void SuspendX11ScreenSaver(bool suspend) {
+bool SuspendX11ScreenSaver(bool suspend) {
   static const bool kScreenSaverAvailable = IsX11ScreenSaverAvailable();
   if (!kScreenSaverAvailable)
-    return;
+    return false;
 
   x11::Connection::Get()->screensaver().Suspend({suspend});
+  return true;
 }
 
 void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
@@ -1135,20 +1136,6 @@ x11::ColorMap XVisualManager::XVisualData::GetColormap() {
     connection->Flush();
   }
   return colormap_;
-}
-
-ScopedUnsetDisplay::ScopedUnsetDisplay() {
-  const char* display = getenv("DISPLAY");
-  if (display) {
-    display_.emplace(display);
-    unsetenv("DISPLAY");
-  }
-}
-
-ScopedUnsetDisplay::~ScopedUnsetDisplay() {
-  if (display_) {
-    setenv("DISPLAY", display_->c_str(), 1);
-  }
 }
 
 }  // namespace ui

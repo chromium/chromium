@@ -4,10 +4,10 @@
 
 package org.chromium.ui.resources.dynamics;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.HardwareRenderer;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RenderNode;
@@ -20,6 +20,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -67,7 +69,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
 
     // RenderNode was added in API level 29 (Android 10). So restrict AcceleratedImageReader as
     // well.
-    @TargetApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private class AcceleratedImageReader implements ImageReader.OnImageAvailableListener {
         // Track the last BitmapRequestId so we only return one image per request (in case of
         // animations during that draw).
@@ -161,12 +163,14 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
 
             assert renderNode != null;
             mTaskRunner.postTask(() -> {
+                HardwareRenderer mRenderer = new HardwareRenderer();
                 try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
                     mCurrentBitmapRequestId.incrementAndGet();
                     Surface s = mReaderDelegate.getSurface();
-                    Canvas hwCanvas = s.lockHardwareCanvas();
-                    hwCanvas.drawRenderNode(renderNode);
-                    s.unlockCanvasAndPost(hwCanvas);
+                    mRenderer.setContentRoot(renderNode);
+                    mRenderer.setSurface(s);
+                    mRenderer.createRenderRequest().syncAndDraw();
+                    mRenderer.destroy();
                 }
             });
         }
@@ -298,7 +302,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     // This uses a RecordingNode to store all the required draw instructions without doing
     // them upfront. And then on a threadpool task we grab a hardware canvas (required to use a
     // RenderNode) and draw it using the hardware accelerated canvas.
-    @TargetApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private void captureWithHardwareDraw() {
         try (TraceEvent e = TraceEvent.scoped("ViewResourceAdapter:captureWithHardwareDraw")) {
             if (mView.getWidth() == 0 || mView.getHeight() == 0) {

@@ -78,11 +78,13 @@ void CardExpirationDateFixFlowViewBridge::OnDismissed() {
 }
 
 void CardExpirationDateFixFlowViewBridge::PerformClose() {
-  base::WeakPtr<CardExpirationDateFixFlowViewBridge> weakSelf =
+  base::WeakPtr<CardExpirationDateFixFlowViewBridge> weak_this =
       weak_ptr_factory_.GetWeakPtr();
   [view_controller_ dismissViewControllerAnimated:YES
                                        completion:^{
-                                         weakSelf->DeleteSelf();
+                                         if (weak_this) {
+                                           weak_this->DeleteSelf();
+                                         }
                                        }];
 }
 

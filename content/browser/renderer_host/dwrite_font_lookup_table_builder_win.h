@@ -96,7 +96,8 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
   // from disk), The DWrite.dll's product version and the Chrome version, as a
   // safety mechanism to refresh the cache for every release. Exposed as a
   // public method to be able to run the hash function in a test.
-  std::string ComputePersistenceHash();
+  // `browser_version` is used in the hash.
+  std::string ComputePersistenceHash(const std::string& browser_version);
 
   // Configures the cache directory in which to store the serialized font table
   // lookup structure. Use only in testing. Normally the directory name is
@@ -157,8 +158,9 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
 
   // Load from cache or construct the font unique name lookup table. If the
   // cache is up to date, do not schedule a run to scan all Windows-enumerated
-  // fonts.
-  void PrepareFontUniqueNameTable();
+  // fonts. `browser_version` is used in the hashing algorithm for the cache
+  // key.
+  void PrepareFontUniqueNameTable(const std::string& browser_version);
 
   // Helper function to perform DWrite operations to retrieve path names, full
   // font name and PostScript name for a font specified by collection + family

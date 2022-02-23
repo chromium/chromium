@@ -21,15 +21,16 @@ namespace media {
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
     bool keyframe,
-    scoped_refptr<VASurface> input_surface,
+    VASurfaceID input_surface_id,
+    const gfx::Size& input_surface_size,
     scoped_refptr<CodecPicture> picture,
     std::unique_ptr<ScopedVABuffer> coded_buffer)
     : input_frame_(input_frame),
       keyframe_(keyframe),
-      input_surface_(input_surface),
+      input_surface_id_(input_surface_id),
+      input_surface_size_(input_surface_size),
       picture_(std::move(picture)),
       coded_buffer_(std::move(coded_buffer)) {
-  DCHECK(input_surface_);
   DCHECK(picture_);
   DCHECK(coded_buffer_);
 }
@@ -37,15 +38,16 @@ VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
 VaapiVideoEncoderDelegate::EncodeJob::EncodeJob(
     scoped_refptr<VideoFrame> input_frame,
     bool keyframe)
-    : input_frame_(input_frame), keyframe_(keyframe) {}
+    : input_frame_(input_frame),
+      keyframe_(keyframe),
+      input_surface_id_(VA_INVALID_ID) {}
 
 VaapiVideoEncoderDelegate::EncodeJob::~EncodeJob() = default;
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeResult>
 VaapiVideoEncoderDelegate::EncodeJob::CreateEncodeResult(
     const BitstreamBufferMetadata& metadata) && {
-  return std::make_unique<EncodeResult>(input_surface_,
-                                        std::move(coded_buffer_), metadata);
+  return std::make_unique<EncodeResult>(std::move(coded_buffer_), metadata);
 }
 
 base::TimeDelta VaapiVideoEncoderDelegate::EncodeJob::timestamp() const {
@@ -61,9 +63,13 @@ VABufferID VaapiVideoEncoderDelegate::EncodeJob::coded_buffer_id() const {
   return coded_buffer_->id();
 }
 
-const scoped_refptr<VASurface>&
-VaapiVideoEncoderDelegate::EncodeJob::input_surface() const {
-  return input_surface_;
+VASurfaceID VaapiVideoEncoderDelegate::EncodeJob::input_surface_id() const {
+  return input_surface_id_;
+}
+
+const gfx::Size& VaapiVideoEncoderDelegate::EncodeJob::input_surface_size()
+    const {
+  return input_surface_size_;
 }
 
 const scoped_refptr<CodecPicture>&
@@ -72,18 +78,11 @@ VaapiVideoEncoderDelegate::EncodeJob::picture() const {
 }
 
 VaapiVideoEncoderDelegate::EncodeResult::EncodeResult(
-    scoped_refptr<VASurface> surface,
     std::unique_ptr<ScopedVABuffer> coded_buffer,
     const BitstreamBufferMetadata& metadata)
-    : surface_(std::move(surface)),
-      coded_buffer_(std::move(coded_buffer)),
-      metadata_(metadata) {}
+    : coded_buffer_(std::move(coded_buffer)), metadata_(metadata) {}
 
 VaapiVideoEncoderDelegate::EncodeResult::~EncodeResult() = default;
-
-VASurfaceID VaapiVideoEncoderDelegate::EncodeResult::input_surface_id() const {
-  return surface_->id();
-}
 
 VABufferID VaapiVideoEncoderDelegate::EncodeResult::coded_buffer_id() const {
   return coded_buffer_->id();
@@ -130,10 +129,10 @@ VaapiVideoEncoderDelegate::Encode(std::unique_ptr<EncodeJob> encode_job) {
     return nullptr;
   }
 
-  const VASurfaceID va_surface_id = encode_job->input_surface()->id();
+  const VASurfaceID va_surface_id = encode_job->input_surface_id();
   if (!native_input_mode_ && !vaapi_wrapper_->UploadVideoFrameToSurface(
                                  *encode_job->input_frame(), va_surface_id,
-                                 encode_job->input_surface()->size())) {
+                                 encode_job->input_surface_size())) {
     VLOGF(1) << "Failed to upload frame";
     return nullptr;
   }

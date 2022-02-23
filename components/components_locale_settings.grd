@@ -34,8 +34,10 @@
       <output filename="components_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="components_locale_settings_af.pak" type="data_package" lang="af" />
       <output filename="components_locale_settings_is.pak" type="data_package" lang="is" />
+      <output filename="components_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="components_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="components_locale_settings_ar.pak" type="data_package" lang="ar" />
@@ -189,8 +191,10 @@
       <output filename="java/res/values-zh-rHK/components_locale_settings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/components_locale_settings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/components_locale_settings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/components_locale_settings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/components_locale_settings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
-
 
     <!-- Pseudolocales -->
     <output filename="components_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />

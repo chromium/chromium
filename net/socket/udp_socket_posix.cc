@@ -44,25 +44,25 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/socket/ios_cronet_buildflags.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/udp_net_log_parameters.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-#if defined(OS_ANDROID)
-#include <dlfcn.h>
-#include "base/android/build_info.h"
+#if BUILDFLAG(IS_ANDROID)
 #include "base/native_library.h"
-#include "base/strings/utf_string_conversions.h"
-#endif  // defined(OS_ANDROID)
+#include "net/android/network_library.h"
+#include "net/android/radio_activity_tracker.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 // This was needed to debug crbug.com/640281.
 // TODO(zhongyi): Remove once the bug is resolved.
 #include <dlfcn.h>
 #include <pthread.h>
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 namespace net {
 
@@ -75,7 +75,7 @@ const int kActivityMonitorBytesThreshold = 65535;
 const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
 const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 // On OSX the file descriptor is guarded to detect the cause of
 // crbug.com/640281. guarded API is supported only on newer versions of OSX,
@@ -141,7 +141,7 @@ const unsigned int GUARD_DUP = 1u << 1;
 
 const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
@@ -199,10 +199,10 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   socket_ = CreatePlatformSocket(addr_family_, SOCK_DGRAM, 0);
   if (socket_ == kInvalidSocket)
     return MapSystemError(errno);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &kSocketFdGuard,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   socket_hash_ = GetSocketFDHash(socket_);
   if (!base::SetNonBlocking(socket_)) {
     const int err = MapSystemError(errno);
@@ -287,18 +287,25 @@ void UDPSocketPosix::Close() {
   // Verify that |socket_| hasn't been corrupted. Needed to debug
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). See https://crbug.com/1151048.
-  // TODO(ricea): Remove this if it doesn't work, or when the OS bug is fixed.
   int value = 0;
   socklen_t value_len = sizeof(value);
   HANDLE_EINTR(getsockopt(socket_, SOL_SOCKET, SO_ERROR, &value, &value_len));
 
-  PCHECK(IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) == 0);
+  if (IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) != 0) {
+    // There is a bug in the Mac OS kernel that it can return an
+    // ENOTCONN error. In this case we don't know whether the file
+    // descriptor is still allocated or not. We cannot safely close the
+    // file descriptor because it may have been reused by another
+    // thread in the meantime. We may leak file handles here and cause
+    // a crash indirectly later. See https://crbug.com/1151048.
+    PCHECK(errno == ENOTCONN);
+  }
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD)
 
   socket_ = kInvalidSocket;
   addr_family_ = 0;
@@ -394,6 +401,9 @@ int UDPSocketPosix::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
+#if BUILDFLAG(IS_ANDROID)
+  android::MaybeRecordUDPWriteForWakeupTrigger(traffic_annotation);
+#endif  // BUILDFLAG(IS_ANDROID)
   return SendToOrWrite(buf, buf_len, nullptr, std::move(callback));
 }
 
@@ -509,72 +519,11 @@ int UDPSocketPosix::BindToNetwork(
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_connected());
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
-    return ERR_INVALID_ARGUMENT;
-#if defined(OS_ANDROID)
-  // Android prior to Lollipop didn't have support for binding sockets to
-  // networks.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_LOLLIPOP) {
-    return ERR_NOT_IMPLEMENTED;
-  }
-  int rv;
-  // On Android M and newer releases use supported NDK API. On Android L use
-  // setNetworkForSocket from libnetd_client.so.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    // See declaration of android_setsocknetwork() here:
-    // http://androidxref.com/6.0.0_r1/xref/development/ndk/platforms/android-M/include/android/multinetwork.h#65
-    // Function cannot be called directly as it will cause app to fail to load
-    // on pre-marshmallow devices.
-    typedef int (*MarshmallowSetNetworkForSocket)(int64_t netId, int socketFd);
-    static MarshmallowSetNetworkForSocket marshmallowSetNetworkForSocket;
-    // This is racy, but all racers should come out with the same answer so it
-    // shouldn't matter.
-    if (!marshmallowSetNetworkForSocket) {
-      base::FilePath file(base::GetNativeLibraryName("android"));
-      void* dl = dlopen(file.value().c_str(), RTLD_NOW);
-      marshmallowSetNetworkForSocket =
-          reinterpret_cast<MarshmallowSetNetworkForSocket>(
-              dlsym(dl, "android_setsocknetwork"));
-    }
-    if (!marshmallowSetNetworkForSocket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = marshmallowSetNetworkForSocket(network, socket_);
-    if (rv)
-      rv = errno;
-  } else {
-    // NOTE(pauljensen): This does rely on Android implementation details, but
-    // they won't change because Lollipop is already released.
-    typedef int (*LollipopSetNetworkForSocket)(unsigned netId, int socketFd);
-    static LollipopSetNetworkForSocket lollipopSetNetworkForSocket;
-    // This is racy, but all racers should come out with the same answer so it
-    // shouldn't matter.
-    if (!lollipopSetNetworkForSocket) {
-      // Android's netd client library should always be loaded in our address
-      // space as it shims socket() which was used to create |socket_|.
-      base::FilePath file(base::GetNativeLibraryName("netd_client"));
-      // Use RTLD_NOW to match Android's prior loading of the library:
-      // http://androidxref.com/6.0.0_r5/xref/bionic/libc/bionic/NetdClient.cpp#37
-      // Use RTLD_NOLOAD to assert that the library is already loaded and
-      // avoid doing any disk IO.
-      void* dl = dlopen(file.value().c_str(), RTLD_NOW | RTLD_NOLOAD);
-      lollipopSetNetworkForSocket =
-          reinterpret_cast<LollipopSetNetworkForSocket>(
-              dlsym(dl, "setNetworkForSocket"));
-    }
-    if (!lollipopSetNetworkForSocket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = -lollipopSetNetworkForSocket(network, socket_);
-  }
-  // If |network| has since disconnected, |rv| will be ENONET.  Surface this as
-  // ERR_NETWORK_CHANGED, rather than MapSystemError(ENONET) which gives back
-  // the less descriptive ERR_FAILED.
-  if (rv == ENONET)
-    return ERR_NETWORK_CHANGED;
-  if (rv == 0)
+#if BUILDFLAG(IS_ANDROID)
+  int rv = net::android::BindToNetwork(socket_, network);
+  if (rv == OK)
     bound_network_ = network;
-  return MapSystemError(rv);
+  return rv;
 #else
   NOTIMPLEMENTED();
   return ERR_NOT_IMPLEMENTED;
@@ -625,13 +574,13 @@ int UDPSocketPosix::SetDoNotFragment() {
 }
 
 void UDPSocketPosix::SetMsgConfirm(bool confirm) {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   if (confirm) {
     sendto_flags_ |= MSG_CONFIRM;
   } else {
     sendto_flags_ &= ~MSG_CONFIRM;
   }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 }
 
 int UDPSocketPosix::AllowAddressReuse() {
@@ -646,7 +595,7 @@ int UDPSocketPosix::SetBroadcast(bool broadcast) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   int value = broadcast ? 1 : 0;
   int rv;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // SO_REUSEPORT on OSX permits multiple processes to each receive
   // UDP multicast or broadcast datagrams destined for the bound
   // port.
@@ -656,7 +605,7 @@ int UDPSocketPosix::SetBroadcast(bool broadcast) {
   rv = setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, &value, sizeof(value));
   if (rv != 0)
     return MapSystemError(errno);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
   rv = setsockopt(socket_, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value));
 
   return rv == 0 ? OK : MapSystemError(errno);
@@ -959,7 +908,7 @@ int UDPSocketPosix::DoBind(const IPEndPoint& address) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (last_error == EINVAL)
     return ERR_ADDRESS_IN_USE;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   if (last_error == EADDRNOTAVAIL)
     return ERR_ADDRESS_IN_USE;
 #endif
@@ -1042,11 +991,11 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
       if (addr_family_ != AF_INET6)
         return ERR_ADDRESS_INVALID;
       ipv6_mreq mreq;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       mreq.ipv6mr_interface = multicast_interface_;
-#else   // defined(OS_FUCHSIA)
+#else   // BUILDFLAG(IS_FUCHSIA)
       mreq.ipv6mr_interface = 0;  // 0 indicates default multicast interface.
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
       memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv6AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
@@ -1463,12 +1412,12 @@ int UDPSocketPosix::SetIOSNetworkServiceType(int ios_network_service_type) {
   if (ios_network_service_type == 0) {
     return OK;
   }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (setsockopt(socket_, SOL_SOCKET, SO_NET_SERVICE_TYPE,
                  &ios_network_service_type, sizeof(ios_network_service_type))) {
     return MapSystemError(errno);
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   return OK;
 }
 

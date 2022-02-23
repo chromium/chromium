@@ -7,7 +7,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -61,11 +60,6 @@ class AppHistoryApiNavigation final
   Member<ScriptPromiseResolver> committed_resolver_;
   Member<ScriptPromiseResolver> finished_resolver_;
   Member<AppHistoryResult> result_;
-
-  // In same-document traversal cases ResolveFinishedPromise() can be called
-  // before NotifyAboutTheCommittedToEntry(). This tracks that, to let us ensure
-  // NotifyAboutTheCommittedToEntry() can also resolve the finished promise.
-  bool did_finish_before_commit_ = false;
 };
 
 }  // namespace blink

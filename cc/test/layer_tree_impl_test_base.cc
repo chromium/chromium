@@ -58,7 +58,8 @@ LayerTreeImplTestBase::LayerTreeImplTestBase(
   timeline_ = AnimationTimeline::Create(timeline_id);
   animation_host_->AddAnimationTimeline(timeline_);
   // Create impl-side instance.
-  animation_host_->PushPropertiesTo(host_impl()->animation_host());
+  animation_host_->PushPropertiesTo(host_impl()->animation_host(),
+                                    *host_->property_trees());
   timeline_impl_ = host_impl()->animation_host()->GetTimelineById(timeline_id);
 }
 

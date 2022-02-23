@@ -47,8 +47,9 @@ ChannelSplitterHandler::ChannelSplitterHandler(AudioNode& node,
 
   // Create a fixed number of outputs (able to handle the maximum number of
   // channels fed to an input).
-  for (unsigned i = 0; i < number_of_outputs; ++i)
+  for (unsigned i = 0; i < number_of_outputs; ++i) {
     AddOutput(1);
+  }
 
   Initialize();
 }
@@ -172,8 +173,9 @@ ChannelSplitterNode* ChannelSplitterNode::Create(
   ChannelSplitterNode* node =
       Create(*context, options->numberOfOutputs(), exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

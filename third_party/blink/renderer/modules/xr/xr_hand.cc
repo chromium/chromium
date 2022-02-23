@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_hand.h"
 
+#include <memory>
+#include <utility>
+
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
@@ -11,7 +14,10 @@
 namespace blink {
 
 class XRHandIterationSource final
-    : public PairIterable<String, Member<XRJointSpace>>::IterationSource {
+    : public PairIterable<String,
+                          IDLString,
+                          Member<XRJointSpace>,
+                          XRJointSpace>::IterationSource {
  public:
   explicit XRHandIterationSource(HeapVector<Member<XRJointSpace>>& joints)
       : index_(0), joints_(joints) {}
@@ -31,7 +37,8 @@ class XRHandIterationSource final
   }
 
   void Trace(Visitor* visitor) const override {
-    PairIterable<String, Member<XRJointSpace>>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, Member<XRJointSpace>,
+                 XRJointSpace>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -71,8 +78,8 @@ void XRHand::updateFromHandTrackingData(
     std::unique_ptr<TransformationMatrix> mojo_from_joint = nullptr;
     if (hand_joint->mojo_from_joint) {
       new_poses = true;
-      mojo_from_joint = std::make_unique<TransformationMatrix>(
-          hand_joint->mojo_from_joint->matrix());
+      mojo_from_joint =
+          std::make_unique<TransformationMatrix>(*hand_joint->mojo_from_joint);
     } else {
       new_missing_poses = true;
     }

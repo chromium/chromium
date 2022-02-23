@@ -32,6 +32,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Browser;
@@ -394,9 +395,9 @@ public class NavigationTest {
         }
 
         @Override
-        public void onLoadStateChanged(boolean isLoading, boolean toDifferentDocument) {
+        public void onLoadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {
             loadStateChangedCallback.recordValue(
-                    Boolean.toString(isLoading) + " " + Boolean.toString(toDifferentDocument));
+                    Boolean.toString(isLoading) + " " + Boolean.toString(shouldShowLoadingUi));
         }
 
         @Override
@@ -698,15 +699,15 @@ public class NavigationTest {
     }
 
     /**
-     * This test verifies that initial renderer-initiated navigations to about:blank in WebLayer get
-     * marked as failing due to the fact that such navigations are not committed within //content.
-     * It additionally verifies that calling Navigation#getPage() on such a failed navigation raises
-     * an exception rather than crashing the browser (regression test for crbug.com/1233480).
+     * This is a regression test for crbug.com/1233480, adapted for a change in
+     * //content to have such navigations commit rather than fail. It also
+     * should not crash nor throw an exception.
      */
-    @MinWebLayerVersion(96)
+    @MinWebLayerVersion(98)
     @Test
     @SmallTest
-    public void testInitialRendererInitiatedNavigationToAboutBlankFails() throws Exception {
+    @CommandLineFlags.Add("enable-features=" + BlinkFeatures.INITIAL_NAVIGATION_ENTRY)
+    public void testInitialRendererInitiatedNavigationToAboutBlankSucceeds() throws Exception {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(URL1);
 
         // Setup a callback for when the navigation in a new tab fails.
@@ -717,13 +718,10 @@ public class NavigationTest {
                 NavigationController navigationController = tab.getNavigationController();
                 navigationController.registerNavigationCallback(new NavigationCallback() {
                     @Override
-                    public void onNavigationFailed(Navigation navigation) {
-                        assertEquals(NavigationState.FAILED, navigation.getState());
-
-                        // Calling Navigation#getPage() should throw an exception here because the
-                        // navigation has not committed.
-                        assertThrows(IllegalStateException.class, () -> { navigation.getPage(); });
-
+                    public void onNavigationCompleted(Navigation navigation) {
+                        assertEquals(NavigationState.COMPLETE, navigation.getState());
+                        // There should be a valid page for this navigation.
+                        assertNotNull(navigation.getPage());
                         navigationController.unregisterNavigationCallback(this);
                         callbackHelper.notifyCalled();
                     }
@@ -1404,6 +1402,7 @@ public class NavigationTest {
         assertStreamContent();
     }
 
+    @DisabledTest(message = "https://crbug.com/1271989")
     @Test
     @SmallTest
     public void testWebResponseNoStore() throws Exception {

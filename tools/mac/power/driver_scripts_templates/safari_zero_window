@@ -1,5 +1,6 @@
-{%- from 'macros' import input with context -%}
-{{ hash_bang }}
+{%- from 'macros' import hash_bang with context -%}
+{%- from 'macros' import make_maximized with context -%}
+{{ hash_bang() }}
 
 -- Copyright 2021 The Chromium Authors. All rights reserved.
 -- Use of this source code is governed by a BSD-style license that can be
@@ -17,8 +18,7 @@ tell application "Safari"
     activate
   end if
 
-  set w to first window
-  set bounds of w to {0, 0, 1920, 1080}
+  {{ make_maximized() }}
 
   open location "about:blank"
   delay 10

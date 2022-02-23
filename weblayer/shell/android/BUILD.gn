@@ -295,5 +295,6 @@ script_test("weblayer_shell_wpt") {
     "//build/android:test_runner_py",
     "//chrome/test/chromedriver:chromedriver($host_toolchain)",
     "//third_party/blink/tools:wpt_tests_android_isolate",
+    "//tools/imagediff",
   ]
 }

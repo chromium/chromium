@@ -21,7 +21,6 @@ enum WMEventType {
   // Note that this does not mean the window will be in corresponding
   // state and the request may not be fullfilled.
 
-  // NORMAL is used as a restore operation with a few exceptions.
   WM_EVENT_NORMAL = 0,
   WM_EVENT_MAXIMIZE,
   WM_EVENT_MINIMIZE,
@@ -35,6 +34,10 @@ enum WMEventType {
   // SECONDARY is the opposite position of PRIMARY, i.e. if PRIMARY is left,
   // SECONDARY is right.
   WM_EVENT_SNAP_SECONDARY,
+
+  // The restore event will change the window state back to its previous
+  // applicable window state.
+  WM_EVENT_RESTORE,
 
   // A window is requested to be the given bounds. The request may or
   // may not be fulfilled depending on the requested bounds and window's

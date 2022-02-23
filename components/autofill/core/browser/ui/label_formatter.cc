@@ -94,7 +94,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     return nullptr;
   }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return std::make_unique<MobileLabelFormatter>(
       profiles, app_locale, focused_field_type, groups, field_types);
 #else
@@ -124,7 +124,7 @@ std::unique_ptr<LabelFormatter> LabelFormatter::Create(
     default:
       return nullptr;
   }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 }  // namespace autofill

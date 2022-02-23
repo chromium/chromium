@@ -21,9 +21,8 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
-#include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -183,13 +182,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   // If the frame is detached, then don't send any hints other than UA.
   if (!policy)
     return;
-
-  if (!RuntimeEnabledFeatures::FeaturePolicyForClientHintsEnabled() &&
-      !base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty) &&
-      !is_1p_origin) {
-    // No client hints for 3p origins.
-    return;
-  }
 
   // The next 4 hints should be enabled if we're allowing legacy hints to third
   // parties, or if PermissionsPolicy delegation says they are allowed.
@@ -449,6 +441,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
     if (ShouldSendClientHint(
             ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kUAWoW64,
+            hints_preferences)) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kUAWoW64)
+              .c_str(),
+          SerializeBoolHeader(ua->wow64));
+    }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
             network::mojom::blink::WebClientHintsType::kUAReduced,
             hints_preferences)) {
       // If the UA-Reduced client hint should be sent according to the hints
@@ -457,6 +460,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       request.SetHttpHeaderField(
           network::GetClientHintToNameMap()
               .at(network::mojom::blink::WebClientHintsType::kUAReduced)
+              .c_str(),
+          SerializeBoolHeader(true));
+    }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kFullUserAgent,
+            hints_preferences)) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kFullUserAgent)
               .c_str(),
           SerializeBoolHeader(true));
     }
@@ -472,6 +486,17 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             .at(network::mojom::blink::WebClientHintsType::kPrefersColorScheme)
             .c_str(),
         prefers_color_scheme.value());
+  }
+
+  if (ShouldSendClientHint(
+          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          network::mojom::blink::WebClientHintsType::kPartitionedCookies,
+          hints_preferences)) {
+    request.SetHttpHeaderField(
+        network::GetClientHintToNameMap()
+            .at(network::mojom::blink::WebClientHintsType::kPartitionedCookies)
+            .c_str(),
+        SerializeBoolHeader(true));
   }
 }
 
@@ -524,12 +549,6 @@ BaseFetchContext::CheckCSPForRequestInternal(
     ContentSecurityPolicy::CheckHeaderType check_header_type) const {
   if (options.content_security_policy_option ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
-    return absl::nullopt;
-  }
-
-  if (ShouldDisableCSPCheckForLitePageSubresourceRedirectOrigin(
-          GetResourceFetcherProperties().GetLitePageSubresourceRedirectOrigin(),
-          request_context, redirect_status, url)) {
     return absl::nullopt;
   }
 
@@ -693,16 +712,18 @@ bool BaseFetchContext::ShouldSendClientHint(
   if (mode == ClientHintsMode::kLegacy &&
       base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
     origin_ok = true;
-  } else if (RuntimeEnabledFeatures::FeaturePolicyForClientHintsEnabled()) {
-    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
-    // then send Sec-CH-UA-Reduced in the fetch request, regardless of the
-    // permissions policy.
-    origin_ok = type == network::mojom::blink::WebClientHintsType::kUAReduced ||
-                (policy && policy->IsFeatureEnabledForOrigin(
-                               GetClientHintToPolicyFeatureMap().at(type),
-                               resource_origin));
   } else {
-    origin_ok = is_1p_origin;
+    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
+    // Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, then send the hint in the
+    // fetch request, regardless of the permissions policy.
+    origin_ok =
+        type == network::mojom::blink::WebClientHintsType::kUAReduced ||
+        type == network::mojom::blink::WebClientHintsType::kFullUserAgent ||
+        type ==
+            network::mojom::blink::WebClientHintsType::kPartitionedCookies ||
+        (policy &&
+         policy->IsFeatureEnabledForOrigin(
+             GetClientHintToPolicyFeatureMap().at(type), resource_origin));
   }
 
   if (!origin_ok)

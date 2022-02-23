@@ -174,7 +174,7 @@ TraceConfig BackgroundTracingConfigImpl::GetTraceConfig() const {
 
   chrome_config.SetTraceBufferSizeInKb(GetMaximumTraceBufferSizeKb());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For legacy tracing backend, set low trace buffer size on Android in order
   // to upload small trace files.
   if (tracing_mode() == BackgroundTracingConfigImpl::PREEMPTIVE) {
@@ -186,7 +186,7 @@ TraceConfig BackgroundTracingConfigImpl::GetTraceConfig() const {
 }
 
 size_t BackgroundTracingConfigImpl::GetTraceUploadLimitKb() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto type = net::NetworkChangeNotifier::GetConnectionType();
   UMA_HISTOGRAM_ENUMERATION(
       "Tracing.Background.NetworkConnectionTypeWhenUploaded", type,
@@ -269,7 +269,7 @@ BackgroundTracingConfigImpl::PreemptiveFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 
@@ -319,7 +319,7 @@ BackgroundTracingConfigImpl::ReactiveFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 
@@ -356,7 +356,7 @@ BackgroundTracingConfigImpl::SystemFromDict(const base::Value& dict) {
   if (!configs_list)
     return nullptr;
 
-  for (const auto& config_dict : configs_list->GetList()) {
+  for (const auto& config_dict : configs_list->GetListDeprecated()) {
     if (!config_dict.is_dict())
       return nullptr;
 
@@ -432,7 +432,7 @@ int BackgroundTracingConfigImpl::GetMaximumTraceBufferSizeKb() const {
   if (ram_mb > 0 && ram_mb <= 1024) {
     return low_ram_buffer_size_kb_;
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto type = net::NetworkChangeNotifier::GetConnectionType();
   UMA_HISTOGRAM_ENUMERATION(
       "Tracing.Background.NetworkConnectionTypeWhenStarted", type,

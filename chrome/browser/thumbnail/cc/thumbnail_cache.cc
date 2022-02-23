@@ -11,6 +11,7 @@
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
@@ -81,8 +82,9 @@ gfx::Size GetEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 
 template <typename T>
 bool ReadBigEndianFromFile(base::File& file, T* out) {
-  char buffer[sizeof(T)];
-  if (file.ReadAtCurrentPos(buffer, sizeof(T)) != sizeof(T))
+  uint8_t buffer[sizeof(T)];
+  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), sizeof(T)) !=
+      sizeof(T))
     return false;
   base::ReadBigEndian(buffer, out);
   return true;
@@ -512,10 +514,9 @@ void ThumbnailCache::MakeSpaceForNewItemIfNecessary(TabId tab_id) {
 
   if (!found_key_to_remove) {
     // 2. Find the least important id we can remove.
-    for (TabIdList::reverse_iterator riter = visible_ids_.rbegin();
-         riter != visible_ids_.rend(); riter++) {
-      if (cache_.Get(*riter)) {
-        key_to_remove = *riter;
+    for (const TabId& id : base::Reversed(visible_ids_)) {
+      if (cache_.Get(id)) {
+        key_to_remove = id;
         found_key_to_remove = true;
         break;
       }

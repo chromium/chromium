@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -56,7 +57,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
     ASSERT_TRUE(https_server_.Start());
 
     const GURL app_url = GetAppUrl();
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
     web_app_info->theme_color = SK_ColorBLUE;
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 // tablet mode.
 // Fails on Linux Chromium OS.
 // TODO(crbug.com/1191327): reenable the test.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FrameLayoutToggleTabletMode DISABLED_FrameLayoutToggleTabletMode
 #else
 #define MAYBE_FrameLayoutToggleTabletMode FrameLayoutToggleTabletMode

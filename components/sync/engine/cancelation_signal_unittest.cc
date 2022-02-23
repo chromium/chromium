@@ -5,6 +5,7 @@
 #include "components/sync/engine/cancelation_signal.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -42,16 +43,15 @@ class BlockingTask : public CancelationSignal::Observer {
  private:
   base::WaitableEvent event_;
   base::Thread exec_thread_;
-  CancelationSignal* cancel_signal_;
-  bool was_started_;
+  raw_ptr<CancelationSignal> cancel_signal_;
+  bool was_started_ = false;
 };
 
 BlockingTask::BlockingTask(CancelationSignal* cancel_signal)
     : event_(base::WaitableEvent::ResetPolicy::MANUAL,
              base::WaitableEvent::InitialState::NOT_SIGNALED),
       exec_thread_("BlockingTaskBackgroundThread"),
-      cancel_signal_(cancel_signal),
-      was_started_(false) {}
+      cancel_signal_(cancel_signal) {}
 
 BlockingTask::~BlockingTask() {
   if (was_started_) {

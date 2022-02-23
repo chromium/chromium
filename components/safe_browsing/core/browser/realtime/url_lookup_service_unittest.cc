@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -145,11 +146,16 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   void HandleLookupError() { rt_service_->HandleLookupError(); }
   void HandleLookupSuccess() { rt_service_->HandleLookupSuccess(); }
   bool IsInBackoffMode() { return rt_service_->IsInBackoffMode(); }
+  bool CanSendRTSampleRequest() {
+    return rt_service_->CanSendRTSampleRequest();
+  }
   std::unique_ptr<RTLookupRequest> FillRequestProto(
       const GURL& url,
       const GURL& last_committed_url,
-      bool is_mainframe) {
-    return rt_service_->FillRequestProto(url, last_committed_url, is_mainframe);
+      bool is_mainframe,
+      bool is_sampled_report) {
+    return rt_service_->FillRequestProto(url, last_committed_url, is_mainframe,
+                                         is_sampled_report);
   }
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
       const GURL& url) {
@@ -209,6 +215,14 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     test_pref_service_.SetUserPref(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         std::make_unique<base::Value>(true));
+  }
+
+  void EnableExtendedReporting() {
+    EnableMbb();
+    test_pref_service_.SetUserPref(prefs::kSafeBrowsingEnabled,
+                                   std::make_unique<base::Value>(true));
+    test_pref_service_.SetUserPref(prefs::kSafeBrowsingScoutReportingEnabled,
+                                   std::make_unique<base::Value>(true));
   }
 
   void EnableRealTimeUrlLookup(
@@ -281,7 +295,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
-  TestSafeBrowsingTokenFetcher* raw_token_fetcher_ = nullptr;
+  raw_ptr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_ = nullptr;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
@@ -302,11 +316,18 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
       {"http://example.com/abc#123", "http://example.com/abc#123"}};
   for (size_t i = 0; i < base::size(sanitize_url_cases); i++) {
     GURL url(sanitize_url_cases[i].url);
-    auto result = FillRequestProto(url, last_committed_url_, is_mainframe_);
+    auto result = FillRequestProto(url, last_committed_url_, is_mainframe_,
+                                   /*is_sampled_report=*/i % 2 == 0);
+    if (i % 2 == 0) {
+      EXPECT_EQ(/* sampled report */ 2, result->report_type());
+    } else {
+      EXPECT_EQ(/* full report */ 1, result->report_type());
+    }
     EXPECT_EQ(sanitize_url_cases[i].expected_url, result->url());
     EXPECT_EQ(RTLookupRequest::NAVIGATION, result->lookup_type());
     EXPECT_EQ(ChromeUserPopulation::SAFE_BROWSING,
               result->population().user_population());
+    EXPECT_EQ(1, result->frame_type());
 
     // The value of is_history_sync_enabled() should reflect that of the
     // callback passed in by the client, which in this case is true.
@@ -321,8 +342,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
 
 TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureDisabled) {
   feature_list_.InitAndDisableFeature(kSafeBrowsingPageLoadToken);
-  auto request =
-      FillRequestProto(GURL(kTestUrl), GURL(), /*is_mainframe=*/true);
+  auto request = FillRequestProto(GURL(kTestUrl), GURL(), /*is_mainframe=*/true,
+                                  /*is_sampled_report=*/false);
   // Page load tokens should not be attached because the feature flag is
   // disabled.
   ASSERT_EQ(0, request->population().page_load_tokens_size());
@@ -337,7 +358,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
   {
     cache_manager_->SetPageLoadTokenForTesting(
         url, CreatePageLoadToken("url_page_load_token"));
-    auto request = FillRequestProto(url, GURL(), /*is_mainframe=*/true);
+    auto request = FillRequestProto(url, GURL(), /*is_mainframe=*/true,
+                                    /*is_sampled_report=*/false);
     ASSERT_EQ(1, request->population().page_load_tokens_size());
     // The token should be re-generated for the mainframe URL.
     EXPECT_NE("url_page_load_token",
@@ -350,7 +372,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
   {
     ChromeUserPopulation::PageLoadToken empty_token;
     cache_manager_->SetPageLoadTokenForTesting(url, empty_token);
-    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false);
+    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false,
+                                    /*is_sampled_report=*/false);
     ASSERT_EQ(1, request->population().page_load_tokens_size());
     // The token should be generated for the mainframe URL.
     std::string token_value =
@@ -364,7 +387,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
   {
     cache_manager_->SetPageLoadTokenForTesting(
         url, CreatePageLoadToken("url_page_load_token"));
-    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false);
+    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false,
+                                    /*is_sampled_report=*/false);
     ASSERT_EQ(1, request->population().page_load_tokens_size());
     // The token for the mainframe URL should be reused.
     EXPECT_EQ("url_page_load_token",
@@ -896,7 +920,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestReferrerChain_ReferrerChainAttached) {
       url, last_committed_url_, is_mainframe_,
       base::BindOnce(
           [](std::unique_ptr<RTLookupRequest> request, std::string token) {
-            EXPECT_EQ(2, request->version());
+            EXPECT_EQ(3, request->version());
             // Check referrer chain is attached.
             EXPECT_EQ(2, request->referrer_chain().size());
             EXPECT_EQ(kTestUrl, request->referrer_chain().Get(0).url());
@@ -938,7 +962,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       url, last_committed_url_, is_mainframe_,
       base::BindOnce([](std::unique_ptr<RTLookupRequest> request,
                         std::string token) {
-        EXPECT_EQ(2, request->version());
+        EXPECT_EQ(3, request->version());
         EXPECT_EQ(2, request->referrer_chain().size());
         // The first entry is sanitized because it is triggered in a
         // subframe.
@@ -972,6 +996,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 TEST_F(RealTimeUrlLookupServiceTest,
        TestReferrerChain_NotSanitizedIfSubresourceAllowed) {
   EnableMbb();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   // Subresource is allowed when enhanced protection is enabled.
   SetSafeBrowsingState(&test_pref_service_,
                        SafeBrowsingState::ENHANCED_PROTECTION);
@@ -1003,7 +1029,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       url, last_committed_url_, is_mainframe_,
       base::BindOnce([](std::unique_ptr<RTLookupRequest> request,
                         std::string token) {
-        EXPECT_EQ(2, request->version());
+        EXPECT_EQ(3, request->version());
         EXPECT_EQ(2, request->referrer_chain().size());
         // Check referrer chain is not sanitized.
         EXPECT_EQ(kTestSubframeUrl, request->referrer_chain().Get(0).url());
@@ -1066,7 +1092,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
       url, last_committed_url_, is_mainframe_,
       base::BindOnce([](std::unique_ptr<RTLookupRequest> request,
                         std::string token) {
-        EXPECT_EQ(2, request->version());
+        EXPECT_EQ(3, request->version());
         EXPECT_EQ(2, request->referrer_chain().size());
         // Check the first referrer chain is sanitized because it's logged
         // before real time URL lookup is enabled.
@@ -1135,6 +1161,53 @@ TEST_F(RealTimeUrlLookupServiceTest,
   rt_service()->Shutdown();
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestSendSampledRequest) {
+  EnableMbb();
+  // Enabling access token does not affect sending sampled ping.
+  EnableTokenFetchesInClient();
+  GURL url(kTestUrl);
+
+  rt_service()->SendSampledRequest(
+      url, last_committed_url_, is_mainframe_,
+      base::BindOnce(
+          [](std::unique_ptr<RTLookupRequest> request, std::string token) {
+            EXPECT_EQ(3, request->version());
+            EXPECT_EQ(2, request->report_type());
+            EXPECT_EQ(1, request->frame_type());
+          }),
+      base::SequencedTaskRunnerHandle::Get());
+  rt_service()->Shutdown();
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestCanSendRTSampleRequest_FeatureEnabled) {
+  // When extended reporting is not enabled,
+  // sample request will not be sent.
+  EXPECT_FALSE(CanSendRTSampleRequest());
+  // Enable extended reporting.
+  EnableExtendedReporting();
+  rt_service()->set_bypass_probability_for_tests(true);
+  feature_list_.InitAndEnableFeature(
+      safe_browsing::kSendSampledPingsForProtegoAllowlistDomains);
+  // After enabling the feature, a sampled ping should be sent.
+  EXPECT_TRUE(CanSendRTSampleRequest());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestCanSendRTSampleRequest_FeatureDisabled) {
+  // Enable extended reporting.
+  EnableExtendedReporting();
+  rt_service()->set_bypass_probability_for_tests(true);
+  // When feature is not enabled, a sampled ping should not be sent.
+  EXPECT_FALSE(CanSendRTSampleRequest());
+  feature_list_.InitAndDisableFeature(
+      safe_browsing::kSendSampledPingsForProtegoAllowlistDomains);
+  // After enabling the feature, a sampled ping should be sent.
+  EXPECT_FALSE(CanSendRTSampleRequest());
 }
 
 }  // namespace safe_browsing

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -156,16 +156,6 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
     same_site = true;
 
   if (same_site) {
-    // This histogram is introduced to help decide whether we should also check
-    // same scheme while deciding whether or not to block the script as is done
-    // in other cases of "same site" usage. On the other hand we do not want to
-    // block more scripts than necessary.
-    if (params.Url().Protocol() !=
-        document.domWindow()->GetSecurityOrigin()->Protocol()) {
-      document.Loader()->DidObserveLoadingBehavior(
-          LoadingBehaviorFlag::
-              kLoadingBehaviorDocumentWriteBlockDifferentScheme);
-    }
     return false;
   }
 
@@ -176,10 +166,6 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // reloads the page.
   const WebFrameLoadType load_type = document.Loader()->LoadType();
   if (IsReloadLoadType(load_type)) {
-    // Recording this metric since an increase in number of reloads for pages
-    // where a script was blocked could be indicative of a page break.
-    document.Loader()->DidObserveLoadingBehavior(
-        LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlockReload);
     AddWarningHeader(&params);
     return false;
   }

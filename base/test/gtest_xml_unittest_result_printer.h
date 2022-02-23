@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,7 +34,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   void AddLink(const std::string& name, const std::string& url);
 
   // Must be called before adding as a listener. Returns true on success.
-  bool Initialize(const FilePath& output_file_path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 
   // CHECK/DCHECK failed. Print file/line and message to the xml.
   void OnAssert(const char* file,
@@ -55,7 +56,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
                            const std::string& message);
 
   static XmlUnitTestResultPrinter* instance_;
-  FILE* output_file_{nullptr};
+  raw_ptr<FILE> output_file_{nullptr};
   bool open_failed_{false};
   ThreadChecker thread_checker_;
 };

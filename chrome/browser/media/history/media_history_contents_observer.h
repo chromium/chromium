@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_CONTENTS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -73,7 +74,7 @@ class MediaHistoryContentsObserver
   // before we can commit it to the database.
   bool frozen_ = false;
 
-  media_history::MediaHistoryKeyedService* service_;
+  raw_ptr<media_history::MediaHistoryKeyedService> service_ = nullptr;
 
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};

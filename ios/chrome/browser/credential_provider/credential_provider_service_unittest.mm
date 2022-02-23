@@ -25,6 +25,7 @@
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/credential_provider/memory_credential_store.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -115,6 +116,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   TestingPrefServiceSimple testing_pref_service_;
   base::ScopedTempDir temp_dir_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   scoped_refptr<PasswordStore> password_store_;
   id<CredentialStore> credential_store_;
   AuthenticationServiceFake* auth_service_;
@@ -198,7 +200,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   identity_service->AddManagedIdentities(@[ @"Name" ]);
   ChromeIdentity* identity = account_manager_service_->GetDefaultIdentity();
-  auth_service_->SignIn(identity);
+  auth_service_->SignIn(identity, nil);
 
   ASSERT_TRUE(auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(
@@ -287,7 +289,7 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
       [FakeChromeIdentity identityWithEmail:userEmail
                                      gaiaID:@"gaiaID"
                                        name:@"Test Name"];
-  auth_service_->SignIn(identity);
+  auth_service_->SignIn(identity, nil);
   auth_service_->GrantSyncConsent(identity);
   sync_service_.FireStateChanged();
 

@@ -50,16 +50,16 @@ TEST_F(InputMethodMenuManagerStatefulTest, AddAndObserve) {
 
 TEST_F(InputMethodMenuManagerStatefulTest, AddAndCheckExists) {
   InputMethodMenuItemList list;
-  list.push_back(InputMethodMenuItem("key1", "label1", false, false));
-  list.push_back(InputMethodMenuItem("key2", "label2", false, false));
+  list.push_back(InputMethodMenuItem("key1", "label1", false));
+  list.push_back(InputMethodMenuItem("key2", "label2", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(list);
   EXPECT_EQ(menu_manager_->GetCurrentInputMethodMenuItemList().size(), 2U);
   EXPECT_EQ(menu_manager_->GetCurrentInputMethodMenuItemList().at(0).ToString(),
             "key=key1, label=label1, "
-            "is_selection_item=0, is_selection_item_checked=0");
+            "is_selection_item_checked=0");
   EXPECT_EQ(menu_manager_->GetCurrentInputMethodMenuItemList().at(1).ToString(),
             "key=key2, label=label2, "
-            "is_selection_item=0, is_selection_item_checked=0");
+            "is_selection_item_checked=0");
 
   EXPECT_TRUE(menu_manager_->HasInputMethodMenuItemForKey("key1"));
   EXPECT_TRUE(menu_manager_->HasInputMethodMenuItemForKey("key2"));

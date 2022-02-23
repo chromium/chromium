@@ -1,0 +1,3 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Spinner clickable focusable inputType:20 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="dateTime", clickableScore="300", roleDescription="month picker"]

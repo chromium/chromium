@@ -18,6 +18,7 @@ enum class KeepAliveOrigin {
   APP_CONTROLLER,
   BROWSER,
   BROWSER_PROCESS_CHROMEOS,
+  BROWSER_PROCESS_FUCHSIA,
   BROWSER_PROCESS_LACROS,
   SESSION_RESTORE,
 
@@ -64,9 +65,13 @@ enum class KeepAliveOrigin {
   CREDENTIAL_PROVIDER_SIGNIN_DIALOG,
   WEB_APP_INTENT_PICKER,
 
+  // c/b/ui/web_applications
+  WEB_APP_UNINSTALL,
+
   // c/b/web_applications
   APP_MANIFEST_UPDATE,
   APP_START_URL_MIGRATION,
+  APP_GET_INFO,
 
   // c/b/sessions
   SESSION_DATA_DELETER,

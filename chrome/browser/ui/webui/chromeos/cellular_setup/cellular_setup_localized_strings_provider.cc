@@ -134,10 +134,10 @@ void AddNonStringLoadTimeData(content::WebUIDataSource* html_source) {
 
 void AddNonStringLoadTimeDataToDict(base::DictionaryValue* dict) {
   for (const auto& entry : GetBooleanValues())
-    dict->SetBoolean(entry.name, entry.value);
+    dict->SetBoolPath(entry.name, entry.value);
 
   for (const auto& entry : GetResourceIdValues())
-    dict->SetInteger(entry.name, entry.value);
+    dict->SetIntPath(entry.name, entry.value);
 }
 
 }  // namespace cellular_setup

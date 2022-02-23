@@ -34,7 +34,7 @@ void SetPolicySetFromString(const char* const policy_names,
       policy_names, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& policy_name : names) {
     if (policy_name == "anyPolicy") {
-      out->insert(AnyPolicy());
+      out->insert(der::Input(kAnyPolicyOid));
     } else if (policy_name == "NIST-test-policy-1") {
       out->insert(der::Input(kTestPolicy1));
     } else if (policy_name == "NIST-test-policy-2") {

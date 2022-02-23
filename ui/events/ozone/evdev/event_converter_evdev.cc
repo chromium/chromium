@@ -116,6 +116,10 @@ bool EventConverterEvdev::HasTouchpad() const {
   return false;
 }
 
+bool EventConverterEvdev::HasHapticTouchpad() const {
+  return false;
+}
+
 bool EventConverterEvdev::HasTouchscreen() const {
   return false;
 }
@@ -163,6 +167,18 @@ void EventConverterEvdev::PlayVibrationEffect(uint8_t amplitude,
 }
 
 void EventConverterEvdev::StopVibration() {
+  NOTREACHED();
+}
+
+void EventConverterEvdev::PlayHapticTouchpadEffect(
+    HapticTouchpadEffect effect,
+    HapticTouchpadEffectStrength strength) {
+  NOTREACHED();
+}
+
+void EventConverterEvdev::SetHapticTouchpadEffectForNextButtonRelease(
+    HapticTouchpadEffect effect,
+    HapticTouchpadEffectStrength strength) {
   NOTREACHED();
 }
 

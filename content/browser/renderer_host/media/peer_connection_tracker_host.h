@@ -85,11 +85,18 @@ class PeerConnectionTrackerHost
                             const std::string& value) override;
   void OnPeerConnectionSessionIdSet(int lid,
                                     const std::string& session_id) override;
-  void GetUserMedia(const std::string& origin,
+  void GetUserMedia(int request_id,
                     bool audio,
                     bool video,
                     const std::string& audio_constraints,
                     const std::string& video_constraints) override;
+  void GetUserMediaSuccess(int request_id,
+                           const std::string& stream_id,
+                           const std::string& audio_track_info,
+                           const std::string& video_track_info) override;
+  void GetUserMediaFailure(int request_id,
+                           const std::string& error,
+                           const std::string& error_message) override;
   void WebRtcEventLogWrite(int lid,
                            const std::vector<uint8_t>& output) override;
   void AddStandardStats(int lid, base::Value value) override;

@@ -37,7 +37,7 @@ class VirtualTimeTest : public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
-    WebView().Scheduler()->EnableVirtualTime();
+    WebView().Scheduler()->EnableVirtualTime(base::Time());
   }
 
   String ExecuteJavaScript(String script_source) {
@@ -79,13 +79,13 @@ class VirtualTimeTest : public SimTest {
 };
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SetInterval DISABLED_SetInterval
 #else
 #define MAYBE_SetInterval SetInterval
 #endif
 TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
-  WebView().Scheduler()->EnableVirtualTime();
+  WebView().Scheduler()->EnableVirtualTime(base::Time());
   WebView().Scheduler()->SetVirtualTimePolicy(
       PageScheduler::VirtualTimePolicy::kAdvance);
 
@@ -107,7 +107,7 @@ TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
 }
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AllowVirtualTimeToAdvance DISABLED_AllowVirtualTimeToAdvance
 #else
 #define MAYBE_AllowVirtualTimeToAdvance AllowVirtualTimeToAdvance
@@ -136,7 +136,7 @@ TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
 }
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading \
   DISABLED_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading
 #else
@@ -145,7 +145,7 @@ TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
 #endif
 TEST_F(VirtualTimeTest,
        MAYBE_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading) {
-  WebView().Scheduler()->EnableVirtualTime();
+  WebView().Scheduler()->EnableVirtualTime(base::Time());
   WebView().Scheduler()->SetVirtualTimePolicy(
       PageScheduler::VirtualTimePolicy::kDeterministicLoading);
 

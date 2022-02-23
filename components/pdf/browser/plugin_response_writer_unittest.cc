@@ -139,7 +139,8 @@ TEST_F(PluginResponseWriterTest, Start) {
     testing::InSequence in_sequence;
 
     EXPECT_CALL(mock_client_, OnReceiveResponse)
-        .WillOnce([](network::mojom::URLResponseHeadPtr head) {
+        .WillOnce([](network::mojom::URLResponseHeadPtr head,
+                     mojo::ScopedDataPipeConsumerHandle body) {
           EXPECT_EQ(200, head->headers->response_code());
           EXPECT_EQ("text/html", head->mime_type);
         });

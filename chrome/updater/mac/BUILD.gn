@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/compile_plist.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
+import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
 
@@ -13,6 +15,7 @@ group("mac") {
     ":browser_install_script",
     ":privileged_helper",
     ":updater_bundle",
+    ":updater_bundle_test",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
   ]
@@ -30,6 +33,8 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers",
     ":updater_bundle_keystone_plist",
@@ -46,6 +51,8 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers",
     ":updater_bundle_keystone_plist",
@@ -71,23 +78,54 @@ source_set("privileged_helper_sources") {
   ]
 }
 
+compile_plist("priviledged_info_plist") {
+  plist_templates = [ "privileged_helper/Info.plist" ]
+  format = "xml1"
+  substitutions = [
+    "UPDATER_HELPER_BUNDLE_ID=$privileged_helper_name",
+    "UPDATER_HELPER_BUNDLE_NAME=$privileged_helper_bundle_name",
+    "BROWSER_BUNDLE_IDENTIFIER=$mac_browser_bundle_identifier",
+  ]
+  output_name = "$target_gen_dir/$privileged_helper_name-Info.plist"
+}
+
+process_version("priviledged_launchd_plist") {
+  extra_args = [
+    "-e",
+    "UPDATER_HELPER_BUNDLE_ID=\"$privileged_helper_name\"",
+  ]
+
+  process_only = true
+  template_file = "privileged_helper/launchd.plist"
+  output = "$target_gen_dir/$privileged_helper_name-launchd.plist"
+}
+
 executable("privileged_helper") {
   output_name = privileged_helper_name
 
   sources = [ "privileged_helper/main.mm" ]
   deps = [
+    ":priviledged_info_plist",
+    ":priviledged_launchd_plist",
     ":privileged_helper_sources",
     "//base",
   ]
 
   frameworks = [ "Foundation.framework" ]
 
-  inputs = [ "privileged_helper/Info.plist" ]
+  inputs = [
+    "$target_gen_dir/$privileged_helper_name-Info.plist",
+    "$target_gen_dir/$privileged_helper_name-launchd.plist",
+  ]
   ldflags = [
     "-sectcreate",
     "__TEXT",
     "__info_plist",
-    rebase_path(inputs[0], root_build_dir),
+    rebase_path(inputs[0], root_out_dir),
+    "-sectcreate",
+    "__TEXT",
+    "__launchd_plist",
+    rebase_path(inputs[1], root_out_dir),
   ]
 }
 
@@ -108,6 +146,26 @@ action("updater_install_script") {
     rebase_path(root_out_dir + "/chrome/updater/.install"),
     "-p",
     updater_product_full_name,
+  ]
+}
+
+action("updater_test_install_script") {
+  script = "embed_variables.py"
+
+  inputs = [
+    script,
+    "setup/.install.sh",
+  ]
+
+  outputs = [ "$root_out_dir/.install" ]
+
+  args = [
+    "-i",
+    rebase_path("setup/.install.sh"),
+    "-o",
+    rebase_path(root_out_dir + "/.install"),
+    "-p",
+    updater_product_full_name + "_test",
   ]
 }
 
@@ -132,19 +190,33 @@ action("browser_install_script") {
   ]
 }
 
-executable("ksadmin") {
-  output_name = "ksadmin"
+source_set("ksadmin_lib") {
   sources = [
     "keystone/ksadmin.h",
     "keystone/ksadmin.mm",
-    "keystone/ksadmin_main.cc",
   ]
 
   deps = [
     "//base",
     "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
     "//chrome/updater:version_header",
+  ]
+
+  visibility = [
+    ":ksadmin",
+    "//chrome/updater:updater_test_sources",
+  ]
+}
+
+executable("ksadmin") {
+  output_name = "ksadmin"
+  sources = [ "keystone/ksadmin_main.cc" ]
+
+  public_deps = [ ":ksadmin_lib" ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:constants_prod",
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
@@ -191,12 +263,44 @@ bundle_data("keystone_helpers") {
   ]
 }
 
+mac_app_bundle("keystone_agent_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/agent_main.cc" ]
+  output_name = keystone_app_name + "Agent"
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=${keystone_app_name}Agent",
+    "PACKAGE_TYPE=APPL",
+  ]
+}
+
+bundle_data("keystone_agent_bundle_resource_executable") {
+  sources = [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
+}
+
+bundle_data("keystone_agent_bundle_resource_plist") {
+  sources =
+      [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/Info.plist" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+}
+
 mac_app_bundle("keystone_bundle") {
   info_plist = "keystone/Info.plist"
   sources = [ "keystone/keystone_main.cc" ]
   output_name = keystone_app_name
   package_type = "bundle"
-  extra_substitutions = [ "MAC_BUNDLE_IDENTIFIER=$keystone_app_name" ]
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=$keystone_app_name",
+    "PACKAGE_TYPE=BNDL",
+  ]
   public_deps = [ ":keystone_helpers" ]
 }
 
@@ -207,6 +311,10 @@ bundle_data("updater_bundle_keystone_executable") {
   outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/MacOS/{{source_file_part}}" ]
 
   public_deps = [ ":keystone_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
 }
 
 bundle_data("updater_bundle_keystone_plist") {

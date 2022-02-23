@@ -1027,8 +1027,8 @@ if (!is_component_build) {
     lint_suppressions_file = "lint-suppressions.xml"
     lint_baseline_file = "lint-baseline.xml"
 
-    # Still needs to support Jelly Bean. See crbug.com/922656.
-    lint_min_sdk_version = 16
+    # Still needs to support KitKat. See crbug.com/1042122.
+    lint_min_sdk_version = 19
 
     apk_name = "CronetTestInstrumentation"
     android_manifest = "test/javatests/AndroidManifest.xml"

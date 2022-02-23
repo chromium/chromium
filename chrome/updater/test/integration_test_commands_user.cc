@@ -16,6 +16,7 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +61,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::EnterTestMode(url);
   }
 
+  void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
+    updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
+  }
+
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const base::Version& from_version,
@@ -86,6 +91,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void SetupFakeUpdaterLowerVersion() const override {
     updater::test::SetupFakeUpdaterLowerVersion(updater_scope_);
+  }
+
+  void SetupRealUpdaterLowerVersion() const override {
+    updater::test::SetupRealUpdaterLowerVersion(updater_scope_);
   }
 
   void SetExistenceCheckerPath(const std::string& app_id,
@@ -124,6 +133,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunWake(updater_scope_, exit_code);
   }
 
+  void RunWakeActive(int exit_code) const override {
+    updater::test::RunWakeActive(updater_scope_, exit_code);
+  }
+
   void Update(const std::string& app_id) const override {
     updater::test::Update(updater_scope_, app_id);
   }
@@ -134,31 +147,37 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RegisterApp(updater_scope_, app_id);
   }
 
-  void WaitForServerExit() const override {
-    updater::test::WaitForServerExit(updater_scope_);
+  void WaitForUpdaterExit() const override {
+    updater::test::WaitForUpdaterExit(updater_scope_);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void ExpectInterfacesRegistered() const override {
     updater::test::ExpectInterfacesRegistered(updater_scope_);
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(
-      const std::string& app_id) const override {
-    updater::test::ExpectLegacyUpdate3WebSucceeds(updater_scope_, app_id);
+  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
+                                      int expected_final_state,
+                                      int expected_error_code) const override {
+    updater::test::ExpectLegacyUpdate3WebSucceeds(
+        updater_scope_, app_id, expected_final_state, expected_error_code);
   }
 
   void ExpectLegacyProcessLauncherSucceeds() const override {
     updater::test::ExpectLegacyProcessLauncherSucceeds(updater_scope_);
   }
 
+  void RunUninstallCmdLine() const override {
+    updater::test::RunUninstallCmdLine(updater_scope_);
+  }
+
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // /Library is owned by root.
     return base::FilePath(FILE_PATH_LITERAL("/Library"));
 #else
@@ -169,6 +188,36 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void StressUpdateService() const override {
     updater::test::StressUpdateService(updater_scope_);
+  }
+
+  void CallServiceUpdate(const std::string& app_id,
+                         UpdateService::PolicySameVersionUpdate
+                             policy_same_version_update) const override {
+    updater::test::CallServiceUpdate(
+        updater_scope_, app_id,
+        policy_same_version_update ==
+            UpdateService::PolicySameVersionUpdate::kAllowed);
+  }
+
+  void SetupFakeLegacyUpdaterData() const override {
+    updater::test::SetupFakeLegacyUpdaterData(updater_scope_);
+  }
+
+  void ExpectLegacyUpdaterDataMigrated() const override {
+    updater::test::ExpectLegacyUpdaterDataMigrated(updater_scope_);
+  }
+
+  void RunRecoveryComponent(const std::string& app_id,
+                            const base::Version& version) const override {
+    updater::test::RunRecoveryComponent(updater_scope_, app_id, version);
+  }
+
+  void ExpectLastChecked() const override {
+    updater::test::ExpectLastChecked(updater_scope_);
+  }
+
+  void ExpectLastStarted() const override {
+    updater::test::ExpectLastStarted(updater_scope_);
   }
 
  private:

@@ -53,6 +53,3 @@ v8_enable_lazy_source_positions = false
 use_glib = false
 use_gtk = false
 use_pangocairo = false
-
-# TODO(1096425): Remove this once use_x11 goes away.
-use_x11 = false

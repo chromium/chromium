@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -141,7 +142,7 @@ class URLLoaderInterceptor::IOState
   // This lock guarantees that when URLLoaderInterceptor is destroyed,
   // no intercept callbacks will be called.
   base::Lock intercept_lock_;
-  URLLoaderInterceptor* parent_ GUARDED_BY(intercept_lock_);
+  raw_ptr<URLLoaderInterceptor> parent_ GUARDED_BY(intercept_lock_);
 
   URLLoaderCompletionStatusCallback completion_status_callback_;
 
@@ -181,8 +182,9 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
     original_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    original_client_->OnReceiveResponse(std::move(head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    original_client_->OnReceiveResponse(std::move(head), std::move(body));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -294,7 +296,7 @@ class URLLoaderInterceptor::Interceptor
       std::move(error_handler_).Run();
   }
 
-  URLLoaderInterceptor::IOState* parent_;
+  raw_ptr<URLLoaderInterceptor::IOState> parent_;
   ProcessIdGetter process_id_getter_;
   OriginalFactoryGetter original_factory_getter_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
@@ -587,7 +589,8 @@ void URLLoaderInterceptor::WriteResponse(
         network::PopulateParsedHeaders(response->headers.get(), *url);
   }
   response->ssl_info = std::move(ssl_info);
-  client->OnReceiveResponse(std::move(response));
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle());
 
   CHECK_EQ(WriteResponseBody(body, client), MOJO_RESULT_OK);
 }

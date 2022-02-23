@@ -7,6 +7,9 @@ package org.chromium.components.webauthn;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /**
@@ -21,11 +24,23 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
 
     @Override
     public Authenticator createImpl() {
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)
+                || mRenderFrameHost == null) {
+            return null;
+        }
+        WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
+        if (webContents == null) {
             return null;
         }
 
-        if (mRenderFrameHost == null) return null;
-        return new AuthenticatorImpl(mRenderFrameHost);
+        WebAuthenticationDelegate delegate = new WebAuthenticationDelegate();
+        @WebAuthenticationDelegate.Support
+        int supportLevel = delegate.getSupportLevel(webContents);
+        if (supportLevel == WebAuthenticationDelegate.Support.NONE) {
+            return null;
+        }
+
+        return new AuthenticatorImpl(
+                delegate.getIntentSender(webContents), mRenderFrameHost, supportLevel);
     }
 }

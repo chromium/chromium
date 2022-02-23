@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -135,7 +136,7 @@ const ClipboardFormatType& ClipboardFormatType::PngType() {
 
 // static
 const ClipboardFormatType& ClipboardFormatType::BitmapType() {
-  static base::NoDestructor<ClipboardFormatType> type(NSTIFFPboardType);
+  static base::NoDestructor<ClipboardFormatType> type(NSPasteboardTypeTIFF);
   return *type;
 }
 

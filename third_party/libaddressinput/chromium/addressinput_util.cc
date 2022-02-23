@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/stl_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"

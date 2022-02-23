@@ -8,19 +8,23 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 
 #include "base/clang_profiling_buildflags.h"
-#include "base/files/scoped_file.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
-#include "ipc/ipc_channel_proxy.h"
+#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_CHROMECAST)
+#include <string>
+
+#include "mojo/public/cpp/system/message_pipe.h"
+#endif
+
 namespace base {
+class File;
 class FilePath;
 }
 
@@ -41,7 +45,7 @@ class ChildProcessHostDelegate;
 // processes that run independent of the browser process.
 class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
  public:
-  ~ChildProcessHost() override {}
+  ~ChildProcessHost() override;
 
   // This is a value never returned as the unique id of any child processes of
   // any kind, including the values returned by RenderProcessHost::GetID().
@@ -81,7 +85,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // No special behavior requested.
     CHILD_NORMAL = 0,
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Indicates that the child execed after forking may be execced from
     // /proc/self/exe rather than using the "real" app path. This prevents
     // autoupdate from confusing us if it changes the file out from under us.
@@ -90,7 +94,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
     // gdb). In this case, you'd use GetChildPath to get the real executable
     // file name, and then prepend the GDB command to the command line.
     CHILD_ALLOW_SELF = 1 << 0,
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Note, on macOS these are not bitwise flags and each value is mutually
     // exclusive with the others. Each one of these options should correspond
     // to a value in //content/public/app/mac_helpers.gni.
@@ -173,16 +177,22 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   //   3. Main thread, ChildThreadImpl::BindReceiver (virtual).
   virtual void BindReceiver(mojo::GenericPendingReceiver receiver) = 0;
 
+#if BUILDFLAG(IS_CHROMECAST)
   // Instructs the child process to run an instance of the named service. This
   // is DEPRECATED and should never be used.
   virtual void RunServiceDeprecated(
       const std::string& service_name,
       mojo::ScopedMessagePipeHandle service_pipe) = 0;
+#endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   // Write out the accumulated code profiling profile to the configured file.
   // The callback is invoked once the profile has been flushed to disk.
   virtual void DumpProfilingData(base::OnceClosure callback) = 0;
+
+  // Sets the profiling file for the child process.
+  // Used for the coverage builds.
+  virtual void SetProfilingFile(base::File file) = 0;
 #endif
 };
 

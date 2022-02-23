@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
@@ -26,12 +27,12 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/com_init_util.h"
 #include "base/win/current_module.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 namespace internal {
@@ -450,7 +451,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  PooledSingleThreadTaskRunnerManager* const manager_to_join_;
+  const raw_ptr<PooledSingleThreadTaskRunnerManager> manager_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
@@ -531,7 +532,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerJoinTest,
   join_from_different_thread.Join();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST_P(PooledSingleThreadTaskRunnerManagerCommonTest, COMSTAInitialized) {
   scoped_refptr<SingleThreadTaskRunner> com_task_runner =
@@ -643,7 +644,7 @@ TEST_F(PooledSingleThreadTaskRunnerManagerTestWin, PumpsMessages) {
   test::ShutdownTaskTracker(&task_tracker_);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 

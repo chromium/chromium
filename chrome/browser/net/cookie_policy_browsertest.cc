@@ -982,8 +982,8 @@ IN_PROC_BROWSER_TEST_P(SamePartyIsFirstPartyCookiePolicyBrowserTest,
   ExpectFrameContent(AllCookies());
 }
 
-INSTANTIATE_TEST_CASE_P(FlagAndSettings,
-                        SamePartyIsFirstPartyCookiePolicyBrowserTest,
-                        testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(FlagAndSettings,
+                         SamePartyIsFirstPartyCookiePolicyBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace

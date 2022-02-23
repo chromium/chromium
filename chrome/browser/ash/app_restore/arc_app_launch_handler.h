@@ -133,6 +133,8 @@ class ArcAppLaunchHandler
 
   void LaunchApp(const std::string& app_id);
 
+  bool IsAppPendingRestore(const std::string& app_id) const;
+
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(

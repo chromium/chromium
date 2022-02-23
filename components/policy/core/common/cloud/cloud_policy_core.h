@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -132,7 +133,7 @@ class POLICY_EXPORT CloudPolicyCore {
 
   std::string policy_type_;
   std::string settings_entity_id_;
-  CloudPolicyStore* store_;
+  raw_ptr<CloudPolicyStore> store_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   network::NetworkConnectionTrackerGetter network_connection_tracker_getter_;
   std::unique_ptr<CloudPolicyClient> client_;

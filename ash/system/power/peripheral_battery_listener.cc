@@ -369,8 +369,42 @@ void PeripheralBatteryListener::DeviceConnectedStateChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool is_now_connected) {
-  if (!is_now_connected)
+  if (!is_now_connected) {
     RemoveBluetoothBattery(device->GetAddress());
+    return;
+  }
+
+  for (auto type : device->GetAvailableBatteryTypes()) {
+    absl::optional<device::BluetoothDevice::BatteryInfo> info =
+        device->GetBatteryInfo(type);
+
+    DCHECK(info);
+
+    BatteryInfo::ChargeStatus charge_status;
+
+    switch (info->charge_state) {
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kUnknown:
+        charge_status = BatteryInfo::ChargeStatus::kUnknown;
+        break;
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kCharging:
+        charge_status = BatteryInfo::ChargeStatus::kCharging;
+        break;
+      case device::BluetoothDevice::BatteryInfo::ChargeState::kDischarging:
+        charge_status = BatteryInfo::ChargeStatus::kDischarging;
+        break;
+    }
+
+    BatteryInfo battery{GetBatteryMapKey(device),
+                        device->GetNameForDisplay(),
+                        info->percentage,
+                        /*battery_report_eligible=*/true,
+                        base::TimeTicks::Now(),
+                        BatteryInfo::PeripheralType::kOther,
+                        charge_status,
+                        device->GetAddress()};
+
+    UpdateBattery(battery, /*active_update=*/true);
+  }
 }
 
 // Observing device::BluetoothAdapter

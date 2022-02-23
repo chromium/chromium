@@ -16,7 +16,7 @@ bool OSMetrics::FillProcessMemoryMaps(base::ProcessId pid,
 
   std::vector<mojom::VmRegionPtr> results;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, fetching all memory maps is very slow. See
   // https://crbug.com/826913 and https://crbug.com/1035401.
   results = GetProcessModules(pid);

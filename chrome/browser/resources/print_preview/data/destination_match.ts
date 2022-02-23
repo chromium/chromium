@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 
 /**
@@ -31,7 +31,7 @@ export function originToType(origin: DestinationOrigin): PrinterType {
 
 export function getPrinterTypeForDestination(
     destination: (Destination|RecentDestination)): PrinterType {
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
     return PrinterType.PDF_PRINTER;
   }
@@ -102,7 +102,7 @@ export class DestinationMatch {
    *     destination selection.
    */
   private isVirtualDestination_(destination: Destination): boolean {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }

@@ -6,6 +6,7 @@
 
 #include "components/feature_engagement/internal/event_model.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -38,6 +39,10 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
       (event_model.GetLastSnoozeTimestamp(config.trigger.name) <
        base::Time::Now() - base::Days(config.snooze_params.snooze_interval));
 
+  result.priority_notification_ok =
+      !pending_priority_notification_.has_value() ||
+      pending_priority_notification_.value() == feature.name;
+
   result.should_show_snooze =
       result.snooze_expiration_ok &&
       event_model.GetSnoozeCount(config.trigger.name, config.trigger.window,
@@ -59,6 +64,16 @@ void OnceConditionValidator::NotifyIsShowing(
 void OnceConditionValidator::NotifyDismissed(const base::Feature& feature) {
   DCHECK(feature.name == currently_showing_feature_);
   currently_showing_feature_.clear();
+}
+
+void OnceConditionValidator::SetPriorityNotification(
+    const absl::optional<std::string>& feature) {
+  pending_priority_notification_ = feature;
+}
+
+absl::optional<std::string>
+OnceConditionValidator::GetPendingPriorityNotification() {
+  return pending_priority_notification_;
 }
 
 }  // namespace feature_engagement

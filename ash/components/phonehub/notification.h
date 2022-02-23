@@ -12,10 +12,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // A notification generated on the phone, whose contents are transferred to
@@ -34,6 +35,9 @@ class Notification {
 
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;
+
+    static AppMetadata FromValue(const base::Value& value);
+    base::Value ToValue() const;
 
     std::u16string visible_app_name;
     std::string package_name;
@@ -182,13 +186,13 @@ std::ostream& operator<<(std::ostream& stream,
 std::ostream& operator<<(std::ostream& stream,
                          const Notification::Category category);
 }  // namespace phonehub
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-namespace phonehub {
-using ::chromeos::phonehub::Notification;
-}  // namespace phonehub
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::Notification;
+}
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_H_

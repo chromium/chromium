@@ -7,7 +7,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"

@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_UBERTOKEN_FETCHER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_UBERTOKEN_FETCHER_H_
 
-#include <memory>
+#include <string>
 
-#include "base/bind.h"
+#include "base/callback_forward.h"
 
 class GoogleServiceAuthError;
 

@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
@@ -34,20 +33,19 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -59,6 +57,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -101,7 +101,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // TemplateURL used to get the search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // Authentication Service to get the current user's avatar.
@@ -176,6 +175,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)shutdown {
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
+    if (!IsSingleNtpEnabled()) {
+      [self saveContentOffsetForWebState:_webState];
+    }
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
   }
@@ -200,12 +202,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
-    [self saveContentOffsetForWebState:_webState];
+    if (IsSingleNtpEnabled()) {
+      [self saveContentOffsetForWebState:_webState];
+    }
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
+  self.NTPMetrics.webState = webState;
+  if (IsSingleNtpEnabled()) {
+    [self.logoVendor setWebState:webState];
+  }
   if (_webState && _webStateObserver) {
-    [self setContentOffsetForWebState:webState];
+    if (IsSingleNtpEnabled()) {
+      [self setContentOffsetForWebState:webState];
+    }
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -279,37 +289,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _URLLoader->Load(params);
 }
 
-- (void)displayContextMenuForMostVisitedItem:(CollectionViewItem*)item
-                                     atPoint:(CGPoint)touchLocation
-                                 atIndexPath:(NSIndexPath*)indexPath {
-  DCHECK(_browser);
-  // No context menu for action buttons.
-  if ([item isKindOfClass:[ContentSuggestionsMostVisitedActionItem class]]) {
-    return;
-  }
-
-  // Unfocus the omnibox as the omnibox can disappear when choosing some
-  // options. See crbug.com/928237.
-  [self.dispatcher cancelOmniboxEdit];
-
-  ContentSuggestionsMostVisitedItem* mostVisitedItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedItem>(item);
-  self.alertCoordinator = [ContentSuggestionsAlertFactory
-      alertCoordinatorForMostVisitedItem:mostVisitedItem
-                        onViewController:self.suggestionsViewController
-                             withBrowser:self.browser
-                                 atPoint:touchLocation
-                             atIndexPath:indexPath
-                          commandHandler:self];
-
-  [self.alertCoordinator start];
-}
-
-- (void)dismissModals {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
-}
-
 // TODO(crbug.com/761096) : Promo handling should be tested.
 - (void)handlePromoTapped {
   NotificationPromoWhatsNew* notificationPromo =
@@ -317,6 +296,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   DCHECK(notificationPromo);
   notificationPromo->HandleClosed();
   [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_PROMO];
+  if (IsSingleCellContentSuggestionsEnabled()) {
+    [self.suggestionsMediator hidePromo];
+  }
 
   if (notificationPromo->IsURLPromo()) {
     UrlLoadParams params = UrlLoadParams::InNewTab(notificationPromo->url());
@@ -358,21 +340,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)handleFeedManageActivityTapped {
   [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-  [self.discoverFeedMetrics recordHeaderMenuManageActivityTapped];
+  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
 }
 
 - (void)handleFeedManageInterestsTapped {
   [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-  [self.discoverFeedMetrics recordHeaderMenuManageInterestsTapped];
+  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
 }
 
 - (void)handleFeedLearnMoreTapped {
   [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
-  [self.discoverFeedMetrics recordHeaderMenuLearnMoreTapped];
+  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
 }
 
-- (void)openMostRecentTab:(CollectionViewItem*)item {
-  DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
+- (void)openMostRecentTab {
   base::RecordAction(
       base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
   [self.suggestionsMediator hideRecentTabTile];
@@ -389,6 +370,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
+
+- (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
+                            incognito:(BOOL)incognito
+                              atIndex:(NSInteger)index
+                            fromPoint:(CGPoint)point {
+  if (incognito &&
+      IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    // This should only happen when the policy changes while the option is
+    // presented.
+    return;
+  }
+  [self logMostVisitedOpening:item atIndex:index];
+  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
+}
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
                             incognito:(BOOL)incognito
@@ -426,12 +421,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
 
-- (BOOL)isContextMenuVisible {
-  return self.alertCoordinator.isVisible;
-}
-
-- (BOOL)isScrolledToTop {
-  return self.primaryViewController.scrolledToTop;
+- (BOOL)isScrolledToMinimumHeight {
+  return [self.ntpViewController isScrolledToMinimumHeight];
 }
 
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
@@ -486,8 +477,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - Private
 
 // Returns the center of the cell associated with |item| in the window
-// coordinates. Returns CGPointZero is the cell isn't visible.
-- (CGPoint)cellCenterForItem:(CollectionViewItem<SuggestedContent>*)item {
+// coordinates. Returns CGPointZero if the cell isn't visible.
+- (CGPoint)cellCenterForItem:(ContentSuggestionsMostVisitedItem*)item {
   NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
       indexPathForItem:item];
   if (!indexPath)
@@ -552,6 +543,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Save the NTP scroll offset into the last committed navigation item for the
 // before we navigate away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
+  if (!IsSingleNtpEnabled() &&
+      webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+          kChromeUINewTabURL) {
+    return;
+  }
+  if (IsSingleNtpEnabled() &&
+      (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL &&
+       webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL)) {
+    // Do nothing if the current page is not the NTP.
+    return;
+  }
+
   web::NavigationManager* manager = webState->GetNavigationManager();
   web::NavigationItem* item =
       webState->GetLastCommittedURL() == kChromeUINewTabURL
@@ -596,18 +601,19 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   web::NavigationItem* item = navigationManager->GetVisibleItem();
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
-  CGFloat minimumOffset =
-      -self.ntpViewController.contentSuggestionsContentHeight;
-  // TODO(crbug.com/1114792): Create a protocol to stop having references to
-  // both of these ViewControllers directly.
+  CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
   if (offset > minimumOffset) {
     [self.ntpViewController setSavedContentOffset:offset];
-    if (IsSingleNtpEnabled()) {
-      return;
-    }
   } else if (IsSingleNtpEnabled()) {
     // Remove this if NTPs are ever scoped back to the WebState.
     [self.ntpViewController setContentOffsetToTop];
+    // Refresh NTP content if there is is no saved scrolled state or when a new
+    // NTP is opened. Since the same NTP is being shared across tabs, this
+    // ensures that new content is being fetched.
+    [self.suggestionsMediator refreshMostVisitedTiles];
+    ios::GetChromeBrowserProvider()
+        .GetDiscoverFeedProvider()
+        ->RefreshFeedIfNeeded();
   }
 }
 

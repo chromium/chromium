@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
@@ -168,7 +169,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int Init();
   void ExtractClientCert();
 
-  SSLServerContextImpl* context_;
+  raw_ptr<SSLServerContextImpl> context_;
 
   NetLogWithSource net_log_;
 
@@ -371,8 +372,9 @@ SSLServerContextImpl::SocketImpl::SelectCertificateCallback(
     const SSL_CLIENT_HELLO* client_hello) {
   SSLServerContextImpl::SocketImpl* socket = FromSSL(client_hello->ssl);
   const SSLServerConfig& config = socket->context_->ssl_server_config_;
-  if (!config.client_hello_callback_for_testing.is_null()) {
-    config.client_hello_callback_for_testing.Run(client_hello);
+  if (!config.client_hello_callback_for_testing.is_null() &&
+      !config.client_hello_callback_for_testing.Run(client_hello)) {
+    return ssl_select_cert_error;
   }
   return ssl_select_cert_success;
 }
@@ -728,7 +730,6 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
   int net_error = OK;
   int rv = SSL_do_handshake(ssl_.get());
   if (rv == 1) {
-    completed_handshake_ = true;
     const STACK_OF(CRYPTO_BUFFER)* certs =
         SSL_get0_peer_certificates(ssl_.get());
     if (certs) {
@@ -745,6 +746,15 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
                               alpn_len);
       negotiated_protocol_ = NextProtoFromString(proto);
     }
+
+    if (context_->ssl_server_config_.alert_after_handshake_for_testing) {
+      SSL_send_fatal_alert(ssl_.get(),
+                           context_->ssl_server_config_
+                               .alert_after_handshake_for_testing.value());
+      return ERR_FAILED;
+    }
+
+    completed_handshake_ = true;
   } else {
     int ssl_error = SSL_get_error(ssl_.get(), rv);
 
@@ -959,7 +969,7 @@ void SSLServerContextImpl::Init() {
   switch (ssl_server_config_.client_cert_type) {
     case SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
-      FALLTHROUGH;
+      [[fallthrough]];
     case SSLServerConfig::ClientCertType::OPTIONAL_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_PEER;
       SSL_CTX_set_custom_verify(ssl_ctx_.get(), verify_mode,

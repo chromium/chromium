@@ -15,7 +15,7 @@
 namespace ui {
 
 // Dummy implementation of TextInputClient. All functions do nothing.
-// TODO(crbug.com/1148157): Replace this class with FakeTextInputClient.
+// TODO(crbug.com/1277388): Replace this class with FakeTextInputClient.
 class DummyTextInputClient : public TextInputClient {
  public:
   DummyTextInputClient();
@@ -63,7 +63,7 @@ class DummyTextInputClient : public TextInputClient {
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
@@ -80,12 +80,12 @@ class DummyTextInputClient : public TextInputClient {
       const std::vector<GrammarFragment>& fragments) override;
 #endif
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
       const std::u16string& active_composition_text,

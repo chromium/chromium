@@ -656,7 +656,7 @@ public static {{MODEL_CLASS_NAME}} newInstance(Context context, Model.Options ru
 public static {{MODEL_CLASS_NAME}} newInstance(Context context, String modelPath, Model.Options runningOptions) throws IOException {
   Model model = Model.createModel(context, modelPath, runningOptions);
   Metadata metadata = new Metadata(model.getData(), model);
-  MyImageClassifier instance = new MyImageClassifier(model, metadata);)");
+  {{MODEL_CLASS_NAME}} instance = new {{MODEL_CLASS_NAME}}(model, metadata);)");
   for (const auto& tensor : model.inputs) {
     SetCodeWriterWithTensorInfo(code_writer, tensor);
     code_writer->Append(
@@ -779,7 +779,11 @@ bool GenerateBuildGradleContent(CodeWriter* code_writer,
   code_writer->Append(R"(buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()  // For versioned releases
+        maven {         // For snapshot releases
+            name 'ossrh-snapshot'
+            url 'http://oss.sonatype.org/content/repositories/snapshots'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
@@ -835,8 +839,8 @@ preBuild.dependsOn downloadLibs
 
 dependencies {
     compileOnly 'org.checkerframework:checker-qual:2.5.8'
-    api 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
-    api 'org.tensorflow:tensorflow-lite-support:0.0.0-nightly'
+    api 'org.tensorflow:tensorflow-lite:0.0.0-nightly-SNAPSHOT'
+    api 'org.tensorflow:tensorflow-lite-support:0.0.0-nightly-SNAPSHOT'
     api files("$buildDir/libs/tensorflow-lite-support-metadata.jar")
     implementation 'org.apache.commons:commons-compress:1.19'
 })");

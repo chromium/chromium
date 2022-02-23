@@ -11,7 +11,9 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_test_util.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
@@ -30,11 +32,19 @@
 #include "base/scoped_observation.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
+
+using ::testing::AnyOf;
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Not;
+using ::testing::SizeIs;
 
 namespace {
 class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
@@ -46,6 +56,11 @@ class MockAmbientBackendModelObserver : public AmbientBackendModelObserver {
   MOCK_METHOD(void, OnImageAdded, (), (override));
   MOCK_METHOD(void, OnImagesReady, (), (override));
 };
+
+MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
+  return !arg.photo.isNull() && !photo_with_details.photo.isNull() &&
+         arg.photo.BackedBySameObjectAs(photo_with_details.photo);
+}
 
 }  // namespace
 
@@ -103,6 +118,55 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
   }
 
   void Init() { photo_controller()->Init(); }
+
+  void RunUntilImagesReady() {
+    if (photo_controller()->ambient_backend_model()->ImagesReady())
+      return;
+
+    static constexpr base::TimeDelta kTimeout = base::Seconds(3);
+    base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);
+    base::RunLoop loop;
+    base::RepeatingClosure quit_closure = loop.QuitClosure();
+    testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
+    base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+        scoped_observation{&mock_backend_observer};
+    scoped_observation.Observe(photo_controller()->ambient_backend_model());
+    ON_CALL(mock_backend_observer, OnImagesReady)
+        .WillByDefault(
+            ::testing::Invoke([quit_closure]() { quit_closure.Run(); }));
+    loop.Run();
+  }
+
+  void RunUntilNextTopicsAdded(int num_expected_topics) {
+    static constexpr base::TimeDelta kTimeout = base::Seconds(3);
+    base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);
+    base::RunLoop loop;
+    base::RepeatingClosure quit_closure = loop.QuitClosure();
+    int num_topics_added = 0;
+    testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
+    base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+        scoped_observation{&mock_backend_observer};
+    scoped_observation.Observe(photo_controller()->ambient_backend_model());
+    ON_CALL(mock_backend_observer, OnImageAdded)
+        .WillByDefault(::testing::Invoke(
+            [quit_closure, num_expected_topics, &num_topics_added]() {
+              ++num_topics_added;
+              if (num_topics_added >= num_expected_topics)
+                quit_closure.Run();
+            }));
+    loop.Run();
+  }
+};
+
+class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
+ protected:
+  static constexpr int kNumDynamicAssets = 4;
+
+  void SetUp() override {
+    AmbientAshTestBase::SetUp();
+    photo_controller()->ambient_backend_model()->SetPhotoConfig(
+        GenerateAnimationConfigWithNAssets(kNumDynamicAssets));
+  }
 };
 
 // Test that topics are downloaded when starting screen update.
@@ -115,7 +179,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadTopics) {
   topics = photo_controller()->ambient_backend_model()->topics();
   EXPECT_TRUE(topics.empty());
 
-  FastForwardToNextImage();
+  RunUntilImagesReady();
   topics = photo_controller()->ambient_backend_model()->topics();
   EXPECT_FALSE(topics.empty());
 
@@ -127,42 +191,57 @@ TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadTopics) {
 
 // Test that image is downloaded when starting screen update.
 TEST_F(AmbientPhotoControllerTest, ShouldStartToDownloadImages) {
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
-  FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  RunUntilImagesReady();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Stop to refresh images.
   photo_controller()->StopScreenUpdate();
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 }
 
-// Tests that photos are updated periodically when starting screen update.
-TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
+// Tests that photos are updated when OnMarkerHit() is called.
+TEST_F(AmbientPhotoControllerTest, OnMarkerHitShouldUpdatePhoto) {
   PhotoWithDetails image1;
   PhotoWithDetails image2;
   PhotoWithDetails image3;
 
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
-  FastForwardToNextImage();
-  image1 = photo_controller()->ambient_backend_model()->GetNextImage();
+  RunUntilImagesReady();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image1);
   EXPECT_FALSE(image1.IsNull());
   EXPECT_TRUE(image2.IsNull());
 
-  FastForwardToNextImage();
-  image2 = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image2);
   EXPECT_FALSE(image2.IsNull());
   EXPECT_FALSE(image1.photo.BackedBySameObjectAs(image2.photo));
   EXPECT_TRUE(image3.IsNull());
 
-  FastForwardToNextImage();
-  image3 = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image3);
   EXPECT_FALSE(image3.IsNull());
   EXPECT_FALSE(image1.photo.BackedBySameObjectAs(image3.photo));
   EXPECT_FALSE(image2.photo.BackedBySameObjectAs(image3.photo));
@@ -171,14 +250,45 @@ TEST_F(AmbientPhotoControllerTest, ShouldUpdatePhotoPeriodically) {
   photo_controller()->StopScreenUpdate();
 }
 
+TEST_F(AmbientPhotoControllerTest,
+       ShouldLoadSavedTopicsFromDiskWithoutInternet) {
+  // Start ambient mode and run until ImagesReady(). At this point, the
+  // controller should have saved 2 topics to disk.
+  PhotoWithDetails image;
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
+  ASSERT_FALSE(image.IsNull());
+
+  // Stop ambient mode. That should clear the decoded topics in the model but
+  // not clear the saved topics on disk.
+  photo_controller()->StopScreenUpdate();
+
+  // Simulate internet connection down.
+  backend_controller()->SetFetchScreenUpdateInfoResponseSize(
+      /*num_topics_to_return=*/0);
+
+  // Restart ambient mode, and it should load previously saved topics from disk.
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
+  EXPECT_FALSE(image.IsNull());
+}
+
 // Tests that image details is correctly set.
 TEST_F(AmbientPhotoControllerTest, ShouldSetDetailsCorrectly) {
   SetPhotoOrientation(/*portrait=*/true);
   // Start to refresh images.
   photo_controller()->StartScreenUpdate();
-  FastForwardToNextImage();
-  PhotoWithDetails image =
-      photo_controller()->ambient_backend_model()->GetNextImage();
+  RunUntilImagesReady();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Fake details defined in fake_ambient_backend_controller_impl.cc.
@@ -192,9 +302,12 @@ TEST_F(AmbientPhotoControllerTest, ShouldSetDetailsCorrectly) {
 TEST_F(AmbientPhotoControllerTest, ShouldSaveImagesOnDisk) {
   // Start to refresh images. It will download two images immediately and write
   // them in |ambient_image_path|. It will also download one more image after
-  // fast forward. It will also download the related images and not cache them.
+  // OnMarkerHit(). It will also download the related images and not cache
+  // them.
   photo_controller()->StartScreenUpdate();
-  FastForwardToNextImage();
+  RunUntilImagesReady();
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
 
   // Count number of writes to cache. There should be three cache writes during
   // this ambient mode session.
@@ -206,13 +319,19 @@ TEST_F(AmbientPhotoControllerTest, ShouldSaveImagesOnDisk) {
 TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
   // Start to refresh images. It will download two images immediately and write
   // them in |ambient_image_path|. It will also download one more image after
-  // fast forward. It will also download the related images and not cache them.
+  // OnMarkerHit(). It will also download the related images and not cache
+  // them.
   photo_controller()->StartScreenUpdate();
-  FastForwardToNextImage();
+  RunUntilImagesReady();
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
 
   EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 
   // Stop to refresh images.
@@ -221,7 +340,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 
   EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 }
 
@@ -230,7 +351,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -240,8 +364,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   // Reset variables in photo controller.
   Init();
   FetchImage();
-  FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -251,7 +377,10 @@ TEST_F(AmbientPhotoControllerTest,
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // The initial file name to be read is 0. Save a file with index 99 to check
@@ -262,8 +391,10 @@ TEST_F(AmbientPhotoControllerTest,
   // Reset variables in photo controller.
   Init();
   FetchImage();
-  FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -274,7 +405,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache, which is empty.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -287,7 +421,9 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
   // Forward a little bit time. FetchTopics() will succeed. Downloading should
   // fail. Will read from cache.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -296,7 +432,10 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_TRUE(image.IsNull());
 
   // Save a file to check if it gets read for display.
@@ -307,36 +446,48 @@ TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   // Reset variables in photo controller.
   Init();
   FetchImage();
-  FastForwardToNextImage();
-  image = photo_controller()->ambient_backend_model()->GetCurrentImage();
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/&image,
+      /*next_image=*/nullptr);
   EXPECT_FALSE(image.IsNull());
   EXPECT_EQ(image.details, details);
 }
 
 // Test that image is read from disk when image decoding failed.
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
+  Init();
   SetDecodePhotoImage(gfx::ImageSkia());
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed.
   // Downloading succeed and save the data to disk.
   // First decoding should fail. Will read from cache, and then succeed.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 }
 
 // Test that image will refresh when have more topics.
 TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
+  Init();
   FetchImage();
   FastForwardToNextImage();
   // Topics is empty. Will read from cache, which is empty.
-  auto image = photo_controller()->ambient_backend_model()->GetNextImage();
+  PhotoWithDetails image;
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_TRUE(image.IsNull());
 
   FetchTopics();
   // Forward a little bit time. FetchTopics() will succeed and refresh image.
   task_environment()->FastForwardBy(0.2 * kTopicFetchInterval);
-  image = photo_controller()->ambient_backend_model()->GetNextImage();
+  photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
+      /*current_image=*/nullptr,
+      /*next_image=*/&image);
   EXPECT_FALSE(image.IsNull());
 }
 
@@ -429,8 +580,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   SetDownloadPhotoData("image data");
 
   photo_controller()->StartScreenUpdate();
-  // Run the clock so the first photo is loaded.
-  FastForwardTiny();
+  RunUntilNextTopicsAdded(/*num_expected_topics=*/1);
 
   // Should contain hash of downloaded data.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
@@ -441,7 +591,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   // Now expect a call because second image is loaded.
   EXPECT_CALL(mock_backend_observer, OnImagesReady).Times(1);
   SetDownloadPhotoData("image data 2");
-  FastForwardToNextImage();
+  RunUntilImagesReady();
 
   // Second image should have been loaded.
   EXPECT_TRUE(photo_controller()->ambient_backend_model()->IsHashDuplicate(
@@ -476,6 +626,117 @@ TEST_F(AmbientPhotoControllerTest, ShouldStartToRefreshWeather) {
   FastForwardToRefreshWeather();
   EXPECT_FALSE(model->show_celsius());
   EXPECT_LT(info.temp_f, 0);
+}
+
+TEST_F(AmbientPhotoControllerTest, IsScreenUpdateActive) {
+  ASSERT_FALSE(photo_controller()->IsScreenUpdateActive());
+  photo_controller()->StartScreenUpdate();
+  EXPECT_TRUE(photo_controller()->IsScreenUpdateActive());
+  photo_controller()->StopScreenUpdate();
+  EXPECT_FALSE(photo_controller()->IsScreenUpdateActive());
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest, AnimationPreparesInitialTopicSet) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              SizeIs(kNumDynamicAssets));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       AnimationRefreshesTopicSetEachCycle) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  base::circular_deque<PhotoWithDetails> old_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+
+  // Start rendering animation.
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  // Simulate cycle ending. This should trigger an image refresh.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  base::circular_deque<PhotoWithDetails> new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+
+  // Verify that the new set actually has different photos from the initial set.
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
+  old_photos = new_photos;
+
+  // One more cycle.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       StopsRefreshingImagesAfterTargetAmountBuffered) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+
+  // Fast forward time to make sure no more images are prepared after
+  // |kNumDynamicAssets| has been added.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              SizeIs(kNumDynamicAssets));
+}
+
+TEST_F(AmbientPhotoControllerAnimationTest,
+       AnimationRefreshesAfterIncompleteTopicSet) {
+  photo_controller()->StartScreenUpdate();
+  RunUntilImagesReady();
+  base::circular_deque<PhotoWithDetails> old_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets / 2);
+  base::circular_deque<PhotoWithDetails> new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+
+  EXPECT_THAT(new_photos[0], BackedBySameImageAs(old_photos[2]));
+  EXPECT_THAT(new_photos[1], BackedBySameImageAs(old_photos[3]));
+  EXPECT_THAT(old_photos, Not(Contains(BackedBySameImageAs(new_photos[2]))));
+  EXPECT_THAT(old_photos, Not(Contains(BackedBySameImageAs(new_photos[3]))));
+  old_photos = new_photos;
+
+  // Cycle ends when only half of target amount refreshed.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  RunUntilNextTopicsAdded(kNumDynamicAssets);
+  // Fast forward time to make sure no more images are prepared after
+  // |kNumDynamicAssets| has been added.
+  task_environment()->FastForwardBy(base::Minutes(1));
+  new_photos =
+      photo_controller()->ambient_backend_model()->all_decoded_topics();
+  EXPECT_THAT(new_photos, SizeIs(kNumDynamicAssets));
+  ASSERT_THAT(old_photos.size(), Eq(new_photos.size()));
+  EXPECT_THAT(new_photos,
+              Not(AnyOf(Contains(BackedBySameImageAs(old_photos[0])),
+                        Contains(BackedBySameImageAs(old_photos[1])),
+                        Contains(BackedBySameImageAs(old_photos[2])),
+                        Contains(BackedBySameImageAs(old_photos[3])))));
 }
 
 }  // namespace ash

@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="102360288709523007">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chromium。</translation>
+<translation id="1047130070405668746">选择“Chromium”</translation>
+<translation id="1091252999271033193">这意味着 Chromium 每次都会对移动网站发出请求。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">显示意在引导用户登录 Chromium 的提示。</translation>
 <translation id="1584569488888892906">Chromium 不仅简便安全，而且速度更胜从前</translation>
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
+<translation id="1722370509450468186">您的密码将会保存到您的帐号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 数据</translation>
 <translation id="1838412507805038478">Chromium 已证实：此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. 选择“Chromium”</translation>
 <translation id="2006345422933397527">Chromium 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="2054703085270098503">Chromium 可确保您始终处于保护之下</translation>
 <translation id="2168108852149185974">部分插件会导致 Chromium 崩溃，请卸载这些插件：</translation>
 <translation id="2178608107313874732">Chromium 目前无法使用您的相机</translation>
 <translation id="2195025571279539885">下次访问这个网站时，您希望 Chromium 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2218146227246548550">根据贵单位的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">这意味着 Chromium 每次都会对桌面版网站发出请求。</translation>
 <translation id="2426113998523353159">根据贵单位的要求，您必须登录才能使用 Chromium。</translation>
 <translation id="2450140762465183767">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="2478931088402984578">选择 <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
 <translation id="3639997914391704523">您需要先登录 Google 帐号才能使用 Chromium 的密码检查功能。</translation>
 <translation id="3805899903892079518">Chromium 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
-<translation id="3946918322491238254">您仍可在此设备上查看自己的所有书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
+<translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理器中。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
 <translation id="6752854822223394465">贵组织正在设置 Chromium…</translation>
 <translation id="6820823224820483452">Chromium 无法检查所有密码。请明天再试。</translation>
+<translation id="7006920032187763988">您可在 iPad 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="7018284295775193585">Chromium 无法更新</translation>
 <translation id="7045244423563602563">定制您的专属 Chromium</translation>
 <translation id="7099326575020694068">Chromium 无法在分割视图模式下使用您的相机</translation>
 <translation id="7108914401277488191">Chromium 助您事半功倍</translation>
 <translation id="7118091470949186573">当您点按消息、文档和其他应用中的链接时，可以使用 Chromium 打开链接啦。</translation>
+<translation id="7175400662502680481">您的密码遭遇了数据泄露。密码管理器建议您立即更改此密码。</translation>
 <translation id="7208566199746267865">为节省您的时间，Chromium 已将您的 Google 帐号同步到网络上。您可在“设置”中添加或移除帐号。</translation>
 <translation id="725427773388857052">Chromium 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="7269362888766543920">部分插件会导致 Chromium 崩溃，请尝试卸载这些插件。</translation>
 <translation id="7313655110045230863">若要将 Chromium 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chromium”。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">所选数据已从 Chromium 和同步的设备中移除。不过，您的 Google 帐号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
+<translation id="7395825497086981028">系统会将您的密码保存到 <ph name="EMAIL" /> 的密码管理器中。</translation>
 <translation id="7400689562045506105">随时随地使用 Chromium</translation>
 <translation id="766897673682622022">您的密码遭遇了数据泄露。Chromium 建议您立即更改此密码。</translation>
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">从这部设备中清除您的 Chromium 数据？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />将 Chromium 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 无法检查是否有更新。请稍后再试。</translation>
+<translation id="858114650497379505">您可在 iPhone 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
 <translation id="894437814105052438">当您退出登录后，Chromium 不会将任何新数据同步到您的 Google 帐号。先前已同步的数据将会保留在帐号中。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
+<translation id="9059693977935746710">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的密码管理器中</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9110075932708282655">默认使用 Chromium</translation>
 <translation id="921174536258924340">Chromium 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>

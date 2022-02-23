@@ -37,14 +37,10 @@ Polymer({
 
     const client = AppTrustedCommFactory.getPostMessageAPIClient();
 
-    this.addWebUIListener('onNewScreencastPreconditionChanged', (canStart) => {
-      if (typeof canStart !== "boolean") {
-        console.error(
-            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
-        return;
-      }
-      client.onNewScreencastPreconditionChanged(canStart);
-    });
+    this.addWebUIListener(
+        'onNewScreencastPreconditionChanged', (precondition) => {
+          client.onNewScreencastPreconditionChanged(precondition);
+        });
 
     this.addWebUIListener('onSodaInstallProgressUpdated', (progress) => {
       if (isNaN(progress)) {
@@ -54,6 +50,10 @@ Polymer({
       }
 
       client.onSodaInstallProgressUpdated(progress);
+    });
+
+    this.addWebUIListener('onSodaInstalled', (args) => {
+      client.onSodaInstalled();
     });
 
     this.addWebUIListener('onSodaInstallError', (args) => {
@@ -70,5 +70,12 @@ Polymer({
       }
       client.onScreencastsStateChange(pendingScreencasts);
     });
+
+    this.addWebUIListener(
+        'onSodaInstalled',
+        () => {
+            // TODO(b/197164300): Pass this information to google3 deployed
+            // content in iframe.
+        });
   },
 });

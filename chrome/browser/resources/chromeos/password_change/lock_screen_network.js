@@ -37,6 +37,11 @@ Polymer({
     ];
   },
 
+  /** @override */
+  ready() {
+    chrome.send('initialize');
+  },
+
   /**
    * Handles clicks on network items in the <network-select> element by
    * attempting a connection to the selected network or requesting a password

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 

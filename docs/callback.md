@@ -271,6 +271,49 @@ void InnerWork(base::OnceClosure work_done_cb,
                base::OnceClosure work_aborted_cb);
 ```
 
+### BarrierCallback<T>
+
+Sometimes you might need to request data from several sources, then do something
+with the collective results once all data is available. You can do this with a
+`BarrierCallback<T>`. The `BarrierCallback<T>` is created with two parameters:
+
+-   `num_callbacks`: The number of times the `BarrierCallback` can be run, each
+    time being passed an object of type T.
+-   `done_callback`: This will be run once the `BarrierCallback` has been run
+    `num_callbacks` times.
+
+The `done_callback` will receive a `std::vector<T>` containing the
+`num_callbacks` parameters passed in the respective `Run` calls. The order of
+`Ts` in the `vector` is unspecified.
+
+Note that
+
+-   barrier callback must not be run more than `num_callback` times,
+-   `done_callback` will be called on the same thread as the final call to the
+    barrier callback. `done_callback` will also be cleared on the same thread.
+
+Example:
+
+```cpp
+void Merge(const std::vector<Data>& data);
+
+void Collect(base::OnceCallback<void(Data)> collect_and_merge) {
+  // Do something, probably asynchronously, and at some point:
+  std::move(collect_and_merge).Run(data);
+}
+
+CollectAndMerge() {
+  const auto collect_and_merge =
+      base::BarrierCallback<Image>(sources_.size(), base::BindOnce(&Merge));
+  for (const auto& source : sources_) {
+    // Copy the barrier callback for asynchronous data collection.
+    // Once all sources have called `collect_and_merge` with their respective
+    // data, |Merge| will be called with a vector of the collected data.
+    source.Collect(collect_and_merge);
+  }
+}
+```
+
 ## Quick reference for basic stuff
 
 ### Binding A Bare Function

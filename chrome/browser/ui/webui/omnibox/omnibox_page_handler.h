@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -89,7 +89,7 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   mojo::Remote<mojom::OmniboxPage> page_;
 
   // The Profile* handed to us in our constructor.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   mojo::Receiver<mojom::OmniboxPageHandler> receiver_;
 

@@ -34,52 +34,6 @@ namespace syncer {
 
 namespace sync_ui_util {
 
-const char kIdentityTitle[] = "Identity";
-const char kDetailsKey[] = "details";
-
-// Resource paths.
-const char kAboutJS[] = "about.js";
-const char kChromeSyncJS[] = "chrome_sync.js";
-const char kDataJS[] = "data.js";
-const char kEventsJS[] = "events.js";
-const char kSearchJS[] = "search.js";
-const char kSyncIndexJS[] = "sync_index.js";
-const char kSyncLogJS[] = "sync_log.js";
-const char kSyncNodeBrowserJS[] = "sync_node_browser.js";
-const char kSyncSearchJS[] = "sync_search.js";
-const char kUserEventsJS[] = "user_events.js";
-const char kTrafficLogJS[] = "traffic_log.js";
-const char kInvalidationsJS[] = "invalidations.js";
-
-// Message handlers.
-const char kGetAllNodes[] = "getAllNodes";
-const char kRequestDataAndRegisterForUpdates[] =
-    "requestDataAndRegisterForUpdates";
-const char kRequestIncludeSpecificsInitialState[] =
-    "requestIncludeSpecificsInitialState";
-const char kRequestListOfTypes[] = "requestListOfTypes";
-const char kRequestStart[] = "requestStart";
-const char kRequestStopKeepData[] = "requestStopKeepData";
-const char kRequestStopClearData[] = "requestStopClearData";
-const char kSetIncludeSpecifics[] = "setIncludeSpecifics";
-const char kTriggerRefresh[] = "triggerRefresh";
-const char kWriteUserEvent[] = "writeUserEvent";
-
-// Other strings.
-const char kEntityCounts[] = "entityCounts";
-const char kEntities[] = "entities";
-const char kNonTombstoneEntities[] = "nonTombstoneEntities";
-const char kIncludeSpecifics[] = "includeSpecifics";
-const char kModelType[] = "modelType";
-const char kOnAboutInfoUpdated[] = "onAboutInfoUpdated";
-const char kOnEntityCountsUpdated[] = "onEntityCountsUpdated";
-const char kOnProtocolEvent[] = "onProtocolEvent";
-const char kOnReceivedIncludeSpecificsInitialState[] =
-    "onReceivedIncludeSpecificsInitialState";
-const char kOnReceivedListOfTypes[] = "onReceivedListOfTypes";
-const char kTypes[] = "types";
-const char kOnInvalidationReceived[] = "onInvalidationReceived";
-
 namespace {
 
 const char kUninitialized[] = "Uninitialized";
@@ -201,8 +155,6 @@ std::string GetDisableReasonsString(
     return "None";
   }
   std::vector<std::string> reason_strings;
-  if (disable_reasons.Has(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE))
-    reason_strings.push_back("Platform override");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_ENTERPRISE_POLICY))
     reason_strings.push_back("Enterprise policy");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN))
@@ -483,13 +435,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     os_feature_state->Set("Flag disabled");
-  } else if (!chromeos::features::IsSyncConsentOptionalEnabled()) {
-    DCHECK(service->GetUserSettings()->IsOsSyncFeatureEnabled());
-    os_feature_state->Set("Enforced Enabled");
-  } else if (service->GetUserSettings()->IsOsSyncFeatureEnabled()) {
-    os_feature_state->Set("Enabled");
   } else {
-    os_feature_state->Set("Disabled");
+    os_feature_state->Set("Enforced Enabled");
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   feature_enabled->Set(service->IsSyncFeatureEnabled());
@@ -574,7 +521,8 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   if (is_status_valid) {
     cryptographer_can_encrypt->Set(full_status.cryptographer_can_encrypt);
     has_pending_keys->Set(full_status.crypto_has_pending_keys);
-    encrypted_types->Set(ModelTypeSetToString(full_status.encrypted_types));
+    encrypted_types->Set(
+        ModelTypeSetToDebugString(full_status.encrypted_types));
     has_keystore_key->Set(full_status.has_keystore_key);
     keystore_migration_time->Set(
         GetTimeStr(full_status.keystore_migration_time, "Not Migrated"));

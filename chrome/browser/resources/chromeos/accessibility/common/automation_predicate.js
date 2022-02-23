@@ -212,10 +212,10 @@ AutomationPredicate = class {
    */
   static touchLeaf(node) {
     return !!(!node.firstChild && node.name) || node.role === Role.BUTTON ||
-        node.role === Role.CHECK_BOX || node.role === Role.POP_UP_BUTTON ||
-        node.role === Role.PORTAL || node.role === Role.RADIO_BUTTON ||
-        node.role === Role.SLIDER || node.role === Role.SWITCH ||
-        node.role === Role.TEXT_FIELD ||
+        node.role === Role.CHECK_BOX || node.role === Role.LIST_BOX ||
+        node.role === Role.POP_UP_BUTTON || node.role === Role.PORTAL ||
+        node.role === Role.RADIO_BUTTON || node.role === Role.SLIDER ||
+        node.role === Role.SWITCH || node.role === Role.TEXT_FIELD ||
         node.role === Role.TEXT_FIELD_WITH_COMBO_BOX ||
         (node.role === Role.MENU_ITEM && !hasActionableDescendant(node)) ||
         // Simple list items should be leaves.
@@ -228,7 +228,9 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static isInvalid(node) {
-    return node.invalidState === InvalidState.TRUE;
+    return node.invalidState === InvalidState.TRUE ||
+        AutomationPredicate.hasInvalidGrammarMarker(node) ||
+        AutomationPredicate.hasInvalidSpellingMarker(node);
   }
 
 
@@ -442,7 +444,7 @@ AutomationPredicate = class {
     return AutomationPredicate.match({
       anyRole: [
         Role.GENERIC_CONTAINER, Role.DOCUMENT, Role.GROUP, Role.LIST,
-        Role.LIST_ITEM, Role.TOOLBAR, Role.WINDOW
+        Role.LIST_ITEM, Role.TAB, Role.TAB_PANEL, Role.TOOLBAR, Role.WINDOW
       ],
       anyPredicate: [
         AutomationPredicate.landmark, AutomationPredicate.structuralContainer,
@@ -546,6 +548,14 @@ AutomationPredicate = class {
     // Similarly, ignore nodes acting as descriptions.
     if (node.descriptionFor && node.descriptionFor.length > 0 &&
         node.role === Role.LABEL_TEXT) {
+      return true;
+    }
+
+    // Ignore list markers that are followed by a static text.
+    // The bullet will be added before the static text (or static text's inline
+    // text box) in output.js.
+    if (node.role === Role.LIST_MARKER && node.nextSibling &&
+        node.nextSibling.role === Role.STATIC_TEXT) {
       return true;
     }
 
@@ -906,4 +916,14 @@ AutomationPredicate.menuItem = AutomationPredicate.roles(
  */
 AutomationPredicate.text = AutomationPredicate.roles(
     [Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK]);
+
+/**
+ * Matches against selecteable text like nodes.
+ * @param {!AutomationNode} node
+ * @return {boolean}
+ */
+AutomationPredicate.selectableText = AutomationPredicate.roles([
+  Role.STATIC_TEXT, Role.INLINE_TEXT_BOX, Role.LINE_BREAK, Role.LIST_MARKER
+]);
+
 });  // goog.scope

@@ -1,7 +1,11 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/ui.gni")
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
 static_library("external_arc") {
   sources = [
     "keyboard/arc_input_method_surface_manager.cc",
@@ -36,14 +40,14 @@ static_library("external_arc") {
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
   deps = [
     "//ash",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_metrics_constants",
+    "//ash/components/arc/mojom:notifications",
+    "//ash/components/arc/session:connection_holder",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
     "//components/account_id",
-    "//components/arc:arc_base_utils",
-    "//components/arc:arc_metrics_constants",
-    "//components/arc/mojom:notifications",
-    "//components/arc/session:connection_holder",
     "//components/exo",
     "//mojo/public/cpp/system",
     "//ui/accessibility:accessibility",
@@ -51,7 +55,6 @@ static_library("external_arc") {
     "//ui/aura",
     "//ui/color",
     "//ui/message_center",
-    "//ui/native_theme",
     "//ui/views",
     "//ui/wm",
   ]
@@ -73,10 +76,10 @@ source_set("unit_tests") {
     ":test_support",
     "//ash",
     "//ash:test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/session:connection_holder",
     "//ash/public/cpp",
     "//base/test:test_support",
-    "//components/arc:notification_test_support",
-    "//components/arc/session:connection_holder",
     "//components/exo",
     "//components/exo:test_support",
     "//testing/gmock",
@@ -87,7 +90,7 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 
-  assert_no_deps = [ "//compponents/arc:arc_base" ]
+  assert_no_deps = [ "//ash/compponents/arc:arc_base" ]
 }
 
 source_set("test_support") {

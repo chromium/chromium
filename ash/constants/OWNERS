@@ -2,3 +2,5 @@ per-file ash_features.cc=*
 per-file ash_features.h=*
 per-file ash_switches.cc=*
 per-file ash_switches.h=*
+per-file url_constants.cc=*
+per-file url_constants.h=*

@@ -33,13 +33,14 @@ class CONTENT_EXPORT DirectUDPSocketImpl
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback);
 
- protected:
-  // blink:mojom::DirectUDPSocket:
+  // blink::mojom::DirectUDPSocket:
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
   void Close() override;
 
  private:
+  void OnDisconnect();
+
   mojo::Remote<network::mojom::UDPSocket> remote_;
 };
 

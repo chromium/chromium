@@ -142,6 +142,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
   std::unique_ptr<FakeFidoRequestHandlerBase> fake_request_handler_;
   std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_config_;
+  FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };
 
 TEST_F(FidoBleAdapterManagerTest, AdapterNotPresent) {

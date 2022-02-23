@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bits.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +66,8 @@
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -440,7 +441,7 @@ TEST_P(AnimationAnimationTestCompositing, SetCurrentTimeAboveMaxTimeDelta) {
   double limit = 1e30;
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(limit),
                             ASSERT_NO_EXCEPTION);
-  ignore_result(animation->currentTime());
+  std::ignore = animation->currentTime();
   EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
               CompositorAnimations::kEffectHasUnsupportedTimingParameters);
 }
@@ -1571,12 +1572,12 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // No size change and animation does not require a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Restart animation on a width change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 200));
+      gfx::SizeF(200, 200));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 
   GetDocument().GetPendingAnimations().Update(nullptr, true);
@@ -1584,7 +1585,7 @@ TEST_P(AnimationAnimationTestCompositing,
 
   // Restart animation on a height change.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 300));
+      gfx::SizeF(200, 300));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
@@ -1615,19 +1616,19 @@ TEST_P(AnimationAnimationTestCompositing,
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
                           ASSERT_NO_EXCEPTION);
 
   // Transform is not height dependent and a change to the height does not force
   // an animation restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 300));
+      gfx::SizeF(100, 300));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Width change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(200, 300));
+      gfx::SizeF(200, 300));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
@@ -1658,19 +1659,19 @@ TEST_P(AnimationAnimationTestCompositing,
   GetDocument().GetPendingAnimations().Update(nullptr, true);
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(100, 200));
+      gfx::SizeF(100, 200));
   animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
                           ASSERT_NO_EXCEPTION);
 
   // Transform is not width dependent and a change to the width does not force
   // an animation restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(300, 200));
+      gfx::SizeF(300, 200));
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 
   // Height change forces a restart.
   keyframe_effect->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      FloatSize(300, 400));
+      gfx::SizeF(300, 400));
   EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
 }
 
@@ -2077,6 +2078,22 @@ TEST_P(AnimationAnimationTestNoCompositing,
   EXPECT_FALSE(animation->HasPendingActivity());
 }
 
+TEST_P(AnimationAnimationTestCompositing, InvalidExecutionContext) {
+  // Test for crbug.com/1254444. Guard against setting an invalid execution
+  // context.
+  EXPECT_TRUE(animation->GetExecutionContext());
+  GetDocument().GetExecutionContext()->NotifyContextDestroyed();
+  EXPECT_FALSE(animation->GetExecutionContext());
+  Animation* original_animation = animation;
+  ResetWithCompositedAnimation();
+  EXPECT_TRUE(animation);
+  EXPECT_NE(animation, original_animation);
+  EXPECT_FALSE(animation->GetExecutionContext());
+  // Cancel queues an event if there is a valid execution context.
+  animation->cancel();
+  EXPECT_FALSE(animation->HasPendingActivity());
+}
+
 class AnimationPendingAnimationsTest : public PaintTestConfigurations,
                                        public RenderingTest {
  public:
@@ -2282,7 +2299,7 @@ TEST_P(AnimationAnimationTestCompositing,
             CompositorAnimations::kTimelineSourceHasInvalidCompositingState);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222646
 #define MAYBE_ContentVisibleDisplayLockTest \
   DISABLED_ContentVisibleDisplayLockTest
@@ -2348,10 +2365,6 @@ TEST_P(AnimationAnimationTestCompositing, MAYBE_ContentVisibleDisplayLockTest) {
 }
 
 TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
-  // This test applies to CompositeAfterPaint only.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes anim {
@@ -2395,10 +2408,6 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
 }
 
 TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
-  // This test applies to CompositeAfterPaint only.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes anim {

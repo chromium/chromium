@@ -268,20 +268,6 @@ class MockSocketFactory : public net::ClientSocketFactory {
     ADD_FAILURE() << "Called CreateSSLClientSocket()";
     return nullptr;
   }
-  std::unique_ptr<net::ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<net::StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const net::HostPortPair& endpoint,
-      const net::ProxyServer& proxy_server,
-      net::HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      net::NextProto negotiated_protocol,
-      net::ProxyDelegate* proxy_delegate,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    ADD_FAILURE() << "Called CreateProxyClientSocket()";
-    return nullptr;
-  }
 
  private:
   std::vector<std::unique_ptr<MockUDPSocket>> udp_sockets_;

@@ -71,7 +71,7 @@ source_set("tts") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/web",
-    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//url",
   ]
@@ -88,7 +88,8 @@ source_set("test_support") {
   deps = [
     ":voice",
     "//base",
-    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/test/providers/voice_search",
     "//testing/gtest",
   ]
 }
@@ -111,6 +112,8 @@ source_set("unit_tests") {
     ":voice",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/web:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
     "//testing/gmock",

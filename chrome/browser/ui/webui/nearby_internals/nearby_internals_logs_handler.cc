@@ -53,7 +53,7 @@ void NearbyInternalsLogsHandler::OnJavascriptDisallowed() {
 void NearbyInternalsLogsHandler::HandleGetLogMessages(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   base::Value list(base::Value::Type::LIST);
   for (const auto& log : *LogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));

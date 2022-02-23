@@ -11,9 +11,15 @@
 #include "content/public/common/content_switches.h"
 #include "ui/compositor/compositor_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/test/test_switches.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_switches.h"  // nogncheck
+#endif
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
@@ -22,7 +28,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Many tests validate code that requires user32.dll to be loaded. Loading it,
   // however, cannot be done on the main thread loop because it is a blocking
   // call, and all the test code runs on the main thread loop. Instead, just
@@ -31,24 +37,42 @@ int main(int argc, char** argv) {
   base::win::PinUser32();
 
   base::win::EnableHighDPISupport();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // Adjust switches for interactive tests where the user is expected to
   // manually verify results.
   if (command_line->HasSwitch(switches::kTestLauncherInteractive)) {
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1288963): Consider porting interactive tests to Fuchsia.
+    LOG(FATAL) << "Interactive tests are not supported on Fuchsia.";
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Under Windows, dialogs (but not the browser window) created in the
     // spawned browser_test process are invisible for some unknown reason.
     // Pass in --disable-gpu to resolve this for now. See
     // http://crbug.com/687387.
     command_line->AppendSwitch(switches::kDisableGpu);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   }
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Running in headless mode frees the test suite from depending on
+  // a graphical compositor.
+  // TODO(crbug.com/1292100): Switch to Flatland ozone platform.
+  command_line->AppendSwitch(switches::kHeadless);
+  command_line->AppendSwitchNative(switches::kOzonePlatform,
+                                   switches::kHeadless);
+
+  // The default headless resolution (1x1) causes ui/gfx/canvas.cc to crash.
+  // TODO(crbug.com/1292122): Remove workaround once bug is fixed.
+  command_line->AppendSwitchNative(switches::kOzoneOverrideScreenSize, "10,10");
+#endif
 
   ChromeTestSuiteRunner runner;
   ChromeTestLauncherDelegate delegate(&runner);

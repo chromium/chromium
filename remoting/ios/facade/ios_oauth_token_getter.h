@@ -5,7 +5,6 @@
 #ifndef REMOTING_IOS_FACADE_IOS_OAUTH_TOKEN_GETTER_H_
 #define REMOTING_IOS_FACADE_IOS_OAUTH_TOKEN_GETTER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/base/oauth_token_getter.h"
 

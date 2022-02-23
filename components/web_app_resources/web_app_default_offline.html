@@ -1,0 +1,24 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>$i18n{title}</title>
+  <link rel="stylesheet" href="../security_interstitials/core/common/resources/interstitial_core.css">
+  <link rel="stylesheet" href="../security_interstitials/core/common/resources/interstitial_common.css">
+  <link rel="stylesheet" href="web_app_default_offline.css">
+  <style>
+    :root {
+      --customized-background-color: $i18n{customized_background_color};
+      --theme-color: $i18n{theme_color};
+      --dark-mode-background-color: $i18n{dark_mode_background_color};
+      --dark-mode-theme-color: $i18n{dark_mode_theme_color};
+    }
+  </style>
+</head>
+  <body style="font-family: $i18n{fontfamily};font-size:$i18n{fontsize}">
+    <img id="icon" src=$i18n{icon_url}>
+    <h1>$i18n{app_short_name}</h1>
+    <h2 id="default-web-app-msg">$i18n{web_app_default_offline_message}</h2>
+    <!--TODO(crbug.com/1285723: Add web app icon.)-->
+  </body>
+</html>

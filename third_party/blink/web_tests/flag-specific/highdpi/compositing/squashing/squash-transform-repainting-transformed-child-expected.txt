@@ -2,7 +2,7 @@ CASE 1, original layer tree
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -15,10 +15,10 @@ CASE 1, original layer tree
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [-143, -143],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [7, 7],
       "bounds": [218, 218],
-      "transform": 1
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -38,7 +38,7 @@ CASE 2, hovering over the outer div
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -51,13 +51,13 @@ CASE 2, hovering over the outer div
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [-143, -143],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [7, 7],
       "bounds": [218, 218],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 196, 196]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [
@@ -77,7 +77,7 @@ CASE 3, hovering over the inner div
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -90,13 +90,13 @@ CASE 3, hovering over the inner div
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [-143, -143],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [7, 7],
       "bounds": [218, 218],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [68, 68, 150, 150]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [

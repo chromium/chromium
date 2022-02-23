@@ -100,8 +100,15 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
 
 }  // namespace
 
-const Feature kPersistentHistogramsFeature{"PersistentHistograms",
-                                           FEATURE_ENABLED_BY_DEFAULT};
+const Feature kPersistentHistogramsFeature{
+    "PersistentHistograms",
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1295119): Enable once writable mmap() is supported.
+    FEATURE_DISABLED_BY_DEFAULT
+#else
+    FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_FUCHSIA)
+};
 
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
     PersistentMemoryAllocator* allocator)
@@ -565,9 +572,9 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   // it is needed, memory will be allocated from the persistent segment and
   // a reference to it stored at the passed address. Other threads can then
   // notice the valid reference and access the same data.
-  DelayedPersistentAllocation counts_data(memory_allocator_.get(),
-                                          &histogram_data_ptr->counts_ref,
-                                          kTypeIdCountsArray, counts_bytes, 0);
+  DelayedPersistentAllocation counts_data(
+      memory_allocator_.get(), &histogram_data_ptr->counts_ref,
+      kTypeIdCountsArray, counts_bytes, false);
 
   // A second delayed allocations is defined using the same reference storage
   // location as the first so the allocation of one will automatically be found
@@ -676,17 +683,17 @@ void GlobalHistogramAllocator::CreateWithLocalMemory(
       std::make_unique<LocalPersistentMemoryAllocator>(size, id, name))));
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
                                               size_t size,
                                               uint64_t id,
                                               StringPiece name,
                                               bool exclusive_write) {
-  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_SHARE_DELETE |
+  uint32_t flags = File::FLAG_OPEN_ALWAYS | File::FLAG_WIN_SHARE_DELETE |
                    File::FLAG_READ | File::FLAG_WRITE;
   if (exclusive_write)
-    flags |= File::FLAG_EXCLUSIVE_WRITE;
+    flags |= File::FLAG_WIN_EXCLUSIVE_WRITE;
   File file(file_path, flags);
   if (!file.IsValid())
     return false;
@@ -833,7 +840,7 @@ bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
 
   return success;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 void GlobalHistogramAllocator::CreateWithSharedMemoryRegion(
@@ -902,7 +909,7 @@ const FilePath& GlobalHistogramAllocator::GetPersistentLocation() const {
 }
 
 bool GlobalHistogramAllocator::WriteToPersistentLocation() {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // NACL doesn't support file operations, including ImportantFileWriter.
   NOTREACHED();
   return false;
@@ -929,7 +936,7 @@ bool GlobalHistogramAllocator::WriteToPersistentLocation() {
 void GlobalHistogramAllocator::DeletePersistentLocation() {
   memory_allocator()->SetMemoryState(PersistentMemoryAllocator::MEMORY_DELETED);
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   NOTREACHED();
 #else
   if (persistent_location_.empty())

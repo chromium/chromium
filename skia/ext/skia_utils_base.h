@@ -5,6 +5,7 @@
 #ifndef SKIA_EXT_SKIA_UTILS_BASE_H_
 #define SKIA_EXT_SKIA_UTILS_BASE_H_
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkFlattenable.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 
@@ -54,6 +55,9 @@ SK_API void WriteSkFontStyle(base::Pickle* pickle, SkFontStyle style);
 // code handling the SkBitmap wants to work with an N32 type, rather than
 // delaying this conversion until a later time.
 SK_API bool SkBitmapToN32OpaqueOrPremul(const SkBitmap& in, SkBitmap* out);
+
+// Returns hex string representation for the |color| in "#FFFFFF" format.
+SK_API std::string SkColorToHexString(SkColor color);
 
 }  // namespace skia
 

@@ -19,7 +19,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -263,17 +263,17 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   // There should be a lock_ if this is going to be used across multiple
   // threads, or we guarantee it is used by a single thread by using a thread
   // checker if no lock_ is set.
-  base::Lock* lock_ = nullptr;
+  raw_ptr<base::Lock> lock_ = nullptr;
   base::ThreadChecker lockless_thread_checker_;
 
   // Client that wants to listen for important events on the GpuControl.
-  gpu::GpuControlClient* gpu_control_client_ = nullptr;
+  raw_ptr<gpu::GpuControlClient> gpu_control_client_ = nullptr;
 
   // Unowned list of DeletionObservers.
   base::ObserverList<DeletionObserver>::Unchecked deletion_observers_;
 
   scoped_refptr<GpuChannelHost> channel_;
-  GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   bool disconnected_ = false;
   const int channel_id_;
   const int32_t route_id_;
@@ -301,7 +301,8 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   UpdateVSyncParametersCallback update_vsync_parameters_completion_callback_;
 
   // Cache pointer to EnsureWorkVisibleDuration custom UMA histogram.
-  base::HistogramBase* uma_histogram_ensure_work_visible_duration_ = nullptr;
+  raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =
+      nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
   base::WeakPtrFactory<CommandBufferProxyImpl> weak_ptr_factory_{this};

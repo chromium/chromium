@@ -176,7 +176,10 @@ class CONTENT_EXPORT DownloadManagerDelegate {
   // |filename| contains a basename with an extension, but without a path. This
   // should be the case on return as well. I.e. |filename| cannot specify a
   // relative path.
-  virtual void SanitizeSavePackageResourceName(base::FilePath* filename) {}
+  // |source_url| contains the URL from which the download originates and is
+  // needed to determine the file's danger level.
+  virtual void SanitizeSavePackageResourceName(base::FilePath* filename,
+                                               const GURL& source_url) {}
 
   // Sanitize a download parameters
   //

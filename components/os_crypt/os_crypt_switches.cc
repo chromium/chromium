@@ -8,11 +8,11 @@
 namespace os_crypt {
 namespace switches {
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 const char kUseMockKeychain[] = "use-mock-keychain";
 
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace switches
 }  // namespace os_crypt

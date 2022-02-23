@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_CONTROLLER_H_
 
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/components/sharesheet/constants.h"
 
 namespace sharesheet {
 

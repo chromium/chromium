@@ -28,9 +28,13 @@ class SegmentSelector : public ModelExecutionScheduler::Observer {
   using SegmentSelectionCallback =
       base::OnceCallback<void(const SegmentSelectionResult&)>;
 
-  // Client API. Returns the selected segment from the last session. If none,
-  // returns empty result.
+  // Client API. Returns the selected segment from the last session
+  // asynchronously. If none, returns empty result.
   virtual void GetSelectedSegment(SegmentSelectionCallback callback) = 0;
+
+  // Client API. Returns the cached selected segment from the last session
+  // synchronously.
+  virtual SegmentSelectionResult GetCachedSegmentResult() = 0;
 };
 
 }  // namespace segmentation_platform

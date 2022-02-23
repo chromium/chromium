@@ -38,6 +38,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -49,7 +50,6 @@
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom-shared.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/blame_context.h"
@@ -79,7 +79,6 @@ class TaskGraphRunner;
 
 namespace gfx {
 class ColorSpace;
-class RenderingPipeline;
 }
 
 namespace gpu {
@@ -151,6 +150,10 @@ namespace scheduler {
 class WebThreadScheduler;
 }
 
+namespace mojom {
+class ServiceWorkerContainerHostInterfaceBase;
+}
+
 class BLINK_PLATFORM_EXPORT Platform {
  public:
   // Initialize platform and wtf. If you need to initialize the entire Blink,
@@ -204,10 +207,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns a theme engine. Should be non-null.
   virtual WebThemeEngine* ThemeEngine();
-
-  // AppCache  ----------------------------------------------------------
-
-  virtual bool IsURLSupportedForAppCache(const WebURL& url) { return false; }
 
   // Audio --------------------------------------------------------------
 
@@ -302,8 +301,12 @@ class BLINK_PLATFORM_EXPORT Platform {
   WrapSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
-  // Returns the User-Agent string.
+  // Returns the default User-Agent string, it can either full User-Agent string
+  // or reduced User-Agent string based on policy setting.
   virtual WebString UserAgent() { return WebString(); }
+  // Returns the full User-Agent string.
+  virtual WebString FullUserAgent() { return WebString(); }
+  // Returns the reduced User-Agent string.
   virtual WebString ReducedUserAgent() { return WebString(); }
 
   // Returns the User Agent metadata. This will replace `UserAgent()` if we
@@ -423,7 +426,7 @@ class BLINK_PLATFORM_EXPORT Platform {
     return nullptr;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // This is called after the compositor thread is created, so the embedder
   // can initiate an IPC to change its thread priority (on Linux we can't
   // increase the nice value, so we need to ask the browser process). This
@@ -476,6 +479,10 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns an interface to the IO task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const {
     return nullptr;
+  }
+
+  virtual base::PlatformThreadId GetIOThreadId() const {
+    return base::kInvalidThreadId;
   }
 
   // Returns an interface to run nested message loop. Used for debugging.
@@ -578,7 +585,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // called by platform/graphics/ is fine.
   virtual bool IsGpuCompositingDisabled() const { return true; }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns if synchronous compositing is enabled. Only used for Android
   // webview.
   virtual bool IsSynchronousCompositingEnabledForAndroidWebView() {
@@ -632,14 +639,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // The TaskGraphRunner. This must be non-null if compositing any widgets.
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() { return nullptr; }
-
-  // The RenderingPipeline for the main thread. May be null.
-  virtual gfx::RenderingPipeline* GetMainThreadPipeline() { return nullptr; }
-
-  // The RenderingPipeline for the compositor thread. May be null.
-  virtual gfx::RenderingPipeline* GetCompositorThreadPipeline() {
-    return nullptr;
-  }
 
   // Media stream ----------------------------------------------------
   virtual scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(

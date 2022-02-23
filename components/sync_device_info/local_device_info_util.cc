@@ -75,15 +75,15 @@ std::string GetPersonalizableDeviceNameInternal();
 sync_pb::SyncEnums::DeviceType GetLocalDeviceType() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return sync_pb::SyncEnums_DeviceType_TYPE_CROS;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return sync_pb::SyncEnums_DeviceType_TYPE_LINUX;
-#elif defined(OS_ANDROID) || defined(OS_IOS)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
              ? sync_pb::SyncEnums_DeviceType_TYPE_TABLET
              : sync_pb::SyncEnums_DeviceType_TYPE_PHONE;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return sync_pb::SyncEnums_DeviceType_TYPE_MAC;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return sync_pb::SyncEnums_DeviceType_TYPE_WIN;
 #else
   return sync_pb::SyncEnums_DeviceType_TYPE_OTHER;

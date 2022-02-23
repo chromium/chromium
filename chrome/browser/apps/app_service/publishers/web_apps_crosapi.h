@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
@@ -29,6 +32,8 @@ class Location;
 namespace apps {
 
 class StandaloneBrowserPublisherTest;
+
+struct AppLaunchParams;
 
 // An app publisher for crosapi web apps. This is a proxy publisher that lives
 // in ash-chrome, and the apps will be published over crosapi. This proxy
@@ -65,6 +70,8 @@ class WebAppsCrosapi : public KeyedService,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -111,7 +118,7 @@ class WebAppsCrosapi : public KeyedService,
                      apps::mojom::PermissionPtr permission) override;
 
   // crosapi::mojom::AppPublisher overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
+  void OnApps(std::vector<AppPtr> deltas) override;
   void RegisterAppController(
       mojo::PendingRemote<crosapi::mojom::AppController> controller) override;
   void OnCapabilityAccesses(
@@ -129,10 +136,14 @@ class WebAppsCrosapi : public KeyedService,
       GetMenuModelCallback callback,
       crosapi::mojom::MenuItemsPtr crosapi_menu_items);
 
-  void OnLoadIcon(uint32_t icon_effects,
+  void OnLoadIcon(IconType icon_type,
                   int size_hint_in_dip,
+                  apps::IconEffects icon_effects,
                   apps::LoadIconCallback callback,
                   IconValuePtr icon_value);
+  void OnApplyIconEffects(IconType icon_type,
+                          apps::LoadIconCallback callback,
+                          IconValuePtr icon_value);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};

@@ -13,8 +13,8 @@
 #include "base/sequence_checker.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
-#include "media/base/decode_status.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/decoder_status.h"
 #include "media/base/decryptor.h"
 #include "media/base/video_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,7 +48,7 @@ class DecoderBufferTranscryptor {
 
   // Removes all pending tasks and invokes all pending VideoDecoder::DecodeCB
   // callbacks with the passed in |status|.
-  void Reset(DecodeStatus status);
+  void Reset(DecoderStatus status);
 
  private:
   // Transcrypt task holding single transcrypt request.

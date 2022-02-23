@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
@@ -96,6 +97,8 @@ class CC_EXPORT CompositorTimingHistory {
 
   void ClearHistory();
 
+  size_t CommitDurationSampleCountForTesting() const;
+
  protected:
   void DidBeginMainFrame(base::TimeTicks begin_main_frame_end_time);
 
@@ -156,7 +159,7 @@ class CC_EXPORT CompositorTimingHistory {
   std::unique_ptr<UMAReporter> uma_reporter_;
 
   // Owned by LayerTreeHost and is destroyed when LayerTreeHost is destroyed.
-  RenderingStatsInstrumentation* rendering_stats_instrumentation_;
+  raw_ptr<RenderingStatsInstrumentation> rendering_stats_instrumentation_;
 
   // Used only for reporting animation targeted UMA.
   bool previous_frame_had_custom_property_animations_ = false;

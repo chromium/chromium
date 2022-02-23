@@ -146,8 +146,7 @@ AppLauncherBrowserAgent::TabHelperDelegate::GetQueueForAppLaunchDialog(
   // closed immediately after the navigation fails, cancelling the app launcher
   // dialog before it gets a chance to be shown.  When this occurs, use the
   // OverlayRequestQueue for the tab's opener instead.
-  if (!web_state->GetNavigationManager()->GetItemCount() &&
-      web_state->HasOpener()) {
+  if (!web_state->GetNavigationItemCount() && web_state->HasOpener()) {
     int index = web_state_list_->GetIndexOfWebState(web_state);
     queue_web_state =
         web_state_list_->GetOpenerOfWebStateAt(index).opener ?: queue_web_state;

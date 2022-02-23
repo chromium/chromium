@@ -165,16 +165,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
 
   bool HasCollapsedBorders() const final;
 
-  bool HasColElements() const final {
-    NOTREACHED();
-    return false;
-  }
-
-  bool IsFixedTableLayout() const final {
-    NOT_DESTROYED();
-    return StyleRef().TableLayout() == ETableLayout::kFixed &&
-           !StyleRef().LogicalWidth().IsAuto();
-  }
   int16_t HBorderSpacing() const final {
     NOT_DESTROYED();
     return ShouldCollapseBorders() ? 0 : StyleRef().HorizontalBorderSpacing();
@@ -188,18 +178,20 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
       unsigned absolute_column_index) const final;
 
   // NG does not need this method. Sections are not cached.
-  void RecalcSectionsIfNeeded() const final {}
+  void RecalcSectionsIfNeeded() const final { NOT_DESTROYED(); }
 
   // Not used by NG. Legacy caches sections.
   void ForceSectionsRecalc() final { NOT_DESTROYED(); }
 
   // Used in paint for printing. Should not be needed by NG.
   LayoutUnit RowOffsetFromRepeatingFooter() const final {
+    NOT_DESTROYED();
     NOTIMPLEMENTED();  // OK, never used.
     return LayoutUnit();
   }
   // Used in paint for printing. Should not be needed by NG.
   LayoutUnit RowOffsetFromRepeatingHeader() const final {
+    NOT_DESTROYED();
     NOTIMPLEMENTED();  // OK, never used.
     return LayoutUnit();
   }
@@ -216,16 +208,19 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
 
   // Following methods are called during printing, not in TablesNG.
   LayoutNGTableSectionInterface* TopNonEmptySectionInterface() const final {
+    NOT_DESTROYED();
     NOTREACHED();
     return nullptr;
   }
 
   LayoutNGTableSectionInterface* BottomSectionInterface() const final {
+    NOT_DESTROYED();
     NOTREACHED();
     return nullptr;
   }
 
   LayoutNGTableSectionInterface* BottomNonEmptySectionInterface() const final {
+    NOT_DESTROYED();
     NOTREACHED();
     return nullptr;
   }

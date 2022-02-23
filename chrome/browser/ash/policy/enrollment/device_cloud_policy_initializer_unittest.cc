@@ -64,7 +64,7 @@ void DeviceCloudPolicyInitializerTest::SetupZeroTouchFlag() {
   const ZeroTouchParam& param = GetParam();
   if (param.enable_zero_touch_flag != nullptr) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        chromeos::switches::kEnterpriseEnableZeroTouchEnrollment,
+        ash::switches::kEnterpriseEnableZeroTouchEnrollment,
         param.enable_zero_touch_flag);
   }
 }
@@ -103,9 +103,9 @@ TEST_P(DeviceCloudPolicyInitializerTest,
 
   // Server-backed state: advertised enrollment.
   base::DictionaryValue state_dict;
-  state_dict.SetString(kDeviceStateMode,
-                       kDeviceStateRestoreModeReEnrollmentRequested);
-  state_dict.SetString(kDeviceStateManagementDomain, "example.com");
+  state_dict.SetStringKey(kDeviceStateMode,
+                          kDeviceStateRestoreModeReEnrollmentRequested);
+  state_dict.SetStringKey(kDeviceStateManagementDomain, "example.com");
   local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
   config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
@@ -134,8 +134,8 @@ TEST_P(DeviceCloudPolicyInitializerTest,
   EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
 
   // Server-backed state: forced enrollment.
-  state_dict.SetString(kDeviceStateMode,
-                       kDeviceStateRestoreModeReEnrollmentEnforced);
+  state_dict.SetStringKey(kDeviceStateMode,
+                          kDeviceStateRestoreModeReEnrollmentEnforced);
   local_state_.Set(prefs::kServerBackedDeviceState, state_dict);
   config = device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
   EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);

@@ -123,13 +123,13 @@ bool IsErrorPage(content::WebContents* web_contents) {
 
 // TODO(crbug/928323): REMOVE DIRTY HACK
 // To prevent access to blocked websites, we are temporarily disabling the
-// HTML-only download of error pages for supervised users only.
+// HTML-only download of error pages for child users only.
 // Note that MHTML is still available, so the save functionality is preserved.
 bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
     content::WebContents* web_contents) const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return !profile->IsSupervised() || !IsErrorPage(web_contents);
+  return !profile->IsChild() || !IsErrorPage(web_contents);
 }
 
 bool SavePackageFilePicker::ShouldSaveAsMHTML() const {

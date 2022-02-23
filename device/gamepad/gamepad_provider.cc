@@ -216,11 +216,11 @@ void GamepadProvider::Initialize(std::unique_ptr<GamepadDataFetcher> fetcher) {
 
   if (!polling_thread_)
     polling_thread_ = std::make_unique<base::Thread>("Gamepad polling thread");
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux, the data fetcher needs to watch file descriptors, so the message
   // loop needs to be a libevent loop.
   const base::MessagePumpType kMessageLoopType = base::MessagePumpType::IO;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // On Android, keeping a message loop of default type.
   const base::MessagePumpType kMessageLoopType = base::MessagePumpType::DEFAULT;
 #else

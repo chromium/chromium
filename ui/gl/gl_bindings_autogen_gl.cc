@@ -309,6 +309,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ANGLE_texture_external_update");
   ext.b_GL_ANGLE_translated_shader_source =
       gfx::HasExtension(extensions, "GL_ANGLE_translated_shader_source");
+  ext.b_GL_ANGLE_vulkan_image =
+      gfx::HasExtension(extensions, "GL_ANGLE_vulkan_image");
   ext.b_GL_ANGLE_webgl_compatibility =
       gfx::HasExtension(extensions, "GL_ANGLE_webgl_compatibility");
   ext.b_GL_APPLE_fence = gfx::HasExtension(extensions, "GL_APPLE_fence");
@@ -474,6 +476,11 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_OVR_multiview2 = gfx::HasExtension(extensions, "GL_OVR_multiview2");
   ext.b_GL_QCOM_tiled_rendering =
       gfx::HasExtension(extensions, "GL_QCOM_tiled_rendering");
+
+  if (ext.b_GL_ANGLE_vulkan_image) {
+    fn.glAcquireTexturesANGLEFn = reinterpret_cast<glAcquireTexturesANGLEProc>(
+        GetGLProcAddress("glAcquireTexturesANGLE"));
+  }
 
   if (ver->IsAtLeastGL(4u, 1u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glActiveShaderProgramFn = reinterpret_cast<glActiveShaderProgramProc>(
@@ -2518,6 +2525,11 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glReleaseShaderCompiler"));
   }
 
+  if (ext.b_GL_ANGLE_vulkan_image) {
+    fn.glReleaseTexturesANGLEFn = reinterpret_cast<glReleaseTexturesANGLEProc>(
+        GetGLProcAddress("glReleaseTexturesANGLE"));
+  }
+
   if (ver->IsAtLeastGL(3u, 0u) || ver->is_es) {
     fn.glRenderbufferStorageEXTFn =
         reinterpret_cast<glRenderbufferStorageEXTProc>(
@@ -3046,6 +3058,12 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 
 void DriverGL::ClearBindings() {
   memset(this, 0, sizeof(*this));
+}
+
+void GLApiBase::glAcquireTexturesANGLEFn(GLuint numTextures,
+                                         const GLuint* textures,
+                                         const GLenum* layouts) {
+  driver_->fn.glAcquireTexturesANGLEFn(numTextures, textures, layouts);
 }
 
 void GLApiBase::glActiveShaderProgramFn(GLuint pipeline, GLuint program) {
@@ -5522,6 +5540,12 @@ void GLApiBase::glReleaseShaderCompilerFn(void) {
   driver_->fn.glReleaseShaderCompilerFn();
 }
 
+void GLApiBase::glReleaseTexturesANGLEFn(GLuint numTextures,
+                                         const GLuint* textures,
+                                         GLenum* layouts) {
+  driver_->fn.glReleaseTexturesANGLEFn(numTextures, textures, layouts);
+}
+
 void GLApiBase::glRenderbufferStorageEXTFn(GLenum target,
                                            GLenum internalformat,
                                            GLsizei width,
@@ -5967,18 +5991,20 @@ void GLApiBase::glTexStorageMem2DEXTFn(GLenum target,
                                      height, memory, offset);
 }
 
-void GLApiBase::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                              GLsizei levels,
-                                              GLenum internalFormat,
-                                              GLsizei width,
-                                              GLsizei height,
-                                              GLuint memory,
-                                              GLuint64 offset,
-                                              GLbitfield createFlags,
-                                              GLbitfield usageFlags) {
-  driver_->fn.glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat,
-                                            width, height, memory, offset,
-                                            createFlags, usageFlags);
+void GLApiBase::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
+  driver_->fn.glTexStorageMemFlags2DANGLEFn(
+      target, levels, internalFormat, width, height, memory, offset,
+      createFlags, usageFlags, imageCreateInfoPNext);
 }
 
 void GLApiBase::glTexSubImage2DFn(GLenum target,
@@ -6406,6 +6432,13 @@ void GLApiBase::glWindowRectanglesEXTFn(GLenum mode,
                                         GLsizei n,
                                         const GLint* box) {
   driver_->fn.glWindowRectanglesEXTFn(mode, n, box);
+}
+
+void TraceGLApi::glAcquireTexturesANGLEFn(GLuint numTextures,
+                                          const GLuint* textures,
+                                          const GLenum* layouts) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glAcquireTexturesANGLE");
+  gl_api_->glAcquireTexturesANGLEFn(numTextures, textures, layouts);
 }
 
 void TraceGLApi::glActiveShaderProgramFn(GLuint pipeline, GLuint program) {
@@ -9343,6 +9376,13 @@ void TraceGLApi::glReleaseShaderCompilerFn(void) {
   gl_api_->glReleaseShaderCompilerFn();
 }
 
+void TraceGLApi::glReleaseTexturesANGLEFn(GLuint numTextures,
+                                          const GLuint* textures,
+                                          GLenum* layouts) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glReleaseTexturesANGLE");
+  gl_api_->glReleaseTexturesANGLEFn(numTextures, textures, layouts);
+}
+
 void TraceGLApi::glRenderbufferStorageEXTFn(GLenum target,
                                             GLenum internalformat,
                                             GLsizei width,
@@ -9860,20 +9900,22 @@ void TraceGLApi::glTexStorageMem2DEXTFn(GLenum target,
                                   memory, offset);
 }
 
-void TraceGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                               GLsizei levels,
-                                               GLenum internalFormat,
-                                               GLsizei width,
-                                               GLsizei height,
-                                               GLuint memory,
-                                               GLuint64 offset,
-                                               GLbitfield createFlags,
-                                               GLbitfield usageFlags) {
+void TraceGLApi::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceGLAPI::glTexStorageMemFlags2DANGLE");
   gl_api_->glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat, width,
                                          height, memory, offset, createFlags,
-                                         usageFlags);
+                                         usageFlags, imageCreateInfoPNext);
 }
 
 void TraceGLApi::glTexSubImage2DFn(GLenum target,
@@ -10373,6 +10415,16 @@ void TraceGLApi::glWindowRectanglesEXTFn(GLenum mode,
                                          const GLint* box) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glWindowRectanglesEXT");
   gl_api_->glWindowRectanglesEXTFn(mode, n, box);
+}
+
+void LogGLApi::glAcquireTexturesANGLEFn(GLuint numTextures,
+                                        const GLuint* textures,
+                                        const GLenum* layouts) {
+  GL_SERVICE_LOG("glAcquireTexturesANGLE"
+                 << "(" << numTextures << ", "
+                 << static_cast<const void*>(textures) << ", "
+                 << static_cast<const void*>(layouts) << ")");
+  gl_api_->glAcquireTexturesANGLEFn(numTextures, textures, layouts);
 }
 
 void LogGLApi::glActiveShaderProgramFn(GLuint pipeline, GLuint program) {
@@ -14204,6 +14256,16 @@ void LogGLApi::glReleaseShaderCompilerFn(void) {
   gl_api_->glReleaseShaderCompilerFn();
 }
 
+void LogGLApi::glReleaseTexturesANGLEFn(GLuint numTextures,
+                                        const GLuint* textures,
+                                        GLenum* layouts) {
+  GL_SERVICE_LOG("glReleaseTexturesANGLE"
+                 << "(" << numTextures << ", "
+                 << static_cast<const void*>(textures) << ", "
+                 << static_cast<const void*>(layouts) << ")");
+  gl_api_->glReleaseTexturesANGLEFn(numTextures, textures, layouts);
+}
+
 void LogGLApi::glRenderbufferStorageEXTFn(GLenum target,
                                           GLenum internalformat,
                                           GLsizei width,
@@ -14903,15 +14965,17 @@ void LogGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
                                              GLuint memory,
                                              GLuint64 offset,
                                              GLbitfield createFlags,
-                                             GLbitfield usageFlags) {
+                                             GLbitfield usageFlags,
+                                             const void* imageCreateInfoPNext) {
   GL_SERVICE_LOG("glTexStorageMemFlags2DANGLE"
                  << "(" << GLEnums::GetStringEnum(target) << ", " << levels
                  << ", " << GLEnums::GetStringEnum(internalFormat) << ", "
                  << width << ", " << height << ", " << memory << ", " << offset
-                 << ", " << createFlags << ", " << usageFlags << ")");
+                 << ", " << createFlags << ", " << usageFlags << ", "
+                 << static_cast<const void*>(imageCreateInfoPNext) << ")");
   gl_api_->glTexStorageMemFlags2DANGLEFn(target, levels, internalFormat, width,
                                          height, memory, offset, createFlags,
-                                         usageFlags);
+                                         usageFlags, imageCreateInfoPNext);
 }
 
 void LogGLApi::glTexSubImage2DFn(GLenum target,
@@ -15548,6 +15612,12 @@ void NoContextHelper(const char* method_name) {
              << " without current GL context";
 }
 }  // namespace
+
+void NoContextGLApi::glAcquireTexturesANGLEFn(GLuint numTextures,
+                                              const GLuint* textures,
+                                              const GLenum* layouts) {
+  NoContextHelper("glAcquireTexturesANGLE");
+}
 
 void NoContextGLApi::glActiveShaderProgramFn(GLuint pipeline, GLuint program) {
   NoContextHelper("glActiveShaderProgram");
@@ -17989,6 +18059,12 @@ void NoContextGLApi::glReleaseShaderCompilerFn(void) {
   NoContextHelper("glReleaseShaderCompiler");
 }
 
+void NoContextGLApi::glReleaseTexturesANGLEFn(GLuint numTextures,
+                                              const GLuint* textures,
+                                              GLenum* layouts) {
+  NoContextHelper("glReleaseTexturesANGLE");
+}
+
 void NoContextGLApi::glRenderbufferStorageEXTFn(GLenum target,
                                                 GLenum internalformat,
                                                 GLsizei width,
@@ -18420,15 +18496,17 @@ void NoContextGLApi::glTexStorageMem2DEXTFn(GLenum target,
   NoContextHelper("glTexStorageMem2DEXT");
 }
 
-void NoContextGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                                   GLsizei levels,
-                                                   GLenum internalFormat,
-                                                   GLsizei width,
-                                                   GLsizei height,
-                                                   GLuint memory,
-                                                   GLuint64 offset,
-                                                   GLbitfield createFlags,
-                                                   GLbitfield usageFlags) {
+void NoContextGLApi::glTexStorageMemFlags2DANGLEFn(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   NoContextHelper("glTexStorageMemFlags2DANGLE");
 }
 

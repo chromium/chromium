@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/browser/install_result_code.h"
 
 namespace web_app {
 
@@ -24,7 +24,7 @@ class SyncInstallDelegate {
 
   using RepeatingInstallCallback =
       base::RepeatingCallback<void(const AppId& app_id,
-                                   InstallResultCode code)>;
+                                   webapps::InstallResultCode code)>;
   using RepeatingUninstallCallback =
       base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
 

@@ -21,7 +21,7 @@ const char kDisableSpokenFeedbackURLFragment[] = "close";
 const char kFocusURLFragment[] = "focus";
 const char kFullscreenURLFragment[] = "fullscreen";
 const char kWidgetName[] = "ChromeVoxPanel";
-const int kPanelHeight = 35;
+const int kPanelHeight = 44;
 
 }  // namespace
 

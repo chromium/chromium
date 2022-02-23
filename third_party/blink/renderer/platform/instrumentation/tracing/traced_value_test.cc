@@ -81,7 +81,7 @@ TEST(TracedValueTest, Hierarchy) {
   base::Value* a1_value = parsed->FindListKey("a1");
   ASSERT_NE(nullptr, a1_value);
   ASSERT_TRUE(a1_value->is_list());
-  base::Value::ListView a1 = a1_value->GetList();
+  base::Value::ListView a1 = a1_value->GetListDeprecated();
   absl::optional<int> a1i0 = a1[0].GetIfInt();
   ASSERT_TRUE(a1i0.has_value());
   EXPECT_EQ(1, *a1i0);
@@ -157,7 +157,7 @@ TEST(TracedValueTest, NonCopiedNames) {
   EXPECT_EQ("string", *string_value);
   base::Value* a1_value = parsed->FindListKey(array_str);
   ASSERT_TRUE(a1_value->is_list());
-  base::Value::ListView a1 = a1_value->GetList();
+  base::Value::ListView a1 = a1_value->GetListDeprecated();
   absl::optional<int> el0 = a1[0].GetIfInt();
   absl::optional<int> el1 = a1[1].GetIfInt();
   ASSERT_TRUE(el0.has_value());

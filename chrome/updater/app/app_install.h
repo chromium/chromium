@@ -15,7 +15,6 @@
 #include "chrome/updater/splash_screen.h"
 
 namespace base {
-class TaskRunner;
 class Version;
 }
 
@@ -30,8 +29,10 @@ class UpdateService;
 class AppInstallController
     : public base::RefCountedThreadSafe<AppInstallController> {
  public:
-  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>()>;
+  using Maker = base::RepeatingCallback<scoped_refptr<AppInstallController>(
+      scoped_refptr<UpdateService> update_service)>;
   virtual void InstallApp(const std::string& app_id,
+                          const std::string& app_name,
                           base::OnceCallback<void(int)> callback) = 0;
 
  protected:
@@ -53,11 +54,11 @@ class AppInstall : public App {
 
   // Overrides for App.
   void Initialize() override;
+  void Uninitialize() override;
   void FirstTaskRun() override;
 
   // Called after the version of the active updater has been retrieved.
-  void GetVersionDone(scoped_refptr<UpdateService>,
-                      const base::Version& version);
+  void GetVersionDone(const base::Version& version);
 
   void InstallCandidateDone(bool valid_version, int result);
 
@@ -74,6 +75,11 @@ class AppInstall : public App {
   // Bound to the main sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // The `app_id_` is parsed from the tag, if the the tag is present, or from
+  // the command line argument --app-id.
+  std::string app_id_;
+  std::string app_name_;
+
   // Creates instances of |SplashScreen|.
   SplashScreen::Maker splash_screen_maker_;
 
@@ -86,7 +92,7 @@ class AppInstall : public App {
 
   scoped_refptr<AppInstallController> app_install_controller_;
 
-  scoped_refptr<base::TaskRunner> make_active_task_runner_;
+  scoped_refptr<UpdateService> update_service_;
 };
 
 scoped_refptr<App> MakeAppInstall();

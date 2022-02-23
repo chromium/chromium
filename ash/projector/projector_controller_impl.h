@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,8 +25,10 @@ class ProjectorUiController;
 class ProjectorMetadataController;
 
 // A controller to handle projector functionalities.
-class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
-                                           public ProjectorSessionObserver {
+class ASH_EXPORT ProjectorControllerImpl
+    : public ProjectorController,
+      public ProjectorSessionObserver,
+      public CrasAudioHandler::AudioObserver {
  public:
   // Callback that should be executed when the screencast container directory is
   // created. `screencast_file_path_no_extension` is the path of screencast file
@@ -45,11 +48,13 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   // ProjectorController:
   void StartProjectorSession(const std::string& storage_dir) override;
   void SetClient(ProjectorClient* client) override;
-  void OnSpeechRecognitionAvailable(bool available) override;
+  void OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability availability) override;
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
+  void OnSpeechRecognitionStopped() override;
   bool IsEligible() const override;
-  bool CanStartNewSession() const override;
+  NewScreencastPrecondition GetNewScreencastPrecondition() const override;
   void OnToolSet(const AnnotatorTool& tool) override;
   void OnUndoRedoAvailabilityChanged(bool undo_available,
                                      bool redo_available) override;
@@ -63,19 +68,11 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   void CreateScreencastContainerFolder(
       CreateScreencastContainerFolderCallback callback);
 
-  // Sets Caption bubble state to become opened/closed.
-  void SetCaptionBubbleState(bool is_on);
-
-  // Callback on when the caption bubble model state changes.
-  void OnCaptionBubbleModelStateChanged(bool is_on);
-
-  // Mark a key idea.
-  void MarkKeyIdea();
-
-  // Called by Capture Mode to notify with the state of a projector-initiated
-  // video recording.
-  void OnRecordingStarted();
-  void OnRecordingEnded();
+  // Called by Capture Mode to notify with the state of a video recording.
+  // `is_in_projector_mode` indicates whether it's a projector-initiated video
+  // recording.
+  void OnRecordingStarted(bool is_in_projector_mode);
+  void OnRecordingEnded(bool is_in_projector_mode);
 
   // Called by Capture Mode to notify us that a Projector-initiated recording
   // session was aborted (i.e. recording was never started) due to e.g. user
@@ -86,16 +83,12 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   void OnLaserPointerPressed();
   // Invoked when marker button is pressed.
   void OnMarkerPressed();
-  // Invoked when clear all markers button is pressed.
-  void OnClearAllMarkersPressed();
-  // Invoked when the undo button is pressed.
-  void OnUndoPressed();
-  // Invoked when selfie cam button is pressed.
-  void OnSelfieCamPressed(bool enabled);
-  // Invoked when magnifier button is pressed.
-  void OnMagnifierButtonPressed(bool enabled);
-  // Invoked when the marker color has been requested to change.
-  void OnChangeMarkerColorPressed(SkColor new_color);
+  // Reset and disable the laser pointer and the annotator tools.
+  void ResetTools();
+  // Returns true if laser pointer is active.
+  bool IsLaserPointerEnabled();
+  // Returns true if annotator is active.
+  bool IsAnnotatorEnabled();
 
   // Notifies the ProjectorClient if the Projector SWA can trigger a
   // new Projector session. The preconditions are calculated in
@@ -115,13 +108,18 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
+  // CrasAudioHandler::AudioObserver:
+  void OnAudioNodesChanged() override;
+
  private:
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
 
+  bool IsInputDeviceAvailable() const;
+
   // Starts or stops the speech recognition session.
   void StartSpeechRecognition();
-  void StopSpeechRecognition();
+  void MaybeStopSpeechRecognition();
 
   // Triggered when finish creating the screencast container folder. This method
   // caches the the container folder path in `ProjectorSession` and triggers the
@@ -145,11 +143,9 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
 
-  // Whether the caption bubble ui is being shown or not.
-  bool is_caption_on_ = false;
-
   // Whether SODA is available on the device.
-  bool is_speech_recognition_available_ = false;
+  SpeechRecognitionAvailability speech_recognition_availability_ =
+      SpeechRecognitionAvailability::kOnDeviceSpeechRecognitionNotSupported;
 
   // Whether speech recognition is taking place or not.
   bool is_speech_recognition_on_ = false;

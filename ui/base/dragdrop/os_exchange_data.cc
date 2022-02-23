@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/pickle.h"
+#include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
@@ -32,6 +33,14 @@ void OSExchangeData::MarkOriginatedFromRenderer() {
 
 bool OSExchangeData::DidOriginateFromRenderer() const {
   return provider_->DidOriginateFromRenderer();
+}
+
+void OSExchangeData::MarkAsFromPrivileged() {
+  provider_->MarkAsFromPrivileged();
+}
+
+bool OSExchangeData::IsFromPrivileged() const {
+  return provider_->IsFromPrivileged();
 }
 
 void OSExchangeData::SetString(const std::u16string& data) {
@@ -131,7 +140,7 @@ bool OSExchangeData::GetFileContents(base::FilePath* filename,
   return provider_->GetFileContents(filename, file_contents);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }

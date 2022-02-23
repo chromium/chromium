@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
@@ -235,9 +236,9 @@ void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
 }
 
 ScriptPromise MIDIPort::Accept(ScriptState* script_state) {
-  return ScriptPromise::Cast(script_state,
-                             ToV8(this, script_state->GetContext()->Global(),
-                                  script_state->GetIsolate()));
+  return ScriptPromise::Cast(
+      script_state,
+      ToV8Traits<MIDIPort>::ToV8(script_state, this).ToLocalChecked());
 }
 
 void MIDIPort::SetStates(PortState state, ConnectionState connection) {

@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_RENDERER_WRAPPER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline_status.h"
@@ -64,12 +65,13 @@ class MediaFoundationRendererWrapper final
 
  private:
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
-                             base::win::ScopedHandle handle);
+                             base::win::ScopedHandle handle,
+                             const std::string& error);
   void OnDCOMPSurfaceHandleRegistered(
       GetDCOMPSurfaceCallback callback,
       const absl::optional<base::UnguessableToken>& token);
 
-  mojom::FrameInterfaceFactory* frame_interfaces_;
+  raw_ptr<mojom::FrameInterfaceFactory> frame_interfaces_;
   std::unique_ptr<MediaFoundationRenderer> renderer_;
   mojo::Receiver<MediaFoundationRendererExtension> renderer_extension_receiver_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;

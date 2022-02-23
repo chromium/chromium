@@ -148,17 +148,21 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
+    ScopedJavaLocalRef<jclass> clazz,
     base::span<const ScopedJavaLocalRef<jobject>> v) {
-  ScopedJavaLocalRef<jclass> object_array_clazz =
-      GetClass(env, "java/lang/Object");
-  jobjectArray joa =
-      env->NewObjectArray(v.size(), object_array_clazz.obj(), nullptr);
+  jobjectArray joa = env->NewObjectArray(v.size(), clazz.obj(), nullptr);
   CheckException(env);
 
   for (size_t i = 0; i < v.size(); ++i) {
     env->SetObjectArrayElement(joa, i, v[i].obj());
   }
   return ScopedJavaLocalRef<jobjectArray>(env, joa);
+}
+
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaLocalRef<jobject>> v) {
+  return ToJavaArrayOfObjects(env, GetClass(env, "java/lang/Object"), v);
 }
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(

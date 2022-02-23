@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -22,12 +23,10 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
 }
 
 namespace gpu {
@@ -131,8 +130,7 @@ class GPU_EXPORT Scheduler {
              std::tie(other.priority, other.order_num);
     }
 
-    std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue()
-        const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
     SequenceId sequence_id;
     SchedulingPriority priority = SchedulingPriority::kLow;
@@ -323,7 +321,7 @@ class GPU_EXPORT Scheduler {
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_;
 
-    Scheduler* const scheduler_;
+    const raw_ptr<Scheduler> scheduler_;
     const SequenceId sequence_id_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -368,7 +366,7 @@ class GPU_EXPORT Scheduler {
 
   void RunNextTask();
 
-  SyncPointManager* const sync_point_manager_;
+  const raw_ptr<SyncPointManager> sync_point_manager_;
   mutable base::Lock lock_;
   base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
       GUARDED_BY(lock_);

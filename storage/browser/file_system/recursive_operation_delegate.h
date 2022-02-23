@@ -9,7 +9,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) RecursiveOperationDelegate
   // Called when all recursive operation is done (or an error occurs).
   void Done(base::File::Error error);
 
-  FileSystemContext* file_system_context_;
+  raw_ptr<FileSystemContext> file_system_context_;
   StatusCallback callback_;
   base::stack<FileSystemURL> pending_directories_;
   base::stack<base::queue<FileSystemURL>> pending_directory_stack_;

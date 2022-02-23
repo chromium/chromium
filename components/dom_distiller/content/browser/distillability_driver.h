@@ -65,7 +65,6 @@ class DistillabilityDriver
   // metrics for the ReaderMode experiment.
   UMAHelper::DistillabilityDriverTimer timer_;
 
-  content::WebContents* web_contents_;
   base::RepeatingCallback<bool(content::WebContents*)> is_secure_check_;
 
   base::WeakPtrFactory<DistillabilityDriver> weak_factory_{this};

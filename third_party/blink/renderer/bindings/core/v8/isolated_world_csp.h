@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ISOLATED_WORLD_CSP_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ISOLATED_WORLD_CSP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

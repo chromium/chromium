@@ -18,6 +18,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -99,7 +100,7 @@ struct SimpleEntryCreationResults {
   explicit SimpleEntryCreationResults(SimpleEntryStat entry_stat);
   ~SimpleEntryCreationResults();
 
-  SimpleSynchronousEntry* sync_entry;
+  raw_ptr<SimpleSynchronousEntry> sync_entry;
 
   // Expectation is that [0] will always be filled in, but [1] might not be.
   SimpleStreamPrefetchData stream_prefetch_data[2];
@@ -468,7 +469,7 @@ class SimpleSynchronousEntry {
       false,
   };
 
-  SimpleFileTracker* file_tracker_;
+  raw_ptr<SimpleFileTracker> file_tracker_;
 
   // The number of trailing bytes in file 0 that we believe should be
   // prefetched in order to read the EOF record and stream 0.  This is

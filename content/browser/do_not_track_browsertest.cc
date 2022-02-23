@@ -4,6 +4,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
@@ -19,7 +20,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
 
@@ -47,7 +48,7 @@ class MockContentBrowserClient final : public ContentBrowserClient {
 class DoNotTrackTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/864403): It seems that we call unsupported Android APIs on
     // KitKat when we set a ContentBrowserClient. Don't call such APIs and make
     // this test available on KitKat.
@@ -93,7 +94,7 @@ class DoNotTrackTest : public ContentBrowserTest {
   }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   MockContentBrowserClient client_;
 };
 
@@ -183,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, Worker) {
 // Checks that the DNT header is sent in a request for shared worker script.
 // Disabled on Android since a shared worker is not available on Android:
 // crbug.com/869745.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -406,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(DoNotTrackTest, FetchFromWorker) {
 //
 // Disabled on Android since a shared worker is not available on Android:
 // crbug.com/869745.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FetchFromSharedWorker DISABLED_FetchFromSharedWorker
 #else
 #define MAYBE_FetchFromSharedWorker FetchFromSharedWorker

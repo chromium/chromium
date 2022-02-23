@@ -78,6 +78,15 @@ class ASH_EXPORT VideoRecordingWatcher
   // Clean up prior to deletion.
   void ShutDown();
 
+  // Returns the current parent window for
+  // `CaptureModeCameraController::camera_preview_widget_` when recording is in
+  // progress.
+  aura::Window* GetCameraPreviewParentWindow() const;
+
+  // Returns the confine bounds for the camera preview when recording is in
+  // progress.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
@@ -275,9 +284,6 @@ class ASH_EXPORT VideoRecordingWatcher
   // If |window_being_recorded_| is not a root window, we must make a request to
   // make it capturable by the |FrameSinkVideoCapturer|.
   aura::ScopedWindowCaptureRequest non_root_window_capture_request_;
-
-  // Register for DisplayObserver callbacks.
-  display::ScopedDisplayObserver display_observer_{this};
 
   // True if the shutting down process has been triggered.
   bool is_shutting_down_ = false;

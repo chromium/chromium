@@ -194,7 +194,7 @@ class V4L2CaptureDelegateTest : public ::testing::Test {
 }  // anonymous namespace
 
 // Fails on Linux, see crbug/732355
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CreateAndDestroyAndVerifyControls \
   DISABLED_CreateAndDestroyAndVerifyControls
 #else

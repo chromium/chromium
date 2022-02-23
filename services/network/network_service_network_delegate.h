@@ -6,12 +6,13 @@
 #define SERVICES_NETWORK_NETWORK_SERVICE_NETWORK_DELEGATE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                       const net::CanonicalCookie& cookie,
                       net::CookieOptions* options,
                       bool allowed_from_caller) override;
-  bool OnForcePrivacyMode(
+  net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   bool enable_referrers_;
   bool validate_referrer_policy_on_initial_request_;
   mojo::Remote<mojom::ProxyErrorClient> proxy_error_client_;
-  NetworkContext* network_context_;
+  raw_ptr<NetworkContext> network_context_;
 
   mutable base::WeakPtrFactory<NetworkServiceNetworkDelegate> weak_ptr_factory_{
       this};

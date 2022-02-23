@@ -222,7 +222,7 @@ InterpolationValue CSSShadowListInterpolationType::PerformAdditiveComposition(
     std::unique_ptr<InterpolableList> interpolable_list,
     const InterpolationValue& underlying) const {
   // Per the spec, addition of shadow lists is defined as concatenation.
-  // https://drafts.csswg.org/web-animations/#combining-shadow-lists
+  // https://w3.org/TR/web-animations-1/#combining-shadow-lists
   const InterpolableList& underlying_list =
       To<InterpolableList>(*underlying.interpolable_value);
   auto composited_list = std::make_unique<InterpolableList>(
@@ -245,7 +245,7 @@ CSSShadowListInterpolationType::PerformAccumulativeComposition(
     const InterpolationValue& underlying) const {
   // Per the spec, accumulation of shadow lists operates on pairwise addition of
   // the underlying components.
-  // https://drafts.csswg.org/web-animations/#combining-shadow-lists
+  // https://w3.org/TR/web-animations-1/#combining-shadow-lists
   const InterpolableList& underlying_list =
       To<InterpolableList>(*underlying.interpolable_value);
   wtf_size_t length = interpolable_list->length();

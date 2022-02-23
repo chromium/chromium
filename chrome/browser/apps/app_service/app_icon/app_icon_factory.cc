@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
@@ -31,6 +30,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -40,7 +40,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #endif
 
@@ -161,12 +161,26 @@ SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size) {
   base::AssertLongCPUWorkAllowed();
   SkBitmap decoded;
   bool success = gfx::PNGCodec::Decode(data, size, &decoded);
-  DCHECK(success);
+  LOG_IF(ERROR, !success) << "Failed to decode icon data as PNG";
   return decoded;
 }
 
 gfx::ImageSkia SkBitmapToImageSkia(SkBitmap bitmap, float icon_scale) {
   return gfx::ImageSkia::CreateFromBitmap(bitmap, icon_scale);
+}
+
+// Calls |callback| with the compressed icon |data|.
+void CompleteIconWithCompressed(apps::LoadIconCallback callback,
+                                std::vector<uint8_t> data) {
+  if (data.empty()) {
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
+  }
+  auto iv = std::make_unique<apps::IconValue>();
+  iv->icon_type = apps::IconType::kCompressed;
+  iv->compressed = std::move(data);
+  iv->is_placeholder_icon = false;
+  std::move(callback).Run(std::move(iv));
 }
 
 }  // namespace
@@ -420,6 +434,16 @@ void ApplyIconEffects(IconEffects icon_effects,
       base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,
                                           std::move(callback));
   icon_loader->ApplyIconEffects(icon_effects, std::move(iv));
+}
+
+void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
+                                             LoadIconCallback callback) {
+  iv->uncompressed.MakeThreadSafe();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&apps::EncodeImageToPngBytes, iv->uncompressed,
+                     /*rep_icon_scale=*/1.0f),
+      base::BindOnce(&CompleteIconWithCompressed, std::move(callback)));
 }
 
 void LoadIconFromExtension(IconType icon_type,

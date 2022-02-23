@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace dbus {
 class Bus;
@@ -24,6 +25,8 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
    public:
     ~Observer() override = default;
     virtual void OnThunderboltDeviceConnected(bool is_thunderbolt_only) = 0;
+    virtual void OnCableWarning(
+        typecd::CableWarningType cable_warning_type) = 0;
   };
 
   void AddObserver(Observer* observer);
@@ -50,6 +53,7 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
   virtual ~TypecdClient();
 
   void NotifyOnThunderboltDeviceConnected(bool is_thunderbolt_only);
+  void NotifyOnCableWarning(typecd::CableWarningType cable_warning_type);
 
  private:
   base::ObserverList<Observer> observer_list_;

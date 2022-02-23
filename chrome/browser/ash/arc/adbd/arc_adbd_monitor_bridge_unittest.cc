@@ -6,16 +6,16 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_adbd_monitor_instance.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/test_browser_context.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_adbd_monitor_instance.h"
-#include "components/arc/test/fake_arc_session.h"
-#include "components/arc/test/test_browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -153,7 +153,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
   // Find the STOP operation for the job.
   auto it = std::find(ops.begin(), ops.end(),
                       std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 2);
+  EXPECT_EQ(ops.size(), 2u);
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
@@ -179,7 +179,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
   // Find the STOP operation for the job.
   auto it = std::find(ops.begin(), ops.end(),
                       std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 1);
+  EXPECT_EQ(ops.size(), 1u);
   // The next operation must be START for the job.
   EXPECT_EQ(it->first, kArcVmAdbdJobName);
 }

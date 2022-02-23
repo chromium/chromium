@@ -69,7 +69,11 @@ class CrostiniBrowserTestChromeBrowserMainExtraParts
   // Ideally we'd call SetConnectionType in PostCreateThreads, but currently we
   // have to wait for PreProfileInit to complete, since that creatse the
   // ash::Shell that AshService needs in order to start.
-  void PostProfileInit() override {
+  void PostProfileInit(Profile* profile, bool is_initial_profile) override {
+    // The setup below is intended to run for only the initial profile.
+    if (!is_initial_profile)
+      return;
+
     connection_change_simulator_.SetConnectionType(
         network::mojom::ConnectionType::CONNECTION_WIFI);
   }
@@ -95,11 +99,11 @@ CrostiniBrowserTestBase::CrostiniBrowserTestBase(bool register_termina)
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
   fake_crostini_features_.SetAll(true);
 
-  dmgr_ = new chromeos::disks::MockDiskMountManager;
+  dmgr_ = new ash::disks::MockDiskMountManager;
   ON_CALL(*dmgr_, MountPath)
       .WillByDefault(Invoke(this, &CrostiniBrowserTestBase::DiskMountImpl));
   // Test object will be deleted by DiskMountManager::Shutdown
-  chromeos::disks::DiskMountManager::InitializeForTesting(dmgr_);
+  ash::disks::DiskMountManager::InitializeForTesting(dmgr_);
 }
 void CrostiniBrowserTestBase::DiskMountImpl(
     const std::string& source_path,
@@ -107,13 +111,13 @@ void CrostiniBrowserTestBase::DiskMountImpl(
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
     chromeos::MountType type,
-    chromeos::MountAccessMode access_mode) {
-  chromeos::disks::DiskMountManager::MountPointInfo info(
-      source_path, "/path/to/mount", type,
-      chromeos::disks::MOUNT_CONDITION_NONE);
-  dmgr_->NotifyMountEvent(
-      chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
-      chromeos::MountError::MOUNT_ERROR_NONE, info);
+    chromeos::MountAccessMode access_mode,
+    ash::disks::DiskMountManager::MountPathCallback callback) {
+  ash::disks::DiskMountManager::MountPointInfo info(
+      source_path, "/path/to/mount", type, ash::disks::MOUNT_CONDITION_NONE);
+  std::move(callback).Run(chromeos::MountError::MOUNT_ERROR_NONE, info);
+  dmgr_->NotifyMountEvent(ash::disks::DiskMountManager::MountEvent::MOUNTING,
+                          chromeos::MountError::MOUNT_ERROR_NONE, info);
 }
 
 void CrostiniBrowserTestBase::CreatedBrowserMainParts(

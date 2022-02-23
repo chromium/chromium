@@ -101,16 +101,18 @@ void OnPeripheralLimitedNotificationClicked(absl::optional<int> button_index) {
       UpdateNotificationPrefCount(/*clicked_settings=*/true);
       break;
     case ButtonIndex::kLearnMore:
-      NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
-                                                /*from_user_interaction=*/true);
+      NewWindowDelegate::GetPrimary()->OpenUrl(
+          GURL(kLearnMoreHelpUrl),
+          NewWindowDelegate::OpenUrlFrom::kUserInteraction);
       break;
   }
   RemoveNotification(kPciePeripheralLimitedPerformanceNotificationId);
 }
 
 void OnGuestNotificationClicked(bool is_thunderbolt_only) {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kLearnMoreHelpUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 
   if (is_thunderbolt_only) {
     RemoveNotification(kPciePeripheralGuestModeNotSupportedNotificationId);
@@ -121,14 +123,16 @@ void OnGuestNotificationClicked(bool is_thunderbolt_only) {
 }
 
 void OnPeripheralBlockedNotificationClicked() {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kLearnMoreHelpUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   RemoveNotification(kPciePeripheralDeviceBlockedNotificationId);
 }
 
 void OnBillboardNotificationClicked() {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kLearnMoreHelpUrl),
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(kLearnMoreHelpUrl),
+      NewWindowDelegate::OpenUrlFrom::kUserInteraction);
   RemoveNotification(kPciePeripheralBillboardDeviceNotificationId);
 }
 
@@ -149,15 +153,15 @@ PciePeripheralNotificationController::PciePeripheralNotificationController(
 }
 
 PciePeripheralNotificationController::~PciePeripheralNotificationController() {
-  if (ash::PciePeripheralManager::IsInitialized())
-    ash::PciePeripheralManager::Get()->RemoveObserver(this);
+  if (ash::PeripheralNotificationManager::IsInitialized())
+    ash::PeripheralNotificationManager::Get()->RemoveObserver(this);
 }
 
 void PciePeripheralNotificationController::
-    OnPciePeripheralManagerInitialized() {
-  DCHECK(ash::PciePeripheralManager::IsInitialized());
+    OnPeripheralNotificationManagerInitialized() {
+  DCHECK(ash::PeripheralNotificationManager::IsInitialized());
 
-  ash::PciePeripheralManager::Get()->AddObserver(this);
+  ash::PeripheralNotificationManager::Get()->AddObserver(this);
 }
 
 void PciePeripheralNotificationController::NotifyBillboardDevice() {

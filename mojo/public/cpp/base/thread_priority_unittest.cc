@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/base/thread_priority_mojom_traits.h"
+
+#include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo_base {

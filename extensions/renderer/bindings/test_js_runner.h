@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_BINDINGS_TEST_JS_RUNNER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "extensions/renderer/bindings/js_runner.h"
 
 namespace extensions {

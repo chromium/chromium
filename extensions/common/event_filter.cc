@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "ipc/ipc_message.h"
 
 using url_matcher::URLMatcher;
@@ -95,7 +96,7 @@ bool EventFilter::CreateConditionSets(
     return AddDictionaryAsConditionSet(&empty_dict, condition_sets);
   }
   for (int i = 0; i < url_filter_count; i++) {
-    base::DictionaryValue* url_filter;
+    const base::DictionaryValue* url_filter;
     if (!matcher->GetURLFilter(i, &url_filter))
       return false;
     if (!AddDictionaryAsConditionSet(url_filter, condition_sets))
@@ -105,7 +106,7 @@ bool EventFilter::CreateConditionSets(
 }
 
 bool EventFilter::AddDictionaryAsConditionSet(
-    base::DictionaryValue* url_filter,
+    const base::DictionaryValue* url_filter,
     URLMatcherConditionSet::Vector* condition_sets) {
   std::string error;
   URLMatcherConditionSet::ID condition_set_id = next_condition_set_id_++;
@@ -135,7 +136,7 @@ std::string EventFilter::RemoveEventMatcher(MatcherID id) {
 
 std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
     const std::string& event_name,
-    const EventFilteringInfo& event_info,
+    const mojom::EventFilteringInfo& event_info,
     int routing_id) const {
   std::set<MatcherID> matchers;
 

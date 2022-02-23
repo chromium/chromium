@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -141,10 +141,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
@@ -167,6 +166,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                 bool is_main_frame,
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
+  bool
+  ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport()
+      override;
   bool CreateThreadPool(base::StringPiece name) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
@@ -188,11 +190,13 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      content::RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   bool ShouldAllowNoLongerUsedProcessToExit() override;
   bool ShouldIsolateErrorPage(bool in_main_frame) override;
@@ -262,7 +266,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   const bool sniff_file_urls_;
 
   // The AwFeatureListCreator is owned by AwMainDelegate.
-  AwFeatureListCreator* const aw_feature_list_creator_;
+  const raw_ptr<AwFeatureListCreator> aw_feature_list_creator_;
 };
 
 }  // namespace android_webview

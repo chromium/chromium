@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -36,7 +35,6 @@ namespace chromeos {
 class NetworkStateInformer;
 class OobeDisplayChooser;
 class SigninScreenHandler;
-class SigninScreenHandlerDelegate;
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
 // - welcome screen (setup language/keyboard/network).
@@ -92,9 +90,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Shows or hides OOBE UI elements.
   void ShowOobeUI(bool show);
-
-  // Shows the signin screen.
-  void ShowSigninScreen(SigninScreenHandlerDelegate* delegate);
 
   // Forwards an accelerator to the webui to be handled.
   void ForwardAccelerator(std::string accelerator_name);

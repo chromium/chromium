@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,6 +60,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -291,9 +293,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
 
     writer->set_delegate(session_.get());
 
-    session_handle_ = session_->CreateHandle(
-        url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
-
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -306,6 +305,8 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     EXPECT_THAT(session_->CryptoConnect(callback.callback()), IsOk());
     EXPECT_TRUE(session_->OneRttKeysAvailable());
 
+    session_handle_ = session_->CreateHandle(
+        url::SchemeHostPort(url::kHttpsScheme, "mail.example.org", 80));
     EXPECT_THAT(session_handle_->RequestStream(true, callback.callback(),
                                                TRAFFIC_ANNOTATION_FOR_TESTS),
                 IsOk());
@@ -624,7 +625,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   std::unique_ptr<QuicProxyClientSocket> sock_;
   std::unique_ptr<TestProxyDelegate> proxy_delegate_;
 
-  quic::test::MockSendAlgorithm* send_algorithm_;
+  raw_ptr<quic::test::MockSendAlgorithm> send_algorithm_;
   scoped_refptr<TestTaskRunner> runner_;
 
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
@@ -678,6 +679,14 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
   const HttpResponseInfo* response = sock_->GetConnectResponseInfo();
   ASSERT_TRUE(response != nullptr);
   ASSERT_EQ(200, response->headers->response_code());
+
+  // Although the underlying HTTP/3 connection uses TLS and negotiates ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  net::SSLInfo ssl_info;
+  EXPECT_FALSE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(sock_->WasAlpnNegotiated());
+  EXPECT_EQ(sock_->GetNegotiatedProtocol(), NextProto::kProtoUnknown);
 }
 
 TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
@@ -765,10 +774,10 @@ TEST_P(QuicProxyClientSocketTest, ConnectWithAuthCredentials) {
   // Add auth to cache
   const std::u16string kFoo(u"foo");
   const std::u16string kBar(u"bar");
-  http_auth_cache_.Add(GURL(kProxyUrl), HttpAuth::AUTH_PROXY, "MyRealm1",
-                       HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
-                       "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar),
-                       "/");
+  http_auth_cache_.Add(
+      url::SchemeHostPort(GURL(kProxyUrl)), HttpAuth::AUTH_PROXY, "MyRealm1",
+      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   AssertConnectSucceeds();
 
@@ -2011,7 +2020,7 @@ class DeleteSockCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  std::unique_ptr<QuicProxyClientSocket>* sock_;
+  raw_ptr<std::unique_ptr<QuicProxyClientSocket>> sock_;
 };
 
 // If the socket is reset when both a read and write are pending, and the

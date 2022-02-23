@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Promise;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
@@ -51,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountTrackerServiceTest {
     private static final long ACCOUNT_TRACKER_SERVICE_NATIVE = 10001L;
     private static final String ACCOUNT_EMAIL = "test@gmail.com";

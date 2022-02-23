@@ -1,0 +1,1 @@
+build --@rules_rust//:extra_rustc_flags=-Clink-arg=-fuse-ld=lld

@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -44,6 +43,8 @@
 namespace net {
 
 using CookieDeletionInfo = CookieDeletionInfo;
+
+bool const kFirstPartySetsEnabled = false;
 
 namespace {
 
@@ -242,7 +243,8 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
     std::unique_ptr<net::CanonicalCookie> cookie,
     const GURL& source_url,
     const net::CookieOptions& options,
-    SetCookiesCallback callback) {
+    SetCookiesCallback callback,
+    const net::CookieAccessResult* cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
@@ -257,12 +259,18 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   CookieAccessScheme access_scheme =
       cookie_util::ProvisionalAccessScheme(source_url);
 
+  net::CookieAccessResult access_result;
+  if (cookie_access_result) {
+    access_result = *cookie_access_result;
+  }
+
   if (cookie->IsSecure() &&
       access_scheme == CookieAccessScheme::kNonCryptographic) {
-    if (!callback.is_null())
-      std::move(callback).Run(
-          net::CookieAccessResult(net::CookieInclusionStatus(
-              net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY)));
+    if (!callback.is_null()) {
+      access_result.status.AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      std::move(callback).Run(access_result);
+    }
     return;
   }
 
@@ -271,19 +279,21 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   if (ns_cookie != nil) {
     system_store_->SetCookieAsync(
         ns_cookie, &cookie->CreationDate(),
-        BindSetCookiesCallback(&callback, net::CookieAccessResult()));
+        BindSetCookiesCallback(&callback, access_result));
     return;
   }
 
-  if (!callback.is_null())
-    std::move(callback).Run(net::CookieAccessResult(net::CookieInclusionStatus(
-        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE)));
+  if (!callback.is_null()) {
+    access_result.status.AddExclusionReason(
+        net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    std::move(callback).Run(access_result);
+  }
 }
 
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
-    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -409,7 +419,8 @@ CookieStoreIOS::CookieStoreIOS(
     std::unique_ptr<SystemCookieStore> system_store,
     NetLog* net_log)
     : cookie_monster_(new net::CookieMonster(persistent_store,
-                                             net_log)),
+                                             net_log,
+                                             net::kFirstPartySetsEnabled)),
       system_store_(std::move(system_store)),
       metrics_enabled_(false),
       cookie_cache_(new CookieCache()),
@@ -672,7 +683,7 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
         key.first, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain::Todo(), std::move(callback));
+        net::CookiePartitionKeyCollection::Todo(), std::move(callback));
   }
 }
 

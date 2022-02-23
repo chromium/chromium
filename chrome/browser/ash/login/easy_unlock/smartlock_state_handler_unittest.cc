@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/proximity_auth/proximity_auth_pref_manager.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -203,8 +203,11 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // string.
   std::string GetCustomIconId() const {
     std::string result;
-    if (last_custom_icon_)
-      last_custom_icon_->GetString("id", &result);
+    if (last_custom_icon_) {
+      const std::string* result_ptr = last_custom_icon_->FindStringKey("id");
+      if (result_ptr)
+        result = *result_ptr;
+    }
     return result;
   }
 
@@ -216,26 +219,30 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // Gets the custom icon's tooltip text, if one is set.
   std::u16string GetCustomIconTooltip() const {
     std::u16string result;
-    if (last_custom_icon_)
-      last_custom_icon_->GetString("tooltip.text", &result);
+    if (last_custom_icon_) {
+      const std::string* result_ptr =
+          last_custom_icon_->FindStringPath("tooltip.text");
+      if (result_ptr)
+        result = base::UTF8ToUTF16(*result_ptr);
+    }
     return result;
   }
 
   // Whether the custom icon's tooltip should be autoshown. If the icon is not
   // set, or it doesn't have a tooltip, returns false.
   bool IsCustomIconTooltipAutoshown() const {
-    bool result = false;
-    if (last_custom_icon_)
-      last_custom_icon_->GetBoolean("tooltip.autoshow", &result);
-    return result;
+    if (!last_custom_icon_)
+      return false;
+
+    return last_custom_icon_->FindBoolPath("tooltip.autoshow").value_or(false);
   }
 
   // Whether the custom icon is set and if has hardlock capability enabed.
   bool CustomIconHardlocksOnClick() const {
-    bool result = false;
-    if (last_custom_icon_)
-      last_custom_icon_->GetBoolean("hardlockOnClick", &result);
-    return result;
+    if (!last_custom_icon_)
+      return false;
+
+    return last_custom_icon_->FindBoolKey("hardlockOnClick").value_or(false);
   }
 
  private:
@@ -248,7 +255,10 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
     if (last_custom_icon_->FindKey("tooltip")) {
       std::u16string tooltip;
-      EXPECT_TRUE(last_custom_icon_->GetString("tooltip.text", &tooltip));
+      const std::string* tooltip_ptr =
+          last_custom_icon_->FindStringPath("tooltip.text");
+      EXPECT_TRUE(tooltip_ptr);
+      tooltip = base::UTF8ToUTF16(*tooltip_ptr);
       EXPECT_FALSE(tooltip.empty());
       EXPECT_FALSE(StringHasPlaceholders(tooltip));
     }

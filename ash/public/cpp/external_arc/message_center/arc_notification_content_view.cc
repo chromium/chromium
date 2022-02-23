@@ -6,14 +6,15 @@
 
 #include <memory>
 
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -250,7 +251,6 @@ class ArcNotificationContentView::SlideHelper {
   bool slide_in_progress_ = false;
 };
 
-
 ArcNotificationContentView::ArcNotificationContentView(
     ArcNotificationItem* item,
     const message_center::Notification& notification,
@@ -260,12 +260,17 @@ ArcNotificationContentView::ArcNotificationContentView(
       event_forwarder_(new EventForwarder(this)),
       mouse_enter_exit_handler_(new MouseEnterExitHandler(this)),
       message_view_(message_view),
-      control_buttons_view_(message_view) {
+      control_buttons_view_(message_view),
+      notification_width_(features::IsNotificationsRefreshEnabled()
+                              ? kNotificationInMessageCenterWidth
+                              : message_center::kNotificationWidth) {
   DCHECK(message_view);
 
-  // kNotificationWidth must be 360, since this value is separately defined in
-  // ArcNotificationWrapperView class in Android side.
-  DCHECK_EQ(360, message_center::kNotificationWidth);
+  // |notification_width_| must be 360 (or 344 for refreshed notifications),
+  // since this value is separately defined in ArcNotificationWrapperView class
+  // in Android side.
+  DCHECK_EQ(features::IsNotificationsRefreshEnabled() ? 344 : 360,
+            notification_width_);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
@@ -488,10 +493,10 @@ void ArcNotificationContentView::UpdatePreferredSize() {
   if (preferred_size.IsEmpty())
     return;
 
-  if (preferred_size.width() != message_center::kNotificationWidth) {
-    const float scale = static_cast<float>(message_center::kNotificationWidth) /
-                        preferred_size.width();
-    preferred_size.SetSize(message_center::kNotificationWidth,
+  if (preferred_size.width() != notification_width_) {
+    const float scale =
+        static_cast<float>(notification_width_) / preferred_size.width();
+    preferred_size.SetSize(notification_width_,
                            preferred_size.height() * scale);
   }
 
@@ -572,21 +577,12 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
     return;
   mask_insets_ = new_insets;
 
-  SkColor color = GetColorProvider()->GetColor(
-      message_view_->is_active() ? ui::kColorNotificationBackgroundActive
-                                 : ui::kColorNotificationBackgroundInactive);
-
-  if (ash::features::IsNotificationsRefreshEnabled()) {
-    color = AshColorProvider::Get()->GetControlsLayerColor(
-        message_view_->is_active()
-            ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
-            : AshColorProvider::ControlsLayerType::
-                  kControlBackgroundColorInactive);
-  }
-
+  // The color of the mask, which is used only for corner-rounding, should be
+  // pure opaque white.
+  const SkColor mask_color = SK_ColorWHITE;
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
-          top_radius_, bottom_radius_, color);
+          top_radius_, bottom_radius_, mask_color);
   // Set insets to round visible notification corners. https://crbug.com/866777
   mask_painter->set_insets(new_insets);
 
@@ -661,9 +657,7 @@ void ArcNotificationContentView::Layout() {
     const gfx::Size surface_size = surface_->GetSize();
     if (!surface_size.IsEmpty()) {
       const float factor =
-          static_cast<float>(message_center::kNotificationWidth -
-                             kScrollBarWidth) /
-          (surface_size.width());
+          static_cast<float>(notification_width_) / surface_size.width();
       transform.Scale(factor, factor);
     }
 
@@ -763,6 +757,13 @@ void ArcNotificationContentView::OnThemeChanged() {
   // OnThemeChanged may be called before container is set.
   if (GetWidget() && GetNativeViewContainer())
     UpdateMask(true);
+
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    // Adjust control button color.
+    control_buttons_view_.SetButtonIconColors(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
 }
 
 void ArcNotificationContentView::OnRemoteInputActivationChanged(

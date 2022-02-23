@@ -37,10 +37,6 @@ public final class FeedProcessScopeDependencyProviderTest {
 
         // Boilerplate.
         @Override
-        public boolean shouldPrerender() {
-            return false;
-        }
-        @Override
         public void setUsageAndCrashReporting(boolean enabled) {}
         @Override
         public void syncUsageAndCrashReportingPrefs() {}
@@ -52,6 +48,10 @@ public final class FeedProcessScopeDependencyProviderTest {
         }
         @Override
         public boolean isNetworkAvailableForCrashUploads() {
+            return true;
+        }
+        @Override
+        public boolean isUsageAndCrashReportingPermittedByPolicy() {
             return true;
         }
         @Override
@@ -69,17 +69,7 @@ public final class FeedProcessScopeDependencyProviderTest {
         @Override
         public void setMetricsReportingEnabled(boolean enabled) {}
         @Override
-        public boolean isMetricsReportingManaged() {
-            return false;
-        }
-        @Override
-        public boolean getNetworkPredictionEnabled() {
-            return false;
-        }
-        @Override
-        public void setNetworkPredictionEnabled(boolean enabled) {}
-        @Override
-        public boolean isNetworkPredictionManaged() {
+        public boolean isMetricsReportingDisabledByPolicy() {
             return false;
         }
     };

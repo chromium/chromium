@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -17,9 +18,9 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -357,7 +358,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   }
 
   void OpenUrlAtIndex(const GURL& url, int index) {
-    AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED);
+    ASSERT_TRUE(AddTabAtIndex(index, url, ui::PAGE_TRANSITION_TYPED));
     auto* active_contents = browser_view()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(active_contents));
     SynchronizeBrowserWithRenderer(active_contents);
@@ -683,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
 }
 
 // Fails on Linux ChromiumOS MSan Tests (https://crbug.com/1194575).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestScrollingPageAndSwitchingToNTP \
   DISABLED_TestScrollingPageAndSwitchingToNTP
 #else
@@ -750,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 }
 
 // Fails on Linux Chromium OS Tests (https://crbug.com/1191327).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestClosingATab DISABLED_TestClosingATab
 #else
 #define MAYBE_TestClosingATab TestClosingATab
@@ -867,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_TRUE(bool_result);
   // Evaluate an empty sentence to make sure that the event processing is done
   // in the content.
-  ignore_result(content::EvalJs(contents, ";"));
+  std::ignore = content::EvalJs(contents, ";");
 
   SCOPED_TRACE("Scroll to hide should now work.");
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
@@ -1085,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
   send_key_event(ui::VKEY_RETURN);
   // Evaluate an empty sentence to make sure that the event processing is done
   // in the content.
-  ignore_result(content::EvalJs(contents, ";"));
+  std::ignore = content::EvalJs(contents, ";");
 
   // Verify that the selected option has changed and the fourth option is
   // selected.
@@ -1411,7 +1412,14 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
                                TopChromeShownState::kFullyHidden);
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestToggleChromeVox) {
+// Flaky on ChromeOS Release bots. https://crbug.com/1033648
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
+#define MAYBE_TestToggleChromeVox DISABLED_TestToggleChromeVox
+#else
+#define MAYBE_TestToggleChromeVox TestToggleChromeVox
+#endif
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       MAYBE_TestToggleChromeVox) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());

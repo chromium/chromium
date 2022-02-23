@@ -4,7 +4,6 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {Destination, DestinationOrigin} from './data/destination.js';
-import {NativeLayer} from './native_layer.js';
 
 /**
  * Event types dispatched by the cloudprint interface.

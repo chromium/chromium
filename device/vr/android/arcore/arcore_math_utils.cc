@@ -49,13 +49,13 @@ gfx::Transform MatrixFromTransformedPoints(const base::span<const float> uvs) {
 
   // Transform initializes to the identity matrix and then is modified by uvs.
   gfx::Transform result;
-  result.matrix().set(0, 0, uvs[2] - uvs[0]);
-  result.matrix().set(0, 1, uvs[4] - uvs[0]);
-  result.matrix().set(0, 3, uvs[0]);
+  result.matrix().setRC(0, 0, uvs[2] - uvs[0]);
+  result.matrix().setRC(0, 1, uvs[4] - uvs[0]);
+  result.matrix().setRC(0, 3, uvs[0]);
 
-  result.matrix().set(1, 0, uvs[3] - uvs[1]);
-  result.matrix().set(1, 1, uvs[5] - uvs[1]);
-  result.matrix().set(1, 3, uvs[1]);
+  result.matrix().setRC(1, 0, uvs[3] - uvs[1]);
+  result.matrix().setRC(1, 1, uvs[5] - uvs[1]);
+  result.matrix().setRC(1, 3, uvs[1]);
 
   return result;
 }

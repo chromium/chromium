@@ -53,6 +53,8 @@ const struct AcceleratorMapping {
     {IDC_SHOW_HISTORY, ui::EF_COMMAND_DOWN, ui::VKEY_Y},
     {IDC_VIEW_SOURCE, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_U},
     {IDC_ZOOM_MINUS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_MINUS},
+    // The following entry also enables "Cmd =" on US keyboards to invoke View
+    // -> Zoom In.
     {IDC_ZOOM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_OEM_PLUS},
 
     // Accelerators used in the Main Menu, but not the toolbar menu.
@@ -84,8 +86,6 @@ const struct AcceleratorMapping {
     {IDC_FOCUS_SEARCH, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_F},
     {IDC_FIND_NEXT, ui::EF_COMMAND_DOWN, ui::VKEY_G},
     {IDC_FIND_PREVIOUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_G},
-    {IDC_ZOOM_PLUS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_PLUS},
-    {IDC_ZOOM_MINUS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_MINUS},
     {IDC_STOP, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_PERIOD},
     {IDC_RELOAD, ui::EF_COMMAND_DOWN, ui::VKEY_R},
     {IDC_RELOAD_BYPASSING_CACHE, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
@@ -124,17 +124,23 @@ ui::Accelerator enterFullscreenAccelerator() {
 }  // namespace
 
 AcceleratorsCocoa::AcceleratorsCocoa() {
-  for (size_t i = 0; i < base::size(kAcceleratorMap); ++i) {
-    const AcceleratorMapping& entry = kAcceleratorMap[i];
+  for (const AcceleratorMapping& entry : kAcceleratorMap) {
     ui::Accelerator accelerator(entry.key_code, entry.modifiers);
-    accelerators_[entry.command_id] = accelerator;
+
+    auto result =
+        accelerators_.insert(std::make_pair(entry.command_id, accelerator));
+    DCHECK(result.second);
   }
 
-  accelerators_[IDC_FULLSCREEN] = enterFullscreenAccelerator();
+  auto result = accelerators_.insert(
+      std::make_pair(IDC_FULLSCREEN, enterFullscreenAccelerator()));
+  DCHECK(result.second);
 
   if (commander::IsEnabled()) {
-    accelerators_[IDC_TOGGLE_COMMANDER] =
-        ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
+    result = accelerators_.insert(
+        std::make_pair(IDC_TOGGLE_COMMANDER,
+                       ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN)));
+    DCHECK(result.second);
   }
 }
 

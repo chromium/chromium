@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/param_traits_macros.h"
 #include "ui/gfx/buffer_types.h"
@@ -14,7 +15,7 @@
 #include "ui/gfx/ipc/gfx_param_traits_macros.h"
 #include "ui/gfx/selection_bound.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -34,7 +35,7 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::Range> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort> {
   typedef gfx::ScopedRefCountedIOSurfaceMachPort param_type;
@@ -58,7 +59,7 @@ struct GFX_IPC_EXPORT ParamTraits<gfx::ScopedIOSurface> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 template <>
 struct GFX_IPC_EXPORT ParamTraits<gfx::SelectionBound> {

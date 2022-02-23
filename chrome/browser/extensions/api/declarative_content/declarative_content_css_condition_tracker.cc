@@ -44,7 +44,7 @@ DeclarativeContentCssPredicate::Create(ContentPredicateEvaluator* evaluator,
                                        std::string* error) {
   std::vector<std::string> css_rules;
   if (value.is_list()) {
-    for (const base::Value& css_rule_value : value.GetList()) {
+    for (const base::Value& css_rule_value : value.GetListDeprecated()) {
       if (!css_rule_value.is_string()) {
         *error = base::StringPrintf(kCssInvalidTypeOfParameter,
                                     declarative_content_constants::kCss);

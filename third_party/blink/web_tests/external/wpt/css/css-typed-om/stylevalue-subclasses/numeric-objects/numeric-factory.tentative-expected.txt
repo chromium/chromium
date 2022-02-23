@@ -10,8 +10,8 @@ FAIL CSS.lh returns a CSSUnitValue with correct value and unit CSS[unit] is not 
 FAIL CSS.rlh returns a CSSUnitValue with correct value and unit CSS[unit] is not a function
 PASS CSS.vw returns a CSSUnitValue with correct value and unit
 PASS CSS.vh returns a CSSUnitValue with correct value and unit
-FAIL CSS.vi returns a CSSUnitValue with correct value and unit CSS[unit] is not a function
-FAIL CSS.vb returns a CSSUnitValue with correct value and unit CSS[unit] is not a function
+PASS CSS.vi returns a CSSUnitValue with correct value and unit
+PASS CSS.vb returns a CSSUnitValue with correct value and unit
 PASS CSS.vmin returns a CSSUnitValue with correct value and unit
 PASS CSS.vmax returns a CSSUnitValue with correct value and unit
 PASS CSS.cm returns a CSSUnitValue with correct value and unit

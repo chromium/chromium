@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/export/csv_writer.h"
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
@@ -25,7 +26,7 @@ class CSVFormatter {
   void EndLine();
 
  private:
-  std::string* output_;
+  raw_ptr<std::string> output_;
   bool at_beginning_of_line_;
 };
 
@@ -51,7 +52,7 @@ void CSVFormatter::AppendValue(const std::string& raw_value) {
 }
 
 void CSVFormatter::EndLine() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const char kLineEnding[] = "\r\n";
 #else
   const char kLineEnding[] = "\n";

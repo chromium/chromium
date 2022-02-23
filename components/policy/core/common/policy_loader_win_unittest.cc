@@ -87,10 +87,11 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::STRING: {
-      std::u16string str_value;
-      if (!value.GetAsString(&str_value))
+      if (!value.is_string())
         return false;
-      return key.WriteValue(name.c_str(), base::as_wcstr(str_value)) ==
+      return key.WriteValue(
+                 name.c_str(),
+                 base::as_wcstr(base::UTF8ToUTF16(value.GetString()))) ==
              ERROR_SUCCESS;
     }
 
@@ -109,7 +110,7 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::LIST: {
       if (!value.is_list())
         return false;
-      const base::Value::ConstListView& list_view = value.GetList();
+      const base::Value::ConstListView& list_view = value.GetListDeprecated();
       for (size_t i = 0; i < list_view.size(); ++i) {
         if (!InstallValue(list_view[i], hive, path + kPathSep + name,
                           base::NumberToWString(i + 1))) {
@@ -323,7 +324,7 @@ void RegistryTestHarness::InstallStringListPolicy(
       KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   int index = 1;
-  for (const auto& element : policy_value->GetList()) {
+  for (const auto& element : policy_value->GetListDeprecated()) {
     if (!element.is_string())
       continue;
 
@@ -476,22 +477,22 @@ TEST_F(PolicyLoaderWinTest, Merge3rdPartyPolicies) {
   const char kMachineRecommended[] = "machine-recommended";
 
   base::DictionaryValue policy;
-  policy.SetString("a", kMachineMandatory);
+  policy.SetStringKey("a", kMachineMandatory);
   EXPECT_TRUE(InstallValue(policy, HKEY_LOCAL_MACHINE,
                            kPathSuffix, kMandatory));
-  policy.SetString("a", kUserMandatory);
-  policy.SetString("b", kUserMandatory);
+  policy.SetStringKey("a", kUserMandatory);
+  policy.SetStringKey("b", kUserMandatory);
   EXPECT_TRUE(InstallValue(policy, HKEY_CURRENT_USER,
                            kPathSuffix, kMandatory));
-  policy.SetString("a", kMachineRecommended);
-  policy.SetString("b", kMachineRecommended);
-  policy.SetString("c", kMachineRecommended);
+  policy.SetStringKey("a", kMachineRecommended);
+  policy.SetStringKey("b", kMachineRecommended);
+  policy.SetStringKey("c", kMachineRecommended);
   EXPECT_TRUE(InstallValue(policy, HKEY_LOCAL_MACHINE,
                            kPathSuffix, kRecommended));
-  policy.SetString("a", kUserRecommended);
-  policy.SetString("b", kUserRecommended);
-  policy.SetString("c", kUserRecommended);
-  policy.SetString("d", kUserRecommended);
+  policy.SetStringKey("a", kUserRecommended);
+  policy.SetStringKey("b", kUserRecommended);
+  policy.SetStringKey("c", kUserRecommended);
+  policy.SetStringKey("d", kUserRecommended);
   EXPECT_TRUE(InstallValue(policy, HKEY_CURRENT_USER,
                            kPathSuffix, kRecommended));
 
@@ -581,9 +582,9 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
       })"));
 
   base::DictionaryValue policy;
-  policy.SetBoolean("bool", true);
-  policy.SetInteger("int", -123);
-  policy.SetDouble("double", 456.78e9);
+  policy.SetBoolKey("bool", true);
+  policy.SetIntKey("int", -123);
+  policy.SetDoubleKey("double", 456.78e9);
   base::ListValue list;
   list.Append(std::make_unique<base::Value>(policy.Clone()));
   list.Append(std::make_unique<base::Value>(policy.Clone()));
@@ -597,11 +598,11 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
   base::JSONWriter::Write(list, &encoded_list);
   ASSERT_FALSE(encoded_list.empty());
   base::DictionaryValue encoded_policy;
-  encoded_policy.SetString("bool", "1");
-  encoded_policy.SetString("int", "-123");
-  encoded_policy.SetString("double", "456.78e9");
-  encoded_policy.SetString("list", encoded_list);
-  encoded_policy.SetString("dict", encoded_dict);
+  encoded_policy.SetStringKey("bool", "1");
+  encoded_policy.SetStringKey("int", "-123");
+  encoded_policy.SetStringKey("double", "456.78e9");
+  encoded_policy.SetStringKey("list", encoded_list);
+  encoded_policy.SetStringKey("dict", encoded_dict);
 
   const std::wstring kPathSuffix =
       kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\string");
@@ -628,9 +629,9 @@ TEST_F(PolicyLoaderWinTest, LoadIntegerEncodedValues) {
       "}"));
 
   base::DictionaryValue encoded_policy;
-  encoded_policy.SetInteger("bool", 1);
-  encoded_policy.SetInteger("int", 123);
-  encoded_policy.SetInteger("double", 456);
+  encoded_policy.SetIntKey("bool", 1);
+  encoded_policy.SetIntKey("int", 123);
+  encoded_policy.SetIntKey("double", 456);
 
   const std::wstring kPathSuffix =
       kTestPolicyKey + std::wstring(L"\\3rdparty\\extensions\\int");
@@ -638,9 +639,9 @@ TEST_F(PolicyLoaderWinTest, LoadIntegerEncodedValues) {
       InstallValue(encoded_policy, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
   base::DictionaryValue policy;
-  policy.SetBoolean("bool", true);
-  policy.SetInteger("int", 123);
-  policy.SetDouble("double", 456.0);
+  policy.SetBoolKey("bool", true);
+  policy.SetIntKey("int", 123);
+  policy.SetDoubleKey("double", 456.0);
   PolicyBundle expected;
   expected.Get(ns).LoadFrom(&policy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                             POLICY_SOURCE_PLATFORM);
@@ -671,12 +672,12 @@ TEST_F(PolicyLoaderWinTest, DefaultPropertySchemaType) {
   // Write some test values.
   base::DictionaryValue policy;
   // These special values have a specific schema for them.
-  policy.SetInteger("special-int1", 123);
-  policy.SetString("special-int2", "-456");
+  policy.SetIntKey("special-int1", 123);
+  policy.SetStringKey("special-int2", "-456");
   // Other values default to be loaded as doubles.
-  policy.SetInteger("double1", 789.0);
-  policy.SetString("double2", "123.456e7");
-  policy.SetString("invalid", "omg");
+  policy.SetIntKey("double1", 789.0);
+  policy.SetStringKey("double2", "123.456e7");
+  policy.SetStringKey("invalid", "omg");
   base::DictionaryValue all_policies;
   all_policies.SetKey("policy", policy.Clone());
 
@@ -686,10 +687,10 @@ TEST_F(PolicyLoaderWinTest, DefaultPropertySchemaType) {
       InstallValue(all_policies, HKEY_CURRENT_USER, kPathSuffix, kMandatory));
 
   base::DictionaryValue expected_policy;
-  expected_policy.SetInteger("special-int1", 123);
-  expected_policy.SetInteger("special-int2", -456);
-  expected_policy.SetDouble("double1", 789.0);
-  expected_policy.SetDouble("double2", 123.456e7);
+  expected_policy.SetIntKey("special-int1", 123);
+  expected_policy.SetIntKey("special-int2", -456);
+  expected_policy.SetDoubleKey("double1", 789.0);
+  expected_policy.SetDoubleKey("double2", 123.456e7);
   base::DictionaryValue expected_policies;
   expected_policies.SetKey("policy", expected_policy.Clone());
   PolicyBundle expected;
@@ -718,12 +719,12 @@ TEST_F(PolicyLoaderWinTest, AlternativePropertySchemaType) {
 
   PolicyBundle expected;
   base::DictionaryValue expected_a;
-  expected_a.SetInteger("policy 1", 3);
-  expected_a.SetInteger("policy 2", 3);
+  expected_a.SetIntKey("policy 1", 3);
+  expected_a.SetIntKey("policy 2", 3);
   expected.Get(ns_a).LoadFrom(&expected_a, POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM);
   base::DictionaryValue expected_b;
-  expected_b.SetInteger("policy 1", 2);
+  expected_b.SetIntKey("policy 1", 2);
   expected.Get(ns_b).LoadFrom(&expected_b, POLICY_LEVEL_MANDATORY,
                               POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM);
 

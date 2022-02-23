@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"

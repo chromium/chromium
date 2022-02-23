@@ -28,11 +28,64 @@ namespace os.telemetry {
 
   callback OemDataCallback = void (OemData oemData);
 
+  dictionary MemoryInfo {
+    long? totalMemoryKiB;
+    long? freeMemoryKiB;
+    long? availableMemoryKiB;
+    double? pageFaultsSinceLastBoot;
+  };
+
+  callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
+
+  enum CpuArchitectureEnum {
+    unknown,
+    x86_64,
+    aarch64,
+    armv7l
+  };
+
+  dictionary CpuCStateInfo {
+    // Name of the state.
+    DOMString? name;
+    // Time spent in the state since the last reboot, in microseconds.
+    double? timeInStateSinceLastBootUs;
+  };
+
+  dictionary LogicalCpuInfo {
+    // The max CPU clock speed in kHz.
+    long? maxClockSpeedKhz;
+    // Maximum frequency the CPU is allowed to run at, by policy.
+    long? scalingMaxFrequencyKhz;
+    // Current frequency the CPU is running at.
+    long? scalingCurrentFrequencyKhz;
+    // Idle time since last boot, in milliseconds.
+    double? idleTimeMs;
+    // Information about the logical CPU's time in various C-states.
+    CpuCStateInfo[] cStates;
+  };
+
+  dictionary PhysicalCpuInfo {
+    DOMString? modelName;
+    LogicalCpuInfo[] logicalCpus;
+  };
+
+  dictionary CpuInfo {
+    long? numTotalThreads;
+    CpuArchitectureEnum architecture;
+    PhysicalCpuInfo[] physicalCpus;
+  };
+
+  callback CpuInfoCallback = void (CpuInfo cpuInfo);
+
   interface Functions {
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
     // Retrieves OEM data.
     [supportsPromises] static void getOemData(OemDataCallback callback);
+
+    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
+
+    [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
   };
 };

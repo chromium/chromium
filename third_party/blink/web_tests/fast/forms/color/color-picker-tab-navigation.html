@@ -5,6 +5,8 @@
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
 </script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
@@ -15,13 +17,13 @@ testRunner.waitUntilDone();
 
 <script>
 let descriptionContainer = document.getElementById('description');
-openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
+openPickerDeprecatedJsTest(document.getElementById('color'), openPickerCallback, openPickerCallback);
 
 function openPickerCallback() {
   if (internals.pagePopupWindow) {
     descriptionContainer.append('Popup opened.', document.createElement('br'));
-    popupWindow.focus();
-    const popupDocument = popupWindow.document;
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
     const formatToggler = popupDocument.querySelector('format-toggler');
     tabNavigateAndLogFocusableElements(popupDocument);
     changeActiveColorFormat(formatToggler);

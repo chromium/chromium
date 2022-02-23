@@ -45,15 +45,19 @@ function combinePaths(origin, source) {
  *     corresponding to |source|. Otherwise, returns the full path for |source|.
  */
 function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
-  const url = new URL(urlPrefix);
-  const schemeRelativeUrl = '//' + url.host + url.pathname;
+  let schemeRelativeUrl = urlPrefix;
+  if (urlPrefix.includes('://')) {
+    const url = new URL(urlPrefix);
+    schemeRelativeUrl = '//' + url.host + url.pathname;
+  }
   let pathFromUrl = '';
   if (source.startsWith(urlPrefix)) {
     pathFromUrl = source.slice(urlPrefix.length);
   } else if (source.startsWith(schemeRelativeUrl)) {
     pathFromUrl = source.slice(schemeRelativeUrl.length);
   } else if (
-      !source.includes('://') && !!origin && origin.startsWith(urlSrcPath)) {
+      !source.includes('://') && !source.startsWith('//') && !!origin &&
+      origin.startsWith(urlSrcPath)) {
     // Relative import from a file that lives in urlSrcPath.
     pathFromUrl = combinePaths(relativePath(urlSrcPath, origin), source);
   }
@@ -61,9 +65,9 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
     return '';
   }
 
-  const fullUrl = new URL(pathFromUrl, urlPrefix);
-  if (excludes.includes(fullUrl.href)) {
-    return fullUrl.href;
+  if (excludes.includes(urlPrefix + pathFromUrl) ||
+      excludes.includes(schemeRelativeUrl + pathFromUrl)) {
+    return urlPrefix + pathFromUrl;
   }
   return joinPaths(urlSrcPath, pathFromUrl);
 }
@@ -92,8 +96,8 @@ export default function plugin(
 
       for (const [url, path] of urlsToPaths) {
         const resultPath = getPathForUrl(source, origin, url, path, excludes);
-        if (resultPath.includes('://')) {
-          return {id: resultPath, external: true};
+        if (resultPath.includes('://') || resultPath.startsWith('//')) {
+          return {id: resultPath, external: 'absolute'};
         } else if (resultPath) {
           return resultPath;
         }
@@ -110,7 +114,7 @@ export default function plugin(
         const pathFromRoot = relativePath(rootPath, fullSourcePath);
         if (excludes.includes(pathFromRoot)) {
           const url = new URL(pathFromRoot, hostUrl);
-          return {id: url.href, external: true};
+          return {id: url.href, external: 'absolute'};
         }
       }
 

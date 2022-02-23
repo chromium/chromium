@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -177,7 +178,8 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       head->headers->AddHeader(net::HttpRequestHeaders::kContentType,
                                head->mime_type.c_str());
     }
-    client_->OnReceiveResponse(std::move(head));
+    client_->OnReceiveResponse(std::move(head),
+                               mojo::ScopedDataPipeConsumerHandle());
     client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     uint32_t write_size = data->size();

@@ -36,31 +36,5 @@ TEST(QuicHttpUtilsTest, ConvertQuicPriorityToRequestPriority) {
   }
 }
 
-TEST(QuicHttpUtilsTest, FilterSupportedAltSvcVersions) {
-  // Supported versions are versions A and C, the alt service
-  // versions are versions B and C. FilterSupportedAltSvcVersions
-  // finds the intersection of the two sets ... version C.  Note that
-  // as QUIC versions are defined/undefined, the exact version numbers
-  // used may need to change.  The actual version numbers are not
-  // important. Note that FilterSupportedAltSvcVersions is only used
-  // for the old Google-specific Alt-Svc format which is now deprecated.
-  quic::ParsedQuicVersionVector supported_versions = {
-      quic::ParsedQuicVersion::Q050(),
-      quic::ParsedQuicVersion::Q043(),
-  };
-
-  spdy::SpdyAltSvcWireFormat::VersionVector alt_svc_versions_google = {
-      33, quic::ParsedQuicVersion::Q043().transport_version};
-
-  quic::ParsedQuicVersionVector supported_alt_svc_versions = {
-      quic::ParsedQuicVersion::Q043()};
-  spdy::SpdyAltSvcWireFormat::AlternativeService altsvc;
-
-  altsvc.protocol_id = "quic";
-  altsvc.version = alt_svc_versions_google;
-  EXPECT_EQ(supported_alt_svc_versions,
-            FilterSupportedAltSvcVersions(altsvc, supported_versions));
-}
-
 }  // namespace test
 }  // namespace net

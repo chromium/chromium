@@ -22,6 +22,9 @@
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/formats/mp4/aac.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/formats/mp4/hevc.h"
+#endif
 #endif
 
 namespace media {
@@ -542,7 +545,39 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         profile = H264PROFILE_BASELINE;
       break;
     }
-#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    case VideoCodec::kHEVC: {
+      int hevc_profile = FF_PROFILE_UNKNOWN;
+      if ((codec_context->profile < FF_PROFILE_HEVC_MAIN ||
+           codec_context->profile > FF_PROFILE_HEVC_REXT) &&
+          codec_context->extradata && codec_context->extradata_size) {
+        mp4::HEVCDecoderConfigurationRecord hevc_config;
+        if (hevc_config.Parse(codec_context->extradata,
+                              codec_context->extradata_size)) {
+          hevc_profile = hevc_config.general_profile_idc;
+        }
+      } else {
+        hevc_profile = codec_context->profile;
+      }
+      switch (hevc_profile) {
+        case FF_PROFILE_HEVC_MAIN:
+          profile = HEVCPROFILE_MAIN;
+          break;
+        case FF_PROFILE_HEVC_MAIN_10:
+          profile = HEVCPROFILE_MAIN10;
+          break;
+        case FF_PROFILE_HEVC_MAIN_STILL_PICTURE:
+          profile = HEVCPROFILE_MAIN_STILL_PICTURE;
+          break;
+        default:
+          // Always assign a default if all heuristics fail.
+          profile = HEVCPROFILE_MAIN;
+          break;
+      }
+      break;
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kVP8:
       profile = VP8PROFILE_ANY;
       break;
@@ -568,11 +603,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     case VideoCodec::kAV1:
       profile = AV1PROFILE_PROFILE_MAIN;
       break;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case VideoCodec::kHEVC:
-      profile = HEVCPROFILE_MAIN;
-      break;
-#endif
     case VideoCodec::kTheora:
       profile = THEORAPROFILE_ANY;
       break;
@@ -583,28 +613,13 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   auto* alpha_mode = av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
   const bool has_alpha = alpha_mode && !strcmp(alpha_mode->value, "1");
 
-  VideoRotation video_rotation = VIDEO_ROTATION_0;
-  int rotation = 0;
-  AVDictionaryEntry* rotation_entry = NULL;
-  rotation_entry = av_dict_get(stream->metadata, "rotate", nullptr, 0);
-  if (rotation_entry && rotation_entry->value && rotation_entry->value[0])
-    base::StringToInt(rotation_entry->value, &rotation);
+  void* display_matrix =
+      av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
 
-  switch (rotation) {
-    case 0:
-      break;
-    case 90:
-      video_rotation = VIDEO_ROTATION_90;
-      break;
-    case 180:
-      video_rotation = VIDEO_ROTATION_180;
-      break;
-    case 270:
-      video_rotation = VIDEO_ROTATION_270;
-      break;
-    default:
-      DLOG(ERROR) << "Unsupported video rotation metadata: " << rotation;
-      break;
+  VideoTransformation video_transformation = VideoTransformation();
+  if (display_matrix) {
+    video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
+        static_cast<int32_t*>(display_matrix));
   }
 
   // Prefer the color space found by libavcodec if available.
@@ -660,8 +675,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   config->Initialize(codec, profile,
                      has_alpha ? VideoDecoderConfig::AlphaMode::kHasAlpha
                                : VideoDecoderConfig::AlphaMode::kIsOpaque,
-                     color_space, VideoTransformation(video_rotation),
-                     coded_size, visible_rect, natural_size, extra_data,
+                     color_space, video_transformation, coded_size,
+                     visible_rect, natural_size, extra_data,
                      GetEncryptionScheme(stream));
   // Set the aspect ratio explicitly since our version hasn't been rounded.
   config->set_aspect_ratio(aspect_ratio);

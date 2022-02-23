@@ -94,6 +94,9 @@ bool FilterIsForFileExtensions(const apps::mojom::IntentFilterPtr& filter);
 bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
                           const apps::mojom::IntentFilterPtr& filter);
 
+// Return true if `intent` corresponds to a share intent.
+bool IsShareIntent(const apps::mojom::IntentPtr& intent);
+
 // Return true if |value| matches |pattern| with simple glob syntax.
 // In this syntax, you can use the '*' character to match against zero or
 // more occurrences of the character immediately before. If the character

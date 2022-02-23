@@ -56,7 +56,7 @@ CRASHPAD_CHILD_TEST_MAIN(AddressSpaceChildTestMain) {
   // correctly.
   for (const auto& t : kTestMappingPermAndSizes) {
     zx_handle_t vmo = ZX_HANDLE_INVALID;
-    const size_t size = t.pages * PAGE_SIZE;
+    const size_t size = t.pages * zx_system_get_page_size();
     zx_status_t status = zx_vmo_create(size, 0, &vmo);
     ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
     status = zx_vmo_replace_as_executable(vmo, ZX_HANDLE_INVALID, &vmo);
@@ -126,7 +126,7 @@ class AddressSpaceTest : public MultiprocessExec {
       const auto& t = kTestMappingPermAndSizes[i];
       EXPECT_TRUE(HasSingleMatchingMapping(process_snapshot.MemoryMap(),
                                            test_addresses[i],
-                                           t.pages * PAGE_SIZE,
+                                           t.pages * zx_system_get_page_size(),
                                            t.minidump_perm))
           << base::StringPrintf(
                  "index %zu, zircon_perm 0x%x, minidump_perm 0x%x",

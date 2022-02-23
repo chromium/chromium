@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -126,6 +127,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetRequireServiceToGetProperties(
       bool require_service_to_get_properties) override;
   void SetFakeTrafficCounters(base::Value fake_traffic_counters) override;
+  void SetTimeGetterForTest(base::RepeatingCallback<base::Time()>) override;
 
  private:
   typedef base::ObserverList<ShillPropertyChangedObserver>::Unchecked
@@ -140,6 +142,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetCellularActivated(const dbus::ObjectPath& service_path,
                             ErrorCallback error_callback);
   void ContinueConnect(const std::string& service_path);
+  void SetDefaultFakeTrafficCounters();
 
   base::Value stub_services_{base::Value::Type::DICTIONARY};
 
@@ -169,6 +172,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   bool require_service_to_get_properties_ = false;
 
   base::Value fake_traffic_counters_{base::Value::Type::LIST};
+
+  // Gets the mocked time in tests.
+  base::RepeatingCallback<base::Time()> time_getter_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -30,8 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_REVERB_H_
 
 #include <memory>
-
 #include "third_party/blink/renderer/platform/audio/reverb_convolver.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

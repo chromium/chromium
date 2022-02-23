@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -34,7 +35,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -88,14 +89,14 @@ cart_db::ChromeCartContentProto BuildProtoWithProducts(
   return proto;
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
                               Profile* profile,
                               Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     run_loop->Quit();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 const char kMockExample[] = "guitarcenter.com";
 const char kMockExampleFallbackURL[] = "https://www.guitarcenter.com/cart";
@@ -166,7 +167,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   using FormSubmittedEntry = ukm::builders::Shopping_FormSubmitted;
   using XHREntry = ukm::builders::Shopping_WillSendRequest;
 
-  void SetUpInProcessBrowserTestFixture() override {
+  CommerceHintAgentTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
           {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
@@ -561,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
 // the rest and below tests don't work on CrOS yet. Re-enable them on CrOS after
 // figuring out the reason for failure.
 // Signing out on Lacros is not possible.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug/1258803): Skip work on non-eligible profiles.
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   Profile* profile =
@@ -618,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class CommerceHintCacaoTest : public CommerceHintAgentTest {
  public:
@@ -855,7 +856,7 @@ class CommerceHintTimeoutTest : public CommerceHintAgentTest {
 };
 
 // Flaky on Linux and ChromeOS: https://crbug.com/1257964.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ExtractCart DISABLED_ExtractCart
 #else
 #define MAYBE_ExtractCart ExtractCart
@@ -1153,7 +1154,7 @@ class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
 };
 
 // Times out on multiple platforms. https://crbug.com/1258553
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CartExtractionSkipped DISABLED_CartExtractionSkipped
 #else
 #define MAYBE_CartExtractionSkipped CartExtractionSkipped
@@ -1180,4 +1181,42 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
 
   WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
 }
+
+class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
+ public:
+  CommerceHintAgentFencedFrameTest() = default;
+  ~CommerceHintAgentFencedFrameTest() override = default;
+  CommerceHintAgentFencedFrameTest(const CommerceHintAgentFencedFrameTest&) =
+      delete;
+
+  CommerceHintAgentFencedFrameTest& operator=(
+      const CommerceHintAgentFencedFrameTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
+                       VisitCartInFencedFrame) {
+  // For add-to-cart by URL, normally a URL in that domain has already been
+  // committed.
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url =
+      https_server_.GetURL("www.guitarcenter.com", "/cart.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // Do not affect counts.
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
+}
+
 }  // namespace

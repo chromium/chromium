@@ -175,6 +175,11 @@ void CredentialManagerPendingRequestTask::OnGetPasswordStoreResultsFrom(
   AggregatePasswordStoreResults(std::move(results));
 }
 
+base::WeakPtr<PasswordStoreConsumer>
+CredentialManagerPendingRequestTask::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void CredentialManagerPendingRequestTask::ProcessMigratedForms(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   AggregatePasswordStoreResults(std::move(forms));

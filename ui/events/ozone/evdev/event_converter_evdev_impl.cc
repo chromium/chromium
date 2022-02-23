@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"

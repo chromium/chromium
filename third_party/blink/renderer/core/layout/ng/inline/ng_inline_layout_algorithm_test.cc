@@ -156,19 +156,19 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
                                        container_builder.GetWritingDirection());
   container_builder.SetItemsBuilder(&items_builder);
   context.SetItemsBuilder(&items_builder);
-  scoped_refptr<const NGLayoutResult> layout_result =
+  const NGLayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
   EXPECT_TRUE(line1.BreakToken());
 
   // Perform 2nd layout with the break token from the 1st line.
-  scoped_refptr<const NGLayoutResult> layout_result2 =
+  const NGLayoutResult* layout_result2 =
       inline_node.Layout(constraint_space, line1.BreakToken(), &context);
   const auto& line2 = layout_result2->PhysicalFragment();
   EXPECT_TRUE(line2.BreakToken());
 
   // Perform 3rd layout with the break token from the 2nd line.
-  scoped_refptr<const NGLayoutResult> layout_result3 =
+  const NGLayoutResult* layout_result3 =
       inline_node.Layout(constraint_space, line2.BreakToken(), &context);
   const auto& line3 = layout_result3->PhysicalFragment();
   EXPECT_FALSE(line3.BreakToken());
@@ -288,7 +288,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, ContainerBorderPadding) {
   NGBlockNode block_node(block_flow);
   NGConstraintSpace space =
       NGConstraintSpace::CreateFromLayoutObject(*block_flow);
-  scoped_refptr<const NGLayoutResult> layout_result = block_node.Layout(space);
+  const NGLayoutResult* layout_result = block_node.Layout(space);
 
   EXPECT_TRUE(layout_result->BfcBlockOffset().has_value());
   EXPECT_EQ(0, *layout_result->BfcBlockOffset());
@@ -359,9 +359,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
     </div>
   )HTML");
   // ** Run LayoutNG algorithm **
-  NGConstraintSpace space;
-  scoped_refptr<const NGPhysicalBoxFragment> html_fragment;
-  std::tie(html_fragment, space) = RunBlockLayoutAlgorithmForElement(
+  auto [html_fragment, space] = RunBlockLayoutAlgorithmForElement(
       GetDocument().getElementsByTagName("html")->item(0));
   auto* body_fragment =
       To<NGPhysicalBoxFragment>(html_fragment->Children()[0].get());

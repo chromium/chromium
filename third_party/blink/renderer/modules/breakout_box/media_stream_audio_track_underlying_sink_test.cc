@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,9 +73,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
         MakeGarbageCollected<AudioData>(std::move(media_buffer));
     if (audio_data_out)
       *audio_data_out = audio_data;
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(audio_data, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
   }
 
  protected:

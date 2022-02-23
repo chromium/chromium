@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -104,11 +105,11 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool all_data_;
   base::OnceClosure callback_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
 };
 
 // Returns whether the user is a managed user or not.

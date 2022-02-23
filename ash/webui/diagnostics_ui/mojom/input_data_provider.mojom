@@ -5,21 +5,29 @@
 module ash.diagnostics.mojom;
 
 enum ConnectionType {
-  kInternal,  // Includes internal USB devices.
+  // Includes devices connected over USB that are on fully internal busses, as
+  // well as the keyboards/touchpads for detachables.
+  kInternal,
   kUsb,
   kBluetooth,
+  // An unknown device is most likely to be internal.
   kUnknown,
 };
 
-// The physical style of a keyboard.
 enum PhysicalLayout {
   kUnknown,
   // A typical Chrome OS keyboard with action keys on the top row, reduced
   // navigation keys, etc.
   kChromeOS,
-  // The slightly-modified Chrome OS keyboard found on Dell Enterprise
-  // Chromebooks or Dell WWCB keyboards (like the KM713 Chrome Keyboard).
-  kChromeOSDellEnterprise,
+  // The slightly-modified Chrome OS keyboard found on the early Dell Enterprise
+  // Chromebooks (Arcada and Sarien). Has Fn and keyboard layout switch keys
+  // between the left Ctrl and Alt, and Page Up and Down keys in the gaps around
+  // the arrow keys.
+  kChromeOSDellEnterpriseWilco,
+  // The layout found on later Dell Enterprise Chromebooks (Drallion) and Dell
+  // ChromeOS keyboards like the KM713 Chrome Keyboard. Like the Wilco layout
+  // except it doesn't have the Page Up and Down keys around the arrow keys.
+  kChromeOSDellEnterpriseDrallion,
 };
 
 // The international standard that the layout follows.
@@ -31,9 +39,38 @@ enum MechanicalLayout {
 };
 
 enum NumberPadPresence {
+  // Unknown indicates there is no reliable evidence whether a numberpad is
+  // present. This is common for external keyboards.
   kUnknown,
   kPresent,
   kNotPresent,
+};
+
+// Note that this enumeration will need to be extended if new keys are added.
+enum TopRowKey {
+  // Either no key at all, or no special action key at this position.
+  kNone,
+  // Marker for keys which cannot be decoded, but have some action.
+  kUnknown,
+  kBack,
+  kForward,
+  kRefresh,
+  kFullscreen,
+  kOverview,
+  kScreenshot,
+  kScreenBrightnessDown,
+  kScreenBrightnessUp,
+  kPrivacyScreenToggle,
+  kVolumeMute,
+  kVolumeDown,
+  kVolumeUp,
+  kKeyboardBacklightDown,
+  kKeyboardBacklightUp,
+  kNextTrack,
+  kPreviousTrack,
+  kPlayPause,
+  kScreenMirror,
+  kDelete,
 };
 
 // Describes a connected keyboard.
@@ -44,19 +81,55 @@ struct KeyboardInfo {
   string name;
   PhysicalLayout physical_layout;
   MechanicalLayout mechanical_layout;
-  bool has_assistant_key;
+  // For internal keyboards, the region code of the device (from which the
+  // visual layout can be determined).
+  string? region_code;
   NumberPadPresence number_pad_present;
+  // List of ChromeOS specific action keys in the top row. This list excludes
+  // the left-most Escape key, and right-most key (usually Power/Lock).
+  // If a keyboard has F11-F15 keys beyond the rightmost action key, they may
+  // not be included in this list (even as kNone).
+  array<TopRowKey> top_row_keys;
+  // Only applicable to CrOS keyboards.
+  bool has_assistant_key;
 };
 
-// Describes the glyphs that appear on a single key.
-struct KeyGlyphSet {
-  // Glyph if pressed without modifiers. Displayed in the centre or on the lower
-  // half of the key.
-  string main_glyph;
+enum KeyEventType {
+  kPress,
+  kRelease,
+};
 
-  // Glyph if pressed with Shift. Displayed in the upper half. Null if it's just
-  // the main glyph in upper-case.
-  string? shift_glyph;
+// Describes an event on a connected keyboard.
+struct KeyEvent {
+  // The number of the keyboard's /dev/input/event* node.
+  uint32 id;
+  KeyEventType type;
+  // The evdev key code
+  uint32 key_code;
+  // The kernel-reported 'physical' scancode; this may be a 32-bit Usage for
+  // USB and Bluetooth HID devices, or an AT-style scancode for some internal
+  // keyboards.
+  uint32 scan_code;
+  // Position of the key on the top row after escape (0 is leftmost, 1 is next
+  // to the right, etc.), or -1 for keys not on the top row. Generally, 0 is F1,
+  // in some fashion.
+  // NOTE: This position may exceed the length of top_row_keys, for external
+  // keyboards with keys in the F11-F15 range.
+  int32 top_row_position;
+};
+
+// Implemented by clients that wish to be updated when input devices have keys
+// pressed or released, while the client has focus and is visible; pause and
+// resume events will be generated if focus/visibility changes.
+interface KeyboardObserver {
+  // Called when a key is pressed or released on the observed device, and
+  // events to this observer have not been paused.
+  OnKeyEvent(KeyEvent event);
+  // Called when delivery of events to the app are paused temporarily for
+  // security reasons. While paused, events will be discarded.
+  OnKeyEventsPaused();
+  // Called when delivery of events resumes.
+  OnKeyEventsResumed();
 };
 
 enum TouchDeviceType {
@@ -96,14 +169,15 @@ interface InputDataProvider {
   GetConnectedDevices() =>
     (array<KeyboardInfo> keyboards,
      array<TouchDeviceInfo> touch_devices);
-  // Registers an observer of connected input devices.
+
+  // Registers an observer for changes to the connected input devices.
   ObserveConnectedDevices(pending_remote<ConnectedDevicesObserver> observer);
 
-  // Returns the visual layout for the keyboard with the given ID. For external
-  // keyboards where we can't be sure of their layout, this will default to the
-  // system layout.
-  //
-  // The layout is represented as a map from the evdev code of a key to a
-  // KeyGlyphSet describing its glyphs.
-  GetKeyboardVisualLayout(uint32 id) => (map<uint32, KeyGlyphSet> layout);
+  // id is the number of the keyboard device's /dev/input/event* node.
+  // Observation is cancelled when KeyboardObserver (or InputDataProvider)
+  // is destroyed.
+  // The native implementation of InputDataProvider has a reference to the
+  // target SWA window, and enforces the security policy of only forwarding
+  // key events to the observer when that window is visible and has focus.
+  ObserveKeyEvents(uint32 id, pending_remote<KeyboardObserver> observer);
 };

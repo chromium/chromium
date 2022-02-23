@@ -26,7 +26,6 @@
 #include "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -361,7 +360,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
     if (webState && PagePlaceholderTabHelper::FromWebState(webState)
                         ->will_add_placeholder_for_next_navigation()) {
-      [sessionIDs addObject:TabIdTabHelper::FromWebState(webState)->tab_id()];
+      [sessionIDs addObject:webState->GetStableIdentifier()];
     }
     index = index + dx;
   }
@@ -375,6 +374,9 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)handlePan:(SideSwipeGestureRecognizer*)gesture {
+  // Do not trigger a CheckForOverRealization here, as it's expected
+  // that many WebStates may realize from multiple swipes.
+  web::IgnoreOverRealizationCheck();
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return [self handleiPhoneTabSwipe:gesture];
   } else {

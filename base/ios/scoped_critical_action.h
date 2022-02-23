@@ -5,8 +5,8 @@
 #ifndef BASE_IOS_SCOPED_CRITICAL_ACTION_H_
 #define BASE_IOS_SCOPED_CRITICAL_ACTION_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/lock.h"
 
 namespace base {

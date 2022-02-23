@@ -21,16 +21,16 @@
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <features.h>
 #endif
 
@@ -46,7 +46,7 @@ namespace base {
 namespace trace_event {
 
 namespace {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // A structure containing some information about a given heap.
 struct WinHeapInfo {
   size_t committed_size;
@@ -104,14 +104,15 @@ void ReportWinHeapStats(MemoryDumpLevelOfDetail level_of_detail,
     }
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                MemoryDumpLevelOfDetail level_of_detail,
                                size_t* total_virtual_size,
                                size_t* resident_size,
-                               size_t* allocated_objects_size) {
+                               size_t* allocated_objects_size,
+                               uint64_t* syscall_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
   bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
@@ -141,6 +142,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
+  *syscall_count += partition_stats_dumper.syscall_count();
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -172,28 +174,29 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t resident_size = 0;
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  uint64_t syscall_count = 0;
+  uint64_t pa_only_resident_size;
+  uint64_t pa_only_allocated_objects_size;
+#endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(pmd, args.level_of_detail, &total_virtual_size,
-                            &resident_size, &allocated_objects_size);
+                            &resident_size, &allocated_objects_size,
+                            &syscall_count);
 
+  pa_only_resident_size = resident_size;
+  pa_only_allocated_objects_size = allocated_objects_size;
+
+  // Even when PartitionAlloc is used, WinHeap is still used as well, report
+  // its statistics.
 #if OS_WIN
   ReportWinHeapStats(args.level_of_detail, pmd, &total_virtual_size,
                      &resident_size, &allocated_objects_size,
                      &allocated_objects_count);
 #endif
   // TODO(keishi): Add glibc malloc on Android
-#elif BUILDFLAG(USE_TCMALLOC)
-  bool res =
-      allocator::GetNumericProperty("generic.heap_size", &total_virtual_size);
-  DCHECK(res);
-  res = allocator::GetNumericProperty("generic.total_physical_bytes",
-                                      &resident_size);
-  DCHECK(res);
-  res = allocator::GetNumericProperty("generic.current_allocated_bytes",
-                                      &allocated_objects_size);
-  DCHECK(res);
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   malloc_statistics_t stats = {0};
   malloc_zone_statistics(nullptr, &stats);
   total_virtual_size = stats.size_allocated;
@@ -211,11 +214,11 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   // fragmentation. See
   // https://bugs.chromium.org/p/chromium/issues/detail?id=695263#c1.
   resident_size = stats.size_in_use;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ReportWinHeapStats(args.level_of_detail, nullptr, &total_virtual_size,
                      &resident_size, &allocated_objects_size,
                      &allocated_objects_count);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 // TODO(fuchsia): Port, see https://crbug.com/706592.
 #else
 #if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
@@ -253,16 +256,41 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           allocated_objects_count);
   }
 
-  if (resident_size > allocated_objects_size) {
-    // Explicitly specify why is extra memory resident. In tcmalloc it accounts
-    // for free lists and caches. In mac and ios it accounts for the
-    // fragmentation and metadata.
+  int64_t waste = static_cast<int64_t>(resident_size) - allocated_objects_size;
+
+  // With PartitionAlloc, reported size under malloc/partitions is the resident
+  // size, so it already includes fragmentation. Meaning that "malloc/"'s size
+  // would double-count fragmentation if we report it under
+  // "malloc/metadata_fragmentation_caches" as well.
+  //
+  // Still report waste, as on some platforms, PartitionAlloc doesn't capture
+  // all of malloc()'s memory footprint.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size) -
+                     pa_only_allocated_objects_size;
+  waste -= pa_waste;
+#endif
+
+  if (waste > 0) {
+    // Explicitly specify why is extra memory resident. In mac and ios it
+    // accounts for the fragmentation and metadata.
     MemoryAllocatorDump* other_dump =
         pmd->CreateAllocatorDump("malloc/metadata_fragmentation_caches");
     other_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          resident_size - allocated_objects_size);
+                          MemoryAllocatorDump::kUnitsBytes, waste);
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  uint64_t new_syscalls = syscall_count - last_syscall_count_;
+  base::TimeDelta time_since_last_dump =
+      base::TimeTicks::Now() - last_memory_dump_time_;
+  uint64_t syscalls_per_minute = static_cast<uint64_t>(
+      (60 * new_syscalls) / time_since_last_dump.InSecondsF());
+  outer_dump->AddScalar("syscalls_per_minute", "count", syscalls_per_minute);
+
+  last_memory_dump_time_ = base::TimeTicks::Now();
+  last_syscall_count_ = syscall_count;
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   return true;
 }
@@ -294,10 +322,19 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_mmapped_bytes_ += memory_stats->total_mmapped_bytes;
   total_resident_bytes_ += memory_stats->total_resident_bytes;
   total_active_bytes_ += memory_stats->total_active_bytes;
+  syscall_count_ += memory_stats->syscall_count;
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
+
+  auto total_committed_bytes = memory_stats->total_committed_bytes;
+  auto total_active_bytes = memory_stats->total_active_bytes;
+  size_t wasted = total_committed_bytes - total_active_bytes;
+  DCHECK_GE(total_committed_bytes, total_active_bytes);
+  size_t fragmentation =
+      total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
+
   allocator_dump->AddScalar("size", "bytes",
                             memory_stats->total_resident_bytes);
   allocator_dump->AddScalar("allocated_objects_size", "bytes",
@@ -322,11 +359,12 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   allocator_dump->AddScalar("brp_quarantined_count", "count",
                             memory_stats->total_brp_quarantined_count);
 #endif
-
   allocator_dump->AddScalar("syscall_count", "count",
                             memory_stats->syscall_count);
   allocator_dump->AddScalar("syscall_total_time_ms", "ms",
                             memory_stats->syscall_total_time_ns / 1e6);
+  allocator_dump->AddScalar("fragmentation", "percent", fragmentation);
+  allocator_dump->AddScalar("wasted", "bytes", wasted);
 
   if (memory_stats->has_thread_cache) {
     const auto& thread_cache_stats = memory_stats->current_thread_cache_stats;

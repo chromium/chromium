@@ -26,13 +26,13 @@
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "printing/backend/cups_connection.h"
 #include "printing/backend/cups_ipp_utils.h"
 #include "printing/backend/print_backend_cups_ipp.h"
 #include "printing/printing_features.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace printing {
 
@@ -61,7 +61,7 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
                                    http_encryption_t encryption,
                                    bool blocking,
                                    const std::string& locale)
-    : PrintBackend(locale),
+    : locale_(locale),
       print_server_url_(print_server_url),
       cups_encryption_(encryption),
       blocking_(blocking) {}
@@ -104,7 +104,7 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
         printer.options[opt_index].value;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, "printer-info" option specifies the printer name and
   // "printer-make-and-model" specifies the printer description.
   if (info)
@@ -248,7 +248,7 @@ mojom::ResultCode PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
     return result_code;
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  return ParsePpdCapabilities(dest.get(), locale(), info.printer_capabilities,
+  return ParsePpdCapabilities(dest.get(), locale_, info.printer_capabilities,
                               printer_info)
              ? mojom::ResultCode::kSuccess
              : mojom::ResultCode::kFailed;
@@ -302,18 +302,16 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
   return !!GetNamedDest(printer_name);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool for_cloud_print) {
-#if defined(OS_MAC)
-  if (!for_cloud_print &&
-      base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
+    const std::string& locale) {
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(
-        CreateConnection(print_backend_settings), locale);
+        CreateConnection(print_backend_settings));
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   std::string print_server_url_str, cups_blocking;
   int encryption = HTTP_ENCRYPT_NEVER;
   if (print_backend_settings) {
@@ -329,7 +327,7 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
       print_server_url, static_cast<http_encryption_t>(encryption),
       cups_blocking == kValueTrue, locale);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 int PrintBackendCUPS::GetDests(cups_dest_t** dests) {
   // Default to the local print server (CUPS scheduler)

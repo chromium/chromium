@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"  // For OS_POSIX
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 
@@ -3415,9 +3415,8 @@ void HttpCache::Transaction::RecordHistograms() {
   // have started and so request_ should exist.
   DCHECK(request_);
   if (request_->possibly_top_frame_origin) {
-    url::Origin request_origin = url::Origin::Create(request_->url);
     is_third_party =
-        !request_origin.IsSameOriginWith(*request_->possibly_top_frame_origin);
+        !request_->possibly_top_frame_origin->IsSameOriginWith(request_->url);
   }
 
   std::string mime_type;

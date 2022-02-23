@@ -1054,26 +1054,15 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
       CreateFencedFrame(web_contents->GetMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
-  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
-            content::EvalJs(fenced_frame_host,
-                            "(async () => {"
-                            "  let [e] = await self.showOpenFilePicker();"
-                            "  self.entry = e;"
-                            "  return e.name; })()"));
+  // File system access is disabled for fenced frames.
+  EXPECT_FALSE(content::ExecJs(fenced_frame_host,
+                               "(async () => {"
+                               "  let [e] = await self.showOpenFilePicker();"
+                               "  self.entry = e;"
+                               "  return e.name; })()"));
 
   // Even read-only access should show a usage indicator.
-  EXPECT_TRUE(IsUsageIndicatorVisible());
-
-  // Write access in the fenced frame must fail.
-  EXPECT_EQ("Not allowed to request permissions in this context.",
-            content::EvalJs(fenced_frame_host,
-                            "(async () => {"
-                            "  try {"
-                            "    await self.entry.createWritable();"
-                            "  } catch (e) {"
-                            "    return e.message;"
-                            "  }"
-                            "  return 'no error'; })()"));
+  EXPECT_FALSE(IsUsageIndicatorVisible());
 }
 
 INSTANTIATE_TEST_SUITE_P(

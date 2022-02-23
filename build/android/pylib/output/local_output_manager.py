@@ -21,7 +21,7 @@ class LocalOutputManager(output_manager.OutputManager):
   """
 
   def __init__(self, output_dir):
-    super(LocalOutputManager, self).__init__()
+    super().__init__()
     timestamp = time.strftime(
         '%Y_%m_%dT%H_%M_%S', time.localtime())
     self._output_root = os.path.abspath(os.path.join(
@@ -36,8 +36,7 @@ class LocalOutputManager(output_manager.OutputManager):
 class LocalArchivedFile(output_manager.ArchivedFile):
 
   def __init__(self, out_filename, out_subdir, datatype, out_root):
-    super(LocalArchivedFile, self).__init__(
-        out_filename, out_subdir, datatype)
+    super().__init__(out_filename, out_subdir, datatype)
     self._output_path = os.path.join(out_root, out_subdir, out_filename)
 
   def _Link(self):

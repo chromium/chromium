@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -46,7 +47,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -74,6 +74,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -183,8 +184,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
     // to avoid having to set up a mock policy server. UserCloudPolicyManager
     // will shut down the profile if there's an error loading the initial
     // policy, so disable this behavior so we can inject policy directly.
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void SetUpOnMainThread() override {
@@ -222,22 +222,19 @@ class UserImageManagerTestBase : public LoginManagerTest,
   void ExpectUserImageInfo(const AccountId& account_id,
                            int image_index,
                            const base::FilePath& image_path) {
-    const base::DictionaryValue* images_pref =
+    const base::Value* images_pref =
         local_state_->GetDictionary(UserImageManagerImpl::kUserImageProperties);
     ASSERT_TRUE(images_pref);
-    const base::DictionaryValue* image_properties = NULL;
-    images_pref->GetDictionaryWithoutPathExpansion(account_id.GetUserEmail(),
-                                                   &image_properties);
+    const base::Value* image_properties =
+        images_pref->FindDictKey(account_id.GetUserEmail());
     ASSERT_TRUE(image_properties);
-    int actual_image_index;
-    std::string actual_image_path;
-    ASSERT_TRUE(
-        image_properties->GetInteger(UserImageManagerImpl::kImageIndexNodeName,
-                                     &actual_image_index) &&
-        image_properties->GetString(UserImageManagerImpl::kImagePathNodeName,
-                                    &actual_image_path));
-    EXPECT_EQ(image_index, actual_image_index);
-    EXPECT_EQ(image_path.value(), actual_image_path);
+    absl::optional<int> actual_image_index =
+        image_properties->FindIntKey(UserImageManagerImpl::kImageIndexNodeName);
+    const std::string* actual_image_path = image_properties->FindStringKey(
+        UserImageManagerImpl::kImagePathNodeName);
+    ASSERT_TRUE(actual_image_index.has_value() && actual_image_path);
+    EXPECT_EQ(image_index, actual_image_index.value());
+    EXPECT_EQ(image_path.value(), *actual_image_path);
   }
 
   // Verifies that there is no image info for `account_id` in dictionary

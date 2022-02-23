@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,7 +56,6 @@ struct WebServiceWorkerInstalledScriptsManagerParams;
 namespace content {
 
 class EmbeddedWorkerInstanceClientImpl;
-class WebServiceWorkerFetchContext;
 
 // ServiceWorkerContextClient is a "client" of a service worker execution
 // context. It enables communication between the embedder and Blink's
@@ -71,8 +69,7 @@ class WebServiceWorkerFetchContext;
 //
 // Unless otherwise noted (here or in base class documentation), all methods
 // are called on the worker thread.
-class CONTENT_EXPORT ServiceWorkerContextClient
-    : public blink::WebServiceWorkerContextClient {
+class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
  public:
   // Called on the initiator thread.
   // - |is_starting_installed_worker| is true if the script is already installed
@@ -170,31 +167,18 @@ class CONTENT_EXPORT ServiceWorkerContextClient
   void RequestTermination(RequestTerminationCallback callback) override;
   scoped_refptr<blink::WebServiceWorkerFetchContext>
   CreateWorkerFetchContextOnInitiatorThread() override;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // The following are for use by NavigationPreloadRequest.
-  //
-  // Called to resolve the FetchEvent.preloadResponse promise.
   void OnNavigationPreloadResponse(
       int fetch_event_id,
       std::unique_ptr<blink::WebURLResponse> response,
-      mojo::ScopedDataPipeConsumerHandle data_pipe);
-
-  // Called when the navigation preload request completed. Either
-  // OnNavigationPreloadComplete() or OnNavigationPreloadError() must be
-  // called to release the preload related resources.
+      mojo::ScopedDataPipeConsumerHandle data_pipe) override;
   void OnNavigationPreloadComplete(int fetch_event_id,
                                    base::TimeTicks completion_time,
                                    int64_t encoded_data_length,
                                    int64_t encoded_body_length,
-                                   int64_t decoded_body_length);
-
-  // Called when an error occurred while receiving the response of the
-  // navigation preload request.
+                                   int64_t decoded_body_length) override;
   void OnNavigationPreloadError(
       int fetch_event_id,
-      std::unique_ptr<blink::WebServiceWorkerError> error);
-  /////////////////////////////////////////////////////////////////////////////
+      std::unique_ptr<blink::WebServiceWorkerError> error) override;
 
  private:
   struct WorkerContextData;

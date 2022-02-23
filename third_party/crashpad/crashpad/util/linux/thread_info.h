@@ -24,7 +24,7 @@
 #include "util/linux/address_types.h"
 #include "util/numeric/int128.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 
@@ -261,11 +261,12 @@ union FloatContext {
 // __ANDROID_API_N__ is a proxy for determining whether unified headers are in
 // use. It’s only defined by unified headers. Unified headers call this
 // structure user_fpxregs_struct regardless of API level.
-#if defined(OS_ANDROID) && __ANDROID_API__ <= 19 && !defined(__ANDROID_API_N__)
+#if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ <= 19 && \
+    !defined(__ANDROID_API_N__)
   using NativeFpxregs = user_fxsr_struct;
 #else
   using NativeFpxregs = user_fpxregs_struct;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   static_assert(sizeof(f32_t::fxsave) == sizeof(NativeFpxregs),
                 "Size mismatch");
 #elif defined(ARCH_CPU_X86_64)

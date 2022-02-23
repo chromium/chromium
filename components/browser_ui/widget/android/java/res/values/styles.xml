@@ -3,7 +3,36 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
+    <!-- AlertDialog styles -->
+    <!-- This should be kept in sync with |Theme.BrowserUI.AlertDialog.NoActionBar|. -->
+    <style name="Base.Theme.Chromium.AlertDialog"
+        parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:textColorPrimary">@macro/default_text_color</item>
+        <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+
+        <!--  Overriding AppCompat values -->
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+    <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
+
+    <style name="Theme.Chromium.AlertDialog.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
     <!-- Card styles -->
     <style name="CardTransparentForDark">
         <item name="android:background">@drawable/incognito_card_bg</item>
@@ -33,13 +62,21 @@
         <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
     </style>
 
-    <style name="OverflowMenuAnim">
+    <style name="EndIconMenuAnim">
         <item name="android:windowEnterAnimation">@anim/menu_enter</item>
         <item name="android:windowExitAnimation">@anim/menu_exit</item>
     </style>
-    <style name="OverflowMenuAnimBottom">
+    <style name="EndIconMenuAnimBottom">
         <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
+    </style>
+    <style name="StartIconMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_top_left</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_top_left</item>
+    </style>
+    <style name="StartIconMenuAnimBottom">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom_left</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
     </style>
 
     <!-- Modern List Item -->
@@ -117,4 +154,52 @@
         <item name="android:layout_marginBottom">6dp</item>
     </style>
 
+    <!-- Chips -->
+    <style name="SuggestionChipThemeOverlay">
+        <item name="chipStyle">@style/SuggestionChip</item>
+    </style>
+
+    <style name="Chip">
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="chipColor">@color/chip_background_color</item>
+        <item name="chipStateLayerColor">@color/chip_state_layer_color</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
+        <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="rippleColor">@color/chip_ripple_color</item>
+        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
+    </style>
+    <style name="SuggestionChip" parent="Chip">
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="cornerRadius">@dimen/chip_corner_radius</item>
+    </style>
+    <style name="InputChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="AssistiveChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
+        <item name="iconWidth">28dp</item>
+        <item name="iconHeight">28dp</item>
+        <item name="useRoundedIcon">true</item>
+        <item name="endIconWidth">18dp</item>
+        <item name="endIconHeight">18dp</item>
+    </style>
+
+    <style name="ChipTextView">
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="MenuChip" parent="Chip" tools:ignore="UnusedResources">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
+        <item name="chipColor">@color/menu_chip_background</item>
+        <item name="solidColorChip">true</item>
+        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
+    </style>
 </resources>

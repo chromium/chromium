@@ -8,6 +8,12 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/mojom/frame.mojom.h"
+#endif
 
 namespace {
 
@@ -22,7 +28,7 @@ void RegisterPoliciesForNonAssociatedInterfaces(
 }
 
 // Registers policies for channel-associated interfaces registered in
-// `BindAssociatedReceiverFromFrame()`.
+// `RegisterAssociatedInterfaceBindersForRenderFrameHost()`.
 void RegisterPoliciesForChannelAssociatedInterfaces(
     content::MojoBinderPolicyMap& policy_map) {
   policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(
@@ -30,6 +36,16 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
   policy_map
       .SetAssociatedPolicy<subresource_filter::mojom::SubresourceFilterHost>(
           content::MojoBinderAssociatedPolicy::kGrant);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(https://crbug.com/1278141): Revisit this decision after Prerender2
+  // support desktops.
+  // TODO(https://crbug.com/1259007): Introduce kExperimentalGrant and
+  // replace kGrant with kExperimentalGrant.
+  if (blink::features::IsPrerender2Enabled()) {
+    policy_map.SetAssociatedPolicy<extensions::mojom::LocalFrameHost>(
+        content::MojoBinderAssociatedPolicy::kGrant);
+  }
+#endif
 }
 
 }  // namespace

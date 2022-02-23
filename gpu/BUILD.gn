@@ -9,45 +9,34 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/gl/features.gni")
+if (is_android) {
+  # Pull in enable_chrome_android_internal.
+  import("//build/config/android/config.gni")
+}
 
 config("gpu_implementation") {
   defines = [ "GPU_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 config("gpu_gles2_implementation") {
   defines = [ "GPU_GLES2_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 config("gpu_util_implementation") {
   defines = [ "GPU_UTIL_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 config("raster_implementation") {
   defines = [ "RASTER_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 config("webgpu_implementation") {
   defines = [ "WEBGPU_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 component("gpu") {
@@ -456,13 +445,17 @@ test("gl_tests") {
 
   if (use_dawn) {
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 
   data_deps = [ "//testing/buildbot/filters:gl_tests_filters" ]
+
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:gl_tests_filters" ]
+  }
 }
 
 test("gpu_unittests") {
@@ -855,28 +848,6 @@ if (is_linux || is_chromeos) {
     libfuzzer_options = [ "max_len=16384" ]
   }
 
-  fuzzer_test("gpu_swiftshader_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [ "GPU_FUZZER_USE_SWIFTSHADER" ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
   fuzzer_test("gpu_swangle_passthrough_fuzzer") {
     sources = [ "command_buffer/tests/fuzzer_main.cc" ]
 
@@ -932,31 +903,6 @@ if (is_linux || is_chromeos) {
       "GPU_FUZZER_USE_ANGLE",
       "GPU_FUZZER_USE_RASTER_DECODER",
       "GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER",
-    ]
-
-    deps = [
-      ":gles2",
-      ":gpu",
-      "//base",
-      "//base/third_party/dynamic_annotations",
-      "//ui/gfx/geometry",
-      "//ui/gl",
-      "//ui/gl:test_support",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    libfuzzer_options = [ "max_len=16384" ]
-  }
-
-  fuzzer_test("gpu_raster_swiftshader_fuzzer") {
-    sources = [ "command_buffer/tests/fuzzer_main.cc" ]
-
-    defines = [
-      "GPU_FUZZER_USE_RASTER_DECODER",
-      "GPU_FUZZER_USE_SWIFTSHADER",
     ]
 
     deps = [

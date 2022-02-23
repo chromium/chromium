@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 

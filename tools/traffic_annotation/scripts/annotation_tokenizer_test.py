@@ -96,6 +96,15 @@ class AnnotationTokenizerTest(unittest.TestCase):
     self.assertEqual('world', tokenizer.maybe_advance('symbol'))
     self.assertEqual(None, tokenizer.maybe_advance('right_paren'))
 
+  def testEscaping(self):
+    tokenizer = Tokenizer(
+        '''
+      "\\"abc \\\\\\" def \\\\\\""
+      "string ends here:\\\\" this is not part of the string"
+    ''', 'foo.txt', 33)
+    self.assertEqual('"abc \\" def \\"', tokenizer.advance('string_literal'))
+    self.assertEqual('string ends here:\\', tokenizer.advance('string_literal'))
+
 
 if __name__ == '__main__':
   unittest.main()

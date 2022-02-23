@@ -20,15 +20,20 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
 extern const base::Feature kDefaultCalculatorWebApp;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
-#endif  // defined(OS_CHROMEOS)
+
+extern const base::Feature kCursiveStylusPreinstall;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate
 // installation on features listed in |kPreinstalledAppInstallFeatures|.
 bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
                                             const Profile& profile);
+
+// Checks if migration flag is enabled on all OS.
+bool IsAnyChromeAppToWebAppMigrationEnabled(const Profile& profile);
 
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 

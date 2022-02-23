@@ -9,25 +9,24 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/rand_util.h"
 
-namespace base {
-
 namespace partition_alloc {
+
 class RandomGenerator {
  public:
   constexpr RandomGenerator() {}
 
   uint32_t RandomValue() {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     return GetGenerator()->RandUint32();
   }
 
   void SeedForTesting(uint64_t seed) {
-    internal::ScopedGuard<true> guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     GetGenerator()->ReseedForTesting(seed);
   }
 
  private:
-  internal::PartitionLock lock_ = {};
+  ::partition_alloc::internal::Lock lock_ = {};
   bool initialized_ GUARDED_BY(lock_) = false;
   union {
     base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
@@ -49,20 +48,22 @@ class RandomGenerator {
 // non-trivial default destructor. Not meant to be destructed anyway.
 static_assert(std::is_trivially_destructible<RandomGenerator>::value, "");
 
-}  // namespace partition_alloc
-
 namespace {
 
-partition_alloc::RandomGenerator g_generator = {};
+RandomGenerator g_generator = {};
 
 }  // namespace
+
+namespace internal {
 
 uint32_t RandomValue() {
   return g_generator.RandomValue();
 }
 
+}  // namespace internal
+
 void SetMmapSeedForTesting(uint64_t seed) {
   return g_generator.SeedForTesting(seed);
 }
 
-}  // namespace base
+}  // namespace partition_alloc

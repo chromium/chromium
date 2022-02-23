@@ -1,11 +1,7 @@
 This is a testharness.js-based test.
 PASS .container > div 1
-FAIL .container > div 2 assert_equals: 
-<div class="container"><div style="align-self: normal" data-offset-x="10" data-offset-y="1"></div></div>
-offsetTop expected 1 but got 5
-FAIL .container > div 3 assert_equals: 
-<div class="container"><div style="align-self: stretch" data-offset-x="10" data-offset-y="1"></div></div>
-offsetTop expected 1 but got 5
+PASS .container > div 2
+PASS .container > div 3
 PASS .container > div 4
 FAIL .container > div 5 assert_equals: 
 <div class="container"><div style="align-self: last baseline" data-offset-x="10" data-offset-y="5"></div></div>
@@ -18,12 +14,8 @@ PASS .container > div 10
 PASS .container > div 11
 PASS .container > div 12
 PASS .container > div 13
-FAIL .container > div 14 assert_equals: 
-<div class="container"><div style="align-self: normal" data-offset-x="-2" data-offset-y="1"></div></div>
-offsetTop expected 1 but got -3
-FAIL .container > div 15 assert_equals: 
-<div class="container"><div style="align-self: stretch" data-offset-x="-2" data-offset-y="1"></div></div>
-offsetTop expected 1 but got -3
+PASS .container > div 14
+PASS .container > div 15
 PASS .container > div 16
 FAIL .container > div 17 assert_equals: 
 <div class="container"><div style="align-self: last baseline" data-offset-x="-2" data-offset-y="-3"></div></div>

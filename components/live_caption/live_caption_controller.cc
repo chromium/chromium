@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/caption_util.h"
@@ -68,9 +69,6 @@ void LiveCaptionController::Init() {
   if (!media::IsLiveCaptionFeatureEnabled())
     return;
 
-  base::UmaHistogramBoolean(
-      "Accessibility.LiveCaption.UseSodaForLiveCaption",
-      base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_prefs_);
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -124,11 +122,6 @@ bool LiveCaptionController::IsLiveCaptionEnabled() {
 
 void LiveCaptionController::StartLiveCaption() {
   DCHECK(enabled_);
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    CreateUI();
-    return;
-  }
-
   // The SodaInstaller determines whether SODA is already on the device and
   // whether or not to download. Once SODA is on the device and ready, the
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
@@ -225,7 +218,7 @@ void LiveCaptionController::OnLanguageIdentificationEvent(
   // TODO(crbug.com/1175357): Implement the UI for language identification.
 }
 
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 void LiveCaptionController::OnToggleFullscreen(
     CaptionBubbleContext* caption_bubble_context) {
   if (!enabled_)

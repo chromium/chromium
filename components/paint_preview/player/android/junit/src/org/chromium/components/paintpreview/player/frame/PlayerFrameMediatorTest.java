@@ -244,7 +244,7 @@ public class PlayerFrameMediatorTest {
         mGestureListener = new PlayerGestureListener(null, () -> mHasUserInteraction = true, null);
         Size contentSize = new Size(CONTENT_WIDTH, CONTENT_HEIGHT);
         mMediator = new PlayerFrameMediator(mModel, mCompositorDelegate, mGestureListener,
-                mFrameGuid, contentSize, 0, 0, null, true);
+                mFrameGuid, contentSize, 0, 0, 0f, null, true);
         mScaleController =
                 new PlayerFrameScaleController(mModel.get(PlayerFrameProperties.SCALE_MATRIX),
                         mMediator, null, mGestureListener::onScale);
@@ -675,15 +675,19 @@ public class PlayerFrameMediatorTest {
         Pair<View, Rect> subFrame2 = new Pair<>(subFrame2View, new Rect(30, 130, 70, 160));
         Pair<View, Rect> subFrame3 = new Pair<>(subFrame3View, new Rect(120, 35, 150, 65));
 
-        mMediator.addSubFrame(
-                subFrame1.first, subFrame1.second, Mockito.mock(PlayerFrameMediator.class));
-        mMediator.addSubFrame(
-                subFrame2.first, subFrame2.second, Mockito.mock(PlayerFrameMediator.class));
-        mMediator.addSubFrame(
-                subFrame3.first, subFrame3.second, Mockito.mock(PlayerFrameMediator.class));
+        PlayerFrameMediator subFrame1Mediator = Mockito.mock(PlayerFrameMediator.class);
+        PlayerFrameMediator subFrame2Mediator = Mockito.mock(PlayerFrameMediator.class);
+        PlayerFrameMediator subFrame3Mediator = Mockito.mock(PlayerFrameMediator.class);
+        InOrder inOrder = inOrder(subFrame1Mediator, subFrame2Mediator, subFrame3Mediator);
+        mMediator.addSubFrame(subFrame1.first, subFrame1.second, subFrame1Mediator);
+        mMediator.addSubFrame(subFrame2.first, subFrame2.second, subFrame2Mediator);
+        mMediator.addSubFrame(subFrame3.first, subFrame3.second, subFrame3Mediator);
 
         // Initial view port setup.
         mMediator.updateViewportSize(100, 200, 1f);
+        inOrder.verify(subFrame1Mediator).setVisibleRegion(0, 0, 50, 100);
+        inOrder.verify(subFrame2Mediator).setVisibleRegion(0, 0, 40, 30);
+        inOrder.verify(subFrame3Mediator).setVisibleRegion(0, 0, 0, 0);
         List<View> expectedViews = new ArrayList<>();
         List<Rect> expectedRects = new ArrayList<>();
         List<Boolean> expectedVisibility = new ArrayList<>();
@@ -702,6 +706,9 @@ public class PlayerFrameMediatorTest {
                 getVisibilities(mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS)));
 
         mScrollController.scrollBy(100, 0);
+        inOrder.verify(subFrame1Mediator).setVisibleRegion(0, 0, 0, 0);
+        inOrder.verify(subFrame2Mediator).setVisibleRegion(0, 0, 0, 0);
+        inOrder.verify(subFrame3Mediator).setVisibleRegion(0, 0, 30, 30);
         expectedRects.set(0, new Rect(0, 0, 0, 0));
         expectedRects.set(1, new Rect(0, 0, 0, 0));
         expectedRects.set(2, new Rect(20, 35, 50, 65));
@@ -715,6 +722,9 @@ public class PlayerFrameMediatorTest {
                 getVisibilities(mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS)));
 
         mScrollController.scrollBy(-50, 0);
+        inOrder.verify(subFrame1Mediator).setVisibleRegion(40, 0, 50, 100);
+        inOrder.verify(subFrame2Mediator).setVisibleRegion(20, 0, 40, 30);
+        inOrder.verify(subFrame3Mediator).setVisibleRegion(0, 0, 30, 30);
         expectedRects.clear();
         expectedRects.add(new Rect(-40, 20, 10, 120));
         expectedRects.add(new Rect(-20, 130, 20, 160));
@@ -729,6 +739,9 @@ public class PlayerFrameMediatorTest {
                 getVisibilities(mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS)));
 
         mScrollController.scrollBy(0, 200);
+        inOrder.verify(subFrame1Mediator).setVisibleRegion(0, 0, 0, 0);
+        inOrder.verify(subFrame2Mediator).setVisibleRegion(0, 0, 0, 0);
+        inOrder.verify(subFrame3Mediator).setVisibleRegion(0, 0, 0, 0);
         expectedRects.clear();
         expectedRects.add(new Rect(0, 0, 0, 0));
         expectedRects.add(new Rect(0, 0, 0, 0));

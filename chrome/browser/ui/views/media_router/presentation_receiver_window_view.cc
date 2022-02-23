@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -43,7 +44,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
 
@@ -123,7 +124,7 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
   SetOwnedByWidget(false);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](PresentationReceiverWindowView* dialog) {
-        auto* const delegate = dialog->delegate_;
+        auto* const delegate = dialog->delegate_.get();
         delete dialog;
         delegate->WindowClosed();
       },
@@ -136,7 +137,7 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
 PresentationReceiverWindowView::~PresentationReceiverWindowView() = default;
 
 void PresentationReceiverWindowView::Init() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, the mapping between accelerators and commands is dynamic and user
   // configurable. We fetch and use the default mapping.
   bool result = GetDefaultMacAcceleratorForCommandId(IDC_FULLSCREEN,
@@ -202,7 +203,7 @@ void PresentationReceiverWindowView::Init() {
   box_owner->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   auto* box = SetLayoutManager(std::move(box_owner));
-  AddChildView(location_bar_view_);
+  AddChildView(location_bar_view_.get());
   box->SetFlexForView(location_bar_view_, 0);
   AddChildView(web_view);
   box->SetFlexForView(web_view, 1);

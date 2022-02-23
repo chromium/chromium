@@ -26,10 +26,10 @@ source_set("translate") {
     "translate_accept_languages_factory.cc",
     "translate_accept_languages_factory.h",
     "translate_infobar_tags.h",
-    "translate_ranker_factory.cc",
     "translate_ranker_factory.h",
-    "translate_ranker_metrics_provider.cc",
+    "translate_ranker_factory.mm",
     "translate_ranker_metrics_provider.h",
+    "translate_ranker_metrics_provider.mm",
     "translate_service_ios.h",
     "translate_service_ios.mm",
   ]

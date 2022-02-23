@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace base {
 namespace trace_event {

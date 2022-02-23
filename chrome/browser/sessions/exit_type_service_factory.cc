@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 
+#include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/buildflags.h"
@@ -41,7 +43,7 @@ KeyedService* ExitTypeServiceFactory::BuildServiceInstanceFor(
     return nullptr;
     // TODO(sky): is this necessary?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
   return new ExitTypeService(profile);

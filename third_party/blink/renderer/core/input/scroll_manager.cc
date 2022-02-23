@@ -32,9 +32,10 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 namespace {
@@ -90,7 +91,7 @@ void ScrollManager::ClearGestureScrollState() {
   last_gesture_scroll_over_embedded_content_view_ = false;
   scroll_gesture_handling_node_ = nullptr;
   previous_gesture_scrolled_node_ = nullptr;
-  last_scroll_delta_for_scroll_gesture_ = FloatSize();
+  last_scroll_delta_for_scroll_gesture_ = ScrollOffset();
   delta_consumed_for_scroll_sequence_ = false;
   did_scroll_x_for_scroll_gesture_ = false;
   did_scroll_y_for_scroll_gesture_ = false;
@@ -312,7 +313,7 @@ bool ScrollManager::CanScroll(const ScrollState& scroll_state,
 }
 
 bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
-                                  ScrollGranularity granularity,
+                                  ui::ScrollGranularity granularity,
                                   Node* start_node,
                                   Node* mouse_press_node) {
   Node* node = start_node;
@@ -368,19 +369,19 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     // the Home/End key is considered as a scroll with intended end position
     // only.
     switch (granularity) {
-      case ScrollGranularity::kScrollByLine:
-      case ScrollGranularity::kScrollByPercentage: {
+      case ui::ScrollGranularity::kScrollByLine:
+      case ui::ScrollGranularity::kScrollByPercentage: {
         if (scrollable_area->SnapForDirection(delta))
           return true;
         break;
       }
-      case ScrollGranularity::kScrollByPage: {
+      case ui::ScrollGranularity::kScrollByPage: {
         if (scrollable_area->SnapForEndAndDirection(delta))
           return true;
         break;
       }
-      case ScrollGranularity::kScrollByDocument: {
-        FloatPoint end_position = scrollable_area->ScrollPosition() + delta;
+      case ui::ScrollGranularity::kScrollByDocument: {
+        gfx::PointF end_position = scrollable_area->ScrollPosition() + delta;
         bool scrolled_x = physical_direction == kScrollLeft ||
                           physical_direction == kScrollRight;
         bool scrolled_y = physical_direction == kScrollUp ||
@@ -416,7 +417,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
 // TODO(bokan): This should be merged with logicalScroll assuming
 // defaultSpaceEventHandler's chaining scroll can be done crossing frames.
 bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
-                                   ScrollGranularity granularity,
+                                   ui::ScrollGranularity granularity,
                                    Node* starting_node,
                                    Node* mouse_press_node) {
   // The layout needs to be up to date to determine if we can scroll. We may be
@@ -530,7 +531,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
   current_scroll_chain_.clear();
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  gfx::Point position = FlooredIntPoint(gesture_event.PositionInRootFrame());
+  gfx::Point position =
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame());
   scroll_state_data->position_x = position.x();
   scroll_state_data->position_y = position.y();
   scroll_state_data->delta_x_hint = -gesture_event.DeltaXInRootFrame();
@@ -622,10 +624,11 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   // scrolling occurs in the direction opposite the finger's movement
   // direction. e.g. Finger moving up has negative event delta but causes the
   // page to scroll down causing positive scroll delta.
-  FloatSize delta(-gesture_event.DeltaXInRootFrame(),
-                  -gesture_event.DeltaYInRootFrame());
-  FloatSize velocity(-gesture_event.VelocityX(), -gesture_event.VelocityY());
-  FloatPoint position(gesture_event.PositionInRootFrame());
+  ScrollOffset delta(-gesture_event.DeltaXInRootFrame(),
+                     -gesture_event.DeltaYInRootFrame());
+  gfx::Vector2dF velocity(-gesture_event.VelocityX(),
+                          -gesture_event.VelocityY());
+  gfx::PointF position = gesture_event.PositionInRootFrame();
 
   if (delta.IsZero())
     return WebInputEventResult::kNotHandled;
@@ -650,11 +653,11 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  scroll_state_data->delta_x = delta.width();
-  scroll_state_data->delta_y = delta.height();
+  scroll_state_data->delta_x = delta.x();
+  scroll_state_data->delta_y = delta.y();
   scroll_state_data->delta_granularity = gesture_event.DeltaUnits();
-  scroll_state_data->velocity_x = velocity.width();
-  scroll_state_data->velocity_y = velocity.height();
+  scroll_state_data->velocity_x = velocity.x();
+  scroll_state_data->velocity_y = velocity.y();
   scroll_state_data->position_x = position.x();
   scroll_state_data->position_y = position.y();
   scroll_state_data->is_in_inertial_phase =
@@ -686,8 +689,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
 
   last_scroll_delta_for_scroll_gesture_ = delta;
 
-  bool did_scroll_x = scroll_state->deltaX() != delta.width();
-  bool did_scroll_y = scroll_state->deltaY() != delta.height();
+  bool did_scroll_x = scroll_state->deltaX() != delta.x();
+  bool did_scroll_y = scroll_state->deltaY() != delta.y();
 
   did_scroll_x_for_scroll_gesture_ |= did_scroll_x;
   did_scroll_y_for_scroll_gesture_ |= did_scroll_y;
@@ -706,7 +709,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
     if (Node* overscroll_target = GetScrollEventTarget()) {
       overscroll_target->GetDocument().EnqueueOverscrollEventForNode(
-          overscroll_target, delta.width(), delta.height());
+          overscroll_target, delta.x(), delta.y());
     }
   }
 
@@ -739,15 +742,15 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   if (!scrollable_area)
     return;
 
-  FloatPoint current_position = scrollable_area->ScrollPosition();
+  gfx::PointF current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          gfx::Vector2dF(current_position.x(), current_position.y()),
+          current_position,
           gfx::Vector2dF(scroll_state_data->delta_x,
                          scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
 
-  absl::optional<FloatPoint> snap_point =
+  absl::optional<gfx::PointF> snap_point =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_point)
     return;
@@ -849,8 +852,10 @@ LayoutBox* ScrollManager::LayoutBoxForSnapping() const {
   return previous_gesture_scrolled_node_->GetLayoutBox();
 }
 
-ScrollOffset GetScrollDirection(FloatSize delta) {
-  return delta.ShrunkTo(FloatSize(1, 1)).ExpandedTo(FloatSize(-1, -1));
+ScrollOffset GetScrollDirection(ScrollOffset delta) {
+  delta.SetToMax(ScrollOffset(-1, -1));
+  delta.SetToMin(ScrollOffset(1, 1));
+  return delta;
 }
 
 bool ScrollManager::SnapAtGestureScrollEnd(
@@ -867,7 +872,7 @@ bool ScrollManager::SnapAtGestureScrollEnd(
   bool is_mouse_wheel =
       end_event.SourceDevice() == WebGestureDevice::kTouchpad &&
       end_event.data.scroll_end.delta_units !=
-          ScrollGranularity::kScrollByPrecisePixel;
+          ui::ScrollGranularity::kScrollByPrecisePixel;
 
   // Treat mouse wheel scrolls as direction only scroll with its last scroll
   // delta amout. This means each wheel tick will prefer the next snap position
@@ -896,33 +901,32 @@ bool ScrollManager::SnapAtGestureScrollEnd(
 
 bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
     const gfx::Vector2dF& natural_displacement,
-    gfx::Vector2dF* out_initial_position,
-    gfx::Vector2dF* out_target_position) const {
+    gfx::PointF* out_initial_position,
+    gfx::PointF* out_target_position) const {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(LayoutBoxForSnapping());
   if (!scrollable_area)
     return false;
 
-  FloatPoint current_position = scrollable_area->ScrollPosition();
-  *out_initial_position = ToGfxVector2dF(current_position);
+  gfx::PointF current_position = scrollable_area->ScrollPosition();
+  *out_initial_position = current_position;
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
           *out_initial_position, natural_displacement,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
-  absl::optional<FloatPoint> snap_end =
+  absl::optional<gfx::PointF> snap_end =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_end.has_value())
     return false;
-  *out_target_position = ToGfxVector2dF(snap_end.value());
+  *out_target_position = snap_end.value();
   return true;
 }
 
-gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
-    const gfx::Vector2dF& delta) {
+gfx::PointF ScrollManager::ScrollByForSnapFling(const gfx::Vector2dF& delta) {
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(LayoutBoxForSnapping());
   if (!scrollable_area)
-    return gfx::Vector2dF();
+    return gfx::PointF();
 
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
@@ -933,7 +937,7 @@ gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
   scroll_state_data->is_in_inertial_phase = true;
   scroll_state_data->from_user_input = true;
   scroll_state_data->delta_granularity =
-      ScrollGranularity::kScrollByPrecisePixel;
+      ui::ScrollGranularity::kScrollByPrecisePixel;
   scroll_state_data->delta_consumed_for_scroll_sequence =
       delta_consumed_for_scroll_sequence_;
   auto* scroll_state =
@@ -941,8 +945,8 @@ gfx::Vector2dF ScrollManager::ScrollByForSnapFling(
   scroll_state->SetCurrentNativeScrollingNode(previous_gesture_scrolled_node_);
 
   CustomizedScroll(*scroll_state);
-  FloatPoint end_position = scrollable_area->ScrollPosition();
-  return gfx::Vector2dF(end_position.x(), end_position.y());
+  // Return the end scroll position.
+  return scrollable_area->ScrollPosition();
 }
 
 void ScrollManager::ScrollEndForSnapFling(bool did_finish) {
@@ -1051,9 +1055,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
 
     LocalFrameView* view = frame_->View();
     PhysicalOffset view_point(view->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame())));
-    HitTestRequest request(HitTestRequest::kReadOnly |
-                           HitTestRequest::kRetargetForInert);
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame())));
+    HitTestRequest request(HitTestRequest::kReadOnly);
     HitTestLocation location(view_point);
     HitTestResult result(request, location);
     document->GetLayoutView()->HitTest(location, result);
@@ -1205,10 +1208,10 @@ bool ScrollManager::HandleScrollGestureOnResizer(
                             ? event_target->GetLayoutObject()->EnclosingLayer()
                             : nullptr;
     gfx::Point p = frame_->View()->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame()));
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
-        layer->GetScrollableArea()->IsPointInResizeControl(p,
-                                                           kResizerForTouch)) {
+        layer->GetScrollableArea()->IsAbsolutePointInResizeControl(
+            p, kResizerForTouch)) {
       resize_scrollable_area_ = layer->GetScrollableArea();
       resize_scrollable_area_->SetInResizeMode(true);
       offset_from_resize_corner_ =
@@ -1218,8 +1221,7 @@ bool ScrollManager::HandleScrollGestureOnResizer(
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureScrollUpdate) {
     if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
-      gfx::Point pos =
-          RoundedIntPoint(FloatPoint(gesture_event.PositionInRootFrame()));
+      gfx::Point pos = gfx::ToRoundedPoint(gesture_event.PositionInRootFrame());
       pos.Offset(gesture_event.DeltaXInRootFrame(),
                  gesture_event.DeltaYInRootFrame());
       resize_scrollable_area_->Resize(pos, offset_from_resize_corner_);
@@ -1245,8 +1247,9 @@ void ScrollManager::Resize(const WebMouseEvent& evt) {
   if (evt.GetType() == WebInputEvent::Type::kMouseMove) {
     if (!frame_->GetEventHandler().MousePressed())
       return;
-    resize_scrollable_area_->Resize(FlooredIntPoint(evt.PositionInRootFrame()),
-                                    offset_from_resize_corner_);
+    resize_scrollable_area_->Resize(
+        gfx::ToFlooredPoint(evt.PositionInRootFrame()),
+        offset_from_resize_corner_);
   }
 }
 

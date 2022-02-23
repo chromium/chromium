@@ -33,6 +33,7 @@ class DeviceSettingsAsh : public mojom::DeviceSettingsService,
   // crosapi::mojom::DeviceSettingsService:
   void AddDeviceSettingsObserver(
       mojo::PendingRemote<mojom::DeviceSettingsObserver> observer) override;
+  void GetDevicePolicy(GetDevicePolicyCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::DeviceSettingsService> receivers_;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -29,8 +30,7 @@ class BubbleContentsWrapperService : public KeyedService {
 
   template <typename T>
   void InitBubbleContentsWrapper(const GURL& webui_url,
-                                 int task_manager_string_id,
-                                 bool enable_extension_apis) {
+                                 int task_manager_string_id) {
     // If replacing an existing BubbleContentsWrapper make sure it has no
     // associated host.
     auto it = web_contents_map_.find(webui_url.host());
@@ -40,7 +40,7 @@ class BubbleContentsWrapperService : public KeyedService {
     }
 
     auto contents_wrapper = std::make_unique<BubbleContentsWrapperT<T>>(
-        webui_url, profile_, task_manager_string_id, enable_extension_apis);
+        webui_url, profile_, task_manager_string_id);
     contents_wrapper->ReloadWebContents();
     web_contents_map_.insert({webui_url.host(), std::move(contents_wrapper)});
   }
@@ -54,7 +54,7 @@ class BubbleContentsWrapperService : public KeyedService {
       base::flat_map<std::string, std::unique_ptr<BubbleContentsWrapper>>;
 
   // Profile associated with this service.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Associates BubbleContentsWrapper instances with their WebUI URL hostname.
   WebContentsMap web_contents_map_;

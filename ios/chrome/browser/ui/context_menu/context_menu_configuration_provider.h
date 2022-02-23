@@ -13,6 +13,7 @@ class WebState;
 }
 
 class Browser;
+class GURL;
 
 // Object creating the configuration (action items...) for the context menu.
 @interface ContextMenuConfigurationProvider : NSObject
@@ -28,18 +29,9 @@ class Browser;
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;
 
-// Called when the user commits the preview (taps on it).
-- (void)commitPreview;
-
-// DEPRECATED.
-// Displays a context menu using an action sheet on |baseViewController|.
-// |params| is copied in order to be used in blocks.
-- (void)showLegacyContextMenuForWebState:(web::WebState*)webState
-                                  params:(web::ContextMenuParams)params;
-
-// DEPRECATED.
-// Dismisses the context menu shown above.
-- (void)dismissLegacyContextMenu;
+// The URL to be loaded when the user taps on the preview. Empty URL if there is
+// nothing to load.
+@property(nonatomic, assign, readonly) GURL URLToLoad;
 
 @end
 

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace ui_controls {
@@ -79,7 +80,7 @@ bool SendMouseClick(MouseButton type) {
   return instance_->SendMouseClick(type);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 bool SendTouchEvents(int action, int num, int x, int y) {
   CHECK(g_ui_controls_enabled);

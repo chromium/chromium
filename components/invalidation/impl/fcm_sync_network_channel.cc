@@ -5,6 +5,7 @@
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 
 namespace invalidation {
 

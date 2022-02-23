@@ -13,13 +13,12 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
@@ -134,16 +133,22 @@ bool WebAppShimManagerDelegate::AppCanCreateHost(Profile* profile,
                                                  const AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppCanCreateHost(profile, app_id);
-  // All PWAs and bookmark apps can attach to a host.
-  return AppIsInstalled(profile, app_id);
+  // A host is only created for use with RemoteCocoa.
+  return AppUsesRemoteCocoa(profile, app_id);
 }
 
 bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(Profile* profile,
                                                    const AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppUsesRemoteCocoa(profile, app_id);
-  // All PWAs and bookmark apps use RemoteCocoa.
-  return AppIsInstalled(profile, app_id);
+  // All PWAs, and bookmark apps that open in their own window (not in a browser
+  // window) can attach to a host.
+  if (!profile)
+    return false;
+  auto& registrar = WebAppProvider::GetForWebApps(profile)->registrar();
+  return registrar.IsInstalled(app_id) &&
+         registrar.GetAppEffectiveDisplayMode(app_id) !=
+             web_app::DisplayMode::kBrowser;
 }
 
 bool WebAppShimManagerDelegate::AppIsMultiProfile(Profile* profile,
@@ -265,38 +270,32 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    if (!launch_files.empty()) {
-      WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
-      absl::optional<GURL> file_handler_url =
-          provider->os_integration_manager().GetMatchingFileHandlerURL(
-              app_id, launch_files);
-      if (!file_handler_url) {
-        CancelAppLaunch(profile, app_id);
-        return;
-      }
-
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
+  if (!launch_files.empty()) {
+    absl::optional<GURL> file_handler_url =
+        provider->os_integration_manager().GetMatchingFileHandlerURL(
+            app_id, launch_files);
+    if (file_handler_url)
       params.launch_files = launch_files;
+    // If there is no matching file handling URL (such as when the API has been
+    // disabled), fall back to a normal app launch.
+  }
 
-      const WebApp* web_app = provider->registrar().GetAppById(app_id);
-      DCHECK(web_app);
+  if (!params.launch_files.empty()) {
+    const WebApp* web_app = provider->registrar().GetAppById(app_id);
+    DCHECK(web_app);
 
-      if (web_app->file_handler_approval_state() ==
-          ApiApprovalState::kRequiresPrompt) {
-        chrome::ShowWebAppFileLaunchDialog(
-            launch_files, profile, app_id,
-            base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
-                           profile));
-        return;
-      }
-
-      DCHECK_EQ(ApiApprovalState::kAllowed,
-                web_app->file_handler_approval_state());
+    if (web_app->file_handler_approval_state() ==
+        ApiApprovalState::kRequiresPrompt) {
+      chrome::ShowWebAppFileLaunchDialog(
+          launch_files, profile, app_id,
+          base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
+                         profile));
+      return;
     }
-  } else {
-    // !features::kDesktopPWAsFileHandlingSettingsGated:
-    params.launch_files = launch_files;
+
+    DCHECK_EQ(ApiApprovalState::kAllowed,
+              web_app->file_handler_approval_state());
   }
 
   LaunchAppWithParams(profile, std::move(params));
@@ -357,11 +356,6 @@ WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
     return fallback_delegate_->GetAppShortcutsMenuItemInfos(profile, app_id);
 
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items;
-
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
-    return dock_menu_items;
-  }
 
   DCHECK(profile);
 

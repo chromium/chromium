@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/decorators/page_load_tracker_decorator_helper.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -58,7 +59,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
 
     // |web_contents| must not be loading when it starts being tracked by this
     // observer. Otherwise, loading state wouldn't be tracked correctly.
-    DCHECK(!web_contents->IsLoadingToDifferentDocument());
+    DCHECK(!web_contents->ShouldShowLoadingUI());
   }
 
   WebContentsObserver(const WebContentsObserver&) = delete;
@@ -76,7 +77,7 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_EQ(loading_state_, LoadingState::kNotLoading);
 
     // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
     loading_state_ = LoadingState::kWaitingForNavigation;
@@ -88,8 +89,8 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Only observe top-level navigation to a different document.
-    if (!web_contents()->IsLoadingToDifferentDocument())
+    // Only observe top-level navigation that will show navigation UI.
+    if (!web_contents()->ShouldShowLoadingUI())
       return;
 
     DCHECK(web_contents()->IsLoading());
@@ -149,9 +150,9 @@ class PageLoadTrackerDecoratorHelper::WebContentsObserver
  private:
   // TODO(https://crbug.com/1048719): Extract the logic to manage a linked list
   // of WebContentsObservers to a helper class.
-  PageLoadTrackerDecoratorHelper* const outer_;
-  WebContentsObserver* prev_ GUARDED_BY_CONTEXT(sequence_checker_);
-  WebContentsObserver* next_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<PageLoadTrackerDecoratorHelper> outer_;
+  raw_ptr<WebContentsObserver> prev_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<WebContentsObserver> next_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum class LoadingState {
     // Initial state.

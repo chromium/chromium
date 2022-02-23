@@ -27,7 +27,7 @@ public class NoUnderlineClickableSpan extends ClickableSpan {
      * @param onClickCallback The callback notified when the span is clicked.
      */
     public NoUnderlineClickableSpan(Resources resources, Callback<View> onClickCallback) {
-        this(resources, R.color.default_text_color_link, onClickCallback);
+        this(resources, R.color.default_text_color_link_baseline, onClickCallback);
     }
 
     /**

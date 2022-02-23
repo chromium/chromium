@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "content/common/content_export.h"
 #include "media/base/renderer_factory.h"
 
 namespace blink {
@@ -29,7 +28,7 @@ namespace content {
 
 // RendererFactory implementation for Cast. This class is similar to
 // DefaultRendererFactory, but provides its own CastAudioRenderer for audio.
-class CONTENT_EXPORT CastRendererFactory final : public media::RendererFactory {
+class CastRendererFactory final : public media::RendererFactory {
  public:
   using GetGpuFactoriesCB =
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>;

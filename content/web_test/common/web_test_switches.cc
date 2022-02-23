@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 
 namespace switches {
 
@@ -52,7 +53,7 @@ const char kStableReleaseMode[] = "stable-release-mode";
 // kRunWebTests is set.
 const char kDisableHeadlessMode[] = "disable-headless-mode";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Registers additional font files on Windows (for fonts outside the usual
 // %WINDIR%\Fonts location). Multiple files can be used by separating them
 // with a semicolon (;).

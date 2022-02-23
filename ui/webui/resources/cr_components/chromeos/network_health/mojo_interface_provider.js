@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 // #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-// #import 'chrome://resources/mojo/ash/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+// #import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 // clang-format on
 
 /**
@@ -16,13 +16,13 @@
 
 /**
  * @type
- *     {?ash.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
+ *     {?chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  */
 let networkDiagnosticsService = null;
 
 /**
  * @param
- *     {!ash.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
+ *     {!chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  *     testNetworkDiagnosticsService
  */
 /* #export */ function setNetworkDiagnosticsServiceForTesting(
@@ -32,7 +32,7 @@ let networkDiagnosticsService = null;
 
 /**
  * @return
- *     {!ash.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
+ *     {!chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  */
 /* #export */ function getNetworkDiagnosticsService() {
   if (networkDiagnosticsService) {
@@ -40,6 +40,6 @@ let networkDiagnosticsService = null;
   }
 
   networkDiagnosticsService =
-      ash.networkDiagnostics.mojom.NetworkDiagnosticsRoutines.getRemote();
+      chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutines.getRemote();
   return networkDiagnosticsService;
 }

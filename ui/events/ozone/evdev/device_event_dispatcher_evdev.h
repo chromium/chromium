@@ -204,7 +204,8 @@ class COMPONENT_EXPORT(EVDEV) DeviceEventDispatcherEvdev {
       bool has_mouse,
       bool has_pointing_stick) = 0;
   virtual void DispatchTouchpadDevicesUpdated(
-      const std::vector<InputDevice>& devices) = 0;
+      const std::vector<InputDevice>& devices,
+      bool has_haptic_touchpad) = 0;
   virtual void DispatchDeviceListsComplete() = 0;
   virtual void DispatchStylusStateChanged(StylusState stylus_state) = 0;
   virtual void DispatchGamepadDevicesUpdated(

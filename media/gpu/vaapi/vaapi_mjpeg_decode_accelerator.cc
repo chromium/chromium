@@ -155,6 +155,7 @@ void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
           "Media.VaapiMjpegDecodeAccelerator.VAAPIError"))) {
     VLOGF(1) << "Failed initializing |decoder_|";
     std::move(init_cb).Run(false);
+    return;
   }
 
   vpp_vaapi_wrapper_ = VaapiWrapper::Create(
@@ -165,12 +166,14 @@ void VaapiMjpegDecodeAccelerator::InitializeOnDecoderTaskRunner(
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI for VPP";
     std::move(init_cb).Run(false);
+    return;
   }
 
   // Size is irrelevant for a VPP context.
   if (!vpp_vaapi_wrapper_->CreateContext(gfx::Size())) {
     VLOGF(1) << "Failed to create context for VPP";
     std::move(init_cb).Run(false);
+    return;
   }
 
   std::move(init_cb).Run(true);
@@ -185,6 +188,7 @@ void VaapiMjpegDecodeAccelerator::InitializeOnTaskRunner(
   if (!decoder_thread_.Start()) {
     VLOGF(1) << "Failed to start decoding thread.";
     std::move(init_cb).Run(false);
+    return;
   }
   decoder_task_runner_ = decoder_thread_.task_runner();
 
@@ -240,7 +244,7 @@ void VaapiMjpegDecodeAccelerator::CreateImageProcessor(
   // (i.e., |decoder_thread_|) and we control the lifetime of |decoder_thread_|.
   // Therefore, base::Unretained(this) is safe.
   image_processor_ = LibYUVImageProcessorBackend::Create(
-      input_config, output_config, {ImageProcessorBackend::OutputMode::IMPORT},
+      input_config, output_config, ImageProcessorBackend::OutputMode::IMPORT,
       VIDEO_ROTATION_0,
       base::BindRepeating(&VaapiMjpegDecodeAccelerator::OnImageProcessorError,
                           base::Unretained(this)),

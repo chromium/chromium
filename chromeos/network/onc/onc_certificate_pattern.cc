@@ -24,8 +24,8 @@ bool GetAsListOfStrings(const base::Value& value,
     return false;
 
   result->clear();
-  result->reserve(value.GetList().size());
-  for (const auto& entry : value.GetList()) {
+  result->reserve(value.GetListDeprecated().size());
+  for (const auto& entry : value.GetListDeprecated()) {
     if (!entry.is_string())
       return false;
     result->push_back(entry.GetString());

@@ -18,6 +18,7 @@ static_library("feedback") {
     "feedback_uploader.h",
     "feedback_util.cc",
     "feedback_util.h",
+    "pii_types.h",
     "redaction_tool.cc",
     "redaction_tool.h",
     "system_logs/system_logs_fetcher.cc",

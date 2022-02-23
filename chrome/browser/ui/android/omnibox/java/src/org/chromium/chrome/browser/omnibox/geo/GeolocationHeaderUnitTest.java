@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -27,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -53,6 +53,7 @@ import java.util.HashSet;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class GeolocationHeaderUnitTest {
     private static final String SEARCH_URL = "https://www.google.com/search?q=potatoes";
 
@@ -139,9 +140,6 @@ public class GeolocationHeaderUnitTest {
                      any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
                      anyString(), anyString()))
                 .thenReturn(ContentSettingValues.ALLOW);
-        when(mWebsitePreferenceBridgeJniMock.isPermissionControlledByDSE(
-                     any(BrowserContextHandle.class), anyInt(), anyString()))
-                .thenReturn(true);
         when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
                      any(BrowserContextHandle.class), anyString()))
                 .thenReturn(true);

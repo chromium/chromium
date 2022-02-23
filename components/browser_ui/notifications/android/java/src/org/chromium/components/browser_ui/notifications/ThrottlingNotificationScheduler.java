@@ -25,9 +25,9 @@ import java.util.PriorityQueue;
  * notifications to the NotificationManager.
  */
 public class ThrottlingNotificationScheduler {
-    // To avoid notification updates being throttled by Android, using 250 ms as the interval
-    // so that no more than 5 updates are posted per second.
-    public static final long UPDATE_DELAY_MILLIS = 250;
+    // To avoid notification updates being throttled by Android, using 350 ms as the interval
+    // so that no more than 3 updates are posted per second.
+    public static final long UPDATE_DELAY_MILLIS = 350;
 
     // Priority queue hold all the pending notifications.
     private final PriorityQueue<PendingNotificationTask> mPendingNotificationTasks =

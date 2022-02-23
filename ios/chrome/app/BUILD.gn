@@ -137,21 +137,6 @@ if (!is_fat_secondary_toolchain) {
   }
 }
 
-source_set("content_suggestions_scheduler_app_state_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "content_suggestions_scheduler_app_state_agent.h",
-    "content_suggestions_scheduler_app_state_agent.mm",
-  ]
-  deps = [
-    "//components/ntp_snippets",
-    "//components/previous_session_info",
-    "//ios/chrome/app/application_delegate:observing_app_state_agent",
-    "//ios/chrome/browser/metrics",
-    "//ios/chrome/browser/ntp_snippets",
-  ]
-}
-
 if (ios_enable_credential_provider_extension) {
   source_set("credential_provider_migrator_app_agent") {
     configs += [ "//build/config/compiler:enable_arc" ]
@@ -212,7 +197,12 @@ source_set("enterprise_app_agent") {
   deps = [
     ":enterprise_app_agent_ui",
     "//base",
+    "//components/policy/core/common",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
@@ -283,7 +273,6 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
-    ":content_suggestions_scheduler_app_state_agent",
     ":enterprise_app_agent",
     ":first_run_app_state_agent",
     ":mode",
@@ -334,7 +323,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/credential_provider:buildflags",
-    "//ios/chrome/browser/credential_provider:feature_flags",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/favicon",
@@ -381,7 +369,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/variations:ios_chrome_ui_string_overrider_factory",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web/session_state",
     "//ios/chrome/browser/web_state_list",
@@ -393,7 +380,7 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
-    "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web/common:features",
     "//ios/web/common:uikit",

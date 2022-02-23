@@ -22,7 +22,6 @@ cast_source_set("app") {
     "//chromecast/common",
     "//chromecast/common:resource_delegate",
     "//chromecast/gpu",
-    "//chromecast/renderer",
     "//chromecast/utility",
     "//components/crash/core/common:crash_key",
     "//content/public/app",
@@ -31,43 +30,15 @@ cast_source_set("app") {
     "//ui/base",
   ]
 
+  if (enable_cast_media_runtime) {
+    deps += [ "//chromecast/renderer:renderer_base" ]
+  } else {
+    deps += [ "//chromecast/renderer" ]
+  }
+
   if (!is_fuchsia) {
     # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     deps += [ "//components/crash/core/app" ]
-  }
-}
-
-if (enable_cast_media_runtime) {
-  cast_source_set("app_core") {
-    sources = [
-      "cast_main_delegate.cc",
-      "cast_main_delegate.h",
-    ]
-
-    public_deps = [ "//base" ]
-
-    deps = [
-      ":cast_crash_client",
-      "//chromecast:chromecast_buildflags",
-      "//chromecast/base",
-      "//chromecast/browser",
-      "//chromecast/cast_core:cast_runtime_content_client_factories",
-      "//chromecast/common",
-      "//chromecast/common:resource_delegate",
-      "//chromecast/gpu",
-      "//chromecast/renderer:renderer_base",
-      "//chromecast/utility",
-      "//components/crash/core/common:crash_key",
-      "//content/public/app",
-      "//content/public/browser",
-      "//content/public/common",
-      "//ui/base",
-    ]
-
-    if (!is_fuchsia) {
-      # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
-      deps += [ "//components/crash/core/app" ]
-    }
   }
 }
 

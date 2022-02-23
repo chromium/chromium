@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -299,8 +299,8 @@ TEST(NetworkConfigurationPolicyHandlerTest, Sanitization) {
   const base::Value* sanitized =
       policy_map.GetValue(key::kOpenNetworkConfiguration);
   ASSERT_TRUE(sanitized);
-  std::string sanitized_onc;
-  EXPECT_TRUE(sanitized->GetAsString(&sanitized_onc));
+  ASSERT_TRUE(sanitized->is_string());
+  const std::string& sanitized_onc = sanitized->GetString();
   EXPECT_FALSE(sanitized_onc.empty());
   EXPECT_EQ(std::string::npos, sanitized_onc.find("pass"));
 }

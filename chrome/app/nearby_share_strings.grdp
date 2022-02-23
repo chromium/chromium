@@ -83,6 +83,15 @@
     Set up Nearby Share
   </message>
 
+  <!-- One-page onboarding page -->
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY" desc="Label of device visibility selection button which will redirect user to visibility selection page">
+    Device visibility
+  </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_VISIBILITY_HELP_ALL_CONTACTS" desc="Text that accompanies the device visibility selection button to give some context about what the current visibility selection means">
+    Contacts nearby can share with you. Approval will be required.
+  </message>
+
+
   <!-- Visibility page -->
   <message name="IDS_NEARBY_VISIBILITY_PAGE_MANAGE_CONTACTS" desc="Action button text to manage the contacts of a user while setting up Nearby Share.">
     Manage contacts

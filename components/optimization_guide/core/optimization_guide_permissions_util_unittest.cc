@@ -7,9 +7,8 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -22,19 +21,17 @@ class OptimizationGuidePermissionsUtilTest : public testing::Test {
   void SetUp() override {
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_.registry());
-    pref_service_.registry()->RegisterBooleanPref(
-        data_reduction_proxy::prefs::kDataSaverEnabled, false);
-  }
-
-  void SetDataSaverEnabled(bool enabled) {
-    data_reduction_proxy::DataReductionProxySettings::
-        SetDataSaverEnabledForTesting(&pref_service_, enabled);
+    prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void SetUrlKeyedAnonymizedDataCollectionEnabled(bool enabled) {
     pref_service_.SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
+  }
+
+  void SetOptimizationGuideFetchingPrefEnabled(bool enabled) {
+    pref_service_.SetBoolean(prefs::kOptimizationGuideFetchingEnabled, enabled);
   }
 
   PrefService* pref_service() { return &pref_service_; }
@@ -45,53 +42,38 @@ class OptimizationGuidePermissionsUtilTest : public testing::Test {
 };
 
 TEST_F(OptimizationGuidePermissionsUtilTest,
-       IsUserPermittedToFetchHintsNonDataSaverUser) {
+       IsUserPermittedToFetchHintsDefaultUser) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       {optimization_guide::features::kRemoteOptimizationGuideFetching});
-  SetDataSaverEnabled(false);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));
 }
 
-TEST_F(OptimizationGuidePermissionsUtilTest,
-       IsUserPermittedToFetchHintsDataSaverUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching});
-  SetDataSaverEnabled(true);
-
-  EXPECT_TRUE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
-      /*is_off_the_record=*/false, pref_service()));
-}
-
 TEST_F(
     OptimizationGuidePermissionsUtilTest,
-    IsUserPermittedToFetchHintsNonDataSaverUserAnonymousDataCollectionEnabledFeatureEnabled) {
+    IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionEnabledFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {optimization_guide::features::kRemoteOptimizationGuideFetching,
        optimization_guide::features::
            kRemoteOptimizationGuideFetchingAnonymousDataConsent},
       {});
-  SetDataSaverEnabled(false);
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   EXPECT_TRUE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));
 }
 
-TEST_F(
-    OptimizationGuidePermissionsUtilTest,
-    IsUserPermittedToFetchHintsNonDataSaverUserAnonymousDataCollectionDisabled) {
+TEST_F(OptimizationGuidePermissionsUtilTest,
+       IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {optimization_guide::features::kRemoteOptimizationGuideFetching,
        optimization_guide::features::
            kRemoteOptimizationGuideFetchingAnonymousDataConsent},
       {});
-  SetDataSaverEnabled(false);
   SetUrlKeyedAnonymizedDataCollectionEnabled(false);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
@@ -100,13 +82,12 @@ TEST_F(
 
 TEST_F(
     OptimizationGuidePermissionsUtilTest,
-    IsUserPermittedToFetchHintsNonDataSaverUserAnonymousDataCollectionEnabledFeatureNotEnabled) {
+    IsUserPermittedToFetchHintsDefaultUserAnonymousDataCollectionEnabledFeatureNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {optimization_guide::features::kRemoteOptimizationGuideFetching},
       {optimization_guide::features::
            kRemoteOptimizationGuideFetchingAnonymousDataConsent});
-  SetDataSaverEnabled(false);
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
@@ -118,8 +99,16 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {optimization_guide::features::kRemoteOptimizationGuideFetching});
-  SetDataSaverEnabled(true);
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+
+  EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
+      /*is_off_the_record=*/false, pref_service()));
+}
+
+TEST_F(OptimizationGuidePermissionsUtilTest,
+       IsUserPermittedToFetchHintsAllFeaturesEnabledButPrefDisabled) {
+  SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  SetOptimizationGuideFetchingPrefEnabled(false);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
       /*is_off_the_record=*/false, pref_service()));
@@ -133,7 +122,6 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
        optimization_guide::features::
            kContextMenuPerformanceInfoAndRemoteHintFetching},
       {});
-  SetDataSaverEnabled(false);
   SetUrlKeyedAnonymizedDataCollectionEnabled(false);
 
   EXPECT_TRUE(IsUserPermittedToFetchFromRemoteOptimizationGuide(
@@ -150,7 +138,6 @@ TEST_F(OptimizationGuidePermissionsUtilTest,
        optimization_guide::features::
            kContextMenuPerformanceInfoAndRemoteHintFetching},
       {});
-  SetDataSaverEnabled(true);
   SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 
   EXPECT_FALSE(IsUserPermittedToFetchFromRemoteOptimizationGuide(

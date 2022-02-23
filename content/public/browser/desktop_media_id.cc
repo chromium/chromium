@@ -21,7 +21,7 @@ namespace content {
 const char kScreenPrefix[] = "screen";
 const char kWindowPrefix[] = "window";
 
-#if defined(USE_AURA) || defined(OS_MAC)
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 // static
 DesktopMediaID DesktopMediaID::RegisterNativeWindow(DesktopMediaID::Type type,
                                                     gfx::NativeWindow window) {

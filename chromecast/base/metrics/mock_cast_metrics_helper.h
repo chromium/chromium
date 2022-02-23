@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -90,7 +90,7 @@ FamilyInfoFetcher::FamilyInfoFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : consumer_(consumer),
       primary_account_id_(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync)),
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       access_token_expired_(false) {}
@@ -134,7 +134,7 @@ void FamilyInfoFetcher::StartFetchingAccessToken() {
           base::BindOnce(&FamilyInfoFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
 }
 
 void FamilyInfoFetcher::OnAccessTokenFetchComplete(
@@ -252,7 +252,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 // static
 bool FamilyInfoFetcher::ParseMembers(const base::ListValue* list,
                                      std::vector<FamilyMember>* members) {
-  for (const auto& entry : list->GetList()) {
+  for (const auto& entry : list->GetListDeprecated()) {
     FamilyMember member;
     const base::DictionaryValue* dict = NULL;
     if (!entry.GetAsDictionary(&dict) || !ParseMember(dict, &member)) {

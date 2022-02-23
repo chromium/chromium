@@ -30,7 +30,7 @@
 #include "ui/events/test/test_event_target.h"
 #include "ui/gfx/geometry/transform.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/win/events_win_utils.h"
 #endif
 
@@ -42,7 +42,7 @@ TEST(EventTest, NoNativeEvent) {
 }
 
 TEST(EventTest, NativeEvent) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CHROME_MSG native_event = {nullptr, WM_KEYUP, VKEY_A, 0};
   KeyEvent keyev(native_event);
   EXPECT_TRUE(keyev.HasNativeEvent());
@@ -379,7 +379,7 @@ TEST(EventTest, KeyEventCode) {
   const char kCodeForSpace[] = "Space";
   ASSERT_EQ(kDomCodeForSpace,
             ui::KeycodeConverter::CodeStringToDomCode(kCodeForSpace));
-  const uint16_t kNativeCodeSpace =
+  const int kNativeCodeSpace =
       ui::KeycodeConverter::DomCodeToNativeKeycode(kDomCodeForSpace);
   ASSERT_NE(ui::KeycodeConverter::InvalidNativeKeycode(), kNativeCodeSpace);
   ASSERT_EQ(kNativeCodeSpace,
@@ -401,7 +401,7 @@ TEST(EventTest, KeyEventCode) {
     KeyEvent key(ET_KEY_PRESSED, VKEY_SPACE, EF_NONE);
     EXPECT_EQ(kCodeForSpace, key.GetCodeString());
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   {
     // Test a non extended key.
     ASSERT_EQ((kNativeCodeSpace & 0xFF), kNativeCodeSpace);
@@ -427,7 +427,7 @@ TEST(EventTest, KeyEventCode) {
     // KeyEvent converts from the native keycode (scan code) to the code.
     EXPECT_EQ(kCodeForHome, key.GetCodeString());
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 TEST(EventTest, TouchEventRadiusDefaultsToOtherAxis) {
@@ -693,7 +693,7 @@ TEST(EventTest, OrdinalMotionConversion) {
 
 // Checks that Event.Latency.OS2.MOUSE_WHEEL histogram is computed properly.
 TEST(EventTest, EventLatencyOSMouseWheelHistogram) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::HistogramTester histogram_tester;
   CHROME_MSG event = {nullptr, WM_MOUSEWHEEL, 0, 0};
   MouseWheelEvent mouseWheelEvent(event);
@@ -842,7 +842,7 @@ TEST(EventTest, ToStringNotEmpty) {
   EXPECT_FALSE(scroll_event.ToString().empty());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 const struct AltGraphEventTestCase {
@@ -1130,7 +1130,7 @@ TEST_F(EventLatencyTest, ComputeEventLatencyOSFromPerformanceCounter) {
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Verifies that copied events never copy target_.
 TEST(EventTest, NeverCopyTarget) {

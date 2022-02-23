@@ -19,7 +19,7 @@
 
 namespace media {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 DefaultRendererFactory::DefaultRendererFactory(
     MediaLog* media_log,
     DecoderFactory* decoder_factory,
@@ -91,7 +91,7 @@ std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
       // finishes.
       base::BindRepeating(&DefaultRendererFactory::CreateAudioDecoders,
                           base::Unretained(this), media_task_runner),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       media_log_));
 #else
       media_log_, speech_recognition_client_.get()));

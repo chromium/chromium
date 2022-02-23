@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
+#define CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_
+
+#include "base/callback.h"
+#include "components/url_rewrite/renderer/url_request_rules_receiver.h"
+#include "content/public/renderer/render_frame_observer.h"
+
+namespace content {
+class RenderFrame;
+}  // namespace content
+
+namespace chromecast {
+
+// This class provides URL request rewrite rules by binding a
+// UrlRequestRulesReceiver mojo interface and listening for updates from
+// browser. The lifespan of provider and rules is tied to a RenderFrame. Owned
+// by CastRuntimeContentRendererClient, this object will be destroyed on
+// RenderFrame destruction, triggering the destruction of all of the objects it
+// exposes.
+class UrlRewriteRulesProvider final : public content::RenderFrameObserver {
+ public:
+  // |on_render_frame_deleted_callback| must delete |this|.
+  UrlRewriteRulesProvider(
+      content::RenderFrame* render_frame,
+      base::OnceCallback<void(int)> on_render_frame_deleted_callback);
+  ~UrlRewriteRulesProvider() override;
+
+  UrlRewriteRulesProvider(const UrlRewriteRulesProvider&) = delete;
+  UrlRewriteRulesProvider& operator=(const UrlRewriteRulesProvider&) = delete;
+
+  const scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetCachedRules()
+      const;
+
+ private:
+  // content::RenderFrameObserver implementation.
+  void OnDestruct() override;
+
+  url_rewrite::UrlRequestRulesReceiver url_request_rules_receiver_;
+  base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
+};
+
+}  // namespace chromecast
+
+#endif  // CHROMECAST_RENDERER_URL_REWRITE_RULES_PROVIDER_H_

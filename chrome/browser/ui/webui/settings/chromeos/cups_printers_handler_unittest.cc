@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/printing_stubs.h"
+#include "chrome/browser/ash/printing/printing_stubs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"

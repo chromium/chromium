@@ -8,15 +8,16 @@ import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
 import '/app-management/file_path.mojom-lite.js';
 import '/app-management/image.mojom-lite.js';
+import '/app-management/safe_base_name.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/app-management/app_management.mojom-lite.js';
 
+import {BrowserProxy as ComponentBrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
+import {AppType, InstallReason} from '//resources/cr_components/app_management/constants.js';
+import {PermissionType, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {PermissionType, TriState} from '../permission_constants.js';
-
-import {AppType, InstallReason} from './constants.js';
 import {FakePageHandler} from './fake_page_handler.js';
 
 export class BrowserProxy {
@@ -74,7 +75,7 @@ export class BrowserProxy {
             'pjkljhegncpnkkknowihdijeoejaedia',
             {
               title: 'Chrome App',
-              type: AppType.kExtension,
+              type: AppType.kChromeApp,
               description: 'A Chrome App installed from the Chrome Web Store.',
             },
             ),
@@ -89,7 +90,7 @@ export class BrowserProxy {
             'pjkljhegncpnkkknbcohdijeoejaedia',
             {
               title: 'Chrome App, OEM installed',
-              type: AppType.kExtension,
+              type: AppType.kChromeApp,
               description: 'A Chrome App installed by an OEM.',
               installReason: InstallReason.kOem,
             },
@@ -111,11 +112,8 @@ export class BrowserProxy {
       this.fakeHandler.setApps(appList);
 
     } else {
-      this.handler = new appManagement.mojom.PageHandlerRemote();
-      const factory = appManagement.mojom.PageHandlerFactory.getRemote();
-      factory.createPageHandler(
-          this.callbackRouter.$.bindNewPipeAndPassRemote(),
-          this.handler.$.bindNewPipeAndPassReceiver());
+      this.handler = ComponentBrowserProxy.getInstance().handler;
+      this.callbackRouter = ComponentBrowserProxy.getInstance().callbackRouter;
     }
   }
 }

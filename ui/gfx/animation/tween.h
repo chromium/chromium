@@ -7,17 +7,19 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_export.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/transform_operations.h"
 
 namespace base {
 class TimeTicks;
 }
 
 namespace gfx {
+
+class Rect;
+class RectF;
+class Size;
+class SizeF;
+class Transform;
+class TransformOperations;
 
 class ANIMATION_EXPORT Tween {
  public:
@@ -62,18 +64,36 @@ class ANIMATION_EXPORT Tween {
     // ACCEL_100_DECEL_100 = (1, 0, 0, 1): https://cubic-bezier.com/#1,0,0,1
     // ACCEL_LIN_DECEL_LIN = (0, 0, 1, 1): https://cubic-bezier.com/#0,0,1,1
     // ACCEL_40_DECEL_20 = (0.4, 0, 0.8, 1): https://cubic-bezier.com/#.4,0,.8,1
+    // ACCEL_<1>_<2>_DECEL_<3>_<4> correspond to cubic bezier with curve
+    // parameters (0.01 * <1>, 0.01 * <2>, 1 - 0.01 * <3>, 1 - 0.01 * <4>). For
+    // example,
+    // ACCEL_0_20_DECEL_100_10 = (0, 0.2, 0, 0.9):
+    //     https://cubic-bezier.com/#0,.2,0,.9
+    // ACCEL_40_DECEL_100_3 = (0.4, 0, 0,0.97):
+    //     https://cubic-bezier.com/#.4,0,0,.97
+    // ACCEL_LIN_DECEL_100_3 = (0, 0, 0, 0.97):
+    //     https://cubic-bezier.com/#0,0,0,.97
     ACCEL_LIN_DECEL_60,   // Pulling a small to medium element into a place.
     ACCEL_LIN_DECEL_100,  // Pulling a small to medium element into a place that
                           // has very fast deceleration.
+    // Starts with linear speed and soft deceleration. Use for elements that are
+    // not visible at the beginning of a transition, but are visible at the end.
+    ACCEL_LIN_DECEL_100_3,
     ACCEL_20_DECEL_60,  // Moving a small, low emphasis or responsive elements.
     ACCEL_20_DECEL_100,
     ACCEL_40_DECEL_20,
+    // Moderate acceleration and soft deceleration. Used for elements that are
+    // visible at the beginning and end of a transition.
+    ACCEL_40_DECEL_100_3,
     ACCEL_80_DECEL_20,     // Slow in and fast out with ease.
     ACCEL_0_40_DECEL_100,  // Specialized curve with an emphasized deceleration
                            // drift.
     ACCEL_0_80_DECEL_80,   // Variant of ACCEL_0_40_DECEL_100 which drops in
                            // value faster, but flattens out into the drift
                            // sooner.
+
+    ACCEL_0_100_DECEL_80,  // Variant of ACCEL_0_80_DECEL_80 which drops in
+                           // value even faster.
   };
 
   Tween(const Tween&) = delete;

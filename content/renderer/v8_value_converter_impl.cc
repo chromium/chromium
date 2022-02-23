@@ -287,17 +287,17 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::ListValue* val) const {
-  v8::Local<v8::Array> result(v8::Array::New(isolate, val->GetList().size()));
+  v8::Local<v8::Array> result(
+      v8::Array::New(isolate, val->GetListDeprecated().size()));
 
   // TODO(robwu): Callers should pass in the context.
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
-  for (size_t i = 0; i < val->GetList().size(); ++i) {
-    const base::Value* child = nullptr;
-    CHECK(val->Get(i, &child));
+  for (size_t i = 0; i < val->GetListDeprecated().size(); ++i) {
+    const base::Value& child = val->GetListDeprecated()[i];
 
     v8::Local<v8::Value> child_v8 =
-        ToV8ValueImpl(isolate, creation_context, child);
+        ToV8ValueImpl(isolate, creation_context, &child);
     CHECK(!child_v8.IsEmpty());
 
     v8::Maybe<bool> maybe =
@@ -342,7 +342,8 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::Value* value) const {
-  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  DCHECK(creation_context->GetCreationContextChecked() ==
+         isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value->GetBlob().size());
   memcpy(buffer->GetBackingStore()->Data(), value->GetBlob().data(),
@@ -450,9 +451,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
   std::unique_ptr<v8::Context::Scope> scope;
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
-  if (!val->CreationContext().IsEmpty() &&
-      val->CreationContext() != isolate->GetCurrentContext())
-    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
+  v8::Local<v8::Context> creation_context;
+  if (val->GetCreationContext().ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext())
+    scope = std::make_unique<v8::Context::Scope>(creation_context);
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -529,9 +531,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   std::unique_ptr<v8::Context::Scope> scope;
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
-  if (!val->CreationContext().IsEmpty() &&
-      val->CreationContext() != isolate->GetCurrentContext())
-    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
+  v8::Local<v8::Context> creation_context;
+  if (val->GetCreationContext().ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext())
+    scope = std::make_unique<v8::Context::Scope>(creation_context);
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;

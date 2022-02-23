@@ -126,7 +126,7 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
 #endif
 
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString(kStateKey, state);
+  dict->SetStringKey(kStateKey, state);
   dict->SetDoubleKey(kDownloadProgressKey, download_progress);
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));

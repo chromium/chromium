@@ -21,6 +21,7 @@
 <translation id="115443833402798225">韩语（安马太）</translation>
 <translation id="1155759005174418845">加泰罗尼亚语</translation>
 <translation id="1168100932582989117">Google 域名服务器</translation>
+<translation id="1171082344678443012">XZ 压缩包</translation>
 <translation id="1172970565351728681">还需大约 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，详细信息</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">已与 Linux 共享此文件夹</translation>
 <translation id="1864756863218646478">找不到该文件。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，连接</translation>
+<translation id="1914901738028575085">CloudReady 2.0 设备</translation>
 <translation id="1920670151694390848">马拉雅拉姆语音译</translation>
 <translation id="1920798810075583923">西瓜</translation>
 <translation id="1924372192547904021">已将“<ph name="DRIVE_NAME" />”格式化</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="2025955442973426285">蒂格尼亚语</translation>
 <translation id="2028997212275086731">RAR 归档</translation>
+<translation id="2036414735548252477">LZMA 压缩的 tar 归档</translation>
 <translation id="2037845485764049925">俄语</translation>
 <translation id="2044023416777079300">调制解调器未注册</translation>
 <translation id="2046702855113914483">拉面</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">使用“<ph name="EXTENSION_NAME" />”分享</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 主机</translation>
+<translation id="3104793765551262433">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
 <translation id="3113153474486991170">无法从此处打开“<ph name="PATH" />”。您需要将它复制到“我的文件”，才能打开它。</translation>
 <translation id="3113592018909187986">您还有 1 次尝试机会。在设置新 PIN 码之前，您将无法使用此网络。</translation>
 <translation id="3124404833828281817">一个人在做白日梦</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
 <translation id="3567221313191587603">如果想在离线状态下使用您的文件，请先选择相应文件，然后将“<ph name="OFFLINE_CHECKBOX_NAME" />”所对应的切换开关上的滑块滑至开启位置。</translation>
 <translation id="357479282490346887">立陶宛语</translation>
+<translation id="3587482841069643663">全部</translation>
 <translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">加拿大法语</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">所有文件都已备份！</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由您的管理员管理，详细信息</translation>
 <translation id="3645233063072417428">已移动 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
-<translation id="3645531960514756307">取消固定文件夹</translation>
 <translation id="3685122418104378273">当您使用移动数据网络时，Google 云端硬盘同步功能默认情况下处于停用状态。</translation>
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，<ph name="CONNECTION_STATUS" />，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3691184985318546178">僧伽罗语</translation>
 <translation id="3726463242007121105">系统不支持此设备的文件系统，因此无法打开此设备。</translation>
 <translation id="3727148787322499904">更改此设置将会影响所有共享网络</translation>
+<translation id="3737576078404241332">从边栏中移除</translation>
 <translation id="3741243925913727067">将您的媒体设备上的照片和视频备份到 Google 云端硬盘。</translation>
 <translation id="3749289110408117711">文件名</translation>
 <translation id="3780536599611287598">您无权将文件移动到“<ph name="FOLDER_NAME" />”中。</translation>
@@ -355,7 +360,7 @@
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
 <translation id="4186579485882418952">启用离线功能</translation>
 <translation id="4193154014135846272">Google 文档</translation>
-<translation id="4197674956721858839">压缩选择</translation>
+<translation id="4197674956721858839">压缩选中的文件</translation>
 <translation id="4202378258276439759">西班牙语（拉丁美洲）</translation>
 <translation id="4202977638116331303">格鲁吉亚语</translation>
 <translation id="421017592316736757">您必须在线访问此文件。</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">植物学家</translation>
 <translation id="4326192123064055915">咖啡</translation>
 <translation id="4336032328163998280">复制操作失败。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">添加至边栏</translation>
 <translation id="4348495354623233847">索拉尼库尔德语（阿拉伯语字母）键盘</translation>
 <translation id="4363958938297989186">俄语注音键盘</translation>
 <translation id="4364327530094270451">甜瓜</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 字节</translation>
 <translation id="4880214202172289027">音量滑块</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="4886199584824489598">Bzip2 压缩包</translation>
 <translation id="4900532980794411603">与 Parallels Desktop 共享</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="4905417359854579806">可以开始备份 <ph name="FILE_COUNT" />了</translation>
@@ -579,6 +586,7 @@
 <translation id="6055907707645252013">“<ph name="NETWORK_TYPE" />”类型的网络，未连接</translation>
 <translation id="6074825444536523002">Google 表单</translation>
 <translation id="6079871810119356840">匈牙利语 Qwerty 键盘</translation>
+<translation id="6082256976217156453">LZMA 压缩包</translation>
 <translation id="6096979789310008754">已清除搜索文本，目前显示的是所有文件和文件夹。</translation>
 <translation id="610101264611565198">正在将 <ph name="FILE_NAME" /> 移动到“<ph name="FOLDER_NAME" />”</translation>
 <translation id="6129953537138746214">空格</translation>
@@ -674,6 +682,7 @@
 <translation id="6935521024859866267">倒栽葱蝴蝶</translation>
 <translation id="6943836128787782965">HTTP 获取请求失败</translation>
 <translation id="6949408524333579394">塞尔维亚语音译</translation>
+<translation id="6954309393500027528">您的管理员已禁止粘贴此文件</translation>
 <translation id="6960565108681981554">未激活。请联系您的运营商。</translation>
 <translation id="696203921837389374">在移动数据网络中启用同步功能</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -834,6 +843,7 @@
 <translation id="8297012244086013755">韩语（3 Set，无Shift按键版）</translation>
 <translation id="8299269255470343364">日语</translation>
 <translation id="8300849813060516376">OTASP 失败</translation>
+<translation id="8308481408797647857">XZ 压缩的 tar 归档</translation>
 <translation id="8312871300878166382">粘贴到文件夹中</translation>
 <translation id="8329978297633540474">纯文本</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>
@@ -870,6 +880,7 @@
 <translation id="8551494947769799688">拉脱维亚语</translation>
 <translation id="8560515948038859357">粤语</translation>
 <translation id="8561206103590473338">大象</translation>
+<translation id="8566466896628108558">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
 <translation id="8569764466147087991">选择要打开的文件</translation>
 <translation id="8577897833047451336">克罗地亚语</translation>
 <translation id="8578308463707544055">印度尼西亚语</translation>
@@ -887,6 +898,7 @@
 <translation id="8714406895390098252">自行车</translation>
 <translation id="8719721339511222681">已选择<ph name="ENTRY_NAME" />。</translation>
 <translation id="872537912056138402">克罗地亚语</translation>
+<translation id="873847021056608403">CloudReady 2.0 设备</translation>
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，连接</translation>
 <translation id="8750438273876807512">轻触并按住某个文件，点按 <ph name="ICON" />，然后选择“固定到任务栏”，即可在任务栏中快速访问您的文件。</translation>
 <translation id="8787254343425541995">允许共享网络使用代理</translation>
@@ -922,7 +934,6 @@
 <translation id="9110990317705400362">我们在不断寻找各种方式来提高上网安全。之前，任何网站都可以提示您在浏览器中添加扩展程序；而在最新版本的Google Chrome中，您必须明确告诉Chrome您想要安装这些扩展程序（即：在“扩展程序”页添加它们）后才可以。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">解锁</translation>
 <translation id="912419004897138677">编解码器</translation>
-<translation id="9129931661813833980">固定文件夹</translation>
 <translation id="9130775360844693113">“<ph name="DESTINATION_NAME" />”的成员将会有权访问这些内容。</translation>
 <translation id="9131598836763251128">选择一个或多个文件</translation>
 <translation id="9133055936679483811">压缩失败。<ph name="ERROR_MESSAGE" /></translation>
@@ -943,6 +954,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="947144732524271678">已选择从<ph name="FROM_ENTRY_NAME" />到<ph name="TO_ENTRY_NAME" />的 <ph name="ENTRY_COUNT" /> 个条目。</translation>
+<translation id="961973045258256291">Gzip 压缩包</translation>
 <translation id="965477715979482472">英语（南非）</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="988685240266037636">已有名为“<ph name="FILE_NAME" />”的文件。要覆盖它吗？</translation>

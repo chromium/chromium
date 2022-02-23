@@ -78,7 +78,7 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
   // path from UTF8, and ending up with an invalid path will fail later in
   // RunImpl when we attempt to get the profile from the path.
   profile_path_ = base::FilePath::FromUTF8Unsafe(*path);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // For Windows machines, the path that Chrome reports for the profile is
   // "Normalized" to all lower-case on the reporting server. This means that
   // when the server sends the command, the path will be all lower case and

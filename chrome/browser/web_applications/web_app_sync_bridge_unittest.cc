@@ -14,7 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -30,6 +29,7 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -178,7 +178,7 @@ bool RemoveEntityDataAppFromAppsList(const std::string& storage_key,
 void RunCallbacksOnInstall(
     const std::vector<WebApp*>& apps,
     FakeWebAppRegistryController::RepeatingInstallCallback callback,
-    InstallResultCode code) {
+    webapps::InstallResultCode code) {
   for (WebApp* app : apps)
     callback.Run(app->app_id(), code);
 }
@@ -466,7 +466,7 @@ TEST_F(WebAppSyncBridgeTest, MergeSyncData_LocalSetLessThanServerSet) {
         EXPECT_TRUE(expected_apps_to_install.empty());
 
         RunCallbacksOnInstall(apps_to_install, callback,
-                              InstallResultCode::kSuccessNewInstall);
+                              webapps::InstallResultCode::kSuccessNewInstall);
         run_loop.Quit();
       }));
 
@@ -559,7 +559,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
         }
 
         RunCallbacksOnInstall(apps_to_install, callback,
-                              InstallResultCode::kSuccessNewInstall);
+                              webapps::InstallResultCode::kSuccessNewInstall);
         barrier_closure.Run();
       }));
 
@@ -1063,7 +1063,7 @@ TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
 
         EXPECT_TRUE(apps_in_sync_install.empty());
         RunCallbacksOnInstall(apps_to_install, callback,
-                              InstallResultCode::kSuccessNewInstall);
+                              webapps::InstallResultCode::kSuccessNewInstall);
         run_loop.Quit();
       }));
 

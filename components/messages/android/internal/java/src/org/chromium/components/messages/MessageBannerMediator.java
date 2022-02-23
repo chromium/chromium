@@ -214,18 +214,15 @@ class MessageBannerMediator implements SwipeHandler {
         final float velocity = isVertical ? velocityY : velocityX;
         float translateTo;
         if (isVertical) {
-            translateTo = velocity < 0 ? -mMaxTranslationYSupplier.get() : 0;
+            final float translationY = mModel.get(TRANSLATION_Y);
+            translateTo = translationY < 0 ? -mMaxTranslationYSupplier.get() : 0;
         } else {
             final float translationX = mModel.get(TRANSLATION_X);
-
-            if (velocity < 0) {
-                translateTo = translationX > mHorizontalHideThresholdPx
-                        ? 0
-                        : -mMaxHorizontalTranslationPx.get();
+            if (Math.abs(translationX) < mHorizontalHideThresholdPx) {
+                translateTo = 0;
             } else {
-                translateTo = translationX < -mHorizontalHideThresholdPx
-                        ? 0
-                        : mMaxHorizontalTranslationPx.get();
+                translateTo =
+                        MathUtils.flipSignIf(mMaxHorizontalTranslationPx.get(), translationX < 0);
             }
         }
 

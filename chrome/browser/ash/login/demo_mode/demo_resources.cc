@@ -86,11 +86,6 @@ void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
     return;
   load_requested_ = true;
 
-  if (config_ == DemoSession::DemoModeConfig::kOffline) {
-    LoadPreinstalledOfflineResources();
-    return;
-  }
-
   auto cros_component_manager =
       g_browser_process->platform_part()->cros_component_manager();
   // In unit tests, DemoModeTestHelper should set up a fake
@@ -121,15 +116,6 @@ void DemoResources::InstalledComponentLoaded(
     const base::FilePath& path) {
   component_error_ = error;
   OnDemoResourcesLoaded(absl::make_optional(path));
-}
-
-void DemoResources::LoadPreinstalledOfflineResources() {
-  chromeos::DBusThreadManager::Get()
-      ->GetImageLoaderClient()
-      ->LoadComponentAtPath(
-          kOfflineDemoModeResourcesComponentName, GetPreInstalledPath(),
-          base::BindOnce(&DemoResources::OnDemoResourcesLoaded,
-                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DemoResources::OnDemoResourcesLoaded(

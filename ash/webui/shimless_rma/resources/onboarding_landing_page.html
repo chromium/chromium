@@ -1,19 +1,14 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .large-icon {
-    height: 200px;
-    width: 300px;
-  }
-
   .small-icon {
     height: 30px;
     width: 30px;
   }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
+<base-page>
+  <div slot="left-pane">
     <h1>[[i18n('welcomeTitleText')]]</h1>
-    <div>[[i18n('beginRmaWarningText')]]</div>
+    <div class="instructions">[[i18n('beginRmaWarningText')]]</div>
     <div id="verificationMessage">
       <paper-spinner-lite id="busyIcon" hidden$="[[!verificationInProgress_]]"
         active>
@@ -22,15 +17,33 @@
         icon="[[getVerificationIcon_(isCompliant_)]]"
         hidden$="[[verificationInProgress_]]" class="small-icon">
       </iron-icon>
-      [[verificationMessage_]]
-    </div>
-    <div hidden$="[[verificationInProgress_]]">
-      <p id="errorMessage" hidden="[[isCompliant_]]">[[errorMessage_]]</p>
+      <span hidden$="[[!verificationInProgress_]]" class="instructions">
+        [[i18n('validatingComponentsText')]]
+      </span>
+      <span hidden$="[[verificationInProgress_]]">
+        <span hidden$="[[!isCompliant_]]" class="instructions">
+          [[i18n('validatedComponentsSuccessText')]]
+        </span>
+        <span inner-h-t-m-l="[[verificationFailedMessage_]]"
+            hidden$="[[isCompliant_]]" class="instructions">
+        </span>
+      </span>
     </div>
   </div>
-  <div slot="body">
-    <!-- TODO(gavindodd): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder" class="large-icon">
-    </iron-icon>
+  <div slot="right-pane">
+    <div class="illustration-wrapper">
+      <img class="illustration" src="illustrations/repair_start.svg">
+    </div>
   </div>
 </base-page>
+
+<cr-dialog id="unqualifiedComponentsDialog" on-cancel="closeDialog_"
+    ignore-popstate>
+  <div slot="title">[[i18n('unqualifiedComponentsTitle')]]</div>
+  <div slot="body" id="dialogBody">[[componentsList_]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('okButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

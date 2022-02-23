@@ -18,8 +18,9 @@ DownloadRow& DownloadRow::operator=(const DownloadRow& other) = default;
 bool DownloadRow::operator==(const DownloadRow& rhs) const {
   return current_path == rhs.current_path && target_path == rhs.target_path &&
          url_chain == rhs.url_chain && referrer_url == rhs.referrer_url &&
-         site_url == rhs.site_url && tab_url == rhs.tab_url &&
-         tab_referrer_url == rhs.tab_referrer_url &&
+         site_url == rhs.site_url &&
+         embedder_download_data == rhs.embedder_download_data &&
+         tab_url == rhs.tab_url && tab_referrer_url == rhs.tab_referrer_url &&
          http_method == rhs.http_method && mime_type == rhs.mime_type &&
          original_mime_type == rhs.original_mime_type &&
          start_time == rhs.start_time && end_time == rhs.end_time &&

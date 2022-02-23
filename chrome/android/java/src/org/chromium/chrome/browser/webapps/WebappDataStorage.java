@@ -73,6 +73,13 @@ public class WebappDataStorage {
     // Whether the last WebAPK update request succeeded.
     static final String KEY_DID_LAST_UPDATE_REQUEST_SUCCEED = "did_last_update_request_succeed";
 
+    // The update pipeline might hold off on updating while the WebAPK is in use. If the usage drags
+    // on, it could result in a new update check being issued (restarting the update pipeline)
+    // before the update takes place, which can result in the App Identity Update dialog being shown
+    // again to the user (showing the same update they already approved). This setting helps prevent
+    // that, by storing a hash of what the last accepted update contained.
+    static final String KEY_LAST_UPDATE_HASH_ACCEPTED = "last_update_hash_accepted";
+
     // Whether to check updates less frequently.
     static final String KEY_RELAX_UPDATES = "relax_updates";
 
@@ -326,6 +333,7 @@ public class WebappDataStorage {
         editor.remove(KEY_LAST_CHECK_WEB_MANIFEST_UPDATE_TIME);
         editor.remove(KEY_LAST_UPDATE_REQUEST_COMPLETE_TIME);
         editor.remove(KEY_DID_LAST_UPDATE_REQUEST_SUCCEED);
+        editor.remove(KEY_LAST_UPDATE_HASH_ACCEPTED);
         editor.remove(KEY_RELAX_UPDATES);
         editor.remove(KEY_SHOW_DISCLOSURE);
         editor.remove(KEY_LAUNCH_COUNT);
@@ -451,6 +459,20 @@ public class WebappDataStorage {
      */
     boolean getDidLastWebApkUpdateRequestSucceed() {
         return mPreferences.getBoolean(KEY_DID_LAST_UPDATE_REQUEST_SUCCEED, false);
+    }
+
+    /**
+     * Updates the `hash` of the last accepted identity update that was approved.
+     */
+    public void updateLastWebApkUpdateHashAccepted(String hash) {
+        mPreferences.edit().putString(KEY_LAST_UPDATE_HASH_ACCEPTED, hash).apply();
+    }
+
+    /**
+     * Returns the `hash` of the last accepted identity update that was approved.
+     */
+    String getLastWebApkUpdateHashAccepted() {
+        return mPreferences.getString(KEY_LAST_UPDATE_HASH_ACCEPTED, "");
     }
 
     /**

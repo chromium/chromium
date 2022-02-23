@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_PAIRING_HOST_AUTHENTICATOR_H_
 #define REMOTING_PROTOCOL_PAIRING_HOST_AUTHENTICATOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/pairing_authenticator_base.h"
 #include "remoting/protocol/pairing_registry.h"

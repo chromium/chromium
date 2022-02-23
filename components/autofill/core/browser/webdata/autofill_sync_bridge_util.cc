@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_util.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
 
 using autofill::data_util::TruncateUTF8;
 using sync_pb::AutofillWalletSpecifics;
@@ -103,8 +103,13 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     case sync_pb::WalletMaskedCreditCard::ENROLLED:
       state = CreditCard::ENROLLED;
       break;
+    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+      state = CreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
+    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE:
+      state = CreditCard::UNENROLLED_AND_ELIGIBLE;
+      break;
     case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
-      state = CreditCard::UNSPECIFIED;
       break;
   }
   result.set_virtual_card_enrollment_state(state);
@@ -275,6 +280,12 @@ void SetAutofillWalletSpecificsFromServerCard(
     case CreditCard::ENROLLED:
       state = sync_pb::WalletMaskedCreditCard::ENROLLED;
       break;
+    case CreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
+    case CreditCard::UNENROLLED_AND_ELIGIBLE:
+      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE;
+      break;
     case CreditCard::UNSPECIFIED:
       state = sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
       break;
@@ -335,7 +346,7 @@ void SetAutofillOfferSpecificsFromOfferData(
       (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
   offer_specifics->mutable_display_strings()->set_value_prop_text(
       offer_data.display_strings.value_prop_text);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   offer_specifics->mutable_display_strings()->set_see_details_text_mobile(
       offer_data.display_strings.see_details_text);
   offer_specifics->mutable_display_strings()
@@ -347,7 +358,7 @@ void SetAutofillOfferSpecificsFromOfferData(
   offer_specifics->mutable_display_strings()
       ->set_usage_instructions_text_desktop(
           offer_data.display_strings.usage_instructions_text);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Because card_linked_offer_data and promo_code_offer_data are a oneof,
   // setting one will clear the other. We should figure out which one we care
@@ -390,7 +401,7 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
   }
   offer_data.display_strings.value_prop_text =
       offer_specifics.display_strings().value_prop_text();
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   offer_data.display_strings.see_details_text =
       offer_specifics.display_strings().see_details_text_mobile();
   offer_data.display_strings.usage_instructions_text =
@@ -400,7 +411,7 @@ AutofillOfferData AutofillOfferDataFromOfferSpecifics(
       offer_specifics.display_strings().see_details_text_desktop();
   offer_data.display_strings.usage_instructions_text =
       offer_specifics.display_strings().usage_instructions_text_desktop();
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Card-linked offer fields:
   offer_data.offer_reward_amount =

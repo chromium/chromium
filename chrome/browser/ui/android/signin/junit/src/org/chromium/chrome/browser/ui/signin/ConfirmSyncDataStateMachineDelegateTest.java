@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAlertDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +28,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 /** Tests for {@link ConfirmSyncDataStateMachineDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ConfirmSyncDataStateMachineDelegateTest {
     private FragmentManager mFragmentManager;
     private ConfirmSyncDataStateMachineDelegate mStateMachineDelegate;

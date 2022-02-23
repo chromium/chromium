@@ -16,7 +16,7 @@
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to see text and images copied to the clipboard
     </message>
     <message name="IDS_NFC_INFOBAR_TEXT" desc="Text requesting permission for a site to use NFC">
-      <ph name="URL">$1<ex>google.com</ex></ph> wants to send and receive info when you tap your phone on an NFC device
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to see and change information on NFC devices that you tap with your phone
     </message>
     <message name="IDS_VR_INFOBAR_TEXT" desc="Text requesting permission for a site to use VR">
       <ph name="URL">$1<ex>google.com</ex></ph> wants to use your virtual reality device and data
@@ -83,7 +83,7 @@
       Allow 2 permissions?
     </message>
 </if>
-  <if expr="is_android or chromeos or lacros or is_win">
+  <if expr="is_android or chromeos_ash or chromeos_lacros or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier
     </message>
@@ -133,7 +133,7 @@ Do you want to allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use co
 This will otherwise be blocked by your privacy settings. This will allow the content you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to track your activity.
   </message>
   <message name="IDS_WINDOW_PLACEMENT_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to place windows. Follows a prompt: 'This site would like to:'">
-    Open and place windows on your screens
+    Use info about your screens to open and place windows
   </message>
   <message name="IDS_FONT_ACCESS_PERMISSION_FRAGMENT" desc="Permission request shown if the user is visiting a site that wants to access locally installed font data. Follows a prompt: 'This site would like to:'">
     Use the fonts on your computer so you can create high-fidelity content

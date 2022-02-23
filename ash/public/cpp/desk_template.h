@@ -12,6 +12,10 @@
 #include "base/time/time.h"
 #include "components/app_restore/restore_data.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace ash {
 
 // Indicates where a desk template originated from.
@@ -41,6 +45,12 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
 
+  // Returns whether desk templates support the `window`'s app type.
+  static bool IsAppTypeSupported(aura::Window* window);
+
+  // A special value to use as an icon identifier for an incognito window.
+  static constexpr char kIncognitoWindowIdentifier[] = "incognito_window";
+
   base::GUID uuid() const { return uuid_; }
   DeskTemplateSource source() const { return source_; }
   base::Time created_time() const { return created_time_; }
@@ -68,7 +78,7 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   // This specifically used in the DeskSyncBridge which requires a map
   // of DeskTemplate unique pointers to be valid and needs to pass
   // that information in DeskModel callbacks.
-  std::unique_ptr<DeskTemplate> Clone();
+  std::unique_ptr<DeskTemplate> Clone() const;
 
   // Indicates the last time the user created or updated this template.
   // If this desk template was never updated since creation, its creation time
@@ -79,6 +89,12 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
 
   // Indicates whether this template has been updated since creation.
   bool WasUpdatedSinceCreation() const { return !updated_time_.is_null(); }
+
+  // Indicates whether this template can be modified by user.
+  bool IsModifiable() const { return source_ == DeskTemplateSource::kUser; }
+
+  // Returns `this` in string format. Used for debugging and in feedback logs.
+  std::string ToString() const;
 
  private:
   DeskTemplate();

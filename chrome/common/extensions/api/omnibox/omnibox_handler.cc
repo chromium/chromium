@@ -45,7 +45,7 @@ bool OmniboxHandler::Parse(Extension* extension, std::u16string* error) {
   auto info = std::make_unique<OmniboxInfo>();
   info->keyword = manifest_keys.omnibox.keyword;
   if (info->keyword.empty()) {
-    *error = base::ASCIIToUTF16(manifest_errors::kEmptyOmniboxKeyword);
+    *error = manifest_errors::kEmptyOmniboxKeyword;
     return false;
   }
 

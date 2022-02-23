@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_
 #define CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/management/management_service.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#endif
 
 using EnterpriseManagementAuthority = policy::EnterpriseManagementAuthority;
 using ManagementAuthorityTrustworthiness =
@@ -13,14 +19,17 @@ using ManagementAuthorityTrustworthiness =
 
 class Profile;
 
+// TODO (crbug/1238355): Add unit tests for this file.
+
 class BrowserCloudManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
   BrowserCloudManagementStatusProvider();
   ~BrowserCloudManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 class LocalBrowserManagementStatusProvider final
@@ -29,8 +38,9 @@ class LocalBrowserManagementStatusProvider final
   LocalBrowserManagementStatusProvider();
   ~LocalBrowserManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 };
 
 class ProfileCloudManagementStatusProvider final
@@ -39,11 +49,29 @@ class ProfileCloudManagementStatusProvider final
   explicit ProfileCloudManagementStatusProvider(Profile* profile);
   ~ProfileCloudManagementStatusProvider() final;
 
+ protected:
   // ManagementStatusProvider impl
-  EnterpriseManagementAuthority GetAuthority() final;
+  EnterpriseManagementAuthority FetchAuthority() final;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class DeviceManagementStatusProvider final
+    : public policy::ManagementStatusProvider {
+ public:
+  explicit DeviceManagementStatusProvider(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector);
+  ~DeviceManagementStatusProvider() final;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
+
+ private:
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_;
+};
+#endif
 
 #endif  // CHROME_BROWSER_ENTERPRISE_BROWSER_MANAGEMENT_BROWSER_MANAGEMENT_STATUS_PROVIDER_H_

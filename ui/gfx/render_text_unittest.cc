@@ -17,7 +17,9 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -51,13 +53,13 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -87,7 +89,7 @@ enum {
 using FontSpan = std::pair<Font, Range>;
 
 bool IsFontsSmoothingEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BOOL antialiasing = TRUE;
   BOOL result = SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &antialiasing, 0);
   if (result == FALSE) {
@@ -413,7 +415,7 @@ class TestRectangleBuffer {
 
  private:
   const char* string_;
-  const SkColor* buffer_;
+  raw_ptr<const SkColor> buffer_;
   int stride_;
   int row_count_;
 };
@@ -1567,9 +1569,9 @@ const RunListCase kBasicsRunListCases[] = {
      "[0][1][2][3][4]"},  // http://crbug.com/396776
     {"jap_paren2", u"國哲(c)1",
      "[0->1][2][3][4][5]"},  // http://crbug.com/125792
-    {"newline1", u"\n\n", "[0->1]"},
-    {"newline2", u"\r\n\r\n", "[0->3]"},
-    {"newline3", u"\r\r\n", "[0->2]"},
+    {"newline1", u"\n\n", "[0][1]"},
+    {"newline2", u"\r\n\r\n", "[0][1][2][3]"},
+    {"newline3", u"\r\r\n", "[0->1][2]"},
     {"multiline_newline1", u"\n\n", "[0][1]", true},
     {"multiline_newline2", u"\r\n\r\n", "[0->1][2->3]", true},
     {"multiline_newline3", u"\r\r\n", "[0][1->2]", true},
@@ -1748,7 +1750,7 @@ const RunListCase kScriptsRunListCases[] = {
 
     // Control Pictures.
     {"control_pictures", u"␑␒␓␔␕␖␗␘␙␚␛", "[0->10]"},
-    {"control_pictures_rewrite", u"␑\t␛", "[0->2]"},
+    {"control_pictures_rewrite", u"␑\t␛", "[0][1][2]"},
 
     // Unicode art.
     {"unicode_emoticon1", u"(▀̿ĺ̯▀̿ ̿)", "[0][1->2][3->4][5->6][7->8][9]"},
@@ -2809,7 +2811,7 @@ TEST_F(RenderTextTest, MoveCursor_Word) {
                                         SELECTION_NONE, &expected);
 
   // Move right twice.
-#if defined(OS_WIN)  // Move word right includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Move word right includes space/punctuation.
   expected.push_back(Range(4));
   expected.push_back(Range(8));
 #else  // Non-Windows: move word right does NOT include space/punctuation.
@@ -2829,7 +2831,7 @@ TEST_F(RenderTextTest, MoveCursor_Word) {
 
   // Move right twice.
   expected.push_back(Range(6));
-#if defined(OS_WIN)  // Select word right includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word right includes space/punctuation.
   expected.push_back(Range(6, 8));
 #else  // Non-Windows: select word right does NOT include space/punctuation.
   expected.push_back(Range(6, 7));
@@ -2851,7 +2853,7 @@ TEST_F(RenderTextTest, MoveCursor_Word) {
                                         SELECTION_RETAIN, &expected);
 
   // Move right twice.
-#if defined(OS_WIN)  // Select word right includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word right includes space/punctuation.
   expected.push_back(Range(6, 8));
 #else  // Non-Windows: select word right does NOT include space/punctuation.
   expected.push_back(Range(6, 7));
@@ -2874,7 +2876,7 @@ TEST_F(RenderTextTest, MoveCursor_Word) {
                                         SELECTION_EXTEND, &expected);
 
   // Move right twice.
-#if defined(OS_WIN)  // Select word right includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word right includes space/punctuation.
   expected.push_back(Range(4, 8));
 #else  // Non-Windows: select word right does NOT include space/punctuation.
   expected.push_back(Range(4, 7));
@@ -2904,7 +2906,7 @@ TEST_F(RenderTextTest, MoveCursor_Word_RTL) {
                                         SELECTION_NONE, &expected);
 
   // Move left twice.
-#if defined(OS_WIN)  // Move word left includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Move word left includes space/punctuation.
   expected.push_back(Range(4));
   expected.push_back(Range(8));
 #else  // Non-Windows: move word left does NOT include space/punctuation.
@@ -2924,7 +2926,7 @@ TEST_F(RenderTextTest, MoveCursor_Word_RTL) {
 
   // Move left twice.
   expected.push_back(Range(6));
-#if defined(OS_WIN)  // Select word left includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word left includes space/punctuation.
   expected.push_back(Range(6, 8));
 #else  // Non-Windows: select word left does NOT include space/punctuation.
   expected.push_back(Range(6, 7));
@@ -2946,7 +2948,7 @@ TEST_F(RenderTextTest, MoveCursor_Word_RTL) {
                                         SELECTION_RETAIN, &expected);
 
   // Move left twice.
-#if defined(OS_WIN)  // Select word left includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word left includes space/punctuation.
   expected.push_back(Range(6, 8));
 #else  // Non-Windows: select word left does NOT include space/punctuation.
   expected.push_back(Range(6, 7));
@@ -2969,7 +2971,7 @@ TEST_F(RenderTextTest, MoveCursor_Word_RTL) {
                                         SELECTION_EXTEND, &expected);
 
   // Move left twice.
-#if defined(OS_WIN)  // Select word left includes space/punctuation.
+#if BUILDFLAG(IS_WIN)  // Select word left includes space/punctuation.
   expected.push_back(Range(4, 8));
 #else  // Non-Windows: select word left does NOT include space/punctuation.
   expected.push_back(Range(4, 7));
@@ -4349,14 +4351,14 @@ TEST_F(RenderTextTest, MoveCursorLeftRightWithSelection_Multiline) {
 
   // Move cursor right with WORD_BREAK.
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(Range(4), render_text->selection());
 #else
   EXPECT_EQ(Range(3), render_text->selection());
 #endif
   EXPECT_EQ(0U, GetLineContainingCaret());
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(Range(9), render_text->selection());
   EXPECT_EQ(3U, GetLineContainingCaret());
 #else
@@ -4441,7 +4443,7 @@ void MoveLeftRightByWordVerifier(RenderText* render_text, const char16_t* str) {
     const SelectionModel end = render_text->selection_model();
 
     // For testing simplicity, each word is a 3-character word.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Windows moves from "|abc def" to "abc |def" instead of "abc| def", so
     // traverse 4 characters on all but the last word instead of all but the
     // first.
@@ -4488,7 +4490,7 @@ void MoveLeftRightByWordVerifier(RenderText* render_text, const char16_t* str) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(aleventhal): https://crbug.com/906308 Fix bugs, update verifier code
 // above, and enable for Windows.
 #define MAYBE_MoveLeftRightByWordInBidiText \
@@ -4573,7 +4575,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInTextWithMultiSpaces) {
   render_text->SetText(u"abc     def");
   render_text->SetCursorPosition(5);
   render_text->MoveCursor(WORD_BREAK, CURSOR_RIGHT, SELECTION_NONE);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(8U, render_text->cursor_position());
 #else
   EXPECT_EQ(11U, render_text->cursor_position());
@@ -4611,7 +4613,7 @@ TEST_F(RenderTextTest, MoveLeftRightByWordInThaiText) {
 
 // TODO(crbug.com/865527): Chinese and Japanese tokenization doesn't work on
 // mobile.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(RenderTextTest, MoveLeftRightByWordInChineseText) {
   RenderText* render_text = GetRenderText();
   // zh-Hans-CN: 我们去公园玩, broken to 我们|去|公园|玩.
@@ -4956,7 +4958,7 @@ TEST_F(RenderTextTest, DefaultLineHeights) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"A quick brown fox jumped over the lazy dog!");
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   const FontList body2_font = FontList().DeriveWithSizeDelta(-1);
 #else
   const FontList body2_font;
@@ -4965,7 +4967,7 @@ TEST_F(RenderTextTest, DefaultLineHeights) {
   const FontList headline_font = body2_font.DeriveWithSizeDelta(8);
   const FontList title_font = body2_font.DeriveWithSizeDelta(3);
   const FontList body1_font = body2_font.DeriveWithSizeDelta(1);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const FontList button_font =
       body2_font.DeriveWithWeight(gfx::Font::Weight::BOLD);
 #else
@@ -5151,10 +5153,10 @@ TEST_F(RenderTextTest, StringSizeBoldWidth) {
   // implemented because of test system font configuration).
   RenderText* render_text = GetRenderText();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Increase font size to ensure that bold and regular styles differ in width.
   render_text->SetFontList(FontList("Arial, 20px"));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   render_text->SetText(u"Hello World");
 
@@ -5166,7 +5168,7 @@ TEST_F(RenderTextTest, StringSizeBoldWidth) {
   const int bold_width = render_text->GetStringSize().width();
   EXPECT_GT(bold_width, plain_width);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   render_text->SetWeight(Font::Weight::SEMIBOLD);
   const int semibold_width = render_text->GetStringSize().width();
   EXPECT_GT(bold_width, semibold_width);
@@ -6369,16 +6371,28 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
   render_text->SetText(kTextWithControlCharacters);
 
   // The control characters should have been replaced by their symbols.
-  EXPECT_EQ(u"␈␍␇␉␊␋␌", render_text->GetDisplayText());
+  EXPECT_EQ(u"␈␍␇⇥ ␋␌", render_text->GetDisplayText());
 
   // Setting multiline, the newline character will be back to the original text.
   render_text->SetMultiline(true);
-  EXPECT_EQ(u"␈\r␇␉\n␋␌", render_text->GetDisplayText());
+  EXPECT_EQ(u"␈\r␇⇥\n␋␌", render_text->GetDisplayText());
 
   // The generic control characters should have been replaced by the replacement
   // codepoints.
   render_text->SetText(u"\u008f\u0080");
   EXPECT_EQ(u"\ufffd\ufffd", render_text->GetDisplayText());
+
+  // The '\r\n' should have been replaced with single CR symbol in single line
+  // mode, even if it's a trailing newline.
+  render_text->SetMultiline(false);
+  render_text->SetText(u"abc\r\n\r\n");
+  EXPECT_EQ(u"abc␍ ␍ ", render_text->GetDisplayText());
+  render_text->SetText(u"abc\r\n");
+  EXPECT_EQ(u"abc␍ ", render_text->GetDisplayText());
+
+  // The trailing '\r\n' should not be replaced in multi line mode.
+  render_text->SetMultiline(true);
+  EXPECT_EQ(u"abc\r\n", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
@@ -6399,7 +6413,7 @@ TEST_F(RenderTextTest, AppleSpecificPrivateUseCharacterReplacement) {
   // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"\uf8ff");
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(u"\uf8ff", render_text->GetDisplayText());
 #else
   EXPECT_EQ(u"\ufffd", render_text->GetDisplayText());
@@ -6414,7 +6428,7 @@ TEST_F(RenderTextTest, MicrosoftSpecificPrivateUseCharacterReplacement) {
   for (auto* codepoint : allowed_codepoints) {
     RenderText* render_text = GetRenderText();
     render_text->SetText(codepoint);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (base::win::GetVersion() >= base::win::Version::WIN10) {
       EXPECT_EQ(codepoint, render_text->GetDisplayText());
     } else {
@@ -6749,7 +6763,7 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmojiVariationSelectors) {
   EXPECT_EQ(gfx::Range(1, 1), render_text->selection());
   EXPECT_EQ(1 * kGlyphWidth, render_text->GetUpdatedCursorBounds().x());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Early versions of macOS provide a tofu glyph for the variation selector.
   // Bail out early except on 10.12 and above.
   if (base::mac::IsAtMostOS10_11())
@@ -6757,7 +6771,7 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmojiVariationSelectors) {
 #endif
 
   // TODO(865709): make this work on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Jump over the telephone: two codepoints, but a single glyph.
   render_text->MoveCursor(CHARACTER_BREAK, CURSOR_RIGHT, SELECTION_NONE);
   EXPECT_EQ(gfx::Range(3, 3), render_text->selection());
@@ -6787,7 +6801,7 @@ TEST_F(RenderTextTest, HarfBuzz_OrphanedVariationSelector) {
 
 TEST_F(RenderTextTest, HarfBuzz_AsciiVariationSelector) {
   RenderTextHarfBuzz* render_text = GetRenderText();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Don't use a system font on macOS - asking for a variation selector on
   // ASCII glyphs can tickle OS bugs. See http://crbug.com/785522.
   render_text->SetFontList(FontList("Arial, 12px"));
@@ -6881,10 +6895,10 @@ TEST_F(RenderTextTest, EmojiFlagGlyphCount) {
 
   const internal::TextRunList* run_list = GetHarfBuzzRunList();
   ASSERT_EQ(1U, run_list->runs().size());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   // On Linux and macOS, the flags should be found, so two glyphs result.
   EXPECT_EQ(2u, run_list->runs()[0]->shape.glyph_count);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // It seems that some versions of android support the flags. Older versions
   // don't support it.
   EXPECT_TRUE(2u == run_list->runs()[0]->shape.glyph_count ||
@@ -6913,7 +6927,7 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
   EXPECT_EQ(expected, GetRunListStrings());
   EXPECT_EQ("[0->2][3][4->6]", GetRunListStructureString());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> expected_fonts;
   if (base::win::GetVersion() < base::win::Version::WIN10)
     expected_fonts = {"Segoe UI", "Segoe UI", "Segoe UI Symbol"};
@@ -7001,7 +7015,7 @@ TEST_F(RenderTextTest, StringFitsOwnWidth) {
 }
 
 // TODO(865715): Figure out why this fails on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Ensure that RenderText examines all of the fonts in its FontList before
 // falling back to other fonts.
 TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
@@ -7024,13 +7038,13 @@ TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
   ASSERT_EQ(static_cast<size_t>(1), spans.size());
   EXPECT_EQ(kSymbolFontName, spans[0].first.GetFontName());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Ensure that the fallback fonts offered by GetFallbackFonts() are tried. Note
 // this test assumes the font "Arial" doesn't provide a unicode glyph for a
 // particular character, and that there is a system fallback font which does.
 // TODO(msw): Fallback doesn't find a glyph on Linux and Android.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(RenderTextTest, HarfBuzz_UnicodeFallback) {
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetFontList(FontList("Arial, 12px"));
@@ -7041,7 +7055,8 @@ TEST_F(RenderTextTest, HarfBuzz_UnicodeFallback) {
   ASSERT_EQ(1U, run_list->size());
   EXPECT_EQ(0U, run_list->runs()[0]->CountMissingGlyphs());
 }
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_ANDROID)
 
 // Ensure that the fallback fonts offered by GetFallbackFont() support glyphs
 // for different languages.
@@ -7151,7 +7166,7 @@ const FallbackFontCase kComplexTextCases[] = {
     {"mixed1", u"www.اختبار.com"},
     {"mixed2", u"(اختبار)"},
     {"mixed3", u"/ זה (מבחן) /"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {"asc_arb", u"abcښڛڜdef"},
     {"devanagari", u"ञटठडढणतथ"},
     {"ethiopic", u"መጩጪᎅⶹⶼ"},
@@ -7212,7 +7227,7 @@ INSTANTIATE_TEST_SUITE_P(FallbackFontComplexTextCases,
 // block. These tests work on Windows and Mac default fonts installation.
 // On other platforms, the fonts are mock (see test_fonts).
 const FallbackFontCase kCommonScriptCases[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The following tests are made to work on win7 and win10.
     {"common00", u"\u237b\u2ac1\u24f5\u259f\u2a87\u23ea\u25d4\u2220"},
     {"common01", u"\u2303\u2074\u2988\u32b6\u26a2\u24e5\u2a53\u2219"},
@@ -7246,7 +7261,7 @@ const FallbackFontCase kCommonScriptCases[] = {
     {"common29", u"\u2981\ua721\u25a9\u2320\u21cf\u295a\u2273\u2ac2"},
     {"common30", u"\u22d9\u2465\u2347\u2a94\u4dca\u2389\u23b0\u208d"},
     {"common31", u"\u21cc\u2af8\u2912\u23a4\u2271\u2303\u241e\u33a1"},
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     {"common00", u"\u2497\uff04\u277c\u21b6\u2076\u21e4\u2068\u21b3"},
     {"common01", u"\u2663\u2466\u338e\u226b\u2734\u21be\u3389\u00ab"},
     {"common02", u"\u2062\u2197\u3392\u2681\u33be\u206d\ufe10\ufe34"},
@@ -7279,7 +7294,7 @@ const FallbackFontCase kCommonScriptCases[] = {
     {"common29", u"\u2517\u2297\u2762\u2460\u25bd\u24a9\u21a7\ufe64"},
     {"common30", u"\u2105\u2722\u275d\u249c\u21a2\u2590\u2260\uff5d"},
     {"common31", u"\u33ba\u21c6\u2706\u02cb\ufe64\u02e6\u0374\u2493"},
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     {"common00", u"\u2153\u24e0\u2109\u02f0\u2a8f\u25ed\u02c5\u2716"},
     {"common01", u"\u02f0\u208c\u2203\u2518\u2067\u2270\u21f1\ufe66"},
     {"common02", u"\u2686\u2585\u2b15\u246f\u23e3\u21b4\u2394\ufe31"},
@@ -7326,7 +7341,7 @@ INSTANTIATE_TEST_SUITE_P(FallbackFontCommonScript,
                          ::testing::ValuesIn(kCommonScriptCases),
                          RenderTextTestWithFallbackFontCase::ParamInfoToString);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Ensures that locale is used for fonts selection.
 TEST_F(RenderTextTest, CJKFontWithLocale) {
   const char16_t kCJKTest[] = u"\u8AA4\u904E\u9AA8";
@@ -7349,7 +7364,7 @@ TEST_F(RenderTextTest, CJKFontWithLocale) {
     EXPECT_TRUE(unique_font_name);
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(RenderTextTest, SameFontAccrossIgnorableCodepoints) {
   RenderText* render_text = GetRenderText();
@@ -7575,8 +7590,8 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
   render_text->SetText(u"x");
 
   DrawVisualText();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   // On Linux, whether subpixel AA is supported is determined by the platform
   // FontConfig. Force it into a particular style after computing runs. Other
   // platforms use a known default FontRenderParams from a static local.
@@ -7590,8 +7605,8 @@ TEST_F(RenderTextTest, SubpixelRenderingSuppressed) {
 
   render_text->set_subpixel_rendering_suppressed(true);
   DrawVisualText();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_FUCHSIA)
   // For Linux, runs shouldn't be re-calculated, and the suppression of the
   // SUBPIXEL_RENDERING_RGB set above should now take effect. But, after
   // checking, apply the override anyway to be explicit that it is suppressed.
@@ -8521,7 +8536,7 @@ TEST_F(RenderTextTest, DrawSelectAll) {
   ExpectTextLog(kUnselected);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(RenderTextTest, StringSizeUpdatedWhenDeviceScaleFactorChanges) {
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"Test - 1");

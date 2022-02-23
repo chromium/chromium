@@ -287,10 +287,9 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const DictionaryValue& filtered) {
   for (DictionaryValue::Iterator it(filtered); !it.IsAtEnd(); it.Advance()) {
     // We skip entries if they are malformed.
-    const base::ListValue* filter_list = nullptr;
-    if (!it.value().GetAsList(&filter_list))
+    if (!it.value().is_list())
       continue;
-    for (const base::Value& filter_value : filter_list->GetList()) {
+    for (const base::Value& filter_value : it.value().GetListDeprecated()) {
       if (!filter_value.is_dict())
         continue;
       const base::DictionaryValue* filter =
@@ -318,9 +317,8 @@ std::set<const EventListener*> EventListenerMap::GetEventListeners(
   std::set<const EventListener*> interested_listeners;
   if (IsFilteredEvent(event)) {
     // Look up the interested listeners via the EventFilter.
-    std::set<MatcherID> ids =
-        event_filter_.MatchEvent(event.event_name, event.filter_info,
-            MSG_ROUTING_NONE);
+    std::set<MatcherID> ids = event_filter_.MatchEvent(
+        event.event_name, *event.filter_info, MSG_ROUTING_NONE);
     for (const MatcherID& id : ids) {
       EventListener* listener = listeners_by_matcher_id_[id];
       CHECK(listener);

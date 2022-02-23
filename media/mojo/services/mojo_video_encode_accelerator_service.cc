@@ -47,7 +47,7 @@ MojoVideoEncodeAcceleratorService::~MojoVideoEncodeAcceleratorService() {
 
 void MojoVideoEncodeAcceleratorService::Initialize(
     const media::VideoEncodeAccelerator::Config& config,
-    mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> client,
+    mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient> client,
     InitializeCallback success_callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

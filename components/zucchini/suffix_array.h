@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 
 namespace zucchini {
 
@@ -209,9 +210,9 @@ class InducedSuffixSort {
 
       // Process each |lms_indices| backward, and assign them to the end of
       // their respective buckets, so relative order is preserved.
-      for (auto it = lms_indices.crbegin(); it != lms_indices.crend(); ++it) {
-        key_type key = str[*it];
-        suffix_array[--bucket_bounds[key]] = *it;
+      for (size_t lms_index : base::Reversed(lms_indices)) {
+        key_type key = str[lms_index];
+        suffix_array[--bucket_bounds[key]] = lms_index;
       }
 
       // Step 2

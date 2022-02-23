@@ -27,7 +27,8 @@ include_rules = [
   "+components/network_session_configurator/common",
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
-  "+components/payments",
+  "+components/payments/content/icon",
+  "+components/payments/mojom",
   "+components/services/heap_profiling/public",
   "+components/services/quarantine/public/mojom/quarantine.mojom.h",
   "+components/system_media_controls",
@@ -60,6 +61,7 @@ include_rules = [
   "+sql",
   "+ui/aura_extra",
   "+components/vector_icons",
+  "+ui/strings/grit/ax_strings.h",
   "+ui/webui",
 
   # TODO(crbug.com/1079201): Consider removing "+serivces". Each service should
@@ -111,6 +113,7 @@ include_rules = [
   "+third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h",
   "+third_party/blink/public/platform/modules/sms/webotp_service.mojom.h",
   "+third_party/blink/public/public_buildflags.h",
+  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",

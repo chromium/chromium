@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -164,7 +165,7 @@ WebNode WebElement::OpenOrClosedShadowRoot() {
 }
 
 gfx::Rect WebElement::BoundsInViewport() const {
-  return ToGfxRect(ConstUnwrap<Element>()->BoundsInViewport());
+  return ConstUnwrap<Element>()->BoundsInViewport();
 }
 
 SkBitmap WebElement::ImageContents() {
@@ -209,6 +210,12 @@ WebString WebElement::GetComputedValue(const WebString& property_name) {
   auto* computed_style =
       MakeGarbageCollected<CSSComputedStyleDeclaration>(element);
   return computed_style->GetPropertyCSSValue(property_id)->CssText();
+}
+
+void WebElement::UseCountParamUrlUsageIfNeeded(bool is_pdf) const {
+  if (auto* object =
+          ::blink::DynamicTo<HTMLObjectElement>(ConstUnwrap<Element>()))
+    object->UseCountParamUrlUsageIfNeeded(is_pdf);
 }
 
 WebElement::WebElement(Element* elem) : WebNode(elem) {}

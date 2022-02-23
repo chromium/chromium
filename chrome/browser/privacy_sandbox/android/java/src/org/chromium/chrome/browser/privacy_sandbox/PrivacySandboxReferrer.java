@@ -14,7 +14,8 @@ import java.lang.annotation.RetentionPolicy;
  * numeric values should never be reused. To be kept in sync with PrivacySandboxReferrer in
  * enums.xml.
  */
-@IntDef({PrivacySandboxReferrer.PRIVACY_SETTINGS, PrivacySandboxReferrer.COOKIES_SNACKBAR})
+@IntDef({PrivacySandboxReferrer.PRIVACY_SETTINGS, PrivacySandboxReferrer.COOKIES_SNACKBAR,
+        PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PrivacySandboxReferrer {
     /**
@@ -25,5 +26,9 @@ public @interface PrivacySandboxReferrer {
      * Corresponds to clicking on the snackbar on the cookies Site Settings page.
      */
     int COOKIES_SNACKBAR = 1;
-    int COUNT = 2;
+    /**
+     * Corresponds to the notice shown in the main browser window.
+     */
+    int PRIVACY_SANDBOX_NOTICE = 2;
+    int COUNT = 3;
 }

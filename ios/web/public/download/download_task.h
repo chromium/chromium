@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -42,6 +41,12 @@ class DownloadTask {
 
     // Download is completely finished.
     kComplete,
+
+    // Download has failed but can be resumed
+    kFailed,
+
+    // Downkoad has failed but cannot be resumed
+    kFailedNotResumable,
   };
 
   enum class Destination {

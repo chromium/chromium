@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_chrome_tab_ui_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_chrome_tab_ui_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_chrome_tab_ui_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_chrome_tab_ui_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_chrome_tab_ui_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_chrome_tab_ui_strings_af.xtb" lang="af" />
@@ -443,6 +446,9 @@
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE" desc="Message shown when merchant trust signals are available.">
         View store info?
       </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE_SEE_REVIEWS" desc="Alternative title of the message shown when merchant trust signals are available.">
+        See store reviews?
+      </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_ACTION" desc="The label of the action button on the merchant viewer message.">
         View
       </message>
@@ -453,6 +459,11 @@
          {REVIEWS, plural,
             =1 {(<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review)}
             other {(<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews)}}
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_DESCRIPTION_REVIEWS_FROM_GOOGLE" desc="Alternative message description indicating that the reviews come from Google.">
+         {REVIEWS, plural,
+            =1 {<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review from Google}
+            other {<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews from Google}}
       </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_RATING_NUMERICAL" desc="The rating of the merchant in numerical form.">
         <ph name="CURRENT_RATING">%1$.1f<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$d<ex>5</ex></ph>
@@ -494,6 +505,20 @@
       </message>
       <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_CLOSED" desc="Accessibility string read when the merchant viewer bottom sheet is closed.">
         Information about this store closed
+      </message>
+
+      <!-- Close All Tabs Dialog Strings -->
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE" desc="When users click the menu item 'Close all tabs' in tab switcher, a dialog will pop up and this text is the message of the dialog.">
+        You can find your closed tabs in Recent tabs under the Chrome main menu
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_TITLE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the title of the dialog.">
+        Close all Incognito tabs?
+      </message>
+      <message name="IDS_CLOSE_ALL_TABS_DIALOG_MESSAGE_INCOGNITO" desc="When users click the menu item 'Close all tabs' in Incognito tab switcher, a dialog will pop up and this text is the message of the dialog.">
+        Your activity in these Incognito tabs will be cleared from this device
       </message>
     </messages>
   </release>

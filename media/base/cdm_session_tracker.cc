@@ -4,6 +4,8 @@
 
 #include "media/base/cdm_session_tracker.h"
 
+#include "base/callback.h"
+
 namespace media {
 
 CdmSessionTracker::CdmSessionTracker() = default;

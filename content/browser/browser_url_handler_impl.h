@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_url_handler.h"
 
 class GURL;

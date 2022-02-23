@@ -43,8 +43,12 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // highlighted.
   void OnProcessingComplete(int success_count, int fragment_count);
 
-  // Cleans up highlights on the page in response to user click.
+  // Event propagated when the user clicks anywhere on the page.
   void OnClick();
+
+  // Event propagated when the user clicks on a highlighted text fragment.
+  // CGRect indicates the coordinates of the text fragment sending the event.
+  void OnClickWithSender(CGRect rect, NSString* text);
 
   // WebStateObserver methods:
   void DidFinishNavigation(WebState* web_state,

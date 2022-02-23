@@ -407,11 +407,9 @@ void NativeWidgetMac::InitModalType(ui::ModalType modal_type) {
 }
 
 const gfx::ImageSkia* NativeWidgetMac::GetWindowIcon() {
-  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 const gfx::ImageSkia* NativeWidgetMac::GetWindowAppIcon() {
-  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 

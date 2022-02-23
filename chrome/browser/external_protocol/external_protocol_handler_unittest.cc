@@ -16,6 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -193,7 +194,8 @@ class ExternalProtocolHandlerTest : public testing::Test {
         url,
         base::BindRepeating(&ExternalProtocolHandlerTest::GetWebContents,
                             base::Unretained(this)),
-        ui::PAGE_TRANSITION_LINK, true, initiating_origin);
+        ui::PAGE_TRANSITION_LINK, true, initiating_origin,
+        content::WeakDocumentPtr());
     run_loop_.Run();
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
 
@@ -309,8 +311,8 @@ TEST_F(ExternalProtocolHandlerTest, TestUrlEscapeNoChecks) {
   delegate_.set_block_state(ExternalProtocolHandler::DONT_BLOCK);
   delegate_.set_os_state(shell_integration::NOT_DEFAULT);
   delegate_.set_complete_on_launch(true);
-  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url,
-                                                         web_contents_.get());
+  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+      url, web_contents_.get(), content::WeakDocumentPtr());
   run_loop_.Run();
   ExternalProtocolHandler::SetDelegateForTesting(nullptr);
 
@@ -426,7 +428,7 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
       kScheme_2, &example_origin_2, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
-  const base::DictionaryValue* protocol_origin_pairs =
+  const base::Value* protocol_origin_pairs =
       profile_->GetPrefs()->GetDictionary(
           prefs::kProtocolHandlerPerOriginAllowedProtocols);
   base::Value expected_allowed_protocols_for_example_origin_1(

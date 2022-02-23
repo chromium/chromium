@@ -16,11 +16,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/trace_event/base_tracing.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -132,7 +132,8 @@ IndexedDBTransaction::IndexedDBTransaction(
       run_tasks_callback_(std::move(tasks_available_callback)),
       tear_down_callback_(std::move(tear_down_callback)),
       transaction_(backing_store_transaction) {
-  IDB_ASYNC_TRACE_BEGIN("IndexedDBTransaction::lifetime", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB",
+                                    "IndexedDBTransaction::lifetime", this);
   callbacks_ = connection_->callbacks();
   database_ = connection_->database();
   if (database_)
@@ -144,7 +145,8 @@ IndexedDBTransaction::IndexedDBTransaction(
 }
 
 IndexedDBTransaction::~IndexedDBTransaction() {
-  IDB_ASYNC_TRACE_END("IndexedDBTransaction::lifetime", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", "IndexedDBTransaction::lifetime",
+                                  this);
   // It shouldn't be possible for this object to get deleted until it's either
   // complete or aborted.
   DCHECK_EQ(state_, FINISHED);
@@ -288,7 +290,7 @@ void IndexedDBTransaction::EnsureBackingStoreTransactionBegun() {
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
     BlobWriteResult result,
     storage::mojom::WriteBlobToFileResult error) {
-  IDB_TRACE("IndexedDBTransaction::BlobWriteComplete");
+  TRACE_EVENT0("IndexedDB", "IndexedDBTransaction::BlobWriteComplete");
   if (state_ == FINISHED)  // aborted
     return leveldb::Status::OK();
   DCHECK_EQ(state_, COMMITTING);
@@ -317,7 +319,7 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
 }
 
 leveldb::Status IndexedDBTransaction::Commit() {
-  IDB_TRACE1("IndexedDBTransaction::Commit", "txn.id", id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBTransaction::Commit", "txn.id", id());
 
   timeout_timer_.Stop();
 
@@ -436,7 +438,8 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
     abort_task_stack_.clear();
 
     {
-      IDB_TRACE1(
+      TRACE_EVENT1(
+          "IndexedDB",
           "IndexedDBTransaction::CommitPhaseTwo.TransactionCompleteCallbacks",
           "txn.id", id());
       callbacks_->OnComplete(*this);
@@ -466,7 +469,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
 
 std::tuple<IndexedDBTransaction::RunTasksResult, leveldb::Status>
 IndexedDBTransaction::RunTasks() {
-  IDB_TRACE1("IndexedDBTransaction::RunTasks", "txn.id", id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBTransaction::RunTasks", "txn.id", id());
 
   DCHECK(!processing_event_queue_);
 
@@ -555,7 +558,8 @@ void IndexedDBTransaction::Timeout() {
 }
 
 void IndexedDBTransaction::CloseOpenCursorBindings() {
-  IDB_TRACE1("IndexedDBTransaction::CloseOpenCursorBindings", "txn.id", id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBTransaction::CloseOpenCursorBindings",
+               "txn.id", id());
   std::vector<IndexedDBCursor*> cursor_ptrs(open_cursors_.begin(),
                                             open_cursors_.end());
   for (auto* cursor_ptr : cursor_ptrs)
@@ -563,7 +567,8 @@ void IndexedDBTransaction::CloseOpenCursorBindings() {
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {
-  IDB_TRACE1("IndexedDBTransaction::CloseOpenCursors", "txn.id", id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBTransaction::CloseOpenCursors", "txn.id",
+               id());
 
   // IndexedDBCursor::Close() indirectly mutates |open_cursors_|, when it calls
   // IndexedDBTransaction::UnregisterOpenCursor().

@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeFeatureStatusProvider::FakeFeatureStatusProvider()
@@ -29,4 +29,4 @@ FeatureStatus FakeFeatureStatusProvider::GetStatus() const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

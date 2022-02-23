@@ -121,7 +121,7 @@ export function makeInfoView(browserBridge) {
       const gpuInfo = browserBridge.gpuInfo;
       let i;
       if (gpuInfo) {
-        // Not using jstemplate here for blacklist status because we construct
+        // Not using jstemplate here for blocklist status because we construct
         // href from data, which jstemplate can't seem to do.
         if (gpuInfo.featureStatus) {
           this.appendFeatureInfo_(
@@ -266,7 +266,6 @@ export function makeInfoView(browserBridge) {
         'texture_sharing': 'Texture Sharing',
         'video_decode': 'Video Decode',
         'rasterization': 'Rasterization',
-        'oop_rasterization': 'Out-of-process Rasterization',
         'opengl': 'OpenGL',
         'metal': 'Metal',
         'vulkan': 'Vulkan',
@@ -280,6 +279,8 @@ export function makeInfoView(browserBridge) {
         'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
         'raw_draw': 'Raw Draw',
         'video_encode': 'Video Encode',
+        'direct_rendering_display_compositor':
+            'Direct Rendering Display Compositor',
       };
 
       const statusMap = {

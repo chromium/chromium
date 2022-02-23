@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TEST_VIEW_EVENT_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_TEST_VIEW_EVENT_TEST_BASE_H_
 
+#include "base/memory/raw_ptr.h"
+
 // We only want to use ViewEventTestBase in test targets which properly
 // isolate each test case by running each test in a separate process.
 // This way if a test hangs the test launcher can reliably terminate it.
@@ -131,7 +133,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
   std::unique_ptr<base::Thread> drag_event_thread_;
 
   base::RunLoop run_loop_;
-  views::Widget* window_ = nullptr;
+  raw_ptr<views::Widget> window_ = nullptr;
 };
 
 // Convenience macro for defining a ViewEventTestBase. See class description

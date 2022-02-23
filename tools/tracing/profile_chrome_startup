@@ -45,8 +45,8 @@ def _CreateOptionParser():
 
 
 def _SetupFlags(options):
-  flag_utils.SetupProfilingCategories(options)
   flag_utils.SetupLogging(options.verbosity)
+  flag_utils.SetupProfilingCategories(options)
 
 
 def main():
@@ -76,7 +76,15 @@ def main():
     symbolize_trace.SymbolizeTrace(trace_file=trace_file, options=options)
 
   if options.view:
-    display_in_browser.DisplayInBrowser(trace_file, options.trace_format)
+    trace = options.output_file
+    if not trace or not os.path.isfile(trace):
+      trace = trace_file
+
+    if trace and os.path.isfile(trace):
+      display_in_browser.DisplayInBrowser(trace, options.trace_format)
+    else:
+      flag_utils.GetTraceLogger().warning(
+          'Trace is not found, so not opening in browser.')
 
 if __name__ == '__main__':
   sys.exit(main())

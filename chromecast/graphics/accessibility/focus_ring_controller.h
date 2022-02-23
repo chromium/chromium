@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/graphics/accessibility/focus_ring_layer.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/widget_focus_manager.h"

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/device/battery/battery_status_manager.h"
@@ -116,7 +116,7 @@ class BatteryStatusServiceTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   BatteryStatusService battery_service_;
-  FakeBatteryManager* battery_manager_;
+  raw_ptr<FakeBatteryManager> battery_manager_;
   BatteryStatusService::BatteryUpdateCallback callback1_;
   BatteryStatusService::BatteryUpdateCallback callback2_;
   int callback1_invoked_count_;

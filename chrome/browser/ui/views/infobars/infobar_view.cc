@@ -62,7 +62,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(LabelType, kLabelType, LabelType::kNone)
 
 // IDs of the colors to use for infobar elements.
 constexpr int kInfoBarLabelBackgroundColor = ThemeProperties::COLOR_INFOBAR;
-constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_BOOKMARK_TEXT;
+constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_TOOLBAR_TEXT;
 
 constexpr int kSeparatorHeightDip = 1;
 
@@ -116,7 +116,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_TOAST_LABEL_VERTICAL),
                     0));
-    AddChildView(icon_);
+    AddChildView(icon_.get());
   }
 
   if (this->delegate()->IsCloseable()) {
@@ -127,8 +127,7 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
     views::SetImageFromVectorIcon(close_button.get(),
                                   vector_icons::kCloseRoundedIcon,
                                   gfx::kPlaceholderColor);
-    close_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+    close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     gfx::Insets close_button_spacing = GetCloseButtonSpacing();
     close_button->SetProperty(views::kMarginsKey,
                               gfx::Insets(close_button_spacing.top(), 0,
@@ -244,8 +243,10 @@ void InfoBarView::OnThemeChanged() {
     if (label_type != LabelType::kNone) {
       auto* label = static_cast<views::Label*>(child);
       label->SetBackgroundColor(background_color);
-      if (label_type == LabelType::kLabel)
+      if (label_type == LabelType::kLabel) {
         label->SetEnabledColor(text_color);
+        label->SetAutoColorReadabilityEnabled(false);
+      }
     }
   }
 

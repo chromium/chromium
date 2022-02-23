@@ -46,15 +46,17 @@ constexpr gfx::Insets kLeftContentPaddingWithIcon(2, 4, 0, 12);
 // Minimum size of a button in the actions row.
 constexpr gfx::Size kActionButtonMinSize(0, 32);
 
-constexpr int kMessageViewWidthWithIcon =
+constexpr int kMessageLabelWidthWithIcon =
     kNotificationWidth - kIconViewSize.width() -
     kLeftContentPaddingWithIcon.left() - kLeftContentPaddingWithIcon.right() -
     kContentRowPadding.left() - kContentRowPadding.right();
 
-constexpr int kMessageViewWidth =
+constexpr int kMessageLabelWidth =
     kNotificationWidth - kLeftContentPadding.left() -
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
+
+constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
 
 // Max number of lines for title_view_.
 constexpr int kMaxLinesForTitleView = 1;
@@ -84,7 +86,7 @@ gfx::FontList GetHeaderTextFontList() {
 }
 
 gfx::Insets CalculateTopPadding(int font_list_height) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the fonts can have slightly different metrics reported,
   // depending on where the code runs. In Chrome, DirectWrite is on, which means
   // font metrics are reported from Skia, which rounds from float using ceil.
@@ -289,7 +291,10 @@ NotificationView::NotificationView(
 
   AddChildView(std::move(header_row));
   AddChildView(std::move(content_row));
-  AddChildView(CreateImageContainerBuilder().Build());
+  AddChildView(
+      CreateImageContainerBuilder()
+          .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding))
+          .Build());
   AddChildView(CreateInlineSettingsBuilder().Build());
   AddChildView(CreateActionsRow());
 
@@ -324,7 +329,7 @@ void NotificationView::CreateOrUpdateTitleView(
       notification.type() == NOTIFICATION_TYPE_PROGRESS) {
     if (title_view_) {
       DCHECK(left_content()->Contains(title_view_));
-      left_content()->RemoveChildViewT(title_view_);
+      left_content()->RemoveChildViewT(title_view_.get());
       title_view_ = nullptr;
     }
     return;
@@ -407,7 +412,7 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
           IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS;
       break;
     case NotifierType::CROSTINI_APPLICATION:
-      FALLTHROUGH;
+      [[fallthrough]];
     // PhoneHub notifications do not have inline settings.
     case NotifierType::PHONE_HUB:
       NOTREACHED();
@@ -466,22 +471,27 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
   // Ideally, we should fix the original bug, but it seems there's no obvious
   // solution for the bug according to https://crbug.com/678337#c7, we should
   // ensure that the change won't break any of the users of BoxLayout class.
-  const int message_view_width =
-      (IsIconViewShown() ? kMessageViewWidthWithIcon : kMessageViewWidth) -
+  const int message_label_width =
+      (IsIconViewShown() ? kMessageLabelWidthWithIcon : kMessageLabelWidth) -
       GetInsets().width();
   if (title_view_)
-    title_view_->SizeToFit(message_view_width);
-  if (message_view()) {
-    message_view()->SetMultiLine(true);
-    message_view()->SetMaxLines(expanded ? kMaxLinesForExpandedMessageView
-                                         : kMaxLinesForMessageView);
-    message_view()->SizeToFit(message_view_width);
+    title_view_->SizeToFit(message_label_width);
+  if (message_label()) {
+    message_label()->SetMultiLine(true);
+    message_label()->SetMaxLines(expanded ? kMaxLinesForExpandedMessageLabel
+                                          : kMaxLinesForMessageLabel);
+    message_label()->SizeToFit(message_label_width);
   }
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 
 gfx::Size NotificationView::GetIconViewSize() const {
   return kIconViewSize;
+}
+
+int NotificationView::GetLargeImageViewMaxWidth() const {
+  return kNotificationWidth - kLargeImageContainerPadding.width() -
+         GetInsets().width();
 }
 
 void NotificationView::OnThemeChanged() {
@@ -518,6 +528,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
   dont_block_button_->SetChecked(true);
 
   NotificationViewBase::ToggleInlineSettings(event);
+  PreferredSizeChanged();
 
   if (inline_settings_row()->GetVisible())
     AddBackgroundAnimation(event);
@@ -540,8 +551,8 @@ bool NotificationView::IsExpandable() const {
     return false;
 
   // Expandable if the message exceeds one line.
-  if (message_view() && message_view()->GetVisible() &&
-      message_view()->GetRequiredLines() > 1) {
+  if (message_label() && message_label()->GetVisible() &&
+      message_label()->GetRequiredLines() > 1) {
     return true;
   }
   // Expandable if there is at least one inline action.

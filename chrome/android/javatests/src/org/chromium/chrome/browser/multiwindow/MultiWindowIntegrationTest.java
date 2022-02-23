@@ -8,10 +8,10 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.move
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -28,18 +28,22 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Integration testing for Android's N+ MultiWindow.
@@ -67,7 +71,7 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @DisabledTest(message = "Flaky on test-n-phone https://crbug/1197125")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
@@ -105,7 +109,7 @@ public class MultiWindowIntegrationTest {
     @Test
     @MediumTest
     @Feature("MultiWindow")
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
             ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void
@@ -136,5 +140,36 @@ public class MultiWindowIntegrationTest {
         // At this point cta2 should have zero tabs, and cta should have 2 tabs (NTP, 'google').
         waitForTabs("CTA2", cta2, 0, Tab.INVALID_TAB_ID);
         waitForTabs("CTA", cta, 2, googleTabId);
+    }
+
+    @Test
+    @MediumTest
+    @Feature("MultiWindow")
+    @RequiresApi(Build.VERSION_CODES.N)
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
+            ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    // TODO(1298242): Enable this test for tablet once the tab switcher is supported.
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void
+    testMovingLastTabKeepsActivityAlive() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        int blankTab = cta.getActivityTabProvider().get().getId();
+
+        // Move the blank tab to cta2.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
+                R.id.move_to_other_window_menu_id);
+
+        final ChromeTabbedActivity2 cta2 = waitForSecondChromeTabbedActivity();
+
+        // At this point cta2 should have zero tabs, and cta should have 1 tab.
+        waitForTabs("CTA", cta, 0, Tab.INVALID_TAB_ID);
+        waitForTabs("CTA2", cta2, 1, blankTab);
+
+        // Once all the tabs from one activity have been removed, the tab switcher should be shown.
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
+
+        // The activity should also remain alive.
+        Assert.assertFalse("The original activity should not be finishing!", cta.isFinishing());
+        Assert.assertFalse("The original activity should still be alive!", cta.isDestroyed());
     }
 }

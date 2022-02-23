@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/image/image_skia.h"

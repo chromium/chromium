@@ -186,6 +186,45 @@ class OsDiagnosticsRunCpuCacheRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "os.diagnostics.runCpuFloatingPointAccuracyRoutine",
+      OS_DIAGNOSTICS_RUNCPUFLOATINGPOINTACCURACYROUTINE)
+
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction();
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction(
+      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
+  OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction& operator=(
+      const OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunCpuFloatingPointAccuracyRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsRunCpuPrimeSearchRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuPrimeSearchRoutine",
+                             OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE)
+
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction();
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction(
+      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
+  OsDiagnosticsRunCpuPrimeSearchRoutineFunction& operator=(
+      const OsDiagnosticsRunCpuPrimeSearchRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunCpuPrimeSearchRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunCpuStressRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:
@@ -205,6 +244,25 @@ class OsDiagnosticsRunCpuStressRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunDiskReadRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDiskReadRoutine",
+                             OS_DIAGNOSTICS_RUNDISKREADROUTINE)
+
+  OsDiagnosticsRunDiskReadRoutineFunction();
+  OsDiagnosticsRunDiskReadRoutineFunction(
+      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
+  OsDiagnosticsRunDiskReadRoutineFunction& operator=(
+      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunDiskReadRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunMemoryRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:
@@ -219,6 +277,44 @@ class OsDiagnosticsRunMemoryRoutineFunction
 
  private:
   ~OsDiagnosticsRunMemoryRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsRunNvmeWearLevelRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeWearLevelRoutine",
+                             OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE)
+
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction();
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction(
+      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction& operator=(
+      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsRunSmartctlCheckRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSmartctlCheckRoutine",
+                             OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE)
+
+  OsDiagnosticsRunSmartctlCheckRoutineFunction();
+  OsDiagnosticsRunSmartctlCheckRoutineFunction(
+      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
+  OsDiagnosticsRunSmartctlCheckRoutineFunction& operator=(
+      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunSmartctlCheckRoutineFunction() override;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

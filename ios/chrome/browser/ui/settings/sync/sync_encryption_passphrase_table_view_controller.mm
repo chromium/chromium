@@ -21,6 +21,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -159,11 +160,10 @@ const CGFloat kSpinnerButtonPadding = 18;
   [super viewDidLoad];
   [self loadModel];
   [self setRightNavBarItem];
-  if (base::ios::IsSceneStartupSupported()) {
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
-  }
+
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -262,9 +262,10 @@ const CGFloat kSpinnerButtonPadding = 18;
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text = self.footerMessage;
-  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-      GURL(kSyncGoogleDashboardURL),
-      GetApplicationContext()->GetApplicationLocale())};
+  footerItem.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(kSyncGoogleDashboardURL),
+                       GetApplicationContext()->GetApplicationLocale())] ];
   return footerItem;
 }
 

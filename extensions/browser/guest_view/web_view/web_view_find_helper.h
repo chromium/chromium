@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -173,7 +173,7 @@ class WebViewFindHelper {
   };
 
   // Pointer to the webview that is being helped.
-  WebViewGuest* const webview_guest_;
+  const raw_ptr<WebViewGuest> webview_guest_;
 
   // A counter to generate a unique request id for a find request.
   // We only need the ids to be unique for a given WebViewGuest.

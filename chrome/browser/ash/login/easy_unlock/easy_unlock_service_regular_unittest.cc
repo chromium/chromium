@@ -11,11 +11,16 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/proximity_auth/fake_lock_handler.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
@@ -31,14 +36,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/multidevice/beacon_seed.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/components/proximity_auth/fake_lock_handler.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -220,6 +221,9 @@ class EasyUnlockServiceRegularTest : public testing::Test {
     if (is_locked)
       proximity_auth::ScreenlockBridge::Get()->SetFocusedUser(account_id_);
 
+    fake_lock_handler_->ClearSmartLockState();
+    fake_lock_handler_->ClearSmartLockAuthResult();
+
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         is_locked ? fake_lock_handler_.get() : nullptr);
   }
@@ -230,7 +234,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             ->GetRemoteDevices();
     if (are_local_and_remote_devices_expected)
       // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->GetList().size());
+      EXPECT_EQ(2u, remote_devices->GetListDeprecated().size());
     else
       EXPECT_FALSE(remote_devices);
   }
@@ -499,6 +503,102 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   histogram_tester_.ExpectBucketCount(
       "ChromeOS.FeatureUsage.SmartLock",
       feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
+}
+
+// Regression test for b/213941298.
+// Authenticate with Easy Unlock twice, calling UpdateSmartLockState in between.
+// Ordinarily, this call to UpdateSmartLockState would be made by
+// ProximityAuthClient during the OnScreenDidUnlock event. Check that the second
+// call to AttemptAuth succeeds since UpdateSmartLockState clears out the last
+// auth attempt, allowing the next auth attempt to proceed.
+TEST_F(EasyUnlockServiceRegularTest,
+       UpdateSmartLockStateClearsLastAuthAttempt) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
+  service->UpdateSmartLockState(SmartLockState::kInactive);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state().has_value());
+
+  SetScreenLockState(true /* is_locked */);
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  ASSERT_TRUE(fake_lock_handler_->smart_lock_auth_result().has_value());
+  EXPECT_TRUE(fake_lock_handler_->smart_lock_auth_result().value());
+
+  SetScreenLockState(false /* is_locked */);
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+  EXPECT_EQ(SmartLockState::kDisabled, service->GetInitialSmartLockState());
+}
+
+TEST_F(EasyUnlockServiceRegularTest, ShowInitialSmartLockState_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_lock_handler_->smart_lock_state().value());
+}
+
+TEST_F(EasyUnlockServiceRegularTest,
+       ShowInitialSmartLockState_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
+
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetIsEnabled(false);
+
+  EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
+
+  SetScreenLockState(true /* is_locked */);
+
+  // Before EasyUnlockService::UpdateSmartLockState() is called externally,
+  // ensure that internal state is updated to an "initial" state to prevent
+  // UI jank.
+  EXPECT_EQ(SmartLockState::kDisabled,
+            fake_lock_handler_->smart_lock_state().value());
 }
 
 }  // namespace ash

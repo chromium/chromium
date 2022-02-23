@@ -842,8 +842,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kResourcesPrivate);
   skip.insert(APIPermissionID::kRtcPrivate);
   skip.insert(APIPermissionID::kSafeBrowsingPrivate);
-  // TODO(crbug.com/1220107): Add a permission for speechRecognitionPrivate.
-  skip.insert(APIPermissionID::kSpeechRecognitionPrivate);
   skip.insert(APIPermissionID::kSystemPrivate);
   skip.insert(APIPermissionID::kTabCaptureForTab);
   skip.insert(APIPermissionID::kTerminalPrivate);

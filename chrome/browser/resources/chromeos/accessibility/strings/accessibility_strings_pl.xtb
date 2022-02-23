@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Obszar ćwiczenia: listy</translation>
 <translation id="1195238899008218998">Posłowie</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
+<translation id="1198865190323699001">Kliknięcia</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1206619573307042055">transparent</translation>
 <translation id="1207086294218137981">Nie ma następnego nagłówka poziomu 4</translation>
@@ -69,6 +70,7 @@
 <translation id="1354356357730355833">kopiuj</translation>
 <translation id="135978014023467274">Czytnik ChromeVox został zaktualizowany do wersji 63.</translation>
 <translation id="1360699455582016846">Kliknij element pod klawiszem sterującym <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">przejdź do następnego znaku</translation>
 <translation id="1377925789329510816">To jest ostatni nagłówek. Kliknij klawisz wyszukiwania + H, by wrócić do pierwszego nagłówka na tej stronie, lub klawisz wyszukiwania + Shift + H, by przejść do drugiego.</translation>
 <translation id="138218114945450791">Jasnoniebieski</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -213,6 +215,7 @@
 <translation id="2450814015951372393">Pole wyboru</translation>
 <translation id="2461822463642141190">Aktualnie</translation>
 <translation id="2462626033734746142">Grupa przycisków radiowych</translation>
+<translation id="2467741090055146971">odznacz</translation>
 <translation id="2471138580042810658">Nagłówek 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{gwiazdka}few{# znaki gwiazdki}many{# znaków gwiazdki}other{# asterisks}}</translation>
 <translation id="2490721194269245365">Różanobrązowy</translation>
@@ -387,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{prawy nawias kwadratowy}few{# prawe nawiasy kwadratowe}many{# prawych nawiasów kwadratowych}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{pytajnik}few{# pytajniki}many{# pytajników}other{# question marks}}</translation>
+<translation id="3505359110822747654">Zwiń menu ChromeVoxa</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{kareta}few{# znaki karety}many{# znaków karety}other{# carets}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{biały punktor}few{# białe punktory}many{# białych punktorów}other{# białego punktora}}</translation>
 <translation id="352577523970648069">Pole tekstowe z możliwością edytowania</translation>
 <translation id="3538907380453898475">listaopisu</translation>
 <translation id="3549141990712742152">wytnij <ph name="TEXT" />.</translation>
@@ -565,6 +570,7 @@
 <translation id="4854380505292502090">Nie ma widżetu poprzedniego pliku multimedialnego</translation>
 <translation id="4855927945655956315">Klawisze podstawowe: Ctrl</translation>
 <translation id="4862744964787595316">Bez pogrubienia</translation>
+<translation id="4865995900839719272">przejdź do poprzedniego wiersza</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Włącz rejestrowanie TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +629,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, karta</translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5310788376443009632">usunięto:</translation>
+<translation id="5316825363044614340">przejdź do następnego wiersza</translation>
 <translation id="5320727453979144100">Tryb klawiszy trwałych włączony</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{przecinek}few{# przecinki}many{# przecinków}other{# commas}}</translation>
 <translation id="532485153932049746">Formatowanie tekstu
@@ -659,6 +666,7 @@
 <translation id="5522423213731659107">Moduł Szybkie wprowadzenie został ukończony</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Bardzo jasny szary</translation>
+<translation id="554893713779400387">Włącz lub wyłącz dyktowanie</translation>
 <translation id="5549179427201066174">Włącz lub wyłącz powiadamianie dźwiękiem (ikony audio)</translation>
 <translation id="556042886152191864">Przycisk</translation>
 <translation id="5561345396546889625">Następna lista</translation>
@@ -669,6 +677,7 @@
 <translation id="5597170376237141345">Następne pole wyboru</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, niewybrany przycisk opcji</translation>
 <translation id="5601172225407283979">Wykonaj domyślne działanie</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{punktor kwadratowy}few{# punktory kwadratowe}many{# punktorów kwadratowych}other{# punktora kwadratowego}}</translation>
 <translation id="5608798115546226984">Autouzupełnianie w tekście</translation>
 <translation id="5616029807486814372">Następna lekcja</translation>
 <translation id="561939826962581046">time</translation>
@@ -902,6 +911,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Nie ma poprzedniego pola formularza</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">pomoc</translation>
 <translation id="7317017974771324508">częściowo wybrano</translation>
 <translation id="7322442671176251901">Czytanie dotykiem</translation>
 <translation id="7344012264516629579">Dodatkowe polecenia nawigacyjne obejmują na przykład przejście za pomocą linku, przycisku lub pola wyboru. Pełną listę poleceń nawigacyjnych znajdziesz w różnych menu programu ChromeVox, które otworzysz, naciskając jednocześnie klawisz wyszukiwania i kropkę.</translation>
@@ -1090,6 +1100,7 @@
 <translation id="8659501358298941449">Listy</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> koniec</translation>
 <translation id="867187640362843212">Nagłówek 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}few{poziom umieszczony #}many{poziom umieszczony #}other{poziom umieszczony #}}</translation>
 <translation id="8693391540059827073">Moja ulubiona pora roku</translation>
 <translation id="8696284982970258155">Spadziowy</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{kreska pionowa}few{# kreski pionowe}many{# kresek pionowych}other{# vertical pipes}}</translation>
@@ -1128,6 +1139,7 @@
 <translation id="9014206344398081366">Samouczek ChromeVox</translation>
 <translation id="9040132695316389094">Nagłówek 1</translation>
 <translation id="9061884144798498064">Wybierz tabelę ośmiopunktowego pisma Braille'a:</translation>
+<translation id="9063946545000394379">przejdź do poprzedniego znaku</translation>
 <translation id="9065283790526219006">+wyskakujące okienko</translation>
 <translation id="9065912140022662363">Nie ma następnego przycisku radiowego</translation>
 <translation id="9067522039955793016">Podział strony</translation>
@@ -1156,6 +1168,7 @@
 <translation id="9223032053830369045">Ciemnoczerwony</translation>
 <translation id="923331726185079994">ChromeVox został zaktualizowany</translation>
 <translation id="93384979447910801">Ciemny zielony morski</translation>
+<translation id="937605981140327129">Funkcja TalkBack nie jest obecnie zainstalowana. Pobierz ze Sklepu Play aplikację Ułatwienia dostępu na Androida i spróbuj ponownie.</translation>
 <translation id="948171205378458592">Zmniejsz tempo mowy</translation>
 <translation id="957570623732056069">Aby poruszać się po tej lekcji, przesuwaj palcem w lewo lub w prawo</translation>
 <translation id="958854023026327378">Przesuń jednym palcem w dół</translation>

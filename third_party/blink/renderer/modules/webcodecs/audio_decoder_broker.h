@@ -15,7 +15,7 @@
 #include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -45,10 +45,10 @@ class CrossThreadAudioDecoderClient {
     bool needs_bitstream_conversion;
   };
 
-  virtual void OnInitialize(media::Status status,
+  virtual void OnInitialize(media::DecoderStatus status,
                             absl::optional<DecoderDetails> details) = 0;
 
-  virtual void OnDecodeDone(int cb_id, media::Status status) = 0;
+  virtual void OnDecodeDone(int cb_id, media::DecoderStatus status) = 0;
 
   virtual void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) = 0;
 
@@ -96,9 +96,9 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   int CreateCallbackId();
 
   // MediaAudioTaskWrapper::CrossThreadAudioDecoderClient
-  void OnInitialize(media::Status status,
+  void OnInitialize(media::DecoderStatus status,
                     absl::optional<DecoderDetails> details) override;
-  void OnDecodeDone(int cb_id, media::Status status) override;
+  void OnDecodeDone(int cb_id, media::DecoderStatus status) override;
   void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) override;
   void OnReset(int cb_id) override;
 

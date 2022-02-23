@@ -20,13 +20,14 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -47,6 +48,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail("account@gmail.com");
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
@@ -78,6 +82,22 @@ public class GoogleServicesSettingsTest {
                 ()
                         -> UserPrefs.get(Profile.getLastUsedRegularProfile())
                                    .setBoolean(Pref.SIGNIN_ALLOWED, true));
+    }
+
+    @Test
+    @LargeTest
+    public void allowSigninOptionHiddenFromChildUser() {
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
+        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
+                Profile::getLastUsedRegularProfile);
+        CriteriaHelper.pollUiThread(profile::isChild);
+
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        ChromeSwitchPreference allowChromeSignin =
+                (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+        Assert.assertFalse(
+                "Chrome Signin option should not be visible", allowChromeSignin.isVisible());
     }
 
     @Test
@@ -139,8 +159,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
+    @DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantNoPreferenceIfOnboardingNeverShown() {
@@ -163,8 +183,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
+    @DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantPreferenceShownIfOnboardingShown() {
@@ -182,8 +202,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantNoPreferenceIfFeatureDisabled() {
@@ -201,8 +221,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
+    @DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantSwitchOn() {
@@ -225,8 +245,8 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_NAME)
+    @DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH})
     public void
     testAutofillAssistantSwitchOff() {
@@ -244,7 +264,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
     public void testAutofillAssistantProactiveHelp() {
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -265,7 +285,7 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"AssistantVoiceSearch"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void testAutofillAssistantSubsection_AssistantVoiceSeach() {
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -310,8 +330,7 @@ public class GoogleServicesSettingsTest {
     }
 
     private void setAutofillAssistantSwitchValue(boolean newValue) {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {

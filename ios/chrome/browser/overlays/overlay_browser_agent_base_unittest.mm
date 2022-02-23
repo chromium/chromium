@@ -15,7 +15,6 @@
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -72,21 +71,20 @@ BROWSER_USER_DATA_KEY_IMPL(FakeOverlayBrowserAgent)
 // Test fixture for OverlayBrowserAgentBase.
 class OverlayBrowserAgentBaseTest : public PlatformTest {
  public:
-  OverlayBrowserAgentBaseTest() : web_state_list_(&web_state_list_delegate_) {
+  OverlayBrowserAgentBaseTest() {
     // Create the Browser and set up the browser agent.
     TestChromeBrowserState::Builder builder;
     browser_state_ = builder.Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     FakeOverlayBrowserAgent::CreateForBrowser(browser_.get());
     // Set up the infobar OverlayPresenter.
     OverlayPresenter::FromBrowser(browser_.get(), kModality)
         ->SetPresentationContext(&presentation_context_);
     // Add and active a WebState over which to present overlays.
-    web_state_list_.InsertWebState(0, std::make_unique<web::FakeWebState>(),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
-    web_state_ = web_state_list_.GetActiveWebState();
+    browser_->GetWebStateList()->InsertWebState(
+        0, std::make_unique<web::FakeWebState>(), WebStateList::INSERT_ACTIVATE,
+        WebStateOpener());
+    web_state_ = browser_->GetWebStateList()->GetActiveWebState();
   }
 
   ~OverlayBrowserAgentBaseTest() override {
@@ -111,8 +109,6 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   web::WebState* web_state_ = nullptr;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext presentation_context_;

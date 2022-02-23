@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
@@ -20,9 +22,10 @@ struct ExtensionBuilder::ManifestData {
   Type type;
   std::string name;
   std::vector<std::string> permissions;
-  absl::optional<ActionType> action;
+  absl::optional<ActionInfo::Type> action;
   absl::optional<BackgroundContext> background_context;
   absl::optional<std::string> version;
+  absl::optional<int> manifest_version;
 
   // A ContentScriptEntry includes a string name, and a vector of string
   // match patterns.
@@ -34,7 +37,7 @@ struct ExtensionBuilder::ManifestData {
   std::unique_ptr<base::DictionaryValue> GetValue() const {
     DictionaryBuilder manifest;
     manifest.Set(manifest_keys::kName, name)
-        .Set(manifest_keys::kManifestVersion, 2)
+        .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
         .Set(manifest_keys::kVersion, version.value_or("0.1"))
         .Set(manifest_keys::kDescription, "some description");
 
@@ -59,15 +62,17 @@ struct ExtensionBuilder::ManifestData {
     }
 
     if (action) {
+      // TODO(devlin): Update this when action_info_test_util.[h|cc] is moved to
+      // //extensions.
       const char* action_key = nullptr;
       switch (*action) {
-        case ActionType::PAGE_ACTION:
+        case ActionInfo::TYPE_PAGE:
           action_key = manifest_keys::kPageAction;
           break;
-        case ActionType::BROWSER_ACTION:
+        case ActionInfo::TYPE_BROWSER:
           action_key = manifest_keys::kBrowserAction;
           break;
-        case ActionType::ACTION:
+        case ActionInfo::TYPE_ACTION:
           action_key = manifest_keys::kAction;
           break;
       }
@@ -165,6 +170,13 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
   return extension;
 }
 
+base::Value ExtensionBuilder::BuildManifest() {
+  CHECK(manifest_data_ || manifest_value_);
+  return manifest_data_
+             ? base::Value::FromUniquePtrValue(manifest_data_->GetValue())
+             : manifest_value_->Clone();
+}
+
 ExtensionBuilder& ExtensionBuilder::AddPermission(
     const std::string& permission) {
   CHECK(manifest_data_);
@@ -180,9 +192,9 @@ ExtensionBuilder& ExtensionBuilder::AddPermissions(
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetAction(ActionType action) {
+ExtensionBuilder& ExtensionBuilder::SetAction(ActionInfo::Type type) {
   CHECK(manifest_data_);
-  manifest_data_->action = action;
+  manifest_data_->action = type;
   return *this;
 }
 
@@ -207,6 +219,22 @@ ExtensionBuilder& ExtensionBuilder::SetVersion(const std::string& version) {
   return *this;
 }
 
+ExtensionBuilder& ExtensionBuilder::SetManifestVersion(int manifest_version) {
+  CHECK(manifest_data_);
+  manifest_data_->manifest_version = manifest_version;
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddJSON(base::StringPiece json) {
+  CHECK(manifest_data_);
+  std::string wrapped_json = base::StringPrintf("{%s}", json.data());
+  base::JSONReader::ValueWithError parsed =
+      base::JSONReader::ReadAndReturnValueWithError(wrapped_json);
+  CHECK(parsed.value) << "Failed to parse json for extension '"
+                      << manifest_data_->name << "':" << parsed.error_message;
+  return MergeManifest(*parsed.value);
+}
+
 ExtensionBuilder& ExtensionBuilder::SetPath(const base::FilePath& path) {
   path_ = path;
   return *this;
@@ -225,16 +253,19 @@ ExtensionBuilder& ExtensionBuilder::SetManifest(
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::MergeManifest(
-    std::unique_ptr<base::DictionaryValue> manifest) {
+ExtensionBuilder& ExtensionBuilder::MergeManifest(const base::Value& to_merge) {
+  CHECK(to_merge.is_dict());
   if (manifest_data_) {
-    base::DictionaryValue* extra_dict = nullptr;
-    manifest_data_->get_extra()->GetAsDictionary(&extra_dict);
-    extra_dict->MergeDictionary(manifest.get());
+    manifest_data_->get_extra()->MergeDictionary(&to_merge);
   } else {
-    manifest_value_->MergeDictionary(manifest.get());
+    manifest_value_->MergeDictionary(&to_merge);
   }
   return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::MergeManifest(
+    std::unique_ptr<base::DictionaryValue> manifest) {
+  return MergeManifest(*manifest);
 }
 
 ExtensionBuilder& ExtensionBuilder::AddFlags(int init_from_value_flags) {

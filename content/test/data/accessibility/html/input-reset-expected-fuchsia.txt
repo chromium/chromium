@@ -1,0 +1,8 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN
+++++++BUTTON focusable label='Reset' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Reset'
+++++++++++UNKNOWN label='Reset'

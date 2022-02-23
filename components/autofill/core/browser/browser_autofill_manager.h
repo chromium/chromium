@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -114,7 +114,7 @@ class BrowserAutofillManager : public AutofillManager,
                                           const FormData& form,
                                           const FormFieldData& field_data);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of credit cards that have associated cloud token data.
   virtual void FetchVirtualCardCandidates();
 
@@ -153,10 +153,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
-  virtual void FillVirtualCardInformation(const std::string& guid,
-                                          int query_id,
-                                          const FormData& form,
-                                          const FormFieldData& field);
+  virtual void FillOrPreviewVirtualCardInformation(
+      mojom::RendererFormDataAction action,
+      const std::string& guid,
+      int query_id,
+      const FormData& form,
+      const FormFieldData& field);
 
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
@@ -421,10 +423,8 @@ class BrowserAutofillManager : public AutofillManager,
         profile_or_credit_card_with_cvc;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
-    // TODO(crbug/896689): Remove |filled_field_unique_name|.
     const FieldGlobalId filled_field_id;
     const FieldSignature filled_field_signature;
-    const std::u16string filled_field_unique_name;
     // The security origin from which the field was filled.
     url::Origin filled_origin;
     // The time at which the initial fill occurred.
@@ -541,13 +541,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns the field corresponding to |form| and |field| that can be
   // autofilled. Returns NULL if the field cannot be autofilled.
-  AutofillField* GetAutofillField(const FormData& form,
-                                  const FormFieldData& field)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] AutofillField* GetAutofillField(const FormData& form,
+                                                const FormFieldData& field);
 
   // Returns true if any form in the field corresponds to an address
   // |FieldTypeGroup|.
-  bool FormHasAddressField(const FormData& form) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool FormHasAddressField(const FormData& form);
 
   // Returns Suggestions corresponding to both the |autofill_field| type and
   // stored profiles whose values match the contents of |field|. |form| stores
@@ -608,7 +607,17 @@ class BrowserAutofillManager : public AutofillManager,
       size_t current_index,
       const ServerFieldTypeSet& upload_types);
 
-  void FillFieldWithValue(
+  // Calls FieldFiller::FillFormField().
+  //
+  // If the field was newly filled, sets `autofill_field->is_autofilled` and
+  // `field_data->is_autofilled` both to true (otherwise leaves them unchanged).
+  //
+  // Also logs metrics and, if `should_notify` is true, calls
+  // AutofillClient::DidFillOrPreviewField().
+  //
+  // Returns true if the field has been filled, false otherwise. This is
+  // independent of whether the field was filled or autofilled before.
+  bool FillFieldWithValue(
       AutofillField* autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
@@ -619,11 +628,9 @@ class BrowserAutofillManager : public AutofillManager,
       mojom::RendererFormDataAction action,
       std::string* failure_to_fill);
 
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
   void SetFillingContext(const FormStructure& form,
                          std::unique_ptr<FillingContext> context);
 
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
   FillingContext* GetFillingContext(const FormStructure& form);
 
   // Whether there should be an attempts to refill the form. Returns true if all
@@ -655,7 +662,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::vector<AutofillProfile>& profiles,
       FormStructure* form_structure);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Whether to show the option to use virtual card in the autofill popup.
   bool ShouldShowVirtualCardOption(FormStructure* form_structure);
 #endif
@@ -678,7 +685,7 @@ class BrowserAutofillManager : public AutofillManager,
   // web database.  This is overridden by the BrowserAutofillManagerTest.
   // Weak reference.
   // May be NULL.  NULL indicates OTR.
-  PersonalDataManager* personal_data_;
+  raw_ptr<PersonalDataManager> personal_data_;
 
   // Used to help fill data into fields.
   FieldFiller field_filler_;
@@ -727,7 +734,7 @@ class BrowserAutofillManager : public AutofillManager,
   // The autofill offer manager, used to to retrieve offers for card
   // suggestions. Initialized when BrowserAutofillManager is created.
   // |offer_manager_| is never null.
-  AutofillOfferManager* offer_manager_;
+  raw_ptr<AutofillOfferManager> offer_manager_;
 
   // Helper class to generate Autofill suggestions.
   std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
@@ -748,15 +755,11 @@ class BrowserAutofillManager : public AutofillManager,
   mutable std::map<int, std::string> int_to_backend_map_;
 
   // Delegate used in test to get notifications on certain events.
-  BrowserAutofillManagerTestDelegate* test_delegate_ = nullptr;
+  raw_ptr<BrowserAutofillManagerTestDelegate> test_delegate_ = nullptr;
 
-  // A map of form names to FillingContext instances used to make refill
+  // A map from FormGlobalId to FillingContext instances used to make refill
   // attempts for dynamic forms.
-  // TODO(crbug/896689): Remove code duplication once experiment is finished.
-  std::map<FormGlobalId, std::unique_ptr<FillingContext>>
-      filling_context_by_global_id_;
-  std::map<std::u16string, std::unique_ptr<FillingContext>>
-      filling_context_by_unique_name_;
+  std::map<FormGlobalId, std::unique_ptr<FillingContext>> filling_context_;
 
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.

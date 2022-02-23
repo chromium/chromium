@@ -14,12 +14,12 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget.h"
@@ -161,10 +161,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   AppListView& operator=(const AppListView&) = delete;
 
   ~AppListView() override;
-
-  // Prevents handling input events for the |window| in context of handling in
-  // app list.
-  static void ExcludeWindowFromEventHandling(aura::Window* window);
 
   // Used for testing, allows the page reset timer to be fired immediately
   // after starting.
@@ -413,6 +409,9 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Updates the title of the window that contains the launcher.
   void UpdateWindowTitle();
 
+  // Called when app list visibility changed.
+  void OnAppListVisibilityChanged(bool shown);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListControllerImplTest,
                            CheckAppListViewBoundsWhenVKeyboardEnabled);
@@ -618,7 +617,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   bool disable_contents_reset_when_showing_ = false;
 
   // Records the presentation time for app launcher dragging.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // A timer which will reset the app list to the initial page. This timer only
   // goes off when the app list is not visible after a set amount of time.

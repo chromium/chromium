@@ -29,6 +29,8 @@ namespace tab_strip_ui {
 absl::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
     TabGroupModel* tab_group_model,
     std::string group_id_string) {
+  if (!tab_group_model)
+    return absl::nullopt;
   for (tab_groups::TabGroupId candidate : tab_group_model->ListTabGroups()) {
     if (candidate.ToString() == group_id_string) {
       return absl::optional<tab_groups::TabGroupId>{candidate};
@@ -144,18 +146,23 @@ bool DropTabsInNewBrowser(Browser* new_browser,
         GetBrowserWithGroupId(new_browser->profile(), group_id_utf8);
     if (!source_browser)
       return false;
-    source_group_id = GetTabGroupIdFromString(
-        source_browser->tab_strip_model()->group_model(), group_id_utf8);
+    TabGroupModel* source_group_model =
+        source_browser->tab_strip_model()->group_model();
+    if (!source_group_model)
+      return false;
+    source_group_id =
+        GetTabGroupIdFromString(source_group_model, group_id_utf8);
     if (!source_group_id)
       return false;
-
-    TabGroup* source_group =
-        source_browser->tab_strip_model()->group_model()->GetTabGroup(
-            *source_group_id);
+    TabGroup* source_group = source_group_model->GetTabGroup(*source_group_id);
     tab_indices_to_move = source_group->ListTabs();
 
-    new_browser->tab_strip_model()->group_model()->AddTabGroup(
-        *source_group_id, *source_group->visual_data());
+    TabGroupModel* new_group_model =
+        new_browser->tab_strip_model()->group_model();
+    if (!new_group_model)
+      return false;
+    new_group_model->AddTabGroup(*source_group_id,
+                                 *source_group->visual_data());
   }
 
   const int source_index = tab_indices_to_move.start();

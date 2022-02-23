@@ -7,9 +7,10 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import './profile_picker_shared_css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
+import {getTemplate} from './profile_switch.html.js';
 
 export interface ProfileSwitchElement {
   $: {
@@ -27,7 +28,7 @@ export class ProfileSwitchElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

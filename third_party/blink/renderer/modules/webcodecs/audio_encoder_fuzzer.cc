@@ -60,14 +60,17 @@ DEFINE_TEXT_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
-    Persistent<FakeFunction> error_function =
-        FakeFunction::Create(script_state, "error");
+    Persistent<ScriptFunction> error_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("error"));
     Persistent<V8WebCodecsErrorCallback> error_callback =
-        V8WebCodecsErrorCallback::Create(error_function->Bind());
-    Persistent<FakeFunction> output_function =
-        FakeFunction::Create(script_state, "output");
+        V8WebCodecsErrorCallback::Create(error_function->V8Function());
+    Persistent<ScriptFunction> output_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("output"));
     Persistent<V8EncodedAudioChunkOutputCallback> output_callback =
-        V8EncodedAudioChunkOutputCallback::Create(output_function->Bind());
+        V8EncodedAudioChunkOutputCallback::Create(
+            output_function->V8Function());
 
     Persistent<AudioEncoderInit> audio_encoder_init =
         MakeGarbageCollected<AudioEncoderInit>();
@@ -92,8 +95,7 @@ DEFINE_TEXT_PROTO_FUZZER(
             break;
           }
           case wc_fuzzer::AudioEncoderApiInvocation::kEncode: {
-            AudioData* data =
-                MakeAudioData(script_state, invocation.encode().data());
+            AudioData* data = MakeAudioData(invocation.encode().data());
             if (!data)
               return;
 

@@ -81,7 +81,7 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 }
 
 void NGFragmentItems::FinalizeAfterLayout(
-    const Vector<scoped_refptr<const NGLayoutResult>, 1>& results) {
+    const HeapVector<Member<const NGLayoutResult>, 1>& results) {
 #if DCHECK_IS_ON()
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     for (const auto& result : results) {
@@ -99,6 +99,7 @@ void NGFragmentItems::FinalizeAfterLayout(
   ClearCollectionScope<HeapHashMap<Member<const LayoutObject>, LastItem>>
       clear_scope(&last_items);
   wtf_size_t item_index = 0;
+  wtf_size_t line_fragment_id = NGFragmentItem::kInitialLineFragmentId;
   for (const auto& result : results) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
@@ -112,6 +113,7 @@ void NGFragmentItems::FinalizeAfterLayout(
       ++item_index;
       if (item.Type() == NGFragmentItem::kLine) {
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
+        item.SetFragmentId(line_fragment_id++);
         continue;
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();
@@ -268,6 +270,83 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     cursor.MoveToNextSkippingChildren();
   }
   return nullptr;  // all items are reusable.
+}
+
+bool NGFragmentItems::IsContainerForCulledInline(
+    const LayoutInline& layout_inline,
+    bool* is_first_container,
+    bool* is_last_container) const {
+  DCHECK(!layout_inline.HasInlineFragments());
+  const wtf_size_t start_idx = size_of_earlier_fragments_;
+  const wtf_size_t end_idx = EndItemIndex();
+  const LayoutObject* next_descendant;
+  bool found_item = false;
+  *is_first_container = true;
+  for (const LayoutObject* descendant = layout_inline.FirstChild(); descendant;
+       descendant = next_descendant) {
+    wtf_size_t item_idx = descendant->FirstInlineFragmentItemIndex();
+    if (descendant->IsBox() || item_idx)
+      next_descendant = descendant->NextInPreOrderAfterChildren(&layout_inline);
+    else
+      next_descendant = descendant->NextInPreOrder(&layout_inline);
+    if (!item_idx)
+      continue;
+
+    // |FirstInlineFragmentItemIndex| is 1-based. Convert to 0-based index.
+    item_idx--;
+
+    if (item_idx >= end_idx) {
+      // This descendant starts in a later container. So this isn't the last
+      // container for the culled inline.
+      *is_last_container = false;
+      return found_item;
+    }
+
+    if (item_idx < start_idx) {
+      // This descendant doesn't start here. But does it occur here?
+      *is_first_container = false;
+      NGInlineCursor cursor;
+      for (cursor.MoveTo(*descendant); cursor.Current() && item_idx < end_idx;
+           cursor.MoveToNextForSameLayoutObject()) {
+        item_idx += cursor.Current()->DeltaToNextForSameLayoutObject();
+        if (item_idx >= start_idx) {
+          if (item_idx >= end_idx) {
+            // The descendant occurs in a later container. So this isn't the
+            // last container for the culled inline.
+            *is_last_container = false;
+            return found_item;
+          }
+          // The descendant occurs here. Proceed to figure out if it ends here
+          // as well.
+          found_item = true;
+        }
+      }
+      continue;
+    }
+
+    // This descendant starts here. Does it end here as well?
+    found_item = true;
+    const NGFragmentItem* item = &items_[item_idx - start_idx];
+    do {
+      if (const wtf_size_t delta = item->DeltaToNextForSameLayoutObject()) {
+        item_idx += delta;
+        if (item_idx >= end_idx) {
+          // This descendant also occurs in a later container. So this isn't the
+          // last container for the culled inline.
+          *is_last_container = false;
+          return true;
+        }
+        item = &items_[item_idx - start_idx];
+      } else {
+        item = nullptr;
+      }
+    } while (item);
+  }
+
+  // We didn't find anything that occurs in a later container, so this *is* the
+  // last container for the culled inline.
+  *is_last_container = true;
+  return found_item;
 }
 
 // static

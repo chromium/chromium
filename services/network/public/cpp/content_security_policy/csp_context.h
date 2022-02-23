@@ -40,6 +40,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
   // - triggering the "SecurityPolicyViolation" javascript event.
   // - sending a JSON report to any uri defined with the "report-uri" directive.
   // Returns true when the request can proceed, false otherwise.
+  // Note that when |is_opaque_fenced_frame| is true only https scheme source
+  // will be matched and |url| might be disregarded.
   bool IsAllowedByCsp(
       const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
       mojom::CSPDirectiveName directive_name,
@@ -49,7 +51,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
       bool is_response_check,
       const mojom::SourceLocationPtr& source_location,
       CheckCSPDisposition check_csp_disposition,
-      bool is_form_submission);
+      bool is_form_submission,
+      bool is_opaque_fenced_frame = false);
 
   // Called when IsAllowedByCsp return false. Implementer of CSPContext must
   // display an error message and send reports using |violation|.

@@ -8,13 +8,17 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class PrivacySandboxSettings;
 class Profile;
+
+namespace privacy_sandbox {
+class PrivacySandboxSettings;
+}
 
 class PrivacySandboxSettingsFactory : public BrowserContextKeyedServiceFactory {
  public:
   static PrivacySandboxSettingsFactory* GetInstance();
-  static PrivacySandboxSettings* GetForProfile(Profile* profile);
+  static privacy_sandbox::PrivacySandboxSettings* GetForProfile(
+      Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<PrivacySandboxSettingsFactory>;

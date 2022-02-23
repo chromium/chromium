@@ -27,26 +27,17 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestSyncService(
-    web::BrowserState* context) {
-  return std::make_unique<syncer::TestSyncService>();
-}
-
 class SyncEncryptionTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateTestSyncService));
-    browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
 
-    ChromeBrowserState* browserState = browser_.get()->GetBrowserState();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     syncer::TestSyncService* test_sync_service =
         static_cast<syncer::TestSyncService*>(
-            SyncServiceFactory::GetForBrowserState(browserState));
+            SyncServiceFactory::GetForBrowserState(browser_state_.get()));
     test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();
@@ -58,7 +49,8 @@ class SyncEncryptionTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 TEST_F(SyncEncryptionTableViewControllerTest, TestModel) {

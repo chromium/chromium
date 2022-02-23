@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "storage/browser/file_system/async_file_util.h"
 

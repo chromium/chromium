@@ -21,15 +21,8 @@ buildflag_header("buildflags") {
 }
 
 if (enable_pdf) {
-  config("common") {
-    configs = [ "//build/config/compiler:noshadowing" ]
-  }
-
   config("strict") {
-    configs = [
-      ":common",
-      "//build/config/compiler:wexit_time_destructors",
-    ]
+    configs = [ "//build/config/compiler:wexit_time_destructors" ]
   }
 
   config("pdfium_includes") {
@@ -110,6 +103,8 @@ if (enable_pdf) {
       "draw_utils/coordinates.h",
       "draw_utils/shadow.cc",
       "draw_utils/shadow.h",
+      "file_extension.cc",
+      "file_extension.h",
       "page_orientation.cc",
       "page_orientation.h",
       "paint_aggregator.cc",
@@ -224,8 +219,6 @@ if (enable_pdf) {
       "pdfium/pdfium_assert_matching_enums.cc",
       "ppapi_migration/ppapi_assert_matching_enums.cc",
     ]
-
-    configs += [ ":common" ]
 
     deps = [
       ":accessibility",
@@ -380,7 +373,7 @@ if (enable_pdf) {
       "//skia",
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common:headers",
-      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/display",
       "//ui/events/blink",
@@ -403,8 +396,6 @@ if (enable_pdf) {
       "test/test_pdfium_engine.cc",
       "test/test_pdfium_engine.h",
     ]
-
-    configs += [ ":common" ]
 
     deps = [
       ":internal",
@@ -441,6 +432,7 @@ if (enable_pdf) {
       "document_layout_unittest.cc",
       "document_loader_impl_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
+      "file_extension_unittest.cc",
       "page_orientation_unittest.cc",
       "parsed_params_unittest.cc",
       "pdf_transform_unittest.cc",
@@ -467,8 +459,6 @@ if (enable_pdf) {
       "ui/file_name_unittest.cc",
       "ui/thumbnail_unittest.cc",
     ]
-
-    configs += [ ":common" ]
 
     data = [ "test/data/" ]
 
@@ -501,6 +491,7 @@ if (enable_pdf) {
       "//third_party/blink/public/common:headers",
       "//third_party/pdfium",
       "//ui/base",
+      "//ui/base/cursor",
       "//ui/events/blink:blink",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",

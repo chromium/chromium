@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://html.spec.whatwg.org/#cross-origin-opener-policies
+// https://html.spec.whatwg.org/C/#cross-origin-opener-policies
 
 [
   LegacyNoInterfaceObject

@@ -40,6 +40,13 @@ def _CommonChecks(input_api, output_api):
         results += (
             style_variable_generator.presubmit_support.FindDeletedCSSVariables(
                 input_api, output_api, STYLE_VAR_GEN_INPUTS))
+        sys.path += [
+            input_api.os_path.join(input_api.change.RepositoryRoot(), 'ui',
+                                   'chromeos')
+        ]
+        import styles.presubmit_support
+        results += styles.presubmit_support._CheckSemanticColors(
+            input_api, output_api)
     finally:
         sys.path = old_sys_path
     return results

@@ -32,6 +32,24 @@ import {getMetadataProvider} from './mojo_interface_provider.js';
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
 
 /**
+ * Lookup table maps icons to the correct display class.
+ * @private {Map<string, string>}
+ */
+const ICON_CLASS_MAP = new Map([
+  ['print-management:file-gdoc', 'file-icon-blue'],
+  ['print-management:file-word', 'file-icon-blue'],
+  ['print-management:file-generic', 'file-icon-gray'],
+  ['print-management:file-excel', 'file-icon-green'],
+  ['print-management:file-gform', 'file-icon-green'],
+  ['print-management:file-gsheet', 'file-icon-green'],
+  ['print-management:file-image', 'file-icon-red'],
+  ['print-management:file-gdraw', 'file-icon-red'],
+  ['print-management:file-gslide', 'file-icon-yellow'],
+  ['print-management:file-pdf', 'file-icon-red'],
+  ['print-management:file-ppt', 'file-icon-red'],
+]);
+
+/**
  * Converts a mojo time to a JS time.
  * @param {!mojoBase.mojom.Time} mojoTime
  * @return {!Date}
@@ -58,10 +76,10 @@ function convertMojoTimeToJS(mojoTime) {
  * @return {boolean}
  */
 function isToday(date) {
-  const today_date = new Date();
-  return date.getDate() === today_date.getDate() &&
-      date.getMonth() === today_date.getMonth() &&
-      date.getFullYear() === today_date.getFullYear();
+  const todayDate = new Date();
+  return date.getDate() === todayDate.getDate() &&
+      date.getMonth() === todayDate.getMonth() &&
+      date.getFullYear() === todayDate.getFullYear();
 }
 
 /**
@@ -228,6 +246,18 @@ Polymer({
      * @private
      */
     showFullOngoingStatus_: Boolean,
+
+    /** @private {string} */
+    fileIcon_: {
+      type: String,
+      computed: 'computeFileIcon_(jobTitle_)',
+    },
+
+    /** @private {string} */
+    fileIconClass_: {
+      type: String,
+      computed: 'computeFileIconClass_(fileIcon_)',
+    },
   },
 
   observers: [
@@ -446,24 +476,33 @@ Polymer({
    * (i.e. [iron-iconset-svg name]:[SVG <g> tag id]) for a given file.
    * This is a best effort approach, as we are only given the file name and
    * not necessarily its extension.
-   * @param {string} fileName
    * @return {string}
    * @private
    */
-  getFileIcon_(fileName) {
-    const file_extension = getFileExtensionIconName(fileName);
+  computeFileIcon_() {
+    const fileExtension = getFileExtensionIconName(this.jobTitle_);
     // It's valid for a file to have '.' in its name and not be its extension.
     // If this is the case and we don't have a non-generic file icon, attempt to
     // see if this is a Google file.
-    if (file_extension && file_extension !== GENERIC_FILE_EXTENSION_ICON) {
-      return file_extension;
+    if (fileExtension && fileExtension !== GENERIC_FILE_EXTENSION_ICON) {
+      return fileExtension;
     }
-    const gfile_extension = getGFileIconName(fileName);
-    if (gfile_extension) {
-      return gfile_extension;
+    const gfileExtension = getGFileIconName(this.jobTitle_);
+    if (gfileExtension) {
+      return gfileExtension;
     }
 
     return GENERIC_FILE_EXTENSION_ICON;
+  },
+
+  /**
+   * Uses file-icon SVG id to determine correct class to apply for file icon.
+   * @return {string}
+   * @private
+   */
+  computeFileIconClass_() {
+    const iconClass = ICON_CLASS_MAP.get(this.fileIcon_);
+    return `flex-center ${iconClass}`;
   },
 
   /**

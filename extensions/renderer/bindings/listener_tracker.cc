@@ -4,7 +4,9 @@
 
 #include "extensions/renderer/bindings/listener_tracker.h"
 
+#include "base/check.h"
 #include "base/values.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/value_counter.h"
 
 namespace extensions {
@@ -80,9 +82,10 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
 
 std::set<int> ListenerTracker::GetMatchingFilteredListeners(
     const std::string& event_name,
-    const EventFilteringInfo& filter,
+    mojom::EventFilteringInfoPtr filter,
     int routing_id) {
-  return event_filter_.MatchEvent(event_name, filter, routing_id);
+  DCHECK(!filter.is_null());
+  return event_filter_.MatchEvent(event_name, *filter, routing_id);
 }
 
 }  // namespace extensions

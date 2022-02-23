@@ -198,8 +198,8 @@ class ArcNotificationViewTest : public AshTestBase {
       ArcNotificationItem* item,
       const Notification& notification,
       bool shown_in_popup) {
-    auto message_view =
-        std::make_unique<ArcNotificationView>(item, notification);
+    auto message_view = std::make_unique<ArcNotificationView>(
+        item, notification, shown_in_popup);
     message_view->content_view_->SetPreferredSize(gfx::Size(100, 100));
     return message_view;
   }

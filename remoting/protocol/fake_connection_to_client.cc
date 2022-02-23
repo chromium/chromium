@@ -32,7 +32,7 @@ void FakeVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void FakeVideoStream::SelectSource(int id) {}
+void FakeVideoStream::SelectSource(webrtc::ScreenId id) {}
 
 base::WeakPtr<FakeVideoStream> FakeVideoStream::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -48,6 +48,7 @@ void FakeConnectionToClient::SetEventHandler(EventHandler* event_handler) {
 }
 
 std::unique_ptr<VideoStream> FakeConnectionToClient::StartVideoStream(
+    const std::string& stream_name,
     std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) {
   desktop_capturer_ = std::move(desktop_capturer);
   if (video_stub_ && video_encode_task_runner_) {

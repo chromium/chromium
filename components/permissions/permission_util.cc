@@ -75,8 +75,6 @@ std::string PermissionUtil::GetPermissionString(
       return "WindowPlacement";
     case ContentSettingsType::FONT_ACCESS:
       return "FontAccess";
-    case ContentSettingsType::FILE_HANDLING:
-      return "FileHandling";
     case ContentSettingsType::DISPLAY_CAPTURE:
       return "DisplayCapture";
     default:
@@ -118,7 +116,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::BACKGROUND_SYNC:
       *out = PermissionType::BACKGROUND_SYNC;
       break;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
       break;
@@ -174,9 +172,6 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::DISPLAY_CAPTURE:
       *out = PermissionType::DISPLAY_CAPTURE;
       break;
-    case ContentSettingsType::FILE_HANDLING:
-      *out = PermissionType::FILE_HANDLING;
-      break;
     default:
       return false;
   }
@@ -193,7 +188,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS:
@@ -213,7 +208,6 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::FONT_ACCESS:
     case ContentSettingsType::IDLE_DETECTION:
     case ContentSettingsType::DISPLAY_CAPTURE:
-    case ContentSettingsType::FILE_HANDLING:
       return true;
     default:
       return false;
@@ -259,27 +253,22 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
 
-  if (base::FeatureList::IsEnabled(features::kRevisedOriginHandling)) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
-    // If `allow_universal_access_from_file_urls` flag is enabled, a file can
-    // introduce discrepancy between GetLastCommittedURL and
-    // GetLastCommittedOrigin. In that case GetLastCommittedURL should be used
-    // for requesting and verifying permissions.
-    // Disabling `kRevisedOriginHandling` feature introduces no side effects,
-    // because in both cases we rely on
-    // GetLastCommittedURL().DeprecatedGetOriginAsURL().
-    if (web_contents->GetOrCreateWebPreferences()
-            .allow_universal_access_from_file_urls &&
-        render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
-      return render_frame_host->GetLastCommittedURL()
-          .DeprecatedGetOriginAsURL();
-    }
-
-    return render_frame_host->GetLastCommittedOrigin().GetURL();
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  // If `allow_universal_access_from_file_urls` flag is enabled, a file can
+  // introduce discrepancy between GetLastCommittedURL and
+  // GetLastCommittedOrigin. In that case GetLastCommittedURL should be used
+  // for requesting and verifying permissions.
+  // Disabling `kRevisedOriginHandling` feature introduces no side effects,
+  // because in both cases we rely on
+  // GetLastCommittedURL().DeprecatedGetOriginAsURL().
+  if (web_contents->GetOrCreateWebPreferences()
+          .allow_universal_access_from_file_urls &&
+      render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
+    return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   }
 
-  return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  return render_frame_host->GetLastCommittedOrigin().GetURL();
 }
 
 }  // namespace permissions

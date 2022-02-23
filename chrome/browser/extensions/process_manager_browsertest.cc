@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,7 +47,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -66,11 +64,6 @@
 namespace extensions {
 
 namespace {
-
-bool IsExtensionProcessSharingAllowed() {
-  return !base::FeatureList::IsEnabled(
-      extensions_features::kStrictExtensionIsolation);
-}
 
 void AddFrameToSet(std::set<content::RenderFrameHost*>* frames,
                    content::RenderFrameHost* rfh) {
@@ -324,8 +317,8 @@ class DefaultProfileExtensionBrowserTest : public ExtensionBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
 #endif
   }
 };
@@ -345,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(DefaultProfileExtensionBrowserTest, NoExtensionHosts) {
   Profile* otr = original->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(profile(), otr);
-  EXPECT_TRUE(chromeos::ProfileHelper::IsSigninProfile(original));
+  EXPECT_TRUE(ash::ProfileHelper::IsSigninProfile(original));
 #endif
 
   ProcessManager* pm = ProcessManager::Get(original);
@@ -401,9 +394,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Test that loading an extension with a browser action does not create a
 // background page and that clicking on the action creates the appropriate
 // ExtensionHost.
-// Disabled due to flake, see http://crbug.com/315242
-IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
-                       DISABLED_PopupHostCreation) {
+// TODO(http://crbug.com/1271329): Times out frequently on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupHostCreation DISABLED_PopupHostCreation
+#else
+#define MAYBE_PopupHostCreation PopupHostCreation
+#endif
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, MAYBE_PopupHostCreation) {
   ProcessManager* pm = ProcessManager::Get(profile());
 
   // Load an extension with the ability to open a popup but no background
@@ -444,7 +441,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(pm->GetSiteInstanceForURL(popup->url()));
   EXPECT_FALSE(pm->IsBackgroundHostClosing(popup->id()));
   EXPECT_EQ(-1, pm->GetLazyKeepaliveCount(popup.get()));
-  EXPECT_TRUE(pm->GetLazyKeepaliveActivities(popup.get()).empty());
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(popup.get()).empty());
 }
 
@@ -685,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Verify correct keepalive count behavior on network request events.
 // Regression test for http://crbug.com/535716.
 // Disabled on Linux for flakiness: http://crbug.com/1030435.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_KeepaliveOnNetworkRequest DISABLED_KeepaliveOnNetworkRequest
 #else
 #define MAYBE_KeepaliveOnNetworkRequest KeepaliveOnNetworkRequest
@@ -764,13 +760,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
 
   EXPECT_EQ(kNumExtensions, installed_extensions.size());
 
-  if (!IsExtensionProcessSharingAllowed()) {
-    EXPECT_EQ(kNumExtensions, processes.size()) << "Extension process reuse is "
-                                                   "expected to be disabled.";
-  } else {
-    EXPECT_LT(processes.size(), kNumExtensions)
-        << "Expected extension process reuse, but none happened.";
-  }
+  EXPECT_EQ(kNumExtensions, processes.size()) << "Extension process reuse is "
+                                                 "expected to be disabled.";
 
   // Interact with each extension background page by setting and reading back
   // the cookie. This would fail for one of the two extensions in a shared

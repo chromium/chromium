@@ -150,7 +150,6 @@ source_set("common_sources") {
     "resource_usage_reporter_type_converters.cc",
     "resource_usage_reporter_type_converters.h",
     "result_codes.h",
-    "sandbox_init.h",
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
     "socket_permission_request.h",
@@ -172,7 +171,10 @@ source_set("common_sources") {
   ]
 
   if (is_win) {
-    sources += [ "font_cache_dispatcher_win.h" ]
+    sources += [
+      "font_cache_dispatcher_win.h",
+      "sandbox_init_win.h",
+    ]
   }
 
   if (is_android) {
@@ -196,6 +198,10 @@ source_set("common_sources") {
     ":interfaces",
     ":renderer_type",
     ":trust_tokens_mojo_bindings",
+
+    # TODO(crbug.com/977637): Remove when
+    # content::LaunchUtilityProcessServiceDeprecated() gets removed.
+    "//build:chromecast_buildflags",
     "//content/common",
     "//content/public/common/zygote:buildflags",
     "//ipc",
@@ -234,7 +240,6 @@ source_set("common_sources") {
     "//third_party/icu",
     "//ui/accessibility",
     "//ui/base",
-    "//ui/base/cursor:cursor_base",
     "//ui/gfx",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
@@ -248,6 +253,10 @@ source_set("common_sources") {
 
   if (is_android) {
     deps += [ "//content/public/android:jni" ]
+  }
+
+  if (is_win) {
+    deps += [ "//sandbox/win:common" ]
   }
 
   if (is_chromeos_ash) {
@@ -316,6 +325,7 @@ mojom("interfaces") {
   ]
 
   sources = [
+    "alternative_error_page_override_info.mojom",
     "drop_data.mojom",
     "resource_usage_reporter.mojom",
     "webplugininfo.mojom",
@@ -329,6 +339,7 @@ mojom("interfaces") {
   deps = [
     "//mojo/public/mojom/base:base",
     "//services/network/public/mojom",
+    "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
 
     # This dependency is really a dependency for the typemaps, but we need

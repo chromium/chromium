@@ -369,6 +369,14 @@ void LogPasswordEditResult(IsUsernameChanged username_changed,
                                 values);
 }
 
+void LogUserInteractionsWhenAddingCredentialFromSettings(
+    AddCredentialFromSettingsUserInteractions
+        add_credential_from_settings_user_interaction) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AddCredentialFromSettings.UserAction",
+      add_credential_from_settings_user_interaction);
+}
+
 }  // namespace metrics_util
 
 }  // namespace password_manager

@@ -61,12 +61,16 @@ std::string GetStringNameForOptimizationType(
       return "AboutThisSite";
     case proto::OptimizationType::MERCHANT_TRUST_SIGNALS_V2:
       return "MerchantTrustSignalsV2";
+    case proto::OptimizationType::PAGE_ENTITIES:
+      return "PageEntities";
   }
 
   // The returned string is used to record histograms for the optimization type.
-  // Also add the string to OptimizationGuide_OptimizationTypes histogram suffix
-  // in histogram_suffixes_list.xml. Needs to update enums.xml when adding new
-  // value in OptimizationType.
+  //
+  // Whenever a new value is added, make sure to add it to the OptimizationType
+  // variant list in
+  // //tools/metrics/histograms/metadata/optimization/histograms.xml. Also
+  // update enums.xml when adding new value in OptimizationType.
   NOTREACHED();
   return std::string();
 }

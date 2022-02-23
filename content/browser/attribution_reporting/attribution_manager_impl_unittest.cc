@@ -4,8 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
-#include <stdint.h>
-
+#include <initializer_list>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -13,23 +12,40 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/time/clock.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
+#include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,105 +53,50 @@ namespace content {
 
 namespace {
 
-using CreateReportStatus =
-    ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
+using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Expectation;
+using ::testing::Field;
+using ::testing::Ge;
+using ::testing::InSequence;
+using ::testing::IsEmpty;
+using ::testing::Le;
+using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
-constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
+using Checkpoint = ::testing::MockFunction<void(int step)>;
 
-class ConstantStartupDelayPolicy : public AttributionPolicy {
+class MockAttributionManagerObserver : public AttributionManager::Observer {
  public:
-  ConstantStartupDelayPolicy() = default;
-  ~ConstantStartupDelayPolicy() override = default;
+  MOCK_METHOD(void, OnSourcesChanged, (), (override));
 
-  base::Time GetReportTimeForReportPastSendTime(base::Time now) const override {
-    return now + kExpiredReportOffset;
-  }
-};
+  MOCK_METHOD(void, OnReportsChanged, (), (override));
 
-// Mock reporter that tracks reports being queued by the AttributionManager.
-class TestAttributionReporter
-    : public AttributionManagerImpl::AttributionReporter {
- public:
-  TestAttributionReporter() = default;
-  ~TestAttributionReporter() override = default;
+  MOCK_METHOD(void,
+              OnSourceHandled,
+              (const StorableSource& source, StorableSource::Result result),
+              (override));
 
-  // AttributionManagerImpl::AttributionReporter
-  void AddReportsToQueue(std::vector<AttributionReport> reports) override {
-    if (reports.empty())
-      return;
+  MOCK_METHOD(void,
+              OnSourceDeactivated,
+              (const DeactivatedSource& source),
+              (override));
 
-    num_reports_ += reports.size();
-    last_report_time_ = reports.back().report_time;
+  MOCK_METHOD(void,
+              OnReportSent,
+              (const AttributionReport& report, const SendResult& info),
+              (override));
 
-    for (auto& report : reports) {
-      SentReportInfo info(std::move(report), sent_report_info_status_,
-                          /*http_response_code=*/0);
-
-      if (should_run_report_sent_callbacks_) {
-        report_sent_callback_.Run(std::move(info));
-      } else {
-        deferred_callbacks_.push_back(std::move(info));
-      }
-    }
-
-    if (quit_closure_ && num_reports_ >= expected_num_reports_)
-      std::move(quit_closure_).Run();
-  }
-
-  void RunDeferredCallbacks() {
-    for (auto& deferred_callback : deferred_callbacks_) {
-      report_sent_callback_.Run(std::move(deferred_callback));
-    }
-    deferred_callbacks_.clear();
-  }
-
-  void RemoveAllReportsFromQueue() override {
-    for (auto& deferred_callback : deferred_callbacks_) {
-      deferred_callback.status = SentReportInfo::Status::kRemovedFromQueue;
-    }
-    RunDeferredCallbacks();
-  }
-
-  void ShouldRunReportSentCallbacks(bool should_run_report_sent_callbacks) {
-    should_run_report_sent_callbacks_ = should_run_report_sent_callbacks;
-  }
-
-  void SetSentReportInfoStatus(SentReportInfo::Status status) {
-    sent_report_info_status_ = status;
-  }
-
-  size_t num_reports() { return num_reports_; }
-
-  base::Time last_report_time() { return last_report_time_; }
-
-  void WaitForNumReports(size_t expected_num_reports) {
-    if (num_reports_ >= expected_num_reports)
-      return;
-
-    expected_num_reports_ = expected_num_reports;
-    base::RunLoop wait_loop;
-    quit_closure_ = wait_loop.QuitClosure();
-    wait_loop.Run();
-  }
-
-  void SetReportSentCallback(
-      base::RepeatingCallback<void(SentReportInfo)> report_sent_callback) {
-    report_sent_callback_ = std::move(report_sent_callback);
-  }
-
- private:
-  base::RepeatingCallback<void(SentReportInfo)> report_sent_callback_;
-  bool should_run_report_sent_callbacks_ = false;
-  SentReportInfo::Status sent_report_info_status_ =
-      SentReportInfo::Status::kSent;
-  size_t expected_num_reports_ = 0u;
-  size_t num_reports_ = 0u;
-  base::Time last_report_time_;
-  base::OnceClosure quit_closure_;
-
-  std::vector<SentReportInfo> deferred_callbacks_;
+  MOCK_METHOD(void,
+              OnTriggerHandled,
+              (const AttributionStorage::CreateReportResult& result),
+              (override));
 };
 
 // Time after impression that a conversion can first be sent. See
@@ -145,7 +106,82 @@ constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 // Give impressions a sufficiently long expiry.
 constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
-const size_t kMaxSentReportsToStore = 3;
+class MockNetworkSender : public AttributionNetworkSender {
+ public:
+  // AttributionManagerImpl::NetworkSender:
+  void SendReport(AttributionReport report,
+                  ReportSentCallback callback) override {
+    calls_.push_back(report);
+    callbacks_.emplace_back(std::move(report), std::move(callback));
+  }
+
+  const std::vector<AttributionReport>& calls() const { return calls_; }
+
+  void RunCallback(size_t index, SendResult::Status status) {
+    std::move(callbacks_[index].second)
+        .Run(std::move(callbacks_[index].first),
+             SendResult(status, /*http_response_code=*/0));
+  }
+
+  void Reset() {
+    calls_.clear();
+    callbacks_.clear();
+  }
+
+  void RunCallbacksAndReset(
+      std::initializer_list<SendResult::Status> statuses) {
+    ASSERT_THAT(callbacks_, SizeIs(statuses.size()));
+
+    const auto* status_it = statuses.begin();
+
+    for (auto& callback : callbacks_) {
+      std::move(callback.second)
+          .Run(std::move(callback.first),
+               SendResult(*status_it, /*http_response_code=*/0));
+      status_it++;
+    }
+
+    Reset();
+  }
+
+ private:
+  std::vector<AttributionReport> calls_;
+  std::vector<std::pair<AttributionReport, ReportSentCallback>> callbacks_;
+};
+
+class MockCookieChecker : public AttributionCookieChecker {
+ public:
+  ~MockCookieChecker() override { EXPECT_THAT(callbacks_, IsEmpty()); }
+
+  // AttributionManagerImpl::CookieChecker:
+  void IsDebugCookieSet(const url::Origin& origin,
+                        base::OnceCallback<void(bool)> callback) override {
+    if (defer_callbacks_) {
+      callbacks_.push_back(std::move(callback));
+    } else {
+      std::move(callback).Run(origins_with_debug_cookie_set_.contains(origin));
+    }
+  }
+
+  void AddOriginWithDebugCookieSet(url::Origin origin) {
+    origins_with_debug_cookie_set_.insert(std::move(origin));
+  }
+
+  void DeferCallbacks() { defer_callbacks_ = true; }
+
+  void RunNextDeferredCallback(bool is_debug_cookie_set) {
+    if (!callbacks_.empty()) {
+      std::move(callbacks_.front()).Run(is_debug_cookie_set);
+      callbacks_.pop_front();
+    }
+  }
+
+ private:
+  base::flat_set<url::Origin> origins_with_debug_cookie_set_;
+
+  bool defer_callbacks_ = false;
+  base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
+};
 
 }  // namespace
 
@@ -153,503 +189,574 @@ class AttributionManagerImplTest : public testing::Test {
  public:
   AttributionManagerImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        browser_context_(std::make_unique<TestBrowserContext>()),
         mock_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        cookie_checker_(new MockCookieChecker()),
+        network_sender_(new MockNetworkSender()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
+
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
+
     CreateManager();
   }
 
   void CreateManager() {
-    auto reporter = std::make_unique<TestAttributionReporter>();
-    test_reporter_ = reporter.get();
+    auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
+
+    storage_delegate->set_report_delay(kFirstReportingWindow);
+    storage_delegate->set_max_attributions_per_source(3);
+    storage_delegate->set_offline_report_delay_config(
+        AttributionStorageDelegate::OfflineReportDelayConfig{
+            .min = base::Minutes(0),
+            .max = base::Minutes(1),
+        });
+
+    storage_delegate_ = storage_delegate.get();
+
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
-        std::move(reporter), std::make_unique<ConstantStartupDelayPolicy>(),
-        task_environment_.GetMockClock(), dir_.GetPath(), mock_storage_policy_,
-        kMaxSentReportsToStore);
-    test_reporter_->SetReportSentCallback(
-        base::BindRepeating(&AttributionManagerImpl::OnReportSent,
-                            base::Unretained(attribution_manager_.get())));
+        AttributionManagerImpl::DefaultIsReportAllowedCallback(
+            browser_context_.get()),
+        dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
+        absl::WrapUnique(cookie_checker_.get()),
+        absl::WrapUnique(network_sender_.get()));
   }
 
-  void ExpectNumStoredImpressions(size_t expected_num_impressions) {
-    // There should be one impression and one conversion.
-    base::RunLoop impression_loop;
-    auto get_impressions_callback = base::BindLambdaForTesting(
-        [&](std::vector<StorableSource> impressions) {
-          EXPECT_EQ(expected_num_impressions, impressions.size());
-          impression_loop.Quit();
-        });
+  void ShutdownManager() {
+    // Allow the network sender to be reused across `CreateManager()`
+    // invocations by ensuring that the manager doesn't destroy it.
+    if (attribution_manager_) {
+      attribution_manager_->cookie_checker_.release();
+      attribution_manager_->network_sender_.release();
+      attribution_manager_.reset();
+    }
+  }
+
+  std::vector<StoredSource> StoredSources() {
+    std::vector<StoredSource> result;
+    base::RunLoop loop;
     attribution_manager_->GetActiveSourcesForWebUI(
-        std::move(get_impressions_callback));
-    impression_loop.Run();
+        base::BindLambdaForTesting([&](std::vector<StoredSource> sources) {
+          result = std::move(sources);
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
   }
 
-  void ExpectNumStoredReports(size_t expected_num_reports) {
-    base::RunLoop report_loop;
-    auto reports_callback =
+  std::vector<AttributionReport> StoredReports() {
+    std::vector<AttributionReport> result;
+    base::RunLoop loop;
+    attribution_manager_->GetPendingReportsForInternalUse(
         base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
-          EXPECT_EQ(expected_num_reports, reports.size());
-          report_loop.Quit();
-        });
-    attribution_manager_->GetPendingReportsForWebUI(
-        std::move(reports_callback));
-    report_loop.Run();
+          result = std::move(reports);
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
   }
 
-  const base::Clock& clock() { return *task_environment_.GetMockClock(); }
+  void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }
+
+  void SetOfflineAndWaitForObserversToBeNotified(bool offline) {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        offline ? network::mojom::ConnectionType::CONNECTION_NONE
+                : network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+    // Ensure that the network connection observers have been notified before
+    // this call returns.
+    task_environment_.RunUntilIdle();
+  }
 
  protected:
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<AttributionManagerImpl> attribution_manager_;
-  TestAttributionReporter* test_reporter_ = nullptr;
+  std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
+  const raw_ptr<MockCookieChecker> cookie_checker_;
+  const raw_ptr<MockNetworkSender> network_sender_;
+  raw_ptr<ConfigurableStorageDelegate> storage_delegate_;
+
+  std::unique_ptr<AttributionManagerImpl> attribution_manager_;
 };
 
 TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
-  auto impression = SourceBuilder(clock().Now())
+  auto impression = SourceBuilder()
                         .SetExpiry(kImpressionExpiry)
                         .SetSourceEventId(100)
                         .Build();
   attribution_manager_->HandleSource(impression);
 
-  base::RunLoop run_loop;
-  auto get_impressions_callback =
-      base::BindLambdaForTesting([&](std::vector<StorableSource> impressions) {
-        EXPECT_THAT(impressions, ElementsAre(impression));
-        run_loop.Quit();
-      });
-  attribution_manager_->GetActiveSourcesForWebUI(
-      std::move(get_impressions_callback));
-  run_loop.Run();
+  EXPECT_THAT(StoredSources(),
+              ElementsAre(CommonSourceInfoIs(impression.common_info())));
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetSourceEventId(100)
                                          .Build());
   task_environment_.FastForwardBy(2 * kImpressionExpiry);
 
-  base::RunLoop run_loop;
-  auto get_impressions_callback =
-      base::BindLambdaForTesting([&](std::vector<StorableSource> impressions) {
-        EXPECT_TRUE(impressions.empty());
-        run_loop.Quit();
-      });
-  attribution_manager_->GetActiveSourcesForWebUI(
-      std::move(get_impressions_callback));
-  run_loop.Run();
+  EXPECT_THAT(StoredSources(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
-  auto impression = SourceBuilder(clock().Now())
-                        .SetExpiry(kImpressionExpiry)
-                        .SetSourceEventId(100)
-                        .Build();
-  attribution_manager_->HandleSource(impression);
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(100);
+  attribution_manager_->HandleSource(builder.Build());
 
   auto conversion = DefaultTrigger();
   attribution_manager_->HandleTrigger(conversion);
 
-  AttributionReport expected_report(
-      impression, conversion.trigger_data(),
-      /*conversion_time=*/clock().Now(),
-      /*report_time=*/clock().Now() + kFirstReportingWindow,
-      /*priority=*/0,
-      /*conversion_id=*/absl::nullopt);
+  AttributionReport expected_report =
+      ReportBuilder(AttributionInfoBuilder(builder.BuildStored())
+                        .SetTime(base::Time::Now())
+                        .Build())
+          .SetTriggerData(conversion.trigger_data())
+          .SetReportTime(base::Time::Now() + kFirstReportingWindow)
+          .Build();
 
-  base::RunLoop run_loop;
-  auto reports_callback =
-      base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
-        EXPECT_THAT(reports, ElementsAre(expected_report));
-        run_loop.Quit();
-      });
-  attribution_manager_->GetPendingReportsForWebUI(std::move(reports_callback));
-  run_loop.Run();
+  // The external report ID is randomly generated by the storage delegate,
+  // so zero it out here to avoid flakiness.
+  std::vector<AttributionReport> reports = StoredReports();
+  for (auto& report : reports) {
+    report.SetExternalReportIdForTesting(DefaultExternalReportID());
+  }
+  EXPECT_THAT(reports, ElementsAre(expected_report));
 }
 
-TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportQueued) {
+TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  // Reports are queued in intervals ahead of when they should be
-  // sent. Make sure the report is not queued earlier than this.
+  // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval -
-                                  base::Minutes(1));
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+                                  base::Microseconds(1));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
-TEST_F(AttributionManagerImplTest, QueuedReportNotSent_NotQueuedAgain) {
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+TEST_F(AttributionManagerImplTest,
+       MultipleReportsWithSameReportTime_AllSentSimultaneously) {
+  const GURL url_a(
+      "https://a.example/.well-known/attribution-reporting/report-attribution");
+  const GURL url_b(
+      "https://b.example/.well-known/attribution-reporting/report-attribution");
+  const GURL url_c(
+      "https://c.example/.well-known/attribution-reporting/report-attribution");
 
-  // If the report is not sent, it should not be added to the queue again as
-  // long as the reporter is still handling it.
-  task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  const auto origin_a = url::Origin::Create(url_a);
+  const auto origin_b = url::Origin::Create(url_b);
+  const auto origin_c = url::Origin::Create(url_c);
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_a)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_a).Build());
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_b)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_b).Build());
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_c)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_c).Build());
+
+  EXPECT_THAT(StoredReports(), SizeIs(3));
+
+  // Make sure the reports are not sent earlier than their report time.
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Microseconds(1));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  // The 3 reports can be sent in any order due to the `base::RandomShuffle()`
+  // in `AttributionManagerImpl::OnGetReportsToSend()`.
+  EXPECT_THAT(network_sender_->calls(),
+              UnorderedElementsAre(ReportURLIs(url_a), ReportURLIs(url_b),
+                                   ReportURLIs(url_c)));
+}
+
+TEST_F(AttributionManagerImplTest,
+       MultipleReportsWithDifferentReportTimes_SentInSequence) {
+  const GURL url_a(
+      "https://a.example/.well-known/attribution-reporting/report-attribution");
+  const GURL url_b(
+      "https://b.example/.well-known/attribution-reporting/report-attribution");
+
+  const auto origin_a = url::Origin::Create(url_a);
+  const auto origin_b = url::Origin::Create(url_b);
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_a)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_a).Build());
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_b)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_b).Build());
+
+  EXPECT_THAT(StoredReports(), SizeIs(2));
+
+  // Make sure the reports are not sent earlier than their report time.
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Microseconds(2));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  network_sender_->Reset();
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_b)));
+}
+
+TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->Reset();
+
+  ForceGetReportsToSend();
+  // The sender hasn't invoked the callback, so the manager shouldn't try to
+  // send the report again.
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
        QueuedReportFailedWithShouldRetry_QueuedAgain) {
   base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(
-      SentReportInfo::Status::kTransientFailure);
 
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  // This is 3 instead of 1 because the failed report is directly added back
-  // into the queue 2 times.
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
+
+  // First report delay.
+  task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
+
+  // Second report delay.
+  task_environment_.FastForwardBy(base::Minutes(15));
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
+}
+
+TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
+  const GURL url_a(
+      "https://a.example/.well-known/attribution-reporting/report-attribution");
+  const GURL url_b(
+      "https://b.example/.well-known/attribution-reporting/report-attribution");
+
+  const auto origin_a = url::Origin::Create(url_a);
+  const auto origin_b = url::Origin::Create(url_b);
+
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_a)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_a).Build());
+
+  task_environment_.FastForwardBy(base::Minutes(10));
+  attribution_manager_->HandleSource(SourceBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .SetReportingOrigin(origin_b)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder().SetReportingOrigin(origin_b).Build());
+
+  EXPECT_THAT(StoredReports(), SizeIs(2));
+
+  task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(10));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  // Because this report will be retried at its original report time + 5
+  // minutes, the get-reports timer, which was originally scheduled to run at
+  // the second report's report time, should be overridden to run earlier.
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
 }
 
 TEST_F(AttributionManagerImplTest,
        QueuedReportFailedWithoutShouldRetry_NotQueuedAgain) {
   base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kFailure);
 
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
-  // If the report indicated retry, it should be added to the queue again.
-  task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  // Ensure that observers are notified after the report is deleted.
+  EXPECT_CALL(observer, OnSourcesChanged).Times(0);
+  EXPECT_CALL(observer, OnReportsChanged);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset({SendResult::Status::kFailure});
+
+  EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(false);
-  test_reporter_->SetSentReportInfoStatus(
-      SentReportInfo::Status::kTransientFailure);
 
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  base::Time expected_report_time = clock().Now() + kFirstReportingWindow;
-
   task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval -
                                   base::Milliseconds(1));
-  EXPECT_EQ(base::Time(), test_reporter_->last_report_time());
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  // The report is first in the queuing window.
+  // The report is sent at its expected report time.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
 
-  // Simulate the reporter sending the report only once the actual report time
-  // has been reached.
-  task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  test_reporter_->RunDeferredCallbacks();
-
-  test_reporter_->WaitForNumReports(2);
-  // At this point, the report has been added directly to the reporter with the
-  // updated report time of +5 minutes.
-  expected_report_time += base::Minutes(5);
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
-
+  // The report is sent at the first retry time of +5 minutes.
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
-  test_reporter_->RunDeferredCallbacks();
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
 
-  test_reporter_->WaitForNumReports(3);
-  // At this point, the report has been added directly to the reporter with the
-  // updated report time of +15 minutes.
-  expected_report_time += base::Minutes(15);
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
-
+  // The report is sent at the second retry time of +15 minutes.
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
-  test_reporter_->RunDeferredCallbacks();
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kTransientFailure});
 
   // At this point, the report has reached the maximum number of attempts and it
   // should no longer be present in the DB.
-  ExpectNumStoredReports(0);
+  EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
-}
-
-TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
-  base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->SetSentReportInfoStatus(
-      SentReportInfo::Status::kTransientFailure);
-
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  // This is 3 instead of 1 because the failed report is directly added back
-  // into the queue 2 times.
-  EXPECT_EQ(3u, test_reporter_->num_reports());
-
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kOffline);
-  task_environment_.FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
-
-  task_environment_.FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
-
-  // kFailed =1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  // Simulate shutdown.
-  attribution_manager_.reset();
+  ShutdownManager();
 
   // Fast-forward past the reporting window and past report expiry.
   task_environment_.FastForwardBy(kFirstReportingWindow);
   task_environment_.FastForwardBy(base::Days(100));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   // Simulate startup and ensure the report is sent before being expired.
+  // Advance by the max offline report delay, per
+  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
-
-  test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  task_environment_.FastForwardBy(
+      storage_delegate_->GetOfflineReportDelayConfig()->max);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
-TEST_F(AttributionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
+TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(true);
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
 
-  // The report should not be added to the queue again.
-  task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   // kSent = 0.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 0, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 0, 1);
 }
 
-TEST_F(AttributionManagerImplTest, QueuedReportSent_SentReportInfoUpdated) {
+TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   base::HistogramTester histograms;
-  test_reporter_->ShouldRunReportSentCallbacks(true);
 
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetSourceEventId(1)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
-  // This one shouldn't be stored, as its status is `kDropped`.
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kDropped);
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetSourceEventId(2)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)), _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(2u)), _));
+  EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(3u)), _));
 
-  test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kSent);
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetSourceEventId(3)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  // This one should be stored, as its status is `kDropped`.
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(2).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(3).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  task_environment_.FastForwardBy(kFirstReportingWindow);
 
   // This one shouldn't be stored, as it will be retried.
-  test_reporter_->SetSentReportInfoStatus(
-      SentReportInfo::Status::kTransientFailure);
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetSourceEventId(4)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(4).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+  task_environment_.FastForwardBy(kFirstReportingWindow);
 
-  const auto& sent_reports =
-      attribution_manager_->GetSessionStorage().GetSentReports();
-  EXPECT_EQ(2u, sent_reports.size());
-  EXPECT_EQ(1u, sent_reports[0].report.impression.source_event_id());
-  EXPECT_EQ(3u, sent_reports[1].report.impression.source_event_id());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(4));
+  network_sender_->RunCallbacksAndReset(
+      {SendResult::Status::kSent, SendResult::Status::kDropped,
+       SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
   // kSent = 0.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 0, 2);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 0, 2);
   // kFailed = 1.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 1, 0);
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
 }
 
-TEST_F(AttributionManagerImplTest, QueuedReportSent_StoresLastN) {
-  test_reporter_->ShouldRunReportSentCallbacks(true);
+TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
-  // Process |kMaxSentReportsToStore + 1| reports.
-  for (uint64_t i = 1; i <= 4; i++) {
-    attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                           .SetSourceEventId(i)
-                                           .SetExpiry(kImpressionExpiry)
-                                           .Build());
-    attribution_manager_->HandleTrigger(DefaultTrigger());
-    task_environment_.FastForwardBy(kFirstReportingWindow -
-                                    kAttributionManagerQueueReportsInterval);
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(observer, OnTriggerHandled(CreateReportStatusIs(
+                              AttributionTrigger::Result::kSuccess)))
+        .Times(3);
+
+    EXPECT_CALL(checkpoint, Call(1));
+
+    EXPECT_CALL(
+        observer,
+        OnTriggerHandled(AllOf(
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(1)))),
+            CreateReportStatusIs(
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
+
+    EXPECT_CALL(checkpoint, Call(2));
+
+    EXPECT_CALL(
+        observer,
+        OnTriggerHandled(AllOf(
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(-5)))),
+            CreateReportStatusIs(
+                AttributionTrigger::Result::kPriorityTooLow))));
+
+    EXPECT_CALL(checkpoint, Call(3));
+
+    EXPECT_CALL(
+        observer,
+        OnTriggerHandled(AllOf(
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(2)))),
+            CreateReportStatusIs(
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
+    EXPECT_CALL(
+        observer,
+        OnTriggerHandled(AllOf(
+            DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(3)))),
+            CreateReportStatusIs(
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
   }
 
-  // Only the last |kMaxSentReportsToStore| should be stored.
-  const auto& sent_reports =
-      attribution_manager_->GetSessionStorage().GetSentReports();
-  EXPECT_EQ(3u, sent_reports.size());
-  EXPECT_EQ(2u, sent_reports[0].report.impression.source_event_id());
-  EXPECT_EQ(3u, sent_reports[1].report.impression.source_event_id());
-  EXPECT_EQ(4u, sent_reports[2].report.impression.source_event_id());
-}
-
-TEST_F(AttributionManagerImplTest, DroppedReport_StoresLastN) {
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  ExpectNumStoredImpressions(1);
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 
   // `kNavigation` sources can have 3 reports, so none of these should result in
   // a dropped report.
   for (int i = 1; i <= 3; i++) {
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(i).Build());
-    ExpectNumStoredReports(i);
-    EXPECT_EQ(
-        0u,
-        attribution_manager_->GetSessionStorage().GetDroppedReports().size());
+    EXPECT_THAT(StoredReports(), SizeIs(i));
   }
+
+  checkpoint.Call(1);
 
   {
     // This should replace the report with priority 1.
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(4).Build());
-    ExpectNumStoredReports(3);
-    const auto& dropped_reports =
-        attribution_manager_->GetSessionStorage().GetDroppedReports();
-    EXPECT_EQ(1u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[0].status());
+    EXPECT_THAT(StoredReports(), SizeIs(3));
   }
+
+  checkpoint.Call(2);
 
   {
     // This should be dropped, as it has a lower priority than all stored
     // reports.
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(-5).Build());
-    ExpectNumStoredReports(3);
-    const auto& dropped_reports =
-        attribution_manager_->GetSessionStorage().GetDroppedReports();
-    EXPECT_EQ(2u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[0].status());
-    EXPECT_EQ(-5, dropped_reports[1].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[1].status());
+    EXPECT_THAT(StoredReports(), SizeIs(3));
   }
 
+  checkpoint.Call(3);
+
   {
-    // These should replace the reports with priority 2 and 3 and pop the report
-    // with priority 1 from the session storage, as only
-    // `kMaxSentReportsToStore` should be stored.
+    // These should replace the reports with priority 2 and 3.
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(5).Build());
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(6).Build());
-    ExpectNumStoredReports(3);
-    const auto& dropped_reports =
-        attribution_manager_->GetSessionStorage().GetDroppedReports();
-    EXPECT_EQ(3u, dropped_reports.size());
-    EXPECT_EQ(-5, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[0].status());
-    EXPECT_EQ(2, dropped_reports[1].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[1].status());
-    EXPECT_EQ(3, dropped_reports[2].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[2].status());
+    EXPECT_THAT(StoredReports(), SizeIs(3));
   }
-}
-
-// Add a conversion to storage and reset the manager to mimic a report being
-// available at startup.
-TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Queued) {
-  // Create a report that will be reported at t= 2 days.
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-
-  // Create another conversion that will be reported at t=
-  // (kFirstReportingWindow + 2 * kAttributionManagerQueueReportsInterval).
-  task_environment_.FastForwardBy(2 * kAttributionManagerQueueReportsInterval);
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-
-  EXPECT_EQ(0u, test_reporter_->num_reports());
-
-  // Reset the manager to simulate shutdown.
-  attribution_manager_.reset();
-
-  // Fast forward past the expected report time of the first conversion, t =
-  // (kFirstReportingWindow+ 1 minute).
-  task_environment_.FastForwardBy(
-      kFirstReportingWindow - (2 * kAttributionManagerQueueReportsInterval) +
-      base::Minutes(1));
-
-  // Create the manager and check that the first report is queued immediately.
-  CreateManager();
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-  test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-
-  // The second report is still queued at the correct time.
-  task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(2u, test_reporter_->num_reports());
 }
 
 // This functionality is tested more thoroughly in the AttributionStorageSql
 // unit tests. Here, just test to make sure the basic control flow is working.
 TEST_F(AttributionManagerImplTest, ClearData) {
   for (bool match_url : {true, false}) {
-    base::Time start = clock().Now();
+    base::Time start = base::Time::Now();
     attribution_manager_->HandleSource(
         SourceBuilder(start).SetExpiry(kImpressionExpiry).Build());
     attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -662,101 +769,111 @@ TEST_F(AttributionManagerImplTest, ClearData) {
         run_loop.QuitClosure());
     run_loop.Run();
 
-    task_environment_.FastForwardBy(kFirstReportingWindow -
-                                    kAttributionManagerQueueReportsInterval);
     size_t expected_reports = match_url ? 0u : 1u;
-    EXPECT_EQ(expected_reports, test_reporter_->num_reports());
+    EXPECT_THAT(StoredReports(), SizeIs(expected_reports));
   }
-}
-
-TEST_F(AttributionManagerImplTest, ClearData_ClearsSentReports) {
-  test_reporter_->ShouldRunReportSentCallbacks(true);
-
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  EXPECT_FALSE(
-      attribution_manager_->GetSessionStorage().GetSentReports().empty());
-
-  attribution_manager_->ClearData(clock().Now(), clock().Now(),
-                                  base::NullCallback(), base::DoNothing());
-  EXPECT_TRUE(
-      attribution_manager_->GetSessionStorage().GetSentReports().empty());
 }
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  std::vector<AttributionReport> reports = StoredReports();
+  EXPECT_THAT(reports, SizeIs(1));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  attribution_manager_->SendReportsForWebUI(base::DoNothing());
-  task_environment_.FastForwardBy(base::Minutes(0));
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  attribution_manager_->SendReportsForWebUI(
+      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
+             .id)},
+      base::DoNothing());
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
-// TODO(crbug.com/1088449): Flaky on Linux and Android.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#define MAYBE_ExpiredReportsAtStartup_Delayed \
-  DISABLED_ExpiredReportsAtStartup_Delayed
-#else
-#define MAYBE_ExpiredReportsAtStartup_Delayed ExpiredReportsAtStartup_Delayed
-#endif
-TEST_F(AttributionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
-  // Create a report that will be reported at t= 2 days.
-  base::Time start_time = clock().Now();
+TEST_F(AttributionManagerImplTest,
+       ConversionsSentFromUI_CallbackInvokedWhenAllDone) {
+  size_t callback_calls = 0;
+
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  std::vector<AttributionReport> reports = StoredReports();
+  EXPECT_THAT(reports, SizeIs(2));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  // Reset the manager to simulate shutdown.
-  attribution_manager_.reset();
+  attribution_manager_->SendReportsForWebUI(
+      {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
+             .id),
+       *(absl::get<AttributionReport::EventLevelData>(reports.back().data())
+             .id)},
+      base::BindLambdaForTesting([&]() { callback_calls++; }));
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(2));
+  EXPECT_EQ(callback_calls, 0u);
 
-  // Fast forward past the expected report time of the first conversion, t =
-  // (kFirstReportingWindow+ 1 minute).
-  task_environment_.FastForwardBy(kFirstReportingWindow + base::Minutes(1));
+  network_sender_->RunCallback(0, SendResult::Status::kSent);
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(callback_calls, 0u);
+
+  network_sender_->RunCallback(1, SendResult::Status::kTransientFailure);
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(callback_calls, 1u);
+}
+
+TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  ShutdownManager();
+
+  // Fast forward past the expected report time of the first conversion.
+  task_environment_.FastForwardBy(kFirstReportingWindow +
+                                  base::Milliseconds(1));
 
   CreateManager();
-  test_reporter_->WaitForNumReports(1);
 
   // Ensure that the expired report is delayed based on the time the browser
-  // started.
-  EXPECT_EQ(start_time + kFirstReportingWindow + base::Minutes(1) +
-                kExpiredReportOffset,
-            test_reporter_->last_report_time());
+  // started and the min and max offline report delays, per
+  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
+  base::Time min_new_time = base::Time::Now();
+  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
+  EXPECT_THAT(StoredReports(),
+              ElementsAre(ReportTimeIs(AllOf(Ge(min_new_time + delay->min),
+                                             Le(min_new_time + delay->max)))));
+
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
        NonExpiredReportsQueuedAtStartup_NotDelayed) {
-  // Create a report that will be reported at t= 2 days.
-  base::Time start_time = clock().Now();
-  attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  base::Time start_time = base::Time::Now();
 
-  // Reset the manager to simulate shutdown.
-  attribution_manager_.reset();
+  // Create a report that will be reported at t= 2 days.
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  ShutdownManager();
 
   // Fast forward just before the expected report time.
-  task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(1));
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  base::Milliseconds(1));
+
+  CreateManager();
 
   // Ensure that this report does not receive additional delay.
-  CreateManager();
-  test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-  EXPECT_EQ(start_time + kFirstReportingWindow,
-            test_reporter_->last_report_time());
+  EXPECT_THAT(StoredReports(),
+              ElementsAre(ReportTimeIs(start_time + kFirstReportingWindow)));
+
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   GURL session_only_origin("https://sessiononly.example");
   auto impression =
-      SourceBuilder(clock().Now())
+      SourceBuilder()
           .SetImpressionOrigin(url::Origin::Create(session_only_origin))
           .Build();
 
@@ -765,15 +882,14 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   attribution_manager_->HandleSource(impression);
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  ExpectNumStoredImpressions(1u);
-  ExpectNumStoredReports(1u);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+  EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  // Reset the manager to simulate shutdown.
-  attribution_manager_.reset();
+  ShutdownManager();
   CreateManager();
 
-  ExpectNumStoredImpressions(0u);
-  ExpectNumStoredReports(0u);
+  EXPECT_THAT(StoredSources(), IsEmpty());
+  EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -782,18 +898,15 @@ TEST_F(AttributionManagerImplTest,
       url::Origin::Create(GURL("https://sessiononly.example"));
   // Create impressions which each have the session only origin as one of
   // impression/conversion/reporting origin.
-  auto impression1 = SourceBuilder(clock().Now())
-                         .SetImpressionOrigin(session_only_origin)
-                         .Build();
-  auto impression2 = SourceBuilder(clock().Now())
-                         .SetReportingOrigin(session_only_origin)
-                         .Build();
-  auto impression3 = SourceBuilder(clock().Now())
-                         .SetConversionOrigin(session_only_origin)
-                         .Build();
+  auto impression1 =
+      SourceBuilder().SetImpressionOrigin(session_only_origin).Build();
+  auto impression2 =
+      SourceBuilder().SetReportingOrigin(session_only_origin).Build();
+  auto impression3 =
+      SourceBuilder().SetConversionOrigin(session_only_origin).Build();
 
   // Create one  impression which is not session only.
-  auto impression4 = SourceBuilder(clock().Now()).Build();
+  auto impression4 = SourceBuilder().Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin.GetURL());
 
@@ -802,14 +915,13 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(impression3);
   attribution_manager_->HandleSource(impression4);
 
-  ExpectNumStoredImpressions(4u);
+  EXPECT_THAT(StoredSources(), SizeIs(4));
 
-  // Reset the manager to simulate shutdown.
-  attribution_manager_.reset();
+  ShutdownManager();
   CreateManager();
 
   // All session-only impressions should be deleted.
-  ExpectNumStoredImpressions(1u);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
 // Tests that trigger priority cannot result in more than the maximum number of
@@ -819,116 +931,472 @@ TEST_F(AttributionManagerImplTest,
 // This ensures that a queued report cannot be overwritten by a new, higher
 // priority trigger.
 TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
-  test_reporter_->ShouldRunReportSentCallbacks(true);
   attribution_manager_->HandleSource(
-      SourceBuilder(clock().Now()).SetExpiry(base::Days(7)).Build());
-  ExpectNumStoredImpressions(1u);
+      SourceBuilder().SetExpiry(base::Days(7)).Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
-  ExpectNumStoredReports(3u);
+  EXPECT_THAT(StoredReports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(3));
+  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
+                                         SendResult::Status::kSent,
+                                         SendResult::Status::kSent});
 
   task_environment_.FastForwardBy(base::Minutes(5));
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  ExpectNumStoredReports(0);
+  EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
-      AttributionStorage::CreateReportResult::Status::kNoMatchingImpressions,
-      1);
+      AttributionTrigger::Result::kNoMatchingImpressions, 1);
 }
 
-TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
-  test_reporter_->ShouldRunReportSentCallbacks(true);
+TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   base::HistogramTester histograms;
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now()).Build());
+  attribution_manager_->HandleSource(SourceBuilder().Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  ExpectNumStoredReports(1);
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
-  ExpectNumStoredReports(0);
+  EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  static constexpr char kMetric[] = "Conversions.DeleteSentReportOperation";
-  histograms.ExpectTotalCount(kMetric, 2);
-  histograms.ExpectBucketCount(
-      kMetric, AttributionManagerImpl::DeleteEvent::kStarted, 1);
-  histograms.ExpectBucketCount(
-      kMetric, AttributionManagerImpl::DeleteEvent::kSucceeded, 1);
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  // Ensure that deleting a report notifies observers.
+  EXPECT_CALL(observer, OnSourcesChanged).Times(0);
+  EXPECT_CALL(observer, OnReportsChanged);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
+  EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
-TEST_F(AttributionManagerImplTest, ClearData_RequeuesReports) {
-  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
-  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetExpiry(kImpressionExpiry)
-                                         .SetReportingOrigin(origin_a)
-                                         .Build());
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(origin_a).Build());
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
 
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetExpiry(kImpressionExpiry)
-                                         .SetReportingOrigin(origin_b)
-                                         .Build());
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(origin_b).Build());
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
 
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+    EXPECT_CALL(observer, OnSourcesChanged);
+    EXPECT_CALL(observer, OnReportsChanged).Times(0);
+    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+    EXPECT_CALL(checkpoint, Call(1));
 
-  test_reporter_->WaitForNumReports(2);
-  EXPECT_EQ(2u, test_reporter_->num_reports());
+    EXPECT_CALL(observer, OnSourcesChanged);
+    EXPECT_CALL(observer, OnReportsChanged);
+    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
-  attribution_manager_->ClearData(
-      base::Time::Min(), base::Time::Max(),
-      base::BindLambdaForTesting(
-          [&](const url::Origin& origin) { return origin == origin_a; }),
-      base::DoNothing());
+    EXPECT_CALL(checkpoint, Call(2));
 
-  test_reporter_->WaitForNumReports(3);
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+    EXPECT_CALL(observer, OnSourcesChanged);
+    EXPECT_CALL(observer, OnReportsChanged).Times(0);
+    EXPECT_CALL(observer,
+                OnSourceDeactivated(DeactivatedSource{
+                    builder.BuildStored(),
+                    DeactivatedSource::Reason::kReplacedByNewerSource}));
+  }
+
+  attribution_manager_->HandleSource(builder.Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+  checkpoint.Call(1);
+
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+  checkpoint.Call(2);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
-TEST_F(AttributionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
-  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
-  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
 
-  attribution_manager_->HandleSource(SourceBuilder(clock().Now())
-                                         .SetExpiry(kImpressionExpiry)
-                                         .SetReportingOrigin(origin_a)
-                                         .Build());
-  attribution_manager_->HandleTrigger(
-      TriggerBuilder().SetReportingOrigin(origin_a).Build());
+  SourceBuilder builder;
+  builder.SetExpiry(kImpressionExpiry).SetSourceEventId(7);
 
-  ExpectNumStoredReports(1u);
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
 
-  task_environment_.FastForwardBy(kFirstReportingWindow -
-                                  kAttributionManagerQueueReportsInterval);
+    EXPECT_CALL(observer, OnSourcesChanged);
+    EXPECT_CALL(observer, OnReportsChanged).Times(0);
+    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
 
-  test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-  ExpectNumStoredReports(1u);
+    EXPECT_CALL(checkpoint, Call(1));
 
+    // Each stored report should notify sources changed one time.
+    for (size_t i = 1; i <= 3; i++) {
+      EXPECT_CALL(observer, OnSourcesChanged);
+      EXPECT_CALL(observer, OnReportsChanged);
+    }
+    EXPECT_CALL(observer, OnSourceDeactivated).Times(0);
+
+    EXPECT_CALL(checkpoint, Call(2));
+
+    EXPECT_CALL(observer, OnReportsChanged).Times(3);
+    EXPECT_CALL(checkpoint, Call(3));
+
+    EXPECT_CALL(observer, OnSourcesChanged);
+    EXPECT_CALL(observer, OnReportsChanged);
+    EXPECT_CALL(observer,
+                OnSourceDeactivated(DeactivatedSource{
+                    builder.BuildStored(),
+                    DeactivatedSource::Reason::kReachedAttributionLimit}));
+  }
+
+  attribution_manager_->HandleSource(builder.Build());
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+  checkpoint.Call(1);
+
+  // Store the maximum number of reports for the source.
+  for (size_t i = 1; i <= 3; i++) {
+    attribution_manager_->HandleTrigger(DefaultTrigger());
+    EXPECT_THAT(StoredReports(), SizeIs(i));
+  }
+
+  checkpoint.Call(2);
+
+  // Simulate the reports being sent and removed from storage.
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(3));
+  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
+                                         SendResult::Status::kSent,
+                                         SendResult::Status::kSent});
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  checkpoint.Call(3);
+
+  // The next report should cause the source to be deactivated; the report
+  // itself shouldn't be stored as we've already reached the maximum number of
+  // conversions per source.
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), IsEmpty());
+}
+
+TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnSourcesChanged);
+  EXPECT_CALL(observer, OnReportsChanged);
+
+  base::RunLoop run_loop;
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
-      base::BindLambdaForTesting(
-          [&](const url::Origin& origin) { return origin == origin_b; }),
-      base::DoNothing());
+      base::BindRepeating([](const url::Origin& _) { return false; }),
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
 
-  ExpectNumStoredReports(1u);
+TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsConversionMeasurementOperationAllowed(
+          _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
+          Pointee(url::Origin::Create(GURL("https://impression.test/"))),
+          Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
+          Pointee(url::Origin::Create(GURL("https://report.test/")))))
+      .WillOnce(Return(false));
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  EXPECT_CALL(observer, OnReportSent(_, Field(&SendResult::status,
+                                              SendResult::Status::kDropped)));
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+
+  EXPECT_THAT(StoredReports(), IsEmpty());
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  // kDropped = 2.
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
+}
+
+TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  SetOfflineAndWaitForObserversToBeNotified(true);
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  SetOfflineAndWaitForObserversToBeNotified(false);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+}
+
+TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectUniqueSample("Conversions.TimeFromConversionToReportSend",
+                                kFirstReportingWindow.InHours(), 1);
+}
+
+TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  // Prevent the report from being sent until after its original report time.
+  SetOfflineAndWaitForObserversToBeNotified(true);
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  SetOfflineAndWaitForObserversToBeNotified(false);
+
+  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
+  task_environment_.FastForwardBy(delay->max);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectUniqueTimeSample("Conversions.ExtraReportDelay2",
+                                    base::Days(3) + delay->min, 1);
+}
+
+TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  attribution_manager_->SendReportsForWebUI(
+      {AttributionReport::EventLevelData::Id(1)}, base::DoNothing());
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
+  histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
+}
+
+// Regression test for https://crbug.com/1294519.
+TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
+  storage_delegate_->set_randomized_response(
+      std::vector<AttributionStorageDelegate::FakeReport>{
+          {
+              .trigger_data = 0,
+              .report_time = base::Time::Now() + base::Days(1),
+          },
+      });
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+}
+
+// Test that multiple source and trigger registrations, with and without debug
+// keys present, are handled in the order they are received by the manager.
+TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
+  cookie_checker_->DeferCallbacks();
+
+  const auto r1 = url::Origin::Create(GURL("https://r1.test"));
+  const auto r2 = url::Origin::Create(GURL("https://r2.test"));
+
+  const AttributionManagerImpl::SourceOrTrigger kEvents[] = {
+      SourceBuilder()
+          .SetSourceEventId(1)
+          .SetDebugKey(11)
+          .SetReportingOrigin(r1)
+          .SetExpiry(kImpressionExpiry)
+          .Build(),
+
+      TriggerBuilder().SetTriggerData(2).SetReportingOrigin(r1).Build(),
+
+      TriggerBuilder()
+          .SetTriggerData(3)
+          .SetDebugKey(13)
+          .SetReportingOrigin(r2)
+          .Build(),
+
+      SourceBuilder()
+          .SetSourceEventId(4)
+          .SetDebugKey(14)
+          .SetReportingOrigin(r2)
+          .SetExpiry(kImpressionExpiry)
+          .Build(),
+
+      TriggerBuilder().SetTriggerData(5).SetReportingOrigin(r2).Build(),
+  };
+
+  for (const auto& event : kEvents) {
+    attribution_manager_->MaybeEnqueueEventForTesting(event);
+  }
+
+  ASSERT_THAT(StoredSources(), IsEmpty());
+  ASSERT_THAT(StoredReports(), IsEmpty());
+
+  // This should cause the first 2 events to be processed.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
+  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
+
+  // This should cause the next event to be processed. There's no matching
+  // source, so the trigger should be dropped.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(), ElementsAre(SourceEventIdIs(1)));
+  ASSERT_THAT(StoredReports(), ElementsAre(EventLevelDataIs(TriggerDataIs(2))));
+
+  // This should cause the next 2 events to be processed.
+  cookie_checker_->RunNextDeferredCallback(/*is_debug_cookie_set=*/false);
+  ASSERT_THAT(StoredSources(),
+              UnorderedElementsAre(SourceEventIdIs(1), SourceEventIdIs(4)));
+  ASSERT_THAT(StoredReports(),
+              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(2)),
+                                   EventLevelDataIs(TriggerDataIs(5))));
+}
+
+namespace {
+
+const struct {
+  const char* name;
+  absl::optional<uint64_t> input_debug_key;
+  const char* reporting_origin;
+  absl::optional<uint64_t> expected_debug_key;
+} kDebugKeyTestCases[] = {
+    {
+        "no debug key, no cookie",
+        absl::nullopt,
+        "https://r2.test",
+        absl::nullopt,
+    },
+    {
+        "has debug key, no cookie",
+        123,
+        "https://r2.test",
+        absl::nullopt,
+    },
+    {
+        "no debug key, has cookie",
+        absl::nullopt,
+        "https://r1.test",
+        absl::nullopt,
+    },
+    {
+        "has debug key, has cookie",
+        123,
+        "https://r1.test",
+        123,
+    },
+};
+
+}  // namespace
+
+TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(GURL("https://r1.test")));
+
+  for (const auto& test_case : kDebugKeyTestCases) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(
+                url::Origin::Create(GURL(test_case.reporting_origin)))
+            .SetDebugKey(test_case.input_debug_key)
+            .SetExpiry(kImpressionExpiry)
+            .Build());
+
+    EXPECT_THAT(StoredSources(),
+                ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
+        << test_case.name;
+
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    base::NullCallback(), base::DoNothing());
+  }
+}
+
+TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
+  cookie_checker_->AddOriginWithDebugCookieSet(
+      url::Origin::Create(GURL("https://r1.test")));
+
+  for (const auto& test_case : kDebugKeyTestCases) {
+    const auto reporting_origin =
+        url::Origin::Create(GURL(test_case.reporting_origin));
+
+    attribution_manager_->HandleSource(SourceBuilder()
+                                           .SetReportingOrigin(reporting_origin)
+                                           .SetExpiry(kImpressionExpiry)
+                                           .Build());
+
+    EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
+
+    attribution_manager_->HandleTrigger(
+        TriggerBuilder()
+            .SetReportingOrigin(reporting_origin)
+            .SetDebugKey(test_case.input_debug_key)
+            .Build());
+    EXPECT_THAT(
+        StoredReports(),
+        ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(absl::nullopt)),
+                          TriggerDebugKeyIs(test_case.expected_debug_key))))
+        << test_case.name;
+
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    base::NullCallback(), base::DoNothing());
+  }
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_NotifiesObservers_SourceHandled) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  const StorableSource source = SourceBuilder().Build();
+
+  EXPECT_CALL(observer,
+              OnSourceHandled(source, StorableSource::Result::kSuccess));
+
+  attribution_manager_->HandleSource(source);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
 }  // namespace content

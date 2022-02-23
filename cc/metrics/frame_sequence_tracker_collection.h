@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
@@ -54,7 +55,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   FrameSequenceTracker* StartSequence(FrameSequenceTrackerType type);
   FrameSequenceTracker* StartScrollSequence(
       FrameSequenceTrackerType type,
-      FrameSequenceMetrics::ThreadType scrolling_thread);
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread);
 
   // Schedules |tracker| for destruction. This is preferred instead of outright
   // desrtruction of the tracker, since this ensures that the actual tracker
@@ -119,12 +120,15 @@ class CC_EXPORT FrameSequenceTrackerCollection {
     custom_tracker_results_added_callback_ = std::move(callback);
   }
 
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
+
  private:
   friend class FrameSequenceTrackerTest;
 
   FrameSequenceTracker* StartSequenceInternal(
       FrameSequenceTrackerType type,
-      FrameSequenceMetrics::ThreadType scrolling_thread);
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread);
 
   void RecreateTrackers(const viz::BeginFrameArgs& args);
   // Destroy the trackers that are ready to be terminated.
@@ -152,7 +156,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
 
   // The callsite can use the type to manipulate the tracker.
   base::flat_map<
-      std::pair<FrameSequenceTrackerType, FrameSequenceMetrics::ThreadType>,
+      std::pair<FrameSequenceTrackerType, FrameInfo::SmoothEffectDrivingThread>,
       std::unique_ptr<FrameSequenceTracker>>
       frame_trackers_;
 
@@ -165,11 +169,11 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   NotifyCustomerTrackerResutlsCallback custom_tracker_results_added_callback_;
 
   std::vector<std::unique_ptr<FrameSequenceTracker>> removal_trackers_;
-  CompositorFrameReportingController* const
+  const raw_ptr<CompositorFrameReportingController>
       compositor_frame_reporting_controller_;
 
   base::flat_map<
-      std::pair<FrameSequenceTrackerType, FrameSequenceMetrics::ThreadType>,
+      std::pair<FrameSequenceTrackerType, FrameInfo::SmoothEffectDrivingThread>,
       std::unique_ptr<FrameSequenceMetrics>>
       accumulated_metrics_;
 

@@ -112,7 +112,6 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
                                 /*pref_service=*/autofill_client_.GetPrefs(),
                                 /*local_state=*/autofill_client_.GetPrefs(),
                                 /*identity_manager=*/nullptr,
-                                /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
                                 /*image_fetcher=*/nullptr,
@@ -274,7 +273,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, IsUserOptedIn_True) {
   EXPECT_TRUE(fido_authenticator_->IsUserOptedIn());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(CreditCardFIDOAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   scoped_feature_list_.InitAndEnableFeature(
@@ -353,7 +352,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseRequestOptions) {
   EXPECT_EQ(kTestChallenge, BytesToBase64(request_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
-            BytesToBase64(request_options_ptr->allow_credentials.front().id()));
+            BytesToBase64(request_options_ptr->allow_credentials.front().id));
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAssertionResponse) {
@@ -383,12 +382,12 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseCreationOptions) {
   EXPECT_EQ(kTestRelyingPartyId, creation_options_ptr->relying_party.id);
 
   // Ensure only platform authenticators are allowed.
-  EXPECT_EQ(AuthenticatorAttachment::kPlatform,
-            creation_options_ptr->authenticator_selection
-                ->authenticator_attachment());
+  EXPECT_EQ(
+      AuthenticatorAttachment::kPlatform,
+      creation_options_ptr->authenticator_selection->authenticator_attachment);
   EXPECT_EQ(UserVerificationRequirement::kRequired,
             creation_options_ptr->authenticator_selection
-                ->user_verification_requirement());
+                ->user_verification_requirement);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAttestationResponse) {
@@ -624,7 +623,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
       AutofillMetrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This test is not applicable for Android (we won't opt-in with Register).
 TEST_F(CreditCardFIDOAuthenticatorTest,
        Register_OptInAttemptReturnsRequestOptions) {

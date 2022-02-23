@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -14,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "testing/gtest/include/gtest/gtest.h"

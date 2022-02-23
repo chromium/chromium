@@ -16,9 +16,11 @@
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
+#include "components/autofill_assistant/browser/service/cup_impl.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
@@ -58,6 +60,14 @@ constexpr base::TimeDelta kMaxFailedTriggerScriptsCacheDuration =
     base::Hours(1);
 constexpr base::TimeDelta kMaxUserDenylistedCacheDuration = base::Hours(1);
 
+// Synthetic field trial names and group names should match those specified
+// in google3/analysis/uma/dashboards/
+// .../variations/generate_server_hashes.py and
+// .../website/components/variations_dash/variations_histogram_entry.js.
+const char kTriggeredSyntheticTrial[] = "AutofillAssistantTriggered";
+const char kEnabledGroupName[] = "Enabled";
+const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
+
 // Creates a service request sender that serves the pre-specified response.
 // Creation may fail (return null) if the parameter fails to decode.
 std::unique_ptr<ServiceRequestSender> CreateBase64TriggerScriptRequestSender(
@@ -78,6 +88,7 @@ std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
   return std::make_unique<ServiceRequestSenderImpl>(
       browser_context,
       /* access_token_fetcher = */ nullptr,
+      std::make_unique<cup::CUPImplFactory>(),
       std::make_unique<NativeURLLoaderFactory>(),
       ApiKeyFetcher().GetAPIKey(delegate->GetChannel()),
       /* auth_enabled = */ false,
@@ -168,7 +179,7 @@ GetImplicitTriggeringDebugParametersFromCommandLine() {
 Starter::Starter(content::WebContents* web_contents,
                  StarterPlatformDelegate* platform_delegate,
                  ukm::UkmRecorder* ukm_recorder,
-                 base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+                 base::WeakPtr<RuntimeManager> runtime_manager,
                  const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents),
       current_ukm_source_id_(
@@ -302,7 +313,8 @@ void Starter::OnHeuristicMatch(const GURL& url,
            std::vector<std::string>(intents.begin(), intents.end()), ",")},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
-      {"ORIGINAL_DEEPLINK", url.spec()}};
+      {"ORIGINAL_DEEPLINK", url.spec()},
+      {"CALLER", "7"}};
   // Add/overwrite with debug parameters if specified.
   for (const auto& debug_param :
        implicit_triggering_debug_parameters_.additional_script_parameters()) {
@@ -328,6 +340,26 @@ TriggerContext* Starter::GetPendingTriggerContext() const {
     return &trigger_script_coordinator_->GetTriggerContext();
   }
   return pending_trigger_context_.get();
+}
+
+void Starter::RegisterSyntheticFieldTrials(
+    const TriggerContext& trigger_context) const {
+  std::unique_ptr<AssistantFieldTrialUtil> field_trial_util =
+      platform_delegate_->CreateFieldTrialUtil();
+  if (!field_trial_util) {
+    // Failsafe, should never happen.
+    NOTREACHED();
+    return;
+  }
+
+  field_trial_util->RegisterSyntheticFieldTrial(kTriggeredSyntheticTrial,
+                                                kEnabledGroupName);
+  // Synthetic trial for experiments.
+  for (const std::string& experiment_id :
+       trigger_context.GetScriptParameters().GetExperiments()) {
+    field_trial_util->RegisterSyntheticFieldTrial(kExperimentsSyntheticTrial,
+                                                  experiment_id);
+  }
 }
 
 void Starter::OnTabInteractabilityChanged(bool is_interactable) {
@@ -413,6 +445,10 @@ void Starter::OnDependenciesInvalidated() {
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());
+
+  // Register synthetic trial as soon as possible.
+  RegisterSyntheticFieldTrials(*trigger_context);
+
   CancelPendingStartup(Metrics::TriggerScriptFinishedState::CANCELED);
   pending_trigger_context_ = std::move(trigger_context);
 
@@ -430,6 +466,9 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
       {platform_delegate_->GetMakeSearchesAndBrowsingBetterEnabled(),
        platform_delegate_->GetProactiveHelpSettingEnabled(),
        platform_delegate_->GetFeatureModuleInstalled()});
+  Metrics::RecordStartRequest(ukm_recorder_, current_ukm_source_id_,
+                              pending_trigger_context_->GetScriptParameters(),
+                              startup_mode);
 
   // Trigger scripts may need to wait for navigation to the deeplink domain to
   // ensure that UKMs are recorded for the right source-id.
@@ -485,8 +524,11 @@ void Starter::CancelPendingStartup(
   }
   platform_delegate_->HideOnboarding();
   if (waiting_for_onboarding_) {
-    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
-    Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_SHOWN);
+    Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                           current_ukm_source_id_,
+                                           Metrics::Onboarding::OB_NO_ANSWER);
+    Metrics::RecordRegularScriptOnboarding(
+        ukm_recorder_, current_ukm_source_id_, Metrics::Onboarding::OB_SHOWN);
     waiting_for_onboarding_ = false;
   }
   OnStartDone(/* start_regular_script = */ false);
@@ -584,9 +626,11 @@ void Starter::StartTriggerScript() {
                          .value();
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
       platform_delegate_, web_contents(),
-      WebController::CreateForWebContents(web_contents(),
-                                          /* user_data= */ nullptr,
-                                          /* log_info= */ nullptr),
+      WebController::CreateForWebContents(
+          web_contents(),
+          /* user_data= */ nullptr,
+          /* log_info= */ nullptr,
+          /* annotate_dom_model_service= */ nullptr),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(
@@ -689,25 +733,47 @@ void Starter::OnOnboardingFinished(
           std::string());
   switch (result) {
     case OnboardingResult::DISMISSED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
+      Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                             current_ukm_source_id_,
+                                             Metrics::Onboarding::OB_NO_ANSWER);
       Metrics::RecordDropOut(
           Metrics::DropOutReason::ONBOARDING_BACK_BUTTON_CLICKED, intent);
       break;
     case OnboardingResult::REJECTED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_CANCELLED);
+      if (shown) {
+        Metrics::RecordRegularScriptOnboarding(
+            ukm_recorder_, current_ukm_source_id_,
+            Metrics::Onboarding::OB_CANCELLED);
+      } else {
+        // Should not happen, but it's technically possible. Only OB_NOT_SHOWN
+        // will be recorded, since OB_REJECTED is intended to convey explicit
+        // user rejection only.
+      }
       Metrics::RecordDropOut(Metrics::DropOutReason::DECLINED, intent);
       break;
     case OnboardingResult::NAVIGATION:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_NO_ANSWER);
+      Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
+                                             current_ukm_source_id_,
+                                             Metrics::Onboarding::OB_NO_ANSWER);
       Metrics::RecordDropOut(Metrics::DropOutReason::ONBOARDING_NAVIGATION,
                              intent);
       break;
     case OnboardingResult::ACCEPTED:
-      Metrics::RecordOnboardingResult(Metrics::OnBoarding::OB_ACCEPTED);
+      if (shown) {
+        Metrics::RecordRegularScriptOnboarding(
+            ukm_recorder_, current_ukm_source_id_,
+            Metrics::Onboarding::OB_ACCEPTED);
+      } else {
+        // This can happen if the onboarding was already accepted and was thus
+        // not shown. We will record OB_NOT_SHOWN but not OB_ACCEPTED, as the
+        // latter is intended to convey explicit user consent only.
+      }
       break;
   }
-  Metrics::RecordOnboardingResult(shown ? Metrics::OnBoarding::OB_SHOWN
-                                        : Metrics::OnBoarding::OB_NOT_SHOWN);
+  Metrics::RecordRegularScriptOnboarding(
+      ukm_recorder_, current_ukm_source_id_,
+      shown ? Metrics::Onboarding::OB_SHOWN
+            : Metrics::Onboarding::OB_NOT_SHOWN);
 
   if (result != OnboardingResult::ACCEPTED) {
     runtime_manager_->SetUIState(UIState::kNotShown);

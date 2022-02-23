@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <atomic>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -57,9 +57,9 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
   }
 
  private:
-  OneWriterSeqLock* seqlock_;
-  TestData* data_;
-  std::atomic<int>* ready_;
+  raw_ptr<OneWriterSeqLock> seqlock_;
+  raw_ptr<TestData> data_;
+  raw_ptr<std::atomic<int>> ready_;
 };
 
 class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
@@ -90,11 +90,11 @@ class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
   }
 
  private:
-  OneWriterSeqLock* seqlock_;
-  std::atomic<int>* ready_;
+  raw_ptr<OneWriterSeqLock> seqlock_;
+  raw_ptr<std::atomic<int>> ready_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ManyThreads FLAKY_ManyThreads
 #else
 #define MAYBE_ManyThreads ManyThreads

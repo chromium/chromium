@@ -54,7 +54,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -115,7 +115,7 @@ class ImageDocumentParser : public RawDataDocumentParser {
 
 // --------
 
-static String ImageTitle(const String& filename, const IntSize& size) {
+static String ImageTitle(const String& filename, const gfx::Size& size) {
   StringBuilder result;
   result.Append(filename);
   result.Append(" (");
@@ -215,7 +215,7 @@ DocumentParser* ImageDocument::CreateParser() {
   return MakeGarbageCollected<ImageDocumentParser>(this);
 }
 
-IntSize ImageDocument::ImageSize() const {
+gfx::Size ImageDocument::ImageSize() const {
   DCHECK(image_element_);
   DCHECK(image_element_->CachedImage());
   return image_element_->CachedImage()->IntrinsicSize(
@@ -235,7 +235,8 @@ void ImageDocument::CreateDocumentStructure(
     return;  // runScriptsAtDocumentElementAvailable can detach the frame.
 
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
-  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  auto* meta =
+      MakeGarbageCollected<HTMLMetaElement>(*this, CreateElementFlags());
   meta->setAttribute(html_names::kNameAttr, "viewport");
   meta->setAttribute(html_names::kContentAttr,
                      "width=device-width, minimum-scale=0.1");
@@ -306,7 +307,7 @@ void ImageDocument::UpdateTitle() {
   // Report the natural image size in the page title, regardless of zoom
   // level.  At a zoom level of 1 the image is guaranteed to have an integer
   // size.
-  IntSize size = ImageSize();
+  gfx::Size size = ImageSize();
   if (!size.width())
     return;
   // Compute the title, we use the decoded filename of the resource, falling
@@ -327,7 +328,7 @@ float ImageDocument::Scale() const {
   if (!view)
     return 1.0f;
 
-  IntSize image_size = ImageSize();
+  gfx::Size image_size = ImageSize();
   if (image_size.IsEmpty())
     return 1.0f;
 
@@ -346,8 +347,7 @@ void ImageDocument::ResizeImageToFit() {
   if (!image_element_ || image_element_->GetDocument() != this)
     return;
 
-  IntSize image_size = ImageSize();
-  image_size.Scale(Scale());
+  gfx::Size image_size = gfx::ScaleToFlooredSize(ImageSize(), Scale());
 
   image_element_->setWidth(image_size.width());
   image_element_->setHeight(image_size.height());
@@ -408,6 +408,7 @@ ImageDocument::MouseCursorMode ImageDocument::ComputeMouseCursorMode() const {
 
 void ImageDocument::UpdateImageStyle() {
   StringBuilder image_style;
+  image_style.Append("display: block;");
   image_style.Append("-webkit-user-select: none;");
 
   if (ShouldShrinkToFit()) {
@@ -461,7 +462,7 @@ void ImageDocument::RestoreImageSize() {
       image_element_->GetDocument() != this)
     return;
 
-  IntSize image_size = ImageSize();
+  gfx::Size image_size = ImageSize();
   image_element_->setWidth(image_size.width());
   image_element_->setHeight(image_size.height());
   UpdateImageStyle();
@@ -511,7 +512,9 @@ void ImageDocument::WindowSizeChanged() {
     // around. i.e. The div should fill the viewport when minimally zoomed and
     // the URL bar is showing, but won't fill the new space when the URL bar
     // hides.
-    float aspect_ratio = View()->GetLayoutSize().AspectRatio();
+    gfx::Size layout_size = View()->GetLayoutSize();
+    float aspect_ratio =
+        static_cast<float>(layout_size.width()) / layout_size.height();
     int div_height = std::max(ImageSize().height(),
                               static_cast<int>(div_width / aspect_ratio));
     div_element_->SetInlineStyleProperty(CSSPropertyID::kHeight, div_height,

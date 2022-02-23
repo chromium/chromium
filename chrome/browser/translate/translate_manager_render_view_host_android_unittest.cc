@@ -82,7 +82,7 @@ class TranslateManagerRenderViewHostAndroidTest
                : NULL;
   }
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
   // If there is 1 infobar and it is a translate infobar, closes it and returns
   // true.  Returns false otherwise.
   bool CloseTranslateInfoBar() {

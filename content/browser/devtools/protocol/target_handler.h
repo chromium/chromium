@@ -99,6 +99,7 @@ class TargetHandler : public DevToolsDomainHandler,
       Maybe<bool> in_disposeOnDetach,
       Maybe<String> in_proxyServer,
       Maybe<String> in_proxyBypassList,
+      Maybe<protocol::Array<String>> in_originsToGrantUniversalNetworkAccess,
       std::unique_ptr<CreateBrowserContextCallback> callback) override;
   void DisposeBrowserContext(
       const std::string& context_id,

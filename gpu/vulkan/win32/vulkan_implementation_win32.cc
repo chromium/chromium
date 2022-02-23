@@ -26,28 +26,16 @@ VulkanImplementationWin32::~VulkanImplementationWin32() = default;
 
 bool VulkanImplementationWin32::InitializeVulkanInstance(bool using_surface) {
   DCHECK(using_surface);
+
+  base::FilePath loader_path(use_swiftshader() ? L"vk_swiftshader.dll"
+                                               : L"vulkan-1.dll");
   std::vector<const char*> required_extensions = {
       VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
       VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
       VK_KHR_SURFACE_EXTENSION_NAME,
       VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
   };
-
-  VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-
-  base::FilePath path(use_swiftshader() ? L"vk_swiftshader.dll"
-                                        : L"vulkan-1.dll");
-
-  base::NativeLibraryLoadError native_library_load_error;
-  vulkan_function_pointers->vulkan_loader_library =
-      base::LoadNativeLibrary(path, &native_library_load_error);
-  if (!vulkan_function_pointers->vulkan_loader_library)
-    return false;
-
-  if (!vulkan_instance_.Initialize(required_extensions, {}))
-    return false;
-  return true;
+  return vulkan_instance_.Initialize(loader_path, required_extensions, {});
 }
 
 VulkanInstance* VulkanImplementationWin32::GetVulkanInstance() {

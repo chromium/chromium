@@ -9,7 +9,6 @@
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {

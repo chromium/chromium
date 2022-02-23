@@ -464,25 +464,32 @@ void ServiceWorkerMetrics::RecordStartWorkerTimingClockConsistency(
   UMA_HISTOGRAM_ENUMERATION("ServiceWorker.StartTiming.ClockConsistency", type);
 }
 
-void ServiceWorkerMetrics::RecordOfflineCapableReason(
-    blink::ServiceWorkerStatusCode status,
-    int status_code) {
-  if (status == blink::ServiceWorkerStatusCode::kErrorTimeout) {
-    base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                  OfflineCapableReason::kTimeout);
-    return;
-  } else if (status == blink::ServiceWorkerStatusCode::kOk) {
-    if (200 <= status_code && status_code <= 299) {
-      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                    OfflineCapableReason::kSuccess);
-      return;
-    } else if (300 <= status_code && status_code <= 399) {
-      base::UmaHistogramEnumeration("ServiceWorker.OfflineCapable.Reason",
-                                    OfflineCapableReason::kRedirect);
-      return;
+void ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+    bool skip_service_worker) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation",
+          skip_service_worker);
     }
   }
-  NOTREACHED();
+}
+
+void ServiceWorkerMetrics::
+    RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+        base::TimeDelta time) {
+  static bool is_first_call = true;
+  if (is_first_call) {
+    is_first_call = false;
+    if (!GetContentClient()->browser()->IsBrowserStartupComplete()) {
+      base::UmaHistogramMediumTimes(
+          "ServiceWorker.OnBrowserStartup.FirstFindRegistrationForClientUrl."
+          "Time",
+          time);
+    }
+  }
 }
 
 }  // namespace content

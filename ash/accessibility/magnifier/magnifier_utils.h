@@ -8,8 +8,13 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace gfx {
 class Point;
+class Rect;
 }  // namespace gfx
 
 namespace ash {
@@ -68,6 +73,12 @@ float ASH_EXPORT GetNextMagnifierScaleValue(int delta_index,
                                             float current_scale,
                                             float min_scale,
                                             float max_scale);
+
+// Gets the bounds of the Docked Magnifier viewport widget when placed in the
+// display whose root window is |root|. The bounds returned correspond to the
+// top quarter portion of the screen.
+gfx::Rect ASH_EXPORT GetViewportWidgetBoundsInRoot(aura::Window* root,
+                                                   float screen_height_divisor);
 
 // If either of the fullscreen or docked magnifier is enabled, its focus will be
 // updated to center around the given `point_in_screen`. Note that both

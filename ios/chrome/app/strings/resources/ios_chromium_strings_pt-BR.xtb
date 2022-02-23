@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="102360288709523007">Ajude a melhorar o Chromium. Envie estatísticas e relatórios de erros ao Google.</translation>
+<translation id="1047130070405668746">Selecione o Chromium</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
 <translation id="1289216811211435351">Mudar para o Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Mostra solicitações para fazer login no Chromium.</translation>
 <translation id="1584569488888892906">O Chromium é simples, seguro e está mais rápido do que nunca</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
+<translation id="1722370509450468186">A senha será salva na sua conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
 <translation id="1838412507805038478">O Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste website.</translation>
 <translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Selecione o Chromium</translation>
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="2054703085270098503">Proteja-se com o Chromium</translation>
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Indisponível no Chromium Canary</translation>
 <translation id="3639997914391704523">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
-<translation id="3946918322491238254">Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
+<translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora você poderá usar o Chromium sempre que tocar em links em mensagens, documentos e outros apps.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6752854822223394465">Sua organização está configurando o Chromium…</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
+<translation id="7006920032187763988">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPad.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium</translation>
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
 <translation id="7108914401277488191">Use o Chromium e seja ainda mais eficiente</translation>
 <translation id="7118091470949186573">Agora você pode usar o Chromium sempre que toca em links em mensagens, documentos e outros apps.</translation>
+<translation id="7175400662502680481">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="7208566199746267865">O Chromium permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="7269362888766543920">Alguns complementos causam falhas do Chromium. Tente desinstalá-los.</translation>
 <translation id="7313655110045230863">Para definir o Chromium como o navegador padrão, abra as configurações. Toque em "App do navegador padrão" e selecione o Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
+<translation id="7395825497086981028">A senha será salva no Gerenciador de senhas da conta <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Use o Chromium em qualquer lugar</translation>
 <translation id="766897673682622022">Sua senha foi exposta em uma violação de dados. Por recomendação do Chromium, mude a senha imediatamente.</translation>
 <translation id="7674213385180944843">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Chromium e ative a câmera.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Dica: <ph name="BEGIN_LINK" />mova o Chromium para a base<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
+<translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
 <translation id="894437814105052438">Quando você se desconecta, o Chromium não sincroniza nenhum dado novo com sua Conta do Google. Os dados sincronizados anteriormente permanecem na conta.</translation>
 <translation id="9022552996538154597">Fazer login no Chromium</translation>
+<translation id="9059693977935746710">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9110075932708282655">Usar o Chromium por padrão</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>

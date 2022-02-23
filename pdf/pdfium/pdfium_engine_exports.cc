@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_print.h"
@@ -27,7 +28,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -42,9 +43,9 @@ int CalculatePosition(FPDF_PAGE page,
   const int dpi_y = settings.dpi.height();
   const int dpi = std::max(dpi_x, dpi_y);
   int page_width = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
+      ConvertUnitFloat(FPDF_GetPageWidthF(page), kPointsPerInch, dpi));
   int page_height = static_cast<int>(
-      ConvertUnitDouble(FPDF_GetPageHeightF(page), kPointsPerInch, dpi));
+      ConvertUnitFloat(FPDF_GetPageHeightF(page), kPointsPerInch, dpi));
 
   // Start by assuming that we will draw exactly to the bounds rect
   // specified.
@@ -188,7 +189,7 @@ base::Value RecursiveGetStructTree(FPDF_STRUCTELEMENT struct_elem) {
   // use "~children" instead of "children" because we pretty-print the
   // result of this as JSON and the keys are sorted; it's much easier to
   // understand when the children are the last key.
-  if (!children.GetList().empty())
+  if (!children.GetListDeprecated().empty())
     result.SetKey("~children", std::move(children));
 
   return result;
@@ -227,7 +228,7 @@ PDFiumEngineExports::PDFiumEngineExports() {}
 
 PDFiumEngineExports::~PDFiumEngineExports() {}
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
@@ -237,9 +238,9 @@ std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     return std::vector<uint8_t>();
   return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(
     base::span<const uint8_t> pdf_buffer,
     int page_number,
@@ -311,20 +312,10 @@ bool PDFiumEngineExports::RenderPDFPageToDC(
   return true;
 }
 
-void PDFiumEngineExports::SetPDFEnsureTypefaceCharactersAccessible(
-    PDFEnsureTypefaceCharactersAccessible func) {
-  FPDF_SetTypefaceAccessibleFunc(
-      reinterpret_cast<PDFiumEnsureTypefaceCharactersAccessible>(func));
-}
-
-void PDFiumEngineExports::SetPDFUseGDIPrinting(bool enable) {
-  FPDF_SetPrintTextWithGDI(enable);
-}
-
 void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
   FPDF_SetPrintMode(mode);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PDFiumEngineExports::RenderPDFPageToBitmap(
     base::span<const uint8_t> pdf_buffer,

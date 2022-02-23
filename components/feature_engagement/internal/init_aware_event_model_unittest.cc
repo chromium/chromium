@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,7 +70,7 @@ class InitAwareEventModelTest : public testing::Test {
   void OnModelInitialized(bool success) { load_success_ = success; }
 
   std::unique_ptr<InitAwareEventModel> model_;
-  MockEventModel* mocked_model_;
+  raw_ptr<MockEventModel> mocked_model_;
 
   // Load callback tracking.
   absl::optional<bool> load_success_;

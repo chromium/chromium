@@ -11,6 +11,8 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_UNIONPAY" file="autofill/unionpay.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_VISA" file="autofill/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_TROY" file="autofill/troy.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG" file="autofill/virtual_card_enroll.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK" file="autofill/virtual_card_enroll_dark.png" />
   <if expr="_google_chrome">
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_ISSUED_CARD" file="google_chrome/autofill/googlepay_plex.png" />

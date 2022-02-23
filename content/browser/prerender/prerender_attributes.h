@@ -5,29 +5,34 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_ATTRIBUTES_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_ATTRIBUTES_H_
 
+#include <string>
+
+#include "content/common/content_export.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/base/page_transition_types.h"
 
 namespace content {
-
-enum class PrerenderTriggerType {
-  // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
-  kSpeculationRule,
-};
 
 // Records the basic attributes of a prerender request.
 struct CONTENT_EXPORT PrerenderAttributes {
   PrerenderAttributes(
       const GURL& prerendering_url,
       PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix,
       Referrer referrer,
       absl::optional<url::Origin> initiator_origin,
       const GURL& initiator_url,
       int initiator_process_id,
       absl::optional<blink::LocalFrameToken> initiator_frame_token,
-      ukm::SourceId initiator_ukm_id);
+      ukm::SourceId initiator_ukm_id,
+      ui::PageTransition transition_type,
+      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate);
+
   ~PrerenderAttributes();
   PrerenderAttributes(const PrerenderAttributes&);
   PrerenderAttributes& operator=(const PrerenderAttributes&) = delete;
@@ -39,6 +44,10 @@ struct CONTENT_EXPORT PrerenderAttributes {
   GURL prerendering_url;
 
   PrerenderTriggerType trigger_type;
+
+  // Used for kEmbedder trigger type to avoid exposing information of embedders
+  // to content/. Only used for metrics.
+  std::string embedder_histogram_suffix;
 
   Referrer referrer;
 
@@ -58,6 +67,14 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // This is ukm::kInvalidSourceId when prerendering is initiated by the
   // browser.
   ukm::SourceId initiator_ukm_id;
+
+  ui::PageTransition transition_type;
+
+  // Triggers can specify their own predicate judging whether two URLs are
+  // considered as pointing to the same destination. The URLs must be in
+  // same-origin.
+  absl::optional<base::RepeatingCallback<bool(const GURL&)>>
+      url_match_predicate;
 
   // Serialises this struct into a trace.
   void WriteIntoTrace(perfetto::TracedValue trace_context) const;

@@ -182,7 +182,7 @@
   [self stop];
 }
 
-- (void)showHistoryFromRecentTabs {
+- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
   // Dismiss recent tabs before presenting history.
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<ApplicationCommands> handler =

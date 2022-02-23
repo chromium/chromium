@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -180,7 +181,7 @@ class CertVerifyProcTrustStore {
   }
 
  private:
-  SystemTrustStore* system_trust_store_;
+  raw_ptr<SystemTrustStore> system_trust_store_;
   TrustStoreInMemory additional_trust_store_;
   TrustStoreCollection trust_store_;
 };
@@ -373,14 +374,14 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
   }
 
   // The CRLSet may be null.
-  const CRLSet* crl_set_;
-  CertNetFetcher* net_fetcher_;
+  raw_ptr<const CRLSet> crl_set_;
+  raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
   const int flags_;
-  const CertVerifyProcTrustStore* trust_store_;
+  raw_ptr<const CertVerifyProcTrustStore> trust_store_;
   const base::StringPiece stapled_leaf_ocsp_response_;
-  const EVRootCAMetadata* ev_metadata_;
-  bool* checked_revocation_for_some_path_;
+  raw_ptr<const EVRootCAMetadata> ev_metadata_;
+  raw_ptr<bool> checked_revocation_for_some_path_;
 };
 
 class CertVerifyProcBuiltin : public CertVerifyProc {
@@ -494,7 +495,9 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
 
   if (errors.ContainsError(cert_errors::kDistrustedByTrustStore) ||
       errors.ContainsError(cert_errors::kVerifySignedDataFailed) ||
-      errors.ContainsError(cert_errors::kNoIssuersFound)) {
+      errors.ContainsError(cert_errors::kNoIssuersFound) ||
+      errors.ContainsError(cert_errors::kDeadlineExceeded) ||
+      errors.ContainsError(cert_errors::kIterationLimitExceeded)) {
     *cert_status |= CERT_STATUS_AUTHORITY_INVALID;
   }
 
@@ -572,7 +575,7 @@ CertPathBuilder::Result TryBuildPath(
     GetEVPolicyOids(ev_metadata, target.get(), &user_initial_policy_set);
     // TODO(crbug.com/634484): netlog user_initial_policy_set.
   } else {
-    user_initial_policy_set = {AnyPolicy()};
+    user_initial_policy_set = {der::Input(kAnyPolicyOid)};
   }
 
   PathBuilderDelegateImpl path_builder_delegate(

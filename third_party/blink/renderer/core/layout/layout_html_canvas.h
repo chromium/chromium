@@ -40,7 +40,6 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     NOT_DESTROYED();
     return type == kLayoutObjectCanvas || LayoutReplaced::IsOfType(type);
   }
-  PaintLayerType LayerTypeRequired() const override;
 
   void InvalidatePaint(const PaintInvalidatorContext&) const final;
 
@@ -64,12 +63,6 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     NOT_DESTROYED();
     CanvasSizeChanged();
   }
-
-  bool CanHaveAdditionalCompositingReasons() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  CompositingReasons AdditionalCompositingReasons() const override;
 };
 
 template <>

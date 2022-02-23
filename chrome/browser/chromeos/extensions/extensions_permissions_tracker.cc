@@ -127,7 +127,7 @@ void ExtensionsPermissionsTracker::RegisterLocalStatePrefs(
 
 void ExtensionsPermissionsTracker::ParseExtensionPermissions(
     const Extension* extension) {
-  bool is_safe = IsWhitelistedForPublicSession(extension->id()) ||
+  bool is_safe = IsAllowlistedForPublicSession(extension->id()) ||
                  IsSafePerms(extension->permissions_data());
 
   extension_safety_ratings_[extension->id()] = is_safe;

@@ -13,6 +13,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
@@ -52,6 +53,11 @@ using TestBase =
 #endif
     ;
 
+class TestCapabilities : public Capabilities {
+ public:
+  std::string GetSecurityContext() const override { return "test"; }
+};
+
 class ServerTest : public TestBase {
  public:
   ServerTest() = default;
@@ -67,11 +73,6 @@ class ServerTest : public TestBase {
   }
 
  protected:
-  base::FilePath GetUniqueSocketPath() const {
-    return xdg_temp_dir_.GetPath().Append(GetUniqueSocketName());
-  }
-
- private:
   base::ScopedTempDir xdg_temp_dir_;
 };
 
@@ -98,25 +99,6 @@ TEST_F(ServerTest, GetFileDescriptor) {
   DCHECK_GE(fd, 0);
 }
 
-TEST_F(ServerTest, CustomSocketPath) {
-  std::unique_ptr<Display> display(new Display);
-
-  base::ScopedTempDir non_xdg_dir;
-  ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
-
-  std::unique_ptr<Server> server =
-      Server::Create(display.get(), Capabilities::GetDefaultCapabilities(),
-                     non_xdg_dir.GetPath().Append("custom-socket"));
-  EXPECT_TRUE(server);
-
-  // Check that Create() has put the socket in the directory. Actually two files
-  // will be created (the socket and its .lock), so we use StartsWith().
-  base::FileEnumerator enumerator(non_xdg_dir.GetPath(), /*recursive=*/false,
-                                  base::FileEnumerator::FILES);
-  EXPECT_TRUE(base::StartsWith(enumerator.Next().BaseName().MaybeAsASCII(),
-                               "custom-socket"));
-}
-
 TEST_F(ServerTest, CapabilityAssociation) {
   std::unique_ptr<Capabilities> capabilities =
       Capabilities::GetDefaultCapabilities();
@@ -131,26 +113,38 @@ TEST_F(ServerTest, CapabilityAssociation) {
 }
 
 TEST_F(ServerTest, CreateAsync) {
+  using MockServerFunction =
+      testing::MockFunction<void(bool, const base::FilePath&)>;
+
   std::unique_ptr<Display> display(new Display);
 
   base::ScopedTempDir non_xdg_dir;
   ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
 
   base::RunLoop run_loop;
-  testing::MockFunction<void(std::unique_ptr<Server>)> server_callback;
-  EXPECT_CALL(server_callback, Call(testing::_))
-      .WillOnce(testing::Invoke([&run_loop](std::unique_ptr<Server> server) {
-        EXPECT_TRUE(server);
+  base::FilePath server_socket;
+  MockServerFunction server_callback;
+  EXPECT_CALL(server_callback, Call(testing::_, testing::_))
+      .WillOnce(testing::Invoke([&run_loop, &server_socket](
+                                    bool success, const base::FilePath& path) {
+        EXPECT_TRUE(success);
+        server_socket = path;
         run_loop.Quit();
       }));
 
-  Server::CreateAsync(
-      display.get(), Capabilities::GetDefaultCapabilities(),
-      GetUniqueSocketPath(),
-      base::BindOnce(
-          &testing::MockFunction<void(std::unique_ptr<Server>)>::Call,
-          base::Unretained(&server_callback)));
+  std::unique_ptr<Server> server =
+      Server::Create(display.get(), std::make_unique<TestCapabilities>());
+  server->StartAsync(base::BindOnce(&MockServerFunction::Call,
+                                    base::Unretained(&server_callback)));
   run_loop.Run();
+
+  // Should create a directory for the server.
+  EXPECT_TRUE(base::DirectoryExists(server_socket.DirName()));
+  // Must not be a child of the XDG dir.
+  EXPECT_TRUE(base::IsDirectoryEmpty(xdg_temp_dir_.GetPath()));
+  // Must be deleted when the helper is removed.
+  server.reset();
+  EXPECT_FALSE(base::PathExists(server_socket));
 }
 
 void ConnectToServer(const std::string socket_name,

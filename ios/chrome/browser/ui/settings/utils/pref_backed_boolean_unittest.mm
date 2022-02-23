@@ -26,10 +26,17 @@ const char kTestSwitchPref[] = "test-pref";
 class PrefBackedBooleanTest : public PlatformTest {
  public:
   void SetUp() override {
+    PlatformTest::SetUp();
     pref_service_.registry()->RegisterBooleanPref(kTestSwitchPref, false);
     observable_boolean_ =
         [[PrefBackedBoolean alloc] initWithPrefService:&pref_service_
                                               prefName:kTestSwitchPref];
+  }
+
+  void TearDown() override {
+    [observable_boolean_ stop];
+    observable_boolean_ = nil;
+    PlatformTest::TearDown();
   }
 
  protected:

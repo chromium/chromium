@@ -3,18 +3,103 @@
         "benchmarks": {
             "power.mobile": {
                 "abridged": false
-            },
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "2": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "3": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "4": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "5": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "6": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "7": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "8": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "9": {
+        "benchmarks": {
+            "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "10": {
+        "benchmarks": {
             "system_health.scroll_jank_mobile": {
+                "end": 5,
+                "abridged": false
+            }
+        }
+    },
+    "11": {
+        "benchmarks": {
+            "system_health.scroll_jank_mobile": {
+                "begin": 5,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 4,
+        "num_stories": 5,
         "predicted_min_shard_time": 318.0,
         "predicted_min_shard_index": 0,
         "predicted_max_shard_time": 318.0,
         "predicted_max_shard_index": 0,
-        "shard #0": 318.0
+        "shard #0": 318.0,
+        "shard #1": 318.0,
+        "shard #2": 318.0,
+        "shard #3": 318.0,
+        "shard #4": 318.0,
+        "shard #5": 318.0,
+        "shard #6": 318.0,
+        "shard #7": 318.0,
+        "shard #8": 318.0,
+        "shard #9": 318.0
     }
 }

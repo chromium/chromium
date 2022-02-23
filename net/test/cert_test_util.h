@@ -8,13 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "net/cert/x509_cert_types.h"
+#include "crypto/crypto_buildflags.h"
+#include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/scoped_nss_types.h"
 
 // From <pk11pub.h>
@@ -31,7 +33,7 @@ namespace net {
 
 class EVRootCAMetadata;
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 // Imports a private key from file |key_filename| in |dir| into |slot|. The file
 // must contain a PKCS#8 PrivateKeyInfo in DER encoding. Returns true on success
 // and false on failure.
@@ -89,6 +91,12 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     base::StringPiece cert_file,
     int format);
 
+// Imports a single certificate from |cert_path|.
+// If the file contains multiple certificates, the first certificate found
+// will be returned.
+scoped_refptr<X509Certificate> ImportCertFromFile(
+    const base::FilePath& cert_path);
+
 // Imports a single certificate from |cert_file|.
 // |certs_dir| represents the test certificates directory. |cert_file| is the
 // name of the certificate file. If cert_file contains multiple certificates,
@@ -96,6 +104,13 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
 scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
     base::StringPiece cert_file);
+
+// Imports a private key from |key_path|, which should be a PEM file containing
+// a PRIVATE KEY block. Only the first private key found will be returned, if
+// the file contains multiple private keys or other PEM blocks, they will be
+// ignored.
+bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(
+    const base::FilePath& key_path);
 
 // ScopedTestEVPolicy causes certificates marked with |policy|, issued from a
 // root with the given fingerprint, to be treated as EV. |policy| is expressed
@@ -111,7 +126,7 @@ class ScopedTestEVPolicy {
 
  private:
   SHA256HashValue fingerprint_;
-  EVRootCAMetadata* const ev_root_ca_metadata_;
+  const raw_ptr<EVRootCAMetadata> ev_root_ca_metadata_;
 };
 
 }  // namespace net

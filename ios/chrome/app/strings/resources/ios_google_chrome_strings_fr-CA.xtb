@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="1096883626080133124">Faites-en plus avec le navigateur Google Chrome : simple, sécuritaire et plus rapide que jamais</translation>
+<translation id="1143896152279775643">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe Google du compte <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
-<translation id="1314663809820920746">Vous pouvez tout de même voir la totalité de vos favoris, de votre historique, de vos mots de passe et de vos autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte Google.</translation>
 <translation id="1479202195792305274">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
 <translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome a vérifié que <ph name="ISSUER" /> a émis le certificat de ce site Web.</translation>
 <translation id="2199719347983604670">Données provenant de la synchronisation Google Chrome</translation>
 <translation id="2313070403598893276">Google Chrome est simple, sécuritaire et plus rapide que jamais</translation>
+<translation id="2339201583852607431">Votre mot de passe sera enregistré dans votre compte Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome partage votre position avec les sites que vous autorisez.</translation>
 <translation id="2347208864470321755">Lorsque cette fonction est activée, Google Chrome vous propose de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
@@ -24,6 +25,7 @@
 <translation id="2574249610672786438">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous sur tous vos appareils</translation>
 <translation id="2576431527583832481">Une nouvelle version améliorée de Google Chrome est maintenant offerte.</translation>
 <translation id="257708665678654955">Souhaitez-vous que Google Chrome vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite?</translation>
+<translation id="2671426118752779020">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPhone.</translation>
 <translation id="2695886661449553974">Chrome n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
@@ -38,6 +40,7 @@
 <translation id="3522659714780527202">Pour voir vos onglets partout où vous utilisez Chrome, activez la synchronisation</translation>
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3634910711516114487">Pour profiter au maximum de Chrome, connectez-vous à Chrome avec votre compte Google</translation>
+<translation id="3655656110921623717">Cela signifie que Chrome demandera toujours la version mobile du site.</translation>
 <translation id="3706101708757577809">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
@@ -54,8 +57,10 @@
 <translation id="4698415050768537821">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Fonctionnalité non prise en charge par Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires.</translation>
+<translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5162467219239570114">Google Chrome n'est plus à jour. Si aucune mise à jour n'est offerte dans l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, il est possible que votre appareil ne prenne plus en charge les nouvelles versions de Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
+<translation id="5460571915754665838">4. Sélectionnez Chrome</translation>
 <translation id="5639704535586432836">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Google Chrome et activez l'appareil photo.</translation>
 <translation id="5642200033778930880">Google Chrome ne peut pas utiliser votre appareil photo en mode Vue partagée</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -67,11 +72,13 @@
 <translation id="6063091872902370735">Autoriser la connexion dans Chrome</translation>
 <translation id="6181930887571472871">Passer à Chrome</translation>
 <translation id="6238746320622508509">Chrome peut verrouiller vos onglets de navigation privée.</translation>
+<translation id="6387994324662817823">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil uniquement.</translation>
 <translation id="6427126399757991875">Votre organisation est en train de configurer Chrome…</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome ne synchronise aucune nouvelle donnée avec votre compte Google. Les données précédemment synchronisées demeurent dans le compte.</translation>
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais elles resteront stockées dans votre compte Google.</translation>
 <translation id="6676840375528380067">Effacer vos données Chrome de cet appareil?</translation>
+<translation id="6709398533399187136">Votre mot de passe a été exposé dans une violation de données. Le Gestionnaire de mots de passe Google vous recommande de le modifier maintenant.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="6964931465519938134">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
@@ -80,6 +87,7 @@
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>
 <translation id="7172660552945675509">Conseil : <ph name="BEGIN_LINK" />Déplacez Chrome vers le dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utilise Face ID pour assurer un accès autorisé à vos mots de passe.</translation>
+<translation id="72119412072970160">Vous pouvez utiliser les mots de passe que vous avez enregistrés dans le gestionnaire de mots de passe Google pour d'autres applications sur votre iPad.</translation>
 <translation id="7261678641327190792">Chrome ne peut pas vérifier vos mots de passe</translation>
 <translation id="7272930098487145294">Pour enregistrer des images, touchez Paramètres et autorisez Chrome à les ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chrome seront effacées de cet appareil</translation>
@@ -107,5 +115,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Demeurez en sécurité grâce à Chrome</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
+<translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Définir Chrome comme navigateur par défaut?</translation>
+<translation id="9122931302567044771">Cela signifie que Chrome demandera toujours la version bureau du site.</translation>
 </translationbundle>

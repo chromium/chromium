@@ -342,19 +342,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
     fetch_integrity_ = integrity;
   }
 
-  PreviewsState GetPreviewsState() const { return previews_state_; }
-  void SetPreviewsState(PreviewsState previews_state) {
-    previews_state_ = previews_state;
-  }
-
   bool CacheControlContainsNoCache() const;
   bool CacheControlContainsNoStore() const;
   bool HasCacheValidatorFields() const;
-
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  bool IsExternalRequest() const { return is_external_request_; }
-  void SetExternalRequestStateFromRequestorAddressSpace(
-      network::mojom::IPAddressSpace);
 
   network::mojom::CorsPreflightPolicy CorsPreflightPolicy() const {
     return cors_preflight_policy_;
@@ -580,7 +570,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   ResourceLoadPriority initial_priority_;
   ResourceLoadPriority priority_;
   int intra_priority_value_;
-  PreviewsState previews_state_;
   scoped_refptr<WebURLRequestExtraData> url_request_extra_data_;
   mojom::blink::RequestContextType request_context_;
   network::mojom::RequestDestination destination_;
@@ -591,7 +580,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String fetch_integrity_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
-  bool is_external_request_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;
   absl::optional<RedirectInfo> redirect_info_;
   absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;

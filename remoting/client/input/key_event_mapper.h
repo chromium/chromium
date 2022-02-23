@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "remoting/protocol/input_filter.h"
 
 namespace remoting {

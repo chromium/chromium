@@ -60,33 +60,36 @@ constexpr char kSystemWebAppsCountHistogramName[] =
 constexpr char kStandaloneBrowserExtensionCountHistogramName[] =
     "FamilyUser.LacrosChromeAppsCount2";
 
-const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
+const char* GetAppsCountHistogramName(apps::AppType app_type) {
   switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
+    case apps::AppType::kUnknown:
+    // Extensions are recorded separately, and AppService only has some
+    // extensions with file browser handlers.
+    case apps::AppType::kExtension:
       return kUnknownAppsCountHistogramName;
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return kArcAppsCountHistogramName;
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return kBuiltInAppsCountHistogramName;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return kCrostiniAppsCountHistogramName;
-    case apps::mojom::AppType::kExtension:
+    case apps::AppType::kChromeApp:
       return kExtensionAppsCountHistogramName;
-    case apps::mojom::AppType::kWeb:
+    case apps::AppType::kWeb:
       return kWebAppsCountHistogramName;
-    case apps::mojom::AppType::kMacOs:
+    case apps::AppType::kMacOs:
       return kMacOsAppsCountHistogramName;
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return kPluginVmAppsCountHistogramName;
-    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::AppType::kStandaloneBrowser:
       return kStandaloneBrowserAppsCountHistogramName;
-    case apps::mojom::AppType::kRemote:
+    case apps::AppType::kRemote:
       return kRemoteAppsCountHistogramName;
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return kBorealisAppsCountHistogramName;
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       return kStandaloneBrowserExtensionCountHistogramName;
   }
 }
@@ -129,12 +132,12 @@ FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest() {
 
 // static
 const char* FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(
-    apps::mojom::AppType app_type) {
+    apps::AppType app_type) {
   return GetAppsCountHistogramName(app_type);
 }
 
 void FamilyUserAppMetrics::Init() {
-  for (const auto app_type : app_registry_->GetInitializedAppTypes()) {
+  for (const auto app_type : app_registry_->InitializedAppTypes()) {
     OnAppTypeInitialized(app_type);
   }
 }
@@ -154,8 +157,13 @@ void FamilyUserAppMetrics::OnNewDay() {
     RecordRecentlyUsedAppsCount(app_type);
 }
 
-void FamilyUserAppMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
+void FamilyUserAppMetrics::OnAppTypeInitialized(apps::AppType app_type) {
   DCHECK(!base::Contains(ready_app_types_, app_type));
+  // Skip the extension app type, because extensions are recorded separately,
+  // and AppService only has some extensions with file browser handlers.
+  if (app_type == apps::AppType::kExtension)
+    return;
+
   ready_app_types_.insert(app_type);
   if (should_record_metrics_on_new_day_)
     RecordRecentlyUsedAppsCount(app_type);
@@ -169,7 +177,7 @@ void FamilyUserAppMetrics::OnAppRegistryCacheWillBeDestroyed(
 
 void FamilyUserAppMetrics::OnAppUpdate(const apps::AppUpdate& update) {}
 
-bool FamilyUserAppMetrics::IsAppTypeReady(apps::mojom::AppType app_type) const {
+bool FamilyUserAppMetrics::IsAppTypeReady(apps::AppType app_type) const {
   return base::Contains(ready_app_types_, app_type);
 }
 
@@ -205,14 +213,14 @@ void FamilyUserAppMetrics::RecordEnabledExtensionsCount() {
                                extensions_count);
 }
 
-void FamilyUserAppMetrics::RecordRecentlyUsedAppsCount(
-    apps::mojom::AppType app_type) {
+void FamilyUserAppMetrics::RecordRecentlyUsedAppsCount(apps::AppType app_type) {
   int app_count = 0;
   base::Time now = base::Time::Now();
+  apps::mojom::AppType mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
   // The below will execute synchronously.
   app_registry_->ForEachApp(
-      [app_type, now, this, &app_count](const apps::AppUpdate& update) {
-        if (update.AppType() != app_type)
+      [mojom_app_type, now, this, &app_count](const apps::AppUpdate& update) {
+        if (update.AppType() != mojom_app_type)
           return;
         // Only count apps that have been used recently.
         if (now - update.LastLaunchTime() <= kOneDay ||

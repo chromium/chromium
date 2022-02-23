@@ -42,7 +42,8 @@ class PageTopicsModelExecutor : public PageContentAnnotationJobExecutor,
 
   // Extracts the scored categories from the output of the model.
   // Public for testing.
-  absl::optional<std::vector<WeightedString>> ExtractCategoriesFromModelOutput(
+  absl::optional<std::vector<WeightedIdentifier>>
+  ExtractCategoriesFromModelOutput(
       const std::vector<tflite::task::core::Category>& model_output) const;
 
  private:

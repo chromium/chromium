@@ -4,7 +4,6 @@
 
 package org.chromium.net;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -73,7 +74,6 @@ public class ProxyChangeListener {
             mExclusionList = exclusionList;
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         private static ProxyConfig fromProxyInfo(ProxyInfo proxyInfo) {
             if (proxyInfo == null) {
                 return null;
@@ -224,7 +224,7 @@ public class ProxyChangeListener {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private ProxyConfig getProxyConfig(Intent intent) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(

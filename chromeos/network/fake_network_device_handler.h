@@ -67,8 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkDeviceHandler
                  base::OnceClosure callback,
                  network_handler::ErrorCallback error_callback) override;
 
-  void SetCellularAllowRoaming(bool allow_roaming,
-                               bool policy_allow_roaming) override;
+  void SetCellularPolicyAllowRoaming(bool policy_allow_roaming) override;
 
   void SetUsbEthernetMacAddressSource(const std::string& source) override;
 };

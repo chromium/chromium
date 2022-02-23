@@ -40,7 +40,8 @@ public class TabbedSheetDelegate implements NavigationSheet.Delegate {
         if (!isOffTheRecord || !ChromeFeatureList.isEnabled(INCOGNITO_HISTORY_ENTRIES_FLAG)) {
             history.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX,
                     new GURL(UrlConstants.HISTORY_URL), GURL.emptyGURL(), GURL.emptyGURL(),
-                    GURL.emptyGURL(), mFullHistoryMenu, null, 0, 0));
+                    GURL.emptyGURL(), mFullHistoryMenu, null, 0, 0,
+                    /* isInitialEntry=*/false));
         }
         return history;
     }

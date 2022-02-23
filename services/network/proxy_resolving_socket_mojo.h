@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketMojo
   std::unique_ptr<net::StreamSocket> TakeSocket() override;
 
   mojo::Remote<mojom::SocketObserver> observer_;
-  TLSSocketFactory* tls_socket_factory_;
+  raw_ptr<TLSSocketFactory> tls_socket_factory_;
   std::unique_ptr<net::StreamSocket> socket_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
   mojom::ProxyResolvingSocketFactory::CreateProxyResolvingSocketCallback

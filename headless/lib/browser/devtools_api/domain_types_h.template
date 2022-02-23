@@ -9,13 +9,17 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "base/values.h"
-#include "headless/lib/browser/protocol/base_string_adapter.h"
+#include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
+
 {% for domain_name in domain.dependencies %}
 #include "headless/public/devtools/internal/types_forward_declarations_{{domain_name | camelcase_to_hacker_style}}.h"
 {% endfor %}
 #include "headless/public/headless_export.h"
 
 namespace headless {
+namespace protocol {
+using Binary = crdtp::Binary;
+}
 
 class ErrorReporter;
 

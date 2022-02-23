@@ -15,7 +15,7 @@
 
   #feedback-footer {
     border: none;
-    border-top: 1px solid var(--google-grey-refresh-500);
+    border-top: 1px solid var(--google-grey-500);
     height: 40px;
     width: 100%;
   }
@@ -26,14 +26,14 @@
   }
 
   #feedback-icon {
-    --iron-icon-fill-color: var(--google-grey-refresh-700);
+    --iron-icon-fill-color: var(--google-grey-700);
     height: var(--mwb-icon-size);
     width: var(--mwb-icon-size);
   }
 
   @media (prefers-color-scheme: dark) {
     #feedback-icon {
-      --iron-icon-fill-color: var(--google-blue-refresh-300);
+      --iron-icon-fill-color: var(--google-blue-300);
     }
   }
 
@@ -58,12 +58,13 @@
     --cr-expand-button-size: 24px;
     --cr-expand-button-icon-size: 16px;
     --cr-section-vertical-padding: 0;
+    -webkit-tap-highlight-color: transparent;
     flex-grow: 1;
   }
 </style>
 <tab-search-search-field id="searchField" autofocus
     clear-label="$i18n{clearSearch}" label="$i18n{searchTabs}"
-    on-focus="onSearchFocus_" on-keydown="onSearchKeyDown_"
+    on-keydown="onSearchKeyDown_"
     on-search-changed="onSearchChanged_"
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>

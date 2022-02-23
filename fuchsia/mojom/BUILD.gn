@@ -43,6 +43,7 @@ source_set("traits") {
 
   visibility = [
     ":*",
+    "//fuchsia/engine/mojom:*",
     "//media/fuchsia/mojom:*",
   ]
 }

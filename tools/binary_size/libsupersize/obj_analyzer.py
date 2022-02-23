@@ -70,15 +70,6 @@ def _DecodePosition(x):
   return (int(x[:sep_idx]), int(x[sep_idx + 1:]))
 
 
-def _MakeToolPrefixAbsolute(tool_prefix):
-  # Ensure tool_prefix is absolute so that CWD does not affect it
-  if os.path.sep in tool_prefix:
-    # Use abspath() on the dirname to avoid it stripping a trailing /.
-    dirname = os.path.dirname(tool_prefix)
-    tool_prefix = os.path.abspath(dirname) + tool_prefix[len(dirname):]
-  return tool_prefix
-
-
 class _PathsByType:
   def __init__(self, arch, obj, bc):
     self.arch = arch
@@ -87,8 +78,7 @@ class _PathsByType:
 
 
 class _BulkObjectFileAnalyzerWorker:
-  def __init__(self, tool_prefix, output_directory, track_string_literals=True):
-    self._tool_prefix = _MakeToolPrefixAbsolute(tool_prefix)
+  def __init__(self, output_directory, track_string_literals=True):
     self._output_directory = output_directory
     self._track_string_literals = track_string_literals
     self._list_of_encoded_elf_string_ranges_by_path = None
@@ -131,7 +121,6 @@ class _BulkObjectFileAnalyzerWorker:
     return parallel.BulkForkAndCall(
         runner,
         batches,
-        tool_prefix=self._tool_prefix,
         output_directory=self._output_directory)
 
   def _RunNm(self, paths_by_type):
@@ -183,15 +172,14 @@ class _BulkObjectFileAnalyzerWorker:
   def SortPaths(self):
     # Demangle all names, which can result in some merging of lists.
     self._paths_by_name = demangle.DemangleKeysAndMergeLists(
-        self._paths_by_name, self._tool_prefix)
+        self._paths_by_name)
     # Sort and uniquefy.
     for key in self._paths_by_name.keys():
       self._paths_by_name[key] = sorted(set(self._paths_by_name[key]))
 
   def _ReadElfStringData(self, elf_path, elf_string_ranges):
     # Read string_data from elf_path, to be shared with forked processes.
-    address, offset, _ = string_extract.LookupElfRodataInfo(
-        elf_path, self._tool_prefix)
+    address, offset, _ = string_extract.LookupElfRodataInfo(elf_path)
     adjust = address - offset
     abs_elf_string_ranges = (
         (addr - adjust, s) for addr, s in elf_string_ranges)
@@ -206,7 +194,6 @@ class _BulkObjectFileAnalyzerWorker:
         string_extract.ResolveStringPiecesIndirect,
         params,
         string_data=string_data,
-        tool_prefix=self._tool_prefix,
         output_directory=self._output_directory)
     return list(results)
 
@@ -264,8 +251,8 @@ def _TerminateSubprocesses():
 
 class _BulkObjectFileAnalyzerHost:
   """Runs BulkObjectFileAnalyzer in a subprocess."""
-  def __init__(self, tool_prefix, output_directory, track_string_literals=True):
-    self._tool_prefix = tool_prefix
+
+  def __init__(self, output_directory, track_string_literals=True):
     self._output_directory = output_directory
     self._track_string_literals = track_string_literals
     self._child_pid = None
@@ -287,7 +274,7 @@ class _BulkObjectFileAnalyzerHost:
       logging.root.handlers[0].setFormatter(logging.Formatter(
           'obj_analyzer: %(levelname).1s %(relativeCreated)6d %(message)s'))
       worker_analyzer = _BulkObjectFileAnalyzerWorker(
-          self._tool_prefix, self._output_directory,
+          self._output_directory,
           track_string_literals=self._track_string_literals)
       delegate = _BulkObjectFileAnalyzerDelegate(worker_analyzer, child_conn)
       delegate.Run()
@@ -412,7 +399,6 @@ if parallel.DISABLE_ASYNC:
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--multiprocess', action='store_true')
-  parser.add_argument('--tool-prefix', required=True)
   parser.add_argument('--output-directory', required=True)
   parser.add_argument('--elf-file', type=os.path.realpath)
   parser.add_argument('--show-names', action='store_true')
@@ -424,12 +410,10 @@ def main():
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
   if args.multiprocess:
-    bulk_analyzer = _BulkObjectFileAnalyzerHost(args.tool_prefix,
-                                                args.output_directory)
+    bulk_analyzer = _BulkObjectFileAnalyzerHost(args.output_directory)
   else:
     parallel.DISABLE_ASYNC = True
-    bulk_analyzer = _BulkObjectFileAnalyzerWorker(
-        args.tool_prefix, args.output_directory)
+    bulk_analyzer = _BulkObjectFileAnalyzerWorker(args.output_directory)
 
   # Pass individually to test multiple calls.
   for path in args.objects:
@@ -443,8 +427,7 @@ def main():
       print('{}: {!r}'.format(name, paths))
 
   if args.elf_file:
-    address, offset, size = string_extract.LookupElfRodataInfo(
-        args.elf_file, args.tool_prefix)
+    address, offset, size = string_extract.LookupElfRodataInfo(args.elf_file)
     bulk_analyzer.AnalyzeStringLiterals(args.elf_file, ((address, size),))
 
     positions_by_path = bulk_analyzer.GetStringPositions()[0]

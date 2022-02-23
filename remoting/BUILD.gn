@@ -45,16 +45,16 @@ group("remoting_all") {
       deps += [
         "//remoting/host:remoting_native_messaging_manifests",
         "//remoting/host:remoting_start_host",
-        "//remoting/host/it2me:remote_assistance_host",
       ]
+      if (!is_ios) {
+        deps += [ "//remoting/host:remoting_native_messaging_host" ]
+      }
 
+      # it2me.
+      deps += [ "//remoting/host/it2me:remote_assistance_host" ]
       if (is_win) {
         deps += [ "//remoting/host/it2me:remote_assistance_host_uiaccess" ]
       }
-    }
-
-    if (is_win || (!is_chromeos_ash && !is_android && !is_ios)) {
-      deps += [ "//remoting/host:remoting_native_messaging_host" ]
     }
 
     if (is_linux && !is_chromeos_lacros) {
@@ -172,7 +172,7 @@ if (enable_remoting_host) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
-      "//jingle:webrtc_glue",
+      "//components/webrtc:thread_wrapper",
       "//net:test_support",
       "//remoting/base",
       "//remoting/client:client",

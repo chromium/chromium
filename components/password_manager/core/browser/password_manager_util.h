@@ -29,6 +29,10 @@ class PasswordManagerDriver;
 class PasswordManagerClient;
 }  // namespace password_manager
 
+namespace autofill {
+class AutofillClient;
+}  // namespace autofill
+
 namespace syncer {
 class SyncService;
 }
@@ -83,7 +87,8 @@ bool ShowAllSavedPasswordsContextMenuEnabled(
 // be asked to opt in to account storage, will trigger a reauth flow first and
 // generation will only happen on success.
 void UserTriggeredManualGenerationFromContextMenu(
-    password_manager::PasswordManagerClient* password_manager_client);
+    password_manager::PasswordManagerClient* password_manager_client,
+    autofill::AutofillClient* autofill_client);
 
 // This function handles the following clean-ups of credentials:
 // (1) Removing blocklisted duplicates: if two blocklisted credentials have the

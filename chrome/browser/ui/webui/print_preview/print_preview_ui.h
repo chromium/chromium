@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -157,7 +158,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Allows tests to wait until the print preview dialog is loaded.
   class TestDelegate {
    public:
+    // Provides the total number of pages requested for the preview.
     virtual void DidGetPreviewPageCount(uint32_t page_count) = 0;
+
+    // Notifies that a page was rendered for the preview.  This occurs after
+    // any possible N-up processing, so each rendered page could represent
+    // multiple pages that were counted in `DidGetPreviewPageCount()`.
     virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) = 0;
 
    protected:
@@ -253,7 +259,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 #endif
 
   // Weak pointer to the WebUI handler.
-  PrintPreviewHandler* const handler_;
+  const raw_ptr<PrintPreviewHandler> handler_;
 
   // Indicates whether the source document is from ARC.
   bool source_is_arc_ = false;

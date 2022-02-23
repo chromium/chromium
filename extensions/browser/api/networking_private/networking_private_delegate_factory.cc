@@ -12,9 +12,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/networking_private/networking_private_chromeos.h"
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "extensions/browser/api/networking_private/networking_private_linux.h"
-#elif defined(OS_WIN) || defined(OS_MAC)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "components/wifi/wifi_service.h"
 #include "extensions/browser/api/networking_private/networking_private_service_client.h"
 #endif
@@ -62,9 +62,9 @@ KeyedService* NetworkingPrivateDelegateFactory::BuildServiceInstanceFor(
   NetworkingPrivateDelegate* delegate;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate = new NetworkingPrivateChromeOS(browser_context);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   delegate = new NetworkingPrivateLinux();
-#elif defined(OS_WIN) || defined(OS_MAC)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<wifi::WiFiService> wifi_service(wifi::WiFiService::Create());
   delegate = new NetworkingPrivateServiceClient(std::move(wifi_service));
 #else

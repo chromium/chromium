@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"

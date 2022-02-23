@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/strings/string_piece.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
 
@@ -41,6 +42,17 @@ ASH_EXPORT gfx::ShadowValues GetTextShadowValues(
     const ui::ColorProvider* color_provider);
 
 ASH_EXPORT bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic);
+
+// A "dynamic" asset is a spot in an ambient Lottie animation where a photo of
+// interest goes (ex: from a user’s google photos album) and is changed each
+// time a new animation cycle starts. This contrasts with a "static" asset,
+// which is a fixed image in the animation that does not change between
+// animation cycles.
+//
+// Note this function is specific to ash/ambient mode animations and not a
+// generic Lottie file standard; i.e. do not use this function for
+// non-ash/ambient Lottie files.
+ASH_EXPORT bool IsDynamicLottieAsset(base::StringPiece asset_id);
 
 }  // namespace util
 }  // namespace ambient

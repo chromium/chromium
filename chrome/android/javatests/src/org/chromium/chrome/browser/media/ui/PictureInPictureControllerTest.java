@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -43,7 +43,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";

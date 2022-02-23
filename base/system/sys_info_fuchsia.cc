@@ -7,12 +7,16 @@
 #include <sys/statvfs.h>
 #include <zircon/syscalls.h>
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/build_info.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -55,10 +59,13 @@ TotalDiskSpace& GetTotalDiskSpace() {
 
 // Returns the total-disk-space set for the volume containing |path|. If
 // |volume_path| is non-null then it receives the path to the relevant volume.
-// Returns -1, and does not modify |volume_path|, if no match is found.
+// Returns -1, and does not modify |volume_path|, if no match is found. Also
+// returns -1 if |path| is not absolute.
 int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
                                                FilePath* volume_path) {
-  CHECK(path.IsAbsolute());
+  if (!path.IsAbsolute()) {
+    return -1;
+  }
   TotalDiskSpace& total_disk_space = GetTotalDiskSpace();
 
   AutoLock l(total_disk_space.lock);
@@ -162,7 +169,7 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
 
 // static
 std::string SysInfo::OperatingSystemVersion() {
-  return zx_system_get_version_string();
+  return std::string(GetBuildInfoVersion());
 }
 
 // static

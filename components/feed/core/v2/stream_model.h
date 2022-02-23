@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/stream_model/ephemeral_change.h"
 #include "components/feed/core/v2/stream_model/feature_tree.h"
@@ -89,7 +91,7 @@ class StreamModel {
     virtual void OnStoreChange(StoreUpdate update) = 0;
   };
 
-  explicit StreamModel(Context* context);
+  StreamModel(Context* context, const LoggingParameters& logging_parameters);
   ~StreamModel();
 
   StreamModel(const StreamModel& src) = delete;
@@ -101,6 +103,10 @@ class StreamModel {
   void SetStoreObserver(StoreObserver* store_observer);
 
   // Data access.
+
+  const LoggingParameters& GetLoggingParameters() const {
+    return logging_parameters_;
+  }
 
   // Was this feed signed in.
   bool signed_in() const { return stream_data_.signed_in(); }
@@ -159,6 +165,8 @@ class StreamModel {
 
   ContentStats GetContentStats() const;
 
+  const std::string& GetRootEventId() const;
+
  private:
   struct SharedState {
     // Whether the data has been changed since the last call to |OnUiUpdate()|.
@@ -172,12 +180,13 @@ class StreamModel {
 
   void UpdateFlattenedTree();
 
+  const LoggingParameters logging_parameters_;
   // The stream type for which this model is used. Used only for forwarding to
   // observers.
   StreamType stream_type_;
 
   base::ObserverList<Observer> observers_;
-  StoreObserver* store_observer_ = nullptr;  // Unowned.
+  raw_ptr<StoreObserver> store_observer_ = nullptr;  // Unowned.
   stream_model::ContentMap content_map_;
   stream_model::FeatureTree base_feature_tree_{&content_map_};
   // |base_feature_tree_| with |ephemeral_changes_| applied.

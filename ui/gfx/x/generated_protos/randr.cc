@@ -40,6 +40,7 @@
 
 #include "randr.h"
 
+#include <unistd.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -2494,7 +2495,7 @@ Future<void> RandR::SetCrtcGamma(const RandR::SetCrtcGammaRequest& request) {
   buf.Write(&crtc);
 
   // size
-  size = red.size();
+  size = blue.size();
   buf.Write(&size);
 
   // pad0

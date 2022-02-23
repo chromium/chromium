@@ -7,16 +7,23 @@
 #include <cinttypes>
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/mime_util.h"
 #include "media/base/offloading_audio_encoder.h"
+#include "media/mojo/clients/mojo_audio_encoder.h"
+#include "media/mojo/mojom/audio_encoder.mojom-blink.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
@@ -45,10 +52,10 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
   }
   auto* result = MakeGarbageCollected<AudioEncoderTraits::ParsedConfig>();
 
-  result->codec = media::AudioCodec::kUnknown;
+  result->options.codec = media::AudioCodec::kUnknown;
   bool is_codec_ambiguous = true;
   bool parse_succeeded = ParseAudioCodecString(
-      "", config->codec().Utf8(), &is_codec_ambiguous, &result->codec);
+      "", config->codec().Utf8(), &is_codec_ambiguous, &result->options.codec);
 
   if (!parse_succeeded || is_codec_ambiguous) {
     exception_state.ThrowTypeError("Unknown codec.");
@@ -90,7 +97,7 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
 
 bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
-  switch (config->codec) {
+  switch (config->options.codec) {
     case media::AudioCodec::kOpus: {
       if (config->options.channels > 2) {
         // Our Opus implementation only supports up to 2 channels
@@ -137,12 +144,35 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
   return result;
 }
 
-}  // namespace
-
-// static
-const char* AudioEncoderTraits::GetNameForDevTools() {
-  return "AudioEncoder(WebCodecs)";
+std::unique_ptr<media::AudioEncoder> CreateSoftwareAudioEncoder(
+    media::AudioCodec codec) {
+  if (codec != media::AudioCodec::kOpus)
+    return nullptr;
+  auto software_encoder = std::make_unique<media::AudioOpusEncoder>();
+  return std::make_unique<media::OffloadingAudioEncoder>(
+      std::move(software_encoder));
 }
+
+std::unique_ptr<media::AudioEncoder> CreatePlatformAudioEncoder(
+    media::AudioCodec codec) {
+  if (!base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
+    return nullptr;
+  if (codec != media::AudioCodec::kOpus)
+    return nullptr;
+
+  mojo::PendingRemote<media::mojom::InterfaceFactory> pending_interface_factory;
+  mojo::Remote<media::mojom::InterfaceFactory> interface_factory;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      pending_interface_factory.InitWithNewPipeAndPassReceiver());
+  interface_factory.Bind(std::move(pending_interface_factory));
+
+  mojo::PendingRemote<media::mojom::AudioEncoder> encoder_remote;
+  interface_factory->CreateAudioEncoder(
+      encoder_remote.InitWithNewPipeAndPassReceiver());
+  return std::make_unique<media::MojoAudioEncoder>(std::move(encoder_remote));
+}
+
+}  // namespace
 
 // static
 const char* AudioEncoderTraits::GetName() {
@@ -167,18 +197,33 @@ AudioEncoder::AudioEncoder(ScriptState* script_state,
 
 AudioEncoder::~AudioEncoder() = default;
 
+std::unique_ptr<media::AudioEncoder> AudioEncoder::CreateMediaAudioEncoder(
+    const ParsedConfig& config) {
+  if (auto result = CreatePlatformAudioEncoder(config.options.codec))
+    return result;
+  return CreateSoftwareAudioEncoder(config.options.codec);
+}
+
 void AudioEncoder::ProcessConfigure(Request* request) {
   DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(active_config_);
-  DCHECK_EQ(active_config_->codec, media::AudioCodec::kOpus);
+  DCHECK_EQ(active_config_->options.codec, media::AudioCodec::kOpus);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   request->StartTracing();
 
-  auto software_encoder = std::make_unique<media::AudioOpusEncoder>();
-  media_encoder_ = std::make_unique<media::OffloadingAudioEncoder>(
-      std::move(software_encoder));
+  media_encoder_ = CreateMediaAudioEncoder(*active_config_);
+  if (!media_encoder_) {
+    HandleError(logger_->MakeException(
+        "Encoder creation error.",
+        media::EncoderStatus(
+            media::EncoderStatus::Codes::kEncoderInitializationError,
+            "Unable to create encoder (most likely unsupported "
+            "codec/acceleration requirement combination)")));
+    request->EndTracing();
+    return;
+  }
 
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
       &AudioEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
@@ -187,7 +232,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
   auto done_callback = [](AudioEncoder* self, media::AudioCodec codec,
-                          Request* req, media::Status status) {
+                          Request* req, media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -195,7 +240,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
-          self->logger_->MakeException("Encoding error.", status));
+          self->logger_->MakeException("Encoding error.", std::move(status)));
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.AudioEncoder.Codec",
                                     codec);
@@ -212,7 +257,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, WrapCrossThreadWeakPersistent(this),
-          active_config_->codec, WrapCrossThreadPersistent(request))));
+          active_config_->options.codec, WrapCrossThreadPersistent(request))));
 }
 
 void AudioEncoder::ProcessEncode(Request* request) {
@@ -220,7 +265,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kEncode);
-  DCHECK_GT(requested_encodes_, 0);
+  DCHECK_GT(requested_encodes_, 0u);
 
   request->StartTracing();
 
@@ -232,7 +277,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK(data);
 
   auto done_callback = [](AudioEncoder* self, Request* req,
-                          media::Status status) {
+                          media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -240,7 +285,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
-          self->logger_->MakeException("Encoding error.", status));
+          self->logger_->MakeException("Encoding error.", std::move(status)));
     }
 
     req->EndTracing();
@@ -249,12 +294,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   if (data->channel_count() != active_config_->options.channels ||
       data->sample_rate() != active_config_->options.sample_rate) {
-    media::Status error(media::StatusCode::kEncoderFailedEncode);
-    error.WithData("channels", data->channel_count());
-    error.WithData("sampleRate", data->sample_rate());
-
     HandleError(logger_->MakeException(
-        "Input audio buffer is incompatible with codec parameters", error));
+        "Input audio buffer is incompatible with codec parameters",
+        media::EncoderStatus(media::EncoderStatus::Codes::kEncoderFailedEncode)
+            .WithData("channels", data->channel_count())
+            .WithData("sampleRate", data->sample_rate())));
 
     request->EndTracing();
 
@@ -289,7 +333,7 @@ AudioEncoder::ParsedConfig* AudioEncoder::ParseConfig(
 
 bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
                                   ParsedConfig& new_config) {
-  return original_config.codec == new_config.codec &&
+  return original_config.options.codec == new_config.options.codec &&
          original_config.options.channels == new_config.options.channels &&
          original_config.options.bitrate == new_config.options.bitrate &&
          original_config.options.sample_rate == new_config.options.sample_rate;

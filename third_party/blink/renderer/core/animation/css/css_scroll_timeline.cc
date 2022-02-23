@@ -102,15 +102,15 @@ ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
 
   switch (value_id) {
     case CSSValueID::kInline:
-      return ScrollTimeline::Inline;
+      return ScrollTimeline::kInline;
     case CSSValueID::kHorizontal:
-      return ScrollTimeline::Horizontal;
+      return ScrollTimeline::kHorizontal;
     case CSSValueID::kVertical:
-      return ScrollTimeline::Vertical;
+      return ScrollTimeline::kVertical;
     case CSSValueID::kAuto:
     case CSSValueID::kBlock:
     default:
-      return ScrollTimeline::Block;
+      return ScrollTimeline::kBlock;
   }
 }
 

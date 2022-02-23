@@ -12,16 +12,21 @@ namespace installer {
 InstallServiceWorkItem::InstallServiceWorkItem(
     const std::wstring& service_name,
     const std::wstring& display_name,
+    uint32_t start_type,
     const base::CommandLine& service_cmd_line,
+    const base::CommandLine& com_service_cmd_line_args,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
     const std::vector<GUID>& iids)
-    : impl_(std::make_unique<InstallServiceWorkItemImpl>(service_name,
-                                                         display_name,
-                                                         service_cmd_line,
-                                                         registry_path,
-                                                         clsids,
-                                                         iids)) {}
+    : impl_(std::make_unique<InstallServiceWorkItemImpl>(
+          service_name,
+          display_name,
+          start_type,
+          service_cmd_line,
+          com_service_cmd_line_args,
+          registry_path,
+          clsids,
+          iids)) {}
 
 InstallServiceWorkItem::~InstallServiceWorkItem() = default;
 
@@ -38,8 +43,12 @@ bool InstallServiceWorkItem::DeleteService(const std::wstring& service_name,
                                            const std::wstring& registry_path,
                                            const std::vector<GUID>& clsids,
                                            const std::vector<GUID>& iids) {
+  // The `display_name`, `start_type`, `service_cmd_line`, and
+  // `com_service_cmd_line_args` are ignored by `InstallServiceWorkItemImpl` for
+  // `DeleteServiceImpl`.
   return InstallServiceWorkItemImpl(
-             service_name, std::wstring(),
+             service_name, std::wstring(), SERVICE_DISABLED,
+             base::CommandLine(base::CommandLine::NO_PROGRAM),
              base::CommandLine(base::CommandLine::NO_PROGRAM), registry_path,
              clsids, iids)
       .DeleteServiceImpl();

@@ -50,6 +50,30 @@ js_library("inline_login_welcome_page_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
+js_library("inline_login_signin_blocked_by_policy_page_test") {
+  deps = [
+    ":inline_login_test_util",
+    "..:chai_assert",
+    "..:test_util",
+    "//chrome/browser/resources/inline_login:inline_login_app",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("arc_account_picker_page_test") {
+  deps = [
+    ":inline_login_test_util",
+    "..:chai_assert",
+    "..:test_util",
+    "//chrome/browser/resources/inline_login:inline_login_app",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
 js_library("inline_login_test_util") {
   deps = [
     "..:test_browser_proxy",

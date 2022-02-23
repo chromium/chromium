@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_param_traits.h"
 

@@ -7,12 +7,14 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -22,7 +24,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -34,7 +36,6 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -281,6 +282,10 @@ class RemoteAppsManagerBrowsertest
     EXPECT_FALSE(client->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
         ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/false);
+    }
     EXPECT_TRUE(client->GetAppListWindow());
   }
 
@@ -288,7 +293,7 @@ class RemoteAppsManagerBrowsertest
   RemoteAppsManager* manager_ = nullptr;
   MockImageDownloader* image_downloader_ = nullptr;
   Profile* profile_ = nullptr;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
@@ -457,6 +462,39 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
   EXPECT_EQ(std::string(), item1->folder_id());
   ash::AppListItem* item2 = GetAppListItem(kId3);
   EXPECT_EQ(std::string(), item2->folder_id());
+}
+
+// Verifies that folders are not removed after user moves all but single item
+// from them.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
+                       DontRemoveSingleItemFolders) {
+  // Folder has id kId1.
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
+
+  // App has id kId2.
+  AddAppAndWaitForIconChange(kId2, "name", kId1, GURL("icon_url"),
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
+  // App has id kId3.
+  AddAppAndWaitForIconChange(kId3, "name2", kId1, GURL("icon_url2"),
+                             CreateTestIcon(32, SK_ColorBLUE),
+                             /*add_to_front=*/false);
+
+  ash::AppListItem* folder_item = GetAppListItem(kId1);
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+  EXPECT_TRUE(folder_item->FindChildItem(kId2));
+  EXPECT_TRUE(folder_item->FindChildItem(kId3));
+
+  // Move kId2 item to root app list.
+  ash::AppListItem* item1 = GetAppListItem(kId2);
+  ASSERT_TRUE(item1);
+  ash::AppListModelProvider::Get()->model()->MoveItemToRootAt(
+      item1, folder_item->position().CreateBefore());
+
+  ASSERT_EQ(folder_item, GetAppListItem(kId1));
+  EXPECT_EQ(1u, folder_item->ChildItemCount());
+  EXPECT_FALSE(folder_item->FindChildItem(kId2));
+  EXPECT_TRUE(folder_item->FindChildItem(kId3));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {

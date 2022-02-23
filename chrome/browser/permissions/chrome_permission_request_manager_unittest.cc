@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -106,7 +107,7 @@ class ChromePermissionRequestManagerTest
   }
 
   void WaitForBubbleToBeShown() {
-    manager_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+    manager_->DocumentOnLoadCompletedInPrimaryMainFrame();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -147,7 +148,7 @@ class ChromePermissionRequestManagerTest
   permissions::MockPermissionRequest request2_;
   permissions::MockPermissionRequest request_mic_;
   permissions::MockPermissionRequest request_camera_;
-  permissions::PermissionRequestManager* manager_;
+  raw_ptr<permissions::PermissionRequestManager> manager_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
@@ -593,7 +594,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               permissions::prefs::kPermissionActions);
   const auto permissions_actions =
-      update->FindListPath("notifications")->GetList();
+      update->FindListPath("notifications")->GetListDeprecated();
   PermissionActionsHistoryFactory::GetForProfile(profile())->ClearHistory(
       from_time, to_time);
 

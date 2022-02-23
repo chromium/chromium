@@ -51,7 +51,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
@@ -59,7 +60,6 @@ namespace blink {
 enum ResizerHitTestType { kResizerForPointer, kResizerForTouch };
 
 class ComputedStyle;
-class GraphicsLayer;
 class HitTestResult;
 class LayoutBox;
 class LayoutCustomScrollbarPart;
@@ -83,7 +83,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
-  Vector<IntRect> tickmarks_override_;
+  Vector<gfx::Rect> tickmarks_override_;
 };
 
 // PaintLayerScrollableArea represents the scrollable area of a LayoutBox.
@@ -94,33 +94,28 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 // scrollLeft).
 //
 // The size and scroll origin of the scrollable area are based on layout
-// dimensions. They are recomputed after layout in updateScrollDimensions.
+// dimensions. They are recomputed after layout in |UpdateScrollDimensions|.
 //
-// updateScrollDimensions also determines if scrollbars need to be allocated,
+// |UpdateScrollDimensions| also determines if scrollbars need to be allocated,
 // destroyed or updated as a result of layout. This is based on the value of the
 // 'overflow' property. Having non-overlay scrollbars automatically allocates a
-// scrollcorner (m_scrollCorner), which is used to style the intersection of the
-// two scrollbars.
+// scrollcorner (|scroll_corner_|), which is used to style the intersection of
+// the two scrollbars.
 //
 // Note that scrollbars are placed based on the LayoutBox's computed
 // 'direction'. See https://webkit.org/b/54623 for some context.
 //
-// The ‘resize' property allocates a resizer (m_resizer), which is overlaid on
-// top of the scroll corner. It is used to resize an element using the mouse.
-//
-// The scrollbars and scroll corner can also be hardware accelerated
-// and thus get their own GraphicsLayer (see the layerFor* functions).
-// This only happens if the associated PaintLayer is itself composited.
-//
+// The ‘resize' property allocates a resizer (|resizer_|), which is overlaid on
+// top of the scroll corner. It is used to resize an element using the mouse. A
+// resizer can exist when there are no scrollbars.
 //
 // ***** OVERLAY OVERFLOW CONTROLS *****
-// Overlay overflow controls are painted on top of the box's content. As such
-// they don't use any space in the box. Software overlay overflow controls are
-// painted by PaintLayerPainter::PaintOverlayOverflowControlsForFragments after
-// all content as part of a separate tree traversal. The reason for this 2nd
-// traversal is that they need to be painted on top of everything. Hardware
-// accelerated overlay overflow controls are painted into their associated
-// GraphicsLayers by CompositedLayerMapping::PaintScrollableArea.
+// Overlay overflow controls are painted on top of the box's content, including
+// overlay scrollbars and resizers (regardless of whether the scrollbars are
+// overlaid). As such, they don't use any space in the box. Overlay overflow
+// controls are painted by
+// |PaintLayerPainter::PaintOverlayOverflowControlsForFragments| after all
+// scrolling contents.
 class CORE_EXPORT PaintLayerScrollableArea final
     : public GarbageCollected<PaintLayerScrollableArea>,
       public ScrollableArea {
@@ -295,35 +290,16 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   SmoothScrollSequencer* GetSmoothScrollSequencer() const override;
 
-  // For composited scrolling, we allocate an extra GraphicsLayer to hold
-  // onto the scrolling content. The layer can be shifted on the GPU and
-  // composited at little cost.
-  // Note that this is done in CompositedLayerMapping, this function being
-  // only a helper.
-  cc::Layer* LayerForScrolling() const override;
-
-  void DidCompositorScroll(const FloatPoint&) override;
-
-  // GraphicsLayers for the scrolling components.
-  // Any function can return nullptr if they are not accelerated.
-  GraphicsLayer* GraphicsLayerForScrolling() const;
-  GraphicsLayer* GraphicsLayerForHorizontalScrollbar() const;
-  GraphicsLayer* GraphicsLayerForVerticalScrollbar() const;
-  GraphicsLayer* GraphicsLayerForScrollCorner() const;
-
-  cc::Layer* LayerForHorizontalScrollbar() const override;
-  cc::Layer* LayerForVerticalScrollbar() const override;
-  cc::Layer* LayerForScrollCorner() const override;
+  void DidCompositorScroll(const gfx::PointF&) override;
 
   bool ShouldScrollOnMainThread() const override;
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;
-  IntRect ScrollCornerRect() const override;
-  void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation) override;
+  gfx::Rect ScrollCornerRect() const override;
   void SetScrollCornerNeedsPaintInvalidation() override;
-  IntRect ConvertFromScrollbarToContainingEmbeddedContentView(
+  gfx::Rect ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
-      const IntRect&) const override;
+      const gfx::Rect&) const override;
   gfx::Point ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
       const gfx::Point&) const override;
@@ -334,32 +310,30 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ConvertFromRootFrameToVisualViewport(
       const gfx::Point&) const override;
   int ScrollSize(ScrollbarOrientation) const override;
-  FloatPoint ScrollPosition() const override {
-    return FloatPoint(ScrollOrigin()) + GetScrollOffset();
-  }
-  FloatPoint ScrollOffsetToPosition(const ScrollOffset& offset) const override {
-    return FloatPoint(ScrollOrigin()) + offset;
+  gfx::PointF ScrollOffsetToPosition(
+      const ScrollOffset& offset) const override {
+    return gfx::PointF(ScrollOrigin()) + offset;
   }
   ScrollOffset ScrollPositionToOffset(
-      const FloatPoint& position) const override {
-    return position - ScrollOrigin();
+      const gfx::PointF& position) const override {
+    return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
   }
-  IntSize ScrollOffsetInt() const override;
+  gfx::Vector2d ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
   // Commits a final scroll offset for the frame, if it might have changed.
   // If it did change, enqueues a scroll event.
   void EnqueueScrollEventIfNeeded();
-  IntSize MinimumScrollOffsetInt() const override;
-  IntSize MaximumScrollOffsetInt() const override;
-  IntRect VisibleContentRect(
+  gfx::Vector2d MinimumScrollOffsetInt() const override;
+  gfx::Vector2d MaximumScrollOffsetInt() const override;
+  gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   PhysicalRect VisibleScrollSnapportRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
-  IntSize ContentsSize() const override;
+  gfx::Size ContentsSize() const override;
 
   // Similar to |ContentsSize| but snapped considering |paint_offset| which can
   // have subpixel accumulation.
-  IntSize PixelSnappedContentsSize(const PhysicalOffset& paint_offset) const;
+  gfx::Size PixelSnappedContentsSize(const PhysicalOffset& paint_offset) const;
 
   void ContentsResized() override;
   gfx::Point LastKnownMousePosition() const override;
@@ -378,7 +352,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   cc::AnimationHost* GetCompositorAnimationHost() const override;
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() const override;
   bool HasTickmarks() const override;
-  Vector<IntRect> GetTickmarks() const override;
+  Vector<gfx::Rect> GetTickmarks() const override;
 
   void VisibleSizeChanged();
 
@@ -386,12 +360,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
-  void ScrollToAbsolutePosition(const FloatPoint& position,
+  void ScrollToAbsolutePosition(const gfx::PointF& position,
                                 mojom::blink::ScrollBehavior scroll_behavior =
                                     mojom::blink::ScrollBehavior::kInstant,
                                 mojom::blink::ScrollType scroll_type =
                                     mojom::blink::ScrollType::kProgrammatic) {
-    SetScrollOffset(position - ScrollOrigin(), scroll_type, scroll_behavior);
+    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
+                    scroll_type, scroll_behavior);
   }
 
   // This will set the scroll position without clamping, and it will do all
@@ -432,7 +407,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
 
   void Resize(const gfx::Point& pos, const LayoutSize& old_offset);
-  IntSize OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
+  gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
 
   bool InResizeMode() const { return in_resize_mode_; }
   void SetInResizeMode(bool in_resize_mode) {
@@ -449,10 +424,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void PositionOverflowControls();
 
-  // isPointInResizeControl() is used for testing if a pointer/touch position is
-  // in the resize control area.
-  bool IsPointInResizeControl(const gfx::Point& absolute_point,
-                              ResizerHitTestType) const;
+  // Test if a pointer/touch position is in the resize control area.
+  bool IsAbsolutePointInResizeControl(const gfx::Point& absolute_point,
+                                      ResizerHitTestType) const;
+  bool IsLocalPointInResizeControl(const gfx::Point& local_point,
+                                   ResizerHitTestType) const;
+
   bool HitTestOverflowControls(HitTestResult&, const gfx::Point& local_point);
 
   bool HitTestResizerInFragments(const PaintLayerFragments&,
@@ -464,15 +441,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const PhysicalRect&,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
 
-  // Returns true if scrollable area is in the FrameView's collection of
-  // scrollable areas. This can only happen if we're scrollable, visible to hit
-  // test, and do in fact overflow. This means that 'overflow: hidden' or
-  // 'pointer-events: none' layers never get added to the FrameView's
-  // collection.
+  // Returns true if the scrollable area is user-scrollable, visible to hit
+  // testing, and it does in fact overflow. This means this method will return
+  // false for 'overflow: hidden' and 'pointer-events: none'.
   bool ScrollsOverflow() const { return scrolls_overflow_; }
 
   // Rectangle encompassing the scroll corner and resizer rect.
-  IntRect ScrollCornerAndResizerRect() const;
+  gfx::Rect ScrollCornerAndResizerRect() const;
 
   // The difference between this function and NeedsCompositedScrolling() is
   // that this function returns the composited scrolling status based on paint
@@ -491,14 +466,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 #endif
 
-  IntRect ResizerCornerRect(ResizerHitTestType) const;
+  gfx::Rect ResizerCornerRect(ResizerHitTestType) const;
 
   PaintLayer* Layer() const override;
 
   LayoutCustomScrollbarPart* Resizer() const { return resizer_; }
 
-  IntRect RectForHorizontalScrollbar() const;
-  IntRect RectForVerticalScrollbar() const;
+  gfx::Rect RectForHorizontalScrollbar() const;
+  gfx::Rect RectForVerticalScrollbar() const;
 
   bool ScheduleAnimation() override;
   bool ShouldPerformScrollAnchoring() const override;
@@ -509,19 +484,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   LayoutBox* GetLayoutBox() const override;
 
-  FloatQuad LocalToVisibleContentQuad(const FloatQuad&,
-                                      const LayoutObject*,
-                                      unsigned = 0) const final;
+  gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,
+                                       const LayoutObject*,
+                                       unsigned = 0) const final;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final;
-
-  bool ShouldRebuildHorizontalScrollbarLayer() const {
-    return rebuild_horizontal_scrollbar_layer_;
-  }
-  bool ShouldRebuildVerticalScrollbarLayer() const {
-    return rebuild_vertical_scrollbar_layer_;
-  }
-  void ResetRebuildScrollbarLayerFlags();
 
   // Did DelayScrollOffsetClampScope prevent us from running
   // clampScrollOffsetsAfterLayout() in updateAfterLayout()?
@@ -564,8 +531,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return non_composited_main_thread_scrolling_reasons_;
   }
 
-  uint64_t Id() const;
-
   ScrollbarTheme& GetPageScrollbarTheme() const override;
 
   // Return the thickness of the existing scrollbar; or, if there is no
@@ -593,7 +558,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void Trace(Visitor*) const override;
 
-  IntRect ScrollingBackgroundVisualRect(
+  gfx::Rect ScrollingBackgroundVisualRect(
       const PhysicalOffset& paint_offset) const;
   const DisplayItemClient& GetScrollingBackgroundDisplayItemClient() const {
     return *scrolling_background_display_item_client_;
@@ -610,7 +575,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool NeedsResnap() const override;
   void SetNeedsResnap(bool) override;
 
-  absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
+  absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
 
   void DisposeImpl() override;
@@ -629,9 +594,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return !!pending_view_state_;
   }
 
-  void SetTickmarksOverride(Vector<IntRect> tickmarks);
+  void SetTickmarksOverride(Vector<gfx::Rect> tickmarks);
 
-  // For CompositeAfterPaint.
   bool ShouldDirectlyCompositeScrollbar(const Scrollbar&) const;
 
   void EstablishScrollbarRoot(bool freeze_horizontal, bool freeze_vertical);
@@ -646,6 +610,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
       return is_vertical_scrollbar_frozen_;
     return FreezeScrollbarsScope::ScrollbarsAreFrozen();
   }
+
+  // Force scrollbars off for reconstruction.
+  void RemoveScrollbarsForReconstruction();
 
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
@@ -669,7 +636,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   int VerticalScrollbarStart() const;
   int HorizontalScrollbarStart() const;
-  IntSize ScrollbarOffset(const Scrollbar&) const;
+  gfx::Vector2d ScrollbarOffset(const Scrollbar&) const;
 
   // If OverflowIndependent is specified, will only change current scrollbar
   // existence if the new style doesn't depend on overflow which requires
@@ -697,9 +664,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool SetHasHorizontalScrollbar(bool has_scrollbar);
   bool SetHasVerticalScrollbar(bool has_scrollbar);
 
-  // Force scrollbars off for reconstruction.
-  void RemoveScrollbarsForReconstruction();
-
   void UpdateScrollCornerStyle();
   LayoutSize MinimumSizeForResizing(float zoom_factor);
   PhysicalRect LayoutContentRect(IncludeScrollbarsInRect) const;
@@ -707,8 +671,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void UpdateResizerStyle(const ComputedStyle* old_style);
 
   void UpdateScrollableAreaSet();
-
-  void UpdateCompositingLayersAfterScroll();
 
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
@@ -723,11 +685,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return *rare_data_;
   }
 
-  IntRect CornerRect() const;
+  gfx::Rect CornerRect() const;
 
   void ScrollControlWasSetNeedsPaintInvalidation() override;
 
-  IntSize PixelSnappedBorderBoxSize() const;
+  gfx::Size PixelSnappedBorderBoxSize() const;
 
   using BackgroundPaintLocation = uint8_t;
   bool ComputeNeedsCompositedScrollingInternal(
@@ -738,10 +700,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const PaintInvalidatorContext&,
       bool needs_paint_invalidation,
       Scrollbar* scrollbar,
-      GraphicsLayer* graphics_layer,
       bool& previously_was_overlay,
       bool& previously_was_directly_composited,
-      IntRect& visual_rect);
+      gfx::Rect& visual_rect);
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
@@ -762,13 +723,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // FIXME: once cc can handle composited scrolling with clip paths, we will
   // no longer need this bit.
   unsigned needs_composited_scrolling_ : 1;
-
-  // Set to indicate that a scrollbar layer, if present, needs to be rebuilt
-  // in the next compositing update because the underlying blink::Scrollbar
-  // instance has been reconstructed.
-  unsigned rebuild_horizontal_scrollbar_layer_ : 1;
-  unsigned rebuild_vertical_scrollbar_layer_ : 1;
-  unsigned previous_vertical_scrollbar_on_left_ : 1;
 
   unsigned needs_scroll_offset_clamp_ : 1;
   unsigned needs_relayout_ : 1;
@@ -828,9 +782,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool vertical_scrollbar_previously_was_overlay_ = false;
   bool horizontal_scrollbar_previously_was_directly_composited_ = false;
   bool vertical_scrollbar_previously_was_directly_composited_ = false;
-  IntRect horizontal_scrollbar_visual_rect_;
-  IntRect vertical_scrollbar_visual_rect_;
-  IntRect scroll_corner_and_resizer_visual_rect_;
+  gfx::Rect horizontal_scrollbar_visual_rect_;
+  gfx::Rect vertical_scrollbar_visual_rect_;
+  gfx::Rect scroll_corner_and_resizer_visual_rect_;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,

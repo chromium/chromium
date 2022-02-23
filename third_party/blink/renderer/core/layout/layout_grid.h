@@ -99,11 +99,13 @@ class LayoutGrid final : public LayoutBlock, public LayoutNGGridInterface {
 
   wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const final {
+    NOT_DESTROYED();
     return base::checked_cast<wtf_size_t>(grid_->AutoRepeatTracks(direction));
   }
 
   wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final {
+    NOT_DESTROYED();
     return base::checked_cast<wtf_size_t>(grid_->ExplicitGridStart(direction));
   }
 

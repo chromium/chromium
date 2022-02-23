@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -20,8 +21,8 @@
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
   const policy::PolicyMap& policies =
       g_browser_process->browser_policy_connector()
@@ -40,8 +41,8 @@ bool GetPolicyOrFeature(const char* policy_name, const base::Feature& feature) {
 bool IsAudioServiceSandboxEnabled() {
 // TODO(crbug.com/1052397): Remove !IS_CHROMEOS_LACROS once lacros starts being
 // built with OS_CHROMEOS instead of OS_LINUX.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   return GetPolicyOrFeature(policy::key::kAudioSandboxEnabled,
                             features::kAudioServiceSandbox);
 #else
@@ -49,7 +50,7 @@ bool IsAudioServiceSandboxEnabled() {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsAudioProcessHighPriorityEnabled() {
   return GetPolicyOrFeature(policy::key::kAudioProcessHighPriorityEnabled,
                             features::kAudioProcessHighPriorityWin);

@@ -120,6 +120,9 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // container.
   bool IsEventInTabSliderContainer(const gfx::Point& screen_point);
 
+  // Returns the maximum width of the cycle view.
+  int CalculateMaxWidth() const;
+
  private:
   friend class WindowCycleListTestApi;
 

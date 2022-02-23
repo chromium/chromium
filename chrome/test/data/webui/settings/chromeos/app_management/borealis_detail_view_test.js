@@ -17,7 +17,7 @@ suite('<app-management-borealis-detail-view>', function() {
   let borealisDetailView;
   let fakeHandler;
 
-  const kBorealisMainAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
+  const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
   function getPermissionBoolByType(permissionType) {
     return app_management.util.getPermissionValueBool(
@@ -50,7 +50,7 @@ suite('<app-management-borealis-detail-view>', function() {
       type: apps.mojom.AppType.kBorealis,
       permissions: permissions
     };
-    const mainApp = await fakeHandler.addApp(kBorealisMainAppId, mainOptions);
+    const mainApp = await fakeHandler.addApp(kBorealisClientAppId, mainOptions);
     app_management.AppManagementStore.getInstance().dispatch(
         app_management.actions.updateSelectedAppId(mainApp.id));
     borealisDetailView =
@@ -138,6 +138,6 @@ suite('<app-management-borealis-detail-view>', function() {
     await fakeHandler.flushPipesForTesting();
     assertEquals(
         settings.Router.getInstance().getQueryParameters().get('id'),
-        kBorealisMainAppId);
+        kBorealisClientAppId);
   });
 });

@@ -17,9 +17,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <dlfcn.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -36,13 +36,13 @@ class ScopedModuleHandle {
     Impl(const Impl&) = delete;
     Impl& operator=(const Impl&) = delete;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     using ModuleHandle = void*;
 
     static void* LookUpSymbol(ModuleHandle handle, const char* symbol_name) {
       return dlsym(handle, symbol_name);
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     using ModuleHandle = HMODULE;
 
     static void* LookUpSymbol(ModuleHandle handle, const char* symbol_name) {

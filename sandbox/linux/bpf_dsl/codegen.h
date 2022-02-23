@@ -12,7 +12,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 struct sock_filter;

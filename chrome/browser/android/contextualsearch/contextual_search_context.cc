@@ -59,6 +59,21 @@ void ContextualSearchContext::SetResolveProperties(
   previous_event_results_ = j_previous_event_results;
 }
 
+void ContextualSearchContext::SetSurroundingsAndSelection(
+    JNIEnv* env,
+    jobject obj,
+    const base::android::JavaParamRef<jstring>& j_surrounding_text,
+    jint j_selection_start,
+    jint j_selection_end) {
+  surrounding_text_ =
+      base::android::ConvertJavaStringToUTF16(env, j_surrounding_text);
+  DCHECK(j_selection_start >= 0);
+  DCHECK(j_selection_end <= (int)surrounding_text_.length());
+  DCHECK(j_selection_start <= j_selection_end);
+  start_offset_ = j_selection_start;
+  end_offset_ = j_selection_end;
+}
+
 void ContextualSearchContext::AdjustSelection(JNIEnv* env,
                                               jobject obj,
                                               jint j_start_adjust,

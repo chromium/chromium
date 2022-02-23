@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_ANDROID_MEDIA_PLAYER_RENDERER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -116,7 +117,7 @@ class CONTENT_EXPORT MediaPlayerRenderer
   int render_process_id_;
   int routing_id_;
 
-  media::RendererClient* renderer_client_;
+  raw_ptr<media::RendererClient> renderer_client_;
 
   std::unique_ptr<media::MediaPlayerBridge> media_player_;
 
@@ -133,7 +134,7 @@ class CONTENT_EXPORT MediaPlayerRenderer
   std::unique_ptr<media::MediaResourceGetter> media_resource_getter_;
 
   bool web_contents_muted_;
-  MediaPlayerRendererWebContentsObserver* web_contents_observer_;
+  raw_ptr<MediaPlayerRendererWebContentsObserver> web_contents_observer_;
   float volume_;
 
   mojo::Receiver<MediaPlayerRendererExtension> renderer_extension_receiver_;

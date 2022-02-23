@@ -68,7 +68,7 @@ class TestBiodObserver : public BiodClient::Observer {
   void BiodEnrollScanDoneReceived(biod::ScanResult scan_result,
                                   bool is_complete,
                                   int percent_complete) override;
-  void BiodAuthScanDoneReceived(biod::ScanResult scan_result,
+  void BiodAuthScanDoneReceived(const biod::FingerprintMessage& msg,
                                 const AuthScanMatches& matches) override;
   void BiodSessionFailedReceived() override;
 

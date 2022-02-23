@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -72,10 +73,10 @@ public class InCctTriggeringFromGsaTest {
                         .putExtra(Browser.EXTRA_APPLICATION_ID, IntentHandler.PACKAGE_GSA));
 
         // Enable MSBB.
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    AutofillAssistantUiController.getProfile(), true);
+                    Profile.getLastUsedRegularProfile(), true);
 
             // Force native to pick up the changes we made to Chrome preferences.
             AutofillAssistantTabHelper
@@ -135,7 +136,7 @@ public class InCctTriggeringFromGsaTest {
                 withText("TriggerScript"), isDisplayed(), 2 * DEFAULT_MAX_TIME_TO_POLL);
 
         // Disabling the proactive help setting should stop the trigger script.
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(false);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(false);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> AutofillAssistantTabHelper
@@ -149,7 +150,7 @@ public class InCctTriggeringFromGsaTest {
         // still on a supported URL.
         testServiceRequestSender.setNextResponse(
                 /* httpStatus = */ 200, createDefaultTriggerScriptResponse("TriggerScript"));
-        AutofillAssistantPreferencesUtil.setProactiveHelpSwitch(true);
+        AutofillAssistantPreferencesUtil.setProactiveHelpPreference(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> AutofillAssistantTabHelper

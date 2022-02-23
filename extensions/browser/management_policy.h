@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension.h"
 

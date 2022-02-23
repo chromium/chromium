@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -24,6 +25,7 @@ namespace media_router {
 
 class CastAppDiscoveryService;
 class CastMediaSinkService;
+class CastMediaSinkServiceImpl;
 class DialMediaSinkService;
 class DialMediaSinkServiceImpl;
 class MediaSinkServiceBase;
@@ -45,7 +47,6 @@ class DualMediaSinkService {
 
   // Returns the lazily-created leaky singleton instance.
   static DualMediaSinkService* GetInstance();
-  static void SetInstanceForTest(DualMediaSinkService* instance_for_test);
 
   DualMediaSinkService(const DualMediaSinkService&) = delete;
   DualMediaSinkService& operator=(const DualMediaSinkService&) = delete;
@@ -54,7 +55,9 @@ class DualMediaSinkService {
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
   // Used by CastMediaRouteProvider only.
-  MediaSinkServiceBase* GetCastMediaSinkServiceImpl();
+  MediaSinkServiceBase* GetCastMediaSinkServiceBase();
+
+  CastMediaSinkServiceImpl* GetCastMediaSinkServiceImpl();
 
   CastAppDiscoveryService* cast_app_discovery_service() {
     return cast_app_discovery_service_.get();
@@ -75,13 +78,17 @@ class DualMediaSinkService {
   // Marked virtual for testing.
   virtual void BindLogger(LoggerImpl* logger_impl);
 
+  virtual void RemoveLogger();
+
   virtual void OnUserGesture();
 
+#if BUILDFLAG(IS_WIN)
   // Starts mDNS discovery on |cast_media_sink_service_| if it is not already
   // started.
   virtual void StartMdnsDiscovery();
 
   bool MdnsDiscoveryStarted();
+#endif
 
  protected:
   // Used by tests.
@@ -93,13 +100,11 @@ class DualMediaSinkService {
 
  private:
   friend class DualMediaSinkServiceTest;
+
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallback);
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallbackAfterDiscovery);
-  friend class MediaRouterDesktopTest;
-
-  static DualMediaSinkService* instance_for_test_;
 
   friend struct std::default_delete<DualMediaSinkService>;
 

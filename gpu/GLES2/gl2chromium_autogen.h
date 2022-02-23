@@ -341,8 +341,6 @@
 #define glTraceEndCHROMIUM GLES2_GET_FUN(TraceEndCHROMIUM)
 #define glDiscardFramebufferEXT GLES2_GET_FUN(DiscardFramebufferEXT)
 #define glLoseContextCHROMIUM GLES2_GET_FUN(LoseContextCHROMIUM)
-#define glUnpremultiplyAndDitherCopyCHROMIUM \
-  GLES2_GET_FUN(UnpremultiplyAndDitherCopyCHROMIUM)
 #define glDrawBuffersEXT GLES2_GET_FUN(DrawBuffersEXT)
 #define glDiscardBackbufferCHROMIUM GLES2_GET_FUN(DiscardBackbufferCHROMIUM)
 #define glScheduleOverlayPlaneCHROMIUM \

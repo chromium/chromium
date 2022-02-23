@@ -176,12 +176,10 @@ void PredictionMetricsHandler::ComputeMetrics() {
       base::StrCat({histogram_name_, ".FramePredictionScore"}),
       std::abs(frame_score));
 
-  // Need |last_predicted_| to compute WrongDirection and Jitter metrics.
+  // Need |last_predicted_| to compute Jitter metrics.
   if (!last_predicted_.has_value())
     return;
 
-  base::UmaHistogramBoolean(base::StrCat({histogram_name_, ".WrongDirection"}),
-                            ComputeWrongDirectionMetric());
   base::UmaHistogramCounts1000(
       base::StrCat({histogram_name_, ".PredictionJitter"}),
       ComputePredictionJitterMetric());
@@ -208,13 +206,6 @@ double PredictionMetricsHandler::ComputeFrameOverUnderPredictionMetric() const {
     return relative_direction.Length();
   else
     return -relative_direction.Length();
-}
-
-bool PredictionMetricsHandler::ComputeWrongDirectionMetric() {
-  gfx::Vector2dF real_direction = next_real_ - interpolated_;
-  gfx::Vector2dF predicted_direction =
-      predicted_events_queue_.front().pos - last_predicted_.value();
-  return gfx::DotProduct(real_direction, predicted_direction) < 0;
 }
 
 double PredictionMetricsHandler::ComputePredictionJitterMetric() {

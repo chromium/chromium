@@ -409,8 +409,7 @@ bool PasswordCheckManager::ShouldFetchPasswordScripts() const {
     case SyncState::kSyncingNormalEncryption:
       ABSL_FALLTHROUGH_INTENDED;
     case SyncState::kAccountPasswordsActiveNormalEncryption:
-      return base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordScriptsFetching);
+      return password_manager::features::IsPasswordScriptsFetchingEnabled();
   }
 }
 

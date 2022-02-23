@@ -1,0 +1,31 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cpp") {
+  sources = [
+    "controller/quick_answers_controller.cc",
+    "controller/quick_answers_controller.h",
+    "quick_answers_state.cc",
+    "quick_answers_state.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//components/language/core/browser:browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "quick_answers_prefs.cc",
+    "quick_answers_prefs.h",
+  ]
+
+  deps = [ "//components/prefs" ]
+}

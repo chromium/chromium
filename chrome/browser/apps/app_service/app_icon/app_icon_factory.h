@@ -12,13 +12,13 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
@@ -43,7 +43,8 @@ enum IconEffects : uint32_t {
   // The icon effects are applied in numerical order, low to high. It is always
   // resize-and-then-badge and never badge-and-then-resize, which can matter if
   // the badge has a fixed size.
-  kResizeAndPad = 0x01,  // Resize and Pad per Material Design style.
+  kMdIconStyle = 0x01,   // Icon should have Material Design style. Resize and
+                         // add padding if necessary.
   kChromeBadge = 0x02,   // Another (Android) app has the same name.
   kBlocked = 0x04,       // Disabled apps are grayed out and badged.
   kRoundCorners = 0x08,  // Bookmark apps get round corners.
@@ -132,6 +133,10 @@ void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
                       IconValuePtr iv,
                       LoadIconCallback callback);
+
+// Encodes |iv| as a compressed PNG icon.
+void ConvertUncompressedIconToCompressedIcon(IconValuePtr iv,
+                                             LoadIconCallback callback);
 
 // Loads an icon from an extension.
 void LoadIconFromExtension(IconType icon_type,

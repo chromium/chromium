@@ -3,9 +3,9 @@ include_rules = [
   "+cc/output",
   "+components/policy/core/common",
   "+components/viz/common",
+  "+components/webrtc",
   "+extensions/browser/api/messaging",
   "+google_apis",
-  "+jingle/glue",
   # Checks the availability of hardware encoder on Windows.
   "+media/base/win/mf_initializer.h",
   "+media/gpu/windows/media_foundation_video_encode_accelerator_win.h",
@@ -13,6 +13,7 @@ include_rules = [
   "+mojo/core/embedder",
   "+net",
   "+remoting/codec",
+  "+remoting/host/chromeos",
   "+remoting/protocol",
   "+remoting/signaling",
   "+remoting/tools",

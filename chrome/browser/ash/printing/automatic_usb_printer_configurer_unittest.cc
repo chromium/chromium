@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/printers_map.h"
+#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/printers_map.h"
-#include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +49,7 @@ Printer CreateIppPrinter(const std::string& id) {
 // Adding a printer causes the observer's OnPrintersChanged() method to run.
 class FakeObservablePrintersManager {
  public:
-  void SetObserver(chromeos::CupsPrintersManager::Observer* observer) {
+  void SetObserver(CupsPrintersManager::Observer* observer) {
     DCHECK(observer);
     observer_ = observer;
   }
@@ -87,12 +87,11 @@ class FakeObservablePrintersManager {
     observer_->OnPrintersChanged(printer_class, printers_.Get(printer_class));
   }
 
-  chromeos::CupsPrintersManager::Observer* observer_;
-  chromeos::PrintersMap printers_;
+  CupsPrintersManager::Observer* observer_;
+  PrintersMap printers_;
 };
 
-class FakePrinterInstallationManager
-    : public chromeos::PrinterInstallationManager {
+class FakePrinterInstallationManager : public PrinterInstallationManager {
  public:
   FakePrinterInstallationManager() = default;
   ~FakePrinterInstallationManager() override = default;
@@ -156,8 +155,7 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
   AutomaticUsbPrinterConfigurerTest() {
     fake_installation_manager_ =
         std::make_unique<FakePrinterInstallationManager>();
-    auto printer_configurer =
-        std::make_unique<chromeos::TestPrinterConfigurer>();
+    auto printer_configurer = std::make_unique<TestPrinterConfigurer>();
     fake_printer_configurer_ = printer_configurer.get();
     fake_notification_controller_ =
         std::make_unique<FakeUsbPrinterNotificationController>();
@@ -180,7 +178,7 @@ class AutomaticUsbPrinterConfigurerTest : public testing::Test {
 
  protected:
   FakeObservablePrintersManager fake_observable_printers_manager_;
-  chromeos::TestPrinterConfigurer* fake_printer_configurer_;  // not owned.
+  TestPrinterConfigurer* fake_printer_configurer_;  // not owned.
   std::unique_ptr<FakePrinterInstallationManager> fake_installation_manager_;
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_;
@@ -350,7 +348,7 @@ TEST_F(AutomaticUsbPrinterConfigurerTest, RegisterAutoconfFailureForIppUsb) {
   const Printer printer2 = CreateIppUsbPrinter(printer2_id);
 
   fake_printer_configurer_->AssignPrinterSetupResult(
-      printer1_id, chromeos::PrinterSetupResult::kPrinterIsNotAutoconfigurable);
+      printer1_id, PrinterSetupResult::kPrinterIsNotAutoconfigurable);
 
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer1);
   fake_observable_printers_manager_.AddNearbyAutomaticPrinter(printer2);

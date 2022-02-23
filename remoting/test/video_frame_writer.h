@@ -5,7 +5,6 @@
 #ifndef REMOTING_TEST_VIDEO_FRAME_WRITER_H_
 #define REMOTING_TEST_VIDEO_FRAME_WRITER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {

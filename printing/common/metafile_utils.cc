@@ -10,10 +10,10 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTime.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -175,6 +175,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     default:
       tag->fTypeString = kPDFStructureTypeNonStruct;
+      break;
   }
 
   if (ui::IsCellOrTableHeader(ax_node->GetRole())) {
@@ -198,15 +199,11 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   if (!lang.empty() && lang != parent_lang)
     tag->fLang = lang.c_str();
 
-  size_t children_count = ax_node->GetUnignoredChildCount();
-  tag->fChildVector.resize(children_count);
-  for (size_t i = 0; i < children_count; i++) {
+  tag->fChildVector.resize(ax_node->GetUnignoredChildCount());
+  for (size_t i = 0; i < tag->fChildVector.size(); i++) {
     tag->fChildVector[i] = std::make_unique<SkPDF::StructureElementNode>();
-    bool success = RecursiveBuildStructureTree(
-        ax_node->GetUnignoredChildAtIndex(i), tag->fChildVector[i].get());
-
-    if (success)
-      valid = true;
+    valid |= RecursiveBuildStructureTree(ax_node->GetUnignoredChildAtIndex(i),
+                                         tag->fChildVector[i].get());
   }
 
   return valid;

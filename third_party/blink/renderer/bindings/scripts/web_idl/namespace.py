@@ -134,7 +134,7 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
     @property
     def constants(self):
         """Returns constants."""
-        return ()
+        return self._constants
 
     @property
     def constructors(self):

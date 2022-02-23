@@ -6,7 +6,7 @@
 #define REMOTING_PROTOCOL_HOST_VIDEO_DISPATCHER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/video_stub.h"
 
@@ -35,7 +35,7 @@ class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
-  VideoFeedbackStub* video_feedback_stub_ = nullptr;
+  raw_ptr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
 };
 
 }  // namespace protocol

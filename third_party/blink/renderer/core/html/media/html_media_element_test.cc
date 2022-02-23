@@ -27,7 +27,8 @@
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -85,7 +86,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(GetNetworkState, NetworkState());
   MOCK_CONST_METHOD0(WouldTaintOrigin, bool());
   MOCK_METHOD1(SetLatencyHint, void(double));
-  MOCK_METHOD1(SetAutoplayInitiated, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
   MOCK_METHOD1(EnabledAudioTracksChanged, void(const WebVector<TrackId>&));
   MOCK_METHOD1(SelectedVideoTrackChanged, void(TrackId*));
   MOCK_METHOD4(
@@ -184,13 +185,6 @@ class TestMediaPlayerObserver final
 
   void OnAudioOutputSinkChangingDisabled() override {}
 
-  void OnBufferUnderflow() override {
-    received_buffer_underflow_ = true;
-    run_loop_->Quit();
-  }
-
-  void OnSeek() override {}
-
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 
@@ -213,8 +207,6 @@ class TestMediaPlayerObserver final
     return received_uses_audio_service_.value() == uses_audio_service;
   }
 
-  bool received_buffer_underflow() const { return received_buffer_underflow_; }
-
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   bool received_media_playing_{false};
@@ -223,7 +215,6 @@ class TestMediaPlayerObserver final
   absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
   absl::optional<bool> received_uses_audio_service_;
-  bool received_buffer_underflow_{false};
 };
 
 class TestMediaPlayerHost final : public media::mojom::blink::MediaPlayerHost {
@@ -281,7 +272,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_CALL(*mock_media_player, SetLatencyHint(_)).Times(AnyNumber());
 
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr,
+        gfx::Size(), nullptr,
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             std::move(mock_media_player)));
 
@@ -420,15 +411,6 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
         uses_audio_service);
   }
 
-  void NotifyBufferUnderflowEvent() {
-    media_->DidBufferUnderflow();
-    media_player_observer().WaitUntilReceivedMessage();
-  }
-
-  bool ReceivedMessageBufferUnderflowEvent() {
-    return media_player_observer().received_buffer_underflow();
-  }
-
   bool WasPlayerDestroyed() const { return !media_player_weak_; }
 
   // Create a dummy page holder with the given security origin.
@@ -437,7 +419,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     // Make another document with the same security origin.
 
     auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr,
+        gfx::Size(), nullptr,
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             /*player=*/nullptr));
     Document& document = dummy_page_holder->GetDocument();
@@ -582,7 +564,6 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataRespondsToEnded) {
   EXPECT_TRUE(CouldPlayIfEnoughData());
 
   // Playback can only end once the ready state is above kHaveMetadata.
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -608,7 +589,6 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataRespondsToError) {
   EXPECT_NE(mock_wmpi, nullptr);
   EXPECT_TRUE(CouldPlayIfEnoughData());
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveMetadata);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -651,7 +631,6 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataInfiniteStreamNeverEnds) {
   EXPECT_CALL(*MockMediaPlayer(), CurrentTime())
       .WillRepeatedly(Return(std::numeric_limits<double>::infinity()));
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveMetadata);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -800,7 +779,6 @@ TEST_P(HTMLMediaElementTest, DefaultTracksAreEnabled) {
 
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   ASSERT_EQ(1u, Media()->audioTracks().length());
@@ -816,7 +794,6 @@ TEST_P(HTMLMediaElementTest, VisibilityObserverCreatedForLazyLoad) {
 
   EXPECT_CALL(*MockMediaPlayer(), DidLazyLoad()).WillRepeatedly(Return(true));
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_EQ(HasLazyLoadObserver(), GetParam() == MediaTestParam::kVideo);
 }
@@ -830,7 +807,6 @@ TEST_P(HTMLMediaElementTest, ContextPaused) {
   Media()->Play();
 
   test::RunPendingTasks();
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_FALSE(Media()->paused());
@@ -868,7 +844,6 @@ TEST_P(HTMLMediaElementTest, GcMarkingNoAllocHasActivity) {
   Media()->Play();
 
   test::RunPendingTasks();
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   SetError(MakeGarbageCollected<MediaError>(MediaError::kMediaErrDecode, ""));
 
@@ -892,7 +867,6 @@ TEST_P(HTMLMediaElementTest, CapturesRedirectedSrc) {
   GURL redirected_url("https://redirected.com");
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects())
       .WillRepeatedly(Return(redirected_url));
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_EQ(Media()->downloadURL(), redirected_url);
@@ -905,7 +879,6 @@ TEST_P(HTMLMediaElementTest, EmptyRedirectedSrcUsesOriginal) {
   Media()->Play();
   test::RunPendingTasks();
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
 }
@@ -980,11 +953,9 @@ TEST_P(HTMLMediaElementTest, OnTimeUpdate_ReadyState) {
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects)
       .WillRepeatedly(Return(GURL()));
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveCurrentData);
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 }
@@ -999,7 +970,6 @@ TEST_P(HTMLMediaElementTest, OnTimeUpdate_Seeking) {
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveCurrentData);
 
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
@@ -1020,7 +990,6 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_InitiallyTrue) {
 
   EXPECT_TRUE(Media()->IsShowPosterFlagSet());
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1032,7 +1001,6 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlay) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1048,7 +1016,6 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterSeek) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1066,7 +1033,6 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterAutoPlay) {
   Media()->SetBooleanAttribute(html_names::kAutoplayAttr, true);
   test::RunPendingTasks();
 
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1097,7 +1063,6 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlayBeforeReady) {
   EXPECT_FALSE(Media()->IsShowPosterFlagSet());
 
   // Pretend we have data to begin playback
-  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   // We should have data, be playing, and the show poster flag should be unset
@@ -1170,13 +1135,6 @@ TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {
 
   NotifyUseAudioServiceChanged(true);
   EXPECT_TRUE(ReceivedMessageUseAudioServiceChanged(true));
-}
-
-TEST_P(HTMLMediaElementTest, SendBufferOverflowToObserver) {
-  WaitForPlayer();
-
-  NotifyBufferUnderflowEvent();
-  EXPECT_TRUE(ReceivedMessageBufferUnderflowEvent());
 }
 
 TEST_P(HTMLMediaElementTest,
@@ -1333,6 +1291,41 @@ TEST_P(HTMLMediaElementTest,
   new_document.adoptNode(Media(), ASSERT_NO_EXCEPTION);
   // The element should no longer use the original frame.
   EXPECT_NE(old_frame, Media()->LocalFrameForPlayer());
+}
+
+TEST_P(HTMLMediaElementTest, PlayedWithoutUserActivation) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  Media()->Play();
+}
+
+TEST_P(HTMLMediaElementTest, PlayedWithUserActivation) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  LocalFrame::NotifyUserActivation(
+      Media()->GetDocument().GetFrame(),
+      mojom::UserActivationNotificationType::kTest);
+
+  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(true));
+  Media()->Play();
+}
+
+TEST_P(HTMLMediaElementTest, PlayedWithUserActivationBeforeLoad) {
+  LocalFrame::NotifyUserActivation(
+      Media()->GetDocument().GetFrame(),
+      mojom::UserActivationNotificationType::kTest);
+
+  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(_)).Times(0);
+  Media()->Play();
 }
 
 }  // namespace blink

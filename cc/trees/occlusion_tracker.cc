@@ -361,7 +361,7 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
   // otherwise be wrong is that this layer is a non-render-surface mask layer
   // with kDstIn blend mode.
   const auto* effect_node =
-      layer->layer_tree_impl()->property_trees()->effect_tree.Node(
+      layer->layer_tree_impl()->property_trees()->effect_tree().Node(
           layer->effect_tree_index());
   if (!effect_node->HasRenderSurface() &&
       !IsOccludingBlendMode(effect_node->blend_mode))

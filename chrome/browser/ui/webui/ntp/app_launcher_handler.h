@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -16,10 +17,11 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/core/favicon_service.h"
@@ -52,13 +54,15 @@ class WebAppProvider;
 }  // namespace web_app
 
 // The handler for Javascript messages related to the "apps" view.
+// TODO(https://crbug.com/1295802): This class should listen to changes from
+// other sources (such as other app pages or web app settings page).
 class AppLauncherHandler
     : public content::WebUIMessageHandler,
       public extensions::ExtensionUninstallDialog::Delegate,
       public ExtensionEnableFlowDelegate,
       public extensions::InstallObserver,
       public web_app::AppRegistrarObserver,
-      public web_app::WebAppPolicyManagerObserver,
+      public web_app::WebAppInstallManagerObserver,
       public extensions::ExtensionRegistryObserver {
  public:
   AppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -99,16 +103,20 @@ class AppLauncherHandler
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::OnWebAppInstallManagerObserver:
   void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
-                                  const base::Time& time) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
-  // web_app::WebAppPolicyManagerObserver
-  void OnPolicyChanged() override;
+  // web_app::AppRegistrarObserver:
+  void OnWebAppInstallTimeChanged(const web_app::AppId& app_id,
+                                  const base::Time& time) override;
+  void OnAppRegistrarDestroyed() override;
+  void OnWebAppRunOnOsLoginModeChanged(
+      const web_app::AppId& app_id,
+      web_app::RunOnOsLoginMode run_on_os_login_mode) override;
+  void OnWebAppSettingsPolicyChanged() override;
 
   // Populate the given dictionary with all installed app info.
   void FillAppDictionary(base::DictionaryValue* value);
@@ -226,19 +234,19 @@ class AppLauncherHandler
 
   // The apps are represented in the extensions model, which
   // outlives us since it's owned by our containing profile.
-  extensions::ExtensionService* const extension_service_;
+  const raw_ptr<extensions::ExtensionService> extension_service_;
 
   // The apps are represented in the web apps model, which outlives us since
   // it's owned by our containing profile.
-  web_app::WebAppProvider* const web_app_provider_;
+  const raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       web_apps_observation_{this};
 
-  base::ScopedObservation<web_app::WebAppPolicyManager,
-                          web_app::WebAppPolicyManagerObserver>
-      web_apps_policy_manager_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::ScopedObservation<extensions::InstallTracker,
                           extensions::InstallObserver>
@@ -259,9 +267,6 @@ class AppLauncherHandler
 
   // The ids of apps to show on the NTP.
   std::set<std::string> visible_apps_;
-
-  // The ids of apps installed externally.
-  std::map<web_app::AppId, GURL> policy_installed_apps_;
 
   // The id of the extension we are prompting the user about (either enable or
   // uninstall).

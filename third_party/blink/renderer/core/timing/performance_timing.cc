@@ -393,6 +393,16 @@ uint64_t PerformanceTiming::FirstContentfulPaint() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstContentfulPaint());
 }
 
+base::TimeTicks
+PerformanceTiming::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+    const {
+  const PaintTiming* timing = GetPaintTiming();
+  if (!timing)
+    return base::TimeTicks();
+
+  return timing->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+}
+
 base::TimeTicks PerformanceTiming::FirstContentfulPaintAsMonotonicTime() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
@@ -442,6 +452,14 @@ LargestContentfulPaintTypeMask PerformanceTiming::LargestContentfulPaintType()
     return 0;
   }
   return paint_timing_detector->LargestContentfulPaintType();
+}
+
+double PerformanceTiming::LargestContentfulPaintImageBPP() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector) {
+    return 0.0;
+  }
+  return paint_timing_detector->LargestContentfulPaintImageBPP();
 }
 
 uint64_t PerformanceTiming::LargestTextPaint() const {

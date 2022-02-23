@@ -12,6 +12,7 @@ component("account_manager_core") {
   sources = [
     "account.cc",
     "account.h",
+    "account_addition_options.h",
     "account_addition_result.cc",
     "account_addition_result.h",
     "account_manager_facade.cc",

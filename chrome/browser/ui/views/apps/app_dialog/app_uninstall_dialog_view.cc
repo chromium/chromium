@@ -71,8 +71,8 @@ std::u16string GetWindowTitleForApp(Profile* profile,
   if (app_type == AppType::kArc && IsArcShortcutApp(profile, app_id))
     return l10n_util::GetStringUTF16(IDS_EXTENSION_UNINSTALL_PROMPT_TITLE);
 #else
-  // On non-ChromeOS, only extension and web app types meaningfully exist.
-  DCHECK(app_type != AppType::kExtension && app_type != AppType::kWeb);
+  // On non-ChromeOS, only Chrome app and web app types meaningfully exist.
+  DCHECK(app_type != AppType::kChromeApp && app_type != AppType::kWeb);
 #endif
   return l10n_util::GetStringFUTF16(IDS_PROMPT_APP_UNINSTALL_TITLE,
                                     base::UTF8ToUTF16(app_name));
@@ -81,7 +81,7 @@ std::u16string GetWindowTitleForApp(Profile* profile,
 }  // namespace
 
 // static
-void apps::UninstallDialog::UiBase::Create(
+views::Widget* apps::UninstallDialog::UiBase::Create(
     Profile* profile,
     apps::mojom::AppType app_type,
     const std::string& app_id,
@@ -89,11 +89,12 @@ void apps::UninstallDialog::UiBase::Create(
     gfx::ImageSkia image,
     gfx::NativeWindow parent_window,
     apps::UninstallDialog* uninstall_dialog) {
-  constrained_window::CreateBrowserModalDialogViews(
+  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       (new AppUninstallDialogView(profile, app_type, app_id, app_name, image,
                                   uninstall_dialog)),
-      parent_window)
-      ->Show();
+      parent_window);
+  widget->Show();
+  return widget;
 }
 
 AppUninstallDialogView::AppUninstallDialogView(
@@ -151,7 +152,8 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::mojom::AppType::kExtension:
       NOTREACHED();
       break;
     case apps::mojom::AppType::kArc:
@@ -185,7 +187,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::mojom::AppType::kSystemWeb:
       InitializeViewForWebApp(profile, app_id);
       break;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       InitializeViewForExtension(profile, app_id);
       break;
   }
@@ -282,8 +284,6 @@ void AppUninstallDialogView::InitializeViewForExtension(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE));
     report_abuse_checkbox->SetMultiLine(true);
     report_abuse_checkbox_ = AddChildView(std::move(report_abuse_checkbox));
-  } else if (extension->from_bookmark()) {
-    InitializeCheckbox(extensions::AppLaunchInfo::GetFullLaunchURL(extension));
   }
 }
 

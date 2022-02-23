@@ -8,7 +8,9 @@
 #include <map>
 #include <memory>
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -150,7 +152,7 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
   bool CanShowSurvey();
 
   std::unique_ptr<Delegate> delegate_;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   scoped_refptr<AccuracyTipSafeBrowsingClient> sb_client_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   GURL url_for_last_shown_tip_;
@@ -160,9 +162,9 @@ class AccuracyService : public KeyedService, history::HistoryServiceObserver {
   const base::TimeDelta time_between_prompts_;
   const bool disable_ui_ = false;
 
-  base::Clock* clock_ = base::DefaultClock::GetInstance();
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
-  content::WebContents* web_contents_showing_accuracy_tip_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_showing_accuracy_tip_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

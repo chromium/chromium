@@ -50,6 +50,7 @@ class ArcTermsOfServiceOobeNegotiator
 
   // chromeos::ConsolidatedConsentScreen::Observer:
   void OnConsolidatedConsentAccept() override;
+  void OnConsolidatedConsentScreenDestroyed() override;
 
   // ArcTermsOfServiceNegotiator:
   void StartNegotiationImpl() override;

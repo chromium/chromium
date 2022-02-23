@@ -131,7 +131,7 @@ INSERT INTO "insecure_credentials"
   (parent_id,insecurity_type,create_time,is_muted) VALUES(
 1, /* parent_id */
 0, /* compromise_type */
-13047423600000000, /* create_time */
+0, /* create_time */
 0 /* is_muted */
 );
 INSERT INTO "insecure_credentials"

@@ -15,7 +15,7 @@
     </item>
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/default_bg_color" />
+            <solid android:color="@color/default_bg_color_baseline" />
             <size
                 android:width="@dimen/quick_action_search_widget_dino_size"
                 android:height="@dimen/quick_action_search_widget_dino_size" />

@@ -331,10 +331,9 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
-LayoutBlock& NGFragmentItem::BlockInInline() const {
+LayoutObject& NGFragmentItem::BlockInInline() const {
   DCHECK(IsBlockInInline());
-  auto* const block =
-      To<LayoutBlock>(To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild());
+  auto* const block = To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild();
   DCHECK(block) << this;
   return *block;
 }
@@ -361,8 +360,7 @@ gfx::RectF NGFragmentItem::ObjectBoundingBox(
     const NGFragmentItems& items) const {
   DCHECK_EQ(Type(), kSvgText);
   const Font scaled_font = ScaledFont();
-  gfx::RectF ink_bounds =
-      ToGfxRectF(scaled_font.TextInkBounds(TextPaintInfo(items)));
+  gfx::RectF ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
   if (const auto* font_data = scaled_font.PrimaryFont())
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
   ink_bounds.Scale(SvgFragmentData()->length_adjust_scale, 1.0f);
@@ -380,10 +378,10 @@ gfx::RectF NGFragmentItem::ObjectBoundingBox(
   return ink_bounds;
 }
 
-FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
+gfx::QuadF NGFragmentItem::SvgUnscaledQuad() const {
   DCHECK_EQ(Type(), kSvgText);
-  FloatQuad quad = BuildSvgTransformForBoundingBox().MapQuad(
-      FloatRect(SvgFragmentData()->rect));
+  gfx::QuadF quad = BuildSvgTransformForBoundingBox().MapQuad(
+      gfx::QuadF(SvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
   quad.Scale(1 / scaling_factor, 1 / scaling_factor);
   return quad;
@@ -394,11 +392,10 @@ PhysicalOffset NGFragmentItem::MapPointInContainer(
   if (Type() != kSvgText || !HasSvgTransformForBoundingBox())
     return point;
   const float scaling_factor = SvgScalingFactor();
-  return PhysicalOffset::FromFloatPointRound(
-      BuildSvgTransformForBoundingBox()
-          .Inverse()
-          .MapPoint(FloatPoint(point).ScaledBy(scaling_factor))
-          .ScaledBy(1 / scaling_factor));
+  return PhysicalOffset::FromPointFRound(
+      gfx::ScalePoint(BuildSvgTransformForBoundingBox().Inverse().MapPoint(
+                          gfx::ScalePoint(gfx::PointF(point), scaling_factor)),
+                      scaling_factor));
 }
 
 float NGFragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
@@ -652,8 +649,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForTextPath(
   AffineTransform transform;
   transform.Rotate(svg_data.angle);
 
-  const SimpleFontData* font_data =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+  const SimpleFontData* font_data = ScaledFont().PrimaryFont();
 
   // https://svgwg.org/svg2-draft/text.html#TextpathLayoutRules
   // The rotation should be about the center of the baseline.
@@ -692,8 +688,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForBoundingBox() const {
     return BuildSvgTransformForTextPath(AffineTransform());
 
   transform.Rotate(svg_data.angle);
-  const SimpleFontData* font_data =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+  const SimpleFontData* font_data = ScaledFont().PrimaryFont();
   // https://svgwg.org/svg2-draft/text.html#TextElementRotateAttribute
   // > The supplemental rotation, in degrees, about the current text position
   //
@@ -1022,7 +1017,7 @@ PhysicalRect NGFragmentItem::ComputeTextBoundsRectForHitTest(
   // See svg/hittest/text-small-font-size.html.
   if (Type() == kSvgText)
     return border_rect;
-  return PhysicalRect(PixelSnappedIntRect(border_rect));
+  return PhysicalRect(ToPixelSnappedRect(border_rect));
 }
 
 PositionWithAffinity NGFragmentItem::PositionForPointInText(

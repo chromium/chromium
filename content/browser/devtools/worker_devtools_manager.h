@@ -21,7 +21,7 @@ class DedicatedWorkerHost;
 
 // Manages WorkerDevToolsAgentHost's for Dedicated Workers. This class lives on
 // UI thread. This is only used for PlzDedicatedWorker.
-class CONTENT_EXPORT WorkerDevToolsManager {
+class WorkerDevToolsManager {
  public:
   // Returns the WorkerDevToolsManager singleton.
   static WorkerDevToolsManager& GetInstance();

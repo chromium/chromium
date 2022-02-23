@@ -68,8 +68,6 @@ constexpr char kAssistantScreenshotPrefix[] =
     "googleassistant://take-screenshot";
 constexpr char kAssistantSettingsPrefix[] = "googleassistant://settings";
 constexpr char kAssistantTaskManagerPrefix[] = "googleassistant://task-manager";
-constexpr char kAssistantWhatsOnMyScreenPrefix[] =
-    "googleassistant://whats-on-my-screen";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -195,10 +193,6 @@ GURL CreateAssistantQueryDeepLink(const std::string& query) {
 
 GURL CreateAssistantSettingsDeepLink() {
   return GURL(kAssistantSettingsPrefix);
-}
-
-GURL CreateWhatsOnMyScreenDeepLink() {
-  return GURL(kAssistantWhatsOnMyScreenPrefix);
 }
 
 std::map<std::string, std::string> GetDeepLinkParams(const GURL& deep_link) {
@@ -366,7 +360,7 @@ DeepLinkType GetDeepLinkType(const GURL& url) {
       {DeepLinkType::kScreenshot, kAssistantScreenshotPrefix},
       {DeepLinkType::kSettings, kAssistantSettingsPrefix},
       {DeepLinkType::kTaskManager, kAssistantTaskManagerPrefix},
-      {DeepLinkType::kWhatsOnMyScreen, kAssistantWhatsOnMyScreenPrefix}};
+  };
 
   for (const auto& supported_deep_link : kSupportedDeepLinks) {
     if (base::StartsWith(url.spec(), supported_deep_link.second,
@@ -480,7 +474,6 @@ absl::optional<GURL> GetWebUrl(
     case DeepLinkType::kQuery:
     case DeepLinkType::kScreenshot:
     case DeepLinkType::kTaskManager:
-    case DeepLinkType::kWhatsOnMyScreen:
       NOTREACHED();
       return absl::nullopt;
   }

@@ -784,6 +784,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   bool has_arguments = token.GetType() == kFunctionToken;
   selector->UpdatePseudoType(value, *context_, has_arguments, context_->Mode());
 
+  if (UNLIKELY(is_inside_has_argument_))
+    found_pseudo_in_has_argument_ = true;
+
   if (selector->Match() == CSSSelector::kPseudoElement) {
     switch (selector->GetPseudoType()) {
       case CSSSelector::kPseudoBefore:
@@ -877,6 +880,11 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
 
+      base::AutoReset<bool> is_inside_has_argument(&is_inside_has_argument_,
+                                                   true);
+      base::AutoReset<bool> found_pseudo_in_has_argument(
+          &found_pseudo_in_has_argument_, false);
+
       std::unique_ptr<CSSSelectorList> selector_list =
           std::make_unique<CSSSelectorList>();
       *selector_list = ConsumeRelativeSelectorList(block);
@@ -884,6 +892,8 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         return nullptr;
 
       selector->SetSelectorList(std::move(selector_list));
+      if (UNLIKELY(found_pseudo_in_has_argument_))
+        selector->SetContainsPseudoInsideHasPseudoClass();
       return selector;
     }
     case CSSSelector::kPseudoNot: {
@@ -915,6 +925,26 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         parts.push_back(ident.Value().ToAtomicString());
       } while (!block.AtEnd());
       selector->SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
+      return selector;
+    }
+    case CSSSelector::kPseudoPageTransitionContainer:
+    case CSSSelector::kPseudoPageTransitionImageWrapper:
+    case CSSSelector::kPseudoPageTransitionOutgoingImage:
+    case CSSSelector::kPseudoPageTransitionIncomingImage: {
+      const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+      if (!block.AtEnd())
+        return nullptr;
+
+      absl::optional<AtomicString> argument;
+      if (ident.GetType() == kIdentToken)
+        argument = ident.Value().ToAtomicString();
+      else if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*')
+        argument = CSSSelector::UniversalSelectorAtom();
+
+      if (!argument)
+        return nullptr;
+
+      selector->SetArgument(*argument);
       return selector;
     }
     case CSSSelector::kPseudoSlotted: {
@@ -1013,7 +1043,7 @@ CSSSelector::MatchType CSSSelectorParser::ConsumeAttributeMatch(
     case kDelimiterToken:
       if (token.Delimiter() == '=')
         return CSSSelector::kAttributeExact;
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       failed_parsing_ = true;
       return CSSSelector::kAttributeExact;

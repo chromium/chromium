@@ -103,6 +103,9 @@ class ASH_EXPORT AppListFolderView
   // Closes the folder page and goes back the top level page.
   void CloseFolderPage();
 
+  // Focuses the name input text-field in the folder header.
+  void FocusNameInput();
+
   // Focuses the first app item. Does not set the selection or perform a11y
   // announce if `silently` is true.
   void FocusFirstItem(bool silently);
@@ -138,6 +141,9 @@ class ASH_EXPORT AppListFolderView
   // Sets the bounding box for the folder view bounds. The bounds are expected
   // to be in the parent view's coordinate system.
   void SetBoundingBox(const gfx::Rect& bounding_box);
+
+  // Sets the callback that runs when the folder animation ends.
+  void SetAnimationDoneTestCallback(base::OnceClosure animation_done_callback);
 
   AppsGridView* items_grid_view() { return items_grid_view_; }
 
@@ -230,6 +236,14 @@ class ASH_EXPORT AppListFolderView
   // false when resetting the folder state due to folder item view deletion.
   void ResetState(bool restore_folder_item_view_state);
 
+  // Called when the animation to show the folder view is completed.
+  void OnShowAnimationDone();
+
+  // Called when the animation to hide the folder view is completed.
+  // `hide_for_reparent` is true if an item in the folder is being reparented to
+  // the root grid view.
+  void OnHideAnimationDone(bool hide_for_reparent);
+
   // Controller interface implemented by the container for this view.
   AppListFolderController* const folder_controller_;
 
@@ -261,6 +275,9 @@ class ASH_EXPORT AppListFolderView
   AppListViewDelegate* const view_delegate_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
 
+  // Whether the folder view is currently shown, or showing.
+  bool shown_ = false;
+
   // The folder item in the root apps grid associated with this folder.
   AppListItemView* folder_item_view_ = nullptr;
 
@@ -273,8 +290,6 @@ class ASH_EXPORT AppListFolderView
   // The bounds of the box within which the folder view can be shown. The bounds
   // are relative the the parent view's coordinate system.
   gfx::Rect bounding_box_;
-
-  bool hide_for_reparent_ = false;
 
   std::vector<std::unique_ptr<Animation>> folder_visibility_animations_;
 
@@ -290,6 +305,9 @@ class ASH_EXPORT AppListFolderView
   // model, and animations depend on the folder item view).
   base::ScopedObservation<views::View, views::ViewObserver>
       folder_item_view_observer_{this};
+
+  // The callback that runs at the end of the folder animation.
+  base::OnceClosure animation_done_test_callback_;
 
   base::WeakPtrFactory<AppListFolderView> weak_ptr_factory_{this};
 };

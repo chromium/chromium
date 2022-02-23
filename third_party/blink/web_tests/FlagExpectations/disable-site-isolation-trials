@@ -30,6 +30,7 @@ virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-ke
 
 # OOPIF tests need site isolation
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-existing.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
 http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
@@ -41,3 +42,30 @@ crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Fa
 # Fix to unblock wpt-importer
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
+crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
+crbug.com/626703 external/wpt/webrtc-stats/rtp-stats-creation.html [ Crash Failure ]
+crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Failure Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Timeout ]
+crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/oklch-008.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-composite-1c.html [ Crash Failure ]
+crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
+crbug.com/626703 external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]

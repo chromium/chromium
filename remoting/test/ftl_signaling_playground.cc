@@ -21,7 +21,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
@@ -96,7 +96,7 @@ void FtlSignalingPlayground::PrintHelp() {
 }
 
 void FtlSignalingPlayground::StartLoop() {
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   std::string username = cmd_line->GetSwitchValueASCII(kSwitchNameUsername);

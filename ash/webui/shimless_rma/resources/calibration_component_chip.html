@@ -1,50 +1,72 @@
-<style include="cr-shared-style shimless-rma-shared">
+<style include="cr-shared-style shimless-rma-shared shimless-fonts">
   :host {
     padding: 1px;
   }
 
-  /* TODO(gavindodd): update colors to CrOS */
-  :host([skip]) #containerButton {
-    background-color: lightgray;
+  /* TODO(gavinwill): update colors to CrOS */
+  :host([checked]) #componentButton {
+    background-color: lightskyblue;
   }
 
-  :host([completed]) #containerButton {
-    background-color: yellowgreen;
+  /* TODO(gavinwill): update colors to CrOS */
+  :host([disabled]) #componentButton {
+    background-color: lightskyblue;
+    opacity: 0.5;
   }
 
-  :host([failed]) #containerButton {
-    background-color: IndianRed;
+  #componentButton {
+    --vertical-padding: 24px;
+    border-radius: 8px;
+    box-shadow: var(--cr-card-shadow);
+    color: var(--shimless-component-text-color);
+    font-family: var(--shimless-component-font-family);
+    font-size: var(--shimless-component-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    height: calc((2 * var(--vertical-padding)) + 
+        var(--shimless-component-line-height));
+    line-height: var(--shimless-component-line-height);
+    padding: 0;
+    width: 100%;
   }
 
-  #containerDiv {
-    height: 40px;
-    width: 180px;
+  #labelDiv {
+    color: grey;
+    flex-basis: 155px;
+    inset-inline-start: 0;
+    padding-inline-start: 24px;
+    position: absolute;
   }
 
-  #containerButton {
-    border-radius: 10px;
-    box-shadow: 0px 2px 2px 2px #bbb;
-    height: 40px;
-    width: 180px;
+  :host([checked]) #labelDiv {
+    color: blue;
   }
 
-  .icon-top-right {
-    height: 15px;
-    position: relative;
-    right: 20px;
-    top: -5px;
-    width: 15px;
+  #checkIcon {
+    margin-top: 6px;
+  }
+
+  #infoIcon {
+    fill: red;
+    margin-inline-end: 5px;
+  }
+
+  #checkIcon {
+    height: 20px;
+    inset-inline-end: 16px;
+    position: absolute;
+    width: 20px;
   }
 </style>
 
-<div id="containerDiv">
-  <cr-button disabled$="[[disabled]]"
-      id="containerButton" on-click="onComponentButtonClicked_">
+<cr-button id="componentButton" on-click="onComponentButtonClicked_"
+    disabled="[[disabled]]">
+  <div id="labelDiv">
+    <iron-icon id="infoIcon" icon="shimless-icon:info" hidden="[[!failed]]">
+    </iron-icon>
     <span id="componentName">[[componentName]]</span>
-  </cr-button>
-
-  <!-- TODO(gavindodd): Replace icon with checked icon -->
-  <iron-icon id="skipIcon" icon="shimless-icon:wifi"
-    hidden$="[[!skip]]" class="icon-top-right">
+    <div>[[componentId]]</div>
+  </div>
+  <iron-icon id="checkIcon" icon="shimless-icon24:check-circle"
+      hidden="[[!shouldShowCheckIcon_(checked, disabled)]]">
   </iron-icon>
-</div>
+</cr-button>

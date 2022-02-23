@@ -10,6 +10,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/win/mf_helpers.h"
 
@@ -183,6 +184,60 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   frame->metadata().dcomp_surface = true;
 
   std::move(create_video_frame_cb).Run(frame);
+}
+
+void DCOMPTextureWrapperImpl::CreateVideoFrame(
+    const gfx::Size& natural_size,
+    gfx::GpuMemoryBufferHandle dx_handle,
+    const base::UnguessableToken& token,
+    CreateDXVideoFrameCB create_video_frame_cb) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
+
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                   gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                   gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
+      gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
+          std::move(dx_handle), natural_size, gfx::BufferFormat::RGBA_8888,
+          gfx::BufferUsage::GPU_READ, base::NullCallback(), nullptr, nullptr);
+
+  // The VideoFrame object requires a 4 array mailbox holder because some
+  // formats can have 4 separate planes that can have 4 different GPU
+  // memories and even though in our case we are using only the first plane we
+  // still need to provide the video frame creation with a 4 array mailbox
+  // holder.
+  gpu::MailboxHolder holder[media::VideoFrame::kMaxPlanes];
+  gpu::Mailbox mailbox = sii->CreateSharedImage(
+      gmb.get(), nullptr, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage);
+  gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+  holder[0] = gpu::MailboxHolder(mailbox, sync_token, GL_TEXTURE_2D);
+
+  scoped_refptr<media::VideoFrame> video_frame_texture =
+      media::VideoFrame::WrapExternalGpuMemoryBuffer(
+          gfx::Rect(natural_size), natural_size, std::move(gmb), holder,
+          base::NullCallback(), base::TimeDelta::Min());
+  video_frame_texture->metadata().wants_promotion_hint = true;
+  video_frame_texture->metadata().allow_overlay = true;
+
+  video_frame_texture->AddDestructionObserver(base::BindPostTask(
+      media_task_runner_,
+      base::BindOnce(&DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction,
+                     weak_factory_.GetWeakPtr(), sync_token, mailbox),
+      FROM_HERE));
+
+  std::move(create_video_frame_cb).Run(video_frame_texture, token);
+}
+
+void DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction(
+    const gpu::SyncToken& sync_token,
+    const gpu::Mailbox& image_mailbox) {
+  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
+  sii->DestroySharedImage(sync_token, image_mailbox);
 }
 
 void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {

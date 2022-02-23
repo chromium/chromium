@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_member.h"
@@ -60,9 +61,14 @@ class SyncTransportDataPrefs {
   void UpdateInvalidationVersions(
       const std::map<ModelType, int64_t>& invalidation_versions);
 
+  // Migrates invalidation versions from a deprecated pref to the current one.
+  // Does nothing if the pref was already migrated. Should be called during
+  // browser startup.
+  static void MigrateInvalidationVersions(PrefService* pref_service);
+
  private:
   // Never null.
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

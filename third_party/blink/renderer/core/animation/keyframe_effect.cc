@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -172,7 +172,10 @@ KeyframeEffect::KeyframeEffect(Element* target,
 
   // fix target for css animations and transitions
   if (target && target->IsPseudoElement()) {
-    target_element_ = target->parentElement();
+    // The |target_element_| is used to target events in script when
+    // animating pseudo elements. This requires using the DOM element that the
+    // pseudo element originates from.
+    target_element_ = DynamicTo<PseudoElement>(target)->OriginatingElement();
     DCHECK(!target_element_->IsPseudoElement());
     target_pseudo_ = target->tagName();
   }
@@ -239,20 +242,19 @@ void KeyframeEffect::setComposite(String composite_string) {
   InvalidateAndNotifyOwner();
 }
 
+// Returns a list of 'ComputedKeyframes'. A ComputedKeyframe consists of the
+// normal keyframe data combined with the computed offset for the given
+// keyframe.
+// https://w3.org/TR/web-animations-1/#dom-keyframeeffect-getkeyframes
 HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation())
     animation->FlushPendingUpdates();
 
   HeapVector<ScriptValue> computed_keyframes;
-  if (!model_->HasFrames())
+  if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 
-  // getKeyframes() returns a list of 'ComputedKeyframes'. A ComputedKeyframe
-  // consists of the normal keyframe data combined with the computed offset for
-  // the given keyframe.
-  //
-  // https://w3c.github.io/web-animations/#dom-keyframeeffectreadonly-getkeyframes
   KeyframeVector keyframes = ignore_css_keyframes_
                                  ? model_->GetFrames()
                                  : model_->GetComputedKeyframes(EffectTarget());
@@ -472,7 +474,7 @@ const CSSProperty** TransformProperties() {
 }  // namespace
 
 bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   static const auto** properties = TransformProperties();
   bool preserves_axis_alignment = true;
   bool has_transform = false;

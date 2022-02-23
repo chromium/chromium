@@ -55,6 +55,7 @@
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -105,6 +106,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -201,7 +203,7 @@ void MaybeCreateSafeBrowsing(
 }  // anonymous namespace
 
 std::string GetProduct() {
-  return version_info::GetProductNameAndVersionForUserAgent();
+  return embedder_support::GetProduct(/*allow_override=*/true);
 }
 
 std::string GetUserAgent() {
@@ -256,10 +258,8 @@ AwContentBrowserClient::~AwContentBrowserClient() {}
 
 void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
-  network::mojom::HttpAuthStaticParamsPtr auth_static_params =
-      network::mojom::HttpAuthStaticParams::New();
-  auth_static_params->supported_schemes = AwBrowserContext::GetAuthSchemes();
-  content::GetNetworkService()->SetUpHttpAuth(std::move(auth_static_params));
+  content::GetNetworkService()->SetUpHttpAuth(
+      network::mojom::HttpAuthStaticParams::New());
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(
@@ -494,7 +494,7 @@ bool AwContentBrowserClient::CanCreateWindow(
 
 base::FilePath AwContentBrowserClient::GetDefaultDownloadDirectory() {
   // Android WebView does not currently use the Chromium downloads system.
-  // Download requests are cancelled immedately when recognized; see
+  // Download requests are cancelled immediately when recognized; see
   // AwResourceDispatcherHost::CreateResourceHandlerForDownload. However the
   // download system still tries to start up and calls this before recognizing
   // the request has been cancelled.
@@ -609,56 +609,60 @@ AwContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<AwDevToolsManagerDelegate>();
 }
 
-bool AwContentBrowserClient::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == autofill::mojom::AutofillDriver::Name_) {
-    autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
-    content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
-        mojo::PendingAssociatedReceiver<
-            content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == mojom::FrameHost::Name_) {
-    AwRenderViewHostExt::BindFrameHost(
-        mojo::PendingAssociatedReceiver<mojom::FrameHost>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
-    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-        mojo::PendingAssociatedReceiver<
-            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
-    AwPrintManager::BindPrintManagerHost(
-        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      security_interstitials::mojom::InterstitialCommands::Name_) {
-    security_interstitials::SecurityInterstitialTabHelper::
-        BindInterstitialCommands(
-            mojo::PendingAssociatedReceiver<
-                security_interstitials::mojom::InterstitialCommands>(
-                std::move(*handle)),
-            render_frame_host);
-    return true;
-  }
-
-  return false;
+void AwContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+             receiver) {
+        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             content_capture::mojom::ContentCaptureReceiver> receiver) {
+        content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver) {
+        AwRenderViewHostExt::BindFrameHost(std::move(receiver),
+                                           render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             page_load_metrics::mojom::PageLoadMetrics> receiver) {
+        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+             receiver) {
+        AwPrintManager::BindPrintManagerHost(std::move(receiver),
+                                             render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             security_interstitials::mojom::InterstitialCommands> receiver) {
+        security_interstitials::SecurityInterstitialTabHelper::
+            BindInterstitialCommands(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
 }
 
 void AwContentBrowserClient::ExposeInterfacesToRenderer(
@@ -791,6 +795,15 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       url, has_user_gesture, is_redirect, is_main_frame, ignore_navigation);
 }
 
+bool AwContentBrowserClient::
+    ShouldIgnoreInitialNavigationEntryNavigationStateChangedForLegacySupport() {
+  // On Android WebView, we should not fire the initial NavigationEntry
+  // creation/modification NavigationStateChanged calls to preserve legacy
+  // behavior (not firing extra onPageFinished calls), as initial
+  // NavigationEntries used to not exist. See https://crbug.com/1277414.
+  return true;
+}
+
 bool AwContentBrowserClient::CreateThreadPool(base::StringPiece name) {
   if (g_should_create_thread_pool) {
     base::ThreadPoolInstance::Create(name);
@@ -825,6 +838,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
+    content::RenderFrameHost* initiator_document,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   // Sandbox flags
   // =============
@@ -863,6 +877,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
 void AwContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    const absl::optional<url::Origin>& request_initiator_origin,
     NonNetworkURLLoaderFactoryMap* factories) {
   WebContents* web_contents = content::WebContents::FromRenderFrameHost(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));

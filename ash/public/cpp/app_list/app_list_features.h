@@ -27,9 +27,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppRanker;
 // AppSearchResultRankerPredictorName.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateAppsRanker;
 
-// Enable a model that ranks query based non-apps result.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableQueryBasedMixedTypesRanker;
-
 // Enable a model that ranks zero-state files and recent queries.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableZeroStateMixedTypesRanker;
 
@@ -42,9 +39,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedFiles;
 
 // Enables local file suggestions in the suggestion chips.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedLocalFiles;
-
-// Enables the Assistant search redirection in the app list.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAssistantSearch;
 
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListLaunchRecording;
@@ -62,11 +56,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kLauncherSettingsSearch;
 // non empty queries.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAggregatedMlSearchRanking;
 
-// Enables the new app dragging in the launcher. When the users drags an app
-// within the launcher, this flag will enable the new cardified state, where
-// apps grid pages are scaled down and shown a background card.
-ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
-
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
@@ -77,6 +66,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 // suggestions.
 ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
 
+// Enables iconified text and inline icons in launcher search.
+ASH_PUBLIC_EXPORT extern const base::Feature kSearchResultInlineIcon;
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
@@ -84,16 +76,15 @@ ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsSuggestedFilesEnabled();
 ASH_PUBLIC_EXPORT bool IsSuggestedLocalFilesEnabled();
-ASH_PUBLIC_EXPORT bool IsAssistantSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsFuzzyAppSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSettingsSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
-ASH_PUBLIC_EXPORT bool IsNewDragSpecInLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
 
 ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
 ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();

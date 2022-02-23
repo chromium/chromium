@@ -312,7 +312,7 @@ TEST_F(MessagePipeTest, BasicWaiting) {
   ASSERT_FALSE(hss.satisfiable_signals & MOJO_HANDLE_SIGNAL_WRITABLE);
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 const size_t kPingPongHandlesPerIteration = 30;
 const size_t kPingPongIterations = 500;
@@ -385,7 +385,7 @@ TEST_F(MessagePipeTest, SharedBufferHandlePingPong) {
     MojoClose(buffers[i]);
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(FuseMessagePipeTest, Basic) {
   // Test that we can fuse pipes and they still work.

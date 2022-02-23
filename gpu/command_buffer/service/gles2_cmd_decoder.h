@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -214,7 +214,7 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   bool initialized_ = false;
   bool debug_ = false;
   bool log_commands_ = false;
-  Outputter* outputter_ = nullptr;
+  raw_ptr<Outputter> outputter_ = nullptr;
 };
 
 }  // namespace gles2

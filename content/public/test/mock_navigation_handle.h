@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -18,9 +19,11 @@
 #include "content/public/common/child_process_host.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
 
@@ -56,6 +59,10 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsPrerenderedPageActivation() override {
     return is_prerendered_page_activation_;
   }
+  FrameType GetNavigatingFrameType() const override {
+    NOTIMPLEMENTED();
+    return FrameType::kPrimaryMainFrame;
+  }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
   bool IsSameOrigin() override {
@@ -67,6 +74,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
+  MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
   }
@@ -78,11 +86,17 @@ class MockNavigationHandle : public NavigationHandle {
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
   }
+  RenderFrameHost* GetParentFrameOrOuterDocument() override {
+    return render_frame_host_ ? render_frame_host_->GetParentOrOuterDocument()
+                              : nullptr;
+  }
   WebContents* GetWebContents() override { return web_contents_; }
   MOCK_METHOD0(NavigationStart, base::TimeTicks());
   MOCK_METHOD0(NavigationInputStart, base::TimeTicks());
   MOCK_METHOD0(GetNavigationHandleTiming, const NavigationHandleTiming&());
-  MOCK_METHOD0(WasStartedFromContextMenu, bool());
+  bool WasStartedFromContextMenu() override {
+    return was_started_from_context_menu_;
+  }
   MOCK_METHOD0(GetSearchableFormURL, const GURL&());
   MOCK_METHOD0(GetSearchableFormEncoding, const std::string&());
   ReloadType GetReloadType() override { return reload_type_; }
@@ -184,6 +198,14 @@ class MockNavigationHandle : public NavigationHandle {
     auto dict = std::move(context).WriteDictionary();
   }
   MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
+  MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
+  MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(const base::android::JavaRef<jobject>&,
+              GetJavaNavigationHandle,
+              ());
+#endif
 
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {
@@ -255,18 +277,21 @@ class MockNavigationHandle : public NavigationHandle {
     initiator_origin_ = initiator_origin;
   }
   void set_reload_type(ReloadType reload_type) { reload_type_ = reload_type; }
+  void set_was_started_from_context_menu(bool was_started_from_context_menu) {
+    was_started_from_context_menu_ = was_started_from_context_menu;
+  }
 
  private:
   int64_t navigation_id_;
   GURL url_;
   GURL previous_main_frame_url_;
-  SiteInstance* starting_site_instance_ = nullptr;
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<SiteInstance> starting_site_instance_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   GURL base_url_for_data_url_;
   blink::mojom::Referrer referrer_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
-  RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;
   bool is_prerendered_page_activation_ = false;
@@ -290,6 +315,7 @@ class MockNavigationHandle : public NavigationHandle {
   absl::optional<blink::Impression> impression_;
   absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  bool was_started_from_context_menu_ = false;
 };
 
 }  // namespace content

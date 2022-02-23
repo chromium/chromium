@@ -87,7 +87,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   started_detection_ = true;
   last_detection_time_ = current_time;
 
-  IntSize main_frame_size = main_frame->GetMainFrameViewportSize();
+  gfx::Size main_frame_size = main_frame->GetMainFrameViewportSize();
 
   if (main_frame_size != last_detection_main_frame_size_) {
     // Reset the candidate when the the viewport size has changed. Changing
@@ -173,11 +173,12 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   if (!element->GetLayoutObject())
     return;
 
-  IntRect overlay_rect = element->GetLayoutObject()->AbsoluteBoundingBoxRect();
+  gfx::Rect overlay_rect =
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   bool is_large =
-      (overlay_rect.size().Area() >
-       main_frame_size.Area() * kLargeAdSizeToViewportSizeThreshold);
+      (overlay_rect.size().Area64() >
+       main_frame_size.Area64() * kLargeAdSizeToViewportSizeThreshold);
 
   bool has_gesture = LocalFrame::HasTransientUserActivation(main_frame);
   bool is_ad = element->IsAdRelated();

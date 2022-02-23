@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/common/language_code.h"
@@ -37,6 +36,7 @@ class LogManager;
 }
 
 namespace password_manager {
+class PasswordScriptsFetcher;
 class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 }
@@ -114,6 +114,8 @@ class IOSChromePasswordManagerClient
       const override;
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
       override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
 
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,

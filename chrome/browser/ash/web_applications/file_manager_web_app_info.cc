@@ -7,16 +7,18 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
 using ash::file_manager::kChromeUIFileManagerURL;
@@ -27,7 +29,7 @@ namespace {
 // The handler action has the format: chrome://file-manager/?${ACTION_NAME}
 // This means: For files with the given `file_extensions` or `mime_type` the
 // Files SWA is a candidate app to open/handle such files.
-void AppendFileHandler(WebApplicationInfo& info,
+void AppendFileHandler(WebAppInstallInfo& info,
                        const std::string& action_name,
                        const base::flat_set<std::string>& file_extensions,
                        const std::string& mime_type = "") {
@@ -35,8 +37,7 @@ void AppendFileHandler(WebApplicationInfo& info,
 
   GURL action = GURL(kChromeUIFileManagerURL);
   GURL::Replacements replacements;
-  replacements.SetQuery(action_name.c_str(),
-                        url::Component(0, action_name.length()));
+  replacements.SetQueryStr(action_name);
   handler.action = action.ReplaceComponents(replacements);
 
   handler.accept.emplace_back();
@@ -49,8 +50,8 @@ void AppendFileHandler(WebApplicationInfo& info,
 
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(kChromeUIFileManagerURL);
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
@@ -66,8 +67,14 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
           {"icon256.png", 256, IDR_FILE_MANAGER_ICON_256},
       },
       *info);
-  info->theme_color = 0xFFFFFFFF;
-  info->background_color = 0xFFFFFFFF;
+
+  auto* color_provider = ash::AshColorProvider::Get();
+  info->theme_color =
+      color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
@@ -83,6 +90,10 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gdoc", {"gdoc"});
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
+
+  // Drive & Office Docs:
+  AppendFileHandler(*info, "open-web-drive-office",
+                    {"doc", "docx", "xls", "xlsx", "ppt", "pptx"});
 
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
@@ -111,8 +122,8 @@ FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
               {{web_app::GetOrigin(kChromeUIFileManagerURL),
                 {"FileHandling"}}})) {}
 
-std::unique_ptr<WebApplicationInfo>
-FileManagerSystemAppDelegate::GetWebAppInfo() const {
+std::unique_ptr<WebAppInstallInfo> FileManagerSystemAppDelegate::GetWebAppInfo()
+    const {
   return CreateWebAppInfoForFileManager();
 }
 

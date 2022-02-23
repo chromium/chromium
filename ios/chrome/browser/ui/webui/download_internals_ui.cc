@@ -38,17 +38,17 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
  private:
   // WebUIIOSMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "getServiceStatus",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "getServiceDownloads",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "startDownload",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleStartDownload,
@@ -96,33 +96,28 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
     web_ui()->FireWebUIListener("service-request-made", args);
   }
 
-  void HandleGetServiceStatus(const base::ListValue* args) {
+  void HandleGetServiceStatus(base::Value::ConstListView args) {
     if (!download_service_)
       return;
-
-    const base::Value* callback_id;
-    CHECK(args->Get(0, &callback_id));
-    web_ui()->ResolveJavascriptCallback(
-        *callback_id, download_service_->GetLogger()->GetServiceStatus());
-  }
-
-  void HandleGetServiceDownloads(const base::ListValue* args) {
-    if (!download_service_)
-      return;
-
-    const base::Value* callback_id;
-    CHECK(args->Get(0, &callback_id));
 
     web_ui()->ResolveJavascriptCallback(
-        *callback_id, download_service_->GetLogger()->GetServiceDownloads());
+        args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
-  void HandleStartDownload(const base::ListValue* args) {
+  void HandleGetServiceDownloads(base::Value::ConstListView args) {
     if (!download_service_)
       return;
 
-    CHECK_GT(args->GetList().size(), 1u) << "Missing argument download URL.";
-    GURL url = GURL(args->GetList()[1].GetString());
+    web_ui()->ResolveJavascriptCallback(
+        args[0], download_service_->GetLogger()->GetServiceDownloads());
+  }
+
+  void HandleStartDownload(base::Value::ConstListView args) {
+    if (!download_service_)
+      return;
+
+    CHECK_GT(args.size(), 1u) << "Missing argument download URL.";
+    GURL url = GURL(args[1].GetString());
     if (!url.is_valid()) {
       LOG(WARNING) << "Can't parse download URL, try to enter a valid URL.";
       return;

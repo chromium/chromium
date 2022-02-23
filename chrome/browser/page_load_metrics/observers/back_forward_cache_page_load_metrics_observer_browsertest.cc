@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
+    base::Value expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
     EXPECT_NE(rfh_a->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-    base::ListValue expectations =
+    base::Value expectations =
         EvalJs(web_contents(), "cls_run_tests").ExtractList();
     next_score = EvalJs(web_contents(),
                         R"((async() => {
@@ -684,17 +684,10 @@ IN_PROC_BROWSER_TEST_F(
   VerifyHistoryNavPageEndReasons(expected_reasons_b, url_b);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1261828): Flaky on linux-chromeos.
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
-#else
-#define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
-  ResponsivenessMetricsNormalizationWithSendingAllLatencies
-#endif
+// TODO(crbug.com/1261828): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCachePageLoadMetricsObserverBrowserTest,
-    MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+    DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

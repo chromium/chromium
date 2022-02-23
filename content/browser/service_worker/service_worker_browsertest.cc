@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -35,6 +36,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -233,10 +235,9 @@ VerifySaveDataNotInAccessControlRequestHeader(
   return std::move(http_response);
 }
 
-void CountScriptResources(
-    ServiceWorkerContextWrapper* wrapper,
-    const GURL& scope,
-    int* num_resources) {
+void CountScriptResources(ServiceWorkerContextWrapper* wrapper,
+                          const GURL& scope,
+                          int* num_resources) {
   *num_resources = -1;
 
   std::vector<ServiceWorkerRegistrationInfo> infos =
@@ -265,7 +266,8 @@ void CountScriptResources(
 void StoreString(std::string* result,
                  base::OnceClosure callback,
                  base::Value value) {
-  value.GetAsString(result);
+  if (result && value.is_string())
+    *result = value.GetString();
   std::move(callback).Run();
 }
 
@@ -297,12 +299,12 @@ bool CheckHeader(const base::DictionaryValue& dict,
     return false;
   }
 
-  for (const auto& header : headers->GetList()) {
+  for (const auto& header : headers->GetListDeprecated()) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetList();
+    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;
@@ -333,12 +335,12 @@ bool HasHeader(const base::DictionaryValue& dict,
     return false;
   }
 
-  for (const auto& header : headers->GetList()) {
+  for (const auto& header : headers->GetListDeprecated()) {
     if (!header.is_list()) {
       ADD_FAILURE();
       return false;
     }
-    base::Value::ConstListView name_value_pair = header.GetList();
+    base::Value::ConstListView name_value_pair = header.GetListDeprecated();
     if (name_value_pair.size() != 2u) {
       ADD_FAILURE();
       return false;
@@ -373,6 +375,12 @@ void CheckPageIsMarkedSecure(
       entry->GetSSL().certificate.get()));
   EXPECT_FALSE(net::IsCertStatusError(entry->GetSSL().cert_status));
 }
+
+enum class UserAgentOriginTrialTestType {
+  UAReduction,
+  UADeprecation,
+  UAReductionAndDeprecation
+};
 
 }  // namespace
 
@@ -527,10 +535,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, RequestOrigin) {
       [&](URLLoaderInterceptor::RequestParams* params) {
         auto it = expected_request_urls.find(params->url_request.url);
         if (it != expected_request_urls.end()) {
-          if (base::FeatureList::IsEnabled(features::kPlzServiceWorker) &&
-              it->second) {
-            // The main script is loaded in the browser process when
-            // PlzServiceWorker is enabled. In that case,
+          if (it->second) {
+            // The main script is loaded from the browser process. In that case,
             // `originated_from_service_worker` is set to false and the
             // `trusted_params` is available.
             EXPECT_FALSE(params->url_request.originated_from_service_worker);
@@ -1136,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
 
 class UserAgentServiceWorkerBrowserTest
     : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<UserAgentOriginTrialTestType> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // The public key for the default privatey key used by the
@@ -1147,23 +1153,12 @@ class UserAgentServiceWorkerBrowserTest
                                     kOriginTrialTestPublicKey);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kPlzServiceWorker);
-
-    ServiceWorkerBrowserTest::SetUp();
-  }
-
-  bool WithUserAgentReductionOriginTrialToken() const { return GetParam(); }
-
   std::string GetExpectedUserAgent() const {
     ShellContentBrowserClient* client = ShellContentBrowserClient::Get();
-    if (WithUserAgentReductionOriginTrialToken())
+    if (GetParam() == UserAgentOriginTrialTestType::UAReduction)
       return client->GetReducedUserAgent();
-    return client->GetUserAgent();
+    return client->GetFullUserAgent();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
@@ -1174,11 +1169,21 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   // Generated by running (in tools/origin_trials):
   // generate_token.py https://127.0.0.1:44444 UserAgentReduction
   //   --expire-timestamp=2000000000
-  static constexpr char kOriginTrialToken[] =
+  static constexpr char kUAReducedOriginTrialToken[] =
       "A93QtcQ0CRKf5ioPasUwNbweXQWgbI4ZEshiz+"
       "YS7dkQEWVfW9Ua2pTnA866sZwRzuElkPwsUdGdIaW0fRUP8AwAAABceyJvcmlnaW4iOiAiaH"
       "R0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJVc2VyQWdlbnRSZWR1Y3Rpb2"
       "4iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44444 SendFullUserAgentAfterReduction
+  //   --expire-timestamp=2000000000
+  static constexpr char kUAFullOriginTrialToken[] =
+      "A6+Ti/9KuXTgmFzOQwkTuO8k0QFH8vUaxmv0CllAET1/"
+      "307KShF6fhskMuBqFUvqO7ViAkZ+"
+      "NSeJhQI0n5aLggsAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAi"
+      "ZmVhdHVyZSI6ICJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6"
+      "IDIwMDAwMDAwMDB9";
 
   const GURL main_page_url(
       base::StrCat({kOriginUrl, "/create_service_worker.html"}));
@@ -1205,10 +1210,25 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
                  ? "javascript"
                  : "html",
              "\n"});
-        if (WithUserAgentReductionOriginTrialToken() &&
-            params->url_request.url == service_worker_url) {
-          base::StrAppend(&headers,
-                          {"Origin-Trial: ", kOriginTrialToken, "\n"});
+        if (params->url_request.url == service_worker_url) {
+          switch (GetParam()) {
+            case UserAgentOriginTrialTestType::UAReduction:
+              base::StrAppend(
+                  &headers,
+                  {"Origin-Trial: ", kUAReducedOriginTrialToken, "\n"});
+              break;
+            case UserAgentOriginTrialTestType::UADeprecation:
+              base::StrAppend(
+                  &headers, {"Origin-Trial: ", kUAFullOriginTrialToken, "\n"});
+              break;
+            case UserAgentOriginTrialTestType::UAReductionAndDeprecation:
+              base::StrAppend(
+                  &headers, {"Origin-Trial: ", kUAReducedOriginTrialToken, ",",
+                             kUAFullOriginTrialToken, "\n"});
+              break;
+            default:
+              break;
+          }
         }
 
         URLLoaderInterceptor::WriteResponse(path, params->client.get(),
@@ -1245,9 +1265,12 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   run_loop.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserAgentServiceWorkerBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UserAgentServiceWorkerBrowserTest,
+    testing::Values(UserAgentOriginTrialTestType::UAReduction,
+                    UserAgentOriginTrialTestType::UADeprecation,
+                    UserAgentOriginTrialTestType::UAReductionAndDeprecation));
 
 class ServiceWorkerEagerCacheStorageSetupTest
     : public ServiceWorkerBrowserTest {
@@ -2489,7 +2512,7 @@ class CodeCacheHostInterceptor
   // These can be held as raw pointers since we use the
   // RenderFrameHostObserver interface to clear them before they are
   // destroyed.
-  CodeCacheHostImpl* code_cache_host_impl_;
+  raw_ptr<CodeCacheHostImpl> code_cache_host_impl_;
 };
 
 class CacheStorageControlForBadOrigin
@@ -2737,7 +2760,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDisableWebSecurityTest,
   RunTestWithCrossOriginURL(kPageUrl, kScopeUrl);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Flaky on Android, http://crbug.com/1141870.
 #define MAYBE_RegisterNoCrash DISABLED_RegisterNoCrash
 #else
@@ -3281,41 +3304,24 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetURL("/service_worker/" + worker_url),
             running_info.script_url);
 
-  // Non-PlzServiceWorker:
-  // Process allocation is broken during a fresh installation. We currently do
-  // not have the headers, and end up with a non isolated service worker script.
-  //
-  // TODO(crbug.com/996511): Remove non-PlzSerivceWorker case once the flag
-  // sticks.
   bool is_in_process =
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID() ==
       running_info.render_process_id;
   if (!IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_TRUE(is_in_process);
-  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // When PlzServiceWorker is enabled, the page and the worker cannot live in
-    // the same process.
-    EXPECT_NE(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
-              is_in_process);
-  }
+  if (!IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+    EXPECT_FALSE(is_in_process);
+
   if (IsPageCrossOriginIsolated() && !IsServiceWorkerCrossOriginIsolated())
     EXPECT_FALSE(is_in_process);
-  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated()) {
-    // When PlzServiceWorker is enabled, the page and the worker live in the
-    // same process.
-    EXPECT_EQ(base::FeatureList::IsEnabled(features::kPlzServiceWorker),
-              is_in_process);
-  }
+  if (IsPageCrossOriginIsolated() && IsServiceWorkerCrossOriginIsolated())
+    EXPECT_TRUE(is_in_process);
 
   ProcessLock process_lock =
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
-  if (base::FeatureList::IsEnabled(features::kPlzServiceWorker)) {
-    EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-              process_lock.web_exposed_isolation_info().is_isolated());
-  } else {
-    EXPECT_FALSE(process_lock.web_exposed_isolation_info().is_isolated());
-  }
+  EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
+            process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
@@ -3370,7 +3376,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerCrossOriginIsolatedBrowserTest,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           running_info.render_process_id);
   EXPECT_EQ(IsServiceWorkerCrossOriginIsolated(),
-            process_lock.web_exposed_isolation_info().is_isolated());
+            process_lock.GetWebExposedIsolationInfo().is_isolated());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3645,7 +3651,7 @@ class ServiceWorkerBackForwardCacheBrowserTest
 };
 
 // Fails on Android. https://crbug.com/1216619
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EvictionOfBackForwardCacheWithMultipleServiceWorkers \
   DISABLED_EvictionOfBackForwardCacheWithMultipleServiceWorkers
 #else

@@ -26,7 +26,9 @@ class BrowserContext;
 namespace ash {
 class CertificateProvider;
 }  // namespace ash
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
 class PolicyCertificateProvider;
 }
@@ -126,9 +128,11 @@ class CertificateManagerModel {
 
   // Holds parameters during construction.
   struct Params {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // May be nullptr.
     chromeos::PolicyCertificateProvider* policy_certs_provider = nullptr;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // May be nullptr.
     std::unique_ptr<ash::CertificateProvider> extension_certificate_provider;
 #endif

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 
+#include "base/no_destructor.h"
 #import "base/timer/elapsed_timer.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
 #import "ios/web/public/js_messaging/web_frame.h"

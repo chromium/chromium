@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
           controller_connection.MakeConnectionRequest(),
           media_router::MediaRoute("route",
                                    media_router::MediaSource(presentation_url),
-                                   "sink", "desc", true, true));
+                                   "sink", "desc", true));
 
   base::RunLoop connection_loop;
   EXPECT_CALL(controller_connection, OnMessage(_)).WillOnce([&](auto response) {

@@ -207,4 +207,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularConnectionHandler
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+using ::chromeos::CellularConnectionHandler;
+}  // namespace ash
+
 #endif  // CHROMEOS_NETWORK_CELLULAR_CONNECTION_HANDLER_H_

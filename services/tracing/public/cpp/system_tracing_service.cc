@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"

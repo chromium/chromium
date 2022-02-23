@@ -71,6 +71,11 @@ interface FrameSinkBundle {
   DidAllocateSharedBitmap(
       uint32 sink_id, mojo_base.mojom.ReadOnlySharedMemoryRegion region,
       gpu.mojom.Mailbox id);
+
+  // Corresponds to a single message of the same name on CompositorFrameSink
+  // for the identified sink.
+  [EnableIf=is_android]
+  SetThreadIds(uint32 sink_id, array<int32> thread_ids);
 };
 
 // A set of ReturnedResources belonging to a specific frame sink.

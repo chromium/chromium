@@ -12,36 +12,40 @@ namespace printing {
 
 namespace internal {
 
-uint8_t* GetDriverInfo(HANDLE printer, int level) {
+std::unique_ptr<uint8_t[]> GetDriverInfo(HANDLE printer, int level) {
   DWORD size = 0;
-  ::GetPrinterDriver(printer, NULL, level, NULL, 0, &size);
-  if (size == 0) {
-    return NULL;
-  }
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
-  memset(buffer.get(), 0, size);
-  if (!::GetPrinterDriver(printer, NULL, level, buffer.get(), size, &size)) {
-    return NULL;
-  }
-  return buffer.release();
+  // ::GetPrinterDriver() will always fail on this check for the required size
+  // because the provided buffer is intentionally insufficient.
+  ::GetPrinterDriver(printer, nullptr, level, nullptr, 0, &size);
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER || size == 0)
+    return nullptr;
+
+  auto buffer = std::make_unique<uint8_t[]>(size);
+  if (!::GetPrinterDriver(printer, nullptr, level, buffer.get(), size, &size))
+    return nullptr;
+
+  return buffer;
 }
 
-uint8_t* GetPrinterInfo(HANDLE printer, int level) {
+std::unique_ptr<uint8_t[]> GetPrinterInfo(HANDLE printer, int level) {
   DWORD size = 0;
-  ::GetPrinter(printer, level, NULL, 0, &size);
-  if (size == 0) {
+  // ::GetPrinter() will always fail on this check for the required size
+  // because the provided buffer is intentionally insufficient.
+  ::GetPrinter(printer, level, nullptr, 0, &size);
+  DWORD last_err = GetLastError();
+  if (last_err != ERROR_INSUFFICIENT_BUFFER || size == 0) {
     LOG(WARNING) << "Failed to get size of PRINTER_INFO_" << level
-                 << ", error = " << GetLastError();
-    return NULL;
+                 << ", error = " << last_err;
+    return nullptr;
   }
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[size]);
-  memset(buffer.get(), 0, size);
+
+  auto buffer = std::make_unique<uint8_t[]>(size);
   if (!::GetPrinter(printer, level, buffer.get(), size, &size)) {
     LOG(WARNING) << "Failed to get PRINTER_INFO_" << level
                  << ", error = " << GetLastError();
-    return NULL;
+    return nullptr;
   }
-  return buffer.release();
+  return buffer;
 }
 
 }  // namespace internal

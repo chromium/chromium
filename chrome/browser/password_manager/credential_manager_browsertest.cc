@@ -1,15 +1,16 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,8 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -50,10 +53,6 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
            password_manager::ui::CREDENTIAL_REQUEST_STATE;
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PasswordManagerBrowserTestBase::SetUpCommandLine(command_line);
-  }
-
   // Similarly to PasswordManagerBrowserTestBase::NavigateToFile this is a
   // wrapper around ui_test_utils::NavigateURL that waits until DidFinishLoad()
   // fires. Different to NavigateToFile this method allows passing a test_server
@@ -61,7 +60,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   void NavigateToURL(const net::EmbeddedTestServer& test_server,
                      const std::string& hostname,
                      const std::string& relative_url) {
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     GURL url = test_server.GetURL(hostname, relative_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     observer.Wait();
@@ -300,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           signin_form,
           password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -369,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'abcdef' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -384,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: '123456' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -456,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -471,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -554,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user1', password: 'ABCDEF' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -569,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
         "  new PasswordCredential({ id: 'user2', password: 'UVWXYZ' }))"
         ".then(cred => window.location = '/password/done.html');"));
 
-    NavigationObserver observer(WebContents());
+    PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
     observer.Wait();
   }
@@ -631,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
           signin_form,
           password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -679,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       "  new PasswordCredential({ id: 'user', password: 'P4SSW0RD' }))"
       ".then(cred => window.location = '/password/done.html');"));
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -776,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       "navigator.credentials.get({password: true})"
       ".then(cred => window.location = '/password/done.html');"));
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
   observer.Wait();
 
@@ -951,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   // Fill the new password and click the button to submit the page later. The
   // API should suppress the autofill password manager and overwrite the
   // password.
-  NavigationObserver form_submit_observer(WebContents());
+  PasswordsNavigationObserver form_submit_observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(
       WebContents(),
       "document.getElementById('username_field').value = 'user';"
@@ -1003,6 +1002,130 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, CredentialsAutofilled) {
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
   WaitForElementValue("username_field", "user");
   WaitForElementValue("password_field", "12345");
+}
+
+class CredentialManagerAvatarTest : public PasswordManagerBrowserTestBase {
+ public:
+  static const char kAvatarOrigin[];
+  static const char kAvatarPath[];
+  static const char kLoginPath[];
+
+  CredentialManagerAvatarTest() {
+    https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &CredentialManagerAvatarTest::HandleRequest, base::Unretained(this)));
+  }
+
+  // Add a Credential Management API password with an icon to the store.
+  void AddPasswordForURL(const GURL& url);
+
+  // A counter for requests made to fetch the avatar.
+  size_t avatar_request_counter() const { return avatar_request_counter_; }
+
+  // Runs the message loop until the avatar counter equals |expected|.
+  void WaitForAvatarCounter(size_t expected);
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request);
+  void OnIncrementAvatarCounter();
+
+  size_t avatar_request_counter_ = 0;
+
+  // A pointer to the run loop used to wait for the avatar.
+  base::RunLoop* run_loop_ = nullptr;
+};
+
+const char CredentialManagerAvatarTest::kAvatarOrigin[] = "avatarserver.com";
+const char CredentialManagerAvatarTest::kAvatarPath[] = "/image.png";
+const char CredentialManagerAvatarTest::kLoginPath[] = "/login";
+
+void CredentialManagerAvatarTest::AddPasswordForURL(const GURL& url) {
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.signon_realm = form.url.GetWithEmptyPath().spec();
+  form.username_value = u"User";
+  form.password_value = u"12345";
+  form.type = password_manager::PasswordForm::Type::kApi;
+  form.skip_zero_click = true;
+  form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
+
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::EXPLICIT_ACCESS);
+  password_store->AddLogin(form);
+}
+
+void CredentialManagerAvatarTest::WaitForAvatarCounter(size_t expected) {
+  if (avatar_request_counter_ == expected)
+    return;
+  // The logic doesn't support increments by more than one.
+  EXPECT_EQ(expected, avatar_request_counter_ + 1);
+  base::RunLoop loop;
+  run_loop_ = &loop;
+  loop.Run();
+  EXPECT_EQ(expected, avatar_request_counter_);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+CredentialManagerAvatarTest::HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (request.relative_url == kAvatarPath) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("image/gif");
+    http_response->AddCustomHeader("Cache-Control", "max-age=100000");
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CredentialManagerAvatarTest::OnIncrementAvatarCounter,
+                       base::Unretained(this)));
+  } else if (request.relative_url == kLoginPath) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/plain");
+    http_response->set_content("Login now");
+  }
+  return http_response;
+}
+
+void CredentialManagerAvatarTest::OnIncrementAvatarCounter() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  avatar_request_counter_++;
+  if (run_loop_) {
+    run_loop_->Quit();
+    run_loop_ = nullptr;
+  }
+}
+
+// Test that the avatar is requested in the context of the main frame. Thus,
+// it should not be cached by one origin for another origin.
+IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
+                       AvatarFetchIsolatedPerOrigin) {
+  const GURL a_url = https_test_server().GetURL("a.com", kLoginPath);
+  const GURL b_url = https_test_server().GetURL("b.com", kLoginPath);
+
+  AddPasswordForURL(a_url);
+  AddPasswordForURL(b_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+
+  // The account chooser UI requested the avatar.
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  WaitForAvatarCounter(1u);
+
+  // Navigate to the second site, the icon is requested again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  WaitForAvatarCounter(2u);
+
+  // Navigate back to the first site, the icon is already cached.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  EXPECT_EQ(avatar_request_counter(), 2u);
 }
 
 }  // namespace

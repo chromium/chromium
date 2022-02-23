@@ -29,3 +29,8 @@ bool AutocompleteProviderClient::IsIncognitoModeAvailable() const {
 bool AutocompleteProviderClient::IsSharingHubAvailable() const {
   return false;
 }
+
+base::WeakPtr<AutocompleteProviderClient>
+AutocompleteProviderClient::GetWeakPtr() {
+  return nullptr;
+}

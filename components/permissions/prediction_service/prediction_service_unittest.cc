@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
-#include "components/permissions/prediction_service/prediction_service_common.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "google/protobuf/message_lite.h"
@@ -103,8 +103,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(0);
   kRequestAllCountsZero.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestAllCountsZero.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestAllCountsZero.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestAllCountsZero.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
   kRequestAllCountsZero.mutable_permission_features()->Clear();
   auto* permission_feature =
       kRequestAllCountsZero.mutable_permission_features()->Add();
@@ -132,8 +136,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestRoundedCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestRoundedCounts.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestRoundedCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestRoundedCounts.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
   kRequestRoundedCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestRoundedCounts.mutable_permission_features()->Add();
@@ -161,8 +169,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestEqualCountsTotal20.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestEqualCountsTotal20.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestEqualCountsTotal20.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestEqualCountsTotal20.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
   kRequestEqualCountsTotal20.mutable_permission_features()->Clear();
   permission_feature =
       kRequestEqualCountsTotal20.mutable_permission_features()->Add();
@@ -190,8 +202,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestDifferentCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestDifferentCounts.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestDifferentCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestDifferentCounts.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
   kRequestDifferentCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestDifferentCounts.mutable_permission_features()->Add();
@@ -277,11 +293,12 @@ class PredictionServiceTest : public testing::Test {
     EXPECT_EQ(std::string(), access_token);
   }
 
-  void ResponseCallback(base::RunLoop* response_loop,
-                        bool lookup_successful,
-                        bool response_from_cache,
-                        std::unique_ptr<GeneratePredictionsResponse> response) {
-    received_responses_.emplace_back(std::move(response));
+  void ResponseCallback(
+      base::RunLoop* response_loop,
+      bool lookup_successful,
+      bool response_from_cache,
+      const absl::optional<GeneratePredictionsResponse>& response) {
+    received_responses_.emplace_back(response);
     if (response_loop)
       response_loop->Quit();
 
@@ -291,7 +308,7 @@ class PredictionServiceTest : public testing::Test {
 
  protected:
   std::vector<std::unique_ptr<GeneratePredictionsRequest>> received_requests_;
-  std::vector<std::unique_ptr<GeneratePredictionsResponse>> received_responses_;
+  std::vector<absl::optional<GeneratePredictionsResponse>> received_responses_;
   std::unique_ptr<PredictionService> prediction_service_;
 
   // Different paths to simulate different server behaviours.
@@ -497,7 +514,7 @@ TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
   response_loop.Run();
 
   EXPECT_EQ(2u, received_responses_.size());
-  EXPECT_TRUE(received_responses_[1].get() != nullptr);
+  EXPECT_TRUE(received_responses_[1]);
   EXPECT_EQ(kResponseLikely.SerializeAsString(),
             received_responses_[1]->SerializeAsString());
   EXPECT_EQ(0u, prediction_service_->pending_requests_for_testing().size());
@@ -524,13 +541,16 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
   std::string kPlatformName =
       ClientFeatures_Platform_Name(permissions::GetCurrentPlatformProto());
 
+  std::string kPlatformEnumName = ClientFeatures_PlatformEnum_Name(
+      permissions::GetCurrentPlatformEnumProto());
+
   std::string expected_round_counts =
       "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
       "20000000298023224,\"avgDismissRate\":0.20000000298023224,"
       "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
       "20000000298023224,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
+      "\"gestureEnum\":\"GESTURE_UNSPECIFIED_V2\",\"platform\":\"" +
+      kPlatformName + "\",\"platformEnum\":\"" + kPlatformEnumName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
       "\"permissionStats\":{\"avgDenyRate\":0.20000000298023224,"
       "\"avgDismissRate\":0.20000000298023224,\"avgGrantRate\":0."
@@ -542,8 +562,8 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
       "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
       "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
       "30000001192092896,\"promptsCount\":20},\"gesture\":\"GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
+      "\"gestureEnum\":\"GESTURE_V2\",\"platform\":\"" +
+      kPlatformName + "\",\"platformEnum\":\"" + kPlatformEnumName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
       "\"permissionStats\":{\"avgDenyRate\":0.30000001192092896,"
       "\"avgDismissRate\":0.30000001192092896,\"avgGrantRate\":0."
@@ -555,8 +575,8 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
       "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
       "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
       "30000001192092896,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
+      "\"gestureEnum\":\"GESTURE_UNSPECIFIED_V2\",\"platform\":\"" +
+      kPlatformName + "\",\"platformEnum\":\"" + kPlatformEnumName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
       "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
       "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";
@@ -564,8 +584,9 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
   std::string expected_zero_counts =
       "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.0,"
       "\"avgDismissRate\":0.0,\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,"
-      "\"promptsCount\":0},\"gesture\":\"GESTURE\",\"platform\":\"" +
-      kPlatformName +
+      "\"promptsCount\":0},\"gesture\":\"GESTURE\","
+      "\"gestureEnum\":\"GESTURE_V2\",\"platform\":\"" +
+      kPlatformName + "\",\"platformEnum\":\"" + kPlatformEnumName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
       "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
       "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";

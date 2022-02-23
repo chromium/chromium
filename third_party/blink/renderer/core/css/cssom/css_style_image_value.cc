@@ -7,7 +7,7 @@
 namespace blink {
 
 double CSSStyleImageValue::intrinsicWidth(bool& is_null) const {
-  const absl::optional<IntSize> size = IntrinsicSize();
+  const absl::optional<gfx::Size> size = IntrinsicSize();
   if (!size) {
     is_null = true;
     return 0;
@@ -16,7 +16,7 @@ double CSSStyleImageValue::intrinsicWidth(bool& is_null) const {
 }
 
 double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
-  const absl::optional<IntSize> size = IntrinsicSize();
+  const absl::optional<gfx::Size> size = IntrinsicSize();
   if (!size) {
     is_null = true;
     return 0;
@@ -25,7 +25,7 @@ double CSSStyleImageValue::intrinsicHeight(bool& is_null) const {
 }
 
 double CSSStyleImageValue::intrinsicRatio(bool& is_null) const {
-  const absl::optional<IntSize> size = IntrinsicSize();
+  const absl::optional<gfx::Size> size = IntrinsicSize();
   if (!size || size.value().height() == 0) {
     is_null = true;
     return 0;
@@ -33,10 +33,10 @@ double CSSStyleImageValue::intrinsicRatio(bool& is_null) const {
   return static_cast<double>(size.value().width()) / size.value().height();
 }
 
-FloatSize CSSStyleImageValue::ElementSize(
-    const FloatSize& default_object_size,
+gfx::SizeF CSSStyleImageValue::ElementSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum) const {
-  return FloatSize(IntrinsicSize().value_or(IntSize()));
+  return gfx::SizeF(IntrinsicSize().value_or(gfx::Size()));
 }
 
 }  // namespace blink

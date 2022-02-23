@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
+namespace web {
+class WebState;
+}  // namespace
+
 // Observer to listen for when the doodle is shown and hidden.
 @protocol DoodleObserver <NSObject>
 
@@ -35,6 +39,9 @@
 // Checks for a new doodle.  Calling this method frequently will result in a
 // query being issued at most once per hour.
 - (void)fetchDoodle;
+
+// Updates the vendor's WebState.
+- (void)setWebState:(web::WebState*)webState;
 
 @end
 

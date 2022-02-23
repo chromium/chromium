@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/inspector/console_message_storage.h"
@@ -53,7 +52,6 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
@@ -120,8 +118,16 @@ class WorkerThread::RefCountedWaitableEvent
 // otherwise this could have been done with WTF::Bind and ref counted objects.
 class WorkerThread::InterruptData {
  public:
-  InterruptData(WorkerThread* worker_thread, mojom::FrameLifecycleState state)
-      : worker_thread_(worker_thread), state_(state) {}
+  InterruptData(WorkerThread* worker_thread,
+                mojom::blink::FrameLifecycleState state,
+                bool is_in_back_forward_cache)
+      : worker_thread_(worker_thread),
+        state_(state),
+        is_in_back_forward_cache_(is_in_back_forward_cache) {
+    DCHECK(!is_in_back_forward_cache ||
+           state == mojom::blink::FrameLifecycleState::kFrozen);
+  }
+
   InterruptData(const InterruptData&) = delete;
   InterruptData& operator=(const InterruptData&) = delete;
 
@@ -129,12 +135,14 @@ class WorkerThread::InterruptData {
   void MarkPostTaskCalled() { seen_post_task_ = true; }
   void MarkInterruptCalled() { seen_interrupt_ = true; }
 
-  mojom::FrameLifecycleState state() { return state_; }
+  mojom::blink::FrameLifecycleState state() { return state_; }
   WorkerThread* worker_thread() { return worker_thread_; }
+  bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
  private:
   WorkerThread* worker_thread_;
-  mojom::FrameLifecycleState state_;
+  mojom::blink::FrameLifecycleState state_;
+  bool is_in_back_forward_cache_;
   bool seen_interrupt_ = false;
   bool seen_post_task_ = false;
 };
@@ -238,11 +246,12 @@ void WorkerThread::FetchAndRunModuleScript(
 }
 
 void WorkerThread::Pause() {
-  PauseOrFreeze(mojom::FrameLifecycleState::kPaused);
+  PauseOrFreeze(mojom::blink::FrameLifecycleState::kPaused, false);
 }
 
-void WorkerThread::Freeze() {
-  PauseOrFreeze(mojom::FrameLifecycleState::kFrozen);
+void WorkerThread::Freeze(bool is_in_back_forward_cache) {
+  PauseOrFreeze(mojom::blink::FrameLifecycleState::kFrozen,
+                is_in_back_forward_cache);
 }
 
 void WorkerThread::Resume() {
@@ -815,9 +824,13 @@ bool WorkerThread::CheckRequestedToTerminate() {
   return requested_to_terminate_;
 }
 
-void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
+void WorkerThread::PauseOrFreeze(mojom::blink::FrameLifecycleState state,
+                                 bool is_in_back_forward_cache) {
+  DCHECK(!is_in_back_forward_cache ||
+         state == mojom::blink::FrameLifecycleState::kFrozen);
+
   if (IsCurrentThread()) {
-    PauseOrFreezeOnWorkerThread(state);
+    PauseOrFreezeOnWorkerThread(state, is_in_back_forward_cache);
   } else {
     // We send a V8 interrupt to break active JS script execution because
     // workers might not yield. Likewise we might not be in JS and the
@@ -825,7 +838,8 @@ void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
     // Use a token to mitigate both the interrupt and post task firing.
     MutexLocker lock(mutex_);
 
-    InterruptData* interrupt_data = new InterruptData(this, state);
+    InterruptData* interrupt_data =
+        new InterruptData(this, state, is_in_back_forward_cache);
     pending_interrupts_.insert(std::unique_ptr<InterruptData>(interrupt_data));
 
     if (auto* isolate = GetIsolate()) {
@@ -841,13 +855,19 @@ void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
 }
 
 void WorkerThread::PauseOrFreezeOnWorkerThread(
-    mojom::FrameLifecycleState state) {
+    mojom::blink::FrameLifecycleState state,
+    bool is_in_back_forward_cache) {
   DCHECK(IsCurrentThread());
-  DCHECK(state == mojom::FrameLifecycleState::kFrozen ||
-         state == mojom::FrameLifecycleState::kPaused);
+  DCHECK(state == mojom::blink::FrameLifecycleState::kFrozen ||
+         state == mojom::blink::FrameLifecycleState::kPaused);
+  DCHECK(!is_in_back_forward_cache ||
+         state == mojom::blink::FrameLifecycleState::kFrozen);
+
   pause_or_freeze_count_++;
+  GlobalScope()->SetIsInBackForwardCache(is_in_back_forward_cache);
   GlobalScope()->SetLifecycleState(state);
-  GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kStrict);
+  GlobalScope()->SetDefersLoadingForResourceFetchers(
+      GlobalScope()->GetLoaderFreezeMode());
 
   // If already paused return early.
   if (pause_or_freeze_count_ > 1)
@@ -867,7 +887,8 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
     nested_runner->Run();
   }
   GlobalScope()->SetDefersLoadingForResourceFetchers(LoaderFreezeMode::kNone);
-  GlobalScope()->SetLifecycleState(mojom::FrameLifecycleState::kRunning);
+  GlobalScope()->SetIsInBackForwardCache(false);
+  GlobalScope()->SetLifecycleState(mojom::blink::FrameLifecycleState::kRunning);
 }
 
 void WorkerThread::ResumeOnWorkerThread() {
@@ -884,7 +905,7 @@ void WorkerThread::PauseOrFreezeWithInterruptDataOnWorkerThread(
     InterruptData* interrupt_data) {
   DCHECK(IsCurrentThread());
   bool should_execute = false;
-  mojom::FrameLifecycleState state;
+  mojom::blink::FrameLifecycleState state;
   {
     MutexLocker lock(mutex_);
     state = interrupt_data->state();
@@ -906,7 +927,8 @@ void WorkerThread::PauseOrFreezeWithInterruptDataOnWorkerThread(
   }
 
   if (should_execute) {
-    PauseOrFreezeOnWorkerThread(state);
+    PauseOrFreezeOnWorkerThread(state,
+                                interrupt_data->is_in_back_forward_cache());
   }
 }
 

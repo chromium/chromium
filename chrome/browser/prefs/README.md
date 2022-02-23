@@ -87,6 +87,13 @@ each `PrefService` is query-able by the rest of //chrome, your code can
 therefore assume the migration has taken place if it's accessing the
 `PrefService` via an initialized `BrowserProcess` or `Profile`.
 
+Note that this code in browser_prefs.cc does *not* run on iOS, so if you're
+migrating a pref that also is used on iOS, then the pref may also need to be
+migrated or cleared specifically for iOS as well. This could be by doing the
+migration in feature code that's called by all platforms instead of here, or by
+calling migration code in the appropriate place for iOS specifically, e.g.
+[ios/chrome/browser/prefs/browser_prefs.mm](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/prefs/browser_prefs.mm).
+
 As per [deleting an old pref](#deleting-an-old-pref), if the old pref is also a
 policy, you will need to mark it deprecated for a few milestones first as
 described in

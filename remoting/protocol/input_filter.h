@@ -6,7 +6,7 @@
 #define REMOTING_PROTOCOL_INPUT_FILTER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/input_stub.h"
 
 namespace remoting {
@@ -45,7 +45,7 @@ class InputFilter : public InputStub {
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  InputStub* input_stub_;
+  raw_ptr<InputStub> input_stub_;
   bool enabled_;
 };
 

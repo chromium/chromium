@@ -6,12 +6,13 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 
 #include "base/strings/string_tokenizer.h"
 
 void GetAllTokens(base::StringTokenizer& t) {
   while (t.GetNext()) {
-    (void)t.token();
+    std::ignore = t.token();
   }
 }
 

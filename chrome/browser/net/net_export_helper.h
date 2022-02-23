@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+
 namespace base {
 class Value;
 class DictionaryValue;
@@ -23,7 +25,7 @@ namespace chrome_browser_net {
 
 std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile);
 std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders();
 #endif
 

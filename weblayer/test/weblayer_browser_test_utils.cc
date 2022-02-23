@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "url/gurl.h"
@@ -17,9 +18,9 @@
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/test_navigation_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/test/stub_autofill_provider.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace weblayer {
 
@@ -92,7 +93,7 @@ const std::u16string& GetTitle(Shell* shell) {
   return tab_impl->web_contents()->GetTitle();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void InitializeAutofillWithEventForwarding(
     Shell* shell,
     const base::RepeatingCallback<void(const autofill::FormData&)>&
@@ -101,7 +102,7 @@ void InitializeAutofillWithEventForwarding(
   new StubAutofillProvider(tab_impl->web_contents(), on_received_form_data);
   tab_impl->InitializeAutofillForTests();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ActivateSubresourceFilterInWebContentsForURL(
     content::WebContents* web_contents,

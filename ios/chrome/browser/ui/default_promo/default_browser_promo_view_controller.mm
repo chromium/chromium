@@ -34,8 +34,7 @@
       IsInModifiedStringsGroup()
           ? l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE)
           : l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_DESCRIPTION);
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_MAIN_BUTTON_TEXT);
+  self.primaryActionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
   if (IsInRemindMeLaterGroup() &&
       !ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
     // Show the Remind Me Later button if the user is in the correct experiment

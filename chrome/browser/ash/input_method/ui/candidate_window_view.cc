@@ -172,10 +172,7 @@ BEGIN_METADATA(InformationTextArea, views::View)
 END_METADATA
 
 CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
-    : selected_candidate_index_in_page_(-1),
-      should_show_at_composition_head_(false),
-      should_show_upper_side_(false),
-      was_candidate_window_open_(false) {
+    : selected_candidate_index_in_page_(-1) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCanActivate(false);
   DCHECK(parent);
@@ -300,8 +297,6 @@ void CandidateWindowView::UpdateCandidates(
     // Initialize candidate views if necessary.
     MaybeInitializeCandidateViews(new_candidate_window);
 
-    should_show_at_composition_head_ =
-        new_candidate_window.show_window_at_composition();
     // Compute the index of the current page.
     const int current_page_index = ComputePageIndex(new_candidate_window);
     if (current_page_index < 0)

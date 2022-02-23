@@ -94,8 +94,10 @@ const char kMakeChromeDefault[] = "make-chrome-default";
 // Tells installer to expect to be run as a subsidiary to an MSI.
 const char kMsi[] = "msi";
 
-// Useful only when used with --update-setup-exe, otherwise ignored. It
-// specifies the full path where updated setup.exe will be stored.
+// Useful only when used with --update-setup-exe; otherwise ignored. Specifies
+// the full path where the updated setup.exe will be written. Any other files
+// created in the indicated directory may be deleted by the caller after process
+// termination.
 const char kNewSetupExe[] = "new-setup-exe";
 
 // Specifies a nonce to use with the rotate device key command.

@@ -5,8 +5,10 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility.h"
@@ -31,6 +33,39 @@
 namespace content {
 
 namespace {
+
+// DEBUG_BITMAP_GENERATION (0 or 1) controls whether the routines
+// to save the test bitmaps are present. By default the test just fails
+// without reading/writing files but it is then convenient to have
+// a simple way to make the failing tests write out the input/output images
+// to check them visually.
+#define DEBUG_BITMAP_GENERATION (0)
+
+bool SaveBitmapToPNG(const SkBitmap& bmp, const char* path) {
+#if DEBUG_BITMAP_GENERATION
+  base::ScopedAllowBlockingForTesting allow_io;
+
+  std::vector<unsigned char> png;
+  gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
+  if (!gfx::PNGCodec::Encode(
+          reinterpret_cast<const unsigned char*>(bmp.getPixels()), color_format,
+          gfx::Size(bmp.width(), bmp.height()),
+          static_cast<int>(bmp.rowBytes()), false,
+          std::vector<gfx::PNGCodec::Comment>(), &png)) {
+    LOG(ERROR) << "Failed to encode image";
+    return false;
+  }
+
+  const base::FilePath fpath(path);
+  const int num_written = base::WriteFile(
+      fpath, reinterpret_cast<const char*>(&png[0]), png.size());
+  if (num_written != static_cast<int>(png.size())) {
+    LOG(ERROR) << "Failed to write dest \"" << path << '"';
+    return false;
+  }
+#endif
+  return true;
+}
 
 class AccessibilityActionBrowserTest : public ContentBrowserTest {
  public:
@@ -406,6 +441,113 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ImgElementGetImage) {
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(1, 2));
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ButtonGetImage) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(
+      "data:text/html,"
+      "<body>"
+      "<button style=\"height:200px;width:200px\">Button One</button>"
+      "</body>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  BrowserAccessibility* target = FindNode(ax::mojom::Role::kButton, "");
+  ASSERT_NE(nullptr, target);
+
+  AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
+                                          ui::kAXModeComplete,
+                                          ax::mojom::Event::kImageFrameUpdated);
+  GetManager()->GetImageData(*target, gfx::Size());
+  waiter2.WaitForNotification();
+
+  SkBitmap bitmap;
+  GetBitmapFromImageDataURL(target, &bitmap);
+// https://crbug.com/1285202: Investigate why on Android the button is not
+// necessarily set to the specified CSS size.
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(bitmap.width(), 200);
+  EXPECT_EQ(bitmap.height(), 200);
+#else
+  EXPECT_GE(bitmap.width(), 200);
+  EXPECT_GE(bitmap.height(), 200);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  ASSERT_TRUE(SaveBitmapToPNG(bitmap, "/tmp/button.png"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       ButtonGetImageAndResize) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(
+      "data:text/html,"
+      "<body>"
+      "<button>Button One</button>"
+      "</body>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  BrowserAccessibility* target = FindNode(ax::mojom::Role::kButton, "");
+  ASSERT_NE(nullptr, target);
+
+  AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
+                                          ui::kAXModeComplete,
+                                          ax::mojom::Event::kImageFrameUpdated);
+  GetManager()->GetImageData(*target, gfx::Size(10, 10));
+  waiter2.WaitForNotification();
+
+  SkBitmap bitmap;
+  GetBitmapFromImageDataURL(target, &bitmap);
+  EXPECT_EQ(bitmap.width(), 10);
+  EXPECT_EQ(bitmap.height(), 10);
+
+  ASSERT_TRUE(SaveBitmapToPNG(bitmap, "/tmp/button.png"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, RootGetImage) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  GURL url(
+      "data:text/html,"
+      "<body>"
+      "<button>Button One</button>"
+      "<button>Button Two</button>"
+      "</body>");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  waiter.WaitForNotification();
+
+  BrowserAccessibility* target = GetManager()->GetRoot();
+  ASSERT_NE(nullptr, target);
+
+  AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
+                                          ui::kAXModeComplete,
+                                          ax::mojom::Event::kImageFrameUpdated);
+  GetManager()->GetImageData(*target, gfx::Size());
+  waiter2.WaitForNotification();
+
+  SkBitmap bitmap;
+  GetBitmapFromImageDataURL(target, &bitmap);
+  // TODO(https://crbug.com/1285202): Consider adding a more elaborate test that
+  // covers pixels, if it is stable enough.
+  EXPECT_GT(bitmap.width(), 0);
+  EXPECT_GT(bitmap.height(), 0);
+
+  ASSERT_TRUE(SaveBitmapToPNG(bitmap, "/tmp/root.png"));
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        DoDefaultActionFocusesContentEditable) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -468,13 +610,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, TextareaSetValue) {
   // which contain all of the line break information.
   //
   // We should do it with accessibility flags instead. http://crbug.com/672205
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Check that it really does contain two lines.
   BrowserAccessibility::AXPosition start_position =
       target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          ui::AXBoundaryBehavior::kCrossBoundary);
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }
@@ -490,11 +632,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_NE(nullptr, target);
   EXPECT_EQ(u"Before", target->GetValueForControl());
 
-  AccessibilityNotificationWaiter waiter2(
+  AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED);
   GetManager()->SetValue(*target, "Line1\nLine2");
-  waiter2.WaitForNotification();
+  waiter.WaitForNotification();
 
   EXPECT_EQ(u"Line1\nLine2", target->GetValueForControl());
 
@@ -502,13 +644,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   // which contain all of the line break information.
   //
   // We should do it with accessibility flags instead. http://crbug.com/672205
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Check that it really does contain two lines.
   BrowserAccessibility::AXPosition start_position =
       target->CreateTextPositionAt(0);
   BrowserAccessibility::AXPosition end_of_line_1 =
       start_position->CreateNextLineEndPosition(
-          ui::AXBoundaryBehavior::CrossBoundary);
+          ui::AXBoundaryBehavior::kCrossBoundary);
   EXPECT_EQ(5, end_of_line_1->text_offset());
 #endif
 }
@@ -818,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {
 
 // Action::kScrollToMakeVisible does not seem reliable on Android and we are
 // currently only using it for desktop screen readers.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
@@ -956,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ScrollIntoView) {
     EXPECT_FALSE(doc_left_third.Contains(bounds));
   }
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
   // Create an svg link element that has the shape of a small, red square.
@@ -981,17 +1123,17 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
   EXPECT_EQ(1U, target_node->PlatformChildCount());
   GetManager()->DoDefaultAction(*target_node);
   click_waiter.WaitForNotification();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This waiter times out on some Android try bots.
   // TODO(akihiroota): Refactor test to be applicable to all platforms.
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "SVG link was clicked!");
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // This test ony makes sense on platforms where the popup menu is implemented
 // internally as an HTML page in a popup, not where it's a native popup.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        OpenSelectPopupWithNoAXMenuList) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -1031,6 +1173,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   ASSERT_TRUE(listbox);
   EXPECT_EQ(3U, listbox->PlatformChildCount());
 }
-#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_ATK)
 
 }  // namespace content

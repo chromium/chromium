@@ -53,8 +53,8 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // ImageDecoder:
   String FilenameExtension() const override { return "ico"; }
   void OnSetData(SegmentReader*) override;
-  IntSize Size() const override;
-  IntSize FrameSizeAtIndex(wtf_size_t) const override;
+  gfx::Size Size() const override;
+  gfx::Size FrameSizeAtIndex(wtf_size_t) const override;
   bool SetSize(unsigned width, unsigned height) override;
   bool FrameIsReceivedAtIndex(wtf_size_t) const override;
   // CAUTION: SetFailed() deletes all readers and decoders.  Be careful to
@@ -77,7 +77,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   struct IconDirectoryEntry {
     DISALLOW_NEW();
-    IntSize size_;
+    gfx::Size size_;
     uint16_t bit_count_;
     gfx::Point hot_spot_;
     uint32_t image_offset_;
@@ -178,7 +178,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // Valid only while a BMPImageReader is decoding, this holds the size
   // for the particular entry being decoded.
-  IntSize frame_size_;
+  gfx::Size frame_size_;
 };
 
 }  // namespace blink

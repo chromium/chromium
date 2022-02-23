@@ -4,13 +4,14 @@
 
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 
+#include <tuple>
+
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -18,34 +19,17 @@
 #include "base/task/thread_pool.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/bookmark_constants.h"
-#include "components/history/core/browser/history_database_params.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/top_sites.h"
-#include "components/history/core/browser/visit_delegate.h"
-#include "components/history/ios/browser/history_database_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/undo/bookmark_undo_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
-#include "ios/chrome/browser/history/history_client_impl.h"
-#include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/history/top_sites_factory.h"
-#include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -56,28 +40,6 @@
 #endif
 
 namespace {
-std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<history::HistoryService>(
-      base::WrapUnique(new HistoryClientImpl(
-          ios::BookmarkModelFactory::GetForBrowserState(browser_state))),
-      nullptr);
-}
-
-std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model(
-      new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
-          browser_state, nullptr,
-          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state))));
-  bookmark_model->Load(browser_state->GetPrefs(),
-                       browser_state->GetStatePath());
-  ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
-      ->Start(bookmark_model.get());
-  return bookmark_model;
-}
 
 std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
@@ -269,54 +231,15 @@ net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
 }
 
 void TestChromeBrowserState::CreateWebDataService() {
-  ignore_result(
+  std::ignore =
       ios::WebDataServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildWebDataService)));
+          this, base::BindRepeating(&BuildWebDataService));
 
   // Wait a bit after creating the WebDataService to allow the initialisation
   // to complete (otherwise the TestChromeBrowserState may be destroyed before
   // initialisation of the database is complete which leads to SQL init errors).
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-}
-
-void TestChromeBrowserState::CreateBookmarkModel(bool delete_file) {
-  if (delete_file) {
-    base::DeleteFile(GetOriginalChromeBrowserState()->GetStatePath().Append(
-        bookmarks::kBookmarksFileName));
-  }
-  ignore_result(
-      ios::BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildBookmarkModel)));
-}
-
-bool TestChromeBrowserState::CreateHistoryService() {
-  // Should never be created multiple times.
-  DCHECK(!ios::HistoryServiceFactory::GetForBrowserStateIfExists(
-      this, ServiceAccessType::EXPLICIT_ACCESS));
-
-  // Create and initialize the HistoryService, but destroy it if the init fails.
-  history::HistoryService* history_service =
-      static_cast<history::HistoryService*>(
-          ios::HistoryServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-              this, base::BindRepeating(&BuildHistoryService)));
-  if (!history_service->Init(
-          history::HistoryDatabaseParamsForPath(
-              GetOriginalChromeBrowserState()->GetStatePath()))) {
-    ios::HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        this, BrowserStateKeyedServiceFactory::TestingFactory());
-    return false;
-  }
-
-  // Some tests expect that CreateHistoryService() will also make the
-  // InMemoryURLIndex available.
-  ios::InMemoryURLIndexFactory::GetInstance()->SetTestingFactory(
-      this, ios::InMemoryURLIndexFactory::GetDefaultFactory());
-  // Disable WebHistoryService by default, since it makes network requests.
-  ios::WebHistoryServiceFactory::GetInstance()->SetTestingFactory(
-      this, BrowserStateKeyedServiceFactory::TestingFactory());
-
-  return true;
 }
 
 sync_preferences::TestingPrefServiceSyncable*

@@ -1,6 +1,6 @@
 # Block Layout #
 
-This document can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/ng/BlockLayout.md).
+This document can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/BlockLayout.md).
 
 ## BFC & BFC Offsets ##
 

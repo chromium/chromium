@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   bubble->SetURL(GURL("http://www.foo.com"));
   EXPECT_TRUE(widget->IsVisible());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Clearing the URL and status closes the widget on platforms other than Mac.
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
   bubble->SetStatus(std::u16string());
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
 
 // Mac does not delete the widget after a delay, so this test only runs on
 // non-mac platforms.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();

@@ -145,6 +145,7 @@ needs to have at least one test case. Valid values are:
 - `chromeos_ash`
 - `chromeos_lacros`
 - `android`
+- `fuchsia`
 - `ios` (tested via separate [policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json))
 
 The boolean `official_only` field indicates whether this policy is only

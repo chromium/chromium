@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
@@ -66,7 +67,7 @@ class ResourceRequestAllowedNotifierTest
     tracker->SetConnectionType(network::mojom::ConnectionType::CONNECTION_WIFI);
 
     resource_request_allowed_notifier_.InitWithEulaAcceptNotifier(
-        this, base::WrapUnique(eula_notifier_));
+        this, base::WrapUnique(eula_notifier_.get()));
   }
 
   ResourceRequestAllowedNotifierTest(
@@ -130,7 +131,7 @@ class ResourceRequestAllowedNotifierTest
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   TestRequestAllowedNotifier resource_request_allowed_notifier_;
   TestingPrefServiceSimple prefs_;
-  TestEulaAcceptedNotifier* eula_notifier_;  // Weak, owned by RRAN.
+  raw_ptr<TestEulaAcceptedNotifier> eula_notifier_;  // Weak, owned by RRAN.
   bool was_notified_;
 };
 

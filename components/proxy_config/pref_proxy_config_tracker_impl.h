@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -169,8 +170,8 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   // Configuration as defined by prefs.
   net::ProxyConfigWithAnnotation pref_config_;
 
-  PrefService* pref_service_;
-  ProxyConfigServiceImpl* proxy_config_service_impl_;  // Weak ptr.
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<ProxyConfigServiceImpl> proxy_config_service_impl_;  // Weak ptr.
   PrefChangeRegistrar proxy_prefs_;
 
   // State of |active_config_|.  |active_config_| is only valid if

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -23,7 +24,7 @@
 #include "media/gpu/gles2_decoder_helper.h"
 #include "ui/gl/gl_context.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #endif
 
@@ -45,14 +46,14 @@ class CommandBufferHelperImpl
 
     stub_->AddDestructionObserver(this);
     wait_sequence_id_ = stub_->channel()->scheduler()->CreateSequence(
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         // Workaround for crbug.com/1035750.
         // TODO(sandersd): Investigate whether there is a deeper scheduling
         // problem that can be resolved.
         gpu::SchedulingPriority::kHigh
 #else
         gpu::SchedulingPriority::kNormal
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
         ,
         stub_->channel()->task_runner());
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
@@ -82,7 +83,7 @@ class CommandBufferHelperImpl
     return stub_->channel()->shared_image_stub();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override {
     if (!stub_)
       return nullptr;
@@ -274,7 +275,7 @@ class CommandBufferHelperImpl
     }
 
    private:
-    CommandBufferHelperImpl* const helper_;
+    const raw_ptr<CommandBufferHelperImpl> helper_;
     int client_id_ = 0;
     uint64_t client_tracing_id_ = 0;
     uint64_t context_group_tracing_id_ = 0;
@@ -318,7 +319,7 @@ class CommandBufferHelperImpl
     stub->channel()->scheduler()->DestroySequence(wait_sequence_id_);
   }
 
-  gpu::CommandBufferStub* stub_;
+  raw_ptr<gpu::CommandBufferStub> stub_;
   // Wait tasks are scheduled on our own sequence so that we can't inadvertently
   // block the command buffer.
   gpu::SequenceId wait_sequence_id_;

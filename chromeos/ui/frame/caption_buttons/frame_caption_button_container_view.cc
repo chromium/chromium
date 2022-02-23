@@ -6,9 +6,9 @@
 
 #include <cmath>
 #include <map>
+#include <tuple>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -487,12 +487,12 @@ void FrameCaptionButtonContainerView::MenuButtonPressed() {
   // Send up event as well as down event as ARC++ clients expect this sequence.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_APPS, ui::EF_NONE);
-  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
-      &press_key_event));
+  std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
+      &press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_APPS,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->GetEventSink()->OnEventFromSource(
-      &release_key_event));
+  std::ignore = root_window->GetHost()->GetEventSink()->OnEventFromSource(
+      &release_key_event);
   // TODO(oshima): Add metrics
 }
 
@@ -574,8 +574,11 @@ bool FrameCaptionButtonContainerView::CanSnap() {
   return SnapController::Get()->CanSnap(frame_->GetNativeWindow());
 }
 
-void FrameCaptionButtonContainerView::ShowSnapPreview(SnapDirection snap) {
-  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap);
+void FrameCaptionButtonContainerView::ShowSnapPreview(
+    SnapDirection snap,
+    bool allow_haptic_feedback) {
+  SnapController::Get()->ShowSnapPreview(frame_->GetNativeWindow(), snap,
+                                         allow_haptic_feedback);
 }
 
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {

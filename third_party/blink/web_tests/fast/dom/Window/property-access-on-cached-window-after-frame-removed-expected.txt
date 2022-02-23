@@ -2,6 +2,7 @@ Tests property access on a cached DOMWindow after the associated frame is no lon
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS childWindow.anonymous is false
 PASS childWindow.appHistory.canGoBack is false
 PASS childWindow.appHistory.canGoForward is false
 PASS childWindow.appHistory.current is null
@@ -60,7 +61,9 @@ PASS childWindow.oncanplaythrough is null
 PASS childWindow.onchange is null
 PASS childWindow.onclick is null
 PASS childWindow.onclose is null
+PASS childWindow.oncontextlost is null
 PASS childWindow.oncontextmenu is null
+PASS childWindow.oncontextrestored is null
 PASS childWindow.oncuechange is null
 PASS childWindow.ondblclick is null
 PASS childWindow.ondevicemotion is null

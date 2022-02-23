@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/feature_list.h"
+#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
@@ -19,8 +20,9 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/sys_utils.h"
 #endif
 
@@ -42,7 +44,7 @@ bool MemoryPressureListenerRegistry::IsLowEndDevice() {
 
 // static
 bool MemoryPressureListenerRegistry::IsCurrentlyLowMemory() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::android::SysUtils::IsCurrentlyLowMemory();
 #else
   return false;
@@ -74,12 +76,12 @@ MemoryPressureListenerRegistry& MemoryPressureListenerRegistry::Instance() {
 }
 
 void MemoryPressureListenerRegistry::RegisterThread(Thread* thread) {
-  MutexLocker lock(threads_mutex_);
+  base::AutoLock lock(threads_lock_);
   threads_.insert(thread);
 }
 
 void MemoryPressureListenerRegistry::UnregisterThread(Thread* thread) {
-  MutexLocker lock(threads_mutex_);
+  base::AutoLock lock(threads_lock_);
   threads_.erase(thread);
 }
 
@@ -117,7 +119,7 @@ void MemoryPressureListenerRegistry::OnPurgeMemory() {
   base::PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
 
   // Thread-specific data never issues a layout, so we are safe here.
-  MutexLocker lock(threads_mutex_);
+  base::AutoLock lock(threads_lock_);
   for (auto* thread : threads_) {
     if (!thread->GetTaskRunner())
       continue;

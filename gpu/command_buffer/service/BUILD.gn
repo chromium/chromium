@@ -243,6 +243,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image_backing_gl_image.h",
     "shared_image_backing_gl_texture.cc",
     "shared_image_backing_gl_texture.h",
+    "shared_image_backing_raw_draw.cc",
+    "shared_image_backing_raw_draw.h",
     "shared_image_backing_shared_memory.cc",
     "shared_image_backing_shared_memory.h",
     "shared_image_factory.cc",
@@ -308,7 +310,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:raster_sources",
     "//gpu/command_buffer/common:webgpu_sources",
     "//skia",
-    "//third_party/dawn/src/dawn:dawn_headers",
+    "//third_party/dawn/include/dawn:headers",
   ]
   deps = [
     ":disk_cache_proto",
@@ -331,6 +333,7 @@ target(link_target_type, "gles2_sources") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/zlib",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
@@ -358,7 +361,13 @@ target(link_target_type, "gles2_sources") {
       "//gpu/vulkan",
     ]
 
-    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win) {
+    sources += [
+      "shared_image_backing_factory_angle_vulkan.cc",
+      "shared_image_backing_factory_angle_vulkan.h",
+    ]
+
+    if (is_linux || is_chromeos || is_fuchsia || is_android || is_win ||
+        is_apple) {
       sources += [
         "external_semaphore.cc",
         "external_semaphore.h",
@@ -385,6 +394,8 @@ target(link_target_type, "gles2_sources") {
         "shared_image_backing_ozone.h",
         "shared_image_representation_gl_ozone.cc",
         "shared_image_representation_gl_ozone.h",
+        "shared_image_representation_skia_vk_ozone.cc",
+        "shared_image_representation_skia_vk_ozone.h",
       ]
     }
 
@@ -405,9 +416,9 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn_native",
-      "//third_party/dawn/src/dawn_platform",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+      "//third_party/dawn/src/dawn/platform",
     ]
     if (dawn_enable_opengles) {
       sources += [
@@ -436,8 +447,8 @@ target(link_target_type, "gles2_sources") {
   if (skia_use_dawn) {
     deps += [
       "//components/viz/common:dawn_context_provider",
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
     ]
   }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 
+#include "base/check.h"
 #import "ios/chrome/browser/ui/elements/instruction_view_constants.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -30,6 +31,7 @@ constexpr CGFloat kIconLabelWidth = 30;
 
 @interface InstructionView ()
 
+// The style of the instruction view.
 @property(nonatomic, assign) InstructionViewStyle style;
 
 // A list of step number labels for color reset on trait collection change.
@@ -42,9 +44,15 @@ constexpr CGFloat kIconLabelWidth = 30;
 #pragma mark - Public
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList
-                       style:(InstructionViewStyle)style {
+                       style:(InstructionViewStyle)style
+                       icons:(NSArray<UIImage*>*)icons {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    BOOL useIcon = icons != nil;
+    if (useIcon) {
+      DCHECK(icons.count == instructionList.count);
+    }
+
     _style = style;
     _stepNumberLabels =
         [[NSMutableArray alloc] initWithCapacity:instructionList.count];
@@ -52,13 +60,18 @@ constexpr CGFloat kIconLabelWidth = 30;
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     stackView.axis = UILayoutConstraintAxisVertical;
-    [stackView addArrangedSubview:[self createLineInstruction:instructionList[0]
-                                                   stepNumber:1]];
+    UIView* firstBulletPoint = useIcon ? [self createIconView:icons[0]]
+                                       : [self createStepNumberView:1];
+    [stackView
+        addArrangedSubview:[self createLineInstruction:instructionList[0]
+                                       bulletPointView:firstBulletPoint]];
     for (NSUInteger i = 1; i < [instructionList count]; i++) {
+      UIView* bulletPoint = useIcon ? [self createIconView:icons[i]]
+                                    : [self createStepNumberView:i + 1];
       [stackView addArrangedSubview:[self createLineSeparator]];
       [stackView
           addArrangedSubview:[self createLineInstruction:instructionList[i]
-                                              stepNumber:i + 1]];
+                                         bulletPointView:bulletPoint]];
     }
     [self addSubview:stackView];
     AddSameConstraints(self, stackView);
@@ -74,6 +87,11 @@ constexpr CGFloat kIconLabelWidth = 30;
     self.layer.cornerRadius = kCornerRadius;
   }
   return self;
+}
+
+- (instancetype)initWithList:(NSArray<NSString*>*)instructionList
+                       style:(InstructionViewStyle)style {
+  return [self initWithList:instructionList style:style icons:nil];
 }
 
 - (instancetype)initWithList:(NSArray<NSString*>*)instructionList {
@@ -113,13 +131,10 @@ constexpr CGFloat kIconLabelWidth = 30;
   return liner;
 }
 
-// Creates an instruction line which contain a step number and an instruction
-// text.
+// Creates an instruction line with a bullet point view followed by
+// instructions.
 - (UIView*)createLineInstruction:(NSString*)instruction
-                      stepNumber:(NSUInteger)stepNumber {
-  UIView* stepNumberView = [self createStepNumberView:stepNumber];
-  stepNumberView.translatesAutoresizingMaskIntoConstraints = NO;
-
+                 bulletPointView:(UIView*)bulletPointView {
   UILabel* instructionLabel = [[UILabel alloc] init];
   instructionLabel.textColor = [UIColor colorNamed:kGrey800Color];
   instructionLabel.font =
@@ -130,15 +145,15 @@ constexpr CGFloat kIconLabelWidth = 30;
   instructionLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIView* line = [[UIView alloc] init];
-  [line addSubview:stepNumberView];
+  [line addSubview:bulletPointView];
   [line addSubview:instructionLabel];
 
   [NSLayoutConstraint activateConstraints:@[
-    [stepNumberView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
-                                                 constant:kLeadingMargin],
-    [stepNumberView.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
+    [bulletPointView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
+                                                  constant:kLeadingMargin],
+    [bulletPointView.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
     [instructionLabel.leadingAnchor
-        constraintEqualToAnchor:stepNumberView.trailingAnchor
+        constraintEqualToAnchor:bulletPointView.trailingAnchor
                        constant:kSpacing],
     [instructionLabel.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
     [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
@@ -146,7 +161,7 @@ constexpr CGFloat kIconLabelWidth = 30;
     [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
                                                constant:kVerticalMargin],
     [instructionLabel.trailingAnchor constraintEqualToAnchor:line.trailingAnchor
-                                                    constant:kTrailingMargin]
+                                                    constant:-kTrailingMargin]
   ]];
 
   return line;
@@ -222,6 +237,13 @@ constexpr CGFloat kIconLabelWidth = 30;
   ]];
 
   return labelContainer;
+}
+
+// Creates a view with icon in it.
+- (UIView*)createIconView:(UIImage*)icon {
+  UIImageView* iconImageView = [[UIImageView alloc] initWithImage:icon];
+  iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  return iconImageView;
 }
 
 // Sets and update the background color of the step number label on

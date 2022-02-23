@@ -56,6 +56,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void SetDisplayEmail(const std::string& email) final;
   void SetDisplayAndGivenName(const std::string& display_name,
                               const std::string& given_name) final;
+  void ShowAllowlistCheckFailedError() final;
   void LoadWallpaper(const AccountId& account_id) final;
   void LoadSigninWallpaper() final;
   bool IsUserAllowlisted(

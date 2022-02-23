@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -28,6 +29,17 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// Subclass of ConsistencyPromoSigninMediator to override
+// |signinTimeoutDurationSeconds| property.
+@interface TestConsistencyPromoSigninMediator : ConsistencyPromoSigninMediator
+
+@property(nonatomic, assign) NSInteger signinTimeoutDurationSeconds;
+
+@end
+
+@implementation TestConsistencyPromoSigninMediator
+@end
 
 class ConsistencyPromoSigninMediatorTest : public PlatformTest {
  public:
@@ -74,12 +86,12 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
         browser_state_.get());
   }
 
-  ConsistencyPromoSigninMediator* GetConsistencyPromoSigninMediator() {
+  TestConsistencyPromoSigninMediator* GetConsistencyPromoSigninMediator() {
     ChromeAccountManagerService* chromeAccountManagerService =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
-    ConsistencyPromoSigninMediator* mediator =
-        [[ConsistencyPromoSigninMediator alloc]
+    TestConsistencyPromoSigninMediator* mediator =
+        [[TestConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chromeAccountManagerService
                     authenticationService:GetAuthenticationService()
                           identityManager:GetIdentityManager()
@@ -91,7 +103,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates cookies being added on the web.
   void SigninAndSimulateCookies(ConsistencyPromoSigninMediator* mediator,
                                 ChromeIdentity* identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(identity, nil);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
                                     withIdentity:identity]);
@@ -111,9 +123,11 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates a cookie error.
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
                               ChromeIdentity* identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(identity, nil);
     OCMExpect([mediator_delegate_mock_
-        consistencyPromoSigninMediatorGenericErrorDidHappen:mediator]);
+        consistencyPromoSigninMediator:mediator
+                        errorDidHappen:
+                            ConsistencyPromoSigninMediatorErrorGeneric]);
     id<IdentityManagerObserverBridgeDelegate>
         identityManagerObserverBridgeDelegate =
             (id<IdentityManagerObserverBridgeDelegate>)mediator;
@@ -131,6 +145,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 
@@ -270,4 +285,41 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithError) {
   histogram_tester.ExpectBucketCount(
       "Signin.AccountConsistencyPromoAction",
       signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN, 1);
+}
+
+// Tests timeout error.
+TEST_F(ConsistencyPromoSigninMediatorTest, SigninCoordinatorWithTimeoutError) {
+  base::HistogramTester histogram_tester;
+  TestConsistencyPromoSigninMediator* mediator =
+      GetConsistencyPromoSigninMediator();
+  // Sets the timeout duration to 0, to trigger the timeout error without
+  // waiting.
+  mediator.signinTimeoutDurationSeconds = 0;
+  // Starts sign-in for the mediator.
+  OCMExpect([mediator_delegate_mock_
+      consistencyPromoSigninMediatorSigninStarted:mediator]);
+  [mediator signinWithIdentity:identity1_];
+  // Expects timeout.
+  OCMExpect([mediator_delegate_mock_
+      consistencyPromoSigninMediator:mediator
+                      errorDidHappen:
+                          ConsistencyPromoSigninMediatorErrorTimeout]);
+  // Wait for the time trigger.
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 2);
+  // Expects show metric.
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::SHOWN, 1);
+  // Expects timeout metric.
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN, 1);
+  // Closes the sign-in dialog.
+  [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
+  // Expects dismiss metric.
+  histogram_tester.ExpectTotalCount("Signin.AccountConsistencyPromoAction", 3);
+  histogram_tester.ExpectBucketCount(
+      "Signin.AccountConsistencyPromoAction",
+      signin_metrics::AccountConsistencyPromoAction::DISMISSED_BUTTON, 1);
 }

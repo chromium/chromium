@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/signin/oauth2_token_fetcher.h"
-#include "chromeos/login/auth/user_context.h"
 
 namespace ash {
 

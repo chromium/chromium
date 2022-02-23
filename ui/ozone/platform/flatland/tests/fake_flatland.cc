@@ -23,6 +23,16 @@ fidl::InterfaceHandle<fuchsia::ui::composition::Flatland> FakeFlatland::Connect(
   return flatland;
 }
 
+fidl::InterfaceRequestHandler<fuchsia::ui::composition::Flatland>
+FakeFlatland::GetRequestHandler(async_dispatcher_t* dispatcher) {
+  return
+      [this, dispatcher](
+          fidl::InterfaceRequest<fuchsia::ui::composition::Flatland> request) {
+        CHECK(!binding_.is_bound());
+        binding_.Bind(std::move(request), dispatcher);
+      };
+}
+
 void FakeFlatland::Disconnect(fuchsia::ui::composition::FlatlandError error) {
   binding_.events().OnError(std::move(error));
   binding_.Unbind();
@@ -43,6 +53,16 @@ void FakeFlatland::FireOnFramePresentedEvent(
   binding_.events().OnFramePresented(std::move(frame_presented_info));
 }
 
+void FakeFlatland::SetViewRefFocusedRequestHandler(
+    ViewRefFocusedRequestHandler handler) {
+  view_ref_focused_handler_ = std::move(handler);
+}
+
+void FakeFlatland::SetTouchSourceRequestHandler(
+    TouchSourceRequestHandler handler) {
+  touch_source_request_handler_ = std::move(handler);
+}
+
 void FakeFlatland::NotImplemented_(const std::string& name) {
   LOG(ERROR) << "FakeFlatland does not implement " << name;
 }
@@ -50,6 +70,22 @@ void FakeFlatland::NotImplemented_(const std::string& name) {
 void FakeFlatland::Present(fuchsia::ui::composition::PresentArgs args) {
   // TODO(fxb/85619): ApplyCommands()
   present_handler_.Run(std::move(args));
+}
+
+void FakeFlatland::CreateView2(
+    fuchsia::ui::views::ViewCreationToken token,
+    fuchsia::ui::views::ViewIdentityOnCreation view_identity,
+    fuchsia::ui::composition::ViewBoundProtocols view_protocols,
+    fidl::InterfaceRequest<fuchsia::ui::composition::ParentViewportWatcher>
+        parent_viewport_watcher) {
+  if (view_ref_focused_handler_ && view_protocols.has_view_ref_focused()) {
+    view_ref_focused_handler_(
+        std::move(*view_protocols.mutable_view_ref_focused()));
+  }
+  if (touch_source_request_handler_ && view_protocols.has_touch_source()) {
+    touch_source_request_handler_(
+        std::move(*view_protocols.mutable_touch_source()));
+  }
 }
 
 void FakeFlatland::SetDebugName(std::string debug_name) {

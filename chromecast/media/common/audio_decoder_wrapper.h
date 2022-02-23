@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/common/audio_decoder_software_wrapper.h"

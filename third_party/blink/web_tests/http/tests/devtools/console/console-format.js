@@ -79,7 +79,7 @@
       var smallTypedArray = new Uint8Array(new ArrayBuffer(400));
       smallTypedArray["foo"] = "bar";
       var bigTypedArray = new Uint8Array(new ArrayBuffer(400 * 1000 * 1000));
-      bigTypedArray["FAIL"] = "FAIL: Object.getOwnPropertyNames() should not have been run";
+      bigTypedArray.PASS = "Non-element properties should be displayed.";
       var namespace = {};
       namespace.longSubNamespace = {};
       namespace.longSubNamespace.x = {};

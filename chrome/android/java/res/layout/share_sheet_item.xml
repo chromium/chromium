@@ -47,7 +47,7 @@
         android:maxLines="1"
         android:paddingTop="13dp"
         android:text="@string/new_badge"
-        android:textAppearance="@style/TextAppearance.TextSmall.Blue"
+        android:textAppearance="@style/TextAppearance.TextSmall.Accent1"
         android:visibility="gone"/>
 
 </RelativeLayout>

@@ -8,6 +8,7 @@
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"

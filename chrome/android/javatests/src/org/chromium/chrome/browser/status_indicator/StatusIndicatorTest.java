@@ -27,7 +27,6 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +50,6 @@ import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
@@ -66,10 +64,6 @@ import org.chromium.ui.test.util.UiRestriction;
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class StatusIndicatorTest {
     // clang-format on
-
-    @ClassRule
-    public static DisableAnimationsTestRule mDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

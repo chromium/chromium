@@ -12,6 +12,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/color_palette.h"
@@ -42,7 +43,8 @@ views::Label* GetLabel(AssistantOnboardingSuggestionView* suggestion_view) {
 using AssistantOnboardingSuggestionViewTest = AshTestBase;
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
   ASSERT_TRUE(features::IsDarkLightModeEnabled());
@@ -130,6 +132,10 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
+
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 

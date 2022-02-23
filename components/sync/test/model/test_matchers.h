@@ -48,12 +48,11 @@ MATCHER_P2(MetadataBatchContains, state, entities, "") {
 
   // We need to convert the map values to non-pointers in order to make them
   // copyable and use gmock.
-  std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>> metadata =
-      arg->TakeAllMetadata();
+  std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
+      metadata_by_storage_key = arg->TakeAllMetadata();
   std::map<std::string, sync_pb::EntityMetadata> copyable_metadata;
-  for (std::pair<const std::string, std::unique_ptr<sync_pb::EntityMetadata>>&
-           kv : metadata) {
-    copyable_metadata[kv.first] = std::move(*(kv.second));
+  for (auto& [storage_key, metadata] : metadata_by_storage_key) {
+    copyable_metadata[storage_key] = std::move(*metadata);
   }
 
   return ExplainMatchResult(

@@ -23,8 +23,6 @@ class NET_EXPORT SCTAuditingDelegate {
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps) = 0;
-
-  virtual bool IsSCTAuditingEnabled() = 0;
 };
 
 }  // namespace net

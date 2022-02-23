@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_H_
 #define IOS_CHROME_BROWSER_PRERENDER_PRERENDER_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/web/public/navigation/referrer.h"
 #include "ui/base/page_transition_types.h"

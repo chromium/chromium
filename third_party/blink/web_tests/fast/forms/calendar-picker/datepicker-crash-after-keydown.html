@@ -3,7 +3,7 @@
 if (window.testRunner) {
   testRunner.dumpAsText();
 }
-function openPicker(input) {
+function openPickerDeprecatedJsTest(input) {
   sendKey(input, "Down", false, true);
   finishTest();
 }
@@ -12,7 +12,7 @@ function sendKey(input, keyName, ctrlKey, altKey) {
   event.initKeyboardEvent('keydown', true, true, document.defaultView, keyName, 0, ctrlKey, altKey);
   input.dispatchEvent(event);
 }
-openPicker(document.getElementById('month'), finishTest);
+openPickerDeprecatedJsTest(document.getElementById('month'), finishTest);
 function finishTest() {
   document.body.innerText = 'PASS (not crashed)';
 }

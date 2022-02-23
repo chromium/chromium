@@ -12,6 +12,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
@@ -60,10 +61,11 @@ std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
 }
 
 std::unique_ptr<tflite::task::vision::ImageClassifier> CreateClassifier(
-    const std::string& model_data) {
+    std::string model_data) {
   TRACE_EVENT0("safe_browsing", "CreateTfLiteClassifier");
   tflite::task::vision::ImageClassifierOptions options;
-  options.mutable_model_file_with_metadata()->set_file_content(model_data);
+  options.mutable_model_file_with_metadata()->set_file_content(
+      std::move(model_data));
   auto statusor_classifier =
       tflite::task::vision::ImageClassifier::CreateFromOptions(
           options, CreateOpResolver());
@@ -109,21 +111,37 @@ std::string GetModelInput(const SkBitmap& bitmap, int width, int height) {
 }  // namespace
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
+Scorer::VisualTfliteModelHelperResult Scorer::ApplyVisualTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
     int input_height,
-    const std::string& model_data) {
-  TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
-  std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
-      CreateClassifier(model_data);
-  if (!classifier)
-    return std::vector<double>();
+    std::unique_ptr<base::MemoryMappedFile> visual_tflite_model) {
+  VisualTfliteModelHelperResult result;
+  result.visual_tflite_model = std::move(visual_tflite_model);
 
+  TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
+  base::Time before_operation = base::Time::Now();
+  std::string model_data = std::string(
+      reinterpret_cast<const char*>(result.visual_tflite_model->data()),
+      result.visual_tflite_model->length());
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.ModelCopy",
+                          base::Time::Now() - before_operation);
+  before_operation = base::Time::Now();
+  std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
+      CreateClassifier(std::move(model_data));
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.CreateClassifier",
+                          base::Time::Now() - before_operation);
+  if (!classifier)
+    return result;
+
+  before_operation = base::Time::Now();
   std::string model_input = GetModelInput(bitmap, input_width, input_height);
   if (model_input.empty())
-    return std::vector<double>();
+    return result;
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.GetModelInput",
+                          base::Time::Now() - before_operation);
 
+  before_operation = base::Time::Now();
   tflite::task::vision::FrameBuffer::Plane plane{
       reinterpret_cast<const tflite::uint8*>(model_input.data()),
       {3 * input_width, 3}};
@@ -132,9 +150,11 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
       tflite::task::vision::FrameBuffer::Format::kRGB,
       tflite::task::vision::FrameBuffer::Orientation::kTopLeft);
   auto statusor_result = classifier->Classify(*frame_buffer);
+  base::UmaHistogramTimes("SBClientPhishing.ApplyTfliteTime.Classify",
+                          base::Time::Now() - before_operation);
   if (!statusor_result.ok()) {
     VLOG(1) << statusor_result.status().ToString();
-    return std::vector<double>();
+    return result;
   } else {
     std::vector<double> scores(
         statusor_result->classifications(0).classes().size());
@@ -142,8 +162,16 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
          statusor_result->classifications(0).classes()) {
       scores[clas.index()] = clas.score();
     }
-    return scores;
+    result.scores = std::move(scores);
+    return result;
   }
+}
+
+void Scorer::OnVisualTfLiteModelComplete(
+    base::OnceCallback<void(std::vector<double>)> callback,
+    VisualTfliteModelHelperResult result) {
+  visual_tflite_model_ = std::move(result.visual_tflite_model);
+  std::move(callback).Run(result.scores);
 }
 #endif
 
@@ -160,5 +188,15 @@ double Scorer::LogOdds2Prob(double log_odds) {
 
 Scorer::Scorer() = default;
 Scorer::~Scorer() = default;
+
+Scorer::VisualTfliteModelHelperResult::VisualTfliteModelHelperResult() =
+    default;
+Scorer::VisualTfliteModelHelperResult::~VisualTfliteModelHelperResult() =
+    default;
+Scorer::VisualTfliteModelHelperResult::VisualTfliteModelHelperResult(
+    VisualTfliteModelHelperResult&&) = default;
+Scorer::VisualTfliteModelHelperResult&
+Scorer::VisualTfliteModelHelperResult::operator=(
+    VisualTfliteModelHelperResult&&) = default;
 
 }  // namespace safe_browsing

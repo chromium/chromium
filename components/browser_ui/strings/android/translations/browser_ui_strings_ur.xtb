@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">سائٹ <ph name="SITE_NAME" /> شامل کی گئی</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
+<translation id="1409426117486808224">کھلے ٹیبز کیلئے سادہ منظر</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
 <translation id="2228071138934252756">‏<ph name="APP_NAME" /> کو اپنے کیمرے تک رسائی دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ہٹائیں</translation>
 <translation id="2289270750774289114">اس وقت پوچھیں جب کسی سائٹ میں قریبی بلوٹوتھ آلات کو دریافت کرنا مقصود ہو (تجویز کردہ)</translation>
 <translation id="2315043854645842844">کلائنٹ سائڈ سرٹیفکیٹ کا انتخاب آپریٹنگ سسٹم کے ذریعہ تعاون یافتہ نہیں ہے۔</translation>
+<translation id="2321958826496381788">سلائیڈر کو اس وقت تک گھسیٹیں جب اسے آرام سے پڑھ سکتے ہوں۔ کسی پیراگراف پر دوبار تھپتھپانے کے بعد متن کم از کم اتنا بڑا دکھائی دینا چاہیے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2379925928934107488">‏ممکن ہو تو سائٹس پر گہری تھیم لاگو ہوتی ہے جب Chrome کو گہری تھیم استعمال کرنے کیلئے سیٹ کیا جاتا ہے</translation>
+<translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">معلومات دکھائیں</translation>
 <translation id="3123473560110926937">بعض سائٹس پر مسدود ہے</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> اسٹور کردہ ڈیٹا</translation>
+<translation id="3203366800380907218">ویب سے</translation>
 <translation id="321187648315454507">‏<ph name="APP_NAME" /> کو آپ کو اطلاعات بھیجنے کی سہولت دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی اطلاعات آن کریں۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
 <translation id="3277252321222022663">سائٹس کو سینسرز تک رسائی حاصل کرنے کی اجازت دیں (تجویز کردہ)</translation>
@@ -110,14 +115,18 @@
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
+<translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
 <translation id="3955193568934677022">سائٹس کو محفوظ کردہ مواد چلانے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">مخصوص سائٹ کے لیے کوکیز کی اجازت دیں۔</translation>
+<translation id="4040330681741629921">کسی سائٹ کو سادہ منظر میں دکھائے جانے پر اطلاع حاصل کریں</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
+<translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
+<translation id="4194328954146351878">‏سائٹس کو NFC آلات پر معلومات دیکھنے اور تبدیل کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4200726100658658164">مقام کی ترتیبات کھولیں</translation>
 <translation id="4226663524361240545">اطلاعات آلہ کو وائبریٹ کر سکتی ہیں</translation>
 <translation id="4259722352634471385">نیویگیشن مسدود ہے: <ph name="URL" /></translation>
@@ -126,6 +135,7 @@
 <translation id="42981349822642051">پھیلائیں</translation>
 <translation id="4336434711095810371">سبھی ڈیٹا صاف کریں</translation>
 <translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
+<translation id="4428065317363009941">اشتہارات کو ذاتی نوعیت کا بنانا</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="445467742685312942">سائٹس کو محفوظ مواد چلانے کی اجازت دیں</translation>
 <translation id="4468959413250150279">کسی مخصوص سائٹ کیلئے آواز بند کریں۔</translation>
@@ -156,6 +166,7 @@
 <translation id="5186036860380548585">اسکرین کے اوپری حصہ کے قریب اختیار دستیاب ہے</translation>
 <translation id="5197729504361054390">آپ کے منتخب کردہ رابطوں کا <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> کے ساتھ اشتراک کیا جائے گا۔</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
+<translation id="5264323282659631142">’<ph name="CHIP_LABEL" />‘ ہٹائیں</translation>
 <translation id="528192093759286357">پوری اسکرین سے باہر نکلنے کیلئے اوپر سے گھسیٹیں اور پیچھے جائیں بٹن کو ٹچ کریں۔</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5301954838959518834">ٹھیک ہے، سمجھ آ گئی</translation>
@@ -166,6 +177,7 @@
 <translation id="5354152178998424783">اس سے سائٹس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{‏(‎+1 مزید)}other{(# + مزید)}}</translation>
 <translation id="5403592356182871684">نام</translation>
+<translation id="5412236728747081950">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں موصول کرتی ہے</translation>
 <translation id="5438097262470833822">یہ انتخاب <ph name="WEBSITE" /> کے لیے اجازتوں کو ری سیٹ کرے گا</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> میں سے <ph name="ELAPSED_TIME" /> وقت گزر گیا۔</translation>
 <translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
@@ -177,10 +189,10 @@
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
+<translation id="5668404140385795438">زوم ان کرنے سے بچنے کیلئے کسی ویب سائٹ کی درخواست کو اوور رائیڈ کریں</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5690795753582697420">‏Android کی ترتیبات میں کیمرا آف ہے</translation>
-<translation id="5710871682236653961">‏NFC آلات پر تھپتھپاتے وقت سائٹس کو معلومات بھیجنے اور وصول کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="5719847187258001597">اس سے <ph name="ORIGIN" /> یا اس ایپ کے ذریعے آپ کی ہوم اسکرین پر اسٹور کردہ سبھی ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود ہو گیا</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -230,16 +242,16 @@
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6818926723028410516">آئٹمز منتخب کریں</translation>
 <translation id="6864395892908308021">‏یہ آلہ NFC کو نہیں پڑھ سکتا</translation>
-<translation id="6910211073230771657">حذف کردہ</translation>
 <translation id="6912998170423641340">سائٹس کو کلپ بورڈ سے ٹیکسٹ اور تصاویر پڑھنے سے مسدود کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
+<translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
 <translation id="7016516562562142042">موجودہ سرچ انجن کیلئے اجازت یافتہ</translation>
+<translation id="702463548815491781">‏TalkBack یا سوئچ رسائی آن ہونے پر تجویز کردہ</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
-<translation id="7070090581017165256">اس سائٹ کے بارے میں</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> منتخب ہو گئے۔ اختیارات اسکرین کے اوپری حصہ کے قریب دستیاب ہیں</translation>
 <translation id="7141896414559753902">سائٹس کو پاپ اپس اور ری ڈائریکٹس دکھانے سے مسدود کریں (تجویز کردہ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -254,8 +266,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">سائٹ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
-<translation id="7572498721684305250">‏NFC آلات پر تھپتھپاتے وقت سائٹس کو معلومات بھیجنے اور وصول کرنے سے مسدود کریں</translation>
 <translation id="757524316907819857">محفوظ مواد چلانے سے سائٹس کو مسدود کریں</translation>
+<translation id="7577900504646297215">دلچسپیوں کا نظم کریں</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
@@ -288,6 +300,7 @@
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
 <translation id="8249310407154411074">اوپر منتقل کریں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8284326494547611709">کیپشنز</translation>
 <translation id="8300705686683892304">ایپ کے زیر انتظام ہیں</translation>
 <translation id="8324158725704657629">دوبارہ مت پوچھیں</translation>
 <translation id="8372893542064058268">کسی مخصوص سائٹ کیلئے پس منظر کی مطابقت پذیری کی اجازت دیں۔</translation>
@@ -321,6 +334,7 @@
 <translation id="8903921497873541725">زوم ان کریں</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏اس آلہ کے لیے NFC آف ہے۔ اسے <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں آن کریں۔</translation>
+<translation id="8928445016601307354">‏سائٹس کو NFC آلات پر معلومات دیکھنے اور تبدیل کرنے سے مسدود کریں</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">کسی مخصوص سائٹ کے لیے کوکیز مسدود کریں۔</translation>
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>

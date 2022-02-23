@@ -9,6 +9,7 @@
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
@@ -30,7 +31,7 @@ class TimeTrayItemViewTest : public AshTestBase,
     else
       scoped_feature_list_.InitWithFeatures({}, features);
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(GetPrimaryShelf());
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(GetPrimaryShelf());
     time_tray_item_view_ =
         std::make_unique<TimeTrayItemView>(GetPrimaryShelf(), model_.get());
   }
@@ -57,7 +58,7 @@ class TimeTrayItemViewTest : public AshTestBase,
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<TimeTrayItemView> time_tray_item_view_;
 };
 

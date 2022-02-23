@@ -11,7 +11,6 @@
 #include "chrome/android/chrome_jni_headers/PasswordChangeLauncher_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
-#include "chrome/common/url_constants.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -85,7 +84,8 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       Java_PasswordChangeLauncher_start(
           env, window_android_->GetJavaObject(),
           url::GURLAndroid::FromNativeGURL(env, origin_),
-          base::android::ConvertUTF16ToJavaString(env, username_));
+          base::android::ConvertUTF16ToJavaString(env, username_),
+          /*skip_login=*/true);
       break;
   }
 
@@ -104,7 +104,7 @@ std::u16string CredentialLeakControllerAndroid::GetAcceptButtonLabel() const {
 }
 
 std::u16string CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
-  return password_manager::GetCancelButtonLabel();
+  return password_manager::GetCancelButtonLabel(leak_type_);
 }
 
 std::u16string CredentialLeakControllerAndroid::GetDescription() const {
@@ -117,4 +117,8 @@ std::u16string CredentialLeakControllerAndroid::GetTitle() const {
 
 bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {
   return password_manager::ShouldShowCancelButton(leak_type_);
+}
+
+bool CredentialLeakControllerAndroid::ShouldShowChangePasswordButton() const {
+  return password_manager::ShouldShowChangePasswordButton(leak_type_);
 }

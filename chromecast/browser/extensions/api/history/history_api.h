@@ -6,7 +6,6 @@
 #define CHROMECAST_BROWSER_EXTENSIONS_API_HISTORY_HISTORY_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromecast/common/extensions_api/history.h"
 #include "extensions/browser/extension_function.h"
 

@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -20,6 +19,7 @@
 namespace content {
 
 class FrameTreeNode;
+class RenderFrameHostImpl;
 
 // Responsible for browser-process-side mixed content security checks. It checks
 // only for frame-level resource loads (aka navigation loads). Sub-resources

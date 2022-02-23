@@ -50,6 +50,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/messages/android/mock_message_dispatcher_bridge.h"
+#endif
+
 namespace subresource_filter {
 
 namespace {
@@ -180,6 +184,12 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     Observe(contents);
 
     observer_ = std::make_unique<TestSubresourceFilterObserver>(contents);
+
+#if BUILDFLAG(IS_ANDROID)
+    message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
+    messages::MessageDispatcherBridge::SetInstanceForTesting(
+        &message_dispatcher_bridge_);
+#endif
   }
 
   virtual void Configure() {
@@ -202,6 +212,10 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     RunUntilIdle();
 
     content::RenderViewHostTestHarness::TearDown();
+
+#if BUILDFLAG(IS_ANDROID)
+    messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+#endif
   }
 
   TestSubresourceFilterObserver* observer() { return observer_.get(); }
@@ -345,21 +359,10 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     return &scoped_configuration_;
   }
 
-  bool presenting_ads_blocked_infobar() {
-    auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-        content::RenderViewHostTestHarness::web_contents());
-    if (infobar_manager->infobar_count() == 0)
-      return false;
-
-    // No infobars other than the ads blocked infobar should be displayed in the
-    // context of these tests.
-    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-    auto* infobar = infobar_manager->infobar_at(0);
-    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
-              infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
-
-    return true;
-  }
+ protected:
+#if BUILDFLAG(IS_ANDROID)
+  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+#endif
 
  private:
   testing::ScopedSubresourceFilterConfigurator scoped_configuration_;
@@ -376,6 +379,40 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;
+};
+
+class SubresourceFilterSafeBrowsingActivationThrottleInfoBarUiTest
+    : public SubresourceFilterSafeBrowsingActivationThrottleTest {
+ public:
+  void SetUp() override {
+    SubresourceFilterSafeBrowsingActivationThrottleTest::SetUp();
+#if BUILDFLAG(IS_ANDROID)
+    message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(false);
+    messages::MessageDispatcherBridge::SetInstanceForTesting(
+        &message_dispatcher_bridge_);
+#endif
+  }
+
+  bool presenting_ads_blocked_infobar() {
+    auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+        content::RenderViewHostTestHarness::web_contents());
+    if (infobar_manager->infobar_count() == 0)
+      return false;
+
+    // No infobars other than the ads blocked infobar should be displayed in the
+    // context of these tests.
+    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+    auto* infobar = infobar_manager->infobar_at(0);
+    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+              infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
+
+    return true;
+  }
+
+ protected:
+#if BUILDFLAG(IS_ANDROID)
+  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+#endif
 };
 
 class SubresourceFilterSafeBrowsingActivationThrottleParamTest
@@ -585,12 +622,12 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
        NotificationVisibility) {
   GURL url(kURL);
   ConfigureForMatch(url);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
   content::RenderFrameHost* rfh = SimulateNavigateAndCommit({url}, main_rfh());
 
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(rfh));
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(presenting_ads_blocked_infobar());
-#endif
 }
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
@@ -756,11 +793,11 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   const GURL url("https://example.test/");
 
   // Navigate initially, should be no activation.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage).Times(0);
+#endif
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
-  EXPECT_FALSE(presenting_ads_blocked_infobar());
-#endif
 
   // Simulate opening devtools and forcing activation.
   devtools_interaction_tracker->ToggleForceActivation(true);
@@ -768,11 +805,11 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kForcedActivationEnabled, 1);
 
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(presenting_ads_blocked_infobar());
-#endif
 
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.PageLoad.ActivationDecision",
@@ -798,14 +835,14 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   base::HistogramTester histogram_tester;
   devtools_interaction_tracker->ToggleForceActivation(true);
   const GURL url("https://example.test/");
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+#endif
   SimulateNavigateAndCommit({url}, main_rfh());
   devtools_interaction_tracker->ToggleForceActivation(false);
 
   // Resource should be disallowed, since navigation commit had activation.
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(presenting_ads_blocked_infobar());
-#endif
 }
 
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleScopeTest,
@@ -1093,6 +1130,18 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
                   : mojom::ActivationLevel::kDisabled,
               *observer()->GetPageActivationForLastCommittedLoad());
   }
+}
+
+TEST_F(SubresourceFilterSafeBrowsingActivationThrottleInfoBarUiTest,
+       NotificationVisibility) {
+  GURL url(kURL);
+  ConfigureForMatch(url);
+  content::RenderFrameHost* rfh = SimulateNavigateAndCommit({url}, main_rfh());
+
+  EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(rfh));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(presenting_ads_blocked_infobar());
+#endif
 }
 
 // Disabled due to flaky failures: https://crbug.com/753669.

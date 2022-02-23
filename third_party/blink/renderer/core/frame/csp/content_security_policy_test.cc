@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/crypto.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -559,6 +559,7 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
       {CSPDirectiveName::ChildSrc, "child-src"},
       {CSPDirectiveName::ConnectSrc, "connect-src"},
       {CSPDirectiveName::DefaultSrc, "default-src"},
+      {CSPDirectiveName::FencedFrameSrc, "fenced-frame-src"},
       {CSPDirectiveName::FrameAncestors, "frame-ancestors"},
       {CSPDirectiveName::FrameSrc, "frame-src"},
       {CSPDirectiveName::FontSrc, "font-src"},
@@ -1181,7 +1182,7 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
       CSPDirectiveName::ManifestSrc,   CSPDirectiveName::MediaSrc,
       CSPDirectiveName::ObjectSrc,     CSPDirectiveName::PrefetchSrc,
       CSPDirectiveName::ScriptSrcElem, CSPDirectiveName::StyleSrcElem,
-      CSPDirectiveName::WorkerSrc};
+      CSPDirectiveName::WorkerSrc,     CSPDirectiveName::FencedFrameSrc};
   for (auto type : types_to_test) {
     EXPECT_TRUE(
         csp->AllowFromSource(type, example_url, example_url,

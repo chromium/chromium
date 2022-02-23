@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -84,7 +85,7 @@ const char kMoveToAccountStoreOfferedCountKey[] =
 // Returns the total number of accounts for which an opt-in to the account
 // storage exists. Used for metrics.
 int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
-  const base::DictionaryValue* global_pref =
+  const base::Value* global_pref =
       pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings);
   int count = 0;
   for (auto entry : global_pref->DictItems()) {
@@ -99,7 +100,7 @@ class AccountStorageSettingsReader {
  public:
   AccountStorageSettingsReader(const PrefService* prefs,
                                const GaiaIdHash& gaia_id_hash) {
-    const base::DictionaryValue* global_pref =
+    const base::Value* global_pref =
         prefs->GetDictionary(prefs::kAccountStoragePerAccountSettings);
     if (global_pref)
       account_settings_ = global_pref->FindDictKey(gaia_id_hash.ToBase64());
@@ -131,7 +132,7 @@ class AccountStorageSettingsReader {
 
  private:
   // May be null, if no settings for this account were saved yet.
-  const base::Value* account_settings_ = nullptr;
+  raw_ptr<const base::Value> account_settings_ = nullptr;
 };
 
 // Helper class for updating account storage settings for a given account. Like
@@ -147,8 +148,8 @@ class ScopedAccountStorageSettingsUpdate {
   base::Value* GetOrCreateAccountSettings() {
     base::Value* account_settings = update_->FindDictKey(account_hash_);
     if (!account_settings) {
-      account_settings =
-          update_->SetKey(account_hash_, base::DictionaryValue());
+      account_settings = update_->SetKey(
+          account_hash_, base::Value(base::Value::Type::DICTIONARY));
     }
     DCHECK(account_settings);
     return account_settings;

@@ -29,26 +29,27 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
 namespace {
 
-FloatPoint ContentsOffset(LocalFrame* frame) {
+gfx::Vector2dF ContentsOffset(LocalFrame* frame) {
   if (!frame)
-    return FloatPoint();
+    return gfx::Vector2dF();
   LocalFrameView* frame_view = frame->View();
   if (!frame_view)
-    return FloatPoint();
+    return gfx::Vector2dF();
   float scale = 1.0f / frame->PageZoomFactor();
-  return FloatPoint(frame_view->LayoutViewport()->GetScrollOffset())
-      .ScaledBy(scale);
+  gfx::Vector2dF offset = frame_view->LayoutViewport()->GetScrollOffset();
+  offset.Scale(scale);
+  return offset;
 }
 
-LayoutPoint PageToAbsolute(LocalFrame* frame, const FloatPoint& page_pos) {
+LayoutPoint PageToAbsolute(LocalFrame* frame, const gfx::PointF& page_pos) {
   float scale_factor = frame ? frame->PageZoomFactor() : 1.0f;
-  FloatPoint converted_point = page_pos.ScaledBy(scale_factor);
+  gfx::PointF converted_point = gfx::ScalePoint(page_pos, scale_factor);
 
   if (frame && frame->View())
     converted_point = frame->View()->DocumentToFrame(converted_point);
@@ -61,9 +62,9 @@ LayoutPoint PageToAbsolute(LocalFrame* frame, const FloatPoint& page_pos) {
 Touch::Touch(LocalFrame* frame,
              EventTarget* target,
              int identifier,
-             const FloatPoint& screen_pos,
-             const FloatPoint& page_pos,
-             const FloatSize& radius,
+             const gfx::PointF& screen_pos,
+             const gfx::PointF& page_pos,
+             const gfx::SizeF& radius,
              float rotation_angle,
              float force)
     : target_(target),
@@ -78,10 +79,10 @@ Touch::Touch(LocalFrame* frame,
 
 Touch::Touch(EventTarget* target,
              int identifier,
-             const FloatPoint& client_pos,
-             const FloatPoint& screen_pos,
-             const FloatPoint& page_pos,
-             const FloatSize& radius,
+             const gfx::PointF& client_pos,
+             const gfx::PointF& screen_pos,
+             const gfx::PointF& page_pos,
+             const gfx::SizeF& radius,
              float rotation_angle,
              float force,
              LayoutPoint absolute_location)
@@ -98,10 +99,10 @@ Touch::Touch(EventTarget* target,
 Touch::Touch(LocalFrame* frame, const TouchInit* initializer)
     : target_(initializer->target()),
       identifier_(initializer->identifier()),
-      client_pos_(FloatPoint(initializer->clientX(), initializer->clientY())),
-      screen_pos_(FloatPoint(initializer->screenX(), initializer->screenY())),
-      page_pos_(FloatPoint(initializer->pageX(), initializer->pageY())),
-      radius_(FloatSize(initializer->radiusX(), initializer->radiusY())),
+      client_pos_(initializer->clientX(), initializer->clientY()),
+      screen_pos_(initializer->screenX(), initializer->screenY()),
+      page_pos_(initializer->pageX(), initializer->pageY()),
+      radius_(initializer->radiusX(), initializer->radiusY()),
       rotation_angle_(initializer->rotationAngle()),
       force_(initializer->force()),
       absolute_location_(PageToAbsolute(frame, page_pos_)) {}

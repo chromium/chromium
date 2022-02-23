@@ -8,12 +8,12 @@
 #include <string>
 
 // This file contains utilities used for device local accounts (public sessions
-// / kiosks). Eg. check whether an extension is whitelisted for use in public
+// / kiosks). Eg. check whether an extension is allowlisted for use in public
 // session.
 
 namespace extensions {
 
-bool IsWhitelistedForPublicSession(const std::string& extension_id);
+bool IsAllowlistedForPublicSession(const std::string& extension_id);
 
 }  // namespace extensions
 

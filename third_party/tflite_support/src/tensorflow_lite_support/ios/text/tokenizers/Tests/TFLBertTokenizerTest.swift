@@ -18,7 +18,7 @@ import XCTest
 
 class TFLBertTokenizerTest: XCTestCase {
   static let bundle = Bundle(for: TFLBertTokenizerTest.self)
-  static let mobileBertVocabPath = bundle.path(forResource: "vocab", ofType: "txt")!
+  static let mobileBertVocabPath = bundle.path(forResource: "mobilebert_vocab", ofType: "txt")!
 
   func testInitBertTokenizerFromPath() {
     let bertTokenizer = TFLBertTokenizer(vocabPath: TFLBertTokenizerTest.mobileBertVocabPath)

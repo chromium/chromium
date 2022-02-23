@@ -5,10 +5,14 @@
 #ifndef UI_BASE_L10N_L10N_UTIL_MAC_BRIDGE_H_
 #define UI_BASE_L10N_L10N_UTIL_MAC_BRIDGE_H_
 
+#import <UIKit/UIKit.h>
+
 // An ObjC wrapper around namespaced C++ l10n methods.
 @interface L10NUtils : NSObject
 
 + (NSString*)stringForMessageId:(int)messageId;
+
++ (NSString*)stringWithFixupForMessageId:(int)messageId;
 
 @end
 

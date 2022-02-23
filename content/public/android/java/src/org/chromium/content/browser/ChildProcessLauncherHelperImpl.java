@@ -389,9 +389,9 @@ public final class ChildProcessLauncherHelperImpl {
                     sandboxed = false;
                 }
 
-                // Remove sandbox restriction on network service process.
+                // Network Service:
                 if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(serviceSandboxType)) {
-                    sandboxed = false;
+                    sandboxed = ChildProcessLauncherHelperImplJni.get().isNetworkSandboxEnabled();
                 }
             }
         }
@@ -879,5 +879,6 @@ public final class ChildProcessLauncherHelperImpl {
                 int reverseRank);
 
         boolean serviceGroupImportanceEnabled();
+        boolean isNetworkSandboxEnabled();
     }
 }

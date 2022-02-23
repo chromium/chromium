@@ -4,13 +4,17 @@
 
 #include "ash/system/unified/unified_system_tray_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/unified/notification_hidden_view.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
@@ -50,7 +54,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model());
   }
 
@@ -74,8 +78,8 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   }
 
  protected:
-  void WaitForAnimation() {
-    while (controller()->animation_->is_animating())
+  void WaitForAnimation(UnifiedSystemTrayController* controller) {
+    while (controller->animation_->is_animating())
       base::RunLoop().RunUntilIdle();
   }
 
@@ -96,10 +100,14 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   UnifiedSystemTrayController* controller() { return controller_.get(); }
   UnifiedSystemTrayView* view() { return view_.get(); }
 
+  bool PrimarySystemTrayIsExpandedOnOpen() {
+    return GetPrimaryUnifiedSystemTray()->model()->IsExpandedOnOpen();
+  }
+
  private:
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-  std::unique_ptr<UnifiedSystemTrayModel> model_;
+  scoped_refptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemTrayView> view_;
 
@@ -113,7 +121,7 @@ TEST_F(UnifiedSystemTrayControllerTest, ToggleExpanded) {
   const int expanded_height = view()->GetPreferredSize().height();
 
   controller()->ToggleExpanded();
-  WaitForAnimation();
+  WaitForAnimation(controller());
 
   const int collapsed_height = view()->GetPreferredSize().height();
   EXPECT_LT(collapsed_height, expanded_height);
@@ -200,6 +208,32 @@ TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeProhibited) {
   EXPECT_EQ(nullptr, view()
                          ->notification_hidden_view_for_testing()
                          ->change_button_for_testing());
+}
+
+TEST_F(UnifiedSystemTrayControllerTest, SystemTrayCollapsePref) {
+  InitializeView();
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  UnifiedSystemTrayController* controller =
+      GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test();
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // System tray is initially expanded when no pref is set.
+  EXPECT_FALSE(prefs->HasPrefPath(prefs::kSystemTrayExpanded));
+  EXPECT_TRUE(PrimarySystemTrayIsExpandedOnOpen());
+
+  // Toggle collapsed state.
+  controller->ToggleExpanded();
+  WaitForAnimation(controller);
+  EXPECT_FALSE(PrimarySystemTrayIsExpandedOnOpen());
+
+  // Close bubble and assert pref has been set.
+  GetPrimaryUnifiedSystemTray()->CloseBubble();
+  EXPECT_TRUE(prefs->HasPrefPath(prefs::kSystemTrayExpanded));
+
+  // Reopen bubble to load `kSystemTrayExpanded` pref.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  EXPECT_FALSE(PrimarySystemTrayIsExpandedOnOpen());
 }
 
 }  // namespace ash

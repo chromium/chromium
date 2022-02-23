@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
 #define CONTENT_BROWSER_QUOTA_QUOTA_MANAGER_HOST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/quota/quota_change_dispatcher.h"
@@ -105,13 +106,13 @@ class QuotaManagerHost : public blink::mojom::QuotaManagerHost {
   // Raw pointer use is safe because the QuotaContext that indirectly owns this
   // QuotaManagerHost owner holds a reference to the QuotaManager. Therefore
   // the QuotaManager is guaranteed to outlive this QuotaManagerHost.
-  storage::QuotaManager* const quota_manager_;
+  const raw_ptr<storage::QuotaManager> quota_manager_;
 
   // Raw pointer use is safe because the QuotaContext that indirectly owns this
   // QuotaManagerHost owner holds a reference to the QuotaPermissionContext.
   // Therefore the QuotaPermissionContext is guaranteed to outlive this
   // QuotaManagerHost.
-  QuotaPermissionContext* const permission_context_;
+  const raw_ptr<QuotaPermissionContext> permission_context_;
 
   scoped_refptr<QuotaChangeDispatcher> quota_change_dispatcher_;
 

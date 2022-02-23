@@ -28,21 +28,21 @@ class CppBundleGeneratorTest(unittest.TestCase):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_win_linux.json')
     self.assertEqual(
-        'defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))',
+        'BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)',
         _getPlatformIfdefs(cpp_bundle_generator, model))
 
   def testIfDefsForAll(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_all.json')
     self.assertEqual(
-        'defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || '
-        '(defined(OS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS))',
+        'BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || '
+        '(BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_LACROS))',
         _getPlatformIfdefs(cpp_bundle_generator, model))
 
   def testIfDefsForChromeOS(self):
     cpp_bundle_generator, model = _createCppBundleGenerator(
         'test/function_platform_chromeos.json')
-    self.assertEqual('(defined(OS_CHROMEOS) && '
+    self.assertEqual('(BUILDFLAG(IS_CHROMEOS) && '
                       '!BUILDFLAG(IS_CHROMEOS_LACROS))',
                       _getPlatformIfdefs(cpp_bundle_generator, model))
 

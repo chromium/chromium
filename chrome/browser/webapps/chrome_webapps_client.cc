@@ -5,12 +5,14 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -49,7 +51,7 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
     content::WebContents* web_contents,
     InstallTrigger trigger) {
   bool is_custom_tab = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
       web_contents->GetDelegate());
   is_custom_tab = delegate->IsCustomTab();
@@ -80,14 +82,14 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
 
 AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
     content::WebContents* web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
 #else
   return AppBannerManagerDesktop::FromWebContents(web_contents);
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ChromeWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {

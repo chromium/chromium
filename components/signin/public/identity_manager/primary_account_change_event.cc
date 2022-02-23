@@ -4,7 +4,10 @@
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
-#if defined(OS_ANDROID)
+#include "build/build_config.h"
+#include "base/check_op.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/android/jni_headers/PrimaryAccountChangeEvent_jni.h"
 #endif
 
@@ -103,7 +106,7 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 ConvertToJavaPrimaryAccountChangeEvent(
     JNIEnv* env,
@@ -120,6 +123,6 @@ ConvertToJavaPrimaryAccountChangeEvent(
       env, jint(event_type_not_required), jint(event_type_sync));
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace signin

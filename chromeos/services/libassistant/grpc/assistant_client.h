@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/grpc/services_status_observer.h"
@@ -172,6 +171,7 @@ class AssistantClient {
   virtual std::string GetDeviceId() = 0;
 
   // Audio-related functionality:
+  // Enables or disables audio input pipeline.
   virtual void EnableListening(bool listening_enabled) = 0;
 
   // Alarm/timer-related functionality:
@@ -185,13 +185,15 @@ class AssistantClient {
   virtual void RemoveTimer(const std::string& timer_id) = 0;
   // Resumes the specified timer (expected to be in paused state).
   virtual void ResumeTimer(const std::string& timer_id) = 0;
-  // Returns the list of all currently scheduled, ringing or paused timers.
-  virtual std::vector<assistant::AssistantTimer> GetTimers() = 0;
+  // Returns the list of all currently scheduled, ringing or paused timers in
+  // the callback.
+  virtual void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) = 0;
 
   // Registers |observer| to get notified on any alarm/timer status change.
-  virtual void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  virtual void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) = 0;
 
   // Will not return nullptr.

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/listener_tracker.h"
 #include "gin/converter.h"
 
@@ -160,7 +160,7 @@ size_t UnfilteredEventListeners::GetNumListeners() {
 }
 
 std::vector<v8::Local<v8::Function>> UnfilteredEventListeners::GetListeners(
-    const EventFilteringInfo* filter,
+    mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
   std::vector<v8::Local<v8::Function>> listeners;
   listeners.reserve(listeners_.size());
@@ -310,10 +310,12 @@ size_t FilteredEventListeners::GetNumListeners() {
 }
 
 std::vector<v8::Local<v8::Function>> FilteredEventListeners::GetListeners(
-    const EventFilteringInfo* filter,
+    mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
   std::set<int> ids = listener_tracker_->GetMatchingFilteredListeners(
-      event_name_, filter ? *filter : EventFilteringInfo(), kIgnoreRoutingId);
+      event_name_,
+      filter ? std::move(filter) : mojom::EventFilteringInfo::New(),
+      kIgnoreRoutingId);
 
   std::vector<v8::Local<v8::Function>> listeners;
   listeners.reserve(ids.size());

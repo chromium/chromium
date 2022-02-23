@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.password_check;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 
 /**
  * Helper class for recording password check metrics.

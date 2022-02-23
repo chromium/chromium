@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "courgette/disassembler_win32.h"
 #include "courgette/image_utils.h"
 #include "courgette/types_win_pe.h"

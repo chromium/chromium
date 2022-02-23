@@ -10,19 +10,14 @@
 @class FakeChromeIdentity;
 @protocol GREYMatcher;
 
+namespace signin {
+enum class ConsentLevel;
+}
+
 // SigninEarlGreyAppInterface contains the app-side implementation for
 // helpers that primarily work via direct model access. These helpers are
 // compiled into the app binary and can be called from either app or test code.
 @interface SigninEarlGreyAppInterface : NSObject
-
-// Returns a fake identity.
-+ (FakeChromeIdentity*)fakeIdentity1;
-
-// Returns a second fake identity.
-+ (FakeChromeIdentity*)fakeIdentity2;
-
-// Returns a fake managed identity.
-+ (FakeChromeIdentity*)fakeManagedIdentity;
 
 // Adds |fakeIdentity| to the fake identity service.
 + (void)addFakeIdentity:(FakeChromeIdentity*)fakeIdentity;
@@ -40,9 +35,9 @@
 // If there is no signed-in account returns an empty string.
 + (NSString*)primaryAccountGaiaID;
 
-// Returns the email of the signed-in account.
+// Returns the email of the primary account base on |consentLevel|.
 // If there is no signed-in account returns an empty string.
-+ (NSString*)primaryAccountEmail;
++ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel;
 
 // Checks that no identity is signed in.
 + (BOOL)isSignedOut;

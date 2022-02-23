@@ -7,12 +7,13 @@
 #include <string>
 
 #include "components/content_settings/core/common/features.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -56,6 +57,7 @@
                                                     URLLoader:_URLLoader];
   }
 
+  self.incognitoView.accessibilityIdentifier = kNTPIncognitoViewIdentifier;
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
                                           UIViewAutoresizingFlexibleWidth];
   self.incognitoView.backgroundColor = [UIColor colorNamed:kBackgroundColor];

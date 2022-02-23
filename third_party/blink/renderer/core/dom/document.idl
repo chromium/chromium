@@ -24,9 +24,6 @@ enum DocumentReadyState { "loading", "interactive", "complete" };
 // https://w3c.github.io/page-visibility/#visibilitystate-enum
 enum VisibilityState { "hidden", "visible" };
 
-// https://wicg.github.io/cors-rfc1918/#feature-detect
-enum AddressSpace { "local", "private", "public" };
-
 typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 // https://dom.spec.whatwg.org/#interface-document
@@ -178,11 +175,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     readonly attribute boolean wasDiscarded;
 
     // https://wicg.github.io/nav-speculation/prerendering.html#dom-document-prerendering
-    [RuntimeEnabled=Prerender2RelatedFeatures] readonly attribute boolean prerendering;
-
-    // CORS and RFC1918
-    // https://wicg.github.io/cors-rfc1918/#feature-detect
-    [CallWith=ScriptState, RuntimeEnabled=AddressSpace, ImplementedAs=addressSpaceForBindings] readonly attribute AddressSpace addressSpace;
+    [RuntimeEnabled=Prerender2RelatedFeatures, Measure] readonly attribute boolean prerendering;
 
     // Non-standard APIs
     [MeasureAs=DocumentCaretRangeFromPoint] Range caretRangeFromPoint(optional long x = 0, optional long y = 0);
@@ -190,10 +183,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Storage Access API
     [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI, MeasureAs=StorageAccessAPI_HasStorageAccess_Method] Promise<boolean> hasStorageAccess();
     [CallWith=ScriptState, NewObject, RuntimeEnabled=StorageAccessAPI, MeasureAs=StorageAccessAPI_requestStorageAccess_Method] Promise<void> requestStorageAccess();
-
-    // Interest Cohort API
-    // TODO(yaoxia): Add web tests. http://crbug/1130074.
-    [CallWith=ScriptState, RaisesException, NewObject, SecureContext, RuntimeEnabled=InterestCohortAPI, MeasureAs=InterestCohortAPI_interestCohort_Method] Promise<InterestCohort> interestCohort();
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
@@ -216,7 +205,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     attribute EventHandler onbeforecut;
     attribute EventHandler onbeforepaste;
     attribute EventHandler onfreeze;
-    [RuntimeEnabled=Prerender2RelatedFeatures] attribute EventHandler onprerenderingchange;
+    [RuntimeEnabled=Prerender2RelatedFeatures, Measure] attribute EventHandler onprerenderingchange;
     attribute EventHandler onresume;
     attribute EventHandler onsearch;
     attribute EventHandler onvisibilitychange;

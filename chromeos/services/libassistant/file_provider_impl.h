@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "libassistant/shared/public/platform_file.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
 namespace chromeos {
 namespace libassistant {

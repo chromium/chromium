@@ -96,9 +96,7 @@ class RecentAppsViewTest : public AshTestBase,
     auto result = std::make_unique<TestSearchResult>();
     result->set_result_id(id);
     result->set_result_type(type);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
     model->results()->Add(std::move(result));
   }
 
@@ -113,6 +111,10 @@ class RecentAppsViewTest : public AshTestBase,
       AddAppListItem(id);
       AddSearchResult(id, AppListSearchResultType::kInstalledApp);
     }
+  }
+
+  void RemoveApp(const std::string& id) {
+    AppListModelProvider::Get()->model()->DeleteItem(id);
   }
 
   std::vector<AppListItemView*> GetAppListItemViews() {
@@ -347,6 +349,24 @@ TEST_P(RecentAppsViewTest, NotVisibleWithLessThanMinimumApps) {
 
   // Verify the visibility of the recent_apps section.
   EXPECT_FALSE(GetRecentAppsView()->GetVisible());
+}
+
+TEST_P(RecentAppsViewTest, RemoveAppUpdatesRecentApps) {
+  AddAppResults(5);
+  ShowAppList();
+
+  // Verify initial set of shown apps.
+  EXPECT_EQ(std::vector<std::string>({"id0", "id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
+
+  // Uninstall the first app.
+  RemoveApp("id0");
+
+  // Verify the visibility of the recent_apps section.
+  EXPECT_TRUE(GetRecentAppsView()->GetVisible());
+  // Verify shown apps.
+  EXPECT_EQ(std::vector<std::string>({"id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
 }
 
 }  // namespace

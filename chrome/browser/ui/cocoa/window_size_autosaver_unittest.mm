@@ -47,7 +47,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::DictionaryValue* placement = pref->GetDictionary(path_);
+  const base::Value* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
   EXPECT_TRUE(placement->DictEmpty());
 
@@ -96,17 +96,18 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   }
 
   // ...and it should be in the profile, too.
-  EXPECT_TRUE(pref->GetDictionary(path_));
-  int x, y;
-  const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
-  EXPECT_FALSE(windowPref->GetInteger("left", &x));
-  EXPECT_FALSE(windowPref->GetInteger("right", &x));
-  EXPECT_FALSE(windowPref->GetInteger("top", &x));
-  EXPECT_FALSE(windowPref->GetInteger("bottom", &x));
-  ASSERT_TRUE(windowPref->GetInteger("x", &x));
-  ASSERT_TRUE(windowPref->GetInteger("y", &y));
-  EXPECT_EQ(300, x);
-  EXPECT_EQ(310, y);
+  const base::Value* windowPref = pref->GetDictionary(path_);
+  ASSERT_TRUE(windowPref);
+  EXPECT_FALSE(windowPref->FindIntKey("left").has_value());
+  EXPECT_FALSE(windowPref->FindIntKey("right").has_value());
+  EXPECT_FALSE(windowPref->FindIntKey("top").has_value());
+  EXPECT_FALSE(windowPref->FindIntKey("bottom").has_value());
+  absl::optional<int> x = windowPref->FindIntKey("x");
+  absl::optional<int> y = windowPref->FindIntKey("y");
+  ASSERT_TRUE(x.has_value());
+  ASSERT_TRUE(y.has_value());
+  EXPECT_EQ(300, x.value());
+  EXPECT_EQ(310, y.value());
 }
 
 TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
@@ -114,7 +115,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::DictionaryValue* placement = pref->GetDictionary(path_);
+  const base::Value* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
   EXPECT_TRUE(placement->DictEmpty());
 
@@ -156,18 +157,22 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
 
   // ...and it should be in the profile, too.
   EXPECT_TRUE(pref->GetDictionary(path_));
-  int x1, y1, x2, y2;
-  const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
-  EXPECT_FALSE(windowPref->GetInteger("x", &x1));
-  EXPECT_FALSE(windowPref->GetInteger("y", &x1));
-  ASSERT_TRUE(windowPref->GetInteger("left", &x1));
-  ASSERT_TRUE(windowPref->GetInteger("right", &x2));
-  ASSERT_TRUE(windowPref->GetInteger("top", &y1));
-  ASSERT_TRUE(windowPref->GetInteger("bottom", &y2));
-  EXPECT_EQ(300, x1);
-  EXPECT_EQ(310, y1);
-  EXPECT_EQ(300 + 250, x2);
-  EXPECT_EQ(310 + 252, y2);
+  const base::Value* windowPref = pref->GetDictionary(path_);
+  ASSERT_TRUE(windowPref);
+  EXPECT_FALSE(windowPref->FindIntKey("x").has_value());
+  EXPECT_FALSE(windowPref->FindIntKey("y").has_value());
+  absl::optional<int> x1 = windowPref->FindIntKey("left");
+  absl::optional<int> x2 = windowPref->FindIntKey("right");
+  absl::optional<int> y1 = windowPref->FindIntKey("top");
+  absl::optional<int> y2 = windowPref->FindIntKey("bottom");
+  ASSERT_TRUE(x1.has_value());
+  ASSERT_TRUE(x2.has_value());
+  ASSERT_TRUE(y1.has_value());
+  ASSERT_TRUE(y2.has_value());
+  EXPECT_EQ(300, x1.value());
+  EXPECT_EQ(310, y1.value());
+  EXPECT_EQ(300 + 250, x2.value());
+  EXPECT_EQ(310 + 252, y2.value());
 }
 
 // http://crbug.com/39625
@@ -176,11 +181,11 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   ASSERT_TRUE(pref);
 
   DictionaryPrefUpdate update(pref, path_);
-  base::DictionaryValue* windowPref = update.Get();
-  windowPref->SetInteger("left", 50);
-  windowPref->SetInteger("right", 50);
-  windowPref->SetInteger("top", 60);
-  windowPref->SetInteger("bottom", 60);
+  base::Value* windowPref = update.Get();
+  windowPref->SetIntKey("left", 50);
+  windowPref->SetIntKey("right", 50);
+  windowPref->SetIntKey("top", 60);
+  windowPref->SetIntKey("bottom", 60);
 
   {
     // Window rect shouldn't change...
@@ -197,13 +202,12 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
 
   // ...and it should be gone from the profile, too.
   EXPECT_TRUE(pref->GetDictionary(path_));
-  int x1, y1, x2, y2;
-  EXPECT_FALSE(windowPref->GetInteger("x", &x1));
-  EXPECT_FALSE(windowPref->GetInteger("y", &x1));
-  ASSERT_FALSE(windowPref->GetInteger("left", &x1));
-  ASSERT_FALSE(windowPref->GetInteger("right", &x2));
-  ASSERT_FALSE(windowPref->GetInteger("top", &y1));
-  ASSERT_FALSE(windowPref->GetInteger("bottom", &y2));
+  EXPECT_FALSE(windowPref->FindIntKey("x").has_value());
+  EXPECT_FALSE(windowPref->FindIntKey("y").has_value());
+  ASSERT_FALSE(windowPref->FindIntKey("left").has_value());
+  ASSERT_FALSE(windowPref->FindIntKey("right").has_value());
+  ASSERT_FALSE(windowPref->FindIntKey("top").has_value());
+  ASSERT_FALSE(windowPref->FindIntKey("bottom").has_value());
 }
 
 }  // namespace

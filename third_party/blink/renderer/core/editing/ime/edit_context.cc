@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -212,7 +211,7 @@ void EditContext::updateSelection(uint32_t start,
                                   uint32_t end,
                                   ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -242,26 +241,18 @@ void EditContext::updateCharacterBounds(
   character_bounds_range_start_ = static_cast<uint32_t>(range_start);
 
   character_bounds_.Clear();
-  std::for_each(
-      character_bounds.begin(), character_bounds.end(),
-      [this](const auto& bound) {
-        const DoubleRect double_rect(bound->x(), bound->y(), bound->width(),
-                                     bound->height());
-        character_bounds_.push_back(ToGfxRect(EnclosingIntRect(double_rect)));
-      });
+  std::for_each(character_bounds.begin(), character_bounds.end(),
+                [this](const auto& bound) {
+                  character_bounds_.push_back(bound->ToEnclosingRect());
+                });
 }
 
-void EditContext::updateBounds(DOMRect* control_bounds,
-                               DOMRect* selection_bounds) {
-  // Return the IntRect containing the given DOMRect.
-  const DoubleRect control_bounds_double_rect(
-      control_bounds->x(), control_bounds->y(), control_bounds->width(),
-      control_bounds->height());
-  control_bounds_ = ToGfxRect(EnclosingIntRect(control_bounds_double_rect));
-  const DoubleRect selection_bounds_double_rect(
-      selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
-      selection_bounds->height());
-  selection_bounds_ = ToGfxRect(EnclosingIntRect(selection_bounds_double_rect));
+void EditContext::updateControlBounds(DOMRect* control_bounds) {
+  control_bounds_ = control_bounds->ToEnclosingRect();
+}
+
+void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
+  selection_bounds_ = selection_bounds->ToEnclosingRect();
 }
 
 void EditContext::updateText(uint32_t start,
@@ -269,7 +260,7 @@ void EditContext::updateText(uint32_t start,
                              const String& new_text,
                              ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setrangetext
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setrangetext
   if (start > end) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -298,7 +289,7 @@ uint32_t EditContext::selectionStart() const {
 void EditContext::setSelectionStart(uint32_t selection_start,
                                     ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   selection_start_ = std::min(selection_end_, selection_start);
 }
 
@@ -313,7 +304,7 @@ uint32_t EditContext::characterBoundsRangeStart() const {
 void EditContext::setSelectionEnd(uint32_t selection_end,
                                   ExceptionState& exception_state) {
   // Following this spec:
-  // https://html.spec.whatwg.org/#dom-textarea/input-setselectionrange
+  // https://html.spec.whatwg.org/C/#dom-textarea/input-setselectionrange
   selection_end_ = std::min(selection_end, text_.length());
 }
 
@@ -432,8 +423,12 @@ String EditContext::enterKeyHint() const {
 
 void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
                                   gfx::Rect* selection_bounds) {
-  *control_bounds = control_bounds_;
-  *selection_bounds = selection_bounds_;
+  // EditContext's coordinates are in CSS pixels, which need to be converted to
+  // physical pixels before return.
+  *control_bounds = gfx::ScaleToEnclosingRect(
+      control_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
+  *selection_bounds = gfx::ScaleToEnclosingRect(
+      selection_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
 }
 
 bool EditContext::SetComposition(
@@ -766,7 +761,16 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   if (static_cast<int>(character_bounds_.size()) != composition_range.length())
     return false;
 
-  bounds = character_bounds_;
+  bounds.Clear();
+  std::for_each(
+      character_bounds_.begin(), character_bounds_.end(),
+      [&bounds, this](auto& bound_in_css_pixels) {
+        // EditContext's coordinates are in CSS pixels, which need to be
+        // converted to physical pixels before return.
+        bounds.push_back(gfx::ScaleToEnclosingRect(
+            bound_in_css_pixels, DomWindow()->GetFrame()->DevicePixelRatio()));
+      });
+
   return true;
 }
 

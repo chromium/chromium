@@ -5,14 +5,140 @@
 <link rel="stylesheet" href="chrome://resources/cr_elements/md_select_css.html">
 
 <template>
-  <style include="cr-shared-style md-select">
+  <style include="cr-shared-style md-select shimless-fonts">
+    :host {
+      --footer-height: 80px;
+      --radio-button-top-padding: 20px;
+      --title-bottom-margin: 16px;
+    }
+
     html {
+      --cr-card-shadow: var(--cr-elevation-1);
       background-color: var(--cros-bg-color);
     }
 
-    p.indented-description {
-      padding: 0 0 0 48px; /* specify all to override */
-      color: gray; /* TODO(joonbug): update cros color */
+    .indented-description {
+      color: var(--shimless-instructions-text-color);
+      padding: 0; /* specify all to override */
+      padding-inline-start: 60px;
+      width: 375px;
+    }
+
+    .large-icon {
+      height: 200px;
+      width: 300px;
+    }
+
+    .large-spinner {
+      height: 286px;
+      width: 286px;
+    }
+
+    h1 {
+      color: var(--shimless-title-text-color);
+      font-family: var(--shimless-title-font-family);
+      font-size: var(--shimless-title-font-size);
+      font-weight: var(--shimless-medium-font-weight);
+      line-height: var(--shimless-title-line-height);
+      margin-bottom: var(--title-bottom-margin);
+    }
+
+    .instructions {
+      color: var(--shimless-instructions-text-color);
+      font-family: var(--shimless-instructions-font-family);
+      font-size: var(--shimless-instructions-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-instructions-line-height);
+    }
+
+    cr-input {
+      font-family: var(--shimless-input-font-family);
+      font-size: var(--shimless-input-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-input-line-height);
+    }
+
+    cr-dialog [slot=title] {
+      color: var(--shimless-dialog-title-text-color);
+      font-family: var(--shimless-dialog-title-font-family);
+      font-size: var(--shimless-dialog-title-font-size);
+      font-weight: var(--shimless-medium-font-weight);
+      line-height: var(--shimless-dialog-title-line-height);
+    }
+
+    cr-dialog [slot=body] {
+      color: var(--shimless-dialog-body-text-color);
+      font-family: var(--shimless-dialog-body-font-family);
+      font-size: var(--shimless-dialog-body-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-dialog-body-line-height);
+    }
+
+    cr-radio-button {
+      --cr-radio-button-size: 20px;
+      padding-bottom: 8px;
+      padding-inline-start: 20px;
+      padding-top: var(--radio-button-top-padding);
+    }
+
+    cr-radio-group {
+      margin-top: calc(40px - var(--radio-button-top-padding) - 
+          var(--title-bottom-margin));
+    }
+
+    base-page {
+      height: 100%;
+      width: 100%;
+    }
+
+    .warning-icon {
+      fill: var(--cros-icon-color-warning);
+      height: 32px;
+      width: 32px;
+    }
+
+    .component-grid {
+      display: inline-grid;
+      grid-column-gap: 16px;
+      grid-row-gap: 16px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .component-grid.repair {
+      grid-template-columns: auto auto;
+    }
+
+    .component-grid.calibration {
+      grid-template-columns: auto;
+    }
+
+    cr-button {
+      border-radius: 15px;
+    }
+
+    .illustration-wrapper {
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .illustration {
+      width: 320px;
+    }
+
+    [slot=optional-icon] {
+      height: 32px;
+      margin-bottom: 40px;
+      margin-top: 40px;
+      width: 32px;
+    }
+
+    [slot=right-pane] {
+      height: 100%;
+      width: 100%;
     }
   </style>
 </template>

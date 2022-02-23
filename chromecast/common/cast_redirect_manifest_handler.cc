@@ -35,16 +35,15 @@ bool CastRedirectHandler::Parse(extensions::Extension* extension,
   const base::DictionaryValue* dict;
   if (extension->manifest()->GetDictionary(kCastRedirect, &dict)) {
     for (const auto kv : dict->DictItems()) {
-      std::string path;
-      if (kv.second.GetAsString(&path)) {
-        info->redirects.emplace_back(kv.first, path);
+      if (kv.second.is_string()) {
+        info->redirects.emplace_back(kv.first, kv.second.GetString());
       }
     }
   }
 
-  std::string url;
-  if (extension->manifest()->GetString(kCastUrl, &url)) {
-    info->cast_url = url;
+  if (const std::string* url =
+          extension->manifest()->FindStringPath(kCastUrl)) {
+    info->cast_url = *url;
   }
 
   if (!info->redirects.empty() || !info->cast_url.empty()) {

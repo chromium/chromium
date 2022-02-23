@@ -19,9 +19,9 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -283,7 +283,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
   }
   EXPECT_EQ(offer_specifics.display_strings().value_prop_text(),
             offer_data.display_strings.value_prop_text);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(offer_specifics.display_strings().see_details_text_mobile(),
             offer_data.display_strings.see_details_text);
   EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_mobile(),
@@ -293,7 +293,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
             offer_data.display_strings.see_details_text);
   EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_desktop(),
             offer_data.display_strings.usage_instructions_text);
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Test to ensure the card-linked offer-specific fields from an

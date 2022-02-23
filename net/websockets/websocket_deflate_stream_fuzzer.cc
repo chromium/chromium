@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_deflate_predictor.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
@@ -64,6 +65,9 @@ class WebSocketFuzzedStream final : public WebSocketStream {
   void Close() override {}
   std::string GetSubProtocol() const override { return std::string(); }
   std::string GetExtensions() const override { return std::string(); }
+  const NetLogWithSource& GetNetLogWithSource() const override {
+    return net_log_;
+  }
 
  private:
   std::unique_ptr<WebSocketFrame> CreateFrame() {
@@ -96,6 +100,8 @@ class WebSocketFuzzedStream final : public WebSocketStream {
   std::vector<scoped_refptr<IOBufferWithSize>> buffers_;
 
   FuzzedDataProvider* fuzzed_data_provider_;
+
+  NetLogWithSource net_log_;
 };
 
 void WebSocketDeflateStreamFuzz(const uint8_t* data, size_t size) {

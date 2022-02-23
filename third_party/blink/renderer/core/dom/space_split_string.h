@@ -101,7 +101,10 @@ class CORE_EXPORT SpaceSplitString {
     AtomicString key_string_;
     Vector<AtomicString, 4> vector_;
   };
-  typedef HashMap<AtomicString, Data*> DataMap;
+
+  // We can use a non-ref-counted StringImpl* as the key because the associated
+  // Data object will keep it alive via the key_string_ member.
+  typedef HashMap<StringImpl*, Data*> DataMap;
 
   static DataMap& SharedDataMap();
 

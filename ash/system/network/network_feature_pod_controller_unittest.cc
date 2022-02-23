@@ -35,6 +35,31 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 
+// Flaky on Chrome OS debug and Linux Chromium OS ASan LSan Tests. b/217762791
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_HasCorrectButtonStateWhenNetworkStateChanges \
+  DISABLED_HasCorrectButtonStateWhenNetworkStateChanges
+#define MAYBE_PressingIconOrLabelIsHandledCorrectly_Cellular \
+  DISABLED_PressingIconOrLabelIsHandledCorrectly_Cellular
+#define MAYBE_PressingIconOrLabelIsHandledCorrectly_Tether \
+  DISABLED_PressingIconOrLabelIsHandledCorrectly_Tether
+#define MAYBE_HasCorrectLabel DISABLED_HasCorrectLabel
+#define MAYBE_HasCorrectSubLabel_Cellular DISABLED_HasCorrectSubLabel_Cellular
+#define MAYBE_HasCorrectSubLabel_Tether DISABLED_HasCorrectSubLabel_Tether
+#define MAYBE_HasCorrectSubLabel_WiFi DISABLED_HasCorrectSubLabel_WiFi
+#else
+#define MAYBE_HasCorrectButtonStateWhenNetworkStateChanges \
+  HasCorrectButtonStateWhenNetworkStateChanges
+#define MAYBE_PressingIconOrLabelIsHandledCorrectly_Cellular \
+  PressingIconOrLabelIsHandledCorrectly_Cellular
+#define MAYBE_PressingIconOrLabelIsHandledCorrectly_Tether \
+  PressingIconOrLabelIsHandledCorrectly_Tether
+#define MAYBE_HasCorrectLabel HasCorrectLabel
+#define MAYBE_HasCorrectSubLabel_Cellular HasCorrectSubLabel_Cellular
+#define MAYBE_HasCorrectSubLabel_Tether HasCorrectSubLabel_Tether
+#define MAYBE_HasCorrectSubLabel_WiFi HasCorrectSubLabel_WiFi
+#endif
+
 namespace ash {
 namespace {
 
@@ -332,7 +357,7 @@ TEST_F(NetworkFeaturePodControllerTest,
 }
 
 TEST_F(NetworkFeaturePodControllerTest,
-       HasCorrectButtonStateWhenNetworkStateChanges) {
+       MAYBE_HasCorrectButtonStateWhenNetworkStateChanges) {
   EXPECT_TRUE(feature_pod_button()->GetEnabled());
   EXPECT_TRUE(feature_pod_button()->GetVisible());
 
@@ -372,7 +397,7 @@ TEST_F(NetworkFeaturePodControllerTest, CannotBeModifiedWhenScreenIsLocked) {
 }
 
 TEST_F(NetworkFeaturePodControllerTest,
-       PressingIconOrLabelIsHandledCorrectly_Cellular) {
+       MAYBE_PressingIconOrLabelIsHandledCorrectly_Cellular) {
   ASSERT_TRUE(network_state_handler()->IsTechnologyEnabled(
       NetworkTypePattern::Cellular()));
 
@@ -410,7 +435,7 @@ TEST_F(NetworkFeaturePodControllerTest,
 }
 
 TEST_F(NetworkFeaturePodControllerTest,
-       PressingIconOrLabelIsHandledCorrectly_Tether) {
+       MAYBE_PressingIconOrLabelIsHandledCorrectly_Tether) {
   ASSERT_TRUE(network_state_handler()->IsTechnologyEnabled(
       NetworkTypePattern::Tether()));
 
@@ -454,7 +479,7 @@ TEST_F(NetworkFeaturePodControllerTest,
   }
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectLabel) {
+TEST_F(NetworkFeaturePodControllerTest, MAYBE_HasCorrectLabel) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_LABEL),
       feature_pod_label_button()->GetLabelText());
@@ -481,7 +506,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectLabel) {
             feature_pod_label_button()->GetLabelText());
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Cellular) {
+TEST_F(NetworkFeaturePodControllerTest, MAYBE_HasCorrectSubLabel_Cellular) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             feature_pod_label_button()->GetSubLabelText());
@@ -580,7 +605,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Ethernet) {
       feature_pod_label_button()->GetSubLabelText());
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Tether) {
+TEST_F(NetworkFeaturePodControllerTest, MAYBE_HasCorrectSubLabel_Tether) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             feature_pod_label_button()->GetSubLabelText());
@@ -620,7 +645,7 @@ TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_Tether) {
       network_state_handler()));
 }
 
-TEST_F(NetworkFeaturePodControllerTest, HasCorrectSubLabel_WiFi) {
+TEST_F(NetworkFeaturePodControllerTest, MAYBE_HasCorrectSubLabel_WiFi) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_SUBLABEL),
             feature_pod_label_button()->GetSubLabelText());

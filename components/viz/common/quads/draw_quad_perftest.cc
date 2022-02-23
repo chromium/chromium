@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -114,7 +115,7 @@ class DrawQuadPerfTest : public testing::Test {
 
  private:
   std::unique_ptr<CompositorRenderPass> render_pass_;
-  SharedQuadState* shared_state_;
+  raw_ptr<SharedQuadState> shared_state_;
   base::LapTimer timer_;
 };
 

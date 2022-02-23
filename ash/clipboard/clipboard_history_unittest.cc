@@ -26,6 +26,8 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ash {
@@ -104,8 +106,14 @@ class ClipboardHistoryTest : public AshTestBase {
 
     int expected_bitmaps_index = 0;
     for (const auto& item : items) {
+      // The PNG should not have yet been encoded.
+      const auto& maybe_png = item.data().maybe_png();
+      EXPECT_FALSE(maybe_png.has_value());
+
+      auto maybe_bitmap = item.data().GetBitmapIfPngNotEncoded();
+      EXPECT_TRUE(maybe_bitmap.has_value());
       EXPECT_TRUE(gfx::BitmapsAreEqual(
-          expected_bitmaps[expected_bitmaps_index++], item.data().bitmap()));
+          expected_bitmaps[expected_bitmaps_index++], maybe_bitmap.value()));
     }
   }
 
@@ -280,9 +288,7 @@ TEST_F(ClipboardHistoryTest, PauseHistory) {
 
 // Tests that bitmaps are recorded in clipboard history.
 TEST_F(ClipboardHistoryTest, BasicBitmap) {
-  SkBitmap test_bitmap;
-  test_bitmap.allocN32Pixels(3, 2);
-  test_bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   std::vector<SkBitmap> input_bitmaps{test_bitmap};
   std::vector<SkBitmap> expected_bitmaps{test_bitmap};
 
@@ -292,12 +298,8 @@ TEST_F(ClipboardHistoryTest, BasicBitmap) {
 // Tests that duplicate bitmaps show up in history as one item placed in
 // most-recent order.
 TEST_F(ClipboardHistoryTest, DuplicateBitmap) {
-  SkBitmap test_bitmap_1;
-  test_bitmap_1.allocN32Pixels(3, 2);
-  test_bitmap_1.eraseARGB(255, 0, 255, 0);
-  SkBitmap test_bitmap_2;
-  test_bitmap_2.allocN32Pixels(3, 2);
-  test_bitmap_2.eraseARGB(0, 255, 0, 0);
+  SkBitmap test_bitmap_1 = gfx::test::CreateBitmap(3, 2);
+  SkBitmap test_bitmap_2 = gfx::test::CreateBitmap(4, 3);
 
   std::vector<SkBitmap> input_bitmaps{test_bitmap_1, test_bitmap_2,
                                       test_bitmap_1};

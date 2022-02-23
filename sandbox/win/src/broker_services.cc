@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
@@ -521,8 +520,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   for (HANDLE handle : policy_handle_list)
     startup_info->AddInheritedHandle(handle);
 
-  scoped_refptr<AppContainerBase> container =
-      policy_base->GetAppContainerBase();
+  scoped_refptr<AppContainer> container = policy_base->GetAppContainer();
   if (container)
     startup_info->SetAppContainer(container);
 
@@ -537,11 +535,16 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
   base::win::ScopedProcessInformation process_info;
+  std::vector<base::win::Sid> imp_caps;
+  if (container) {
+    for (const base::win::Sid& sid :
+         container->GetImpersonationCapabilities()) {
+      imp_caps.push_back(sid.Clone());
+    }
+  }
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(initial_token), std::move(lockdown_token), job.Get(),
-      thread_pool_,
-      container ? container->GetImpersonationCapabilities()
-                : std::vector<Sid>());
+      thread_pool_, imp_caps);
 
   result = target->Create(exe_path, command_line, std::move(startup_info),
                           &process_info, last_error);
@@ -573,7 +576,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Now the policy is the owner of the target. TargetProcess will terminate
   // the process if it has not completed when it is destroyed.
-  result = policy_base->AddTarget(std::move(target));
+  result = policy_base->ApplyToTarget(std::move(target));
 
   if (result != SBOX_ALL_OK) {
     *last_error = ::GetLastError();

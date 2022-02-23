@@ -1,0 +1,43 @@
+<!--
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:STATE-CHANGE:DEFUNCT*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:EVENT_OBJECT_HIDE*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+@UIA-WIN-DENY:*StructureChanged*
+@UIA-WIN_DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<div id="container"></div>
+<script>
+  function show_menu(add_ancestor_divs) {
+    prefix = '<div><div>';
+    suffix = '</div></div>';
+    content = '<div id="menu" role="menu" tabIndex="-1">' +
+              '  <div role="menuitem" tabIndex="-1">Cut</div>' +
+              '  <div role="menuitem" tabIndex="-1">Copy</div>' +
+              '  <div role="menuitem" tabIndex="-1">Paste</div>' +
+              '</div>';
+    document.getElementById("container").innerHTML = add_ancestor_divs
+        ? prefix + content + suffix
+        : content;
+  }
+  function hide_menu() {
+    document.getElementById("container").innerHTML = '';
+  }
+
+  const go_passes = [
+    () => show_menu(false),
+    () => hide_menu(),
+    () => show_menu(true),
+    () => hide_menu(),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

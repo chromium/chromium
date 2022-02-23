@@ -56,7 +56,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void ZygoteStarting(std::vector<std::unique_ptr<content::ZygoteForkDelegate>>*
                           delegates) override;
   void ZygoteForked() override;
@@ -65,7 +65,7 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   void PostEarlyInitialization(bool is_running_tests) override;
   bool ShouldCreateFeatureList() override;
   void PostFieldTrialInitialization() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool ShouldHandleConsoleControlEvents() override;
 #endif
 
@@ -75,11 +75,11 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   content::ContentRendererClient* CreateContentRendererClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void InitMacCrashReporter(const base::CommandLine& command_line,
                             const std::string& process_type);
   void SetUpInstallerPreferences(const base::CommandLine& command_line);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   ChromeContentClient chrome_content_client_;
 

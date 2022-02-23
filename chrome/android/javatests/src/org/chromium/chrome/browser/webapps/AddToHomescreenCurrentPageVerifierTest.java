@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,6 +71,7 @@ public final class AddToHomescreenCurrentPageVerifierTest {
     @Test
     @LargeTest
     @Feature({"Webapps"})
+    @FlakyTest(message = "http://crbug.com/1283235")
     public void testInScope() {
         String page = "https://foo.com/chrome/test/data/android/customtabs/cct_header.html";
         String otherPageInScope = "https://foo.com/chrome/test/data/android/simple.html";

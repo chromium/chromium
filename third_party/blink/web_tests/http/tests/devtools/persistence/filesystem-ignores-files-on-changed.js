@@ -7,7 +7,7 @@
   await TestRunner.loadTestModule('bindings_test_runner');
 
   TestRunner.addResult('Creating filesystem');
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   await fs.reportCreatedPromise();
 
   Persistence.isolatedFileSystemManager.addEventListener(

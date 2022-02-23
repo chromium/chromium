@@ -49,7 +49,8 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
@@ -525,12 +526,6 @@ TEST_F(ImageResourceTest, SVGImage) {
 }
 
 TEST_F(ImageResourceTest, SVGImageWithSubresource) {
-  // SVG images block all subresources other than data urls. This test
-  // explicitly asserts asynchronous loading of data url fonts, and will not
-  // work when SyncLoadDataUrlFonts is enabled.
-  // TODO(xiaochengh): Try other types of subresources encoded as a data url.
-  ScopedSyncLoadDataUrlFontsForTest disabled_scope(false);
-
   KURL url("http://127.0.0.1:8000/foo");
   ImageResource* image_resource = ImageResource::CreateForTest(url);
   auto* observer = MakeGarbageCollected<MockImageResourceObserver>(
@@ -924,7 +919,7 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
 
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(
-          IntSize(800, 600), /*chrome_client=*/nullptr,
+          gfx::Size(800, 600), /*chrome_client=*/nullptr,
           MakeGarbageCollected<EmptyLocalFrameClient>());
 
   KURL test_url(kTestURL);
@@ -951,9 +946,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
 
   // Ensure that |image_resource| has a loader.
-  auto* loader =
+  [[maybe_unused]] auto* loader =
       MakeGarbageCollected<ResourceLoader>(fetcher, scheduler, image_resource);
-  ALLOW_UNUSED_LOCAL(loader);
 
   image_resource->NotifyStartLoad();
 

@@ -50,7 +50,7 @@
     [Replaceable, MeasureAs=BarPropToolbar] readonly attribute BarProp toolbar;
     attribute DOMString status;
     [CrossOrigin, CallWith=Isolate] void close();
-    [HighEntropy=Direct, MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
+    [MeasureAs=WindowClosed, CrossOrigin] readonly attribute boolean closed;
     void stop();
     [CrossOrigin, CallWith=Isolate] void focus();
     [CrossOrigin] void blur();
@@ -60,7 +60,7 @@
     [Replaceable, CrossOrigin] readonly attribute unsigned long length;
     [LegacyUnforgeable, CrossOrigin] readonly attribute Window? top;
     // FIXME: opener should be of type any.
-    [CrossOrigin, Custom=Setter] attribute Window opener;
+    [CrossOrigin, Custom=Setter, ImplementedAs=OpenerWithMetrics] attribute Window opener;
     [Replaceable, CrossOrigin] readonly attribute Window? parent;
     [CheckSecurity=ReturnValue, Custom=Getter] readonly attribute Element? frameElement;
 
@@ -206,6 +206,14 @@
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
     [RuntimeEnabled=TrustedDOMTypes, CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
+
+    // Anonymous iframe:
+    // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
+    [RuntimeEnabled=AnonymousIframe] readonly attribute boolean anonymous;
+
+    // Collection of fenced frame APIs
+    // https://github.com/shivanigithub/fenced-frame/issues/14
+    [RuntimeEnabled=FencedFrames] readonly attribute Fence? fence;
 };
 
 Window includes GlobalEventHandlers;

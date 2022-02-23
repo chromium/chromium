@@ -35,7 +35,7 @@
     "lib": {
         "package": "headless/lib/browser/protocol",
         "output": "lib/browser/protocol",
-        "string_header": "headless/lib/browser/protocol/base_string_adapter.h",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h",
         "export_macro": "HEADLESS_EXPORT",
         "export_header": "headless/public/headless_export.h"
     },

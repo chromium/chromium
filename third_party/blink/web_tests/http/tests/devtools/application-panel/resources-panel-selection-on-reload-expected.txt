@@ -17,9 +17,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Back-Forward Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -27,6 +28,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     inspected-page.html
@@ -49,9 +51,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Back-Forward Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -59,6 +62,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     inspected-page.html

@@ -8,14 +8,13 @@
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_event_log.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -113,7 +112,7 @@ void ShillLogSource::OnGetManagerProperties(
 
   const base::Value* devices = result->FindListKey(shill::kDevicesProperty);
   if (devices) {
-    for (const base::Value& device : devices->GetList()) {
+    for (const base::Value& device : devices->GetListDeprecated()) {
       std::string path = GetString(&device);
       if (path.empty())
         continue;
@@ -127,7 +126,7 @@ void ShillLogSource::OnGetManagerProperties(
 
   const base::Value* services = result->FindListKey(shill::kServicesProperty);
   if (services) {
-    for (const base::Value& service : services->GetList()) {
+    for (const base::Value& service : services->GetListDeprecated()) {
       std::string path = GetString(&service);
       if (path.empty())
         continue;
@@ -164,7 +163,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
   if (!ip_configs)
     return;
 
-  for (const base::Value& ip_config : ip_configs->GetList()) {
+  for (const base::Value& ip_config : ip_configs->GetListDeprecated()) {
     std::string ip_config_path = GetString(&ip_config);
     if (ip_config_path.empty())
       continue;

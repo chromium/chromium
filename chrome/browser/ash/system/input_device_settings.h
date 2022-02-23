@@ -198,6 +198,7 @@ class InputDeviceSettings {
   class FakeInterface {
    public:
     virtual void set_touchpad_exists(bool exists) = 0;
+    virtual void set_haptic_touchpad_exists(bool exists) = 0;
     virtual void set_mouse_exists(bool exists) = 0;
     virtual void set_pointing_stick_exists(bool exists) = 0;
     virtual const TouchpadSettings& current_touchpad_settings() const = 0;
@@ -231,6 +232,10 @@ class InputDeviceSettings {
   // Sets the touchpad scroll sensitivity in the range [kMinPointerSensitivity,
   // kMaxPointerSensitivity].
   virtual void SetTouchpadScrollSensitivity(int value) = 0;
+
+  // Calls |callback|, possibly asynchronously, after determining if at least
+  // one touchpad that supports haptics is connected.
+  virtual void HapticTouchpadExists(DeviceExistsCallback callback) = 0;
 
   // Turns touchpad haptic feedback on/off.
   virtual void SetTouchpadHapticFeedback(bool enabled) = 0;

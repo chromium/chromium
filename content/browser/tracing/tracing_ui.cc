@@ -236,10 +236,8 @@ TracingUI::TracingUI(WebUI* web_ui)
     : WebUIController(web_ui),
       delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
   // Set up the chrome://tracing/ source.
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-
-  WebUIDataSource* source = WebUIDataSource::Create(kChromeUITracingHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(), kChromeUITracingHost);
   source->DisableTrustedTypesCSP();
   source->UseStringsJs();
   source->SetDefaultResource(IDR_TRACING_ABOUT_TRACING_HTML);
@@ -247,7 +245,6 @@ TracingUI::TracingUI(WebUI* web_ui)
 
   source->SetRequestFilter(base::BindRepeating(OnShouldHandleRequest),
                            base::BindRepeating(OnTracingRequest));
-  WebUIDataSource::Add(browser_context, source);
 }
 
 TracingUI::~TracingUI() = default;

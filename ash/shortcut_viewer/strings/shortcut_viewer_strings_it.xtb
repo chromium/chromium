@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Apri una nuova finestra in modalità di navigazione in incognito</translation>
 <translation id="152892567002884378">Alza il volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, quindi <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="1652741121070700329">Passa all'inizio della parola precedente</translation>
 <translation id="1679841710523778799">Aumenta la luminosità</translation>
 <translation id="168356808214100546">Tieni premuto <ph name="ALT" />, tocca <ph name="TAB" /> fin quando arrivi alla finestra che vuoi aprire, quindi rilascia.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Premi <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> e fai clic su un link</translation>
 <translation id="561814908794220892">Apre la pagina web in una nuova scheda</translation>
 <translation id="5620219513321115856">Sposta la finestra attiva sulla scrivania a destra</translation>
+<translation id="5699366815052349604">Assegna la finestra attiva a tutte le scrivanie</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Apre il link nella scheda</translation>
 <translation id="5757474750054631686">Oscura la tastiera (soltanto per tastiere retroilluminate)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Visualizza i file nascosti nell'app File</translation>
 <translation id="8717459106217102612">Seleziona la parola o la lettera precedente</translation>
 <translation id="8727232706774971183">Visualizza le notifiche</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> da 1 a 8</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8881584919399569791">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="88986195241502842">Pagina giù</translation>

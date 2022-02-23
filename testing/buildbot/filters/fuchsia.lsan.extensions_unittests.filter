@@ -1,0 +1,21 @@
+# crbug.com/431213, Fuchsia's sanitizer runtimes don't support source-based
+# suppressions
+-APIBinding*
+-APIEventHandlerTest*
+-APILastErrorTest*
+-APIRequestHandlerTest.SettingLastError
+-All/ResponseValidationNativeExtensionBindingsSystemUnittest.ResponseValidation*
+-DeclarativeEventTest.TestRulesSchema
+-DeclarativeEventWithSchemaTest.TestAllMethods
+-EventEmitterUnittest.ListenersDestroyingContext
+-EventEmitterUnittest.TestDispatchMethod
+-GinPortTest*
+-I18nHooksDelegateTest.TestI18nGetMessage
+-ModuleSystemTest*
+-NativeExtensionBindingsSystemUnittest*
+-NativeRendererMessagingServiceTest*
+-OneTimeMessageHandlerTest*
+-RuntimeHooksDelegate*
+-SafeBuiltinsUnittest*
+-StorageAreaTest*
+-UtilsUnittest.SuperClass

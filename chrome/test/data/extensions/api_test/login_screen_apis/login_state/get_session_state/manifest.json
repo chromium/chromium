@@ -1,0 +1,12 @@
+{
+  "name": "Get Session State",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Browser test for chrome.loginState.getSessionState()",
+  "background": {
+    "scripts": ["test.js"]
+  },
+  "permissions": [
+    "loginState"
+  ]
+}

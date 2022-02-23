@@ -79,6 +79,8 @@ def sentence_fragments(token_word,
   deterministic heuristics based on punctuation, capitalization, and similar
   text attributes.
 
+  NOTE: This op is deprecated. Use `StateBasedSentenceBreaker` instead.
+
   Args:
     token_word: A Tensor (w/ rank=2) or a RaggedTensor (w/ ragged_rank=1)
       containing the token strings.

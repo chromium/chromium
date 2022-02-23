@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -269,10 +269,10 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   // It's safer to make a copy of the GpuPreferences struct rather
   // than refer to the one passed in to the constructor.
   const GpuPreferences gpu_preferences_;
-  MailboxManager* mailbox_manager_;
+  raw_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<MemoryTracker> memory_tracker_;
-  ShaderTranslatorCache* shader_translator_cache_;
-  FramebufferCompletenessCache* framebuffer_completeness_cache_;
+  raw_ptr<ShaderTranslatorCache> shader_translator_cache_;
+  raw_ptr<FramebufferCompletenessCache> framebuffer_completeness_cache_;
 
   bool enforce_gl_minimums_;
   bool bind_generates_resource_;
@@ -297,7 +297,7 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   uint32_t max_uniform_buffer_bindings_;
   uint32_t uniform_buffer_offset_alignment_;
 
-  ProgramCache* program_cache_;
+  raw_ptr<ProgramCache> program_cache_;
 
   std::unique_ptr<BufferManager> buffer_manager_;
 
@@ -313,9 +313,9 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
 
   scoped_refptr<FeatureInfo> feature_info_;
 
-  ImageManager* image_manager_;
+  raw_ptr<ImageManager> image_manager_;
 
-  gpu::ImageFactory* image_factory_;
+  raw_ptr<gpu::ImageFactory> image_factory_;
 
   std::vector<base::WeakPtr<DecoderContext>> decoders_;
 
@@ -324,21 +324,21 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
 
   bool use_passthrough_cmd_decoder_;
   std::unique_ptr<PassthroughResources> passthrough_resources_;
-  PassthroughDiscardableManager* passthrough_discardable_manager_;
+  raw_ptr<PassthroughDiscardableManager> passthrough_discardable_manager_;
 
   // Used to notify the watchdog thread of progress during destruction,
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
-  gl::ProgressReporter* progress_reporter_;
+  raw_ptr<gl::ProgressReporter> progress_reporter_;
 
   GpuFeatureInfo gpu_feature_info_;
 
-  ServiceDiscardableManager* discardable_manager_;
+  raw_ptr<ServiceDiscardableManager> discardable_manager_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
 
-  gpu::SharedImageManager* shared_image_manager_ = nullptr;
+  raw_ptr<gpu::SharedImageManager> shared_image_manager_ = nullptr;
 };
 
 }  // namespace gles2

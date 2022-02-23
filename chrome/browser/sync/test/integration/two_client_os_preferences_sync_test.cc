@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -94,6 +95,21 @@ IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
   ClearPref(0, ash::prefs::kShelfAlignment);
 
   ASSERT_TRUE(ClearedPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
+}
+
+// OS Settings syncing even when browser sync is disabled.
+IN_PROC_BROWSER_TEST_F(TwoClientOsPreferencesSyncTest, BrowserSyncDisabled) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  for (int i = 0; i < num_clients(); ++i) {
+    // Disable all browser types.
+    GetSyncService(i)->GetUserSettings()->SetSelectedTypes(
+        false, syncer::UserSelectableTypeSet());
+    GetClient(i)->AwaitSyncSetupCompletion();
+  }
+
+  ChangeStringPref(0, ash::prefs::kShelfAlignment, ash::kShelfAlignmentRight);
+  EXPECT_TRUE(StringPrefMatchChecker(ash::prefs::kShelfAlignment).Wait());
 }
 
 }  // namespace

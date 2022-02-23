@@ -84,7 +84,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
     decoder_->Initialize(
         config, false, cdm_context_.get(),
         base::BindOnce(
-            [](bool success, Status status) {
+            [](bool success, DecoderStatus status) {
               EXPECT_EQ(status.is_ok(), success);
             },
             success),
@@ -118,7 +118,8 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   // Decode |buffer| and expect DecodeDone to get called with |status|.
-  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer, StatusCode status) {
+  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer,
+                       DecoderStatus::Codes status) {
     EXPECT_CALL(*this, DecodeDone(HasStatusCode(status)));
     decoder_->Decode(buffer,
                      base::BindOnce(&DecryptingVideoDecoderTest::DecodeDone,
@@ -162,7 +163,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
             Invoke(this, &DecryptingVideoDecoderTest::DecryptAndDecodeVideo));
     EXPECT_CALL(*this, FrameReady(decoded_video_frame_));
     for (int i = 0; i < kDecodingDelay + 1; ++i)
-      DecodeAndExpect(encrypted_buffer_, DecodeStatus::OK);
+      DecodeAndExpect(encrypted_buffer_, DecoderStatus::Codes::kOk);
   }
 
   // Sets up expectations and actions to put DecryptingVideoDecoder in an end
@@ -171,7 +172,8 @@ class DecryptingVideoDecoderTest : public testing::Test {
   void EnterEndOfStreamState() {
     // The codec in the |decryptor_| will be flushed.
     EXPECT_CALL(*this, FrameReady(decoded_video_frame_)).Times(kDecodingDelay);
-    DecodeAndExpect(DecoderBuffer::CreateEOSBuffer(), DecodeStatus::OK);
+    DecodeAndExpect(DecoderBuffer::CreateEOSBuffer(),
+                    DecoderStatus::Codes::kOk);
     EXPECT_EQ(0, num_frames_in_decryptor_);
   }
 
@@ -237,7 +239,7 @@ class DecryptingVideoDecoderTest : public testing::Test {
   }
 
   MOCK_METHOD1(FrameReady, void(scoped_refptr<VideoFrame>));
-  MOCK_METHOD1(DecodeDone, void(Status));
+  MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
@@ -389,7 +391,7 @@ TEST_F(DecryptingVideoDecoderTest, Reset_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Reset();
 }
@@ -399,7 +401,7 @@ TEST_F(DecryptingVideoDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Reset();
 }
@@ -459,7 +461,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Destroy();
 }
@@ -469,7 +471,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Destroy();
 }
@@ -491,7 +493,7 @@ TEST_F(DecryptingVideoDecoderTest, Destroy_DuringPendingReset) {
   EnterPendingDecodeState();
 
   EXPECT_CALL(*decryptor_, ResetDecoder(Decryptor::kVideo));
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   decoder_->Reset(NewExpectedClosure());
   Destroy();

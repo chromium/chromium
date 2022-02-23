@@ -13,8 +13,7 @@
 #include "base/strings/strcat.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
-namespace chromeos {
-namespace language_packs {
+namespace chromeos::language_packs {
 
 // All Language Pack IDs are listed here.
 constexpr char kHandwritingFeatureId[] = "LP_ID_HANDWRITING";
@@ -95,6 +94,10 @@ class LanguagePackManager : public DlcserviceClient::Observer {
     virtual void OnPackStateChanged(const PackResult& pack_result) = 0;
   };
 
+  // Disallow copy and assign.
+  LanguagePackManager(const LanguagePackManager&) = delete;
+  LanguagePackManager& operator=(const LanguagePackManager&) = delete;
+
   // Returns true if the given Language Pack exists and can be installed on
   // this device.
   // TODO(claudiomagni): Check per board.
@@ -150,10 +153,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   LanguagePackManager();
   ~LanguagePackManager() override;
 
-  // Disallow copy and assign.
-  LanguagePackManager(const LanguagePackManager&) = delete;
-  LanguagePackManager& operator=(const LanguagePackManager&) = delete;
-
   // Finds the ID of the DLC corresponding to the given spec.
   // Returns true if the DLC exists or false otherwise.
   bool GetDlcId(const std::string& pack_id,
@@ -169,7 +168,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace language_packs
-}  // namespace chromeos
+}  // namespace chromeos::language_packs
 
 #endif  // CHROMEOS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACK_MANAGER_H_

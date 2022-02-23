@@ -68,6 +68,14 @@ class PluginVmManagerImplTest : public testing::Test {
     chrome_shelf_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     chromeos::DlcserviceClient::InitializeFake();
+
+    // Make StartVm succeed by default, tests can override as needed.
+    VmPluginDispatcherClient().set_start_vm_response(
+        vm_tools::plugin_dispatcher::StartVmResponse());
+
+    // Borealis makes a call, unrelated to this test so just reset it.
+    DCHECK_EQ(ConciergeClient().get_vm_info_call_count(), 1);
+    ConciergeClient().reset_get_vm_info_call_count();
   }
 
   PluginVmManagerImplTest(const PluginVmManagerImplTest&) = delete;
@@ -113,8 +121,7 @@ class PluginVmManagerImplTest : public testing::Test {
       vm_tools::plugin_dispatcher::VmToolsState state) {
     vm_tools::plugin_dispatcher::VmToolsStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_tools_state(state);
     VmPluginDispatcherClient().NotifyVmToolsStateChanged(state_changed_signal);
@@ -123,8 +130,7 @@ class PluginVmManagerImplTest : public testing::Test {
   void NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState state) {
     vm_tools::plugin_dispatcher::VmStateChangedSignal state_changed_signal;
     state_changed_signal.set_owner_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(
-            testing_profile_.get()));
+        ash::ProfileHelper::GetUserIdHashFromProfile(testing_profile_.get()));
     state_changed_signal.set_vm_name(kPluginVmName);
     state_changed_signal.set_vm_state(state);
     VmPluginDispatcherClient().NotifyVmStateChanged(state_changed_signal);
@@ -509,7 +515,8 @@ TEST_F(PluginVmManagerImplTest, UninstallMissingPluginVm) {
   test_helper_->AllowPluginVm();
   EXPECT_TRUE(PluginVmFeatures::Get()->IsAllowed(testing_profile_.get()));
 
-  VmPluginDispatcherClient().set_list_vms_response({});  // An empty list.
+  VmPluginDispatcherClient().set_list_vms_response(
+      vm_tools::plugin_dispatcher::ListVmResponse());
   testing_profile_->GetPrefs()->SetBoolean(
       plugin_vm::prefs::kPluginVmImageExists, true);
 

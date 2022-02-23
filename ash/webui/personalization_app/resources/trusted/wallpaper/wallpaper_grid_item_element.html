@@ -1,0 +1,151 @@
+<style include="common-style">
+  :host {
+    box-sizing: border-box;
+    display: block;
+    height: calc(
+      var(--personalization-app-grid-item-height) +
+      var(--personalization-app-grid-item-spacing));
+    overflow: hidden;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+    /* Subtract 0.34px to fix subpixel rounding issues with iron-list. This
+     * ensures all grid items in a row add up to at least 1px smaller than the
+     * parent width. */
+    width: calc(100% / 3 - 0.34px);
+  }
+
+  @media(min-width: 720px) {
+    :host {
+      /* Subtract 0.25px to fix subpixel rounding issues with iron-list. This
+       * ensures all grid items in a row add up to at least 1px smaller than the
+       * parent width. */
+      width: calc(100% / 4 - 0.25px) !important;
+    }
+  }
+
+  :host(:focus-visible) {
+    outline: none;
+  }
+
+  .item {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.12);
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  :host(:focus-visible) .item {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  .item[aria-selected] {
+    background-color: rgba(
+      var(--cros-color-prominent-rgb),
+      var(--personalization-app-second-tone-opacity));
+    border-radius:
+      calc(var(--personalization-app-grid-item-border-radius) + 4px);
+  }
+
+  img {
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .item[aria-selected] img {
+    animation-duration:  200ms;
+    animation-fill-mode: forwards;
+    animation-name: img-resize;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1.0);
+  }
+
+  @keyframes img-resize {
+    100% {
+      height: calc(100% - 8px);
+      width: calc(100% - 8px);
+    }
+  }
+
+  .text {
+    background: linear-gradient(
+        rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 55%));
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 50%;
+    justify-content: flex-end;
+    left: 0;
+    overflow: hidden;
+    padding: 8px;
+    position: absolute;
+    right: 0;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .primary-text,
+  .secondary-text {
+    color: white;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-shadow: var(--personalization-app-text-shadow-elevation-1);
+  }
+
+  .primary-text {
+    font: var(--cros-headline-1-font);
+  }
+
+  .secondary-text {
+    font: var(--cros-annotation-2-font);
+  }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    animation-duration: 200ms;
+    animation-name: iron-icon-scale;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1.0);
+    left: 8px;
+    position: absolute;
+    top: 8px;
+  }
+
+  .item:not([aria-selected]) iron-icon {
+    display: none;
+  }
+
+  @keyframes iron-icon-scale {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+</style>
+<div class="item" aria-selected$="[[selected]]">
+  <template is="dom-if" if="[[isImageVisible_(imageSrc)]]">
+    <img is="cr-auto-img" auto-src="[[imageSrc]]" with-cookies></img>
+  </template>
+  <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
+    <div class="text">
+      <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]">
+        <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>
+      </template>
+      <template is="dom-if" if="[[isSecondaryTextVisible_(secondaryText)]]">
+        <p class="secondary-text" title$="[[secondaryText]]">[[secondaryText]]</p>
+      </template>
+    </div>
+  </template>
+  <iron-icon icon="personalization:checkmark"></iron-icon>
+</div>

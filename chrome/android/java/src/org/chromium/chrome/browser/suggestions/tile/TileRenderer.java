@@ -18,6 +18,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
@@ -97,27 +98,29 @@ public class TileRenderer {
      */
     public void renderTileSection(
             List<Tile> sectionTiles, ViewGroup parent, TileGroup.TileSetupDelegate setupDelegate) {
-        // Map the old tile views by url so they can be reused later.
-        Map<SiteSuggestion, SuggestionsTileView> oldTileViews = new HashMap<>();
-        int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            SuggestionsTileView tileView = (SuggestionsTileView) parent.getChildAt(i);
-            oldTileViews.put(tileView.getData(), tileView);
-        }
-
-        // Remove all views from the layout because even if they are reused later they'll have to be
-        // added back in the correct order.
-        parent.removeAllViews();
-
-        for (Tile tile : sectionTiles) {
-            SuggestionsTileView tileView = oldTileViews.get(tile.getData());
-            if (tileView == null || tileView.getIconView() == null
-                    || tileView.getIconView().getDrawable() == null
-                    || tile.getSource() == TileSource.EXPLORE) {
-                tileView = buildTileView(tile, parent, setupDelegate);
+        try (TraceEvent e = TraceEvent.scoped("TileRenderer.renderTileSection")) {
+            // Map the old tile views by url so they can be reused later.
+            Map<SiteSuggestion, SuggestionsTileView> oldTileViews = new HashMap<>();
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                SuggestionsTileView tileView = (SuggestionsTileView) parent.getChildAt(i);
+                oldTileViews.put(tileView.getData(), tileView);
             }
 
-            parent.addView(tileView);
+            // Remove all views from the layout because even if they are reused later they'll have
+            // to be added back in the correct order.
+            parent.removeAllViews();
+
+            for (Tile tile : sectionTiles) {
+                SuggestionsTileView tileView = oldTileViews.get(tile.getData());
+                if (tileView == null || tileView.getIconView() == null
+                        || tileView.getIconView().getDrawable() == null
+                        || tile.getSource() == TileSource.EXPLORE) {
+                    tileView = buildTileView(tile, parent, setupDelegate);
+                }
+
+                parent.addView(tileView);
+            }
         }
     }
 

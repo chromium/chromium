@@ -87,4 +87,14 @@ void JavaService::GetNextActions(
   std::move(callback).Run(net::HTTP_OK, response);
 }
 
+void JavaService::GetUserData(const CollectUserDataOptions& options,
+                              ResponseCallback callback) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto jresponse =
+      Java_AutofillAssistantTestService_getUserDataNative(env, java_service_);
+  std::string response;
+  base::android::JavaByteArrayToString(env, jresponse, &response);
+  std::move(callback).Run(net::HTTP_OK, response);
+}
+
 }  // namespace autofill_assistant

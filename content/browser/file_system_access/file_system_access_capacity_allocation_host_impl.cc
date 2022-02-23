@@ -116,7 +116,8 @@ void FileSystemAccessCapacityAllocationHostImpl::DidGetUsageAndQuota(
   quota_manager_proxy()->NotifyStorageModified(
       storage::QuotaClientType::kFileSystem, url_.storage_key(),
       storage::FileSystemTypeToQuotaStorageType(url_.type()), capacity_delta,
-      base::Time::Now());
+      base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+      base::DoNothing());
   std::move(callback).Run(capacity_delta);
 }
 

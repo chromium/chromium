@@ -7,14 +7,14 @@
 #include "base/check.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #include "ui/gl/android/scoped_java_surface.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
     gfx::AcceleratedWidget widget,
     const base::android::JavaRef<jobject>& j_surface,
@@ -27,10 +27,10 @@ GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
   if (j_surface)
     surface = gl::ScopedJavaSurface::AcquireExternalSurface(j_surface);
 }
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(gfx::AcceleratedWidget widget)
     : widget(widget) {}
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(SurfaceRecord&&) = default;
 
@@ -74,17 +74,17 @@ gfx::AcceleratedWidget GpuSurfaceTracker::AcquireNativeWidget(
   if (it == surface_map_.end())
     return gfx::kNullAcceleratedWidget;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (it->second.widget != gfx::kNullAcceleratedWidget)
     ANativeWindow_acquire(it->second.widget);
   *can_be_used_with_surface_control =
       it->second.can_be_used_with_surface_control;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return it->second.widget;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
     gpu::SurfaceHandle surface_handle,
     bool* can_be_used_with_surface_control) {

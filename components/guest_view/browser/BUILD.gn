@@ -23,8 +23,8 @@ static_library("browser") {
     "//components/guest_view/browser/guest_view_manager_delegate.cc",
     "//components/guest_view/browser/guest_view_manager_delegate.h",
     "//components/guest_view/browser/guest_view_manager_factory.h",
-    "//components/guest_view/browser/guest_view_message_filter.cc",
-    "//components/guest_view/browser/guest_view_message_filter.h",
+    "//components/guest_view/browser/guest_view_message_handler.cc",
+    "//components/guest_view/browser/guest_view_message_handler.h",
   ]
 
   public_deps = [
@@ -34,12 +34,10 @@ static_library("browser") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
-    "//components/keyed_service/content",
-    "//components/keyed_service/core",
+    "//components/guest_view/common:mojom",
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
-    "//ipc",
     "//third_party/blink/public/common",
     "//url",
   ]

@@ -56,7 +56,7 @@ absl::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
     const web_app::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::DictionaryValue* ids_to_metrics =
+  const base::Value* ids_to_metrics =
       pref_service->GetDictionary(prefs::kWebAppInstallMetrics);
   if (!ids_to_metrics)
     return absl::nullopt;

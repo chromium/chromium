@@ -119,7 +119,6 @@ CSSVariableData::CSSVariableData(const CSSTokenizedValue& tokenized_value,
       needs_variable_resolution_(needs_variable_resolution),
       base_url_(base_url.IsValid() ? base_url.GetString() : String()),
       charset_(charset) {
-  DCHECK(!tokenized_value.range.AtEnd());
   ConsumeAndUpdateTokens(tokenized_value.range);
 }
 

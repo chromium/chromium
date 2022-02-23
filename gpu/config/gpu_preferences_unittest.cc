@@ -68,8 +68,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.texture_target_exception_list,
             right.texture_target_exception_list);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
-  EXPECT_EQ(left.enable_oop_rasterization, right.enable_oop_rasterization);
-  EXPECT_EQ(left.disable_oop_rasterization, right.disable_oop_rasterization);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
   EXPECT_EQ(left.gr_context_type, right.gr_context_type);
@@ -96,7 +94,7 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
 #endif
   EXPECT_EQ(left.enable_native_gpu_memory_buffers,
             right.enable_native_gpu_memory_buffers);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(left.enable_chromeos_direct_video_decoder,
             right.enable_chromeos_direct_video_decoder);
 #endif
@@ -168,8 +166,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(disable_biplanar_gpu_memory_buffers_for_video_frames,
                           true)
     GPU_PREFERENCES_FIELD(ignore_gpu_blocklist, true)
-    GPU_PREFERENCES_FIELD(enable_oop_rasterization, true)
-    GPU_PREFERENCES_FIELD(disable_oop_rasterization, true)
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
     GPU_PREFERENCES_FIELD_ENUM(gr_context_type, GrContextType::kVulkan,
                                mojom::GrContextType::kVulkan)
@@ -189,7 +185,7 @@ TEST(GpuPreferencesTest, EncodeDecode) {
                                base::MessagePumpType::UI)
 #endif
     GPU_PREFERENCES_FIELD(enable_native_gpu_memory_buffers, true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     GPU_PREFERENCES_FIELD(enable_chromeos_direct_video_decoder, true);
 #endif
 
@@ -267,8 +263,6 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
     PRINT_INT(texture_target_exception_list[i].format);
   }
   PRINT_BOOL(ignore_gpu_blocklist);
-  PRINT_BOOL(enable_oop_rasterization);
-  PRINT_BOOL(disable_oop_rasterization);
   PRINT_BOOL(watchdog_starts_backgrounded);
   PRINT_INT(gr_context_type);
   PRINT_INT(use_vulkan);
@@ -283,7 +277,7 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
   PRINT_INT(message_pump_type);
 #endif
   PRINT_BOOL(enable_native_gpu_memory_buffers);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   PRINT_BOOL(enable_chromeos_direct_video_decoder);
 #endif
   printf("}\n");

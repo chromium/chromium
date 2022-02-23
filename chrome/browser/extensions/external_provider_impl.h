@@ -10,7 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/common/manifest.h"
@@ -128,10 +130,10 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Weak pointer to the object that consumes the external extensions.
   // This is zeroed out by: ServiceShutdown()
-  VisitorInterface* service_;  // weak
+  raw_ptr<VisitorInterface> service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  std::unique_ptr<base::Value::DictStorage> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.
@@ -142,7 +144,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   scoped_refptr<ExternalLoader> loader_;
 
   // The profile that will be used to install external extensions.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Creation flags to use for the extension.  These flags will be used
   // when calling Extension::Create() by the crx installer.

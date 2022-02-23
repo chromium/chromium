@@ -110,7 +110,6 @@ DocumentInit& DocumentInit::ForPrerendering(bool is_prerendering) {
 // static
 DocumentInit::Type DocumentInit::ComputeDocumentType(
     LocalFrame* frame,
-    const KURL& url,
     const String& mime_type,
     bool* is_for_external_handler) {
   if (frame && frame->InViewSourceMode())
@@ -134,7 +133,7 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kMedia;
 
   if (frame && frame->GetPage() && frame->Loader().AllowPlugins()) {
-    PluginData* plugin_data = GetPluginData(frame, url);
+    PluginData* plugin_data = GetPluginData(frame);
 
     // Everything else except text/plain can be overridden by plugins.
     // Disallowing plugins to use text/plain prevents plugins from hijacking a
@@ -172,21 +171,13 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
 }
 
 // static
-PluginData* DocumentInit::GetPluginData(LocalFrame* frame, const KURL& url) {
-  // If the document is being created for the main frame,
-  // frame()->tree().top()->securityContext() returns nullptr.
-  // For that reason, the origin must be retrieved directly from |url|.
-  if (frame->IsMainFrame())
-    return frame->GetPage()->GetPluginData(SecurityOrigin::Create(url).get());
-
-  const SecurityOrigin* main_frame_origin =
-      frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
-  return frame->GetPage()->GetPluginData(main_frame_origin);
+PluginData* DocumentInit::GetPluginData(LocalFrame* frame) {
+  return frame->GetPage()->GetPluginData();
 }
 
 DocumentInit& DocumentInit::WithTypeFrom(const String& mime_type) {
   mime_type_ = mime_type;
-  type_ = ComputeDocumentType(window_ ? window_->GetFrame() : nullptr, Url(),
+  type_ = ComputeDocumentType(window_ ? window_->GetFrame() : nullptr,
                               mime_type_, &is_for_external_handler_);
   return *this;
 }
@@ -282,7 +273,7 @@ Document* DocumentInit::CreateDocument() const {
     case Type::kText:
       return MakeGarbageCollected<TextDocument>(*this);
     case Type::kUnspecified:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

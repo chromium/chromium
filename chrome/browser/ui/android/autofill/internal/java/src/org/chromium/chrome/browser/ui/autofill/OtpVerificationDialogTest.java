@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -30,19 +31,23 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Optional;
+
 /**
- * Unit tests for {@link OtpVerificationDialog}.
+ * Unit tests for {@link OtpVerificationDialogView}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OtpVerificationDialogTest {
     private static final String ERROR_MESSAGE = "Error message";
     private static final String VALID_OTP = "123456";
 
-    private OtpVerificationDialog mOtpVerificationDialog;
+    private OtpVerificationDialogView mOtpVerificationDialogView;
     private FakeModalDialogManager mModalDialogManager;
+    private OtpVerificationDialogCoordinator mOtpVerificationDialogCoordinator;
 
     @Mock
-    private OtpVerificationDialog.Listener mListener;
+    private OtpVerificationDialogCoordinator.Delegate mDelegate;
+
     private class FakeModalDialogManager extends ModalDialogManager {
         private PropertyModel mShownDialogModel;
 
@@ -75,15 +80,19 @@ public class OtpVerificationDialogTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModalDialogManager = new FakeModalDialogManager();
-        mOtpVerificationDialog = new OtpVerificationDialog(
-                ApplicationProvider.getApplicationContext(), mListener, mModalDialogManager);
+        mOtpVerificationDialogView = (OtpVerificationDialogView) LayoutInflater
+                                             .from(ApplicationProvider.getApplicationContext())
+                                             .inflate(R.layout.otp_verification_dialog, null);
+        mOtpVerificationDialogCoordinator =
+                new OtpVerificationDialogCoordinator(ApplicationProvider.getApplicationContext(),
+                        mModalDialogManager, mOtpVerificationDialogView, mDelegate);
     }
 
     @Test
     public void testDefaultState() {
         int otpLength = 6;
 
-        mOtpVerificationDialog.show(otpLength);
+        mOtpVerificationDialogCoordinator.show(otpLength);
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -101,9 +110,8 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testShowHideErrorMessage() {
-        mOtpVerificationDialog.show(/*otpLength= */ 6);
-
-        mOtpVerificationDialog.showOtpErrorMessage(ERROR_MESSAGE);
+        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogView.showOtpErrorMessage(Optional.of(ERROR_MESSAGE));
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -120,7 +128,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testPositiveButtonDisabledState() {
-        mOtpVerificationDialog.show(/*otpLength= */ 6);
+        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
@@ -141,7 +149,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testOtpSubmission() {
-        mOtpVerificationDialog.show(/*otpLength= */ 6);
+        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
         EditText otpInputEditText = (EditText) view.findViewById(R.id.otp_input);
@@ -150,7 +158,7 @@ public class OtpVerificationDialogTest {
         mModalDialogManager.clickPositiveButton();
 
         // Verify that the listener is called with the text entered in the OTP input field.
-        verify(mListener, times(1)).onConfirm(VALID_OTP);
+        verify(mDelegate, times(1)).onConfirm(VALID_OTP);
         // Verify that the progress bar is shown.
         assertThat(view.findViewById(R.id.progress_bar_overlay).getVisibility())
                 .isEqualTo(View.VISIBLE);
@@ -158,7 +166,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testGetNewCode() {
-        mOtpVerificationDialog.show(/*otpLength= */ 6);
+        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView otpResendMessageTextView = (TextView) view.findViewById(R.id.otp_resend_message);
@@ -168,16 +176,16 @@ public class OtpVerificationDialogTest {
 
         getNewCodeSpan.onClick(otpResendMessageTextView);
 
-        verify(mListener, times(1)).onNewOtpRequested();
+        verify(mDelegate, times(1)).onNewOtpRequested();
     }
 
     @Test
     public void testDialogDismissal() {
-        mOtpVerificationDialog.show(/*otpLength= */ 6);
+        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
 
         mModalDialogManager.dismissDialog(mModalDialogManager.getShownDialogModel(),
                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
-        verify(mListener, times(1)).onDialogDismissed();
+        verify(mDelegate, times(1)).onDialogDismissed();
     }
 }

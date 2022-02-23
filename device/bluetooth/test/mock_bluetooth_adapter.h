@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -19,9 +18,9 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace device {
 
@@ -56,7 +55,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   bool IsInitialized() const override { return true; }
 
   void Initialize(base::OnceClosure callback) override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void Shutdown() override;
 #endif
   MOCK_METHOD1(AddObserver, void(BluetoothAdapter::Observer*));
@@ -120,7 +119,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     CreateServiceErrorCallback error_callback));
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD3(SetServiceAllowList,
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
@@ -132,8 +131,8 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothLowEnergyScanSession>(
           std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
           base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
-#endif
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD4(
       ConnectDevice,
       void(const std::string& address,
@@ -173,7 +172,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,

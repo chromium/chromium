@@ -29,8 +29,8 @@ testing::AssertionResult ModelTypeSetEquals(ModelTypeSet a, ModelTypeSet b) {
     return testing::AssertionSuccess();
   } else {
     return testing::AssertionFailure()
-           << "Left side " << ModelTypeSetToString(a)
-           << ", does not match rigth side: " << ModelTypeSetToString(b);
+           << "Left side " << ModelTypeSetToDebugString(a)
+           << ", does not match rigth side: " << ModelTypeSetToDebugString(b);
   }
 }
 
@@ -68,14 +68,13 @@ class NudgeTrackerTest : public ::testing::Test {
     nudge_tracker_.RecordSuccessfulSyncCycle({});
   }
 
-  std::unique_ptr<InvalidationInterface> BuildInvalidation(
+  std::unique_ptr<SyncInvalidation> BuildInvalidation(
       int64_t version,
       const std::string& payload) {
     return MockInvalidation::Build(version, payload);
   }
 
-  static std::unique_ptr<InvalidationInterface>
-  BuildUnknownVersionInvalidation() {
+  static std::unique_ptr<SyncInvalidation> BuildUnknownVersionInvalidation() {
     return MockInvalidation::BuildUnknownVersion();
   }
 

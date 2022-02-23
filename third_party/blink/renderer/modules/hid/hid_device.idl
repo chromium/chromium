@@ -31,11 +31,22 @@
 
     // Open a connection to the device. The promise is resolved once the device
     // is ready to send or receive reports.
-    [CallWith=ScriptState, MeasureAs=HidDeviceOpen] Promise<void> open();
-
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        MeasureAs=HidDeviceOpen
+    ] Promise<void> open();
     // Close the connection to the device. The promise is resolved once the
     // device is closed.
     [CallWith=ScriptState, MeasureAs=HidDeviceClose] Promise<void> close();
+
+    // Revoke permission to the device. The promise is resolved once the
+    // device is forgotten.
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        RuntimeEnabled=HidDeviceForget
+    ] Promise<void> forget();
 
     // Send an output report to the device. Set |reportId| to the first byte of
     // the report and |data| to the remaining bytes. Set |reportId| to zero if

@@ -23,7 +23,8 @@ struct VAContextAndScopedVASurfaceDeleter;
 struct Vp8FrameHeader;
 
 // Class to map a given VABuffer, identified by |buffer_id|, for its lifetime.
-// This class must operate under |lock_| acquired.
+// The |lock_| might be null depending on the user of this class. If |lock_| is
+// not null, this class must operate under |lock_| acquired.
 class ScopedVABufferMapping {
  public:
   // |release_callback| will be called if the mapping of the buffer failed.
@@ -37,9 +38,13 @@ class ScopedVABufferMapping {
   ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
 
   ~ScopedVABufferMapping();
-  bool IsValid() const { return !!va_buffer_data_; }
+  bool IsValid() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return !!va_buffer_data_;
+  }
   void* data() const {
     DCHECK(IsValid());
+    CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_data_;
   }
   // Explicit destruction method, to retrieve the success/error result. It is
@@ -51,13 +56,16 @@ class ScopedVABufferMapping {
   const VADisplay va_display_;
   const VABufferID buffer_id_;
 
+  base::SequenceCheckerImpl sequence_checker_;
+
   void* va_buffer_data_ = nullptr;
 };
 
 // This class tracks the VABuffer life cycle from vaCreateBuffer() to
 // vaDestroyBuffer(). Users of this class are responsible for mapping and
-// unmapping the buffer as needed. The destructor acquires |lock|, but the user
-// of this class must acquire the lock prior to construction.
+// unmapping the buffer as needed. The |lock_| might be null depending on the
+// user of this class. If |lock_| is not null, |lock_| is acquired for
+// destruction purposes.
 class ScopedVABuffer {
  public:
   // Creates ScopedVABuffer. Returns nullptr if creating the va buffer fails.
@@ -72,9 +80,18 @@ class ScopedVABuffer {
   ScopedVABuffer& operator=(const ScopedVABuffer&) = delete;
   ~ScopedVABuffer();
 
-  VABufferID id() const { return va_buffer_id_; }
-  VABufferType type() const { return va_buffer_type_; }
-  size_t size() const { return size_; }
+  VABufferID id() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return va_buffer_id_;
+  }
+  VABufferType type() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return va_buffer_type_;
+  }
+  size_t size() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return size_;
+  }
 
  private:
   ScopedVABuffer(base::Lock* lock,
@@ -86,6 +103,8 @@ class ScopedVABuffer {
   base::Lock* const lock_;
   const VADisplay va_display_ GUARDED_BY(lock_);
 
+  base::SequenceCheckerImpl sequence_checker_;
+
   const VABufferID va_buffer_id_;
   const VABufferType va_buffer_type_;
   const size_t size_;
@@ -94,8 +113,9 @@ class ScopedVABuffer {
 // This class tracks the VAImage life cycle from vaCreateImage() - vaGetImage()
 // to vaDestroyImage(). In between creation and destruction, image()->buf  will
 // try to be be mapped on user space using a ScopedVABufferMapping. All
-// resources will be cleaned up appropriately. |lock| is acquired for
-// destruction purposes.
+// resources will be cleaned up appropriately. The |lock_| might be null
+// depending on the user of this class. If |lock_| is not null, |lock_| is
+// acquired for destruction purposes.
 class ScopedVAImage {
  public:
   ScopedVAImage(base::Lock* lock,
@@ -111,9 +131,13 @@ class ScopedVAImage {
 
   bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
 
-  const VAImage* image() const { return image_.get(); }
+  const VAImage* image() const {
+    CHECK(sequence_checker_.CalledOnValidSequence());
+    return image_.get();
+  }
   const ScopedVABufferMapping* va_buffer() const {
     DCHECK(IsValid());
+    CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_.get();
   }
 
@@ -122,6 +146,8 @@ class ScopedVAImage {
   const VADisplay va_display_ GUARDED_BY(lock_);
   std::unique_ptr<VAImage> image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
+
+  base::SequenceCheckerImpl sequence_checker_;
 };
 
 // A VA-API-specific surface used by video/image codec accelerators to work on.

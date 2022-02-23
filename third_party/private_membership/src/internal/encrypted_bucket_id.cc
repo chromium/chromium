@@ -42,7 +42,7 @@ namespace rlwe {
   if(!status_or_encrypted_id.ok()){
       return absl::InvalidArgumentError(status_or_encrypted_id.status().message());
   }
-  std::string encrypted_id = std::move(status_or_encrypted_id).ValueOrDie();
+  std::string encrypted_id = std::move(status_or_encrypted_id).value();
   return EncryptedBucketId::Create(encrypted_id, params, ctx);
 }
 

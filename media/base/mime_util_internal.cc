@@ -21,7 +21,7 @@
 #include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 
 // TODO(dalecurtis): This include is not allowed by media/base since
@@ -91,6 +91,12 @@ const StringToCodecMap& GetStringToCodecMap() {
       {"vp8", MimeUtil::VP8},
       {"vp8.0", MimeUtil::VP8},
       {"theora", MimeUtil::THEORA},
+      {"dtsc", MimeUtil::DTS},
+      {"mp4a.a9", MimeUtil::DTS},
+      {"mp4a.A9", MimeUtil::DTS},
+      {"dtsx", MimeUtil::DTSXP2},
+      {"mp4a.b2", MimeUtil::DTSXP2},
+      {"mp4a.B2", MimeUtil::DTSXP2},
   });
 
   return *kStringToCodecMap;
@@ -139,11 +145,7 @@ static MimeUtil::ParsedCodecResult MakeDefaultParsedCodecResult() {
 }
 
 MimeUtil::MimeUtil() {
-#if defined(OS_ANDROID)
-  // When the unified media pipeline is enabled, we need support for both GPU
-  // video decoders and MediaCodec; indicated by HasPlatformDecoderSupport().
-  // When the Android pipeline is used, we only need access to MediaCodec.
-  platform_info_.has_platform_decoders = HasPlatformDecoderSupport();
+#if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   platform_info_.has_platform_dv_decoder =
       MediaCodecUtil::IsDolbyVisionDecoderAvailable();
@@ -158,7 +160,7 @@ MimeUtil::MimeUtil() {
 #endif
   platform_info_.has_platform_opus_decoder =
       MediaCodecUtil::IsOpusDecoderAvailable();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
   InitializeMimeTypeMaps();
 }
@@ -187,6 +189,10 @@ AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
       return AudioCodec::kOpus;
     case MimeUtil::FLAC:
       return AudioCodec::kFLAC;
+    case MimeUtil::DTS:
+      return AudioCodec::kDTS;
+    case MimeUtil::DTSXP2:
+      return AudioCodec::kDTSXP2;
     default:
       break;
   }
@@ -345,6 +351,11 @@ void MimeUtil::AddSupportedMediaFormats() {
   mp4_video_codecs.emplace(AV1);
 #endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  mp4_audio_codecs.emplace(DTS);
+  mp4_audio_codecs.emplace(DTSXP2);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
   CodecSet mp4_codecs(mp4_audio_codecs);
   mp4_codecs.insert(mp4_video_codecs.begin(), mp4_video_codecs.end());
 
@@ -384,7 +395,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   CodecSet mp2t_codecs{H264, MPEG2_AAC, MPEG4_AAC, MP3};
   AddContainerWithCodecs("video/mp2t", mp2t_codecs);
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kCanPlayHls)) {
     // HTTP Live Streaming (HLS).
     CodecSet hls_codecs{H264,
@@ -402,7 +413,7 @@ void MimeUtil::AddSupportedMediaFormats() {
     // https://crbug.com/675552 for details and examples.
     AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
@@ -553,10 +564,6 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
   DVLOG(3) << __func__;
   DCHECK_NE(mime_type_lower_case, "");
 
-  // Encrypted block support is never available without platform decoders.
-  if (is_encrypted && !platform_info.has_platform_decoders)
-    return false;
-
   // NOTE: We do not account for Media Source Extensions (MSE) within these
   // checks since it has its own isTypeSupported() which will handle platform
   // specific codec rejections.  See http://crbug.com/587303.
@@ -581,21 +588,18 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
       // valid codecs to be used with HLS mime types.
       DCHECK(!base::EndsWith(mime_type_lower_case, "mpegurl",
                              base::CompareCase::SENSITIVE));
-      FALLTHROUGH;
+      [[fallthrough]];
     case PCM:
     case MP3:
     case MPEG4_AAC:
     case FLAC:
     case VORBIS:
       // These codecs are always supported; via a platform decoder (when used
-      // with MSE/EME), a software decoder (the unified pipeline), or with
-      // MediaPlayer.
-      DCHECK(!is_encrypted || platform_info.has_platform_decoders);
+      // with MSE/EME) or with a software decoder (the unified pipeline).
       return true;
 
     case MPEG4_XHE_AAC:
-      // xHE-AAC is only supported via MediaCodec.
-      return platform_info.has_platform_decoders;
+      return true;
 
     case MPEG_H_AUDIO:
       return false;
@@ -611,18 +615,14 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
         return false;
       }
 
-      DCHECK(!is_encrypted || platform_info.has_platform_decoders);
       return true;
 
     case H264:
-      // When content is not encrypted we fall back to MediaPlayer, thus we
-      // always support H264. For EME we need MediaCodec.
-      return !is_encrypted || platform_info.has_platform_decoders;
+      return true;
 
     case HEVC:
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-      return platform_info.has_platform_decoders &&
-             platform_info.has_platform_hevc_decoder;
+      return platform_info.has_platform_hevc_decoder;
 #else
       return false;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -662,6 +662,14 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
     case AC3:
     case EAC3:
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      return true;
+#else
+      return false;
+#endif
+
+    case DTS:
+    case DTSXP2:
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
       return true;
 #else
       return false;
@@ -927,7 +935,7 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
   // handled by (android specific) media::IsSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,

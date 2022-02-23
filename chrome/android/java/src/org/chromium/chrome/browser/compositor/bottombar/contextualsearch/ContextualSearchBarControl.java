@@ -15,7 +15,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.contextualsearch.QuickActionCategory;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -211,9 +210,6 @@ public class ContextualSearchBarControl {
         // The space will be freed when the panel closes.
         if (percentage == TRANSPARENT_OPACITY) {
             mQuickActionControl.reset();
-            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
-                mCaptionControl.hide();
-            }
             getImageControl().hideCustomImage(false);
         }
     }
@@ -232,13 +228,21 @@ public class ContextualSearchBarControl {
     }
 
     /**
+     * Updates this bar when in transition between expanded and maximized states.
+     * @param percentage The percentage to the more opened state.
+     */
+    public void onUpdateFromExpandToMaximize(float percentage) {
+        getImageControl().onUpdateFromExpandToMaximize(percentage);
+        mCaptionControl.onUpdateFromExpandToMaximize(percentage);
+    }
+
+    /**
      * Sets the details of the context to display in the control.
      * @param selection The portion of the context that represents the user's selection.
      * @param end The portion of the context after the selection.
      */
     public void setContextDetails(String selection, String end) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
         mContextControl.setContextDetails(selection, end);
         resetSearchBarContextOpacity();
@@ -264,7 +268,6 @@ public class ContextualSearchBarControl {
      */
     public void setSearchTerm(String searchTerm) {
         cancelSearchTermResolutionAnimation();
-        hideCaption();
         mQuickActionControl.reset();
         mSearchTermControl.setSearchTerm(searchTerm);
         resetSearchBarTermOpacity();
@@ -276,6 +279,20 @@ public class ContextualSearchBarControl {
      */
     public void setCaption(String caption) {
         mCaptionControl.setCaption(caption);
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    void hideCaption() {
+        mCaptionControl.hide();
+    }
+
+    /**
+     * Hides the caption so it will not be displayed in the control.
+     */
+    boolean hasCaption() {
+        return mCaptionControl.hasCaption();
     }
 
     /**
@@ -385,13 +402,6 @@ public class ContextualSearchBarControl {
     private void resetSearchBarTermOpacity() {
         mSearchBarContextOpacity = TRANSPARENT_OPACITY;
         mSearchBarTermOpacity = FULL_OPACITY;
-    }
-
-    /**
-     * Hides the caption so it will not be displayed in the control.
-     */
-    private void hideCaption() {
-        mCaptionControl.hide();
     }
 
     // ============================================================================================
@@ -594,7 +604,13 @@ public class ContextualSearchBarControl {
     private void updateInBarRelatedSearchesSize(float percentage) {
         mInBarRelatedSearchesAnimatedHeightDps =
                 getInBarRelatedSearchesMaximumHeight() * percentage;
-        mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
+        if (mContextualSearchPanel.isDelayedIntelligenceActive()) {
+            mContextualSearchPanel.setClampedPanelHeight(
+                    mContextualSearchPanel.getPanelHeightFromState(
+                            mContextualSearchPanel.getPanelState()));
+        } else {
+            mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
+        }
         if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
             clearCacheMaxHeightForShrinkAnimation();
         }

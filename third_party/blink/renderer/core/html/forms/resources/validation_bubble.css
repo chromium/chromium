@@ -6,7 +6,18 @@
 :root {
   --bubble-background: white;
   --bubble-border-color: gray;
+  --box-shadow-color: rgba(0, 0, 0, 0.2);
+  --submessage-color: #444;
   --arrow-size: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bubble-background:  #3B3B3B;
+    --bubble-border-color: #858585;
+    --box-shadow-color: rgba(255, 255, 255, 0.2);
+    --submessage-color: #efefef;
+  }
 }
 
 #container {
@@ -55,7 +66,7 @@
   background: var(--bubble-background);
   border-radius: 4px;
   border: 1px solid var(--bubble-border-color);
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 4px 4px 4px var(--box-shadow-color);
   display: grid;
   padding: 8px;
 }
@@ -138,7 +149,7 @@
 }
 
 #sub-message {
-  color: #444;
+  color: var(--submessage-color);
   font-size: 13px;
   grid-row: 2;
   grid-column: 2;

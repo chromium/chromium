@@ -13,14 +13,13 @@
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
-#include "content/common/service_worker/service_worker_utils.h"
-#include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_blink_platform_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -41,6 +40,13 @@ namespace {
 
 constexpr char kServiceWorkerSubresourceLoaderScope[] =
     "ServiceWorkerSubresourceLoader";
+
+template <typename T>
+static std::string MojoEnumToString(T mojo_enum) {
+  std::ostringstream oss;
+  oss << mojo_enum;
+  return oss.str();
+}
 
 network::mojom::URLResponseHeadPtr RewriteServiceWorkerTime(
     base::TimeTicks service_worker_start_time,
@@ -75,11 +81,12 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
     url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnReceiveResponse(
-        rewrite_header_callback_.Run(std::move(response_head)));
+        rewrite_header_callback_.Run(std::move(response_head)),
+        std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -348,8 +355,7 @@ void ServiceWorkerSubresourceLoader::OnFetchEventFinished(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnFetchEventFinished",
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
                           TRACE_ID_LOCAL(request_id_)),
-      TRACE_EVENT_FLAG_FLOW_IN, "status",
-      ServiceWorkerUtils::MojoEnumToString(status));
+      TRACE_EVENT_FLAG_FLOW_IN, "status", MojoEnumToString(status));
 
   // Stop restarting logic here since OnFetchEventFinished() indicates that the
   // fetch event dispatch reached the renderer.
@@ -588,14 +594,23 @@ void ServiceWorkerSubresourceLoader::StartResponse(
 void ServiceWorkerSubresourceLoader::CommitResponseHeaders() {
   TransitionToStatus(Status::kSentHeader);
   DCHECK(url_loader_client_.is_bound());
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
+    return;  // Will be sent in CommitResponseBody.
+
   // TODO(kinuko): Fill the ssl_info.
-  url_loader_client_->OnReceiveResponse(response_head_.Clone());
+  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                        mojo::ScopedDataPipeConsumerHandle());
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   TransitionToStatus(Status::kSentBody);
-  url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
+    url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                          std::move(response_body));
+  } else {
+    url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
+  }
 }
 
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
@@ -684,10 +699,11 @@ void ServiceWorkerSubresourceLoader::RecordTimingMetrics(bool handled) {
         completion_time - response_head_->load_timing.receive_headers_end);
     // Same as above, breakdown by response source.
     base::UmaHistogramMediumTimes(
-        base::StrCat({"ServiceWorker.LoadTiming.Subresource."
-                      "ResponseReceivedToCompleted2",
-                      ServiceWorkerUtils::FetchResponseSourceToSuffix(
-                          response_source_)}),
+        base::StrCat(
+            {"ServiceWorker.LoadTiming.Subresource."
+             "ResponseReceivedToCompleted2",
+             blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+                 response_source_)}),
         completion_time - response_head_->load_timing.receive_headers_end);
   } else {
     // Mojo message delay (network fallback case). See above for the detail.
@@ -797,11 +813,20 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
   DCHECK(!side_data_reading_complete_);
   side_data_reading_complete_ = true;
 
-  if (metadata.has_value())
+  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      metadata.has_value()) {
     url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
+  }
 
   DCHECK(data_pipe.is_valid());
   CommitResponseBody(std::move(data_pipe));
+
+  // See https://crbug.com/1294238. The cached meta data needs to be sent after
+  // the response head.
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      metadata.has_value()) {
+    url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
+  }
 
   // If the blob reading completed before the side data reading, then we
   // must manually finalize the blob reading now.

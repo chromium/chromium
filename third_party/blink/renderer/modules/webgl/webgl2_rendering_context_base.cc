@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_transform_feedback.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using WTF::String;
@@ -215,7 +215,7 @@ void WebGL2RenderingContextBase::InitializeNewContext() {
   // Create a default transform feedback object so there is a place to
   // hold any bound buffers.
   default_transform_feedback_ = MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFTypeDefault);
+      this, WebGLTransformFeedback::TFType::kDefault);
   transform_feedback_binding_ = default_transform_feedback_;
 
   GLint max_uniform_buffer_bindings = 0;
@@ -264,7 +264,7 @@ void WebGL2RenderingContextBase::bufferData(GLenum target,
 }
 
 void WebGL2RenderingContextBase::bufferData(GLenum target,
-                                            DOMArrayBuffer* data,
+                                            DOMArrayBufferBase* data,
                                             GLenum usage) {
   WebGLRenderingContextBase::bufferData(target, data, usage);
 }
@@ -298,7 +298,7 @@ void WebGL2RenderingContextBase::bufferSubData(
 
 void WebGL2RenderingContextBase::bufferSubData(GLenum target,
                                                int64_t offset,
-                                               DOMArrayBuffer* data) {
+                                               DOMArrayBufferBase* data) {
   WebGLRenderingContextBase::bufferSubData(target, offset, data);
 }
 
@@ -662,10 +662,10 @@ bool WebGL2RenderingContextBase::CheckAndTranslateAttachments(
   return true;
 }
 
-IntRect WebGL2RenderingContextBase::GetTextureSourceSubRectangle(
+gfx::Rect WebGL2RenderingContextBase::GetTextureSourceSubRectangle(
     GLsizei width,
     GLsizei height) {
-  return IntRect(unpack_skip_pixels_, unpack_skip_rows_, width, height);
+  return gfx::Rect(unpack_skip_pixels_, unpack_skip_rows_, width, height);
 }
 
 void WebGL2RenderingContextBase::invalidateFramebuffer(
@@ -922,7 +922,7 @@ void WebGL2RenderingContextBase::RenderbufferStorageImpl(
                           "for integer formats, samples > 0");
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case GL_R8:
     case GL_RG8:
     case GL_RGB8:
@@ -1873,10 +1873,8 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
                                             GLenum type,
                                             ImageData* pixels) {
   DCHECK(pixels);
-  IntRect source_image_rect;
-  source_image_rect.set_origin(
-      gfx::Point(unpack_skip_pixels_, unpack_skip_rows_));
-  source_image_rect.set_size(IntSize(width, height));
+  gfx::Rect source_image_rect(unpack_skip_pixels_, unpack_skip_rows_, width,
+                              height);
   TexImageHelperImageData(kTexImage3D, target, level, internalformat, 0, format,
                           type, depth, 0, 0, 0, pixels, source_image_rect,
                           unpack_image_height_);
@@ -4512,7 +4510,7 @@ WebGLTransformFeedback* WebGL2RenderingContextBase::createTransformFeedback() {
   if (isContextLost())
     return nullptr;
   return MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFTypeUser);
+      this, WebGLTransformFeedback::TFType::kUser);
 }
 
 void WebGL2RenderingContextBase::deleteTransformFeedback(
@@ -5910,7 +5908,7 @@ ScriptValue WebGL2RenderingContextBase::getFramebufferAttachmentParameter(
     case GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL:
       if (!attachment_object->IsTexture())
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE:
     case GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE:
     case GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE:
@@ -5929,7 +5927,7 @@ ScriptValue WebGL2RenderingContextBase::getFramebufferAttachmentParameter(
             "COMPONENT_TYPE can't be queried for DEPTH_STENCIL_ATTACHMENT");
         return ScriptValue::CreateNull(script_state->GetIsolate());
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING: {
       GLint value = 0;
       ContextGL()->GetFramebufferAttachmentParameteriv(target, attachment,

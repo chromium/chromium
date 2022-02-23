@@ -23,11 +23,12 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 
@@ -70,10 +71,10 @@ void LogFaviconContainedInSpecifics(bool contains_favicon) {
 void UpdateBookmarkSpecificsMetaInfo(
     const bookmarks::BookmarkNode::MetaInfoMap* metainfo_map,
     sync_pb::BookmarkSpecifics* bm_specifics) {
-  for (const std::pair<const std::string, std::string>& pair : *metainfo_map) {
+  for (const auto& [key, value] : *metainfo_map) {
     sync_pb::MetaInfo* meta_info = bm_specifics->add_meta_info();
-    meta_info->set_key(pair.first);
-    meta_info->set_value(pair.second);
+    meta_info->set_key(key);
+    meta_info->set_value(value);
   }
 }
 
@@ -137,8 +138,6 @@ void SetBookmarkFaviconFromSpecifics(
 }
 
 // This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
 std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
   DCHECK_GE(bytes.size(), 16U);
 
@@ -162,9 +161,13 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
       bytes[14], bytes[15]);
 }
 
-// This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
+// This is an exact copy of the same code in bookmark_update_preprocessing.cc,
+// which could be removed if eventually client tags are adapted/inferred in
+// ModelTypeWorker. The reason why this is non-trivial today is that some users
+// are known to contain corrupt data in the sense that several different
+// entities (identified by their server-provided ID) use the same client tag
+// (and GUID). Currently BookmarkModelMerger has logic to prefer folders over
+// regular URLs and reassign GUIDs.
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
@@ -333,8 +336,13 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   DCHECK(favicon_service);
   DCHECK(IsValidBookmarkSpecifics(specifics));
 
-  base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
+  const base::GUID guid = base::GUID::ParseLowercase(specifics.guid());
   DCHECK(guid.is_valid());
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  DCHECK(parent_guid.is_valid());
+  DCHECK_EQ(parent_guid, parent->guid());
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
@@ -452,14 +460,13 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
     LogInvalidSpecifics(InvalidBookmarkSpecificsError::kBannedGUID);
     is_valid = false;
   }
-  if (specifics.has_parent_guid()) {
-    const base::GUID parent_guid =
-        base::GUID::ParseLowercase(specifics.parent_guid());
-    if (!parent_guid.is_valid()) {
-      DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
-      LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
-      is_valid = false;
-    }
+
+  const base::GUID parent_guid =
+      base::GUID::ParseLowercase(specifics.parent_guid());
+  if (!parent_guid.is_valid()) {
+    DLOG(ERROR) << "Invalid bookmark: invalid parent GUID in specifics.";
+    LogInvalidSpecifics(InvalidBookmarkSpecificsError::kInvalidParentGUID);
+    is_valid = false;
   }
 
   switch (specifics.type()) {
@@ -571,7 +578,7 @@ void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
     return;
   }
 
-  const SyncedBookmarkTracker::Entity* const tracked_entity =
+  const SyncedBookmarkTrackerEntity* const tracked_entity =
       tracker.GetEntityForSyncId(update_entity->id);
   if (!tracked_entity || !tracked_entity->bookmark_node()) {
     // The entity is not tracked locally or it has been deleted, so the GUID is

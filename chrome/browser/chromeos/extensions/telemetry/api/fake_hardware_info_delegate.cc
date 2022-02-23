@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 

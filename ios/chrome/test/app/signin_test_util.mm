@@ -132,7 +132,6 @@ void SignInWithoutSync(ChromeIdentity* identity) {
   __block AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:browser
                                          identity:identity
-                                  shouldClearData:SHOULD_CLEAR_DATA_CLEAR_DATA
                                  postSignInAction:POST_SIGNIN_ACTION_NONE
                          presentingViewController:viewController];
   authenticationFlow.dispatcher = (id<BrowsingDataCommands>)GetMainController();

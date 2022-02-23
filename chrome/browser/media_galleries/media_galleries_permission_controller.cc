@@ -291,7 +291,7 @@ void MediaGalleriesPermissionController::FileSelected(
   MediaGalleryPrefInfo gallery;
   DCHECK(preferences_);
   bool gallery_exists = preferences_->LookUpGalleryByPath(path, &gallery);
-  if (gallery_exists && !gallery.IsBlackListedType()) {
+  if (gallery_exists && !gallery.IsBlockListedType()) {
     // The prefs are in sync with |known_galleries_|, so it should exist in
     // |known_galleries_| as well. User selecting a known gallery effectively
     // just sets the gallery to permitted.
@@ -317,7 +317,7 @@ void MediaGalleriesPermissionController::FileSelected(
 
   // Lastly, if not found, add a new gallery to |new_galleries_|.
   // prefId == kInvalidMediaGalleryPrefId for completely new galleries.
-  // The old prefId is retained for blacklisted galleries.
+  // The old prefId is retained for blocklisted galleries.
   gallery.pref_id = GetDialogId(gallery.pref_id);
   new_galleries_[gallery.pref_id] = Entry(gallery, true);
   dialog_->UpdateGalleries();
@@ -382,7 +382,7 @@ void MediaGalleriesPermissionController::InitializePermissions() {
   const MediaGalleriesPrefInfoMap& galleries = preferences_->known_galleries();
   for (auto iter = galleries.begin(); iter != galleries.end(); ++iter) {
     const MediaGalleryPrefInfo& gallery = iter->second;
-    if (gallery.IsBlackListedType())
+    if (gallery.IsBlockListedType())
       continue;
 
     GalleryDialogId gallery_id = GetDialogId(gallery.pref_id);

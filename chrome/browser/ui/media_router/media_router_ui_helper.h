@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/common/media_source.h"
@@ -31,6 +32,16 @@ std::string GetHostFromURL(const GURL& gurl);
 
 // Returns the duration to wait for route creation result before we time out.
 base::TimeDelta GetRouteRequestTimeout(MediaCastMode cast_mode);
+
+// Determines if the specified cast mode requires permission from the user
+// in order to proceed.
+bool RequiresScreenCapturePermission(MediaCastMode cast_mode);
+
+// Requests permission for screen capturing.
+bool GetScreenCapturePermission();
+
+void set_screen_capture_allowed_for_testing(bool allowed);
+void clear_screen_capture_allowed_for_testing();
 
 // A variation of MediaRouteResponseCallback that doesn't require the
 // PresentationConnection objects.

@@ -27,11 +27,11 @@ Polymer({
   },
 
   onBeforeShow() {
-    this.$.spinner.setPlay(true);
+    this.$.spinner.playing = true;
   },
 
   onBeforeHide() {
-    this.$.spinner.setPlay(false);
+    this.$.spinner.playing = false;
   },
 
   /**

@@ -19,19 +19,20 @@ namespace {
 static const V8PrivateProperty::SymbolKey
     kByteLengthQueuingStrategySizeFunction;
 
-class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
+class ByteLengthQueuingStrategySizeFunction final
+    : public ScriptFunction::Callable {
  public:
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    ByteLengthQueuingStrategySizeFunction* self =
-        MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>(
-            script_state);
+    auto* self = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<ByteLengthQueuingStrategySizeFunction>());
 
     // https://streams.spec.whatwg.org/#byte-length-queuing-strategy-size-function
 
     // 2. Let F be ! CreateBuiltinFunction(steps, « », globalObject’s relevant
     //    Realm).
     // 4. Perform ! SetFunctionLength(F, 1).
-    v8::Local<v8::Function> function = self->BindToV8Function(/*length=*/1);
+    v8::Local<v8::Function> function = self->V8Function();
 
     // 3. Perform ! SetFunctionName(F, "size").
     function->SetName(V8String(script_state->GetIsolate(), "size"));
@@ -39,14 +40,13 @@ class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
     return function;
   }
 
-  explicit ByteLengthQueuingStrategySizeFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  ByteLengthQueuingStrategySizeFunction() = default;
 
- private:
-  void CallRaw(const v8::FunctionCallbackInfo<v8::Value>& args) override {
+  void CallRaw(ScriptState* script_state,
+               const v8::FunctionCallbackInfo<v8::Value>& args) override {
     auto* isolate = args.GetIsolate();
-    DCHECK_EQ(isolate, GetScriptState()->GetIsolate());
-    auto context = GetScriptState()->GetContext();
+    DCHECK_EQ(isolate, script_state->GetIsolate());
+    auto context = script_state->GetContext();
     v8::Local<v8::Value> chunk;
     if (args.Length() < 1) {
       chunk = v8::Undefined(isolate);
@@ -77,6 +77,8 @@ class ByteLengthQueuingStrategySizeFunction final : public ScriptFunction {
     }
     args.GetReturnValue().Set(byte_length);
   }
+
+  int Length() const override { return 1; }
 };
 
 }  // namespace

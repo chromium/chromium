@@ -18,7 +18,7 @@ import './mojom/shimless_rma.mojom-lite.js';
  * Convenience type as mojo-lite does not define types for method results and
  * this is used frequently.
  * @typedef {{
- *   state: !RmaState,
+ *   state: !State,
  *   canCancel: boolean,
  *   canGoBack: boolean,
  *   error: !RmadErrorCode
@@ -27,9 +27,9 @@ import './mojom/shimless_rma.mojom-lite.js';
 export let StateResult;
 
 /**
- * @typedef {ash.shimlessRma.mojom.RmaState}
+ * @typedef {ash.shimlessRma.mojom.State}
  */
-export const RmaState = ash.shimlessRma.mojom.RmaState;
+export const State = ash.shimlessRma.mojom.State;
 
 /**
  * @typedef {ash.shimlessRma.mojom.RmadErrorCode}
@@ -52,9 +52,13 @@ export const ComponentType = ash.shimlessRma.mojom.ComponentType;
 export const ComponentRepairStatus =
     ash.shimlessRma.mojom.ComponentRepairStatus;
 
-/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteState} */
-export const WriteProtectDisableCompleteState =
-    ash.shimlessRma.mojom.WriteProtectDisableCompleteState;
+/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteAction} */
+export const WriteProtectDisableCompleteAction =
+    ash.shimlessRma.mojom.WriteProtectDisableCompleteAction;
+
+/** @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareStatus} */
+export const UpdateRoFirmwareStatus =
+    ash.shimlessRma.mojom.UpdateRoFirmwareStatus;
 
 /**
  * @typedef {ash.shimlessRma.mojom.CalibrationSetupInstruction}
@@ -96,6 +100,12 @@ export const FinalizationStatus = ash.shimlessRma.mojom.FinalizationStatus;
 export const OsUpdateOperation = ash.shimlessRma.mojom.OsUpdateOperation;
 
 /**
+ * Type alias for UpdateErrorCode.
+ * @typedef {ash.shimlessRma.mojom.UpdateErrorCode}
+ */
+export const UpdateErrorCode = ash.shimlessRma.mojom.UpdateErrorCode;
+
+/**
  * @typedef {ash.shimlessRma.mojom.Component}
  */
 export const Component = ash.shimlessRma.mojom.Component;
@@ -105,6 +115,20 @@ export const Component = ash.shimlessRma.mojom.Component;
  * @typedef {ash.shimlessRma.mojom.ErrorObserverRemote}
  */
 export const ErrorObserverRemote = ash.shimlessRma.mojom.ErrorObserverRemote;
+
+/**
+ * Type alias for ErrorObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverReceiver}
+ */
+export const ErrorObserverReceiver =
+    ash.shimlessRma.mojom.ErrorObserverReceiver;
+
+/**
+ * Type alias for ErrorObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverInterface}
+ */
+export const ErrorObserverInterface =
+    ash.shimlessRma.mojom.ErrorObserverInterface;
 
 /**
  * Type alias for OsUpdateObserverRemote.
@@ -126,6 +150,27 @@ export const OsUpdateObserverReceiver =
  */
 export const OsUpdateObserverInterface =
     ash.shimlessRma.mojom.OsUpdateObserverInterface;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote}
+ */
+export const UpdateRoFirmwareObserverRemote =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver}
+ */
+export const UpdateRoFirmwareObserverReceiver =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface}
+ */
+export const UpdateRoFirmwareObserverInterface =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface;
 
 /**
  * Type alias for CalibrationObserverRemote.
@@ -198,6 +243,20 @@ export const HardwareWriteProtectionStateObserverInterface =
  */
 export const PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
+
+/**
+ * Type alias for PowerCableStateObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverReceiver}
+ */
+export const PowerCableStateObserverReceiver =
+    ash.shimlessRma.mojom.PowerCableStateObserverReceiver;
+
+/**
+ * Type alias for PowerCableStateObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.PowerCableStateObserverInterface}
+ */
+export const PowerCableStateObserverInterface =
+    ash.shimlessRma.mojom.PowerCableStateObserverInterface;
 
 /**
  * Type alias for HardwareVerificationStatusObserverRemote.

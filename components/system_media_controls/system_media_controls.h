@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControls {
 
   // Setters for metadata.
   virtual void SetPlaybackStatus(PlaybackStatus value) = 0;
+  virtual void SetID(const std::string* value) {}
   virtual void SetTitle(const std::u16string& value) = 0;
   virtual void SetArtist(const std::u16string& value) = 0;
   virtual void SetAlbum(const std::u16string& value) = 0;

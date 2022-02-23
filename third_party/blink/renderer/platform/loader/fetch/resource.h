@@ -34,6 +34,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -482,7 +484,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   }
 
   void SetCachePolicyBypassingCache();
-  void SetPreviewsState(PreviewsState);
   void ClearRangeRequestHeader();
 
   SharedBuffer* Data() const { return data_.get(); }

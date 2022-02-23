@@ -28,7 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/messages/android/messages_feature.h"
 #endif
 
@@ -297,6 +297,8 @@ void ReputationWebContentsObserver::RegisterSafetyTipCloseCallbackForTesting(
 ReputationWebContentsObserver::ReputationWebContentsObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
+      content::WebContentsUserData<ReputationWebContentsObserver>(
+          *web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       reputation_check_pending_for_testing_(true),
       weak_factory_(this) {
@@ -431,7 +433,7 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
                        navigation_source_id, profile_, result.url,
                        result.safety_tip_status,
                        std::move(safety_tip_close_callback_for_testing_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (messages::IsSafetyTipMessagesUiEnabled()) {
       should_call_safety_tip_dialog = false;
       delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,
@@ -485,7 +487,7 @@ void ReputationWebContentsObserver::OnDigitalAssetLinkValidationResult(
                      navigation_source_id, profile_, result.url,
                      result.safety_tip_status,
                      std::move(safety_tip_close_callback_for_testing_));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (messages::IsSafetyTipMessagesUiEnabled()) {
     should_call_safety_tip_dialog = false;
     delegate_.DisplaySafetyTipPrompt(result.safety_tip_status,

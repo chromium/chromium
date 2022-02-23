@@ -11,6 +11,7 @@
     body {
       height: 100%;
     }
+
     body {
       margin: 0 40px 0;
     }
@@ -19,9 +20,13 @@
 
 <body>
   <!-- TODO(xiangdongkong): add other steps and manage states-->
-  <confirmation-page></confirmation-page>
+  <search-page></search-page>
 
+  <script type="module" src="search_page.js"></script>
   <script type="module" src="confirmation_page.js"></script>
+  <!-- Below mojo script required to run browser tests -->
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js">
+  </script>
   <link rel="stylesheet" src="os_feedback_shared_css.js">
 </body>
 

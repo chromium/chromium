@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/user_context.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
@@ -92,6 +92,13 @@ bool NetworkStateHelper::IsConnected() const {
       chromeos::NetworkHandler::Get()->network_state_handler();
   return nsh->ConnectedNetworkByType(chromeos::NetworkTypePattern::Default()) !=
          nullptr;
+}
+
+bool NetworkStateHelper::IsConnectedToEthernet() const {
+  chromeos::NetworkStateHandler* nsh =
+      chromeos::NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(
+             chromeos::NetworkTypePattern::Ethernet()) != nullptr;
 }
 
 bool NetworkStateHelper::IsConnecting() const {

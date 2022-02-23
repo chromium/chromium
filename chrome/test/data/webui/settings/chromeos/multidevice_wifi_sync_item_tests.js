@@ -13,10 +13,21 @@
 // #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
+// Prefs used by settings-multidevice-wifi-sync-item if
+// SyncSettingsCategorization is disabled.
 function getPrefs() {
   return {
     wifiConfigurationsRegistered: true,
     wifiConfigurationsSynced: true,
+  };
+}
+
+// Prefs used by settings-multidevice-wifi-sync-item if
+// SyncSettingsCategorization is enabled.
+function getOsPrefs() {
+  return {
+    osWifiConfigurationsRegistered: true,
+    osWifiConfigurationsSynced: true,
   };
 }
 
@@ -103,10 +114,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     wifiSyncItem.remove();
   });
 
-  test('Chrome Sync off', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', false, prefs);
+  test('Wifi Sync off', async () => {
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = false;
+    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
     Polymer.dom.flush();
 
     assertTrue(
@@ -118,10 +129,10 @@ suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
     assertFalse(toggle.checked);
   });
 
-  test('Chrome Sync on', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('os-sync-prefs-changed', true, prefs);
+  test('Wifi Sync on', async () => {
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = true;
+    cr.webUIListenerCallback('os-sync-prefs-changed', prefs);
     Polymer.dom.flush();
 
     assertFalse(

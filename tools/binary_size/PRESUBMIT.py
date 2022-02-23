@@ -26,6 +26,10 @@ def CommonChecks(input_api, output_api):
       skip_shebang_check=True)
 
   output.extend(input_api.RunTests(py_tests, False))
+  output.extend(
+      input_api.canned_checks.CheckPatchFormatted(input_api,
+                                                  output_api,
+                                                  check_js=True))
 
   if input_api.is_committing:
     output.extend(input_api.canned_checks.PanProjectChecks(input_api,

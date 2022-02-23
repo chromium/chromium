@@ -13,6 +13,9 @@ import "components/services/app_service/public/mojom/types.mojom";
 // app's name and icon) that are satisfied by the appropriate provider.
 //
 // See components/services/app_service/README.md.
+//
+// Mojom AppService is DEPRECATED. When adding new interfaces, use AppPublisher
+// in chrome/browser/apps/app_service/publishers/app_publisher.h.
 interface AppService {
   // Called by a publisher of apps to register itself and its apps with the App
   // Service.
@@ -166,6 +169,12 @@ interface AppService {
       AppType app_type,
       string app_id,
       WindowMode window_mode);
+
+  // Set the mode for the app to be run on os login identified by |app_id|.
+  SetRunOnOsLoginMode(
+    AppType app_type,
+    string app_id,
+    RunOnOsLoginMode run_on_os_login_mode);
 };
 
 interface Publisher {
@@ -333,6 +342,12 @@ interface Publisher {
   SetWindowMode(
       string app_id,
       WindowMode window_mode);
+
+  // Set the mode to run on OS Login for the app identified by |app_id|.
+  // Implemented if the publisher supports setting this mode for OS Login,
+  // otherwise should do nothing.
+  SetRunOnOsLoginMode(string app_id,
+                      RunOnOsLoginMode run_on_os_login_mode);
 };
 
 // Subscriber works as a proxy, to receive a stream of apps from publishers,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 
 #include <string>
 
@@ -10,7 +10,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_process_information.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
@@ -19,11 +18,6 @@
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace content {
-
-bool InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
-                       sandbox::SandboxInterfaceInfo* sandbox_info) {
-  return sandbox::policy::Sandbox::Initialize(sandbox_type, sandbox_info);
-}
 
 sandbox::ResultCode StartSandboxedProcess(
     SandboxedProcessLauncherDelegate* delegate,

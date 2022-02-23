@@ -1,12 +1,14 @@
 /* Copyright 2020 The Chromium Authors. All rights reserved.
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
+{%- if not suppress_sources_comment %}
 
 /* This file is generated from:
 {%- for path in in_files %}
  *  {{path}}
-{%-  endfor %}
+{%- endfor %}
  */
+{%- endif %}
 {% macro render_variables_for_mode(mode) -%}
 {%- for model_name, color in colors[mode].items() %}
   {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};

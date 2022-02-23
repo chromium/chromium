@@ -45,7 +45,7 @@ namespace android {
 
 namespace {
 
-#if !defined(NDEBUG) || defined(COMPONENT_BUILD)
+#if !defined(NDEBUG) || defined(COMPONENT_BUILD) || defined(OFFICIAL_BUILD)
 // Always disabled for debug builds to avoid hitting a limit of signal
 // interrupts that can get delivered into a single HANDLE_EINTR. Also
 // debugging experience would be bad if there are a lot of signals flying
@@ -53,6 +53,8 @@ namespace {
 // Always disabled for component builds because in this case the code is not
 // organized in one contiguous region which is required for the reached code
 // profiler.
+// Disabled for official builds because `g_text_bitfield` isn't included in
+// official builds.
 constexpr const bool kConfigurationSupported = false;
 #else
 constexpr const bool kConfigurationSupported = true;

@@ -1,0 +1,5 @@
+# crbug.com/1272880
+-BluetoothRemoteGattCharacteristicTest.*
+-BluetoothRemoteGattDescriptorTest.*
+-BluetoothRemoteGattServiceTest.*
+-BluetoothTest.*

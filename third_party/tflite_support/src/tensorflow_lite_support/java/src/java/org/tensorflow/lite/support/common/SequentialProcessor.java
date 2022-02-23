@@ -16,6 +16,7 @@ limitations under the License.
 package org.tensorflow.lite.support.common;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A processor base class that chains a serial of {@link Operator<T>} and executes them.
+ * A processor base class that chains a serial of {@code Operator<T>} and executes them.
  *
  * <p>Typically, users could use its subclasses, e.g. {@link
  * org.tensorflow.lite.support.image.ImageProcessor} rather than directly use this one.

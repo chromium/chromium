@@ -26,8 +26,6 @@ UKM: Event.<scroll_name>.<input_modality>.TimeToHandled\n"];
     "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>";
     "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2";
     "Event.Latency.<scroll_name>.<input_modality>.BrowserNotifiedToBeforeGpuSwap2";
-    "Event.Latency.<scroll_name>.Touch.EventTimeToRAFTime";
-    "Event.Latency.<scroll_name>.Touch.RAFTimeToFrameSwapEnd";
     "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2";
   }
 
@@ -46,8 +44,7 @@ INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT"];
     rank=same;
     edge[style=dotted,minlen=8];
     INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT->
-    scroll_original->
-    INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT;
+    scroll_original;
   }
 
   // Layout the rest of the components.
@@ -68,10 +65,6 @@ INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT"];
   scroll_to_schedule_metrics->
   rendering_scheduled;
 
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT->
-  "Event.Latency.<scroll_name>.Touch.EventTimeToRAFTime"->
-  rendering_scheduled;
-
   rendering_scheduled->
   "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>"->
   INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT->
@@ -82,10 +75,6 @@ INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT"];
   "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2"->
   INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT
     [weight=4];
-
-  rendering_scheduled->
-  "Event.Latency.<scroll_name>.Touch.RAFTimeToFrameSwapEnd"->
-  INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT;
 
   // Add legend and position it under INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT.
   legend

@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
@@ -68,10 +68,10 @@ std::string GetFileMimeType(const base::FilePath& path,
 
 std::pair<BinaryUploadService::Result, BinaryUploadService::Request::Data>
 GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
-  // FLAG_SHARE_DELETE is necessary to allow the file to be renamed by the user
-  // clicking "Open Now" without causing download errors.
+  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
+  // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_SHARE_DELETE);
+                            base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
     return std::make_pair(BinaryUploadService::Result::UNKNOWN,
@@ -120,7 +120,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   return {file_size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
-          file_data};
+          std::move(file_data)};
 }
 
 bool IsZipFile(const base::FilePath::StringType& extension,
@@ -196,13 +196,8 @@ bool FileAnalysisRequest::FileSupportedByDlp(
     const std::string& mime_type) const {
   for (const std::string& tag : content_analysis_request().tags()) {
     if (tag == "dlp") {
-      if (FileTypeSupportedForDlp(file_name_)) {
-        return true;
-      } else if (base::FeatureList::IsEnabled(
-                     safe_browsing::kFileAnalysisMimeTypeSniff)) {
-        return MimeTypeSupportedForDlp(mime_type);
-      }
-      return false;
+      return FileTypeSupportedForDlp(file_name_) ||
+             MimeTypeSupportedForDlp(mime_type);
     }
   }
 
@@ -303,7 +298,14 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
 
 void FileAnalysisRequest::RunCallback() {
   if (!data_callback_.is_null()) {
-    std::move(data_callback_).Run(cached_result_, cached_data_);
+    // Manually copy `cached_data_` since it is move-only.
+    BinaryUploadService::Request::Data data;
+    data.hash = cached_data_.hash;
+    data.mime_type = cached_data_.mime_type;
+    data.path = cached_data_.path;
+    data.size = cached_data_.size;
+
+    std::move(data_callback_).Run(cached_result_, std::move(data));
   }
 }
 

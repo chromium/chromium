@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
-#include "content/public/common/content_features.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -63,8 +62,8 @@ class FakeEmbeddedWorkerInstanceClient::LoaderClient final
 
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {}
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {}
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override {}
@@ -161,7 +160,6 @@ void FakeEmbeddedWorkerInstanceClient::StartWorker(
   // which causes the browser to write the script response in service worker
   // storage. We do that manually here.
   if (start_params_->main_script_load_params) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
     // Wait until OnComplete() is called so that the script is stored in the
     // storage and the script cache map is populated by
     // ServiceWorkerNewScriptLoader.

@@ -147,14 +147,14 @@ void ConsentAuditorImpl::RecordLocalConsent(
     const std::string& confirmation_text) {
   DictionaryPrefUpdate consents_update(pref_service_,
                                        prefs::kLocalConsentsDictionary);
-  base::DictionaryValue* consents = consents_update.Get();
+  base::Value* consents = consents_update.Get();
   DCHECK(consents);
 
-  base::DictionaryValue record;
-  record.SetKey(kLocalConsentDescriptionKey, base::Value(description_text));
-  record.SetKey(kLocalConsentConfirmationKey, base::Value(confirmation_text));
-  record.SetKey(kLocalConsentVersionKey, base::Value(app_version_));
-  record.SetKey(kLocalConsentLocaleKey, base::Value(app_locale_));
+  base::Value record(base::Value::Type::DICTIONARY);
+  record.SetStringKey(kLocalConsentDescriptionKey, description_text);
+  record.SetStringKey(kLocalConsentConfirmationKey, confirmation_text);
+  record.SetStringKey(kLocalConsentVersionKey, app_version_);
+  record.SetStringKey(kLocalConsentLocaleKey, app_locale_);
 
   consents->SetKey(feature, std::move(record));
 }

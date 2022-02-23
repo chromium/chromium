@@ -206,16 +206,20 @@ _primitive_kind_to_fuzz_type = {
 _SHARED_MODULE_PREFIX = 'chrome://resources/mojo'
 
 
+def _IsAbsoluteChromeResourcesPath(path):
+  return path.startswith('chrome://resources/')
+
+
 def _GetWebUiModulePath(module):
   """Returns the path to a WebUI module, from the perspective of a WebUI page
   that makes it available. This is based on the corresponding mojom target's
   webui_module_path value. Returns None if the target specifies no module
   path. Otherwise, returned paths always end in a '/' and begin with either
-  `_SHARED_MODULE_PREFIX` or a '/'."""
+  `chrome://resources/` or a '/'."""
   path = module.metadata.get('webui_module_path')
   if path is None or path == '/':
     return path
-  if path.startswith(_SHARED_MODULE_PREFIX):
+  if _IsAbsoluteChromeResourcesPath(path):
     return path.rstrip('/') + '/'
   return '/{}/'.format(path.strip('/'))
 
@@ -1023,12 +1027,33 @@ class Generator(generator.Generator):
         assert base_path is not None
         import_path = '{}{}-webui.js'.format(base_path,
                                              os.path.basename(kind.module.path))
+
         import_module_is_shared = import_path.startswith(_SHARED_MODULE_PREFIX)
-        if import_module_is_shared == this_module_is_shared:
-          # Either we're a non-shared resource importing another non-shared
-          # resource, or we're a shared resource importing another shared
-          # resource. In both cases, we assume a relative import path will
-          # suffice.
+        if this_module_is_shared:
+          assert import_module_is_shared, \
+              'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
+                  'module "{}"'.format(self.module.path, kind.module.path)
+
+        # Some Mojo JS files are served from chrome://resources/, but not from
+        # chrome://resources/mojo/, for example from
+        # chrome://resources/cr_components/. Need to use absolute paths when
+        # referring to such files from other modules, so that TypeScript can
+        # correctly resolve them since they belong to a different ts_library()
+        # target compared to |this_module_path|.
+        import_module_is_in_chrome_resources = _IsAbsoluteChromeResourcesPath(
+            import_path)
+        use_absolute_path = import_module_is_in_chrome_resources and not \
+                import_module_is_shared
+
+        # Either we're a non-shared resource importing another non-shared
+        # resource, or we're a shared resource importing another shared
+        # resource. In both cases, we assume a relative import path will
+        # suffice.
+        use_relative_path = not use_absolute_path and \
+                import_module_is_shared == this_module_is_shared
+
+        if use_relative_path:
+
           def strip_prefix(s, prefix):
             if s.startswith(prefix):
               return s[len(prefix):]
@@ -1041,10 +1066,6 @@ class Generator(generator.Generator):
           if (not import_path.startswith('.')
               and not import_path.startswith('/')):
             import_path = './' + import_path
-        else:
-          assert import_module_is_shared, \
-              'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
-                  'module "{}"'.format(self.module.path, kind.module.path)
       else:
         import_path = self._GetRelativePath(kind.module.path) + '.m.js'
 

@@ -26,10 +26,6 @@ using views::Widget;
 
 namespace {
 
-// Duration of animation scheduled when frame color is changed.
-constexpr base::TimeDelta kFrameColorChangeAnimationDuration =
-    base::Milliseconds(240);
-
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,
                    const cc::PaintFlags& flags,
@@ -99,7 +95,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 
   if (updated) {
     UpdateCaptionButtonColors();
-    StartTransitionAnimation(kFrameColorChangeAnimationDuration);
+    StartTransitionAnimation(kDefaultFrameColorChangeAnimationDuration);
   }
 }
 

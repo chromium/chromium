@@ -9,6 +9,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/proximity_auth/screenlock_bridge.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,9 +19,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/components/multidevice/remote_device_cache.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace proximity_auth {
 class ProximityAuthLocalStatePrefManager;
@@ -28,9 +28,7 @@ namespace ash {
 class EasyUnlockChallengeWrapper;
 
 // EasyUnlockService instance that should be used for signin profile.
-class EasyUnlockServiceSignin
-    : public EasyUnlockService,
-      public proximity_auth::ScreenlockBridge::Observer {
+class EasyUnlockServiceSignin : public EasyUnlockService {
  public:
   EasyUnlockServiceSignin(
       Profile* profile,
@@ -101,9 +99,10 @@ class EasyUnlockServiceSignin
   bool IsEligible() const override;
   bool IsEnabled() const override;
   bool IsChromeOSLoginEnabled() const override;
+  SmartLockState GetInitialSmartLockState() const override;
   void OnSuspendDoneInternal() override;
 
-  // proximity_auth::ScreenlockBridge::Observer implementation:
+  // EasyUnlockService:
   void OnScreenDidLock(proximity_auth::ScreenlockBridge::LockHandler::ScreenType
                            screen_type) override;
   void OnScreenDidUnlock(

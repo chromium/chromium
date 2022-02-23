@@ -1,0 +1,8 @@
+input.accessibilityAttributeNames.has(AXFocusableAncestor)='yes'
+input.accessibilityAttributeValue(AXFocusableAncestor)=:2
+contenteditable.accessibilityAttributeNames.has(AXFocusableAncestor)='yes'
+contenteditable.accessibilityAttributeValue(AXFocusableAncestor)=:3
+not_applicable.accessibilityAttributeNames.has(AXFocusableAncestor)='yes'
+not_applicable.accessibilityAttributeValue(AXFocusableAncestor)=NULL
+document.accessibilityAttributeNames.has(AXFocusableAncestor)='no'
+document.accessibilityAttributeValue(AXFocusableAncestor)=NULL

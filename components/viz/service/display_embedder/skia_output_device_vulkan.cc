@@ -18,14 +18,13 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_surface.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/native_window_jni.h>
 #endif
 
@@ -77,7 +76,7 @@ SkiaOutputDeviceVulkan::~SkiaOutputDeviceVulkan() {
   vulkan_surface_->Destroy();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 gpu::SurfaceHandle SkiaOutputDeviceVulkan::GetChildSurfaceHandle() {
   if (LIKELY(vulkan_surface_->accelerated_widget() != surface_handle_))
     return vulkan_surface_->accelerated_widget();
@@ -182,8 +181,7 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
       sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
 
   if (UNLIKELY(!sk_surface)) {
-    SkSurfaceProps surface_props =
-        skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
     const auto surface_format = vulkan_surface_->surface_format().format;
     DCHECK(surface_format == VK_FORMAT_B8G8R8A8_UNORM ||
            surface_format == VK_FORMAT_R8G8B8A8_UNORM);
@@ -259,7 +257,7 @@ void SkiaOutputDeviceVulkan::EndPaint() {
 
 bool SkiaOutputDeviceVulkan::Initialize() {
   gfx::AcceleratedWidget accelerated_widget = gfx::kNullAcceleratedWidget;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool can_be_used_with_surface_control = false;
   accelerated_widget =
       gpu::GpuSurfaceLookup::GetInstance()->AcquireNativeWidget(
@@ -289,7 +287,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   vulkan_surface_ = std::move(vulkan_surface);
 
   capabilities_.uses_default_gl_framebuffer = false;
-  capabilities_.max_frames_pending = 1;
+  capabilities_.pending_swap_params.max_pending_swaps = 1;
   // Vulkan FIFO swap chain should return vk images in presenting order, so set
   // preserve_buffer_content & supports_post_sub_buffer to true to let
   // SkiaOutputBufferImpl to manager damages.
@@ -298,7 +296,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_target_damage = true;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kHardware;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // With vulkan, if the chrome is launched in landscape mode, the chrome is
   // always blank until chrome window is rotated once. Workaround this problem
   // by using logic rotation mode.
@@ -323,6 +321,9 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
       sk_color_type;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+      sk_color_type;
+  // BGRX_8888 is used on Windows.
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
       sk_color_type;
   return true;
 }

@@ -15,8 +15,8 @@
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_resizer.h"
-#include "remoting/host/screen_resolution.h"
 
 namespace remoting {
 namespace {

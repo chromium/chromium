@@ -35,7 +35,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
@@ -72,7 +71,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -95,7 +94,7 @@ void RemoveURLFromMemoryCacheInternal(const KURL& url) {
 
 scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
     GlobalScopeCreationParams* creation_params,
-    ExecutionContext* execution_context) {
+    bool is_service_worker_global_scope) {
   // A worker environment settings object's origin must be set as follows:
   //
   // - DedicatedWorkers and SharedWorkers
@@ -120,7 +119,7 @@ scoped_refptr<SecurityOrigin> CreateSecurityOrigin(
   // https://w3c.github.io/ServiceWorker/#start-register
   // Step 3: If scriptURL’s scheme is not one of "http" and "https", reject
   // promise with a TypeError and abort these steps. [spec text]
-  DCHECK(!execution_context->IsServiceWorkerGlobalScope() ||
+  DCHECK(!is_service_worker_global_scope ||
          !KURL(creation_params->script_url).ProtocolIsData());
 
   // TODO(https://crbug.com/1058305) Inherit |agent_cluster_id_| for dedicated
@@ -334,11 +333,10 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     SingleCachedMetadataHandler* handler(
         CreateWorkerScriptCachedMetadataHandler(complete_url,
                                                 std::move(cached_meta_data)));
-    ClassicScript* script = MakeGarbageCollected<ClassicScript>(
-        ScriptSourceCode(source_code, ScriptSourceLocationType::kUnknown,
-                         handler, complete_url),
+    ClassicScript* script = ClassicScript::Create(
+        source_code, ClassicScript::StripFragmentIdentifier(complete_url),
         response_url /* base_url */, ScriptFetchOptions(),
-        sanitize_script_errors);
+        ScriptSourceLocationType::kUnknown, sanitize_script_errors, handler);
 
     // Step 5.2: "Run the classic script script, with the rethrow errors
     // argument set to true."
@@ -438,9 +436,11 @@ void WorkerGlobalScope::EvaluateClassicScript(
                                               std::move(cached_meta_data));
   // Cross-origin workers are disallowed, so use
   // SanitizeScriptErrors::kDoNotSanitize.
-  Script* worker_script = MakeGarbageCollected<ClassicScript>(
-      ScriptSourceCode(source_code, handler, script_url), script_url,
-      ScriptFetchOptions(), SanitizeScriptErrors::kDoNotSanitize);
+  Script* worker_script = ClassicScript::Create(
+      source_code, script_url, script_url /* base_url */, ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kDoNotSanitize,
+      handler, TextPosition::MinimumPosition(),
+      ScriptStreamer::NotStreamingReason::kWorkerTopLevelScript);
   WorkerScriptFetchFinished(*worker_script, stack_id);
 }
 
@@ -537,10 +537,13 @@ void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
 WorkerGlobalScope::WorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerThread* thread,
-    base::TimeTicks time_origin)
+    base::TimeTicks time_origin,
+    bool is_service_worker_global_scope)
     : WorkerOrWorkletGlobalScope(
           thread->GetIsolate(),
-          CreateSecurityOrigin(creation_params.get(), GetExecutionContext()),
+          CreateSecurityOrigin(creation_params.get(),
+                               is_service_worker_global_scope),
+          creation_params->starter_secure_context,
           MakeGarbageCollected<Agent>(
               thread->GetIsolate(),
               (creation_params->agent_cluster_id.is_empty()

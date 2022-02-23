@@ -20,6 +20,7 @@
   <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x, url(resources/greenbox30.svg) 2x) 5 3, pointer'>Explicit hotspot at (5,3) logical in 1x and 2x</div>
   <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 1x) 5 24, pointer'>Explicit hotspot at (5,24) logical in 1x</div>
   <div style='cursor: -webkit-image-set(url(resources/greenbox.svg) 0.7x, url(resources/greenbox30.svg) 1.4x) 7 3, pointer'>Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer</div>
+  <div style='cursor: url(resources/greenbox-no-size.svg), pointer'>SVG image with no specified size</div>
 </div>
 <br/>
 <div id="console"></div>
@@ -86,7 +87,7 @@ if (window.testRunner) {
 
 // Now wait for each image to load or fail to load before starting tests.
 // Without this we can get null images in the cursors - eg. no known size.
-preloadImagesFromStyle(testContainer, 4, runTests, /doesntexist/);
+preloadImagesFromStyle(testContainer, 5, runTests, /doesntexist/);
 
 </script>
 

@@ -76,9 +76,8 @@ void NigoriKeyBag::CopyFrom(const NigoriKeyBag& other) {
 
 sync_pb::NigoriKeyBag NigoriKeyBag::ToProto() const {
   sync_pb::NigoriKeyBag output;
-  for (const auto& key_name_and_nigori : nigori_map_) {
-    *output.add_key() =
-        NigoriToProto(*key_name_and_nigori.second, key_name_and_nigori.first);
+  for (const auto& [key_name, nigori] : nigori_map_) {
+    *output.add_key() = NigoriToProto(*nigori, key_name);
   }
   return output;
 }
@@ -135,10 +134,9 @@ std::string NigoriKeyBag::AddKeyFromProto(const sync_pb::NigoriKey& key) {
 }
 
 void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
-  for (const auto& key_name_and_nigori : other.nigori_map_) {
+  for (const auto& [key_name, nigori] : other.nigori_map_) {
     // Only use this key if we don't already know about it.
-    nigori_map_.emplace(key_name_and_nigori.first,
-                        CloneNigori(*key_name_and_nigori.second));
+    nigori_map_.emplace(key_name, CloneNigori(*nigori));
   }
 }
 

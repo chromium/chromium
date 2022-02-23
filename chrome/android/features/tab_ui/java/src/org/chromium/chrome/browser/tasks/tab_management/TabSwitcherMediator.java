@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.FirstDrawDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -616,19 +619,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mRegisteredFirstMeaningfulPaintRecorder) return;
         mRegisteredFirstMeaningfulPaintRecorder = true;
 
-        boolean hasTabs = false;
-        if (mTabModelSelector.isTabStateInitialized()) {
-            hasTabs = mTabModelSelector.getTabModelFilterProvider()
-                              .getCurrentTabModelFilter()
-                              .getCount()
-                    > 0;
-        } else {
-            List<PseudoTab> allTabs;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
-            }
-            hasTabs = allTabs != null && !allTabs.isEmpty();
-        }
+        boolean hasTabs = getTabCount() > 0;
 
         if (!hasTabs) {
             FirstDrawDetector.waitForFirstDraw(
@@ -784,7 +775,25 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {}
+    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
+        if (mMode == TabListMode.CAROUSEL) {
+            ReturnToChromeExperimentsUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
+        }
+    }
+
+    @Override
+    public @TabSwitcherType int getTabSwitcherType() {
+        switch (mMode) {
+            case TabListMode.CAROUSEL:
+                return TabSwitcherType.CAROUSEL;
+            case TabListMode.GRID:
+                return TabSwitcherType.GRID;
+            case TabListMode.LIST:
+            case TabListMode.STRIP:
+            default:
+                return TabSwitcherType.NONE;
+        }
+    }
 
     /**
      * Do clean-up work after the overview hiding animation is finished.
@@ -889,5 +898,16 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         if (filter == null) return;
         RecordHistogram.recordCountHistogram(TAB_ENTRIES_HISTOGRAM, filter.getCount());
+    }
+
+    private int getTabCount() {
+        if (mTabModelSelector.isTabStateInitialized()) {
+            return mTabModelSelector.getTabModelFilterProvider()
+                    .getCurrentTabModelFilter()
+                    .getCount();
+        } else {
+            return SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.REGULAR_TAB_COUNT);
+        }
     }
 }

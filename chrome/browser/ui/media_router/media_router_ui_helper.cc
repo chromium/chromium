@@ -5,8 +5,14 @@
 #include "chrome/browser/ui/media_router/media_router_ui_helper.h"
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "extensions/browser/extension_registry.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#include "ui/base/cocoa/permissions_utils.h"
+#endif
 
 namespace media_router {
 
@@ -15,8 +21,11 @@ namespace {
 // The amount of time to wait for a response when creating a new route.
 const int kCreateRouteTimeoutSeconds = 20;
 const int kCreateRouteTimeoutSecondsForTab = 60;
-const int kCreateRouteTimeoutSecondsForLocalFile = 60;
 const int kCreateRouteTimeoutSecondsForDesktop = 120;
+
+#if BUILDFLAG(IS_MAC)
+absl::optional<bool> g_screen_capture_allowed_for_testing;
+#endif
 
 }  // namespace
 
@@ -48,12 +57,42 @@ base::TimeDelta GetRouteRequestTimeout(MediaCastMode cast_mode) {
       return base::Seconds(kCreateRouteTimeoutSecondsForTab);
     case DESKTOP_MIRROR:
       return base::Seconds(kCreateRouteTimeoutSecondsForDesktop);
-    case LOCAL_FILE:
-      return base::Seconds(kCreateRouteTimeoutSecondsForLocalFile);
     default:
       NOTREACHED();
       return base::TimeDelta();
   }
+}
+
+bool RequiresScreenCapturePermission(MediaCastMode cast_mode) {
+#if BUILDFLAG(IS_MAC)
+  return base::mac::IsAtLeastOS10_15() &&
+         cast_mode == MediaCastMode::DESKTOP_MIRROR;
+#else
+  return false;
+#endif
+}
+
+bool GetScreenCapturePermission() {
+#if BUILDFLAG(IS_MAC)
+  return g_screen_capture_allowed_for_testing.has_value()
+             ? *g_screen_capture_allowed_for_testing
+             : (ui::IsScreenCaptureAllowed() ||
+                ui::TryPromptUserForScreenCapture());
+#else
+  return true;
+#endif
+}
+
+void set_screen_capture_allowed_for_testing(bool allowed) {
+#if BUILDFLAG(IS_MAC)
+  g_screen_capture_allowed_for_testing = allowed;
+#endif
+}
+
+void clear_screen_capture_allowed_for_testing() {
+#if BUILDFLAG(IS_MAC)
+  g_screen_capture_allowed_for_testing.reset();
+#endif
 }
 
 RouteParameters::RouteParameters() = default;

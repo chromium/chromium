@@ -15,6 +15,8 @@ std::string BorealisInstaller::GetInstallingStateName(InstallingState state) {
   switch (state) {
     case InstallingState::kInactive:
       return "kInactive";
+    case InstallingState::kCheckingIfAllowed:
+      return "kCheckingIfAllowed";
     case InstallingState::kInstallingDlc:
       return "kInstallingDlc";
     case InstallingState::kStartingUp:

@@ -102,11 +102,16 @@ executable("skia_demo") {
 }
 
 if (is_fuchsia) {
-  cr_fuchsia_package("ozone_demo_pkg") {
+  fuchsia_component("ozone_demo_component") {
     testonly = true
-    binary = ":ozone_demo"
-    package_name = "ozone_demo"
     manifest = "//build/config/fuchsia/gfx_tests.cmx"
+    data_deps = [ ":ozone_demo" ]
+    visibility = [ ":*" ]
+  }
+
+  fuchsia_package("ozone_demo_pkg") {
+    testonly = true
+    package_name = "ozone_demo"
     deps = [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_image_pipe_swapchain" ]
   }
 

@@ -50,16 +50,13 @@ std::tuple<scoped_refptr<LevelDBState>,
 DefaultLevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
                                         bool create_if_missing,
                                         size_t write_buffer_size) {
-  leveldb::Status status;
-  std::unique_ptr<leveldb::DB> db;
-
   if (file_name.empty()) {
     if (!create_if_missing)
       return {nullptr, leveldb::Status::NotFound("", ""), false};
 
     std::unique_ptr<leveldb::Env> in_memory_env =
         leveldb_chrome::NewMemEnv(in_memory_db_name_, options_.env);
-    std::tie(db, status) = OpenInMemoryDB(in_memory_env.get());
+    auto [db, status] = OpenInMemoryDB(in_memory_env.get());
     if (UNLIKELY(!status.ok())) {
       LOG(ERROR) << "Failed to open in-memory LevelDB database: "
                  << status.ToString();
@@ -73,7 +70,7 @@ DefaultLevelDBFactory::OpenLevelDBState(const base::FilePath& file_name,
   }
 
   // ChromiumEnv assumes UTF8, converts back to FilePath before using.
-  std::tie(db, status) =
+  auto [db, status] =
       OpenDB(file_name.AsUTF8Unsafe(), create_if_missing, write_buffer_size);
   if (UNLIKELY(!status.ok())) {
     if (!create_if_missing && status.IsInvalidArgument())

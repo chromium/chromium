@@ -5,7 +5,6 @@
 #ifndef SANDBOX_LINUX_BPF_DSL_POLICY_H_
 #define SANDBOX_LINUX_BPF_DSL_POLICY_H_
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/sandbox_export.h"
 

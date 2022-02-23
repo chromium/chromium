@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/gl_display_egl_util_ozone.h"
 
+#include "base/no_destructor.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 
@@ -29,6 +30,14 @@ void GLDisplayEglUtilOzone::ChoosePlatformCustomAlphaAndBufferSize(
   auto* utility = ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
   if (utility)
     utility->ChooseEGLAlphaAndBufferSize(alpha_size, buffer_size);
+}
+
+absl::optional<base::ScopedEnvironmentVariableOverride>
+GLDisplayEglUtilOzone::MaybeGetScopedDisplayUnsetForVulkan() {
+  auto* utility = ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+  if (utility)
+    return utility->MaybeGetScopedDisplayUnsetForVulkan();
+  return absl::nullopt;
 }
 
 GLDisplayEglUtilOzone::GLDisplayEglUtilOzone() = default;

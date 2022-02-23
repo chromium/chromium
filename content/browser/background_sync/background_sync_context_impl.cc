@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/task_traits.h"
+#include "build/build_config.h"
 #include "content/browser/background_sync/background_sync_launcher.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/one_shot_background_sync_service_impl.h"
@@ -39,7 +40,7 @@ BackgroundSyncContextImpl::~BackgroundSyncContextImpl() {
 }
 
 // static
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BackgroundSyncContext::FireBackgroundSyncEventsAcrossPartitions(
     BrowserContext* browser_context,
     blink::mojom::BackgroundSyncType sync_type,

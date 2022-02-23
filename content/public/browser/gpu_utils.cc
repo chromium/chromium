@@ -48,7 +48,7 @@ bool GetUintFromSwitch(const base::CommandLine* command_line,
 namespace content {
 
 bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return false;
 #else
   if (viz::PreferRGB565ResourcesForDisplay())
@@ -67,7 +67,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kDisableAcceleratedVideoDecode);
   gpu_preferences.disable_accelerated_video_encode =
       command_line->HasSwitch(switches::kDisableAcceleratedVideoEncode);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu_preferences.enable_low_latency_dxva =
       !command_line->HasSwitch(switches::kDisableLowLatencyDxva);
   gpu_preferences.enable_zero_copy_dxgi_video =
@@ -87,20 +87,12 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kInProcessGPU);
   gpu_preferences.gpu_sandbox_start_early =
       command_line->HasSwitch(switches::kGpuSandboxStartEarly);
-
-  gpu_preferences.enable_oop_rasterization =
-      command_line->HasSwitch(switches::kEnableOopRasterization);
-  gpu_preferences.disable_oop_rasterization =
-      command_line->HasSwitch(switches::kDisableOopRasterization);
-
-  gpu_preferences.enable_oop_rasterization_ddl =
-      base::FeatureList::IsEnabled(features::kOopRasterizationDDL);
   gpu_preferences.enable_vulkan_protected_memory =
       command_line->HasSwitch(switches::kEnableVulkanProtectedMemory);
   gpu_preferences.disable_vulkan_fallback_to_gl_for_testing =
       command_line->HasSwitch(switches::kDisableVulkanFallbackToGLForTesting);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   gpu_preferences.enable_metal = base::FeatureList::IsEnabled(features::kMetal);
 #endif
 
@@ -113,7 +105,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // The direct VideoDecoder is disallowed on some particular SoC/platforms.
   const bool should_use_direct_video_decoder =
@@ -134,9 +126,9 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #else   // !BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   gpu_preferences.enable_chromeos_direct_video_decoder = false;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   gpu_preferences.disable_oopr_debug_crash_dump =
       command_line->HasSwitch(switches::kDisableOoprDebugCrashDump);
 #endif

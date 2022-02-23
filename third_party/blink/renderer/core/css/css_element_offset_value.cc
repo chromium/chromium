@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_element_offset_value.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -39,9 +39,9 @@ String CSSElementOffsetValue::CustomCSSText() const {
 }
 
 bool CSSElementOffsetValue::Equals(const CSSElementOffsetValue& other) const {
-  return DataEquivalent(target_, other.target_) &&
-         DataEquivalent(edge_, other.edge_) &&
-         DataEquivalent(threshold_, other.threshold_);
+  return base::ValuesEquivalent(target_, other.target_) &&
+         base::ValuesEquivalent(edge_, other.edge_) &&
+         base::ValuesEquivalent(threshold_, other.threshold_);
 }
 
 void CSSElementOffsetValue::TraceAfterDispatch(blink::Visitor* visitor) const {

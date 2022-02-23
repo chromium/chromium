@@ -38,11 +38,11 @@ std::string CommitRequestEvent::GetType() const {
 }
 
 std::string CommitRequestEvent::GetDetails() const {
-  return base::StringPrintf("Item count: %" PRIuS
-                            "\n"
-                            "Contributing types: %s",
-                            num_items_,
-                            ModelTypeSetToString(contributing_types_).c_str());
+  return base::StringPrintf(
+      "Item count: %" PRIuS
+      "\n"
+      "Contributing types: %s",
+      num_items_, ModelTypeSetToDebugString(contributing_types_).c_str());
 }
 
 std::unique_ptr<base::DictionaryValue> CommitRequestEvent::GetProtoMessage(

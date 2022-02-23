@@ -8,6 +8,7 @@
 
 {% block extra_uses_permissions %}
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 {% endblock %}
 
 {% block extra_application_definitions_for_test %}

@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
+import "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom";
 import "url/mojom/origin.mojom";
 
 // Represents a blink::StorageKey (third_party/blink/common/storage_key).
@@ -21,4 +22,9 @@ struct StorageKey {
   // by anonymous iframes:
   // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
   mojo_base.mojom.UnguessableToken? nonce;
+
+  // An enumerated value indicating if any frame in the StorageKey's
+  // ancestor chain (including the `top_level_site`) is cross-site with the
+  // current frame (`origin`).
+  blink.mojom.AncestorChainBit ancestor_chain_bit;
 };

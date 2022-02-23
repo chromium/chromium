@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -125,6 +125,10 @@ class RuleFeatureSetTest : public testing::Test {
 
   void CollectNthInvalidationSet(InvalidationLists& invalidation_lists) {
     rule_feature_set_.CollectNthInvalidationSet(invalidation_lists);
+  }
+
+  bool NeedsHasInvalidationForClass(const AtomicString& class_name) {
+    return rule_feature_set_.NeedsHasInvalidationForClass(class_name);
   }
 
   void AddTo(RuleFeatureSet& rule_feature_set) {
@@ -1362,6 +1366,72 @@ TEST_F(RuleFeatureSetTest, invalidatesParts) {
     ExpectPartsInvalidation(invalidation_lists.descendants);
     EXPECT_TRUE(invalidation_lists.descendants[0]->TreeBoundaryCrossing());
     EXPECT_TRUE(invalidation_lists.descendants[0]->InvalidatesParts());
+  }
+}
+
+TEST_F(RuleFeatureSetTest, invalidatesTerminalHas) {
+  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
+            CollectFeatures(".a .b:has(.c)"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ExpectClassInvalidation("b", invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_FALSE(NeedsHasInvalidationForClass("a"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "b");
+    ExpectSelfInvalidation(invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_FALSE(NeedsHasInvalidationForClass("b"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "c");
+    ExpectNoInvalidation(invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_TRUE(NeedsHasInvalidationForClass("c"));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, invalidatesNonTerminalHas) {
+  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch,
+            CollectFeatures(".a .b:has(.c) .d"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "a");
+    ExpectClassInvalidation("d", invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_FALSE(NeedsHasInvalidationForClass("a"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "b");
+    ExpectClassInvalidation("d", invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_FALSE(NeedsHasInvalidationForClass("b"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "c");
+    ExpectNoInvalidation(invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_TRUE(NeedsHasInvalidationForClass("c"));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForClass(invalidation_lists, "d");
+    ExpectSelfInvalidation(invalidation_lists.descendants);
+    ExpectNoInvalidation(invalidation_lists.siblings);
+    EXPECT_FALSE(NeedsHasInvalidationForClass("d"));
   }
 }
 

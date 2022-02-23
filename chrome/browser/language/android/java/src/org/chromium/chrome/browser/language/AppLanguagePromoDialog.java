@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -236,13 +237,18 @@ public class AppLanguagePromoDialog {
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View row) {
             LanguageItemAdapter adapter = (LanguageItemAdapter) getBindingAdapter();
             adapter.setSelectedLanguage(getBindingAdapterPosition());
+            View positiveButton = row.getRootView().findViewById(R.id.positive_button);
+            if (positiveButton != null) {
+                positiveButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+            }
         }
 
         public void bindViewHolder(LanguageItem languageItem, boolean checked) {
             mRadioButton.setChecked(checked);
+            mRadioButton.setContentDescription(languageItem.getDisplayName());
             if (languageItem.isSystemDefault()) {
                 // For the system default locale the display name should be the primary TextView.
                 mPrimaryNameTextView.setText(languageItem.getDisplayName());
@@ -504,20 +510,18 @@ public class AppLanguagePromoDialog {
      * @return Whether the app language prompt should be shown or not.
      */
     private static boolean shouldShowPrompt() {
-        boolean isOnline = NetworkChangeNotifier.isOnline();
-        // This switch is only used for testing so it is ok to override all other checks.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
-            // Even if feature is set don't show prompt if offline for testing.
-            recordOnlineStatus(isOnline);
-            return isOnline;
+        // Skip feature and preference checks if forced on for testing.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
+            // Don't show the prompt if not enabled.
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
+            // Don't show the prompt if it has already been shown.
+            if (TranslateBridge.getAppLanguagePromptShown()) return false;
         }
 
-        // Don't show the prompt if not enabled or already shown.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
-        if (TranslateBridge.getAppLanguagePromptShown()) return false;
-
-        // Don't show the prompt if offline since a language pack download will fail.
+        boolean isOnline = NetworkChangeNotifier.isOnline();
         recordOnlineStatus(isOnline);
+
+        // Only show the prompt if online.
         return isOnline;
     }
 

@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(X11) Present {
   };
 
   struct Notify {
+    bool operator==(const Notify& other) const {
+      return window == other.window && serial == other.serial;
+    }
+
     Window window{};
     uint32_t serial{};
   };
@@ -133,7 +137,6 @@ class COMPONENT_EXPORT(X11) Present {
   struct GenericEvent {
     static constexpr int type_id = 6;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint8_t extension{};
     uint16_t sequence{};
     uint32_t length{};
@@ -146,7 +149,6 @@ class COMPONENT_EXPORT(X11) Present {
   struct ConfigureNotifyEvent {
     static constexpr int type_id = 7;
     static constexpr uint8_t opcode = 0;
-    bool send_event{};
     uint16_t sequence{};
     Event event{};
     Window window{};
@@ -166,7 +168,6 @@ class COMPONENT_EXPORT(X11) Present {
   struct CompleteNotifyEvent {
     static constexpr int type_id = 8;
     static constexpr uint8_t opcode = 1;
-    bool send_event{};
     uint16_t sequence{};
     CompleteKind kind{};
     CompleteMode mode{};
@@ -182,7 +183,6 @@ class COMPONENT_EXPORT(X11) Present {
   struct IdleNotifyEvent {
     static constexpr int type_id = 9;
     static constexpr uint8_t opcode = 2;
-    bool send_event{};
     uint16_t sequence{};
     Event event{};
     Window window{};
@@ -196,7 +196,6 @@ class COMPONENT_EXPORT(X11) Present {
   struct RedirectNotifyEvent {
     static constexpr int type_id = 10;
     static constexpr uint8_t opcode = 3;
-    bool send_event{};
     uint16_t sequence{};
     uint8_t update_window{};
     Event event{};

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Kikatalan</translation>
 <translation id="1168100932582989117">Seva za jina la Google</translation>
+<translation id="1171082344678443012">Faili iliyobanwa na XZ</translation>
 <translation id="1172970565351728681">Zimesalia takribani <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
 <translation id="1173916544412572294">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Maelezo</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Hatua ya kubadilisha muundo wa hifadhi itafuta data yote iliyomo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="2025955442973426285">Kitigrinya</translation>
 <translation id="2028997212275086731">Kumbukumbu la RAR</translation>
+<translation id="2036414735548252477">Faili ya tar iliyobanwa na LZMA</translation>
 <translation id="2037845485764049925">Kirusi</translation>
 <translation id="2044023416777079300">Modemu haijasajiliwa</translation>
 <translation id="2046702855113914483">Rameni</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Shiriki na <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Seva Mbadala ya Seva Pangishi ya SOCKS</translation>
+<translation id="3104793765551262433">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="3113153474486991170">Imeshindwa kufungua "<ph name="PATH" />" kutoka hapa. Tafadhali inakili kwenye sehemu ya "Faili zangu" ili uifungue.</translation>
 <translation id="3113592018909187986">Umebakisha jaribio moja. Hutaweza kutumia mtandao huu hadi utakapoweka PIN mpya.</translation>
 <translation id="3124404833828281817">Mtu aliyezama kwenye mawazo</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Kiingereza (Marekani) kwenye kibodi ya Kimataifa (PC)</translation>
 <translation id="3567221313191587603">Chagua faili kisha uwashe <ph name="OFFLINE_CHECKBOX_NAME" /> ili uweze kufikia faili zako nje ya mtandao.</translation>
 <translation id="357479282490346887">Kilithuania</translation>
+<translation id="3587482841069643663">Zote</translation>
 <translation id="3592251141500063301">Imeshindwa kufanya <ph name="FILE_NAME" /> ipatikane nje ya mtandao</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kifaransa cha Kanada</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Zote zimehifadhiwa nakala!</translation>
 <translation id="3634507049637220048">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
 <translation id="3645233063072417428">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimehamishwa.</translation>
-<translation id="3645531960514756307">Bandua folda</translation>
 <translation id="3685122418104378273">Usawazishaji wa Hifadhi ya Google umezimwa kwa chaguomsingi wakati wa kutumia data ya kifaa cha mkononi.</translation>
 <translation id="3689865792480713551">Ghairi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Haijawashwa, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, asilimia <ph name="SIGNAL_STRENGTH" />, Maelezo</translation>
 <translation id="3691184985318546178">Kisinhala</translation>
 <translation id="3726463242007121105">Kifaa hakiwezi kufunguliwa kwa sababu mfumo wake wa faili hauwezi kutumika.</translation>
 <translation id="3727148787322499904">Kubadilisha mipangilio hii kutaathiri mitandao yote inayoshirikiwa</translation>
+<translation id="3737576078404241332">Ondoa kwenye utepe</translation>
 <translation id="3741243925913727067">Hifadhi nakala ya picha na video za kifaa chako cha kuhifadhia data kwenye Hifadhi ya Google.</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
 <translation id="3780536599611287598">Huna ruhusa ya kuhamishia faili kwenye '<ph name="FOLDER_NAME" />'.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Mwanabotania</translation>
 <translation id="4326192123064055915">Kahawa</translation>
 <translation id="4336032328163998280">Uendeshaji wa nakala haukufanikiwa. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Weka kwenye utepe</translation>
 <translation id="4348495354623233847">Kikurdi cha Sorani kwenye kibodi ya Kiarabu</translation>
 <translation id="4363958938297989186">Kirusi kwenye kibodi ya Fonetiki</translation>
 <translation id="4364327530094270451">Tikiti</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291">Baiti <ph name="NUMBER_OF_BYTES" /></translation>
 <translation id="4880214202172289027">Kitelezi cha sauti</translation>
 <translation id="4881695831933465202">Fungua</translation>
+<translation id="4886199584824489598">Faili iliyobanwa na Bzip2</translation>
 <translation id="4900532980794411603">Shiriki na Parallels Desktop</translation>
 <translation id="4902546322522096650">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unganisha</translation>
 <translation id="4905417359854579806">Iko tayari kuhifadhi nakala ya <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Mtandao wa <ph name="NETWORK_TYPE" /> - haujaunganishwa</translation>
 <translation id="6074825444536523002">Fomu ya Google</translation>
 <translation id="6079871810119356840">Kihungari kwenye kibodi ya Qwerty</translation>
+<translation id="6082256976217156453">Faili iliyobanwa na LZMA</translation>
 <translation id="6096979789310008754">Imefuta hoja ya utafutaji, inaonyesha faili na folda zote.</translation>
 <translation id="610101264611565198">Inahamishia <ph name="FILE_NAME" /> kwenye <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Nafasi</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Juu Chini</translation>
 <translation id="6943836128787782965">HTTP imeshindikana</translation>
 <translation id="6949408524333579394">Unukuzi wa mfumo wa kuandika Kiserbia</translation>
+<translation id="6954309393500027528">Msimamizi wako amezuia kubandika faili hii</translation>
 <translation id="6960565108681981554">Haijawashwa. Wasiliana na mtoa huduma wako.</translation>
 <translation id="696203921837389374">Washa inasawazisha kwenye data ya kifaa cha mkononi</translation>
 <translation id="6965382102122355670">Sawa</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Seti ya Hangul 3 (Hakuna Shift)</translation>
 <translation id="8299269255470343364">Kijapani</translation>
 <translation id="8300849813060516376">OTASP imeshindikana</translation>
+<translation id="8308481408797647857">Faili ya tar iliyobanwa na XZ</translation>
 <translation id="8312871300878166382">Bandika ndani ya folda</translation>
 <translation id="8329978297633540474">Matini makavu</translation>
 <translation id="8335587457941836791">Banua kutoka kwenye rafu</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Kilatvia</translation>
 <translation id="8560515948038859357">Kikantoni</translation>
 <translation id="8561206103590473338">Tembo</translation>
+<translation id="8566466896628108558">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
 <translation id="8569764466147087991">Chagua faili ya kufungua</translation>
 <translation id="8577897833047451336">Kikorasia</translation>
 <translation id="8578308463707544055">Kiindonesia</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Tunaendelea kutafuta njia za kufanya kuvinjari kwako kuwe salama zaidi. Hapo awali, tovuti yoyote ingeweza kukuomba kuongeza kiendelezi katika kivinjari chako. Katika matoleo mapya ya Google Chrome, lazima uiambie Chrome kwa uwazi kuwa unataka kusakinisha viendelezi hivi kwa kuviongeza kupitia ukurasa wa Viendelezi. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Fungua</translation>
 <translation id="912419004897138677">Kodeki</translation>
-<translation id="9129931661813833980">Bandika folda</translation>
 <translation id="9130775360844693113">Wanachama wa '<ph name="DESTINATION_NAME" />' watapata idhini ya kuvifikia vipengee hivi.</translation>
 <translation id="9131598836763251128">Chagua faili moja au zaidi</translation>
 <translation id="9133055936679483811">Haikuwezekana kubana. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Ilibadilishwa na</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="947144732524271678">Umechagua fungu lenye vipengee <ph name="ENTRY_COUNT" /> kuanzia <ph name="FROM_ENTRY_NAME" /> hadi <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Faili iliyobanwa na Gzip</translation>
 <translation id="965477715979482472">Kiingereza (Afrika Kusini)</translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="988685240266037636">Faili yenye jina "<ph name="FILE_NAME" />" tayari ipo. Ungependa kuibadilisha?</translation>

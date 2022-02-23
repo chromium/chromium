@@ -90,7 +90,7 @@
         android:order="16"
         android:title="@string/toolbar_shortcut"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings"
+        android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
         android:order="17"
         android:title="@string/prefs_accessibility"/>
@@ -104,11 +104,6 @@
         android:key="languages"
         android:order="19"
         android:title="@string/language_settings"/>
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:fragment="org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment"
-        android:key="data_reduction"
-        android:order="20"
-        android:title="@string/data_reduction_title_lite_mode"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.download.settings.DownloadSettings"
         android:key="downloads"

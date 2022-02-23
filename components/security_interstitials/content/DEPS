@@ -24,6 +24,7 @@ include_rules = [
   "+services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h",
   "+services/network/public",
   "+services/network/test",
+  "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/mojom",
   "+third_party/protobuf",
   "+third_party/re2",

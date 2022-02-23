@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,9 +44,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
-#include "chrome/browser/password_manager/android/save_password_message_delegate.h"
+#include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 
 class PasswordAccessoryController;
@@ -127,7 +127,7 @@ class ChromePasswordManagerClient
   void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Notifies `PasswordReuseDetectionManager` about passwords selected from
   // AllPasswordsBottomSheet.
   void OnPasswordSelected(const std::u16string& text) override;
@@ -182,12 +182,10 @@ class ChromePasswordManagerClient
       const override;
   password_manager::PasswordScriptsFetcher* GetPasswordScriptsFetcher()
       override;
+  password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() override;
   password_manager::SyncState GetPasswordSyncState() const override;
   bool WasLastNavigationHTTPError() const override;
-
-#if defined(OS_ANDROID)
-  bool WasCredentialLeakDialogShown() const override;
-#endif  // defined(OS_ANDROID)
 
   net::CertStatus GetMainFrameCertStatus() const override;
   void PromptUserToEnableAutosignin() override;
@@ -226,7 +224,7 @@ class ChromePasswordManagerClient
   void LogPasswordReuseDetectedEvent() override;
 
   // Reporting these events is only supported on desktop platforms.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,
@@ -254,6 +252,7 @@ class ChromePasswordManagerClient
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
   password_manager::WebAuthnCredentialsDelegate*
   GetWebAuthnCredentialsDelegate() override;
+  version_info::Channel GetChannel() const override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(
@@ -270,11 +269,11 @@ class ChromePasswordManagerClient
   void FrameWasScrolled() override;
   void GenerationElementLostFocus() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnImeTextCommittedEvent(const std::u16string& text_str) override;
   void OnImeSetComposingTextEvent(const std::u16string& text_str) override;
   void OnImeFinishComposingTextEvent() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Observer for PasswordGenerationPopup events. Used for testing.
   void SetTestObserver(PasswordGenerationPopupObserver* observer);
@@ -295,17 +294,13 @@ class ChromePasswordManagerClient
   bool was_on_paste_called() const { return was_on_paste_called_; }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PasswordAccessoryController* GetOrCreatePasswordAccessory();
 
   TouchToFillController* GetOrCreateTouchToFillController();
 
   password_manager::CredentialCache* GetCredentialCacheForTesting() {
     return &credential_cache_;
-  }
-
-  void SetCredentialLeakDialogWasShownForTesting(bool value) {
-    was_leak_dialog_shown_ = value;
   }
 #endif
 
@@ -321,13 +316,10 @@ class ChromePasswordManagerClient
   friend class content::WebContentsUserData<ChromePasswordManagerClient>;
 
   // content::WebContentsObserver overrides.
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
 // TODO(crbug.com/1006430): Paste event is not captured on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnPaste() override;
 #endif
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
@@ -368,7 +360,7 @@ class ChromePasswordManagerClient
       content::RenderFrameHost* frame_host,
       const gfx::RectF& bounds_in_frame_coordinates);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -376,7 +368,7 @@ class ChromePasswordManagerClient
   password_manager::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Holds and facilitates a credential store for each origin in this tab.
   password_manager::CredentialCache credential_cache_;
 
@@ -389,16 +381,13 @@ class ChromePasswordManagerClient
   // reset when ime finish composing text event is triggered.
   std::u16string last_composing_text_;
 
-  // Whether a leak warning was shown. Used only for tests or when
-  // kPasswordChange feature is enabled.
-  bool was_leak_dialog_shown_ = false;
-
-  SavePasswordMessageDelegate save_password_message_delegate_;
+  SaveUpdatePasswordMessageDelegate save_update_password_message_delegate_;
   GeneratedPasswordSavedMessageDelegate
       generated_password_saved_message_delegate_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
+  raw_ptr<password_manager::ContentPasswordManagerDriverFactory>
+      driver_factory_;
 
   ChromeWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
@@ -411,7 +400,7 @@ class ChromePasswordManagerClient
       password_generation_driver_receivers_;
 
   // Observer for password generation popup.
-  PasswordGenerationPopupObserver* observer_;
+  raw_ptr<PasswordGenerationPopupObserver> observer_;
 
   // Controls the popup
   base::WeakPtr<PasswordGenerationPopupControllerImpl> popup_controller_;

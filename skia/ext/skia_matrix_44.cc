@@ -569,7 +569,7 @@ static bool is_matrix_finite(const Matrix44& matrix) {
   SkScalar accumulator = 0;
   for (int row = 0; row < 4; ++row) {
     for (int col = 0; col < 4; ++col) {
-      accumulator *= matrix.get(row, col);
+      accumulator *= matrix.rc(row, col);
     }
   }
   return accumulator == 0;

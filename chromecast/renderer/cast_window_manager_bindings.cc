@@ -4,10 +4,10 @@
 
 #include "chromecast/renderer/cast_window_manager_bindings.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
@@ -42,7 +42,7 @@ const char kCanRightDragName[] = "canRightDrag";
 const char kMinimize[] = "minimize";
 const char kMaximize[] = "maximize";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kDisplayControlsName[] = "displayControls";
 #endif
 
@@ -183,7 +183,7 @@ void CastWindowManagerBindings::OnTouchInputSupportSet(
     resolver.Get(isolate)
         ->Resolve(context,
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                   gin::DataObjectBuilder(isolate)
                       .Set(kDisplayControlsName, display_controls)
                       .Build()
@@ -238,7 +238,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::InvokeV8Callback(
@@ -267,7 +267,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::OnBackGesture(

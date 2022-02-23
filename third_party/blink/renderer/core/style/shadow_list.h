@@ -32,15 +32,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SHADOW_LIST_H_
 
 #include "third_party/blink/renderer/core/style/shadow_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace blink {
+namespace gfx {
+class OutsetsF;
+class RectF;
+}
 
-class FloatRect;
+namespace blink {
 
 typedef Vector<ShadowData, 1> ShadowDataVector;
 
@@ -60,9 +62,9 @@ class ShadowList : public RefCounted<ShadowList> {
 
   // Outsets needed to include all shadows in this list, as well as the
   // source (i.e. no outsets will be negative).
-  FloatRectOutsets RectOutsetsIncludingOriginal() const;
+  gfx::OutsetsF RectOutsetsIncludingOriginal() const;
 
-  void AdjustRectForShadow(FloatRect&) const;
+  void AdjustRectForShadow(gfx::RectF&) const;
 
  private:
   ShadowList(ShadowDataVector& shadows) {

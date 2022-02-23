@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -211,8 +212,12 @@ void HTMLOptionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   if (name == html_names::kValueAttr) {
-    if (HTMLDataListElement* data_list = OwnerDataListElement())
+    if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
+    } else if (HTMLSelectMenuElement* select_menu =
+                   HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+      select_menu->OptionElementValueChanged(*this);
+    }
   } else if (name == html_names::kDisabledAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
@@ -255,8 +260,12 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   SetSelectedState(selected);
 
-  if (HTMLSelectElement* select = OwnerSelectElement())
+  if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
+  } else if (HTMLSelectMenuElement* select_menu =
+                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+    select_menu->OptionSelectionStateChanged(this, selected);
+  }
 }
 
 bool HTMLOptionElement::selectedForBinding() const {
@@ -331,10 +340,14 @@ void HTMLOptionElement::ChildrenChanged(const ChildrenChange& change) {
 }
 
 void HTMLOptionElement::DidChangeTextContent() {
-  if (HTMLDataListElement* data_list = OwnerDataListElement())
+  if (HTMLDataListElement* data_list = OwnerDataListElement()) {
     data_list->OptionElementChildrenChanged();
-  else if (HTMLSelectElement* select = OwnerSelectElement())
+  } else if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
+  } else if (HTMLSelectMenuElement* select_menu =
+                 HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+    select_menu->OptionElementChildrenChanged(*this);
+  }
   UpdateLabel();
 }
 

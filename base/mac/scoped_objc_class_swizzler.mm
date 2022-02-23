@@ -8,8 +8,7 @@
 
 #include "base/check_op.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 ScopedObjCClassSwizzler::ScopedObjCClassSwizzler(Class target,
                                                  Class source,
@@ -67,5 +66,4 @@ void ScopedObjCClassSwizzler::Init(Class target,
   method_exchangeImplementations(old_selector_impl_, new_selector_impl_);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

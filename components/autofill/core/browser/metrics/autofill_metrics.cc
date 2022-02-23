@@ -16,13 +16,13 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -193,6 +193,24 @@ std::string GetCreditCardTypeSuffix(
       NOTREACHED();
       return std::string();
   }
+}
+
+std::string AppendMeasurementTimeToMetricName(
+    base::StringPiece metric_name,
+    AutofillMetrics::MeasurementTime measurement_time) {
+  base::StringPiece measurement_time_string;
+  switch (measurement_time) {
+    case AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy:
+      measurement_time_string = "AtFillTimeBeforeSecurityPolicy";
+      break;
+    case AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy:
+      measurement_time_string = "AtFillTimeAfterSecurityPolicy";
+      break;
+    case AutofillMetrics::MeasurementTime::kSubmissionTime:
+      measurement_time_string = "AtSubmissionTime";
+      break;
+  }
+  return base::JoinString({metric_name, measurement_time_string}, ".");
 }
 
 }  // namespace
@@ -504,7 +522,7 @@ const char* GetQualityMetricTypeSuffix(
   switch (metric_type) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case AutofillMetrics::TYPE_SUBMISSION:
       return "";
     case AutofillMetrics::TYPE_NO_SUBMISSION:
@@ -936,6 +954,12 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
         "Autofill.CreditCardInfoBar" + destination + ".FromNonFocusableForm",
         metric, NUM_INFO_BAR_METRICS);
   }
+
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        "Autofill.CreditCardInfoBar" + destination + ".WithMultipleLegalLines",
+        metric, NUM_INFO_BAR_METRICS);
+  }
 }
 
 // static
@@ -994,6 +1018,11 @@ void AutofillMetrics::LogSaveCardPromptOfferMetric(
         metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
         NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
   }
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".WithMultipleLegalLines", metric,
+        NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
+  }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(
@@ -1043,6 +1072,11 @@ void AutofillMetrics::LogSaveCardPromptResultMetric(
   if (options.from_dynamic_change_form) {
     base::UmaHistogramEnumeration(
         metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
+        NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
+  }
+  if (options.has_multiple_legal_lines) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".WithMultipleLegalLines", metric,
         NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
   }
 
@@ -2071,6 +2105,12 @@ void AutofillMetrics::LogStoredProfileCount(size_t num_profiles) {
 }
 
 // static
+void AutofillMetrics::LogStoredProfilesWithoutCountry(size_t num_profiles) {
+  UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileWithoutCountryCount",
+                          num_profiles);
+}
+
+// static
 void AutofillMetrics::LogStoredProfileDisusedCount(size_t num_profiles) {
   UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileDisusedCount", num_profiles);
 }
@@ -2281,6 +2321,11 @@ void AutofillMetrics::LogAddressSuggestionsCount(size_t num_suggestions) {
 }
 
 // static
+void AutofillMetrics::LogSuggestionClick(SuggestionClickResult value) {
+  base::UmaHistogramEnumeration("Autofill.SuggestionClick", value);
+}
+
+// static
 void AutofillMetrics::LogAutofillSuggestionAcceptedIndex(int index,
                                                          PopupType popup_type,
                                                          bool off_the_record) {
@@ -2303,6 +2348,11 @@ void AutofillMetrics::LogAutofillSuggestionAcceptedIndex(int index,
 
   base::UmaHistogramBoolean("Autofill.SuggestionAccepted.OffTheRecord",
                             off_the_record);
+}
+
+// static
+void AutofillMetrics::LogAutofillPopupHidingReason(PopupHidingReason reason) {
+  base::UmaHistogramEnumeration("Autofill.PopupHidingReason", reason);
 }
 
 // static
@@ -2393,6 +2443,85 @@ void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
     UMA_HISTOGRAM_BOOLEAN("Autofill.PerfectFilling.CreditCards",
                           perfect_filling);
   }
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithDetectedFields(size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithDetectedFields", num_frames);
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithDetectedCreditCardFields(
+    size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields",
+      num_frames);
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
+    size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields",
+      num_frames);
+}
+
+// static
+absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+AutofillMetrics::LogCreditCardSeamlessFills(
+    const ServerFieldTypeSet& autofilled_types,
+    MeasurementTime measurement_time) {
+  bool name = autofilled_types.contains(CREDIT_CARD_NAME_FULL) ||
+              (autofilled_types.contains(CREDIT_CARD_NAME_FIRST) &&
+               autofilled_types.contains(CREDIT_CARD_NAME_LAST));
+  bool number = autofilled_types.contains(CREDIT_CARD_NUMBER);
+  bool exp = autofilled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
+             autofilled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
+             (autofilled_types.contains(CREDIT_CARD_EXP_MONTH) &&
+              (autofilled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
+               autofilled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+  bool cvc = autofilled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
+  if (!name && !number && !exp && !cvc)
+    return absl::nullopt;
+
+  CreditCardSeamlessFillMetric emit;
+  if (name && number && exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kFullFill;
+  } else if (!name && number && exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalNameMissing;
+  } else if (name && number && exp && !cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalCvcMissing;
+  } else if (!name && number && exp && !cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalNameAndCvcMissing;
+  } else if (name && number && !exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kFullFillButExpDateMissing;
+  } else {
+    emit = CreditCardSeamlessFillMetric::kPartialFill;
+  }
+
+  base::UmaHistogramEnumeration(
+      AppendMeasurementTimeToMetricName("Autofill.CreditCard.SeamlessFills",
+                                        measurement_time),
+      emit);
+  return emit;
+}
+
+// static
+void AutofillMetrics::LogCreditCardNumberFills(
+    const ServerFieldTypeSet& autofilled_types,
+    MeasurementTime measurement_time) {
+  bool emit = autofilled_types.contains(CREDIT_CARD_NUMBER);
+  base::UmaHistogramBoolean(
+      AppendMeasurementTimeToMetricName("Autofill.CreditCard.NumberFills",
+                                        measurement_time),
+      emit);
 }
 
 // static
@@ -2953,10 +3082,23 @@ void AutofillMetrics::LogNewProfileImportDecision(
                                 decision);
 }
 
+void AutofillMetrics::LogNewProfileWithComplementedCountryImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.NewProfileWithComplementedCountryDecision",
+      decision);
+}
+
 void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.NewProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
+void AutofillMetrics::LogNewProfileEditedComplementedCountry() {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.NewProfileEditedComplementedCountry",
+      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry);
 }
 
 void AutofillMetrics::LogNewProfileNumberOfEditedFields(
@@ -2970,6 +3112,13 @@ void AutofillMetrics::LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
+}
+
+void AutofillMetrics::LogProfileUpdateWithComplementedCountryImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.UpdateProfileWithComplementedCountryDecision",
+      decision);
 }
 
 void AutofillMetrics::LogProfileUpdateAffectedType(
@@ -3001,6 +3150,12 @@ void AutofillMetrics::LogProfileUpdateEditedType(ServerFieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
+void AutofillMetrics::LogProfileUpdateEditedComplementedCountry() {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.UpdateProfileEditedComplementedCountry",
+      AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCountry);
 }
 
 void AutofillMetrics::LogUpdateProfileNumberOfEditedFields(
@@ -3084,6 +3239,21 @@ void AutofillMetrics::LogVirtualCardMetadataSynced(bool existing_card) {
 // static
 void AutofillMetrics::LogImageFetchResult(bool succeeded) {
   base::UmaHistogramBoolean("Autofill.ImageFetcher.Result", succeeded);
+}
+
+// static
+void AutofillMetrics::LogImageFetcherRequestLatency(
+    const base::TimeDelta& duration) {
+  base::UmaHistogramLongTimes("Autofill.ImageFetcher.RequestLatency", duration);
+}
+
+// static
+void AutofillMetrics::LogAutofillingSourceForStateSelectionFieldAtSubmission(
+    AutofilledSourceMetricForStateSelectionField
+        autofilled_source_metric_for_state_selection_field) {
+  base::UmaHistogramEnumeration(
+      "Autofill.AutofilledFieldAtSubmission.ByStateSelectionField",
+      autofilled_source_metric_for_state_selection_field);
 }
 
 // static

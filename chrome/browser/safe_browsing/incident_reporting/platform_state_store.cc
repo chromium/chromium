@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/incident_reporting/platform_state_store.h"
 
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_PLATFORM_STATE_STORE)
 
@@ -43,12 +44,11 @@ void KeysAndDigestsToProtobuf(
     const base::DictionaryValue& keys_and_digests,
     RepeatedPtrField<StateStoreData::Incidents::KeyDigestMapFieldEntry>*
         key_digest_pairs) {
-  std::string digest_value;
   for (base::DictionaryValue::Iterator iter(keys_and_digests); !iter.IsAtEnd();
        iter.Advance()) {
     uint32_t digest = 0;
-    if (!iter.value().is_string() || !iter.value().GetAsString(&digest_value) ||
-        !base::StringToUint(digest_value, &digest)) {
+    if (!iter.value().is_string() ||
+        !base::StringToUint(iter.value().GetString(), &digest)) {
       NOTREACHED();
       continue;
     }
@@ -127,14 +127,13 @@ void RestoreFromProtobuf(
 
 #endif  // USE_PLATFORM_STATE_STORE
 
-std::unique_ptr<base::DictionaryValue> Load(Profile* profile) {
+absl::optional<base::Value> Load(Profile* profile) {
 #if defined(USE_PLATFORM_STATE_STORE)
-  std::unique_ptr<base::DictionaryValue> value_dict(
-      new base::DictionaryValue());
+  base::Value value_dict(base::Value::Type::DICTIONARY);
   std::string data;
   PlatformStateStoreLoadResult result = ReadStoreData(profile, &data);
   if (result == PlatformStateStoreLoadResult::SUCCESS)
-    result = DeserializeIncidentsSent(data, value_dict.get());
+    result = DeserializeIncidentsSent(data, &value_dict);
   switch (result) {
     case PlatformStateStoreLoadResult::SUCCESS:
     case PlatformStateStoreLoadResult::CLEARED_DATA:
@@ -145,16 +144,15 @@ std::unique_ptr<base::DictionaryValue> Load(Profile* profile) {
     case PlatformStateStoreLoadResult::OPEN_FAILED:
     case PlatformStateStoreLoadResult::READ_FAILED:
     case PlatformStateStoreLoadResult::PARSE_ERROR:
-      // Return null for all error cases.
-      value_dict.reset();
-      break;
+      // Return nullopt for all error cases.
+      return absl::nullopt;
     case PlatformStateStoreLoadResult::NUM_RESULTS:
       NOTREACHED();
       break;
   }
   return value_dict;
 #else
-  return nullptr;
+  return absl::nullopt;
 #endif
 }
 
@@ -177,17 +175,16 @@ void SerializeIncidentsSent(const base::DictionaryValue* incidents_sent,
   store_data.SerializeToString(data);
 }
 
-PlatformStateStoreLoadResult DeserializeIncidentsSent(
-    const std::string& data,
-    base::DictionaryValue* value_dict) {
+PlatformStateStoreLoadResult DeserializeIncidentsSent(const std::string& data,
+                                                      base::Value* value_dict) {
   StateStoreData store_data;
   if (data.empty()) {
-    value_dict->Clear();
+    value_dict->DictClear();
     return PlatformStateStoreLoadResult::SUCCESS;
   }
   if (!store_data.ParseFromString(data))
     return PlatformStateStoreLoadResult::PARSE_ERROR;
-  value_dict->Clear();
+  value_dict->DictClear();
   RestoreFromProtobuf(store_data.type_to_incidents(), value_dict);
   return PlatformStateStoreLoadResult::SUCCESS;
 }

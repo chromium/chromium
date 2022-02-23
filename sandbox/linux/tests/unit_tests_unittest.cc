@@ -45,7 +45,7 @@ SANDBOX_DEATH_TEST(UnitTests,
                    SEGVDeathWithMessage,
                    DEATH_SEGV_MESSAGE("Hello")) {
   LOG(ERROR) << "Hello";
-  while (1) {
+  while (true) {
     volatile char* addr = reinterpret_cast<volatile char*>(NULL);
     *addr = '\0';
   }

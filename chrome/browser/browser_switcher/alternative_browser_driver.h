@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 
@@ -81,7 +82,7 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
  private:
   using StringType = base::FilePath::StringType;
 
-  const BrowserSwitcherPrefs* const prefs_;
+  const raw_ptr<const BrowserSwitcherPrefs> prefs_;
 };
 
 }  // namespace browser_switcher

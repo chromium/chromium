@@ -19,28 +19,23 @@ const int kTrackImageSize = 24;
 
 }  // namespace
 
-namespace views {
-
 TrackImageButton::TrackImageButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon,
                                    std::u16string label)
-    : ImageButton(std::move(callback)),
+    : OverlayWindowImageButton(std::move(callback)),
       image_(
           gfx::CreateVectorIcon(icon, kTrackImageSize, kPipWindowIconColor)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetImage(views::Button::STATE_NORMAL, image_);
 
   // Accessibility.
   SetAccessibleName(label);
   SetTooltipText(label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 void TrackImageButton::SetVisible(bool visible) {
   // We need to do more than the usual visibility change because otherwise the
   // overlay window cannot be dragged when grabbing within the button area.
-  ImageButton::SetVisible(visible);
+  views::ImageButton::SetVisible(visible);
   SetSize(visible ? last_visible_size_ : gfx::Size());
 }
 
@@ -49,7 +44,5 @@ void TrackImageButton::OnBoundsChanged(const gfx::Rect&) {
     last_visible_size_ = size();
 }
 
-BEGIN_METADATA(TrackImageButton, views::ImageButton)
+BEGIN_METADATA(TrackImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views

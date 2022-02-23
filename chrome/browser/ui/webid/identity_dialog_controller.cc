@@ -13,11 +13,20 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/webid_dialog.h"
 #include "components/infobars/core/infobar.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
 IdentityDialogController::IdentityDialogController() = default;
 
 IdentityDialogController::~IdentityDialogController() = default;
+
+int IdentityDialogController::GetBrandIconMinimumSize() {
+  return AccountSelectionView::GetBrandIconMinimumSize();
+}
+
+int IdentityDialogController::GetBrandIconIdealSize() {
+  return AccountSelectionView::GetBrandIconIdealSize();
+}
 
 void IdentityDialogController::ShowInitialPermissionDialog(
     content::WebContents* rp_web_contents,
@@ -98,34 +107,49 @@ void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& idp_url,
-    AccountList accounts,
+    base::span<const content::IdentityRequestAccount> accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
-#if !defined(OS_ANDROID)
-  std::move(on_selected).Run(accounts[0].sub);
+#if !BUILDFLAG(IS_ANDROID)
+  std::move(on_selected)
+      .Run(accounts[0].id,
+           accounts[0].login_state ==
+               content::IdentityRequestAccount::LoginState::kSignIn);
 #else
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
-  const GURL& rp_url = rp_web_contents_->GetLastCommittedURL();
+  std::string rp_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          rp_web_contents_->GetLastCommittedURL(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  std::string idp_etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          idp_url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-
-  account_view_->Show(rp_url, idp_url, accounts, idp_metadata, client_data,
-                      sign_in_mode);
+  account_view_->Show(rp_etld_plus_one, idp_etld_plus_one, accounts,
+                      idp_metadata, client_data, sign_in_mode);
 #endif
 }
 
 void IdentityDialogController::OnAccountSelected(const Account& account) {
-  std::move(on_account_selection_).Run(account.sub);
+  std::move(on_account_selection_)
+      .Run(account.id,
+           account.login_state ==
+               content::IdentityRequestAccount::LoginState::kSignIn);
 }
 
 void IdentityDialogController::OnDismiss() {
-  std::move(on_account_selection_).Run(std::string());
+  // |OnDismiss| can be called after |OnAccountSelected| which sets the callback
+  // to null.
+  if (on_account_selection_)
+    std::move(on_account_selection_).Run(std::string(), false);
 }
 
 gfx::NativeView IdentityDialogController::GetNativeView() {

@@ -5,6 +5,6 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUExternalTextureDescriptor : GPUObjectDescriptorBase {
-    required HTMLVideoElement source;
+    required (HTMLVideoElement or VideoFrame) source;
     GPUPredefinedColorSpace colorSpace = "srgb";
 };

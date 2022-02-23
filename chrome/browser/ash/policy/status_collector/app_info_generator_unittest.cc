@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -161,8 +162,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
       window_ = std::make_unique<aura::Window>(nullptr);
       window_->Init(ui::LAYER_NOT_DRAWN);
       instance_ = std::make_unique<apps::Instance>(
-          app_id,
-          apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
+          app_id, base::UnguessableToken::Create(), window_.get());
     }
 
     apps::Instance* instance() const { return instance_.get(); }
@@ -176,9 +176,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
     auto clone = instance.instance()->Clone();
     clone->UpdateState(state, time);
 
-    std::vector<std::unique_ptr<apps::Instance>> deltas;
-    deltas.push_back(std::move(clone));
-    GetInstanceRegistry().OnInstances(deltas);
+    GetInstanceRegistry().OnInstance(std::move(clone));
   }
 
   std::unique_ptr<TestingProfile> CreateProfile(const AccountId& account_id,
@@ -298,7 +296,7 @@ TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
+          apps::mojom::AppType::kChromeApp);
   PushApp("c", "ThirdApp", apps::mojom::Readiness::kUninstalledByUser, "",
           apps::mojom::AppType::kCrostini);
 
@@ -652,7 +650,7 @@ TEST_F(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
+          apps::mojom::AppType::kChromeApp);
   auto max_days_past = base::Days(
       1);  // Exclude all past usage except for UTC today and yesterday.
   auto generator = GetGenerator(max_days_past);

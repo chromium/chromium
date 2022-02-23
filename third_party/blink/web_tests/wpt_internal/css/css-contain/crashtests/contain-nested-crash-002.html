@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+html {
+  -webkit-user-modify: read-write-plaintext-only
+}
+
+* {
+  contain: strict;
+}
+</style>
+<script>
+function jsfuzzer() {
+  htmlvar00014.appendChild(htmlvar00017);
+}
+</script>
+<body onload=jsfuzzer()>
+  <button>
+    <span id="htmlvar00014"></span>
+  </button>
+  <span></span>
+  <span>
+    <button id="htmlvar00017"></button>
+  </span>
+</body>

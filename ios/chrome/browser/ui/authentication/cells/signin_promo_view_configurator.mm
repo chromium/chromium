@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
@@ -68,6 +71,8 @@ using l10n_util::GetNSStringF;
   std::u16string name16 = SysNSStringToUTF16(name);
   switch (self.signinPromoViewMode) {
     case SigninPromoViewModeNoAccounts: {
+      DCHECK(!name);
+      DCHECK(!self.userImage);
       NSString* signInString = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       signinPromoView.accessibilityLabel = signInString;
       [signinPromoView.primaryButton setTitle:signInString
@@ -94,11 +99,14 @@ using l10n_util::GetNSStringF;
       break;
     }
   }
-
+  DCHECK(name);
   DCHECK_NE(self.signinPromoViewMode, SigninPromoViewModeNoAccounts);
   UIImage* image = self.userImage;
-  if (!image)
-    image = ios::provider::GetSigninDefaultAvatar();
+  DCHECK(image);
+  CGSize avatarSize =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize);
+  DCHECK_EQ(avatarSize.width, image.size.width);
+  DCHECK_EQ(avatarSize.height, image.size.height);
   [signinPromoView setProfileImage:image];
 }
 

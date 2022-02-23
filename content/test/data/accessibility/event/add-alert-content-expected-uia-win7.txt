@@ -1,0 +1,5 @@
+LiveRegionChanged on role=alert, name=Foo
+=== Start Continuation ===
+LiveRegionChanged on role=alert, name=Bar
+=== Start Continuation ===
+LiveRegionChanged on role=alert, name=Baz

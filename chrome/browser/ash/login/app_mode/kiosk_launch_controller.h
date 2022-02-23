@@ -67,14 +67,14 @@ class KioskLaunchController
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
 
-  static std::unique_ptr<base::AutoReset<bool>>
-  DisableWaitTimerAndLoginOperationsForTesting() WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<bool>> SkipSplashScreenWaitForTesting()
-      WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<base::TimeDelta>>
-  SetNetworkWaitForTesting(base::TimeDelta wait_time) WARN_UNUSED_RESULT;
-  static std::unique_ptr<base::AutoReset<bool>> BlockAppLaunchForTesting()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  DisableWaitTimerAndLoginOperationsForTesting();
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  SkipSplashScreenWaitForTesting();
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<base::TimeDelta>>
+  SetNetworkWaitForTesting(base::TimeDelta wait_time);
+  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
+  BlockAppLaunchForTesting();
   static void SetNetworkTimeoutCallbackForTesting(base::OnceClosure* callback);
   static void SetCanConfigureNetworkCallbackForTesting(
       ReturnBoolCallback* callback);

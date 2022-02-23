@@ -22,3 +22,19 @@
 .histogram-body {
   padding-inline-start: 15px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .histogram-header {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .histogram-header-link {
+    color: rgb(138, 180, 248); /* --google-blue-300 */
+  }
+
+  html,
+  body {
+    background-color: rgb(32, 33, 36); /* --google-grey-900 */
+    color: rgb(232, 234, 237); /* --google-grey-200 */
+  }
+}

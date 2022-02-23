@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Children respond to changes in container size
-PASS Descendants respond to changes in container size
-Harness: the test ran to completion.
-

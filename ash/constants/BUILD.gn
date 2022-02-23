@@ -23,11 +23,15 @@ component("constants") {
     "ash_switches.h",
     "devicetype.cc",
     "devicetype.h",
+    "url_constants.cc",
+    "url_constants.h",
   ]
   public_deps = [
     "//base",
+    "//chromeos/constants",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//url",
   ]
   deps = [ "//build:branding_buildflags" ]
 }

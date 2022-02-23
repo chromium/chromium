@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/macros.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/engine/connection_handler.h"
 #include "mojo/public/cpp/system/data_pipe.h"

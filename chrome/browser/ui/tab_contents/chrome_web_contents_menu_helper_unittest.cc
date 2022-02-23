@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -30,8 +31,8 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
     pref_service_ = prefs.get();
 
     return profile_manager()->CreateTestingProfile(
-        "test_profile", std::move(prefs), std::u16string(), 0, std::string(),
-        TestingProfile::TestingFactories(), absl::optional<bool>());
+        "test_profile", std::move(prefs), std::u16string(), 0,
+        TestingProfile::TestingFactories());
   }
 
   sync_preferences::PrefServiceSyncable* pref_service() {
@@ -39,7 +40,7 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable* pref_service_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
 };
 }  // namespace
 

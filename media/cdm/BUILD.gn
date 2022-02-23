@@ -67,6 +67,8 @@ source_set("cdm") {
     "supported_audio_codecs.h",
   ]
 
+  public_deps = [ ":cdm_type" ]
+
   deps = [
     "//crypto",
     "//media/base",
@@ -82,7 +84,6 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_paths",
-      "//components/crash/core/common:crash_key",
     ]
     sources += [
       "cdm_adapter.cc",
@@ -120,6 +121,7 @@ source_set("cdm") {
     deps += [
       ":cdm_api",
       ":cdm_type_conversion",
+      "//components/crash/core/common:crash_key",
     ]
   }
 
@@ -151,10 +153,18 @@ static_library("cdm_paths") {
     "cdm_paths.cc",
     "cdm_paths.h",
   ]
+
+  public_deps = [ ":cdm_type" ]
+
   deps = [
     "//base",
     "//media:media_buildflags",
   ]
+}
+
+source_set("cdm_type") {
+  sources = [ "cdm_type.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

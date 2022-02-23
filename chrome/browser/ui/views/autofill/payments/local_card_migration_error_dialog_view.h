@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_ERROR_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_ERROR_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
@@ -43,9 +44,9 @@ class LocalCardMigrationErrorDialogView
   void WindowClosing() override;
 
  private:
-  LocalCardMigrationDialogController* controller_;
+  raw_ptr<LocalCardMigrationDialogController> controller_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

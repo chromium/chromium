@@ -113,9 +113,9 @@ class PasswordGenerationController {
   // Member accessors:
   // -----------------
 
-  virtual gfx::NativeWindow top_level_native_window() const = 0;
+  virtual gfx::NativeWindow top_level_native_window() = 0;
 
-  virtual content::WebContents* web_contents() const = 0;
+  virtual content::WebContents* web_contents() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_CONTROLLER_H_

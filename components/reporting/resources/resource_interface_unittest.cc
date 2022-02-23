@@ -24,6 +24,10 @@ class ResourceInterfaceTest
  protected:
   ResourceInterface* resource_interface() const { return GetParam(); }
 
+  void TearDown() override {
+    EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };
@@ -38,8 +42,6 @@ TEST_P(ResourceInterfaceTest, NestedReservationTest) {
   for (; size < resource_interface()->GetTotal(); size *= 2) {
     resource_interface()->Discard(size);
   }
-
-  EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
 }
 
 TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
@@ -77,8 +79,6 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
             size, resource_interface(), &discard_waiter));
   }
   discard_waiter.Wait();
-
-  EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
 }
 
 TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
@@ -98,7 +98,50 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
             size, resource_interface(), &waiter));
   }
   waiter.Wait();
-  EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
+}
+
+TEST_P(ResourceInterfaceTest, MoveScopedReservationTest) {
+  uint64_t size = resource_interface()->GetTotal();
+  ScopedReservation scoped_reservation(size / 2, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+  {
+    ScopedReservation moved_scoped_reservation(std::move(scoped_reservation));
+    EXPECT_TRUE(moved_scoped_reservation.reserved());
+    EXPECT_FALSE(scoped_reservation.reserved());
+  }
+  EXPECT_FALSE(scoped_reservation.reserved());
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationBasicReduction) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+  EXPECT_TRUE(scoped_reservation.Reduce(size / 2));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationReductionWithLargerNewSize) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+  EXPECT_FALSE(scoped_reservation.Reduce(size + 1));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationReductionWithNegativeNewSize) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+  EXPECT_FALSE(scoped_reservation.Reduce(-(size / 2)));
+}
+
+TEST_P(ResourceInterfaceTest, ScopedReservationRepeatingReductions) {
+  uint64_t size = resource_interface()->GetTotal() / 2;
+  ScopedReservation scoped_reservation(size, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+
+  for (; size >= 2; size /= 2) {
+    EXPECT_TRUE(scoped_reservation.Reduce(size / 2));
+  }
+  EXPECT_FALSE(scoped_reservation.Reduce(size / 2));
 }
 
 TEST_P(ResourceInterfaceTest, ReservationOverMaxTest) {
@@ -106,7 +149,6 @@ TEST_P(ResourceInterfaceTest, ReservationOverMaxTest) {
       resource_interface()->Reserve(resource_interface()->GetTotal() + 1));
   EXPECT_TRUE(resource_interface()->Reserve(resource_interface()->GetTotal()));
   resource_interface()->Discard(resource_interface()->GetTotal());
-  EXPECT_THAT(resource_interface()->GetUsed(), Eq(0u));
 }
 
 INSTANTIATE_TEST_SUITE_P(VariousResources,

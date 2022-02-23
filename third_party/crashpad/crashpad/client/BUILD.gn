@@ -170,6 +170,7 @@ source_set("client_test") {
     sources += [
       "crashpad_client_ios_test.mm",
       "ios_handler/exception_processor_test.mm",
+      "ios_handler/in_process_handler_test.cc",
       "ios_handler/in_process_intermediate_dump_handler_test.cc",
     ]
   }

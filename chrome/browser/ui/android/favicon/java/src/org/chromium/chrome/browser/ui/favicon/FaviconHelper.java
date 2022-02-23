@@ -71,7 +71,8 @@ public class FaviconHelper {
             Canvas c = new Canvas(tintedBitmap);
             @ColorInt
             int tintColor = ApiCompatibilityUtils.getColor(resources,
-                    useDarkIcon ? R.color.default_icon_color : R.color.default_icon_color_light);
+                    useDarkIcon ? R.color.default_icon_color_baseline
+                                : R.color.default_icon_color_light);
             Paint p = new Paint();
             p.setColorFilter(new PorterDuffColorFilter(tintColor, PorterDuff.Mode.SRC_IN));
             c.drawBitmap(origBitmap, 0f, 0f, p);

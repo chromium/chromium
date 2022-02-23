@@ -29,11 +29,11 @@ Gather slices with `indices=-1` mapped to `default`.
 This operation is similar to `tf.gather()`, except that any value of `-1`
 in `indices` will be mapped to `default`.  Example:
 
-```python
 ```
-
-> > > gather_with_default(['a', 'b', 'c', 'd'], [2, 0, -1, 2, -1], '_').eval()
-> > > array(['c', 'a', '_', 'c', '_'], dtype=object) ` `
+>>> gather_with_default(['a', 'b', 'c', 'd'], [2, 0, -1, 2, -1], '_')
+<tf.Tensor: shape=(5,), dtype=string,
+    numpy=array([b'c', b'a', b'_', b'c', b'_'], dtype=object)>
+```
 
 <!-- Tabular view -->
  <table class="responsive fixed orange">

@@ -1,6 +1,6 @@
 <style>
   #container {
-    height: 392px;
+    height: 408px;
   }
 </style>
 <div id="container">
@@ -15,6 +15,7 @@
           devices="[[discoveredDevices_]]"
           device-pending-pairing="[[devicePendingPairing_]]"
           on-pair-device="onPairDevice_"
+          is-bluetooth-enabled="[[isBluetoothEnabled_]]"
           id="deviceSelectionPage">
       </bluetooth-pairing-device-selection-page>
     </template>

@@ -15,9 +15,10 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -152,6 +153,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
     Iterator(const Iterator&) = delete;
     Iterator& operator=(const Iterator&) = delete;
 
+    ~Iterator();
+
     // Resets the iterator back to the beginning.
     void Reset();
 
@@ -220,7 +223,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
 
    private:
     // Weak-pointer to memory allocator being iterated over.
-    const PersistentMemoryAllocator* allocator_;
+    raw_ptr<const PersistentMemoryAllocator> allocator_;
 
     // The last record that was returned.
     std::atomic<Reference> last_record_;
@@ -682,9 +685,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
   const bool readonly_;                // Indicates access to read-only memory.
   mutable std::atomic<bool> corrupt_;  // Local version of "corrupted" flag.
 
-  HistogramBase* allocs_histogram_;  // Histogram recording allocs.
-  HistogramBase* used_histogram_;    // Histogram recording used space.
-  HistogramBase* errors_histogram_;  // Histogram recording errors.
+  raw_ptr<HistogramBase> allocs_histogram_;  // Histogram recording allocs.
+  raw_ptr<HistogramBase> used_histogram_;    // Histogram recording used space.
+  raw_ptr<HistogramBase> errors_histogram_;  // Histogram recording errors.
 
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
@@ -775,7 +778,8 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
   base::ReadOnlySharedMemoryMapping shared_memory_;
 };
 
-#if !defined(OS_NACL)  // NACL doesn't support any kind of file access in build.
+// NACL doesn't support any kind of file access in build.
+#if !BUILDFLAG(IS_NACL)
 // This allocator takes a memory-mapped file object and performs allocation
 // from it. The allocator takes ownership of the file object.
 class BASE_EXPORT FilePersistentMemoryAllocator
@@ -817,7 +821,7 @@ class BASE_EXPORT FilePersistentMemoryAllocator
  private:
   std::unique_ptr<MemoryMappedFile> mapped_file_;
 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // An allocation that is defined but not executed until required at a later
 // time. This allows for potential users of an allocation to be decoupled

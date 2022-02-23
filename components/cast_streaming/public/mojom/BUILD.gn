@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "cast_streaming_session.mojom" ]
+  sources = [
+    "cast_streaming_session.mojom",
+    "renderer_controller.mojom",
+  ]
   public_deps = [
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",

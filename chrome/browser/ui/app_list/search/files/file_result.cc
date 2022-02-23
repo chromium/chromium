@@ -11,24 +11,23 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -85,14 +84,25 @@ void LogRelevance(ChromeSearchResult::ResultType result_type,
 
 FileResult::FileResult(const std::string& schema,
                        const base::FilePath& filepath,
+                       const absl::optional<std::u16string>& details,
                        ResultType result_type,
                        DisplayType display_type,
+                       float relevance,
+                       const std::u16string& query,
                        Type type,
                        Profile* profile)
     : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
   SetCategory(Category::kFiles);
+  SetDisplayType(display_type);
+
+  set_relevance(relevance);
+  if (display_type == DisplayType::kList) {
+    // Chip and list results overlap, and only list results are fully launched.
+    // So we only log metrics for list results.
+    LogRelevance(result_type, relevance);
+  }
 
   SetResultType(result_type);
   switch (result_type) {
@@ -114,85 +124,46 @@ FileResult::FileResult(const std::string& schema,
       NOTREACHED();
   }
 
-  SetDisplayType(display_type);
-
-  // Set the details to the display name of the Files app.
-  std::u16string sanitized_name = base::CollapseWhitespace(
-      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
-  base::i18n::SanitizeUserSuppliedString(&sanitized_name);
-  SetDetails(sanitized_name);
   SetTitle(base::UTF8ToUTF16(
       StripHostedFileExtensions(filepath.BaseName().value())));
-}
-
-FileResult::FileResult(const std::string& schema,
-                       const base::FilePath& filepath,
-                       ResultType result_type,
-                       DisplayType display_type,
-                       const float relevance,
-                       Profile* profile)
-    : FileResult(schema,
-                 filepath,
-                 result_type,
-                 display_type,
-                 Type::kFile,
-                 profile) {
-  set_relevance(relevance);
-  if (display_type == DisplayType::kList) {
-    // Chip and list results overlap, and only list results are fully launched.
-    // So we only log metrics for list results.
-    LogRelevance(result_type, relevance);
-  }
-
-  // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled.
-  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
-                               ash::ColorProvider::Get()->IsDarkModeEnabled();
-  switch (display_type) {
-    case DisplayType::kChip:
-    case DisplayType::kContinue:
-      SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
-      break;
-    case DisplayType::kList:
-      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-FileResult::FileResult(const std::string& schema,
-                       const base::FilePath& filepath,
-                       ResultType result_type,
-                       const std::u16string& query,
-                       const float relevance,
-                       Type type,
-                       Profile* profile)
-    : FileResult(schema,
-                 filepath,
-                 result_type,
-                 DisplayType::kList,
-                 type,
-                 profile) {
-  set_relevance(relevance);
-  LogRelevance(result_type, relevance);
-
   SetTitleTags(CalculateTags(query, title()));
 
+  if (details)
+    SetDetails(details.value());
+
   // Launcher search results UI is light by default, so use icons for light
-  // background if dark/light mode feature is not enabled.
-  const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
-                               ash::ColorProvider::Get()->IsDarkModeEnabled();
-  switch (type) {
-    case Type::kFile:
-      SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));
-      break;
-    case Type::kDirectory:
-      SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background)));
-      break;
-    case Type::kSharedDirectory:
-      SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background)));
-      break;
+  // background if dark/light mode feature is not enabled. Productivity launcher
+  // has dark background by default, so use icons for dark background in that
+  // case.
+  const bool dark_background =
+      ash::features::IsDarkLightModeEnabled()
+          ? ash::ColorProvider::Get()->IsDarkModeEnabled()
+          : ash::features::IsProductivityLauncherEnabled();
+  if (display_type == DisplayType::kChip) {
+    SetChipIcon(chromeos::GetChipIconForPath(filepath, dark_background));
+  } else if (display_type == DisplayType::kContinue) {
+    // For Continue Section, if dark/light mode is disabled, we should use the
+    // icon and not the chip icon with a dark background as default.
+    const gfx::ImageSkia chip_icon =
+        ash::features::IsDarkLightModeEnabled()
+            ? chromeos::GetChipIconForPath(filepath, dark_background)
+            : chromeos::GetIconForPath(filepath, /*dark_background=*/true);
+    SetChipIcon(chip_icon);
+  } else {
+    switch (type) {
+      case Type::kFile:
+        SetIcon(IconInfo(chromeos::GetIconForPath(filepath, dark_background),
+                         kSystemIconDimension));
+        break;
+      case Type::kDirectory:
+        SetIcon(IconInfo(chromeos::GetIconFromType("folder", dark_background),
+                         kSystemIconDimension));
+        break;
+      case Type::kSharedDirectory:
+        SetIcon(IconInfo(chromeos::GetIconFromType("shared", dark_background),
+                         kSystemIconDimension));
+        break;
+    }
   }
 }
 
@@ -212,6 +183,10 @@ void FileResult::Open(int event_flags) {
                               platform_util::OpenOperationCallback());
       break;
   }
+}
+
+absl::optional<std::string> FileResult::DriveId() const {
+  return drive_id_;
 }
 
 // static
@@ -242,11 +217,22 @@ void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
 
   // Request a thumbnail for all file types. For unsupported types, this will
   // just call OnThumbnailLoaded with an error.
-  const gfx::Size size =
-      ash::SharedAppListConfig::instance().search_list_thumbnail_size();
+  const gfx::Size size = gfx::Size(kThumbnailDimension, kThumbnailDimension);
   thumbnail_loader->Load({filepath_, size},
                          base::BindOnce(&FileResult::OnThumbnailLoaded,
                                         weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::SetDetailsToJustificationString() {
+  GetJustificationStringAsync(
+      filepath_, base::BindOnce(&FileResult::OnJustificationStringReturned,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::OnJustificationStringReturned(
+    absl::optional<std::u16string> justification) {
+  if (justification)
+    SetDetails(justification.value());
 }
 
 void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
@@ -261,8 +247,7 @@ void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,
 
   DCHECK_EQ(error, base::File::Error::FILE_OK);
 
-  const int dimension =
-      ash::SharedAppListConfig::instance().search_list_thumbnail_dimension();
+  const int dimension = kThumbnailDimension;
   const auto image = gfx::ImageSkia::CreateFromBitmap(*bitmap, 1.0f);
 
   SetIcon(ChromeSearchResult::IconInfo(image, dimension,

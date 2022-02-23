@@ -48,10 +48,10 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
-    # For outline atomics on AArch64 (can't pass this unconditionally
-    # due to unused flag warning on other targets).
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
+    } else if (arm_control_flow_integrity == "pac") {
+      cflags += [ "-mbranch-protection=pac-ret" ]
     }
   }
 
@@ -89,11 +89,6 @@ config("runtime_library") {
   # on this library on 32-bit platforms.
   if (current_cpu == "arm" || current_cpu == "x86") {
     libs += [ "android_support" ]
-  }
-
-  # arm builds of libc++ starting in NDK r12 depend on unwind.
-  if (current_cpu == "arm") {
-    libs += [ "unwind" ]
   }
 
   if (current_cpu == "arm" && arm_version == 6) {
@@ -143,6 +138,12 @@ if (current_toolchain == default_toolchain) {
   pool("goma_javac_pool") {
     # Override action_pool when goma is enabled for javac.
     depth = 10000
+  }
+
+  # nocompile tests share output directory to avoid them all needing to rebuild
+  # things. But this also means they can't run in parallel.
+  pool("nocompile_pool") {
+    depth = 1
   }
 
   # When defined, this pool should be used instead of link_pool for command

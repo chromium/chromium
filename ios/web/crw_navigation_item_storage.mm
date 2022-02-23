@@ -47,7 +47,11 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
 
 }  // namespace web
 
-@implementation CRWNavigationItemStorage
+@implementation CRWNavigationItemStorage {
+  GURL _URL;
+  GURL _virtualURL;
+  std::u16string _title;
+}
 
 #pragma mark - NSObject
 
@@ -227,11 +231,33 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
                              serializedSizeInBytes / 1024);
 }
 
-- (GURL)virtualURL {
+#pragma mark - Properties
+
+- (const GURL&)URL {
+  return _URL;
+}
+
+- (void)setURL:(const GURL&)URL {
+  _URL = URL;
+}
+
+- (const GURL&)virtualURL {
   // virtualURL is not stored (see -encodeWithCoder:) if it's the same as URL.
   // This logic repeats NavigationItemImpl::GetURL to store virtualURL only when
   // different from URL.
   return _virtualURL.is_empty() ? _URL : _virtualURL;
+}
+
+- (void)setVirtualURL:(const GURL&)virtualURL {
+  _virtualURL = virtualURL;
+}
+
+- (const std::u16string&)title {
+  return _title;
+}
+
+- (void)setTitle:(const std::u16string&)title {
+  _title = title;
 }
 
 @end

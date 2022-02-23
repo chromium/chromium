@@ -15,9 +15,6 @@ message FontEnumerationTable {
     required string full_name = 20;
     required string family = 30;
     required string style = 40;
-    required bool italic = 50;
-    required float stretch = 60;
-    required float weight = 70;
   }
 
   repeated FontMetadata fonts = 10;

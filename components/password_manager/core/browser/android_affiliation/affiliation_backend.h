@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -89,7 +90,9 @@ class AffiliationBackend : public FacetManagerHost,
   void Prefetch(const FacetURI& facet_uri, const base::Time& keep_fresh_until);
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until);
+  void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris);
   void TrimCacheForFacetURI(const FacetURI& facet_uri);
+  void TrimUnusedCache(std::vector<FacetURI> facet_uris);
 
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.
@@ -156,8 +159,8 @@ class AffiliationBackend : public FacetManagerHost,
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::Clock* clock_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<AffiliationFetcherFactory> fetcher_factory_;
   std::unique_ptr<AffiliationDatabase> cache_;

@@ -42,8 +42,11 @@ void RecordDangerousDownloadInfobarEvent(DangerousDownloadInfobarEvent event) {
 void DangerousDownloadInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     download::DownloadItem* download_item) {
-  infobar_manager->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
-      base::WrapUnique(new DangerousDownloadInfoBarDelegate(download_item))));
+  if (infobar_manager->AddInfoBar(
+          std::make_unique<infobars::ConfirmInfoBar>(base::WrapUnique(
+              new DangerousDownloadInfoBarDelegate(download_item))))) {
+    RecordDangerousDownloadInfobarEvent(DangerousDownloadInfobarEvent::kShown);
+  }
 }
 
 DangerousDownloadInfoBarDelegate::DangerousDownloadInfoBarDelegate(
@@ -53,7 +56,6 @@ DangerousDownloadInfoBarDelegate::DangerousDownloadInfoBarDelegate(
   message_text_ = l10n_util::GetStringFUTF16(
       IDS_PROMPT_DANGEROUS_DOWNLOAD,
       base::UTF8ToUTF16(download_item_->GetFileNameToReportUser().value()));
-  RecordDangerousDownloadInfobarEvent(DangerousDownloadInfobarEvent::kShown);
 }
 
 DangerousDownloadInfoBarDelegate::~DangerousDownloadInfoBarDelegate() {

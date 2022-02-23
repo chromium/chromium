@@ -75,6 +75,7 @@ const char kExtensionHmacSecret[] = "hmac-secret";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
+const char kExtensionMinPINLength[] = "minPinLength";
 
 const base::TimeDelta kBleDevicePairingModeWaitingInterval = base::Seconds(2);
 

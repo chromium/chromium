@@ -9,11 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -127,8 +127,8 @@ class BluetoothDetailedViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  ash::TopShortcutButton* FindPairNewDeviceClickableView() {
-    return FindViewById<ash::TopShortcutButton*>(
+  ash::IconButton* FindPairNewDeviceClickableView() {
+    return FindViewById<ash::IconButton*>(
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
             kPairNewDeviceClickableView);
   }
@@ -186,13 +186,13 @@ TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  SimulateMouseClickAt(GetEventGenerator(), settings_button);
+  LeftClickOn(settings_button);
   EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(0u, fake_detailed_view_delegate()->close_bubble_call_count());
 
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-  SimulateMouseClickAt(GetEventGenerator(), settings_button);
+  LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
   EXPECT_EQ(1u, fake_detailed_view_delegate()->close_bubble_call_count());
 }
@@ -226,7 +226,7 @@ TEST_F(BluetoothDetailedViewTest, PressingToggleNotifiesDelegate) {
   EXPECT_FALSE(
       bluetooth_detailed_view_delegate()->last_bluetooth_toggle_state());
 
-  SimulateMouseClickAt(GetEventGenerator(), toggle_button);
+  LeftClickOn(toggle_button);
 
   EXPECT_TRUE(toggle_button->GetIsOn());
   EXPECT_TRUE(
@@ -251,8 +251,7 @@ TEST_F(BluetoothDetailedViewTest, BluetoothToggleHasCorrectTooltipText) {
 }
 
 TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   EXPECT_FALSE(pair_new_device_view->GetVisible());
@@ -260,14 +259,13 @@ TEST_F(BluetoothDetailedViewTest, PressingPairNewDeviceNotifiesDelegate) {
                     ->on_pair_new_device_requested_call_count());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
-  SimulateMouseClickAt(GetEventGenerator(), pair_new_device_button);
+  LeftClickOn(pair_new_device_button);
   EXPECT_EQ(1u, bluetooth_detailed_view_delegate()
                     ->on_pair_new_device_requested_call_count());
 }
 
 TEST_F(BluetoothDetailedViewTest, PairNewDeviceButtonIsCentered) {
-  ash::TopShortcutButton* pair_new_device_button =
-      FindPairNewDeviceClickableView();
+  IconButton* pair_new_device_button = FindPairNewDeviceClickableView();
   views::View* pair_new_device_view = FindPairNewDeviceView();
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
@@ -301,13 +299,14 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
 
   BluetoothDeviceListItemView* device_list_item =
       bluetooth_detailed_view()->AddDeviceListItem();
-  device_list_item->UpdateDeviceProperties(paired_properties);
+  device_list_item->UpdateDeviceProperties(
+      /*device_index=*/0, /*device_count=*/0, paired_properties);
 
   bluetooth_detailed_view()->NotifyDeviceListChanged();
 
   EXPECT_FALSE(
       bluetooth_detailed_view_delegate()->last_device_list_item_selected());
-  SimulateMouseClickAt(GetEventGenerator(), device_list_item);
+  LeftClickOn(device_list_item);
   EXPECT_TRUE(
       bluetooth_detailed_view_delegate()->last_device_list_item_selected());
   EXPECT_EQ(kDeviceId, bluetooth_detailed_view_delegate()

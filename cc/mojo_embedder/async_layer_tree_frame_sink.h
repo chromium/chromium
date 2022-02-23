@@ -9,9 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -61,12 +64,13 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     ~InitParams();
 
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner;
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr;
+    raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager = nullptr;
     std::unique_ptr<viz::SyntheticBeginFrameSource>
         synthetic_begin_frame_source;
     UnboundMessagePipes pipes;
     bool wants_animate_only_begin_frames = false;
     const char* client_name = nullptr;
+    base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
   };
 
   AsyncLayerTreeFrameSink(
@@ -87,8 +91,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   void DetachFromClient() override;
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id) override;
   void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed,
-                             bool show_hit_test_borders) override;
+                             bool hit_test_data_changed) override;
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -121,6 +124,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   viz::LocalSurfaceId local_surface_id_;
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::SyntheticBeginFrameSource> synthetic_begin_frame_source_;
+#if BUILDFLAG(IS_ANDROID)
+  base::PlatformThreadId io_thread_id_;
+#endif
 
   // Message pipes that will be bound when BindToClient() is called.
   UnboundMessagePipes pipes_;
@@ -128,7 +134,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   // One of |compositor_frame_sink_| or |compositor_frame_sink_associated_| will
   // be bound after calling BindToClient(). |compositor_frame_sink_ptr_| will
   // point to message pipe we want to use.
-  viz::mojom::CompositorFrameSink* compositor_frame_sink_ptr_ = nullptr;
+  raw_ptr<viz::mojom::CompositorFrameSink> compositor_frame_sink_ptr_ = nullptr;
   mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink_;
   mojo::AssociatedRemote<viz::mojom::CompositorFrameSink>
       compositor_frame_sink_associated_;

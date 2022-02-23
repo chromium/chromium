@@ -5,10 +5,13 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/test_autofill_tick_clock.h"
+#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -57,10 +60,13 @@ class AutofillImageFetcherTest : public testing::Test {
         std::make_unique<TestAutofillImageFetcher>(std::move(image_fetcher));
   }
 
-  void SimulateOnImageFetched(const GURL& url, const gfx::Image& image) {
+  void SimulateOnImageFetched(
+      const GURL& url,
+      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
+      const gfx::Image& image) {
     TestAutofillImageFetcher::OnCardArtImageFetched(
-        autofill_image_fetcher()->current_operation(), url, image,
-        image_fetcher::RequestMetadata());
+        autofill_image_fetcher()->current_operation(), url,
+        fetch_image_request_timestamp, image, image_fetcher::RequestMetadata());
   }
 
   void ValidateResult(std::map<GURL, gfx::Image> received_images,
@@ -83,10 +89,14 @@ class AutofillImageFetcherTest : public testing::Test {
 
  private:
   std::unique_ptr<TestAutofillImageFetcher> autofill_image_fetcher_;
-  image_fetcher::MockImageFetcher* image_fetcher_;
+  raw_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
 };
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   // The credit card network images cannot be found in the tests, but it should
   // be okay since we don't care what the images are.
   gfx::Image fake_image1 =
@@ -115,16 +125,25 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   std::vector<GURL> urls = {fake_url1, fake_url2};
   autofill_image_fetcher()->FetchImagesForUrls(urls, callback);
 
+  // Advance the time to make the latency values more realistic.
+  test_clock.Advance(base::Microseconds(2000));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  SimulateOnImageFetched(fake_url1, fake_image1);
-  SimulateOnImageFetched(fake_url2, fake_image2);
+  SimulateOnImageFetched(fake_url1, now, fake_image1);
+  SimulateOnImageFetched(fake_url2, now, fake_image2);
 
   ValidateResult(std::move(received_images), expected_images);
   histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", true, 2);
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 2);
+  histogram_tester.ExpectUniqueSample("Autofill.ImageFetcher.RequestLatency", 2,
+                                      2);
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   gfx::Image fake_image1 =
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           IDR_DEFAULT_FAVICON);
@@ -144,16 +163,24 @@ TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
   std::vector<GURL> urls = {fake_url1, GURL("")};
   autofill_image_fetcher()->FetchImagesForUrls(urls, callback);
 
+  test_clock.Advance(base::Microseconds(2000));
   // Simulate successful image fetching (for image with URL) -> expect the
   // callback to be called.
-  SimulateOnImageFetched(fake_url1, fake_image1);
+  SimulateOnImageFetched(fake_url1, now, fake_image1);
 
   ValidateResult(std::move(received_images), expected_images);
   histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", true, 1);
   histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", false, 1);
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ImageFetcher.RequestLatency", 2,
+                                      1);
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
+  base::TimeTicks now = AutofillTickClock::NowTicks();
+  TestAutofillTickClock test_clock;
+  test_clock.SetNowTicks(now);
+
   GURL fake_url1 = GURL("http://www.example.com/fake_image1");
   std::map<GURL, gfx::Image> expected_images;
 
@@ -171,12 +198,16 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForUrls(urls, callback);
 
+  test_clock.Advance(base::Microseconds(2000));
   // Simulate failed image fetching (for image with URL) -> expect the
   // callback to be called.
-  SimulateOnImageFetched(fake_url1, gfx::Image());
+  SimulateOnImageFetched(fake_url1, now, gfx::Image());
 
   ValidateResult(std::move(received_images), expected_images);
   histogram_tester.ExpectBucketCount("Autofill.ImageFetcher.Result", false, 1);
+  histogram_tester.ExpectTotalCount("Autofill.ImageFetcher.RequestLatency", 1);
+  histogram_tester.ExpectUniqueSample("Autofill.ImageFetcher.RequestLatency", 2,
+                                      1);
 }
 
 }  // namespace autofill

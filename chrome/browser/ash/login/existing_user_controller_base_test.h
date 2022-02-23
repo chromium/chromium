@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_BASE_TEST_H_
 #define CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_BASE_TEST_H_
 
+#include <memory>
+
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,8 +56,8 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  MockUserManager* const mock_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<MockUserManager> const mock_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> const scoped_user_manager_;
 };
 
 }  // namespace ash

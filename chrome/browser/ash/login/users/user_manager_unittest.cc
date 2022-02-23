@@ -6,6 +6,7 @@
 #include <cstring>
 #include <memory>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -25,7 +26,6 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
@@ -87,8 +87,7 @@ class UserManagerTest : public testing::Test {
   void SetUp() override {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(::switches::kTestType);
-    command_line.AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+    command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
@@ -355,9 +354,10 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
   user_manager::UserManager::Get()->UserLoggedIn(
       owner_account_id_at_invalid_domain_,
       owner_account_id_at_invalid_domain_.GetUserEmail(), false, false);
-  EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
-                owner_account_id_at_invalid_domain_));
+  user_manager::KnownUser known_user(local_state_->Get());
+  EXPECT_EQ(
+      user_manager::ProfileRequiresPolicy::kUnknown,
+      known_user.GetProfileRequiresPolicy(owner_account_id_at_invalid_domain_));
   ResetUserManager();
 }
 

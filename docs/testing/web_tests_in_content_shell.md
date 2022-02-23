@@ -84,7 +84,7 @@ You need to start a web server first. By default it serves generated files from
 out/Release:
 
 ```bash
-python third_party/blink/tools/run_blink_httpd.py -t <build directory>
+vpython third_party/blink/tools/run_blink_httpd.py -t <build directory>
 ```
 Then run the test with a localhost URL:
 
@@ -101,7 +101,7 @@ Similar to HTTP tests, many WPT (a.k.a. web-platform-tests under
 tests require some setup before running in Content Shell:
 
 ```bash
-python third_party/blink/tools/run_blink_wptserve.py -t <build directory>
+vpython third_party/blink/tools/run_blink_wptserve.py -t <build directory>
 ```
 
 Then run the test:
@@ -144,7 +144,7 @@ If you want to debug WPT with devtools in Content Shell, you will first need to
 start the server:
 
 ```bash
-python third_party/blink/tools/run_blink_wptserve.py
+vpython third_party/blink/tools/run_blink_wptserve.py
 ```
 
 Then start Content Shell with some additional flags:
@@ -152,6 +152,20 @@ Then start Content Shell with some additional flags:
 ```bash
 out/Default/content_shell --enable-experimental-web-platform-features --ignore-certificate-errors --host-resolver-rules="MAP nonexistent.*.test ~NOTFOUND, MAP *.test. 127.0.0.1, MAP *.test 127.0.0.1"
 ```
+
+You are also able to debug the inside of Chromium with a debugger for
+particular WPT tests. After starting the WPT server, run particular tests via
+Content Shell from the debugger with the following command.
+(Refer to your debugger's manual for how to start a program from your debugger.)
+
+```bash
+out/Default/content_shell --run-web-tests http://localhost:8001/<test>
+```
+
+Chromium adopts multi-process architecture. If you want to debug the child
+renderer processes, use `--single-process` Content Shell option, or
+`--renderer-startup-dialog` option and attach the debugger to the renderer
+processes after starting the tests. Refer to the Debugging section below for details.
 
 ## Debugging
 

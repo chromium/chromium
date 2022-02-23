@@ -67,10 +67,10 @@ OptimizationGuideService::OptimizationGuideService(
           : nullptr;
 
   hints_manager_ = std::make_unique<optimization_guide::IOSChromeHintsManager>(
-      browser_state, chrome_browser_state->GetPrefs(), hint_store_.get(),
+      browser_state, chrome_browser_state->GetPrefs(),
+      hint_store_ ? hint_store_->AsWeakPtr() : nullptr,
       top_host_provider_.get(), tab_url_provider_.get(),
-      browser_state->GetSharedURLLoaderFactory(),
-      GetApplicationContext()->GetNetworkConnectionTracker());
+      browser_state->GetSharedURLLoaderFactory());
 
   bool optimization_guide_fetching_enabled =
       optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(

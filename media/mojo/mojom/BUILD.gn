@@ -18,6 +18,7 @@ mojom("mojom") {
     "audio_logging.mojom",
     "audio_output_stream.mojom",
     "audio_parameters.mojom",
+    "audio_processing.mojom",
     "audio_stream_factory.mojom",
     "capture_handle.mojom",
     "cdm_document_service.mojom",
@@ -47,6 +48,7 @@ mojom("mojom") {
     "video_encode_accelerator.mojom",
     "video_encoder_info.mojom",
     "watch_time_recorder.mojom",
+    "webrtc_video_perf.mojom",
   ]
 
   if (enable_media_drm_storage) {
@@ -159,6 +161,21 @@ mojom("mojom") {
   ]
 
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "media.mojom.AudioProcessingSettings"
+          cpp = "::media::AudioProcessingSettings"
+        },
+        {
+          mojom = "media.mojom.AudioProcessingStats"
+          cpp = "::media::AudioProcessingStats"
+        },
+      ]
+      traits_headers = [ "audio_processing_mojom_traits.h" ]
+      traits_sources = [ "audio_processing_mojom_traits.cc" ]
+      traits_public_deps = [ ":shared_mojom_traits" ]
+    },
     {
       types = [
         {
@@ -361,8 +378,16 @@ mojom("mojom") {
           cpp = "::media::internal::StatusData"
         },
         {
-          mojom = "media.mojom.Status"
-          cpp = "::media::Status"
+          mojom = "media.mojom.EncoderStatus"
+          cpp = "::media::EncoderStatus"
+        },
+        {
+          mojom = "media.mojom.DecoderStatus"
+          cpp = "::media::DecoderStatus"
+        },
+        {
+          mojom = "media.mojom.PipelineStatus"
+          cpp = "::media::PipelineStatus"
         },
       ]
       traits_headers = [ "status_mojom_traits.h" ]
@@ -740,6 +765,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_decoder_config_mojom_traits_unittest.cc",
+    "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
     "video_decoder_config_mojom_traits_unittest.cc",
     "video_encode_accelerator_mojom_traits_unittest.cc",

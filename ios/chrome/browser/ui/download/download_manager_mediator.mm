@@ -163,8 +163,11 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
     case web::DownloadTask::State::kInProgress:
       return kDownloadManagerStateInProgress;
     case web::DownloadTask::State::kComplete:
-      return task_->GetErrorCode() ? kDownloadManagerStateFailed
-                                   : kDownloadManagerStateSucceeded;
+      return kDownloadManagerStateSucceeded;
+    case web::DownloadTask::State::kFailed:
+      return kDownloadManagerStateFailed;
+    case web::DownloadTask::State::kFailedNotResumable:
+      return kDownloadManagerStateFailedNotResumable;
     case web::DownloadTask::State::kCancelled:
       // Download Manager should dismiss the UI after download cancellation.
       return kDownloadManagerStateNotStarted;
@@ -176,6 +179,8 @@ int DownloadManagerMediator::GetDownloadManagerA11yAnnouncement() const {
     case web::DownloadTask::State::kNotStarted:
       return IDS_IOS_DOWNLOAD_MANAGER_REQUESTED_ACCESSIBILITY_ANNOUNCEMENT;
     case web::DownloadTask::State::kComplete:
+    case web::DownloadTask::State::kFailed:
+    case web::DownloadTask::State::kFailedNotResumable:
       return task_->GetErrorCode()
                  ? IDS_IOS_DOWNLOAD_MANAGER_FAILED_ACCESSIBILITY_ANNOUNCEMENT
                  : IDS_IOS_DOWNLOAD_MANAGER_SUCCEEDED_ACCESSIBILITY_ANNOUNCEMENT;

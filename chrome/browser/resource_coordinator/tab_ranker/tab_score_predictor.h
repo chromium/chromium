@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assist_ranker {
@@ -59,8 +58,7 @@ class TabScorePredictor {
   // Scores the tab using the tab reactivation model. A higher score indicates
   // the tab is more likely to be reactivated than a lower score. A lower score
   // indicates the tab is more likely to be closed.
-  TabRankerResult ScoreTab(const TabFeatures& tab,
-                           float* score) WARN_UNUSED_RESULT;
+  [[nodiscard]] TabRankerResult ScoreTab(const TabFeatures& tab, float* score);
 
   // Scores multiple tabs.
   // Input is a map from an id (lifecycle_unit id) to the TabFeatures of that

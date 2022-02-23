@@ -20,6 +20,7 @@ namespace ash {
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
+class SearchResultPageDialogController;
 
 // The search results view for productivity launcher. Contains a scrolling list
 // of search results. Does not include the search box, which is owned by a
@@ -31,8 +32,10 @@ class ASH_EXPORT ProductivityLauncherSearchView
  public:
   METADATA_HEADER(ProductivityLauncherSearchView);
 
-  ProductivityLauncherSearchView(AppListViewDelegate* view_delegate,
-                                 SearchBoxView* search_box_view);
+  ProductivityLauncherSearchView(
+      AppListViewDelegate* view_delegate,
+      SearchResultPageDialogController* dialog_controller,
+      SearchBoxView* search_box_view);
   ProductivityLauncherSearchView(const ProductivityLauncherSearchView&) =
       delete;
   ProductivityLauncherSearchView& operator=(
@@ -53,8 +56,19 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();
 
+  // Sums the heights of all search_result_list_views_ owned by this view.
+  int TabletModePreferredHeight();
+
+  // Returns a layer that can be used for launcher page animations. Which layer
+  // is an implementation detail.
+  ui::Layer* GetPageAnimationLayer() const;
+
   std::vector<SearchResultContainerView*> result_container_views_for_test() {
     return result_container_views_;
+  }
+
+  ResultSelectionController* result_selection_controller_for_test() {
+    return result_selection_controller_.get();
   }
 
  private:
@@ -90,6 +104,8 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // result view unless overridden by |ignore_result_changes_for_a11y_|.
   void MaybeNotifySelectedResultChanged();
 
+  SearchResultPageDialogController* const dialog_controller_;
+
   SearchBoxView* const search_box_view_;
 
   // The scroll view that contains all the result_container_views_.
@@ -99,9 +115,8 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // accessibility framework.
   bool ignore_result_changes_for_a11y_ = false;
 
-  // Containers for search result views. Has a single element, but is a vector
-  // for compatibility with SearchBoxView. The contained view is owned by the
-  // views hierarchy.
+  // Containers for search result views. The contained views are owned by the
+  // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
 
   // Handles search result selection.

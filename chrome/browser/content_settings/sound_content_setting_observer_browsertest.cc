@@ -266,9 +266,8 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   GURL url = embedded_test_server()->GetURL("/simple.html");
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  content_settings->SetWebsiteSettingDefaultScope(
-      url, url, ContentSettingsType::SOUND,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+  content_settings->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);
 
   // Loads a simple page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -4,13 +4,13 @@
 
 package org.chromium.components.browser_ui.notifications;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.Log;
@@ -51,35 +51,35 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         mNotificationManager.cancelAll();
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         mNotificationManager.createNotificationChannel(channel);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         mNotificationManager.createNotificationChannelGroup(channelGroup);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public List<NotificationChannel> getNotificationChannels() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return mNotificationManager.getNotificationChannels();
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public List<NotificationChannelGroup> getNotificationChannelGroups() {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return mNotificationManager.getNotificationChannelGroups();
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannel(String id) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -118,14 +118,14 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
                 notification.getNotification());
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public NotificationChannel getNotificationChannel(String channelId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         return mNotificationManager.getNotificationChannel(channelId);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;

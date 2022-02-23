@@ -22,13 +22,12 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-class Profile;
 
 namespace extensions {
 class AppWindow;
@@ -42,9 +41,13 @@ class NotificationDisplayService;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of extension-backed apps for
-// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps) and
-// hosted apps (including desktop PWAs).
+// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
+// hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
+// there are 2 ExtensionAppsChromeOs publishers for browser extensions and
+// Chrome apps(including hosted apps) separately.
 //
 // In the future, desktop PWAs will be migrated to a new system.
 //
@@ -56,22 +59,23 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public AppWebContentsData::Client {
  public:
-  explicit ExtensionAppsChromeOs(AppServiceProxy* proxy);
+  ExtensionAppsChromeOs(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsChromeOs() override;
 
   ExtensionAppsChromeOs(const ExtensionAppsChromeOs&) = delete;
   ExtensionAppsChromeOs& operator=(const ExtensionAppsChromeOs&) = delete;
-
-  // Record uninstall dialog action for Web apps and Chrome apps.
-  static void RecordUninstallCanceledAction(Profile* profile,
-                                            const std::string& app_id);
 
   void Shutdown();
 
   void ObserveArc();
 
  private:
-  void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
+  friend class PublisherHost;
+
+  // ExtensionAppsBase overrides.
+  void Initialize() override;
+  void LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                               LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,
@@ -138,11 +142,13 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void OnHideWebStoreIconPrefChanged() override;
   void OnSystemFeaturesPrefChanged() override;
   bool Accepts(const extensions::Extension* extension) override;
+  void SetShowInFields(const extensions::Extension* extension,
+                       App& app) override;
   void SetShowInFields(apps::mojom::AppPtr& app,
                        const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
-  std::unique_ptr<App> CreateApp(const extensions::Extension* extension,
-                                 Readiness readiness) override;
+  AppPtr CreateApp(const extensions::Extension* extension,
+                   Readiness readiness) override;
   apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                               apps::mojom::Readiness readiness) override;
 
@@ -163,13 +169,19 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
 
-  void UpdateAppDisabledState(
-      const base::ListValue* disabled_system_features_pref,
-      int feature,
-      const std::string& app_id,
-      bool is_disabled_mode_changed);
+  void UpdateAppDisabledState(const base::Value* disabled_system_features_pref,
+                              int feature,
+                              const std::string& app_id,
+                              bool is_disabled_mode_changed);
 
-  apps::InstanceRegistry* instance_registry_;
+  void LaunchExtension(const std::string& app_id,
+                       int32_t event_flags,
+                       apps::mojom::IntentPtr intent,
+                       apps::mojom::LaunchSource launch_source,
+                       apps::mojom::WindowInfoPtr window_info,
+                       LaunchAppWithIntentCallback callback);
+
+  apps::InstanceRegistry* const instance_registry_;
   base::ScopedObservation<extensions::AppWindowRegistry,
                           extensions::AppWindowRegistry::Observer>
       app_window_registry_{this};

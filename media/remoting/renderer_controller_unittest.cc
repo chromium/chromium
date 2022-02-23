@@ -394,7 +394,7 @@ TEST_F(RendererControllerTest, SetClientNullptr) {
   ExpectInLocalRendering();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(RendererControllerTest, RemotePlaybackHlsCompatibility) {
   controller_ = FakeRemoterFactory::CreateController(true);
   controller_->SetClient(this);

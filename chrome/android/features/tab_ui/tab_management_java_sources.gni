@@ -6,11 +6,12 @@ import(
     "//chrome/android/features/start_surface/public/start_surface_public_java_sources.gni")
 
 public_tab_management_java_sources = [
-  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/MostVisitedListProperties.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/TasksSurface.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/TasksSurfaceProperties.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/mv_tiles/MostVisitedTileNavigationDelegate.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/pseudotab/PseudoTab.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/pseudotab/TabAttributeCache.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialog.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingUtilities.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/StoreTrackingUtilities.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUi.java",
@@ -32,6 +33,7 @@ tab_management_test_java_sources = [
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/SingleTabViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/TasksViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/AssertsTest.java",
+  "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialogTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
@@ -53,18 +55,20 @@ tab_management_test_java_sources = [
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorTestingRobot.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSuggestionMessageCardTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMultiWindowTest.java",
+  "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherTabletTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherThumbnailTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabUiTestHelper.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TestRecyclerViewSimpleViewBinder.java",
 ]
 
 tab_management_junit_java_sources = [
-  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/MostVisitedListViewBinderUnitTest.java",
+  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/TasksSurfaceMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/pseudotab/PseudoTabUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/pseudotab/TabAttributeCacheUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupUtilsUnitTest.java",
+  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialogUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/ConditionalTabStripUtilsUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/PriceMessageServiceUnitTest.java",

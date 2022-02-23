@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -121,22 +121,18 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _instructionsTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_instructionsTextLabel];
 
-    UIImageView* googlePayBadge = nil;
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableAccountWalletStorage)) {
-      googlePayBadge = [[UIImageView alloc] init];
-      googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
-      googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
-      googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
+    UIImageView* googlePayBadge = [[UIImageView alloc] init];
+    googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
+    googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
+    googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 // IDR_AUTOFILL_GOOGLE_PAY_DARK only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
-          UIUserInterfaceStyleDark) {
-        googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK);
-      }
-#endif
-      [contentView addSubview:googlePayBadge];
+    if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+        UIUserInterfaceStyleDark) {
+      googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY_DARK);
     }
+#endif
+    [contentView addSubview:googlePayBadge];
 
     _errorLabel = [[UILabel alloc] init];
     _errorLabel.font = [[MDCTypography fontLoader] regularFontOfSize:12];
@@ -150,7 +146,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _dateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_dateContainerView];
 
-    _monthInput = ios::GetChromeBrowserProvider().CreateStyledTextField();
+    _monthInput = ios::provider::CreateStyledTextField();
     _monthInput.placeholder = l10n_util::GetNSString(
         IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH);
     _monthInput.accessibilityIdentifier = @"month_textField";
@@ -165,7 +161,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _dateSeparator.translatesAutoresizingMaskIntoConstraints = NO;
     [_dateContainerView addSubview:_dateSeparator];
 
-    _yearInput = ios::GetChromeBrowserProvider().CreateStyledTextField();
+    _yearInput = ios::provider::CreateStyledTextField();
     _yearInput.placeholder =
         l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR);
     _yearInput.accessibilityIdentifier = @"year_textField";
@@ -178,7 +174,7 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _CVCContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_CVCContainerView];
 
-    _CVCInput = ios::GetChromeBrowserProvider().CreateStyledTextField();
+    _CVCInput = ios::provider::CreateStyledTextField();
     _CVCInput.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _CVCInput.placeholder =
         l10n_util::GetNSString(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC);
@@ -203,27 +199,6 @@ const CGFloat kGooglePayBadgeHeight = 22;
     _buttonForNewCard.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_buttonForNewCard];
 
-    if (googlePayBadge) {
-      [NSLayoutConstraint activateConstraints:@[
-        [_dateContainerView.topAnchor
-            constraintEqualToAnchor:googlePayBadge.bottomAnchor
-                           constant:kUISpacing],
-        [googlePayBadge.topAnchor
-            constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
-                           constant:kUISpacing],
-        [googlePayBadge.leadingAnchor
-            constraintEqualToAnchor:_instructionsTextLabel.leadingAnchor],
-        [googlePayBadge.heightAnchor
-            constraintEqualToConstant:kGooglePayBadgeHeight],
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [_dateContainerView.topAnchor
-            constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
-                           constant:kUISpacing],
-      ]];
-    }
-
     [NSLayoutConstraint activateConstraints:@[
       // Text label
       [_instructionsTextLabel.topAnchor
@@ -236,7 +211,19 @@ const CGFloat kGooglePayBadgeHeight = 22;
           constraintEqualToAnchor:contentView.trailingAnchor
                          constant:-kHorizontalPadding],
 
+      // Google Pay badge.
+      [googlePayBadge.topAnchor
+          constraintEqualToAnchor:_instructionsTextLabel.bottomAnchor
+                         constant:kUISpacing],
+      [googlePayBadge.leadingAnchor
+          constraintEqualToAnchor:_instructionsTextLabel.leadingAnchor],
+      [googlePayBadge.heightAnchor
+          constraintEqualToConstant:kGooglePayBadgeHeight],
+
       // Date container
+      [_dateContainerView.topAnchor
+          constraintEqualToAnchor:googlePayBadge.bottomAnchor
+                         constant:kUISpacing],
       [_dateContainerView.leadingAnchor
           constraintEqualToAnchor:_instructionsTextLabel.leadingAnchor],
       [_dateContainerView.heightAnchor

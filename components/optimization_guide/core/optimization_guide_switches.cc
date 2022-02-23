@@ -27,12 +27,6 @@ const char kHintsProtoOverride[] = "optimization_guide_hints_override";
 // hosts.
 const char kFetchHintsOverride[] = "optimization-guide-fetch-hints-override";
 
-// Overrides scheduling and time delays for fetching prediction models and host
-// model features. This causes a prediction model and host model features fetch
-// immediately on start up.
-const char kFetchModelsAndHostModelFeaturesOverrideTimer[] =
-    "optimization-guide-fetch-models-and-features-override";
-
 // Overrides the hints fetch scheduling and delay, causing a hints fetch
 // immediately on start up using the TopHostProvider. This is meant for testing.
 const char kFetchHintsOverrideTimer[] =
@@ -87,6 +81,14 @@ const char kModelOverride[] = "optimization-guide-model-override";
 // Triggers validation of the model. Used for manual testing.
 const char kModelValidate[] = "optimization-guide-model-validate";
 
+// Prevents any models from being executing when in annotating a batch
+// of visits. This is used for testing only.
+const char kStopHistoryVisitBatchAnnotateForTesting[] =
+    "stop-history-visit-batch-annotate";
+
+const char kPageContentAnnotationsLoggingEnabled[] =
+    "enable-page-content-annotations-logging";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -132,11 +134,6 @@ ParseHintsFetchOverrideFromCommandLine() {
 bool ShouldOverrideFetchHintsTimer() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kFetchHintsOverrideTimer);
-}
-
-bool ShouldOverrideFetchModelsAndFeaturesTimer() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kFetchModelsAndHostModelFeaturesOverrideTimer);
 }
 
 std::unique_ptr<optimization_guide::proto::Configuration>
@@ -191,7 +188,7 @@ bool ShouldValidateModel() {
 }
 
 absl::optional<std::string> GetModelOverride() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug/1227996): The parsing below is not supported on Windows because
   // ':' is used as a delimiter, but this must be used in the absolute file path
   // on Windows.
@@ -204,6 +201,18 @@ absl::optional<std::string> GetModelOverride() {
     return absl::nullopt;
   return command_line->GetSwitchValueASCII(kModelOverride);
 #endif
+}
+
+bool StopHistoryVisitBatchAnnotateForTesting() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kStopHistoryVisitBatchAnnotateForTesting))
+    return true;
+  return false;
+}
+
+bool ShouldLogPageContentAnnotationsInput() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kPageContentAnnotationsLoggingEnabled);
 }
 
 }  // namespace switches

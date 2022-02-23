@@ -47,6 +47,12 @@ Polymer({
   browserProxy_: null,
 
   properties: {
+    /** @protected {boolean} */
+    saveSessionLogEnabled_: {
+      type: Boolean,
+      value: true,
+    },
+
     /** @private {boolean} */
     showBatteryStatusCard_: {
       type: Boolean,
@@ -149,6 +155,12 @@ Polymer({
 
   /** @protected */
   onSessionLogClick_() {
+    // Click already handled then leave early.
+    if (!this.saveSessionLogEnabled_) {
+      return;
+    }
+
+    this.saveSessionLogEnabled_ = false;
     this.browserProxy_.saveSessionLog()
         .then(
             /* @type {boolean} */ (success) => {
@@ -157,7 +169,10 @@ Polymer({
                   loadTimeData.getString(`sessionLogToastText${result}`);
               this.$.toast.show();
             })
-        .catch(() => {/* File selection cancelled */});
+        .catch(() => {/* File selection cancelled */})
+        .finally(() => {
+          this.saveSessionLogEnabled_ = true;
+        });
   },
 
   /** @private */

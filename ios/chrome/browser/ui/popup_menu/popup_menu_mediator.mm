@@ -42,8 +42,8 @@
 #include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_navigation_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
@@ -480,18 +480,23 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
         [self createToolsMenuItems];
         break;
       case PopupMenuTypeNavigationForward:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createNavigationItemsForType:PopupMenuTypeNavigationForward];
         break;
       case PopupMenuTypeNavigationBackward:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createNavigationItemsForType:PopupMenuTypeNavigationBackward];
         break;
       case PopupMenuTypeTabGrid:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createTabGridMenuItems];
         break;
       case PopupMenuTypeTabStripTabGrid:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createTabGridMenuItems];
         break;
       case PopupMenuTypeNewTab:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createSearchMenuItems];
         break;
     }
@@ -832,7 +837,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     } else {
       item.title =
           base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-      const gfx::Image& image = navigationItem->GetFavicon().image;
+      const gfx::Image& image = navigationItem->GetFaviconStatus().image;
       if (!image.IsEmpty())
         item.favicon = image.ToUIImage();
     }

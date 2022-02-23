@@ -5,11 +5,11 @@
 #include "gpu/command_buffer/service/shared_image_representation_dawn_egl_image.h"
 
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #endif
 
-#include <dawn_native/OpenGLBackend.h>
+#include <dawn/native/OpenGLBackend.h>
 
 namespace gpu {
 
@@ -24,7 +24,7 @@ SharedImageRepresentationDawnEGLImage::SharedImageRepresentationDawnEGLImage(
       device_(device),
       image_(image),
       texture_descriptor_(texture_descriptor),
-      dawn_procs_(dawn_native::GetProcs()) {
+      dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
   DCHECK(image_);
 
@@ -41,19 +41,19 @@ SharedImageRepresentationDawnEGLImage::
 
 WGPUTexture SharedImageRepresentationDawnEGLImage::BeginAccess(
     WGPUTextureUsage usage) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On D3D11 backings, we must acquire the keyed mutex to do interop. If we
   // ever switch to non-D3D backings on Windows, this code will break horribly.
   // TODO(senorblanco): This should probably be a virtual on SharedImageBacking
   // to avoid this cast.
   static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
 #endif
-  dawn_native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
+  dawn::native::opengl::ExternalImageDescriptorEGLImage externalImageDesc;
   externalImageDesc.cTextureDescriptor = &texture_descriptor_;
   externalImageDesc.image = image_;
   externalImageDesc.isInitialized = true;
   texture_ =
-      dawn_native::opengl::WrapExternalEGLImage(device_, &externalImageDesc);
+      dawn::native::opengl::WrapExternalEGLImage(device_, &externalImageDesc);
   return texture_;
 }
 
@@ -61,10 +61,10 @@ void SharedImageRepresentationDawnEGLImage::EndAccess() {
   if (!texture_) {
     return;
   }
-  if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
+  if (dawn::native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
     SetCleared();
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(senorblanco): This should probably be a virtual on SharedImageBacking
   // to avoid this cast.
   static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();

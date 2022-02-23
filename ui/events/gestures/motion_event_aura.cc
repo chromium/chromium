@@ -100,7 +100,7 @@ bool MotionEventAura::OnTouch(const TouchEvent& touch) {
     case ET_TOUCH_PRESSED:
       if (!AddTouch(touch))
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ET_TOUCH_RELEASED:
     case ET_TOUCH_CANCELLED:
       // Removing these touch points needs to be postponed until after the

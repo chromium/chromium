@@ -33,7 +33,7 @@ SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
   int offset = 0;
 
   // We haven't read the header.
-  if (total_bytes_ == 0) {
+  if (!total_bytes_.has_value()) {
     if (bytes_read < 512) {
       error_id_ = error::kUnzipInvalidArchive;
       return Result::kFailure;
@@ -48,11 +48,13 @@ SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
     offset += 512;
   }
 
+  DCHECK(total_bytes_.has_value());
+
   // A tar file always has a padding at the end of the file. As they should not
   // be included in the output, we should take the minimum of the actual
   // remaining bytes versus the bytes read.
-  uint64_t bytes_written =
-      std::min<uint64_t>(total_bytes_ - curr_bytes_, bytes_read - offset);
+  uint64_t bytes_written = std::min<uint64_t>(
+      total_bytes_.value() - curr_bytes_, bytes_read - offset);
   if (!delegate_->WriteContents(buffer_.data() + offset, bytes_written,
                                 &error_id_)) {
     return Result::kFailure;
@@ -65,7 +67,9 @@ SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
 }
 
 bool SingleFileTarReader::IsComplete() const {
-  return total_bytes_ > 0 && total_bytes_ == curr_bytes_;
+  if (!total_bytes_.has_value())
+    return false;
+  return total_bytes_.value() == curr_bytes_;
 }
 
 // static

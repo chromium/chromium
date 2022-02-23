@@ -6,37 +6,38 @@
 
 import argparse
 import logging
+import typing
 import os
-import psutil
-import signal
-import subprocess
-import sys
-import time
+import datetime
 
+from driver import DriverContext
+import scenarios
+import browsers
 import utils
-from driver import Driver
-import generate_scripts
 
 
-def SignalHandler(sig, frame, driver):
-  """Handle the run being aborted.
-  """
-  driver.Teardown()
-  sys.exit(0)
+def IterScenarios(
+    scenario_names: typing.List[str],
+    browser_driver_factory: typing.Callable[[], browsers.BrowserDriver],
+    **kwargs):
+  for scenario_and_browser_name in scenario_names:
+    scenario_name, _, browser_name = scenario_and_browser_name.partition(':')
+    browser_driver = browser_driver_factory(browser_name)
+    scenario_driver = scenarios.MakeScenarioDriver(scenario_name,
+                                                   browser_driver, **kwargs)
+    if scenario_driver is None:
+      logging.error(f"Skipping invalid scenario {scenario_and_browser_name}.")
+    else:
+      yield scenario_driver
 
 
 def main():
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
-  parser.add_argument("output_dir", help="Output dir")
+  parser.add_argument("--output_dir", help="Output dir")
   parser.add_argument('--no-checks',
                       dest='no_checks',
                       action='store_true',
                       help="Invalid environment doesn't throw")
-  parser.add_argument(
-      '--measure',
-      dest='run_measure',
-      action='store_true',
-      help="Run measurements of the cpu use of the application.")
 
   # Profile related arguments
   parser.add_argument(
@@ -45,6 +46,17 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
+  parser.add_argument("--power_sampler",
+                      help="Path to power sampler binary",
+                      required=True)
+  parser.add_argument(
+      '--scenarios',
+      dest='scenarios',
+      action='store',
+      required=True,
+      nargs='+',
+      help="List of scenarios and browsers to run in the format"
+      "<scenario_name>:<browser_name>, e.g. idle_on_wiki:safari")
   parser.add_argument('--meet-meeting-id',
                       dest='meet_meeting_id',
                       action='store',
@@ -54,6 +66,10 @@ def main():
       dest='chrome_user_dir',
       action='store',
       help='The user data dir to pass to Chrome via --user-data-dir')
+  parser.add_argument('--chromium-path',
+                      dest='chromium_path',
+                      action='store',
+                      help='The path to Chromium.app')
 
   parser.add_argument('--verbose',
                       action='store_true',
@@ -63,48 +79,39 @@ def main():
   args = parser.parse_args()
 
   if args.verbose:
-    log_level = logging.INFO
+    log_level = logging.DEBUG
   else:
-    log_level = logging.WARNING
+    log_level = logging.INFO
   logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
-  if args.profile_mode and args.run_measure:
-    logging.error("Cannot measure and profile at the same time, choose one.")
-    sys.exit(-1)
+  output_dir = args.output_dir
+  if not output_dir:
+    output_dir = os.path.join("output",
+                              datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-  # Generate the runner scripts
-  extra_args = {}
-  if args.meet_meeting_id:
-    extra_args["meeting_id"] = args.meet_meeting_id
-  generate_scripts.generate_all(extra_args)
+  logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
+  with DriverContext(output_dir, args.power_sampler) as driver:
+    driver.CheckEnv(not args.no_checks)
+    # This is the average brightness from UMA data.
+    driver.SetMainDisplayBrightness(65)
 
-  driver = Driver(args.output_dir)
-  driver.CheckEnv(not args.no_checks)
+    driver.WaitBatteryNotFull()
 
-  signal.signal(
-      signal.SIGINT, lambda sig, frame: SignalHandler(sig, frame, driver))
-
-  if args.chrome_user_dir:
-    chrome_extra_arg = "--user-data-dir=%s" % args.chrome_user_dir
-  else:
-    chrome_extra_arg = "--guest"
-
-  # Measure or Profile all defined scenarios. To add/remove some change their
-  # "skip" attribute in utils.SCENARIOS.
-  for scenario in utils.SCENARIOS:
-
-    if scenario["browser"] != "Safari":
-      scenario["extra_args"].append(chrome_extra_arg)
-
-    # TODO(crbug.com/1224994): Allow scenario filtering like gtest_filter.
-    if not scenario["skip"]:
-      if args.run_measure:
-        logging.info(f'Recording scenario {scenario["name"]} ...')
-        driver.Record(scenario)
+    # Measure or Profile all defined scenarios.
+    browser_factory = lambda browser_name: browsers.MakeBrowserDriver(
+        browser_name,
+        chrome_user_dir=args.chrome_user_dir,
+        chromium_path=args.chromium_path)
+    for scenario in IterScenarios(args.scenarios,
+                                  browser_factory,
+                                  meet_meeting_id=args.meet_meeting_id):
 
       if args.profile_mode:
-        logging.info(f'Profiling scenario {scenario["name"]} ...')
+        logging.info(f'Profiling scenario {scenario.name} ...')
         driver.Profile(scenario, profile_mode=args.profile_mode)
+      else:
+        logging.info(f'Recording scenario {scenario.name} ...')
+        driver.Record(scenario)
 
 
 if __name__ == "__main__":

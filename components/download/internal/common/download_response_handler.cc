@@ -60,6 +60,7 @@ DownloadResponseHandler::DownloadResponseHandler(
     const DownloadUrlParameters::RequestHeadersType& request_headers,
     const std::string& request_origin,
     DownloadSource download_source,
+    bool require_safety_checks,
     std::vector<GURL> url_chain,
     bool is_background_mode)
     : delegate_(delegate),
@@ -80,6 +81,7 @@ DownloadResponseHandler::DownloadResponseHandler(
       credentials_mode_(resource_request->credentials_mode),
       is_partial_request_(save_info_->offset > 0),
       completed_(false),
+      require_safety_checks_(require_safety_checks),
       abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE),
       is_background_mode_(is_background_mode) {
   if (!is_parallel_request) {
@@ -98,7 +100,8 @@ void DownloadResponseHandler::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void DownloadResponseHandler::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   create_info_ = CreateDownloadCreateInfo(*head);
   cert_status_ = head->cert_status;
 
@@ -124,6 +127,9 @@ void DownloadResponseHandler::OnReceiveResponse(
 
   if (create_info_->result != DOWNLOAD_INTERRUPT_REASON_NONE)
     OnResponseStarted(mojom::DownloadStreamHandlePtr());
+
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 std::unique_ptr<DownloadCreateInfo>
@@ -158,6 +164,7 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->request_initiator = request_initiator_;
   create_info->credentials_mode = credentials_mode_;
   create_info->isolation_info = isolation_info_;
+  create_info->require_safety_checks = require_safety_checks_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;
@@ -173,8 +180,7 @@ void DownloadResponseHandler::OnReceiveRedirect(
     return;
   }
 
-  if (!first_origin_.IsSameOriginWith(
-          url::Origin::Create(redirect_info.new_url))) {
+  if (!first_origin_.IsSameOriginWith(redirect_info.new_url)) {
     // Cross-origin redirect.
     switch (cross_origin_redirects_) {
       case network::mojom::RedirectMode::kFollow:

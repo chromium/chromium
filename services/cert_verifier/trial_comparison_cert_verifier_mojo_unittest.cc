@@ -15,11 +15,11 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
 #endif
 
@@ -109,7 +109,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   base::Time time = base::Time::Now();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr uint32_t kExpectedTrustResult = 4;
   constexpr int32_t kExpectedResultCode = -12345;
   std::vector<net::CertVerifyProcMac::ResultDebugData::CertEvidenceInfo>
@@ -136,7 +136,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   mac_trust_debug_info->UpdateTrustDebugInfo(
       kExpectedTrustDebugInfo, net::TrustStoreMac::TrustImplType::kSimple);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<uint8_t> authroot_sequence{'T', 'E', 'S', 'T'};
   net::CertVerifyProcWin::ResultDebugData::Create(time, authroot_sequence,
                                                   &primary_result);
@@ -180,7 +180,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
             std::string(report.sct_list.begin(), report.sct_list.end()));
 
   ASSERT_TRUE(report.debug_info);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_TRUE(report.debug_info->mac_platform_debug_info);
   EXPECT_EQ(kExpectedTrustResult,
             report.debug_info->mac_platform_debug_info->trust_result);
@@ -203,7 +203,7 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
       cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
       report.debug_info->mac_trust_impl);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ASSERT_TRUE(report.debug_info->win_platform_debug_info);
   EXPECT_EQ(time,
             report.debug_info->win_platform_debug_info->authroot_this_update);

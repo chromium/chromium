@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"

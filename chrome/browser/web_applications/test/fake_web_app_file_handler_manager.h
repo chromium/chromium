@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "url/gurl.h"
 
@@ -26,7 +26,8 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
       delete;
   ~FakeWebAppFileHandlerManager() override;
 
-  const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id) override;
+  const apps::FileHandlers* GetAllFileHandlers(
+      const AppId& app_id) const override;
 
   using AcceptMap = std::map<std::string, base::flat_set<std::string>>;
   // Installs a file handler for |app_id| with the action url |handler|,

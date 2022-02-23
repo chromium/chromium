@@ -47,7 +47,7 @@ class MainThreadWorkletTest : public PageTestBase {
     SetUpScope("script-src 'self' https://allowed.example.com");
   }
   void SetUpScope(const String& csp_header) {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     KURL url = KURL("https://example.com/");
     NavigateTo(url);
     LocalDOMWindow* window = GetFrame().DomWindow();
@@ -72,7 +72,8 @@ class MainThreadWorkletTest : public PageTestBase {
         window->GetReferrerPolicy(), window->GetSecurityOrigin(),
         window->IsSecureContext(), window->GetHttpsState(),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
-        window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
+        window->AddressSpace(),
+        OriginTrialContext::GetInheritedTrialFeatures(window).get(),
         base::UnguessableToken::Create(), nullptr /* worker_settings */,
         mojom::blink::V8CacheOptions::kDefault,
         MakeGarbageCollected<WorkletModuleResponsesMap>(),

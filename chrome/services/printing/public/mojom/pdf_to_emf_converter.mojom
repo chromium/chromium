@@ -16,12 +16,6 @@ import "mojo/public/mojom/base/string16.mojom";
 // - call PdfToEmfConverter.ConvertPage() for each page to generate the EMF
 //   files.
 
-interface PdfToEmfConverterClient {
-  [Sync]
-  PreCacheFontCharacters(array<uint8> logfont,
-                         mojo_base.mojom.String16 characters) => ();
-};
-
 interface PdfToEmfConverter {
   ConvertPage(uint32 page_number) =>
       (mojo_base.mojom.ReadOnlySharedMemoryRegion? emf_region,
@@ -30,7 +24,6 @@ interface PdfToEmfConverter {
 
 interface PdfToEmfConverterFactory {
   CreateConverter(mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region,
-                  PdfRenderSettings render_settings,
-                  pending_remote<PdfToEmfConverterClient> client)
+                  PdfRenderSettings render_settings)
       => (pending_remote<PdfToEmfConverter> converter, uint32 page_count);
 };

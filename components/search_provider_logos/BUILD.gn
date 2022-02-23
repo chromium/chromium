@@ -17,11 +17,10 @@ static_library("search_provider_logos") {
     "logo_service.h",
     "logo_service_impl.cc",
     "logo_service_impl.h",
-    "switches.cc",
-    "switches.h",
   ]
 
   public_deps = [
+    ":switches",
     "//base",
     "//skia",
   ]
@@ -36,6 +35,13 @@ static_library("search_provider_logos") {
     "//services/network/public/mojom",
     "//ui/gfx",
     "//url",
+  ]
+}
+
+static_library("switches") {
+  sources = [
+    "switches.cc",
+    "switches.h",
   ]
 }
 

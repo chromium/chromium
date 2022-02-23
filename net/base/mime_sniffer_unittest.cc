@@ -40,7 +40,7 @@ TEST(MimeSnifferTest, SniffableSchemes) {
   } kTestCases[] = {
     {url::kAboutScheme, false},
     {url::kBlobScheme, false},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {url::kContentScheme, true},
 #else
     {url::kContentScheme, false},

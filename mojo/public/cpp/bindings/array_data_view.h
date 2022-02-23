@@ -36,7 +36,11 @@ class ArrayDataViewImpl<
   const T* data() const { return data_->storage(); }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -54,7 +58,11 @@ class ArrayDataViewImpl<
   bool operator[](size_t index) const { return data_->at(index); }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -82,7 +90,11 @@ class ArrayDataViewImpl<
   }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -110,7 +122,11 @@ class ArrayDataViewImpl<
   }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -133,7 +149,11 @@ class ArrayDataViewImpl<
   }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -161,7 +181,11 @@ class ArrayDataViewImpl<
   }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 
@@ -186,7 +210,11 @@ class ArrayDataViewImpl<
   }
 
  protected:
+  // `data_` is not a raw_ptr<...> for performance reasons (based on analysis of
+  // sampling profiler data).
   Data_* data_;
+  // `message_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   Message* message_;
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
@@ -26,9 +27,7 @@ class TimerController::TimerListener
  public:
   TimerListener(AssistantClient* assistant_client,
                 mojom::TimerDelegate* delegate)
-      : assistant_client_(*assistant_client),
-        delegate_(*delegate),
-        main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
+      : assistant_client_(*assistant_client), delegate_(*delegate) {}
   TimerListener(const TimerListener&) = delete;
   TimerListener& operator=(const TimerListener&) = delete;
   ~TimerListener() override = default;
@@ -39,11 +38,11 @@ class TimerController::TimerListener
     // Register as an observer of |AlarmTimerEvent| to get notified on
     // alarm/timer status change, i.e. when timers are scheduled, updated,
     // and/or removed. Status change will be reflected on UI correspondingly.
-    assistant_client_.RegisterAlarmTimerEventObserver(
-        weak_factory_.GetWeakPtr());
+    assistant_client_.AddAlarmTimerEventObserver(this);
 
     // Force sync the initial timer state.
-    NotifyTimerStatusChanged(assistant_client_.GetTimers());
+    assistant_client_.GetTimers(base::BindOnce(
+        &TimerListener::NotifyTimerStatusChanged, weak_factory_.GetWeakPtr()));
   }
 
   void Stop() {
@@ -64,7 +63,12 @@ class TimerController::TimerListener
       const ::assistant::api::OnAlarmTimerEventRequest& request) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    NotifyTimerStatusChanged(ConstructAssistantTimersFromProto(request));
+    // Only handle timer event in this timer listener.
+    auto& alarm_timer_event = request.event();
+    if (alarm_timer_event.has_on_timer_state_changed()) {
+      NotifyTimerStatusChanged(ConstructAssistantTimersFromProto(
+          alarm_timer_event.on_timer_state_changed().timer_params()));
+    }
   }
 
   // Notify our timer delegate on any timer status change. |timers| contains
@@ -80,8 +84,6 @@ class TimerController::TimerListener
 
   AssistantClient& assistant_client_ GUARDED_BY_CONTEXT(sequence_checker_);
   mojom::TimerDelegate& delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   base::WeakPtrFactory<TimerListener> weak_factory_{this};
 };

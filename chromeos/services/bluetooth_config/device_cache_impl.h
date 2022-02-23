@@ -10,6 +10,7 @@
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -30,7 +31,8 @@ class DeviceCacheImpl : public DeviceCache,
  public:
   DeviceCacheImpl(AdapterStateController* adapter_state_controller,
                   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-                  DeviceNameManager* device_name_manager);
+                  DeviceNameManager* device_name_manager,
+                  FastPairDelegate* fast_pair_delegate);
   ~DeviceCacheImpl() override;
 
  private:
@@ -70,13 +72,17 @@ class DeviceCacheImpl : public DeviceCache,
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
                                    device::BluetoothDevice* device,
                                    bool is_now_connected) override;
+  void DeviceBlockedByPolicyChanged(device::BluetoothAdapter* adapter,
+                                    device::BluetoothDevice* device,
+                                    bool new_blocked_status) override;
   void DeviceBatteryChanged(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device,
                             device::BluetoothDevice::BatteryType type) override;
 
   // DeviceNameManager::Observer:
-  void OnDeviceNicknameChanged(const std::string& device_id,
-                               const std::string& nickname) override;
+  void OnDeviceNicknameChanged(
+      const std::string& device_id,
+      const absl::optional<std::string>& nickname) override;
 
   // Fetches all known devices from BluetoothAdapter and populates them into
   // |paired_devices_| and |unpaired_devices_|.
@@ -93,8 +99,9 @@ class DeviceCacheImpl : public DeviceCache,
   // true if the device was removed from the list.
   bool RemoveFromPairedDeviceList(device::BluetoothDevice* device);
 
-  // Attempts to add updated metadata about |device| to |paired_devices_|.
-  // Returns true if the device was updated in the list.
+  // Attempts to add updated metadata about |device| to |paired_devices_|. If
+  // |device| is not found in |paired_devices_|, no update is performed. Returns
+  // true if the device was updated in the list.
   bool AttemptUpdatePairedDeviceMetadata(device::BluetoothDevice* device);
 
   // Sorts |paired_devices_| based on connection state. This function is called
@@ -114,8 +121,9 @@ class DeviceCacheImpl : public DeviceCache,
   // true if the device was removed from the list.
   bool RemoveFromUnpairedDeviceList(device::BluetoothDevice* device);
 
-  // Attempts to add updated metadata about |device| to |unpaired_devices_|.
-  // Returns true if the device was updated in the list.
+  // Attempts to add updated metadata about |device| to |paired_devices_|. If
+  // |device| is not found in |unpaired_devices_|, it is added. Returns true if
+  // the device was updated in the list.
   bool AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
 
   // Sorts |unpaired_devices_| based on signal strength. This function is called
@@ -130,6 +138,7 @@ class DeviceCacheImpl : public DeviceCache,
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   DeviceNameManager* device_name_manager_;
+  FastPairDelegate* fast_pair_delegate_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;

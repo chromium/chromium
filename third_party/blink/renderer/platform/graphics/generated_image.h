@@ -26,9 +26,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GENERATED_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GENERATED_IMAGE_H_
 
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -38,10 +39,10 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
 
   bool HasIntrinsicSize() const override { return false; }
 
-  IntSize SizeWithConfig(SizeConfig) const override {
-    return RoundedIntSize(size_);
+  gfx::Size SizeWithConfig(SizeConfig) const override {
+    return gfx::ToRoundedSize(size_);
   }
-  FloatSize SizeWithConfigAsFloat(SizeConfig) const override { return size_; }
+  gfx::SizeF SizeWithConfigAsFloat(SizeConfig) const override { return size_; }
 
   // Assume that generated content has no decoded data we need to worry about
   void DestroyDecodedData() override {}
@@ -51,25 +52,25 @@ class PLATFORM_EXPORT GeneratedImage : public Image {
  protected:
   void DrawPattern(GraphicsContext&,
                    const cc::PaintFlags&,
-                   const FloatRect& dest_rect,
+                   const gfx::RectF& dest_rect,
                    const ImageTilingInfo&,
                    const ImageDrawOptions& draw_options) final;
   virtual sk_sp<cc::PaintShader> CreateShader(
-      const FloatRect& tile_rect,
+      const gfx::RectF& tile_rect,
       const SkMatrix* pattern_matrix,
-      const FloatRect& src_rect,
+      const gfx::RectF& src_rect,
       const ImageDrawOptions& draw_options);
 
   // FIXME: Implement this to be less conservative.
   bool CurrentFrameKnownToBeOpaque() override { return false; }
 
-  GeneratedImage(const FloatSize& size) : size_(size) {}
+  GeneratedImage(const gfx::SizeF& size) : size_(size) {}
 
   virtual void DrawTile(GraphicsContext&,
-                        const FloatRect&,
+                        const gfx::RectF&,
                         const ImageDrawOptions&) = 0;
 
-  FloatSize size_;
+  gfx::SizeF size_;
 };
 
 }  // namespace blink

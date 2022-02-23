@@ -42,7 +42,7 @@ struct SystemAppLaunchParams {
   ~SystemAppLaunchParams();
 
   // If provided launches System Apps into |url|, instead of its start_url (as
-  // specified its WebApplicationInfo). Mutually exclusive with non-empty
+  // specified its WebAppInstallInfo). Mutually exclusive with non-empty
   // |launch_paths|.
   absl::optional<GURL> url;
 
@@ -52,7 +52,7 @@ struct SystemAppLaunchParams {
 
   // If non-empty, specifies files passed to Web File Handling. Apps need to
   // have "FileHandling" origin trial in its SystemAppInfo, and file handlers
-  // in its WebApplicationInfo. Mutually exclusive with |url|.
+  // in its WebAppInstallInfo. Mutually exclusive with |url|.
   std::vector<base::FilePath> launch_paths;
 };
 
@@ -96,12 +96,12 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params);
 
-// Returns a browser that is hosting the given system app type and browser type,
-// or nullptr if not found.
-Browser* FindSystemWebAppBrowser(
-    Profile* profile,
-    SystemAppType app_type,
-    Browser::Type browser_type = Browser::TYPE_APP);
+// Returns a browser that is hosting the given system |app_type|,
+// |browser_type| and |url| (if not empty) or nullptr if not found.
+Browser* FindSystemWebAppBrowser(Profile* profile,
+                                 SystemAppType app_type,
+                                 Browser::Type browser_type = Browser::TYPE_APP,
+                                 const GURL& url = GURL());
 
 // Returns true if the |browser| is a system web app.
 bool IsSystemWebApp(Browser* browser);

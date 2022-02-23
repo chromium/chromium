@@ -106,7 +106,8 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
 
   ClearGLErrors(true, "Incoming GLError");
 
-  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
+  if (mode_ == ScopedAppGLStateRestore::MODE_DRAW &&
+      base::android::BuildInfo::GetInstance()->sdk_int() ==
       base::android::SDK_VERSION_S) {
     GLint red_bits = 0;
     GLint green_bits = 0;

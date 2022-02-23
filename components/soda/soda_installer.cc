@@ -24,6 +24,14 @@ namespace {
 
 constexpr int kSodaCleanUpDelayInDays = 30;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+inline std::string GetProjectorLanguageCode(PrefService* pref_service) {
+  return pref_service->GetString(ash::prefs::kProjectorCreationFlowLanguage);
+}
+
+#endif  // IS_CHROMEOS_ASH
+
 }  // namespace
 
 namespace speech {
@@ -73,10 +81,10 @@ void SodaInstaller::Init(PrefService* profile_prefs,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition) ||
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
-#endif
       soda_installer_initialized_) {
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (soda_installer_initialized_) {
+#endif
     return;
   }
 
@@ -88,19 +96,22 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
 
     if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
-            ->GetList()
+            ->GetListDeprecated()
             .empty()) {
       // TODO(crbug.com/1200667): Register the default language used by
       // Dictation on ChromeOS.
-      // TODO(crbug.com/1165437): Register the default language used by
-      // Projector on ChromeOS.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      RegisterLanguage(GetProjectorLanguageCode(profile_prefs), global_prefs);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
       RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
                        global_prefs);
     }
 
     for (const auto& language :
          global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
-             ->GetList()) {
+             ->GetListDeprecated()) {
       SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
                                                     global_prefs);
     }
@@ -251,7 +262,7 @@ void SodaInstaller::NotifyOnSodaLanguagePackProgress(
 void SodaInstaller::RegisterLanguage(const std::string& language,
                                      PrefService* global_prefs) {
   ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
-  if (!base::Contains(update->GetList(), base::Value(language))) {
+  if (!base::Contains(update->GetListDeprecated(), base::Value(language))) {
     update->Append(language);
   }
 }

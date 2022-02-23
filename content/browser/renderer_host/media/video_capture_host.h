@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -72,6 +73,8 @@ class CONTENT_EXPORT VideoCaptureHost
   void OnBufferReady(const VideoCaptureControllerID& controller_id,
                      const ReadyBuffer& buffer,
                      const std::vector<ReadyBuffer>& scaled_buffers) override;
+  void OnFrameWithEmptyRegionCapture(
+      const VideoCaptureControllerID& controller_id) override;
   void OnEnded(const VideoCaptureControllerID& id) override;
   void OnStarted(const VideoCaptureControllerID& id) override;
   void OnStartedUsingGpuDecode(const VideoCaptureControllerID& id) override;
@@ -87,9 +90,6 @@ class CONTENT_EXPORT VideoCaptureHost
   void Resume(const base::UnguessableToken& device_id,
               const base::UnguessableToken& session_id,
               const media::VideoCaptureParams& params) override;
-  void Crop(const base::UnguessableToken& device_id,
-            const base::Token& crop_id,
-            CropCallback callback) override;
   void RequestRefreshFrame(const base::UnguessableToken& device_id) override;
   void ReleaseBuffer(const base::UnguessableToken& device_id,
                      int32_t buffer_id,
@@ -130,7 +130,7 @@ class CONTENT_EXPORT VideoCaptureHost
   std::unique_ptr<RenderProcessHostDelegate> render_process_host_delegate_;
   uint32_t number_of_active_streams_ = 0;
 
-  MediaStreamManager* const media_stream_manager_;
+  const raw_ptr<MediaStreamManager> media_stream_manager_;
 
   // A map of VideoCaptureControllerID to the VideoCaptureController to which it
   // is connected. An entry in this map holds a null controller while it is in
@@ -143,6 +143,8 @@ class CONTENT_EXPORT VideoCaptureHost
   std::map<base::UnguessableToken,
            mojo::Remote<media::mojom::VideoCaptureObserver>>
       device_id_to_observer_map_;
+
+  absl::optional<gfx::Rect> region_capture_rect_;
 
   base::WeakPtrFactory<VideoCaptureHost> weak_factory_{this};
 };

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.AutoplayManagementLauncher;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator.FollowManagementLauncher;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -29,7 +30,7 @@ public class FeedManagementCoordinator {
 
     public FeedManagementCoordinator(Activity activity,
             FollowManagementLauncher followManagementLauncher,
-            AutoplayManagementLauncher autoplayManagementLauncher) {
+            AutoplayManagementLauncher autoplayManagementLauncher, @StreamKind int feedType) {
         mActivity = (AppCompatActivity) activity;
         ModelList listItems = new ModelList();
 
@@ -50,8 +51,8 @@ public class FeedManagementCoordinator {
         mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
-        mMediator = new FeedManagementMediator(
-                mActivity, listItems, followManagementLauncher, autoplayManagementLauncher);
+        mMediator = new FeedManagementMediator(mActivity, listItems, followManagementLauncher,
+                autoplayManagementLauncher, feedType);
     }
 
     public View getView() {

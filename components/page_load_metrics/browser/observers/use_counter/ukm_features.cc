@@ -31,9 +31,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kNavigatorVibrateSubFrame,
           WebFeature::kTouchEventPreventedNoTouchAction,
           WebFeature::kTouchEventPreventedForcedDocumentPassiveNoTouchAction,
-          WebFeature::kApplicationCacheInstalledButNoManifest,
-          WebFeature::kApplicationCacheManifestSelectInsecureOrigin,
-          WebFeature::kApplicationCacheManifestSelectSecureOrigin,
           WebFeature::kMixedContentAudio,
           WebFeature::kMixedContentImage,
           WebFeature::kMixedContentVideo,
@@ -194,7 +191,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kAVIFImage,
           WebFeature::kGetDisplayMedia,
           WebFeature::kLaxAllowingUnsafeCookies,
-          WebFeature::kOpenWebDatabaseThirdPartyContext,
           WebFeature::kOversrollBehaviorOnViewportBreaks,
           WebFeature::kPaymentRequestCSPViolation,
           WebFeature::kRequestedFileSystemPersistentThirdPartyContext,
@@ -208,13 +204,11 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSerialPortOpen,
           WebFeature::kHidRequestDevice,
           WebFeature::kHidDeviceOpen,
-          WebFeature::kCrossOriginWasmModuleSharing,
           WebFeature::kControlledNonBlobURLWorkerWillBeUncontrolled,
           WebFeature::kSameSiteCookieInclusionChangedByCrossSiteRedirect,
           WebFeature::
               kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory,
           WebFeature::kBlobStoreAccessAcrossAgentClustersInResolveForNavigation,
-          WebFeature::kReadOrWriteWebDatabaseThirdPartyContext,
           WebFeature::kSearchEventFired,
           WebFeature::kReadOrWriteWebDatabase,
           WebFeature::kExternalProtocolBlockedBySandbox,
@@ -228,6 +222,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
           WebFeature::kOpenWebDatabaseInsecureContext,
+          WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
       }));
   return *opt_in_features;
 }

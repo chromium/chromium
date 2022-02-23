@@ -119,6 +119,7 @@ static_library("libxml_utils") {
     ":xml_reader",
     ":xml_writer",
     "//base/test:test_support",
+    "//services/data_decoder:lib",
     "//services/data_decoder:xml_parser_fuzzer_deps",
   ]
   sources = [

@@ -125,14 +125,15 @@ class BookmarkCodecTest : public testing::Test {
     ASSERT_TRUE(roots);
 
     base::Value* bb_value =
-        roots->FindDictKey(BookmarkCodec::kRootFolderNameKey);
+        roots->FindDictKey(BookmarkCodec::kBookmarkBarFolderNameKey);
     ASSERT_TRUE(bb_value);
 
     base::Value* bb_children_value =
         bb_value->FindListKey(BookmarkCodec::kChildrenKey);
     ASSERT_TRUE(bb_children_value);
 
-    base::Value::ListView bb_children_l_value = bb_children_value->GetList();
+    base::Value::ListView bb_children_l_value =
+        bb_children_value->GetListDeprecated();
     ASSERT_LT(index, bb_children_l_value.size());
 
     base::Value& child_value = bb_children_l_value[index];
@@ -378,7 +379,7 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
       AssertModelsEqual(decoded_model.get(), decoded_model2.get()));
 }
 
-TEST_F(BookmarkCodecTest, CanDecodeModelWithoutMobileBookmarks) {
+TEST_F(BookmarkCodecTest, CannotDecodeModelWithoutMobileBookmarks) {
   base::FilePath test_file =
       GetTestDataDir().AppendASCII("bookmarks/model_without_sync.json");
   ASSERT_TRUE(base::PathExists(test_file));
@@ -390,35 +391,8 @@ TEST_F(BookmarkCodecTest, CanDecodeModelWithoutMobileBookmarks) {
   std::unique_ptr<BookmarkModel> decoded_model(
       TestBookmarkClient::CreateModel());
   BookmarkCodec decoder;
-  ASSERT_TRUE(Decode(&decoder, *root.get(), decoded_model.get(),
-                     /*sync_metadata_str=*/nullptr));
-  ExpectIDsUnique(decoded_model.get());
-
-  const BookmarkNode* bbn = decoded_model->bookmark_bar_node();
-  ASSERT_EQ(1u, bbn->children().size());
-
-  const BookmarkNode* child = bbn->children().front().get();
-  EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(u"Folder A", child->GetTitle());
-  ASSERT_EQ(1u, child->children().size());
-
-  child = child->children().front().get();
-  EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(u"Bookmark Manager", child->GetTitle());
-
-  const BookmarkNode* other = decoded_model->other_node();
-  ASSERT_EQ(1u, other->children().size());
-
-  child = other->children().front().get();
-  EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(u"Folder B", child->GetTitle());
-  ASSERT_EQ(1u, child->children().size());
-
-  child = child->children().front().get();
-  EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(u"Get started with Google Chrome", child->GetTitle());
-
-  ASSERT_TRUE(decoded_model->mobile_node() != nullptr);
+  EXPECT_FALSE(Decode(&decoder, *root.get(), decoded_model.get(),
+                      /*sync_metadata_str=*/nullptr));
 }
 
 TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {

@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -167,8 +167,7 @@ bool WebKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value* dict = local_state->GetDictionary(dictionary_name());
 
-  if (!LoadFromDictionary(base::Value::AsDictionaryValue(*dict),
-                          /* lazy_icon_load= */ true))
+  if (!LoadFromDictionary(*dict, /* lazy_icon_load= */ true))
     return false;
 
   // If the icon was previously downloaded using a different url, do not use
@@ -215,7 +214,7 @@ GURL WebKioskAppData::GetLaunchableUrl() const {
 }
 
 void WebKioskAppData::UpdateFromWebAppInfo(
-    std::unique_ptr<WebApplicationInfo> app_info) {
+    std::unique_ptr<WebAppInstallInfo> app_info) {
   DCHECK(app_info);
   name_ = base::UTF16ToUTF8(app_info->title);
   base::FilePath cache_dir;

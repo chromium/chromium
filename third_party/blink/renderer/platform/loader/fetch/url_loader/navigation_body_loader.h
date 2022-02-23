@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -63,6 +62,9 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   //
   // StartLoadingBody
   //   request code cache
+  //   Note: If the kEarlyBodyLoad feature is enabled, BindURLLoaderAndContinue
+  //   can run in parallel with requesting the code cache. The client will get a
+  //   completion signal for both these events.
   // ContinueWithCodeCache
   //   notify client about cache
   // BindURLLoaderAndContinue
@@ -87,8 +89,8 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
 
   // network::mojom::URLLoaderClient implementation.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;

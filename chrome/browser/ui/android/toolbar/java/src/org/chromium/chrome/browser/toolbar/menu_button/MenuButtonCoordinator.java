@@ -77,7 +77,7 @@ public class MenuButtonCoordinator {
                                          new ShowBadgeProperty(false, false))
                                  .with(MenuButtonProperties.THEME,
                                          new ThemeProperty(themeColorProvider.getTint(),
-                                                 themeColorProvider.useLight()))
+                                                 themeColorProvider.getBrandedColorScheme()))
                                  .with(MenuButtonProperties.IS_VISIBLE, true)
                                  .with(MenuButtonProperties.STATE_SUPPLIER, menuButtonStateSupplier)
                                  .build();
@@ -237,5 +237,10 @@ public class MenuButtonCoordinator {
     public Animator getUrlFocusingAnimator(boolean isFocusingUrl) {
         return mMediator.getUrlFocusingAnimator(isFocusingUrl,
                 mMenuButton != null && mMenuButton.getLayoutDirection() == LAYOUT_DIRECTION_RTL);
+    }
+
+    /** Returns whether the menu button is currently showing an update badge. */
+    public boolean isShowingUpdateBadge() {
+        return mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge;
     }
 }

@@ -75,8 +75,8 @@ The existing owners of a directory approve additions to the list. It is
 preferable to have many directories, each with a smaller number of specific
 owners rather than large directories with many owners. Owners should:
 
-  * Demonstrate excellent judgment, teamwork and ability to uphold Chrome
-    development principles.
+  * Demonstrate excellent judgment, teamwork and ability to uphold
+    [Chromium development principles](contributing.md).
 
   * Be already acting as an owner, providing high-quality reviews and design
     feedback.
@@ -95,16 +95,36 @@ owners rather than large directories with many owners. Owners should:
     discourage people from sending reviews, including writing "slow" or
     "emeritus" after your name.
 
-The above are guidelines more than they are hard rules, and exceptions are
-okay as long as there is a consensus by the existing owners for them.
-For example, seldom-updated directories may have exceptions to the
-"substantiality" and "recency" requirements. Directories in `third_party`
-should list those most familiar with the library, regardless of how often
-the code is updated.
+Seldom-updated directories may have exceptions to the "substantiality" and
+"recency" requirements.
+
+Directories in `//third_party` should list those most familiar with the
+library, regardless of how often the code is updated.
+
+#### Removal of owners
+
+If a code owner is not meeting the [expectations of
+owners](#expectations-of-owners) listed above for more than one quarter (and
+they are not on a leave during that time), then they may be removed by any
+co-owner or an owner from the parent directory after a 4-week notice, using
+the following process:
+
+  * Upload a change removing the owner and copy all owners in that directory,
+    including the owner in question.
+  * If the affected owner approves the change, it may be landed immediately.
+  * Otherwise, the change author must wait five working days for feedback from
+    the other owners.
+    * After that time has elapsed, if the change has received 3 approvals
+      with no objections from anyone else, the change may be landed.
+    * If the directory does not have 4 owners, then the decision should
+      be escalated to the owners of the parent directory (or directories)
+      as necessary to provide enough of votes.
+    * If there are objections, then the decision should be escalated to
+      the [../CHROME_ENG_REVIEW](//CHROME_ENG_REVIEW) for resolution.
 
 ### OWNERS file details
 
-Refer to the [source code](https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/owners.py)
+Refer to the [owners plugin](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/backend-find-owners.md)
 for all details on the file format.
 
 This example indicates that two people are owners, in addition to any owners
@@ -151,42 +171,37 @@ per-file foo.*=a@chromium.org
 per-file readme.txt=*
 ```
 
-Note that `per-file` directives cannot directly specify subdirectories, e.g:
-```
-per-file foo/bar.cc=a@chromium.org
-```
-
-is not OK; instead, place a `per-file` directive in `foo/OWNERS`.
-
 Other `OWNERS` files can be included by reference by listing the path to the
 file with `file://...`. This example indicates that only the people listed in
 `//ipc/SECURITY_OWNERS` can review the messages files:
 ```
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
+
+File globbing is supported using the
+[simple path expression format](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simplePathExpressions)
 ```
 
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
-[sheriffs](sheriffs.md), Release Program Managers, 
-[Large Scale Changes](#large-scale-changes), 
-[Global Approvers](#global-approvals) reviewers, 
-[Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS) 
-have this capability. The power to use Owners-Override should be restricted 
+[sheriffs](sheriffs.md), Release Program Managers,
+[Large Scale Changes](#large-scale-changes),
+[Global Approvers](#global-approvals) reviewers,
+[Chrome Eng Review members](https://chromium.googlesource.com/chromium/src/+/HEAD/ENG_REVIEW_OWNERS)
+have this capability. The power to use Owners-Override should be restricted
 as follows:
 
-  * Active sheriffs can set Owners-Override only on sheriffing CLs (e.g.,
-    revert, reland, test fix).
-  * Release Program Managers can set Owners-Override only on sheriffing CLs and
-    CLs needed for releasing (e.g., cherry-pick).
+  * Active sheriffs and Release Program Managers can set Owners-Override only on
+    CLs needed for sheriffing and releasing (e.g., revert, reland, test fix,
+    cherry-pick).
   * Large Scale Change reviewers can set Owners-Override only on sheriffing CLs
     and CLs about the approved Large Scale Change.
   * Global approvers can set Owners-Override only on sheriffing CLs and
     mechanical CLs associated with their API changes. For example,
     //base/OWNERS can set Owners-Override on mechanical CLs associated with
     //base/ API changes.
-  * Chrome Eng Review members can set Owners-Override on any changes to help 
+  * Chrome Eng Review members can set Owners-Override on any changes to help
     with cases that cannot be handled by the above groups and expedite CLs
     when LSC is too heavyweight.. However, please use one of the above groups
     before asking Chrome Eng Review members.
@@ -195,9 +210,9 @@ When you need Owners-Override on sheriffing CLs, please reach out to the
 Active Sheriffs and Release Program Managers first. If none of them is
 available, please send an email to lsc-owners-override@chromium.org for help.
 
-Note that Owners-Override by itself is not enough on your own CLs. Where this 
-matters is when you are sheriffing. For example, if you want to revert or 
-disable a test, your Owners-Override on the CL is not enough. You need 
+Note that Owners-Override by itself is not enough on your own CLs. Where this
+matters is when you are sheriffing. For example, if you want to revert or
+disable a test, your Owners-Override on the CL is not enough. You need
 another committer to LGTM the CL.
 
 ## Mechanical changes
@@ -208,7 +223,7 @@ and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
 rubberstamp +1s from affected directories' owners. This should only be used for
 mechanical updates to the affected directories.
 
-If you are making one-off CLs that touch many directories and cannot be 
+If you are making one-off CLs that touch many directories and cannot be
 handled by the global approvers, you can ask one of Chrome Eng Review members.
 
 ### Large Scale Changes

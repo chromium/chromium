@@ -34,25 +34,34 @@ PoseFrameData MojoToDevicePoseFrameData(
   return ret;
 }
 
+device_test::mojom::Eye XrEyeToMojoEye(XrEye eye) {
+  switch (eye) {
+    case XrEye::kLeft:
+      return device_test::mojom::Eye::LEFT;
+    case XrEye::kRight:
+      return device_test::mojom::Eye::RIGHT;
+    case XrEye::kNone:
+      return device_test::mojom::Eye::NONE;
+  }
+}
+
 XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
 
-void XRTestHookWrapper::OnFrameSubmitted(SubmittedFrameData frame_data) {
+void XRTestHookWrapper::OnFrameSubmitted(const std::vector<ViewData>& views) {
   if (hook_) {
-    auto submitted = device_test::mojom::SubmittedFrameData::New();
-    submitted->color =
-        device_test::mojom::Color::New(frame_data.color.r, frame_data.color.g,
-                                       frame_data.color.b, frame_data.color.a);
-
-    submitted->image_size =
-        gfx::Size(frame_data.image_width, frame_data.image_height);
-    submitted->eye = frame_data.left_eye ? device_test::mojom::Eye::LEFT
-                                         : device_test::mojom::Eye::RIGHT;
-    submitted->viewport =
-        gfx::Rect(frame_data.viewport.left, frame_data.viewport.right,
-                  frame_data.viewport.top, frame_data.viewport.bottom);
-    hook_->OnFrameSubmitted(std::move(submitted));
+    std::vector<device_test::mojom::ViewDataPtr> submitted_views;
+    for (const ViewData& view : views) {
+      device_test::mojom::ViewDataPtr view_data =
+          device_test::mojom::ViewData::New();
+      view_data->color = device_test::mojom::Color::New(
+          view.color.r, view.color.g, view.color.b, view.color.a);
+      view_data->viewport = view.viewport;
+      view_data->eye = XrEyeToMojoEye(view.eye);
+      submitted_views.push_back(std::move(view_data));
+    }
+    hook_->OnFrameSubmitted(std::move(submitted_views));
   }
 }
 

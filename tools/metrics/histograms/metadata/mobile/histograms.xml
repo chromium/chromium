@@ -51,24 +51,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.AppMenu.SimilarSelection"
-    enum="AppMenuSimilarSelectionType" expires_after="M95">
-  <obsolete>
-    Deprecated as of 03/2021.
-  </obsolete>
-  <owner>gangwu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Android: This metrics is recorded when users made similar selections on app
-    menu within a period of time. ex. a user selected downloading the current
-    page. After 5 seconds, the user opened the app menu again and selected
-    download manager. In this case, we would consider that Download and Download
-    Manager are similar selections.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -81,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -93,8 +77,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.CanonicalURLResult" enum="CanonicalURLResult"
-    expires_after="M87">
+    expires_after="2022-07-11">
   <owner>pkl@chromium.org</owner>
+  <owner>sebsg@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
     The result of the operation to retrieve the page's canonical URL.
@@ -102,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>seblalancette@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -131,6 +116,9 @@ chromium-metrics-reviews@google.com.
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
     <variant name="TabGrid" summary="Tab Grid Entry"/>
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>
+    <variant name="TabGridEdit" summary="Tab Grid Edit"/>
+    <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
+    <variant name="Toolbar" summary="Menu from a toolbar button"/>
     <variant name="WebImage" summary="Image on a Web page"/>
     <variant name="WebImageLink" summary="Image-Link on a Web page"/>
     <variant name="WebLink" summary="Link on a Web page"/>
@@ -199,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Badge.Tapped"
-    enum="MobileMessagesBadgeState" expires_after="2022-05-23">
+    enum="MobileMessagesBadgeState" expires_after="2022-07-24">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -208,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Banner.Dismiss"
-    enum="MobileMessagesBannerDismissType" expires_after="2022-05-23">
+    enum="MobileMessagesBannerDismissType" expires_after="2022-07-24">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -217,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Banner.Event"
-    enum="MobileMessagesBannerEvent" expires_after="2022-05-27">
+    enum="MobileMessagesBannerEvent" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -226,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Banner.OnScreenTime" units="ms"
-    expires_after="2022-05-11">
+    expires_after="2022-07-11">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -237,7 +225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.ConcurrentPresented" units="infobars"
-    expires_after="2022-03-20">
+    expires_after="2022-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -271,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Modal.Event"
-    enum="MobileMessagesModalEvent" expires_after="2022-03-20">
+    enum="MobileMessagesModalEvent" expires_after="2022-07-24">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -280,14 +268,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.OverflowRow.Tapped"
-    enum="MobileMessagesInfobarType" expires_after="2022-03-20">
+    enum="MobileMessagesInfobarType" expires_after="2022-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records a tap on an Infobar overflow menu row.</summary>
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Dismiss"
-    enum="MobileMessagesPasswordsModalDismiss" expires_after="2022-05-01">
+    enum="MobileMessagesPasswordsModalDismiss" expires_after="2022-07-03">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -296,7 +284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Event"
-    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-03-20">
+    enum="MobileMessagesPasswordsModalEvent" expires_after="2022-07-31">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -305,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Mobile.Messages.Passwords.Modal.Present"
-    enum="MobileMessagesPasswordsModalPresent" expires_after="2022-03-20">
+    enum="MobileMessagesPasswordsModalPresent" expires_after="2022-07-20">
 <!-- Name completed by histogram_suffixes name="Mobile.Messages.Password.Type" -->
 
   <owner>sczs@chromium.org</owner>
@@ -314,14 +302,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Save.Card.Modal.Event"
-    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-03-20">
+    enum="MobileMessagesSaveCardModalEvent" expires_after="2022-06-26">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>Records Save Card specific Infobar Modal events.</summary>
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Banner.Event"
-    enum="MobileMessagesTranslateBannerEvent" expires_after="2022-03-20">
+    enum="MobileMessagesTranslateBannerEvent" expires_after="2022-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -331,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Event"
-    enum="MobileMessagesTranslateModalEvent" expires_after="2022-03-20">
+    enum="MobileMessagesTranslateModalEvent" expires_after="2022-08-07">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -341,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Messages.Translate.Modal.Present"
-    enum="MobileMessagesTranslateModalPresent" expires_after="2022-03-20">
+    enum="MobileMessagesTranslateModalPresent" expires_after="2022-07-20">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -361,7 +349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Share.EntryPoints" enum="IOSActivityScenario"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>seblalancette@chromium.org</owner>
   <owner>chrome-sharing-core@google.com</owner>
   <summary>
@@ -518,20 +506,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.NotifyFailure"
-    enum="SystemNotificationType" expires_after="2021-10-31">
-  <obsolete>
-    Deprecated 10/2021
-  </obsolete>
-  <owner>knollr@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    Android: Represents the number of system notifications failed to be notified
-    by Android NotificationManager API. Recorded when the notification is shown
-    on Android.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.SystemNotification.Shown" enum="SystemNotificationType"
     expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
@@ -545,27 +519,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.Translate.Unused.Count" units="units"
-    expires_after="2022-03-20">
+    expires_after="2022-07-31">
   <owner>sczs@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
     Records a histogram for an infobar (both legacy and Messages) that the user
     did not interact with throughout its lifetime.
-  </summary>
-</histogram>
-
-<histogram name="MobileDownload.Background"
-    enum="MobileDownloadBackgroundDownloadEvent" expires_after="2020-10-11">
-  <obsolete>
-    Removed 2020-10.
-  </obsolete>
-  <owner>hnakashima@chromium.org</owner>
-  <owner>hanxi@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Android: Records events for downloads started from the background, that is,
-    while the browser process is not running. Used to measure completion rate of
-    these downloads.
   </summary>
 </histogram>
 
@@ -590,7 +549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.DownloadLaterPromptStatus"
-    enum="DownloadLaterPromptStatus" expires_after="2022-02-06">
+    enum="DownloadLaterPromptStatus" expires_after="2023-02-06">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -600,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.DownloadPromptStatus"
-    enum="DownloadPromptStatus" expires_after="2022-02-16">
+    enum="DownloadPromptStatus" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -631,21 +590,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Suggestion.Events"
-    enum="DownloadLocationSuggestionEvent" expires_after="2022-02-16">
+    enum="DownloadLocationSuggestionEvent" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion event.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.SuggestionSelected"
-    enum="BooleanSelected" expires_after="2022-02-16">
+    enum="BooleanSelected" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion choice.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Type"
-    enum="DownloadLocationDialogType" expires_after="2022-02-16">
+    enum="DownloadLocationDialogType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -655,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
@@ -667,14 +626,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.Download.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the directory type when download is completed.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Setting.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -720,26 +679,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Deprecated and replaced with MobileFre.CctTos.EnterprisePolicyCheckSpeed2.*.
-    as of 11/2020. The starting time of this metrics is changed to when the
-    fragment attached to the FirstRunActivity.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from object initialization to the
-    enterprise policy check completing. This check is often skipped when its
-    result becomes irrelevant. Histogram has suffixes depending if the timing
-    was faster or slower than inflation.
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
-</histogram>
-
-<histogram
     name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed2{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2022-05-01">
   <owner>skym@chromium.org</owner>
@@ -748,25 +687,6 @@ chromium-metrics-reviews@google.com.
     Android: Records the time it takes from ToS fragment attached to the
     activity to the device ownership check completing.
     {MobileFreInflationSpeedComparison}
-  </summary>
-  <token key="MobileFreInflationSpeedComparison"
-      variants="MobileFreInflationSpeedComparison"/>
-</histogram>
-
-<histogram
-    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Deprecated and replaced with MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.*. as
-    of 11/2020. The starting time of this metrics is changed to when the
-    fragment attached to the FirstRunActivity.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: Records the time it takes from object initialization to the device
-    ownership check completing. Histogram has suffixes depending if the timing
-    was faster or slower than inflation.
   </summary>
   <token key="MobileFreInflationSpeedComparison"
       variants="MobileFreInflationSpeedComparison"/>
@@ -782,7 +702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.ChildAccountStatusDuration" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -792,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="MobileFre.FragmentInflationSpeed" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -805,7 +725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="MobileFre.FromLaunch" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -854,36 +774,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.NativeInitialized" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
     Android: The amount of time spent between FRE started and native
     initialization. Recorded when native is fully initialized.
   </summary>
-</histogram>
-
-<histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}"
-    units="ms" expires_after="2022-05-01">
-  <obsolete>
-    Replaced by MobileFre.PolicyServiceInitDelayAfterNative.*2 due to bug fix as
-    of 05/2021. See https://crbug.com/1208942.
-  </obsolete>
-  <owner>skym@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Android: The amount of time spent between native initialized and the
-    decision &quot;whether we need to wait to load policy service from
-    native&quot; has been made. The decision is made when no on-device policy is
-    found, or policy service is fully initialized. If the decision has been made
-    before native initialization, SystemClock#elapsedRealTime was recorded, in
-    which does not provide much useful information. Recorded during FRE only,
-    when on-device policy is {PolicyPresence}
-  </summary>
-  <token key="PolicyPresence">
-    <variant name=".WithoutPolicy" summary="not presented."/>
-    <variant name=".WithPolicy" summary="presented."/>
-  </token>
 </histogram>
 
 <histogram name="MobileFre.PolicyServiceInitDelayAfterNative{PolicyPresence}2"
@@ -905,7 +802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>bsazonov@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
@@ -1014,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileIntent.FirstPartyToInternalScheme" enum="Boolean"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1061,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileOmnibox.PressedClipboardSuggestionAge" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-08-07">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -1077,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-08-07">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1087,7 +984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-06-05">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1099,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.BookmarkManager.ImpressionsTilXButton"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-06-05">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1109,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.NTPContentSuggestions.ImpressionsTilXButton"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-08-07">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1120,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-08-14">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1130,7 +1027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-06-05">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1142,7 +1039,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilXButton"
-    units="impressions" expires_after="2022-04-01">
+    units="impressions" expires_after="2022-06-05">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1152,7 +1049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.DailyLaunchCount" units="units"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1184,24 +1081,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileStartup.Experimental.LaunchCause" enum="LaunchCause"
-    expires_after="2022-01-07">
-  <obsolete>
-    Removed Experimental label in 02/2021.
-  </obsolete>
-  <owner>mthiesse@chromium.org</owner>
-  <owner>tedchoc@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records what caused Chrome to be launched.
-
-    Recorded for all types of ChromeActivity, in all cases where Chrome becomes
-    visible to the user.
-  </summary>
-</histogram>
-
 <histogram name="MobileStartup.IntentToCreationTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1213,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1226,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.LaunchType" enum="LaunchType"
-    expires_after="2022-04-03">
+    expires_after="2022-08-07">
   <owner>tedchoc@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

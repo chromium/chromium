@@ -7,10 +7,11 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -142,8 +144,8 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
     net::URLRequest* request,
     const std::vector<std::string>& additional_headers) {
   std::string signed_headers_header;
-  ignore_result(request->extra_request_headers().GetHeader(
-      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header));
+  std::ignore = request->extra_request_headers().GetHeader(
+      kTrustTokensRequestHeaderSignedHeaders, &signed_headers_header);
 
   // Because of the characteristics of the protocol, there are expected to be
   // roughly 2-5 total headers to sign.

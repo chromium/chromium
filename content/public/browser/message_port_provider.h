@@ -8,18 +8,17 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #endif
 
@@ -43,7 +42,7 @@ class CONTENT_EXPORT MessagePortProvider {
                                  const std::u16string& target_origin,
                                  const std::u16string& data);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static void PostMessageToFrame(
       Page& page,
       JNIEnv* env,
@@ -51,9 +50,9 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::android::JavaParamRef<jstring>& target_origin,
       const base::android::JavaParamRef<jstring>& data,
       const base::android::JavaParamRef<jobjectArray>& ports);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       Page& page,
@@ -61,7 +60,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const absl::optional<std::u16string>& target_origin,
       const std::u16string& data,
       std::vector<blink::WebMessagePort> ports);
-#endif  // OS_FUCHSIA || BUILDFLAG(IS_CHROMECAST)
+#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMECAST)
 };
 
 }  // namespace content

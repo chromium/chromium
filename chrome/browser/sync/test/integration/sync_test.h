@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/extensions/install_verifier.h"
@@ -79,9 +79,9 @@ class SyncServiceImpl;
 
 namespace switches {
 
-extern const char kPasswordFileForTest[];
-extern const char kSyncUserForTest[];
-extern const char kSyncPasswordForTest[];
+inline constexpr char kPasswordFileForTest[] = "password-file-for-test";
+inline constexpr char kSyncUserForTest[] = "sync-user-for-test";
+inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 
 }  // namespace switches
 
@@ -91,7 +91,7 @@ extern const char kSyncPasswordForTest[];
 //
 // The list below shows some command line switches that can customize test
 // behavior. It may become non-exaustive over time.
-// switches::kSyncServiceURL - By default, tests use a fake_server::FakeServer
+// syncer::kSyncServiceURL - By default, tests use a fake_server::FakeServer
 //    to emulate the sync server. This switch causes them to run against an
 //    external server instead, pointed by the provided URL. This translates into
 //    the ServerType of the test being EXTERNAL_LIVE_SERVER.
@@ -182,7 +182,7 @@ class SyncTest : public PlatformBrowserTest {
     bool ExistsInstanceID(const std::string& app_id) const override;
 
    private:
-    gcm::GCMDriver* gcm_driver_;
+    raw_ptr<gcm::GCMDriver> gcm_driver_;
     std::map<std::string, std::unique_ptr<FakeInstanceID>> fake_instance_ids_;
   };
 
@@ -214,7 +214,7 @@ class SyncTest : public PlatformBrowserTest {
   // owns the objects and manages its lifetime.
   std::vector<Profile*> GetAllProfiles();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
   // and manages its lifetime. The called browser must not be closed before.
   Browser* GetBrowser(int index);
@@ -258,10 +258,10 @@ class SyncTest : public PlatformBrowserTest {
   virtual bool UseVerifier();
 
   // Initializes sync clients and profiles but does not sync any of them.
-  virtual bool SetupClients() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetupClients();
 
   // Initializes sync clients and profiles if required and syncs each of them.
-  virtual bool SetupSync() WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool SetupSync();
 
   // This is similar to click the reset button on chrome.google.com/sync.
   // Only takes effect when running with external servers.
@@ -402,7 +402,7 @@ class SyncTest : public PlatformBrowserTest {
       std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
       content::BrowserContext* context);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Called when the |browser| was removed externally. This just marks the
   // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
   // and |profiles_| in sync. It is used when the |browser| is removed within a
@@ -475,7 +475,7 @@ class SyncTest : public PlatformBrowserTest {
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the
   // .cc file.
-  Profile* previous_profile_;
+  raw_ptr<Profile> previous_profile_;
 
   // Number of sync clients that will be created by a test.
   int num_clients_;
@@ -489,7 +489,7 @@ class SyncTest : public PlatformBrowserTest {
   // completed, used for two-client tests with external server.
   std::vector<std::unique_ptr<base::ScopedTempDir>> scoped_temp_dirs_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Collection of pointers to the browser objects used by a test. One browser
   // instance is created for each sync profile. Browser object lifetime is
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
@@ -533,7 +533,7 @@ class SyncTest : public PlatformBrowserTest {
   // We don't need a corresponding verifier sync client because the contents
   // of the verifier profile are strictly local, and are not meant to be
   // synced.
-  Profile* verifier_;
+  raw_ptr<Profile> verifier_;
 
   // Indicates whether to use a new user data dir.
   // Only used for external server tests with two clients.
@@ -542,7 +542,7 @@ class SyncTest : public PlatformBrowserTest {
   // The feature list to override features for all sync tests.
   base::test::ScopedFeatureList feature_list_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Disable extension install verification.
   extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
 #endif

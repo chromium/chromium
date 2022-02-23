@@ -22,12 +22,11 @@ const int kTimeoutMilliseconds = 10000;
 const int kMaxResponseBytes = 65536;
 const int kMaxFetchesPerCert = 5;
 
-bool ParseCertFromDer(const uint8_t* data,
-                      size_t length,
+bool ParseCertFromDer(base::span<const uint8_t> data,
                       ParsedCertificateList* results) {
   CertErrors errors;
   if (!ParsedCertificate::CreateAndAddToVector(
-          x509_util::CreateCryptoBuffer(data, length),
+          x509_util::CreateCryptoBuffer(data),
           x509_util::DefaultParseCertificateOptions(), results, &errors)) {
     // TODO(crbug.com/634443): propagate error info.
     // TODO(mattm): this creates misleading log spam if one of the other Parse*
@@ -77,9 +76,8 @@ bool ParseCertFromPem(const uint8_t* data,
   if (!pem_tokenizer.GetNext())
     return false;
 
-  return ParseCertFromDer(
-      reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-      pem_tokenizer.data().size(), results);
+  return ParseCertFromDer(base::as_bytes(base::make_span(pem_tokenizer.data())),
+                          results);
 }
 
 class AiaRequest : public CertIssuerSource::Request {
@@ -145,8 +143,7 @@ bool AiaRequest::AddCompletedFetchToResults(Error error,
 
   // TODO(https://crbug.com/870359): Some AIA responses are served as PEM, which
   // is not part of RFC 5280's profile.
-  return ParseCertFromDer(fetched_bytes.data(), fetched_bytes.size(),
-                          results) ||
+  return ParseCertFromDer(fetched_bytes, results) ||
          ParseCertsFromCms(fetched_bytes, results) ||
          ParseCertFromPem(fetched_bytes.data(), fetched_bytes.size(), results);
 }

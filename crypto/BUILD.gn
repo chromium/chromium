@@ -2,9 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/crypto.gni")
+import("//crypto/features.gni")
 import("//testing/test.gni")
+
+buildflag_header("buildflags") {
+  header = "crypto_buildflags.h"
+  flags = [ "USE_NSS_CERTS=$use_nss_certs" ]
+}
 
 component("crypto") {
   output_name = "crcrypto"  # Avoid colliding with OpenSSL's libcrypto.
@@ -56,7 +62,10 @@ component("crypto") {
     "//base/third_party/dynamic_annotations",
   ]
 
-  public_deps = [ "//third_party/boringssl" ]
+  public_deps = [
+    ":buildflags",
+    "//third_party/boringssl",
+  ]
 
   if (is_apple) {
     sources += [
@@ -70,7 +79,7 @@ component("crypto") {
 
     if (is_mac) {
       sources += [
-        "apple_keychain_mac.mm",
+        "apple_keychain_mac.cc",
 
         # TODO(brettw): these mocks should be moved to a test_support_crypto
         # target if possible.
@@ -203,15 +212,19 @@ static_library("test_support") {
   ]
 }
 
-# This is a meta-target that forwards to NSS's SSL library or OpenSSL,
-# according to the state of the crypto flags. A target just wanting to depend
-# on the current SSL library should just depend on this.
+# This target historically abstracted between different cryptography and TLS
+# libraries. Now we always use //third_party/boringssl for cryptography and TLS.
+# On Linux and Chrome OS, we additionally use //build/config/linux/nss for some
+# certificate-related platform integration points. Depend on one or both of the
+# individual targets instead of this one.
+#
+# TODO(https://crbug.com/1275165): Remove this target.
 group("platform") {
   public_deps = [ "//third_party/boringssl" ]
 
   # Link in NSS if it is used for the platform certificate library
   # (use_nss_certs).
   if (use_nss_certs) {
-    public_configs = [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
+    public_configs = [ "//build/config/linux/nss" ]
   }
 }

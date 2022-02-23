@@ -12,6 +12,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util.h"
 #include "chrome/updater/win/test/test_initializer.h"
 #include "chrome/updater/win/test/test_strings.h"
 
@@ -19,9 +22,17 @@ int main(int, char**) {
   bool success = base::CommandLine::Init(0, nullptr);
   DCHECK(success);
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (command_line->HasSwitch(updater::kEnableLoggingSwitch)) {
+    InitLogging(command_line->HasSwitch(updater::kSystemSwitch)
+                    ? updater::UpdaterScope::kSystem
+                    : updater::UpdaterScope::kUser,
+                FILE_PATH_LITERAL("updater.log"));
+  }
+
   updater::NotifyInitializationDoneForTesting();
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(updater::kTestSleepMinutesSwitch)) {
     std::string value =
         command_line->GetSwitchValueASCII(updater::kTestSleepMinutesSwitch);

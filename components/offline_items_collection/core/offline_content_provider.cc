@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/offline_items_collection/core/offline_content_provider.h"
+#include "base/observer_list.h"
 
 namespace offline_items_collection {
 

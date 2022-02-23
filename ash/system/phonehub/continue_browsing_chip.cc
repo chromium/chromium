@@ -41,10 +41,10 @@ constexpr int kTitleMaxLines = 2;
 }  // namespace
 
 ContinueBrowsingChip::ContinueBrowsingChip(
-    const chromeos::phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
+    const phonehub::BrowserTabsModel::BrowserTabMetadata& metadata,
     int index,
     size_t total_count,
-    chromeos::phonehub::UserActionRecorder* user_action_recorder)
+    phonehub::UserActionRecorder* user_action_recorder)
     : views::Button(base::BindRepeating(&ContinueBrowsingChip::ButtonPressed,
                                         base::Unretained(this))),
       url_(metadata.url),
@@ -141,8 +141,8 @@ void ContinueBrowsingChip::ButtonPressed() {
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
   user_action_recorder_->RecordBrowserTabOpened();
 
-  NewWindowDelegate::GetInstance()->OpenUrl(url_,
-                                            /*from_user_interaction=*/true);
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 
   // Close Phone Hub bubble in current display.
   views::Widget* const widget = GetWidget();

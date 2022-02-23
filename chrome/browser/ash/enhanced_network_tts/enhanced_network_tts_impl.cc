@@ -98,7 +98,7 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
   std::vector<uint16_t> text_breaks =
       FindTextBreaks(utterance_u16string, char_limit_per_request_);
   uint16_t text_piece_start_index = 0;
-  for (int i = 0; i < text_breaks.size(); i++) {
+  for (size_t i = 0; i < text_breaks.size(); i++) {
     uint16_t text_piece_end_index = text_breaks[i];
     auto size = text_piece_end_index - text_piece_start_index + 1;
     const std::string text_piece = base::UTF16ToUTF8(
@@ -125,17 +125,6 @@ void EnhancedNetworkTtsImpl::GetAudioData(mojom::TtsRequestPtr request,
 
 void EnhancedNetworkTtsImpl::SetCharLimitPerRequestForTesting(int limit) {
   char_limit_per_request_ = limit;
-}
-
-data_decoder::mojom::JsonParser* EnhancedNetworkTtsImpl::GetJsonParser() {
-  // TODO(crbug.com/1217301): Sets an explicit disconnect handler.
-  if (!json_parser_) {
-    data_decoder_.GetService()->BindJsonParser(
-        json_parser_.BindNewPipeAndPassReceiver());
-    json_parser_.reset_on_disconnect();
-  }
-
-  return json_parser_.get();
 }
 
 std::unique_ptr<network::SimpleURLLoader>
@@ -196,7 +185,7 @@ void EnhancedNetworkTtsImpl::OnServerResponseReceived(
   }
 
   // Send the JSON string to a dedicated service for safe parsing.
-  GetJsonParser()->Parse(
+  data_decoder_.ParseJson(
       *json_response,
       base::BindOnce(&EnhancedNetworkTtsImpl::OnResponseJsonParsed,
                      weak_factory_.GetWeakPtr(), start_index, is_last_request));
@@ -205,19 +194,18 @@ void EnhancedNetworkTtsImpl::OnServerResponseReceived(
 void EnhancedNetworkTtsImpl::OnResponseJsonParsed(
     const int start_index,
     const bool is_last_request,
-    const absl::optional<base::Value> json_data,
-    const absl::optional<std::string>& error) {
-  const bool success = json_data.has_value() && !error.has_value();
+    data_decoder::DataDecoder::ValueOrError result) {
   // Extract results for the request.
-  if (success) {
-    SendResponse(UnpackJsonResponse(*json_data, start_index, is_last_request));
+  if (result.value) {
+    SendResponse(
+        UnpackJsonResponse(*result.value, start_index, is_last_request));
     // Only start the next request after finishing the current one. This method
     // will also reset the internal state if there is no more request.
     ProcessNextServerRequest();
   } else {
     ResetAndSendErrorResponse(mojom::TtsRequestError::kReceivedUnexpectedData);
     DVLOG(1) << "Parsing server response JSON failed with error: "
-             << error.value_or("No reason reported.");
+             << result.error.value_or("No reason reported.");
   }
 }
 

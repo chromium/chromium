@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/web/web_ax_object.h"
 
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -470,7 +469,7 @@ WebString WebAXObject::ImageDataUrl(const gfx::Size& max_size) const {
   if (IsDetached())
     return WebString();
 
-  return private_->ImageDataUrl(IntSize(max_size));
+  return private_->ImageDataUrl(max_size);
 }
 
 ax::mojom::InvalidState WebAXObject::InvalidState() const {
@@ -532,7 +531,8 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
   if (hit)
     return WebAXObject(hit);
 
-  if (private_->GetBoundsInFrameCoordinates().Contains(contents_point))
+  if (private_->GetBoundsInFrameCoordinates().Contains(
+          LayoutPoint(contents_point)))
     return *this;
 
   return WebAXObject();
@@ -540,7 +540,7 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
 gfx::Rect WebAXObject::GetBoundsInFrameCoordinates() const {
   LayoutRect rect = private_->GetBoundsInFrameCoordinates();
-  return ToGfxRect(EnclosingIntRect(rect));
+  return ToEnclosingRect(rect);
 }
 
 WebString WebAXObject::KeyboardShortcut() const {
@@ -1177,7 +1177,7 @@ void WebAXObject::Dropeffects(
 
 void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
                                     gfx::RectF& bounds_in_container,
-                                    skia::Matrix44& container_transform,
+                                    gfx::Transform& container_transform,
                                     bool* clips_children) const {
   if (IsDetached())
     return;
@@ -1187,11 +1187,11 @@ void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
 #endif
 
   AXObject* container = nullptr;
-  FloatRect bounds;
+  gfx::RectF bounds;
   private_->GetRelativeBounds(&container, bounds, container_transform,
                               clips_children);
   offset_container = WebAXObject(container);
-  bounds_in_container = ToGfxRectF(bounds);
+  bounds_in_container = bounds;
 }
 
 void WebAXObject::GetAllObjectsWithChangedBounds(
@@ -1246,7 +1246,7 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
   blink::mojom::blink::ScrollAlignment blink_vertical_scroll_alignment = {
       visible_vertical_behavior, vertical_behavior, vertical_behavior};
   return private_->RequestScrollToMakeVisibleWithSubFocusAction(
-      IntRect(subfocus), blink_horizontal_scroll_alignment,
+      subfocus, blink_horizontal_scroll_alignment,
       blink_vertical_scroll_alignment);
 }
 
@@ -1375,8 +1375,7 @@ void WebAXObject::UpdateLayout(const WebDocument& web_document) {
   if (!document || !document->View() || !document->ExistingAXObjectCache())
     return;
   if (document->NeedsLayoutTreeUpdate() || document->View()->NeedsLayout() ||
-      document->Lifecycle().GetState() <
-          DocumentLifecycle::kCompositingAssignmentsClean ||
+      document->Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean ||
       document->ExistingAXObjectCache()->IsDirty()) {
     document->View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kAccessibility);

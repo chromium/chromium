@@ -47,16 +47,16 @@ class ExtensionOverrideTest : public ExtensionApiTest {
 
   bool CheckHistoryOverridesContainsNoDupes() {
     // There should be no duplicate entries in the preferences.
-    const base::DictionaryValue* overrides =
+    const base::Value* overrides =
         browser()->profile()->GetPrefs()->GetDictionary(
             ExtensionWebUI::kExtensionURLOverrides);
 
-    const base::ListValue* values = nullptr;
-    if (!overrides->GetList("history", &values))
+    const base::Value* values = overrides->FindListKey("history");
+    if (!values)
       return false;
 
     std::set<std::string> seen_overrides;
-    for (const auto& val : values->GetList()) {
+    for (const auto& val : values->GetListDeprecated()) {
       const base::DictionaryValue* dict = nullptr;
       std::string entry;
       if (!val.GetAsDictionary(&dict) || !dict->GetString("entry", &entry) ||
@@ -263,13 +263,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
 // on that page does not steal the focus away by focusing the omnibox.
 // See https://crbug.com/700124.
 // Flaky, http://crbug.com/1269169.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
   DISABLED_SubframeNavigationInOverridenNTPDoesNotAffectFocus
 #else
 #define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
   SubframeNavigationInOverridenNTPDoesNotAffectFocus
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(
     ExtensionOverrideTest,
     MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus) {
@@ -304,11 +304,11 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Times out consistently on Win, http://crbug.com/45173.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OverrideHistory DISABLED_OverrideHistory
 #else
 #define MAYBE_OverrideHistory OverrideHistory
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, MAYBE_OverrideHistory) {
   ASSERT_TRUE(RunExtensionTest("override/history")) << message_;
@@ -349,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
   base::Value list(base::Value::Type::LIST);
   for (size_t i = 0; i < 3; ++i) {
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetString("entry", "http://www.google.com/");
-    dict->SetBoolean("active", true);
+    dict->SetStringKey("entry", "http://www.google.com/");
+    dict->SetBoolKey("active", true);
     list.Append(std::move(*dict));
   }
 

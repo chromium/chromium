@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
@@ -43,8 +44,14 @@ LoginDisplayMojo::~LoginDisplayMojo() {
 
 void LoginDisplayMojo::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
-      account_id, base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
-                                 weak_factory_.GetWeakPtr(), account_id));
+      // Currently if PIN is cryptohome-based, PinCanAuthenticate always return
+      // true if there's a set up PIN, even if the quick unlock policy disables
+      // it. And if PIN is pref-based it always returns false regardless of the
+      // policy because pref-based PIN doesn't have capability to decrypt the
+      // user's cryptohome. So just pass an arbitrary purpose here.
+      account_id, quick_unlock::Purpose::kAny,
+      base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
+                     weak_factory_.GetWeakPtr(), account_id));
 }
 
 void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
@@ -55,12 +62,8 @@ void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
       account_id, enable_challenge_response);
 }
 
-void LoginDisplayMojo::ClearAndEnablePassword() {}
-
 void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
-                            bool show_guest,
-                            bool show_users,
-                            bool show_new_user) {
+                            bool show_guest) {
   host_->SetUserCount(filtered_users.size());
   auto* client = LoginScreenClientImpl::Get();
 
@@ -126,20 +129,11 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   }
 }
 
-void LoginDisplayMojo::OnPreferencesChanged() {
-  if (webui_handler_)
-    webui_handler_->OnPreferencesChanged();
-}
-
 void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   // OOBE UI is null iff we display the user adding screen.
   if (is_enabled && host_->GetOobeUI() != nullptr) {
     host_->GetOobeUI()->ShowOobeUI(false);
   }
-}
-
-void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
-  host_->ShowAllowlistCheckFailedError();
 }
 
 void LoginDisplayMojo::Login(const UserContext& user_context,
@@ -154,31 +148,12 @@ bool LoginDisplayMojo::IsSigninInProgress() const {
   return false;
 }
 
-void LoginDisplayMojo::OnSigninScreenReady() {
-  if (delegate_)
-    delegate_->OnSigninScreenReady();
-}
-
 void LoginDisplayMojo::ShowEnterpriseEnrollmentScreen() {
   NOTIMPLEMENTED();
 }
 
 void LoginDisplayMojo::ShowKioskAutolaunchScreen() {
   NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::ShowWrongHWIDScreen() {
-  NOTIMPLEMENTED();
-}
-
-void LoginDisplayMojo::SetWebUIHandler(
-    LoginDisplayWebUIHandler* webui_handler) {
-  webui_handler_ = webui_handler;
-}
-
-bool LoginDisplayMojo::AllowNewUserChanged() const {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 bool LoginDisplayMojo::IsUserSigninCompleted() const {

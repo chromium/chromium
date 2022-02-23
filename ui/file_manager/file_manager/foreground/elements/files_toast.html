@@ -4,7 +4,8 @@
   -->
 <style>
   .container {
-    --cr-toast-background: var(--google-grey-900-white-4-percent);
+    --cr-toast-background: var(--cros-bg-color-elevation-2-inverted);
+    box-shadow: var(--cros-elevation-2-shadow);
     justify-content: space-between;
     max-width: 336px;
     min-height: 48px;
@@ -25,6 +26,7 @@
   .text {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+    --cr-toast-text-color: var(--cros-toast-text-color);
     display: -webkit-box;
     line-height: 20px;
     margin: 14px 16px;
@@ -32,7 +34,19 @@
   }
 
   .action {
+    --cr-toast-button-color: var(--cros-toast-button-color);
+    --ink-color: var(--cros-toast-button-color);
+    --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
     margin: 0 8px !important;
+  }
+
+  .action:active {
+    box-shadow: none;
+  }
+
+  :host-context(.focus-outline-visible) .action:focus {
+    --focus-shadow-color: none;
+    outline: 2px solid var(--cros-toast-button-color);
   }
 </style>
 <cr-toast class="container" id="container" duration="5000">

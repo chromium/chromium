@@ -172,7 +172,7 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
   // Note: at the moment, this method is valid for MMAP buffers only. It will
   // return nullptr for any other buffer type.
-  scoped_refptr<VideoFrame> GetVideoFrame() WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<VideoFrame> GetVideoFrame();
 
   // Return the V4L2 buffer ID of the underlying buffer.
   // TODO(acourbot) This is used for legacy clients but should be ultimately
@@ -253,7 +253,7 @@ class MEDIA_GPU_EXPORT V4L2ReadableBuffer
   // V4L2ReadableBufferRef if both references point to the same V4L2 buffer.
   // Note: at the moment, this method is valid for MMAP buffers only. It will
   // return nullptr for any other buffer type.
-  scoped_refptr<VideoFrame> GetVideoFrame() WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<VideoFrame> GetVideoFrame();
 
  private:
   friend class V4L2BufferRefFactory;
@@ -312,19 +312,15 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // format is returned. It is guaranteed to feature the specified |fourcc|,
   // but any other parameter (including |size| and |buffer_size| may have been
   // adjusted by the driver, so the caller must check their values.
-  absl::optional<struct v4l2_format> SetFormat(uint32_t fourcc,
-                                               const gfx::Size& size,
-                                               size_t buffer_size)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<struct v4l2_format>
+  SetFormat(uint32_t fourcc, const gfx::Size& size, size_t buffer_size);
 
   // Identical to |SetFormat|, but does not actually apply the format, and can
   // be called anytime.
   // Returns an adjusted V4L2 format if |fourcc| is supported by the queue, or
   // |nullopt| if |fourcc| is not supported or an ioctl error happened.
-  absl::optional<struct v4l2_format> TryFormat(uint32_t fourcc,
-                                               const gfx::Size& size,
-                                               size_t buffer_size)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] absl::optional<struct v4l2_format>
+  TryFormat(uint32_t fourcc, const gfx::Size& size, size_t buffer_size);
 
   // Returns the currently set format on the queue. The result is returned as
   // a std::pair where the first member is the format, or absl::nullopt if the
@@ -355,8 +351,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // callers must always check the return value.
   //
   // Calling this method while buffers are still allocated results in an error.
-  size_t AllocateBuffers(size_t count,
-                         enum v4l2_memory memory) WARN_UNUSED_RESULT;
+  [[nodiscard]] size_t AllocateBuffers(size_t count, enum v4l2_memory memory);
 
   // Deallocate all buffers previously allocated by |AllocateBuffers|. Any
   // references to buffers previously allocated held by the client must be
@@ -648,6 +643,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return true on success.
   // The device will be closed in the destructor.
   virtual bool Open(Type type, uint32_t v4l2_pixfmt) = 0;
+
+  // Returns the driver name.
+  std::string GetDriverName();
 
   // Returns the V4L2Queue corresponding to the requested |type|, or nullptr
   // if the requested queue type is not supported.

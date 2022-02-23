@@ -17,13 +17,15 @@ import './shared_style.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserService} from './browser_service.js';
+import {BrowserServiceImpl} from './browser_service.js';
 import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
 import {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
 import {Page, TABBED_PAGES} from './router.js';
+import {getTemplate} from './side_bar.html.js';
 
 export type FooterInfo = {
   managed: boolean,
@@ -33,7 +35,11 @@ export type FooterInfo = {
 export interface HistorySideBarElement {
   $: {
     'cbd-ripple': PaperRippleElement,
+    'history': HTMLAnchorElement,
+    'menu': IronSelectorElement,
     'thc-ripple': PaperRippleElement,
+    'toggle-history-clusters': HTMLElement,
+    'syncedTabs': HTMLElement,
   };
 }
 
@@ -43,7 +49,7 @@ export class HistorySideBarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -133,7 +139,7 @@ export class HistorySideBarElement extends PolymerElement {
    * Relocates the user to the clear browsing data section of the settings page.
    */
   private onClearBrowsingDataTap_(e: Event) {
-    const browserService = BrowserService.getInstance();
+    const browserService = BrowserServiceImpl.getInstance();
     browserService.recordAction('InitClearBrowsingData');
     browserService.openClearBrowsingData();
     this.$['cbd-ripple'].upAction();
@@ -223,6 +229,12 @@ export class HistorySideBarElement extends PolymerElement {
   private computeShowToggleHistoryClusters_(): boolean {
     return this.historyClustersEnabled &&
         !this.historyClustersVisibleManagedByPolicy_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-side-bar': HistorySideBarElement;
   }
 }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {fakeNetworks} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setNetworkConfigServiceForTesting, setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -42,7 +43,7 @@ export function onboardingNetworkPageTest() {
   /**
    * @return {!Promise}
    */
-  function initializeChooseDestinationPage() {
+  function initializeOnboardingNetworkPage() {
     assertFalse(!!component);
 
     component = /** @type {!OnboardingNetworkPage} */ (
@@ -70,7 +71,7 @@ export function onboardingNetworkPageTest() {
   }
 
   test('ComponentRenders', async () => {
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
     assertTrue(!!component);
 
     const networkList = component.shadowRoot.querySelector('#networkList');
@@ -80,7 +81,7 @@ export function onboardingNetworkPageTest() {
 
   test('PopulatesNetworkList', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const networkList = component.shadowRoot.querySelector('#networkList');
     assertTrue(!!networkList);
@@ -90,7 +91,7 @@ export function onboardingNetworkPageTest() {
 
   test('NetworkSelectionDialog', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const networkList = component.shadowRoot.querySelector('#networkList');
     component.onNetworkSelected_({detail: networkList.networks[1]});
@@ -107,7 +108,7 @@ export function onboardingNetworkPageTest() {
 
   test('DialogConnectButtonBindsToDialog', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
     await openNetworkConfigDialog();
 
     const connectButton = /** @type {!CrDialogElement} */ (
@@ -123,7 +124,7 @@ export function onboardingNetworkPageTest() {
 
   test('DialogCloses', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
-    await initializeChooseDestinationPage();
+    await initializeOnboardingNetworkPage();
 
     const dialog = /** @type {!CrDialogElement} */ (
         component.shadowRoot.querySelector('#dialog'));
@@ -139,5 +140,39 @@ export function onboardingNetworkPageTest() {
     await flushTasks();
 
     assertFalse(dialog.open);
+  });
+
+  test('SetSkipButtonWhenNotConnected', async () => {
+    networkConfigService.addNetworksForTest(fakeNetworks);
+
+    component = /** @type {!OnboardingNetworkPage} */ (
+        document.createElement('onboarding-network-page'));
+    let buttonLabelKey;
+    component.addEventListener('set-next-button-label', (e) => {
+      buttonLabelKey = e.detail;
+    });
+
+    document.body.appendChild(component);
+    await flushTasks();
+    assertEquals('skipButtonLabel', buttonLabelKey);
+
+    const ethernetConnected = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kEthernet, 'ethernet');
+    ethernetConnected.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
+    networkConfigService.addNetworksForTest([ethernetConnected]);
+
+    component.refreshNetworks();
+    await flushTasks();
+    assertEquals('nextButtonLabel', buttonLabelKey);
+  });
+
+  test('DisableNetworkList', async () => {
+    await initializeOnboardingNetworkPage();
+
+    const networkList = component.shadowRoot.querySelector('#networkList');
+    assertEquals(undefined, networkList.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(networkList.disabled);
   });
 }

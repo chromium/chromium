@@ -1,0 +1,83 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("bindgen") {
+  crate_type = "bin"
+  crate_root = "crate/src/main.rs"
+  sources = [ "crate/src/main.rs" ]
+  edition = "2018"
+  deps = [
+    ":lib",
+    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/cexpr/v0_6:lib",
+    "//third_party/rust/clang_sys/v1:lib",
+    "//third_party/rust/clap/v2:lib",
+    "//third_party/rust/env_logger/v0_9:lib",
+    "//third_party/rust/lazy_static/v1:lib",
+    "//third_party/rust/lazycell/v1:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/peeking_take_while/v0_1:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/regex/v1:lib",
+    "//third_party/rust/rustc_hash/v1:lib",
+    "//third_party/rust/shlex/v1:lib",
+    "//third_party/rust/which/v4:lib",
+  ]
+  features = [
+    "clap",
+    "env_logger",
+    "log",
+    "logging",
+    "runtime",
+    "which",
+    "which-rustfmt",
+  ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
+  rustenv = [ "CARGO_PKG_VERSION=0.59" ]
+}
+cargo_crate("lib") {
+  crate_name = "bindgen"
+  epoch = "0.59"
+  crate_type = "rlib"
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  deps = [
+    "//third_party/rust/bitflags/v1:lib",
+    "//third_party/rust/cexpr/v0_6:lib",
+    "//third_party/rust/clang_sys/v1:lib",
+    "//third_party/rust/clap/v2:lib",
+    "//third_party/rust/env_logger/v0_9:lib",
+    "//third_party/rust/lazy_static/v1:lib",
+    "//third_party/rust/lazycell/v1:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/peeking_take_while/v0_1:lib",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/regex/v1:lib",
+    "//third_party/rust/rustc_hash/v1:lib",
+    "//third_party/rust/shlex/v1:lib",
+    "//third_party/rust/which/v4:lib",
+  ]
+  features = [
+    "clap",
+    "env_logger",
+    "log",
+    "logging",
+    "runtime",
+    "which",
+    "which-rustfmt",
+  ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
+  build_script_outputs = [ "host-target.txt" ]
+  rustenv = [ "CARGO_PKG_VERSION=0.59" ]
+}

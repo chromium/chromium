@@ -26,7 +26,7 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
     // devices. The default threshold value is set to 1700 MB to account for all
     // 2GB devices which report lower RAM due to carveouts.
     int default_memory_threshold_mb =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         1700;
 #else
         // Desktop has lower memory limitations compared to Android allowing us

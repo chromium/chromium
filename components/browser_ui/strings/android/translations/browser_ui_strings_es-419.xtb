@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Se agregó el sitio <ph name="SITE_NAME" />.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga detenida</translation>
+<translation id="1409426117486808224">Vista simplificada para las pestañas abiertas</translation>
 <translation id="1415402041810619267">URL acortada</translation>
 <translation id="1446450296470737166">Control de dispositivos MIDI</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda a tu cámara, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Solo esta vez</translation>
+<translation id="2253414712144136228">Quitar <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Preguntarme cuando un sitio intente conectarse a dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados del lado del cliente.</translation>
+<translation id="2321958826496381788">Arrastra el control deslizante hasta que puedas leer esto cómodamente. El texto debería verse, al menos, de este tamaño al tocar dos veces un párrafo.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplicar el Tema oscuro para los sitios (de ser posible) cuando está habilitado en Chrome</translation>
+<translation id="2387895666653383613">Ajuste de texto</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{Permitidos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>
 <translation id="2434158240863470628">Se completó la descarga <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">Mostrar información</translation>
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
 <translation id="3198916472715691905">Datos almacenados: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">Desde la Web</translation>
 <translation id="321187648315454507">Para permitir que <ph name="APP_NAME" /> te envíe notificaciones, actívalas también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3277252321222022663">Permitir que los sitios accedan a los sensores (recomendado)</translation>
@@ -110,6 +115,7 @@
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3859306556332390985">Buscar más adelante</translation>
+<translation id="3895926599014793903">Forzar habilitación de zoom</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3987993985790029246">Copiar vínculo</translation>
@@ -117,7 +123,9 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permite las cookies para un sitio específico.</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
+<translation id="4149994727733219643">Vista simplificada para páginas web</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
+<translation id="4194328954146351878">Preguntar antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir la configuración de la ubicación</translation>
 <translation id="4226663524361240545">Es posible que las notificaciones hagan vibrar el dispositivo</translation>
 <translation id="4259722352634471385">Navegación bloqueada: <ph name="URL" /></translation>
@@ -126,6 +134,7 @@
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336434711095810371">Borrar todos los datos</translation>
 <translation id="4402755511846832236">No permitir que los sitios sepan cuando estás usando activamente este dispositivo</translation>
+<translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="4434045419905280838">Ventanas emergentes y redireccionamientos</translation>
 <translation id="445467742685312942">Permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
@@ -156,6 +165,7 @@
 <translation id="5186036860380548585">Esta opción está disponible cerca de la parte superior de la pantalla.</translation>
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>
+<translation id="5264323282659631142">Quitar "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Arrastra el dedo desde la parte superior y toca el botón Atrás para salir de la pantalla completa.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Entendido</translation>
@@ -177,10 +187,10 @@
 <translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
+<translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en la configuración de Android</translation>
-<translation id="5710871682236653961">Preguntar antes de permitir que los sitios envíen y reciban información cuando presionas dispositivos NFC (recomendado)</translation>
 <translation id="5719847187258001597">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> o su app que aparece en la pantalla principal.</translation>
 <translation id="5771720122942595109">Bloqueado: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -230,16 +240,16 @@
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6818926723028410516">Seleccionar elementos</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
-<translation id="6910211073230771657">Eliminado</translation>
 <translation id="6912998170423641340">Impedir que los sitios lean el texto y las imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6992289844737586249">Preguntar primero antes de permitir que los sitios usen tu micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivado en la configuración de Android</translation>
 <translation id="7016516562562142042">Se habilitó para el motor de búsqueda actual</translation>
+<translation id="702463548815491781">Se recomienda cuando TalkBack o Accesibilidad con interruptores están activadas</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
-<translation id="7070090581017165256">Acerca de este sitio</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Opciones disponibles cerca de la parte superior de la pantalla</translation>
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -254,8 +264,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Un sitio está utilizando el micrófono</translation>
 <translation id="7561196759112975576">Siempre</translation>
-<translation id="7572498721684305250">Impide que los sitios envíen y reciban información cuando presionas dispositivos NFC</translation>
 <translation id="757524316907819857">Impedir que los sitios reproduzcan contenido protegido</translation>
+<translation id="7577900504646297215">Administrar intereses</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7781829728241885113">Ayer</translation>
@@ -288,6 +298,7 @@
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Borrar</translation>
+<translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una app</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano para un sitio específico.</translation>
@@ -321,6 +332,7 @@
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">La tecnología NFC está desactivada en este dispositivo. Actívala en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">No permitir que los sitio vean y cambien la información de los dispositivos NFC</translation>
 <translation id="8941729603749328384">www.ejemplo.com</translation>
 <translation id="8958424370300090006">Bloquea las cookies en un sitio específico.</translation>
 <translation id="8959122750345127698">Navegación inaccesible: <ph name="URL" /></translation>

@@ -154,13 +154,15 @@ if (!is_component_build && !fuchsia_code_coverage) {
   _web_instance_host_deps_files_to_exclude += [ "lib/libfuchsia_egl.so" ]
 }
 
-cr_fuchsia_package("cast_runner_pkg") {
-  binary = ":cast_runner_exe"
-  package_name = "cast_runner"
+fuchsia_component("cast_runner_component") {
   manifest = "cast/cast_runner.cmx"
+  data_deps = [ ":cast_runner_exe" ]
+  visibility = [ ":*" ]
+}
 
-  # Required by web_instance_host.
-  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
+fuchsia_package("cast_runner_pkg") {
+  package_name = "cast_runner"
+  deps = [ ":cast_runner_component" ]
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
@@ -218,6 +220,7 @@ test("cast_runner_integration_tests") {
     "//components/cast/message_port",
     "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base/test:test_support",
+    "//media/fuchsia/audio:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
@@ -237,6 +240,7 @@ test("cast_runner_integration_tests") {
       "web_engine",
     ],
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
@@ -266,6 +270,7 @@ test("cast_runner_browsertests") {
     "//testing/gtest",
     "//ui/ozone",
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/jit_capabilities.test-cmx",
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
@@ -286,13 +291,15 @@ executable("web_runner_exe") {
   visibility = [ ":*" ]
 }
 
-cr_fuchsia_package("web_runner_pkg") {
-  binary = ":web_runner_exe"
-  package_name = "web_runner"
+fuchsia_component("web_runner_component") {
   manifest = "web/web_runner.cmx"
+  data_deps = [ ":web_runner_exe" ]
+  visibility = [ ":*" ]
+}
 
-  # Required by web_instance_host.
-  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
+fuchsia_package("web_runner_pkg") {
+  package_name = "web_runner"
+  deps = [ ":web_runner_component" ]
   excluded_files = _web_instance_host_deps_files_to_exclude
 }
 
@@ -327,6 +334,7 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords/password_infobar_modal_interaction_handler.h"
 
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -31,14 +32,16 @@ class PasswordInfobarModalInteractionHandlerTest : public PlatformTest {
             InfobarType::kInfobarTypePasswordSave,
             MockIOSChromeSavePasswordInfoBarDelegate::Create(@"username",
                                                              @"password")) {
-    [browser_.GetCommandDispatcher()
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_command_receiver_
                      forProtocol:@protocol(ApplicationSettingsCommands)];
     handler_ = std::make_unique<PasswordInfobarModalInteractionHandler>(
-        &browser_, password_modal::PasswordAction::kSave);
+        browser_.get(), password_modal::PasswordAction::kSave);
   }
   ~PasswordInfobarModalInteractionHandlerTest() override {
-    [browser_.GetCommandDispatcher()
+    [browser_->GetCommandDispatcher()
         stopDispatchingToTarget:mock_command_receiver_];
     EXPECT_OCMOCK_VERIFY(mock_command_receiver_);
   }
@@ -50,7 +53,8 @@ class PasswordInfobarModalInteractionHandlerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   id mock_command_receiver_ = nil;
   InfoBarIOS infobar_;
   std::unique_ptr<PasswordInfobarModalInteractionHandler> handler_;
@@ -73,7 +77,8 @@ TEST_F(PasswordInfobarModalInteractionHandlerTest, NeverSaveCredentials) {
 // Tests that PresentPasswordsSettings() forwards the call to the mock delegate.
 TEST_F(PasswordInfobarModalInteractionHandlerTest, PresentPasswordsSettings) {
   OCMExpect([mock_command_receiver_
-      showSavedPasswordsSettingsFromViewController:nil]);
+      showSavedPasswordsSettingsFromViewController:nil
+                                  showCancelButton:YES]);
   handler_->PresentPasswordsSettings(&infobar_);
 }
 

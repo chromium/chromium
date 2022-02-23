@@ -71,7 +71,7 @@
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_gdi_object.h"
 #include "ui/native_theme/native_theme_win.h"
 #endif
@@ -80,7 +80,7 @@ namespace views {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr bool kContextMenuOnMousePress = false;
 #else
 constexpr bool kContextMenuOnMousePress = true;
@@ -651,7 +651,7 @@ gfx::Transform View::GetTransform() const {
     return gfx::Transform();
 
   gfx::Transform transform = layer()->transform();
-  gfx::Vector2dF scroll_offset = layer()->CurrentScrollOffset();
+  gfx::PointF scroll_offset = layer()->CurrentScrollOffset();
   // Offsets for layer-based scrolling are never negative, but the horizontal
   // scroll direction is reversed in RTL via canvas flipping.
   transform.Translate((GetMirrored() ? 1 : -1) * scroll_offset.x(),
@@ -1093,12 +1093,10 @@ void View::Paint(const PaintInfo& parent_paint_info) {
   if (!ShouldPaint())
     return;
 
-#if DCHECK_IS_ON()
   if (!has_run_accessibility_paint_checks_) {
     RunAccessibilityPaintChecks(this);
     has_run_accessibility_paint_checks_ = true;
   }
-#endif  // DCHECK_IS_ON()
 
   const gfx::Rect& parent_bounds =
       !parent() ? GetMirroredBounds() : parent()->GetMirroredBounds();
@@ -1446,7 +1444,7 @@ void View::OnMouseEvent(ui::MouseEvent* event) {
         OnMouseMoved(*event);
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_MOUSE_DRAGGED:
       ProcessMouseDragged(event);
       return;
@@ -3005,7 +3003,7 @@ bool View::ProcessMousePressed(const ui::MouseEvent& event) {
                             ? GetDragOperations(event.location())
                             : 0;
   ContextMenuController* context_menu_controller =
-      event.IsRightMouseButton() ? context_menu_controller_ : nullptr;
+      event.IsRightMouseButton() ? context_menu_controller_.get() : nullptr;
   View::DragInfo* drag_info = GetDragInfo();
 
   const bool was_enabled = GetEnabled();

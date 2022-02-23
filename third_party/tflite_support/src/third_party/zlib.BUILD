@@ -37,3 +37,30 @@ cc_library(
     copts = ["-Wno-implicit-function-declaration"],
     includes = ["."],
 )
+
+cc_library(
+    name = "zlib_minizip",
+    srcs = [
+        "contrib/minizip/ioapi.c",
+        "contrib/minizip/miniunz.c",
+        "contrib/minizip/minizip.c",
+        "contrib/minizip/unzip.c",
+        "contrib/minizip/zip.c",
+    ],
+    hdrs = [
+        "contrib/minizip/crypt.h",
+        "contrib/minizip/ioapi.h",
+        "contrib/minizip/mztools.h",
+        "contrib/minizip/unzip.h",
+        "contrib/minizip/zip.h",
+    ],
+    copts = [
+        "-Wno-dangling-else",
+        "-Wno-format",
+        "-Wno-incompatible-pointer-types",
+        "-Wno-incompatible-pointer-types-discards-qualifiers",
+        "-Wno-parentheses",
+        "-DIOAPI_NO_64",
+    ],
+    deps = [":zlib"],
+)

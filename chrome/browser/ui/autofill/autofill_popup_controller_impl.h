@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -158,7 +159,13 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // to find the AXPlatformNode specifically for the autofill text field.
   virtual ui::AXPlatformNode* GetRootAXPlatformNodeForWebContents();
 
+  // Hides |view_| unless it is null and then deletes |this|.
+  virtual void HideViewAndDie();
+
  private:
+  // TODO(crbug.com/1276850, crbug.com/1277218): Remove.
+  enum class SelfStatus { kDestroyed, kAlive };
+
   // The user has accepted the currently selected line. Returns whether there
   // was a selection to accept.
   bool AcceptSelectedLine();
@@ -167,22 +174,30 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
 
-  // Hides |view_| unless it is null and then deletes |this|.
-  void HideViewAndDie();
+  // Returns true iff the focused frame has a pointer lock, which may be used to
+  // trick the user into accepting some suggestion (crbug.com/1239496). In such
+  // a case, we should hide the popup.
+  bool IsMouseLocked() const;
 
-  // Casts `delegate_->GetDriver->` to ContentAutofillDriver or
+  // Casts `delegate_->GetDriver()` to ContentAutofillDriver or
   // ContentPasswordManagerDriver, respectively.
   absl::variant<ContentAutofillDriver*,
                 password_manager::ContentPasswordManagerDriver*>
   GetDriver();
+
+  // Conceptually an override of AutofillPopupController::SetSelectedLine(), but
+  // additionally returns a `SelfStatus` to indicate if |this| was destroyed by
+  // this call.
+  // TODO(crbug.com/1276850, crbug.com/1277218): Replace with SetSelectedLine().
+  SelfStatus SetSelectedLineHelper(absl::optional<int> selected_line);
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
   void SetViewForTesting(AutofillPopupView* view) { view_ = view; }
 
   PopupControllerCommon controller_common_;
-  content::WebContents* web_contents_;
-  AutofillPopupView* view_ = nullptr;  // Weak reference.
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<AutofillPopupView> view_ = nullptr;  // Weak reference.
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   // If set to true, the popup will never be hidden because of stale data or if
@@ -199,6 +214,12 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // The line that is currently selected by the user, null indicates that no
   // line is currently selected.
   absl::optional<int> selected_line_;
+
+  // AutofillPopupControllerImpl deletes itself. To simplify memory management,
+  // we delete the object asynchronously if AutofillDelayPopupControllerDeletion
+  // is enabled (TODO(crbug.com/1277218): Remove "if" clause).
+  base::WeakPtrFactory<AutofillPopupControllerImpl>
+      self_deletion_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<AutofillPopupControllerImpl> weak_ptr_factory_{this};
 };

@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
+    "shimless_rma_delegate.h",
     "shimless_rma_service.cc",
     "shimless_rma_service.h",
     "version_updater.cc",
@@ -16,6 +19,7 @@ static_library("backend") {
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
     "//chromeos/dbus",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
     "//chromeos/dbus/update_engine",

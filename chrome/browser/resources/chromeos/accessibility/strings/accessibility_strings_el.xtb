@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Περιοχή εξάσκησης: αναπτυσσόμενες λίστες</translation>
 <translation id="1195238899008218998">Επίλογος</translation>
 <translation id="1197088940767939838">Πορτοκαλί</translation>
+<translation id="1198865190323699001">Κινήσεις αφής</translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1206619573307042055">μαρκίζα</translation>
 <translation id="1207086294218137981">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 4.</translation>
@@ -390,7 +391,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{δεξιά αγκύλη}other{# δεξιές αγκύλες}}</translation>
 <translation id="3494946239022273294">στοιχείο μενού</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{λατινικό ερωτηματικό}other{# λατινικά ερωτηματικά}}</translation>
+<translation id="3505359110822747654">Σύμπτυξη μενού ChromeVox</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{σύμβολο προσθήκης}other{# σύμβολα προσθήκης}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{λευκή κουκκίδα}other{# λευκές κουκκίδες}}</translation>
 <translation id="352577523970648069">Ένα πεδίο κειμένου με δυνατότητα επεξεργασίας</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">αποκοπή <ph name="TEXT" />.</translation>
@@ -664,6 +667,7 @@
 <translation id="5522423213731659107">Ο σύντομος προσανατολισμός ολοκληρώθηκε!</translation>
 <translation id="5534303576632885660">κεφαλίδα</translation>
 <translation id="5539820223028224601">Πολύ ανοιχτό γκρι</translation>
+<translation id="554893713779400387">Εναλλαγή υπαγόρευσης</translation>
 <translation id="5549179427201066174">Ενεργοποίηση ή απενεργοποίηση των ηχητικών σχολίων (ηχητικά μηνύματα).</translation>
 <translation id="556042886152191864">Κουμπί</translation>
 <translation id="5561345396546889625">Επόμενη λίστα</translation>
@@ -674,6 +678,7 @@
 <translation id="5597170376237141345">Επόμενο πλαίσιο ελέγχου</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, μη επιλεγμένο κουμπί επιλογής</translation>
 <translation id="5601172225407283979">Εκτέλεση προεπιλεγμένης ενέργειας</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{τετράγωνη κουκκίδα}other{# τετράγωνες κουκκίδες}}</translation>
 <translation id="5608798115546226984">Ενσωματωμένη αυτόματη συμπλήρωση</translation>
 <translation id="5616029807486814372">Επόμενο μάθημα</translation>
 <translation id="561939826962581046">ώρα</translation>
@@ -1097,6 +1102,7 @@
 <translation id="8659501358298941449">Αναπτυσσόμενες λίστες</translation>
 <translation id="8666733765751421568">Τέλος <ph name="TYPE" /></translation>
 <translation id="867187640362843212">Επικεφαλίδα 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{επίπεδο ενσωμάτωσης #}}</translation>
 <translation id="8693391540059827073">Η αγαπημένη μου εποχή</translation>
 <translation id="8696284982970258155">Μελίτωμα</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{κάθετη παύλα}other{# κάθετες παύλες}}</translation>
@@ -1164,6 +1170,7 @@
 <translation id="9223032053830369045">Σκούρο κόκκινο</translation>
 <translation id="923331726185079994">Έγινε ενημέρωση του ChromeVox</translation>
 <translation id="93384979447910801">Σκούρο πράσινο μαρέν</translation>
+<translation id="937605981140327129">Το TalkBack δεν είναι εγκατεστημένο αυτήν τη στιγμή. Εγκαταστήστε το Android AccessibilitySuite μέσω του Play Store και δοκιμάστε ξανά.</translation>
 <translation id="948171205378458592">Μείωση ταχύτητας ομιλίας</translation>
 <translation id="957570623732056069">Σύρετε προς τα αριστερά ή προς τα δεξιά με ένα δάχτυλο για περιήγηση σε αυτό το μάθημα</translation>
 <translation id="958854023026327378">Σύρετε ένα δάκτυλο προς τα κάτω</translation>

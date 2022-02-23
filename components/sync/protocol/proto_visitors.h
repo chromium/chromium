@@ -353,7 +353,6 @@ VISIT_PROTO_FIELDS(const sync_pb::DataTypeContext& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::DataTypeProgressMarker& proto) {
   VISIT(data_type_id);
   VISIT_BYTES(token);
-  VISIT(timestamp_token_for_migration);
   VISIT(notification_hint);
   VISIT(get_update_triggers);
 }
@@ -452,6 +451,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(modification_time);
   VISIT(specifics_hash);
   VISIT(base_specifics_hash);
+  VISIT(possibly_trimmed_base_specifics);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
@@ -674,6 +674,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(creation_time);
   VISIT(user_name);
   VISIT(user_display_name);
+  VISIT_ENUM(payments_support);
   // |private_key| is deliberately omitted to avoid including sensitive
   // information in debugging output, which might be included in bug reports
   // etc.
@@ -701,7 +702,12 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
   VISIT(password_specifics_data);
-  VISIT_BYTES(local_chrome_data);
+  VISIT(local_data);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData_LocalData& proto) {
+  VISIT_BYTES(opaque_metadata);
+  VISIT(previously_associated_sync_account_email);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
@@ -1245,6 +1251,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::AppOneOf& proto) {
   VISIT(browser_app_window);
   VISIT(chrome_app);
   VISIT(progress_web_app);
+  VISIT(arc_app);
 }
 
 VISIT_PROTO_FIELDS(
@@ -1276,6 +1283,20 @@ VISIT_PROTO_FIELDS(
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::WindowBound& proto) {
   VISIT(top);
   VISIT(left);
+  VISIT(width);
+  VISIT(height);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics::ArcApp& proto) {
+  VISIT(app_id);
+  VISIT(minimum_size);
+  VISIT(maximum_size);
+  VISIT(title);
+  VISIT(bounds_in_root);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::WorkspaceDeskSpecifics::ArcApp::WindowSize& proto) {
   VISIT(width);
   VISIT(height);
 }

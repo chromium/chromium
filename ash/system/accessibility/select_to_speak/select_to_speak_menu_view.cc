@@ -273,14 +273,14 @@ void SelectToSpeakMenuView::OnButtonPressed(views::Button* sender) {
 
   switch (action) {
     case SelectToSpeakPanelAction::kPreviousParagraph:
-      FALLTHROUGH;
+      [[fallthrough]];
     case SelectToSpeakPanelAction::kNextParagraph:
       base::UmaHistogramEnumeration(
           kParagraphNavigationMethodHistogramName,
           CrosSelectToSpeakActivationMethod::kMenuButton);
       break;
     case SelectToSpeakPanelAction::kPreviousSentence:
-      FALLTHROUGH;
+      [[fallthrough]];
     case SelectToSpeakPanelAction::kNextSentence:
       base::UmaHistogramEnumeration(
           kSentenceNavigationMethodHistogramName,

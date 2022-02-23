@@ -6,31 +6,33 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_H_
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_for_ui.h"
-#include "base/message_loop/watchable_io_message_pump_posix.h"
-#include "base/threading/thread_checker.h"
 
 struct wl_display;
 struct wl_event_queue;
 
-namespace base {
-class Thread;
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace ui {
 
-// WaylandEventWatcher serves a single purpose: poll for events in the wayland
-// connection file descriptor. Which will then trigger input objects (e.g:
-// WaylandPointer, WaylandKeyboard, etc) callbacks, indirectly leading to calls
-// into WaylandEventSource, so feeding the platform events pipeline.
-class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
+// WaylandEventWatcher is a base class that provides a read/prepare/dispatch
+// functionality to derived WaylandEventWatcherFDWatch and
+// WaylandEventWatcherGlib classes. These classes serve a single purpose - they
+// use libevent or libglib (depends on the build configuration of Chromium) to
+// watch a Wayland file descriptor and get notified when they can read events
+// from an event queue. They also strictly follow a strict prepare/read/dispatch
+// dance to ensure Wayland client event loop's integration into the previously
+// mentioned event loop libraries is correct. The events that the instance of
+// this class dispatches trigger input objects (e.g: WaylandPointer,
+// WaylandKeyboard, and others) callbacks, indirectly leading to calls into
+// WaylandEventSource, so feeding the platform events pipeline.
+class WaylandEventWatcher {
  public:
-  WaylandEventWatcher(wl_display* display, wl_event_queue* event_queue);
   WaylandEventWatcher(const WaylandEventWatcher&) = delete;
   WaylandEventWatcher& operator=(const WaylandEventWatcher&) = delete;
-  ~WaylandEventWatcher() override;
+  virtual ~WaylandEventWatcher();
+
+  static std::unique_ptr<WaylandEventWatcher> CreateWaylandEventWatcher(
+      wl_display* display,
+      wl_event_queue* event_queue);
 
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Can only be set once.
@@ -41,28 +43,43 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   // are already bound and properly initialized.
   void StartProcessingEvents();
 
+  // Calls wl_display_roundtrip_queue. Might be required during initialization
+  // of some objects that should block until they are initialized.
+  void RoundTripQueue();
+
+ protected:
+  WaylandEventWatcher(wl_display* display, wl_event_queue* event_queue);
+
   // Stops polling for events from input devices.
   void StopProcessingEvents();
 
-  // See the comment near WaylandEventWatcher::use_dedicated_polling_thread_.
-  void UseSingleThreadedPollingForTesting();
+  // Starts watching the fd. Returns true on success
+  virtual bool StartWatchingFD(int fd) = 0;
+  // Stops watching the previously passed fd.
+  virtual void StopWatchingFD() = 0;
+
+  // Prepares to read events. Must be called before the event loop goes to
+  // sleep. Returns true if prepared and false if prepare to read failed, which
+  // means there are events to be dispatched.
+  bool WlDisplayPrepareToRead();
+
+  // Read the events. Should be only called after the event loop polled the fd
+  // and if WlDisplayPrepareToRead has been called before.
+  void WlDisplayReadEvents();
+
+  // Cancels prepare to read.
+  void WlDisplayCancelRead();
+
+  // Dispatches all incoming events for objects assigned to the event queue
+  // after the events have been read with the WlDisplayReadEvents call. Also,
+  // checks for errors by calling WlDisplayCheckForErrors if the Wayland API
+  // failed.
+  void WlDisplayDispatchPendingQueue();
 
  private:
-  // base::MessagePumpForUI::FdWatcher
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
-
-  void StartProcessingEventsInternal();
-  void StopProcessingEventsInternal();
-  void StartWatchingFd(base::WatchableIOMessagePumpPosix::Mode mode);
-  void MaybePrepareReadQueue();
-  void DispatchPendingQueue();
-
   // Checks if |display_| has any error set. If so, |shutdown_cb_| is executed
   // and false is returned.
-  bool CheckForErrors();
-
-  base::MessagePumpForUI::FdWatchController controller_;
+  void WlDisplayCheckForErrors();
 
   wl_display* const display_;  // Owned by WaylandConnection.
   wl_event_queue* const event_queue_;  // Owned by WaylandConnection.
@@ -70,34 +87,7 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   bool watching_ = false;
   bool prepared_ = false;
 
-  // A separate thread is not used in some tests (ozone_unittests), as it
-  // requires additional synchronization from the WaylandTest side. Otherwise,
-  // some tests complete without waiting until events come. That is, the tests
-  // suppose that our calls/requests are completed after calling Sync(), which
-  // resumes our fake Wayland server and sends out events, but as long as there
-  // is one additional "polling" thread involved, some additional
-  // synchronization mechanisms are needed. At this point, it's easier to
-  // continue to watch the file descriptor on the same thread where the
-  // ozone_unittests run.
-  bool use_dedicated_polling_thread_ = true;
-
   base::OnceCallback<void()> shutdown_cb_;
-
-  // Used to verify watching the fd happens on a valid thread.
-  THREAD_CHECKER(thread_checker_);
-
-  // See the |use_dedicated_polling_thread_| and also the comment in the source
-  // file for this header.
-  // TODO(crbug.com/1117463): consider polling on I/O instead.
-  std::unique_ptr<base::Thread> thread_;
-
-  // The original ui task runner where |this| has been created.
-  scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-
-  // The thread's task runner where the wl_display's fd is being watched.
-  scoped_refptr<base::SingleThreadTaskRunner> watching_thread_task_runner_;
-
-  base::WeakPtrFactory<WaylandEventWatcher> weak_factory_{this};
 };
 
 }  // namespace ui

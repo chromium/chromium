@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -92,7 +92,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (identifier_value &&
           identifier_value->GetValueID() == CSSValueID::kAuto)
         return CSSKeywordValue::Create("auto");
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case CSSPropertyID::kBackgroundColor:
     case CSSPropertyID::kBorderBottomColor:
@@ -106,7 +106,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kOutlineColor:
     case CSSPropertyID::kStopColor:
     case CSSPropertyID::kTextDecorationColor:
-    case CSSPropertyID::kWebkitTextEmphasisColor: {
+    case CSSPropertyID::kTextEmphasisColor: {
       // Only 'currentcolor' is supported.
       auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
       if (identifier_value &&
@@ -151,7 +151,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       // offset-anchor and offset-position can be 'auto'
       if (value.IsIdentifierValue())
         return CreateStyleValue(value);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSPropertyID::kObjectPosition:
     case CSSPropertyID::kPerspectiveOrigin:
     case CSSPropertyID::kTransformOrigin:

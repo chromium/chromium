@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
@@ -19,11 +21,11 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/share_operation.h"
 #endif
 
@@ -36,7 +38,7 @@ ShareServiceImpl::ShareServiceImpl(
     mojo::PendingReceiver<blink::mojom::ShareService> receiver)
     : content::DocumentService<blink::mojom::ShareService>(render_frame_host,
                                                            std::move(receiver))
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       sharesheet_client_(
           content::WebContents::FromRenderFrameHost(render_frame_host))
@@ -52,6 +54,15 @@ void ShareServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ShareService> receiver) {
   DCHECK(render_frame_host);
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer should have checked and disallowed the request for fenced
+    // frames in NavigatorShare and thrown a DOMException. Ignore the request
+    // and mark it as bad if it didn't happen for some reason.
+    bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
+                                    bad_message::SSI_CREATE_FENCED_FRAME);
+    return;
+  }
+
   new ShareServiceImpl(render_frame_host, std::move(receiver));
 }
 
@@ -237,10 +248,10 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   sharesheet_client_.Share(title, text, share_url, std::move(files),
                            std::move(callback));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   auto sharing_service_operation =
       std::make_unique<webshare::SharingServiceOperation>(
           title, text, share_url, std::move(files), web_contents);
@@ -258,7 +269,7 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
          ShareCallback callback,
          blink::mojom::ShareError result) { std::move(callback).Run(result); },
       std::move(sharing_service_operation), std::move(callback)));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   auto share_operation = std::make_unique<webshare::ShareOperation>(
       title, text, share_url, std::move(files), web_contents);
   auto* const share_operation_ptr = share_operation.get();

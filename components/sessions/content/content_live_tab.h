@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_CONTENT_CONTENT_LIVE_TAB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/core/live_tab.h"
@@ -58,7 +59,7 @@ class SESSIONS_EXPORT ContentLiveTab
     return web_contents_->GetController();
   }
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace sessions

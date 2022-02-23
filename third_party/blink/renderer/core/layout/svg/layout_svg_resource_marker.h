@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_marker_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -63,7 +62,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   bool ShouldPaint() const;
 
-  FloatPoint ReferencePoint() const;
+  gfx::PointF ReferencePoint() const;
   float Angle() const;
   SVGMarkerUnitsType MarkerUnits() const;
   SVGMarkerOrientType OrientType() const;

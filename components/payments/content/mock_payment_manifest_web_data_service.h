@@ -18,7 +18,7 @@ class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
  public:
   MockPaymentManifestWebDataService();
   MOCK_METHOD(void,
-              ClearSecurePaymentConfirmationInstruments,
+              ClearSecurePaymentConfirmationCredentials,
               (base::Time begin, base::Time end, base::OnceClosure callback),
               (override));
 

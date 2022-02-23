@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "remoting/host/clipboard.h"

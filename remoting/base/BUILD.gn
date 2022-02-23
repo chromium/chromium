@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//remoting/build/config/remoting_logging.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protobuf_http_client_messages_proto") {
@@ -138,7 +139,10 @@ source_set("authorization") {
     "//remoting/build/config:version",
   ]
 
-  deps = [ "//services/network/public/cpp" ]
+  deps = [
+    ":logging",
+    "//services/network/public/cpp",
+  ]
 
   public_deps = [
     "//base",
@@ -169,6 +173,33 @@ source_set("breakpad") {
   }
 }
 
+source_set("logging") {
+  public = [ "logging.h" ]
+
+  sources = [
+    "logging.cc",
+    "logging_internal.h",
+  ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "logging_linux.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "logging_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "logging_win.cc" ]
+  }
+
+  if (remoting_webrtc_verbose_logging) {
+    defines = [ "WEBRTC_VERBOSE_LOGGING" ]
+  }
+
+  deps = [ "//base" ]
+}
+
 source_set("settings") {
   sources = [
     "host_settings.cc",
@@ -177,6 +208,7 @@ source_set("settings") {
     "user_settings.h",
   ]
   deps = [
+    ":logging",
     "//base",
     "//remoting/base",
   ]
@@ -215,6 +247,7 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":logging",
     ":protobuf_http_client_messages_proto",
     "//base/test:test_support",
     "//remoting/proto",
@@ -275,6 +308,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":logging",
     ":protobuf_http_client_messages_proto",
     ":run_all_unittests",
     ":test_proto",

@@ -352,9 +352,9 @@ bool SessionFileReader::FillBuffer() {
 }
 
 base::FilePath::StringType TimestampToString(const base::Time time) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::NumberToString(time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::NumberToWString(
       time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 #endif
@@ -673,8 +673,8 @@ std::unique_ptr<base::File> CommandStorageBackend::OpenAndWriteHeader(
   DCHECK(!path.empty());
   std::unique_ptr<base::File> file = std::make_unique<base::File>(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                base::File::FLAG_EXCLUSIVE_WRITE |
-                base::File::FLAG_EXCLUSIVE_READ);
+                base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                base::File::FLAG_WIN_EXCLUSIVE_READ);
   if (!file->IsValid())
     return nullptr;
   FileHeader header;

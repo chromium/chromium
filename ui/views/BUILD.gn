@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
@@ -496,10 +497,7 @@ component("views") {
   ]
 
   sources += get_target_outputs(":views_vector_icons")
-  configs += [
-    "//build/config:precompiled_headers",
-    "//build/config/compiler:noshadowing",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
   defines = [ "VIEWS_IMPLEMENTATION" ]
 
   deps = [
@@ -537,7 +535,7 @@ component("views") {
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
     "//ui/base/clipboard",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime/init",
@@ -567,6 +565,7 @@ component("views") {
     sources -= [ "window/window_button_order_provider.cc" ]
     public_deps += [ "//ui/base/cursor:theme_manager" ]
     deps += [
+      "//build:chromecast_buildflags",
       "//ui/base/ime/linux",
       "//ui/shell_dialogs",
     ]
@@ -612,6 +611,8 @@ component("views") {
       "accessibility/ax_virtual_view_mac.mm",
       "cocoa/drag_drop_client_mac.h",
       "cocoa/drag_drop_client_mac.mm",
+      "cocoa/native_widget_mac_event_monitor.h",
+      "cocoa/native_widget_mac_event_monitor.mm",
       "cocoa/native_widget_mac_ns_window_host.mm",
       "cocoa/text_input_host.h",
       "cocoa/text_input_host.mm",
@@ -767,6 +768,7 @@ component("views") {
     }
     deps += [
       "//ui/aura",
+      "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/events",
       "//ui/platform_window",
       "//ui/platform_window/wm",
@@ -795,16 +797,15 @@ component("views") {
         "widget/desktop_aura/desktop_screen_position_client.cc",
         "widget/desktop_aura/desktop_window_tree_host.cc",
       ]
-      public_deps += [
-        "//ui/base/cursor",
-        "//ui/base/cursor/mojom:cursor_type",
-      ]
+      public_deps += [ "//ui/aura/cursor" ]
       if (is_win) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_win.h" ]
         sources += [
           "widget/desktop_aura/desktop_drag_drop_client_win.cc",
           "widget/desktop_aura/desktop_drag_drop_client_win.h",
           "widget/desktop_aura/desktop_drop_target_win.cc",
+          "widget/desktop_aura/desktop_native_cursor_manager_win.cc",
+          "widget/desktop_aura/desktop_native_cursor_manager_win.h",
           "widget/desktop_aura/desktop_screen_win.cc",
           "widget/desktop_aura/desktop_screen_win.h",
           "widget/desktop_aura/desktop_window_tree_host_win.cc",
@@ -918,6 +919,8 @@ source_set("test_support") {
     "controls/table/test_table_model.h",
     "controls/textfield/textfield_test_api.cc",
     "controls/textfield/textfield_test_api.h",
+    "interaction/interaction_test_util_views.cc",
+    "interaction/interaction_test_util_views.h",
     "layout/animating_layout_manager_test_util.cc",
     "layout/animating_layout_manager_test_util.h",
     "test/ax_event_counter.cc",
@@ -984,6 +987,7 @@ source_set("test_support") {
     "//ipc:test_support",
     "//mojo/core/embedder",
     "//skia",
+    "//ui/accessibility",
     "//ui/base",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",
@@ -1040,7 +1044,6 @@ source_set("test_support") {
       "test/widget_test_aura.cc",
     ]
     deps += [
-      "//ui/accessibility",
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/wm",
@@ -1139,6 +1142,7 @@ test("views_unittests") {
     "image_model_utils_unittest.cc",
     "interaction/element_tracker_views_unittest.cc",
     "interaction/interaction_sequence_views_unittest.cc",
+    "interaction/interaction_test_util_views_unittest.cc",
     "layout/animating_layout_manager_unittest.cc",
     "layout/box_layout_unittest.cc",
     "layout/box_layout_view_unittest.cc",
@@ -1165,6 +1169,7 @@ test("views_unittests") {
     "view_tracker_unittest.cc",
     "view_unittest.cc",
     "widget/any_widget_observer_unittest.cc",
+    "widget/drop_helper_unittest.cc",
     "widget/native_widget_unittest.cc",
     "widget/root_view_unittest.cc",
     "widget/unique_widget_ptr_unittest.cc",
@@ -1186,7 +1191,7 @@ test("views_unittests") {
     "//base:i18n",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//cc",
+    "//cc:test_support",
     "//cc/paint",
     "//components/vector_icons",
     "//components/viz/common",
@@ -1222,7 +1227,10 @@ test("views_unittests") {
     "//url",
   ]
 
-  data_deps = [ "//ui/resources:ui_test_pak_data" ]
+  data_deps = [
+    "//testing/buildbot/filters:views_unittests_filters",
+    "//ui/resources:ui_test_pak_data",
+  ]
 
   if (is_win) {
     public_deps = [
@@ -1263,6 +1271,12 @@ test("views_unittests") {
     }
   }
 
+  if (skia_support_skottie) {
+    sources += [ "controls/animated_image_view_unittest.cc" ]
+
+    deps += [ "//ui/lottie" ]
+  }
+
   if (is_mac) {
     sources += [
       "cocoa/bridged_native_widget_unittest.mm",
@@ -1287,6 +1301,7 @@ test("views_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 
@@ -1439,22 +1454,12 @@ source_set("views_interactive_ui_tests") {
       "//ui/platform_window",
       "//ui/platform_window/wm",
     ]
-  }
 
-  # TODO(1239521): x11 interactive ui tests should probably have own target.
-  # At the moment, it's impossible to move this test file under X11 directory
-  # as it will result in a gn dependency problem.
-  if (ozone_platform_x11 && !is_chromeos_ash && !is_chromecast) {
-    sources += [
-      "widget/desktop_aura/x11_topmost_window_finder_interactive_uitest.cc",
-    ]
-    deps += [
-      "//ui/base/x",
-      "//ui/base/x:test_support",
-      "//ui/gfx/x",
-      "//ui/ozone",
-      "//ui/platform_window/x11",
-    ]
+    if (enable_desktop_aura) {
+      sources += [
+        "widget/desktop_aura/desktop_native_widget_aura_interactive_uitest.cc",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {

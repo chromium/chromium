@@ -4,15 +4,11 @@
 
 #include "components/signin/public/base/account_consistency_method.h"
 
+#include "build/build_config.h"
 
 namespace signin {
 
-// Do not merge the two feature flags.
-// Experiments for MICE will be run independently per platform (Android, iOS).
-#if defined(OS_ANDROID)
-// Feature flag for FRE related changes as part of MICE.
-const base::Feature kMobileIdentityConsistencyFRE{
-    "MobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
+#if BUILDFLAG(IS_ANDROID)
 const base::Feature kMobileIdentityConsistencyPromos{
     "MobileIdentityConsistencyPromos", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif

@@ -29,6 +29,7 @@ extensions_api_schema_files_ = [
   "guest_view_internal.json",
   "management.json",
   "hid.idl",
+  "i18n.json",
   "idle.json",
   "metrics_private.json",
   "mime_handler_private.idl",

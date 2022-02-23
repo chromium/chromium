@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gin/runner.h"
 
 namespace gin {
@@ -56,7 +57,7 @@ class GIN_EXPORT ShellRunner : public Runner {
 
   void Run(v8::Local<v8::Script> script);
 
-  ShellRunnerDelegate* delegate_;
+  raw_ptr<ShellRunnerDelegate> delegate_;
 
   std::unique_ptr<ContextHolder> context_holder_;
 };

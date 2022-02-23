@@ -9,21 +9,13 @@
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
 namespace content {
 namespace {
-
-// Returns whether |url| has a local scheme - i.e. a document that commits with
-// |url| should inherit its policies from the initiator or the parent frame.
-//
-// If |url| is not `about:srcdoc` and this function returns true, then the
-// document should inherit its policies from the initiator.
-bool HasLocalScheme(const GURL& url) {
-  return url.SchemeIs(url::kAboutScheme) || url.SchemeIs(url::kDataScheme) ||
-         url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme);
-}
 
 // Returns a copy of |parent|'s policies, or nullopt if |parent| is nullptr.
 std::unique_ptr<PolicyContainerPolicies> GetParentPolicies(
@@ -135,6 +127,13 @@ void PolicyContainerNavigationBundle::SetCrossOriginOpenerPolicy(
   delivered_policies_->cross_origin_opener_policy = coop;
 }
 
+void PolicyContainerNavigationBundle::SetCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy coep) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_->cross_origin_embedder_policy = coep;
+}
+
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
@@ -142,7 +141,9 @@ PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   return *delivered_policies_;
 }
 
-void PolicyContainerNavigationBundle::ComputePoliciesForError() {
+void PolicyContainerNavigationBundle::ComputePoliciesForError(
+    bool is_inside_mhtml,
+    network::mojom::WebSandboxFlags frame_sandbox_flags) {
   // The decision to commit an error page can happen after receiving the
   // response for a regular document. It overrides any previous attempt to
   // |ComputePolicies()|.
@@ -159,6 +160,8 @@ void PolicyContainerNavigationBundle::ComputePoliciesForError() {
   // request (from the unknown/public address space to private). See also
   // crbug.com/1180140.
   policies->ip_address_space = delivered_policies_->ip_address_space;
+
+  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies.get());
 
   SetFinalPolicies(std::move(policies));
 
@@ -178,6 +181,33 @@ void PolicyContainerNavigationBundle::ComputeIsWebSecureContext() {
       parent_policies_->is_web_secure_context;
 }
 
+void PolicyContainerNavigationBundle::ComputeSandboxFlags(
+    bool is_inside_mhtml,
+    network::mojom::WebSandboxFlags frame_sandbox_flags,
+    PolicyContainerPolicies* policies) {
+  DCHECK(!HasComputedPolicies());
+
+  auto sandbox_flags_to_commit = frame_sandbox_flags;
+
+  // The document can also restrict sandbox further, via its CSP.
+  for (const auto& csp : policies->content_security_policies) {
+    sandbox_flags_to_commit |= csp->sandbox;
+  }
+
+  // The URL of a document loaded from a MHTML archive is controlled by the
+  // Content-Location header. This can be set to an arbitrary URL. This is
+  // potentially dangerous. For this reason we force the document to be
+  // sandboxed, providing exceptions only for creating new windows. This
+  // includes disallowing javascript and using an opaque origin.
+  if (is_inside_mhtml) {
+    sandbox_flags_to_commit |= ~network::mojom::WebSandboxFlags::kPopups &
+                               ~network::mojom::WebSandboxFlags::
+                                   kPropagatesToAuxiliaryBrowsingContexts;
+  }
+
+  policies->sandbox_flags = sandbox_flags_to_commit;
+}
+
 std::unique_ptr<PolicyContainerPolicies>
 PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
     const GURL& url,
@@ -192,20 +222,12 @@ PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
     policies->ip_address_space = delivered_policies_->ip_address_space;
   }
 
-  // Ignore inheritance of COOP for blobs or filesystem schemes as this
-  // conflicts with COEP.
-  // TODO(https://crbug.com/1057296) properly implement inheritance for blobs
-  if (url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme)) {
-    policies->cross_origin_opener_policy =
-        delivered_policies_->cross_origin_opener_policy;
-  }
-
   return policies;
 }
 
 std::unique_ptr<PolicyContainerPolicies>
 PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
-  DCHECK(HasLocalScheme(url)) << "No inheritance allowed for non-local schemes";
+  DCHECK(url.SchemeIsLocal()) << url << " should not inherit policies";
 
   if (url.IsAboutSrcdoc()) {
     DCHECK(parent_policies_)
@@ -221,28 +243,40 @@ PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
 }
 
 std::unique_ptr<PolicyContainerPolicies>
-PolicyContainerNavigationBundle::ComputeFinalPolicies(const GURL& url) {
+PolicyContainerNavigationBundle::ComputeFinalPolicies(
+    const GURL& url,
+    bool is_inside_mhtml,
+    network::mojom::WebSandboxFlags frame_sandbox_flags) {
+  std::unique_ptr<PolicyContainerPolicies> policies;
+
   // Policies are either inherited from another document for local scheme, or
   // directly set from the delivered response.
-  if (!HasLocalScheme(url))
-    return delivered_policies_->Clone();
+  if (!url.SchemeIsLocal()) {
+    policies = delivered_policies_->Clone();
+  } else if (history_policies_) {
+    // For a local scheme, history policies should not incorporate delivered
+    // ones as this may lead to duplication of some policies already stored in
+    // history. For example, consider the following HTML:
+    //    <iframe src="about:blank" csp="something">
+    // This will store CSP: something in history. The next time we have a
+    // history navigation we will have CSP: something twice.
+    policies = history_policies_->Clone();
+  } else {
+    policies = IncorporateDeliveredPolicies(url, ComputeInheritedPolicies(url));
+  }
 
-  // For a local scheme, history policies should not incorporate delivered ones
-  // as this may lead to duplication of some policies already stored in history.
-  // For example, consider the following HTML:
-  //    <iframe src="about:blank" csp="something">
-  // This will store CSP: something in history. The next time we have a history
-  // navigation we will have CSP: something twice.
-  if (history_policies_)
-    return history_policies_->Clone();
-
-  return IncorporateDeliveredPolicies(url, ComputeInheritedPolicies(url));
+  ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies.get());
+  return policies;
 }
 
-void PolicyContainerNavigationBundle::ComputePolicies(const GURL& url) {
+void PolicyContainerNavigationBundle::ComputePolicies(
+    const GURL& url,
+    bool is_inside_mhtml,
+    network::mojom::WebSandboxFlags frame_sandbox_flags) {
   DCHECK(!HasComputedPolicies());
   ComputeIsWebSecureContext();
-  SetFinalPolicies(ComputeFinalPolicies(url));
+  SetFinalPolicies(
+      ComputeFinalPolicies(url, is_inside_mhtml, frame_sandbox_flags));
 }
 
 bool PolicyContainerNavigationBundle::HasComputedPolicies() const {

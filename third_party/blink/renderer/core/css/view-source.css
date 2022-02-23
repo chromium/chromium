@@ -72,7 +72,7 @@ td {
     width: 31px;
     background-color: -internal-light-dark(rgb(240, 240, 240), rgb(60, 60, 60));
     border-right: 1px solid rgb(187, 187, 187) !important;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 .line-gutter-backdrop {
@@ -91,7 +91,7 @@ td {
     white-space: nowrap;
     font-size: 9px;
     font-family: Helvetica;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 .line-number::before {

@@ -4,6 +4,8 @@
 
 #include "sandbox/win/tests/common/test_utils.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <winioctl.h>
 
@@ -47,7 +49,7 @@ bool SetReparsePoint(HANDLE source, const wchar_t* target) {
 
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
 
-  data->ReparseTag = 0xa0000003;
+  data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
   memcpy(data->MountPointReparseBuffer.PathBuffer, target, size_target + 2);
   data->MountPointReparseBuffer.SubstituteNameLength = size_target;
   data->MountPointReparseBuffer.PrintNameOffset = size_target + 2;
@@ -67,85 +69,13 @@ bool SetReparsePoint(HANDLE source, const wchar_t* target) {
 bool DeleteReparsePoint(HANDLE source) {
   DWORD returned;
   REPARSE_DATA_BUFFER data = {0};
-  data.ReparseTag = 0xa0000003;
+  data.ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
   if (!DeviceIoControl(source, FSCTL_DELETE_REPARSE_POINT, &data, 8, NULL, 0,
                        &returned, NULL)) {
     return false;
   }
 
   return true;
-}
-
-SidAndAttributes::SidAndAttributes(const SID_AND_ATTRIBUTES& sid_and_attributes)
-    : attributes_(sid_and_attributes.Attributes),
-      sid_(sid_and_attributes.Sid) {}
-
-PSID SidAndAttributes::GetPSID() const {
-  return sid_.GetPSID();
-}
-
-DWORD SidAndAttributes::GetAttributes() const {
-  return attributes_;
-}
-
-bool GetTokenAppContainerSid(HANDLE token,
-                             std::unique_ptr<sandbox::Sid>* app_container_sid) {
-  std::vector<char> app_container_info(sizeof(TOKEN_APPCONTAINER_INFORMATION) +
-                                       SECURITY_MAX_SID_SIZE);
-  DWORD return_length;
-
-  if (!::GetTokenInformation(
-          token, TokenAppContainerSid, app_container_info.data(),
-          base::checked_cast<DWORD>(app_container_info.size()),
-          &return_length)) {
-    return false;
-  }
-
-  PTOKEN_APPCONTAINER_INFORMATION info =
-      reinterpret_cast<PTOKEN_APPCONTAINER_INFORMATION>(
-          app_container_info.data());
-  if (!info->TokenAppContainer)
-    return false;
-  *app_container_sid = std::make_unique<sandbox::Sid>(info->TokenAppContainer);
-  return true;
-}
-
-bool GetTokenGroups(HANDLE token,
-                    TOKEN_INFORMATION_CLASS information_class,
-                    std::vector<SidAndAttributes>* token_groups) {
-  if (information_class != ::TokenCapabilities &&
-      information_class != ::TokenGroups &&
-      information_class != ::TokenRestrictedSids) {
-    return false;
-  }
-
-  std::vector<char> groups_buf;
-  if (!GetVariableTokenInformation(token, information_class, &groups_buf))
-    return false;
-
-  PTOKEN_GROUPS groups = reinterpret_cast<PTOKEN_GROUPS>(groups_buf.data());
-
-  if (groups->GroupCount > 0) {
-    token_groups->insert(token_groups->begin(), groups->Groups,
-                         groups->Groups + groups->GroupCount);
-  }
-
-  return true;
-}
-
-bool GetVariableTokenInformation(HANDLE token,
-                                 TOKEN_INFORMATION_CLASS information_class,
-                                 std::vector<char>* information) {
-  DWORD return_length;
-  if (!::GetTokenInformation(token, information_class, nullptr, 0,
-                             &return_length)) {
-    if (::GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-      return false;
-  }
-
-  information->resize(return_length);
-  return !!::GetTokenInformation(token, information_class, information->data(),
-                                 return_length, &return_length);
 }
 
 }  // namespace sandbox

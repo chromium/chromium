@@ -16,6 +16,8 @@
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
       "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",
       "fuchsia.ui.policy.Presenter",
       "fuchsia.ui.scenic.Scenic"

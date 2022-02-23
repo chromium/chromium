@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       'Tests that virtual time fence does not block interrupting protocol' +
       ' commands.');
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: 1000, waitForNavigation: true});
   await dp.Performance.enable();
-  dp.Page.navigate({url: testRunner.url('/resources/blank.html')});
+  await dp.Page.navigate({url: testRunner.url('/resources/blank.html')});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: 1000});
 
   await dp.Emulation.onceVirtualTimeBudgetExpired();
   await dp.Performance.getMetrics();

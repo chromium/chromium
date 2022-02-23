@@ -6,12 +6,13 @@
 #define CHROME_BROWSER_ASH_ANDROID_SMS_ANDROID_SMS_SERVICE_H_
 
 #include <memory>
+
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
@@ -32,7 +33,6 @@ namespace android_sms {
 class AndroidSmsAppManager;
 class AndroidSmsAppSetupController;
 class ConnectionManager;
-class PairingLostNotifier;
 
 // KeyedService which manages Android Messages integration. This service
 // has four main responsibilities:
@@ -79,7 +79,6 @@ class AndroidSmsService : public KeyedService,
   std::unique_ptr<AndroidSmsAppManager> android_sms_app_manager_;
   std::unique_ptr<AndroidSmsPairingStateTrackerImpl>
       android_sms_pairing_state_tracker_;
-  std::unique_ptr<PairingLostNotifier> pairing_lost_notifier_;
   std::unique_ptr<ConnectionManager> connection_manager_;
 };
 

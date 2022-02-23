@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.os.Build;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,8 @@ import java.util.concurrent.TimeUnit;
  * Tests for AudioTrackOutputStream.
  */
 @RunWith(LocalRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+// Need sdk > Q for robolectric 4.6.
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class AudioTrackOutputStreamTest {
     static class ObservableAudioTrack extends AudioTrack {
         private List<Byte> mReceivedData = new ArrayList<Byte>();

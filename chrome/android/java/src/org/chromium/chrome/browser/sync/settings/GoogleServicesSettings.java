@@ -17,14 +17,14 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -70,8 +70,6 @@ public class GoogleServicesSettings
             PrivacyPreferencesManagerImpl.getInstance();
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate =
             createManagedPreferenceDelegate();
-    private final SharedPreferencesManager mSharedPreferencesManager =
-            SharedPreferencesManager.getInstance();
 
     private ChromeSwitchPreference mAllowSignin;
     private ChromeSwitchPreference mSearchSuggestions;
@@ -88,8 +86,15 @@ public class GoogleServicesSettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.google_services_preferences);
 
         mAllowSignin = (ChromeSwitchPreference) findPreference(PREF_ALLOW_SIGNIN);
-        mAllowSignin.setOnPreferenceChangeListener(this);
-        mAllowSignin.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+
+        if (Profile.getLastUsedRegularProfile().isChild()) {
+            // Do not display option to allow / disallow sign-in for supervised accounts since
+            // these require the user to be signed-in and syncing.
+            mAllowSignin.setVisible(false);
+        } else {
+            mAllowSignin.setOnPreferenceChangeListener(this);
+            mAllowSignin.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
 
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);
         mSearchSuggestions.setOnPreferenceChangeListener(this);
@@ -114,7 +119,7 @@ public class GoogleServicesSettings
         Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
         // Assistant autofill/voicesearch both live in the sub-section. If either one of them is
         // enabled, then the subsection should show.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+        if (AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled()
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
             removePreference(getPreferenceScreen(), mAutofillAssistant);
             mAutofillAssistant = null;
@@ -164,6 +169,9 @@ public class GoogleServicesSettings
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (PREF_ALLOW_SIGNIN.equals(key)) {
+            assert !Profile.getLastUsedRegularProfile().isChild()
+                : "A supervised account must not update allow sign-in.";
+
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             boolean shouldSignUserOut =
@@ -214,7 +222,9 @@ public class GoogleServicesSettings
         mSearchSuggestions.setChecked(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED));
 
         mUsageAndCrashReporting.setChecked(
-                mPrivacyPrefManager.isUsageAndCrashReportingPermittedByUser());
+                mPrivacyPrefManager.isUsageAndCrashReportingPermittedByUser()
+                && !mPrivacyPrefManager.isMetricsReportingDisabledByPolicy());
+
         mUrlKeyedAnonymizedData.setChecked(
                 UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                         Profile.getLastUsedRegularProfile()));
@@ -240,7 +250,8 @@ public class GoogleServicesSettings
                 return mPrefService.isManagedPreference(Pref.SEARCH_SUGGEST_ENABLED);
             }
             if (PREF_USAGE_AND_CRASH_REPORTING.equals(key)) {
-                return PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingManaged();
+                return PrivacyPreferencesManagerImpl.getInstance()
+                        .isMetricsReportingDisabledByPolicy();
             }
             if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
                 return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(
@@ -255,19 +266,17 @@ public class GoogleServicesSettings
      *  will the AA switch be assigned a value).
      */
     private boolean shouldShowAutofillAssistantPreference() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT)
-                && mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED);
+        return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
+                && AutofillAssistantPreferencesUtil.containsAssistantEnabledPreference();
     }
 
     public boolean isAutofillAssistantSwitchOn() {
-        return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
+        return AutofillAssistantPreferencesUtil.getAssistantEnabledPreference(
+                /* defaultValue= */ false);
     }
 
     public void setAutofillAssistantSwitchValue(boolean newValue) {
-        mSharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, newValue);
+        AutofillAssistantPreferencesUtil.setAssistantEnabledPreference(newValue);
     }
 
     // SignOutDialogListener implementation:

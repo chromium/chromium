@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream.h"
 #include "net/quic/quic_crypto_client_stream_factory.h"
@@ -57,7 +57,7 @@ class MockCryptoClientStreamFactory : public QuicCryptoClientStreamFactory {
 
  private:
   MockCryptoClientStream::HandshakeMode handshake_mode_;
-  MockCryptoClientStream* last_stream_;
+  raw_ptr<MockCryptoClientStream> last_stream_;
   base::queue<const ProofVerifyDetailsChromium*> proof_verify_details_queue_;
   std::unique_ptr<quic::QuicConfig> config_;
   bool use_mock_crypter_;

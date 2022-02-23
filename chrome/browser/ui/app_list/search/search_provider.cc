@@ -29,7 +29,9 @@ void SearchProvider::SwapResults(Results* new_results) {
   if (app_list_features::IsCategoricalSearchEnabled()) {
     Results results;
     results.swap(*new_results);
-    search_controller_->SetResults(ResultType(), std::move(results));
+    if (search_controller_)
+      search_controller_->SetResults(this, std::move(results));
+    FireResultChanged();
   } else {
     results_.swap(*new_results);
     FireResultChanged();
@@ -37,14 +39,23 @@ void SearchProvider::SwapResults(Results* new_results) {
 }
 
 void SearchProvider::ClearResults() {
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
+  if (app_list_features::IsCategoricalSearchEnabled()) {
+    Results results;
+    SwapResults(&results);
+    FireResultChanged();
+  } else {
     results_.clear();
     FireResultChanged();
   }
 }
 
 void SearchProvider::ClearResultsSilently() {
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
+  if (app_list_features::IsCategoricalSearchEnabled()) {
+    // Don't call `SwapResults()` to avoid calling `FireResultsChanged()`.
+    Results results;
+    if (search_controller_)
+      search_controller_->SetResults(this, std::move(results));
+  } else {
     results_.clear();
   }
 }
@@ -54,6 +65,10 @@ void SearchProvider::FireResultChanged() {
     return;
 
   result_changed_callback_.Run();
+}
+
+bool SearchProvider::ShouldBlockZeroState() const {
+  return false;
 }
 
 }  // namespace app_list

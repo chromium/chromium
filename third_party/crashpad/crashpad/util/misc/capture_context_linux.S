@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "util/misc/arm64_pac_bti.S"
+
 // namespace crashpad {
 // void CaptureContext(ucontext_t* context);
 // }  // namespace crashpad
@@ -38,6 +40,7 @@
 
 CAPTURECONTEXT_SYMBOL:
 CAPTURECONTEXT_SYMBOL2:
+  CRASHPAD_AARCH64_VALID_CALL_TARGET
 
 #if defined(__i386__)
 
@@ -313,14 +316,15 @@ CAPTURECONTEXT_SYMBOL2:
   stp x26, x27, [x0, #0x188]
   stp x28, x29, [x0, #0x198]
 
-  // The original LR can't be recovered.
+  // The original LR can't be recovered, therefore no need to sign x30 with PAC.
   str x30, [x0, #0x1a8]
 
   // Use x1 as a scratch register.
   mov x1, SP
   str x1, [x0, #0x1b0] // context->uc_mcontext.sp
 
-  // The link register holds the return address for this function.
+  // The link register holds the return address for this function and won't be
+  // recovered, therefore no need to sign x30 with PAC.
   str x30, [x0, #0x1b8]  // context->uc_mcontext.pc
 
   // pstate should hold SPSR but NZCV are the only bits we know about.

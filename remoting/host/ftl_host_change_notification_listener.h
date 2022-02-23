@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
@@ -51,8 +51,8 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
  private:
   void OnHostDeleted();
 
-  Listener* listener_;
-  SignalStrategy* signal_strategy_;
+  raw_ptr<Listener> listener_;
+  raw_ptr<SignalStrategy> signal_strategy_;
   base::WeakPtrFactory<FtlHostChangeNotificationListener> weak_factory_{this};
 };
 

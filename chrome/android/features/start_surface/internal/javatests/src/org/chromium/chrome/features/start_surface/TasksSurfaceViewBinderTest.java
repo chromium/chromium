@@ -28,14 +28,13 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link TasksSurfaceViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
+public class TasksSurfaceViewBinderTest extends BlankUiTestActivityTestCase {
     private ViewGroup mParentView;
     private ViewGroup mTasksSurfaceView;
-    private View mTopToolbarPlaceholderView;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -49,14 +48,11 @@ public class TasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
             // for the TasksSurfaceViewBinder.
             mParentView = new FrameLayout(getActivity());
             mTasksSurfaceView = new FrameLayout(getActivity());
-            mTopToolbarPlaceholderView = new View(getActivity());
-            mTasksSurfaceView.addView(mTopToolbarPlaceholderView);
             getActivity().setContentView(mParentView);
 
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
             mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                    new TasksSurfaceViewBinder.ViewHolder(
-                            mParentView, mTasksSurfaceView, mTopToolbarPlaceholderView),
+                    new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
                     TasksSurfaceViewBinder::bind);
         });
     }
@@ -76,8 +72,7 @@ public class TasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
         assertNotNull(mTasksSurfaceView.getParent());
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
         assertEquals(10, layoutParams.bottomMargin);
-        ViewGroup.LayoutParams layoutParams1 = mTopToolbarPlaceholderView.getLayoutParams();
-        assertEquals(20, layoutParams1.height);
+        assertEquals(20, layoutParams.topMargin);
 
         mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
         assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
@@ -104,11 +99,11 @@ public class TasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
     public void testSetTopBarHeight() {
         mPropertyModel.set(TOP_MARGIN, 10);
         mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-        ViewGroup.LayoutParams layoutParams = mTopToolbarPlaceholderView.getLayoutParams();
-        assertEquals(10, layoutParams.height);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        assertEquals("Top margin isn't initialized correctly.", 10, layoutParams.topMargin);
 
         mPropertyModel.set(TOP_MARGIN, 20);
-        layoutParams = mTopToolbarPlaceholderView.getLayoutParams();
-        assertEquals(20, layoutParams.height);
+        layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        assertEquals("Wrong top margin.", 20, layoutParams.topMargin);
     }
 }

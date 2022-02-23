@@ -31,11 +31,11 @@ component("gpu") {
   # media-related content code should access //media/gpu.
   visibility = [
     ":*",
+    "//ash/components/arc/mojom:media",
+    "//ash/components/arc/mojom:media_mojolpm",
+    "//ash/components/arc/video_accelerator:common",
     "//chrome/gpu",
     "//chromecast/*",
-    "//components/arc/mojom:media",
-    "//components/arc/mojom:media_mojolpm",
-    "//components/arc/video_accelerator:common",
     "//components/chromeos_camera/*",
     "//components/mirroring/service:mirroring_service",
     "//components/viz/service/main",
@@ -185,6 +185,7 @@ component("gpu") {
       "windows/d3d11_h264_accelerator.h",
       "windows/d3d11_picture_buffer.cc",
       "windows/d3d11_picture_buffer.h",
+      "windows/d3d11_status.cc",
       "windows/d3d11_status.h",
       "windows/d3d11_texture_selector.cc",
       "windows/d3d11_texture_selector.h",
@@ -209,19 +210,22 @@ component("gpu") {
       "windows/dxva_picture_buffer_win.h",
       "windows/dxva_video_decode_accelerator_win.cc",
       "windows/dxva_video_decode_accelerator_win.h",
-      "windows/hresult_status_debug_device.cc",
-      "windows/hresult_status_debug_device.h",
       "windows/init_guid.cc",
       "windows/media_foundation_video_encode_accelerator_win.cc",
       "windows/media_foundation_video_encode_accelerator_win.h",
       "windows/supported_profile_helpers.cc",
       "windows/supported_profile_helpers.h",
     ]
+    if (enable_platform_hevc_decoding) {
+      sources += [
+        "windows/d3d11_h265_accelerator.cc",
+        "windows/d3d11_h265_accelerator.h",
+      ]
+    }
     configs += [ "//third_party/khronos:khronos_headers" ]
     public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
       "//gpu/ipc/common:common",
-      "//media/base/win:hresult_status_helper",
       "//media/parsers",
       "//third_party/angle:includes",
       "//ui/display",
@@ -313,6 +317,16 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_win || use_vaapi) {
+    sources += [
+      "vp9_svc_layers.cc",
+      "vp9_svc_layers.h",
+      "vpx_rate_control.cc",
+      "vpx_rate_control.h",
+    ]
+    configs += [ "//third_party/libvpx:libvpx_config" ]
+    deps += [ "//third_party/libvpx:libvpxrc" ]
+  }
   if (use_libgav1_parser) {
     sources += [
       "av1_decoder.cc",
@@ -488,7 +502,12 @@ source_set("unit_tests") {
   if (enable_platform_hevc_decoding) {
     sources += [ "h265_decoder_unittest.cc" ]
   }
-  if (is_chromeos_ash && (use_v4l2_codec || use_vaapi)) {
+  if (is_linux || is_chromeos) {
+    sources += [ "buffer_validation_unittest.cc" ]
+  }
+
+  # TODO(b/219079009): consider running these tests without VA-API or V4L2.
+  if (is_chromeos && (use_v4l2_codec || use_vaapi)) {
     deps += [ "//media/gpu/chromeos:unit_tests" ]
   }
   if (use_vaapi) {
@@ -528,6 +547,10 @@ source_set("unit_tests") {
 
   if (is_mac) {
     deps += [ "//media/gpu/mac:unit_tests" ]
+  }
+
+  if (is_win || use_vaapi) {
+    sources += [ "vp9_svc_layers_unittest.cc" ]
   }
 }
 
@@ -573,6 +596,7 @@ if (use_v4l2_codec || use_vaapi) {
     data = [ "//media/test/data/" ]
     deps = [
       ":buildflags",
+      ":common",
       "test:frame_file_writer",
       "test:frame_validator",
       "test:helpers",
@@ -590,6 +614,7 @@ if (use_v4l2_codec || use_vaapi) {
     data = [ "//media/test/data/" ]
     deps = [
       ":buildflags",
+      ":common",
       "test:frame_validator",
       "test:helpers",
       "test:test_helpers",

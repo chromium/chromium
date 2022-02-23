@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.EventFilter;
@@ -64,12 +63,6 @@ public abstract class Layout {
         /** Use a viewport that accounts for the browser controls state in the previous layout. */
         int USE_PREVIOUS_BROWSER_CONTROLS_STATE = 3;
     }
-
-    // Defines to make the code easier to read.
-    public static final boolean NEED_TITLE = true;
-    public static final boolean NO_TITLE = false;
-    public static final boolean SHOW_CLOSE_BUTTON = true;
-    public static final boolean NO_CLOSE_BUTTON = false;
 
     /** Length of the unstalling animation. **/
     public static final long UNSTALLED_ANIMATION_DURATION_MS = 500;
@@ -172,31 +165,26 @@ public abstract class Layout {
      * Creates a {@link LayoutTab}.
      * @param id              The id of the reference {@link Tab} in the {@link TabModel}.
      * @param isIncognito     Whether the new tab is incognito.
-     * @param showCloseButton True to show and activate a close button on the border.
-     * @param isTitleNeeded   Whether a title will be shown.
      * @return                The newly created {@link LayoutTab}.
      */
-    public LayoutTab createLayoutTab(
-            int id, boolean isIncognito, boolean showCloseButton, boolean isTitleNeeded) {
-        return createLayoutTab(id, isIncognito, showCloseButton, isTitleNeeded, -1.f, -1.f);
+    public LayoutTab createLayoutTab(int id, boolean isIncognito) {
+        return createLayoutTab(id, isIncognito, -1.f, -1.f);
     }
 
     /**
      * Creates a {@link LayoutTab}.
      * @param id               The id of the reference {@link Tab} in the {@link TabModel}.
      * @param isIncognito      Whether the new tab is incognito.
-     * @param showCloseButton  True to show and activate a close button on the border.
-     * @param isTitleNeeded    Whether a title will be shown.
      * @param maxContentWidth  The max content width of the tab.  Negative numbers will use the
      *                         original content width.
      * @param maxContentHeight The max content height of the tab.  Negative numbers will use the
      *                         original content height.
      * @return                 The newly created {@link LayoutTab}.
      */
-    public LayoutTab createLayoutTab(int id, boolean isIncognito, boolean showCloseButton,
-            boolean isTitleNeeded, float maxContentWidth, float maxContentHeight) {
-        LayoutTab layoutTab = mUpdateHost.createLayoutTab(
-                id, isIncognito, showCloseButton, isTitleNeeded, maxContentWidth, maxContentHeight);
+    public LayoutTab createLayoutTab(
+            int id, boolean isIncognito, float maxContentWidth, float maxContentHeight) {
+        LayoutTab layoutTab =
+                mUpdateHost.createLayoutTab(id, isIncognito, maxContentWidth, maxContentHeight);
         initLayoutTabFromHost(layoutTab);
         return layoutTab;
     }
@@ -450,7 +438,8 @@ public abstract class Layout {
         if (mNextTabId != Tab.INVALID_TAB_ID) {
             TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
             if (model != null) {
-                TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, mNextTabId));
+                TabModelUtils.setIndex(
+                        model, TabModelUtils.getTabIndexById(model, mNextTabId), false);
             }
             mNextTabId = Tab.INVALID_TAB_ID;
         }
@@ -745,7 +734,6 @@ public abstract class Layout {
      *
      * @param viewport          A viewport in which to display content in px.
      * @param visibleViewport   The visible section of the viewport in px.
-     * @param layerTitleCache   A layer title cache.
      * @param tabContentManager A tab content manager.
      * @param resourceManager   A resource manager.
      * @param browserControls   A browser controls state provider.
@@ -753,10 +741,10 @@ public abstract class Layout {
      *                          {@link Layout}.
      */
     public final SceneLayer getUpdatedSceneLayer(RectF viewport, RectF visibleViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        updateSceneLayer(viewport, visibleViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        updateSceneLayer(
+                viewport, visibleViewport, tabContentManager, resourceManager, browserControls);
         return getSceneLayer();
     }
 
@@ -792,8 +780,8 @@ public abstract class Layout {
      * should override this function in order for other functions to work.
      */
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {}
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {}
 
     /**
      * @return The {@link LayoutType}.

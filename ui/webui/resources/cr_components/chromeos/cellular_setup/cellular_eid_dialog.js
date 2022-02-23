@@ -64,7 +64,7 @@ Polymer({
     const context = this.getCanvasContext_();
     context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
     context.fillStyle = getComputedStyle(this.$.qrCodeCanvas)
-                            .getPropertyValue('--cros-dark-icon-color-primary');
+                            .getPropertyValue('--cros-icon-color-primary-dark');
     let index = 0;
     for (let x = 0; x < response.qrCode.size; x++) {
       for (let y = 0; y < response.qrCode.size; y++) {

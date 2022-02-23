@@ -141,7 +141,7 @@ Status ECGroup::CheckPrivateKey(const BigNum& priv_key) const {
     return InvalidArgumentError(
         "The given key is out of bounds, needs to be in [1, order) instead.");
   }
-  return OkStatus();
+  return absl::OkStatus();
 }
 
 StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveInternal(

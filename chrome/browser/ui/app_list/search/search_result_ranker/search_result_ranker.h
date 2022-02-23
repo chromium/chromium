@@ -27,7 +27,6 @@
 namespace app_list {
 
 class RecurrenceRanker;
-class SearchController;
 enum class RankingItemType;
 
 // SearchResultRanker re-ranks launcher search and zero-state results using a
@@ -43,7 +42,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
 
   // Performs all setup of rankers. This is separated from the constructor for
   // testing reasons.
-  void InitializeRankers(SearchController* search_controller);
+  void InitializeRankers();
 
   // Queries each model contained with the SearchResultRanker for its results,
   // and saves them for use on subsequent calls to Rank(). The given query may

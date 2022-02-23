@@ -50,9 +50,9 @@
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -61,6 +61,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -85,9 +86,11 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -1294,7 +1297,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
         chrome::ExecuteCommand(browser, IDC_NEW_TAB);
         break;
       }
-      FALLTHROUGH;  // To create new window.
+      [[fallthrough]];  // To create new window.
     case IDC_NEW_WINDOW:
       CreateBrowser(profile);
       break;
@@ -1449,7 +1452,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
       SessionService* sessionService =
           SessionServiceFactory::GetForProfileForSessionRestore(lastProfile);
       if (sessionService &&
-          sessionService->RestoreIfNecessary(std::vector<GURL>(),
+          sessionService->RestoreIfNecessary(StartupTabs(),
                                              /* restore_apps */ false))
         return NO;
     }
@@ -1597,11 +1600,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (IsProfileSignedOut(profile))
     return nullptr;  // Profile is locked.
 
-  // When opening a Guest session or if incognito is forced.
-  if (ProfileManager::IsOffTheRecordModeForced(profile))
-    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-
-  return profile;
+  return ProfileManager::MaybeForceOffTheRecordMode(profile);
 }
 
 - (void)getUrl:(NSAppleEventDescriptor*)event
@@ -1830,24 +1829,48 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
                           _menuState.get(), _lastProfile));
 }
 
+- (const ui::ThemeProvider&)lastActiveThemeProvider {
+  // Themes are only available while a profile is available.
+  DCHECK(_lastProfile);
+
+  // AppController is conceptually a root for Chromium Mac. As a result, it is
+  // allowed to refer to the profile to get a theme provider. Non-root UI
+  // concepts should rely on well known roots to obtain a ThemeProvider.
+  return ThemeService::GetThemeProviderForProfile(_lastProfile);
+}
+
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
+  if (!window) {
+    return NO;
+  }
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+  return browser && browser->is_type_normal();
+}
+
 - (void)updateMenuItemKeyEquivalents {
   BOOL enableCloseTabShortcut = NO;
+
   id target = [NSApp targetForAction:@selector(performClose:)];
 
-  // |target| is an instance of NSPopover or NSWindow.
-  // If a popover (likely the dictionary lookup popover), we want Cmd-W to
-  // close the popover so map it to "Close Window".
-  // Otherwise, map Cmd-W to "Close Tab" if it's a browser window.
-  if ([target isKindOfClass:[NSWindow class]]) {
-    NSWindow* window = target;
-    NSWindow* mainWindow = [NSApp mainWindow];
-    if (!window || ([window parentWindow] == mainWindow)) {
-      // If the target window is a child of the main window (e.g. a bubble), the
-      // main window should be the one that handles the close menu item action.
-      window = mainWindow;
+  // If `target` is a popover (likely the dictionary lookup popover) the
+  // main window should handle the close menu item action.
+  NSWindow* targetWindow = nil;
+  if ([target isKindOfClass:[NSPopover class]]) {
+    targetWindow =
+        [[[base::mac::ObjCCast<NSPopover>(target) contentViewController] view]
+            window];
+  } else {
+    targetWindow = base::mac::ObjCCast<NSWindow>(target);
+  }
+
+  if (targetWindow != nil) {
+    // If `targetWindow` is a child (a popover or bubble) the parent should
+    // handle the command.
+    if ([targetWindow parentWindow] != nil) {
+      targetWindow = [targetWindow parentWindow];
     }
-    Browser* browser = chrome::FindBrowserWithWindow(window);
-    enableCloseTabShortcut = browser && browser->is_type_normal();
+
+    enableCloseTabShortcut = [self windowHasBrowserTabs:targetWindow];
   }
 
   [self adjustCloseWindowMenuItemKeyEquivalent:enableCloseTabShortcut];
@@ -1969,6 +1992,18 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   });
 }
 
+- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem {
+  _closeWindowMenuItem = menuItem;
+}
+
+- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
+  _closeTabMenuItem = menuItem;
+}
+
+- (void)setLastProfileForTesting:(Profile*)profile {
+  _lastProfile = profile;
+}
+
 @end  // @implementation AppController
 
 //---------------------------------------------------------------------------
@@ -2017,7 +2052,7 @@ Profile* RunInSafeProfileHelper::GetSafeProfile(Profile* loaded_profile,
       break;
     case Profile::CREATE_STATUS_CREATED:
       NOTREACHED() << "Should only be called when profile loading is complete";
-      FALLTHROUGH;
+      [[fallthrough]];
     case Profile::CREATE_STATUS_LOCAL_FAIL:
       return nullptr;
   }
@@ -2062,10 +2097,11 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
   // best to bottleneck the openings through that for uniform handling.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   chrome::startup::IsFirstRun first_run =
-      first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                    : chrome::startup::IS_NOT_FIRST_RUN;
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
-  launch.OpenURLsInBrowser(browser, false, urls);
+  launch.OpenURLsInBrowser(browser, chrome::startup::IsProcessStartup::kNo,
+                           urls);
 
   // This NTP check should be replaced once https://crbug.com/624410 is fixed.
   if (startupIndex != TabStripModel::kNoTab &&

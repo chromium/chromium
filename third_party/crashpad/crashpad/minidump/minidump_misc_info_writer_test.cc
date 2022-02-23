@@ -19,7 +19,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
@@ -436,8 +435,7 @@ TEST(MinidumpMiscInfoWriter, TimeZoneStringsOverflow) {
 
   constexpr uint32_t kTimeZoneId = 2;
   constexpr int32_t kBias = 300;
-  MINIDUMP_MISC_INFO_N tmp;
-  ALLOW_UNUSED_LOCAL(tmp);
+  [[maybe_unused]] MINIDUMP_MISC_INFO_N tmp;
   std::string standard_name(base::size(tmp.TimeZone.StandardName) + 1, 's');
   constexpr int32_t kStandardBias = 0;
   std::string daylight_name(base::size(tmp.TimeZone.DaylightName), 'd');
@@ -528,8 +526,7 @@ TEST(MinidumpMiscInfoWriter, BuildStringsOverflow) {
   MinidumpFileWriter minidump_file_writer;
   auto misc_info_writer = std::make_unique<MinidumpMiscInfoWriter>();
 
-  MINIDUMP_MISC_INFO_N tmp;
-  ALLOW_UNUSED_LOCAL(tmp);
+  [[maybe_unused]] MINIDUMP_MISC_INFO_N tmp;
   std::string build_string(base::size(tmp.BuildString) + 1, 'B');
   std::string debug_build_string(base::size(tmp.DbgBldStr), 'D');
 

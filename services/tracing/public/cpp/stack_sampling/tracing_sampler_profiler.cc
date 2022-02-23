@@ -14,6 +14,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -206,7 +207,7 @@ class TracingSamplerProfilerDataSource
  private:
   // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
-  tracing::PerfettoProducer* producer_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<tracing::PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
   std::set<TracingSamplerProfiler*> profilers_;
   bool is_startup_tracing_ = false;
   bool is_started_ = false;
@@ -371,48 +372,23 @@ TracingSamplerProfiler::TracingProfileBuilder::GetModuleCache() {
 using SampleDebugProto =
     perfetto::protos::pbzero::ChromeSamplingProfilerSampleCollected;
 
-void RecordSampleCompletedEvent(base::PlatformThreadId sampled_thread_id,
-                                size_t frame_count,
-                                SampleDebugProto::WriteStatus write_status) {
-  TRACE_EVENT_INSTANT(
-      TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
-      "TracingProfileBuilder::OnSampleCompleted",
-      [&](perfetto::EventContext ctx) {
-        auto* sample_event =
-            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                ->set_chrome_sampling_profiler_sample_completed();
-        sample_event->set_frame_count(frame_count);
-        sample_event->set_write_status(write_status);
-        sample_event->set_sampled_thread_id(sampled_thread_id);
-      });
-}
-
 void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
     std::vector<base::Frame> frames,
     base::TimeTicks sample_timestamp) {
-  const size_t frame_size = frames.size();
   base::AutoLock l(trace_writer_lock_);
   if (!trace_writer_) {
     if (buffered_samples_.size() < kMaxBufferedSamples) {
       buffered_samples_.emplace_back(
           BufferedSample(sample_timestamp, std::move(frames)));
     }
-    RecordSampleCompletedEvent(sampled_thread_id_, frame_size,
-                               SampleDebugProto::WRITE_STATUS_BUFFERING_SAMPLE);
     return;
   }
   if (!buffered_samples_.empty()) {
     for (const auto& sample : buffered_samples_) {
-      RecordSampleCompletedEvent(
-          sampled_thread_id_, frame_size,
-          SampleDebugProto::WRITE_STATUS_WRITING_BUFFERED);
       WriteSampleToTrace(sample);
     }
     buffered_samples_.clear();
   }
-  // TODO(b/201276114): Remove this event once the bug is fixed.
-  RecordSampleCompletedEvent(sampled_thread_id_, frame_size,
-                             SampleDebugProto::WRITE_STATUS_WRITING_TO_TRACE);
   WriteSampleToTrace(BufferedSample(sample_timestamp, std::move(frames)));
 
   if (sample_callback_for_testing_) {
@@ -625,7 +601,7 @@ void TracingSamplerProfiler::StackProfileWriter::ResetEmittedState() {
 
 // static
 void TracingSamplerProfiler::MangleModuleIDIfNeeded(std::string* module_id) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Linux ELF module IDs are 160bit integers, which we need to mangle
   // down to 128bit integers to match the id that Breakpad outputs.
   // Example on version '66.0.3359.170' x64:
@@ -777,7 +753,7 @@ void TracingSamplerProfiler::StartTracing(
 
   profile_builder_ = profile_builder.get();
   // Create and start the stack sampling profiler.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
   const auto create_unwinders = []() {
     std::vector<std::unique_ptr<base::Unwinder>> unwinders;
@@ -797,13 +773,13 @@ void TracingSamplerProfiler::StartTracing(
                                             module_cache));
   profiler_->Start();
 #endif
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder));
   if (aux_unwinder_factory_)
     profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
   profiler_->Start();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
   if (loader_lock_sampling_thread_)

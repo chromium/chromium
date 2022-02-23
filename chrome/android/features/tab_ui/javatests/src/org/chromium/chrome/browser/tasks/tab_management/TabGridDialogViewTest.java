@@ -31,15 +31,15 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * DummyUiActivity Tests for the {@link TabGridDialogView}.
+ * BlankUiTestActivity Tests for the {@link TabGridDialogView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabGridDialogViewTest extends DummyUiActivityTestCase {
+public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private int mToolbarHeight;
     private int mTopMargin;
     private int mSideMargin;

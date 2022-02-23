@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/touch_action.h"
@@ -35,9 +36,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 class CrossProcessFrameConnector;
@@ -111,7 +112,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
-  void ShowWithVisibility(PageVisibilityState page_visibility) final;
+  void ShowWithVisibility(PageVisibilityState page_visibility) override;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
@@ -156,7 +157,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       override;
   bool IsRenderWidgetHostViewChildFrame() override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // RenderWidgetHostView implementation.
   void SetActive(bool active) override;
   void ShowDefinitionForSelection() override;
@@ -168,7 +169,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const std::string& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
@@ -262,7 +263,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // frame_connector_ provides a platform abstraction. Messages
   // sent through it are routed to the embedding renderer process.
-  CrossProcessFrameConnector* frame_connector_;
+  raw_ptr<CrossProcessFrameConnector> frame_connector_;
 
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

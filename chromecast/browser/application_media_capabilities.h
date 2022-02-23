@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_APPLICATION_MEDIA_CAPABILITIES_H_
 #define CHROMECAST_BROWSER_APPLICATION_MEDIA_CAPABILITIES_H_
 
-#include "base/macros.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -16,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,7 +42,7 @@ std::vector<content::WebPluginInfo> GetPlugins() {
   auto callback =
       base::BindOnce(&GetPluginsInfoCallback, &plugins, run_loop.QuitClosure());
   content::PluginService::GetInstance()->GetPlugins(std::move(callback));
-  run_loop.RunUntilIdle();
+  run_loop.Run();
   return plugins;
 }
 
@@ -48,25 +50,25 @@ std::vector<content::WebPluginInfo> GetPlugins() {
 
 using ChromePluginTest = InProcessBrowserTest;
 
-// Verify that the official builds have the known set of plugins.
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // http://crbug.com/1147726
-#define MAYBE_InstalledPlugins DISABLED_InstalledPlugins
-#else
-#define MAYBE_InstalledPlugins InstalledPlugins
-#endif
-IN_PROC_BROWSER_TEST_F(ChromePluginTest, MAYBE_InstalledPlugins) {
-  const char* expected[] = {
-      "Chrome PDF Plugin",
-      "Native Client",
+// Verify a known subset of plugins for the build configuration.
+// TODO(https://crbug.com/1297566): Fix and re-eanble test.
+IN_PROC_BROWSER_TEST_F(ChromePluginTest, DISABLED_InstalledPlugins) {
+  base::flat_set<std::string> expected = {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "Chrome PDF Plugin",
+
+#if BUILDFLAG(ENABLE_NACL)
+    "Native Client",
+#endif  // BUILDFLAG(ENABLE_NACL)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
 
-  std::vector<content::WebPluginInfo> plugins = GetPlugins();
-  for (size_t i = 0; i < base::size(expected); ++i) {
-    size_t j = 0;
-    for (; j < plugins.size(); ++j) {
-      if (plugins[j].name == base::ASCIIToUTF16(expected[i]))
-        break;
-    }
-    ASSERT_TRUE(j != plugins.size()) << "Didn't find " << expected[i];
+  auto actual = GetPlugins();
+  for (const auto& cur_actual : actual) {
+    expected.erase(base::UTF16ToASCII(cur_actual.name));
+  }
+
+  for (const auto& not_found : expected) {
+    ADD_FAILURE() << "Didn't find " << not_found;
   }
 }

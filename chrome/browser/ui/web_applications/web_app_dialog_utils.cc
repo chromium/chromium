@@ -18,12 +18,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/navigation_entry.h"
@@ -36,7 +36,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     chrome::PwaInProductHelpState iph_state,
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);
@@ -59,7 +59,7 @@ WebAppInstalledCallback& GetInstalledCallbackForTesting() {
 
 void OnWebAppInstalled(WebAppInstalledCallback callback,
                        const AppId& installed_app_id,
-                       InstallResultCode code) {
+                       webapps::InstallResultCode code) {
   if (GetInstalledCallbackForTesting())
     std::move(GetInstalledCallbackForTesting()).Run(installed_app_id, code);
 
@@ -101,6 +101,9 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
       browser->tab_strip_model()->GetActiveWebContents();
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   DCHECK(provider);
+
+  if (provider->install_manager().IsInstallingForWebContents(web_contents))
+    return;
 
   webapps::WebappInstallSource install_source =
       webapps::InstallableMetrics::GetInstallSource(

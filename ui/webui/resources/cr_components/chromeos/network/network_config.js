@@ -41,6 +41,8 @@ const mojom = chromeos.networkConfig.mojom;
 /** @type {string}  */ const NO_CERTS_HASH = 'no-certs';
 /** @type {string}  */ const NO_USER_CERT_HASH = 'no-user-cert';
 
+/** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
+
 Polymer({
   is: 'network-config',
 
@@ -138,6 +140,20 @@ Polymer({
       type: Object,
       value: null,
     },
+
+    /**
+     * The cached result of installed server CA certificates.
+     * @private {
+     *     undefined|Array<!chromeos.networkConfig.mojom.NetworkCertificate>}
+     */
+    cachedServerCaCerts_: Array,
+
+    /**
+     * The cached result of installed user certificates.
+     * @private {
+     *     undefined|Array<!chromeos.networkConfig.mojom.NetworkCertificate>}
+     */
+    cachedUserCerts_: Array,
 
     /**
      * Used to populate the 'Server CA certificate' dropdown.
@@ -373,6 +389,7 @@ Polymer({
     'updateEapOuter_(eapProperties_.outer)',
     'updateEapCerts_(eapProperties_.*, serverCaCerts_, userCerts_)',
     'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
+    'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_)',
     'updateVpnType_(configProperties_, vpnType_)',
     'updateVpnIPsecCerts_(vpnType_,' +
         'configProperties_.typeConfig.vpn.ipSec.*, serverCaCerts_, userCerts_)',
@@ -414,6 +431,8 @@ Polymer({
     this.managedProperties_ = null;
     this.configProperties_ = undefined;
     this.propertiesSent_ = false;
+    this.cachedServerCaCerts_ = undefined;
+    this.cachedUserCerts_ = undefined;
     this.selectedServerCaHash_ = undefined;
     this.selectedUserCertHash_ = undefined;
 
@@ -617,45 +636,8 @@ Polymer({
   /** NetworkListenerBehavior override */
   onNetworkCertificatesChanged() {
     this.networkConfig_.getNetworkCertificates().then(response => {
-      const vpn = this.configProperties_.typeConfig.vpn;
-      const isOpenVpn =
-          !!vpn && !!vpn.type && vpn.type.value === mojom.VpnType.kOpenVPN;
-
-      const caCerts = response.serverCas.slice();
-      if (!isOpenVpn) {
-        // 'Default' is the same as 'Do not check' except that 'Default' sets
-        // eap.useSystemCas (which does not apply to OpenVPN).
-        caCerts.unshift(this.getDefaultCert_(
-            chromeos.networkConfig.mojom.CertificateType.kServerCA,
-            this.i18n('networkCAUseDefault'), DEFAULT_HASH));
-      }
-      caCerts.push(this.getDefaultCert_(
-          chromeos.networkConfig.mojom.CertificateType.kServerCA,
-          this.i18n('networkCADoNotCheck'), DO_NOT_CHECK_HASH));
-      this.set('serverCaCerts_', caCerts);
-
-      let userCerts = response.userCerts.slice();
-      // Only certs available for network authentication can be used.
-      userCerts.forEach(function(cert) {
-        if (!cert.availableForNetworkAuth) {
-          cert.hash = '';
-        }  // Clear the hash to invalidate the certificate.
-      });
-      if (isOpenVpn) {
-        // OpenVPN allows but does not require a user certificate.
-        userCerts.unshift(this.getDefaultCert_(
-            chromeos.networkConfig.mojom.CertificateType.kUserCert,
-            this.i18n('networkNoUserCert'), NO_USER_CERT_HASH));
-      }
-      if (!userCerts.length) {
-        userCerts = [this.getDefaultCert_(
-            chromeos.networkConfig.mojom.CertificateType.kUserCert,
-            this.i18n('networkCertificateNoneInstalled'), NO_CERTS_HASH)];
-      }
-      this.set('userCerts_', userCerts);
-
-      this.updateSelectedCerts_();
-      this.updateCertError_();
+      this.set('cachedServerCaCerts_', response.serverCas.slice());
+      this.set('cachedUserCerts_', response.userCerts.slice());
     });
   },
 
@@ -887,7 +869,13 @@ Polymer({
     };
     if (wireguard.peers && wireguard.peers.activeValue) {
       for (const peer of wireguard.peers.activeValue) {
-        config.peers.push(Object.assign({}, peer));
+        const peerCopied = Object.assign({}, peer);
+        if (this.hasGuid_()) {
+          // Shill does not return exact value for crendential fields, showing
+          // a placeholder here.
+          peerCopied.presharedKey = PLACEHOLDER_CREDENTIAL;
+        }
+        config.peers.push(peerCopied);
       }
     }
     return config;
@@ -1172,6 +1160,54 @@ Polymer({
   },
 
   /** @private */
+  updateCertItems_() {
+    if (this.configProperties_ === undefined ||
+        this.cachedServerCaCerts_ === undefined ||
+        this.cachedUserCerts_ === undefined) {
+      return;
+    }
+
+    const isOpenVpn = this.vpnType_ === VPNConfigType.OPEN_VPN;
+    const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC_CERT;
+    const caCerts = this.cachedServerCaCerts_.slice();
+    if (!isOpenVpn && !isIpsec) {
+      // 'Default' is the same as 'Do not check' except that 'Default' sets
+      // eap.useSystemCas (which does not apply to OpenVPN and IPsec-based
+      // VPNs).
+      caCerts.unshift(this.getDefaultCert_(
+          chromeos.networkConfig.mojom.CertificateType.kServerCA,
+          this.i18n('networkCAUseDefault'), DEFAULT_HASH));
+    }
+    caCerts.push(this.getDefaultCert_(
+        chromeos.networkConfig.mojom.CertificateType.kServerCA,
+        this.i18n('networkCADoNotCheck'), DO_NOT_CHECK_HASH));
+    this.set('serverCaCerts_', caCerts);
+
+    let userCerts = this.cachedUserCerts_.slice();
+    // Only certs available for network authentication can be used.
+    userCerts.forEach(function(cert) {
+      if (!cert.availableForNetworkAuth) {
+        cert.hash = '';
+      }  // Clear the hash to invalidate the certificate.
+    });
+    if (isOpenVpn) {
+      // OpenVPN allows but does not require a user certificate.
+      userCerts.unshift(this.getDefaultCert_(
+          chromeos.networkConfig.mojom.CertificateType.kUserCert,
+          this.i18n('networkNoUserCert'), NO_USER_CERT_HASH));
+    }
+    if (!userCerts.length) {
+      userCerts = [this.getDefaultCert_(
+          chromeos.networkConfig.mojom.CertificateType.kUserCert,
+          this.i18n('networkCertificateNoneInstalled'), NO_CERTS_HASH)];
+    }
+    this.set('userCerts_', userCerts);
+
+    this.updateSelectedCerts_();
+    this.updateCertError_();
+  },
+
+  /** @private */
   updateVpnType_() {
     if (this.configProperties_ === undefined || this.vpnType_ === undefined) {
       return;
@@ -1254,6 +1290,9 @@ Polymer({
       return;
     }
     const ipSec = this.configProperties_.typeConfig.vpn.ipSec;
+    if (!ipSec) {
+      return;
+    }
     const pem = ipSec.serverCaPems ? ipSec.serverCaPems[0] : undefined;
     const certId =
         ipSec.clientCertType === 'PKCS11Id' ? ipSec.clientCertPkcs11Id : '';
@@ -1266,6 +1305,9 @@ Polymer({
       return;
     }
     const openVpn = this.configProperties_.typeConfig.vpn.openVpn;
+    if (!openVpn) {
+      return;
+    }
     const pem = openVpn.serverCaPems ? openVpn.serverCaPems[0] : undefined;
     const certId =
         openVpn.clientCertType === 'PKCS11Id' ? openVpn.clientCertPkcs11Id : '';
@@ -1645,6 +1687,10 @@ Polymer({
     if (!this.isValidWireGuardKey_(peer.publicKey)) {
       return false;
     }
+    if (!!peer.presharedKey && peer.presharedKey !== PLACEHOLDER_CREDENTIAL &&
+        !this.isValidWireGuardKey_(peer.presharedKey)) {
+      return false;
+    }
     // endpoint should be the form of IP:port or hostname:port
     if (!peer.endpoint || !peer.endpoint.match(/^[a-zA-Z0-9\-\.]+:[0-9]+$/i)) {
       return false;
@@ -1807,9 +1853,10 @@ Polymer({
     propertiesToSet.typeConfig.vpn.host = 'wireguard';
     propertiesToSet.ipAddressConfigType = 'Static';
     propertiesToSet.staticIpConfig = {
-      ipAddress: this.ipAddressInput_,
       gateway: this.ipAddressInput_,
+      ipAddress: this.ipAddressInput_,
       routingPrefix: 32,
+      type: chromeos.networkConfig.mojom.IPConfigType.kIPv4,
     };
     if (this.nameServersInput_) {
       propertiesToSet.nameServersConfigType = 'Static';
@@ -1820,6 +1867,14 @@ Polymer({
       delete wireguard.privateKey;
     } else if (this.wireguardKeyType_ === WireGuardKeyConfigType.GENERATE_NEW) {
       wireguard.privateKey = '';
+    }
+    assert(!!wireguard.peers);
+    for (const peer of wireguard.peers) {
+      if (peer.presharedKey === PLACEHOLDER_CREDENTIAL) {
+        delete peer.presharedKey;  // No modification
+      } else if (peer.presharedKey === undefined) {
+        peer.presharedKey = '';  // Explicitly removed
+      }
     }
   },
 

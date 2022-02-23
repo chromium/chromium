@@ -80,7 +80,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    std::u16string text = android_node->GetInnerText();
+    std::u16string text = android_node->GetTextContentUTF16();
     std::u16string concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,

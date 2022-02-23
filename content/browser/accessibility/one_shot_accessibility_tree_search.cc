@@ -424,6 +424,12 @@ bool AccessibilityRadioGroupPredicate(BrowserAccessibility* start,
   return node->GetRole() == ax::mojom::Role::kRadioGroup;
 }
 
+bool AccessibilitySectionPredicate(BrowserAccessibility* start,
+                                   BrowserAccessibility* node) {
+  return AccessibilityLandmarkPredicate(start, node) ||
+         node->GetRole() == ax::mojom::Role::kHeading;
+}
+
 bool AccessibilityTablePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
   return ui::IsTableLike(node->GetRole());

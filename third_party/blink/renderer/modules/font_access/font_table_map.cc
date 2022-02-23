@@ -14,7 +14,8 @@ void FontTableMap::Trace(Visitor* visitor) const {
 }
 
 class FontTableMapIterationSource final
-    : public PairIterable<String, Member<Blob>>::IterationSource {
+    : public PairIterable<String, IDLString, Member<Blob>, Blob>::
+          IterationSource {
  public:
   explicit FontTableMapIterationSource(const FontTableMap::MapType& map) {
     for (const auto& table_name : map.Keys()) {
@@ -39,7 +40,8 @@ class FontTableMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(table_data_);
-    PairIterable<String, Member<Blob>>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, Member<Blob>, Blob>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -48,7 +50,7 @@ class FontTableMapIterationSource final
   unsigned current_index_;
 };
 
-PairIterable<String, Member<Blob>>::IterationSource*
+PairIterable<String, IDLString, Member<Blob>, Blob>::IterationSource*
 FontTableMap::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<FontTableMapIterationSource>(table_map_);
 }

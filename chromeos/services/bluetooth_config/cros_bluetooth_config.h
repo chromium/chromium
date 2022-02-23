@@ -23,9 +23,11 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class BluetoothDeviceStatusNotifier;
+class BluetoothPowerController;
 class DeviceCache;
 class DeviceNameManager;
 class DeviceOperationHandler;
+class DiscoveredDevicesProvider;
 class DiscoverySessionManager;
 class FastPairDelegate;
 class Initializer;
@@ -69,11 +71,13 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   mojo::ReceiverSet<mojom::CrosBluetoothConfig> receivers_;
 
   std::unique_ptr<AdapterStateController> adapter_state_controller_;
+  std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;
   std::unique_ptr<DeviceNameManager> device_name_manager_;
   std::unique_ptr<DeviceCache> device_cache_;
   std::unique_ptr<SystemPropertiesProvider> system_properties_provider_;
   std::unique_ptr<BluetoothDeviceStatusNotifier>
       bluetooth_device_status_notifier_;
+  std::unique_ptr<DiscoveredDevicesProvider> discovered_devices_provider_;
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;
   std::unique_ptr<DeviceOperationHandler> device_operation_handler_;
   FastPairDelegate* fast_pair_delegate_ = nullptr;

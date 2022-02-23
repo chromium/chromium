@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -25,8 +26,10 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/explore_sites/most_visited_client.h"
+#else
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -53,8 +56,8 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
   void OnURLFilterChanged() override;
 
  private:
-  Profile* const profile_;
-  Observer* supervisor_observer_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<Observer> supervisor_observer_;
   base::ScopedObservation<SupervisedUserService, SupervisedUserServiceObserver>
       register_observation_{this};
 };
@@ -108,12 +111,12 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),
 #else
       nullptr,
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       ChromeCustomLinksManagerFactory::NewForProfile(profile),
 #else
       nullptr,
@@ -127,12 +130,17 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess())),
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      std::make_unique<SupervisorBridge>(profile)
+      std::make_unique<SupervisorBridge>(profile),
 #else
-      nullptr
+      nullptr,
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+      web_app::IsAnyChromeAppToWebAppMigrationEnabled(*profile)
+#else
+      false
 #endif
   );
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   most_visited_sites->SetExploreSitesClient(
       explore_sites::MostVisitedClient::Create());
 #endif

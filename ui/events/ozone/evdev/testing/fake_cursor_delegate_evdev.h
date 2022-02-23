@@ -29,7 +29,7 @@ class FakeCursorDelegateEvdev : public CursorDelegateEvdev {
   void MoveCursor(const gfx::Vector2dF& delta) override {
     cursor_location_ = gfx::PointF(delta.x(), delta.y());
   }
-  bool IsCursorVisible() override { return 1; }
+  bool IsCursorVisible() override { return true; }
   gfx::Rect GetCursorConfinedBounds() override {
     NOTIMPLEMENTED();
     return gfx::Rect();

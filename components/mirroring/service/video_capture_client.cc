@@ -91,30 +91,33 @@ void VideoCaptureClient::RequestRefreshFrame() {
   video_capture_host_->RequestRefreshFrame(DeviceId());
 }
 
-void VideoCaptureClient::OnStateChanged(media::mojom::VideoCaptureState state) {
+void VideoCaptureClient::OnStateChanged(
+    media::mojom::VideoCaptureResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << __func__ << " state: " << state;
-
-  switch (state) {
-    case media::mojom::VideoCaptureState::STARTED:
-      RequestRefreshFrame();
-      break;
-    case media::mojom::VideoCaptureState::FAILED:
-      if (!error_callback_.is_null())
-        std::move(error_callback_).Run();
-      break;
-    case media::mojom::VideoCaptureState::PAUSED:
-    case media::mojom::VideoCaptureState::RESUMED:
-      break;
-    case media::mojom::VideoCaptureState::STOPPED:
-    case media::mojom::VideoCaptureState::ENDED:
-      client_buffers_.clear();
-      mapped_buffers_.clear();
-      weak_factory_.InvalidateWeakPtrs();
-      error_callback_.Reset();
-      frame_deliver_callback_.Reset();
-      receiver_.reset();
-      break;
+  if (result->which() == media::mojom::VideoCaptureResult::Tag::STATE) {
+    media::mojom::VideoCaptureState state = result->get_state();
+    DVLOG(2) << __func__ << " state: " << state;
+    switch (state) {
+      case media::mojom::VideoCaptureState::STARTED:
+        RequestRefreshFrame();
+        break;
+      case media::mojom::VideoCaptureState::PAUSED:
+      case media::mojom::VideoCaptureState::RESUMED:
+        break;
+      case media::mojom::VideoCaptureState::STOPPED:
+      case media::mojom::VideoCaptureState::ENDED:
+        client_buffers_.clear();
+        mapped_buffers_.clear();
+        weak_factory_.InvalidateWeakPtrs();
+        error_callback_.Reset();
+        frame_deliver_callback_.Reset();
+        receiver_.reset();
+        break;
+    }
+  } else {
+    DVLOG(2) << __func__ << " Failed with an error.";
+    if (!error_callback_.is_null())
+      std::move(error_callback_).Run();
   }
 }
 
@@ -126,7 +129,7 @@ void VideoCaptureClient::OnNewBuffer(
 
   if (!buffer_handle->is_read_only_shmem_region() &&
       !buffer_handle->is_shared_buffer_handle()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (!buffer_handle->is_gpu_memory_buffer_handle()) {
       NOTIMPLEMENTED();
       return;
@@ -194,7 +197,7 @@ void VideoCaptureClient::OnBufferReady(
   scoped_refptr<media::VideoFrame> frame;
   BufferFinishedCallback buffer_finished_callback;
   if (buffer_iter->second->is_gpu_memory_buffer_handle()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     frame = media::VideoFrame::WrapUnacceleratedIOSurface(
         buffer_iter->second->get_gpu_memory_buffer_handle().Clone(),
         buffer->info->visible_rect, buffer->info->timestamp);
@@ -260,7 +263,9 @@ void VideoCaptureClient::OnBufferReady(
     LOG(DFATAL) << "Unable to wrap shared memory mapping.";
     video_capture_host_->ReleaseBuffer(DeviceId(), buffer->buffer_id,
                                        media::VideoCaptureFeedback());
-    OnStateChanged(media::mojom::VideoCaptureState::FAILED);
+
+    OnStateChanged(media::mojom::VideoCaptureResult::NewErrorCode(
+        media::VideoCaptureError::kDeviceClientTooManyFramesDroppedY16));
     return;
   }
   frame->AddDestructionObserver(
@@ -277,11 +282,12 @@ void VideoCaptureClient::OnBufferReady(
         nv12_to_i420_pool_->CreateFrame(
             media::PIXEL_FORMAT_I420, frame->coded_size(),
             frame->visible_rect(), frame->natural_size(), frame->timestamp());
-    media::Status status =
+    media::EncoderStatus status =
         media::ConvertAndScaleFrame(*frame, *new_frame, nv12_to_i420_tmp_buf_);
     if (!status.is_ok()) {
       LOG(DFATAL) << "Unable to convert frame to I420.";
-      OnStateChanged(media::mojom::VideoCaptureState::FAILED);
+      OnStateChanged(media::mojom::VideoCaptureResult::NewErrorCode(
+          media::VideoCaptureError::kDeviceClientTooManyFramesDroppedY16));
       return;
     }
     frame = new_frame;

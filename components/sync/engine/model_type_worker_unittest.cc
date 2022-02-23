@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,13 +19,13 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/model_type_processor.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -441,7 +442,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   // Non-owned, possibly null pointer. This object belongs to the
   // ModelTypeWorker under test.
-  MockModelTypeProcessor* mock_type_processor_ = nullptr;
+  raw_ptr<MockModelTypeProcessor> mock_type_processor_ = nullptr;
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test
@@ -809,39 +810,49 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_MultipleDuplicateHashes) {
   EXPECT_EQ(kValue3, result[2]->entity.specifics.preference().value());
 }
 
-// Covers the scenario where two updates have the same client tag hash but
+// Covers the scenario where updates have the same client tag hash but
 // different server IDs. This scenario is considered a bug on the server.
 TEST_F(ModelTypeWorkerTest,
        ReceiveUpdates_DuplicateClientTagHashesForDistinctServerIds) {
   NormalInitialize();
 
-  // First create two entities with different tags, so they get assigned
+  // First create three entities with different tags, so they get assigned
   // different server ids.
-  SyncEntity entity1 = server()->UpdateFromServer(
+  SyncEntity oldest_entity = server()->UpdateFromServer(
       /*version_offset=*/10, GenerateTagHash(kTag1),
       GenerateSpecifics("key1", "value1"));
-  SyncEntity entity2 = server()->UpdateFromServer(
-      /*version_offset=*/10, GenerateTagHash(kTag2),
+  SyncEntity second_newest_entity = server()->UpdateFromServer(
+      /*version_offset=*/11, GenerateTagHash(kTag2),
       GenerateSpecifics("key2", "value2"));
-  // Mimic a bug on the server by modifying the second entity to have the same
-  // tag as the first one.
-  entity2.set_client_defined_unique_tag(GenerateTagHash(kTag1).value());
+  SyncEntity newest_entity = server()->UpdateFromServer(
+      /*version_offset=*/12, GenerateTagHash(kTag3),
+      GenerateSpecifics("key3", "value3"));
+
+  // Mimic a bug on the server by modifying all entities to have the same tag.
+  second_newest_entity.set_client_defined_unique_tag(
+      oldest_entity.client_defined_unique_tag());
+  newest_entity.set_client_defined_unique_tag(
+      oldest_entity.client_defined_unique_tag());
+
+  // Send |newest_entity| in the middle position, to rule out the worker is
+  // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
-      server()->GetProgress(), server()->GetContext(), {&entity1, &entity2},
+      server()->GetProgress(), server()->GetContext(),
+      {&oldest_entity, &newest_entity, &second_newest_entity},
       status_controller());
 
   ApplyUpdates();
 
-  // Make sure the first update has been discarded.
+  // Make sure the update with latest version was kept.
   ASSERT_EQ(1u, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> result =
       processor()->GetNthUpdateResponse(0);
   ASSERT_EQ(1u, result.size());
   ASSERT_TRUE(result[0]);
-  EXPECT_EQ(entity2.id_string(), result[0]->entity.id);
+  EXPECT_EQ(newest_entity.id_string(), result[0]->entity.id);
 }
 
-// Covers the scenario where two updates have the same GUID as originator client
+// Covers the scenario where updates have the same GUID as originator client
 // item ID but different server IDs. This scenario is considered a bug on the
 // server.
 TEST_F(ModelTypeWorkerTest,
@@ -849,35 +860,48 @@ TEST_F(ModelTypeWorkerTest,
   const std::string kOriginatorClientItemId = base::GenerateGUID();
   const std::string kURL1 = "http://url1";
   const std::string kURL2 = "http://url2";
+  const std::string kURL3 = "http://url3";
   const std::string kServerId1 = "serverid1";
   const std::string kServerId2 = "serverid2";
+  const std::string kServerId3 = "serverid3";
 
   NormalInitialize();
 
-  sync_pb::SyncEntity entity1;
-  sync_pb::SyncEntity entity2;
+  sync_pb::SyncEntity oldest_entity;
+  sync_pb::SyncEntity second_newest_entity;
+  sync_pb::SyncEntity newest_entity;
 
-  // Generate two entities with the same originator client item ID.
-  entity1.set_id_string(kServerId1);
-  entity2.set_id_string(kServerId2);
-  entity1.mutable_specifics()->mutable_bookmark()->set_url(kURL1);
-  entity2.mutable_specifics()->mutable_bookmark()->set_url(kURL2);
-  entity1.set_originator_client_item_id(kOriginatorClientItemId);
-  entity2.set_originator_client_item_id(kOriginatorClientItemId);
+  oldest_entity.set_version(1000);
+  second_newest_entity.set_version(1001);
+  newest_entity.set_version(1002);
 
+  // Generate entities with the same originator client item ID.
+  oldest_entity.set_id_string(kServerId1);
+  second_newest_entity.set_id_string(kServerId2);
+  newest_entity.set_id_string(kServerId3);
+  oldest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL1);
+  second_newest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL2);
+  newest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL3);
+  oldest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+  second_newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+  newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+
+  // Send |newest_entity| in the middle position, to rule out the worker is
+  // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
-      server()->GetProgress(), server()->GetContext(), {&entity1, &entity2},
+      server()->GetProgress(), server()->GetContext(),
+      {&oldest_entity, &newest_entity, &second_newest_entity},
       status_controller());
 
   ApplyUpdates();
 
-  // Make sure the first update has been discarded.
+  // Make sure the update with latest version was kept.
   ASSERT_EQ(1u, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> result =
       processor()->GetNthUpdateResponse(0);
   ASSERT_EQ(1u, result.size());
   ASSERT_TRUE(result[0]);
-  EXPECT_EQ(kURL2, result[0]->entity.specifics.bookmark().url());
+  EXPECT_EQ(newest_entity.id_string(), result[0]->entity.id);
 }
 
 // Covers the scenario where two updates have the same originator client item ID
@@ -1335,7 +1359,7 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
-      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+      ModelTypeForHistograms::kPreferences, 1);
 
   // Send empty GetUpdatesResponse. The counter shouldn't change.
   worker()->ProcessGetUpdatesResponse(
@@ -1362,24 +1386,30 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   ApplyUpdates();
 
   // Double check the histogram hasn't been recorded so far.
-  const std::string histogram_name =
-      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound2.") +
-      ModelTypeToHistogramSuffix(worker()->GetModelType());
-  EXPECT_TRUE(histogram_tester.GetAllSamples(histogram_name).empty());
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples("Sync.ModelTypeTimeUntilEncryptionKeyFound2")
+                  .empty());
+  EXPECT_TRUE(histogram_tester
+                  .GetAllSamples(
+                      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE")
+                  .empty());
 
   // Make the key available. The correct number of GetUpdates cycles should
   // have been recorded.
   DecryptPendingKey();
   ASSERT_EQ(2, get_updates_while_should_have_been_known);
   histogram_tester.ExpectUniqueSample(
-      histogram_name, get_updates_while_should_have_been_known, 1);
+      "Sync.ModelTypeTimeUntilEncryptionKeyFound2",
+      get_updates_while_should_have_been_known, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeTimeUntilEncryptionKeyFound2.PREFERENCE",
+      get_updates_while_should_have_been_known, 1);
 }
 
 TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kIgnoreSyncEncryptionKeysLongMissing);
+  feature_list.InitAndEnableFeature(kIgnoreSyncEncryptionKeysLongMissing);
 
   NormalInitialize();
   worker()->SetMinGetUpdatesToIgnoreKeyForTest(2);
@@ -1403,9 +1433,9 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
 
   // Should have recorded that 1 entity was dropped.
   histogram_tester.ExpectUniqueSample(
-      base::StrCat({"Sync.ModelTypeUndecryptablePendingUpdatesDropped.",
-                    ModelTypeToHistogramSuffix(worker()->GetModelType())}),
-      1, 1);
+      "Sync.ModelTypeUndecryptablePendingUpdatesDropped", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ModelTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
 
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
@@ -1415,7 +1445,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // Should have recorded that 1 incoming update was ignored.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeUpdateDrop.DecryptionPendingForTooLong",
-      ModelTypeHistogramValue(worker()->GetModelType()), 1);
+      ModelTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got
@@ -1528,7 +1558,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                 FakeCryptographer(), PREFERENCES, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_FALSE(data.id.empty());
-  EXPECT_FALSE(data.parent_id.empty());
+  EXPECT_FALSE(data.legacy_parent_id.empty());
   EXPECT_EQ("CLIENT_TAG", data.client_tag_hash.value());
   EXPECT_EQ("SERVER_TAG", data.server_defined_unique_tag);
   EXPECT_FALSE(data.is_deleted());
@@ -1810,14 +1840,14 @@ void GetLocalChangesRequestTest::ScheduleBlockingWait(
 // Tests that request doesn't block when cancelation signal is already signaled.
 TEST_F(GetLocalChangesRequestTest, CancelationSignaledBeforeRequest) {
   cancelation_signal_.Signal();
-  auto request = MakeRequest();
+  scoped_refptr<GetLocalChangesRequest> request = MakeRequest();
   request->WaitForResponseOrCancelation();
   EXPECT_TRUE(request->WasCancelled());
 }
 
 // Tests that signaling cancelation signal while request is blocked unblocks it.
 TEST_F(GetLocalChangesRequestTest, CancelationSignaledAfterRequest) {
-  auto request = MakeRequest();
+  scoped_refptr<GetLocalChangesRequest> request = MakeRequest();
   ScheduleBlockingWait(request);
   start_event_.Wait();
   cancelation_signal_.Signal();
@@ -1828,7 +1858,7 @@ TEST_F(GetLocalChangesRequestTest, CancelationSignaledAfterRequest) {
 // Tests that setting response unblocks request.
 TEST_F(GetLocalChangesRequestTest, SuccessfulRequest) {
   const std::string kHash1 = "SomeHash";
-  auto request = MakeRequest();
+  scoped_refptr<GetLocalChangesRequest> request = MakeRequest();
   ScheduleBlockingWait(request);
   start_event_.Wait();
   {

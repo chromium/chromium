@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/mock_callback.h"
@@ -67,7 +68,7 @@ class CodecWrapperTest : public testing::Test {
   // So that we can get the thread's task runner.
   base::test::TaskEnvironment task_environment_;
 
-  NiceMock<MockMediaCodecBridge>* codec_;
+  raw_ptr<NiceMock<MockMediaCodecBridge>> codec_;
   std::unique_ptr<CodecWrapper> wrapper_;
   scoped_refptr<CodecSurfaceBundle> surface_bundle_;
   NiceMock<base::MockCallback<CodecWrapper::OutputReleasedCB>>

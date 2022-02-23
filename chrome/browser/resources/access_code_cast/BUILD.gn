@@ -1,0 +1,89 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android, "access_code_cast is not for android.")
+
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+html_to_js("web_components") {
+  js_files = [
+    "access_code_cast.ts",
+    "code_input/code_input.ts",
+    "error_message/error_message.ts",
+  ]
+}
+
+copy("copy_browser_proxy") {
+  sources = [ "browser_proxy.ts" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js" ]
+  mojom_folder =
+      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/"
+  sources = [ "$mojom_folder/access_code_cast.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+copy("copy_mojo_dep") {
+  deps = [ "//components/media_router/common/mojom:route_request_result_code_webui_js" ]
+  mojom_folder = "$root_gen_dir/mojom-webui/components/media_router/common/mojom/"
+  sources = [ "$mojom_folder/route_request_result_code.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_browser_proxy",
+    ":copy_mojo",
+    ":copy_mojo_dep",
+    ":web_components",
+  ]
+  root_dir = "$target_gen_dir"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "access_code_cast.mojom-webui.js",
+    "access_code_cast.ts",
+    "browser_proxy.ts",
+    "code_input/code_input.ts",
+    "error_message/error_message.ts",
+    "route_request_result_code.mojom-webui.js",
+  ]
+}
+
+generate_grd("build_grd") {
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  deps = [ ":build_ts" ]
+
+  grd_prefix = "access_code_cast"
+  out_grd = resources_grd_file
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/access_code_cast_resources.h",
+    "grit/access_code_cast_resources_map.cc",
+    "grit/access_code_cast_resources_map.h",
+    "access_code_cast_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

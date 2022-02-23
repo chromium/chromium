@@ -3,9 +3,14 @@
   <title>Accessing document.cookie in urn document</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <link rel="webbundle" href="../resources/wbn/urn-uuid-html.wbn"
-  resources="urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae" /></head>
+</head>
 <body>
+<script type="webbundle">
+  {
+    "source": "../resources/wbn/uuid-in-package-html.wbn",
+    "resources": ["uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae"]
+  }
+</script>
 <script>
 
 async function createIframeAndWaitLoad(t, frame_url) {
@@ -41,7 +46,7 @@ const isUrnDocumentAccessedCookiesUseCounted = () => {
 const runIsUrnDocumentAccessedCookiesUseCountedString =
   '(' + isUrnDocumentAccessedCookiesUseCounted.toString() + ')()';
 
-const urn_document_url = 'urn:uuid:429fcc4e-0696-4bad-b099-ee9175f023ae';
+const urn_document_url = 'uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae';
 
 promise_test(async (t) => {
   const iframe = await createIframeAndWaitLoad(t, urn_document_url);

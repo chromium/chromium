@@ -4,7 +4,7 @@
 
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 
-#include "ash/grit/ash_sample_system_web_app_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_sample_system_web_app_untrusted_resources_map.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
 #include "content/public/browser/web_contents.h"

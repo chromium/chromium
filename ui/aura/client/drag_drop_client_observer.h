@@ -25,8 +25,14 @@ class AURA_EXPORT DragDropClientObserver {
   // Called when dragging is updated.
   virtual void OnDragUpdated(const ui::DropTargetEvent& event) {}
 
-  // Called when dragging ended.
-  virtual void OnDragEnded() {}
+  // Called when dragging completes successfully.
+  virtual void OnDragCompleted(const ui::DropTargetEvent& event) {}
+
+  // Called when dragging is cancelled.
+  //
+  // NOTE: Drag 'n drop cancellations may be processed asynchronously.
+  // Hence, this hook might be called before the action is actually processed.
+  virtual void OnDragCancelled() {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when the set of currently selected drag operation changes during the

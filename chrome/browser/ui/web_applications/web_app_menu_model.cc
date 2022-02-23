@@ -36,6 +36,9 @@
 #include "ui/views/widget/widget.h"
 #endif
 
+using WebExposedIsolationLevel =
+    content::RenderFrameHost::WebExposedIsolationLevel;
+
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;
 
@@ -109,7 +112,14 @@ void WebAppMenuModel::Build() {
   if (IsCommandIdEnabled(kExtensionsMenuCommandId))
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
-  AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
+
+  // Isolated apps shouldn't be opened in Chrome.
+  bool is_isolated_app =
+      web_contents &&
+      web_contents->GetMainFrame()->GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  if (!is_isolated_app)
+    AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
@@ -127,7 +137,7 @@ void WebAppMenuModel::Build() {
 
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(browser()->app_controller());
   if (browser()->app_controller()->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -137,7 +147,7 @@ void WebAppMenuModel::Build() {
                 ui::EscapeMenuLabelAmpersands(
                     browser()->app_controller()->GetAppShortName())));
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   AddSeparator(ui::LOWER_SEPARATOR);
 
   CreateZoomMenu();

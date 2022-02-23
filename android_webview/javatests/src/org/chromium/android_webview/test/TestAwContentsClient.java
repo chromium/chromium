@@ -8,6 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.http.SslError;
 
+import androidx.annotation.NonNull;
+
+import org.junit.Assert;
+
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.base.Callback;
@@ -57,6 +61,7 @@ public class TestAwContentsClient extends NullContentsClient {
     private final FaviconHelper mFaviconHelper;
     private final TouchIconHelper mTouchIconHelper;
     private final RenderProcessGoneHelper mRenderProcessGoneHelper;
+    private final ShowFileChooserHelper mShowFileChooserHelper;
 
     public TestAwContentsClient() {
         super(ThreadUtils.getUiThreadLooper());
@@ -82,6 +87,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mFaviconHelper = new FaviconHelper();
         mTouchIconHelper = new TouchIconHelper();
         mRenderProcessGoneHelper = new RenderProcessGoneHelper();
+        mShowFileChooserHelper = new ShowFileChooserHelper();
         mAllowSslError = true;
     }
 
@@ -159,6 +165,10 @@ public class TestAwContentsClient extends NullContentsClient {
 
     public RenderProcessGoneHelper getRenderProcessGoneHelper() {
         return mRenderProcessGoneHelper;
+    }
+
+    public ShowFileChooserHelper getShowFileChooserHelper() {
+        return mShowFileChooserHelper;
     }
 
     /**
@@ -394,6 +404,49 @@ public class TestAwContentsClient extends NullContentsClient {
     public void onReceivedLoginRequest(String realm, String account, String args) {
         if (TRACE) Log.i(TAG, "onReceivedLoginRequest " + realm);
         getOnReceivedLoginRequestHelper().notifyCalled(realm, account, args);
+    }
+
+    /**
+     * Method to pass back a FileChooserParamsImpl object back to users of the class.
+     */
+    @Override
+    public void showFileChooser(
+            Callback<String[]> uploadFilePathsCallback, FileChooserParamsImpl fileChooserParams) {
+        uploadFilePathsCallback.onResult(mShowFileChooserHelper.getChosenFilesToUpload());
+        mShowFileChooserHelper.notifyCalled(fileChooserParams);
+    }
+
+    /**
+     * Callback helper for showFileChooser.
+     */
+    public static class ShowFileChooserHelper extends CallbackHelper {
+        private FileChooserParamsImpl mFileChooserParams;
+        private String[] mFilesUploaded;
+
+        public FileChooserParamsImpl getFileParams() {
+            Assert.assertNotNull("File Chooser parameters are null!", mFileChooserParams);
+            return mFileChooserParams;
+        }
+
+        /**
+         * Need to mock the action of uploading files when a user selects files.
+         * This sets up plumbing to provide files to the showFileChooser callback.
+         *
+         * @param files
+         */
+        public void setChosenFilesToUpload(@NonNull String[] files) {
+            mFilesUploaded = files;
+        }
+
+        public String[] getChosenFilesToUpload() {
+            Assert.assertNotNull("Files intended for upload are null!", mFilesUploaded);
+            return mFilesUploaded;
+        }
+
+        public void notifyCalled(FileChooserParamsImpl params) {
+            mFileChooserParams = params;
+            notifyCalled();
+        }
     }
 
     @Override

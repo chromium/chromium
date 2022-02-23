@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/installable/fake_installable_manager.h"
@@ -57,8 +57,8 @@ class FakeWebPageMetadataAgent
         std::move(handle)));
   }
 
-  // Set |web_app_info| to respond on |GetWebApplicationInfo|.
-  void SetWebApplicationInfo(const WebApplicationInfo& web_app_info) {
+  // Set |web_app_info| to respond on |GetWebAppInstallInfo|.
+  void SetWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
     web_app_info_ = web_app_info;
   }
 
@@ -72,13 +72,13 @@ class FakeWebPageMetadataAgent
     // Convert more fields as needed.
     DCHECK(web_app_info_.manifest_icons.empty());
     DCHECK(web_app_info_.mobile_capable ==
-           WebApplicationInfo::MOBILE_CAPABLE_UNSPECIFIED);
+           WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED);
 
     std::move(callback).Run(std::move(web_page_metadata));
   }
 
  private:
-  WebApplicationInfo web_app_info_;
+  WebAppInstallInfo web_app_info_;
 
   mojo::AssociatedReceiver<webapps::mojom::WebPageMetadataAgent> receiver_{
       this};
@@ -113,13 +113,13 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
         web_contents()->GetMainFrame());
   }
 
-  void SetRendererWebApplicationInfo(const WebApplicationInfo& web_app_info) {
-    fake_chrome_render_frame_.SetWebApplicationInfo(web_app_info);
+  void SetRendererWebAppInstallInfo(const WebAppInstallInfo& web_app_info) {
+    fake_chrome_render_frame_.SetWebAppInstallInfo(web_app_info);
   }
 
-  void GetWebApplicationInfoCallback(
+  void GetWebAppInstallInfoCallback(
       base::OnceClosure quit_closure,
-      std::unique_ptr<WebApplicationInfo> web_app_info) {
+      std::unique_ptr<WebAppInstallInfo> web_app_info) {
     web_app_info_ = std::move(web_app_info);
     std::move(quit_closure).Run();
   }
@@ -135,7 +135,7 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
     return content::WebContentsTester::For(web_contents());
   }
 
-  const std::unique_ptr<WebApplicationInfo>& web_app_info() {
+  const std::unique_ptr<WebAppInstallInfo>& web_app_info() {
     return web_app_info_.value();
   }
 
@@ -143,147 +143,147 @@ class WebAppDataRetrieverTest : public ChromeRenderViewHostTestHarness {
 
  private:
   FakeWebPageMetadataAgent fake_chrome_render_frame_;
-  absl::optional<std::unique_ptr<WebApplicationInfo>> web_app_info_;
+  absl::optional<std::unique_ptr<WebAppInstallInfo>> web_app_info_;
   std::vector<apps::IconInfo> icons_;
 };
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_NoEntry) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_NoEntry) {
   SetFakeWebPageMetadataAgent();
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_EQ(nullptr, web_app_info());
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlAbsent) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlAbsent) {
   SetFakeWebPageMetadataAgent();
 
   const GURL kFooUrl("https://foo.example");
   web_contents_tester()->NavigateAndCommit(kFooUrl);
 
-  WebApplicationInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.start_url = GURL();
 
-  SetRendererWebApplicationInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(original_web_app_info);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  // If the WebApplicationInfo has no URL, we fallback to the last committed
+  // If the WebAppInstallInfo has no URL, we fallback to the last committed
   // URL.
   EXPECT_EQ(kFooUrl, web_app_info()->start_url);
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_AppUrlPresent) {
   SetFakeWebPageMetadataAgent();
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
-  WebApplicationInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.start_url = GURL("https://bar.example");
 
-  SetRendererWebApplicationInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(original_web_app_info);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_EQ(original_web_app_info.start_url, web_app_info()->start_url);
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_TitleAbsentFromRenderer) {
   SetFakeWebPageMetadataAgent();
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   web_contents_tester()->SetTitle(kFooTitle);
 
-  WebApplicationInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.title = u"";
 
-  SetRendererWebApplicationInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(original_web_app_info);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  // If the WebApplicationInfo has no title, we fallback to the WebContents
+  // If the WebAppInstallInfo has no title, we fallback to the WebContents
   // title.
   EXPECT_EQ(kFooTitle, web_app_info()->title);
 }
 
 TEST_F(WebAppDataRetrieverTest,
-       GetWebApplicationInfo_TitleAbsentFromWebContents) {
+       GetWebAppInstallInfo_TitleAbsentFromWebContents) {
   SetFakeWebPageMetadataAgent();
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   web_contents_tester()->SetTitle(u"");
 
-  WebApplicationInfo original_web_app_info;
+  WebAppInstallInfo original_web_app_info;
   original_web_app_info.title = u"";
 
-  SetRendererWebApplicationInfo(original_web_app_info);
+  SetRendererWebAppInstallInfo(original_web_app_info);
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
-  // If the WebApplicationInfo has no title and the WebContents has no title, we
+  // If the WebAppInstallInfo has no title and the WebContents has no title, we
   // fallback to start_url.
   EXPECT_EQ(base::UTF8ToUTF16(web_app_info()->start_url.spec()),
             web_app_info()->title);
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_ConnectionError) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_ConnectionError) {
   // Do not set fake WebPageMetadataAgent to simulate connection error.
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_EQ(nullptr, web_app_info());
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_WebContentsDestroyed) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_WebContentsDestroyed) {
   SetFakeWebPageMetadataAgent();
 
   web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   DeleteContents();
   run_loop.Run();
@@ -341,7 +341,7 @@ TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   run_loop.Run();
 }
 
-TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
+TEST_F(WebAppDataRetrieverTest, GetWebAppInstallInfo_FrameNavigated) {
   SetFakeWebPageMetadataAgent();
 
   web_contents_tester()->SetTitle(kFooTitle);
@@ -351,9 +351,9 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
-  retriever.GetWebApplicationInfo(
+  retriever.GetWebAppInstallInfo(
       web_contents(),
-      base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
+      base::BindOnce(&WebAppDataRetrieverTest::GetWebAppInstallInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   web_contents_tester()->NavigateAndCommit(kFooUrl);
   run_loop.Run();

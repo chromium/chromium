@@ -135,6 +135,11 @@ void VideoFrameHandlerAsh::OnNewBuffer(
   } else if (buffer_handle->is_gpu_memory_buffer_handle()) {
     crosapi_handle->set_gpu_memory_buffer_handle(ToCrosapiGpuMemoryBufferHandle(
         std::move(buffer_handle->get_gpu_memory_buffer_handle())));
+  } else if (buffer_handle->is_read_only_shmem_region()) {
+    // Lacros is guaranteed to be newer than us so it's okay to skip the version
+    // check here.
+    crosapi_handle->set_read_only_shmem_region(
+        std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
     NOTREACHED() << "Unexpected new buffer type";
   }
@@ -178,6 +183,10 @@ void VideoFrameHandlerAsh::OnError(media::VideoCaptureError error) {
 void VideoFrameHandlerAsh::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   proxy_->OnFrameDropped(reason);
+}
+
+void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {
+  proxy_->OnFrameWithEmptyRegionCapture();
 }
 
 void VideoFrameHandlerAsh::OnLog(const std::string& message) {

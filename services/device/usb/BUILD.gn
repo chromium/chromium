@@ -50,6 +50,7 @@ static_library("usb") {
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
+    "//services/device:utility",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]
@@ -240,7 +241,10 @@ if (is_android) {
 
   android_library("java") {
     sources = java_sources_needing_jni
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }

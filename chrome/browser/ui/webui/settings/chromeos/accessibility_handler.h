@@ -10,10 +10,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/soda/soda_installer.h"
 
-namespace base {
-class ListValue;
-}
-
 class Profile;
 
 namespace chromeos {
@@ -35,19 +31,19 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
   // Callback which updates if startup sound is enabled. Visible for testing.
-  void HandleManageA11yPageReady(const base::ListValue* args);
+  void HandleManageA11yPageReady(base::Value::ConstListView args);
 
  private:
   friend class AccessibilityHandlerTest;
 
   // Callback for the messages to show settings for ChromeVox or
   // Select To Speak.
-  void HandleShowChromeVoxSettings(const base::ListValue* args);
-  void HandleShowSelectToSpeakSettings(const base::ListValue* args);
-  void HandleSetStartupSoundEnabled(const base::ListValue* args);
+  void HandleShowChromeVoxSettings(base::Value::ConstListView args);
+  void HandleShowSelectToSpeakSettings(base::Value::ConstListView args);
+  void HandleSetStartupSoundEnabled(base::Value::ConstListView args);
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
-      const base::ListValue* args);
-  void HandleShowChromeVoxTutorial(const base::ListValue* args);
+      base::Value::ConstListView args);
+  void HandleShowChromeVoxTutorial(base::Value::ConstListView args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

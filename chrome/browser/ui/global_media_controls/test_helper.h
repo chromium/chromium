@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_TEST_HELPER_H_
 
+#include "base/observer_list.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "content/public/browser/presentation_request.h"
 #include "testing/gmock/include/gmock/gmock.h"

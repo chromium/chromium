@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/nintendo_controller.h"

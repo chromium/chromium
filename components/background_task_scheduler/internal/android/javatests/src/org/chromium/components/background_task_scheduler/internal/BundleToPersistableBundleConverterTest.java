@@ -4,7 +4,6 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -26,7 +25,6 @@ import java.util.Set;
  * Tests for {@link BundleToPersistableBundleConverter}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BundleToPersistableBundleConverterTest {
     @Test

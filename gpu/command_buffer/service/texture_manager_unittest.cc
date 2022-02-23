@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"

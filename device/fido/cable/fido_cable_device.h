@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/fido_ble_connection.h"
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   // request, or else is empty if no request is currently pending.
   absl::optional<CancelToken> current_token_;
   absl::optional<FidoBleTransaction> transaction_;
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   absl::optional<EncryptionData> encryption_data_;
   base::WeakPtrFactory<FidoCableDevice> weak_factory_{this};

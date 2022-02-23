@@ -11,7 +11,7 @@ namespace features {
 
 namespace {
 
-// Array of features exposed through the Java Features brdige class. Entries in
+// Array of features exposed through the Java Features bridge class. Entries in
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h), and must be
 // replicated in the same order in PhotoPickerFeatures.java.
@@ -22,7 +22,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
 }  // namespace
 
 const base::Feature kPhotoPickerVideoSupport{"PhotoPickerVideoSupport",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 static jlong JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

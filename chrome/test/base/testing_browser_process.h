@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,7 +27,7 @@
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"
 #endif
 
@@ -35,7 +36,6 @@ class NotificationPlatformBridge;
 class NotificationUIManager;
 class PrefService;
 class SystemNotificationHelper;
-class WatchDogThread;
 
 namespace content {
 class NotificationService;
@@ -86,7 +86,6 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
   network::NetworkQualityTracker* network_quality_tracker() override;
-  WatchDogThread* watchdog_thread() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
   variations::VariationsService* variations_service() override;
@@ -103,14 +102,12 @@ class TestingBrowserProcess : public BrowserProcess {
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  federated_learning::FlocSortingLshClustersService*
-  floc_sorting_lsh_clusters_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
   NotificationUIManager* notification_ui_manager() override;
   NotificationPlatformBridge* notification_platform_bridge() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   IntranetRedirectDetector* intranet_redirect_detector() override;
 #endif
   void CreateDevToolsProtocolHandler() override;
@@ -128,7 +125,7 @@ class TestingBrowserProcess : public BrowserProcess {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void StartAutoupdateTimer() override {}
 #endif
 
@@ -139,14 +136,15 @@ class TestingBrowserProcess : public BrowserProcess {
 
   network_time::NetworkTimeTracker* network_time_tracker() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   gcm::GCMDriver* gcm_driver() override;
 #endif
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+  HidPolicyAllowedDevices* hid_policy_allowed_devices() override;
 #endif
   BuildState* GetBuildState() override;
   breadcrumbs::BreadcrumbPersistentStorageManager*
@@ -159,9 +157,6 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
-  void SetFlocSortingLshClustersService(
-      std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-          service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -214,13 +209,11 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-  std::unique_ptr<federated_learning::FlocSortingLshClustersService>
-      floc_sorting_lsh_clusters_service_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The following objects are not owned by TestingBrowserProcess:
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   std::unique_ptr<TestingBrowserProcessPlatformPart> platform_part_;
@@ -237,8 +230,9 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
+  std::unique_ptr<HidPolicyAllowedDevices> hid_policy_allowed_devices_;
   BuildState build_state_;
 #endif
 };

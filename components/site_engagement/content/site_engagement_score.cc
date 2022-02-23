@@ -16,6 +16,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/variations/variations_associated_data.h"
@@ -47,9 +48,10 @@ std::unique_ptr<base::DictionaryValue> GetSiteEngagementScoreDictForSettings(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT, NULL));
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
+          origin_url, origin_url, ContentSettingsType::SITE_ENGAGEMENT,
+          nullptr)));
 
   if (value.get())
     return value;
@@ -277,7 +279,7 @@ void SiteEngagementScore::Commit() {
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::move(score_dict_));
+      base::Value::FromUniquePtrValue(std::move(score_dict_)));
 }
 
 blink::mojom::EngagementLevel SiteEngagementScore::GetEngagementLevel() const {

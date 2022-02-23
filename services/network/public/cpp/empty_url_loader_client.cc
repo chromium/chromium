@@ -64,7 +64,11 @@ void EmptyURLLoaderClient::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void EmptyURLLoaderClient::OnReceiveResponse(
-    const mojom::URLResponseHeadPtr head) {}
+    const mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
+}
 
 void EmptyURLLoaderClient::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,

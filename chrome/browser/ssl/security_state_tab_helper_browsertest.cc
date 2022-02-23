@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -75,6 +75,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
@@ -1365,48 +1366,6 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
             observer.latest_security_level());
 }
 
-// Tests that legacy TLS pages show the correct security descriptions.
-class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
-    : public InProcessBrowserTest {
- public:
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings() {}
-
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings(
-      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings& operator=(
-      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
-
-  void SetUpOnMainThread() override {
-    net::SSLServerConfig config;
-    config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_1;
-    config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_1;
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK, config);
-    ASSERT_TRUE(https_server()->Start());
-  }
-
- protected:
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
- private:
-  net::EmbeddedTestServer https_server_{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-// Tests that a connection with legacy TLS versions (TLS 1.0/1.1) gets
-// downgraded to SecurityLevel WARNING and |connection_used_legacy_tls| is set.
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSDowngradesSecurityLevel) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(tab);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/ssl/google.html")));
-  WaitForInterstitial(tab);
-  ProceedThroughInterstitial(tab);
-
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
-}
-
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.
 // Regression test for https://crbug.com/760647.
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
@@ -1431,44 +1390,6 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
   ASSERT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
 
   EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
-}
-
-// Tests that the histogram for security level is recorded correctly for HTTPS
-// pages.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithAutoupgradesDisabled,
-                       HTTPSSecurityLevelHistogram) {
-  SetUpMockCertVerifierForHttpsServer(0, net::OK);
-  const char kHistogramName[] = "Security.SecurityLevel.CryptographicScheme";
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  {
-    base::HistogramTester histograms;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server_.GetURL("/title1.html")));
-    histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-  }
-
-  // Load mixed content and check that the histogram is recorded correctly.
-  {
-    base::HistogramTester histograms;
-    SecurityStyleTestObserver observer(contents);
-    EXPECT_TRUE(content::ExecuteScript(contents,
-                                       "var i = document.createElement('img');"
-                                       "i.src = 'http://example.test';"
-                                       "document.body.appendChild(i);"));
-    observer.WaitForDidChangeVisibleSecurityState();
-    histograms.ExpectUniqueSample(kHistogramName, security_state::WARNING, 1);
-  }
-
-  // Navigate away and the histogram should be recorded exactly once again, when
-  // the new navigation commits.
-  {
-    base::HistogramTester histograms;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server_.GetURL("/title2.html")));
-    histograms.ExpectUniqueSample(kHistogramName, security_state::SECURE, 1);
-  }
 }
 
 // Tests that the security level form submission histogram is logged correctly.
@@ -1652,7 +1573,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
   // The inner content of test.example.org_test.sxg has
   // "<script> document.title = document.location.href; </script>".
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  ASSERT_EQ(inner_url, contents->GetURL());
+  ASSERT_EQ(inner_url, contents->GetLastCommittedURL());
 
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1697,7 +1618,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
     // The inner content of test.example.org_test.sxg has
     // "<script> document.title = document.location.href; </script>".
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-    ASSERT_EQ(inner_url, contents->GetURL());
+    ASSERT_EQ(inner_url, contents->GetLastCommittedURL());
   }
 
   CheckSecurityInfoForSecure(
@@ -1752,7 +1673,7 @@ class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
   content::WebContents* web_contents() { return web_contents_; }
 
  protected:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1874,6 +1795,107 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
 
   // Shutdown server.
   ASSERT_TRUE(test_server->ShutdownAndWaitUntilComplete());
+}
+
+// For tests which use fenced frame.
+class SecurityStateTabHelperFencedFrameTest
+    : public SecurityStateTabHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SecurityStateTabHelperFencedFrameTest() {
+    // Enable or disable MixedContentAutoupgrade feature based on the test
+    // parameter.
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kMixedContentAutoupgrade, GetParam());
+  }
+  ~SecurityStateTabHelperFencedFrameTest() override = default;
+  SecurityStateTabHelperFencedFrameTest(
+      const SecurityStateTabHelperFencedFrameTest&) = delete;
+
+  SecurityStateTabHelperFencedFrameTest& operator=(
+      const SecurityStateTabHelperFencedFrameTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  bool IsAutoupgradeEnabled() { return GetParam(); }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SecurityStateTabHelperFencedFrameTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
+                       ChangeSecurityStateWhenLoadingInsecureContent) {
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = https_server_.GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Create a fenced frame with a page that displays insecure content.
+  GURL fenced_frame_url =
+      https_server_.GetURL("/ssl/page_displays_insecure_content.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  if (IsAutoupgradeEnabled()) {
+    // The security state of the web contents should not be changed because
+    // the MixedContentAutoupgrade feature changes the internal insecure url
+    // from http to https.
+    CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                               false, false,
+                               false /* expect cert status error */);
+  } else {
+    // The security state of the web contents should be changed to WARNING.
+    CheckSecurityInfoForSecure(web_contents(), security_state::WARNING, false,
+                               true, false,
+                               false /* expect cert status error */);
+  }
+}
+
+// TODO(crbug.com/1282044): This behavior should not be allowed, since it allows
+// mixed frames, which are otherwise blocked, once this is fixed, change this
+// test so it verifies the navigation is block.
+IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
+                       LoadFencedFrameViaInsecureURL) {
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = https_server_.GetURL("/empty.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Create a fenced frame with an insecure url.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
+
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  CheckSecurityInfoForSecure(web_contents(), security_state::DANGEROUS, false,
+                             false, true, false /* expect cert status error */);
 }
 
 }  // namespace

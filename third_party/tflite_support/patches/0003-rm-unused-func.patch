@@ -1,0 +1,224 @@
+From 9a8667b3d3be2ef20a88dfe9d50a1345d136da3e Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 7 Feb 2022 12:09:58 -0800
+Subject: [PATCH 03/12] rm unused func
+
+---
+ .../vision/utils/libyuv_frame_buffer_utils.cc | 201 +-----------------
+ 1 file changed, 1 insertion(+), 200 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
+index 0ece48636504e..6fd3ca81c984c 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
+@@ -1326,206 +1326,7 @@ absl::Status CropResize(const FrameBuffer& buffer, int x0, int y0, int x1,
+   }
+ }
+ 
+-// Returns the scaled dimension of the input_size best fit within the
+-// output_size bound while respecting the aspect ratio.
+-FrameBuffer::Dimension GetScaledDimension(FrameBuffer::Dimension input_size,
+-                                          FrameBuffer::Dimension output_size) {
+-  int original_width = input_size.width;
+-  int original_height = input_size.height;
+-  int bound_width = output_size.width;
+-  int bound_height = output_size.height;
+-  int new_width = original_width;
+-  int new_height = original_height;
+-
+-  // Try to fit the width first.
+-  new_width = bound_width;
+-  new_height = (new_width * original_height) / original_width;
+-
+-  // Try to fit the height if needed.
+-  if (new_height > bound_height) {
+-    new_height = bound_height;
+-    new_width = (new_height * original_width) / original_height;
+-  }
+-  return FrameBuffer::Dimension{.width = new_width, .height = new_height};
+-}
+-
+-// This method only supports kGRAY, kRGBA, and kRGB formats.
+-absl::Status UniformCropResizePlane(const FrameBuffer& buffer,
+-                                    std::vector<int> crop_coordinates,
+-                                    FrameBuffer* output_buffer) {
+-  int x0 = 0, y0 = 0;
+-  FrameBuffer::Dimension input_dimension = buffer.dimension();
+-  if (!crop_coordinates.empty()) {
+-    x0 = crop_coordinates[0];
+-    y0 = crop_coordinates[1];
+-    input_dimension =
+-        GetCropDimension(x0, crop_coordinates[2], y0, crop_coordinates[3]);
+-  }
+-  if (input_dimension == output_buffer->dimension()) {
+-    // Cropping only case.
+-    return CropPlane(buffer, x0, y0, crop_coordinates[2], crop_coordinates[3],
+-                     output_buffer);
+-  }
+-
+-  // Cropping is achieved by adjusting origin to (x0, y0).
+-  ASSIGN_OR_RETURN(int pixel_stride, GetPixelStrides(buffer.format()));
+-  int adjusted_offset =
+-      buffer.plane(0).stride.row_stride_bytes * y0 + x0 * pixel_stride;
+-  FrameBuffer::Plane plane = {
+-      /*buffer=*/buffer.plane(0).buffer + adjusted_offset,
+-      /*stride=*/{buffer.plane(0).stride.row_stride_bytes, pixel_stride}};
+-  auto adjusted_buffer =
+-      FrameBuffer::Create({plane}, input_dimension, buffer.format(),
+-                          buffer.orientation(), buffer.timestamp());
+-
+-  // Uniform resize is achieved by adjusting the resize dimension to fit the
+-  // output_buffer and respect the input aspect ratio at the same time. We
+-  // create an intermediate output buffer with adjusted dimension and point its
+-  // backing buffer to the output_buffer. Note the stride information on the
+-  // adjusted_output_buffer is not used in the Resize* methods.
+-  FrameBuffer::Dimension adjusted_dimension =
+-      GetScaledDimension(input_dimension, output_buffer->dimension());
+-  FrameBuffer::Plane output_plane = {/*buffer=*/output_buffer->plane(0).buffer,
+-                                     /*stride=*/output_buffer->plane(0).stride};
+-  auto adjusted_output_buffer = FrameBuffer::Create(
+-      {output_plane}, adjusted_dimension, output_buffer->format(),
+-      output_buffer->orientation(), output_buffer->timestamp());
+-
+-  switch (buffer.format()) {
+-    case FrameBuffer::Format::kRGB:
+-      return ResizeRgb(*adjusted_buffer, adjusted_output_buffer.get());
+-    case FrameBuffer::Format::kRGBA:
+-      return ResizeRgba(*adjusted_buffer, adjusted_output_buffer.get());
+-    case FrameBuffer::Format::kGRAY:
+-      return ResizeGray(*adjusted_buffer, adjusted_output_buffer.get());
+-    default:
+-      return CreateStatusWithPayload(
+-          StatusCode::kInternal,
+-          absl::StrFormat("Format %i is not supported.", buffer.format()),
+-          TfLiteSupportStatus::kImageProcessingError);
+-  }
+-}
+-
+-absl::Status UniformCropResizeYuv(const FrameBuffer& buffer,
+-                                  std::vector<int> crop_coordinates,
+-                                  FrameBuffer* output_buffer) {
+-  int x0 = 0, y0 = 0;
+-  FrameBuffer::Dimension input_dimension = buffer.dimension();
+-  if (!crop_coordinates.empty()) {
+-    x0 = crop_coordinates[0];
+-    y0 = crop_coordinates[1];
+-    input_dimension =
+-        GetCropDimension(x0, crop_coordinates[2], y0, crop_coordinates[3]);
+-  }
+-  if (input_dimension == output_buffer->dimension()) {
+-    // Cropping only case.
+-    int x1 = crop_coordinates[2];
+-    int y1 = crop_coordinates[3];
+-    switch (buffer.format()) {
+-      case FrameBuffer::Format::kNV12:
+-      case FrameBuffer::Format::kNV21:
+-        return CropNv(buffer, x0, y0, x1, y1, output_buffer);
+-      case FrameBuffer::Format::kYV12:
+-      case FrameBuffer::Format::kYV21:
+-        return CropYv(buffer, x0, y0, x1, y1, output_buffer);
+-      default:
+-        return CreateStatusWithPayload(
+-            StatusCode::kInternal,
+-            absl::StrFormat("Format %i is not supported.", buffer.format()),
+-            TfLiteSupportStatus::kImageProcessingError);
+-    }
+-  }
+-
+-  // Cropping is achieved by adjusting origin to (x0, y0).
+-  ASSIGN_OR_RETURN(FrameBuffer::YuvData input_data,
+-                   FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
+-  // Cropping YUV planes by offsetting the origins of each plane.
+-  // TODO(b/152629712): Investigate the impact of color shifting caused by the
+-  // bounding box with odd X or Y starting positions.
+-  const int plane_y_offset = input_data.y_row_stride * y0 + x0;
+-  const int plane_uv_offset = input_data.uv_row_stride * (y0 / 2) +
+-                              input_data.uv_pixel_stride * (x0 / 2);
+-  FrameBuffer::Plane adjusted_plane_y = {
+-      /*buffer=*/input_data.y_buffer + plane_y_offset,
+-      /*stride=*/{input_data.y_row_stride, /*pixel_stride_bytes=*/1}};
+-  FrameBuffer::Plane adjusted_plane_u = {
+-      /*buffer=*/input_data.u_buffer + plane_uv_offset,
+-      /*stride=*/{input_data.uv_row_stride, input_data.uv_pixel_stride}};
+-  FrameBuffer::Plane adjusted_plane_v = {
+-      /*buffer=*/input_data.v_buffer + plane_uv_offset,
+-      /*stride=*/{input_data.uv_row_stride, input_data.uv_pixel_stride}};
+-
+-  // Uniform resize is achieved by adjusting the resize dimension to fit the
+-  // output_buffer and respect the input aspect ratio at the same time. For
+-  // YUV formats, we need access to the actual output dimension to get the
+-  // correct address of each plane. For this, we are not calling ResizeNv or
+-  // ResizeYv but the libyuv scale methods directly.
+-  FrameBuffer::Dimension adjusted_dimension =
+-      GetScaledDimension(input_dimension, output_buffer->dimension());
+-  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
+-                   FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
+-
+-  switch (buffer.format()) {
+-    case FrameBuffer::Format::kNV12: {
+-      int ret = libyuv::NV12Scale(
+-          adjusted_plane_y.buffer, adjusted_plane_y.stride.row_stride_bytes,
+-          adjusted_plane_u.buffer, adjusted_plane_u.stride.row_stride_bytes,
+-          input_dimension.width, input_dimension.height,
+-          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+-          const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+-          adjusted_dimension.width, adjusted_dimension.height,
+-          libyuv::FilterMode::kFilterBilinear);
+-      if (ret != 0) {
+-        return CreateStatusWithPayload(
+-            StatusCode::kUnknown, "Libyuv NV12Scale operation failed.",
+-            TfLiteSupportStatus::kImageProcessingBackendError);
+-      }
+-      return absl::OkStatus();
+-    }
+-    case FrameBuffer::Format::kNV21: {
+-      int ret = libyuv::NV12Scale(
+-          adjusted_plane_y.buffer, adjusted_plane_y.stride.row_stride_bytes,
+-          adjusted_plane_v.buffer, adjusted_plane_v.stride.row_stride_bytes,
+-          input_dimension.width, input_dimension.height,
+-          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+-          const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
+-          adjusted_dimension.width, adjusted_dimension.height,
+-          libyuv::FilterMode::kFilterBilinear);
+-      if (ret != 0) {
+-        return CreateStatusWithPayload(
+-            StatusCode::kUnknown, "Libyuv NV12Scale operation failed.",
+-            TfLiteSupportStatus::kImageProcessingBackendError);
+-      }
+-      return absl::OkStatus();
+-    }
+-    case FrameBuffer::Format::kYV12:
+-    case FrameBuffer::Format::kYV21: {
+-      int ret = libyuv::I420Scale(
+-          adjusted_plane_y.buffer, adjusted_plane_y.stride.row_stride_bytes,
+-          adjusted_plane_u.buffer, adjusted_plane_u.stride.row_stride_bytes,
+-          adjusted_plane_v.buffer, adjusted_plane_v.stride.row_stride_bytes,
+-          input_dimension.width, input_dimension.height,
+-          const_cast<uint8_t*>(output_data.y_buffer), output_data.y_row_stride,
+-          const_cast<uint8_t*>(output_data.u_buffer), output_data.uv_row_stride,
+-          const_cast<uint8_t*>(output_data.v_buffer), output_data.uv_row_stride,
+-          adjusted_dimension.width, adjusted_dimension.height,
+-          libyuv::FilterMode::kFilterBilinear);
+-      if (ret != 0) {
+-        return CreateStatusWithPayload(
+-            StatusCode::kUnknown, "Libyuv I420Scale operation failed.",
+-            TfLiteSupportStatus::kImageProcessingBackendError);
+-      }
+-      return absl::OkStatus();
+-    }
+-    default:
+-      return CreateStatusWithPayload(
+-          StatusCode::kInternal,
+-          absl::StrFormat("Format %i is not supported.", buffer.format()),
+-          TfLiteSupportStatus::kImageProcessingError);
+-  }
+-  return absl::OkStatus();
+-}
+-}  // namespace
++} // namespace
+ 
+ absl::Status LibyuvFrameBufferUtils::Crop(const FrameBuffer& buffer, int x0,
+                                           int y0, int x1, int y1,
+-- 
+2.35.0.263.gb82422642f-goog
+

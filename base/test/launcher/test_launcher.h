@@ -15,10 +15,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/launch.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
 #include "base/test/launcher/test_results_tracker.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -110,7 +112,7 @@ class TestLauncher {
 
     int flags = 0;
     // These mirror values in base::LaunchOptions, see it for details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::LaunchOptions::Inherit inherit_mode =
         base::LaunchOptions::Inherit::kSpecific;
     base::HandlesToInheritVector handles_to_inherit;
@@ -134,7 +136,7 @@ class TestLauncher {
   // Runs the launcher. Must be called at most once.
   // command_line is null by default.
   // if null, uses command line for current process.
-  bool Run(CommandLine* command_line = nullptr) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Run(CommandLine* command_line = nullptr);
 
   // Launches a child process (assumed to be gtest-based binary) which runs
   // tests indicated by |test_names|.
@@ -156,7 +158,7 @@ class TestLauncher {
   // Returns true if child test processes should have dedicated temporary
   // directories.
   static constexpr bool SupportsPerChildTempDirs() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return true;
 #else
     // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
@@ -165,7 +167,7 @@ class TestLauncher {
   }
 
  private:
-  bool Init(CommandLine* command_line) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Init(CommandLine* command_line);
 
   // Gets tests from the delegate, and converts to TestInfo objects.
   // Catches and logs uninstantiated parameterized tests.
@@ -203,7 +205,7 @@ class TestLauncher {
   // Rest counters, retry tests list, and test result tracker.
   void OnTestIterationStart();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void OnShutdownPipeReadable();
 #endif
 
@@ -227,6 +229,8 @@ class TestLauncher {
   // EXPECT/ASSERT/DCHECK statements. Test launcher parses that
   // file to get additional information about test run (status,
   // error-messages, stack-traces and file/line for failures).
+  // |thread_id| is the actual worker thread that launching the child process.
+  // |process_num| is a sequence number of the process executed in the run.
   // |leaked_items| is the number of files and/or directories remaining in the
   // child process's temporary directory upon its termination.
   void ProcessTestResults(const std::vector<std::string>& test_names,
@@ -235,6 +239,8 @@ class TestLauncher {
                           TimeDelta elapsed_time,
                           int exit_code,
                           bool was_timeout,
+                          PlatformThreadId thread_id,
+                          int process_num,
                           int leaked_items);
 
   std::vector<std::string> CollectTests();
@@ -245,7 +251,7 @@ class TestLauncher {
   // is running on the correct thread.
   ThreadChecker thread_checker_;
 
-  TestLauncherDelegate* launcher_delegate_;
+  raw_ptr<TestLauncherDelegate> launcher_delegate_;
 
   // Support for outer sharding, just like gtest does.
   int32_t total_shards_;  // Total number of outer shards, at least one.

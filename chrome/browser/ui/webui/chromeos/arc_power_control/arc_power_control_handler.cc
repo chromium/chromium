@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
 
+#include "ash/components/arc/mojom/power.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/linux_util.h"
 #include "base/process/launch.h"
@@ -18,9 +21,6 @@
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/mojom/power.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace chromeos {
 
@@ -157,28 +157,21 @@ void ArcPowerControlHandler::OnWakefulnessChanged(
   }
 }
 
-void ArcPowerControlHandler::OnThrottle(ThrottleObserver::PriorityLevel level) {
+void ArcPowerControlHandler::OnThrottle(bool throttled) {
   UpdatePowerControlStatus();
 
-  std::string mode;
-  switch (instance_throttle_->enforced_level()) {
-    case ThrottleObserver::PriorityLevel::UNKNOWN:
-      mode = kThrottlingAuto;
-      break;
-    case ThrottleObserver::PriorityLevel::LOW:
-      mode = kThrottlingForce;
-      break;
-    default:
-      mode = kThrottlingDisable;
-      break;
-  }
+  std::string mode = kThrottlingAuto;
+  auto* observer = instance_throttle_->GetObserverByName(
+      arc::ArcInstanceThrottle::kChromeArcPowerControlPageObserver);
+  if (observer && observer->enforced())
+    mode = observer->active() ? kThrottlingDisable : kThrottlingForce;
 
   CallJavascriptFunction(GetJavascriptDomain() + "setThrottlingMode",
                          base::Value(mode));
 
   if (stop_tracing_timer_.IsRunning()) {
     throttling_events_.emplace_back(
-        std::make_pair(TRACE_TIME_TICKS_NOW(), level));
+        std::make_pair(TRACE_TIME_TICKS_NOW(), throttled));
   }
 }
 
@@ -199,19 +192,19 @@ void ArcPowerControlHandler::HandleReady(const base::ListValue* args) {
       base::BindOnce(&ArcPowerControlHandler::OnIsDeveloperMode,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  OnThrottle(instance_throttle_->level());
+  OnThrottle(instance_throttle_->should_throttle());
 }
 
 void ArcPowerControlHandler::HandleSetWakefulnessMode(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
@@ -220,7 +213,7 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
       arc::ArcServiceManager::Get()->arc_bridge_service()->power();
   DCHECK(power);
 
-  const std::string mode = args->GetList()[0].GetString();
+  const std::string mode = args->GetListDeprecated()[0].GetString();
   if (mode == kWakenessfullWakeUp) {
     if (wakefulness_mode_ == arc::mojom::WakefulnessMode::ASLEEP) {
       arc::mojom::PowerInstance* const power_instance =
@@ -249,41 +242,49 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
 }
 
 void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
     return;
   }
 
-  if (!args->GetList()[0].is_string()) {
+  if (!args->GetListDeprecated()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
 
-  ThrottleObserver::PriorityLevel enforced_level;
-  const std::string mode = args->GetList()[0].GetString();
+  auto* observer = instance_throttle_->GetObserverByName(
+      arc::ArcInstanceThrottle::kChromeArcPowerControlPageObserver);
+  if (!observer) {
+    LOG(ERROR)
+        << "An throttle observer for chrome://arc-power-control not found";
+    return;
+  }
+
+  const std::string mode = args->GetListDeprecated()[0].GetString();
   if (mode == kThrottlingDisable) {
-    enforced_level = ThrottleObserver::PriorityLevel::CRITICAL;
+    observer->SetActive(true);
+    observer->SetEnforced(true);
   } else if (mode == kThrottlingAuto) {
-    enforced_level = ThrottleObserver::PriorityLevel::UNKNOWN;
+    observer->SetActive(false);
+    observer->SetEnforced(false);
   } else if (mode == kThrottlingForce) {
-    enforced_level = ThrottleObserver::PriorityLevel::LOW;
+    observer->SetActive(false);
+    observer->SetEnforced(true);
   } else {
     LOG(ERROR) << "Invalid mode: " << mode;
     return;
   }
-
-  instance_throttle_->SetEnforced(enforced_level);
 }
 
 void ArcPowerControlHandler::HandleStartTracing(const base::ListValue* args) {
-  DCHECK(!args->GetList().size());
+  DCHECK(!args->GetListDeprecated().size());
   StartTracing();
 }
 
 void ArcPowerControlHandler::HandleStopTracing(const base::ListValue* args) {
-  DCHECK(!args->GetList().size());
+  DCHECK(!args->GetListDeprecated().size());
   StopTracing();
 }
 
@@ -298,7 +299,7 @@ void ArcPowerControlHandler::StartTracing() {
       std::make_pair(tracing_time_min_, wakefulness_mode_));
   throttling_events_.clear();
   throttling_events_.emplace_back(
-      std::make_pair(tracing_time_min_, instance_throttle_->level()));
+      std::make_pair(tracing_time_min_, instance_throttle_->should_throttle()));
   system_stat_collector_ = std::make_unique<arc::ArcSystemStatCollector>();
   system_stat_collector_->Start(kMaxIntervalToDisplay);
   stop_tracing_timer_.Start(FROM_HERE, system_stat_collector_->max_interval(),
@@ -361,23 +362,10 @@ void ArcPowerControlHandler::UpdatePowerControlStatus() {
   }
 
   status += " (";
-  switch (instance_throttle_->level()) {
-    case ThrottleObserver::PriorityLevel::UNKNOWN:
-      status += "throttling unknown";
-      break;
-    case ThrottleObserver::PriorityLevel::LOW:
-      status += "throttling";
-      break;
-    case ThrottleObserver::PriorityLevel::NORMAL:
-      status += "foreground";
-      break;
-    case ThrottleObserver::PriorityLevel::IMPORTANT:
-      status += "important foreground";
-      break;
-    case ThrottleObserver::PriorityLevel::CRITICAL:
-      status += "critical foreground";
-      break;
-  }
+  if (instance_throttle_->should_throttle())
+    status += "throttling";
+  else
+    status += "critical foreground";
   status += ")";
 
   CallJavascriptFunction(GetJavascriptDomain() + "setPowerControlStatus",

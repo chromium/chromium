@@ -188,11 +188,15 @@ class FlossAdapterClientTest : public testing::Test {
               static_cast<FlossAdapterClient::BluetoothTransport>(transport));
 
     auto response = ::dbus::Response::CreateEmpty();
+    dbus::MessageWriter writer(response.get());
+    writer.AppendBool(/*success=*/true);
     std::move(*cb).Run(response.get(), nullptr);
   }
 
-  void ExpectValidCreateBond(const absl::optional<Void>& ret,
+  void ExpectValidCreateBond(const absl::optional<bool>& ret,
                              const absl::optional<Error>& err) {
+    ASSERT_TRUE(ret.has_value());
+    EXPECT_TRUE(*ret);
     EXPECT_FALSE(err.has_value());
   }
 

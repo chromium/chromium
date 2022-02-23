@@ -1,0 +1,54 @@
+<html>
+<head>
+<script>
+var gaia = gaia || {};
+gaia.chromeOSLogin = {};
+
+gaia.chromeOSLogin.allowed_parent_urls_ = ['chrome://chrome-signin',
+    'chrome://oobe', 'chrome://lock-reauth']
+gaia.chromeOSLogin.parent_webview_ = undefined;
+gaia.chromeOSLogin.parent_webview_url_ = undefined;
+
+gaia.chromeOSLogin.registerHtml5Listener = function() {
+  var onMessage = function(e) {
+    if (!gaia.chromeOSLogin.allowed_parent_urls_.includes(e.origin)) {
+      return;
+    }
+    gaia.chromeOSLogin.parent_webview_ = e.source;
+    gaia.chromeOSLogin.parent_webview_url_ = e.origin;
+    if (e.data.method != 'handshake') {
+      return;
+    }
+
+    gaia.chromeOSLogin.sendUserInfo();
+    gaia.chromeOSLogin.sendCloseView();
+  };
+  window.addEventListener('message', onMessage);
+}
+
+gaia.chromeOSLogin.sendUserInfo = function() {
+  msg = {
+    'method': 'userInfo',
+    'services': [],
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+      gaia.chromeOSLogin.parent_webview_url_);
+};
+
+gaia.chromeOSLogin.sendCloseView = function() {
+  msg = {
+    'method': 'closeView',
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+      gaia.chromeOSLogin.parent_webview_url_);
+};
+
+function onLoad() {
+  gaia.chromeOSLogin.registerHtml5Listener();
+}
+
+</script>
+</head>
+<body onload='onLoad();'>
+</body>
+</html>

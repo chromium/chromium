@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 
 import logging
 
@@ -23,10 +22,10 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
 
   def __init__(self, args, test_name):
     self._unlocked_parameter = None
-    super(BinarySearchParameterOptimizer, self).__init__(args, test_name)
+    super().__init__(args, test_name)
 
   def _VerifyArgs(self):
-    super(BinarySearchParameterOptimizer, self)._VerifyArgs()
+    super()._VerifyArgs()
 
     max_diff_locked = self._args.max_max_diff == self._args.min_max_diff
     delta_threshold_locked = (
@@ -72,10 +71,9 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     """
     if self._unlocked_parameter == self.UNLOCKED_PARAM_MAX_DIFF:
       return self._args.max_max_diff, self._args.min_max_diff
-    elif self._unlocked_parameter == self.UNLOCKED_PARAM_DELTA_THRESHOLD:
+    if self._unlocked_parameter == self.UNLOCKED_PARAM_DELTA_THRESHOLD:
       return self._args.max_delta_threshold, self._args.min_delta_threshold
-    else:
-      return self._args.min_edge_threshold, self._args.max_edge_threshold
+    return self._args.min_edge_threshold, self._args.max_edge_threshold
 
   def _CreateParameterSet(self, value):
     """Creates a parameter_set.ParameterSet to test.
@@ -90,9 +88,8 @@ class BinarySearchParameterOptimizer(base_optimizer.BaseParameterOptimizer):
     if self._unlocked_parameter == self.UNLOCKED_PARAM_MAX_DIFF:
       return parameter_set.ParameterSet(value, self._args.min_delta_threshold,
                                         self._args.min_edge_threshold)
-    elif self._unlocked_parameter == self.UNLOCKED_PARAM_DELTA_THRESHOLD:
+    if self._unlocked_parameter == self.UNLOCKED_PARAM_DELTA_THRESHOLD:
       return parameter_set.ParameterSet(self._args.min_max_diff, value,
                                         self._args.min_edge_threshold)
-    else:
-      return parameter_set.ParameterSet(self._args.min_max_diff,
-                                        self._args.min_delta_threshold, value)
+    return parameter_set.ParameterSet(self._args.min_max_diff,
+                                      self._args.min_delta_threshold, value)

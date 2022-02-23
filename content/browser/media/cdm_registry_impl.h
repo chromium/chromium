@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"

@@ -32,6 +32,7 @@
 #include "content/public/app/content_main.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "headless/app/headless_shell.h"
 #include "headless/app/headless_shell_switches.h"
@@ -51,13 +52,13 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/crash/core/app/crash_switches.h"  // nogncheck
 #include "components/crash/core/app/run_as_crashpad_handler_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/os_crypt/os_crypt_switches.h"  // nogncheck
 #endif
 
@@ -109,7 +110,7 @@ bool ParseFontRenderHinting(
 }
 
 GURL ConvertArgumentToURL(const base::CommandLine::StringType& arg) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GURL url(base::WideToUTF8(arg));
 #else
   GURL url(arg);
@@ -144,7 +145,7 @@ base::FilePath GetSSLKeyLogFile(const base::CommandLine* command_line) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::string path_str;
   env->GetVar("SSLKEYLOGFILE", &path_str);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // base::Environment returns environment variables in UTF-8 on Windows.
   return base::FilePath(base::UTF8ToWide(path_str));
 #else
@@ -156,12 +157,12 @@ int RunContentMain(
     HeadlessBrowser::Options options,
     base::OnceCallback<void(HeadlessBrowser*)> on_browser_start_callback) {
   content::ContentMainParams params(nullptr);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Sandbox info has to be set and initialized.
   CHECK(options.sandbox_info);
   params.instance = options.instance;
   params.sandbox_info = std::move(options.sandbox_info);
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   params.argc = options.argc;
   params.argv = options.argv;
 #endif
@@ -235,9 +236,7 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {
   if (policy::HeadlessModePolicy::IsHeadlessDisabled(
           static_cast<HeadlessBrowserImpl*>(browser)->GetPrefs())) {
     LOG(ERROR) << "Headless mode is disabled by policy.";
-    browser_->BrowserMainThread()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+    ShutdownSoon();
     return;
   }
 #endif
@@ -271,7 +270,7 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {
   // driven by debugger.
   if (args.empty() && !base::CommandLine::ForCurrentProcess()->HasSwitch(
                           switches::kRemoteDebuggingPipe)) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     args.push_back(L"about:blank");
 #else
     args.push_back("about:blank");
@@ -318,12 +317,23 @@ void HeadlessShell::Detach() {
   web_contents_ = nullptr;
 }
 
-void HeadlessShell::Shutdown() {
+void HeadlessShell::ShutdownSoon() {
+  if (shutdown_pending_)
+    return;
+  shutdown_pending_ = true;
   DCHECK(browser_);
   if (web_contents_)
-    Detach();
-  if (browser_context_)
-    browser_context_->Close();
+    web_contents_->Close();
+  DCHECK(!web_contents_);
+  browser_->BrowserMainThread()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+}
+
+void HeadlessShell::Shutdown() {
+  DCHECK(!web_contents_);
+  if (content::RenderProcessHost::run_renderer_in_process())
+    content::RenderProcessHost::ShutDownInProcessRenderer();
   browser_->Shutdown();
 }
 
@@ -333,9 +343,7 @@ void HeadlessShell::DevToolsTargetReady() {
   target->AttachClient(devtools_client_.get());
   if (!target->IsAttached()) {
     LOG(ERROR) << "Could not attach DevTools target.";
-    browser_->BrowserMainThread()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+    ShutdownSoon();
     return;
   }
 
@@ -407,9 +415,7 @@ void HeadlessShell::HeadlessWebContentsDestroyed() {
   // Detach now, but defer shutdown till the HeadlessWebContents
   // removal is complete.
   Detach();
-  browser_->BrowserMainThread()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HeadlessShell::Shutdown, weak_factory_.GetWeakPtr()));
+  ShutdownSoon();
 }
 
 void HeadlessShell::FetchTimeout() {
@@ -427,7 +433,7 @@ void HeadlessShell::OnTargetCrashed(
     const inspector::TargetCrashedParams& params) {
   LOG(ERROR) << "Abnormal renderer termination.";
   // NB this never gets called if remote debugging is enabled.
-  Shutdown();
+  ShutdownSoon();
 }
 
 void HeadlessShell::PollReadyState() {
@@ -492,7 +498,7 @@ void HeadlessShell::OnPageReady() {
                  switches::kPrintToPDF)) {
     PrintToPDF();
   } else {
-    Shutdown();
+    ShutdownSoon();
   }
 }
 
@@ -513,7 +519,7 @@ void HeadlessShell::OnDomFetched(
   } else {
     printf("%s\n", result->GetResult()->GetValue()->GetString().c_str());
   }
-  Shutdown();
+  ShutdownSoon();
 }
 
 void HeadlessShell::InputExpression() {
@@ -530,7 +536,7 @@ void HeadlessShell::InputExpression() {
       // If there's no expression, then quit.
       if (expression.str().size() == 0) {
         printf("\n");
-        Shutdown();
+        ShutdownSoon();
         return;
       }
       break;
@@ -538,7 +544,7 @@ void HeadlessShell::InputExpression() {
     expression << static_cast<char>(c);
   }
   if (expression.str() == "quit") {
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   devtools_client_->GetRuntime()->Evaluate(
@@ -567,7 +573,7 @@ void HeadlessShell::OnScreenshotCaptured(
     std::unique_ptr<page::CaptureScreenshotResult> result) {
   if (!result) {
     LOG(ERROR) << "Capture screenshot failed";
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   WriteFile(switches::kScreenshot, kDefaultScreenshotFileName,
@@ -593,7 +599,7 @@ void HeadlessShell::OnPDFCreated(
     std::unique_ptr<page::PrintToPDFResult> result) {
   if (!result) {
     LOG(ERROR) << "Print to PDF failed";
-    Shutdown();
+    ShutdownSoon();
     return;
   }
   WriteFile(switches::kPrintToPDF, kDefaultPDFFileName, result->GetData());
@@ -660,7 +666,7 @@ void HeadlessShell::OnFileWritten(const base::FilePath file_name,
 }
 
 void HeadlessShell::OnFileClosed(base::File::Error error_code) {
-  Shutdown();
+  ShutdownSoon();
 }
 
 bool HeadlessShell::RemoteDebuggingEnabled() const {
@@ -670,7 +676,7 @@ bool HeadlessShell::RemoteDebuggingEnabled() const {
           command_line.HasSwitch(switches::kRemoteDebuggingPipe));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int HeadlessShellMain(HINSTANCE instance,
                       sandbox::SandboxInterfaceInfo* sandbox_info) {
   base::CommandLine::Init(0, nullptr);
@@ -693,10 +699,10 @@ int HeadlessShellMain(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
   RunChildProcessIfNeeded(argc, argv);
   HeadlessBrowser::Options::Builder builder(argc, argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   HeadlessShell shell;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(fuchsia): Remove this when GPU accelerated compositing is ready.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kDisableGpu);
 #endif
@@ -705,15 +711,7 @@ int HeadlessShellMain(int argc, const char** argv) {
   if (!ValidateCommandLine(command_line))
     return EXIT_FAILURE;
 
-// Crash reporting in headless mode is enabled by default in official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  builder.SetCrashReporterEnabled(true);
-  base::FilePath dumps_path;
-  base::PathService::Get(base::DIR_TEMP, &dumps_path);
-  builder.SetCrashDumpsDir(dumps_path);
-#endif
-
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   command_line.AppendSwitch(os_crypt::switches::kUseMockKeychain);
 #endif
 
@@ -847,14 +845,14 @@ int HeadlessShellMain(int argc, const char** argv) {
 }
 
 int HeadlessShellMain(const content::ContentMainParams& params) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return HeadlessShellMain(params.instance, params.sandbox_info);
 #else
   return HeadlessShellMain(params.argc, params.argv);
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RunChildProcessIfNeeded(HINSTANCE instance,
                              sandbox::SandboxInterfaceInfo* sandbox_info) {
   base::CommandLine::Init(0, nullptr);
@@ -865,7 +863,7 @@ void RunChildProcessIfNeeded(HINSTANCE instance,
 void RunChildProcessIfNeeded(int argc, const char** argv) {
   base::CommandLine::Init(argc, argv);
   HeadlessBrowser::Options::Builder builder(argc, argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   const base::CommandLine& command_line(
       *base::CommandLine::ForCurrentProcess());
 

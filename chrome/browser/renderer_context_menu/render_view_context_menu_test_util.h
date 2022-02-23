@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
@@ -80,7 +81,8 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   extensions::ContextMenuMatcher& extension_items() { return extension_items_; }
 #endif
 
-  void set_protocol_handler_registry(ProtocolHandlerRegistry* registry) {
+  void set_protocol_handler_registry(
+      custom_handlers::ProtocolHandlerRegistry* registry) {
     protocol_handler_registry_ = registry;
   }
 

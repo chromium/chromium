@@ -49,7 +49,7 @@ class MockPolicyService : public PolicyService {
   MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD1(RefreshPolicies, void(base::OnceClosure));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD0(GetPolicyServiceAndroid, android::PolicyServiceAndroid*());
 #endif
 };

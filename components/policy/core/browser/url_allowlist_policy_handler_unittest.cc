@@ -10,13 +10,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -87,7 +87,7 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Empty) {
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetList().size());
+  EXPECT_EQ(0U, out->GetListDeprecated().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
@@ -101,7 +101,7 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(0U, out->GetList().size());
+  EXPECT_EQ(0U, out->GetListDeprecated().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
@@ -113,16 +113,16 @@ TEST_F(URLAllowlistPolicyHandlerTest, ApplyPolicySettings_Successful) {
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
   ASSERT_TRUE(out->is_list());
-  ASSERT_EQ(1U, out->GetList().size());
+  ASSERT_EQ(1U, out->GetListDeprecated().size());
 
-  const std::string* out_string = out->GetList()[0].GetIfString();
+  const std::string* out_string = out->GetListDeprecated()[0].GetIfString();
   ASSERT_TRUE(out_string);
   EXPECT_EQ(kTestAllowlistValue, *out_string);
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitOK) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLAllowlistPolicyValueWithEntries(max_filters_per_policy);
 
@@ -134,7 +134,7 @@ TEST_F(URLAllowlistPolicyHandlerTest,
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(max_filters_per_policy, out->GetList().size());
+  EXPECT_EQ(max_filters_per_policy, out->GetListDeprecated().size());
 }
 
 // Test that the warning message, mapped to
@@ -142,7 +142,7 @@ TEST_F(URLAllowlistPolicyHandlerTest,
 // |errors_| when URLAllowlist entries exceed the max filters per policy limit.
 TEST_F(URLAllowlistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLAllowlistPolicyValueWithEntries(max_filters_per_policy + 1);
 
@@ -160,7 +160,7 @@ TEST_F(URLAllowlistPolicyHandlerTest,
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlAllowlist, &out));
   ASSERT_TRUE(out->is_list());
-  EXPECT_EQ(max_filters_per_policy + 1, out->GetList().size());
+  EXPECT_EQ(max_filters_per_policy + 1, out->GetListDeprecated().size());
 }
 
 TEST_F(URLAllowlistPolicyHandlerTest, ValidatePolicy) {

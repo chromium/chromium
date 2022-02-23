@@ -17,6 +17,7 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feedwire {
 class Request;
@@ -24,9 +25,12 @@ class Response;
 }  // namespace feedwire
 
 namespace feed {
+struct AccountInfo;
 
 // DiscoverApi types. Defines information about each discover API. For use with
 // `FeedNetwork::SendApiRequest()`.
+// Some APIs do not send request metadata because it is already included in the
+// `feedwire::Request` proto and is therefore redundant.
 
 struct QueryInteractiveFeedDiscoverApi {
   using Request = feedwire::Request;
@@ -37,6 +41,7 @@ struct QueryInteractiveFeedDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1:queryInteractiveFeed";
   }
+  static bool SendRequestMetadata() { return false; }
 };
 
 struct QueryBackgroundFeedDiscoverApi {
@@ -48,6 +53,7 @@ struct QueryBackgroundFeedDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1:queryBackgroundFeed";
   }
+  static bool SendRequestMetadata() { return false; }
 };
 
 struct QueryNextPageDiscoverApi {
@@ -59,6 +65,7 @@ struct QueryNextPageDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1:queryNextPage";
   }
+  static bool SendRequestMetadata() { return false; }
 };
 
 struct UploadActionsDiscoverApi {
@@ -70,6 +77,7 @@ struct UploadActionsDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1/actions:upload";
   }
+  static bool SendRequestMetadata() { return true; }
 };
 
 struct ListWebFeedsDiscoverApi {
@@ -79,6 +87,7 @@ struct ListWebFeedsDiscoverApi {
       NetworkRequestType::kListWebFeeds;
   static base::StringPiece Method() { return "POST"; }
   static base::StringPiece RequestPath(const Request&) { return "v1/webFeeds"; }
+  static bool SendRequestMetadata() { return true; }
 };
 
 struct ListRecommendedWebFeedDiscoverApi {
@@ -90,6 +99,7 @@ struct ListRecommendedWebFeedDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1/recommendedWebFeeds";
   }
+  static bool SendRequestMetadata() { return true; }
 };
 
 struct FollowWebFeedDiscoverApi {
@@ -101,6 +111,7 @@ struct FollowWebFeedDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1:followWebFeed";
   }
+  static bool SendRequestMetadata() { return true; }
 };
 
 struct UnfollowWebFeedDiscoverApi {
@@ -112,6 +123,7 @@ struct UnfollowWebFeedDiscoverApi {
   static base::StringPiece RequestPath(const Request&) {
     return "v1:unfollowWebFeed";
   }
+  static bool SendRequestMetadata() { return true; }
 };
 
 struct WebFeedListContentsDiscoverApi {
@@ -121,6 +133,7 @@ struct WebFeedListContentsDiscoverApi {
       NetworkRequestType::kWebFeedListContents;
   static base::StringPiece Method() { return "POST"; }
   static base::StringPiece RequestPath(const Request&) { return "v1/contents"; }
+  static bool SendRequestMetadata() { return false; }
 };
 
 class FeedNetwork {
@@ -164,7 +177,7 @@ class FeedNetwork {
   virtual void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) = 0;
 
   // Send a Discover API request. Usage:
@@ -172,13 +185,21 @@ class FeedNetwork {
   template <typename API>
   void SendApiRequest(
       const typename API::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
+      RequestMetadata request_metadata,
       base::OnceCallback<void(ApiResult<typename API::Response>)> callback) {
     std::string binary_proto;
     request.SerializeToString(&binary_proto);
+    absl::optional<RequestMetadata> optional_request_metadata;
+    if (API::SendRequestMetadata()) {
+      optional_request_metadata =
+          absl::make_optional(std::move(request_metadata));
+    }
+
     SendDiscoverApiRequest(
         API::kRequestType, API::RequestPath(request), API::Method(),
-        std::move(binary_proto), gaia,
+        std::move(binary_proto), account_info,
+        std::move(optional_request_metadata),
         base::BindOnce(&ParseAndForwardApiResponse<API>, std::move(callback)));
   }
 
@@ -195,7 +216,8 @@ class FeedNetwork {
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
-      const std::string& gaia,
+      const AccountInfo& account_info,
+      absl::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) = 0;
 
   template <typename API>

@@ -8,11 +8,25 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
 namespace chromeos {
+
+namespace {
+
+std::string OnGetHardwareInfo(base::SysInfo::HardwareInfo hardware_info) {
+  std::string manufacturer;
+  base::TrimWhitespaceASCII(hardware_info.manufacturer,
+                            base::TrimPositions::TRIM_ALL, &manufacturer);
+
+  return manufacturer;
+}
+
+}  // namespace
 
 // static
 HardwareInfoDelegate::Factory* HardwareInfoDelegate::Factory::test_factory_ =
@@ -37,12 +51,8 @@ HardwareInfoDelegate::HardwareInfoDelegate() = default;
 HardwareInfoDelegate::~HardwareInfoDelegate() = default;
 
 void HardwareInfoDelegate::GetManufacturer(ManufacturerCallback callback) {
-  base::SysInfo::GetHardwareInfo(base::BindOnce(
-      [](HardwareInfoDelegate::ManufacturerCallback callback,
-         base::SysInfo::HardwareInfo hardware_info) {
-        std::move(callback).Run(std::move(hardware_info.manufacturer));
-      },
-      std::move(callback)));
+  base::SysInfo::GetHardwareInfo(
+      base::BindOnce(&OnGetHardwareInfo).Then(std::move(callback)));
 }
 
 }  // namespace chromeos

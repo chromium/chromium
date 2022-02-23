@@ -34,10 +34,13 @@ void AXTreeManagerMap::RemoveTreeManager(AXTreeID tree_id) {
 }
 
 AXTreeManager* AXTreeManagerMap::GetManager(AXTreeID tree_id) {
-  if (tree_id == AXTreeIDUnknown() || !base::Contains(map_, tree_id))
+  if (tree_id == AXTreeIDUnknown())
+    return nullptr;
+  auto iter = map_.find(tree_id);
+  if (iter == map_.end())
     return nullptr;
 
-  return map_.at(tree_id);
+  return iter->second;
 }
 
 AXTreeManager* AXTreeManagerMap::GetManagerForChildTree(

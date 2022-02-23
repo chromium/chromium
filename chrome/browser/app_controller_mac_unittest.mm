@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/mac/scoped_objc_class_swizzler.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -20,6 +21,39 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/platform_test.h"
+
+namespace {
+
+id* TargetForAction() {
+  static id targetForAction;
+  return &targetForAction;
+}
+
+}  // namespace
+
+@interface FakeBrowserWindow : NSWindow
+@end
+
+@implementation FakeBrowserWindow
+@end
+
+// A class providing alternative implementations of various methods.
+@interface AppControllerKeyEquivalentTestHelper : NSObject
+- (id)targetForAction:(SEL)selector;
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window;
+@end
+
+@implementation AppControllerKeyEquivalentTestHelper
+
+- (id)targetForAction:(SEL)selector {
+  return *TargetForAction();
+}
+
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
+  return [window isKindOfClass:[FakeBrowserWindow class]];
+}
+
+@end
 
 class AppControllerTest : public PlatformTest {
  protected:
@@ -42,6 +76,78 @@ class AppControllerTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
+};
+
+class AppControllerKeyEquivalentTest : public PlatformTest {
+ protected:
+  AppControllerKeyEquivalentTest() {}
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    nsAppTargetForActionSwizzler_ =
+        std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+            [NSApp class], [AppControllerKeyEquivalentTestHelper class],
+            @selector(targetForAction:));
+    appControllerSwizzler_ =
+        std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+            [AppController class], [AppControllerKeyEquivalentTestHelper class],
+            @selector(windowHasBrowserTabs:));
+
+    appController_.reset([[AppController alloc] init]);
+
+    closeWindowMenuItem_.reset([[NSMenuItem alloc] initWithTitle:@""
+                                                          action:0
+                                                   keyEquivalent:@""]);
+    [appController_ setCloseWindowMenuItemForTesting:closeWindowMenuItem_];
+
+    closeTabMenuItem_.reset([[NSMenuItem alloc] initWithTitle:@""
+                                                       action:0
+                                                keyEquivalent:@""]);
+    [appController_ setCloseTabMenuItemForTesting:closeTabMenuItem_];
+  }
+
+  void CheckMenuItemsMatchBrowserWindow() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    [appController_ updateMenuItemKeyEquivalents];
+
+    EXPECT_TRUE([[closeWindowMenuItem_ keyEquivalent] isEqualToString:@"W"]);
+    EXPECT_EQ([closeWindowMenuItem_ keyEquivalentModifierMask],
+              NSCommandKeyMask);
+    EXPECT_TRUE([[closeTabMenuItem_ keyEquivalent] isEqualToString:@"w"]);
+    EXPECT_EQ([closeTabMenuItem_ keyEquivalentModifierMask], NSCommandKeyMask);
+  }
+
+  void CheckMenuItemsMatchNonBrowserWindow() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    [appController_ updateMenuItemKeyEquivalents];
+
+    EXPECT_TRUE([[closeWindowMenuItem_ keyEquivalent] isEqualToString:@"w"]);
+    EXPECT_EQ([closeWindowMenuItem_ keyEquivalentModifierMask],
+              NSCommandKeyMask);
+    EXPECT_TRUE([[closeTabMenuItem_ keyEquivalent] isEqualToString:@""]);
+    EXPECT_EQ([closeTabMenuItem_ keyEquivalentModifierMask], 0UL);
+  }
+
+  void TearDown() override {
+    PlatformTest::TearDown();
+
+    [appController_ setCloseWindowMenuItemForTesting:nil];
+    [appController_ setCloseTabMenuItemForTesting:nil];
+    *TargetForAction() = nil;
+  }
+
+ private:
+  std::unique_ptr<base::mac::ScopedObjCClassSwizzler>
+      nsAppTargetForActionSwizzler_;
+  std::unique_ptr<base::mac::ScopedObjCClassSwizzler> appControllerSwizzler_;
+  base::scoped_nsobject<AppController> appController_;
+  base::scoped_nsobject<NSMenuItem> closeWindowMenuItem_;
+  base::scoped_nsobject<NSMenuItem> closeTabMenuItem_;
 };
 
 TEST_F(AppControllerTest, DockMenuProfileNotLoaded) {
@@ -95,4 +201,90 @@ TEST_F(AppControllerTest, LastProfile) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(dest_path2, [ac lastProfile]->GetPath());
+}
+
+// Tests key equivalents for Close Window when target is a child window (like a
+// bubble).
+TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForBubbleWindow) {
+  // Set up the "bubble" and main window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  base::scoped_nsobject<NSWindow> childWindow([[NSWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+  base::scoped_nsobject<NSWindow> browserWindow([[FakeBrowserWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+
+  [browserWindow addChildWindow:childWindow ordered:NSWindowAbove];
+
+  *TargetForAction() = childWindow;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
+// Tests key equivalents for Close Window when target is an NSPopOver.
+TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForPopover) {
+  // Set up the popover and main window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  base::scoped_nsobject<NSPopover> popover([[NSPopover alloc] init]);
+  base::scoped_nsobject<NSWindow> popoverWindow([[NSWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+  [popover
+      setContentViewController:[[[NSViewController alloc] init] autorelease]];
+  [[popover contentViewController] setView:[popoverWindow contentView]];
+  base::scoped_nsobject<NSWindow> browserWindow([[FakeBrowserWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+  [browserWindow addChildWindow:popoverWindow ordered:NSWindowAbove];
+
+  *TargetForAction() = popover;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
+// Tests key equivalents for Close Window when target is a browser window.
+TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForBrowserWindow) {
+  // Set up the browser window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  base::scoped_nsobject<NSWindow> browserWindow([[FakeBrowserWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+
+  *TargetForAction() = browserWindow;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
+// Tests key equivalents for Close Window when target is not a browser window.
+TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForNonBrowserWindow) {
+  // Set up the window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  base::scoped_nsobject<NSWindow> mainWindow([[NSWindow alloc]
+      initWithContentRect:kContentRect
+                styleMask:NSWindowStyleMaskClosable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+
+  *TargetForAction() = mainWindow;
+
+  CheckMenuItemsMatchNonBrowserWindow();
+}
+
+// Tests key equivalents for Close Window when target is not a window.
+TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForNonWindow) {
+  base::scoped_nsobject<NSObject> nonWindowObject([[NSObject alloc] init]);
+  *TargetForAction() = nonWindowObject;
+
+  CheckMenuItemsMatchNonBrowserWindow();
 }

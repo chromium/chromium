@@ -20,7 +20,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.AccountInfo;
@@ -39,7 +37,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -47,8 +44,8 @@ import java.util.List;
 
 /**
  * Bottom sheet content to display a list of devices a user can send a tab to after they have
- * chosen to share it with themselves through the SendTabToSelfFeature. If sync is disabled
- * or no target devices are available an prompt will be shown indicating to the user that
+ * chosen to share it with themselves through the SendTabToSelfFeature. If the user is signed-out
+ * or no target devices are available, a prompt will be shown indicating to the user that
  * they must sign in to use the feature.
  */
 public class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
@@ -61,14 +58,11 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     private final String mUrl;
     private final String mTitle;
     private final long mNavigationTime;
-    private final SettingsLauncher mSettingsLauncher;
-    private final boolean mIsSyncEnabled;
 
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
     public DevicePickerBottomSheetContent(Context context, String url, String title,
-            long navigationTime, BottomSheetController controller,
-            SettingsLauncher settingsLauncher, boolean isSyncEnabled) {
+            long navigationTime, BottomSheetController controller) {
         mContext = context;
         mController = controller;
         mProfile = Profile.getLastUsedRegularProfile();
@@ -76,8 +70,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         mUrl = url;
         mTitle = title;
         mNavigationTime = navigationTime;
-        mSettingsLauncher = settingsLauncher;
-        mIsSyncEnabled = isSyncEnabled;
 
         createToolbarView();
         createContentView();
@@ -102,46 +94,25 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         TextView title = sharingUnavailableView.findViewById(R.id.title);
         TextView instructionsToEnable =
                 sharingUnavailableView.findViewById(R.id.instructions_to_enable);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_WHEN_SIGNED_IN)) {
-            if (targetDeviceList.isEmpty()) {
-                mContentView = sharingUnavailableView;
-                title.setText(R.string.send_tab_to_self_share_activity_title);
-                instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-                return;
-            }
-            // Sharing is available.
-        } else {
-            // Note the string below is more general than its "no_devices" name suggests.
-            title.setText(R.string.sharing_no_devices_available_title);
-            if (!mIsSyncEnabled) {
-                mContentView = sharingUnavailableView;
-                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
-                enableSettingsButton();
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NotSyncing");
-                return;
-            }
-            if (targetDeviceList.isEmpty()) {
-                mContentView = sharingUnavailableView;
-                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
-                mToolbarView.setVisibility(View.GONE);
-                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-                return;
-            }
-            // Sharing is available.
+        if (targetDeviceList.isEmpty()) {
+            mContentView = sharingUnavailableView;
+            title.setText(R.string.send_tab_to_self_share_activity_title);
+            instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
+            mToolbarView.setVisibility(View.GONE);
+            // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.
+            // Those should be recorded separately instead.
+            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
+            return;
         }
 
+        // Sharing is available.
         mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.send_tab_to_self_device_picker_list, null);
         ListView listView = mContentView.findViewById(R.id.device_picker_list);
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK)) {
-            createManageDevicesLink(listView);
-        }
+        createManageDevicesLink(listView);
     }
 
     private void createManageDevicesLink(ListView deviceListView) {
@@ -152,13 +123,16 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         AccountInfo account = getSharingAccountInfo();
         assert account != null : "The user must be signed in to share a tab";
 
-        RoundedCornerImageView avatarView = containerView.findViewById(R.id.account_avatar);
-        int accountAvatarSizePx = Math.round(
-                ACCOUNT_AVATAR_SIZE_DP * mContext.getResources().getDisplayMetrics().density);
-        avatarView.setImageBitmap(Bitmap.createScaledBitmap(
-                account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
-        avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
-                accountAvatarSizePx / 2, accountAvatarSizePx / 2);
+        // The avatar can be null in tests.
+        if (account.getAccountImage() != null) {
+            RoundedCornerImageView avatarView = containerView.findViewById(R.id.account_avatar);
+            int accountAvatarSizePx = Math.round(
+                    ACCOUNT_AVATAR_SIZE_DP * mContext.getResources().getDisplayMetrics().density);
+            avatarView.setImageBitmap(Bitmap.createScaledBitmap(
+                    account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
+            avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
+                    accountAvatarSizePx / 2, accountAvatarSizePx / 2);
+        }
 
         Resources resources = mContext.getResources();
         // The link is opened in a new tab to avoid exiting the current page, which the user
@@ -185,18 +159,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         IntentUtils.addTrustedIntentExtras(intent);
         mContext.startActivity(intent);
-    }
-
-    private void enableSettingsButton() {
-        if (mSettingsLauncher == null) {
-            return;
-        }
-        ButtonCompat chromeSettingsButton = mContentView.findViewById(R.id.chrome_settings);
-        chromeSettingsButton.setVisibility(View.VISIBLE);
-        chromeSettingsButton.setOnClickListener(view -> {
-            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.ChromeSettingsClicked");
-            mSettingsLauncher.launchSettingsActivity(ContextUtils.getApplicationContext());
-        });
     }
 
     @Override

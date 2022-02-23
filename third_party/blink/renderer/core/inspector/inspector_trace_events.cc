@@ -10,7 +10,6 @@
 
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -36,7 +35,6 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
@@ -387,12 +385,18 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoVideoPersistentAncestor)
     DEFINE_STRING_MAPPING(PseudoXrOverlay)
     DEFINE_STRING_MAPPING(PseudoTargetText)
+    DEFINE_STRING_MAPPING(PseudoSelectorFragmentAnchor)
     DEFINE_STRING_MAPPING(PseudoModal)
     DEFINE_STRING_MAPPING(PseudoHighlight)
     DEFINE_STRING_MAPPING(PseudoSpellingError)
     DEFINE_STRING_MAPPING(PseudoGrammarError)
     DEFINE_STRING_MAPPING(PseudoHas)
     DEFINE_STRING_MAPPING(PseudoRelativeLeftmost)
+    DEFINE_STRING_MAPPING(PseudoPageTransition)
+    DEFINE_STRING_MAPPING(PseudoPageTransitionContainer);
+    DEFINE_STRING_MAPPING(PseudoPageTransitionImageWrapper);
+    DEFINE_STRING_MAPPING(PseudoPageTransitionIncomingImage);
+    DEFINE_STRING_MAPPING(PseudoPageTransitionOutgoingImage);
 #undef DEFINE_STRING_MAPPING
   }
 
@@ -659,7 +663,7 @@ void inspector_layout_event::BeginData(perfetto::TracedValue context,
   SetCallStack(dict);
 }
 
-static void CreateQuad(perfetto::TracedValue context, const FloatQuad& quad) {
+static void CreateQuad(perfetto::TracedValue context, const gfx::QuadF& quad) {
   auto array = std::move(context).WriteArray();
   array.Append(quad.p1().x());
   array.Append(quad.p1().y());
@@ -690,7 +694,7 @@ static void CreateLayoutRoot(perfetto::TracedValue context,
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, layout_root.object, "nodeId");
   dict.Add("depth", static_cast<int>(layout_root.depth));
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_root.object->AbsoluteQuads(quads);
   if (quads.size() > kMaxQuads)
     quads.Shrink(kMaxQuads);
@@ -1109,7 +1113,7 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
 void inspector_paint_event::Data(perfetto::TracedValue context,
                                  Frame* frame,
                                  const LayoutObject* layout_object,
-                                 const FloatQuad& quad,
+                                 const gfx::QuadF& quad,
                                  int layer_id) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
@@ -1273,8 +1277,8 @@ void inspector_function_call_event::Data(
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        const LayoutImage& layout_image,
-                                       const FloatRect& src_rect,
-                                       const FloatRect& dest_rect) {
+                                       const gfx::RectF& src_rect,
+                                       const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, &layout_image, "nodeId");
   if (const ImageResourceContent* content = layout_image.CachedImage())
@@ -1300,8 +1304,8 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
                                        Node* node,
                                        const StyleImage& style_image,
-                                       const FloatRect& src_rect,
-                                       const FloatRect& dest_rect) {
+                                       const gfx::RectF& src_rect,
+                                       const gfx::RectF& dest_rect) {
   auto dict = std::move(context).WriteDictionary();
   if (node)
     SetNodeInfo(dict, node, "nodeId", nullptr);
@@ -1346,9 +1350,11 @@ void inspector_update_counters_event::Data(perfetto::TracedValue context) {
 }
 
 void inspector_invalidate_layout_event::Data(perfetto::TracedValue context,
-                                             LocalFrame* frame) {
+                                             LocalFrame* frame,
+                                             DOMNodeId nodeId) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  dict.Add("nodeId", nodeId);
   SetCallStack(dict);
 }
 

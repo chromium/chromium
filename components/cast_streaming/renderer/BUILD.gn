@@ -21,6 +21,43 @@ source_set("renderer") {
   ]
 }
 
+source_set("playback_command_forwarding_renderer_factory") {
+  public = [ "public/playback_command_forwarding_renderer_factory.h" ]
+  sources = [ "playback_command_forwarding_renderer_factory.cc" ]
+  deps = [
+    ":playback_command_forwarding_renderer",
+    "//base",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("renderer_controller_proxy") {
+  public = [ "public/renderer_controller_proxy.h" ]
+  sources = [ "renderer_controller_proxy.cc" ]
+  public_deps = [
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("renderer_controller_proxy_factory") {
+  public = [ "public/renderer_controller_proxy_factory.h" ]
+  sources = [
+    "renderer_controller_proxy_impl.cc",
+    "renderer_controller_proxy_impl.h",
+  ]
+
+  public_deps = [
+    ":renderer_controller_proxy",
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("demuxer") {
   deps = [
     "//base",
@@ -38,12 +75,41 @@ source_set("demuxer") {
   visibility = [ ":*" ]
 }
 
-# NOTE: This source set is intentionally empty. It is used to force the building
-# of the code defined in this directory, as it is production code which must
-# be validated as part of the CQ.
-# TODO(crbug.com/1207721): Add unit tests for code in this directory.
+source_set("playback_command_forwarding_renderer") {
+  sources = [
+    "playback_command_forwarding_renderer.cc",
+    "playback_command_forwarding_renderer.h",
+  ]
+  deps = [
+    "//base",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  visibility = [ ":*" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  deps = [ ":renderer" ]
-  sources = []
+
+  sources = [
+    "playback_command_forwarding_renderer_factory_unittest.cc",
+    "playback_command_forwarding_renderer_unittest.cc",
+  ]
+
+  deps = [
+    ":playback_command_forwarding_renderer",
+    ":playback_command_forwarding_renderer_factory",
+    ":renderer",
+    ":renderer_controller_proxy",
+    ":renderer_controller_proxy_factory",
+    "//base/test:test_support",
+    "//components/cast_streaming/public/mojom",
+    "//media:test_support",
+    "//media/mojo:test_support",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

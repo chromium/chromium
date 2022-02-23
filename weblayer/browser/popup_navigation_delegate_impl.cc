@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/blocked_content/android/popup_blocked_infobar_delegate.h"
 #endif
 
@@ -57,7 +57,7 @@ PopupNavigationDelegateImpl::NavigateWithGesture(
 void PopupNavigationDelegateImpl::OnPopupBlocked(
     content::WebContents* web_contents,
     int total_popups_blocked_on_page) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   blocked_content::PopupBlockedInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents),
       total_popups_blocked_on_page,

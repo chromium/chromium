@@ -6,7 +6,10 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/network_service/aw_network_change_notifier_factory.h"
+#include "android_webview/common/aw_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -47,8 +50,9 @@ class AwBrowserContextTest : public testing::Test {
 
   // Create the TestBrowserThreads.
   content::BrowserTaskEnvironment task_environment_;
-  content::TestContentClientInitializer* test_content_client_initializer_;
-  AwBrowserProcess* browser_process_;
+  raw_ptr<content::TestContentClientInitializer>
+      test_content_client_initializer_;
+  raw_ptr<AwBrowserProcess> browser_process_;
 };
 
 // Tests that constraints on trust for Symantec-issued certificates are not
@@ -78,6 +82,37 @@ TEST_F(AwBrowserContextTest, SHA1LocalAnchorsAllowed) {
   ASSERT_TRUE(network_context_params.initial_ssl_config);
   ASSERT_TRUE(
       network_context_params.initial_ssl_config->sha1_local_anchors_enabled);
+}
+
+// Tests that TLS 1.0/1.1 is still allowed for WebView by default.
+TEST_F(AwBrowserContextTest, LegacyTLSVersionsAllowed) {
+  AwBrowserContext context;
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
+  context.ConfigureNetworkContextParams(
+      false, base::FilePath(), &network_context_params, &cert_verifier_params);
+
+  ASSERT_TRUE(network_context_params.initial_ssl_config);
+  EXPECT_EQ(network::mojom::SSLVersion::kTLS1,
+            network_context_params.initial_ssl_config->version_min);
+}
+
+// Tests that TLS 1.0/1.1 are disallowed when the escape hatch feature is
+// disabled.
+TEST_F(AwBrowserContextTest, LegacyTLSVersionsDisallowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      android_webview::features::kWebViewLegacyTlsSupport);
+
+  AwBrowserContext context;
+  network::mojom::NetworkContextParams network_context_params;
+  cert_verifier::mojom::CertVerifierCreationParams cert_verifier_params;
+  context.ConfigureNetworkContextParams(
+      false, base::FilePath(), &network_context_params, &cert_verifier_params);
+
+  ASSERT_TRUE(network_context_params.initial_ssl_config);
+  EXPECT_EQ(network::mojom::SSLVersion::kTLS12,
+            network_context_params.initial_ssl_config->version_min);
 }
 
 }  // namespace android_webview

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -174,7 +175,6 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const std::vector<blink::UseCounterFeature>& new_features,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
-      const mojom::DeferredResourceCounts& new_deferred_resource_data,
       const mojom::InputTiming& input_timing,
       const blink::MobileFriendliness& mobile_friendliness,
       content::RenderFrameHost* rfh);
@@ -182,9 +182,9 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   content::WebContents* web_contents() const { return web_contents_; }
 
   RegisterObserversCallback register_callback_;
-  content::WebContents* web_contents_;
-  content::RenderViewHostTestHarness* rfh_test_harness_;
-  MetricsWebContentsObserver* metrics_web_contents_observer_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::RenderViewHostTestHarness> rfh_test_harness_;
+  raw_ptr<MetricsWebContentsObserver> metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 };

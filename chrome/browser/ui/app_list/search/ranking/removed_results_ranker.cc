@@ -4,31 +4,22 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
-#include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 
 namespace app_list {
 
-// static
-bool RemovedResultsRanker::ShouldDelegateToResult(ProviderType provider) {
-  return provider == ash::AppListSearchResultType::kOmnibox;
-}
-
-RemovedResultsRanker::RemovedResultsRanker(Profile* profile) {
-  base::FilePath path =
-      RankerStateDirectory(profile).AppendASCII("removed_results_ranker.pb");
-  proto_.Init(path, write_delay_, base::DoNothing(), base::DoNothing());
+RemovedResultsRanker::RemovedResultsRanker(
+    PersistentProto<RemovedResultsProto> proto)
+    : proto_(std::move(proto)) {
+  proto_.Init();
 }
 
 RemovedResultsRanker::~RemovedResultsRanker() = default;
 
-void RemovedResultsRanker::Rank(ResultsMap& results,
-                                CategoriesMap& categories,
-                                ProviderType provider) {
-  // Results with delegated removal are handled in
-  // SearchController::InvokeResultAction().
-  if (!proto_.initialized() || ShouldDelegateToResult(provider))
+void RemovedResultsRanker::UpdateResultRanks(ResultsMap& results,
+                                             ProviderType provider) {
+  if (!initialized())
     return;
 
   const auto it = results.find(provider);
@@ -43,7 +34,7 @@ void RemovedResultsRanker::Rank(ResultsMap& results,
 }
 
 void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
-  if (!proto_.initialized())
+  if (!initialized())
     return;
 
   // Record the string ID of |result| to the storage proto's map.

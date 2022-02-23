@@ -9,7 +9,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -2607,51 +2606,6 @@ TEST(URLCanonTest, IDNToASCII) {
   str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
-}
-
-TEST(URLCanonTest, EscapedHostCharToEnum) {
-  EXPECT_EQ(EscapedHostChar::kSpace, EscapedHostCharToEnum(' '));
-  EXPECT_EQ(EscapedHostChar::kBang, EscapedHostCharToEnum('!'));
-  EXPECT_EQ(EscapedHostChar::kDoubleQuote, EscapedHostCharToEnum('"'));
-  EXPECT_EQ(EscapedHostChar::kHash, EscapedHostCharToEnum('#'));
-  EXPECT_EQ(EscapedHostChar::kDollar, EscapedHostCharToEnum('$'));
-  EXPECT_EQ(EscapedHostChar::kAmpersand, EscapedHostCharToEnum('&'));
-  EXPECT_EQ(EscapedHostChar::kSingleQuote, EscapedHostCharToEnum('\''));
-  EXPECT_EQ(EscapedHostChar::kLeftParen, EscapedHostCharToEnum('('));
-  EXPECT_EQ(EscapedHostChar::kRightParen, EscapedHostCharToEnum(')'));
-  EXPECT_EQ(EscapedHostChar::kAsterisk, EscapedHostCharToEnum('*'));
-  EXPECT_EQ(EscapedHostChar::kComma, EscapedHostCharToEnum(','));
-  EXPECT_EQ(EscapedHostChar::kLeftAngle, EscapedHostCharToEnum('<'));
-  EXPECT_EQ(EscapedHostChar::kEquals, EscapedHostCharToEnum('='));
-  EXPECT_EQ(EscapedHostChar::kRightAngle, EscapedHostCharToEnum('>'));
-  EXPECT_EQ(EscapedHostChar::kAt, EscapedHostCharToEnum('@'));
-  EXPECT_EQ(EscapedHostChar::kBackTick, EscapedHostCharToEnum('`'));
-  EXPECT_EQ(EscapedHostChar::kLeftCurly, EscapedHostCharToEnum('{'));
-  EXPECT_EQ(EscapedHostChar::kPipe, EscapedHostCharToEnum('|'));
-  EXPECT_EQ(EscapedHostChar::kRightCurly, EscapedHostCharToEnum('}'));
-
-  EXPECT_EQ(EscapedHostChar::kUnknown, EscapedHostCharToEnum('a'));
-  EXPECT_EQ(EscapedHostChar::kUnknown, EscapedHostCharToEnum('\\'));
-}
-
-TEST(URLCanonTest, EscapedHostCharHistograms) {
-  std::string input("foo  <bar>");
-
-  Component in_comp(0, input.size());
-  Component out_comp;
-  std::string out_str;
-  StdStringCanonOutput output(&out_str);
-
-  base::HistogramTester histogram_tester;
-  bool success = CanonicalizeHost(input.data(), in_comp, &output, &out_comp);
-  ASSERT_TRUE(success);
-  histogram_tester.ExpectBucketCount("URL.Host.DidEscape", 1, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kSpace, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kLeftAngle, 1);
-  histogram_tester.ExpectBucketCount("URL.Host.EscapeChar",
-                                     EscapedHostChar::kRightAngle, 1);
 }
 
 }  // namespace url

@@ -34,7 +34,7 @@
 #include "third_party/crashpad/crashpad/snapshot/minidump/process_snapshot_minidump.h"
 #include "third_party/crashpad/crashpad/tools/tool_support.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "third_party/crashpad/crashpad/snapshot/sanitized/sanitization_information.h"
 #endif
 
@@ -47,7 +47,7 @@ constexpr size_t kAllocationSize = 902;
 constexpr int kSuccess = 0;
 constexpr size_t kTotalPages = AllocatorState::kMaxSlots;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 int HandlerMainAdaptor(int argc, char* argv[]) {
   crashpad::UserStreamDataSources user_stream_data_sources;
   user_stream_data_sources.push_back(
@@ -60,7 +60,7 @@ MULTIPROCESS_TEST_MAIN(CrashpadHandler) {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
   // Remove the --test-child-process argument from argv and launch crashpad.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<wchar_t*> argv;
   for (auto& arg : cmd_line->argv()) {
     if (arg.find(L"test-child-process") == std::string::npos)
@@ -80,11 +80,11 @@ MULTIPROCESS_TEST_MAIN(CrashpadHandler) {
 
   return 0;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Child process that launches the crashpad handler and then crashes.
 MULTIPROCESS_TEST_MAIN(CrashingProcess) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Disable the system crash reporter from inspecting this crash (it is slow
   // and causes test timeouts.)
   crashpad::CrashpadInfo::GetCrashpadInfo()
@@ -122,7 +122,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   std::map<std::string, std::string> annotations;
   std::vector<std::string> arguments;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   static crashpad::SanitizationInformation sanitization_info = {};
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
   if (cmd_line->HasSwitch("sanitize")) {
@@ -145,12 +145,12 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   arguments.push_back("--test-child-process=CrashpadHandler");
 #endif
 
   crashpad::CrashpadClient* client = new crashpad::CrashpadClient();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool handler =
       client->StartHandlerAtCrash(/* handler */ cmd_line->GetProgram(),
                                   /* database */ directory,
@@ -158,7 +158,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
                                   /* url */ "",
                                   /* annotations */ annotations,
                                   /* arguments */ arguments);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // TODO: Once the minSdkVersion is >= Q define a CrashpadHandlerMain() and
   // use the /system/bin/linker approach instead of using
   // libchrome_crashpad_handler.so
@@ -225,7 +225,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(ptrs[0]);
 
     // Take the remaining metadata slot with an allocation on a different page.
-    while (1) {
+    while (true) {
       void* new_alloc = gpa->Allocate(1);
       if (new_alloc != ptrs[0])
         break;
@@ -292,13 +292,13 @@ class CrashHandlerTest : public base::MultiProcessTest,
       cmd_line.AppendSwitch("sanitize");
 
     base::LaunchOptions options;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     options.start_hidden = true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     base::Process process =
         base::SpawnMultiProcessTestChild("CrashingProcess", cmd_line, options);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     int exit_code = -1;
     EXPECT_TRUE(WaitForMultiprocessTestChildExit(
         process, TestTimeouts::action_max_timeout(), &exit_code));
@@ -402,7 +402,7 @@ class CrashHandlerTest : public base::MultiProcessTest,
   bool gwp_asan_found_;
 };
 
-#if defined(ADDRESS_SANITIZER) && (defined(OS_WIN) || defined(OS_ANDROID))
+#if defined(ADDRESS_SANITIZER) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
 // ASan intercepts crashes and crashpad doesn't have a chance to see them.
 #define MAYBE_DISABLED(name) DISABLED_ ##name
 #else
@@ -458,7 +458,7 @@ TEST_P(CrashHandlerTest, MAYBE_DISABLED(UnrelatedException)) {
 INSTANTIATE_TEST_SUITE_P(VaryAllocator,
                          CrashHandlerTest,
                          testing::Values(
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                              TestParams("malloc", true),
 #endif
                              TestParams("malloc", false),

@@ -64,6 +64,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
   MOCK_METHOD1(SetPreferredFrameInterval, void(base::TimeDelta));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));
+  MOCK_METHOD1(SetThreadIds, void(const WTF::Vector<int32_t>&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

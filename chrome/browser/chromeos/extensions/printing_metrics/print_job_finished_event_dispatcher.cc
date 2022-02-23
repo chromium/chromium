@@ -38,7 +38,7 @@ PrintJobFinishedEventDispatcher::PrintJobFinishedEventDispatcher(
 PrintJobFinishedEventDispatcher::~PrintJobFinishedEventDispatcher() {}
 
 void PrintJobFinishedEventDispatcher::OnPrintJobFinished(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info) {
+    const ash::printing::proto::PrintJobInfo& print_job_info) {
   auto event = std::make_unique<Event>(
       events::PRINTING_METRICS_ON_PRINT_JOB_FINISHED,
       api::printing_metrics::OnPrintJobFinished::kEventName,

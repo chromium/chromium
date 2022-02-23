@@ -29,7 +29,7 @@
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/infobars/android/infobar_android.h"  // nogncheck
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"  // nogncheck
@@ -46,7 +46,7 @@ const char kTimeSinceAdsInterventionTriggeredHistogram[] =
     "TimeSinceLastActiveAdsIntervention";
 const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
  public:
   TestInfoBarManagerObserver() = default;
@@ -73,7 +73,7 @@ class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
   base::OnceClosure on_infobar_added_callback_;
   base::OnceClosure on_infobar_removed_callback_;
 };
-#endif  // if defined(OS_ANDROID)
+#endif  // if BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, RulesArePublished) {
 // currently has a safe browsing database available in production only on
 // Android; the safe browsing database being non-null is a prerequisite for
 // subresource filter operation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // Tests that page activation state is computed as part of a pageload.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that the ads blocked infobar is presented when visiting a page where the
 // subresource filter blocks resources from being loaded and is removed when
 // navigating away.

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -20,7 +21,7 @@
 #include "extensions/common/extension_set.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/service_providers_win.h"
@@ -68,7 +69,7 @@ std::unique_ptr<base::ListValue> GetExtensionInfo(Profile* profile) {
   return extension_list;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<base::DictionaryValue> GetWindowsServiceProviders() {
   auto service_providers = std::make_unique<base::DictionaryValue>();
 

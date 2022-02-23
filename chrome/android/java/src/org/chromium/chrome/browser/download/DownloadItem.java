@@ -197,7 +197,7 @@ public class DownloadItem {
             case DownloadState.INTERRUPTED:
                 @ResumeMode
                 int resumeMode = DownloadUtils.getResumeMode(
-                        downloadInfo.getUrl(), downloadInfo.getFailState());
+                        downloadInfo.getUrl().getSpec(), downloadInfo.getFailState());
                 if (resumeMode == ResumeMode.INVALID || resumeMode == ResumeMode.USER_RESTART) {
                     // Fail but can restart from the beginning. The UI should let the user to retry.
                     offlineItem.state = OfflineItemState.INTERRUPTED;

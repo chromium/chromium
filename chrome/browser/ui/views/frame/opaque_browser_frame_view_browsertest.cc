@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +24,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
@@ -52,7 +54,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
 
   bool InstallAndLaunchWebApp(
       absl::optional<SkColor> theme_color = absl::nullopt) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->theme_color = theme_color;
@@ -70,7 +72,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     // browser windows, see |CreateBrowserNonClientFrameView()|.
     bool is_opaque_browser_frame_view =
         views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
     DCHECK(is_opaque_browser_frame_view);
 #else
@@ -108,9 +110,9 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
               theme_mode == ThemeMode::kDefault);
   }
 
-  BrowserView* browser_view_ = nullptr;
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
-  WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
 
   // Disable animations.
   ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode_{
@@ -124,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {
             gfx::kGoogleGrey900);
 }
 
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 // The app theme color should be ignored in system theme mode.
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, SystemThemeColor) {
@@ -156,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, SystemThemeColor) {
   EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
             expected_caption_color);
 }
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, LightThemeColor) {
   if (!InstallAndLaunchWebApp(SK_ColorYELLOW))
@@ -278,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
@@ -302,12 +304,12 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     InProcessBrowserTest::SetUp();
   }
 
-  void InstallAndLaunchWebAppWithWindowControlsOverlay() {
+  bool InstallAndLaunchWebAppWithWindowControlsOverlay() {
     GURL start_url = web_app_frame_toolbar_helper_
                          .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
                              embedded_test_server(), &temp_dir_);
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -328,12 +330,22 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
+    // Not all platform configurations use OpaqueBrowserFrameView for their
+    // browser windows, see |CreateBrowserNonClientFrameView()|.
+    bool is_opaque_browser_frame_view =
+        views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
+
+    if (!is_opaque_browser_frame_view)
+      return false;
+
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
     auto* web_app_frame_toolbar =
         opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
+
+    return true;
   }
 
   void ToggleWindowControlsOverlayEnabledAndWait() {
@@ -341,11 +353,11 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
     browser_view_->ToggleWindowControlsOverlayEnabled();
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
-  BrowserView* browser_view_ = nullptr;
-  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  raw_ptr<OpaqueBrowserFrameView> opaque_browser_frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
@@ -355,7 +367,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonsTooltip) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
 
   auto* minimize_button = static_cast<const views::Button*>(
       opaque_browser_frame_view_->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
@@ -394,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonHitTest) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
 
   opaque_browser_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
 

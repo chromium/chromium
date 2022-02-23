@@ -7,18 +7,26 @@
     <!-- Please see src/ui/android/java/res/values/colors.xml for the shared common colors. -->
 
     <!-- Omnibox Suggestion colors -->
-    <color name="suggestion_url_color">@color/default_text_color_link</color>
-    <color name="suggestion_url_color_incognito">@color/modern_blue_300</color>
+    <macro name="suggestion_url_color">@macro/default_text_color_link</macro>
+    <color name="suggestion_url_color_incognito">@color/default_text_color_link_light</color>
     <color name="answers_description_text_negative">@color/default_red</color>
     <color name="answers_description_text_positive">@color/default_green</color>
 
     <!-- LocationBar colors -->
-    <color name="locationbar_dark_hint_text">@color/search_box_hint</color>
+    <color name="locationbar_dark_hint_text">@color/default_text_color_secondary_list</color>
     <color name="locationbar_light_hint_text">@color/default_text_color_secondary_light</color>
-    <color name="locationbar_status_offline_color">@color/modern_grey_900</color>
+
+    <color name="locationbar_status_offline_color_dark">@color/default_text_color_secondary_dark</color>
     <color name="locationbar_status_offline_color_light">@android:color/white</color>
-    <color name="locationbar_status_preview_color">@color/modern_blue_600</color>
-    <color name="locationbar_status_preview_color_light">@color/modern_blue_300</color>
+    <color name="locationbar_status_offline_color_incognito">@color/default_text_color_secondary_light</color>
+
+    <color name="locationbar_status_preview_color_dark">@color/default_text_color_secondary_dark</color>
+    <color name="locationbar_status_preview_color_light">@android:color/white</color>
+    <color name="locationbar_status_preview_color_incognito">@color/modern_blue_300</color>
+
+    <color name="locationbar_status_separator_color_dark">@color/baseline_neutral_variant_500</color>
+    <color name="locationbar_status_separator_color_light">@color/white_alpha_60</color>
+    <color name="locationbar_status_separator_color_incognito">@color/baseline_neutral_variant_400</color>
 
     <color name="omnibox_focused_fading_background_color">@color/black_alpha_65</color>
     <color name="omnibox_focused_fading_background_color_light">@color/white_alpha_65</color>

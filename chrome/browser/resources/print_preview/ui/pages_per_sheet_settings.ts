@@ -6,9 +6,8 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {MarginsType} from '../data/margins.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './pages_per_sheet_settings.html.js';
 
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
@@ -23,7 +22,7 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -38,6 +37,8 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
     ];
   }
 
+  disabled: boolean;
+
   /**
    * @param newValue The new value of the pages per sheet setting.
    */
@@ -47,6 +48,13 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
 
   onProcessSelectChange(value: string) {
     this.setSetting('pagesPerSheet', parseInt(value, 10));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pages-per-sheet-settings':
+        PrintPreviewPagesPerSheetSettingsElement;
   }
 }
 

@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"

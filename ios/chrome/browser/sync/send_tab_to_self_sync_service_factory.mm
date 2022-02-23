@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"

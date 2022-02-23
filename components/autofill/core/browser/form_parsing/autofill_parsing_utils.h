@@ -7,38 +7,76 @@
 
 #include <string>
 
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
-// A bit-field used for matching specific parts of a field in question.
-// Attributes.
-enum MatchAttributes {
-  MATCH_LABEL = 1 << 0,
-  MATCH_NAME = 1 << 1,
-  MATCH_ATTRIBUTES_DEFAULT = MATCH_LABEL | MATCH_NAME,
+// The sources from which strings are matched: the field's label or its name or
+// id attribute value.
+//
+// For example, in
+// <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
+// the kLabel is "Cellphone number" and the kName is "mobile".
+enum class MatchAttribute { kLabel, kName, kMaxValue = kName };
+
+// The types of fields which may be matched.
+//
+// For example, in
+// <label for="mobile">Cellphone number:</label> <input type="tel" id="mobile">
+// the MatchFieldType is kTelephone.
+enum class MatchFieldType {
+  kText,
+  kEmail,
+  kTelephone,
+  kSelect,
+  kTextArea,
+  kPassword,
+  kNumber,
+  kSearch,
+  kMaxValue = kSearch
 };
 
-// A bit-field used for matching specific parts of a field in question.
-// Input types.
-enum MatchFieldTypes {
-  MATCH_TEXT = 1 << 2,
-  MATCH_EMAIL = 1 << 3,
-  MATCH_TELEPHONE = 1 << 4,
-  MATCH_SELECT = 1 << 5,
-  MATCH_TEXT_AREA = 1 << 6,
-  MATCH_PASSWORD = 1 << 7,
-  MATCH_NUMBER = 1 << 8,
-  MATCH_SEARCH = 1 << 9,
-  MATCH_ALL_INPUTS = MATCH_TEXT | MATCH_EMAIL | MATCH_TELEPHONE | MATCH_SELECT |
-                     MATCH_TEXT_AREA | MATCH_PASSWORD | MATCH_NUMBER |
-                     MATCH_SEARCH,
+// Contains all MatchAttribute constants.
+constexpr DenseSet<MatchAttribute> kAllMatchAttributes{MatchAttribute::kLabel,
+                                                       MatchAttribute::kName};
 
-  // By default match label and name for input/text types.
-  MATCH_INPUTS_DEFAULT = MATCH_TEXT,
+// Contains all MatchFieldType constants.
+constexpr DenseSet<MatchFieldType> kAllMatchFieldTypes{
+    MatchFieldType::kText,      MatchFieldType::kEmail,
+    MatchFieldType::kTelephone, MatchFieldType::kSelect,
+    MatchFieldType::kTextArea,  MatchFieldType::kPassword,
+    MatchFieldType::kNumber,    MatchFieldType::kSearch};
+
+// A pair of sets of MatchAttributes and MatchFieldTypes.
+struct MatchParams {
+  inline constexpr MatchParams(DenseSet<MatchAttribute> attributes,
+                               DenseSet<MatchFieldType> field_types);
+  inline constexpr MatchParams(const MatchParams&);
+  inline constexpr MatchParams& operator=(const MatchParams&);
+  inline constexpr MatchParams(MatchParams&&);
+  inline constexpr MatchParams& operator=(MatchParams&&);
+
+  DenseSet<MatchAttribute> attributes;
+  DenseSet<MatchFieldType> field_types;
 };
 
-constexpr int MATCH_DEFAULT = MATCH_ATTRIBUTES_DEFAULT | MATCH_INPUTS_DEFAULT;
+inline constexpr MatchParams::MatchParams(DenseSet<MatchAttribute> attributes,
+                                          DenseSet<MatchFieldType> field_types)
+    : attributes(attributes), field_types(field_types) {}
+inline constexpr MatchParams::MatchParams(const MatchParams&) = default;
+inline constexpr MatchParams& MatchParams::operator=(const MatchParams&) =
+    default;
+inline constexpr MatchParams::MatchParams(MatchParams&&) = default;
+inline constexpr MatchParams& MatchParams::operator=(MatchParams&&) = default;
+
+// By default match label and name for <input type="text"> elements.
+template <MatchFieldType... additional_match_field_types>
+constexpr MatchParams kDefaultMatchParamsWith{
+    kAllMatchAttributes,
+    {MatchFieldType::kText, additional_match_field_types...}};
+
+constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
 
 // Structure for a better organization of data and regular expressions
 // for autofill regex_constants. In the future, to implement faster
@@ -56,8 +94,8 @@ struct MatchingPattern {
   std::u16string positive_pattern;
   std::u16string negative_pattern;
   float positive_score = 1.1;
-  uint8_t match_field_attributes;
-  uint16_t match_field_input_types;
+  DenseSet<MatchAttribute> match_field_attributes;
+  DenseSet<MatchFieldType> match_field_input_types;
 };
 
 }  // namespace autofill

@@ -22,6 +22,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/base/models/image_model.h"
@@ -81,7 +82,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
                            IDS_SHELF_CONTEXT_MENU_CLOSE);
     }
   }
-  if (app_id != extension_misc::kChromeAppId) {
+  if (app_id != app_constants::kChromeAppId) {
     AddContextMenuOption(menu_model.get(), ash::UNINSTALL,
                          IDS_APP_LIST_EXTENSIONS_UNINSTALL);
   }
@@ -210,7 +211,7 @@ void ExtensionShelfContextMenu::CreateOpenNewSubmenu(
       open_new_submenu_model_.get(),
       ui::ImageModel::FromVectorIcon(
           GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId()),
-          ui::kColorMenuIcon, ash::kAppContextMenuIconSize));
+          ui::kColorAshSystemUIMenuIcon, ash::kAppContextMenuIconSize));
 }
 
 extensions::LaunchType ExtensionShelfContextMenu::GetLaunchType() const {

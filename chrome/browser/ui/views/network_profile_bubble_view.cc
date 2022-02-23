@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -43,8 +44,8 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView {
   void LinkClicked(const ui::Event&);
 
   // Used for loading pages.
-  content::PageNavigator* navigator_;
-  Profile* profile_;
+  raw_ptr<content::PageNavigator> navigator_;
+  raw_ptr<Profile> profile_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

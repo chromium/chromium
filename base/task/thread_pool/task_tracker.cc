@@ -105,14 +105,14 @@ class EphemeralTaskExecutor : public TaskExecutor {
     return single_thread_task_runner_;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) override {
     CheckTraitsCompatibleWithSequenceTraits(traits);
     return single_thread_task_runner_;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // Currently ignores |traits.priority()|.
@@ -349,10 +349,11 @@ void TaskTracker::CompleteShutdown() {
     CheckedAutoLock auto_lock(flush_lock_);
     flush_cv_->Broadcast();
   }
-  CallFlushCallbackForTesting();
+  InvokeFlushCallbacksForTesting();
 }
 
 void TaskTracker::FlushForTesting() {
+  AssertFlushForTestingAllowed();
   CheckedAutoLock auto_lock(flush_lock_);
   while (num_incomplete_task_sources_.load(std::memory_order_acquire) != 0 &&
          !IsShutdownComplete()) {
@@ -364,14 +365,12 @@ void TaskTracker::FlushAsyncForTesting(OnceClosure flush_callback) {
   DCHECK(flush_callback);
   {
     CheckedAutoLock auto_lock(flush_lock_);
-    DCHECK(!flush_callback_for_testing_)
-        << "Only one FlushAsyncForTesting() may be pending at any time.";
-    flush_callback_for_testing_ = std::move(flush_callback);
+    flush_callbacks_for_testing_.push_back(std::move(flush_callback));
   }
 
   if (num_incomplete_task_sources_.load(std::memory_order_acquire) == 0 ||
       IsShutdownComplete()) {
-    CallFlushCallbackForTesting();
+    InvokeFlushCallbacksForTesting();
   }
 }
 
@@ -448,7 +447,8 @@ bool TaskTracker::CanRunPriority(TaskPriority priority) const {
 }
 
 RegisteredTaskSource TaskTracker::RunAndPopNextTask(
-    RegisteredTaskSource task_source) {
+    RegisteredTaskSource task_source,
+    base::Location* posted_from) {
   DCHECK(task_source);
 
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
@@ -464,6 +464,8 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   }
 
   if (task) {
+    if (posted_from)
+      *posted_from = task->posted_from;
     // Run the |task| (whether it's a worker task or the Clear() closure).
     RunTask(std::move(task.value()), task_source.get(), traits);
   }
@@ -663,17 +665,17 @@ void TaskTracker::DecrementNumIncompleteTaskSources() {
       CheckedAutoLock auto_lock(flush_lock_);
       flush_cv_->Broadcast();
     }
-    CallFlushCallbackForTesting();
+    InvokeFlushCallbacksForTesting();
   }
 }
 
-void TaskTracker::CallFlushCallbackForTesting() {
-  OnceClosure flush_callback;
+void TaskTracker::InvokeFlushCallbacksForTesting() {
+  base::circular_deque<OnceClosure> flush_callbacks;
   {
     CheckedAutoLock auto_lock(flush_lock_);
-    flush_callback = std::move(flush_callback_for_testing_);
+    flush_callbacks = std::move(flush_callbacks_for_testing_);
   }
-  if (flush_callback)
+  for (auto& flush_callback : flush_callbacks)
     std::move(flush_callback).Run();
 }
 

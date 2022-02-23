@@ -389,7 +389,7 @@ fn expand_cxx_type_assert_pinned(ety: &ExternType) -> TokenStream {
     let infer = Token![_](ident.span());
 
     quote! {
-        let _ = {
+        let _: fn() = {
             // Derived from https://github.com/nvzqz/static-assertions-rs.
             trait __AmbiguousIfImpl<A> {
                 fn infer() {}

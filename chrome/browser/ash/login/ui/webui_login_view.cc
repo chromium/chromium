@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -49,6 +49,8 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -166,8 +168,6 @@ void WebUILoginView::InitializeWebView(views::WebView* web_view,
 
   extensions::SetViewType(web_contents,
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
   blink::RendererPreferences* prefs = web_contents->GetMutableRendererPrefs();
   renderer_preferences_util::UpdateFromSystemSettings(
       prefs, ProfileHelper::GetSigninProfile());
@@ -430,6 +430,12 @@ void WebUILoginView::OnLoginPromptVisible() {
   }
 
   webui_visible_ = true;
+}
+
+void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->SetName(
+      l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
+  node_data->role = ax::mojom::Role::kWindow;
 }
 
 BEGIN_METADATA(WebUILoginView, views::View)

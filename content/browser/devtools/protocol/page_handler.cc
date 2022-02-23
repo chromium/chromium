@@ -69,7 +69,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/snapshot/snapshot.h"
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #endif
 
@@ -122,7 +122,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
     const gfx::Size& surface_size,
     float device_scale_factor,
     float page_scale_factor,
-    const gfx::Vector2dF& root_scroll_offset,
+    const gfx::PointF& root_scroll_offset,
     float top_controls_visible_height) {
   if (surface_size.IsEmpty() || device_scale_factor == 0)
     return nullptr;
@@ -130,7 +130,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
   const gfx::SizeF content_size_dip =
       gfx::ScaleSize(gfx::SizeF(surface_size), 1 / device_scale_factor);
   float top_offset_dip = top_controls_visible_height;
-  gfx::Vector2dF root_scroll_offset_dip = root_scroll_offset;
+  gfx::PointF root_scroll_offset_dip = root_scroll_offset;
   if (IsUseZoomForDSFEnabled()) {
     top_offset_dip /= device_scale_factor;
     root_scroll_offset_dip.Scale(1 / device_scale_factor);
@@ -171,7 +171,7 @@ gfx::Size DetermineSnapshotSize(const gfx::Size& surface_size,
 void GetMetadataFromFrame(const media::VideoFrame& frame,
                           double* device_scale_factor,
                           double* page_scale_factor,
-                          gfx::Vector2dF* root_scroll_offset,
+                          gfx::PointF* root_scroll_offset,
                           double* top_controls_visible_height) {
   // Get metadata from |frame|. This will CHECK if metadata is missing.
   *device_scale_factor = *frame.metadata().device_scale_factor;
@@ -194,11 +194,14 @@ bool CanExecuteGlobalCommands(
 
 }  // namespace
 
-PageHandler::PageHandler(EmulationHandler* emulation_handler,
-                         BrowserHandler* browser_handler,
-                         bool allow_unsafe_operations)
+PageHandler::PageHandler(
+    EmulationHandler* emulation_handler,
+    BrowserHandler* browser_handler,
+    bool allow_unsafe_operations,
+    absl::optional<url::Origin> navigation_initiator_origin)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       allow_unsafe_operations_(allow_unsafe_operations),
+      navigation_initiator_origin_(navigation_initiator_origin),
       enabled_(false),
       screencast_enabled_(false),
       screencast_quality_(kDefaultScreenshotQuality),
@@ -215,7 +218,7 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       emulation_handler_(emulation_handler),
       browser_handler_(browser_handler) {
   bool create_video_consumer = true;
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   constexpr auto kScreencastPixelFormat = media::PIXEL_FORMAT_I420;
   // Video capture doesn't work on Android WebView. Use CopyFromSurface instead.
   if (!CompositorImpl::IsInitialized())
@@ -227,8 +230,7 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
     video_consumer_ = std::make_unique<DevToolsVideoConsumer>(
         base::BindRepeating(&PageHandler::OnFrameFromVideoConsumer,
                             weak_factory_.GetWeakPtr()));
-    video_consumer_->SetFormat(kScreencastPixelFormat,
-                               gfx::ColorSpace::CreateREC709());
+    video_consumer_->SetFormat(kScreencastPixelFormat);
   }
   DCHECK(emulation_handler_);
 }
@@ -521,6 +523,15 @@ void PageHandler::Navigate(const std::string& url,
   params.referrer = Referrer(GURL(referrer.fromMaybe("")), policy);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
+  if (navigation_initiator_origin_.has_value()) {
+    // When this agent has an initiator origin defined, ensure that its
+    // navigations are considered renderer-initiated by that origin, such that
+    // URL spoof defenses are in effect. (crbug.com/1192417)
+    params.is_renderer_initiated = true;
+    params.initiator_origin = *navigation_initiator_origin_;
+    params.source_site_instance = SiteInstance::CreateForURL(
+        host_->GetBrowserContext(), navigation_initiator_origin_->GetURL());
+  }
   // Handler may be destroyed while navigating if the session
   // gets disconnected as a result of access checks.
   base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();
@@ -1057,7 +1068,7 @@ void PageHandler::InnerSwapCompositorFrame() {
       BuildScreencastFrameMetadata(
           surface_size, frame_metadata_->device_scale_factor,
           frame_metadata_->page_scale_factor,
-          frame_metadata_->root_scroll_offset.value_or(gfx::Vector2dF()),
+          frame_metadata_->root_scroll_offset.value_or(gfx::PointF()),
           top_controls_visible_height);
   if (!page_metadata)
     return;
@@ -1099,7 +1110,7 @@ void PageHandler::OnFrameFromVideoConsumer(
 
   double device_scale_factor, page_scale_factor;
   double top_controls_visible_height;
-  gfx::Vector2dF root_scroll_offset;
+  gfx::PointF root_scroll_offset;
   GetMetadataFromFrame(*frame, &device_scale_factor, &page_scale_factor,
                        &root_scroll_offset, &top_controls_visible_height);
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =
@@ -1280,8 +1291,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
-    case Reason::kNotMainFrame:
-      return Page::BackForwardCacheNotRestoredReasonEnum::NotMainFrame;
+    case Reason::kNotPrimaryMainFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::NotPrimaryMainFrame;
     case Reason::kBackForwardCacheDisabled:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           BackForwardCacheDisabled;
@@ -1369,9 +1380,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kNavigationCancelledWhileRestoring:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           NavigationCancelledWhileRestoring;
-    case Reason::kBackForwardCacheDisabledForPrerender:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          BackForwardCacheDisabledForPrerender;
     case Reason::kUserAgentOverrideDiffers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           UserAgentOverrideDiffers;
@@ -1576,6 +1584,9 @@ DisableForRenderFrameHostReasonToProtocol(
         case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentMediaSessionService;
+        case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+          return Page::BackForwardCacheNotRestoredReasonEnum::
+              ContentScreenReader;
       }
     case BackForwardCache::DisabledSource::kEmbedder:
       switch (static_cast<back_forward_cache::DisabledReasonId>(reason.id)) {
@@ -1639,7 +1650,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
-    case Reason::kNotMainFrame:
+    case Reason::kNotPrimaryMainFrame:
     case Reason::kBackForwardCacheDisabled:
     case Reason::kRelatedActiveContentsExist:
     case Reason::kHTTPStatusNotOK:
@@ -1678,7 +1689,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kUserAgentOverrideDiffers:
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kBackForwardCacheDisabledForDelegate:
-    case Reason::kBackForwardCacheDisabledForPrerender:
     case Reason::kServiceWorkerUnregistration:
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
@@ -1801,6 +1811,27 @@ CreateNotRestoredExplanation(
   return reasons;
 }
 
+std::unique_ptr<Page::BackForwardCacheNotRestoredExplanationTree>
+CreateNotRestoredExplanationTree(
+    const BackForwardCacheCanStoreTreeResult& tree_result) {
+  auto explanation = CreateNotRestoredExplanation(
+      tree_result.GetDocumentResult().not_stored_reasons(),
+      tree_result.GetDocumentResult().blocklisted_features(),
+      tree_result.GetDocumentResult().disabled_reasons());
+
+  auto children_array = std::make_unique<
+      protocol::Array<Page::BackForwardCacheNotRestoredExplanationTree>>();
+  for (auto& child : tree_result.GetChildren()) {
+    children_array->emplace_back(
+        CreateNotRestoredExplanationTree(*(child.get())));
+  }
+  return Page::BackForwardCacheNotRestoredExplanationTree::Create()
+      .SetUrl(tree_result.GetUrl().spec())
+      .SetExplanations(std::move(explanation))
+      .SetChildren(std::move(children_array))
+      .Build();
+}
+
 Response PageHandler::AddCompilationCache(const std::string& url,
                                           const Binary& data) {
   // We're just checking a permission here, the real business happens
@@ -1812,7 +1843,8 @@ Response PageHandler::AddCompilationCache(const std::string& url,
 
 void PageHandler::BackForwardCacheNotUsed(
     const NavigationRequest* navigation,
-    const BackForwardCacheCanStoreDocumentResult* result) {
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result) {
   if (!enabled_)
     return;
 
@@ -1825,8 +1857,15 @@ void PageHandler::BackForwardCacheNotUsed(
       result->not_stored_reasons(), result->blocklisted_features(),
       result->disabled_reasons());
 
+  // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|
+  // has the reasons.
+  std::unique_ptr<Page::BackForwardCacheNotRestoredExplanationTree>
+      explanation_tree =
+          tree_result ? CreateNotRestoredExplanationTree(*tree_result)
+                      : nullptr;
   frontend_->BackForwardCacheNotUsed(devtools_navigation_token, frame_id,
-                                     std::move(explanation));
+                                     std::move(explanation),
+                                     std::move(explanation_tree));
 }
 
 bool PageHandler::ShouldBypassCSP() {

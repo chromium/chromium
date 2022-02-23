@@ -13,7 +13,10 @@ namespace web {
 ContextMenuParams::ContextMenuParams()
     : is_main_frame(true),
       referrer_policy(ReferrerPolicyDefault),
-      location(CGPointZero) {}
+      location(CGPointZero),
+      natural_width(0.0),
+      natural_height(0.0),
+      bounding_box(CGRectZero) {}
 
 ContextMenuParams::ContextMenuParams(const ContextMenuParams& other) = default;
 

@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font_names_testing.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/system_fonts_win.h"
 #endif
 
@@ -28,7 +28,7 @@ class FontTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // System fonts is keeping a cache of loaded system fonts. These fonts are
     // scaled based on global callbacks configured on startup. The tests in this
     // file are testing these callbacks and need to be sure we cleared the
@@ -53,7 +53,7 @@ TEST_F(FontTest, DefaultFont) {
 
 TEST_F(FontTest, LoadArial) {
   Font cf(kTestFontName, 16);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_TRUE(cf.GetNativeFont());
 #endif
   EXPECT_EQ(cf.GetStyle(), Font::NORMAL);
@@ -66,7 +66,7 @@ TEST_F(FontTest, LoadArial) {
 TEST_F(FontTest, LoadArialBold) {
   Font cf(kTestFontName, 16);
   Font bold(cf.Derive(0, Font::NORMAL, Font::Weight::BOLD));
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_TRUE(bold.GetNativeFont());
 #endif
   EXPECT_EQ(bold.GetStyle(), Font::NORMAL);
@@ -143,7 +143,7 @@ TEST_F(FontTest, DeriveFont) {
   EXPECT_EQ(cf.GetWeight(), cf_underlined_resized.GetWeight());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(FontTest, DeriveResizesIfSizeTooSmall) {
   Font cf(kTestFontName, 8);
   gfx::win::SetGetMinimumFontSizeCallback([] { return 5; });
@@ -159,7 +159,7 @@ TEST_F(FontTest, DeriveKeepsOriginalSizeIfHeightOk) {
   Font derived_font = cf.Derive(-2, cf.GetStyle(), cf.GetWeight());
   EXPECT_EQ(6, derived_font.GetFontSize());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(FontTest, WeightConversion) {
   struct WeightMatchExpectation {

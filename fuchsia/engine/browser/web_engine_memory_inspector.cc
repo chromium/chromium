@@ -8,6 +8,7 @@
 #include <lib/inspect/cpp/inspector.h>
 #include <sstream>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "fuchsia/base/config_reader.h"
@@ -25,8 +26,8 @@ std::vector<std::string> GetAllocatorDumpNamesFromConfig() {
     return {};
 
   std::vector<std::string> names;
-  names.reserve(names_list->GetList().size());
-  for (auto& name : names_list->GetList()) {
+  names.reserve(names_list->GetListDeprecated().size());
+  for (auto& name : names_list->GetListDeprecated()) {
     names.push_back(name.GetString());
   }
   return names;

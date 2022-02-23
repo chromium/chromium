@@ -8,6 +8,7 @@
 #include "base/i18n/rtl.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -21,6 +22,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/first_run/first_run_configuration.h"
+#include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -159,6 +161,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self.navigationController setNavigationBarHidden:YES];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
 }
 
 - (void)viewDidLayoutSubviews {
@@ -265,6 +268,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
       };
 
   [self.coordinator start];
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kSyncScreenStart);
 }
 
 // Handles the sign-in completion and proceeds to complete the first run
@@ -273,6 +277,20 @@ const BOOL kDefaultStatsCheckboxValue = YES;
               completionInfo:(SigninCompletionInfo*)signinCompletionInfo {
   [self.coordinator stop];
   self.coordinator = nil;
+
+  switch (signinResult) {
+    case SigninCoordinatorResultCanceledByUser:
+    case SigninCoordinatorResultInterrupted: {
+      base::UmaHistogramEnumeration(
+          "FirstRun.Stage", first_run::kSyncScreenCompletionWithoutSync);
+      break;
+    }
+    case SigninCoordinatorResultSuccess: {
+      base::UmaHistogramEnumeration("FirstRun.Stage",
+                                    first_run::kSyncScreenCompletionWithSync);
+      break;
+    }
+  }
 
   [self completeFirstRunWithSigninCompletionInfo:signinCompletionInfo];
 }
@@ -304,6 +322,7 @@ const BOOL kDefaultStatsCheckboxValue = YES;
             (UIViewController*)presentingViewController
                                  signinCompletionInfo:
                                      (SigninCompletionInfo*)completionInfo {
+  base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
   FirstRunDismissed();
   switch (completionInfo.signinCompletionAction) {
     case SigninCompletionActionNone:

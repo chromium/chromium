@@ -4,6 +4,8 @@
 
 #include "base/process/launch.h"
 
+#include <tuple>
+
 #include <lib/fdio/limits.h>
 #include <lib/fdio/namespace.h>
 #include <lib/fdio/spawn.h>
@@ -18,7 +20,6 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/environment_internal.h"
 #include "base/scoped_generic.h"
@@ -123,13 +124,13 @@ Process LaunchProcess(const CommandLine& cmdline,
   return LaunchProcess(cmdline.argv(), options);
 }
 
-// TODO(768416): Investigate whether we can make LaunchProcess() create
-// unprivileged processes by default (no implicit capabilities are granted).
 Process LaunchProcess(const std::vector<std::string>& argv,
                       const LaunchOptions& options) {
   // fdio_spawn_etc() accepts an array of |fdio_spawn_action_t|, describing
   // namespace entries, descriptors and handles to launch the child process
-  // with.
+  // with. |fdio_spawn_action_t| does not own any values assigned to its
+  // members, so strings assigned to members must be valid through the
+  // fdio_spawn_etc() call.
   std::vector<fdio_spawn_action_t> spawn_actions;
 
   // Handles to be transferred to the child are owned by this vector, so that
@@ -225,7 +226,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   // If |process_name_suffix| is specified then set process name as
   // "<file_name><suffix>", otherwise leave the default value.
-  std::string process_name;
+  std::string process_name;  // Must outlive the fdio_spawn_etc() call.
   if (!options.process_name_suffix.empty()) {
     process_name = base::FilePath(argv[0]).BaseName().value() +
                    options.process_name_suffix;
@@ -244,7 +245,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   // fdio_spawn_etc() will close all handles specified in add-handle actions,
   // regardless of whether it succeeds or fails, so release our copies.
   for (auto& transferred_handle : transferred_handles)
-    ignore_result(transferred_handle.release());
+    std::ignore = transferred_handle.release();
 
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "fdio_spawn: " << error_message;

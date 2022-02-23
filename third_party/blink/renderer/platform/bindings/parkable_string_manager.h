@@ -72,6 +72,17 @@ class PLATFORM_EXPORT ParkableStringManager {
   // Public for testing.
   constexpr static int kAgingIntervalInSeconds = 2;
 
+  // According to UMA data (as of 2021-11-09) ~70% of renderers exist for less
+  // than 60 seconds. Using this as a delay of the first parking attempts
+  // to lower the number of parking operations on strings that are discarded
+  // soon after when the renderer dies. Subsequent additions will schedule
+  // according to the default delay. This applies to all renderers, young or
+  // old. This is considered a necessary trade-off to cover the spare renderer
+  // use-case. The spare renderer might have a long lifetime on first addition
+  // of a parkable string but it does not indicate a higher chance of the
+  // renderer staying alive for a long time.
+  constexpr static base::TimeDelta kFirstParkingDelay{base::Seconds(60)};
+
   static const char* kAllocatorDumpName;
   // Relies on secure hash equality for deduplication. If one day SHA256 becomes
   // insecure, then this would need to be updated to a more robust hash.
@@ -138,6 +149,8 @@ class PLATFORM_EXPORT ParkableStringManager {
   StringMap unparked_strings_;
   StringMap parked_strings_;
   StringMap on_disk_strings_;
+
+  bool first_string_aging_was_delayed_ = false;
 
   std::unique_ptr<DiskDataAllocator> allocator_for_testing_;
 

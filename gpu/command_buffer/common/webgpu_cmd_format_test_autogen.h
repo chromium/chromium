@@ -98,13 +98,15 @@ TEST_F(WebGPUFormatTest, DissociateMailboxForPresent) {
 
 TEST_F(WebGPUFormatTest, RequestAdapter) {
   cmds::RequestAdapter& cmd = *GetBufferAs<cmds::RequestAdapter>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<uint64_t>(11), static_cast<uint32_t>(12));
+  void* next_cmd = cmd.Set(&cmd, static_cast<uint64_t>(11),
+                           static_cast<uint32_t>(12), static_cast<bool>(13));
   EXPECT_EQ(static_cast<uint32_t>(cmds::RequestAdapter::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
   EXPECT_EQ(static_cast<uint64_t>(11), cmd.request_adapter_serial);
   EXPECT_EQ(static_cast<uint32_t>(12), cmd.power_preference);
+  EXPECT_EQ(static_cast<bool>(13),
+            static_cast<bool>(cmd.force_fallback_adapter));
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

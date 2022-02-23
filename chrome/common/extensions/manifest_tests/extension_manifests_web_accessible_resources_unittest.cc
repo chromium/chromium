@@ -5,6 +5,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -348,5 +349,52 @@ TEST_F(WebAccessibleResourcesManifestTest, WebAccessibleResourcesWildcard) {
     EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
         extension.get(), "test",
         url::Origin::Create(GURL("https://allowed.example"))));
+  }
+}
+
+// Verify behavior of web accessible resources with subdomains and ports.
+TEST_F(WebAccessibleResourcesManifestTest, MatchFromInitiator) {
+  auto test_match_from_initiator = [&](const char* match,
+                                       const char* initiator_string,
+                                       bool expected_accessible) {
+    // Install extension.
+    auto manifest = content::JsReplace(R"([{
+          "resources": ["web_accessible_resource.html"],
+          "matches": [$1]
+        }])",
+                                       match);
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess(GetManifestData(manifest)));
+    EXPECT_TRUE(
+        WebAccessibleResourcesInfo::HasWebAccessibleResources(extension.get()));
+
+    // Verify behavior of web accessible resources.
+    auto origin = url::Origin::Create(GURL(initiator_string));
+    EXPECT_EQ(expected_accessible,
+              WebAccessibleResourcesInfo::IsResourceWebAccessible(
+                  extension.get(), "web_accessible_resource.html", origin));
+  };
+
+  struct {
+    const char* match;
+    const char* origin;
+    bool expected_accessible;
+  } test_cases[] = {
+      // Subdomain
+      {"https://a.example.com/*", "https://a.example.com/test", true},
+      {"https://a.example.com/*", "https://b.example.com/test", false},
+      {"https://a.example.com/*", "https://a.example.com:8080/test", true},
+      {"https://a.example.com:8080/*", "https://a.example.com/test", false},
+
+      // Wildcard subdomain
+      {"https://*.example.com/*", "https://a.example.com/test", true},
+      // Wildcard port
+      {"https://a.example.com:*/*", "https://a.example.com:8080", true},
+      // Mismatched port when port explicitly specified in both
+      {"https://a.example.com:8888/*", "https://a.example.com:8080", false},
+  };
+  for (const auto& test_case : test_cases) {
+    test_match_from_initiator(test_case.match, test_case.origin,
+                              test_case.expected_accessible);
   }
 }

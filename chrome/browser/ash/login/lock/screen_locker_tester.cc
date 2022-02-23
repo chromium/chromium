@@ -7,17 +7,17 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/fake_extended_authenticator.h"
+#include "ash/components/login/auth/key.h"
+#include "ash/components/login/auth/stub_authenticator.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/fake_extended_authenticator.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/stub_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"

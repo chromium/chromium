@@ -197,12 +197,12 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   // Clears the password field after a time without action if the display
   // password button is visible.
-  std::unique_ptr<base::RetainingOneShotTimer> clear_password_timer_;
+  base::RetainingOneShotTimer clear_password_timer_;
 
   // Hides the password after a short delay if the password is shown, except if
   // ChromeVox is enabled (otherwise, the user would not have time to navigate
   // through the password and make the characters read out loud one by one).
-  std::unique_ptr<base::RetainingOneShotTimer> hide_password_timer_;
+  base::RetainingOneShotTimer hide_password_timer_;
 
   LoginPalette palette_;
 

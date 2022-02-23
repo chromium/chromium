@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_advertising_event.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -52,6 +52,7 @@ class Bluetooth final : public EventTargetWithInlineData,
                               const BluetoothLEScanOptions*,
                               ExceptionState&);
 
+  bool IsServiceBound() const { return service_.is_bound(); }
   mojom::blink::WebBluetoothService* Service() { return service_.get(); }
 
   // WebBluetoothAdvertisementClient

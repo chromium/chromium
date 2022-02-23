@@ -210,7 +210,7 @@ bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
   // Some extensions must retain privilege to all requested host permissions.
   // Specifically, extensions that don't show up in chrome:extensions (where
   // withheld permissions couldn't be granted), extensions that are part of
-  // chrome or corporate policy, and extensions that are whitelisted to script
+  // chrome or corporate policy, and extensions that are allowlisted to script
   // everywhere must always have permission to run on a page.
   return ui_util::ShouldDisplayInExtensionSettings(type, location) &&
          !Manifest::IsPolicyLocation(location) &&
@@ -234,6 +234,7 @@ int GetBrowserContextId(content::BrowserContext* context) {
     iter =
         context_map->insert(std::make_pair(original_context, next_id++)).first;
   }
+  DCHECK(iter->second != kUnspecifiedContextId);
   return iter->second;
 }
 
@@ -268,6 +269,20 @@ bool IsExtensionVisibleToContext(const Extension& extension,
   return !browser_context->IsOffTheRecord() ||
          !CanBeIncognitoEnabled(&extension) ||
          IsIncognitoEnabled(extension.id(), browser_context);
+}
+
+// Initializes file scheme access if the extension has such permission.
+void InitializeFileSchemeAccessForExtension(
+    int render_process_id,
+    const std::string& extension_id,
+    content::BrowserContext* browser_context) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  // TODO(karandeepb): This should probably use
+  // extensions::util::AllowFileAccess.
+  if (prefs->AllowFileAccess(extension_id)) {
+    content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
+        render_process_id, url::kFileScheme);
+  }
 }
 
 }  // namespace util

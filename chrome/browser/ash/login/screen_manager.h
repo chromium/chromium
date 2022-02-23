@@ -27,6 +27,9 @@ class ScreenManager {
   // Initialize all screen instances.
   void Init(std::vector<std::unique_ptr<BaseScreen>> screens);
 
+  // Destroys all screen instances.
+  void Shutdown();
+
   // Getter for screen. Does not create the screen.
   BaseScreen* GetScreen(OobeScreenId screen);
 

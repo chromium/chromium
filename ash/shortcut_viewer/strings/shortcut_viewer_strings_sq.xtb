@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Hap një dritare të re në modalitetin "e fshehtë"</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, më pas <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
 <translation id="1652741121070700329">Lëviz në fillim të fjalës së mëparshme</translation>
 <translation id="1679841710523778799">Aktivizo ndriçimin</translation>
 <translation id="168356808214100546">Shtyp dhe mbaj shtypur <ph name="ALT" />, trokit <ph name="TAB" /> derisa të arrish te dritarja që dëshiron të hapësh, më pas lëshoje.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Shtyp <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> dhe kliko një lidhje</translation>
 <translation id="561814908794220892">Hap faqen e uebit në një skedë të re</translation>
 <translation id="5620219513321115856">Zhvendos dritaren aktive në tavolinën e punës në të djathtë</translation>
+<translation id="5699366815052349604">Cakto dritaren aktive për të gjitha tavolinat e punës</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ose <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Hap lidhjen në skedë</translation>
 <translation id="5757474750054631686">Errëso tastierën (vetëm për tastierat me sfond të ndriçuar)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">Ktheje skedën në pozicionin fillestar</translation>
 <translation id="6474744297082284761">Zvogëlo (kur është e lidhur me stacionin OSE kur janë aktivë zmadhuesit e ekranit të plotë)</translation>
 <translation id="649811797655257835">Zgjidh skedarin, më pas shtyp <ph name="SPACE" /></translation>
+<translation id="6515089016094047210">Hap ose mbyll miniaplikacionin e kalendarit.</translation>
 <translation id="6551886416582667425">Nxirr një pamje/regjistrim të pjesshëm të ekranit</translation>
 <translation id="6556040137485212400">Hap dritaren që nuk është përdorur prej më shumë kohësh</translation>
 <translation id="666343722268997814">Hap menynë e klikimit me të djathtë për artikullin e theksuar</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">Shfaq skedarët e fshehur në aplikacionin "Skedarët"</translation>
 <translation id="8717459106217102612">Zgjidh fjalën ose shkronjën e mëparshme</translation>
 <translation id="8727232706774971183">Shiko njoftimet e tua</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-8</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8881584919399569791">Zhvendos dritaren aktive në tavolinën e punës në të majtë</translation>
 <translation id="88986195241502842">Faqe poshtë</translation>

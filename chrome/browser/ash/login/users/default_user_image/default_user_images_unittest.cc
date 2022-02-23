@@ -12,9 +12,9 @@ namespace default_user_image {
 
 TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
   std::unique_ptr<base::ListValue> current_default_images =
-      default_user_image::GetCurrentImageSet();
+      default_user_image::GetCurrentImageSetAsListValue();
 
-  for (auto& image_data : current_default_images.get()->GetList()) {
+  for (auto& image_data : current_default_images.get()->GetListDeprecated()) {
     const auto index = image_data.FindIntPath("index");
     EXPECT_TRUE(index.has_value());
     EXPECT_TRUE(IsValidIndex(index.value()));
@@ -22,7 +22,7 @@ TEST(DefaultUserImagesTest, CurrentImageSetShouldBeEligible) {
 
     const auto* url = image_data.FindStringPath("url");
     EXPECT_TRUE(url);
-    EXPECT_EQ(GetDefaultImageUrl(index.value()), url->c_str());
+    EXPECT_EQ(GetDefaultImageUrl(index.value()).spec(), url->c_str());
 
     const auto* title = image_data.FindStringPath("title");
     EXPECT_TRUE(title);

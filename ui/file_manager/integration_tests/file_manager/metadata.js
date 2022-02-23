@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MetadataStatsType} from '../metadata_stats_type.js';
-import {addEntries, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
+import {addEntries, createTestFile, ENTRIES, EntryType, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -29,26 +29,6 @@ function equal1PercentMargin(value, desiredValue) {
   }
 
   return result;
-}
-
-/**
- * Creates a test file, which can be inside folders, however parent folders
- * have to be created by the caller using |createTestFolder|.
- * @param {string} path File path to be created,
- * @return {TestEntryInfo}
- */
-function createTestFile(path) {
-  const name = path.split('/').pop();
-  return new TestEntryInfo({
-    targetPath: path,
-    nameText: name,
-    type: EntryType.FILE,
-    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
-    sizeText: '51 bytes',
-    typeText: 'Plain text',
-    sourceFileName: 'text.txt',
-    mimeType: 'text/plain'
-  });
 }
 
 /**

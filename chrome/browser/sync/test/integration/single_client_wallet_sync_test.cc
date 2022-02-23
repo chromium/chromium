@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -280,9 +279,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTestWithoutAccountStorage,
                                   CreateDefaultSyncPaymentsCustomerData()});
   ASSERT_TRUE(SetupSync());
 
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_EQ(nullptr, account_data);
 
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
@@ -333,9 +334,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
 
   // Check that no data is stored in the profile storage.
@@ -351,14 +354,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   ExpectDefaultCreditCardValues(*cards[0]);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, signout is not supported with Mirror account consistency.
-  // TODO(https://crbug.com/1260291): Enable this test once signout is
-  // supported.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    return;
-#endif
-
+// On Lacros, signout is not supported with Mirror account consistency.
+// TODO(https://crbug.com/1260291): Enable this part of the test once signout is
+// supported.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Now sign back out.
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -373,21 +372,23 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   // Check directly in the DB that the account storage is now cleared.
   EXPECT_EQ(0U, GetServerCards(account_data).size());
+#endif
 }
 
 // Wallet data should get cleared from the database when the user signs out and
 // different data should get downstreamed when the user signs in with a
 // different account.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
-                       ClearOnSignOutAndDownstreamOnSignIn) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, signout is not supported with Mirror account consistency.
-  // TODO(https://crbug.com/1260291): Enable this test once signout is
-  // supported.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
+// On Lacros, signout is not supported with Mirror account consistency.
+// TODO(https://crbug.com/1260291): Enable this test once signout is supported.
+#define MAYBE_ClearOnSignOutAndDownstreamOnSignIn \
+  DISABLED_ClearOnSignOutAndDownstreamOnSignIn
+#else
+#define MAYBE_ClearOnSignOutAndDownstreamOnSignIn \
+  ClearOnSignOutAndDownstreamOnSignIn
 #endif
-
+IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
+                       MAYBE_ClearOnSignOutAndDownstreamOnSignIn) {
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
@@ -548,16 +549,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
 
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Wallet data should get cleared from the database when the user signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, signout is not supported with Mirror account consistency.
-  // TODO(https://crbug.com/1260291): Enable this test once signout is
-  // supported.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    GTEST_SKIP();
-#endif
 
+// Wallet data should get cleared from the database when the user signs out.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// On Lacros, signout is not supported with Mirror account consistency.
+// TODO(https://crbug.com/1260291): Enable this test once signout is supported.
+#define MAYBE_ClearOnSignOut DISABLED_ClearOnSignOut
+#else
+#define MAYBE_ClearOnSignOut ClearOnSignOut
+#endif
+IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, MAYBE_ClearOnSignOut) {
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
                                   CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),
@@ -1408,9 +1409,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the data is stored in the account storage (ephemeral), but not
@@ -1476,9 +1479,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the card is stored in the account storage (ephemeral), but not
@@ -1493,7 +1498,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now start actually configuring Sync.
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
-  auto setup_handle = GetSyncService(0)->GetSetupInProgressHandle();
+  std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
+      GetSyncService(0)->GetSetupInProgressHandle();
 
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill});
@@ -1562,9 +1568,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
   EXPECT_FALSE(
       GetPersonalDataManager(0)->IsUsingAccountStorageForServerDataForTest());
 
-  auto account_data = GetAccountWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> account_data =
+      GetAccountWebDataService(0);
   ASSERT_NE(nullptr, account_data);
-  auto profile_data = GetProfileWebDataService(0);
+  scoped_refptr<autofill::AutofillWebDataService> profile_data =
+      GetProfileWebDataService(0);
   ASSERT_NE(nullptr, profile_data);
 
   // Check that the card is stored in the profile storage (persisted), but not

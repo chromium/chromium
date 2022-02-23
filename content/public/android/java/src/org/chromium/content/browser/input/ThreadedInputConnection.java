@@ -5,6 +5,7 @@
 package org.chromium.content.browser.input;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,7 +19,9 @@ import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.SurroundingText;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -611,6 +614,21 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             }
         });
         return true;
+    }
+
+    /**
+     * @see InputConnection#getSurroundingText(int, int, int)
+     */
+    @RequiresApi(Build.VERSION_CODES.S)
+    @SuppressLint("Override")
+    @Override
+    public SurroundingText getSurroundingText(int beforeLength, int afterLength, int flags) {
+        if (DEBUG_LOGS) {
+            Log.i(TAG, "getSurroundingText [%d %d %x]", beforeLength, afterLength, flags);
+        }
+        TextInputState textInputState = requestAndWaitForTextInputState();
+        if (textInputState == null) return null;
+        return textInputState.getSurroundingText(beforeLength, afterLength);
     }
 
     /**

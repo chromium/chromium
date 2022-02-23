@@ -79,7 +79,7 @@ void VirtualKeyboard::setOverlaysContent(bool overlays_content) {
 
 void VirtualKeyboard::VirtualKeyboardOverlayChanged(
     const gfx::Rect& keyboard_rect) {
-  bounding_rect_ = DOMRect::FromFloatRect(FloatRect(gfx::RectF(keyboard_rect)));
+  bounding_rect_ = DOMRect::FromRectF(gfx::RectF(keyboard_rect));
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (window) {
     DocumentStyleEnvironmentVariables& vars =

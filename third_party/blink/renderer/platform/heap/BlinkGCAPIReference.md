@@ -1,25 +1,44 @@
-# Blink GC API reference
+# Oilpan - Blink GC
 
-This document describes the usage of Oilpan -- Blink's garbage collector.
-If you just want to get an overview of the API you can have a look at
-[this tutorial](https://docs.google.com/presentation/d/1XPu03ymz8W295mCftEC9KshH9Icxfq81YwIJQzQrvxo/edit#slide=id.p).
-If you're interested in wrapper tracing, see [Wrapper Tracing Reference](../bindings/TraceWrapperReference.md).
+Oilpan is a garbage collection system for Blink objects.
+This document explores the design, API and usage of the GC.
 
 [TOC]
 
-## Header file
+## Overview
 
-Unless otherwise noted, any of the primitives explained on this page require the following `#include` statement:
+The general design of Oilpan is explained in the [Oilpan README](https://chromium.googlesource.com/v8/v8/+/main/include/cppgc/README.md).
+This section focuses on the Blink specific extensions to that design.
 
-```c++
-#include "third_party/blink/renderer/platform/heap/handle.h"
-```
+## Threading model
+
+Oilpan assumes heaps are not shared among threads.
+Blink creates and uses a different heap and root set for each thread.
+Matching a thread to its relevant heap is maintained by `blink::ThreadState`.
+
+Any object or `Persistent` (See [Persistent, WeakPersistent, CrossThreadPersistent, CrossThreadWeakPersistent](https://chromium.googlesource.com/v8/v8/+/main/include/cppgc/README.md#Persistent,-WeakPersistent,-CrossThreadPersistent,-CrossThreadWeakPersistent) for details) that is allocated on a thread automatically belong to that thread's heap or root set.
+
+Threads that want to allocate Oilpan objects must be *attached* to Oilpan, by calling either `blink::ThreadState::AttachMainThread()` or `blink::ThreadState::AttachCurrentThread()`.
+
+## Heap partitioning
+
+Blink assigns the following types to custom spaces in Oilpan's heap:
+- Objects that are a collection backing are allocated in one of the collection backing *compactable* custom spaces.
+- Objects that are a Node, a CSSValue or a LayoutObject are allocated in one of the typed custom spaces.
+
+## Mode of operation
+
+- Blink uses concurrent garbage collection (marking and sweeping), except for during thread termination and heap destruction.
+- When under memory pressure, Blink triggers a conservative GC.
+
+# Oilpan API reference
 
 ## Base class templates
 
 ### GarbageCollected
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/garbage_collected.h`</small>
 
-A class that wants the lifetime management of its instances to be managed by Oilpan must inherit from `GarbageCollected<T>`.
+A class that wants the lifetime of its instances to be managed by Oilpan must inherit from `GarbageCollected<T>`.
 
 ```c++
 class YourClass : public GarbageCollected<YourClass> {
@@ -28,17 +47,20 @@ class YourClass : public GarbageCollected<YourClass> {
 ```
 
 Instances of such classes are said to be *on Oilpan heap*, or *on heap* for short, while instances of other classes are called *off heap*.
-In the rest of this document, the terms *on heap* or *on-heap objects* are used to mean the objects on Oilpan heap instead of on normal (default) dynamic allocator's heap space.
+In the rest of this document, the terms *on heap*, *on-heap objects* or *garbage-collected objects* are used to mean the objects on Oilpan heap instead of on normal (default) dynamic allocator's heap space.
 
-You can create an instance of your class through `MakeGarbageCollected<T>`, while you may not free the object with `delete`, as Oilpan is responsible for deallocating the object once it determines the object is unreachable.
+Instances of a garbage-collected class can be created/allocated through `MakeGarbageCollected<T>`.
+Declaring a class as garbage collected disallows the use of `operator new`.
+It is not allowed to free garbage-collected object with `delete`, as Oilpan is responsible for deallocating the object once it determines the object is unreachable.
 
-You may not allocate an on-heap object on stack.
+Garbage-collected objects may not be allocated on stack. See [STACK_ALLOCATED](#STACK_ALLOCATED) and [Heap collections](#Heap-collections) for exceptions to this rule.
 
-Your class may need to have a tracing method. See [Tracing](#Tracing) for details.
+Garbage-collected class may need to have a tracing method. See [Tracing](#Tracing) for details.
 
-Your class will be automatically finalized as long as it is non-trivially destructible.
+Non-trivially destructible classes will be automatically finalized.
 Non-final classes that are not trivially destructible are required to have a virtual destructor.
-Trivially destructible classes should not have a destructor. Adding a destructor to such classes would make then non-trivially destructible and would hinder performance.
+Trivially destructible classes should not have a destructor.
+Adding a destructor to such classes would make them non-trivially destructible and would hinder performance.
 Note that finalization is done at an arbitrary time after the object becomes unreachable.
 Any destructor executed within the finalization period *must not* touch any other on-heap object because destructors can be executed in any order.
 
@@ -60,7 +82,8 @@ class B : public A, public Q {
 // };
 ```
 
-If a non-leftmost base class needs to retain an on-heap object, that base class needs to inherit from [GarbageCollectedMixin](#GarbageCollectedMixin). It's generally recommended to make *any* non-leftmost base class inherit from `GarbageCollectedMixin` because it's dangerous to save a pointer to a non-leftmost non-`GarbageCollectedMixin` subclass of an on-heap object.
+If a non-leftmost base class needs to retain an on-heap object, that base class needs to inherit from [GarbageCollectedMixin](#GarbageCollectedMixin).
+It's generally recommended to make *any* non-leftmost base class inherit from `GarbageCollectedMixin` because it's dangerous to save a pointer to a non-leftmost non-`GarbageCollectedMixin` subclass of an on-heap object.
 
 ```c++
 P* raw_pointer;
@@ -80,6 +103,7 @@ public:
 ```
 
 ### GarbageCollectedMixin
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/garbage_collected.h`</small>
 
 A non-leftmost base class of a garbage-collected class should derive from `GarbageCollectedMixin`.
 
@@ -105,7 +129,7 @@ class A final : public GarbageCollected<A>, public P {
 };
 ```
 
-You cannot instantiate a class that is a descendant of `GarbageCollectedMixin` but not a descendant of `GarbageCollected<T>`.
+A class that is a descendant of `GarbageCollectedMixin` but not a descendant of `GarbageCollected<T>` cannot be instantiated..
 
 ```c++
 class P : public GarbageCollectedMixin { };
@@ -129,6 +153,7 @@ void foo() {
 ## Class properties
 
 ### USING_PRE_FINALIZER
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/prefinalizer.h`</small>
 
 `USING_PRE_FINALIZER(ClassName, FunctionName)` in a class declaration declares the class has a *pre-finalizer* of name `FunctionName`.
 A pre-finalizer must have the function signature `void()` but can have any name.
@@ -180,63 +205,80 @@ class Child : public Parent {
 };
 ```
 
+Alternatively, several classes in the same hierarchy may have pre-finalizers and these will also be executed in reverse order wrt. to construction.
+
+```c++
+class Parent : public GarbageCollected<Parent> {
+  USING_PRE_FINALIZER(Parent, Dispose);
+ public:
+  void Dispose() {
+    // Pre-finalizer for {Parent}.
+  }
+  // ...
+};
+
+class Child : public Parent {
+  USING_PRE_FINALIZER(Child, Dispose);
+ public:
+  void Dispose() {
+    // Pre-finalizer for {Child}.
+  }
+  // ...
+};
+```
+
 *Notes*
-- Pre-finalizers are not allowed to allocate new on-heap objects or resurrect objects (i.e., they are not allowed to relink dead objects into the object graph).
+- Pre-finalizers are not allowed to resurrect objects (i.e. they are not allowed to relink dead objects into the object graph).
 - Pre-finalizers have some implications on the garbage collector's performance: the garbage-collector needs to iterate all registered pre-finalizers at every GC.
 Therefore, a pre-finalizer should be avoided unless it is really necessary.
-Especially, avoid defining a pre-finalizer in a class that can be allocated a lot.
-
-### STACK_ALLOCATED
-
-Class level annotation that should be used if the object is only stack allocated; it disallows use of `operator new`. Any fields holding garbage-collected objects should use regular pointers or references and you do not need to define a `Trace()` method as they are on the stack, and automatically traced and kept alive should a conservative GC be required.
-
-Classes with this annotation do not need a `Trace()` method and must not inherit a on-heap garbage collected class.
-
-Marking a class as STACK_ALLOCATED implicitly implies [DISALLOW_NEW](#DISALLOW_NEW).
+Especially, avoid defining a pre-finalizer in a class that might be allocated a lot.
 
 ### DISALLOW_NEW
+<small>**Declared in:** `third_party/blink/renderer/platform/wtf/allocator/allocator.h`</small>
 
-Class-level annotation declaring the class cannot be separately allocated using `operator new`.
-It can be used on stack, as a part of object, or as a value in a heap collection.
-If the class has `Member<T>` references, you need a `Trace()` method which the object containing the `DISALLOW_NEW()`
-part object must call upon. The clang Blink GC plugin checks and enforces this.
+Class-level annotation declaring the class cannot be separately allocated using `operator new` or `MakeGarbageCollected<T>`.
+It can be used on stack, as an embedded part of some other object, or as a value in a heap collection.
+If the class has `Member<T>` references, it needs a `Trace()` method, which must be called by the embedding object (e.g. the collection or the object that this class is a part of).
 
 Classes with this annotation need a `Trace()` method, but should not inherit a garbage collected class.
 
+### STACK_ALLOCATED
+<small>**Declared in:** `third_party/blink/renderer/platform/wtf/allocator/allocator.h`</small>
+
+Class level annotation that should be used if the class is only stack allocated.
+Any fields holding garbage-collected objects should use raw pointers or references.
+
+Classes with this annotation do not need to define a `Trace()` method as they are on the stack, and are automatically traced and kept alive should a conservative GC be required.
+
+Stack allocated classes must not inherit a on-heap garbage collected class.
+
+Marking a class as STACK_ALLOCATED implicitly implies [DISALLOW_NEW](#DISALLOW_NEW), and thus disallow the use of `operator new` and `MakeGarbageCollected<T>`.
 
 ## Handles
 
 Class templates in this section are smart pointers, each carrying a pointer to an on-heap object (think of `scoped_refptr<T>`
-for `RefCounted<T>`). Collectively, they are called *handles*.
+for `RefCounted<T>`).
+Collectively, they are called *handles*.
 
 On-heap objects must be retained by any of these, depending on the situation.
 
-### Raw pointers
-
-Raw pointers to garbage-collected objects should be avoided as they may cause memory corruptions.
-An exception to this rule is on-stack references to on-heap objects (including function parameters and return types) which must be raw pointers.
-
-```c++
-void someFunction() {
-  SomeGarbageCollectedClass* object = MakeGarbageCollected<SomeGarbageCollectedClass>(); // OK, retained by a pointer.
-  ...
-}
-// OK to leave the object behind. The Blink GC system will free it up when it becomes unused.
-```
-
 ### Member, WeakMember
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/member.h`</small>
 
 In a garbage-collected class, on-heap objects must be retained by `Member<T>` or `WeakMember<T>`, depending on
 the desired semantics.
 
 `Member<T>` represents a *strong* reference to an object of type `T`, which means that the referred object is kept
-alive as long as the owner class instance is alive. Unlike `scoped_refptr<T>`, it is okay to form a reference cycle with
+alive as long as the owner class instance is alive.
+Unlike `scoped_refptr<T>`, it is okay to form a reference cycle with
 members (in on-heap objects) and raw pointers (on stack).
 
-`WeakMember<T>` is a *weak* reference to an object of type `T`. Unlike `Member<T>`, `WeakMember<T>` does not keep
-the pointed object alive. The pointer in a `WeakMember<T>` can become `nullptr` when the object gets garbage-collected.
-It may take some time for the pointer in a `WeakMember<T>` to become `nullptr` after the object actually goes unused,
-because this rewrite is only done within Blink GC's garbage collection period.
+`WeakMember<T>` is a *weak* reference to an object of type `T`.
+Unlike `Member<T>`, `WeakMember<T>` does not keep
+the pointed object alive.
+The pointer in a `WeakMember<T>` can become `nullptr` when the object gets garbage-collected.
+It may take some time for the pointer in a `WeakMember<T>` to become `nullptr` after the object actually becomes unreachable,
+because this rewrite is only done within Oilpan's garbage collection cycle.
 
 ```c++
 class SomeGarbageCollectedClass : public GarbageCollected<SomeGarbageCollectedClass> {
@@ -247,24 +289,28 @@ private:
 };
 ```
 
-The use of `WeakMember<T>` incurs some overhead in garbage collector's performance. Use it sparingly. Usually, weak
-members are not necessary at all, because reference cycles with members are allowed.
+The use of `WeakMember<T>` incurs some overhead in garbage collector's performance.
+Use it sparingly.
+Usually, weak members are not necessary at all, because reference cycles with members are allowed.
 
 More specifically, `WeakMember<T>` should be used only if the owner of a weak member can outlive the pointed object.
 Otherwise, `Member<T>` should be used.
 
-You need to trace every `Member<T>` and `WeakMember<T>` in your class. See [Tracing](#Tracing).
+It is required that every `Member<T>` and `WeakMember<T>` in a garbage-collected class be traced. See [Tracing](#Tracing).
 
 ### UntracedMember
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/member.h`</small>
 
 `UntracedMember<T>` represents a reference to a garbage collected object which is ignored by Oilpan.
 
-Unlike `Member<T>`, `UntracedMember<T>` will not keep an object alive. However, unlike `WeakMember<T>`, the reference will not be cleared (i.e. set to `nullptr`) if the referenced object dies.
+Unlike `Member<T>`, `UntracedMember<T>` will not keep an object alive.
+However, unlike `WeakMember<T>`, the reference will not be cleared (i.e. set to `nullptr`) if the referenced object dies.
 Furthermore, class fields of type `UntracedMember<T>` should not be traced by the class' tracing method.
 
-Users should  use `UntracedMember<T>` when implementing [custom weakness semantics](#Custom-weak-callbacks).
+Users should avoid using `UntracedMember<T>` in any case other than when implementing [custom weakness semantics](#Custom-weak-callbacks).
 
 ### Persistent, WeakPersistent, CrossThreadPersistent, CrossThreadWeakPersistent
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/persistent.h`</small>
 
 In a non-garbage-collected class, on-heap objects must be retained by `Persistent<T>`, `WeakPersistent<T>`,
 `CrossThreadPersistent<T>`, or `CrossThreadWeakPersistent<T>`, depending on the situations and the desired semantics.
@@ -272,11 +318,11 @@ In a non-garbage-collected class, on-heap objects must be retained by `Persisten
 `Persistent<T>` is the most basic handle in the persistent family, which makes the referred object alive
 unconditionally, as long as the persistent handle is alive.
 
-`WeakPersistent<T>` does not make the referred object alive, and becomes `nullptr` when the object gets
+`WeakPersistent<T>` does not keep the referred object alive, and becomes `nullptr` when the object gets
 garbage-collected, just like `WeakMember<T>`.
 
 `CrossThreadPersistent<T>` and `CrossThreadWeakPersistent<T>` are cross-thread variants of `Persistent<T>` and
-`WeakPersistent<T>`, respectively, which can point to an object in a different thread.
+`WeakPersistent<T>`, respectively, which can point to an object in a different thread (i.e. in a different heap).
 
 ```c++
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -288,28 +334,41 @@ private:
 };
 ```
 
-`persistent.h` provides these persistent pointers.
+***
+**Warning:** `Persistent<T>` and `CrossThreadPersistent<T>` are vulnerable to reference cycles.
+If a reference cycle is formed with `Persistent`s, `Member`s, `RefPtr`s and `OwnPtr`s, all the objects in the cycle **will leak**, since
+no object in the cycle can be aware of whether they are ever referred to from outside the cycle.
 
-*** note
-**Warning:** `Persistent<T>` and `CrossThreadPersistent<T>` are vulnerable to reference cycles. If a reference cycle
-is formed with `Persistent`s, `Member`s, `RefPtr`s and `OwnPtr`s, all the objects in the cycle **will leak**, since
-nobody in the cycle can be aware of whether they are ever referred from anyone.
-
-When you are about to add a new persistent, be careful not to create a reference cycle. If a cycle is inevitable, make
-sure the cycle is eventually cut by someone outside the cycle.
+Be careful not to create a reference cycle when adding a new persistent.
+If a cycle is inevitable, make sure the cycle is eventually cut by someone outside the cycle.
 ***
 
-Persistents have small overhead in itself, because they need to maintain the list of all persistents. Therefore, it's
-not a good idea to create or keep a lot of persistents at once.
+Persistents have a small unavoidable overhead because they require maintaining a list of all persistents.
+Therefore, creating or keeping a lot of persistents at once would have performance implications and should be avoided when possible.
 
-Weak variants have overhead just like `WeakMember<T>`. Use them sparingly.
+Weak variants have overhead just like `WeakMember<T>`.
+Use them sparingly.
 
-The need of cross-thread persistents may indicate a poor design in multi-thread object ownership. Think twice if they
-are really necessary.
+The need of cross-thread persistents may indicate a poor design in multi-thread object ownership.
+Think twice if they are really necessary.
+
+### Raw pointers
+
+Using raw pointers to garbage-collected objects on-heap is forbidden, as they may cause memory corruptions.
+On-stack references to garbage-collected object (including function parameters and return types), on the other hand, must use raw pointers.
+This is the only case where raw pointers to on-heap objects should be used.
+
+```c++
+void someFunction() {
+  SomeGarbageCollectedClass* object = MakeGarbageCollected<SomeGarbageCollectedClass>(); // OK, retained by a pointer.
+  ...
+}
+// OK to leave the object behind. The Blink GC system will free it up when it becomes unused.
+```
 
 ## Tracing
 
-A garbage-collected class is required to have *a tracing method*, which lists up all the on-heap objects it has.
+A garbage-collected class is required to have *a tracing method*, which lists all the references to on-heap objects it has.
 The tracing method is called when the garbage collector needs to determine (1) all the on-heap objects referred from a
 live object, and (2) all the weak handles that may be filled with `nullptr` later.
 
@@ -332,13 +391,14 @@ void SomeGarbageCollectedClass::Trace(Visitor* visitor) const {
 }
 ```
 
-Specifically, if your class needs a tracing method, you need to declare and define a `Trace(Visitor*) const` method.
+Specifically, if a class needs a tracing method, declaring and defining a `Trace(Visitor*) const` method is required.
 This method is normally declared in the header file and defined once in the implementation file, but there are variations.
-Another common variation is to declare a virtual `Trace()` for base classes that will be subclassed.
+A common variation is to declare a virtual `Trace()` for base classes that will be subclassed.
 
 The function implementation must contain:
-- For each on-heap object `object` in your class, a tracing call: `visitor->Trace(object);`.
-- For each base class of your class `BaseClass` that is a descendant of `GarbageCollected<T>` or `GarbageCollectedMixin`, a delegation call to base class: `BaseClass::Trace(visitor)`.
+- For each reference tp an on-heap object `object` in the class, a tracing call: `visitor->Trace(object);`.
+- For each embedded `DISALLOW_NEW` object `object` in the class, a tracing call: `visitor->Trace(object);`.
+- For each base class of the class `BaseClass` that is a descendant of `GarbageCollected<T>` or `GarbageCollectedMixin`, a delegation call to base class: `BaseClass::Trace(visitor)`.
 It is recommended that the delegation call, if any, is put at the end of a tracing method.
 - See [Advanced weak handling](#Advanced%20Weak%20Handling) for implementing non-trivial weakness.
 
@@ -420,8 +480,6 @@ In addition to basic weak handling using `WeakMember<T>` Oilpan also supports:
 
 Like regular weakness, collections support weakness by putting references in `WeakMember<T>`.
 
-In sequence containers such as `HeapVector` the `WeakMember<T>` references are just cleared without adding any additional handling (cleared references are not automatically removed from the container).
-
 In associative containers such as `HeapHashMap` or `HeapHashSet` Oilpan distinguishes between *pure weakness* and *mixed weakness*:
 - Pure weakness: All entries in such containers are wrapped in `WeakMember<T>`.
   Examples are `HeapHashSet<WeakMember<T>>` and `HeapHashMap<WeakMember<T>, WeakMember<U>>`.
@@ -433,6 +491,8 @@ In associative containers such as `HeapHashMap` or `HeapHashSet` Oilpan distingu
 The semantics then are as follows:
 - Pure weakness: Oilpan will automatically remove the entries from the container if any of its declared `WeakMember<T>` fields points to a dead object.
 - Mixed weakness: Oilpan applies ephemeron semantics meaning that the strong parts of an entry are only treated as strong if the `WeakMember<T>` fields point to a live object.
+
+Weak references (e.g. `WeakMember<T>`) are not supported in sequential containers such as `HeapVector` or `HeapDeque`.
 
 ### Custom weak callbacks
 
@@ -475,6 +535,7 @@ If `W` itself dies than the callback will not be executed.
 Operations that must always happen should instead go into destructors or pre-finalizers.
 
 ## Traits helpers
+<small>**Declared in:** `third_party/blink/renderer/platform/heap/heap_traits.h`</small>
 
 At times, one may be working on code that needs to deal with both, off heap and on heap, objects.
 The following helpers can aid in writing code that needs to use different wrappers and containers based on whether a type is managed by Oilpan.
@@ -496,8 +557,8 @@ AddMemberIfNeeded<A> v3;       // Member<A> v3;
 
 Given a type `T`, defines a type alias that is either `HeapVector<T>`, `HeapVector<Member<T>>` or `Vector<T>` based on the following rules:
 
-* `T` is a type managed by the Blink GC → `HeapVector<Member<T>>`
-* `T` has a `Trace()` method but is not managed by the Blink GC → `HeapVector<T>` (this is a rare case; IDL unions and dictionaries fall in this category, for example)
+* `T` is a garbage collected type managed by Oilpan → `HeapVector<Member<T>>`
+* `T` has a `Trace()` method but is not managed by Oilpan → `HeapVector<T>` (this is a rare case; IDL unions and dictionaries fall in this category, for example)
 * All other cases → `Vector<T>`
 
 ```c++
@@ -526,7 +587,8 @@ VectorOf<MyGarbageCollectedClass> v4;     // HeapVector<Member<MyGarbageCollecte
 
 Similar to `VectorOf<T>`, but defines a type alias that is either `HeapVector<std::pair<V, X>>` (where `V` is either `T` or `Member<T>` and `X` is either `U` or `Member<U>`) or `Vector<std::pair<T, U>>`.
 
-In other words, if either `T` or `U` needs to be wrapped in a `HeapVector` instead of a `Vector`, `VectorOfPairs` will use a `HeapVector<std::pair<>>` and wrap them with `Member<>` appropriately. Otherwise, a `Vector<std::pair<>>` will be used.
+In other words, if either `T` or `U` needs to be wrapped in a `HeapVector` instead of a `Vector`, `VectorOfPairs` will use a `HeapVector<std::pair<>>` and wrap them with `Member<>` appropriately.
+Otherwise, a `Vector<std::pair<>>` will be used.
 
 ```c++
 class MyGarbageCollectedClass : public GarbageCollected<MyGarbageCollectedClass> {

@@ -45,12 +45,13 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/base/ui_base_features.h"
@@ -148,8 +149,13 @@ void ColorInputType::HandleDOMActivateEvent(Event& event) {
     return;
 
   Document& document = GetElement().GetDocument();
-  if (!LocalFrame::HasTransientUserActivation(document.GetFrame()))
+  if (!LocalFrame::HasTransientUserActivation(document.GetFrame())) {
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A user gesture is required to show the color picker."));
     return;
+  }
 
   ChromeClient* chrome_client = GetChromeClient();
   if (chrome_client && !HasOpenedPopup()) {
@@ -246,7 +252,7 @@ Element& ColorInputType::OwnerElement() const {
   return GetElement();
 }
 
-IntRect ColorInputType::ElementRectRelativeToViewport() const {
+gfx::Rect ColorInputType::ElementRectRelativeToViewport() const {
   return GetElement().GetDocument().View()->FrameToViewport(
       GetElement().PixelSnappedBoundingBox());
 }

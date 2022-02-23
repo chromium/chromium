@@ -75,6 +75,17 @@ def _ValidateDelta(root, delta):
       raise ParseError('encountered exception {0} while parsing {1}'.format(
           e, mojom))
     for imp in ast.import_list:
+      if (not file_overrides.get(imp.import_filename)
+          and not os.path.exists(os.path.join(root, imp.import_filename))):
+        # Speculatively construct a path prefix to locate the import_filename
+        mojom_path = os.path.dirname(os.path.normpath(mojom)).split(os.sep)
+        test_prefix = ''
+        for path_component in mojom_path:
+          test_prefix = os.path.join(test_prefix, path_component)
+          test_import_filename = os.path.join(test_prefix, imp.import_filename)
+          if os.path.exists(os.path.join(root, test_import_filename)):
+            imp.import_filename = test_import_filename
+            break
       parseMojom(imp.import_filename, file_overrides, override_modules)
 
     # Now that the transitive set of dependencies has been imported and parsed

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -14,13 +13,11 @@ if (optimize_webui) {
     out_grd = "$target_gen_dir/resources.grdp"
     input_files = [
       "privacy_sandbox/app.js",
+      "privacy_sandbox/app.html.js",
+      "privacy_sandbox/icons.js",
       "privacy_sandbox/privacy_sandbox_browser_proxy.js",
     ]
     input_files_base_dir = rebase_path("$target_gen_dir/../tsc", root_build_dir)
     deps = [ "..:build_ts" ]
   }
-}
-
-html_to_js("web_components") {
-  js_files = [ "app.ts" ]
 }

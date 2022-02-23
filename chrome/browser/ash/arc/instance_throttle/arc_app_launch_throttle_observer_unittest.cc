@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,10 +19,15 @@ namespace {
 
 ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
     const std::string package_name) {
-  return ArcAppListPrefs::AppInfo(package_name, package_name, "", "", "",
-                                  base::Time(), base::Time(), true, true,
-                                  arc::mojom::ArcResizeLockState::UNDEFINED,
-                                  true, true, true, true, true, true);
+  return ArcAppListPrefs::AppInfo(
+      package_name, package_name, "" /* activity */, "" /* intent_uri */,
+      "" /* icon_resource_id */, base::Time() /* last_launch_time */,
+      base::Time() /* install_time */, true /* sticky */,
+      true /* notifications_enabled */,
+      arc::mojom::ArcResizeLockState::UNDEFINED,
+      true /* resize_lock_needs_confirmation */,
+      ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
+      true /* show_in_launcher */, true /* shortcut */, true /* launchable */);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {

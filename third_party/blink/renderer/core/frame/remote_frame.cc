@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositing_helper.h"
@@ -55,9 +56,8 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -80,10 +81,11 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
   return *map;
 }
 
-FloatRect DeNormalizeRect(const gfx::RectF& normalized, const IntRect& base) {
-  FloatRect result(normalized);
+gfx::RectF DeNormalizeRect(const gfx::RectF& normalized,
+                           const gfx::Rect& base) {
+  gfx::RectF result = normalized;
   result.Scale(base.width(), base.height());
-  result.MoveBy(FloatPoint(base.origin()));
+  result.Offset(base.OffsetFromOrigin());
   return result;
 }
 
@@ -369,12 +371,6 @@ void RemoteFrame::SetCcLayer(scoped_refptr<cc::Layer> layer,
         .SetHasPointerEventsNone(IsIgnoredForHitTest());
   }
 
-  // If we now have a CC layer make sure its bounds match previously sent visual
-  // properties. This is necessary for the crash ui layer to be shown.
-  if (cc_layer_ && sent_visual_properties_) {
-    cc_layer_->SetBounds(sent_visual_properties_->local_frame_size);
-  }
-
   HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
   owner->SetNeedsCompositingUpdate();
 
@@ -420,7 +416,7 @@ void RemoteFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
 
 bool RemoteFrame::BubbleLogicalScrollFromChildFrame(
     mojom::blink::ScrollDirection direction,
-    ScrollGranularity granularity,
+    ui::ScrollGranularity granularity,
     Frame* child) {
   DCHECK(child->Client());
   To<LocalFrame>(child)
@@ -550,9 +546,9 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
   security_context_.SetInsecureNavigationsSet(set);
 }
 
-void RemoteFrame::FrameRectsChanged(const IntRect& local_frame_rect,
-                                    const IntRect& screen_space_rect) {
-  pending_visual_properties_.screen_space_rect = ToGfxRect(screen_space_rect);
+void RemoteFrame::FrameRectsChanged(const gfx::Rect& local_frame_rect,
+                                    const gfx::Rect& screen_space_rect) {
+  pending_visual_properties_.screen_space_rect = screen_space_rect;
   pending_visual_properties_.local_frame_size =
       gfx::Size(local_frame_rect.width(), local_frame_rect.height());
   SynchronizeVisualProperties();
@@ -739,17 +735,17 @@ void RemoteFrame::ScrollRectToVisible(
   absolute_rect =
       owner_object->ScrollRectToVisible(absolute_rect, std::move(params));
 
-  IntRect rect_in_document =
+  gfx::Rect rect_in_document =
       owner_object->GetDocument()
           .GetFrame()
           ->LocalFrameRoot()
           .View()
-          ->RootFrameToDocument(EnclosingIntRect(
+          ->RootFrameToDocument(ToEnclosingRect(
               owner_element->GetDocument().View()->ConvertToRootFrame(
                   absolute_rect)));
-  IntRect element_bounds_in_document = EnclosingIntRect(
+  gfx::Rect element_bounds_in_document = gfx::ToEnclosingRect(
       DeNormalizeRect(relative_element_bounds, rect_in_document));
-  IntRect caret_bounds_in_document = EnclosingIntRect(
+  gfx::Rect caret_bounds_in_document = gfx::ToEnclosingRect(
       DeNormalizeRect(relative_caret_bounds, rect_in_document));
 
   // This is due to something such as scroll focused editable element into
@@ -773,8 +769,8 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
   // C++ Blink type and use the Mojo type everywhere or typemap the
   // Mojo type to the pre-existing native C++ Blink type.
   IntrinsicSizingInfo sizing_info;
-  sizing_info.size = FloatSize(info->size);
-  sizing_info.aspect_ratio = FloatSize(info->aspect_ratio);
+  sizing_info.size = info->size;
+  sizing_info.aspect_ratio = info->aspect_ratio;
   sizing_info.has_width = info->has_width;
   sizing_info.has_height = info->has_height;
   View()->SetIntrinsicSizeInfo(sizing_info);
@@ -839,7 +835,7 @@ void RemoteFrame::UpdateOpener(
   }
 }
 
-IntSize RemoteFrame::GetMainFrameViewportSize() const {
+gfx::Size RemoteFrame::GetMainFrameViewportSize() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
@@ -970,16 +966,8 @@ void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
-  if (!GetFrameSinkId().is_valid())
+  if (!GetFrameSinkId().is_valid() || remote_process_gone_)
     return false;
-
-  // If the remote process is gone and we have new bounds adjust the
-  // crash ui layer so at least it tracks the new size.
-  if (remote_process_gone_) {
-    if (cc_layer_)
-      cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
-    return false;
-  }
 
   bool capture_sequence_number_changed =
       sent_visual_properties_ &&
@@ -988,7 +976,7 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   if (view_) {
     pending_visual_properties_.compositor_viewport =
-        ToGfxRect(view_->GetCompositingRect());
+        view_->GetCompositingRect();
     pending_visual_properties_.compositing_scale_factor =
         view_->GetCompositingScaleFactor();
   }
@@ -1036,26 +1024,19 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   compositing_helper_->SetSurfaceId(surface_id,
                                     capture_sequence_number_changed);
-  DCHECK(cc_layer_);
-  // Note that in pre-CompositeAfterPaint, CompositedLayerMapping/GraphicsLayer
-  // will set the bounds again with the same value.
-  cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
 
   bool rect_changed = !sent_visual_properties_ ||
                       sent_visual_properties_->screen_space_rect !=
                           pending_visual_properties_.screen_space_rect;
   bool visual_properties_changed = synchronized_props_changed || rect_changed;
 
-  if (!visual_properties_changed)
-    return false;
-
-  if (propagate) {
+  if (visual_properties_changed && propagate) {
     GetRemoteFrameHostRemote().SynchronizeVisualProperties(
         pending_visual_properties_);
     RecordSentVisualProperties();
   }
 
-  return true;
+  return visual_properties_changed;
 }
 
 void RemoteFrame::RecordSentVisualProperties() {
@@ -1096,6 +1077,11 @@ void RemoteFrame::SetViewportIntersection(
   }
   GetRemoteFrameHostRemote().UpdateViewportIntersection(
       intersection_state.Clone(), visual_properties);
+}
+
+void RemoteFrame::UpdateCompositedLayerBounds() {
+  if (cc_layer_)
+    cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
 }
 
 void RemoteFrame::DidChangeScreenInfos(

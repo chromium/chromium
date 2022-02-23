@@ -13,23 +13,15 @@ group("polymer3_elements") {
     ":demo_preferences_module",
     ":demo_setup_module",
     ":enable_debugging_module",
+    ":enterprise_enrollment_module",
     ":hid_detection_module",
     ":oobe_eula_module",
+    ":oobe_network_module",
     ":packaged_license_module",
+    ":quick_start_module",
     ":update_module",
     ":welcome_dialog_module",
     ":welcome_module",
-  ]
-}
-
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-}
-
-js_type_check("closure_compile_local") {
-  uses_legacy_modules = true
-  deps = [
-    ":oobe_network",
   ]
 }
 
@@ -41,9 +33,12 @@ js_type_check("closure_compile_module") {
     ":demo_preferences.m",
     ":demo_setup.m",
     ":enable_debugging.m",
+    ":enterprise_enrollment.m",
     ":hid_detection.m",
     ":oobe_eula.m",
+    ":oobe_network.m",
     ":packaged_license.m",
+    ":quick_start.m",
     ":update.m",
     ":welcome.m",
     ":welcome_dialog.m",
@@ -52,18 +47,6 @@ js_type_check("closure_compile_module") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("oobe_network") {
-  deps = [
-    # TODO(crbug.com/251576): Restore when migrate to Polymer 3.
-    # "../../components:network_select_login",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/cr_components/chromeos/network:network_select",
-  ]
-}
 
 js_library("auto_enrollment_check.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/auto_enrollment_check.m.js" ]
@@ -119,6 +102,25 @@ js_library("enable_debugging.m") {
   extra_deps = [ ":enable_debugging_module" ]
 }
 
+js_library("enterprise_enrollment.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enterprise_enrollment.m.js" ]
+  deps = [
+    "../../../keyboard:keyboard_utils.m",
+    "../../components:display_manager_types.m",
+    "../../components:gaia_dialog.m",
+    "../../components:keyboard_utils_for_injection",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../common:offline_ad_login.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":enterprise_enrollment_module" ]
+}
+
 js_library("hid_detection.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/hid_detection.m.js" ]
   deps = [
@@ -130,6 +132,18 @@ js_library("hid_detection.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":hid_detection_module" ]
+}
+
+js_library("quick_start.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/quick_start.m.js" ]
+  deps = [
+    "../../components:oobe_types.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":quick_start_module" ]
 }
 
 js_library("oobe_eula.m") {
@@ -150,6 +164,20 @@ js_library("oobe_eula.m") {
     "$externs_path/webview_tag.js",
   ]
   extra_deps = [ ":oobe_eula_module" ]
+}
+
+js_library("oobe_network.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_network.m.js" ]
+  deps = [
+    "../../components:network_select_login.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":oobe_network_module" ]
 }
 
 js_library("packaged_license.m") {
@@ -184,6 +212,7 @@ js_library("welcome.m") {
   deps = [
     ":welcome_dialog.m",
     "../..:display_manager.m",
+    "../../components:oobe_cr_lottie.m",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",
@@ -193,7 +222,7 @@ js_library("welcome.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
   extra_deps = [ ":welcome_module" ]
   externs_list = [ "$externs_path/tts.js" ]
@@ -245,6 +274,14 @@ polymer_modulizer("enable_debugging") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
+polymer_modulizer("enterprise_enrollment") {
+  js_file = "enterprise_enrollment.js"
+  html_file = "enterprise_enrollment.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
 polymer_modulizer("hid_detection") {
   js_file = "hid_detection.js"
   html_file = "hid_detection.html"
@@ -253,9 +290,25 @@ polymer_modulizer("hid_detection") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
+polymer_modulizer("quick_start") {
+  js_file = "quick_start.js"
+  html_file = "quick_start.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
 polymer_modulizer("oobe_eula") {
   js_file = "oobe_eula.js"
   html_file = "oobe_eula.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_network") {
+  js_file = "oobe_network.js"
+  html_file = "oobe_network.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

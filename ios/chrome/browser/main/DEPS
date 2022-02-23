@@ -1,0 +1,13 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^browser_agent_util.mm": [
+    "+ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h",
+  ],
+  "^browser_impl.mm": [
+    "+ios/chrome/browser/ui/commands/command_dispatcher.h",
+  ],
+  "^test_browser.mm": [
+    "+ios/chrome/browser/ui/commands/command_dispatcher.h",
+  ]
+}
+

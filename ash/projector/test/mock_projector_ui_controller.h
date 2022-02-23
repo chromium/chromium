@@ -28,18 +28,8 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
   // ProjectorUiController:
   MOCK_METHOD0(ShowToolbar, void());
   MOCK_METHOD0(CloseToolbar, void());
-  MOCK_METHOD0(OnKeyIdeaMarked, void());
   MOCK_METHOD0(OnLaserPointerPressed, void());
   MOCK_METHOD0(OnMarkerPressed, void());
-  MOCK_METHOD0(OnClearAllMarkersPressed, void());
-  MOCK_METHOD0(OnUndoPressed, void());
-  MOCK_METHOD2(OnTranscription,
-               void(const std::string& transcription, bool is_final));
-  MOCK_METHOD1(OnSelfieCamPressed, void(bool enabled));
-  MOCK_METHOD1(OnRecordingStateChanged, void(bool started));
-  MOCK_METHOD1(OnChangeMarkerColorPressed, void(SkColor new_color));
-  MOCK_METHOD1(SetCaptionBubbleState, void(bool));
-  MOCK_METHOD1(OnMagnifierButtonPressed, void(bool));
 };
 
 }  // namespace ash

@@ -37,6 +37,7 @@ using EncryptionScheme = WebMediaKeySystemMediaCapability::EncryptionScheme;
 // strings are for testing purpose only.
 const char kClearKeyKeySystem[] = "org.w3.clearkey";
 const char kSupportedKeySystem[] = "keysystem.test.supported";
+const char kSupportedSubKeySystem[] = "keysystem.test.supported.sub";
 const char kUnsupportedKeySystem[] = "keysystem.test.unsupported";
 
 // Robustness strings for kSupportedKeySystem.
@@ -197,12 +198,30 @@ class FakeKeySystems : public media::KeySystems {
  public:
   ~FakeKeySystems() override = default;
 
-  void UpdateIfNeeded() override { ++update_count; }
+  void UpdateIfNeeded(base::OnceClosure done_cb) override {
+    NOTREACHED() << "Not needed since IsUpToDate() always returns true";
+    std::move(done_cb).Run();
+  }
+
+  bool IsUpToDate() override { return true; }
+
+  std::string GetBaseKeySystemName(
+      const std::string& key_system) const override {
+    DCHECK(IsSupportedKeySystem(key_system));
+    return key_system == kSupportedSubKeySystem ? kSupportedKeySystem
+                                                : key_system;
+  }
 
   bool IsSupportedKeySystem(const std::string& key_system) const override {
     // Based on EME spec, Clear Key key system is always supported.
-    return key_system == kSupportedKeySystem ||
-           key_system == kClearKeyKeySystem;
+    return key_system == kClearKeyKeySystem ||
+           key_system == kSupportedKeySystem ||
+           key_system == kSupportedSubKeySystem;
+  }
+
+  bool ShouldUseBaseKeySystemName(
+      const std::string& key_system) const override {
+    return key_system == kSupportedSubKeySystem;
   }
 
   bool CanUseAesDecryptor(const std::string& key_system) const override {
@@ -349,8 +368,6 @@ class FakeKeySystems : public media::KeySystems {
   // the default values may be changed.
   EmeFeatureSupport persistent_state = EmeFeatureSupport::NOT_SUPPORTED;
   EmeFeatureSupport distinctive_identifier = EmeFeatureSupport::REQUESTABLE;
-
-  int update_count = 0;
 };
 
 class FakeMediaPermission : public media::MediaPermission {
@@ -479,7 +496,7 @@ class KeySystemConfigSelectorTest : public testing::Test {
   WebString key_system_ = WebString::FromUTF8(kSupportedKeySystem);
   std::vector<WebMediaKeySystemConfiguration> configs_;
 
-  // Holds the selected configuration and CdmConfig.
+  // Holds the selected key system, configuration and CdmConfig.
   WebMediaKeySystemConfiguration config_;
   media::CdmConfig cdm_config_;
 
@@ -551,17 +568,6 @@ TEST_F(KeySystemConfigSelectorTest, UsableConfig) {
   EXPECT_FALSE(cdm_config_.use_hw_secure_codecs);
 }
 
-// KeySystemConfigSelector should make sure it uses up-to-date KeySystems.
-TEST_F(KeySystemConfigSelectorTest, UpdateKeySystems) {
-  configs_.push_back(UsableConfiguration());
-
-  ASSERT_EQ(key_systems_->update_count, 0);
-  SelectConfig();
-  EXPECT_EQ(key_systems_->update_count, 1);
-  SelectConfig();
-  EXPECT_EQ(key_systems_->update_count, 2);
-}
-
 TEST_F(KeySystemConfigSelectorTest, Label) {
   auto config = UsableConfiguration();
   config.label = "foo";
@@ -590,6 +596,14 @@ TEST_F(KeySystemConfigSelectorTest, KeySystem_ClearKey) {
   key_system_ = kClearKeyKeySystem;
   configs_.push_back(UsableConfiguration());
   SelectConfigReturnsConfig();
+  DCHECK_EQ(cdm_config_.key_system, kClearKeyKeySystem);
+}
+
+TEST_F(KeySystemConfigSelectorTest, KeySystem_SubKeySystem) {
+  key_system_ = kSupportedSubKeySystem;
+  configs_.push_back(UsableConfiguration());
+  SelectConfigReturnsConfig();
+  DCHECK_EQ(cdm_config_.key_system, kSupportedKeySystem);
 }
 
 // --- Disable EncryptedMedia ---
@@ -736,13 +750,13 @@ TEST_F(KeySystemConfigSelectorTest,
   config.distinctive_identifier = MediaKeysRequirement::kOptional;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
   EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
   EXPECT_TRUE(cdm_config_.allow_distinctive_identifier);
 #else
   SelectConfigReturnsError();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(KeySystemConfigSelectorTest,
@@ -755,13 +769,13 @@ TEST_F(KeySystemConfigSelectorTest,
   config.distinctive_identifier = MediaKeysRequirement::kRequired;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
   EXPECT_EQ(MediaKeysRequirement::kRequired, config_.distinctive_identifier);
   EXPECT_TRUE(cdm_config_.allow_distinctive_identifier);
 #else
   SelectConfigReturnsError();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // --- persistentState ---
@@ -1263,11 +1277,11 @@ TEST_F(KeySystemConfigSelectorTest,
   config.video_capabilities = video_capabilities;
   configs_.push_back(config);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SelectConfigRequestsPermissionAndReturnsConfig();
 #else
   SelectConfigReturnsConfig();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(MediaKeysRequirement::kNotAllowed, config_.distinctive_identifier);
   ASSERT_EQ(1u, config_.video_capabilities.size());
 }

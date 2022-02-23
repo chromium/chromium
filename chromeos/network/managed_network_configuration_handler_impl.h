@@ -20,7 +20,6 @@
 #include "chromeos/network/policy_applicator.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }  // namespace base
 
@@ -58,13 +57,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       network_handler::PropertiesCallback callback) override;
 
   void SetProperties(const std::string& service_path,
-                     const base::DictionaryValue& user_settings,
+                     const base::Value& user_settings,
                      base::OnceClosure callback,
                      network_handler::ErrorCallback error_callback) override;
 
   void CreateConfiguration(
       const std::string& userhash,
-      const base::DictionaryValue& properties,
+      const base::Value& properties,
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const override;
 
@@ -88,18 +87,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
 
   bool IsAnyPolicyApplicationRunning() const override;
 
-  const base::DictionaryValue* FindPolicyByGUID(
+  const base::Value* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const override;
 
-  const GuidToPolicyMap* GetNetworkConfigsFromPolicy(
+  bool HasAnyPolicyNetwork(const std::string& userhash) const override;
+
+  const base::Value* GetGlobalConfigFromPolicy(
       const std::string& userhash) const override;
 
-  const base::DictionaryValue* GetGlobalConfigFromPolicy(
-      const std::string& userhash) const override;
-
-  const base::DictionaryValue* FindPolicyByGuidAndProfile(
+  const base::Value* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       ::onc::ONCSource* onc_source) const override;
@@ -135,8 +133,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                                      base::OnceClosure callback) override;
 
   void UpdateExistingConfigurationWithPropertiesFromPolicy(
-      const base::DictionaryValue& existing_properties,
-      const base::DictionaryValue& new_properties,
+      const base::Value& existing_properties,
+      const base::Value& new_properties,
       base::OnceClosure callback) override;
 
   void OnPoliciesApplied(const NetworkProfile& profile) override;
@@ -144,6 +142,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
  private:
   friend class AutoConnectHandlerTest;
   friend class ClientCertResolverTest;
+  friend class ESimPolicyLoginMetricsLoggerTest;
   friend class ManagedNetworkConfigurationHandler;
   friend class ManagedNetworkConfigurationHandlerTest;
   friend class ManagedNetworkConfigurationHandlerMockTest;

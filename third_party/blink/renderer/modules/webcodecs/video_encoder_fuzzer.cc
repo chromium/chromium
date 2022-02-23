@@ -60,14 +60,17 @@ DEFINE_TEXT_PROTO_FUZZER(
         ToScriptStateForMainWorld(&page_holder->GetFrame());
     ScriptState::Scope scope(script_state);
 
-    Persistent<FakeFunction> error_function =
-        FakeFunction::Create(script_state, "error");
+    Persistent<ScriptFunction> error_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("error"));
     Persistent<V8WebCodecsErrorCallback> error_callback =
-        V8WebCodecsErrorCallback::Create(error_function->Bind());
-    Persistent<FakeFunction> output_function =
-        FakeFunction::Create(script_state, "output");
+        V8WebCodecsErrorCallback::Create(error_function->V8Function());
+    Persistent<ScriptFunction> output_function =
+        MakeGarbageCollected<ScriptFunction>(
+            script_state, MakeGarbageCollected<FakeFunction>("output"));
     Persistent<V8EncodedVideoChunkOutputCallback> output_callback =
-        V8EncodedVideoChunkOutputCallback::Create(output_function->Bind());
+        V8EncodedVideoChunkOutputCallback::Create(
+            output_function->V8Function());
 
     Persistent<VideoEncoderInit> video_encoder_init =
         MakeGarbageCollected<VideoEncoderInit>();

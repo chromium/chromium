@@ -8,6 +8,8 @@
 
 #include "base/big_endian.h"
 #include "base/logging.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 
@@ -101,7 +103,8 @@ URLID TypedURLSyncMetadataDatabase::StorageKeyToURLID(
     const std::string& storage_key) {
   URLID storage_key_int = 0;
   DCHECK_EQ(storage_key.size(), sizeof(storage_key_int));
-  base::ReadBigEndian(storage_key.data(), &storage_key_int);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(storage_key.data()),
+                      &storage_key_int);
   // Make sure storage_key_int is set.
   DCHECK_NE(storage_key_int, 0);
   return storage_key_int;

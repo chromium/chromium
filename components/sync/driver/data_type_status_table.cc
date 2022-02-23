@@ -14,9 +14,9 @@ namespace {
 ModelTypeSet GetTypesFromErrorMap(
     const DataTypeStatusTable::TypeErrorMap& errors) {
   ModelTypeSet result;
-  for (auto it = errors.begin(); it != errors.end(); ++it) {
-    DCHECK(!result.Has(it->first));
-    result.Put(it->first);
+  for (const auto& [type, error] : errors) {
+    DCHECK(!result.Has(type));
+    result.Put(type);
   }
   return result;
 }
@@ -33,9 +33,8 @@ DataTypeStatusTable::~DataTypeStatusTable() = default;
 void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
   DVLOG(1) << "Setting " << errors.size() << " new failed types.";
 
-  for (const auto& model_type_and_error : errors) {
-    UpdateFailedDataType(model_type_and_error.first,
-                         model_type_and_error.second);
+  for (const auto& [model_type, error] : errors) {
+    UpdateFailedDataType(model_type, error);
   }
 }
 

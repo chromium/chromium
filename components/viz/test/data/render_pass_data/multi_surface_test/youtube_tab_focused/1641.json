@@ -77,7 +77,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 22,
@@ -834,7 +834,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 706,
@@ -1809,7 +1809,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 1107,
@@ -2296,7 +2296,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 600,
@@ -4332,7 +4332,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 600,
@@ -4443,7 +4443,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 600,
@@ -4560,7 +4560,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 90,
@@ -5625,7 +5625,7 @@
                "matrix": "RGB",
                "primaries": "BT709",
                "range": "FULL",
-               "transfer": "IEC61966_2_1"
+               "transfer": "SRGB"
             },
             "damage_rect": {
                "height": 20,

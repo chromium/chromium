@@ -34,39 +34,25 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  auto* layer = GetPaintLayerByElementId("canvas");
-  ASSERT_TRUE(layer);
-  EXPECT_FALSE(layer->GetLayoutObject()
-                   .FirstFragment()
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation());
-  EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
 
-  EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_FALSE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* painting_layer = GetLayoutObjectByElementId("canvas")->PaintingLayer();
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
   canvas->CreateLayer();
-  EXPECT_TRUE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_TRUE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(layer,
-            To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->GetLayoutObject()
-                    .FirstFragment()
-                    .PaintProperties()
-                    ->PaintOffsetTranslation()
-                    ->HasDirectCompositingReasons());
-  } else {
-    EXPECT_EQ(CompositingReason::kCanvas, layer->DirectCompositingReasons());
-  }
+  ASSERT_EQ(
+      painting_layer,
+      To<LayoutBoxModelObject>(canvas->GetLayoutObject())->PaintingLayer());
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->PaintOffsetTranslation());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {

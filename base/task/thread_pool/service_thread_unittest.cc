@@ -29,7 +29,7 @@ void VerifyHasStringOnStack(const std::string& query) {
 
 }  // namespace
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Many POSIX bots flakily crash on |debug::StackTrace().ToString()|,
 // https://crbug.com/840429.
 #define MAYBE_StackHasIdentifyingFrame DISABLED_StackHasIdentifyingFrame

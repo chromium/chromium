@@ -10,12 +10,13 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/shared_worker_host.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -112,7 +113,6 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       const blink::MessagePortChannel& message_port,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      bool did_fetch_worker_script,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
@@ -135,7 +135,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       worker_hosts_;
 
   // |storage_partition_| owns |this|.
-  StoragePartitionImpl* const storage_partition_;
+  const raw_ptr<StoragePartitionImpl> storage_partition_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_override_;
 

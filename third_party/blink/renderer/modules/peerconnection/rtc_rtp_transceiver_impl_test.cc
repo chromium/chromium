@@ -69,8 +69,8 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
 
   std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
   CreateRemoteTrackAndAdapter(const std::string& id) {
-    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track =
-        blink::MockWebRtcAudioTrack::Create(id).get();
+    rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> webrtc_track(
+        blink::MockWebRtcAudioTrack::Create(id).get());
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
     base::RunLoop run_loop;
@@ -89,8 +89,9 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
   rtc::scoped_refptr<blink::FakeRtpSender> CreateWebRtcSender(
       rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       const std::string& stream_id) {
-    return new rtc::RefCountedObject<blink::FakeRtpSender>(
-        std::move(track), std::vector<std::string>({stream_id}));
+    return rtc::scoped_refptr<blink::FakeRtpSender>(
+        new rtc::RefCountedObject<blink::FakeRtpSender>(
+            std::move(track), std::vector<std::string>({stream_id})));
   }
 
   rtc::scoped_refptr<blink::FakeRtpReceiver> CreateWebRtcReceiver(
@@ -98,10 +99,11 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
       const std::string& stream_id) {
     rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
         new rtc::RefCountedObject<blink::MockMediaStream>(stream_id));
-    return new rtc::RefCountedObject<blink::FakeRtpReceiver>(
-        track.get(),
-        std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>(
-            {remote_stream}));
+    return rtc::scoped_refptr<blink::FakeRtpReceiver>(
+        new rtc::RefCountedObject<blink::FakeRtpReceiver>(
+            track,
+            std::vector<rtc::scoped_refptr<webrtc::MediaStreamInterface>>(
+                {remote_stream})));
   }
 
   rtc::scoped_refptr<blink::FakeRtpTransceiver> CreateWebRtcTransceiver(
@@ -113,13 +115,14 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
       absl::optional<webrtc::RtpTransceiverDirection> current_direction) {
     DCHECK(!sender->track() ||
            sender->track()->kind() == receiver->track()->kind());
-    return new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
-        receiver->track()->kind() ==
-                webrtc::MediaStreamTrackInterface::kAudioKind
-            ? cricket::MEDIA_TYPE_AUDIO
-            : cricket::MEDIA_TYPE_VIDEO,
-        std::move(sender), std::move(receiver), std::move(mid), stopped,
-        direction, std::move(current_direction));
+    return rtc::scoped_refptr<blink::FakeRtpTransceiver>(
+        new rtc::RefCountedObject<blink::FakeRtpTransceiver>(
+            receiver->track()->kind() ==
+                    webrtc::MediaStreamTrackInterface::kAudioKind
+                ? cricket::MEDIA_TYPE_AUDIO
+                : cricket::MEDIA_TYPE_VIDEO,
+            std::move(sender), std::move(receiver), std::move(mid), stopped,
+            direction, std::move(current_direction)));
   }
 
   RtpTransceiverState CreateTransceiverState(
@@ -135,7 +138,7 @@ class RTCRtpTransceiverImplTest : public ::testing::Test {
     return RtpTransceiverState(
         main_task_runner_, signaling_task_runner(), webrtc_transceiver.get(),
         blink::RtpSenderState(main_task_runner_, signaling_task_runner(),
-                              webrtc_transceiver->sender().get(),
+                              webrtc_transceiver->sender(),
                               std::move(sender_track_ref),
                               webrtc_transceiver->sender()->stream_ids()),
         blink::RtpReceiverState(main_task_runner_, signaling_task_runner(),

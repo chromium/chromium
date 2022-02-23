@@ -123,6 +123,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_state.h"
@@ -868,14 +869,6 @@ bool IsSigninForcedByPolicy() {
 
   [self createInitialUI:[self initialUIMode]];
 
-  // By reaching here, it's guaranteed that both Normal and incognito sessions
-  // were restored. and if it's the first time that multi-window sessions are
-  // created, the migration was done. Update the Multi-Window flag so it's not
-  // used again in the same run when creating new windows.
-  // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-  // sessions is done.
-  [[PreviousSessionInfo sharedInstance] updateMultiWindowSupportStatus];
-
   if ([self shouldShowRestorePrompt]) {
     [self.sceneState.appState.startupInformation
             .restoreHelper showRestorePrompt];
@@ -1581,6 +1574,12 @@ bool IsSigninForcedByPolicy() {
   // Do not display the web sign-in promo if there is any UI on the screen.
   if (self.signinCoordinator || self.settingsNavigationController)
     return;
+  if (self.sceneState.appState.initStage == InitStageFirstRun) {
+    // This case is possible when using force FRE flag and opening chrome
+    // with accounts.google.com in the background.
+    // crbug.com/1293305.
+    return;
+  }
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
@@ -1588,6 +1587,10 @@ bool IsSigninForcedByPolicy() {
   if (!self.signinCoordinator)
     return;
   __weak SceneController* weakSelf = self;
+
+  // Copy the URL so it can be safely captured in the block.
+  GURL copiedURL = url;
+
   [self startSigninCoordinatorWithCompletion:^(BOOL success) {
     // If the sign-in is not successful or the scene controller is shut down do
     // not load the continuation URL.
@@ -1595,7 +1598,7 @@ bool IsSigninForcedByPolicy() {
       return;
     }
     UrlLoadingBrowserAgent::FromBrowser(weakSelf.mainInterface.browser)
-        ->Load(UrlLoadParams::InCurrentTab(url));
+        ->Load(UrlLoadParams::InCurrentTab(copiedURL));
   }];
 }
 
@@ -1778,7 +1781,8 @@ bool IsSigninForcedByPolicy() {
 
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSavedPasswordsSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                    showCancelButton:(BOOL)showCancelButton {
   if (!baseViewController) {
     // TODO(crbug.com/779791): Don't pass base view controller through
     // dispatched command.
@@ -1789,14 +1793,16 @@ bool IsSigninForcedByPolicy() {
                                          self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showSavedPasswordsSettingsFromViewController:baseViewController];
+        showSavedPasswordsSettingsFromViewController:baseViewController
+                                    showCancelButton:showCancelButton];
     return;
   }
   Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController savePasswordsControllerForBrowser:browser
-                                                             delegate:self
-                                      startPasswordCheckAutomatically:NO];
+  self.settingsNavigationController = [SettingsNavigationController
+      savePasswordsControllerForBrowser:browser
+                               delegate:self
+        startPasswordCheckAutomatically:YES
+                       showCancelButton:showCancelButton];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
@@ -1818,7 +1824,8 @@ bool IsSigninForcedByPolicy() {
   self.settingsNavigationController =
       [SettingsNavigationController savePasswordsControllerForBrowser:browser
                                                              delegate:self
-                                      startPasswordCheckAutomatically:YES];
+                                      startPasswordCheckAutomatically:YES
+                                                     showCancelButton:NO];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
@@ -2302,7 +2309,7 @@ bool IsSigninForcedByPolicy() {
   // Immediately hide modals from the provider (alert views, action sheets,
   // popovers). They will be ultimately dismissed by their owners, but at least,
   // they are not visible.
-  ios::GetChromeBrowserProvider().HideModalViewStack();
+  ios::provider::HideModalViewStack();
 
   // ChromeIdentityService is responsible for the dialogs displayed by the
   // services it wraps.
@@ -2350,7 +2357,7 @@ bool IsSigninForcedByPolicy() {
   [self closeSettingsOrSigninAnimated:NO completion:chosenCompletion];
 
   // Verify that no modal views are left presented.
-  ios::GetChromeBrowserProvider().LogIfModalViewsArePresented();
+  ios::provider::LogIfModalViewsArePresented();
 }
 
 - (void)openMultipleTabsInMode:
@@ -2619,6 +2626,7 @@ bool IsSigninForcedByPolicy() {
   }
   [self.mainCoordinator
       showTabViewController:self.currentInterface.viewController
+                  incognito:self.currentInterface.incognito
          shouldCloseTabGrid:dismissTabSwitcher
                  completion:completion];
   [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
@@ -2705,8 +2713,8 @@ bool IsSigninForcedByPolicy() {
       dismissSettings();
     }
   } else if (self.signinCoordinator) {
-    //      |self.signinCoordinator| can be presented without settings, from the
-    //      bookmarks or the recent tabs view.
+    // |self.signinCoordinator| can be presented without settings, from the
+    // bookmarks or the recent tabs view.
     [self interruptSigninCoordinatorAnimated:animated completion:completion];
   } else {
     completion();
@@ -2738,12 +2746,14 @@ bool IsSigninForcedByPolicy() {
     (signin_ui::CompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   if (!signin::IsSigninAllowedByPolicy()) {
-    completion(/*success=*/NO);
+    if (completion) {
+      completion(/*success=*/NO);
+    }
     [self.signinCoordinator stop];
     id<PolicyChangeCommands> handler = HandlerForProtocol(
         self.signinCoordinator.browser->GetCommandDispatcher(),
         PolicyChangeCommands);
-    [handler showPolicySignoutPrompt];
+    [handler showForceSignedOutPrompt];
     self.signinCoordinator = nil;
     return;
   }
@@ -2909,6 +2919,7 @@ bool IsSigninForcedByPolicy() {
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
   [self.mainCoordinator setActivePage:self.activePage];
+  [self.mainCoordinator setActiveMode:TabGridModeNormal];
   [self.mainCoordinator showTabGrid];
 }
 

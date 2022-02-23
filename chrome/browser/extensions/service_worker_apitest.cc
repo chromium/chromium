@@ -4,9 +4,12 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -71,6 +74,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/common/verifier_formats.h"
@@ -133,7 +137,7 @@ class ErrorObserver : public ErrorConsole::Observer {
       : errors_expected_(errors_expected),
         error_console_(error_console),
         errors_observed_(0) {
-    observation_.Observe(error_console_);
+    observation_.Observe(error_console_.get());
   }
 
   // ErrorConsole::Observer implementation.
@@ -153,7 +157,7 @@ class ErrorObserver : public ErrorConsole::Observer {
 
  private:
   size_t errors_expected_;
-  ErrorConsole* error_console_;
+  raw_ptr<ErrorConsole> error_console_;
   size_t errors_observed_;
   base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
       this};
@@ -511,6 +515,28 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
               HasSubstr("Logged from MV3 service worker"));
 }
 
+// Tests that an extension can fetch a file scheme URL from the service worker,
+// if it has file access.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       FetchFileSchemeURLWithFileAccess) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/"
+                       "fetch_file_scheme_url_with_file_access",
+                       {}, {.allow_file_access = true}))
+      << message_;
+}
+
+// Tests that an extension can not fetch a file scheme URL from the service
+// worker, if it does not have file access.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       FetchFileSchemeURLWithNoFileAccess) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/"
+                       "fetch_file_scheme_url_with_no_file_access",
+                       {}))
+      << message_;
+}
+
 // Tests chrome.runtime.onInstalled fires for extension service workers.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
   ASSERT_TRUE(RunExtensionTest(
@@ -866,8 +892,8 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
         ->DispatchEventToExtension(extension_id_, std::move(event));
   }
 
-  content::BrowserContext* const browser_context_ = nullptr;
-  EventRouter* const event_router_ = nullptr;
+  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  const raw_ptr<EventRouter> event_router_ = nullptr;
   const ExtensionId extension_id_;
   std::unique_ptr<Event> event_;
   ExtensionTestMessageListener listener_;
@@ -884,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EarlyEventDispatch) {
       events::FOR_TEST, extensions::api::test::OnMessage::kEventName,
       base::JSONReader::Read(R"([{"data": "hello", "lastMessage": true}])")
           .value()
-          .TakeList(),
+          .TakeListDeprecated(),
       profile());
 
   EarlyWorkerMessageSender sender(profile(), kId, std::move(event));
@@ -913,9 +939,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       events::WEB_NAVIGATION_ON_COMMITTED, "webNavigation.onCommitted",
       api::web_navigation::OnCommitted::Create(details), profile());
   // The filter will match the listener filter registered from the extension.
-  EventFilteringInfo info;
-  info.url = GURL("http://foo.com/a.html");
-  on_committed_event->filter_info = info;
+  mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+  info->url = GURL("http://foo.com/a.html");
+  on_committed_event->filter_info = std::move(info);
 
   EarlyWorkerMessageSender sender(profile(), kId,
                                   std::move(on_committed_event));
@@ -1018,8 +1044,8 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
-  PushMessagingServiceImpl* push_service_;
+  raw_ptr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
+  raw_ptr<PushMessagingServiceImpl> push_service_;
 };
 
 class ServiceWorkerLazyBackgroundTest : public ServiceWorkerTest {
@@ -1866,7 +1892,7 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
   // Holds version id of an extension worker once OnVersionStartedRunning is
   // observed.
   absl::optional<int64_t> running_version_id_;
-  content::ServiceWorkerContext* context_ = nullptr;
+  raw_ptr<content::ServiceWorkerContext> context_ = nullptr;
   GURL extension_url_;
 };
 
@@ -1986,6 +2012,55 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsQuerySplit) {
   const Extension* extension =
       LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
+
+  // Wait for the extension's service workers to be ready.
+  ASSERT_TRUE(ready_regular.WaitUntilSatisfied());
+  ASSERT_TRUE(ready_incognito.WaitUntilSatisfied());
+
+  // Load a new tab in both browsers.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome:version")));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser_incognito, GURL("chrome:about")));
+
+  {
+    ExtensionTestMessageListener tabs_listener(false);
+    // The extension waits for the reply to the "ready" sendMessage call
+    // and replies with the URLs of the tabs.
+    ready_regular.Reply("");
+    EXPECT_TRUE(tabs_listener.WaitUntilSatisfied());
+    EXPECT_EQ(R"(["chrome://version/"])", tabs_listener.message());
+  }
+  {
+    ExtensionTestMessageListener tabs_listener(false);
+    // Reply to the original message and wait for the return message.
+    ready_incognito.Reply("");
+    EXPECT_TRUE(tabs_listener.WaitUntilSatisfied());
+    EXPECT_EQ(R"(["chrome://about/"])", tabs_listener.message());
+  }
+}
+
+// Tests already-loaded extension activation in incognito profile.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       AlreadyLoadedSplitExtensionActivationInIncognito) {
+  ExtensionTestMessageListener ready_regular("Script started regular", true);
+  ExtensionTestMessageListener ready_incognito("Script started incognito",
+                                               true);
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(kIncognitoManifest, "split"));
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kQueryWorkerScript);
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  // Open an incognito window.
+  // Note: It is important that we create incognito profile _after_ loading
+  // |extension| above as we want to test how extensions that already has been
+  // activated in the main profile are activated in incognito (see
+  // |ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions|).
+  Browser* browser_incognito =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(browser_incognito);
 
   // Wait for the extension's service workers to be ready.
   ASSERT_TRUE(ready_regular.WaitUntilSatisfied());
@@ -2412,7 +2487,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
 }
 
 // Disabled on win due to flakiness: https://crbug.com/1127126.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PRE_FilteredEventsAfterRestart \
   DISABLED_PRE_FilteredEventsAfterRestart
 #define MAYBE_FilteredEventsAfterRestart DISABLED_FilteredEventsAfterRestart
@@ -2557,6 +2632,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
   // Expect the permission ("storage") to be available now.
   EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kStorage));
+}
+
+// Tests that loading a component MV3 extension succeeds.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Component) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/component", {},
+                       {.load_as_component = true}))
+      << message_;
 }
 
 // Tests that an extension's service worker can't be used to relax the extension

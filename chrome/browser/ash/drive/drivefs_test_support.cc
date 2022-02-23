@@ -32,7 +32,7 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
       drive::FakeDriveFsHelper::kPredefinedProfileSalt);
   fake_drivefs_.RegisterMountingForAccountId(
       base::BindLambdaForTesting([profile]() {
-        auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
         if (!user)
           return std::string();
 
@@ -51,9 +51,9 @@ FakeDriveFsHelper::CreateFakeDriveFsListenerFactory() {
 bool SetUpUserDataDirectoryForDriveFsTest() {
   auto known_users_list = std::make_unique<base::ListValue>();
   auto user_dict = std::make_unique<base::DictionaryValue>();
-  user_dict->SetString("account_type", "google");
-  user_dict->SetString("email", "testuser@gmail.com");
-  user_dict->SetString("gaia_id", "123456");
+  user_dict->SetStringKey("account_type", "google");
+  user_dict->SetStringKey("email", "testuser@gmail.com");
+  user_dict->SetStringKey("gaia_id", "123456");
   known_users_list->Append(std::move(user_dict));
 
   base::DictionaryValue local_state;

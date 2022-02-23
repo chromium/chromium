@@ -146,7 +146,7 @@ message UrlRule {
   // If |domains| is empty or has exceptions only, the rule is called generic.
   // Otherwise is it called domain specific, i.e. applies to a limited number of
   // domains.
-  repeated DomainListItem domains = 5;
+  repeated DomainListItem initiator_domains = 5;
 
   // The format of |url_pattern|.
   optional UrlPatternType url_pattern_type = 6;

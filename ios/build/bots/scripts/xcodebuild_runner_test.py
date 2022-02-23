@@ -141,8 +141,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
-    self.mock(test_runner.subprocess, 'check_output', lambda _: 'fake-output')
-    self.mock(test_runner.subprocess, 'check_call', lambda _: 'fake-out')
+    self.mock(test_runner.subprocess, 'check_output', lambda _: b'fake-output')
+    self.mock(test_runner.subprocess, 'check_call', lambda _: b'fake-out')
     self.mock(test_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
@@ -190,9 +190,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     crashed_collection.crashed = True
     mock_result.return_value = crashed_collection
     self.assertFalse(tr.launch())
-    self.assertEqual(len(tr.test_results['tests']), 3)
+    self.assertEqual(len(tr.test_results['tests']), 2)
     tests = tr.test_results['tests']
-    self.assertEqual(tests['BUILD_INTERRUPTED']['actual'], 'CRASH')
     self.assertEqual(tests['Class1/passedTest1']['actual'], 'PASS')
     self.assertEqual(tests['Class1/passedTest2']['actual'], 'SKIP')
     self.assertEqual(tests['Class1/passedTest2']['expected'], 'PASS')
@@ -208,10 +207,10 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
                                                  "fake-host-app-path",
                                                  "fake-out-dir")
     self.assertFalse(tr.launch())
-    self.assertEqual(len(tr.test_results['tests']), 2)
+    self.assertEqual(len(tr.test_results['tests']), 1)
     tests = tr.test_results['tests']
-    self.assertEqual(tests['BUILD_INTERRUPTED']['actual'], 'CRASH')
     self.assertEqual(tests['Class1/passedTest1']['actual'], 'PASS')
+    # Class1/passedTest2 doesn't appear in test results.
 
   @mock.patch('xcodebuild_runner.isinstance', return_value=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser.collect_test_results')

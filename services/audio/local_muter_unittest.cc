@@ -93,7 +93,7 @@ TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
   // stack as the mojo connection error handler, just as would take place in the
   // live build.
   auto muter = std::make_unique<LocalMuter>(&coordinator, group_id);
-  base::MockCallback<base::OnceClosure> callback;
+  base::MockCallback<base::RepeatingClosure> callback;
   EXPECT_CALL(callback, Run()).WillOnce(InvokeWithoutArgs([&muter]() {
     muter.reset();
   }));

@@ -23,13 +23,6 @@ class ASH_EXPORT QuickActionItem : public views::View {
     virtual void OnButtonPressed(bool is_now_enabled) = 0;
   };
 
-  // |icon_on| and |icon_off| indicates the icons used in on/off state of the
-  // button.
-  QuickActionItem(Delegate* delegate,
-                  int label_id,
-                  const gfx::VectorIcon& icon_on,
-                  const gfx::VectorIcon& icon_off);
-
   // If only one icon is supplied, it will be used in both cases.
   QuickActionItem(Delegate* delegate,
                   int label_id,
@@ -45,11 +38,8 @@ class ASH_EXPORT QuickActionItem : public views::View {
   // Set the color of sub-label shown below the label.
   void SetSubLabelColor(SkColor color);
 
-  // Set the icon button to be either |icon_on_| or |icon_off_|.
-  void SetIcon(bool is_on);
-
   // Set the tooltip text of the icon button.
-  void SetIconTooltip(const std::u16string& text);
+  void SetTooltip(const std::u16string& text);
 
   // Change the toggled state. If toggled, the background color of the circle
   // will change.
@@ -73,8 +63,6 @@ class ASH_EXPORT QuickActionItem : public views::View {
  private:
   // Owned by views hierarchy.
   FeaturePodIconButton* icon_button_ = nullptr;
-  const gfx::VectorIcon& icon_on_;
-  const gfx::VectorIcon& icon_off_;
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
 

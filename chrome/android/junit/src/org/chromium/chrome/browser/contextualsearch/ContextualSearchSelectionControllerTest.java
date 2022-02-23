@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextualsearch;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -15,8 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -24,7 +21,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
 /**
@@ -41,11 +37,6 @@ import org.chromium.ui.touch_selection.SelectionEventType;
                         .class})
 public final class ContextualSearchSelectionControllerTest {
     private static final String USER_SELECTION = "user selection";
-    private static final String POPUP_CONTROLLER_SELECTION = "popup controller selection";
-
-    /** A SelectionPopupController that always returns POPUP_CONTROLLER_SELECTION. */
-    @Mock
-    private static SelectionPopupController sMockSelectionPopupController;
 
     /** Stores the selection set by ContextualSearchSelectionController#handleSelection. */
     private static String sSelectionSetByHandleSelection;
@@ -55,9 +46,6 @@ public final class ContextualSearchSelectionControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        when(sMockSelectionPopupController.getSelectedText())
-                .thenReturn(POPUP_CONTROLLER_SELECTION);
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mSelectionControllerUnderTest =
                 new ContextualSearchSelectionController(activity, null, null, null);
@@ -102,15 +90,6 @@ public final class ContextualSearchSelectionControllerTest {
         protected void handleSelection(
                 String selection, @ContextualSearchSelectionController.SelectionType int type) {
             sSelectionSetByHandleSelection = selection;
-        }
-
-        /**
-         * Returns the mock popup controller, which always returns a fixed string from
-         * #getSelectedText.
-         */
-        @Implementation
-        protected SelectionPopupController getSelectionPopupController() {
-            return sMockSelectionPopupController;
         }
 
         /** Returns the selection that was set by the call to #handleSelection. */
@@ -159,12 +138,12 @@ public final class ContextualSearchSelectionControllerTest {
         // SELECTION_HANDLE_DRAG_STARTED event.
         mSelectionControllerUnderTest.handleSelectionEvent(
                 SelectionEventType.SELECTION_HANDLES_MOVED, 0f, 0f);
-        // Make sure we grabbed the selection from the SelectionPopupController.
-        Assert.assertEquals("Smart Text Selection interaction with Contextual Search "
+        // Make sure we did not establish any selection.
+        Assert.assertNull("Smart Text Selection interaction with Contextual Search "
                         + "through the ContextualSearchSelectionController#handleSelectionEvent "
                         + "sent a selection to the Manager that was unexpected. Smart Text "
                         + "Selection with the intelligent Long-press gesture may be broken.",
-                POPUP_CONTROLLER_SELECTION, getSelectionSetByHandleSelection());
+                getSelectionSetByHandleSelection());
     }
 
     //============================================================================================

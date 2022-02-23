@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/dbus/biod/constants.pb.h"
+#include "chromeos/dbus/biod/messages.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
     // Called when an authentication scan is performed. If the scan is
     // successful, |matches| will equal all the enrollment IDs that match the
     // scan, and the labels of the matched fingerprints.
-    virtual void BiodAuthScanDoneReceived(biod::ScanResult scan_result,
+    virtual void BiodAuthScanDoneReceived(const biod::FingerprintMessage& msg,
                                           const AuthScanMatches& matches) {}
 
     // Called during an enrollment or authentication session to indicate a

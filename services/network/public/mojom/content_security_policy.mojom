@@ -102,6 +102,7 @@ enum CSPDirectiveName {
   ChildSrc,
   ConnectSrc,
   DefaultSrc,
+  FencedFrameSrc,
   FontSrc,
   FormAction,
   FrameAncestors,

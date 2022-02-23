@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_CONTENT_VERIFIER_TEST_UTILS_H_
 #define CHROME_BROWSER_EXTENSIONS_CONTENT_VERIFIER_TEST_UTILS_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <set>

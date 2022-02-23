@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
-#include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -54,9 +53,10 @@ class ZeroStateDriveProvider : public SearchProvider,
       const power_manager::ScreenIdleState& proto) override;
 
   // SearchProvider:
-  void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
-  void Start(const std::u16string& query) override;
+  void StartZeroState() override;
+  void ViewClosing() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   void set_session_manager_for_testing(
       session_manager::SessionManager* session_manager) {
@@ -79,12 +79,22 @@ class ZeroStateDriveProvider : public SearchProvider,
   void OnFilePathsLocated(
       absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
 
-  std::unique_ptr<FileResult> MakeListResult(const base::FilePath& filepath,
-                                             const float relevance);
-  // TODO(crbug.com/1258415): Chip results don't exist in the new launcher.
-  // MakeChipResult can be removed after launch.
-  std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
-                                             const float relevance);
+  void SetSearchResults(
+      std::vector<absl::optional<base::FilePath>> filtered_paths);
+
+  std::unique_ptr<FileResult> MakeListResult(
+      const base::FilePath& filepath,
+      const absl::optional<std::string>& prediction_reason,
+      const float relevance);
+
+  // Callback for when the ItemSuggestCache updates its results.
+  void OnCacheUpdated();
+
+  // Requests an update from the ItemSuggestCache, but only if the call is long
+  // enough after the provider was constructed. This helps ease resource
+  // contention at login, and prevents the call from failing because Google auth
+  // tokens haven't been set up yet.
+  void MaybeUpdateCache();
 
   // We are intending to change the triggers of queries to ItemSuggest, but
   // first want to know the QPS impact of the change. This method records
@@ -99,6 +109,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
   session_manager::SessionManager* session_manager_;
+
+  const base::Time construction_time_;
 
   ItemSuggestCache item_suggest_cache_;
 
@@ -118,16 +130,13 @@ class ZeroStateDriveProvider : public SearchProvider,
   // hypothetical query on wake.
   bool screen_off_ = true;
 
-  // Whether the suggested files feature is enabled. True if both the experiment
-  // is enabled, and the suggested content toggle is enabled.
-  const bool suggested_files_enabled_;
+  // A file needs to have been modified more recently than this to be considered
+  // valid.
+  const base::TimeDelta max_last_modified_time_;
 
-  // Score normalizer for Finch experiment. Nullopt if experiment disabled.
-  absl::optional<ScoreNormalizer> normalizer_;
-
-  // Whether we have sent at least one request to ItemSuggest to warm up the
-  // results cache.
-  bool have_warmed_up_cache_ = false;
+  // Whether or not zero-state drive files are enabled. True iff the
+  // productivity launcher is enabled.
+  const bool enabled_;
 
   base::ScopedObservation<drive::DriveIntegrationService,
                           drive::DriveIntegrationServiceObserver>

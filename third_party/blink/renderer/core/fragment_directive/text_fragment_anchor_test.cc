@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -80,11 +81,11 @@ class TextFragmentAnchorTest : public SimTest {
     return GetDocument().View()->LayoutViewport();
   }
 
-  IntRect ViewportRect() {
-    return IntRect(gfx::Point(), LayoutViewport()->VisibleContentRect().size());
+  gfx::Rect ViewportRect() {
+    return gfx::Rect(LayoutViewport()->VisibleContentRect().size());
   }
 
-  IntRect BoundingRectInFrame(Node& node) {
+  gfx::Rect BoundingRectInFrame(Node& node) {
     return node.GetLayoutObject()->AbsoluteBoundingBoxRect();
   }
 
@@ -95,7 +96,7 @@ class TextFragmentAnchorTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   void SimulateRightClick(int x, int y) {
@@ -105,7 +106,7 @@ class TextFragmentAnchorTest : public SimTest {
                         base::TimeTicks::Now());
     event.SetFrameScale(1);
     WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-        WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+        WebCoalescedInputEvent(event, ui::LatencyInfo()));
   }
 
   void SimulateTap(int x, int y) {
@@ -145,7 +146,7 @@ class TextFragmentAnchorTest : public SimTest {
       event.SetFrameScale(1);
 
       WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-          WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+          WebCoalescedInputEvent(event, ui::LatencyInfo()));
     } else if (WebInputEvent::IsTouchEventType(type)) {
       WebTouchEvent event(type, WebInputEvent::kNoModifiers,
                           base::TimeTicks::Now());
@@ -161,7 +162,7 @@ class TextFragmentAnchorTest : public SimTest {
         event.touches[0].state = WebTouchPoint::State::kStateReleased;
 
       WebView().MainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
-          WebCoalescedInputEvent(event, ui::LatencyInfo()), base::DoNothing());
+          WebCoalescedInputEvent(event, ui::LatencyInfo()));
       WebView().MainFrameWidget()->DispatchBufferedTouchEvents();
     } else {
       NOTREACHED() << "Only needed to support Gesture/Touch until now. "
@@ -1046,11 +1047,8 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
   EXPECT_EQ(14u, markers.at(0)->EndOffset());
 }
 
-// Test that user scrolling dismisses the highlight.
-TEST_P(TextFragmentAnchorScrollTest, DismissTextHighlightOnUserScroll) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingV2);
+// Test that user scrolling keeps the highlight.
+TEST_P(TextFragmentAnchorScrollTest, KeepTextHighlightOnUserScroll) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1089,21 +1087,13 @@ TEST_P(TextFragmentAnchorScrollTest, DismissTextHighlightOnUserScroll) {
 
   Compositor().BeginFrame();
 
-  if (IsUserScrollType()) {
-    EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
-    EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
-  } else {
-    EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
-    EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
-  }
+  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that user scrolling doesn't dismiss the highlight, when the
 // SharedHighlightingV2 flag is enabled.
 TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1325,7 +1315,7 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   ASSERT_NE(ScrollOffset(), first_scroll_offset);
 
   Element& p = *GetDocument().getElementById("text");
-  IntRect first_bounding_rect = BoundingRectInFrame(p);
+  gfx::Rect first_bounding_rect = BoundingRectInFrame(p);
   EXPECT_TRUE(ViewportRect().Contains(first_bounding_rect));
 
   // Load an image that pushes the target text out of view
@@ -1594,11 +1584,8 @@ TEST_F(TextFragmentAnchorTest, CheckForWordBoundaryWithPartialWord) {
   EXPECT_EQ(17u, markers.at(0)->EndOffset());
 }
 
-// Test dismissing the text highlight with a click
+// Test click keeps the text highlight
 TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1643,25 +1630,23 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithClick) {
 
   SimulateClick(100, 100);
 
-  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  // Ensure the fragment is uninstalled
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
   url = GetDocument()
             .GetFrame()
             ->Loader()
             .GetDocumentLoader()
             ->GetHistoryItem()
             ->Url();
-  EXPECT_EQ("https://example.com/test.html", url.GetString());
+  EXPECT_EQ(
+      "https://example.com/test.html#:~:text=test%20page&text=more%20text",
+      url.GetString());
 }
 
 // Test not dismissing the text highlight with a click, if the
 // SharedHighlightingV2 flag is enabled.
 TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithClick) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1703,11 +1688,8 @@ TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithClick) {
   EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
-// Test dismissing the text highlight with a tap
-TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithTap) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingV2);
+// Test that a tap keeps the text highlight
+TEST_F(TextFragmentAnchorTest, KeepsTextHighlightWithTap) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1752,25 +1734,23 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightWithTap) {
 
   SimulateTap(100, 100);
 
-  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 
-  // Ensure the fragment is uninstalled
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
   url = GetDocument()
             .GetFrame()
             ->Loader()
             .GetDocumentLoader()
             ->GetHistoryItem()
             ->Url();
-  EXPECT_EQ("https://example.com/test.html", url.GetString());
+  EXPECT_EQ(
+      "https://example.com/test.html#:~:text=test%20page&text=more%20text",
+      url.GetString());
 }
 
 // Test not dismissing the text highlight with a tap, if the
 // SharedHighlightingV2 flag is enabled.
 TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithTap) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1812,11 +1792,9 @@ TEST_F(TextFragmentAnchorTest, DontDismissTextHighlightWithTap) {
   EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
-// Test that we don't dismiss a text highlight before it's scrolled into view
-TEST_F(TextFragmentAnchorTest, DismissTextHighlightOutOfView) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingV2);
+// Test that we don't dismiss a text highlight before and after it's scrolled
+// into view
+TEST_F(TextFragmentAnchorTest, KeepsTextHighlightOutOfView) {
   SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
   SimSubresourceRequest css_request("https://example.com/test.css", "text/css");
   LoadURL("https://example.com/test.html#:~:text=test");
@@ -1850,17 +1828,15 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightOutOfView) {
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
-  // Click to dismiss
+  // Click
   SimulateClick(100, 100);
-  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
-// Test dismissing a text highlight that didn't require a scroll into view
-TEST_F(TextFragmentAnchorTest, DismissTextHighlightInView) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndDisableFeature(
-      shared_highlighting::kSharedHighlightingV2);
+// Test that a text highlight that didn't require a scroll into view is kept on
+// tap
+TEST_F(TextFragmentAnchorTest, KeepsTextHighlightInView) {
   SimRequest request(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text",
@@ -1890,10 +1866,8 @@ TEST_F(TextFragmentAnchorTest, DismissTextHighlightInView) {
 
   SimulateTap(100, 100);
 
-  EXPECT_EQ(0u, GetDocument().Markers().Markers().size());
-
-  // Ensure the fragment is uninstalled
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 }
 
 // Test that the fragment directive delimiter :~: works properly and is stripped
@@ -2376,9 +2350,6 @@ TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_BlockInterruption) {
 }
 
 TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   SimRequest request("https://www.test.com/#:~:text=First%20test,page%20three",
                      "text/html");
   LoadURL("https://www.test.com/#:~:text=First%20test,page%20three");
@@ -2457,9 +2428,6 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
 // a text fragment, when the TextFragmentTapOpensContextMenu
 // RuntimeEnabledFeature is enabled.
 TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   LoadAhem();
   SimRequest request(
       "https://example.com/"
@@ -2559,9 +2527,6 @@ class MockUnhandledTapNotifierImpl : public mojom::blink::UnhandledTapNotifier {
 // selected. RuntimeEnabledFeature is enabled.
 TEST_F(TextFragmentAnchorTest,
        ShouldNotRequestUnhandledTapNotifierWhenTapOnTextFragment) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
   LoadAhem();
   SimRequest request(
       "https://example.com/"
@@ -2623,9 +2588,6 @@ TEST_F(TextFragmentAnchorTest,
 
 TEST_F(TextFragmentAnchorTest, TapOpeningContextMenuWithDirtyLifecycleNoCrash) {
   ScopedTextFragmentTapOpensContextMenuForTest tap_opens_context_menu(true);
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      shared_highlighting::kSharedHighlightingV2);
 
   SimRequest request(
       "https://example.com/"

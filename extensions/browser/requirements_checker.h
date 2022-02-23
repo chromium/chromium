@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_REQUIREMENTS_CHECKER_H_
 #define EXTENSIONS_BROWSER_REQUIREMENTS_CHECKER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/preload_check.h"

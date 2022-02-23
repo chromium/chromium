@@ -16,19 +16,6 @@
       "transform": 1
     },
     {
-      "name": "HorizontalScrollbar",
-      "position": [0, 485],
-      "bounds": [800, 15],
-      "contentsOpaqueForText": true,
-      "transform": 1
-    },
-    {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 485],
-      "transform": 1
-    },
-    {
       "name": "LayoutNGBlockFlow DIV",
       "bounds": [785, 1340],
       "invalidations": [
@@ -40,6 +27,19 @@
         [224, 0, 45, 18],
         [52, 18, 45, 18]
       ],
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 485],
+      "bounds": [800, 15],
+      "contentsOpaqueForText": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 485],
       "transform": 1
     }
   ],

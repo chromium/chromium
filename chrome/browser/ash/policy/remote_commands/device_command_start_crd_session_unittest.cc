@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,7 +26,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,6 +41,8 @@ namespace em = enterprise_management;
 namespace {
 
 using base::test::TestFuture;
+using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
+using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 
 constexpr char kResultCodeFieldName[] = "resultCode";
 constexpr char kResultMessageFieldName[] = "message";
@@ -199,9 +202,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   std::string CreateSuccessPayload(const std::string& access_code);
-  std::string CreateErrorPayload(
-      DeviceCommandStartCrdSessionJob::ResultCode result_code,
-      const std::string& error_message);
+  std::string CreateErrorPayload(ResultCode result_code,
+                                 const std::string& error_message);
   std::string CreateNotIdlePayload(base::TimeDelta idleness);
 
   void LogInAsManagedGuestSessionUser() {
@@ -291,7 +293,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
                    GenerateCommandProto(
                        kUniqueID, base::TimeTicks::Now() - test_start_time_,
                        idleness_cutoff_, acked_user_presence_),
-                   nullptr);
+                   em::SignedData());
 
     if (oauth_token_)
       job().SetOAuthTokenForTest(oauth_token_.value());
@@ -355,7 +357,7 @@ std::string DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
 }
 
 std::string DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
-    DeviceCommandStartCrdSessionJob::ResultCode result_code,
+    ResultCode result_code,
     const std::string& error_message = "") {
   std::string payload;
   base::Value root(base::Value::Type::DICTIONARY);
@@ -728,6 +730,131 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_EQ(false,
             crd_host_delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendSuccessUmaLogWhenAutoLaunchKioskConnects) {
+  LogInAsAutoLaunchedKioskAppUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  crd_host_delegate().SetHasActiveSession(true);
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.SessionType",
+      UmaSessionType::kAutoLaunchedKiosk, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendSuccessUmaLogWhenAffiliatedUserConnects) {
+  LogInAsAffiliatedUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.SessionType",
+      UmaSessionType::kAffiliatedUser, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendSuccessUmaLogWhenManagedGuestSessionConnects) {
+  LogInAsManagedGuestSessionUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::SUCCESS, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.SessionType",
+      UmaSessionType::kManagedGuestSession, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendErrorUmaLogWhenDeviceNotReady) {
+  base::HistogramTester histogram_tester;
+
+  DeviceOAuth2TokenServiceFactory::Shutdown();
+
+  crd_host_delegate().SetHasActiveSession(true);
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ResultCode::FAILURE_SERVICES_NOT_READY, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendErrorUmaLogWhenUserTypeIsNotSupported) {
+  LogInAsRegularUser();
+
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendErrorUmaLogWhenDeviceIsNotIdle) {
+  LogInAsAutoLaunchedKioskAppUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  const auto idleness_cutoff = base::Seconds(10);
+  const auto device_idle_time = base::Seconds(9);
+
+  SetDeviceIdleTime(device_idle_time);
+  SetIdlenessCutoff(idleness_cutoff);
+
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result", ResultCode::FAILURE_NOT_IDLE,
+      1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendErrorUmaLogFailureNoAuthToken) {
+  LogInAsAffiliatedUser();
+
+  base::HistogramTester histogram_tester;
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ResultCode::FAILURE_NO_OAUTH_TOKEN, 1);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       ShouldSendErrorUmaLogFailureCrdHostError) {
+  LogInAsAutoLaunchedKioskAppUser();
+  SetOAuthToken(kTestOAuthToken);
+  base::HistogramTester histogram_tester;
+
+  crd_host_delegate().MakeAccessCodeFetchFail();
+
+  Result result = RunJobAndWaitForResult();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DeviceRemoteCommand.Crd.Result",
+      ResultCode::FAILURE_CRD_HOST_ERROR, 1);
 }
 
 }  // namespace policy

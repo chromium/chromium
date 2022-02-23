@@ -11,7 +11,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -128,7 +127,8 @@ bool AudioDecoderAndroid::Start(int64_t start_pts) {
   DCHECK(IsValidConfig(config_));
   DCHECK(IsValidChannelNumber(config_.channel_number));
   sink_.Reset(this, config_.channel_number, config_.samples_per_second,
-              backend_->Primary(), backend_->DeviceId(),
+              config_.audio_track_session_id, backend_->Primary(),
+              config_.use_hw_av_sync, backend_->DeviceId(),
               backend_->ContentType());
   sink_->SetStreamVolumeMultiplier(volume_multiplier_);
   // Create decoder_ if necessary. This can happen if Stop() was called, and
@@ -292,7 +292,8 @@ bool AudioDecoderAndroid::SetConfig(const AudioConfig& config) {
 
 void AudioDecoderAndroid::ResetSinkForNewConfig(const AudioConfig& config) {
   sink_.Reset(this, config.channel_number, config.samples_per_second,
-              backend_->Primary(), backend_->DeviceId(),
+              config.audio_track_session_id, backend_->Primary(),
+              config.use_hw_av_sync, backend_->DeviceId(),
               backend_->ContentType());
   sink_->SetStreamVolumeMultiplier(volume_multiplier_);
   pending_output_frames_ = kNoPendingOutput;

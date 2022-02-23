@@ -7,10 +7,11 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
@@ -61,6 +62,10 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   void Trace(Visitor*) const override;
 
  private:
+  class BlobPromiseResolverFunction;
+  void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
+  // Promises to Blobs in the `ClipboardItem` were rejected.
+  void RejectBlobPromise(const String& exception_text);
   // Called to begin writing a type.
   void WriteNextRepresentation();
 
@@ -103,10 +108,14 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // Only for use in writeText().
   String plain_text_;
   HeapVector<std::pair<String, Member<Blob>>> clipboard_item_data_;
+  HeapVector<std::pair<String, ScriptPromise>>
+      clipboard_item_data_with_promises_;
   // Index of clipboard representation currently being processed.
   wtf_size_t clipboard_representation_index_;
   // Stores all the custom formats defined in `ClipboardItemOptions`.
   Vector<String> custom_format_items_;
+  // Stores the types provided by the web authors.
+  Vector<String> clipboard_item_types_;
 
   // Because v8 is thread-hostile, ensures that all interactions with
   // ScriptState and ScriptPromiseResolver occur on the main thread.

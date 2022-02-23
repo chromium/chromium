@@ -37,7 +37,7 @@ namespace blink {
 // of the context.
 class AudioDestinationHandler : public AudioHandler {
  public:
-  AudioDestinationHandler(AudioNode&);
+  explicit AudioDestinationHandler(AudioNode&);
   ~AudioDestinationHandler() override;
 
   // The method MUST NOT be invoked when rendering a graph because the
@@ -111,7 +111,7 @@ class AudioDestinationNode : public AudioNode {
   void ReportWillBeDestroyed() final;
 
  protected:
-  AudioDestinationNode(BaseAudioContext&);
+  explicit AudioDestinationNode(BaseAudioContext&);
 };
 
 }  // namespace blink

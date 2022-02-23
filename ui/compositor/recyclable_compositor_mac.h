@@ -5,6 +5,9 @@
 #ifndef UI_COMPOSITOR_RECYCLABLE_COMPOSITOR_MAC_H_
 #define UI_COMPOSITOR_RECYCLABLE_COMPOSITOR_MAC_H_
 
+#include <list>
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"

@@ -9,11 +9,11 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 
 namespace web {
 class NavigationContext;
+enum Permission : NSUInteger;
 }
 
 // Observes page lifecycle events from Objective-C. To use as a
@@ -65,6 +65,11 @@ class NavigationContext;
 - (void)webState:(web::WebState*)webState
     didUpdateFaviconURLCandidates:
         (const std::vector<web::FaviconURL>&)candidates;
+
+// Invoked by WebStateObserverBridge::PermissionStateChanged.
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission
+    API_AVAILABLE(ios(15.0));
 
 // Invoked by WebStateObserverBridge::WebFrameDidBecomeAvailable.
 - (void)webState:(web::WebState*)webState
@@ -121,6 +126,9 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void DidChangeVisibleSecurityState(web::WebState* web_state) override;
   void FaviconUrlUpdated(web::WebState* web_state,
                          const std::vector<FaviconURL>& candidates) override;
+  void PermissionStateChanged(web::WebState* web_state,
+                              web::Permission permission) override
+      API_AVAILABLE(ios(15.0));
   void WebFrameDidBecomeAvailable(WebState* web_state,
                                   WebFrame* web_frame) override;
   void WebFrameWillBecomeUnavailable(WebState* web_state,

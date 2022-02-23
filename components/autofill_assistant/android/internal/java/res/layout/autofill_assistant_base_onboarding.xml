@@ -53,6 +53,7 @@
 
         <!-- Subtitle (e.g., 'Google Assistant saves you time...')-->
         <LinearLayout
+            android:id="@+id/onboarding_subtitle_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Space
@@ -89,22 +90,19 @@
                 android:layout_height="1dp"
                 android:layout_weight="0.33"/>
         </LinearLayout>
-        <Space android:layout_width="0dp" android:layout_height="20dp"/>
+        <!-- Space between divider and terms-->
+        <Space 
+            android:id="@+id/terms_spacing_before"
+            android:layout_width="0dp"
+            android:layout_height="20dp"/>
 
         <!-- Terms and Conditions message and link -->
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:paddingBottom="9dp">
-            <TextView
-                android:id="@+id/google_terms_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:layout_gravity="center"
-                android:textAppearance="@style/TextAppearance.AssistantBlackCaption"
-                android:text="@string/autofill_assistant_google_terms_description" />
-        </LinearLayout>
-        <Space android:layout_width="0dp" android:layout_height="18dp"/>
+        <include layout="@layout/autofill_assistant_onboarding_terms"/>
+
+        <!-- Some space between terms and onboarding buttons -->
+        <Space
+            android:id="@+id/terms_spacing_after"
+            android:layout_width="0dp"
+            android:layout_height="18dp"/>
     </LinearLayout>
 </ScrollView>

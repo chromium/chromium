@@ -166,7 +166,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   def test_create_device_by_platform_and_version(self, subprocess_mock, _):
     """Ensures that command is correct."""
-    subprocess_mock.return_value = 'NEW_UDID'
+    subprocess_mock.return_value = b'NEW_UDID'
     self.assertEqual(
         'NEW_UDID',
         iossim_util.create_device_by_platform_and_version(
@@ -195,7 +195,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
   @mock.patch('subprocess.check_output', autospec=True)
   def test_get_home_directory(self, subprocess_mock, _):
     """Ensures that command is correct."""
-    subprocess_mock.return_value = 'HOME_DIRECTORY'
+    subprocess_mock.return_value = b'HOME_DIRECTORY'
     self.assertEqual('HOME_DIRECTORY',
                      iossim_util.get_home_directory('iPhone 11', '13.2.2'))
     self.assertEqual([

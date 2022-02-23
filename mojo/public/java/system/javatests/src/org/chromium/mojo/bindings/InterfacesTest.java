@@ -141,13 +141,13 @@ public class InterfacesTest {
 
         @Override
         public void requestImportedInterface(InterfaceRequest<ImportedInterface> obj,
-                RequestImportedInterfaceResponse callback) {
+                RequestImportedInterface_Response callback) {
             throw new UnsupportedOperationException("Not implemented.");
         }
 
         @Override
         public void takeImportedInterface(
-                ImportedInterface obj, TakeImportedInterfaceResponse callback) {
+                ImportedInterface obj, TakeImportedInterface_Response callback) {
             throw new UnsupportedOperationException("Not implemented.");
         }
     }

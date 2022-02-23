@@ -7,21 +7,9 @@ if (is_android) {
 }
 
 browser_sources = [
-  "data_reduction_proxy_compression_stats.cc",
-  "data_reduction_proxy_compression_stats.h",
   "data_reduction_proxy_metrics.h",
-  "data_reduction_proxy_prefs.cc",
-  "data_reduction_proxy_prefs.h",
-  "data_reduction_proxy_service.cc",
-  "data_reduction_proxy_service.h",
   "data_reduction_proxy_settings.cc",
   "data_reduction_proxy_settings.h",
-  "data_store.cc",
-  "data_store.h",
-  "data_usage_store.cc",
-  "data_usage_store.h",
-  "db_data_owner.cc",
-  "db_data_owner.h",
 ]
 
 if (is_android) {
@@ -31,9 +19,6 @@ if (is_android) {
     deps = [
       "//base",
       "//components/data_reduction_proxy/core/common",
-      "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
-      "//components/data_use_measurement/core",
-      "//components/data_use_measurement/core:ascriber",
       "//components/pref_registry",
       "//components/prefs",
       "//crypto",
@@ -42,27 +27,14 @@ if (is_android) {
       "//url:url",
     ]
   }
-
-  java_cpp_enum("data_reduction_proxy_savings_cleared_enum_java") {
-    sources = [ "data_reduction_proxy_compression_stats.h" ]
-  }
 }
 
 static_library("browser") {
   sources = browser_sources
-  sources += [
-    "data_store_impl.cc",
-    "data_store_impl.h",
-  ]
 
-  public_deps = [
-    "//components/data_reduction_proxy/core/common",
-    "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
-  ]
+  public_deps = [ "//components/data_reduction_proxy/core/common" ]
   deps = [
     "//base",
-    "//components/data_use_measurement/core",
-    "//components/data_use_measurement/core:ascriber",
     "//components/pref_registry",
     "//components/prefs",
     "//crypto",
@@ -77,72 +49,4 @@ static_library("browser") {
   if (!is_ios) {
     defines += [ "USE_GOOGLE_API_KEYS_FOR_AUTH_KEY" ]
   }
-}
-
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "data_reduction_proxy_settings_test_utils.cc",
-    "data_reduction_proxy_settings_test_utils.h",
-    "data_reduction_proxy_test_utils.cc",
-    "data_reduction_proxy_test_utils.h",
-  ]
-
-  public_deps = [ ":browser" ]
-  deps = [
-    "//base",
-    "//components/data_reduction_proxy/core/common",
-    "//components/data_use_measurement/core",
-    "//components/data_use_measurement/core:ascriber",
-    "//components/prefs:test_support",
-    "//net",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-  sources = [
-    "//components/test/data/data_reduction_proxy/direct/block10.html",
-    "//components/test/data/data_reduction_proxy/direct/block10.html.mock-http-headers",
-    "//components/test/data/data_reduction_proxy/direct/noblock.html",
-    "//components/test/data/data_reduction_proxy/direct/noblock.html.mock-http-headers",
-    "//components/test/data/data_reduction_proxy/proxy/block10.html",
-    "//components/test/data/data_reduction_proxy/proxy/block10.html.mock-http-headers",
-    "//components/test/data/data_reduction_proxy/proxy/noblock.html",
-    "//components/test/data/data_reduction_proxy/proxy/noblock.html.mock-http-headers",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "data_reduction_proxy_compression_stats_unittest.cc",
-    "data_reduction_proxy_prefs_unittest.cc",
-    "data_reduction_proxy_settings_unittest.cc",
-    "data_usage_store_unittest.cc",
-  ]
-
-  deps = [
-    ":browser",
-    ":test_support",
-    ":unit_tests_bundle_data",
-    "//base",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
-    "//components/data_use_measurement/core:ascriber",
-    "//components/prefs:test_support",
-    "//components/variations:test_support",
-    "//net:test_support",
-    "//services/network:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

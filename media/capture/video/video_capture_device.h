@@ -15,7 +15,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <string>
 
@@ -224,11 +223,11 @@ class CAPTURE_EXPORT VideoCaptureDevice
     //
     // The buffer stays reserved for use by the caller as long as it
     // holds on to the contained |buffer_read_write_permission|.
-    virtual ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
-                                              VideoPixelFormat format,
-                                              int frame_feedback_id,
-                                              Buffer* buffer)
-        WARN_UNUSED_RESULT = 0;
+    [[nodiscard]] virtual ReserveResult ReserveOutputBuffer(
+        const gfx::Size& dimensions,
+        VideoPixelFormat format,
+        int frame_feedback_id,
+        Buffer* buffer) = 0;
 
     // Provides VCD::Client with a populated Buffer containing the content of
     // the next video frame. The |buffer| must originate from an earlier call to
@@ -320,11 +319,18 @@ class CAPTURE_EXPORT VideoCaptureDevice
   virtual void Resume() {}
 
   // Start/stop cropping.
+  //
   // Non-empty |crop_id| sets (or changes) the crop-target.
   // Empty |crop_id| reverts the capture to its original, uncropped state.
+  //
+  // |crop_version| must be incremented by at least one for each call.
+  // By including it in frame's metadata, Viz informs Blink what was the
+  // latest invocation of cropTo() before a given frame was produced.
+  //
   // The callback reports success/failure.
   virtual void Crop(
       const base::Token& crop_id,
+      uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
 
   // Deallocates the video capturer, possibly asynchronously.
@@ -339,10 +345,6 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // would be sequenced through the same task runner, so that deallocation
   // happens first.
   virtual void StopAndDeAllocate() = 0;
-
-  // Hints to the source that if it has an alpha channel, that alpha channel
-  // will be ignored and can be discarded.
-  virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}
 
   // Retrieve the photo capabilities and settings of the device (e.g. zoom
   // levels etc). On success, invokes |callback|. On failure, drops callback

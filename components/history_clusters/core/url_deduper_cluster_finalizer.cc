@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/url_deduper_cluster_finalizer.h"
 
+#include "base/ranges/algorithm.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 namespace history_clusters {
@@ -12,24 +13,34 @@ UrlDeduperClusterFinalizer::UrlDeduperClusterFinalizer() = default;
 UrlDeduperClusterFinalizer::~UrlDeduperClusterFinalizer() = default;
 
 void UrlDeduperClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
-  base::flat_map<GURL, size_t> url_to_last_visit_idx;
-  for (auto visit_it = cluster.visits.rbegin();
-       visit_it != cluster.visits.rend(); ++visit_it) {
-    auto& visit = *visit_it;
-    auto visit_url = visit.normalized_url;
-    auto it = url_to_last_visit_idx.find(visit_url);
-    if (it != url_to_last_visit_idx.end()) {
-      auto last_visit_it = url_to_last_visit_idx.find(visit_url);
-      DCHECK(last_visit_it != url_to_last_visit_idx.end());
-      DCHECK_LT(last_visit_it->second, cluster.visits.size());
-      auto& canonical_visit = cluster.visits.at(last_visit_it->second);
-      MergeDuplicateVisitIntoCanonicalVisit(visit, canonical_visit);
-    } else {
-      url_to_last_visit_idx.insert(
-          {visit_url,
-           std::distance(cluster.visits.begin(), visit_it.base()) - 1});
-    }
+  base::flat_map<GURL, history::ClusterVisit*> url_to_canonical_visit;
+  // First do a prepass to find the canonical visit for each URL. This simply
+  // marks the last visit in `cluster` with any given URL as the canonical one.
+  for (auto& visit : cluster.visits) {
+    url_to_canonical_visit[visit.url_for_deduping] = &visit;
   }
+
+  cluster.visits.erase(
+      base::ranges::remove_if(
+          cluster.visits,
+          [&](auto& visit) {
+            // We are guaranteed to find a matching canonical visit, due to our
+            // prepass above.
+            auto it = url_to_canonical_visit.find(visit.url_for_deduping);
+            DCHECK(it != url_to_canonical_visit.end());
+            history::ClusterVisit* canonical_visit = it->second;
+
+            // If a DIFFERENT visit is the canonical visit for this key, merge
+            // this visit in, and mark this visit as to be removed.
+            if (&visit != canonical_visit) {
+              MergeDuplicateVisitIntoCanonicalVisit(std::move(visit),
+                                                    *canonical_visit);
+              return true;
+            }
+
+            return false;
+          }),
+      cluster.visits.end());
 }
 
 }  // namespace history_clusters

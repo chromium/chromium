@@ -79,7 +79,6 @@ out/Default/browser_tests --gtest_filter="PDFExtensionAccessibilityTreeDumpTest*
 Supported platforms are:
 * `android` -- expected Android AccessibilityNodeInfo output
 * `auralinux` -- expected Linux ATK output
-* `auralinux-trusty` -- expected Linux ATK output (Version Specific Expected File)
 * `auralinux-xenial` -- expected Linux ATK output (Version Specific Expected File)
 * `blink` -- representation of internal accessibility tree
 * `blink-cros` -- representation of internal accessibility tree
@@ -120,16 +119,14 @@ specific filters.
 In the case of Linux, the tests are run on several LTS
 [releases](https://releases.ubuntu.com/) of Ubuntu:
 
-* "Trusty Tahr": Ubuntu 14.04 LTS, ATK version 2.10 (bot: "linux-trusty-rel")
 * "Xenial Xerus": Ubuntu 16.04, ATK version 2.18 (bot: "linux-xenial-rel")
 * "Bionic Beaver": Ubuntu 18.04, ATK version 2.28 (runs on multiple bots)
 
 In many cases the expected results for `foo.html` will be the same for all
 versions of Ubuntu, in which case `foo-expected-auralinux.txt` is all that is
 needed. However, if the `foo.html` test passes on the Linux release build
-("linux-rel"), but fails on "linux-trusty-rel", you will need an additional
-`foo-expected-auralinux-trusty.txt` file. If it also fails on "linux-xenial-rel",
-create `foo-expected-auralinux-xenial.txt`.
+("linux-rel"), but fails on "linux-xenial-rel", you will need an additional
+`foo-expected-auralinux-xenial.txt` file.
 
 At the present time there is no version-specific support for Bionic Beaver,
 which is the current version run on "linux-rel".
@@ -198,7 +195,7 @@ Note: Mac platform is supported only.
 `Script tests` provide platform dependent `-SCRIPT` directive to indicate
 a script to run. For example:
 
-`MAC-SCRIPT: input.AXName`
+`@MAC-SCRIPT: input.AXName`
 
 to dump accessible name of an accessible node for a DOM element having
 `input` DOM id on Mac platform. You can also use `:LINE_NUM` syntax to indicate
@@ -206,19 +203,33 @@ an accessible object, where `LINE_NUM` is index of a line where
 the accessible object is placed in the formatted tree. However you should avoid
 using `:LINE_NUM` in a test as it may break the test automatic rebaseling.
 
-You can put multiple instructions under the same `MAC-SCRIPT` directive, for
+You can put multiple instructions under the same `@MAC-SCRIPT` directive, for
 example:
 ```
-MAC-SCRIPT:
+@MAC-SCRIPT:
   input.AXRole
   input.AXName
 ```
 
-Calls can be chained, for example:
+Calls can be chained. For example:
 
 `input.AXFocusableAncestor.AXRole`
 
-Parameterized attributes are also supported, for example:
+Note: The `.AXAttribute` will dump the accessible attribute for the node only
+if the attribute is supported for that node.
+
+To test for the support of the attribute in mac accessibility API, you can see
+if the attribute is included in the accessibilityAttribute names using
+`has()`. For example, the following will tell you whether the attribute
+`AXInvalid` is supported on an accessible node, regardless of whether the
+attribute has been provided by the web author.
+
+```
+@MAC-SCRIPT:
+  input.accessibilityAttributeNames.has(AXInvalid)
+```
+
+Parameterized attributes are also supported. For example:
 
 `paragraph.AXTextMarkerForIndex(0)`
 
@@ -238,24 +249,30 @@ for example:
 You can also use array operator[] to refer to an array element at a given index,
 for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
 
-To set a settable attribute you can assign a value to the attribute, for example:
+To set a settable attribute you can assign a value to the attribute. For example:
 ```
 textarea_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
 textarea.AXSelectedTextMarkerRange = textarea_range
 ```
 
+To pass a SEL as argument, you need to use the "@SEL:" prefix. For example:
+```
+@SCRIPT:
+  slider.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)
+```
+
 You can use `waitfor` instruction to wait for a specific event before the script
-continues, for example:
+continues. For example:
 
 ```
-MAC-SCRIPT:
+@MAC-SCRIPT:
   button.AXPerformAction(AXPress)
   wait for AXFocusedUIElementChanged
 ```
 
 will trigger `AXPress` action on a button and will wait for
 `AXFocusedUIElementChanged` event. You can also be more specific if you want to
-and provide the event target, for example:
+and provide the event target. For example:
 `wait for AXFocusedUIElementChanged on AXButton`
 
 ### Advanced directives
@@ -308,11 +325,11 @@ Invokes default action on an accessible object defined by the directive.
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
 To skip dumping a particular element, add `@NO_DUMP` to a property that will
-be exposed as an ax::mojom::StringAttribute, for example
+be exposed as an ax::mojom::StringAttribute. For example
 `<div class="@NO_DUMP"></div>`.
 
 To skip dumping all children of a particular element, add `@NO_CHILDREN_DUMP`
-to a property that will be exposed as an ax::mojom::StringAttribute, for example
+to a property that will be exposed as an ax::mojom::StringAttribute. For example
 `<div class="@NO_CHILDREN_DUMP"></div>`.
 
 Note that setting the `aria-label` value to `@NO_DUMP` or `@NO_CHILDREN_DUMP`
@@ -320,7 +337,7 @@ is not guaranteed to work due to certain roles no longer supporting author-
 provided naming in ARIA 1.2.
 
 To load an iframe from a different site, forcing it into a different process,
-use `/cross-site/HOSTNAME/` in the url, for example:
+use `/cross-site/HOSTNAME/` in the url. For example:
 `<iframe src="cross-site/1.com/accessibility/html/frame.html"></iframe>`
 
 ## Generating expectations and rebaselining:
@@ -328,7 +345,7 @@ use `/cross-site/HOSTNAME/` in the url, for example:
 If you want to populate the expectation file directly rather than typing it
 or copying-and-pasting it, first make sure the file exists (it can be empty),
 then run the test with the `--generate-accessibility-test-expectations`
-argument, for example:
+argument. For example:
 ```
   out/Debug/content_browsertests \
     --generate-accessibility-test-expectations \

@@ -83,7 +83,7 @@ void LogMessageHandler::PostLogMessageToCorrectThread(
 
   // This method is always called under the global lock, so post a task to
   // handle the log message, even if we're already on the correct thread.
-  // This alows the lock to be released quickly.
+  // This allows the lock to be released quickly.
   //
   // Note that this means that LOG(FATAL) messages will be lost because the
   // process will exit before the message is sent to the client.

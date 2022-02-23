@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
@@ -26,8 +27,8 @@ class CastSessionClientImpl : public CastSessionClient,
 
   // CastSessionClient implementation
   mojom::RoutePresentationConnectionPtr Init() override;
-  // TODO(jrw): Remove redundant "ToClient" in the name of this and other
-  // methods.
+  // TODO(crbug.com/1291745): Remove redundant "ToClient" in the name of this
+  // and other methods.
   void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) override;
   void SendMediaStatusToClient(const base::Value& media_status,
@@ -69,7 +70,7 @@ class CastSessionClientImpl : public CastSessionClient,
 
   const AutoJoinPolicy auto_join_policy_;
 
-  CastActivity* const activity_;
+  const raw_ptr<CastActivity> activity_;
 
   // The maximum number of pending media requests, used to prevent memory leaks.
   // Normally the number of pending requests should be fairly small, but each
@@ -82,8 +83,9 @@ class CastSessionClientImpl : public CastSessionClient,
   // sequenceNumber field in outgoing messages so a client can associate a media
   // status message with a previous request.
   //
-  // TODO(jrw): Investigate whether this mapping is really necessary, or if
-  // sequence numbers can be used directly without generating request IDs.
+  // TODO(crbug.com/1291745): Investigate whether this mapping is really
+  // necessary, or if sequence numbers can be used directly without generating
+  // request IDs.
   base::flat_map<int, int> pending_media_requests_;
 
   // Receiver for the PresentationConnection in Blink to receive incoming

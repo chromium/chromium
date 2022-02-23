@@ -9,11 +9,11 @@
 
 #include "ash/components/phonehub/camera_roll_download_manager.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/containers/flat_map.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeCameraRollDownloadManager::FakeCameraRollDownloadManager() = default;
@@ -22,20 +22,22 @@ FakeCameraRollDownloadManager::~FakeCameraRollDownloadManager() = default;
 
 void FakeCameraRollDownloadManager::CreatePayloadFiles(
     int64_t payload_id,
-    const chromeos::phonehub::proto::CameraRollItemMetadata& item_metadata,
+    const phonehub::proto::CameraRollItemMetadata& item_metadata,
     CreatePayloadFilesCallback payload_files_callback) {
-  if (should_create_payload_files_succeed_) {
+  absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+      payload_files;
+  if (expected_create_payload_files_result_ ==
+      CreatePayloadFilesResult::kSuccess) {
+    payload_files = absl::make_optional(
+        chromeos::secure_channel::mojom::PayloadFiles::New());
     payload_update_map_.emplace(
         payload_id,
         std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>());
-    std::move(payload_files_callback)
-        .Run(CreatePayloadFilesResult::kSuccess,
-             absl::make_optional(
-                 chromeos::secure_channel::mojom::PayloadFiles::New()));
   } else {
-    std::move(payload_files_callback)
-        .Run(CreatePayloadFilesResult::kInvalidFileName, absl::nullopt);
+    payload_files = absl::nullopt;
   }
+  std::move(payload_files_callback)
+      .Run(expected_create_payload_files_result_, std::move(payload_files));
 }
 
 void FakeCameraRollDownloadManager::UpdateDownloadProgress(
@@ -54,4 +56,4 @@ FakeCameraRollDownloadManager::GetFileTransferUpdates(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

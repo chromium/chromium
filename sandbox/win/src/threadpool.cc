@@ -4,15 +4,16 @@
 
 #include "sandbox/win/src/threadpool.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 
-#include "sandbox/win/src/win_utils.h"
+#include <vector>
 
 namespace sandbox {
 
-ThreadPool::ThreadPool() {
-  ::InitializeCriticalSection(&lock_);
-}
+ThreadPool::ThreadPool() = default;
+ThreadPool::~ThreadPool() = default;
 
 bool ThreadPool::RegisterWait(const void* cookie,
                               HANDLE waitable_object,
@@ -28,7 +29,7 @@ bool ThreadPool::RegisterWait(const void* cookie,
     return false;
   }
   PoolObject pool_obj = {cookie, pool_object};
-  AutoLock lock(&lock_);
+  base::AutoLock lock(lock_);
   pool_objects_.push_back(pool_obj);
   return true;
 }
@@ -39,7 +40,7 @@ bool ThreadPool::UnRegisterWaits(void* cookie) {
   }
   std::vector<HANDLE> finished_waits;
   {
-    AutoLock lock(&lock_);
+    base::AutoLock lock(lock_);
     PoolObjects::iterator it = pool_objects_.begin();
     while (it != pool_objects_.end()) {
       if (it->cookie == cookie) {
@@ -59,15 +60,8 @@ bool ThreadPool::UnRegisterWaits(void* cookie) {
 }
 
 size_t ThreadPool::OutstandingWaits() {
-  AutoLock lock(&lock_);
+  base::AutoLock lock(lock_);
   return pool_objects_.size();
-}
-
-ThreadPool::~ThreadPool() {
-  // Here we used to unregister all the pool wait handles. Now, following the
-  // rest of the code we avoid lengthy or blocking calls given that the process
-  // is being torn down.
-  ::DeleteCriticalSection(&lock_);
 }
 
 }  // namespace sandbox

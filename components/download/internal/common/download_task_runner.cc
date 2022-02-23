@@ -15,7 +15,7 @@ namespace download {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, the download code dips into COM and the shell here and there,
 // necessitating the use of a COM single-threaded apartment sequence.
 base::LazyThreadPoolCOMSTATaskRunner g_download_task_runner =

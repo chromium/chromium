@@ -4,6 +4,9 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# TODO(https://crbug.com/1164001): add assert(is_chromeos_ash) after the split
+# of //chrome/browser/{ash,chromeos}/printing is finished.
+
 mojom("mojom") {
   sources = [ "printing_manager.mojom" ]
 

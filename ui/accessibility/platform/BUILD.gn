@@ -34,9 +34,11 @@ source_set("platform") {
     # Used by by browser_accessibility_state_impl.cc.
     "ax_platform_node.cc",
     "ax_platform_node.h",
+    "ax_platform_node_delegate.cc",
     "ax_platform_node_delegate.h",
 
     # Used by browser_accessibility.cc.
+    "ax_platform_tree_manager.h",
     "ax_unique_id.cc",
     "ax_unique_id.h",
 
@@ -69,6 +71,7 @@ source_set("platform") {
     "inspect/ax_inspect_scenario.h",
     "inspect/ax_inspect_utils.cc",
     "inspect/ax_inspect_utils.h",
+    "inspect/ax_optional.h",
     "inspect/ax_property_node.cc",
     "inspect/ax_property_node.h",
     "inspect/ax_script_instruction.cc",
@@ -88,14 +91,26 @@ source_set("platform") {
   if (is_fuchsia) {
     sources += [
       "fuchsia/accessibility_bridge_fuchsia.h",
+      "fuchsia/accessibility_bridge_fuchsia_impl.cc",
+      "fuchsia/accessibility_bridge_fuchsia_impl.h",
       "fuchsia/accessibility_bridge_fuchsia_registry.cc",
       "fuchsia/accessibility_bridge_fuchsia_registry.h",
-      "fuchsia/fuchsia_types.cc",
-      "fuchsia/fuchsia_types.h",
+      "fuchsia/ax_platform_node_fuchsia.cc",
+      "fuchsia/ax_platform_node_fuchsia.h",
+      "fuchsia/semantic_provider.h",
+      "fuchsia/semantic_provider_impl.cc",
+      "fuchsia/semantic_provider_impl.h",
     ]
 
-    public_deps +=
-        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+    public_deps += [
+      "//base",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/inspect",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//ui/aura",
+    ]
   }
 
   if (has_native_accessibility) {
@@ -123,6 +138,10 @@ source_set("platform") {
         "ax_platform_relation_win.h",
         "ax_system_caret_win.cc",
         "ax_system_caret_win.h",
+        "inspect/ax_event_recorder_win.cc",
+        "inspect/ax_event_recorder_win.h",
+        "inspect/ax_event_recorder_win_uia.cc",
+        "inspect/ax_event_recorder_win_uia.h",
         "inspect/ax_inspect_utils_win.cc",
         "inspect/ax_inspect_utils_win.h",
         "uia_registrar_win.cc",
@@ -149,8 +168,22 @@ source_set("platform") {
         "ax_platform_node_mac.h",
         "ax_platform_node_mac.mm",
         "ax_private_attributes_mac.h",
+        "ax_private_roles_mac.h",
         "ax_private_webkit_constants_mac.h",
         "ax_private_webkit_constants_mac.mm",
+        "ax_utils_mac.h",
+        "ax_utils_mac.mm",
+        "inspect/ax_call_statement_invoker_mac.h",
+        "inspect/ax_call_statement_invoker_mac.mm",
+        "inspect/ax_event_recorder_mac.h",
+        "inspect/ax_event_recorder_mac.mm",
+        "inspect/ax_inspect_utils_mac.h",
+        "inspect/ax_inspect_utils_mac.mm",
+        "inspect/ax_transform_mac.h",
+        "inspect/ax_transform_mac.mm",
+        "inspect/ax_tree_formatter_mac.h",
+        "inspect/ax_tree_formatter_mac.mm",
+        "inspect/ax_tree_indexer_mac.h",
       ]
 
       frameworks = [

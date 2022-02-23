@@ -31,8 +31,8 @@ CrostiniAnsiblePlaybookExternalDataHandler::
 void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-      GetAccountId(user_id));
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(GetAccountId(user_id));
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
     return;
@@ -48,8 +48,8 @@ void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-      GetAccountId(user_id));
+  Profile* profile =
+      ash::ProfileHelper::Get()->GetProfileByAccountId(GetAccountId(user_id));
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
     return;
@@ -63,7 +63,7 @@ void CrostiniAnsiblePlaybookExternalDataHandler::OnExternalDataFetched(
 void CrostiniAnsiblePlaybookExternalDataHandler::RemoveForAccountId(
     const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (!profile) {
     LOG(ERROR) << "No profile for user is specified";
     return;

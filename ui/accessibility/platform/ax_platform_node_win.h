@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -30,6 +29,14 @@
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
 #include "ui/gfx/range/range.h"
+
+// This nonstandard GUID is taken directly from the Mozilla sources
+// (https://searchfox.org/mozilla-central/source/accessible/windows/msaa/ServiceProvider.cpp#60).
+const GUID GUID_IAccessibleContentDocument = {
+    0xa5d8e1f3,
+    0x3571,
+    0x4d8f,
+    {0x95, 0x21, 0x07, 0xed, 0x28, 0xfb, 0x07, 0x2e}};
 
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
@@ -1177,11 +1184,7 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   std::vector<std::wstring> ComputeIA2Attributes();
 
-  std::wstring UIAAriaRole();
-
   std::wstring ComputeUIAProperties();
-
-  LONG ComputeUIAControlType();
 
   AXPlatformNodeWin* ComputeUIALabeledBy();
 
@@ -1243,6 +1246,27 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                            SanitizeStringAttributeForIA2);
 
  private:
+  // UIA will use the aria role and the UIA control type to generate a
+  // localized string. When our internal role cannot be described accurately
+  // with the aria role or UIA control type, we should supply our own
+  // localized string.
+  enum class UIALocalizationStrategy {
+    // Localized string should be provided by UIA from on the control type.
+    kDeferToControlType,
+    // Localized string should be provided by UIA from on the aria role.
+    // While we can't direct UIA from where to generate localization, managing
+    // the distinction is needed as UIA pre-Windows 8 cannot generate
+    // localized strings for all aria roles.
+    kDeferToAriaRole,
+    // We should supply our own localized string instead of relying on UIA.
+    kSupply
+  };
+  struct UIARoleProperties {
+    UIALocalizationStrategy localization_strategy;
+    LONG control_type;
+    const wchar_t* aria_role;
+  };
+
   AXPlatformNodeWin* GetParentPlatformNodeWin() const;
 
   bool ShouldNodeHaveFocusableState() const;
@@ -1490,6 +1514,8 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   // Return true if the given element is valid enough to be returned as a value
   // for a UIA relation property (e.g. ControllerFor).
   static bool IsValidUiaRelationTarget(AXPlatformNode* ax_platform_node);
+
+  UIARoleProperties GetUIARoleProperties();
 
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;

@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/common/constants.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -62,6 +63,14 @@ constexpr char kCreateShortcuts[] = "create_shortcuts";
 //  - if the feature is enabled, the app will be installed
 //  - if the feature is not enabled, the app will be removed.
 constexpr char kFeatureName[] = "feature_name";
+
+// kFeatureNameOrInstalled is an optional string parameter specifying a feature
+// associated with this app. The feature must be present in
+// |kPreinstalledAppInstallFeatures| to be applicable.
+//
+// When specified, the app will only be installed when the feature is enabled.
+// If the feature is disabled, existing installations will not be removed.
+constexpr char kFeatureNameOrInstalled[] = "feature_name_or_installed";
 
 // kDisableIfArcSupported is an optional bool which specifies whether to skip
 // install of the app if the device supports Arc (Chrome OS only).
@@ -170,7 +179,7 @@ constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
 void EnsureContains(ListPrefUpdate& update, base::StringPiece value) {
-  for (const base::Value& item : update->GetList()) {
+  for (const base::Value& item : update->GetListDeprecated()) {
     if (item.is_string() && item.GetString() == value)
       return;
   }
@@ -198,7 +207,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   if (!value) {
     return base::StrCat({file.AsUTF8Unsafe(), " missing ", kUserType});
   }
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     if (!item.is_string()) {
       return base::StrCat({file.AsUTF8Unsafe(), " has invalid ", kUserType,
                            item.DebugString()});
@@ -213,6 +222,12 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   const std::string* feature_name = app_config.FindStringKey(kFeatureName);
   if (feature_name)
     options.gate_on_feature = *feature_name;
+
+  // feature_name_or_installed
+  const std::string* feature_name_or_installed =
+      app_config.FindStringKey(kFeatureNameOrInstalled);
+  if (feature_name_or_installed)
+    options.gate_on_feature_or_installed = *feature_name_or_installed;
 
   // app_url
   value = app_config.FindKeyOfType(kAppUrl, base::Value::Type::STRING);
@@ -357,7 +372,8 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
       return base::StrCat(
           {file.AsUTF8Unsafe(), " had an invalid ", kUninstallAndReplace});
     }
-    base::Value::ConstListView uninstall_and_replace_values = value->GetList();
+    base::Value::ConstListView uninstall_and_replace_values =
+        value->GetListDeprecated();
 
     for (const auto& app_id_value : uninstall_and_replace_values) {
       if (!app_id_value.is_string()) {
@@ -381,14 +397,14 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   // offline_manifest
   value = app_config.FindDictKey(kOfflineManifest);
   if (value) {
-    WebApplicationInfoFactoryOrError offline_manifest_result =
+    WebAppInstallInfoFactoryOrError offline_manifest_result =
         ParseOfflineManifest(file_utils, dir, file, *value);
     if (std::string* error =
             absl::get_if<std::string>(&offline_manifest_result)) {
       return std::move(*error);
     }
-    options.app_info_factory = std::move(
-        absl::get<WebApplicationInfoFactory>(offline_manifest_result));
+    options.app_info_factory =
+        std::move(absl::get<WebAppInstallInfoFactory>(offline_manifest_result));
   }
 
   if (options.only_use_app_info_factory && !options.app_info_factory) {
@@ -429,12 +445,12 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   return options;
 }
 
-WebApplicationInfoFactoryOrError ParseOfflineManifest(
+WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     FileUtilsWrapper& file_utils,
     const base::FilePath& dir,
     const base::FilePath& file,
     const base::Value& offline_manifest) {
-  WebApplicationInfo app_info;
+  WebAppInstallInfo app_info;
 
   // name
   const std::string* name_string =
@@ -502,12 +518,12 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
   // icon_any_pngs
   const base::Value* icon_files =
       offline_manifest.FindListKey(kOfflineManifestIconAnyPngs);
-  if (!icon_files || icon_files->GetList().empty()) {
+  if (!icon_files || icon_files->GetListDeprecated().empty()) {
     return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                          kOfflineManifestIconAnyPngs,
                          " missing, empty or invalid."});
   }
-  for (const base::Value& icon_file : icon_files->GetList()) {
+  for (const base::Value& icon_file : icon_files->GetListDeprecated()) {
     if (!icon_file.is_string()) {
       return base::StrCat({file.AsUTF8Unsafe(), " ", kOfflineManifest, " ",
                            kOfflineManifestIconAnyPngs, " ",
@@ -561,7 +577,7 @@ WebApplicationInfoFactoryOrError ParseOfflineManifest(
   }
 
   return base::BindRepeating(
-      &std::make_unique<WebApplicationInfo, const WebApplicationInfo&>,
+      &std::make_unique<WebAppInstallInfo, const WebAppInstallInfo&>,
       std::move(app_info));
 }
 
@@ -585,12 +601,12 @@ bool IsReinstallPastMilestoneNeeded(
 }
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
-  const base::ListValue* migrated_apps =
-      profile->GetPrefs()->GetList(prefs::kWebAppsMigratedPreinstalledApps);
+  const base::Value* migrated_apps =
+      profile->GetPrefs()->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   if (!migrated_apps)
     return false;
 
-  for (const auto& val : migrated_apps->GetList()) {
+  for (const auto& val : migrated_apps->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }
@@ -602,7 +618,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
                                const std::string& app_id,
                                bool was_migrated) {
   ListPrefUpdate update(profile->GetPrefs(),
-                        prefs::kWebAppsMigratedPreinstalledApps);
+                        webapps::kWebAppsMigratedPreinstalledApps);
   if (was_migrated)
     EnsureContains(update, app_id);
   else
@@ -610,12 +626,12 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
 }
 
 bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
-  const base::ListValue* migrated_features =
+  const base::Value* migrated_features =
       profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
   if (!migrated_features)
     return false;
 
-  for (const auto& val : migrated_features->GetList()) {
+  for (const auto& val : migrated_features->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == feature_name)
       return true;
   }
@@ -636,12 +652,12 @@ void SetMigrationRun(Profile* profile,
 
 bool WasPreinstalledAppUninstalled(Profile* profile,
                                    const std::string& app_id) {
-  const base::ListValue* uninstalled_apps =
+  const base::Value* uninstalled_apps =
       profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
   if (!uninstalled_apps)
     return false;
 
-  for (const auto& val : uninstalled_apps->GetList()) {
+  for (const auto& val : uninstalled_apps->GetListDeprecated()) {
     if (val.is_string() && val.GetString() == app_id)
       return true;
   }

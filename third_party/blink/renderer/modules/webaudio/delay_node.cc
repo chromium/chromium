@@ -112,8 +112,9 @@ DelayNode* DelayNode::Create(BaseAudioContext* context,
   // maxDelayTime has a default value specified.
   DelayNode* node = Create(*context, options->maxDelayTime(), exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

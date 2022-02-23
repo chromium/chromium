@@ -5,10 +5,9 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -17,8 +16,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -31,6 +30,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -38,6 +38,13 @@
 #endif
 
 namespace signin_ui_util {
+
+namespace {
+const char kMainEmail[] = "main_email@example.com";
+const char kMainGaiaID[] = "main_gaia_id";
+const char kSecondaryEmail[] = "secondary_email@example.com";
+const char kSecondaryGaiaID[] = "secondary_gaia_id";
+}  // namespace
 
 class GetAllowedDomainTest : public ::testing::Test {};
 
@@ -68,11 +75,6 @@ TEST_F(GetAllowedDomainTest, WithValidPattern) {
 
 namespace {
 
-const char kMainEmail[] = "main_email@example.com";
-const char kMainGaiaID[] = "main_gaia_id";
-const char kSecondaryEmail[] = "secondary_email@example.com";
-const char kSecondaryGaiaID[] = "secondary_gaia_id";
-
 class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
  public:
   SigninUiUtilTestBrowserWindow() = default;
@@ -95,24 +97,20 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 };
 
 }  // namespace
 
 class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  DiceSigninUiUtilTest() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    scoped_feature_list_.InitAndDisableFeature(kMultiProfileAccountConsistency);
-#endif
-  }
+  DiceSigninUiUtilTest() = default;
   ~DiceSigninUiUtilTest() override = default;
 
-  struct CreateDiceTurnSyncOnHelperParams {
+  struct CreateTurnSyncOnHelperParams {
    public:
-    Profile* profile = nullptr;
-    Browser* browser = nullptr;
+    raw_ptr<Profile> profile = nullptr;
+    raw_ptr<Browser> browser = nullptr;
     signin_metrics::AccessPoint signin_access_point =
         signin_metrics::AccessPoint::ACCESS_POINT_MAX;
     signin_metrics::PromoAction signin_promo_action =
@@ -120,28 +118,28 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
     signin_metrics::Reason signin_reason =
         signin_metrics::Reason::kUnknownReason;
     CoreAccountId account_id;
-    DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
-        DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
+    TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =
+        TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT;
   };
 
-  void CreateDiceTurnSyncOnHelper(
+  void CreateTurnSyncOnHelper(
       Profile* profile,
       Browser* browser,
       signin_metrics::AccessPoint signin_access_point,
       signin_metrics::PromoAction signin_promo_action,
       signin_metrics::Reason signin_reason,
       const CoreAccountId& account_id,
-      DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
-    create_dice_turn_sync_on_helper_called_ = true;
-    create_dice_turn_sync_on_helper_params_.profile = profile;
-    create_dice_turn_sync_on_helper_params_.browser = browser;
-    create_dice_turn_sync_on_helper_params_.signin_access_point =
+      TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode) {
+    create_turn_sync_on_helper_called_ = true;
+    create_turn_sync_on_helper_params_.profile = profile;
+    create_turn_sync_on_helper_params_.browser = browser;
+    create_turn_sync_on_helper_params_.signin_access_point =
         signin_access_point;
-    create_dice_turn_sync_on_helper_params_.signin_promo_action =
+    create_turn_sync_on_helper_params_.signin_promo_action =
         signin_promo_action;
-    create_dice_turn_sync_on_helper_params_.signin_reason = signin_reason;
-    create_dice_turn_sync_on_helper_params_.account_id = account_id;
-    create_dice_turn_sync_on_helper_params_.signin_aborted_mode =
+    create_turn_sync_on_helper_params_.signin_reason = signin_reason;
+    create_turn_sync_on_helper_params_.account_id = account_id;
+    create_turn_sync_on_helper_params_.signin_aborted_mode =
         signin_aborted_mode;
   }
 
@@ -151,11 +149,6 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     static_cast<SigninUiUtilTestBrowserWindow*>(browser()->window())
         ->set_browser(browser());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-      GTEST_SKIP();
-#endif
   }
 
   // BrowserWithTestWindowTest:
@@ -178,7 +171,7 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
                   bool is_default_promo_account) {
     signin_ui_util::internal::EnableSyncFromPromo(
         browser(), account_info, access_point_, is_default_promo_account,
-        base::BindOnce(&DiceSigninUiUtilTest::CreateDiceTurnSyncOnHelper,
+        base::BindOnce(&DiceSigninUiUtilTest::CreateTurnSyncOnHelper,
                        base::Unretained(this)));
   }
 
@@ -261,11 +254,8 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
 
-  bool create_dice_turn_sync_on_helper_called_ = false;
-  CreateDiceTurnSyncOnHelperParams create_dice_turn_sync_on_helper_params_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
+  bool create_turn_sync_on_helper_called_ = false;
+  CreateTurnSyncOnHelperParams create_turn_sync_on_helper_params_;
 };
 
 TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
@@ -289,7 +279,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
         is_default_promo_account
             ? signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT
             : signin_metrics::PromoAction::PROMO_ACTION_NOT_DEFAULT;
-    ASSERT_TRUE(create_dice_turn_sync_on_helper_called_);
+    ASSERT_TRUE(create_turn_sync_on_helper_called_);
     ExpectOneSigninStartedHistograms(histogram_tester, expected_promo_action);
 
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -304,17 +294,17 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
 
     // Verify that the helper to enable sync is created with the expected
     // params.
-    EXPECT_EQ(profile(), create_dice_turn_sync_on_helper_params_.profile);
-    EXPECT_EQ(browser(), create_dice_turn_sync_on_helper_params_.browser);
-    EXPECT_EQ(account_id, create_dice_turn_sync_on_helper_params_.account_id);
+    EXPECT_EQ(profile(), create_turn_sync_on_helper_params_.profile);
+    EXPECT_EQ(browser(), create_turn_sync_on_helper_params_.browser);
+    EXPECT_EQ(account_id, create_turn_sync_on_helper_params_.account_id);
     EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
-              create_dice_turn_sync_on_helper_params_.signin_access_point);
+              create_turn_sync_on_helper_params_.signin_access_point);
     EXPECT_EQ(expected_promo_action,
-              create_dice_turn_sync_on_helper_params_.signin_promo_action);
+              create_turn_sync_on_helper_params_.signin_promo_action);
     EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
-              create_dice_turn_sync_on_helper_params_.signin_reason);
-    EXPECT_EQ(DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-              create_dice_turn_sync_on_helper_params_.signin_aborted_mode);
+              create_turn_sync_on_helper_params_.signin_reason);
+    EXPECT_EQ(TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+              create_turn_sync_on_helper_params_.signin_aborted_mode);
   }
 }
 
@@ -342,7 +332,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
     EnableSync(
         GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
         is_default_promo_account);
-    ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+    ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
     ExpectOneSigninStartedHistograms(
         histogram_tester,
@@ -382,7 +372,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTab) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::
@@ -415,7 +405,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester,
@@ -437,7 +427,7 @@ TEST_F(DiceSigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
       0, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
   EnableSync(AccountInfo(), false /* is_default_promo_account (not used)*/);
-  ASSERT_FALSE(create_dice_turn_sync_on_helper_called_);
+  ASSERT_FALSE(create_turn_sync_on_helper_called_);
 
   ExpectOneSigninStartedHistograms(
       histogram_tester, signin_metrics::PromoAction::
@@ -569,13 +559,64 @@ TEST_F(
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
       *profile_manager()->profile_attributes_storage(), profile()));
 }
+
+TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt) {
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+  // Calling the function again reuses the tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(1, tab_strip->count());
+
+  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(base::StartsWith(
+      tab->GetVisibleURL().spec(),
+      GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec(),
+      base::CompareCase::INSENSITIVE_ASCII));
+
+  // Changing the parameter opens a new tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(2, tab_strip->count());
+  // Calling the function again reuses the tab.
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(2, tab_strip->count());
+  tab = tab_strip->GetWebContentsAt(1);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(
+      base::StartsWith(tab->GetVisibleURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
+}
+
+TEST_F(DiceSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  Profile* profile = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(0, tab_strip->count());
+  ShowExtensionSigninPrompt(profile, /*enable_sync=*/false,
+                            /*email_hint=*/std::string());
+  EXPECT_EQ(0, tab_strip->count());
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  MirrorSigninUiUtilTest()
-      : scoped_feature_list_(kMultiProfileAccountConsistency) {}
+  MirrorSigninUiUtilTest() = default;
   ~MirrorSigninUiUtilTest() override = default;
 
   // BrowserWithTestWindowTest:
@@ -583,9 +624,6 @@ class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
     return IdentityTestEnvironmentProfileAdaptor::
         GetIdentityTestEnvironmentFactories();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
@@ -608,10 +646,48 @@ TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
                   account_manager::AccountManagerFacade::AccountAdditionSource::
                       kAvatarBubbleReauthAccountButton,
                   kEmail));
-  signin_ui_util::internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
+  internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
       browser(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       &mock_facade);
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt) {
+  const std::string kEmail = "foo@example.com";
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  account_manager::MockAccountManagerFacade mock_facade;
+
+  EXPECT_CALL(
+      mock_facade,
+      ShowReauthAccountDialog(account_manager::AccountManagerFacade::
+                                  AccountAdditionSource::kChromeExtensionReauth,
+                              kEmail));
+  internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      /*enable_sync=*/true, kEmail);
+  // No tabs should be opened.
+  EXPECT_EQ(0, tab_strip->count());
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  Profile* profile = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+
+  const std::string kEmail = "foo@example.com";
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  account_manager::MockAccountManagerFacade mock_facade;
+
+  EXPECT_CALL(mock_facade, ShowReauthAccountDialog(testing::_, testing::_))
+      .Times(0);
+  internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      /*enable_sync=*/true, kEmail);
+  // No dialogs and tabs should be opened.
+  EXPECT_EQ(0, tab_strip->count());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -630,7 +706,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   std::string name("testing_profile");
   TestingProfile* profile = profile_manager.CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), 0, std::string(),
+      base::UTF8ToUTF16(name), 0,
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
 

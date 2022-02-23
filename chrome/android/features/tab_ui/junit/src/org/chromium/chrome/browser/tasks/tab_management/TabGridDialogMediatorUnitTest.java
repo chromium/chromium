@@ -21,8 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -37,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -83,14 +83,15 @@ import java.util.List;
 @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
 public class TabGridDialogMediatorUnitTest {
     // clang-format on
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
-    private static final String DIALOG_TITLE1 = "1 Tab";
-    private static final String DIALOG_TITLE2 = "2 Tabs";
+    private static final String DIALOG_TITLE1 = "1 tab";
+    private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String REMOVE_BUTTON_STRING = "Remove";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
     private static final int TAB1_ID = 456;
@@ -99,10 +100,6 @@ public class TabGridDialogMediatorUnitTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
 
-    @Mock
-    Context mContext;
-    @Mock
-    Resources mResources;
     @Mock
     View mView;
     @Mock
@@ -140,6 +137,7 @@ public class TabGridDialogMediatorUnitTest {
 
     private TabImpl mTab1;
     private TabImpl mTab2;
+    private Activity mActivity;
     private PropertyModel mModel;
     private TabGridDialogMediator mMediator;
 
@@ -178,18 +176,8 @@ public class TabGridDialogMediatorUnitTest {
         doNothing()
                 .when(mTabModelFilterProvider)
                 .addTabModelFilterObserver(mTabModelObserverCaptor.capture());
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(DIALOG_TITLE1)
-                .when(mResources)
-                .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 1, 1);
-        doReturn(DIALOG_TITLE2)
-                .when(mResources)
-                .getQuantityString(R.plurals.bottom_tab_grid_title_placeholder, 2, 2);
         doReturn(mView).when(mAnimationSourceViewProvider).getAnimationSourceViewForTab(anyInt());
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
-        doReturn(REMOVE_BUTTON_STRING)
-                .when(mContext)
-                .getString(R.string.tab_grid_dialog_selection_mode_remove);
         doReturn(mEditable).when(mTitleTextView).getText();
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mEditable).toString();
 
@@ -197,8 +185,10 @@ public class TabGridDialogMediatorUnitTest {
                     ContextUtils.getApplicationContext())) {
             mTabSelectionEditorController = null;
         }
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
-        mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
+        mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
                 mAnimationSourceViewProvider, mShareDelegateSupplier, mSnackbarManager, "");
 
@@ -920,7 +910,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
+        mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
                 mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);
@@ -951,7 +941,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip_WithStoredTitle() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
+        mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
                 mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);
@@ -985,7 +975,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip_SetupAnimation() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
+        mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
                 mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);

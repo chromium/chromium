@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -88,12 +89,8 @@ class ResourceManagerTest : public testing::Test {
  public:
   ResourceManagerTest()
       : window_android_(WindowAndroid::CreateForTesting()),
-        resource_manager_(window_android_) {
+        resource_manager_(window_android_->get()) {
     resource_manager_.Init(&ui_resource_manager_);
-  }
-
-  ~ResourceManagerTest() override {
-    window_android_->Destroy(nullptr, nullptr);
   }
 
   void PreloadResource(ui::SystemUIResourceType type) {
@@ -112,7 +109,7 @@ class ResourceManagerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  WindowAndroid* window_android_;
+  std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting> window_android_;
 
  protected:
   MockUIResourceManager ui_resource_manager_;

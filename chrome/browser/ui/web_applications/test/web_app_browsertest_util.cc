@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,17 +31,17 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test_utils.h"
@@ -52,12 +51,12 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #import "skia/ext/skia_utils_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <shellapi.h>
@@ -70,37 +69,9 @@ namespace web_app {
 
 namespace {
 
-// Waits for |browser| to be removed from BrowserList and then calls |callback|.
-class BrowserRemovedWaiter final : public BrowserListObserver {
- public:
-  explicit BrowserRemovedWaiter(Browser* browser) : browser_(browser) {}
-  ~BrowserRemovedWaiter() override = default;
-
-  void Wait() {
-    BrowserList::AddObserver(this);
-    run_loop_.Run();
-  }
-
-  // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_)
-      return;
-
-    BrowserList::RemoveObserver(this);
-    // Post a task to ensure the Remove event has been dispatched to all
-    // observers.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
-  }
-
- private:
-  Browser* browser_;
-  base::RunLoop run_loop_;
-};
-
 void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   web_app_info->user_display_mode = DisplayMode::kStandalone;
@@ -112,7 +83,7 @@ void AutoAcceptDialogCallback(
 }  // namespace
 
 SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::FilePath icon_path =
       shortcut_path.AppendASCII("Contents/Resources/app.icns");
   base::ScopedCFTypeRef<CFDictionaryRef> empty_dict(
@@ -127,7 +98,7 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
   SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
   return bitmap.getColor(0, 0);
 #else
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SHFILEINFO file_info = {0};
   if (SHGetFileInfo(shortcut_path.value().c_str(), FILE_ATTRIBUTE_NORMAL,
                     &file_info, sizeof(file_info),
@@ -156,8 +127,8 @@ AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const AppId& installed_app_id,
-                               InstallResultCode code) {
-            DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+                               webapps::InstallResultCode code) {
+            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             app_id = installed_app_id;
             run_loop.Quit();
           }));
@@ -185,8 +156,8 @@ AppId InstallWebAppFromManifest(Browser* browser, const GURL& app_url) {
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const AppId& installed_app_id,
-                               InstallResultCode code) {
-            DCHECK_EQ(code, InstallResultCode::kSuccessNewInstall);
+                               webapps::InstallResultCode code) {
+            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             app_id = installed_app_id;
             run_loop.Quit();
           }));
@@ -199,7 +170,7 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
               WindowOpenDisposition::CURRENT_TAB,
               apps::mojom::LaunchSource::kFromTest));
@@ -223,7 +194,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
   content::WebContents* web_contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
+          ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
               app_id, apps::mojom::LaunchContainer::kLaunchContainerTab,
               WindowOpenDisposition::NEW_FOREGROUND_TAB,
               apps::mojom::LaunchSource::kFromTest));
@@ -250,7 +221,7 @@ ExternalInstallOptions CreateInstallOptions(const GURL& url) {
   return install_options;
 }
 
-InstallResultCode ExternallyManagedAppManagerInstall(
+webapps::InstallResultCode ExternallyManagedAppManagerInstall(
     Profile* profile,
     ExternalInstallOptions install_options) {
   DCHECK(profile);
@@ -258,7 +229,7 @@ InstallResultCode ExternallyManagedAppManagerInstall(
   DCHECK(provider);
   test::WaitUntilReady(provider);
   base::RunLoop run_loop;
-  InstallResultCode result_code;
+  webapps::InstallResultCode result_code;
 
   provider->externally_managed_app_manager().Install(
       std::move(install_options),
@@ -343,14 +314,9 @@ Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id) {
 }
 
 void CloseAndWait(Browser* browser) {
-  BrowserRemovedWaiter waiter(browser);
+  BrowserWaiter waiter(browser);
   browser->window()->Close();
-  waiter.Wait();
-}
-
-void WaitForBrowserToBeClosed(Browser* browser) {
-  BrowserRemovedWaiter waiter(browser);
-  waiter.Wait();
+  waiter.AwaitRemoved();
 }
 
 bool IsBrowserOpen(const Browser* test_browser) {
@@ -377,6 +343,56 @@ void UninstallWebAppWithCallback(Profile* profile,
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu, std::move(callback));
+}
+
+BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {
+  BrowserList::AddObserver(this);
+}
+
+BrowserWaiter::~BrowserWaiter() {
+  BrowserList::RemoveObserver(this);
+}
+
+Browser* BrowserWaiter::AwaitAdded() {
+  added_run_loop_.Run();
+  return added_browser_;
+}
+
+Browser* BrowserWaiter::AwaitRemoved() {
+  removed_run_loop_.Run();
+  return removed_browser_;
+}
+
+void BrowserWaiter::OnBrowserAdded(Browser* browser) {
+  if (filter_ && browser != filter_)
+    return;
+  added_browser_ = browser;
+  added_run_loop_.Quit();
+}
+void BrowserWaiter::OnBrowserRemoved(Browser* browser) {
+  if (filter_ && browser != filter_)
+    return;
+  removed_browser_ = browser;
+  removed_run_loop_.Quit();
+}
+
+UpdateAwaiter::UpdateAwaiter(WebAppInstallManager& install_manager) {
+  scoped_observation_.Observe(&install_manager);
+}
+
+void UpdateAwaiter::OnWebAppInstallManagerDestroyed() {
+  scoped_observation_.Reset();
+}
+
+UpdateAwaiter::~UpdateAwaiter() = default;
+
+void UpdateAwaiter::AwaitUpdate() {
+  run_loop_.Run();
+}
+
+void UpdateAwaiter::OnWebAppManifestUpdated(const AppId& app_id,
+                                            base::StringPiece old_name) {
+  run_loop_.Quit();
 }
 
 }  // namespace web_app

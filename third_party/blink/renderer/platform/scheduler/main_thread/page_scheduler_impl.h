@@ -83,11 +83,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       BlameContext*,
       FrameScheduler::FrameType) override;
-  base::TimeTicks EnableVirtualTime() override;
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
   void DisableVirtualTimeForTesting() override;
   bool VirtualTimeAllowedToAdvance() const override;
   void SetVirtualTimePolicy(VirtualTimePolicy) override;
-  void SetInitialVirtualTime(base::Time time) override;
   void GrantVirtualTimeBudget(
       base::TimeDelta budget,
       base::OnceClosure budget_exhausted_callback) override;
@@ -199,7 +198,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     USING_FAST_MALLOC(PageLifecycleStateTracker);
 
    public:
-    explicit PageLifecycleStateTracker(PageSchedulerImpl*, PageLifecycleState);
+    explicit PageLifecycleStateTracker(PageLifecycleState);
     PageLifecycleStateTracker(const PageLifecycleStateTracker&) = delete;
     PageLifecycleStateTracker& operator=(const PageLifecycleStateTracker&) =
         delete;
@@ -216,7 +215,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     static void RecordPageLifecycleStateTransition(
         PageLifecycleStateTransition);
 
-    PageSchedulerImpl* page_scheduler_impl_;
     PageLifecycleState current_state_;
   };
 

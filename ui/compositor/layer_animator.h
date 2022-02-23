@@ -9,9 +9,9 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -227,8 +227,8 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   // Caller must retain the result for as long as the callback needs to remain
   // active. Clearing the result (add_sequence_subscription.reset()) will also
   // remove the subscription.
-  base::CallbackListSubscription AddSequenceScheduledCallback(
-      SequenceScheduledCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddSequenceScheduledCallback(
+      SequenceScheduledCallback callback);
 
   // Called when a threaded animation is actually started.
   void OnThreadedAnimationStarted(base::TimeTicks monotonic_time,
@@ -309,8 +309,8 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   // Removes the sequences from both the running animations and the queue.
   // Returns a pointer to the removed animation, if any. NOTE: the caller is
   // responsible for deleting the returned pointer.
-  LayerAnimationSequence* RemoveAnimation(
-      LayerAnimationSequence* sequence) WARN_UNUSED_RESULT;
+  [[nodiscard]] LayerAnimationSequence* RemoveAnimation(
+      LayerAnimationSequence* sequence);
 
   // Progresses to the end of the sequence before removing it.
   void FinishAnimation(LayerAnimationSequence* sequence, bool abort);
@@ -408,7 +408,7 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   AnimationQueue animation_queue_;
 
   // The target of all layer animations.
-  LayerAnimationDelegate* delegate_ = nullptr;
+  raw_ptr<LayerAnimationDelegate> delegate_ = nullptr;
 
   // Plays CC animations.
   scoped_refptr<cc::Animation> animation_;

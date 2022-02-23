@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,7 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/http/http_auth_preferences.h"
@@ -72,10 +74,6 @@
 #include "net/reporting/reporting_report.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-#include "services/network/sct_auditing/sct_auditing_handler.h"
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
 namespace base {
 class UnguessableToken;
 }  // namespace base
@@ -101,6 +99,10 @@ namespace domain_reliability {
 class DomainReliabilityMonitor;
 }  // namespace domain_reliability
 
+namespace url_matcher {
+class URLMatcher;
+}
+
 namespace network {
 class CertVerifierWithTrustAnchors;
 class CookieManager;
@@ -115,6 +117,7 @@ class PendingTrustTokenStore;
 class ProxyLookupRequest;
 class ResourceScheduler;
 class ResourceSchedulerClient;
+class SCTAuditingHandler;
 class SessionCleanupCookieStore;
 class SQLiteTrustTokenPersister;
 class WebSocketFactory;
@@ -185,7 +188,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return params_ && params_->allow_any_cors_exempt_header_for_browser;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ApplicationStatusListener* app_status_listener() const {
     return app_status_listener_.get();
   }
@@ -236,6 +239,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override;
+  void SetBlockTrustTokens(bool block) override;
   void ClearNetworkingHistoryBetween(
       base::Time start_time,
       base::Time end_time,
@@ -277,7 +281,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                             mojom::NetworkConditionsPtr conditions) override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;
 #endif
@@ -299,11 +303,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps);
-  void SetSCTAuditingEnabled(bool enabled) override;
+  void SetSCTAuditingMode(mojom::SCTAuditingMode mode) override;
   void OnCTLogListUpdated(
       const std::vector<network::mojom::CTLogInfoPtr>& log_list,
       base::Time update_time);
-  SCTAuditingHandler* sct_auditing_handler() { return &sct_auditing_handler_; }
+  SCTAuditingHandler* sct_auditing_handler() {
+    return sct_auditing_handler_.get();
+  }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,
@@ -498,10 +504,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return proxy_lookup_requests_.size();
   }
 
-  NetworkServiceProxyDelegate* proxy_delegate() const {
-    return proxy_delegate_;
-  }
-
   void set_network_qualities_pref_delegate_for_testing(
       std::unique_ptr<NetworkQualitiesPrefDelegate>
           network_qualities_pref_delegate) {
@@ -557,6 +559,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   const PendingTrustTokenStore* trust_token_store() const {
     return trust_token_store_.get();
   }
+  bool are_trust_tokens_blocked() const { return block_trust_tokens_; }
 
   WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
 
@@ -583,6 +586,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnReportAdded(const net::ReportingReport* service_report) override;
   void OnReportUpdated(const net::ReportingReport* service_report) override;
   void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
  private:
@@ -609,6 +614,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // On connection errors the NetworkContext destroys itself.
   void OnConnectionError();
 
+  // Invoked with the FirstPartySetMetadata to be associated with the given
+  // RestrictedCookieManager that is being set up.
+  void OnComputedFirstPartySetMetadata(
+      mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
+      mojom::RestrictedCookieManagerRole role,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+      net::FirstPartySetMetadata first_party_set_metadata);
+
   GURL GetHSTSRedirect(const GURL& original_url);
 
 #if BUILDFLAG(IS_P2P_ENABLED)
@@ -618,9 +633,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CanUploadDomainReliability(const GURL& origin,
                                   base::OnceCallback<void(bool)> callback);
 
-  void OnVerifyCertForSignedExchangeComplete(int cert_verify_id, int result);
+  void OnVerifyCertForSignedExchangeComplete(uint64_t cert_verify_id,
+                                             int result);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void TrustAnchorUsed();
 #endif
 
@@ -630,6 +646,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void LazyCreateExpectCTReporter(net::URLRequestContext* url_request_context);
 
   void OnSetExpectCTTestReportFailure();
+
+  // Checks the Certificate Transparency policy compliance for a given
+  // certificate and SCTs in `cert_verify_result`, and updates
+  // `cert_verify_result.cert_status` and
+  // `cert_verify_result.policy_compliance`. Returns net::OK or
+  // net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
+  // TODO(crbug.com/828447): This code is more-or-less duplicated in
+  // SSLClientSocket and QUIC. Fold this into some CertVerifier-shaped class
+  // in //net.
+  int CheckCTComplianceForSignedExchange(
+      net::CertVerifyResult& cert_verify_result,
+      const net::X509Certificate& certificate,
+      const net::HostPortPair& host_port_pair,
+      const net::NetworkIsolationKey& network_isolation_key);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
   void InitializeCorsParams();
@@ -641,7 +671,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void FinishConstructingTrustTokenStore(
       std::unique_ptr<SQLiteTrustTokenPersister> persister);
 
-  NetworkService* const network_service_;
+  bool IsAllowedToUseAllHttpAuthSchemes(
+      const url::SchemeHostPort& scheme_host_port);
+
+  const raw_ptr<NetworkService> network_service_;
 
   mojo::Remote<mojom::NetworkContextClient> client_;
 
@@ -652,7 +685,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // URLRequestContext.
   URLRequestContextOwner url_request_context_owner_;
 
-  net::URLRequestContext* url_request_context_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
 
 #if BUILDFLAG(ENABLE_REPORTING)
   bool is_observing_reporting_service_;
@@ -661,14 +694,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   // Owned by URLRequestContext.
-  NetworkServiceNetworkDelegate* network_delegate_ = nullptr;
+  raw_ptr<NetworkServiceNetworkDelegate> network_delegate_ = nullptr;
 
   mojom::NetworkContextParamsPtr params_;
 
   // If non-null, called when the mojo pipe for the NetworkContext is closed.
   OnConnectionCloseCallback on_connection_close_callback_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
 #endif
@@ -691,9 +724,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   mojo::UniqueReceiverSet<mojom::HasTrustTokensAnswerer>
       has_trust_tokens_answerers_;
 
-#if !defined(OS_IOS)
+  // Whether the user is blocking Trust Tokens, value provided by the
+  // PrivacySandboxSettings service.
+  bool block_trust_tokens_ = false;
+
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<WebSocketFactory> websocket_factory_;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // These must be below the URLRequestContext, so they're destroyed before it
   // is.
@@ -730,7 +767,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   int current_resource_scheduler_client_id_ = 0;
 
   // Owned by the URLRequestContext
-  net::StaticHttpUserAgentSettings* user_agent_settings_ = nullptr;
+  raw_ptr<net::StaticHttpUserAgentSettings> user_agent_settings_ = nullptr;
 
   // Pointed to by the TransportSecurityState (owned by the
   // URLRequestContext), and must be disconnected from it before it's destroyed.
@@ -746,13 +783,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       outstanding_set_expect_ct_callbacks_;
 
   // Owned by the URLRequestContext.
-  certificate_transparency::ChromeCTPolicyEnforcer* ct_policy_enforcer_ =
-      nullptr;
+  raw_ptr<certificate_transparency::ChromeCTPolicyEnforcer>
+      ct_policy_enforcer_ = nullptr;
 
-  SCTAuditingHandler sct_auditing_handler_;
+  std::unique_ptr<SCTAuditingHandler> sct_auditing_handler_;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CertVerifierWithTrustAnchors* cert_verifier_with_trust_anchors_ = nullptr;
 #endif
 
@@ -771,10 +808,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       host_resolvers_;
   std::unique_ptr<net::HostResolver::ProbeRequest> doh_probes_request_;
 
-  NetworkServiceProxyDelegate* proxy_delegate_ = nullptr;
+  raw_ptr<NetworkServiceProxyDelegate> proxy_delegate_ = nullptr;
 
   // Used for Signed Exchange certificate verification.
-  int next_cert_verify_id_ = 0;
+  uint64_t next_cert_verify_id_ = 0;
   struct PendingCertVerify {
     PendingCertVerify();
     ~PendingCertVerify();
@@ -790,7 +827,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     std::string ocsp_result;
     std::string sct_list;
   };
-  std::map<int, std::unique_ptr<PendingCertVerify>> cert_verifier_requests_;
+  std::map<uint64_t, std::unique_ptr<PendingCertVerify>>
+      cert_verifier_requests_;
 
   // Manages allowed origin access lists.
   cors::OriginAccessList cors_origin_access_list_;
@@ -844,6 +882,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<cors::CorsURLLoaderFactory>,
            base::UniquePtrComparator>
       url_loader_factories_;
+
+  std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 
   base::WeakPtrFactory<NetworkContext> weak_factory_{this};
 };

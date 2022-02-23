@@ -43,8 +43,7 @@ class PackagedLicenseScreenTest : public OobeBaseTest {
   void SetUpLicense(bool value) {
     DictionaryPrefUpdate dict(local_state(), prefs::kServerBackedDeviceState);
     if (value) {
-      dict.Get()->SetKey(policy::kDeviceStatePackagedLicense,
-                         base::Value(true));
+      dict.Get()->SetBoolKey(policy::kDeviceStatePackagedLicense, true);
     } else {
       dict.Get()->RemoveKey(policy::kDeviceStatePackagedLicense);
     }

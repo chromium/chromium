@@ -66,7 +66,7 @@ class CORE_EXPORT NGTextDecorationPainter {
   Phase phase_;
   bool has_line_through_decoration_;
   absl::optional<TextDecorationInfo> decoration_info_;
-  absl::optional<FloatRect> clip_rect_;
+  absl::optional<gfx::RectF> clip_rect_;
 };
 
 }  // namespace blink

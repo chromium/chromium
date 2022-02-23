@@ -337,7 +337,7 @@ const char* BuildDescriptionFromHeaders(AXPlatformNodeDelegate* delegate,
 
   std::string result = base::JoinString(names, " ");
 
-#if defined(LEAK_SANITIZER) && !defined(OS_NACL)
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
   // http://crbug.com/982839
   // atk_table_get_column_description and atk_table_get_row_description return
   // const gchar*, which suggests the caller does not gain ownership of the
@@ -3474,6 +3474,14 @@ void AXPlatformNodeAuraLinux::OnEnabledChanged() {
       GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
 }
 
+void AXPlatformNodeAuraLinux::OnBusyStateChanged(bool is_busy) {
+  AtkObject* obj = GetOrCreateAtkObject();
+  if (!obj)
+    return;
+
+  atk_object_notify_state_change(obj, ATK_STATE_BUSY, is_busy);
+}
+
 void AXPlatformNodeAuraLinux::OnExpandedStateChanged(bool is_expanded) {
   // When a list box is expanded, it becomes visible. This means that it might
   // now have a different role (the role for hidden Views is kUnknown).  We
@@ -3573,6 +3581,14 @@ void AXPlatformNodeAuraLinux::ResendFocusSignalsForCurrentlyFocusedNode() {
 
   g_signal_emit_by_name(focused_node, "focus-event", true);
   atk_object_notify_state_change(focused_node, ATK_STATE_FOCUSED, true);
+}
+
+void AXPlatformNodeAuraLinux::SetAsCurrentlyFocusedNode() {
+  AtkObject* obj = GetOrCreateAtkObject();
+  if (!obj)
+    return;
+
+  SetWeakGPtrToAtkObject(&g_current_focused, obj);
 }
 
 // All menus have closed.
@@ -4153,6 +4169,15 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       break;
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kFocusContext:
+      OnFocused();
+      break;
+    case ax::mojom::Event::kFocusAfterMenuClose:
+      // The saved focused object is not always getting cleared when a popup
+      // becomes active. As a result, when the popup is dismissed, OnFocused()
+      // will return early thinking focus has not changed. Rather than trying
+      // to catch every case, take kFocusAfterMenuClose as a clear indication
+      // that a focus change should be presented and reset the saved focus.
+      g_current_focused = nullptr;
       OnFocused();
       break;
     case ax::mojom::Event::kSelection:

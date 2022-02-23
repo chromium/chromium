@@ -98,7 +98,12 @@ declare_args() {
 
   # Support Perfetto tracing of processes that depend on entry points in
   # //chromecast/external_mojo/external_service_support
+  #
+  # Note: This flag will be deprecated in favor of enable_perfetto_tracing.
   enable_external_mojo_tracing = false
+
+  # Support using system perfetto tracing
+  enable_perfetto_tracing = false
 
   # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
   audio_input_sample_rate = 16000
@@ -125,6 +130,10 @@ declare_args() {
   # True to link in alternate build targets for the Cast Media Runtime.
   enable_cast_media_runtime = false
 
+  # True to use the remoting implementation of cast streaming for the cast web
+  # runtime (as opposed to the mirroring-only implementation).
+  enable_remoting_for_cwr = false
+
   # device specific string to append to User string.
   device_user_agent_suffix = ""
 }
@@ -132,6 +141,10 @@ declare_args() {
 declare_args() {
   # Use Playready CDMs for internal non-desktop builds.
   enable_playready = !is_cast_desktop_build && chromecast_branding != "public"
+
+  assert(!(enable_external_mojo_tracing && enable_perfetto_tracing),
+         "Only one of enable_external_mojo_tracing or " +
+             "enable_perfetto_tracing can be enabled")
 }
 
 # This is the release version, which takes the form <major>.<minor>. Internal

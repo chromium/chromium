@@ -5,8 +5,8 @@
 #ifndef BASE_TRACE_EVENT_MEMORY_INFRA_BACKGROUND_ALLOWLIST_H_
 #define BASE_TRACE_EVENT_MEMORY_INFRA_BACKGROUND_ALLOWLIST_H_
 
-// This file contains the allowlists (aka whitelists) for background mode to
-// limit the tracing overhead and remove sensitive information from traces.
+// This file contains the allowlists for background mode to limit the tracing
+// overhead and remove sensitive information from traces.
 
 #include <string>
 

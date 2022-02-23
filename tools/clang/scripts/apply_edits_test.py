@@ -490,8 +490,6 @@ namespace ash {
 #include <stddef.h>
 #include <vector>
 
-#include "base/macros.h"
-
 // ...
 
 #endif
@@ -504,7 +502,6 @@ namespace ash {
 #include <vector>
 
 #include "new/header.h"
-#include "base/macros.h"
 
 // ...
 
@@ -646,7 +643,7 @@ void foo();
     # test is ensuring that the new header will be inserted into the
     # unconditional part of the file.
     old_contents = '''
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "foo_win.h"
 #endif
 
@@ -655,7 +652,7 @@ void foo();
     expected_new_contents = '''
 #include "new/header.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "foo_win.h"
 #endif
 

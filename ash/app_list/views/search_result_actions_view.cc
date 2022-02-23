@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
@@ -34,8 +35,6 @@ namespace {
 // Image buttons.
 constexpr int kImageButtonSizeDip = 40;
 constexpr int kActionButtonBetweenSpacing = 8;
-// The width of the focus ring.
-constexpr int kFocusRingWidth = 2;
 
 }  // namespace
 
@@ -61,7 +60,7 @@ class SearchResultImageButton : public views::ImageButton {
   // views::ImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  void SetButtonImage(const gfx::ImageSkia& source, int icon_dimension);
+  void SetButtonImage(const gfx::ImageSkia& source);
 
   int GetButtonRadius() const;
   const char* GetClassName() const override;
@@ -115,8 +114,7 @@ SearchResultImageButton::SearchResultImageButton(
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
-  SetButtonImage(action.image,
-                 SharedAppListConfig::instance().search_list_icon_dimension());
+  SetButtonImage(action.image);
 
   SetAccessibleName(action.tooltip_text);
 
@@ -156,22 +154,12 @@ void SearchResultImageButton::UpdateOnStateChanged() {
 
 void SearchResultImageButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (HasFocus() || parent_->GetSelectedAction() == tag()) {
-    cc::PaintFlags circle_flags;
-    circle_flags.setAntiAlias(true);
-    circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
-    circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    circle_flags.setStrokeWidth(kFocusRingWidth);
-    canvas->DrawCircle(GetLocalBounds().CenterPoint(),
-                       GetButtonRadius() - kFocusRingWidth, circle_flags);
+    PaintFocusRing(canvas, GetLocalBounds().CenterPoint(), GetButtonRadius());
   }
 }
 
-void SearchResultImageButton::SetButtonImage(const gfx::ImageSkia& source,
-                                             int icon_dimension) {
-  SetImage(views::ImageButton::STATE_NORMAL,
-           gfx::ImageSkiaOperations::CreateResizedImage(
-               source, skia::ImageOperations::RESIZE_BEST,
-               gfx::Size(icon_dimension, icon_dimension)));
+void SearchResultImageButton::SetButtonImage(const gfx::ImageSkia& source) {
+  SetImage(views::ImageButton::STATE_NORMAL, source);
 }
 
 int SearchResultImageButton::GetButtonRadius() const {

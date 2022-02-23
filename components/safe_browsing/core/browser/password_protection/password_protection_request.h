@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -106,6 +107,12 @@ class PasswordProtectionRequest
     request_outcome_ = request_outcome;
   }
 
+  void finish_for_testing(
+      RequestOutcome outcome,
+      std::unique_ptr<LoginReputationClientResponse> response) {
+    Finish(outcome, std::move(response));
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
@@ -192,10 +199,10 @@ class PasswordProtectionRequest
   virtual void MaybeCollectVisualFeatures() = 0;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Sets the referring app info.
   virtual void SetReferringAppInfo() = 0;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Start a timer to cancel the request if it takes too long.
   void StartTimeout();
@@ -259,7 +266,7 @@ class PasswordProtectionRequest
 
   // The PasswordProtectionServiceBase instance owns |this|.
   // Can only be accessed on UI thread.
-  PasswordProtectionServiceBase* password_protection_service_;
+  raw_ptr<PasswordProtectionServiceBase> password_protection_service_;
 
   // The outcome of the password protection request.
   RequestOutcome request_outcome_;

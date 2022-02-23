@@ -19,7 +19,7 @@ class MockKeyNetworkDelegate : public KeyNetworkDelegate {
   MockKeyNetworkDelegate();
   ~MockKeyNetworkDelegate() override;
 
-  MOCK_METHOD(std::string,
+  MOCK_METHOD(HttpResponseCode,
               SendPublicKeyToDmServerSync,
               (const GURL&, const std::string&, const std::string&),
               (override));

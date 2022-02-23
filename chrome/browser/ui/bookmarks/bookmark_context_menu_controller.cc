@@ -60,6 +60,12 @@ constexpr UserMetricsAction kAppMenuBookmarksNewWindow(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllInNewWindow");
 constexpr UserMetricsAction kAppMenuBookmarksIncognito(
     "WrenchMenu_Bookmarks_ContextMenu_OpenAllIncognito");
+constexpr UserMetricsAction kSidePanelBookmarksNewBackgroundTab(
+    "SidePanel_Bookmarks_ContextMenu_OpenAll");
+constexpr UserMetricsAction kSidePanelBookmarksNewWindow(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllInNewWindow");
+constexpr UserMetricsAction kSidePanelBookmarksIncognito(
+    "SidePanel_Bookmarks_ContextMenu_OpenAllIncognito");
 
 const UserMetricsAction* GetActionForLocationAndDisposition(
     BookmarkLaunchLocation location,
@@ -84,6 +90,17 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
           return &kAppMenuBookmarksNewWindow;
         case WindowOpenDisposition::OFF_THE_RECORD:
           return &kAppMenuBookmarksIncognito;
+        default:
+          return nullptr;
+      }
+    case BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU:
+      switch (disposition) {
+        case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+          return &kSidePanelBookmarksNewBackgroundTab;
+        case WindowOpenDisposition::NEW_WINDOW:
+          return &kSidePanelBookmarksNewWindow;
+        case WindowOpenDisposition::OFF_THE_RECORD:
+          return &kSidePanelBookmarksIncognito;
         default:
           return nullptr;
       }

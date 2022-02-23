@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -46,7 +46,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
   MOCK_METHOD(void,
               RegisterShortcutsMenu,
               (const AppId& app_id,
-               const std::vector<WebApplicationShortcutsMenuItemInfo>&
+               const std::vector<WebAppShortcutsMenuItemInfo>&
                    shortcuts_menu_item_infos,
                const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
                ResultCallback callback),
@@ -59,7 +59,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   MOCK_METHOD(void,
               RegisterRunOnOsLogin,
-              (const AppId& app_id, RegisterRunOnOsLoginCallback callback),
+              (const AppId& app_id, ResultCallback callback),
               (override));
 
   MOCK_METHOD(void,
@@ -85,7 +85,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (const AppId& app_id,
                const base::FilePath& profile_path,
                const std::u16string& shortcut_title,
-               UnregisterRunOnOsLoginCallback callback),
+               ResultCallback callback),
               (override));
   MOCK_METHOD(void,
               DeleteShortcuts,
@@ -110,31 +110,10 @@ class MockOsIntegrationManager : public OsIntegrationManager {
 
   // Update:
   MOCK_METHOD(void,
-              UpdateFileHandlers,
-              (const AppId& app_id,
-               FileHandlerUpdateAction file_handlers_need_os_update,
-               base::OnceClosure finished_callback),
-              (override));
-  MOCK_METHOD(void,
               UpdateShortcuts,
               (const AppId& app_id,
                base::StringPiece old_name,
                base::OnceClosure callback),
-              (override));
-  MOCK_METHOD(void,
-              UpdateShortcutsMenu,
-              (const AppId& app_id, const WebApplicationInfo& web_app_info),
-              (override));
-  MOCK_METHOD(void,
-              UpdateUrlHandlers,
-              (const AppId& app_id,
-               base::OnceCallback<void(bool success)> callback),
-              (override));
-  MOCK_METHOD(void,
-              UpdateProtocolHandlers,
-              (const AppId& app_id,
-               bool force_shortcut_updates_if_needed,
-               base::OnceClosure update_finished_callback),
               (override));
 
   // Utility methods:

@@ -84,22 +84,22 @@ void FCMInvalidationService::OnActiveAccountLogout() {
 base::DictionaryValue FCMInvalidationService::CollectDebugData() const {
   base::DictionaryValue status = FCMInvalidationServiceBase::CollectDebugData();
 
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.Active-account-login",
       base::TimeFormatShortDateAndTime(diagnostic_info_.active_account_login));
-  status.SetString("InvalidationService.Active-account-token-updated",
-                   base::TimeFormatShortDateAndTime(
-                       diagnostic_info_.active_account_token_updated));
-  status.SetString("InvalidationService.Active-account-logged-out",
-                   base::TimeFormatShortDateAndTime(
-                       diagnostic_info_.active_account_logged_out));
-  status.SetBoolean("InvalidationService.Started-on-active-account-login",
-                    diagnostic_info_.was_already_started_on_login);
-  status.SetBoolean(
+  status.SetStringPath("InvalidationService.Active-account-token-updated",
+                       base::TimeFormatShortDateAndTime(
+                           diagnostic_info_.active_account_token_updated));
+  status.SetStringPath("InvalidationService.Active-account-logged-out",
+                       base::TimeFormatShortDateAndTime(
+                           diagnostic_info_.active_account_logged_out));
+  status.SetBoolPath("InvalidationService.Started-on-active-account-login",
+                     diagnostic_info_.was_already_started_on_login);
+  status.SetBoolPath(
       "InvalidationService.Ready-to-start-on-active-account-login",
       diagnostic_info_.was_ready_to_start_on_login);
-  status.SetString("InvalidationService.Active-account-id",
-                   diagnostic_info_.active_account_id.ToString());
+  status.SetStringPath("InvalidationService.Active-account-id",
+                       diagnostic_info_.active_account_id.ToString());
 
   return status;
 }
@@ -108,7 +108,7 @@ bool FCMInvalidationService::IsReadyToStart() {
   bool valid_account_info_available =
       identity_provider_->IsActiveAccountWithRefreshToken();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // IsReadyToStart checks if account is available (active account logged in
   // and token is available). As currently observed, FCMInvalidationService
   // isn't always notified on Android when token is available.

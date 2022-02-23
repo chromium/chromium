@@ -16,6 +16,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
@@ -29,14 +30,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Wait until |condition| returns true.
 void WaitForCondition(base::RepeatingCallback<bool()> condition) {
   while (!condition.Run()) {
@@ -46,7 +47,7 @@ void WaitForCondition(base::RepeatingCallback<bool()> condition) {
     run_loop.Run();
   }
 }
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // already autofilled username.
   FillElementWithValue("username_field", "orary", "temporary");
 
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
   std::string submit =
       "document.getElementById('input_submit_button').click();";
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // we try and save the password even though onsubmit hasn't been called.
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -245,14 +246,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("username_field", "user");
   FillElementWithValue("password_field", "1234");
 
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
 // TODO(crbug.com/1241462):
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PromptForFetchWithNewPasswordsWithoutOnSubmit \
   DISABLED_PromptForFetchWithNewPasswordsWithoutOnSubmit
 #else
@@ -270,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("signup_username_field", "user");
   FillElementWithValue("signup_password_field", "1234");
   FillElementWithValue("confirmation_password_field", "1234");
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
   observer.Wait();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -494,9 +495,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// TODO(crbug.com/1198490): Remove explicit !BUILDFLAG(IS_CHROMEOS_LACROS) when
-// DICE is not enabled on Lacros.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.
 class PasswordManagerInteractiveTestWithSigninInterception
@@ -554,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
                           base::Unretained(password_manager)));
 
   // Start the navigation.
-  NavigationObserver navigation_observer(WebContents());
+  PasswordsNavigationObserver navigation_observer(WebContents());
   content::ExecuteScriptAsync(
       WebContents(), "document.getElementById('input_submit_button').click()");
 
@@ -580,6 +579,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
   navigation_observer.Wait();
   EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 }
-#endif  // ENABLE_DICE_SUPPORT
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace password_manager

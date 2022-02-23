@@ -89,7 +89,7 @@ void SerialPolicyAllowedPorts::LoadAllowAllPortsForUrlsPolicy() {
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   std::vector<url::Origin> urls;
-  for (const auto& url_value : pref_value->GetList()) {
+  for (const auto& url_value : pref_value->GetListDeprecated()) {
     GURL url(url_value.GetString());
     if (!url.is_valid()) {
       continue;
@@ -113,12 +113,12 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetList()) {
+  for (const auto& item : pref_value->GetListDeprecated()) {
     const base::Value* urls_value = item.FindKey(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetList()) {
+    for (const auto& url_value : urls_value->GetListDeprecated()) {
       GURL url(url_value.GetString());
       if (!url.is_valid()) {
         continue;
@@ -133,7 +133,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
 
     const base::Value* devices_value = item.FindKey(kPrefDevicesKey);
     DCHECK(devices_value);
-    for (const auto& port_value : devices_value->GetList()) {
+    for (const auto& port_value : devices_value->GetListDeprecated()) {
       const base::Value* vendor_id_value = port_value.FindKey(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 

@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer ignored
+++++++genericContainer
 ++++++++checkBox name='Test 1: Flash the screen 2 times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 1: Flash the screen'
@@ -18,7 +18,7 @@ rootWebArea
 ++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
-++++++genericContainer ignored
+++++++genericContainer
 ++++++++checkBox name='Test 2: Flash the screen 2 times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 2: Flash the screen'
@@ -37,7 +37,7 @@ rootWebArea
 ++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
-++++++genericContainer ignored
+++++++genericContainer
 ++++++++checkBox name='Test 3: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 3: Flash the screen'
@@ -54,7 +54,7 @@ rootWebArea
 ++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
-++++++genericContainer ignored
+++++++genericContainer
 ++++++++checkBox name='Test 4: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 4: Flash the screen'
@@ -73,7 +73,7 @@ rootWebArea
 ++++++++++++++++++inlineTextBox name='3'
 ++++++++++staticText name='times.'
 ++++++++++++inlineTextBox name='times.'
-++++++genericContainer ignored
+++++++genericContainer
 ++++++++checkBox name='Test 5: Flash the screen two times.' checkedState=false
 ++++++++labelText
 ++++++++++staticText name='Test 5: Flash the screen'

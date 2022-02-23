@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -88,7 +87,7 @@ class RepeatingCallbackList;
 // returned by CallbackListBase::Add() does not outlive the bound object in the
 // callback. A typical way to do this is to bind a callback to a member function
 // on `this` and store the returned subscription as a member variable.
-class BASE_EXPORT CallbackListSubscription {
+class [[nodiscard]] BASE_EXPORT CallbackListSubscription {
  public:
   CallbackListSubscription();
   CallbackListSubscription(CallbackListSubscription&& subscription);
@@ -150,7 +149,7 @@ class CallbackListBase {
 
   // Registers |cb| for future notifications. Returns a CallbackListSubscription
   // whose destruction will cancel |cb|.
-  CallbackListSubscription Add(CallbackType cb) WARN_UNUSED_RESULT {
+  [[nodiscard]] CallbackListSubscription Add(CallbackType cb) {
     DCHECK(!cb.is_null());
     return CallbackListSubscription(base::BindOnce(
         &CallbackListBase::CancelCallback, weak_ptr_factory_.GetWeakPtr(),

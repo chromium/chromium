@@ -187,16 +187,21 @@ void FakeVideoCaptureDeviceFactory::SetToCustomDevicesConfig(
   devices_config_ = config;
 }
 
-std::unique_ptr<VideoCaptureDevice> FakeVideoCaptureDeviceFactory::CreateDevice(
+VideoCaptureErrorOrDevice FakeVideoCaptureDeviceFactory::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   for (const auto& entry : devices_config_) {
     if (device_descriptor.device_id != entry.device_id)
       continue;
-    return CreateDeviceWithSettings(entry);
+    auto device = CreateDeviceWithSettings(entry);
+    return device ? VideoCaptureErrorOrDevice(std::move(device))
+                  : VideoCaptureErrorOrDevice(
+                        VideoCaptureError::
+                            kErrorFakeDeviceIntentionallyEmittingErrorEvent);
   }
-  return nullptr;
+  return VideoCaptureErrorOrDevice(
+      VideoCaptureError::kErrorFakeDeviceIntentionallyEmittingErrorEvent);
 }
 
 void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
@@ -208,15 +213,15 @@ void FakeVideoCaptureDeviceFactory::GetDevicesInfo(
   int entry_index = 0;
   for (const auto& entry : devices_config_) {
     VideoCaptureApi api =
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         VideoCaptureApi::LINUX_V4L2_SINGLE_PLANE;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
         VideoCaptureApi::MACOSX_AVFOUNDATION;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
         VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
         VideoCaptureApi::ANDROID_API2_LEGACY;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
         VideoCaptureApi::FUCHSIA_CAMERA3;
 #else
 #error Unsupported platform

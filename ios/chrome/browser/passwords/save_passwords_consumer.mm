@@ -25,4 +25,9 @@ void SavePasswordsConsumer::OnGetPasswordStoreResults(
   [delegate_ onGetPasswordStoreResults:std::move(results)];
 }
 
+base::WeakPtr<password_manager::PasswordStoreConsumer>
+SavePasswordsConsumer::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ios

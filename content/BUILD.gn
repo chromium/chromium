@@ -9,10 +9,7 @@ import("//tools/grit/grit_rule.gni")
 # Applied by targets internal to content.
 config("content_implementation") {
   defines = [ "CONTENT_IMPLEMENTATION" ]
-  configs = [
-    "//build/config/compiler:noshadowing",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //content")
@@ -62,48 +59,24 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //content")
 # //content/browser target only in non-component builds (when there are no
 # linking problems) for when check is enabled.
 
-if (!is_nacl_nonsfi) {
-  content_shared_components = [
-    "//content/gpu:gpu_sources",
-    "//content/public/browser:browser_sources",
-    "//content/public/child:child_sources",
-    "//content/public/common:common_sources",
-    "//content/public/gpu:gpu_sources",
-    "//content/public/renderer:renderer_sources",
-    "//content/public/utility:utility_sources",
-  ]
+content_shared_components = [
+  "//content/gpu:gpu_sources",
+  "//content/public/browser:browser_sources",
+  "//content/public/child:child_sources",
+  "//content/public/common:common_sources",
+  "//content/public/gpu:gpu_sources",
+  "//content/public/renderer:renderer_sources",
+  "//content/public/utility:utility_sources",
+]
 
-  if (enable_plugins) {
-    content_shared_components +=
-        [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
-  }
+if (enable_plugins) {
+  content_shared_components += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
 }
 
 if (is_component_build) {
   component("content") {
     public_deps =
         content_shared_components + [ "//content/public/app:app_sources" ]
-  }
-} else if (is_nacl_nonsfi) {
-  source_set("content") {
-    sources = [
-      "//sandbox/policy/linux/sandbox_seccomp_bpf_linux.cc",
-      "common/sandbox_init_linux.cc",
-      "common/zygote/send_zygote_child_ping_linux.cc",
-      "public/common/content_switches.cc",
-      "public/common/content_switches.h",
-    ]
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//media:media_buildflags",
-      "//ppapi/buildflags:buildflags",
-      "//printing/buildflags",
-      "//sandbox:sandbox_buildflags",
-      "//sandbox/linux:sandbox",
-      "//sandbox/policy",
-      "//sandbox/policy/mojom",
-    ]
   }
 } else {
   group("content") {
@@ -124,6 +97,7 @@ grit("content_resources") {
     "//gpu/ipc/common:vulkan_interface_webui_js",
     "//ui/base/mojom:mojom_js",
     "//ui/gfx/geometry/mojom:mojom_js",
+    "//ui/gfx/image/mojom:mojom_js",
     "//ui/gfx/range/mojom:mojom_js",
     "//url/mojom:url_mojom_origin_js",
     "//url/mojom:url_mojom_origin_webui_js",
@@ -141,6 +115,7 @@ grit("dev_ui_content_resources") {
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
     "//content/browser/prerender:mojo_bindings_webui_js",
     "//content/browser/process_internals:mojo_bindings_webui_js",
+    "//storage/browser/quota:mojo_bindings_webui_js",
   ]
 }
 

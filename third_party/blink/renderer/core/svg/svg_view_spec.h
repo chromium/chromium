@@ -21,7 +21,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_VIEW_SPEC_H_
 
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

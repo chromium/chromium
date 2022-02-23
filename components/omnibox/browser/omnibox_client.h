@@ -117,11 +117,14 @@ class OmniboxClient {
   virtual void OnFocusChanged(OmniboxFocusState state,
                               OmniboxFocusChangeReason reason) {}
 
-  // Called when the autocomplete result has changed. If the embedder supports
-  // fetching of bitmaps for URLs (not all embedders do), |on_bitmap_fetched|
-  // will be called when the bitmap has been fetched.
+  // Called when the autocomplete result has changed. Implementations that
+  // support prerendering of search results pages should prerender only if
+  // `should_prerender` is true. If the implementation supports fetching of
+  // bitmaps for URLs (not all embedders do), `on_bitmap_fetched` will be called
+  // when the bitmap has been fetched.
   virtual void OnResultChanged(const AutocompleteResult& result,
                                bool default_match_changed,
+                               bool should_prerender,
                                const BitmapFetchedCallback& on_bitmap_fetched) {
   }
 
@@ -163,6 +166,9 @@ class OmniboxClient {
 
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}
+
+  // Focuses the `WebContents`, i.e. the web page of the current tab.
+  virtual void FocusWebContents() {}
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CLIENT_H_

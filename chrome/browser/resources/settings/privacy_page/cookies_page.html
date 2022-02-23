@@ -60,7 +60,8 @@
         <settings-collapse-radio-button id="allowAll"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.ALLOW_ALL]]"
-            label="$i18n{cookiePageAllowAll}">
+            label="$i18n{cookiePageAllowAll}"
+            expand-aria-label="$i18n{cookiePageAllowAllExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -75,7 +76,9 @@
         <settings-collapse-radio-button id="blockThirdPartyIncognito"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
-            label="$i18n{cookiePageBlockThirdIncognito}">
+            label="$i18n{cookiePageBlockThirdIncognito}"
+            expand-aria-label=
+                "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -94,7 +97,8 @@
         <settings-collapse-radio-button id="blockThirdParty"
             pref="[[prefs.generated.cookie_primary_setting]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
-            label="$i18n{cookiePageBlockThird}">
+            label="$i18n{cookiePageBlockThird}"
+            expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:cookie"></iron-icon>
@@ -109,7 +113,8 @@
         <settings-collapse-radio-button id="blockAll"
             pref="[[blockAllPref_]]"
             name="[[cookiePrimarySettingEnum_.BLOCK_ALL]]"
-            label="$i18n{cookiePageBlockAll}">
+            label="$i18n{cookiePageBlockAll}"
+            expand-aria-label="$i18n{cookiePageBlockAllExpandA11yLabel}">
           <div slot="collapse">
             <div class="bullet-line">
               <iron-icon icon="settings:block"></iron-icon>

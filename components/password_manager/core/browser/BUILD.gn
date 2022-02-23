@@ -108,6 +108,8 @@ static_library("browser") {
     "leak_detection_dialog_utils.h",
     "login_database.cc",
     "login_database.h",
+    "login_database_async_helper.cc",
+    "login_database_async_helper.h",
     "manage_passwords_referrer.h",
     "move_password_to_account_store_helper.cc",
     "move_password_to_account_store_helper.h",
@@ -123,6 +125,9 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_change_success_tracker.h",
+    "password_change_success_tracker_impl.cc",
+    "password_change_success_tracker_impl.h",
     "password_feature_manager.h",
     "password_feature_manager_impl.cc",
     "password_feature_manager_impl.h",
@@ -135,6 +140,8 @@ static_library("browser") {
     "password_form_manager_for_ui.h",
     "password_form_metrics_recorder.cc",
     "password_form_metrics_recorder.h",
+    "password_form_prediction_waiter.cc",
+    "password_form_prediction_waiter.h",
     "password_generation_frame_helper.cc",
     "password_generation_frame_helper.h",
     "password_generation_manager.cc",
@@ -190,6 +197,8 @@ static_library("browser") {
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
+    "password_store_util.cc",
+    "password_store_util.h",
     "password_sync_util.cc",
     "password_sync_util.h",
     "password_ui_utils.cc",
@@ -272,6 +281,7 @@ static_library("browser") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:features",
     "//components/autofill/core/common/mojom:mojo_types",
     "//components/device_reauth",
     "//components/favicon/core",
@@ -281,6 +291,7 @@ static_library("browser") {
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",
@@ -294,6 +305,7 @@ static_library("browser") {
     "//components/sync_preferences",
     "//components/url_formatter",
     "//components/variations/net",
+    "//components/version_info:channel",
     "//components/webdata/common",
     "//google_apis",
     "//net",
@@ -315,6 +327,9 @@ static_library("browser") {
     sources += [
       "built_in_backend_to_android_backend_migrator.cc",
       "built_in_backend_to_android_backend_migrator.h",
+      "capabilities_service.h",
+      "capabilities_service_impl.cc",
+      "capabilities_service_impl.h",
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
@@ -322,7 +337,10 @@ static_library("browser") {
       "password_store_backend_migration_decorator.h",
       "password_store_proxy_backend.cc",
       "password_store_proxy_backend.h",
+      "saved_passwords_capabilities_fetcher.cc",
+      "saved_passwords_capabilities_fetcher.h",
     ]
+    deps += [ "//components/autofill_assistant/browser/public" ]
   }
 
   if (!is_ios) {
@@ -502,6 +520,8 @@ static_library("test_support") {
     "mock_bulk_leak_check_service.h",
     "mock_field_info_store.cc",
     "mock_field_info_store.h",
+    "mock_password_change_success_tracker.cc",
+    "mock_password_change_success_tracker.h",
     "mock_password_feature_manager.cc",
     "mock_password_feature_manager.h",
     "mock_password_form_manager_for_ui.cc",
@@ -516,6 +536,8 @@ static_library("test_support") {
     "mock_password_sync_metadata_store.h",
     "mock_smart_bubble_stats_store.cc",
     "mock_smart_bubble_stats_store.h",
+    "mock_webauthn_credentials_delegate.cc",
+    "mock_webauthn_credentials_delegate.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
     "site_affiliation/fake_affiliation_service.cc",
@@ -559,6 +581,7 @@ static_library("test_support") {
     ":affiliation",
     "//base",
     "//components/autofill/core/common",
+    "//components/version_info:channel",
     "//net:net",
     "//services/network:test_support",
   ]
@@ -598,6 +621,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/password_manager/login_db_v3.sql",
     "//components/test/data/password_manager/login_db_v30.sql",
     "//components/test/data/password_manager/login_db_v31.sql",
+    "//components/test/data/password_manager/login_db_v32.sql",
     "//components/test/data/password_manager/login_db_v3_broken.sql",
     "//components/test/data/password_manager/login_db_v4.sql",
     "//components/test/data/password_manager/login_db_v5.sql",
@@ -660,6 +684,7 @@ source_set("unit_tests") {
     "password_form_filling_unittest.cc",
     "password_form_manager_unittest.cc",
     "password_form_metrics_recorder_unittest.cc",
+    "password_form_prediction_waiter_unittest.cc",
     "password_generation_frame_helper_unittest.cc",
     "password_generation_manager_unittest.cc",
     "password_hash_data_unittest.cc",
@@ -702,9 +727,11 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "built_in_backend_to_android_backend_migrator_unittest.cc",
+      "capabilities_service_impl_unittest.cc",
       "password_scripts_fetcher_impl_unittests.cc",
       "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",
+      "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
   }
   if (is_ios) {
@@ -754,6 +781,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/browser/leak_detection:unit_tests",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -765,6 +793,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/url_formatter",
     "//components/variations:test_support",
+    "//components/version_info:channel",
     "//google_apis:google_apis",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
@@ -779,6 +808,10 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  if (is_android) {
+    deps += [ "//components/autofill_assistant/browser/public" ]
+  }
 }
 
 fuzzer_test("csv_reader_fuzzer") {

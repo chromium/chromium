@@ -1,16 +1,14 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-This script provides the necessary flags to symbolize proto traces.
+"""This script provides the necessary flags to symbolize proto traces.
 """
 
+import logging
+import optparse
 import os
 import sys
-import optparse
-import logging
-import webbrowser
-import subprocess
+
 
 sys.path.insert(
     0,
@@ -18,7 +16,7 @@ sys.path.insert(
                  'catapult', 'systrace'))
 from systrace import util
 
-_DEFAULT_CHROME_CATEGORIES = '_DEFAULT_CHROME_CATEGORIES'
+TRACING_LOGGER_NAME = 'chromium:tools/tracing'
 
 
 def GeneralOptions(parser):
@@ -42,7 +40,8 @@ def GeneralOptions(parser):
                              '--verbose',
                              help='Increase output verbosity.',
                              action='count',
-                             dest='verbosity')
+                             dest='verbosity',
+                             default=0)
   general_options.add_option('--view',
                              help='Open resulting trace file in a '
                              'browser.',
@@ -114,8 +113,7 @@ def ProfileOptions(parser):
   profile_options.add_option('--chrome_categories',
                              help='Chrome tracing '
                              'categories to record.',
-                             type='string',
-                             default=_DEFAULT_CHROME_CATEGORIES)
+                             type='string')
   profile_options.add_option(
       '--skip_symbolize',
       help='Skips symbolization after recording trace profile, if specified.',
@@ -167,8 +165,11 @@ def SymbolizeOptions(parser):
       dest='local_build_dir')
   symbolization_options.add_option(
       '--dump_syms',
-      help=('Path to dump_syms binary. Searches the given build '
-            'directory for the binary, if not provided.'),
+      help=('Path to a dump_syms binary. Required when symbolizing an official '
+            'build. Optional on local builds as we can use --local_build_dir '
+            'to locate a binary. If built locally with '
+            'autoninja -C out/Release dump_syms then the binary path is '
+            'out/Release/dump_syms'),
       dest='dump_syms_path')
   symbolization_options.add_option(
       '--symbolizer',
@@ -200,9 +201,20 @@ def SetupProfilingCategories(options):
   specific profiling options.
 
   Args:
-    The command-line options given.
+    options: The command-line options given.
   """
   if options.enable_profiler is None:
+    if not options.chrome_categories:
+      GetTracingLogger().warning(
+          'No trace category or profiler is enabled using --enable_profiler '
+          'and/or --chrome_categories, enabling all default categories.')
+    if not options.skip_symbolize:
+      GetTracingLogger().warning(
+          'No profiler is enabled, symbolization might fail without any '
+          'frames. Use --skip_symbolize to disable symbolization.')
+    else:
+      GetTracingLogger().info(
+          'No profiler is enabled, the trace will only have trace events.')
     return
 
   if options.chrome_categories is None:
@@ -223,18 +235,27 @@ def SetupProfilingCategories(options):
       options.chrome_categories += 'disabled-by-default-memory-infra,-*'
 
 
+def GetTracingLogger():
+  """Returns the logger for tools/tracing."""
+  return logging.getLogger(TRACING_LOGGER_NAME)
+
+
 def SetupLogging(verbosity):
   """Setup logging levels.
 
   Sets default level to warning.
 
   Args:
-    verbosity: None or integer type that specifies the
-      logging level. (options.verbosity)
+    verbosity: None or integer type that specifies the logging level.
+      (options.verbosity)
   """
+  logger = GetTracingLogger()
   if verbosity == 1:
     logging.basicConfig(level=logging.INFO)
+    logger.setLevel(level=logging.INFO)
   elif verbosity >= 2:
     logging.basicConfig(level=logging.DEBUG)
+    logger.setLevel(level=logging.DEBUG)
   else:
     logging.basicConfig(level=logging.WARNING)
+    logger.setLevel(level=logging.WARNING)

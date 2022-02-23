@@ -163,8 +163,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
         performance->AddElementTiming(
             ImagePaintString(), url.GetString(), intersection_rect,
             base::TimeTicks(), load_time, attr,
-            ToGfxSize(cached_image.IntrinsicSize(respect_orientation)), id,
-            element);
+            cached_image.IntrinsicSize(respect_orientation), id, element);
       }
       return;
     }
@@ -179,7 +178,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
                                 : url.GetString();
   element_timings_.emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
-      ToGfxSize(cached_image.IntrinsicSize(respect_orientation)), id, element));
+      cached_image.IntrinsicSize(respect_orientation), id, element));
   // Only queue a presentation promise when |element_timings_| was empty. All of
   // the records in |element_timings_| will be processed when the promise
   // succeeds or fails, and at that time the vector is cleared.

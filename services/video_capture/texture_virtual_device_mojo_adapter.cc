@@ -129,6 +129,10 @@ void TextureVirtualDeviceMojoAdapter::ProcessFeedback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void TextureVirtualDeviceMojoAdapter::RequestRefreshFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void TextureVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_frame_handler_.is_bound())

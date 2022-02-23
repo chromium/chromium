@@ -53,6 +53,24 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
 // registry-controlled domain part.
 std::string GetRegistryControlledDomain(const GURL& signon_realm);
 
+// Returns the regular expression to match |signon_realm| when Public Suffix
+// Domain matching is enabled. Used to retrieve logins from LoginsDatabase with
+// 'WHERE signon_realm REGEX x' query and to verify logins retrieved from the
+// downstream PasswordStoreBackend implementation with C++ Regex matcher.
+std::string GetRegexForPSLMatching(const std::string& signon_realm);
+
+// Returns the regular expression to match |form| when Public Suffix Domain &
+// federated matching is enabled. Used to retrieve logins from LoginsDatabase
+// with 'WHERE signon_realm REGEX x' query and to verify logins retrieved from
+// the downstream PasswordStoreBackend implementation with C++ Regex matcher.
+std::string GetRegexForPSLFederatedMatching(const std::string& signon_realm);
+
+// Returns the expression to match |url| when federated matching is enabled.
+// Used to retrieve logins from LoginsDatabase with 'WHERE signon_realm LIKE x'
+// query and to verify logins retrieved from the downstream PasswordStoreBackend
+// implementation with C++ Regex matcher.
+std::string GetExpressionForFederatedMatching(const GURL& url);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PSL_MATCHING_HELPER_H_

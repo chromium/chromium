@@ -8,7 +8,6 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,7 +62,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   std::unique_ptr<PrintSettings> settings =
       PrintSettingsFromJobSettings(value.value());
   ASSERT_TRUE(settings);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(settings->send_user_info());
   EXPECT_EQ("username@domain.net", settings->username());
   EXPECT_EQ("0000", settings->pin_value());
@@ -81,7 +80,7 @@ TEST(PrintSettingsConversionTest, ConversionTest) {
   EXPECT_FALSE(settings);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
   absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
@@ -94,7 +93,7 @@ TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
 }
 #endif
 
-#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(USE_CUPS))
+#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
   ASSERT_TRUE(value.has_value());
@@ -115,6 +114,6 @@ TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));
   EXPECT_EQ(settings->advanced_settings().at("Foo"), base::Value("Bar"));
 }
-#endif  // defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(USE_CUPS))
+#endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && defined(USE_CUPS))
 
 }  // namespace printing

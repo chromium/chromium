@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/network/cellular_utils.h"
+#include "chromeos/network/hermes_metrics_util.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -71,7 +72,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   if (!device_prefs_)
     return std::vector<CellularESimProfile>();
 
-  const base::ListValue* profiles_list =
+  const base::Value* profiles_list =
       device_prefs_->GetList(prefs::kESimProfiles);
   if (!profiles_list) {
     NET_LOG(ERROR) << "eSIM profiles pref is not a list";
@@ -79,17 +80,16 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   }
 
   std::vector<CellularESimProfile> profiles;
-  for (const base::Value& value : profiles_list->GetList()) {
-    const base::DictionaryValue* dict;
-    if (!value.GetAsDictionary(&dict)) {
+  for (const base::Value& value : profiles_list->GetListDeprecated()) {
+    if (!value.is_dict()) {
       NET_LOG(ERROR) << "List item from eSIM profiles pref is not a dictionary";
       continue;
     }
 
     absl::optional<CellularESimProfile> profile =
-        CellularESimProfile::FromDictionaryValue(*dict);
+        CellularESimProfile::FromDictionaryValue(value);
     if (!profile) {
-      NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << *dict;
+      NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << value;
       continue;
     }
 
@@ -110,6 +110,19 @@ bool CellularESimProfileHandlerImpl::HasRefreshedProfilesForEuicc(
       continue;
 
     if (eid == euicc_properties->eid().value())
+      return true;
+  }
+
+  return false;
+}
+
+bool CellularESimProfileHandlerImpl::HasRefreshedProfilesForEuicc(
+    const dbus::ObjectPath& euicc_path) {
+  base::flat_set<std::string> euicc_paths =
+      GetAutoRefreshedEuiccPathsFromPrefs();
+
+  for (const auto& path : euicc_paths) {
+    if (euicc_path.value() == path)
       return true;
   }
 
@@ -193,7 +206,7 @@ base::flat_set<std::string>
 CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
 
-  const base::ListValue* euicc_paths_from_prefs =
+  const base::Value* euicc_paths_from_prefs =
       device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
   if (!euicc_paths_from_prefs) {
     NET_LOG(ERROR) << "Could not fetch refreshed EUICCs pref.";
@@ -201,7 +214,7 @@ CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   }
 
   base::flat_set<std::string> euicc_paths;
-  for (const auto& euicc : euicc_paths_from_prefs->GetList()) {
+  for (const auto& euicc : euicc_paths_from_prefs->GetListDeprecated()) {
     if (!euicc.is_string()) {
       NET_LOG(ERROR) << "Non-string EUICC path: " << euicc;
       continue;
@@ -307,6 +320,43 @@ void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
 
   NET_LOG(EVENT) << "Resetting eSIM profile cache";
   OnHermesPropertiesUpdated();
+}
+
+void CellularESimProfileHandlerImpl::DisableActiveESimProfile() {
+  std::vector<CellularESimProfile> esim_profiles = GetESimProfiles();
+  const auto iter = base::ranges::find_if(
+      esim_profiles, [&](const auto& esim_profile) -> bool {
+        return esim_profile.state() == CellularESimProfile::State::kActive;
+      });
+  if (iter == esim_profiles.end()) {
+    NET_LOG(EVENT) << "No active eSIM profile is found.";
+    return;
+  }
+
+  NET_LOG(EVENT) << "Start disabling eSIM profile on path: "
+                 << iter->path().value();
+  cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kDisablingProfile,
+      base::BindOnce(&CellularESimProfileHandlerImpl::PerformDisableProfile,
+                     weak_ptr_factory_.GetWeakPtr(), iter->path()));
+}
+
+void CellularESimProfileHandlerImpl::PerformDisableProfile(
+    const dbus::ObjectPath& profile_path,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  HermesProfileClient::Get()->DisableCarrierProfile(
+      profile_path,
+      base::BindOnce(&CellularESimProfileHandlerImpl::OnProfileDisabled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(inhibit_lock)));
+}
+
+void CellularESimProfileHandlerImpl::OnProfileDisabled(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status) {
+  if (status != HermesResponseStatus::kSuccess) {
+    NET_LOG(ERROR) << "ESimProfile disable error.";
+  }
+  hermes_metrics::LogDisableProfileResult(status);
 }
 
 }  // namespace chromeos

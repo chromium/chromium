@@ -141,7 +141,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
                                        style.GetWritingDirection(),
                                        /* is_new_fc */ true);
       builder.SetTableCellBorders(cell_border);
-      builder.SetIsTableCell(true, /* is_legacy_table_cell */ false);
+      builder.SetIsTableCell(true);
       builder.SetCacheSlot(NGCacheSlot::kMeasure);
       if (!is_parallel) {
         // Only consider the ICB-size for the orthogonal fallback inline-size
@@ -173,16 +173,13 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     resolved_min_inline_size = std::max(
         MinMaxSizesFunc().min_size, css_min_inline_size.value_or(LayoutUnit()));
     // https://quirks.spec.whatwg.org/#the-table-cell-nowrap-minimum-width-calculation-quirk
-    // Has not worked in Legacy, might be pulled out.
-    if (css_inline_size && node.GetDocument().InQuirksMode()) {
-      bool has_nowrap_attribute =
-          !To<Element>(node.GetDOMNode())
-               ->FastGetAttribute(html_names::kNowrapAttr)
-               .IsNull();
-      if (has_nowrap_attribute && style.AutoWrap()) {
-        resolved_min_inline_size =
-            std::max(resolved_min_inline_size, *css_inline_size);
-      }
+    bool has_nowrap_attribute =
+        node.GetDOMNode() && To<Element>(node.GetDOMNode())
+                                 ->FastHasAttribute(html_names::kNowrapAttr);
+    if (css_inline_size && node.GetDocument().InQuirksMode() &&
+        has_nowrap_attribute) {
+      resolved_min_inline_size =
+          std::max(resolved_min_inline_size, *css_inline_size);
     }
   }
 
@@ -215,7 +212,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
 NGTableTypes::Section NGTableTypes::CreateSection(
     const NGLayoutInputNode& section,
     wtf_size_t start_row,
-    wtf_size_t rows,
+    wtf_size_t row_count,
     LayoutUnit block_size,
     bool treat_as_tbody) {
   const Length& section_css_block_size = section.Style().LogicalHeight();
@@ -226,37 +223,12 @@ NGTableTypes::Section NGTableTypes::CreateSection(
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
   return Section{start_row,
-                 rows,
+                 row_count,
                  block_size,
                  percent,
                  is_constrained,
                  treat_as_tbody,
                  /* needs_redistribution */ false};
-}
-
-NGTableTypes::CellBlockConstraint NGTableTypes::CreateCellBlockConstraint(
-    const NGLayoutInputNode& node,
-    LayoutUnit computed_block_size,
-    const NGBoxStrut& border_box_borders,
-    wtf_size_t row_index,
-    wtf_size_t column_index,
-    wtf_size_t rowspan) {
-  bool is_constrained = node.Style().LogicalHeight().IsFixed();
-  return CellBlockConstraint{
-      computed_block_size, border_box_borders, row_index, column_index, rowspan,
-      is_constrained};
-}
-
-NGTableTypes::RowspanCell NGTableTypes::CreateRowspanCell(
-    wtf_size_t row_index,
-    wtf_size_t rowspan,
-    CellBlockConstraint* cell_block_constraint,
-    absl::optional<LayoutUnit> css_cell_block_size) {
-  if (css_cell_block_size) {
-    cell_block_constraint->min_block_size =
-        std::max(cell_block_constraint->min_block_size, *css_cell_block_size);
-  }
-  return RowspanCell{row_index, rowspan, *cell_block_constraint};
 }
 
 void NGTableTypes::CellInlineConstraint::Encompass(

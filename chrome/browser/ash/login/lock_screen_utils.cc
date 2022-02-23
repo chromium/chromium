@@ -19,8 +19,7 @@
 #include "components/user_manager/known_user.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
-namespace ash {
-namespace lock_screen_utils {
+namespace ash::lock_screen_utils {
 namespace {
 
 bool SetUserInputMethodImpl(
@@ -77,17 +76,17 @@ void SetUserInputMethod(const AccountId& account_id,
 std::string GetUserLastInputMethodId(const AccountId& account_id) {
   if (!account_id.is_valid())
     return std::string();
-  std::string input_method_id;
-  if (user_manager::known_user::GetUserLastInputMethodId(account_id,
-                                                         &input_method_id)) {
-    return input_method_id;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (const std::string* input_method_id =
+          known_user.GetUserLastInputMethodId(account_id)) {
+    return *input_method_id;
   }
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
   // data.
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile && profile->GetPrefs()) {
-    input_method_id =
+    std::string input_method_id =
         profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
     if (!input_method_id.empty())
       return input_method_id;
@@ -95,7 +94,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 
   // Try to use old values.
   PrefService* const local_state = g_browser_process->local_state();
-  const base::DictionaryValue* users_last_input_methods =
+  const base::Value* users_last_input_methods =
       local_state->GetDictionary(::prefs::kUsersLastInputMethod);
 
   if (!users_last_input_methods) {
@@ -109,6 +108,8 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
     DVLOG(0) << "GetUserLastInputMethodId: no input method for this user";
     return std::string();
   }
+  // Migrate into the known_user system.
+  known_user.SetUserLastLoginInputMethodId(account_id, *input_method_str);
 
   return *input_method_str;
 }
@@ -118,7 +119,7 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
-      login_screen_input_methods->GetList().empty()) {
+      login_screen_input_methods->GetListDeprecated().empty()) {
     StopEnforcingPolicyInputMethods();
     return;
   }
@@ -130,7 +131,8 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
     allowed_input_method_ids.push_back(user_input_method_id);
   }
 
-  for (const auto& input_method_entry : login_screen_input_methods->GetList()) {
+  for (const auto& input_method_entry :
+       login_screen_input_methods->GetListDeprecated()) {
     if (input_method_entry.is_string())
       allowed_input_method_ids.push_back(input_method_entry.GetString());
   }
@@ -152,25 +154,28 @@ void StopEnforcingPolicyInputMethods() {
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {
-  bool auto_repeat_enabled = kDefaultKeyAutoRepeatEnabled;
-  if (user_manager::known_user::GetBooleanPref(
-          account_id, prefs::kXkbAutoRepeatEnabled, &auto_repeat_enabled) &&
-      !auto_repeat_enabled) {
-    input_method::InputMethodManager::Get()
-        ->GetImeKeyboard()
-        ->SetAutoRepeatEnabled(false);
-    return;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (absl::optional<bool> auto_repeat_enabled =
+          known_user.FindBoolPath(account_id, prefs::kXkbAutoRepeatEnabled);
+      auto_repeat_enabled.has_value()) {
+    if (!auto_repeat_enabled.value()) {
+      input_method::InputMethodManager::Get()
+          ->GetImeKeyboard()
+          ->SetAutoRepeatEnabled(false);
+      return;
+    }
   }
 
-  int auto_repeat_delay = kDefaultKeyAutoRepeatDelay.InMilliseconds();
-  int auto_repeat_interval = kDefaultKeyAutoRepeatInterval.InMilliseconds();
-  user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatDelay, &auto_repeat_delay);
-  user_manager::known_user::GetIntegerPref(
-      account_id, prefs::kXkbAutoRepeatInterval, &auto_repeat_interval);
   input_method::AutoRepeatRate rate;
-  rate.initial_delay_in_ms = auto_repeat_delay;
-  rate.repeat_interval_in_ms = auto_repeat_interval;
+
+  rate.initial_delay_in_ms =
+      known_user.FindIntPath(account_id, prefs::kXkbAutoRepeatDelay)
+          .value_or(kDefaultKeyAutoRepeatDelay.InMilliseconds());
+
+  rate.repeat_interval_in_ms =
+      known_user.FindIntPath(account_id, prefs::kXkbAutoRepeatInterval)
+          .value_or(kDefaultKeyAutoRepeatInterval.InMilliseconds());
+
   input_method::InputMethodManager::Get()
       ->GetImeKeyboard()
       ->SetAutoRepeatEnabled(true);
@@ -181,22 +186,25 @@ void SetKeyboardSettings(const AccountId& account_id) {
 std::vector<LocaleItem> FromListValueToLocaleItem(
     std::unique_ptr<base::ListValue> locales) {
   std::vector<LocaleItem> result;
-  for (const auto& locale : locales->GetList()) {
+  for (const auto& locale : locales->GetListDeprecated()) {
     const base::DictionaryValue* dictionary;
     if (!locale.GetAsDictionary(&dictionary))
       continue;
 
     LocaleItem locale_item;
-    dictionary->GetString("value", &locale_item.language_code);
-    dictionary->GetString("title", &locale_item.title);
-    std::string group_name;
-    dictionary->GetString("optionGroupName", &group_name);
-    if (!group_name.empty())
-      locale_item.group_name = group_name;
+    const std::string* language_code = dictionary->FindStringKey("value");
+    if (language_code)
+      locale_item.language_code = *language_code;
+    const std::string* title = dictionary->FindStringKey("title");
+    if (title)
+      locale_item.title = *title;
+    const std::string* group_name =
+        dictionary->FindStringKey("optionGroupName");
+    if (group_name && !group_name->empty())
+      locale_item.group_name = *group_name;
     result.push_back(std::move(locale_item));
   }
   return result;
 }
 
-}  // namespace lock_screen_utils
-}  // namespace ash
+}  // namespace ash::lock_screen_utils

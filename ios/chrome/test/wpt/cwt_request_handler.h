@@ -13,7 +13,6 @@
 
 #include "base/files/file_path.h"
 #include "base/ios/block_types.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"

@@ -8,7 +8,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 
 namespace blink {
@@ -17,11 +18,14 @@ namespace blink {
 // of an element created using content:element(id).
 // The element function is described at
 // https://developer.mozilla.org/en-US/docs/Web/CSS/element().
-//
-// TODO(khushalsagar) : Switch this to a pseudo element.
-class CORE_EXPORT DocumentTransitionContentElement : public HTMLElement {
+class CORE_EXPORT DocumentTransitionContentElement
+    : public DocumentTransitionPseudoElementBase {
  public:
-  explicit DocumentTransitionContentElement(Document& document);
+  explicit DocumentTransitionContentElement(
+      Element* parent,
+      PseudoId,
+      const AtomicString& document_transition_tag,
+      viz::SharedElementResourceId);
   ~DocumentTransitionContentElement() override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size);
@@ -29,8 +33,6 @@ class CORE_EXPORT DocumentTransitionContentElement : public HTMLElement {
   const viz::SharedElementResourceId& resource_id() const {
     return resource_id_;
   }
-
-  void Trace(Visitor* visitor) const override;
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;

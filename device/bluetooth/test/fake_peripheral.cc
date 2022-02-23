@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
@@ -98,10 +99,7 @@ std::string FakePeripheral::AddFakeService(
   std::string new_service_id =
       base::StringPrintf("%s_%zu", GetAddress().c_str(), ++last_service_id_);
 
-  GattServiceMap::iterator it;
-  bool inserted;
-
-  std::tie(it, inserted) = gatt_services_.emplace(
+  auto [it, inserted] = gatt_services_.emplace(
       new_service_id,
       std::make_unique<FakeRemoteGattService>(new_service_id, service_uuid,
                                               true /* is_primary */, this));
@@ -125,7 +123,7 @@ uint32_t FakePeripheral::GetBluetoothClass() const {
   return 0;
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 device::BluetoothTransport FakePeripheral::GetType() const {
   NOTREACHED();
   return device::BLUETOOTH_TRANSPORT_INVALID;
@@ -207,13 +205,6 @@ bool FakePeripheral::IsConnecting() const {
   return false;
 }
 
-#if defined(OS_CHROMEOS)
-bool FakePeripheral::IsBlockedByPolicy() const {
-  NOTREACHED();
-  return false;
-}
-#endif
-
 bool FakePeripheral::ExpectingPinCode() const {
   NOTREACHED();
   return false;
@@ -243,6 +234,13 @@ void FakePeripheral::Connect(PairingDelegate* pairing_delegate,
                              ConnectCallback callback) {
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void FakePeripheral::ConnectClassic(PairingDelegate* pairing_delegate,
+                                    ConnectCallback callback) {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakePeripheral::SetPinCode(const std::string& pincode) {
   NOTREACHED();
@@ -368,7 +366,7 @@ void FakePeripheral::DispatchDiscoveryResponse() {
 void FakePeripheral::DisconnectGatt() {
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void FakePeripheral::ExecuteWrite(base::OnceClosure callback,
                                   ExecuteWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
@@ -378,6 +376,6 @@ void FakePeripheral::AbortWrite(base::OnceClosure callback,
                                 AbortWriteErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace bluetooth

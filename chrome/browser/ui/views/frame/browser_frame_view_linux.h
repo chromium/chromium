@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "ui/views/linux_ui/window_button_order_observer.h"
@@ -32,7 +33,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.
-  gfx::ShadowValues GetShadowValues() const;
+  static gfx::ShadowValues GetShadowValues();
 
  protected:
   // views::WindowButtonOrderObserver:
@@ -55,7 +56,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   virtual float GetRestoredCornerRadiusDip() const;
 
  private:
-  BrowserFrameViewLayoutLinux* const layout_;
+  const raw_ptr<BrowserFrameViewLayoutLinux> layout_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_H_

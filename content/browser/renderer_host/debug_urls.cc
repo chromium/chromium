@@ -31,7 +31,7 @@
 #include "ppapi/proxy/ppapi_messages.h"                 // nogncheck
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/debug/invalid_access_win.h"
 #endif
 
@@ -50,7 +50,7 @@ const char kAsanHeapOverflow[] = "/browser-heap-overflow";
 const char kAsanHeapUnderflow[] = "/browser-heap-underflow";
 const char kAsanUseAfterFree[] = "/browser-use-after-free";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kAsanCorruptHeapBlock[] = "/browser-corrupt-heap-block";
 const char kAsanCorruptHeap[] = "/browser-corrupt-heap";
 #endif
@@ -67,7 +67,7 @@ bool IsAsanDebugURL(const GURL& url) {
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock ||
       url.path_piece() == kAsanCorruptHeap) {
     return true;
@@ -79,7 +79,7 @@ bool IsAsanDebugURL(const GURL& url) {
 
 bool HandleAsanDebugURL(const GURL& url) {
 #if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url.path_piece() == kAsanCorruptHeapBlock) {
     base::debug::AsanCorruptHeapBlock();
     return true;
@@ -87,7 +87,7 @@ bool HandleAsanDebugURL(const GURL& url) {
     base::debug::AsanCorruptHeap();
     return true;
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (url.path_piece() == kAsanHeapOverflow) {
     base::debug::AsanHeapOverflow();
@@ -134,7 +134,7 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (url == blink::kChromeUIBrowserHeapCorruptionURL) {
     // Induce an intentional heap corruption in the browser process.
     base::debug::win::TerminateWithHeapCorruption();
@@ -174,7 +174,7 @@ bool HandleDebugURL(const GURL& url,
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url == blink::kChromeUIGpuJavaCrashURL) {
     GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,

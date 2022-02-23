@@ -20,13 +20,13 @@ import './throbber_css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
+import {Destination, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
+import {getTemplate} from './destination_select.html.js';
 import {SelectMixin} from './select_mixin.js';
 
 const PrintPreviewDestinationSelectElementBase =
@@ -39,7 +39,7 @@ export class PrintPreviewDestinationSelectElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -194,8 +194,15 @@ export class PrintPreviewDestinationSelectElement extends
   /**
    * Return the options currently visible to the user for testing purposes.
    */
-  getVisibleItemsForTest(): NodeListOf<Element> {
-    return this.shadowRoot!.querySelectorAll('option:not([hidden])');
+  getVisibleItemsForTest(): NodeListOf<HTMLOptionElement> {
+    return this.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+        'option:not([hidden])');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-select': PrintPreviewDestinationSelectElement;
   }
 }
 

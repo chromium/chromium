@@ -22,7 +22,7 @@
 namespace {
 
 const base::CommandLine::StringType FAKE_DEVICE_FLAG =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::ASCIIToWide(switches::kUseFakeDeviceForMediaStream);
 #else
     switches::kUseFakeDeviceForMediaStream;

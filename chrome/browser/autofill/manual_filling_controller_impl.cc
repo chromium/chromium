@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -140,7 +139,7 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   TRACE_EVENT0("passwords",
                "ManualFillingControllerImpl::NotifyFocusedInputChanged");
   autofill::LocalFrameToken frame_token;
-  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
+  if (content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame()) {
     frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
   }
   last_focused_field_id_ = {frame_token, focused_field_id};
@@ -247,7 +246,10 @@ void ManualFillingControllerImpl::RequestAccessorySheet(
 }
 
 gfx::NativeView ManualFillingControllerImpl::container_view() const {
-  return web_contents_->GetNativeView();
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents&>(GetWebContents()).GetNativeView();
 }
 
 // Returns a weak pointer for this object.
@@ -257,7 +259,7 @@ ManualFillingControllerImpl::AsWeakPtr() {
 }
 
 void ManualFillingControllerImpl::Initialize() {
-  DCHECK(FromWebContents(web_contents_)) << "Don't call from constructor!";
+  DCHECK(FromWebContents(&GetWebContents())) << "Don't call from constructor!";
   RegisterObserverForAllowedSources();
   if (address_controller_)
     address_controller_->RefreshSuggestions();
@@ -265,12 +267,11 @@ void ManualFillingControllerImpl::Initialize() {
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  if (PasswordAccessoryController::AllowedForWebContents(web_contents_)) {
-    pwd_controller_ =
-        ChromePasswordManagerClient::FromWebContents(web_contents_)
-            ->GetOrCreatePasswordAccessory()
-            ->AsWeakPtr();
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
+  if (PasswordAccessoryController::AllowedForWebContents(web_contents)) {
+    pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
+                          ->GetOrCreatePasswordAccessory()
+                          ->AsWeakPtr();
     DCHECK(pwd_controller_);
   }
   if (AddressAccessoryController::AllowedForWebContents(web_contents)) {
@@ -294,7 +295,7 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     base::WeakPtr<AddressAccessoryController> address_controller,
     base::WeakPtr<CreditCardAccessoryController> cc_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
       pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       cc_controller_(std::move(cc_controller)),

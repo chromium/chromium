@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -16,7 +17,7 @@
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
 }
 
 // TODO(crbug.com/1269277): Fix flakiness on Linux and Lacros then reenable.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OpeningAndClosingTheSidePanelHandlesFocusCorrectly \
   DISABLED_OpeningAndClosingTheSidePanelHandlesFocusCorrectly
 #else

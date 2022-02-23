@@ -1,0 +1,82 @@
+# vr tests do not apply to emulator
+-org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
+
+# crbug.com/1193745
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
+
+# crbug.com/1193814
+-org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testDangerousDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testDuplicateHttpPostDownload_Dismiss__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderEnabled
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderDisabled
+-org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderEnabled
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1036552
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
+
+# crbug.com/1061178
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
+
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
+
+# crbug.com/1195097
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
+
+# crbug.com/1225709
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
+-org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
+
+# crbug.com/1225754
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1231219
+-org.chromium.chrome.browser.bookmarks.BookmarkTest.testMoveDownMenuItem
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
+
+# crbug.com/1231259
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessoryIntegrationTest.testFillsSuggestionOnClick
+
+# crbug.com/1231646
+-org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsMediatorTest.testShowAreaSelectionDone
+
+# crbug.com/1231652
+-org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
+
+# crbug.com/1179791
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest.interactingWithLocationBarHidesAutofillAssistant
+
+# crbug.com/1188920
+-org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
+
+# crbug.com/1297370
+-org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.*
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.*
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
+
+# crbug.com/1297678
+-org.chromium.ui.base.ClipboardAndroidTest.*
+
+# crbug.com/1297682
+-org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*

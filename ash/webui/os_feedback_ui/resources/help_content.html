@@ -1,0 +1,22 @@
+<style>
+  .help-item {
+    display: flex;
+    margin: 12px 12px 0;
+  }
+
+  #helpContentLabel {
+    margin-top: 24px;
+  }
+</style>
+<div id="helpContentContainer">
+  <!--TODO(xiangdongkong): use localized strings -->
+  <p id="helpContentLabel">Suggested help content:</p>
+  <dom-repeat items="[[helpContentList]]">
+    <template>
+      <div class="help-item">
+        <!--TODO(xiangdongkong): add icon -->
+        <a href="[[getUrl_(item)]]" target="_blank">[[getTitle_(item)]]</a>
+      </div>
+    </template>
+  </dom-repeat>
+</div>

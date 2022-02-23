@@ -17,6 +17,3 @@ pdf_use_skia_override = false
 
 # Disable use of Skia backend, paths only (experimental)
 pdf_use_skia_paths_override = false
-
-# Enable experimental win32 GDI APIs.
-pdf_use_win32_gdi_override = true

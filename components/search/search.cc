@@ -13,7 +13,7 @@
 namespace search {
 
 bool IsInstantExtendedAPIEnabled() {
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;

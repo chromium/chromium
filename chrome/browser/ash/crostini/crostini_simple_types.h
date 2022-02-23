@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 
 // This file contains simple C++ types. Simple isn't a precise term, but as a
@@ -95,7 +96,9 @@ enum class CrostiniResult {
   SHARE_PATHS_FAILED = 63,
   UNREGISTERED_APPLICATION = 64,
   VSH_CONNECT_FAILED = 65,
-  kMaxValue = VSH_CONNECT_FAILED,
+  CONTAINER_STOP_FAILED = 66,
+  CONTAINER_STOP_CANCELLED = 67,
+  kMaxValue = CONTAINER_STOP_CANCELLED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
@@ -120,15 +123,6 @@ enum class UninstallPackageProgressStatus {
   SUCCEEDED,
   FAILED,
   UNINSTALLING,  // In progress
-};
-
-// TODO(juwa): delete this once the new version of tremplin has shipped.
-enum class ExportContainerProgressStatus {
-  // Deprecated. Has been replaced by STREAMING.
-  PACK,
-  // Deprecated. Has been replaced by STREAMING.
-  DOWNLOAD,
-  STREAMING,
 };
 
 enum class ImportContainerProgressStatus {
@@ -184,8 +178,11 @@ struct ContainerInfo {
 struct Icon {
   std::string desktop_file_id;
 
-  // Icon file content in PNG format.
+  // Icon file content in specified format.
   std::string content;
+
+  // Icon format (e.g. PNG, SVG)
+  vm_tools::cicerone::DesktopIcon::Format format;
 };
 
 struct LinuxPackageInfo {

@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_TEST_RESOURCE_FETCHER_PROPERTIES_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
@@ -60,11 +61,6 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override {
     return IsMainFrame() ? 3 : 2;
-  }
-
-  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
-      const override {
-    return nullptr;
   }
 
   void SetIsMainFrame(bool value) { is_main_frame_ = value; }

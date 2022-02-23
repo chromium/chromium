@@ -8,7 +8,7 @@
   }
 
   #group-button {
-    --cr-icon-button-size: 28px;
+    --cr-icon-button-size: var(--emoji-size);
     --cr-icon-button-fill-color: var(--cros-icon-color-primary);
     --cr-icon-button-icon-size: 20px;
     font-size: 20px;
@@ -20,6 +20,9 @@
     --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
   }
 
+  :host([v2-enabled]) {
+    --emoji-size: var(--v2-emoji-size);
+  }
 </style>
 
 <cr-icon-button

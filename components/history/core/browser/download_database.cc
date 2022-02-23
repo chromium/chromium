@@ -44,7 +44,7 @@ enum DroppedReason {
   DROPPED_REASON_MAX
 };
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Binds/reads the given file path to the given column of the given statement.
 void BindFilePath(sql::Statement& statement,
@@ -296,6 +296,11 @@ bool DownloadDatabase::MigrateDownloadSiteInstanceUrl() {
   return EnsureColumnExists("site_url", "VARCHAR NOT NULL DEFAULT ''");
 }
 
+bool DownloadDatabase::MigrateEmbedderDownloadData() {
+  return EnsureColumnExists("embedder_download_data",
+                            "VARCHAR NOT NULL DEFAULT ''");
+}
+
 bool DownloadDatabase::MigrateDownloadLastAccessTime() {
   return EnsureColumnExists("last_access_time", "INTEGER NOT NULL DEFAULT 0");
 }
@@ -332,16 +337,20 @@ bool DownloadDatabase::InitDownloadTable() {
       "referrer VARCHAR NOT NULL,"          // HTTP Referrer
       "site_url VARCHAR NOT NULL,"          // Site URL for initiating site
                                             // instance.
-      "tab_url VARCHAR NOT NULL,"           // Tab URL for initiator.
-      "tab_referrer_url VARCHAR NOT NULL,"  // Tag referrer URL for
-                                            // initiator.
-      "http_method VARCHAR NOT NULL,"       // HTTP method.
-      "by_ext_id VARCHAR NOT NULL,"         // ID of extension that started the
-                                            // download
-      "by_ext_name VARCHAR NOT NULL,"       // name of extension
-      "etag VARCHAR NOT NULL,"              // ETag
-      "last_modified VARCHAR NOT NULL,"     // Last-Modified header
-      "mime_type VARCHAR(255) NOT NULL,"    // MIME type.
+      "embedder_download_data VARCHAR NOT NULL,"  // Serialized proto for
+                                                  // embedder data pertaining to
+                                                  // the initiating site
+                                                  // instance.
+      "tab_url VARCHAR NOT NULL,"                 // Tab URL for initiator.
+      "tab_referrer_url VARCHAR NOT NULL,"        // Tag referrer URL for
+                                                  // initiator.
+      "http_method VARCHAR NOT NULL,"             // HTTP method.
+      "by_ext_id VARCHAR NOT NULL,"       // ID of extension that started the
+                                          // download
+      "by_ext_name VARCHAR NOT NULL,"     // name of extension
+      "etag VARCHAR NOT NULL,"            // ETag
+      "last_modified VARCHAR NOT NULL,"   // Last-Modified header
+      "mime_type VARCHAR(255) NOT NULL,"  // MIME type.
       "original_mime_type VARCHAR(255) NOT NULL)"  // Original MIME type.
       ,
       kDownloadsTable);
@@ -439,9 +448,10 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
           "SELECT id, guid, current_path, target_path, mime_type, "
           "original_mime_type, start_time, received_bytes, total_bytes, state, "
           "danger_type, interrupt_reason, hash, end_time, opened, "
-          "last_access_time, transient, referrer, site_url, tab_url, "
-          "tab_referrer_url, http_method, by_ext_id, by_ext_name, etag, "
-          "last_modified FROM %s ORDER BY start_time",
+          "last_access_time, transient, referrer, site_url, "
+          "embedder_download_data, tab_url, tab_referrer_url, http_method, "
+          "by_ext_id, by_ext_name, etag, last_modified FROM %s ORDER BY "
+          "start_time",
           kDownloadsTable)
           .c_str()));
 
@@ -478,6 +488,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
     info->transient = statement_main.ColumnInt(column++) != 0;
     info->referrer_url = GURL(statement_main.ColumnString(column++));
     info->site_url = GURL(statement_main.ColumnString(column++));
+    info->embedder_download_data = statement_main.ColumnString(column++);
     info->tab_url = GURL(statement_main.ColumnString(column++));
     info->tab_referrer_url = GURL(statement_main.ColumnString(column++));
     info->http_method = statement_main.ColumnString(column++);
@@ -675,15 +686,14 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
         base::StringPrintf(
             "INSERT INTO %s "
             "(id, guid, current_path, target_path, mime_type, "
-            "original_mime_type, "
-            " start_time, received_bytes, total_bytes, state, danger_type, "
-            " interrupt_reason, hash, end_time, opened, last_access_time, "
-            "transient, referrer, site_url, tab_url, tab_referrer_url, "
-            "http_method, "
-            " by_ext_id, by_ext_name, etag, last_modified) "
+            "original_mime_type, start_time, received_bytes, total_bytes, "
+            "state, danger_type, interrupt_reason, hash, end_time, opened, "
+            "last_access_time, transient, referrer, site_url, "
+            "embedder_download_data, tab_url, tab_referrer_url, http_method, "
+            "by_ext_id, by_ext_name, etag, last_modified) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
             "        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-            "        ?, ?, ?, ?, ?, ?)",
+            "        ?, ?, ?, ?, ?, ?, ?)",
             kDownloadsTable)
             .c_str()));
 
@@ -710,6 +720,7 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
     statement_insert.BindInt(column++, info.transient ? 1 : 0);
     statement_insert.BindString(column++, info.referrer_url.spec());
     statement_insert.BindString(column++, info.site_url.spec());
+    statement_insert.BindString(column++, info.embedder_download_data);
     statement_insert.BindString(column++, info.tab_url.spec());
     statement_insert.BindString(column++, info.tab_referrer_url.spec());
     statement_insert.BindString(column++, info.http_method);

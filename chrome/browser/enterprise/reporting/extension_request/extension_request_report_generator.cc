@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/values_util.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -20,6 +19,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/enterprise/common/proto/extensions_workflow_events.pb.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/common/extension_urls.h"
@@ -28,7 +28,7 @@ namespace enterprise_reporting {
 namespace {
 
 bool IsRequestInDict(const std::string& extension_id,
-                     const base::DictionaryValue* requests) {
+                     const base::Value* requests) {
   return requests->FindKey(extension_id) != nullptr;
 }
 
@@ -62,6 +62,7 @@ std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
   report->set_client_type(ExtensionsWorkflowEvent::CHROME_OS_USER);
 #else
   report->set_client_type(ExtensionsWorkflowEvent::BROWSER_DEVICE);
+  report->set_device_name(policy::GetMachineName());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return report;
 }
@@ -101,9 +102,9 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   std::string webstore_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  const base::DictionaryValue* pending_requests =
+  const base::Value* pending_requests =
       profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  const base::DictionaryValue* uploaded_requests =
+  const base::Value* uploaded_requests =
       profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
 
   for (auto it : pending_requests->DictItems()) {

@@ -296,7 +296,17 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
   const SessionID& session_id = GetSessionIDForTab(tab);
   content::NavigationController& controller =
       tab->web_contents()->GetController();
-  const int current_index = controller.GetCurrentEntryIndex();
+  // Ensure that we don't try to persist initial NavigationEntry, as it is
+  // not actually associated with any navigation and will just result in
+  // about:blank on session restore.
+  bool is_on_initial_entry =
+      (tab->web_contents()->GetController().GetLastCommittedEntry() &&
+       tab->web_contents()
+           ->GetController()
+           .GetLastCommittedEntry()
+           ->IsInitialEntry());
+  const int current_index =
+      is_on_initial_entry ? -1 : controller.GetCurrentEntryIndex();
   const int min_index =
       std::max(current_index - sessions::gMaxPersistNavigationCount, 0);
   const int max_index =
@@ -311,6 +321,8 @@ void BrowserPersister::BuildCommandsForTab(TabImpl* tab, int index_in_browser) {
                                           ? controller.GetPendingEntry()
                                           : controller.GetEntryAtIndex(i);
     DCHECK(entry);
+    if (entry->IsInitialEntry())
+      continue;
     const SerializedNavigationEntry navigation =
         ContentSerializedNavigationBuilder::FromNavigationEntry(i, entry);
     command_storage_manager_->AppendRebuildCommand(

@@ -357,7 +357,7 @@ RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
   std::vector<api::declarative_net_request::Rule> result;
   std::u16string error;
   bool populate_result = json_schema_compiler::util::PopulateArrayFromList(
-      GetSessionRulesValue(extension_id).GetList(), &result, &error);
+      GetSessionRulesValue(extension_id).GetListDeprecated(), &result, &error);
   DCHECK(populate_result);
   DCHECK(error.empty());
   return result;
@@ -405,7 +405,7 @@ RulesMonitorService::RulesMonitorService(
       ruleset_manager_(browser_context),
       action_tracker_(browser_context),
       global_rules_tracker_(prefs_, extension_registry_) {
-  registry_observation_.Observe(extension_registry_);
+  registry_observation_.Observe(extension_registry_.get());
 }
 
 RulesMonitorService::~RulesMonitorService() = default;

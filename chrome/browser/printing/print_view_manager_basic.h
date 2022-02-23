@@ -25,7 +25,7 @@ class PrintViewManagerBasic
       mojo::PendingAssociatedReceiver<mojom::PrintManagerHost> receiver,
       content::RenderFrameHost* rfh);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
 #endif

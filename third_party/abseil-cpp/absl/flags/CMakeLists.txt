@@ -105,6 +105,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::config
+    absl::dynamic_annotations
     absl::fast_type_id
 )
 

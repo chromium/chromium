@@ -47,17 +47,18 @@ class BASE_EXPORT RefCountedBase {
 
   ~RefCountedBase() {
 #if DCHECK_IS_ON()
-    DCHECK(in_dtor_) << "RefCounted object deleted without calling Release()";
+    // RefCounted object deleted without calling Release()
+    DCHECK(in_dtor_);
 #endif
   }
 
   void AddRef() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
-    DCHECK(!needs_adopt_ref_)
-        << "This RefCounted object is created with non-zero reference count."
-        << " The first reference to such a object has to be made by AdoptRef or"
-        << " MakeRefCounted.";
+    // This RefCounted object is created with non-zero reference count.
+    // The first reference to such a object has to be made by AdoptRef or
+    // MakeRefCounted.
+    DCHECK(!needs_adopt_ref_);
     if (ref_count_ >= 1) {
       DCHECK(CalledOnValidSequence());
     }
@@ -195,10 +196,10 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   ALWAYS_INLINE void AddRefImpl() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
-    DCHECK(!needs_adopt_ref_)
-        << "This RefCounted object is created with non-zero reference count."
-        << " The first reference to such a object has to be made by AdoptRef or"
-        << " MakeRefCounted.";
+    // This RefCounted object is created with non-zero reference count.
+    // The first reference to such a object has to be made by AdoptRef or
+    // MakeRefCounted.
+    DCHECK(!needs_adopt_ref_);
 #endif
     ref_count_.Increment();
   }
@@ -206,10 +207,10 @@ class BASE_EXPORT RefCountedThreadSafeBase {
   ALWAYS_INLINE void AddRefWithCheckImpl() const {
 #if DCHECK_IS_ON()
     DCHECK(!in_dtor_);
-    DCHECK(!needs_adopt_ref_)
-        << "This RefCounted object is created with non-zero reference count."
-        << " The first reference to such a object has to be made by AdoptRef or"
-        << " MakeRefCounted.";
+    // This RefCounted object is created with non-zero reference count.
+    // The first reference to such a object has to be made by AdoptRef or
+    // MakeRefCounted.
+    DCHECK(!needs_adopt_ref_);
 #endif
     CHECK_GT(ref_count_.Increment(), 0);
   }

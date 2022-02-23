@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,6 +56,7 @@ class ExternallyInstalledWebAppPrefs {
   void Insert(const GURL& url,
               const AppId& app_id,
               ExternalInstallSource install_source);
+  bool Remove(const GURL& url);
   absl::optional<AppId> LookupAppId(const GURL& url) const;
   bool HasNoApps() const;
 
@@ -66,7 +68,7 @@ class ExternallyInstalledWebAppPrefs {
   bool IsPlaceholderApp(const AppId& app_id) const;
 
  private:
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 };
 
 }  // namespace web_app

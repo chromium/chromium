@@ -15,6 +15,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -664,7 +665,7 @@ class BackgroundSyncManagerTest
 
   void SetRelyOnAndroidNetworkDetectionAndRestartManager(
       bool rely_on_android_network_detection) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     BackgroundSyncParameters* parameters =
         GetController()->background_sync_parameters();
     parameters->rely_on_android_network_detection =
@@ -745,7 +746,7 @@ class BackgroundSyncManagerTest
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  StoragePartitionImpl* storage_partition_impl_;
+  raw_ptr<StoragePartitionImpl> storage_partition_impl_;
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;
   base::SimpleTestClock test_clock_;
   std::unique_ptr<TestBackgroundSyncProxy> test_proxy_;
@@ -1967,7 +1968,7 @@ TEST_F(BackgroundSyncManagerTest, RelyOnAndroidNetworkDetection) {
   EXPECT_TRUE(Register(sync_options_1_));
   SetNetwork(network::mojom::ConnectionType::CONNECTION_WIFI);
   base::RunLoop().RunUntilIdle();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0, sync_events_called_);
   EXPECT_TRUE(GetRegistration(sync_options_1_));
 #else

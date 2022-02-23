@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
@@ -176,7 +178,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DedicatedWebTransportHttp3Client> client_;
-  TestConnectionHelper* helper_;  // Owned by |context_|.
+  raw_ptr<TestConnectionHelper> helper_;  // Owned by |context_|.
   ::testing::NiceMock<MockVisitor> visitor_;
   std::unique_ptr<QuicSimpleServer> server_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -203,7 +205,13 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   Run();
 }
 
-TEST_F(DedicatedWebTransportHttp3Test, CloseTimeout) {
+// TODO(https://crbug.com/1288036): The test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseTimeout DISABLED_CloseTimeout
+#else
+#define MAYBE_CloseTimeout CloseTimeout
+#endif
+TEST_F(DedicatedWebTransportHttp3Test, MAYBE_CloseTimeout) {
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
       GetURL("/echo"), origin_, &visitor_, isolation_key_, context_.get(),

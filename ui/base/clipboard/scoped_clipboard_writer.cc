@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "net/base/escape.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/gfx/geometry/size.h"
@@ -48,6 +49,11 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
 
   if (confidential_)
     Clipboard::GetForCurrentThread()->MarkAsConfidential();
+}
+
+void ScopedClipboardWriter::SetDataSource(
+    std::unique_ptr<DataTransferEndpoint> data_src) {
+  data_src_ = std::move(data_src);
 }
 
 void ScopedClipboardWriter::WriteText(const std::u16string& text) {
@@ -198,8 +204,7 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
   // have a mapping of custom format MIME type to web custom format.
   // There can only be 100 custom format per write and it will be
   // registered when the web authors request for a custom format.
-  static constexpr int kMaxRegisteredFormats = 100;
-  if (counter_ >= kMaxRegisteredFormats)
+  if (counter_ >= ui::kMaxRegisteredClipboardFormats)
     return;
   std::string format_in_ascii = base::UTF16ToASCII(format);
   if (registered_formats_.find(format_in_ascii) == registered_formats_.end()) {
@@ -211,6 +216,16 @@ void ScopedClipboardWriter::WriteData(const std::u16string& format,
         {web_custom_format_string, std::move(data)});
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ScopedClipboardWriter::WriteEncodedDataTransferEndpointForTesting(
+    const std::string& json) {
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(Clipboard::ObjectMapParam(json.begin(), json.end()));
+  objects_[Clipboard::PortableFormat::kEncodedDataTransferEndpoint] =
+      parameters;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ScopedClipboardWriter::Reset() {
   objects_.clear();

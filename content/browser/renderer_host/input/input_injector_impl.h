@@ -15,7 +15,7 @@
 namespace content {
 
 // An implementation of InputInjector.
-class CONTENT_EXPORT InputInjectorImpl : public mojom::InputInjector {
+class InputInjectorImpl : public mojom::InputInjector {
  public:
   explicit InputInjectorImpl(base::WeakPtr<RenderFrameHostImpl> frame_host);
 

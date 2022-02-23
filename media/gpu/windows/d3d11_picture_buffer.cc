@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "media/base/media_log.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
@@ -66,8 +65,8 @@ D3D11Status D3D11PictureBuffer::Init(
 
   if (!SUCCEEDED(hr)) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to CreateVideoDecoderOutputView";
-    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputViewFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr,
+                           D3D11Status::Codes::kCreateDecoderOutputViewFailed);
   }
 
   return D3D11Status::Codes::kOk;

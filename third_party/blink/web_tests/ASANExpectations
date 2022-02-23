@@ -5,7 +5,7 @@
 # This file is used for tests that only need to be suppressed on
 # the Chromium WebKit ASAN bots.
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 # NULL deref in libflashplayer.so, http://crbug.com/145940
 # ==12527== ERROR: AddressSanitizer: SEGV on unknown address 0x7f628058b38b
@@ -56,7 +56,6 @@ crbug.com/438499 [ Linux ] virtual/threaded-no-composited-antialiasing/animation
 crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behavior/* [ Skip ]
 crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow.html [ Timeout ]
 crbug.com/464065 [ Linux ] media/track/css-cue-for-video-in-shadow-2.html [ Timeout ]
-crbug.com/572723 [ Linux ] http/tests/devtools/sources/debugger/debugger-completions-on-call-frame.js [ Timeout Pass ]
 crbug.com/700795 [ Linux ] http/tests/devtools/animation/animation-transition-setTiming-crash.js [ Skip ]
 
 # Intentionally failed allocations, via partitionAllocGenericFlags()

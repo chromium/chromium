@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/common/file_system/file_system_types.h"

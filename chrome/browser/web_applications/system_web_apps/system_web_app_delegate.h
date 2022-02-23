@@ -9,12 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -41,7 +42,7 @@ url::Origin GetOrigin(const char* url);
 // their application, overriding GetWebAppInfo(), and other methods as needed.
 class SystemWebAppDelegate {
  public:
-  // When installing via a WebApplicationInfo, the url is never loaded. It's
+  // When installing via a WebAppInstallInfo, the url is never loaded. It's
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.
   SystemWebAppDelegate(
@@ -66,8 +67,8 @@ class SystemWebAppDelegate {
   // The URL that the System App will be installed from.
   const GURL& GetInstallUrl() const { return install_url_; }
 
-  // Returns a WebApplicationInfo struct to complete installation.
-  virtual std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const = 0;
+  // Returns a WebAppInstallInfo struct to complete installation.
+  virtual std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const = 0;
 
   // If specified, the apps in |uninstall_and_replace| will have their data
   // migrated to this System App.
@@ -85,9 +86,11 @@ class SystemWebAppDelegate {
   // ShouldReuseExistingWindow() should return false at the same time.
   virtual bool ShouldShowNewWindowMenuOption() const;
 
-  // If true, when the app is launched through the File Handling Web API, we
-  // will include the file's directory in window.launchQueue as the first value.
-  virtual bool ShouldIncludeLaunchDirectory() const;
+  // Called when the app is launched with `params`. If the returned value is
+  // non-empty, it will be passed to the page as a FileSystemDirectoryHandle
+  // pre-pended to the `launchParams` list.
+  virtual base::FilePath GetLaunchDirectory(
+      const apps::AppLaunchParams& params) const;
 
   // Map from origin to enabled origin trial names for this app. For example,
   // "chrome://sample-web-app/" to ["Frobulate"]. If set, we will enable the
@@ -126,6 +129,9 @@ class SystemWebAppDelegate {
   // If true, allows the app to close the window through scripts, for example
   // using `window.close()`.
   virtual bool ShouldAllowScriptsToCloseWindows() const;
+
+  // If true, allows app to show up in file-open intent and picking surfaces.
+  virtual bool ShouldHandleFileOpenIntents() const;
 
   // Setup information to drive a background task.
   virtual absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const;
@@ -170,11 +176,28 @@ class SystemWebAppDelegate {
       const GURL& url,
       const apps::AppLaunchParams& params) const;
 
+  // Whether |url| which is outside the normal Navigation Scope should be
+  // considered part of this System App.
+  virtual bool IsUrlInSystemAppScope(const GURL& url) const;
+
+  // Whether it is preferred to resolve background color from the manifest,
+  // as opposed to resolving background color from web contents.
+  virtual bool PreferManifestBackgroundColor() const;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns whether theme changes should be animated.
+  virtual bool ShouldAnimateThemeChanges() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  protected:
+  Profile* profile() const { return profile_; }
+
+  // These should all be private. See
+  // https://google.github.io/styleguide/cppguide.html#Access_Control
   SystemAppType type_;
   std::string internal_name_;
   GURL install_url_;
-  const Profile* profile_;
+  raw_ptr<Profile> profile_;
   OriginTrialsMap origin_trials_map_;
 };
 

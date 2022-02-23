@@ -13,11 +13,15 @@ body {
 }
 
 #tableTitle {
-  color: #4a4a4a;
+  color: var(--feedback-primary-color);
 }
 
 #status {
-  color: rgb(66, 133, 244);
+  color: var(--feedback-prominent-color);
   display: inline-block;
   margin: .5em .5em;
+}
+
+.list:not(.filtered) tr:nth-child(odd) td {
+  background-color: var(--feedback-highlight-color);
 }

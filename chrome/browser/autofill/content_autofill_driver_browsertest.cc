@@ -135,35 +135,6 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     }
   }
 
-  void GetElementFormAndFieldData(const std::string& selector,
-                                  size_t expected_form_size) {
-    base::RunLoop run_loop;
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetMainFrame())
-        ->GetAutofillAgent()
-        ->GetElementFormAndFieldDataAtIndex(
-            selector, 0,
-            base::BindOnce(
-                &ContentAutofillDriverBrowserTest::OnGetElementFormAndFieldData,
-                base::Unretained(this), run_loop.QuitClosure(),
-                expected_form_size));
-    run_loop.Run();
-  }
-
-  void OnGetElementFormAndFieldData(base::RepeatingClosure done_callback,
-                                    size_t expected_form_size,
-                                    const autofill::FormData& form_data,
-                                    const autofill::FormFieldData& form_field) {
-    std::move(done_callback).Run();
-    if (expected_form_size) {
-      ASSERT_EQ(form_data.fields.size(), expected_form_size);
-      ASSERT_FALSE(form_field.label.empty());
-    } else {
-      ASSERT_EQ(form_data.fields.size(), expected_form_size);
-      ASSERT_TRUE(form_field.label.empty());
-    }
-  }
-
   testing::NiceMock<MockAutofillClient>& autofill_client() {
     return *autofill_client_.get();
   }
@@ -286,26 +257,6 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
       GURL(chrome::kChromeUIAboutURL), content::Referrer(),
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
   runner->Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       GetElementFormAndFieldData) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "/autofill/autofill_assistant_test_form.html")));
-
-  GetElementFormAndFieldData("#testformone #NAME_FIRST",
-                             /*expected_form_size=*/9u);
-
-  GetElementFormAndFieldData("#testformtwo #NAME_FIRST",
-                             /*expected_form_size=*/7u);
-
-  // Multiple corresponding form fields. Takes the first as an implementation
-  // detail of this test helper.
-  GetElementFormAndFieldData("#NAME_FIRST", /*expected_form_size=*/9u);
-
-  // No corresponding form field.
-  GetElementFormAndFieldData("#whatever", /*expected_form_size=*/0u);
 }
 
 class ContentAutofillDriverPrerenderBrowserTest

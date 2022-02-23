@@ -117,13 +117,11 @@ void CastToolbarButton::OnIssuesCleared() {
 }
 
 void CastToolbarButton::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
-  has_local_display_route_ =
-      std::find_if(routes.begin(), routes.end(),
-                   [](const media_router::MediaRoute& route) {
-                     return route.is_local() && route.for_display();
-                   }) != routes.end();
+    const std::vector<media_router::MediaRoute>& routes) {
+  has_local_route_ = std::find_if(routes.begin(), routes.end(),
+                                  [](const media_router::MediaRoute& route) {
+                                    return route.is_local();
+                                  }) != routes.end();
   UpdateIcon();
 }
 
@@ -168,7 +166,7 @@ void CastToolbarButton::UpdateIcon() {
   const gfx::VectorIcon* new_icon = nullptr;
   SkColor icon_color;
 
-  if (severity == Severity::NOTIFICATION && !has_local_display_route_) {
+  if (severity == Severity::NOTIFICATION && !has_local_route_) {
     new_icon = &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
   } else if (severity == Severity::FATAL) {

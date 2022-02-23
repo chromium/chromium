@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -197,7 +198,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
-  MockAffiliationService* url_service_ = nullptr;
+  raw_ptr<MockAffiliationService> url_service_ = nullptr;
 
  private:
 };
@@ -470,6 +471,31 @@ IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
   // Expect no UKMs saved.
   EXPECT_TRUE(
       test_recorder()->GetEntriesByName(UkmBuilder::kEntryName).empty());
+}
+
+IN_PROC_BROWSER_TEST_P(WellKnownChangePasswordNavigationThrottleBrowserTest,
+                       AffiliationServiceReturnsWellKnownChangePasswordPath) {
+  path_response_map_[kWellKnownChangePasswordPath] = {
+      net::HTTP_PERMANENT_REDIRECT,
+      {std::make_pair("Location", "/change-password")},
+      response_delays().change_password_delay};
+  path_response_map_[kWellKnownNotExistingResourcePath] = {
+      net::HTTP_OK, {}, response_delays().not_exist_delay};
+  path_response_map_["/change-password"] = {net::HTTP_OK, {}, 0};
+
+  EXPECT_CALL(
+      *url_service_,
+      GetChangePasswordURL(test_server_->GetURL(kWellKnownChangePasswordPath)))
+      .WillRepeatedly(
+          Return(test_server_->GetURL(kWellKnownChangePasswordPath)));
+
+  GURL navigate_url = test_server_->GetURL(kWellKnownChangePasswordPath);
+  GURL expected_url = test_server_->GetURL("/change-password");
+  TestNavigationThrottle(
+      navigate_url, expected_url,
+      url::Origin::Create(GURL("https://passwords.google.com/checkup")));
+
+  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }
 
 // Harness for testing the throttle with prerendering involved.

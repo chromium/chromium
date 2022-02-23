@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "content/child/child_thread_impl.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
@@ -27,7 +26,7 @@ class ServiceWorkerContextClient;
 // service worker to stop and then deletes itself.
 //
 // Created and lives on a ThreadPool background thread.
-class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
+class EmbeddedWorkerInstanceClientImpl
     : public blink::mojom::EmbeddedWorkerInstanceClient {
  public:
   // Enum for UMA to record when StartWorker is received.

@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -78,7 +79,7 @@ const int kCommitErrorThreshold = 8;
 
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const unsigned kMaxLocalStorageAreaCount = 10;
 const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 #else
@@ -212,7 +213,7 @@ class LocalStorageImpl::StorageAreaHolder final
     options.default_commit_delay = kCommitDefaultDelaySecs;
     options.max_bytes_per_hour = kMaxBytesPerHour;
     options.max_commits_per_hour = kMaxCommitsPerHour;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
 #else
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_AND_VALUES;
@@ -288,13 +289,13 @@ class LocalStorageImpl::StorageAreaHolder final
   bool has_bindings() const { return has_bindings_; }
 
  private:
-  LocalStorageImpl* context_;
+  raw_ptr<LocalStorageImpl> context_;
   blink::StorageKey storage_key_;
   // Holds the same value as |area_|. The reason for this is that
   // during destruction of the StorageAreaImpl instance we might still get
   // called and need access  to the StorageAreaImpl instance. The unique_ptr
   // could already be null, but this field should still be valid.
-  StorageAreaImpl* area_ptr_;
+  raw_ptr<StorageAreaImpl> area_ptr_;
   std::unique_ptr<StorageAreaImpl> area_;
   bool has_bindings_ = false;
 };

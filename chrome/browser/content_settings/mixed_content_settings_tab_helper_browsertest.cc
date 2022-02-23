@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -22,22 +23,22 @@
 
 class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
  public:
-  MixedContentSettingsTabHelperBrowserTest()
-      : prerender_helper_(base::BindRepeating(
-            &MixedContentSettingsTabHelperBrowserTest::web_contents,
-            base::Unretained(this))) {}
+  MixedContentSettingsTabHelperBrowserTest() = default;
   ~MixedContentSettingsTabHelperBrowserTest() override = default;
-
-  void SetUp() override {
-    prerender_helper_.SetUp(&ssl_server_);
-    InProcessBrowserTest::SetUp();
-  }
+  MixedContentSettingsTabHelperBrowserTest(
+      const MixedContentSettingsTabHelperBrowserTest&) = delete;
+  MixedContentSettingsTabHelperBrowserTest& operator=(
+      const MixedContentSettingsTabHelperBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ssl_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ssl_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(ssl_server_.Start());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  protected:
@@ -47,14 +48,6 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
         switches::kIgnoreCertificateErrors);
   }
 
-  content::test::PrerenderTestHelper* prerender_helper() {
-    return &prerender_helper_;
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   content::RenderFrameHost* current_frame_host() {
     return web_contents()->GetMainFrame();
   }
@@ -62,7 +55,6 @@ class MixedContentSettingsTabHelperBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer* test_server() { return &ssl_server_; }
 
  private:
-  content::test::PrerenderTestHelper prerender_helper_;
   net::EmbeddedTestServer ssl_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
@@ -117,9 +109,35 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
       *new_contents->GetMainFrame()));
 }
 
+class MixedContentSettingsTabHelperPrerenderBrowserTest
+    : public MixedContentSettingsTabHelperBrowserTest {
+ public:
+  MixedContentSettingsTabHelperPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &MixedContentSettingsTabHelperBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~MixedContentSettingsTabHelperPrerenderBrowserTest() override = default;
+  MixedContentSettingsTabHelperPrerenderBrowserTest(
+      const MixedContentSettingsTabHelperPrerenderBrowserTest&) = delete;
+  MixedContentSettingsTabHelperPrerenderBrowserTest& operator=(
+      const MixedContentSettingsTabHelperPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(test_server());
+    MixedContentSettingsTabHelperBrowserTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
 // Tests that the prerending doesn't affect the mixed content's insecure status
 // in the primary page.
-IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
                        KeepInsecureInPrerendering) {
   GURL primary_url(
       test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
@@ -170,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
 
 // Tests that the prerending doesn't affect the mixed content's insecure status
 // with the main frame.
-IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
                        DoNotAffectInsecureOfPrimaryPageInPrerendering) {
   GURL primary_url(
       test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
@@ -210,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
 
 // Tests that the activated page keeps the mixed content's secure status
 // after the prerending page is activated.
-IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
                        DoNotAffectSecureOfPrerenderingPage) {
   GURL primary_url(
       test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
@@ -246,4 +264,81 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperBrowserTest,
 
   // Mixed content should keep to be blocked in the activated page.
   EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+}
+
+class MixedContentSettingsTabHelperFencedFrameBrowserTest
+    : public MixedContentSettingsTabHelperBrowserTest {
+ public:
+  MixedContentSettingsTabHelperFencedFrameBrowserTest() = default;
+  ~MixedContentSettingsTabHelperFencedFrameBrowserTest() override = default;
+  MixedContentSettingsTabHelperFencedFrameBrowserTest(
+      const MixedContentSettingsTabHelperFencedFrameBrowserTest&) = delete;
+  MixedContentSettingsTabHelperFencedFrameBrowserTest& operator=(
+      const MixedContentSettingsTabHelperFencedFrameBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    MixedContentSettingsTabHelperBrowserTest::SetUpOnMainThread();
+    EXPECT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Tests that the mixed content's insecure status in the primary page
+// is disregarded by the fenced frame
+IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperFencedFrameBrowserTest,
+                       IgnoreInsecureContentInFencedFrame) {
+  GURL primary_url(
+      test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
+  auto* helper = MixedContentSettingsTabHelper::FromWebContents(web_contents());
+
+  // Loads a primary page that has mixed content.
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), primary_url));
+
+  // Mixed content should be blocked at first.
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Loads a fenced frame.
+  content::RenderFrameHostWrapper fenced_frame_host(
+      fenced_frame_test_helper().CreateFencedFrame(
+          current_frame_host(),
+          embedded_test_server()->GetURL("/fenced_frames/title1.html")));
+  ASSERT_NE(nullptr, fenced_frame_host.get());
+
+  // Mixed content should be blocked in a fenced frame
+  EXPECT_FALSE(
+      helper->IsRunningInsecureContentAllowed(*fenced_frame_host.get()));
+
+  // Emulates link clicking on the mixed script bubble to allow mixed content
+  // to run.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  std::unique_ptr<ContentSettingBubbleModel> model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          browser()->content_setting_bubble_model_delegate(),
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          ContentSettingsType::MIXEDSCRIPT));
+  model->OnCustomLinkClicked();
+
+  // Waits for reload.
+  observer.Wait();
+
+  // Mixed content should no longer be blocked in the main frame.
+  EXPECT_TRUE(helper->IsRunningInsecureContentAllowed(*current_frame_host()));
+
+  // Loads a fenced frame.
+  content::RenderFrameHostWrapper another_fenced_frame_host(
+      fenced_frame_test_helper().CreateFencedFrame(
+          current_frame_host(),
+          embedded_test_server()->GetURL("/fenced_frames/title1.html")));
+  ASSERT_NE(nullptr, another_fenced_frame_host.get());
+
+  // Mixed content should continue to be blocked in a fenced frame
+  EXPECT_FALSE(helper->IsRunningInsecureContentAllowed(
+      *another_fenced_frame_host.get()));
 }

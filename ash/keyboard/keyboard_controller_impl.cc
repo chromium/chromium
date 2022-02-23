@@ -67,7 +67,7 @@ absl::optional<display::Display> GetFirstTouchDisplay() {
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
                                     const std::string& feature_path) {
   DCHECK(prefs);
-  const base::DictionaryValue* features =
+  const base::Value* features =
       prefs->GetDictionary(prefs::kAccessibilityVirtualKeyboardFeatures);
 
   if (!features)
@@ -276,6 +276,11 @@ KeyRepeatSettings KeyboardControllerImpl::GetKeyRepeatSettings() {
   int interval_in_ms = prefs->GetInteger(ash::prefs::kXkbAutoRepeatInterval);
   return KeyRepeatSettings{enabled, base::Milliseconds(delay_in_ms),
                            base::Milliseconds(interval_in_ms)};
+}
+
+bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
+  PrefService* prefs = pref_change_registrar_->prefs();
+  return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
 }
 
 // SessionObserver

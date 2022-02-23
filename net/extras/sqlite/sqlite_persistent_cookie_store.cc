@@ -18,7 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -99,7 +99,7 @@ void RecordCookieCommitProblem(CookieCommitProblem event) {
 // The persistent cookie store is loaded into memory on eTLD at a time. This
 // variable controls the delay between loading eTLDs, so as to not overload the
 // CPU or I/O with these low priority requests immediately after start up.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // TODO(ellyjones): This should be 200ms, but currently CookieStoreIOS is
 // waiting for -FinishedLoadingCookies to be called after all eTLD cookies are
 // loaded before making any network requests.  Changing to 0ms for now.
@@ -121,6 +121,7 @@ namespace {
 
 // Version number of the database.
 //
+// Version 17 - 2022/01/25 - https://crrev.com/c/3416230
 // Version 16 - 2021/09/10 - https://crrev.com/c/3152897
 // Version 15 - 2021/07/01 - https://crrev.com/c/3001822
 // Version 14 - 2021/02/23 - https://crrev.com/c/2036899
@@ -137,6 +138,8 @@ namespace {
 // Version 5  - 2011/12/05 - https://codereview.chromium.org/8533013
 // Version 4  - 2009/09/01 - https://codereview.chromium.org/183021
 //
+//
+// Version 17 fixes crbug.com/1290841: Bug in V16 migration.
 //
 // Version 16 changes the unique constraint's order of columns to have
 // top_frame_site_key be after host_key. This allows us to use the internal
@@ -214,8 +217,8 @@ namespace {
 // Version 3 updated the database to include the last access time, so we can
 // expire them in decreasing order of use when we've reached the maximum
 // number of cookies.
-const int kCurrentVersionNumber = 16;
-const int kCompatibleVersionNumber = 16;
+const int kCurrentVersionNumber = 17;
+const int kCompatibleVersionNumber = 17;
 
 }  // namespace
 
@@ -435,7 +438,7 @@ class SQLitePersistentCookieStore::Backend
   // cookies stored persistently).
   //
   // Not owned.
-  CookieCryptoDelegate* crypto_;
+  raw_ptr<CookieCryptoDelegate> crypto_;
 };
 
 namespace {
@@ -549,7 +552,7 @@ class IncrementTimeDelta {
   }
 
  private:
-  base::TimeDelta* delta_;
+  raw_ptr<base::TimeDelta> delta_;
   base::TimeDelta original_value_;
   base::Time start_;
 };
@@ -686,6 +689,12 @@ bool CreateV16Schema(sql::Database* db) {
     return false;
 
   return true;
+}
+
+// Initializes the cookies table, returning true on success.
+// The table/index cannot exist when calling this function.
+bool CreateV17Schema(sql::Database* db) {
+  return CreateV16Schema(db);
 }
 
 }  // namespace
@@ -836,7 +845,7 @@ bool SQLitePersistentCookieStore::Backend::CreateDatabaseSchema() {
   if (db()->DoesTableExist("cookies"))
     return true;
 
-  return CreateV16Schema(db());
+  return CreateV17Schema(db());
 }
 
 bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
@@ -1184,12 +1193,11 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 13) {
-    const base::TimeTicks start_time = base::TimeTicks::Now();
     sql::Transaction transaction(db());
     if (!transaction.Begin())
       return absl::nullopt;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Migration is only needed on Windows. On other platforms, this is a no-op.
     if (crypto_ && crypto_->ShouldEncrypt()) {
       sql::Statement select_statement, update_statement;
@@ -1207,8 +1215,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       if (!select_statement.is_valid() || !update_statement.is_valid())
         return absl::nullopt;
 
-      bool okay = true;
-
       std::map<int64_t, std::string> encrypted_values;
 
       while (select_statement.Step()) {
@@ -1218,13 +1224,11 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         std::string decrypted_value;
         if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
           RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
-          okay = false;
           continue;
         }
         std::string new_encrypted_value;
         if (!crypto_->EncryptString(decrypted_value, &new_encrypted_value)) {
           RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
-          okay = false;
           continue;
         }
         encrypted_values[rowid] = new_encrypted_value;
@@ -1237,8 +1241,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         if (!update_statement.Run())
           return absl::nullopt;
       }
-
-      UMA_HISTOGRAM_BOOLEAN("Cookie.MigratedEncryptionKeySuccess", okay);
     }
 #endif
     ++cur_version;
@@ -1246,8 +1248,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
-    base::UmaHistogramTimes("Cookie.TimeDatabaseMigrationToV14",
-                            base::TimeTicks::Now() - start_time);
   }
 
   if (cur_version == 14) {
@@ -1324,7 +1324,46 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
+  }
+
+  if (cur_version == 16) {
+    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV17");
+
+    sql::Transaction transaction(db());
+    if (!transaction.Begin())
+      return absl::nullopt;
+
+    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old"))
+      return absl::nullopt;
+    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index"))
+      return absl::nullopt;
+
+    if (!CreateV17Schema(db()))
+      return absl::nullopt;
+    static constexpr char insert_cookies_sql[] =
+        "INSERT OR REPLACE INTO cookies "
+        "(creation_utc, host_key, top_frame_site_key, name, value, "
+        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
+        "last_access_utc, has_expires, is_persistent, priority, samesite, "
+        "source_scheme, source_port, is_same_party) "
+        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
+        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
+        "       last_access_utc, has_expires, is_persistent, priority, "
+        "samesite,"
+        "       source_scheme, source_port, is_same_party "
+        "FROM cookies_old ORDER BY creation_utc ASC";
+    if (!db()->Execute(insert_cookies_sql))
+      return absl::nullopt;
+    if (!db()->Execute("DROP TABLE cookies_old"))
+      return absl::nullopt;
+
     ++cur_version;
+    meta_table()->SetVersionNumber(cur_version);
+    meta_table()->SetCompatibleVersionNumber(
+        std::min(cur_version, kCompatibleVersionNumber));
+    transaction.Commit();
   }
 
   // Put future migration cases here.

@@ -76,6 +76,7 @@ android_library("internal_java") {
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_check/android:public_ui_java",
     "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/android/favicon:java",
@@ -122,13 +123,13 @@ android_library("internal_java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
+    "//chrome/browser/password_check/android:java_resources",
     "//components/browser_ui/settings/android:java_resources",
     "//components/browser_ui/styles/android:java_resources",
   ]
 
   sources = [
     "java/res/drawable-night/password_check_positive.xml",
-    "java/res/drawable/ic_autofill_assistant_white_24dp.xml",
     "java/res/drawable/ic_check_circle_filled_green_24dp.xml",
     "java/res/drawable/password_check_positive.xml",
     "java/res/layout/password_check_compromised_credential_item.xml",

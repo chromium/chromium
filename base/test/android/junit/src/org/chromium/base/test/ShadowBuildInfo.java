@@ -14,11 +14,13 @@ import org.chromium.base.BuildInfo;
 @Implements(BuildInfo.class)
 public class ShadowBuildInfo {
     private static boolean sIsAtLeastS;
+    private static boolean sIsAtLeastT;
 
     /** Rests the changes made to static state. */
     @Resetter
     public static void reset() {
         sIsAtLeastS = false;
+        sIsAtLeastT = false;
     }
 
     /** Whether the current build is considered to be at least S. */
@@ -27,8 +29,19 @@ public class ShadowBuildInfo {
         return sIsAtLeastS;
     }
 
+    /** Whether the current build is considered to be at least T. */
+    @Implementation
+    public static boolean isAtLeastT() {
+        return sIsAtLeastT;
+    }
+
     /** Sets whether current Android version is at least S. */
     public static void setIsAtLeastS(boolean isAtLeastS) {
         sIsAtLeastS = isAtLeastS;
+    }
+
+    /** Sets whether current Android version is at least T. */
+    public static void setIsAtLeastT(boolean isAtLeastT) {
+        sIsAtLeastT = isAtLeastT;
     }
 }

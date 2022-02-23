@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -45,7 +46,7 @@ class MojoHostResolverImpl::Job {
   // Mojo disconnect handler.
   void OnMojoDisconnect();
 
-  MojoHostResolverImpl* resolver_service_;
+  raw_ptr<MojoHostResolverImpl> resolver_service_;
   // This Job's iterator in |resolver_service_|, so the Job may be removed on
   // completion.
   std::list<Job>::iterator iter_;
@@ -125,8 +126,7 @@ void MojoHostResolverImpl::Job::OnResolveDone(int result) {
 
   std::vector<net::IPAddress> result_addresses;
   if (request_->GetAddressResults()) {
-    for (const auto& endpoint :
-         request_->GetAddressResults().value().endpoints()) {
+    for (const auto& endpoint : request_->GetAddressResults()->endpoints()) {
       result_addresses.push_back(endpoint.address());
     }
   }

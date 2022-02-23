@@ -24,13 +24,17 @@ extern const char kCredentialsEnableAutosignin[];
 // passwords.
 extern const char kCredentialsEnableService[];
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
 extern const char kCurrentMigrationVersionToGoogleMobileServices[];
+
+// Timestamps of when credentials from the GMS Core to the built in storage were
+// last time migrated, in microseconds since Windows epoch.
+extern const char kTimeOfLastMigrationAttempt[];
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Whether the password was blank, only valid if OS password was last changed
 // on or before the value contained in kOsPasswordLastChanged.
 extern const char kOsPasswordBlank[];
@@ -39,7 +43,7 @@ extern const char kOsPasswordBlank[];
 extern const char kOsPasswordLastChanged[];
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // The current status of migrating the passwords from the Keychain to the
 // database. Stores a value from MigrationStatus.
 extern const char kKeychainMigrationStatus[];
@@ -73,6 +77,10 @@ extern const char kLastTimeObsoleteHttpCredentialsRemoved[];
 // The last time the password check has run to completion.
 extern const char kLastTimePasswordCheckCompleted[];
 
+// Timestamps of when password store metrics where last reported, in
+// microseconds since Windows epoch.
+extern const char kLastTimePasswordStoreMetricsReported[];
+
 // The last time the password check has run to completion synced across devices.
 // It's used on passwords.google.com and not in Chrome.
 extern const char kSyncedLastTimePasswordCheckCompleted[];
@@ -83,6 +91,10 @@ extern const char kPasswordHashDataList[];
 // Boolean indicating whether Chrome should check whether the credentials
 // submitted by the user were part of a leak.
 extern const char kPasswordLeakDetectionEnabled[];
+
+// Boolean indicating whether users can mute (aka dismiss) alerts resulting from
+// compromised credentials that were submitted by the user.
+extern const char kPasswordDismissCompromisedAlertEnabled[];
 
 // Timestamps of when credentials from the profile / account store were last
 // used to fill a form, in microseconds since Windows epoch.

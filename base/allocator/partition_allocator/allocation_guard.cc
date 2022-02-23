@@ -8,12 +8,11 @@
 
 #if defined(PA_HAS_ALLOCATION_GUARD)
 
-namespace base {
-namespace internal {
+namespace partition_alloc {
 
 namespace {
 thread_local bool g_disallow_allocations;
-}
+}  // namespace
 
 ScopedDisallowAllocations::ScopedDisallowAllocations() {
   if (g_disallow_allocations)
@@ -37,7 +36,6 @@ ScopedAllowAllocations::~ScopedAllowAllocations() {
   g_disallow_allocations = saved_value_;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // defined(PA_HAS_ALLOCATION_GUARD)

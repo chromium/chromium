@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_wasm_response_extensions.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -75,7 +76,9 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -95,17 +98,6 @@
 #endif
 
 namespace blink {
-
-static void ReportFatalErrorInMainThread(const char* location,
-                                         const char* message) {
-  LOG(FATAL)  << "V8 error: " << message << " (" << location << ").";
-}
-
-static void ReportOOMErrorInMainThread(const char* location, bool is_js_heap) {
-  DVLOG(1) << "V8 " << (is_js_heap ? "javascript" : "process") << " OOM: ("
-           << location << ").";
-  OOM_CRASH(0);
-}
 
 static String ExtractMessageForConsole(v8::Isolate* isolate,
                                        v8::Local<v8::Value> data) {
@@ -749,30 +741,6 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
   return V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
 }
 
-void AddHistogramSample(void* hist, int sample) {
-  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
-  histogram->Add(sample);
-}
-
-void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
-  // Each histogram has an implicit '0' bucket (for underflow), so we can always
-  // bump the minimum to 1.
-  DCHECK_LE(0, min);
-  min = std::max(1, min);
-
-  // For boolean histograms, always include an overflow bucket [2, infinity).
-  if (max == 1 && buckets == 2) {
-    max = 2;
-    buckets = 3;
-  }
-
-  const std::string histogram_name =
-      Platform::Current()->GetNameForHistogram(name);
-  return base::Histogram::FactoryGet(
-      histogram_name, min, max, static_cast<uint32_t>(buckets),
-      base::Histogram::kUmaTargetedHistogramFlag);
-}
-
 }  // namespace
 
 void V8Initializer::InitializeMainThread(
@@ -787,25 +755,18 @@ void V8Initializer::InitializeMainThread(
 
   ThreadScheduler* scheduler = ThreadScheduler::Current();
 
-  v8::Isolate* isolate;
-  {
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.V8.InitPerIsolateData");
-    isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
-                                           GetV8ContextSnapshotMode(),
-                                           CreateHistogram, AddHistogramSample);
-  }
+  v8::Isolate* isolate = V8PerIsolateData::Initialize(
+      scheduler->V8TaskRunner(), GetV8ContextSnapshotMode(), CreateHistogram,
+      AddHistogramSample, ReportV8FatalError, ReportV8OOMError);
   scheduler->SetV8Isolate(isolate);
 
   // ThreadState::isolate_ needs to be set before setting the EmbedderHeapTracer
   // as setting the tracer indicates that a V8 garbage collection should trace
   // over to Blink.
-  DCHECK(ThreadState::MainThreadState());
+  DCHECK(ThreadStateStorage::MainThreadStateStorage());
 
   InitializeV8Common(isolate);
 
-  isolate->SetOOMErrorHandler(ReportOOMErrorInMainThread);
-
-  isolate->SetFatalErrorHandler(ReportFatalErrorInMainThread);
   isolate->AddMessageListenerWithErrorLevel(
       MessageHandlerInMainThread,
       v8::Isolate::kMessageError | v8::Isolate::kMessageWarning |
@@ -833,13 +794,6 @@ void V8Initializer::InitializeMainThread(
   WTF::Partitions::InitializeArrayBufferPartition();
 }
 
-static void ReportFatalErrorInWorker(const char* location,
-                                     const char* message) {
-  // FIXME: We temporarily deal with V8 internal error situations such as
-  // out-of-memory by crashing the worker.
-  LOG(FATAL);
-}
-
 // Stack size for workers is limited to 500KB because default stack size for
 // secondary threads is 512KB on Mac OS X. See GetDefaultThreadStackSize() in
 // base/threading/platform_thread_mac.mm for details.
@@ -853,7 +807,6 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
       v8::Isolate::kMessageError | v8::Isolate::kMessageWarning |
           v8::Isolate::kMessageInfo | v8::Isolate::kMessageDebug |
           v8::Isolate::kMessageLog);
-  isolate->SetFatalErrorHandler(ReportFatalErrorInWorker);
 
   isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);

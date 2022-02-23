@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_test.h"
 
 class ReloadButtonBrowserTest : public InProcessBrowserTest {
@@ -29,7 +30,8 @@ IN_PROC_BROWSER_TEST_F(ReloadButtonBrowserTest, AllowExternalProtocols) {
       url,
       base::BindRepeating(&ReloadButtonBrowserTest::GetWebContents,
                           base::Unretained(this)),
-      ui::PAGE_TRANSITION_LINK, true, url::Origin::Create(url));
+      ui::PAGE_TRANSITION_LINK, true, url::Origin::Create(url),
+      content::WeakDocumentPtr());
   ASSERT_EQ(ExternalProtocolHandler::BLOCK,
             ExternalProtocolHandler::GetBlockState(fake_protocol, nullptr,
                                                    browser()->profile()));

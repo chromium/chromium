@@ -8,7 +8,10 @@ import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -17,7 +20,11 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
+import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
 import org.chromium.components.variations.VariationsSwitches;
+import org.chromium.components.variations.VariationsUtils;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +43,29 @@ import java.util.Date;
  */
 public class VariationsSeedFetcher {
     private static final String TAG = "VariationsSeedFetch";
+
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete("chrome_variations_android",
+                    "semantics {"
+                            + "  sender: 'Chrome Variations Service (Android)'"
+                            + "  description:"
+                            + "      'The variations service is responsible for determining the '"
+                            + "      'state of field trials in Chrome. These field trials '"
+                            + "      'typically configure either A/B experiments, or launched '"
+                            + "      'features – oftentimes, critical security features.'"
+                            + "  trigger: 'This request is made once, on Chrome\'s first run, to '"
+                            + "           'determine the initial state Chrome should be in.'"
+                            + "  data: 'None.'"
+                            + "  destination: GOOGLE_OWNED_SERVICE"
+                            + "}"
+                            + "policy {"
+                            + "  cookies_allowed: NO"
+                            + "  setting: 'Cannot be disabled in Settings. Chrome Variations are '"
+                            + "           'an essential part of Chrome releases.'"
+                            + "  policy_exception_justification:"
+                            + "      'The ChromeVariations policy is only implemented on desktop '"
+                            + "      'and ChromeOS.'"
+                            + "}");
 
     @IntDef({VariationsPlatform.ANDROID, VariationsPlatform.ANDROID_WEBVIEW})
     @Retention(RetentionPolicy.SOURCE)
@@ -64,6 +94,34 @@ public class VariationsSeedFetcher {
 
     @VisibleForTesting
     static final String VARIATIONS_INITIALIZED_PREF = "variations_initialized";
+
+    /**
+     * For mocking the Date in tests.
+     */
+    @VisibleForTesting
+    public interface DateTime {
+        Date newDate();
+    }
+
+    private DateTime mDateTime = () -> new Date();
+
+    /**
+     * Overwrite the DateTime, typically with a mock for testing.
+     * @param dateTime the mock.
+     */
+    @VisibleForTesting
+    public void setDateTime(DateTime dateTime) {
+        // Used for testing, to inject mock Date()
+        mDateTime = dateTime;
+    }
+
+    /**
+     * Get the dateTime, for testing only.
+     */
+    @VisibleForTesting
+    public DateTime getDateTime() {
+        return mDateTime;
+    }
 
     // Synchronization lock to make singleton thread-safe.
     private static final Object sLock = new Object();
@@ -100,7 +158,7 @@ public class VariationsSeedFetcher {
             throws MalformedURLException, IOException {
         String urlString = getConnectionString(platform, restrictMode, milestone, channel);
         URL url = new URL(urlString);
-        return (HttpURLConnection) url.openConnection();
+        return (HttpURLConnection) ChromiumNetworkAdapter.openConnection(url, TRAFFIC_ANNOTATION);
     }
 
     @VisibleForTesting
@@ -162,6 +220,37 @@ public class VariationsSeedFetcher {
         public boolean isGzipCompressed;
         public byte[] seedData;
 
+        private byte[] getUncompressedSeed() throws IOException {
+            byte[] uncompressedSeedData;
+            if (this.isGzipCompressed) {
+                uncompressedSeedData = VariationsUtils.gzipUncompress(this.seedData);
+            } else {
+                uncompressedSeedData = this.seedData;
+            }
+            return uncompressedSeedData;
+        }
+
+        // Returns the parsed VariationsSeed from |seedData|
+        @Nullable
+        @VisibleForTesting
+        public VariationsSeed getParsedVariationsSeed() {
+            if (this.seedData == null) {
+                Log.e(TAG, "SUSI no seed data");
+                return null;
+            }
+            VariationsSeed proto;
+            try {
+                proto = VariationsSeed.parseFrom(getUncompressedSeed());
+            } catch (InvalidProtocolBufferException e) {
+                Log.w(TAG, "InvalidProtocolBufferException when parsing the variations seed.", e);
+                return null;
+            } catch (IOException e) {
+                Log.w(TAG, "IOException when un-gzipping the variations seed.", e);
+                return null;
+            }
+            return proto;
+        }
+
         @Override
         public String toString() {
             if (BuildConfig.ENABLE_ASSERTS) {
@@ -195,8 +284,8 @@ public class VariationsSeedFetcher {
                 return;
             }
 
-            SeedFetchInfo fetchInfo =
-                    downloadContent(VariationsPlatform.ANDROID, restrictMode, milestone, channel);
+            SeedFetchInfo fetchInfo = downloadContent(
+                    VariationsPlatform.ANDROID, restrictMode, milestone, channel, null);
             if (fetchInfo.seedInfo != null) {
                 SeedInfo info = fetchInfo.seedInfo;
                 VariationsSeedBridge.setVariationsFirstRunSeed(info.seedData, info.signature,
@@ -228,10 +317,11 @@ public class VariationsSeedFetcher {
      * @param restrictMode the restrict mode parameter to pass to the server via a URL param.
      * @param milestone the milestone parameter to pass to the server via a URL param.
      * @param channel the channel parameter to pass to the server via a URL param.
+     * @param curSeedInfo optional currently saved seed info to set the `If-None-Match` header.
      * @return the object holds the request result and seed data with its related header fields.
      */
     public SeedFetchInfo downloadContent(@VariationsPlatform int platform, String restrictMode,
-            String milestone, String channel) {
+            String milestone, String channel, @Nullable SeedInfo curSeedInfo) {
         SeedFetchInfo fetchInfo = new SeedFetchInfo();
         HttpURLConnection connection = null;
         try {
@@ -241,6 +331,15 @@ public class VariationsSeedFetcher {
             connection.setConnectTimeout(REQUEST_TIMEOUT);
             connection.setDoInput(true);
             connection.setRequestProperty("A-IM", "gzip");
+            if (curSeedInfo != null) {
+                VariationsSeed currentVariationsSeed = curSeedInfo.getParsedVariationsSeed();
+                if (currentVariationsSeed != null) {
+                    String serialNumber = currentVariationsSeed.getSerialNumber();
+                    if (!serialNumber.isEmpty()) {
+                        connection.setRequestProperty("If-None-Match", serialNumber);
+                    }
+                }
+            }
             connection.connect();
             int responseCode = connection.getResponseCode();
             fetchInfo.seedFetchResult = responseCode;
@@ -251,10 +350,17 @@ public class VariationsSeedFetcher {
                 seedInfo.seedData = getRawSeed(connection);
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
-                seedInfo.date = new Date().getTime();
+                seedInfo.date = mDateTime.newDate().getTime();
                 seedInfo.isGzipCompressed = getHeaderFieldOrEmpty(connection, "IM").equals("gzip");
                 recordSeedFetchTime(SystemClock.elapsedRealtime() - startTimeMillis);
                 fetchInfo.seedInfo = seedInfo;
+            } else if (responseCode == HttpURLConnection.HTTP_NOT_MODIFIED) {
+                // Update the seed date value in local state (used for expiry check on
+                // next start up), since 304 is a successful response. Note that the
+                // serial number included in the request is always that of the latest
+                // seed, so it's appropriate to always modify the latest seed's date.
+                fetchInfo.seedInfo = curSeedInfo;
+                fetchInfo.seedInfo.date = mDateTime.newDate().getTime();
             } else {
                 String errorMsg = "Non-OK response code = " + responseCode;
                 Log.w(TAG, errorMsg);

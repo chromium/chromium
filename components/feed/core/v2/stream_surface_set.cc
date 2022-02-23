@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/stream_surface_set.h"
 
+#include "base/observer_list.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 
 namespace feed {

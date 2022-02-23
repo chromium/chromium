@@ -120,7 +120,7 @@
 
       .search-history-box-icon {
         --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
-            var(--google-grey-refresh-700));
+            var(--google-grey-700));
         display: flex;
         flex-shrink: 0;
         margin: auto;
@@ -131,7 +131,7 @@
       @media (prefers-color-scheme: dark) {
         .search-history-box-icon {
           --iron-icon-fill-color: var(--cr-link-row-start-icon-color,
-              var(--google-grey-refresh-500));
+              var(--google-grey-500));
         }
       }
 
@@ -174,14 +174,12 @@
             <settings-checkbox id="browsingCheckboxBasic"
                 pref="{{prefs.browser.clear_data.browsing_history_basic}}"
                 label="$i18n{clearBrowsingHistory}"
-                sub-label-html="[[browsingCheckboxLabel_(
-                    isSyncConsented_, isSyncingHistory_, syncStatus.hasError,
+                sub-label-html="[[browsingCheckboxLabel_(isSyncingHistory_,
                     '$i18nPolymer{clearBrowsingHistorySummary}',
-                    '$i18nPolymer{clearBrowsingHistorySummarySignedIn}',
-                    '$i18nPolymer{clearBrowsingHistorySummarySignedInNoLink}',
-                    '$i18nPolymer{clearBrowsingHistorySummarySynced}')]]"
+                    '$i18nPolymer{clearBrowsingHistorySummarySignedInNoLink}'
+                    )]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]" no-set-pref>
+                hidden="[[isChildAccount_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckboxBasic"
                 class="cookies-checkbox"
@@ -201,7 +199,7 @@
                 disabled="[[clearingInProgress_]]" no-set-pref>
             </settings-checkbox>
             <div class="search-history-box"
-                hidden="[[!shouldShowGoogleSearchHistoryLabel_(isSignedIn_)]]">
+                hidden="[[!isSignedIn_]]">
               <iron-icon class="search-history-box-icon" aria-hidden="true"
                   icon="settings20:googleg">
               </iron-icon>
@@ -211,7 +209,7 @@
             </div>
             <div id="nonGoogleSearchHistoryBox"
                 class="search-history-box"
-                hidden="[[!shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse_)]]">
+                hidden="[[!isNonGoogleDse_]]">
               <iron-icon class="search-history-box-icon" aria-hidden="true"
                   icon="cr:search">
               </iron-icon>
@@ -237,14 +235,14 @@
                 label="$i18n{clearBrowsingHistory}"
                 sub-label="[[counters_.browsing_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]" no-set-pref>
+                hidden="[[isChildAccount_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="downloadCheckbox"
                 pref="{{prefs.browser.clear_data.download_history}}"
                 label="$i18n{clearDownloadHistory}"
                 sub-label="[[counters_.download_history]]"
                 disabled="[[clearingInProgress_]]"
-                hidden="[[isSupervised_]]" no-set-pref>
+                hidden="[[isChildAccount_]]" no-set-pref>
             </settings-checkbox>
             <settings-checkbox id="cookiesCheckbox"
                 class="cookies-checkbox"

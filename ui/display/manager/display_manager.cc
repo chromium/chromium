@@ -534,7 +534,7 @@ void DisplayManager::SetOverscanInsets(int64_t display_id,
 void DisplayManager::SetDisplayRotation(int64_t display_id,
                                         Display::Rotation rotation,
                                         Display::RotationSource source) {
-  if (IsInUnifiedMode())
+  if (IsInUnifiedMode() && display_id == kUnifiedDisplayId)
     return;
 
   DisplayInfoList display_info_list;
@@ -1816,6 +1816,19 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
   if (display_info_list->size() == 1)
     return;
 
+  for (auto& display_info : *display_info_list) {
+    auto it = display_info_.find(display_info.id());
+    if (it != display_info_.end()) {
+      display_info.SetRotation(
+          it->second.GetRotation(Display::RotationSource::USER),
+          Display::RotationSource::USER);
+      display_info.SetRotation(
+          it->second.GetRotation(Display::RotationSource::ACTIVE),
+          Display::RotationSource::ACTIVE);
+      display_info.UpdateDisplaySize();
+    }
+  }
+
   if (!ValidateMatrix(current_unified_desktop_matrix_) ||
       !ValidateMatrixForDisplayInfoList(*display_info_list,
                                         current_unified_desktop_matrix_)) {
@@ -1842,7 +1855,6 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     for (const auto& id : row) {
       const ManagedDisplayInfo* info = FindInfoById(*display_info_list, id);
       DCHECK(info);
-
       max_height = std::max(max_height, info->size_in_pixel().height());
     }
     rows_max_heights.emplace_back(max_height);
@@ -2104,6 +2116,8 @@ Display DisplayManager::CreateMirroringDisplayFromDisplayInfoById(
                                   display_info.size_in_pixel(), scale)));
   new_display.set_touch_support(display_info.touch_support());
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
+  new_display.set_rotation(display_info.GetActiveRotation());
+  new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
   return new_display;
 }
 

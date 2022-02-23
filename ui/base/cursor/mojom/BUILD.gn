@@ -33,7 +33,7 @@ source_set("mojom_traits") {
   ]
   public_deps = [
     ":mojom_shared",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
   ]
   deps = [
     "//skia",
@@ -56,7 +56,7 @@ source_set("unittests") {
     ":mojom_traits",
     "//testing/gtest",
     "//ui/base",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry/mojom:mojom_traits",
   ]

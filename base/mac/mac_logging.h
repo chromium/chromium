@@ -9,10 +9,9 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <MacTypes.h>
 #else
 #include <libkern/OSTypes.h>

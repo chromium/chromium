@@ -6,10 +6,12 @@
 #define CC_PAINT_RECORD_PAINT_CANVAS_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/skottie_color_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
@@ -97,7 +99,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,
-                   SkottieFrameDataMap images) override;
+                   SkottieFrameDataMap images,
+                   const SkottieColorMap& color_map,
+                   SkottieTextPropertyValueMap text_map) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,
@@ -162,7 +166,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 
    private:
 #if DCHECK_IS_ON()
-    RecordPaintCanvas* canvas_;
+    raw_ptr<RecordPaintCanvas> canvas_;
 #endif
   };
 

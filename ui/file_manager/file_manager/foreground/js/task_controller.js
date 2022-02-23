@@ -443,25 +443,28 @@ export class TaskController {
   updateContextMenuTaskItems_(openTasks) {
     const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
     if (defaultTask) {
-      this.ui_.defaultTaskMenuItem.removeAttribute('file-type-icon');
+      const menuItem = this.ui_.defaultTaskMenuItem;
+      /**
+       * Menu icon can be controlled by either `iconEndImage` or
+       * `iconEndFileType`, since the default task menu item DOM is shared,
+       * before updating it, we should remove the previous one, e.g. reset both
+       * `iconEndImage` and `iconEndFileType`.
+       */
+      menuItem.iconEndImage = '';
+      menuItem.removeIconEndFileType();
+
+      menuItem.setIconEndHidden(false);
       if (defaultTask.iconType) {
-        this.ui_.defaultTaskMenuItem.style.backgroundImage = '';
-        this.ui_.defaultTaskMenuItem.setAttribute(
-            'file-type-icon', defaultTask.iconType);
-        this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '28px';
+        menuItem.iconEndFileType = defaultTask.iconType;
       } else if (defaultTask.iconUrl) {
-        this.ui_.defaultTaskMenuItem.style.backgroundImage =
-            'url(' + defaultTask.iconUrl + ')';
-        this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '28px';
+        menuItem.iconEndImage = 'url(' + defaultTask.iconUrl + ')';
       } else {
-        this.ui_.defaultTaskMenuItem.style.backgroundImage = '';
-        this.ui_.defaultTaskMenuItem.style.marginInlineEnd = '';
+        menuItem.setIconEndHidden(true);
       }
 
-      this.ui_.defaultTaskMenuItem.label =
-          defaultTask.label || defaultTask.title;
-      this.ui_.defaultTaskMenuItem.disabled = !!defaultTask.disabled;
-      this.ui_.defaultTaskMenuItem.descriptor = defaultTask.descriptor;
+      menuItem.label = defaultTask.label || defaultTask.title;
+      menuItem.disabled = !!defaultTask.disabled;
+      menuItem.descriptor = defaultTask.descriptor;
     }
 
     this.canExecuteDefaultTask_ = defaultTask != null;

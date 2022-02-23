@@ -6,7 +6,6 @@
 #define IOS_WEB_SHELL_SHELL_BROWSER_STATE_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ios/web/public/browser_state.h"
 

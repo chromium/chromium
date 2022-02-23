@@ -16,10 +16,10 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 namespace ash {
@@ -36,16 +36,17 @@ apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return apps::AppTypeName::kChromeApp;
     case apps::mojom::AppType::kWeb:
       return apps::AppTypeName::kWeb;
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
+    case apps::mojom::AppType::kExtension:
       return apps::AppTypeName::kUnknown;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
@@ -63,7 +64,7 @@ bool AppLaunchHandler::HasRestoreData() {
 }
 
 void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == extension_misc::kChromeAppId || !restore_data_ ||
+  if (update.AppId() == app_constants::kChromeAppId || !restore_data_ ||
       !update.ReadinessChanged()) {
     return;
   }
@@ -91,7 +92,7 @@ void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
                      update.AppType(), update.AppId()));
 }
 
-void AppLaunchHandler::OnAppTypeInitialized(apps::mojom::AppType app_type) {
+void AppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {
   // Do nothing: overridden by subclasses.
 }
 
@@ -113,7 +114,7 @@ void AppLaunchHandler::LaunchApps() {
   auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile_)
                      ->AppRegistryCache();
   Observe(cache);
-  for (const auto app_type : cache->GetInitializedAppTypes()) {
+  for (const auto app_type : cache->InitializedAppTypes()) {
     OnAppTypeInitialized(app_type);
   }
 
@@ -127,13 +128,34 @@ void AppLaunchHandler::LaunchApps() {
     }
   });
 
+#if !defined(OFFICIAL_BUILD)
+  base::TimeDelta current_delay = delay_;
+#endif
   for (const auto& app_id : app_ids) {
     // Chrome browser web pages are restored separately, so we don't need to
     // launch browser windows.
-    if (app_id == extension_misc::kChromeAppId)
+    if (app_id == app_constants::kChromeAppId)
       continue;
 
+#if !defined(OFFICIAL_BUILD)
+    // Make shift-click on the launch button launch apps with a delay. This
+    // allows developers to simulate delayed launch behaviors with ARC apps.
+    // TODO(crbug.com/1281685): Remove before feature launch.
+    if (delay_.is_zero()) {
+      LaunchApp(cache->GetAppType(app_id), app_id);
+    } else {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AppLaunchHandler::LaunchApp,
+                         GetWeakPtrAppLaunchHandler(),
+                         cache->GetAppType(app_id), app_id),
+          current_delay);
+      current_delay += delay_;
+    }
+#else
+    DCHECK(delay_.is_zero());
     LaunchApp(cache->GetAppType(app_id), app_id);
+#endif
   }
 }
 
@@ -146,7 +168,7 @@ bool AppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
 void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
                                  const std::string& app_id) {
   DCHECK(restore_data_);
-  DCHECK_NE(app_id, extension_misc::kChromeAppId);
+  DCHECK_NE(app_id, app_constants::kChromeAppId);
 
   const auto it = restore_data_->app_id_to_launch_list().find(app_id);
   if (it == restore_data_->app_id_to_launch_list().end() ||
@@ -161,9 +183,10 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // restoration could be delayed, so return to preserve the restore data
       // for ARC apps.
       return;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       if (ShouldLaunchSystemWebAppOrChromeApp(app_id, it->second))
         LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
@@ -173,9 +196,9 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
+    case apps::mojom::AppType::kExtension:
       NOTREACHED();
       break;
   }
@@ -186,13 +209,13 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list) {
-  auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)
-                       ->BrowserAppLauncher();
-  if (!launcher)
-    return;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
 
-  if (app_type == apps::mojom::AppType::kExtension)
+  if (app_type == apps::mojom::AppType::kChromeApp ||
+      app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     OnExtensionLaunching(app_id);
+  }
 
   for (const auto& it : launch_list) {
     RecordRestoredAppLaunch(GetHistogrameAppType(app_type));
@@ -227,7 +250,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
                                           : std::vector<base::FilePath>{},
         it.second->intent.has_value() ? it.second->intent.value() : intent);
     params.restore_id = it.first;
-    launcher->LaunchAppWithParams(std::move(params));
+    proxy->LaunchAppWithParams(std::move(params));
   }
 }
 

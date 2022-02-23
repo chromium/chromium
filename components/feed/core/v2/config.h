@@ -67,6 +67,8 @@ struct Config {
   base::TimeDelta web_feed_stale_content_threshold = base::Hours(1);
   // TimeDelta after startup to fetch recommended and subscribed Web Feeds if
   // they are stale. If zero, no fetching is done.
+  // This delay is also used to trigger retrying stored follow/unfollow requests
+  // on startup.
   base::TimeDelta fetch_web_feed_info_delay = base::Seconds(40);
   // How long before cached recommended feed data on the device is considered
   // stale and refetched.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/overlay_presentation_context_view_controller.h"
 
 #import "base/test/ios/wait_util.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/test_modality/test_presented_overlay_request_config.h"
@@ -32,10 +33,11 @@ const CGRect kWindowFrame = {{100.0, 100.0}, {100.0, 100.0}};
 // Test fixture for OverlayPresentationContextViewController.
 class OverlayPresentationContextViewControllerTest : public PlatformTest {
  public:
-  OverlayPresentationContextViewControllerTest()
-      : root_view_controller_([[UIViewController alloc] init]),
-        view_controller_(
-            [[OverlayPresentationContextViewController alloc] init]) {
+  OverlayPresentationContextViewControllerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    view_controller_ = [[OverlayPresentationContextViewController alloc] init];
     root_view_controller_.definesPresentationContext = YES;
     scoped_window_.Get().rootViewController = root_view_controller_;
     // Present |view_controller_| over |root_view_controller_| without animation
@@ -66,7 +68,8 @@ class OverlayPresentationContextViewControllerTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestBrowser browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   FakeOverlayRequestCoordinatorDelegate delegate_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_ = nil;
@@ -94,7 +97,7 @@ TEST_F(OverlayPresentationContextViewControllerTest,
   TestPresentedOverlayCoordinator* coordinator =
       [[TestPresentedOverlayCoordinator alloc]
           initWithBaseViewController:view_controller_
-                             browser:&browser_
+                             browser:browser_.get()
                              request:request.get()
                             delegate:&delegate_];
 
@@ -145,7 +148,7 @@ TEST_F(OverlayPresentationContextViewControllerTest, ResizingPresentedOverlay) {
   TestResizingPresentedOverlayCoordinator* coordinator =
       [[TestResizingPresentedOverlayCoordinator alloc]
           initWithBaseViewController:view_controller_
-                             browser:&browser_
+                             browser:browser_.get()
                              request:request.get()
                             delegate:&delegate_];
 

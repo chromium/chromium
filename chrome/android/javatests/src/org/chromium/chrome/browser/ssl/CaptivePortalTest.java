@@ -60,7 +60,8 @@ public class CaptivePortalTest {
             UMAEvent.WWW_MISMATCH_URL_AVAILABLE, UMAEvent.WWW_MISMATCH_URL_NOT_AVAILABLE,
             UMAEvent.SHOW_BAD_CLOCK, UMAEvent.CAPTIVE_PORTAL_CERT_FOUND,
             UMAEvent.WWW_MISMATCH_FOUND_IN_SAN, UMAEvent.SHOW_MITM_SOFTWARE_INTERSTITIAL,
-            UMAEvent.OS_REPORTS_CAPTIVE_PORTAL})
+            UMAEvent.OS_REPORTS_CAPTIVE_PORTAL, UMAEvent.SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL,
+            UMAEvent.SHOW_LEGACY_TLS_INTERSTITIAL})
     @Retention(RetentionPolicy.SOURCE)
     private @interface UMAEvent {
         int HANDLE_ALL = 0;
@@ -76,6 +77,8 @@ public class CaptivePortalTest {
         int WWW_MISMATCH_FOUND_IN_SAN = 10;
         int SHOW_MITM_SOFTWARE_INTERSTITIAL = 11;
         int OS_REPORTS_CAPTIVE_PORTAL = 12;
+        int SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL = 13;
+        int SHOW_LEGACY_TLS_INTERSTITIAL = 14; // Deprecated in M98.
     }
 
     @Rule

@@ -51,5 +51,5 @@ ci.builder(
         short_name = "model",
     ),
     executable = "recipe:flakiness/generate_builder_test_data",
-    schedule = "0 8 * * *",
+    schedule = "0 */1 * * *",
 )

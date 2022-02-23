@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
@@ -117,10 +118,29 @@ void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
                      consumer_, JobId(job_id), std::move(error)));
 }
 
-JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins(
+    password_manager::PasswordStoreOperationTarget target) {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAllLogins(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      static_cast<int>(target));
+  return job_id;
+}
+
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAutofillableLogins() {
+  JobId job_id = GetNextJobId();
+  Java_PasswordStoreAndroidBackendBridgeImpl_getAutofillableLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value());
+  return job_id;
+}
+
+JobId PasswordStoreAndroidBackendBridgeImpl::GetLoginsForSignonRealm(
+    const std::string& signon_realm) {
+  JobId job_id = GetNextJobId();
+  Java_PasswordStoreAndroidBackendBridgeImpl_getLoginsForSignonRealm(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ConvertUTF8ToJavaString(
+          base::android::AttachCurrentThread(), signon_realm));
   return job_id;
 }
 
@@ -147,13 +167,15 @@ JobId PasswordStoreAndroidBackendBridgeImpl::UpdateLogin(
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
-    const password_manager::PasswordForm& form) {
+    const password_manager::PasswordForm& form,
+    password_manager::PasswordStoreOperationTarget target) {
   JobId job_id = GetNextJobId();
   sync_pb::PasswordSpecificsData data = SpecificsDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_removeLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
-                                     data.SerializeAsString()));
+                                     data.SerializeAsString()),
+      static_cast<int>(target));
   return job_id;
 }
 

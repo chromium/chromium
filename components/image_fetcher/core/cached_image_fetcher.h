@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_decoder.h"
@@ -99,7 +100,7 @@ class CachedImageFetcher : public ImageFetcher {
                  std::string image_data);
 
   // Owned by ImageFetcherService.
-  ImageFetcher* image_fetcher_;
+  raw_ptr<ImageFetcher> image_fetcher_;
   scoped_refptr<ImageCache> image_cache_;
 
   // Whether the ImageCache is allowed to be modified in any way from requests

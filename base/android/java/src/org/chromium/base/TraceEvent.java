@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -48,6 +49,7 @@ public class TraceEvent implements AutoCloseable {
     private static volatile boolean sEnabled; // True when tracing into Chrome's tracing service.
     private static AtomicBoolean sNativeTracingReady = new AtomicBoolean();
     private static AtomicBoolean sUiThreadReady = new AtomicBoolean();
+    private static boolean sEventNameFilteringEnabled;
 
     // Trace tags replicated from android.os.Trace.
     public static final long ATRACE_TAG_WEBVIEW = 1L << 4;
@@ -381,8 +383,12 @@ public class TraceEvent implements AutoCloseable {
 
     private static ATrace sATrace;
 
-    private static class BasicLooperMonitor implements Printer {
-        private static final String LOOPER_TASK_PREFIX = "Looper.dispatch: ";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static class BasicLooperMonitor implements Printer {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        static final String LOOPER_TASK_PREFIX = "Looper.dispatch: ";
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        static final String FILTERED_EVENT_NAME = LOOPER_TASK_PREFIX + "EVENT_NAME_FILTERED";
         private static final int SHORTEST_LOG_PREFIX_LENGTH = "<<<<< Finished to ".length();
         private String mCurrentTarget;
 
@@ -424,7 +430,11 @@ public class TraceEvent implements AutoCloseable {
             mCurrentTarget = null;
         }
 
-        private static String getTraceEventName(String line) {
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        static String getTraceEventName(String line) {
+            if (sEventNameFilteringEnabled) {
+                return FILTERED_EVENT_NAME;
+            }
             return LOOPER_TASK_PREFIX + getTarget(line) + "(" + getTargetName(line) + ")";
         }
 
@@ -634,6 +644,14 @@ public class TraceEvent implements AutoCloseable {
         if (sUiThreadReady.get()) {
             ViewHierarchyDumper.updateEnabledState();
         }
+    }
+
+    public static void setEventNameFilteringEnabled(boolean enabled) {
+        sEventNameFilteringEnabled = enabled;
+    }
+
+    public static boolean eventNameFilteringEnabled() {
+        return sEventNameFilteringEnabled;
     }
 
     /**

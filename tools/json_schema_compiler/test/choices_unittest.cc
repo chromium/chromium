@@ -26,12 +26,12 @@ using json_schema_compiler::test_util::Vector;
 TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
   {
     std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        List(std::make_unique<base::Value>(true))->GetList()));
+        List(std::make_unique<base::Value>(true))->GetListDeprecated()));
     EXPECT_FALSE(params);
   }
   {
     std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        List(std::make_unique<base::Value>(6))->GetList()));
+        List(std::make_unique<base::Value>(6))->GetListDeprecated()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->nums.as_integers);
     EXPECT_EQ(6, *params->nums.as_integer);
@@ -41,7 +41,7 @@ TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
         List(List(std::make_unique<base::Value>(2),
                   std::make_unique<base::Value>(6),
                   std::make_unique<base::Value>(8)))
-            ->GetList()));
+            ->GetListDeprecated()));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->nums.as_integers);
     EXPECT_EQ(Vector(2, 6, 8), *params->nums.as_integers);
@@ -53,7 +53,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
             List(Dictionary("strings", std::make_unique<base::Value>("asdf")))
-                ->GetList()));
+                ->GetListDeprecated()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
@@ -64,7 +64,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
         choices::ObjectWithChoices::Params::Create(
             List(Dictionary("strings", std::make_unique<base::Value>("asdf"),
                             "integers", std::make_unique<base::Value>(6)))
-                ->GetList()));
+                ->GetListDeprecated()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
@@ -84,7 +84,8 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            params_value->GetListDeprecated()));
     EXPECT_FALSE(params.get());
   }
   {
@@ -94,7 +95,8 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            params_value->GetListDeprecated()));
     EXPECT_FALSE(params.get());
   }
   {
@@ -103,7 +105,8 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreateFail) {
     std::unique_ptr<base::ListValue> params_value(new base::ListValue());
     params_value->Append(std::move(object_param));
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
-        choices::ObjectWithChoices::Params::Create(params_value->GetList()));
+        choices::ObjectWithChoices::Params::Create(
+            params_value->GetListDeprecated()));
     EXPECT_FALSE(params.get());
   }
 }

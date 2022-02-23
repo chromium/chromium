@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -209,7 +210,7 @@ class MIDI_EXPORT MidiManager {
   base::Lock lock_;
 
   // MidiService outlives MidiManager.
-  MidiService* const service_;
+  const raw_ptr<MidiService> service_;
 };
 
 }  // namespace midi

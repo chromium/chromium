@@ -1,0 +1,6 @@
+Name: nom
+URL: https://crates.io/crates/nom
+Description: A byte-oriented, zero-copy, parser combinators library
+Version: 7.1.0
+Security Critical: no
+License: MIT

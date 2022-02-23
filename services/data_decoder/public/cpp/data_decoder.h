@@ -8,12 +8,12 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo_base {
@@ -96,7 +96,7 @@ class DataDecoder {
 
   // Parses the potentially unsafe JSON string in |json| using this
   // DataDecoder's service instance or some other platform-specific decoding
-  // facility.
+  // facility. The parser conforms to RFC 8259.
   //
   // Note that |callback| will only be called if the parsing operation succeeds
   // or fails before this DataDecoder is destroyed.
@@ -116,13 +116,17 @@ class DataDecoder {
   //
   // Note that |callback| will only be called if the parsing operation succeeds
   // or fails before this DataDecoder is destroyed.
-  void ParseXml(const std::string& xml, ValueParseCallback callback);
+  void ParseXml(const std::string& xml,
+                mojom::XmlParser::WhitespaceBehavior whitespace_behavior,
+                ValueParseCallback callback);
 
   // Parses the potentially unsafe XML string in |xml|. This static helper
   // uses a dedicated instance of the Data Decoder service on applicable
   // platforms.
-  static void ParseXmlIsolated(const std::string& xml,
-                               ValueParseCallback callback);
+  static void ParseXmlIsolated(
+      const std::string& xml,
+      mojom::XmlParser::WhitespaceBehavior whitespace_behavior,
+      ValueParseCallback callback);
 
   // Compresses potentially unsafe |data| using this DataDecoder's service
   // instance.

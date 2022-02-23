@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/pref_names.h"
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace browsing_data {
@@ -88,7 +89,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kClearBrowsingDataHistoryNoticeShownTimes, 0);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(
       kDeleteDownloadHistory, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -100,7 +101,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 #else
   registry->RegisterInt64Pref(prefs::kLastClearBrowsingDataTime, 0);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   registry->RegisterIntegerPref(kLastClearBrowsingDataTab, 0);
   registry->RegisterBooleanPref(

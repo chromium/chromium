@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_resource.h"

@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_PRINTING_PRINTING_CONSTANTS_H_
 #define CHROMEOS_PRINTING_PRINTING_CONSTANTS_H_
 
+#include <stddef.h>
+
 namespace chromeos {
 
 // Maximum size of a PPD file that we will accept, currently 250k.  This number
@@ -13,13 +15,13 @@ namespace chromeos {
 constexpr size_t kMaxPpdSizeBytes = 250 * 1024;
 
 // Printing protocol schemes.
-constexpr char kIppScheme[] = "ipp";
-constexpr char kIppsScheme[] = "ipps";
-constexpr char kUsbScheme[] = "usb";
-constexpr char kHttpScheme[] = "http";
-constexpr char kHttpsScheme[] = "https";
-constexpr char kSocketScheme[] = "socket";
-constexpr char kLpdScheme[] = "lpd";
+inline constexpr char kIppScheme[] = "ipp";
+inline constexpr char kIppsScheme[] = "ipps";
+inline constexpr char kUsbScheme[] = "usb";
+inline constexpr char kHttpScheme[] = "http";
+inline constexpr char kHttpsScheme[] = "https";
+inline constexpr char kSocketScheme[] = "socket";
+inline constexpr char kLpdScheme[] = "lpd";
 
 constexpr int kIppPort = 631;
 // IPPS commonly uses the HTTPS port despite the spec saying it should use the

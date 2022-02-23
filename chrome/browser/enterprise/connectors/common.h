@@ -33,12 +33,16 @@ constexpr char kKeyBlockUnsupportedFileTypes[] = "block_unsupported_file_types";
 constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
 constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
 constexpr char kKeyCustomMessages[] = "custom_messages";
+constexpr char kKeyRequireJustificationTags[] = "require_justification_tags";
 constexpr char kKeyCustomMessagesTag[] = "tag";
 constexpr char kKeyCustomMessagesMessage[] = "message";
 constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyEnterpriseId[] = "enterprise_id";
 constexpr char kKeyDomain[] = "domain";
+constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
+constexpr char kKeyOptInEventName[] = "name";
+constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 
 // A MIME type string that matches all MIME types.
 constexpr char kWildcardMimeType[] = "*";
@@ -81,6 +85,7 @@ struct AnalysisSettings {
   bool block_large_files = false;
   bool block_unsupported_file_types = false;
   std::map<std::string, CustomMessageData> custom_message_data;
+  std::set<std::string> tags_requiring_justification;
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.
   size_t minimum_data_size = 100;
@@ -107,6 +112,7 @@ struct ReportingSettings {
 
   GURL reporting_url;
   std::set<std::string> enabled_event_names;
+  std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
   std::string dm_token;
 
   // Indicates if the report should be made for the profile, or the browser if

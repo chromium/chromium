@@ -279,6 +279,14 @@ js_library("power") {
 }
 
 js_library("storage_adapter") {
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
+js_unittest("storage_adapter_unittest.m") {
+  deps = [
+    ":storage_adapter",
+    "//chrome/test/data/webui:chai_assert",
+  ]
 }
 
 js_library("test_error_reporting") {
@@ -361,6 +369,7 @@ js_test_gen_html("js_test_gen_html_modules") {
     ":files_app_entry_types_unittest.m",
     ":importer_common_unittest.m",
     ":lru_cache_unittest.m",
+    ":storage_adapter_unittest.m",
     ":util_unittest.m",
     ":volume_manager_types_unittest.m",
   ]

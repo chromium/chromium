@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/typed_macros.h"
@@ -212,8 +212,8 @@ class ChannelMac : public Channel,
     incoming_handles_.clear();
 
     if (leak_handles_) {
-      ignore_result(receive_port_.release());
-      ignore_result(send_port_.release());
+      std::ignore = receive_port_.release();
+      std::ignore = send_port_.release();
     } else {
       receive_port_.reset();
       send_port_.reset();

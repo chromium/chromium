@@ -21,11 +21,11 @@ TEST(SpeedometerTest, RemainingTime) {
   Speedometer meter;
 
   // Testing without setting the total bytes:
-  EXPECT_EQ(0, meter.GetSampleCount());
+  EXPECT_EQ(0u, meter.GetSampleCount());
   EXPECT_EQ(0, meter.GetRemainingSeconds());
 
   meter.SetTotalBytes(2000);
-  EXPECT_EQ(0, meter.GetSampleCount());
+  EXPECT_EQ(0u, meter.GetSampleCount());
   EXPECT_EQ(0, meter.GetRemainingSeconds());
 
   // 1st sample.
@@ -33,38 +33,38 @@ TEST(SpeedometerTest, RemainingTime) {
   mock_clock.Advance(base::Milliseconds(11000));
 
   meter.Update(100);
-  EXPECT_EQ(1, meter.GetSampleCount());
+  EXPECT_EQ(1u, meter.GetSampleCount());
   EXPECT_EQ(0, meter.GetRemainingSeconds());
 
   // Sample received less than 1 second after the previous one should be
   // ignored.
   mock_clock.Advance(base::Milliseconds(999));
   meter.Update(300);
-  EXPECT_EQ(1, meter.GetSampleCount());
+  EXPECT_EQ(1u, meter.GetSampleCount());
   EXPECT_EQ(0, meter.GetRemainingSeconds());
 
   // 2nd sample, the remaining time can be computed.
   mock_clock.Advance(base::Milliseconds(1));
   meter.Update(300);
-  EXPECT_EQ(2, meter.GetSampleCount());
+  EXPECT_EQ(2u, meter.GetSampleCount());
   EXPECT_EQ(9, round(meter.GetRemainingSeconds()));
 
   // 3rd sample. +1 second and still only processed 300 bytes.
   mock_clock.Advance(base::Milliseconds(1000));
   meter.Update(300);
-  EXPECT_EQ(3, meter.GetSampleCount());
+  EXPECT_EQ(3u, meter.GetSampleCount());
   EXPECT_EQ(17, round(meter.GetRemainingSeconds()));
 
   // 4th sample, +2 seconds and still only 300 bytes.
   mock_clock.Advance(base::Milliseconds(2000));
   meter.Update(300);
-  EXPECT_EQ(4, meter.GetSampleCount());
+  EXPECT_EQ(4u, meter.GetSampleCount());
   EXPECT_EQ(42, round(meter.GetRemainingSeconds()));
 
   // 5th sample, +1 second and now bumped from 300 to 600 bytes.
   mock_clock.Advance(base::Milliseconds(1000));
   meter.Update(600);
-  EXPECT_EQ(5, meter.GetSampleCount());
+  EXPECT_EQ(5u, meter.GetSampleCount());
   EXPECT_EQ(20, round(meter.GetRemainingSeconds()));
 
   // Elapsed time should impact the remaining time.
@@ -79,29 +79,29 @@ TEST(SpeedometerTest, RemainingTime) {
 TEST(SpeedometerTest, Samples) {
   base::ScopedMockClockOverride mock_clock;
 
-  const int max_samples = 20;
+  constexpr size_t kMaxSamples = 20;
   Speedometer meter;
   meter.SetTotalBytes(20000);
 
   // Slow speed of 100 bytes per second.
   int total_transferred = 0;
-  for (int i = 0; i < max_samples; i++) {
+  for (size_t i = 0; i < kMaxSamples; i++) {
     EXPECT_EQ(i, meter.GetSampleCount());
     mock_clock.Advance(base::Milliseconds(1000));
     total_transferred = i * 100;
     meter.Update(total_transferred);
   }
 
-  EXPECT_EQ(max_samples, meter.GetSampleCount());
+  EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
   EXPECT_EQ(181, round(meter.GetRemainingSeconds()));
 
   // +200 to make it compatible with the values in the unittest in the JS
   // version.
   const int initial_transferred_bytes = total_transferred + 200;
   // Faster speed of 300 bytes per second.
-  for (int i = 0; i < max_samples; i++) {
+  for (size_t i = 0; i < kMaxSamples; i++) {
     // Check buffer not expanded more than the specified length.
-    EXPECT_EQ(max_samples, meter.GetSampleCount());
+    EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
     mock_clock.Advance(base::Milliseconds(1000));
     total_transferred = initial_transferred_bytes + (i * 300);
     meter.Update(total_transferred);
@@ -111,13 +111,13 @@ TEST(SpeedometerTest, Samples) {
     EXPECT_GT(181, meter.GetRemainingSeconds());
   }
 
-  EXPECT_EQ(max_samples, meter.GetSampleCount());
+  EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
   EXPECT_EQ(41, round(meter.GetRemainingSeconds()));
 
   // Stalling.
-  for (int i = 0; i < max_samples; i++) {
+  for (size_t i = 0; i < kMaxSamples; i++) {
     // Check buffer not expanded more than the specified length.
-    EXPECT_EQ(max_samples, meter.GetSampleCount());
+    EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
     mock_clock.Advance(base::Milliseconds(1000));
     meter.Update(total_transferred);
   }

@@ -8,19 +8,19 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"
 #endif
 
 namespace enterprise_connectors {
 
 std::unique_ptr<KeyNetworkDelegate> CreateKeyNetworkDelegate() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<WinKeyNetworkDelegate>();
 #else
   NOTREACHED();
   return nullptr;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace enterprise_connectors

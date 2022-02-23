@@ -1,0 +1,35 @@
+rootWebArea
+++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++++++paragraph ignored invisible
+++++++++staticText ignored invisible name='Text outside the dialog.'
+++++++dialog
+++++++++paragraph
+++++++++++staticText name='Text in the dialog.'
+++++++++++++inlineTextBox name='Text in the dialog.'
+++++++++iframe
+++++++++++rootWebArea
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++paragraph
+++++++++++++++++++staticText name='Text in normal iframe'
+++++++++++++++++++++inlineTextBox name='Text in normal iframe'
+++++++++++++++++iframe
+++++++++++++++++++rootWebArea
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++paragraph
+++++++++++++++++++++++++++staticText name='Text in nested normal iframe'
+++++++++++++++++++++++++++++inlineTextBox name='Text in nested normal iframe'
+++++++iframe ignored invisible
+++++++++rootWebArea invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++paragraph ignored invisible
+++++++++++++++++staticText ignored invisible name='Text in inert iframe'
+++++++++++++++iframe ignored invisible
+++++++++++++++++rootWebArea invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++paragraph ignored invisible
+++++++++++++++++++++++++staticText ignored invisible name='Text in nested inert iframe'

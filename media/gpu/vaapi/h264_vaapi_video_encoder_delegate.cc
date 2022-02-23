@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -45,8 +46,7 @@ constexpr uint32_t kCPBWindowSizeMs = 1500;
 
 // Subjectively chosen.
 // Generally use up to 2 reference frames.
-constexpr size_t kMaxNumReferenceFrames = 2;
-constexpr size_t kMaxRefIdxL0Size = kMaxNumReferenceFrames;
+constexpr size_t kMaxRefIdxL0Size = 2;
 
 // HRD parameters (ch. E.2.2 in H264 spec).
 constexpr int kBitRateScale = 0;  // bit_rate_scale for SPS HRD parameters.
@@ -83,41 +83,6 @@ void FillVAEncRateControlParams(
   memset(&hrd_param, 0, sizeof(hrd_param));
   hrd_param.buffer_size = buffer_size;
   hrd_param.initial_buffer_fullness = buffer_size / 2;
-}
-
-// TODO(hiroh): Put this to media/gpu/gpu_video_encode_accelerator_helpers.h
-VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
-    const VideoEncodeAccelerator::Config& config) {
-  VideoBitrateAllocation bitrate_allocation;
-  if (!config.HasTemporalLayer() && !config.HasSpatialLayer()) {
-    bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
-    return bitrate_allocation;
-  }
-
-  auto& spatial_layer = config.spatial_layers[0];
-  const size_t num_temporal_layers = spatial_layer.num_of_temporal_layers;
-  // TODO(hiroh): support one temporal layer when moving this function.
-  DCHECK_GE(num_temporal_layers, 2u);
-  constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
-      {0.60, 0.40, 0.00},  // For two temporal layers.
-      {0.50, 0.20, 0.30},  // For three temporal layers.
-  };
-
-  const uint32_t bitrate_bps = spatial_layer.bitrate_bps;
-  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
-    const double factor =
-        kTemporalLayersBitrateScaleFactors[num_temporal_layers - 2][tid];
-    bitrate_allocation.SetBitrate(
-        0, tid, base::checked_cast<int>(bitrate_bps * factor));
-  }
-
-  return bitrate_allocation;
-}
-
-static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
-                                                                size_t size) {
-  return base::MakeRefCounted<base::RefCountedBytes>(
-      reinterpret_cast<uint8_t*>(ptr), size);
 }
 
 static void InitVAPictureH264(VAPictureH264* va_pic) {
@@ -209,7 +174,7 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       initial_qp(kDefaultQP),
       min_qp(kMinQP),
       max_qp(kMaxQP),
-      max_num_ref_frames(kMaxNumReferenceFrames),
+      max_num_ref_frames(kMaxRefIdxL0Size),
       max_ref_pic_list0_size(kMaxRefIdxL0Size) {}
 
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
@@ -248,7 +213,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   }
   if (config.HasTemporalLayer() && !supports_temporal_layer_for_testing_) {
     bool support_temporal_layer = false;
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
     VAImplementation implementation = VaapiWrapper::GetImplementationType();
     // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
     // drivers support them.
@@ -327,8 +292,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
       num_temporal_layers_ > 1u
           ? num_temporal_layers_ - 1
           : std::min(kMaxRefIdxL0Size, ave_config.max_num_ref_frames & 0xffff);
-  curr_params_.max_num_ref_frames =
-      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size);
+  curr_params_.max_num_ref_frames = curr_params_.max_ref_pic_list0_size;
 
   bool submit_packed_sps = false;
   bool submit_packed_pps = false;
@@ -354,7 +318,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   UpdateSPS();
   UpdatePPS();
 
-  return UpdateRates(GetDefaultVideoBitrateAllocation(config),
+  return UpdateRates(AllocateBitrateForDefaultEncoding(config),
                      initial_framerate);
 }
 
@@ -454,10 +418,8 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   // below maximum size, dropping oldest references.
   if (pic->ref) {
     ref_pic_list0_.push_front(pic);
-    const size_t max_num_ref_frames =
-        base::checked_cast<size_t>(current_sps_.max_num_ref_frames);
-    while (ref_pic_list0_.size() > max_num_ref_frames)
-      ref_pic_list0_.pop_back();
+    ref_pic_list0_.resize(
+        std::min(curr_params_.max_ref_pic_list0_size, ref_pic_list0_.size()));
   }
 
   num_encoded_frames_++;
@@ -588,6 +550,11 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.cpb_cnt_minus1 = 0;
   current_sps_.bit_rate_scale = kBitRateScale;
   current_sps_.cpb_size_scale = kCPBSizeScale;
+  // This implicitly converts from an unsigned rhs integer to a signed integer
+  // lhs (|bit_rate_value_minus1|). This is safe because
+  // |H264SPS::kBitRateScaleConstantTerm| is 6, so the bitshift is equivalent to
+  // dividing by 2^6. Therefore the resulting value is guaranteed to be in the
+  // range of a signed 32-bit integer.
   current_sps_.bit_rate_value_minus1[0] =
       (curr_params_.bitrate_allocation.GetSumBps() >>
        (kBitRateScale + H264SPS::kBitRateScaleConstantTerm)) -

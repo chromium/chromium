@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -111,7 +112,7 @@ class MockPromptProxy {
 
  private:
   // Data used to create a prompt.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
@@ -143,7 +144,7 @@ class MockInstallPrompt : public ExtensionInstallPrompt {
   }
 
  private:
-  MockPromptProxy* proxy_;
+  raw_ptr<MockPromptProxy> proxy_;
 };
 
 MockPromptProxy::MockPromptProxy(
@@ -260,14 +261,11 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                             .Build());
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
-    ExtensionRegistry::Get(browser()->profile())->AddEnabled(builder.Build());
+    extension_service()->AddExtension(builder.Build().get());
 
     const Extension* extension = GetInstalledExtension(extension_id);
     ASSERT_NE(nullptr, extension);
     ASSERT_EQ(version, extension->VersionString());
-
-    RendererStartupHelperFactory::GetForBrowserContext(browser()->profile())
-        ->OnExtensionLoaded(*extension);
   }
 
   static void InstallerCallback(base::OnceClosure quit_closure,
@@ -991,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
   base::ScopedAllowBlockingForTesting allow_io;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kEnableExtensionAssetsSharing);
+      ash::switches::kEnableExtensionAssetsSharing);
   base::ScopedTempDir cache_dir;
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
   ExtensionAssetsManagerChromeOS::SetSharedInstallDirForTesting(

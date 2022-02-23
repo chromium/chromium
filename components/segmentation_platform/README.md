@@ -38,3 +38,10 @@ target and give the `segmentation_platform` filter file as an argument:
 ```
 ./out/Default/components_unittests --test-launcher-filter-file=components/segmentation_platform/components_unittests.filter
 ```
+
+To update the list of tests, you can run the following command:
+```
+for test in $(git grep -E '^TEST(_F)?\(' -- components/segmentation_platform | \
+  cut -d"(" -f 2 | cut -d"," -f 1 | sort | uniq); do echo ${test}.* ; done > \
+    components/segmentation_platform/components_unittests.filter
+```

@@ -4,10 +4,11 @@
 
 package org.chromium.device.usb;
 
-import android.annotation.TargetApi;
 import android.hardware.usb.UsbConfiguration;
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -69,7 +70,7 @@ final class ChromeUsbDevice {
         return mDevice.getProductId();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private int getDeviceVersion() {
         // The Android framework generates this string with:

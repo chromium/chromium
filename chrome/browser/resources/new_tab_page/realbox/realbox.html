@@ -1,8 +1,9 @@
 <style>
   :host {
+    --ntp-realbox-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
     --ntp-realbox-height: 44px;
     border-radius: calc(0.5 * var(--ntp-realbox-height));
-    box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+    box-shadow: var(--ntp-realbox-shadow);
     font-size: 16px;
     height: var(--ntp-realbox-height);
   }
@@ -15,6 +16,21 @@
 
   :host([matches-are-visible]) {
     box-shadow: none;
+  }
+
+  :host([match-searchbox]) {
+    box-shadow: none;
+    --ntp-realbox-height: 46px;
+    box-sizing: border-box;
+  }
+
+  :host([match-searchbox]:not([matches-are-visible])) {
+    border: 1px solid var(--ntp-border-color);
+  }
+
+  :host([match-searchbox]:not([matches-are-visible]):hover)  {
+    border: 1px solid var(--search-box-bg-hovered, white);
+    box-shadow: var(--ntp-realbox-shadow);
   }
 
   #inputWrapper {
@@ -45,12 +61,16 @@
   }
 
   input::placeholder {
-    color: var(--search-box-placeholder, var(--google-grey-refresh-700));
+    color: var(--search-box-placeholder, var(--google-grey-700));
   }
 
   input:focus,
   :host([matches-are-visible]) input {
     background-color: var(--search-box-results-bg, white);
+  }
+
+  input:hover {
+    background-color: var(--search-box-bg-hovered, white);
   }
 
   ntp-realbox-icon {
@@ -105,7 +125,7 @@
     on-keydown="onInputWrapperKeydown_">
   <input id="input" type="search" autocomplete="off" spellcheck="false"
       aria-live="[[inputAriaLive_]]" role="combobox"
-      placeholder="[[i18n('searchBoxHint')]]"
+      placeholder="$i18n{searchBoxHint}"
       on-copy="onInputCutCopy_" on-cut="onInputCutCopy_"
       on-focus="onInputFocus_" on-blur="onInputBlur_" on-input="onInputInput_"
       on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
@@ -114,7 +134,7 @@
       default-icon="[[realboxIcon_]]" in-searchbox>
   </ntp-realbox-icon>
   <button id="voiceSearchButton" on-click="onVoiceSearchClick_"
-      title="[[i18n('voiceSearchButtonLabel')]]">
+      title="$i18n{voiceSearchButtonLabel}">
   </button>
   <ntp-realbox-dropdown id="matches" role="listbox" theme="[[theme]]"
       result="[[result_]]" selected-match-index="{{selectedMatchIndex_}}"

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_HELPER_INSTANCE_REMOTE_PROXY_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_HELPER_INSTANCE_REMOTE_PROXY_H_
 
-#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 
 namespace arc {
 

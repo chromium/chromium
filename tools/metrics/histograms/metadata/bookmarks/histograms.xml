@@ -1,0 +1,701 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Bookmarks histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
+    expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
+
+  <owner>johntlee@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Logs when a user action triggers a command in the bookmark manager. Commands
+    can be triggered by keyboard shortcuts, menu items or other buttons in the
+    UI.
+
+    Revised in M-76 when the &quot;Open (double click/enter)&quot; bucket was
+    split into two separate buckets, one for bookmarks and one for folders.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.CommandMenuOpened"
+    enum="BookmarkManagerMenuSource" expires_after="2020-06-14">
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    Logs where the menu was opened from when a user action opens the command
+    menu in the bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.NumDragged" units="bookmarks"
+    expires_after="M85">
+  <owner>johntlee@chromium.org</owner>
+  <summary>
+    Logs the number of bookmarks that were dragged simultaneously by a user.
+  </summary>
+</histogram>
+
+<histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
+    expires_after="2022-06-26">
+  <owner>johntlee@chromium.org</owner>
+  <owner>dbeam@chromium.org</owner>
+  <summary>
+    Records the time taken to load the bookmarks Web UI and render. This is
+    roughly equivalent to 'time to first meaningful paint' for the bookmark
+    manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.AddedPerProfileType" enum="BrowserProfileType"
+    expires_after="2022-08-14">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records when a bookmark is added sliced on profile type.
+
+    This was not recorded for Android before M90. Reading list and partner
+    bookmarks aren't reported by it.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Incognito" units="tabs"
+    expires_after="2022-05-01">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records the count of tabs when a user bookmarks all open
+    tabs, in incognito mode.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkAllTabsWithTabsCount.Regular" units="tabs"
+    expires_after="2022-07-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This histogram records the count of tabs when a user bookmarks all open
+    tabs, in regular mode.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarksBarStatus.OnReadingListOpened"
+    enum="BookmarkBarPrefAndState" expires_after="2022-06-26">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This records the Boomarks bar pref state and status when the reading list is
+    opened. This will help determine how often the reading list is accessed from
+    the NTP where the bookmarks bar is always visible and the bookmark bar pref
+    state for those from the NTP. (Desktop only).
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BookmarksInFolder" units="bookmarks"
+    expires_after="M85">
+  <owner>johntlee@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs the number of bookmark items inside a folder every time a folder is
+    opened inside the bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.BottomSheet.DestinationFolder" enum="BookmarkType"
+    expires_after="2022-06-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs the destination directory chosen by the user when saving a bookmark via
+    bottom sheet on Android.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad" units="bookmarks"
+    expires_after="2022-08-07">
+  <owner>supertri@chromium.org</owner>
+  <owner>isherman@chromium.org</owner>
+  <owner>aidanday@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The total number of bookmarks a user has saved, excluding folders. Recorded
+    when a profile is opened - precisely, when bookmarks are loaded into storage
+    from disk. The count includes all bookmarks both in the &quot;Bookmarks
+    Bar&quot; and also under &quot;Other Bookmarks&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.Duplicate{UniquenessCriterion}"
+    units="bookmarks" expires_after="2022-06-30">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of bookmarks a user has saved with a {UniquenessCriterion} that
+    is also present in at least one other bookmark. This excludes not only
+    folders (which don't have a URL) but it also excludes one bookmark per
+    unique {UniquenessCriterion} (that is, all except one are considered
+    duplicates). Recorded when bookmarks are loaded into storage from disk if
+    there is at least one duplicate.
+  </summary>
+  <token key="UniquenessCriterion">
+    <variant name="Url2" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.Count.OnProfileLoad.Unique{UniquenessCriterion}"
+    units="bookmarks" expires_after="2021-10-10">
+  <owner>mastiz@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of unique {UniquenessCriterion}s among bookmarks saved by the
+    user. Recorded when bookmarks are loaded into storage from disk.
+  </summary>
+  <token key="UniquenessCriterion">
+    <variant name="Url" summary="URL"/>
+    <variant name="UrlAndTitle" summary="URL-title pair"/>
+    <variant name="UrlAndTitleAndParent" summary="URL-title-parent triple"/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.Count.OpenInIncognito" units="bookmarks"
+    expires_after="M82">
+  <owner>twellington@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the number of bookmarks which are opened using the &quot;Open in
+    incognito tab&quot; button from selection mode in the Android bookmark
+    manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Count.OpenInNewTab" units="bookmarks"
+    expires_after="M82">
+  <owner>twellington@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records the number of bookmarks which are opened using the &quot;Open in new
+    tab&quot; button from selection mode in the Android bookmark manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.EntryPoint" enum="BookmarksEntryPoint"
+    expires_after="2022-08-07">
+  <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>How users add a new bookmark.</summary>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.AnyTermApproach.Used"
+    enum="Boolean" expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches, or if less
+    than 2 terms are longer than a threshold, nodes are accumulated by
+    intersection; i.e. only nodes matching every term will be accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    This histogram detects whether step 3a or 3b occurred.
+
+    It is emitted exactly once per the omnibox's request for bookmark matches
+    with a non-empty input.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.Terms.TermLength"
+    units="characters" expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches, or if less
+    than 2 terms are longer than a threshold, nodes are accumulated by
+    intersection; i.e. only nodes matching every term will be accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    This histogram measures the length of each term in step 1. It is emitted
+    once per term per the omnibox's request for bookmark matches with a
+    non-empty input.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.{SubmetricMatchCounts}"
+    units="match counts" expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches, or if less
+    than 2 terms are longer than a threshold, nodes are accumulated by
+    intersection; i.e. only nodes matching every term will be accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    {SubmetricMatchCounts}
+  </summary>
+  <token key="SubmetricMatchCounts">
+    <variant name="Matches.ConsideredCount"
+        summary="This histogram counts the matches considered in step 5. This
+                 may be less than the number of nodes returned from step 3,
+                 as there is a limit as to how many matches will be created.
+                 This may more than that limit, as not every match considered
+                 will be created. As deciding whether to create a match is
+                 the computation-heavy part of the process, this histogram is
+                 a good proxy of performance cost. It is emitted at most once
+                 per the omnibox's request for bookmark matches; it won't be
+                 emitted if step 3 matched no nodes."/>
+    <variant name="Matches.ReturnedCount"
+        summary="This histogram counts the matches created in step 5. This
+                 may be less than the number of nodes returned from step 3,
+                 as there is a limit as to how many matches will be created
+                 and some matches will be filtered. It is emitted at most
+                 once per the omnibox's request for bookmark matches; it
+                 won't be emitted if step 3 matched no nodes."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.{SubmetricMs}" units="ms"
+    expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches, or if less
+    than 2 terms are longer than a threshold, nodes are accumulated by
+    intersection; i.e. only nodes matching every term will be accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    {SubmetricMs}
+  </summary>
+  <token key="SubmetricMs">
+    <variant name="Timing.CreatingMatches"
+        summary="This histogram measures the time step 5 took. It is emitted
+                 at most once per the omnibox's request for bookmark matches;
+                 it won't be emitted if step 3 matched no nodes."/>
+    <variant name="Timing.RetrievingNodes"
+        summary="This histogram measures the time steps 2 and 3 took. It is
+                 emitted exactly once per the omnibox's request for bookmark
+                 matches with a non-empty input."/>
+    <variant name="Timing.SortingNodes"
+        summary="This histogram measures the time step 4 took. It is emitted
+                 at most once per the omnibox's request for bookmark matches;
+                 it won't be emitted if step 3 matched no nodes."/>
+    <variant name="Timing.Total"
+        summary="This histogram measures the time all steps took. It is
+                 emitted exactly once per the omnibox's request for bookmark
+                 matches with an empty or non-empty input."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.{SubmetricNodeCounts}"
+    units="node counts" expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches, or if less
+    than 2 terms are longer than a threshold, nodes are accumulated by
+    intersection; i.e. only nodes matching every term will be accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    {SubmetricNodeCounts}
+  </summary>
+  <token key="SubmetricNodeCounts">
+    <variant name="AnyTermApproach.NodeCount"
+        summary="This histogram counts the unique nodes accumulated in step
+                 3b. It may be less than the count of nodes unioned since
+                 those may contain duplicates. It may also be more than the
+                 count of the nodes unioned since this also includes the
+                 nodes intersected. It is emitted each time step 3b occurs;
+                 at most once per the omnibox's request for bookmark matches."/>
+    <variant name="AnyTermApproach.NodeCountAllTerms"
+        summary="This histogram counts the nodes that match every term in
+                 step 3b; i.e., the count of nodes intersected. The
+                 intersected nodes will not contain duplicates but may
+                 include nodes that were also unioned in step 3b. It is
+                 emitted at most once each time step 3b occurs; step 3b
+                 occurs at most once per the omnibox's request for bookmark
+                 matches."/>
+    <variant name="AnyTermApproach.NodeCountAnyTerms"
+        summary="This histogram counts the nodes that match any term in step
+                 3b; i.e., the count of nodes unioned. The unioned nodes will
+                 not contain duplicates if a node was matched by multiple
+                 terms, or if a term matched the same node multiple times. As
+                 mentioned above, terms that are too short will be skipped
+                 during unioning, and unioning will stop once a node limit is
+                 reached; those nodes won't be counted. It is emitted each
+                 time step 3b occurs; at most once per the omnibox's request
+                 for bookmark matches."/>
+    <variant name="AnyTermApproach.NodeCountPerTerm"
+        summary="This histogram counts the nodes matched for each term in
+                 step 3b for unioning. Node matches for a term will not
+                 include duplicates, but may include nodes matched by other
+                 terms. As mentioned above, terms that are too short will be
+                 skipped during unioning, and unioning will stop once a node
+                 limit is reached; those nodes won't be counted. Terms that
+                 match too many nodes will have those nodes counted. This
+                 only counts nodes matched during unioning, not those matched
+                 by intersections and appended after. It is emitted at most
+                 once per term each time step 3b occurs; step 3b occurs at
+                 most once per the omnibox's request for bookmark matches."/>
+    <variant name="Nodes.Count"
+        summary="This histogram counts the nodes returned from step 3. The
+                 nodes will not contain duplicates. It is emitted exactly
+                 once per the omnibox's request for bookmark matches with a
+                 non-empty input."/>
+    <variant name="Nodes.Count.InputsAtLeast3CharsLong"
+        summary="This histogram counts the nodes returned from step 3 when
+                 the input is at least 3 characters long. 3 is the default
+                 value of
+                 `kShortBookmarkSuggestionsByTotalInputLengthThreshold`; if
+                 the corresponding feature is enabled, longer inputs are
+                 expected to return many more nodes than shorter inputs.The
+                 nodes will not contain duplicates. It is emitted at most
+                 once per the omnibox's request for bookmark matches; it is
+                 only emitted if the input is at least 3 characters long."/>
+    <variant name="Nodes.Count.InputsShorterThan3CharsLong"
+        summary="This histogram counts the nodes returned from step 3 when
+                 the input is shorter than 3 characters. 3 is the default
+                 value of
+                 `kShortBookmarkSuggestionsByTotalInputLengthThreshold`; if
+                 the corresponding feature is enabled, longer inputs are
+                 expected to return many more nodes than shorter inputs.The
+                 nodes will not contain duplicates. It is emitted at most
+                 once per the omnibox's request for bookmark matches; it is
+                 only emitted if the input is shorter than 3 characters but
+                 not empty."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.GetResultsMatching.{SubmetricTermCounts}"
+    units="term counts" expires_after="2022-07-15">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Bookmarks are indexed by the terms in their titles and URLs. The omnibox
+    bookmark provider uses this index to search for bookmarks that match the
+    user input. A summary of the approach is:
+
+    1) Split the user input into terms.
+
+    2) For each term, find the index nodes matching the term. Nodes are minimal
+    representations of bookmarks that will later be used to construct matches in
+    step 5.
+
+    3) Accumulate the nodes.
+
+    3a) If the omnibox is interested only in title and URL matches nodes are
+    accumulated by intersection; i.e. only nodes matching every term will be
+    accumulated.
+
+    3b) If the omnibox is interested in path matches as well, nodes are
+    accumulated by union with a limit to avoid accumulating too many nodes. If
+    the limit is reached, intersection nodes will be appended and therefore
+    guaranteed to be included.
+
+    4) Sort the nodes.
+
+    5) Construct bookmark matches from the nodes and the user input. Not all
+    nodes will be converted to matches; there is both filtering and a cap.
+
+    This process occurs each time the omnibox looks up bookmarks for an input;
+    approximately once per character the user types and occasionally at other
+    times, e.g. when the omnibox is focused.
+
+    {SubmetricTermCounts}
+  </summary>
+  <token key="SubmetricTermCounts">
+    <variant name="AnyTermApproach.TermsUnionedCount"
+        summary="This histogram counts the terms in step 3b. This excludes
+                 terms not used for unioning; i.e. terms with no matches. It
+                 is emitted each time step 3b occurs; at most once per the
+                 omnibox's request for bookmark matches."/>
+    <variant name="Terms.TermsCount"
+        summary="This histogram counts the terms in step 1. It is emitted
+                 exactly once per the omnibox's request for bookmark matches
+                 with an empty or non-empty input."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"
+    expires_after="2022-08-14">
+  <owner>ianwen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>Logs a UI location from which a bookmark is launched.</summary>
+</histogram>
+
+<histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"
+    expires_after="M77">
+  <owner>pkotwicz@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs how frequently BookmarkModel::OnFaviconsChanged() is called with a
+    non-empty |icon_url| to determine whether BookmarkNodes should be cached
+    based on their favicon URLs (e.g. http://www.google.com/favicon.ico) in
+    addition to their page URLs (e.g. http://www.google.com). OnFaviconChanged()
+    is expected to be called less than 10 times per user per day with a
+    non-empty |icon_url|.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-07-03">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    This records the number of times the bookmark manager is opened from regular
+    or Incognito tab. This histogram only records the count from
+    ChromeTabbedActivity where we actually have the Bookmark manager UI.
+    Recorded when the bookmark menu item is clicked in Android.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
+    expires_after="2022-02-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
+    out corrupted data introduced by a timestamp bug.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkType" enum="BookmarkType"
+    expires_after="2022-08-14">
+  <owner>wychen@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Logs whether the bookmark entry is a user bookmark or a partner bookmark
+    when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfItems" units="items"
+    expires_after="2022-08-14">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the total number of reading list items shown in the reading list on the
+    Android Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfReadItems" units="items"
+    expires_after="2022-08-14">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the number of read items shown in the reading list on the Android
+    Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.ReadingList.NumberOfUnreadItems" units="items"
+    expires_after="2022-06-26">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>UI&gt;Browser&gt;Mobile&gt;ReadingList</component>
+  <summary>
+    Logs the number of unread items shown in the reading list on the Android
+    Bookmarks page when it is opened.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.StarEntryPoint.ClickedAction"
+    enum="StarEntryPointAction" expires_after="2022-06-26">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Recorded when an action in the Bookmark icon menu is clicked.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.UsageCountPerProfileType" enum="BrowserProfileType"
+    expires_after="2022-08-14">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The number of times bookmarks are used in each profile type. Recorded when a
+    bookmark is clicked.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

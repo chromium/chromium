@@ -26,7 +26,6 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="225614027745146050">Willkommen</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
 <translation id="2329392777730037872"><ph name="URL" /> konnte auf dem Client nicht geöffnet werden.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2366718077645204424">Die Verbindung zum Host kann nicht hergestellt werden. Das von Ihnen verwendete Netzwerk ist möglicherweise nicht korrekt konfiguriert.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Zuletzt online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="2599300881200251572">Dieser Dienst ermöglicht eingehende Verbindungen von Chrome Remote Desktop-Clients.</translation>
 <translation id="2647232381348739934">Chromoting Service</translation>
 <translation id="2676780859508944670">Vorgang läuft...</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte melden Sie sich noch einmal an.</translation>
 <translation id="2803375539583399270">PIN eingeben</translation>
@@ -73,10 +73,10 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4257751272692708833">URL-Weiterleiter: <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Der Zugriffscode ist ungültig. Bitte versuchen Sie es erneut.</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. Alle Rechte vorbehalten.</translation>
 <translation id="4405930547258349619">Zentrale Bibliothek</translation>
 <translation id="443560535555262820">Einstellungen für Bedienungshilfen öffnen</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Alle Rechte vorbehalten.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client getrennt: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ist nicht richtig konfiguriert. Bitte wählen Sie einen anderen Standardbrowser und aktivieren Sie dann die URL-Weiterleitung noch einmal.</translation>

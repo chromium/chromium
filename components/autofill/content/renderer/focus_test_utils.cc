@@ -43,10 +43,11 @@ std::string FocusTestUtils::GetFocusLog(const blink::WebDocument& document) {
       document.GetElementById(blink::WebString::FromUTF8("event_log"));
   if (element.IsNull())
     return "event_log_element_id not found";
-  blink::WebInputElement* input_element = blink::ToWebInputElement(&element);
-  if (!input_element)
+  blink::WebInputElement input_element =
+      element.DynamicTo<blink::WebInputElement>();
+  if (input_element.IsNull())
     return "event_log_element_id does not point to input element";
-  return input_element->Value().Utf8();
+  return input_element.Value().Utf8();
 }
 
 }  // namespace test

@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/web_contents.h"
 
@@ -38,9 +39,6 @@ class WebContentsUserData : public base::SupportsUserData::Data {
  public:
   explicit WebContentsUserData(WebContents& web_contents)
       : web_contents_(&web_contents) {}
-
-  // TODO(crbug.com/1268914) : Remove this constructor.
-  WebContentsUserData() = default;
 
   // Creates an object of type T, and attaches it to the specified WebContents.
   // If an instance is already attached, does nothing.
@@ -74,23 +72,19 @@ class WebContentsUserData : public base::SupportsUserData::Data {
   // The returned `WebContents` is guaranteed to live as long as `this`
   // WebContentsUserData (due to how UserData works - WebContents
   // owns `this` UserData).
-  content::WebContents& GetWebContents() {
-    // TODO(crbug.com/1268914) : Remove when we can't call the default
-    // constructor.
-    CHECK(web_contents_);
-    return *web_contents_;
-  }
+  content::WebContents& GetWebContents() { return *web_contents_; }
+  const content::WebContents& GetWebContents() const { return *web_contents_; }
 
  private:
   // This is a pointer (rather than a reference) to ensure that go/miracleptr
   // can cover this field (see also //base/memory/raw_ptr.md).
-  content::WebContents* const web_contents_ = nullptr;
+  const raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 // This macro declares a static variable inside the class that inherits from
 // WebContentsUserData The address of this static variable is used as the key to
 // store/retrieve an instance of the class on/from a WebState.
-#define WEB_CONTENTS_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
+#define WEB_CONTENTS_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation

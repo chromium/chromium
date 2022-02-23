@@ -50,7 +50,24 @@ message PageTopicsOutputPostprocessingParams {
   optional PageTopicsCategoryPostprocessingParams category_params = 2;
 }
 
+message Topic {
+  // The user-visible string of the taxonomy topic.
+  optional string topic_name = 1;
+  // The id of the topic.
+  optional int64 topic_id = 2;
+}
+
+message TopicTaxonomy {
+  // The version of this specific taxonomy, which is separate from the model
+  // version.
+  optional int64 version = 1;
+  // The topics supported by this taxonomy.
+  repeated Topic topics = 2;
+}
+
 message PageTopicsModelMetadata {
+  reserved 4;
+
   // The version of the model sent by the server, and thus, will only be
   // populated by the server.
   optional int64 version = 1;
@@ -64,4 +81,6 @@ message PageTopicsModelMetadata {
   // populated by the server.
   optional PageTopicsOutputPostprocessingParams output_postprocessing_params =
       3;
+  // The taxonomy used by this model.
+  optional TopicTaxonomy topic_taxonomy = 5;
 }

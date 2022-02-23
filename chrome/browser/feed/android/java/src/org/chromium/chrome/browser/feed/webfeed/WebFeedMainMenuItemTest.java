@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -41,11 +43,11 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLa
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -57,6 +59,7 @@ import java.util.ArrayList;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -107,12 +110,16 @@ public final class WebFeedMainMenuItemTest {
 
         // Add requests for web feed information to mWaitingMetadataCallbacks.
         doAnswer(invocation -> {
+            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
+                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
+                    invocation.<Integer>getArgument(1).intValue());
             mWaitingMetadataCallbacks.add(
-                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1));
+                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2));
             return null;
         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(any(), any(Callback.class));
+                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                        any(Callback.class));
 
         mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
                 R.layout.web_feed_main_menu_item, null));

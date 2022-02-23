@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -40,7 +41,7 @@
 #include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/tooltip_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -59,7 +60,7 @@ views::Widget* CreateWidget(aura::Window* root) {
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   params.parent = root;
 #endif
   params.bounds = gfx::Rect(0, 0, 200, 100);
@@ -92,7 +93,7 @@ class TooltipControllerTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     aura::Window* root_window = GetContext();
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
     if (root_window) {
       tooltip_aura_ = new views::corewm::TooltipAura();
       controller_ = std::make_unique<TooltipController>(
@@ -105,7 +106,7 @@ class TooltipControllerTest : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
     helper_ = std::make_unique<TooltipControllerTestHelper>(
         GetController(widget_.get()));
@@ -113,7 +114,7 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
     aura::Window* root_window = GetContext();
     if (root_window) {
       root_window->RemovePreTargetHandler(controller_.get());
@@ -156,19 +157,19 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_ = nullptr;
+  raw_ptr<TooltipTestView> view_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
  protected:
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
-  TooltipAura* tooltip_aura_;  // not owned.
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
+  raw_ptr<TooltipAura> tooltip_aura_;  // not owned.
 #endif
 
  private:
   std::unique_ptr<TooltipController> controller_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 };
@@ -239,7 +240,7 @@ TEST_F(TooltipControllerTest, DontShowTooltipOnTouch) {
   EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
 }
 
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
 // crbug.com/664370.
 TEST_F(TooltipControllerTest, MaxWidth) {
   std::u16string text =
@@ -767,7 +768,7 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
 // Disabled on Linux as X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint
 // and WaylandScreen::GetAcceleratedWidgetAtScreenPoint don't consider z-order.
 // Disabled on Windows due to failing bots. http://crbug.com/604479
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Capture DISABLED_Capture
 #else
 #define MAYBE_Capture Capture
@@ -1006,7 +1007,7 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_;
+  raw_ptr<TestTooltip> test_tooltip_;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
@@ -1073,7 +1074,7 @@ class TooltipControllerTest3 : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
 
     generator_ = std::make_unique<ui::test::EventGenerator>(GetRootWindow());
@@ -1105,16 +1106,16 @@ class TooltipControllerTest3 : public ViewsTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_ = nullptr;
+  raw_ptr<TestTooltip> test_tooltip_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_;
+  raw_ptr<TooltipTestView> view_;
 
  private:
   std::unique_ptr<TooltipController> controller_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 

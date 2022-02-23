@@ -23,15 +23,15 @@
 #include "client/simple_string_dictionary.h"
 #include "util/misc/tri_state.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace crashpad {
 
 namespace internal {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 class InProcessIntermediateDumpHandler;
 #endif
 
@@ -230,7 +230,7 @@ struct CrashpadInfo {
   };
 
  protected:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   friend class internal::InProcessIntermediateDumpHandler;
 #endif
 

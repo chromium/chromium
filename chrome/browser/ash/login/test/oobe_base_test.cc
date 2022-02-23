@@ -26,9 +26,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
@@ -104,13 +106,10 @@ void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::kDisableOOBEChromeVoxHintTimerForTesting);
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
+  if (!needs_network_screen_skip_check_)
+    command_line->AppendSwitch(
+        switches::kDisableOOBENetworkScreenSkippingForTesting);
   command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
-
-  // Blink features are controlled via a command line switch. Disable HTML
-  // imports which are deprecated. OOBE uses a polyfill for imports that will
-  // be replaced once the migration to JS modules is complete.
-  command_line->AppendSwitchASCII(::switches::kDisableBlinkFeatures,
-                                  "HTMLImports");
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
@@ -226,6 +225,12 @@ OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
                                   ->IsDeviceEnterpriseManaged();
   return isEnterpriseManaged ? UserCreationView::kScreenId
                              : GaiaView::kScreenId;
+}
+
+// static
+OobeScreenId OobeBaseTest::GetScreenAfterNetworkScreen() {
+  bool consolidated_enabled = features::IsOobeConsolidatedConsentEnabled();
+  return consolidated_enabled ? UpdateView::kScreenId : EulaView::kScreenId;
 }
 
 void OobeBaseTest::MaybeWaitForLoginScreenLoad() {

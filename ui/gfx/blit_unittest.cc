@@ -143,7 +143,7 @@ TEST(Blit, ScrollCanvas) {
   VerifyCanvasValues<5, 5>(canvas.get(), scroll_diagonal_expected);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(Blit, WithSharedMemory) {
   const int kCanvasWidth = 5;

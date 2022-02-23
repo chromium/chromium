@@ -600,6 +600,27 @@ suite('NetworkListItemTest', function() {
         assertFalse(eventTriggered);
       });
 
+  test(
+      'Network item force disabled, no arrow and enter and click does not ' +
+          'fire events',
+      async () => {
+        init();
+
+        listItem.disableItem = true;
+        await flushAsync();
+
+        let arrow = listItem.$$('#subpageButton');
+        assertFalse(!!arrow);
+
+        listItem.$$('#divOuter').click();
+        await flushAsync();
+        assertFalse(eventTriggered);
+
+        enter();
+        await flushAsync();
+        assertFalse(eventTriggered);
+      });
+
   test('Show locked sublabel when cellular network is locked', async () => {
     init();
 
@@ -638,6 +659,30 @@ suite('NetworkListItemTest', function() {
             networkStateLockedText, networkStateText.textContent.trim());
       });
 
+  test('computeIsBlockedNetwork()_ should return expected value', async () => {
+    init();
+    await flushAsync();
+    // Should return false if item is null or undefined.
+    assertFalse(listItem.computeIsBlockedNetwork_());
+
+    // Set item to a policy blocked wifi network.
+    const managedProperties = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifiguid');
+    managedProperties.source = chromeos.networkConfig.mojom.OncSource.kUser;
+    managedProperties.typeProperties.wifi.security =
+        chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+    mojoApi_.setManagedPropertiesForTest(managedProperties);
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(managedProperties);
+    listItem.item = networkState;
+    // Set global policy to restrict managed wifi networks.
+    listItem.globalPolicy = {
+      allowOnlyPolicyWifiNetworksToConnect: true,
+    };
+    await flushAsync();
+    assertTrue(listItem.computeIsBlockedNetwork_());
+  });
+
   test(
       'Show detail page when clicking on blocked cellular network item',
       async () => {
@@ -662,7 +707,7 @@ suite('NetworkListItemTest', function() {
 
         // Selecting the row should fire the show-detail event.
         const showDetailPromise =
-            test_util.eventToPromise('show-detail', listItem);
+            test_util.eventToPromise('selected', listItem);
         listItem.$.divOuter.click();
         const showDetailEvent = await showDetailPromise;
         assertEquals(showDetailEvent.detail, networkState);

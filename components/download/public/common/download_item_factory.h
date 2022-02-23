@@ -45,7 +45,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const std::string& serialized_embedder_data,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
       const absl::optional<url::Origin>& initiator_origin,

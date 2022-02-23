@@ -11,9 +11,10 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './search_engine_entry.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
+import {getTemplate} from './search_engines_list.html.js';
 
 export class SettingsSearchEnginesListElement extends PolymerElement {
   static get is() {
@@ -21,7 +22,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -4,6 +4,11 @@
     "allowJs": true,
     "typeRoots": [
        "./../../../../../third_party/node/node_modules/@types"
+    ],
+    "types": [
+      "chai",
+      "mocha",
+      "w3c-css-typed-object-model-level-1"
     ]
   }
 }

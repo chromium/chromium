@@ -37,7 +37,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #endif
 
@@ -148,8 +147,8 @@ void SharingDialogView::AddedToWidget() {
                               gfx::kPlaceholderColor),
         gfx::CreateVectorIcon(*data_.header_icons->dark,
                               gfx::kPlaceholderColor),
-        base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                            base::Unretained(frame_view)));
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
     constexpr gfx::Size kHeaderImageSize(320, 100);
     image_view->SetPreferredSize(kHeaderImageSize);
     image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -189,7 +188,8 @@ views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!dialog) {
     auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
-    if (bubble && bubble->icon_type() == PageActionIconType::kClickToCall)
+    if (bubble && bubble->bubble_type() ==
+                      IntentPickerBubbleView::BubbleType::kClickToCall)
       return bubble;
   }
 #endif

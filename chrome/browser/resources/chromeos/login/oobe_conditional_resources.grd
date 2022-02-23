@@ -20,12 +20,11 @@
       <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
       <structure name="IDR_CUSTOM_ELEMENTS_LOGIN_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=stub" expand_variables="true" />
       <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
-      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_OOBE_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=oobe,OS_INSTALL=os_install" expand_variables="true" />
       <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_HTML" file="structure\components_common.html" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
-      <structure name="IDR_CUSTOM_ELEMENTS_OS_INSTALL_LOGIN_JS" file="structure\components_common.js" flattenhtml="true" type="chrome_html" variables="OOBE=login,OS_INSTALL=os_install" expand_variables="true" />
 
-      <structure name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" flattenhtml="true" type="chrome_html" />
-      <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
+      <structure name="IDR_OOBE_DEBUGGER_UTIL_JS" file="debug\debug_util.js" type="chrome_html" flattenhtml="true" />
+
+      <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_JS" file="components/keyboard_utils_for_injection.js" flattenhtml="true" type="chrome_html" />
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->
@@ -47,6 +46,17 @@
       <!-- OOBE Test API -->
       <include name="IDR_OOBE_TEST_API_JS" file="test_api\test_api.js" type="chrome_html" />
       <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api\no_test_api.js" type="chrome_html" />
+      <include name="IDR_OOBE_TEST_API_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/test_api.m.js" />
+      <include name="IDR_OOBE_TEST_API_STUB_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/no_test_api.m.js" />
+
+      <!-- OOBE Debugger -->
+      <include name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" type="chrome_html" />
+      <include name="IDR_OOBE_DEBUGGER_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/debug/debug.m.js" />
+      <include name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" type="chrome_html" />
+
     </includes>
   </release>
 </grit>

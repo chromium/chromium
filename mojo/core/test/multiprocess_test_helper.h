@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
@@ -35,7 +34,7 @@ class MultiprocessTestHelper {
     // Same as CHILD but uses the newer async channel handshake.
     ASYNC,
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     // Launch the child process as a child in the mojo system, using a named
     // pipe.
     NAMED_CHILD,
@@ -43,7 +42,7 @@ class MultiprocessTestHelper {
     // Launch the child process as an unrelated peer process in the mojo
     // system, using a named pipe.
     NAMED_PEER,
-#endif  //  !defined(OS_FUCHSIA)
+#endif  //  !BUILDFLAG(IS_FUCHSIA)
     // This is the same as child; however, it will never advertise any
     // capabilities.
     CHILD_WITHOUT_CAPABILITIES

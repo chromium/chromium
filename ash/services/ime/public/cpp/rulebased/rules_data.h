@@ -20,7 +20,7 @@ namespace chromeos {
 namespace ime {
 namespace rulebased {
 
-using KeyMap = std::map<mojom::DomCode, const char*>;
+using KeyMap = std::map<ash::ime::mojom::DomCode, const char*>;
 
 using TransformRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
 

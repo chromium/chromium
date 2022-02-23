@@ -219,8 +219,8 @@ void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
 }
 
 Value ParseJson(StringPiece json) {
-  JSONReader::ValueWithError result =
-      JSONReader::ReadAndReturnValueWithError(json, JSON_ALLOW_TRAILING_COMMAS);
+  JSONReader::ValueWithError result = JSONReader::ReadAndReturnValueWithError(
+      json, JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS);
   if (!result.value) {
     ADD_FAILURE() << "Failed to parse \"" << json
                   << "\": " << result.error_message;

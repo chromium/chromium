@@ -32,6 +32,7 @@
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
@@ -579,9 +580,7 @@ TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
   ASSERT_EQ(kExpectedSize, token.length());
   EXPECT_TRUE(installer::StoreDMToken(token));
 
-  base::win::RegKey key;
-  std::wstring name;
-  std::tie(key, name) = InstallUtil::GetCloudManagementDmTokenLocation(
+  auto [key, name] = InstallUtil::GetCloudManagementDmTokenLocation(
       InstallUtil::ReadOnly(true), InstallUtil::BrowserLocation(false));
   ASSERT_TRUE(key.Valid());
 
@@ -635,20 +634,13 @@ TEST(SetupUtilTest, RotateDTKeySuccess) {
   GURL dmserver_url("dmserver.com");
   std::string nonce = "nonce";
 
-  // Create a fake success response.
-  enterprise_management::DeviceManagementResponse response;
-  response.mutable_browser_public_key_upload_response()->set_response_code(
-      enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS);
-  std::string response_str;
-  response.SerializeToString(&response_str);
-
   // Trigger the key rotation with a real persistence delegate (empty) but with
   // a mocked network delegate.
   auto mock_network_delegate =
       std::make_unique<enterprise_connectors::test::MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dmserver_url, token, testing::_))
-      .WillOnce(testing::Return(response_str));
+      .WillOnce(testing::Return(/*http_code=*/200));
 
   auto key_rotation_manager =
       enterprise_connectors::KeyRotationManager::CreateForTesting(
@@ -659,10 +651,7 @@ TEST(SetupUtilTest, RotateDTKeySuccess) {
   ASSERT_TRUE(installer::RotateDeviceTrustKey(std::move(key_rotation_manager),
                                               dmserver_url, token, nonce));
 
-  base::win::RegKey key;
-  std::wstring signingkey_name;
-  std::wstring tustlevel_name;
-  std::tie(key, signingkey_name, tustlevel_name) =
+  auto [key, signingkey_name, tustlevel_name] =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(true));
   ASSERT_TRUE(key.Valid());

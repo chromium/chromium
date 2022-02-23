@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -131,6 +132,8 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options,
       TriggerManagerReason* out_reason);
@@ -143,6 +146,8 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options);
 
@@ -180,7 +185,7 @@ class TriggerManager {
 
   // The UI manager is used to send reports to Google. Not owned.
   // TODO(lpz): we may only need a the PingManager here.
-  BaseUIManager* ui_manager_;
+  raw_ptr<BaseUIManager> ui_manager_;
 
   // Map of the data collectors running on each tabs. New keys are added the
   // first time any trigger tries to collect data on a tab and are removed when
@@ -213,7 +218,7 @@ class TriggerManagerWebContentsHelper
                                   TriggerManager* trigger_manager);
 
   // Trigger Manager will be notified of any relevant WebContents events.
-  TriggerManager* trigger_manager_;
+  raw_ptr<TriggerManager> trigger_manager_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

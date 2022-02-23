@@ -5,9 +5,12 @@
 #ifndef NET_BASE_NET_MODULE_H__
 #define NET_BASE_NET_MODULE_H__
 
-#include "base/macros.h"
-#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace net {
 

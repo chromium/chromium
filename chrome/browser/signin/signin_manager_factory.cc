@@ -4,10 +4,8 @@
 
 #include "chrome/browser/signin/signin_manager_factory.h"
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -36,16 +34,6 @@ SigninManagerFactory::~SigninManagerFactory() = default;
 
 KeyedService* SigninManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros with Mirror, signed-out profiles are not supported yet. Disable
-  // the `SigninManager` so that it does not remove the primary account.
-  // TODO(https://crbug.com/1259872): Revisit this once Dice is no longer
-  // supported on Lacros, and see if the SigninManager can be removed from the
-  // build entirely.
-  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
-    return nullptr;
-#endif
-
   Profile* profile = Profile::FromBrowserContext(context);
   return new SigninManager(profile->GetPrefs(),
                            IdentityManagerFactory::GetForProfile(profile));

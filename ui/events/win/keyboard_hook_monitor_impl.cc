@@ -4,6 +4,8 @@
 
 #include "ui/events/win/keyboard_hook_monitor_impl.h"
 
+#include "base/no_destructor.h"
+
 namespace ui {
 
 KeyboardHookMonitorImpl::KeyboardHookMonitorImpl() = default;

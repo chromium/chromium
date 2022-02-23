@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="102360288709523007">사용 통계와 비정상 종료 보고서를 Google로 전송하면 Chromium 개선에 도움이 됩니다.</translation>
+<translation id="1047130070405668746">Chromium을 선택합니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Chromium에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="1584569488888892906">간편하고 안전하며 더 빨라진 Chromium을 사용해 보세요</translation>
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
+<translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Chromium을 선택합니다.</translation>
 <translation id="2006345422933397527">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="2054703085270098503">Chromium으로 안전하게 보호하기</translation>
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Chromium Canary에서 지원되지 않습니다.</translation>
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
-<translation id="3946918322491238254">북마크, 방문 기록, 비밀번호 및 기타 설정은 모두 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
+<translation id="4043291146360695975">비밀번호가 이 기기의 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">한층 개선된 Chromium의 최신 버전이 출시되었습니다.</translation>
 <translation id="6752854822223394465">조직에서 Chromium을 설정하는 중...</translation>
 <translation id="6820823224820483452">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
+<translation id="7006920032187763988">비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="7018284295775193585">Chromium을 업데이트할 수 없습니다.</translation>
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="7099326575020694068">Chromium에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="7108914401277488191">Chromium으로 더 다양한 작업 처리하기</translation>
 <translation id="7118091470949186573">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
+<translation id="7175400662502680481">정보 유출로 인해 비밀번호가 노출되었습니다. 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7208566199746267865">Chromium에서는 계정 로그인 정보가 자동으로 채워지기 때문에 시간을 절약할 수 있습니다. 설정에서 계정을 추가하거나 삭제할 수 있습니다.</translation>
 <translation id="725427773388857052">Chromium에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
 <translation id="7269362888766543920">일부 부가기능으로 인해 Chromium이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>
 <translation id="7313655110045230863">Chromium을 기본 브라우저로 설정하려면 Settings(설정)를 여세요. Default Browser App(기본 브라우저 앱)을 탭한 다음 Chromium을 선택합니다.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">선택한 데이터가 Chromium 및 동기화된 기기에서 삭제되었습니다. history.google.com에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
+<translation id="7395825497086981028">비밀번호가 <ph name="EMAIL" />의 비밀번호 관리자에 저장됩니다.</translation>
 <translation id="7400689562045506105">어디서나 Chromium 사용</translation>
 <translation id="766897673682622022">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7674213385180944843">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chromium을 열고 카메라를 사용 설정하세요.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8175055321229419309">도움말: <ph name="BEGIN_LINK" />Chromium을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="858114650497379505">비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
 <translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
+<translation id="9059693977935746710">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9110075932708282655">Chromium을 기본 브라우저로 사용</translation>
 <translation id="921174536258924340">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>

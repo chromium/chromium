@@ -7,7 +7,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -17,33 +17,38 @@
 namespace policy {
 
 namespace {
-static DlpContentObserver* g_testing_dlp_content_observer = nullptr;
+static DlpContentObserver* g_dlp_content_observer = nullptr;
 }  // namespace
 
 // static
 DlpContentObserver* DlpContentObserver::Get() {
-  if (g_testing_dlp_content_observer)
-    return g_testing_dlp_content_observer;
+  if (g_dlp_content_observer)
+    return g_dlp_content_observer;
 
-    // Initializes DlpContentManager(Lacros) if needed.
+    // Initializes DlpContentManager(Ash/Lacros) if needed.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return DlpContentManager::Get();
+  auto* manager = new DlpContentManagerAsh();
+  manager->Init();
+  g_dlp_content_observer = manager;
 #else
-  return DlpContentManagerLacros::Get();
+  auto* manager = new DlpContentManagerLacros();
+  manager->Init();
+  g_dlp_content_observer = manager;
 #endif
+  return g_dlp_content_observer;
 }
 
 /* static */
 void DlpContentObserver::SetDlpContentObserverForTesting(
     DlpContentObserver* dlp_content_observer) {
-  if (g_testing_dlp_content_observer)
-    delete g_testing_dlp_content_observer;
-  g_testing_dlp_content_observer = dlp_content_observer;
+  if (g_dlp_content_observer)
+    delete g_dlp_content_observer;
+  g_dlp_content_observer = dlp_content_observer;
 }
 
 /* static */
 void DlpContentObserver::ResetDlpContentObserverForTesting() {
-  g_testing_dlp_content_observer = nullptr;
+  g_dlp_content_observer = nullptr;
 }
 
 // ScopedDlpContentObserverForTesting

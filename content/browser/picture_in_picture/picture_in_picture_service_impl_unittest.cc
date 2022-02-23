@@ -7,9 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
@@ -53,13 +54,10 @@ class PictureInPictureDelegate : public WebContentsDelegate {
   PictureInPictureDelegate(const PictureInPictureDelegate&) = delete;
   PictureInPictureDelegate& operator=(const PictureInPictureDelegate&) = delete;
 
-  MOCK_METHOD3(EnterPictureInPicture,
-               PictureInPictureResult(WebContents*,
-                                      const viz::SurfaceId&,
-                                      const gfx::Size&));
+  MOCK_METHOD1(EnterPictureInPicture, PictureInPictureResult(WebContents*));
 };
 
-class TestOverlayWindow : public OverlayWindow {
+class TestOverlayWindow : public VideoOverlayWindow {
  public:
   TestOverlayWindow() = default;
 
@@ -68,9 +66,9 @@ class TestOverlayWindow : public OverlayWindow {
 
   ~TestOverlayWindow() override {}
 
-  static std::unique_ptr<OverlayWindow> Create(
-      PictureInPictureWindowController* controller) {
-    return std::unique_ptr<OverlayWindow>(new TestOverlayWindow());
+  static std::unique_ptr<VideoOverlayWindow> Create(
+      VideoPictureInPictureWindowController* controller) {
+    return std::unique_ptr<VideoOverlayWindow>(new TestOverlayWindow());
   }
 
   bool IsActive() override { return false; }
@@ -80,7 +78,7 @@ class TestOverlayWindow : public OverlayWindow {
   bool IsVisible() override { return false; }
   bool IsAlwaysOnTop() override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
-  void UpdateVideoSize(const gfx::Size& natural_size) override {
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
   }
   void SetPlaybackState(PlaybackState playback_state) override {}
@@ -105,8 +103,8 @@ class PictureInPictureTestBrowserClient : public TestContentBrowserClient {
   PictureInPictureTestBrowserClient() = default;
   ~PictureInPictureTestBrowserClient() override = default;
 
-  std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
-      PictureInPictureWindowController* controller) override {
+  std::unique_ptr<VideoOverlayWindow> CreateWindowForVideoPictureInPicture(
+      VideoPictureInPictureWindowController* controller) override {
     return TestOverlayWindow::Create(controller);
   }
 };
@@ -182,13 +180,13 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
   PictureInPictureTestBrowserClient browser_client_;
   PictureInPictureDelegate delegate_;
   // Will be deleted when the frame is destroyed.
-  PictureInPictureServiceImpl* service_impl_;
+  raw_ptr<PictureInPictureServiceImpl> service_impl_;
   // Required to pass a valid PendingRemote to StartSession() in the tests.
   PictureInPictureMediaPlayerReceiver media_player_receiver_;
 };
 
 // Flaky on Android. https://crbug.com/970866
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_EnterPictureInPicture DISABLED_EnterPictureInPicture
 #else
 #define MAYBE_EnterPictureInPicture EnterPictureInPicture
@@ -196,8 +194,8 @@ class PictureInPictureServiceImplTest : public RenderViewHostImplTestHarness {
 
 TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
   const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  const VideoPictureInPictureWindowControllerImpl* controller =
+      VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
           contents());
 
   ASSERT_TRUE(controller);
@@ -217,8 +215,7 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kSuccess));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;
@@ -249,8 +246,8 @@ TEST_F(PictureInPictureServiceImplTest, MAYBE_EnterPictureInPicture) {
 
 TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
   const int kPlayerVideoOnlyId = 30;
-  const PictureInPictureWindowControllerImpl* controller =
-      PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  const VideoPictureInPictureWindowControllerImpl* controller =
+      VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
           contents());
 
   ASSERT_TRUE(controller);
@@ -263,8 +260,7 @@ TEST_F(PictureInPictureServiceImplTest, EnterPictureInPicture_NotSupported) {
                      viz::LocalSurfaceId(
                          11, base::UnguessableToken::Deserialize(0x111111, 0)));
 
-  EXPECT_CALL(delegate(),
-              EnterPictureInPicture(contents(), surface_id, gfx::Size(42, 42)))
+  EXPECT_CALL(delegate(), EnterPictureInPicture(contents()))
       .WillRepeatedly(testing::Return(PictureInPictureResult::kNotSupported));
 
   mojo::Remote<blink::mojom::PictureInPictureSession> session_remote;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/source_language_combobox_model.h"
@@ -32,6 +33,10 @@
 
 class Browser;
 
+namespace translate {
+class TranslateBubbleVisualTest;
+}  // namespace translate
+
 namespace views {
 class Checkbox;
 class Combobox;
@@ -53,27 +58,18 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   };
 
   // Element IDs for ui::ElementTracker
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kIdentifier);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageTab);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kCloseButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kOptionsMenuButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kChangeTargetLanguage);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageCombobox);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kTargetLanguageDoneButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kChangeSourceLanguage);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageCombobox);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView,
-                                         kSourceLanguageDoneButton);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(TranslateBubbleView, kErrorMessage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageTab);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOptionsMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeTargetLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTargetLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChangeSourceLanguage);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageCombobox);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
   TranslateBubbleView(const TranslateBubbleView&) = delete;
   TranslateBubbleView& operator=(const TranslateBubbleView&) = delete;
@@ -136,6 +132,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   };
 
   friend class TranslateBubbleViewTest;
+  friend class translate::TranslateBubbleVisualTest;
   friend void ::translate::test_utils::PressTranslate(::Browser*);
   friend void ::translate::test_utils::PressRevert(::Browser*);
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
@@ -287,25 +284,25 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   static TranslateBubbleView* translate_bubble_view_;
 
-  views::View* translate_view_ = nullptr;
-  views::View* error_view_ = nullptr;
-  views::View* advanced_view_source_ = nullptr;
-  views::View* advanced_view_target_ = nullptr;
+  raw_ptr<views::View> translate_view_ = nullptr;
+  raw_ptr<views::View> error_view_ = nullptr;
+  raw_ptr<views::View> advanced_view_source_ = nullptr;
+  raw_ptr<views::View> advanced_view_target_ = nullptr;
 
   std::unique_ptr<SourceLanguageComboboxModel> source_language_combobox_model_;
   std::unique_ptr<TargetLanguageComboboxModel> target_language_combobox_model_;
 
-  views::Combobox* source_language_combobox_ = nullptr;
-  views::Combobox* target_language_combobox_ = nullptr;
+  raw_ptr<views::Combobox> source_language_combobox_ = nullptr;
+  raw_ptr<views::Combobox> target_language_combobox_ = nullptr;
 
-  views::Checkbox* always_translate_checkbox_ = nullptr;
-  views::Checkbox* advanced_always_translate_checkbox_ = nullptr;
-  views::TabbedPane* tabbed_pane_ = nullptr;
+  raw_ptr<views::Checkbox> always_translate_checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> advanced_always_translate_checkbox_ = nullptr;
+  raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
 
-  views::LabelButton* advanced_reset_button_source_ = nullptr;
-  views::LabelButton* advanced_reset_button_target_ = nullptr;
-  views::LabelButton* advanced_done_button_source_ = nullptr;
-  views::LabelButton* advanced_done_button_target_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_reset_button_source_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_reset_button_target_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_done_button_source_ = nullptr;
+  raw_ptr<views::LabelButton> advanced_done_button_target_ = nullptr;
 
   // Default source/target language without user interaction.
   int previous_source_language_index_;

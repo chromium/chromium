@@ -29,6 +29,11 @@ struct BASE_EXPORT Task : public PendingTask {
        OnceClosure task,
        TimeTicks queue_time,
        TimeDelta delay);
+  // |delayed_run_time| is the time when the task should be run.
+  Task(const Location& posted_from,
+       OnceClosure task,
+       TimeTicks queue_time,
+       TimeTicks delayed_run_time);
 
   // Task is move-only to avoid mistakes that cause reference counts to be
   // accidentally bumped.

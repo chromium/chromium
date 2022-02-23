@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"

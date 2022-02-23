@@ -177,11 +177,9 @@ void NotificationPlatformBridgeLacros::Display(
   // the notification ID. Lacros does not support Chrome OS multi-signin, so we
   // don't need to handle inactive user notification blockers in ash.
 
-  // Clean up any old notification with the same ID before creating the new one.
-  remote_notifications_.erase(notification.id());
-
   auto pending_notification = std::make_unique<RemoteNotificationDelegate>(
       notification.id(), bridge_delegate_, weak_factory_.GetWeakPtr());
+  // Display the notification, or update an existing one with the same ID.
   (*message_center_remote_)
       ->DisplayNotification(ToMojo(notification),
                             pending_notification->BindNotificationDelegate());

@@ -51,7 +51,7 @@ void EnvInputStateController::UpdateStateForTouchEvent(
     case ui::ET_TOUCH_CANCELLED:
       if (!event.HasNativeEvent())
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_TOUCH_RELEASED:
       touch_ids_down_ = (touch_ids_down_ | (1 << event.pointer_details().id)) ^
                         (1 << event.pointer_details().id);

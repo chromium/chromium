@@ -142,7 +142,8 @@ class CastInternalMessage {
 // Represents a Cast session on a Cast device. Cast sessions are derived from
 // RECEIVER_STATUS messages sent by Cast devices.
 //
-// TODO(jrw): Rename either this class or ::CastSession to avoid confusion.
+// TODO(crbug.com/1291743): Rename either this class or ::CastSession to avoid
+// confusion.
 class CastSession {
  public:
   // Returns a CastSession from |receiver_status| message sent by |sink|, or

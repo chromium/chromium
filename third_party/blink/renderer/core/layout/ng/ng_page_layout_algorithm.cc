@@ -19,7 +19,7 @@ NGPageLayoutAlgorithm::NGPageLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
     : NGLayoutAlgorithm(params) {}
 
-scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
   LogicalSize page_size = ChildAvailableSize();
 
   NGConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
@@ -40,7 +40,8 @@ scoped_refptr<const NGLayoutResult> NGPageLayoutAlgorithm::Layout() {
         CalculateInitialFragmentGeometry(child_space, Node());
     NGBlockLayoutAlgorithm child_algorithm(
         {Node(), fragment_geometry, child_space, break_token});
-    scoped_refptr<const NGLayoutResult> result = child_algorithm.Layout();
+    child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
+    const NGLayoutResult* result = child_algorithm.Layout();
     const auto& page = result->PhysicalFragment();
 
     container_builder_.AddChild(page, page_offset);
@@ -87,6 +88,7 @@ NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
 
   // TODO(mstensho): Handle auto block size.
   space_builder.SetFragmentationType(kFragmentPage);
+  space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetFragmentainerBlockSize(page_size.block_size);
   space_builder.SetIsAnonymous(true);
 

@@ -14,7 +14,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_export.h"
 
 namespace gpu {
@@ -149,7 +149,7 @@ class GPU_EXPORT FencedAllocator {
   // the other functions that return a block index).
   Offset AllocInBlock(BlockIndex index, uint32_t size);
 
-  CommandBufferHelper *helper_;
+  raw_ptr<CommandBufferHelper> helper_;
   Container blocks_;
   uint32_t bytes_in_use_;
 };
@@ -272,7 +272,7 @@ class FencedAllocatorWrapper {
 
  private:
   FencedAllocator allocator_;
-  void* base_;
+  raw_ptr<void> base_;
 };
 
 }  // namespace gpu

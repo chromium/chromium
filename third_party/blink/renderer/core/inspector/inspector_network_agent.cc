@@ -76,7 +76,7 @@
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -114,7 +114,7 @@ using protocol::Response;
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr int kDefaultTotalBufferSize = 10 * 1000 * 1000;    // 10 MB
 constexpr int kDefaultResourceBufferSize = 5 * 1000 * 1000;  // 5 MB
 #else
@@ -484,11 +484,13 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
       return protocol::Network::CorsErrorEnum::PreflightInvalidAllowCredentials;
 
-    case network::mojom::CorsError::kPreflightMissingAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightMissingAllowExternal;
+    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightMissingAllowPrivateNetwork;
 
-    case network::mojom::CorsError::kPreflightInvalidAllowExternal:
-      return protocol::Network::CorsErrorEnum::PreflightInvalidAllowExternal;
+    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
+      return protocol::Network::CorsErrorEnum::
+          PreflightInvalidAllowPrivateNetwork;
 
     case network::mojom::CorsError::kInvalidAllowMethodsPreflightResponse:
       return protocol::Network::CorsErrorEnum::
@@ -1274,8 +1276,10 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
   if (bypass_service_worker_.Get())
     request.SetSkipServiceWorker(true);
 
-  if (attach_debug_stack_enabled_.Get()) {
-    DCHECK(!request.GetDevToolsStackId().has_value());
+  if (attach_debug_stack_enabled_.Get() &&
+      // Preserving existing stack id when cloning requests instead of
+      // overwriting
+      !request.GetDevToolsStackId().has_value()) {
     ExecutionContext* context = nullptr;
     if (worker_global_scope_) {
       context = worker_global_scope_.Get();

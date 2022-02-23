@@ -5,8 +5,8 @@
 #include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_personalization_app_resources.h"
-#include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
+#include "ash/webui/grit/ash_personalization_app_resources_map.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/strings/string_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -16,10 +16,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
-#include "ui/chromeos/styles/cros_styles.h"
-#include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_generated_resources_map.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -40,28 +36,12 @@ void AddStrings(content::WebUIDataSource* source) {
                                IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS);
   }
 
-  // Add load_time_data manually because it is not available at
-  // chrome-untrusted://resources/load_time_data.js. Specifically add
-  // load_time_data.js and not load_time_data.m.js because StringsJs will fail
-  // to import load_time_data.m.js at this unusual path.
-  source->AddResourcePath("load_time_data.js", IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
   source->UseStringsJs();
 }
 
 void AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isGooglePhotosIntegrationEnabled",
                      features::IsWallpaperGooglePhotosIntegrationEnabled());
-}
-
-void AddCrosColors(content::WebUIDataSource* source) {
-  source->AddResourcePath("chromeos/colors/cros_styles.css",
-                          IDR_WEBUI_CROS_COLORS_CSS);
-
-  source->AddString(
-      "crosColorsDebugOverrides",
-      base::FeatureList::IsEnabled(features::kSemanticColorsDebugOverride)
-          ? cros_styles::kDebugOverrideCssString
-          : std::string());
 }
 
 class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
@@ -83,16 +63,6 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
           base::StartsWith(resource.path, "common"))
         source->AddResourcePath(resource.path, resource.id);
     }
-    // Mirror assert.m.js here so that it is accessible at the same path in
-    // trusted and untrusted context.
-    source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
-
-    // Add WebUI resources like polymer and iron-list so that it is accessible
-    // inside untrusted iframe.
-    source->AddResourcePaths(base::make_span(kWebuiGeneratedResources,
-                                             kWebuiGeneratedResourcesSize));
-
-    AddCrosColors(source.get());
 
     source->AddFrameAncestor(GURL(kChromeUIPersonalizationAppURL));
 
@@ -102,11 +72,12 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
         "img-src 'self' data: https://*.googleusercontent.com;");
 
     source->OverrideContentSecurityPolicy(
-        network::mojom::CSPDirectiveName::ScriptSrc, "script-src 'self';");
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src 'self' chrome-untrusted://resources;");
 
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::StyleSrc,
-        "style-src 'self' 'unsafe-inline';");
+        "style-src 'self' 'unsafe-inline' chrome-untrusted://resources;");
 
 #if !DCHECK_IS_ON()
     // When DCHECKs are off and a user goes to an invalid url serve a default

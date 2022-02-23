@@ -12,12 +12,12 @@
 #include "android_webview/browser/gfx/parent_compositor_draw_constraints.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace android_webview {
 
@@ -40,7 +40,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void SetCompositorFrameProducer(
       CompositorFrameProducer* compositor_frame_producer,
       RootFrameSinkGetter root_frame_sink_getter) override;
-  void SetScrollOffsetOnUI(gfx::Vector2d scroll_offset) override;
+  void SetScrollOffsetOnUI(gfx::Point scroll_offset) override;
   std::unique_ptr<ChildFrame> SetFrameOnUI(
       std::unique_ptr<ChildFrame> frame) override;
   void TakeParentDrawDataOnUI(ParentCompositorDrawConstraints* constraints,
@@ -52,7 +52,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void RemoveFromCompositorFrameProducerOnUI();
 
   // Render thread methods.
-  gfx::Vector2d GetScrollOffsetOnRT();
+  gfx::Point GetScrollOffsetOnRT();
   ChildFrameQueue PassFramesOnRT();
   void PostParentDrawDataToChildCompositorOnRT(
       const ParentCompositorDrawConstraints& parent_draw_constraints,
@@ -80,7 +80,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
     ~InsideHardwareReleaseReset();
 
    private:
-    RenderThreadManager* render_thread_manager_;
+    raw_ptr<RenderThreadManager> render_thread_manager_;
   };
 
  private:
@@ -116,12 +116,12 @@ class RenderThreadManager : public CompositorFrameConsumer {
   // Accessed by RT thread.
   std::unique_ptr<HardwareRenderer> hardware_renderer_;
   bool view_tree_force_dark_state_ = false;
-  AwVulkanContextProvider* vulkan_context_provider_ = nullptr;
+  raw_ptr<AwVulkanContextProvider> vulkan_context_provider_ = nullptr;
 
   // Accessed by both UI and RT thread.
   mutable base::Lock lock_;
   RootFrameSinkGetter root_frame_sink_getter_;
-  gfx::Vector2d scroll_offset_;
+  gfx::Point scroll_offset_;
   ChildFrameQueue child_frames_;
   bool mark_hardware_release_;
   ParentCompositorDrawConstraints parent_draw_constraints_;

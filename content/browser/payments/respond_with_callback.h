@@ -6,10 +6,8 @@
 #define CONTENT_BROWSER_PAYMENTS_RESPOND_WITH_CALLBACK_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/payment_app_provider_util.h"

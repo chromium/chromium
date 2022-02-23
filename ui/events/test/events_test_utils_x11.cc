@@ -121,7 +121,7 @@ x11::Event CreateXInput2Event(int deviceid,
   event.event_y = ToFp1616(location.y()),
   event.event = x11::Connection::Get()->default_root();
   event.button_mask = {0, 0};
-  return x11::Event(std::move(event));
+  return x11::Event(false, std::move(event));
 }
 
 }  // namespace
@@ -142,7 +142,7 @@ void ScopedXI2Event::InitKeyEvent(EventType type,
       .same_screen = true,
   };
 
-  x11::Event x11_event(key_event);
+  x11::Event x11_event(false, key_event);
   event_ = std::move(x11_event);
 }
 
@@ -158,7 +158,7 @@ void ScopedXI2Event::InitMotionEvent(const gfx::Point& location,
       .same_screen = true,
   };
 
-  x11::Event x11_event(motion_event);
+  x11::Event x11_event(false, motion_event);
   event_ = std::move(x11_event);
 }
 
@@ -176,7 +176,7 @@ void ScopedXI2Event::InitButtonEvent(EventType type,
       .same_screen = true,
   };
 
-  x11::Event x11_event(button_event);
+  x11::Event x11_event(false, button_event);
   event_ = std::move(x11_event);
 }
 

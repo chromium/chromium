@@ -104,7 +104,7 @@ void GoogleAppsHandler::RegisterMessages() {
 }
 
 void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK_GE(list.size(), 1u);
   int app_id = list[0].GetInt();
 
@@ -132,11 +132,10 @@ void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
 
 void GoogleAppsHandler::HandleGetGoogleAppsList(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       BookmarkItemsToListValue(google_apps_.data(), google_apps_.size()));
 }
 

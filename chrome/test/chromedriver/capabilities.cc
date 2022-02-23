@@ -158,16 +158,17 @@ Status ParseMobileEmulation(const base::Value& option,
     if (!mobile_emulation->GetDictionary("deviceMetrics", &metrics))
       return Status(kInvalidArgument, "'deviceMetrics' must be a dictionary");
 
-    int width = 0;
-    int height = 0;
-    bool touch = true;
-    bool mobile = true;
-
-    if (metrics->FindKey("width") && !metrics->GetInteger("width", &width))
+    const base::Value* width_value = metrics->FindKey("width");
+    if (width_value && !width_value->is_int())
       return Status(kInvalidArgument, "'width' must be an integer");
 
-    if (metrics->FindKey("height") && !metrics->GetInteger("height", &height))
+    int width = width_value ? width_value->GetInt() : 0;
+
+    const base::Value* height_value = metrics->FindKey("height");
+    if (height_value && !height_value->is_int())
       return Status(kInvalidArgument, "'height' must be an integer");
+
+    int height = height_value ? height_value->GetInt() : 0;
 
     absl::optional<double> maybe_device_scale_factor =
         metrics->FindDoubleKey("pixelRatio");
@@ -175,14 +176,17 @@ Status ParseMobileEmulation(const base::Value& option,
         !maybe_device_scale_factor.has_value())
       return Status(kInvalidArgument, "'pixelRatio' must be a double");
 
-    if (metrics->FindKey("touch") && !metrics->GetBoolean("touch", &touch))
+    absl::optional<bool> touch = metrics->FindBoolKey("touch");
+    if (metrics->FindKey("touch") && !touch.has_value())
       return Status(kInvalidArgument, "'touch' must be a boolean");
 
-    if (metrics->FindKey("mobile") && !metrics->GetBoolean("mobile", &mobile))
+    absl::optional<bool> mobile = metrics->FindBoolKey("mobile");
+    if (metrics->FindKey("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
 
-    DeviceMetrics* device_metrics = new DeviceMetrics(
-        width, height, maybe_device_scale_factor.value_or(0), touch, mobile);
+    DeviceMetrics* device_metrics =
+        new DeviceMetrics(width, height, maybe_device_scale_factor.value_or(0),
+                          touch.value_or(true), mobile.value_or(true));
     capabilities->device_metrics =
         std::unique_ptr<DeviceMetrics>(device_metrics);
   }
@@ -264,7 +268,7 @@ Status ParseSwitches(const base::Value& option,
                      Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& arg : option.GetList()) {
+  for (const base::Value& arg : option.GetListDeprecated()) {
     if (!arg.is_string())
       return Status(kInvalidArgument, "each argument must be a string");
     std::string arg_string = arg.GetString();
@@ -279,7 +283,7 @@ Status ParseSwitches(const base::Value& option,
 Status ParseExtensions(const base::Value& option, Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& extension : option.GetList()) {
+  for (const base::Value& extension : option.GetListDeprecated()) {
     if (!extension.is_string()) {
       return Status(kInvalidArgument,
                     "each extension must be a base64 encoded string");
@@ -316,11 +320,11 @@ Status ParseProxy(bool w3c_compliant,
         {"ftpProxy", "ftp"}, {"httpProxy", "http"}, {"sslProxy", "https"},
         {"socksProxy", "socks"}};
     const std::string kSocksProxy = "socksProxy";
-    const base::Value* option_value = NULL;
+    const base::Value* option_value = nullptr;
     std::string proxy_servers;
     for (size_t i = 0; i < base::size(proxy_servers_options); ++i) {
-      if (!proxy_dict->Get(proxy_servers_options[i][0], &option_value) ||
-          option_value->is_none()) {
+      option_value = proxy_dict->FindPath(proxy_servers_options[i][0]);
+      if (option_value == nullptr || option_value->is_none()) {
         continue;
       }
       if (!option_value->is_string()) {
@@ -331,11 +335,7 @@ Status ParseProxy(bool w3c_compliant,
       }
       std::string value = option_value->GetString();
       if (proxy_servers_options[i][0] == kSocksProxy) {
-        int socksVersion;
-        if (!proxy_dict->GetInteger("socksVersion", &socksVersion))
-          return Status(
-              kInvalidArgument,
-              "Specifying 'socksProxy' requires an integer for 'socksVersion'");
+        int socksVersion = proxy_dict->FindIntKey("socksVersion").value_or(-1);
         if (socksVersion < 0 || socksVersion > 255)
           return Status(
               kInvalidArgument,
@@ -351,13 +351,14 @@ Status ParseProxy(bool w3c_compliant,
     }
 
     std::string proxy_bypass_list;
-    if (proxy_dict->Get("noProxy", &option_value) && !option_value->is_none()) {
+    option_value = proxy_dict->FindPath("noProxy");
+    if (option_value != nullptr && !option_value->is_none()) {
       // W3C requires noProxy to be a list of strings, while legacy protocol
       // requires noProxy to be a string of comma-separated items.
       // In practice, library implementations are not always consistent,
       // so we accept both formats regardless of the W3C mode setting.
       if (option_value->is_list()) {
-        for (const base::Value& item : option_value->GetList()) {
+        for (const base::Value& item : option_value->GetListDeprecated()) {
           if (!item.is_string())
             return Status(kInvalidArgument,
                           "'noProxy' must be a list of strings");
@@ -390,7 +391,7 @@ Status ParseExcludeSwitches(const base::Value& option,
                             Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  for (const base::Value& switch_value : option.GetList()) {
+  for (const base::Value& switch_value : option.GetListDeprecated()) {
     if (!switch_value.is_string()) {
       return Status(kInvalidArgument,
                     "each switch to be removed must be a string");
@@ -520,7 +521,7 @@ Status ParseDevToolsEventsLoggingPrefs(const base::Value& option,
                                        Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
-  if (option.GetList().empty())
+  if (option.GetListDeprecated().empty())
     return Status(kInvalidArgument, "list must contain values");
   capabilities->devtools_events_logging_prefs = option.Clone();
   return Status(kOk);
@@ -530,7 +531,7 @@ Status ParseWindowTypes(const base::Value& option, Capabilities* capabilities) {
   if (!option.is_list())
     return Status(kInvalidArgument, "must be a list");
   std::set<WebViewInfo::Type> window_types_tmp;
-  for (const base::Value& window_type : option.GetList()) {
+  for (const base::Value& window_type : option.GetListDeprecated()) {
     if (!window_type.is_string()) {
       return Status(kInvalidArgument, "each window type must be a string");
     }
@@ -674,7 +675,7 @@ void Switches::SetSwitch(const std::string& name) {
 }
 
 void Switches::SetSwitch(const std::string& name, const std::string& value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   switch_map_[name] = base::UTF8ToWide(value);
 #else
   switch_map_[name] = value;
@@ -717,7 +718,7 @@ bool Switches::HasSwitch(const std::string& name) const {
 
 std::string Switches::GetSwitchValue(const std::string& name) const {
   NativeString value = GetSwitchValueNative(name);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(value);
 #else
   return value;

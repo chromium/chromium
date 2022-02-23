@@ -3,4 +3,3 @@
 # found in the LICENSE file.
 
 exec("./findit.star")
-exec("./consoles/findit.star")

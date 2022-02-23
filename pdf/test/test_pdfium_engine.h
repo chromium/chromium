@@ -42,6 +42,11 @@ class TestPDFiumEngine : public PDFiumEngine {
   MOCK_METHOD(void, ScrolledToXPosition, (int), (override));
   MOCK_METHOD(void, ScrolledToYPosition, (int), (override));
 
+  MOCK_METHOD(bool,
+              HandleInputEvent,
+              (const blink::WebInputEvent&),
+              (override));
+
   MOCK_METHOD(void, ZoomUpdated, (double), (override));
 
   MOCK_METHOD(gfx::Size,
@@ -68,6 +73,8 @@ class TestPDFiumEngine : public PDFiumEngine {
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
 
   std::vector<uint8_t> GetSaveData() override;
+
+  MOCK_METHOD(void, SetCaretPosition, (const gfx::Point&), (override));
 
   void SetPermissions(const std::vector<DocumentPermission>& permissions);
 

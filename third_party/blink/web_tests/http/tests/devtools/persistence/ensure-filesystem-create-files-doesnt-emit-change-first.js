@@ -6,7 +6,7 @@
   TestRunner.addResult(`Verify that fs.createFile is creating UISourceCode atomically with content`);
   await TestRunner.loadTestModule('bindings_test_runner');
 
-  var folderLocation = 'file:///var/test';
+  var folderLocation = '/var/test';
   await (new BindingsTestRunner.TestFileSystem(folderLocation)).reportCreatedPromise();
 
   Workspace.workspace.addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, async event => {
@@ -17,6 +17,6 @@
     TestRunner.completeTest();
   });
 
-  var fsWorkspaceBinding = Workspace.workspace.project(folderLocation);
+  var fsWorkspaceBinding = await Workspace.workspace.project('file://' + folderLocation);
   fsWorkspaceBinding.createFile('', 'test.txt', 'file content');
 })()

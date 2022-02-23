@@ -10,8 +10,8 @@
 namespace cc {
 
 EffectNode::EffectNode()
-    : id(EffectTree::kInvalidNodeId),
-      parent_id(EffectTree::kInvalidNodeId),
+    : id(kInvalidPropertyNodeId),
+      parent_id(kInvalidPropertyNodeId),
       stable_id(INVALID_STABLE_ID),
       opacity(1.f),
       screen_space_opacity(1.f),

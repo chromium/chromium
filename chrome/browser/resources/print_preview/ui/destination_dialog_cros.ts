@@ -24,12 +24,12 @@ import './throbber_css.js';
 import './destination_list_item.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
@@ -38,6 +38,7 @@ import {DestinationSearchBucket, MetricsContext} from '../metrics.js';
 import {NativeLayerImpl} from '../native_layer.js';
 import {PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
+import {getTemplate} from './destination_dialog_cros.html.js';
 import {PrintPreviewDestinationListItemElement} from './destination_list_item.js';
 import {PrintPreviewSearchBoxElement} from './print_preview_search_box.js';
 import {PrintPreviewProvisionalDestinationResolverElement} from './provisional_destination_resolver.js';
@@ -65,7 +66,7 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -198,12 +199,12 @@ export class PrintPreviewDestinationDialogCrosElement extends
 
   private onDestinationStoreSet_() {
     assert(this.destinations_.length === 0);
-    const destinationStore = assert(this.destinationStore);
     this.tracker_.add(
-        destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
+        this.destinationStore, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDestinations_.bind(this));
     this.tracker_.add(
-        destinationStore, DestinationStoreEventType.DESTINATION_SEARCH_DONE,
+        this.destinationStore,
+        DestinationStoreEventType.DESTINATION_SEARCH_DONE,
         this.updateDestinations_.bind(this));
     this.initialized_ = true;
     if (this.printServerStore_) {
@@ -388,6 +389,13 @@ export class PrintPreviewDestinationDialogCrosElement extends
   private onManageButtonClick_() {
     this.metrics_.record(DestinationSearchBucket.MANAGE_BUTTON_CLICKED);
     NativeLayerImpl.getInstance().managePrinters();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-dialog-cros':
+        PrintPreviewDestinationDialogCrosElement;
   }
 }
 

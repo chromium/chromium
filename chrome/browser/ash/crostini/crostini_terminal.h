@@ -9,6 +9,8 @@
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -96,6 +98,15 @@ enum class TerminalSetting {
   kMaxValue = kThemeVariations,
 };
 
+const std::string& GetTerminalDefaultUrl();
+
+// Generate URL to launch terminal.
+GURL GenerateTerminalURL(
+    Profile* profile,
+    const ContainerId& container_id = ContainerId::GetDefault(),
+    const std::string& cwd = "",
+    const std::vector<std::string>& terminal_args = {});
+
 // Launches the terminal tabbed app.
 void LaunchTerminal(Profile* profile,
                     int64_t display_id = display::kInvalidDisplayId,
@@ -103,9 +114,16 @@ void LaunchTerminal(Profile* profile,
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
+void LaunchTerminalForSSH(Profile* profile, int64_t display_id);
+
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
                            const GURL& url);
+
+void LaunchTerminalWithIntent(Profile* profile,
+                              int64_t display_id,
+                              apps::mojom::IntentPtr intent,
+                              CrostiniSuccessCallback callback);
 
 // Launches the terminal settings popup window.
 void LaunchTerminalSettings(Profile* profile,
@@ -119,6 +137,25 @@ std::string GetTerminalSettingBackgroundColor(Profile* profile);
 
 // Returns terminal setting 'pass-ctrl-w'.
 bool GetTerminalSettingPassCtrlW(Profile* profile);
+
+// Add terminal menu items (Settings, Shut down Linux).
+void AddTerminalMenuItems(Profile* profile,
+                          apps::mojom::MenuItemsPtr* menu_items);
+
+// Add terminal shortcut items in menu.
+void AddTerminalMenuShortcuts(
+    Profile* profile,
+    int next_command_id,
+    apps::mojom::MenuItemsPtr menu_items,
+    apps::mojom::Publisher::GetMenuModelCallback callback,
+    std::vector<gfx::ImageSkia> icons = {});
+
+// Called when user clicks on terminal menu items. Returns true if |shortcut_id|
+// is recognized and handled.
+bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
+                                        const std::string& shortcut_id,
+                                        int64_t display_id);
+
 }  // namespace crostini
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_H_

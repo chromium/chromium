@@ -151,10 +151,6 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
     NOT_DESTROYED();
     return this;
   }
-  const LayoutTableRow* ToLayoutTableRow() const final {
-    NOT_DESTROYED();
-    return this;
-  }
   LayoutNGTableInterface* TableInterface() const final {
     NOT_DESTROYED();
     return Table();

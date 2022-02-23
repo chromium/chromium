@@ -92,6 +92,11 @@ class TestReportingCache : public ReportingCache {
       const std::vector<const ReportingReport*>& reports) override {
     NOTREACHED();
   }
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override {
+    NOTREACHED();
+    return base::flat_map<url::Origin, std::vector<ReportingEndpoint>>();
+  }
   void IncrementEndpointDeliveries(const ReportingEndpointGroupKey& group_key,
                                    const GURL& url,
                                    int reports_delivered,

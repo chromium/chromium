@@ -38,7 +38,7 @@ def KCamelToShouty(s):
   return s.upper()
 
 
-class JavaString(object):
+class JavaString:
   def __init__(self, name, value, comments):
     self.name = KCamelToShouty(name)
     self.value = value
@@ -67,7 +67,7 @@ def ParseTemplateFile(lines):
 
 # TODO(crbug.com/937282): Work will be needed if we want to annotate specific
 # constants in the file to be parsed.
-class CppConstantParser(object):
+class CppConstantParser:
   """Parses C++ constants, retaining their comments.
 
   The Delegate subclass is responsible for matching and extracting the
@@ -76,7 +76,7 @@ class CppConstantParser(object):
   """
   SINGLE_LINE_COMMENT_RE = re.compile(r'\s*(// [^\n]*)')
 
-  class Delegate(object):
+  class Delegate:
     def ExtractConstantName(self, line):
       """Extracts a constant's name from line or None if not a match."""
       raise NotImplementedError()
@@ -149,9 +149,8 @@ class CppConstantParser(object):
       self._in_comment = True
       self._in_variable = True
       return True
-    else:
-      self._in_comment = False
-      return False
+    self._in_comment = False
+    return False
 
   def _ParseVariable(self, line):
     current_name = self._delegate.ExtractConstantName(line)
@@ -164,9 +163,8 @@ class CppConstantParser(object):
       else:
         self._in_variable = True
       return True
-    else:
-      self._in_variable = False
-      return False
+    self._in_variable = False
+    return False
 
   def _ParseLine(self, line):
     if not self._in_variable:

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -45,13 +46,13 @@ namespace {
 
 constexpr char kRpHostName[] = "rp.example";
 constexpr char kIdpOrigin[] = "https://idp.example.org";
-constexpr char kExpectedWellKnownPath[] = "/.well-known/webid";
-constexpr char kIdpEndpointRelativeValue[] = "/webid/sign-in";
-constexpr char kTestWellKnownResponseBody[] =
-    "{\"idp_endpoint\": \"/webid/sign-in\"}";
-constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/webid/\"}";
+constexpr char kExpectedManifestPath[] = "/fedcm.json";
+constexpr char kIdpEndpointRelativeValue[] = "/fedcm/sign-in";
+constexpr char kTestManifestResponseBody[] =
+    "{\"idp_endpoint\": \"/fedcm/sign-in\"}";
+constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/fedcm/\"}";
 constexpr char kTestContentType[] = "application/json";
-constexpr char kIdpForbiddenHeader[] = "Sec-WebID-CSRF";
+constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
 // Value will be added here as token introspection is implemented.
 constexpr char kIdToken[] = "[not a real token]";
 constexpr char kIdpEndpointTokenResponse[] =
@@ -80,12 +81,12 @@ class IdpTestServer {
       return nullptr;
 
     if (request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
-      EXPECT_EQ(request.headers.at(kIdpForbiddenHeader).size(), 12ul);
+      EXPECT_EQ(request.headers.at(kIdpForbiddenHeader), "?1");
     }
 
     auto response = std::make_unique<BasicHttpResponse>();
-    if (IsWellKnownRequest(request)) {
-      BuildResponseFromDetails(*response.get(), well_known_details_);
+    if (IsManifestRequest(request)) {
+      BuildResponseFromDetails(*response.get(), manifest_details_);
       return response;
     }
 
@@ -97,8 +98,8 @@ class IdpTestServer {
     return nullptr;
   }
 
-  void SetWellKnownResponseDetails(ResponseDetails details) {
-    well_known_details_ = details;
+  void SetManifestResponseDetails(ResponseDetails details) {
+    manifest_details_ = details;
   }
 
   void SetIdpEndpointResponseDetails(ResponseDetails details) {
@@ -106,9 +107,9 @@ class IdpTestServer {
   }
 
  private:
-  bool IsWellKnownRequest(const HttpRequest& request) {
+  bool IsManifestRequest(const HttpRequest& request) {
     if (request.method == HttpMethod::METHOD_GET &&
-        request.relative_url == kExpectedWellKnownPath) {
+        request.relative_url == kExpectedManifestPath) {
       return true;
     }
     return false;
@@ -132,14 +133,15 @@ class IdpTestServer {
 
   // Response values for the types of requests that are sent to the IdP.
   // These have default values that can be overridden for specific tests.
-  ResponseDetails well_known_details_ = {
-      net::HTTP_OK, kTestWellKnownResponseBody, kTestContentType};
+  ResponseDetails manifest_details_ = {net::HTTP_OK, kTestManifestResponseBody,
+                                       kTestContentType};
   ResponseDetails idp_endpoint_details_ = {net::HTTP_OK, kTestIdpEndpointBody,
                                            kTestContentType};
 };
 
 }  // namespace
 
+// TODO(yigu): Update the tests (e.g. fedcm manifest) to cover mediation mode.
 class WebIdBrowserTest : public ContentBrowserTest {
  public:
   WebIdBrowserTest() = default;
@@ -178,10 +180,10 @@ class WebIdBrowserTest : public ContentBrowserTest {
     std::vector<base::Feature> features;
 
     // kSplitCacheByNetworkIsolationKey feature is needed to verify
-    // that the network shard for fetching the .well-known file is different
+    // that the network shard for fetching the fedcm manifest file is different
     // from that used for other IdP transactions, to prevent data leakage.
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    features.push_back(features::kWebID);
+    features.push_back(features::kFedCm);
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
@@ -197,11 +199,16 @@ class WebIdBrowserTest : public ContentBrowserTest {
   std::string GetBasicRequestString() {
     return R"(
         (async () => {
-          var x = (await navigator.id.get({
-            provider: ')" +
+          var x = (await navigator.credentials.get({
+            federated: {
+              providers: [{
+                url: ')" +
            BaseIdpUrl() + R"(',
-            client_id: 'client_id_1',
-            nonce: '12345',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+              mode: "permission",
+            }
           }));
           return x;
         }) ()
@@ -224,7 +231,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
-  ContentBrowserClient* old_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 // Verify a standard login flow with IdP sign-in page.
@@ -246,12 +253,12 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FastLoginFlow) {
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
   std::string idp_endpoint_absolute_url =
       BaseIdpUrl() + kIdpEndpointRelativeValue;
-  std::string well_known_response_body =
+  std::string manifest_response_body =
       "{\"idp_endpoint\": \"" + idp_endpoint_absolute_url + "\"}";
-  idp_server()->SetWellKnownResponseDetails(
-      {net::HTTP_OK, well_known_response_body, kTestContentType});
+  idp_server()->SetManifestResponseDetails(
+      {net::HTTP_OK, manifest_response_body, kTestContentType});
 
-  std::string signin_url_absolute_url = BaseIdpUrl() + "/webid";
+  std::string signin_url_absolute_url = BaseIdpUrl() + "/fedcm";
   std::string idp_endpoint_response_body =
       "{\"signin_url\": \"" + signin_url_absolute_url + "\"}";
   idp_server()->SetIdpEndpointResponseDetails(
@@ -289,25 +296,19 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, TokenExchangePermissionDeclined) {
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
 }
 
-// Verify an error is returned when WebID is not supported by the provided IdP.
-IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
-  idp_server()->SetWellKnownResponseDetails({net::HTTP_NOT_FOUND, "", ""});
-
-  std::string expected_error =
-      "a JavaScript error: \"NetworkError: The "
-      "indicated provider does not support WebID.\"\n";
-  EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
-}
-
 // Verify an attempt to invoke WebID with an insecure IDP path fails.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
   std::string script = R"(
         (async () => {
-          var x = (await navigator.id.get({
-            provider: 'http://idp.example)" +
+          var x = (await navigator.credentials.get({
+            federated: {
+              providers: [{
+                url: 'http://idp.example)" +
                        base::NumberToString(https_server().port()) + R"(',
-            client_id: 'client_id_1',
-            nonce: '12345',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }]
+            }
           }));
           return x;
         }) ()

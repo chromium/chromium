@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,11 +18,11 @@
 
 namespace web {
 
-bool ExtractFaviconURL(const base::ListValue* favicons,
+bool ExtractFaviconURL(const base::Value::ConstListView& favicons,
                        const GURL& page_origin,
                        std::vector<web::FaviconURL>* urls) {
   BOOL has_favicon = NO;
-  for (const base::Value& favicon : favicons->GetList()) {
+  for (const base::Value& favicon : favicons) {
     if (!favicon.is_dict())
       return false;
 

@@ -43,20 +43,19 @@
         "description": "Sends a single request to other listeners within the extension. Similar to $(ref:runtime.connect), but only sends a single request with an optional response. The $(ref:extension.onRequest) event is fired in each page of the extension.",
         "parameters": [
           {"type": "string", "name": "extensionId", "optional": true, "description": "The extension ID of the extension you want to connect to. If omitted, default is your own extension."},
-          { "type": "any", "name": "request" },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the extension, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
-              }
-            ]
-          }
-        ]
+          { "type": "any", "name": "request" }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the extension, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
+            }
+          ]
+        }
       },
       {
         "name": "getURL",
@@ -156,38 +155,34 @@
         "type": "function",
         "description": "Retrieves the state of the extension's access to Incognito-mode. This corresponds to the user-controlled per-extension 'Allowed in Incognito' setting accessible via the chrome://extensions page.",
         "min_version": "12.0.706.0",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "isAllowedAccess",
-                "type": "boolean",
-                "description": "True if the extension has access to Incognito mode, false otherwise."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "isAllowedAccess",
+              "type": "boolean",
+              "description": "True if the extension has access to Incognito mode, false otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "isAllowedFileSchemeAccess",
         "type": "function",
         "description": "Retrieves the state of the extension's access to the 'file://' scheme. This corresponds to the user-controlled per-extension 'Allow access to File URLs' setting accessible via the chrome://extensions page.",
         "min_version": "12.0.706.0",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "isAllowedAccess",
-                "type": "boolean",
-                "description": "True if the extension can access the 'file://' scheme, false otherwise."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "isAllowedAccess",
+              "type": "boolean",
+              "description": "True if the extension can access the 'file://' scheme, false otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "setUpdateUrlData",

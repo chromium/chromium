@@ -149,24 +149,23 @@ MediaNotificationService::MediaNotificationService(
   media_session_item_producer_->AddObserver(this);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
 
-  if (media_router::MediaRouterEnabled(profile)) {
-    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast)) {
-      // base::Unretained() is safe here because cast_notification_producer_ is
-      // deleted before item_manager_.
-      cast_notification_producer_ =
-          std::make_unique<CastMediaNotificationProducer>(
-              profile, item_manager_.get(),
-              base::BindRepeating(
-                  &global_media_controls::MediaItemManager::OnItemsChanged,
-                  base::Unretained(item_manager_.get())));
-      item_manager_->AddItemProducer(cast_notification_producer_.get());
-    }
-    if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
-      presentation_request_notification_producer_ =
-          std::make_unique<PresentationRequestNotificationProducer>(this);
-      item_manager_->AddItemProducer(
-          presentation_request_notification_producer_.get());
-    }
+  if (!media_router::MediaRouterEnabled(profile)) {
+    return;
+  }
+  // base::Unretained() is safe here because cast_notification_producer_ is
+  // deleted before item_manager_.
+  cast_notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
+      profile, item_manager_.get(),
+      base::BindRepeating(
+          &global_media_controls::MediaItemManager::OnItemsChanged,
+          base::Unretained(item_manager_.get())));
+  item_manager_->AddItemProducer(cast_notification_producer_.get());
+
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    presentation_request_notification_producer_ =
+        std::make_unique<PresentationRequestNotificationProducer>(this);
+    item_manager_->AddItemProducer(
+        presentation_request_notification_producer_.get());
   }
 }
 

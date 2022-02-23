@@ -127,7 +127,7 @@ config("runtime_library") {
   # libclang_rt.iossim.a for arm64 simulator builds. This can be
   # removed when an arm64 slice is added to upstream Clang.
   if (target_environment == "simulator" && current_cpu == "arm64") {
-    assert(xcode_version_int == 1300)
+    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
     ldflags += [
       "-lSystem",
       rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
@@ -141,7 +141,7 @@ config("runtime_library") {
   # for catalyst build. This can be removed when a catalyst slice is added
   # to upstream Clang.
   if (target_environment == "catalyst") {
-    assert(xcode_version_int == 1300)
+    assert(1300 <= xcode_version_int && xcode_version_int <= 1321)
     ldflags += [
       "-lSystem",
       rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
@@ -206,14 +206,28 @@ config("ios_dynamic_flags") {
     _swift_compatibility_libs_dir =
         "$_swift_compatibility_libs_dir_prefix/iphoneos"
   } else if (target_environment == "catalyst") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+    # The Swift compatibility libraries have changed location starting with
+    # Xcode 13.0, so check the version of Xcode when deciding which path to
+    # use.
+    if (xcode_version_int >= 1300) {
+      _swift_compatibility_libs_dir =
+          "$_swift_compatibility_libs_dir_prefix/macosx"
+    } else {
+      _swift_compatibility_libs_dir =
+          "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+    }
   }
 
   lib_dirs = [
     "$ios_sdk_path/usr/lib/swift",
     _swift_compatibility_libs_dir,
   ]
+
+  # When building for catalyst, some Swift support libraries are in a
+  # different directory which needs to be added to the search path.
+  if (target_environment == "catalyst") {
+    lib_dirs += [ "$ios_sdk_path/System/iOSSupport/usr/lib/swift" ]
+  }
 }
 
 config("ios_shared_library_flags") {
@@ -229,20 +243,30 @@ config("disable_implicit_retain_self_warning") {
 }
 
 config("xctest_config") {
-  # Use -iframework for XCTest.framework so that the compiler will treat it as a
-  # system framework and ignore warnings in XCTest framework headers.
+  # Add some directories to the system framework search path to make
+  # them available to the compiler while silencing warnings in the
+  # framework headers. This is required for XCTest.
   common_flags = [
     "-iframework",
     rebase_path("$ios_sdk_platform_path/Developer/Library/Frameworks",
                 root_build_dir),
+    "-iframework",
+    rebase_path("$ios_sdk_path/Developer/Library/Frameworks", root_build_dir),
   ]
   cflags = common_flags
   ldflags = common_flags
+  swiftflags = common_flags
 
+  include_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
+  lib_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
   frameworks = [
     "Foundation.framework",
     "XCTest.framework",
   ]
+}
+
+config("enable_swift_cxx_interop") {
+  swiftflags = [ "-enable-cxx-interop" ]
 }
 
 group("xctest") {

@@ -32,6 +32,10 @@ component("ports") {
 
   defines = [ "IS_MOJO_CORE_PORTS_IMPL" ]
 
+  if (target_os == "chromeos") {
+    defines += [ "MOJO_BACKWARDS_COMPAT" ]
+  }
+
   public_deps = [ "//base" ]
 
   if (!is_nacl) {

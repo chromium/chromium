@@ -6,7 +6,7 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
-#include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -15,38 +15,65 @@
 
 namespace blink {
 
+namespace {
+
+// Produce PhysicalAxes corresponding to the computed container-type.
+// Note that this may be different from the *actually* contained axes
+// provided to ContainerChanged, since there are multiple sources of
+// applied containment (e.g. the 'contain' property itself).
+PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
+  LogicalAxes axes(kLogicalAxisNone);
+  if (style.ContainerType() & kContainerTypeInlineSize)
+    axes |= LogicalAxes(kLogicalAxisInline);
+  if (style.ContainerType() & kContainerTypeBlockSize)
+    axes |= LogicalAxes(kLogicalAxisBlock);
+  return ToPhysicalAxes(axes, style.GetWritingMode());
+}
+
+bool NameMatches(const ComputedStyle& style,
+                 const ContainerSelector& container_selector) {
+  const AtomicString& name = container_selector.Name();
+  return name.IsNull() || (style.ContainerName().Contains(name));
+}
+
+bool TypeMatches(const ComputedStyle& style,
+                 const ContainerSelector& container_selector) {
+  unsigned type = container_selector.Type();
+  return !type || ((style.ContainerType() & type) == type);
+}
+
+bool Matches(const ComputedStyle& style,
+             const ContainerSelector& container_selector) {
+  return NameMatches(style, container_selector) &&
+         TypeMatches(style, container_selector);
+}
+
+}  // namespace
+
 // static
 Element* ContainerQueryEvaluator::FindContainer(
     const StyleRecalcContext& context,
-    const AtomicString& container_name) {
+    const ContainerSelector& container_selector) {
   Element* container = context.container;
   if (!container)
     return nullptr;
 
-  if (container_name == g_null_atom)
+  if (container_selector.IsNearest())
     return container;
 
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = container; element;
-       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+       element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (style->IsContainerForContainerQueries() &&
-          style->ContainerName() == container_name)
+      if (style->IsContainerForContainerQueries(*element) &&
+          Matches(*style, container_selector)) {
         return element;
+      }
     }
   }
 
   return nullptr;
 }
-
-namespace {
-
-bool IsSufficientlyContained(PhysicalAxes contained_axes,
-                             PhysicalAxes queried_axes) {
-  return (contained_axes & queried_axes) == queried_axes;
-}
-
-}  // namespace
 
 double ContainerQueryEvaluator::Width() const {
   return size_.width.ToDouble();
@@ -63,12 +90,10 @@ bool ContainerQueryEvaluator::Eval(
 
 bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
                                    MediaQueryEvaluator::Results results) const {
-  if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
+  if (!media_query_evaluator_)
     return false;
-  if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
-    return false;
-  DCHECK(media_query_evaluator_);
-  return media_query_evaluator_->Eval(*container_query.media_queries_, results);
+  return media_query_evaluator_->Eval(*container_query.query_, results) ==
+         KleeneValue::kTrue;
 }
 
 void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
@@ -126,8 +151,27 @@ void ContainerQueryEvaluator::SetData(Document& document,
   size_ = size;
   contained_axes_ = contained_axes;
 
-  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      document, style, size.width.ToDouble(), size.height.ToDouble());
+  absl::optional<double> width;
+  absl::optional<double> height;
+
+  // An axis is "supported" only when it appears in the computed value of
+  // 'container-type', and when containment is actually applied for that axis.
+  //
+  // See IsEligibleForSizeContainment (and similar).
+  PhysicalAxes supported_axes = ContainerTypeAxes(style) & contained_axes;
+
+  if ((supported_axes & PhysicalAxes(kPhysicalAxisHorizontal)) !=
+      PhysicalAxes(kPhysicalAxisNone)) {
+    width = size.width.ToDouble();
+  }
+
+  if ((supported_axes & PhysicalAxes(kPhysicalAxisVertical)) !=
+      PhysicalAxes(kPhysicalAxisNone)) {
+    height = size.height.ToDouble();
+  }
+
+  auto* query_values =
+      MakeGarbageCollected<CSSContainerValues>(document, style, width, height);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -146,7 +190,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
 
   for (const auto& result : results_) {
     if (Eval(*result.key) != result.value) {
-      change = std::max(change, result.key->Name() == g_null_atom
+      change = std::max(change, result.key->Selector().IsNearest()
                                     ? Change::kNearestContainer
                                     : Change::kDescendantContainers);
     }

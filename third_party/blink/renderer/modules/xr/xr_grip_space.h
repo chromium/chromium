@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRIP_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRIP_SPACE_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 
@@ -14,7 +16,7 @@ class XRGripSpace : public XRSpace {
  public:
   XRGripSpace(XRSession* session, XRInputSource* input_source);
 
-  absl::optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() const override;
   bool EmulatedPosition() const override;
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()

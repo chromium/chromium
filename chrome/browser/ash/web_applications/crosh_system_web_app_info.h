@@ -12,21 +12,21 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class CroshSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit CroshSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldHaveTabStrip() const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCroshSystemWebApp();
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCroshSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CROSH_SYSTEM_WEB_APP_INFO_H_

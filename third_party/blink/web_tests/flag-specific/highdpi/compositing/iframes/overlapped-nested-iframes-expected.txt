@@ -1,23 +1,11 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1178, 2475],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 1
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [420, 300],
-      "transform": 2
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [375, 255],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
@@ -25,18 +13,6 @@
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 4
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [420, 300],
-      "transform": 5
-    },
-    {
-      "name": "LayoutView #document",
-      "bounds": [375, 255],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#C0C0C0",
-      "transform": 6
     },
     {
       "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
@@ -48,13 +24,13 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='banner'",
       "bounds": [1178, 180],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#00000080"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [1178, 0],
-      "bounds": [22, 900],
-      "contentsOpaque": true
+      "bounds": [22, 900]
     }
   ],
   "transforms": [

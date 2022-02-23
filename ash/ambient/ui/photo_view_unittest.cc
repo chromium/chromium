@@ -13,11 +13,35 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
 
 using AmbientPhotoViewTest = AmbientAshTestBase;
+
+// Test that a new topic s rendered every cycle.
+TEST_F(AmbientPhotoViewTest, ShouldRefreshImagesEveryCycle) {
+  UpdateDisplay("600x800");
+
+  ShowAmbientScreen();
+  gfx::ImageSkia image_1 = GetAmbientBackgroundImageView()->GetCurrentImage();
+  ASSERT_FALSE(image_1.isNull());
+
+  // It takes 2 cycles to refresh both AmbientBackgroundImageViews owned by the
+  // PhotoView, guaranteeing that the images for both should have changed.
+  FastForwardToNextImage();
+  FastForwardToNextImage();
+  gfx::ImageSkia image_2 = GetAmbientBackgroundImageView()->GetCurrentImage();
+  ASSERT_FALSE(image_2.isNull());
+  EXPECT_FALSE(image_2.BackedBySameObjectAs(image_1));
+
+  FastForwardToNextImage();
+  FastForwardToNextImage();
+  gfx::ImageSkia image_3 = GetAmbientBackgroundImageView()->GetCurrentImage();
+  ASSERT_FALSE(image_3.isNull());
+  EXPECT_FALSE(image_3.BackedBySameObjectAs(image_2));
+}
 
 // Test that image is scaled to fill screen width when image is portrait and
 // screen is portrait. The top and bottom of the image will be cut off, as

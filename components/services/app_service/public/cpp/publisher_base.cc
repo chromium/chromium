@@ -181,4 +181,10 @@ void PublisherBase::SetWindowMode(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
+void PublisherBase::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace apps

@@ -35,6 +35,7 @@ template("ios_chrome_repack_locales") {
       "${root_gen_dir}/ios/chrome/ios_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
       "${root_gen_dir}/ui/strings/app_locale_settings_",
+      "${root_gen_dir}/ui/strings/ax_strings_",
       "${root_gen_dir}/ui/strings/ui_strings_",
     ]
 
@@ -55,6 +56,7 @@ template("ios_chrome_repack_locales") {
       "//ios/chrome/app/strings:ios_strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
 

@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 
@@ -134,13 +135,13 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // dictionary if they do not already exist. Otherwise will fail and return if
   // NULL if they do not exist.
   base::Value* GetValidCertDecisionsDict(
-      base::Value* dict,
-      CreateDictionaryEntriesDisposition create_entries);
+      CreateDictionaryEntriesDisposition create_entries,
+      base::Value& dict);
 
   std::unique_ptr<base::Clock> clock_;
-  content::BrowserContext* browser_context_;
-  PrefService* pref_service_;
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   using AllowedCert = std::pair<std::string /* certificate fingerprint */,
                                 base::FilePath /* StoragePartition path */>;

@@ -24,11 +24,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
@@ -42,7 +41,7 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
   };
 
   FEConvolveMatrix(Filter*,
-                   const IntSize&,
+                   const gfx::Size&,
                    float,
                    float,
                    const gfx::Vector2d&,
@@ -60,13 +59,13 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
                                           int indention) const override;
 
  private:
-  FloatRect MapEffect(const FloatRect&) const final;
+  gfx::RectF MapEffect(const gfx::RectF&) const final;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 
   bool ParametersValid() const;
 
-  IntSize kernel_size_;
+  gfx::Size kernel_size_;
   float divisor_;
   float bias_;
   gfx::Vector2d target_offset_;

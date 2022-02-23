@@ -30,17 +30,14 @@ suite('<app-management-uninstall-button', () => {
       installReason: installReason
     };
 
-    // Add an app, and make it the currently selected app.
     app = await fakeHandler.addApp('app1_id', arcOptions);
-    app_management.AppManagementStore.getInstance().dispatch(
-        app_management.actions.updateSelectedAppId(app.id));
     await fakeHandler.flushPipesForTesting();
 
     assertTrue(
         !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
 
     uninstallButton = document.createElement('app-management-uninstall-button');
-
+    uninstallButton.app = app;
     replaceBody(uninstallButton);
     await fakeHandler.flushPipesForTesting();
   }
@@ -48,7 +45,7 @@ suite('<app-management-uninstall-button', () => {
   test('Click uninstall', async () => {
     await setupUninstallButton(apps.mojom.InstallReason.kUser);
 
-    uninstallButton.$$('#uninstallButton').click();
+    uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     assertFalse(
         !!app_management.AppManagementStore.getInstance().data.apps[app.id]);
@@ -56,7 +53,7 @@ suite('<app-management-uninstall-button', () => {
 
   test('Disabled by policy', async () => {
     await setupUninstallButton(apps.mojom.InstallReason.kPolicy);
-    uninstallButton.$$('#uninstallButton').click();
+    uninstallButton.shadowRoot.querySelector('#uninstallButton').click();
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
     assertTrue(
@@ -65,7 +62,7 @@ suite('<app-management-uninstall-button', () => {
 
   test('System app, button hidden', async () => {
     await setupUninstallButton(apps.mojom.InstallReason.kSystem);
-    assertFalse(!!uninstallButton.$$('#uninstallButton'));
+    assertFalse(!!uninstallButton.shadowRoot.querySelector('#uninstallButton'));
     await fakeHandler.flushPipesForTesting();
     // Disabled by policy, clicking should not remove app.
     assertTrue(

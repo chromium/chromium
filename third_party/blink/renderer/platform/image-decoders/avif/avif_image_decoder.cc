@@ -297,11 +297,11 @@ cc::YUVSubsampling AVIFImageDecoder::GetYUVSubsampling() const {
   }
 }
 
-IntSize AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
+gfx::Size AVIFImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
   if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
-    return IntSize(UVSize(Size().width(), chroma_shift_x_),
-                   UVSize(Size().height(), chroma_shift_y_));
+    return gfx::Size(UVSize(Size().width(), chroma_shift_x_),
+                     UVSize(Size().height(), chroma_shift_y_));
   }
   return Size();
 }
@@ -531,7 +531,7 @@ void AVIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
 
   // For AVIFs, the frame always fills the entire image.
-  buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
+  buffer.SetOriginalFrameRect(gfx::Rect(Size()));
 
   avifImageTiming timing;
   auto ret = avifDecoderNthImageTiming(decoder_.get(), index, &timing);
@@ -888,9 +888,10 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
 
   const auto* image = decoder_->image;
   // Frame size must be equal to container size.
-  if (IntSize(image->width, image->height) != Size()) {
-    DVLOG(1) << "Frame size " << IntSize(image->width, image->height)
-             << " differs from container size " << Size();
+  if (gfx::Size(image->width, image->height) != Size()) {
+    DVLOG(1) << "Frame size "
+             << gfx::Size(image->width, image->height).ToString()
+             << " differs from container size " << Size().ToString();
     return AVIF_RESULT_UNKNOWN_ERROR;
   }
   // Frame bit depth must be equal to container bit depth.

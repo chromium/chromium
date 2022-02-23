@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"

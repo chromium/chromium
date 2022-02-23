@@ -30,11 +30,11 @@
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
 #endif
@@ -133,8 +133,11 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
 }
 
 // ResponseValid returns whether |response| is permissible for the given
-// |authenticator| and |request|.
-bool ResponseValid(const FidoAuthenticator& authenticator,
+// |authenticator| and |request|. |is_first_response| is true if this is the
+// first assertion response read. For responses to getNextAssertion commands
+// it should be false.
+bool ResponseValid(bool is_first_response,
+                   const FidoAuthenticator& authenticator,
                    const CtapGetAssertionRequest& request,
                    const CtapGetAssertionOptions& options,
                    const AuthenticatorGetAssertionResponse& response) {
@@ -191,6 +194,11 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
+  if (!is_first_response && response.user_selected) {
+    // It is invalid to set `userSelected` on subsequent responses.
+    return false;
+  }
+
   return true;
 }
 
@@ -212,19 +220,14 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
 
   base::flat_set<FidoTransportProtocol> transports;
   for (const auto& credential : allowed_list) {
-    if (credential.transports().empty()) {
+    if (credential.transports.empty()) {
       return kAllTransports;
     }
-    transports.insert(credential.transports().begin(),
-                      credential.transports().end());
+    transports.insert(credential.transports.begin(),
+                      credential.transports.end());
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) {
-    transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
-  }
-
+  transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
   return transports;
 }
 
@@ -345,10 +348,10 @@ void GetAssertionRequestHandler::DispatchRequest(
             fido_filter::Operation::GET_ASSERTION, request_.rp_id,
             authenticator_name,
             std::pair<fido_filter::IDType, base::span<const uint8_t>>(
-                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+                fido_filter::IDType::CREDENTIAL_ID, cred.id)) ==
         fido_filter::Action::BLOCK) {
       FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
-                      << " for credential ID " << base::HexEncode(cred.id());
+                      << " for credential ID " << base::HexEncode(cred.id);
       return;
     }
   }
@@ -415,7 +418,7 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
     FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // In tests the platform authenticator may be a virtual device.
   if (!platform_authenticator->IsTouchIdAuthenticator()) {
     FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
@@ -569,7 +572,7 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     state_ = State::kFinished;
     CancelActiveAuthenticators(authenticator->GetId());
@@ -579,7 +582,8 @@ void GetAssertionRequestHandler::HandleResponse(
                absl::nullopt, authenticator);
       return;
     }
-    if (!ResponseValid(*authenticator, request, options_, *response)) {
+    if (!ResponseValid(/*is_first_response=*/true, *authenticator, request,
+                       options_, *response)) {
       FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                       << authenticator->GetDisplayName();
       std::move(completion_callback_)
@@ -649,8 +653,8 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-  if (!response ||
-      !ResponseValid(*authenticator, request, options_, *response)) {
+  if (!response || !ResponseValid(/*is_first_response=*/true, *authenticator,
+                                  request, options_, *response)) {
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)
@@ -704,7 +708,8 @@ void GetAssertionRequestHandler::HandleNextResponse(
     return;
   }
 
-  if (!ResponseValid(*authenticator, request, options_, *response)) {
+  if (!ResponseValid(/*is_first_response=*/false, *authenticator, request,
+                     options_, *response)) {
     FIDO_LOG(ERROR) << "Failing assertion request due to bad response from "
                     << authenticator->GetDisplayName();
     std::move(completion_callback_)

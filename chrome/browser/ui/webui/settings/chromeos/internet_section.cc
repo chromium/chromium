@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/network_ui/network_health_resource_provider.h"
+#include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -355,7 +357,7 @@ const std::vector<SearchConcept>& GetCellularConnectedSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetCellularESimCapableSearchTerms() {
+const std::vector<SearchConcept>& GetCellularAddESimSearchTerms() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ADD_ESIM,
        mojom::kMobileDataNetworksSubpagePath,
@@ -369,7 +371,8 @@ const std::vector<SearchConcept>& GetCellularESimCapableSearchTerms() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetCellularPrimaryIsESimSearchConcepts() {
+const std::vector<SearchConcept>&
+GetCellularPrimaryIsNonPolicyESimSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CELLULAR_REMOVE_PROFILE,
        mojom::kCellularDetailsSubpagePath,
@@ -565,8 +568,14 @@ std::string GetDetailsSubpageUrl(const std::string& url_to_modify,
       url_to_modify.find('?') == std::string::npos ? "?" : "&", guid.c_str());
 }
 
-bool IsESimCapable() {
-  return HermesManagerClient::Get()->GetAvailableEuiccs().size() != 0;
+bool AllowAddESim(const network_config::mojom::GlobalPolicyPtr& global_policy) {
+  if (HermesManagerClient::Get()->GetAvailableEuiccs().size() == 0)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(ash::features::kESimPolicy))
+    return true;
+
+  return !global_policy->allow_only_policy_cellular_networks;
 }
 
 absl::optional<std::string> GetCellularActiveSimIccid(
@@ -576,6 +585,11 @@ absl::optional<std::string> GetCellularActiveSimIccid(
       return sim_info->iccid;
   }
   return absl::nullopt;
+}
+
+bool IsPolicySource(network_config::mojom::OncSource onc_source) {
+  return onc_source == network_config::mojom::OncSource::kUserPolicy ||
+         onc_source == network_config::mojom::OncSource::kDevicePolicy;
 }
 
 }  // namespace
@@ -746,8 +760,9 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"eidPopupMenuItemTitle", IDS_CELLULAR_SETUP_EID_MENU_ITEM_TITLE},
       {"cellularNetworkPsimLabel", IDS_SETTINGS_INTERNET_PSIM_LABEL},
       {"pSimNotInsertedLabel", IDS_SETTINGS_INTERNET_PSIM_NOT_INSERTED_LABEL},
-      {"eSimNetworkNotSetup",
+      {"eSimNetworkNotSetupWithDownloadLink",
        IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK},
+      {"eSimNetworkNotSetup", IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP},
       {"cellularNetworkTetherLabel", IDS_SETTINGS_INTERNET_TETHER_LABEL},
       {"showEidPopupButtonLabel",
        IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL},
@@ -813,6 +828,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE},
       {"cellularNetworRefreshingProfileListProfile",
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
+      {"cellularNetworkResettingESim",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -823,6 +840,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   ui::network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
   cellular_setup::AddLocalizedStrings(html_source);
+  chromeos::network_health::AddResources(html_source);
+  chromeos::traffic_counters::AddResources(html_source);
 
   html_source->AddBoolean(
       "bypassConnectivityCheck",
@@ -1031,11 +1050,19 @@ void InternetSection::OnActiveNetworksChanged(
 }
 
 void InternetSection::FetchDeviceList() {
+  cros_network_config_->GetGlobalPolicy(
+      base::BindOnce(&InternetSection::OnGlobalPolicy, base::Unretained(this)));
+}
+
+void InternetSection::OnGlobalPolicy(
+    network_config::mojom::GlobalPolicyPtr global_policy) {
   cros_network_config_->GetDeviceStateList(
-      base::BindOnce(&InternetSection::OnDeviceList, base::Unretained(this)));
+      base::BindOnce(&InternetSection::OnDeviceList, base::Unretained(this),
+                     std::move(global_policy)));
 }
 
 void InternetSection::OnDeviceList(
+    network_config::mojom::GlobalPolicyPtr global_policy,
     std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices) {
   using network_config::mojom::DeviceStateType;
   using network_config::mojom::NetworkType;
@@ -1047,7 +1074,7 @@ void InternetSection::OnDeviceList(
   updater.RemoveSearchTags(GetWifiOffSearchConcepts());
   updater.RemoveSearchTags(GetCellularOnSearchConcepts());
   updater.RemoveSearchTags(GetCellularOffSearchConcepts());
-  updater.RemoveSearchTags(GetCellularESimCapableSearchTerms());
+  updater.RemoveSearchTags(GetCellularAddESimSearchTerms());
   updater.RemoveSearchTags(GetInstantTetheringSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringOnSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringOffSearchConcepts());
@@ -1076,8 +1103,9 @@ void InternetSection::OnDeviceList(
         // check is in OnNetworkList().
         if (device->device_state == DeviceStateType::kEnabled) {
           updater.AddSearchTags(GetCellularOnSearchConcepts());
-          if (IsESimCapable())
-            updater.AddSearchTags(GetCellularESimCapableSearchTerms());
+          if (AllowAddESim(global_policy)) {
+            updater.AddSearchTags(GetCellularAddESimSearchTerms());
+          }
         } else if (device->device_state == DeviceStateType::kDisabled) {
           updater.AddSearchTags(GetCellularOffSearchConcepts());
         }
@@ -1125,7 +1153,7 @@ void InternetSection::OnNetworkList(
   updater.RemoveSearchTags(GetWifiHiddenSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
   updater.RemoveSearchTags(GetCellularConnectedSearchConcepts());
-  updater.RemoveSearchTags(GetCellularPrimaryIsESimSearchConcepts());
+  updater.RemoveSearchTags(GetCellularPrimaryIsNonPolicyESimSearchConcepts());
   updater.RemoveSearchTags(GetCellularMeteredSearchConcepts());
   updater.RemoveSearchTags(GetInstantTetheringConnectedSearchConcepts());
   updater.RemoveSearchTags(GetVpnConnectedSearchConcepts());
@@ -1149,9 +1177,12 @@ void InternetSection::OnNetworkList(
         active_cellular_guid_ = network->guid;
         updater.AddSearchTags(GetCellularSearchConcepts());
 
-        // If the primary cellular network is ESim.
-        if (!network->type_state->get_cellular()->eid.empty())
-          updater.AddSearchTags(GetCellularPrimaryIsESimSearchConcepts());
+        // If the primary cellular network is ESim and not policy ESim.
+        if (!network->type_state->get_cellular()->eid.empty() &&
+            !IsPolicySource(network->source)) {
+          updater.AddSearchTags(
+              GetCellularPrimaryIsNonPolicyESimSearchConcepts());
+        }
       }
     }
 

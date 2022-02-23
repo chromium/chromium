@@ -18,6 +18,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -95,11 +96,11 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
 
   // Don't do specialty configuration for error size (-1).
   if (memory_size > 0) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && \
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && \
     defined(ARCH_CPU_64_BITS)
     constexpr size_t kTwoGigabytes = 2ull * 1024 * 1024 * 1024;
     limits.max_blob_in_memory_space = kTwoGigabytes;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 100ll);
 #else
     limits.max_blob_in_memory_space = static_cast<size_t>(memory_size / 5ll);
@@ -115,7 +116,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
   if (disk_size >= 0) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 2ll);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     limits.desired_max_disk_space = static_cast<uint64_t>(3ll * disk_size / 50);
 #else
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 10ll);
@@ -371,7 +372,7 @@ class BlobMemoryController::MemoryQuotaAllocationTask
   size_t allocation_size() const { return allocation_size_; }
 
  private:
-  BlobMemoryController* controller_;
+  raw_ptr<BlobMemoryController> controller_;
   std::vector<scoped_refptr<ShareableBlobDataItem>> pending_items_;
   MemoryQuotaRequestCallback done_callback_;
 
@@ -530,7 +531,7 @@ class BlobMemoryController::FileQuotaAllocationTask
   size_t allocation_size() const { return allocation_size_; }
 
  private:
-  BlobMemoryController* controller_;
+  raw_ptr<BlobMemoryController> controller_;
   std::vector<uint64_t> file_sizes_;
   std::vector<scoped_refptr<ShareableBlobDataItem>> pending_items_;
   FileQuotaRequestCallback done_callback_;

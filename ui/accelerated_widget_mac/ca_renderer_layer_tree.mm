@@ -120,12 +120,12 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
   if (__builtin_available(macos 11.0, *)) {
     if (io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::SMPTEST2084,
+                            gfx::ColorSpace::TransferID::PQ,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED) ||
         io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::ARIB_STD_B67,
+                            gfx::ColorSpace::TransferID::HLG,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED)) {
       CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferColorPrimariesKey,
@@ -137,7 +137,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       CVBufferSetAttachment(
           cv_pixel_buffer, kCVImageBufferTransferFunctionKey,
           io_surface_color_space.GetTransferID() ==
-                  gfx::ColorSpace::TransferID::ARIB_STD_B67
+                  gfx::ColorSpace::TransferID::HLG
               ? kCVImageBufferTransferFunction_ITU_R_2100_HLG
               : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
           kCVAttachmentMode_ShouldPropagate);
@@ -506,8 +506,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
         }
       }
 
-      if (protected_video_type_ ==
-          gfx::ProtectedVideoType::kHardwareProtected) {
+      if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
         if (@available(macOS 10.15, *)) {
           type_ = CALayerType::kVideo;
           video_type_can_downgrade_ = false;
@@ -864,8 +863,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         av_layer_.reset([[AVSampleBufferDisplayLayer alloc] init]);
         ca_layer_.reset([av_layer_ retain]);
         [av_layer_ setVideoGravity:AVLayerVideoGravityResize];
-        if (protected_video_type_ ==
-            gfx::ProtectedVideoType::kHardwareProtected) {
+        if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
           if (@available(macOS 10.15, *)) {
             [av_layer_ setPreventsCapture:true];
           }

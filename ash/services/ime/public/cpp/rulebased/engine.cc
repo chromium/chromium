@@ -11,6 +11,9 @@ namespace chromeos {
 namespace ime {
 namespace rulebased {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 Engine::Engine() = default;
 Engine::~Engine() = default;
 

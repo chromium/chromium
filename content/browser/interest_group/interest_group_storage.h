@@ -65,14 +65,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   // not exist.
   void UpdateInterestGroup(blink::InterestGroup group);
   // Report that updating of the interest group with owner `owner` and name
-  // `name` failed. The rate limit duration for failed updates is shorter than
-  // for those that succeed -- for successes, UpdateInterestGroup()
-  // automatically updates the rate limit duration. If `net_disconnected` is
-  // true, the rate limit duration is set to 0, since updates can retry
-  // immediately if the network is disconnected.
-  void ReportUpdateFetchFailed(const url::Origin& owner,
-                               const std::string& name,
-                               bool net_disconnected);
+  // `name` failed. With the exception of parse failures, the rate limit
+  // duration for failed updates is shorter than for those that succeed -- for
+  // successes, UpdateInterestGroup() automatically updates the rate limit
+  // duration.
+  void ReportUpdateFailed(const url::Origin& owner,
+                          const std::string& name,
+                          bool parse_failure);
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBid(const url::Origin& owner,
                               const std::string& name);
@@ -92,6 +91,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Records the K-anonymity data for an ad.
   void UpdateAdKAnonymity(const StorageInterestGroup::KAnonymityData& data,
                           const absl::optional<base::Time>& update_sent_time);
+  // Gets a single interest group.
+  absl::optional<StorageInterestGroup> GetInterestGroup(
+      const url::Origin& owner,
+      const std::string& name);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   std::vector<url::Origin> GetAllInterestGroupOwners();
@@ -102,10 +105,13 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
   // that are currently rate-limited for updates. Additionally, this will update
   // the `next_update_after` field such that a subsequent
-  // ClaimInterestGroupsForUpdate() call with the same `owner` won't return
+  // GetInterestGroupsForUpdate() call with the same `owner` won't return
   // anything until after the success rate limit period passes.
-  std::vector<StorageInterestGroup> ClaimInterestGroupsForUpdate(
+  std::vector<StorageInterestGroup> GetInterestGroupsForUpdate(
       const url::Origin& owner);
+  // Gets a list of all interest group joining origins. Each joining origin
+  // will only appear once.
+  std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.

@@ -9,9 +9,9 @@
 
 namespace ppapi {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 const PP_NetAddress_Private NetAddressPrivateImpl::kInvalidNetAddress = { 0 };
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace ppapi

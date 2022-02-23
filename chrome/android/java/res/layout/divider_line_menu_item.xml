@@ -18,6 +18,6 @@
     <View
         style="@style/HorizontalDivider"
         android:layout_width="match_parent"
-        android:background="@color/divider_line_bg_color" />
+        android:background="@macro/divider_line_bg_color" />
 
 </LinearLayout>

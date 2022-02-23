@@ -443,10 +443,11 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
       base::ScopedBlockingCall scoped_blocking_call(
           FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-      std::unique_ptr<struct __res_state> res = resolv_reader_->GetResState();
-      if (res) {
-        dns_config_ = ConvertResStateToDnsConfig(*res.get());
-        resolv_reader_->CloseResState(res.get());
+      {
+        std::unique_ptr<ScopedResState> res = resolv_reader_->GetResState();
+        if (res) {
+          dns_config_ = ConvertResStateToDnsConfig(res->state());
+        }
       }
 
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.DnsConfig.Resolv.Read",

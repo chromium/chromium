@@ -4,6 +4,9 @@
 
 static_library("public") {
   sources = [
+    "autofill_assistant.cc",
+    "autofill_assistant.h",
+    "autofill_assistant_factory.h",
     "runtime_manager.cc",
     "runtime_manager.h",
     "runtime_manager_impl.cc",
@@ -14,6 +17,7 @@ static_library("public") {
 
   deps = [
     "//base",
+    "//components/version_info:channel",
     "//content/public/browser",
   ]
 }

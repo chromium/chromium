@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 

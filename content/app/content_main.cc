@@ -5,6 +5,7 @@
 #include "content/public/app/content_main.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -46,7 +47,7 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/process_startup_helper.h"
@@ -55,7 +56,7 @@
 #include "ui/base/win/atl_module.h"
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include <locale.h>
 #include <signal.h>
 
@@ -63,18 +64,18 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "base/files/scoped_file.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "content/app/mac_init.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include "base/allocator/allocator_shim.h"
 #endif
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -84,7 +85,7 @@ namespace {
 // service manager embedder process.
 constexpr size_t kMaximumMojoMessageSize = 128 * 1024 * 1024;
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 // Setup signal-handling state: resanitize most signals, ignore SIGPIPE.
 void SetupSignalHandlers() {
@@ -134,7 +135,7 @@ void PopulateFDsFromCommandLine() {
   }
 }
 
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 bool IsSubprocess() {
   auto type = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -146,7 +147,7 @@ bool IsSubprocess() {
 }
 
 void CommonSubprocessInit() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // HACK: Let Windows know that we have started.  This is needed to suppress
   // the IDC_APPSTARTING cursor from being displayed for a prolonged period
   // while a subprocess is starting.
@@ -157,7 +158,7 @@ void CommonSubprocessInit() {
   }
 #endif
 
-#if !defined(OFFICIAL_BUILD) && defined(OS_WIN)
+#if !defined(OFFICIAL_BUILD) && BUILDFLAG(IS_WIN)
   base::RouteStdioToConsole(false);
   LoadLibraryA("dbghelp.dll");
 #endif
@@ -176,13 +177,14 @@ void InitializeMojo(mojo::core::Configuration* config) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
         false
 #else
+        !command_line.HasSwitch(switches::kDisableMojoBroker) &&
         !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)
 #endif
         ;
     if (!config->is_broker_process)
       config->force_direct_shared_memory_allocation = true;
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (base::win::GetVersion() >= base::win::Version::WIN8_1) {
       // On Windows 8.1 and later it's not necessary to broker shared memory
       // allocation, as even sandboxed processes can allocate their own without
@@ -231,7 +233,7 @@ RunContentProcess(ContentMainParams params,
                   ContentMainRunner* content_main_runner) {
   int exit_code = -1;
   base::debug::GlobalActivityTracker* tracker = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<base::mac::ScopedNSAutoreleasePool> autorelease_pool;
 #endif
 
@@ -239,17 +241,20 @@ RunContentProcess(ContentMainParams params,
   // may re-run Main() without restarting the browser process. This flag
   // prevents initializing things more than once.
   static bool is_initialized = false;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(!is_initialized);
 #endif
-  if (!is_initialized) {
+  if (is_initialized) {
+    content_main_runner->ReInitializeParams(std::move(params));
+  } else {
     is_initialized = true;
-#if defined(OS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ALLOCATOR_SHIM)
     base::allocator::InitializeAllocatorShim();
 #endif
+    base::allocator::InstallDanglingRawPtrChecks();
     base::EnableTerminationOnOutOfMemory();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // The various desktop environments set this environment variable that
     // allows the dbus client library to connect directly to the bus. When this
     // variable is not set (test environments like xvfb-run), the dbus client
@@ -263,17 +268,17 @@ RunContentProcess(ContentMainParams params,
     setenv("DBUS_SESSION_BUS_ADDRESS", "disabled:", kNoOverrideIfAlreadySet);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::win::RegisterInvalidParamHandler();
     ui::win::CreateATLModuleIfNeeded();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // On Android, the command line is initialized when library is loaded.
     int argc = 0;
     const char** argv = nullptr;
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // argc/argv are ignored on Windows; see command_line.h for details.
     argc = params.argc;
     argv = params.argv;
@@ -281,18 +286,18 @@ RunContentProcess(ContentMainParams params,
 
     base::CommandLine::Init(argc, argv);
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     PopulateFDsFromCommandLine();
 #endif
 
     base::EnableTerminationOnHeapCorruption();
 
     SetProcessTitleFromCommandLine(argv);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // On Android setlocale() is not supported, and we don't override the signal
 // handlers so we can get a stack trace when crashing.
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     // Set C library locale to make sure CommandLine can parse
     // argument values in the correct encoding and to make sure
     // generated file names (think downloads) are in the file system's
@@ -310,11 +315,11 @@ RunContentProcess(ContentMainParams params,
     SetupSignalHandlers();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // We need this pool for all the objects created before we get to the event
     // loop, but we don't want to leave them hanging around until the app quits.
     // Each "main" needs to flush this pool right before it goes into its main
@@ -324,7 +329,7 @@ RunContentProcess(ContentMainParams params,
     InitializeMac();
 #endif
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     base::subtle::EnableFDOwnershipEnforcement(true);
 #endif
 
@@ -355,7 +360,7 @@ RunContentProcess(ContentMainParams params,
     // Note #2: some platforms can directly allocated shared memory in a
     // sandboxed process. The defines below must be in sync with the
     // implementation of mojo::NodeController::CreateSharedBuffer().
-#if !defined(OS_MAC) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
     if (sandbox::policy::IsUnsandboxedSandboxType(
             sandbox::policy::SandboxTypeFromCommandLine(
                 *base::CommandLine::ForCurrentProcess()))) {
@@ -372,9 +377,9 @@ RunContentProcess(ContentMainParams params,
       // allocate shared memory.
       mojo::SharedMemoryUtils::InstallBaseHooks();
     }
-#endif  // !defined(OS_MAC) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Route stdio to parent console (if any) or create one.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kEnableLogging)) {
@@ -406,11 +411,11 @@ RunContentProcess(ContentMainParams params,
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   autorelease_pool.reset();
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content_main_runner->Shutdown();
 #endif
 

@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_get_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_refresh_keys_operation.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/login/auth/user_context.h"
 
 class AccountId;
 
@@ -28,6 +26,8 @@ class ListValue;
 }  // namespace base
 
 namespace ash {
+
+class UserContext;
 
 // A class to manage Easy unlock cryptohome keys.
 class EasyUnlockKeyManager {

@@ -3,7 +3,9 @@ rootWebArea
 ++++genericContainer
 ++++++staticText name='Supercali'
 ++++++++inlineTextBox name='Supercali'
+++++++genericContainer ignored
 ++++++staticText name='fragilistic'
 ++++++++inlineTextBox name='fragilistic'
+++++++genericContainer ignored
 ++++++staticText name='expialidocious'
 ++++++++inlineTextBox name='expialidocious'

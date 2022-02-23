@@ -242,8 +242,7 @@ const uint8_t* TestRtcpPacketBuilder::Data() {
 }
 
 base::BigEndianReader* TestRtcpPacketBuilder::Reader() {
-  big_endian_reader_ = base::BigEndianReader(
-      reinterpret_cast<const char *>(Data()), Length());
+  big_endian_reader_ = base::BigEndianReader(Data(), Length());
   return &big_endian_reader_;
 }
 

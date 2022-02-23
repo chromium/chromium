@@ -125,10 +125,10 @@ class UrlBarProperties {
             new WritableObjectPropertyKey<>();
 
     /**
-     * Specifies the omnibox theme. It can be light or dark because of a publisher defined color,
+     * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
      */
-    public static final WritableIntPropertyKey OMNIBOX_THEME = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
 
     /**
      * Specifies whether incognito colors should be used in the view, meaning baseline dark theme
@@ -145,5 +145,5 @@ class UrlBarProperties {
             new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
                     FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
                     URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, TEXT_CHANGED_LISTENER,
-                    OMNIBOX_THEME, INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
+                    BRANDED_COLOR_SCHEME, INCOGNITO_COLORS_ENABLED, WINDOW_DELEGATE};
 }

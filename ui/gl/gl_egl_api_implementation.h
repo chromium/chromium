@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
 
@@ -35,7 +35,7 @@ class GL_EXPORT EGLApiBase : public EGLApi {
   ~EGLApiBase() override;
   void InitializeBase(DriverEGL* driver);
 
-  DriverEGL* driver_;
+  raw_ptr<DriverEGL> driver_;
 };
 
 class GL_EXPORT RealEGLApi : public EGLApiBase {
@@ -66,7 +66,7 @@ class GL_EXPORT LogEGLApi : public EGLApi {
   #include "gl_bindings_api_autogen_egl.h"
 
  private:
-  EGLApi* egl_api_;
+  raw_ptr<EGLApi> egl_api_;
 };
 
 // Inserts a TRACE for every EGL call.
@@ -82,7 +82,7 @@ class GL_EXPORT TraceEGLApi : public EGLApi {
   #include "gl_bindings_api_autogen_egl.h"
 
  private:
-  EGLApi* egl_api_;
+  raw_ptr<EGLApi> egl_api_;
 };
 
 }  // namespace gl

@@ -21,7 +21,7 @@ class ModelTypeTest : public testing::Test {};
 TEST_F(ModelTypeTest, ModelTypeToValue) {
   for (int i = 0; i < GetNumModelTypes(); ++i) {
     ModelType model_type = ModelTypeFromInt(i);
-    base::ExpectStringValue(ModelTypeToString(model_type),
+    base::ExpectStringValue(ModelTypeToDebugString(model_type),
                             *ModelTypeToValue(model_type));
   }
 }
@@ -30,12 +30,13 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
   const ModelTypeSet model_types(BOOKMARKS, APPS);
 
   std::unique_ptr<base::ListValue> value(ModelTypeSetToValue(model_types));
-  EXPECT_EQ(2u, value->GetList().size());
-  std::string types[2];
-  EXPECT_TRUE(value->GetString(0, &types[0]));
-  EXPECT_TRUE(value->GetString(1, &types[1]));
-  EXPECT_EQ("Bookmarks", types[0]);
-  EXPECT_EQ("Apps", types[1]);
+  ASSERT_TRUE(value->is_list());
+  base::Value::ConstListView value_list = value->GetListDeprecated();
+  ASSERT_EQ(2u, value_list.size());
+  ASSERT_TRUE(value_list[0].is_string());
+  EXPECT_EQ("Bookmarks", value_list[0].GetString());
+  ASSERT_TRUE(value_list[1].is_string());
+  EXPECT_EQ("Apps", value_list[1].GetString());
 }
 
 TEST_F(ModelTypeTest, IsRealDataType) {
@@ -67,7 +68,7 @@ TEST_F(ModelTypeTest, ModelTypeHistogramMapping) {
   std::set<ModelTypeForHistograms> histogram_values;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
     ModelTypeForHistograms histogram_value = ModelTypeHistogramValue(type);
 
     EXPECT_TRUE(histogram_values.insert(histogram_value).second)
@@ -82,7 +83,7 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   std::set<int> identifiers;
   ModelTypeSet all_types = ModelTypeSet::All();
   for (ModelType type : all_types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
     int stable_identifier = ModelTypeToStableIdentifier(type);
     EXPECT_GT(stable_identifier, 0);
     EXPECT_TRUE(identifiers.insert(stable_identifier).second)
@@ -96,20 +97,10 @@ TEST_F(ModelTypeTest, ModelTypeToStableIdentifier) {
   EXPECT_EQ(9, ModelTypeToStableIdentifier(TYPED_URLS));
 }
 
-TEST_F(ModelTypeTest, ModelTypeSetFromString) {
-  ModelTypeSet empty;
-  ModelTypeSet one(BOOKMARKS);
-  ModelTypeSet two(BOOKMARKS, TYPED_URLS);
-
-  EXPECT_EQ(empty, ModelTypeSetFromString(ModelTypeSetToString(empty)));
-  EXPECT_EQ(one, ModelTypeSetFromString(ModelTypeSetToString(one)));
-  EXPECT_EQ(two, ModelTypeSetFromString(ModelTypeSetToString(two)));
-}
-
 TEST_F(ModelTypeTest, DefaultFieldValues) {
   ModelTypeSet types = ProtocolTypes();
   for (ModelType type : types) {
-    SCOPED_TRACE(ModelTypeToString(type));
+    SCOPED_TRACE(ModelTypeToDebugString(type));
 
     sync_pb::EntitySpecifics specifics;
     AddDefaultFieldValue(type, &specifics);
@@ -138,15 +129,9 @@ TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
   }
 }
 
-TEST_F(ModelTypeTest, ModelTypeStringMapping) {
-  ModelTypeSet all_types = ModelTypeSet::All();
-  for (ModelType model_type : all_types) {
-    const char* model_type_string = ModelTypeToString(model_type);
-    ModelType converted_model_type = ModelTypeFromString(model_type_string);
-    if (IsRealDataType(model_type))
-      EXPECT_EQ(converted_model_type, model_type);
-    else
-      EXPECT_EQ(converted_model_type, UNSPECIFIED);
+TEST_F(ModelTypeTest, ModelTypeDebugStringIsNotEmpty) {
+  for (ModelType model_type : ModelTypeSet::All()) {
+    EXPECT_NE("", ModelTypeToDebugString(model_type));
   }
 }
 

@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -23,6 +25,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -31,7 +34,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -42,7 +45,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class ContextMenuRenderTest extends DummyUiActivityTestCase {
+public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -56,14 +59,21 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     private View mView;
     private View mFrame;
 
+    private FeatureList.TestValues mTestValues;
+
     public ContextMenuRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+
+        mTestValues = new TestValues();
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, false);
+        FeatureList.setTestValues(mTestValues);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems = new ModelList();
             mAdapter = new ModelListAdapter(mListItems);
@@ -100,9 +110,10 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @Override
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NightModeTestUtils.tearDownNightModeForDummyUiActivity();
+            NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
             mListItems.clear();
         });
+        FeatureList.setTestValues(null);
         super.tearDownTest();
     }
 
@@ -110,6 +121,53 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink() throws IOException {
+        doTestContextMenuViewWithLink("context_menu_with_link");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithLink_Popup() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        doTestContextMenuViewWithLink("context_menu_with_link_popup");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithLink_HideHeaderImage() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
+                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+        doTestContextMenuViewWithLink("context_menu_with_link_no_header");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink() throws IOException {
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink_Popup() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink_HideHeaderImage() throws IOException {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
+                ContextMenuCoordinator.HIDE_HEADER_IMAGE_PARAM, "true");
+        doTestContextMenuViewWithImageLink("context_menu_with_image_link_no_header");
+    }
+
+    private void doTestContextMenuViewWithLink(String id) throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems.add(
                     new ListItem(ListItemType.HEADER, getHeaderModel("", "www.google.com", false)));
@@ -123,13 +181,10 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share link"))));
         });
-        mRenderTestRule.render(mFrame, "context_menu_with_link");
+        mRenderTestRule.render(mFrame, id);
     }
 
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    public void testContextMenuViewWithImageLink() throws IOException {
+    private void doTestContextMenuViewWithImageLink(String id) throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mListItems.add(new ListItem(
                     ListItemType.HEADER, getHeaderModel("Capybara", "www.google.com", true)));
@@ -150,30 +205,26 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share image"))));
         });
-        mRenderTestRule.render(mFrame, "context_menu_with_image_link");
+        mRenderTestRule.render(mFrame, id);
     }
 
-    private PropertyModel getHeaderModel(String title, CharSequence url, boolean hasImage) {
+    private PropertyModel getHeaderModel(
+            String title, CharSequence url, boolean hasImageThumbnail) {
+        PropertyModel model = ContextMenuHeaderCoordinator.buildModel(getActivity(), title, url);
         Bitmap image;
-        if (hasImage) {
+        if (hasImageThumbnail) {
             image = BitmapFactory.decodeFile(
                     UrlUtils.getIsolatedTestFilePath("chrome/test/data/android/capybara.jpg"));
         } else {
-            final int size = getActivity().getResources().getDimensionPixelSize(
-                    R.dimen.context_menu_header_monogram_size);
+            final int size = model.get(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL);
             image = BitmapFactory.decodeFile(UrlUtils.getIsolatedTestFilePath(
                     "chrome/test/data/android/UiCapture/cloud.png"));
             image = Bitmap.createScaledBitmap(image, size, size, true);
         }
 
-        return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
-                .with(ContextMenuHeaderProperties.TITLE, title)
-                .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, 1)
-                .with(ContextMenuHeaderProperties.URL, url)
-                .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
-                .with(ContextMenuHeaderProperties.IMAGE, image)
-                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImage)
-                .build();
+        model.set(ContextMenuHeaderProperties.IMAGE, image);
+        model.set(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImageThumbnail);
+        return model;
     }
 
     private PropertyModel getItemModel(String title) {

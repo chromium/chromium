@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -140,7 +141,7 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   }
 
  private:
-  const ProcessNode* notified_process_node_ = nullptr;
+  raw_ptr<const ProcessNode> notified_process_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

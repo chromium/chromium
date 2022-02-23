@@ -15,6 +15,14 @@ static_library("backoff_settings") {
   deps = [ "//net" ]
 }
 
+static_library("file") {
+  sources = [
+    "file.cc",
+    "file.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("shared_vector") {
   sources = [ "shared_vector.h" ]
   deps = [
@@ -68,11 +76,25 @@ source_set("test_callbacks_support") {
   deps = [ "//base" ]
 }
 
+source_set("disconnectable_client") {
+  sources = [
+    "disconnectable_client.cc",
+    "disconnectable_client.h",
+  ]
+
+  deps = [
+    ":status",
+    "//base",
+  ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "disconnectable_client_unittest.cc",
+    "file_unittest.cc",
     "shared_queue_unittest.cc",
     "shared_vector_unittest.cc",
     "status_macros_unittest.cc",
@@ -80,6 +102,8 @@ source_set("unit_tests") {
     "statusor_unittest.cc",
   ]
   deps = [
+    ":disconnectable_client",
+    ":file",
     ":shared_queue",
     ":shared_vector",
     ":status",

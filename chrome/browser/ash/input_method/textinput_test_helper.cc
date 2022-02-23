@@ -72,8 +72,6 @@ ui::TextInputClient* TextInputTestHelper::GetTextInputClient() const {
   return input_method_->GetTextInputClient();
 }
 
-void TextInputTestHelper::OnShowVirtualKeyboardIfEnabled() {}
-
 void TextInputTestHelper::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
 }

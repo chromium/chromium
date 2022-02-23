@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -63,6 +64,10 @@ NoStatePrefetchContents* NoStatePrefetchHandle::contents() const {
   return prefetch_data_ ? prefetch_data_->contents() : nullptr;
 }
 
+const GURL& NoStatePrefetchHandle::prerender_url() const {
+  return prerender_url_;
+}
+
 NoStatePrefetchHandle::NoStatePrefetchHandle(
     NoStatePrefetchManager::NoStatePrefetchData* prefetch_data)
     : observer_(nullptr) {
@@ -70,6 +75,9 @@ NoStatePrefetchHandle::NoStatePrefetchHandle(
   if (prefetch_data) {
     prefetch_data_ = prefetch_data->AsWeakPtr();
     prefetch_data->OnHandleCreated(this);
+    if (prefetch_data->contents()) {
+      prerender_url_ = prefetch_data->contents()->prerender_url();
+    }
   }
 }
 

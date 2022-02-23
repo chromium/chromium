@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;
@@ -22,7 +22,7 @@ class NearbyConnection;
 // Helper class to read incoming frames from Nearby devices.
 class IncomingFramesReader {
  public:
-  IncomingFramesReader(chromeos::nearby::NearbyProcessManager* process_manager,
+  IncomingFramesReader(ash::nearby::NearbyProcessManager* process_manager,
                        NearbyConnection* connection);
   virtual ~IncomingFramesReader();
   IncomingFramesReader(const IncomingFramesReader&) = delete;
@@ -56,16 +56,15 @@ class IncomingFramesReader {
   void OnFrameDecoded(sharing::mojom::FramePtr mojo_frame);
   void OnTimeout();
   void OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
   void Done(absl::optional<sharing::mojom::V1FramePtr> frame);
   absl::optional<sharing::mojom::V1FramePtr> GetCachedFrame(
       absl::optional<sharing::mojom::V1Frame::Tag> frame_type);
   sharing::mojom::NearbySharingDecoder* GetOrStartNearbySharingDecoder();
 
-  chromeos::nearby::NearbyProcessManager* process_manager_;
-  std::unique_ptr<
-      chromeos::nearby::NearbyProcessManager::NearbyProcessReference>
+  ash::nearby::NearbyProcessManager* process_manager_;
+  std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyConnection* connection_;
   absl::optional<sharing::mojom::V1Frame::Tag> frame_type_;

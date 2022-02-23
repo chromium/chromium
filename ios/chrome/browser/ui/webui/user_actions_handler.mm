@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 

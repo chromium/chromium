@@ -11,21 +11,17 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/test/portal/portal_interceptor_for_testing.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace content {
 
 PortalCreatedObserver::PortalCreatedObserver(
     RenderFrameHostImpl* render_frame_host_impl)
-    : render_frame_host_impl_(render_frame_host_impl) {
-  old_impl_ = render_frame_host_impl_->frame_host_receiver_for_testing()
-                  .SwapImplForTesting(this);
-}
+    : render_frame_host_impl_(render_frame_host_impl),
+      swapped_impl_(render_frame_host_impl_->frame_host_receiver_for_testing(),
+                    this) {}
 
-PortalCreatedObserver::~PortalCreatedObserver() {
-  render_frame_host_impl_->frame_host_receiver_for_testing().SwapImplForTesting(
-      old_impl_);
-}
+PortalCreatedObserver::~PortalCreatedObserver() = default;
 
 mojom::FrameHost* PortalCreatedObserver::GetForwardingInterface() {
   return render_frame_host_impl_;
@@ -84,7 +80,7 @@ Portal* PortalCreatedObserver::WaitUntilPortalCreated() {
 void PortalCreatedObserver::DidCreatePortal() {
   DCHECK(portal_);
   if (!created_cb_.is_null())
-    std::move(created_cb_).Run(portal_);
+    std::move(created_cb_).Run(portal_.get());
   if (run_loop_)
     run_loop_->Quit();
 }

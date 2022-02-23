@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^mock_ios_add_to_reading_list_infobar_delegate.h": [
+    "+ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h",
+  ],
+}
+

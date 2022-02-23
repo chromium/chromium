@@ -91,7 +91,7 @@ WebTimeRanges ConvertToWebTimeRanges(
 
 WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     media::PipelineStatus error) {
-  switch (error) {
+  switch (error.code()) {
     case media::PIPELINE_ERROR_NETWORK:
     case media::PIPELINE_ERROR_READ:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR:
@@ -111,6 +111,7 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     case media::PIPELINE_ERROR_ABORT:
     case media::PIPELINE_ERROR_INVALID_STATE:
     case media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET:
+    case media::PIPELINE_ERROR_DISCONNECTED:
     case media::CHUNK_DEMUXER_ERROR_APPEND_FAILED:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR:
     case media::AUDIO_RENDERER_ERROR:

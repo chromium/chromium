@@ -1,9 +1,6 @@
 <style>
   :host {
     --emoji-group-clear-recents-icon-size: 16px;
-    --emoji-group-heading-size: 32px;
-    --emoji-group-heading-padding-bottom: 10px;
-    --emoji-group-heading-padding-top: 16px;
     margin-top: 10px;
     position: relative;
   }
@@ -17,7 +14,7 @@
   }
   #heading:focus,
   #heading:active {
-    outline-color: var(--cros-toggle-color);
+    outline-color: var(--cros-text-color-prominent);
     outline-width: 2px;
   }
 
@@ -87,14 +84,21 @@
     background-color: var(--cros-button-background-color-secondary-hover);
     border: 2px solid var(--cros-button-background-color-secondary-hover);
   }
+
+  :host([v2-enabled]) {
+    --emoji-size: var(--v2-emoji-size);
+    --emoji-spacing: var(--v2-emoji-spacing);
+  }
 </style>
 
-<div id="heading" role="heading" aria-level="2" tabindex="-1">
-<div id="heading-left">[[data.group]]</div>
-<template is="dom-if" if="[[clearable]]">
-  <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
-    on-click="onClearClick">
-  </cr-icon-button>
+<template is="dom-if" if="[[group]]">
+  <div id="heading" role="heading" aria-level="2" tabindex="-1">
+  <div id="heading-left">[[group]]</div>
+  <template is="dom-if" if="[[clearable]]">
+    <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
+      on-click="onClearClick">
+    </cr-icon-button>
+  </template>
 </template>
 </div>
   <template is = "dom-if" if="[[showClearRecents]]">
@@ -106,7 +110,7 @@
   </template>
 <div id="emoji">
   <div id="fake-focus-target" tabindex="-1"></div>
-  <template is="dom-repeat" items="[[data.emoji]]">
+  <template is="dom-repeat" items="[[data]]">
     <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
       variants="[[item.alternates]]" tooltip="[[getTooltipForEmoji(item.base)]]"
     >

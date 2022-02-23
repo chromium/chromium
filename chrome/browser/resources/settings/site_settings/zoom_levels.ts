@@ -8,6 +8,7 @@
  * or out.
  */
 
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -16,29 +17,31 @@ import '../site_favicon.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ZoomLevelEntry} from './site_settings_prefs_browser_proxy.js';
+import {getTemplate} from './zoom_levels.html.js';
 
-interface RepeaterEvent {
-  model: {
-    index: number,
-  }
+export interface ZoomLevelsElement {
+  $: {
+    empty: HTMLElement,
+    listContainer: HTMLElement,
+    list: IronListElement,
+  };
 }
 
 const ZoomLevelsElementBase = ListPropertyUpdateMixin(
     SiteSettingsMixin(WebUIListenerMixin(PolymerElement)));
 
-class ZoomLevelsElement extends ZoomLevelsElementBase {
+export class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {
     return 'zoom-levels';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -82,9 +85,15 @@ class ZoomLevelsElement extends ZoomLevelsElementBase {
   /**
    * A handler for when a zoom level for a site is deleted.
    */
-  private removeZoomLevel_(event: RepeaterEvent) {
+  private removeZoomLevel_(event: DomRepeatEvent<ZoomLevelEntry>) {
     const site = this.sites_[event.model.index];
     this.browserProxy.removeZoomLevel(site.origin);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'zoom-levels': ZoomLevelsElement;
   }
 }
 

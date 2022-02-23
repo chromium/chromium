@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
@@ -162,12 +163,12 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(const GURL&)URL
+- (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
   faviconLoader->FaviconForPageUrl(
-      URL, kFaviconWidthHeight, kFaviconMinWidthHeight,
+      URL.gurl, kFaviconWidthHeight, kFaviconMinWidthHeight,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });

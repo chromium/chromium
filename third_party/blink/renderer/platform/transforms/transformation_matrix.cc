@@ -32,17 +32,18 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/quaternion.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -811,6 +812,14 @@ void Slerp(TransformationMatrix::DecomposedType& from_decomp,
 
 // End of Supporting Math Functions
 
+TransformationMatrix::TransformationMatrix(const gfx::Transform& t) {
+  const auto& matrix = t.matrix();
+  SetMatrix(matrix.rc(0, 0), matrix.rc(1, 0), matrix.rc(2, 0), matrix.rc(3, 0),
+            matrix.rc(0, 1), matrix.rc(1, 1), matrix.rc(2, 1), matrix.rc(3, 1),
+            matrix.rc(0, 2), matrix.rc(1, 2), matrix.rc(2, 2), matrix.rc(3, 2),
+            matrix.rc(0, 3), matrix.rc(1, 3), matrix.rc(2, 3), matrix.rc(3, 3));
+}
+
 TransformationMatrix::TransformationMatrix(const AffineTransform& t) {
   SetMatrix(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
 }
@@ -819,8 +828,8 @@ TransformationMatrix& TransformationMatrix::Scale(double s) {
   return ScaleNonUniform(s, s);
 }
 
-FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
-                                              bool* clamped) const {
+gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
+                                               bool* clamped) const {
   // This is basically raytracing. We have a point in the destination
   // plane with z=0, and we cast a ray parallel to the z-axis from that
   // point to find the z-position at which it intersects the z=0 plane
@@ -839,7 +848,7 @@ FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
   if (M33() == 0) {
     // In this case, the projection plane is parallel to the ray we are trying
     // to trace, and there is no well-defined value for the projection.
-    return FloatPoint();
+    return gfx::PointF();
   }
 
   double x = p.x();
@@ -864,11 +873,11 @@ FloatPoint TransformationMatrix::ProjectPoint(const FloatPoint& p,
     out_y /= w;
   }
 
-  return FloatPoint(static_cast<float>(out_x), static_cast<float>(out_y));
+  return gfx::PointF(static_cast<float>(out_x), static_cast<float>(out_y));
 }
 
-FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
-  FloatQuad projected_quad;
+gfx::QuadF TransformationMatrix::ProjectQuad(const gfx::QuadF& q) const {
+  gfx::QuadF projected_quad;
 
   bool clamped1 = false;
   bool clamped2 = false;
@@ -884,7 +893,7 @@ FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
   // visible to the projected surface.
   bool everything_was_clipped = clamped1 && clamped2 && clamped3 && clamped4;
   if (everything_was_clipped)
-    return FloatQuad();
+    return gfx::QuadF();
 
   return projected_quad;
 }
@@ -896,8 +905,8 @@ static float ClampEdgeValue(float f) {
 }
 
 LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
-    const FloatQuad& q) const {
-  FloatRect mapped_quad_bounds = ProjectQuad(q).BoundingBox();
+    const gfx::QuadF& q) const {
+  gfx::RectF mapped_quad_bounds = ProjectQuad(q).BoundingBox();
 
   float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
   float top = ClampEdgeValue(floorf(mapped_quad_bounds.y()));
@@ -921,15 +930,15 @@ LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
                     LayoutUnit::Clamp(bottom - top));
 }
 
-void TransformationMatrix::TransformBox(FloatBox& box) const {
-  FloatBox bounds;
+void TransformationMatrix::TransformBox(gfx::BoxF& box) const {
+  gfx::BoxF bounds;
   bool first_point = true;
   for (size_t i = 0; i < 2; ++i) {
     for (size_t j = 0; j < 2; ++j) {
       for (size_t k = 0; k < 2; ++k) {
-        FloatPoint3D point(box.x(), box.y(), box.z());
+        gfx::Point3F point(box.x(), box.y(), box.z());
         point +=
-            FloatPoint3D(i * box.width(), j * box.height(), k * box.depth());
+            gfx::Vector3dF(i * box.width(), j * box.height(), k * box.depth());
         point = MapPoint(point);
         if (first_point) {
           bounds.set_origin(point);
@@ -943,60 +952,58 @@ void TransformationMatrix::TransformBox(FloatBox& box) const {
   box = bounds;
 }
 
-FloatPoint TransformationMatrix::MapPoint(const FloatPoint& p) const {
+gfx::PointF TransformationMatrix::MapPoint(const gfx::PointF& p) const {
   if (IsIdentityOrTranslation()) {
-    return FloatPoint(p.x() + static_cast<float>(matrix_[3][0]),
-                      p.y() + static_cast<float>(matrix_[3][1]));
+    return gfx::PointF(p.x() + static_cast<float>(matrix_[3][0]),
+                       p.y() + static_cast<float>(matrix_[3][1]));
   }
   return InternalMapPoint(p);
 }
 
-FloatPoint3D TransformationMatrix::MapPoint(const FloatPoint3D& p) const {
+gfx::Point3F TransformationMatrix::MapPoint(const gfx::Point3F& p) const {
   if (IsIdentityOrTranslation()) {
-    return FloatPoint3D(p.x() + static_cast<float>(matrix_[3][0]),
-                        p.y() + static_cast<float>(matrix_[3][1]),
-                        p.z() + static_cast<float>(matrix_[3][2]));
+    return p + gfx::Vector3dF(static_cast<float>(matrix_[3][0]),
+                              static_cast<float>(matrix_[3][1]),
+                              static_cast<float>(matrix_[3][2]));
   }
   return InternalMapPoint(p);
 }
 
-IntRect TransformationMatrix::MapRect(const IntRect& rect) const {
-  return EnclosingIntRect(MapRect(FloatRect(rect)));
+gfx::Rect TransformationMatrix::MapRect(const gfx::Rect& rect) const {
+  return gfx::ToEnclosingRect(MapRect(gfx::RectF(rect)));
 }
 
 LayoutRect TransformationMatrix::MapRect(const LayoutRect& r) const {
-  return EnclosingLayoutRect(MapRect(FloatRect(r)));
+  return EnclosingLayoutRect(MapRect(gfx::RectF(r)));
 }
 
-FloatRect TransformationMatrix::MapRect(const FloatRect& r) const {
+gfx::RectF TransformationMatrix::MapRect(const gfx::RectF& r) const {
   if (IsIdentityOrTranslation()) {
-    FloatRect mapped_rect(r);
+    gfx::RectF mapped_rect(r);
     mapped_rect.Offset(static_cast<float>(matrix_[3][0]),
                        static_cast<float>(matrix_[3][1]));
     return mapped_rect;
   }
 
-  FloatQuad result;
+  gfx::QuadF result;
 
   float max_x = r.right();
   float max_y = r.bottom();
-  result.set_p1(InternalMapPoint(FloatPoint(r.x(), r.y())));
-  result.set_p2(InternalMapPoint(FloatPoint(max_x, r.y())));
-  result.set_p3(InternalMapPoint(FloatPoint(max_x, max_y)));
-  result.set_p4(InternalMapPoint(FloatPoint(r.x(), max_y)));
+  result.set_p1(InternalMapPoint(gfx::PointF(r.x(), r.y())));
+  result.set_p2(InternalMapPoint(gfx::PointF(max_x, r.y())));
+  result.set_p3(InternalMapPoint(gfx::PointF(max_x, max_y)));
+  result.set_p4(InternalMapPoint(gfx::PointF(r.x(), max_y)));
 
   return result.BoundingBox();
 }
 
-FloatQuad TransformationMatrix::MapQuad(const FloatQuad& q) const {
+gfx::QuadF TransformationMatrix::MapQuad(const gfx::QuadF& q) const {
   if (IsIdentityOrTranslation()) {
-    FloatQuad mapped_quad(q);
-    mapped_quad.Move(static_cast<float>(matrix_[3][0]),
-                     static_cast<float>(matrix_[3][1]));
-    return mapped_quad;
+    return q + gfx::Vector2dF(ClampTo<float>(matrix_[3][0]),
+                              ClampTo<float>(matrix_[3][1]));
   }
 
-  FloatQuad result;
+  gfx::QuadF result;
   result.set_p1(InternalMapPoint(q.p1()));
   result.set_p2(InternalMapPoint(q.p2()));
   result.set_p3(InternalMapPoint(q.p3()));
@@ -1638,8 +1645,8 @@ TransformationMatrix& TransformationMatrix::Multiply(
   return *this;
 }
 
-FloatPoint TransformationMatrix::InternalMapPoint(
-    const FloatPoint& source_point) const {
+gfx::PointF TransformationMatrix::InternalMapPoint(
+    const gfx::PointF& source_point) const {
   double x = source_point.x();
   double y = source_point.y();
   double result_x = matrix_[3][0] + x * matrix_[0][0] + y * matrix_[1][0];
@@ -1649,11 +1656,11 @@ FloatPoint TransformationMatrix::InternalMapPoint(
     result_x /= w;
     result_y /= w;
   }
-  return FloatPoint(ClampToFloat(result_x), ClampToFloat(result_y));
+  return gfx::PointF(ClampToFloat(result_x), ClampToFloat(result_y));
 }
 
-FloatPoint3D TransformationMatrix::InternalMapPoint(
-    const FloatPoint3D& source_point) const {
+gfx::Point3F TransformationMatrix::InternalMapPoint(
+    const gfx::Point3F& source_point) const {
   double x = source_point.x();
   double y = source_point.y();
   double z = source_point.z();
@@ -1670,7 +1677,7 @@ FloatPoint3D TransformationMatrix::InternalMapPoint(
     result_y /= w;
     result_z /= w;
   }
-  return FloatPoint3D(ClampToFloat(result_x), ClampToFloat(result_y),
+  return gfx::Point3F(ClampToFloat(result_x), ClampToFloat(result_y),
                       ClampToFloat(result_z));
 }
 
@@ -2105,29 +2112,14 @@ void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
   result[15] = M44();
 }
 
-skia::Matrix44 TransformationMatrix::ToSkMatrix44(
-    const TransformationMatrix& matrix) {
-  skia::Matrix44 ret(skia::Matrix44::kUninitialized_Constructor);
-  ret.set4x4(matrix.M11(), matrix.M12(), matrix.M13(), matrix.M14(),
-             matrix.M21(), matrix.M22(), matrix.M23(), matrix.M24(),
-             matrix.M31(), matrix.M32(), matrix.M33(), matrix.M34(),
-             matrix.M41(), matrix.M42(), matrix.M43(), matrix.M44());
-  return ret;
+SkM44 TransformationMatrix::ToSkM44() const {
+  return SkM44(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(), M13(),
+               M23(), M33(), M43(), M14(), M24(), M34(), M44());
 }
 
-SkM44 TransformationMatrix::ToSkM44(const TransformationMatrix& matrix) {
-  return SkM44(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
-               matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
-               matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
-               matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
-}
-
-gfx::Transform TransformationMatrix::ToTransform(
-    const TransformationMatrix& matrix) {
-  return gfx::Transform(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
-                        matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
-                        matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
-                        matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
+gfx::Transform TransformationMatrix::ToTransform() const {
+  return gfx::Transform(M11(), M21(), M31(), M41(), M12(), M22(), M32(), M42(),
+                        M13(), M23(), M33(), M43(), M14(), M24(), M34(), M44());
 }
 
 String TransformationMatrix::ToString(bool as_matrix) const {

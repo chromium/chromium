@@ -37,8 +37,7 @@ class InfoMap : public base::RefCountedThreadSafe<
                     bool notifications_disabled);
 
   // Callback for when an extension is unloaded.
-  void RemoveExtension(const std::string& extension_id,
-                       const UnloadedExtensionReason reason);
+  void RemoveExtension(const std::string& extension_id);
 
   void SetContentVerifier(ContentVerifier* verifier);
   ContentVerifier* content_verifier() { return content_verifier_.get(); }

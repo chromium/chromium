@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_SERVICE_H_
 
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include <list>
+#include <memory>
+#include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -139,7 +143,7 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
   void UseV4LocalDatabaseManager();
 
  private:
-  TestSafeBrowsingService* test_safe_browsing_service_;
+  raw_ptr<TestSafeBrowsingService> test_safe_browsing_service_;
   scoped_refptr<TestSafeBrowsingDatabaseManager> test_database_manager_;
   scoped_refptr<TestSafeBrowsingUIManager> test_ui_manager_;
   bool use_v4_local_db_manager_;

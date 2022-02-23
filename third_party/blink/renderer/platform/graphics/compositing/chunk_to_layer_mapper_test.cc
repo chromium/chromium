@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 
@@ -32,7 +33,7 @@ class ChunkToLayerMapperTest : public testing::Test {
     if (!layer_transform_) {
       layer_transform_ =
           CreateTransform(t0(), TransformationMatrix().Translate(123, 456),
-                          FloatPoint3D(1, 2, 3));
+                          gfx::Point3F(1, 2, 3));
       layer_clip_ =
           CreateClip(c0(), *layer_transform_, FloatRoundedRect(12, 34, 56, 78));
       layer_effect_ = EffectPaintPropertyNode::Create(

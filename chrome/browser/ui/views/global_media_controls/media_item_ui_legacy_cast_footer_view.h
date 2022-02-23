@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_LEGACY_CAST_FOOTER_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "ui/gfx/color_palette.h"
@@ -37,7 +38,7 @@ class MediaItemUILegacyCastFooterView
   SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;
   SkColor background_color_ = global_media_controls::kDefaultBackgroundColor;
 
-  views::LabelButton* stop_cast_button_ = nullptr;
+  raw_ptr<views::LabelButton> stop_cast_button_ = nullptr;
 
   const base::RepeatingClosure stop_casting_callback_;
 };

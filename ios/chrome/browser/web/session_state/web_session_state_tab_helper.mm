@@ -23,9 +23,9 @@
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #include "ios/web/public/web_client.h"
@@ -87,14 +87,13 @@ bool WebSessionStateTabHelper::RestoreSessionFromCache() {
   if (!data.length)
     return false;
 
-  if (!web_state_->SetSessionStateData(data))
+  bool restore_session_succeeded = web_state_->SetSessionStateData(data);
+  UMA_HISTOGRAM_BOOLEAN("Session.WebStates.NativeRestoreSessionFromCache",
+                        restore_session_succeeded);
+  if (!restore_session_succeeded)
     return false;
 
-  // If this fails (e.g., see crbug.com/1019672 for a previous failure), this
-  // implies a bug in WebKit session restoration.
-  web::NavigationManager* navigationManager =
-      web_state_->GetNavigationManager();
-  DCHECK(navigationManager->GetItemCount());
+  DCHECK(web_state_->GetNavigationItemCount());
   web::GetWebClient()->CleanupNativeRestoreURLs(web_state_);
   return true;
 }
@@ -143,6 +142,11 @@ void WebSessionStateTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void WebSessionStateTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  // Don't record navigations that result in downloads, since these will be
+  // discarded and there's no simple callback when discarded.
+  if (navigation_context->IsDownload())
+    return;
+
   MarkStale();
 }
 
@@ -155,10 +159,11 @@ void WebSessionStateTabHelper::WebFrameDidBecomeAvailable(
   // -WebFrameDidBecomeAvailable is called much more often than navigations, so
   // check if either |item_count_| or |last_committed_item_index_| has changed
   // before marking a page as stale.
-  web::NavigationManager* navigationManager = web_state->GetNavigationManager();
-  if (item_count_ == navigationManager->GetItemCount() &&
+  web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  if (item_count_ == web_state->GetNavigationItemCount() &&
       last_committed_item_index_ ==
-          navigationManager->GetLastCommittedItemIndex())
+          navigation_manager->GetLastCommittedItemIndex())
     return;
 
   MarkStale();
@@ -172,7 +177,7 @@ void WebSessionStateTabHelper::MarkStale() {
 
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
-  item_count_ = navigationManager->GetItemCount();
+  item_count_ = web_state_->GetNavigationItemCount();
   last_committed_item_index_ = navigationManager->GetLastCommittedItemIndex();
 
   stale_ = true;

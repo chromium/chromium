@@ -19,30 +19,14 @@
 #include "base/win/scoped_process_information.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace {
 
-// Constants from Google Update.
-// TODO(crbug/1094024): once group policy manager code is available, the
-// server must respond with the following errors:
-// const HRESULT GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY = 0x80040813;
-// const HRESULT GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL = 0x8004081f;
-
-// This is a GoogleUpdate error code, which must be retained by this
-// implementation in order to be backward compatible with the existing
-// update client code in Chrome.
-const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
-
 HRESULT OpenCallerProcessHandle(DWORD proc_id,
                                 base::win::ScopedHandle& proc_handle) {
-  HRESULT hr = ::CoImpersonateClient();
-  if (FAILED(hr))
-    return hr;
-  base::ScopedClosureRunner co_revert_to_self(
-      base::BindOnce(base::IgnoreResult(&::CoRevertToSelf)));
-
   proc_handle.Set(::OpenProcess(PROCESS_DUP_HANDLE, false, proc_id));
   return proc_handle.IsValid() ? S_OK : updater::HRESULTFromLastError();
 }
@@ -178,6 +162,7 @@ STDMETHODIMP LegacyOnDemandImpl::checkForUpdate() {
              LegacyOnDemandImplPtr obj) {
             update_service->Update(
                 obj->app_id(), UpdateService::Priority::kForeground,
+                UpdateService::PolicySameVersionUpdate::kNotAllowed,
                 base::BindRepeating(
                     [](LegacyOnDemandImplPtr obj,
                        const UpdateService::UpdateState& state_update) {

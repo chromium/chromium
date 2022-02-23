@@ -27,13 +27,13 @@
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 // Test that SVG content with JavaScript URLs is sanitized by removing
 // the URLs. This sanitization happens when the content is pasted or
@@ -58,7 +58,7 @@ namespace blink {
 // |expected_partial_contents|.
 void PasteAndVerifySanitization(const char* html_to_paste,
                                 const char* expected_partial_contents) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(1, 1));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   LocalFrame& frame = page_holder.get()->GetFrame();
 
   // Setup a mock clipboard host.

@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/test/views_test_base.h"

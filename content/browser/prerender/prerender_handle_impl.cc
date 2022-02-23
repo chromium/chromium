@@ -4,21 +4,41 @@
 
 #include "content/browser/prerender/prerender_handle_impl.h"
 
+#include "content/public/browser/prerender_trigger_type.h"
+
 namespace content {
 
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
-    int frame_tree_node_id)
+    int frame_tree_node_id,
+    const GURL& prerendering_url)
     : prerender_host_registry_(std::move(prerender_host_registry)),
-      frame_tree_node_id_(frame_tree_node_id) {}
+      frame_tree_node_id_(frame_tree_node_id),
+      prerendering_url_(prerendering_url) {
+  DCHECK(!prerendering_url_.is_empty());
+  // PrerenderHandleImpl is now designed only for embedder triggers (e.g.,
+  // recording kEmbedderTriggeredAndDestroyed on the destructor). If you use
+  // this handle for other triggers, please make sure to update the logging etc.
+  auto* prerender_host =
+      prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id);
+  DCHECK(prerender_host);
+  DCHECK_EQ(prerender_host->trigger_type(), PrerenderTriggerType::kEmbedder);
+}
 
 PrerenderHandleImpl::~PrerenderHandleImpl() {
-  // TODO(https://crbug.com/1166085): Use proper FinalStatus after the
-  // specification of Prerender2 metrics is finalized.
   if (prerender_host_registry_) {
     prerender_host_registry_->CancelHost(
-        frame_tree_node_id_, PrerenderHost::FinalStatus::kDestroyed);
+        frame_tree_node_id_,
+        PrerenderHost::FinalStatus::kEmbedderTriggeredAndDestroyed);
   }
+}
+
+GURL PrerenderHandleImpl::GetInitialPrerenderingUrl() {
+  return prerendering_url_;
+}
+
+base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace content

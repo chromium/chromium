@@ -1,0 +1,64 @@
+
+< !DOCTYPE html >
+<meta charset="utf-8"/>
+<title>Web Locks API: Partitioned WebLocks</title>
+
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/cookies/resources/cookie-helper.sub.js"></script>
+<script src="../credentialless/resources/common.js"></script>
+<script src="resources/helpers.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<body>
+<script>
+
+const { HTTPS_ORIGIN, HTTPS_NOTSAMESITE_ORIGIN } = get_host_info();
+// Map of lock_id => function that releases a lock.
+const held = new Map();
+let next_lock_id = 1;
+
+async function run_test(t) {
+  let target_url = HTTPS_ORIGIN + '/web-locks/resources/iframe.html';
+  target_url = new URL(
+    `./resources/partitioned-parent.html?target=${encodeURIComponent(target_url)}`,
+    HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
+
+  navigator.locks.request('testLock', {mode: 'exclusive', ifAvailable: true},
+        lock => {
+          if (lock === null) {
+            assert_true(false)
+            return;
+          }
+          let lock_id = next_lock_id++;
+          let release;
+          const promise = new Promise(r => { release = r; });
+          held.set(lock_id, release);
+          return promise;
+        });
+
+  const w = window.open(target_url);
+  const result = await new Promise(resolve => window.onmessage = resolve);
+
+  // When 3rd party storage partitioning is enabled, the iFrame should be able
+  // to aquire a lock with the same name as one exclusively held by the opener
+  // of its top window, even when that opener has the same origin.
+  assert_equals(result.data.failed, undefined,
+      'The 1p iframe failed to acquire the lock');
+
+  t.add_cleanup(() => {
+    w.close()
+    for(let i = 1; i < next_lock_id; i++){
+      held.get(i)();
+    }
+  });
+}
+
+promise_test(t => {
+  return run_test(t);
+}, 'WebLocks of an iframe under a 3rd-party site are partitioned');
+</script>
+</body>

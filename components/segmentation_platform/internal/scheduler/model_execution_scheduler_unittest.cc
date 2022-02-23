@@ -28,6 +28,8 @@ using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
 namespace {
 constexpr auto kTestOptimizationTarget =
     OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+constexpr auto kTestOptimizationTarget2 =
+    OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY;
 }  // namespace
 
 class MockModelExecutionObserver : public ModelExecutionScheduler::Observer {
@@ -52,9 +54,12 @@ class ModelExecutionSchedulerTest : public testing::Test {
     std::vector<ModelExecutionScheduler::Observer*> observers = {&observer1_,
                                                                  &observer2_};
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
+    base::flat_set<OptimizationTarget> segment_ids;
+    segment_ids.insert(kTestOptimizationTarget);
     model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
         std::move(observers), segment_database_.get(), &signal_storage_config_,
-        &model_execution_manager_, &clock_, PlatformOptions::CreateDefault());
+        &model_execution_manager_, segment_ids, &clock_,
+        PlatformOptions::CreateDefault());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -131,6 +136,7 @@ TEST_F(ModelExecutionSchedulerTest, OnNewModelInfoReady) {
 
 TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
   segment_database_->FindOrCreateSegment(kTestOptimizationTarget);
+  segment_database_->FindOrCreateSegment(kTestOptimizationTarget2);
 
   // TODO(shaktisahu): Add tests for expired segments, freshly computed segments
   // etc.
@@ -140,6 +146,9 @@ TEST_F(ModelExecutionSchedulerTest, RequestModelExecutionForEligibleSegments) {
       .Times(1);
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(model_execution_manager_,
+              ExecuteModel(kTestOptimizationTarget2, _))
+      .Times(0);
   // TODO(shaktisahu): Add test when the signal collection returns false.
 
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(true);

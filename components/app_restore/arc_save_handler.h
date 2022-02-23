@@ -34,6 +34,19 @@ namespace full_restore {
 
 // ArcSaveHandler is a helper class for FullRestoreSaveHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
+//
+// Task id is saved as the window id. Session id is generated when launch the
+// ARC app, and sent back as a parameter of OnTaskCreated, to connect the launch
+// parameters with the task id. `session_id_to_app_launch_info_` saves the
+// mapping from the session id to the launch parameter.
+//
+// When the task is created, in OnTaskCreated callback, get the launch info from
+// `session_id_to_app_launch_info_` with `session id`, and save the launch info
+// using the task is as the window id.
+//
+// For ghost window, session id is used as the the window id before the task is
+// created. When the task is created, window id is modified to use the task id
+// as the window id.
 class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
  public:
   using AppLaunchInfoPtr = std::unique_ptr<app_restore::AppLaunchInfo>;
@@ -74,7 +87,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
                                uint32_t primary_color,
                                uint32_t status_bar_color);
 
-  // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
+  // Generates the ARC session id (0 - 1,000,000,000) for save ARC apps.
   int32_t GetArcSessionId();
 
   // Returns the app id that associates with |window|.

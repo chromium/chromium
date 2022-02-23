@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -171,7 +170,7 @@ TEST_F(ExtensionRegistryTest, GetExtensionById) {
   scoped_refptr<const Extension> terminated =
       ExtensionBuilder("terminated").Build();
   scoped_refptr<const Extension> blocklisted =
-      ExtensionBuilder("blacklisted").Build();
+      ExtensionBuilder("blocklisted").Build();
 
   // Add an extension to each set.
   registry.AddEnabled(enabled);

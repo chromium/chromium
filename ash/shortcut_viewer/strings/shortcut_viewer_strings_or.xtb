@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">ଇନକଗ୍ନିଟୋ ମୋଡରେ ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ତା’ପରେ <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ ଡେସ୍କକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1652741121070700329">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦର ଆରମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="1679841710523778799">ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="168356808214100546">ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ ଖୋଲିବାକୁ ଚାହୁଁଥିବା ୱିଣ୍ଡୋରେ ପହଞ୍ଚି ନାହାନ୍ତି, ସେପର୍ଯ୍ୟନ୍ତ <ph name="ALT" /> ଦାବି ଧରନ୍ତୁ, <ph name="TAB" />ରେ ଟାପ୍‍ କରନ୍ତୁ, ତା’ପରେ ଛାଡିଦିଅନ୍ତୁ।</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ଦାବନ୍ତୁ ଏବଂ ଗୋଟିଏ ଲିଙ୍କ୍‌ରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="561814908794220892">ଏକ୍‌ ନୂଆ ଟାବ୍‌ରେ ୱେବ୍‌ପୃଷ୍ଠା ଖୋଲନ୍ତୁ</translation>
 <translation id="5620219513321115856">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ଡାହାଣ ପଟ ଡେସ୍କକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
+<translation id="5699366815052349604">ସମସ୍ତ ଡେସ୍କ ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋ ଆସାଇନ କରନ୍ତୁ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> କିମ୍ବା <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5757474750054631686">ନିଷ୍ପ୍ରଭ କୀବୋର୍ଡ (କେବଳ ବ୍ୟାକ୍‍ଲିଟ୍‍ କୀବୋର୍ଡ ପାଇଁ)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">ଫାଇଲ୍ସ ଆପ୍‌ରେ ଲୁଚିଥିବା ଫାଇଲ୍‍ଗୁଡ଼ିକ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="8717459106217102612">ପୂର୍ବବର୍ତ୍ତୀ ଶବ୍ଦ କିମ୍ବା ଅକ୍ଷରକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8727232706774971183">ଆପଣଙ୍କର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1ରୁ 8 ପର୍ଯ୍ୟନ୍ତ</translation>
 <translation id="8855885154700222542">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ କୀ</translation>
 <translation id="8881584919399569791">ସକ୍ରିୟ ୱିଣ୍ଡୋକୁ ବାମ ପଟ ଡେସ୍କକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="88986195241502842">ନିମ୍ନ ପୃଷ୍ଠା</translation>

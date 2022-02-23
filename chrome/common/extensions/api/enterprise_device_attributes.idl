@@ -4,7 +4,8 @@
 
 // Use the <code>chrome.enterprise.deviceAttributes</code> API to read device
 // attributes.
-// Note: This API is only available to extensions force-installed by enterprise policy.
+// Note: This API is only available to extensions force-installed by enterprise
+// policy.
 namespace enterprise.deviceAttributes {
   callback GetDirectoryDeviceIdCallback = void (DOMString deviceId);
 
@@ -51,7 +52,7 @@ namespace enterprise.deviceAttributes {
 
     // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
     // If the current user is not affiliated or no hostname has been set by the
-    // the enterprise policy, returns an empty string.
+    // enterprise policy, returns an empty string.
     // |callback| : Called with hostname of the device.
     [supportsPromises] void getDeviceHostname(
         GetDeviceHostnameCallback callback);

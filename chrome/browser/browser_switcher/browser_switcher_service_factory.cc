@@ -13,7 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_service_win.h"
 #endif
 
@@ -21,7 +21,7 @@ namespace browser_switcher {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using BrowserSwitcherServiceImpl = BrowserSwitcherServiceWin;
 #else
 using BrowserSwitcherServiceImpl = BrowserSwitcherService;

@@ -15,3 +15,69 @@ static_library("privacy_sandbox_prefs") {
 
   public_deps = [ "//base" ]
 }
+
+source_set("privacy_sandbox") {
+  sources = [
+    "canonical_topic.cc",
+    "canonical_topic.h",
+    "privacy_sandbox_features.cc",
+    "privacy_sandbox_features.h",
+    "privacy_sandbox_settings.cc",
+    "privacy_sandbox_settings.h",
+  ]
+
+  deps = [
+    ":privacy_sandbox_prefs",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/keyed_service/core:core",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//net:net",
+    "//ui/base:base",
+    "//url:url",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "canonical_topic_unittest.cc",
+    "privacy_sandbox_settings_unittest.cc",
+  ]
+
+  deps = [
+    ":privacy_sandbox",
+    ":privacy_sandbox_prefs",
+    ":test_support",
+    "//components/content_settings/core/browser:browser",
+    "//components/content_settings/core/test:test_support",
+    "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "privacy_sandbox_test_util.cc",
+    "privacy_sandbox_test_util.h",
+  ]
+  deps = [
+    ":privacy_sandbox",
+    ":privacy_sandbox_prefs",
+    "//components/content_settings/core/browser:browser",
+    "//components/content_settings/core/common:common",
+    "//components/content_settings/core/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//testing/gmock",
+  ]
+}

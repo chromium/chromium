@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -267,13 +266,6 @@ class CORE_EXPORT SerializedScriptValue
   size_t DataLengthInBytes() const { return data_buffer_size_; }
 
   TransferredWasmModulesArray& WasmModules() { return wasm_modules_; }
-
-  const SecurityOrigin* origin() { return origin_.get(); }
-
-  void set_origin(const SecurityOrigin* origin) {
-    origin_ = origin->IsolatedCopy();
-  }
-
   SharedArrayBufferContentsArray& SharedArrayBuffersContents() {
     return shared_array_buffers_contents_;
   }
@@ -396,10 +388,6 @@ class CORE_EXPORT SerializedScriptValue
 
   // These do not have one-use transferred contents, like the above.
   TransferredWasmModulesArray wasm_modules_;
-  // To count how often WebAssembly modules get transferred cross-origin, we
-  // allow to store the |SecurityOrigin| in the |V8SerializedScriptValue|. The
-  // |SecurityOrigin| has to be set explicitly with |set_origin()|.
-  scoped_refptr<SecurityOrigin> origin_;
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;

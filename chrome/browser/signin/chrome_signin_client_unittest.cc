@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -38,7 +37,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/browser_with_test_window_test.h"
 #endif
 
@@ -103,7 +102,7 @@ class ChromeSigninClientTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<Profile> profile_;
-  SigninClient* signin_client_;
+  raw_ptr<SigninClient> signin_client_;
 };
 
 TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsImmediatelyWithNetwork) {
@@ -142,7 +141,7 @@ TEST_F(ChromeSigninClientTest, DelayNetworkCallRunsAfterNetworkChange) {
   ASSERT_TRUE(tester.WasCalledExactlyOnce());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class MockChromeSigninClient : public ChromeSigninClient {
  public:
@@ -264,6 +263,8 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
       return true;
     case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
+    case signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE:
       // TODO(msarda): Add more of the above cases to this "false" branch.
       // For now only ACCOUNT_REMOVED_FROM_DEVICE is here to preserve the status
       // quo. Additional internal sources of sign-out will be moved here in a
@@ -313,8 +314,8 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutAllowed) {
   PreSignOut(signout_source, delete_metric);
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowed) {
   signin_metrics::ProfileSignout signout_source = GetParam();
 
@@ -375,7 +376,6 @@ TEST_P(ChromeSigninClientSignoutSourceTest, UserSignoutDisallowedWithSync) {
 
 TEST_P(ChromeSigninClientSignoutSourceTest,
        UserSignoutDisallowedAccountManagementAccepted) {
-  base::test::ScopedFeatureList features(kAccountPoliciesLoadedWithoutSync);
   signin_metrics::ProfileSignout signout_source = GetParam();
 
   TestingProfile::Builder builder;
@@ -420,6 +420,8 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
     signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
     signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
+    signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
@@ -429,5 +431,5 @@ INSTANTIATE_TEST_SUITE_P(AllSignoutSources,
                          ChromeSigninClientSignoutSourceTest,
                          testing::ValuesIn(kSignoutSources));
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

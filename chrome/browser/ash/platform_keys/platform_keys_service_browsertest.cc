@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -202,7 +202,7 @@ class PlatformKeysServiceBrowserTestBase
     platform_keys_service()->GenerateRSAKey(token_id, key_size,
                                             /*sw_backed=*/false,
                                             generate_key_waiter.GetCallback());
-    generate_key_waiter.Wait();
+    EXPECT_TRUE(generate_key_waiter.Wait());
 
     return generate_key_waiter.public_key_spki_der();
   }
@@ -287,7 +287,7 @@ class PlatformKeysServicePerProfileBrowserTest
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetTokens) {
   test_util::GetTokensExecutionWaiter get_tokens_waiter;
   platform_keys_service()->GetTokens(get_tokens_waiter.GetCallback());
-  get_tokens_waiter.Wait();
+  ASSERT_TRUE(get_tokens_waiter.Wait());
 
   EXPECT_EQ(get_tokens_waiter.status(), Status::kSuccess);
   ASSERT_TRUE(get_tokens_waiter.token_ids());
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetAllKeys) {
     test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
     platform_keys_service()->GetAllKeys(token_id,
                                         get_all_keys_waiter.GetCallback());
-    get_all_keys_waiter.Wait();
+    ASSERT_TRUE(get_all_keys_waiter.Wait());
 
     EXPECT_EQ(get_all_keys_waiter.status(), Status::kSuccess);
     std::vector<std::string> public_keys = get_all_keys_waiter.public_keys();
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
     platform_keys_service()->SetAttributeForKey(
         token_id, spki_der, kAttributeType, token_to_value[token_id],
         set_attr_waiter.GetCallback());
-    set_attr_waiter.Wait();
+    ASSERT_TRUE(set_attr_waiter.Wait());
     EXPECT_EQ(set_attr_waiter.status(), Status::kSuccess);
   }
 
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
     test_util::GetAttributeForKeyExecutionWaiter get_attr_waiter;
     platform_keys_service()->GetAttributeForKey(
         token_id, spki_der, kAttributeType, get_attr_waiter.GetCallback());
-    get_attr_waiter.Wait();
+    ASSERT_TRUE(get_attr_waiter.Wait());
 
     EXPECT_EQ(get_attr_waiter.status(), Status::kSuccess);
     ASSERT_TRUE(get_attr_waiter.attribute_value());
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
   platform_keys_service()->IsKeyOnToken(token_id_2, public_key,
                                         is_key_on_token_waiter.GetCallback());
-  is_key_on_token_waiter.Wait();
+  ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
   EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
-  generate_key_waiter.Wait();
+  ASSERT_TRUE(generate_key_waiter.Wait());
   EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
 
   const std::string public_key_spki_der =
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->SignRSAPKCS1Digest(
       token_id, kDataToSign, public_key_spki_der, kHashAlgorithm,
       sign_waiter.GetCallback());
-  sign_waiter.Wait();
+  ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
 
   crypto::SignatureVerifier signature_verifier;
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->SignRSAPKCS1Raw(
       token_id, kDigestInfoAndDataToSignHash, public_key_spki_der,
       sign_waiter.GetCallback());
-  sign_waiter.Wait();
+  ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
 
   crypto::SignatureVerifier signature_verifier;
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/true,
                                           generate_key_waiter.GetCallback());
-  generate_key_waiter.Wait();
+  ASSERT_TRUE(generate_key_waiter.Wait());
   EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
 
   // Assert: Verify that the the returned public key SPKI has been generated
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
     test_util::SignExecutionWaiter sign_waiter;
     platform_keys_service()->SignRSAPKCS1Raw(
         token_id, data_to_sign, public_key_spki_der, sign_waiter.GetCallback());
-    sign_waiter.Wait();
+    ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.status(), Status::kSuccess);
   }
 
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
     platform_keys_service()->SignRSAPKCS1Raw(token_id, data_to_sign_too_long,
                                              public_key_spki_der,
                                              sign_waiter.GetCallback());
-    sign_waiter.Wait();
+    ASSERT_TRUE(sign_waiter.Wait());
     EXPECT_EQ(sign_waiter.status(), Status::kErrorInputTooLong);
   }
 }
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->SetAttributeForKey(
       token_id, public_key_spki_der, kAttributeType, kAttributeValue,
       set_attribute_for_key_execution_waiter.GetCallback());
-  set_attribute_for_key_execution_waiter.Wait();
+  ASSERT_TRUE(set_attribute_for_key_execution_waiter.Wait());
 
   // Get key attribute.
   test_util::GetAttributeForKeyExecutionWaiter
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->GetAttributeForKey(
       token_id, public_key_spki_der, kAttributeType,
       get_attribute_for_key_execution_waiter.GetCallback());
-  get_attribute_for_key_execution_waiter.Wait();
+  ASSERT_TRUE(get_attribute_for_key_execution_waiter.Wait());
 
   EXPECT_EQ(get_attribute_for_key_execution_waiter.status(), Status::kSuccess);
   ASSERT_TRUE(get_attribute_for_key_execution_waiter.attribute_value());
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->GetAttributeForKey(
       token_id, kPublicKey, kAttributeType,
       get_attribute_for_key_execution_waiter.GetCallback());
-  get_attribute_for_key_execution_waiter.Wait();
+  ASSERT_TRUE(get_attribute_for_key_execution_waiter.Wait());
 
   EXPECT_NE(get_attribute_for_key_execution_waiter.status(), Status::kSuccess);
   EXPECT_FALSE(get_attribute_for_key_execution_waiter.attribute_value());
@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   platform_keys_service()->SetAttributeForKey(
       token_id, kPublicKey, kAttributeType, kAttributeValue,
       set_attribute_for_key_execution_waiter.GetCallback());
-  set_attribute_for_key_execution_waiter.Wait();
+  ASSERT_TRUE(set_attribute_for_key_execution_waiter.Wait());
 
   EXPECT_NE(set_attribute_for_key_execution_waiter.status(), Status::kSuccess);
 }
@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::RemoveKeyExecutionWaiter remove_key_waiter;
   platform_keys_service()->RemoveKey(token_id, public_key_1,
                                      remove_key_waiter.GetCallback());
-  remove_key_waiter.Wait();
+  ASSERT_TRUE(remove_key_waiter.Wait());
 
   EXPECT_EQ(remove_key_waiter.status(), Status::kSuccess);
   EXPECT_FALSE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_1));
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::GetCertificatesExecutionWaiter get_certificates_waiter;
   platform_keys_service()->GetCertificates(
       token_id, get_certificates_waiter.GetCallback());
-  get_certificates_waiter.Wait();
+  ASSERT_TRUE(get_certificates_waiter.Wait());
   ASSERT_EQ(get_certificates_waiter.matches().size(), 0U);
 
   net::ScopedCERTCertificate cert;
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::GetCertificatesExecutionWaiter get_certificates_waiter_2;
   platform_keys_service()->GetCertificates(
       token_id, get_certificates_waiter_2.GetCallback());
-  get_certificates_waiter_2.Wait();
+  ASSERT_TRUE(get_certificates_waiter_2.Wait());
   ASSERT_EQ(get_certificates_waiter_2.matches().size(), 1U);
 
   auto public_key_bytes = base::as_bytes(base::make_span(public_key));
@@ -694,14 +694,14 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::RemoveKeyExecutionWaiter remove_key_waiter;
   platform_keys_service()->RemoveKey(token_id, public_key,
                                      remove_key_waiter.GetCallback());
-  remove_key_waiter.Wait();
+  ASSERT_TRUE(remove_key_waiter.Wait());
   EXPECT_NE(remove_key_waiter.status(), Status::kSuccess);
 
   // Assert that the certificate is not removed.
   test_util::GetCertificatesExecutionWaiter get_certificates_waiter_3;
   platform_keys_service()->GetCertificates(
       token_id, get_certificates_waiter_3.GetCallback());
-  get_certificates_waiter_3.Wait();
+  ASSERT_TRUE(get_certificates_waiter_3.Wait());
 
   net::CertificateList found_certs = get_certificates_waiter_3.matches();
   ASSERT_EQ(found_certs.size(), 1U);
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
   platform_keys_service()->GetAllKeys(token_id,
                                       get_all_keys_waiter.GetCallback());
-  get_all_keys_waiter.Wait();
+  ASSERT_TRUE(get_all_keys_waiter.Wait());
 
   EXPECT_EQ(get_all_keys_waiter.status(), Status::kSuccess);
   std::vector<std::string> public_keys = get_all_keys_waiter.public_keys();
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest, IsKeyOnToken) {
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
   platform_keys_service()->IsKeyOnToken(token_id, public_key,
                                         is_key_on_token_waiter.GetCallback());
-  is_key_on_token_waiter.Wait();
+  ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
   EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
   platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
                                         is_key_on_token_waiter.GetCallback());
-  is_key_on_token_waiter.Wait();
+  ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
   EXPECT_EQ(is_key_on_token_waiter.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_on_token_waiter.on_slot().has_value());
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   test_util::GetKeyLocationsExecutionWaiter get_key_locations_waiter;
   platform_keys_service()->GetKeyLocations(
       public_key, get_key_locations_waiter.GetCallback());
-  get_key_locations_waiter.Wait();
+  ASSERT_TRUE(get_key_locations_waiter.Wait());
 
   EXPECT_EQ(get_key_locations_waiter.status(), Status::kSuccess);
   ASSERT_EQ(get_key_locations_waiter.key_locations().size(), 1U);
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
                                           /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
-  generate_key_waiter.Wait();
+  ASSERT_TRUE(generate_key_waiter.Wait());
   EXPECT_NE(generate_key_waiter.status(), Status::kSuccess);
 }
 
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
   test_util::IsKeyOnTokenExecutionWaiter is_key_on_token_waiter;
   platform_keys_service()->IsKeyOnToken(token_id, "test_public_key",
                                         is_key_on_token_waiter.GetCallback());
-  is_key_on_token_waiter.Wait();
+  ASSERT_TRUE(is_key_on_token_waiter.Wait());
 
   EXPECT_NE(is_key_on_token_waiter.status(), Status::kSuccess);
   EXPECT_FALSE(is_key_on_token_waiter.on_slot().has_value());

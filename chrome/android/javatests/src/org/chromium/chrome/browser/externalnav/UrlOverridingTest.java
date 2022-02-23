@@ -120,6 +120,7 @@ public class UrlOverridingTest {
             BASE_PATH + "redirect_to_other_browser.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
+    private static final String NON_BROWSER_PACKAGE = "not.a.browser";
 
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mFinishCallback;
@@ -156,14 +157,18 @@ public class UrlOverridingTest {
         ai.packageName = packageName;
         ai.name = "Name: " + packageName;
         ai.applicationInfo = new ApplicationInfo();
+        ai.exported = true;
         ResolveInfo ri = new ResolveInfo();
         ri.activityInfo = ai;
         return ri;
     }
 
     private static class TestContext extends ContextWrapper {
-        public TestContext(Context baseContext) {
+        private boolean mResolveToNonBrowserPackage;
+
+        public TestContext(Context baseContext, boolean resolveToNonBrowserPackage) {
             super(baseContext);
+            mResolveToNonBrowserPackage = resolveToNonBrowserPackage;
         }
 
         @Override
@@ -185,6 +190,9 @@ public class UrlOverridingTest {
                 public ResolveInfo resolveActivity(Intent intent, int flags) {
                     if (intent.getPackage() != null
                             && intent.getPackage().equals(OTHER_BROWSER_PACKAGE)) {
+                        if (mResolveToNonBrowserPackage) {
+                            return newResolveInfo(NON_BROWSER_PACKAGE);
+                        }
                         return newResolveInfo(OTHER_BROWSER_PACKAGE);
                     }
                     return TestContext.super.getPackageManager().resolveActivity(intent, flags);
@@ -214,9 +222,10 @@ public class UrlOverridingTest {
         }
     }
 
-    private void setUpTestContext() {
+    private void setUpTestContext(boolean resolveToNonBrowserPackage) {
         mContextToRestore = ContextUtils.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(new TestContext(mContextToRestore));
+        ContextUtils.initApplicationContextForTests(
+                new TestContext(mContextToRestore, resolveToNonBrowserPackage));
     }
 
     private void loadUrlAndWaitForIntentUrl(
@@ -645,7 +654,7 @@ public class UrlOverridingTest {
     @Test
     @LargeTest
     public void testRedirectToOtherBrowser_ChooseSelf() throws TimeoutException {
-        setUpTestContext();
+        setUpTestContext(false);
         Intent result = new Intent(Intent.ACTION_CREATE_SHORTCUT);
 
         runRedirectToOtherBrowserTest(
@@ -662,7 +671,7 @@ public class UrlOverridingTest {
     @Test
     @LargeTest
     public void testRedirectToOtherBrowser_ChooseOther() throws TimeoutException {
-        setUpTestContext();
+        setUpTestContext(false);
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addDataScheme(UrlConstants.DATA_SCHEME);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -679,5 +688,37 @@ public class UrlOverridingTest {
                 () -> { Criteria.checkThat(monitor.getHits(), Matchers.is(1)); });
 
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+    }
+
+    @Test
+    @LargeTest
+    public void testRedirectToOtherBrowser_DefaultNonBrowserPackage() throws TimeoutException {
+        setUpTestContext(true);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
+        filter.addDataScheme(UrlConstants.DATA_SCHEME);
+        filter.addCategory(Intent.CATEGORY_BROWSABLE);
+        Instrumentation.ActivityMonitor viewMonitor =
+                InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, true);
+
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(
+                Intent.ACTION_VIEW, Uri.parse(mTestServer.getURL(REDIRECT_TO_OTHER_BROWSER)));
+        intent.setClassName(context, ChromeLauncherActivity.class.getName());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentFilter filter2 = new IntentFilter(Intent.ACTION_PICK_ACTIVITY);
+        Instrumentation.ActivityMonitor pickActivityMonitor =
+                InstrumentationRegistry.getInstrumentation().addMonitor(filter2, null, true);
+
+        ChromeTabbedActivity activity = ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.CREATED, () -> context.startActivity(intent));
+        mActivityTestRule.setActivity(activity);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(viewMonitor.getHits(), Matchers.is(1));
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        Assert.assertEquals(0, pickActivityMonitor.getHits());
+        InstrumentationRegistry.getInstrumentation().removeMonitor(pickActivityMonitor);
+        InstrumentationRegistry.getInstrumentation().removeMonitor(viewMonitor);
     }
 }

@@ -8,6 +8,13 @@
 
 namespace media {
 
+// static
+Bitrate Bitrate::VariableBitrate(uint32_t target_bitrate,
+                                 uint32_t peak_bitrate) {
+  DCHECK_GE(peak_bitrate, target_bitrate);
+  return Bitrate(Mode::kVariable, target_bitrate, peak_bitrate);
+}
+
 bool Bitrate::operator==(const Bitrate& right) const {
   return (this->mode_ == right.mode_) && (this->target_ == right.target_) &&
          (this->peak_ == right.peak_);

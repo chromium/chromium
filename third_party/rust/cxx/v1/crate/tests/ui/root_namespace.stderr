@@ -1,5 +1,5 @@
 error: expected expression, found `]`
- --> $DIR/root_namespace.rs:9:19
+ --> tests/ui/root_namespace.rs:9:19
   |
 9 |     #[namespace = ]
   |                   ^ expected expression

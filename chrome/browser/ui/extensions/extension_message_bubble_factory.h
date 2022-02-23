@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
+
 class Browser;
 
 namespace extensions {
@@ -40,7 +42,7 @@ class ExtensionMessageBubbleFactory {
   static void set_override_for_tests(OverrideForTesting override);
 
  private:
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_MESSAGE_BUBBLE_FACTORY_H_

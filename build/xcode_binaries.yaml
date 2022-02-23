@@ -25,6 +25,7 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bison
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gm4
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf
+  - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/install_name_tool
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo
@@ -45,6 +46,7 @@ data:
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libtapi.dylib
   - file: Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/libexec/migcom
   - file: Contents/Developer/usr/bin/atos
+  - file: Contents/Developer/usr/bin/notarytool
   - file: Contents/Resources/English.lproj/License.rtf
   - file: Contents/Resources/LicenseInfo.plist
   - dir: Contents/SharedFrameworks/CoreSymbolicationDT.framework

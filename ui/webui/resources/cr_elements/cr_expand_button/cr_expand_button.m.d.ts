@@ -7,7 +7,6 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 interface CrExpandButtonElement extends LegacyElementMixin, HTMLElement {
   expanded: boolean;
   disabled: boolean;
-  ariaLabel: string|null|undefined;
   tabIndex: number;
   noink: boolean;
   focus(): void;

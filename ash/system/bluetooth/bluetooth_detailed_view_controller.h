@@ -80,6 +80,7 @@ class ASH_EXPORT BluetoothDetailedViewController
   std::unique_ptr<BluetoothDeviceListController> device_list_controller_;
   PairedBluetoothDevicePropertiesPtrs connected_devices_;
   PairedBluetoothDevicePropertiesPtrs previously_connected_devices_;
+  UnifiedSystemTrayController* tray_controller_;
 };
 
 }  // namespace ash

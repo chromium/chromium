@@ -46,7 +46,7 @@ DMToken GetDMToken(Profile* const profile) {
     return dm_token;
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return dm_token;
 
@@ -87,7 +87,7 @@ DMToken GetDMToken(Profile* const profile) {
                          policy_manager->core()->client()->dm_token());
     }
   }
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   if (dm_token.is_empty() &&
       ChromeBrowserCloudManagementController::IsEnabled()) {
     dm_token = BrowserDMTokenStorage::Get()->RetrieveDMToken();

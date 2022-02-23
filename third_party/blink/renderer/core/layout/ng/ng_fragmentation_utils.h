@@ -145,28 +145,23 @@ inline void AdjustMarginsForFragmentation(const NGBlockBreakToken* break_token,
 // establishes a new formatting context, |fragmentainer_offset_delta| must be
 // set to the offset from the parent block formatting context, or, if the parent
 // formatting context starts in a previous fragmentainer; the offset from the
-// current fragmentainer block-start.
+// current fragmentainer block-start. |requires_content_before_breaking| is set
+// when inside node that we know will fit (and stay) in the current
+// fragmentainer. See MustStayInCurrentFragmentainer() in NGBoxFragmentBuilder.
 void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
                                        const NGLayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
                                        NGConstraintSpaceBuilder*,
-                                       bool is_new_fc);
+                                       bool is_new_fc,
+                                       bool requires_content_before_breaking);
 
 // Set up a node's fragment builder for block fragmentation. To be done at the
 // beginning of layout.
 void SetupFragmentBuilderForFragmentation(
     const NGConstraintSpace&,
+    const NGLayoutInputNode&,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder*);
-
-// Return true if the node is fully grown at its current size.
-// |current_total_block_size| is the total block-size of the node, as if all
-// fragments were stitched together.
-bool IsNodeFullyGrown(NGBlockNode,
-                      const NGConstraintSpace&,
-                      LayoutUnit current_total_block_size,
-                      const NGBoxStrut& border_padding,
-                      LayoutUnit inline_size);
 
 // Outcome of considering (and possibly attempting) breaking before or inside a
 // child.
@@ -364,9 +359,7 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
 // nullptr if this is the first fragment. Note that this operation is O(n)
 // (number of fragments generated from the node), and should be avoided when
 // possible. This function should no longer be necessary once everything has
-// been properly converted to LayoutNG, and we have also gotten rid of the
-// fragment stitching of composited objects (will be fixed by
-// CompositeAfterPaint).
+// been properly converted to LayoutNG.
 const NGBlockBreakToken* FindPreviousBreakToken(const NGPhysicalBoxFragment&);
 
 // Return the index of the fragmentainer preceding the first fragmentainer

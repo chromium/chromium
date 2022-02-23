@@ -4,6 +4,9 @@
 
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -27,7 +30,7 @@ SolidColorScrollbarLayerImpl::Create(LayerTreeImpl* tree_impl,
 SolidColorScrollbarLayerImpl::~SolidColorScrollbarLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> SolidColorScrollbarLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
       is_left_side_vertical_scrollbar());

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> sitesi eklendi</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1384959399684842514">İndirme işlemi duraklatıldı</translation>
+<translation id="1409426117486808224">Açık sekmeler için basitleştirilmiş görünüm</translation>
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1446450296470737166">MIDI cihazlarının tam denetimine izin verme</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">Çerezlere izin ver</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> uygulamasının kameranıza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da kamerayı açın.</translation>
 <translation id="2241634353105152135">Sadece bir defa</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> öğesini kaldır</translation>
 <translation id="2289270750774289114">Bir site yakındaki Bluetooth cihazları bulmak istediğinde sor (önerilir)</translation>
 <translation id="2315043854645842844">İstemci tarafı sertifika seçimi, işletim sistemi tarafından desteklenmiyor.</translation>
+<translation id="2321958826496381788">Bu yazıyı rahatça okuyana kadar kaydırma çubuğunu sürükleyin. Bir paragrafa iki kez hafifçe dokunduğunuzda metin en az bunun kadar büyük görünmelidir.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2379925928934107488">Mümkünse Chrome koyu tema kullandığında sitelere de koyu tema uygulayın</translation>
+<translation id="2387895666653383613">Metin ölçekleme</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tanesi için daha izin verildi}}</translation>
 <translation id="2434158240863470628">İndirme işlemi tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Her zaman masaüstü sitesini iste</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2485422356828889247">Kaldır</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tarafından yönetiliyor</translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">Bilgileri Göster</translation>
 <translation id="3123473560110926937">Bazı sitelerde engellendi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> depolanmış veri</translation>
+<translation id="3203366800380907218">Web'den</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> uygulamasının size bildirim gönderebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da bildirimleri açın.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Sitelerin sensörlere erişmesine izin ver (önerilen)</translation>
@@ -109,14 +115,18 @@
 <translation id="3835233591525155343">Cihaz kullanımınız</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İleriye doğru git</translation>
+<translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
 <translation id="3955193568934677022">Sitelerin korumalı içeriği oynatmasına izin ver (önerilir)</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3987993985790029246">Bağlantıyı kopyala</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4008040567710660924">Belirli bir site için çerezlere izin verin.</translation>
+<translation id="4040330681741629921">Siteler basitleştirilmiş görünümde gösterilebiliyorsa bilgilendirilirsiniz</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
+<translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
+<translation id="4194328954146351878">NFC cihazlarda sitelere bilgileri görme ve değiştirme izni vermeden önce sor (önerilir)</translation>
 <translation id="4200726100658658164">Konum Ayarlarını açın</translation>
 <translation id="4226663524361240545">Bildirimler cihazı titretebilir</translation>
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
@@ -125,6 +135,7 @@
 <translation id="42981349822642051">Genişlet</translation>
 <translation id="4336434711095810371">Tüm verileri temizle</translation>
 <translation id="4402755511846832236">Bu cihazı etkin olarak kullandığınızda sitelerin bunu bilmesi engellenir</translation>
+<translation id="4428065317363009941">Reklam kişiselleştirme</translation>
 <translation id="4434045419905280838">Pop-up'lar ve yönlendirmeler</translation>
 <translation id="445467742685312942">Sitelerin korumalı içeriği oynatmasına izin ver</translation>
 <translation id="4468959413250150279">Belirli bir site için sesi kapatın.</translation>
@@ -155,6 +166,7 @@
 <translation id="5186036860380548585">Seçenek, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5197729504361054390">Seçtiğiniz kişiler <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ile paylaşılacak.</translation>
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>
+<translation id="5264323282659631142">"<ph name="CHIP_LABEL" />" çipini kaldır</translation>
 <translation id="528192093759286357">Tam ekrandan çıkmak için yukarıdan sürükleyin ve geri düğmesine dokunun.</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5301954838959518834">Tamam, anladım</translation>
@@ -165,6 +177,7 @@
 <translation id="5354152178998424783">Bu işlem, siteler tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizler.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5412236728747081950">Bu site size daha alakalı reklamlar göstermek için Chrome'dan ilgi alanlarınızı öğrenir</translation>
 <translation id="5438097262470833822">Bu tercih, <ph name="WEBSITE" /> izinlerini sıfırlar</translation>
 <translation id="5489227211564503167">Geçen süre: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Araya giren veya yanıltıcı reklamlar gösteren sitelerde reklamları engelle</translation>
@@ -176,10 +189,10 @@
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5649053991847567735">Otomatik indirmeler</translation>
+<translation id="5668404140385795438">Web sitesinin yakınlaştırmayı önleme isteğini geçersiz kıl</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
 <translation id="5689516760719285838">Konum</translation>
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
-<translation id="5710871682236653961">NFC cihazlarına dokunduğunuzda sitelerin bilgi göndermesine ve almasına izin verilmeden önce size sorulur (önerilen)</translation>
 <translation id="5719847187258001597">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> engellendi</translation>
 <translation id="5804241973901381774">İzinler</translation>
@@ -229,16 +242,16 @@
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6818926723028410516">Öğe seçin</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
-<translation id="6910211073230771657">Silindi</translation>
 <translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelle</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6965382102122355670">Tamam</translation>
+<translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="6992289844737586249">Sitelerin, mikrofonunuzu kullanmasına izin verilmeden önce size sorulsun (önerilen)</translation>
 <translation id="7000754031042624318">Android ayarlarından kapatıldı</translation>
 <translation id="7016516562562142042">Geçerli arama motoru için izin verildi</translation>
+<translation id="702463548815491781">TalkBack veya Anahtar Erişimi açık olduğunda önerilir</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
-<translation id="7070090581017165256">Bu site hakkında</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> öğe seçildi. Seçenekler, ekranın üst kısmına yakın bir yerde bulunur</translation>
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -253,8 +266,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Bir site mikrofonunuzu kullanıyor</translation>
 <translation id="7561196759112975576">Her zaman</translation>
-<translation id="7572498721684305250">NFC cihazlarına dokunduğunuzda sitelerin bilgi göndermesini ve almasını engelle</translation>
 <translation id="757524316907819857">Sitelerin korumalı içeriği oynatmasını engellenir</translation>
+<translation id="7577900504646297215">İlgi alanlarını yönet</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7781829728241885113">Dün</translation>
@@ -287,6 +300,7 @@
 <translation id="8211406090763984747">Bağlantı güvenli</translation>
 <translation id="8249310407154411074">En üste taşı</translation>
 <translation id="8261506727792406068">Sil</translation>
+<translation id="8284326494547611709">Altyazılar</translation>
 <translation id="8300705686683892304">Uygulama tarafından yönetiliyor</translation>
 <translation id="8324158725704657629">Tekrar sorma</translation>
 <translation id="8372893542064058268">Belirli bir site için Arka Plan Senkronizasyonuna izin verin.</translation>
@@ -300,6 +314,7 @@
 <translation id="8447861592752582886">Cihaz iznini iptal et</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 çerez kullanımda}other{# çerez kullanımda}}</translation>
 <translation id="8487700953926739672">Çevrimdışı kullanılabilir</translation>
+<translation id="848952951823693243">Her zaman mobil siteyi iste</translation>
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="857943718398505171">İzin verildi (önerilir)</translation>
@@ -319,6 +334,7 @@
 <translation id="8903921497873541725">Yakınlaştır</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC bu cihazda kapalı. Bu özelliği <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda açın.</translation>
+<translation id="8928445016601307354">NFC cihazlarda sitelerin bilgileri görmesini ve değiştirmesini engelle</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Belirli bir site için çerezleri engelleyin.</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>

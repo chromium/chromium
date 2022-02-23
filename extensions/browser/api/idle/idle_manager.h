@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -132,7 +132,7 @@ class IdleManager : public ExtensionRegistryObserver,
   void StopPolling();
   void UpdateIdleState();
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   ui::IdleState last_state_;
   MonitorMap monitors_;

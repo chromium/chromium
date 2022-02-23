@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -17,16 +18,13 @@
 
 struct CoreAccountInfo;
 class ProfilePickerDiceSignInToolbar;
+class ProfilePickerView;
 
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
-
-namespace ui {
-class ThemeProvider;
-}  // namespace ui
 
 // Class responsible for the GAIA sign-in within profile creation flow.
 class ProfilePickerDiceSignInProvider
@@ -47,7 +45,7 @@ class ProfilePickerDiceSignInProvider
                               std::unique_ptr<content::WebContents>,
                               bool is_saml)>;
 
-  ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host,
+  ProfilePickerDiceSignInProvider(ProfilePickerView* host,
                                   ProfilePickerDiceSignInToolbar* toolbar);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
@@ -70,10 +68,14 @@ class ProfilePickerDiceSignInProvider
   // Navigates back in the sign-in flow if applicable.
   void NavigateBack();
 
-  // Returns theme provider based on the sign-in profile or nullptr if the flow
-  // is not yet initialized.
-  const ui::ThemeProvider* GetThemeProvider() const;
   ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
+
+  // Returns nullptr if profile_ has not been created yet.
+  Profile* GetInitializedProfile();
+
+  // Returns whether the flow is initialized (i.e. whether `profile_` has been
+  // created).
+  bool IsInitialized() const;
 
  private:
   // content::WebContentsDelegate:
@@ -115,21 +117,17 @@ class ProfilePickerDiceSignInProvider
   // detected).
   void FinishFlow(bool is_saml);
 
-  // Returns whether the flow is initialized (i.e. whether `profile_` has been
-  // created).
-  bool IsInitialized() const;
-
   void OnSignInContentsFreedUp();
 
   content::WebContents* contents() const { return contents_.get(); }
 
   // The host and toolbar objects, must outlive this object.
-  ProfilePickerWebContentsHost* const host_;
-  ProfilePickerDiceSignInToolbar* const toolbar_;
+  const raw_ptr<ProfilePickerView> host_;
+  const raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

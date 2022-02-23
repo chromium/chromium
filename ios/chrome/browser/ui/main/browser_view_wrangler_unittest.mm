@@ -75,9 +75,11 @@ class BrowserViewWranglerTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    CHECK(chrome_browser_state_->CreateHistoryService());
 
     session_service_block_ = ^SessionServiceIOS*(id self) {
       return test_session_service_;

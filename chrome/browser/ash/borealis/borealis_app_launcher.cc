@@ -30,8 +30,8 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                                  const std::vector<std::string>& args,
                                  OnLaunchedCallback callback) {
   // Launching the borealis app is a legacy way of launching its main app
-  if (app_id == kBorealisAppId) {
-    Launch(ctx, kBorealisMainAppId, args, std::move(callback));
+  if (app_id == kInstallerAppId) {
+    Launch(ctx, kClientAppId, args, std::move(callback));
     return;
   }
 
@@ -45,7 +45,7 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
 
   vm_tools::cicerone::LaunchContainerApplicationRequest request;
   request.set_owner_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(ctx.profile()));
+      ash::ProfileHelper::GetUserIdHashFromProfile(ctx.profile()));
   request.set_vm_name(ctx.vm_name());
   request.set_container_name(ctx.container_name());
   request.set_desktop_file_id(reg->DesktopFileId());
@@ -87,7 +87,6 @@ void BorealisAppLauncher::Launch(std::string app_id,
 void BorealisAppLauncher::Launch(std::string app_id,
                                  const std::vector<std::string>& args,
                                  OnLaunchedCallback callback) {
-  DCHECK(BorealisService::GetForProfile(profile_)->Features().IsAllowed());
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {

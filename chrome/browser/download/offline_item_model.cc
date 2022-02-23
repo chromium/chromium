@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -136,13 +138,13 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     return download::DownloadItem::CANCELLED;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
       return download::DownloadItem::IN_PROGRESS;
     case OfflineItemState::PENDING:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::INTERRUPTED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::FAILED:
       return download::DownloadItem::INTERRUPTED;
     case OfflineItemState::COMPLETE:
@@ -167,22 +169,26 @@ bool OfflineItemModel::TimeRemaining(base::TimeDelta* remaining) const {
   return true;
 }
 
+base::Time OfflineItemModel::GetEndTime() const {
+  return offline_item_->completion_time;
+}
+
 bool OfflineItemModel::IsDone() const {
   if (!offline_item_)
     return true;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PENDING:
       return false;
     case OfflineItemState::INTERRUPTED:
       return !offline_item_->is_resumable;
     case OfflineItemState::FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::COMPLETE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:
@@ -250,7 +256,7 @@ bool OfflineItemModel::ShouldPromoteOrigin() const {
   return offline_item_ && offline_item_->promote_origin;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool OfflineItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {

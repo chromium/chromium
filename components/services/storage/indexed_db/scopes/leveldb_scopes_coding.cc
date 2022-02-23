@@ -100,7 +100,8 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
         result << "<Invalid Seq Num>";
         break;
       }
-      base::ReadBigEndian(key_after_type.data(), &seq_num);
+      base::ReadBigEndian(
+          reinterpret_cast<const uint8_t*>(key_after_type.data()), &seq_num);
       result << seq_num;
       break;
     }

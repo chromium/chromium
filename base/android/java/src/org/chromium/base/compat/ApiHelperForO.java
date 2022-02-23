@@ -5,11 +5,13 @@
 package org.chromium.base.compat;
 
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.content.BroadcastReceiver;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -23,6 +25,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.autofill.AutofillManager;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.VerifiesOnO;
 
@@ -32,7 +36,7 @@ import org.chromium.base.annotations.VerifiesOnO;
  * encountering the new APIs.
  */
 @VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public final class ApiHelperForO {
     private ApiHelperForO() {}
 
@@ -140,5 +144,13 @@ public final class ApiHelperForO {
     /** See {@link Notification#getChannelId()}. */
     public static String getNotificationChannelId(Notification notification) {
         return notification.getChannelId();
+    }
+
+    /**
+     * See {@link Context#registerReceiver(BroadcastReceiver, IntentFilter, String, Handler, int)}
+     */
+    public static Intent registerReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter, String permission, Handler scheduler, int flags) {
+        return context.registerReceiver(receiver, filter, permission, scheduler, flags);
     }
 }

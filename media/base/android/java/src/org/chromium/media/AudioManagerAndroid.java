@@ -17,6 +17,7 @@ import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -1236,6 +1237,86 @@ class AudioManagerAndroid {
     private void unregisterForUsbAudioIntentBroadcast() {
         ContextUtils.getApplicationContext().unregisterReceiver(mUsbAudioReceiver);
         mUsbAudioReceiver = null;
+    }
+
+    /** Return the AudioDeviceInfo array as reported by the Android OS. */
+    private static AudioDeviceInfo[] getAudioDeviceInfo() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return new AudioDeviceInfo[0];
+        }
+
+        AudioManager audioManager =
+                (AudioManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.AUDIO_SERVICE);
+        return audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS);
+    }
+
+    /** Returns whether an audio sink device is connected. */
+    @CalledByNative
+    private static boolean isAudioSinkConnected() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return false;
+        }
+
+        for (AudioDeviceInfo deviceInfo : getAudioDeviceInfo()) {
+            if (deviceInfo.isSink()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns a bit mask of Audio Formats (C++ AudioParameters::Format enum)
+     * supported by all of the sink devices.
+     */
+    @CalledByNative
+    private static int getAudioEncodingFormatsSupported() {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return 0;
+        }
+
+        int intersection_mask = 0; // intersection of multiple device encoding arrays
+        boolean first = true;
+        for (AudioDeviceInfo deviceInfo : getAudioDeviceInfo()) {
+            int[] encodings = deviceInfo.getEncodings();
+            if (encodings.length > 0) {
+                int mask = 0; // bit mask for a single device
+
+                // Map AudioFormat values to C++ media/base/audio_parameters.h Format enum
+                for (int i : encodings) {
+                    switch (i) {
+                        case AudioFormat.ENCODING_PCM_16BIT:
+                            mask |= AudioEncodingFormat.PCM_LINEAR;
+                            break;
+                        case AudioFormat.ENCODING_AC3:
+                            mask |= AudioEncodingFormat.BITSTREAM_AC3;
+                            break;
+                        case AudioFormat.ENCODING_E_AC3:
+                            mask |= AudioEncodingFormat.BITSTREAM_EAC3;
+                            break;
+                        case AudioFormat.ENCODING_DTS:
+                            mask |= AudioEncodingFormat.BITSTREAM_DTS;
+                            break;
+                        case AudioFormat.ENCODING_DTS_HD:
+                            mask |= AudioEncodingFormat.BITSTREAM_DTS_HD;
+                            break;
+                        case AudioFormat.ENCODING_IEC61937:
+                            mask |= AudioEncodingFormat.BITSTREAM_IEC61937;
+                            break;
+                    }
+                }
+
+                // Require all devices to support a format
+                if (first) {
+                    first = false;
+                    intersection_mask = mask;
+                } else {
+                    intersection_mask &= mask;
+                }
+            }
+        }
+        return intersection_mask;
     }
 
     @NativeMethods

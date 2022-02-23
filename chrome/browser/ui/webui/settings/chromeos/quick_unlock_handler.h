@@ -12,10 +12,6 @@
 class PrefService;
 class Profile;
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace chromeos {
 namespace settings {
 
@@ -33,10 +29,10 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleRequestPinLoginState(const base::ListValue* args);
+  void HandleRequestPinLoginState(base::Value::ConstListView args);
   void OnPinLoginAvailable(bool is_available);
 
-  void HandleQuickUnlockDisabledByPolicy(const base::ListValue* args);
+  void HandleQuickUnlockDisabledByPolicy(base::Value::ConstListView args);
   void UpdateQuickUnlockDisabledByPolicy();
 
   Profile* profile_;

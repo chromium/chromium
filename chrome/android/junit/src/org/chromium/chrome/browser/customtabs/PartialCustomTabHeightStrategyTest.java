@@ -81,6 +81,8 @@ public class PartialCustomTabHeightStrategyTest {
     @Mock
     private View mDecorView;
     @Mock
+    private View mRootView;
+    @Mock
     private Display mDisplay;
     @Mock
     private PartialCustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
@@ -104,6 +106,8 @@ public class PartialCustomTabHeightStrategyTest {
         mAttributes = new WindowManager.LayoutParams();
         when(mWindow.getAttributes()).thenReturn(mAttributes);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
+        when(mDecorView.getRootView()).thenReturn(mRootView);
+        when(mRootView.getLayoutParams()).thenReturn(mAttributes);
         when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
@@ -387,6 +391,34 @@ public class PartialCustomTabHeightStrategyTest {
         // Move to cover the whole screen.
         assertEquals(0, mAttributeResults.get(length2 - 1).y);
         assertEquals(DEVICE_HEIGHT / 2, mAttributeResults.get(length2 - 1).height);
+    }
+
+    @Test
+    public void moveDownToDismiss() {
+        PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity, 500,
+                mMultiWindowModeStateDispatcher, mOnResizedCallback, mActivityLifecycleDispatcher);
+
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(DEVICE_HEIGHT / 2, mAttributeResults.get(0).height);
+
+        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
+        // inside as we test MotionEvents directly.
+        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+        final boolean[] closed = {false};
+        handleStrategy.setCloseClickHandler(() -> closed[0] = true);
+
+        // action down
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
+        // action move, the distance on y axis should be larger than
+        // PartialCustomTabHandleStrategy.CLOSE_DISTANCE.
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1850, 0));
+
+        assertTrue("Close click handler should be called.", closed[0]);
     }
 
     private void verifyWindowFlagsSet() {

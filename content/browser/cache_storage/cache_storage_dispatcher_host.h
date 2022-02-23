@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -18,6 +19,10 @@
 
 namespace network {
 struct CrossOriginEmbedderPolicy;
+}
+
+namespace storage {
+struct BucketLocator;
 }
 
 namespace content {
@@ -49,6 +54,7 @@ class CacheStorageDispatcherHost {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const blink::StorageKey& storage_key,
+      const absl::optional<storage::BucketLocator>& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
@@ -65,7 +71,7 @@ class CacheStorageDispatcherHost {
                                       storage::mojom::CacheStorageOwner owner);
 
   // `this` is owned by `context_`.
-  CacheStorageContextImpl* const context_;
+  const raw_ptr<CacheStorageContextImpl> context_;
 
   mojo::UniqueReceiverSet<blink::mojom::CacheStorage> receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CacheStorageCache>

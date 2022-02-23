@@ -77,7 +77,6 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
 };
 
 TEST(AutocorrectManagerTest, HandleAutocorrectSetsAutocorrectRange) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   MockSuggestionHandler mock_suggestion_handler;
@@ -90,7 +89,6 @@ TEST(AutocorrectManagerTest, HandleAutocorrectSetsAutocorrectRange) {
 }
 
 TEST(AutocorrectManagerTest, OnKeyEventHidesUnderlineAfterEnoughKeyPresses) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   MockSuggestionHandler mock_suggestion_handler;
@@ -109,7 +107,6 @@ TEST(AutocorrectManagerTest, OnKeyEventHidesUnderlineAfterEnoughKeyPresses) {
 }
 
 TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
@@ -131,7 +128,6 @@ TEST(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
 }
 
 TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
@@ -165,7 +161,6 @@ TEST(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
 }
 
 TEST(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
-  ui::IMEBridge::Initialize();
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   ui::InputMethodAsh ime(nullptr);
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
@@ -187,7 +182,6 @@ TEST(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
 }
 
 TEST(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
-  ui::IMEBridge::Initialize();
   ui::FakeTextInputClient fake_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   ui::InputMethodAsh ime(nullptr);
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
@@ -209,7 +203,6 @@ TEST(AutocorrectManagerTest, UndoAutocorrectMultipleWordInComposition) {
 }
 
 TEST(AutocorrectManagerTest, RecordVirtualKeyboardMetricsWhenVisible) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;
@@ -225,7 +218,6 @@ TEST(AutocorrectManagerTest, RecordVirtualKeyboardMetricsWhenVisible) {
 
 TEST(AutocorrectManagerTest,
      DoesNotRecordVirtualKeyboardMetricsWhenNotVisible) {
-  ui::IMEBridge::Initialize();
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
   ::testing::StrictMock<MockSuggestionHandler> mock_suggestion_handler;

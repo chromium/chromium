@@ -7,7 +7,6 @@
 
 #include <inttypes.h>
 
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/gfx/geometry/rect.h"

@@ -29,7 +29,6 @@ constexpr char kScreenShareBlockedUMA[] = "ScreenShareBlocked";
 constexpr char kScreenSharePausedOrResumedUMA[] = "ScreenSharePausedOrResumed";
 constexpr char kScreenshotBlockedUMA[] = "ScreenshotBlocked";
 constexpr char kVideoCaptureInterruptedUMA[] = "VideoCaptureInterrupted";
-constexpr char kVideoCaptureBlockedUMA[] = "VideoCaptureBlocked";
 constexpr char kReportedBlockLevelRestriction[] =
     "ReportedBlockLevelRestriction";
 constexpr char kReportedReportLevelRestriction[] =
@@ -38,12 +37,17 @@ constexpr char kReportedWarnLevelRestriction[] = "ReportedWarnLevelRestriction";
 constexpr char kReportedWarnProceedLevelRestriction[] =
     "ReportedWarnProceedLevelRestriction";
 constexpr char kReportedEventStatus[] = "ReportedEventStatus";
+constexpr char kConfidentialContentsCount[] = "ConfidentialContentsCount";
 
 }  // namespace dlp
 
 std::string GetDlpHistogramPrefix();
 
 void DlpBooleanHistogram(const std::string& suffix, bool value);
+
+void DlpConfidentialContentsCountHistogram(const std::string& suffix,
+                                           int sample,
+                                           int max);
 
 void DlpRestrictionConfiguredHistogram(DlpRulesManager::Restriction value);
 

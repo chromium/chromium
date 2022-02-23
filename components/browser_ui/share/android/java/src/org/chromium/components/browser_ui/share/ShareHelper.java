@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.share;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -166,7 +165,6 @@ public class ShareHelper {
                     && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
         }
 
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
         public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
                 @Nullable TargetChosenCallback callback) {
             final Context context = ContextUtils.getApplicationContext();
@@ -183,8 +181,8 @@ public class ShareHelper {
                     sLastRegisteredReceiver.cancel();
                 }
                 sLastRegisteredReceiver = new TargetChosenReceiver(callback);
-                context.registerReceiver(
-                        sLastRegisteredReceiver, new IntentFilter(sTargetChosenReceiveAction));
+                ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
+                        new IntentFilter(sTargetChosenReceiveAction));
             }
 
             Intent intent = new Intent(sTargetChosenReceiveAction);

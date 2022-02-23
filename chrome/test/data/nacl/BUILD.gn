@@ -83,17 +83,6 @@ group("nacl") {
       ":sysconf_nprocessors_onln_test($glibc)",
     ]
   }
-  if ((is_linux || is_chromeos) && enable_nacl_nonsfi) {
-    nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
-    data_deps += [
-      ":irt_exception_test($nonsfi)",
-      ":irt_manifest_file($nonsfi)",
-      ":shared_test_files($nonsfi)",
-    ]
-    if (is_clang) {
-      data_deps += [ ":nonsfi_libc_free" ]
-    }
-  }
 }
 
 if (is_nacl) {
@@ -170,7 +159,7 @@ if (is_nacl) {
   }
 }
 
-if (is_nacl && !is_nacl_nonsfi) {
+if (is_nacl) {
   nacl_test_data("simple_test") {
     output_name = "simple"
     sources = [ "simple.cc" ]
@@ -421,114 +410,5 @@ if (is_nacl && !is_nacl_nonsfi) {
       sources = [ "//native_client/tests/stubout_mode/partly_invalid.c" ]
       destination_dir = "nacl_test_data"
     }
-  }
-}
-
-if ((is_linux || is_chromeos) && is_clang) {
-  if (target_cpu == "x86") {
-    arch = "x86_32"
-  } else if (target_cpu == "x64") {
-    arch = "x86_64"
-  } else {
-    arch = target_cpu
-  }
-
-  config("nonsfi_libc_free_nexe_config") {
-    cflags = [
-      "-Wno-sign-compare",
-
-      # Stack-Smashing protector does not work with libc-free context.
-      "-fno-stack-protector",
-
-      # Optimizers may translate the original code to code which
-      # requires builtin functions and/or relocations. Specifically,
-      # the LLVM's optimizer translates for-loop based zero
-      # clear to memset.
-      "-O0",
-
-      # ARM GCC emits symbols like __aeabi_unwind_cpp_pr0 in
-      # .exidx sections without this flag.
-      "-fno-unwind-tables",
-    ]
-
-    # Workaround against LLVM bug.
-    # In short, an LTO optimization pass might recognize
-    # naive implementations of builtins (such as memset)
-    # and replace them with references to the real builtins,
-    # which, in the case of -nostdlib, might cause the binary
-    # to get undefined references to those symbols.
-    #
-    # See more details:
-    # https://llvm.org/bugs/show_bug.cgi?id=30403
-    if (use_thin_lto) {
-      if (use_lld) {
-        ldflags = [ "-Wl,--lto-O0" ]
-      } else {
-        ldflags = [ "-Wl,-plugin-opt,O0" ]
-      }
-    }
-  }
-
-  executable("nonsfi_libc_free_nexe") {
-    output_name = "libc_free_$arch"
-    output_extension = "nexe"
-    sources = [ "nonsfi/libc_free.c" ]
-    deps = [ "//ppapi/c" ]
-
-    no_default_deps = true
-
-    # Here, we would like to link a relocatable, libc-free executable.
-    # -shared/-fPIC make this binary relocatable. -nostdlib ensures
-    # this is libc-free.
-    # The program does not apply any dynamic relocations at start up,
-    # so it cannot rely on relocations having been applied.
-    # In addition, -fvisibility=hidden avoids creating some types
-    # of relocation.
-    cflags = [
-      "-fPIC",
-      "-fvisibility=hidden",
-    ]
-    ldflags = [
-      "-nostdlib",
-      "-shared",
-
-      # This binary cannot relocate itself, so we should have no
-      # undefined references left.
-      "-Wl,--no-undefined",
-
-      # Silence the warning about the unused '-pthread' argument.
-      # TODO(gn): Come up with a way to remove the -pthread flag instead.
-      "-Qunused-arguments",
-    ]
-    defines = [ "NACL_LINUX=1" ]
-    include_dirs = [ "../../../.." ]
-
-    # Do not use any sanitizers or coverage tools, which require a few symbols.
-    configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
-    configs -= [ "//build/config/coverage:default_coverage" ]
-
-    # Do not use PGO as it also requires a few symbols.
-    configs -= [ "//build/config/compiler/pgo:default_pgo_flags" ]
-
-    # Disable default_init_stack_vars because it inserts memset() calls, but
-    # memset() is not available in this libc-free context.
-    configs -= [ "//build/config/compiler:default_init_stack_vars" ]
-    configs += [ ":nonsfi_libc_free_nexe_config" ]
-  }
-
-  copy("nonsfi_libc_free") {
-    sources = [
-      "${root_out_dir}/libc_free_${arch}.nexe",
-
-      # TODO(ncbray) move into chrome/test/data/nacl when all tests are
-      # converted.
-      "//ppapi/native_client/tools/browser_tester/browserdata/nacltest.js",
-      "nonsfi/irt_test.html",
-      "nonsfi/libc_free.html",
-      "nonsfi/libc_free.nmf",
-    ]
-    outputs =
-        [ "${root_build_dir}/nacl_test_data/libc-free/{{source_file_part}}" ]
-    deps = [ ":nonsfi_libc_free_nexe" ]
   }
 }

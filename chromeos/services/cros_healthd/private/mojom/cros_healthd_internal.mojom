@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Internal API exposed to the cros_healthd daemon. This should only be used by
+// cros_healthd to obtain the browser resources and bootstrap the connection
+// between Chrome and cros_healthd.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojom/external/cros_healthd_internal.mojom.
+
+module chromeos.cros_healthd.internal.mojom;
+
+import "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom";
+import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
+
+// Interface for Chrome to bootstrap the connection between cros_healthd and
+// Chrome. Chrome uses this interface to obtain cros_healthd services and
+// to provide Chrome services.
+//
+// NextMinVersion: 1, NextIndex: 2
+interface ServiceBootstrap {
+    // Pass a receiver of service factory to cros_healthd to bind the services.
+    GetCrosHealthdServiceFactory@0(pending_receiver<
+      chromeos.cros_healthd.mojom.CrosHealthdServiceFactory> receiver);
+    // Pass a remote of internal service factory to cros_healthd for it to
+    // obtain the services in Chrome. This should be the only interface which
+    // the connection is passed from the provider side. All the services in
+    // Chrome should use internal service factory interface to provide services
+    // to cros_healthd.
+    // Should be called only once per connection.
+    SetCrosHealthdInternalServiceFactory@1(pending_remote<
+      CrosHealthdInternalServiceFactory> remote);
+};
+
+// Factory interface which allows remote ends (cros_healthd) to request
+// implementations of several services in Chrome.
+//
+// NextMinVersion: 1, NextIndex: 2
+interface CrosHealthdInternalServiceFactory {
+  // NetworkHealthService provides network health information from chrome
+  // network stack.
+  GetNetworkHealthService@0(pending_receiver<
+      chromeos.network_health.mojom.NetworkHealthService> receiver);
+  // NetworkDiagnosticsRoutines provides network diagnostics routines to test
+  // network.
+  GetNetworkDiagnosticsRoutines@1(pending_receiver<
+      chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines> receiver);
+};

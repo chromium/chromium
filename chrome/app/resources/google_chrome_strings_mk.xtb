@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
 <translation id="1182414570724401860">Chrome препорачува да не ја преземате или отворате датотекава</translation>
+<translation id="1201241595274620956">Услови на CloudReady 2.0</translation>
 <translation id="1278833599417554002">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google Chrome OS“.</translation>
 <translation id="1302523850133262269">Почекајте додека Chrome ги инсталира последните системски ажурирања.</translation>
@@ -40,11 +41,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте најавени на Chrome на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="1812689907177901597">Ако го исклучите ова, може да се најавувате на сајтови на Google, како што е Gmail, без да се најавите на Chrome</translation>
+<translation id="1847459800604232346">Рестартирај го CloudReady 2.0</translation>
 <translation id="1860536484129686729">На Chrome му треба дозвола за да пристапи до камерата за сајтов</translation>
+<translation id="1865667134297225786">CloudReady 2.0 не може да ги синхронизира вашите податоци бидејќи вашите детали за најавување на сметката се застарени.</translation>
 <translation id="1873233029667955273">Google Chrome не е вашиот стандарден прелистувач</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
+<translation id="1887927549935943139">CloudReady 2.0 не може да ги синхронизира вашите податоци затоа што синхронизација не е достапна на вашиот домен.</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Секој профил содржи сопствени податоци на Chrome, како обележувачи, историја, лозинки и друго</translation>
 <translation id="2063848847527508675">Оперативниот систем Chrome треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
@@ -52,18 +57,23 @@
 <translation id="2121284319307530122">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="2123055963409958220">Помогнете да го подобриме Chrome со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Рестартирајте го Chrome сега</translation>
-<translation id="2189289170880510015">Приспособете дел од најважните опции за приватност на Chrome</translation>
+<translation id="2258103955319320201">За да пристапувате до вашите работи на прелистувачот Chrome на сите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2290014774651636340">Клучевите Google API недостасуваат. Некои функции на Google Chrome ќе бидат оневозможени.</translation>
 <translation id="2290095356545025170">Дали сте сигурни дека сакате да го деинсталирате Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Ова е второстепена инсталација на Google Chrome и затоа не може да биде стандарден прелистувач.</translation>
 <translation id="2345992953227471816">Chrome откри дека екстензииве содржат злонамерен софтвер:</translation>
 <translation id="2348335408836342058">На Chrome му треба дозвола за да пристапи до камерата и микрофонот за сајтов</translation>
 <translation id="234869673307233423">Chrome не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="235650106824528204">Податоците на Chrome што се генерирани при користењето на овој профил (како на пример, создавање обележувачи, историја, лозинки и други поставки) може да се отстранат од страна на администраторот на работниот профил. <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Продолжи</translation>
+<translation id="2371517829376452747">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
+    поставките за CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome не може да ги синхронизира вашите податоци затоа што Sync не е достапен за вашиот домен.</translation>
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2534507159460261402">Google Pay (копирана во Chrome)</translation>
+<translation id="2563121210305478421">Да се рестартира Chrome?</translation>
 <translation id="2574930892358684005">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. За да прелистувате одделно, Chrome може да создаде одделен профил за вас.</translation>
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -87,7 +97,9 @@
 <translation id="2926676257163822632">Слабите лозинки се лесни за погаѓање. Дозволете Chrome да ви <ph name="BEGIN_LINK" />создаде и запомни силни лозинки<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">На Chrome му треба дозвола за камерата за сајтов</translation>
 <translation id="2929907241665500097">Chrome не се ажурираше, нешто тргна наопаку. <ph name="BEGIN_LINK" />Поправете ги проблемите со ажурирањето на Chrome и со неуспешните ажурирања.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Рестартирај за да се ажурира &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
+<translation id="303514781271618814">Chrome истражува нови функции што им овозможуваат на сајтовите да го испорачуваат истото доживување при прелистувањето со користење помалку податоци</translation>
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
 <translation id="3059710691562604940">„Безбедното прелистување“ е исклучено. Chrome препорачува да го вклучите.</translation>
 <translation id="3065168410429928842">Картичка на Chrome</translation>
@@ -98,6 +110,7 @@
 <translation id="3114643501466072395">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
+<translation id="3245429137663807393">Ако ги споделувате и извештаите за користењето на Chrome, тие ги содржат URL-адресите што ги посетувате</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ќе се рестартира сега}=1{Chrome ќе се рестартира по 1 секунда}one{Chrome ќе се рестартира по # секунда}other{Chrome ќе се рестартира по # секунди}}</translation>
 <translation id="3395323229510056640">Добијте помош за Chrome OS</translation>
@@ -111,11 +124,11 @@
 <translation id="3533694711092285624">Нема зачувани лозинки. Chrome може да ги проверува вашите лозинки кога ги зачувувате.</translation>
 <translation id="3541482654983822893">Chrome не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
 <translation id="3576528680708590453">Администраторот на системот го конфигурирал Google Chrome да отвора друг прелистувач за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Незадолжително: помогнете да се подобрат функциите и изведбата на CloudReady 2.0 со автоматско испраќање дијагностички податоци и податоци за користењето во Google.</translation>
 <translation id="3582972582564653026">Синхронизирајте го и персонализирајте го Chrome на сите ваши уреди</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Администраторот бара да го рестартирате Chrome за да се примени ажурирање}=1{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Администраторот бара да го рестартирате Chrome за да се примени ажурирање. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
 <translation id="3622797965165704966">Сега е полесно да го користите Chrome со вашата сметка на Google и на споделени компјутери.</translation>
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
-<translation id="3678552270983184277">Стандардните поставки функционираат за повеќето луѓе, но може да ги приспособите да ви одговораат на начинот на кој сакате да го користите Chrome</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Екстензијата „<ph name="EXTENSION_NAME" />“ ја смени страницата што се прикажува кога го стартувате Chrome.</translation>
 <translation id="3779473566290487688">За да добивате идни ажурирања на Google Chrome, потребен ви е OS X 10.11 или понова верзија. Компјутеров користи OS X 10.10.</translation>
@@ -132,6 +145,7 @@
 <translation id="4149882025268051530">Инсталаторот не успеа да ја декомпримира архивата. Преземете го Google Chrome повторно.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Рестартирајте го Chrome во рок од еден ден}one{Рестартирајте го Chrome во рок од # ден}other{Рестартирајте го Chrome во рок од # дена}}</translation>
 <translation id="4205939740494406371">Chrome не може да ги провери вашите лозинки. Обидете се пак по 24 часа или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Систем CloudReady 2.0</translation>
 <translation id="4242034826641750751">На Chrome му треба дозволи за камерата и микрофонот за сајтов</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="4251615635259297716">Да се поврзат вашите податоци на Chrome со оваа сметка?</translation>
@@ -144,21 +158,24 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> е додадена на Chrome</translation>
 <translation id="4384570495110188418">Chrome не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4450664632294415862">Chrome - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Во тек е друга операција на Google Chrome. Обидете се повторно подоцна.</translation>
 <translation id="4480040274068703980">Chrome OS не може да ги синхронизира вашите податоци поради грешка при пријавувањето.</translation>
 <translation id="4521185804071812304">Незадолжително: помогнете да се подобрат функциите и изведбата на Chrome OS со автоматско испраќање дијагностички податоци и податоци за користењето до Google.</translation>
+<translation id="4539063627668028557">Верзија на CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome ви овозможува да кликнете на телефонски број на интернет и да го повикате со Skype!</translation>
+<translation id="4562712242781620537">Систем CloudReady 2.0</translation>
 <translation id="4567424176335768812">Најавени сте како <ph name="USER_EMAIL_ADDRESS" />. Сега може да пристапувате кон вашите обележувачи, историја и други поставки на сите најавени уреди.</translation>
 <translation id="4571503333518166079">Одете во поставките за известувања на Chrome</translation>
 <translation id="459622048091363950">Ако Chrome има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="4600710005438004015">Chrome не може да се ажурира на најновата верзија и поради тоа ги пропуштате новите функции и безбедносни поправки.</translation>
 <translation id="4633000520311261472">За Chrome да биде побезбеден, оневозможивме неколку наставки што не се наведени во <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и можеби се додадени без ваше знаење.</translation>
-<translation id="4666328473657283332">За да пристапувате до вашите работи на Chrome на сите уреди, најавете се за да може да ја вклучите синхронизацијата.</translation>
 <translation id="4728575227883772061">Инсталацијата не успеа поради неодредена грешка. Доколку Google Chrome е активен во моментов, затворете го и обидете се повторно.</translation>
 <translation id="4754614261631455953">Google Chrome Канари (mDNS-In)</translation>
 <translation id="4771048833395599659">Датотекава може да биде опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="479167709087336770">Услугава ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google. Ваквото однесување може да го смените во поставки во секое време.</translation>
+<translation id="4873783916118289636">Прегледајте ги клучните контроли за приватноста и безбедноста во Chrome</translation>
 <translation id="4891791193823137474">Остави Google Chrome да работи во заднина</translation>
 <translation id="4895437082222824641">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="4953650215774548573">Поставете го Google Chrome за ваш стандарден прелистувач</translation>
@@ -172,10 +189,9 @@
 <translation id="5170938038195470297">Вашиот профил на може да се користи бидејќи е од поновата верзија на Google Chrome.
 
 Некои карактеристики можеби се недостапни. Наведете друг директориум на профили или користете понова верзија на Chrome.</translation>
-<translation id="5193136243808726294">ОС на Google Chrome не може да ја отвори страницава.</translation>
 <translation id="521447420733633466">Ако споделувате уред, пријателите и членовите на семејството може одделно да прелистуваат и да го поставуваат Chrome како што сакаат</translation>
 <translation id="5251420635869119124">Гостите може да го користат Chrome без оставање никакви траги зад нив.</translation>
-<translation id="5251679006894510177">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето. Прозорците „Инкогнито“ нема да се отворат повторно.</translation>
+<translation id="5307623274346663914">CloudReady 2.0 треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="5334487786912937552">На Chrome му треба дозвола за пристап до капацитетот за да презема датотеки</translation>
 <translation id="5386244825306882791">Контролира и која страница се прикажува кога го стартувате Chromе или ако пребарувате од лентата за адреси.</translation>
 <translation id="5394833366792865639">Споделете картичка на Chrome</translation>
@@ -184,12 +200,12 @@
 Google Chrome не може да ги обнови вашите поставки.</translation>
 <translation id="556024056938947818">Google Chrome се обидува да прикаже лозинки.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5657226924540934362">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
-    поставките за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево}=1{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Приспособете го и контролирајте го Google Chrome. Потребно е вашето внимание - кликнете за детали.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 не може да ги синхронизира вашите податоци поради грешка при најавување.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ќе се рестартира за 1 секунда}one{Google Chrome ќе се рестартира за # секунда}other{Google Chrome ќе се рестартира за # секунди}}</translation>
 <translation id="5736850870166430177">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
 <translation id="573759479754913123">За Chrome OS</translation>
@@ -204,6 +220,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
 <translation id="6070348360322141662">За дополнителна безбедност, Google Chrome ќе ги шифрира вашите податоци</translation>
 <translation id="608006075545470555">Додајте работен профил во овој прелистувач</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome тукушто се подобри</translation>
 <translation id="6145313976051292476">Отворај PDF-формат во Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
@@ -221,16 +238,25 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6679975945624592337">Остави Google Chrome да работи во заднина</translation>
 <translation id="6696915334902295848">На Chrome му треба дозвола за микрофонот за сајтов</translation>
 <translation id="6739177684496155661">Сакате да продолжите на нов профил на Chrome?</translation>
+<translation id="6749459139769042303">Добијте помош со CloudReady 2.0</translation>
 <translation id="6750954913813541382">За исправка на правописни грешки, Chrome го испраќа текстот што го пишувате во прелистувачот до Google</translation>
 <translation id="677276454032249905">Сепак да се излезе од Chrome?</translation>
+<translation id="6814748008107187409">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
+    поставките за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Дојдовно правило за Google Chrome Canary за да овозможи сообраќај mDNS.</translation>
 <translation id="6881299373831449287">Chrome се ажурира</translation>
 <translation id="6885412569789873916">Апликации на Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> бара да ги прочитате и да ги прифатите следните „Услови за користење“ пред да го користите уредов. Овие услови не ги прошируваат, менуваат или ограничуваат „Условите на Google CloudReady 2.0“.</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6989339256997917931">Google Chrome се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
+<translation id="700644001690392105">За CloudReady 2.0</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
+<translation id="7036251913954633326">Ако сакате да ја користите сметкава само еднократно, може да го користите <ph name="GUEST_LINK_BEGIN" />Режимот на гостин<ph name="GUEST_LINK_END" /> во прелистувачот Chrome. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> во вашиот <ph name="DEVICE_TYPE" />.
+
+Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено додавањето на оваа <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7085332316435785646">Изберете дали да се опфати историјата на Chrome за поперсонализирани доживувања во услугите на Google</translation>
 <translation id="7088681679121566888">Chrome е ажуриран</translation>
 <translation id="7098166902387133879">Google Chrome го користи вашиот микрофон.</translation>
 <translation id="7106741999175697885">Управник со задачи - Google Chrome</translation>
@@ -242,12 +268,17 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7296210096911315575">Важни информации за користење и безбедност</translation>
 <translation id="7308322188646931570">На Chrome му треба пристап до меморијата за да презема датотеки</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
+<translation id="7388770099345495132">Ако сакате да ја користите сметкава само еднократно, може да го користите „Режимот на гостин“ во прелистувачот Chrome. Ако сакате да додадете сметка за некој друг, <ph name="LINK_BEGIN" />додајте ново лице<ph name="LINK_END" /> во вашиот <ph name="DEVICE_TYPE" />.
+
+Дозволите што веќе сте им ги дале на веб-сајтовите и апликациите можеби ќе важат за оваа сметка. Можете да управувате со сметките на Google во <ph name="SETTINGS_LINK_BEGIN" />Поставки<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Бевте најавени на Chrome како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
 <translation id="7408085963519505752">Услови на Chrome OS</translation>
 <translation id="7419046106786626209">Chrome ОС не може да ги синхронизира вашите податоци бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
+<translation id="7481213027396403996">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="7486227612705979895">Chrome ќе пристапува до Drive за да дава предлози во лентата за адреси</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за Chrome OS<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>
 <translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7629695634924605473">Chrome ве известува дали вашите лозинки се компромитирани</translation>
@@ -255,6 +286,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="7665553140559834626">Рестартирајте за да се ажурира &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Инсталаторот не може да создаде привремен директориум. Проверете дали има доволно празен простор и дозвола за инсталирање на софтверот.</translation>
+<translation id="7748512868279796735">Следниве сметки се достапни за профилов на Chrome</translation>
 <translation id="7761834446675418963">Кликнете си на името за да го отворите Chrome и да започнете со прелистување.</translation>
 <translation id="7777080907402804672">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="7781002470561365167">Достапна е нова верзија на Google Chrome.</translation>
@@ -272,7 +304,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8008534537613507642">Преинсталирај го Chrome</translation>
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="8129812357326543296">За &amp;Google Chrome</translation>
-<translation id="822971176939352383">Следниве сметки не се најавени на ниту еден профил на Chrome. Ако сакате да користите сметка на друг профил, прво отстранете го профилот.</translation>
 <translation id="8255190535488645436">Google Chrome ги користи камерата и микрофонот.</translation>
 <translation id="8286862437124483331">Google Chrome се обидува да покаже лозинки. Впишете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="828798499196665338">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено овозможувањето на оваа<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
@@ -287,6 +318,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8556340503434111824">Достапна е нова верзија на Google Chrome и побрза е од кога било.</translation>
+<translation id="8571790202382503603">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Со ова е полесно да се одделат работата и забавата.</translation>
 <translation id="8614913330719544658">Google Chrome не реагира. Да се рестартира сега?</translation>
 <translation id="861702415419836452">На Chrome му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
@@ -295,6 +327,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>
 <translation id="8686817260976772516">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
+<translation id="8712767363896337380">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето.</translation>
 <translation id="873133009373065397">Google Chrome не може да го одреди или постави стандардниот прелистувач</translation>
 <translation id="8823341990149967727">Chrome е застарен</translation>
 <translation id="8834965163890861871">Google Chrome се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>
@@ -302,6 +335,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8862326446509486874">Немате соодветни права за инсталирање на системско ниво. Обидете се да го извршите инсталаторот повторно како администратор.</translation>
 <translation id="8914504000324227558">Рестартирајте го Chrome</translation>
 <translation id="8922193594870374009">За да испратите број од <ph name="ORIGIN" /> до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
+<translation id="8983720963221508955">Вклучивте „Подобрено безбедно прелистување“ во вашата сметка. Сега вклучете го за Chrome.</translation>
 <translation id="8986207147630327271">Додавате работен профил во овој прелистувач и му давате контрола на администраторот само врз тој профил.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>
 <translation id="9026991721384951619">Chrome OS не може да ги синхронизира вашите податоци бидејќи вашите информации за пријавување на сметката се застарени.</translation>

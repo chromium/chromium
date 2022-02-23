@@ -72,7 +72,7 @@ bool CreateWithDacl(const FilePath& path, const wchar_t* sddl, bool directory) {
 
   return ScopedHandle(::CreateFile(path.value().c_str(), GENERIC_ALL, 0,
                                    &security_attr, CREATE_ALWAYS, 0, nullptr))
-      .IsValid();
+      .is_valid();
 }
 
 }  // namespace
@@ -180,6 +180,44 @@ TEST(SecurityUtilTest, GrantAccessToPathDirectoryNoInherit) {
   ASSERT_TRUE(file2.IsValid());
   file2.Close();
   EXPECT_EQ(kTest3InheritedDacl, GetFileDacl(file_path2));
+}
+
+TEST(SecurityUtilTest, CloneSidVector) {
+  std::vector<Sid> sids =
+      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+  std::vector<Sid> clone = CloneSidVector(sids);
+  ASSERT_EQ(sids.size(), clone.size());
+  for (size_t index = 0; index < sids.size(); ++index) {
+    ASSERT_EQ(sids[index], clone[index]);
+    ASSERT_NE(sids[index].GetPSID(), clone[index].GetPSID());
+  }
+  ASSERT_EQ(CloneSidVector(std::vector<Sid>()).size(), 0U);
+}
+
+TEST(SecurityUtilTest, AppendSidVector) {
+  std::vector<Sid> sids =
+      *Sid::FromKnownSidVector({WellKnownSid::kNull, WellKnownSid::kWorld});
+
+  std::vector<Sid> total_sids;
+  AppendSidVector(total_sids, sids);
+  EXPECT_EQ(total_sids.size(), sids.size());
+
+  std::vector<Sid> sids2 = *Sid::FromKnownSidVector(
+      {WellKnownSid::kCreatorOwner, WellKnownSid::kNetwork});
+  AppendSidVector(total_sids, sids2);
+  EXPECT_EQ(total_sids.size(), sids.size() + sids2.size());
+
+  auto sid_interator = total_sids.cbegin();
+  for (size_t index = 0; index < sids.size(); ++index) {
+    ASSERT_EQ(*sid_interator, sids[index]);
+    ASSERT_NE(sid_interator->GetPSID(), sids[index].GetPSID());
+    sid_interator++;
+  }
+  for (size_t index = 0; index < sids2.size(); ++index) {
+    ASSERT_EQ(*sid_interator, sids2[index]);
+    ASSERT_NE(sid_interator->GetPSID(), sids2[index].GetPSID());
+    sid_interator++;
+  }
 }
 
 }  // namespace win

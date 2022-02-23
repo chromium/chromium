@@ -12,7 +12,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -96,11 +96,11 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       bool client_expects_binary_responses,
       const WTF::String& session_id) override;
   void InspectElement(const gfx::Point& point) override;
-  void ReportChildWorkers(bool report,
+  void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override;
 
-  void ReportChildWorkersPostCallbackToIO(bool report,
+  void ReportChildTargetsPostCallbackToIO(bool report,
                                           bool wait_for_debugger,
                                           CrossThreadOnceClosure callback);
 
@@ -111,8 +111,9 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
     base::UnguessableToken devtools_worker_token;
     bool waiting_for_debugger;
     String name;
+    mojom::blink::DevToolsExecutionContextType context_type;
   };
-  void ReportChildWorker(std::unique_ptr<WorkerData>);
+  void ReportChildTarget(std::unique_ptr<WorkerData>);
 
   void CleanupConnection();
 
@@ -125,7 +126,7 @@ class CORE_EXPORT DevToolsAgent : public GarbageCollected<DevToolsAgent>,
       bool client_expects_binary_responses,
       const WTF::String& session_id);
   void InspectElementImpl(const gfx::Point& point);
-  void ReportChildWorkersImpl(bool report,
+  void ReportChildTargetsImpl(bool report,
                               bool wait_for_debugger,
                               base::OnceClosure callback);
 

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -110,6 +111,15 @@ class TileManagerTilePriorityQueueTest : public TestLayerTreeHostBase {
   }
 
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
+
+  class StubGpuBacking : public ResourcePool::GpuBacking {
+   public:
+    void OnMemoryDump(
+        base::trace_event::ProcessMemoryDump* pmd,
+        const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
+        uint64_t tracing_process_id,
+        int importance) const override {}
+  };
 };
 
 TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
@@ -1418,6 +1428,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
   ResourcePool::InUsePoolResource resource =
       host_impl()->resource_pool()->AcquireResource(
           gfx::Size(256, 256), viz::RGBA_8888, gfx::ColorSpace());
+  resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
   EXPECT_FALSE(host_impl()->is_likely_to_require_a_draw());
@@ -1624,7 +1635,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
 
    private:
     gfx::Size size_;
-    void* pixels_;
+    raw_ptr<void> pixels_;
   };
 };
 
@@ -3492,9 +3503,9 @@ TEST_F(DecodedImageTrackerTileManagerTest, DecodedImageTrackerDropsLocksOnUse) {
 
   // Add the images to our decoded_image_tracker.
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image1, gfx::ColorSpace(), base::DoNothing());
+      image1, TargetColorParams(), base::DoNothing());
   host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-      image2, gfx::ColorSpace(), base::DoNothing());
+      image2, TargetColorParams(), base::DoNothing());
   EXPECT_EQ(0u, host_impl()
                     ->tile_manager()
                     ->decoded_image_tracker()
@@ -3574,8 +3585,10 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
                                .TakePaintImage();
 
     // Add the image to our decoded_image_tracker.
+    TargetColorParams target_color_params;
+    target_color_params.color_space = raster_cs;
     host_impl()->tile_manager()->decoded_image_tracker().QueueImageDecode(
-        hdr_image, raster_cs, base::DoNothing());
+        hdr_image, target_color_params, base::DoNothing());
     FlushDecodeTasks();
 
     // Add images to a fake recording source.
@@ -3595,7 +3608,7 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     constexpr float kCustomWhiteLevel = 200.f;
     auto display_cs = gfx::DisplayColorSpaces(raster_cs);
     if (raster_cs.IsHDR())
-      display_cs.SetSDRWhiteLevel(kCustomWhiteLevel);
+      display_cs.SetSDRMaxLuminanceNits(kCustomWhiteLevel);
 
     pending_layer()->layer_tree_impl()->SetDisplayColorSpaces(display_cs);
     PictureLayerTilingSet* tiling_set =
@@ -3660,8 +3673,8 @@ TEST_F(HdrImageTileManagerTest, DecodeHdrImagesToSdrP3) {
 class TileManagerCheckRasterQueriesTest : public TileManagerTest {
  public:
   TileManagerCheckRasterQueriesTest()
-      : pending_raster_queries_(viz::TestContextProvider::CreateWorker().get(),
-                                /*oop_rasterization_enabled=*/false) {}
+      : pending_raster_queries_(
+            viz::TestContextProvider::CreateWorker().get()) {}
   ~TileManagerCheckRasterQueriesTest() override {
     // Ensure that the host impl doesn't outlive |raster_buffer_provider_|.
     TakeHostImpl();
@@ -3675,11 +3688,9 @@ class TileManagerCheckRasterQueriesTest : public TileManagerTest {
  protected:
   class MockRasterQueryQueue : public FakeRasterQueryQueue {
    public:
-    MockRasterQueryQueue(
-        viz::RasterContextProvider* const worker_context_provider,
-        bool oop_rasterization_enabled)
-        : FakeRasterQueryQueue(worker_context_provider,
-                               oop_rasterization_enabled) {}
+    explicit MockRasterQueryQueue(
+        viz::RasterContextProvider* const worker_context_provider)
+        : FakeRasterQueryQueue(worker_context_provider) {}
     MOCK_METHOD0(CheckRasterFinishedQueries, bool());
   };
 

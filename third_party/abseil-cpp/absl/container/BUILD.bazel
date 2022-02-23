@@ -241,6 +241,7 @@ cc_library(
         ":hash_function_defaults",
         ":raw_hash_map",
         "//absl/algorithm:container",
+        "//absl/base:core_headers",
         "//absl/memory",
     ],
 )
@@ -307,9 +308,10 @@ cc_library(
     deps = [
         ":container_memory",
         ":hash_function_defaults",
-        ":node_hash_policy",
+        ":node_slot_policy",
         ":raw_hash_map",
         "//absl/algorithm:container",
+        "//absl/base:core_headers",
         "//absl/memory",
     ],
 )
@@ -339,9 +341,10 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash_function_defaults",
-        ":node_hash_policy",
+        ":node_slot_policy",
         ":raw_hash_set",
         "//absl/algorithm:container",
+        "//absl/base:core_headers",
         "//absl/memory",
     ],
 )
@@ -535,21 +538,21 @@ cc_test(
 )
 
 cc_library(
-    name = "node_hash_policy",
-    hdrs = ["internal/node_hash_policy.h"],
+    name = "node_slot_policy",
+    hdrs = ["internal/node_slot_policy.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = ["//absl/base:config"],
 )
 
 cc_test(
-    name = "node_hash_policy_test",
-    srcs = ["internal/node_hash_policy_test.cc"],
+    name = "node_slot_policy_test",
+    srcs = ["internal/node_slot_policy_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash_policy_traits",
-        ":node_hash_policy",
+        ":node_slot_policy",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -911,6 +914,7 @@ cc_library(
         ":container_memory",
         ":layout",
         "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
         "//absl/base:throw_delegate",
         "//absl/memory",
         "//absl/meta:type_traits",

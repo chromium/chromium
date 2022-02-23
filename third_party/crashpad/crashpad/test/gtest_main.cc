@@ -22,17 +22,17 @@
 #include "gmock/gmock.h"
 #endif  // CRASHPAD_TEST_LAUNCHER_GOOGLEMOCK
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "util/linux/initial_signal_dispositions.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "test/ios/google_test_setup.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "test/win/win_child_process.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(CRASHPAD_IS_IN_CHROMIUM)
 #include "base/bind.h"
@@ -42,7 +42,7 @@
 
 namespace {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 bool GetChildTestFunctionName(std::string* child_func_name) {
   constexpr size_t arg_length =
       sizeof(crashpad::test::internal::kChildTestFunction) - 1;
@@ -55,38 +55,38 @@ bool GetChildTestFunctionName(std::string* child_func_name) {
   }
   return false;
 }
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
 int main(int argc, char* argv[]) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   crashpad::InitializeSignalDispositions();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   crashpad::test::InitializeMainArguments(argc, argv);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   std::string child_func_name;
   if (GetChildTestFunctionName(&child_func_name)) {
     return crashpad::test::internal::CheckedInvokeMultiprocessChild(
         child_func_name);
   }
-#endif  // !OS_IOS
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if defined(CRASHPAD_IS_IN_CHROMIUM)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Chromium’s test launcher interferes with WinMultiprocess-based tests. Allow
   // their child processes to be launched by the standard Google Test-based test
   // runner.
   const bool use_chromium_test_launcher =
       !crashpad::test::WinChildProcess::IsChildProcess();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   constexpr bool use_chromium_test_launcher = false;
-#else  // OS_WIN
+#else  // BUILDFLAG(IS_WIN)
   constexpr bool use_chromium_test_launcher = true;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   if (use_chromium_test_launcher) {
     // This supports --test-launcher-summary-output, which writes a JSON file
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
     CRASHPAD_TEST_LAUNCHER_GOOGLEMOCK
 #endif  // CRASHPAD_TEST_LAUNCHER_GOOGLEMOCK
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS needs to run tests within the context of an app, so call a helper that
   // invokes UIApplicationMain().  The application delegate will call
   // RUN_ALL_TESTS() and exit before returning control to this function.

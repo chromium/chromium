@@ -14,16 +14,14 @@
 
 namespace {
 
-// Margin at the top of the labels.
-const CGFloat kTopMargin = 10;
-// Margin at the bottom of the labels.
-const CGFloat kBottomMargin = 7.5;
-// Margin at the end of the labels.
-const CGFloat kTrailingMargin = 4;
-// Margin before the favicon.
-const CGFloat kLeadingMargin = 15;
+// Padding for top.
+const CGFloat kPaddingTopMargin = 14;
+// Padding for leading/trailing/bottom.
+const CGFloat kPaddingMargin = 16;
 // Margin between the favicon and the text.
-const CGFloat kFaviconToTextMargin = 14;
+const CGFloat kFaviconToTextMargin = 12;
+// Number of lines for the subtitle.
+const CGFloat kNumberOfSubtitleLines = 3;
 
 }  // namespace
 
@@ -45,6 +43,7 @@ const CGFloat kFaviconToTextMargin = 14;
     _title = [[UILabel alloc] init];
     _title.translatesAutoresizingMaskIntoConstraints = NO;
     _title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _title.adjustsFontForContentSizeCategory = YES;
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _title.text = title;
     [self addSubview:_title];
@@ -52,7 +51,10 @@ const CGFloat kFaviconToTextMargin = 14;
     _subtitle = [[UILabel alloc] init];
     _subtitle.translatesAutoresizingMaskIntoConstraints = NO;
     _subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _subtitle.adjustsFontForContentSizeCategory = YES;
+    _subtitle.numberOfLines = kNumberOfSubtitleLines;
     _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _subtitle.lineBreakMode = NSLineBreakByCharWrapping;
     _subtitle.text = subtitle;
     [self addSubview:_subtitle];
 
@@ -62,20 +64,20 @@ const CGFloat kFaviconToTextMargin = 14;
 
     [NSLayoutConstraint activateConstraints:@[
       [_title.topAnchor constraintEqualToAnchor:self.topAnchor
-                                       constant:kTopMargin],
+                                       constant:kPaddingTopMargin],
       [_title.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                            constant:-kTrailingMargin],
+                                            constant:-kPaddingMargin],
 
-      [_title.bottomAnchor constraintEqualToAnchor:_subtitle.topAnchor],
+      [_subtitle.topAnchor constraintEqualToAnchor:_title.bottomAnchor],
 
       [_subtitle.leadingAnchor constraintEqualToAnchor:_title.leadingAnchor],
       [_subtitle.trailingAnchor constraintEqualToAnchor:_title.trailingAnchor],
       [_subtitle.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
-                                             constant:-kBottomMargin],
+                                             constant:-kPaddingMargin],
 
       [_faviconContainer.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
-                         constant:kLeadingMargin],
+                         constant:kPaddingMargin],
       [_faviconContainer.trailingAnchor
           constraintEqualToAnchor:_title.leadingAnchor
                          constant:-kFaviconToTextMargin],

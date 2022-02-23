@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
@@ -112,18 +112,18 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
  private:
   const GpuPreferences gpu_preferences_;
   const GpuFeatureInfo gpu_feature_info_;
-  SyncPointManager* sync_point_manager_;
-  MailboxManager* mailbox_manager_;
+  raw_ptr<SyncPointManager> sync_point_manager_;
+  raw_ptr<MailboxManager> mailbox_manager_;
   std::unique_ptr<gles2::Outputter> outputter_;
   gl::GLSurfaceFormat share_group_surface_format_;
   std::unique_ptr<gles2::ProgramCache> owned_program_cache_;
-  gles2::ProgramCache* program_cache_;
+  raw_ptr<gles2::ProgramCache> program_cache_;
   gles2::ImageManager image_manager_;
   ServiceDiscardableManager discardable_manager_;
   PassthroughDiscardableManager passthrough_discardable_manager_;
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
-  SharedImageManager* shared_image_manager_;
+  raw_ptr<SharedImageManager> shared_image_manager_;
 
   // No-op default initialization is used in in-process mode.
   GpuProcessActivityFlags activity_flags_;

@@ -2393,7 +2393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateSearchResutRemovalDecision"
-    enum="AppListZeroStateResultRemovalConfirmation" expires_after="2019-12-31">
+    enum="AppListResultRemovalConfirmation" expires_after="2019-12-31">
   <obsolete>
     Removed June 2019, replaced by
     Apps.AppList.ZeroStateSearchResultRemovalDecision.
@@ -56154,6 +56154,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.AgentsByTime" units="units"
+    expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>platform-architecture-dev@chromium.org</owner>
+  <summary>
+    Tracks the total number of agents hosted by the browser by time. An entry in
+    bucket N corresponds to N agents being hosted across all live renderer
+    process for 1 second. Recorded on state changes and every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AgentsPerRendererByTime" units="units"
+    expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>platform-architecture-dev@chromium.org</owner>
+  <summary>
+    Tracks the number of agents hosted per renderer by time. An entry in bucket
+    N corresponds to N agents being hosted by a renderer process for 1 second.
+    Recorded on state changes and every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.AgentsUniqueByTime" units="units"
+    expires_after="2020-12-04">
+  <obsolete>
+    Removed 2020-11.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <owner>platform-architecture-dev@chromium.org</owner>
+  <summary>
+    Tracks the number of unique agents hosted by the browser by time. An entry
+    in bucket N corresponds to N unique agents being hosted across all live
+    renderer process for 1 second. Unique means that the agent count would
+    remain the same if they were in one process (i.e. they have different
+    protocol+site). Recorded on state changes and every 5 minutes.
+  </summary>
+</histogram>
+
 <histogram
     name="PerformanceManager.BrowsingInstancePluralityVisibilityState.ByPageTime"
     enum="BrowsingInstancePluralityVisibilityState" expires_after="2019-09-30">
@@ -64049,18 +64096,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.pixelCountOpaque" units="NormalizedPixels"
-    expires_after="2019-02-14">
-  <obsolete>
-    Removed at an unknown time. No longer used in code.
-  </obsolete>
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels known to be opaque, recorded as 10 times the percentage of
-    the viewport that these pixels cover.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.pixelCountPainted" units="NormalizedPixels"
     expires_after="2019-02-14">
   <obsolete>
@@ -64071,18 +64106,6 @@ chromium-metrics-reviews@google.com.
     Number of pixels painted by WebKit into main memory, recorded as 10 times
     the percentage of the viewport that these pixels cover. This is collected
     once per commit from WebKit to the compositor.
-  </summary>
-</histogram>
-
-<histogram name="Renderer4.pixelCountTranslucent" units="NormalizedPixels"
-    expires_after="2019-02-14">
-  <obsolete>
-    Removed at an unknown time. No longer used in code.
-  </obsolete>
-  <owner>wiltzius@chromium.org</owner>
-  <summary>
-    Number of pixels not known to be opaque opaque, recorded as 10 times the
-    percentage of the viewport that these pixels cover.
   </summary>
 </histogram>
 
@@ -81936,7 +81959,7 @@ chromium-metrics-reviews@google.com.
   <owner>zea@chromium.org</owner>
   <summary>
     Whether OAuth2 refresh token was available at the time when
-    ProfileSyncService was starting backend.
+    SyncServiceImpl was starting backend.
   </summary>
 </histogram>
 
@@ -82227,7 +82250,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>zea@chromium.org</owner>
   <summary>
-    Time taken from the start of sync shutdown (in ProfileSyncService) until the
+    Time taken from the start of sync shutdown (in SyncServiceImpl) until the
     backend (SyncEngine) is fully destroyed.
   </summary>
 </histogram>
@@ -82279,7 +82302,7 @@ chromium-metrics-reviews@google.com.
   <owner>jeremy@chromium.org</owner>
   <owner>zea@google.com</owner>
   <summary>
-    Time spent after ProfileSyncService *creation* but before SyncEngine
+    Time spent after SyncServiceImpl *creation* but before SyncEngine
     initialization.
   </summary>
 </histogram>
@@ -86917,6 +86940,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks whether the UMA-Uniformity-Trial-1-Percent field trial was not active
     and which factors contributed to it.
+  </summary>
+</histogram>
+
+<histogram name="Viewport.OverviewZoom" units="%" expires_after="M85">
+  <obsolete>
+    Expired in M85.
+  </obsolete>
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    The screen width as a percentage of viewport width (i.e. zoom at which we
+    can see the whole page). Only recorded on Android and for viewport meta tags
+    with constant width.
   </summary>
 </histogram>
 

@@ -124,7 +124,7 @@ TEST_F(CrashKeysTest, IgnoreBoringFlags) {
   EXPECT_TRUE(GetCrashKeyValue("switch-5").empty());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.InitFromArgv(
@@ -201,4 +201,4 @@ TEST_F(CrashKeysTest, EnabledDisabledFeatures_MultipleParses) {
   }
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

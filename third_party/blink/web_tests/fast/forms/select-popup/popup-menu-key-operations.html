@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
@@ -23,11 +25,12 @@
 var menu = document.getElementById('menu');
 var menu2 = document.getElementById('menu2');
 var picker = null;
-function openPickerErrorCallback() {
+function openPickerErrorCallback(e) {
+  debug('AAAAA' + e);
     testFailed('picker didn\'t open')
     finishJSTest();
 }
-openPicker(menu, test1, openPickerErrorCallback);
+openPickerDeprecatedJsTest(menu, test1, openPickerErrorCallback);
 
 function test1() {
     debug('==> Arrow keys + Enter');
@@ -66,8 +69,8 @@ function test1() {
     shouldBeEqualToString('menu.value', 'foo');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'foo');
 
-    waitUntilClosing(function() {
-        openPicker(menu, test2, openPickerErrorCallback);
+    waitUntilClosingDeprecatedJsTest(function() {
+        openPickerDeprecatedJsTest(menu, test2, openPickerErrorCallback);
     });
 }
 
@@ -88,9 +91,9 @@ function test2() {
     shouldBeEqualToString('menu.value', 'bar');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'bar');
 
-    waitUntilClosing(function() {
+    waitUntilClosingDeprecatedJsTest(function() {
         menu.value = 'foo';
-        openPicker(menu, testProvisionalSelectionAndBlur, openPickerErrorCallback);
+        openPickerDeprecatedJsTest(menu, testProvisionalSelectionAndBlur, openPickerErrorCallback);
     });
 }
 
@@ -111,7 +114,7 @@ function testProvisionalSelectionAndBlur() {
     shouldBeEqualToString('menu.value', 'bar');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'bar');
 
-    openPicker(menu, test3, openPickerErrorCallback);
+    openPickerDeprecatedJsTest(menu, test3, openPickerErrorCallback);
 }
 
 function test3() {
@@ -131,8 +134,8 @@ function test3() {
     shouldBeEqualToString('menu.value', 'garply');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'garply');
 
-    waitUntilClosing(function() {
-        openPicker(menu, test4, openPickerErrorCallback);
+    waitUntilClosingDeprecatedJsTest(function() {
+        openPickerDeprecatedJsTest(menu, test4, openPickerErrorCallback);
     });
 }
 
@@ -153,8 +156,8 @@ function test4() {
     shouldBeEqualToString('menu.value', 'garply');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'garply');
 
-    waitUntilClosing(function() {
-        openPicker(menu, test5, openPickerErrorCallback);
+    waitUntilClosingDeprecatedJsTest(function() {
+        openPickerDeprecatedJsTest(menu, test5, openPickerErrorCallback);
     });
 }
 
@@ -182,8 +185,8 @@ function test5() {
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'garply');
     menu.selectedIndex = 0;
 
-    waitUntilClosing(function() {
-        openPicker(menu, test6, openPickerErrorCallback);
+    waitUntilClosingDeprecatedJsTest(function() {
+        openPickerDeprecatedJsTest(menu, test6, openPickerErrorCallback);
     });
 }
 
@@ -203,9 +206,9 @@ function test6() {
     shouldBeEqualToString('menu.value', 'foo');
     shouldBeEqualToString('internals.selectMenuListText(menu)', 'foo');
 
-    waitUntilClosing(() => {
+    waitUntilClosingDeprecatedJsTest(() => {
         menu2.selectedIndex = -1;
-        openPicker(menu2, testEnterWithoutSelection, openPickerErrorCallback);
+        openPickerDeprecatedJsTest(menu2, testEnterWithoutSelection, openPickerErrorCallback);
     });
 }
 

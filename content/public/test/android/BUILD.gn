@@ -27,6 +27,7 @@ android_library("content_java_test_support") {
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit:junit",
@@ -50,6 +51,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/Coordinates.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DomAutomationController.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/FencedFrameUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/HistoryUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/JavaScriptUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/KeyUtils.java",
@@ -72,6 +74,7 @@ generate_jni("content_test_jni") {
   sources = [
     "javatests/src/org/chromium/content_public/browser/test/RenderFrameHostTestExt.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/FencedFrameUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/RenderProcessHostUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/UiThreadSchedulerTestUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/WebContentsUtils.java",
@@ -89,6 +92,7 @@ static_library("content_native_test_support") {
 
   sources = [
     "dom_utils.cc",
+    "fenced_frame_utils.cc",
     "render_frame_host_test_ext.cc",
     "render_frame_host_test_ext.h",
     "render_process_host_utils.cc",

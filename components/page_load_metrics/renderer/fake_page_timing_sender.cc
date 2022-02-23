@@ -24,12 +24,11 @@ void FakePageTimingSender::SendTiming(
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
-    mojom::DeferredResourceCountsPtr new_deferred_resource_data,
     const mojom::InputTimingPtr new_input_timing,
     const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
-                           render_data, cpu_timing, new_deferred_resource_data,
-                           new_input_timing, mobile_friendliness);
+                           render_data, cpu_timing, new_input_timing,
+                           mobile_friendliness);
 }
 
 void FakePageTimingSender::SetUpSmoothnessReporting(
@@ -140,7 +139,6 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
-    const mojom::DeferredResourceCountsPtr& new_deferred_resource_data,
     const mojom::InputTimingPtr& new_input_timing,
     const absl::optional<blink::MobileFriendliness>& mobile_friendliness) {
   actual_timings_.push_back(timing.Clone());

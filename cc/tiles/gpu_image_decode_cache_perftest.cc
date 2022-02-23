@@ -35,7 +35,7 @@ SkM44 CreateMatrix(const SkSize& scale) {
   return SkM44::Scale(scale.width(), scale.height());
 }
 
-enum class TestMode { kGpu, kTransferCache, kSw };
+enum class TestMode { kGpu, kSw };
 
 class GpuImageDecodeCachePerfTest
     : public testing::Test,
@@ -47,9 +47,8 @@ class GpuImageDecodeCachePerfTest
                kTimeCheckInterval),
         context_provider_(
             base::MakeRefCounted<viz::TestInProcessContextProvider>(
-                /*enable_gles2_interface=*/false,
-                /*support_locking=*/false,
-                ParamToRasterInterfaceType(GetParam()))) {}
+                ParamToTestContextType(GetParam()),
+                /*support_locking=*/false)) {}
 
   void SetUp() override {
     gpu::ContextResult result = context_provider_->BindToCurrentThread();
@@ -64,39 +63,29 @@ class GpuImageDecodeCachePerfTest
   size_t MaxTextureSize() const {
     switch (GetParam()) {
       case TestMode::kGpu:
-      case TestMode::kTransferCache:
         return 4096;
       case TestMode::kSw:
         return 0;
     }
   }
 
-  bool UseTransferCache() const {
-    return GetParam() == TestMode::kTransferCache;
-  }
+  bool UseTransferCache() const { return GetParam() == TestMode::kGpu; }
 
   const char* ParamName() const {
     switch (GetParam()) {
       case TestMode::kGpu:
         return "GPU";
-      case TestMode::kTransferCache:
-        return "TransferCache";
       case TestMode::kSw:
         return "SW";
     }
   }
 
-  viz::RasterInterfaceType ParamToRasterInterfaceType(TestMode mode) {
+  viz::TestContextType ParamToTestContextType(TestMode mode) {
     switch (mode) {
       case TestMode::kGpu:
-        return viz::RasterInterfaceType::GPU;
-      case TestMode::kTransferCache:
-        return viz::RasterInterfaceType::OOPR;
+        return viz::TestContextType::kGpuRaster;
       case TestMode::kSw:
-        return viz::RasterInterfaceType::Software;
-      default:
-        NOTREACHED();
-        return viz::RasterInterfaceType::None;
+        return viz::TestContextType::kSoftwareRaster;
     }
   }
 
@@ -115,9 +104,7 @@ class GpuImageDecodeCachePerfTest
 
 INSTANTIATE_TEST_SUITE_P(P,
                          GpuImageDecodeCachePerfTest,
-                         testing::Values(TestMode::kGpu,
-                                         TestMode::kTransferCache,
-                                         TestMode::kSw));
+                         testing::Values(TestMode::kGpu, TestMode::kSw));
 
 TEST_P(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
   timer_.Reset();
@@ -129,7 +116,7 @@ TEST_P(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
             .TakePaintImage(),
         false, SkIRect::MakeWH(1024, 2048), PaintFlags::FilterQuality::kMedium,
         CreateMatrix(SkSize::Make(1.0f, 1.0f)), 0u,
-        gfx::ColorSpace::CreateXYZD50());
+        TargetColorParams(gfx::ColorSpace::CreateXYZD50()));
 
     DecodedDrawImage decoded_image = cache_->GetDecodedImageForDraw(image);
     cache_->DrawWithImageFinished(image, decoded_image);
@@ -144,8 +131,7 @@ TEST_P(GpuImageDecodeCachePerfTest, DecodeWithColorConversion) {
 using GpuImageDecodeCachePerfTestNoSw = GpuImageDecodeCachePerfTest;
 INSTANTIATE_TEST_SUITE_P(P,
                          GpuImageDecodeCachePerfTestNoSw,
-                         testing::Values(TestMode::kGpu,
-                                         TestMode::kTransferCache));
+                         testing::Values(TestMode::kGpu));
 
 TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
   // Surface to render into.
@@ -161,18 +147,9 @@ TEST_P(GpuImageDecodeCachePerfTestNoSw, DecodeWithMips) {
             .set_image(CreateImage(1024, 2048), PaintImage::GetNextContentId())
             .TakePaintImage(),
         false, SkIRect::MakeWH(1024, 2048), PaintFlags::FilterQuality::kMedium,
-        CreateMatrix(SkSize::Make(0.6f, 0.6f)), 0u, gfx::ColorSpace());
+        CreateMatrix(SkSize::Make(0.6f, 0.6f)), 0u, TargetColorParams());
 
     DecodedDrawImage decoded_image = cache_->GetDecodedImageForDraw(image);
-
-    if (GetParam() == TestMode::kGpu) {
-      SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kLinear);
-      surface->getCanvas()->drawImageRect(
-          decoded_image.image().get(), SkRect::MakeWH(1024, 2048),
-          SkRect::MakeWH(614, 1229), sampling, nullptr,
-          SkCanvas::kStrict_SrcRectConstraint);
-      surface->flushAndSubmit();
-    }
 
     cache_->DrawWithImageFinished(image, decoded_image);
     timer_.NextLap();
@@ -191,7 +168,7 @@ TEST_P(GpuImageDecodeCachePerfTest, AcquireExistingImages) {
           .TakePaintImage(),
       false, SkIRect::MakeWH(1024, 2048), PaintFlags::FilterQuality::kMedium,
       CreateMatrix(SkSize::Make(1.0f, 1.0f)), 0u,
-      gfx::ColorSpace::CreateXYZD50());
+      TargetColorParams(gfx::ColorSpace::CreateXYZD50()));
 
   DecodedDrawImage decoded_image = cache_->GetDecodedImageForDraw(image);
   cache_->DrawWithImageFinished(image, decoded_image);

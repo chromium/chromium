@@ -16,9 +16,7 @@ namespace ash {
 namespace quick_pair {
 namespace fast_pair_decryption {
 
-namespace {
-constexpr int kBlockByteSize = 16;
-}  // namespace
+inline constexpr int kBlockByteSize = 16;
 
 absl::optional<DecryptedResponse> ParseDecryptedResponse(
     const std::array<uint8_t, 16>& aes_key_bytes,

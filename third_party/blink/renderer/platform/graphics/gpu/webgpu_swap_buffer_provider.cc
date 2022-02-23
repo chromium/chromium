@@ -9,20 +9,22 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 
 namespace blink {
 
 namespace {
 viz::ResourceFormat WGPUFormatToViz(WGPUTextureFormat format) {
-  if (format == WGPUTextureFormat_BGRA8Unorm) {
-    return viz::BGRA_8888;
+  switch (format) {
+    case WGPUTextureFormat_BGRA8Unorm:
+      return viz::BGRA_8888;
+    case WGPUTextureFormat_RGBA8Unorm:
+      return viz::RGBA_8888;
+    case WGPUTextureFormat_RGBA16Float:
+      return viz::RGBA_F16;
+    default:
+      NOTREACHED();
+      return viz::RGBA_8888;
   }
-  if (format == WGPUTextureFormat_RGBA8Unorm) {
-    return viz::RGBA_8888;
-  }
-  NOTREACHED();
-  return viz::RGBA_8888;
 }
 }  // namespace
 
@@ -151,7 +153,7 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
   unused_swap_buffers_.push_back(std::move(swap_buffer));
 }
 
-WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
+WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
   DCHECK(!current_swap_buffer_);
   auto context_provider = GetContextProviderWeakPtr();
   if (!context_provider) {
@@ -164,7 +166,7 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
-      context_provider, ToGfxSize(size));
+      context_provider, size);
 
   // Ensure the shared image is allocated and not in use service-side before
   // working with it
@@ -242,7 +244,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // other shared image implementation is implemented on OpenGL via some form of
   // eglSurface and eglBindTexImage (on ANGLE or system drivers) so they use the
   // 2D texture target and cannot always be overlay candidates.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const uint32_t texture_target = GL_TEXTURE_RECTANGLE_ARB;
   const bool is_overlay_candidate = true;
 #else

@@ -18,7 +18,7 @@
 #include "ui/wm/public/activation_client.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
 #endif
 
@@ -30,7 +30,7 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
   if (!client)
     return nullptr;
   gfx::NativeWindow active_window = client->GetActiveWindow();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   NSWindow* active_window = platform_util::GetActiveWindow();
   if (!active_window)
     return nullptr;

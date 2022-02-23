@@ -30,7 +30,8 @@ class NullCpuProbe : public CpuProbe {
   void Update() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Checks that
+    // Ensure that this method is called on a sequence that is allowed to do
+    // IO, even on OSes that don't have a CpuProbe implementation yet.
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
   }
@@ -47,13 +48,13 @@ class NullCpuProbe : public CpuProbe {
 
 // static
 std::unique_ptr<CpuProbe> CpuProbe::Create() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return nullptr;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return CpuProbeLinux::Create();
 #else
   return std::make_unique<NullCpuProbe>();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace content

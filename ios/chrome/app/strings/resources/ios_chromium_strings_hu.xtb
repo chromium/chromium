@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="102360288709523007">Használati statisztikák és hibajelentések küldésével segíthet a Chromium fejlesztésében.</translation>
+<translation id="1047130070405668746">Válassza ki a Chromium böngészőt.</translation>
+<translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">Értesítéseket jelenít meg a Chromiumba való bejelentkezéshez</translation>
 <translation id="1584569488888892906">A Chromium egyszerű, biztonságos és minden eddiginél gyorsabb</translation>
 <translation id="1617663976202781617">A Chromium szinkronizálásából származó adatok</translation>
+<translation id="1722370509450468186">Jelszavát a rendszer a fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="1736662517232558588">A Chromium adatai törölve</translation>
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="1843424232666537147">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="1867772173333403444">4. Válassza ki a Chromium böngészőt.</translation>
 <translation id="2006345422933397527">A Chromium nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2054703085270098503">Gondoskodjon biztonságáról a Chromiummal</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
 <translation id="2218146227246548550">Szervezete megköveteli a bejelentkezést a Chromium használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Ez azt jelenti, hogy a Chromium mindig az asztali webhelyet kéri majd.</translation>
 <translation id="2426113998523353159">Szervezete megköveteli a bejelentkezést a Chromium használatához.</translation>
 <translation id="2450140762465183767">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
 <translation id="2478931088402984578">Válassza ki a <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> böngészőt.</translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
-<translation id="3946918322491238254">Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosításokat azonban a böngésző nem szinkronizálja az Ön fiókjába.</translation>
+<translation id="4043291146360695975">A jelszavakat csak ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6752854822223394465">A szervezete beállítja a Chromiumot…</translation>
 <translation id="6820823224820483452">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
+<translation id="7006920032187763988">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
 <translation id="7018284295775193585">Nem lehet frissíteni a Chromiumot</translation>
 <translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>
 <translation id="7099326575020694068">A Chromium Osztott nézet módban nem tudja használni a kamerát</translation>
 <translation id="7108914401277488191">Hatékonyabb lehet a Chromiummal</translation>
 <translation id="7118091470949186573">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre kattint.</translation>
+<translation id="7175400662502680481">Jelszava adatvédelmi incidens során nyilvánosságra került. A Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="7208566199746267865">A Chromium időt takarít meg Önnek azzal, hogy fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
 <translation id="725427773388857052">A Chromium segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
 <translation id="7269362888766543920">Bizonyos bővítmények a Chromium összeomlását eredményezik. Próbálja meg eltávolítani őket.</translation>
 <translation id="7313655110045230863">Ha a Chromiumot szeretné beállítani alapértelmezett böngészőként, nyissa meg a Beállítások menüt. Koppintson az Alapértelmezett böngészőalkalmazás lehetőségre, és válassza ki a Chromiumot.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">A kiválasztott adatokat eltávolítottuk a Chromiumból és a szinkronizált eszközökről. Előfordulhat, hogy Google-fiókjában (a history.google.com címen) még szerepelnek a böngészési előzmények egyéb formái, így például a keresések és egyéb tevékenységek más Google-szolgáltatásokból.</translation>
+<translation id="7395825497086981028">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="7400689562045506105">A Chromium mindenhol használható</translation>
 <translation id="766897673682622022">Jelszava adatvédelmi incidens során nyilvánosságra került. A Chromium a jelszó azonnali módosítását javasolja.</translation>
 <translation id="7674213385180944843">Nyissa meg a Beállítások &gt; Adatvédelem &gt; Kamera &gt; Chromium elemet, és kapcsolja be a kamerát.</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Helyezze át a Chromiumot a Dockra<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>
+<translation id="858114650497379505">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>
 <translation id="894437814105052438">Ha kijelentkezik, a Chromium nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
+<translation id="9059693977935746710">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9110075932708282655">A Chromium alapértelmezett használata</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>

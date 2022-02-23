@@ -9,11 +9,12 @@
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -81,7 +82,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
-           const FloatPoint& offset,
+           const gfx::Vector2dF& offset,
            unsigned character_index) {
     // cannot mix x-only/xy offsets
     DCHECK(pending_glyphs_.IsEmpty() || HasPendingVerticalOffsets());
@@ -122,7 +123,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   static void AddFastHorizontalGlyphToBloberizer(void* context,
                                                  unsigned,
                                                  Glyph,
-                                                 FloatSize glyph_offset,
+                                                 gfx::Vector2dF glyph_offset,
                                                  float advance,
                                                  bool is_horizontal,
                                                  CanvasRotationInVertical,
@@ -137,7 +138,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   static void AddGlyphToBloberizer(void* context,
                                    unsigned character_index,
                                    Glyph,
-                                   FloatSize glyph_offset,
+                                   gfx::Vector2dF glyph_offset,
                                    float advance,
                                    bool is_horizontal,
                                    CanvasRotationInVertical,
@@ -145,7 +146,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
   void AddEmphasisMark(const GlyphData& emphasis_data,
                        CanvasRotationInVertical canvas_rotation,
-                       FloatPoint glyph_center,
+                       gfx::PointF glyph_center,
                        float mid_glyph_offset);
   static void AddEmphasisMarkToBloberizer(
       void* context,

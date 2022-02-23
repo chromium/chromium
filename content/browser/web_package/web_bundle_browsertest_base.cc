@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -17,9 +18,9 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace web_bundle_browsertest_utils {
@@ -32,7 +33,7 @@ base::FilePath GetTestDataPath(base::StringPiece file) {
       .AppendASCII(file);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void CopyFileAndGetContentUri(const base::FilePath& file,
                               GURL* content_uri,
                               base::FilePath* new_file_path) {
@@ -53,7 +54,7 @@ void CopyFileAndGetContentUri(const base::FilePath& file,
     *new_file_path = temp_file;
   *content_uri = GURL(base::GetContentUriFromFilePath(temp_file).value());
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::string ExecuteAndGetString(const ToRenderFrameHost& adapter,
                                 const std::string& script) {
@@ -710,14 +711,14 @@ void RunBasicNavigationTest(
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/1-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/1-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
       "/1-page/ from wbn, /1-page/script from wbn");
   RunScriptAndObserveNavigation(
       "Navigate to /2-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/2-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/2-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -725,7 +726,7 @@ void RunBasicNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -733,7 +734,7 @@ void RunBasicNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /top-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/top-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/top-page/") /* expected_last_inner_url */,
@@ -741,14 +742,14 @@ void RunBasicNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /1-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
       "/1-page/ from wbn, /1-page/script from wbn");
   RunScriptAndObserveNavigation(
       "Reload /1-page/", web_contents, web_contents /* execution_target */,
-      "location.reload();", {NAVIGATION_TYPE_EXISTING_ENTRY},
+      "location.reload();", {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -756,7 +757,7 @@ void RunBasicNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -782,14 +783,14 @@ void RunBrowserInitiatedOutOfBundleNavigationTest(
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/1-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/1-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
       "/1-page/ from wbn, /1-page/script from wbn");
   RunScriptAndObserveNavigation(
       "Navigate to /2-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/2-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/2-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -808,21 +809,21 @@ void RunBrowserInitiatedOutOfBundleNavigationTest(
   // even if the page is in the web bundle.
   RunScriptAndObserveNavigation(
       "Navigate to /4-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/4-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/4-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       url_origin.Resolve("/4-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/4-page/") /* expected_last_inner_url */,
       "/4-page/ from server, /4-page/script from server");
   RunScriptAndObserveNavigation(
       "Back navigate to /3-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/3-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/3-page/") /* expected_last_inner_url */,
       "/3-page/ from server, /3-page/script from server");
   RunScriptAndObserveNavigation(
       "Back navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -830,7 +831,7 @@ void RunBrowserInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -838,7 +839,7 @@ void RunBrowserInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -846,14 +847,14 @@ void RunBrowserInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /3-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/3-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/3-page/") /* expected_last_inner_url */,
       "/3-page/ from server, /3-page/script from server");
   RunScriptAndObserveNavigation(
       "Forward navigate to /4-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/4-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/4-page/") /* expected_last_inner_url */,
       "/4-page/ from server, /4-page/script from server");
@@ -878,14 +879,14 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/1-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/1-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
       "/1-page/ from wbn, /1-page/script from wbn");
   RunScriptAndObserveNavigation(
       "Navigate to /2-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/2-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/2-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -893,7 +894,7 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Navigate to /server-page/", web_contents,
       web_contents /* execution_target */, "location.href = '/server-page/';",
-      {NAVIGATION_TYPE_NEW_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       url_origin.Resolve("/server-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/server-page/") /* expected_last_inner_url */,
       "/server-page/ from server, /server-page/script from server");
@@ -901,21 +902,21 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
   // even if the page is in the web bundle.
   RunScriptAndObserveNavigation(
       "Navigate to /3-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/3-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/3-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       url_origin.Resolve("/3-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/3-page/") /* expected_last_inner_url */,
       "/3-page/ from server, /3-page/script from server");
   RunScriptAndObserveNavigation(
       "Back navigate to /server-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/server-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/server-page/") /* expected_last_inner_url */,
       "/server-page/ from server, /server-page/script from server");
   RunScriptAndObserveNavigation(
       "Back navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -923,7 +924,7 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -931,7 +932,7 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -939,14 +940,14 @@ void RunRendererInitiatedOutOfBundleNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /server-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/server-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/server-page/") /* expected_last_inner_url */,
       "/server-page/ from server, /server-page/script from server");
   RunScriptAndObserveNavigation(
       "Forward navigate to /3-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       url_origin.Resolve("/3-page/") /* expected_last_comitted_url */,
       url_origin.Resolve("/3-page/") /* expected_last_inner_url */,
       "/3-page/ from server, /3-page/script from server");
@@ -969,7 +970,7 @@ void RunSameDocumentNavigationTest(
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/1-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/1-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -977,7 +978,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/#hash1", web_contents,
       web_contents /* execution_target */, "location.href = '#hash1';",
-      {NAVIGATION_TYPE_NEW_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash1")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/#hash1") /* expected_last_inner_url */,
@@ -985,14 +986,14 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Navigate to /1-page/#hash2", web_contents,
       web_contents /* execution_target */, "location.href = '#hash2';",
-      {NAVIGATION_TYPE_NEW_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash2")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/1-page/#hash2") /* expected_last_inner_url */,
       "/1-page/ from wbn, /1-page/script from wbn");
   RunScriptAndObserveNavigation(
       "Navigate to /2-page/", web_contents, web_contents /* execution_target */,
-      "location.href = '/2-page/';", {NAVIGATION_TYPE_NEW_ENTRY},
+      "location.href = '/2-page/';", {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url  */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -1000,7 +1001,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/#hash2", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash2")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/#hash2") /* expected_last_inner_url */,
@@ -1008,7 +1009,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/#hash1", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash1")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/#hash1") /* expected_last_inner_url */,
@@ -1016,7 +1017,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /1-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/1-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/") /* expected_last_inner_url */,
@@ -1024,7 +1025,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /1-page/#hash1", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash1")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/#hash1") /* expected_last_inner_url */,
@@ -1032,7 +1033,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /1-page/#hash2", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/1-page/#hash2")) /* expected_last_comitted_url */,
       url_origin.Resolve("/1-page/#hash2") /* expected_last_inner_url */,
@@ -1040,7 +1041,7 @@ void RunSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /2-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/2-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/2-page/") /* expected_last_inner_url */,
@@ -1073,7 +1074,7 @@ void RunIframeNavigationTest(
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(web_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
@@ -1082,7 +1083,7 @@ void RunIframeNavigationTest(
       "Navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */,
       "location.href = '/iframe-test-page/';",
-      {NAVIGATION_TYPE_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,
@@ -1115,7 +1116,7 @@ void RunIframeNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /top-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/top-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/top-page/") /* expected_last_inner_url */,
@@ -1124,7 +1125,8 @@ void RunIframeNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+       NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,
@@ -1157,7 +1159,7 @@ void RunIframeOutOfBundleNavigationTest(
       "Navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */,
       "location.href = '/iframe-test-page/';",
-      {NAVIGATION_TYPE_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,
@@ -1207,7 +1209,7 @@ void RunIframeParentInitiatedOutOfBundleNavigationTest(
       "Navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */,
       "location.href = '/iframe-test-page/';",
-      {NAVIGATION_TYPE_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,
@@ -1262,7 +1264,7 @@ void RunIframeSameDocumentNavigationTest(
   // back navigation will recreate the page. Disable back/forward cache to
   // ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(web_contents,
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
@@ -1274,7 +1276,7 @@ void RunIframeSameDocumentNavigationTest(
       "Navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */,
       "location.href = '/iframe-test-page/';",
-      {NAVIGATION_TYPE_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,
@@ -1363,7 +1365,7 @@ void RunIframeSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Back navigate to /top-page/", web_contents,
       web_contents /* execution_target */, "history.back();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY},
       get_url_for_bundle.Run(
           url_origin.Resolve("/top-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/top-page/") /* expected_last_inner_url */,
@@ -1372,7 +1374,8 @@ void RunIframeSameDocumentNavigationTest(
   RunScriptAndObserveNavigation(
       "Forward navigate to /iframe-test-page/", web_contents,
       web_contents /* execution_target */, "history.forward();",
-      {NAVIGATION_TYPE_EXISTING_ENTRY, NAVIGATION_TYPE_AUTO_SUBFRAME},
+      {NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+       NAVIGATION_TYPE_AUTO_SUBFRAME},
       get_url_for_bundle.Run(url_origin.Resolve(
           "/iframe-test-page/")) /* expected_last_comitted_url */,
       url_origin.Resolve("/iframe-test-page/") /* expected_last_inner_url */,

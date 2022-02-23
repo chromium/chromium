@@ -5,7 +5,9 @@
 #include <string.h>
 
 #include <memory>
+#include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
@@ -113,7 +115,7 @@ class BluetoothApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  testing::StrictMock<MockBluetoothAdapter>* mock_adapter_;
+  raw_ptr<testing::StrictMock<MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device1_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device2_;
   std::unique_ptr<testing::NiceMock<MockBluetoothDevice>> device3_;
@@ -212,8 +214,8 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, Discovery) {
   FailNextCall();
   scoped_refptr<api::BluetoothStopDiscoveryFunction> stop_function;
   stop_function = setupFunction(new api::BluetoothStopDiscoveryFunction);
-  (void)utils::RunFunctionAndReturnSingleResult(stop_function.get(), "[]",
-                                                browser());
+  std::ignore = utils::RunFunctionAndReturnSingleResult(stop_function.get(),
+                                                        "[]", browser());
   SetUpMockAdapter();
 }
 

@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "regex"
+  epoch = "1"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+  deps = [
+    "//third_party/rust/aho_corasick/v0_7:lib",
+    "//third_party/rust/memchr/v2:lib",
+    "//third_party/rust/regex_syntax/v0_6:lib",
+  ]
+  features = [
+    "aho-corasick",
+    "memchr",
+    "perf",
+    "perf-cache",
+    "perf-dfa",
+    "perf-inline",
+    "perf-literal",
+    "std",
+    "unicode",
+    "unicode-age",
+    "unicode-bool",
+    "unicode-case",
+    "unicode-gencat",
+    "unicode-perl",
+    "unicode-script",
+    "unicode-segment",
+  ]
+}

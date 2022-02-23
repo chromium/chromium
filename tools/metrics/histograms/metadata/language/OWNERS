@@ -1,0 +1,8 @@
+# When sending a CL with metrics for review, if a member of
+# METRIC_REVIEWER_OWNERS is a good choice of reviewer, please send the CL to
+# them. Otherwise, send the CL to chromium-metrics-reviews@google.com. Googlers
+# can read more about chromium-metrics-reviews@google.com at go/gwsq-gerrit.
+per-file histograms.xml=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+
+curranmax@chromium.org
+mcrouse@chromium.org

@@ -80,6 +80,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -92,7 +93,6 @@ import org.chromium.ui.DropdownItem;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
@@ -179,6 +179,22 @@ public class KeyboardAccessoryModernViewTest {
         public DisplayLockHandle acquireDisplayLock() {
             return () -> {};
         }
+
+        @Override
+        public void setPriorityNotification(String feature) {}
+
+        @Override
+        @Nullable
+        public String getPendingPriorityNotification() {
+            return null;
+        }
+
+        @Override
+        public void registerPriorityNotificationHandler(
+                String feature, Runnable priorityNotificationHandler) {}
+
+        @Override
+        public void unregisterPriorityNotificationHandler(String feature) {}
 
         @Override
         public boolean isInitialized() {

@@ -37,12 +37,10 @@ class CordzInfo;
 
 // Default feature enable states for cord ring buffers
 enum CordFeatureDefaults {
-  kCordEnableBtreeDefault = true,
   kCordEnableRingBufferDefault = false,
   kCordShallowSubcordsDefault = false
 };
 
-extern std::atomic<bool> cord_btree_enabled;
 extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
 
@@ -51,10 +49,6 @@ extern std::atomic<bool> shallow_subcords_enabled;
 // assertions should be relatively cheap and AssertValid() can easily lead to
 // O(n^2) complexity as recursive / full tree validation is O(n).
 extern std::atomic<bool> cord_btree_exhaustive_validation;
-
-inline void enable_cord_btree(bool enable) {
-  cord_btree_enabled.store(enable, std::memory_order_relaxed);
-}
 
 inline void enable_cord_ring_buffer(bool enable) {
   cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
@@ -177,7 +171,7 @@ class CordRepBtree;
 
 // Various representations that we allow
 enum CordRepKind {
-  CONCAT = 0,
+  UNUSED_0 = 0,
   SUBSTRING = 1,
   CRC = 2,
   BTREE = 3,
@@ -185,13 +179,16 @@ enum CordRepKind {
   EXTERNAL = 5,
 
   // We have different tags for different sized flat arrays,
-  // starting with FLAT, and limited to MAX_FLAT_TAG. The 226 value is based on
-  // the current 'size to tag' encoding of 8 / 32 bytes. If a new tag is needed
-  // in the future, then 'FLAT' and 'MAX_FLAT_TAG' should be adjusted as well
-  // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
-  // allocation size. (32 bytes as of now).
+  // starting with FLAT, and limited to MAX_FLAT_TAG. The below values map to an
+  // allocated range of 32 bytes to 256 KB. The current granularity is:
+  // - 8 byte granularity for flat sizes in [32 - 512]
+  // - 64 byte granularity for flat sizes in (512 - 8KiB]
+  // - 4KiB byte granularity for flat sizes in (8KiB, 256 KiB]
+  // If a new tag is needed in the future, then 'FLAT' and 'MAX_FLAT_TAG' should
+  // be adjusted as well as the Tag <---> Size mapping logic so that FLAT still
+  // represents the minimum flat allocation size. (32 bytes as of now).
   FLAT = 6,
-  MAX_FLAT_TAG = 226
+  MAX_FLAT_TAG = 248
 };
 
 // There are various locations where we want to check if some rep is a 'plain'
@@ -242,7 +239,6 @@ struct CordRep {
 
   // Returns true if this instance's tag matches the requested type.
   constexpr bool IsRing() const { return tag == RING; }
-  constexpr bool IsConcat() const { return tag == CONCAT; }
   constexpr bool IsSubstring() const { return tag == SUBSTRING; }
   constexpr bool IsCrc() const { return tag == CRC; }
   constexpr bool IsExternal() const { return tag == EXTERNAL; }
@@ -251,8 +247,6 @@ struct CordRep {
 
   inline CordRepRing* ring();
   inline const CordRepRing* ring() const;
-  inline CordRepConcat* concat();
-  inline const CordRepConcat* concat() const;
   inline CordRepSubstring* substring();
   inline const CordRepSubstring* substring() const;
   inline CordRepCrc* crc();
@@ -277,21 +271,6 @@ struct CordRep {
   // Decrements the reference count of `rep`. Destroys rep if count reaches
   // zero. Requires `rep` to be a non-null pointer value.
   static inline void Unref(CordRep* rep);
-};
-
-struct CordRepConcat : public CordRep {
-  CordRep* left;
-  CordRep* right;
-
-  uint8_t depth() const { return storage[0]; }
-  void set_depth(uint8_t depth) { storage[0] = depth; }
-
-  // Extracts the right-most flat in the provided concat tree if the entire path
-  // to that flat is not shared, and the flat has the requested extra capacity.
-  // Returns the (potentially new) top level tree node and the extracted flat,
-  // or {tree, nullptr} if no flat was extracted.
-  static ExtractResult ExtractAppendBuffer(CordRepConcat* tree,
-                                           size_t extra_capacity);
 };
 
 struct CordRepSubstring : public CordRep {
@@ -459,8 +438,8 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   CordzInfo* cordz_info() const {
     assert(is_tree());
-    intptr_t info =
-        static_cast<intptr_t>(absl::big_endian::ToHost64(as_tree_.cordz_info));
+    intptr_t info = static_cast<intptr_t>(
+        absl::big_endian::ToHost64(static_cast<uint64_t>(as_tree_.cordz_info)));
     assert(info & 1);
     return reinterpret_cast<CordzInfo*>(info - 1);
   }
@@ -470,8 +449,9 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   void set_cordz_info(CordzInfo* cordz_info) {
     assert(is_tree());
-    intptr_t info = reinterpret_cast<intptr_t>(cordz_info) | 1;
-    as_tree_.cordz_info = absl::big_endian::FromHost64(info);
+    uintptr_t info = reinterpret_cast<uintptr_t>(cordz_info) | 1;
+    as_tree_.cordz_info =
+        static_cast<cordz_info_t>(absl::big_endian::FromHost64(info));
   }
 
   // Resets the current cordz_info to null / empty.
@@ -570,16 +550,6 @@ class InlineData {
 };
 
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
-
-inline CordRepConcat* CordRep::concat() {
-  assert(IsConcat());
-  return static_cast<CordRepConcat*>(this);
-}
-
-inline const CordRepConcat* CordRep::concat() const {
-  assert(IsConcat());
-  return static_cast<const CordRepConcat*>(this);
-}
 
 inline CordRepSubstring* CordRep::substring() {
   assert(IsSubstring());

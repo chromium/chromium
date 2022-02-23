@@ -91,13 +91,19 @@ class FakeAssistantClient : public AssistantClient {
   void PauseTimer(const std::string& timer_id) override;
   void RemoveTimer(const std::string& timer_id) override;
   void ResumeTimer(const std::string& timer_id) override;
-  std::vector<assistant::AssistantTimer> GetTimers() override;
-  void RegisterAlarmTimerEventObserver(
-      base::WeakPtr<
-          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+  void GetTimers(
+      base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+          on_done) override;
+  void AddAlarmTimerEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
           observer) override;
 
+ private:
   assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
+  void GetAndNotifyTimerStatus();
+
+  GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+      timer_observer_;
 };
 
 }  // namespace libassistant

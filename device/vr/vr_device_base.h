@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -69,7 +68,7 @@ class COMPONENT_EXPORT(DEVICE_VR_BASE) VRDeviceBase : public mojom::XRRuntime {
   void SetArBlendModeSupported(bool is_ar_blend_mode_supported);
   void SetSupportedFeatures(
       const std::vector<mojom::XRSessionFeature>& features);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void SetLuid(const CHROME_LUID& luid);
 #endif
 

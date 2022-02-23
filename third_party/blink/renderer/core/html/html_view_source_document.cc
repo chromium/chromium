@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/html/html_table_section_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_view_source_parser.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -90,7 +90,8 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
   ParserAppendChild(html);
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
-  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  auto* meta =
+      MakeGarbageCollected<HTMLMetaElement>(*this, CreateElementFlags());
   meta->setAttribute(html_names::kNameAttr, "color-scheme");
   meta->setAttribute(html_names::kContentAttr, "light dark");
   head->ParserAppendChild(meta);

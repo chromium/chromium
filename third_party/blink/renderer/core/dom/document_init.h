@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -106,14 +106,13 @@ class CORE_EXPORT DocumentInit final {
   DocumentInit& ForPrerendering(bool is_prerendering);
   bool IsPrerendering() const { return is_prerendering_; }
 
-  // Compute the type of document to be loaded inside a |frame|, given its |url|
-  // and its |mime_type|.
+  // Compute the type of document to be loaded inside a `frame`, given its
+  // `mime_type`.
   //
   // In case of plugin handled by MimeHandlerview (which do not create a
-  // PluginDocument), the type is Type::KHTML and |is_for_external_handler| is
+  // PluginDocument), the type is Type::KHTML and `is_for_external_handler` is
   // set to true.
   static Type ComputeDocumentType(LocalFrame* frame,
-                                  const KURL& url,
                                   const String& mime_type,
                                   bool* is_for_external_handler = nullptr);
   DocumentInit& WithTypeFrom(const String& mime_type);
@@ -141,7 +140,7 @@ class CORE_EXPORT DocumentInit final {
  private:
   DocumentInit() = default;
 
-  static PluginData* GetPluginData(LocalFrame* frame, const KURL& url);
+  static PluginData* GetPluginData(LocalFrame* frame);
 
   Type type_ = Type::kUnspecified;
   bool is_prerendering_ = false;

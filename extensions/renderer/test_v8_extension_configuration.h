@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace v8 {
 class Extension;
 class ExtensionConfiguration;

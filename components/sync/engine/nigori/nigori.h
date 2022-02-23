@@ -21,7 +21,7 @@ namespace syncer {
 class KeyDerivationParams;
 
 // TODO(crbug.com/922900): inline kNigoriKeyName into Nigori::Permute().
-extern const char kNigoriKeyName[];
+inline constexpr char kNigoriKeyName[] = "nigori-key";
 
 // A (partial) implementation of Nigori, a protocol to securely store secrets in
 // the cloud. This implementation does not support server authentication or

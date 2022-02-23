@@ -862,7 +862,7 @@ def _GetCommandForWebTests(arguments):
       LLVM_PROFILE_FILE_PATH_SUBSTITUTION,
       '--child-processes=%d' % cpu_count, '--disable-breakpad',
       '--no-show-results', '--skip-failing-tests',
-      '--target=%s' % os.path.basename(BUILD_DIR), '--time-out-ms=30000'
+      '--target=%s' % os.path.basename(BUILD_DIR), '--timeout-ms=30000'
   ]
   if arguments.strip():
     command_list.append(arguments)

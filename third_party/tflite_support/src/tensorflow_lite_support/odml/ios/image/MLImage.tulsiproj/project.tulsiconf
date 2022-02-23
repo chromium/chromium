@@ -1,0 +1,17 @@
+{
+  "configDefaults" : {
+    "optionSet" : {
+      "BazelBuildOptionsDebug" : {
+
+      },
+      "BazelBuildOptionsRelease" : {
+
+      },
+    }
+  },
+  "projectName" : "MLImage",
+  "packages" : [
+    "third_party/tensorflow_lite_support/odml/ios/image"
+  ],
+  "workspaceRoot" : "../../../../../.."
+}

@@ -31,10 +31,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SHAPE_VALUE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -83,12 +85,12 @@ inline bool ShapeValue::operator==(const ShapeValue& other) const {
 
   switch (GetType()) {
     case kShape:
-      return DataEquivalent(Shape(), other.Shape()) &&
+      return base::ValuesEquivalent(Shape(), other.Shape()) &&
              CssBox() == other.CssBox();
     case kBox:
       return CssBox() == other.CssBox();
     case kImage:
-      return DataEquivalent(GetImage(), other.GetImage());
+      return base::ValuesEquivalent(GetImage(), other.GetImage());
   }
 
   NOTREACHED();

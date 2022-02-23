@@ -7,12 +7,31 @@
  * 'settings-users-page' is the settings page for managing user accounts on
  * the device.
  */
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/action_link_css.m.js';
+import '//resources/js/action_link.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared_css.js';
+import './user_list.js';
+import './users_add_user_dialog.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-users-page',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -40,7 +59,7 @@ Polymer({
     isChild_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isSupervised');
+        return loadTimeData.getBoolean('isChildAccount');
       },
     },
 
@@ -86,7 +105,7 @@ Polymer({
     }
 
     // Wait for element to load.
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       const userList = this.$$('settings-user-list');
       const removeButton = userList.$$('cr-icon-button');
       if (removeButton) {
@@ -100,14 +119,14 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.ACCOUNTS) {
+    if (route !== routes.ACCOUNTS) {
       return;
     }
 
@@ -157,6 +176,6 @@ Polymer({
 
   /** @private */
   focusAddUserButton_() {
-    cr.ui.focusWithoutInk(assert(this.$$('#add-user-button a')));
+    focusWithoutInk(assert(this.$$('#add-user-button a')));
   },
 });

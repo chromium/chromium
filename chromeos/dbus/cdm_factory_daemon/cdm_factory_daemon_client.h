@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
 class Bus;
@@ -41,6 +42,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
   virtual void BootstrapMojoConnection(
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> callback) = 0;
+
+  // Registers |callback| to run when the CdmFactoryDaemon service becomes
+  // available.
+  virtual void WaitForServiceToBeAvailable(
+      WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

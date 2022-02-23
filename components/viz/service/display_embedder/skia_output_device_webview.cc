@@ -36,7 +36,8 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
   // SkSurface wrappers non GL fbo0.
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();
-  capabilities_.max_frames_pending = gl_surface_->GetBufferCount() - 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      gl_surface_->GetBufferCount() - 1;
 
   DCHECK(context_state_->gr_context());
   DCHECK(context_state_->context());
@@ -100,9 +101,6 @@ void SkiaOutputDeviceWebView::EndPaint() {}
 void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   last_frame_buffer_object_ = fbo;
 
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-
   GrGLFramebufferInfo framebuffer_info;
   framebuffer_info.fFBOID = fbo;
   framebuffer_info.fFormat = GL_RGBA8;
@@ -114,6 +112,8 @@ void SkiaOutputDeviceWebView::InitSkiaSurface(unsigned int fbo) {
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;
+
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   sk_surface_ = SkSurface::MakeFromBackendRenderTarget(
       context_state_->gr_context(), render_target, origin, color_type,
       color_space_.ToSkColorSpace(), &surface_props);

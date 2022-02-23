@@ -357,8 +357,8 @@ void SaveAddressProfileView::AddedToWidget() {
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_SAVE_ADDRESS),
       *bundle.GetImageSkiaNamed(IDR_SAVE_ADDRESS_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                          base::Unretained(GetBubbleFrameView())));
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 

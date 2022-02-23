@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/screen_lock_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 ScreenLockManager::ScreenLockManager() = default;
@@ -23,4 +23,4 @@ void ScreenLockManager::NotifyScreenLockChanged() {
     observer.OnScreenLockChanged();
 }
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

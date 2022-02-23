@@ -94,15 +94,15 @@ TEST_F(ImageIndexTest, IsToken) {
   InitializeWithDefaultTestData();
 
   std::vector<bool> expected = {
-      1,           // raw
-      1, 0,        // ref 0
-      1, 0, 0, 0,  // ref 1
-      1,           // raw
-      1, 0,        // ref 0
-      1, 0,        // ref 0
-      1, 0, 0,     // ref 2
-      1, 1,        // raw
-      1, 0, 0,     // ref 2
+      true,                       // raw
+      true, false,                // ref 0
+      true, false, false, false,  // ref 1
+      true,                       // raw
+      true, false,                // ref 0
+      true, false,                // ref 0
+      true, false, false,         // ref 2
+      true, true,                 // raw
+      true, false, false,         // ref 2
   };
 
   for (offset_t i = 0; i < image_index_.size(); ++i)
@@ -113,15 +113,15 @@ TEST_F(ImageIndexTest, IsReference) {
   InitializeWithDefaultTestData();
 
   std::vector<bool> expected = {
-      0,           // raw
-      1, 1,        // ref 0
-      1, 1, 1, 1,  // ref 1
-      0,           // raw
-      1, 1,        // ref 0
-      1, 1,        // ref 0
-      1, 1, 1,     // ref 2
-      0, 0,        // raw
-      1, 1, 1,     // ref 2
+      false,                     // raw
+      true,  true,               // ref 0
+      true,  true,  true, true,  // ref 1
+      false,                     // raw
+      true,  true,               // ref 0
+      true,  true,               // ref 0
+      true,  true,  true,        // ref 2
+      false, false,              // raw
+      true,  true,  true,        // ref 2
   };
 
   for (offset_t i = 0; i < image_index_.size(); ++i)

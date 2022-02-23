@@ -4,11 +4,14 @@
 
 #include "ash/components/phonehub/browser_tabs_model_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
+
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+
 }  // namespace
 
 BrowserTabsModelController::BrowserTabsModelController(
@@ -52,4 +55,4 @@ void BrowserTabsModelController::UpdateBrowserTabsModel() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

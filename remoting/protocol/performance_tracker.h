@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
-#include "base/macros.h"
-#include "base/timer/timer.h"
 #include "remoting/base/rate_counter.h"
 #include "remoting/base/running_samples.h"
 #include "remoting/protocol/frame_stats.h"
@@ -21,29 +18,12 @@ namespace protocol {
 // for chromoting.
 class PerformanceTracker : public FrameStatsConsumer {
  public:
-  // Callback that updates UMA custom counts or custom times histograms.
-  typedef base::RepeatingCallback<void(const std::string& histogram_name,
-                                       int64_t value,
-                                       int histogram_min,
-                                       int histogram_max,
-                                       int histogram_buckets)>
-      UpdateUmaCustomHistogramCallback;
-
-  // Callback that updates UMA enumeration histograms.
-  typedef base::RepeatingCallback<
-      void(const std::string& histogram_name, int64_t value, int histogram_max)>
-      UpdateUmaEnumHistogramCallback;
-
   PerformanceTracker();
 
   PerformanceTracker(const PerformanceTracker&) = delete;
   PerformanceTracker& operator=(const PerformanceTracker&) = delete;
 
   ~PerformanceTracker() override;
-
-  // Constant used to calculate the average for rate metrics and used by the
-  // plugin for the frequency at which stats should be updated.
-  static const int kStatsUpdatePeriodSeconds = 1;
 
   // Return rates and running-averages for different metrics.
   double video_bandwidth() const { return video_bandwidth_.Rate(); }
@@ -58,19 +38,7 @@ class PerformanceTracker : public FrameStatsConsumer {
   // FrameStatsConsumer interface.
   void OnVideoFrameStats(const FrameStats& stats) override;
 
-  // Sets callbacks in ChromotingInstance to update a UMA custom counts, custom
-  // times or enum histogram.
-  void SetUpdateUmaCallbacks(
-      UpdateUmaCustomHistogramCallback update_uma_custom_counts_callback,
-      UpdateUmaCustomHistogramCallback update_uma_custom_times_callback,
-      UpdateUmaEnumHistogramCallback update_uma_enum_histogram_callback);
-
-  void OnPauseStateChanged(bool paused);
-
  private:
-  // Updates frame-rate, packet-rate and bandwidth UMA statistics.
-  void UploadRateStatsToUma();
-
   // The video and packet rate metrics below are updated per video packet
   // received and then, for reporting, averaged over a 1s time-window.
   // Bytes per second for non-empty video-packets.
@@ -93,15 +61,6 @@ class PerformanceTracker : public FrameStatsConsumer {
   RunningSamples video_decode_ms_;
   RunningSamples video_paint_ms_;
   RunningSamples round_trip_ms_;
-
-  // Used to update UMA stats, if set.
-  UpdateUmaCustomHistogramCallback uma_custom_counts_updater_;
-  UpdateUmaCustomHistogramCallback uma_custom_times_updater_;
-  UpdateUmaEnumHistogramCallback uma_enum_histogram_updater_;
-
-  bool is_paused_ = false;
-
-  base::RepeatingTimer upload_uma_stats_timer_;
 };
 
 }  // namespace protocol

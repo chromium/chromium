@@ -46,19 +46,9 @@ void FakeWebState::CloseWebState() {
   is_closed_ = true;
 }
 
-FakeWebState::FakeWebState()
-    : browser_state_(nullptr),
-      web_usage_enabled_(true),
-      is_loading_(false),
-      is_visible_(false),
-      is_crashed_(false),
-      is_evicted_(false),
-      has_opener_(false),
-      can_take_snapshot_(false),
-      is_closed_(false),
-      trust_level_(kAbsolute),
-      content_is_html_(true),
-      web_view_proxy_(nil) {}
+FakeWebState::FakeWebState(NSString* stable_identifier)
+    : stable_identifier_(stable_identifier ? stable_identifier
+                                           : [[NSUUID UUID] UUIDString]) {}
 
 FakeWebState::~FakeWebState() {
   for (auto& observer : observers_)
@@ -84,11 +74,15 @@ WebStateDelegate* FakeWebState::GetDelegate() {
 void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
 
 bool FakeWebState::IsRealized() const {
-  // FakeWebState cannot be unrealized.
-  return true;
+  return is_realized_;
 }
 
 WebState* FakeWebState::ForceRealized() {
+  if (!is_realized_) {
+    is_realized_ = true;
+    for (auto& observer : observers_)
+      observer.WebStateRealized(this);
+  }
   return this;
 }
 
@@ -114,7 +108,14 @@ void FakeWebState::DidCoverWebContent() {}
 
 void FakeWebState::DidRevealWebContent() {}
 
+base::Time FakeWebState::GetLastActiveTime() const {
+  return last_active_time_;
+}
+
 void FakeWebState::WasShown() {
+  if (!is_visible_)
+    last_active_time_ = base::Time::Now();
+
   is_visible_ = true;
   for (auto& observer : observers_)
     observer.WasShown(this);
@@ -155,12 +156,12 @@ FakeWebState::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* FakeWebState::BuildSessionStorage() {
-  std::unique_ptr<web::SerializableUserData> serializable_user_data =
-      web::SerializableUserDataManager::FromWebState(this)
-          ->CreateSerializableUserData();
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  [session_storage setSerializableUserData:std::move(serializable_user_data)];
+  session_storage.userData =
+      web::SerializableUserDataManager::FromWebState(this)
+          ->GetUserDataForSession();
   session_storage.itemStorages = @[ [[CRWNavigationItemStorage alloc] init] ];
+  session_storage.stableIdentifier = stable_identifier_;
   return session_storage;
 }
 
@@ -218,12 +219,20 @@ void FakeWebState::ExecuteJavaScript(const std::u16string& javascript,
 
 void FakeWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
+NSString* FakeWebState::GetStableIdentifier() const {
+  return stable_identifier_;
+}
+
 const std::string& FakeWebState::GetContentsMimeType() const {
   return mime_type_;
 }
 
 bool FakeWebState::ContentIsHTML() const {
   return content_is_html_;
+}
+
+int FakeWebState::GetNavigationItemCount() const {
+  return navigation_item_count_;
 }
 
 const GURL& FakeWebState::GetVisibleURL() const {
@@ -249,8 +258,16 @@ base::CallbackListSubscription FakeWebState::AddScriptCommandCallback(
   return callback_list_.Add(callback);
 }
 
+void FakeWebState::SetLastActiveTime(base::Time time) {
+  last_active_time_ = time;
+}
+
 void FakeWebState::SetBrowserState(BrowserState* browser_state) {
   browser_state_ = browser_state;
+}
+
+void FakeWebState::SetIsRealized(bool value) {
+  is_realized_ = value;
 }
 
 void FakeWebState::SetJSInjectionReceiver(
@@ -296,6 +313,14 @@ bool FakeWebState::IsEvicted() const {
 
 bool FakeWebState::IsBeingDestroyed() const {
   return false;
+}
+
+const FaviconStatus& FakeWebState::GetFaviconStatus() const {
+  return favicon_status_;
+}
+
+void FakeWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
 }
 
 void FakeWebState::SetLoading(bool is_loading) {
@@ -437,6 +462,10 @@ void FakeWebState::SetCurrentURL(const GURL& url) {
   url_ = url;
 }
 
+void FakeWebState::SetNavigationItemCount(int count) {
+  navigation_item_count_ = count;
+}
+
 void FakeWebState::SetVisibleURL(const GURL& url) {
   url_ = url;
 }
@@ -491,12 +520,45 @@ void FakeWebState::CreateFullPagePdf(
   std::move(callback).Run([[NSData alloc] init]);
 }
 
+void FakeWebState::CloseMediaPresentations() {}
+
 bool FakeWebState::SetSessionStateData(NSData* data) {
   return false;
 }
 
 NSData* FakeWebState::SessionStateData() {
   return nil;
+}
+
+PermissionState FakeWebState::GetStateForPermission(
+    Permission permission) const {
+  switch (permission) {
+    case PermissionCamera:
+      return camera_permission_state_;
+    case PermissionMicrophone:
+      return microphone_permission_state_;
+  }
+  return PermissionStateNotAccessible;
+}
+
+void FakeWebState::SetStateForPermission(PermissionState state,
+                                         Permission permission) {
+  switch (permission) {
+    case PermissionCamera:
+      camera_permission_state_ = state;
+      return;
+    case PermissionMicrophone:
+      microphone_permission_state_ = state;
+      return;
+  }
+}
+
+NSDictionary<NSNumber*, NSNumber*>* FakeWebState::GetStatesForAllPermissions()
+    const {
+  return @{
+    @(PermissionCamera) : @(camera_permission_state_),
+    @(PermissionMicrophone) : @(microphone_permission_state_)
+  };
 }
 
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(

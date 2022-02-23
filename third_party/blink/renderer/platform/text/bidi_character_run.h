@@ -22,7 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 

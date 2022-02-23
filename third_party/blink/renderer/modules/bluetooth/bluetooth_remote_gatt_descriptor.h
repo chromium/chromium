@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -48,9 +48,11 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
  private:
   friend class DescriptorReadValueCallback;
 
-  BluetoothRemoteGATTServer* GetGatt() { return characteristic_->GetGatt(); }
-  mojom::blink::WebBluetoothService* GetService() {
-    return characteristic_->device_->GetBluetooth()->Service();
+  BluetoothRemoteGATTServer* GetGatt() const {
+    return characteristic_->GetGatt();
+  }
+  Bluetooth* GetBluetooth() const {
+    return characteristic_->device_->GetBluetooth();
   }
 
   void ReadValueCallback(ScriptPromiseResolver*,

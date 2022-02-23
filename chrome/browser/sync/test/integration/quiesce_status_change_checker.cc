@@ -72,21 +72,21 @@ bool ProgressMarkersMatch(const syncer::SyncServiceImpl* service1,
     auto pm_it1 = snap1.download_progress_markers().find(type);
     if (pm_it1 == snap1.download_progress_markers().end()) {
       *os << "Progress marker missing in client 1 for "
-          << syncer::ModelTypeToString(type);
+          << syncer::ModelTypeToDebugString(type);
       return false;
     }
 
     auto pm_it2 = snap2.download_progress_markers().find(type);
     if (pm_it2 == snap2.download_progress_markers().end()) {
       *os << "Progress marker missing in client 2 for "
-          << syncer::ModelTypeToString(type);
+          << syncer::ModelTypeToDebugString(type);
       return false;
     }
 
     // Fail if any of them don't match.
     if (!AreProgressMarkersEquivalent(pm_it1->second, pm_it2->second)) {
       *os << "Progress markers don't match for "
-          << syncer::ModelTypeToString(type);
+          << syncer::ModelTypeToDebugString(type);
       return false;
     }
   }
@@ -132,7 +132,8 @@ QuiesceStatusChangeChecker::~QuiesceStatusChangeChecker() {}
 bool QuiesceStatusChangeChecker::IsExitConditionSatisfied(std::ostream* os) {
   // Check that all progress markers are up to date.
   std::vector<syncer::SyncServiceImpl*> enabled_services;
-  for (const auto& checker : checkers_) {
+  for (const std::unique_ptr<NestedUpdatedProgressMarkerChecker>& checker :
+       checkers_) {
     enabled_services.push_back(checker->service());
 
     if (!checker->IsExitConditionSatisfied(os)) {

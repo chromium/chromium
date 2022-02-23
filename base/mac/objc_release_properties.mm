@@ -45,9 +45,7 @@ id ValueOf(id obj, objc_property_t property) {
 
 }  // namespace
 
-namespace base {
-namespace mac {
-namespace details {
+namespace base::mac::details {
 
 void ReleaseProperties(id self, Class cls) {
   unsigned int property_count;
@@ -61,6 +59,4 @@ void ReleaseProperties(id self, Class cls) {
   }
 }
 
-}  // namespace details
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac::details

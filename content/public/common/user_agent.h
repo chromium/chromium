@@ -89,7 +89,7 @@ CONTENT_EXPORT std::string BuildUserAgentFromProduct(
 // if on a codenamed (i.e. not a release) build of an Android.
 CONTENT_EXPORT std::string BuildModelInfo();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Helper function to generate a full user agent string given a short
 // product name and some extra text to be added to the OS info.
 // This is currently only used for Android Web View.
@@ -109,6 +109,10 @@ CONTENT_EXPORT std::string GetAndroidOSInfo(
 CONTENT_EXPORT std::string BuildUserAgentFromOSAndProduct(
     const std::string& os_info,
     const std::string& product);
+
+// Returns true if the binary was built in 32-bit mode and is running on 64-bit
+// Windows; returns false otherwise.
+CONTENT_EXPORT bool IsWoW64();
 
 }  // namespace content
 

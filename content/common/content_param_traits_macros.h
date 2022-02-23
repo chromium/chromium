@@ -15,7 +15,7 @@
 #include "ipc/ipc_message_macros.h"
 #include "ui/native_theme/native_theme.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #endif
 
@@ -25,7 +25,7 @@
 IPC_ENUM_TRAITS_MAX_VALUE(content::NavigationGesture,
                           content::NavigationGestureLast)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::ScrollerStyle, blink::kScrollerStyleOverlay)
 #endif
 

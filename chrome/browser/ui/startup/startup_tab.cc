@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/startup/startup_tab.h"
 
-StartupTab::StartupTab(const GURL& url, bool is_pinned)
-    : url(url), is_pinned(is_pinned) {}
+StartupTab::StartupTab(const GURL& url, Type type) : url(url), type(type) {}
 
 StartupTab::~StartupTab() = default;

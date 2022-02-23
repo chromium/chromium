@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "device/udev_linux/udev_watcher.h"
 #include "services/device/serial/serial_device_enumerator.h"
 

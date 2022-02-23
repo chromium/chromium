@@ -22,7 +22,7 @@ class CommonSwitches {
         // Intentionally no flag since turning this off outside of tests
         // is a security risk.
         prompt_for_external_extensions(nullptr,
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
                                        FeatureSwitch::DEFAULT_ENABLED),
 #else
                                        FeatureSwitch::DEFAULT_DISABLED),
@@ -85,6 +85,8 @@ FeatureSwitch::FeatureSwitch(const base::CommandLine* command_line,
       switch_name_(switch_name),
       default_value_(default_value == DEFAULT_ENABLED),
       override_value_(OVERRIDE_NONE) {}
+
+FeatureSwitch::~FeatureSwitch() = default;
 
 bool FeatureSwitch::IsEnabled() const {
   if (override_value_ != OVERRIDE_NONE)

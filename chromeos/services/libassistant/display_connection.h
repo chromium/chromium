@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
-#include "libassistant/shared/internal_api/display_connection.h"
 
 namespace chromeos {
 namespace libassistant {

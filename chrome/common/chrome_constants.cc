@@ -11,7 +11,7 @@
 
 #define FPL FILE_PATH_LITERAL
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define PRODUCT_STRING "Google Chrome"
 #elif BUILDFLAG(CHROMIUM_BRANDING)
@@ -19,7 +19,7 @@
 #else
 #error Unknown branding
 #endif
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace chrome {
 
@@ -42,60 +42,60 @@ const char kChromeVersion[] = CHROME_VERSION_STRING;
 // in the UITest class we support switching to that version when told to
 // do so.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kBrowserProcessExecutableName[] =
     FPL("chrome.exe");
 const base::FilePath::CharType kHelperProcessExecutableName[] =
     FPL("chrome.exe");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kBrowserProcessExecutableName[] =
     FPL(PRODUCT_STRING);
 const base::FilePath::CharType kHelperProcessExecutableName[] =
     FPL(PRODUCT_STRING " Helper");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // NOTE: Keep it synced with the process names defined in AndroidManifest.xml.
 const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("chrome");
 const base::FilePath::CharType kHelperProcessExecutableName[] =
     FPL("sandboxed_process");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 const base::FilePath::CharType kBrowserProcessExecutableName[] = FPL("chrome");
 // Helper processes end up with a name of "exe" due to execing via
 // /proc/self/exe.  See bug 22703.
 const base::FilePath::CharType kHelperProcessExecutableName[] = FPL("exe");
 #endif  // OS_*
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] =
     FPL("chrome.exe");
 const base::FilePath::CharType kHelperProcessExecutablePath[] =
     FPL("chrome.exe");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] =
     FPL(PRODUCT_STRING ".app/Contents/MacOS/" PRODUCT_STRING);
 const base::FilePath::CharType kHelperProcessExecutablePath[] =
     FPL(PRODUCT_STRING " Helper.app/Contents/MacOS/" PRODUCT_STRING " Helper");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("chrome");
 const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 const base::FilePath::CharType kBrowserProcessExecutablePath[] = FPL("chrome");
 const base::FilePath::CharType kHelperProcessExecutablePath[] = FPL("chrome");
 #endif  // OS_*
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::FilePath::CharType kFrameworkName[] =
     FPL(PRODUCT_STRING " Framework.framework");
 const base::FilePath::CharType kFrameworkExecutableName[] =
     FPL(PRODUCT_STRING " Framework");
 const char kMacHelperSuffixAlerts[] = " (Alerts)";
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kBrowserResourcesDll[] = FPL("chrome.dll");
 const base::FilePath::CharType kElfDll[] = FPL("chrome_elf.dll");
 const base::FilePath::CharType kStatusTrayWindowClass[] =
     FPL("Chrome_StatusTrayWindow");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 const char kInitialProfile[] = "Default";
 const char kMultiProfileDirPrefix[] = "Profile ";
@@ -139,6 +139,8 @@ const base::FilePath::CharType kPreviewsOptOutDBFilename[] =
     FPL("previews_opt_out.db");
 const base::FilePath::CharType kQueryTileStorageDirname[] = FPL("Query Tiles");
 const base::FilePath::CharType kReadmeFilename[] = FPL("README");
+const base::FilePath::CharType kSCTAuditingPendingReportsFileName[] =
+    FPL("SCT Auditing Pending Reports");
 const base::FilePath::CharType kSecurePreferencesFilename[] =
     FPL("Secure Preferences");
 const base::FilePath::CharType kServiceStateFileName[] = FPL("Service State");
@@ -162,12 +164,12 @@ const base::FilePath::CharType kWebAppDirname[] = FPL("Web Applications");
 const base::FilePath::CharType kReportingAndNelStoreFilename[] =
     FPL("Reporting and NEL");
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kJumpListIconDirname[] = FPL("JumpListIcons");
 #endif
 
 // directory names
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const wchar_t kUserDataDirname[] = L"User Data";
 #endif
 

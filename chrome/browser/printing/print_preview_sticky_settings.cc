@@ -47,7 +47,7 @@ void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
 }
 
 void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
-  const base::DictionaryValue* value =
+  const base::Value* value =
       prefs->GetDictionary(prefs::kPrintPreviewStickySettings);
   const base::Value* app_state =
       value->FindKeyOfType(kSettingAppState, base::Value::Type::STRING);
@@ -82,8 +82,9 @@ std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
     return {};
 
   std::vector<std::string> printers;
-  printers.reserve(recent_destinations->GetList().size());
-  for (const auto& recent_destination : recent_destinations->GetList()) {
+  printers.reserve(recent_destinations->GetListDeprecated().size());
+  for (const auto& recent_destination :
+       recent_destinations->GetListDeprecated()) {
     const std::string* printer_id = recent_destination.FindStringKey(kId);
     if (!printer_id)
       continue;

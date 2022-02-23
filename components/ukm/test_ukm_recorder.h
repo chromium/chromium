@@ -48,7 +48,6 @@ class TestUkmRecorder : public UkmRecorderImpl {
   ~TestUkmRecorder() override;
 
   bool ShouldRestrictToWhitelistedSourceIds() const override;
-  bool ShouldRestrictToWhitelistedEntries() const override;
 
   void AddEntry(mojom::UkmEntryPtr entry) override;
 

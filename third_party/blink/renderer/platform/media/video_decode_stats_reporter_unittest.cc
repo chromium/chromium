@@ -38,7 +38,7 @@ const int kDefaultHeight = 480;
 const int kDefaultWidth = 640;
 const char kDefaultKeySystem[] = "org.w3.clearkey";
 const bool kDefaultUseHwSecureCodecs = true;
-const media::CdmConfig kDefaultCdmConfig = {false, false,
+const media::CdmConfig kDefaultCdmConfig = {kDefaultKeySystem, false, false,
                                             kDefaultUseHwSecureCodecs};
 const double kDefaultFps = 30;
 const int kDecodeCountIncrement = 20;
@@ -180,13 +180,12 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   void MakeReporter(
       media::VideoCodecProfile profile = kDefaultProfile,
       const gfx::Size& natural_size = gfx::Size(kDefaultWidth, kDefaultHeight),
-      const std::string key_system = kDefaultKeySystem,
       const absl::optional<media::CdmConfig> cdm_config = kDefaultCdmConfig) {
     reporter_ = std::make_unique<VideoDecodeStatsReporter>(
         SetupRecordInterceptor(&interceptor_),
         base::BindRepeating(&VideoDecodeStatsReporterTest::GetPipelineStatsCB,
                             base::Unretained(this)),
-        profile, natural_size, key_system, cdm_config,
+        profile, natural_size, cdm_config,
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMockTickClock());
   }
@@ -861,19 +860,18 @@ TEST_F(VideoDecodeStatsReporterTest, VaryEmeProperties) {
   const gfx::Size kDefaultSize(kDefaultWidth, kDefaultHeight);
   const char kEmptyKeySystem[] = "";
   const bool kNonDefaultHwSecureCodecs = !kDefaultUseHwSecureCodecs;
-  const media::CdmConfig kNonDefaultCdmConfig = {false, false,
-                                                 kNonDefaultHwSecureCodecs};
   const char kFooKeySystem[] = "fookeysytem";
+  const media::CdmConfig kNonDefaultCdmConfig = {kFooKeySystem, false, false,
+                                                 kNonDefaultHwSecureCodecs};
 
   // Make reporter with no EME properties.
-  MakeReporter(kDefaultProfile, kDefaultSize, kEmptyKeySystem, absl::nullopt);
+  MakeReporter(kDefaultProfile, kDefaultSize, absl::nullopt);
   // Verify the empty key system and non-default hw_secure_codecs.
   StartPlayingAndStabilizeFramerate(kDefaultProfile, kDefaultSize, kDefaultFps,
                                     kEmptyKeySystem, kNonDefaultHwSecureCodecs);
 
   // Make a new reporter with a non-default, non-empty key system.
-  MakeReporter(kDefaultProfile, kDefaultSize, kFooKeySystem,
-               kNonDefaultCdmConfig);
+  MakeReporter(kDefaultProfile, kDefaultSize, kNonDefaultCdmConfig);
   // Verify non-default key system
   StartPlayingAndStabilizeFramerate(kDefaultProfile, kDefaultSize, kDefaultFps,
                                     kFooKeySystem, kNonDefaultHwSecureCodecs);

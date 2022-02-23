@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -42,19 +43,18 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/url_param_filter/url_param_filter_test_helper.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/lens/lens_features.h"
@@ -85,9 +85,11 @@
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -131,12 +133,6 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
  public:
   ContextMenuBrowserTest() {}
 
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Tests in this suite make use of documents with no significant
     // rendered content, and such documents do not accept input for 500ms
@@ -169,6 +165,26 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
                              ui::MENU_SOURCE_NONE);
   }
 
+  std::unique_ptr<TestRenderViewContextMenu>
+  CreateContextMenuForTextInWebContents(const std::u16string& selection_text) {
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::ContextMenuParams params;
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
+    params.selection_text = selection_text;
+    params.page_url = web_contents->GetVisibleURL();
+    params.source_type = ui::MENU_SOURCE_NONE;
+#if BUILDFLAG(IS_MAC)
+    params.writing_direction_default = 0;
+    params.writing_direction_left_to_right = 0;
+    params.writing_direction_right_to_left = 0;
+#endif
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetMainFrame(), params);
+    menu->Init();
+    return menu;
+  }
+
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu(
       const GURL& unfiltered_url,
       const GURL& url,
@@ -195,7 +211,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     params.link_text = link_text;
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = source_type;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
     params.writing_direction_right_to_left = 0;
@@ -217,7 +233,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
   AppId InstallTestWebApp(const GURL& start_url, bool open_as_window = true) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url;
     web_app_info->title = u"Test app 🐐";
@@ -307,7 +323,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
@@ -413,17 +429,28 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
   content::RenderFrameHost* extension_frame() { return extension_frame_; }
 
  private:
-  content::RenderFrameHost* extension_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> extension_frame_ = nullptr;
   guest_view::TestGuestViewManagerFactory factory_;
-  guest_view::TestGuestViewManager* test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
-class PdfPluginContextMenuBrowserTestWithUnseasonedOverride
-    : public base::test::WithFeatureOverride,
-      public PdfPluginContextMenuBrowserTest {
+class ContextMenuIncognitoFilterBrowserTest : public ContextMenuBrowserTest {
  public:
-  PdfPluginContextMenuBrowserTestWithUnseasonedOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+  void SetUpInProcessBrowserTestFixture() override {
+    // Enable open in incognito param filtering, with rules for:
+    // a destination of: <IP address>, for which eTLD+1 is blank,
+    // with outgoing param plzblock
+    // or a source of: foo.com with outgoing param plzblock1
+    std::string encoded_classification = url_param_filter::
+        CreateBase64EncodedFilterParamClassificationForTesting(
+            {{"foo.com", {"plzblock1"}}}, {{"", {"plzblock"}}});
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kIncognitoParamFilterEnabled,
+        {{"classifications", encoded_classification}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -452,9 +479,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_TRUE(menu3->IsCommandIdVisible(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
 
-// Verifies "Save link as" is not enabled for links blacklisted via policy.
+// Verifies "Save link as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       SaveLinkAsEntryIsDisabledForBlacklistedUrls) {
+                       SaveLinkAsEntryIsDisabledForBlockedUrls) {
   base::Value value(base::Value::Type::LIST);
   value.Append(base::Value("google.com"));
   browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
@@ -857,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  EXPECT_EQ(GURL("about:blank"), tab->GetURL());
+  EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for about:blank.
@@ -886,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenAboutBlankInNewTab) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  EXPECT_EQ(GURL("about:blank"), tab->GetURL());
+  EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for data: URLs.
@@ -949,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  ASSERT_EQ(echoheader, tab->GetURL());
+  ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kCorrectReferrer|.
   std::string actual_referrer;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -998,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  ASSERT_EQ(echoheader, tab->GetURL());
+  ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kNoneReferrer|.
   std::string actual_referrer;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -1015,9 +1042,133 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
   ASSERT_EQ(kEmptyReferrer, page_referrer);
 }
 
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it filters as expected.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+                       OpenIncognitoUrlParamFilter) {
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?plzblock=1&nochanges=2&plzblock1=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the filtered URL.
+  GURL expected(embedded_test_server()->GetURL("/empty.html?nochanges=2"));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // The response was a 200, and the navigation went from normal-->OTR browsing.
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental",
+      net::HttpUtil::MapStatusCodeForHistogram(200), 1);
+}
+
+// Ensure that enabling URL param filtering does not apply to "Open in new tab"
+// and that cross-off-the-record metrics are not written in that case.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+                       OpenTabNoUrlParamFilter) {
+  const char kPath[] = "/empty.html?plzblock=1&nochanges=2&plzblock1=2";
+  base::HistogramTester histogram_tester;
+
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(kPath));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in New Tab" and wait for the tab to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+
+  content::WebContents* tab = tab_added_waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the original URL; open in new tab should not filter.
+  GURL expected(embedded_test_server()->GetURL(kPath));
+  ASSERT_EQ(expected, tab->GetLastCommittedURL());
+
+  // Ensure we did not erroneously record a cross-off-the-record metric; the
+  // navigation did not cross over.
+  histogram_tester.ExpectTotalCount(
+      "Navigation.CrossOtr.ContextMenu.ResponseCodeExperimental", 0);
+}
+
+// Enable "Open Link in Incognito Window" URL parameter filtering, and ensure
+// that it does not filter when it is not configured to do so.
+IN_PROC_BROWSER_TEST_F(ContextMenuIncognitoFilterBrowserTest,
+                       OpenIncognitoUrlParamFilterWithoutChanges) {
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_root(embedded_test_server()->GetURL(
+      "/empty.html?noblock=1&nochanges=2&alsonoblock=2"));
+
+  // Go to a |page| with a link to a URL that has associated filtering rules.
+  GURL page("data:text/html,<a href='" + test_root.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up the source URL to an eTLD+1 that also has a filtering rule.
+  const GURL kSource("http://foo.com/test");
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kSource;
+  context_menu_params.link_url = test_root;
+
+  // Select "Open Link in Incognito Window" and wait for window to be added.
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  // Verify that it loaded the unfiltered URL.
+  ASSERT_EQ(test_root, tab->GetLastCommittedURL());
+}
+
 // Verify that "Open link in [App Name]" opens a new App window.
 // TODO(crbug.com/1180790): Test is flaky on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_OpenLinkInWebApp DISABLED_OpenLinkInWebApp
 #else
 #define MAYBE_OpenLinkInWebApp OpenLinkInWebApp
@@ -1188,7 +1339,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                              IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Check whether correct non-located context menu shows up for image element
 // with height more than visual viewport bounds.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
@@ -1357,8 +1508,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPr
   }
 
   profiles::FindOrCreateNewWindowForProfile(
-      profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-      chrome::startup::IS_NOT_FIRST_RUN, false);
+      profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, false);
 
   {
     std::unique_ptr<TestRenderViewContextMenu> menu(
@@ -1396,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPr
 }
 
 // Test is flaky on Win and Mac dbg: crbug.com/1121731
-#if defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
 #define MAYBE_OpenLinkInProfile DISABLED_OpenLinkInProfile
 #else
 #define MAYBE_OpenLinkInProfile OpenLinkInProfile
@@ -1440,8 +1591,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       entry->LockForceSigninProfile(true);
     } else {
       profiles::FindOrCreateNewWindowForProfile(
-          profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-          chrome::startup::IS_NOT_FIRST_RUN, false);
+          profile, chrome::startup::IsProcessStartup::kNo,
+          chrome::startup::IsFirstRun::kNo, false);
       profiles_in_menu.push_back(profile);
     }
   }
@@ -1471,10 +1622,84 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
     content::WaitForLoadStop(tab);
 
     // Verify that it's the correct tab and profile.
-    EXPECT_EQ(url, tab->GetURL());
+    EXPECT_EQ(url, tab->GetLastCommittedURL());
     EXPECT_EQ(profile, Profile::FromBrowserContext(tab->GetBrowserContext()));
   }
 }
+
+// Verify that "Open Link as <profile>" doesn't send referrer URL.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+
+  // Create the profile.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  Profile* profile = CreateSecondaryProfile(1);
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(false);
+  profiles::FindOrCreateNewWindowForProfile(
+      profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, false);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL echoheader(embedded_test_server()->GetURL("/echoheader?Referer"));
+  // Go to a |page| with a link to echoheader URL.
+  GURL page("data:text/html,<a href='" + echoheader.spec() + "'>link</a>");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+
+  // Set up referrer URL.
+  const GURL kReferrer("http://foo.com/test");
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.page_url = kReferrer;
+  context_menu_params.link_url = echoheader;
+  context_menu_params.unfiltered_link_url = echoheader;
+  context_menu_params.link_url = echoheader;
+  context_menu_params.src_url = echoheader;
+
+  TestRenderViewContextMenu menu(
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      context_menu_params);
+  menu.Init();
+
+  // Verify that the Open in Profile option is shown.
+  ui::MenuModel* model = nullptr;
+  int index;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
+                                            &model, &index));
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  int command_id = menu.GetCommandIDByProfilePath(profile->GetPath());
+  ASSERT_NE(-1, command_id);
+  menu.ExecuteCommand(command_id, 0);
+
+  content::WebContents* tab = add_tab.Wait();
+  content::WaitForLoadStop(tab);
+
+  // Verify that it's the correct tab and profile.
+  EXPECT_EQ(profile, Profile::FromBrowserContext(tab->GetBrowserContext()));
+  ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
+
+  // Verify that the header text echoed on the page doesn't reveal `kReferrer`.
+  const std::string kNoneReferrer("None");
+  std::string actual_referrer;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab,
+      "window.domAutomationController.send(window.document.body.textContent);",
+      &actual_referrer));
+  ASSERT_EQ(kNoneReferrer, actual_referrer);
+
+  // Verify that the javascript referrer is empty.
+  std::string page_referrer;
+  const std::string kEmptyReferrer("");
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      tab, "window.domAutomationController.send(window.document.referrer);",
+      &page_referrer));
+  ASSERT_EQ(kEmptyReferrer, page_referrer);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1588,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetLensRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   // Match strings up to the query.
   std::size_t query_start_pos = new_tab_content.find("?");
   // Match the query parameters, without the value of start_time.
@@ -1609,7 +1834,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   EXPECT_EQ(expected_content, new_tab_content);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1706,7 +1931,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
   // The browser should open a new tab for an image search.
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
-  EXPECT_EQ(GetImageSearchURL(), new_tab->GetURL());
+  EXPECT_EQ(GetImageSearchURL(), new_tab->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
@@ -1746,8 +1971,8 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   ASSERT_TRUE(response_received);
 }
 
-// Flaky on Linux. http://crbug.com/1234671
-#if defined(OS_LINUX)
+// Flaky on Linux and LaCros. http://crbug.com/1234671
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_LensImageSearchWithValidImage \
   DISABLED_LensImageSearchWithValidImage
 #else
@@ -1766,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetLensImageSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   // Match strings up to the query.
   std::size_t query_start_pos = new_tab_content.find("?");
   EXPECT_EQ(expected_content.substr(0, query_start_pos),
@@ -1774,6 +1999,15 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(new_tab_content, testing::MatchesRegex(".*ep=ccm&s=&st=\\d+"));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class PdfPluginContextMenuBrowserTestWithUnseasonedOverride
+    : public base::test::WithFeatureOverride,
+      public PdfPluginContextMenuBrowserTest {
+ public:
+  PdfPluginContextMenuBrowserTestWithUnseasonedOverride()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+};
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithUnseasonedOverride,
                        FullPagePdfHasPageItems) {
@@ -1857,6 +2091,7 @@ IN_PROC_BROWSER_TEST_F(PdfPluginContextMenuBrowserTestWithUnseasonedEnabled,
     run_loop.Run();
   }
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class LoadImageRequestObserver : public content::WebContentsObserver {
  public:
@@ -2059,4 +2294,15 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, JpgImageDownscaleToJpg) {
       gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66), ".jpg");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       CopyLinkToTextDisabledWithScrollToTextPolicyDisabled) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kScrollToTextFragmentEnabled, false);
+
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuForTextInWebContents(u"selection text");
+
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
+}
 }  // namespace

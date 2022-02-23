@@ -249,8 +249,8 @@ function createShadowRootWithin(node) {
 }
 createShadowRootWithin(document.body);
 )";
-    ClassicScript::CreateUnspecifiedScript(
-        ScriptSourceCode(script, ScriptSourceLocationType::kInternal))
+    ClassicScript::CreateUnspecifiedScript(script,
+                                           ScriptSourceLocationType::kInternal)
         ->RunScript(web_frame_->GetFrame()->DomWindow(),
                     ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
   }
@@ -484,6 +484,10 @@ void LocalFrameClientImpl::DispatchDidFinishLoad() {
   web_frame_->DidFinish();
 }
 
+void LocalFrameClientImpl::DispatchDidFinishLoadForPrinting() {
+  web_frame_->DidFinishLoadForPrinting();
+}
+
 void LocalFrameClientImpl::BeginNavigation(
     const ResourceRequest& request,
     mojom::RequestContextFrameType frame_type,
@@ -501,7 +505,6 @@ void LocalFrameClientImpl::BeginNavigation(
     base::TimeTicks input_start_time,
     const String& href_translate,
     const absl::optional<WebImpression>& impression,
-    network::mojom::IPAddressSpace initiator_address_space,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -550,7 +553,6 @@ void LocalFrameClientImpl::BeginNavigation(
     // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
     // set.
   }
-  navigation_info->initiator_address_space = initiator_address_space;
 
   navigation_info->impression = impression;
 
@@ -736,13 +738,10 @@ void LocalFrameClientImpl::DidObserveLayoutShift(double score,
 void LocalFrameClientImpl::DidObserveLayoutNg(uint32_t all_block_count,
                                               uint32_t ng_block_count,
                                               uint32_t all_call_count,
-                                              uint32_t ng_call_count,
-                                              uint32_t flexbox_ng_block_count,
-                                              uint32_t grid_ng_block_count) {
+                                              uint32_t ng_call_count) {
   if (WebLocalFrameClient* client = web_frame_->Client()) {
     client->DidObserveLayoutNg(all_block_count, ng_block_count, all_call_count,
-                               ng_call_count, flexbox_ng_block_count,
-                               grid_ng_block_count);
+                               ng_call_count);
   }
 }
 
@@ -817,6 +816,17 @@ String LocalFrameClientImpl::ReducedUserAgent() {
   if (reduced_user_agent_.IsEmpty())
     reduced_user_agent_ = Platform::Current()->ReducedUserAgent();
   return reduced_user_agent_;
+}
+
+String LocalFrameClientImpl::FullUserAgent() {
+  WebString override =
+      web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";
+  if (!override.IsEmpty())
+    return override;
+
+  if (full_user_agent_.IsEmpty())
+    full_user_agent_ = Platform::Current()->FullUserAgent();
+  return full_user_agent_;
 }
 
 absl::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
@@ -1044,10 +1054,9 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
 }
 
 void LocalFrameClientImpl::OnMainFrameIntersectionChanged(
-    const IntRect& intersection_rect) {
+    const gfx::Rect& intersection_rect) {
   DCHECK(web_frame_->Client());
-  web_frame_->Client()->OnMainFrameIntersectionChanged(
-      ToGfxRect(intersection_rect));
+  web_frame_->Client()->OnMainFrameIntersectionChanged(intersection_rect);
 }
 
 void LocalFrameClientImpl::OnOverlayPopupAdDetected() {

@@ -33,7 +33,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/audio/public/mojom/testing_api.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -143,10 +143,9 @@ class WebRtcGetUserMediaBrowserTest : public WebRtcContentBrowserTestBase {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     EXPECT_EQ(parsed_json.value->type(), base::Value::Type::LIST);
 
-    base::ListValue* values;
-    ASSERT_TRUE(parsed_json.value->GetAsList(&values));
+    ASSERT_TRUE(parsed_json.value->is_list());
 
-    for (const auto& entry : values->GetList()) {
+    for (const auto& entry : parsed_json.value->GetListDeprecated()) {
       const base::DictionaryValue* dict;
       std::string kind;
       std::string device_id;
@@ -279,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // TODO(crbug.com/571389, crbug.com/1241538): Flaky on TSAN bots and macOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_GetUserMediaWithMandatorySourceID \
   DISABLED_GetUserMediaWithMandatorySourceID
 #else
@@ -345,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 }
 
 // TODO(crbug.com/1239385): Flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_GetUserMediaWithInvalidOptionalSourceID \
   DISABLED_GetUserMediaWithInvalidOptionalSourceID
 #else
@@ -590,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 // This test calls getUserMedia in an iframe and immediately close the iframe
 // in the scope of the failure callback.
 // Flaky on lacros-chrome and mac bots. http://crbug.com/1196389
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_VideoWithBadConstraintsInIFrameAndCloseInFailureCb \
   DISABLED_VideoWithBadConstraintsInIFrameAndCloseInFailureCb
 #else
@@ -620,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(http://crbug.com/1205560): This test is flaky on mac bots. Re-enable the
 // test after fixing the issue.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InvalidSourceIdInIFrameAndCloseInFailureCb \
   DISABLED_InvalidSourceIdInIFrameAndCloseInFailureCb
 #else
@@ -764,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
 
 // Flaky on Win, see https://crbug.com/915135
 // Flaky on Linux, see https://crbug.com/952381
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ApplyConstraintsNonDevice DISABLED_ApplyConstraintsNonDevice
 #else
 #define MAYBE_ApplyConstraintsNonDevice ApplyConstraintsNonDevice

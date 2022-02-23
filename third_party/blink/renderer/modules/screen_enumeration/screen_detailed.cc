@@ -15,29 +15,13 @@
 
 namespace blink {
 
-namespace {
-
-const display::ScreenInfo& GetScreenInfo(LocalFrame& frame,
-                                         int64_t display_id) {
-  const auto& screen_infos = frame.GetChromeClient().GetScreenInfos(frame);
-  for (const auto& screen : screen_infos.screen_infos) {
-    if (screen.display_id == display_id)
-      return screen;
-  }
-  DEFINE_STATIC_LOCAL(display::ScreenInfo, kEmptyScreenInfo, ());
-  return kEmptyScreenInfo;
-}
-
-}  // namespace
-
 ScreenDetailed::ScreenDetailed(LocalDOMWindow* window,
                                int64_t display_id,
                                bool label_is_internal,
                                uint32_t label_idx)
-    : Screen(window),
+    : Screen(window, display_id),
       label_idx_(label_idx),
-      label_is_internal_(label_is_internal),
-      display_id_(display_id) {}
+      label_is_internal_(label_is_internal) {}
 
 // static
 bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
@@ -64,101 +48,11 @@ bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
   return true;
 }
 
-int ScreenDetailed::height() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.rect.height() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.rect.height();
-}
-
-int ScreenDetailed::width() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.rect.width() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.rect.width();
-}
-
-unsigned ScreenDetailed::colorDepth() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).depth;
-}
-
-unsigned ScreenDetailed::pixelDepth() const {
-  return colorDepth();
-}
-
-int ScreenDetailed::availLeft() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.x() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.x();
-}
-
-int ScreenDetailed::availTop() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.y() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.y();
-}
-
-int ScreenDetailed::availHeight() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.height() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.height();
-}
-
-int ScreenDetailed::availWidth() const {
-  if (!DomWindow())
-    return 0;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
-  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    return base::ClampRound(screen_info.available_rect.width() *
-                            screen_info.device_scale_factor);
-  }
-  return screen_info.available_rect.width();
-}
-
-bool ScreenDetailed::isExtended() const {
-  if (!DomWindow())
-    return false;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).is_extended;
-}
-
 int ScreenDetailed::left() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  const display::ScreenInfo& screen_info = GetScreenInfo();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
     return base::ClampRound(screen_info.rect.x() *
                             screen_info.device_scale_factor);
@@ -170,7 +64,7 @@ int ScreenDetailed::top() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  const display::ScreenInfo& screen_info = GetScreenInfo();
   if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
     return base::ClampRound(screen_info.rect.y() *
                             screen_info.device_scale_factor);
@@ -181,22 +75,19 @@ int ScreenDetailed::top() const {
 bool ScreenDetailed::isPrimary() const {
   if (!DomWindow())
     return false;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).is_primary;
+  return GetScreenInfo().is_primary;
 }
 
 bool ScreenDetailed::isInternal() const {
   if (!DomWindow())
     return false;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).is_internal;
+  return GetScreenInfo().is_internal;
 }
 
 float ScreenDetailed::devicePixelRatio() const {
   if (!DomWindow())
     return 0.f;
-  LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).device_scale_factor;
+  return GetScreenInfo().device_scale_factor;
 }
 
 String ScreenDetailed::label() const {
@@ -206,10 +97,6 @@ String ScreenDetailed::label() const {
   const char* prefix =
       label_is_internal_ ? "Internal Display " : "External Display ";
   return String(prefix) + String::Number(label_idx_);
-}
-
-int64_t ScreenDetailed::DisplayId() const {
-  return display_id_;
 }
 
 }  // namespace blink

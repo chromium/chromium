@@ -8,11 +8,6 @@
 #include "Availability.h"
 #include "base/feature_list.h"
 
-// Allows the user to track product prices through Chrome.
-// Use IsPriceAlertsEnabled in price_alert_util rather than depending
-// on this directly.
-extern const base::Feature kCommercePriceTracking;
-
 // Feature to open tab switcher after sliding down the toolbar.
 extern const base::Feature kExpandedTabStrip;
 
@@ -32,10 +27,6 @@ extern const base::Feature kEnableFREDefaultBrowserScreenTesting;
 // Feature flag that enables using the FRE UI module to show first run screens.
 extern const base::Feature kEnableFREUIModuleIOS;
 
-// Feature flag that enables using the strings of the previous sync screen in
-// the current FRE.
-extern const base::Feature kOldSyncStringFRE;
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 extern const base::Feature kModernTabStrip;
@@ -49,15 +40,18 @@ extern const base::Feature kIncognitoNtpRevamp;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
+// Feature flag that shows iOS 15 context menu, instead of tooltip popover,
+// during a location bar long press gesture.
+extern const base::Feature kIOSLocationBarUseNativeContextMenu;
+
 // Feature flag that swaps the omnibox textfield implementation.
 extern const base::Feature kIOSNewOmniboxImplementation;
 
 // Feature flag that fixes omnibox behavior when using iOS native dictation
 extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
 
-// Feature flag that enables persisting the Crash Restore Infobar across
-// navigations.
-extern const base::Feature kIOSPersistCrashRestore;
+// Feature flag that toggles the SwiftUI omnibox popup implementation.
+extern const base::Feature kIOSOmniboxUpdatedPopupUI;
 
 // Enables the Search History Link in Clear Browsing Data for iOS.
 extern const base::Feature kSearchHistoryLinkIOS;
@@ -65,9 +59,6 @@ extern const base::Feature kSearchHistoryLinkIOS;
 // Feature flag to enable removing any entry points to the history UI from
 // Incognito mode.
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
-
-// Feature to update context menu actions.
-extern const base::Feature kContextMenuActionsRefresh;
 
 // Feature flag to enable using Lens to search for images.
 extern const base::Feature kUseLensToSearchForImage;
@@ -79,7 +70,21 @@ extern const base::Feature kCredentialProviderExtensionPromo;
 // Feature flag to enable duplicate NTP cleanup.
 extern const base::Feature kRemoveExcessNTPs;
 
-// Whether the ContextMenuActionsRefresh flag is enabled.
-bool IsContextMenuActionsRefreshEnabled();
+// Feature flag to enable shortened instruction to turn on Password AutoFill for
+// Chrome.
+extern const base::Feature kEnableShortenedPasswordAutoFillInstruction;
+
+// Feature flag to show the setting allowing the user to choose the mode
+// (Desktop/Mobile) in which the pages will be requested by default.
+extern const base::Feature kAddSettingForDefaultPageMode;
+
+// Feature flag to switch some images to SFSymbols when enabled.
+extern const base::Feature kUseSFSymbolsSamples;
+
+// Feature flag to use UIKit menus instead of custom ones.
+extern const base::Feature kUseUIKitPopupMenu;
+
+// Whether the kUseUIKitPopupMenu flag is enabled.
+bool ShouldUseUIKitPopupMenu();
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -231,7 +231,7 @@ absl::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
   }
 
   // Otherwise, the response should return a list of apps.
-  base::Value::ConstListView app_list = parsed_json.value->GetList();
+  base::Value::ConstListView app_list = parsed_json.value->GetListDeprecated();
   if (app_list.empty()) {
     DVLOG(1) << "No app in the response.";
     // TODO(thanhdng): Add a UMA histogram here.

@@ -104,14 +104,11 @@ source_set("common") {
     "//ppapi/c:c",
     "//ppapi/thunk:headers",
     "//third_party/icu:icuuc",
+    "//url",
   ]
 
   if (!is_nacl) {
     deps += [ "//skia" ]
-  }
-
-  if (!is_nacl_nonsfi) {
-    deps += [ "//url" ]
   }
 }
 
@@ -232,6 +229,7 @@ component("shared_impl") {
   ]
 
   deps = [
+    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu/command_buffer/client",
@@ -248,10 +246,6 @@ component("shared_impl") {
       "//ui/events:events_base",
       "//ui/surface",
     ]
-  }
-
-  if (!is_nacl_nonsfi) {
-    deps += [ "//base/third_party/dynamic_annotations" ]
   }
 
   if (is_mac) {

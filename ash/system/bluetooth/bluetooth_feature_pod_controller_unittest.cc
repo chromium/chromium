@@ -18,6 +18,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -28,6 +29,7 @@
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
 using chromeos::bluetooth_config::mojom::BatteryProperties;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
@@ -87,8 +89,8 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   void LockScreen() {
-    scoped_bluetooth_config_test_helper_.session_manager()->SessionStarted();
-    scoped_bluetooth_config_test_helper_.session_manager()->SetSessionState(
+    bluetooth_config_test_helper()->session_manager()->SessionStarted();
+    bluetooth_config_test_helper()->session_manager()->SetSessionState(
         session_manager::SessionState::LOCKED);
     base::RunLoop().RunUntilIdle();
   }
@@ -117,7 +119,8 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   void SetSystemState(BluetoothSystemState system_state) {
-    scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    bluetooth_config_test_helper()
+        ->fake_adapter_state_controller()
         ->SetSystemState(system_state);
     base::RunLoop().RunUntilIdle();
   }
@@ -131,7 +134,7 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   chromeos::bluetooth_config::FakeDeviceCache* fake_device_cache() {
-    return scoped_bluetooth_config_test_helper_.fake_device_cache();
+    return bluetooth_config_test_helper()->fake_device_cache();
   }
 
   UnifiedSystemTrayController* tray_controller() {
@@ -146,10 +149,12 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   std::unique_ptr<FeaturePodButton> feature_pod_button_;
 
  private:
+  ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
+    return ash_test_helper()->bluetooth_config_test_helper();
+  }
+
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
   base::test::ScopedFeatureList feature_list_;
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
-      scoped_bluetooth_config_test_helper_;
 };
 
 TEST_F(BluetoothFeaturePodControllerTest,

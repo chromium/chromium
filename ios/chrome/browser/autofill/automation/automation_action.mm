@@ -251,8 +251,8 @@
 // selector passed in. The target element is passed in to the JS function
 // by the name "target", so example JS code is like:
 // return target.value
-- (id)executeJavaScript:(std::string)function
-               onTarget:(ElementSelector*)selector {
+- (base::Value)executeJavaScript:(std::string)function
+                        onTarget:(ElementSelector*)selector {
   NSString* javaScript = [NSString
       stringWithFormat:@"    (function() {"
                         "      try {"
@@ -264,7 +264,7 @@
                        base::SysUTF8ToNSString(function),
                        selector.selectorScript];
 
-  return [ChromeEarlGrey executeJavaScript:javaScript];
+  return [ChromeEarlGrey evaluateJavaScript:javaScript];
 }
 
 @end
@@ -293,7 +293,8 @@
       "assertions", base::Value::Type::LIST));
   GREYAssert(assertionsValue, @"Assertions key is missing in action.");
 
-  base::Value::ConstListView assertionsValues(assertionsValue->GetList());
+  base::Value::ConstListView assertionsValues(
+      assertionsValue->GetListDeprecated());
   GREYAssert(assertionsValues.size(), @"Assertions list is empty.");
 
   std::vector<std::string> state_assertions;
@@ -333,10 +334,10 @@
                                                        "    })();",
                                                       assertionString];
 
-    NSNumber* result = base::mac::ObjCCastStrict<NSNumber>(
-        [ChromeEarlGrey executeJavaScript:javascript]);
+    base::Value result = [ChromeEarlGrey evaluateJavaScript:javascript];
+    GREYAssertTrue(result.is_bool(), @"The result is not a boolean.");
 
-    if (![result boolValue]) {
+    if (!result.GetBool()) {
       return assertionString;
     }
   }
@@ -376,12 +377,14 @@
   NSString* expectedValue = base::SysUTF8ToNSString(
       [self stringFromDictionaryWithKey:"expectedValue"]);
 
-  NSString* predictionType = base::mac::ObjCCastStrict<NSString>([self
-      executeJavaScript:"return target.placeholder;"
-               onTarget:[self selectorForTarget]]);
+  base::Value result = [self executeJavaScript:"return target.placeholder;"
+                                      onTarget:[self selectorForTarget]];
+  GREYAssertTrue(result.is_string(), @"The result is not a string.");
+  NSString* predictionType = base::SysUTF8ToNSString(result.GetString());
 
-  NSString* autofilledValue = base::mac::ObjCCastStrict<NSString>(
-      [self executeJavaScript:"return target.value;" onTarget:selector]);
+  result = [self executeJavaScript:"return target.value;" onTarget:selector];
+  GREYAssertTrue(result.is_string(), @"The result is not a string.");
+  NSString* autofilledValue = base::SysUTF8ToNSString(result.GetString());
 
   GREYAssertEqualObjects(predictionType, expectedType,
                          @"Expected prediction type %@ but got %@",

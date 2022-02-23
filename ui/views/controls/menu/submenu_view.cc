@@ -187,7 +187,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
                minimum_preferred_width_ - 2 * insets.width()));
 
   if (parent_menu_item_->GetMenuController() &&
-      parent_menu_item_->GetMenuController()->use_touchable_layout()) {
+      parent_menu_item_->GetMenuController()->use_ash_system_ui_layout()) {
     width = std::max(touchable_minimum_width, width);
   }
 
@@ -271,12 +271,6 @@ int SubmenuView::OnDragUpdated(const ui::DropTargetEvent& event) {
 void SubmenuView::OnDragExited() {
   DCHECK(parent_menu_item_->GetMenuController());
   parent_menu_item_->GetMenuController()->OnDragExited(this);
-}
-
-ui::mojom::DragOperation SubmenuView::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
-  return parent_menu_item_->GetMenuController()->OnPerformDrop(this, event);
 }
 
 views::View::DropCallback SubmenuView::GetDropCallback(

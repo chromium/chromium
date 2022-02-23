@@ -26,11 +26,10 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {omnibox::kOmniboxPedalsBatch2NonEnglish, omnibox::kOmniboxPedalsBatch3,
-         omnibox::kOmniboxPedalsBatch3NonEnglish,
-         omnibox::kOmniboxPedalsTranslationConsole},
-        {});
+    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch2NonEnglish,
+                                    omnibox::kOmniboxPedalsBatch3NonEnglish,
+                                    omnibox::kOmniboxPedalsTranslationConsole},
+                                   {});
     InitPedals();
   }
 
@@ -16334,27 +16333,6 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "visit url history",
         },
 
-        // ID#34
-        {
-            // Generated suggestions:
-            "cast page",
-            "cast screen",
-            "cast this page",
-            "qr code",
-            "save page as",
-            "save this page",
-            "send link",
-            "send link via qr code",
-            "send link with qr code",
-            "send page",
-            "share link",
-            "share link via qr code",
-            "share link with qr code",
-            "share page",
-            "share this page",
-            "share this tab",
-        },
-
         // ID#36
         {
             // Generated suggestions:
@@ -18492,7 +18470,6 @@ class OmniboxPedalImplementationsWithoutTranslationConsoleTest
     feature_list_.InitWithFeatures(
         {
             omnibox::kOmniboxPedalsBatch2NonEnglish,
-            omnibox::kOmniboxPedalsBatch3,
             omnibox::kOmniboxPedalsBatch3NonEnglish,
         },
         {});

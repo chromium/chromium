@@ -10,36 +10,52 @@
 
 namespace blink {
 
-class HasArgumentSubtreeIterator;
-
 class HasArgumentMatchContext {
   STACK_ALLOCATED();
 
  public:
   explicit HasArgumentMatchContext(const CSSSelector* selector);
-  CSSSelector::RelationType GetLeftMostRelation() const;
-  bool GetDepthFixed() const;
-  bool GetAdjacentDistanceFixed() const;
+
+  inline bool AdjacentDistanceFixed() const {
+    return adjacent_distance_limit_ != kInfiniteAdjacentDistance;
+  }
+  inline int AdjacentDistanceLimit() const { return adjacent_distance_limit_; }
+  inline bool DepthFixed() const { return depth_limit_ != kInfiniteDepth; }
+  inline int DepthLimit() const { return depth_limit_; }
+
+  inline CSSSelector::RelationType LeftmostRelation() const {
+    return leftmost_relation_;
+  }
+
+  inline bool SiblingCombinatorAtRightmost() const {
+    return sibling_combinator_at_rightmost_;
+  }
+  inline bool SiblingCombinatorBetweenChildOrDescendantCombinator() const {
+    return sibling_combinator_between_child_or_descendant_combinator_;
+  }
 
  private:
+  const static int kInfiniteDepth = std::numeric_limits<int>::max();
+  const static int kInfiniteAdjacentDistance = std::numeric_limits<int>::max();
+
   // Indicate the :has argument relative type and subtree traversal scope.
-  // If 'adjacent_traversal_distance_' is greater than 0, then it means that
-  // it is enough to traverse the adjacent subtree at that distance.
-  // If it is -1, it means that all the adjacent subtree need to be traversed.
-  // If 'descendant_traversal_depth_' is greater than 0, then it means that
-  // it is enough to traverse elements at the certain depth. If it is -1,
-  // it means that all of the descendant subtree need to be traversed.
+  // If 'adjacent_distance_limit' is integer max, it means that all the
+  // adjacent subtrees need to be traversed. otherwise, it means that it is
+  // enough to traverse the adjacent subtree at that distance.
+  // If 'descendant_traversal_depth_' is integer max, it means that all of the
+  // descendant subtree need to be traversed. Otherwise, it means that it is
+  // enough to traverse elements at the certain depth.
   //
-  // Case 1:  (kDescendant, 0, -1)
+  // Case 1:  (kDescendant, 0, max)
   //   - Argument selector conditions
   //     - Starts with descendant combinator.
-  //   - E.g. ':has(.a)', ':has(:scope .a)', ':has(.a ~ .b > .c)'
+  //   - E.g. ':has(.a)', ':has(.a)', ':has(.a ~ .b > .c)'
   //   - Traverse all descendants of the :has scope element.
-  // Case 2:  (kChild, 0, -1)
+  // Case 2:  (kChild, 0, max)
   //   - Argument selector conditions
   //     - Starts with child combinator.
   //     - At least one descendant combinator.
-  //   - E.g. ':has(:scope > .a .b)', ':has(:scope > .a ~ .b .c)'
+  //   - E.g. ':has(> .a .b)', ':has(> .a ~ .b .c)'
   //   - Traverse all descendants of the :has scope element.
   // Case 3:  (kChild, 0, n)
   //   - Argument selector conditions
@@ -47,49 +63,49 @@ class HasArgumentMatchContext {
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
   //   - E.g.
-  //     - ':has(:scope > .a)'            : (kChild, 0, 1)
-  //     - ':has(:scope > .a ~ .b > .c)'  : (kChild, 0, 2)
+  //     - ':has(> .a)'            : (kChild, 0, 1)
+  //     - ':has(> .a ~ .b > .c)'  : (kChild, 0, 2)
   //   - Traverse the depth n descendants of the :has scope element.
-  // Case 4:  (kIndirectAdjacent, -1, -1)
+  // Case 4:  (kIndirectAdjacent, max, max)
   //   - Argument selector conditions
   //     - Starts with subsequent-sibling combinator.
   //     - At least one descendant combinator.
-  //   - E.g. ':has(:scope ~ .a .b)', ':has(:scope ~ .a + .b > .c ~ .d .e)'
+  //   - E.g. ':has(~ .a .b)', ':has(~ .a + .b > .c ~ .d .e)'
   //   - Traverse all the subsequent sibling subtrees of the :has scope element.
   //     (all subsequent siblings and it's descendants)
-  // Case 5:  (kIndirectAdjacent, -1, 0)
+  // Case 5:  (kIndirectAdjacent, max, 0)
   //   - Argument selector conditions
   //     - Starts with subsequent-sibling combinator.
   //     - No descendant/child combinator.
-  //   - E.g. ':has(:scope ~ .a)', ':has(:scope ~ .a + .b ~ .c)'
+  //   - E.g. ':has(~ .a)', ':has(~ .a + .b ~ .c)'
   //   - Traverse all subsequent siblings of the :has scope element.
-  // Case 6:  (kIndirectAdjacent, -1, n)
+  // Case 6:  (kIndirectAdjacent, max, n)
   //   - Argument selector conditions
   //     - Starts with subsequent-sibling combinator.
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
   //   - E.g.
-  //     - ':has(:scope ~ .a > .b)'                 : (kIndirectAdjacent, -1, 1)
-  //     - ':has(:scope ~ .a + .b > .c ~ .d > .e)'  : (kIndirectAdjacent, -1, 2)
+  //     - ':has(~ .a > .b)'                 : (kIndirectAdjacent, max, 1)
+  //     - ':has(~ .a + .b > .c ~ .d > .e)'  : (kIndirectAdjacent, max, 2)
   //   - Traverse depth n elements of all subsequent sibling subtree of the
   //     :has scope element.
-  // Case 7:  (kDirectAdjacent, -1, -1)
+  // Case 7:  (kDirectAdjacent, max, max)
   //   - Argument selector conditions
   //     - Starts with next-sibling combinator.
   //     - At least one subsequent-sibling combinator to the left of every
   //       descendant or child combinator.
   //     - At least 1 descendant combinator.
-  //   - E.g. ':has(:scope + .a ~ .b .c)', ':has(:scope + .a ~ .b > .c + .e .f)'
+  //   - E.g. ':has(+ .a ~ .b .c)', ':has(+ .a ~ .b > .c + .e .f)'
   //   - Traverse all the subsequent sibling subtrees of the :has scope element.
   //     (all subsequent siblings and it's descendants)
-  // Case 8:  (kDirectAdjacent, -1, 0)
+  // Case 8:  (kDirectAdjacent, max, 0)
   //   - Argument selector conditions
   //     - Starts with next-sibling combinator.
   //     - At least one subsequent-sibling combinator.
   //     - No descendant/child combinator.
-  //   - E.g. ':has(:scope + .a ~ .b)', ':has(:scope + .a + .b ~ .c)'
+  //   - E.g. ':has(+ .a ~ .b)', ':has(+ .a + .b ~ .c)'
   //   - Traverse all subsequent siblings of the :has scope element.
-  // Case 9:  (kDirectAdjacent, -1, n)
+  // Case 9:  (kDirectAdjacent, max, n)
   //   - Argument selector conditions
   //     - Starts with next-sibling combinator.
   //     - At least one subsequent-sibling combinator to the left of every
@@ -97,11 +113,11 @@ class HasArgumentMatchContext {
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
   //   - E.g.
-  //     - ':has(:scope + .a ~ .b > .c)'            : (kDirectAdjacent, -1, 1)
-  //     - ':has(:scope + .a ~ .b > .c + .e >.f)'   : (kDirectAdjacent, -1, 2)
+  //     - ':has(+ .a ~ .b > .c)'            : (kDirectAdjacent, max, 1)
+  //     - ':has(+ .a ~ .b > .c + .e >.f)'   : (kDirectAdjacent, max, 2)
   //   - Traverse depth n elements of all subsequent sibling subtree of the
   //     :has scope element.
-  // Case 10:  (kDirectAdjacent, n, -1)
+  // Case 10:  (kDirectAdjacent, n, max)
   //   - Argument selector conditions
   //     - Starts with next-sibling combinator.
   //     - n number of next-sibling combinator to the left of the leftmost
@@ -110,9 +126,9 @@ class HasArgumentMatchContext {
   //       (or descendant) combinator.
   //     - At least 1 descendant combinator.
   //   - E.g.
-  //     - ':has(:scope + .a .b)'            : (kDirectAdjacent, 1, -1)
-  //     - ':has(:scope + .a > .b + .c .d)'  : (kDirectAdjacent, 1, -1)
-  //     - ':has(:scope + .a + .b > .c .d)'  : (kDirectAdjacent, 2, -1)
+  //     - ':has(+ .a .b)'            : (kDirectAdjacent, 1, max)
+  //     - ':has(+ .a > .b + .c .d)'  : (kDirectAdjacent, 1, max)
+  //     - ':has(+ .a + .b > .c .d)'  : (kDirectAdjacent, 2, max)
   //   - Traverse the distance n sibling subtree of the :has scope element.
   //     (sibling element at distance n, and it's descendants).
   // Case 11:  (kDirectAdjacent, n, 0)
@@ -121,8 +137,8 @@ class HasArgumentMatchContext {
   //     - n number of next-sibling combinator. (n > 0)
   //     - No child/descendant/subsequent-sibling combinator.
   //   - E.g.
-  //     - ':has(:scope + .a)'            : (kDirectAdjacent, 1, 0)
-  //     - ':has(:scope + .a + .b + .c)'  : (kDirectAdjacent, 3, 0)
+  //     - ':has(+ .a)'            : (kDirectAdjacent, 1, 0)
+  //     - ':has(+ .a + .b + .c)'  : (kDirectAdjacent, 3, 0)
   //   - Traverse the distance n sibling element of the :has scope element.
   // Case 12:  (kDirectAdjacent, n, m)
   //   - Argument selector conditions
@@ -134,16 +150,19 @@ class HasArgumentMatchContext {
   //     - n number of child combinator. (n > 0)
   //     - No descendant combinator.
   //   - E.g.
-  //     - ':has(:scope + .a > .b)'                 : (kDirectAdjacent, 1, 1)
-  //     - ':has(:scope + .a + .b > .c ~ .d > .e)'  : (kDirectAdjacent, 2, 2)
+  //     - ':has(+ .a > .b)'                 : (kDirectAdjacent, 1, 1)
+  //     - ':has(+ .a + .b > .c ~ .d > .e)'  : (kDirectAdjacent, 2, 2)
   //   - Traverse the depth m elements of the distance n sibling subtree of
   //     the :has scope element. (elements at depth m of the descendant subtree
   //     of the sibling element at distance n)
   CSSSelector::RelationType leftmost_relation_;
-  int adjacent_traversal_distance_;
-  int descendant_traversal_depth_;
+  int adjacent_distance_limit_;
+  int depth_limit_;
 
-  friend class HasArgumentSubtreeIterator;
+  // Indicates the selector's combinator information which can be used for
+  // sibling traversal after subselector matched.
+  bool sibling_combinator_at_rightmost_{false};
+  bool sibling_combinator_between_child_or_descendant_combinator_{false};
 };
 
 // Subtree traversal iterator class for ':has' argument matching. To
@@ -179,35 +198,60 @@ class HasArgumentMatchContext {
 //
 // We can limit the tree traversal range when we count the leftmost
 // combinators of a ':has' argument selector. For example, when we have
-// 'div:has(:scope > .a > .b)', instead of traversing all the descendants
+// 'div:has(> .a > .b)', instead of traversing all the descendants
 // of div element, we can limit the traversal only for the elements at
-// depth 2 of the div element. When we have 'div:has(:scope + .a > .b)',
+// depth 2 of the div element. When we have 'div:has(+ .a > .b)',
 // we can limit the traversal only for the child elements of the direct
 // adjacent sibling of the div element. To implement this, we need a
 // way to limit the traversal depth and a way to check whether the
 // iterator is currently at the fixed depth or not.
-//
-// TODO(blee@igalia.com) Need to check how to handle the shadow tree
-// cases (e.g. ':has(::slotted(img))', ':has(component::part(my-part))')
 class HasArgumentSubtreeIterator {
   STACK_ALLOCATED();
 
  public:
   HasArgumentSubtreeIterator(Element&, HasArgumentMatchContext&);
   void operator++();
-  Element* Get() const { return current_; }
-  bool IsEnd() const { return !current_; }
-  bool IsAtFixedDepth() const { return depth_ == depth_limit_; }
-  int IsAtSiblingOfHasScope() const { return depth_ == 0; }
+  Element* CurrentElement() const { return current_; }
+  bool AtEnd() const { return !current_; }
+  bool AtFixedDepth() const { return depth_ == context_.DepthLimit(); }
+  bool UnderDepthLimit() const { return depth_ <= context_.DepthLimit(); }
+  bool AtSiblingOfHasScope() const { return depth_ == 0; }
+  inline int Depth() const { return depth_; }
+  inline Element* ScopeElement() const { return has_scope_element_; }
+  inline const HasArgumentMatchContext& Context() const { return context_; }
 
  private:
-  Element* const scope_element_;
-  const bool adjacent_distance_fixed_;
-  const int adjacent_distance_limit_;
-  const int depth_limit_;
+  inline Element* LastWithin(Element*);
+
+  Element* const has_scope_element_;
+  const HasArgumentMatchContext& context_;
+  int depth_{0};
+  Element* current_{nullptr};
+  Element* traversal_end_{nullptr};
+};
+
+// Iterator class to traverse siblings, ancestors and ancestor siblings of the
+// HasArgumentSubtreeIterator's current element until reach to the scope
+// element.
+// This iterator is used to set the 'AncestorsOrAncestorSiblingsAffectedByHas'
+// or 'SiblingsAffectedByHas' flags of those elements before returning early
+// from the ':has()' argument subtree traversal.
+class AffectedByHasIterator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit AffectedByHasIterator(HasArgumentSubtreeIterator&);
+  void operator++();
+  Element* CurrentElement() const { return current_; }
+  bool AtEnd() const;
+  bool AtSiblingOfHasScope() const { return depth_ == 0; }
+
+ private:
+  inline bool NeedsTraverseSiblings();
+
+  const HasArgumentSubtreeIterator& iterator_at_matched_;
   int depth_;
   Element* current_;
-  Element* traversal_end_;
 };
 
 }  // namespace blink

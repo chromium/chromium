@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_TEST_IMAGE_LOADER_H_
 #define EXTENSIONS_BROWSER_TEST_IMAGE_LOADER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "ui/gfx/image/image.h"
 

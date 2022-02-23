@@ -6,10 +6,12 @@
  * @fileoverview Script that runs on the background page.
  */
 
+importScripts('storage.js');
+Storage.initialize();
+
 CONTENT_SCRIPTS = [
-  'accessibility_utils.js',
-  'traverse_util.js',
-  'caret_browsing.js'
+  'accessibility_utils.js', 'node_util.js', 'selection_util.js',
+  'traverse_util.js', 'storage.js', 'caret_browsing.js'
 ];
 
 /**
@@ -19,25 +21,18 @@ CONTENT_SCRIPTS = [
  * is first loaded.
  * @constructor
  */
-var CaretBkgnd = function() {};
-
-/**
- * Flag indicating whether caret browsing is enabled. Global, applies to
- * all tabs simultaneously.
- * @type {boolean}
- */
-CaretBkgnd.isEnabled;
+const CaretBkgnd = function() {};
 
 /**
  * Change the browser action icon and tooltip based on the enabled state.
  */
 CaretBkgnd.setIcon = function() {
-  chrome.browserAction.setIcon(
-      {'path': CaretBkgnd.isEnabled ?
+  chrome.action.setIcon(
+      {'path': Storage.enabled ?
                '../caret_19_on.png' :
                '../caret_19.png'});
-  chrome.browserAction.setTitle(
-      {'title': CaretBkgnd.isEnabled ?
+  chrome.action.setTitle(
+      {'title': Storage.enabled ?
                 'Turn Off Caret Browsing (F7)' :
                 'Turn On Caret Browsing (F7)' });
 };
@@ -50,18 +45,17 @@ CaretBkgnd.setIcon = function() {
  */
 CaretBkgnd.injectContentScripts = function() {
   chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        for (var k = 0; k < CONTENT_SCRIPTS.length; k++) {
-          chrome.tabs.executeScript(
-              tabs[j].id,
-              {file: CONTENT_SCRIPTS[k], allFrames: true},
-              function(result) {
-                // Ignore.
-                chrome.runtime.lastError;
-              });
-        }
+    for (const w of windows) {
+      for (const tab of w.tabs) {
+        chrome.scripting.executeScript(
+            {
+              target: {tabId: tab.id, allFrames: true},
+              files: CONTENT_SCRIPTS,
+            },
+            function(result) {
+              // Ignore.
+              chrome.runtime.lastError;
+            });
       }
     }
   });
@@ -72,10 +66,7 @@ CaretBkgnd.injectContentScripts = function() {
  * all open tabs.
  */
 CaretBkgnd.toggle = function() {
-  CaretBkgnd.isEnabled = !CaretBkgnd.isEnabled;
-  var obj = {};
-  obj['enabled'] = CaretBkgnd.isEnabled;
-  chrome.storage.sync.set(obj);
+  Storage.enabled = !Storage.enabled;
   CaretBkgnd.setIcon();
 };
 
@@ -87,22 +78,10 @@ CaretBkgnd.toggle = function() {
  * and send them to content scripts.
  */
 CaretBkgnd.init = function() {
-  chrome.storage.sync.get('enabled', function(result) {
-    CaretBkgnd.isEnabled = result['enabled'];
-    CaretBkgnd.setIcon();
-    CaretBkgnd.injectContentScripts();
-
-    chrome.browserAction.onClicked.addListener(function(tab) {
-      CaretBkgnd.toggle();
-    });
-  });
-
-  chrome.storage.onChanged.addListener(function() {
-    chrome.storage.sync.get('enabled', function(result) {
-      CaretBkgnd.isEnabled = result['enabled'];
-      CaretBkgnd.setIcon();
-    });
-  });
+  CaretBkgnd.setIcon();
+  chrome.action.onClicked.addListener(CaretBkgnd.toggle);
+  Storage.ENABLED.listeners.push(CaretBkgnd.setIcon);
 };
 
 CaretBkgnd.init();
+self.addEventListener('install', CaretBkgnd.injectContentScripts);

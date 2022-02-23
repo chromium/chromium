@@ -72,6 +72,7 @@ declare global {
         compromiseTime: number;
         elapsedTimeSinceCompromise: string;
         compromiseType: CompromiseType;
+        isMuted: boolean;
       }
 
       export interface InsecureCredential {
@@ -136,6 +137,10 @@ declare global {
           credential: InsecureCredential, newPassword: string,
           callback?: () => void): void;
       export function removeInsecureCredential(
+          credential: InsecureCredential, callback?: () => void): void;
+      export function muteInsecureCredential(
+          credential: InsecureCredential, callback?: () => void): void;
+      export function unmuteInsecureCredential(
           credential: InsecureCredential, callback?: () => void): void;
       export function startPasswordCheck(callback?: () => void): void;
       export function stopPasswordCheck(callback?: () => void): void;

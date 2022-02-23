@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
@@ -80,11 +79,8 @@ class MODULES_EXPORT IncomingStream final
  private:
   class UnderlyingSource;
 
-  // Called when |data_pipe_| becomes readable or errored.
+  // Called when |data_pipe_| becomes readable, closed or errored.
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
-
-  // Called when |data_pipe_| is closed.
-  void OnPeerClosed(MojoResult, const mojo::HandleSignalsState&);
 
   // Rejects any unfinished read() calls and resets |data_pipe_|.
   void HandlePipeClosed();
@@ -125,9 +121,6 @@ class MODULES_EXPORT IncomingStream final
 
   // Only armed when we need to read something.
   mojo::SimpleWatcher read_watcher_;
-
-  // Always armed to detect close.
-  mojo::SimpleWatcher close_watcher_;
 
   Member<ReadableStream> readable_;
   Member<ReadableStreamDefaultControllerWithScriptScope> controller_;

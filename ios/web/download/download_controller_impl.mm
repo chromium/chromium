@@ -5,7 +5,10 @@
 #import "ios/web/download/download_controller_impl.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "ios/web/download/download_native_task_bridge.h"
+#import "ios/web/download/download_native_task_impl.h"
 #import "ios/web/download/download_session_cookie_storage.h"
+#import "ios/web/download/download_session_task_impl.h"
 #include "ios/web/public/browser_state.h"
 #import "ios/web/public/download/download_controller_delegate.h"
 #import "ios/web/public/web_client.h"
@@ -59,9 +62,31 @@ void DownloadControllerImpl::CreateDownloadTask(
   if (!delegate_)
     return;
 
-  auto task = std::make_unique<DownloadTaskImpl>(
+  auto task = std::make_unique<DownloadSessionTaskImpl>(
       web_state, original_url, http_method, content_disposition, total_bytes,
       mime_type, identifier, this);
+  alive_tasks_.insert(task.get());
+  delegate_->OnDownloadCreated(this, web_state, std::move(task));
+}
+
+void DownloadControllerImpl::CreateNativeDownloadTask(
+    WebState* web_state,
+    NSString* identifier,
+    const GURL& original_url,
+    NSString* http_method,
+    const std::string& content_disposition,
+    int64_t total_bytes,
+    const std::string& mime_type,
+    DownloadNativeTaskBridge* download) API_AVAILABLE(ios(15)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+  if (!delegate_) {
+    [download cancel];
+    return;
+  }
+
+  auto task = std::make_unique<DownloadNativeTaskImpl>(
+      web_state, original_url, http_method, content_disposition, total_bytes,
+      mime_type, identifier, download, this);
   alive_tasks_.insert(task.get());
   delegate_->OnDownloadCreated(this, web_state, std::move(task));
 }

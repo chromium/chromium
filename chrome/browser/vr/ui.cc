@@ -897,7 +897,7 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
   return FovRectangle{left_degrees, right_degrees, bottom_degrees, top_degrees};
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern "C" {
 // This symbol is retrieved from the VR feature module library via dlsym(),
 // where it's bare address is type-cast to a CreateUiFunction pointer and
@@ -915,6 +915,6 @@ __attribute__((visibility("default"))) UiInterface* CreateUi(
                 ui_initial_state);
 }
 }  // extern "C"
-#endif  // defined(OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace vr

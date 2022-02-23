@@ -48,6 +48,7 @@ public class CachedFeatureFlags {
      */
     private static Map<String, Boolean> sDefaults =
             ImmutableMap.<String, Boolean>builder()
+                    .put(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true)
                     .put(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, false)
                     .put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false)
                     .put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false)
@@ -82,12 +83,11 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)
                     .put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true)
                     .put(ChromeFeatureList.INTEREST_FEED_V2, true)
-                    .put(ChromeFeatureList.THEME_REFACTOR_ANDROID, false)
+                    .put(ChromeFeatureList.THEME_REFACTOR_ANDROID, true)
                     .put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false)
                     .put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false)
                     .put(ChromeFeatureList.READ_LATER, false)
                     .put(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS, true)
-                    .put(ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK, false)
                     .put(ChromeFeatureList.CCT_INCOGNITO, true)
                     .put(ChromeFeatureList.EXPERIMENTS_FOR_AGSA, true)
                     .put(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION, false)
@@ -101,6 +101,9 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)
+                    .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
                     .build();
 
     /**

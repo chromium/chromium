@@ -110,7 +110,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
     // Otherwise, the intrinsic width is that of the video.
     case kVideo:
       if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
-        IntSize size(player->NaturalSize());
+        gfx::Size size = player->NaturalSize();
         if (!size.IsEmpty()) {
           LayoutSize layout_size = LayoutSize(size);
           layout_size.Scale(scale);
@@ -222,6 +222,9 @@ bool LayoutVideo::SupportsAcceleratedRendering() const {
 
 CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::CompositeVideoElementEnabled())
+    return CompositingReason::kNone;
+
   auto* element = To<HTMLMediaElement>(GetNode());
   if (element->IsFullscreen() && element->UsesOverlayFullscreenVideo())
     return CompositingReason::kVideo;

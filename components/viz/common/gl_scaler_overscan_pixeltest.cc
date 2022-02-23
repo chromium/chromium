@@ -405,7 +405,7 @@ TEST_F(GLScalerOverscanPixelTest, TwoByTwoTapBilinear) {
 }
 
 TEST_F(GLScalerOverscanPixelTest, BicubicUpscale) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Unfortunately, on our current Android bots, there are some inaccuracies
   // introduced by the platform that seem to throw-off the pixel testing of the
   // bicubic sampler.

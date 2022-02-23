@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 
 #include "build/build_config.h"
@@ -31,7 +32,7 @@ class AppMenuTestApiViews : public test::AppMenuTestApi {
   BrowserAppMenuButton* GetAppMenuButton();
   AppMenu* GetAppMenu();
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 AppMenuTestApiViews::AppMenuTestApiViews(Browser* browser)

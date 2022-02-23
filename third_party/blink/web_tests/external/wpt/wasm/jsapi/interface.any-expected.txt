@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 72 tests; 71 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS WebAssembly: property descriptor
+PASS WebAssembly: calling
+PASS WebAssembly: constructing
+PASS WebAssembly.Module: property descriptor
+PASS WebAssembly.Module: prototype
+PASS WebAssembly.Module: prototype.constructor
+PASS WebAssembly.Instance: property descriptor
+PASS WebAssembly.Instance: prototype
+PASS WebAssembly.Instance: prototype.constructor
+PASS WebAssembly.Memory: property descriptor
+PASS WebAssembly.Memory: prototype
+PASS WebAssembly.Memory: prototype.constructor
+PASS WebAssembly.Table: property descriptor
+PASS WebAssembly.Table: prototype
+PASS WebAssembly.Table: prototype.constructor
+PASS WebAssembly.Global: property descriptor
+PASS WebAssembly.Global: prototype
+PASS WebAssembly.Global: prototype.constructor
+PASS WebAssembly.CompileError: property descriptor
+PASS WebAssembly.CompileError: prototype
+PASS WebAssembly.CompileError: prototype.constructor
+PASS WebAssembly.LinkError: property descriptor
+PASS WebAssembly.LinkError: prototype
+PASS WebAssembly.LinkError: prototype.constructor
+PASS WebAssembly.RuntimeError: property descriptor
+PASS WebAssembly.RuntimeError: prototype
+PASS WebAssembly.RuntimeError: prototype.constructor
+PASS WebAssembly.validate
+PASS WebAssembly.validate: name
+PASS WebAssembly.validate: length
+PASS WebAssembly.compile
+PASS WebAssembly.compile: name
+PASS WebAssembly.compile: length
+PASS WebAssembly.instantiate
+PASS WebAssembly.instantiate: name
+PASS WebAssembly.instantiate: length
+PASS WebAssembly.Module.exports
+PASS WebAssembly.Module.exports: name
+PASS WebAssembly.Module.exports: length
+PASS WebAssembly.Module.imports
+PASS WebAssembly.Module.imports: name
+PASS WebAssembly.Module.imports: length
+PASS WebAssembly.Module.customSections
+PASS WebAssembly.Module.customSections: name
+PASS WebAssembly.Module.customSections: length
+PASS WebAssembly.Instance.exports
+PASS WebAssembly.Instance.exports: getter
+PASS WebAssembly.Instance.exports: setter
+PASS WebAssembly.Memory.grow
+PASS WebAssembly.Memory.grow: name
+PASS WebAssembly.Memory.grow: length
+PASS WebAssembly.Memory.buffer
+PASS WebAssembly.Memory.buffer: getter
+PASS WebAssembly.Memory.buffer: setter
+PASS WebAssembly.Table.grow
+PASS WebAssembly.Table.grow: name
+PASS WebAssembly.Table.grow: length
+PASS WebAssembly.Table.get
+PASS WebAssembly.Table.get: name
+PASS WebAssembly.Table.get: length
+PASS WebAssembly.Table.set
+PASS WebAssembly.Table.set: name
+FAIL WebAssembly.Table.set: length assert_equals: WebAssembly.Table.set length should be 1 expected 1 but got 2
+PASS WebAssembly.Table.length
+PASS WebAssembly.Table.length: getter
+PASS WebAssembly.Table.length: setter
+PASS WebAssembly.Global.valueOf
+PASS WebAssembly.Global.valueOf: name
+PASS WebAssembly.Global.valueOf: length
+PASS WebAssembly.Global.value
+PASS WebAssembly.Global.value: getter
+PASS WebAssembly.Global.value: setter
+Harness: the test ran to completion.
+

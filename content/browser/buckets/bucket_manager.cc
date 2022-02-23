@@ -9,7 +9,10 @@
 
 namespace content {
 
-BucketManager::BucketManager() = default;
+BucketManager::BucketManager(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
+    : quota_manager_proxy_(std::move(quota_manager_proxy)) {}
+
 BucketManager::~BucketManager() = default;
 
 void BucketManager::BindReceiver(

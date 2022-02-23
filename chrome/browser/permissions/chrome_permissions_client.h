@@ -39,7 +39,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void AreSitesImportant(
       content::BrowserContext* browser_context,
       std::vector<std::pair<url::Origin, bool>>* urls) override;
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsCookieDeletionDisabled(content::BrowserContext* browser_context,
                                 const GURL& origin) override;
 #endif
@@ -73,19 +73,16 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       const GURL& embedding_origin) override;
   bool DoOriginsMatchNewTabPage(const GURL& requesting_origin,
                                 const GURL& embedding_origin) override;
-#if defined(OS_ANDROID)
-  bool IsPermissionControlledByDse(content::BrowserContext* browser_context,
-                                   ContentSettingsType type,
-                                   const url::Origin& origin) override;
+#if BUILDFLAG(IS_ANDROID)
   bool IsDseOrigin(content::BrowserContext* browser_context,
                    const url::Origin& origin) override;
-  bool ResetPermissionIfControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin) override;
   infobars::InfoBarManager* GetInfoBarManager(
       content::WebContents* web_contents) override;
   infobars::InfoBar* MaybeCreateInfoBar(
+      content::WebContents* web_contents,
+      ContentSettingsType type,
+      base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;
+  std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
       ContentSettingsType type,
       base::WeakPtr<permissions::PermissionPromptAndroid> prompt) override;

@@ -161,7 +161,7 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_EQ(2, table_info->row_nodes[0]->id());
   EXPECT_EQ(3, table_info->row_nodes[1]->id());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(3U, table_info->extra_mac_nodes.size());
 #else
   EXPECT_EQ(0U, table_info->extra_mac_nodes.size());
@@ -497,7 +497,7 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_EQ(4, table_info->row_nodes[2]->id());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(AXTableInfoTest, ExtraMacNodes) {
   // Simple 2 x 2 table with 2 column headers in first row, 2 cells in second
@@ -945,7 +945,7 @@ TEST_F(AXTableInfoTest, TableChanges) {
   EXPECT_FALSE(table_info);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
   // Simple 2 x 2 table with 2 column headers in first row, 2 cells in second

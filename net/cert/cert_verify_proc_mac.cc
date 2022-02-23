@@ -439,7 +439,7 @@ bool HasPolicyOrAnyPolicy(const ParsedCertificate* cert,
     return false;
 
   for (const der::Input& policy_oid : cert->policy_oids()) {
-    if (policy_oid == ev_policy_oid || policy_oid == AnyPolicy())
+    if (policy_oid == ev_policy_oid || policy_oid == der::Input(kAnyPolicyOid))
       return true;
   }
   return false;

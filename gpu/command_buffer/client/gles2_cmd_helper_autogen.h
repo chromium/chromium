@@ -2999,19 +2999,6 @@ void LoseContextCHROMIUM(GLenum current, GLenum other) {
   }
 }
 
-void UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
-                                        GLuint dest_id,
-                                        GLint x,
-                                        GLint y,
-                                        GLsizei width,
-                                        GLsizei height) {
-  gles2::cmds::UnpremultiplyAndDitherCopyCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::UnpremultiplyAndDitherCopyCHROMIUM>();
-  if (c) {
-    c->Init(source_id, dest_id, x, y, width, height);
-  }
-}
-
 void DrawBuffersEXTImmediate(GLsizei count, const GLenum* bufs) {
   const uint32_t size =
       gles2::cmds::DrawBuffersEXTImmediate::ComputeSize(count);

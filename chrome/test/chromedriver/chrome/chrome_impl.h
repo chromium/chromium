@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 
@@ -75,10 +74,8 @@ class ChromeImpl : public Chrome {
     int height;
   };
   virtual Status GetWindow(const std::string& target_id, Window* window);
-  Status ParseWindow(std::unique_ptr<base::DictionaryValue> params,
-                     Window* window);
-  Status ParseWindowBounds(std::unique_ptr<base::DictionaryValue> params,
-                           Window* window);
+  Status ParseWindow(const base::Value& params, Window* window);
+  Status ParseWindowBounds(const base::Value& params, Window* window);
   Status GetWindowBounds(int window_id, Window* window);
   Status SetWindowBounds(Window* window,
                          const std::string& target_id,

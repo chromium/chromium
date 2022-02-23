@@ -14,6 +14,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -240,25 +241,8 @@ void ExtensionLocalizationPeer::ReplaceMessages() {
     return;
 
   std::string extension_id = request_url_.host();
-  extensions::L10nMessagesMap* l10n_messages =
-      extensions::GetL10nMessagesMap(extension_id);
-  if (!l10n_messages) {
-    extensions::L10nMessagesMap messages;
-    message_sender_->Send(new ExtensionHostMsg_GetMessageBundle(
-        extension_id, &messages));
-
-    // Save messages we got, so we don't have to ask again.
-    // Messages map is never empty, it contains at least @@extension_id value.
-    extensions::ExtensionToL10nMessagesMap& l10n_messages_map =
-        *extensions::GetExtensionToL10nMessagesMap();
-    l10n_messages_map[extension_id] = messages;
-
-    l10n_messages = extensions::GetL10nMessagesMap(extension_id);
-  }
-
-  std::string error;
-  if (extensions::MessageBundle::ReplaceMessagesWithExternalDictionary(
-          *l10n_messages, &data_, &error)) {
+  if (extensions::SharedL10nMap::GetInstance().ReplaceMessages(
+          extension_id, &data_, message_sender_)) {
     data_.resize(data_.size());
   }
 }

@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -16,11 +17,11 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 #include "ui/views/focus/widget_focus_manager.h"  // nogncheck
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/mac/key_window_notifier.h"
 #endif
 
@@ -40,7 +41,7 @@ class AppWindowController;
 // but will only route events within a profile to extension processes in the
 // same profile.
 class WindowsEventRouter : public AppWindowRegistry::Observer,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                            public KeyWindowNotifier::Observer,
 #elif defined(TOOLKIT_VIEWS)
                            public views::WidgetFocusChangeListener,
@@ -68,11 +69,11 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   void OnWindowControllerRemoved(WindowController* window) override;
   void OnWindowBoundsChanged(WindowController* window_controller) override;
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // KeyWindowNotifier::Observer:
   void OnNoKeyWindow() override;
 #endif
@@ -85,12 +86,12 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   void AddAppWindow(extensions::AppWindow* app_window);
 
   // The main profile that owns this event router.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The profile the currently focused window belongs to; either the main or
   // incognito profile or NULL (none of the above). We remember this in order
   // to correctly handle focus changes between non-OTR and OTR windows.
-  Profile* focused_profile_;
+  raw_ptr<Profile> focused_profile_;
 
   // The currently focused window. We keep this so as to avoid sending multiple
   // windows.onFocusChanged events with the same windowId.
@@ -108,7 +109,7 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   base::ScopedObservation<WindowControllerList, WindowControllerListObserver>
       observed_controller_list_{this};
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ScopedObservation<KeyWindowNotifier, KeyWindowNotifier::Observer>
       observed_key_window_notifier_{this};
 #endif

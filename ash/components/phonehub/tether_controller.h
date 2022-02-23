@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Exposes Instant Tethering functionality to Phone Hub.
@@ -96,6 +96,13 @@ class TetherController {
 std::ostream& operator<<(std::ostream& stream, TetherController::Status status);
 
 }  // namespace phonehub
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace phonehub {
+using ::ash::phonehub::TetherController;
+}
 }  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_TETHER_CONTROLLER_H_

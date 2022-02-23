@@ -70,7 +70,10 @@ interface RestrictedCookieManager {
   GetAllForUrl(
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
-      CookieManagerGetOptions options) => (
+      CookieManagerGetOptions options,
+      // TODO(crbug.com/1296161): Delete this arg when partitioned cookies
+      // Origin Trial is over.
+      bool partitioned_cookies_runtime_feature_enabled) => (
       array<CookieWithAccessResult> cookies);
 
   SetCanonicalCookie(CanonicalCookie cookie,
@@ -96,7 +99,10 @@ interface RestrictedCookieManager {
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
-                      string cookie) => ();
+                      string cookie,
+                      // TODO(crbug.com/1296161): Delete this arg when
+                      // partitioned cookies Origin Trial is over.
+                      bool partitioned_cookies_runtime_feature_enabled) => ();
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
   // preferences will be skipped, down to potentially returning an empty string.
@@ -108,7 +114,11 @@ interface RestrictedCookieManager {
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
-                   url.mojom.Origin top_frame_origin) => (string cookies);
+                   url.mojom.Origin top_frame_origin,
+                   // TODO(crbug.com/1296161): Delete this arg when
+                   // partitioned cookies Origin Trial is over.
+                   bool partitioned_cookies_runtime_feature_enabled) => (
+                   string cookies);
 
   // Used to check if cookies are enabled for the given URL in context of a
   // given site.

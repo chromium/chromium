@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
-
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -35,7 +34,7 @@ import java.lang.annotation.RetentionPolicy;
  * instance type, to allow compiling against older SDKs. TODO(crbug.com/973781): Clean it up once
  * Chromium is compiled against Android Q SDK.
  */
-@TargetApi(29)
+@RequiresApi(29)
 public interface DirectActionReporter {
     /** Parameter or result type. */
     @IntDef({Type.STRING, Type.BOOLEAN, Type.INT})

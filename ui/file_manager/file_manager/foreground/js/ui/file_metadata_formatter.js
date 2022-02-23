@@ -27,10 +27,10 @@ export class FileMetadataFormatter extends EventTarget {
    * @param {boolean} use12hourClock True if 12 hours clock, False if 24 hours.
    */
   setDateTimeFormat(use12hourClock) {
+    const locale = util.getCurrentLocaleOrDefault();
     this.timeFormatter_ = new Intl.DateTimeFormat(
-        navigator.language,
-        {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
-    this.dateFormatter_ = new Intl.DateTimeFormat(navigator.language, {
+        locale, {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
+    this.dateFormatter_ = new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

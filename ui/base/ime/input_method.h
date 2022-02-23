@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -50,7 +49,7 @@ class TextInputClient;
 // ui::InputMethod and owns it.
 class InputMethod {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef LRESULT NativeEventResult;
 #else
   typedef int32_t NativeEventResult;
@@ -65,10 +64,13 @@ class InputMethod {
   // Called when the top-level system window gets keyboard focus.
   virtual void OnFocus() = 0;
 
+  // Called when there is a touch within a text field that has focus.
+  virtual void OnTouch(ui::EventPointerType pointerType) = 0;
+
   // Called when the top-level system window loses keyboard focus.
   virtual void OnBlur() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called when the focused window receives native IME messages that are not
   // translated into other predefined event callbacks. Currently this method is
   // used only for IME functionalities specific to Windows.
@@ -106,8 +108,8 @@ class InputMethod {
   // dispatched back to the caller via
   // ui::InputMethodDelegate::DispatchKeyEventPostIME(), once it's processed by
   // the input method. It should only be called by a message dispatcher.
-  virtual ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual ui::EventDispatchDetails DispatchKeyEvent(
+      ui::KeyEvent* event) = 0;
 
   // Called by the focused client whenever its text input type is changed.
   // Before calling this method, the focused client must confirm or clear
@@ -138,9 +140,7 @@ class InputMethod {
   // of IME popups is not supported.
   virtual bool IsCandidatePopupOpen() const = 0;
 
-  // Displays an on screen keyboard if enabled.
-  virtual void ShowVirtualKeyboardIfEnabled() = 0;
-
+  // Sets visibility of the virtual keyboard, if enabled already.
   virtual void SetVirtualKeyboardVisibilityIfEnabled(bool should_show) = 0;
 
   // Management of the observer list.

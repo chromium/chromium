@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
@@ -36,8 +35,6 @@ TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
     </svg>
   )HTML");
 
-  const auto* root = GetLayoutObjectByElementId("svg");
-
   const DisplayItem::Type kSVGEffectPaintPhaseForeground =
       static_cast<DisplayItem::Type>(DisplayItem::kSVGEffectPaintPhaseFirst +
                                      5);
@@ -57,22 +54,11 @@ TEST_P(SVGContainerPainterTest, FilterPaintProperties) {
   PaintChunk::Id after_id(after->Id(), kSVGEffectPaintPhaseForeground);
   const auto& after_properties = after->FirstFragment().ContentsProperties();
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(ContentPaintChunks(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                            IsPaintChunk(1, 2, before_id, before_properties),
-                            IsPaintChunk(2, 3, rect_id, container_properties),
-                            IsPaintChunk(3, 4, after_id, after_properties)));
-  } else {
-    const auto* svg_paint_layer = To<LayoutSVGRoot>(root)->Layer();
-    const auto* svg_graphics_layer =
-        svg_paint_layer->GetCompositedLayerMapping()->MainGraphicsLayer();
-
-    EXPECT_THAT(svg_graphics_layer->GetPaintController().PaintChunks(),
-                ElementsAre(IsPaintChunk(0, 1, before_id, before_properties),
-                            IsPaintChunk(1, 2, rect_id, container_properties),
-                            IsPaintChunk(2, 3, after_id, after_properties)));
-  }
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunk(1, 2, before_id, before_properties),
+                          IsPaintChunk(2, 3, rect_id, container_properties),
+                          IsPaintChunk(3, 4, after_id, after_properties)));
 }
 
 }  // namespace blink

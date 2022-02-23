@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_VP9_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
-#include <list>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -13,9 +12,9 @@
 #include "media/base/video_bitrate_allocation.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
-#include "media/gpu/vaapi/vpx_rate_control.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "media/gpu/vpx_rate_control.h"
 
 namespace libvpx {
 struct VP9FrameParamsQpRTC;

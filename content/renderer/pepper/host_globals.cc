@@ -16,7 +16,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
-#include "content/renderer/render_thread_impl.h"
 #include "ppapi/shared_impl/api_id.h"
 #include "ppapi/shared_impl/id_assignment.h"
 #include "ppapi/shared_impl/proxy_lock.h"

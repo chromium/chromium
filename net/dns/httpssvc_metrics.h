@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

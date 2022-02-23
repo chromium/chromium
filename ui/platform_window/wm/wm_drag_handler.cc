@@ -15,6 +15,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(WmDragHandler*, kWmDragHandlerKey, nullptr)
 
 WmDragHandler::Delegate::~Delegate() = default;
 
+bool WmDragHandler::ShouldReleaseCaptureForDrag(
+    ui::OSExchangeData* data) const {
+  // Chrome normally expects starting drag and drop to release capture.
+  return true;
+}
+
 void SetWmDragHandler(PlatformWindow* platform_window,
                       WmDragHandler* drag_handler) {
   platform_window->SetProperty(kWmDragHandlerKey, drag_handler);

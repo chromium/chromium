@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_WEBLAYER_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_
 #define WEBLAYER_BROWSER_WEBLAYER_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"

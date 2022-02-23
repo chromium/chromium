@@ -7,6 +7,7 @@ import("//build/config/ios/asset_catalog.gni")
 group("resources") {
   deps = [
     ":background_color",
+    ":blue_500_color",
     ":blue_color",
     ":blue_halo_color",
     ":close_button_color",
@@ -59,6 +60,10 @@ colorset("blue_color") {
 
 colorset("blue_halo_color") {
   sources = [ "blue_halo_color.colorset/Contents.json" ]
+}
+
+colorset("blue_500_color") {
+  sources = [ "blue_500_color.colorset/Contents.json" ]
 }
 
 colorset("close_button_color") {

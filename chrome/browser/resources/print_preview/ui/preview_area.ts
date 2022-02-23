@@ -7,12 +7,10 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
@@ -21,7 +19,6 @@ import {getPrinterTypeForDestination} from '../data/destination_match.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import {DuplexMode, MediaSizeValue, Ticket} from '../data/model.js';
-import {PrintableArea} from '../data/printable_area.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
@@ -31,9 +28,10 @@ import {areRangesEqual} from '../print_preview_utils.js';
 
 import {MARGIN_KEY_MAP, MarginObject, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
+import {getTemplate} from './preview_area.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-type PreviewTicket = Ticket&{
+export type PreviewTicket = Ticket&{
   headerFooterEnabled: boolean;
   pageRange: Array<{to: number, from: number}>;
   pagesPerSheet: number;
@@ -63,7 +61,7 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -145,6 +143,10 @@ export class PrintPreviewPreviewAreaElement extends
 
   private computePreviewLoaded_(): boolean {
     return this.documentReady_ && this.pluginLoadComplete_;
+  }
+
+  getLastTicketForTest(): PreviewTicket|null {
+    return this.lastTicket_;
   }
 
   previewLoaded(): boolean {
@@ -303,7 +305,6 @@ export class PrintPreviewPreviewAreaElement extends
   // <if expr="is_macosx">
   /** Set the preview state to display the "opening in preview" message. */
   setOpeningPdfInPreview() {
-    assert(isMac);
     this.previewState = this.previewState === PreviewAreaState.LOADING ?
         PreviewAreaState.OPEN_IN_PREVIEW_LOADING :
         PreviewAreaState.OPEN_IN_PREVIEW_LOADED;
@@ -434,7 +435,7 @@ export class PrintPreviewPreviewAreaElement extends
     if (!this.pluginProxy_.pluginReady() ||
         !['PageUp', 'PageDown', 'ArrowLeft', 'ArrowRight', 'ArrowUp',
           'ArrowDown']
-             .includes(e.code) ||
+             .includes(e.key) ||
         hasKeyModifiers(e)) {
       return;
     }
@@ -450,7 +451,7 @@ export class PrintPreviewPreviewAreaElement extends
     // element, and work up the DOM tree to see if any element has a
     // scrollbar. If there exists a scrollbar, do not handle the key event
     // here.
-    const isEventHorizontal = ['ArrowLeft', 'ArrowRight'].includes(e.code);
+    const isEventHorizontal = ['ArrowLeft', 'ArrowRight'].includes(e.key);
     for (let i = 0; i < e.composedPath().length; i++) {
       const element = e.composedPath()[i] as HTMLElement;
       if (element.scrollHeight > element.clientHeight && !isEventHorizontal ||
@@ -771,7 +772,7 @@ export class PrintPreviewPreviewAreaElement extends
           substitutions: [],
           tags: ['BR'],
         });
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       case Error.NO_DESTINATIONS:
         return this.i18n('noDestinationsMessage');
       // </if>
@@ -780,6 +781,12 @@ export class PrintPreviewPreviewAreaElement extends
       default:
         return '';
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-preview-area': PrintPreviewPreviewAreaElement;
   }
 }
 

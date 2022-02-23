@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/download/public/common/all_download_event_notifier.h"
+#include "base/observer_list.h"
 
 namespace download {
 

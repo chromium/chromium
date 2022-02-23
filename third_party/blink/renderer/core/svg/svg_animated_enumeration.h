@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ANIMATED_ENUMERATION_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

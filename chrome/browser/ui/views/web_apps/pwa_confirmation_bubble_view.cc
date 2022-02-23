@@ -48,7 +48,7 @@ bool g_auto_accept_pwa_for_testing = false;
 
 // Returns an ImageView containing the app icon.
 std::unique_ptr<views::ImageView> CreateIconView(
-    const WebApplicationInfo& web_app_info) {
+    const WebAppInstallInfo& web_app_info) {
   constexpr int kIconSize = 48;
   gfx::ImageSkia image(std::make_unique<WebAppInfoImageSource>(
                            kIconSize, web_app_info.icon_bitmaps.any),
@@ -101,7 +101,7 @@ PWAConfirmationBubbleView* PWAConfirmationBubbleView::GetBubble() {
 PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     views::View* anchor_view,
     views::Button* highlight_button,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
     PrefService* prefs,
@@ -223,7 +223,7 @@ bool PWAConfirmationBubbleView::Accept() {
 namespace chrome {
 
 void ShowPWAInstallBubble(content::WebContents* web_contents,
-                          std::unique_ptr<WebApplicationInfo> web_app_info,
+                          std::unique_ptr<WebAppInstallInfo> web_app_info,
                           AppInstallationAcceptanceCallback callback,
                           PwaInProductHelpState iph_state) {
   if (g_bubble_)

@@ -12,7 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/serial_delegate.h"
@@ -86,7 +88,7 @@ class SerialChooserContext : public permissions::ObjectPermissionContextBase,
   // This raw pointer is safe because instances of this class are created by
   // SerialChooserContextFactory as KeyedServices that will be destroyed when
   // the Profile object is destroyed.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Tracks the set of ports to which an origin has access to.
   std::map<url::Origin, std::set<base::UnguessableToken>> ephemeral_ports_;

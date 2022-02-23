@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom-forward.h"
 
 namespace ui {
@@ -93,7 +94,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       RetargetEventType type) const override;
   void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node) override;
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           BrowserAccessibility* node) override;
 
@@ -128,6 +130,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // temporarily, this would need to be more sophisticated.
   void EnableTouchPassthrough() { touch_passthrough_enabled_ = true; }
   bool touch_passthrough_enabled() const { return touch_passthrough_enabled_; }
+
+  std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
  private:
   // AXTreeObserver overrides.

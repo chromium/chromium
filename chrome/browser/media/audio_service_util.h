@@ -9,7 +9,7 @@
 
 bool IsAudioServiceSandboxEnabled();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsAudioProcessHighPriorityEnabled();
 #endif
 

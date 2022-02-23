@@ -32,6 +32,8 @@ std::string ReasonIdToString(
       return "MediaSession";
     case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
       return "MediaSessionService";
+    case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+      return "ScreenReader";
   }
 }
 

@@ -19,6 +19,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
+import {getTemplate} from './omnibox_extension_entry.html.js';
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
 export interface SettingsOmniboxExtensionEntryElement {
@@ -39,7 +40,7 @@ export class SettingsOmniboxExtensionEntryElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

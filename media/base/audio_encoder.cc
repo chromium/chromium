@@ -5,7 +5,6 @@
 #include "media/base/audio_encoder.h"
 
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 

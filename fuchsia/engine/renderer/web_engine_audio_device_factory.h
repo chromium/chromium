@@ -8,9 +8,9 @@
 #include "base/threading/thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 
-class WebEngineAudioDeviceFactory final : public blink::WebAudioDeviceFactory {
+class WebEngineAudioDeviceFactory final : public blink::AudioDeviceFactory {
  public:
   WebEngineAudioDeviceFactory();
   ~WebEngineAudioDeviceFactory() override;

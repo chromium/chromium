@@ -18,16 +18,19 @@
             if (!window.testRunner)
                 return;
             resize("div");
+            resize("div-with-stacked-child");
             resize("textarea1");
             resize("textarea2");
             resize("iframe1");
         }
     </script>
-<style>
-textarea { 
-        resize: both; 
-}
-</style>
+    <style>
+        .target {
+            width: 150px;
+            height: 100px;
+            resize: both;
+        }
+    </style>
 </head>
 <body onload="test()">
     <hr>
@@ -37,10 +40,11 @@ textarea {
         Resize corner does not track the mouse accurately</i>.
     </p>
     <hr>
-    <div id="div" style="overflow: auto; resize: both; width: 150px; height: 100px; border: blue 2px solid;"></div>
-    <textarea id="textarea1" style="width: 150px; height: 100px; border: blue 2px solid;"></textarea>
-    <br>
-    <textarea id="textarea2"></textarea>
-    <br>
-    <iframe id="iframe1" style="resize:both;"></iframe>
+    <div id="div" class="target" style="overflow: auto; border: blue 2px solid;"></div>
+    <div id="div-with-stacked-child" class="target" style="overflow: auto; border: blue 2px solid;">
+        <div style="width: 149px; height: 98px; position: relative; background: yellow"></div>
+    </div>
+    <textarea id="textarea1" class="target" style="border: blue 2px solid;"></textarea>
+    <textarea id="textarea2" class="target"></textarea>
+    <iframe id="iframe1" class="target"></iframe>
 </body>

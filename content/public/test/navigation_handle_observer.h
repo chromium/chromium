@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_NAVIGATION_HANDLE_OBSERVER_H_
 
 #include <cstdint>
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -64,7 +65,7 @@ class NavigationHandleObserver : public WebContentsObserver {
   // A reference to the NavigationHandle so this class will track only
   // one navigation at a time. It is set at DidStartNavigation and cleared
   // at DidFinishNavigation before the NavigationHandle is destroyed.
-  NavigationHandle* handle_ = nullptr;
+  raw_ptr<NavigationHandle> handle_ = nullptr;
   bool has_committed_ = false;
   bool is_error_ = false;
   bool is_main_frame_ = false;

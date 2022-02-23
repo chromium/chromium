@@ -28,22 +28,53 @@ bool SetFieldAndAdvanceCursor(AutofillScanner* scanner, AutofillField** field) {
   return true;
 }
 
-}  // namespace
+// Removes the |attribute| from all |patterns|.
+// TODO(crbug/1142936): This is necessary for
+// AddressField::ParseNameAndLabelSeparately().
+MatchParams WithoutAttribute(MatchParams match_type, MatchAttribute attribute) {
+  match_type.attributes.erase(attribute);
+  return match_type;
+}
+
+// Removes the |attribute| from all |patterns|.
+// TODO(crbug/1142936): This is necessary for
+// AddressField::ParseNameAndLabelSeparately().
+std::vector<MatchingPattern> WithoutAttribute(
+    std::vector<MatchingPattern> patterns,
+    MatchAttribute attribute) {
+  for (MatchingPattern& p : patterns)
+    p.match_field_attributes.erase(attribute);
+  return patterns;
+}
+
+// Adds the |field_type| to all |patterns|.
+// TODO(crbug/1142936): This is necessary for AddressField::ParseAddressLines()
+// and AddressField::Parse().
+std::vector<MatchingPattern> WithFieldType(
+    std::vector<MatchingPattern> patterns,
+    MatchFieldType field_type) {
+  for (MatchingPattern& p : patterns)
+    p.match_field_input_types.insert(field_type);
+  return patterns;
+}
 
 // Some sites use type="tel" for zip fields (to get a numerical input).
 // http://crbug.com/426958
-const int AddressField::kZipCodeMatchType =
-    MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
+constexpr MatchParams kZipCodeMatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kTelephone,
+                            MatchFieldType::kNumber>;
 
-const int AddressField::kDependentLocalityMatchType =
-    MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
+constexpr MatchParams kDependentLocalityMatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>;
 
 // Select fields are allowed here.  This occurs on top-100 site rediff.com.
-const int AddressField::kCityMatchType =
-    MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
+constexpr MatchParams kCityMatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>;
 
-const int AddressField::kStateMatchType =
-    MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH;
+constexpr MatchParams kStateMatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>;
+
+}  // namespace
 
 std::unique_ptr<FormField> AddressField::Parse(
     AutofillScanner* scanner,
@@ -89,9 +120,10 @@ std::unique_ptr<FormField> AddressField::Parse(
       continue;
       // Ignore email addresses.
     } else if (ParseFieldSpecifics(
-                   scanner, kEmailRe, MATCH_DEFAULT | MATCH_TEXT_AREA,
-                   email_patterns, nullptr, {log_manager, "kEmailRe"},
-                   {.augment_types = MATCH_TEXT_AREA})) {
+                   scanner, kEmailRe,
+                   kDefaultMatchParamsWith<MatchFieldType::kTextArea>,
+                   WithFieldType(email_patterns, MatchFieldType::kTextArea),
+                   nullptr, {log_manager, "kEmailRe"})) {
       continue;
     } else if (address_field->ParseAddress(scanner, page_language) ||
                address_field->ParseDependentLocalityCityStateCountryZipCode(
@@ -230,13 +262,15 @@ bool AddressField::ParseAddressFieldSequence(
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
         ParseFieldSpecifics(scanner, kStreetNameRe,
-                            MATCH_DEFAULT | MATCH_SEARCH, street_name_patterns,
-                            &street_name_, {log_manager_, "kStreetNameRe"})) {
+                            kDefaultMatchParamsWith<MatchFieldType::kSearch>,
+                            street_name_patterns, &street_name_,
+                            {log_manager_, "kStreetNameRe"})) {
       continue;
     }
     if (!house_number_ &&
         ParseFieldSpecifics(scanner, kHouseNumberRe,
-                            MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
+                            kDefaultMatchParamsWith<MatchFieldType::kNumber,
+                                                    MatchFieldType::kTelephone>,
                             house_number_patterns, &house_number_,
                             {log_manager_, "kHouseNumberRe"})) {
       continue;
@@ -247,7 +281,8 @@ bool AddressField::ParseAddressFieldSequence(
             features::kAutofillEnableSupportForApartmentNumbers) &&
         !apartment_number_ &&
         ParseFieldSpecifics(scanner, kApartmentNumberRe,
-                            MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE,
+                            kDefaultMatchParamsWith<MatchFieldType::kNumber,
+                                                    MatchFieldType::kTelephone>,
                             apartment_number_patterns, &apartment_number_,
                             {log_manager_, "kApartmentNumberRe"})) {
       continue;
@@ -298,24 +333,34 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
       PatternProvider::GetInstance().GetMatchPatterns("ADDRESS_LINE_1",
                                                       page_language);
 
-  if (!ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT | MATCH_SEARCH,
+  // TODO(crbug.com/1121990): Remove duplicate calls when launching
+  // AutofillParsingPatternProvider. The old code calls ParseFieldSpecifics()
+  // for two different patterns, |pattern| and |label_pattern|. The new code
+  // handles both patterns at once in the |address_line1_patterns|.
+  if (!ParseFieldSpecifics(scanner, pattern,
+                           kDefaultMatchParamsWith<MatchFieldType::kSearch>,
                            address_line1_patterns, &address1_,
                            {log_manager_, "kAddressLine1Re"}) &&
-      !ParseFieldSpecifics(scanner, label_pattern,
-                           MATCH_LABEL | MATCH_SEARCH | MATCH_TEXT,
-                           address_line1_patterns, &address1_,
-                           {log_manager_, "kAddressLine1LabelRe"}) &&
-      !ParseFieldSpecifics(scanner, pattern,
-                           MATCH_DEFAULT | MATCH_SEARCH | MATCH_TEXT_AREA,
-                           address_line1_patterns, &street_address_,
-                           {log_manager_, "kAddressLine1Re"},
-                           {.augment_types = MATCH_TEXT_AREA}) &&
-      !ParseFieldSpecifics(scanner, label_pattern,
-                           MATCH_LABEL | MATCH_SEARCH | MATCH_TEXT_AREA,
-                           address_line1_patterns, &street_address_,
-                           {log_manager_, "kAddressLine1LabelRe"},
-                           {.augment_types = MATCH_TEXT_AREA}))
+      !ParseFieldSpecifics(
+          scanner, label_pattern,
+          MatchParams({MatchAttribute::kLabel},
+                      {MatchFieldType::kSearch, MatchFieldType::kText}),
+          address_line1_patterns, &address1_,
+          {log_manager_, "kAddressLine1LabelRe"}) &&
+      !ParseFieldSpecifics(
+          scanner, pattern,
+          kDefaultMatchParamsWith<MatchFieldType::kSearch,
+                                  MatchFieldType::kTextArea>,
+          WithFieldType(address_line1_patterns, MatchFieldType::kTextArea),
+          &street_address_, {log_manager_, "kAddressLine1Re"}) &&
+      !ParseFieldSpecifics(
+          scanner, label_pattern,
+          MatchParams({MatchAttribute::kLabel},
+                      {MatchFieldType::kSearch, MatchFieldType::kTextArea}),
+          WithFieldType(address_line1_patterns, MatchFieldType::kTextArea),
+          &street_address_, {log_manager_, "kAddressLine1LabelRe"})) {
     return false;
+  }
 
   if (street_address_)
     return true;
@@ -332,9 +377,11 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
 
   if (!ParseField(scanner, pattern, address_line2_patterns, &address2_,
                   {log_manager_, "kAddressLine2Re"}) &&
-      !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
-                           address_line2_patterns, &address2_,
-                           {log_manager_, "kAddressLine2LabelRe"}))
+      !ParseFieldSpecifics(
+          scanner, label_pattern,
+          MatchParams({MatchAttribute::kLabel}, {MatchFieldType::kText}),
+          address_line2_patterns, &address2_,
+          {log_manager_, "kAddressLine2LabelRe"}))
     return true;
 
   const std::vector<MatchingPattern>& address_line_extra_patterns =
@@ -346,10 +393,13 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner,
   pattern = kAddressLinesExtraRe;
   if (!ParseField(scanner, pattern, address_line_extra_patterns, &address3_,
                   {log_manager_, "kAddressLinesExtraRe"}) &&
-      !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
-                           address_line2_patterns, &address3_,
-                           {log_manager_, "kAddressLine2LabelRe"}))
+      !ParseFieldSpecifics(
+          scanner, label_pattern,
+          MatchParams({MatchAttribute::kLabel}, {MatchFieldType::kText}),
+          address_line2_patterns, &address3_,
+          {log_manager_, "kAddressLine2LabelRe"})) {
     return true;
+  }
 
   // Try for surplus lines, which we will promptly discard. Some pages have 4
   // address lines (e.g. uk/ShoesDirect2.html)!
@@ -376,9 +426,11 @@ bool AddressField::ParseCountry(AutofillScanner* scanner,
                                                       page_language);
 
   scanner->SaveCursor();
-  if (ParseFieldSpecifics(
-          scanner, kCountryRe, MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
-          country_patterns, &country_, {log_manager_, "kCountryRe"})) {
+  if (ParseFieldSpecifics(scanner, kCountryRe,
+                          kDefaultMatchParamsWith<MatchFieldType::kSelect,
+                                                  MatchFieldType::kSearch>,
+                          country_patterns, &country_,
+                          {log_manager_, "kCountryRe"})) {
     return true;
   }
 
@@ -387,8 +439,9 @@ bool AddressField::ParseCountry(AutofillScanner* scanner,
   scanner->Rewind();
   return ParseFieldSpecifics(
       scanner, kCountryLocationRe,
-      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH, country_patternsl,
-      &country_, {log_manager_, "kCountryLocationRe"});
+      MatchParams({MatchAttribute::kLabel, MatchAttribute::kName},
+                  {MatchFieldType::kSelect, MatchFieldType::kSearch}),
+      country_patternsl, &country_, {log_manager_, "kCountryLocationRe"});
 }
 
 bool AddressField::ParseZipCode(AutofillScanner* scanner,
@@ -459,7 +512,7 @@ bool AddressField::ParseState(AutofillScanner* scanner,
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
     const std::u16string& pattern,
-    int match_type,
+    MatchParams match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
     const RegExLogging& logging) {
@@ -469,12 +522,12 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
   AutofillField* cur_match = nullptr;
   size_t saved_cursor = scanner->SaveCursor();
   bool parsed_name = ParseFieldSpecifics(
-      scanner, pattern, match_type & ~MATCH_LABEL, patterns, &cur_match,
-      logging, {.restrict_attributes = MATCH_NAME});
+      scanner, pattern, WithoutAttribute(match_type, MatchAttribute::kLabel),
+      WithoutAttribute(patterns, MatchAttribute::kLabel), &cur_match, logging);
   scanner->RewindTo(saved_cursor);
   bool parsed_label = ParseFieldSpecifics(
-      scanner, pattern, match_type & ~MATCH_NAME, patterns, &cur_match, logging,
-      {.restrict_attributes = MATCH_LABEL});
+      scanner, pattern, WithoutAttribute(match_type, MatchAttribute::kName),
+      WithoutAttribute(patterns, MatchAttribute::kName), &cur_match, logging);
   if (parsed_name && parsed_label) {
     if (match)
       *match = cur_match;
@@ -699,7 +752,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
                                                       page_language);
 
   ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
-      scanner, kCountryRe, MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
+      scanner, kCountryRe,
+      kDefaultMatchParamsWith<MatchFieldType::kSelect, MatchFieldType::kSearch>,
       country_patterns, &country_, {log_manager_, "kCountryRe"});
   if (country_result != RESULT_MATCH_NONE)
     return country_result;
@@ -708,7 +762,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
   // "location". However, this only makes sense for select tags.
   return ParseNameAndLabelSeparately(
       scanner, kCountryLocationRe,
-      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH,
+      MatchParams({MatchAttribute::kLabel, MatchAttribute::kName},
+                  {MatchFieldType::kSelect, MatchFieldType::kSearch}),
       country_location_patterns, &country_,
       {log_manager_, "kCountryLocationRe"});
 }

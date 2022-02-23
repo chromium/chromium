@@ -23,7 +23,6 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 #if DCHECK_IS_ON()
 #include <stdio.h>

@@ -55,8 +55,8 @@ class PLATFORM_EXPORT FEDisplacementMap final : public FilterEffect {
                                           int indention) const override;
 
  private:
-  FloatRect MapInputs(const FloatRect&) const override;
-  FloatRect MapEffect(const FloatRect&) const override;
+  gfx::RectF MapInputs(const gfx::RectF&) const override;
+  gfx::RectF MapEffect(const gfx::RectF&) const override;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 

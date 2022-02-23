@@ -67,7 +67,7 @@ class TaskTabHelper : public content::WebContentsObserver,
   int64_t GetParentTaskId();
   int64_t GetParentRootTaskId();
 
-  int last_pruned_navigation_entry_index_;
+  int last_pruned_navigation_entry_index_ = -1;
   std::map<int, int> entry_index_to_spoke_count_map_;
   std::unordered_map<int, sessions::NavigationTaskId>
       local_navigation_task_id_map_;

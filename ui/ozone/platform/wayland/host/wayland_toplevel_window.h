@@ -98,6 +98,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   void AckConfigure(uint32_t serial) override;
   void UpdateDecorations() override;
 
+  // PlatformWindow overrides:
+  bool IsClientControlledWindowMovementSupported() const override;
+
+  // WmDragHandler overrides:
+  bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
+
   // zaura_surface listeners
   static void OcclusionChanged(void* data,
                                zaura_surface* surface,
@@ -109,6 +115,8 @@ class WaylandToplevelWindow : public WaylandWindow,
                                     zaura_surface* surface,
                                     uint32_t mode);
   static void DeskChanged(void* data, zaura_surface* surface, int state);
+  static void StartThrottle(void* data, zaura_surface* surface);
+  static void EndThrottle(void* data, zaura_surface* surface);
 
   // Calls UpdateWindowShape, set_input_region and set_opaque_region
   // for this toplevel window.
@@ -121,9 +129,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   void EndMoveLoop() override;
 
   // WaylandExtension:
-  void StartWindowDraggingSessionIfNeeded() override;
+  void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) override;
   void SetImmersiveFullscreenStatus(bool status) override;
-  void ShowSnapPreview(WaylandWindowSnapDirection snap) override;
+  void ShowSnapPreview(WaylandWindowSnapDirection snap,
+                       bool allow_haptic_feedback) override;
   void CommitSnap(WaylandWindowSnapDirection snap) override;
   void SetCanGoBack(bool value) override;
   void SetPip() override;
@@ -204,10 +213,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::string window_unique_id_;
 #else
   // Id of the chromium app passed through
-  // PlatformWindowInitProperties::wm_class_class. This is used by Wayland
+  // PlatformWindowInitProperties::wm_class_name. This is used by Wayland
   // compositor to identify the app, unite it's windows into the same stack of
   // windows and find *.desktop file to set various preferences including icons.
-  std::string wm_class_class_;
+  std::string app_id_;
 #endif
 
   // Title of the ShellToplevel.

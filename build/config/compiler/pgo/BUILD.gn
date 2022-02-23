@@ -48,27 +48,31 @@ config("pgo_optimization_flags") {
         inputs = [ "//chrome/build/win32.pgo.txt" ]
       }
     } else if (is_mac) {
-      _pgo_target = "mac"
-      inputs = [ "//chrome/build/mac.pgo.txt" ]
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+        inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+      } else {
+        _pgo_target = "mac"
+        inputs = [ "//chrome/build/mac.pgo.txt" ]
+      }
     } else if (is_linux || is_chromeos_lacros) {
       _pgo_target = "linux"
       inputs = [ "//chrome/build/linux.pgo.txt" ]
     }
 
     if (pgo_data_path == "" && _pgo_target != "") {
-      pgo_data_path = rebase_path(exec_script("//tools/update_pgo_profiles.py",
-                                              [
-                                                "--target",
-                                                _pgo_target,
-                                                "get_profile_path",
-                                              ],
-                                              "value"),
-                                  root_build_dir)
+      pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
+                                  [
+                                    "--target",
+                                    _pgo_target,
+                                    "get_profile_path",
+                                  ],
+                                  "value")
     }
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
     cflags = [
-      "-fprofile-instr-use=$pgo_data_path",
+      "-fprofile-use=" + rebase_path(pgo_data_path, root_build_dir),
 
       # It's possible to have some profile data legitimately missing,
       # and at least some profile data always ends up being considered

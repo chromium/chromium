@@ -1,0 +1,70 @@
+<!doctype html>
+<title>Container Relative Units: fall back to small viewport</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-lengths">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
+<style>
+  iframe {
+    width: 200px;
+    height: 40px;
+  }
+</style>
+<iframe id=iframe srcdoc="
+  <style>
+    #container {
+      container-type: inline-size;
+      width: 70px;
+      height: 30px;
+    }
+    #target {
+      left: 10qw;
+      top: 10qh;
+      right: 10qi;
+      bottom: 10qb;
+      margin-left: 10qmax;
+      margin-right: 10qmin;
+    }
+  </style>
+  <div id=container>
+    <div id=target></div>
+  </div>
+"></iframe>
+
+<script>
+  setup(() => assert_implements_container_queries());
+
+  function waitForLoad(w) {
+    return new Promise(resolve => w.addEventListener('load', resolve));
+  }
+
+  promise_test(async () => {
+    await waitForLoad(window);
+    let inner_target = iframe.contentDocument.querySelector('#target');
+
+    // Since there's an inline-size container, qw/qi should evaluate against
+    // that.
+    assert_equals(getComputedStyle(inner_target).left, '7px'); // 10qw
+    assert_equals(getComputedStyle(inner_target).right, '7px'); // 10qi
+
+    // However, there is no size container, so qh/qb should evaluate against
+    // the small viewport size.
+    assert_equals(getComputedStyle(inner_target).top, '4px'); // 10qh
+    assert_equals(getComputedStyle(inner_target).bottom, '4px'); // 10qb
+
+    assert_equals(getComputedStyle(inner_target).marginLeft, '7px'); // 10qmax
+    assert_equals(getComputedStyle(inner_target).marginRight, '4px'); // 10qmin
+
+    iframe.style = 'width:400px;height:80px';
+
+    // Not affected by resize:
+    assert_equals(getComputedStyle(inner_target).left, '7px'); // 10qw
+    assert_equals(getComputedStyle(inner_target).right, '7px'); // 10qi
+
+    // Affected:
+    assert_equals(getComputedStyle(inner_target).top, '8px'); // 10qh
+    assert_equals(getComputedStyle(inner_target).bottom, '8px'); // 10qb
+    assert_equals(getComputedStyle(inner_target).marginLeft, '8px'); // 10qmax
+    assert_equals(getComputedStyle(inner_target).marginRight, '7px'); // 10qmin
+  }, 'Use small viewport size as fallback');
+</script>

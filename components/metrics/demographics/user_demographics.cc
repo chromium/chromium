@@ -101,8 +101,7 @@ bool HasEligibleBirthYear(base::Time now, int user_birth_year, int offset) {
 // Gets the synced user's birth year from synced prefs, see doc of
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
-absl::optional<int> GetUserBirthYear(
-    const base::DictionaryValue* demographics) {
+absl::optional<int> GetUserBirthYear(const base::Value* demographics) {
   const base::Value* value =
       demographics->FindPath(kSyncDemographicsBirthYearPath);
   int birth_year = (value != nullptr && value->is_int())
@@ -120,7 +119,7 @@ absl::optional<int> GetUserBirthYear(
 // DemographicMetricsProvider in demographic_metrics_provider.h for more
 // details.
 absl::optional<UserDemographicsProto_Gender> GetUserGender(
-    const base::DictionaryValue* demographics) {
+    const base::Value* demographics) {
   const base::Value* value =
       demographics->FindPath(kSyncDemographicsGenderPath);
   int gender_int = (value != nullptr && value->is_int())
@@ -216,7 +215,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
   // user_demographics.h for more details.
 
   // Get the pref that contains the user's birth year and gender.
-  const base::DictionaryValue* demographics =
+  const base::Value* demographics =
       pref_service->GetDictionary(kSyncDemographicsPrefName);
   DCHECK(demographics != nullptr);
 

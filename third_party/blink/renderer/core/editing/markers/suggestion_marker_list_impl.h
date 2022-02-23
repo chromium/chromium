@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

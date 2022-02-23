@@ -80,7 +80,6 @@ source_set("startup") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/net:net",
-    "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/common",
@@ -88,6 +87,7 @@ source_set("startup") {
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web",
     "//ios/web/public/init",
   ]

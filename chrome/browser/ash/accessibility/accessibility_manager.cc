@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_constants.h"
@@ -87,7 +88,6 @@
 #include "extensions/common/extension_resource.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -201,9 +201,11 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
 absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
     Profile* profile,
     const std::string& dictation_locale) {
-  const base::DictionaryValue* offline_nudges =
-      profile->GetPrefs()->GetDictionary(
-          prefs::kAccessibilityDictationLocaleOfflineNudge);
+  if (dictation_locale.empty()) {
+    return absl::nullopt;
+  }
+  const base::Value* offline_nudges = profile->GetPrefs()->GetDictionary(
+      prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges->FindBoolPath(dictation_locale);
 }
 
@@ -707,7 +709,7 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
     return;
 
   if (pref_name == ash::prefs::kAccessibilityDictationEnabled &&
-      !::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+      !::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
     return;
   }
 
@@ -896,7 +898,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
 
   // Only need to check SODA installation and locale preference if offline
   // dictation is enabled.
-  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
+  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
     // Show network dictation dialog if needed. Locale prefs are only used
     // when this feature is enabled, so passing the empty string is OK.
     if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog(""))
@@ -921,7 +923,7 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   }
 
   // If SODA isn't available on the device, no need to try to install it.
-  if (!features::IsDictationOfflineAvailableAndEnabled()) {
+  if (!::features::IsDictationOfflineAvailableAndEnabled()) {
     // Show network dictation dialog if needed. Locale doesn't matter as no
     // languages are supported by SODA.
     if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog(""))
@@ -1251,11 +1253,10 @@ void AccessibilityManager::OnActiveOutputNodeChanged() {
   }
 
   const auto& account_ids = user_manager::known_user::GetKnownAccountIds();
-  for (size_t i = 0; i < account_ids.size(); ++i) {
-    bool val;
-    if (user_manager::known_user::GetBooleanPref(
-            account_ids[i], kUserSpokenFeedbackEnabled, &val) &&
-        val) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  for (const auto& account_id : account_ids) {
+    if (known_user.FindBoolPath(account_id, kUserSpokenFeedbackEnabled)
+            .value_or(false)) {
       PlayEarcon(Sound::kStartup, PlaySoundOption::kAlways);
       break;
     }
@@ -1716,7 +1717,7 @@ void AccessibilityManager::LoadEnhancedNetworkTts() {
           ->extension_service()
           ->component_loader();
 
-  if (!features::IsEnhancedNetworkVoicesEnabled() ||
+  if (!::features::IsEnhancedNetworkVoicesEnabled() ||
       component_loader->Exists(extension_misc::kEnhancedNetworkTtsExtensionId))
     return;
 
@@ -1791,7 +1792,7 @@ bool AccessibilityManager::ToggleDictation() {
   if (!profile_)
     return false;
 
-  if (!::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+  if (!::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
     if (!dictation_.get())
       dictation_ = std::make_unique<Dictation>(profile_);
 
@@ -1888,12 +1889,12 @@ bool AccessibilityManager::GetStartupSoundEnabled() const {
   if (user_list.empty())
     return false;
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // |user_list| is sorted by last log in date. Take the most recent user to
   // log in.
-  bool val;
-  return user_manager::known_user::GetBooleanPref(
-             user_list[0]->GetAccountId(), kUserStartupSoundEnabled, &val) &&
-         val;
+  return known_user
+      .FindBoolPath(user_list[0]->GetAccountId(), kUserStartupSoundEnabled)
+      .value_or(false);
 }
 
 void AccessibilityManager::SetStartupSoundEnabled(bool value) const {
@@ -1912,14 +1913,12 @@ const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()
   if (user_list.empty())
     return std::string();
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // |user_list| is sorted by last log in date. Take the most recent user to
   // log in.
-  std::string val;
-  return user_manager::known_user::GetStringPref(
-             user_list[0]->GetAccountId(), kUserBluetoothBrailleDisplayAddress,
-             &val)
-             ? val
-             : std::string();
+  const std::string* val = known_user.FindStringPath(
+      user_list[0]->GetAccountId(), kUserBluetoothBrailleDisplayAddress);
+  return val ? *val : std::string();
 }
 
 void AccessibilityManager::UpdateBluetoothBrailleDisplayAddress(
@@ -1963,7 +1962,7 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
     const std::set<int>& action_keys,
     const std::string& pref_name) {
   DictionaryPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
-  base::ListValue devices;
+  base::Value devices(base::Value::Type::LIST);
   devices.Append(kSwitchAccessInternalDevice);
   devices.Append(kSwitchAccessUsbDevice);
   devices.Append(kSwitchAccessBluetoothDevice);
@@ -1973,6 +1972,11 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
   }
 
   profile_->GetPrefs()->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsDisableAutoclickDialogVisibleForTest() {
+  AutoclickController* controller = Shell::Get()->autoclick_controller();
+  return controller->GetDisableDialogForTesting() != nullptr;  // IN-TEST
 }
 
 // Sends a panel action event to the Select-to-speak extension.
@@ -2030,7 +2034,7 @@ bool AccessibilityManager::ShouldShowNetworkDictationDialog(
     return false;
   }
 
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return true;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2073,7 +2077,7 @@ void AccessibilityManager::OnNetworkDictationDialogDismissed() {
 }
 
 void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2118,7 +2122,7 @@ void AccessibilityManager::OnSodaInstallError(
 }
 
 void AccessibilityManager::OnSodaInstallUpdated(int progress) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -2179,7 +2183,7 @@ void AccessibilityManager::OnSodaLanguagePackError(
 }
 
 bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {
-  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+  if (!::features::IsDictationOfflineAvailableAndEnabled() ||
       !dictation_triggered_by_user_ || !IsDictationEnabled()) {
     return false;
   }
@@ -2200,7 +2204,7 @@ bool AccessibilityManager::ShouldShowSodaSucceededNotificationForDictation() {
 
 bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
     speech::LanguageCode language_code) {
-  if (!features::IsDictationOfflineAvailableAndEnabled() ||
+  if (!::features::IsDictationOfflineAvailableAndEnabled() ||
       !dictation_triggered_by_user_ || !IsDictationEnabled()) {
     return false;
   }
@@ -2224,7 +2228,7 @@ bool AccessibilityManager::ShouldShowSodaFailedNotificationForDictation(
 
 void AccessibilityManager::ShowSodaDownloadNotificationForDictation(
     bool succeeded) {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!::features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   const std::string locale =

@@ -23,7 +23,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -39,9 +39,7 @@ class CORE_EXPORT Navigator final : public NavigatorBase,
   // NavigatorCookies
   bool cookieEnabled() const;
 
-  bool webdriver() const {
-    return RuntimeEnabledFeatures::AutomationControlledEnabled();
-  }
+  bool webdriver() const;
 
   String productSub() const;
   String vendor() const;

@@ -29,13 +29,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".UnitConversion" summary="UnitConversion result type"/>
 </variants>
 
-<variants name="QuickAnswersConsentInteractionType">
-  <variant name=".Accept" summary="Clicks on the accept button"/>
-  <variant name=".Dismiss" summary="Dismisses the consent"/>
-  <variant name=".ManageSettings"
-      summary="Clicks on the 'manage settings' button"/>
-</variants>
-
 <variants name="QuickAnswersV2ConsentResultType">
   <variant name=".Allow" summary="Clicks on the allow button"/>
   <variant name=".Dismiss" summary="Dismisses or ignores the consent"/>
@@ -76,7 +69,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
     expires_after="2022-04-11">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     The number of times buttons on Assistant UI (e.g., minimize) are clicked.
   </summary>
@@ -95,9 +88,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.DspHotwordDetection"
-    enum="DspHotwordDetectionStatus" expires_after="2022-04-10">
-  <owner>meilinw@chromium.org</owner>
+    enum="DspHotwordDetectionStatus" expires_after="2022-08-14">
   <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Counts the number of times Dsp hotword gets detected in each status, to help
     capture the hotword false acceptance rate.
@@ -107,7 +100,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
     expires_after="2022-08-09">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Record the Assistant entry point where Assistant UI becomes visible.
     ChromeOS only.
@@ -117,7 +110,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
     expires_after="2022-08-09">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Record the Assistant exit point where Assistant UI becomes invisible.
     ChromeOS only.
@@ -125,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.HotwordEnableNotification" enum="BooleanHit"
-    expires_after="2021-12-31">
+    expires_after="2022-12-31">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -175,23 +168,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
-    expires_after="2021-12-26">
+    expires_after="2022-12-26">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>Number of queries fired for each entry point.</summary>
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
     expires_after="2022-07-01">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>The Assistant query response type.</summary>
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
     expires_after="2022-05-01">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     The source of Assistant query (e.g. dialog plate text field, voice input).
     Recorded when the query is committed.
@@ -201,7 +194,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
     expires_after="2022-04-24">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Among eligible users, whether the user has the Assistant service enabled.
     Recorded once for every UMA upload. The set of eligible users includes all
@@ -227,8 +220,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
     expires_after="2022-05-01">
-  <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     For each attempt to set the hotword locale for a DSP device, counts whether
     the attempt succeeded.
@@ -297,6 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
     expires_after="2022-05-01">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -307,7 +301,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.ActiveImpression.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2022-01-16">
+    units="ms" expires_after="2023-01-16">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -322,6 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
     expires_after="2022-04-24">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -330,7 +326,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2021-11-21">
+    units="ms" expires_after="2022-11-21">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -340,56 +337,6 @@ chromium-metrics-reviews@google.com.
   <token key="QuickAnswersClickResultType"
       variants="QuickAnswersClickResultType">
     <variant name=""/>
-  </token>
-</histogram>
-
-<histogram name="QuickAnswers.Consent" units="impressions"
-    expires_after="2022-05-01">
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent impression, records how many times the user
-    has seen the consent. ChromeOS only.
-  </summary>
-</histogram>
-
-<histogram
-    name="QuickAnswers.Consent.Duration{QuickAnswersConsentInteractionType}"
-    units="ms" expires_after="2021-08-09">
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent interaction event, records how long the user
-    has seen the consent before. ChromeOS only.
-    {QuickAnswersConsentInteractionType}
-  </summary>
-  <token key="QuickAnswersConsentInteractionType"
-      variants="QuickAnswersConsentInteractionType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
-</histogram>
-
-<histogram
-    name="QuickAnswers.Consent.Impression{QuickAnswersConsentInteractionType}"
-    units="impressions" expires_after="2022-01-02">
-  <owner>llin@google.com</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    For every quick answers consent interaction event, records how many times
-    the user has seen the consent before. ChromeOS only.
-    {QuickAnswersConsentInteractionType}
-  </summary>
-  <token key="QuickAnswersConsentInteractionType"
-      variants="QuickAnswersConsentInteractionType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
   </token>
 </histogram>
 
@@ -407,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.ContextMenu.Close.Duration{InteractionType}"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2022-12-31">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -433,6 +380,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
     expires_after="2022-04-10">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -442,7 +390,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Duration" units="ms"
-    expires_after="2022-01-23">
+    expires_after="2023-01-23">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -452,7 +401,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Status" enum="QuickAnswersLoadStatus"
-    expires_after="2022-01-02">
+    expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -487,6 +437,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
     expires_after="2022-04-03">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -496,7 +447,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Result.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-12-31">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -511,6 +463,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickAnswers.SelectedContent.Length" units="characters"
     expires_after="2022-04-10">
+  <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

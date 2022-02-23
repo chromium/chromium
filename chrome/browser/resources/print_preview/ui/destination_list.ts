@@ -12,9 +12,11 @@ import './throbber_css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_update_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
+
+import {getTemplate} from './destination_list.html.js';
 
 const DESTINATION_ITEM_HEIGHT = 32;
 
@@ -34,7 +36,7 @@ export class PrintPreviewDestinationListElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -181,6 +183,12 @@ export class PrintPreviewDestinationListElement extends
    */
   private getAriaRowindex_(index: number): number {
     return index + 1;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-list': PrintPreviewDestinationListElement;
   }
 }
 

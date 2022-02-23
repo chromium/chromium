@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -116,6 +116,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
     }
   }
 
+  list_item->setSameParty(canonical_cookie.IsSameParty());
   list_item->setPartitioned(canonical_cookie.IsPartitioned());
 
   return list_item;

@@ -10,6 +10,7 @@
 
 import '../../settings_shared_css.js';
 
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,6 +52,7 @@ Polymer({
   is: 'settings-scheduler-slider',
 
   behaviors: [
+    I18nBehavior,
     PrefsBehavior,
     IronResizableBehavior,
     PaperRippleBehavior,
@@ -237,6 +239,33 @@ Polymer({
     percent = isRTL ? 100 - percent : percent;
     return 'left: ' + percent + '%';
   },
+
+  /**
+   * Gets the aria label for the start time knob.
+   * @return {string} The start time string to be announced.
+   * @private
+   */
+  getAriaLabelStartTime_() {
+    return this.i18n(
+        'startTime',
+        this.getTimeString_(
+            /** @type {number} */ (this.prefStartTime.value),
+            this.shouldUse24Hours_));
+  },
+
+  /**
+   * Gets the aria label for the end time knob.
+   * @return {string} The end time string to be announced.
+   * @private
+   */
+  getAriaLabelEndTime_() {
+    return this.i18n(
+        'endTime',
+        this.getTimeString_(
+            /** @type {number} */ (this.prefEndTime.value),
+            this.shouldUse24Hours_));
+  },
+
 
   /**
    * If one of the two knobs is focused, this function blurs it.

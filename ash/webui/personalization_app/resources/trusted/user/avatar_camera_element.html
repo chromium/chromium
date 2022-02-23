@@ -1,0 +1,33 @@
+<style>
+  #webcamVideo {
+    /*
+     * Mirror the webcam feed because people are used to seeing themselves in a
+     * mirror. Still has to be mirrored even in RTL layouts.
+     */
+    transform: scaleX(-1);
+  }
+</style>
+<cr-dialog id="dialog" show-close-button show-on-attach>
+  <div slot="body">
+    <video id="webcamVideo" autoplay
+        hidden$="[[isVideoHidden_(cameraStream_, previewBlobUrl_)]]"></video>
+    <template is="dom-if" if="[[previewBlobUrl_]]">
+      <img src$="[[previewBlobUrl_]]">
+    </template>
+  </div>
+  <div slot="footer">
+    <template is="dom-if" if="[[!previewBlobUrl_]]">
+      <cr-button id="takePhoto" on-click="takePhoto_">
+        [[getTakePhotoText_(mode)]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[previewBlobUrl_]]">
+      <cr-button id="confirmPhoto" on-click="confirmPhoto_">
+        [[getConfirmText_(mode)]]
+      </cr-button>
+      <cr-button id="clearPhoto" on-click="clearPhoto_">
+        $i18n{rejectWebcamPhoto}
+      </cr-button>
+    </template>
+  </div>
+</cr-dialog>

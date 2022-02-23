@@ -4,16 +4,16 @@
 
 """WPT WebDriver tests runner."""
 
-from __future__ import absolute_import
-import pytest
-import os
 import argparse
-import sys
 import json
+import logging
+import os
+import sys
 import tempfile
 import time
-import logging
 import zlib
+
+import pytest
 
 _log = logging.getLogger(__name__)
 
@@ -174,9 +174,12 @@ class SubtestResultRecorder(object):
 
 def set_up_config(path_finder, chromedriver_server):
   # These envs are used to create a WebDriver session in the fixture.py file.
-  os.environ["WD_HOST"] = chromedriver_server.GetHost()
-  os.environ["WD_PORT"] = str(chromedriver_server.GetPort())
-  os.environ["WD_CAPABILITIES"] = json.dumps({
+  config_path = os.path.join(tempfile.mkdtemp(), "wd_config.json")
+  os.environ["WDSPEC_CONFIG_FILE"] = config_path
+
+  wd_host = chromedriver_server.GetHost()
+  wd_port = str(chromedriver_server.GetPort())
+  wd_capabilities = {
       "goog:chromeOptions": {
           "w3c": True,
           "prefs": {
@@ -193,15 +196,18 @@ def set_up_config(path_finder, chromedriver_server):
           ]
 
       }
-  })
+  }
+  config = {
+    "host": wd_host,
+    "port": wd_port,
+    "capabilities": wd_capabilities
+  }
 
-  config_path = os.path.join(tempfile.mkdtemp(), "wd_server_config.json")
-  os.environ["WD_SERVER_CONFIG_FILE"] = config_path
   # Port numbers are defined at
   # https://cs.chromium.org/chromium/src/third_party/blink/tools
   # /blinkpy/web_tests/servers/wptserve.py?l=23&rcl=375b34c6ba64
   # 5d00c1413e4c6106c7bb74581c85
-  config_dict = {
+  server_config_dict = {
     "doc_root": path_finder.path_from_chromium_base(CHROMIUM_WPT_DIR),
     "browser_host": "web-platform.test",
     "domains": {"": {"": "web-platform.test",
@@ -210,8 +216,10 @@ def set_up_config(path_finder, chromedriver_server):
                      "www1": "www1.web-platform.test",
                      "www2": "www2.web-platform.test"}},
     "ports": {"ws": [9001], "wss": [9444], "http": [8001], "https": [8444]}}
+  config["wptserve"] = server_config_dict
+
   with open(config_path, "w") as f:
-    json.dump(config_dict, f)
+    json.dump(config, f)
 
 
 def run_test(path, path_finder, port, skipped_tests=[]):

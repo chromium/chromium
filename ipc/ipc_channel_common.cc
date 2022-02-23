@@ -10,7 +10,7 @@
 
 namespace IPC {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 int g_global_pid = 0;
@@ -26,14 +26,14 @@ int Channel::GetGlobalPid() {
   return g_global_pid;
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::unique_ptr<Channel> Channel::CreateClient(
     const IPC::ChannelHandle& channel_handle,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner) {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   return Channel::Create(channel_handle, Channel::MODE_CLIENT, listener);
 #else
   DCHECK(channel_handle.is_mojo_channel_handle());
@@ -50,7 +50,7 @@ std::unique_ptr<Channel> Channel::CreateServer(
     const IPC::ChannelHandle& channel_handle,
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner) {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   return Channel::Create(channel_handle, Channel::MODE_SERVER, listener);
 #else
   DCHECK(channel_handle.is_mojo_channel_handle());

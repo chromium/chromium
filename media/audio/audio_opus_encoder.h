@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
-#include "media/base/audio_push_fifo.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/opus/src/include/opus.h"
 
@@ -33,24 +33,26 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // AudioEncoder:
   void Initialize(const Options& options,
                   OutputCB output_callback,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
 
   void Encode(std::unique_ptr<AudioBus> audio_bus,
               base::TimeTicks capture_time,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
 
-  void Flush(StatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
   static constexpr int kMinBitrate = 6000;
 
  private:
-  // Called synchronously by |fifo_| once enough audio frames have been
-  // buffered. Calls libopus to do actual encoding.
-  void OnFifoOutput(const AudioBus& output_bus, int frame_delay);
+  class InputFramesFifo;
+
+  // Called synchronously by Encode() once enough audio frames have been
+  // buffered in |fifo_|. Calls libopus to do actual encoding.
+  void OnEnoughInputFrames();
 
   CodecDescription PrepareExtraData();
 
-  StatusOr<OwnedOpusEncoder> CreateOpusEncoder();
+  EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder();
 
   AudioParameters input_params_;
 
@@ -59,12 +61,17 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // (See CreateOpusInputParams() in the .cc file for details).
   AudioParameters converted_params_;
 
+  // Minimal amount of frames needed to satisfy one convert call.
+  int min_input_frames_needed_;
+
   // Sample rate adapter from the input audio to what OpusEncoder desires.
+  // Note: Must outlive |fifo_|.
   std::unique_ptr<AudioConverter> converter_;
 
-  // Buffer for holding the original input audio before it goes to the
+  // Fifo for holding the original input audio before it goes to the
   // converter.
-  std::unique_ptr<AudioPushFifo> fifo_;
+  // Note: Must be destroyed before |converter_|.
+  std::unique_ptr<InputFramesFifo> fifo_;
 
   // This is the destination AudioBus where the |converter_| teh audio into.
   std::unique_ptr<AudioBus> converted_audio_bus_;
@@ -81,7 +88,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   // Callback for reporting completion and status of the current Flush() or
   // Encoder()
-  StatusCB current_done_cb_;
+  EncoderStatusCB current_done_cb_;
 
   // True if the next output needs to have extra_data in it, only happens once.
   bool need_to_emit_extra_data_ = true;

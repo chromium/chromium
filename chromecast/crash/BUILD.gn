@@ -87,6 +87,7 @@ cast_source_set("crash") {
 
     deps += [
       ":build_info",
+      "//chromecast:chromecast_buildflags",
       "//chromecast/base",
       "//chromecast/base:cast_sys_info_util",
       "//chromecast/base:cast_version",

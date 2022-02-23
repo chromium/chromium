@@ -105,6 +105,7 @@ void StubCrosSettingsProvider::SetDefaults() {
   values_.SetValue(kAccountsPrefDeviceLocalAccounts,
                    base::Value(base::Value::Type::LIST));
   values_.SetBoolean(kDevicePeripheralDataAccessEnabled, true);
+  values_.SetBoolean(kRevenEnableDeviceHWDataUsage, false);
   // |kDeviceOwner| will be set to the logged-in user by |UserManager|.
 }
 

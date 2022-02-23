@@ -12,12 +12,13 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
@@ -92,7 +93,7 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    ExtensionsActivity* extensions_activity;
+    raw_ptr<ExtensionsActivity> extensions_activity;
 
     // Unqiuely identifies this client to the invalidation notification server.
     std::string invalidator_client_id;
@@ -100,13 +101,13 @@ class SyncManager {
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    SyncEncryptionHandler* encryption_handler;
+    raw_ptr<SyncEncryptionHandler> encryption_handler;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    CancelationSignal* cancelation_signal;
+    raw_ptr<CancelationSignal> cancelation_signal;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;
@@ -164,7 +165,7 @@ class SyncManager {
   // Inform the syncer that its cached information about a type is obsolete.
   virtual void OnIncomingInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation) = 0;
+      std::unique_ptr<SyncInvalidation> invalidation) = 0;
 
   // Adds a listener to be notified of sync events.
   // NOTE: It is OK (in fact, it's probably a good idea) to call this before

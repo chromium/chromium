@@ -36,4 +36,6 @@ enum ShareType {
   kGoogleSlidesFile,
   // Single file attachment with un-matched mime type.
   kUnknownFile,
+  // Wi-Fi credentials attachment.
+  kWifiCredentials,
 };

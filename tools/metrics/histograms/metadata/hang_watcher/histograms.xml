@@ -22,56 +22,37 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ProcessAndThreadType">
+  <variant name="BrowserProcess.IOThread"
+      summary="the Browser process IO-Thread"/>
+  <variant name="BrowserProcess.ThreadPool"
+      summary="a WorkerPool Thread the Browser process"/>
+  <variant name="BrowserProcess.UIThread"
+      summary="the Browser process UI-Thread"/>
+  <variant name="RendererProcess.IOThread"
+      summary="the IO-Thread of a Renderer process"/>
+  <variant name="RendererProcess.MainThread"
+      summary="the Main Thread of a Renderer process"/>
+</variants>
+
 <variants name="ProcessType">
   <variant name="BrowserProcess"/>
   <variant name="RendererProcess"/>
 </variants>
 
-<variants name="ThreadType">
-  <variant name="IOThread"/>
-  <variant name="ThreadPool"/>
-  <variant name="UIThread"/>
-</variants>
-
-<histogram name="HangWatcher.IsThreadHung.{ProcessType}.{ThreadType}"
+<histogram name="HangWatcher.IsThreadHung.{ProcessAndThreadType}"
     enum="BooleanHung" expires_after="2022-10-23">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Every 10 seconds, a boolean is recorded to this histogram to indicate
-    whether the {ProcessType} {ThreadType} was hung. The thread is hung if the
-    current work unit started running more than 10 seconds ago and this was not
-    labeled as &quot;working as intended&quot; by InvalidateActiveExpectations()
-    (Prior to 2021-07-09 with IgnoreHangsInScope). Recording is skipped if the
-    hang watcher detects an irregular heartbeat (e.g. when the machine sleeps).
+    whether {ProcessAndThreadType} was hung. The thread is hung if the current
+    work unit started running more than 10 seconds ago and this was not labeled
+    as &quot;working as intended&quot; by InvalidateActiveExpectations() (Prior
+    to 2021-07-09 with IgnoreHangsInScope). Recording is skipped if the hang
+    watcher detects an irregular heartbeat (e.g. when the machine sleeps).
   </summary>
-  <token key="ProcessType" variants="ProcessType"/>
-  <token key="ThreadType" variants="ThreadType"/>
-</histogram>
-
-<histogram
-    name="HangWatcher.NumberOfHungThreadsDuringWatchWindow.{ProcessType}.{ThreadType}"
-    units="threads" expires_after="2021-10-23">
-  <obsolete>
-    Replaced by HangWatcher.IsThreadHung on 11-2020.
-  </obsolete>
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    HangWatcher is a class that periodically watches threads to see if they are
-    making progress or if they are hung. This metric is recorded when the
-    HangWatcher checks for hangs. It counts the number of threads of type
-    {ThreadType} that were hung or became hung during the monitoring period in
-    processes of type {ProcessType}. The primary purpose of HangWatcher to
-    upload crash reports on hang. Hangs that last for N monitoring periods do
-    not produce N crash reports. Every subsequent report after the first one is
-    ignored if it pertains to a subset of the same hangs. In contrast this
-    metric is recorded after every single monitoring period. This gives more
-    weight to hangs that last for longer and also accounts for cascading hangs
-    that start as a side-effect of the first recorded one.
-  </summary>
-  <token key="ProcessType" variants="ProcessType"/>
-  <token key="ThreadType" variants="ThreadType"/>
+  <token key="ProcessAndThreadType" variants="ProcessAndThreadType"/>
 </histogram>
 
 <histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"

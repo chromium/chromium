@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -35,33 +37,60 @@ TEST_F(CrostiniActiveWindowThrottleObserverTest, TestConstructDestruct) {}
 
 TEST_F(CrostiniActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   aura::test::TestWindowDelegate dummy_delegate;
-  aura::Window* crostini_window = aura::test::CreateTestWindowWithDelegate(
-      &dummy_delegate, 1, gfx::Rect(), nullptr);
-  aura::Window* chrome_window = aura::test::CreateTestWindowWithDelegate(
-      &dummy_delegate, 2, gfx::Rect(), nullptr);
+  std::unique_ptr<aura::Window> crostini_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 1, gfx::Rect(),
+                                               nullptr));
+  std::unique_ptr<aura::Window> chrome_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 2, gfx::Rect(),
+                                               nullptr));
+  std::unique_ptr<aura::Window> terminal_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 3, gfx::Rect(),
+                                               nullptr));
+  std::unique_ptr<aura::Window> chrome_app_window(
+      aura::test::CreateTestWindowWithDelegate(&dummy_delegate, 4, gfx::Rect(),
+                                               nullptr));
   crostini_window->SetProperty(aura::client::kAppType,
                                static_cast<int>(ash::AppType::CROSTINI_APP));
   chrome_window->SetProperty(aura::client::kAppType,
                              static_cast<int>(ash::AppType::BROWSER));
+  terminal_window->SetProperty(aura::client::kAppType,
+                               static_cast<int>(ash::AppType::CHROME_APP));
+  terminal_window->SetProperty<std::string>(
+      ash::kAppIDKey, crostini::kCrostiniTerminalSystemAppId);
+  chrome_app_window->SetProperty(aura::client::kAppType,
+                                 static_cast<int>(ash::AppType::CHROME_APP));
+  chrome_app_window->SetProperty<std::string>(ash::kAppIDKey,
+                                              "this_is_another_chrome_app");
 
   EXPECT_FALSE(observer()->active());
 
   // Test observer is active for crostini window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      crostini_window, chrome_window);
+      crostini_window.get(), chrome_window.get());
+  EXPECT_TRUE(observer()->active());
+
+  // Test observer is active for terminal window.
+  observer()->OnWindowActivated(
+      CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
+      terminal_window.get(), crostini_window.get());
   EXPECT_TRUE(observer()->active());
 
   // Test observer is inactive for non-crostini window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      chrome_window, crostini_window);
+      chrome_window.get(), terminal_window.get());
+  EXPECT_FALSE(observer()->active());
+
+  observer()->OnWindowActivated(
+      CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
+      chrome_app_window.get(), chrome_window.get());
   EXPECT_FALSE(observer()->active());
 
   // Test observer is inactive for null gained_active window.
   observer()->OnWindowActivated(
       CrostiniActiveWindowThrottleObserver::ActivationReason::INPUT_EVENT,
-      nullptr, crostini_window);
+      nullptr, crostini_window.get());
   EXPECT_FALSE(observer()->active());
 }
 

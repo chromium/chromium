@@ -30,14 +30,15 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       VideoFrameProvider* provider,
-      media::VideoTransformation video_transform);
+      const media::VideoTransformation& video_transform);
   VideoLayerImpl(const VideoLayerImpl&) = delete;
   ~VideoLayerImpl() override;
 
   VideoLayerImpl& operator=(const VideoLayerImpl&) = delete;
 
   // LayerImpl implementation.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
@@ -59,7 +60,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
-      media::VideoTransformation video_transform);
+      const media::VideoTransformation& video_transform);
 
   const char* LayerTypeAsString() const override;
 

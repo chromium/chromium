@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
@@ -144,7 +145,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                   gfx::BufferUsage usage);
 
   GpuServiceProvider gpu_service_provider_;
-  mojom::GpuService* gpu_service_ = nullptr;
+  raw_ptr<mojom::GpuService> gpu_service_ = nullptr;
 
   // This is incremented every time GPU service is shut down in order check
   // whether a buffer is allocated by the most current GPU service or not.

@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -35,7 +36,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -46,6 +47,14 @@ namespace {
 
 const char kFullscreenBubbleReshowsHistogramName[] =
     "ExclusiveAccess.BubbleReshowsPerSession.Fullscreen";
+
+bool IsAnotherScreen(WebContents* web_contents, const int64_t display_id) {
+  if (display_id == display::kInvalidDisplayId)
+    return false;
+  auto* screen = display::Screen::GetScreen();
+  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
+  return display_id != display.id();
+}
 
 }  // namespace
 
@@ -118,34 +127,38 @@ bool FullscreenController::IsFullscreenCausedByTab() const {
   return state_prior_to_tab_fullscreen_ == STATE_NORMAL;
 }
 
-void FullscreenController::EnterFullscreenModeForTab(
+bool FullscreenController::CanEnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const int64_t display_id) {
   DCHECK(requesting_frame);
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   DCHECK(web_contents);
 
-  if (MaybeToggleFullscreenWithinTab(web_contents, true)) {
-    // During tab capture of fullscreen-within-tab views, the browser window
-    // fullscreen state is unchanged, so return now.
-    return;
-  }
-
-  auto* screen = display::Screen::GetScreen();
-  bool requesting_another_screen = false;
-  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
-  requesting_another_screen =
-      display_id != display.id() && display_id != display::kInvalidDisplayId;
   if ((web_contents !=
            exclusive_access_manager()->context()->GetActiveWebContents() ||
        IsWindowFullscreenForTabOrPending()) &&
-      !requesting_another_screen) {
-    // TODO(enne): this early out (and other early outs in this function)
-    // could cause requestFullscreen promises to hang.  If we are in this
-    // function, the renderer expects a visual property update to call
-    // blink::FullscreenController::DidEnterFullscreen to resolve promises.
-    // This needs to be refactored to send more explicit/nuanced feedback
-    // to the renderer, rather than just silently dropping these requests.
+      !IsAnotherScreen(web_contents, display_id))
+    return false;
+
+  return true;
+}
+
+void FullscreenController::EnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const int64_t display_id) {
+  DCHECK(requesting_frame);
+  // This function should never fail. Any possible failures must be checked in
+  // |CanEnterFullscreenModeForTab()| instead. Silently dropping the request
+  // could cause requestFullscreen promises to hang. If we are in this function,
+  // the renderer expects a visual property update to call
+  // |blink::FullscreenController::DidEnterFullscreen| to resolve promises.
+  DCHECK(CanEnterFullscreenModeForTab(requesting_frame, display_id));
+  auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
+  DCHECK(web_contents);
+
+  if (MaybeToggleFullscreenWithinTab(web_contents, true)) {
+    // During tab capture of fullscreen-within-tab views, the browser window
+    // fullscreen state is unchanged, so return now.
     return;
   }
 
@@ -159,7 +172,8 @@ void FullscreenController::EnterFullscreenModeForTab(
   // UI style.
   exclusive_access_context->UpdateUIForTabFullscreen();
 
-  if (!exclusive_access_context->IsFullscreen() || requesting_another_screen) {
+  if (!exclusive_access_context->IsFullscreen() ||
+      IsAnotherScreen(web_contents, display_id)) {
     // Normal -> Tab Fullscreen.
     state_prior_to_tab_fullscreen_ = STATE_NORMAL;
     EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
@@ -365,7 +379,7 @@ void FullscreenController::EnterFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
     int64_t display_id) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Do not enter fullscreen mode if disallowed by pref. This prevents the user
   // from manually entering fullscreen mode and also disables kiosk mode on
   // desktop platforms.
@@ -394,9 +408,8 @@ void FullscreenController::EnterFullscreenModeInternal(
     auto* manager = PermissionManagerFactory::GetForProfile(
         exclusive_access_manager()->context()->GetProfile());
     if (!manager || !requesting_frame ||
-        manager->GetPermissionStatusForFrame(
-                   ContentSettingsType::WINDOW_PLACEMENT, requesting_frame,
-                   GetRequestingOrigin())
+        manager->GetPermissionStatusForCurrentDocument(
+                   ContentSettingsType::WINDOW_PLACEMENT, requesting_frame)
                 .content_setting != ContentSetting::CONTENT_SETTING_ALLOW) {
       display_id = display::kInvalidDisplayId;
     }
@@ -427,7 +440,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
 
   RecordExitingUMA();
   toggled_into_fullscreen_ = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac windows report a state change instantly, and so we must also clear
   // state_prior_to_tab_fullscreen_ to match them else other logic using
   // state_prior_to_tab_fullscreen_ will be incorrect.

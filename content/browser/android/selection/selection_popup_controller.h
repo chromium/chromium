@@ -8,7 +8,9 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/touch_selection/selection_event_type.h"
 
@@ -46,9 +48,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   bool ShowSelectionMenu(RenderFrameHost* render_frame_host,
                          const ContextMenuParams& params,
                          int handle_height);
-  void OnSelectWordAroundCaretAck(bool did_select,
-                                  int start_adjust,
-                                  int end_adjust);
+  void OnSelectAroundCaretAck(blink::mojom::SelectAroundCaretResultPtr result);
   void HidePopupsAndPreserveSelection();
   void RestoreSelectionPopupsIfNecessary();
   std::unique_ptr<ui::TouchHandleDrawable> CreateTouchHandleDrawable();
@@ -60,7 +60,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
  private:
   ~SelectionPopupController() override;
   base::android::ScopedJavaLocalRef<jobject> GetContext() const;
-  RenderWidgetHostViewAndroid* rwhva_ = nullptr;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
 
   JavaObjectWeakGlobalRef java_obj_;
 };

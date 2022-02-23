@@ -14,6 +14,7 @@
 
 #include "util/thread/worker_thread.h"
 
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/misc/clock.h"
 #include "util/synchronization/semaphore.h"
@@ -78,7 +79,7 @@ TEST(WorkerThread, DoWork) {
 // also somewhat useful. The expected time "should" be ~40-50ms with a work
 // interval of 0.05s, but on Fuchsia, 1200ms was observed. So, on Fuchsia, use a
 // much larger timeout. See https://crashpad.chromium.org/bug/231.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   constexpr uint64_t kUpperBoundTime = 10;
 #else
   constexpr uint64_t kUpperBoundTime = 1;

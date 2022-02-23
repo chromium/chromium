@@ -4,30 +4,60 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.base.Callback;
+import android.app.Activity;
+import android.view.View;
 
-import java.util.Map;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Parent interface for autofill-assistant dependencies. This interface allows code outside the
- * feature module to access dependencies inside the feature module without leaking the relevant
- * internal types.
+ * Generic dependencies interface. The concrete implementation will depend on the browser framework,
+ * i.e., WebLayer vs. Chrome.
+ *
+ * WebContents should not be returned in this interface as objects should stay valid when
+ * WebContents change.
  */
-public interface AssistantDependencies {
+@JNINamespace("autofill_assistant")
+public interface AssistantDependencies extends AssistantStaticDependencies {
     /**
-     * Displays the onboarding to the user.
-     *
-     * @param useDialogOnboarding whether to show the dialog or bottom-sheet onboarding.
-     * @param experimentIds the list of active experiment ids.
-     * @param parameters the key/value map of script parameters use.
-     * @param callback the callback to invoke with the {@code OnboardingResult}.
+     * Updates dependencies that are tied to the activity.
+     * @return Whether a new activity could be found.
      */
-    void showOnboarding(boolean useDialogOnboarding, String experimentIds,
-            Map<String, String> parameters, Callback<Integer> callback);
+    boolean maybeUpdateDependencies(Activity activity);
+
+    boolean maybeUpdateDependencies(WebContents webContents);
+
+    Activity getActivity();
+
+    WindowAndroid getWindowAndroid();
+
+    BottomSheetController getBottomSheetController();
+
+    KeyboardVisibilityDelegate getKeyboardVisibilityDelegate();
+
+    ApplicationViewportInsetSupplier getBottomInsetProvider();
+
+    View getRootView();
+
+    AssistantSnackbarFactory getSnackbarFactory();
+
+    AssistantBrowserControlsFactory createBrowserControlsFactory();
 
     /**
-     * Hides the onboarding, if currently shown. Does not invoke the callback that was associated
-     * with {@code showOnboarding}.
+     * Observes tab changes.
+     * @return The destroyer that must be called to unregister the internal observer.
      */
-    void hideOnboarding();
+    Destroyable observeTabChanges(AssistantTabChangeObserver tabChangeObserver);
+
+    // Only called by native to guarantee future type safety.
+    @CalledByNative
+    default AssistantStaticDependencies getStaticDependencies() {
+        return this;
+    }
 }

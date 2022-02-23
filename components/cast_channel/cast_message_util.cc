@@ -162,13 +162,13 @@ CastMessage CreateKeepAliveMessage(base::StringPiece keep_alive_type) {
 // request. The value is platform-dependent and is taken from the Platform enum
 // defined in third_party/metrics_proto/cast_logs.proto.
 int GetVirtualConnectPlatformValue() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return 3;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return 4;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return 5;
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return 6;
 #else
   return 0;
@@ -272,29 +272,28 @@ CastMessageType ParseMessageTypeFromPayload(const base::Value& payload) {
                      : CastMessageType::kOther;
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(CastMessageType message_type) {
   return EnumToString(message_type).value_or("").data();
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(V2MessageType message_type) {
   return EnumToString(message_type).value_or("").data();
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 CastMessageType CastMessageTypeFromString(const std::string& type) {
   auto result = StringToEnum<CastMessageType>(type);
   DVLOG_IF(1, !result) << "Unknown message type: " << type;
   return result.value_or(CastMessageType::kOther);
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 V2MessageType V2MessageTypeFromString(const std::string& type) {
   return StringToEnum<V2MessageType>(type).value_or(V2MessageType::kOther);
 }
 
-// TODO(jrw): Convert to operator<<
 std::string AuthMessageToString(const DeviceAuthMessage& message) {
   std::string out("{");
   if (message.has_challenge()) {
@@ -580,7 +579,7 @@ bool IsMediaRequestMessageType(V2MessageType type) {
   }
 }
 
-// TODO(jrw): Eliminate this function.
+// TODO(crbug.com/1291730): Eliminate this function.
 const char* ToString(GetAppAvailabilityResult result) {
   return EnumToString(result).value_or("").data();
 }

@@ -12,6 +12,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest\.cc": [
+    "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h",
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h",
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h",
     "+chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h",

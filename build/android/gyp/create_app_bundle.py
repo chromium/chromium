@@ -201,9 +201,12 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
   # NOTE: Use '**' instead of '*' to work through directories!
   uncompressed_globs.extend('**.' + ext for ext in _UNCOMPRESSED_FILE_EXTS)
   if not compress_dex:
-    # Explicit glob required only when using bundletool. Play Store looks for
-    # "uncompressDexFiles" set below.
-    uncompressed_globs.extend('classes*.dex')
+    # Explicit glob required only when using bundletool to create .apks files.
+    # Play Store looks for and respects "uncompressDexFiles" set below.
+    # b/176198991
+    # This is added as a placeholder entry in order to have no effect unless
+    # processed with app_bundle_utils.GenerateBundleApks().
+    uncompressed_globs.append('classesX.dex')
 
   data = {
       'optimizations': {

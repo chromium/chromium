@@ -14,17 +14,17 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/gl/gl_fence_apple.h"
 #endif
 
-#if defined(USE_EGL) && defined(OS_POSIX) && !defined(OS_APPLE)
+#if defined(USE_EGL) && BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 #define USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gl/gl_fence_win.h"
 #endif
 
@@ -41,7 +41,7 @@ bool GLFence::IsSupported() {
   return g_current_gl_driver->ext.b_GL_ARB_sync ||
          g_current_gl_version->is_es3 ||
          g_current_gl_version->is_desktop_core_profile ||
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
          g_current_gl_driver->ext.b_GL_APPLE_fence ||
 #else
          g_driver_egl.ext.b_EGL_KHR_fence_sync ||
@@ -54,7 +54,7 @@ std::unique_ptr<GLFence> GLFence::Create() {
       << "Trying to create fence with no context";
 
   std::unique_ptr<GLFence> fence;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   if (g_driver_egl.ext.b_EGL_KHR_fence_sync &&
       g_driver_egl.ext.b_EGL_KHR_wait_sync) {
     // Prefer GLFenceEGL which doesn't require GL context switching.
@@ -67,7 +67,7 @@ std::unique_ptr<GLFence> GLFence::Create() {
           g_current_gl_version->is_desktop_core_profile) {
     // Prefer ARB_sync which supports server-side wait.
     fence = std::make_unique<GLFenceARB>();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   } else if (g_current_gl_driver->ext.b_GL_APPLE_fence) {
     fence = std::make_unique<GLFenceAPPLE>();
 #else
@@ -99,7 +99,7 @@ void GLFence::Invalidate() {
 bool GLFence::IsGpuFenceSupported() {
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
   return gl::GLSurfaceEGL::IsAndroidNativeFenceSyncSupported();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return gl::GLFenceWin::IsSupported();
 #else
   return false;
@@ -112,7 +112,7 @@ std::unique_ptr<GLFence> GLFence::CreateFromGpuFence(
   DCHECK(IsGpuFenceSupported());
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
   return GLFenceAndroidNativeFenceSync::CreateFromGpuFence(gpu_fence);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateFromGpuFence(gpu_fence);
 #else
   NOTREACHED();
@@ -125,7 +125,7 @@ std::unique_ptr<GLFence> GLFence::CreateForGpuFence() {
   DCHECK(IsGpuFenceSupported());
 #if defined(USE_GL_FENCE_ANDROID_NATIVE_FENCE_SYNC)
   return GLFenceAndroidNativeFenceSync::CreateForGpuFence();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return GLFenceWin::CreateForGpuFence();
 #else
   NOTREACHED();

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -212,11 +213,15 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // ideal refresh rate.
   base::TimeDelta new_preferred_interval = UnspecifiedFrameInterval();
   if (*min_frame_sink_interval != BeginFrameArgs::MinInterval()) {
+    base::TimeDelta min_delta = base::TimeDelta::Max();
     for (auto supported_interval : supported_intervals_) {
-      // Pick the display interval which is closest to the preferred interval.
-      if ((*min_frame_sink_interval - supported_interval).magnitude() <
-          (*min_frame_sink_interval - new_preferred_interval).magnitude()) {
+      // Pick the display interval which is closest to the preferred interval
+      // and less than or equal to the min_frame_sink_interval.
+      base::TimeDelta delta = (*min_frame_sink_interval - supported_interval);
+      if (AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
+          (delta.is_positive() && delta < min_delta)) {
         new_preferred_interval = supported_interval;
+        min_delta = delta.magnitude();
       }
     }
   }

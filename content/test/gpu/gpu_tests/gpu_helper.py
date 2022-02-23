@@ -2,29 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
 import re
 import sys
-
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.
+# Examples:
+#   intel_lt_25.20.100.6577
+#   mesa_ge_20.1
 EXPECTATIONS_DRIVER_TAGS = frozenset([
-    'intel_lt_25.20.100.6444',
-    'intel_lt_25.20.100.6577',
-    'intel_lt_26.20.100.7000',
-    'intel_lt_26.20.100.7323',
-    'intel_lt_26.20.100.7870',
-    'intel_lt_26.20.100.8141',
-    'intel_lt_27.20.100.8280',
     'mesa_lt_19.1',
-    'mesa_ge_20.1',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION
@@ -35,6 +24,7 @@ REMOTE_BROWSER_TYPES = [
     'android-chromium',
     'android-webview-instrumentation',
     'cros-chrome',
+    'fuchsia-chrome',
     'web-engine-shell',
 ]
 
@@ -48,8 +38,7 @@ def _ParseANGLEGpuVendorString(device_string):
   match = re.search(r'ANGLE \((.*), .*, .*\)', device_string)
   if match:
     return match.group(1)
-  else:
-    return None
+  return None
 
 
 def _GetANGLEGpuDeviceId(device_string):
@@ -61,8 +50,7 @@ def _GetANGLEGpuDeviceId(device_string):
   match = re.search(r'ANGLE \(.*, (.*), .*\)', device_string)
   if match:
     return match.group(1)
-  else:
-    return None
+  return None
 
 
 def GetGpuVendorString(gpu_info, index):
@@ -75,13 +63,13 @@ def GetGpuVendorString(gpu_info, index):
       vendor_id = primary_gpu.vendor_id
       if vendor_id == 0x10DE:
         return 'nvidia'
-      elif vendor_id == 0x1002:
+      if vendor_id == 0x1002:
         return 'amd'
-      elif vendor_id == 0x8086:
+      if vendor_id == 0x8086:
         return 'intel'
-      elif angle_vendor_string:
+      if angle_vendor_string:
         return angle_vendor_string.lower()
-      elif vendor_string:
+      if vendor_string:
         return vendor_string.split(' ')[0].lower()
   return 'unknown_gpu'
 
@@ -180,18 +168,21 @@ def GetDisplayServer(browser_type):
   if sys.platform.startswith('linux'):
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'
-    else:
-      return 'display-server-x'
-  else:
-    return None
+    return 'display-server-x'
+  return None
 
 
 def GetOOPCanvasStatus(gpu_feature_status):
   if gpu_feature_status and gpu_feature_status.get(
       'canvas_oop_rasterization') == 'enabled_on':
     return 'oop-c'
-  else:
-    return 'no-oop-c'
+  return 'no-oop-c'
+
+
+def GetAsanStatus(gpu_info):
+  if gpu_info.aux_attributes.get('is_asan', False):
+    return 'asan'
+  return 'no-asan'
 
 
 # TODO(rivr): Use GPU feature status for Dawn instead of command line.
@@ -212,9 +203,8 @@ def HasVulkanSkiaRenderer(gpu_feature_status):
 
 
 # used by unittests to create a mock arguments object
-def GetMockArgs(is_asan=False, webgl_version='1.0.0'):
+def GetMockArgs(webgl_version='1.0.0'):
   args = mock.MagicMock()
-  args.is_asan = is_asan
   args.webgl_conformance_version = webgl_version
   args.webgl2_only = False
   # for power_measurement_integration_test.py, .url has to be None to
@@ -251,9 +241,10 @@ def EvaluateVersionComparison(version,
   def parse_version(ver):
     if ver.isdigit():
       return int(ver), ''
-    for i in range(0, len(ver)):
-      if not ver[i].isdigit():
+    for i, digit in enumerate(ver):
+      if not digit.isdigit():
         return int(ver[:i]) if i > 0 else 0, ver[i:]
+    return None
 
   def versions_can_be_compared(ver_list1, ver_list2):
     # If either of the two versions doesn't match the Intel driver version
@@ -291,15 +282,15 @@ def EvaluateVersionComparison(version,
 
     if operation == 'eq':
       return False
-    elif operation == 'ne':
+    if operation == 'ne':
       return True
-    elif operation == 'ge' or operation == 'gt':
+    if operation in ('ge', 'gt'):
       return diff > 0
-    elif operation == 'le' or operation == 'lt':
+    if operation in ('le', 'lt'):
       return diff < 0
     raise Exception('Invalid operation: ' + operation)
 
-  return operation == 'eq' or operation == 'ge' or operation == 'le'
+  return operation in ('eq', 'ge', 'le')
 # pylint: enable=too-many-locals,too-many-branches
 
 

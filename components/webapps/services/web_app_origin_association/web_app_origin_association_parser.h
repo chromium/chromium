@@ -19,7 +19,7 @@ namespace webapps {
 
 // Handles the logic of parsing the web app origin association file from a
 // string as described in the "PWAs as URL Handlers" explainer:
-// https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+// https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
 class WebAppOriginAssociationParser {
  public:
   WebAppOriginAssociationParser();

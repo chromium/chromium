@@ -8,7 +8,6 @@
 #include <dawn/dawn_proc_table.h>
 #include <dawn/webgpu.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"

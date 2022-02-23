@@ -3,17 +3,40 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 namespace {
+
+//  base64url('test') = 'dGVzdA'. This matches the credential ID of
+//  `MAKE_CREDENTIAL_RESPONSE_JSON` in the JS tests.
+constexpr char kTestCredentialId[] = "dGVzdA";
+
+// Domain to serve files from because WebAuthn won't let us scope credentials to
+// localhost. Must be from `net::EmbeddedTestServer::CERT_TEST_NAMES`.
+constexpr char kTestDomain[] = "a.test";
+
+constexpr char kJsErrorPrefix[] = "a JavaScript error: \"";
+
+MATCHER_P(IsJsError, name, "") {
+  return base::StartsWith(arg.error, base::StrCat({kJsErrorPrefix, name}));
+}
+
+MATCHER_P2(IsJsErrorWithMessage, name, message, "") {
+  return base::StrCat({kJsErrorPrefix, name, ": ", message, "\"\n"}) ==
+         arg.error;
+}
 
 class WebAuthenticationProxyApiTest : public ExtensionApiTest {
  protected:
@@ -21,6 +44,8 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     extension_dir_ =
         test_data_dir_.AppendASCII("web_authentication_proxy/main");
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_test_server_.ServeFilesFromDirectory(extension_dir_);
     ASSERT_TRUE(https_test_server_.Start());
   }
@@ -29,13 +54,97 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
 
   bool NavigateAndCallIsUVPAA() {
     if (!ui_test_utils::NavigateToURL(
-            browser(), https_test_server_.GetURL("/page.html"))) {
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
     return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "PublicKeyCredential."
                            "isUserVerifyingPlatformAuthenticatorAvailable();")
         .ExtractBool();
+  }
+
+  content::EvalJsResult NavigateAndCallMakeCredential() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+    }
+    constexpr char kMakeCredentialJs[] =
+        R"((async () => {
+              let credential = await navigator.credentials.create({publicKey: {
+                rp: {'id': 'a.test', 'name': 'A'},
+                challenge: new ArrayBuffer(),
+                user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
+                pubKeyCredParams: [],
+              }});
+              return credential.id;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kMakeCredentialJs);
+  }
+
+  bool NavigateAndCallMakeCredentialThenCancel() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+      return false;
+    }
+    constexpr char kMakeCredentialJs[] =
+        R"((async () => {
+              let abort = new AbortController();
+              let createPromise = navigator.credentials.create({publicKey: {
+                  rp: {'id': 'a.test', 'name': 'A'},
+                  challenge: new ArrayBuffer(),
+                  user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
+                  pubKeyCredParams: [],
+                },
+                signal: abort.signal});
+              abort.abort();
+              let err = await createPromise;
+              return err;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kMakeCredentialJs)
+               .error.find("AbortError") >= 0;
+  }
+
+  content::EvalJsResult NavigateAndCallGetAssertion() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+    }
+    constexpr char kGetAssertionJs[] =
+        R"((async () => {
+              let credential = await navigator.credentials.get({publicKey: {
+                challenge: new ArrayBuffer(),
+                rpId: 'a.test',
+              }});
+              return credential.id;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kGetAssertionJs);
+  }
+
+  bool NavigateAndCallGetAssertionThenCancel() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+      return false;
+    }
+    constexpr char kGetAssertionJs[] =
+        R"((async () => {
+              let abort = new AbortController();
+              let getPromise = navigator.credentials.get({publicKey: {
+                  challenge: new ArrayBuffer(),
+                  rpId: 'a.test',
+                },
+                signal: abort.signal});
+              abort.abort();
+              let err = await getPromise;
+              return err;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kGetAssertionJs)
+               .error.find("AbortError") >= 0;
   }
 
   base::FilePath extension_dir_;
@@ -48,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachDetach) {
   EXPECT_TRUE(RunExtensionTest("web_authentication_proxy/main"));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachReload) {
+// TODO(crbug.com/1276042): Flaky on all platforms
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, DISABLED_AttachReload) {
   SetJsTestName("attachReload");
   // Load an extension that immediately attaches.
   ResultCatcher catcher;
@@ -139,6 +249,174 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAAResolvesOnDetach) {
   // never resolves the request but detaches itself.
   EXPECT_EQ(false, NavigateAndCallIsUVPAA());
   ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredential) {
+  SetJsTestName("makeCredential");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(NavigateAndCallMakeCredential().ExtractString(), kTestCredentialId);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
+  SetJsTestName("makeCredentialError");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener request_listener("nextRequest", false);
+  ExtensionTestMessageListener error_listener("nextError", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+
+  // The JS side listens for DOMError names to pass to completeCreateRequest().
+  // The DOMError observed by the client-side JS that made the WebAuthn request
+  // should match.
+  constexpr const char* kDomErrorNames[] = {
+      // clang-format off
+      "NotAllowedError",
+      "InvalidStateError",
+      "OperationError",
+      "NotSupportedError",
+      "AbortError",
+      "NotReadableError",
+      "SecurityError",
+      // clang-format on
+  };
+  for (auto* error_name : kDomErrorNames) {
+    ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+    error_listener.Reply(error_name);
+    error_listener.Reset();
+    ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+    request_listener.Reset();
+    // `TEST_ERROR_MESSAGE` in `main/test.js`.
+    constexpr char kErrorMessage[] = "test error message";
+    EXPECT_THAT(NavigateAndCallMakeCredential(),
+                IsJsErrorWithMessage(error_name, kErrorMessage));
+  }
+
+  // Tell the JS side to stop expecting more errors and end the test.
+  ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+  error_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
+                       MakeCredentialResolvesOnDetach) {
+  SetJsTestName("makeCredentialResolvesOnDetach");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Call makeCredential() and tell the extension that there is a result. The
+  // extension never resolves the request but detaches itself.
+  EXPECT_THAT(NavigateAndCallMakeCredential(), IsJsError("AbortError"));
+  ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialCancel) {
+  SetJsTestName("makeCredentialCancel");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener request_listener("request", true);
+  EXPECT_TRUE(NavigateAndCallMakeCredentialThenCancel());
+  ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+  request_listener.Reply("");
+
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertion) {
+  SetJsTestName("getAssertion");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(NavigateAndCallGetAssertion().ExtractString(), kTestCredentialId);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionError) {
+  SetJsTestName("getAssertionError");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener request_listener("nextRequest", false);
+  ExtensionTestMessageListener error_listener("nextError", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+
+  // The JS side listens for DOMError names to pass to completeCreateRequest().
+  // The DOMError observed by the client-side JS that made the WebAuthn request
+  // should match.
+  constexpr const char* kDomErrorNames[] = {
+      // clang-format off
+      "NotAllowedError",
+      "InvalidStateError",
+      "OperationError",
+      "NotSupportedError",
+      "AbortError",
+      "NotReadableError",
+      "SecurityError",
+      // clang-format on
+  };
+  for (auto* error_name : kDomErrorNames) {
+    ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+    error_listener.Reply(error_name);
+    error_listener.Reset();
+    ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+    request_listener.Reset();
+    // `TEST_ERROR_MESSAGE` in `main/test.js`.
+    constexpr char kErrorMessage[] = "test error message";
+    EXPECT_THAT(NavigateAndCallGetAssertion(),
+                IsJsErrorWithMessage(error_name, kErrorMessage));
+  }
+
+  // Tell the JS side to stop expecting more errors and end the test.
+  ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+  error_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
+                       GetAssertionResolvesOnDetach) {
+  SetJsTestName("getAssertionResolvesOnDetach");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Call getAssertion() and tell the extension that there is a result. The
+  // extension never resolves the request but detaches itself.
+  EXPECT_THAT(NavigateAndCallGetAssertion(), IsJsError("AbortError"));
+  ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
+  SetJsTestName("getAssertionCancel");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener request_listener("request", true);
+  EXPECT_TRUE(NavigateAndCallGetAssertionThenCancel());
+  ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+  request_listener.Reply("");
+
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 

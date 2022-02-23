@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/background/background_contents.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,7 +31,7 @@ class Profile;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace content {
@@ -131,7 +133,7 @@ class BackgroundContentsService
       bool is_new_browsing_instance,
       const std::string& frame_name,
       const std::string& application_id,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
   // Removes |contents| from |contents_map_|, deleting it.
@@ -182,9 +184,8 @@ class BackgroundContentsService
 
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
-  void LoadBackgroundContentsFromDictionary(
-      const std::string& extension_id,
-      const base::DictionaryValue* contents);
+  void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
+                                            const base::Value* contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
@@ -233,13 +234,13 @@ class BackgroundContentsService
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {

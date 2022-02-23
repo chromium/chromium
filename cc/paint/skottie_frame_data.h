@@ -6,6 +6,7 @@
 #define CC_PAINT_SKOTTIE_FRAME_DATA_H_
 
 #include "base/containers/flat_map.h"
+#include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -18,7 +19,7 @@ namespace cc {
 //
 // There's currently no use case for |skresources::ImageAsset::FrameData.matrix|
 // so it is omitted for now.
-struct SkottieFrameData {
+struct CC_PAINT_EXPORT SkottieFrameData {
   // PaintImage is preferable at the compositor layer instead of a "raw"
   // SkImage. It not only is more well supported for circulating through the
   // compositor/graphics pipeline, but also gives the client the most
@@ -29,6 +30,9 @@ struct SkottieFrameData {
   // image needs to be resized when rendering.
   PaintFlags::FilterQuality quality;
 };
+
+CC_PAINT_EXPORT bool operator==(const SkottieFrameData& frame_l,
+                                const SkottieFrameData& frame_r);
 
 // Map from asset id to the image to use for that asset.
 using SkottieFrameDataMap =

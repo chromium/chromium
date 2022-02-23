@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -98,6 +97,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
       AdvertisementErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+  DeviceList GetDevices() override;
+  ConstDeviceList GetDevices() const override;
 
   // BluetoothDiscoveryManagerMac::Observer overrides:
   void ClassicDeviceFound(IOBluetoothDevice* device) override;

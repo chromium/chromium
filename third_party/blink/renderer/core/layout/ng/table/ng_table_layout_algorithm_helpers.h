@@ -33,8 +33,7 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
       const NGTableTypes::Columns& column_constraints,
       LayoutUnit undistributable_space,
       bool is_fixed_layout,
-      bool is_layout_pass,
-      bool skip_collapsed_columns);
+      bool is_layout_pass);
 
   static void DistributeColspanCellsToColumns(
       const NGTableTypes::ColspanCells& colspan_cells,
@@ -44,7 +43,6 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
 
   static Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
       LayoutUnit assignable_table_inline_size,
-      LayoutUnit inline_border_spacing,
       bool is_fixed_layout,
       const NGTableTypes::Columns& column_constraints);
 

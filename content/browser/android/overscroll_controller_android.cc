@@ -263,7 +263,7 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
     float device_scale_factor,
     const gfx::SizeF& scrollable_viewport_size,
     const gfx::SizeF& root_layer_size,
-    const gfx::Vector2dF& root_scroll_offset,
+    const gfx::PointF& root_scroll_offset,
     bool root_overflow_y_hidden) {
   if (!refresh_effect_ && !glow_effect_)
     return;
@@ -277,8 +277,8 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
   gfx::SizeF viewport_size =
       gfx::ScaleSize(scrollable_viewport_size, scale_factor);
   gfx::SizeF content_size = gfx::ScaleSize(root_layer_size, scale_factor);
-  gfx::Vector2dF content_scroll_offset =
-      gfx::ScaleVector2d(root_scroll_offset, scale_factor);
+  gfx::PointF content_scroll_offset =
+      gfx::ScalePoint(root_scroll_offset, scale_factor);
 
   if (refresh_effect_) {
     refresh_effect_->OnFrameUpdated(viewport_size, content_scroll_offset,

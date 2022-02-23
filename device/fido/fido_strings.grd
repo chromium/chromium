@@ -40,8 +40,10 @@ This file contains the strings for //device/fido.
       <output filename="fido_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="fido_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="fido_strings_af.pak" type="data_package" lang="af" />
       <output filename="fido_strings_is.pak" type="data_package" lang="is" />
+      <output filename="fido_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="fido_strings_am.pak" type="data_package" lang="am" />
     <output filename="fido_strings_ar.pak" type="data_package" lang="ar" />

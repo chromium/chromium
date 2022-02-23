@@ -86,7 +86,7 @@ void NormalizeToCRLF(const CharType* src, wtf_size_t src_length, CharType* q) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void InternalNormalizeLineEndingsToCRLF(const std::string& from,
                                         Vector<char>& buffer) {
   size_t new_len = RequiredSizeForCRLF(from.c_str(), from.length());
@@ -103,7 +103,7 @@ void InternalNormalizeLineEndingsToCRLF(const std::string& from,
   char* write_position = buffer.data() + old_buffer_size;
   NormalizeToCRLF(from.c_str(), from.length(), write_position);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -178,7 +178,7 @@ String NormalizeLineEndingsToCRLF(const String& src) {
 
 void NormalizeLineEndingsToNative(const std::string& from,
                                   Vector<char>& result) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   InternalNormalizeLineEndingsToCRLF(from, result);
 #else
   NormalizeLineEndingsToLF(from, result);

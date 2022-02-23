@@ -458,6 +458,12 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_YUV422P10:
       convert_yuv16(matrix, libyuv::I210ToARGBMatrix);
       break;
+    case PIXEL_FORMAT_YUV444P10:
+      convert_yuv16(matrix, libyuv::I410ToARGBMatrix);
+      break;
+    case PIXEL_FORMAT_YUV420P12:
+      convert_yuv16(matrix, libyuv::I012ToARGBMatrix);
+      break;
 
     case PIXEL_FORMAT_I420A:
       libyuv::I420AlphaToARGBMatrix(
@@ -483,8 +489,6 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV422P9:
     case PIXEL_FORMAT_YUV444P9:
-    case PIXEL_FORMAT_YUV444P10:
-    case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
@@ -1188,18 +1192,17 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV422P9:
     case PIXEL_FORMAT_YUV444P9:
-    case PIXEL_FORMAT_YUV444P10:
-    case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
       temporary_frame = DownShiftHighbitVideoFrame(video_frame);
       video_frame = temporary_frame.get();
       break;
     case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV420P12:
       // In AV1, a monochrome (grayscale) frame is represented as a YUV 4:2:0
-      // frame with no U and V planes. Since there are no 10-bit versions of
-      // libyuv::I400ToARGB() and libyuv::J400ToARGB(), convert the frame to an
-      // 8-bit YUV 4:2:0 frame with U and V planes.
+      // frame with no U and V planes. Since there are no 10-bit and 12-bit
+      // versions of libyuv::I400ToARGBMatrix(), convert the frame to an 8-bit
+      // YUV 4:2:0 frame with U and V planes.
       if (!video_frame->data(VideoFrame::kUPlane) &&
           !video_frame->data(VideoFrame::kVPlane)) {
         temporary_frame = DownShiftHighbitVideoFrame(video_frame);
@@ -1501,7 +1504,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     bool flip_y) {
   if (!raster_context_provider)
     return false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1181993): These formats don't work with the passthrough
   // command decoder on Android for some reason.
   const auto format_enum = static_cast<GLenum>(internal_format);

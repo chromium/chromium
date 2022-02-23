@@ -634,10 +634,6 @@ void TestGLES2Interface::RetireRenderbufferId(GLuint id) {
   renderbuffer_set_.erase(id);
 }
 
-void TestGLES2Interface::SetMaxSamples(int max_samples) {
-  test_capabilities_.max_samples = max_samples;
-}
-
 size_t TestGLES2Interface::NumFramebuffers() const {
   return framebuffer_set_.size();
 }

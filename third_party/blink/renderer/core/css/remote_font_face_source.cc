@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -104,12 +104,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       }
 
     case FontDisplay::kOptional: {
-      const bool use_phase_value =
-          !base::FeatureList::IsEnabled(
-              features::kFontPreloadingDelaysRendering) ||
-          !GetDocument();
-
-      if (use_phase_value) {
+      if (!GetDocument()) {
         switch (phase_) {
           case kNoLimitExceeded:
             return kBlockPeriod;
@@ -344,8 +339,8 @@ RemoteFontFaceSource::CreateLoadingFallbackFontData(
   // This temporary font is not retained and should not be returned.
   FontCachePurgePreventer font_cache_purge_preventer;
   scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::GetFontCache()->GetLastResortFallbackFont(font_description,
-                                                           kDoNotRetain);
+      FontCache::Get().GetLastResortFallbackFont(font_description,
+                                                 kDoNotRetain);
   if (!temporary_font) {
     NOTREACHED();
     return nullptr;

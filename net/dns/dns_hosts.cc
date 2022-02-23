@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -66,7 +65,7 @@ class HostsParser {
           }
 
           // If comma_mode_ is COMMA_IS_TOKEN, fall through:
-          FALLTHROUGH;
+          [[fallthrough]];
 
         default: {
           size_t token_start = pos_;
@@ -183,7 +182,7 @@ void ParseHostsWithCommaModeForTesting(const std::string& contents,
 
 void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsCommaMode comma_mode;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac OS X allows commas to separate hostnames.
   comma_mode = PARSE_HOSTS_COMMA_IS_WHITESPACE;
 #else

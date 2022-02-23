@@ -17,6 +17,7 @@ class WebUIDataSource;
 
 namespace ui {
 class NativeTheme;
+class ThemeProvider;
 }
 
 namespace webui {
@@ -34,16 +35,31 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource);
 
+// Adds string for |id| to |source| and removes & from the string to allow for
+// reuse of generic strings.
+void AddLocalizedString(content::WebUIDataSource* source,
+                        const std::string& message,
+                        int id);
+
 // Returns whether the device is enterprise managed. Note that on Linux, there's
 // no good way of detecting whether the device is managed, so always return
 // false.
 bool IsEnterpriseManaged();
 
 #if defined(TOOLKIT_VIEWS)
+
 // Returns whether WebContents should use dark mode colors depending on the
 // theme.
 ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents);
-#endif
+
+// Returns the ThemeProvider instance associated with the given web contents.
+const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
+
+// Sets a global theme provider that will be returned when calling
+// webui::GetThemeProvider(). Used only for testing.
+void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider);
+
+#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace webui
 

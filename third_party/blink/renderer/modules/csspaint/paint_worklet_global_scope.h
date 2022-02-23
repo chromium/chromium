@@ -63,6 +63,10 @@ class MODULES_EXPORT PaintWorkletGlobalScope final : public WorkletGlobalScope {
   }
 
  private:
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kPaintWorklet;
+  }
+
   // Registers the global scope with a proxy client, if not already done. Only
   // used for worklet-thread bound PaintWorkletGlobalScopes.
   void RegisterWithProxyClientIfNeeded();

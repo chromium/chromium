@@ -76,8 +76,10 @@ below:
       <output filename="blink_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="blink_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="blink_strings_af.pak" type="data_package" lang="af" />
       <output filename="blink_strings_is.pak" type="data_package" lang="is" />
+      <output filename="blink_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="blink_strings_am.pak" type="data_package" lang="am" />
     <output filename="blink_strings_ar.pak" type="data_package" lang="ar" />
@@ -360,6 +362,9 @@ below:
         <message name="IDS_AX_COLOR_WELL_ROLEDESCRIPTION" desc="Accessibility description of the color well for choosing saturation and lighness in a color picker popup">
           Color well with two-dimensional slider for selecting saturation and lightness
         </message>
+        <message name="IDS_SYSTEM_COLOR_CHOOSER" desc="Label for a button which opens a system color picker.">
+          System Colors
+        </message>
       </if>
 
       <!-- Accessibility state localized descriptions -->
@@ -421,276 +426,11 @@ below:
         <message name="IDS_AX_INDETERMINATE_VALUE" desc="Accessibility utterance for when a progress bar/indicator has no value and is being used as an indeterminate progress bar.">
           indeterminate
         </message>
-      </if>
-
-      <!-- Automatic image annotations for accessibility -->
-      <if expr="is_win">
-        <then>
-          <message name="IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION" desc="Accessibility role description for a graphic (image) on a web page or PDF that does not have a description for blind users.">
-            Unlabeled graphic
-          </message>
-        </then>
-        <else>
-          <message name="IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION" desc="Accessibility role description for an image on a web page or PDF that does not have a description for blind users.">
-            Unlabeled image
-          </message>
-        </else>
-      </if>
-      <if expr="is_android">
-        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_LTR" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top right. This is only for LTR languages. The 'more options' text should match TC ID 8110367050267853536">
-          This image isn‘t labeled. Open the More Options menu at the top right to get image descriptions.
-        </message>
-        <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION_ANDROID_RTL" desc="Accessibility message spoken out loud to screen reader users on Android to inform them that they can get a description of an image by opening the 'More Options' menu on the top left. This is only for RTL languages. The 'more options' text should match TC ID 8110367050267853536">
-          This image isn‘t labeled. Open the More Options menu at the top left to get image descriptions.
-        </message>
-      </if>
-      <message name="IDS_AX_IMAGE_ELIGIBLE_FOR_ANNOTATION" desc="Accessibility message spoken out loud to screen reader users to inform them that they can get a description of an image by opening the context menu.">
-        To get missing image descriptions, open the context menu.
-      </message>
-      <message name="IDS_AX_IMAGE_ANNOTATION_PENDING" desc="Accessibility message spoken out loud to screen reader users saying that the browser is in the middle of trying to get a description for an image.">
-        Getting description...
-      </message>
-      <message name="IDS_AX_IMAGE_ANNOTATION_ADULT" desc="Accessibility message spoken out loud to screen reader users indicating that an image appears to be something like nudity or pornography or other policy violation that is not appropriate for children.">
-        Appears to contain adult content. No description available.
-      </message>
-      <message name="IDS_AX_IMAGE_ANNOTATION_NO_DESCRIPTION" desc="Accessibility message spoken out loud to screen reader users indicating that the browser was unable to provide a description for an image.">
-        No description available.
-      </message>
-      <message name="IDS_AX_IMAGE_ANNOTATION_OCR_CONTEXT" desc="Accessibility message spoken out loud to screen reader users when reading text that was automatically extracted from an image, for an example the word 'stop' could be extracted from a photo of a stop sign. Because automatic text extraction sometimes contains errors it is important that the language used indicates some uncertainty - it may say 'stop' or it appears to say 'stop', not it definitely says 'stop'.">
-        Appears to say: <ph name="OCR_TEXT">$1<ex>Stop</ex></ph>
-      </message>
-      <message name="IDS_AX_IMAGE_ANNOTATION_DESCRIPTION_CONTEXT" desc="Accessibility message spoken out loud to screen reader users when reading a computer-generated description of an image, for example a photo of the president at a press conference might be described as 'A person at a podium'. Because automatic image description is sometimes incorrect, it is important that the langauge used indicates some uncertainty - it may be a person, it appears to be a person, not it definitely is a person.">
-        Appears to be: <ph name="DESCRIPTION">$1<ex>A person at a podium</ex></ph>
-      </message>
-
-      <if expr="not is_android and not is_fuchsia">
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLUS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a plus icon, which often is used to add">
-          Plus icon, may mean Add
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing left, which often means back">
-          Left arrow icon, may mean Back
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an arrow pointing to the right, which often means forwards">
-          Right arrow icon, may mean Forwards
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an icon of a phone handset, which often means to call">
-          Phone handset icon, may mean Call
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHAT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cartoon bubble, which often means chat">
-          Cartoon bubble icon, may mean Chat
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CHECK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a check mark icon">
-          Check mark icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_X" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an X, which may mean close or delete">
-          X icon, may mean Close or Delete
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DELETE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a trash can, which may mean delete">
-          Trash icon, may mean Delete
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EDIT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pencil, which may mean edit">
-          Pencil icon, may mean Edit
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a smiley face, which may mean Emoji">
-          Smiley face icon, may mean Emoji
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_END_CALL" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a phone handset pointing down, indicating end call">
-          End Call icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down pointing chevron icon, which may mean Expand">
-          Down chevron icon, may mean Expand
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a heart icon, which may mean Favorite">
-          Heart icon, may mean Favorite
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HOME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a home icon">
-          Home icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_INFO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a lowercase 'i' icon, which may mean 'information'">
-          Lowercase i icon, may mean Information
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LAUNCH_APPS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a 'launch apps' icon">
-          Launch apps icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs up icon, which may mean Like">
-          Thumbs up icon, may mean Like
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_BARS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three horizontal bars or hamburger shaped menu, which may indicate a menu">
-          Three bars icon, may mean Menu
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THREE_DOTS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a three dots or ellipsis shaped icon, which may mean More or may open a menu">
-          Three dots, may mean More
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_NOTIFICATIONS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a notification bell icon">
-          Bell icon, may mean Notifications
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAUSE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a pause icon">
-          Pause icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PLAY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Play icon">
-          Play icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REFRESH" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Refresh icon">
-          Refresh icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MAGNIFYING_GLASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a magnifying glass, which could mean either Search or Zoom">
-          Magnifying glass icon, may mean Search or Zoom
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SEND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paper airplane icon meaning Send">
-          Paper airplane icon, may mean Send
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SETTINGS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gear or wrench icon meaning Settings">
-          Gear or wrench icon, may mean Settings
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHARE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a share iconE">
-          Share icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a star icon">
-          Star icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TAKE_PHOTO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a camera icon, which may mean to take a photo">
-          Camera icon, may mean Take Photo
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TIME" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock icon, may mean Time">
-          Clock icon, may mean Time
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VIDEOCAM" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a video camera icon, which may mean Record Video">
-          Videocamera icon, may mean Record Video
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EXPAND" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four diagonal arrows pointing outward indicating Expand">
-          Four outward arrows icon, may mean Expand
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CONTRACT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case four inward arrows, indicating Contract">
-          Four inward arrows icon, may mean Contract
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GOOGLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Google logo">
-          Google icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_TWITTER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Twitter logo">
-          Twitter icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_FACEBOOK" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case the Facebook logo">
-          Facebook icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ASSISTANT" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a Google Assistant icon">
-          Google Assistant icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_WEATHER" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a weather icon">
-          Weather icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_CART" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping cart">
-          Shopping cart icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UPLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an upward arrow indicating Upload">
-          Upward arrow, may mean Upload
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_QUESTION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a question mark icon">
-          Question mark icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a microphone, which may mean Record">
-          Microphone icon, may mean Record
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MIC_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute microphone icon">
-          Mute microphone icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_GALLERY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a gallery icon">
-          Gallery icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_COMPASS" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a compass icon">
-          Compass icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PEOPLE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a group of people">
-          People icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an up arrow">
-          Up arrow icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ENVELOPE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case an envelope icon">
-          Envelope icon, may mean Mail
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_EMOJI_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case happy and sad face emoji">
-          Happy and sad face emoji icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PAPERCLIP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a paperclip icon, which may mean attachment">
-          Paperclip icon, may mean attachment
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CAST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cast icon, meaning to cast a video to a remote screen">
-          Cast icon, may mean to cast a video to a remote screen
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_UP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume up icon">
-          Volume up icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a volume down icon">
-          Volume down icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_STATE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a speaker icon, usually meaning volume">
-          Speaker icon, may mean volume
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_VOLUME_MUTE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a mute icon">
-          Mute icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_STOP" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a stop icon">
-          Stop icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SHOPPING_BAG" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a shopping bag">
-          Shopping bag icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LIST" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a bulleted list">
-          Bulleted list icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_LOCATION" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a location icon">
-          Location icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CALENDAR" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a calendar icon">
-          Calendar icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_THUMBS_DOWN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a thumbs down icon, meaning dislike">
-          Thumbs down icon, may mean dislike
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HEADSET" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a headset icon">
-          Headset icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_REDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clockwise arrow, may mean redo">
-          Clockwise arrow icon, may mean Redo
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_UNDO" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a counterclockwise arrow, may mean undo">
-          Counterclockwise arrow icon, may mean Undo
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_DOWNLOAD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a download icon">
-          Download icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_ARROW_DOWNWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a down arrow icon">
-          Down arrow icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_UPWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing up, which man mean Collapse">
-          Down chevron icon, may mean Collapse
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_FORWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing right">
-          Right chevron icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_V_BACKWARD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a chevron pointing left">
-          Left chevron icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HISTORY" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a clock with a circular arrow, may mean History">
-          Clock with circular arrow, may mean History
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_PERSON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a person">
-          Person icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_HAPPY_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a happy face icon">
-          Happy face icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SAD_FACE" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sad face icon">
-          Sad face icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_MOON" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a moon, may mean nighttime or sleep">
-          Moon icon, may mean nighttime or sleep
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_CLOUD" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a cloud icon">
-          Cloud icon
-        </message>
-        <message name="IDS_AX_IMAGE_ANNOTATION_ICON_SUN" desc="Accessibility message for blind users that describes an icon and the potential meaning or meanings of the icon: in this case a sun icon, may mean daytime">
-          Sun icon, may mean daytime
+        <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_UNCHECKED" desc="Accessibility state description for a radio button inside a group that has not been checked.">
+          Not checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
+        </message>
+        <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_CHECKED" desc="Accessibility state description for a radio button inside a group that is checked.">
+          Checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
         </message>
       </if>
 

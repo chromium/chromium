@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/range/range.h"
 
+class Browser;
 class Tab;
 class TabStrip;
 
@@ -83,6 +84,9 @@ class TabStripController {
 
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index) = 0;
+
+  // Toggles audio muting for the tab at the specified index in the model.
+  virtual void ToggleTabAudioMute(int index) = 0;
 
   // Adds a tab to an existing tab group.
   virtual void AddTabToGroup(int model_index,

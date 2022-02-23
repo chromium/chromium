@@ -39,8 +39,8 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void PersistClientHints(
       const url::Origin& primary_origin,
-      const std::vector<::network::mojom::WebClientHintsType>& client_hints,
-      base::TimeDelta expiration_duration) override;
+      const std::vector<::network::mojom::WebClientHintsType>& client_hints)
+      override;
 
   void ResetForTesting() override;
 

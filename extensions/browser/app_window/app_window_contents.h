@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "url/gurl.h"
@@ -55,7 +55,7 @@ class AppWindowContentsImpl : public AppWindowContents,
   void UpdateDraggableRegions(content::RenderFrameHost* sender,
                               const std::vector<DraggableRegion>& regions);
 
-  AppWindow* host_;  // This class is owned by |host_|
+  raw_ptr<AppWindow> host_;  // This class is owned by |host_|
   GURL url_;
   std::unique_ptr<content::WebContents> web_contents_;
 };

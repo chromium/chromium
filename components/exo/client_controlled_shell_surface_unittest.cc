@@ -40,7 +40,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -231,7 +230,7 @@ TEST_F(ClientControlledShellSurfaceTest, UpdateModalWindow) {
   child->Attach(child_buffer.get());
   std::unique_ptr<SubSurface> sub_surface(
       display->CreateSubSurface(child.get(), surface.get()));
-  surface->SetSubSurfacePosition(child.get(), gfx::Point(10, 10));
+  surface->SetSubSurfacePosition(child.get(), gfx::PointF(10, 10));
   child->Commit();
   surface->Commit();
   EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
@@ -643,12 +642,16 @@ class TestEventHandler : public ui::EventHandler {
   ~TestEventHandler() override = default;
 
   // ui::EventHandler:
-  void OnMouseEvent(ui::MouseEvent* event) override { received_event_ = true; }
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    mouse_events_.push_back(*event);
+  }
 
-  bool received_event() const { return received_event_; }
+  const std::vector<ui::MouseEvent>& mouse_events() const {
+    return mouse_events_;
+  }
 
  private:
-  bool received_event_ = false;
+  std::vector<ui::MouseEvent> mouse_events_;
 };
 
 }  // namespace
@@ -657,9 +660,9 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   UpdateDisplay("800x600");
 
   gfx::Size buffer_size(256, 256);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<Buffer> buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  std::unique_ptr<Surface> surface = std::make_unique<Surface>();
 
   gfx::Rect fullscreen_bounds(0, 0, 800, 600);
 
@@ -685,8 +688,52 @@ TEST_F(ClientControlledShellSurfaceTest, NoSynthesizedEventOnFrameChange) {
   shell_surface->SetGeometry(cropped_fullscreen_bounds);
   surface->Commit();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(handler.received_event());
+  EXPECT_TRUE(handler.mouse_events().empty());
   env->RemovePreTargetHandler(&handler);
+}
+
+// Shell surfaces should not emit extra events on commit even if using pixel
+// coordinates and a cursor is hovering over the window.
+// https://crbug.com/1296315.
+TEST_F(ClientControlledShellSurfaceTest,
+       NoSynthesizedEventsForPixelCoordinates) {
+  TestEventHandler event_handler;
+
+  gfx::Size buffer_size(400, 400);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto surface = std::make_unique<Surface>();
+  surface->Attach(buffer.get());
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+  // Pixel coordinates add a transform to the underlying layer.
+  shell_surface->set_client_submits_surfaces_in_pixel_coordinates(true);
+
+  display::Display primary_display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+  gfx::Rect initial_bounds(150, 10, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), initial_bounds);
+
+  // Tested condition only happens when cursor is over the window.
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  generator.MoveMouseTo(200, 110);
+
+  shell_surface->host_window()->AddPreTargetHandler(&event_handler);
+  shell_surface->Activate();
+  // Commit an arbitrary number of frames. We expect that this will not generate
+  // synthetic events.
+  for (int i = 0; i < 5; i++) {
+    surface->Commit();
+    task_environment()->RunUntilIdle();
+  }
+
+  // There should be 2 events.  One for mouse enter and the other for move.
+  const auto& events = event_handler.mouse_events();
+  ASSERT_EQ(events.size(), 2UL);
+  EXPECT_EQ(events[0].type(), ui::ET_MOUSE_ENTERED);
+  EXPECT_EQ(events[1].type(), ui::ET_MOUSE_MOVED);
+
+  shell_surface->host_window()->RemovePreTargetHandler(&event_handler);
 }
 
 TEST_F(ClientControlledShellSurfaceTest, CompositorLockInRotation) {
@@ -2776,31 +2823,9 @@ TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
   }
 }
 
-class ClientControlledShellSurfaceFullRestoreTest
-    : public ClientControlledShellSurfaceTest {
- public:
-  ClientControlledShellSurfaceFullRestoreTest() = default;
-  ClientControlledShellSurfaceFullRestoreTest(
-      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
-  ClientControlledShellSurfaceFullRestoreTest& operator=(
-      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
-  ~ClientControlledShellSurfaceFullRestoreTest() override = default;
-
-  // ClientControlledShellSurfaceTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::full_restore::features::kFullRestore);
-    ClientControlledShellSurfaceTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // WideFrameView follows its respective surface when it is eventually parented.
 // See crbug.com/1223135.
-TEST_F(ClientControlledShellSurfaceFullRestoreTest,
-       WideframeForUnparentedTasks) {
+TEST_F(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface =
       exo_test_helper()->CreateClientControlledShellSurface(surface.get());
@@ -2837,8 +2862,7 @@ TEST_F(ClientControlledShellSurfaceFullRestoreTest,
 
   // Call the WindowRestoreController, simulating the ARC task becoming ready.
   // The surface should be reparented and the WideFrameView should follow it.
-  ash::WindowRestoreController::Get()->OnARCTaskReadyForUnparentedWindow(
-      window);
+  ash::WindowRestoreController::Get()->OnParentWindowToValidContainer(window);
   EXPECT_NE(hidden_container_parent, window->parent());
   wide_frame = shell_surface->wide_frame_for_test();
   EXPECT_TRUE(wide_frame);

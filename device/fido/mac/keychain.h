@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 namespace device {

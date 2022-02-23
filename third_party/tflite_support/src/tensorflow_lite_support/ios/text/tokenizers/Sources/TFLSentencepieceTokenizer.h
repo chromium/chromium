@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#import "third_party/tensorflow_lite_support/ios/text/tokenizers/Sources/TFLTokenizer.h"
+#import "tensorflow_lite_support/ios/text/tokenizers/Sources/TFLTokenizer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 /**

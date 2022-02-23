@@ -198,3 +198,25 @@ message CheckOptionElementProto {
 
   message Result { optional bool match = 1; }
 }
+
+// Execute a snippet of JavaScript. The |js_snippet| should come as the body of
+// a "function() { .. }", where "this" refers to the element stored in
+// |client_id|. The |js_snippet| may either return nothing or an integer,
+// mapped to a client status. Any other return value will result in an
+// |INVALID_ACTION| error. The |js_snippet| may also return a Promise that
+// eventually resolves with the same limitations as the return value. When
+// returning a Promise, consider adding a |timeout_ms|. If the Promise is
+// rejected, the action will return an |UNEXPECTED_JS_ERROR|, consider
+// resolving with it a failing status code instead. In case of an error in the
+// snippet, an |UNEXPECTED_JS_ERROR| will be returned together with the line
+// and column number of the error. Note that the column number will be offset
+// by the "function() { " prefix.
+message ExecuteJsProto {
+  // The element on which to execute the JS snippet. Target of "this" in the
+  // snippet.
+  optional ClientIdProto client_id = 1;
+  optional string js_snippet = 2;
+  // Should be used when the |js_snippet| returns a Promise. If the Promise is
+  // not resolved in time, the action will report a |TIMED_OUT| error.
+  optional int32 timeout_ms = 3;
+}

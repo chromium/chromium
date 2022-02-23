@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "components/autofill/content/renderer/form_cache.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 

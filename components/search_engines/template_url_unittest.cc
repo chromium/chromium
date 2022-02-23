@@ -8,11 +8,13 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -1152,6 +1154,57 @@ TEST_F(TemplateURLTest, SuggestClient) {
   EXPECT_EQ("http://google.com/?client=suggest_client", result_2.spec());
 }
 
+TEST_F(TemplateURLTest, ZeroSuggestCacheDuration) {
+  const std::string base_url_str("http://google.com/?");
+  const std::string query_params_str("{google:clientCacheTimeToLive}");
+  const std::string full_url_str = base_url_str + query_params_str;
+  search_terms_data_.set_google_base_url(base_url_str);
+  TemplateURLData data;
+  data.SetURL(full_url_str);
+  TemplateURL url(data);
+  EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+  ASSERT_FALSE(url.url_ref().SupportsReplacement(search_terms_data_));
+
+  {
+    // 'ccttl' query param should not be present if no cache duration is given.
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ("http://google.com/?", result.spec());
+  }
+  {
+    // 'ccttl' query param should be present if a positive cache duration is
+    // given.
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    search_terms_args.zero_suggest_cache_duration_sec = 300;
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ("http://google.com/?ccttl=300&", result.spec());
+  }
+  {
+    // 'ccttl' query param shouldn't be present if a zero cache duration is
+    // given.
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    search_terms_args.zero_suggest_cache_duration_sec = 0;
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ("http://google.com/?", result.spec());
+  }
+  {
+    // 'ccttl' query param should not be present if the request is not a
+    // zero-prefix request.
+    TemplateURLRef::SearchTermsArgs search_terms_args(u"foo");
+    search_terms_args.zero_suggest_cache_duration_sec = 300;
+    GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
+                                                 search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ("http://google.com/?", result.spec());
+  }
+}
+
 TEST_F(TemplateURLTest, GetURLNoSuggestionsURL) {
   TemplateURLData data;
   data.SetURL("http://google.com/?q={searchTerms}");
@@ -1668,13 +1721,19 @@ TEST_F(TemplateURLTest, ReplacePageClassification) {
   search_terms_args.page_classification = metrics::OmniboxEventProto::NTP;
   result = url.url_ref().ReplaceSearchTerms(search_terms_args,
                                             search_terms_data_);
-  EXPECT_EQ("http://www.google.com/?pgcl=1&q=foo", result);
+  EXPECT_EQ(base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)
+                ? "http://www.google.com/?q=foo"
+                : "http://www.google.com/?pgcl=1&q=foo",
+            result);
 
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::HOME_PAGE;
   result = url.url_ref().ReplaceSearchTerms(search_terms_args,
                                             search_terms_data_);
-  EXPECT_EQ("http://www.google.com/?pgcl=3&q=foo", result);
+  EXPECT_EQ(base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)
+                ? "http://www.google.com/?q=foo"
+                : "http://www.google.com/?pgcl=3&q=foo",
+            result);
 }
 
 // Test the IsSearchResults function.

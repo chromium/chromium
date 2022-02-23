@@ -564,13 +564,34 @@ into the same field trial.
 
 **Examples**
 
+Trigger the IPH once every 4 months if the `download_completed` event has
+triggered at least one time and the `download_home_iph_trigger` (download home
+IPH) hasn't triggered in the last 90 days. The feature needs to have been
+available for more than a month and no other IPH has been shown for the current
+session.
+
+The event we are trying to increase the usage of is `download_home_opened` and
+is allowed to have previously happened for the IPH to trigger.
 ```
 {
   "availability": ">=30",
   "session_rate": "<1",
   "event_used": "name:download_home_opened;comparator:any;window:90;storage:360",
-  "event_trigger": "name:download_home_iph_trigger;comparator:any;window:90;storage:360",
+  "event_trigger": "name:download_home_iph_trigger;comparator:==0;window:90;storage:360",
   "event_1": "name:download_completed;comparator:>=1;window:120;storage:180"
+}
+```
+
+Trigger the IPH once per week, up to 3 times per year as long as the user
+hasn't triggered `shopping_list_track_price_from_menu`. The IPH should be ready
+to trigger as long as no other IPH has been shown.
+```
+{
+  "availability": ">=0",
+  "session_rate": "<1",
+  "event_used": "name:shopping_list_track_price_from_menu;comparator:==0;window:360;storage:360",
+  "event_trigger": "shopping_list_menu_item_iph_triggered;comparator:==0;window:7;storage:7",
+  "event_trigger_1": "shopping_list_menu_item_iph_triggered;comparator:<3;window:36;storage:360"
 }
 ```
 
@@ -613,9 +634,21 @@ all described below:
 
 **Examples**
 
+The user_opened_app_menu event hasn't triggered in the last two weeks. Keep
+existing events for 90 days.
 ```
 name:user_opened_app_menu;comparator:==0;window:14;storage:90
+```
+
+The user_has_seen_dino event has occurred at least 5 times in the last 30 days.
+Keep existing events for about a year.
+```
 name:user_has_seen_dino;comparator:>=5;window:30;storage:360
+```
+
+The user_has_seen_wifi event has occurred at least once in the last 30 days.
+Keep existing events for 6 months.
+```
 name:user_has_seen_wifi;comparator:>=1;window:30;storage:180
 ```
 

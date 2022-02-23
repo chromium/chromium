@@ -89,7 +89,7 @@ public class EmptyTabModel implements TabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type) {}
+    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {}
 
     @Override
     public boolean isActiveModel() {

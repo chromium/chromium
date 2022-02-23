@@ -38,6 +38,9 @@ void RecordNotificationTimedOut();
 // Records when a received STTS notification is dismissed for an unknown reason.
 void RecordNotificationDismissReasonUnknown();
 
+// Records when a received STTS notification is throttled from being sent.
+void RecordNotificationThrottled();
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_

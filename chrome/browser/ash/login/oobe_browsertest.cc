@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -10,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -33,7 +36,6 @@
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -51,9 +53,17 @@
 
 namespace ash {
 
-class OobeTest : public OobeBaseTest {
+class OobeTest : public OobeBaseTest, public testing::WithParamInterface<bool> {
  public:
-  OobeTest() = default;
+  OobeTest() : is_auth_session_enabled_(GetParam()) {
+    if (is_auth_session_enabled_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseAuthsessionAuthentication);
+    }
+  }
 
   OobeTest(const OobeTest&) = delete;
   OobeTest& operator=(const OobeTest&) = delete;
@@ -86,11 +96,15 @@ class OobeTest : public OobeBaseTest {
         ->login_window_for_test();
   }
 
+ protected:
+  bool is_auth_session_enabled_;
+
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
+IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   WaitForGaiaPageLoad();
 
   // Make the MountEx cryptohome call fail iff the `create` field is missing,
@@ -106,28 +120,40 @@ IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
 
   const AccountId account_id =
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
-  EXPECT_FALSE(
-      user_manager::known_user::GetIsUsingSAMLPrincipalsAPI(account_id));
 
-  // Verify the parameters that were passed to the latest MountEx call.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));
+
+  // Verify the parameters that were passed to the latest
+  // AuthenticateAuthSession or MountEx call.
   const cryptohome::AuthorizationRequest& cryptohome_auth =
-      FakeUserDataAuthClient::Get()->get_last_mount_authentication();
+      is_auth_session_enabled_
+          ? FakeUserDataAuthClient::Get()
+                ->get_last_authenticate_auth_session_authorization()
+          : FakeUserDataAuthClient::Get()->get_last_mount_authentication();
+
   EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
             cryptohome_auth.key().data().type());
   EXPECT_TRUE(cryptohome_auth.key().data().label().empty());
   EXPECT_FALSE(cryptohome_auth.key().secret().empty());
-  const ::user_data_auth::MountRequest& last_mount_request =
-      FakeUserDataAuthClient::Get()->get_last_mount_request();
-  ASSERT_TRUE(last_mount_request.has_create());
-  ASSERT_EQ(1, last_mount_request.create().keys_size());
-  EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
-            last_mount_request.create().keys(0).data().type());
-  EXPECT_EQ(kCryptohomeGaiaKeyLabel,
-            last_mount_request.create().keys(0).data().label());
-  EXPECT_FALSE(last_mount_request.create().keys(0).secret().empty());
+
+  // create does not make sense in the context of AuthSession,
+  // so we only check passed params when AuthSession feature
+  // is disabled.
+  if (!is_auth_session_enabled_) {
+    const ::user_data_auth::MountRequest& last_mount_request =
+        FakeUserDataAuthClient::Get()->get_last_mount_request();
+    ASSERT_TRUE(last_mount_request.has_create());
+    ASSERT_EQ(1, last_mount_request.create().keys_size());
+    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
+              last_mount_request.create().keys(0).data().type());
+    EXPECT_EQ(kCryptohomeGaiaKeyLabel,
+              last_mount_request.create().keys(0).data().label());
+    EXPECT_FALSE(last_mount_request.create().keys(0).secret().empty());
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(OobeTest, Accelerator) {
+IN_PROC_BROWSER_TEST_P(OobeTest, Accelerator) {
   WaitForGaiaPageLoad();
 
   gfx::NativeWindow login_window = GetLoginWindowWidget()->GetNativeWindow();
@@ -238,5 +264,7 @@ IN_PROC_BROWSER_TEST_F(DisplayOobeTest, OobeMeets2kDisplay) {
   EXPECT_EQ(display.width(), 2560);
   EXPECT_EQ(display.height(), 1440);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, OobeTest, testing::Bool());
 
 }  // namespace ash

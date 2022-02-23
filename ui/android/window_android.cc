@@ -48,6 +48,15 @@ WindowAndroid::ScopedSelectionHandles::~ScopedSelectionHandles() {
   }
 }
 
+WindowAndroid::ScopedWindowAndroidForTesting::ScopedWindowAndroidForTesting(
+    WindowAndroid* window)
+    : window_(window) {}
+
+WindowAndroid::ScopedWindowAndroidForTesting::~ScopedWindowAndroidForTesting() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WindowAndroid_destroy(env, window_->GetJavaObject());
+}
+
 // static
 WindowAndroid* WindowAndroid::FromJavaWindowAndroid(
     const JavaParamRef<jobject>& jwindow_android) {
@@ -87,10 +96,12 @@ WindowAndroid::~WindowAndroid() {
   Java_WindowAndroid_clearNativePointer(AttachCurrentThread(), GetJavaObject());
 }
 
-WindowAndroid* WindowAndroid::CreateForTesting() {
+std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting>
+WindowAndroid::CreateForTesting() {
   JNIEnv* env = AttachCurrentThread();
   long native_pointer = Java_WindowAndroid_createForTesting(env);
-  return reinterpret_cast<WindowAndroid*>(native_pointer);
+  return std::make_unique<ScopedWindowAndroidForTesting>(
+      reinterpret_cast<WindowAndroid*>(native_pointer));
 }
 
 void WindowAndroid::OnCompositingDidCommit() {

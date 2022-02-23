@@ -1783,6 +1783,40 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
   }
 }
 
+TEST_F(PeripheralBatteryListenerTest,
+       PostNofiticationWhenDeviceIsConnectedWithLowBattery) {
+  testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
+  base::ScopedObservation<PeripheralBatteryListener,
+                          PeripheralBatteryListener::Observer>
+      scoped_listener_obs{&listener_observer_mock};
+  scoped_listener_obs.Observe(battery_listener_.get());
+
+  Sequence a;
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
+          AFIELD(&BI::battery_report_eligible, Eq(true)),
+          AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))))
+      .InSequence(a);
+  EXPECT_CALL(listener_observer_mock,
+              OnAddingBattery(AFIELD(&BI::key, Eq(kBluetoothDeviceId1))));
+  mock_device_1_->SetBatteryInfo(
+      BatteryInfo(BatteryType::kDefault, /*percentage=*/5));
+
+  Sequence b;
+  EXPECT_CALL(
+      listener_observer_mock,
+      OnUpdatedBatteryLevel(AllOf(
+          AFIELD(&BI::key, Eq(kBluetoothDeviceId1)), AFIELD(&BI::level, Eq(5)),
+          AFIELD(&BI::battery_report_eligible, Eq(true)),
+          AFIELD(&BI::bluetooth_address, Eq(kBluetoothDeviceAddress1)))))
+      .InSequence(b);
+
+  battery_listener_->DeviceConnectedStateChanged(
+      mock_adapter_.get(), mock_device_1_.get(), /*is_now_connected=*/true);
+}
+
 // TODO: Test needed for eligibility behaviour of stylus chargers.
 
 }  // namespace ash

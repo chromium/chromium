@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_NATIVE_INPUT_EVENT_BUILDER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_NATIVE_INPUT_EVENT_BUILDER_H_
 
+#include "build/build_config.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 
 namespace content {
@@ -12,7 +13,7 @@ namespace protocol {
 
 class NativeInputEventBuilder {
  public:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This returned object has a retain count of 1.
   static gfx::NativeEvent CreateEvent(const NativeWebKeyboardEvent& event);
 #else

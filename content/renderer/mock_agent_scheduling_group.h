@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/types/pass_key.h"
 #include "content/common/associated_interfaces.mojom.h"
-#include "content/common/content_export.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

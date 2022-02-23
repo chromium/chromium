@@ -11,7 +11,8 @@ import os
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import skia_gold_matching_algorithms as algo
-from gpu_tests import path_util
+
+import gpu_path_util
 
 CRASH_TYPE_GPU = 'gpu'
 
@@ -35,7 +36,7 @@ VERY_PERMISSIVE_SOBEL_ALGO = algo.SobelMatchingAlgorithm(
     ignored_border_thickness=1)
 
 
-class PixelTestPage(object):
+class PixelTestPage():
   """A wrapper class mimicking the functionality of the PixelTestsStorySet
   from the old-style GPU tests.
   """
@@ -53,7 +54,7 @@ class PixelTestPage(object):
       grace_period_end=None,
       expected_per_process_crashes=None,
       matching_algorithm=None):
-    super(PixelTestPage, self).__init__()
+    super().__init__()
     self.url = url
     self.name = name
     self.test_rect = test_rect
@@ -120,11 +121,11 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
   return [
       '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
       '--use-file-for-fake-video-capture=' +
-      os.path.join(path_util.GetChromiumSrcDir(), media_stream_source_relpath)
+      os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, media_stream_source_relpath)
   ]
 
 
-class PixelTestPages(object):
+class PixelTestPages():
   @staticmethod
   def DefaultPages(base_name):
     sw_compositing_args = [cba.DISABLE_GPU_COMPOSITING]
@@ -359,6 +360,10 @@ class PixelTestPages(object):
                       base_name + '_WebGPUImportWebGPUCanvas',
                       test_rect=[0, 0, 400, 200],
                       browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_import_video_frame.html',
+                      base_name + '_WebGPUImportVideoFrame',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
         PixelTestPage('pixel_webgpu_webgl_teximage2d.html',
                       base_name + '_WebGPUWebGLTexImage2D',
                       test_rect=[0, 0, 400, 200],
@@ -396,6 +401,10 @@ class PixelTestPages(object):
                       base_name + '_WebGPUCopyExternalImageWebGLCanvas',
                       test_rect=[0, 0, 400, 200],
                       browser_args=webgpu_args),
+        PixelTestPage('pixel_webgpu_copy_externalImage_webgpu_canvas.html',
+                      base_name + '_WebGPUCopyExternalImageWebGPUCanvas',
+                      test_rect=[0, 0, 400, 200],
+                      browser_args=webgpu_args),
     ]
 
   # Pages that should be run with GPU rasterization enabled.
@@ -429,7 +438,7 @@ class PixelTestPages(object):
   def PaintWorkletPages(base_name):
     browser_args = [
         '--enable-blink-features=OffMainThreadCSSPaint',
-        '--enable-gpu-rasterization', '--enable-oop-rasterization'
+        '--enable-gpu-rasterization'
     ]
 
     return [
@@ -589,7 +598,7 @@ class PixelTestPages(object):
   @staticmethod
   def SwiftShaderPages(base_name):
     browser_args = [cba.DISABLE_GPU]
-    suffix = "_SwiftShader"
+    suffix = '_SwiftShader'
     return [
         PixelTestPage('pixel_canvas2d.html',
                       base_name + '_Canvas2DRedBox' + suffix,
@@ -613,7 +622,7 @@ class PixelTestPages(object):
   @staticmethod
   def NoGpuProcessPages(base_name):
     browser_args = [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER]
-    suffix = "_NoGpuProcess"
+    suffix = '_NoGpuProcess'
     return [
         PixelTestPage(
             'pixel_canvas2d.html',

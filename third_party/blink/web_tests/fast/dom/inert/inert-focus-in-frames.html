@@ -28,20 +28,20 @@ function frameLoaded() {
         test(function() {
             var frame1 = mainIframe.contentWindow.frames[0].document;
             var target1 = frame1.querySelector('.target');
-            testCantFocus(target1);
+            testCanFocus(target1);
             var iframe = frame1.querySelector('iframe').contentDocument;
-            testCantFocus(iframe.querySelector('.target'));
-        }, "Focus can't go into frames or iframes in inert subtree");
+            testCanFocus(iframe.querySelector('.target'));
+        }, "Focus can go into frames or iframes in inert subtree");
         done();
     }
 }
 
-function testCantFocus(element) {
+function testCanFocus(element) {
     focusedElement = null;
     element.addEventListener('focus', function() { focusedElement = element; }, false);
     element.focus();
     theElement = element;
-    assert_false(focusedElement === theElement);
+    assert_equals(focusedElement, theElement);
 }
 
 mainIframe.contentDocument.write(mainIframe.textContent);

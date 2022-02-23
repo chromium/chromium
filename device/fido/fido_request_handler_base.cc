@@ -21,8 +21,12 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #endif
 
 namespace device {
@@ -75,6 +79,21 @@ FidoRequestHandlerBase::TransportAvailabilityInfo::
 
 FidoRequestHandlerBase::Observer::~Observer() = default;
 
+// FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls --------------------------
+
+static bool g_always_allow_ble_calls = false;
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::ScopedAlwaysAllowBLECalls() {
+  CHECK(!g_always_allow_ble_calls);
+  g_always_allow_ble_calls = true;
+}
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::
+    ~ScopedAlwaysAllowBLECalls() {
+  CHECK(g_always_allow_ble_calls);
+  g_always_allow_ble_calls = false;
+}
+
 // FidoRequestHandlerBase -----------------------------------------------------
 
 FidoRequestHandlerBase::FidoRequestHandlerBase()
@@ -91,7 +110,7 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
     base::flat_set<FidoTransportProtocol> available_transports) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
   // discoveries if the API is unavailable.
@@ -121,7 +140,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
              FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
     });
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   transport_availability_info_.available_transports = available_transports;
   for (const auto transport : available_transports) {
@@ -144,12 +163,37 @@ void FidoRequestHandlerBase::InitDiscoveries(
   transport_availability_callback_readiness_->num_discoveries_pending =
       discoveries_.size();
 
+#if BUILDFLAG(IS_MAC)
+  // On recent macOS a process must have listed Bluetooth metadata in its
+  // Info.plist in order to call Bluetooth APIs. Failure to do so results in
+  // the system killing with process with SIGABRT once Bluetooth calls are
+  // made.
+  //
+  // However, unless Chromium is started from the Finder, or with special
+  // posix_spawn flags, then the responsible process—the one that needs to have
+  // the right Info.plist—is one of the parent processes, often the terminal
+  // emulator. This can lead to Chromium getting killed when trying to do
+  // WebAuthn. This also affects layout tests.
+  //
+  // Thus, if the responsible process is not Chromium itself, then we do not
+  // make any Bluetooth API calls.
+  const bool can_call_ble_apis =
+      g_always_allow_ble_calls || base::IsProcessSelfResponsible();
+  if (!can_call_ble_apis) {
+    FIDO_LOG(ERROR) << "Cannot test Bluetooth power status because process is "
+                       "not self-responsible. Launch from Finder to fix.";
+  }
+#else
+  const bool can_call_ble_apis = true;
+#endif
+
   // Check if the platform supports BLE before trying to get a power manager.
   // CaBLE might be in |available_transports| without actual BLE support under
   // the virtual environment.
   // TODO(nsatragno): Move the BLE power manager logic to CableDiscoveryFactory
   // so we don't need this additional check.
-  if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
+  if (can_call_ble_apis &&
+      device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
                      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
     transport_availability_callback_readiness_->ble_information_pending = true;
@@ -329,7 +373,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     VLOG(2) << "Embedder controls the dispatch.";
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
     transport_availability_info_.win_native_api_authenticator_id =
@@ -339,7 +383,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)
             ->ShowsPrivacyNotice();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void FidoRequestHandlerBase::GetPlatformCredentialStatus(

@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+
+assert(is_chromeos_ash)
 
 source_set("structs") {
   sources = [ "suggestions.h" ]

@@ -1,0 +1,28 @@
+{
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "process_units": [
+            {
+              "options_type": "NormalizationOptions",
+              "options": {
+                "mean": [
+                  127.5
+                ],
+                "std": [
+                  127.5
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+        }
+      ]
+    }
+  ],
+  "min_parser_version": "1.0.0"
+}

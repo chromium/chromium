@@ -9,7 +9,8 @@
 
 namespace blink {
 
-PaintFilterEffect::PaintFilterEffect(Filter* filter, const PaintFlags& flags)
+PaintFilterEffect::PaintFilterEffect(Filter* filter,
+                                     const cc::PaintFlags& flags)
     : FilterEffect(filter), flags_(flags) {
   SetOperatingInterpolationSpace(kInterpolationSpaceSRGB);
 }

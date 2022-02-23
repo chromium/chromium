@@ -33,6 +33,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
          media::VideoFrameMetadata* output) {
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
+  output->crop_version = input.crop_version();
 
   // bool.
   output->allow_overlay = input.allow_overlay();
@@ -68,6 +69,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::UnguessableToken, overlay_plane_id, OverlayPlaneId);
 
   READ_AND_ASSIGN_OPT(gfx::Rect, capture_update_rect, CaptureUpdateRect);
+  READ_AND_ASSIGN_OPT(gfx::Rect, region_capture_rect, RegionCaptureRect);
 
   READ_AND_ASSIGN_OPT(base::TimeTicks, receive_time, ReceiveTime);
   READ_AND_ASSIGN_OPT(base::TimeTicks, capture_begin_time, CaptureBeginTime);

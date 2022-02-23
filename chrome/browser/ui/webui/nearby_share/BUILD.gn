@@ -15,7 +15,7 @@ mojom("mojom") {
 
   public_deps = [
     ":share_type",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
+    "//ash/services/nearby/public/mojom:nearby_share_target_types",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

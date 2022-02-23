@@ -10,7 +10,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -41,8 +41,8 @@ bool IsPathRestrictionSatisfiedInternal(
   DCHECK(!script_url.has_ref());
   DCHECK(error_message);
 
-  if (ServiceWorkerUtils::ContainsDisallowedCharacter(scope, script_url,
-                                                      error_message)) {
+  if (blink::ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
+          scope, script_url, error_message)) {
     return false;
   }
 

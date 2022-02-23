@@ -97,7 +97,7 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {
     // Induce an intentional crash in the browser process.
-    CHECK(false);
+    CHECK(false) << "User triggered inducebrowsercrashforrealz.";
     // Call another function, so that the above CHECK can't be tail call
     // optimized. This ensures that this method's name will show up in the stack
     // for easier identification.
@@ -395,8 +395,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
   TabInsertionBrowserAgent* insertion_agent =
       TabInsertionBrowserAgent::FromBrowser(browser_);
 
-  insertion_agent->InsertWebState(
+  web::WebState* web_state = insertion_agent->InsertWebState(
       params.web_params, parent_web_state, /*opened_by_dom=*/false,
       insertion_index, params.in_background(), params.inherit_opener);
+  web_state->GetNavigationManager()->LoadIfNecessary();
   notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }

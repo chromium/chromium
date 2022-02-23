@@ -8,18 +8,16 @@
 #include "ash/ash_export.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 
-namespace chromeos {
-namespace phonehub {
-class ConnectionScheduler;
-}  // namespace phonehub
-}  // namespace chromeos
-
 namespace ash {
 
 class PhoneHubInterstitialView;
 
 namespace phone_hub_metrics {
 enum class InterstitialScreenEvent;
+}
+
+namespace phonehub {
+class ConnectionScheduler;
 }
 
 // An interstitial view represeting that connection to the phone has been
@@ -29,7 +27,7 @@ class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
   METADATA_HEADER(PhoneDisconnectedView);
 
   explicit PhoneDisconnectedView(
-      chromeos::phonehub::ConnectionScheduler* connection_scheduler);
+      phonehub::ConnectionScheduler* connection_scheduler);
   PhoneDisconnectedView(const PhoneDisconnectedView&) = delete;
   PhoneDisconnectedView& operator=(const PhoneDisconnectedView&) = delete;
   ~PhoneDisconnectedView() override;
@@ -41,7 +39,7 @@ class ASH_EXPORT PhoneDisconnectedView : public PhoneHubContentView {
   void ButtonPressed(phone_hub_metrics::InterstitialScreenEvent event,
                      base::RepeatingClosure callback);
 
-  chromeos::phonehub::ConnectionScheduler* connection_scheduler_ = nullptr;
+  phonehub::ConnectionScheduler* connection_scheduler_ = nullptr;
 
   PhoneHubInterstitialView* content_view_ = nullptr;
 };

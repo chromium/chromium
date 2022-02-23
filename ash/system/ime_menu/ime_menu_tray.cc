@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -27,7 +28,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/system/unified/top_shortcut_button.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -149,13 +149,14 @@ class ImeTitleView : public views::BoxLayoutView {
                                      TrayPopupUtils::FontStyle::kPodMenuHeader);
     SetFlexForView(title_label, 1);
 
-    settings_button_ = AddChildView(std::make_unique<TopShortcutButton>(
+    settings_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating([]() {
           base::RecordAction(
               base::UserMetricsAction("StatusArea_IME_Detailed"));
           Shell::Get()->system_tray_model()->client()->ShowIMESettings();
         }),
-        kSystemMenuSettingsIcon, IDS_ASH_STATUS_TRAY_IME_SETTINGS));
+        IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
+        IDS_ASH_STATUS_TRAY_IME_SETTINGS));
     settings_button_->SetEnabled(TrayPopupUtils::CanOpenWebUISettings());
   }
   ImeTitleView(const ImeTitleView&) = delete;
@@ -164,7 +165,7 @@ class ImeTitleView : public views::BoxLayoutView {
   ~ImeTitleView() override = default;
 
  private:
-  TopShortcutButton* settings_button_ = nullptr;
+  IconButton* settings_button_ = nullptr;
 };
 
 BEGIN_METADATA(ImeTitleView, views::BoxLayoutView)

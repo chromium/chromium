@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "content/child/child_thread_impl.h"
 #include "content/public/utility/utility_thread.h"
@@ -39,7 +38,7 @@ class UtilityThreadImpl : public UtilityThread,
   // UtilityThread:
   void ReleaseProcess() override;
   void EnsureBlinkInitialized() override;
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   void EnsureBlinkInitializedWithSandboxSupport() override;
 #endif
 

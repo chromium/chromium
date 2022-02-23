@@ -35,7 +35,7 @@ namespace blink {
 
 const LChar kEndOfFileMarker = 0;
 
-// https://html.spec.whatwg.org/#parse-error-unexpected-null-character
+// https://html.spec.whatwg.org/C/#parse-error-unexpected-null-character
 const UChar kReplacementCharacter = 0xFFFD;
 
 // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream

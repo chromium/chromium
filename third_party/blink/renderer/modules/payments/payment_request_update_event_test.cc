@@ -6,12 +6,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
@@ -146,6 +147,8 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
   event->SetTrusted(true);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -183,6 +186,8 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
   event->SetPaymentRequest(request);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -220,6 +225,9 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::kCapturingPhase);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -254,6 +262,9 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::kCapturingPhase);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), scope.GetExceptionState())
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));

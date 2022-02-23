@@ -338,6 +338,26 @@ TEST(ThrottlingControllerTest, UploadOnly) {
   EXPECT_EQ(callback->value(), static_cast<int>(base::size(kUploadData)));
 }
 
+TEST(ThrottlingControllerTest, DownloadBufferSizeIsNotModifiedIfNotThrottled) {
+  MockTransaction mock_transaction = kSimpleGET_Transaction;
+  const int kLargeDataSize = 1024 * 1024;
+  std::string large_data(kLargeDataSize, 'x');
+  mock_transaction.data = large_data.c_str();
+  ThrottlingControllerTestHelper helper(mock_transaction);
+  TestCallback* callback = helper.callback();
+
+  helper.SetNetworkState(false, 0, 0);
+  int rv = helper.Start(false);
+  EXPECT_EQ(rv, net::OK);
+
+  auto large_data_buffer = base::MakeRefCounted<net::IOBuffer>(kLargeDataSize);
+  rv = helper.Read(large_data_buffer.get(), kLargeDataSize);
+  EXPECT_EQ(rv, net::ERR_IO_PENDING);
+  helper.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(callback->run_count(), 1);
+  EXPECT_EQ(callback->value(), kLargeDataSize);
+}
+
 TEST(ThrottlingControllerTest, DownloadIsStreamed) {
   MockTransaction mock_transaction = kSimpleGET_Transaction;
   const int kLargeDataSize = 1024 * 1024;

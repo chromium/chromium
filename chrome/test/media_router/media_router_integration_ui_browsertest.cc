@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   ASSERT_EQ("Test Route", test_ui_->GetStatusTextForSink(receiver_));
 
   test_ui_->StopCasting(receiver_);
-  test_ui_->WaitUntilNoRoutes();
+  WaitUntilNoRoutes(GetActiveWebContents());
   // TODO(takumif): Remove the HideCastDialog() call once the dialog can close
   // on its own.
   test_ui_->HideDialog();

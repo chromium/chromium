@@ -425,8 +425,8 @@ bool DatabaseTracker::DeleteClosedDatabase(
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
-        blink::mojom::StorageType::kTemporary, -db_file_size,
-        base::Time::Now());
+        blink::mojom::StorageType::kTemporary, -db_file_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 
   // Clean up the main database and invalidate the cached record.
   databases_table_->DeleteDatabaseDetails(origin_identifier, database_name);
@@ -504,8 +504,8 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase,
         blink::StorageKey(GetOriginFromIdentifier(origin_identifier)),
-        blink::mojom::StorageType::kTemporary, -deleted_size,
-        base::Time::Now());
+        blink::mojom::StorageType::kTemporary, -deleted_size, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
   return true;
@@ -704,7 +704,8 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
           QuotaClientType::kDatabase,
           blink::StorageKey(GetOriginFromIdentifier(origin_id)),
           blink::mojom::StorageType::kTemporary, new_size - old_size,
-          base::Time::Now());
+          base::Time::Now(), base::SequencedTaskRunnerHandle::Get(),
+          base::DoNothing());
     for (auto& observer : observers_)
       observer.OnDatabaseSizeChanged(origin_id, name, new_size);
   }
@@ -947,7 +948,7 @@ void DatabaseTracker::ClearSessionOnlyOrigins() {
     for (const auto& database : databases) {
       base::File file(
           GetFullDBFilePath(origin, database),
-          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_SHARE_DELETE |
+          base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WIN_SHARE_DELETE |
               base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_READ);
     }
     DeleteOrigin(origin, true);

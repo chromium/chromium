@@ -411,7 +411,7 @@ class PageTextObserverSingleProcessBrowserTest
   }
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1189556
 #define MAYBE_SameProcessIframe DISABLED_SameProcessIframe
 #else

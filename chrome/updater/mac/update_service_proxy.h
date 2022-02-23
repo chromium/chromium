@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
@@ -37,14 +38,18 @@ class UpdateServiceProxy : public UpdateService {
 
   // Overrides for UpdateService.
   void GetVersion(
-      base::OnceCallback<void(const base::Version&)> callback) const override;
+      base::OnceCallback<void(const base::Version&)> callback) override;
   void RegisterApp(
       const RegistrationRequest& request,
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void GetAppStates(
+      base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>)
+      override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
   void Uninitialize() override;
@@ -52,8 +57,13 @@ class UpdateServiceProxy : public UpdateService {
  private:
   ~UpdateServiceProxy() override;
 
+  // Reset invalidates the existing connection, causing error callbacks to fire,
+  // and reinitializes it for further use.
+  void Reset();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
+  UpdaterScope scope_;
   base::scoped_nsobject<CRUUpdateServiceProxyImpl> client_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
 };

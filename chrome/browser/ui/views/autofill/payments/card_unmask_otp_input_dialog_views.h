@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -32,6 +34,18 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
       const CardUnmaskOtpInputDialogViews&) = delete;
   ~CardUnmaskOtpInputDialogViews() override;
 
+  // Notifies the Card Unmask OTP Input Dialog Controller that the new code link
+  // was clicked, and temporarily disables the link in the UI for
+  // |kNewOtpCodeLinkDisabledDuration| (as defined in payments_ui_constants.h).
+  void OnNewCodeLinkClicked();
+
+  // When the new code link is clicked, it is instantly disabled, and re-enabled
+  // after a delay of |kNewOtpCodeLinkDisabledDuration|. This is the function
+  // that gets called after this delay to re-enable the new code link. This
+  // function is abstracted here so that it can be referenced using the
+  // |weak_ptr_factory_| from this class.
+  void EnableNewCodeLink();
+
   // CardUnmaskOtpInputDialogView:
   void ShowPendingState() override;
   void ShowInvalidState(const std::u16string& invalid_label_text) override;
@@ -48,6 +62,22 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
+
+#if defined(UNIT_TEST)
+  bool NewCodeLinkIsEnabledForTesting() {
+    // The entire footer label gets set to not enabled when the new code link is
+    // disabled, so footer_label_->GetEnabled() will always represent whether
+    // the new code link is enabled or disabled.
+    return footer_label_->GetEnabled();
+  }
+
+  void SetClosureToRunAfterNewCodeLinkIsEnabledForTesting(
+      base::RepeatingClosure
+          closure_to_run_after_new_code_link_is_enabled_for_testing) {
+    closure_to_run_after_new_code_link_is_enabled_for_testing_ =
+        closure_to_run_after_new_code_link_is_enabled_for_testing;
+  }
+#endif
 
  private:
   // Initializes the contents of the view and all of its child views.
@@ -66,23 +96,30 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
 
   void CloseWidget(bool user_closed_dialog, bool server_request_succeeded);
 
-  CardUnmaskOtpInputDialogController* controller_ = nullptr;
+  // Sets the text and style of the dialog footer.
+  void SetDialogFooter(bool enabled);
+
+  raw_ptr<CardUnmaskOtpInputDialogController> controller_ = nullptr;
 
   // Elements related to the otp part of the view.
-  views::BoxLayoutView* otp_input_view_ = nullptr;
-  views::Textfield* otp_input_textfield_ = nullptr;
-  views::Label* otp_input_textfield_invalid_label_ = nullptr;
+  raw_ptr<views::BoxLayoutView> otp_input_view_ = nullptr;
+  raw_ptr<views::Textfield> otp_input_textfield_ = nullptr;
+  raw_ptr<views::Label> otp_input_textfield_invalid_label_ = nullptr;
+  raw_ptr<views::StyledLabel> footer_label_ = nullptr;
 
   // Adds padding to the view's layout so that the layout allows room for
   // |otp_input_textfield_invalid_label_| to appear if necessary. This padding's
   // visibility will always be the opposite of
   // |otp_input_textfield_invalid_label_|'s visibility.
-  views::View* otp_input_textfield_invalid_label_padding_ = nullptr;
+  raw_ptr<views::View> otp_input_textfield_invalid_label_padding_ = nullptr;
 
   // Elements related to progress or error when the request is being made.
-  views::BoxLayoutView* progress_view_ = nullptr;
-  views::Label* progress_label_ = nullptr;
-  views::Throbber* progress_throbber_ = nullptr;
+  raw_ptr<views::BoxLayoutView> progress_view_ = nullptr;
+  raw_ptr<views::Label> progress_label_ = nullptr;
+  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
+
+  base::RepeatingClosure
+      closure_to_run_after_new_code_link_is_enabled_for_testing_;
 
   base::WeakPtrFactory<CardUnmaskOtpInputDialogViews> weak_ptr_factory_{this};
 };

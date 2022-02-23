@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 343 tests; 191 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 352 tests; 198 PASS, 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS aa-- (using URL)
 PASS aa-- (using URL.host)
@@ -127,6 +127,15 @@ PASS xn--a.ß (using <a>.hostname)
 FAIL xn--a.ß (using <area>) assert_equals: expected "https://xn--a.ß/x" but got "https://xn--a.%C3%9F/x"
 PASS xn--a.ß (using <area>.host)
 PASS xn--a.ß (using <area>.hostname)
+PASS xn--tešla (using URL)
+PASS xn--tešla (using URL.host)
+PASS xn--tešla (using URL.hostname)
+FAIL xn--tešla (using <a>) assert_equals: expected "https://xn--tešla/x" but got "https://xn--te%C5%A1la/x"
+PASS xn--tešla (using <a>.host)
+PASS xn--tešla (using <a>.hostname)
+FAIL xn--tešla (using <area>) assert_equals: expected "https://xn--tešla/x" but got "https://xn--te%C5%A1la/x"
+PASS xn--tešla (using <area>.host)
+PASS xn--tešla (using <area>.hostname)
 PASS xn--zca.xn--zca (using URL)
 PASS xn--zca.xn--zca (using URL.host)
 PASS xn--zca.xn--zca (using URL.hostname)

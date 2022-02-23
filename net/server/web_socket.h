@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_frame.h"
@@ -53,8 +53,8 @@ class WebSocket final {
   void SendErrorResponse(const std::string& message,
                          const NetworkTrafficAnnotationTag traffic_annotation);
 
-  HttpServer* const server_;
-  HttpConnection* const connection_;
+  const raw_ptr<HttpServer> server_;
+  const raw_ptr<HttpConnection> connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_;
   std::unique_ptr<NetworkTrafficAnnotationTag> traffic_annotation_ = nullptr;

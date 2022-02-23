@@ -16,9 +16,9 @@
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
-#include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
+#include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,6 +67,10 @@ class DiscoverySessionManagerImplTest : public testing::Test {
                    StartScanCallback& callback) {
               EXPECT_FALSE(start_scan_callback_);
               start_scan_callback_ = std::move(callback);
+
+              if (should_synchronously_invoke_start_scan_callback_) {
+                InvokePendingStartScanCallback(/*success=*/true);
+              }
             }));
     ON_CALL(*mock_adapter_, StopScan(testing::_))
         .WillByDefault(testing::Invoke([this](StopScanCallback callback) {
@@ -75,7 +79,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
         }));
 
     discovery_session_manager_ = std::make_unique<DiscoverySessionManagerImpl>(
-        &fake_adapter_state_controller_, mock_adapter_, &fake_device_cache_);
+        &fake_adapter_state_controller_, mock_adapter_,
+        &fake_discovered_devices_provider_);
   }
 
   void TearDown() override {
@@ -150,15 +155,20 @@ class DiscoverySessionManagerImplTest : public testing::Test {
             }));
     mock_devices_.push_back(std::move(mock_device));
 
-    // Add the device to the device cache's unpaired devices.
-    std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices;
+    // Add the device to the discovered devices provider's discovered devices.
+    std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices;
     for (auto& device : mock_devices_) {
-      unpaired_devices.push_back(
-          GenerateBluetoothDeviceMojoProperties(device.get()));
+      discovered_devices.push_back(GenerateBluetoothDeviceMojoProperties(
+          device.get(), /*fast_pair_delegate=*/nullptr));
     }
-    fake_device_cache_.SetUnpairedDevices(std::move(unpaired_devices));
+    fake_discovered_devices_provider_.SetDiscoveredDevices(
+        std::move(discovered_devices));
     fake_device_pairing_handler_factory_.UpdateActiveHandlerDeviceLists();
     discovery_session_manager_->FlushForTesting();
+  }
+
+  void SetShouldSynchronouslyInvokeStartScanCallback(bool should) {
+    should_synchronously_invoke_start_scan_callback_ = should;
   }
 
  private:
@@ -224,11 +234,12 @@ class DiscoverySessionManagerImplTest : public testing::Test {
   std::vector<NiceMockDevice> mock_devices_;
   size_t num_devices_created_ = 0u;
 
+  bool should_synchronously_invoke_start_scan_callback_ = false;
   StartScanCallback start_scan_callback_;
   StopScanCallback stop_scan_callback_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
-  FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
+  FakeDiscoveredDevicesProvider fake_discovered_devices_provider_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   FakeDevicePairingHandlerFactory fake_device_pairing_handler_factory_{*this};
 
@@ -459,6 +470,26 @@ TEST_F(DiscoverySessionManagerImplTest, MultipleClientsAttemptPairing) {
   EXPECT_FALSE(delegate2->pairing_handler().is_connected());
   EXPECT_FALSE(pairing_delegate3->IsMojoPipeConnected());
   InvokePendingStopScanCallback(/*success=*/true);
+}
+
+TEST_F(DiscoverySessionManagerImplTest, StartDiscoverySynchronous) {
+  // Simulate adapter finishing starting scanning immediately. This should cause
+  // |delegate.OnBluetoothDiscoveryStarted()| still to only be called once.
+  SetShouldSynchronouslyInvokeStartScanCallback(true);
+  std::unique_ptr<FakeBluetoothDiscoveryDelegate> delegate = StartDiscovery();
+  EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+  EXPECT_TRUE(delegate->discovered_devices_list().empty());
+
+  // Disconnect the Mojo pipe; this should trigger a StopScan() call.
+  delegate->DisconnectMojoPipe();
+  EXPECT_FALSE(delegate->IsMojoPipeConnected());
+  EXPECT_EQ(1u, delegate->num_start_callbacks());
+
+  // Invoke the StopScan() callback. Since the delegate was already
+  // disconnected, it should not have received a callback.
+  InvokePendingStopScanCallback(/*success=*/true);
+  EXPECT_EQ(0u, delegate->num_stop_callbacks());
 }
 
 }  // namespace bluetooth_config

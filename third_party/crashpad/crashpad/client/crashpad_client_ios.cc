@@ -60,8 +60,14 @@ class CrashHandler : public Thread,
   CrashHandler& operator=(const CrashHandler&) = delete;
 
   static CrashHandler* Get() {
-    static CrashHandler* instance = new CrashHandler();
-    return instance;
+    if (!instance_)
+      instance_ = new CrashHandler();
+    return instance_;
+  }
+
+  static void ResetForTesting() {
+    delete instance_;
+    instance_ = nullptr;
   }
 
   bool Initialize(const base::FilePath& database,
@@ -71,6 +77,13 @@ class CrashHandler : public Thread,
     if (!in_process_handler_.Initialize(
             database, url, annotations, system_data_) ||
         !InstallMachExceptionHandler() ||
+        // xnu turns hardware faults into Mach exceptions, so the only signal
+        // left to register is SIGABRT, which never starts off as a hardware
+        // fault. Installing a handler for other signals would lead to
+        // recording exceptions twice. As a consequence, Crashpad will not
+        // generate intermediate dumps for anything manually calling
+        // raise(SIG*). In practice, this doesn’t actually happen for crash
+        // signals that originate as hardware faults.
         !Signals::InstallHandler(SIGABRT, CatchSignal, 0, &old_action_)) {
       LOG(ERROR) << "Unable to initialize Crashpad.";
       return false;
@@ -106,13 +119,22 @@ class CrashHandler : public Thread,
 
   void DumpWithoutCrash(NativeCPUContext* context, bool process_dump) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-    internal::InProcessHandler::ScopedAlternateWriter scoper(
-        &in_process_handler_);
-    if (scoper.Open()) {
-      DumpWithContext(context);
-      if (process_dump) {
-        in_process_handler_.ProcessIntermediateDump(scoper.path());
+    base::FilePath path;
+    {
+      // Ensure ScopedAlternateWriter's destructor is invoked before processing
+      // the dump, or else any crashes handled during dump processing cannot be
+      // written.
+      internal::InProcessHandler::ScopedAlternateWriter scoper(
+          &in_process_handler_);
+      if (!scoper.Open()) {
+        LOG(ERROR) << "Could not open writer, ignoring dump request.";
+        return;
       }
+      DumpWithContext(context);
+      path = scoper.path();
+    }
+    if (process_dump) {
+      in_process_handler_.ProcessIntermediateDump(path);
     }
   }
 
@@ -131,6 +153,12 @@ class CrashHandler : public Thread,
 
  private:
   CrashHandler() = default;
+
+  ~CrashHandler() {
+    UninstallObjcExceptionPreprocessor();
+    Signals::InstallDefaultHandler(SIGABRT);
+    UninstallMachExceptionHandler();
+  }
 
   bool InstallMachExceptionHandler() {
     exception_port_.reset(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
@@ -164,15 +192,22 @@ class CrashHandler : public Thread,
       return false;
     }
 
+    mach_handler_running_ = true;
     Start();
     return true;
+  }
+
+  void UninstallMachExceptionHandler() {
+    mach_handler_running_ = false;
+    exception_port_.reset();
+    Join();
   }
 
   // Thread:
 
   void ThreadMain() override {
     UniversalMachExcServer universal_mach_exc_server(this);
-    while (true) {
+    while (mach_handler_running_) {
       mach_msg_return_t mr =
           MachMessageServer::Run(&universal_mach_exc_server,
                                  exception_port_.get(),
@@ -180,7 +215,10 @@ class CrashHandler : public Thread,
                                  MachMessageServer::kPersistent,
                                  MachMessageServer::kReceiveLargeIgnore,
                                  kMachMessageTimeoutWaitIndefinitely);
-      MACH_CHECK(mr == MACH_SEND_INVALID_DEST, mr) << "MachMessageServer::Run";
+      MACH_CHECK(mr == (mach_handler_running_ ? MACH_SEND_INVALID_DEST
+                                              : MACH_RCV_PORT_CHANGED),
+                 mr)
+          << "MachMessageServer::Run";
     }
   }
 
@@ -297,8 +335,12 @@ class CrashHandler : public Thread,
   struct sigaction old_action_ = {};
   internal::InProcessHandler in_process_handler_;
   internal::IOSSystemDataCollector system_data_;
+  static CrashHandler* instance_;
+  bool mach_handler_running_ = false;
   InitializationStateDcheck initialized_;
 };
+
+CrashHandler* CrashHandler::instance_ = nullptr;
 
 }  // namespace
 
@@ -362,6 +404,12 @@ void CrashpadClient::DumpWithoutCrashAndDeferProcessingAtPath(
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
   crash_handler->DumpWithoutCrashAtPath(context, path);
+}
+
+void CrashpadClient::ResetForTesting() {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->ResetForTesting();
 }
 
 }  // namespace crashpad

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount"
-    units="count" expires_after="2022-04-10">
+    units="count" expires_after="2022-06-12">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.HadAliases"
-    units="BooleanHadAliases" expires_after="2022-04-10">
+    units="BooleanHadAliases" expires_after="2022-06-12">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.ListLength"
-    units="length" expires_after="2022-04-17">
+    units="length" expires_after="2022-06-19">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias"
-    units="BooleanTagged" expires_after="2022-04-10">
+    units="BooleanTagged" expires_after="2022-06-12">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias"
-    units="BooleanBlocked" expires_after="2022-04-10">
+    units="BooleanBlocked" expires_after="2022-06-12">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -287,54 +287,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit"
-    enum="Boolean" expires_after="2021-11-14">
-  <obsolete>
-    Replaced in 07/2021 with
-    SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.
-  </obsolete>
-  <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every navigation observed by the subresource filter that passes through
-    ReadyToCommitNavigation, whether the navigation results in a commit.
-    Recorded when the navigation finishes.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs) and navigations
-    with no available RenderFrameHost.
-  </summary>
-</histogram>
-
-<histogram
-    name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit.RestrictedAdFrameNavigation"
-    enum="Boolean" expires_after="2021-11-14">
-  <obsolete>
-    Replaced in 07/2021 with
-    SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation.
-  </obsolete>
-  <owner>alexmt@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For every 'restricted' navigation observed by the subresource filter that
-    passes through ReadyToCommitNavigation and occurs in an ad frame, whether
-    the navigation results in a commit. Recorded when the navigation finishes.
-
-    A restricted navigation is one that is either to a URL matching an allowlist
-    rule on the filter list, or is both to a URL that matches no filter list
-    rule and is same-origin with the top-level frame's URL. Note that, if there
-    is a sequence of restricted navigations, each will be counted individually.
-
-    Excludes top-level frame navigations, same-document navigations, navigations
-    that are not handled by the network stack (e.g. about: URLs) and navigations
-    with no available RenderFrameHost.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
-    enum="Boolean" expires_after="2022-04-10">
+    enum="Boolean" expires_after="2022-08-14">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -351,7 +305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
-    enum="Boolean" expires_after="2022-04-24">
+    enum="Boolean" expires_after="2022-06-26">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -399,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
-    enum="SubresourceFilterVerifyStatus" expires_after="2022-04-24">
+    enum="SubresourceFilterVerifyStatus" expires_after="2022-06-26">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -447,56 +401,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.PageLoad.Activation.CPUDuration"
-    units="microseconds" expires_after="2018-08-30">
-  <obsolete>
-    Removed in 10/2020 after being expired two years. Presumably not used.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records how much thread CPU time it takes to decide whether subresource
-    filtering should be activated for a main frame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram
-    name="SubresourceFilter.PageLoad.Activation.RedirectPosition2.Enforcement"
-    enum="RedirectPosition" expires_after="M78">
-  <obsolete>
-    Removed in 10/2020 after being expired over a year. Presumably not used.
-  </obsolete>
-  <owner>ericrobinson@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    For pages that match a given subresource_filter activation list, records the
-    position in the redirect chain of the latest non-NONE list.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceFilter.PageLoad.Activation.WallDuration"
-    units="microseconds" expires_after="2018-08-30">
-  <obsolete>
-    Removed in 10/2020 after being expired two years. Presumably not used.
-  </obsolete>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    Records how long it takes to decide whether subresource filtering should be
-    activated for a main frame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.PageLoad.ActivationDecision"
     enum="SubresourceFilterActivationDecision" expires_after="2021-08-22">
   <owner>jkarlin@chromium.org</owner>
@@ -509,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
-    enum="ActivationList" expires_after="2022-03-20">
+    enum="ActivationList" expires_after="2022-07-24">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -519,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
-    enum="SubresourceFilterActivationState" expires_after="2022-03-20">
+    enum="SubresourceFilterActivationState" expires_after="2022-07-24">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -576,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="2022-04-03">
+    units="resource loads" expires_after="2022-08-07">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -599,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
-    expires_after="2022-06-01">
+    expires_after="2022-07-31">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -613,7 +517,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2022-01-12">
+    units="microseconds" expires_after="2023-01-12">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -631,7 +535,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2022-01-12">
+    units="microseconds" expires_after="2023-01-12">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -675,7 +579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -689,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration"
-    units="microseconds" expires_after="2022-04-17">
+    units="microseconds" expires_after="2022-06-19">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -709,7 +613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
-    units="microseconds" expires_after="2022-01-12">
+    units="microseconds" expires_after="2023-01-12">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -747,202 +651,6 @@ chromium-metrics-reviews@google.com.
     Whether indexing a version of the ruleset and writing it to disk succeeded,
     or failed at a particular step. Recorded every time the RulesetService kicks
     off a ruleset indexing process.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.Blink.Ineligibility"
-    enum="BlinkSubresourceRedirectIneligibility" expires_after="2022-05-01">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the different reasons subresource redirect was disabled by Blink.
-    Recorded for each subresource that was disabled by Blink.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.BypassDuration" units="ms"
-    expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the duration that the subresource redirect feature was stopped due
-    to fetch failure. When such a redirected fetch times out or fails with 503
-    (loadshed failure), subresource redirect is disabled for subsequent
-    pageloads for a random duration or duration mentioned in the Retry-After
-    response header. Recorded for each fetch failure.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
-    enum="HttpResponseCode" expires_after="2022-04-17">
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The server response code of an attempt to compress an image subresource. The
-    initial redirect to the compression server will always be logged as a
-    HTTP_TEMPORARY_REDIRECT, in addition to logging the return code from the
-    compression server.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
-    enum="Boolean" expires_after="M96">
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Whether or not the request to the compression server succeeded at the
-    network layer. Records true if there was no error at the network layer,
-    otherwise false.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
-    expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Recorded whenever the subresource redirect times out, and leads to a random
-    bypass of 1-5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
-    expires_after="2022-04-17">
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The bytes of data saved from the SubresourceRedirect. Recorded every time a
-    SubresourceRedirect returns with a 200 HTTP response code.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
-    expires_after="2022-04-17">
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The percent of data saved from the SubresourceRedirect. Recorded every time
-    a SubresourceRedirect returns with a 200 HTTP response code.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
-    enum="HttpsImageCompressionInfoBarAction" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>src/components/data_reduction_proxy/OWNERS</owner>
-  <summary>
-    Records the user interaction with the HTTPS Image compression notification
-    InfoBar. Recorded when the one-time InfoBar is shown.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.LitePagesService.BypassResult"
-    enum="Boolean" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records whether the LitePages service fetches were bypassed or not. Recorded
-    once per LitePages server accesss. Currently LitePages service is used for
-    fetching compressed images and robots.txt rules.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult"
-    enum="SubresourceRedirectRedirectResult" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the different results possible for subresource redirection, such as
-    redirectable or different reasons of ineligibility. Recorded once for each
-    image request.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.PageLoad.BypassResult" enum="Boolean"
-    expires_after="M96">
-  <obsolete>
-    Replaced by SubresourceRedirect.LitePagesService.BypassResult on 11/2020
-  </obsolete>
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records whether the subresource redirect was bypassed or not for a pageload.
-    Recorded once per pageload.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotRulesDecider.ApplyDuration"
-    units="ms" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the duration that the robots rules decider took to apply the rules.
-    Recorded once for each image fetch. There could be multiple robots rules for
-    an image origin, and the total duration needed to match with all the rules
-    and make the final Allow/Disallow decision is recorded here.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotRulesDecider.Count" units="count"
-    expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the total number of robots rules received in the decider. Recorded
-    whenever robots rules decider object receives successfully parsable robots
-    rules.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotRulesDecider.ReceiveResult"
-    enum="SubresourceRedirectRobotsRulesReceiveResult" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records the final result of retrieving robots.txt rules. Recorded once per
-    robots rules decider object, which is roughly the number of unique image
-    origins in the page.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit"
-    units="BooleanCacheHit" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records how often the origin robots rules were found in the in-memory
-    browser cache. Recorded for every robots rules request from renderer that is
-    eligible to check the in-memory cache.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotsRulesFetcher.CacheHit" units="ms"
-    expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Records whether LitePages robots rules was fetched from Chrome network
-    cache. Recorded for every fetch.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotsRulesFetcher.NetErrorCode"
-    enum="NetErrorCodes" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Net error codes for the LitePages robots rules fetcher. Recorded on every
-    fetch after completion or failure.
-  </summary>
-</histogram>
-
-<histogram name="SubresourceRedirect.RobotsRulesFetcher.ResponseCode"
-    units="HttpResponseCode" expires_after="M96">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    HTTP response code for the LitePages robots rules fetcher. Recorded on every
-    fetch after completion or failure.
   </summary>
 </histogram>
 

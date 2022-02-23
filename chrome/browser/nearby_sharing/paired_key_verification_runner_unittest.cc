@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,9 +44,8 @@ const base::TimeDelta kTimeout = base::Seconds(1);
 
 class MockIncomingFramesReader : public IncomingFramesReader {
  public:
-  MockIncomingFramesReader(
-      chromeos::nearby::NearbyProcessManager* process_manager,
-      NearbyConnection* connection)
+  MockIncomingFramesReader(ash::nearby::NearbyProcessManager* process_manager,
+                           NearbyConnection* connection)
       : IncomingFramesReader(process_manager, connection) {}
 
   MOCK_METHOD(void,
@@ -215,8 +214,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   FakeNearbyConnection connection_;
   FakeNearbyShareCertificateManager certificate_manager_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
-      process_manager_;
+  testing::NiceMock<ash::nearby::MockNearbyProcessManager> process_manager_;
   testing::NiceMock<MockIncomingFramesReader> frames_reader_;
   ShareTarget share_target_;
 };

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

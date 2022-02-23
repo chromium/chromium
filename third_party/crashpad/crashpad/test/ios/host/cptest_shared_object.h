@@ -32,9 +32,15 @@
 // report.
 - (int)pendingReportCount;
 
-// Returns exception code when there's a single pending report, or -1 if there's
-// a different number of pending reports.
-- (int)pendingReportException;
+// Returns true if there's a single pending report and sets the exception code
+// in the out |exception| parameter. Returns false if there's a different number
+// of pending reports.
+- (bool)pendingReportException:(NSNumber**)exception;
+
+// Returns true if there's a single pending report and sets the second-level
+// exception code in the out |exception_info| parameter. Returns false if
+// there's a different number of pending reports.
+- (bool)pendingReportExceptionInfo:(NSNumber**)exception_info;
 
 // Return an NSDictionary with a dictionary named "simplemap", an array named
 // "vector" and an array named "objects", representing the combination of all
@@ -51,9 +57,6 @@
 
 // Triggers a crash with a call to kill(SIGABRT).
 - (void)crashKillAbort;
-
-// Triggers a segfault crash.
-- (void)crashSegv;
 
 // Trigger a crash with a __builtin_trap.
 - (void)crashTrap;
@@ -73,6 +76,9 @@
 // Trigger a caught NSException, this will not crash
 - (void)catchNSException;
 
+// Trigger an NSException with sinkholes in CoreAutoLayout.
+- (void)crashCoreAutoLayoutSinkhole;
+
 // Trigger a crash with an infinite recursion.
 - (void)crashRecursion;
 
@@ -84,6 +90,7 @@
 
 // Trigger a crash after writing various annotations.
 - (void)crashWithAnnotations;
+
 @end
 
 #endif  // CRASHPAD_TEST_IOS_HOST_SHARED_OBJECT_H_

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -35,6 +36,7 @@ SharedContextRateLimiter::SharedContextRateLimiter(unsigned max_pending_ticks)
 }
 
 void SharedContextRateLimiter::Tick() {
+  TRACE_EVENT0("blink", "SharedContextRateLimiter::Tick");
   if (!context_provider_)
     return;
 
@@ -53,12 +55,15 @@ void SharedContextRateLimiter::Tick() {
   }
   if (queries_.size() > max_pending_ticks_) {
     if (can_use_sync_queries_) {
+      TRACE_EVENT0("blink",
+                   "GPU backpressure via GL_COMMANDS_COMPLETED_CHROMIUM");
       GLuint result;
       raster_interface->GetQueryObjectuivEXT(queries_.front(),
                                              GL_QUERY_RESULT_EXT, &result);
       raster_interface->DeleteQueriesEXT(1, &queries_.front());
       queries_.pop_front();
     } else {
+      TRACE_EVENT0("blink", "GPU backpressure via RasterInterface::Finish");
       raster_interface->Finish();
       Reset();
     }

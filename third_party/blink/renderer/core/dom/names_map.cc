@@ -214,7 +214,7 @@ void NamesMap::Set(const AtomicString& source,
     case kKey:
       // The string ends with a key.
       key = AtomicString(characters + start, cur - start);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPostKey:
       // The string ends with a key.
       Add(key, key);
@@ -224,7 +224,7 @@ void NamesMap::Set(const AtomicString& source,
     case kValue:
       // The string ends with a value.
       value = AtomicString(characters + start, cur - start);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPostValue:
       Add(key, value);
       break;

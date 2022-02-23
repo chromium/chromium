@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -43,10 +44,10 @@ class CdmDocumentServiceImpl final
                          const std::string& challenge,
                          ChallengePlatformCallback callback) final;
   void GetStorageId(uint32_t version, GetStorageIdCallback callback) final;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void IsVerifiedAccessEnabled(IsVerifiedAccessEnabledCallback callback) final;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
@@ -57,7 +58,7 @@ class CdmDocumentServiceImpl final
       base::Time end,
       const base::RepeatingCallback<bool(const GURL&)>& filter,
       base::OnceClosure complete_cb);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // |this| can only be destructed as a DocumentService.
@@ -87,7 +88,7 @@ class CdmDocumentServiceImpl final
       platform_verification_flow_;
 #endif
 
-  content::RenderFrameHost* const render_frame_host_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
   base::WeakPtrFactory<CdmDocumentServiceImpl> weak_factory_{this};
 };
 

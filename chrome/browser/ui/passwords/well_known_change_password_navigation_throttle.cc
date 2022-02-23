@@ -57,39 +57,15 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
   return false;
 }
 
-// Used to scope the posted navigation task to the lifetime of |web_contents|.
-class WebContentsLifetimeHelper
-    : public content::WebContentsUserData<WebContentsLifetimeHelper> {
- public:
-  explicit WebContentsLifetimeHelper(WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  base::WeakPtr<WebContentsLifetimeHelper> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void NavigateTo(const content::OpenURLParams& url_params) {
-    web_contents_->OpenURL(url_params);
-  }
-
- private:
-  friend class content::WebContentsUserData<WebContentsLifetimeHelper>;
-
-  WebContents* const web_contents_;
-  base::WeakPtrFactory<WebContentsLifetimeHelper> weak_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsLifetimeHelper);
-
 }  // namespace
 
 // static
 std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
 WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  if (handle->IsInMainFrame() &&
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. portals, fenced frames)
+  if (!handle->GetParentFrameOrOuterDocument() &&
       IsWellKnownChangePasswordUrl(handle->GetURL()) &&
       IsTriggeredByGoogleOwnedUI(handle)) {
     return std::make_unique<WellKnownChangePasswordNavigationThrottle>(handle);
@@ -104,9 +80,9 @@ WellKnownChangePasswordNavigationThrottle::
       request_url_(handle->GetURL()),
       source_id_(
           ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents())) {
-  // If we're in a non-primary frame tree (e.g. prerendering) we're only
-  // constructing the throttle so it can cancel the prerender.
-  if (!handle->IsInPrimaryMainFrame())
+  // If this is a prerender navigation, we're only constructing the throttle
+  // so it can cancel the prerender.
+  if (handle->IsInPrerenderedMainFrame())
     return;
 
   affiliation_service_ =
@@ -126,7 +102,7 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
   // The logic in Redirect will navigate the primary FrameTree if we're in a
   // prerender. We don't have a way to navigate the prerendered page so just
   // cancel the prerender.
-  if (!navigation_handle()->IsInPrimaryMainFrame()) {
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
     return NavigationThrottle::CANCEL;
   }
 
@@ -178,12 +154,15 @@ const char* WellKnownChangePasswordNavigationThrottle::GetNameForLogging() {
 
 void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     bool is_supported) {
-  if (is_supported) {
+  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+
+  // If affiliation service returns .well-known/change-password as change
+  // password url - show it even if Chrome doesn't detect it as supported.
+  if (is_supported || redirect_url == request_url_) {
     RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
     Resume();
     return;
   }
-  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
 
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
@@ -205,12 +184,15 @@ void WellKnownChangePasswordNavigationThrottle::Redirect(const GURL& url) {
   if (!web_contents)
     return;
 
-  WebContentsLifetimeHelper::CreateForWebContents(web_contents);
-  WebContentsLifetimeHelper* helper =
-      WebContentsLifetimeHelper::FromWebContents(web_contents);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebContentsLifetimeHelper::NavigateTo,
-                                helper->GetWeakPtr(), std::move(params)));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<content::WebContents> web_contents,
+                        const content::OpenURLParams& params) {
+                       if (!web_contents)
+                         return;
+                       web_contents->OpenURL(params);
+                     },
+                     web_contents->GetWeakPtr(), std::move(params)));
 }
 
 void WellKnownChangePasswordNavigationThrottle::RecordMetric(

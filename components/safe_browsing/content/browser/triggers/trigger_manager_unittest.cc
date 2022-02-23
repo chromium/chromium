@@ -47,6 +47,8 @@ class MockThreatDetailsFactory : public ThreatDetailsFactory {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback) override {
@@ -121,7 +123,7 @@ class TriggerManagerTest : public ::testing::Test {
         TriggerManager::GetSBErrorDisplayOptions(pref_service_, web_contents);
     return trigger_manager_.StartCollectingThreatDetails(
         trigger_type, web_contents, security_interstitials::UnsafeResource(),
-        nullptr, nullptr, nullptr, options);
+        nullptr, nullptr, base::NullCallback(), nullptr, options);
   }
 
   bool FinishCollectingThreatDetails(const TriggerType trigger_type,

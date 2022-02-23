@@ -81,8 +81,7 @@ WebGLRenderingContextBase* webglRenderingContextBaseFromUnion(
 
 absl::optional<device::Pose> CreatePose(
     const blink::TransformationMatrix& matrix) {
-  return device::Pose::Create(
-      gfx::Transform(TransformationMatrix::ToSkMatrix44(matrix)));
+  return device::Pose::Create(matrix.ToTransform());
 }
 
 device::mojom::blink::XRHandJoint StringToMojomHandJoint(

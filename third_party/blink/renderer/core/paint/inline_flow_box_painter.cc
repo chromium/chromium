@@ -121,9 +121,9 @@ PhysicalRect InlineFlowBoxPainter::PaintRectForImageStrip(
 InlineBoxPainterBase::BorderPaintingType
 InlineFlowBoxPainter::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
-    IntRect& adjusted_clip_rect,
+    gfx::Rect& adjusted_clip_rect,
     bool object_has_multiple_boxes) const {
-  adjusted_clip_rect = PixelSnappedIntRect(adjusted_frame_rect);
+  adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
   if (!inline_flow_box_.Parent() || !style_.HasBorderDecoration())
     return kDontPaintBorders;
   const NinePieceImage& border_image = style_.BorderImage();
@@ -140,7 +140,7 @@ InlineFlowBoxPainter::GetBorderPaintType(
     return kPaintBordersWithoutClip;
 
   // We have a border image that spans multiple lines.
-  adjusted_clip_rect = PixelSnappedIntRect(
+  adjusted_clip_rect = ToPixelSnappedRect(
       ClipRectForNinePieceImageStrip(style_, inline_flow_box_.SidesToInclude(),
                                      border_image, adjusted_frame_rect));
   return kPaintBordersWithClip;
@@ -269,7 +269,7 @@ gfx::Rect InlineFlowBoxPainter::VisualRect(
   const auto& style = inline_flow_box_.GetLineLayoutItem().StyleRef();
   if (style.HasVisualOverflowingEffect())
     visual_rect.Expand(style.BoxDecorationOutsets());
-  return ToGfxRect(EnclosingIntRect(visual_rect));
+  return ToEnclosingRect(visual_rect);
 }
 
 void InlineFlowBoxPainter::RecordHitTestData(
@@ -281,8 +281,7 @@ void InlineFlowBoxPainter::RecordHitTestData(
   DCHECK_EQ(layout_object->StyleRef().Visibility(), EVisibility::kVisible);
 
   paint_info.context.GetPaintController().RecordHitTestData(
-      inline_flow_box_,
-      ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))),
+      inline_flow_box_, ToPixelSnappedRect(AdjustedFrameRect(paint_offset)),
       layout_object->EffectiveAllowedTouchAction(),
       layout_object->InsideBlockingWheelEventHandler());
 }
@@ -299,7 +298,7 @@ void InlineFlowBoxPainter::RecordRegionCaptureData(
     if (crop_id) {
       paint_info.context.GetPaintController().RecordRegionCaptureData(
           inline_flow_box_, *crop_id,
-          ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))));
+          ToPixelSnappedRect(AdjustedFrameRect(paint_offset)));
     }
   }
 }

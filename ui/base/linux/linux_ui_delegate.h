@@ -10,10 +10,12 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
 enum class LinuxUiBackend {
+  kStub,
   kX11,
   kWayland,
 };
@@ -31,6 +33,17 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegate {
   virtual bool ExportWindowHandle(
       uint32_t parent_widget,
       base::OnceCallback<void(const std::string&)> callback);
+
+  // Only implemented on X11.
+  virtual void SetTransientWindowForParent(gfx::AcceleratedWidget parent,
+                                           gfx::AcceleratedWidget transient);
+
+  // Exports a prefixed, platform-dependent (X11 or Wayland) window handle for
+  // an Aura window id, then calls the given callback with the handle. Returns
+  // true on success.  |callback| may be run synchronously or asynchronously.
+  virtual bool ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) = 0;
 
  private:
   static LinuxUiDelegate* instance_;

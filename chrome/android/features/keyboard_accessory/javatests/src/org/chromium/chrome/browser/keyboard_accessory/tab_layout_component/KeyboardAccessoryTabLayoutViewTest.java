@@ -32,15 +32,15 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * View tests for the keyboard accessory tab layout component.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class KeyboardAccessoryTabLayoutViewTest extends DummyUiActivityTestCase {
+public class KeyboardAccessoryTabLayoutViewTest extends BlankUiTestActivityTestCase {
     private PropertyModel mModel;
     private KeyboardAccessoryTabLayoutView mView;
 
@@ -60,7 +60,7 @@ public class KeyboardAccessoryTabLayoutViewTest extends DummyUiActivityTestCase 
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.keyboard_accessory_tabs);
+        BlankUiTestActivity.setTestLayout(R.layout.keyboard_accessory_tabs);
     }
 
     @Override

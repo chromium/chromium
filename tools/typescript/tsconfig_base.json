@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "ESNext",
-    "target": "ESNext",
+    "target": "ES2021",
 
     "noEmitOnError": true,
     "pretty": true,

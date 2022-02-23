@@ -103,7 +103,7 @@ message EncryptedRecord {
   // If missing, the record is either not encrypted or missing.
   optional EncryptionInfo encryption_info = 2;
 
-  // Sequencing information (required). Must be present to allow
+  // Sequence information (required). Must be present to allow
   // tracking and confirmation of the events by server.
   optional SequenceInformation sequence_information = 3;
 

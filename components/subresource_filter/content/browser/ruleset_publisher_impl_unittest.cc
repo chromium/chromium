@@ -27,9 +27,6 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,12 +45,11 @@ using MockClosureTarget =
 class NotifyingMockRenderProcessHost : public content::MockRenderProcessHost {
  public:
   explicit NotifyingMockRenderProcessHost(
-      content::BrowserContext* browser_context)
+      content::BrowserContext* browser_context,
+      content::RenderProcessHostCreationObserver* observer)
       : content::MockRenderProcessHost(browser_context) {
-    content::NotificationService::current()->Notify(
-        content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-        content::Source<content::RenderProcessHost>(this),
-        content::NotificationService::NoDetails());
+    if (observer)
+      observer->OnRenderProcessHostCreated(this);
   }
 };
 
@@ -69,7 +65,7 @@ std::string ReadFileContentsToString(base::File* file) {
 class SubresourceFilterRulesetPublisherImplTest : public ::testing::Test {
  public:
   SubresourceFilterRulesetPublisherImplTest()
-      : existing_renderer_(&browser_context_) {}
+      : existing_renderer_(&browser_context_, nullptr) {}
 
   SubresourceFilterRulesetPublisherImplTest(
       const SubresourceFilterRulesetPublisherImplTest&) = delete;
@@ -130,10 +126,10 @@ class MockRulesetPublisherImpl : public RulesetPublisherImpl {
 };
 
 TEST_F(SubresourceFilterRulesetPublisherImplTest, NoRuleset_NoIPCMessages) {
-  NotifyingMockRenderProcessHost existing_renderer(browser_context());
+  NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockRulesetPublisherImpl service(nullptr,
                                    base::ThreadTaskRunnerHandle::Get());
-  NotifyingMockRenderProcessHost new_renderer(browser_context());
+  NotifyingMockRenderProcessHost new_renderer(browser_context(), &service);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, service.RulesetSent());
 }
@@ -149,12 +145,13 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
                      base::File::FLAG_OPEN | base::File::FLAG_READ),
       base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 
-  NotifyingMockRenderProcessHost existing_renderer(browser_context());
+  NotifyingMockRenderProcessHost existing_renderer(browser_context(), nullptr);
   MockClosureTarget publish_callback_target;
   MockRulesetPublisherImpl service(nullptr,
                                    base::ThreadTaskRunnerHandle::Get());
   service.SetRulesetPublishedCallbackForTesting(base::BindOnce(
       &MockClosureTarget::Call, base::Unretained(&publish_callback_target)));
+
   EXPECT_CALL(publish_callback_target, Call()).Times(1);
   service.PublishNewRulesetVersion(std::move(file));
   base::RunLoop().RunUntilIdle();
@@ -164,7 +161,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
   ASSERT_NO_FATAL_FAILURE(AssertSetRulesetFileWithContent(
       service.RulesetFileForProcess(&existing_renderer), kTestFileContents));
 
-  NotifyingMockRenderProcessHost second_renderer(browser_context());
+  NotifyingMockRenderProcessHost second_renderer(browser_context(), &service);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(3u, service.RulesetSent());
@@ -209,7 +206,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest,
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
   scoped_refptr<base::TestSimpleTaskRunner> background_task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  NotifyingMockRenderProcessHost renderer_host(browser_context());
+  NotifyingMockRenderProcessHost renderer_host(browser_context(), nullptr);
   base::RunLoop callback_waiter;
   auto content_service =
       std::make_unique<MockRulesetPublisherImpl>(nullptr, blocking_task_runner);

@@ -102,7 +102,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // The api permissions don't need to be present either.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     value->SetKey("origins", origins->Clone());
     EXPECT_TRUE(Permissions::Populate(*value, &permissions_object));
 
@@ -119,7 +119,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // Throw errors for non-string API permissions.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     base::Value invalid_apis = apis->Clone();
     invalid_apis.Append(3);
     value->SetKey("permissions", std::move(invalid_apis));
@@ -129,7 +129,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // Throw errors for non-string origins.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     base::Value invalid_origins = origins->Clone();
     invalid_origins.Append(3);
     value->SetKey("origins", std::move(invalid_origins));
@@ -139,14 +139,14 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // Throw errors when "origins" or "permissions" are not list values.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     value->Set("origins", std::make_unique<base::Value>(2));
     EXPECT_FALSE(Permissions::Populate(*value, &permissions_object));
   }
 
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     value->Set("permissions", std::make_unique<base::Value>(2));
     EXPECT_FALSE(Permissions::Populate(*value, &permissions_object));
   }
@@ -154,7 +154,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // Additional fields should be allowed.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     value->SetKey("origins", origins->Clone());
     value->SetKey("random", base::Value(3));
     EXPECT_TRUE(Permissions::Populate(*value, &permissions_object));
@@ -172,7 +172,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
   // Unknown permissions should throw an error.
   {
     Permissions permissions_object;
-    value->Clear();
+    value->DictClear();
     base::Value invalid_apis = apis->Clone();
     invalid_apis.Append("unknown_permission");
     value->SetKey("permissions", std::move(invalid_apis));

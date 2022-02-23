@@ -59,10 +59,25 @@ class UnifiedAutoplaySoundSettingsTest
         ->NavigateAndCommit(GURL("https://first.example.com"));
   }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
+};
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+// Create a class to test when the feature is disabled. The feature must be
+// disabled in the construction of the test harness before the test body is run
+// in order to avoid race conditions.
+class UnifiedAutoplaySoundSettingsTestFeatureDisabled
+    : public UnifiedAutoplaySoundSettingsTest {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({},
+                                          {media::kAutoplayDisableSettings});
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    SoundContentSettingObserver::CreateForWebContents(web_contents());
+  }
 };
 
 TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Allow) {
@@ -93,19 +108,6 @@ TEST_F(UnifiedAutoplaySoundSettingsTest, ContentSetting_Block) {
 
   NavigateToTestPage();
   EXPECT_EQ(blink::mojom::AutoplayPolicy::kNoUserGestureRequired,
-            GetAppliedAutoplayPolicy());
-}
-
-TEST_F(UnifiedAutoplaySoundSettingsTest, Feature_DisabledNoop) {
-  // Explicitly disable the feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({}, {media::kAutoplayDisableSettings});
-
-  SetAutoplayPrefValue(false);
-  EXPECT_FALSE(ShouldBlockAutoplay());
-
-  NavigateToTestPage();
-  EXPECT_EQ(blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 }
 
@@ -159,5 +161,14 @@ TEST_F(UnifiedAutoplaySoundSettingsOverrideTest, CommandLineOverride) {
 
   NavigateToTestPage();
   EXPECT_EQ(blink::mojom::AutoplayPolicy::kUserGestureRequired,
+            GetAppliedAutoplayPolicy());
+}
+
+TEST_F(UnifiedAutoplaySoundSettingsTestFeatureDisabled, Feature_DisabledNoop) {
+  SetAutoplayPrefValue(false);
+  EXPECT_FALSE(ShouldBlockAutoplay());
+
+  NavigateToTestPage();
+  EXPECT_EQ(blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired,
             GetAppliedAutoplayPolicy());
 }

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL 'grid-template' does not supported 'none' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-template' does not supported '100px 1fr / 50px 1fr' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-template' does not supported '[linename] 100px / [columnname1] 30% [columname2] 70%' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-template' does not supported 'fit-content(100px) / fit-content(40%)' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-template' does not supported '"a a a" "b b b"' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-template' does not supported '[header-top] "a a a" [header-bottom] [main-top] "b b b" 1fr [main-bottom] / auto 1fr auto' assert_not_equals: Unsupported value must not be null got disallowed value null
-Harness: the test ran to completion.
-

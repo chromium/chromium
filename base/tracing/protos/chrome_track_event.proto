@@ -130,6 +130,7 @@ enum ShouldSwapBrowsingInstance {
   SHOULD_SWAP_BROWSING_INSTANCE_NO_HAS_NOT_COMMITTED_ANY_NAVIGATION = 20;
   SHOULD_SWAP_BROWSING_INSTANCE_NO_UNLOAD_HANDLER_EXISTS_ON_SAME_SITE_NAVIGATION =
       21;
+  SHOULD_SWAP_BROWSING_INSTANCE_NO_NOT_PRIMARY_MAIN_FRAME = 22;
 }
 
 message ShouldSwapBrowsingInstancesResult {
@@ -615,9 +616,76 @@ message RendererMainThreadTaskExecution {
   optional FrameType frame_type = 4;
 }
 
+message EventLatency {
+  enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0;
+    MOUSE_PRESSED = 1;
+    MOUSE_RELEASED = 2;
+    MOUSE_WHEEL = 3;
+    KEY_PRESSED = 4;
+    KEY_RELEASED = 5;
+    TOUCH_PRESSED = 6;
+    TOUCH_RELEASED = 7;
+    TOUCH_MOVED = 8;
+    GESTURE_SCROLL_BEGIN = 9;
+    GESTURE_SCROLL_UPDATE = 10;
+    GESTURE_SCROLL_END = 11;
+    GESTURE_DOUBLE_TAP = 12;
+    GESTURE_LONG_PRESS = 13;
+    GESTURE_LONG_TAP = 14;
+    GESTURE_SHOW_PRESS = 15;
+    GESTURE_TAP = 16;
+    GESTURE_TAP_CANCEL = 17;
+    GESTURE_TAP_DOWN = 18;
+    GESTURE_TAP_UNCONFIRMED = 19;
+    GESTURE_TWO_FINGER_TAP = 20;
+    FIRST_GESTURE_SCROLL_UPDATE = 21;
+    MOUSE_DRAGGED = 22;
+    GESTURE_PINCH_BEGIN = 23;
+    GESTURE_PINCH_END = 24;
+    GESTURE_PINCH_UPDATE = 25;
+    INERTIAL_GESTURE_SCROLL_UPDATE = 26;
+  }
+
+  optional EventType event_type = 1;
+}
+
+message ProcessSingleton {
+  enum RemoteProcessInteractionResult {
+    INTERACTION_RESULT_UNSPECIFIED = 0;
+    TERMINATE_FAILED = 1;
+    REMOTE_PROCESS_NOT_FOUND = 2;
+    TERMINATE_WAIT_TIMEOUT = 3;
+    RUNNING_PROCESS_NOTIFY_ERROR = 4;
+    TERMINATE_NOT_ENOUGH_PERMISSIONS = 5;
+    REMOTE_PROCESS_SHUTTING_DOWN = 6;
+    PROFILE_UNLOCKED = 7;
+    PROFILE_UNLOCKED_BEFORE_KILL = 8;
+    SAME_BROWSER_INSTANCE = 9;
+    SAME_BROWSER_INSTANCE_BEFORE_KILL = 10;
+    FAILED_TO_EXTRACT_PID = 11;
+    INVALID_LOCK_FILE = 12;
+    ORPHANED_LOCK_FILE = 13;
+    USER_REFUSED_TERMINATION = 14;
+    TERMINATE_SUCCEEDED = 100;
+  }
+
+  enum RemoteHungProcessTerminateReason {
+    TERMINATE_REASON_UNSPECIFIED = 0;
+    USER_ACCEPTED_TERMINATION = 1;
+    NO_VISIBLE_WINDOW_FOUND = 2;
+    NOTIFY_ATTEMPTS_EXCEEDED = 3;
+    SOCKET_WRITE_FAILED = 4;
+    SOCKET_READ_FAILED = 5;
+  }
+
+  optional RemoteProcessInteractionResult remote_process_interaction_result = 1;
+  optional RemoteHungProcessTerminateReason remote_process_terminate_reason = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1032
+  // Next ID: 1034
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -687,5 +755,9 @@ message ChromeTrackEvent {
 
     optional RendererMainThreadTaskExecution
         renderer_main_thread_task_execution = 1031;
+
+    optional EventLatency event_latency = 1032;
+
+    optional ProcessSingleton process_singleton = 1033;
   }
 }

@@ -229,7 +229,9 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
+      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
+      session->GetClient()->MayReadLocalFiles()));
+
   session->AddHandler(std::make_unique<protocol::FetchHandler>(
       GetIOContext(),
       base::BindRepeating(
@@ -406,7 +408,6 @@ ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
 
 void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(
     bool should_pause_on_start) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
   should_pause_on_start_ = should_pause_on_start;
 }
 

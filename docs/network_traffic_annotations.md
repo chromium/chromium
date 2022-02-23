@@ -83,7 +83,9 @@ one object of this type or its variants as an argument of all functions that
 create a network request.
 
 ### Content of Annotation Tag
-Each network traffic annotation should specify the following items:
+Each network traffic annotation should specify the following items, as defined
+in the `NetworkTrafficAnnotation` message of
+`chrome/browser/privacy/traffic_annotation.proto`:
 * `uniqueـid`: A globally unique identifier that must stay unchanged while the
   network request carries the same semantic meaning. If the network request gets
   a new meaning, this ID needs to be changed. The purpose of this ID is to give
@@ -92,10 +94,10 @@ Each network traffic annotation should specify the following items:
   with a network request). IDs of one component should have a shared prefix so
   that sorting all NetworkTrafficAnnotations by unique_id groups those that
   belong to the same component together.
-* `TrafficSource`: These set of fields specify the location of annotation in
+* `source`: These set of fields specify the location of annotation in
   the source code. These fields are automatically set and do not need
   specification.
-* `TrafficSemantics`: These set of fields specify meta information about the
+* `semantics`: These set of fields specify meta information about the
   network request’s content and reason.
    * `sender`: What component triggers the request. The components should be
      human readable and don’t need to reflect the components/ directory. Avoid
@@ -123,7 +125,7 @@ Each network traffic annotation should specify the following items:
      field.
    * `destination_other`: Human readable description in case the destination
      points to `OTHER`.
-* `TrafficPolicy`: These set of fields specify the controls that a user may have
+* `policy`: These set of fields specify the controls that a user may have
   on disabling or limiting the network request and its trace.
    * `cookies_allowed`: Specifies if this request stores and uses cookies or
      not. Use values `YES` or `NO`.
@@ -146,7 +148,9 @@ Each network traffic annotation should specify the following items:
      description works everywhere!
    * `chrome_policy`: Policy configuration that disables or limits this network
      request. This would be a text serialized protobuf of any enterprise policy.
-     See policy list or  chrome_settings.proto for the full list of policies.
+     See policy list or
+     `out/Debug/gen/components/policy/proto/chrome_settings.proto` for the full
+     list of policies.
    * `policy_exception_justification`: If there is no policy to disable or limit
      this request, a justification can be presented here.
 * `comments`: If required, any human readable extra comments.

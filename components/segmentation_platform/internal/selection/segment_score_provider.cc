@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -45,10 +46,9 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
  private:
   void ReadScoresFromLastSession(
       base::OnceClosure callback,
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          all_segments) {
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
     // Read results from last session to memory.
-    for (const auto& pair : all_segments) {
+    for (const auto& pair : *all_segments) {
       OptimizationTarget id = pair.first;
       const proto::SegmentInfo& info = pair.second;
       if (!info.has_prediction_result())
@@ -63,7 +63,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
   }
 
   // The database retrieving results.
-  SegmentInfoDatabase* segment_database_;
+  raw_ptr<SegmentInfoDatabase> segment_database_;
 
   // Model scores that are read from db on startup and used for serving the
   // clients in the current session.

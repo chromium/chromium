@@ -12,7 +12,6 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "fuchsia/engine/browser/cookie_manager_impl.h"
 #include "fuchsia/engine/web_engine_export.h"
 

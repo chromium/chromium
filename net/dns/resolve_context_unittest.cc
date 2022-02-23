@@ -26,6 +26,7 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -70,12 +71,13 @@ DnsConfig CreateDnsConfig(int num_servers, int num_doh_servers) {
                             dns_protocol::kDefaultPort);
     config.nameservers.push_back(dns_endpoint);
   }
+  std::vector<std::string> templates;
+  templates.reserve(num_doh_servers);
   for (int i = 0; i < num_doh_servers; ++i) {
-    std::string server_template(
+    templates.push_back(
         base::StringPrintf("https://mock.http/doh_test_%d{?dns}", i));
-    config.dns_over_https_servers.push_back(
-        DnsOverHttpsServerConfig(server_template, true /* is_post */));
   }
+  config.doh_config = *DnsOverHttpsConfig::FromStrings(std::move(templates));
 
   return config;
 }

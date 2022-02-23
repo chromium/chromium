@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <vector>
 
@@ -16,7 +15,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/hid/fido_hid_packet.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_JOINT_SPACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_JOINT_SPACE_H_
 
+#include <memory>
+#include <string>
+
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/xr/xr_hand.h"
@@ -31,11 +34,11 @@ class XRJointSpace : public XRSpace {
   const String jointName() const;
   device::mojom::XRHandedness handedness() const { return handedness_; }
 
-  absl::optional<TransformationMatrix> MojoFromNative() override;
+  absl::optional<TransformationMatrix> MojoFromNative() const override;
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
   bool EmulatedPosition() const override;
-  XRPose* getPose(XRSpace* other_space) override;
+  XRPose* getPose(const XRSpace* other_space) const override;
 
   void UpdateTracking(std::unique_ptr<TransformationMatrix> mojo_from_joint,
                       float radius);

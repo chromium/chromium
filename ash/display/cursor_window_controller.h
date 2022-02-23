@@ -74,11 +74,21 @@ class ASH_EXPORT CursorWindowController {
   // Only applicable when cursor compositing is enabled.
   void SetDisplay(const display::Display& display);
 
+  // When the mouse starts or stops hovering/resizing the docked magnifier
+  // separator, update the container that holds the cursor (so that the cursor
+  // is shown on top of the docked magnifier viewport when hovering/resizing).
+  // |is_active| is true when user starts hovering the separator.
+  // |is_active| is false when user stops hovering and is no longer resizing.
+  void OnDockedMagnifierResizingStateChanged(bool is_active);
+
   // Sets cursor location, shape, set and visibility.
   void UpdateLocation();
   void SetCursor(gfx::NativeCursor cursor);
   void SetCursorSize(ui::CursorSize cursor_size);
   void SetVisibility(bool visible);
+
+  // Gets the cursor container for testing purposes.
+  const aura::Window* GetContainerForTest() const;
 
  private:
   friend class CursorWindowControllerTest;

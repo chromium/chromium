@@ -254,7 +254,7 @@ StubNotificationDisplayService::NotificationData::NotificationData(
 StubNotificationDisplayService::NotificationData::NotificationData(
     NotificationData&& other)
     : type(other.type),
-      notification(other.notification),
+      notification(std::move(other.notification)),
       metadata(std::move(other.metadata)) {}
 
 StubNotificationDisplayService::NotificationData::~NotificationData() {}
@@ -274,7 +274,7 @@ StubNotificationDisplayService::FindNotification(
     const std::string& notification_id) {
   return std::find_if(
       notifications_.begin(), notifications_.end(),
-      [notification_type, notification_id](const NotificationData& data) {
+      [notification_type, &notification_id](const NotificationData& data) {
         return data.type == notification_type &&
                data.notification.id() == notification_id;
       });

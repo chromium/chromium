@@ -14,14 +14,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/schema.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 
 using base::win::RegistryKeyIterator;
 using base::win::RegistryValueIterator;
-#endif  // #if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace policy {
 
@@ -54,7 +56,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
       return result;
     } else if (value.is_list()) {
       base::Value result(base::Value::Type::LIST);
-      for (const auto& entry : value.GetList()) {
+      for (const auto& entry : value.GetListDeprecated()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry, schema.GetItems());
         if (converted.has_value())
@@ -116,7 +118,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
         return result;
       }
       // Fall through in order to accept lists encoded as JSON strings.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case base::Value::Type::DICTIONARY: {
       // Dictionaries may be encoded as JSON strings.
@@ -188,27 +190,20 @@ void RegistryDict::ClearKeys() {
 
 base::Value* RegistryDict::GetValue(const std::string& name) {
   auto entry = values_.find(name);
-  return entry != values_.end() ? entry->second.get() : nullptr;
+  return entry != values_.end() ? &entry->second : nullptr;
 }
 
 const base::Value* RegistryDict::GetValue(const std::string& name) const {
   auto entry = values_.find(name);
-  return entry != values_.end() ? entry->second.get() : nullptr;
+  return entry != values_.end() ? &entry->second : nullptr;
 }
 
-void RegistryDict::SetValue(const std::string& name,
-                            std::unique_ptr<base::Value> dict) {
-  if (!dict) {
-    RemoveValue(name);
-    return;
-  }
-
+void RegistryDict::SetValue(const std::string& name, base::Value&& dict) {
   values_[name] = std::move(dict);
 }
 
-std::unique_ptr<base::Value> RegistryDict::RemoveValue(
-    const std::string& name) {
-  std::unique_ptr<base::Value> result;
+absl::optional<base::Value> RegistryDict::RemoveValue(const std::string& name) {
+  absl::optional<base::Value> result;
   auto entry = values_.find(name);
   if (entry != values_.end()) {
     result = std::move(entry->second);
@@ -231,8 +226,7 @@ void RegistryDict::Merge(const RegistryDict& other) {
 
   for (auto entry(other.values_.begin()); entry != other.values_.end();
        ++entry) {
-    SetValue(entry->first,
-             base::Value::ToUniquePtrValue(entry->second->Clone()));
+    SetValue(entry->first, entry->second.Clone());
   }
 }
 
@@ -241,7 +235,7 @@ void RegistryDict::Swap(RegistryDict* other) {
   values_.swap(other->values_);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
   ClearKeys();
   ClearValues();
@@ -252,8 +246,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
     switch (it.Type()) {
       case REG_SZ:
       case REG_EXPAND_SZ:
-        SetValue(name,
-                 std::make_unique<base::Value>(base::WideToUTF8(it.Value())));
+        SetValue(name, base::Value(base::WideToUTF8(it.Value())));
         continue;
       case REG_DWORD_LITTLE_ENDIAN:
       case REG_DWORD_BIG_ENDIAN:
@@ -263,11 +256,10 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
             dword_value = base::NetToHost32(dword_value);
           else
             dword_value = base::ByteSwapToLE32(dword_value);
-          SetValue(name, std::make_unique<base::Value>(
-                             static_cast<int>(dword_value)));
+          SetValue(name, base::Value(static_cast<int>(dword_value)));
           continue;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case REG_NONE:
       case REG_LINK:
       case REG_MULTI_SZ:
@@ -310,7 +302,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
           matching_schemas.push_back(Schema());
         for (const Schema& subschema : matching_schemas) {
           absl::optional<base::Value> converted =
-              ConvertRegistryValue(*entry->second, subschema);
+              ConvertRegistryValue(entry->second, subschema);
           if (converted.has_value()) {
             result->SetKey(entry->first, std::move(converted.value()));
             break;
@@ -353,7 +345,7 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
         if (!IsKeyNumerical(entry->first))
           continue;
         absl::optional<base::Value> converted =
-            ConvertRegistryValue(*entry->second, item_schema);
+            ConvertRegistryValue(entry->second, item_schema);
         if (converted.has_value())
           result->Append(std::move(converted.value()));
       }
@@ -365,5 +357,5 @@ std::unique_ptr<base::Value> RegistryDict::ConvertToJSON(
 
   return nullptr;
 }
-#endif  // #if defined(OS_WIN)
+#endif  // #if BUILDFLAG(IS_WIN)
 }  // namespace policy

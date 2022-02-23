@@ -93,6 +93,11 @@ absl::optional<Gamepad> GetXrStandardGamepad(
   if (grasp_button)
     builder.AddOptionalButtonData(grasp_button.value());
 
+  absl::optional<GamepadButton> shoulder_button =
+      controller.GetButton(OpenXrButtonType::kShoulder);
+  if (shoulder_button)
+    builder.AddOptionalButtonData(shoulder_button.value());
+
   return builder.GetGamepad();
 }
 

@@ -32,6 +32,12 @@ class LacrosDataMigrationScreenView {
 
   // Updates the progress bar.
   virtual void SetProgressValue(int progress) = 0;
+
+  // Displays the skip button.
+  virtual void ShowSkipButton() = 0;
+
+  // Notifies the UI about low battery.
+  virtual void SetLowBatteryStatus(bool low_battery) = 0;
 };
 
 class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
@@ -56,6 +62,8 @@ class LacrosDataMigrationScreenHandler : public BaseScreenHandler,
   void Unbind() override;
   void Show() override;
   void SetProgressValue(int progress) override;
+  void ShowSkipButton() override;
+  void SetLowBatteryStatus(bool low_battery) override;
 
  private:
   // BaseScreenHandler:

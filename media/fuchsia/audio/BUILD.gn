@@ -38,6 +38,8 @@ source_set("test_support") {
     "fake_audio_capturer.h",
     "fake_audio_consumer.cc",
     "fake_audio_consumer.h",
+    "fake_audio_device_enumerator.cc",
+    "fake_audio_device_enumerator.h",
   ]
 }
 

@@ -31,7 +31,7 @@ class TestPrintingContextDelegate : public PrintingContext::Delegate {
 
 class TestPrintingContext : public PrintingContext {
  public:
-  explicit TestPrintingContext(Delegate* delegate);
+  TestPrintingContext(Delegate* delegate, bool skip_system_calls);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
   ~TestPrintingContext() override;
@@ -43,6 +43,19 @@ class TestPrintingContext : public PrintingContext {
   void SetDeviceSettings(const std::string& device_name,
                          std::unique_ptr<PrintSettings> settings);
 
+  // Enables tests to fail with an access-denied error.
+  void SetNewDocumentBlockedByPermissions() {
+    new_document_blocked_by_permissions_ = true;
+  }
+#if BUILDFLAG(IS_WIN)
+  void SetOnRenderPageBlockedByPermissions() {
+    render_page_blocked_by_permissions_ = true;
+  }
+#endif
+  void SetDocumentDoneBlockedByPermissions() {
+    document_done_blocked_by_permissions_ = true;
+  }
+
   // PrintingContext overrides:
   void AskUserForSettings(int max_pages,
                           bool has_selection,
@@ -50,23 +63,32 @@ class TestPrintingContext : public PrintingContext {
                           PrintSettingsCallback callback) override;
   mojom::ResultCode UseDefaultSettings() override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  mojom::ResultCode UpdatePrinterSettings(bool external_preview,
-                                          bool show_system_dialog,
-                                          int page_count) override;
+  mojom::ResultCode UpdatePrinterSettings(
+      const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
-  mojom::ResultCode NewPage() override;
-  mojom::ResultCode PageDone() override;
+#if BUILDFLAG(IS_WIN)
+  mojom::ResultCode RenderPage(const PrintedPage& page,
+                               const PageSetup& page_setup) override;
+#endif
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;
   NativeDrawingContext context() const override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode InitWithSettingsForTest(
       std::unique_ptr<PrintSettings> settings) override;
 #endif
 
  private:
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
+  bool new_document_blocked_by_permissions_ = false;
+#if BUILDFLAG(IS_WIN)
+  bool render_page_blocked_by_permissions_ = false;
+#endif
+  bool document_done_blocked_by_permissions_ = false;
 };
 
 }  // namespace printing

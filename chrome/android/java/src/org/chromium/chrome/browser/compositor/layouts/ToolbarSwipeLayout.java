@@ -8,13 +8,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
@@ -29,6 +27,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -160,7 +159,7 @@ public class ToolbarSwipeLayout extends Layout {
         if (model == null) return;
         int fromTabId = mTabModelSelector.getCurrentTabId();
         if (fromTabId == TabModel.INVALID_TAB_INDEX) return;
-        mFromTab = createLayoutTab(fromTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+        mFromTab = createLayoutTab(fromTabId, model.isIncognito());
         prepareLayoutTabForSwipe(mFromTab, false);
     }
 
@@ -208,14 +207,13 @@ public class ToolbarSwipeLayout extends Layout {
         TabModel model = mTabModelSelector.getCurrentModel();
         if (0 <= leftIndex && leftIndex < model.getCount()) {
             leftTabId = model.getTabAt(leftIndex).getId();
-            mLeftTab = createLayoutTab(leftTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+            mLeftTab = createLayoutTab(leftTabId, model.isIncognito());
             prepareLayoutTabForSwipe(mLeftTab, leftIndex != fromIndex);
             mLeftTabSupplier.set(model.getTabAt(leftIndex));
         }
         if (0 <= rightIndex && rightIndex < model.getCount()) {
             rightTabId = model.getTabAt(rightIndex).getId();
-            mRightTab =
-                    createLayoutTab(rightTabId, model.isIncognito(), NO_CLOSE_BUTTON, NEED_TITLE);
+            mRightTab = createLayoutTab(rightTabId, model.isIncognito());
             prepareLayoutTabForSwipe(mRightTab, rightIndex != fromIndex);
             mRightTabSupplier.set(model.getTabAt(rightIndex));
         }
@@ -445,10 +443,10 @@ public class ToolbarSwipeLayout extends Layout {
 
     @Override
     protected void updateSceneLayer(RectF viewport, RectF contentViewport,
-            LayerTitleCache layerTitleCache, TabContentManager tabContentManager,
-            ResourceManager resourceManager, BrowserControlsStateProvider browserControls) {
-        super.updateSceneLayer(viewport, contentViewport, layerTitleCache, tabContentManager,
-                resourceManager, browserControls);
+            TabContentManager tabContentManager, ResourceManager resourceManager,
+            BrowserControlsStateProvider browserControls) {
+        super.updateSceneLayer(
+                viewport, contentViewport, tabContentManager, resourceManager, browserControls);
 
         if (mSceneLayer != null) {
             int background_color = getBackgroundColor();
@@ -458,17 +456,13 @@ public class ToolbarSwipeLayout extends Layout {
         }
     }
 
-    /**
-     * @return The background color of the scene layer.
-     */
+    /** Returns the background color of the scene layer. */
     private int getBackgroundColor() {
-        int colorId = R.color.default_bg_color;
-
         if (mTabModelSelector != null && mTabModelSelector.isIncognitoSelected()) {
-            colorId = R.color.default_bg_color_dark;
+            return getContext().getColor(R.color.default_bg_color_dark);
+        } else {
+            return SemanticColorUtils.getDefaultBgColor(getContext());
         }
-
-        return ApiCompatibilityUtils.getColor(getContext().getResources(), colorId);
     }
 
     @Override

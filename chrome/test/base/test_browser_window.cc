@@ -4,13 +4,20 @@
 
 #include "chrome/test/base/test_browser_window.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "base/values.h"
+#endif
 
 // Helpers --------------------------------------------------------------------
 
@@ -108,6 +115,21 @@ ui::NativeTheme* TestBrowserWindow::GetNativeTheme() {
   return nullptr;
 }
 
+const ui::ThemeProvider* TestBrowserWindow::GetThemeProvider() const {
+  return nullptr;
+}
+
+const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      {ui::ColorProviderManager::ColorMode::kLight,
+       ui::ColorProviderManager::ContrastMode::kNormal,
+       ui::ColorProviderManager::SystemTheme::kDefault, nullptr});
+}
+
+ui::ElementContext TestBrowserWindow::GetElementContext() {
+  return ui::ElementContext();
+}
+
 int TestBrowserWindow::GetTopControlsHeight() const {
   return 0;
 }
@@ -116,7 +138,7 @@ void TestBrowserWindow::SetTopControlsGestureScrollInProgress(
     bool in_progress) {}
 
 StatusBubble* TestBrowserWindow::GetStatusBubble() {
-  return NULL;
+  return nullptr;
 }
 
 gfx::Rect TestBrowserWindow::GetRestoredBounds() const {
@@ -154,6 +176,10 @@ bool TestBrowserWindow::IsFullscreen() const {
 }
 
 bool TestBrowserWindow::IsFullscreenBubbleVisible() const {
+  return false;
+}
+
+bool TestBrowserWindow::IsForceFullscreen() const {
   return false;
 }
 
@@ -233,7 +259,7 @@ SharingDialog* TestBrowserWindow::ShowSharingDialog(
   return nullptr;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 sharing_hub::ScreenshotCapturedBubble*
 TestBrowserWindow::ShowScreenshotCapturedBubble(
     content::WebContents* contents,
@@ -307,9 +333,51 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
   close_callback_ = std::move(close_callback);
 }
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+bool TestBrowserWindow::IsSideSearchPanelVisible() const {
+  return false;
+}
+
+void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
+    const std::map<std::string, std::string>& extra_data) {}
+#endif
+
 FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
+
+bool TestBrowserWindow::IsFeaturePromoActive(
+    const base::Feature& iph_feature,
+    bool include_continued_promos) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->IsPromoActive(iph_feature,
+                                                  include_continued_promos);
+}
+
+bool TestBrowserWindow::MaybeShowFeaturePromo(
+    const base::Feature& iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    FeaturePromoController::BubbleCloseCallback close_callback) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->MaybeShowPromo(
+             iph_feature, body_text_replacements, std::move(close_callback));
+}
+
+bool TestBrowserWindow::CloseFeaturePromo(const base::Feature& iph_feature) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->CloseBubble(iph_feature);
+}
+
+FeaturePromoController::PromoHandle
+TestBrowserWindow::CloseFeaturePromoAndContinue(
+    const base::Feature& iph_feature) {
+  return feature_promo_controller_
+             ? feature_promo_controller_->CloseBubbleAndContinuePromo(
+                   iph_feature)
+             : FeaturePromoController::PromoHandle();
+}
+
+void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
 
 FeaturePromoController* TestBrowserWindow::SetFeaturePromoController(
     std::unique_ptr<FeaturePromoController> feature_promo_controller) {

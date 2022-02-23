@@ -73,6 +73,10 @@ WebEngineIntegrationTestBase::CreateNavigationController() {
 fuchsia::web::CreateContextParams
 WebEngineIntegrationTestBase::TestContextParams() {
   fuchsia::web::CreateContextParams create_params;
+
+  // Most integration tests require networking, to load test web content.
+  create_params.set_features(fuchsia::web::ContextFeatureFlags::NETWORK);
+
   zx_status_t status = filtered_service_directory_.ConnectClient(
       create_params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status)
@@ -196,6 +200,6 @@ void WebEngineIntegrationTestBase::CreateNavigationListener() {
   navigation_listener_binding_ =
       std::make_unique<fidl::Binding<fuchsia::web::NavigationEventListener>>(
           navigation_listener_.get());
-  frame_->SetNavigationEventListener(
-      navigation_listener_binding_->NewBinding());
+  frame_->SetNavigationEventListener2(
+      navigation_listener_binding_->NewBinding(), /*flags=*/{});
 }

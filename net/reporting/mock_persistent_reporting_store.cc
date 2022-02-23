@@ -73,7 +73,7 @@ bool operator==(const MockPersistentReportingStore::Command& lhs,
         UPDATE_REPORTING_ENDPOINT_DETAILS:
     case MockPersistentReportingStore::Command::Type::DELETE_REPORTING_ENDPOINT:
       equal &= (lhs.url == rhs.url);
-      FALLTHROUGH;
+      [[fallthrough]];
     // For endpoint group operations, check the group key only.
     case MockPersistentReportingStore::Command::Type::
         ADD_REPORTING_ENDPOINT_GROUP:

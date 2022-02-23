@@ -12,13 +12,15 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -69,9 +71,12 @@ struct AppState {
   AppState(AppId app_id,
            const std::string app_name,
            const GURL app_scope,
+           const apps::mojom::WindowMode& window_mode,
+           const apps::mojom::RunOnOsLoginMode& run_on_os_login_mode,
            const blink::mojom::DisplayMode& effective_display_mode,
            const blink::mojom::DisplayMode& user_display_mode,
-           bool is_installed_locally);
+           bool is_installed_locally,
+           bool is_shortcut_created);
   ~AppState();
   AppState(const AppState&);
   bool operator==(const AppState& other) const;
@@ -79,9 +84,12 @@ struct AppState {
   AppId id;
   std::string name;
   GURL scope;
+  apps::mojom::WindowMode window_mode;
+  apps::mojom::RunOnOsLoginMode run_on_os_login_mode;
   blink::mojom::DisplayMode effective_display_mode;
   blink::mojom::DisplayMode user_display_mode;
   bool is_installed_locally;
+  bool is_shortcut_created;
 };
 
 struct ProfileState {
@@ -105,7 +113,7 @@ struct StateSnapshot {
 };
 std::ostream& operator<<(std::ostream& out, const StateSnapshot& snapshot);
 
-class WebAppIntegrationTestDriver : AppRegistrarObserver {
+class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
  public:
   struct TestDelegate {
     // Exposing normal functionality of testing::InProcBrowserTest:
@@ -137,8 +145,11 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
 
   // State change actions:
+  void AcceptAppIdUpdateDialog();
   void CloseCustomToolbar();
   void ClosePwa();
+  void DisableRunOnOSLoginMode(const std::string& site_mode);
+  void EnableRunOnOSLoginMode(const std::string& site_mode);
   void InstallCreateShortcutTabbed(const std::string& site_mode);
   void InstallCreateShortcutWindowed(const std::string& site_mode);
   void InstallMenuOption(const std::string& site_mode);
@@ -148,13 +159,23 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
   void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
+  // These functions install apps which are tabbed and creates shortcuts.
+  void InstallPolicyAppOsLoginModeAllowed(const std::string& site_mode);
+  void InstallPolicyAppOsLoginModeBlocked(const std::string& site_mode);
   void LaunchFromChromeApps(const std::string& site_mode);
   void LaunchFromLaunchIcon(const std::string& site_mode);
+  void LaunchFromMenuOption(const std::string& site_mode);
+  void LaunchFromShortcut(const std::string& site_mode);
+  void LaunchAppSettingsFromChromeApps(const std::string& site_mode);
+  void LaunchAppSettingsFromAppMenu(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
+  void ManifestUpdateTitle(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
+  void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
+  void OpenInChrome(const std::string& site_mode);
   void SetOpenInTab(const std::string& site_mode);
   void SetOpenInWindow(const std::string& site_mode);
   void SwitchProfileClients(const std::string& client_mode);
@@ -163,6 +184,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void UninstallFromList(const std::string& site_mode);
   void UninstallFromMenu(const std::string& site_mode);
   void UninstallPolicyApp(const std::string& site_mode);
+  void UninstallFromOs(const std::string& site_mode);
 
   // State Check Actions:
   void CheckAppListEmpty();
@@ -170,7 +192,11 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckAppInListWindowed(const std::string& site_mode);
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
+  void CheckBrowserNavigationIsAppSettings(const std::string& site_mode);
   void CheckAppNotInList(const std::string& site_mode);
+  void CheckAppTitleSiteA(const std::string& title);
+  void CheckAppWindowMode(const std::string& site_mode,
+                          apps::mojom::WindowMode window_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
@@ -178,6 +204,10 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckLaunchIconNotShown();
   void CheckTabCreated();
   void CheckCustomToolbar();
+  void CheckPlatformShortcutAndIcon(const std::string& site_mode);
+  void CheckPlatformShortcutNotExists(const std::string& site_mode);
+  void CheckRunOnOSLoginModeEnabled(const std::string& site_mode);
+  void CheckRunOnOSLoginModeDisabled(const std::string& site_mode);
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
@@ -185,7 +215,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckWindowDisplayStandalone();
 
  protected:
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
 
@@ -208,17 +238,20 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
 
   std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
 
-  GURL GetAppURLForManifest(const std::string& site_mode,
-                            DisplayMode display_mode);
+  std::string GetBrowserWindowTitle(Browser* browser);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
   GURL GetScopeForSiteMode(const std::string& site_mode);
+  GURL GetURLForSiteMode(const std::string& site_mode);
   void InstallCreateShortcut(bool open_in_window);
 
-  void InstallPolicyAppInternal(const std::string& site_mode,
-                                base::Value default_launch_container,
-                                const bool create_shortcut);
+  void InstallPolicyAppInternal(
+      const std::string& site_mode,
+      base::Value default_launch_container,
+      const bool create_shortcut,
+      const apps::mojom::RunOnOsLoginPtr os_login_mode);
 
+  void UninstallPolicyAppById(const AppId& id);
   // This action only works if no navigations to the given app_url occur
   // between app installation and calls to this action.
   bool AreNoAppWindowsOpen(Profile* profile, const AppId& app_id);
@@ -233,6 +266,13 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   Browser* GetAppBrowserForSite(const std::string& site_mode,
                                 bool launch_if_not_open = true);
 
+  bool IsShortcutAndIconCreated(Profile* profile,
+                                const std::string& name,
+                                const AppId& id);
+
+  void SetRunOnOsLoginMode(const std::string& site_mode,
+                           apps::mojom::RunOnOsLoginMode login_mode);
+
   Browser* browser();
   const net::EmbeddedTestServer* embedded_test_server();
   Profile* profile() {
@@ -246,8 +286,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   PageActionIconView* pwa_install_view();
   PageActionIconView* intent_picker_view();
 
-  ScopedOsHooksSuppress os_hooks_suppress_;
-
   // Variables used to facilitate waiting for manifest updates, as there isn't
   // a formal 'action' that a user can take to wait for this, as it happens
   // behind the scenes.
@@ -258,7 +296,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   absl::optional<AppId> waiting_for_update_id_;
   std::unique_ptr<base::RunLoop> waiting_for_update_run_loop_;
 
-  TestDelegate* delegate_;
+  raw_ptr<TestDelegate> delegate_;
   // State snapshots, captured before and after "state change" actions are
   // executed, and inspected by "state check" actions to verify behavior.
   std::unique_ptr<StateSnapshot> before_state_change_action_state_;
@@ -271,14 +309,15 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // can often call another action).
   int executing_action_level_ = 0;
 
-  Browser* active_browser_ = nullptr;
-  Profile* active_profile_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
+  raw_ptr<Profile> active_profile_ = nullptr;
   AppId active_app_id_;
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
 
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
       observation_{this};
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration

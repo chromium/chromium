@@ -23,6 +23,7 @@
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/mac/developer_id_certificate_reauthorize.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
@@ -119,6 +120,8 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
                         l10n_util::GetStringUTF16(IDS_PRODUCT_NAME), false);
   [app_controller mainMenuCreated];
 
+  chrome::DeveloperIDCertificateReauthorizeInApp();
+
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
 
@@ -154,10 +157,17 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
   g_browser_process->platform_part()->app_shim_listener()->Init();
 }
 
-void ChromeBrowserMainPartsMac::PostProfileInit() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::POST_PROFILE_INIT);
-  ChromeBrowserMainPartsPosix::PostProfileInit();
+void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
+                                                bool is_initial_profile) {
+  if (is_initial_profile) {
+    MacStartupProfiler::GetInstance()->Profile(
+        MacStartupProfiler::POST_PROFILE_INIT);
+  }
+
+  ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
+
+  if (!is_initial_profile)
+    return;
 
   // Activation of Keystone is not automatic but done in response to the
   // counting and reporting of profiles.

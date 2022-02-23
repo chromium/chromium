@@ -30,7 +30,7 @@ Screen::~Screen() = default;
 
 // static
 Screen* Screen::GetScreen() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // TODO(scottmg): https://crbug.com/558054
   if (!g_screen)
     g_screen = CreateNativeScreen();
@@ -71,8 +71,9 @@ void Screen::SetDisplayForNewWindows(int64_t display_id) {
   display_id_for_new_windows_ = display_id;
 }
 
-void Screen::SetScreenSaverSuspended(bool suspend) {
+bool Screen::SetScreenSaverSuspended(bool suspend) {
   NOTIMPLEMENTED_LOG_ONCE();
+  return false;
 }
 
 bool Screen::IsScreenSaverActive() const {

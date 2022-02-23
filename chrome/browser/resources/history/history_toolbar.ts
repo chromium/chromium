@@ -11,11 +11,13 @@ import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_too
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './history_toolbar.html.js';
 
 export interface HistoryToolbarElement {
   $: {
-    'main-toolbar': CrToolbarElement,
+    mainToolbar: CrToolbarElement,
   };
 }
 
@@ -25,7 +27,7 @@ export class HistoryToolbarElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -78,6 +80,7 @@ export class HistoryToolbarElement extends PolymerElement {
 
   count: number = 0;
   searchTerm: string;
+  spinnerActive: boolean
   showMenuPromo: boolean;
   private itemsSelected_: boolean = false;
 
@@ -87,7 +90,7 @@ export class HistoryToolbarElement extends PolymerElement {
   }
 
   get searchField(): CrToolbarSearchFieldElement {
-    return this.$['main-toolbar'].getSearchField();
+    return this.$.mainToolbar.getSearchField();
   }
 
   deleteSelectedItems() {

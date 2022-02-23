@@ -159,17 +159,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:kSectionIdentifierEnumZero];
   }
 
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
-    SendTabToSelfManageDevicesItem* manageDevicesItem =
-        [[SendTabToSelfManageDevicesItem alloc]
-            initWithType:ItemTypeManageDevices];
-    manageDevicesItem.accountAvatar = self.accountAvatar;
-    manageDevicesItem.accountEmail = self.accountEmail;
-    manageDevicesItem.delegate = self.delegate;
-    [model addItem:manageDevicesItem
-        toSectionWithIdentifier:kSectionIdentifierEnumZero];
-  }
+  SendTabToSelfManageDevicesItem* manageDevicesItem =
+      [[SendTabToSelfManageDevicesItem alloc]
+          initWithType:ItemTypeManageDevices];
+  manageDevicesItem.accountAvatar = self.accountAvatar;
+  manageDevicesItem.accountEmail = self.accountEmail;
+  manageDevicesItem.delegate = self.delegate;
+  [model addItem:manageDevicesItem
+      toSectionWithIdentifier:kSectionIdentifierEnumZero];
 
   self.sendToDevice =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSend];

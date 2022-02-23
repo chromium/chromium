@@ -114,18 +114,70 @@
       }
     ]
   },
-  "ChromeVariations": {
+  "CloudReportingUploadFrequency": {
     "os": [
       "ios"
     ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
+          "CloudReportingUploadFrequency": 12
+        },
+        "policies_settings": {
+          "CloudReportingUploadFrequency": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.upload_frequency": {
+            "value": "43200000000",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "CloudReportingUploadFrequency": 1
+        },
+        "policies_settings": {
+          "CloudReportingUploadFrequency": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_reporting.upload_frequency": {
+            "value": "10800000000",
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
+  "ChromeVariations": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
           "ChromeVariations": 1
         },
         "prefs": {
           "variations_restrictions_by_policy": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 1
           }
         }
       }
@@ -273,6 +325,31 @@
         "prefs": {
           "user_experience_metrics.reporting_enabled": {
             "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
+  "NewTabPageLocation": {
+    "os": [ "ios" ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+            "NewTabPageLocation": "not_a_url"
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+              "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "NewTabPageLocation": "https://store.google.com"
+        },
+        "prefs": {
+          "ios.ntp.location_override": {
+              "value": "https://store.google.com"
           }
         }
       }
@@ -710,6 +787,36 @@
                 ]
               }
             ]
+          }
+        }
+      }
+    ]
+  },
+
+  "OptimizationGuideFetchingEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OptimizationGuideFetchingEnabled": true
+        },
+        "prefs": {
+          "optimization_guide.fetching_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "OptimizationGuideFetchingEnabled": false
+        },
+        "prefs": {
+          "optimization_guide.fetching_enabled": {
+            "location": "user_profile",
+            "value": false
           }
         }
       }

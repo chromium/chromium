@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
@@ -20,7 +21,8 @@ namespace chromeos {
 //
 // This class doesn't meaningfully populate
 // PrinterConfigCache::FetchResult::time_of_fetch.
-class CHROMEOS_EXPORT FakePrinterConfigCache : public PrinterConfigCache {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) FakePrinterConfigCache
+    : public PrinterConfigCache {
  public:
   FakePrinterConfigCache();
   ~FakePrinterConfigCache() override;

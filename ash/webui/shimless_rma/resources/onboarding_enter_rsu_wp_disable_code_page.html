@@ -1,30 +1,63 @@
-<style include="cr-shared-style shimless-rma-shared">
+<style include="cr-shared-style shimless-rma-shared shimless-fonts">
+  #dialogBody {
+    overflow-wrap: anywhere;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+  }
+
+  #inputValidationLabel {
+    color: var(--shimless-hint-text-color);
+    font-family: var(--shimless-hint-font-family);
+    font-size: var(--shimless-hint-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    line-height: var(--shimless-hint-line-height);
+  }
+
+  :host([rsu-code-invalid_]) #inputValidationLabel {
+    color: red;
+  }
+
+  #inputContainer {
+    width: 275px;
+  }
+
+  #rsuCodeDialogLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
+<base-page>
+  <div slot="left-pane">
     <h1>[[i18n('rsuCodePageTitleText')]]</h1>
-    <div>[[i18n('rsuCodeInstructionsText')]]</div>
-    <div>[[i18n('rsuChallengeLabelText')]]</div>
-    <div id="rsuChallenge">
-      <template id="rsuChallengeParts" is="dom-repeat" items="[[rsuChallenge_]]" as="row">
-        <template id="rsuChallengePart" is="dom-repeat" items="[[row]]" as="segment">
-          <span>[[segment]]&nbsp;</span>
-        </template>
-        <br/>
-      </template>
+    <div class="instructions">
+      <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
-    <div id="rsuHwid">[[i18n('rsuHardwareIdText', rsuHwid_)]]</div>
-    <cr-input
-        on-change="onRsuCodeChanged_"
-        label="[[i18n('rsuCodeLabelText')]]"
-        placeholder="[[i18n('rsuCodePlaceHolderText')]]"
-        id="rsuCode"
-        value="{{rsuCode_}}">
-    </cr-input>
+    <div id="inputContainer">
+      <div id="inputValidationLabel">[[i18n('rsuCodeLabelText')]]</div>
+      <cr-input
+          id="rsuCode"
+          value="{{rsuCode_}}"
+          maxlength="[[rsuCodeExpectedLength_]]"
+          invalid="[[rsuCodeInvalid_]]"
+          disabled="[[allButtonsDisabled]]">
+      </cr-input>
+    </div>
   </div>
-  <div slot="body">
+  <div slot="right-pane">
     <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
     </canvas>
   </div>
 </base-page>
+
+<cr-dialog id="rsuChallengeDialog" on-cancel="closeDialog_" ignore-popstate>
+  <div slot="title">[[i18n('rsuChallengeDialogTitleText')]]</div>
+  <div slot="body" id="dialogBody">[[rsuChallengeLinkText_]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('rsuChallengeDialogDoneButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -31,10 +31,13 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class SizeF;
+}
+
 namespace blink {
 
 class AffineTransform;
-class FloatSize;
 
 // This enum intentionally matches the orientation values from the EXIF spec.
 // See JEITA CP-3451, page 18. http://www.exif.org/Exif2-2.PDF
@@ -87,7 +90,7 @@ class PLATFORM_EXPORT ImageOrientation final {
 
   // This transform can be used for drawing an image according to the
   // orientation. It should be used in a right-handed coordinate system.
-  AffineTransform TransformFromDefault(const FloatSize& drawn_size) const;
+  AffineTransform TransformFromDefault(const gfx::SizeF& drawn_size) const;
 
   inline bool operator==(const ImageOrientation& other) const {
     return other.orientation_ == orientation_;

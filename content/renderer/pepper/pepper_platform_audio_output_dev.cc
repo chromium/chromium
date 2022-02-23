@@ -22,11 +22,11 @@
 #include "content/renderer/render_frame_impl.h"
 #include "media/audio/audio_device_description.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 constexpr base::TimeDelta kMaxAuthorizationTimeout = base::Seconds(4);
 #else
 constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
@@ -186,7 +186,7 @@ void PepperPlatformAudioOutputDev::OnStreamCreated(
     base::SyncSocket::ScopedHandle socket_handle,
     bool playing_automatically) {
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());
@@ -261,7 +261,7 @@ bool PepperPlatformAudioOutputDev::Initialize(int sample_rate,
 
   client_ = client;
 
-  ipc_ = blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+  ipc_ = blink::AudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
       render_frame->GetWebFrame()->GetLocalFrameToken());
   CHECK(ipc_);
 

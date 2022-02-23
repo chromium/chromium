@@ -26,9 +26,6 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
   int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
   GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool ExportWindowHandle(
-      gfx::AcceleratedWidget window_id,
-      base::OnceCallback<void(std::string)> callback) override;
   bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
@@ -36,12 +33,12 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   bool PreferGtkIme() override;
 
  private:
+  GdkDisplay* GetDefaultGdkDisplay();
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
   void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
-  void OnHandleForward(base::OnceCallback<void(std::string)> callback,
-                       const std::string& handle);
 
+  GdkDisplay* default_display_ = nullptr;
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 

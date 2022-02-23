@@ -1049,7 +1049,7 @@ TEST_F(CompositorFrameSinkSupportTest, PassesOnBeginFrameAcks) {
   support_->SetNeedsBeginFrame(false);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223023
 #define MAYBE_NeedsBeginFrameResetAfterPresentationFeedback \
   DISABLED_NeedsBeginFrameResetAfterPresentationFeedback
@@ -1632,8 +1632,8 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
 
 TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
   // No surface with active frame.
-  EXPECT_EQ((gfx::Rect{}), support_->GetCopyOutputRequestRegion(
-                               CapturableFrameSink::RegionSpecifier()));
+  EXPECT_EQ((gfx::Rect{}),
+            support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget()));
 
   // Surface with active frame but no capture identifier.
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
@@ -1641,8 +1641,7 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
   SubmitCompositorFrameWithResources(first_frame_ids,
                                      base::size(first_frame_ids));
   EXPECT_EQ((gfx::Rect{0, 0, 20, 20}),
-            (support_->GetCopyOutputRequestRegion(
-                CapturableFrameSink::RegionSpecifier())));
+            (support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget())));
 
   // Render pass with subtree size.
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
@@ -1704,8 +1703,11 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
       gfx::Rect{0, 0, 20, 20};
   frame_with_crop_id_and_bounds.metadata.capture_bounds =
       RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
-  support_->SubmitCompositorFrame(local_surface_id_,
-                                  std::move(frame_with_crop_id_and_bounds));
+
+  // mark the surface as damaged to update the capture bounds.
+  support_->OnSurfaceAggregatedDamage(
+      /*surface*/ nullptr, local_surface_id_, frame_with_crop_id_and_bounds,
+      gfx::Rect{0, 0, 20, 20}, base::TimeTicks::Now());
 
   EXPECT_EQ((gfx::Rect{0, 0, 13, 13}),
             support_->GetCopyOutputRequestRegion(crop_id));

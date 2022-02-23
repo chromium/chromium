@@ -16,6 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -282,10 +284,10 @@ TEST_F(WebAppRegistrarTest, FilterApps) {
   Registry registry = CreateRegistryForTesting("https://example.com/path", 100);
   auto ids = RegisterAppsForTesting(std::move(registry));
 
-  for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
+  for ([[maybe_unused]] const WebApp& web_app :
+       mutable_registrar().FilterAppsMutable(
            [](const WebApp& web_app) { return false; })) {
     NOTREACHED();
-    ALLOW_UNUSED_LOCAL(web_app);
   }
 
   for (const WebApp& web_app : mutable_registrar().FilterAppsMutable(
@@ -317,8 +319,8 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   RegisterApp(std::move(web_app_in_sync2));
 
   int all_apps_count = 0;
-  for (const WebApp& web_app : registrar().GetAppsIncludingStubs()) {
-    ALLOW_UNUSED_LOCAL(web_app);
+  for ([[maybe_unused]] const WebApp& web_app :
+       registrar().GetAppsIncludingStubs()) {
     ++all_apps_count;
   }
   EXPECT_EQ(12, all_apps_count);
@@ -336,8 +338,7 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   UnregisterApp(web_app_id_in_sync2);
 
   not_in_sync_install_count = 0;
-  for (const WebApp& web_app : registrar().GetApps()) {
-    ALLOW_UNUSED_LOCAL(web_app);
+  for ([[maybe_unused]] const WebApp& web_app : registrar().GetApps()) {
     ++not_in_sync_install_count;
   }
   EXPECT_EQ(10, not_in_sync_install_count);
@@ -899,15 +900,78 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModes) {
   RegisterApp(std::move(web_app));
 
   EXPECT_EQ(RunOnOsLoginMode::kNotRun,
-            registrar().GetAppRunOnOsLoginMode(app_id));
+            registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-  sync_bridge().SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id, RunOnOsLoginMode::kWindowed);
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
-            registrar().GetAppRunOnOsLoginMode(app_id));
+            registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-  sync_bridge().SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kMinimized);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id, RunOnOsLoginMode::kMinimized);
   EXPECT_EQ(RunOnOsLoginMode::kMinimized,
-            registrar().GetAppRunOnOsLoginMode(app_id));
+            registrar().GetAppRunOnOsLoginMode(app_id).value);
+}
+
+TEST_F(WebAppRegistrarTest, RunOnOsLoginModesWithPolicy) {
+  controller().Init();
+
+  auto web_app_default = test::CreateWebApp();
+  auto web_app_default2 = test::CreateWebApp(GURL("https:/default2.example/"));
+  auto web_app_windowed = test::CreateWebApp(GURL("https://windowed.example/"));
+  auto web_app_allowed = test::CreateWebApp(GURL("https://allowed.example/"));
+  const AppId app_id_default = web_app_default->app_id();
+  const AppId app_id_default2 = web_app_default2->app_id();
+  const AppId app_id_windowed = web_app_windowed->app_id();
+  const AppId app_id_allowed = web_app_allowed->app_id();
+
+  RegisterApp(std::move(web_app_default));
+  RegisterApp(std::move(web_app_default2));
+  RegisterApp(std::move(web_app_windowed));
+  RegisterApp(std::move(web_app_allowed));
+
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id_default2, RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id_allowed, RunOnOsLoginMode::kWindowed);
+
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
+            registrar().GetAppRunOnOsLoginMode(app_id_default).value);
+  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
+            registrar().GetAppRunOnOsLoginMode(app_id_default2).value);
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
+            registrar().GetAppRunOnOsLoginMode(app_id_windowed).value);
+  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
+            registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
+
+  const char kWebAppSettingWithDefaultConfiguration[] = R"({
+    "https://windowed.example/": {
+      "run_on_os_login": "run_windowed"
+    },
+    "https://allowed.example/": {
+      "run_on_os_login": "allowed"
+    },
+    "*": {
+      "run_on_os_login": "blocked"
+    }
+  })";
+
+  test::SetWebAppSettingsDictPref(profile(),
+                                  kWebAppSettingWithDefaultConfiguration);
+  controller().policy_manager().RefreshPolicySettingsForTesting();
+
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
+            registrar().GetAppRunOnOsLoginMode(app_id_default).value);
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
+            registrar().GetAppRunOnOsLoginMode(app_id_default2).value);
+  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
+            registrar().GetAppRunOnOsLoginMode(app_id_windowed).value);
+  EXPECT_EQ(RunOnOsLoginMode::kWindowed,
+            registrar().GetAppRunOnOsLoginMode(app_id_allowed).value);
 }
 
 TEST_F(WebAppRegistrarTest, WindowControlsOverlay) {

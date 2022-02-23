@@ -26,7 +26,6 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="225614027745146050">Benvenuto</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
 <translation id="2329392777730037872">Impossibile aprire <ph name="URL" /> sul dispositivo client.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">Impossibile raggiungere l'host. Il problema potrebbe essere dovuto alla configurazione della rete in uso.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Visto l'ultima volta online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="2599300881200251572">Questo servizio consente connessioni in entrata da client Chrome Remote Desktop.</translation>
 <translation id="2647232381348739934">Servizio Chromoting</translation>
 <translation id="2676780859508944670">Operazione in corso...</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Si è verificato un problema di autenticazione. Accedi nuovamente.</translation>
 <translation id="2803375539583399270">Inserisci PIN</translation>
@@ -73,10 +73,10 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL Forwarder</translation>
 <translation id="4277736576214464567">Il codice di accesso non è valido. Riprova.</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="443560535555262820">Apri preferenze Accessibilità</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client scollegato: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non è configurato correttamente. Scegli un altro browser web predefinito e poi attiva nuovamente l'inoltro di URL.</translation>

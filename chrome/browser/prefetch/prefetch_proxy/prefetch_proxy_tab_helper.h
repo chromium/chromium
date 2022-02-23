@@ -11,14 +11,19 @@
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_type.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -166,6 +171,7 @@ class PrefetchProxyTabHelper
   static void CheckEligibilityOfURL(
       Profile* profile,
       const GURL& url,
+      const PrefetchType& prefetch_type,
       OnEligibilityResultCallback result_callback);
 
   const PrefetchMetrics& srp_metrics() const { return *(page_->srp_metrics_); }
@@ -175,12 +181,9 @@ class PrefetchProxyTabHelper
   absl::optional<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics()
       const;
 
-  // Fetches |private_prefetches| (up to a limit) and upon completion of each
-  // prefetch, fetches subresources if the prefetch URL is in
-  // |private_prefetches_with_subresources| (up to a limit).
+  // Fetches |prefetches| (up to a limit) with the given |PrefetchType|.
   void PrefetchSpeculationCandidates(
-      const std::vector<GURL>& private_prefetches_with_subresources,
-      const std::vector<GURL>& private_prefetches,
+      const std::vector<std::pair<GURL, PrefetchType>>& prefetches,
       const GURL& source_document_url);
 
   // content::WebContentsObserver implementation.
@@ -224,7 +227,8 @@ class PrefetchProxyTabHelper
   void AddObserverForTesting(Observer* observer);
   void RemoveObserverForTesting(Observer* observer);
 
-  network::mojom::NetworkContext* GetIsolatedContextForTesting() const;
+  network::mojom::NetworkContext* GetIsolatedContextForTesting(
+      const GURL& url) const;
 
   // Sets the service_worker_context_for_test_ with a FakeServiceWorkerContext
   // for the the purpose of testing.
@@ -232,10 +236,15 @@ class PrefetchProxyTabHelper
   static void SetServiceWorkerContextForTest(
       content::ServiceWorkerContext* context);
 
+  // Overrides the logic for determining which hostnames should not be proxied.
+  static void SetHostNonUniqueFilterForTest(bool (*filter)(base::StringPiece));
+  static void ResetHostNonUniqueFilterForTest();
+
  protected:
   // Exposed for testing.
   explicit PrefetchProxyTabHelper(content::WebContents* web_contents);
-  virtual network::mojom::URLLoaderFactory* GetURLLoaderFactory();
+  virtual network::mojom::URLLoaderFactory* GetURLLoaderFactory(
+      const GURL& url);
 
  private:
   friend class PrefetchProxyPageLoadMetricsObserver;
@@ -260,7 +269,19 @@ class PrefetchProxyTabHelper
     explicit CurrentPageLoad(content::NavigationHandle* handle);
     ~CurrentPageLoad();
 
-    Profile* profile_;
+    // Helper functions to create / get the network context for a given URL. If
+    // |PrefetchProxyUseIndividualNetworkContextsForEachPrefetch| is true, then
+    // this will use the network context for a single prefetch in
+    // |prefetch_containers_|. Otherwise this will use this instances
+    // |network_context_|.
+    void CreateNetworkContextForUrl(const GURL& url);
+    PrefetchProxyNetworkContext* GetNetworkContextForUrl(const GURL& url) const;
+
+    raw_ptr<Profile> profile_;
+
+    // The set of URLs that can potentially be prefetched, and the state
+    // associated the individual prefetches.
+    std::map<GURL, std::unique_ptr<PrefetchContainer>> prefetch_containers_;
 
     // The start time of the current navigation.
     const base::TimeTicks navigation_start_;
@@ -281,13 +302,6 @@ class PrefetchProxyTabHelper
     scoped_refptr<PrefetchProxyPrefetchMetricsCollector>
         prefetch_metrics_collector_;
 
-    // The status of each prefetch.
-    std::map<GURL, PrefetchProxyPrefetchStatus> prefetch_status_by_url_;
-
-    // A map of all predicted URLs to their original placement in the ordered
-    // prediction.
-    std::map<GURL, size_t> original_prediction_ordering_;
-
     // The url loaders that do all the prefetches. Only active loaders are in
     // this set.
     std::set<std::unique_ptr<network::SimpleURLLoader>,
@@ -295,28 +309,11 @@ class PrefetchProxyTabHelper
         url_loaders_;
 
     // An ordered list of the URLs to prefetch.
-    std::vector<GURL> urls_to_prefetch_;
-
-    // Subset of |urls_to_prefetch_| that is allowed to have subresources
-    // fetched. These are still subject to an overall limit restricting how many
-    // prefetches can fetch subresources.
-    std::set<GURL> allowed_to_prefetch_subresources_;
-
-    // A set of all urls that were decoy requests.
-    std::set<GURL> decoy_urls_;
+    std::vector<PrefetchContainer*> urls_to_prefetch_;
 
     // The amount of time that the probe took to complete. Kept in this class
     // until commit in order to be plumbed into |AfterSRPMetrics|.
     absl::optional<base::TimeDelta> probe_latency_;
-
-    // All prefetched responses by URL. This is cleared every time a mainframe
-    // navigation commits.
-    std::map<GURL, std::unique_ptr<PrefetchedMainframeResponseContainer>>
-        prefetched_responses_;
-
-    // A map that corresponds to |prefetched_responses_| for storing prefetch
-    // start times.
-    std::map<GURL, base::TimeTicks> prefetch_start_times_;
 
     // The number of no state prefetch requests that have been made.
     size_t number_of_no_state_prefetch_attempts_ = 0;
@@ -328,21 +325,14 @@ class PrefetchProxyTabHelper
     // prefetch finishes, in success or in error, it is removed from this list.
     // If there is an active no state prefetch, its url will always be the first
     // element.
-    std::vector<GURL> urls_to_no_state_prefetch_;
-
-    // All urls have have been successfully no state prefetched and finished.
-    std::vector<GURL> no_state_prefetched_urls_;
-
-    // URLs for which a NoStatePrefetch was attempted and was denied by the
-    // Prerender code.
-    std::vector<GURL> failed_no_state_prefetch_urls_;
+    std::vector<PrefetchContainer*> urls_to_no_state_prefetch_;
 
     // If the current page load was prerendered, then this subresource manager
     // is taken from |PrefetchProxyService| and used to facilitate loading
     // of prefetched resources from cache. Note: An
     // |PrefetchProxySubresourceManager| is dependent on the
-    // |isolated_url_loader_factory_| and |isolated_network_context_| from the
-    // previous page load remaining alive.
+    // |PrefetchProxyNetworkContext|s from the previous page load remaining
+    // alive.
     std::unique_ptr<PrefetchProxySubresourceManager> subresource_manager_;
 
     // The current status of copying cookies for the next page load when the
@@ -352,16 +342,17 @@ class PrefetchProxyTabHelper
     // A callback that runs once |cookie_copy_status_| is set to copy complete.
     base::OnceClosure on_after_srp_cookie_copy_complete_;
 
-    // The cookie manager, network contextm and url loader factory that will be
-    // used for prefetches. A separate network context is used so that the
-    // prefetch proxy can be used via a custom proxy configuration.
-    mojo::Remote<network::mojom::NetworkContext> isolated_network_context_;
-    mojo::Remote<network::mojom::CookieManager> isolated_cookie_manager_;
-    scoped_refptr<network::SharedURLLoaderFactory> isolated_url_loader_factory_;
+    // If |PrefetchProxyUseIndividualNetworkContextsForEachPrefetch| is false
+    // then this network context is used for all prefetches for this page load.
+    // Otherwise each prefetch in |prefetch_containers_| will use its own
+    // network context. The main purpose of using separate network contexts is
+    // allow for a custom proxy configuration.
+    std::unique_ptr<PrefetchProxyNetworkContext> network_context_;
 
-    // A map of URLs to Listeners for any changes to the cookies for that URL.
-    std::map<GURL, std::unique_ptr<PrefetchProxyCookieListener>>
-        cookie_listeners_;
+    // This keeps the network context used to prefetch the current page load
+    // from the previous page load alive, if the current page load was
+    // prerendered, because |subresource_manager_| is dependent on it.
+    std::unique_ptr<PrefetchProxyNetworkContext> previous_network_context_;
   };
 
   // Returns true if the current profile is not incognito and meets any
@@ -373,7 +364,9 @@ class PrefetchProxyTabHelper
   // considering any user data like service workers or cookies. Used to
   // determine eligibility and whether to send decoy requests.
   static std::pair<bool, absl::optional<PrefetchProxyPrefetchStatus>>
-  CheckEligibilityOfURLSansUserData(Profile* profile, const GURL& url);
+  CheckEligibilityOfURLSansUserData(Profile* profile,
+                                    const GURL& url,
+                                    const PrefetchType& prefetch_type);
 
   // Computes the AfterSRPMetrics that would be returned for the next
   // navigation, when it commits. This method exists to allow the PLM
@@ -400,8 +393,8 @@ class PrefetchProxyTabHelper
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* removed_headers);
 
-  // Called when |loader| completes. |url| is the url that was requested
-  // and |key| is the temporary NIK used during the request.
+  // Called when |loader| completes. |url| is the url that was requested and
+  // |key| is the temporary NIK used during the request.
   void OnPrefetchComplete(network::SimpleURLLoader* loader,
                           const GURL& url,
                           const net::IsolationInfo& isolation_info,
@@ -410,14 +403,14 @@ class PrefetchProxyTabHelper
   // Checks the response from |OnPrefetchComplete| for success or failure. On
   // success the response is moved to a |PrefetchedMainframeResponseContainer|
   // and cached in |prefetched_responses_|.
-  void HandlePrefetchResponse(const GURL& url,
+  void HandlePrefetchResponse(PrefetchContainer* prefetch_container,
                               const net::IsolationInfo& isolation_info,
                               network::mojom::URLResponseHeadPtr head,
                               std::unique_ptr<std::string> body);
 
   // Checks if the given |url| is eligible to be no state prefetched and if so,
   // adds it to the list of urls to be no state prefetched.
-  void MaybeDoNoStatePrefetch(const GURL& url);
+  void MaybeDoNoStatePrefetch(PrefetchContainer* prefetch_container);
 
   // Starts a new no state prefetch for the next eligible url.
   void DoNoStatePrefetch();
@@ -429,26 +422,23 @@ class PrefetchProxyTabHelper
   // Makes a clone of |this|'s prefetch response so that it can be used for
   // NoStatePrefetch now and later reused if the user navigates to that page.
   std::unique_ptr<PrefetchedMainframeResponseContainer>
-  CopyPrefetchResponseForNSP(const GURL& url);
+  CopyPrefetchResponseForNSP(PrefetchContainer* prefetch_container);
 
   // Updates any status like kPrefetchUsed or kPrefetchNotUsed with additional
   // information about applicable NoStatePrefetches given |self|. Note: This is
   // done here because the navigation loader interceptor doesn't have visibility
   // itself and can't report it. Static and public to enable testing.
   PrefetchProxyPrefetchStatus MaybeUpdatePrefetchStatusWithNSPContext(
-      const GURL& url,
-      PrefetchProxyPrefetchStatus status) const;
+      PrefetchContainer* prefetch_container) const;
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
       const absl::optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
 
-  // Fetches the |prefetch_targets|, and considers fetching subresources for
-  // |allowed_to_prefetch_subresources_| based on limits on per page subresource
-  // fetching.
-  void PrefetchUrls(const std::vector<GURL>& prefetch_targets,
-                    const std::set<GURL>& allowed_to_prefetch_subresources);
+  // Fetches the |prefetch_targets| with the given |PrefetchType|.
+  void PrefetchUrls(
+      const std::vector<std::pair<GURL, PrefetchType>>& prefetch_targets);
 
   // Used as a callback for when the eligibility of |url| is determined.
   void OnGotEligibilityResult(
@@ -456,18 +446,12 @@ class PrefetchProxyTabHelper
       bool eligible,
       absl::optional<PrefetchProxyPrefetchStatus> status);
 
-  // Creates a new URL Loader Factory on |page_|'s isolated network context.
-  // |isolation_info| may be passed if the factory will be used in the renderer
-  // for subresources.
-  void CreateNewURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      absl::optional<net::IsolationInfo> isolation_info);
-
-  // Starts a query for all cookies on |url| in the isolated cookie jar so that
-  // they can be copied to the normal profile. After this method is called,
-  // |IsWaitingForAfterSRPCookiesCopy| returns true until
+  // Starts a query for all cookies associated with |prefetch_container|| in the
+  // isolated cookie jar so that they can be copied to the normal profile. After
+  // this method is called, |IsWaitingForAfterSRPCookiesCopy| returns true until
   // |OnCopiedIsolatedCookiesAfterSRPClick| runs.
-  void CopyIsolatedCookiesOnAfterSRPClick(const GURL& url);
+  void CopyIsolatedCookiesOnAfterSRPClick(
+      PrefetchContainer* prefetch_container);
 
   // Starts copying all cookies in |cookie_list| to the normal profile.
   void OnGotIsolatedCookiesToCopyAfterSRPClick(
@@ -480,16 +464,13 @@ class PrefetchProxyTabHelper
   // if any, is run.
   void OnCopiedIsolatedCookiesAfterSRPClick();
 
-  // Creates the isolated network context and url loader factory for this page.
-  void CreateIsolatedURLLoaderFactory();
-
   // Prepare to serve prefetched resources for the given |url| when a navigation
   // to that url is started. This initiates the copying of cookies from the
   // isolated network context to the default context, and notifies the
   // |PrefetchProxySubresourceManager| associated with |url|.
   void PrepareToServe(const GURL& url);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Owns all members which need to be reset on a new page load.
   std::unique_ptr<CurrentPageLoad> page_;

@@ -144,7 +144,7 @@ class TestCallbackWaiter {
 //
 // Usage:
 // {
-//   TestCallbackAutoWaiter waiter;  // Implicitely Attach(1);
+//   TestCallbackAutoWaiter waiter;  // Implicitly Attach(1);
 //   ...
 //   Launch async activity, which will eventually do waiter.Signal();
 //   ...

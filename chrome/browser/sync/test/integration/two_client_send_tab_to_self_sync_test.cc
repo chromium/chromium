@@ -4,6 +4,7 @@
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -20,6 +21,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
@@ -119,7 +121,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, IsActive) {
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfActiveChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)))
                   .Wait());
-  EXPECT_TRUE(send_tab_to_self::IsUserSyncTypeActive(GetProfile(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -145,34 +146,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
   ASSERT_EQ(2u, device_infos.size());
   EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
   EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
-                       SendTabToSelfReceivingDisabled) {
-  ASSERT_TRUE(SetupSync());
-  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs);
-
-  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
-      ->GetDeviceInfoTracker()
-      ->ForcePulseForTest();
-
-  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfDeviceDisabledChecker(
-                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-                      ->GetDeviceInfoTracker(),
-                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
-                      ->GetLocalDeviceInfoProvider()
-                      ->GetLocalDeviceInfo()
-                      ->guid())
-                  .Wait());
-
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
-      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
-          ->GetDeviceInfoTracker()
-          ->GetAllDeviceInfo();
-  EXPECT_EQ(2u, device_infos.size());
-
-  EXPECT_NE(device_infos[0]->send_tab_to_self_receiving_enabled(),
-            device_infos[1]->send_tab_to_self_receiving_enabled());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -227,8 +200,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
 
   EXPECT_EQ(1u, profile1_target_devices.size());
   EXPECT_EQ(1u, profile2_target_devices.size());
-  EXPECT_TRUE(send_tab_to_self::HasValidTargetDevice(GetProfile(0)));
-  EXPECT_TRUE(send_tab_to_self::HasValidTargetDevice(GetProfile(1)));
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -274,15 +251,11 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
           .Wait());
 }
 
-class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
+class TwoClientSendTabToSelfWithTransportModeSyncTest
     : public TwoClientSendTabToSelfSyncTest {
  public:
-  TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() {
-    feature_list_.InitAndEnableFeature(
-        send_tab_to_self::kSendTabToSelfWhenSignedIn);
-  }
-  ~TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn() override =
-      default;
+  TwoClientSendTabToSelfWithTransportModeSyncTest() = default;
+  ~TwoClientSendTabToSelfWithTransportModeSyncTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     TwoClientSendTabToSelfSyncTest::SetUpInProcessBrowserTestFixture();
@@ -294,7 +267,6 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
@@ -307,9 +279,8 @@ class TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn
 #define MAYBE_SignedInClientCanReceive SignedInClientCanReceive
 #endif
 
-IN_PROC_BROWSER_TEST_F(
-    TwoClientSendTabToSelfSyncTestWithSendTabToSelfWhenSignedIn,
-    MAYBE_SignedInClientCanReceive) {
+IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
+                       MAYBE_SignedInClientCanReceive) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   // Set up one client syncing and the other signed-in but not syncing.
@@ -338,4 +309,44 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(device_infos[0]->send_tab_to_self_receiving_enabled());
   EXPECT_TRUE(device_infos[1]->send_tab_to_self_receiving_enabled());
 }
+
+class TwoClientSendTabToSelfSyncTestWithAlwaysReceiveDisabled
+    : public TwoClientSendTabToSelfSyncTest {
+ public:
+  TwoClientSendTabToSelfSyncTestWithAlwaysReceiveDisabled() {
+    feature_list_.InitAndDisableFeature(syncer::kAlwaysReceiveSendTabToSelf);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTestWithAlwaysReceiveDisabled,
+                       SendTabToSelfReceivingDisabled) {
+  ASSERT_TRUE(SetupSync());
+  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs);
+
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+
+  ASSERT_TRUE(send_tab_to_self_helper::SendTabToSelfDeviceDisabledChecker(
+                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+                      ->GetDeviceInfoTracker(),
+                  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+                      ->GetLocalDeviceInfoProvider()
+                      ->GetLocalDeviceInfo()
+                      ->guid())
+                  .Wait());
+
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
+      DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
+          ->GetDeviceInfoTracker()
+          ->GetAllDeviceInfo();
+  EXPECT_EQ(2u, device_infos.size());
+
+  EXPECT_NE(device_infos[0]->send_tab_to_self_receiving_enabled(),
+            device_infos[1]->send_tab_to_self_receiving_enabled());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -125,8 +125,8 @@ class PLATFORM_EXPORT ThreadScheduler {
 
   // Pauses the scheduler. See WebThreadScheduler::PauseRenderer for
   // details. May only be called from the main thread.
-  virtual std::unique_ptr<RendererPauseHandle> PauseScheduler()
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle>
+  PauseScheduler() = 0;
 
   // Returns the current time recognized by the scheduler, which may perhaps
   // be based on a real or virtual time domain. Used by Timer.

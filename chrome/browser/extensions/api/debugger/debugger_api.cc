@@ -18,7 +18,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -49,12 +52,14 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "url/origin.h"
 
 using content::DevToolsAgentHost;
 using content::RenderProcessHost;
@@ -115,12 +120,68 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   return true;
 }
 
+bool ExtensionMayAttachToURLOrInnerURL(const Extension& extension,
+                                       Profile* profile,
+                                       const GURL& url,
+                                       std::string* error) {
+  if (!ExtensionMayAttachToURL(extension, url, profile, error))
+    return false;
+  // For nested URLs, make sure ExtensionMayAttachToURL() allows both
+  // the outer and the inner URLs.
+  if (url.inner_url() &&
+      !ExtensionMayAttachToURL(extension, *url.inner_url(), profile, error)) {
+    return false;
+  }
+  return true;
+}
+
 constexpr char kBrowserTargetId[] = "browser";
 
 constexpr char kPerfettoUIExtensionId[] = "lfmkphfpdbjijhpomgecfikhfohaoine";
 
 bool ExtensionMayAttachToBrowser(const Extension& extension) {
   return extension.id() == kPerfettoUIExtensionId;
+}
+
+bool ExtensionMayAttachToRenderFrameHost(
+    const Extension& extension,
+    Profile* profile,
+    content::RenderFrameHost* render_frame_host,
+    std::string* error) {
+  bool result = true;
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](const Extension& extension, Profile* profile, std::string* error,
+         bool& result, content::RenderFrameHost* rfh) {
+        // If |rfh| is attached to an inner MimeHandlerViewGuest skip it.
+        // This is done to fix crbug.com/1293856 because an extension cannot
+        // inspect another extension.
+        WebContents* rfh_web_contents = WebContents::FromRenderFrameHost(rfh);
+        if (MimeHandlerViewGuest::FromWebContents(rfh_web_contents)) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+
+        if (rfh->GetWebUI()) {
+          *error = debugger_api_constants::kRestrictedError;
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        // We check both the last committed URL and the SiteURL because this
+        // method may be called in the middle of a navigation where the SiteURL
+        // has been updated but navigation hasn't committed yet.
+        if (!ExtensionMayAttachToURLOrInnerURL(
+                extension, profile, rfh->GetLastCommittedURL(), error) ||
+            !ExtensionMayAttachToURLOrInnerURL(
+                extension, profile, rfh->GetSiteInstance()->GetSiteURL(),
+                error)) {
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      std::ref(extension), profile, error, std::ref(result)));
+  return result;
 }
 
 bool ExtensionMayAttachToWebContents(const Extension& extension,
@@ -136,19 +197,8 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
     return false;
   }
 
-  bool result = true;
-  web_contents.GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](const Extension& extension, Profile* profile, std::string* error,
-         bool& result, content::RenderFrameHost* rfh) {
-        if (!ExtensionMayAttachToURL(extension, rfh->GetLastCommittedURL(),
-                                     profile, error)) {
-          result = false;
-          return content::RenderFrameHost::FrameIterationAction::kStop;
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      std::ref(extension), profile, error, std::ref(result)));
-  return result;
+  return ExtensionMayAttachToRenderFrameHost(
+      extension, profile, web_contents.GetMainFrame(), error);
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,
@@ -185,6 +235,8 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
 
   ~ExtensionDevToolsClientHost() override;
 
+  std::string GetTypeForMetrics() override { return "Extension"; }
+
   bool Attach();
   const std::string& extension_id() { return extension_->id(); }
   DevToolsAgentHost* agent_host() { return agent_host_.get(); }
@@ -201,10 +253,13 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
+  bool MayAttachToRenderFrameHost(
+      content::RenderFrameHost* render_frame_host) override;
   bool MayAttachToURL(const GURL& url, bool is_webui) override;
   bool MayAttachToBrowser() override;
   bool MayReadLocalFiles() override;
   bool MayWriteLocalFiles() override;
+  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
 
  private:
   using PendingRequests =
@@ -222,7 +277,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   scoped_refptr<const Extension> extension_;
   Debuggee debuggee_;
@@ -306,11 +361,11 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     DebuggerSendCommandFunction* function,
     const std::string& method,
     SendCommand::Params::CommandParams* command_params) {
-  base::DictionaryValue protocol_request;
+  base::Value protocol_request(base::Value::Type::DICTIONARY);
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
-  protocol_request.SetInteger("id", request_id);
-  protocol_request.SetString("method", method);
+  protocol_request.SetIntKey("id", request_id);
+  protocol_request.SetStringKey("method", method);
   if (command_params) {
     protocol_request.SetKey("params",
                             command_params->additional_properties.Clone());
@@ -373,27 +428,27 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
 
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
-  std::unique_ptr<base::Value> result = base::JSONReader::ReadDeprecated(
+  absl::optional<base::Value> result = base::JSONReader::Read(
       message_str, base::JSON_REPLACE_INVALID_CHARACTERS);
   if (!result || !result->is_dict()) {
     LOG(ERROR) << "Tried to send invalid message to extension: " << message_str;
     return;
   }
-  base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(result.get());
+  base::Value dictionary = std::move(result.value());
 
-  absl::optional<int> id = dictionary->FindIntKey("id");
+  absl::optional<int> id = dictionary.FindIntKey("id");
   if (!id) {
-    std::string method_name;
-    if (!dictionary->GetString("method", &method_name))
+    std::string* method_name = dictionary.FindStringKey("method");
+    if (!method_name)
       return;
 
     OnEvent::Params params;
-    base::DictionaryValue* params_value;
-    if (dictionary->GetDictionary("params", &params_value))
-      params.additional_properties.Swap(params_value);
+    if (base::Value* params_value = dictionary.FindDictKey("params")) {
+      params.additional_properties.Swap(
+          static_cast<base::DictionaryValue*>(params_value));
+    }
 
-    auto args(OnEvent::Create(debuggee_, method_name, params));
+    auto args(OnEvent::Create(debuggee_, *method_name, params));
     auto event =
         std::make_unique<Event>(events::DEBUGGER_ON_EVENT, OnEvent::kEventName,
                                 std::move(args), profile_);
@@ -404,9 +459,16 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     if (it == pending_requests_.end())
       return;
 
-    it->second->SendResponseBody(dictionary);
+    it->second->SendResponseBody(std::move(dictionary));
     pending_requests_.erase(it);
   }
+}
+
+bool ExtensionDevToolsClientHost::MayAttachToRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  std::string error;
+  return ExtensionMayAttachToRenderFrameHost(*extension_, profile_,
+                                             render_frame_host, &error);
 }
 
 bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
@@ -414,15 +476,7 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   if (is_webui)
     return false;
   std::string error;
-  if (!ExtensionMayAttachToURL(*extension_, url, profile_, &error))
-    return false;
-  // For nested URLs, make sure ExtensionMayAttachToURL() allows both
-  // the outer and the inner URLs.
-  if (url.inner_url() && !ExtensionMayAttachToURL(*extension_, *url.inner_url(),
-                                                  profile_, &error)) {
-    return false;
-  }
-  return true;
+  return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, &error);
 }
 
 bool ExtensionDevToolsClientHost::MayAttachToBrowser() {
@@ -435,6 +489,14 @@ bool ExtensionDevToolsClientHost::MayReadLocalFiles() {
 
 bool ExtensionDevToolsClientHost::MayWriteLocalFiles() {
   return false;
+}
+
+absl::optional<url::Origin>
+ExtensionDevToolsClientHost::GetNavigationInitiatorOrigin() {
+  // Ensure that navigations started by debugger API are treated as
+  // renderer-initiated by this extension, so that URL spoof defenses are in
+  // effect.
+  return extension_->origin();
 }
 
 // DebuggerFunction -----------------------------------------------------------
@@ -587,15 +649,24 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
         FormatErrorMessage(debugger_api_constants::kAlreadyAttachedError)));
   }
 
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   auto host = std::make_unique<ExtensionDevToolsClientHost>(
-      Profile::FromBrowserContext(browser_context()), agent_host_.get(),
-      extension(), debuggee_);
+      profile, agent_host_.get(), extension(), debuggee_);
 
   if (!host->Attach()) {
     return RespondNow(Error(debugger_api_constants::kRestrictedError));
   }
 
   host.release();  // An attached client host manages its own lifetime.
+
+  if (!(Manifest::IsPolicyLocation(extension()->location()) ||
+        Manifest::IsComponentLocation(extension()->location()))) {
+    bool is_developer_mode =
+        profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
+    base::UmaHistogramBoolean("Extensions.Debugger.UserIsInDeveloperMode",
+                              is_developer_mode);
+  }
+
   return RespondNow(NoArguments());
 }
 
@@ -642,20 +713,19 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
   return RespondLater();
 }
 
-void DebuggerSendCommandFunction::SendResponseBody(
-    base::DictionaryValue* response) {
-  base::Value* error_body;
-  if (response->Get("error", &error_body)) {
+void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
+  if (base::Value* error_body = response.FindKey("error")) {
     std::string error;
     base::JSONWriter::Write(*error_body, &error);
     Respond(Error(std::move(error)));
     return;
   }
 
-  base::DictionaryValue* result_body;
   SendCommand::Results::Result result;
-  if (response->GetDictionary("result", &result_body))
-    result.additional_properties.Swap(result_body);
+  if (base::Value* result_body = response.FindDictKey("result")) {
+    result.additional_properties.Swap(
+        static_cast<base::DictionaryValue*>(result_body));
+  }
 
   Respond(ArgumentList(SendCommand::Results::Create(result)));
 }
@@ -681,35 +751,33 @@ const char kTargetTypeBackgroundPage[] = "background_page";
 const char kTargetTypeWorker[] = "worker";
 const char kTargetTypeOther[] = "other";
 
-std::unique_ptr<base::DictionaryValue> SerializeTarget(
-    scoped_refptr<DevToolsAgentHost> host) {
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
-  dictionary->SetString(kTargetIdField, host->GetId());
-  dictionary->SetString(kTargetTitleField, host->GetTitle());
-  dictionary->SetBoolean(kTargetAttachedField, host->IsAttached());
-  dictionary->SetString(kTargetUrlField, host->GetURL().spec());
+base::Value SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  dictionary.SetStringKey(kTargetIdField, host->GetId());
+  dictionary.SetStringKey(kTargetTitleField, host->GetTitle());
+  dictionary.SetBoolKey(kTargetAttachedField, host->IsAttached());
+  dictionary.SetStringKey(kTargetUrlField, host->GetURL().spec());
 
   std::string type = host->GetType();
   std::string target_type = kTargetTypeOther;
   if (type == DevToolsAgentHost::kTypePage) {
     int tab_id =
         extensions::ExtensionTabUtil::GetTabId(host->GetWebContents());
-    dictionary->SetInteger(kTargetTabIdField, tab_id);
+    dictionary.SetIntKey(kTargetTabIdField, tab_id);
     target_type = kTargetTypePage;
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
-    dictionary->SetString(kTargetExtensionIdField, host->GetURL().host());
+    dictionary.SetStringKey(kTargetExtensionIdField, host->GetURL().host());
     target_type = kTargetTypeBackgroundPage;
   } else if (type == DevToolsAgentHost::kTypeServiceWorker ||
              type == DevToolsAgentHost::kTypeSharedWorker) {
     target_type = kTargetTypeWorker;
   }
 
-  dictionary->SetString(kTargetTypeField, target_type);
+  dictionary.SetStringKey(kTargetTypeField, target_type);
 
   GURL favicon_url = host->GetFaviconURL();
   if (favicon_url.is_valid())
-    dictionary->SetString(kTargetFaviconUrlField, favicon_url.spec());
+    dictionary.SetStringKey(kTargetFaviconUrlField, favicon_url.spec());
 
   return dictionary;
 }
@@ -723,8 +791,8 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() = default;
 ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (size_t i = 0; i < list.size(); ++i)
-    result->Append(SerializeTarget(list[i]));
+  for (auto& i : list)
+    result->Append(SerializeTarget(i));
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));

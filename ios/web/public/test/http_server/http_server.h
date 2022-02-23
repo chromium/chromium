@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #import "ios/web/public/test/http_server/response_provider.h"
@@ -149,6 +148,6 @@ class HttpServer : public base::RefCountedThreadSafe<HttpServer> {
 };
 
 }  // namespace test
-}  // namspace web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_TEST_HTTP_SERVER_HTTP_SERVER_H_

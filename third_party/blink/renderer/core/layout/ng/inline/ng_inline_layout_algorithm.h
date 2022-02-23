@@ -51,7 +51,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                   NGLogicalLineItems* line_box,
                   LayoutUnit* ruby_block_start_adjust);
 
-  scoped_refptr<const NGLayoutResult> Layout() override;
+  const NGLayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     NOTREACHED();

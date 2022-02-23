@@ -46,9 +46,9 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
         const content::NativeWebKeyboardEvent& event);
   };
 
-  BubbleContentsWrapper(content::BrowserContext* browser_context,
+  BubbleContentsWrapper(const GURL& webui_url,
+                        content::BrowserContext* browser_context,
                         int task_manager_string_id,
-                        bool enable_extension_apis,
                         bool webui_resizes_host,
                         bool esc_closes_ui);
   ~BubbleContentsWrapper() override;
@@ -109,12 +109,11 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
-                         bool enable_extension_apis = false,
                          bool webui_resizes_host = true,
                          bool esc_closes_ui = true)
-      : BubbleContentsWrapper(browser_context,
+      : BubbleContentsWrapper(webui_url,
+                              browser_context,
                               task_manager_string_id,
-                              enable_extension_apis,
                               webui_resizes_host,
                               esc_closes_ui),
         webui_url_(webui_url) {}

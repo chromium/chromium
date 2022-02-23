@@ -4,20 +4,20 @@
 
 #include "net/dns/public/util.h"
 
-#include <set>
-#include <unordered_map>
-
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/public/dns_protocol.h"
-#include "net/third_party/uri_template/uri_template.h"
-#include "url/gurl.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
 namespace {
+
 IPEndPoint GetMdnsIPEndPoint(const char* address) {
   IPAddress multicast_group_number;
   bool success = multicast_group_number.AssignFromIPLiteral(address);
@@ -25,39 +25,10 @@ IPEndPoint GetMdnsIPEndPoint(const char* address) {
   return IPEndPoint(multicast_group_number,
                     dns_protocol::kDefaultPortMulticast);
 }
+
 }  // namespace
 
 namespace dns_util {
-
-bool IsValidDohTemplate(base::StringPiece server_template,
-                        std::string* server_method) {
-  std::string url_string;
-  std::string test_query = "this_is_a_test_query";
-  std::unordered_map<std::string, std::string> template_params(
-      {{"dns", test_query}});
-  std::set<std::string> vars_found;
-  bool valid_template = uri_template::Expand(
-      std::string(server_template), template_params, &url_string, &vars_found);
-  if (!valid_template) {
-    // The URI template is malformed.
-    return false;
-  }
-  GURL url(url_string);
-  if (!url.is_valid() || !url.SchemeIs("https")) {
-    // The expanded template must be a valid HTTPS URL.
-    return false;
-  }
-  if (url.host().find(test_query) != std::string::npos) {
-    // The dns variable may not be part of the hostname.
-    return false;
-  }
-  // If the template contains a dns variable, use GET, otherwise use POST.
-  if (server_method) {
-    *server_method =
-        (vars_found.find("dns") == vars_found.end()) ? "POST" : "GET";
-  }
-  return true;
-}
 
 IPEndPoint GetMdnsGroupEndPoint(AddressFamily address_family) {
   switch (address_family) {
@@ -77,7 +48,7 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
 // CrOS as described in crbug.com/931916, and the following is a temporary
 // mitigation to reconcile the two issues. Remove this after closing
 // crbug.com/899310.
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
   // With Windows, binding to a mulitcast group address is not allowed.
   // Multicast messages will be received appropriate to the multicast groups the
   // socket has joined. Sockets intending to receive multicast messages should
@@ -93,12 +64,47 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
       NOTREACHED();
       return IPEndPoint();
   }
-#else   // !(defined(OS_WIN) || defined(OS_FUCHSIA)) || defined(OS_APPLE)
+#else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
   // With POSIX, any socket can receive messages for multicast groups joined by
   // any socket on the system. Sockets intending to receive messages for a
   // specific multicast group should bind to that group address.
   return GetMdnsGroupEndPoint(address_family);
-#endif  // !(defined(OS_WIN) || defined(OS_FUCHSIA)) || defined(OS_APPLE)
+#endif  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
+}
+
+std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port) {
+  DCHECK(!scheme_host_port.host().empty() &&
+         scheme_host_port.host().front() != '.');
+
+  // Normalize ws/wss schemes to http/https. Note that this behavior is not
+  // indicated by the draft-ietf-dnsop-svcb-https-08 spec.
+  base::StringPiece normalized_scheme = scheme_host_port.scheme();
+  if (normalized_scheme == url::kWsScheme) {
+    normalized_scheme = url::kHttpScheme;
+  } else if (normalized_scheme == url::kWssScheme) {
+    normalized_scheme = url::kHttpsScheme;
+  }
+
+  // For http-schemed hosts, request the corresponding upgraded https host
+  // per the rules in draft-ietf-dnsop-svcb-https-08, Section 9.5.
+  uint16_t port = scheme_host_port.port();
+  if (normalized_scheme == url::kHttpScheme) {
+    normalized_scheme = url::kHttpsScheme;
+    if (port == 80)
+      port = 443;
+  }
+
+  // Scheme should always end up normalized to "https" to create HTTPS
+  // transactions.
+  DCHECK_EQ(normalized_scheme, url::kHttpsScheme);
+
+  // Per the rules in draft-ietf-dnsop-svcb-https-08, Section 9.1 and 2.3,
+  // encode scheme and port in the transaction hostname, unless the port is
+  // the default 443.
+  if (port == 443)
+    return scheme_host_port.host();
+  return base::StrCat({"_", base::NumberToString(scheme_host_port.port()),
+                       "._https.", scheme_host_port.host()});
 }
 
 }  // namespace dns_util

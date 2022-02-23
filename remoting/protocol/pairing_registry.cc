@@ -255,7 +255,7 @@ void PairingRegistry::SanitizePairings(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   std::unique_ptr<base::ListValue> sanitized_pairings(new base::ListValue());
-  for (size_t i = 0; i < pairings->GetList().size(); ++i) {
+  for (size_t i = 0; i < pairings->GetListDeprecated().size(); ++i) {
     base::DictionaryValue* pairing_json;
     if (!pairings->GetDictionary(i, &pairing_json)) {
       LOG(WARNING) << "A pairing entry is not a dictionary.";

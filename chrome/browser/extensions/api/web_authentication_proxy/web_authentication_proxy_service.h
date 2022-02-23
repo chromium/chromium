@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
+#include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -30,8 +33,6 @@ class WebAuthenticationProxyService
       public KeyedService,
       public ExtensionRegistryObserver {
  public:
-  using EventId = int32_t;
-
   // Returns the extension registered as the request proxy, or `nullptr` if none
   // is active.
   const Extension* GetActiveRequestProxy();
@@ -44,13 +45,32 @@ class WebAuthenticationProxyService
   // Unregisters the currently active request proxy extension, if any.
   void ClearActiveRequestProxy();
 
-  // CompleteIsUvpaaRequest injects the result for the
+  // Injects the result for the `onCreateRequest` extension API event
+  // with `EventId` matching the one in `details`.
+  //
+  // Returns whether completing the request succeeded. If it didn't, `error_out`
+  // contains an error message.
+  bool CompleteCreateRequest(
+      const api::web_authentication_proxy::CreateResponseDetails& details,
+      std::string* error_out);
+
+  // Injects the result for the `onGetRequest` extension API event with
+  // `EventId` matching the one in `details`.
+  //
+  // Returns whether completing the request succeeded. If it didn't, `error_out`
+  // contains an error message.
+  bool CompleteGetRequest(
+      const api::web_authentication_proxy::GetResponseDetails& details,
+      std::string* error_out);
+
+  // Injects the result for the
   // `events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST` event with
   // `event_id`. `is_uvpaa` is the result to be returned to the original caller
   // of the PublicKeyCredential.IsUserPlatformAuthenticatorAvailable().
   //
-  // Returns whether an event matching `event_id` was found.
-  bool CompleteIsUvpaaRequest(EventId event_id, bool is_uvpaa);
+  // Returns whether the ID was valid.
+  bool CompleteIsUvpaaRequest(
+      const api::web_authentication_proxy::IsUvpaaResponseDetails& details);
 
  private:
   friend class WebAuthenticationProxyServiceFactory;
@@ -60,10 +80,18 @@ class WebAuthenticationProxyService
   ~WebAuthenticationProxyService() override;
 
   void CancelPendingCallbacks();
+  RequestId NewRequestId();
 
-  // content::WebAuthnRequestProxy:
+  // content::WebAuthenticationRequestProxy:
   bool IsActive() override;
-  void SignalIsUvpaaRequest(IsUvpaaCallback callback) override;
+  RequestId SignalCreateRequest(
+      const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
+      CreateCallback callback) override;
+  RequestId SignalGetRequest(
+      const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options,
+      GetCallback callback) override;
+  RequestId SignalIsUvpaaRequest(IsUvpaaCallback callback) override;
+  void CancelRequest(RequestId request_id) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -73,15 +101,19 @@ class WebAuthenticationProxyService
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  EventRouter* event_router_ = nullptr;
-  ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<EventRouter> event_router_ = nullptr;
+  raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
 
   // The extension that is currently acting as the WebAuthn request proxy, if
   // any. An extension becomes the active proxy by calling `attach()`. It
   // unregisters by calling `detach()` or getting unloaded.
   absl::optional<std::string> active_request_proxy_extension_id_;
 
-  std::map<EventId, IsUvpaaCallback> pending_is_uvpaa_callbacks_;
+  std::map<RequestId, IsUvpaaCallback> pending_is_uvpaa_callbacks_;
+  std::map<RequestId, CreateCallback> pending_create_callbacks_;
+  std::map<RequestId, GetCallback> pending_get_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // WebAuthenticationProxyServiceFactory creates instances of

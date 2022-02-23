@@ -28,10 +28,13 @@ source_set("browser_sources") {
   sources = [
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
+    "attribution_reporting.h",
     "audio_service.h",
     "audio_service_info.cc",
     "audio_service_info.h",
     "authenticator_environment.h",
+    "authenticator_request_client_delegate.cc",
+    "authenticator_request_client_delegate.h",
     "ax_event_notification_details.cc",
     "ax_event_notification_details.h",
     "ax_inspect_factory.cc",
@@ -100,6 +103,8 @@ source_set("browser_sources") {
     "client_hints.cc",
     "client_hints.h",
     "client_hints_controller_delegate.h",
+    "commit_deferring_condition.cc",
+    "commit_deferring_condition.h",
     "console_message.cc",
     "console_message.h",
     "contacts_picker_properties_requested.h",
@@ -139,6 +144,9 @@ source_set("browser_sources") {
     "devtools_permission_overrides.h",
     "devtools_socket_factory.h",
     "disallow_activation_reason.h",
+    "document_picture_in_picture_window_controller.h",
+    "document_ref.cc",
+    "document_ref.h",
     "document_service.h",
     "document_service_internal.cc",
     "document_service_internal.h",
@@ -169,12 +177,10 @@ source_set("browser_sources") {
     "file_system_access_write_item.h",
     "file_url_loader.h",
     "focused_node_details.h",
-    "font_access_chooser.h",
-    "font_access_context.h",
-    "font_access_delegate.h",
     "font_list_async.h",
     "frame_accept_header.cc",
     "frame_accept_header.h",
+    "frame_type.h",
     "generated_code_cache_settings.h",
     "global_request_id.cc",
     "global_request_id.h",
@@ -199,6 +205,7 @@ source_set("browser_sources") {
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",
+    "interest_group_manager.h",
     "invalidate_type.h",
     "jank_monitor.h",
     "javascript_dialog_manager.cc",
@@ -282,6 +289,7 @@ source_set("browser_sources") {
     "platform_notification_context.h",
     "platform_notification_service.h",
     "prerender_handle.h",
+    "prerender_trigger_type.h",
     "presentation_receiver_flags.h",
     "presentation_request.cc",
     "presentation_request.h",
@@ -332,6 +340,7 @@ source_set("browser_sources") {
     "service_worker_context.h",
     "service_worker_context_observer.h",
     "service_worker_external_request_result.h",
+    "service_worker_external_request_timeout_type.h",
     "service_worker_running_info.cc",
     "service_worker_running_info.h",
     "service_worker_version_base_info.h",
@@ -386,8 +395,11 @@ source_set("browser_sources") {
     "video_capture_device_launcher.cc",
     "video_capture_device_launcher.h",
     "video_capture_service.h",
+    "video_picture_in_picture_window_controller.h",
     "visibility.h",
     "vpn_service_proxy.h",
+    "weak_document_ptr.cc",
+    "weak_document_ptr.h",
     "web_contents.cc",
     "web_contents.h",
     "web_contents_delegate.cc",
@@ -569,12 +581,14 @@ source_set("browser_sources") {
     sources += [ "zygote_host/zygote_host_linux.h" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "lock_screen_storage.h" ]
+  }
+
   if (!is_android) {
     sources += [
       # Some Web Authentication related targets only apply to desktop because
       # Android provides its own native implementation of that API.
-      "authenticator_request_client_delegate.cc",
-      "authenticator_request_client_delegate.h",
       "web_authentication_request_proxy.h",
     ]
   }
@@ -600,6 +614,10 @@ source_set("browser_sources") {
       "//device/vr/public/cpp",
       "//device/vr/public/mojom:isolated_xr_service",
     ]
+  }
+
+  if (use_clang_profiling_inside_sandbox) {
+    sources += [ "profiling_utils.h" ]
   }
 }
 

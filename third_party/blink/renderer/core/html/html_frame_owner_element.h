@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
@@ -130,6 +130,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Element overrides:
   bool IsAdRelated() const override;
 
+  // If the iframe is lazy-loaded, initiate its load, and return true if such
+  // a load was initiated.
+  bool LoadImmediatelyIfLazy();
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -181,6 +185,9 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
  protected:
   bool is_swapping_frames() const { return is_swapping_frames_; }
 
+  // Checks that the number of frames on the page are within the current limit.
+  bool IsCurrentlyWithinFrameLimit() const;
+
  private:
   // Intentionally private to prevent redundant checks when the type is
   // already HTMLFrameOwnerElement.
@@ -190,6 +197,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void SetIsSwappingFrames(bool is_swapping) override {
     is_swapping_frames_ = is_swapping;
   }
+  bool IsLazyLoadableAd() const;
 
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.

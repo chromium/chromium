@@ -46,10 +46,14 @@ class MetricReportQueue {
   virtual void Enqueue(const MetricData& metric_data,
                        ReportQueue::EnqueueCallback callback);
 
+  // Initiate manual upload of records with `priority_` and restart timer if
+  // exists.
+  void Upload();
+
+ private:
   // Initiate upload of records with `priority_`.
   virtual void Flush();
 
- private:
   const std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue_;
 
   const Priority priority_;

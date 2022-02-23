@@ -43,7 +43,7 @@ void FakeLocalFrameHost::DidDisplayInsecureContent() {}
 
 void FakeLocalFrameHost::DidContainInsecureFormAction() {}
 
-void FakeLocalFrameHost::DocumentAvailableInMainFrame(
+void FakeLocalFrameHost::MainDocumentElementAvailable(
     bool uses_temporary_zoom_level) {}
 
 void FakeLocalFrameHost::SetNeedsOcclusionTracking(bool needs_tracking) {}
@@ -231,10 +231,17 @@ void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
 void FakeLocalFrameHost::DidUpdatePreferredColorScheme(
     blink::mojom::PreferredColorScheme preferred_color_scheme) {}
 
+void FakeLocalFrameHost::DidInferColorScheme(
+    blink::mojom::PreferredColorScheme preferred_color_scheme) {}
+
 void FakeLocalFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::LocalFrameHost>(
       std::move(handle)));
 }
+
+void FakeLocalFrameHost::DidChangeSrcDoc(
+    const blink::FrameToken& child_frame_token,
+    const WTF::String& srcdoc_value) {}
 
 }  // namespace blink

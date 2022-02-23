@@ -120,7 +120,7 @@ class BlockingLoginTest
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {
     ASSERT_EQ(chrome::NOTIFICATION_PROFILE_ADDED, type);
-    if (chromeos::ProfileHelper::IsLockScreenAppProfile(
+    if (ash::ProfileHelper::IsLockScreenAppProfile(
             content::Source<Profile>(source).ptr())) {
       return;
     }
@@ -265,19 +265,19 @@ IN_PROC_BROWSER_TEST_P(BlockingLoginTest, LoginBlocksForUser) {
 
     case 5:
       PushResponse(net::HTTP_OK).set_content(GetPolicyResponse());
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 4:
       PushResponse(net::HTTP_OK).set_content(GetRegisterResponse());
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 3:
       PushResponse(net::HTTP_OK).set_content(kOAuth2AccessTokenData);
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 2:
       PushResponse(net::HTTP_OK).set_content(kOAuth2TokenPairData);
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case 1:
       PushResponse(net::HTTP_OK)

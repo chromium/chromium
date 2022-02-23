@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_factory.h"
 #include "media/mojo/services/mojo_cdm_service.h"
@@ -54,8 +55,7 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
   ~CdmFactoryImpl() final { DVLOG(1) << __func__; }
 
   // mojom::CdmFactory implementation.
-  void CreateCdm(const std::string& key_system,
-                 const CdmConfig& cdm_config,
+  void CreateCdm(const CdmConfig& cdm_config,
                  CreateCdmCallback callback) final {
     DVLOG(2) << __func__;
 
@@ -73,7 +73,7 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
     pending_mojo_cdm_services_[raw_mojo_cdm_service] =
         std::move(mojo_cdm_service);
     raw_mojo_cdm_service->Initialize(
-        cdm_factory, key_system, cdm_config,
+        cdm_factory, cdm_config,
         base::BindOnce(&CdmFactoryImpl::OnCdmServiceInitialized,
                        weak_ptr_factory_.GetWeakPtr(), raw_mojo_cdm_service,
                        std::move(callback)));
@@ -129,7 +129,7 @@ class CdmFactoryImpl final : public DeferredDestroy<mojom::CdmFactory> {
   // available.
   MojoCdmServiceContext cdm_service_context_;
 
-  CdmService::Client* client_;
+  raw_ptr<CdmService::Client> client_;
   mojo::Remote<mojom::FrameInterfaceFactory> interfaces_;
   mojo::UniqueReceiverSet<mojom::ContentDecryptionModule> cdm_receivers_;
   std::unique_ptr<media::CdmFactory> cdm_factory_;
@@ -163,10 +163,9 @@ void CdmService::CreateCdmFactory(
   if (!client_)
     return;
 
-  cdm_factory_receivers_.AddReceiver(
-      std::make_unique<CdmFactoryImpl>(client_.get(),
-                                       std::move(frame_interfaces)),
-      std::move(receiver));
+  cdm_factory_receivers_.Add(std::make_unique<CdmFactoryImpl>(
+                                 client_.get(), std::move(frame_interfaces)),
+                             std::move(receiver));
 }
 
 }  // namespace media

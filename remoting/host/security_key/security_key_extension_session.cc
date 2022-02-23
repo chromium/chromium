@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "remoting/base/logging.h"
@@ -46,11 +45,11 @@ unsigned int GetCommandCode(const std::string& data) {
 bool ConvertListToString(const base::Value& bytes, std::string* out) {
   out->clear();
 
-  unsigned int byte_count = bytes.GetList().size();
+  unsigned int byte_count = bytes.GetListDeprecated().size();
   if (byte_count != 0) {
     out->reserve(byte_count);
     for (unsigned int i = 0; i < byte_count; i++) {
-      auto value = bytes.GetList()[i].GetIfInt();
+      auto value = bytes.GetListDeprecated()[i].GetIfInt();
       if (!value.has_value()) {
         return false;
       }
@@ -110,7 +109,8 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
   }
   std::string type = *maybe_type;
 
-  base::Value::DictStorage client_message = std::move(*value).TakeDict();
+  base::Value::DictStorage client_message =
+      std::move(*value).TakeDictDeprecated();
   if (type == kControlMessage) {
     ProcessControlMessage(client_message);
   } else if (type == kDataMessage) {

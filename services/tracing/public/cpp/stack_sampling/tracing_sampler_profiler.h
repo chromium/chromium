@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
@@ -25,14 +25,14 @@
 #include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARM64) && \
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64) && \
     BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 1
 #else
 #define ANDROID_ARM64_UNWINDING_SUPPORTED 0
 #endif
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #define ANDROID_CFI_UNWINDING_SUPPORTED 1
 #else
@@ -127,9 +127,18 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
     void WriteSampleToTrace(const BufferedSample& sample);
 
+    // TODO(ssid): Consider using an interning scheme to reduce memory usage
+    // and increase the sample size.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // We usually sample at 50ms, and expect that tracing should have started in
-    // 10s.
+    // 10s (5s for 2 threads). Approximately 100 frames and 200 samples would use
+    // 300KiB.
     constexpr static size_t kMaxBufferedSamples = 200;
+#else
+    // 2000 samples are enough to store samples for 100 seconds (50s for 2
+    // threads), and consumes about 3MiB of memory.
+    constexpr static size_t kMaxBufferedSamples = 2000;
+#endif
     std::vector<BufferedSample> buffered_samples_;
 
     base::ModuleCache module_cache_;
@@ -174,7 +183,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // Returns whether of not the sampler profiling is able to unwind the stack
   // on this platform.
   constexpr static bool IsStackUnwindingSupported() {
-#if defined(OS_MAC) || defined(OS_WIN) && defined(_WIN64) || \
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) && defined(_WIN64) || \
     ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
     return true;
 #else
@@ -210,7 +219,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
   base::Lock lock_;
   std::unique_ptr<base::StackSamplingProfiler> profiler_;  // under |lock_|
-  TracingProfileBuilder* profile_builder_ = nullptr;
+  raw_ptr<TracingProfileBuilder> profile_builder_ = nullptr;
   base::RepeatingClosure sample_callback_for_testing_;
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)

@@ -137,6 +137,16 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
   }
 };
 
+class DumpAccessibilityNodeWithoutMathMLTest
+    : public DumpAccessibilityNodeTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityNodeTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "MathMLCore");
+  }
+};
+
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
@@ -154,6 +164,12 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityAccNameTest,
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    TestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityNodeWithoutMathMLTest,
     ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
     TestPassToString());
 
@@ -192,6 +208,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLIdentifier) {
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMath) {
   RunMathMLTest(FILE_PATH_LITERAL("math.html"));
+}
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeWithoutMathMLTest, MathMLMath) {
+  RunMathMLTest(FILE_PATH_LITERAL("math-disabled.html"));
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMultiscripts) {
   RunMathMLTest(FILE_PATH_LITERAL("mmultiscripts.html"));
@@ -283,6 +302,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       DescFromContentOfDescribedbyElementRecursive) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "desc-from-content-of-describedby-element-recursive.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        DescImgAltDescribedbyHidden) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-img-alt-describedby-hidden.html"));
 }
@@ -339,6 +364,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        DescLinkWithLabelAndTitle) {
   RunAccNameTest(FILE_PATH_LITERAL("desc-link-with-label-and-title.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameButtonAriaPressedFalse) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-button-aria-pressed-false.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameButtonLabel) {
@@ -845,6 +875,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameResetButton) {
   RunAccNameTest(FILE_PATH_LITERAL("name-reset-button.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextContentOfLabelledByElementRecursive) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-text-content-of-labelledby-element-recursive.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextCssAfterInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-css-after-in-label.html"));
 }
@@ -910,6 +946,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyHiddenDifferentVisibilityTypes) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-text-labelledby-hidden-different-visibility-types.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyHiddenMultipleLevels) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-labelledby-hidden-multiple-levels.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameTextLabelledbyHiddenWithHiddenChild) {
   RunAccNameTest(
       FILE_PATH_LITERAL("name-text-labelledby-hidden-with-hidden-child.html"));
@@ -933,6 +981,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextLabelWithInput) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-label-with-input.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelWithReadonlyInput) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-label-with-readonly-input.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextSelectInLabel) {

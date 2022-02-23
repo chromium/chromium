@@ -12,7 +12,7 @@
 
 namespace syncer {
 
-// Defined for googletest.  Forwards to ModelTypeSetToString().
+// Defined for googletest.  Forwards to ModelTypeSetToDebugString().
 void PrintTo(ModelTypeSet model_types, ::std::ostream* os);
 
 // A gmock matcher for ModelTypeSet.  Use like:

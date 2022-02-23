@@ -8,7 +8,7 @@
           $i18n{searchEnginesPageExplanation}
       </div>
     </div>
-    <div class="cr-row first" hidden="[[!showKeywordTriggerSetting_]]">
+    <div class="cr-row first">
       <div class="flex cr-padded-text">
         <div id="keyboardShortcutsTitle">
           $i18n{searchEnginesKeyboardShortcutsTitle}
@@ -18,7 +18,7 @@
         </div>
       </div>
     </div>
-    <div class="list-frame" hidden="[[!showKeywordTriggerSetting_]]">
+    <div class="list-frame">
       <settings-radio-group id="keyboardShortcutSettingGroup"
           pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
           on-change="onKeyboardShortcutSettingChange_">
@@ -72,10 +72,16 @@
       $i18n{searchNoResults}
     </div>
 
-    <template is="dom-if" if="[[showDialog_]]" restamp>
-      <settings-search-engine-dialog model="[[dialogModel_]]"
-          on-close="onCloseDialog_">
-      </settings-search-engine-dialog>
+    <template is="dom-if" if="[[showEditDialog_]]" restamp>
+      <settings-search-engine-edit-dialog model="[[dialogModel_]]"
+          on-close="onCloseEditDialog_">
+      </settings-search-engine-edit-dialog>
+    </template>
+
+    <template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
+      <settings-search-engine-delete-confirmation-dialog
+          model="[[dialogModel_]]" on-close="onCloseDeleteConfirmationDialog_">
+      </settings-search-engine-delete-confirmation-dialog>
     </template>
 
     <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
@@ -110,7 +116,7 @@
       </settings-search-engines-list>
     </template>
 
-    <div hidden="[[isActiveSearchEnginesFlagEnabled_]]">
+    <template is="dom-if" if="[[!isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">
         <h2 class="flex">$i18n{searchEnginesOther}</h2>
         <cr-button class="secondary-button header-aligned-button"
@@ -126,7 +132,7 @@
                 "[[isActiveSearchEnginesFlagEnabled_]]"
           name-column-header="$i18n{searchEnginesSearchEngine}">
       </settings-search-engines-list>
-    </div>
+    </template>
 
     <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">
@@ -140,7 +146,7 @@
                 "[[isActiveSearchEnginesFlagEnabled_]]"
           show-query-url collapse-list
           expand-list-text="$i18n{searchEnginesAdditionalInactiveSites}"
-          name-column-header="$i18n{searchEnginesInactiveSite}">
+          name-column-header="$i18n{searchEnginesSiteOrPage}">
       </settings-search-engines-list>
     </template>
     <div id="noOtherEngines" class="list-frame"

@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -301,12 +302,12 @@ std::string SerializeSeed(const VariationsSeed& seed) {
   return serialized_seed;
 }
 
-// Converts |list_value| to a string, to make it easier for debugging.
-std::string ListValueToString(const base::ListValue& list_value) {
+// Converts |value| to a string, to make it easier for debugging.
+std::string ValueToString(const base::Value& value) {
   std::string json;
   JSONStringValueSerializer serializer(&json);
   serializer.set_pretty_print(true);
-  serializer.Serialize(list_value);
+  serializer.Serialize(value);
   return json;
 }
 
@@ -358,7 +359,7 @@ class VariationsServiceTest : public ::testing::Test {
 
  protected:
   TestingPrefServiceSimple prefs_;
-  network::TestNetworkConnectionTracker* network_tracker_;
+  raw_ptr<network::TestNetworkConnectionTracker> network_tracker_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -811,16 +812,15 @@ TEST_F(VariationsServiceTest, LoadPermanentConsistencyCountry) {
         << test.permanent_consistency_country_before << ", " << test.version
         << ", " << test.latest_country_code;
 
-    base::ListValue expected_list_value;
+    base::Value expected_list_value{base::Value::Type::LIST};
     for (const std::string& component :
          base::SplitString(test.permanent_consistency_country_after, ",",
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       expected_list_value.Append(component);
     }
-    const base::ListValue* pref_value =
+    const base::Value* pref_value =
         prefs_.GetList(prefs::kVariationsPermanentConsistencyCountry);
-    EXPECT_EQ(ListValueToString(expected_list_value),
-              ListValueToString(*pref_value))
+    EXPECT_EQ(ValueToString(expected_list_value), ValueToString(*pref_value))
         << test.permanent_consistency_country_before << ", " << test.version
         << ", " << test.latest_country_code;
 

@@ -150,7 +150,7 @@ absl::optional<autofill::AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
   // Note that also GetManager() can return nullptr.
   autofill::BrowserAutofillManager* autofill_manager =
-      web_contents_->GetFocusedFrame() ? GetManager() : nullptr;
+      GetWebContents().GetFocusedFrame() ? GetManager() : nullptr;
   std::vector<UserInfo> info_to_add;
   bool allow_filling =
       autofill_manager &&
@@ -207,7 +207,7 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
 void CreditCardAccessoryControllerImpl::OnFillingTriggered(
     FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
-  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
   if (!rfh)
     return;  // Without focused frame, driver and manager will be undefined.
   if (!GetDriver() || !GetManager()) {
@@ -256,7 +256,7 @@ void CreditCardAccessoryControllerImpl::OnFillingTriggered(
 void CreditCardAccessoryControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) {
   if (selected_action == AccessoryAction::MANAGE_CREDIT_CARDS) {
-    autofill::ShowAutofillCreditCardSettings(web_contents_);
+    autofill::ShowAutofillCreditCardSettings(&GetWebContents());
     return;
   }
   NOTREACHED() << "Unhandled selected action: "
@@ -317,7 +317,7 @@ void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
     const std::u16string& cvc) {
   if (result != CreditCardFetchResult::kSuccess)
     return;
-  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
   if (!rfh || !last_focused_field_id_ ||
       last_focused_field_id_.frame_token !=
           autofill::LocalFrameToken(rfh->GetFrameToken().value())) {
@@ -351,11 +351,11 @@ void CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
 
 CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     content::WebContents* web_contents)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<CreditCardAccessoryControllerImpl>(
+          *web_contents),
       personal_data_manager_(
           autofill::PersonalDataManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  web_contents_->GetBrowserContext()))) {
+              Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   if (personal_data_manager_)
     personal_data_manager_->AddObserver(this);
 }
@@ -366,7 +366,8 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
     PersonalDataManager* personal_data_manager,
     autofill::BrowserAutofillManager* af_manager,
     autofill::AutofillDriver* af_driver)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<CreditCardAccessoryControllerImpl>(
+          *web_contents),
       mf_controller_(mf_controller),
       personal_data_manager_(personal_data_manager),
       af_manager_for_testing_(af_manager),
@@ -377,7 +378,7 @@ CreditCardAccessoryControllerImpl::CreditCardAccessoryControllerImpl(
 
 std::vector<CreditCardAccessoryControllerImpl::CardOrVirtualCard>
 CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
-  if (!web_contents_->GetFocusedFrame() || !personal_data_manager_)
+  if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_)
     return std::vector<CardOrVirtualCard>();
 
   std::vector<CardOrVirtualCard> cards;
@@ -395,7 +396,7 @@ CreditCardAccessoryControllerImpl::GetAllCreditCards() const {
 
 std::vector<const CachedServerCardInfo*>
 CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
-  if (!web_contents_->GetFocusedFrame())
+  if (!GetWebContents().GetFocusedFrame())
     return std::vector<const CachedServerCardInfo*>();
   autofill::BrowserAutofillManager* autofill_manager = GetManager();
   if (!autofill_manager || !autofill_manager->credit_card_access_manager())
@@ -421,7 +422,7 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
 std::vector<const AutofillOfferData*>
 CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
   autofill::BrowserAutofillManager* autofill_manager = GetManager();
-  if (!web_contents_->GetFocusedFrame() || !personal_data_manager_ ||
+  if (!GetWebContents().GetFocusedFrame() || !personal_data_manager_ ||
       !autofill_manager)
     return std::vector<const AutofillOfferData*>();
 
@@ -434,28 +435,38 @@ CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
 base::WeakPtr<ManualFillingController>
 CreditCardAccessoryControllerImpl::GetManualFillingController() {
   if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(web_contents_);
+    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
   DCHECK(mf_controller_);
   return mf_controller_;
 }
 
 autofill::AutofillDriver* CreditCardAccessoryControllerImpl::GetDriver() {
-  DCHECK(web_contents_->GetFocusedFrame());
+  DCHECK(GetWebContents().GetFocusedFrame());
   return af_driver_for_testing_
-             ? af_driver_for_testing_
+             ? af_driver_for_testing_.get()
              : autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                   web_contents_->GetFocusedFrame());
+                   GetWebContents().GetFocusedFrame());
 }
 
 autofill::BrowserAutofillManager*
 CreditCardAccessoryControllerImpl::GetManager() const {
-  DCHECK(web_contents_->GetFocusedFrame());
+  DCHECK(GetWebContents().GetFocusedFrame());
   if (af_manager_for_testing_)
     return af_manager_for_testing_;
   autofill::ContentAutofillDriver* driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
-          web_contents_->GetFocusedFrame());
+          GetWebContents().GetFocusedFrame());
   return driver ? driver->browser_autofill_manager() : nullptr;
+}
+
+content::WebContents& CreditCardAccessoryControllerImpl::GetWebContents()
+    const {
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents&>(
+      content::WebContentsUserData<
+          CreditCardAccessoryControllerImpl>::GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CreditCardAccessoryControllerImpl);

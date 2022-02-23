@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_CLEANUP_VISUALS_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_CLEANUP_VISUALS_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
@@ -36,7 +37,7 @@ class CleanupVisualsTask : public Task {
   void Run() override;
 
   void Complete(Result result);
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   base::Time now_;
 
   CleanupVisualsCallback complete_callback_;

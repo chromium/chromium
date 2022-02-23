@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/language/core/browser/pref_names.h"
@@ -36,8 +37,7 @@ namespace settings {
 namespace {
 
 bool ShouldShowQuickAnswersSettings() {
-  return ash::QuickAnswersState::Get() &&
-         ash::QuickAnswersState::Get()->is_eligible();
+  return QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible();
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts() {
@@ -194,11 +194,12 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("quickAnswersTranslationDisabled",
-                          ash::features::IsQuickAnswersV2TranslationDisabled());
+  html_source->AddBoolean(
+      "quickAnswersTranslationDisabled",
+      chromeos::features::IsQuickAnswersV2TranslationDisabled());
   html_source->AddBoolean(
       "quickAnswersSubToggleEnabled",
-      ash::features::IsQuickAnswersV2SettingsSubToggleEnabled());
+      chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled());
 }
 
 void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
@@ -280,7 +281,7 @@ SearchSection::SearchSection(Profile* profile,
   }
 
   if (ShouldShowQuickAnswersSettings()) {
-    ash::QuickAnswersState::Get()->AddObserver(this);
+    QuickAnswersState::Get()->AddObserver(this);
     UpdateQuickAnswersSearchTags();
   }
 }
@@ -308,6 +309,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("shouldShowQuickAnswersSettings",
                           ShouldShowQuickAnswersSettings());
+  html_source->AddBoolean(
+      "syncSettingsCategorizationEnabled",
+      chromeos::features::IsSyncSettingsCategorizationEnabled());
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",
@@ -437,13 +441,13 @@ void SearchSection::UpdateAssistantSearchTags() {
 }
 
 void SearchSection::UpdateQuickAnswersSearchTags() {
-  DCHECK(ash::QuickAnswersState::Get());
+  DCHECK(QuickAnswersState::Get());
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
-  if (ash::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
-      ash::QuickAnswersState::Get()->settings_enabled()) {
+  if (chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
+      QuickAnswersState::Get()->settings_enabled()) {
     updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
   }
 }

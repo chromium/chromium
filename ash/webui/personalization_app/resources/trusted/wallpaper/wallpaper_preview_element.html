@@ -1,0 +1,84 @@
+<style include="common-style">
+  #wallpaperLabel {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: label;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. label .'
+      '. image .'
+      '. theme .'
+      '. .     .';
+    grid-template-columns: 20px 1fr 20px;
+    grid-template-rows: 48px minmax(158px, 220px) 1fr 20px;
+  }
+
+  #wallpaperLabel > p {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+  }
+
+  #wallpaperButton {
+    border: 0;
+    border-radius: 0;
+    height: 48px;
+    /* Make the arrow align with the thumbnail image */
+    margin-inline-end: -18px;
+    min-width: 0;
+    padding: 0;
+    width: 48px;
+  }
+
+  #imageContainer {
+    grid-area: image;
+    justify-self: center;
+    max-width: 360px;
+    min-width: 252px;
+  }
+
+  #shelf {
+    background-color: var(--cros-separator-color);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    bottom: 0;
+    height: 24px;
+    position: absolute;
+    width: 100%;
+  }
+
+  ::slotted(personalization-theme) {
+    grid-area: theme;
+  }
+</style>
+<div class="preview-container" id="container">
+  <div id="wallpaperLabel">
+    <p>$i18n{wallpaperLabel}</p>
+    <cr-button id="wallpaperButton" on-click="onClickWallpaper_">
+      <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+    </cr-button>
+  </div>
+  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
+    <div id="imagePlaceholder"></div>
+  </template>
+  <template is="dom-if" if="[[showImage_]]">
+      <div id="imageContainer" class="photo-images-container">
+        <img src$="[[getImageSrc_(image_)]]" aria-hidden="true"
+            on-click="onClickWallpaper_">
+        <div id="shelf"></div>
+      </div>
+  </template>
+  <slot></slot>
+</div>

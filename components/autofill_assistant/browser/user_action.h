@@ -15,15 +15,9 @@
 
 namespace autofill_assistant {
 
-// An action that the user can perform, through the UI or, on Android Q, through
-// a direct action.
+// An action that the user can perform through the UI.
 class UserAction {
  public:
-  // Executes a user action with the given additional trigger context.
-  //
-  // The context is relevant only for actions that execute a script.
-  using Callback = base::OnceCallback<void(std::unique_ptr<TriggerContext>)>;
-
   UserAction(UserAction&&);
   UserAction();
 
@@ -39,17 +33,10 @@ class UserAction {
              bool enabled,
              const std::string& identifier);
 
-  // Returns true if the action has no trigger, that is, there is no chip and no
-  // direct action.
-  bool has_triggers() const {
-    return !chip_.empty() || !direct_action_.empty();
-  }
-
+  // Returns true if the action has a chip.
+  bool has_chip() const { return !chip_.empty(); }
   const Chip& chip() const { return chip_; }
   Chip& chip() { return chip_; }
-
-  const DirectAction& direct_action() const { return direct_action_; }
-  DirectAction& direct_action() { return direct_action_; }
 
   std::string identifier() const { return identifier_; }
 
@@ -60,22 +47,14 @@ class UserAction {
   // Checks whether a callback is assigned to the action. Actions without
   // callbacks do nothing.
   bool HasCallback() const { return callback_ ? true : false; }
-
-  // Specifies a callback that accepts no context.
-  void SetCallback(base::OnceCallback<void()> callback);
-
-  // Specifies a callback that accepts a context.
-  void SetCallback(
-      base::OnceCallback<void(std::unique_ptr<TriggerContext>)> callback) {
+  void SetCallback(base::OnceCallback<void()> callback) {
     callback_ = std::move(callback);
   }
-
-  // Call this action within the specific context, if a callback is set.
-  void Call(std::unique_ptr<TriggerContext> context) {
+  void RunCallback() {
     if (!callback_)
       return;
 
-    std::move(callback_).Run(std::move(context));
+    std::move(callback_).Run();
   }
 
  private:
@@ -83,17 +62,12 @@ class UserAction {
   // empty.
   Chip chip_;
 
-  // Specifies how the user can perform the action as a direct action. Might be
-  // empty.
-  // TODO(b/204057224): Extract script execution logic from this class.
-  DirectAction direct_action_;
-
   // Whether the action is enabled. The chip for a disabled action might still
   // be shown.
   bool enabled_ = true;
 
   // Callback triggered to trigger the action.
-  Callback callback_;
+  base::OnceCallback<void()> callback_;
 
   // Optional identifier to uniquely identify this user action.
   std::string identifier_;

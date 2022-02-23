@@ -15,18 +15,25 @@ class LayoutNGButton final : public LayoutNGFlexibleBox {
   ~LayoutNGButton() override;
   void Trace(Visitor*) const override;
 
-  const char* GetName() const override { return "LayoutNGButton"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGButton";
+  }
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {}
-  bool CreatesAnonymousWrapper() const override { return true; }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOT_DESTROYED(); }
+  bool CreatesAnonymousWrapper() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
  private:
   void UpdateAnonymousChildStyle(const LayoutObject* child,
                                  ComputedStyle& child_style) const override;
 
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectNGButton || LayoutNGFlexibleBox::IsOfType(type);
   }
 

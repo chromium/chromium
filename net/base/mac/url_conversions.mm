@@ -29,16 +29,13 @@ NSURL* NSURLWithGURL(const GURL& url) {
   std::string escaped_query = EscapeNSURLPrecursor(url.query());
   std::string escaped_ref = EscapeNSURLPrecursor(url.ref());
   if (!escaped_path.empty()) {
-    replacements.SetPath(escaped_path.c_str(),
-                         url::Component(0, escaped_path.size()));
+    replacements.SetPathStr(escaped_path);
   }
   if (!escaped_query.empty()) {
-    replacements.SetQuery(escaped_query.c_str(),
-                          url::Component(0, escaped_query.size()));
+    replacements.SetQueryStr(escaped_query);
   }
   if (!escaped_ref.empty()) {
-    replacements.SetRef(escaped_ref.c_str(),
-                        url::Component(0, escaped_ref.size()));
+    replacements.SetRefStr(escaped_ref);
   }
   GURL escaped_url = url.ReplaceComponents(replacements);
 

@@ -210,8 +210,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (is_initial_block_size_indefinite) {
     LayoutUnit intrinsic_block_size = layout_result.IntrinsicBlockSize();
 
-    // Grid/flex can have their children calculate their size based on their
-    // parent's final block-size. E.g.
+    // Grid/flex/fieldset can have their children calculate their size based on
+    // their parent's final block-size. E.g.
     // <div style="display: flex;">
     //   <div style="display: flex;"> <!-- or "display: grid;" -->
     //     <!-- Child will stretch to the parent's block-size -->
@@ -239,7 +239,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     if (old_space.IsFixedBlockSize() ||
         (old_space.IsBlockAutoBehaviorStretch() &&
          style.LogicalHeight().IsAuto())) {
-      if (node.IsFlexibleBox() || node.IsGrid())
+      if (node.IsFlexibleBox() || node.IsGrid() || node.IsFieldsetContainer())
         intrinsic_block_size = kIndefiniteSize;
     }
 

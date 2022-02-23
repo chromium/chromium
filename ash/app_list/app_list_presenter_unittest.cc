@@ -30,6 +30,7 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
@@ -38,6 +39,7 @@
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -86,6 +88,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
@@ -108,6 +111,7 @@ namespace ash {
 namespace {
 
 constexpr int kAppListBezelMargin = 50;
+constexpr int kBestMatchContainerIndex = 1;
 
 AppListModel* GetAppListModel() {
   return AppListModelProvider::Get()->model();
@@ -155,13 +159,48 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
   suggestion_result->set_is_omnibox_search(true);
+  suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
-  actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
+  actions.push_back(SearchResultAction(SearchResultActionType::kRemove,
+                                       gfx::ImageSkia(), u"Remove",
                                        true /*visible_on_hover*/));
   suggestion_result->SetActions(actions);
 
   return suggestion_result;
+}
+
+// Verifies the current search result page anchored dialog bounds.
+// The dialog is expected to be positioned horizontally centered within the
+// search box bounds.
+void SanityCheckSearchResultsAnchoredDialogBounds(
+    const views::Widget* dialog,
+    const SearchBoxView* search_box_view) {
+  auto horizontal_center_offset = [](const gfx::Rect& inner,
+                                     const gfx::Rect& outer) -> int {
+    return outer.CenterPoint().x() - inner.CenterPoint().x();
+  };
+
+  const gfx::Rect dialog_bounds = dialog->GetWindowBoundsInScreen();
+  const gfx::Rect search_box_bounds =
+      search_box_view->GetWidget()->GetWindowBoundsInScreen();
+  // The dialog should be horizontally centered within the search box.
+  EXPECT_EQ(0, horizontal_center_offset(dialog_bounds, search_box_bounds));
+  // Verify the confirmation dialog is positioned with the top within search
+  // box bounds.
+  EXPECT_GT(dialog_bounds.y(), search_box_bounds.y());
+  EXPECT_LT(dialog_bounds.y(), search_box_bounds.bottom());
+}
+
+// Returns the search box view from either the clamshell bubble or the tablet
+// mode fullscreen launcher.
+SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->IsInTabletMode()) {
+    DCHECK(Shell::Get()->app_list_controller()->IsVisible());
+    return helper->GetBubbleSearchBoxView();
+  }
+  return helper->GetSearchBoxView();
 }
 
 }  // namespace
@@ -169,9 +208,8 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
 // This suite used to be called AppListPresenterDelegateTest. It's not called
 // AppListPresenterImplTest because that name was already taken. The two test
 // suite were not merged in order to maintain git blame history for this file.
-class AppListPresenterTest
-    : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class AppListPresenterTest : public AshTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
   AppListPresenterTest() = default;
   AppListPresenterTest(const AppListPresenterTest&) = delete;
@@ -180,12 +218,19 @@ class AppListPresenterTest
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        app_list_features::kNewDragSpecInLauncher, std::get<1>(GetParam()));
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
+  }
+
+  // Ensures the launcher is visible and showing the apps grid.
+  void EnsureLauncherWithVisibleAppsGrid() {
+    auto* helper = GetAppListTestHelper();
+    helper->ShowAndRunLoop(GetPrimaryDisplayId());
+    if (!features::IsProductivityLauncherEnabled())
+      helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+    helper->WaitUntilIdle();
   }
 
   void SetAppListStateAndWait(AppListViewState new_state) {
@@ -195,10 +240,14 @@ class AppListPresenterTest
   }
 
   // Whether to run the test with mouse or gesture events.
-  bool TestMouseEventParam() const { return std::get<0>(GetParam()); }
+  bool TestMouseEventParam() const { return GetParam(); }
 
-  // Whether to run the test with mouse or gesture events.
-  bool GetTestFullscreen() const { return std::get<0>(GetParam()); }
+  // Whether to run the test with fullscreen or not.
+  bool TestFullscreenParam() const { return GetParam(); }
+
+  SearchBoxView* GetSearchBoxView() {
+    return GetSearchBoxViewFromHelper(GetAppListTestHelper());
+  }
 
   gfx::Point GetPointOutsideSearchbox() {
     // Ensures that the point satisfies the following conditions:
@@ -206,17 +255,11 @@ class AppListPresenterTest
     // (2) The point is outside of the search box.
     // (3) The touch event on the point should not be consumed by the handler
     // for back gesture.
-    return GetAppListView()
-        ->search_box_view()
-        ->GetBoundsInScreen()
-        .bottom_right();
+    return GetSearchBoxView()->GetBoundsInScreen().bottom_right();
   }
 
   gfx::Point GetPointInsideSearchbox() {
-    return GetAppListView()
-        ->search_box_view()
-        ->GetBoundsInScreen()
-        .CenterPoint();
+    return GetSearchBoxView()->GetBoundsInScreen().CenterPoint();
   }
 
   AppListView* GetAppListView() {
@@ -231,21 +274,10 @@ class AppListPresenterTest
   }
 
   AppsGridView* apps_grid_view() {
-    return GetAppListView()
-        ->app_list_main_view()
-        ->contents_view()
-        ->apps_container_view()
-        ->apps_grid_view();
-  }
+    if (features::IsProductivityLauncherEnabled())
+      return GetAppListTestHelper()->GetScrollableAppsGridView();
 
-  int GetPeekingHeight() {
-    return GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
-  }
-
-  void ShowZeroStateSearchInHalfState() {
-    GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-    GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
-    GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
+    return GetAppListTestHelper()->GetRootPagedAppsGridView();
   }
 
   SearchResultBaseView* GetSearchResultListViewItemAt(int index) {
@@ -273,48 +305,52 @@ class AppListPresenterTest
 
   views::DialogDelegate* GetSearchResultPageAnchoredDialog() {
     return search_result_page()
-        ->anchored_dialog_for_test()
+        ->dialog_for_test()
         ->widget()
         ->widget_delegate()
         ->AsDialogDelegate();
   }
 
-  // Verifies the current search result page anchored dialog bounds.
-  // The dialog is expected to be positioned horizontally centered within the
-  // search box bounds.
-  void SanityCheckSearchResultsAnchoredDialogBounds(
-      const views::Widget* dialog) {
-    auto horizontal_center_offset = [](const gfx::Rect& inner,
-                                       const gfx::Rect& outer) -> int {
-      return outer.CenterPoint().x() - inner.CenterPoint().x();
-    };
-
-    const gfx::Rect dialog_bounds = dialog->GetWindowBoundsInScreen();
-    const gfx::Rect search_box_bounds = GetAppListView()
-                                            ->search_box_view()
-                                            ->GetWidget()
-                                            ->GetWindowBoundsInScreen();
-    // The dialog should be horizontally centered within the search box.
-    EXPECT_EQ(0, horizontal_center_offset(dialog_bounds, search_box_bounds));
-    // Verify the confirmation dialog is positioned with the top within search
-    // box bounds.
-    EXPECT_GT(dialog_bounds.y(), search_box_bounds.y());
-    EXPECT_LT(dialog_bounds.y(), search_box_bounds.bottom());
-  }
-
   // Returns the |dialog| vertical offset from the top of the search box bounds.
   int GetSearchResultsAnchoredDialogTopOffset(const views::Widget* dialog) {
     const gfx::Rect dialog_bounds = dialog->GetWindowBoundsInScreen();
-    const gfx::Rect search_box_bounds = GetAppListView()
-                                            ->search_box_view()
-                                            ->GetWidget()
-                                            ->GetWindowBoundsInScreen();
+    const gfx::Rect search_box_bounds =
+        GetSearchBoxView()->GetWidget()->GetWindowBoundsInScreen();
     return dialog_bounds.y() - search_box_bounds.y();
+  }
+};
+
+// Instantiate the values in the parameterized tests. Used to
+// toggle mouse and touch events and in some tests to toggle fullscreen mode
+// tests.
+INSTANTIATE_TEST_SUITE_P(All, AppListPresenterTest, testing::Bool());
+
+// Tests for the legacy clamshell "peeking" launcher. These tests can be deleted
+// when ProductivityLauncher ships to stable.
+class AppListPresenterNonBubbleTest : public AppListPresenterTest {
+ public:
+  AppListPresenterNonBubbleTest() {
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  int GetPeekingHeight() {
+    return GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
+  }
+
+  void ShowZeroStateSearchInHalfState() {
+    GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+    GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
+    GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Instantiate the values in the parameterized tests. Used to
+// toggle mouse and touch events and in some tests to toggle fullscreen mode
+// tests.
+INSTANTIATE_TEST_SUITE_P(All, AppListPresenterNonBubbleTest, testing::Bool());
 
 // Tests all tablet/clamshell classic/bubble launcher combinations.
 class AppListBubbleAndTabletTest
@@ -359,15 +395,82 @@ class AppListBubbleAndTabletTest
     return !productivity_launcher_param();
   }
 
+  SearchBoxView* GetSearchBoxView() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleSearchBoxView()
+               : GetAppListTestHelper()->GetAppListView()->search_box_view();
+  }
+
+  SearchResultPageView* GetFullscreenSearchPage() {
+    return GetAppListTestHelper()
+        ->GetAppListView()
+        ->app_list_main_view()
+        ->contents_view()
+        ->search_result_page_view();
+  }
+
   bool AppListSearchResultPageVisible() {
     return should_show_bubble_launcher()
                ? GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible()
-               : GetAppListTestHelper()
-                     ->GetAppListView()
-                     ->app_list_main_view()
-                     ->contents_view()
-                     ->search_result_page_view()
-                     ->GetVisible();
+               : GetFullscreenSearchPage()->GetVisible();
+  }
+
+  SearchResultContainerView* GetDefaultSearchResultListView() {
+    if (should_show_bubble_launcher()) {
+      return GetAppListTestHelper()
+          ->GetProductivityLauncherSearchView()
+          ->result_container_views_for_test()[kBestMatchContainerIndex];
+    }
+    if (productivity_launcher_param()) {
+      return GetFullscreenSearchPage()
+          ->productivity_launcher_search_view_for_test()
+          ->result_container_views_for_test()[kBestMatchContainerIndex];
+    }
+    return GetFullscreenSearchPage()->GetSearchResultListViewForTest();
+  }
+
+  ResultSelectionController* GetResultSelectionController() {
+    if (should_show_bubble_launcher()) {
+      return GetAppListTestHelper()
+          ->GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
+    }
+
+    if (productivity_launcher_param()) {
+      return GetFullscreenSearchPage()
+          ->productivity_launcher_search_view_for_test()
+          ->result_selection_controller_for_test();
+    }
+
+    return GetFullscreenSearchPage()->result_selection_controller();
+  }
+
+  SearchResultPageAnchoredDialog* GetSearchResultPageDialog() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleSearchPageDialog()
+               : GetAppListTestHelper()->GetFullscreenSearchPageDialog();
+  }
+
+  void CancelSearchResultPageDialog() {
+    views::WidgetDelegate* widget_delegate =
+        GetSearchResultPageDialog()->widget()->widget_delegate();
+    if (!productivity_launcher_param()) {
+      widget_delegate->AsDialogDelegate()->CancelDialog();
+    } else {
+      GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
+                       ->cancel_button_for_test());
+    }
+  }
+
+  void AcceptSearchResultPageDialog() {
+    views::WidgetDelegate* widget_delegate =
+        GetSearchResultPageDialog()->widget()->widget_delegate();
+    if (!productivity_launcher_param()) {
+      widget_delegate->AsDialogDelegate()->AcceptDialog();
+    } else {
+      GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
+                       ->accept_button_for_test());
+    }
   }
 
   ContinueSectionView* GetContinueSectionView() {
@@ -387,6 +490,13 @@ class AppListBubbleAndTabletTest
                ? GetAppListTestHelper()->GetBubbleLauncherAppsSeparatorView()
                : GetAppListTestHelper()
                      ->GetFullscreenLauncherAppsSeparatorView();
+  }
+
+  void LongPressAt(const gfx::Point& point) {
+    ui::TouchEvent long_press(ui::ET_GESTURE_LONG_PRESS, point,
+                              base::TimeTicks::Now(),
+                              ui::PointerDetails(ui::EventPointerType::kTouch));
+    GetEventGenerator()->Dispatch(&long_press);
   }
 
   void EnsureLauncherShown() {
@@ -434,16 +544,17 @@ class AppListBubbleAndTabletTest
   AppsGridView* apps_grid_view_ = nullptr;
 };
 
-// Used to test app_list behavior with a populated apps_grid
-class PopulatedAppListTest : public AshTestBase,
-                             public testing::WithParamInterface<bool> {
+// Used to test app_list behavior with a populated apps_grid.
+class PopulatedAppListTestBase : public AshTestBase {
  public:
-  PopulatedAppListTest() = default;
-  ~PopulatedAppListTest() override = default;
+  explicit PopulatedAppListTestBase(bool productivity_launcher_enabled)
+      : productivity_launcher_enabled_(productivity_launcher_enabled) {
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              productivity_launcher_enabled);
+  }
+  ~PopulatedAppListTestBase() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        app_list_features::kNewDragSpecInLauncher, GetParam());
     AppListConfigProvider::Get().ResetForTesting();
     AshTestBase::SetUp();
 
@@ -454,12 +565,16 @@ class PopulatedAppListTest : public AshTestBase,
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
+    // With productivity launcher, fullscreen launcher is used only in tablet
+    // mode, so enable tablet mode.
+    if (productivity_launcher_enabled_)
+      EnableTabletMode(true);
   }
 
  protected:
   void OpenAppListInFullscreen() {
     AppListPresenterImpl* presenter =
-        Shell::Get()->app_list_controller()->presenter();
+        Shell::Get()->app_list_controller()->fullscreen_presenter();
     presenter->Show(AppListViewState::kFullscreenAllApps,
                     GetPrimaryDisplay().id(), base::TimeTicks::Now(),
                     /*show_source=*/absl::nullopt);
@@ -524,44 +639,52 @@ class PopulatedAppListTest : public AshTestBase,
     folder_view()->folder_header_view()->ItemNameChanged();
   }
 
+  const bool productivity_launcher_enabled_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
   AppListView* app_list_view_ = nullptr;         // Owned by native widget.
   PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
-// Subclass of PopuplatedAppListTest which enables the virtual keyboard.
-class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
+// Parameterized by whether productivity launcher is enabled - when the feature
+// is enabled, the test run in tablet mode by default.
+class PopulatedAppListTest : public PopulatedAppListTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
-  PopulatedAppListWithVKEnabledTest() = default;
+  PopulatedAppListTest()
+      : PopulatedAppListTestBase(/*productivity_launcher_enabled=*/GetParam()) {
+  }
+  ~PopulatedAppListTest() override = default;
+
+  bool IsProductivityLauncherEnabled() const { return GetParam(); }
+};
+
+// Instantiated by whether productivity launcher is enabled.
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         PopulatedAppListTest,
+                         testing::Bool());
+
+class LegacyPopulatedAppListTest : public PopulatedAppListTestBase {
+ public:
+  LegacyPopulatedAppListTest()
+      : PopulatedAppListTestBase(/*productivity_launcher_enabled=*/false) {}
+  ~LegacyPopulatedAppListTest() override = default;
+};
+
+// Subclass of PopulatedAppListTest which enables the virtual keyboard.
+class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTestBase {
+ public:
+  PopulatedAppListWithVKEnabledTest() : PopulatedAppListTestBase(false) {}
   ~PopulatedAppListWithVKEnabledTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
-    PopulatedAppListTest::SetUp();
+    PopulatedAppListTestBase::SetUp();
   }
 };
-
-// Instantiate the values in the parameterized tests. First boolean is used to
-// toggle mouse and touch events and in some tests to toggle fullscreen mode
-// tests. The second one toggles cardfied state feature enabled or disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListPresenterTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
-
-// Instantiate the Boolean which is used to toggle cardified state in the
-// parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All, PopulatedAppListTest, testing::Bool());
-
-// Instantiate the Boolean which is used to toggle cardified state in the
-// parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopulatedAppListWithVKEnabledTest,
-                         testing::Bool());
 
 // Instantiate the values in the parameterized tests. First boolean is used to
 // determine whether to use the kProductivityLauncher feature flag. The second
@@ -587,6 +710,41 @@ TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {
   // Delete the character in the textfield and check visibility.
   generator->PressKey(ui::VKEY_BACK, 0);
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
+}
+
+// Regression test for b/204482740.
+TEST_P(AppListBubbleAndTabletTest, AppListEventTargeterForAssistantScrolling) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // A custom event targeter is installed.
+  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
+  ASSERT_TRUE(window);
+  aura::WindowTargeter* targeter = window->targeter();
+  ASSERT_TRUE(targeter);
+
+  // Simulate an assistant card with a webview being shown, which sets a window
+  // property on its window. See AssistantCardElementView::AddedToWidget().
+  aura::Window* child =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(100, 100), window);
+  child->SetProperty(assistant::ui::kOnlyAllowMouseClickEvents, true);
+
+  // Scroll events are blocked for that window.
+  constexpr int offset = 10;
+  ui::ScrollEvent scroll_down(ui::ET_SCROLL, gfx::Point(),
+                              base::TimeTicks::Now(), ui::EF_NONE, 0, offset, 0,
+                              offset, /*finger_count=*/2);
+  EXPECT_FALSE(targeter->SubtreeShouldBeExploredForEvent(child, scroll_down));
+
+  // Click events are not blocked.
+  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       base::TimeTicks::Now(), ui::EF_NONE,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
+                         base::TimeTicks::Now(), ui::EF_NONE,
+                         ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
+  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
 }
 
 // Tests that apps container/page does not have a separator between apps grid
@@ -705,7 +863,7 @@ TEST_P(AppListBubbleAndTabletTest,
 
 // Verifies that context menu click should not activate the search box
 // (see https://crbug.com/941428).
-TEST_P(AppListPresenterTest, RightClickSearchBoxInPeeking) {
+TEST_F(AppListPresenterNonBubbleTest, RightClickSearchBoxInPeeking) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* app_list_view = GetAppListView();
   gfx::Rect app_list_bounds = app_list_view->GetBoundsInScreen();
@@ -721,7 +879,9 @@ TEST_P(AppListPresenterTest, RightClickSearchBoxInPeeking) {
   EXPECT_EQ(AppListViewState::kPeeking, app_list_view->app_list_state());
 }
 
-TEST_P(AppListPresenterTest, ReshownAppListResetsSearchBoxActivation) {
+// Not relevant for ProductivityLauncher because the bubble launcher search box
+// is always active.
+TEST_F(AppListPresenterNonBubbleTest, ReshownAppListResetsSearchBoxActivation) {
   // Activate the search box.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
@@ -738,8 +898,10 @@ TEST_P(AppListPresenterTest, ReshownAppListResetsSearchBoxActivation) {
 }
 
 // Tests that the SearchBox activation is reset after the AppList is hidden with
-// no animation from FULLSCREEN_SEARCH.
-TEST_P(AppListPresenterTest, SideShelfAppListResetsSearchBoxActivationOnClose) {
+// no animation from FULLSCREEN_SEARCH. Not relevant for ProductivityLauncher
+// because the bubble launcher search box is always active.
+TEST_F(AppListPresenterNonBubbleTest,
+       SideShelfAppListResetsSearchBoxActivationOnClose) {
   // Set the shelf to one side, then show the AppList and activate the
   // searchbox.
   SetShelfAlignment(ShelfAlignment::kRight);
@@ -791,20 +953,16 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
-TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
-  ShowZeroStateSearchInHalfState();
+TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
 
-  // Mark the suggested content info as dismissed so that it does not interfere
-  // with the layout.
-  Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-  GetAppListView()
-      ->app_list_main_view()
-      ->contents_view()
-      ->search_result_page_view()
-      ->GetPrivacyContainerViewForTest()
-      ->Update();
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
 
-  // Add a zero state suggestion results - the result that will be tested is in
+  // Add suggestion results - the result that will be tested is in
   // the second place.
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
@@ -812,16 +970,17 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   // The result list is updated asynchronously.
-  GetAppListTestHelper()->WaitUntilIdle();
+  base::RunLoop().RunUntilIdle();
 
-  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(1);
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(1);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
 
   // Make sure the search results page is laid out after adding result action
   // buttons.
-  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_TRUE(result_view->actions_view());
   EXPECT_EQ(1u, result_view->actions_view()->children().size());
@@ -829,38 +988,36 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
 
   // The remove action button is visible on hover only.
   EXPECT_FALSE(action_view->GetVisible());
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(result_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(action_view->GetVisible());
 
   // Record the current result selection before clicking the remove action
   // button.
   ResultSelectionController* result_selection_controller =
-      search_result_page()->result_selection_controller();
+      GetResultSelectionController();
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
   ResultLocationDetails* result_location =
       result_selection_controller->selected_location_details();
 
   // Ensure layout after the action view visibility has been updated.
-  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
 
   // Click the remove action button, this should surface a confirmation dialog.
-  ClickMouseAt(action_view->GetBoundsInScreen().CenterPoint());
+  LeftClickOn(action_view);
 
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
                   .empty());
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(GetSearchResultPageDialog());
 
   // Cancel the dialog - the app list should remain in the search result page,
   // the suggestion removal dialog should be hidden, and no result action should
   // be invoked.
-  GetSearchResultPageAnchoredDialog()->CancelDialog();
+  CancelSearchResultPageDialog();
 
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(GetSearchResultPageDialog());
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
@@ -868,25 +1025,24 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
 
   // The result selection should be at the same position.
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
-  EXPECT_EQ(result_location,
-            result_selection_controller->selected_location_details());
+  EXPECT_EQ(*result_location,
+            *result_selection_controller->selected_location_details());
 
   // Click remove suggestion action button again.
-  ClickMouseAt(action_view->GetBoundsInScreen().CenterPoint());
+  generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
 
   // Expect the removal confirmation dialog - this time, accept it.
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
-  GetSearchResultPageAnchoredDialog()->AcceptDialog();
+  ASSERT_TRUE(GetSearchResultPageDialog());
+  AcceptSearchResultPageDialog();
 
   // The app list should remain showing search results, the dialog should be
   // closed, and result removal action should be invoked.
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(GetSearchResultPageDialog());
 
-  // The result selection should be at the same position.
+  // A result should still be selected.
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
-  EXPECT_EQ(result_location,
-            result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
       {kTestResultId, SearchResultActionType::kRemove}};
@@ -897,10 +1053,16 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
   EXPECT_EQ(expected_actions, invoked_actions);
 }
 
-TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
-  ShowZeroStateSearchInHalfState();
+TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionUsingLongTap) {
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
 
-  // Add a zero state suggestion results - the result that will be tested is in
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Add suggestion results - the result that will be tested is in
   // the second place.
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
@@ -909,14 +1071,15 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
-  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(1);
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(1);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
 
   // Make sure the search results page is laid out after adding result action
   // buttons.
-  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
 
   // Long tap on the search result. This should show the removal confirmation
   // dialog.
@@ -927,15 +1090,16 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
                   .empty());
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(GetSearchResultPageDialog());
 
   // Cancel the dialog - the app list should remain in the search result page,
   // the suggestion removal dialog should be hidden, and no result action should
   // be invoked.
-  GetSearchResultPageAnchoredDialog()->CancelDialog();
+  CancelSearchResultPageDialog();
 
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(GetSearchResultPageDialog());
+
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
                   ->GetAndClearInvokedResultActions()
@@ -946,13 +1110,13 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
 
   // Expect the removal confirmation dialog - this time, accept it.
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
-  GetSearchResultPageAnchoredDialog()->AcceptDialog();
+  ASSERT_TRUE(GetSearchResultPageDialog());
+  AcceptSearchResultPageDialog();
 
   // The app list should remain showing search results, the dialog should be
   // closed, and result removal action should be invoked.
-  GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
-  EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(GetSearchResultPageDialog());
   EXPECT_FALSE(result_view->selected());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
@@ -965,7 +1129,8 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
   EXPECT_EQ(expected_actions, invoked_actions);
 }
 
-TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
+TEST_F(AppListPresenterNonBubbleTest,
+       RemoveSuggestionDialogAnimatesWithAppListView) {
   ShowZeroStateSearchInHalfState();
 
   // Add a zero state suggestion result.
@@ -981,13 +1146,14 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   // Show remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   views::Widget* const confirmation_dialog =
-      search_result_page()->anchored_dialog_for_test()->widget();
+      search_result_page()->dialog_for_test()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
+  SanityCheckSearchResultsAnchoredDialogBounds(
+      confirmation_dialog, GetAppListView()->search_box_view());
   const gfx::Rect initial_dialog_bounds =
       confirmation_dialog->GetWindowBoundsInScreen();
 
@@ -996,7 +1162,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   EXPECT_NE(confirmation_dialog->GetLayer()->transform(), gfx::Transform());
   EXPECT_EQ(confirmation_dialog->GetLayer()->GetTargetTransform(),
@@ -1009,7 +1175,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
   EXPECT_EQ(gfx::RectF(initial_dialog_bounds), current_bounds);
 }
 
-TEST_P(AppListPresenterTest,
+TEST_F(AppListPresenterNonBubbleTest,
        RemoveSuggestionDialogBoundsUpdateWithAppListState) {
   ShowZeroStateSearchInHalfState();
 
@@ -1027,35 +1193,39 @@ TEST_P(AppListPresenterTest,
 
   // Show the remove suggestion dialog.
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   views::Widget* const confirmation_dialog =
-      search_result_page()->anchored_dialog_for_test()->widget();
+      search_result_page()->dialog_for_test()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
   SCOPED_TRACE("Initial confirmation dialog bounds");
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
+  SanityCheckSearchResultsAnchoredDialogBounds(
+      confirmation_dialog, GetAppListView()->search_box_view());
   const int dialog_margin =
       GetSearchResultsAnchoredDialogTopOffset(confirmation_dialog);
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(search_result_page()->dialog_for_test());
 
   // Verify that the confirmation dialog followed the search box widget.
   SCOPED_TRACE("Confirmation dialog bounds after transition");
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
+  SanityCheckSearchResultsAnchoredDialogBounds(
+      confirmation_dialog, GetAppListView()->search_box_view());
   EXPECT_EQ(dialog_margin,
             GetSearchResultsAnchoredDialogTopOffset(confirmation_dialog));
 }
 
-TEST_P(AppListPresenterTest,
+TEST_P(AppListBubbleAndTabletTest,
        TransitionToAppsContainerClosesRemoveSuggestionDialog) {
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  // Show search page.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureTapAt(GetPointInsideSearchbox());
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
@@ -1063,48 +1233,56 @@ TEST_P(AppListPresenterTest,
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
-  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(0);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
 
   // Show remove suggestion dialog.
-  ui::TouchEvent long_press(
-      ui::ET_GESTURE_LONG_PRESS, result_view->GetBoundsInScreen().CenterPoint(),
-      base::TimeTicks::Now(), ui::PointerDetails(ui::EventPointerType::kTouch));
-  GetEventGenerator()->Dispatch(&long_press);
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
+  LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(GetSearchResultPageDialog());
 
   views::Widget* const confirmation_dialog =
-      search_result_page()->anchored_dialog_for_test()->widget();
+      GetSearchResultPageDialog()->widget();
   ASSERT_TRUE(confirmation_dialog);
 
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog,
+                                               GetSearchBoxView());
 
   // Verify that transition to apps page hides the removal confirmation dialog.
   views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
-  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+  GetSearchBoxView()->ClearSearchAndDeactivateSearchBox();
+  EXPECT_FALSE(AppListSearchResultPageVisible());
 
   widget_close_waiter.Wait();
 }
 
-TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
+TEST_P(AppListBubbleAndTabletTest,
+       RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // Enable virtual keyboard for this test.
   KeyboardController* const keyboard_controller =
       Shell::Get()->keyboard_controller();
   keyboard_controller->SetEnableFlag(
       keyboard::KeyboardEnableFlag::kCommandLineEnabled);
 
-  ShowZeroStateSearchInHalfState();
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
 
-  // Add a zero state suggestion result.
+  // Show search page.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_A, 0);
+  EXPECT_TRUE(AppListSearchResultPageVisible());
+
+  // Add a suggestion result.
   const std::string kTestResultId = "Test suggestion";
   GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
-  SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
+  SearchResultBaseView* result_view =
+      GetDefaultSearchResultListView()->GetResultViewAt(0);
   ASSERT_TRUE(result_view);
   ASSERT_TRUE(result_view->result());
   ASSERT_EQ(kTestResultId, result_view->result()->id());
@@ -1114,8 +1292,9 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Show remove suggestion dialog.
+  result_view->GetWidget()->LayoutRootViewIfNecessary();
   LongPressAt(result_view->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(search_result_page()->anchored_dialog_for_test());
+  ASSERT_TRUE(GetSearchResultPageDialog());
 
   // The search box should have lost the focus, which should have hidden the
   // keyboard.
@@ -1125,26 +1304,22 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // changed the position of the search box - the confirmation dialog should
   // have followed it).
   views::Widget* const confirmation_dialog =
-      search_result_page()->anchored_dialog_for_test()->widget();
-  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog);
+      GetSearchResultPageDialog()->widget();
+  SanityCheckSearchResultsAnchoredDialogBounds(confirmation_dialog,
+                                               GetSearchBoxView());
 
   views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
+  GetSearchBoxView()->ClearSearchAndDeactivateSearchBox();
+  EXPECT_FALSE(AppListSearchResultPageVisible());
+  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 
-  // Go to peeking state, and verify the keyboard is not reshown.
-  GetAppListView()->SetState(AppListViewState::kPeeking);
-  GetAppListTestHelper()->WaitUntilIdle();
   // Exiting the search results page should close the dialog.
   widget_close_waiter.Wait();
-  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
-
-  GetAppListTestHelper()->DismissAndRunLoop();
-  GetAppListTestHelper()->CheckVisibility(false);
-  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 }
 
 // Verifies that the downward mouse drag on AppsGridView's first page should
 // be handled by AppList.
-TEST_P(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
+TEST_F(LegacyPopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
   InitializeAppsGrid();
   PopulateApps(2);
 
@@ -1168,7 +1343,7 @@ TEST_P(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
 
 // Verifies that the upward mouse drag on AppsGridView's first page should
 // be handled by PaginationController.
-TEST_P(PopulatedAppListTest,
+TEST_F(LegacyPopulatedAppListTest,
        MouseDragAppsGridViewHandledByPaginationController) {
   InitializeAppsGrid();
   PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
@@ -1216,10 +1391,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center());
   EXPECT_TRUE(apps_grid_view_->IsDragging());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1250,7 +1422,7 @@ TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   EXPECT_TRUE(apps_grid_view_->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id());
   EXPECT_FALSE(apps_grid_view_->IsDragging());
 
   // Verify that mouse drag has been canceled.
@@ -1277,14 +1449,13 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   PopulateApps(3);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1294,7 +1465,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id());
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1323,14 +1494,13 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   PopulateApps(3);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1355,7 +1525,7 @@ TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
   // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  app_list_test_model_->DeleteItem(dragged_view->item()->id());
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1413,8 +1583,10 @@ TEST_P(PopulatedAppListTest,
   EXPECT_TRUE(apps_grid_view_->IsDragging());
   EXPECT_TRUE(folder_view()->items_grid_view()->IsDragging());
 
-  // Delete the dragged item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_view->item()->id());
+  // Leave the dragged item as it's folder only child, and then delete it, which
+  // should also delete the folder.
+  app_list_test_model_->DeleteItem("Item 3");
+  app_list_test_model_->DeleteItem(dragged_view->item()->id());
 
   // Verify that drag has been canceled.
   EXPECT_FALSE(apps_grid_view_->IsDragging());
@@ -1422,8 +1594,8 @@ TEST_P(PopulatedAppListTest,
 
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ("Item 3", apps_grid_view_->GetItemViewAt(2)->item()->id());
-  EXPECT_EQ("Item 4", apps_grid_view_->GetItemViewAt(3)->item()->id());
+  EXPECT_EQ("Item 4", apps_grid_view_->GetItemViewAt(2)->item()->id());
+  EXPECT_EQ("Item 5", apps_grid_view_->GetItemViewAt(3)->item()->id());
 
   // Hide and show the app list again to verify checks done when resetting the
   // apps grid for show pass (e.g. verification that size of the app list views
@@ -1499,28 +1671,24 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   event_generator->MoveTouch(
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
-  gfx::Point target =
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
-  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
-
   // End drag at the in between items 1 and 2 - note that these have been
   // translated one slot left to fill in space left by the dragged view, so the
   // expected drop slot is actually slot 1.
+  gfx::Point target =
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
   event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
 
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
 }
 
 // Tests screen rotation during apps grid item drag where the drag item ends up
@@ -1532,7 +1700,8 @@ TEST_P(PopulatedAppListTest,
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) +
+               apps_grid_test_api_->TilesPerPage(1));
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1545,7 +1714,7 @@ TEST_P(PopulatedAppListTest,
   // Move the item close to screen edge, so it ends up in area that triggers
   // page scroll after rotation.
   event_generator->MoveTouch(app_list_view_->GetBoundsInScreen().left_center() +
-                             gfx::Vector2d(100, 0));
+                             gfx::Vector2d(64, 0));
 
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
@@ -1557,8 +1726,15 @@ TEST_P(PopulatedAppListTest,
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
+  ASSERT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
   event_generator->MoveTouchBy(0, 10);
   EXPECT_TRUE(apps_grid_view_->FirePageFlipTimerForTest());
+  // Move the pointer away from the grid horizontally for it to get out ouf apps
+  // grid drag buffer, so the release results in a canceled drag - for
+  // productivity launcher, the grid is spread out vertically so there is no
+  // area under the grid that's: in page flip area, outside of apps grid drag
+  // buffer, and outside of shelf bounds.
+  event_generator->MoveTouchBy(0, 270);
   event_generator->ReleaseTouch();
 
   // The model state should not have been changed.
@@ -1579,14 +1755,13 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   PopulateApps(10);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1595,10 +1770,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   event_generator->MoveTouch(
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1629,15 +1801,14 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   PopulateApps(10);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1651,10 +1822,8 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   EXPECT_TRUE(
       folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
   EXPECT_FALSE(AppListIsInFolderView());
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1663,7 +1832,6 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
 
   gfx::Point target =
       apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().right_center();
-  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
   // End drag at the in between items 1 and 2.
   event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
@@ -1689,10 +1857,9 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
   AppListItemView* folder_item = apps_grid_view_->GetItemViewAt(2);
   ASSERT_TRUE(folder_item);
-  event_generator->GestureTapAt(folder_item->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(folder_item);
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
@@ -1700,6 +1867,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
       folder_view()->items_grid_view()->GetItemViewAt(0);
   ASSERT_TRUE(dragged_view);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1727,18 +1895,31 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   EXPECT_TRUE(apps_grid_view_->GetItemViewAt(3)->item()->is_folder());
   EXPECT_EQ(dragged_item->folder_id(),
             apps_grid_view_->GetItemViewAt(3)->item()->id());
+
+  // With productivity launcher enabled, newly created folder should open and
+  // have the name input focused.
+  EXPECT_EQ(productivity_launcher_param(),
+            GetAppListTestHelper()->IsInFolderView());
+  if (productivity_launcher_param()) {
+    EXPECT_EQ(dragged_item->folder_id(), folder_view()->folder_item()->id());
+    EXPECT_TRUE(folder_view()
+                    ->folder_header_view()
+                    ->GetFolderNameViewForTest()
+                    ->HasFocus());
+  }
 }
 
 // Tests that an item can be removed just after creating a folder that contains
 // that item. See https://crbug.com/1083942
 TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
-  const int kItemCount = 5;
+  const int kItemCount = 6;
   PopulateApps(kItemCount);
 
   // Dragging the item with index 4.
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(4);
   AppListItem* const dragged_item = dragged_view->item();
+  AppListItem* const merged_item = apps_grid_view_->GetItemViewAt(3)->item();
 
   // Drag the item on top of the item with index 3.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -1766,11 +1947,84 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
 
-  // Open the newly created folder.
+  // Open the newly created folder - when productivity launcher is enabled this
+  // happens automatically.
+  if (!IsProductivityLauncherEnabled())
+    LeftClickOn(apps_grid_view_->GetItemViewAt(3));
+
+  // Verify that item views have no layers after the folder has been opened.
+  apps_grid_test_api_->WaitForItemMoveAnimationDone();
+  EXPECT_TRUE(AppListIsInFolderView());
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
+
+  // Verify that a pending layout, if any, does not cause a crash.
+  apps_grid_view_->InvalidateLayout();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Remove an item from the folder, and leave it as a single item folder.
+  app_list_test_model_->DeleteItem(merged_item->id());
+  EXPECT_TRUE(AppListIsInFolderView());
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Remove the original drag view item.
+  app_list_test_model_->DeleteItem(dragged_item->id());
+  apps_grid_test_api_->WaitForItemMoveAnimationDone();
+
+  EXPECT_FALSE(AppListIsInFolderView());
+  EXPECT_FALSE(apps_grid_view_->GetItemViewAt(3)->item()->is_folder());
+
+  // Verify that a pending layout, if any, does not cause a crash.
+  apps_grid_view_->InvalidateLayout();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+}
+
+TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
+  InitializeAppsGrid();
+  const int kItemCount = 5;
+  PopulateApps(kItemCount);
+
+  // Dragging the item with index 4.
+  AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(4);
+  AppListItem* const dragged_item = dragged_view->item();
+  AppListItem* const merged_item = apps_grid_view_->GetItemViewAt(3)->item();
+
+  // Drag the item on top of the item with index 3.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(dragged_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  dragged_view->FireMouseDragTimerForTest();
+  // Move mouse to switch to cardified state -the cardified state starts only
+  // once the drag distance exceeds a drag threshold, so the pointer has to
+  // sufficiently move from the original position.
+  event_generator->MoveMouseBy(10, 10);
   event_generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
   event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(apps_grid_view_->IsDragging());
+
+  AppListItem* folder_item = apps_grid_view_->GetItemViewAt(3)->item();
+  EXPECT_TRUE(folder_item->is_folder());
+  EXPECT_EQ(dragged_item->folder_id(), folder_item->id());
+
+  // Verify that item layers have been destroyed after the drag operation ended.
+  apps_grid_test_api_->WaitForItemMoveAnimationDone();
+
+  for (int i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
+    views::View* item_view = apps_grid_view_->view_model()->view_at(i);
+    EXPECT_FALSE(item_view->layer()) << "at " << i;
+  }
+
+  // Open the newly created folder - with productivity launcher, the folder
+  // should already be open.
+  if (!IsProductivityLauncherEnabled()) {
+    event_generator->MoveMouseTo(
+        apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+    event_generator->ReleaseLeftButton();
+  }
 
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
@@ -1785,7 +2039,10 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Remove the original drag view item.
-  app_list_test_model_->DeleteUninstalledItem(dragged_item->id());
+  app_list_test_model_->DeleteItem(dragged_item->id());
+  // Reparent the remaining folder item to the root apps grid (as it's done by
+  // Chrome when cleaning up single-item folders).
+  app_list_test_model_->MoveItemToRootAt(merged_item, folder_item->position());
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
 
   EXPECT_FALSE(AppListIsInFolderView());
@@ -1796,7 +2053,7 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-TEST_P(PopulatedAppListWithVKEnabledTest,
+TEST_F(PopulatedAppListWithVKEnabledTest,
        TappingAppsGridClosesVirtualKeyboard) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -1839,22 +2096,23 @@ TEST_P(PopulatedAppListWithVKEnabledTest,
 // Tests that a folder item that is dragged to the page flip area and released
 // will discard empty pages in the apps grid. If an empty page is not discarded,
 // the apps grid crashes (See http://crbug.com/1100011).
-TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
+// NOTE: Productivity launcher does not create empty pages during drag, so this
+// test is not relevant.
+TEST_F(LegacyPopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   InitializeAppsGrid();
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
   PopulateApps(2);
   ASSERT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
 
   // Tap the folder item to show its contents.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1948,7 +2206,7 @@ TEST_P(AppListPresenterTest, UpdateDisplayNotCloseAppList) {
 }
 
 // Tests the app list window's bounds under multi-displays environment.
-TEST_P(AppListPresenterTest, AppListWindowBounds) {
+TEST_F(AppListPresenterNonBubbleTest, AppListWindowBounds) {
   // Set up a screen with two displays (horizontally adjacent).
   UpdateDisplay("1024x768,1024x768");
   const gfx::Size display_size(1024, 768);
@@ -1983,9 +2241,9 @@ TEST_P(AppListPresenterTest, AppListWindowBounds) {
 
 // Tests that the app list window's bounds and the search box bounds are updated
 // when the display bounds change.
-TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChange) {
+TEST_F(AppListPresenterTest, AppListBoundsChangeForDisplayChange) {
   UpdateDisplay("1024x768");
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
 
   const gfx::Rect app_list_bounds =
@@ -2012,7 +2270,8 @@ TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChange) {
 
 // Tests that the app list window's bounds and the search box bounds in the half
 // state are updated when the display bounds change.
-TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChangeSearch) {
+TEST_F(AppListPresenterNonBubbleTest,
+       AppListBoundsChangeForDisplayChangeSearch) {
   UpdateDisplay("1024x768");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -2042,7 +2301,8 @@ TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChangeSearch) {
 
 // Tests that the app list window's bounds and the search box bounds in the
 // fullscreen state are updated when the display bounds change.
-TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChangeFullscreen) {
+TEST_F(AppListPresenterNonBubbleTest,
+       AppListBoundsChangeForDisplayChangeFullscreen) {
   UpdateDisplay("1024x768");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -2072,7 +2332,7 @@ TEST_P(AppListPresenterTest, AppListBoundsChangeForDisplayChangeFullscreen) {
 
 // Tests that the app list window's bounds and the search box bounds in the
 // fullscreen search state are updated when the display bounds change.
-TEST_P(AppListPresenterTest,
+TEST_F(AppListPresenterNonBubbleTest,
        AppListBoundsChangeForDisplayChangeFullscreenSearch) {
   UpdateDisplay("1024x768");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2103,7 +2363,9 @@ TEST_P(AppListPresenterTest,
 }
 
 // Tests that the app list is not draggable in side shelf alignment.
-TEST_P(AppListPresenterTest, SideShelfAlignmentDragDisabled) {
+// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
+// support swipe to open and close.
+TEST_P(AppListPresenterNonBubbleTest, SideShelfAlignmentDragDisabled) {
   SetShelfAlignment(ShelfAlignment::kRight);
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   const AppListView* app_list = GetAppListView();
@@ -2129,7 +2391,7 @@ TEST_P(AppListPresenterTest, SideShelfAlignmentDragDisabled) {
 
 // Tests that the app list initializes in fullscreen with side shelf alignment
 // and that the state transitions via text input act properly.
-TEST_P(AppListPresenterTest, SideShelfAlignmentTextStateTransitions) {
+TEST_F(AppListPresenterNonBubbleTest, SideShelfAlignmentTextStateTransitions) {
   SetShelfAlignment(ShelfAlignment::kLeft);
 
   // Open the app list with side shelf alignment, then check that it is in
@@ -2154,7 +2416,8 @@ TEST_P(AppListPresenterTest, SideShelfAlignmentTextStateTransitions) {
 
 // Tests that the app list initializes in peeking with bottom shelf alignment
 // and that the state transitions via text input act properly.
-TEST_P(AppListPresenterTest, BottomShelfAlignmentTextStateTransitions) {
+TEST_F(AppListPresenterNonBubbleTest,
+       BottomShelfAlignmentTextStateTransitions) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* app_list = GetAppListView();
   EXPECT_FALSE(app_list->is_fullscreen());
@@ -2222,7 +2485,7 @@ TEST_P(AppListPresenterTest, AppListClosesWhenLeavingTabletMode) {
 
 // Tests that the app list state responds correctly to tablet mode being
 // enabled while the app list is being shown with half launcher.
-TEST_P(AppListPresenterTest, HalfToFullscreenWhenTabletModeIsActive) {
+TEST_F(AppListPresenterNonBubbleTest, HalfToFullscreenWhenTabletModeIsActive) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -2239,7 +2502,7 @@ TEST_P(AppListPresenterTest, HalfToFullscreenWhenTabletModeIsActive) {
 }
 
 // Tests that the app list view handles drag properly in laptop mode.
-TEST_P(AppListPresenterTest, AppListViewDragHandler) {
+TEST_P(AppListPresenterNonBubbleTest, AppListViewDragHandler) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -2306,7 +2569,8 @@ TEST_P(AppListPresenterTest, AppListViewDragHandler) {
 
 // Tests that the bottom shelf background is hidden when the app list is shown
 // in laptop mode.
-TEST_P(AppListPresenterTest, ShelfBackgroundIsHiddenWhenAppListIsShown) {
+TEST_F(AppListPresenterNonBubbleTest,
+       ShelfBackgroundIsHiddenWhenAppListIsShown) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   ShelfLayoutManager* shelf_layout_manager =
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
@@ -2317,9 +2581,8 @@ TEST_P(AppListPresenterTest, ShelfBackgroundIsHiddenWhenAppListIsShown) {
 
 // Tests the shelf background type is as expected when a window is created after
 // going to tablet mode.
-TEST_P(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
+TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
   // Enter tablet mode to display the home launcher.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   EnableTabletMode(true);
   ShelfLayoutManager* shelf_layout_manager =
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
@@ -2337,7 +2600,7 @@ TEST_P(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
 // Tests that app list understands shelf rounded corners state while animating
 // out and in, and that it keeps getting notified of shelf state changes if
 // close animation is interrupted by another show request.
-TEST_P(AppListPresenterTest, AppListShownWhileClosing) {
+TEST_F(AppListPresenterNonBubbleTest, AppListShownWhileClosing) {
   auto window = CreateTestWindow();
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
 
@@ -2385,7 +2648,7 @@ TEST_P(AppListPresenterTest, AppListShownWhileClosing) {
 // Tests how shelf state is updated as app list state changes with a maximized
 // window open. It verifies that the app list knows that the maximized shelf had
 // no rounded corners.
-TEST_P(AppListPresenterTest, AppListWithMaximizedShelf) {
+TEST_F(AppListPresenterNonBubbleTest, AppListWithMaximizedShelf) {
   auto window = CreateTestWindow();
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
 
@@ -2433,7 +2696,7 @@ TEST_P(AppListPresenterTest, AppListWithMaximizedShelf) {
 // Verifies the shelf background state changes when a window is maximized while
 // app list is shown. Verifies that AppList::shelf_has_rounded_corners() is
 // updated.
-TEST_P(AppListPresenterTest, WindowMaximizedWithAppListShown) {
+TEST_F(AppListPresenterNonBubbleTest, WindowMaximizedWithAppListShown) {
   auto window = CreateTestWindow();
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2461,8 +2724,7 @@ TEST_P(AppListPresenterTest, WindowMaximizedWithAppListShown) {
 
 // Tests that the bottom shelf is auto hidden when a window is fullscreened in
 // tablet mode (home launcher is shown behind).
-TEST_P(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
   EnableTabletMode(true);
   Shelf* shelf =
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()));
@@ -2478,7 +2740,7 @@ TEST_P(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
 
 // Tests that the peeking app list closes if the user taps or clicks outside
 // its bounds.
-TEST_P(AppListPresenterTest, TapAndClickOutsideClosesPeekingAppList) {
+TEST_P(AppListPresenterNonBubbleTest, TapAndClickOutsideClosesPeekingAppList) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -2501,7 +2763,8 @@ TEST_P(AppListPresenterTest, TapAndClickOutsideClosesPeekingAppList) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_P(AppListPresenterTest, LongPressOutsideCloseAppList) {
+// ProductivityLauncher closes on touch-press, so this test isn't relevant.
+TEST_F(AppListPresenterNonBubbleTest, LongPressOutsideCloseAppList) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
 
@@ -2518,7 +2781,8 @@ TEST_P(AppListPresenterTest, LongPressOutsideCloseAppList) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_P(AppListPresenterTest, TwoFingerTapOutsideCloseAppList) {
+// ProductivityLauncher closes on touch-press, so this test isn't relevant.
+TEST_F(AppListPresenterNonBubbleTest, TwoFingerTapOutsideCloseAppList) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
 
@@ -2537,7 +2801,7 @@ TEST_P(AppListPresenterTest, TwoFingerTapOutsideCloseAppList) {
 
 // Tests that a keypress activates the searchbox and that clearing the
 // searchbox, the searchbox remains active.
-TEST_P(AppListPresenterTest, KeyPressEnablesSearchBox) {
+TEST_F(AppListPresenterNonBubbleTest, KeyPressEnablesSearchBox) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   SearchBoxView* search_box_view = GetAppListView()->search_box_view();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -2554,7 +2818,7 @@ TEST_P(AppListPresenterTest, KeyPressEnablesSearchBox) {
 // Tests that a tap/click on the AppListView from half launcher returns the
 // AppListView to Peeking, and that a tap/click on the AppListView from
 // Peeking closes the app list.
-TEST_P(AppListPresenterTest,
+TEST_P(AppListPresenterNonBubbleTest,
        StateTransitionsByTapAndClickingAppListBodyFromHalf) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2599,7 +2863,7 @@ TEST_P(AppListPresenterTest,
 // Tests that a tap/click on the AppListView from Fullscreen search returns
 // the AppListView to fullscreen all apps, and that a tap/click on the
 // AppListView from fullscreen all apps closes the app list.
-TEST_P(AppListPresenterTest,
+TEST_P(AppListPresenterNonBubbleTest,
        StateTransitionsByTappingAppListBodyFromFullscreen) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2650,7 +2914,7 @@ TEST_P(AppListPresenterTest,
 
 // Tests that the searchbox activates when it is tapped and that the widget is
 // closed after tapping outside the searchbox.
-TEST_P(AppListPresenterTest, TapAndClickEnablesSearchBox) {
+TEST_P(AppListPresenterNonBubbleTest, TapAndClickEnablesSearchBox) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   SearchBoxView* search_box_view = GetAppListView()->search_box_view();
@@ -2692,8 +2956,9 @@ TEST_P(AppListPresenterTest, TapAndClickEnablesSearchBox) {
 }
 
 // Tests that search box gets deactivated if the active search model gets
-// switched.
-TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
+// switched. Does not apply to ProductivityLauncher, where the search box is
+// always active.
+TEST_P(AppListPresenterNonBubbleTest, SearchBoxDeactivatedOnModelChange) {
   EnableTabletMode(true);
 
   const bool test_mouse_event = TestMouseEventParam();
@@ -2729,7 +2994,8 @@ TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
 }
 
 // Tests that search UI gets closed if search model gets changed.
-TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
+// TODO(crbug.com/1273162): Fix for ProductivityLauncher enabled.
+TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
   EnableTabletMode(true);
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2812,7 +3078,7 @@ TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
 
 // Tests that the result selection will reset after closing the search box by
 // clicking somewhere outside the search box.
-TEST_P(AppListPresenterTest,
+TEST_P(AppListPresenterNonBubbleTest,
        ClosingSearchBoxByClickingOutsideResetsResultSelection) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2870,7 +3136,7 @@ TEST_P(AppListPresenterTest,
 
 // Tests that the result selection will reset after closing the search box by
 // clicking the close button.
-TEST_P(AppListPresenterTest,
+TEST_P(AppListPresenterNonBubbleTest,
        ClosingSearchBoxByClickingCloseButtonResetsResultSelection) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -2910,10 +3176,9 @@ TEST_P(AppListPresenterTest,
   const views::View* close_button =
       GetAppListView()->search_box_view()->close_button();
   if (test_mouse_event) {
-    ClickMouseAt(close_button->GetBoundsInScreen().CenterPoint());
+    LeftClickOn(close_button);
   } else {
-    GetEventGenerator()->GestureTapAt(
-        close_button->GetBoundsInScreen().CenterPoint());
+    GestureTapOn(close_button);
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -2921,9 +3186,9 @@ TEST_P(AppListPresenterTest,
   // Tap/Click the search box again, the result selection should be reset to the
   // first one.
   if (test_mouse_event) {
-    ClickMouseAt(GetPointInsideSearchbox());
+    LeftClickOn(search_box_view);
   } else {
-    GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
+    GestureTapOn(search_box_view);
   }
 
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -2935,7 +3200,8 @@ TEST_P(AppListPresenterTest,
 
 // Tests that the shelf background displays/hides with bottom shelf
 // alignment.
-TEST_P(AppListPresenterTest, ShelfBackgroundRespondsToAppListBeingShown) {
+TEST_F(AppListPresenterNonBubbleTest,
+       ShelfBackgroundRespondsToAppListBeingShown) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
   // Show the app list, the shelf background should be transparent.
@@ -2958,7 +3224,7 @@ TEST_P(AppListPresenterTest, ShelfBackgroundRespondsToAppListBeingShown) {
 
 // Tests that the half app list closes itself if the user taps outside its
 // bounds.
-TEST_P(AppListPresenterTest, TapAndClickOutsideClosesHalfAppList) {
+TEST_P(AppListPresenterNonBubbleTest, TapAndClickOutsideClosesHalfAppList) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   // Transition to half app list by entering text.
@@ -2983,7 +3249,7 @@ TEST_P(AppListPresenterTest, TapAndClickOutsideClosesHalfAppList) {
 }
 
 // Tests that the search box is set active with a whitespace query.
-TEST_P(AppListPresenterTest, WhitespaceQuery) {
+TEST_F(AppListPresenterNonBubbleTest, WhitespaceQuery) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
   EXPECT_FALSE(view->search_box_view()->is_search_box_active());
@@ -3016,7 +3282,7 @@ TEST_P(AppListPresenterTest, WhitespaceQuery) {
 // Tests that an unhandled two finger tap/right click does not close the app
 // list, and an unhandled one finger tap/left click closes the app list in
 // Peeking mode.
-TEST_P(AppListPresenterTest, UnhandledEventOnPeeking) {
+TEST_P(AppListPresenterNonBubbleTest, UnhandledEventOnPeeking) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -3055,8 +3321,11 @@ TEST_P(AppListPresenterTest, UnhandledEventOnPeeking) {
 
 // Tests that a drag to the bezel from Fullscreen/Peeking will close the app
 // list.
-TEST_P(AppListPresenterTest, DragToBezelClosesAppListFromFullscreenAndPeeking) {
-  const bool test_fullscreen = GetTestFullscreen();
+// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
+// support swipe to open and close.
+TEST_P(AppListPresenterNonBubbleTest,
+       DragToBezelClosesAppListFromFullscreenAndPeeking) {
+  const bool test_fullscreen = TestFullscreenParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -3085,11 +3354,13 @@ TEST_P(AppListPresenterTest, DragToBezelClosesAppListFromFullscreenAndPeeking) {
 
 // Tests that a drag to the bezel from Fullscreen/Peeking will close the app
 // list even on external display with non zero y origin.
-TEST_P(AppListPresenterTest,
+// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
+// support swipe to open and close.
+TEST_P(AppListPresenterNonBubbleTest,
        DragToBezelClosesAppListFromFullscreenAndPeekingOnExternal) {
   UpdateDisplay("800x600,1000x768");
 
-  const bool test_fullscreen = GetTestFullscreen();
+  const bool test_fullscreen = TestFullscreenParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
   AppListView* view = GetAppListView();
   {
@@ -3143,17 +3414,12 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
   // Disconnect secondary display.
   UpdateDisplay("1024x768");
 
-  // Open app list to fullscreen.
-  helper->ShowAndRunLoop(GetPrimaryDisplayId());
-  helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
-  helper->WaitUntilIdle();
+  // Open app list to show app items.
+  EnsureLauncherWithVisibleAppsGrid();
 
   // Click on an item.
   AppListItemView* item_view = apps_grid_view()->GetItemViewAt(0);
-  gfx::Point item_center = item_view->GetBoundsInScreen().CenterPoint();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(item_center);
-  generator->ClickLeftButton();
+  LeftClickOn(item_view);
 
   // No crash. No use-after-free detected by ASAN.
 }
@@ -3161,7 +3427,7 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
 // Tests that the app list window's bounds height (from the shelf) in kPeeking
 // state is the same whether the app list is shown on the primary display
 // or the secondary display fir different display placements.
-TEST_P(AppListPresenterTest, AppListPeekingStateHeightOnMultiDisplay) {
+TEST_F(AppListPresenterNonBubbleTest, AppListPeekingStateHeightOnMultiDisplay) {
   UpdateDisplay("800x1000, 800x600");
 
   const std::vector<display::DisplayPlacement::Position> placements = {
@@ -3223,7 +3489,7 @@ TEST_P(AppListPresenterTest, AppListPeekingStateHeightOnMultiDisplay) {
 // Tests that the app list window's bounds height (from the shelf) in kHalf
 // state is the same whether the app list is shown on the primary display
 // or the secondary display fir different display placements.
-TEST_P(AppListPresenterTest, AppListHalfStateHeightOnMultiDisplay) {
+TEST_F(AppListPresenterNonBubbleTest, AppListHalfStateHeightOnMultiDisplay) {
   UpdateDisplay("800x1000, 800x600");
 
   const std::vector<display::DisplayPlacement::Position> placements = {
@@ -3283,8 +3549,9 @@ TEST_P(AppListPresenterTest, AppListHalfStateHeightOnMultiDisplay) {
 }
 
 // Tests that a fling from Fullscreen/Peeking closes the app list.
-TEST_P(AppListPresenterTest, FlingDownClosesAppListFromFullscreenAndPeeking) {
-  const bool test_fullscreen = GetTestFullscreen();
+TEST_P(AppListPresenterNonBubbleTest,
+       FlingDownClosesAppListFromFullscreenAndPeeking) {
+  const bool test_fullscreen = TestFullscreenParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -3304,19 +3571,16 @@ TEST_P(AppListPresenterTest, FlingDownClosesAppListFromFullscreenAndPeeking) {
 
 // Tests that drag using a mouse does not always close the app list if the app
 // list was previously closed using a fling gesture.
-TEST_P(AppListPresenterTest, MouseDragAfterDownwardFliing) {
-  const bool test_fullscreen = GetTestFullscreen();
+TEST_P(AppListPresenterNonBubbleTest, MouseDragAfterDownwardFliing) {
+  const bool test_fullscreen = TestFullscreenParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   AppListView* view = GetAppListView();
-  const gfx::Point expand_arrow_point = view->app_list_main_view()
-                                            ->contents_view()
-                                            ->expand_arrow_view()
-                                            ->GetBoundsInScreen()
-                                            .CenterPoint();
+  const views::View* expand_arrow =
+      view->app_list_main_view()->contents_view()->expand_arrow_view();
 
   if (test_fullscreen)
-    GetEventGenerator()->GestureTapAt(expand_arrow_point);
+    GestureTapOn(expand_arrow);
   GetAppListTestHelper()->CheckState(test_fullscreen
                                          ? AppListViewState::kFullscreenAllApps
                                          : AppListViewState::kPeeking);
@@ -3330,7 +3594,7 @@ TEST_P(AppListPresenterTest, MouseDragAfterDownwardFliing) {
   // position.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   if (test_fullscreen)
-    GetEventGenerator()->GestureTapAt(expand_arrow_point);
+    GestureTapOn(expand_arrow);
   GetAppListTestHelper()->CheckState(test_fullscreen
                                          ? AppListViewState::kFullscreenAllApps
                                          : AppListViewState::kPeeking);
@@ -3347,7 +3611,7 @@ TEST_P(AppListPresenterTest, MouseDragAfterDownwardFliing) {
                                          : AppListViewState::kPeeking);
 }
 
-TEST_P(AppListPresenterTest,
+TEST_F(AppListPresenterNonBubbleTest,
        MouseWheelFromAppListPresenterImplTransitionsAppListState) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -3358,8 +3622,9 @@ TEST_P(AppListPresenterTest,
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
-TEST_P(AppListPresenterTest, LongUpwardDragInFullscreenShouldNotClose) {
-  const bool test_fullscreen_search = GetTestFullscreen();
+TEST_P(AppListPresenterNonBubbleTest,
+       LongUpwardDragInFullscreenShouldNotClose) {
+  const bool test_fullscreen_search = TestFullscreenParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
   FlingUpOrDown(GetEventGenerator(), view, true);
@@ -3392,7 +3657,7 @@ TEST_P(AppListPresenterTest, LongUpwardDragInFullscreenShouldNotClose) {
 
 // Tests closing the app list during drag, and verifies the bounds get properly
 // updated when the app list is shown again..
-TEST_P(AppListPresenterTest, CloseAppListDuringDrag) {
+TEST_P(AppListPresenterNonBubbleTest, CloseAppListDuringDrag) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -3423,7 +3688,9 @@ TEST_P(AppListPresenterTest, CloseAppListDuringDrag) {
 
 // Tests closing the app list during drag, and verifies that drag updates are
 // ignored while the app list is closing.
-TEST_P(AppListPresenterTest, DragUpdateWhileAppListClosing) {
+// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
+// support swipe to open and close.
+TEST_P(AppListPresenterNonBubbleTest, DragUpdateWhileAppListClosing) {
   const bool test_mouse_event = TestMouseEventParam();
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -3468,7 +3735,7 @@ TEST_P(AppListPresenterTest, DragUpdateWhileAppListClosing) {
 }
 
 // Tests that a drag can not make the app list smaller than the shelf height.
-TEST_P(AppListPresenterTest, LauncherCannotGetSmallerThanShelf) {
+TEST_F(AppListPresenterNonBubbleTest, LauncherCannotGetSmallerThanShelf) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   AppListView* view = GetAppListView();
 
@@ -3487,7 +3754,7 @@ TEST_P(AppListPresenterTest, LauncherCannotGetSmallerThanShelf) {
 }
 
 // Tests that the AppListView is on screen on a small display.
-TEST_P(AppListPresenterTest, SearchBoxShownOnSmallDisplay) {
+TEST_F(AppListPresenterNonBubbleTest, SearchBoxShownOnSmallDisplay) {
   // Update the display to a small scale factor.
   UpdateDisplay("600x400");
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -3511,7 +3778,7 @@ TEST_P(AppListPresenterTest, SearchBoxShownOnSmallDisplay) {
 }
 
 // Tests that the AppListView is on screen on a small work area.
-TEST_P(AppListPresenterTest, SearchBoxShownOnSmallWorkArea) {
+TEST_F(AppListPresenterNonBubbleTest, SearchBoxShownOnSmallWorkArea) {
   // Update the work area to a small size.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   ASSERT_TRUE(display_manager()->UpdateWorkAreaOfDisplay(
@@ -3545,9 +3812,7 @@ TEST_P(AppListPresenterTest, ShowInInvalidDisplay) {
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
 }
 
-// Tests that tap the auto-hide shelf with app list opened should dismiss the
-// app list but keep shelf visible.
-TEST_P(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
+TEST_F(AppListPresenterTest, TapAppListThenSystemTrayShowsAutoHiddenShelf) {
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
@@ -3563,21 +3828,29 @@ TEST_P(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap the system tray should open system tray bubble and keep shelf visible.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureTapAt(
-      GetPrimaryUnifiedSystemTray()->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(GetPrimaryUnifiedSystemTray());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap to dismiss the app list and the auto-hide shelf.
-  generator->GestureTapAt(gfx::Point(0, 0));
+  GetEventGenerator()->GestureTapAt(gfx::Point(0, 0));
   EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
   GetAppListTestHelper()->CheckVisibility(false);
+}
 
-  // Show the AppList again.
+TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  // Create a normal unmaximized window; the shelf should be hidden.
+  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Show the AppList.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -3594,8 +3867,9 @@ TEST_P(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
 
   // Test that tapping the auto-hidden shelf dismisses the app list when tapping
   // part of the shelf that does not contain the apps.
-  generator->GestureTapAt(shelf_view->GetBoundsInScreen().left_center() +
-                          gfx::Vector2d(10, 0));
+  GetEventGenerator()->GestureTapAt(
+      shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(10, 0));
+  base::RunLoop().RunUntilIdle();  // Wait for autohide to be recomputed.
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
@@ -3606,13 +3880,17 @@ TEST_P(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
 
   // App list should remain visible when tapping on a shelf app button.
   ASSERT_TRUE(shelf_view_test_api.GetButton(0));
-  generator->GestureTapAt(
-      shelf_view_test_api.GetButton(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(shelf_view_test_api.GetButton(0));
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
 TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
+  // Parameterize by ProductivityLauncher.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kProductivityLauncher,
+                                    GetParam());
+
   // Add enough shelf items for the shelf to enter overflow.
   Shelf* const shelf = GetPrimaryShelf();
   ScrollableShelfView* const scrollable_shelf_view =
@@ -3638,9 +3916,7 @@ TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
   // visible.
   const views::View* right_arrow = scrollable_shelf_view->right_arrow();
   ASSERT_TRUE(right_arrow->GetVisible());
-  GetEventGenerator()->MoveMouseTo(
-      right_arrow->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(right_arrow);
 
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -3648,9 +3924,7 @@ TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
   // Click left button - verify the app list stays visible.
   const views::View* left_arrow = scrollable_shelf_view->left_arrow();
   ASSERT_TRUE(left_arrow->GetVisible());
-  GetEventGenerator()->MoveMouseTo(
-      left_arrow->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(left_arrow);
 
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -3667,7 +3941,7 @@ TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
 
 // Verifies that in clamshell mode, AppList has the expected state based on the
 // drag distance after dragging from Peeking state.
-TEST_P(AppListPresenterTest, DragAppListViewFromPeeking) {
+TEST_F(AppListPresenterNonBubbleTest, DragAppListViewFromPeeking) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -3707,7 +3981,7 @@ TEST_P(AppListPresenterTest, DragAppListViewFromPeeking) {
 
 // Tests that the app list background corner radius remains constant during app
 // list drag if the shelf is not in maximized state.
-TEST_P(AppListPresenterTest, BackgroundCornerRadiusDuringDrag) {
+TEST_F(AppListPresenterNonBubbleTest, BackgroundCornerRadiusDuringDrag) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -3781,7 +4055,7 @@ TEST_P(AppListPresenterTest, BackgroundCornerRadiusDuringDrag) {
 
 // Tests how app list background rounded corners are changed during a drag while
 // the shelf is in a maximized state (i.e. while a maximized window is shown).
-TEST_P(AppListPresenterTest,
+TEST_F(AppListPresenterNonBubbleTest,
        BackgroundCornerRadiusDuringDragWithMaximizedShelf) {
   auto window = CreateTestWindow();
   window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
@@ -3880,8 +4154,7 @@ TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
 
   // Open the folder.
   ASSERT_FALSE(AppListIsInFolderView());
-  GetEventGenerator()->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Check that the touch selection menu runner is not running.
@@ -3892,8 +4165,7 @@ TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
   views::View* folder_name_view =
       folder_view()->folder_header_view()->GetFolderNameViewForTest();
   UpdateFolderName("folder_name");
-  GetEventGenerator()->GestureTapAt(
-      folder_name_view->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(folder_name_view);
 
   // Fire the timer to show the textfield quick menu.
   views::TextfieldTestApi textfield_test_api(
@@ -3910,8 +4182,7 @@ TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
           ui::TouchSelectionMenuRunner::GetInstance()));
   views::LabelButton* button = test_api.GetFirstButton();
   ASSERT_TRUE(button);
-  gfx::Point point = button->GetBoundsInScreen().CenterPoint();
-  GetEventGenerator()->GestureTapAt(point);
+  GestureTapOn(button);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Refresh the folder item name.
@@ -3921,7 +4192,8 @@ TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
 }
 
 // Tests how app list is laid out during different state transitions and app
-// list drag.
+// list drag. All these tests can be deleted when ProductivityLauncher ships to
+// stable.
 class AppListPresenterLayoutTest : public AppListPresenterTest {
  public:
   AppListPresenterLayoutTest() = default;
@@ -3929,7 +4201,9 @@ class AppListPresenterLayoutTest : public AppListPresenterTest {
 
   void SetUp() override {
     AppListPresenterTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kEnableBackgroundBlur);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kEnableBackgroundBlur},
+        /*disabled_features=*/{features::kProductivityLauncher});
 
     UpdateDisplay("1080x900");
     GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -3978,15 +4252,14 @@ class AppListPresenterLayoutTest : public AppListPresenterTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Instantiate the values in the parameterized tests. First boolean is used to
+// Instantiate the values in the parameterized tests. Used to
 // toggle mouse and touch events and in some tests to toggle fullscreen mode
-// tests. The second one toggles cardfied state feature enabled or disabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListPresenterLayoutTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// tests.
+INSTANTIATE_TEST_SUITE_P(All, AppListPresenterLayoutTest, testing::Bool());
 
 // Tests that the app list contents top margin is gradually updated during drag
 // between peeking and fullscreen view state while showing apps page.
+// This test can be deleted when ProductivityLauncher ships to stable.
 TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
   const int shelf_height = ShelfConfig::Get()->shelf_size();
   const int fullscreen_y = 0;
@@ -4091,6 +4364,7 @@ TEST_P(AppListPresenterLayoutTest, AppsPagePositionDuringDrag) {
 
 // Tests that the app list contents top margin is gradually updated during drag
 // between half and fullscreen state while showing search results.
+// This test can be deleted when ProductivityLauncher ships to stable.
 TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
@@ -4207,6 +4481,7 @@ TEST_P(AppListPresenterLayoutTest, SearchResultsPagePositionDuringDrag) {
 }
 
 // Tests changing the active app list page while drag is in progress.
+// This test can be deleted when ProductivityLauncher ships to stable.
 TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
   const gfx::Point peeking_top =
@@ -4316,6 +4591,7 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageDuringDrag) {
 }
 
 // Tests changing the active app list page in fullscreen state.
+// This test can be deleted when ProductivityLauncher ships to stable.
 TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
   FlingUpOrDown(GetEventGenerator(), GetAppListView(), true);
@@ -4380,20 +4656,22 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
 }
 
 // Test a variety of behaviors for home launcher (app list in tablet mode).
+// Parameterized by ProductivityLauncher.
 class AppListPresenterHomeLauncherTest
     : public AshTestBase,
       public testing::WithParamInterface<bool> {
  public:
   AppListPresenterHomeLauncherTest() {
-    if (GetParam()) {
+    const bool enable_productivity_launcher = GetParam();
+    if (enable_productivity_launcher) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kEnableBackgroundBlur,
-           app_list_features::kNewDragSpecInLauncher},
-          {});
+          /*enabled_features=*/{features::kEnableBackgroundBlur,
+                                features::kProductivityLauncher},
+          /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {features::kEnableBackgroundBlur},
-          {app_list_features::kNewDragSpecInLauncher});
+          /*enabled_features=*/{features::kEnableBackgroundBlur},
+          /*disabled_features=*/{features::kProductivityLauncher});
     }
   }
   AppListPresenterHomeLauncherTest(const AppListPresenterHomeLauncherTest&) =
@@ -4454,8 +4732,7 @@ class AppListPresenterHomeLauncherTest
     // (2) The point is outside of the search box.
     // (3) The touch event on the point should not be consumed by the handler
     // for back gesture.
-    return GetAppListView()
-        ->search_box_view()
+    return GetSearchBoxViewFromHelper(GetAppListTestHelper())
         ->GetBoundsInScreen()
         .bottom_right();
   }
@@ -4475,14 +4752,16 @@ class AppListPresenterHomeLauncherTest
   std::unique_ptr<WallpaperControllerTestApi> wallpaper_test_api_;
 };
 
-// Instantiate the Boolean which is used to toggle cardified state in the
-// parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
                          AppListPresenterHomeLauncherTest,
                          testing::Bool());
 
 // Verifies that mouse dragging AppListView is enabled.
 TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppList) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   std::unique_ptr<AppListItem> item(new AppListItem("fake id"));
   GetAppListModel()->AddItem(std::move(item));
 
@@ -4513,6 +4792,10 @@ TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppList) {
 // Verifies that mouse dragging AppListView creates layers, causes to change the
 // opacity, and destroys the layers when done.
 TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   const int items_in_page =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   for (int i = 0; i < items_in_page; ++i) {
@@ -4575,6 +4858,10 @@ TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
 // Tests that ending of the mouse dragging of app-list destroys the layers for
 // the items which are in the second page. See https://crbug.com/990529.
 TEST_P(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   const int items_in_page =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   AppListModel* model = GetAppListModel();
@@ -4668,7 +4955,7 @@ TEST_P(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
   // Show app list in non-tablet mode. The window container should be
   // kShellWindowId_AppListContainer.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  aura::Window* window = GetAppListView()->GetWidget()->GetNativeWindow();
+  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
   aura::Window* root_window = window->GetRootWindow();
   EXPECT_TRUE(root_window->GetChildById(kShellWindowId_AppListContainer)
                   ->Contains(window));
@@ -4676,28 +4963,34 @@ TEST_P(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
   // Turn on tablet mode. The window container should be
   // kShellWindowId_HomeScreenContainer.
   EnableTabletMode(true);
+  aura::Window* window2 = Shell::Get()->app_list_controller()->GetWindow();
   EXPECT_TRUE(root_window->GetChildById(kShellWindowId_HomeScreenContainer)
-                  ->Contains(window));
+                  ->Contains(window2));
 }
 
 // Tests that the background opacity change for app list.
 TEST_P(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
-  // Show app list in non-tablet mode. The background shield opacity should be
-  // 70%.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  // ProductivityLauncher uses a different widget for clamshell mode.
+  if (!features::IsProductivityLauncherEnabled()) {
+    // Show app list in non-tablet mode. The background shield opacity should be
+    // 70%.
+    GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
-  // The opacity should be set on the color, not the layer. Setting opacity on
-  // the layer will change the opacity of the blur effect, which is not desired.
-  const U8CPU clamshell_background_opacity = static_cast<U8CPU>(255 * 0.8);
-  EXPECT_EQ(SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
-                            /*is_tablet_mode*/
-                            false, /*default_color*/ gfx::kGoogleGrey900),
-                        clamshell_background_opacity),
-            GetAppListView()->GetAppListBackgroundShieldColorForTest());
-  EXPECT_EQ(1, GetAppListView()
-                   ->GetAppListBackgroundShieldForTest()
-                   ->layer()
-                   ->opacity());
+    // The opacity should be set on the color, not the layer. Setting opacity on
+    // the layer will change the opacity of the blur effect, which is not
+    // desired.
+    const U8CPU clamshell_background_opacity = static_cast<U8CPU>(255 * 0.8);
+    EXPECT_EQ(
+        SkColorSetA(AppListColorProvider::Get()->GetAppListBackgroundColor(
+                        /*is_tablet_mode*/
+                        false, /*default_color*/ gfx::kGoogleGrey900),
+                    clamshell_background_opacity),
+        GetAppListView()->GetAppListBackgroundShieldColorForTest());
+    EXPECT_EQ(1, GetAppListView()
+                     ->GetAppListBackgroundShieldForTest()
+                     ->layer()
+                     ->opacity());
+  }
 
   // Turn on tablet mode. The background shield should be transparent.
   EnableTabletMode(true);
@@ -4717,13 +5010,16 @@ TEST_P(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
 // Tests that the background blur which is present in clamshell mode does not
 // show in tablet mode.
 TEST_P(AppListPresenterHomeLauncherTest, BackgroundBlur) {
-  // Show app list in non-tablet mode. The background blur should be enabled.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  EXPECT_GT(GetAppListView()
-                ->GetAppListBackgroundShieldForTest()
-                ->layer()
-                ->background_blur(),
-            0.0f);
+  // ProductivityLauncher uses a different widget for clamshell mode.
+  if (!features::IsProductivityLauncherEnabled()) {
+    // Show app list in non-tablet mode. The background blur should be enabled.
+    GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+    EXPECT_GT(GetAppListView()
+                  ->GetAppListBackgroundShieldForTest()
+                  ->layer()
+                  ->background_blur(),
+              0.0f);
+  }
 
   // Turn on tablet mode. The background blur should be disabled.
   EnableTabletMode(true);
@@ -4739,30 +5035,31 @@ TEST_P(AppListPresenterHomeLauncherTest, TapOrClickToDismiss) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(GetPointOutsideSearchbox());
+  const gfx::Point origin;
+  generator->MoveMouseTo(origin);
   generator->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_FALSE(IsAppListVisible());
 
   // Show app list in non-tablet mode. Tap outside search box.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
-  generator->GestureTapDownAndUp(GetPointOutsideSearchbox());
+  generator->GestureTapDownAndUp(origin);
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_FALSE(IsAppListVisible());
 
   // Show app list in tablet mode. Click outside search box.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  generator->MoveMouseTo(GetPointOutsideSearchbox());
+  generator->MoveMouseTo(origin);
   generator->PressLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_TRUE(IsAppListVisible());
 
   // Tap outside search box.
-  generator->GestureTapDownAndUp(GetPointOutsideSearchbox());
+  generator->GestureTapDownAndUp(origin);
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_TRUE(IsAppListVisible());
 }
 
 TEST_P(AppListPresenterHomeLauncherTest,
@@ -4854,7 +5151,7 @@ TEST_P(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
 }
 
 // Tests that the gesture-scroll cannot dismiss the app list.
-TEST_P(AppListPresenterHomeLauncherTest, GestureScrollToDismiss) {
+TEST_F(AppListPresenterNonBubbleTest, GestureScrollToDismiss) {
   // Show app list in non-tablet mode. Fling down.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -4870,7 +5167,7 @@ TEST_P(AppListPresenterHomeLauncherTest, GestureScrollToDismiss) {
   GetAppListTestHelper()->CheckVisibility(true);
 }
 
-TEST_P(AppListPresenterHomeLauncherTest,
+TEST_F(AppListPresenterNonBubbleTest,
        MouseScrollUpFromPeekingShowsFullscreenLauncher) {
   // Show app list in non-tablet mode.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -4889,7 +5186,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(app_list->IsVisible());
 }
 
-TEST_P(AppListPresenterHomeLauncherTest,
+TEST_F(AppListPresenterNonBubbleTest,
        MouseScrollDownFromPeekingClosesLauncher) {
   // Show app list in non-tablet mode.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -4908,7 +5205,7 @@ TEST_P(AppListPresenterHomeLauncherTest,
 }
 
 // Tests that mouse-scroll up at fullscreen will dismiss app list.
-TEST_P(AppListPresenterHomeLauncherTest, MouseScrollToDismissFromFullscreen) {
+TEST_F(AppListPresenterNonBubbleTest, MouseScrollToDismissFromFullscreen) {
   // Show app list in non-tablet mode. Mouse-scroll down.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -4932,6 +5229,10 @@ TEST_P(AppListPresenterHomeLauncherTest, MouseScrollToDismissFromFullscreen) {
 // Test that the AppListView opacity is reset after it is hidden during the
 // overview mode animation.
 TEST_P(AppListPresenterHomeLauncherTest, LauncherShowsAfterOverviewMode) {
+  // ProductivityLauncher closes itself in overview in clamshell mode.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   // Show the AppList in clamshell mode.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5171,6 +5472,10 @@ TEST_P(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
 // shelf.
 TEST_P(AppListPresenterHomeLauncherTest,
        SwitchToTabletModeDuringDraggingFromShelf) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   UpdateDisplay("1080x900");
   GetAppListTestHelper()->CheckVisibility(false);
 
@@ -5214,6 +5519,10 @@ TEST_P(AppListPresenterHomeLauncherTest,
 // close app list.
 TEST_P(AppListPresenterHomeLauncherTest,
        SwitchToTabletModeDuringDraggingToClose) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   UpdateDisplay("1080x900");
 
   // Open app list.
@@ -5314,19 +5623,17 @@ class AppListPresenterVirtualKeyboardTest : public AppListPresenterTest {
   }
 };
 
-// Instantiate the values in the parameterized tests. First boolean is used to
-// toggle mouse and touch events and in some tests to toggle fullscreen mode
-// tests. The second one toggles cardfied state feature enabled or disabled.
-INSTANTIATE_TEST_SUITE_P(All,
+// Instantiate the values in the parameterized tests. Used to toggle mouse and
+// touch events.
+INSTANTIATE_TEST_SUITE_P(Mouse,
                          AppListPresenterVirtualKeyboardTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 // Tests that tapping or clicking the body of the applist with an active virtual
 // keyboard when there exists text in the searchbox results in the virtual
 // keyboard closing with no side effects.
 TEST_P(AppListPresenterVirtualKeyboardTest,
        TapAppListWithVirtualKeyboardDismissesVirtualKeyboardWithSearchText) {
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   EnableTabletMode(true);
 
   // Tap to activate the searchbox.
@@ -5351,13 +5658,13 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
   // FULLSCREEN_SEARCH.
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-  EXPECT_TRUE(GetAppListView()->search_box_view()->is_search_box_active());
+  EXPECT_TRUE(GetSearchBoxView()->is_search_box_active());
 
   // Tap or click the body of the AppList again, the searchbox should deactivate
   // and the applist should be in FULLSCREEN_ALL_APPS.
   ClickOrTap(GetPointOutsideSearchbox());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-  EXPECT_FALSE(GetAppListView()->search_box_view()->is_search_box_active());
+  EXPECT_FALSE(GetSearchBoxView()->is_search_box_active());
 }
 
 // Tests that tapping or clicking the body of the applist with an active virtual
@@ -5365,7 +5672,6 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
 // keyboard and searchbox closing with no side effects.
 TEST_P(AppListPresenterVirtualKeyboardTest,
        TapAppListWithVirtualKeyboardDismissesVirtualKeyboardWithoutSearchText) {
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   EnableTabletMode(true);
 
   // Tap to activate the searchbox.
@@ -5384,7 +5690,7 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
-  EXPECT_FALSE(GetAppListView()->search_box_view()->is_search_box_active());
+  EXPECT_FALSE(GetSearchBoxView()->is_search_box_active());
 }
 
 TEST_P(AppListPresenterHomeLauncherTest, TapHomeButtonOnExternalDisplay) {
@@ -5394,14 +5700,16 @@ TEST_P(AppListPresenterHomeLauncherTest, TapHomeButtonOnExternalDisplay) {
   {
     SCOPED_TRACE("1st tap");
     GetAppListTestHelper()->CheckVisibility(true);
-    GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
+    if (!features::IsProductivityLauncherEnabled())
+      GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
   }
 
   TapHomeButton(GetSecondaryDisplay().id());
   {
     SCOPED_TRACE("2nd tap");
     GetAppListTestHelper()->CheckVisibility(false);
-    GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
+    if (!features::IsProductivityLauncherEnabled())
+      GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
   }
 }
 
@@ -5409,15 +5717,13 @@ TEST_P(AppListPresenterHomeLauncherTest, TapHomeButtonOnExternalDisplay) {
 // by moving the textfield's cursor to the tapped position within the text.
 TEST_P(AppListPresenterTest, SearchBoxTextfieldGestureTap) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
 
   // Tap on the search box to focus and open it.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureTapAt(GetPointInsideSearchbox());
 
   // Set the text of the search box textfield.
-  views::Textfield* textfield =
-      GetAppListView()->search_box_view()->search_box();
+  views::Textfield* textfield = GetSearchBoxView()->search_box();
   textfield->SetText(u"Test search box string");
 
   // The textfield's cursor position should start out at the end of the string.

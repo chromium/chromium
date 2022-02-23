@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -122,8 +123,7 @@ class P2PSocketManager::DnsRequest {
  private:
   void OnDone(int result) {
     net::IPAddressList list;
-    const absl::optional<net::AddressList>& addresses =
-        request_->GetAddressResults();
+    const net::AddressList* addresses = request_->GetAddressResults();
     if (result != net::OK || !addresses) {
       LOG(ERROR) << "Failed to resolve address for " << host_name_
                  << ", errorcode: " << result;
@@ -138,7 +138,7 @@ class P2PSocketManager::DnsRequest {
   }
 
   std::string host_name_;
-  net::HostResolver* resolver_;
+  raw_ptr<net::HostResolver> resolver_;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request_;
 
   DoneCallback done_callback_;

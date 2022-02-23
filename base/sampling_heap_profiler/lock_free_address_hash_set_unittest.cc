@@ -11,6 +11,7 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,8 +135,8 @@ class WriterThread : public SimpleThread {
   }
 
  private:
-  LockFreeAddressHashSet* set_;
-  std::atomic_bool* cancel_;
+  raw_ptr<LockFreeAddressHashSet> set_;
+  raw_ptr<std::atomic_bool> cancel_;
 };
 
 TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {

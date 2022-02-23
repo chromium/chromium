@@ -14,6 +14,9 @@ namespace network_diagnostics {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 constexpr mojom::RoutineVerdict kInitialVerdict =
     mojom::RoutineVerdict::kNotRun;
 constexpr mojom::RoutineVerdict kVerdict = mojom::RoutineVerdict::kNoProblem;

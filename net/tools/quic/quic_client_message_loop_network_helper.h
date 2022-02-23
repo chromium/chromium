@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"

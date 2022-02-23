@@ -27,21 +27,21 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <termios.h>
 #include <unistd.h>
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #include "remoting/host/setup/daemon_controller_delegate_linux.h"
 #include "remoting/host/setup/start_host_as_root.h"
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/process/process_info.h"
 
 #include <windows.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
@@ -57,7 +57,7 @@ base::RunLoop* g_active_run_loop = nullptr;
 
 // Lets us hide the PIN that a user types.
 void SetEcho(bool echo) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD mode;
   HANDLE console_handle = GetStdHandle(STD_INPUT_HANDLE);
   if (!GetConsoleMode(console_handle, &mode)) {
@@ -75,7 +75,7 @@ void SetEcho(bool echo) {
     term.c_lflag &= ~ECHO;
   }
   tcsetattr(STDIN_FILENO, TCSANOW, &term);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 // Reads a newline-terminated string from stdin.
@@ -126,12 +126,12 @@ void OnDone(HostStarter::Result result) {
 }  // namespace
 
 int StartHostMain(int argc, char** argv) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Minimize the amount of code that runs as root on Posix systems.
   if (getuid() == 0) {
     return remoting::StartHostAsRoot(argc, argv);
   }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // google_apis::GetOAuth2ClientID/Secret need a static CommandLine.
   base::CommandLine::Init(argc, argv);
@@ -163,7 +163,7 @@ int StartHostMain(int argc, char** argv) {
   // for the account which generated |code|.
   std::string host_owner = command_line->GetSwitchValueASCII("host-owner");
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   if (command_line->HasSwitch("no-start")) {
     // On Linux, registering the host with systemd and starting it is the only
     // reason start_host requires root. The --no-start options skips that final
@@ -173,15 +173,15 @@ int StartHostMain(int argc, char** argv) {
     // controller code, and must be configured on the Linux delegate explicitly.
     DaemonControllerDelegateLinux::set_start_host_after_setup(false);
   }
-#endif  // defined(OS_LINUX)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN)
   // The tool must be run elevated on Windows so the host has access to the
   // directories used to store the configuration JSON files.
   if (!base::IsCurrentProcessElevated()) {
     fprintf(stderr, "Error: %s must be run as an elevated process.", argv[0]);
     return 1;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (command_line->HasSwitch("help") || command_line->HasSwitch("h") ||
       command_line->HasSwitch("?") || !command_line->GetArgs().empty()) {

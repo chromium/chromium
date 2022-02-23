@@ -41,8 +41,8 @@ ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state) {
 
 ScriptPromise UnderlyingSourceBase::cancelWrapper(ScriptState* script_state,
                                                   ScriptValue reason) {
-  if (controller_)
-    controller_->NoteHasBeenCanceled();
+  DCHECK(controller_);  // startWrapper() must have been called
+  controller_->Deactivate();
   return Cancel(script_state, reason);
 }
 
@@ -57,10 +57,14 @@ ScriptValue UnderlyingSourceBase::type(ScriptState* script_state) const {
 }
 
 void UnderlyingSourceBase::ContextDestroyed() {
-  if (controller_) {
-    controller_->NoteHasBeenCanceled();
-    controller_.Clear();
-  }
+  // `controller_` can be unset in two cases:
+  // 1. The UnderlyingSourceBase is never used to create a ReadableStream. For
+  //    example, BodyStreamBuffer inherits from UnderlyingSourceBase but if an
+  //    existing stream is passed to the constructor it won't create a new one.
+  // 2. ContextDestroyed() is called re-entrantly during construction. This can
+  //    happen when a worker is terminated.
+  if (controller_)
+    controller_->Deactivate();
 }
 
 void UnderlyingSourceBase::Trace(Visitor* visitor) const {

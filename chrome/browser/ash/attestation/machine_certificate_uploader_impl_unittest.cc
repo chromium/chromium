@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/ash/attestation/fake_certificate.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,17 +40,6 @@ constexpr int64_t kCertExpiringSoon = 20;
 constexpr int64_t kCertExpired = -20;
 constexpr int kRetryLimit = 3;
 constexpr char kFakeCertificate[] = "fake_cert";
-
-void CertCallbackSuccess(AttestationFlow::CertificateCallback callback) {
-  AttestationClient::Get()
-      ->GetTestInterface()
-      ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
-      ->set_certificate("fake_cert");
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), ATTESTATION_SUCCESS, "fake_cert"));
-}
 
 void CertCallbackUnspecifiedFailure(
     AttestationFlow::CertificateCallback callback) {

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="102360288709523007">Помогнете за подобряването на Chromium, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
+<translation id="1047130070405668746">Изберете Chromium.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
 <translation id="1289216811211435351">Превключване към Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Показва подкани за влизане в Chromium.</translation>
 <translation id="1584569488888892906">Chromium е опростен, сигурен и по-бърз от всякога</translation>
 <translation id="1617663976202781617">Данни от синхронизирането в Chromium</translation>
+<translation id="1722370509450468186">Паролата ви ще бъде запазена в профила ви (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Данните в Chromium са изчистени</translation>
 <translation id="1838412507805038478">Chromium потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium разполага с функции, които ви помагат да управлявате данните си в интернет и бързината на зареждане на уеб страници.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Изберете Chromium.</translation>
 <translation id="2006345422933397527">Chromium не можа да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="2054703085270098503">Сърфирайте безопасно с Chromium</translation>
 <translation id="2168108852149185974">Някои добавки водят до срив на Chromium. Моля, деинсталирайте:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Не се поддържа от Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium може да проверява паролите ви, когато влизате с профила си в Google.</translation>
 <translation id="3805899903892079518">Chromium няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
-<translation id="3946918322491238254">Пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
+<translation id="4043291146360695975">Паролите се запазват в мениджъра на паролите само на това устройство.</translation>
 <translation id="4099085513035183040">Не се поддържа от Chromium бета</translation>
 <translation id="4555020257205549924">Когато тази функция е включена, Chromium ще предлага да преведе страниците, написани на други езици, посредством Google Преводач. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Вече можете да използвате Chromium всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chromium току-що се подобри! Налице е нова версия.</translation>
 <translation id="6752854822223394465">Организацията ви настройва Chromium...</translation>
 <translation id="6820823224820483452">Chromium не успя да провери всички пароли. Опитайте отново утре.</translation>
+<translation id="7006920032187763988">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPad.</translation>
 <translation id="7018284295775193585">Chromium не може да се актуализира</translation>
 <translation id="7045244423563602563">Персонализирайте Chromium според вкуса си</translation>
 <translation id="7099326575020694068">Chromium не може да използва камерата ви в режим на разделен изглед</translation>
 <translation id="7108914401277488191">Вършете повече неща с Chromium</translation>
 <translation id="7118091470949186573">Вече можете да използвате Chromium всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
+<translation id="7175400662502680481">Паролата ви бе разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
 <translation id="7208566199746267865">С Chromium спестявате време, като свързвате профилите си с мрежата. Можете да добавяте или премахвате профили от настройките.</translation>
 <translation id="725427773388857052">Chromium може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="7269362888766543920">Някои добавки причиняват срив на Chromium. Моля, опитайте да ги деинсталирате.</translation>
 <translation id="7313655110045230863">За да направите Chromium браузъра си по подразбиране, отворете „Настройки“, докоснете „Стандартно приложение за браузър“ и изберете Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Избраните данни са премахнати от Chromium и синхронизираните устройства. Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес history.google.com – например търсения и активност от други наши услуги.</translation>
+<translation id="7395825497086981028">Паролата ви ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Използвайте Chromium навсякъде</translation>
 <translation id="766897673682622022">Паролата ви бе разкрита при нарушение на сигурността на данните. Chromium препоръчва да я промените сега.</translation>
 <translation id="7674213385180944843">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Chromium“ и включете камерата.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Искате ли данните ви в Chromium да бъдат изчистени от устройството?</translation>
 <translation id="8175055321229419309">Съвет: <ph name="BEGIN_LINK" />Преместете Chromium в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не можа да провери за актуализации. Опитайте отново по-късно.</translation>
+<translation id="858114650497379505">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPhone.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
 <translation id="8663480472502753423">Поддържане на браузъра Chromium актуален</translation>
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
 <translation id="894437814105052438">Когато излезете от профила си, Chromium няма да синхронизира новите данни с профила ви в Google. Синхронизираните по-рано данни продължават да се съхраняват в профила ви.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
+<translation id="9059693977935746710">Няма да е нужно да помните тази парола. Тя ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9110075932708282655">Използване на Chromium по подразбиране</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>

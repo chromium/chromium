@@ -34,10 +34,10 @@ class FilePath;
 
 class BASE_EXPORT CommandLine {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The native command line string type.
   using StringType = std::wstring;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   using StringType = std::string;
 #endif
 
@@ -62,7 +62,7 @@ class BASE_EXPORT CommandLine {
 
   ~CommandLine();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // By default this class will treat command-line arguments beginning with
   // slashes as switches on Windows, but not other platforms.
   //
@@ -103,7 +103,7 @@ class BASE_EXPORT CommandLine {
   // Returns true if the CommandLine has been initialized for the given process.
   static bool InitializedForCurrentProcess();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static CommandLine FromString(StringPieceType command_line);
 #endif
 
@@ -118,7 +118,7 @@ class BASE_EXPORT CommandLine {
   // GetCommandLineStringForShell() instead.
   StringType GetCommandLineString() const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the command-line string in the proper format for the Windows shell,
   // ending with the argument placeholder "--single-argument %1". The single-
   // argument switch prevents unexpected parsing of arguments from other
@@ -204,7 +204,7 @@ class BASE_EXPORT CommandLine {
   // Common for debuggers, like "gdb --args".
   void PrependWrapper(StringPieceType wrapper);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initialize by parsing the given command line string.
   // The program name is assumed to be the first item in the string.
   void ParseFromString(StringPieceType command_line);
@@ -231,7 +231,7 @@ class BASE_EXPORT CommandLine {
   StringType GetArgumentsStringInternal(
       bool allow_unsafe_insert_sequences) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initializes by parsing |raw_command_line_string_|, treating everything
   // after |single_arg_switch_string| + <a single character> as the command
   // line's single argument, and dropping any arguments previously parsed. The

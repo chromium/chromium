@@ -26,7 +26,7 @@ enum class DownloadConfirmationResult {
   // downloaded.
   CONTINUE_WITHOUT_CONFIRMATION,
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // After the user confirmed the file path on the dialog, we still need to
   // check to make sure the path is valid. This is only used in the Android
   // case because there is no equivalent DownloadLocationPicker to handle

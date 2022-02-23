@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -31,13 +32,13 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool multi_channel_capture_processing = true;
   bool stereo_mirroring = false;
 
-  // TODO(https://crbug.com/1215061): Deprecate this setting.
+  // TODO(https://crbug.com/1269723): Deprecate this setting.
   // This flag preserves the behavior of the to-be-deprecated flag / constraint
   // |AudioProcessingProperties::goog_experimental_echo_cancellation|: It has no
   // effect on what effects are enabled, but for legacy reasons, it forces APM
   // to be created and used.
   bool force_apm_creation =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       false;
 #else
       true;
@@ -57,8 +58,43 @@ struct MEDIA_EXPORT AudioProcessingSettings {
            force_apm_creation == b.force_apm_creation;
   }
 
+  bool NeedWebrtcAudioProcessing() const {
+    // TODO(https://crbug.com/1269364): Legacy iOS-specific behavior;
+    // reconsider.
+#if BUILDFLAG(IS_IOS)
+    if (stereo_mirroring)
+      return true;
+#else
+    if (echo_cancellation || automatic_gain_control) {
+      return true;
+    }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (force_apm_creation)
+      return true;
+#endif
+
+    return noise_suppression || high_pass_filter || transient_noise_suppression;
+  }
+
+  bool NeedAudioModification() const {
+    return NeedWebrtcAudioProcessing() || stereo_mirroring;
+  }
+
+  bool NeedPlayoutReference() const {
+    return echo_cancellation || automatic_gain_control;
+  }
+
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
+};
+
+// This struct contains audio processing metrics that are reported by the audio
+// service.
+struct MEDIA_EXPORT AudioProcessingStats {
+  absl::optional<double> echo_return_loss;
+  absl::optional<double> echo_return_loss_enhancement;
 };
 
 }  // namespace media

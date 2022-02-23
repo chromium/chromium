@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -203,7 +204,7 @@ TEST_F(WakeLockTest, MultipleRequests) {
 // multiple clients. Has no effect on Android either.
 TEST_F(WakeLockTest, ChangeType) {
   EXPECT_FALSE(HasWakeLock());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Call ChangeType() on a wake lock that is in inactive status.
   EXPECT_TRUE(ChangeType(device::mojom::WakeLockType::kPreventAppSuspension));
   EXPECT_TRUE(ChangeType(device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -269,7 +270,7 @@ TEST_F(WakeLockTest, ChangeType) {
   EXPECT_EQ(0, GetActiveWakeLocks(mojom::WakeLockType::kPreventDisplaySleep));
   EXPECT_EQ(0, GetActiveWakeLocks(
                    mojom::WakeLockType::kPreventDisplaySleepAllowDimming));
-#else  // OS_ANDROID:
+#else  // BUILDFLAG(IS_ANDROID):
   EXPECT_FALSE(ChangeType(device::mojom::WakeLockType::kPreventAppSuspension));
   EXPECT_FALSE(ChangeType(device::mojom::WakeLockType::kPreventDisplaySleep));
   EXPECT_FALSE(ChangeType(

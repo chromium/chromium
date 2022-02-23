@@ -19,6 +19,9 @@ constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
 
 ManagedSessionService::ManagedSessionService(base::Clock* clock)
     : clock_(clock), session_manager_(session_manager::SessionManager::Get()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  SetLoginStatus();
   if (session_manager_) {
     // To alleviate tight coupling in unit tests to DeviceStatusCollector.
     session_manager_observation_.Observe(session_manager_);
@@ -37,14 +40,23 @@ ManagedSessionService::~ManagedSessionService() {
         ->RemoveLoginStatusConsumer(this);
   }
 
-  if (chromeos::SessionTerminationManager::Get()) {
-    chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->RemoveObserver(this);
   }
 }
 
 void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
+  if (is_logged_in_observed_) {
+    if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+      observer->OnGuestLogin();
+    } else {
+      auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser());
+      observer->OnLogin(profile);
+    }
+  }
 }
 
 void ManagedSessionService::RemoveObserver(
@@ -72,12 +84,15 @@ void ManagedSessionService::OnSessionStateChanged() {
 
 void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  profile_observations_.AddObservation(profile);
-  if (chromeos::SessionTerminationManager::Get() &&
-      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
-    chromeos::SessionTerminationManager::Get()->AddObserver(this);
+      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  bool is_primary_profile =
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
+  if (is_logged_in_observed_ && is_primary_profile) {
+    return;
+  } else if (!is_primary_profile) {
+    profile_observations_.AddObservation(profile);
   }
+  SetLoginStatus();
   for (auto& observer : observers_) {
     observer.OnLogin(profile);
   }
@@ -101,7 +116,7 @@ void ManagedSessionService::OnSessionWillBeTerminated() {
     observer.OnSessionTerminationStarted(
         user_manager::UserManager::Get()->GetPrimaryUser());
   }
-  chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  ash::SessionTerminationManager::Get()->RemoveObserver(this);
 }
 
 void ManagedSessionService::OnUserToBeRemoved(const AccountId& account_id) {
@@ -136,10 +151,37 @@ void ManagedSessionService::OnAuthAttemptStarted() {
   }
 }
 
-void ManagedSessionService::OnAuthFailure(const chromeos::AuthFailure& error) {
+void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
   for (auto& observer : observers_) {
     observer.OnLoginFailure(error);
   }
 }
 
+void ManagedSessionService::SetLoginStatus() {
+  if (is_logged_in_observed_ || !user_manager::UserManager::Get() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return;
+  }
+
+  auto* const primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user || !primary_user->is_profile_created()) {
+    return;
+  }
+
+  auto* const profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  if (!profile) {
+    // Profile is not fully initialized yet.
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_logged_in_observed_ = true;
+  if (!user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    profile_observations_.AddObservation(profile);
+  }
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->AddObserver(this);
+  }
+}
 }  // namespace policy

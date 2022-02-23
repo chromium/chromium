@@ -11,7 +11,7 @@ namespace vr {
 void TransformToGvrMat(const gfx::Transform& in, gvr::Mat4f* out) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      out->m[i][j] = in.matrix().get(i, j);
+      out->m[i][j] = in.matrix().rc(i, j);
     }
   }
 }
@@ -19,7 +19,7 @@ void TransformToGvrMat(const gfx::Transform& in, gvr::Mat4f* out) {
 void GvrMatToTransform(const gvr::Mat4f& in, gfx::Transform* out) {
   for (int i = 0; i < 4; ++i) {
     for (int j = 0; j < 4; ++j) {
-      out->matrix().set(i, j, in.m[i][j]);
+      out->matrix().setRC(i, j, in.m[i][j]);
     }
   }
 }

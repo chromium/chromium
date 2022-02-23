@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using content::BrowserThread;
 

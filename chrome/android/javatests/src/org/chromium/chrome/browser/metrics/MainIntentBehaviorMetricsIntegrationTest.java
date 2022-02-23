@@ -29,13 +29,13 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.download.home.DownloadActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkActivity;
-import org.chromium.chrome.browser.download.DownloadActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.DummySettingsForTest;
+import org.chromium.chrome.browser.settings.PlaceholderSettingsForTest;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -57,8 +57,8 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
-    public SettingsActivityTestRule<DummySettingsForTest> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(DummySettingsForTest.class);
+    public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
 
     private UserActionTester mActionTester;
 

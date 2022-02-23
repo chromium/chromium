@@ -39,6 +39,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -50,7 +51,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -62,8 +63,8 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 public class FreUMADialogTest {
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -107,6 +108,7 @@ public class FreUMADialogTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1295406")
     public void testTurningOnAllowCrashUploadWhenCrashUploadByNotAllowedDefault() {
         showFreUMADialog(/*allowCrashUpload=*/false);
 

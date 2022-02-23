@@ -11,6 +11,7 @@
     ],
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
+      "fuchsia.buildinfo.Provider",
       "fuchsia.camera3.DeviceWatcher",
       "fuchsia.device.NameProvider",
       "fuchsia.fonts.Provider",
@@ -19,6 +20,7 @@
       "fuchsia.legacymetrics.MetricsRecorder",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.media.SessionAudioConsumerFactory",
       "fuchsia.media.drm.PlayReady",

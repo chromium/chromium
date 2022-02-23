@@ -63,6 +63,7 @@ struct BLINK_COMMON_EXPORT UserAgentMetadata {
   std::string model;
   bool mobile = false;
   std::string bitness;
+  bool wow64 = false;
 };
 
 // Used when customizing the sent User-Agent and Sec-CH-UA-* for

@@ -116,7 +116,7 @@ Error FileErrorToNetError(base::File::Error file_error) {
       return ERR_ACCESS_DENIED;
     case base::File::FILE_ERROR_MAX:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case base::File::FILE_ERROR_NOT_A_DIRECTORY:
     case base::File::FILE_ERROR_NOT_A_FILE:
     case base::File::FILE_ERROR_NOT_EMPTY:

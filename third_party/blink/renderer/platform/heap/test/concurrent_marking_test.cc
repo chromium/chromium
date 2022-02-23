@@ -6,8 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -283,21 +288,6 @@ void PopFromCollection() {
   }
   driver.FinishGC();
 }
-
-#define TEST_VECTOR_COLLECTION(name, type)                                \
-  TEST_F(ConcurrentMarkingTest, AddTo##name) { AddToCollection<type>(); } \
-  TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOf##name) {            \
-    RemoveFromBeginningOfCollection<type>();                              \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOf##name) {               \
-    RemoveFromMiddleOfCollection<type>();                                 \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, RemoveFromEndOf##name) {                  \
-    RemoveFromEndOfCollection<type>();                                    \
-  }                                                                       \
-  TEST_F(ConcurrentMarkingTest, Clear##name) { ClearCollection<type>(); } \
-  TEST_F(ConcurrentMarkingTest, Swap##name) { SwapCollections<type>(); }  \
-  TEST_F(ConcurrentMarkingTest, PopFrom##name) { PopFromCollection<type>(); }
 
 template <typename T, wtf_size_t inlineCapacity>
 struct MethodAdapter<HeapVector<T, inlineCapacity>>

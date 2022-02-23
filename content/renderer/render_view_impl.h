@@ -182,7 +182,7 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // The `AgentSchedulingGroup` this view is associated with.
   AgentSchedulingGroup& agent_scheduling_group_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android Specific ----------------------------------------------------------
 
   // Whether this was a renderer-created or browser-created RenderView.

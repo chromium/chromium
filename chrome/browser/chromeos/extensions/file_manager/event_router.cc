@@ -11,11 +11,15 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/disks/disk.h"
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram.h"
@@ -50,9 +54,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/disks/disk.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "components/arc/arc_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -69,8 +71,8 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
 using drive::DriveIntegrationService;
 using drive::DriveIntegrationServiceFactory;
@@ -356,20 +358,6 @@ bool ShouldShowNotificationForVolume(
   return true;
 }
 
-std::set<std::string> GetEventListenerExtensionIds(
-    Profile* profile,
-    const std::string& event_name) {
-  const extensions::EventListenerMap::ListenerList& listeners =
-      extensions::EventRouter::Get(profile)
-          ->listeners()
-          .GetEventListenersByName(event_name);
-  std::set<std::string> extension_ids;
-  for (const auto& listener : listeners) {
-    extension_ids.insert(listener->extension_id());
-  }
-  return extension_ids;
-}
-
 // Sub-part of the event router for handling device events.
 class DeviceEventRouterImpl : public DeviceEventRouter {
  public:
@@ -437,6 +425,12 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       } else {
         urls.insert(listener->listener_url());
       }
+    }
+    // In SWA, there may not be a window open to listen to the event, so always
+    // add the File Manager URL so events can be sent to the
+    // SystemNotificationManager.
+    if (ash::features::IsFileManagerSwaEnabled()) {
+      urls.insert(file_manager::util::GetFileManagerURL());
     }
     return urls;
   }
@@ -653,6 +647,7 @@ void EventRouter::ObserveEvents() {
   pref_change_registrar_->Add(arc::prefs::kArcEnabled, callback);
   pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia,
                               callback);
+  pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, callback);
 
   auto plugin_vm_callback = base::BindRepeating(&EventRouter::OnPluginVmChanged,
                                                 weak_factory_.GetWeakPtr());
@@ -911,13 +906,13 @@ void EventRouter::DispatchDirectoryChangeEventWithEntryDefinition(
                          ? file_manager_private::FILE_WATCH_EVENT_TYPE_ERROR
                          : file_manager_private::FILE_WATCH_EVENT_TYPE_CHANGED;
 
-  event.entry.additional_properties.SetString(
+  event.entry.additional_properties.SetStringKey(
       "fileSystemName", entry_definition.file_system_name);
-  event.entry.additional_properties.SetString(
+  event.entry.additional_properties.SetStringKey(
       "fileSystemRoot", entry_definition.file_system_root_url);
-  event.entry.additional_properties.SetString(
+  event.entry.additional_properties.SetStringKey(
       "fileFullPath", "/" + entry_definition.full_path.value());
-  event.entry.additional_properties.SetBoolean("fileIsDirectory",
+  event.entry.additional_properties.SetBoolKey("fileIsDirectory",
                                                entry_definition.is_directory);
 
   BroadcastEvent(profile_,
@@ -1113,12 +1108,12 @@ void EventRouter::PopulateCrostiniEvent(
   event.event_type = event_type;
   event.vm_name = vm_name;
   file_manager_private::CrostiniEvent::EntriesType entry;
-  entry.additional_properties.SetString(
+  entry.additional_properties.SetStringKey(
       "fileSystemRoot",
       storage::GetExternalFileSystemRootURIString(origin.GetURL(), mount_name));
-  entry.additional_properties.SetString("fileSystemName", file_system_name);
-  entry.additional_properties.SetString("fileFullPath", full_path);
-  entry.additional_properties.SetBoolean("fileIsDirectory", true);
+  entry.additional_properties.SetStringKey("fileSystemName", file_system_name);
+  entry.additional_properties.SetStringKey("fileFullPath", full_path);
+  entry.additional_properties.SetBoolKey("fileIsDirectory", true);
   event.entries.emplace_back(std::move(entry));
 }
 
@@ -1244,9 +1239,9 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     event_status.item_count = status.sources.size();
 
     // Get the last error occurrence in the `sources`.
-    for (auto it = status.sources.rbegin(); it != status.sources.rend(); it++) {
-      if (it->error && it->error.value() != base::File::FILE_OK) {
-        event_status.error_name = FileErrorToErrorName(it->error.value());
+    for (const io_task::EntryStatus& source : base::Reversed(status.sources)) {
+      if (source.error && source.error.value() != base::File::FILE_OK) {
+        event_status.error_name = FileErrorToErrorName(source.error.value());
       }
     }
 
@@ -1262,6 +1257,27 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
         extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
         file_manager_private::OnIOTaskProgressStatus::kEventName,
         file_manager_private::OnIOTaskProgressStatus::Create(event_status));
+
+    // Send file watch notifications on I/O task completion. inotify is flaky on
+    // some filesystems, so send these notifications so that at least operations
+    // made from Files App are always reflected in the UI.
+    if (status.IsCompleted()) {
+      std::set<base::FilePath> updated_paths;
+      if (status.destination_folder.is_valid()) {
+        updated_paths.insert(status.destination_folder.path());
+      }
+      for (const auto& source : status.sources) {
+        updated_paths.insert(source.url.path().DirName());
+      }
+      for (const auto& output : status.outputs) {
+        updated_paths.insert(output.url.path().DirName());
+      }
+
+      for (const auto& path : updated_paths) {
+        HandleFileWatchNotification(path, false);
+      }
+    }
+
     return;
   }
 

@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -151,7 +152,7 @@ ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
     std::unique_ptr<ui::OSExchangeData> data) {
   auto drop_cb = GetDropCallback(event);
   auto output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
   return output_drag_op;
 }
 
@@ -224,6 +225,10 @@ aura::client::CursorClient* WMHelperChromeOS::GetCursorClient() {
   return aura::client::GetCursorClient(ash::Shell::GetPrimaryRootWindow());
 }
 
+aura::client::DragDropClient* WMHelperChromeOS::GetDragDropClient() {
+  return aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow());
+}
+
 void WMHelperChromeOS::AddPreTargetHandler(ui::EventHandler* handler) {
   ash::Shell::Get()->AddPreTargetHandler(handler);
 }
@@ -292,12 +297,11 @@ float GetDefaultDeviceScaleFactor() {
 
 void WMHelperChromeOS::PerformDrop(
     std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-    const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data,
     ui::mojom::DragOperation& output_drag_op) {
   for (auto& drop_cb : drop_callbacks) {
     auto operation = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(event, operation);
+    std::move(drop_cb).Run(operation);
     if (operation != ui::mojom::DragOperation::kNone)
       output_drag_op = operation;
   }

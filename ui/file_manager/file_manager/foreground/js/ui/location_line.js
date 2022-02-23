@@ -142,23 +142,4 @@ export class LocationLine extends EventTarget {
       this.navigateToIndex_(Number(signal));
     }
   }
-
-  /**
-   * Execute an element.
-   * @param {number} index The index of clicked path component.
-   * @param {!Event} event The MouseEvent object.
-   * @private
-   */
-  onClick_(index, event) {
-    let button = event.target;
-
-    // Remove 'focused' state from the clicked button.
-    while (button && !button.classList.contains('breadcrumb-path')) {
-      button = button.parentElement;
-    }
-    if (button) {
-      button.blur();
-    }
-    this.navigateToIndex_(index);
-  }
 }

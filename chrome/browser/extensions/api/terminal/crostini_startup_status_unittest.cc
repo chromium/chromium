@@ -25,14 +25,12 @@ class CrostiniStartupStatusTest : public testing::Test {
 
   void Done() { done_ = true; }
 
-  CrostiniStartupStatus* NewStartupStatus(bool verbose) {
-    return new CrostiniStartupStatus(
+  std::unique_ptr<CrostiniStartupStatus> NewStartupStatus(bool verbose) {
+    return std::make_unique<CrostiniStartupStatus>(
         base::BindRepeating(&CrostiniStartupStatusTest::Print,
                             base::Unretained(this)),
         verbose);
   }
-
-  void SetUp() override {}
 
   std::vector<std::string> output_;
   bool done_ = false;
@@ -40,7 +38,7 @@ class CrostiniStartupStatusTest : public testing::Test {
 };
 
 TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
-  auto* startup_status = NewStartupStatus(false);
+  auto startup_status = NewStartupStatus(false);
   startup_status->OnStageStarted(InstallerState::kStart);
   startup_status->OnStageStarted(InstallerState::kInstallImageLoader);
   startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
@@ -66,7 +64,7 @@ TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
 }
 
 TEST_F(CrostiniStartupStatusTest, TestVerbose) {
-  auto* startup_status = NewStartupStatus(true);
+  auto startup_status = NewStartupStatus(true);
   startup_status->OnStageStarted(InstallerState::kStart);
   startup_status->OnStageStarted(InstallerState::kInstallImageLoader);
   startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
@@ -104,7 +102,7 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
 TEST_F(CrostiniStartupStatusTest,
        TestNoOutOfBoundsAccessWhenRestartBeforeStageStart) {
   // Repro case for crbug/1214039.
-  auto* startup_status = NewStartupStatus(true);
+  auto startup_status = NewStartupStatus(true);
   startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
 
   ASSERT_EQ(output_.size(), 2u);

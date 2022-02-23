@@ -4,7 +4,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "net/cert/internal/extended_key_usage.h"
 #include "net/der/input.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +39,8 @@ TEST(ExtendedKeyUsageTest, ParseEKUExtension) {
   EXPECT_TRUE(ParseEKUExtension(extension_value, &ekus));
 
   EXPECT_EQ(2u, ekus.size());
-  EXPECT_TRUE(HasEKU(ekus, ServerAuth()));
-  EXPECT_TRUE(HasEKU(ekus, ClientAuth()));
+  EXPECT_TRUE(HasEKU(ekus, der::Input(kServerAuth)));
+  EXPECT_TRUE(HasEKU(ekus, der::Input(kClientAuth)));
 }
 
 // Check that an extension with the same OID present multiple times doesn't
@@ -62,7 +61,7 @@ TEST(ExtendedKeyUsageTest, RepeatedOid) {
   EXPECT_TRUE(ParseEKUExtension(extension, &ekus));
   EXPECT_EQ(2u, ekus.size());
   for (const auto& eku : ekus) {
-    EXPECT_EQ(ServerAuth(), eku);
+    EXPECT_EQ(der::Input(kServerAuth), eku);
   }
 }
 
@@ -83,7 +82,7 @@ TEST(ExtendedKeyUsageTest, ParseEKUExtensionGracefullyHandlesPrivateOids) {
   std::vector<der::Input> ekus;
   EXPECT_TRUE(ParseEKUExtension(extension, &ekus));
   EXPECT_EQ(2u, ekus.size());
-  EXPECT_TRUE(HasEKU(ekus, ServerAuth()));
+  EXPECT_TRUE(HasEKU(ekus, der::Input(kServerAuth)));
 
   const uint8_t google_oid[] = {0x2B, 0x06, 0x01, 0x04, 0x01, 0xD6, 0x79};
   der::Input google(google_oid);

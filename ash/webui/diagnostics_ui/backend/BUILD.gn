@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
@@ -18,6 +20,10 @@ static_library("backend") {
     "histogram_util.h",
     "input_data_provider.cc",
     "input_data_provider.h",
+    "input_data_provider_keyboard.cc",
+    "input_data_provider_keyboard.h",
+    "input_data_provider_touch.cc",
+    "input_data_provider_touch.h",
     "log_test_helpers.cc",
     "log_test_helpers.h",
     "network_health_provider.cc",
@@ -41,9 +47,9 @@ static_library("backend") {
   ]
 
   deps = [
+    "//ash",
     "//ash/constants:constants",
     "//ash/public/cpp",
-    "//ash/services/network_health/public/mojom",
     "//ash/webui/diagnostics_ui/mojom",
     "//base",
     "//chromeos/dbus/power",
@@ -52,6 +58,7 @@ static_library("backend") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
     "//chromeos/system",
     "//content/public/browser",
@@ -59,11 +66,14 @@ static_library("backend") {
     "//services/device/public/mojom",
     "//ui/base",
     "//ui/base/ime/ash",
+    "//ui/chromeos/events",
+    "//ui/events/devices",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info",
     "//ui/events/ozone/layout",
     "//ui/gfx",
     "//ui/shell_dialogs",
+    "//ui/web_dialogs",
     "//ui/webui",
   ]
 }
@@ -112,13 +122,16 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//dbus",
+    "//device/udev_linux:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
+    "//ui/chromeos/events",
     "//ui/events/ozone",
     "//ui/events/ozone/evdev:event_device_info_test_utils",
     "//ui/gfx",
     "//ui/shell_dialogs",
+    "//ui/views:test_support",
     "//ui/webui",
   ]
 }

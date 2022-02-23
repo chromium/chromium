@@ -43,46 +43,65 @@ namespace {
 // Video decoder tests usage message. Make sure to also update the documentation
 // under docs/media/gpu/video_decoder_test_usage.md when making changes here.
 constexpr const char* usage_msg =
-    "usage: video_decode_accelerator_tests\n"
-    "           [-v=<level>] [--vmodule=<config>]\n"
-    "           [--validator_type=(none|md5|ssim)]\n"
-    "           [--output_frames=(all|corrupt)] [--output_format=(png|yuv)]\n"
-    "           [--output_limit=<number>] [--output_folder=<folder>]\n"
-    "           ([--use-legacy]|[--use_vd]|[--use_vd_vda]) [--gtest_help]\n"
-    "           [--help] [<video path>] [<video metadata path>]\n";
+    R"(usage: video_decode_accelerator_tests
+           [-v=<level>] [--vmodule=<config>]
+           [--validator_type=(none|md5|ssim)]
+           [--output_frames=(all|corrupt)] [--output_format=(png|yuv)]
+           [--output_limit=<number>] [--output_folder=<folder>]
+           [--linear_output] ([--use-legacy]|[--use_vd]|[--use_vd_vda])
+           [--disable_vaapi_lock]
+           [--gtest_help] [--help]
+           [<video path>] [<video metadata path>]
+)";
 
 // Video decoder tests help message.
 constexpr const char* help_msg =
-    "Run the video decode accelerator tests on the video specified by\n"
-    "<video path>. If no <video path> is given the default\n"
-    "\"test-25fps.h264\" video will be used.\n"
-    "\nThe <video metadata path> should specify the location of a json file\n"
-    "containing the video's metadata, such as frame checksums. By default\n"
-    "<video path>.json will be used.\n"
-    "\nThe following arguments are supported:\n"
-    "   -v                  enable verbose mode, e.g. -v=2.\n"
-    "  --vmodule            enable verbose mode for the specified module,\n"
-    "                       e.g. --vmodule=*media/gpu*=2.\n\n"
-    " --validator_type      validate decoded frames, possible values are \n"
-    "                       md5 (default, compare against md5hash of expected\n"
-    "                       frames), ssim (compute SSIM against expected\n"
-    "                       frames, currently allowed for AV1 streams only)\n"
-    "                       and none (disable frame validation).\n"
-    "  --use-legacy         use the legacy VDA-based video decoders.\n"
-    "  --use_vd             use the new VD-based video decoders.\n"
-    "                       (enabled by default)\n"
-    "  --use_vd_vda         use the new VD-based video decoders with a\n"
-    "                       wrapper that translates to the VDA interface,\n"
-    "                       used to test interaction with older components\n"
-    "  --output_frames      write the selected video frames to disk, possible\n"
-    "                       values are \"all|corrupt\".\n"
-    "  --output_format      set the format of frames saved to disk, supported\n"
-    "                       formats are \"png\" (default) and \"yuv\".\n"
-    "  --output_limit       limit the number of frames saved to disk.\n"
-    "  --output_folder      set the folder used to store frames, defaults to\n"
-    "                       \"<testname>\".\n\n"
-    "  --gtest_help         display the gtest help and exit.\n"
-    "  --help               display this help and exit.\n";
+    R"""(Run the video decode accelerator tests on the video specified by
+<video path>. If no <video path> is given the default
+"test-25fps.h264" video will be used.
+
+The <video metadata path> should specify the location of a json file
+containing the video's metadata, such as frame checksums. By default
+<video path>.json will be used.
+
+The following arguments are supported:
+   -v                   enable verbose mode, e.g. -v=2.
+  --vmodule             enable verbose mode for the specified module,
+                        e.g. --vmodule=*media/gpu*=2.
+
+ --validator_type       validate decoded frames, possible values are
+                        md5 (default, compare against md5hash of expected
+                        frames), ssim (compute SSIM against expected
+                        frames, currently allowed for AV1 streams only)
+                        and none (disable frame validation).
+  --use-legacy          use the legacy VDA-based video decoders.
+  --use_vd              use the new VD-based video decoders.
+                        (enabled by default)
+  --use_vd_vda          use the new VD-based video decoders with a
+                        wrapper that translates to the VDA interface,
+                        used to test interaction with older components
+  --linear_output       use linear buffers as the final output of the
+                        decoder which may require the use of an image
+                        processor internally. This flag only works in
+                        conjunction with --use_vd_vda.
+                        Disabled by default.
+  --output_frames       write the selected video frames to disk, possible
+                        values are "all|corrupt".
+  --output_format       set the format of frames saved to disk, supported
+                        formats are "png" (default) and "yuv".
+  --output_limit        limit the number of frames saved to disk.
+  --output_folder       set the folder used to store frames, defaults to
+                        "<testname>".
+  --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                        i.e., only on devices that use the VA-API with a libva
+                        backend that's known to be thread-safe and only in
+                        portions of the Chrome stack that should be able to
+                        deal with the absence of the lock
+                        (not the VaapiVideoDecodeAccelerator).
+
+  --gtest_help          display the gtest help and exit.
+  --help                display this help and exit.
+)""";
 
 media::test::VideoPlayerTestEnvironment* g_env;
 
@@ -155,6 +174,7 @@ class VideoDecoderTest : public ::testing::Test {
         base::NumberToString(g_env->Video()->FrameRate()));
 
     config.implementation = g_env->GetDecoderImplementation();
+    config.linear_output = g_env->ShouldOutputLinearBuffers();
 
     auto video_player = VideoPlayer::Create(
         config, g_env->GetGpuMemoryBufferFactory(), std::move(frame_renderer),
@@ -194,7 +214,7 @@ class VideoDecoderTest : public ::testing::Test {
 
     bool init_success = false;
     VideoDecoder::InitCB init_cb = base::BindOnce(
-        [](bool* init_success, media::Status result) {
+        [](bool* init_success, DecoderStatus result) {
           *init_success = result.is_ok();
         },
         &init_success);
@@ -206,12 +226,12 @@ class VideoDecoderTest : public ::testing::Test {
     if (!init_success)
       return false;
     auto encoded_data_helper =
-        std::make_unique<EncodedDataHelper>(video->Data(), video->Profile());
+        std::make_unique<EncodedDataHelper>(video->Data(), video->Codec());
     DCHECK(encoded_data_helper);
     while (!encoded_data_helper->ReachEndOfStream()) {
       bool decode_success = false;
       media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* decode_success, media::Status status) {
+          [](bool* decode_success, DecoderStatus status) {
             *decode_success = status.is_ok();
           },
           &decode_success);
@@ -227,7 +247,7 @@ class VideoDecoderTest : public ::testing::Test {
     }
     bool flush_success = false;
     media::VideoDecoder::DecodeCB flush_cb = base::BindOnce(
-        [](bool* flush_success, media::Status status) {
+        [](bool* flush_success, DecoderStatus status) {
           *flush_success = status.is_ok();
         },
         &flush_success);
@@ -380,6 +400,30 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
 
+TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
+  if (g_env->GetDecoderImplementation() != DecoderImplementation::kVDVDA)
+    GTEST_SKIP();
+
+  auto tvp = CreateVideoPlayer(g_env->Video());
+
+  tvp->PlayUntil(VideoPlayerEvent::kNewBuffersRequested);
+  EXPECT_TRUE(tvp->WaitForEvent(VideoPlayerEvent::kNewBuffersRequested));
+
+  // TODO(b/192523692): Add a new test case that continues passing input buffers
+  // between the resolution change has been aborted and resetting the decoder.
+
+  tvp->Reset();
+  EXPECT_TRUE(tvp->WaitForResetDone());
+
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+
+  EXPECT_EQ(tvp->GetResetDoneCount(), 1u);
+  EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(tvp->WaitForFrameProcessors());
+}
+
 // Play video from start to end. Multiple buffer decodes will be queued in the
 // decoder, without waiting for the result of the previous decode requests.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {
@@ -496,6 +540,8 @@ int main(int argc, char** argv) {
   bool use_legacy = false;
   bool use_vd = false;
   bool use_vd_vda = false;
+  bool linear_output = false;
+  std::vector<base::Feature> disabled_features;
   media::test::DecoderImplementation implementation =
       media::test::DecoderImplementation::kVD;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
@@ -561,6 +607,10 @@ int main(int argc, char** argv) {
     } else if (it->first == "use_vd_vda") {
       use_vd_vda = true;
       implementation = media::test::DecoderImplementation::kVDVDA;
+    } else if (it->first == "linear_output") {
+      linear_output = true;
+    } else if (it->first == "disable_vaapi_lock") {
+      disabled_features.push_back(media::kGlobalVaapiLock);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -583,6 +633,12 @@ int main(int argc, char** argv) {
               << media::test::usage_msg;
     return EXIT_FAILURE;
   }
+  if (linear_output && !use_vd_vda) {
+    std::cout << "--linear_output must be used with the VDVDA (--use_vd_vda)\n"
+                 "implementation.\n"
+              << media::test::usage_msg;
+    return EXIT_FAILURE;
+  }
 
   testing::InitGoogleTest(&argc, argv);
 
@@ -601,7 +657,8 @@ int main(int argc, char** argv) {
   media::test::VideoPlayerTestEnvironment* test_environment =
       media::test::VideoPlayerTestEnvironment::Create(
           video_path, video_metadata_path, validator_type, implementation,
-          base::FilePath(output_folder), frame_output_config);
+          linear_output, base::FilePath(output_folder), frame_output_config,
+          /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 

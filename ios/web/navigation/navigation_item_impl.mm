@@ -70,7 +70,7 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       title_(item.title_),
       page_display_state_(item.page_display_state_),
       transition_type_(item.transition_type_),
-      favicon_(item.favicon_),
+      favicon_status_(item.favicon_status_),
       ssl_(item.ssl_),
       timestamp_(item.timestamp_),
       user_agent_type_(item.user_agent_type_),
@@ -174,12 +174,12 @@ ui::PageTransition NavigationItemImpl::GetTransitionType() const {
   return transition_type_;
 }
 
-const FaviconStatus& NavigationItemImpl::GetFavicon() const {
-  return favicon_;
+const FaviconStatus& NavigationItemImpl::GetFaviconStatus() const {
+  return favicon_status_;
 }
 
-FaviconStatus& NavigationItemImpl::GetFavicon() {
-  return favicon_;
+void NavigationItemImpl::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
 }
 
 const SSLStatus& NavigationItemImpl::GetSSL() const {

@@ -70,6 +70,19 @@ chrome_pgo_phase = 0
 EOF
         ;;
 
+    mac)
+        cat <<EOF
+target_os = "mac"
+dcheck_always_on = true
+is_chrome_branded = true
+is_debug = false
+is_official_build = true
+use_goma = false
+chrome_pgo_phase = 0
+symbol_level = 1
+EOF
+        ;;
+
     *)
         echo "unknown platform"
         exit 1
@@ -87,8 +100,10 @@ pre_process() {
     # Build generated files that a successful compilation depends on.
     echo "*** Preparing targets for $PLATFORM ***"
     gn gen $OUT_DIR
-    GEN_H_TARGETS=`ninja -C $OUT_DIR -t targets all | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' | cut -d : -f 1`
-    time ninja -C $OUT_DIR $GEN_H_TARGETS
+    time ninja -C $OUT_DIR -t targets all \
+        | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' \
+        | cut -d : -f 1 \
+        | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR
 
     TARGET_OS_OPTION=""
     if [ $PLATFORM = "win" ]; then

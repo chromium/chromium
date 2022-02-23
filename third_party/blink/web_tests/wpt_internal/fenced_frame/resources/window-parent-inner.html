@@ -12,10 +12,9 @@ async function init() { // Needed in order to use top-level await.
   //   2.) Nested iframes inside a fenced frame
   //   3.) Nested fenced frames
   const url = new URL(location.href);
-  const is_nested_fenced_frame = (url.search == "?nested");
 
-  const window_parent_key = KEYS["window.parent"];
-  const window_parent_ack_key = KEYS["window.parent ACK"];
+  const [window_parent_key, window_parent_ack_key, nested] = parseKeylist();
+  const is_nested_fenced_frame = (nested == "nested");
 
   // Report whether or not `window.parent` was correct.
   let pass_string = "";
@@ -56,7 +55,8 @@ async function init() { // Needed in order to use top-level await.
   // the `window_parent_key` stash and we can write to it again.
   await nextValueFromServer(window_parent_ack_key);
 
-  attachFencedFrame("window-parent-inner.html?nested");
+  attachFencedFrame(generateURL("window-parent-inner.html",
+      [window_parent_key, window_parent_ack_key, "nested"]));
 }
 
 init();

@@ -13,7 +13,8 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -291,10 +292,9 @@ LoginScreenModel* LoginScreenController::GetModel() {
 }
 
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
-  ToastData toast_data(
-      "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      absl::optional<std::u16string>(std::u16string()) /*dismiss_text*/,
-      true /*visible_on_lock_screen*/);
+  ToastData toast_data("KioskAppError", ToastCatalogName::kKioskAppError,
+                       base::UTF8ToUTF16(message), ToastData::kInfiniteDuration,
+                       /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
 
@@ -397,6 +397,10 @@ void LoginScreenController::ClearLoginShelfGestureHandler() {
   return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
       ->ClearLoginShelfSwipeHandler();
+}
+
+views::Widget* LoginScreenController::GetLoginWindowWidget() {
+  return client_ ? client_->GetLoginWindowWidget() : nullptr;
 }
 
 void LoginScreenController::ShowLockScreen() {

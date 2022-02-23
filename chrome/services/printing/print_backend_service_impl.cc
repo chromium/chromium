@@ -10,11 +10,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -22,15 +24,26 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/printed_document.h"
 #include "printing/printing_context.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/threading/thread_restrictions.h"
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #endif
 
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
 #include "printing/backend/cups_connection_pool.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/containers/queue.h"
+#include "printing/emf_win.h"
+#include "printing/metafile.h"
+#include "printing/metafile_skia.h"
+#include "printing/printed_page_win.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #endif
 
 namespace printing {
@@ -45,7 +58,7 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   // CUPS is thread safe, so a task runner can be allocated for each job.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(kTraits);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // For Windows, we want a single threaded task runner shared for all print
   // jobs in the process because Windows printer drivers are oftentimes not
   // thread-safe.  This protects against multiple print jobs to the same device
@@ -62,47 +75,199 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   return task_runner;
 }
 
-}  // namespace
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<Metafile> CreateMetafile(mojom::MetafileDataType data_type) {
+  switch (data_type) {
+    case mojom::MetafileDataType::kPDF:
+      return std::make_unique<MetafileSkia>();
+    case mojom::MetafileDataType::kEMF:
+      return std::make_unique<Emf>();
+  }
+}
+#endif
 
 // Local storage of document and associated data needed to submit to job to
-// the operating system's printing API.
-struct PrintBackendServiceImpl::DocumentContainer {
-  DocumentContainer(
-      scoped_refptr<PrintedDocument> document,
-      mojom::PrintTargetType target_type,
-      int page_count,
-      mojom::PrintBackendService::StartPrintingCallback start_printing_callback)
-      : document(document),
-        target_type(target_type),
-        page_count(page_count),
-        start_printing_callback(std::move(start_printing_callback)),
-        task_runner(GetPrintingTaskRunner()) {
-    // Container is created on main thread, but system calls show be on
-    // `task_runner`.
-    DETACH_FROM_SEQUENCE(system_sequence_checker);
-  }
+// the operating system's printing API.  All access to the document occurs on
+// a worker task runner.
+class DocumentContainer {
+ public:
+  DocumentContainer(PrintingContext::Delegate* context_delegate,
+                    scoped_refptr<PrintedDocument> document,
+                    mojom::PrintTargetType target_type)
+      : context_delegate_(context_delegate),
+        document_(document),
+        target_type_(target_type) {}
 
   ~DocumentContainer() = default;
 
-  scoped_refptr<PrintedDocument> document;
+  // Helper functions that runs on a task runner.
+  mojom::ResultCode StartPrintingReadyDocument();
+#if BUILDFLAG(IS_WIN)
+  mojom::ResultCode DoRenderPrintedPage(
+      uint32_t page_index,
+      mojom::MetafileDataType page_data_type,
+      base::ReadOnlySharedMemoryRegion serialized_page,
+      gfx::Size page_size,
+      gfx::Rect page_content_rect,
+      float shrink_factor);
+#endif
+  mojom::ResultCode DoDocumentDone();
+
+ private:
+  PrintingContext::Delegate* context_delegate_;
+  scoped_refptr<PrintedDocument> document_;
 
   // `context` is not initialized until the document is ready for printing.
-  std::unique_ptr<PrintingContext> context;
+  std::unique_ptr<PrintingContext> context_;
 
-  // Parameters required for the delayed call to `UpdatePrinterSettings()`.
-  mojom::PrintTargetType target_type;
-  int page_count;
+  // Parameter required for the delayed call to `UpdatePrinterSettings()`.
+  mojom::PrintTargetType target_type_;
 
-  // `start_printing_callback` is held until the document is ready for
+  // Ensure all interactions for this document are issued from the same runner.
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Start printing for document " << document_->cookie();
+
+  // Create a printing context that will work with this document for the
+  // duration of the print job.
+  context_ =
+      PrintingContext::Create(context_delegate_, /*skip_system_calls=*/false);
+
+  // With out-of-process printing the printer settings no longer get updated
+  // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that
+  // now to our new context.
+  // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
+  // `PrintingContext::UpdatePrinterSettings()`.
+  PrintingContext::PrinterSettings printer_settings {
+#if BUILDFLAG(IS_MAC)
+    .external_preview =
+        target_type_ == mojom::PrintTargetType::kExternalPreview,
+#endif
+    .show_system_dialog = target_type_ == mojom::PrintTargetType::kSystemDialog,
+#if BUILDFLAG(IS_WIN)
+    .page_count = 0,
+#endif
+  };
+  context_->ApplyPrintSettings(document_->settings());
+  mojom::ResultCode result = context_->UpdatePrinterSettings(printer_settings);
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure updating printer settings for document "
+                << document_->cookie() << ", error: " << result;
+    return result;
+  }
+
+  result = context_->NewDocument(document_->name());
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure initializing new document " << document_->cookie()
+                << ", error: " << result;
+    return result;
+  }
+
+  return mojom::ResultCode::kSuccess;
+}
+
+#if BUILDFLAG(IS_WIN)
+mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
+    uint32_t page_index,
+    mojom::MetafileDataType page_data_type,
+    base::ReadOnlySharedMemoryRegion serialized_page,
+    gfx::Size page_size,
+    gfx::Rect page_content_rect,
+    float shrink_factor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Render printed page " << page_index << " for document "
+           << document_->cookie();
+
+  base::ReadOnlySharedMemoryMapping mapping = serialized_page.Map();
+  if (!mapping.IsValid()) {
+    DLOG(ERROR) << "Failure printing document " << document_->cookie()
+                << ", cannot map input.";
+    return mojom::ResultCode::kFailed;
+  }
+
+  auto metafile = CreateMetafile(page_data_type);
+
+  // For security reasons we need to use a copy of the data, and not operate
+  // on it directly out of shared memory.  Make a copy here if the underlying
+  // `Metafile` implementation doesn't do it automatically.
+  // TODO(crbug.com/1135729)  Eliminate this copy when the shared memory can't
+  // be written by the sender.
+  std::unique_ptr<uint8_t[]> data_copy;
+  base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
+  if (metafile->ShouldCopySharedMemoryRegionData()) {
+    data_copy = std::make_unique<uint8_t[]>(data.size());
+    std::copy(data.data(), data.data() + data.size(), data_copy.get());
+    data = base::span<const uint8_t>(data_copy.get(), data.size());
+  }
+  if (!metafile->InitFromData(data)) {
+    DLOG(ERROR) << "Failure printing document " << document_->cookie()
+                << ", unable to initialize.";
+    return mojom::ResultCode::kFailed;
+  }
+
+  document_->SetPage(page_index, std::move(metafile), shrink_factor, page_size,
+                     page_content_rect);
+
+  return document_->RenderPrintedPage(*document_->GetPage(page_index),
+                                      context_.get());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+mojom::ResultCode DocumentContainer::DoDocumentDone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Document done for document " << document_->cookie();
+  return context_->DocumentDone();
+}
+
+}  // namespace
+
+// Helper for managing `DocumentContainer` objects.  All access to this occurs
+// on the main thread.
+class PrintBackendServiceImpl::DocumentHelper {
+ public:
+  DocumentHelper(
+      int document_cookie,
+      base::SequenceBound<DocumentContainer> document_container,
+      mojom::PrintBackendService::StartPrintingCallback start_printing_callback)
+      : document_cookie_(document_cookie),
+        document_container_(std::move(document_container)),
+        start_printing_callback_(std::move(start_printing_callback)) {}
+
+  ~DocumentHelper() = default;
+
+  int document_cookie() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return document_cookie_;
+  }
+
+  base::SequenceBound<DocumentContainer>& document_container() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return document_container_;
+  }
+
+  mojom::PrintBackendService::StartPrintingCallback
+  TakeStartPrintingCallback() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return std::move(start_printing_callback_);
+  }
+
+ private:
+  const int document_cookie_;
+
+  base::SequenceBound<DocumentContainer> document_container_;
+
+  // `start_printing_callback_` is held until the document is ready for
   // printing.
-  mojom::PrintBackendService::StartPrintingCallback start_printing_callback;
+  mojom::PrintBackendService::StartPrintingCallback start_printing_callback_;
 
-  // Printing interactions with the system APIs will be made on this runner.
-  scoped_refptr<base::SequencedTaskRunner> task_runner;
-
-  // Ensure all system interactions for this document to be issued from this
-  // runner.
-  SEQUENCE_CHECKER(system_sequence_checker);
+  // Ensure all interactions for this document are issued from the same runner.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Sandboxed service helper.
@@ -173,8 +338,7 @@ void PrintBackendServiceImpl::Poke() {}
 void PrintBackendServiceImpl::EnumeratePrinters(
     mojom::PrintBackendService::EnumeratePrintersCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrinterListResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -193,8 +357,7 @@ void PrintBackendServiceImpl::EnumeratePrinters(
 void PrintBackendServiceImpl::GetDefaultPrinterName(
     mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::DefaultPrinterNameResult::NewResultCode(
         mojom::ResultCode::kFailed));
     return;
@@ -216,8 +379,7 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
         callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
             mojom::ResultCode::kFailed));
@@ -245,8 +407,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
     const std::string& printer_name,
     mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::PrinterCapsAndInfoResult::NewResultCode(
         mojom::ResultCode::kFailed));
     return;
@@ -256,7 +417,7 @@ void PrintBackendServiceImpl::FetchCapabilities(
       print_backend_->GetPrinterDriverInfo(printer_name));
 
   PrinterSemanticCapsAndDefaults::Papers user_defined_papers;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   {
     // Blocking is needed here for when macOS reads paper sizes from file.
     //
@@ -296,12 +457,34 @@ void PrintBackendServiceImpl::FetchCapabilities(
           std::move(caps_and_info)));
 }
 
+void PrintBackendServiceImpl::UseDefaultSettings(
+    mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
+    std::move(callback).Run(
+        mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+    return;
+  }
+
+  // Use a one-time `PrintingContext` to get the print settings.
+  std::unique_ptr<PrintingContext> context =
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
+  mojom::ResultCode result = context.get()->UseDefaultSettings();
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure getting default settings of default printer, "
+                << "error: " << result;
+    std::move(callback).Run(mojom::PrintSettingsResult::NewResultCode(result));
+    return;
+  }
+  std::move(callback).Run(mojom::PrintSettingsResult::NewSettings(
+      *context->TakeAndResetSettings()));
+}
+
 void PrintBackendServiceImpl::UpdatePrintSettings(
     base::flat_map<std::string, base::Value> job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(
         mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
     return;
@@ -327,7 +510,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
       print_backend_->GetPrinterDriverInfo(printer_name));
 
-#if defined(OS_LINUX) && defined(USE_CUPS)
+#if BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
   // Try to fill in advanced settings based upon basic info options.
   PrinterBasicInfo basic_info;
   if (print_backend_->GetPrinterBasicInfo(printer_name, &basic_info) ==
@@ -338,14 +521,14 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
 
     job_settings[kSettingAdvancedSettings] = std::move(advanced_settings);
   }
-#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 
   // Use a one-time `PrintingContext` to do the update to print settings.
   // Intentionally do not cache this context here since the process model does
   // not guarantee that we will return to this same process when
   // `StartPrinting()` might be called.
   std::unique_ptr<PrintingContext> context =
-      PrintingContext::Create(&context_delegate_);
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
   mojom::ResultCode result =
       context->UpdatePrintSettings(base::Value(std::move(job_settings)));
 
@@ -362,27 +545,15 @@ void PrintBackendServiceImpl::StartPrinting(
     int document_cookie,
     const std::u16string& document_name,
     mojom::PrintTargetType target_type,
-    int page_count,
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
   if (!print_backend_) {
-    DLOG(ERROR)
-        << "Print backend instance has not been initialized for locale.";
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
     std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }
 
-  // Save all the document settings for use through the print job, until the
-  // time that this document can complete printing.  Track the order of
-  // received documents with position in `documents_`.
-  auto document = base::MakeRefCounted<PrintedDocument>(
-      std::make_unique<PrintSettings>(settings), document_name,
-      document_cookie);
-  documents_.push_back(
-      std::make_unique<PrintBackendServiceImpl::DocumentContainer>(
-          document, target_type, page_count, std::move(callback)));
-
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
   if (connection_pool) {
     // If a pool exists then this document can only proceed with printing if
@@ -398,79 +569,157 @@ void PrintBackendServiceImpl::StartPrinting(
   }
 #endif
 
-  // Safe to use `base::Unretained(this)` because `this` outlives the callback.
-  // The entire service process goes away when `this` lifetime expires.
-  DocumentContainer& document_container = *documents_.back();
-  document_container.task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&PrintBackendServiceImpl::StartPrintingReadyDocument,
-                     base::Unretained(this), std::ref(document_container)),
-      base::BindOnce(&PrintBackendServiceImpl::OnDidStartPrintingReadyDocument,
-                     base::Unretained(this), std::ref(document_container)));
+  // Save all the document settings for use through the print job, until the
+  // time that this document can complete printing.  Track the order of
+  // received documents with position in `documents_`.
+  auto document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(settings), document_name,
+      document_cookie);
+  base::SequenceBound<DocumentContainer> document_container(
+      GetPrintingTaskRunner(), &context_delegate_, document, target_type);
+  documents_.push_back(std::make_unique<DocumentHelper>(
+      document_cookie, std::move(document_container), std::move(callback)));
+  DocumentHelper& document_helper = *documents_.back();
+
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper.document_container()
+      .AsyncCall(&DocumentContainer::StartPrintingReadyDocument)
+      .Then(base::BindOnce(
+          &PrintBackendServiceImpl::OnDidStartPrintingReadyDocument,
+          base::Unretained(this), std::ref(document_helper)));
 }
 
-mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
-    PrintBackendServiceImpl::DocumentContainer& document_container) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(document_container.system_sequence_checker);
-
-  scoped_refptr<PrintedDocument> document = document_container.document;
-  DVLOG(1) << "Start printing for document " << document->cookie();
-
-  // Create a printing context that will work with this document for the
-  // duration of the print job.
-  auto context = PrintingContext::Create(&context_delegate_);
-
-  // With out-of-process printing the printer settings no longer get updated
-  // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that
-  // now to our new context.
-  // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
-  // `PrintingContext::UpdatePrinterSettings()`.
-  bool external_preview = false;
-  bool show_system_dialog =
-      document_container.target_type == mojom::PrintTargetType::kSystemDialog;
-#if defined(OS_MAC)
-  if (document_container.target_type ==
-      mojom::PrintTargetType::kExternalPreview) {
-    external_preview = true;
-  }
-#endif
-  context->ApplyPrintSettings(document->settings());
-  mojom::ResultCode result = context->UpdatePrinterSettings(
-      external_preview, show_system_dialog, document_container.page_count);
-  if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR) << "Failure updating printer settings for document "
-                << document->cookie() << ", error: " << result;
-    return result;
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::RenderPrintedPage(
+    int32_t document_cookie,
+    uint32_t page_index,
+    mojom::MetafileDataType page_data_type,
+    base::ReadOnlySharedMemoryRegion serialized_page,
+    const gfx::Size& page_size,
+    const gfx::Rect& page_content_rect,
+    float shrink_factor,
+    mojom::PrintBackendService::RenderPrintedPageCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
   }
 
-  result = context->NewDocument(document->name());
-  if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR) << "Failure initializing new document " << document->cookie()
-                << ", error: " << result;
-    return result;
+  DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
+  if (!document_helper) {
+    DLOG(ERROR) << "Unrecognized document " << document_cookie
+                << " for printing page " << page_index;
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
   }
 
-  document_container.context = std::move(context);
-  return mojom::ResultCode::kSuccess;
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper->document_container()
+      .AsyncCall(&DocumentContainer::DoRenderPrintedPage)
+      .WithArgs(page_index, page_data_type, std::move(serialized_page),
+                page_size, page_content_rect, shrink_factor)
+      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidRenderPrintedPage,
+                           base::Unretained(this), std::ref(*document_helper),
+                           std::move(callback)));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void PrintBackendServiceImpl::DocumentDone(
+    int document_cookie,
+    mojom::PrintBackendService::DocumentDoneCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
+  if (!document_helper) {
+    DLOG(ERROR) << "Unrecognized document " << document_cookie << " to be done";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper->document_container()
+      .AsyncCall(&DocumentContainer::DoDocumentDone)
+      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidDocumentDone,
+                           base::Unretained(this), std::ref(*document_helper),
+                           std::move(callback)));
 }
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
-    PrintBackendServiceImpl::DocumentContainer& document_container,
+    DocumentHelper& document_helper,
     mojom::ResultCode result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(callback_sequence_checker_);
-  std::move(document_container.start_printing_callback).Run(result);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  document_helper.TakeStartPrintingCallback().Run(result);
   if (result == mojom::ResultCode::kSuccess)
     return;
 
   // Remove this document due to the failure to do setup.
-  int cookie = document_container.document->cookie();
-  auto item = std::find_if(
-      documents_.begin(), documents_.end(),
-      [cookie](const std::unique_ptr<DocumentContainer>& document_container) {
-        return document_container->document->cookie() == cookie;
-      });
+  RemoveDocumentHelper(document_helper);
+}
+
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::OnDidRenderPrintedPage(
+    PrintBackendServiceImpl::DocumentHelper& document_helper,
+    mojom::PrintBackendService::RenderPrintedPageCallback callback,
+    mojom::ResultCode result) {
+  std::move(callback).Run(result);
+  if (result == mojom::ResultCode::kSuccess)
+    return;
+
+  // Remove this document due to the rendering failure.
+  RemoveDocumentHelper(document_helper);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void PrintBackendServiceImpl::OnDidDocumentDone(
+    DocumentHelper& document_helper,
+    mojom::PrintBackendService::DocumentDoneCallback callback,
+    mojom::ResultCode result) {
+  std::move(callback).Run(result);
+
+  // All complete for this document.
+  RemoveDocumentHelper(document_helper);
+}
+
+PrintBackendServiceImpl::DocumentHelper*
+PrintBackendServiceImpl::GetDocumentHelper(int document_cookie) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // Most new calls are expected to be relevant to the most recently added
+  // document, which would be at the end of the list.  So search the list
+  // backwards to hopefully reduce the time to find the document.
+  for (const std::unique_ptr<DocumentHelper>& helper :
+       base::Reversed(documents_)) {
+    if (helper->document_cookie() == document_cookie) {
+      return helper.get();
+    }
+  }
+  return nullptr;
+}
+
+void PrintBackendServiceImpl::RemoveDocumentHelper(
+    DocumentHelper& document_helper) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  // Must search forwards because std::vector::erase() doesn't work with a
+  // reverse iterator.
+  int cookie = document_helper.document_cookie();
+  auto item =
+      std::find_if(documents_.begin(), documents_.end(),
+                   [cookie](const std::unique_ptr<DocumentHelper>& helper) {
+                     return helper->document_cookie() == cookie;
+                   });
   DCHECK(item != documents_.end())
-      << "To be deleted DocumentContainer not found";
+      << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);
 
   // TODO(crbug.com/809738)  This releases a connection; try to start the

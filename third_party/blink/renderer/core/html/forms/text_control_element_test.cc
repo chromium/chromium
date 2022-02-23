@@ -42,7 +42,7 @@ class TextControlElementTest : public testing::Test {
 
 void TextControlElementTest::SetUp() {
   dummy_page_holder_ =
-      std::make_unique<DummyPageHolder>(IntSize(800, 600), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600), nullptr);
 
   document_ = &dummy_page_holder_->GetDocument();
   document_->documentElement()->setInnerHTML(

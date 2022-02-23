@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PERSISTENT_KEY_VALUE_STORE_IMPL_H_
 #define COMPONENTS_FEED_CORE_V2_PERSISTENT_KEY_VALUE_STORE_IMPL_H_
 
-#include <list>
 #include <memory>
 #include <string>
 

@@ -56,7 +56,7 @@ template("style_variable_generator") {
            ] + rebase_path(sources, root_build_dir)
   }
 
-  action("${target_name}_views_generator") {
+  action("${target_name}_views_h_generator") {
     script = script_file
     forward_variables_from(invoker,
                            [
@@ -71,15 +71,45 @@ template("style_variable_generator") {
     out_file = "$target_gen_dir/${original_target_name}.h"
     outputs = [ out_file ]
     args = [
-             "--generator=Views",
+             "--generator=ViewsH",
              "--out-file",
              rebase_path("$out_file", root_build_dir),
            ] + rebase_path(sources, root_build_dir)
   }
 
-  source_set("${target_name}_views") {
-    sources = [ "$target_gen_dir/${original_target_name}.h" ]
-    deps = [ ":${original_target_name}_views_generator" ]
+  action("${target_name}_views_cc_generator") {
+    script = script_file
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "sources",
+                           ])
+
+    inputs = common_inputs + [
+               "//tools/style_variable_generator/views_generator.py",
+               "//tools/style_variable_generator/views_generator_cc.tmpl",
+             ]
+    out_file = "$target_gen_dir/${original_target_name}.cc"
+    outputs = [ out_file ]
+    args = [
+             "--generator=ViewsCC",
+             "--out-file",
+             rebase_path("$out_file", root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
+
+  component("${target_name}_views") {
+    sources = [
+      "$target_gen_dir/${original_target_name}.cc",
+      "$target_gen_dir/${original_target_name}.h",
+    ]
+    deps = [
+      ":${original_target_name}_views_cc_generator",
+      ":${original_target_name}_views_h_generator",
+      "//base",
+      "//skia",
+    ]
+    defines = [ "IS_${original_target_name}_IMPL" ]
   }
 
   action("${target_name}_proto") {

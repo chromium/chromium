@@ -75,8 +75,7 @@ if (is_android) {
     deps = [ "//third_party/icu:icu_assets" ]
     if (use_v8_context_snapshot) {
       deps += [ "//tools/v8_context_snapshot:v8_context_snapshot_assets" ]
-    }
-    if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+    } else {
       deps += [ "//v8:v8_external_startup_data_assets" ]
     }
   }
@@ -95,7 +94,6 @@ test("weblayer_browsertests") {
     "//components/test/data",
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "//third_party/tlslite/",
   ]
 
   data_deps = [
@@ -222,6 +220,7 @@ test("weblayer_browsertests") {
       "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_factory_browsertest.cc",
       "../browser/safe_browsing/safe_browsing_browsertest.cc",
+      "../browser/safe_browsing/weblayer_ping_manager_browsertest.cc",
       "../browser/url_bar/page_info_browsertest.cc",
       "../shell/android/browsertests_apk/translate_test_bridge.cc",
       "../shell/android/browsertests_apk/translate_test_bridge.h",
@@ -253,6 +252,7 @@ test("weblayer_browsertests") {
       "//content/test:android_test_message_pump_support",
       "//content/test:android_test_message_pump_support",
       "//services/metrics/public/cpp:ukm_builders",
+      "//services/network:test_support",
       "//services/tracing:test_utils",
       "//testing/android/native_test:native_test_support",
       "//third_party/metrics_proto",

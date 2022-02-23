@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
@@ -108,7 +108,7 @@ class UpdateService : public KeyedService,
   base::Value GetExtensionOmahaAttributes(const std::string& extension_id);
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   scoped_refptr<update_client::UpdateClient> update_client_;
   scoped_refptr<UpdateDataProvider> update_data_provider_;

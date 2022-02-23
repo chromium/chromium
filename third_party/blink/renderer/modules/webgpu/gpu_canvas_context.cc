@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 
 namespace blink {
 
@@ -85,7 +86,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
 
   if (Host()->ResourceProvider() &&
-      Host()->ResourceProvider()->Size() != IntSize(swapchain_->Size())) {
+      Host()->ResourceProvider()->Size() != swapchain_->Size()) {
     Host()->DiscardResourceProvider();
   }
 
@@ -172,12 +173,11 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       AsDawnEnum<WGPUTextureFormat>(descriptor->format());
   switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
-      break;
+#if !BUILDFLAG(IS_MAC)
+    case WGPUTextureFormat_RGBA8Unorm:
+#endif
     case WGPUTextureFormat_RGBA16Float:
-      configured_device_->InjectError(
-          WGPUErrorType_Validation,
-          "rgba16float swap chain is not yet supported");
-      return;
+      break;
     default:
       configured_device_->InjectError(WGPUErrorType_Validation,
                                       "unsupported swap chain format");
@@ -185,10 +185,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   // Set the default size.
-  IntSize size;
+  gfx::Size size;
   if (descriptor->hasSize()) {
     WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
-    size = IntSize(dawn_extent.width, dawn_extent.height);
+    size = gfx::Size(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {
       configured_device_->InjectError(

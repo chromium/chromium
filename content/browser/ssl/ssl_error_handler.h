@@ -5,9 +5,9 @@
 #ifndef CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 #define CONTENT_BROWSER_SSL_SSL_ERROR_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
 #include "net/ssl/ssl_info.h"
@@ -28,7 +28,7 @@ class WebContents;
 // call exactly one of those methods exactly once.
 class SSLErrorHandler {
  public:
-  class CONTENT_EXPORT Delegate {
+  class Delegate {
    public:
     // Called when SSLErrorHandler decides to cancel the request because of
     // the SSL error.
@@ -68,7 +68,7 @@ class SSLErrorHandler {
   bool fatal() const { return fatal_; }
 
   // Cancels the associated net::URLRequest.
-  CONTENT_EXPORT void CancelRequest();
+  void CancelRequest();
 
   // Continue the net::URLRequest ignoring any previous errors.  Note that some
   // errors cannot be ignored, in which case this will result in the request
@@ -100,7 +100,7 @@ class SSLErrorHandler {
   const bool fatal_;
 
   // The WebContents associated with the request that generated the error.
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
 };
 
 }  // namespace content

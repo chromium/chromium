@@ -7,10 +7,17 @@
 class TestHarness {
   finished = false;
   success = false;
+  skipped = false;
   message = 'ok';
   logs = [];
 
   constructor() {}
+
+  skip(message) {
+    this.skipped = true;
+    this.finished = true;
+    this.message = message;
+  }
 
   reportSuccess() {
     this.finished = true;
@@ -76,7 +83,7 @@ function fourColorsFrame(ctx, width, height, text) {
   ctx.fillStyle = kGreen;
   ctx.fillRect(width / 2, height / 2, width / 2, height / 2);
 
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = 'white';
   ctx.font = (height / 10) + 'px sans-serif';
   ctx.fillText(text, width / 2, height / 2);
 }
@@ -121,6 +128,46 @@ function checkFourColorsFrame(ctx, width, height, tolerance) {
                       tolerance, 'bottom right corner is green');
 }
 
+// Paints |count| black dots on the |ctx|, so their presence can be validated
+// later. This is an analog of the most basic bar code.
+function putBlackDots(ctx, width, height, count) {
+  ctx.fillStyle = 'black';
+  const dot_size = 10;
+  const step = dot_size * 3;
+
+  for (let i = 1; i <= count; i++) {
+    let x = i * step;
+    let y = step * (x / width + 1);
+    x %= width;
+    ctx.fillRect(x, y, dot_size, dot_size);
+  }
+}
+
+// Validates that frame has |count| black dots in predefined places.
+function validateBlackDots(frame, count) {
+  const width = frame.displayWidth;
+  const height = frame.displayHeight;
+  let cnv = new OffscreenCanvas(width, height);
+  var ctx = cnv.getContext('2d');
+  ctx.drawImage(frame, 0, 0);
+  const dot_size = 10;
+  const step = dot_size * 3;
+
+  for (let i = 1; i <= count; i++) {
+    let x = i * step + dot_size / 2;
+    let y = step * (x / width + 1) + dot_size / 2;
+    x %= width;
+    let rgba = ctx.getImageData(x, y, 1, 1).data;
+    const tolerance = 40;
+    if (rgba[0] > tolerance || rgba[1] > tolerance || rgba[2] > tolerance) {
+      // The dot is too bright to be a black dot.
+      return false;
+    }
+  }
+  return true;
+}
+
+
 // Base class for video frame sources.
 class FrameSource {
   constructor() {}
@@ -128,6 +175,8 @@ class FrameSource {
   async getNextFrame() {
     return null;
   }
+
+  close() {}
 }
 
 // Source of video frames coming from taking snapshots of a canvas.
@@ -140,13 +189,16 @@ class CanvasSource extends FrameSource {
     this.ctx = this.canvas.getContext('2d');
     this.timestamp = 0;
     this.duration = 16666;  // 1/60 s
+    this.frame_index = 0;
   }
 
   async getNextFrame() {
     fourColorsFrame(this.ctx, this.width, this.height,
                     this.timestamp.toString());
+    putBlackDots(this.ctx, this.width, this.height, this.frame_index);
     let result = new VideoFrame(this.canvas, {timestamp: this.timestamp});
     this.timestamp += this.duration;
+    this.frame_index++;
     return result;
   }
 }
@@ -163,6 +215,36 @@ class StreamSource extends FrameSource {
     const result = await this.reader.read();
     const frame = result.value;
     return frame;
+  }
+
+  close() {
+    if (this.reader)
+      this.reader.cancel();
+  }
+}
+
+class ArrayBufferSource extends FrameSource {
+  constructor(width, height) {
+    super();
+    this.inner_src = new CanvasSource(width, height);
+    this.width = width;
+    this.height = height;
+  }
+
+  async getNextFrame() {
+    let prototype_frame = await this.inner_src.getNextFrame();
+    let size = prototype_frame.allocationSize();
+    let buf = new ArrayBuffer(size);
+    let layout = await prototype_frame.copyTo(buf);
+    let init = {
+        format: prototype_frame.format,
+        timestamp: prototype_frame.timestamp,
+        codedWidth: prototype_frame.codedWidth,
+        codedHeight: prototype_frame.codedHeight,
+        colorSpace: prototype_frame.colorSpace,
+        layout: layout
+    };
+    return new VideoFrame(buf, init);
   }
 }
 
@@ -217,6 +299,11 @@ class DecoderSource extends FrameSource {
     });
 
     return next.promise;
+  }
+
+  close() {
+    if (this.decoder)
+      this.decoder.close();
   }
 }
 
@@ -292,7 +379,15 @@ async function prepareDecoderSource(
     encoder.encode(frame, {keyFrame: false});
     frame.close();
   }
-  await encoder.flush();
+  try {
+    await encoder.flush();
+    encoder.close();
+    canvasSource.close();
+  } catch (e) {
+    errors++;
+    TEST.log(e);
+  }
+
   if (errors > 0)
     return null;
 
@@ -331,6 +426,9 @@ async function createFrameSource(type, width, height) {
     }
     case 'sw_decoder': {
       return prepareDecoderSource(40, width, height, 'vp8', 'prefer-software');
+    }
+    case 'arraybuffer': {
+      return new ArrayBufferSource(width, height);
     }
   }
 }

@@ -530,7 +530,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckAmbientLightReadings) {
       sizeof(SensorReadingSharedBuffer),
       SensorReadingSharedBuffer::GetOffset(SensorType::AMBIENT_LIGHT));
 
-  double sensor_value[kSensorValuesSize] = {22};
+  double sensor_value[kSensorValuesSize] = {50};
   InitializeSupportedSensor(SensorType::AMBIENT_LIGHT, kZero, kZero, kZero,
                             sensor_value);
 
@@ -549,7 +549,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest, CheckAmbientLightReadings) {
 
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-  EXPECT_THAT(buffer->reading.als.value, sensor_value[0]);
+  EXPECT_THAT(buffer->reading.als.value, 50);
 
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }
@@ -755,7 +755,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
       sizeof(SensorReadingSharedBuffer),
       SensorReadingSharedBuffer::GetOffset(SensorType::AMBIENT_LIGHT));
 
-  double sensor_value[kSensorValuesSize] = {22};
+  double sensor_value[kSensorValuesSize] = {50};
   // Set a non-zero frequency here and sensor's reporting mode will be
   // mojom::ReportingMode::CONTINUOUS.
   InitializeSupportedSensor(SensorType::AMBIENT_LIGHT,
@@ -779,7 +779,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
 
   SensorReadingSharedBuffer* buffer =
       static_cast<SensorReadingSharedBuffer*>(mapping.get());
-  EXPECT_THAT(buffer->reading.als.value, sensor_value[0]);
+  EXPECT_THAT(buffer->reading.als.value, 50);
 
   EXPECT_TRUE(sensor->StopListening(client.get(), configuration));
 }

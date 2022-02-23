@@ -7,7 +7,6 @@
      be greater than 200. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
     tools:ignore="VectorRaster"
     android:width="224dp"
     android:height="107dp"

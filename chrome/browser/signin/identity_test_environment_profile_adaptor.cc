@@ -52,8 +52,10 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 // static
 void IdentityTestEnvironmentProfileAdaptor::
     SetIdentityTestEnvironmentFactoriesOnBrowserContext(
-        content::BrowserContext* context) {
-  for (const auto& factory_pair : GetIdentityTestEnvironmentFactories()) {
+        content::BrowserContext* context,
+        signin::AccountConsistencyMethod account_consistency) {
+  for (const auto& factory_pair :
+       GetIdentityTestEnvironmentFactories(account_consistency)) {
     factory_pair.first->SetTestingFactory(context, factory_pair.second);
   }
 }

@@ -14,11 +14,11 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
 import '../os_apps_page/os_apps_page.js';
-import '../os_people_page/os_people_page.m.js';
+import '../os_people_page/os_people_page.js';
 import '../os_privacy_page/os_privacy_page.js';
 import '../os_printing_page/os_printing_page.js';
 import '../os_search_page/os_search_page.js';
-import '../personalization_page/personalization_page.m.js';
+import '../personalization_page/personalization_page.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page_css.js';
 import '../bluetooth_page/bluetooth_page.js';
@@ -36,7 +36,7 @@ import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/
 
 import {Route, Router} from '../../router.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
@@ -60,6 +60,8 @@ Polymer({
     },
 
     showAndroidApps: Boolean,
+
+    showArcvmManageUsb: Boolean,
 
     showCrostini: Boolean,
 
@@ -85,6 +87,19 @@ Polymer({
     isGuestMode_: {
       type: Boolean,
       value: loadTimeData.getBoolean('isGuest'),
+    },
+
+    /**
+     * Whether Accessibility OS Settings visibility improvements are enabled.
+     * @private{boolean}
+     */
+    isAccessibilityOSSettingsVisibilityEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.getBoolean(
+            'isAccessibilityOSSettingsVisibilityEnabled');
+      }
     },
 
     /**

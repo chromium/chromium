@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +34,7 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
   WebDialogDelegate* delegate() { return delegate_; }
 
  private:
-  WebDialogDelegate* delegate_;  // unowned
+  raw_ptr<WebDialogDelegate> delegate_;  // unowned
 };
 
 }  // namespace
@@ -103,8 +104,12 @@ void WebDialogUIBase::OnDialogClosed(const base::ListValue* args) {
   WebDialogDelegate* delegate = GetDelegate(web_ui_->GetWebContents());
   if (delegate) {
     std::string json_retval;
-    if (args && !args->GetList().empty() && !args->GetString(0, &json_retval))
-      NOTREACHED() << "Could not read JSON argument";
+    if (args && !args->GetListDeprecated().empty()) {
+      if (args->GetListDeprecated()[0].is_string())
+        json_retval = args->GetListDeprecated()[0].GetString();
+      else
+        NOTREACHED() << "Could not read JSON argument";
+    }
 
     delegate->OnDialogCloseFromWebUI(json_retval);
   }

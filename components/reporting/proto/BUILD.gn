@@ -38,5 +38,5 @@ proto_library("test_proto") {
 # Metrics records definitions.
 proto_library("metric_data_proto") {
   proto_in_dir = "//"
-  sources = [ "metric_data.proto" ]
+  sources = [ "synced/metric_data.proto" ]
 }

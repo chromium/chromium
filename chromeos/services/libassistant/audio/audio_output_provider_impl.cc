@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/audio/audio_stream_handler.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
-#include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/audio/audio_device_description.h"
 
 namespace chromeos {
@@ -177,21 +177,11 @@ void AudioOutputProviderImpl::Bind(
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
 
 // Called from the Libassistant thread.
-#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
-assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
-    assistant_client::OutputStreamType type,
-    const assistant_client::OutputStreamFormat& stream_format) {
-  return CreateAudioOutputInternal(type, stream_format);
-}
-#endif  // BUILD_LIBASSISTANT_146S
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamMetadata metadata) {
   return CreateAudioOutputInternal(metadata.type,
                                    metadata.buffer_stream_format);
 }
-#endif  // BUILD_LIBASSISTANT_152S
 
 // Called from the Libassistant thread.
 std::vector<assistant_client::OutputStreamEncoding>

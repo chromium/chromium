@@ -19,7 +19,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
     : public InputMethodWinBase {
  public:
   InputMethodWinTSF(internal::InputMethodDelegate* delegate,
-                    HWND toplevel_window_handle);
+                    HWND attached_window_handle);
 
   InputMethodWinTSF(const InputMethodWinTSF&) = delete;
   InputMethodWinTSF& operator=(const InputMethodWinTSF&) = delete;
@@ -43,7 +43,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
                                  TextInputClient* focused) override;
   void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                 TextInputClient* focused) override;
-  void ShowVirtualKeyboardIfEnabled() override;
 
  private:
   void ConfirmCompositionText();

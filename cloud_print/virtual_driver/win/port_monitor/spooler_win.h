@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include "base/memory/raw_ptr.h"
+
 // Compatible structures and prototypes are also defined in the Windows DDK in
 // winsplp.h.
 #ifndef _WINSPLP_
@@ -84,7 +86,7 @@ typedef struct {
   DWORD cbSize;
   HANDLE hSpooler;
   HKEY hckRegistryRoot;
-  void* pMonitorReg;  // Unused
+  raw_ptr<void> pMonitorReg;  // Unused
   BOOL bLocal;
   LPCWSTR pszServerName;
 } MONITORINIT;

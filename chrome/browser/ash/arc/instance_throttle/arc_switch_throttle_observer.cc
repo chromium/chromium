@@ -9,8 +9,7 @@
 namespace arc {
 
 ArcSwitchThrottleObserver::ArcSwitchThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL, "ArcSwitch") {
-}
+    : ThrottleObserver("ArcSwitch") {}
 
 void ArcSwitchThrottleObserver::StartObserving(
     content::BrowserContext* context,
@@ -21,7 +20,7 @@ void ArcSwitchThrottleObserver::StartObserving(
   // regardless of state of other observers. So we always set throttling as
   // CPU_RESTRICTION_FOREGROUND in the last case, that means no CPU restriction
   // happens.
-  SetActive(chromeos::switches::IsArcCpuRestrictionDisabled());
+  SetActive(ash::switches::IsArcCpuRestrictionDisabled());
 }
 
 }  // namespace arc

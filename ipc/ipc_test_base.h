@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
@@ -48,7 +47,7 @@ class IPCChannelMojoTestBase : public testing::Test {
   mojo::ScopedMessagePipeHandle TakeHandle();
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   mojo::ScopedMessagePipeHandle handle_;
   mojo::core::test::MultiprocessTestHelper helper_;

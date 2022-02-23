@@ -60,11 +60,11 @@ bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
 
   const base::Value* list_value = nullptr;
   if (!extension->manifest()->GetList(keys::kSandboxedPages, &list_value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidSandboxedPagesList);
+    *error = errors::kInvalidSandboxedPagesList;
     return false;
   }
 
-  base::Value::ConstListView list_view = list_value->GetList();
+  base::Value::ConstListView list_view = list_value->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (!list_view[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

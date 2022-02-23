@@ -19,11 +19,11 @@
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_message_utils.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/chromoting_param_traits.h"
 #include "remoting/host/chromoting_param_traits_impl.h"
 #include "remoting/host/file_transfer/file_chooser_common_win.h"
-#include "remoting/host/host_exit_codes.h"
-#include "remoting/host/switches.h"
 
 namespace remoting {
 

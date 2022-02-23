@@ -13,7 +13,7 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
@@ -89,7 +89,7 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   void EntryComplete(ShaderDiskCacheEntry* entry);
   void ReadComplete();
 
-  ShaderCacheFactory* factory_;
+  raw_ptr<ShaderCacheFactory> factory_;
   bool cache_available_;
   base::FilePath cache_path_;
   bool is_initialized_;

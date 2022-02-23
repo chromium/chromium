@@ -5,5 +5,5 @@
   "chrome_url_overrides": {
     "newtab": "blank.html"
   },
-  "manifest_version": 2
+  "manifest_version": 3
 }

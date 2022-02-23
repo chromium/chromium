@@ -34,7 +34,11 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/time/time.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -68,7 +72,7 @@ std::u16string CreateAccessibleName(const Notification& notification) {
 }
 
 bool ShouldShowAeroShadowBorder() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ui::win::IsAeroGlassEnabled();
 #else
   return false;
@@ -240,6 +244,10 @@ void MessageView::OnMouseReleased(const ui::MouseEvent& event) {
   MessageCenter::Get()->ClickOnNotification(notification_id_);
 }
 
+void MessageView::OnMouseEntered(const ui::MouseEvent& event) {
+  MessageCenter::Get()->OnMessageViewHovered(notification_id_);
+}
+
 bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.flags() != ui::EF_NONE)
     return false;
@@ -350,7 +358,10 @@ void MessageView::OnSlideStarted() {
 
 void MessageView::OnSlideChanged(bool in_progress) {
   for (auto& observer : observers_) {
-    observer.OnSlideChanged(notification_id_);
+    if (in_progress)
+      observer.OnSlideChanged(notification_id_);
+    else
+      observer.OnSlideEnded(notification_id_);
   }
 }
 
@@ -461,6 +472,13 @@ void MessageView::OnSnoozeButtonPressed(const ui::Event& event) {
   for (auto& observer : observers_)
     observer.OnSnoozeButtonPressed(notification_id_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+base::TimeDelta MessageView::GetBoundsAnimationDuration(
+    const Notification& notification) const {
+  return base::Milliseconds(0);
+}
+#endif
 
 bool MessageView::ShouldShowControlButtons() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

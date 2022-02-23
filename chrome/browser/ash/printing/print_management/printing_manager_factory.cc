@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +37,7 @@ PrintingManagerFactory::PrintingManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(CupsPrintJobManagerFactory::GetInstance());
 }
 
 PrintingManagerFactory::~PrintingManagerFactory() = default;
@@ -57,7 +57,7 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(context),
+      CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
 }
 

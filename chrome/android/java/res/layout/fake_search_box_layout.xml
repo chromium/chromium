@@ -29,7 +29,7 @@
         android:gravity="center_vertical">
         <EditText
             tools:ignore="Autofill,LabelFor"
-            style="@style/TextAppearance.NewTabPageSearchBoxText"
+            style="@style/TextAppearance.SearchBoxText.NewTabPage"
             android:id="@+id/search_box_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -40,14 +40,6 @@
             android:inputType="text"
             android:singleLine="true"
             android:hint="@string/search_or_type_web_address" />
-
-        <org.chromium.ui.widget.ChipView
-            android:id="@+id/query_tiles_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:visibility="gone"
-            style="@style/InputChipWithRemoveIcon" />
     </RelativeLayout>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"

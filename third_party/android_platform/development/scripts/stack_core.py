@@ -78,9 +78,9 @@ _TRACE_LINE = re.compile(
 #   #00 0x7324d92d /data/app-lib/org.chromium.native_test-1/libbase.cr.so+0x0006992d
 # This pattern includes the unused named capture groups <symbol_present> and
 # <symbol_name> so that it can interoperate with the |_TRACE_LINE| regex.
-_DEBUG_TRACE_LINE = re.compile('(.*)(?P<frame>\#[0-9]+ 0x[0-9a-f]{8,16}) '
-                               '(?P<lib>[^+]+)\+0x(?P<address>[0-9a-f]{8,16})'
-                               '(?P<symbol_present>)(?P<symbol_name>)')
+_DEBUG_TRACE_LINE = re.compile(r'(.*)#(?P<frame>[0-9]+) 0x[0-9a-f]{8,16} '
+                               r'(?P<lib>[^+]+)\+0x(?P<address>[0-9a-f]{8,16})'
+                               r'(?P<symbol_present>)(?P<symbol_name>)')
 
 # Examples of matched value lines include:
 #   bea4170c  8018e4e9  /data/data/com.my.project/lib/libmyproject.so
@@ -143,6 +143,7 @@ def PrintJavaLines(java_lines):
       print(' ')
     print(l)
 
+
 def PrintOutput(trace_lines, value_lines, java_lines, more_info):
   if trace_lines:
     PrintTraceLines(trace_lines)
@@ -157,13 +158,15 @@ def PrintOutput(trace_lines, value_lines, java_lines, more_info):
   if java_lines:
     PrintJavaLines(java_lines)
 
+
 def PrintDivider():
   print()
   print('-----------------------------------------------------\n')
 
 
 def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
-                          arch_defined, llvm_symbolizer, apks_directory):
+                          arch_defined, llvm_symbolizer, apks_directory,
+                          pass_through):
   """Symbolize stacks on the fly as they are read from an input stream."""
 
   if fallback_monochrome:
@@ -188,6 +191,8 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
   for line in iter(sys.stdin.readline, b''):
     if not line: # EOF
       break
+    if pass_through:
+      sys.stdout.write(line)
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
@@ -463,10 +468,9 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
         logging.debug('Identified lib: %s' % area)
         # If a calls b which further calls c and c is inlined to b, we want to
         # display "a -> b -> c" in the stack trace instead of just "a -> c"
-        # To use llvm symbolizer, the hexadecimal address has to start with 0x.
-        info = llvm_symbolizer.GetSymbolInformation(
-            os.path.join(symbol.SYMBOLS_DIR, symbol.TranslateLibPath(area)),
-            '0x' + code_addr)
+        library = os.path.join(symbol.SYMBOLS_DIR,
+                               symbol.TranslateLibPath(area))
+        info = llvm_symbolizer.GetSymbolInformation(library, int(code_addr,16))
         logging.debug('symbol information: %s' % info)
         nest_count = len(info) - 1
         for source_symbol, source_location in info:
@@ -481,15 +485,16 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
             trace_lines.append((code_addr,
                                 source_symbol,
                                 source_location))
+
     match = _VALUE_LINE.match(line)
     if match:
       (_, addr, value, area, _, symbol_name) = match.groups()
       if area == UNKNOWN or area == HEAP or area == STACK or not area:
         value_lines.append((addr, value, '', area))
       else:
-        info = llvm_symbolizer.GetSymbolInformation(
-            os.path.join(symbol.SYMBOLS_DIR, symbol.TranslateLibPath(area)),
-            '0x' + value)
+        library = os.path.join(symbol.SYMBOLS_DIR,
+                               symbol.TranslateLibPath(area))
+        info = llvm_symbolizer.GetSymbolInformation(library, int(value,16))
         source_symbol, source_location = info.pop()
 
         value_lines.append((addr,

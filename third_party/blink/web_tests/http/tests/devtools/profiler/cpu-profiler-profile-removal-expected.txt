@@ -1,7 +1,0 @@
-Tests that CPU profile removal from a group works. Bug 110466
-
-Profiler was enabled.
-Profile groups after removal:
-
-Profiler was disabled.
-

@@ -55,7 +55,6 @@ class ContentSettingsAgentImpl
     virtual absl::optional<bool> AllowReadFromClipboard();
     virtual absl::optional<bool> AllowWriteToClipboard();
     virtual absl::optional<bool> AllowMutationEvents();
-    virtual void PassiveInsecureContentFound(const blink::WebURL& resource_url);
   };
 
   // Set `should_allowlist` to true if `render_frame()` contains content that
@@ -100,7 +99,6 @@ class ContentSettingsAgentImpl
   bool AllowRunningInsecureContent(bool allowed_per_settings,
                                    const blink::WebURL& url) override;
   bool AllowPopupsAndRedirects(bool default_value) override;
-  void PassiveInsecureContentFound(const blink::WebURL& resource_url) override;
   bool ShouldAutoupgradeMixedContent() override;
 
   bool allow_running_insecure_content() const {

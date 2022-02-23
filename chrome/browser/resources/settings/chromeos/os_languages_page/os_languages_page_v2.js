@@ -13,14 +13,45 @@
  */
 const kMenuCloseDelay = 100;
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/js/action_link.js';
+import '//resources/cr_elements/action_link_css.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {sendWithPromise, removeWebUIListener, addWebUIListener, WebUIListener} from '//resources/js/cr.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import './change_device_language_dialog.js';
+import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction, InputsShortcutReminderState} from './languages_metrics_proxy.js';
+import './os_add_languages_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '../../controls/settings_toggle_button.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import '../../settings_shared_css.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-languages-page-v2',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -107,22 +138,21 @@ Polymer({
     },
   },
 
-  /** @private {?settings.LanguagesMetricsProxy} */
+  /** @private {?LanguagesMetricsProxy} */
   languagesMetricsProxy_: null,
 
   /** @override */
   created() {
-    this.languagesMetricsProxy_ =
-        settings.LanguagesMetricsProxyImpl.getInstance();
+    this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.OS_LANGUAGES_LANGUAGES) {
+    if (route !== routes.OS_LANGUAGES_LANGUAGES) {
       return;
     }
 
@@ -146,7 +176,7 @@ Polymer({
   /** @private */
   onChangeDeviceLanguageDialogClose_() {
     this.showChangeDeviceLanguageDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#changeDeviceLanguage')));
+    focusWithoutInk(assert(this.$$('#changeDeviceLanguage')));
   },
 
   /**
@@ -175,7 +205,7 @@ Polymer({
   /** @private */
   onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$.addLanguages));
+    focusWithoutInk(assert(this.$.addLanguages));
   },
 
   /**
@@ -228,7 +258,7 @@ Polymer({
     }
     this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
         e.target.checked);
-    settings.recordSettingChange();
+    recordSettingChange();
     this.closeMenuSoon_();
   },
 
@@ -287,7 +317,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
     this.languageHelper.moveLanguageToFront(
         this.detailLanguage_.state.language.code);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -298,7 +328,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.state.language.code, /*upDirection=*/ true);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -309,7 +339,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
     this.languageHelper.moveLanguage(
         this.detailLanguage_.state.language.code, /*upDirection=*/ false);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -320,7 +350,7 @@ Polymer({
     /** @type {!CrActionMenuElement} */ (this.$.menu.get()).close();
     this.languageHelper.disableLanguage(
         this.detailLanguage_.state.language.code);
-    settings.recordSettingChange();
+    recordSettingChange();
   },
 
   /**
@@ -404,13 +434,13 @@ Polymer({
   /** @private */
   openManageGoogleAccountLanguage_() {
     this.languagesMetricsProxy_.recordInteraction(
-        settings.LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
+        LanguagesPageInteraction.OPEN_MANAGE_GOOGLE_ACCOUNT_LANGUAGE);
     window.open(loadTimeData.getString('googleAccountLanguagesURL'));
   },
 
   /** @private */
   onLanguagePreferenceDescriptionLinkClick_() {
     this.languagesMetricsProxy_.recordInteraction(
-        settings.LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
+        LanguagesPageInteraction.OPEN_WEB_LANGUAGES_LEARN_MORE);
   },
 });

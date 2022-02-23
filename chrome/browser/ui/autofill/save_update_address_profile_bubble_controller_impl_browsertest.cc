@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -34,9 +35,10 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
         browser()->tab_strip_model()->GetActiveWebContents();
     autofill::ChromeAutofillClient* autofill_client =
         autofill::ChromeAutofillClient::FromWebContents(web_contents);
+    AutofillProfile profile = test::GetFullProfile();
+    AutofillProfile* original_profile = (name == "Update") ? &profile : nullptr;
     autofill_client->ConfirmSaveAddressProfile(
-        test::GetFullProfile(),
-        /*original_profile=*/nullptr,
+        profile, original_profile,
         AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
         base::DoNothing());
     controller_ = SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
@@ -49,12 +51,17 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   }
 
  private:
-  SaveUpdateAddressProfileBubbleControllerImpl* controller_ = nullptr;
+  raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl> controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
                        InvokeUi_Save) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
+                       InvokeUi_Update) {
   ShowAndVerifyUi();
 }
 

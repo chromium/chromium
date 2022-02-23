@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -13,7 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -53,13 +54,13 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
     args->Append(alarm.js_alarm->ToValue());
     std::unique_ptr<Event> event(
         new Event(events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName,
-                  std::move(*args).TakeList(), browser_context_));
+                  std::move(*args).TakeListDeprecated(), browser_context_));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 // Creates a TimeDelta from a delay as specified in the API.
@@ -70,9 +71,9 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
-                                        const base::ListValue* list) {
+                                        const base::Value::ConstListView list) {
   AlarmManager::AlarmList alarms;
-  for (const base::Value& alarm_value : list->GetList()) {
+  for (const base::Value& alarm_value : list) {
     std::unique_ptr<Alarm> alarm(new Alarm());
     if (alarm_value.is_dict() &&
         alarms::Alarm::Populate(alarm_value, alarm->js_alarm.get())) {
@@ -331,11 +332,11 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    bool is_unpacked,
                                    std::unique_ptr<base::Value> value) {
-  base::ListValue* list = NULL;
-  if (value.get() && value->GetAsList(&list)) {
-    AlarmList alarm_states = AlarmsFromValue(extension_id, is_unpacked, list);
-    for (size_t i = 0; i < alarm_states.size(); ++i)
-      AddAlarmImpl(extension_id, std::move(alarm_states[i]));
+  if (value.get() && value->is_list()) {
+    AlarmList alarm_states =
+        AlarmsFromValue(extension_id, is_unpacked, value->GetListDeprecated());
+    for (auto& alarm : alarm_states)
+      AddAlarmImpl(extension_id, std::move(alarm));
   }
 
   ReadyQueue& extension_ready_queue = ready_actions_[extension_id];

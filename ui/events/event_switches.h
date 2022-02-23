@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_EVENT_SWITCHES_H_
 #define UI_EVENTS_EVENT_SWITCHES_H_
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ui/events/events_base_export.h"
 
@@ -13,7 +12,7 @@ namespace switches {
 
 EVENTS_BASE_EXPORT extern const char kCompensateForUnstablePinchZoom[];
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 EVENTS_BASE_EXPORT extern const char kTouchDevices[];
 EVENTS_BASE_EXPORT extern const char kPenDevices[];
 #endif

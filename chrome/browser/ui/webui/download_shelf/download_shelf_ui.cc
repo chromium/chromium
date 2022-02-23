@@ -145,10 +145,10 @@ void DownloadShelfUI::OpenDownload(uint32_t download_id) {
 
 void DownloadShelfUI::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download_model,
-    base::TimeTicks show_download_start_time_ticks) {
+    base::Time show_download_start_time) {
   DownloadUIModel* download = AddDownload(std::move(download_model));
   show_download_time_map_.insert_or_assign(download->download()->GetId(),
-                                           show_download_start_time_ticks);
+                                           show_download_start_time);
   // Observe any changes on the download item in order to propagate such changes
   // to the UI.
   download->download()->AddObserver(this);
@@ -169,7 +169,7 @@ std::vector<DownloadUIModel*> DownloadShelfUI::GetDownloads() {
   return downloads;
 }
 
-base::TimeTicks DownloadShelfUI::GetShowDownloadTime(uint32_t download_id) {
+base::Time DownloadShelfUI::GetShowDownloadTime(uint32_t download_id) {
   return show_download_time_map_[download_id];
 }
 

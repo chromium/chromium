@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "new_tab_page.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings",

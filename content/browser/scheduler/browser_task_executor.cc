@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -21,7 +20,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #endif
 
@@ -40,11 +39,6 @@ namespace features {
 // of all chrometto performance improvements.
 constexpr base::Feature kBrowserPrioritizeInputQueue{
     "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// When NavigationTaskQueue is enabled, the browser will schedule some tasks
-// related to navigation network responses in a kHighest priority queue.
-constexpr base::Feature kNavigationNetworkResponseQueue{
-    "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
 // the kBootstrap task type on the default task queues (based on priority of
@@ -120,14 +114,14 @@ BaseBrowserTaskExecutor::CreateSingleThreadTaskRunner(
   return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::CreateCOMSTATaskRunner(
     const base::TaskTraits& traits,
     base::SingleThreadTaskRunnerThreadMode thread_mode) {
   return GetTaskRunner(ExtractBrowserThreadId(traits), traits);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 scoped_refptr<base::SingleThreadTaskRunner>
 BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
@@ -189,7 +183,7 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
 
       case BrowserTaskType::kNavigationNetworkResponse:
         if (base::FeatureList::IsEnabled(
-                features::kNavigationNetworkResponseQueue)) {
+                ::features::kNavigationNetworkResponseQueue)) {
           return QueueType::kNavigationNetworkResponse;
         }
         // Defer to traits.priority() below.
@@ -266,7 +260,7 @@ void BrowserTaskExecutor::CreateInternal(
   g_browser_task_executor->browser_ui_thread_handle_
       ->EnableAllExceptBestEffortQueues();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PostTaskAndroid::SignalNativeSchedulerReady();
 #endif
 }
@@ -282,7 +276,7 @@ BrowserTaskExecutor* BrowserTaskExecutor::Get() {
 
 // static
 void BrowserTaskExecutor::ResetForTesting() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
 #endif
   if (g_browser_task_executor) {

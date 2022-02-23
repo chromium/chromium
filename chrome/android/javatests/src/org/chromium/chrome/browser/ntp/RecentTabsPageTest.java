@@ -32,7 +32,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -50,8 +49,7 @@ public class RecentTabsPageTest {
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeAccountInfoService());
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -105,8 +103,7 @@ public class RecentTabsPageTest {
         Assert.assertEquals(0,
                 SharedPreferencesManager.getInstance().readInt(
                         ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT));
-        mAccountManagerTestRule.addAccountWithNameAndAvatar(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPage = loadRecentTabsPage();
         mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
         Assert.assertEquals(1,

@@ -7,13 +7,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -93,7 +94,7 @@ GLboolean glIsSyncEmulateEGL(GLsync sync) {
   return true;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 std::map<GLuint, base::TimeTicks>& GetProgramCreateTimesMap() {
   static base::NoDestructor<std::map<GLuint, base::TimeTicks>> instance;
   return *instance.get();
@@ -105,103 +106,102 @@ std::map<GLuint, base::TimeTicks>& GetProgramCreateTimesMap() {
 namespace {
 
 template <typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind(R (gl::GLApi::*func)(Args...),
-                                                  gl::GLApi* api) {
+GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_api(
+    R (gl::GLApi::*func)(Args...),
+    gl::GLApi* api) {
   return [func, api](Args... args) { return (api->*func)(args...); };
 }
 
-template <typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow(
+struct FlushHelper {
+  FlushHelper() {
+    TRACE_EVENT0("gpu",
+                 "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc");
+    glFlush();
+  }
+  ~FlushHelper() {
+    TRACE_EVENT0("gpu",
+                 "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc");
+    glFlush();
+  }
+};
+
+template <bool droppable,
+          bool slow,
+          bool need_flush,
+          typename R,
+          typename... Args>
+GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_impl(
     R(GL_BINDING_CALL* func)(Args...),
     gl::ProgressReporter* progress_reporter) {
-  if (!progress_reporter)
-    return func;
-  return [func, progress_reporter](Args... args) {
-    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    return func(args...);
-  };
-}
+  // Don't wrap missing functions.
+  if (!func)
+    return nullptr;
 
-template <bool droppable_call, typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> maybe_drop_call(
-    R(GL_BINDING_CALL* func)(Args...)) {
-  // One branch is optimized away because droppable_call is set at compile time.
-  if (droppable_call) {
-    return [func](Args... args) {
-      if (!HasInitializedNullDrawGLBindings())
-        func(args...);
+  constexpr bool need_wrap = droppable || slow || need_flush;
+  if constexpr (need_wrap) {
+    return [func, progress_reporter](Args... args) -> R {
+      if constexpr (droppable) {
+        if (HasInitializedNullDrawGLBindings())
+          return R();
+      }
+
+      absl::optional<gl::ScopedProgressReporter> scoped_reporter;
+      // Not using constexpr if here to avoid unused progress_reporter warning.
+      if (slow && progress_reporter)
+        scoped_reporter.emplace(progress_reporter);
+
+      absl::optional<FlushHelper> flush_helper;
+      if constexpr (need_flush)
+        flush_helper.emplace();
+      return func(args...);
     };
   } else {
     return func;
   }
 }
 
-template <bool droppable_call = false, typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow_on_mac(
-    R(GL_BINDING_CALL* func)(Args...),
-    gl::ProgressReporter* progress_reporter) {
-#if defined(OS_APPLE)
-  if (!progress_reporter) {
-    return maybe_drop_call<droppable_call>(func);
-  }
-  return [func, progress_reporter](Args... args) {
-    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    // Conditional may be optimized out because droppable_call is set at compile
-    // time.
-    if (!droppable_call || !HasInitializedNullDrawGLBindings())
-      return func(args...);
-  };
-#endif
-  return maybe_drop_call<droppable_call>(func);
-}
+// Call can be dropped for tests that setup null draw gl bindings.
+struct Droppable {};
+// Call needs to be wrapped with ProgressReporter.
+struct Slow {};
+// Call needs to be wrapped with glFlush call, used on MacOS.
+struct NeedFlush {};
 
-template <bool droppable_call = false, typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_with_flush_on_mac(
-    R(GL_BINDING_CALL* func)(Args...),
-    bool is_angle) {
-#if defined(OS_APPLE)
-  // If running on Apple silicon or ANGLE, regardless of the architecture,
-  // disable this workaround.  See https://crbug.com/1131312.
-  const bool needs_flush =
-      base::mac::GetCPUType() == base::mac::CPUType::kIntel && !is_angle;
-  if (needs_flush) {
-    return [func](Args... args) {
-      // Conditional may be optimized out because droppable_call is set at
-      // compile time.
-      if (!droppable_call || !HasInitializedNullDrawGLBindings()) {
-        {
-          TRACE_EVENT0(
-              "gpu",
-              "CreateGrGLInterface - bind_with_flush_on_mac - beforefunc");
-          glFlush();
-        }
-        func(args...);
-        {
-          TRACE_EVENT0(
-              "gpu",
-              "CreateGrGLInterface - bind_with_flush_on_mac - afterfunc");
-          glFlush();
-        }
-      }
-    };
-  }
+#if BUILDFLAG(IS_APPLE)
+using SlowOnMac = Slow;
+using NeedFlushOnMac = NeedFlush;
+#else
+using SlowOnMac = void;
+using NeedFlushOnMac = void;
 #endif
-  return maybe_drop_call<droppable_call>(func);
-}
 
-template <bool droppable_call = false, typename R, typename... Args>
-GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind_slow_with_flush_on_mac(
-    R(GL_BINDING_CALL* func)(Args...),
-    gl::ProgressReporter* progress_reporter,
-    bool is_angle) {
-  if (!progress_reporter) {
-    return bind_with_flush_on_mac<droppable_call>(func, is_angle);
+template <typename... Traits>
+struct BindWithTraits {
+  template <typename R, typename... Args>
+  static GrGLFunction<R GR_GL_FUNCTION_TYPE(Args...)> bind(
+      R(GL_BINDING_CALL* func)(Args...),
+      gl::ProgressReporter* progress_reporter,
+      bool is_angle) {
+    constexpr bool droppable =
+        base::trait_helpers::HasTrait<Droppable, Traits...>();
+    constexpr bool slow = base::trait_helpers::HasTrait<Slow, Traits...>();
+    constexpr bool need_flush =
+        base::trait_helpers::HasTrait<NeedFlush, Traits...>();
+
+#if BUILDFLAG(IS_APPLE)
+    if (need_flush && base::mac::GetCPUType() == base::mac::CPUType::kIntel &&
+        !is_angle) {
+      return bind_impl<droppable, slow, /*need_flush=*/true>(func,
+                                                             progress_reporter);
+    } else {
+      return bind_impl<droppable, slow, /*need_flush=*/false>(
+          func, progress_reporter);
+    }
+#else
+    return bind_impl<droppable, slow, need_flush>(func, progress_reporter);
+#endif
   }
-  return [func, progress_reporter, is_angle](Args... args) {
-    gl::ScopedProgressReporter scoped_reporter(progress_reporter);
-    return bind_with_flush_on_mac<droppable_call>(func, is_angle)(args...);
-  };
-}
+};
 
 const GLubyte* GetStringHook(const char* gl_version_string,
                              const char* glsl_version_string,
@@ -230,6 +230,7 @@ const char* kBlocklistExtensions[] = {
     "GL_NV_bindless_texture",
     "GL_NV_texture_barrier",
     "GL_OES_sample_shading",
+    "GL_EXT_draw_instanced",
 };
 
 }  // anonymous namespace
@@ -276,11 +277,11 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       return GetStringHook(version.gl_version, version.glsl_version, name);
     };
   } else {
-    get_string = bind(&gl::GLApi::glGetStringFn, api);
+    get_string = bind_with_api(&gl::GLApi::glGetStringFn, api);
   }
 
-  auto get_stringi = bind(&gl::GLApi::glGetStringiFn, api);
-  auto get_integerv = bind(&gl::GLApi::glGetIntegervFn, api);
+  auto get_stringi = bind_with_api(&gl::GLApi::glGetStringiFn, api);
+  auto get_integerv = bind_with_api(&gl::GLApi::glGetIntegervFn, api);
 
   GrGLExtensions extensions;
   if (!extensions.init(standard, get_string, get_stringi, get_integerv)) {
@@ -290,42 +291,39 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   for (const char* extension : kBlocklistExtensions)
     extensions.remove(extension);
 
+#define BIND_EXTENSION(skia_name, chrome_name, ...)            \
+  functions->f##skia_name = BindWithTraits<__VA_ARGS__>::bind( \
+      gl->gl##chrome_name##Fn, progress_reporter, version_info.is_angle)
+#define BIND(fname, ...) BIND_EXTENSION(fname, fname, __VA_ARGS__)
+
   GrGLInterface* interface = new GrGLInterface();
   GrGLInterface::Functions* functions = &interface->fFunctions;
-  functions->fActiveTexture = gl->glActiveTextureFn;
-  functions->fAttachShader = gl->glAttachShaderFn;
-  functions->fBindAttribLocation = gl->glBindAttribLocationFn;
-  functions->fBindBuffer = gl->glBindBufferFn;
-  functions->fBindFragDataLocation = gl->glBindFragDataLocationFn;
-  functions->fBindUniformLocation = gl->glBindUniformLocationCHROMIUMFn;
-  functions->fBeginQuery = gl->glBeginQueryFn;
-  functions->fBindSampler = gl->glBindSamplerFn;
-  functions->fBindTexture =
-      bind_slow_on_mac(gl->glBindTextureFn, progress_reporter);
-
-  functions->fBlendBarrier = gl->glBlendBarrierKHRFn;
-
-  functions->fBlendColor = gl->glBlendColorFn;
-  functions->fBlendEquation = gl->glBlendEquationFn;
-  functions->fBlendFunc = gl->glBlendFuncFn;
-  functions->fBufferData = gl->glBufferDataFn;
-  functions->fBufferSubData = gl->glBufferSubDataFn;
-  functions->fClear = bind_slow_with_flush_on_mac<true>(
-      gl->glClearFn, progress_reporter, version_info.is_angle);
-  functions->fClearColor = gl->glClearColorFn;
-  functions->fClearStencil = gl->glClearStencilFn;
-  functions->fClearTexImage = gl->glClearTexImageFn;
-  functions->fClearTexSubImage = gl->glClearTexSubImageFn;
-  functions->fColorMask = gl->glColorMaskFn;
-  functions->fCompileShader =
-      bind_slow(gl->glCompileShaderFn, progress_reporter);
-  functions->fCompressedTexImage2D = bind_slow_with_flush_on_mac(
-      gl->glCompressedTexImage2DFn, progress_reporter, version_info.is_angle);
-  functions->fCompressedTexSubImage2D =
-      bind_slow(gl->glCompressedTexSubImage2DFn, progress_reporter);
-  functions->fCopyTexSubImage2D =
-      bind_slow(gl->glCopyTexSubImage2DFn, progress_reporter);
-#if defined(OS_APPLE)
+  BIND(ActiveTexture);
+  BIND(AttachShader);
+  BIND(BindAttribLocation);
+  BIND(BindBuffer);
+  BIND(BindFragDataLocation);
+  BIND_EXTENSION(BindUniformLocation, BindUniformLocationCHROMIUM);
+  BIND(BeginQuery);
+  BIND(BindSampler);
+  BIND(BindTexture, SlowOnMac);
+  BIND_EXTENSION(BlendBarrier, BlendBarrierKHR);
+  BIND(BlendColor);
+  BIND(BlendEquation);
+  BIND(BlendFunc);
+  BIND(BufferData);
+  BIND(BufferSubData);
+  BIND(Clear, Droppable, SlowOnMac, NeedFlushOnMac);
+  BIND(ClearColor);
+  BIND(ClearStencil);
+  BIND(ClearTexImage);
+  BIND(ClearTexSubImage);
+  BIND(ColorMask);
+  BIND(CompileShader, Slow);
+  BIND(CompressedTexImage2D, Slow, NeedFlushOnMac);
+  BIND(CompressedTexSubImage2D, Slow);
+  BIND(CopyTexSubImage2D, Slow);
+#if BUILDFLAG(IS_APPLE)
   functions->fCreateProgram = [func = gl->glCreateProgramFn]() {
     auto& program_create_times = GetProgramCreateTimesMap();
     GLuint program = func();
@@ -333,83 +331,73 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
     return program;
   };
 #else
-  functions->fCreateProgram = gl->glCreateProgramFn;
+  BIND(CreateProgram);
 #endif
-  functions->fCreateShader = gl->glCreateShaderFn;
-  functions->fCullFace = gl->glCullFaceFn;
-  functions->fDeleteBuffers =
-      bind_slow(gl->glDeleteBuffersARBFn, progress_reporter);
-#if defined(OS_APPLE)
+  BIND(CreateShader);
+  BIND(CullFace);
+  BIND_EXTENSION(DeleteBuffers, DeleteBuffersARB, Slow);
+#if BUILDFLAG(IS_APPLE)
   functions->fDeleteProgram = [func = gl->glDeleteProgramFn](GLuint program) {
     auto& program_create_times = GetProgramCreateTimesMap();
     program_create_times.erase(program);
     func(program);
   };
 #else
-  functions->fDeleteProgram =
-      bind_slow(gl->glDeleteProgramFn, progress_reporter);
+  BIND(DeleteProgram, Slow);
 #endif
-  functions->fDeleteQueries = gl->glDeleteQueriesFn;
-  functions->fDeleteSamplers = gl->glDeleteSamplersFn;
-  functions->fDeleteShader = bind_slow(gl->glDeleteShaderFn, progress_reporter);
-  functions->fDeleteTextures = bind_slow_with_flush_on_mac(
-      gl->glDeleteTexturesFn, progress_reporter, version_info.is_angle);
-  functions->fDepthMask = gl->glDepthMaskFn;
-  functions->fDisable = gl->glDisableFn;
-  functions->fDisableVertexAttribArray = gl->glDisableVertexAttribArrayFn;
-  functions->fDiscardFramebuffer = gl->glDiscardFramebufferEXTFn;
-  functions->fDrawArrays =
-      bind_slow_on_mac<true>(gl->glDrawArraysFn, progress_reporter);
-  functions->fDrawBuffer = gl->glDrawBufferFn;
-  functions->fDrawBuffers = gl->glDrawBuffersARBFn;
-  functions->fDrawElements =
-      bind_slow_on_mac<true>(gl->glDrawElementsFn, progress_reporter);
-
-  functions->fDrawArraysInstanced = bind_slow_on_mac<true>(
-      gl->glDrawArraysInstancedANGLEFn, progress_reporter);
-  functions->fDrawArraysInstancedBaseInstance = bind_slow_on_mac<true>(
-      gl->glDrawArraysInstancedBaseInstanceANGLEFn, progress_reporter);
-  functions->fMultiDrawArraysInstancedBaseInstance = bind_slow_on_mac<true>(
-      gl->glMultiDrawArraysInstancedBaseInstanceANGLEFn, progress_reporter);
-  functions->fDrawElementsInstanced = bind_slow_on_mac<true>(
-      gl->glDrawElementsInstancedANGLEFn, progress_reporter);
-  functions->fDrawElementsInstancedBaseVertexBaseInstance =
-      bind_slow_on_mac<true>(
-          gl->glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn,
-          progress_reporter);
-  functions->fMultiDrawElementsInstancedBaseVertexBaseInstance =
-      bind_slow_on_mac<true>(
-          gl->glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLEFn,
-          progress_reporter);
+  BIND(DeleteQueries);
+  BIND(DeleteSamplers);
+  BIND(DeleteShader, Slow);
+  BIND(DeleteTextures, Slow, NeedFlushOnMac);
+  BIND(DepthMask);
+  BIND(Disable);
+  BIND(DisableVertexAttribArray);
+  BIND_EXTENSION(DiscardFramebuffer, DiscardFramebufferEXT);
+  BIND(DrawArrays, Droppable, SlowOnMac);
+  BIND(DrawBuffer);
+  BIND_EXTENSION(DrawBuffers, DrawBuffersARB);
+  BIND(DrawElements, Droppable, SlowOnMac);
+  BIND_EXTENSION(DrawArraysInstanced, DrawArraysInstancedANGLE, Droppable,
+                 SlowOnMac);
+  BIND_EXTENSION(DrawArraysInstancedBaseInstance,
+                 DrawArraysInstancedBaseInstanceANGLE, Droppable, SlowOnMac);
+  BIND_EXTENSION(MultiDrawArraysInstancedBaseInstance,
+                 MultiDrawArraysInstancedBaseInstanceANGLE, Droppable,
+                 SlowOnMac);
+  BIND_EXTENSION(DrawElementsInstanced, DrawElementsInstancedANGLE, Droppable,
+                 SlowOnMac);
+  BIND_EXTENSION(DrawElementsInstancedBaseVertexBaseInstance,
+                 DrawElementsInstancedBaseVertexBaseInstanceANGLE, Droppable,
+                 SlowOnMac);
+  BIND_EXTENSION(MultiDrawElementsInstancedBaseVertexBaseInstance,
+                 MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                 Droppable, SlowOnMac);
 
   // GL 4.0 or GL_ARB_draw_indirect or ES 3.1
-  functions->fDrawArraysIndirect =
-      bind_slow_on_mac<true>(gl->glDrawArraysIndirectFn, progress_reporter);
-  functions->fDrawElementsIndirect =
-      bind_slow_on_mac<true>(gl->glDrawElementsIndirectFn, progress_reporter);
+  BIND(DrawArraysIndirect, Droppable, SlowOnMac);
+  BIND(DrawElementsIndirect, Droppable, SlowOnMac);
 
-  functions->fDrawRangeElements =
-      bind_slow_on_mac<true>(gl->glDrawRangeElementsFn, progress_reporter);
-  functions->fEnable = gl->glEnableFn;
-  functions->fEnableVertexAttribArray = gl->glEnableVertexAttribArrayFn;
-  functions->fEndQuery = gl->glEndQueryFn;
-  functions->fFinish = bind_slow(gl->glFinishFn, progress_reporter);
-  functions->fFlush = bind_slow(gl->glFlushFn, progress_reporter);
-  functions->fFrontFace = gl->glFrontFaceFn;
-  functions->fGenBuffers = gl->glGenBuffersARBFn;
-  functions->fGetBufferParameteriv = gl->glGetBufferParameterivFn;
-  functions->fGetError = gl->glGetErrorFn;
-  functions->fGetIntegerv = gl->glGetIntegervFn;
-  functions->fGetMultisamplefv = gl->glGetMultisamplefvFn;
-  functions->fGetQueryObjectiv = gl->glGetQueryObjectivFn;
-  functions->fGetQueryObjectuiv = gl->glGetQueryObjectuivFn;
-  functions->fGetQueryObjecti64v = gl->glGetQueryObjecti64vFn;
-  functions->fGetQueryObjectui64v = gl->glGetQueryObjectui64vFn;
-  functions->fQueryCounter = gl->glQueryCounterFn;
-  functions->fGetQueryiv = gl->glGetQueryivFn;
-  functions->fGetProgramBinary = gl->glGetProgramBinaryFn;
-  functions->fGetProgramInfoLog = gl->glGetProgramInfoLogFn;
-#if defined(OS_APPLE)
+  BIND(DrawRangeElements, Droppable, SlowOnMac);
+  BIND(Enable);
+  BIND(EnableVertexAttribArray);
+  BIND(EndQuery);
+  BIND(Finish, Slow);
+  BIND(Flush, Slow);
+  BIND(FrontFace);
+  BIND_EXTENSION(GenBuffers, GenBuffersARB);
+  BIND(GetBufferParameteriv);
+  BIND(GetError);
+  BIND(GetIntegerv);
+  BIND(GetMultisamplefv);
+  BIND(GetQueryObjectiv);
+  BIND(GetQueryObjectuiv);
+  BIND(GetQueryObjecti64v);
+  BIND(GetQueryObjectui64v);
+  BIND(QueryCounter);
+  BIND(GetQueryiv);
+  BIND(GetProgramBinary);
+  BIND(GetProgramInfoLog);
+#if BUILDFLAG(IS_APPLE)
   functions->fGetProgramiv = [func = gl->glGetProgramivFn](
                                  GLuint program, GLenum pname, GLint* params) {
     func(program, pname, params);
@@ -424,295 +412,271 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
     }
   };
 #else
-  functions->fGetProgramiv = gl->glGetProgramivFn;
+  BIND(GetProgramiv);
 #endif
-  functions->fGetShaderInfoLog = gl->glGetShaderInfoLogFn;
-  functions->fGetShaderiv = gl->glGetShaderivFn;
+  BIND(GetShaderInfoLog);
+  BIND(GetShaderiv);
   functions->fGetString = get_string;
-  functions->fGetStringi = gl->glGetStringiFn;
-  functions->fGetShaderPrecisionFormat = gl->glGetShaderPrecisionFormatFn;
-  functions->fGetTexLevelParameteriv = gl->glGetTexLevelParameterivFn;
-  functions->fGenQueries = gl->glGenQueriesFn;
-  functions->fGenSamplers = gl->glGenSamplersFn;
-  functions->fGenTextures = gl->glGenTexturesFn;
-  functions->fGetUniformLocation = gl->glGetUniformLocationFn;
-  functions->fIsTexture = gl->glIsTextureFn;
-  functions->fLineWidth = gl->glLineWidthFn;
-  functions->fLinkProgram = bind_slow(gl->glLinkProgramFn, progress_reporter);
-  functions->fMapBuffer = gl->glMapBufferFn;
+  BIND(GetStringi);
+  BIND(GetShaderPrecisionFormat);
+  BIND(GetTexLevelParameteriv);
+  BIND(GenQueries);
+  BIND(GenSamplers);
+  BIND(GenTextures);
+  BIND(GetUniformLocation);
+  BIND(IsTexture);
+  BIND(LineWidth);
+  BIND(LinkProgram, Slow);
+  BIND(MapBuffer);
 
   // GL 4.3 or GL_ARB_multi_draw_indirect or ES+GL_EXT_multi_draw_indirect
-  // functions->fMultiDrawArraysIndirect = gl->glMultiDrawArraysIndirectFn;
-  // functions->fMultiDrawElementsIndirect = gl->glMultiDrawElementsIndirectFn;
+  // BIND(MultiDrawArraysIndirect);
+  // BIND(MultiDrawElementsIndirect);
 
-  functions->fPatchParameteri = gl->glPatchParameteriFn;
-  functions->fPixelStorei = gl->glPixelStoreiFn;
-  functions->fPolygonMode = gl->glPolygonModeFn;
+  BIND(PatchParameteri);
+  BIND(PixelStorei);
+  BIND(PolygonMode);
+
+  // TODO(vasilyt): Figure out why BIND(fProgramBinary) doesn't fit in
+  // GrFunction
   functions->fProgramBinary = gl->glProgramBinaryFn;
-  functions->fProgramParameteri = gl->glProgramParameteriFn;
+
+  BIND(ProgramParameteri);
 
   // GL_EXT_raster_multisample
-  // functions->fRasterSamples = gl->glRasterSamplesEXTFn;
+  // BIND_EXTENSION(RasterSamples , RasterSamplesEXT);
 
-  functions->fReadBuffer = gl->glReadBufferFn;
-  functions->fReadPixels = gl->glReadPixelsFn;
-  functions->fSamplerParameteri = gl->glSamplerParameteriFn;
-  functions->fSamplerParameteriv = gl->glSamplerParameterivFn;
-  functions->fScissor = gl->glScissorFn;
-  functions->fShaderSource = gl->glShaderSourceFn;
-  functions->fStencilFunc = gl->glStencilFuncFn;
-  functions->fStencilFuncSeparate = gl->glStencilFuncSeparateFn;
-  functions->fStencilMask = gl->glStencilMaskFn;
-  functions->fStencilMaskSeparate = gl->glStencilMaskSeparateFn;
-  functions->fStencilOp = gl->glStencilOpFn;
-  functions->fStencilOpSeparate = gl->glStencilOpSeparateFn;
-  functions->fTexBuffer = gl->glTexBufferFn;
-  functions->fTexBufferRange = gl->glTexBufferRangeFn;
-  functions->fTexImage2D = bind_slow_with_flush_on_mac(
-      gl->glTexImage2DFn, progress_reporter, version_info.is_angle);
-  functions->fTexParameterf = gl->glTexParameterfFn;
-  functions->fTexParameterfv = gl->glTexParameterfvFn;
-  functions->fTexParameteri = gl->glTexParameteriFn;
-  functions->fTexParameteriv = gl->glTexParameterivFn;
-  functions->fTexStorage2D = bind_slow_with_flush_on_mac(
-      gl->glTexStorage2DEXTFn, progress_reporter, version_info.is_angle);
-  functions->fTexSubImage2D = bind_slow_with_flush_on_mac(
-      gl->glTexSubImage2DFn, progress_reporter, version_info.is_angle);
+  BIND(ReadBuffer);
+  BIND(ReadPixels);
+  BIND(SamplerParameteri);
+  BIND(SamplerParameteriv);
+  BIND(Scissor);
+  BIND(ShaderSource);
+  BIND(StencilFunc);
+  BIND(StencilFuncSeparate);
+  BIND(StencilMask);
+  BIND(StencilMaskSeparate);
+  BIND(StencilOp);
+  BIND(StencilOpSeparate);
+  BIND(TexBuffer);
+  BIND(TexBufferRange);
+  BIND(TexImage2D, Slow, NeedFlushOnMac);
+  BIND(TexParameterf);
+  BIND(TexParameterfv);
+  BIND(TexParameteri);
+  BIND(TexParameteriv);
+  BIND_EXTENSION(TexStorage2D, TexStorage2DEXT, Slow, NeedFlushOnMac);
+  BIND(TexSubImage2D, Slow, NeedFlushOnMac);
 
   // GL 4.5 or GL_ARB_texture_barrier or GL_NV_texture_barrier
-  // functions->fTextureBarrier = gl->glTextureBarrierFn;
-  // functions->fTextureBarrier = gl->glTextureBarrierNVFn;
+  // BIND(TextureBarrier);
+  // BIND_EXTENSION(TextureBarrier , TextureBarrierNV);
 
-  functions->fUniform1f = gl->glUniform1fFn;
-  functions->fUniform1i = gl->glUniform1iFn;
-  functions->fUniform1fv = gl->glUniform1fvFn;
-  functions->fUniform1iv = gl->glUniform1ivFn;
-  functions->fUniform2f = gl->glUniform2fFn;
-  functions->fUniform2i = gl->glUniform2iFn;
-  functions->fUniform2fv = gl->glUniform2fvFn;
-  functions->fUniform2iv = gl->glUniform2ivFn;
-  functions->fUniform3f = gl->glUniform3fFn;
-  functions->fUniform3i = gl->glUniform3iFn;
-  functions->fUniform3fv = gl->glUniform3fvFn;
-  functions->fUniform3iv = gl->glUniform3ivFn;
-  functions->fUniform4f = gl->glUniform4fFn;
-  functions->fUniform4i = gl->glUniform4iFn;
-  functions->fUniform4fv = gl->glUniform4fvFn;
-  functions->fUniform4iv = gl->glUniform4ivFn;
-  functions->fUniformMatrix2fv = gl->glUniformMatrix2fvFn;
-  functions->fUniformMatrix3fv = gl->glUniformMatrix3fvFn;
-  functions->fUniformMatrix4fv = gl->glUniformMatrix4fvFn;
-  functions->fUnmapBuffer = gl->glUnmapBufferFn;
-  functions->fUseProgram = gl->glUseProgramFn;
-  functions->fVertexAttrib1f = gl->glVertexAttrib1fFn;
-  functions->fVertexAttrib2fv = gl->glVertexAttrib2fvFn;
-  functions->fVertexAttrib3fv = gl->glVertexAttrib3fvFn;
-  functions->fVertexAttrib4fv = gl->glVertexAttrib4fvFn;
+  BIND(Uniform1f);
+  BIND(Uniform1i);
+  BIND(Uniform1fv);
+  BIND(Uniform1iv);
+  BIND(Uniform2f);
+  BIND(Uniform2i);
+  BIND(Uniform2fv);
+  BIND(Uniform2iv);
+  BIND(Uniform3f);
+  BIND(Uniform3i);
+  BIND(Uniform3fv);
+  BIND(Uniform3iv);
+  BIND(Uniform4f);
+  BIND(Uniform4i);
+  BIND(Uniform4fv);
+  BIND(Uniform4iv);
+  BIND(UniformMatrix2fv);
+  BIND(UniformMatrix3fv);
+  BIND(UniformMatrix4fv);
+  BIND(UnmapBuffer);
+  BIND(UseProgram);
+  BIND(VertexAttrib1f);
+  BIND(VertexAttrib2fv);
+  BIND(VertexAttrib3fv);
+  BIND(VertexAttrib4fv);
 
-  functions->fVertexAttribDivisor = gl->glVertexAttribDivisorANGLEFn;
+  BIND_EXTENSION(VertexAttribDivisor, VertexAttribDivisorANGLE);
 
-  functions->fVertexAttribIPointer = gl->glVertexAttribIPointerFn;
+  BIND(VertexAttribIPointer);
 
-  functions->fVertexAttribPointer = gl->glVertexAttribPointerFn;
-  functions->fViewport = gl->glViewportFn;
-  functions->fBindFragDataLocationIndexed = gl->glBindFragDataLocationIndexedFn;
+  BIND(VertexAttribPointer);
+  BIND(Viewport);
+  BIND(BindFragDataLocationIndexed);
 
-  functions->fBindVertexArray = gl->glBindVertexArrayOESFn;
-  functions->fGenVertexArrays = gl->glGenVertexArraysOESFn;
-  functions->fDeleteVertexArrays = gl->glDeleteVertexArraysOESFn;
+  BIND_EXTENSION(BindVertexArray, BindVertexArrayOES);
+  BIND_EXTENSION(GenVertexArrays, GenVertexArraysOES);
+  BIND_EXTENSION(DeleteVertexArrays, DeleteVertexArraysOES);
 
-  functions->fMapBufferRange = gl->glMapBufferRangeFn;
-  functions->fFlushMappedBufferRange = gl->glFlushMappedBufferRangeFn;
+  BIND(MapBufferRange);
+  BIND(FlushMappedBufferRange);
 
-  functions->fGenerateMipmap = gl->glGenerateMipmapEXTFn;
-  functions->fGenFramebuffers = gl->glGenFramebuffersEXTFn;
-  functions->fGetFramebufferAttachmentParameteriv =
-      gl->glGetFramebufferAttachmentParameterivEXTFn;
-  functions->fGetRenderbufferParameteriv =
-      gl->glGetRenderbufferParameterivEXTFn;
-  functions->fBindFramebuffer = bind_slow_with_flush_on_mac(
-      gl->glBindFramebufferEXTFn, progress_reporter, version_info.is_angle);
-  functions->fFramebufferTexture2D = gl->glFramebufferTexture2DEXTFn;
-  functions->fCheckFramebufferStatus = gl->glCheckFramebufferStatusEXTFn;
-  functions->fDeleteFramebuffers = bind_slow_with_flush_on_mac(
-      gl->glDeleteFramebuffersEXTFn, progress_reporter, version_info.is_angle);
-  functions->fRenderbufferStorage = bind_with_flush_on_mac(
-      gl->glRenderbufferStorageEXTFn, version_info.is_angle);
-  functions->fGenRenderbuffers = gl->glGenRenderbuffersEXTFn;
-  functions->fDeleteRenderbuffers = bind_with_flush_on_mac(
-      gl->glDeleteRenderbuffersEXTFn, version_info.is_angle);
-  functions->fFramebufferRenderbuffer = gl->glFramebufferRenderbufferEXTFn;
-  functions->fBindRenderbuffer = gl->glBindRenderbufferEXTFn;
-  functions->fRenderbufferStorageMultisample = bind_with_flush_on_mac(
-      gl->glRenderbufferStorageMultisampleFn, version_info.is_angle);
-  functions->fFramebufferTexture2DMultisample =
-      gl->glFramebufferTexture2DMultisampleEXTFn;
-  functions->fRenderbufferStorageMultisampleES2EXT = bind_with_flush_on_mac(
-      gl->glRenderbufferStorageMultisampleEXTFn, version_info.is_angle);
-  functions->fBlitFramebuffer =
-      bind_with_flush_on_mac(gl->glBlitFramebufferFn, version_info.is_angle);
+  BIND_EXTENSION(GenerateMipmap, GenerateMipmapEXT);
+  BIND_EXTENSION(GenFramebuffers, GenFramebuffersEXT);
+  BIND_EXTENSION(GetFramebufferAttachmentParameteriv,
+                 GetFramebufferAttachmentParameterivEXT);
+  BIND_EXTENSION(GetRenderbufferParameteriv, GetRenderbufferParameterivEXT);
+  BIND_EXTENSION(BindFramebuffer, BindFramebufferEXT, Slow, NeedFlushOnMac);
+  BIND_EXTENSION(FramebufferTexture2D, FramebufferTexture2DEXT);
+  BIND_EXTENSION(CheckFramebufferStatus, CheckFramebufferStatusEXT);
+  BIND_EXTENSION(DeleteFramebuffers, DeleteFramebuffersEXT, Slow,
+                 NeedFlushOnMac);
+  BIND_EXTENSION(RenderbufferStorage, RenderbufferStorageEXT, NeedFlushOnMac);
+  BIND_EXTENSION(GenRenderbuffers, GenRenderbuffersEXT);
+  BIND_EXTENSION(DeleteRenderbuffers, DeleteRenderbuffersEXT, NeedFlushOnMac);
+  BIND_EXTENSION(FramebufferRenderbuffer, FramebufferRenderbufferEXT);
+  BIND_EXTENSION(BindRenderbuffer, BindRenderbufferEXT);
 
-  functions->fCoverageModulation = gl->glCoverageModulationNVFn;
+  BIND(RenderbufferStorageMultisample, NeedFlushOnMac);
+  BIND_EXTENSION(FramebufferTexture2DMultisample,
+                 FramebufferTexture2DMultisampleEXT);
+  BIND_EXTENSION(RenderbufferStorageMultisampleES2EXT,
+                 RenderbufferStorageMultisampleEXT, NeedFlushOnMac);
+  BIND(BlitFramebuffer, NeedFlushOnMac);
 
-  functions->fInsertEventMarker = gl->glInsertEventMarkerEXTFn;
-  functions->fPushGroupMarker = gl->glPushGroupMarkerEXTFn;
-  functions->fPopGroupMarker = gl->glPopGroupMarkerEXTFn;
+  BIND_EXTENSION(CoverageModulation, CoverageModulationNV);
+
+  BIND_EXTENSION(InsertEventMarker, InsertEventMarkerEXT);
+  BIND_EXTENSION(PushGroupMarker, PushGroupMarkerEXT);
+  BIND_EXTENSION(PopGroupMarker, PopGroupMarkerEXT);
 
   // GL 4.3 or GL_ARB_invalidate_subdata
-  // functions->fInvalidateBufferData = gl->glInvalidateBufferDataFn;
-  // functions->fInvalidateBufferSubData = gl->glInvalidateBufferSubDataFn;
-  // functions->fInvalidateTexImage = gl->glInvalidateTexImageFn;
-  // functions->fInvalidateTexSubImage = gl->glInvalidateTexSubImageFn;
+  // BIND(InvalidateBufferData);
+  // BIND(InvalidateBufferSubData);
+  // BIND(InvalidateTexImage);
+  // BIND(InvalidateTexSubImage);
 
-  functions->fInvalidateFramebuffer = gl->glInvalidateFramebufferFn;
-  functions->fInvalidateSubFramebuffer = gl->glInvalidateSubFramebufferFn;
+  BIND(InvalidateFramebuffer);
+  BIND(InvalidateSubFramebuffer);
 
   // GL_NV_bindless_texture
-  // functions->fGetTextureHandle = gl->glGetTextureHandleNVFn;
-  // functions->fGetTextureSamplerHandle = gl->glGetTextureSamplerHandleNVFn;
-  // functions->fMakeTextureHandleResident =
-  //     gl->glMakeTextureHandleResidentNVFn;
-  // functions->fMakeTextureHandleNonResident =
-  //     gl->glMakeTextureHandleNonResidentNVFn;
-  // functions->fGetImageHandle = gl->glGetImageHandleNVFn;
-  // functions->fMakeImageHandleResident = gl->glMakeImageHandleResidentNVFn;
-  // functions->fMakeImageHandleNonResident =
-  //     gl->glMakeImageHandleNonResidentNVFn;
-  // functions->fIsTextureHandleResident = gl->glIsTextureHandleResidentNVFn;
-  // functions->fIsImageHandleResident = gl->glIsImageHandleResidentNVFn;
-  // functions->fUniformHandleui64 = gl->glUniformHandleui64NVFn;
-  // functions->fUniformHandleui64v = gl->glUniformHandleui64vNVFn;
-  // functions->fProgramUniformHandleui64 = gl->glProgramUniformHandleui64NVFn;
-  // functions->fProgramUniformHandleui64v =
-  //     gl->glProgramUniformHandleui64vNVFn;
+  // BIND_EXTENSION(GetTextureHandle , GetTextureHandleNV);
+  // BIND_EXTENSION(GetTextureSamplerHandle , GetTextureSamplerHandleNV);
+  // BIND_EXTENSION(MakeTextureHandleResident , MakeTextureHandleResidentNV);
+  // BIND_EXTENSION(MakeTextureHandleNonResident ,
+  // MakeTextureHandleNonResidentNV); BIND_EXTENSION(GetImageHandle ,
+  // GetImageHandleNV); BIND_EXTENSION(MakeImageHandleResident ,
+  // MakeImageHandleResidentNV); BIND_EXTENSION(MakeImageHandleNonResident ,
+  // MakeImageHandleNonResidentNV); BIND_EXTENSION(IsTextureHandleResident ,
+  // IsTextureHandleResidentNV); BIND_EXTENSION(IsImageHandleResident ,
+  // IsImageHandleResidentNV); BIND_EXTENSION(UniformHandleui64 ,
+  // UniformHandleui64NV); BIND_EXTENSION(UniformHandleui64v ,
+  // UniformHandleui64vNV); BIND_EXTENSION(ProgramUniformHandleui64 ,
+  // ProgramUniformHandleui64NV); BIND_EXTENSION(ProgramUniformHandleui64v ,
+  // ProgramUniformHandleui64vNV);
 
   // GL_EXT_direct_state_access
-  // functions->fTextureParameteri = gl->glTextureParameteriEXTFn;
-  // functions->fTextureParameteriv = gl->glTextureParameterivEXTFn;
-  // functions->fTextureParameterf = gl->glTextureParameterfEXTFn;
-  // functions->fTextureParameterfv = gl->glTextureParameterfvEXTFn;
-  // functions->fTextureImage1D = gl->glTextureImage1DEXTFn;
-  // functions->fTextureImage2D = gl->glTextureImage2DEXTFn;
-  // functions->fTextureSubImage1D = gl->glTextureSubImage1DEXTFn;
-  // functions->fTextureSubImage2D = gl->glTextureSubImage2DEXTFn;
-  // functions->fCopyTextureImage1D = gl->glCopyTextureImage1DEXTFn;
-  // functions->fCopyTextureImage2D = gl->glCopyTextureImage2DEXTFn;
-  // functions->fCopyTextureSubImage1D = gl->glCopyTextureSubImage1DEXTFn;
-  // functions->fCopyTextureSubImage2D = gl->glCopyTextureSubImage2DEXTFn;
-  // functions->fGetNamedBufferParameteriv =
-  //     gl->glGetNamedBufferParameterivEXTFn;
-  // functions->fGetNamedBufferPointerv = gl->glGetNamedBufferPointervEXTFn;
-  // functions->fGetNamedBufferSubData = gl->glGetNamedBufferSubDataEXTFn;
-  // functions->fGetTextureImage = gl->glGetTextureImageEXTFn;
-  // functions->fGetTextureParameterfv = gl->glGetTextureParameterfvEXTFn;
-  // functions->fGetTextureParameteriv = gl->glGetTextureParameterivEXTFn;
-  // functions->fGetTextureLevelParameterfv =
-  //     gl->glGetTextureLevelParameterfvEXTFn;
-  // functions->fGetTextureLevelParameteriv =
-  //     gl->glGetTextureLevelParameterivEXTFn;
-  // functions->fMapNamedBuffer = gl->glMapNamedBufferEXTFn;
-  // functions->fNamedBufferData = gl->glNamedBufferDataEXTFn;
-  // functions->fNamedBufferSubData = gl->glNamedBufferSubDataEXTFn;
-  // functions->fProgramUniform1f = gl->glProgramUniform1fEXTFn;
-  // functions->fProgramUniform2f = gl->glProgramUniform2fEXTFn;
-  // functions->fProgramUniform3f = gl->glProgramUniform3fEXTFn;
-  // functions->fProgramUniform4f = gl->glProgramUniform4fEXTFn;
-  // functions->fProgramUniform1i = gl->glProgramUniform1iEXTFn;
-  // functions->fProgramUniform2i = gl->glProgramUniform2iEXTFn;
-  // functions->fProgramUniform3i = gl->glProgramUniform3iEXTFn;
-  // functions->fProgramUniform4i = gl->glProgramUniform4iEXTFn;
-  // functions->fProgramUniform1fv = gl->glProgramUniform1fvEXTFn;
-  // functions->fProgramUniform2fv = gl->glProgramUniform2fvEXTFn;
-  // functions->fProgramUniform3fv = gl->glProgramUniform3fvEXTFn;
-  // functions->fProgramUniform4fv = gl->glProgramUniform4fvEXTFn;
-  // functions->fProgramUniform1iv = gl->glProgramUniform1ivEXTFn;
-  // functions->fProgramUniform2iv = gl->glProgramUniform2ivEXTFn;
-  // functions->fProgramUniform3iv = gl->glProgramUniform3ivEXTFn;
-  // functions->fProgramUniform4iv = gl->glProgramUniform4ivEXTFn;
-  // functions->fProgramUniformMatrix2fv = gl->glProgramUniformMatrix2fvEXTFn;
-  // functions->fProgramUniformMatrix3fv = gl->glProgramUniformMatrix3fvEXTFn;
-  // functions->fProgramUniformMatrix4fv = gl->glProgramUniformMatrix4fvEXTFn;
-  // functions->fUnmapNamedBuffer = gl->glUnmapNamedBufferEXTFn;
-  // functions->fTextureImage3D = gl->glTextureImage3DEXTFn;
-  // functions->fTextureSubImage3D = gl->glTextureSubImage3DEXTFn;
-  // functions->fCopyTextureSubImage3D = gl->glCopyTextureSubImage3DEXTFn;
-  // functions->fCompressedTextureImage3D = gl->glCompressedTextureImage3DEXTFn;
-  // functions->fCompressedTextureImage2D = gl->glCompressedTextureImage2DEXTFn;
-  // functions->fCompressedTextureImage1D = gl->glCompressedTextureImage1DEXTFn;
-  // functions->fCompressedTextureSubImage3D =
-  //     gl->glCompressedTextureSubImage3DEXTFn;
-  // functions->fCompressedTextureSubImage2D =
-  //     gl->glCompressedTextureSubImage2DEXTFn;
-  // functions->fCompressedTextureSubImage1D =
-  //     gl->glCompressedTextureSubImage1DEXTFn;
-  // functions->fGetCompressedTextureImage =
-  //     gl->glGetCompressedTextureImageEXTFn;
-  // functions->fProgramUniformMatrix2x3fv =
-  //     gl->glProgramUniformMatrix2x3fvEXTFn;
-  // functions->fProgramUniformMatrix3x2fv =
-  //     gl->glProgramUniformMatrix3x2fvEXTFn;
-  // functions->fProgramUniformMatrix2x4fv =
-  //     gl->glProgramUniformMatrix2x4fvEXTFn;
-  // functions->fProgramUniformMatrix4x2fv =
-  //     gl->glProgramUniformMatrix4x2fvEXTFn;
-  // functions->fProgramUniformMatrix3x4fv =
-  //     gl->glProgramUniformMatrix3x4fvEXTFn;
-  // functions->fProgramUniformMatrix4x3fv =
-  //     gl->glProgramUniformMatrix4x3fvEXTFn;
-  // functions->fNamedRenderbufferStorage = gl->glNamedRenderbufferStorageEXTFn;
-  // functions->fGetNamedRenderbufferParameteriv =
-  //     gl->glGetNamedRenderbufferParameterivEXTFn;
-  // functions->fNamedRenderbufferStorageMultisample =
-  //     gl->glNamedRenderbufferStorageMultisampleEXTFn;
-  // functions->fCheckNamedFramebufferStatus =
-  //     gl->glCheckNamedFramebufferStatusEXTFn;
-  // functions->fNamedFramebufferTexture1D =
-  //     gl->glNamedFramebufferTexture1DEXTFn;
-  // functions->fNamedFramebufferTexture2D =
-  //     gl->glNamedFramebufferTexture2DEXTFn;
-  // functions->fNamedFramebufferTexture3D =
-  //     gl->glNamedFramebufferTexture3DEXTFn;
-  // functions->fNamedFramebufferRenderbuffer =
-  //     gl->glNamedFramebufferRenderbufferEXTFn;
-  // functions->fGetNamedFramebufferAttachmentParameteriv =
-  //     gl->glGetNamedFramebufferAttachmentParameterivEXTFn;
-  // functions->fGenerateTextureMipmap = gl->glGenerateTextureMipmapEXTFn;
-  // functions->fFramebufferDrawBuffer = gl->glFramebufferDrawBufferEXTFn;
-  // functions->fFramebufferDrawBuffers = gl->glFramebufferDrawBuffersEXTFn;
-  // functions->fFramebufferReadBuffer = gl->glFramebufferReadBufferEXTFn;
-  // functions->fGetFramebufferParameteriv =
-  //     gl->glGetFramebufferParameterivEXTFn;
-  // functions->fNamedCopyBufferSubData = gl->glNamedCopyBufferSubDataEXTFn;
-  // functions->fVertexArrayVertexOffset = gl->glVertexArrayVertexOffsetEXTFn;
-  // functions->fVertexArrayColorOffset = gl->glVertexArrayColorOffsetEXTFn;
-  // functions->fVertexArrayEdgeFlagOffset =
-  //     gl->glVertexArrayEdgeFlagOffsetEXTFn;
-  // functions->fVertexArrayIndexOffset = gl->glVertexArrayIndexOffsetEXTFn;
-  // functions->fVertexArrayNormalOffset = gl->glVertexArrayNormalOffsetEXTFn;
-  // functions->fVertexArrayTexCoordOffset =
-  //     gl->glVertexArrayTexCoordOffsetEXTFn;
-  // functions->fVertexArrayMultiTexCoordOffset =
-  //     gl->glVertexArrayMultiTexCoordOffsetEXTFn;
-  // functions->fVertexArrayFogCoordOffset =
-  //     gl->glVertexArrayFogCoordOffsetEXTFn;
-  // functions->fVertexArraySecondaryColorOffset =
-  //     gl->glVertexArraySecondaryColorOffsetEXTFn;
-  // functions->fVertexArrayVertexAttribOffset =
-  //     gl->glVertexArrayVertexAttribOffsetEXTFn;
-  // functions->fVertexArrayVertexAttribIOffset =
-  //     gl->glVertexArrayVertexAttribIOffsetEXTFn;
-  // functions->fEnableVertexArray = gl->glEnableVertexArrayEXTFn;
-  // functions->fDisableVertexArray = gl->glDisableVertexArrayEXTFn;
-  // functions->fEnableVertexArrayAttrib = gl->glEnableVertexArrayAttribEXTFn;
-  // functions->fDisableVertexArrayAttrib = gl->glDisableVertexArrayAttribEXTFn;
-  // functions->fGetVertexArrayIntegerv = gl->glGetVertexArrayIntegervEXTFn;
-  // functions->fGetVertexArrayPointerv = gl->glGetVertexArrayPointervEXTFn;
-  // functions->fGetVertexArrayIntegeri_v = gl->glGetVertexArrayIntegeri_vEXTFn;
-  // functions->fGetVertexArrayPointeri_v = gl->glGetVertexArrayPointeri_vEXTFn;
-  // functions->fMapNamedBufferRange = gl->glMapNamedBufferRangeEXTFn;
-  // functions->fFlushMappedNamedBufferRange =
-  //     gl->glFlushMappedNamedBufferRangeEXTFn;
-  // functions->fTextureBuffer = gl->glTextureBufferEXTFn;
+  // BIND_EXTENSION(TextureParameteri , TextureParameteriEXT);
+  // BIND_EXTENSION(TextureParameteriv , TextureParameterivEXT);
+  // BIND_EXTENSION(TextureParameterf , TextureParameterfEXT);
+  // BIND_EXTENSION(TextureParameterfv , TextureParameterfvEXT);
+  // BIND_EXTENSION(TextureImage1D , TextureImage1DEXT);
+  // BIND_EXTENSION(TextureImage2D , TextureImage2DEXT);
+  // BIND_EXTENSION(TextureSubImage1D , TextureSubImage1DEXT);
+  // BIND_EXTENSION(TextureSubImage2D , TextureSubImage2DEXT);
+  // BIND_EXTENSION(CopyTextureImage1D , CopyTextureImage1DEXT);
+  // BIND_EXTENSION(CopyTextureImage2D , CopyTextureImage2DEXT);
+  // BIND_EXTENSION(CopyTextureSubImage1D , CopyTextureSubImage1DEXT);
+  // BIND_EXTENSION(CopyTextureSubImage2D , CopyTextureSubImage2DEXT);
+  // BIND_EXTENSION(GetNamedBufferParameteriv , GetNamedBufferParameterivEXT);
+  // BIND_EXTENSION(GetNamedBufferPointerv , GetNamedBufferPointervEXT);
+  // BIND_EXTENSION(GetNamedBufferSubData , GetNamedBufferSubDataEXT);
+  // BIND_EXTENSION(GetTextureImage , GetTextureImageEXT);
+  // BIND_EXTENSION(GetTextureParameterfv , GetTextureParameterfvEXT);
+  // BIND_EXTENSION(GetTextureParameteriv , GetTextureParameterivEXT);
+  // BIND_EXTENSION(GetTextureLevelParameterfv , GetTextureLevelParameterfvEXT);
+  // BIND_EXTENSION(GetTextureLevelParameteriv , GetTextureLevelParameterivEXT);
+  // BIND_EXTENSION(MapNamedBuffer , MapNamedBufferEXT);
+  // BIND_EXTENSION(NamedBufferData , NamedBufferDataEXT);
+  // BIND_EXTENSION(NamedBufferSubData , NamedBufferSubDataEXT);
+  // BIND_EXTENSION(ProgramUniform1f , ProgramUniform1fEXT);
+  // BIND_EXTENSION(ProgramUniform2f , ProgramUniform2fEXT);
+  // BIND_EXTENSION(ProgramUniform3f , ProgramUniform3fEXT);
+  // BIND_EXTENSION(ProgramUniform4f , ProgramUniform4fEXT);
+  // BIND_EXTENSION(ProgramUniform1i , ProgramUniform1iEXT);
+  // BIND_EXTENSION(ProgramUniform2i , ProgramUniform2iEXT);
+  // BIND_EXTENSION(ProgramUniform3i , ProgramUniform3iEXT);
+  // BIND_EXTENSION(ProgramUniform4i , ProgramUniform4iEXT);
+  // BIND_EXTENSION(ProgramUniform1fv , ProgramUniform1fvEXT);
+  // BIND_EXTENSION(ProgramUniform2fv , ProgramUniform2fvEXT);
+  // BIND_EXTENSION(ProgramUniform3fv , ProgramUniform3fvEXT);
+  // BIND_EXTENSION(ProgramUniform4fv , ProgramUniform4fvEXT);
+  // BIND_EXTENSION(ProgramUniform1iv , ProgramUniform1ivEXT);
+  // BIND_EXTENSION(ProgramUniform2iv , ProgramUniform2ivEXT);
+  // BIND_EXTENSION(ProgramUniform3iv , ProgramUniform3ivEXT);
+  // BIND_EXTENSION(ProgramUniform4iv , ProgramUniform4ivEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix2fv , ProgramUniformMatrix2fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix3fv , ProgramUniformMatrix3fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix4fv , ProgramUniformMatrix4fvEXT);
+  // BIND_EXTENSION(UnmapNamedBuffer , UnmapNamedBufferEXT);
+  // BIND_EXTENSION(TextureImage3D , TextureImage3DEXT);
+  // BIND_EXTENSION(TextureSubImage3D , TextureSubImage3DEXT);
+  // BIND_EXTENSION(CopyTextureSubImage3D , CopyTextureSubImage3DEXT);
+  // BIND_EXTENSION(CompressedTextureImage3D , CompressedTextureImage3DEXT);
+  // BIND_EXTENSION(CompressedTextureImage2D , CompressedTextureImage2DEXT);
+  // BIND_EXTENSION(CompressedTextureImage1D , CompressedTextureImage1DEXT);
+  // BIND_EXTENSION(CompressedTextureSubImage3D,
+  //                CompressedTextureSubImage3DEXT);
+  // BIND_EXTENSION(CompressedTextureSubImage2D,
+  //                CompressedTextureSubImage2DEXT);
+  // BIND_EXTENSION(CompressedTextureSubImage1D,
+  //                CompressedTextureSubImage1DEXT);
+  // BIND_EXTENSION(GetCompressedTextureImage, GetCompressedTextureImageEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix2x3fv, ProgramUniformMatrix2x3fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix3x2fv, ProgramUniformMatrix3x2fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix2x4fv, ProgramUniformMatrix2x4fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix4x2fv, ProgramUniformMatrix4x2fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix3x4fv, ProgramUniformMatrix3x4fvEXT);
+  // BIND_EXTENSION(ProgramUniformMatrix4x3fv, ProgramUniformMatrix4x3fvEXT);
+  // BIND_EXTENSION(NamedRenderbufferStorage, NamedRenderbufferStorageEXT);
+  // BIND_EXTENSION(GetNamedRenderbufferParameteriv,
+  //                GetNamedRenderbufferParameterivEXT);
+  // BIND_EXTENSION(NamedRenderbufferStorageMultisample,
+  //                NamedRenderbufferStorageMultisampleEXT);
+  // BIND_EXTENSION(CheckNamedFramebufferStatus,
+  //                CheckNamedFramebufferStatusEXT);
+  // BIND_EXTENSION(NamedFramebufferTexture1D, NamedFramebufferTexture1DEXT);
+  // BIND_EXTENSION(NamedFramebufferTexture2D, NamedFramebufferTexture2DEXT);
+  // BIND_EXTENSION(NamedFramebufferTexture3D, NamedFramebufferTexture3DEXT);
+  // BIND_EXTENSION(NamedFramebufferRenderbuffer,
+  //                NamedFramebufferRenderbufferEXT);
+  // BIND_EXTENSION(GetNamedFramebufferAttachmentParameteriv,
+  //                GetNamedFramebufferAttachmentParameterivEXT);
+  // BIND_EXTENSION(GenerateTextureMipmap, GenerateTextureMipmapEXT);
+  // BIND_EXTENSION(FramebufferDrawBuffer, FramebufferDrawBufferEXT);
+  // BIND_EXTENSION(FramebufferDrawBuffers, FramebufferDrawBuffersEXT);
+  // BIND_EXTENSION(FramebufferReadBuffer, FramebufferReadBufferEXT);
+  // BIND_EXTENSION(GetFramebufferParameteriv, GetFramebufferParameterivEXT);
+  // BIND_EXTENSION(NamedCopyBufferSubData, NamedCopyBufferSubDataEXT);
+  // BIND_EXTENSION(VertexArrayVertexOffset, VertexArrayVertexOffsetEXT);
+  // BIND_EXTENSION(VertexArrayColorOffset, VertexArrayColorOffsetEXT);
+  // BIND_EXTENSION(VertexArrayEdgeFlagOffset, VertexArrayEdgeFlagOffsetEXT);
+  // BIND_EXTENSION(VertexArrayIndexOffset, VertexArrayIndexOffsetEXT);
+  // BIND_EXTENSION(VertexArrayNormalOffset, VertexArrayNormalOffsetEXT);
+  // BIND_EXTENSION(VertexArrayTexCoordOffset, VertexArrayTexCoordOffsetEXT);
+  // BIND_EXTENSION(VertexArrayMultiTexCoordOffset,
+  //                VertexArrayMultiTexCoordOffsetEXT);
+  // BIND_EXTENSION(VertexArrayFogCoordOffset, VertexArrayFogCoordOffsetEXT);
+  // BIND_EXTENSION(VertexArraySecondaryColorOffset,
+  //                VertexArraySecondaryColorOffsetEXT);
+  // BIND_EXTENSION(VertexArrayVertexAttribOffset,
+  //                VertexArrayVertexAttribOffsetEXT);
+  // BIND_EXTENSION(VertexArrayVertexAttribIOffset,
+  //                VertexArrayVertexAttribIOffsetEXT);
+  // BIND_EXTENSION(EnableVertexArray, EnableVertexArrayEXT);
+  // BIND_EXTENSION(DisableVertexArray, DisableVertexArrayEXT);
+  // BIND_EXTENSION(EnableVertexArrayAttrib, EnableVertexArrayAttribEXT);
+  // BIND_EXTENSION(DisableVertexArrayAttrib, DisableVertexArrayAttribEXT);
+  // BIND_EXTENSION(GetVertexArrayIntegerv, GetVertexArrayIntegervEXT);
+  // BIND_EXTENSION(GetVertexArrayPointerv, GetVertexArrayPointervEXT);
+  // BIND_EXTENSION(GetVertexArrayIntegeri_v, GetVertexArrayIntegeri_vEXT);
+  // BIND_EXTENSION(GetVertexArrayPointeri_v, GetVertexArrayPointeri_vEXT);
+  // BIND_EXTENSION(MapNamedBufferRange, MapNamedBufferRangeEXT);
+  // BIND_EXTENSION(FlushMappedNamedBufferRange,
+  //                FlushMappedNamedBufferRangeEXT);
+  // BIND_EXTENSION(TextureBuffer, TextureBufferEXT);
 
   // Some drivers report GL_KHR_debug but do not provide functions. Validate and
   // remove reported extension from the list if necessary
@@ -720,42 +684,42 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   if (gl->glDebugMessageControlFn && gl->glDebugMessageInsertFn &&
       gl->glDebugMessageCallbackFn && gl->glGetDebugMessageLogFn &&
       gl->glPushDebugGroupFn && gl->glPopDebugGroupFn && gl->glObjectLabelFn) {
-    functions->fDebugMessageControl = gl->glDebugMessageControlFn;
-    functions->fDebugMessageInsert = gl->glDebugMessageInsertFn;
-    functions->fDebugMessageCallback = gl->glDebugMessageCallbackFn;
-    functions->fGetDebugMessageLog = gl->glGetDebugMessageLogFn;
-    functions->fPushDebugGroup = gl->glPushDebugGroupFn;
-    functions->fPopDebugGroup = gl->glPopDebugGroupFn;
-    functions->fObjectLabel = gl->glObjectLabelFn;
+    BIND(DebugMessageControl);
+    BIND(DebugMessageInsert);
+    BIND(DebugMessageCallback);
+    BIND(GetDebugMessageLog);
+    BIND(PushDebugGroup);
+    BIND(PopDebugGroup);
+    BIND(ObjectLabel);
   } else {
     extensions.remove("GL_KHR_debug");
   }
 
   // GL_EXT_window_rectangles
-  functions->fWindowRectangles = gl->glWindowRectanglesEXTFn;
+  BIND_EXTENSION(WindowRectangles, WindowRectanglesEXT);
 
   // GL_QCOM_tiled_rendering
-  functions->fStartTiling = gl->glStartTilingQCOMFn;
-  functions->fEndTiling = gl->glEndTilingQCOMFn;
+  BIND_EXTENSION(StartTiling, StartTilingQCOM);
+  BIND_EXTENSION(EndTiling, EndTilingQCOM);
 
   // EGL_KHR_image / EGL_KHR_image_base
   // functions->fCreateImage = nullptr;
   // functions->fDestroyImage = nullptr;
 
-  functions->fFenceSync = gl->glFenceSyncFn;
-  functions->fIsSync = gl->glIsSyncFn;
-  functions->fClientWaitSync = gl->glClientWaitSyncFn;
-  functions->fWaitSync = gl->glWaitSyncFn;
-  functions->fDeleteSync = gl->glDeleteSyncFn;
+  BIND(FenceSync);
+  BIND(IsSync);
+  BIND(ClientWaitSync);
+  BIND(WaitSync);
+  BIND(DeleteSync);
 
   if (!gl->glFenceSyncFn) {
     // NOTE: Skia uses the same function pointers without APPLE suffix
     if (extensions.has("GL_APPLE_sync")) {
-      functions->fFenceSync = gl->glFenceSyncAPPLEFn;
-      functions->fIsSync = gl->glIsSyncAPPLEFn;
-      functions->fClientWaitSync = gl->glClientWaitSyncAPPLEFn;
-      functions->fWaitSync = gl->glWaitSyncAPPLEFn;
-      functions->fDeleteSync = gl->glDeleteSyncAPPLEFn;
+      BIND_EXTENSION(FenceSync, FenceSyncAPPLE);
+      BIND_EXTENSION(IsSync, IsSyncAPPLE);
+      BIND_EXTENSION(ClientWaitSync, ClientWaitSyncAPPLE);
+      BIND_EXTENSION(WaitSync, WaitSyncAPPLE);
+      BIND_EXTENSION(DeleteSync, DeleteSyncAPPLE);
     } else if (g_driver_egl.ext.b_EGL_KHR_fence_sync) {
       // Emulate APPLE_sync via egl
       extensions.add("GL_APPLE_sync");
@@ -774,13 +738,16 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   }
 
   // Skia can fall back to GL_NV_fence if GLsync objects are not available.
-  functions->fDeleteFences = gl->glDeleteFencesNVFn;
-  functions->fFinishFence = gl->glFinishFenceNVFn;
-  functions->fGenFences = gl->glGenFencesNVFn;
-  functions->fSetFence = gl->glSetFenceNVFn;
-  functions->fTestFence = gl->glTestFenceNVFn;
+  BIND_EXTENSION(DeleteFences, DeleteFencesNV);
+  BIND_EXTENSION(FinishFence, FinishFenceNV);
+  BIND_EXTENSION(GenFences, GenFencesNV);
+  BIND_EXTENSION(SetFence, SetFenceNV);
+  BIND_EXTENSION(TestFence, TestFenceNV);
 
-  functions->fGetInternalformativ = gl->glGetInternalformativFn;
+  BIND(GetInternalformativ);
+
+#undef BIND
+#undef BIND_EXTENSION
 
   interface->fStandard = standard;
   interface->fExtensions.swap(&extensions);

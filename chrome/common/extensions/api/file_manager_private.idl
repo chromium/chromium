@@ -49,7 +49,7 @@ namespace fileManagerPrivate {
 // Type of the mounted volume.
 enum VolumeType { drive, downloads, removable, archive, provided, mtp,
                   media_view, crostini, android_files, documents_provider,
-                  testing, smb };
+                  testing, smb, system_internal };
 
 // Device type. Available if this is removable volume.
 enum DeviceType { usb, sd, optical, mobile, unknown };
@@ -284,6 +284,7 @@ enum EntryPropertyName {
   canRename,
   canAddChildren,
   canShare,
+  canPin,
   isMachineRoot,
   isExternalMedia,
   isArbitrarySyncFolder
@@ -353,8 +354,9 @@ enum IOTaskState {
 
 enum IOTaskType {
   copy,
-  move,
   delete,
+  extract,
+  move,
   zip
 };
 
@@ -479,6 +481,9 @@ dictionary EntryProperties {
   // True if the entry can be shared by the user.
   boolean? canShare;
 
+  // True if the entry can be pinned by the user.
+  boolean? canPin;
+
   // True if the entry is a machine root for backup and sync.
   boolean? isMachineRoot;
 
@@ -593,6 +598,9 @@ dictionary VolumeMetadata {
   // The path on the remote host where this volume is mounted, for crostini this
   // is the user's homedir (/home/<username>).
   DOMString? remoteMountPath;
+
+  // Flag that specifies whether the volume is hidden from the user.
+  boolean hidden;
 };
 
 // Payload data for mount event.
@@ -722,12 +730,14 @@ dictionary Preferences {
   DOMString timezone;
   boolean arcEnabled;
   boolean arcRemovableMediaAccessEnabled;
+  DOMString[] folderShortcuts;
 };
 
 dictionary PreferencesChange {
   boolean? cellularDisabled;
   boolean? arcEnabled;
   boolean? arcRemovableMediaAccessEnabled;
+  DOMString[]? folderShortcuts;
 };
 
 dictionary SearchParams {
@@ -967,6 +977,16 @@ dictionary ProgressStatus {
   DOMString errorName;
 };
 
+// A Guest OS that supports guest->host file sharing. This definition should
+// match the one in file_manager_private.js.
+dictionary MountableGuest {
+  // The ID of this guest, used to identify it in calls to the backend.
+  long id;
+
+  // The localised display name of this guest as e.g. shown in the sidebar.
+  DOMString displayName;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -991,6 +1011,9 @@ callback GetContentMetadataCallback = void(MediaMetadata result);
 // |result| Hash containing the string assets.
 callback GetStringsCallback = void(object result);
 
+// |color| String containing the color of the title bar.
+callback GetFrameColorCallback = void(DOMString color);
+
 // |success| True when file watch is successfully added.
 callback AddFileWatchCallback = void(optional boolean success);
 
@@ -1008,6 +1031,10 @@ callback AddMountCallback = void(DOMString sourcePath);
 // |volumeMetadataList| The list of VolumeMetadata representing mounted volumes.
 callback GetVolumeMetadataListCallback =
     void(VolumeMetadata[] volumeMetadataList);
+
+// |disallowedEntries| A list of files not allowed to be transfered.
+callback GetDisallowedTransfersCallback =
+    void([instanceOf=Entry] object[] disallowedEntries);
 
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
@@ -1110,6 +1137,9 @@ callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
 
 // |state| Describes the current holding space state.
 callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
+
+// |guests| List of Guest OSs which have available mounts.
+callback ListMountableGuestsCallback = void(MountableGuest[] guest);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -1269,6 +1299,16 @@ interface Functions {
   // Get the list of mounted volumes.
   // |callback|
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
+
+  // Returns the list of files not allowed to be transfered.
+  // |entries| List of the source entries to be transfered.
+  // |destinationEntry| Entry for the destination (parent) directory.
+  // |callback| Result callback.
+  [nocompile]
+  static void getDisallowedTransfers(
+      [instanceOf=Entry] object[] entries,
+      [instanceOf=DirectoryEntry] object destinationEntry,
+      GetDisallowedTransfersCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.
@@ -1578,12 +1618,18 @@ interface Functions {
   // |callback| The result callback.
   static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
 
+  // Returns color via `callback` for Files app foreground window frame.
+  static void getFrameColor(GetFrameColorCallback callback);
+
   // Returns true via `callback` if tablet mode is enabled, false otherwise.
   static void isTabletModeEnabled(BooleanCallback callback);
 
   // Notifies the browser of the result of a dialog displayed earlier as a
   // result of the onDriveConfirmDialog event.
   static void notifyDriveDialogResult(DriveDialogResult result);
+
+  // Opens a new browser tab and navigates to `url`.
+  static void openURL(DOMString url);
 
   // Creates a new Files app window in the directory provided in `params`.
   static void openWindow(OpenWindowParams params, BooleanCallback callback);
@@ -1599,6 +1645,9 @@ interface Functions {
   // Cancels an I/O task by id. Task ids are communicated to the Files App in
   // each I/O task's progress status.
   static void cancelIOTask(long taskId);
+
+  // Lists mountable Guest OSs.
+  static void listMountableGuests(ListMountableGuestsCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
@@ -1632,5 +1681,9 @@ interface Events {
   static void onTabletModeChanged(boolean enabled);
 
   static void onIOTaskProgressStatus(ProgressStatus status);
+
+  // Event broadcast when the list of Guest OSs that support Guest->Host file
+  // sharing changes.
+  static void onMountableGuestsChanged(MountableGuest[] guests);
 };
 };

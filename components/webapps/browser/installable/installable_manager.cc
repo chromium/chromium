@@ -37,7 +37,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #endif
 
@@ -79,7 +79,7 @@ const int kMinimumPrimaryIconSizeInPx = 144;
 const int kMinimumPrimaryAdaptiveLauncherIconSizeInPx = 83;
 
 int GetIdealPrimaryIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -87,7 +87,7 @@ int GetIdealPrimaryIconSizeInPx() {
 }
 
 int GetMinimumPrimaryIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetMinimumHomescreenIconSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -95,7 +95,7 @@ int GetMinimumPrimaryIconSizeInPx() {
 }
 
 int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealAdaptiveLauncherIconSizeInPx();
 #else
   return kMinimumPrimaryAdaptiveLauncherIconSizeInPx;
@@ -103,7 +103,7 @@ int GetIdealPrimaryAdaptiveLauncherIconSizeInPx() {
 }
 
 int GetIdealSplashIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetIdealSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -111,7 +111,7 @@ int GetIdealSplashIconSizeInPx() {
 }
 
 int GetMinimumSplashIconSizeInPx() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return WebappsIconUtils::GetMinimumSplashImageSizeInPx();
 #else
   return kMinimumPrimaryIconSizeInPx;
@@ -129,7 +129,7 @@ constexpr ImageTypeDetails kSupportedImageTypes[] = {
     {".png", "image/png"},
     {".svg", "image/svg+xml"},
 // TODO(https://crbug.com/466958): Add WebP support for Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {".webp", "image/webp"},
 #endif
 };
@@ -206,7 +206,7 @@ void OnDidCompleteGetAllErrors(
 void OnDidCompleteGetPrimaryIcon(
     base::OnceCallback<void(const SkBitmap*)> callback,
     const InstallableData& data) {
-  std::move(callback).Run(data.primary_icon);
+  std::move(callback).Run(data.primary_icon.get());
 }
 
 }  // namespace
@@ -234,6 +234,7 @@ InstallableManager::IconProperty& InstallableManager::IconProperty::operator=(
 
 InstallableManager::InstallableManager(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<InstallableManager>(*web_contents),
       eligibility_(std::make_unique<EligiblityProperty>()),
       manifest_(std::make_unique<ManifestProperty>()),
       valid_manifest_(std::make_unique<ValidManifestProperty>()),

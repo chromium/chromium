@@ -4,6 +4,7 @@
 
 #include "ui/native_theme/native_theme_android.h"
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -39,14 +40,6 @@ gfx::Size NativeThemeAndroid::GetPartSize(Part part,
   if (part == kCheckbox || part == kRadio)
     return gfx::Size(kCheckboxAndRadioWidth, kCheckboxAndRadioHeight);
   return NativeThemeBase::GetPartSize(part, state, extra);
-}
-
-SkColor NativeThemeAndroid::GetSystemColorDeprecated(
-    ColorId color_id,
-    ColorScheme color_scheme,
-    bool apply_processing) const {
-  NOTIMPLEMENTED();
-  return SK_ColorBLACK;
 }
 
 void NativeThemeAndroid::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {

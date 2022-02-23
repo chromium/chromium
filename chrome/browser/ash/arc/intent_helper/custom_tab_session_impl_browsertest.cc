@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/arc/intent_helper/custom_tab.h"
-#include "components/arc/test/arc_util_test_support.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"

@@ -1,0 +1,24 @@
+<!doctype html>
+<head>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<title>Test partitioned cookies ancestor chain: cross site embed</title>
+</head>
+<body>
+<script>
+
+test(() => {
+  const iframe = document.createElement("iframe");
+  const url = new URL(
+    "/cookies/partitioned-cookies/resources/" +
+        "ancestor-chain-same-site-embed.html",
+    `https://${ORIGINAL_HOST}:${window.location.port}`);
+  iframe.src = url.href;
+  document.body.appendChild(iframe);
+  fetch_tests_from_window(iframe.contentWindow);
+}, "Cross-site embed opened");
+
+</script>
+</body>

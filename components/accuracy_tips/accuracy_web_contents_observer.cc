@@ -30,8 +30,9 @@ AccuracyWebContentsObserver::~AccuracyWebContentsObserver() = default;
 AccuracyWebContentsObserver::AccuracyWebContentsObserver(
     content::WebContents* web_contents,
     AccuracyService* accuracy_service)
-    : WebContentsObserver(web_contents), accuracy_service_(accuracy_service) {
-  DCHECK(web_contents);
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<AccuracyWebContentsObserver>(*web_contents),
+      accuracy_service_(accuracy_service) {
   DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
   DCHECK(accuracy_service);
 }

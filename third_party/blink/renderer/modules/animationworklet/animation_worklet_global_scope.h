@@ -73,6 +73,12 @@ class MODULES_EXPORT AnimationWorkletGlobalScope : public WorkletGlobalScope {
 
  private:
   void RegisterWithProxyClientIfNeeded();
+
+  // TODO(crbug.com/1286242): Return a proper destination for AnimationWorklet.
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kScript;
+  }
+
   Animator* CreateInstance(
       const String& name,
       WorkletAnimationOptions options,

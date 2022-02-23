@@ -1,0 +1,156 @@
+name: Test libloading
+
+on:
+  push:
+    paths-ignore:
+    - '*.mkd'
+    - 'LICENSE'
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  native-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_toolchain: [nightly, stable, 1.40.0]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust ${{ matrix.rust_toolchain }}
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: ${{ matrix.rust_toolchain }}
+            profile: minimal
+            components: clippy
+            default: true
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: -- --nocapture
+      - name: Test Release
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release -- --nocapture
+      - name: Documentation
+        uses: actions-rs/cargo@v1
+        with:
+          command: rustdoc
+          args: |
+            -Zunstable-options
+            --config
+            'build.rustdogflags=["--cfg", "libloading_docs", "-D", "rustdoc::broken_intra_doc_links"]'
+        if: ${{ matrix.rust_toolchain == 'nightly' }}
+
+  windows-gnu-test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_toolchain: [nightly, stable]
+        rust_target:
+          - x86_64-pc-windows-gnu
+          - i686-pc-windows-gnu
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add MSYS2 to the PATH
+        run: echo "c:/msys64/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      - name: Add 32-bit mingw-w64 to the PATH
+        run: echo "c:/msys64/mingw32/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+        if: startsWith(matrix.rust_target, 'i686')
+      - name: Add 64-bit mingw-w64 to the PATH
+        run: echo "c:/msys64/mingw64/bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+        if: startsWith(matrix.rust_target, 'x86_64')
+      - name: Set TARGET variable
+        run: echo "TARGET=${{ matrix.rust_target}}" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Install Rust nightly
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: ${{ matrix.rust_toolchain }}
+            target: ${{ matrix.rust_target }}
+            profile: minimal
+            default: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target ${{ matrix.rust_target }} --manifest-path=Cargo.toml
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --target ${{ matrix.rust_target }} --manifest-path=Cargo.toml
+
+  bare-cross-build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_target:
+          # BSDs: could be tested with full system emulation
+          # - x86_64-unknown-dragonfly
+          # - x86_64-unknown-freebsd
+          - x86_64-unknown-haiku
+          # - x86_64-unknown-netbsd
+          - x86_64-unknown-openbsd
+          - x86_64-unknown-redox
+          - x86_64-fuchsia
+          - wasm32-unknown-unknown
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust nightly
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            profile: minimal
+            default: true
+      - name: Fix-up toolchain
+        run: |
+            rustup component add rust-src --toolchain nightly --target ${{ matrix.rust_target }}
+      - name: Update
+        uses: actions-rs/cargo@v1
+        with:
+          command: update
+          args: --manifest-path=Cargo.toml
+      - name: Build ${{ matrix.rust_target }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target ${{ matrix.rust_target }} --manifest-path=Cargo.toml -Zbuild-std
+
+  cross-ios-build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust_toolchain: [nightly, stable]
+        rust_target:
+          - aarch64-apple-ios
+          - x86_64-apple-ios
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust ${{ matrix.rust_toolchain }}
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: ${{ matrix.rust_toolchain }}
+            target: ${{ matrix.rust_target }}
+            profile: minimal
+            default: true
+      - name: Update
+        uses: actions-rs/cargo@v1
+        with:
+          command: update
+          args: --manifest-path=Cargo.toml
+      - name: Build ${{ matrix.rust_target }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target=${{ matrix.rust_target }} --manifest-path=Cargo.toml

@@ -16,7 +16,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_SOLARIS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS)
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,9 +24,9 @@
 #include <string>
 
 #include "base/command_line.h"
-#endif  // defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_SOLARIS)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <errno.h>  // Get program_invocation_short_name declaration.
 #include <sys/prctl.h>
 
@@ -38,13 +38,13 @@
 #include "base/threading/platform_thread.h"
 // Linux/glibc doesn't natively have setproctitle().
 #include "content/common/set_process_title_linux.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 
 // TODO(jrg): Find out if setproctitle or equivalent is available on Android.
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_SOLARIS) && \
-    !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_SOLARIS) && \
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 void SetProcessTitleFromCommandLine(const char** main_argv) {
   // Build a single string which consists of all the arguments separated
@@ -53,7 +53,7 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
   std::string title;
   bool have_argv0 = false;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(base::PlatformThread::CurrentId(), getpid());
 
   if (main_argv)
@@ -88,7 +88,7 @@ void SetProcessTitleFromCommandLine(const char** main_argv) {
     *base_name_storage = std::move(base_name);
     program_invocation_short_name = &(*base_name_storage)[0];
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

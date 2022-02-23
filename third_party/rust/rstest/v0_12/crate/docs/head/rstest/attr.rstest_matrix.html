@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `rstest_matrix` attr in crate `rstest`."><meta name="keywords" content="rust, rustlang, rust-lang, rstest_matrix"><title>rstest::rstest_matrix - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="shortcut icon" href="../favicon.ico"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc attr"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../rstest/index.html'><div class='logo-container'><img src='../rust-logo.png' alt='logo'></div></a><div class="sidebar-elems"><p class='location'><a href='index.html'>rstest</a></p><script>window.sidebarCurrent = {name: 'rstest_matrix', ty: 'attr', relpath: ''};</script><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/rstest/lib.rs.html#838-843' title='goto source code'>[src]</a></span><span class='in-band'>Attribute Macro <a href='index.html'>rstest</a>::<wbr><a class="attr" href=''>rstest_matrix</a></span></h1><pre class='rust attr'>#[rstest_matrix]</pre><div class='stability'><div class='stab deprecated'>Deprecated since 0.5.0: <p>Please use #[rstest(...)] instead</p>
+</div></div><div class='docblock'><p>Write matrix-based tests: you must indicate arguments and values list that you want to test and
+<code>rstest_matrix</code> generate an indipendent test for each argument combination (the carthesian
+product of values lists).</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="attribute">#[<span class="ident">rstest_matrix</span>(
+    <span class="ident">foo</span> <span class="op">=</span><span class="op">&gt;</span> [<span class="number">42</span>, <span class="number">24</span>]</span>,
+    <span class="ident">bar</span> <span class="op">=</span><span class="op">&gt;</span> [<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>]
+)]
+<span class="kw">fn</span> <span class="ident">matrix_test</span>(<span class="ident">foo</span>: <span class="ident">u32</span>, <span class="ident">bar</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+    <span class="comment">//... test body</span>
+}</pre></div>
+<p>Running <code>cargo test</code> in this case executes four tests:</p>
+<pre><code class="language-bash">running 4 tests
+test matrix_test::case_1_1 ... ok
+test matrix_test::case_1_2 ... ok
+test matrix_test::case_2_1 ... ok
+test matrix_test::case_2_2 ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+</code></pre>
+<p>Like in <a href="../rstest/attr.rstest.html"><code>[rstest]</code></a> you can inject fixture values and every parameter that
+isn't mapped in <code>case()</code>s will be resolved as default <code>fixture</code>.</p>
+<p>In general <code>rstest_matrix</code>'s syntax is:</p>
+<pre><code class="language-norun">rstest_matrix(
+    ident_1 =&gt; [val_1_1, ..., val_1_m1],
+    ....
+    ident_n =&gt; [val_n_1, ..., val_n_mn][,]
+    [fixture_1(...]
+    [...,]
+    [fixture_k(...)]
+    [::attribute_1[:: ... [::attribute_k]]]
+)
+</code></pre>
+<ul>
+<li><code>ident_x</code> should be a valid function argument name</li>
+<li><code>val_x_y</code> should be a valid rust expression that can be assigned to <code>ident_x</code> function argument</li>
+<li><code>fixture_v(...)</code> should be a valid function argument and a <a href="../rstest/attr.fixture.html"><code>[fixture]</code></a> fixture function</li>
+<li>attributes now can be just <code>trace</code> or <code>notrace(args..)</code> (see <a href="../rstest/attr.rstest.html"><code>[rstest]</code></a></li>
+</ul>
+<p>Function's arguments can be present just once as identity or fixture.</p>
+<p>Functions marked by <code>rstest_matrix</code> can use generics, <code>impl</code> and <code>dyn</code> without any
+restriction.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered">
+<span class="attribute">#[<span class="ident">rstest_matrix</span>(
+    <span class="ident">foo</span> <span class="op">=</span><span class="op">&gt;</span> [<span class="string">&quot;foo&quot;</span>, <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;foo&quot;</span>)]</span>
+)]
+<span class="kw">fn</span> <span class="ident">len</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">foo</span>: <span class="ident">S</span>) {
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">input</span>.<span class="ident">as_ref</span>().<span class="ident">len</span>())
+}
+
+<span class="attribute">#[<span class="ident">rstest_matrix</span>(
+    <span class="ident">foo</span> <span class="op">=</span><span class="op">&gt;</span> [<span class="string">&quot;foo&quot;</span>, <span class="ident">String</span>::<span class="ident">from</span>(<span class="string">&quot;foo&quot;</span>)]</span>
+)]
+<span class="kw">fn</span> <span class="ident">len_by_impl</span>(<span class="ident">foo</span>: <span class="kw">impl</span> <span class="ident">AsRef</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>) {
+    <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="number">3</span>, <span class="ident">input</span>.<span class="ident">as_ref</span>().<span class="ident">len</span>())
+}</pre></div>
+</div></section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../";window.currentCrate = "rstest";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

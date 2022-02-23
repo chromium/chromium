@@ -12,11 +12,11 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-class MessageSender;
 class ConnectionScheduler;
+class MessageSender;
 
 // Implements NotificationAccessManager by persisting the last-known
 // notification access value to user prefs.
@@ -37,7 +37,9 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
 
   // NotificationAccessManager:
   AccessStatus GetAccessStatus() const override;
-  void SetAccessStatusInternal(AccessStatus access_status) override;
+  AccessProhibitedReason GetAccessProhibitedReason() const override;
+  void SetAccessStatusInternal(AccessStatus access_status,
+                               AccessProhibitedReason reason) override;
   void OnSetupRequested() override;
 
   bool HasNotificationSetupUiBeenDismissed() const override;
@@ -48,6 +50,9 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
 
   void SendShowNotificationAccessSetupRequest();
 
+  bool HasAccessStatusChanged(AccessStatus access_status,
+                              AccessProhibitedReason reason);
+
   FeatureStatus current_feature_status_;
   PrefService* pref_service_;
   FeatureStatusProvider* feature_status_provider_;
@@ -56,6 +61,6 @@ class NotificationAccessManagerImpl : public NotificationAccessManager,
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_IMPL_H_

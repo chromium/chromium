@@ -1,0 +1,298 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("message_port") {
+  sources = [
+    "message_port_handler.cc",
+    "message_port_handler.h",
+    "message_port_service.cc",
+    "message_port_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/cast/message_port",
+    "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
+  ]
+}
+
+cast_source_set("metrics_recorder") {
+  sources = [
+    "cast_runtime_action_recorder.cc",
+    "cast_runtime_action_recorder.h",
+    "cast_runtime_histogram_flattener.cc",
+    "cast_runtime_histogram_flattener.h",
+    "cast_runtime_metrics_recorder.cc",
+    "cast_runtime_metrics_recorder.h",
+    "cast_runtime_metrics_recorder_service.cc",
+    "cast_runtime_metrics_recorder_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromecast/metrics:metrics_recorder",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
+    "//third_party/grpc:grpc++",
+  ]
+
+  deps = [
+    "//chromecast/base/metrics",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/metrics_proto",
+  ]
+}
+
+cast_source_set("grpc_webui") {
+  sources = [
+    "grpc_resource_data_source.cc",
+    "grpc_resource_data_source.h",
+    "grpc_webui_controller.cc",
+    "grpc_webui_controller.h",
+    "grpc_webui_controller_factory.cc",
+    "grpc_webui_controller_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/base",
+    "//chromecast/base:chromecast_switches",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:browser_base",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//third_party/grpc:grpc++",
+  ]
+
+  public_deps = [
+    "//chromecast/browser:public",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto_castcore",
+  ]
+
+  if (enable_chromecast_extensions) {
+    sources += [
+      "grpc_webui_controller_extension.cc",
+      "grpc_webui_controller_extension.h",
+    ]
+
+    deps += [
+      "//components/guest_view/browser",
+      "//extensions/browser",
+    ]
+  }
+}
+
+cast_source_set("core_service_bindings") {
+  sources = [
+    "bindings_manager_web_runtime.cc",
+    "bindings_manager_web_runtime.h",
+  ]
+
+  public_deps = [
+    ":message_port",
+    "//base",
+    "//chromecast/bindings:bindings_manager",
+    "//chromecast/bindings/public/mojom",
+    "//components/cast/api_bindings:manager",
+    "//components/cast/message_port",
+    "//components/cast/message_port:blink_message_port_adapter",
+    "//mojo/public/cpp/bindings",
+    "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
+  ]
+
+  if (is_linux || is_chromeos || is_android) {
+    deps = [ "//chromecast/bindings:bindings_manager_cast" ]
+  }
+}
+
+cast_source_set("runtime_application") {
+  sources = [
+    "runtime_application.cc",
+    "runtime_application.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//third_party/cast_core/public/src/proto/common:application_config_proto",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+    "//url",
+  ]
+}
+
+cast_source_set("streaming_receiver_session_client") {
+  sources = [
+    "streaming_controller.h",
+    "streaming_controller_base.cc",
+    "streaming_controller_base.h",
+    "streaming_controller_mirroring.cc",
+    "streaming_controller_mirroring.h",
+    "streaming_receiver_session_client.cc",
+    "streaming_receiver_session_client.h",
+  ]
+
+  if (!enable_remoting_for_cwr) {
+    sources += [ "streaming_controller_factory_mirroring.cc" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chromecast/browser:public",
+    "//components/cast/message_port",
+    "//components/cast_streaming/browser",
+    "//media/mojo/mojom",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/shared:platform_info_serializer",
+    "//components/cast/message_port:message_port_core",
+    "//components/cast_streaming/public",
+    "//components/cast_streaming/public/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+cast_source_set("runtime_application_watcher") {
+  sources = [
+    "runtime_application_watcher.cc",
+    "runtime_application_watcher.h",
+  ]
+}
+
+cast_source_set("runtime_application_dispatcher") {
+  sources = [
+    "runtime_application_base.cc",
+    "runtime_application_base.h",
+    "runtime_application_dispatcher.cc",
+    "runtime_application_dispatcher.h",
+    "streaming_runtime_application.cc",
+    "streaming_runtime_application.h",
+    "web_runtime_application.cc",
+    "web_runtime_application.h",
+  ]
+
+  public_deps = [
+    ":grpc_webui",
+    ":metrics_recorder",
+    ":runtime_application",
+    ":runtime_application_watcher",
+    "//base",
+    "//chromecast/browser:browser_base",
+    "//chromecast/common:feature_constants",
+    "//components/cast_streaming/public/mojom",
+    "//components/url_rewrite/browser",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/cast_core/public/src/proto/core:cast_core_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto_castcore",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/v2:core_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/v2:core_message_port_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/v2:runtime_application_service_proto_castcore",
+    "//third_party/cast_core/public/src/proto/v2:runtime_message_port_application_service_proto_castcore",
+    "//third_party/grpc:grpc++",
+  ]
+
+  deps = [
+    ":core_service_bindings",
+    ":streaming_receiver_session_client",
+    "//chromecast/cast_core/runtime/browser/url_rewrite",
+    "//chromecast/media/base:video_plane_controller",
+    "//chromecast/metrics:cast_event_builder_simple",
+    "//components/cast/message_port",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/public",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common:headers",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+}
+
+cast_source_set("cast_runtime_service") {
+  sources = [
+    "cast_runtime_service.cc",
+    "cast_runtime_service.h",
+  ]
+
+  public_deps = [
+    ":runtime_application_dispatcher",
+    "//base",
+    "//chromecast/browser:browser_base",
+    "//chromecast/media/cma/backend/proxy:headers",
+    "//chromecast/metrics:cast_event_builder_simple",
+    "//chromecast/service",
+  ]
+}
+
+cast_source_set("browser") {
+  sources = [
+    "cast_core_switches.h",
+    "cast_runtime_content_browser_client.cc",
+    "cast_runtime_content_browser_client.h",
+  ]
+
+  deps = [
+    ":cast_runtime_service",
+    ":runtime_application_watcher",
+    "//base",
+    "//chromecast/cast_core/runtime/common:cors_exempt_headers",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
+    "//content/public/common",
+    "//media",
+    "//third_party/cast_core/public/src/proto/runtime:runtime_service_proto",
+  ]
+
+  public_deps = [ "//chromecast/browser:browser_base" ]
+
+  if (enable_cast_media_runtime) {
+    sources += [ "cast_content_browser_client_factory.cc" ]
+  } else {
+    deps += [ "//chromecast/browser:simple_client" ]
+  }
+}
+
+cast_source_set("browser_simple") {
+  sources = [ "cast_runtime_content_browser_client_simple.cc" ]
+
+  deps = [ ":browser" ]
+}
+
+# TODO(b/194439829): Upstream additional metrics unit tests.
+cast_source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cast_runtime_histogram_flattener_unittest.cc",
+    "cast_runtime_metrics_test_helpers.cc",
+    "cast_runtime_metrics_test_helpers.h",
+    "grpc_resource_data_source_unittest.cc",
+    "streaming_receiver_session_client_unittest.cc",
+  ]
+
+  deps = [
+    ":grpc_webui",
+    ":metrics_recorder",
+    ":streaming_receiver_session_client",
+    "//base",
+    "//base/test:test_support",
+    "//chromecast/browser:test_support",
+    "//chromecast/shared:platform_info_serializer",
+    "//components/cast_streaming/browser",
+    "//components/cast_streaming/public",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
+    "//third_party/grpc:grpc++",
+    "//third_party/metrics_proto",
+  ]
+}

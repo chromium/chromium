@@ -5,7 +5,6 @@
 #ifndef NET_COOKIES_STATIC_COOKIE_POLICY_H_
 #define NET_COOKIES_STATIC_COOKIE_POLICY_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 class GURL;

@@ -157,6 +157,8 @@ enum OptimizationType {
   // Provides key information about the merchant represented by the current
   // host -- VERSION 2.
   MERCHANT_TRUST_SIGNALS_V2 = 21;
+  // Provides the entities that are present on the page.
+  PAGE_ENTITIES = 22;
 }
 
 // Presents semantics for how page load URLs should be matched.

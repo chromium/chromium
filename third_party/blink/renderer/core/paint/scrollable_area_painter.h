@@ -5,18 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SCROLLABLE_AREA_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SCROLLABLE_AREA_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace gfx {
+class Rect;
 class Vector2d;
 }
 
 namespace blink {
 
 class CullRect;
-class DisplayItemClient;
 class GraphicsContext;
-class IntRect;
 class Scrollbar;
 struct PaintInfo;
 class PaintLayerScrollableArea;
@@ -52,10 +51,9 @@ class ScrollableAreaPainter {
 
  private:
   void DrawPlatformResizerImage(GraphicsContext&,
-                                const IntRect& resizer_corner_rect);
+                                const gfx::Rect& resizer_corner_rect);
 
   PaintLayerScrollableArea& GetScrollableArea() const;
-  const DisplayItemClient& DisplayItemClientForCorner() const;
 
   PaintLayerScrollableArea* scrollable_area_;
 };

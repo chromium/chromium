@@ -30,7 +30,7 @@ base::Value Serialize(
     }
   }
 
-  if (!children_list.GetList().empty())
+  if (!children_list.GetListDeprecated().empty())
     root->SetKey(child_key, std::move(children_list));
   return std::move(*root);
 }

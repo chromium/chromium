@@ -55,7 +55,7 @@ class ContentSuggestionsHeaderSynchronizerTest : public PlatformTest {
 TEST_F(ContentSuggestionsHeaderSynchronizerTest, shiftUp) {
   // Setup.
   id collectionController = CollectionController();
-  OCMExpect([collectionController setScrolledToTop:YES]);
+  OCMExpect([collectionController setScrolledToMinimumHeight:YES]);
 
   // Action.
   [Synchronizer() shiftTilesUpWithAnimations:nil completion:nil];

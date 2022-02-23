@@ -5,6 +5,8 @@
 #include "base/memory/weak_ptr.h"
 
 #if DCHECK_IS_ON()
+#include <ostream>
+
 #include "base/debug/stack_trace.h"
 #endif
 

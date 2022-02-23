@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_CAST_CONTENT_GESTURE_HANDLER_H_
 #define CHROMECAST_BROWSER_CAST_CONTENT_GESTURE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromecast/browser/gesture_router.h"

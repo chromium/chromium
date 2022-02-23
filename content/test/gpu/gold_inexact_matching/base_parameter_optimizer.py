@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import glob
 import hashlib
 import itertools
@@ -12,11 +10,13 @@ import json
 import logging
 import multiprocessing
 import os
-from PIL import Image
-import requests
 import shutil
 import subprocess
 import tempfile
+
+from PIL import Image  # pylint: disable=import-error
+
+import requests  # pylint: disable=import-error
 
 from gold_inexact_matching import parameter_set
 
@@ -30,7 +30,7 @@ GOLDCTL_PATHS = [
 ]
 
 
-class BaseParameterOptimizer(object):
+class BaseParameterOptimizer():
   """Abstract base class for running a parameter optimization for a test."""
   MIN_EDGE_THRESHOLD = 0
   MAX_EDGE_THRESHOLD = 255
@@ -251,7 +251,7 @@ class BaseParameterOptimizer(object):
                             sort_keys=True,
                             separators=(',', ':'))
       md5 = hashlib.md5()
-      md5.update(json_str)
+      md5.update(json_str.encode('utf-8'))
       self._DownloadExpectations('%s/json/v1/positivedigestsbygrouping/%s' %
                                  (self._gold_url, md5.hexdigest()))
       self._DownloadImagesForTraceGrouping()
@@ -289,7 +289,7 @@ class BaseParameterOptimizer(object):
         if status == 'positive'
     ]
     if not positive_digests:
-      raise RuntimeError('Failed to find any positive digests for test %s',
+      raise RuntimeError('Failed to find any positive digests for test %s' %
                          self._test_name)
     for digest in positive_digests:
       content = self._DownloadImageWithDigest(digest)

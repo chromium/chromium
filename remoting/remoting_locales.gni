@@ -75,8 +75,10 @@ remoting_locales_without_pseudolocales = [
 if (is_chromeos_ash || is_chromeos_lacros) {
   # Support Icelandic in ChromeOS
   remoting_locales_without_pseudolocales += [
+    "af",
     "en-US",
     "is",
+    "zu",
   ]
 }
 

@@ -18,7 +18,6 @@
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/scoped_writable_entry.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/disk_cache/disk_cache.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -63,7 +62,7 @@ struct PutContext {
   ScopedWritableEntry cache_entry;
 };
 
-class CONTENT_EXPORT CacheStorageCacheEntryHandler {
+class CacheStorageCacheEntryHandler {
  public:
   // The DiskCacheBlobEntry is a ref-counted object containing both
   // a disk_cache Entry and a Handle to the cache in which it lives.  This

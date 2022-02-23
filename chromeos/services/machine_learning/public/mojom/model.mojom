@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 // Datatypes and interfaces of models for the Machine Learning API.
 
 // NOTE: This mojom exists in two places and must be kept in sync:
@@ -31,15 +33,17 @@ enum BuiltinModelId {
   // Test ML model.
   TEST_MODEL = 1,
   // The Smart Dim (20181115) ML model.
-  SMART_DIM_20181115 = 2,
+  UNSUPPORTED_SMART_DIM_20181115 = 2,
   // The Smart Dim (20190221) ML model.
-  SMART_DIM_20190221 = 3,
+  UNSUPPORTED_SMART_DIM_20190221 = 3,
   // The Top Cat (20190722) ML model.
   UNSUPPORTED_TOP_CAT_20190722 = 4,
   // The Smart Dim (20190521) ML model.
   SMART_DIM_20190521 = 5,
   // The Search Ranker (20190923) ML model.
   SEARCH_RANKER_20190923 = 6,
+  // The Adaptive Charging (20211105) ML model.
+  [MinVersion=1] ADAPTIVE_CHARGING_20211105 = 7,
 };
 
 // Options for creating the executor.  Options are used for testing and
@@ -47,6 +51,7 @@ enum BuiltinModelId {
 [Stable]
 struct GraphExecutorOptions {
   bool use_nnapi = false;
+  [MinVersion=1] bool use_gpu = false;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -58,6 +63,10 @@ enum CreateGraphExecutorResult {
   MEMORY_ALLOCATION_ERROR = 2,
   NNAPI_UNAVAILABLE = 3,
   NNAPI_USE_ERROR = 4,
+  [MinVersion=1] GPU_UNAVAILABLE = 5,
+  [MinVersion=1] GPU_USE_ERROR = 6,
+  [MinVersion=1] DELEGATE_CONFIG_ERROR = 7,
+  [MinVersion=1] NOT_FULLY_DELEGABLE = 8,
 };
 
 // Model specification for builtin models.
@@ -94,13 +103,17 @@ struct FlatBufferModelSpec {
 // Next ordinal: 2
 [Stable]
 interface Model {
-  CreateGraphExecutor@0(pending_receiver<GraphExecutor> receiver) =>
+  // Deprecated messages:
+  REMOVED_0@0(pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 
-  // This function is temporary. We plan to rationalize this interface and
-  // sync it with the interfaces at chromeos/service/machine_learning.
-  // See crbug/1081597.
-  CreateGraphExecutorWithOptions@1(GraphExecutorOptions options,
-                                   pending_receiver<GraphExecutor> receiver) =>
+  // Creates a new GraphExecutor with the specified `options` and binds it to
+  // `receiver`. The GraphExecutor can be used to repeatedly evaluate this
+  // `Model`.
+  // * A Model can have more than one GraphExecutor.
+  // * Releasing this GraphExecutor frees the associated memory (but
+  //   doesn't free the Model unless its pipe is also closed).
+  CreateGraphExecutor@1(GraphExecutorOptions options,
+                        pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 };

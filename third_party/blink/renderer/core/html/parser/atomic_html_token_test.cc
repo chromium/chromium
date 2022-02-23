@@ -41,38 +41,4 @@ TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromHTMLToken) {
   EXPECT_FALSE(attribute_d);
 }
 
-TEST(AtomicHTMLTokenTest, EmptyAttributeValueFromCompactHTMLToken) {
-  HTMLToken token;
-  token.BeginStartTag('a');
-  token.AddNewAttribute();
-  token.BeginAttributeName(3);
-  token.AppendToAttributeName('b');
-  token.EndAttributeName(4);
-  token.AddNewAttribute();
-  token.BeginAttributeName(5);
-  token.AppendToAttributeName('c');
-  token.EndAttributeName(6);
-  token.BeginAttributeValue(8);
-  token.EndAttributeValue(8);
-
-  AtomicHTMLToken atoken(
-      CompactHTMLToken(&token, TextPosition::MinimumPosition()));
-
-  const blink::Attribute* attribute_b = atoken.GetAttributeItem(
-      QualifiedName(AtomicString(), "b", AtomicString()));
-  ASSERT_TRUE(attribute_b);
-  EXPECT_FALSE(attribute_b->Value().IsNull());
-  EXPECT_TRUE(attribute_b->Value().IsEmpty());
-
-  const blink::Attribute* attribute_c = atoken.GetAttributeItem(
-      QualifiedName(AtomicString(), "c", AtomicString()));
-  ASSERT_TRUE(attribute_c);
-  EXPECT_FALSE(attribute_c->Value().IsNull());
-  EXPECT_TRUE(attribute_c->Value().IsEmpty());
-
-  const blink::Attribute* attribute_d = atoken.GetAttributeItem(
-      QualifiedName(AtomicString(), "d", AtomicString()));
-  EXPECT_FALSE(attribute_d);
-}
-
 }  // namespace blink

@@ -198,7 +198,7 @@ class CC_EXPORT SnapContainerData {
   explicit SnapContainerData(ScrollSnapType type);
   SnapContainerData(ScrollSnapType type,
                     const gfx::RectF& rect,
-                    const gfx::Vector2dF& max);
+                    const gfx::PointF& max);
   SnapContainerData(const SnapContainerData& other);
   SnapContainerData(SnapContainerData&& other);
   ~SnapContainerData();
@@ -221,7 +221,7 @@ class CC_EXPORT SnapContainerData {
 
   // Returns true if a snap position was found.
   bool FindSnapPosition(const SnapSelectionStrategy& strategy,
-                        gfx::Vector2dF* snap_position,
+                        gfx::PointF* snap_position,
                         TargetSnapAreaElementIds* target_element_ids,
                         const ElementId& active_element_id = ElementId()) const;
 
@@ -239,13 +239,13 @@ class CC_EXPORT SnapContainerData {
   void set_rect(const gfx::RectF& rect) { rect_ = rect; }
   gfx::RectF rect() const { return rect_; }
 
-  void set_max_position(gfx::Vector2dF position) { max_position_ = position; }
-  gfx::Vector2dF max_position() const { return max_position_; }
+  void set_max_position(gfx::PointF position) { max_position_ = position; }
+  gfx::PointF max_position() const { return max_position_; }
 
-  void set_proximity_range(const gfx::Vector2dF& range) {
+  void set_proximity_range(const gfx::PointF& range) {
     proximity_range_ = range;
   }
-  gfx::Vector2dF proximity_range() const { return proximity_range_; }
+  gfx::PointF proximity_range() const { return proximity_range_; }
 
  private:
   // Finds the best SnapArea candidate that's optimal for the given selection
@@ -278,7 +278,7 @@ class CC_EXPORT SnapContainerData {
       const ElementId& active_element_id) const;
 
   bool FindSnapPositionForMutualSnap(const SnapSelectionStrategy& strategy,
-                                     gfx::Vector2dF* snap_position) const;
+                                     gfx::PointF* snap_position) const;
 
   // Finds the snap area associated with the target snap area element id for the
   // given axis.
@@ -311,11 +311,11 @@ class CC_EXPORT SnapContainerData {
 
   // The maximal scroll position of the SnapContainer, in the same coordinate
   // with blink's scroll position.
-  gfx::Vector2dF max_position_;
+  gfx::PointF max_position_;
 
   // A valid snap position should be within the |proximity_range_| of the
   // current offset on the snapping axis.
-  gfx::Vector2dF proximity_range_;
+  gfx::PointF proximity_range_;
 
   // The SnapAreaData for the snap areas in this snap container. When a scroll
   // happens, we iterate through the snap_area_list to find the best snap

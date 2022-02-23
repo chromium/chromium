@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -55,8 +56,8 @@ class ThreadTrackingLayerTreeFrameSinkClient
   }
 
  private:
-  base::PlatformThreadId* called_thread_id_;
-  base::RunLoop* run_loop_;
+  raw_ptr<base::PlatformThreadId> called_thread_id_;
+  raw_ptr<base::RunLoop> run_loop_;
 };
 
 TEST(AsyncLayerTreeFrameSinkTest,
@@ -156,9 +157,8 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
                      .SetRenderPassList(std::move(*pass_list))
                      .Build();
     pass_list->clear();
-    layer_tree_frame_sink_->SubmitCompositorFrame(
-        std::move(frame), hit_test_data_changed,
-        /*show_hit_test_borders=*/false);
+    layer_tree_frame_sink_->SubmitCompositorFrame(std::move(frame),
+                                                  hit_test_data_changed);
   }
 
   const viz::HitTestRegionList& GetHitTestData() const {

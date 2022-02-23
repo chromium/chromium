@@ -31,5 +31,5 @@
         android:id="@+id/progress_bar_message"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Blue" />
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Accent1" />
     </LinearLayout>

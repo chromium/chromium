@@ -10,16 +10,15 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace file_manager {
 
-class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
+class FakeDiskMountManager : public ash::disks::DiskMountManager {
  public:
   struct MountRequest {
     MountRequest(const std::string& source_path,
@@ -74,7 +73,7 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   const DiskMap& disks() const override;
-  const chromeos::disks::Disk* FindDiskBySourcePath(
+  const ash::disks::Disk* FindDiskBySourcePath(
       const std::string& source_path) const override;
   const MountPointMap& mount_points() const override;
   void EnsureMountInfoRefreshed(EnsureMountInfoRefreshedCallback callback,
@@ -84,7 +83,8 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
                  chromeos::MountType type,
-                 chromeos::MountAccessMode access_mode) override;
+                 chromeos::MountAccessMode access_mode,
+                 MountPathCallback) override;
   // In order to simulate asynchronous invocation of callbacks after unmount
   // is finished, |callback| will be invoked only when
   // |FinishAllUnmountRequest()| is called.
@@ -93,22 +93,20 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
   void RemountAllRemovableDrives(
       chromeos::MountAccessMode access_mode) override;
   void FormatMountedDevice(const std::string& mount_path,
-                           chromeos::disks::FormatFileSystemType filesystem,
+                           ash::disks::FormatFileSystemType filesystem,
                            const std::string& label) override;
-  void SinglePartitionFormatDevice(
-      const std::string& device_path,
-      chromeos::disks::FormatFileSystemType filesystem,
-      const std::string& label) override;
+  void SinglePartitionFormatDevice(const std::string& device_path,
+                                   ash::disks::FormatFileSystemType filesystem,
+                                   const std::string& label) override;
   void RenameMountedDevice(const std::string& mount_path,
                            const std::string& volume_name) override;
   void UnmountDeviceRecursively(
       const std::string& device_path,
       UnmountDeviceRecursivelyCallbackType callback) override;
 
-  bool AddDiskForTest(std::unique_ptr<chromeos::disks::Disk> disk) override;
+  bool AddDiskForTest(std::unique_ptr<ash::disks::Disk> disk) override;
   bool AddMountPointForTest(const MountPointInfo& mount_point) override;
-  void InvokeDiskEventForTest(DiskEvent event,
-                              const chromeos::disks::Disk* disk);
+  void InvokeDiskEventForTest(DiskEvent event, const ash::disks::Disk* disk);
 
  private:
   base::ObserverList<Observer> observers_;

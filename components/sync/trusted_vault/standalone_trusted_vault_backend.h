@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -109,6 +110,8 @@ class StandaloneTrustedVaultBackend
                                 int method_type_hint,
                                 base::OnceClosure cb);
 
+  void ClearDataForAccount(const CoreAccountInfo& account_info);
+
   absl::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
   sync_pb::LocalDeviceRegistrationInfo GetDeviceRegistrationInfoForTesting(
@@ -144,7 +147,7 @@ class StandaloneTrustedVaultBackend
       const TrustedVaultKeyAndVersion& vault_key_and_version);
 
   void OnKeysDownloaded(TrustedVaultDownloadKeysStatus status,
-                        const std::vector<std::vector<uint8_t>>& vault_keys,
+                        const std::vector<std::vector<uint8_t>>& new_vault_keys,
                         int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(base::OnceClosure cb,
@@ -221,7 +224,7 @@ class StandaloneTrustedVaultBackend
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"

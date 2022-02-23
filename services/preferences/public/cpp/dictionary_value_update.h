@@ -93,7 +93,6 @@ class DictionaryValueUpdate {
   // doubles.
   bool GetDouble(base::StringPiece path, double* out_value) const;
   bool GetString(base::StringPiece path, std::string* out_value) const;
-  bool GetString(base::StringPiece path, std::u16string* out_value) const;
   bool GetDictionary(base::StringPiece path,
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(base::StringPiece path,
@@ -156,6 +155,8 @@ class DictionaryValueUpdate {
       const std::vector<base::StringPiece>& path);
 
   UpdateCallback report_update_;
+  // `value_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   base::DictionaryValue* const value_;
   const std::vector<std::string> path_;
 };

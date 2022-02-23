@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 #define GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -188,8 +188,8 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void OnReleaseMailbox(GLuint shared_texture_id,
                         base::OnceCallback<void()> release_mailbox);
 
-  gles2::GLES2Interface* gl_;
-  ContextSupport* context_support_;
+  raw_ptr<gles2::GLES2Interface> gl_;
+  raw_ptr<ContextSupport> context_support_;
   std::unique_ptr<GLHelper> gl_helper_;
   base::WeakPtrFactory<RasterImplementationGLES> weak_ptr_factory_{this};
 };

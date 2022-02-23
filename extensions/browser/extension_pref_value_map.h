@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_prefs_scope.h"

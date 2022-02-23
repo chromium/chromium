@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -107,13 +107,6 @@ enum DestinationType {
   DIFFERENT,       // different from both.
 };
 
-static const char kQuicAlternativeServiceHeader[] =
-    "Alt-Svc: quic=\":443\"\r\n\r\n";
-static const char kQuicAlternativeServiceWithProbabilityHeader[] =
-    "Alt-Svc: quic=\":443\";p=\".5\"\r\n\r\n";
-static const char kQuicAlternativeServiceDifferentPortHeader[] =
-    "Alt-Svc: quic=\":137\"\r\n\r\n";
-
 const char kDefaultServerHostName[] = "mail.example.org";
 const char kDifferentHostname[] = "different.example.com";
 
@@ -158,31 +151,36 @@ std::string PrintToString(const PoolingTestParams& p) {
        "Dependency"});
 }
 
-std::string GenerateQuicAltSvcHeader(
-    const quic::ParsedQuicVersionVector& versions) {
-  std::string altsvc_header = "Alt-Svc: ";
+std::string GenerateQuicAltSvcHeaderValue(
+    const quic::ParsedQuicVersionVector& versions,
+    std::string host,
+    uint16_t port) {
+  std::string value;
   std::string version_string;
   bool first_version = true;
   for (const auto& version : versions) {
     if (first_version) {
       first_version = false;
     } else {
-      altsvc_header.append(", ");
+      value.append(", ");
     }
-    altsvc_header.append(quic::AlpnForVersion(version));
-    altsvc_header.append("=\":443\"");
-    if (version.SupportsGoogleAltSvcFormat()) {
-      if (!version_string.empty()) {
-        version_string.append(",");
-      }
-      version_string.append(base::NumberToString(version.transport_version));
-    }
+    value.append(base::StrCat({quic::AlpnForVersion(version), "=\"", host, ":",
+                               base::NumberToString(port), "\""}));
   }
-  if (!version_string.empty()) {
-    altsvc_header.append(", quic=\":443\"; v=\"" + version_string + "\"");
-  }
-  altsvc_header.append("\r\n");
+  return value;
+}
 
+std::string GenerateQuicAltSvcHeaderValue(
+    const quic::ParsedQuicVersionVector& versions,
+    uint16_t port) {
+  return GenerateQuicAltSvcHeaderValue(versions, "", port);
+}
+
+std::string GenerateQuicAltSvcHeader(
+    const quic::ParsedQuicVersionVector& versions) {
+  std::string altsvc_header = "Alt-Svc: ";
+  altsvc_header.append(GenerateQuicAltSvcHeaderValue(versions, 443));
+  altsvc_header.append("\r\n");
   return altsvc_header;
 }
 
@@ -248,8 +246,8 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
   void OnConnectionChanged() override {}
 
  private:
-  bool* should_notify_updated_rtt_;
-  bool* rtt_notification_received_;
+  raw_ptr<bool> should_notify_updated_rtt_;
+  raw_ptr<bool> rtt_notification_received_;
 };
 
 class TestSocketPerformanceWatcherFactory
@@ -688,8 +686,25 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(status_line, response->headers->GetStatusLine());
     EXPECT_TRUE(response->was_fetched_via_spdy);
     EXPECT_TRUE(response->was_alpn_negotiated);
-    EXPECT_EQ(QuicHttpStream::ConnectionInfoFromQuicVersion(version),
-              response->connection_info);
+    auto connection_info =
+        QuicHttpStream::ConnectionInfoFromQuicVersion(version);
+    if (connection_info == response->connection_info) {
+      return;
+    }
+    // QUIC v1 and QUIC v2 are considered a match, because they have the same
+    // ALPN token.
+    if ((connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
+         connection_info == HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1) &&
+        (response->connection_info ==
+             HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 ||
+         response->connection_info ==
+             HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1)) {
+      return;
+    }
+
+    // They do not match.  This EXPECT_EQ will fail and print useful
+    // information.
+    EXPECT_EQ(connection_info, response->connection_info);
   }
 
   void CheckWasQuicResponse(HttpNetworkTransaction* trans,
@@ -864,12 +879,11 @@ class QuicNetworkTransactionTest
         MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
         MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-    MockRead http_reads[] = {
-        MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-        MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-        MockRead(SYNCHRONOUS, 5, "http used"),
-        // Connection closed.
-        MockRead(SYNCHRONOUS, OK, 6)};
+    MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                             MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                             MockRead(SYNCHRONOUS, 5, "http used"),
+                             // Connection closed.
+                             MockRead(SYNCHRONOUS, OK, 6)};
     SequencedSocketData http_data(http_reads, http_writes);
     socket_factory_.AddSocketDataProvider(&http_data);
     SSLSocketDataProvider ssl_data(ASYNC, OK);
@@ -1002,7 +1016,44 @@ class QuicNetworkTransactionTest
     }
   }
 
+  // Verify that the set of QUIC protocols in `alt_svc_info_vector` and
+  // `supported_versions` is the same.  Since QUICv1 and QUICv2 have the same
+  // ALPN token "h3", they cannot be distinguished when parsing ALPN, so
+  // consider them equal.  This is accomplished by comparing the set of ALPN
+  // strings (instead of comparing the set of ParsedQuicVersion entities).
+  static void VerifyQuicVersionsInAlternativeServices(
+      const AlternativeServiceInfoVector& alt_svc_info_vector,
+      const quic::ParsedQuicVersionVector& supported_versions) {
+    // Process supported versions.
+    std::set<std::string> supported_alpn;
+    for (const auto& version : supported_versions) {
+      if (version.AlpnDeferToRFCv1()) {
+        // These versions currently do not support Alt-Svc.
+        return;
+      }
+      supported_alpn.insert(quic::ParsedQuicVersionToString(version));
+    }
+
+    // Versions that support the legacy Google-specific Alt-Svc format are sent
+    // in a single Alt-Svc entry, therefore they are accumulated in a single
+    // AlternativeServiceInfo, whereas more recent versions all have their own
+    // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
+    std::set<std::string> alt_svc_negotiated_alpn;
+    for (const auto& alt_svc_info : alt_svc_info_vector) {
+      EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
+      for (const auto& version : alt_svc_info.advertised_versions()) {
+        alt_svc_negotiated_alpn.insert(
+            quic::ParsedQuicVersionToString(version));
+      }
+    }
+
+    // Compare.
+    EXPECT_EQ(alt_svc_negotiated_alpn, supported_alpn);
+  }
+
   const quic::ParsedQuicVersion version_;
+  const std::string alt_svc_header_ =
+      GenerateQuicAltSvcHeader({version_}) + "\r\n";
   const bool client_headers_include_h2_stream_dependency_;
   quic::ParsedQuicVersionVector supported_versions_;
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
@@ -1801,34 +1852,8 @@ TEST_P(QuicNetworkTransactionTest, DoNotUseQuicForUnsupportedVersion) {
   alt_svc_info_vector =
       session_->http_server_properties()->GetAlternativeServiceInfos(
           server, NetworkIsolationKey());
-  // Versions that support the legacy Google-specific Alt-Svc format are sent in
-  // a single Alt-Svc entry, therefore they are accumulated in a single
-  // AlternativeServiceInfo, whereas more recent versions all have their own
-  // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
-  quic::ParsedQuicVersionVector alt_svc_negotiated_versions;
-  for (const auto& alt_svc_info : alt_svc_info_vector) {
-    EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
-    for (const auto& version : alt_svc_info.advertised_versions()) {
-      if (std::find(alt_svc_negotiated_versions.begin(),
-                    alt_svc_negotiated_versions.end(),
-                    version) == alt_svc_negotiated_versions.end()) {
-        alt_svc_negotiated_versions.push_back(version);
-      }
-    }
-  }
-
-  ASSERT_EQ(supported_versions_.size(), alt_svc_negotiated_versions.size());
-  auto version_compare = [](const quic::ParsedQuicVersion& a,
-                            const quic::ParsedQuicVersion& b) {
-    return std::tie(a.transport_version, a.handshake_protocol) <
-           std::tie(b.transport_version, b.handshake_protocol);
-  };
-  std::sort(supported_versions_.begin(), supported_versions_.end(),
-            version_compare);
-  std::sort(alt_svc_negotiated_versions.begin(),
-            alt_svc_negotiated_versions.end(), version_compare);
-  EXPECT_TRUE(std::equal(supported_versions_.begin(), supported_versions_.end(),
-                         alt_svc_negotiated_versions.begin()));
+  VerifyQuicVersionsInAlternativeServices(alt_svc_info_vector,
+                                          supported_versions_);
 }
 
 // Regression test for https://crbug.com/546991.
@@ -1971,8 +1996,12 @@ TEST_P(QuicNetworkTransactionTest, DoNotForceQuicForHttps) {
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuic) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2016,6 +2045,10 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuic) {
 }
 
 TEST_P(QuicNetworkTransactionTest, UseIetfAlternativeServiceForQuic) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   std::string alt_svc_header =
       "Alt-Svc: " + quic::AlpnForVersion(version_) + "=\":443\"\r\n\r\n";
   MockRead http_reads[] = {
@@ -2065,6 +2098,10 @@ TEST_P(QuicNetworkTransactionTest, UseIetfAlternativeServiceForQuic) {
 // Much like above, but makes sure NetworkIsolationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        UseAlternativeServiceForQuicWithNetworkIsolationKey) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
@@ -2082,7 +2119,7 @@ TEST_P(QuicNetworkTransactionTest,
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2152,20 +2189,34 @@ TEST_P(QuicNetworkTransactionTest,
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceWithVersionForQuic1) {
-  // Both server advertises and client supports two QUIC versions.
-  // Only |version_| is advertised and supported.
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  // Both client and server supports two QUIC versions:
+  // Client supports |supported_versions_[0]| and |supported_versions_[1]|,
+  // server supports |version_| and |advertised_version_2|.
+  // Only |version_| (same as |supported_versions_[0]|) is supported by both.
   // The QuicStreamFactoy will pick up |version_|, which is verified as the
   // PacketMakers are using |version_|.
 
-  // Add support for another QUIC version besides |version_| on the client side.
-  // Also find a different version advertised by the server.
+  // Compare ALPN strings instead of ParsedQuicVersions because QUIC v1 and v2
+  // have the same ALPN string.
+  ASSERT_EQ(1u, supported_versions_.size());
+  ASSERT_EQ(supported_versions_[0], version_);
   quic::ParsedQuicVersion advertised_version_2 =
       quic::ParsedQuicVersion::Unsupported();
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (version == version_)
+    if (quic::AlpnForVersion(version) == quic::AlpnForVersion(version_)) {
       continue;
+    }
     if (supported_versions_.size() != 2) {
       supported_versions_.push_back(version);
+      continue;
+    }
+    if (supported_versions_.size() == 2 &&
+        quic::AlpnForVersion(supported_versions_[1]) ==
+            quic::AlpnForVersion(version)) {
       continue;
     }
     advertised_version_2 = version;
@@ -2236,7 +2287,7 @@ TEST_P(QuicNetworkTransactionTest,
   quic::ParsedQuicVersion common_version_2 =
       quic::ParsedQuicVersion::Unsupported();
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (version != version_) {
+    if (version != version_ && !version.AlpnDeferToRFCv1()) {
       common_version_2 = version;
       break;
     }
@@ -2320,57 +2371,17 @@ TEST_P(QuicNetworkTransactionTest,
       "hello!", false, 443, "HTTP/1.1 200", picked_version);
 }
 
-TEST_P(QuicNetworkTransactionTest,
-       UseAlternativeServiceWithProbabilityForQuic) {
-  MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(kQuicAlternativeServiceWithProbabilityHeader),
-      MockRead("hello world"),
-      MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
-      MockRead(ASYNC, OK)};
-
-  StaticSocketDataProvider http_data(http_reads, base::span<MockWrite>());
-  socket_factory_.AddSocketDataProvider(&http_data);
-  AddCertificate(&ssl_data_);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
-
-  MockQuicData mock_quic_data(version_);
-  int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
-  mock_quic_data.AddWrite(
-      SYNCHRONOUS,
-      ConstructClientRequestHeadersPacket(
-          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
-          true, GetRequestHeaders("GET", "https", "/")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerResponseHeadersPacket(
-                 1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
-                 GetResponseHeaders("200")));
-  mock_quic_data.AddRead(
-      ASYNC, ConstructServerDataPacket(
-                 2, GetNthClientInitiatedBidirectionalStreamId(0), false, true,
-                 ConstructDataFrame("hello!")));
-  mock_quic_data.AddWrite(SYNCHRONOUS,
-                          ConstructClientAckPacket(packet_num++, 2, 1));
-  mock_quic_data.AddRead(ASYNC, ERR_IO_PENDING);  // No more data to read
-  mock_quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
-
-  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
-
-  AddHangingNonAlternateProtocolSocketData();
-  CreateSession();
-
-  SendRequestAndExpectHttpResponse("hello world");
-  SendRequestAndExpectQuicResponse("hello!");
-}
-
 TEST_P(QuicNetworkTransactionTest, SetAlternativeServiceWithScheme) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  std::string alt_svc_header = base::StrCat(
+      {"Alt-Svc: ",
+       GenerateQuicAltSvcHeaderValue({version_}, "foo.example.com", 443), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead("Alt-Svc: quic=\"foo.example.org:443\", quic=\":444\"\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2401,9 +2412,16 @@ TEST_P(QuicNetworkTransactionTest, SetAlternativeServiceWithScheme) {
 }
 
 TEST_P(QuicNetworkTransactionTest, DoNotGetAltSvcForDifferentOrigin) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  std::string alt_svc_header = base::StrCat(
+      {"Alt-Svc: ",
+       GenerateQuicAltSvcHeaderValue({version_}, "foo.example.com", 443), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead("Alt-Svc: quic=\"foo.example.org:443\", quic=\":444\"\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -2500,37 +2518,15 @@ TEST_P(QuicNetworkTransactionTest,
   const AlternativeServiceInfoVector alt_svc_info_vector =
       session_->http_server_properties()->GetAlternativeServiceInfos(
           https_server, NetworkIsolationKey());
-  // Versions that support the legacy Google-specific Alt-Svc format are sent in
-  // a single Alt-Svc entry, therefore they are accumulated in a single
-  // AlternativeServiceInfo, whereas more recent versions all have their own
-  // Alt-Svc entry and AlternativeServiceInfo entry.  Flatten to compare.
-  quic::ParsedQuicVersionVector alt_svc_negotiated_versions;
-  for (const auto& alt_svc_info : alt_svc_info_vector) {
-    EXPECT_EQ(kProtoQUIC, alt_svc_info.alternative_service().protocol);
-    for (const auto& version : alt_svc_info.advertised_versions()) {
-      if (std::find(alt_svc_negotiated_versions.begin(),
-                    alt_svc_negotiated_versions.end(),
-                    version) == alt_svc_negotiated_versions.end()) {
-        alt_svc_negotiated_versions.push_back(version);
-      }
-    }
-  }
-
-  ASSERT_EQ(supported_versions_.size(), alt_svc_negotiated_versions.size());
-  auto version_compare = [](const quic::ParsedQuicVersion& a,
-                            const quic::ParsedQuicVersion& b) {
-    return std::tie(a.transport_version, a.handshake_protocol) <
-           std::tie(b.transport_version, b.handshake_protocol);
-  };
-  std::sort(supported_versions_.begin(), supported_versions_.end(),
-            version_compare);
-  std::sort(alt_svc_negotiated_versions.begin(),
-            alt_svc_negotiated_versions.end(), version_compare);
-  EXPECT_TRUE(std::equal(supported_versions_.begin(), supported_versions_.end(),
-                         alt_svc_negotiated_versions.begin()));
+  VerifyQuicVersionsInAlternativeServices(alt_svc_info_vector,
+                                          supported_versions_);
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceAllSupportedVersion) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   std::string altsvc_header = base::StringPrintf(
       "Alt-Svc: %s=\":443\"\r\n\r\n", quic::AlpnForVersion(version_).c_str());
   MockRead http_reads[] = {
@@ -2662,6 +2658,10 @@ TEST_P(QuicNetworkTransactionTest, GoAwayWithConnectionMigrationOnPortsOnly) {
 // TODO(fayang): Add time driven idle network detection test.
 TEST_P(QuicNetworkTransactionTest,
        DISABLED_QuicFailsOnBothNetworksWhileTCPSucceeds) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   if (version_.UsesTls()) {
     // QUIC with TLS1.3 handshake doesn't support 0-rtt.
     return;
@@ -2698,10 +2698,10 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "TCP succeeds"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -2772,6 +2772,10 @@ TEST_P(QuicNetworkTransactionTest,
 // TODO(fayang): Add time driven idle network detection test.
 TEST_P(QuicNetworkTransactionTest,
        DISABLED_RetryOnAlternateNetworkWhileTCPSucceeds) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   if (version_.UsesTls()) {
     // QUIC with TLS1.3 handshake doesn't support 0-rtt.
     return;
@@ -2809,10 +2813,10 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "TCP succeeds"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -2894,6 +2898,10 @@ TEST_P(QuicNetworkTransactionTest,
 TEST_P(
     QuicNetworkTransactionTest,
     DISABLED_RetryOnAlternateNetworkWhileTCPSucceedsWithNetworkIsolationKey) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   if (version_.UsesTls()) {
     // QUIC with TLS1.3 handshake doesn't support 0-rtt.
     return;
@@ -2949,10 +2957,10 @@ TEST_P(
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "TCP succeeds"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "TCP succeeds"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -3383,6 +3391,10 @@ TEST_P(QuicNetworkTransactionTest, ProtocolErrorAfterHandshakeConfirmed) {
 // connection times out, then QUIC will be marked as broken and the request
 // retried over TCP.
 TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
@@ -3489,10 +3501,10 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -3551,6 +3563,10 @@ TEST_P(QuicNetworkTransactionTest, TimeoutAfterHandshakeConfirmedThenBroken2) {
 // retried over TCP and the QUIC will be marked as broken.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBroken) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   context_.params()->idle_connection_timeout = base::Seconds(5);
 
   // The request will initially go out over QUIC.
@@ -3593,10 +3609,10 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -3649,6 +3665,10 @@ TEST_P(QuicNetworkTransactionTest,
 // Much like above test, but verifies that NetworkIsolationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithNetworkIsolationKey) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
@@ -3708,10 +3728,10 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -3781,6 +3801,10 @@ TEST_P(QuicNetworkTransactionTest,
 // request is reset from, then QUIC will be marked as broken and the request
 // retried over TCP.
 TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   // The request will initially go out over QUIC.
   MockQuicData quic_data(version_);
   spdy::SpdyPriority priority =
@@ -3824,10 +3848,10 @@ TEST_P(QuicNetworkTransactionTest, ResetAfterHandshakeConfirmedThenBroken) {
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -3955,10 +3979,14 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
 // ALTERNATE_PROTOCOL_USAGE_BROKEN is only logged once.
 // This is a regression test for crbug/1024613.
 TEST_P(QuicNetworkTransactionTest, BrokenAlternativeOnlyRecordedOnce) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   base::HistogramTester histogram_tester;
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4013,6 +4041,10 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternativeOnlyRecordedOnce) {
 // This is a regression tests for crbug/731303.
 TEST_P(QuicNetworkTransactionTest,
        ResetPooledAfterHandshakeConfirmedThenBroken) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   context_.params()->allow_remote_alt_svc = true;
 
   GURL origin1 = request_.url;
@@ -4096,10 +4128,10 @@ TEST_P(QuicNetworkTransactionTest,
       MockWrite(SYNCHRONOUS, 1, "Host: www.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -4150,6 +4182,10 @@ TEST_P(QuicNetworkTransactionTest,
 
 TEST_P(QuicNetworkTransactionTest,
        DoNotUseAlternativeServiceQuicUnsupportedVersion) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   std::string altsvc_header =
       base::StringPrintf("Alt-Svc: quic=\":443\"; v=\"%u\"\r\n\r\n",
                          version_.transport_version - 1);
@@ -4176,10 +4212,17 @@ TEST_P(QuicNetworkTransactionTest,
 // If no existing QUIC session can be used, use the first alternative service
 // from the list.
 TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   context_.params()->allow_remote_alt_svc = true;
+  std::string alt_svc_header = base::StrCat(
+      {"Alt-Svc: ",
+       GenerateQuicAltSvcHeaderValue({version_}, "foo.example.org", 443), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, 444), "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead("Alt-Svc: quic=\"foo.example.org:443\", quic=\":444\"\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4204,9 +4247,10 @@ TEST_P(QuicNetworkTransactionTest, UseExistingAlternativeServiceForQuic) {
           packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
           true, GetRequestHeaders("GET", "https", "/")));
 
-  std::string alt_svc_list =
-      "quic=\"mail.example.org:444\", quic=\"foo.example.org:443\", "
-      "quic=\"bar.example.org:445\"";
+  std::string alt_svc_list = base::StrCat(
+      {GenerateQuicAltSvcHeaderValue({version_}, "mail.example.org", 444), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, "foo.example.org", 443), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, "bar.example.org", 445)});
   mock_quic_data.AddRead(
       ASYNC, ConstructServerResponseHeadersPacket(
                  1, GetNthClientInitiatedBidirectionalStreamId(0), false, false,
@@ -4455,13 +4499,16 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
 // if this is also the first existing QUIC session.
 TEST_P(QuicNetworkTransactionTest,
        UseSharedExistingAlternativeServiceForQuicWithValidCert) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   context_.params()->allow_remote_alt_svc = true;
   // Default cert is valid for *.example.org
 
   // HTTP data for request to www.example.org.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead("Alt-Svc: quic=\":443\"\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world from www.example.org"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4472,9 +4519,12 @@ TEST_P(QuicNetworkTransactionTest,
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
 
   // HTTP data for request to mail.example.org.
+  std::string alt_svc_header2 = base::StrCat(
+      {"Alt-Svc: ", GenerateQuicAltSvcHeaderValue({version_}, 444), ",",
+       GenerateQuicAltSvcHeaderValue({version_}, "www.example.org", 443),
+       "\r\n\r\n"});
   MockRead http_reads2[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead("Alt-Svc: quic=\":444\", quic=\"www.example.org:443\"\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header2.data()),
       MockRead("hello world from mail.example.org"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4559,9 +4609,15 @@ TEST_P(QuicNetworkTransactionTest,
 }
 
 TEST_P(QuicNetworkTransactionTest, AlternativeServiceDifferentPort) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
+  std::string alt_svc_header =
+      base::StrCat({"Alt-Svc: ", GenerateQuicAltSvcHeaderValue({version_}, 137),
+                    "\r\n\r\n"});
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"),
-      MockRead(kQuicAlternativeServiceDifferentPortHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4589,8 +4645,12 @@ TEST_P(QuicNetworkTransactionTest, AlternativeServiceDifferentPort) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4650,6 +4710,10 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
 
 TEST_P(QuicNetworkTransactionTest,
        ConfirmAlternativeServiceWithNetworkIsolationKey) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
@@ -4667,7 +4731,7 @@ TEST_P(QuicNetworkTransactionTest,
   http_server_properties_ = std::make_unique<HttpServerProperties>();
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4735,8 +4799,12 @@ TEST_P(QuicNetworkTransactionTest,
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuicForHttps) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -4778,6 +4846,10 @@ TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuicForHttps) {
 }
 
 TEST_P(QuicNetworkTransactionTest, HungAlternativeService) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::COLD_START);
 
@@ -4786,10 +4858,10 @@ TEST_P(QuicNetworkTransactionTest, HungAlternativeService) {
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
 
   SequencedSocketData http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
@@ -4952,6 +5024,10 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ZeroRTTWithProxy) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateFixedFromPacResult(
           "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -4962,10 +5038,10 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithProxy) {
       MockWrite(SYNCHRONOUS, 1, "Host: mail.example.org\r\n"),
       MockWrite(SYNCHRONOUS, 2, "Proxy-Connection: keep-alive\r\n\r\n")};
 
-  MockRead http_reads[] = {
-      MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
-      MockRead(SYNCHRONOUS, 4, kQuicAlternativeServiceHeader),
-      MockRead(SYNCHRONOUS, 5, "hello world"), MockRead(SYNCHRONOUS, OK, 6)};
+  MockRead http_reads[] = {MockRead(SYNCHRONOUS, 3, "HTTP/1.1 200 OK\r\n"),
+                           MockRead(SYNCHRONOUS, 4, alt_svc_header_.data()),
+                           MockRead(SYNCHRONOUS, 5, "hello world"),
+                           MockRead(SYNCHRONOUS, OK, 6)};
 
   StaticSocketDataProvider http_data(http_reads, http_writes);
   socket_factory_.AddSocketDataProvider(&http_data);
@@ -5958,6 +6034,10 @@ TEST_P(QuicNetworkTransactionTest, BrokenAlternateProtocolOnConnectFailure) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   MockQuicData mock_quic_data(version_);
   mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeDummyCHLOPacket(1));
   mock_quic_data.AddRead(ASYNC, ConstructServerConnectionClosePacket(1));
@@ -5965,7 +6045,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
 
   // When the QUIC connection fails, we will try the request again over HTTP.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -5989,6 +6069,10 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnect) {
 }
 
 TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   MockQuicData mock_quic_data(version_);
   mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_->MakeDummyCHLOPacket(1));
   mock_quic_data.AddRead(ASYNC, ConstructServerConnectionClosePacket(1));
@@ -6001,7 +6085,7 @@ TEST_P(QuicNetworkTransactionTest, ConnectionCloseDuringConnectProxy) {
 
   // When the QUIC connection fails, we will try the request again over HTTP.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -6860,15 +6944,19 @@ class QuicURLRequestContext : public URLRequestContext {
   MockClientSocketFactory& socket_factory() { return *socket_factory_; }
 
  private:
-  MockClientSocketFactory* socket_factory_;
+  raw_ptr<MockClientSocketFactory> socket_factory_;
   URLRequestContextStorage storage_;
 };
 
 TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   session_params_.quic_host_allowlist.insert("mail.example.org");
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -6912,10 +7000,14 @@ TEST_P(QuicNetworkTransactionTest, HostInAllowlist) {
 }
 
 TEST_P(QuicNetworkTransactionTest, HostNotInAllowlist) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   session_params_.quic_host_allowlist.insert("mail.example.com");
 
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("hello world"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};
@@ -9403,9 +9495,13 @@ TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadPauseAndResume) {
 }
 
 TEST_P(QuicNetworkTransactionTest, AllowHTTP1UploadFailH1AndResumeQuic) {
+  if (version_.AlpnDeferToRFCv1()) {
+    // These versions currently do not support Alt-Svc.
+    return;
+  }
   // This test confirms failed main job should not bother quic job.
   MockRead http_reads[] = {
-      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(kQuicAlternativeServiceHeader),
+      MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
       MockRead("1.1 Body"),
       MockRead(SYNCHRONOUS, ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ),
       MockRead(ASYNC, OK)};

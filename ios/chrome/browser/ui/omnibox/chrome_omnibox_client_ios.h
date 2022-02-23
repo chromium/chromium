@@ -49,6 +49,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
                       OmniboxFocusChangeReason reason) override;
   void OnResultChanged(const AutocompleteResult& result,
                        bool default_match_changed,
+                       bool should_prerender,
                        const BitmapFetchedCallback& on_bitmap_fetched) override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
   void DiscardNonCommittedNavigations() override;

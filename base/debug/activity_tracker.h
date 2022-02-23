@@ -20,16 +20,22 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
+#include "build/build_config.h"
+
+#if DCHECK_IS_ON()
+#include "base/threading/platform_thread_ref.h"
+#endif
 
 namespace base {
 
@@ -224,7 +230,7 @@ class BASE_EXPORT ActivityTrackerMemoryAllocator {
   size_t cache_used() const { return cache_used_; }
 
  private:
-  PersistentMemoryAllocator* const allocator_;
+  const raw_ptr<PersistentMemoryAllocator> allocator_;
   const uint32_t object_type_;
   const uint32_t object_free_type_;
   const size_t object_size_;
@@ -536,8 +542,9 @@ class BASE_EXPORT ActivityUserData {
 
     StringPiece name;                 // The "key" of the record.
     ValueType type;                   // The type of the value.
-    void* memory;                     // Where the "value" is held.
-    std::atomic<uint16_t>* size_ptr;  // Address of the actual size of value.
+    raw_ptr<void> memory;             // Where the "value" is held.
+    raw_ptr<std::atomic<uint16_t>>
+        size_ptr;                     // Address of the actual size of value.
     size_t extent;                    // The total storage of the value,
   };                                  // typically rounded up for alignment.
 
@@ -561,11 +568,11 @@ class BASE_EXPORT ActivityUserData {
   // Information about the memory block in which new data can be stored. These
   // are "mutable" because they change even on "const" objects that are just
   // skipping already set values.
-  mutable char* memory_;
+  mutable raw_ptr<char> memory_;
   mutable size_t available_;
 
   // A pointer to the memory header for this instance.
-  MemoryHeader* const header_;
+  const raw_ptr<MemoryHeader> header_;
 
   // These hold values used when initially creating the object. They are
   // compared against current header values to check for outside changes.
@@ -655,7 +662,7 @@ class BASE_EXPORT ThreadActivityTracker {
    protected:
     // The thread tracker to which this object reports. It can be null if
     // activity tracking is not (yet) enabled.
-    ThreadActivityTracker* const tracker_;
+    const raw_ptr<ThreadActivityTracker> tracker_;
 
     // An identifier that indicates a specific activity on the stack.
     ActivityId activity_id_;
@@ -766,8 +773,8 @@ class BASE_EXPORT ThreadActivityTracker {
       Activity* activity,
       ActivityTrackerMemoryAllocator* allocator);
 
-  Header* const header_;        // Pointer to the Header structure.
-  Activity* const stack_;       // The stack of activities.
+  const raw_ptr<Header> header_;   // Pointer to the Header structure.
+  const raw_ptr<Activity> stack_;  // The stack of activities.
 
 #if DCHECK_IS_ON()
   // The ActivityTracker is thread bound, and will be invoked across all the
@@ -913,7 +920,7 @@ class BASE_EXPORT GlobalActivityTracker {
       int stack_depth,
       int64_t process_id);
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Like above but internally creates an allocator around a disk file with
   // the specified |size| at the given |file_path|. Any existing file will be
   // overwritten. The |id| and |name| are arbitrary and stored in the allocator
@@ -923,7 +930,7 @@ class BASE_EXPORT GlobalActivityTracker {
                              uint64_t id,
                              StringPiece name,
                              int stack_depth);
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
   // Like above but internally creates an allocator using local heap memory of
   // the specified size. This is used primarily for unit tests. The |process_id|
@@ -1170,7 +1177,7 @@ class BASE_EXPORT GlobalActivityTracker {
     const PersistentMemoryAllocator::Reference mem_reference_;
 
     // The physical address used for the thread-tracker's memory.
-    void* const mem_base_;
+    const raw_ptr<void> mem_base_;
   };
 
   // Creates a global tracker using a given persistent-memory |allocator| and
@@ -1370,7 +1377,7 @@ class BASE_EXPORT ScopedThreadJoinActivity
 };
 
 // Some systems don't have base::Process
-#if !defined(OS_NACL) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_IOS)
 class BASE_EXPORT ScopedProcessWaitActivity
     : public GlobalActivityTracker::ScopedThreadActivity {
  public:

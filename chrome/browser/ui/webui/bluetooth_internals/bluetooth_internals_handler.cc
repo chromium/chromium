@@ -55,7 +55,7 @@ void BluetoothInternalsHandler::GetDebugLogsChangeHandler(
       break;
     case DebugLogsManager::DebugLogsState::kSupportedAndEnabled:
       initial_toggle_value = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case DebugLogsManager::DebugLogsState::kSupportedButDisabled:
       handler_remote = debug_logs_manager_->GenerateRemote();
       break;

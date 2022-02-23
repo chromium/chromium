@@ -25,10 +25,12 @@ setup(() => assertSpeculationRulesIsSupported());
 
     // We have to open a new window to run the test, since a window that was
     // not created by window.open() cannot be moved.
-    window.open(
-        url, '_blank',
-        `width=${window.screen.availWidth / 2},height=${
-            window.screen.availHeight / 2},noopener`);
+    window.open(url, '_blank',
+                `left=${window.screen.availLeft},
+                 top=${window.screen.availTop},
+                 width=${window.screen.availWidth / 2},
+                 height=${window.screen.availHeight / 2},
+                 noopener`);
 
     const result = await gotMessage;
     assert_equals(result.status, 'PASS');

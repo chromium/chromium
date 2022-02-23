@@ -10,7 +10,7 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 #include "net/disk_cache/blockfile/storage_block.h"
@@ -91,7 +91,7 @@ class Rankings {
     }
 
    private:
-    Rankings* rankings_;
+    raw_ptr<Rankings> rankings_;
   };
 
   // If we have multiple lists, we have to iterate through all at the same time.
@@ -102,7 +102,7 @@ class Rankings {
 
     List list;                     // Which entry was returned to the user.
     CacheRankingsBlock* nodes[3];  // Nodes on the first three lists.
-    Rankings* my_rankings;
+    raw_ptr<Rankings> my_rankings;
   };
 
   Rankings();
@@ -210,8 +210,8 @@ class Rankings {
   bool count_lists_;
   Addr heads_[LAST_ELEMENT];
   Addr tails_[LAST_ELEMENT];
-  BackendImpl* backend_;
-  LruData* control_data_;  // Data related to the LRU lists.
+  raw_ptr<BackendImpl> backend_;
+  raw_ptr<LruData> control_data_;  // Data related to the LRU lists.
   IteratorList iterators_;
 };
 

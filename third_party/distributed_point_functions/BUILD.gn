@@ -6,7 +6,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "src/dpf/distributed_point_function.proto" ]
+  sources = [ "code/dpf/distributed_point_function.proto" ]
   proto_out_dir = "third_party/distributed_point_functions/dpf"
   cc_generator_options = "lite"
 }
@@ -18,41 +18,40 @@ if (!defined(dpf_abseil_cpp_dir)) {
 config("distributed_point_functions_includes") {
   include_dirs = [
     ".",
-    "src",
+    "code",
     "$target_gen_dir",
   ]
 }
 
-config("distributed_point_functions_warnings") {
-  if (is_clang) {
-    # distributed_point_functions.cc (intentionally) does
-    # `control_bits[0] & control_bit_correction[keep]` where both args
-    # are of type bool.
-    cflags = [ "-Wno-bitwise-instead-of-logical" ]
-  }
-}
-
 source_set("distributed_point_functions") {
   sources = [
+    "code/dpf/aes_128_fixed_key_hash.cc",
+    "code/dpf/aes_128_fixed_key_hash.h",
+    "code/dpf/distributed_point_function.cc",
+    "code/dpf/distributed_point_function.h",
+    "code/dpf/int_mod_n.cc",
+    "code/dpf/int_mod_n.h",
+    "code/dpf/internal/proto_validator.cc",
+    "code/dpf/internal/proto_validator.h",
+    "code/dpf/internal/value_type_helpers.cc",
+    "code/dpf/internal/value_type_helpers.h",
+    "code/dpf/status_macros.h",
+    "code/dpf/tuple.h",
+    "code/dpf/xor_wrapper.h",
     "glog/logging.h",
-    "src/dpf/distributed_point_function.cc",
-    "src/dpf/distributed_point_function.h",
-    "src/dpf/internal/array_conversions.h",
-    "src/dpf/internal/pseudorandom_generator.cc",
-    "src/dpf/internal/pseudorandom_generator.h",
-    "src/dpf/status_macros.h",
   ]
 
   public_deps = [
     ":proto",
     "$dpf_abseil_cpp_dir:absl",
+    "//base",
     "//third_party/boringssl",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   # Do not apply Chromium code rules to this third-party code.
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ ":distributed_point_functions_warnings" ]
 
   public_configs = [ ":distributed_point_functions_includes" ]
 }

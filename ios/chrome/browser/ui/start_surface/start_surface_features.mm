@@ -10,7 +10,7 @@
 #endif
 
 const base::Feature kStartSurface{"StartSurface",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
@@ -26,7 +26,7 @@ bool IsStartSurfaceEnabled() {
 double GetReturnToStartSurfaceDuration() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kStartSurface, kReturnToStartSurfaceInactiveDurationInSeconds,
-      60 * 60 /*default to 1 hour*/);
+      60 * 60 * 12 /*default to 12 hour*/);
 }
 
 bool ShouldHideShortcutsForStartSurface() {

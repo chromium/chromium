@@ -9,9 +9,12 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
@@ -25,6 +28,9 @@ constexpr char kUsageMsg[] =
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--v=<log verbosity>]\n"
+    "           [--output_path_prefix=<output files path prefix>]\n"
+    "           [--md5]\n"
+    "           [--visible]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
@@ -37,6 +43,18 @@ constexpr char kHelpMsg[] =
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
+    "    --output_path_prefix=<path>\n"
+    "        Optional. Prefix to the filepaths where raw YUV frames will be\n"
+    "        written. For example, setting <path> to \"test/test_\" would \n"
+    "        result in output files of the form \"test/test_000000.yuv\",\n"
+    "       \"test/test_000001.yuv\", etc.\n"
+    "    --md5\n"
+    "        Optional. If specified, prints the md5 of each decoded (and\n"
+    "        visible, if --visible is specified) frame in I420 format to\n"
+    "        stdout.\n"
+    "    --visible\n"
+    "        Optional. If specified, computes md5 hash values only for\n"
+    "        visible frames.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -53,6 +71,14 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
   }
 
   return header_fourcc;
+}
+
+// Computes the md5 of given I420 data |yuv_plane| and prints the md5 to stdout.
+// This functionality is needed for tast tests.
+void ComputeAndPrintMd5hash(const std::vector<char>& yuv_plane) {
+  base::MD5Digest md5_digest;
+  base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
+  std::cout << MD5DigestToBase16(md5_digest) << std::endl;
 }
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
@@ -76,8 +102,7 @@ std::unique_ptr<Vp9Decoder> CreateDecoder(
 
   LOG_ASSERT(file_header.fourcc == v4l2_fourcc('V', 'P', '9', '0'))
       << "Codec " << media::FourccToString(file_header.fourcc)
-      << " not supported.\n"
-      << kUsageMsg;
+      << " not supported." << kUsageMsg;
 
   const auto driver_codec_fourcc = FileFourccToDriverFourcc(file_header.fourcc);
 
@@ -102,6 +127,10 @@ int main(int argc, char** argv) {
     std::cout << kUsageMsg << "\n" << kHelpMsg;
     return EXIT_SUCCESS;
   }
+
+  const bool has_output_file = cmd->HasSwitch("output_path_prefix");
+  const std::string output_file_prefix =
+      cmd->GetSwitchValueASCII("output_path_prefix");
 
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
   if (video_path.empty())
@@ -130,11 +159,38 @@ int main(int argc, char** argv) {
 
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
-    const Vp9Decoder::Result res = dec->DecodeNextFrame();
+
+    std::vector<char> y_plane;
+    std::vector<char> u_plane;
+    std::vector<char> v_plane;
+    gfx::Size size;
+    Vp9Decoder::Result res =
+        dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
     if (res == Vp9Decoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;
     }
+
+    if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
+      continue;
+
+    std::vector<char> yuv_plane(y_plane);
+    yuv_plane.insert(yuv_plane.end(), u_plane.begin(), u_plane.end());
+    yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
+
+    if (cmd->HasSwitch("md5"))
+      ComputeAndPrintMd5hash(yuv_plane);
+
+    if (!has_output_file)
+      continue;
+
+    base::FilePath filename(
+        base::StringPrintf("%s%.6d.yuv", output_file_prefix.c_str(), i));
+    base::File output_file(
+        filename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    output_file.WriteAtCurrentPos(y_plane.data(), size.GetArea());
+    output_file.WriteAtCurrentPos(u_plane.data(), size.GetArea() / 4);
+    output_file.WriteAtCurrentPos(v_plane.data(), size.GetArea() / 4);
   }
 
   return EXIT_SUCCESS;

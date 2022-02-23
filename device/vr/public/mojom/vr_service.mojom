@@ -67,6 +67,7 @@ enum XRSessionFeature {
   DEPTH = 12,
   IMAGE_TRACKING = 13,
   HAND_INPUT = 14,
+  SECONDARY_VIEWS = 15,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -165,6 +166,9 @@ struct XRSessionOptions {
   // Must be present if either optional or required features contain
   // depth sensing API.
   XRDepthOptions? depth_options;
+
+  // ID of this request, used for tracing.
+  uint64 trace_id;
 };
 
 struct XRDepthConfig {
@@ -457,7 +461,12 @@ struct XRView {
   // A viewport describes the rectangular region that the underlying graphics
   // API should use to render this view.
   // See https://immersive-web.github.io/webxr/#xrviewport
-  gfx.mojom.Size viewport;
+  gfx.mojom.Rect viewport;
+
+  // A first person observer view is a secondary view typically used when
+  // capturing from the camera of an AR device.
+  // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
+  bool is_first_person_observer = false;
 };
 
 struct VRStageParameters {

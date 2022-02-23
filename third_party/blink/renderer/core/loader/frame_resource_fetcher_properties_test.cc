@@ -15,7 +15,7 @@ namespace blink {
 class FrameResourceFetcherPropertiesTest : public testing::Test {
  public:
   FrameResourceFetcherPropertiesTest()
-      : dummy_page_holder_(std::make_unique<DummyPageHolder>(IntSize(1, 1))),
+      : dummy_page_holder_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))),
         properties_(MakeGarbageCollected<FrameResourceFetcherProperties>(
             *dummy_page_holder_->GetDocument().Loader(),
             dummy_page_holder_->GetDocument())) {}

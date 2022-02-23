@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_request_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
@@ -150,7 +149,8 @@ TEST_F(BackgroundFetchManagerTest, BlobsExtracted) {
   RequestInit* request_init = RequestInit::Create();
   request_init->setMethod("POST");
   request_init->setBody(blink::ScriptValue(
-      scope.GetIsolate(), ToV8(body_text, scope.GetScriptState())));
+      scope.GetIsolate(),
+      ToV8Traits<IDLString>::ToV8(scope.GetScriptState(), body_text)));
   Request* image_request =
       Request::Create(scope.GetScriptState(), image_url.GetString(),
                       request_init, scope.GetExceptionState());

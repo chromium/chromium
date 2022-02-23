@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
@@ -17,9 +19,10 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/label_button.h"
 
-class IncognitoClearBrowsingDataDialogBrowserTest
-    : public InProcessBrowserTest {
+class IncognitoClearBrowsingDataDialogBrowserTest : public DialogBrowserTest {
  public:
+  void ShowUi(const std::string& name) override { OpenDialog(); }
+
   void OpenDialog() {
     incognito_browser_ = CreateIncognitoBrowser(browser()->profile());
     views::View* view = static_cast<views::View*>(
@@ -40,8 +43,13 @@ class IncognitoClearBrowsingDataDialogBrowserTest
   }
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
+
+IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
+                       InvokeUi_default) {
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
                        TestDialogIsShown) {
@@ -97,40 +105,15 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
   CloseBrowserSynchronously(GetIncognitoBrowser());
 }
 
-class IncognitoClearBrowsingDataTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  IncognitoClearBrowsingDataTest() {
-    feature_list_.InitWithFeatureState(
-        features::kIncognitoClearBrowsingDataDialogForDesktop, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(IncognitoClearBrowsingDataTestWithFeatureFlag,
-                         IncognitoClearBrowsingDataTest,
-                         testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(IncognitoClearBrowsingDataTest,
+IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
                        ClearBrowsingDataNavigationInIncognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::SendToOmniboxAndSubmit(incognito_browser,
                                         "chrome://settings/clearBrowserData");
   std::u16string current_tab_title;
-
-  if (GetParam()) {
-    ui_test_utils::GetCurrentTabTitle(incognito_browser, &current_tab_title);
-    EXPECT_EQ(u"about:blank", current_tab_title);
-    ASSERT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
-  } else {
-    // Should open the clear browsing data dialog in regular browser.
-    ui_test_utils::GetCurrentTabTitle(browser(), &current_tab_title);
-    EXPECT_EQ(u"chrome://settings/clearBrowserData", current_tab_title);
-    ASSERT_FALSE(IncognitoClearBrowsingDataDialog::IsShowing());
-  }
+  ui_test_utils::GetCurrentTabTitle(incognito_browser, &current_tab_title);
+  EXPECT_EQ(u"about:blank", current_tab_title);
+  ASSERT_TRUE(IncognitoClearBrowsingDataDialog::IsShowing());
 }
 
 class IncognitoHistoryDisclaimerDialogBrowserTest
@@ -156,7 +139,7 @@ class IncognitoHistoryDisclaimerDialogBrowserTest
   }
 
  private:
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(IncognitoHistoryDisclaimerDialogBrowserTest,

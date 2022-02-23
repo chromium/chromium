@@ -4,12 +4,19 @@
 
 #include "cc/paint/skottie_resource_metadata.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace cc {
+
+SkottieResourceMetadataMap::ImageAssetMetadata::ImageAssetMetadata(
+    base::FilePath resource_path_in,
+    absl::optional<gfx::Size> size_in)
+    : resource_path(std::move(resource_path_in)), size(std::move(size_in)) {}
 
 SkottieResourceMetadataMap::SkottieResourceMetadataMap() = default;
 
@@ -23,7 +30,9 @@ SkottieResourceMetadataMap::~SkottieResourceMetadataMap() = default;
 
 bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
                                                base::StringPiece resource_name,
-                                               base::StringPiece resource_id) {
+                                               base::StringPiece resource_id,
+                                               absl::optional<gfx::Size> size) {
+  DCHECK(!size || !size->IsEmpty());
   if (resource_id.empty()) {
     LOG(ERROR) << "Skottie animation has asset with empty resource_id";
     return false;
@@ -42,7 +51,8 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
   bool inserted = asset_storage_
                       .try_emplace(std::string(resource_id),
                                    base::FilePath::FromASCII(resource_path)
-                                       .Append(resource_name_component))
+                                       .Append(resource_name_component),
+                                   std::move(size))
                       .second;
   if (!inserted) {
     LOG(ERROR) << "Skottie animation has assets with duplicate resource_id: "
@@ -52,7 +62,8 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
 }
 
 SkottieResourceIdHash HashSkottieResourceId(base::StringPiece resource_id) {
-  return SkottieResourceIdHash::FromUnsafeValue(base::FastHash(resource_id));
+  return SkottieResourceIdHash::FromUnsafeValue(
+      base::PersistentHash(resource_id.data(), resource_id.length()));
 }
 
 }  // namespace cc

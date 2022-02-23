@@ -6,16 +6,17 @@
 
 /**
  * Builds a PaymentRequest that requests a shipping address.
+ * @param {String} paymentMethod - the payment method to be used.
  * @return {PaymentRequest} - A new PaymentRequest object.
  */
-function buildPaymentRequest() {
+function buildPaymentRequest(paymentMethod) {
   try {
     return new PaymentRequest(
-        [{supportedMethods: 'basic-card'}], {
-          total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
-          displayItems: [
-            {label: 'Item1', amount: {currency: 'USD', value: '2.00'}},
-            {label: 'Item2', amount: {currency: 'USD', value: '3.00'}},
+      [{supportedMethods: paymentMethod}], {
+      total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
+      displayItems: [
+        {label: 'Item1', amount: {currency: 'USD', value: '2.00'}},
+        {label: 'Item2', amount: {currency: 'USD', value: '3.00'}},
           ],
           shippingOptions: [{
             selected: true,
@@ -24,14 +25,14 @@ function buildPaymentRequest() {
             amount: {currency: 'USD', value: '0.00'},
           }],
           modifiers: [{
-            supportedMethods: 'basic-card',
+            supportedMethods: paymentMethod,
             additionalDisplayItems: [{
               label: 'Discount',
               amount: {currency: 'USD', value: '0.00'},
-            }],
-          }],
-        },
-        {requestShipping: true});
+        }],
+      }],
+    },
+      {requestShipping: true});
   } catch (error) {
     print(error.message);
   }
@@ -59,9 +60,10 @@ function showPaymentRequest(pr) {
 
 /**
  * Calls updateWith() with {}
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithEmpty() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithEmpty(paymentMethod) { // eslint-disable-line no-unused-vars
+  var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {};
   pr.addEventListener('shippingaddresschange', function(e) {
     e.updateWith(updatedDetails);
@@ -74,9 +76,10 @@ function updateWithEmpty() { // eslint-disable-line no-unused-vars
 
 /**
  * Calls updateWith() with total
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithTotal() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithTotal(paymentMethod) { // eslint-disable-line no-unused-vars
+  var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     total: {label: 'Updated total', amount: {currency: 'USD', value: '10.00'}},
   };
@@ -91,9 +94,10 @@ function updateWithTotal() { // eslint-disable-line no-unused-vars
 
 /**
  * Calls updateWith() with displayItems
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithDisplayItems() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithDisplayItems(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+  var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     displayItems: [
       {label: 'Item1', amount: {currency: 'USD', value: '3.00'}},
@@ -111,9 +115,10 @@ function updateWithDisplayItems() { // eslint-disable-line no-unused-vars
 
 /**
  * Calls updateWith() with shipping options
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithShippingOptions() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithShippingOptions(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+  var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     shippingOptions: [{
       selected: true,
@@ -133,12 +138,13 @@ function updateWithShippingOptions() { // eslint-disable-line no-unused-vars
 
 /**
  * Calls updateWith() with modifiers
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithModifiers() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithModifiers(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+  var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     modifiers: [{
-      supportedMethods: 'basic-card',
+      supportedMethods: paymentMethod,
       total: {
         label: 'Modifier total',
         amount: {currency: 'USD', value: '4.00'},
@@ -160,9 +166,10 @@ function updateWithModifiers() { // eslint-disable-line no-unused-vars
 
 /**
  * Calls updateWith() with an error.
+ * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithError() { // eslint-disable-line no-unused-vars
-  var pr = buildPaymentRequest();
+function updateWithError(paymentMethod) { // eslint-disable-line no-unused-vars
+  var pr = buildPaymentRequest(paymentMethod);
   var errorDetails = {
     error: 'This is an error for a browsertest',
   };

@@ -16,7 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -230,7 +230,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     Message response;
 
     // Points to a stack-allocated variable.
-    bool* response_received;
+    raw_ptr<bool> response_received;
   };
 
   using SyncResponseMap = std::map<uint64_t, std::unique_ptr<SyncResponseInfo>>;
@@ -251,7 +251,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
     bool Accept(Message* message) override;
 
    private:
-    InterfaceEndpointClient* const owner_;
+    const raw_ptr<InterfaceEndpointClient> owner_;
   };
 
   void InitControllerIfNecessary();
@@ -293,8 +293,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   ScopedInterfaceEndpointHandle handle_;
   std::unique_ptr<AssociatedGroup> associated_group_;
+  // `controller_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
   InterfaceEndpointController* controller_ = nullptr;
 
+  // `incoming_receiver_` is not a raw_ptr<...> for performance reasons (based
+  // on analysis of sampling profiler data).
   MessageReceiverWithResponderStatus* const incoming_receiver_ = nullptr;
   HandleIncomingMessageThunk thunk_{this};
   MessageDispatcher dispatcher_;

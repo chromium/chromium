@@ -20,16 +20,15 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -42,10 +41,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -95,7 +94,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mNativeInitialized;
     private AutocompleteController mAutocomplete;
     private long mUrlFocusTime;
-    private boolean mEnableAdaptiveSuggestionsCount;
     private boolean mShouldCacheSuggestions;
 
     @IntDef({SuggestionVisibilityState.DISALLOWED, SuggestionVisibilityState.PENDING_ALLOW,
@@ -131,6 +129,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     // Set at the end of the Omnibox interaction to indicate whether the user selected an item
     // from the list (true) or left the Omnibox and suggestions list with no action taken (false).
     private boolean mOmniboxFocusResultedInNavigation;
+    // Facilitate detection of Autocomplete actions being scheduled from an Autocomplete action.
+    private boolean mIsExecutingAutocompleteAction;
+    // Whether user scrolled the suggestions list.
+    private boolean mSuggestionsListScrolled;
 
     /**
      * The text shown in the URL bar (user text + inline autocomplete) after the most recent set of
@@ -152,7 +154,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ExploreIconProvider exploreIconProvider) {
+            @NonNull ExploreIconProvider exploreIconProvider,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -165,7 +168,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
-                activityTabSupplier, bookmarkState, exploreIconProvider);
+                activityTabSupplier, bookmarkState, exploreIconProvider, omniboxPedalDelegate);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
     }
@@ -173,9 +176,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /**
      * Initialize the Mediator with default set of suggestion processors.
      */
-    void initDefaultProcessors(Callback<List<QueryTile>> queryTileSuggestionCallback) {
+    void initDefaultProcessors() {
         mDropdownViewInfoListBuilder.initDefaultProcessors(
-                mContext, this, mDelegate, mUrlBarEditingTextProvider, queryTileSuggestionCallback);
+                mContext, this, mDelegate, mUrlBarEditingTextProvider);
     }
 
     /**
@@ -249,11 +252,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     /**
      * Specifies the visual state to be used by the suggestions.
-     * @param omniboxTheme The {@link @OmniboxTheme}.
+     * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    void updateVisualsForState(@OmniboxTheme int omniboxTheme) {
-        mDropdownViewInfoListManager.setOmniboxTheme(omniboxTheme);
-        mListPropertyModel.set(SuggestionListProperties.OMNIBOX_THEME, omniboxTheme);
+    void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        mDropdownViewInfoListManager.setBrandedColorScheme(brandedColorScheme);
+        mListPropertyModel.set(SuggestionListProperties.COLOR_SCHEME, brandedColorScheme);
     }
 
     /**
@@ -278,11 +281,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     void onNativeInitialized() {
         mNativeInitialized = true;
-
-        mEnableAdaptiveSuggestionsCount =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
         mDropdownViewInfoListBuilder.onNativeInitialized();
-
         runPendingAutocompleteRequests();
     }
 
@@ -292,6 +291,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
+            mSuggestionsListScrolled = false;
             mUrlFocusTime = System.currentTimeMillis();
             mJankTracker.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
@@ -318,6 +318,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
             SuggestionsMetrics.recordRefineActionUsage(mRefineActionUsage);
+            SuggestionsMetrics.recordSuggestionsListScrolled(
+                    mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
+                    mSuggestionsListScrolled);
 
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
             mEditSessionState = EditSessionState.INACTIVE;
@@ -378,35 +381,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     long getCurrentNativeAutocompleteResult() {
         return mAutocompleteResult.getNativeObjectRef();
-    }
-
-    private static boolean isQueryEditingEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_ENABLE_QUERY_EDITING);
-    }
-
-    /** Called when a query tile is selected by the user. */
-    void onQueryTileSelected(QueryTile queryTile) {
-        // For last level tile, start a search query, unless we want to let user have a chance to
-        // edit the query.
-        if (queryTile.children.isEmpty() && !isQueryEditingEnabled()) {
-            launchSearchUrlForQueryTileSuggestion(queryTile);
-            return;
-        }
-
-        // If the tile has sub-tiles, start a new request to the backend to get the new set
-        // of tiles. Also set the tile text in omnibox.
-        stopAutocomplete(false);
-        String refineText = TextUtils.concat(queryTile.queryText, " ").toString();
-        mDelegate.setOmniboxEditingText(refineText);
-
-        mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
-        mEditSessionState = EditSessionState.ACTIVATED_BY_QUERY_TILE;
-
-        mAutocomplete.start(mDataProvider.getCurrentUrl(),
-                mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                mUrlBarEditingTextProvider.getSelectionStart(),
-                !mUrlBarEditingTextProvider.shouldAutocomplete(), queryTile.id, true);
     }
 
     /**
@@ -476,7 +450,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             assert tabModel != null;
 
             int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-            tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
+            tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
         } else {
             mBringTabToFrontCallback.onResult(tab);
         }
@@ -539,6 +513,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dialogController)
                         .with(ModalDialogProperties.TITLE, suggestion.getDisplayText())
+                        .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
                         .with(ModalDialogProperties.MESSAGE, resources.getString(dialogMessageId))
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
@@ -671,12 +646,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 int pageClassification =
                         mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
                 String currentUrl = mDataProvider.getCurrentUrl();
-                boolean isQueryStartedFromTiles = mDelegate.didFocusUrlFromQueryTiles()
-                        || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
                 postAutocompleteRequest(() -> {
                     mAutocomplete.start(currentUrl, pageClassification, textWithoutAutocomplete,
-                            cursorPosition, preventAutocomplete, null, isQueryStartedFromTiles);
+                            cursorPosition, preventAutocomplete);
                 }, OMNIBOX_SUGGESTION_START_DELAY_MS);
             }
         }
@@ -900,7 +873,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
             mAutocomplete.start(mDataProvider.getCurrentUrl(),
-                    mDataProvider.getPageClassification(false), query, -1, false, null, false);
+                    mDataProvider.getPageClassification(false), query, -1, false);
         }
     }
 
@@ -923,8 +896,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     @Override
     public void onSuggestionDropdownScroll() {
-        if (mEnableAdaptiveSuggestionsCount
-                && mDropdownViewInfoListBuilder.hasFullyConcealedElements()) {
+        if (mDropdownViewInfoListBuilder.hasFullyConcealedElements()) {
+            mSuggestionsListScrolled = true;
             mDelegate.setKeyboardVisibility(false, false);
         }
     }
@@ -961,9 +934,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     @Override
     public void onSuggestionDropdownOverscrolledToTop() {
-        if (mEnableAdaptiveSuggestionsCount) {
-            mDelegate.setKeyboardVisibility(true, false);
-        }
+        mDelegate.setKeyboardVisibility(true, false);
     }
 
     /**
@@ -974,37 +945,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         return mNewOmniboxEditSessionTimestamp > 0
                 ? (SystemClock.elapsedRealtime() - mNewOmniboxEditSessionTimestamp)
                 : -1;
-    }
-
-    /**
-     * Launches the search URL for the query tile suggestion.
-     * @param queryTile The query tile user selected.
-     */
-    @SuppressWarnings("VisibleForTests")
-    private void launchSearchUrlForQueryTileSuggestion(QueryTile queryTile) {
-        SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
-        int position = -1;
-        int suggestionCount = getSuggestionCount();
-        AutocompleteMatch suggestion = null;
-        // Find the suggestion position and hashCode.
-        for (int i = 0; i < suggestionCount; ++i) {
-            suggestion = getSuggestionAt(i);
-            if (suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION) {
-                position = i;
-                break;
-            }
-        }
-        if (suggestion == null) return;
-        GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(position,
-                getElapsedTimeSinceInputChange(), queryTile.queryText, queryTile.searchParams);
-
-        // Abort if the Autocomplete has just become invalid/profile was destroyed.
-        if (updatedUrl == null) return;
-
-        // RecordMetrics has to be called before loadUrl, or otherwise the native AutocompleteResult
-        // object will be reset and the suggestion will fail validation.
-        recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
-        mDelegate.loadUrl(updatedUrl.getSpec(), PageTransition.LINK, mLastActionUpTimestamp);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -1026,15 +966,16 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      *         Use SCHEDULE_FOR_IMMEDIATE_EXECUTION to post action at front of the message queue.
      */
     private void postAutocompleteRequest(@NonNull Runnable action, long delayMillis) {
+        assert !mIsExecutingAutocompleteAction : "Can't schedule conflicting autocomplete action";
+        assert ThreadUtils.runningOnUiThread() : "Detected input from a non-UI thread. Test error?";
+
         cancelAutocompleteRequests();
         mCurrentAutocompleteRequest = new Runnable() {
             @Override
             public void run() {
+                mIsExecutingAutocompleteAction = true;
                 action.run();
-                // Catch any AutocompleteRequests that post subsequent AutocompleteRequest.
-                // Note: we have to explicitly instantiate a Runnable class, otherwise
-                // 'this' will resolve into a parent class and Runnable.this won't work.
-                assert mCurrentAutocompleteRequest == this;
+                mIsExecutingAutocompleteAction = false;
                 // Release completed Runnable.
                 mCurrentAutocompleteRequest = null;
             }

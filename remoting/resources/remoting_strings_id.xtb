@@ -26,7 +26,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="225614027745146050">Selamat Datang</translation>
 <translation id="2320166752086256636">Sembunyikan keyboard</translation>
 <translation id="2329392777730037872">Gagal membuka <ph name="URL" /> di klien.</translation>
-<translation id="2333212046079545895">Hak Cipta 2021 Google LLC. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2366718077645204424">Tidak dapat menjangkau inang. Ini mungkin karena konfigurasi jaringan yang Anda gunakan.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Terakhir terlihat online <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="2599300881200251572">Layanan ini mengaktifkan sambungan masuk dari klien Chrome Desktop Jarak Jauh.</translation>
 <translation id="2647232381348739934">Layanan Chromoting</translation>
 <translation id="2676780859508944670">Sedang bekerja…</translation>
+<translation id="2692522824157224199">Hak Cipta 2022 Google LLC. Hak Cipta Dilindungi Undang-Undang.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Terjadi masalah saat mengautentikasi. Silakan login kembali.</translation>
 <translation id="2803375539583399270">Masukkan PIN</translation>
@@ -73,10 +73,10 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4257751272692708833">Penerus URL <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kode akses tidak valid. Harap coba lagi.</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
+<translation id="4372650392690220936">Hak Cipta 2022 Pengarang Chromium. Hak Cipta Dilindungi Undang-Undang.</translation>
 <translation id="4405930547258349619">Pustaka Inti</translation>
 <translation id="443560535555262820">Buka Preferensi Accessibility</translation>
 <translation id="4450893287417543264">Jangan tampilkan lagi</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4563926062592110512">Klien terputus: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> tidak dikonfigurasi dengan benar. Pilih browser web default lain, lalu aktifkan penerusan URL lagi.</translation>
@@ -99,7 +99,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="5204575267916639804">FAQ</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5234764350956374838">Tutup</translation>
-<translation id="5308380583665731573">Sambungkan</translation>
+<translation id="5308380583665731573">Hubungkan</translation>
 <translation id="533625276787323658">Perangkat sambungan belum disiapkan</translation>
 <translation id="5397086374758643919">Pencopot Pemasangan Host Chrome Desktop Jarak Jauh</translation>
 <translation id="5419418238395129586">Online terakhir: <ph name="DATE" /></translation>

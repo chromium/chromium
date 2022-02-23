@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "components/search_engines/search_terms_data.h"
 
 // Implementation of SearchTermsData that is only usable on the UI thread.
@@ -26,7 +26,7 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GetSuggestRequestIdentifier() const override;
   std::string GoogleImageSearchSource() const override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string GetYandexReferralID() const override;
   std::string GetMailRUReferralID() const override;
 #endif

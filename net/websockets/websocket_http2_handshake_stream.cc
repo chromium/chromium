@@ -5,11 +5,11 @@
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
 #include <cstddef>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -45,7 +45,7 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
-    std::vector<std::string> dns_aliases)
+    std::set<std::string> dns_aliases)
     : result_(HandshakeResult::HTTP2_INCOMPLETE),
       session_(session),
       connect_delegate_(connect_delegate),
@@ -168,17 +168,7 @@ void WebSocketHttp2HandshakeStream::Close(bool not_reusable) {
     stream_closed_ = true;
     stream_error_ = ERR_CONNECTION_CLOSED;
   }
-
-  // The method needs to be idempotent as it may be called multiple times.
-  if (!stream_adapter_)
-    return;
-
   stream_adapter_.reset();
-
-  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
-  // resolved.
-  CHECK(!stream_adapter_reset_by_close_);
-  stream_adapter_reset_by_close_ = true;
 }
 
 bool WebSocketHttp2HandshakeStream::IsResponseBodyComplete() const {
@@ -249,7 +239,7 @@ HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   return nullptr;
 }
 
-const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
+const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
     const {
   return dns_aliases_;
 }
@@ -261,25 +251,11 @@ base::StringPiece WebSocketHttp2HandshakeStream::GetAcceptChViaAlps() const {
 std::unique_ptr<WebSocketStream> WebSocketHttp2HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 
-  // These checks are here to find the cause of https://crbug.com/1215989.
-  // TODO(ricea): Remove them once the cause has been determined.
-  CHECK(!stream_adapter_reset_by_onclose_);
-
-  // The above blank line exists because stack traces often have annoying
-  // off-by-one errors in the line numbers.
-  CHECK(!stream_adapter_reset_by_close_);
-
-  // Above blank line is also intentional.
-  CHECK(!stream_adapter_moved_by_upgrade_);
-
-  // This should definitely be true if we get this far.
-  CHECK(stream_adapter_);
-
   stream_adapter_->DetachDelegate();
   std::unique_ptr<WebSocketStream> basic_stream =
-      std::make_unique<WebSocketBasicStream>(
-          std::move(stream_adapter_), nullptr, sub_protocol_, extensions_);
-  stream_adapter_moved_by_upgrade_ = true;
+      std::make_unique<WebSocketBasicStream>(std::move(stream_adapter_),
+                                             nullptr, sub_protocol_,
+                                             extensions_, net_log_);
 
   if (!extension_params_->deflate_enabled)
     return basic_stream;
@@ -327,9 +303,7 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
 }
 
 void WebSocketHttp2HandshakeStream::OnClose(int status) {
-  // TODO(ricea): Change this CHECK back to a DCHECK when
-  // https://crbug.com/1215989 is fixed.
-  CHECK(stream_adapter_);
+  DCHECK(stream_adapter_);
   DCHECK_GT(ERR_IO_PENDING, status);
 
   stream_closed_ = true;
@@ -337,11 +311,6 @@ void WebSocketHttp2HandshakeStream::OnClose(int status) {
   stream_ = nullptr;
 
   stream_adapter_.reset();
-
-  // TODO(ricea): Remove these two lines once https://crbug.com/1215989 is
-  // resolved.
-  CHECK(!stream_adapter_reset_by_close_);
-  stream_adapter_reset_by_close_ = true;
 
   // If response headers have already been received,
   // then ValidateResponse() sets |result_|.

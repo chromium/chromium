@@ -250,8 +250,7 @@ class ReporterRunnerTest
   // |invocation|.
   base::Process LaunchReporterProcess(
       const SwReporterInvocation& invocation,
-      const base::LaunchOptions& options) override {
-    ANALYZER_ALLOW_UNUSED(options);
+      [[maybe_unused]] const base::LaunchOptions& options) override {
     ++reporter_launch_count_;
     reporter_launch_parameters_.push_back(invocation);
     if (first_launch_callback_)
@@ -260,8 +259,8 @@ class ReporterRunnerTest
     return base::Process::Current();
   }
 
-  int WaitForReporterExit(const base::Process& reporter_process) const {
-    ANALYZER_ALLOW_UNUSED(reporter_process);
+  int WaitForReporterExit([
+      [maybe_unused]] const base::Process& reporter_process) const {
     return exit_code_to_report_;
   }
 

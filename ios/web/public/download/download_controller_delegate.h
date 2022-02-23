@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ios/web/public/download/download_task.h"
 
 namespace web {

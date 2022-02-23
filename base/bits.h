@@ -209,12 +209,16 @@ ALWAYS_INLINE constexpr size_t CountTrailingZeroBitsSizeT(size_t x) {
   return CountTrailingZeroBits(x);
 }
 
-// Returns the integer i such as 2^i <= n < 2^(i+1)
+// Returns the integer i such as 2^i <= n < 2^(i+1).
+//
+// There is a common `BitLength` function, which returns the number of bits
+// required to represent a value. Rather than implement that function,
+// use `Log2Floor` and add 1 to the result.
 constexpr int Log2Floor(uint32_t n) {
   return 31 - CountLeadingZeroBits(n);
 }
 
-// Returns the integer i such as 2^(i-1) < n <= 2^i
+// Returns the integer i such as 2^(i-1) < n <= 2^i.
 constexpr int Log2Ceiling(uint32_t n) {
   // When n == 0, we want the function to return -1.
   // When n == 0, (n - 1) will underflow to 0xFFFFFFFF, which is

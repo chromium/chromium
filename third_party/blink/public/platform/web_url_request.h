@@ -36,7 +36,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/base/page_transition_types.h"
 
@@ -229,12 +228,6 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT WebString GetFetchIntegrity() const;
   BLINK_PLATFORM_EXPORT void SetFetchIntegrity(const WebString&);
 
-  // The PreviewsState which determines whether to request a Preview version of
-  // the resource. The PreviewsState is a bitmask of potentially several
-  // Previews optimizations.
-  BLINK_PLATFORM_EXPORT PreviewsState GetPreviewsState() const;
-  BLINK_PLATFORM_EXPORT void SetPreviewsState(PreviewsState);
-
   // Extra data associated with the underlying resource request. Resource
   // requests can be copied. If non-null, each copy of a resource requests
   // holds a pointer to the extra data, and the extra data pointer will be
@@ -253,9 +246,6 @@ class WebURLRequest {
 
   BLINK_PLATFORM_EXPORT Priority GetPriority() const;
   BLINK_PLATFORM_EXPORT void SetPriority(Priority);
-
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  BLINK_PLATFORM_EXPORT bool IsExternalRequest() const;
 
   BLINK_PLATFORM_EXPORT network::mojom::CorsPreflightPolicy
   GetCorsPreflightPolicy() const;

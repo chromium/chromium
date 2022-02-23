@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
@@ -21,8 +22,13 @@ using VmType = guest_os::GuestOsRegistryService::VmType;
 
 bool AppHandlesProtocol(
     const guest_os::GuestOsRegistryService::Registration& app,
-    const std::string& scheme) {
-  return app.MimeTypes().count("x-scheme-handler/" + scheme) != 0;
+    const GURL& url) {
+  if (app.VmType() == guest_os::GuestOsRegistryService::VmType::
+                          ApplicationList_VmType_BOREALIS &&
+      !borealis::IsExternalURLAllowed(url)) {
+    return false;
+  }
+  return app.MimeTypes().count("x-scheme-handler/" + url.scheme()) != 0;
 }
 
 }  // namespace
@@ -41,7 +47,7 @@ absl::optional<GuestOsRegistryService::Registration> GetHandler(
   absl::optional<GuestOsRegistryService::Registration> result;
   for (auto& pair : registry_service->GetEnabledApps()) {
     auto& registration = pair.second;
-    if (AppHandlesProtocol(registration, url.scheme()) &&
+    if (AppHandlesProtocol(registration, url) &&
         (!result || registration.LastLaunchTime() > result->LastLaunchTime())) {
       result = std::move(registration);
     }

@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -115,6 +115,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   SelectorFilter& GetSelectorFilter() { return selector_filter_; }
 
   StyleRuleKeyframes* FindKeyframesRule(const Element*,
+                                        const Element* animating_element,
                                         const AtomicString& animation_name);
 
   // These methods will give back the set of rules that matched for a given
@@ -205,6 +206,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                       const StyleRequest&,
                       StyleResolverState& state,
                       StyleCascade& cascade);
+  void ApplyBaseStyleNoCache(Element* element,
+                             const StyleRecalcContext&,
+                             const StyleRequest&,
+                             StyleResolverState& state,
+                             StyleCascade& cascade);
   void ApplyInterpolations(StyleResolverState& state,
                            StyleCascade& cascade,
                            ActiveInterpolationsMap& interpolations);
@@ -284,6 +290,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   Document& GetDocument() const { return *document_; }
 
   bool IsForcedColorsModeEnabled() const;
+
+  template <typename Functor>
+  void ForEachUARulesForElement(const Element& element,
+                                ElementRuleCollector* collector,
+                                Functor& func) const;
 
   MatchedPropertiesCache matched_properties_cache_;
   Member<Document> document_;

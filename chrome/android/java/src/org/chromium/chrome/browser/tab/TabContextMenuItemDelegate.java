@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.MailTo;
@@ -18,7 +19,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -40,14 +40,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-
-import java.util.List;
 
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.
@@ -55,8 +52,6 @@ import java.util.List;
 public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
-    private boolean mLoadOriginalImageRequestedForPageLoad;
-    private EmptyTabObserver mDataReductionProxyContextMenuTabObserver;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManager;
@@ -72,20 +67,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mSnackbarManager = snackbarManager;
-
-        mDataReductionProxyContextMenuTabObserver = new EmptyTabObserver() {
-            @Override
-            public void onPageLoadStarted(Tab tab, GURL url) {
-                mLoadOriginalImageRequestedForPageLoad = false;
-            }
-        };
-        mTab.addObserver(mDataReductionProxyContextMenuTabObserver);
     }
 
     @Override
-    public void onDestroy() {
-        mTab.removeObserver(mDataReductionProxyContextMenuTabObserver);
-    }
+    public void onDestroy() {}
 
     @Override
     public String getPageTitle() {
@@ -208,8 +193,10 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         TabDelegate tabDelegate = new TabDelegate(mTab.isIncognito());
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, TabUtils.getActivity(mTab),
-                CriticalPersistedTabData.from(mTab).getParentId());
+        Activity activity = TabUtils.getActivity(mTab);
+        tabDelegate.createTabInOtherWindow(loadUrlParams, activity,
+                CriticalPersistedTabData.from(mTab).getParentId(),
+                MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 
     @Override
@@ -230,17 +217,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         loadUrlParams.setReferrer(referrer);
         mTabModelSelector.openNewTab(loadUrlParams,
                 TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, isIncognito());
-    }
-
-    @Override
-    public void onLoadOriginalImage() {
-        mLoadOriginalImageRequestedForPageLoad = true;
-        mTab.loadOriginalImage();
-    }
-
-    @Override
-    public boolean wasLoadOriginalImageRequestedForPageLoad() {
-        return mLoadOriginalImageRequestedForPageLoad;
     }
 
     @Override
@@ -356,18 +332,5 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
-    }
-
-    @Override
-    public void removeHighlighting() {
-        List<RenderFrameHost> renderFrameHosts =
-                mTab.getWebContents().getMainFrame().getAllRenderFrameHosts();
-
-        // Remove highlights from all frames in the primary page.
-        for (RenderFrameHost renderFrameHost : renderFrameHosts) {
-            TextFragmentReceiver producer =
-                    renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
-            producer.removeFragments();
-        }
     }
 }

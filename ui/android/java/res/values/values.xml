@@ -12,4 +12,8 @@
 
     <!--  Expand more  -->
     <integer name="expand_more_horizontal_rotation_degree">270</integer>
+
+    <!-- Drag shadow resize ratio -->
+    <item name="drag_shadow_resize_ratio" format="float" type="dimen">0.6</item>
+    <item name="drag_shadow_max_size_to_window_ratio" format="float" type="dimen">0.35</item>
 </resources>

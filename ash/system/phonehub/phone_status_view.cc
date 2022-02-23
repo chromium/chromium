@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/status_area_widget.h"
@@ -36,9 +37,9 @@
 
 namespace ash {
 
-using PhoneStatusModel = chromeos::phonehub::PhoneStatusModel;
-
 namespace {
+
+using PhoneStatusModel = phonehub::PhoneStatusModel;
 
 // Appearance in Dip.
 constexpr int kTitleContainerSpacing = 16;
@@ -80,7 +81,7 @@ bool IsBatterySaverModeOn(const PhoneStatusModel& phone_status) {
 
 }  // namespace
 
-PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
+PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
                                  Delegate* delegate)
     : TriView(kTitleContainerSpacing),
       phone_model_(phone_model),
@@ -134,10 +135,10 @@ PhoneStatusView::PhoneStatusView(chromeos::phonehub::PhoneModel* phone_model,
   separator_->SetPreferredHeight(kSeparatorHeight);
   AddView(TriView::Container::CENTER, separator_);
 
-  settings_button_ = new TopShortcutButton(
+  settings_button_ = new IconButton(
       base::BindRepeating(&Delegate::OpenConnectedDevicesSettings,
                           base::Unretained(delegate)),
-      kSystemMenuSettingsIcon,
+      IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
       IDS_ASH_PHONE_HUB_CONNECTED_DEVICE_SETTINGS_LABEL);
   AddView(TriView::Container::END, settings_button_);
 

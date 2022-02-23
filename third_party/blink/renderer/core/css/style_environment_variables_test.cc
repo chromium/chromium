@@ -252,11 +252,11 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromRoot) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Create a second page that uses the variable.
-  auto new_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   InitializeTestPageWithVariableNamed(new_page->GetFrame(), kVariableName);
 
   // Create an empty page that does not use the variable.
-  auto empty_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto empty_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   empty_page->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   SetVariableOnRoot(kVariableName, kVariableTestColor);
@@ -271,7 +271,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromDocument) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Create a second page that uses the variable.
-  auto new_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   InitializeTestPageWithVariableNamed(new_page->GetFrame(), kVariableName);
 
   SetVariableOnDocument(kVariableName, kVariableTestColor);

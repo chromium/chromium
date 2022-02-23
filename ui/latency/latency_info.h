@@ -5,11 +5,6 @@
 #ifndef UI_LATENCY_LATENCY_INFO_H_
 #define UI_LATENCY_LATENCY_INFO_H_
 
-#include <stdint.h>
-
-#include <map>
-#include <memory>
-#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -17,16 +12,15 @@
 #include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
-#include "ui/gfx/geometry/point_f.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "ipc/ipc_param_traits.h"  // nogncheck
 #include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #endif
 
 namespace ui {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 namespace mojom {
 class LatencyInfoDataView;
 }
@@ -62,8 +56,6 @@ enum LatencyComponentType {
   // This is special component indicating there is rendering scheduled for
   // the event associated with this LatencyInfo on impl thread.
   INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
-  // Original timestamp of the last event that has been coalesced into this one.
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
   // Timestamp when the frame is swapped in renderer.
   INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
   // Timestamp of when the display compositor receives a compositor frame from
@@ -96,8 +88,6 @@ enum class SourceEventType {
 
 class LatencyInfo {
  public:
-  enum : size_t { kMaxInputCoordinates = 2 };
-
   // Map a Latency Component (with a component-specific int64_t id) to a
   // timestamp.
   using LatencyMap = base::flat_map<LatencyComponentType, base::TimeTicks>;
@@ -128,9 +118,6 @@ class LatencyInfo {
       const std::vector<LatencyInfo>& latency_info,
       perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
 
-  // Copy timestamp with type |type| from |other| into |this|.
-  void CopyLatencyFrom(const LatencyInfo& other, LatencyComponentType type);
-
   // Add timestamps for components that are in |other| but not in |this|.
   void AddNewLatencyFrom(const LatencyInfo& other);
 
@@ -157,13 +144,6 @@ class LatencyInfo {
 
   void Terminate();
 
-  // When GestureScrollUpdate events are coalesced, update the aggregated
-  // event's scroll_update_delta and the SCROLL_UPDATE_LAST_EVENT_COMPONENT.
-  void CoalesceScrollUpdateWith(const LatencyInfo& other);
-
-  // Scale scroll_update_delta and predicted_scroll_update_delta.
-  LatencyInfo ScaledBy(float scale) const;
-
   const LatencyMap& latency_components() const { return latency_components_; }
 
   const SourceEventType& source_event_type() const {
@@ -181,14 +161,6 @@ class LatencyInfo {
   void set_trace_id(int64_t trace_id) { trace_id_ = trace_id; }
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
   void set_ukm_source_id(ukm::SourceId id) { ukm_source_id_ = id; }
-  void set_scroll_update_delta(float delta) { scroll_update_delta_ = delta; }
-  float scroll_update_delta() const { return scroll_update_delta_; }
-  void set_predicted_scroll_update_delta(float delta) {
-    predicted_scroll_update_delta_ = delta;
-  }
-  float predicted_scroll_update_delta() const {
-    return predicted_scroll_update_delta_;
-  }
   int64_t gesture_scroll_id() const { return gesture_scroll_id_; }
   void set_gesture_scroll_id(int64_t id) { gesture_scroll_id_ = id; }
   int64_t touch_trace_id() const { return touch_trace_id_; }
@@ -202,21 +174,18 @@ class LatencyInfo {
   LatencyMap latency_components_;
 
   // The unique id for matching the ASYNC_BEGIN/END trace event.
-  int64_t trace_id_;
+  int64_t trace_id_ = -1;
   // UKM Source id to be used for recording UKM metrics associated with this
   // event.
-  ukm::SourceId ukm_source_id_;
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
   // Whether this event has been coalesced into another event.
-  bool coalesced_;
+  bool coalesced_ = false;
   // Whether a begin component has been added.
-  bool began_;
+  bool began_ = false;
   // Whether a terminal component has been added.
-  bool terminated_;
+  bool terminated_ = false;
   // Stores the type of the first source event.
-  SourceEventType source_event_type_;
-
-  float scroll_update_delta_;
-  float predicted_scroll_update_delta_;
+  SourceEventType source_event_type_ = SourceEventType::UNKNOWN;
 
   // The unique id for denoting a scroll gesture. This is only set for
   // GestureScrollBegin, GestureScrollUpdate, and GestureScrollEnd events, and
@@ -224,13 +193,13 @@ class LatencyInfo {
   // scroll in the sql interface of TBMv3 (Trace Based Metrics v3). As a current
   // implementation detail this unique id comes from the |trace_id| of the
   // associated GestureScrollBegin (-1 if there was none or it wasn't valid).
-  int64_t gesture_scroll_id_;
+  int64_t gesture_scroll_id_ = 0;
   // The unique id for denoting a touch, tracking from TouchStart through
   // TouchMoves to TouchEnd. Used for TBMv3 metrics as in the same way as
   // gesture_scroll_id_.
-  int64_t touch_trace_id_;
+  int64_t touch_trace_id_ = 0;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   friend struct IPC::ParamTraits<ui::LatencyInfo>;
   friend struct mojo::StructTraits<ui::mojom::LatencyInfoDataView,
                                    ui::LatencyInfo>;

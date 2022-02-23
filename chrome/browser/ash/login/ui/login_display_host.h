@@ -84,6 +84,9 @@ class LoginDisplayHost {
   // Returns corresponding native window.
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
 
+  // Returns the current login window widget.
+  virtual views::Widget* GetLoginWindowWidget() const = 0;
+
   // Returns instance of the OOBE WebUI.
   virtual OobeUI* GetOobeUI() const = 0;
 
@@ -134,9 +137,6 @@ class LoginDisplayHost {
   // Starts sign in screen.
   virtual void StartSignInScreen() = 0;
 
-  // Invoked when system preferences that affect the signin screen have changed.
-  virtual void OnPreferencesChanged() = 0;
-
   // Start kiosk identified by `kiosk_app_id` splash screen. if `is_auto_launch`
   // is true, the app is being auto-launched with no delay.
   virtual void StartKiosk(const KioskAppId& kiosk_app_id,
@@ -149,6 +149,10 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
+  // Show allowlist check failed error. Happens after user completes online
+  // signin but allowlist check fails.
+  virtual void ShowAllowlistCheckFailedError() = 0;
+
   // Show the os install dialog.
   virtual void ShowOsInstallScreen() = 0;
 
@@ -156,7 +160,7 @@ class LoginDisplayHost {
   virtual void ShowGuestTosScreen() = 0;
 
   // Hide any visible oobe dialog.
-  virtual void HideOobeDialog() = 0;
+  virtual void HideOobeDialog(bool saml_video_timeout = false) = 0;
 
   // Sets whether shelf buttons are enabled.
   virtual void SetShelfButtonsEnabled(bool enabled) = 0;
@@ -247,6 +251,10 @@ class LoginDisplayHost {
 
   // Returns pointer to the WizardContext for tests.
   virtual WizardContext* GetWizardContextForTesting() = 0;
+
+  // Returns true if WebUI was created, which allows observers to wait for
+  // Browser initialization finish.
+  virtual bool IsWebUIStarted() const = 0;
 
  protected:
   LoginDisplayHost();

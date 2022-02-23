@@ -6,11 +6,12 @@
 
 #include <iterator>
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -184,8 +185,8 @@ class TestFileSystemAccessDirectoryEntriesListener
   }
 
  private:
-  std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_;
-  blink::mojom::FileSystemAccessErrorPtr* final_result_;
+  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_;
+  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_;
   base::OnceClosure done_;
 };
 }  // namespace
@@ -204,13 +205,13 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   for (const char* name : kUnsafeNames) {
     base::FilePath file_path = dir_.GetPath().AppendASCII(name);
     bool success = base::WriteFile(file_path, "data");
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // Some of the unsafe names are not legal file names on Windows. This is
     // okay, and doesn't materially effect the outcome of the test, so just
     // ignore any failures writing these files to disk.
     EXPECT_TRUE(success) << "Failed to create file " << file_path;
 #else
-    ignore_result(success);
+    std::ignore = success;
 #endif
   }
 

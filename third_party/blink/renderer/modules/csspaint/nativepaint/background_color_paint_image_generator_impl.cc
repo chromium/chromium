@@ -29,7 +29,7 @@ BackgroundColorPaintImageGeneratorImpl::BackgroundColorPaintImageGeneratorImpl(
     : background_color_paint_definition_(background_color_paint_definition) {}
 
 scoped_refptr<Image> BackgroundColorPaintImageGeneratorImpl::Paint(
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,

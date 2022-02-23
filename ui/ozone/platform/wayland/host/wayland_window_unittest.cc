@@ -20,10 +20,10 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -35,14 +35,17 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
+#include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
@@ -51,7 +54,6 @@
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
-#include "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window.h"
@@ -804,8 +806,16 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 }
 
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
+  // Real insets used by default on HiDPI.
+  const auto kInsets = gfx::Insets{38, 44, 55, 44};
+  const auto kNormalBounds = window_->GetBounds();
+
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
-  auto normal_bounds = window_->GetBounds();
+
+  // Set nonzero insets and ensure that they are only used when the window has
+  // normal state.
+  // See https://crbug.com/1274629
+  window_->SetDecorationInsets(&kInsets);
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
   AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED, states.get());
@@ -827,8 +837,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 
@@ -849,8 +862,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 
@@ -881,8 +897,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 }
@@ -1174,7 +1193,7 @@ TEST_P(WaylandWindowTest, CanDispatchMouseEventFocus) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
   EXPECT_TRUE(window_->CanDispatchEvent(&test_mouse_event_));
 }
@@ -1190,26 +1209,26 @@ TEST_P(WaylandWindowTest, SetCursorUsesZcrCursorShapesForCommonTypes) {
   // Verify some commonly-used cursors.
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_POINTER));
-  auto pointer_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+  auto pointer_cursor = base::MakeRefCounted<BitmapCursor>(
       mojom::CursorType::kPointer, kDefaultCursorScale);
   window_->SetCursor(pointer_cursor.get());
 
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_HAND));
-  auto hand_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+  auto hand_cursor = base::MakeRefCounted<BitmapCursor>(
       mojom::CursorType::kHand, kDefaultCursorScale);
   window_->SetCursor(hand_cursor.get());
 
   EXPECT_CALL(*mock_cursor_shapes,
               SetCursorShape(ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_IBEAM));
-  auto ibeam_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+  auto ibeam_cursor = base::MakeRefCounted<BitmapCursor>(
       mojom::CursorType::kIBeam, kDefaultCursorScale);
   window_->SetCursor(ibeam_cursor.get());
 }
 
 TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
   MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
-  auto hand_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+  auto hand_cursor = base::MakeRefCounted<BitmapCursor>(
       mojom::CursorType::kHand, kDefaultCursorScale);
   // Setting the same cursor twice on the client only calls the server once.
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(1);
@@ -1220,7 +1239,7 @@ TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
 TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForNoneCursor) {
   MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
-  auto none_cursor = base::MakeRefCounted<BitmapCursorOzone>(
+  auto none_cursor = base::MakeRefCounted<BitmapCursor>(
       mojom::CursorType::kNone, kDefaultCursorScale);
   window_->SetCursor(none_cursor.get());
 }
@@ -1230,9 +1249,9 @@ TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForCustomCursors) {
 
   // Custom cursors require bitmaps, so they do not use server-side cursors.
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
-  auto custom_cursor = base::MakeRefCounted<BitmapCursorOzone>(
-      mojom::CursorType::kCustom, SkBitmap(), gfx::Point(),
-      kDefaultCursorScale);
+  auto custom_cursor =
+      base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kCustom, SkBitmap(),
+                                         gfx::Point(), kDefaultCursorScale);
   window_->SetCursor(custom_cursor.get());
 }
 
@@ -1329,7 +1348,7 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
       server_.seat()->resource(),
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
   Sync();
-  ASSERT_TRUE(connection_->pointer() && connection_->touch());
+  ASSERT_TRUE(connection_->seat()->pointer() && connection_->seat()->touch());
   window_->SetPointerFocus(true);
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -1399,7 +1418,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Make sure the events are handled by the window that has the pointer focus.
@@ -1523,7 +1542,7 @@ TEST_P(WaylandWindowTest,
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Make sure the events are handled by the window that has the pointer focus.
@@ -1588,7 +1607,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_KEYBOARD);
   Sync();
-  ASSERT_TRUE(connection_->keyboard());
+  ASSERT_TRUE(connection_->seat()->keyboard());
   menu_window->set_keyboard_focus(true);
 
   // Even though the menu window has the keyboard focus, the keyboard events are
@@ -1656,9 +1675,9 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
                                 WL_SEAT_CAPABILITY_KEYBOARD |
                                 WL_SEAT_CAPABILITY_TOUCH);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
-  ASSERT_TRUE(connection_->touch());
-  ASSERT_TRUE(connection_->keyboard());
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
+  ASSERT_TRUE(connection_->seat()->keyboard());
 
   uint32_t serial = 0;
 
@@ -1753,7 +1772,7 @@ TEST_P(WaylandWindowTest, DispatchWindowMove) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
 
   // Focus and press left mouse button, so that serial is sent to client.
   auto* pointer_resource = server_.seat()->pointer()->resource();
@@ -1776,7 +1795,7 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
 
   auto* pointer_resource = server_.seat()->pointer()->resource();
   wl_pointer_send_enter(pointer_resource, 1, surface_->resource(), 0, 0);
@@ -2594,13 +2613,14 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_popup());
 }
 
-TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
+TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
   buffer_manager_gpu_->Initialize(
       std::move(interface_ptr), {}, false, true, false,
-      /*supports_non_backed_solid_color_buffers*/ false);
+      /*supports_non_backed_solid_color_buffers*/ false,
+      /*supports_subpixel_accurate_position*/ false);
 
   // Setup wl_buffers.
   constexpr uint32_t buffer_id1 = 1;
@@ -2639,6 +2659,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   background->transform = gfx::OVERLAY_TRANSFORM_NONE;
   background->buffer_id = buffer_id1;
   background->surface_scale_factor = 1;
+  background->opacity = 1.f;
   overlays.push_back(std::move(background));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
   mock_surface->SendFrameCallback();
@@ -2647,20 +2668,20 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
 
   EXPECT_NE(mock_surface->attached_buffer(), nullptr);
 
-  // Hiding window attaches a nil wl_buffer as background.
   window->Hide();
   mock_surface->SendFrameCallback();
 
   Sync();
 
-  EXPECT_EQ(mock_surface->attached_buffer(), nullptr);
-
-  mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
+  mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
   window->Show(false);
 
   Sync();
 
   SendConfigureEvent(mock_surface->xdg_surface(), 100, 100, 2, states.get());
+
+  // Expects to receive an attach request on next frame.
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
 
   // Commit a frame with only the primary_plane.
   overlays.clear();
@@ -2670,6 +2691,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   primary->transform = gfx::OVERLAY_TRANSFORM_NONE;
   primary->buffer_id = buffer_id2;
   primary->surface_scale_factor = 1;
+  primary->opacity = 1.f;
   overlays.push_back(std::move(primary));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
 
@@ -2954,7 +2976,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Emulate a root menu creation with no serial available and ensure
@@ -3011,42 +3033,98 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   Sync();
 }
 
-TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
-  VerifyAndClearExpectations();
+namespace {
 
-  std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-      gfx::Rect(0, 0, 640, 480), &delegate_);
-  EXPECT_TRUE(window);
+class WaylandSubsurfaceTest : public WaylandWindowTest {
+ public:
+  WaylandSubsurfaceTest() = default;
+  ~WaylandSubsurfaceTest() override = default;
 
-  gfx::Rect subsurface_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
-  bool result = window->RequestSubsurface();
-  EXPECT_TRUE(result);
+ protected:
+  void OneWaylandSubsurfaceTestHelper(
+      const gfx::RectF& subsurface_bounds,
+      const gfx::RectF& expected_subsurface_bounds) {
+    VerifyAndClearExpectations();
 
-  WaylandSubsurface* wayland_subsurface =
-      window->wayland_subsurfaces().begin()->get();
+    std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
+        PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
+        gfx::Rect(0, 0, 640, 480), &delegate_);
+    EXPECT_TRUE(window);
 
-  Sync();
+    bool result = window->RequestSubsurface();
+    EXPECT_TRUE(result);
 
-  auto* mock_surface_root_window = server_.GetObject<wl::MockSurface>(
-      window->root_surface()->GetSurfaceId());
-  auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
-      wayland_subsurface->wayland_surface()->GetSurfaceId());
-  EXPECT_TRUE(mock_surface_subsurface);
-  wayland_subsurface->ConfigureAndShowSurface(
-      subsurface_bounds, gfx::Rect(0, 0, 640, 480) /*parent_bounds_px*/,
-      1.f /*buffer_scale*/, nullptr, nullptr);
-  connection_->ScheduleFlush();
+    WaylandSubsurface* wayland_subsurface =
+        window->wayland_subsurfaces().begin()->get();
 
-  Sync();
+    Sync();
 
-  auto* test_subsurface = mock_surface_subsurface->sub_surface();
-  EXPECT_TRUE(test_subsurface);
-  auto* parent_resource = mock_surface_root_window->resource();
-  EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
+    auto* mock_surface_root_window = server_.GetObject<wl::MockSurface>(
+        window->root_surface()->GetSurfaceId());
+    auto* mock_surface_subsurface = server_.GetObject<wl::MockSurface>(
+        wayland_subsurface->wayland_surface()->GetSurfaceId());
+    EXPECT_TRUE(mock_surface_subsurface);
+    wayland_subsurface->ConfigureAndShowSurface(
+        subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
+        1.f /*buffer_scale*/, nullptr, nullptr);
+    connection_->ScheduleFlush();
 
-  EXPECT_EQ(test_subsurface->position(), subsurface_bounds.origin());
-  EXPECT_TRUE(test_subsurface->sync());
+    Sync();
+
+    auto* test_subsurface = mock_surface_subsurface->sub_surface();
+    EXPECT_TRUE(test_subsurface);
+    auto* parent_resource = mock_surface_root_window->resource();
+    EXPECT_EQ(parent_resource, test_subsurface->parent_resource());
+
+    // The conversion from double to fixed and back is necessary because it
+    // happens during the roundtrip, and it creates significant error.
+    gfx::PointF expected_position(wl_fixed_to_double(wl_fixed_from_double(
+                                      expected_subsurface_bounds.x())),
+                                  wl_fixed_to_double(wl_fixed_from_double(
+                                      expected_subsurface_bounds.y())));
+    EXPECT_EQ(test_subsurface->position(), expected_position);
+    EXPECT_TRUE(test_subsurface->sync());
+  }
+};
+
+}  // namespace
+
+// Tests integer and non integer size/position support with and without surface
+// augmenter.
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceInteger) {
+  ASSERT_FALSE(connection_->surface_augmenter());
+
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
+       gfx::RectF({16, 16}, {11, 11})},
+      {gfx::RectF({7.041, 8.583}, {13.452, 20.231}),
+       gfx::RectF({7.041, 8.583}, {13.452, 20.231})}};
+
+  for (const auto& item : test_data) {
+    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
+                                   item[1] /* expected_subsurface_bounds */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  };
+}
+
+TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceNonInteger) {
+  ASSERT_FALSE(connection_->surface_augmenter());
+
+  constexpr gfx::RectF test_data[2][2] = {
+      {gfx::RectF({15, 15}, {10, 10}), gfx::RectF({15, 15}, {10, 10})},
+      {gfx::RectF({7, 8}, {16, 18}), gfx::RectF({7, 8}, {16, 18})}};
+
+  for (const auto& item : test_data) {
+    OneWaylandSubsurfaceTestHelper(item[0] /* subsurface_bounds */,
+                                   item[1] /* expected_subsurface_bounds */);
+
+    // Initialize the surface augmenter now.
+    InitializeSurfaceAugmenter();
+    ASSERT_TRUE(connection_->surface_augmenter());
+  }
 }
 
 // Tests that WaylandPopups can be repositioned.
@@ -3157,5 +3235,14 @@ INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{
                              .shell_version = wl::ShellVersion::kV6}));
+
+INSTANTIATE_TEST_SUITE_P(XdgVersionV6Test,
+                         WaylandSubsurfaceTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kV6}));
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         WaylandSubsurfaceTest,
+                         Values(wl::ServerConfig{
+                             .shell_version = wl::ShellVersion::kStable}));
 
 }  // namespace ui

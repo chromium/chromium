@@ -11,6 +11,8 @@
 #include "base/time/clock.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace ash {
+
 namespace {
 
 // Delay to wait for a response to our geolocation request, if we get a response
@@ -162,3 +164,5 @@ void NightLightClient::RequestGeoposition() {
       false /* send_cell_towers */,
       base::BindOnce(&NightLightClient::OnGeoposition, base::Unretained(this)));
 }
+
+}  // namespace ash

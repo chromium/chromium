@@ -25,7 +25,7 @@
 #include "weblayer/browser/translate_accept_languages_factory.h"
 #include "weblayer/browser/translate_ranker_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/infobars/content/content_infobar_manager.h"
 #include "weblayer/browser/translate_compact_infobar.h"
 #endif
@@ -55,8 +55,8 @@ std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
 
 TranslateClientImpl::TranslateClientImpl(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<TranslateClientImpl>(*web_contents),
       translate_driver_(*web_contents,
-                        &web_contents->GetController(),
                         /*url_language_histogram=*/nullptr,
                         /*translate_model_service=*/nullptr),
       translate_manager_(new translate::TranslateManager(
@@ -80,7 +80,7 @@ bool TranslateClientImpl::ShowTranslateUI(
     const std::string& target_language,
     translate::TranslateErrors::Type error_type,
     bool triggered_from_menu) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (error_type != translate::TranslateErrors::NONE)
     step = translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   translate::TranslateInfoBarDelegate::Create(
@@ -120,7 +120,7 @@ TranslateClientImpl::GetTranslateAcceptLanguages() {
       web_contents()->GetBrowserContext());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<infobars::InfoBar> TranslateClientImpl::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
   return std::make_unique<TranslateCompactInfoBar>(std::move(delegate));

@@ -4,11 +4,14 @@
 
 #include "extensions/browser/extensions_browser_client.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 
 namespace extensions {
 
@@ -45,10 +48,9 @@ ExtensionsBrowserClient::CreateUpdateClient(content::BrowserContext* context) {
   return scoped_refptr<update_client::UpdateClient>(nullptr);
 }
 
-std::unique_ptr<content::BluetoothChooser>
-ExtensionsBrowserClient::CreateBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+ExtensionsBrowserClient::CreateUpdaterKeepAlive(
+    content::BrowserContext* context) {
   return nullptr;
 }
 
@@ -127,5 +129,10 @@ bool ExtensionsBrowserClient::IsValidTabId(content::BrowserContext* context,
                                            int tab_id) const {
   return false;
 }
+
+void ExtensionsBrowserClient::NotifyExtensionApiTabExecuteScript(
+    content::BrowserContext* context,
+    const ExtensionId& extension_id,
+    const std::string& code) const {}
 
 }  // namespace extensions

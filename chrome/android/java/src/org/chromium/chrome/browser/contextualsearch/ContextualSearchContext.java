@@ -50,8 +50,8 @@ public abstract class ContextualSearchContext {
     // The offset of an initial Tap gesture within the text content.
     private int mTapOffset = INVALID_OFFSET;
 
-    // The initial word selected by a Tap, or null.
-    private String mInitialSelectedWord;
+    // The selection being resolved, or null if no resolve has started.
+    private String mSelectionBeingResolved;
 
     // The original encoding of the base page.
     private String mEncoding;
@@ -166,13 +166,30 @@ public abstract class ContextualSearchContext {
                 && !hasAnalyzedTap()) {
             analyzeTap(startOffset);
         }
-        // Notify of an initial selection if it's not empty.
+        // Notify of a changed selection if it's not empty.
         if (endOffset > startOffset) {
-            updateInitialSelectedWord();
             onSelectionChanged();
         }
         // Detect the language of the surroundings or the selection.
         setTranslationLanguages(getDetectedLanguage(), mTargetLanguage, mFluentLanguages);
+    }
+
+    /**
+     * Sets the surrounding text and the selection range to the given params, and pushes them
+     * down to the native layer.
+     * @param surroundingText The complete text string to use as the context of the search, which
+     *        surrounds the selection.
+     * @param startOffset The offset from the beginning of the surrounding text to the start of the
+     *        selection (in characters).
+     * @param endOffset The offset from the beginning of the surrounding text to the end of the
+     *        selection (in characters).
+     */
+    void setSurroundingsAndSelection(String surroundingText, int startOffset, int endOffset) {
+        mSurroundingText = surroundingText;
+        mSelectionStartOffset = startOffset;
+        mSelectionEndOffset = endOffset;
+        ContextualSearchContextJni.get().setSurroundingsAndSelection(
+                mNativePointer, this, surroundingText, startOffset, endOffset);
     }
 
     /**
@@ -214,10 +231,12 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * @return The initial word selected by a Tap.
+     * @return The selection being resolved, or {@code null} if no resolve has been
+     * requested.
      */
-    String getInitialSelectedWord() {
-        return mInitialSelectedWord;
+    @Nullable
+    String getSelectionBeingResolved() {
+        return mSelectionBeingResolved;
     }
 
     /**
@@ -250,6 +269,7 @@ public abstract class ContextualSearchContext {
      *        be requested.
      */
     void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
+        mSelectionBeingResolved = getCurrentSelection();
         mRelatedSearchesStamp = relatedSearchesStamp;
         ContextualSearchContextJni.get().prepareToResolve(
                 mNativePointer, this, isExactSearch, relatedSearchesStamp);
@@ -266,25 +286,19 @@ public abstract class ContextualSearchContext {
         // Fully track the selection as it changes.
         mSelectionStartOffset += startAdjust;
         mSelectionEndOffset += endAdjust;
-        updateInitialSelectedWord();
         ContextualSearchContextJni.get().adjustSelection(
                 getNativePointer(), this, startAdjust, endAdjust);
         // Notify of changes.
         onSelectionChanged();
     }
 
-    /** Updates the initial selected word if it has not yet been set. */
-    private void updateInitialSelectedWord() {
-        if (TextUtils.isEmpty(mInitialSelectedWord) && !TextUtils.isEmpty(mSurroundingText)) {
-            // TODO(donnd): investigate the root cause of crbug.com/725027 that requires this
-            // additional validation to prevent this substring call from crashing!
-            if (mSelectionEndOffset < mSelectionStartOffset || mSelectionStartOffset < 0
-                    || mSelectionEndOffset > mSurroundingText.length()) {
-                return;
-            }
-            mInitialSelectedWord =
-                    mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
+    /** Returns the current selection, or an empty string if there is no valid selection. */
+    private String getCurrentSelection() {
+        if (TextUtils.isEmpty(mSurroundingText) || mSelectionEndOffset < mSelectionStartOffset
+                || mSelectionStartOffset < 0 || mSelectionEndOffset > mSurroundingText.length()) {
+            return "";
         }
+        return mSurroundingText.substring(mSelectionStartOffset, mSelectionEndOffset);
     }
 
     /** @return the current selection, or an empty string if data is invalid or nothing selected. */
@@ -579,5 +593,8 @@ public abstract class ContextualSearchContext {
                 String fluentLanguages);
         void prepareToResolve(long nativeContextualSearchContext, ContextualSearchContext caller,
                 boolean isExactSearch, String relatedSearchesStamp);
+        void setSurroundingsAndSelection(long nativeContextualSearchContext,
+                ContextualSearchContext caller, String surroundings, int startOffset,
+                int endOffset);
     }
 }

@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 namespace {
@@ -29,7 +29,7 @@ TEST_F(ImageDataTest, CreateImageDataTooBig) {
 
 TEST_F(ImageDataTest, ImageDataTooBigToAllocateDoesNotCrash) {
   ImageData* image_data = ImageData::CreateForTest(
-      IntSize(1, (v8::TypedArray::kMaxLength / 4) + 1));
+      gfx::Size(1, (v8::TypedArray::kMaxLength / 4) + 1));
   EXPECT_EQ(image_data, nullptr);
 }
 

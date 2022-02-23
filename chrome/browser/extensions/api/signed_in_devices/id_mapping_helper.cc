@@ -76,7 +76,7 @@ void CreateMappingForUnmappedDevices(
     // If the device does not have a local id, set one.
     if (local_id.empty()) {
       local_id = GetRandomId(*value, device_info.size());
-      value->SetString(local_id, device->guid());
+      value->SetStringKey(local_id, device->guid());
     }
     device->set_public_id(local_id);
   }

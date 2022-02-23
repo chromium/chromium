@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+// Feature for session-only data deletion on startup.
+
+#include "chrome/browser/browser_switcher/browser_switcher_features.h"
+
+// A kill-switch for the <open-in>None behavior change made in M99, in
+// IeemSitelistParser. This makes it easy to revert the change if we break
+// a customer.
+//
+// TODO(crbug.com/1282233): Remove this flag once we're confident this
+// doesn't break customers.
+extern const base::Feature kBrowserSwitcherNoneIsGreylist{
+    "BrowserSwitcherNoneIsGreylist", base::FEATURE_DISABLED_BY_DEFAULT};

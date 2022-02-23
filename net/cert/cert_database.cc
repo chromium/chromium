@@ -6,6 +6,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/observer_list_threadsafe.h"
+#include "build/build_config.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
 
@@ -41,7 +42,7 @@ CertDatabase::CertDatabase()
     : observer_list_(new base::ObserverListThreadSafe<Observer>) {}
 
 CertDatabase::~CertDatabase() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ReleaseNotifier();
 #endif
 }

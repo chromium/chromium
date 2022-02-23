@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"

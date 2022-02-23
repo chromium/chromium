@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATER_CONFIGURATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/component_updater/configurator_impl.h"
@@ -16,6 +17,7 @@
 #include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/unzipper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -40,7 +42,6 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -52,7 +53,6 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -60,6 +60,8 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
+  update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
 
  protected:
   friend class base::RefCountedThreadSafe<AwComponentUpdaterConfigurator>;
@@ -67,7 +69,8 @@ class AwComponentUpdaterConfigurator : public update_client::Configurator {
 
  private:
   component_updater::ConfiguratorImpl configurator_impl_;
-  PrefService* pref_service_;  // This member is not owned by this class.
+  raw_ptr<PrefService>
+      pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

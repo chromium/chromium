@@ -59,11 +59,11 @@
 #include "sql/database.h"
 #include "sql/sql_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/features.h"
 #endif
 
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
   ASSERT_EQ(headers->response_code(), 401);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
                        HttpCacheWrittenToDiskOnApplicationStateChange) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -508,77 +508,6 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, SyncCookieGetOnCrash) {
   // If the renderer is hung the test will hang.
 }
 
-int64_t GetFirstPartySetCountFromNetworkService() {
-  DCHECK(!content::IsInProcessNetworkService());
-
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
-  network_service_test.FlushForTesting();
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-
-  int64_t count = 0;
-  EXPECT_TRUE(network_service_test->GetFirstPartySetEntriesCount(&count));
-
-  return count;
-}
-
-class NetworkServiceWithFirstPartySetBrowserTest
-    : public NetworkServiceBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NetworkServiceBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        "https://example.com,https://member1.com,https://member2.com");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(NetworkServiceWithFirstPartySetBrowserTest,
-                       GetsUseFirstPartySetSwitch) {
-  if (IsInProcessNetworkService())
-    return;
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 3);
-
-  SimulateNetworkServiceCrash();
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 3);
-}
-
-class NetworkServiceWithoutFirstPartySetBrowserTest
-    : public NetworkServiceBrowserTest {
- public:
-  NetworkServiceWithoutFirstPartySetBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Supplying this switch should not enable the feature, since the feature
-    // was explicitly disabled.
-    NetworkServiceBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
-        "https://example.com,https://member1.com,https://member2.com");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NetworkServiceWithoutFirstPartySetBrowserTest,
-                       GetsEnableFirstPartySetsSwitch) {
-  if (IsInProcessNetworkService())
-    return;
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
-
-  SimulateNetworkServiceCrash();
-
-  EXPECT_EQ(GetFirstPartySetCountFromNetworkService(), 0);
-}
-
 // Tests that CORS is performed by the network service when |factory_override|
 // is used.
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
@@ -604,7 +533,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
         response->headers->SetHeader("access-control-allow-origin",
                                      "https://www2.example.com");
         response->headers->SetHeader("access-control-allow-methods", "*");
-        client->OnReceiveResponse(std::move(response));
+        client->OnReceiveResponse(std::move(response),
+                                  mojo::ScopedDataPipeConsumerHandle());
       } else if (resource_request.method == "custom-method") {
         has_received_request_ = true;
         auto response = network::mojom::URLResponseHead::New();
@@ -612,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
             "HTTP/1.1 202 Accepted");
         response->headers->SetHeader("access-control-allow-origin",
                                      "https://www2.example.com");
-        client->OnReceiveResponse(std::move(response));
+        client->OnReceiveResponse(std::move(response),
+                                  mojo::ScopedDataPipeConsumerHandle());
         client->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       } else {
         client->OnComplete(
@@ -682,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
 // Android doesn't support PRE_ tests.
 // TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
 // TODO(crbug.com/1266222): Fix disk cache error on Fuchsia
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceBrowserCacheResetTest() = default;
@@ -836,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
                                            /*load_only_from_cache=*/true, url),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 enum class FailureType {
   kNoFailures = 0,
@@ -848,7 +779,7 @@ enum class FailureType {
   // A file called 'TestCookies' already exists in the migration target
   // directory.
   kCookieFileAlreadyThere = 3,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The 'TestCookies' file in the destination directory is locked and cannot be
   // written to. This is only valid on Windows where files can actually be
   // locked.
@@ -857,7 +788,7 @@ enum class FailureType {
   // from (during the migration). This failure is only valid on Windows where
   // files can actually be locked.
   kSourceCookieFileIsLocked = 5,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   // A file exists with the same name as the Cache dir. This will cause the
   // creation of the cache dir to fail, and cache to not function either
   // (although we don't test for that here).
@@ -869,10 +800,10 @@ static const FailureType kFailureTypes[] = {
     FailureType::kDirIsAFile,
     FailureType::kDirAlreadyThere,
     FailureType::kCookieFileAlreadyThere,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     FailureType::kDestCookieFileIsLocked,
     FailureType::kSourceCookieFileIsLocked,
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     FailureType::kCacheDirIsAFile};
 
 static const base::FilePath::CharType kCookieDatabaseName[] =
@@ -889,7 +820,7 @@ class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
     // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
     EXPECT_FALSE(
         base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, the network sandbox needs to be disabled. This is because the
     // code that performs the migration on Windows DCHECKs if network sandbox is
     // enabled and migration is not requested, but this is used in the tests to
@@ -902,7 +833,7 @@ class NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  protected:
   bool in_process_network_service_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
  private:
   base::test::ScopedFeatureList win_network_sandbox_feature_;
 #endif
@@ -1003,7 +934,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
 
   // Verify cookie file is there, copied across from the tempdir 'one'.
   EXPECT_TRUE(base::PathExists(tempdir_two.Append(kCookieDatabaseName)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::File longer_lived_file;
 #endif
 
@@ -1030,7 +961,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
           base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
       EXPECT_TRUE(scoped_file.IsValid());
     } break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case FailureType::kDestCookieFileIsLocked:
       // Create a file called 'TestCookies' in the destination path and hold a
       // write lock on it so it can't be written to.
@@ -1038,8 +969,8 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file = base::File(
           tempdir_two.Append(kNetworkSubpath).Append(kCookieDatabaseName),
           base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-              base::File::FLAG_EXCLUSIVE_WRITE |
-              base::File::FLAG_EXCLUSIVE_READ);
+              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+              base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
     case FailureType::kSourceCookieFileIsLocked:
@@ -1050,11 +981,11 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       longer_lived_file =
           base::File(tempdir_two.Append(kCookieDatabaseName),
                      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-                         base::File::FLAG_EXCLUSIVE_WRITE |
-                         base::File::FLAG_EXCLUSIVE_READ);
+                         base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                         base::File::FLAG_WIN_EXCLUSIVE_READ);
       EXPECT_TRUE(longer_lived_file.IsValid());
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     case FailureType::kCacheDirIsAFile: {
       // Make the cache directory invalid by deleting it and making it a file,
       // so it can't be created or used.
@@ -1131,7 +1062,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
           /*sample=kFailedToCreateDataDirectory=*/2,
           /*expected_bucket_count=*/1);
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case FailureType::kDestCookieFileIsLocked:
       // Cookie file should still be in the original `unsandboxed_data_path` as
       // it could not be moved as the destination was locked or not writable.
@@ -1174,7 +1105,7 @@ void MigrationTestInternal(const base::FilePath& tempdir_one,
       // totally broken. :(
       cookies_should_work = false;
       break;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     case FailureType::kCacheDirIsAFile:
       histogram_tester.ExpectUniqueSample(
           "NetworkService.GrantSandboxToCacheResult",

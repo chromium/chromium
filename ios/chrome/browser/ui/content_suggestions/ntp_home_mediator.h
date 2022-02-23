@@ -32,7 +32,7 @@ class ChromeAccountManagerService;
 @class NewTabPageViewController;
 @protocol NTPHomeConsumer;
 @class NTPHomeMetrics;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 @protocol OmniboxCommands;
 class TemplateURLService;
 @protocol SnackbarCommands;
@@ -65,16 +65,8 @@ class VoiceSearchAvailability;
         dispatcher;
 // Recorder for the metrics related to the NTP.
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
-// Recorder for the metrics related to the Discover feed.
-@property(nonatomic, strong) DiscoverFeedMetricsRecorder* discoverFeedMetrics;
-// Primary collection view controller that receives scroll events.
-// In the refactored NTP, the Discover feed collection view behaves as the
-// primary NTP scroll view. Otherwise, the content suggestions collection view
-// becomes the main NTP scroll view.
-// TODO(crbug.com/1114792): Change this comment to remove the mention of the
-// refactored NTP.
-@property(nonatomic, weak) id<ContentSuggestionsCollectionControlling>
-    primaryViewController;
+// Recorder for the metrics related to the feed.
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 // View Controller for the NTP if using the non refactored NTP or the Feed is
 // not visible.
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update

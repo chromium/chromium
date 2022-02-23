@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/public/mojom/mtp_file_entry.mojom.h"

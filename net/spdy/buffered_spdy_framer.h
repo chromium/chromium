@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -248,7 +248,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
  private:
   spdy::SpdyFramer spdy_framer_;
   http2::Http2DecoderAdapter deframer_;
-  BufferedSpdyFramerVisitorInterface* visitor_;
+  raw_ptr<BufferedSpdyFramerVisitorInterface> visitor_;
 
   int frames_received_ = 0;
 

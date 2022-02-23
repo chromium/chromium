@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -73,7 +74,7 @@ class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
   }
 
  private:
-  content::RenderFrameHost* const frame_;
+  const raw_ptr<content::RenderFrameHost> frame_;
   content::RenderWidgetHost::KeyPressEventCallback callback_;
 };
 
@@ -127,25 +128,25 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
       password_selected_(false),
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
   // There may not always be a ZoomController, e.g. in tests.
   if (zoom_controller)
     zoom_controller->AddObserver(this);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   help_text_ = l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
 }
 
 PasswordGenerationPopupControllerImpl::
     ~PasswordGenerationPopupControllerImpl() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents());
   if (zoom_controller)
     zoom_controller->RemoveObserver(this);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::WeakPtr<PasswordGenerationPopupControllerImpl>
@@ -219,7 +220,7 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   state_ = state;
 
   if (!view_) {
-    view_ = PasswordGenerationPopupView::Create(this);
+    view_ = PasswordGenerationPopupView::Create(GetWeakPtr());
 
     // Treat popup as being hidden if creation fails.
     if (!view_) {
@@ -282,12 +283,12 @@ void PasswordGenerationPopupControllerImpl::DidFinishNavigation(
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void PasswordGenerationPopupControllerImpl::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideImpl();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PasswordGenerationPopupControllerImpl::Hide(PopupHidingReason) {
   HideImpl();

@@ -9,7 +9,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/common/extensions/api/printing.h"
 
-namespace proto = chromeos::printing::proto;
+namespace proto = ::ash::printing::proto;
 
 namespace extensions {
 

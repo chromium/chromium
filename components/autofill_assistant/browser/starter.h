@@ -9,13 +9,14 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/starter_heuristic.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
@@ -34,7 +35,7 @@ class Starter : public content::WebContentsObserver {
   explicit Starter(content::WebContents* web_contents,
                    StarterPlatformDelegate* platform_delegate,
                    ukm::UkmRecorder* ukm_recorder,
-                   base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+                   base::WeakPtr<RuntimeManager> runtime_manager,
                    const base::TickClock* tick_clock);
   ~Starter() override;
   Starter(const Starter&) = delete;
@@ -140,6 +141,10 @@ class Starter : public content::WebContentsObserver {
   // |trigger_script_coordinator_|.
   TriggerContext* GetPendingTriggerContext() const;
 
+  // Registers the synthetic field trials for triggering and experiments.
+  void RegisterSyntheticFieldTrials(
+      const TriggerContext& trigger_context) const;
+
   // The UKM source id to use for UKM metrics.
   ukm::SourceId current_ukm_source_id_ = ukm::kInvalidSourceId;
 
@@ -151,7 +156,7 @@ class Starter : public content::WebContentsObserver {
   // This cache is shared across all tabs. It is size-limited and entries only
   // last for a limited amount of time before they go stale. Made available in
   // the header for easier unit-testing.
-  base::HashingLRUCache<std::string, base::TimeTicks>*
+  raw_ptr<base::HashingLRUCache<std::string, base::TimeTicks>>
       cached_failed_trigger_script_fetches_;
 
   // The list of organization-identifying domains that a user has temporarily
@@ -170,14 +175,14 @@ class Starter : public content::WebContentsObserver {
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
-  StarterPlatformDelegate* const platform_delegate_;
-  ukm::UkmRecorder* ukm_recorder_ = nullptr;
-  base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
+  const raw_ptr<StarterPlatformDelegate> platform_delegate_;
+  raw_ptr<ukm::UkmRecorder> ukm_recorder_ = nullptr;
+  base::WeakPtr<RuntimeManager> runtime_manager_;
   bool fetch_trigger_scripts_on_navigation_ = false;
   std::unique_ptr<TriggerContext> pending_trigger_context_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
   const scoped_refptr<StarterHeuristic> starter_heuristic_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
   base::WeakPtrFactory<Starter> weak_ptr_factory_{this};
 };
 

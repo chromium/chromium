@@ -20,7 +20,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_commands.h"
 #endif
 
@@ -251,6 +251,10 @@ class DownloadUIModel {
   // and so can't give an estimate.
   virtual bool TimeRemaining(base::TimeDelta* remaining) const;
 
+  // Returns the end/completion time for a completed download. base::Time()
+  // if the download has not completed yet.
+  virtual base::Time GetEndTime() const;
+
   // Returns true if the download has been opened.
   virtual bool GetOpened() const;
 
@@ -315,7 +319,7 @@ class DownloadUIModel {
   // security reasons.
   virtual bool ShouldPromoteOrigin() const;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Methods related to DownloadCommands.
   // Returns whether the given download command is enabled for this download.
   virtual bool IsCommandEnabled(const DownloadCommands* download_commands,

@@ -51,8 +51,7 @@ struct CheckedAddOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedAddFastOp<T, U>::is_supported)
+    if constexpr (CheckedAddFastOp<T, U>::is_supported)
       return CheckedAddFastOp<T, U>::Do(x, y, result);
 
     // Double the underlying type up to a full machine word.
@@ -115,8 +114,7 @@ struct CheckedSubOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedSubFastOp<T, U>::is_supported)
+    if constexpr (CheckedSubFastOp<T, U>::is_supported)
       return CheckedSubFastOp<T, U>::Do(x, y, result);
 
     // Double the underlying type up to a full machine word.
@@ -181,8 +179,7 @@ struct CheckedMulOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedMulFastOp<T, U>::is_supported)
+    if constexpr (CheckedMulFastOp<T, U>::is_supported)
       return CheckedMulFastOp<T, U>::Do(x, y, result);
 
     using Promotion = typename FastIntegerArithmeticPromotion<T, U>::type;
@@ -334,7 +331,7 @@ struct CheckedRshOp<T,
                                             std::is_integral<U>::value>::type> {
   using result_type = T;
   template <typename V>
-  static bool Do(T x, U shift, V* result) {
+  static constexpr bool Do(T x, U shift, V* result) {
     // Use sign conversion to push negative values out of range.
     if (BASE_NUMERICS_UNLIKELY(as_unsigned(shift) >=
                                IntegerBitsPlusSign<T>::value)) {
@@ -564,7 +561,7 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
 
   constexpr bool is_valid() const {
     // Written this way because std::isfinite is not reliably constexpr.
-    return MustTreatAsConstexpr(value_)
+    return IsConstantEvaluated()
                ? value_ <= std::numeric_limits<T>::max() &&
                      value_ >= std::numeric_limits<T>::lowest()
                : std::isfinite(value_);

@@ -19,6 +19,10 @@ How-tos:
 Related:
   * [WebAppProvider README.md](/chrome/browser/web_applications/README.md)
 
+## When to add integration tests?
+A web app feature should have unit tests and browsertests that focus on testing the specific feature itself, the browsertests are capable of testing all the edgecases of the particular feature.
+If a feature affects user-facing flows in any ways, integration tests should also be added to cover updates to web apps' critical user journeys.  They wouldn't be as detailed as the browsertests that focus on all the way you can use the particular code component, but rather aim to cover the major ways users interact with the new feature.
+
 ## Future Work
 
 * Allowing parameterized state-check actions.

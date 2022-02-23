@@ -32,17 +32,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 
-#include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
+#include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "v8/include/v8.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-maybe.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 
@@ -345,7 +353,17 @@ enum class NamedPropertyDeleterResult {
 // Gets the url of the currently executing script. Returns empty string, if no
 // script is executing (e.g. during parsing of a meta tag in markup), or the
 // script context is otherwise unavailable.
-PLATFORM_EXPORT String GetCurrentScriptUrl(int max_stack_depth);
+PLATFORM_EXPORT String GetCurrentScriptUrl();
+
+// Gets the urls of the scripts at the top of the currently executing stack.
+// If available, returns up to |unique_url_count| urls, filtering out duplicate
+// urls (e.g. if the stack includes multiple frames from the same script).
+// Returns an empty vector, if no script is executing (e.g. during parsing of a
+// meta tag in markup), or the script context is otherwise unavailable.
+// To minimize the cost of walking the stack, only the top frames (currently 10)
+// are examined, regardless of the value of |unique_url_count|.
+PLATFORM_EXPORT Vector<String> GetScriptUrlsFromCurrentStack(
+    wtf_size_t unique_url_count);
 
 namespace bindings {
 

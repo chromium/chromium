@@ -161,8 +161,9 @@ class BufferSourceProvider final : public AudioSourceProvider {
   void ProvideInput(AudioBus* bus, int frames_to_process) override {
     DCHECK(source_);
     DCHECK(bus);
-    if (!source_ || !bus)
+    if (!source_ || !bus) {
       return;
+    }
 
     float* buffer = bus->Channel(0)->MutableData();
 
@@ -171,9 +172,10 @@ class BufferSourceProvider final : public AudioSourceProvider {
     memcpy(buffer, source_, sizeof(float) * frames_to_copy);
 
     // Zero-pad if necessary.
-    if (frames_to_copy < frames_to_process)
+    if (frames_to_copy < frames_to_process) {
       memset(buffer + frames_to_copy, 0,
              sizeof(float) * (frames_to_process - frames_to_copy));
+    }
 
     source_frames_available_ -= frames_to_copy;
     source_ += frames_to_copy;
@@ -474,8 +476,9 @@ void SincResampler::Process(AudioSourceProvider* source_provider,
       virtual_source_index_ += scale_factor_;
 
       --number_of_destination_frames;
-      if (!number_of_destination_frames)
+      if (!number_of_destination_frames) {
         return;
+      }
     }
 
     // Wrap back around to the start.

@@ -5,7 +5,6 @@
 #ifndef UI_GL_SCOPED_MAKE_CURRENT_H_
 #define UI_GL_SCOPED_MAKE_CURRENT_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gl/gl_export.h"
 

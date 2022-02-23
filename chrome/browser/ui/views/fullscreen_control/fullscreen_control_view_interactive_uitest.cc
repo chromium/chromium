@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 // These four tests which cover the mouse/touch fullscreen UI are covering
 // behavior that doesn't exist on Mac - Mac has its own native fullscreen exit
 // UI. See IsExitUiEnabled() in FullscreenControlHost.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Disabled on Lacros due to flaky. crbug.com/1254453
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -230,8 +230,16 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_MouseExitFullscreen) {
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MouseExitFullscreen_TimeoutAndRetrigger \
+  DISABLED_MouseExitFullscreen_TimeoutAndRetrigger
+#else
+#define MAYBE_MouseExitFullscreen_TimeoutAndRetrigger \
+  MouseExitFullscreen_TimeoutAndRetrigger
+#endif
+// Flaky on lacros: https://crbug.com/1254453
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       MouseExitFullscreen_TimeoutAndRetrigger) {
+                       MAYBE_MouseExitFullscreen_TimeoutAndRetrigger) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());

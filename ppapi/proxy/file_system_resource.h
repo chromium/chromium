@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_resource.h"

@@ -14,11 +14,6 @@ import "url/mojom/url.mojom";
 
 // This interface is used to notify loading stats of the resource.
 interface ResourceLoadInfoNotifier {
-  // Called to update information to determine whether a user gesture should
-  // carryover to future navigations, when a request is initiated.
-  [EnableIf=is_android]
-  NotifyUpdateUserGestureCarryoverInfo();
-
   // Called to notify the request has been redirected.
   NotifyResourceRedirectReceived(network.mojom.URLRequestRedirectInfo redirect_info,
                                  network.mojom.URLResponseHead redirect_response);
@@ -27,8 +22,7 @@ interface ResourceLoadInfoNotifier {
   NotifyResourceResponseReceived(int64 request_id,
                                  url.mojom.Url response_url,
                                  network.mojom.URLResponseHead head,
-                                 network.mojom.RequestDestination request_destination,
-                                 int32 previews_state);
+                                 network.mojom.RequestDestination request_destination);
 
   // Called to notify the transfer size is updated.
   NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);

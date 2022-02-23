@@ -25,6 +25,7 @@
 #include "snapshot/exception_snapshot.h"
 #include "snapshot/linux/process_reader_linux.h"
 #include "snapshot/memory_snapshot.h"
+#include "snapshot/memory_snapshot_generic.h"
 #include "util/linux/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -58,7 +59,8 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
   bool Initialize(ProcessReaderLinux* process_reader,
                   LinuxVMAddress siginfo_address,
                   LinuxVMAddress context_address,
-                  pid_t thread_id);
+                  pid_t thread_id,
+                  uint32_t* gather_indirectly_referenced_memory_cap);
 
   // ExceptionSnapshot:
 
@@ -91,6 +93,7 @@ class ExceptionSnapshotLinux final : public ExceptionSnapshot {
   } context_union_;
   CPUContext context_;
   std::vector<uint64_t> codes_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotGeneric>> extra_memory_;
   uint64_t thread_id_;
   uint64_t exception_address_;
   uint32_t signal_number_;

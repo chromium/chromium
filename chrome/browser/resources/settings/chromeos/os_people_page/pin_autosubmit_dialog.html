@@ -1,84 +1,69 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  cr-dialog::part(dialog) {
+    width: fit-content;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../../settings_shared_css.html">
+  #errorIcon {
+    --iron-icon-height: var(--cr-icon-size);
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+    display: inline-block;
+  }
 
-<dom-module id="settings-pin-autosubmit-dialog">
-  <template>
-    <style include="settings-shared">
-      cr-dialog::part(dialog) {
-        width: fit-content;
-      }
+  #errorDiv {
+    align-items: center;
+    color: var(--cros-text-color-alert);
+    display: flex;
+    flex-direction: row;
+    height: 32px;
+    min-height: 0;
+  }
 
-      #errorIcon {
-        --iron-icon-height: var(--cr-icon-size);
-        --iron-icon-width: var(--cr-icon-size);
-        --iron-icon-fill-color: var(--cros-icon-color-alert);
-        display: inline-block;
-      }
+  /* Hide this using visibility: hidden instead of hidden so that the
+     dialog does not resize when there are no problems to display. */
+  #errorDiv[invisible] {
+    visibility: hidden;
+  }
 
-      #errorDiv {
-        align-items: center;
-        color: var(--cros-text-color-alert);
-        display: flex;
-        flex-direction: row;
-        height: 32px;
-        min-height: 0;
-      }
+  #pinKeyboardDiv {
+    justify-content: center;
+    padding: 0;
+  };
 
-      /* Hide this using visibility: hidden instead of hidden so that the
-         dialog does not resize when there are no problems to display. */
-      #errorDiv[invisible] {
-        visibility: hidden;
-      }
+  #pinKeyboard {
+    --cr-input-placeholder-letter-spacing: normal;
+  }
 
-      #pinKeyboardDiv {
-        justify-content: center;
-        padding: 0;
-      };
-
-      #pinKeyboard {
-        --cr-input-placeholder-letter-spacing: normal;
-      }
-
-      #pinAutosubmitDialogSubtitle {
-        padding-bottom: 16px;
-      }
-    </style>
-    <cr-dialog id="dialog" on-close="close" close-text="$i18n{close}">
-      <div slot="title">$i18n{configurePinConfirmPinTitle}</div>
-      <div slot="body">
-        <div id="pinAutosubmitDialogSubtitle">
-          $i18n{pinAutoSubmitPrompt}
+  #pinAutosubmitDialogSubtitle {
+    padding-bottom: 16px;
+  }
+</style>
+<cr-dialog id="dialog" on-close="close" close-text="$i18n{close}">
+  <div slot="title">$i18n{configurePinConfirmPinTitle}</div>
+  <div slot="body">
+    <div id="pinAutosubmitDialogSubtitle">
+      $i18n{pinAutoSubmitPrompt}
+    </div>
+    <!-- PIN keyboard -->
+    <div id="pinKeyboardDiv" class="settings-box continuation">
+      <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+          on-submit="onPinSubmit_" value="{{pinValue_}}"
+          disabled="[[requestInProcess_]]"
+          enable-letters>
+        <div id="errorDiv" invisible$="[[!error_]]">
+          <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+          <span id="errorMessage">[[getErrorMessageString_(error_)]]</span>
         </div>
-        <!-- PIN keyboard -->
-        <div id="pinKeyboardDiv" class="settings-box continuation">
-          <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
-              on-submit="onPinSubmit_" value="{{pinValue_}}"
-              disabled="[[requestInProcess_]]"
-              enable-letters>
-            <div id="errorDiv" invisible$="[[!error_]]">
-              <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
-              <span id="errorMessage">[[getErrorMessageString_(error_)]]</span>
-            </div>
-          </pin-keyboard>
-        </div>
-      </div>
-      <div slot="button-container">
-        <cr-button id="cancelButton" class="cancel-button" on-click="onCancelTap_">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="confirmButton" class="action-button" on-click="onPinSubmit_"
-            disabled="[[confirmButtonDisabled_]]">
-          $i18n{confirm}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-  <script src="pin_autosubmit_dialog.js"></script>
-</dom-module>
+      </pin-keyboard>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button" on-click="onCancelTap_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="confirmButton" class="action-button" on-click="onPinSubmit_"
+        disabled="[[confirmButtonDisabled_]]">
+      $i18n{confirm}
+    </cr-button>
+  </div>
+</cr-dialog>

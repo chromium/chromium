@@ -112,7 +112,7 @@ int VideoCaptureDeviceFactoryMac::GetGetDevicesInfoRetryCount() {
   return get_device_descriptors_retry_count;
 }
 
-std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(descriptor.capture_api, VideoCaptureApi::UNKNOWN);
@@ -130,7 +130,9 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
       capture_device.reset();
     }
   }
-  return std::unique_ptr<VideoCaptureDevice>(std::move(capture_device));
+  return capture_device ? VideoCaptureErrorOrDevice(std::move(capture_device))
+                        : VideoCaptureErrorOrDevice(
+                              VideoCaptureError::kMacSetCaptureDeviceFailed);
 }
 
 void VideoCaptureDeviceFactoryMac::GetDevicesInfo(

@@ -10,6 +10,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -34,8 +36,6 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -100,7 +100,7 @@ void CopyLockResult(base::RunLoop* loop,
 }
 
 void CertCallbackSuccess(
-    chromeos::attestation::AttestationFlow::CertificateCallback callback) {
+    ash::attestation::AttestationFlow::CertificateCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback),
@@ -300,7 +300,7 @@ class DeviceCloudPolicyManagerAshTest
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   bool set_empty_system_salt_ = false;
   ServerBackedStateKeysBroker state_keys_broker_;
-  StrictMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
+  StrictMock<ash::attestation::MockAttestationFlow> mock_attestation_flow_;
 
   DeviceCloudPolicyStoreAsh* store_;
   SchemaRegistry schema_registry_;
@@ -923,7 +923,7 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, UnregisterFails) {
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
   // Simulate the flag --disable-machine-cert-request being provided to Chrome.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      chromeos::switches::kDisableMachineCertRequest);
+      ash::switches::kDisableMachineCertRequest);
 
   // Set expectation that a request for a machine cert is never made.
   EXPECT_CALL(

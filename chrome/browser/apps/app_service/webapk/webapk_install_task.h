@@ -9,14 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features_parser.h"
+#include "ash/components/arc/mojom/webapk.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
-#include "chrome/browser/web_applications/web_application_info.h"
-#include "components/arc/arc_features_parser.h"
-#include "components/arc/mojom/webapk.mojom.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

@@ -59,6 +59,15 @@ def ngrams(data,
   op is intended to cover basic use cases; more complex combinations can be
   created using the sliding_window op.
 
+  >>> input_data = tf.ragged.constant([["e", "f", "g"], ["dd", "ee"]])
+  >>> ngrams(
+  ...   input_data,
+  ...   width=2,
+  ...   axis=-1,
+  ...   reduction_type=Reduction.STRING_JOIN,
+  ...   string_separator="|")
+  <tf.RaggedTensor [[b'e|f', b'f|g'], [b'dd|ee']]>
+
   Args:
     data: The data to reduce.
     width: The width of the ngram window. If there is not sufficient data to
@@ -79,7 +88,9 @@ def ngrams(data,
     name: The op name.
 
   Returns:
-    A tensor of ngrams.
+    A tensor of ngrams. If the input is a tf.Tensor, the output will also
+      be a tf.Tensor; if the input is a tf.RaggedTensor, the output will be
+      a tf.RaggedTensor.
 
   Raises:
     InvalidArgumentError: if `reduction_type` is either None or not a Reduction,

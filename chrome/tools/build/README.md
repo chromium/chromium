@@ -1,5 +1,7 @@
-This directory contains code needed to validate and assemble chrome packages for
-deployment. The main file in each platform-specific subdirectory is `FILES.cfg`.
-This file is interpreted by python's execfile, and the global FILES is
-extracted. For more details on how this file is used, see the [extraction
-logic](https://source.chromium.org/chromium/chromium/tools/build/+/main:scripts/common/archive_utils.py).
+'FILES.cfg' for each platform is now obsolete with respect to archiving
+(crbug/1260176). New config files for archiving build artifacts are located in
+src/infra/archive_config for dev builders and in
+src-internal/testing/buildbot/archive for official builders.
+For more information on how these files are used, refer to the proto file within
+the archive module:
+https://chromium.googlesource.com/chromium/tools/build.git/+/HEAD/recipes/recipe_modules/archive/properties.proto

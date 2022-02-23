@@ -21,8 +21,7 @@ enum class QuotaClientType {
   kServiceWorkerCache = 4,
   kServiceWorker = 5,
   kBackgroundFetch = 6,
-  kAppcache = 7,
-  kNativeIO = 8,
+  kNativeIO = 7,
 };
 
 // Set of QuotaClientType values.

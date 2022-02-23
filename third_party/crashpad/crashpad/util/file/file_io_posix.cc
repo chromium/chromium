@@ -72,7 +72,7 @@ FileHandle OpenFileForOutput(int rdwr_or_wronly,
                              const base::FilePath& path,
                              FileWriteMode mode,
                              FilePermissions permissions) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // O_NOCTTY is invalid on Fuchsia, and O_CLOEXEC isn't necessary.
   int flags = 0;
 #else
@@ -120,7 +120,7 @@ FileOperationResult ReadFile(FileHandle file, void* buffer, size_t size) {
 
 FileHandle OpenFileForRead(const base::FilePath& path) {
   int flags = O_RDONLY;
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // O_NOCTTY is invalid on Fuchsia, and O_CLOEXEC isn't necessary.
   flags |= O_NOCTTY | O_CLOEXEC;
 #endif
@@ -153,7 +153,7 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
   return fd;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 FileHandle LoggingOpenMemoryFileForReadAndWrite(const base::FilePath& name) {
   DCHECK(name.value().find('/') == std::string::npos);
 
@@ -208,7 +208,7 @@ FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
   return fd;
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 FileLockingResult LoggingLockFile(FileHandle file,
                                   FileLocking locking,
@@ -234,7 +234,7 @@ bool LoggingUnlockFile(FileHandle file) {
   return rv == 0;
 }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 FileOffset LoggingSeekFile(FileHandle file, FileOffset offset, int whence) {
   off_t rv = lseek(file, offset, whence);

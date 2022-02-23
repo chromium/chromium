@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 
+#include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/notification_access_manager.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,8 +17,6 @@
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -25,11 +26,6 @@ class DictionaryValue;
 }  // namespace base
 
 namespace chromeos {
-
-namespace phonehub {
-class NotificationAccessManager;
-}  // namespace phonehub
-
 namespace settings {
 
 // Chrome "Multidevice" (a.k.a. "Connected Devices") settings page UI handler.
@@ -40,7 +36,9 @@ class MultideviceHandler
       public android_sms::AndroidSmsAppManager::Observer,
       public phonehub::NotificationAccessManager::Observer,
       public phonehub::NotificationAccessSetupOperation::Delegate,
-      public ash::eche_app::AppsAccessManager::Observer {
+      public ash::eche_app::AppsAccessManager::Observer,
+      public ash::eche_app::AppsAccessSetupOperation::Delegate,
+      public ash::phonehub::CameraRollManager::Observer {
  public:
   MultideviceHandler(
       PrefService* prefs,
@@ -49,7 +47,8 @@ class MultideviceHandler
       multidevice_setup::AndroidSmsPairingStateTracker*
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager,
-      ash::eche_app::AppsAccessManager* apps_access_manager);
+      ash::eche_app::AppsAccessManager* apps_access_manager,
+      ash::phonehub::CameraRollManager* camera_roll_manager);
 
   MultideviceHandler(const MultideviceHandler&) = delete;
   MultideviceHandler& operator=(const MultideviceHandler&) = delete;
@@ -77,6 +76,10 @@ class MultideviceHandler
   void OnStatusChange(
       phonehub::NotificationAccessSetupOperation::Status new_status) override;
 
+  // ash::eche_app::AppsAccessSetupOperation::Delegate:
+  void OnAppsStatusChange(
+      ash::eche_app::AppsAccessSetupOperation::Status new_status) override;
+
   // phonehub::NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
 
@@ -89,6 +92,9 @@ class MultideviceHandler
   // ash::eche_app::AppsAccessManager::Observer:
   void OnAppsAccessChanged() override;
 
+  // ash::phonehub::CameraRollManager::Observer:
+  void OnCameraRollViewUiStateUpdated() override;
+
   // Called when the Nearby Share enabled pref changes.
   void OnNearbySharingEnabledChanged();
 
@@ -96,18 +102,20 @@ class MultideviceHandler
   // update (e.g., not due to a getPageContent() request).
   void UpdatePageContent();
 
-  void HandleShowMultiDeviceSetupDialog(const base::ListValue* args);
-  void HandleGetPageContent(const base::ListValue* args);
-  void HandleSetFeatureEnabledState(const base::ListValue* args);
-  void HandleRemoveHostDevice(const base::ListValue* args);
-  void HandleRetryPendingHostSetup(const base::ListValue* args);
-  void HandleSetUpAndroidSms(const base::ListValue* args);
-  void HandleGetSmartLockSignInEnabled(const base::ListValue* args);
-  void HandleSetSmartLockSignInEnabled(const base::ListValue* args);
-  void HandleGetSmartLockSignInAllowed(const base::ListValue* args);
-  void HandleGetAndroidSmsInfo(const base::ListValue* args);
-  void HandleAttemptNotificationSetup(const base::ListValue* args);
-  void HandleCancelNotificationSetup(const base::ListValue* args);
+  void HandleShowMultiDeviceSetupDialog(base::Value::ConstListView args);
+  void HandleGetPageContent(base::Value::ConstListView args);
+  void HandleSetFeatureEnabledState(base::Value::ConstListView args);
+  void HandleRemoveHostDevice(base::Value::ConstListView args);
+  void HandleRetryPendingHostSetup(base::Value::ConstListView args);
+  void HandleSetUpAndroidSms(base::Value::ConstListView args);
+  void HandleGetSmartLockSignInEnabled(base::Value::ConstListView args);
+  void HandleSetSmartLockSignInEnabled(base::Value::ConstListView args);
+  void HandleGetSmartLockSignInAllowed(base::Value::ConstListView args);
+  void HandleGetAndroidSmsInfo(base::Value::ConstListView args);
+  void HandleAttemptNotificationSetup(base::Value::ConstListView args);
+  void HandleCancelNotificationSetup(base::Value::ConstListView args);
+  void HandleAttemptAppsSetup(base::Value::ConstListView args);
+  void HandleCancelAppsSetup(base::Value::ConstListView args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
@@ -150,6 +158,10 @@ class MultideviceHandler
   android_sms::AndroidSmsAppManager* android_sms_app_manager_;
 
   ash::eche_app::AppsAccessManager* apps_access_manager_;
+  std::unique_ptr<ash::eche_app::AppsAccessSetupOperation>
+      apps_access_operation_;
+
+  ash::phonehub::CameraRollManager* camera_roll_manager_;
 
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>
@@ -167,6 +179,9 @@ class MultideviceHandler
   base::ScopedObservation<ash::eche_app::AppsAccessManager,
                           ash::eche_app::AppsAccessManager::Observer>
       apps_access_manager_observation_{this};
+  base::ScopedObservation<ash::phonehub::CameraRollManager,
+                          ash::phonehub::CameraRollManager::Observer>
+      camera_roll_manager_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};

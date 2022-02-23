@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -28,18 +30,17 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -60,9 +61,13 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kExtension:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      // TODO(petermarshall): Distinguish Chrome apps from Extensions.
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      // Chrome apps and Extensions both get called file_handler, even though
+      // extensions really have file_browser_handler. It doesn't matter anymore
+      // because both are executed through App Service, which can tell the
+      // difference itself.
       return TASK_TYPE_FILE_HANDLER;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kCrostini:
@@ -170,9 +175,11 @@ void FindAppServiceTasks(Profile* profile,
     if (!(app_type == apps::mojom::AppType::kArc ||
           app_type == apps::mojom::AppType::kWeb ||
           app_type == apps::mojom::AppType::kSystemWeb ||
+          app_type == apps::mojom::AppType::kChromeApp ||
           app_type == apps::mojom::AppType::kExtension ||
-          app_type == apps::mojom::AppType::kStandaloneBrowserExtension))
+          app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp)) {
       continue;
+    }
 
     if (app_type == apps::mojom::AppType::kWeb ||
         app_type == apps::mojom::AppType::kSystemWeb) {
@@ -204,7 +211,8 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    if (app_type == apps::mojom::AppType::kExtension) {
+    if (app_type == apps::mojom::AppType::kChromeApp ||
+        app_type == apps::mojom::AppType::kExtension) {
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;
@@ -275,6 +283,7 @@ void ExecuteAppServiceTask(
       task.task_type == TASK_TYPE_ARC_APP
           ? apps_util::CreateShareIntentFromFiles(file_urls, mime_types)
           : apps_util::CreateViewIntentFromFiles(std::move(intent_files));
+  intent->activity_name = task.action_id;
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       task.app_id, ui::EF_NONE, std::move(intent), launch_source,

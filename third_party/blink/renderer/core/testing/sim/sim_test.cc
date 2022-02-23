@@ -19,7 +19,7 @@
 namespace blink {
 
 SimTest::SimTest() {
-  Document::SetThreadedParsingEnabledForTesting(false);
+  Document::SetForceSynchronousParsingForTesting(true);
   // Threaded animations are usually enabled for blink. However these tests use
   // synchronous compositing, which can not run threaded animations.
   bool was_threaded_animation_enabled =
@@ -30,7 +30,7 @@ SimTest::SimTest() {
 }
 
 SimTest::~SimTest() {
-  Document::SetThreadedParsingEnabledForTesting(true);
+  Document::SetForceSynchronousParsingForTesting(false);
   content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
   WebCache::Clear();
 }

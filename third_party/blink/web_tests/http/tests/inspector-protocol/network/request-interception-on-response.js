@@ -12,7 +12,7 @@
       testRunner.log('Request Intercepted: ' + event.params.request.url.split('/').pop());
       testRunner.log('  responseStatusCode: ' + event.params.responseStatusCode);
       testRunner.log('  responseHeaders:');
-      for (var headerName of Object.keys(event.params.responseHeaders)) {
+      for (var headerName of Object.keys(event.params.responseHeaders).sort()) {
         var headerValue = event.params.responseHeaders[headerName];
         if (headersMaskList.has(headerName.toLowerCase()))
           headerValue = '<Masked>';

@@ -63,7 +63,10 @@ function queueNavigationEventMessage(message) {
  * called for same-document navigation.
  */
 window.history.pushState = function(stateObject, pageTitle, pageUrl) {
-  queueNavigationEventMessage({'command': 'willChangeState'});
+  queueNavigationEventMessage({
+    'command': 'willChangeState',
+    'frame_id': __gCrWeb.message.getFrameId()
+  });
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -82,12 +85,16 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
     'command': 'didPushState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
-    'pageUrl': pageUrl.toString()
+    'pageUrl': pageUrl.toString(),
+    'frame_id': __gCrWeb.message.getFrameId()
   });
 };
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
-  queueNavigationEventMessage({'command': 'willChangeState'});
+  queueNavigationEventMessage({
+    'command': 'willChangeState',
+    'frame_id': __gCrWeb.message.getFrameId()
+  });
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -108,7 +115,8 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
     'command': 'didReplaceState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
-    'pageUrl': pageUrl.toString()
+    'pageUrl': pageUrl.toString(),
+    'frame_id': __gCrWeb.message.getFrameId()
   });
 };
 

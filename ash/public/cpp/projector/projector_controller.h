@@ -12,6 +12,7 @@
 namespace ash {
 
 struct AnnotatorTool;
+struct NewScreencastPrecondition;
 
 // File extension of Projector metadata file. It is used to identify Projector
 // screencasts at processing pending screencasts and fetching screencast list.
@@ -19,22 +20,26 @@ constexpr char kProjectorMetadataFileExtension[] = "projector";
 
 class ProjectorClient;
 
+// Enum class used to notify the ProjectorController on the availability of
+// speech recognition.
+enum class ASH_PUBLIC_EXPORT SpeechRecognitionAvailability {
+  // Device does not support SODA (Speech on Device API)
+  kOnDeviceSpeechRecognitionNotSupported,
+  // User's language is not supported by SODA.
+  kUserLanguageNotSupported,
+  // SODA binary is not yet installed.
+  kSodaNotInstalled,
+  // SODA binary and language packs are downloading.
+  kSodaInstalling,
+  // SODA installation failed.
+  kSodaInstallationError,
+  // SODA is available to be used.
+  kAvailable
+};
+
 // Interface to control projector in ash.
 class ASH_PUBLIC_EXPORT ProjectorController {
  public:
-  class ScopedInstanceResetterForTest {
-   public:
-    ScopedInstanceResetterForTest();
-    ScopedInstanceResetterForTest(const ScopedInstanceResetterForTest&) =
-        delete;
-    ScopedInstanceResetterForTest& operator=(
-        const ScopedInstanceResetterForTest&) = delete;
-    ~ScopedInstanceResetterForTest();
-
-   private:
-    ProjectorController* const controller_;
-  };
-
   ProjectorController();
   ProjectorController(const ProjectorController&) = delete;
   ProjectorController& operator=(const ProjectorController&) = delete;
@@ -56,7 +61,8 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   virtual void SetClient(ProjectorClient* client) = 0;
 
   // Called when speech recognition using SODA is available.
-  virtual void OnSpeechRecognitionAvailable(bool available) = 0;
+  virtual void OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability availability) = 0;
 
   // Called when transcription result from mic input is ready.
   virtual void OnTranscription(
@@ -65,13 +71,16 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Called when there is an error in transcription.
   virtual void OnTranscriptionError() = 0;
 
+  // Called when speech recognition stopped.
+  virtual void OnSpeechRecognitionStopped() = 0;
+
   // Returns true if Projector screen recording feature is available on the
   // device. If on device speech recognition is not available on device, then
   // Projector is not eligible.
   virtual bool IsEligible() const = 0;
 
   // Returns true if we can start a new Projector session.
-  virtual bool CanStartNewSession() const = 0;
+  virtual NewScreencastPrecondition GetNewScreencastPrecondition() const = 0;
 
   // The following functions are callbacks from the annotator back to the
   // ProjectorController.

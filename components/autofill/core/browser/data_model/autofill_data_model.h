@@ -89,10 +89,6 @@ class AutofillDataModel : public FormGroup {
   // longer than |kDisusedCreditCardDeletionTimeDelta|.
   virtual bool IsDeletable() const;
 
-  // Returns the validity state of the specified autofill type.
-  virtual ValidityState GetValidityState(ServerFieldType type,
-                                         ValidationSource source) const;
-
  protected:
   // Called to update |use_count_| and |use_date_| when this data model is
   // the subject of user interaction (usually, when it's used to fill a form).

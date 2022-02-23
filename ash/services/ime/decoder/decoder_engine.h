@@ -23,9 +23,10 @@ namespace ime {
 // A Mojo wrapper around a "decoder" that converts key events and pointer events
 // to text. The built-in Chrome OS XKB extension communicates with this to
 // implement its IMEs.
-class DecoderEngine : public mojom::InputChannel {
+class DecoderEngine : public ash::ime::mojom::InputChannel {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform);
+  explicit DecoderEngine(ImeCrosPlatform* platform,
+                         absl::optional<ImeDecoder::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;
@@ -34,28 +35,20 @@ class DecoderEngine : public mojom::InputChannel {
 
   // Binds the mojom::InputChannel interface to this object and returns true if
   // the given ime_spec is supported by the engine.
-  bool BindRequest(const std::string& ime_spec,
-                   mojo::PendingReceiver<mojom::InputChannel> receiver,
-                   mojo::PendingRemote<mojom::InputChannel> remote,
-                   const std::vector<uint8_t>& extra);
+  bool BindRequest(
+      const std::string& ime_spec,
+      mojo::PendingReceiver<ash::ime::mojom::InputChannel> receiver,
+      mojo::PendingRemote<ash::ime::mojom::InputChannel> remote,
+      const std::vector<uint8_t>& extra);
 
   // mojom::InputChannel:
   void ProcessMessage(const std::vector<uint8_t>& message,
                       ProcessMessageCallback callback) override;
 
  private:
-  // Try to load the decoding functions from some decoder shared library.
-  // Returns whether loading decoder is successful.
-  bool TryLoadDecoder();
-
-  // Returns whether the decoder shared library supports this ime_spec.
-  bool IsImeSupportedByDecoder(const std::string& ime_spec);
-
   ImeCrosPlatform* platform_ = nullptr;
-
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
-
-  mojo::ReceiverSet<mojom::InputChannel> decoder_channel_receivers_;
+  mojo::ReceiverSet<ash::ime::mojom::InputChannel> decoder_channel_receivers_;
 };
 
 }  // namespace ime

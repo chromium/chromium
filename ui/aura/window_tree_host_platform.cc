@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/host_frame_rate_throttler.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -32,7 +33,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/platform_window/win/win_window.h"
 #endif
 
@@ -71,7 +72,7 @@ void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
 #if defined(USE_OZONE)
   platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
       this, std::move(properties));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   platform_window_ = std::make_unique<ui::WinWindow>(this, properties.bounds);
 #else
   NOTIMPLEMENTED();
@@ -178,7 +179,7 @@ void WindowTreeHostPlatform::MoveCursorToScreenLocationInPixels(
 }
 
 void WindowTreeHostPlatform::OnCursorVisibilityChangedNative(bool show) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WindowTreeHostPlatform::LockMouse(Window* window) {
@@ -292,6 +293,13 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
       break;
   }
   SetNativeWindowOcclusionState(aura_occlusion_state, {});
+}
+
+void WindowTreeHostPlatform::SetFrameRateThrottleEnabled(bool enabled) {
+  if (enabled)
+    HostFrameRateThrottler::GetInstance().AddHost(this);
+  else
+    HostFrameRateThrottler::GetInstance().RemoveHost(this);
 }
 
 }  // namespace aura

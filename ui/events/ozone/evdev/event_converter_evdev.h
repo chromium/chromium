@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/task/current_thread.h"
 #include "ui/events/devices/gamepad_device.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
@@ -94,6 +95,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is used for a touchpad device.
   virtual bool HasTouchpad() const;
 
+  // Returns true if the converter is used for a haptic touchpad device.
+  // If HasHapticTouchpad() is true, then HasTouchpad() is also true.
+  virtual bool HasHapticTouchpad() const;
+
   // Returns true if the converter is used for a touchscreen device.
   virtual bool HasTouchscreen() const;
 
@@ -151,6 +156,13 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Handle gamepad force feedback effects.
   virtual void PlayVibrationEffect(uint8_t amplitude, uint16_t duration_millis);
   virtual void StopVibration();
+
+  // Handle haptic touchpad effects.
+  virtual void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                        HapticTouchpadEffectStrength strength);
+  virtual void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength);
 
  protected:
   // base::MessagePumpForUI::FdWatcher:

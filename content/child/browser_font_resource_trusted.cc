@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_canvas.h"
@@ -107,7 +108,7 @@ class TextRunCollection {
 
  private:
   // Will be null if we skipped autodetection.
-  UBiDi* bidi_;
+  raw_ptr<UBiDi> bidi_;
 
   // Text of all the runs.
   std::u16string text_;

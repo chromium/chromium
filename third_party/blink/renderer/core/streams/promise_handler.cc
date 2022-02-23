@@ -35,28 +35,28 @@ v8::Local<v8::Promise> AttemptToReturnDummyPromise(
 
 }  // namespace
 
-PromiseHandler::PromiseHandler(ScriptState* script_state)
-    : PromiseHandlerBase(script_state) {}
+PromiseHandler::PromiseHandler() = default;
 
-void PromiseHandler::CallRaw(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void PromiseHandler::CallRaw(ScriptState* script_state,
+                             const v8::FunctionCallbackInfo<v8::Value>& args) {
   DCHECK_EQ(args.Length(), 1);
-  CallWithLocal(args[0]);
+  CallWithLocal(script_state, args[0]);
 }
 
-PromiseHandlerWithValue::PromiseHandlerWithValue(ScriptState* script_state)
-    : PromiseHandlerBase(script_state) {}
+PromiseHandlerWithValue::PromiseHandlerWithValue() = default;
 
 void PromiseHandlerWithValue::CallRaw(
+    ScriptState* script_state,
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   DCHECK_EQ(args.Length(), 1);
-  auto ret = CallWithLocal(args[0]);
+  auto ret = CallWithLocal(script_state, args[0]);
   args.GetReturnValue().Set(ret);
 }
 
 v8::Local<v8::Promise> StreamThenPromise(v8::Local<v8::Context> context,
                                          v8::Local<v8::Promise> promise,
-                                         PromiseHandlerBase* on_fulfilled,
-                                         PromiseHandlerBase* on_rejected) {
+                                         ScriptFunction* on_fulfilled,
+                                         ScriptFunction* on_rejected) {
   v8::MaybeLocal<v8::Promise> result_maybe;
   if (!on_fulfilled) {
     DCHECK(on_rejected);
@@ -71,13 +71,12 @@ v8::Local<v8::Promise> StreamThenPromise(v8::Local<v8::Context> context,
                << "by shutdown and ignoring it";
       return AttemptToReturnDummyPromise(context, promise);
     }
-    result_maybe =
-        promise->Then(context, noop, on_rejected->BindToV8Function());
+    result_maybe = promise->Then(context, noop, on_rejected->V8Function());
   } else if (on_rejected) {
-    result_maybe = promise->Then(context, on_fulfilled->BindToV8Function(),
-                                 on_rejected->BindToV8Function());
+    result_maybe = promise->Then(context, on_fulfilled->V8Function(),
+                                 on_rejected->V8Function());
   } else {
-    result_maybe = promise->Then(context, on_fulfilled->BindToV8Function());
+    result_maybe = promise->Then(context, on_fulfilled->V8Function());
   }
 
   v8::Local<v8::Promise> result;

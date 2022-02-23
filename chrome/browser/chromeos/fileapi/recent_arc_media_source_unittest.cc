@@ -4,6 +4,11 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -16,11 +21,6 @@
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

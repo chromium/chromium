@@ -6,10 +6,10 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/payment_app.mojom.h"
+#include "ash/components/arc/pay/arc_payment_app_bridge.h"
+#include "ash/components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "ash/public/cpp/external_arc/overlay/test/test_arc_overlay_manager.h"
-#include "components/arc/mojom/payment_app.mojom.h"
-#include "components/arc/pay/arc_payment_app_bridge.h"
-#include "components/arc/test/arc_payment_app_bridge_test_support.h"
 #include "components/payments/core/method_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

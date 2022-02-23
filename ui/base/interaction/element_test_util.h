@@ -8,7 +8,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
-namespace ui {
+namespace ui::test {
 
 // Provides a platform-less pseudoelement for use in ElementTracker and
 // InteractionSequence tests.
@@ -25,6 +25,9 @@ class TestElementBase : public TrackedElement {
 
   // Simulate the element hidden event.
   void Hide();
+
+  // Simuate a custom event on this element.
+  void SendCustomEvent(CustomElementEventType event_type);
 
  private:
   bool visible_ = false;
@@ -50,6 +53,6 @@ class TestElementOtherFramework : public TestElementBase {
 // Convenience typedef for unique pointers to test elements.
 using TestElementPtr = std::unique_ptr<TestElementBase>;
 
-}  // namespace ui
+}  // namespace ui::test
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TEST_UTIL_H_

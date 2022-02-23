@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -415,7 +416,7 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
       }
       alternative_service_list.Append(std::move(alternative_service_string));
     }
-    if (alternative_service_list.GetList().empty())
+    if (alternative_service_list.GetListDeprecated().empty())
       continue;
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetStringKey("server", key.server.Serialize());
@@ -551,10 +552,9 @@ void HttpServerProperties::SetMaxServerConfigsStoredInProperties(
   // Update the |canonical_server_info_map_| as well, so it stays in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_ = QuicCanonicalMap();
-  for (auto it = quic_server_info_map_.rbegin();
-       it != quic_server_info_map_.rend(); ++it) {
-    temp_map.Put(it->first, it->second);
-    UpdateCanonicalServerInfoMap(it->first);
+  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map_)) {
+    temp_map.Put(key, server_info);
+    UpdateCanonicalServerInfoMap(key);
   }
 
   quic_server_info_map_.Swap(temp_map);
@@ -1119,28 +1119,27 @@ void HttpServerProperties::OnServerInfoLoaded(
   server_info_map_.Swap(*server_info_map);
 
   // Add the entries from the memory cache.
-  for (auto it = server_info_map->rbegin(); it != server_info_map->rend();
-       ++it) {
+  for (auto& [key, server_info] : base::Reversed(*server_info_map)) {
     // If there's no corresponding old entry, add the new entry directly.
-    auto old_entry = server_info_map_.Get(it->first);
+    auto old_entry = server_info_map_.Get(key);
     if (old_entry == server_info_map_.end()) {
-      server_info_map_.Put(it->first, std::move(it->second));
+      server_info_map_.Put(key, std::move(server_info));
       continue;
     }
 
     // Otherwise, merge the old and new entries. Prefer values from older
     // entries.
     if (!old_entry->second.supports_spdy.has_value())
-      old_entry->second.supports_spdy = it->second.supports_spdy;
+      old_entry->second.supports_spdy = server_info.supports_spdy;
     if (!old_entry->second.alternative_services.has_value())
-      old_entry->second.alternative_services = it->second.alternative_services;
+      old_entry->second.alternative_services = server_info.alternative_services;
     if (!old_entry->second.server_network_stats.has_value())
-      old_entry->second.server_network_stats = it->second.server_network_stats;
+      old_entry->second.server_network_stats = server_info.server_network_stats;
 
     // |requires_http11| isn't saved to prefs, so the loaded entry should not
     // have it set. Unconditionally copy it from the new entry.
     DCHECK(!old_entry->second.requires_http11.has_value());
-    old_entry->second.requires_http11 = it->second.requires_http11;
+    old_entry->second.requires_http11 = server_info.requires_http11;
   }
 
   // Attempt to find canonical servers. Canonical suffix only apply to HTTPS.
@@ -1184,19 +1183,17 @@ void HttpServerProperties::OnQuicServerInfoMapLoaded(
   quic_server_info_map_.Swap(*quic_server_info_map);
 
   // Add the entries from the memory cache.
-  for (auto it = quic_server_info_map->rbegin();
-       it != quic_server_info_map->rend(); ++it) {
-    if (quic_server_info_map_.Get(it->first) == quic_server_info_map_.end()) {
-      quic_server_info_map_.Put(it->first, it->second);
+  for (const auto& [key, server_info] : base::Reversed(*quic_server_info_map)) {
+    if (quic_server_info_map_.Get(key) == quic_server_info_map_.end()) {
+      quic_server_info_map_.Put(key, server_info);
     }
   }
 
   // Repopulate |canonical_server_info_map_| to stay in sync with
   // |quic_server_info_map_|.
   canonical_server_info_map_.clear();
-  for (auto it = quic_server_info_map_.rbegin();
-       it != quic_server_info_map_.rend(); ++it) {
-    UpdateCanonicalServerInfoMap(it->first);
+  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map_)) {
+    UpdateCanonicalServerInfoMap(key);
   }
 }
 

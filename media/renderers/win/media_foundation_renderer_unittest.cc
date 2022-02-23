@@ -177,7 +177,7 @@ TEST_F(MediaFoundationRendererTest, VerifyInitWithoutSetCdm) {
   AddStream(DemuxerStream::AUDIO, /*encrypted=*/false);
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
 
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
 
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
                            renderer_init_cb_.Get());
@@ -193,7 +193,7 @@ TEST_F(MediaFoundationRendererTest, SetCdmThenInit) {
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
 
   EXPECT_CALL(set_cdm_cb_, Run(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
 
   mf_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -210,7 +210,7 @@ TEST_F(MediaFoundationRendererTest, InitThenSetCdm) {
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
 
   EXPECT_CALL(set_cdm_cb_, Run(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
 
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
                            renderer_init_cb_.Get());
@@ -230,10 +230,10 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
 
   EXPECT_CALL(set_cdm_cb_, Run(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   // Ignore the DirectComposition handle value returned as our |pmp_server_|
   // has no real implementation.
-  EXPECT_CALL(get_dcomp_surface_cb, Run(_));
+  EXPECT_CALL(get_dcomp_surface_cb, Run(_, _));
 
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
                            renderer_init_cb_.Get());

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <set>
-#include "base/compiler_specific.h"
 #include "chrome/browser/install_verification/win/module_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

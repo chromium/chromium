@@ -21,6 +21,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_mac.h"
+#include "services/device/utils/mac_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -30,57 +31,6 @@ namespace {
 // USB class codes are defined by the USB specification.
 // https://www.usb.org/defined-class-codes
 constexpr uint8_t kDeviceClassHub = 0x09;
-
-// These methods are similar to the ones used by HidServiceMac.
-// TODO(https://crbug.com/1104271): Move these methods into a shared utility
-// file.
-absl::optional<std::u16string> GetStringProperty(io_service_t service,
-                                                 CFStringRef key) {
-  base::ScopedCFTypeRef<CFStringRef> ref(base::mac::CFCast<CFStringRef>(
-      IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
-
-  if (!ref)
-    return absl::nullopt;
-
-  return base::SysCFStringRefToUTF16(ref);
-}
-
-absl::optional<uint16_t> GetUint16Property(io_service_t service,
-                                           CFStringRef property) {
-  base::ScopedCFTypeRef<CFNumberRef> cf_number(
-      base::mac::CFCast<CFNumberRef>(IORegistryEntryCreateCFProperty(
-          service, property, kCFAllocatorDefault, 0)));
-
-  if (!cf_number)
-    return absl::nullopt;
-  if (CFGetTypeID(cf_number) != CFNumberGetTypeID())
-    return absl::nullopt;
-  uint16_t value;
-  if (!CFNumberGetValue((CFNumberRef)cf_number, kCFNumberSInt16Type, &value))
-    return absl::nullopt;
-  return value;
-}
-
-absl::optional<uint8_t> GetUint8Property(io_service_t service,
-                                         CFStringRef property) {
-  base::ScopedCFTypeRef<CFNumberRef> cf_number(
-      base::mac::CFCast<CFNumberRef>(IORegistryEntryCreateCFProperty(
-          service, property, kCFAllocatorDefault, 0)));
-
-  bool success = false;
-  uint8_t value;
-  if (cf_number) {
-    if (CFGetTypeID(cf_number) == CFNumberGetTypeID()) {
-      success =
-          CFNumberGetValue((CFNumberRef)cf_number, kCFNumberSInt8Type, &value);
-    }
-  }
-
-  if (success)
-    return value;
-
-  return absl::nullopt;
-}
 
 }  // namespace
 
@@ -222,30 +172,32 @@ void UsbServiceMac::AddDevice(io_service_t device) {
     return;
 
   absl::optional<uint8_t> property_uint8 =
-      GetUint8Property(device, CFSTR("PortNum"));
+      GetIntegerProperty<uint8_t>(device, CFSTR("PortNum"));
   if (!property_uint8.has_value())
     return;
   uint8_t port_number = property_uint8.value();
 
   absl::optional<uint16_t> property_uint16 =
-      GetUint16Property(device, CFSTR("bcdUSB"));
+      GetIntegerProperty<uint16_t>(device, CFSTR("bcdUSB"));
   uint16_t usb_version;
   if (!property_uint16.has_value())
     return;
   usb_version = property_uint16.value();
 
   absl::optional<std::u16string> property_string16 =
-      GetStringProperty(device, CFSTR(kUSBVendorString));
+      GetStringProperty<std::u16string>(device, CFSTR(kUSBVendorString));
   std::u16string manufacturer_string;
   if (property_string16.has_value())
     manufacturer_string = property_string16.value();
 
-  property_string16 = GetStringProperty(device, CFSTR(kUSBSerialNumberString));
+  property_string16 =
+      GetStringProperty<std::u16string>(device, CFSTR(kUSBSerialNumberString));
   std::u16string serial_number_string;
   if (property_string16.has_value())
     serial_number_string = property_string16.value();
 
-  property_string16 = GetStringProperty(device, CFSTR(kUSBProductString));
+  property_string16 =
+      GetStringProperty<std::u16string>(device, CFSTR(kUSBProductString));
   std::u16string product_string;
   if (property_string16.has_value())
     product_string = property_string16.value();

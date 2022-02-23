@@ -27,9 +27,8 @@
 #include "third_party/blink/renderer/core/frame/navigator_language.h"
 #include "third_party/blink/renderer/core/frame/navigator_on_line.h"
 #include "third_party/blink/renderer/core/frame/navigator_ua.h"
-#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {

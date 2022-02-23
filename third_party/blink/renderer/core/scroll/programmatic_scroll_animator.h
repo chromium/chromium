@@ -8,7 +8,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   void Trace(Visitor*) const override;
 
  private:
-  void NotifyOffsetChanged(const ScrollOffset&);
+  mojom::blink::ScrollType GetScrollType() const;
   void AnimationFinished();
 
   Member<ScrollableArea> scrollable_area_;

@@ -76,7 +76,7 @@ template("cargo_crate") {
     }
     _epochlabel = "vunknown"
     if (defined(invoker.epoch)) {
-      _tempepoch = string_replace(invoker.epoch, ".", "")
+      _tempepoch = string_replace(invoker.epoch, ".", "_")
       _epochlabel = "v${_tempepoch}"
     }
     build_script_name = "${_cratelabel}_${_epochlabel}_build_script"
@@ -88,6 +88,9 @@ template("cargo_crate") {
     crate_type = "rlib"
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
+    }
+    if (!defined(rustflags)) {
+      rustflags = []
     }
     if (crate_type == "bin") {
       target_type = "executable"
@@ -108,6 +111,8 @@ template("cargo_crate") {
                              "build_root",
                              "build_deps",
                              "build_sources",
+                             "build_script_inputs",
+                             "build_script_outputs",
                              "target_type",
                              "visibility",
                              "testonly",
@@ -122,9 +127,6 @@ template("cargo_crate") {
       if (!defined(sources)) {
         sources = []
       }
-      if (!defined(rustflags)) {
-        rustflags = []
-      }
       if (defined(invoker.dev_deps)) {
         test_deps = invoker.dev_deps
       }
@@ -135,10 +137,28 @@ template("cargo_crate") {
       # we can include it in the 'sources' line and thus have dependency
       # calculation done correctly. data_deps won't work because targets don't
       # require them to be present until runtime.
-      flags_file = get_label_info(":${orig_target_name}_build_script_output",
-                                  "target_out_dir") + "/cargo_flags.rs"
-      rustflags += [ "@" + rebase_path(flags_file) ]
+      build_script_output_dir =
+          get_label_info(":${orig_target_name}_build_script_output",
+                         "target_out_dir")
+      flags_file =
+          build_script_output_dir + "/${orig_target_name}_cargo_flags.rs"
+      rustflags += [ "@" + rebase_path(flags_file, root_build_dir) ]
       sources += [ flags_file ]
+      if (defined(invoker.build_script_outputs)) {
+        # Build scripts may output arbitrary files. They are usually included in
+        # the main Rust target using include! or include_str! and therefore the filename
+        # may be .rs or may be arbitrary. We want to educate ninja about the
+        # dependency either way.
+        foreach(extra_source,
+                filter_include(invoker.build_script_outputs, [ "*.rs" ])) {
+          sources += [ "$build_script_output_dir/$extra_source" ]
+        }
+        inputs = []
+        foreach(extra_source,
+                filter_exclude(invoker.build_script_outputs, [ "*.rs" ])) {
+          inputs += [ "$build_script_output_dir/$extra_source" ]
+        }
+      }
       deps += [ ":${build_script_name}_output" ]
     } else {
       not_needed([ "orig_target_name" ])
@@ -151,21 +171,25 @@ template("cargo_crate") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${build_script_name}($host_toolchain)"
       deps = [ build_script_target ]
-      flags_file = "$target_out_dir/cargo_flags.rs"
+      flags_file = "$target_out_dir/${orig_target_name}_cargo_flags.rs"
       build_script_out_dir = get_label_info(build_script_target, "root_out_dir")
       build_script = "$build_script_out_dir/${build_script_name}"
       if (is_win) {
         build_script = "${build_script}.exe"
       }
+      inputs = [ build_script ]
+      outputs = [ flags_file ]
       args = [
         "--build-script",
-        rebase_path(build_script),
+        rebase_path(build_script, root_build_dir),
         "--output",
-        rebase_path(flags_file),
+        rebase_path(flags_file, root_build_dir),
         "--rust-prefix",
-        rust_prefix,
+        rebase_path("${rust_sysroot}/bin"),
         "--out-dir",
-        target_out_dir,
+        rebase_path(target_out_dir, root_build_dir),
+        "--src-dir",
+        rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
       ]
       if (defined(rust_abi_target) && rust_abi_target != "") {
         args += [
@@ -173,10 +197,20 @@ template("cargo_crate") {
           rust_abi_target,
         ]
       }
-      inputs = [ build_script ]
-      outputs = [ flags_file ]
+      if (defined(invoker.features)) {
+        args += [ "--features" ]
+        args += invoker.features
+      }
       if (defined(invoker.build_script_outputs)) {
-        outputs += invoker.build_script_outputs
+        args += [ "--generated-files" ]
+        args += invoker.build_script_outputs
+        foreach(generated_file, invoker.build_script_outputs) {
+          outputs += [ "$target_out_dir/$generated_file" ]
+        }
+      }
+      if (defined(invoker.rustenv)) {
+        args += [ "--env" ]
+        args += invoker.rustenv
       }
       if (defined(invoker.build_script_inputs)) {
         inputs += invoker.build_script_inputs
@@ -208,6 +242,8 @@ template("cargo_crate") {
                    "build_sources",
                    "build_deps",
                    "build_root",
+                   "build_script_inputs",
+                   "build_script_outputs",
                  ])
     }
   }

@@ -79,7 +79,7 @@ int WebPWriteTIFF(FILE* fout, const struct WebPDecBuffer* const buffer);
 int WebPWriteAlphaPlane(FILE* fout, const struct WebPDecBuffer* const buffer);
 
 // Save as YUV samples as PGM format (using IMC4 layout).
-// See: http://www.fourcc.org/yuv.php#IMC4.
+// See: https://www.fourcc.org/yuv.php#IMC4.
 // (very convenient format for viewing the samples, esp. for odd dimensions).
 int WebPWritePGM(FILE* fout, const struct WebPDecBuffer* const buffer);
 

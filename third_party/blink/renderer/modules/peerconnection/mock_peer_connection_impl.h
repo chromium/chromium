@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,13 +105,35 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender() const override;
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver() const override;
   bool stopped() const override;
+  bool stopping() const override;
   webrtc::RtpTransceiverDirection direction() const override;
   void SetDirection(webrtc::RtpTransceiverDirection new_direction) override;
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
-  void Stop() override;
   void SetTransport(
       rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport);
+  std::vector<webrtc::RtpCodecCapability> codec_preferences() const override {
+    return {};
+  }
+  webrtc::RTCError SetCodecPreferences(
+      rtc::ArrayView<webrtc::RtpCodecCapability>) override {
+    RTC_DCHECK_NOTREACHED() << "Not implemented";
+    return {};
+  }
+  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+      const override {
+    return {};
+  }
+  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+      rtc::ArrayView<const webrtc::RtpHeaderExtensionCapability>
+          header_extensions_to_offer) override {
+    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+  }
+
+  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+      const override {
+    return {};
+  }
 
  private:
   cricket::MediaType media_type_;
@@ -203,7 +224,8 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>> AddTrack(
       rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track,
       const std::vector<std::string>& stream_ids) override;
-  bool RemoveTrack(webrtc::RtpSenderInterface* sender) override;
+  webrtc::RTCError RemoveTrackOrError(
+      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) override;
   std::vector<rtc::scoped_refptr<webrtc::RtpSenderInterface>> GetSenders()
       const override;
   std::vector<rtc::scoped_refptr<webrtc::RtpReceiverInterface>> GetReceivers()

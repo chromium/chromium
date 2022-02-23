@@ -29,14 +29,13 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link SecondaryTasksSurfaceViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
+public class SecondaryTasksSurfaceViewBinderTest extends BlankUiTestActivityTestCase {
     private ViewGroup mParentView;
     private View mTasksSurfaceView;
-    private View mTopToolbarPlaceholderView;
     private PropertyModel mPropertyModel;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -51,13 +50,11 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
             mParentView = new FrameLayout(getActivity());
             mTasksSurfaceView = new View(getActivity());
             mTasksSurfaceView.setBackground(new ColorDrawable(Color.WHITE));
-            mTopToolbarPlaceholderView = new View(getActivity());
             getActivity().setContentView(mParentView);
 
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
             mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                    new TasksSurfaceViewBinder.ViewHolder(
-                            mParentView, mTasksSurfaceView, mTopToolbarPlaceholderView),
+                    new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
                     SecondaryTasksSurfaceViewBinder::bind);
         });
     }
@@ -89,7 +86,6 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
         assertNotNull(mTasksSurfaceView.getParent());
         assertEquals(View.VISIBLE, mTasksSurfaceView.getVisibility());
-        assertEquals(View.GONE, mTopToolbarPlaceholderView.getVisibility());
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
         assertEquals(20, layoutParams.topMargin);
 

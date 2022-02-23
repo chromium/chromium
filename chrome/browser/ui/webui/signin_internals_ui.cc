@@ -88,7 +88,7 @@ void SignInInternalsHandler::RegisterMessages() {
 }
 
 void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
-  std::string callback_id = args->GetList()[0].GetString();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());

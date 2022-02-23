@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"
@@ -88,7 +89,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   void ReceiveTraceChunkOnBlockingThread(std::unique_ptr<std::string> chunk) {
     if (!OpenFileIfNeededOnBlockingThread())
       return;
-    ignore_result(fwrite(chunk->c_str(), chunk->size(), 1, file_));
+    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_);
   }
 
   bool OpenFileIfNeededOnBlockingThread() {
@@ -143,7 +144,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::FilePath file_path_;
   base::FilePath pending_file_path_;
   base::OnceClosure completion_callback_;
-  FILE* file_ = nullptr;
+  raw_ptr<FILE> file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
 };
 

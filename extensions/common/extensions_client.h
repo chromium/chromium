@@ -118,8 +118,8 @@ class ExtensionsClient {
   virtual const GURL& GetWebstoreUpdateURL() const = 0;
 
   // Returns a flag indicating whether or not a given URL is a valid
-  // extension blacklist URL.
-  virtual bool IsBlacklistUpdateURL(const GURL& url) const = 0;
+  // extension blocklist URL.
+  virtual bool IsBlocklistUpdateURL(const GURL& url) const = 0;
 
   // Returns the set of file paths corresponding to any images within an
   // extension's contents that may be displayed directly within the browser UI

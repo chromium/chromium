@@ -5,6 +5,7 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/optimization_guide/android/native_j_unittests_jni_headers/OptimizationGuideBridgeNativeUnitTest_jni.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
@@ -46,8 +47,8 @@ class MockOptimizationGuideHintsManager
             /*top_host_provider=*/nullptr,
             /*tab_url_provider=*/nullptr,
             /*url_loader_factory=*/nullptr,
-            content::GetNetworkConnectionTracker(),
-            /*push_notification_manager=*/nullptr) {}
+            /*push_notification_manager=*/nullptr,
+            /*optimization_guide_logger=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD3(CanApplyOptimizationAsync,
                void(const GURL&,
@@ -117,8 +118,8 @@ class OptimizationGuideBridgeTest : public testing::Test {
 
  protected:
   base::android::ScopedJavaGlobalRef<jobject> j_test_;
-  JNIEnv* env_;
-  MockOptimizationGuideKeyedService* optimization_guide_keyed_service_;
+  raw_ptr<JNIEnv> env_;
+  raw_ptr<MockOptimizationGuideKeyedService> optimization_guide_keyed_service_;
   std::unique_ptr<MockOptimizationGuideHintsManager>
       optimization_guide_hints_manager_;
 
@@ -126,7 +127,7 @@ class OptimizationGuideBridgeTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };

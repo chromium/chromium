@@ -1,3 +1,0 @@
-Test that the API exists with origin trial token
-
-SUCCESS

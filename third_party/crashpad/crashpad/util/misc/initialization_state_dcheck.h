@@ -17,8 +17,9 @@
 
 //! \file
 
+#include <tuple>
+
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state.h"
 
@@ -175,11 +176,17 @@ using InitializationStateDcheck = bool[0];
 // Avoid triggering warnings by repurposing these macros when DCHECKs are
 // disabled.
 #define INITIALIZATION_STATE_SET_INITIALIZING(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                                     \
+    std::ignore = initialization_state_dcheck;                             \
+  } while (false)
 #define INITIALIZATION_STATE_SET_VALID(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                              \
+    std::ignore = initialization_state_dcheck;                      \
+  } while (false)
 #define INITIALIZATION_STATE_DCHECK_VALID(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                                 \
+    std::ignore = initialization_state_dcheck;                         \
+  } while (false)
 
 #endif
 

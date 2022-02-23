@@ -125,7 +125,7 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
           base::StringPrintf(
               "%s/%s/", chrome_prefs::internals::kSettingsEnforcementTrialName,
               chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement));
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // In Windows and MacOS builds, it is not possible to disable settings
       // enforcement.
       unauthenticated_load_allowed_ = false;
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
   // The --load-extension command line flag should not be applied to the sign-in
   // profile.
   EXPECT_EQ(0, GetNonComponentEnabledExtensionCount(
-                   chromeos::ProfileHelper::GetSigninProfile()));
+                   ash::ProfileHelper::GetSigninProfile()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

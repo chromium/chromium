@@ -11,7 +11,6 @@
 #include "android_webview/browser/gfx/vulkan_gl_interop.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 

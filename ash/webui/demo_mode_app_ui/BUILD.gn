@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos, "Demo Mode App is Chrome OS only")
+assert(is_chromeos_ash, "Demo Mode App is ash-chrome only")
 assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
 
 static_library("demo_mode_app_ui") {

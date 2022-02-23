@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -32,7 +32,7 @@ TEST(SocketTagTest, Compares) {
   EXPECT_FALSE(unset1 != unset2);
   EXPECT_FALSE(unset1 < unset2);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag s00(0, 0), s01(0, 1), s11(1, 1);
 
   EXPECT_FALSE(s00 == unset1);
@@ -54,7 +54,7 @@ TEST(SocketTagTest, Compares) {
 
 // On Android, where socket tagging is supported, verify that SocketTag::Apply
 // works as expected.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(SocketTagTest, Apply) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";

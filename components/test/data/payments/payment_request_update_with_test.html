@@ -12,12 +12,14 @@ found in the LICENSE file.
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-<button class="small" onclick="updateWithEmpty()" id="updateWithEmpty">updateWithEmpty</button>
-<button class="small" onclick="updateWithTotal()" id="updateWithTotal">updateWithTotal</button>
-<button class="small" onclick="updateWithDisplayItems()" id="updateWithDisplayItems">updateWithDisplayItems</button>
-<button class="small" onclick="updateWithShippingOptions()" id="updateWithShippingOptions">updateWithShippingOptions</button>
-<button class="small" onclick="updateWithModifiers()" id="updateWithModifiers">updateWithModifiers</button>
-<button class="small" onclick="updateWithError()" id="updateWithError">updateWithError</button>
+<button class="small" onclick="updateWithEmpty('basic-card')" id="updateWithEmpty">updateWithEmpty</button>
+<button class="small" onclick="updateWithTotal('basic-card')" id="updateWithTotal">updateWithTotal</button>
+<button class="small" onclick="updateWithDisplayItems('basic-card')"
+  id="updateWithDisplayItems">updateWithDisplayItems</button>
+<button class="small" onclick="updateWithShippingOptions('basic-card')"
+  id="updateWithShippingOptions">updateWithShippingOptions</button>
+<button class="small" onclick="updateWithModifiers('basic-card')" id="updateWithModifiers">updateWithModifiers</button>
+<button class="small" onclick="updateWithError('basic-card')" id="updateWithError">updateWithError</button>
 <pre id="result"></pre>
 <script src="util.js"></script>
 <script src="update_with.js"></script>

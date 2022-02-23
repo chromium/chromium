@@ -83,7 +83,7 @@ void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   use_remote_suggestions_ = SpellingServiceClient::IsAvailable(
       browser_context, SpellingServiceClient::SUGGEST);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   use_platform_suggestions_ = spellcheck::UseBrowserSpellChecker();
   if (use_platform_suggestions_) {
     // Need to asynchronously retrieve suggestions from the platform
@@ -143,7 +143,7 @@ void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
     // to dictionary" will be removed later.
     proxy_->AddSeparator();
   } else {
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     if (!suggestions_.empty() || use_remote_suggestions_)
       proxy_->AddSeparator();
 
@@ -170,9 +170,9 @@ void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
         spellcheck_service->GetMetrics()->RecordSuggestionStats(1);
       proxy_->AddSeparator();
     }
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   // If word is misspelled, give option for "Add to dictionary" and, if
   // multilingual spellchecking is not enabled, a check item "Ask Google for
@@ -183,7 +183,7 @@ void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   proxy_->AddSpellCheckServiceItem(integrate_spelling_service_.GetValue());
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellingMenuObserver::OnContextMenuShown(
     const content::ContextMenuParams& /*params*/,
     const gfx::Rect& /*bounds_in_screen*/) {
@@ -208,7 +208,7 @@ void SpellingMenuObserver::OnContextMenuShown(
                            /*title=*/std::u16string());
   }
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 bool SpellingMenuObserver::IsCommandIdSupported(int command_id) {
   if (command_id >= IDC_SPELLCHECK_SUGGESTION_0 &&
@@ -355,7 +355,7 @@ void SpellingMenuObserver::ExecuteCommand(int command_id) {
   }
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellingMenuObserver::OnGetPlatformSuggestionsComplete(
     const spellcheck::PerLanguageSuggestions&
         platform_per_language_suggestions) {
@@ -424,7 +424,7 @@ void SpellingMenuObserver::RegisterSuggestionsCompleteCallbackForTesting(
     base::OnceClosure callback) {
   suggestions_complete_callback_for_testing_ = std::move(callback);
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 void SpellingMenuObserver::GetRemoteSuggestions() {
   // The service types |SpellingServiceClient::SPELLCHECK| and
@@ -498,7 +498,7 @@ void SpellingMenuObserver::OnGetRemoteSuggestionsComplete(
     bool success,
     const std::u16string& /*text*/,
     const std::vector<SpellCheckResult>& results) {
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   if (use_platform_suggestions_) {
     // Cache results since we need the parallel retrieval of local suggestions
     // to also complete in order to proceed.
@@ -509,12 +509,12 @@ void SpellingMenuObserver::OnGetRemoteSuggestionsComplete(
 
     completion_barrier_.Run();
   } else {
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     animation_timer_.Stop();
     UpdateRemoteSuggestion(type, success, results);
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 }
 
 void SpellingMenuObserver::UpdateRemoteSuggestion(
@@ -556,12 +556,12 @@ void SpellingMenuObserver::UpdateRemoteSuggestion(
   }
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellingMenuObserver::FireSuggestionsCompleteCallbackIfNeededForTesting() {
   if (suggestions_complete_callback_for_testing_)
     std::move(suggestions_complete_callback_for_testing_).Run();
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 void SpellingMenuObserver::OnAnimationTimerExpired(int command_id) {
   // Append '.' characters to the end of "Checking".

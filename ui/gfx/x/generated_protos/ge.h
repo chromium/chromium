@@ -41,9 +41,11 @@
 #ifndef UI_GFX_X_GENERATED_PROTOS_GE_H_
 #define UI_GFX_X_GENERATED_PROTOS_GE_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"

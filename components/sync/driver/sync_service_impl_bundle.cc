@@ -35,6 +35,8 @@ std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
       .WillByDefault(Return(&component_factory_));
   ON_CALL(*sync_client, GetSyncInvalidationsService())
       .WillByDefault(Return(sync_invalidations_service()));
+  ON_CALL(*sync_client, GetTrustedVaultClient())
+      .WillByDefault(Return(trusted_vault_client()));
   return std::move(sync_client);
 }
 

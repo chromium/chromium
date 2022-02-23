@@ -1,0 +1,71 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/account_manager.mojom";
+
+// A mojo representation of syncer::Nigori. Should only be obtained by using
+// Nigori::ExportKeys() or direct mapping from other Nigori representations,
+// such as sync_pb::NigoriKey.
+[Stable]
+struct NigoriKey {
+  array<uint8> encryption_key@0;
+  array<uint8> mac_key@1;
+};
+
+// Allows lacros-chrome to observe the explicit-passphrase related state.
+// Next version: 1
+// Next ordinal value: 2
+[Stable, Uuid="aeec552c-67c7-43dc-bbcf-d2fcc7c6a754"]
+interface SyncExplicitPassphraseClientObserver {
+  // Called when passphrase became required for observed client (e.g. explicit
+  // passphrase Nigori update is received and correct passphrase is not yet
+  // available).
+  OnPassphraseRequired@0();
+
+  // Called when passphrase became available for observed client (e.g. user
+  // entered the correct passphrase or passphrase obtained by other way, such
+  // as SetDecryptionNigoriKey() IPC below).
+  OnPassphraseAvailable@1();
+};
+
+// Defines a Sync API related to explicit passphrase sharing that lives in
+// ash-chrome and is accessed from lacros-chrome.
+// Next version: 1
+// Next ordinal value: 3
+[Stable, Uuid="4d13845c-a628-404b-8a88-c39a0aeea298"]
+interface SyncExplicitPassphraseClient {
+  // Adds a new observer. Immediately fires OnPassphraseRequired()
+  // or OnPassphraseAvailable() if needed.
+  AddObserver@0(pending_remote<SyncExplicitPassphraseClientObserver> observer);
+
+  // Attempts to retrieve explicit passphrase key. |account_key| is used to
+  // verify that the decryption key is requested for the primary profile syncing
+  // account. Returns null if no key is available.
+  GetDecryptionNigoriKey@1(AccountKey account_key) =>
+    (NigoriKey? decryption_key);
+
+  // Attempts to set explicit passphrase decryption key. It's safe to call this
+  // method when passphrase is not required or with non-matching (outdated key
+  // or key that is not yet needed for ash-chrome SyncService), because
+  // SyncService will verify |decryption_key| against sync data. However,
+  // |decryption_key| must belong to the account specified by |account_key| and
+  // must be obtained by the user input or from Ash. |account_key| is used to
+  // verify that the decryption key is passed for the primary profile syncing
+  // account.
+  SetDecryptionNigoriKey@2(AccountKey account_key,
+                           NigoriKey decryption_key);
+};
+
+// Defines a Sync API that lives in ash-chrome and is accessed from
+// lacros-chrome. To be extended in the future.
+// Next version: 1
+// Next ordinal value: 1
+[Stable, Uuid="4499c528-4578-466d-a97d-d66217323f48"]
+interface SyncService {
+  // Binds SyncExplicitPassphraseClient, that lives in ash-chrome.
+  BindExplicitPassphraseClient@0(
+    pending_receiver<SyncExplicitPassphraseClient> receiver);
+};

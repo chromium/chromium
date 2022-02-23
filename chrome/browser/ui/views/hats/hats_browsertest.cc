@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -125,7 +126,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
   int failure_count = 0;
 
  private:
-  MockHatsService* hats_service_;
+  raw_ptr<MockHatsService> hats_service_;
 };
 
 // Test that the web dialog correctly receives change to history state that
@@ -149,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       kHatsNextTestSurveyProductSpecificStringData);
 
   // Check that no record of a survey being shown is present.
-  const base::DictionaryValue* pref_data =
+  const base::Value* pref_data =
       browser()->profile()->GetPrefs()->GetDictionary(
           prefs::kHatsSurveyMetadata);
   absl::optional<base::Time> last_survey_started_time =

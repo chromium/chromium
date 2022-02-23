@@ -259,15 +259,6 @@ int WebResourceRequestSender::SendAsync(
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   CheckSchemeForReferrerPolicy(*request);
 
-#if defined(OS_ANDROID)
-  // Main frame shouldn't come here.
-  DCHECK(!(request->is_main_frame &&
-           IsRequestDestinationFrame(request->destination)));
-  if (request->has_user_gesture) {
-    resource_load_info_notifier_wrapper->NotifyUpdateUserGestureCarryoverInfo();
-  }
-#endif
-
   // Compute a unique request_id for this renderer process.
   int request_id = MakeRequestID();
   request_info_ = std::make_unique<PendingRequestInfo>(
@@ -278,8 +269,6 @@ int WebResourceRequestSender::SendAsync(
       ->NotifyResourceLoadInitiated(
           request_id, request->url, request->method, request->referrer,
           request_info_->request_destination, request->priority);
-
-  request_info_->previews_state = request->previews_state;
 
   auto client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
@@ -464,8 +453,7 @@ void WebResourceRequestSender::OnReceivedResponse(
     return;
 
   request_info_->resource_load_info_notifier_wrapper
-      ->NotifyResourceResponseReceived(std::move(response_head),
-                                       request_info_->previews_state);
+      ->NotifyResourceResponseReceived(std::move(response_head));
 }
 
 void WebResourceRequestSender::OnReceivedCachedMetadata(

@@ -6,7 +6,6 @@
 #define DEVICE_FIDO_MAC_FAKE_TOUCH_ID_CONTEXT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "device/fido/mac/touch_id_context.h"
 
 namespace device {

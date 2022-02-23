@@ -33,7 +33,7 @@ TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {
       PaintRenderingContext2DSettings::Create();
   context_settings->setAlpha(false);
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      IntSize(kWidth, kHeight), context_settings, kZoom,
+      gfx::Size(kWidth, kHeight), context_settings, kZoom,
       1.0 /* device_scale_factor */);
   TrySettingStrokeStyle(ctx, "#0000ff", "blue");
   TrySettingStrokeStyle(ctx, "#000000", "currentColor");
@@ -43,7 +43,7 @@ TEST(PaintRenderingContext2DTest, testWidthAndHeight) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      IntSize(kWidth, kHeight), context_settings, kZoom,
+      gfx::Size(kWidth, kHeight), context_settings, kZoom,
       1.0 /* device_scale_factor */);
   EXPECT_EQ(kWidth, ctx->Width());
   EXPECT_EQ(kHeight, ctx->Height());
@@ -53,7 +53,7 @@ TEST(PaintRenderingContext2DTest, testBasicState) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      IntSize(kWidth, kHeight), context_settings, kZoom,
+      gfx::Size(kWidth, kHeight), context_settings, kZoom,
       1.0 /* device_scale_factor */);
 
   const double kShadowBlurBefore = 2;
@@ -85,7 +85,7 @@ TEST(PaintRenderingContext2DTest, setTransformWithDeviceScaleFactor) {
       PaintRenderingContext2DSettings::Create();
   float device_scale_factor = 1.23;
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      IntSize(kWidth, kHeight), context_settings, kZoom, device_scale_factor);
+      gfx::Size(kWidth, kHeight), context_settings, kZoom, device_scale_factor);
   DOMMatrix* matrix = ctx->getTransform();
   EXPECT_TRUE(matrix->isIdentity());
   ctx->setTransform(2.1, 2.5, 1.4, 2.3, 20, 50);
@@ -102,7 +102,7 @@ TEST(PaintRenderingContext2DTest, setTransformWithDefaultDeviceScaleFactor) {
   PaintRenderingContext2DSettings* context_settings =
       PaintRenderingContext2DSettings::Create();
   PaintRenderingContext2D* ctx = MakeGarbageCollected<PaintRenderingContext2D>(
-      IntSize(kWidth, kHeight), context_settings, kZoom,
+      gfx::Size(kWidth, kHeight), context_settings, kZoom,
       1.0 /* device_scale_factor */);
   DOMMatrix* matrix = ctx->getTransform();
   EXPECT_TRUE(matrix->isIdentity());

@@ -148,15 +148,11 @@ void ResourceMessageParams::AppendHandle(SerializedHandle handle) const {
 }
 
 ResourceMessageCallParams::ResourceMessageCallParams()
-    : ResourceMessageParams(),
-      has_callback_(0) {
-}
+    : ResourceMessageParams(), has_callback_(false) {}
 
 ResourceMessageCallParams::ResourceMessageCallParams(PP_Resource resource,
                                                      int32_t sequence)
-    : ResourceMessageParams(resource, sequence),
-      has_callback_(0) {
-}
+    : ResourceMessageParams(resource, sequence), has_callback_(false) {}
 
 ResourceMessageCallParams::~ResourceMessageCallParams() {
 }

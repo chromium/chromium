@@ -62,7 +62,7 @@ class PredictionMetricsHandlerTest : public testing::Test {
   bool HasPredictionHistograms() {
     uint64_t histogram_size =
         histogram_tester_
-            ->GetAllSamples("Event.InputEventPrediction.Scroll.WrongDirection")
+            ->GetAllSamples("Event.InputEventPrediction.Scroll.VisualJitter")
             .size();
     return histogram_size > 0u;
   }
@@ -172,25 +172,25 @@ void AddEvents(PredictionMetricsHandler* metrics_handler) {
                                      MillisecondsToTestTimeTicks(12));
   // P1 | Interpolation from R1-R2 is (2.5,2.5)
   // P1 | Frame Interpolation from R1-R2 is (3,3)
-  // OverPrediction | RightDirection
+  // OverPrediction
   metrics_handler->AddPredictedEvent(gfx::PointF(3.5, 3.5),
                                      MillisecondsToTestTimeTicks(18),
                                      MillisecondsToTestTimeTicks(20));
   // P2 | Interpolation from R2-R3 is (4.75,4.75)
   // P2 | Frame Interpolation from R2-R3 is (5.5,5.5)
-  // UnderPrediction | RightDirection
+  // UnderPrediction
   metrics_handler->AddPredictedEvent(gfx::PointF(5, 5),
                                      MillisecondsToTestTimeTicks(26),
                                      MillisecondsToTestTimeTicks(28));
   // P3 | Interpolation from R3-R4 is (6.5,6.5)
   // P3 | Frame Interpolation from R3-R4 is (6,6)
-  // UnderPrediction | WrongDirection
+  // UnderPrediction
   metrics_handler->AddPredictedEvent(gfx::PointF(7, 7),
                                      MillisecondsToTestTimeTicks(34),
                                      MillisecondsToTestTimeTicks(36));
   // P4 | Interpolation from R4-R5 is (4.5,4.5)
   // P4 | Frame Interpolation from R4-R5 is (4,4)
-  // OverPrediction | RightDirection
+  // OverPrediction
   metrics_handler->AddPredictedEvent(gfx::PointF(3, 3),
                                      MillisecondsToTestTimeTicks(42),
                                      MillisecondsToTestTimeTicks(44));
@@ -223,10 +223,6 @@ TEST_F(PredictionMetricsHandlerTest, PredictionMetricTest) {
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   "Event.InputEventPrediction.Scroll.FramePredictionScore"),
               ElementsAre(Bucket(0, 3), Bucket(1, 2)));
-
-  EXPECT_THAT(histogram_tester().GetAllSamples(
-                  "Event.InputEventPrediction.Scroll.WrongDirection"),
-              ElementsAre(Bucket(0, 3), Bucket(1, 1)));
 
   EXPECT_THAT(histogram_tester().GetAllSamples(
                   "Event.InputEventPrediction.Scroll.PredictionJitter"),

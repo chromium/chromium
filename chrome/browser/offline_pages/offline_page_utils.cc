@@ -41,9 +41,9 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/mime_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_controller_base.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace offline_pages {
 namespace {
@@ -383,7 +383,7 @@ bool OfflinePageUtils::IsShowingTrustedOfflinePage(
 void OfflinePageUtils::AcquireFileAccessPermission(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   content::WebContents::Getter web_contents_getter =
       GetWebContentsGetter(web_contents);
   DownloadControllerBase::Get()->AcquireFileAccessPermission(
@@ -391,7 +391,7 @@ void OfflinePageUtils::AcquireFileAccessPermission(
 #else
   // Not needed in other platforms.
   std::move(callback).Run(true /*granted*/);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace offline_pages

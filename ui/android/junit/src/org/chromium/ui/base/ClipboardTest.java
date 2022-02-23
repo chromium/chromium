@@ -7,11 +7,14 @@ package org.chromium.ui.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -110,7 +113,7 @@ public class ClipboardTest {
     public void testClipboardCopyUrlToClipboard() {
         Clipboard clipboard = Clipboard.getInstance();
         ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
-        clipboard.overrideClipboardManagerForTesting(clipboardManager);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
         String url = JUnitTestGURLs.SEARCH_URL;
         clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
@@ -125,7 +128,7 @@ public class ClipboardTest {
     public void testClipboardCopyUrlToClipboardNoException() {
         Clipboard clipboard = Clipboard.getInstance();
         ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
-        clipboard.overrideClipboardManagerForTesting(clipboardManager);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
         doThrow(SecurityException.class).when(clipboardManager).setPrimaryClip(any(ClipData.class));
         String url = JUnitTestGURLs.SEARCH_URL;
@@ -135,5 +138,18 @@ public class ClipboardTest {
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
         assertEquals(url, clipCaptor.getValue().getItemAt(0).getText());
+    }
+
+    @Test
+    public void testHasCoercedTextCanGetUrl() {
+        Clipboard clipboard = Clipboard.getInstance();
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
+
+        ClipDescription clipDescription =
+                new ClipDescription("url", new String[] {"text/x-moz-url"});
+        when(clipboardManager.getPrimaryClipDescription()).thenReturn(clipDescription);
+
+        assertTrue(clipboard.hasCoercedText());
     }
 }

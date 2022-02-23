@@ -55,12 +55,12 @@ if (enable_java_templates) {
             rebase_path(import_child_missing_symbol_test_nocompile_sources,
                         "",
                         "nocompile_gn")
-        expected_compile_output_regex = "error: package test\.missing_symbol\.sub does not exist\nPlease add //build/android/test/nocompile_gn:sub_b_java dep to //build/android/test/nocompile_gn:import_child_missing_symbol_test_java\."
+        expected_compile_output_regex = "error: package test\.missing_symbol\.sub does not exist\nHint: Add \"//build/android/test/nocompile_gn:sub_b_java\" to deps of //build/android/test/nocompile_gn:import_child_missing_symbol_test_java"
       },
       {
         target = "nocompile_gn:import_parent_missing_symbol_test_java"
         nocompile_sources = []
-        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.B\nPlease add //build/android/test/nocompile_gn:b_java dep to //build/android/test/nocompile_gn:import_parent_missing_symbol_test_java\."
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.B\nHint: Add \"//build/android/test/nocompile_gn:b_java\" to deps of //build/android/test/nocompile_gn:import_parent_missing_symbol_test_java"
       },
       {
         target = "nocompile_gn:import_turbine_missing_symbol_test_java"
@@ -68,17 +68,17 @@ if (enable_java_templates) {
             rebase_path(import_turbine_missing_symbol_test_nocompile_sources,
                         "",
                         "nocompile_gn")
-        expected_compile_output_regex = "error: symbol not found test\.missing_symbol\.B\nPlease add //build/android/test/nocompile_gn:b_java dep to //build/android/test/nocompile_gn:import_turbine_missing_symbol_test_java\."
+        expected_compile_output_regex = "error: symbol not found test\.missing_symbol\.B\nHint: Add \"//build/android/test/nocompile_gn:b_java\" to deps of //build/android/test/nocompile_gn:import_turbine_missing_symbol_test_java"
       },
       {
         target = "nocompile_gn:prebuilt_missing_symbol_test_java"
         nocompile_sources = []
-        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.C\nPlease add //build/android/test/nocompile_gn:c_prebuilt_java dep to //build/android/test/nocompile_gn:prebuilt_missing_symbol_test_java\."
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.C\nHint: Add \"//build/android/test/nocompile_gn:c_prebuilt_java\" to deps of //build/android/test/nocompile_gn:prebuilt_missing_symbol_test_java"
       },
       {
         target = "nocompile_gn:cpp_template_missing_symbol_test_java"
         nocompile_sources = []
-        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.D\nPlease add //build/android/test/nocompile_gn:d_java dep to //build/android/test/nocompile_gn:cpp_template_missing_symbol_test_java\."
+        expected_compile_output_regex = "error: cannot find symbol test\.missing_symbol\.D\nHint: Add \"//build/android/test/nocompile_gn:d_java\" to deps of //build/android/test/nocompile_gn:cpp_template_missing_symbol_test_java"
       },
     ]
   }

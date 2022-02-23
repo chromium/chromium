@@ -4,7 +4,9 @@
 
 #include "weblayer/browser/permissions/weblayer_nfc_permission_context_delegate.h"
 
-#if defined(OS_ANDROID)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/tab_impl.h"
 #endif
 
@@ -16,7 +18,7 @@ WebLayerNfcPermissionContextDelegate::WebLayerNfcPermissionContextDelegate() =
 WebLayerNfcPermissionContextDelegate::~WebLayerNfcPermissionContextDelegate() =
     default;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool WebLayerNfcPermissionContextDelegate::IsInteractable(
     content::WebContents* web_contents) {
   auto* tab = TabImpl::FromWebContents(web_contents);

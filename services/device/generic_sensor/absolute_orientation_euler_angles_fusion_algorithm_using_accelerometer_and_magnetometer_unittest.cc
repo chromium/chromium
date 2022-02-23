@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
@@ -69,7 +70,8 @@ class
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer*
+  raw_ptr<
+      AbsoluteOrientationEulerAnglesFusionAlgorithmUsingAccelerometerAndMagnetometer>
       fusion_algorithm_;
 };
 

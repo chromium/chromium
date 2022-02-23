@@ -30,7 +30,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   WaitForFrameWithColor(SK_ColorGREEN);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class WebContentsVideoCaptureDeviceBrowserTestAura
     : public WebContentsVideoCaptureDeviceBrowserTest {
  public:
@@ -427,7 +427,7 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     All,
     WebContentsVideoCaptureDeviceBrowserTestP,
@@ -457,7 +457,8 @@ INSTANTIATE_TEST_SUITE_P(
 // and whether the main document contains a cross-site iframe.
 
 // Fails on LACROS for Chrome OS and linux. http://crbug.com/1108205
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges

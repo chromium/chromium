@@ -93,7 +93,7 @@ AppStateMap GetAppStates(Profile* profile) {
   std::unique_ptr<const extensions::ExtensionSet> extensions(
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet());
-  for (const auto& extension : *extensions) {
+  for (scoped_refptr<const extensions::Extension> extension : *extensions) {
     if (extension->is_app() &&
         extensions::util::ShouldSync(extension.get(), profile)) {
       const std::string& id = extension->id();
@@ -109,7 +109,7 @@ AppStateMap GetAppStates(Profile* profile) {
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();
 
-  for (const auto& id : pending_crx_ids) {
+  for (const std::string& id : pending_crx_ids) {
     LoadApp(profile, id, &(app_state_map[id]));
   }
 
@@ -156,19 +156,21 @@ bool SyncAppHelper::AppStatesMatch(Profile* profile1, Profile* profile2) {
   auto it1 = state_map1.begin();
   auto it2 = state_map2.begin();
   while (it1 != state_map1.end()) {
-    if (it1->first != it2->first) {
+    const auto& [app_id1, app_state1] = *it1;
+    const auto& [app_id2, app_state2] = *it2;
+    if (app_id1 != app_id2) {
       DVLOG(2) << "Apps for profile " << profile1->GetDebugName()
                << " do not match profile " << profile2->GetDebugName();
       return false;
-    } else if (!it1->second.IsValid()) {
+    } else if (!app_state1.IsValid()) {
       DVLOG(2) << "Apps for profile " << profile1->GetDebugName()
                << " are not valid.";
       return false;
-    } else if (!it2->second.IsValid()) {
+    } else if (!app_state2.IsValid()) {
       DVLOG(2) << "Apps for profile " << profile2->GetDebugName()
                << " are not valid.";
       return false;
-    } else if (!it1->second.Equals(it2->second)) {
+    } else if (!app_state1.Equals(app_state2)) {
       // If this test is run against real backend servers then we do not expect
       // to install pending apps. So, we don't check equality of AppStates of
       // each app per profile.

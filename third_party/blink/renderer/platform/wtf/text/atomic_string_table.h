@@ -37,7 +37,8 @@ class WTF_EXPORT AtomicStringTable final {
   // Inserting strings into the table. Note that the return value from adding
   // a UChar string may be an LChar string as the table will attempt to
   // convert the string to save memory if possible.
-  StringImpl* Add(StringImpl*);
+  scoped_refptr<StringImpl> Add(StringImpl*);
+  scoped_refptr<StringImpl> Add(scoped_refptr<StringImpl>&&);
   scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
   scoped_refptr<StringImpl> Add(const UChar* chars, unsigned length);
 
@@ -118,11 +119,13 @@ class WTF_EXPORT AtomicStringTable final {
 
   // This is for ~StringImpl to unregister a string before destruction since
   // the table is holding weak pointers. It should not be used directly.
-  void Remove(StringImpl*);
+  bool ReleaseAndRemoveIfNeeded(StringImpl*);
 
  private:
   template <typename T, typename HashTranslator>
   inline scoped_refptr<StringImpl> AddToStringTable(const T& value);
+
+  StringImpl* AddNoLock(StringImpl*);
 
   WeakResult WeakFindSlow(StringImpl*);
   WeakResult WeakFindSlow(const StringView&);

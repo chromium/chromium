@@ -25,7 +25,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Function;
 import org.chromium.components.strictmode.ThreadStrictModeInterceptor;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowserFragmentCreateParams;
@@ -75,8 +74,6 @@ public class InstrumentationActivity extends AppCompatActivity {
 
     private static OnCreatedCallback sOnCreatedCallback;
 
-    private static Function<Context, Context> sContextBuilder;
-
     // If true, multiple fragments may be created. Only the first is attached. This is useful for
     // tests that need to create multiple BrowserFragments.
     public static boolean sAllowMultipleFragments;
@@ -96,18 +93,6 @@ public class InstrumentationActivity extends AppCompatActivity {
     private boolean mIgnoreRendererCrashes;
     private TabListCallback mTabListCallback;
     private List<Tab> mPreviousTabList = new ArrayList<>();
-
-    public static void setActivityContextBuilder(Function<Context, Context> contextBuilder) {
-        sContextBuilder = contextBuilder;
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        if (sContextBuilder != null) {
-            base = sContextBuilder.apply(base);
-        }
-        super.attachBaseContext(base);
-    }
 
     private static boolean isJaCoCoEnabled() {
         // Nothing is set at runtime indicating jacoco is being used. This looks for the existence
@@ -210,6 +195,12 @@ public class InstrumentationActivity extends AppCompatActivity {
             return;
         }
         super.startActivityForResult(intent, requestCode, options);
+    }
+
+    @Override
+    public int checkPermission(String permission, int pid, int uid) {
+        // Tests can use a ContextWrapper for tha application context in order to hook this call.
+        return ContextUtils.getApplicationContext().checkPermission(permission, pid, uid);
     }
 
     public View getTopContentsContainer() {
@@ -367,6 +358,15 @@ public class InstrumentationActivity extends AppCompatActivity {
             // Don't reset |sOnCreatedCallback| as it's needed for tests that exercise activity
             // recreation.
         }
+    }
+
+    /**
+     * Removes and adds back the TabListCallback. This is useful for tests that
+     * need to ensure their callback is run first.
+     */
+    public void reregisterTabListCallback() {
+        mBrowser.unregisterTabListCallback(mTabListCallback);
+        mBrowser.registerTabListCallback(mTabListCallback);
     }
 
     private void setTabCallbacks(Tab tab) {

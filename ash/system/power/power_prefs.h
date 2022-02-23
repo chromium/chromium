@@ -27,6 +27,7 @@ class ScreenIdleState;
 
 namespace ash {
 
+class HpsSenseController;
 class PowerPrefsTest;
 
 // Sends an updated power policy to the |power_policy_controller| whenever one
@@ -68,6 +69,7 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   void UpdatePowerPolicyFromPrefs();
+  void UpdatePowerPolicyFromPrefsChange();
 
   // Observes either the signin screen prefs or active user prefs and loads
   // initial settings.
@@ -84,6 +86,7 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
 
   std::unique_ptr<PrefChangeRegistrar> profile_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_registrar_;
+  std::unique_ptr<HpsSenseController> hps_sense_controller_;
 
   const base::TickClock* tick_clock_;  // Not owned.
 
@@ -93,6 +96,9 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   // Time at which the screen was last turned off due to user inactivity.
   // Unset if the screen isn't currently turned off due to user inactivity.
   base::TimeTicks screen_idle_off_time_;
+
+  // The last observed quick dim state for the current pref service.
+  bool quick_dim_pref_enabled_ = false;
 
   PrefService* local_state_ = nullptr;  // Not owned.
 };

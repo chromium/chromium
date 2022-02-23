@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest,
 
 // This test is OK on Windows, but times out on other platforms.
 // https://crbug.com/833854
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NewlyIntroducedListener NewlyIntroducedListener
 #else
 #define MAYBE_NewlyIntroducedListener DISABLED_NewlyIntroducedListener

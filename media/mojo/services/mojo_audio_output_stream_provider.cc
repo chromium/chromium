@@ -44,7 +44,7 @@ void MojoAudioOutputStreamProvider::Acquire(
 // |processing_id| gets dropped here. It's not supported outside of the audio
 // service. As this class is slated for removal, it will not be updated to
 // support audio processing.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (params.IsBitstreamFormat()) {
     // Bitstream streams are only supported on Android.
     BadMessage(

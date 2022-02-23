@@ -24,5 +24,19 @@ void FakeAppsAccessManager::SetAccessStatusInternal(
 
 void FakeAppsAccessManager::OnSetupRequested() {}
 
+void FakeAppsAccessManager::SetAppsSetupOperationStatus(
+    AppsAccessSetupOperation::Status new_status) {
+  switch (new_status) {
+    case AppsAccessSetupOperation::Status::kCompletedSuccessfully:
+      SetAccessStatusInternal(AccessStatus::kAccessGranted);
+      break;
+    default:
+      // Do not update access status based on other operation status values.
+      break;
+  }
+
+  AppsAccessManager::SetAppsSetupOperationStatus(new_status);
+}
+
 }  // namespace eche_app
 }  // namespace ash

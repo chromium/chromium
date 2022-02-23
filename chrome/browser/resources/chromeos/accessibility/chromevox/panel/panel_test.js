@@ -66,6 +66,11 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
     assertEquals(menuItemTitle, activeItem.menuItemTitle);
   }
 
+  isMenuTitleMessage(menuTitleMessage) {
+    const menu = this.getPanel().activeMenu_;
+    return menuTitleMessage === menu.menuMsg;
+  }
+
   get linksDoc() {
     return `
       <p>start</p>
@@ -95,7 +100,8 @@ TEST_F('ChromeVoxPanelTest', 'ActivateMenu', function() {
   });
 });
 
-TEST_F('ChromeVoxPanelTest', 'LinkMenu', function() {
+// TODO(https://crbug.com/1299765): Re-enable once flaky timeouts are fixed.
+TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', function() {
   this.runWithLoadedTree(this.linksDoc, async function(root) {
     CommandHandler.onCommand('showLinksList');
     await this.waitForMenu('role_link');
@@ -225,3 +231,37 @@ TEST_F('ChromeVoxPanelTest', 'ShortcutsAreInternationalized', function() {
         'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
   });
 });
+
+// Ensure 'Touch Gestures' is not in the panel menus by default.
+TEST_F(
+    'ChromeVoxPanelTest', 'TouchGesturesMenuNotAvailableWhenNotInTouchMode',
+    function() {
+      this.runWithLoadedTree(this.linksDoc, async function(root) {
+        new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+        await this.waitForMenu('panel_search_menu');
+        do {
+          this.fireMockEvent('ArrowRight')();
+          assertFalse(this.isMenuTitleMessage('panel_menu_touchgestures'));
+        } while (!this.isMenuTitleMessage('panel_search_menu'));
+      });
+    });
+
+// Ensure 'Touch Gesture' is in the panel menus when touch mode is enabled.
+TEST_F(
+    'ChromeVoxPanelTest', 'TouchGesturesMenuAvailableWhenInTouchMode',
+    function() {
+      this.runWithLoadedTree(this.linksDoc, async function(root) {
+        this.getPanel().setTouchGestureSourceForTesting();
+        new PanelCommand(PanelCommandType.OPEN_MENUS).send();
+        await this.waitForMenu('panel_search_menu');
+
+        // Look for Touch Gestures menu, fail if getting back to start.
+        do {
+          this.fireMockEvent('ArrowRight')();
+          assertFalse(this.isMenuTitleMessage('panel_search_menu'));
+        } while (!this.isMenuTitleMessage('panel_menu_touchgestures'));
+
+        this.assertActiveMenuItem(
+            'panel_menu_touchgestures', 'Click on current item');
+      });
+    });

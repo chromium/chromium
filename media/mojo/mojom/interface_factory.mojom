@@ -5,6 +5,7 @@
 module media.mojom;
 
 import "media/mojo/mojom/audio_decoder.mojom";
+import "media/mojo/mojom/audio_encoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_log.mojom";
@@ -19,6 +20,9 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 interface InterfaceFactory {
   CreateAudioDecoder(pending_receiver<AudioDecoder> audio_decoder);
   CreateVideoDecoder(pending_receiver<VideoDecoder> video_decoder);
+
+  // Creates an AudioEncoder bound to a given receiver.
+  CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);
 
   // Creates a regular media::Renderer (DefaultRendererFactory).
   // TODO(guohuideng): remove |audio_device_id|, it's not used.
@@ -65,17 +69,17 @@ interface InterfaceFactory {
       pending_remote<FlingingRendererClientExtension> client_extension,
       pending_receiver<Renderer> renderer);
 
-  // Creates a CDM based on the |key_system| and |cdm_config| provided. A
-  // |key_system| is a generic term for a decryption mechanism and/or content
+  // Creates a CDM based on the `cdm_config` provided. The `key_system` in the
+  // `cdm_config` is a generic term for a decryption mechanism and/or content
   // protection provider. It should be a reverse domain name,
   // e.g. "com.example.somesystem". However, this call may be initiated by an
   // untrusted process (e.g. renderer), so the implementation must fully
-  // validate |key_system| before creating the CDM. |cdm_config| specifies other
+  // validate `key_system` before creating the CDM. `cdm_config` specifies other
   // properties of the CDM which may influence creation. Upon failure, the
-  // returned |cdm| and |cdm_context| will be null, and |error_message| will
-  // specify the error reason. Upon success, |cdm| and |cdm_context| will be
-  // valid, and |error_message| will be empty.
-  CreateCdm(string key_system, CdmConfig cdm_config) =>
+  // returned `cdm` and `cdm_context` will be null, and `error_message` will
+  // specify the error reason. Upon success, `cdm` and `cdm_context` will be
+  // valid, and `error_message` will be empty.
+  CreateCdm(CdmConfig cdm_config) =>
             (pending_remote<ContentDecryptionModule>? cdm,
              CdmContext? cdm_context,
              string error_message);

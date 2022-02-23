@@ -13,15 +13,16 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -79,27 +80,16 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
 
   Browser* browser = toolbar_view_->browser();
 
-  FeaturePromoControllerViews* const feature_promo_controller =
-      BrowserView::GetBrowserViewForBrowser(toolbar_view_->browser())
-          ->feature_promo_controller();
-
   // If the menu was opened while reopen tab in-product help was
   // showing, we continue the IPH into the menu. Notify the promo
   // controller we are taking control of the promo.
-  DCHECK(!reopen_tab_promo_handle_);
-  if (feature_promo_controller->BubbleIsShowing(
-          feature_engagement::kIPHReopenTabFeature)) {
-    reopen_tab_promo_handle_ =
-        feature_promo_controller->CloseBubbleAndContinuePromo(
-            feature_engagement::kIPHReopenTabFeature);
-  }
-
-  bool alert_reopen_tab_items = reopen_tab_promo_handle_.has_value();
+  reopen_tab_promo_handle_ = browser->window()->CloseFeaturePromoAndContinue(
+      feature_engagement::kIPHReopenTabFeature);
 
   RunMenu(
       std::make_unique<AppMenuModel>(toolbar_view_, browser,
                                      toolbar_view_->app_menu_icon_controller()),
-      browser, run_types, alert_reopen_tab_items);
+      browser, run_types, reopen_tab_promo_handle_.is_valid());
 }
 
 void BrowserAppMenuButton::OnThemeChanged() {
@@ -123,7 +113,7 @@ void BrowserAppMenuButton::HandleMenuClosed() {
   // If we were showing a promo in the menu, drop the handle to notify
   // FeaturePromoController we're done. This is a no-op if we weren't
   // showing the promo.
-  reopen_tab_promo_handle_.reset();
+  reopen_tab_promo_handle_.Release();
 }
 
 void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
@@ -141,26 +131,21 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
   }
 
   absl::optional<SkColor> color;
+  const auto* tp = GetThemeProvider();
   switch (type_and_severity_.severity) {
     case AppMenuIconController::Severity::NONE:
       break;
     case AppMenuIconController::Severity::LOW:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleGreen300, gfx::kGoogleGreen600,
-          gfx::kGoogleGreen050, gfx::kGoogleGreen900);
-
+      color =
+          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW);
       break;
     case AppMenuIconController::Severity::MEDIUM:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleYellow300, gfx::kGoogleYellow600,
-          gfx::kGoogleYellow050, gfx::kGoogleYellow900);
-
+      color = tp->GetColor(
+          ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM);
       break;
     case AppMenuIconController::Severity::HIGH:
-      color = AdjustHighlightColorForContrast(
-          GetThemeProvider(), gfx::kGoogleRed300, gfx::kGoogleRed600,
-          gfx::kGoogleRed050, gfx::kGoogleRed900);
-
+      color =
+          tp->GetColor(ThemeProperties::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH);
       break;
   }
 

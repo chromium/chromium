@@ -13,11 +13,6 @@ specified by the --skip-existing flag, the script checks what HTML report files
 have already been uploaded to the GCS bucket, then works on generating the
 remaining desired files.
 
-Size files are fetched by streaming them from the source bucket, then the
-html_report module handles creating a report file to diff two size files.
-Reports are saved to a local directory, and once all reports are created they
-can be uploaded to the destination bucket.
-
 Reports can be uploaded automatically with the --sync flag. Otherwise, they can
 be uploaded at a later point.
 """

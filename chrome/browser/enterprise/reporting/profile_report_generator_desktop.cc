@@ -45,7 +45,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     enterprise_management::ChromeUserProfileInfo* report) {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kCloudExtensionRequestEnabled))
     return;
-  const base::DictionaryValue* pending_requests =
+  const base::Value* pending_requests =
       profile_->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
 
   // In case a corrupted profile prefs causing |pending_requests| to be null.

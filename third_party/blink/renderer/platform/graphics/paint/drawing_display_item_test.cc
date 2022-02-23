@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
@@ -34,7 +34,7 @@ static sk_sp<PaintRecord> CreateRectRecord(const gfx::RectF& record_bounds) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas =
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
-  canvas->drawRect(gfx::RectFToSkRect(record_bounds), PaintFlags());
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
   return recorder.finishRecordingAsPicture();
 }
 
@@ -47,7 +47,7 @@ static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
   canvas->save();
   canvas->translate(dx, dy);
-  canvas->drawRect(gfx::RectFToSkRect(record_bounds), PaintFlags());
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
   canvas->restore();
   return recorder.finishRecordingAsPicture();
 }
@@ -161,7 +161,7 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas =
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
-  canvas->drawOval(gfx::RectFToSkRect(record_bounds), PaintFlags());
+  canvas->drawOval(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
 
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           ToEnclosingRect(record_bounds),
@@ -179,7 +179,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
   constexpr int kSize = 100;
   SkBitmap bitmap;
   bitmap.allocN32Pixels(kSize, kSize);
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(SK_ColorWHITE);
   for (float r = kRadiusStep; r < kSize / 2; r += kRadiusStep) {
@@ -204,6 +204,21 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
       }
     }
   }
+}
+
+TEST_F(DrawingDisplayItemTest, DrawEmptyImage) {
+  auto image = cc::PaintImageBuilder::WithDefault()
+                   .set_paint_record(sk_make_sp<PaintRecord>(), gfx::Rect(), 0)
+                   .set_id(1)
+                   .TakePaintImage();
+  PaintRecorder recorder;
+  recorder.beginRecording(100, 100)->drawImageRect(
+      image, SkRect::MakeEmpty(), SkRect::MakeEmpty(),
+      SkCanvas::kFast_SrcRectConstraint);
+  DrawingDisplayItem item(
+      client_->Id(), DisplayItem::kBoxDecorationBackground, gfx::Rect(10, 20),
+      recorder.finishRecordingAsPicture(), RasterEffectOutset::kNone);
+  EXPECT_TRUE(item.RectKnownToBeOpaque().IsEmpty());
 }
 
 }  // namespace

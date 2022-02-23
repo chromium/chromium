@@ -6,7 +6,6 @@
 #define DEVICE_GAMEPAD_GAMEPAD_MONITOR_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "device/gamepad/gamepad_consumer.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"

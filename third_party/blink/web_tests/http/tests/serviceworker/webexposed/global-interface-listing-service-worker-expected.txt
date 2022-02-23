@@ -10,10 +10,13 @@ interface AbortPaymentEvent : ExtendableEvent
     method respondWith
 interface AbortSignal : EventTarget
     static method abort
+    static method timeout
     attribute @@toStringTag
     getter aborted
     getter onabort
+    getter reason
     method constructor
+    method throwIfAborted
     setter onabort
 interface BackgroundFetchEvent : ExtendableEvent
     attribute @@toStringTag
@@ -543,7 +546,6 @@ interface FileSystemFileHandle : FileSystemHandle
     method createWritable
     method getFile
     method move
-    method rename
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind
@@ -553,7 +555,6 @@ interface FileSystemHandle
     method move
     method queryPermission
     method remove
-    method rename
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
@@ -792,6 +793,37 @@ interface MediaCapabilities
     method constructor
     method decodingInfo
     method encodingInfo
+interface MediaStreamTrack : EventTarget
+    attribute @@toStringTag
+    getter contentHint
+    getter enabled
+    getter id
+    getter kind
+    getter label
+    getter muted
+    getter oncapturehandlechange
+    getter onended
+    getter onmute
+    getter onunmute
+    getter readyState
+    method applyConstraints
+    method clone
+    method constructor
+    method getCapabilities
+    method getCaptureHandle
+    method getConstraints
+    method getSettings
+    method stop
+    setter contentHint
+    setter enabled
+    setter oncapturehandlechange
+    setter onended
+    setter onmute
+    setter onunmute
+interface MediaStreamTrackGenerator : MediaStreamTrack
+    attribute @@toStringTag
+    getter writable
+    method constructor
 interface MessageChannel
     attribute @@toStringTag
     getter port1
@@ -955,12 +987,16 @@ interface NotificationEvent : ExtendableEvent
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
+    getter oncontextlost
+    getter oncontextrestored
     getter width
     method constructor
     method convertToBlob
     method getContext
     method transferToImageBitmap
     setter height
+    setter oncontextlost
+    setter oncontextrestored
     setter width
 interface OffscreenCanvasRenderingContext2D
     attribute @@toStringTag
@@ -1126,6 +1162,7 @@ interface PerformanceEntry
     getter duration
     getter entryType
     getter name
+    getter navigationCount
     getter startTime
     method constructor
     method toJSON
@@ -1343,7 +1380,6 @@ interface Response
     method text
 interface Scheduler
     attribute @@toStringTag
-    getter currentTaskSignal
     method constructor
     method postTask
 interface SecurityPolicyViolationEvent : Event
@@ -2172,6 +2208,7 @@ interface WebGL2RenderingContext
     attribute WAIT_FAILED
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -2252,6 +2289,7 @@ interface WebGL2RenderingContext
     method drawElements
     method drawElementsInstanced
     method drawRangeElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method endQuery
@@ -2721,6 +2759,7 @@ interface WebGLRenderingContext
     attribute VIEWPORT
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -2771,6 +2810,7 @@ interface WebGLRenderingContext
     method disableVertexAttribArray
     method drawArrays
     method drawElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method finish
@@ -2964,7 +3004,6 @@ interface WindowClient : Client
     method navigate
 interface WorkerGlobalScope : EventTarget
     attribute @@toStringTag
-    getter addressSpace
     getter caches
     getter crossOriginIsolated
     getter crypto
@@ -3050,6 +3089,7 @@ interface WritableStream
     method getWriter
 interface WritableStreamDefaultController
     attribute @@toStringTag
+    getter signal
     method constructor
     method error
 interface WritableStreamDefaultWriter

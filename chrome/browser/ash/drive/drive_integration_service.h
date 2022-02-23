@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "ash/components/drivefs/drivefs_host.h"
 #include "base/callback.h"
@@ -101,6 +102,8 @@ class DriveIntegrationService : public KeyedService,
   using SearchDriveByFileNameCallback =
       base::OnceCallback<void(drive::FileError,
                               std::vector<drivefs::mojom::QueryItemPtr>)>;
+  using GetThumbnailCallback =
+      base::OnceCallback<void(const absl::optional<std::vector<uint8_t>>&)>;
 
   // test_mount_point_name, test_cache_root and
   // test_drivefs_mojo_listener_factory are used by tests to inject customized
@@ -220,6 +223,14 @@ class DriveIntegrationService : public KeyedService,
   // Loads account settings (including feature flags) from
   // |data_dir_path/account_settings. Should only be called in developer mode.
   void LoadAccountSettings();
+
+  // Returns a PNG containing a thumbnail for |path|. If |crop_to_square|, a
+  // 360x360 thumbnail, cropped to fit a square is returned; otherwise a
+  // thumbnail up to 500x500, maintaining aspect ration, is returned. If |path|
+  // does not exist or does not have a thumbnail, |thumbnail| will be null.
+  void GetThumbnail(const base::FilePath& path,
+                    bool crop_to_square,
+                    GetThumbnailCallback callback);
 
  private:
   enum State {

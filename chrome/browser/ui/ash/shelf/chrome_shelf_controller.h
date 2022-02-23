@@ -293,6 +293,9 @@ class ChromeShelfController
   void OnAppUpdated(content::BrowserContext* browser_context,
                     const std::string& app_id,
                     bool reload_icon) override;
+  void OnAppShowInShelfChanged(content::BrowserContext* browser_context,
+                               const std::string& app_id,
+                               bool show_in_shelf) override;
   void OnAppUninstalledPrepared(content::BrowserContext* browser_context,
                                 const std::string& app_id,
                                 bool by_migration) override;
@@ -352,11 +355,26 @@ class ChromeShelfController
   // Re-syncs shelf model.
   void UpdatePinnedAppsFromSync();
 
+  // Makes sure that the app with `app_id` is pinned at `target_index` within
+  // shelf model if possible. `current_index` is the current app index in the
+  // shelf model.
+  // If the app is not in the model, the value should be -1.
+  // Returns whether the app got pinned - for example, this may fail for chrome
+  // app if it's not present in the shelf, or if creating a shelf item for the
+  // app fails.
+  bool EnsureAppPinnedInModelAtIndex(const std::string& app_id,
+                                     int current_index,
+                                     int target_index);
+
   // Schedules re-sync of shelf model.
   void ScheduleUpdatePinnedAppsFromSync();
 
   // Update the policy-pinned flag for each shelf item.
   void UpdatePolicyPinnedAppsFromPrefs();
+
+  // Updates the policy-pinned flag for shelf item at `model_index` in shelf
+  // model.
+  void UpdatePinnedByPolicyForItemAtIndex(int model_index);
 
   // Returns the shelf item status for the given |app_id|, which can be either
   // STATUS_RUNNING (if there is such an app) or STATUS_CLOSED.

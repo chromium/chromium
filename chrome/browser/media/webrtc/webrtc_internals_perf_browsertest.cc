@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -76,7 +76,7 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
         base::JSONReader::ReadDeprecated(all_stats_json);
     base::DictionaryValue* result;
     if (parsed_json.get() && parsed_json->GetAsDictionary(&result)) {
-      ignore_result(parsed_json.release());
+      std::ignore = parsed_json.release();
       return result;
     }
 

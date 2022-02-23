@@ -58,13 +58,13 @@ const char kPluginsServerUrl[] =
 
 GURL GetPluginsServerURL() {
   std::string filename;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   filename = "plugins_win.json";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   filename = "plugins_chromeos.json";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   filename = "plugins_linux.json";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   filename = "plugins_mac.json";
 #else
 #error Unknown platform
@@ -90,8 +90,8 @@ PluginsResourceService::PluginsResourceService(PrefService* local_state)
           base::BindOnce(&content::GetNetworkConnectionTracker)) {}
 
 void PluginsResourceService::Init() {
-  const base::DictionaryValue* metadata =
-      prefs_->GetDictionary(prefs::kPluginsMetadata);
+  const base::DictionaryValue* metadata = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(prefs::kPluginsMetadata));
   PluginFinder::GetInstance()->ReinitializePlugins(metadata);
   StartAfterDelay();
 }

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -40,11 +41,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
+#include "net/android/radio_activity_tracker.h"
+#include "net/base/features.h"
 #include "services/network/radio_monitor_android.h"
 #endif
 
@@ -140,7 +142,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   absl::optional<net::AddressList> result_addresses_;
   absl::optional<std::vector<std::string>> result_text_;
   absl::optional<std::vector<net::HostPortPair>> result_hosts_;
-  base::RunLoop* const run_loop_;
+  const raw_ptr<base::RunLoop> run_loop_;
 };
 
 class TestMdnsListenClient : public mojom::MdnsListenClient {
@@ -707,8 +709,8 @@ TEST_F(HostResolverTest, IncludeCanonicalName) {
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(response_client.result_addresses().value().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("123.0.12.24", 80)));
-  EXPECT_EQ("canonicalexample.com",
-            response_client.result_addresses().value().GetCanonicalName());
+  EXPECT_THAT(response_client.result_addresses().value().dns_aliases(),
+              testing::ElementsAre("canonicalexample.com"));
 }
 
 TEST_F(HostResolverTest, LoopbackOnly) {
@@ -1572,13 +1574,13 @@ TEST_F(HostResolverTest, MdnsListener_UnhandledResult) {
 }
 #endif  // BUILDFLAG(ENABLE_MDNS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 class HostResolverRecordRadioWakeupTest : public HostResolverTest {
  public:
   HostResolverRecordRadioWakeupTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kRecordRadioWakeupTrigger);
+        net::features::kRecordRadioWakeupTrigger);
   }
 
  private:
@@ -1588,9 +1590,10 @@ class HostResolverRecordRadioWakeupTest : public HostResolverTest {
 TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kDormant);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kDormant);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
 
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
@@ -1622,7 +1625,7 @@ TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
       mojom::ResolveHostParameters::Purpose::kPreconnect, 1);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace network

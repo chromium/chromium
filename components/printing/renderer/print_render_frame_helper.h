@@ -34,15 +34,11 @@
 
 // RenderViewTest-based tests crash on Android
 // http://crbug.com/187500
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PrintRenderFrameHelperTest DISABLED_PrintRenderFrameHelperTest
-#define MAYBE_PrintRenderFrameHelperPreviewTest \
-  DISABLED_PrintRenderFrameHelperPreviewTest
 #else
 #define MAYBE_PrintRenderFrameHelperTest PrintRenderFrameHelperTest
-#define MAYBE_PrintRenderFrameHelperPreviewTest \
-  PrintRenderFrameHelperPreviewTest
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 class DictionaryValue;
@@ -167,8 +163,9 @@ class PrintRenderFrameHelper
   const mojo::AssociatedRemote<mojom::PrintManagerHost>& GetPrintManagerHost();
 
  private:
+  friend class PrintRenderFrameHelperPreviewTest;
   friend class PrintRenderFrameHelperTestBase;
-  FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperPreviewTest,
+  FRIEND_TEST_ALL_PREFIXES(PrintRenderFrameHelperPreviewTest,
                            BlockScriptInitiatedPrinting);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
                            PrintRequestedPages);
@@ -176,10 +173,10 @@ class PrintRenderFrameHelper
                            BlockScriptInitiatedPrinting);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest,
                            BlockScriptInitiatedPrintingFromPopup);
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest);
   FRIEND_TEST_ALL_PREFIXES(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe);
-#endif  // defined(OS_WIN) || defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
   // CREATE_IN_PROGRESS signifies that the preview document is being rendered
   // asynchronously by a PrintRenderer.
@@ -250,6 +247,7 @@ class PrintRenderFrameHelper
       absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidFailProvisionalLoad() override;
   void DidFinishLoad() override;
+  void DidFinishLoadForPrinting() override;
   void ScriptedPrint(bool user_initiated) override;
 
   void BindPrintRenderFrameReceiver(
@@ -439,7 +437,8 @@ class PrintRenderFrameHelper
 
   // WARNING: |this| may be gone after this method returns when |type| is
   // PRINT_PREVIEW_SCRIPTED.
-  void RequestPrintPreview(PrintPreviewRequestType type);
+  void RequestPrintPreview(PrintPreviewRequestType type,
+                           bool already_notified_frame);
 
   // Checks whether print preview should continue or not.
   // Returns true if canceling, false if continuing.
@@ -658,6 +657,8 @@ class PrintRenderFrameHelper
     int count_ = 0;
   };
 
+  void WaitForLoad(PrintPreviewRequestType type);
+
   ScriptingThrottler scripting_throttler_;
 
   bool print_node_in_progress_ = false;
@@ -676,10 +677,13 @@ class PrintRenderFrameHelper
   // is enabled.
   std::unique_ptr<content::AXTreeSnapshotter> snapshotter_;
 
-  // Used to fix a race condition where the source is a PDF and print preview
-  // hangs because RequestPrintPreview is called before DidStopLoading() is
-  // called. This is a store for the RequestPrintPreview() call and its
-  // parameters so that it can be invoked after DidStopLoading.
+  // Used for two reasons:
+  // * To give the document time to finish loading any pending resources that
+  //   are desired for printing.
+  // * To fix a race condition where the source is a PDF and print preview
+  //   hangs because RequestPrintPreview is called before DidStopLoading() is
+  //   called. This is a store for the RequestPrintPreview() call and its
+  //   parameters so that it can be invoked after DidStopLoading.
   base::OnceClosure on_stop_loading_closure_;
 
   // Stores the quit closures of Mojo responses.

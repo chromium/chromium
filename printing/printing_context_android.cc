@@ -62,7 +62,9 @@ void GetPageRanges(JNIEnv* env,
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
+    Delegate* delegate,
+    bool skip_system_calls) {
+  DCHECK(!skip_system_calls);
   return std::make_unique<PrintingContextAndroid>(delegate);
 }
 
@@ -157,12 +159,6 @@ void PrintingContextAndroid::ShowSystemDialogDone(
   std::move(callback_).Run(mojom::ResultCode::kCanceled);
 }
 
-void PrintingContextAndroid::PrintDocument(const MetafilePlayer& metafile) {
-  DCHECK(is_file_descriptor_valid());
-
-  metafile.SaveToFileDescriptor(fd_);
-}
-
 mojom::ResultCode PrintingContextAndroid::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
@@ -200,10 +196,8 @@ gfx::Size PrintingContextAndroid::GetPdfPaperSizeDeviceUnits() {
 }
 
 mojom::ResultCode PrintingContextAndroid::UpdatePrinterSettings(
-    bool external_preview,
-    bool show_system_dialog,
-    int page_count) {
-  DCHECK(!show_system_dialog);
+    const PrinterSettings& printer_settings) {
+  DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
   // Intentional No-op.
@@ -219,24 +213,17 @@ mojom::ResultCode PrintingContextAndroid::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextAndroid::NewPage() {
+mojom::ResultCode PrintingContextAndroid::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
+  DCHECK(is_file_descriptor_valid());
 
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextAndroid::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
+  return metafile.SaveToFileDescriptor(fd_) ? mojom::ResultCode::kSuccess
+                                            : mojom::ResultCode::kFailed;
 }
 
 mojom::ResultCode PrintingContextAndroid::DocumentDone() {

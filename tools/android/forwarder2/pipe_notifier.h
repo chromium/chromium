@@ -5,8 +5,6 @@
 #ifndef TOOLS_ANDROID_FORWARDER2_PIPE_NOTIFIER_H_
 #define TOOLS_ANDROID_FORWARDER2_PIPE_NOTIFIER_H_
 
-#include "base/macros.h"
-
 namespace forwarder2 {
 
 // Helper class used to create a unix pipe that sends notifications to the

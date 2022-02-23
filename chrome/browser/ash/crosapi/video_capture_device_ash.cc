@@ -13,10 +13,14 @@
 namespace crosapi {
 
 VideoCaptureDeviceAsh::VideoCaptureDeviceAsh(
+    mojo::PendingRemote<video_capture::mojom::Device> device_remote)
+    : device_(std::move(device_remote)) {}
+
+VideoCaptureDeviceAsh::VideoCaptureDeviceAsh(
     mojo::PendingReceiver<crosapi::mojom::VideoCaptureDevice> proxy_receiver,
     mojo::PendingRemote<video_capture::mojom::Device> device_remote,
     base::OnceClosure cleanup_callback)
-    : device_(std::move(device_remote)) {
+    : VideoCaptureDeviceAsh(std::move(device_remote)) {
   receiver_.Bind(std::move(proxy_receiver));
   receiver_.set_disconnect_handler(std::move(cleanup_callback));
 }
@@ -58,6 +62,10 @@ void VideoCaptureDeviceAsh::TakePhoto(TakePhotoCallback callback) {
 void VideoCaptureDeviceAsh::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
   device_->ProcessFeedback(std::move(feedback));
+}
+
+void VideoCaptureDeviceAsh::RequestRefreshFrame() {
+  device_->RequestRefreshFrame();
 }
 
 }  // namespace crosapi

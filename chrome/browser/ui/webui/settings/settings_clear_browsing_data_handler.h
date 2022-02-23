@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -53,7 +54,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
  protected:
   // Fetches a list of installed apps to be displayed in the clear browsing
   // data confirmation dialog. Called by Javascript.
-  void GetRecentlyLaunchedInstalledApps(const base::ListValue* args);
+  void GetRecentlyLaunchedInstalledApps(base::Value::ConstListView args);
 
  private:
   friend class TestingClearBrowsingDataHandler;
@@ -79,7 +80,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
       base::Value::ConstListView installed_apps);
 
   // Clears browsing data, called by Javascript.
-  void HandleClearBrowsingData(const base::ListValue* value);
+  void HandleClearBrowsingData(base::Value::ConstListView value);
 
   // Called when a clearing task finished. |webui_callback_id| is provided
   // by the WebUI action that initiated it.
@@ -92,7 +93,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
       uint64_t failed_data_types);
 
   // Initializes the dialog UI. Called by JavaScript when the DOM is ready.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(base::Value::ConstListView args);
 
   // Implementation of SyncServiceObserver.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -124,13 +125,13 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void OnTemplateURLServiceChanged() override;
 
   // Cached profile corresponding to the WebUI of this handler.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Counters that calculate the data volume for individual data types.
   std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>> counters_;
 
   // SyncService to observe sync state changes.
-  syncer::SyncService* sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 

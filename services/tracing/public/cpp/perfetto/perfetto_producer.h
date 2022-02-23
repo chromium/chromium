@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/basic_types.h"
@@ -113,7 +114,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // TODO(crbug.com/839071): Find a good compromise between performance and
   // data granularity (mainly relevant to running with small buffer sizes
   // when we use background tracing) on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr size_t kSMBPageSizeBytes = 4 * 1024;
 #else
   static constexpr size_t kSMBPageSizeBytes = 32 * 1024;
@@ -156,7 +157,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // subprocess to start tracing after it connects).
   base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
 
-  base::tracing::PerfettoTaskRunner* const task_runner_;
+  const raw_ptr<base::tracing::PerfettoTaskRunner> task_runner_;
 
   std::atomic<bool> startup_tracing_active_{false};
 

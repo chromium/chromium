@@ -102,7 +102,8 @@
               <template is="dom-repeat" items="[[siteGroup.origins]]">
                 <div class="list-item hr">
                   <div class="start row-aligned list-item origin-link"
-                       on-click="onOriginTap_" actionable>
+                       on-click="onOriginTap_"
+                       actionable$="[[!item.isPartitioned]]">
                     <site-favicon url="[[item.origin]]"></site-favicon>
                     <div class="site-representation middle text-elide">
                       <span id="originSiteRepresentation"
@@ -133,8 +134,13 @@
                           &nbsp;&middot;
                           [[originCookiesItem_(cookiesNum_.*, index)]]
                       </span>
+                      <span class="secondary" hidden$="[[!item.isPartitioned]]">
+                          &nbsp;&middot;
+                          $i18n{siteSettingsSiteEntryPartitionedLabel}
+                      </span>
                     </div>
                     <cr-icon-button class="subpage-arrow"
+                        hidden$="[[item.isPartitioned]]"
                         aria-labelledby$="originSiteRepresentation"
                         aria-roledescription=
                             "$i18n{subpageArrowRoleDescription}"
@@ -160,6 +166,7 @@
                           id="removeOriginButton"
                           title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
                           data-origin$="[[item.origin]]" data-context="origin"
+                          data-partitioned$="[[item.isPartitioned]]"
                           on-click="onRemove_" focus-row-control
                           focus-type="remove">
                       </cr-icon-button>

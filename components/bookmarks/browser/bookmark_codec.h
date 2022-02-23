@@ -42,15 +42,14 @@ class BookmarkCodec {
   // Encodes the model to a JSON value. This is invoked to encode the contents
   // of the bookmark bar model and is currently a convenience to invoking Encode
   // that takes the bookmark bar node and other folder node.
-  base::Value Encode(BookmarkModel* model,
-                     const std::string& sync_metadata_str);
+  base::Value Encode(BookmarkModel* model, std::string sync_metadata_str);
 
   // Encodes the bookmark bar and other folders returning the JSON value.
   base::Value Encode(const BookmarkNode* bookmark_bar_node,
                      const BookmarkNode* other_folder_node,
                      const BookmarkNode* mobile_folder_node,
                      const BookmarkNode::MetaInfoMap* model_meta_info_map,
-                     const std::string& sync_metadata_str);
+                     std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
   // setting |max_node_id| to the greatest node id. Returns true on success,
@@ -89,7 +88,7 @@ class BookmarkCodec {
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
-  static const char kRootFolderNameKey[];
+  static const char kBookmarkBarFolderNameKey[];
   static const char kOtherBookmarkFolderNameKey[];
   static const char kMobileBookmarkFolderNameKey[];
   static const char kVersionKey[];

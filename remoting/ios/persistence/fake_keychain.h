@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "remoting/ios/persistence/keychain.h"
 
 namespace remoting {

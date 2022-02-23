@@ -141,7 +141,14 @@ class NavigationSimulator {
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
       NavigationController& controller);
 
-  virtual ~NavigationSimulator() {}
+  // Creates a NavigationSimulator that will be used to simulate a
+  // renderer-initiated navigation of a fenced frame root (|render_frame_host|)
+  // to |original_url|.
+  static std::unique_ptr<NavigationSimulator> CreateForFencedFrame(
+      const GURL& original_url,
+      RenderFrameHost* fenced_frame_root);
+
+  virtual ~NavigationSimulator() = default;
 
   // --------------------------------------------------------------------------
 
@@ -250,6 +257,8 @@ class NavigationSimulator {
   virtual void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) = 0;
   virtual void SetTransition(ui::PageTransition transition) = 0;
   virtual void SetHasUserGesture(bool has_user_gesture) = 0;
+  virtual void SetNavigationInputStart(
+      base::TimeTicks navigation_input_start) = 0;
   // Note: ReloadType should only be specified for browser-initiated
   // navigations.
   virtual void SetReloadType(ReloadType reload_type) = 0;

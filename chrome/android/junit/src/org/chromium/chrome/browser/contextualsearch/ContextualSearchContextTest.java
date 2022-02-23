@@ -110,7 +110,6 @@ public class ContextualSearchContextTest {
         assertEquals(INVALID, mContext.getSelectionStartOffset());
         assertEquals(INVALID, mContext.getSelectionEndOffset());
         assertNull(mContext.getEncoding());
-        assertNull(mContext.getInitialSelectedWord());
         assertEquals("", mContext.getTextContentFollowingSelection());
     }
 
@@ -141,11 +140,9 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.getSelectionStartOffset() >= 0);
         assertTrue(mContext.getSelectionEndOffset() >= 0);
         assertNotNull(mContext.getEncoding());
-        assertNull(mContext.getInitialSelectedWord());
         assertFalse(mDidSelectionChange);
 
         simulateSelectWordAroundCaret(-"Ba".length(), "rack".length());
-        assertEquals("Barack", mContext.getInitialSelectedWord());
         assertEquals("Barack".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
         assertTrue(mDidSelectionChange);
@@ -162,7 +159,6 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.canResolve());
 
         simulateResolve(0, " Obama".length());
-        assertEquals("Barack", mContext.getInitialSelectedWord());
         assertEquals("Barack Obama".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
     }

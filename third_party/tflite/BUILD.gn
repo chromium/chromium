@@ -65,13 +65,10 @@ config("tflite_flags") {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
 
-  if (is_chromeos || is_chromeos_lacros) {
+  if (is_chromeos) {
     # TODO(crbug.com/1168787): Determine if neon can be supported
     # on chromeos builds.
-    defines += [
-      "TF_LITE_DISABLE_X86_NEON",
-      "TFLITE_ENABLE_RUY=OFF",
-    ]
+    defines += [ "TF_LITE_DISABLE_X86_NEON" ]
   }
 }
 
@@ -403,7 +400,7 @@ static_library("tflite") {
     "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
     "src/tensorflow/lite/builtin_ops.h",
-    "src/tensorflow/lite/c/common.c",
+    "src/tensorflow/lite/c/common.cc",
     "src/tensorflow/lite/c/common.h",
     "src/tensorflow/lite/core/api/error_reporter.cc",
     "src/tensorflow/lite/core/api/error_reporter.h",
@@ -414,8 +411,18 @@ static_library("tflite") {
     "src/tensorflow/lite/core/api/tensor_utils.cc",
     "src/tensorflow/lite/core/api/tensor_utils.h",
     "src/tensorflow/lite/core/subgraph.cc",
+    "src/tensorflow/lite/delegates/interpreter_utils.cc",
+    "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+    "src/tensorflow/lite/experimental/acceleration/configuration/delegate_registry.cc",
+    "src/tensorflow/lite/experimental/acceleration/configuration/delegate_registry.h",
+    "src/tensorflow/lite/experimental/acceleration/configuration/flatbuffer_to_proto.cc",
+    "src/tensorflow/lite/experimental/acceleration/configuration/flatbuffer_to_proto.h",
+    "src/tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.cc",
+    "src/tensorflow/lite/experimental/acceleration/configuration/proto_to_flatbuffer.h",
+    "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
+    "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
     "src/tensorflow/lite/experimental/resource/initialization_status.cc",
     "src/tensorflow/lite/experimental/resource/initialization_status.h",
     "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
@@ -474,7 +481,11 @@ static_library("tflite") {
   }
 
   if (is_ios) {
-    sources += [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
+    sources += [
+      "src/tensorflow/lite/minimal_logging_ios.cc",
+      "src/tensorflow/lite/profiling/signpost_profiler.h",
+      "src/tensorflow/lite/profiling/signpost_profiler.mm",
+    ]
   } else if (is_android) {
     sources += [
       "src/tensorflow/lite/minimal_logging_android.cc",

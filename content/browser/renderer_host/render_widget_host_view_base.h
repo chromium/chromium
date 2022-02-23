@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
@@ -238,6 +239,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void FocusedNodeChanged(bool is_editable_node,
                                   const gfx::Rect& node_bounds_in_screen) {}
 
+  // This method will clear any cached fallback surface. For use in response to
+  // a CommitPending where there is no content for TakeFallbackContentFrom.
+  virtual void ClearFallbackSurfaceForCommitPending() {}
   // This method will reset the fallback to the first surface after navigation.
   virtual void ResetFallbackToFirstNavigationSurface() = 0;
 
@@ -343,15 +347,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Returns true if this view's size have been initialized.
   virtual bool HasSize() const;
 
-  // Informs the view that the assocaited InterstitialPage was attached.
-  virtual void OnInterstitialPageAttached() {}
-
-  // Tells the view that the assocaited InterstitialPage will going away (but is
-  // not yet destroyed, as InterstitialPage destruction is asynchronous). The
-  // view may use this notification to clean up associated resources. This
-  // should be called before the WebContents is fully destroyed.
-  virtual void OnInterstitialPageGoingAway() {}
-
   // Returns true if the visual properties should be sent to the renderer at
   // this time. This function is intended for subclasses to suppress
   // synchronization, the default implementation returns true.
@@ -368,6 +363,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
       const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) {}
 
   virtual void SetLastPointerType(ui::EventPointerType last_pointer_type) {}
+
+  // Returns true if the view is in the active window.
+  virtual bool IsInActiveWindow() const;
 
   //----------------------------------------------------------------------------
   // The following methods are related to IME.
@@ -585,6 +583,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // instead.
   void OnShowWithPageVisibility(PageVisibilityState page_visibility);
 
+  void UpdateSystemCursorSize(const gfx::Size& cursor_size);
+
   // Each platform should override this to call RenderWidgetHostImpl::WasShown
   // and DelegatedFrameHost::WasShown, and do any platform-specific bookkeeping
   // needed.  The given `visible_time_request`, if any, should be passed to
@@ -611,7 +611,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
-  RenderWidgetHostImpl* host_;
+  raw_ptr<RenderWidgetHostImpl> host_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;
@@ -630,7 +630,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // with. This is initially nullptr until the first time the view calls
   // GetTextInputManager(). It also becomes nullptr when TextInputManager is
   // destroyed before the RWHV is destroyed.
-  TextInputManager* text_input_manager_ = nullptr;
+  raw_ptr<TextInputManager> text_input_manager_ = nullptr;
 
   // The background color used in the current renderer.
   absl::optional<SkColor> content_background_color_;
@@ -641,7 +641,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   bool is_currently_scrolling_viewport_ = false;
 
-  TooltipObserver* tooltip_observer_for_testing_ = nullptr;
+  raw_ptr<TooltipObserver> tooltip_observer_for_testing_ = nullptr;
+
+  // Cursor size in logical pixels, obtained from the OS. This value is general
+  // to all displays.
+  gfx::Size system_cursor_size_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -659,6 +663,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                            MojoInterfaceReboundOnDisconnect);
   FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
                            NoFallbackAfterHiddenNavigationFails);
+  FRIEND_TEST_ALL_PREFIXES(NoCompositingRenderWidgetHostViewBrowserTest,
+                           NoFallbackIfSwapFailedBeforeNavigation);
 
   void SynchronizeVisualProperties();
 

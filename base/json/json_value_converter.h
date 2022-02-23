@@ -14,7 +14,6 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -269,9 +268,9 @@ class RepeatedValueConverter
       return false;
     }
 
-    field->reserve(value.GetList().size());
+    field->reserve(value.GetListDeprecated().size());
     size_t i = 0;
-    for (const Value& element : value.GetList()) {
+    for (const Value& element : value.GetListDeprecated()) {
       auto e = std::make_unique<Element>();
       if (basic_converter_.Convert(element, e.get())) {
         field->push_back(std::move(e));
@@ -302,9 +301,9 @@ class RepeatedMessageConverter
     if (!value.is_list())
       return false;
 
-    field->reserve(value.GetList().size());
+    field->reserve(value.GetListDeprecated().size());
     size_t i = 0;
-    for (const Value& element : value.GetList()) {
+    for (const Value& element : value.GetListDeprecated()) {
       auto nested = std::make_unique<NestedType>();
       if (converter_.Convert(element, nested.get())) {
         field->push_back(std::move(nested));
@@ -339,9 +338,9 @@ class RepeatedCustomValueConverter
     if (!value.is_list())
       return false;
 
-    field->reserve(value.GetList().size());
+    field->reserve(value.GetListDeprecated().size());
     size_t i = 0;
-    for (const Value& element : value.GetList()) {
+    for (const Value& element : value.GetListDeprecated()) {
       auto nested = std::make_unique<NestedType>();
       if ((*convert_func_)(&element, nested.get())) {
         field->push_back(std::move(nested));

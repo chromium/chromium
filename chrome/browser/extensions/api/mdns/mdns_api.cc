@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 namespace extensions {
 
@@ -175,7 +176,7 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
   auto event = std::make_unique<Event>(events::MDNS_ON_SERVICE_LIST,
                                        mdns::OnServiceList::kEventName,
                                        std::move(results), browser_context_);
-  event->filter_info.service_type = service_type;
+  event->filter_info->service_type = service_type;
 
   // TODO(justinlin): To avoid having listeners without filters getting all
   // events, modify API to have this event require filters.
@@ -208,24 +209,25 @@ void MDnsAPI::GetValidOnServiceListListeners(
   for (const auto& listener : GetEventListeners()) {
     base::DictionaryValue* filter = listener->filter();
 
-    std::string service_type;
-    filter->GetStringASCII(kEventFilterServiceTypeKey, &service_type);
-    if (service_type.empty())
+    const std::string* service_type =
+        filter->FindStringKey(kEventFilterServiceTypeKey);
+    if (!service_type || service_type->empty() ||
+        !base::IsStringASCII(*service_type))
       continue;
 
     // Match service type when filter isn't ""
-    if (!service_type_filter.empty() && service_type_filter != service_type)
+    if (!service_type_filter.empty() && service_type_filter != *service_type)
       continue;
 
     // Don't listen for services associated only with disabled extensions
     // or non-allowlisted, non-platform-app extensions.
-    if (!IsMDnsAllowed(listener->extension_id(), service_type))
+    if (!IsMDnsAllowed(listener->extension_id(), *service_type))
       continue;
 
     if (extension_ids)
       extension_ids->insert(listener->extension_id());
     if (service_type_counts) {
-      (*service_type_counts)[service_type]++;
+      (*service_type_counts)[*service_type]++;
     }
   }
 }

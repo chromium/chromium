@@ -5,13 +5,25 @@
 module blink.mojom;
 
 // Explainer for the Direct Sockets API:
-// https://github.com/WICG/raw-sockets/blob/main/docs/explainer.md
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
+
+// This enum is used to track how often each permission check cause
+// Permission Denied failures. Used for histograms, don't renumber.
+enum DirectSocketFailureType {
+  kPermissionsPolicy = 0,
+  kTransientActivation = 1,
+  kUserDialog = 2,
+  kResolvingToNonPublic = 3,
+  kRateLimiting = 4,
+  kCORS = 5,
+  kEnterprisePolicy = 6
+};
 
 struct DirectSocketOptions {
   string? local_hostname;
@@ -25,6 +37,8 @@ struct DirectSocketOptions {
 
   // Only relevant for TCP:
   bool no_delay = false;
+
+  network.mojom.TCPKeepAliveOptions? keep_alive_options;
 };
 
 // This wraps network.mojom.NetworkContext and handles extra work such as

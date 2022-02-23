@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_BLOCKLIST_CHECK_H_
 #define CHROME_BROWSER_EXTENSIONS_BLOCKLIST_CHECK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/preload_check.h"
@@ -31,7 +32,7 @@ class BlocklistCheck : public PreloadCheck {
  private:
   void OnBlocklistedStateRetrieved(BlocklistState blocklist_state);
 
-  Blocklist* blocklist_;
+  raw_ptr<Blocklist> blocklist_;
   ResultCallback callback_;
   base::WeakPtrFactory<BlocklistCheck> weak_ptr_factory_{this};
 };

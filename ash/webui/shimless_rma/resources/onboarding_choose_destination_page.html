@@ -1,12 +1,13 @@
 <style include="cr-shared-style shimless-rma-shared">
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
+<base-page>
+  <div slot="left-pane">
     <h1>[[i18n('chooseDestinationTitleText')]]</h1>
     <cr-radio-group
         id="chooseDestinationGroup"
-        on-selected-changed="onDestinationSelectionChanged_">
+        on-selected-changed="onDestinationSelectionChanged_"
+        disabled="[[allButtonsDisabled]]">
       <cr-radio-button name="originalOwner" id="destinationOriginalOwner">
         [[i18n('sameOwnerText')]]
       </cr-radio-button>

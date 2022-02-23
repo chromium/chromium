@@ -45,10 +45,10 @@ bool LOGIN_EXPORT ParseValue(const base::Value* value, AccountId* out_value);
 
 template <typename T>
 inline bool GetArg(const base::ListValue* args, size_t index, T* out_value) {
-  const base::Value* value;
-  if (!args->Get(index, &value))
+  const auto& list = args->GetListDeprecated();
+  if (list.size() <= index)
     return false;
-  return ParseValue(value, out_value);
+  return ParseValue(&list[index], out_value);
 }
 
 base::Value LOGIN_EXPORT MakeValue(bool v);
@@ -87,7 +87,7 @@ inline void DispatchToCallback(
     const base::ListValue* args,
     std::index_sequence<Ns...> indexes) {
   DCHECK(args);
-  DCHECK_EQ(sizeof...(Args), args->GetList().size());
+  DCHECK_EQ(sizeof...(Args), args->GetListDeprecated().size());
 
   callback.Run(ParseArg<Args, Ns>(args)...);
 }

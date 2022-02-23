@@ -13,7 +13,7 @@
 namespace blink {
 
 TEST(MediaQueryMatcherTest, LostFrame) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   auto* matcher =
       MakeGarbageCollected<MediaQueryMatcher>(page_holder->GetDocument());
   scoped_refptr<MediaQuerySet> query_set =

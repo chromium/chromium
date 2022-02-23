@@ -76,7 +76,7 @@ TEST(JSONWriterTest, NestedTypes) {
 
   // The pretty-printer uses a different newline style on Windows than on
   // other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define JSON_NEWLINE "\r\n"
 #else
 #define JSON_NEWLINE "\n"
@@ -177,11 +177,11 @@ TEST(JSONWriterTest, StackOverflow) {
   // We cannot just let deep_list tear down since it
   // would cause a stack overflow. Therefore, we tear
   // down the deep list manually.
-  deep_list_storage = std::move(deep_list).TakeList();
+  deep_list_storage = std::move(deep_list).TakeListDeprecated();
   while (!deep_list_storage.empty()) {
     DCHECK_EQ(deep_list_storage.size(), 1u);
     Value inner_list = std::move(deep_list_storage[0]);
-    deep_list_storage = std::move(inner_list).TakeList();
+    deep_list_storage = std::move(inner_list).TakeListDeprecated();
   }
 }
 

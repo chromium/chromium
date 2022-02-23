@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CREDENTIAL_LEAK_CONTROLLER_ANDROID_H_
 
 #include <memory>
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -64,6 +66,10 @@ class CredentialLeakControllerAndroid {
   // Checks whether the cancel button should be shown.
   bool ShouldShowCancelButton() const;
 
+  // Whether the "change password automatically" button is available. Varies by
+  // leak type.
+  bool ShouldShowChangePasswordButton() const;
+
  private:
   // Used to customize the UI.
   const password_manager::CredentialLeakType leak_type_;
@@ -72,7 +78,7 @@ class CredentialLeakControllerAndroid {
 
   const std::u16string username_;
 
-  ui::WindowAndroid* window_android_;
+  raw_ptr<ui::WindowAndroid> window_android_;
 
   std::unique_ptr<CredentialLeakDialogViewAndroid> dialog_view_;
 };

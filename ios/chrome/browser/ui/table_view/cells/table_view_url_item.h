@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
-class GURL;
+@class CrURL;
 @class FaviconView;
 @class TableViewURLCellFaviconBadgeView;
 
@@ -19,8 +19,8 @@ class GURL;
 
 // The title of the page at |URL|.
 @property(nonatomic, readwrite, copy) NSString* title;
-// GURL from which the cell will retrieve a favicon and display the host name.
-@property(nonatomic, assign) GURL URL;
+// CrURL from which the cell will retrieve a favicon and display the host name.
+@property(nonatomic, readwrite, strong) CrURL* URL;
 // Supplemental text used to describe the URL.
 @property(nonatomic, readwrite, copy) NSString* supplementalURLText;
 // Delimiter used to separate the URL hostname and the supplemental text.

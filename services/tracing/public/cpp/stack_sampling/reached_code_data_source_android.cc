@@ -10,6 +10,7 @@
 #include "base/android/reached_addresses_bitset.h"
 #include "base/android/reached_code_profiler.h"
 #include "base/debug/elf_reader.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"

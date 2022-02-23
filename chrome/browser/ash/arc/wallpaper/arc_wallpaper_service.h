@@ -10,8 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/wallpaper.mojom.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
-#include "components/arc/mojom/wallpaper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

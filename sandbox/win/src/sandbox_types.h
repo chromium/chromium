@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 
@@ -14,7 +15,7 @@ namespace sandbox {
 //
 // Note: These codes are listed in a histogram and any new codes should be added
 // at the end. If the underlying type is changed then the forward declaration in
-// sandbox_init.h must be updated.
+// sandbox_init_win.h must be updated.
 //
 enum ResultCode : int {
   SBOX_ALL_OK = 0,
@@ -145,6 +146,9 @@ enum ResultCode : int {
   SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN = 61,
   // Cannot create a sandbox policy for an unsandboxed process.
   SBOX_ERROR_UNSANDBOXED_PROCESS = 62,
+  // Could not create the unsandboxed process. Extended error from
+  // base::LaunchProcess will be in GetLastError().
+  SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS = 63,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
@@ -174,8 +178,8 @@ class TargetServices;
 
 // Contains the pointer to a target or broker service.
 struct SandboxInterfaceInfo {
-  BrokerServices* broker_services;
-  TargetServices* target_services;
+  raw_ptr<BrokerServices> broker_services;
+  raw_ptr<TargetServices> target_services;
 };
 
 #define SANDBOX_INTERCEPT extern "C"
@@ -184,10 +188,8 @@ enum InterceptionType {
   INTERCEPTION_INVALID = 0,
   INTERCEPTION_SERVICE_CALL,  // Trampoline of an NT native call
   INTERCEPTION_EAT,
-  INTERCEPTION_SIDESTEP,        // Preamble patch
-  INTERCEPTION_SMART_SIDESTEP,  // Preamble patch but bypass internal calls
-  INTERCEPTION_UNLOAD_MODULE,   // Unload the module (don't patch)
-  INTERCEPTION_LAST             // Placeholder for last item in the enumeration
+  INTERCEPTION_UNLOAD_MODULE,  // Unload the module (don't patch)
+  INTERCEPTION_LAST            // Placeholder for last item in the enumeration
 };
 
 }  // namespace sandbox

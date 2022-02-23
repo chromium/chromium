@@ -42,5 +42,7 @@ enum PanelOrientation {
 enum PrivacyScreenState {
   DISABLED = 0,
   ENABLED = 1,
-  NOT_SUPPORTED = 2
+  DISABLED_LOCKED = 2,
+  ENABLED_LOCKED = 3,
+  NOT_SUPPORTED = 4
 };

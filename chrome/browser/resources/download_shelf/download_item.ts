@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -44,20 +44,20 @@ export class DownloadItemElement extends CustomElement {
     this.opened = false;
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
-    this.$('#shadow-mask')
-        .addEventListener('click', () => this.onOpenButtonClick_());
-    this.$('#dropdown-button')
-        .addEventListener('click', e => this.onDropdownButtonClick_(e));
+    this.$('#shadow-mask')!.addEventListener(
+        'click', () => this.onOpenButtonClick_());
+    this.$('#dropdown-button')!.addEventListener(
+        'click', e => this.onDropdownButtonClick_(e));
     const discardButton = this.$('#discard-button') as HTMLElement;
     discardButton.innerText = loadTimeData.getString('discardButtonText');
     discardButton.addEventListener('click', () => this.onDiscardButtonClick_());
-    this.$('#keep-button')
-        .addEventListener('click', () => this.onKeepButtonClick_());
+    this.$('#keep-button')!.addEventListener(
+        'click', () => this.onKeepButtonClick_());
     this.addEventListener('contextmenu', e => this.onContextMenu_(e));
 
-    this.$('.progress-indicator').addEventListener('animationend', () => {
-      this.$('.progress-indicator')
-          .classList.remove('download-complete-animation');
+    this.$('.progress-indicator')!.addEventListener('animationend', () => {
+      this.$('.progress-indicator')!.classList.remove(
+          'download-complete-animation');
     });
   }
 
@@ -132,8 +132,8 @@ export class DownloadItemElement extends CustomElement {
           this.progress = 1;
           // Only start animation if it's called from OnDownloadUpdated.
           if (this.downloadUpdated_) {
-            this.$('.progress-indicator')
-                .classList.add('download-complete-animation');
+            this.$('.progress-indicator')!.classList.add(
+                'download-complete-animation');
           }
           break;
         case DownloadState.kInterrupted:

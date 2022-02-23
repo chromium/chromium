@@ -17,7 +17,7 @@ namespace {
 
 class ComponentExtensionIMEManagerTest : public testing::Test {
  public:
-  ComponentExtensionIMEManagerTest() : mock_delegate_(NULL) {}
+  ComponentExtensionIMEManagerTest() : mock_delegate_(nullptr) {}
 
   ComponentExtensionIMEManagerTest(const ComponentExtensionIMEManagerTest&) =
       delete;
@@ -137,7 +137,7 @@ TEST_F(ComponentExtensionIMEManagerTest, LoadComponentExtensionIMETest) {
           extension_ime_util::GetComponentInputMethodID(
               ime_list_[i].id,
               ime_list_[i].engines[j].engine_id);
-      component_ext_mgr_->LoadComponentExtensionIME(NULL /* profile */,
+      component_ext_mgr_->LoadComponentExtensionIME(nullptr /* profile */,
                                                     input_method_id);
       EXPECT_EQ(ime_list_[i].id, mock_delegate_->last_loaded_extension_id());
     }
@@ -152,7 +152,7 @@ TEST_F(ComponentExtensionIMEManagerTest, UnloadComponentExtensionIMETest) {
           extension_ime_util::GetComponentInputMethodID(
               ime_list_[i].id,
               ime_list_[i].engines[j].engine_id);
-      component_ext_mgr_->UnloadComponentExtensionIME(NULL /* profile */,
+      component_ext_mgr_->UnloadComponentExtensionIME(nullptr /* profile */,
                                                       input_method_id);
       EXPECT_EQ(ime_list_[i].id, mock_delegate_->last_unloaded_extension_id());
     }

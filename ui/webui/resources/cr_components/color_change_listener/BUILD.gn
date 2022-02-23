@@ -1,0 +1,28 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [
+    ":browser_proxy",
+    ":colors_css_updater",
+  ]
+}
+
+mojom("mojom") {
+  sources = [ "color_change_listener.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "chrome://resources/cr_components/color_change_listener/"
+}
+
+js_library("browser_proxy") {
+  deps = [ ":mojom_webui_js" ]
+}
+
+js_library("colors_css_updater") {
+  deps = [ ":browser_proxy" ]
+}

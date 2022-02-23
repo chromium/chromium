@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
@@ -90,7 +91,7 @@ ui::ColorId selected_text_color_id(bool has_focus) {
 
 // Whether the platform "command" key is down.
 bool IsCmdOrCtrl(const ui::Event& event) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return event.IsCommandDown();
 #else
   return event.IsControlDown();
@@ -107,7 +108,7 @@ struct TableView::SortHelper {
     return table->CompareRows(model_index1, model_index2) < 0;
   }
 
-  TableView* table;
+  raw_ptr<TableView> table;
 };
 
 // Used as the comparator to sort the contents of the table when a TableGrouper
@@ -127,7 +128,7 @@ struct TableView::GroupSortHelper {
     return table->CompareRows(range1, range2) < 0;
   }
 
-  TableView* table;
+  raw_ptr<TableView> table;
   std::map<int, int> model_index_to_range_start;
 };
 
@@ -527,7 +528,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
 
     case ui::VKEY_UP:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (event.IsAltDown()) {
         if (GetRowCount())
           SelectByViewIndex(0);
@@ -540,7 +541,7 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
 
     case ui::VKEY_DOWN:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (event.IsAltDown()) {
         if (GetRowCount())
           SelectByViewIndex(GetRowCount() - 1);
@@ -852,7 +853,7 @@ void TableView::OnItemsRemoved(int start, int length) {
 
   // Remove the virtual views that are no longer needed.
   auto& virtual_children = GetViewAccessibility().virtual_children();
-  for (int i = start; i < start + length; i++)
+  for (int i = start; !virtual_children.empty() && i < start + length; i++)
     virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
 
   UpdateVirtualAccessibilityChildrenBounds();
@@ -1647,7 +1648,11 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
 
   // Update the bounds for the table's content rows.
   for (int row_index = 0; row_index < GetRowCount(); row_index++) {
-    auto& ax_row = virtual_children[header_ ? row_index + 1 : row_index];
+    const size_t ax_row_index = header_ ? row_index + 1 : row_index;
+    if (ax_row_index >= virtual_children.size())
+      break;
+
+    auto& ax_row = virtual_children[ax_row_index];
     ui::AXNodeData& row_data = ax_row->GetCustomData();
     DCHECK_EQ(row_data.role, ax::mojom::Role::kRow);
     row_data.relative_bounds.bounds =

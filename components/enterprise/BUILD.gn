@@ -8,10 +8,18 @@ static_library("enterprise") {
   sources = [
     "browser/reporting/browser_report_generator.cc",
     "browser/reporting/browser_report_generator.h",
+    "browser/reporting/chrome_profile_request_generator.cc",
+    "browser/reporting/chrome_profile_request_generator.h",
+    "browser/reporting/cloud_profile_reporting_policy_handler.cc",
+    "browser/reporting/cloud_profile_reporting_policy_handler.h",
+    "browser/reporting/cloud_reporting_frequency_policy_handler.cc",
+    "browser/reporting/cloud_reporting_frequency_policy_handler.h",
     "browser/reporting/cloud_reporting_policy_handler.cc",
     "browser/reporting/cloud_reporting_policy_handler.h",
     "browser/reporting/common_pref_names.cc",
     "browser/reporting/common_pref_names.h",
+    "browser/reporting/os_report_generator.cc",
+    "browser/reporting/os_report_generator.h",
     "browser/reporting/policy_info.cc",
     "browser/reporting/policy_info.h",
     "browser/reporting/profile_report_generator.cc",
@@ -22,7 +30,8 @@ static_library("enterprise") {
     "browser/reporting/real_time_uploader.h",
     "browser/reporting/report_generator.cc",
     "browser/reporting/report_generator.h",
-    "browser/reporting/report_request_definition.h",
+    "browser/reporting/report_request.cc",
+    "browser/reporting/report_request.h",
     "browser/reporting/report_request_queue_generator.cc",
     "browser/reporting/report_request_queue_generator.h",
     "browser/reporting/report_scheduler.cc",
@@ -65,7 +74,10 @@ static_library("enterprise") {
     sources += [
       "browser/controller/chrome_browser_cloud_management_controller.cc",
       "browser/controller/chrome_browser_cloud_management_controller.h",
+      "browser/device_trust/device_trust_key_manager.h",
     ]
+
+    deps += [ "//third_party/abseil-cpp:absl" ]
   }
 }
 
@@ -87,33 +99,41 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = []
-  deps = []
+  sources = [
+    "browser/reporting/chrome_profile_request_generator_unittest.cc",
+    "browser/reporting/report_uploader_unittest.cc",
+  ]
+
+  deps = [
+    ":enterprise",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/policy/core/common:test_support",
+    "//components/version_info",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
   if (!is_chromeos_ash) {
     sources += [
       "browser/controller/browser_dm_token_storage_unittest.cc",
       "browser/reporting/cloud_reporting_policy_handler_unittest.cc",
-      "browser/reporting/report_uploader_unittest.cc",
     ]
 
-    deps = [
-      ":enterprise",
+    deps += [
       ":test_support",
       "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/policy/core/browser:test_support",
-      "//components/policy/core/common:test_support",
       "//components/prefs:test_support",
-      "//components/reporting/client:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 
-  if (!is_android && !is_chromeos_ash) {
+  if (!is_android) {
     sources += [ "browser/reporting/real_time_uploader_unittest.cc" ]
+    deps += [
+      "//base",
+      "//components/enterprise/common/proto:extensions_workflow_events_proto",
+      "//components/reporting/client:test_support",
+    ]
   }
 }

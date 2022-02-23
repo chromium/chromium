@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -96,7 +96,7 @@ class FakeUsbDeviceInfo : public base::RefCounted<FakeUsbDeviceInfo> {
   void SetDefault();
   mojom::UsbDeviceInfo device_info_;
   base::ObserverList<Observer> observer_list_;
-  MockUsbMojoDevice* mock_device_ = nullptr;
+  raw_ptr<MockUsbMojoDevice> mock_device_ = nullptr;
 };
 
 }  // namespace device

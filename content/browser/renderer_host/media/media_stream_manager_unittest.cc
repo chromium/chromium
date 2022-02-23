@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -36,11 +37,11 @@
 
 #if defined(USE_ALSA)
 #include "media/audio/alsa/audio_manager_alsa.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "media/audio/android/audio_manager_android.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "media/audio/mac/audio_manager_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "media/audio/win/audio_manager_win.h"
 #else
 #include "media/audio/fake_audio_manager.h"
@@ -56,11 +57,11 @@ namespace content {
 
 #if defined(USE_ALSA)
 typedef media::AudioManagerAlsa AudioManagerPlatform;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef media::AudioManagerMac AudioManagerPlatform;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 typedef media::AudioManagerWin AudioManagerPlatform;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 typedef media::AudioManagerAndroid AudioManagerPlatform;
 #else
 typedef media::FakeAudioManager AudioManagerPlatform;
@@ -165,7 +166,7 @@ class TestBrowserClient : public ContentBrowserClient {
   MediaObserver* GetMediaObserver() override { return media_observer_; }
 
  private:
-  MediaObserver* media_observer_;
+  raw_ptr<MediaObserver> media_observer_;
 };
 
 class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
@@ -405,7 +406,7 @@ class MediaStreamManagerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  MockVideoCaptureProvider* video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider> video_capture_provider_;
   base::RunLoop run_loop_;
 };
 

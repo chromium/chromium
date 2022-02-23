@@ -260,6 +260,8 @@ component("fido") {
     sources += [
       "cros/authenticator.cc",
       "cros/authenticator.h",
+      "cros/credential_store.cc",
+      "cros/credential_store.h",
       "cros/discovery.cc",
       "cros/discovery.h",
     ]
@@ -299,6 +301,7 @@ static_library("cablev2_authenticator") {
     ":fido",
     "//components/cbor",
     "//components/device_event_log",
+    "//content/public/common",  # for authenticator.mojom
     "//services/network/public/mojom",
   ]
 }
@@ -313,6 +316,7 @@ static_library("cablev2_test_util") {
     ":cablev2_authenticator",
     ":fido",
     "//components/cbor",
+    "//content/public/common",  # for authenticator.mojom
     "//crypto",
     "//services/network:test_support",
     "//services/network/public/mojom",

@@ -19,32 +19,57 @@ class AuthIconView;
 // lock screen.
 class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
  public:
+  class Factory {
+   public:
+    Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
+    static std::unique_ptr<SmartLockAuthFactorModel> Create(
+        SmartLockState initial_state,
+        base::RepeatingCallback<void()> arrow_button_tap_callback);
+
+    static void SetFactoryForTesting(Factory* factory);
+
+   protected:
+    virtual ~Factory() = default;
+    virtual std::unique_ptr<SmartLockAuthFactorModel> CreateInstance(
+        SmartLockState initial_state,
+        base::RepeatingCallback<void()> arrow_button_tap_callback) = 0;
+
+   private:
+    static Factory* factory_instance_;
+  };
+
   SmartLockAuthFactorModel(
+      SmartLockState initial_state,
       base::RepeatingCallback<void()> arrow_button_tap_callback);
   SmartLockAuthFactorModel(SmartLockAuthFactorModel&) = delete;
   SmartLockAuthFactorModel& operator=(SmartLockAuthFactorModel&) = delete;
   ~SmartLockAuthFactorModel() override;
 
-  // TODO(crbug.com/1233614): Remove this once SmartLockState is passed in
-  // instead of EasyUnlockIconState.
-  void SetEasyUnlockIconState(EasyUnlockIconState state);
+  // AuthFactorModel:
+  void OnArrowButtonTapOrClickEvent() override;
 
   void SetSmartLockState(SmartLockState state);
   void NotifySmartLockAuthResult(bool result);
-  void OnArrowButtonTapOrClickEvent() override;
+
+ protected:
+  SmartLockState state_;
 
  private:
   // AuthFactorModel:
-  AuthFactorState GetAuthFactorState() override;
-  AuthFactorType GetType() override;
-  int GetLabelId() override;
-  bool ShouldAnnounceLabel() override;
-  int GetAccessibleNameId() override;
+  AuthFactorState GetAuthFactorState() const override;
+  AuthFactorType GetType() const override;
+  int GetLabelId() const override;
+  bool ShouldAnnounceLabel() const override;
+  int GetAccessibleNameId() const override;
   void UpdateIcon(AuthIconView* icon) override;
-  void OnTapOrClickEvent() override;
+  void DoHandleTapOrClick() override;
+  void DoHandleErrorTimeout() override;
 
   base::RepeatingCallback<void()> arrow_button_tap_callback_;
-  SmartLockState state_ = SmartLockState::kInactive;
+
   absl::optional<bool> auth_result_;
 };
 

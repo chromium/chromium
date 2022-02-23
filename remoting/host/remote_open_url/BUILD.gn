@@ -26,10 +26,10 @@ source_set("common") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//remoting/base",
-    "//remoting/host:base",
+    "//remoting/host:chromoting_host_services_client",
     "//remoting/host:resources",
     "//remoting/host:settings",
-    "//remoting/host/mojo_ipc",
+    "//remoting/host/base",
     "//remoting/host/mojom",
     "//remoting/protocol",
     "//remoting/resources",
@@ -68,11 +68,7 @@ source_set("remote_open_url_main_headers") {
 }
 
 source_set("main") {
-  defines = [ "HOST_IMPLEMENTATION" ]
-
-  if (is_win) {
-    defines += host_predefines
-  }
+  configs += [ "//remoting/build/config:host_implementation" ]
 
   sources = [ "remote_open_url_main.cc" ]
   deps = [
@@ -82,9 +78,10 @@ source_set("main") {
     "//base:i18n",
     "//mojo/core/embedder",
     "//remoting/host",
-    "//remoting/host:logging",
+    "//remoting/host:chromoting_host_services_client",
     "//remoting/host:resources",
     "//remoting/host:settings",
+    "//remoting/host/base",
     "//remoting/host/mojom",
     "//ui/base",
     "//url",
@@ -117,8 +114,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/platform",
     "//net",
     "//remoting/base",
-    "//remoting/host/mojo_ipc",
-    "//remoting/host/mojo_ipc:test_support",
+    "//remoting/host:test_support",
     "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/protocol:test_support",
@@ -131,7 +127,10 @@ source_set("unit_tests") {
 if (enable_me2me_host && (is_linux || is_win)) {
   executable("remote_open_url") {
     sources = [ "remote_open_url_entry_point.cc" ]
-    deps = [ ":remote_open_url_main_headers" ]
+    deps = [
+      ":remote_open_url_main_headers",
+      "//remoting/host:remoting_core",
+    ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (is_win) {
@@ -142,11 +141,8 @@ if (enable_me2me_host && (is_linux || is_win)) {
 
       deps += [
         "//build/win:default_exe_manifest",
-        "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
       ]
-    } else {
-      deps += [ ":main" ]
     }
   }
 }

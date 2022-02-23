@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PAYMENTS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -25,12 +26,14 @@ extern const base::Feature kAutofillEnableMerchantBoundVirtualCards;
 extern const base::Feature kAutofillEnableOfferNotificationCrossTabTracking;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
-extern const base::Feature kAutofillEnableOffersInDownstream;
-extern const base::Feature
-    kAutofillEnableSaveCardInfoBarAccountIndicationFooter;
+extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
 extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
 extern const base::Feature kAutofillEnableToolbarStatusChip;
+extern const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId;
+extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;
 extern const base::Feature kAutofillEnableVirtualCard;
+extern const base::Feature
+    kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::Feature kAutofillFixOfferInIncognito;

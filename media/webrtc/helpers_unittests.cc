@@ -36,7 +36,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
   EXPECT_TRUE(config.gain_controller1.enabled);
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(config.gain_controller2.enabled);
 #else
   EXPECT_FALSE(config.gain_controller2.enabled);
@@ -44,10 +44,9 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-  EXPECT_FALSE(config.voice_detection.enabled);
   EXPECT_FALSE(config.residual_echo_detector.enabled);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android uses echo cancellation optimized for mobiles, and does not
   // support keytap suppression.
   EXPECT_TRUE(config.echo_canceller.mobile_mode);
@@ -63,7 +62,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
   EXPECT_TRUE(config.gain_controller1.enabled);
   using Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
   // TODO(bugs.webrtc.org/7909): Add OS_IOS once bug fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(config.gain_controller1.mode, Mode::kFixedDigital);
 #else
   EXPECT_EQ(config.gain_controller1.mode, Mode::kAdaptiveAnalog);
@@ -72,12 +71,12 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
   const auto& agc1_analog_config =
       config.gain_controller1.analog_gain_controller;
   // TODO(bugs.webrtc.org/7909): Uncomment below once fixed.
-  // #if defined(OS_ANDROID) || defined(OS_IOS)
+  // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   //   // No analog controller available on mobile.
   //   EXPECT_FALSE(agc1_analog_config.enabled);
   // #else
   EXPECT_TRUE(agc1_analog_config.enabled);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Leaving `agc_startup_min_volume` unspecified on mobile does not override
   // `startup_min_volume`.
   EXPECT_EQ(agc1_analog_config.startup_min_volume,
@@ -95,7 +94,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAgcConfig) {
 
   // Check that either AGC1 digital or AGC2 digital is used based on the
   // platforms where the Hybrid AGC is enabled by default.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_FALSE(agc1_analog_config.enable_digital_adaptive);
   EXPECT_TRUE(config.gain_controller2.enabled);
   EXPECT_TRUE(config.gain_controller2.adaptive_digital.enabled);
@@ -173,7 +172,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CannotDisableAnalogAgc) {
 }
 #endif  // !BUILDFLAG(IS_CHROMECAST)
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Checks that on mobile the AGC1 Analog startup minimum volume cannot be
 // overridden.
 TEST(CreateWebRtcAudioProcessingModuleTest, CannotOverrideAgcStartupMinVolume) {
@@ -188,7 +187,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CannotOverrideAgcStartupMinVolume) {
             kDefaultApmConfig.gain_controller1.analog_gain_controller
                 .startup_min_volume);
 }
-#else   // !(defined(OS_ANDROID) || defined(OS_IOS))
+#else   // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 // Checks that on all the platforms other than mobile the AGC1 Analog startup
 // minimum volume can be overridden.
 TEST(CreateWebRtcAudioProcessingModuleTest, OverrideAgcStartupMinVolume) {
@@ -202,7 +201,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, OverrideAgcStartupMinVolume) {
   EXPECT_EQ(config.gain_controller1.analog_gain_controller.startup_min_volume,
             123);
 }
-#endif  // !(defined(OS_ANDROID) || defined(OS_IOS))
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 
 TEST(CreateWebRtcAudioProcessingModuleTest, EnableAgc1AnalogClippingControl) {
   ::base::test::ScopedFeatureList feature_list;
@@ -363,7 +362,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
         /*settings=*/{.echo_cancellation = echo_canceller_enabled});
 
     EXPECT_EQ(config.echo_canceller.enabled, echo_canceller_enabled);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(config.echo_canceller.mobile_mode);
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
@@ -387,7 +386,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
     auto config = CreateApmGetConfig(/*settings=*/{
         .transient_noise_suppression = transient_suppression_enabled});
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     // Transient suppression is not supported (nor useful) on mobile platforms.
     EXPECT_FALSE(config.transient_suppression.enabled);
 #else

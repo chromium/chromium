@@ -14,6 +14,8 @@ message AppLaunchEvent {
     SUGGESTION_CHIP = 2;
     SHELF = 3;
     SEARCH_BOX = 4;
+    RECENT_APPS = 5;
+    CONTINUE_TASKS = 6;
   }
   // The component that the user launched the app from.
   optional LaunchedFrom launched_from = 1;

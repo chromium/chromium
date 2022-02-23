@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/connectivity_diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -66,23 +67,21 @@ Profile* GetAppProfile() {
 
 }  // namespace
 
-constexpr const char ErrorScreen::kUserActionConfigureCertsButtonClicked[] =
+constexpr const char kUserActionConfigureCertsButtonClicked[] =
     "configure-certs";
-constexpr const char ErrorScreen::kUserActionDiagnoseButtonClicked[] =
-    "diagnose";
-constexpr const char ErrorScreen::kUserActionLaunchOobeGuestSessionClicked[] =
+constexpr const char kUserActionDiagnoseButtonClicked[] = "diagnose";
+constexpr const char kUserActionLaunchOobeGuestSessionClicked[] =
     "launch-oobe-guest";
-constexpr const char
-    ErrorScreen::kUserActionLocalStateErrorPowerwashButtonClicked[] =
-        "local-state-error-powerwash";
-constexpr const char ErrorScreen::kUserActionRebootButtonClicked[] = "reboot";
-constexpr const char ErrorScreen::kUserActionShowCaptivePortalClicked[] =
+constexpr const char kUserActionLocalStateErrorPowerwashButtonClicked[] =
+    "local-state-error-powerwash";
+constexpr const char kUserActionRebootButtonClicked[] = "reboot";
+constexpr const char kUserActionShowCaptivePortalClicked[] =
     "show-captive-portal";
-constexpr const char ErrorScreen::kUserActionNetworkConnected[] =
-    "network-connected";
-constexpr const char ErrorScreen::kUserActionReloadGaia[] = "reload-gaia";
-constexpr const char ErrorScreen::kUserActionCancelReset[] = "cancel-reset";
-constexpr const char ErrorScreen::kUserActionCancel[] = "cancel";
+constexpr const char kUserActionOpenInternetDialog[] = "open-internet-dialog";
+constexpr const char kUserActionNetworkConnected[] = "network-connected";
+constexpr const char kUserActionReloadGaia[] = "reload-gaia";
+constexpr const char kUserActionCancelReset[] = "cancel-reset";
+constexpr const char kUserActionCancel[] = "cancel";
 
 ErrorScreen::ErrorScreen(ErrorScreenView* view)
     : BaseScreen(ErrorScreenView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -276,6 +275,9 @@ void ErrorScreen::HideImpl() {
 void ErrorScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();
+  } else if (action_id == kUserActionOpenInternetDialog) {
+    // Empty string opens the internet detail dialog for the default network.
+    chromeos::InternetDetailDialog::ShowDialog("");
   } else if (action_id == kUserActionConfigureCertsButtonClicked) {
     OnConfigureCerts();
   } else if (action_id == kUserActionDiagnoseButtonClicked) {
@@ -367,8 +369,8 @@ void ErrorScreen::OnRebootButtonClicked() {
 }
 
 void ErrorScreen::OnCancelButtonClicked() {
-  if (view_)
-    view_->OnCancelButtonClicked();
+  DCHECK(LoginDisplayHost::default_host()->HasUserPods());
+  LoginDisplayHost::default_host()->HideOobeDialog();
   Hide();
 }
 

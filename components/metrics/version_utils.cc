@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -49,7 +49,7 @@ SystemProfileProto::Channel AsProtobufChannel(version_info::Channel channel) {
 }
 
 std::string GetAppPackageName() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return base::android::BuildInfo::GetInstance()->package_name();
 #else
   return std::string();

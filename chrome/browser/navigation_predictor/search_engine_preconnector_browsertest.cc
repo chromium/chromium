@@ -172,13 +172,13 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
 
   // After switching search providers, the test URL should now start being
   // preconnected.
-  WaitForPreresolveCountForURL(GetTestURL("/"), 2);
+  WaitForPreresolveCountForURL(GetTestURL("/"), 1);
   // Preconnect should occur for DSE.
-  EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
+  EXPECT_EQ(1, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 
-  WaitForPreresolveCountForURL(GetTestURL("/"), 4);
+  WaitForPreresolveCountForURL(GetTestURL("/"), 2);
   // Preconnect should occur again for DSE.
-  EXPECT_EQ(4, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
+  EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
@@ -221,10 +221,10 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorNoDelaysBrowserTest,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
   const GURL search_url = template_url->GenerateSearchURL({});
-  WaitForPreresolveCountForURL(search_url, 2);
+  WaitForPreresolveCountForURL(search_url, 1);
 
-  // Preconnect should occur for fake search (2 since there are 2 NIKs).
-  EXPECT_EQ(2, preresolve_counts_[search_url]);
+  // Preconnect should occur for fake search.
+  EXPECT_EQ(1, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
@@ -331,12 +331,12 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
   if (!skip_in_background() || load_page()) {
-    WaitForPreresolveCountForURL(fake_search_url, 2);
+    WaitForPreresolveCountForURL(fake_search_url, 1);
   }
 
   // If preconnects are skipped in background and no web contents is in
   // foreground, then no preconnect should happen.
-  EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 2,
+  EXPECT_EQ(skip_in_background() && !load_page() ? 0 : 1,
             preresolve_counts_[fake_search_url]);
   histogram_tester.ExpectUniqueSample(
       "NavigationPredictor.SearchEnginePreconnector."
@@ -490,10 +490,10 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorEnabledOnlyBrowserTest,
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
   const GURL search_url = template_url->GenerateSearchURL({});
-  WaitForPreresolveCountForURL(search_url, 2);
+  WaitForPreresolveCountForURL(search_url, 1);
 
-  // Preconnect should occur for Google search (2 since there are 2 NIKs).
-  EXPECT_EQ(2, preresolve_counts_[search_url]);
+  // Preconnect should occur for Google search.
+  EXPECT_EQ(1, preresolve_counts_[search_url]);
 
   // No preconnects should have been issued for the test URL.
   EXPECT_EQ(0, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);

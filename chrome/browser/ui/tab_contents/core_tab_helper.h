@@ -15,6 +15,7 @@
 #include "components/search_engines/template_url.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -130,7 +131,7 @@ class CoreTabHelper : public content::WebContentsObserver,
 
   // Content restrictions, used to disable print/copy etc based on content's
   // (full-page plugins for now only) permissions.
-  int content_restrictions_;
+  int content_restrictions_ = 0;
 
   base::WeakPtrFactory<CoreTabHelper> weak_factory_{this};
 

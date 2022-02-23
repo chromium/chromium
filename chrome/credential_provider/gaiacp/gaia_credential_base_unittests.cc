@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1404,7 +1405,7 @@ class GcpGaiaCredentialBaseCloudMappingTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
   bool is_ad_user = GetParam();
 };
 
@@ -1570,7 +1571,7 @@ class GcpGaiaCredentialBaseAdScenariosTest : public GcpGaiaCredentialBaseTest {
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseAdScenariosTest::SetUp() {
@@ -1800,7 +1801,7 @@ class GcpGaiaCredentialBaseAdOfflineScenariosTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseAdOfflineScenariosTest::SetUp() {
@@ -1984,7 +1985,7 @@ class GcpGaiaCredentialBaseCloudLocalAccountTest
       "https://www.googleapis.com/admin/directory/v1/users/"
       "%s?projection=full&viewType=domain_public",
       net::EscapeUrlEncodedData(kDefaultEmail, true).c_str());
-  GaiaUrls* gaia_urls_ = GaiaUrls::GetInstance();
+  raw_ptr<GaiaUrls> gaia_urls_ = GaiaUrls::GetInstance();
 };
 
 void GcpGaiaCredentialBaseCloudLocalAccountTest::SetUp() {
@@ -2846,7 +2847,7 @@ class GcpGaiaCredentialBasePasswordRecoveryTest
     : public GcpGaiaCredentialBaseTest,
       public ::testing::WithParamInterface<std::tuple<int, int, int>> {};
 
-TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
+TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, DISABLED_PasswordRecovery) {
   USES_CONVERSION;
 
   int generate_public_key_result = std::get<0>(GetParam());
@@ -3476,7 +3477,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
 
   std::vector<std::string> actual_mac_address_list;
   for (const base::Value& value :
-       request_dict.FindKey("wlan_mac_addr")->GetList()) {
+       request_dict.FindKey("wlan_mac_addr")->GetListDeprecated()) {
     ASSERT_TRUE(value.is_string());
     actual_mac_address_list.push_back(value.GetString());
   }

@@ -1,0 +1,36 @@
+Document
+++List
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='tic'
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Button Name='a button'
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='tac'
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='toe'
+++++ListItem
+++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++Hyperlink Name='a link'
+++++++++Text Name='a link' IsControlElement=false
+++List
+++++ListItem
+++++++Group IsControlElement=false
+++++++++Text Name='tic'
+++++ListItem
+++++++Button Name='a button'
+++++ListItem
+++++++Group IsControlElement=false
+++++++++Text Name='tac'
+++++ListItem
+++++++Group IsControlElement=false
+++++++++Text Name='toe'
+++++ListItem
+++++++Hyperlink Name='a link'
+++++++++Text Name='a link' IsControlElement=false

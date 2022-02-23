@@ -7,8 +7,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MOUNT_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MOUNT_H_
 
+#include <string>
+#include <vector>
+
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
+#include "third_party/ced/src/util/encodings/encodings.h"
 
 namespace extensions {
 
@@ -21,11 +25,26 @@ class FileManagerPrivateAddMountFunction : public LoggedExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.addMount",
                              FILEMANAGERPRIVATE_ADDMOUNT)
 
- protected:
-  ~FileManagerPrivateAddMountFunction() override = default;
+ private:
+  ~FileManagerPrivateAddMountFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
+
+  // Called when the encoding of a ZIP archive has been determined.
+  void OnEncodingDetected(Encoding encoding);
+
+  // Finishes mounting after encoding is detected.
+  void FinishMounting();
+
+  // Path of the device or archive to mount.
+  base::FilePath path_;
+
+  // Lowercase extension of the path to mount.
+  std::string extension_;
+
+  // Mount options.
+  std::vector<std::string> options_;
 };
 
 // Implements chrome.fileManagerPrivate.removeMount method.

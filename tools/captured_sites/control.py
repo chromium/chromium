@@ -84,6 +84,7 @@ _WPR_INJECT_SCRIPTS = ('--inject_scripts=third_party/catapult/web_page_replay_g'
 _NORMAL_BROWSER_AUTOFILL = 'cache_replayer=1'
 _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
+_RUN_DEBUGGING_TESTS = '--gtest_break_on_failure'
 
 _AUTOFILL_TEST = '*/AutofillCapturedSitesInteractiveTest'
 _PASSWORD_MANAGER_TEST = '*/CapturedSitesPasswordManagerBrowserTest'
@@ -170,6 +171,12 @@ def _add_run_args(parser):
                       dest='add_disabled',
                       action='store_true',
                       help='Also run disabled tests that match the filter.')
+  parser.add_argument('-f',
+                      '--break_on_failure',
+                      dest='add_break_on_failure',
+                      action='store_true',
+                      help=('Run tests in single-process mode and brings the '
+                            'debugger on an assertion failure.'))
   parser.add_argument('-v',
                       '--verbose',
                       dest='verbose_logging',
@@ -333,6 +340,9 @@ def _launch_run(options, forward_args):
 
   if options.add_disabled:
     command_args.append(_RUN_DISABLED_TESTS)
+
+  if options.add_break_on_failure:
+    command_args.append(_RUN_DEBUGGING_TESTS)
 
   if options.retry_count > 0:
     command_args.append('--test-launcher-retry-limit=%d' % options.retry_count)

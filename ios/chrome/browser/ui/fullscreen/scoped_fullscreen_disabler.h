@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_SCOPED_FULLSCREEN_DISABLER_H_
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"

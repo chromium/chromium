@@ -7,12 +7,16 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/painter.h"
 
 namespace {
 
@@ -34,9 +38,7 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
       icon_on_(icon_on),
       icon_off_(icon_off) {
   views::InstallPillHighlightPathGenerator(this);
-  SetProminent(is_prominent);
   SetText(message);
-  SetCornerRadius(GetIconSize());
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
@@ -92,12 +94,18 @@ void OmniboxChipButton::OnThemeChanged() {
   UpdateIconAndColors();
 }
 
+void OmniboxChipButton::UpdateBackgroundColor() {
+  SetBackground(
+      CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
+          GetBackgroundColor(), GetIconSize())));
+}
+
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
   if (animation != animation_.get())
     return;
 
   fully_collapsed_ = animation->GetCurrentValue() != 1.0;
-  if (animation->GetCurrentValue() == 1.0)
+  if (animation->GetCurrentValue() == 1.0 && expand_animation_ended_callback_)
     expand_animation_ended_callback_.Run();
 }
 
@@ -118,37 +126,43 @@ int OmniboxChipButton::GetIconSize() const {
 void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget())
     return;
-  SetEnabledTextColors(GetForegroundColor());
+  SetEnabledTextColors(GetTextAndIconColor());
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     show_blocked_icon_ ? icon_off_ : icon_on_,
-                    GetForegroundColor(), GetIconSize(), nullptr));
-  SetBgColorOverride(GetBackgroundColor());
+                    GetTextAndIconColor(), GetIconSize(), nullptr));
 }
 
-SkColor OmniboxChipButton::GetMainColor() {
+SkColor OmniboxChipButton::GetTextAndIconColor() {
   switch (theme_) {
-    case Theme::kBlue:
-      // TODO(crbug.com/1003612): ui::kColorButtonBackgroundProminent does not
-      // always represent the blue color we need, but it is OK to use for now.
-      return GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent);
-    case Theme::kGray:
+    case Theme::kNormalVisibility: {
+      // TODO(crbug.com/1274118) Instead of using constants or toolbar colors,
+      // add the chip's properties.
+      return color_utils::IsDark(
+                 GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR))
+                 ? gfx::kGoogleBlue300
+                 : gfx::kGoogleBlue600;
+    }
+    case Theme::kLowVisibility: {
       return GetThemeProvider()->GetColor(
-          ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED);
+          ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE);
+    }
   }
 }
 
-SkColor OmniboxChipButton::GetNeutralColor() {
-  return views::style::GetColor(*this, label()->GetTextContext(),
-                                views::style::STYLE_DIALOG_BUTTON_DEFAULT);
-}
-
-SkColor OmniboxChipButton::GetForegroundColor() {
-  return GetProminent() ? GetNeutralColor() : GetMainColor();
-}
-
 SkColor OmniboxChipButton::GetBackgroundColor() {
-  return GetProminent() ? GetMainColor() : GetNeutralColor();
+  SkColor active_tab_color =
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+
+  if (theme_ == Theme::kLowVisibility) {
+    return active_tab_color;
+  }
+
+  // TODO(crbug.com/1274118) Instead of using constants or toolbar colors, add
+  // the chip's properties.
+  return ThemeProperties::GetDefaultColor(
+      ThemeProperties::COLOR_TOOLBAR, false,
+      /*dark_mode=*/color_utils::IsDark(active_tab_color));
 }
 
 void OmniboxChipButton::SetForceExpandedForTesting(
@@ -159,7 +173,8 @@ void OmniboxChipButton::SetForceExpandedForTesting(
 void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
   if (show_blocked_icon_ != show_blocked_icon) {
     show_blocked_icon_ = show_blocked_icon;
-    theme_ = show_blocked_icon ? Theme::kGray : Theme::kBlue;
+    theme_ =
+        show_blocked_icon ? Theme::kLowVisibility : Theme::kNormalVisibility;
     UpdateIconAndColors();
   }
 }

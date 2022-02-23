@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
-
+#include "components/optimization_guide/proto/models.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -66,6 +66,74 @@ TEST(OptimizationGuideFeaturesTest, ValidPageContentRAPPORMetrics) {
        {"noise_prob_for_rappor_metrics", ".2"}});
   EXPECT_EQ(2, features::NumBitsForRAPPORMetrics());
   EXPECT_EQ(.2, features::NoiseProbabilityForRAPPORMetrics());
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageEntitiesModelOnPageContentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageEntitiesPageContentAnnotations);
+
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageEntitiesModelOnPageContentEmptyAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageEntitiesPageContentAnnotations);
+
+  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageEntitiesModelOnPageContentWithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageEntitiesPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
+
+  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent(""));
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("zh-CN"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageVisibilityPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
 }  // namespace

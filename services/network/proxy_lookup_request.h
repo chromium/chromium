@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_isolation_key.h"
@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   // Cancels |request_| and tells |network_context_| to delete |this|.
   void DestroySelf();
 
-  NetworkContext* const network_context_;
+  const raw_ptr<NetworkContext> network_context_;
   const net::NetworkIsolationKey network_isolation_key_;
   mojo::Remote<mojom::ProxyLookupClient> proxy_lookup_client_;
 

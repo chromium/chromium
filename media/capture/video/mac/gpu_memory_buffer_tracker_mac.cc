@@ -82,7 +82,7 @@ GpuMemoryBufferTrackerMac::GetGpuMemoryBufferHandle() {
   DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_);
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  gmb_handle.id.id = -1;
+  gmb_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   gmb_handle.io_surface = io_surface_;
   return gmb_handle;
 }

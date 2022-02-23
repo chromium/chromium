@@ -36,11 +36,9 @@
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/symantec_certs.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/dns_util.h"
 #include "net/extras/preload_data/decoder.h"
-#include "net/http/hsts_info.h"
 #include "net/http/http_security_headers.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
@@ -387,6 +385,10 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 const base::Feature TransportSecurityState::kDynamicExpectCTFeature{
     "DynamicExpectCT", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// static
+const base::Feature TransportSecurityState::kCertificateTransparencyEnforcement{
+    "CertificateTransparencyEnforcement", base::FEATURE_ENABLED_BY_DEFAULT};
+
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
@@ -411,7 +413,8 @@ TransportSecurityState::TransportSecurityState(
           features::kPartitionExpectCTStateByNetworkIsolationKey)) {
 // Static pinning is only enabled for official builds to make sure that
 // others don't end up with pins that cannot be easily updated.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(OS_ANDROID) || defined(OS_IOS)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_IOS)
   enable_static_pins_ = false;
   enable_static_expect_ct_ = false;
 #endif
@@ -433,8 +436,26 @@ bool TransportSecurityState::ShouldSSLErrorsBeFatal(const std::string& host) {
          GetStaticDomainState(host, &unused_sts, &unused_pkp);
 }
 
-bool TransportSecurityState::ShouldUpgradeToSSL(const std::string& host) {
+base::Value TransportSecurityState::NetLogUpgradeToSSLParam(
+    const std::string& host) {
   STSState sts_state;
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("host", host);
+  dict.SetBoolKey("get_sts_state_result", GetSTSState(host, &sts_state));
+  dict.SetBoolKey("should_upgrade_to_ssl", sts_state.ShouldUpgradeToSSL());
+  dict.SetBoolKey(
+      "host_found_in_hsts_bypass_list",
+      hsts_host_bypass_list_.find(host) != hsts_host_bypass_list_.end());
+  return dict;
+}
+
+bool TransportSecurityState::ShouldUpgradeToSSL(
+    const std::string& host,
+    const NetLogWithSource& net_log) {
+  STSState sts_state;
+  net_log.AddEvent(
+      NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
+      [&] { return NetLogUpgradeToSSLParam(host); });
   return GetSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL();
 }
 
@@ -487,9 +508,12 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
-  // If CT emergency disable flag is set, we don't require CT for any host.
-  if (ct_emergency_disable_)
+  // If CT is emergency disabled, either through a component updater set flag or
+  // through the feature flag, we don't require CT for any host.
+  if (ct_emergency_disable_ ||
+      !base::FeatureList::IsEnabled(kCertificateTransparencyEnforcement)) {
     return CT_NOT_REQUIRED;
+  }
 
   // CT is not required if the certificate does not chain to a publicly
   // trusted root certificate. Testing can override this, as certain tests
@@ -512,9 +536,6 @@ TransportSecurityState::CheckCTRequirements(
   ExpectCTState state;
   if (IsDynamicExpectCTEnabled() &&
       GetDynamicExpectCTState(hostname, network_isolation_key, &state)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Net.ExpectCTHeader.PolicyComplianceOnConnectionSetup",
-        policy_compliance, ct::CTPolicyCompliance::CT_POLICY_COUNT);
     if (!complies && expect_ct_reporter_ && !state.report_uri.is_empty() &&
         report_status == ENABLE_EXPECT_CT_REPORTS) {
       MaybeNotifyExpectCTFailed(
@@ -1026,16 +1047,12 @@ void TransportSecurityState::ProcessExpectCTHeader(
   bool enforce;
   GURL report_uri;
   bool parsed = ParseExpectCTHeader(value, &max_age, &enforce, &report_uri);
-  UMA_HISTOGRAM_BOOLEAN("Net.ExpectCTHeader.ParseSuccess", parsed);
   if (!parsed)
     return;
   // Do not persist Expect-CT headers if the connection was not chained to a
   // public root or did not comply with CT policy.
   if (!ssl_info.is_issued_by_known_root)
     return;
-  UMA_HISTOGRAM_ENUMERATION(
-      "Net.ExpectCTHeader.PolicyComplianceOnHeaderProcessing",
-      ssl_info.ct_policy_compliance, ct::CTPolicyCompliance::CT_POLICY_COUNT);
   if (ssl_info.ct_policy_compliance !=
       ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS) {
     // If an Expect-CT header is observed over a non-compliant connection, the

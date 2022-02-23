@@ -4,9 +4,13 @@
 
 #include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
+#include "weblayer/browser/page_impl.h"
 #include "weblayer/public/js_communication/web_message.h"
 #include "weblayer/public/js_communication/web_message_host.h"
 #include "weblayer/public/js_communication/web_message_host_factory.h"
@@ -49,9 +53,19 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
   bool IsInBackForwardCache() override {
     return proxy_->IsInBackForwardCache();
   }
+  Page& GetPage() override {
+    // In general WebLayer avoids exposing child frames. As such, GetPage()
+    // returns the Page of the main frame.
+    PageImpl* page =
+        PageImpl::GetForPage(proxy_->GetPage().GetMainDocument().GetPage());
+    // NavigationControllerImpl creates the PageImpl when navigation finishes so
+    // that by the time this is called the Page should have been created.
+    DCHECK(page);
+    return *page;
+  }
 
  private:
-  js_injection::WebMessageReplyProxy* proxy_;
+  raw_ptr<js_injection::WebMessageReplyProxy> proxy_;
   std::unique_ptr<weblayer::WebMessageHost> connection_;
 };
 

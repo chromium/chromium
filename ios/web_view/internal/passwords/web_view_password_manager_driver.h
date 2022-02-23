@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"

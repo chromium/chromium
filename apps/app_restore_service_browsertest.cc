@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "apps/app_restore_service.h"
+
 #include "apps/app_restore_service_factory.h"
 #include "apps/saved_files_service.h"
+#include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
@@ -140,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, FileAccessIsSavedToPrefs) {
 }
 
 // Flaky: crbug.com/269613
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_FileAccessIsRestored DISABLED_FileAccessIsRestored
 #else
 #define MAYBE_FileAccessIsRestored FileAccessIsRestored

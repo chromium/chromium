@@ -19,7 +19,6 @@ import subprocess
 import sys
 
 import merge_lib as profile_merger
-import merge_js_lib as javascript_merger
 
 def _MergeAPIArgumentParser(*args, **kwargs):
   """Parameters passed to this merge script, as per:
@@ -96,44 +95,27 @@ def main():
     profile_merger.merge_java_exec_files(
         params.task_output_dir, output_path, params.jacococli_path)
 
+  failed = False
+
   if params.javascript_coverage_dir:
-    if not params.merged_js_cov_filename:
-      parser.error('--merged-js-cov-filename required when merging '
-                   'JavaScript coverage')
+    current_dir = os.path.dirname(__file__)
+    merge_js_results_script = os.path.join(current_dir, 'merge_js_results.py')
+    args = [
+      sys.executable,
+      merge_js_results_script,
+      '--task-output-dir',
+      params.task_output_dir,
+      '--javascript-coverage-dir',
+      params.javascript_coverage_dir,
+      '--merged-js-cov-filename',
+      params.merged_js_cov_filename,
+    ]
 
-    parsed_scripts = javascript_merger.write_parsed_scripts(
-        params.task_output_dir)
-    if parsed_scripts:
-      logging.info('Raw parsed scripts written out to %s', parsed_scripts)
-      coverage_dirs = javascript_merger.get_raw_coverage_dirs(
-          params.task_output_dir)
-      logging.info(
-          'Identified directories containing coverage %s', coverage_dirs)
-
-      try:
-        logging.info('Converting raw coverage to istanbul')
-        javascript_merger.convert_raw_coverage_to_istanbul(
-            coverage_dirs, parsed_scripts, params.task_output_dir)
-
-        istanbul_coverage_dir = os.path.join(params.task_output_dir, 'istanbul')
-        output_dir = os.path.join(istanbul_coverage_dir, 'merged')
-        os.makedirs(output_dir)
-
-        coverage_file_path = os.path.join(output_dir, 'coverage.json')
-        logging.info('Merging istanbul reports to %s', coverage_file_path)
-        javascript_merger.merge_istanbul_reports(
-            istanbul_coverage_dir, parsed_scripts, coverage_file_path)
-      except RuntimeError as e:
-        logging.warn('Failed executing istanbul tasks: %s', e.message)
-
-    # Ensure JavaScript coverage dir exists.
-    if not os.path.exists(params.javascript_coverage_dir):
-      os.makedirs(params.javascript_coverage_dir)
-
-    output_path = os.path.join(params.javascript_coverage_dir,
-        '%s_javascript.json' % params.merged_js_cov_filename)
-    logging.info('Merging v8 coverage output to %s', output_path)
-    javascript_merger.merge_coverage_files(params.task_output_dir, output_path)
+    rc = subprocess.call(args)
+    if rc != 0:
+      failed = True
+      logging.warning('%s exited with %s' %
+                      (merge_js_results_script, rc))
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
@@ -163,8 +145,6 @@ def main():
     with open(os.path.join(params.profdata_dir, 'invalid_profiles.json'),
               'w') as f:
       json.dump(invalid_profiles, f)
-
-  failed = False
 
   # If given, always run the additional merge script, even if we only have one
   # output json. Merge scripts sometimes upload artifacts to cloud storage, or

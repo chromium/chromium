@@ -4,8 +4,9 @@
 
 #include "device/fido/mac/touch_id_context.h"
 
-#import <CoreFoundation/CoreFoundation.h>
-#import <Security/Security.h>
+#include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
+#include <Security/Security.h>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -39,46 +40,32 @@ base::ScopedCFTypeRef<SecAccessControlRef> DefaultAccessControl() {
           nullptr));
 }
 
-// Returns whether the current binary is signed with a keychain-access-groups
+// Returns whether the main executable is signed with a keychain-access-groups
 // entitlement that contains |keychain_access_group|. This is required for the
 // TouchIdAuthenticator to access key material stored in the Touch ID secure
 // enclave.
-bool BinaryHasKeychainAccessGroupEntitlementBlocking(
+bool ExecutableHasKeychainAccessGroupEntitlement(
     const std::string& keychain_access_group) {
-  // This method makes call into the macOS Security Framework, which may block.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
+  base::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
+  if (!task) {
+    return false;
+  }
 
-  base::ScopedCFTypeRef<SecCodeRef> code;
-  if (SecCodeCopySelf(kSecCSDefaultFlags, code.InitializeInto()) !=
-      errSecSuccess) {
+  base::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
+      SecTaskCopyValueForEntitlement(task, CFSTR("keychain-access-groups"),
+                                     nullptr));
+  if (!entitlement_value_cftype) {
     return false;
   }
-  base::ScopedCFTypeRef<CFDictionaryRef> signing_info;
-  if (SecCodeCopySigningInformation(code, kSecCSDefaultFlags,
-                                    signing_info.InitializeInto()) !=
-      errSecSuccess) {
+
+  NSArray* entitlement_value_nsarray = base::mac::CFToNSCast(
+      base::mac::CFCast<CFArrayRef>(entitlement_value_cftype));
+  if (!entitlement_value_nsarray) {
     return false;
   }
-  CFDictionaryRef entitlements =
-      base::mac::GetValueFromDictionary<CFDictionaryRef>(
-          signing_info, kSecCodeInfoEntitlementsDict);
-  if (!entitlements) {
-    return false;
-  }
-  CFArrayRef keychain_access_groups =
-      base::mac::GetValueFromDictionary<CFArrayRef>(
-          entitlements,
-          base::ScopedCFTypeRef<CFStringRef>(
-              base::SysUTF8ToCFStringRef("keychain-access-groups")));
-  if (!keychain_access_groups) {
-    return false;
-  }
-  return CFArrayContainsValue(
-      keychain_access_groups,
-      CFRangeMake(0, CFArrayGetCount(keychain_access_groups)),
-      base::ScopedCFTypeRef<CFStringRef>(
-          base::SysUTF8ToCFStringRef(keychain_access_group)));
+
+  return [entitlement_value_nsarray
+      containsObject:base::SysUTF8ToNSString(keychain_access_group)];
 }
 
 // Returns whether creating a key pair in the secure enclave succeeds. Keys are
@@ -123,12 +110,12 @@ std::unique_ptr<TouchIdContext> TouchIdContext::Create() {
 }
 
 // static
-bool TouchIdContext::TouchIdAvailableImplBlocking(AuthenticatorConfig config) {
-  // Ensure that the binary is signed with the keychain-access-group
+bool TouchIdContext::TouchIdAvailableImpl(AuthenticatorConfig config) {
+  // Ensure that the main executable is signed with the keychain-access-group
   // entitlement that is configured by the embedder; that user authentication
   // with biometry, watch, or device passcode possible; and that the device has
   // a secure enclave.
-  if (!BinaryHasKeychainAccessGroupEntitlementBlocking(
+  if (!ExecutableHasKeychainAccessGroupEntitlement(
           config.keychain_access_group)) {
     FIDO_LOG(ERROR)
         << "Touch ID authenticator unavailable because keychain-access-group "
@@ -154,7 +141,7 @@ bool TouchIdContext::TouchIdAvailableImplBlocking(AuthenticatorConfig config) {
 
 // Testing seam to allow faking Touch ID in tests.
 TouchIdContext::TouchIdAvailableFuncPtr TouchIdContext::g_touch_id_available_ =
-    &TouchIdContext::TouchIdAvailableImplBlocking;
+    &TouchIdContext::TouchIdAvailableImpl;
 
 // static
 void TouchIdContext::TouchIdAvailable(

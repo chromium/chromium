@@ -8,13 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 
 @class ViewRevealingVerticalPanHandler;
 enum class ViewRevealState;
 
 // Coordinator for the thumb strip, which is a 1-row horizontal display of tab
 // miniatures above the toolbar.
-@interface ThumbStripCoordinator : ChromeCoordinator
+@interface ThumbStripCoordinator : ChromeCoordinator <ViewRevealingAnimatee>
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

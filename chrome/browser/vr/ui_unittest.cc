@@ -180,7 +180,7 @@ TEST_F(UiTest, CaptureToasts) {
 
   for (auto& spec : GetIndicatorSpecs()) {
     for (int i = 0; i < 3; ++i) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       if (i == 1)  // Skip background tabs for non-Android platforms.
         continue;
 #endif
@@ -819,7 +819,7 @@ TEST_F(UiTest, WebVrTimeout) {
 
   RunForMs(500);
   // On Windows, the timeout message button is not shown.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {kWebVrTimeoutSpinner, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
@@ -830,7 +830,7 @@ TEST_F(UiTest, WebVrTimeout) {
       {kWebVrTimeoutSpinner, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       false);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrBackground,
@@ -840,7 +840,7 @@ TEST_F(UiTest, WebVrTimeout) {
   model_->web_vr.state = kWebVrTimeoutImminent;
   RunForMs(500);
   // On Windows, the timeout message button is not shown.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   VerifyVisibility({kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
                     kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
                     kWebVrTimeoutMessageButton, kWebVrTimeoutMessageButtonText},
@@ -849,7 +849,7 @@ TEST_F(UiTest, WebVrTimeout) {
   VerifyVisibility({kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
                     kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
                    false);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {
           kWebVrTimeoutSpinner, kWebVrBackground,
@@ -864,7 +864,7 @@ TEST_F(UiTest, WebVrTimeout) {
       },
       false);
 // On Windows, the timeout message button is not shown.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   VerifyVisibility(
       {kWebVrBackground, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText,
@@ -875,7 +875,7 @@ TEST_F(UiTest, WebVrTimeout) {
       {kWebVrBackground, kWebVrTimeoutMessage, kWebVrTimeoutMessageLayout,
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       true);
-#endif  // OS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 TEST_F(UiTest, SpeechRecognitionUiVisibility) {
@@ -1339,7 +1339,7 @@ TEST_F(UiTest, RepositionHostedUi) {
 
 // Ensures that permissions do not appear after showing hosted UI.
 TEST_F(UiTest, DoNotShowIndicatorsAfterHostedUi) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CreateScene(kInWebVr);
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
   browser_ui->SetWebVrMode(true);
@@ -1363,7 +1363,7 @@ TEST_F(UiTest, DoNotShowIndicatorsAfterHostedUi) {
 // is released that we do not show the exclusive screen toast. Distinguishing
 // these cases requires knowledge of the previous state.
 TEST_F(UiTest, LongPressMenuButtonInWebVrMode) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CreateScene(kInWebVr);
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
   browser_ui->SetWebVrMode(true);

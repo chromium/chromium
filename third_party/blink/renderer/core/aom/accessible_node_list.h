@@ -16,7 +16,7 @@ enum class AOMRelationListProperty;
 class ExceptionState;
 
 // Accessibility Object Model node list
-// Explainer: https://github.com/WICG/aom/blob/master/explainer.md
+// Explainer: https://github.com/WICG/aom/blob/gh-pages/explainer.md
 // Spec: https://wicg.github.io/aom/spec/
 class CORE_EXPORT AccessibleNodeList : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

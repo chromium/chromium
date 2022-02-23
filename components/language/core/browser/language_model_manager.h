@@ -22,6 +22,7 @@ class LanguageModelManager : public KeyedService {
     BASELINE,
     FLUENT,
     GEO,
+    ULP,
   };
 
   LanguageModelManager() = delete;
@@ -40,6 +41,8 @@ class LanguageModelManager : public KeyedService {
   // through a call to AddModel.
   void SetPrimaryModel(ModelType type);
   LanguageModel* GetPrimaryModel() const;
+  ModelType GetPrimaryModelType() const;
+  LanguageModel* GetLanguageModel(ModelType type) const;
 
  private:
   std::unique_ptr<LanguageModel> default_model_;

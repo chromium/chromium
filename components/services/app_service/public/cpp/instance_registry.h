@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_REGISTRY_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_REGISTRY_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/observer_list.h"
@@ -17,8 +17,29 @@
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
+
+class InstanceRegistryTest;
 
 namespace apps {
+
+// The parameters to create or update the instance for the `app_id` and
+// `window`, when calling InstanceRegistry::CreateOrUpdateInstance.
+struct InstanceParams {
+  InstanceParams(const std::string& app_id, aura::Window* window);
+
+  InstanceParams(const InstanceParams&) = delete;
+  InstanceParams& operator=(const InstanceParams&) = delete;
+
+  ~InstanceParams();
+
+  const std::string app_id;
+  aura::Window* window;
+  absl::optional<std::string> launch_id;
+  absl::optional<std::pair<InstanceState, base::Time>> state;
+  absl::optional<content::BrowserContext*> browser_context;
+};
 
 // InstanceRegistry keeps all of the Instances seen by AppServiceProxy.
 // It also keeps the "sum" of those previous deltas, so that observers of this
@@ -75,38 +96,56 @@ class InstanceRegistry {
   void RemoveObserver(Observer* observer);
 
   using InstancePtr = std::unique_ptr<Instance>;
-  using Instances = std::vector<InstancePtr>;
+  using InstanceIds = std::set<base::UnguessableToken>;
 
-  // Notification and merging might be delayed until after OnInstances returns.
-  // For example, suppose that the initial set of states is (a0, b0, c0) for
-  // three app_id's ("a", "b", "c"). Now suppose OnInstances is called with two
-  // updates (b1, c1), and when notified of b1, an observer calls OnInstances
-  // again with (c2, d2). The c1 delta should be processed before the c2 delta,
-  // as it was sent first, and both c1 and c2 will be updated to the observer
-  // following the sequence. This means that processing c2 (scheduled by the
-  // second OnInstances call) should wait until the first OnInstances call has
-  // finished processing b1, and then c1, which means that processing c2 is
-  // delayed until after the second OnInstances call returns.
+  // Creates a new instance for the `app_id` and `window` with a new instance id
+  // if there is no exist instance. Otherwise, reuse the existing instance id
+  // with `param` to update the instance.
   //
-  // The caller presumably calls OnInstances(std::move(deltas)).
-  void OnInstances(const Instances& deltas);
+  // This function calls OnInstance to add the new instance or update the
+  // existing instance.
+  //
+  // Note: For Lacros windows having multiple tabs/nstances, this interface
+  // should not be called, since `window` might have multiple instances.
+  void CreateOrUpdateInstance(InstanceParams&& param);
 
-  // Return enclosing app windows for the |app_id|. If the app is in a browser
-  // tab, the window returned will be the window of the browser.
-  std::set<aura::Window*> GetEnclosingAppWindows(const std::string& app_id);
+  // Notification and merging might be delayed until after OnInstance returns.
+  // For example, suppose that the initial set of states is (a0, b0, c0) for
+  // three app_id's ("a", "b", "c"). Now suppose OnInstance is called with an
+  // update (b1), and when notified of b1, an observer calls OnInstance
+  // again with (b2). The b1 delta should be processed before the b2 delta,
+  // as it was sent first, and both b1 and b2 will be updated to the observer
+  // following the sequence. This means that processing b2 (scheduled by the
+  // second OnInstance call) should wait until the first OnInstance call has
+  // finished processing b1, and then b2, which means that processing b2 is
+  // delayed until after the second OnInstance call returns.
+  //
+  // The caller presumably calls OnInstance(std::move(delta)).
+  void OnInstance(InstancePtr delta);
 
-  // Return instance keys for the |app_id|.
-  std::set<const Instance::InstanceKey> GetInstanceKeys(
-      const std::string& app_id);
+  // Returns instances for the |app_id|.
+  std::set<const Instance*> GetInstances(const std::string& app_id);
 
-  // Return the state for the |instance_key|.
-  InstanceState GetState(const Instance::InstanceKey& instance_key) const;
+  // Returns one state for the `window`.
+  //
+  // Note: This interface is used for the standalone window, or the ash Chrome
+  // browser tab window, which has one instance only. For Lacros windows which
+  // might have multiple instances for tabs, this interface should not be
+  // called, since `window` might have multiple instances, and the InstanceState
+  // returned in these cases will be arbitrary.
+  InstanceState GetState(const aura::Window* window) const;
 
-  // Return the shelf id for the |instance_key|.
-  ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;
+  // Returns the shelf id for the `window`.
+  //
+  // Note: This interface is used for the standalone window, or the ash Chrome
+  // browser tab window, which has one instance only. For Lacros windows which
+  // might have multiple instances for tabs, this interface should not be
+  // called, since `window` might have multiple instances, and the ShelfID
+  // returned in these cases will be arbitrary.
+  ash::ShelfID GetShelfId(const aura::Window* window) const;
 
-  // Return true if there is an instance for the |instance_key|.
-  bool Exists(const Instance::InstanceKey& instance_key) const;
+  // Return true if there is an instance for the `window`.
+  bool Exists(const aura::Window* window) const;
 
   // Return true if there is any instance in the InstanceRegistry for |app_id|.
   bool ContainsAppId(const std::string& app_id) const;
@@ -125,18 +164,18 @@ class InstanceRegistry {
   // f must be synchronous, and if it asynchronously calls ForEachInstance
   // again, it's not guaranteed to see a consistent state.
   template <typename FunctionType>
-  void ForEachInstance(FunctionType f) {
+  void ForEachInstance(FunctionType f) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
     for (const auto& s_iter : states_) {
-      apps::Instance* state = s_iter.second.get();
+      const apps::Instance* state = s_iter.second.get();
       f(apps::InstanceUpdate(state, nullptr));
     }
   }
 
   // Calls f, a void-returning function whose arguments are (const
   // apps::InstanceUpdate&), on the instance in the instance_registry with the
-  // given instance_key. It will return true (and call f) if there is such an
+  // given instance id. It will return true (and call f) if there is such an
   // instance, otherwise it will return false (and not call f). The
   // InstanceUpdate argument to f has the same semantics as for ForEachInstance,
   // above.
@@ -144,11 +183,11 @@ class InstanceRegistry {
   // f must be synchronous, and if it asynchronously calls ForOneInstance again,
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
-  bool ForOneInstance(const Instance::InstanceKey& instance_key,
-                      FunctionType f) {
+  bool ForOneInstance(const base::UnguessableToken& instance_id,
+                      FunctionType f) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    auto s_iter = states_.find(instance_key);
+    auto s_iter = states_.find(instance_id);
     apps::Instance* state =
         (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     if (state) {
@@ -158,32 +197,100 @@ class InstanceRegistry {
     return false;
   }
 
+  // Calls f, a void-returning function whose arguments are (const
+  // apps::InstanceUpdate&), on instances in the instance_registry with the
+  // given window. It will return true (and call f) if there is such an
+  // instance, otherwise it will return false (and not call f). The
+  // InstanceUpdate argument to f has the same semantics as for ForEachInstance,
+  // above.
+  //
+  // f must be synchronous, and if it asynchronously calls ForOneInstance again,
+  // it's not guaranteed to see a consistent state.
+  template <typename FunctionType>
+  bool ForInstancesWithWindow(const aura::Window* window,
+                              FunctionType f) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+    InstanceIds instance_ids;
+    auto it = window_to_instance_ids_.find(window);
+    if (it != window_to_instance_ids_.end()) {
+      instance_ids = it->second;
+    }
+
+    // There could be some instances in `deltas_pending_`.
+    for (const auto& delta : deltas_pending_) {
+      if (delta->Window() == window) {
+        instance_ids.insert(delta->InstanceId());
+      }
+    }
+
+    // `old_state_` might be an instance to be deleted. But in OnInstanceUpdate,
+    // the caller might still need that instance to know which instance will be
+    // deleted.
+    if (old_state_ && old_state_.get()) {
+      instance_ids.insert(old_state_->InstanceId());
+    }
+
+    if (instance_ids.empty()) {
+      return false;
+    }
+
+    for (const auto& instance_id : instance_ids) {
+      auto s_iter = states_.find(instance_id);
+      apps::Instance* state =
+          (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+      if (state) {
+        f(apps::InstanceUpdate(state, nullptr));
+      }
+    }
+    return true;
+  }
+
  private:
-  void DoOnInstances(const Instances& deltas);
+  friend class InstanceRegistryTest;
+
+  void DoOnInstance(InstancePtr deltas);
+
+  void MaybeRemoveInstance(const Instance* delta);
+
+  void MaybeRemoveInstanceId(const base::UnguessableToken& instance_id,
+                             aura::Window* window);
 
   base::ObserverList<Observer> observers_;
 
-  // OnInstances calls DoOnInstances zero or more times. If we're nested,
-  // in_progress is true, so that there's multiple OnInstances call to this
+  // OnInstance calls DoOnInstance zero or more times. If we're nested,
+  // in_progress is true, so that there's multiple OnInstance call to this
   // InstanceRegistry in the call stack, the deeper OnInstances call simply adds
-  // work to deltas_pending_ and returns without calling DoOnInstances. If we're
-  // not nested, in_progress is false, OnInstances calls DoOnInstances one or
-  // more times; "more times" happens if DoOnInstances notifying observers leads
-  // to more OnInstances calls that enqueue deltas_pending_ work.
+  // work to deltas_pending_ and returns without calling DoOnInstance. If we're
+  // not nested, in_progress is false, OnInstance calls DoOnInstance one or
+  // more times; "more times" happens if DoOnInstance notifying observers leads
+  // to more OnInstance calls that enqueue deltas_pending_ work.
   //
-  // Nested OnInstances calls are expected to be rare (but still dealt with
-  // sensibly). In the typical case, OnInstances should call DoOnInstances
+  // Nested OnInstance calls are expected to be rare (but still dealt with
+  // sensibly). In the typical case, OnInstance should call DoOnInstance
   // exactly once, and deltas_pending_ will stay empty.
   bool in_progress_ = false;
 
-  // Maps from instance key to the latest state: the "sum" of all previous
+  // Maps from the instance id to the latest state: the "sum" of all previous
   // deltas.
-  std::map<const Instance::InstanceKey, InstancePtr> states_;
-  Instances deltas_pending_;
+  std::map<const base::UnguessableToken, InstancePtr> states_;
 
-  // Maps from app id to app instance key.
-  std::map<const std::string, std::set<const Instance::InstanceKey>>
-      app_id_to_app_instance_key_;
+  std::list<InstancePtr> deltas_pending_;
+
+  // Maps from window to a set of instance id.
+  std::map<const aura::Window*, InstanceIds> window_to_instance_ids_;
+
+  // Maps from instance id to window, to check whether the window is changed for
+  // the instance id. When a tab is pulled to a new Lacros window, the window
+  // might be changed, and the instance id should be removed from
+  // `window_to_instance_ids_`. `states_` can't be used to check window, because
+  // some instances might be in `deltas_pending_`.
+  std::map<const base::UnguessableToken, aura::Window*> instance_id_to_window_;
+
+  // Maps from app id to instances.
+  std::map<const std::string, std::set<const Instance*>> app_id_to_instances_;
+
+  std::unique_ptr<Instance> old_state_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
 };

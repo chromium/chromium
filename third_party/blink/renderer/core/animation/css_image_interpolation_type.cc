@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -45,8 +46,8 @@ class CSSImageNonInterpolableValue final : public NonInterpolableValue {
 
   bool IsSingle() const { return is_single_; }
   bool Equals(const CSSImageNonInterpolableValue& other) const {
-    return DataEquivalent(start_, other.start_) &&
-           DataEquivalent(end_, other.end_);
+    return base::ValuesEquivalent(start_, other.start_) &&
+           base::ValuesEquivalent(end_, other.end_);
   }
 
   static scoped_refptr<CSSImageNonInterpolableValue> Merge(

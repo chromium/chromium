@@ -37,7 +37,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -170,7 +170,7 @@ void ChromeTracingDelegate::BackgroundTracingStateManager::Initialize() {
 
   const base::Value* upload_times = dict->FindListKey(kUploadTimesKey);
   if (upload_times) {
-    for (const auto& scenario_dict : upload_times->GetList()) {
+    for (const auto& scenario_dict : upload_times->GetListDeprecated()) {
       DCHECK(scenario_dict.is_dict());
       const std::string* scenario = scenario_dict.FindStringKey(kScenarioKey);
       const base::Value* timestamp_val =
@@ -302,7 +302,7 @@ ChromeTracingDelegate::ChromeTracingDelegate() {
   DCHECK(
       content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
       !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserList::AddObserver(this);
 #else
   TabModelList::AddObserver(this);
@@ -316,14 +316,14 @@ ChromeTracingDelegate::ChromeTracingDelegate() {
 
 ChromeTracingDelegate::~ChromeTracingDelegate() {
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   BrowserList::RemoveObserver(this);
 #else
   TabModelList::RemoveObserver(this);
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ChromeTracingDelegate::OnTabModelAdded() {
   for (const TabModel* model : TabModelList::models()) {
     if (model->GetProfile()->IsOffTheRecord())
@@ -339,7 +339,7 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
   if (browser->profile()->IsOffTheRecord())
     incognito_launched_ = true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool ChromeTracingDelegate::IsActionAllowed(
     BackgroundScenarioAction action,

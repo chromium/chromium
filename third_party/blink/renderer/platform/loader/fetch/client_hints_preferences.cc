@@ -40,31 +40,49 @@ void ClientHintsPreferences::CombineWith(
   }
 }
 
-void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
+bool ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
     const String& header_value,
     const KURL& url,
-    Context* context) {
+    Context* context,
+    bool is_http_equiv,
+    bool is_preload_or_sync_parser) {
   // Client hints should be allowed only on secure URLs.
   if (!IsClientHintsAllowed(url))
-    return;
+    return false;
 
   // 8-bit conversions from String can turn non-ASCII characters into ?,
   // turning syntax errors into "correct" syntax, so reject those first.
   // (.Utf8() doesn't have this problem, but it does a lot of expensive
   //  work that would be wasted feeding to an ASCII-only syntax).
   if (!header_value.ContainsOnlyASCIIOrEmpty())
-    return;
+    return false;
 
-  // Note: .Ascii() would convert tab to ?, which is undesirable.
-  absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
-      network::ParseClientHintsHeader(header_value.Latin1());
+  if (is_http_equiv) {
+    // Note: .Ascii() would convert tab to ?, which is undesirable.
+    absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed_ch =
+        network::ParseClientHintsHeader(header_value.Latin1());
 
-  if (!parsed_ch.has_value())
-    return;
+    if (!parsed_ch.has_value())
+      return false;
 
-  // The renderer only handles http-equiv, so this merges.
-  for (network::mojom::WebClientHintsType newly_enabled : parsed_ch.value())
-    enabled_hints_.SetIsEnabled(newly_enabled, true);
+    // Update first-party permissions for each client hint.
+    for (network::mojom::WebClientHintsType newly_enabled : parsed_ch.value()) {
+      enabled_hints_.SetIsEnabled(newly_enabled, true);
+    }
+  } else if (is_preload_or_sync_parser) {
+    // Note: .Ascii() would convert tab to ?, which is undesirable.
+    absl::optional<network::ClientHintToDelegatedThirdPartiesHeader> parsed_ch =
+        network::ParseClientHintToDelegatedThirdPartiesHeader(
+            header_value.Latin1());
+
+    if (!parsed_ch.has_value())
+      return false;
+
+    // Update first-party permissions for each client hint.
+    for (const auto& pair : parsed_ch.value().map) {
+      enabled_hints_.SetIsEnabled(pair.first, true);
+    }
+  }
 
   if (context) {
     for (const auto& elem : network::GetClientHintToNameMap()) {
@@ -73,6 +91,7 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
         context->CountClientHints(type);
     }
   }
+  return true;
 }
 
 // static

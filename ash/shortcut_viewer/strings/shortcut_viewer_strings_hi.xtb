@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">गुप्त मोड में नई विंडो खोलें</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, फिर <ph name="ESC" /></translation>
+<translation id="1586324912145647027">पहली डेस्क से आठवीं डेस्क पर जाएं</translation>
 <translation id="1652741121070700329">पिछले शब्द की शुरुआत में ले जाएं</translation>
 <translation id="1679841710523778799">स्क्रीन की रोशनी बढ़ाएं</translation>
 <translation id="168356808214100546">जब तक कि आप उस विंडो पर नहीं पहुंच जाते जिसे आप खोलना चाहते हैं, तब तक <ph name="ALT" /> दबाकर रखें और <ph name="TAB" /> पर टैप करें, फिर छोड़ दें.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> दबाएं और किसी लिंक पर क्लिक करें</translation>
 <translation id="561814908794220892">वेबपेज को नए टैब में खोलें</translation>
 <translation id="5620219513321115856">चालू विंडो को दाईं तरफ़ के डेस्क पर ले जाएं</translation>
+<translation id="5699366815052349604">सभी डेस्क के लिए ऐक्टिव विंडो असाइन करें</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> या <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">लिंक को टैब में खोलें</translation>
 <translation id="5757474750054631686">कीबोर्ड की रोशनी कम करें (केवल बैकलिट कीबोर्ड के लिए)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">टैब को उसकी मूल जगह पर वापस ले जाएं</translation>
 <translation id="6474744297082284761">ज़ूम घटाएं (डॉक किए जाने या फ़ुलस्क्रीन मैग्निफ़ायर चालू किए जाने पर)</translation>
 <translation id="649811797655257835">फ़ाइल चुनें, फिर <ph name="SPACE" /> दबाएं</translation>
+<translation id="6515089016094047210">कैलेंडर विजेट खोलें या बंद करें.</translation>
 <translation id="6551886416582667425">पार्शियल (कुछ हिस्सों का) स्क्रीनशॉट लें/पार्शियल (कुछ हिस्सों की) रिकॉर्डिंग करें</translation>
 <translation id="6556040137485212400">उस विंडो को खोलें जिसका सबसे लंबे समय से इस्तेमाल नहीं किया गया है</translation>
 <translation id="666343722268997814">हाइलाइट किए गए आइटम के लिए राइट-क्लिक मेन्यू खोलें</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">Files ऐप्लिकेशन में छिपी हुई फ़ाइलें दिखाएं</translation>
 <translation id="8717459106217102612">पिछला शब्द या अक्षर चुनें</translation>
 <translation id="8727232706774971183">अपनी सूचनाएं देखें</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> एक से आठ</translation>
 <translation id="8855885154700222542">फ़ुलस्क्रीन कुंजी</translation>
 <translation id="8881584919399569791">चालू विंडो को बाईं तरफ़ के डेस्क पर ले जाएं</translation>
 <translation id="88986195241502842">Page down</translation>

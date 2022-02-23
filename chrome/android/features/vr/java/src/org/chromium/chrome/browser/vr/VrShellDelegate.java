@@ -699,7 +699,7 @@ public class VrShellDelegate
         // a thread-safety issue since it thinks the receiver isn't fully initialized before being
         // exposed to other threads. This isn't actually an issue in this case, but we need to set
         // sVrBroadcastReceiver after we're done using it here to fix the compile error.
-        activity.registerReceiver(receiver, filter);
+        ContextUtils.registerNonExportedBroadcastReceiver(activity, receiver, filter);
         sVrBroadcastReceiver = receiver;
         Intent vrIntent = new Intent(VR_ENTRY_RESULT_ACTION);
         vrIntent.setPackage(activity.getPackageName());

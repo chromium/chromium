@@ -58,10 +58,12 @@ void TestCreditCardFIDOAuthenticator::GetAssertion(
         GetAssertionAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
     fido_authenticator->OnDidGetAssertion(AuthenticatorStatus::SUCCESS,
-                                          std::move(response));
+                                          std::move(response),
+                                          /*dom_exception_details=*/nullptr);
   } else {
     fido_authenticator->OnDidGetAssertion(
-        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr);
+        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+        /*dom_exception_details=*/nullptr);
   }
 }
 
@@ -74,16 +76,18 @@ void TestCreditCardFIDOAuthenticator::MakeCredential(
         MakeCredentialAuthenticatorResponse::New();
     response->info = blink::mojom::CommonCredentialInfo::New();
     fido_authenticator->OnDidMakeCredential(AuthenticatorStatus::SUCCESS,
-                                            std::move(response));
+                                            std::move(response),
+                                            /*dom_exception_details=*/nullptr);
   } else {
     fido_authenticator->OnDidMakeCredential(
-        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr);
+        AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+        /*dom_exception_details=*/nullptr);
   }
 }
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetCredentialId() {
   DCHECK(!request_options_->allow_credentials.empty());
-  return request_options_->allow_credentials.front().id();
+  return request_options_->allow_credentials.front().id;
 }
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetChallenge() {

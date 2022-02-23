@@ -25,7 +25,7 @@
 #include "device/fido/filter.h"
 #include "device/fido/make_credential_task.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
@@ -304,6 +304,10 @@ bool ValidateResponseExtensions(const CtapMakeCredentialRequest& request,
       if (!request.cred_blob || !it.second.is_bool()) {
         return false;
       }
+    } else if (ext_name == kExtensionMinPINLength) {
+      if (!request.min_pin_length_requested || !it.second.is_unsigned()) {
+        return false;
+      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
@@ -432,10 +436,10 @@ void MakeCredentialRequestHandler::DispatchRequest(
             fido_filter::Operation::MAKE_CREDENTIAL, request_.rp.id,
             authenticator_name,
             std::pair<fido_filter::IDType, base::span<const uint8_t>>(
-                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+                fido_filter::IDType::CREDENTIAL_ID, cred.id)) ==
         fido_filter::Action::BLOCK) {
       FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
-                      << " for credential ID " << base::HexEncode(cred.id());
+                      << " for credential ID " << base::HexEncode(cred.id);
       return;
     }
   }
@@ -448,7 +452,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
       IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
                                         observer());
   if (post_touch_status != MakeCredentialStatus::kSuccess) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If the Windows API cannot handle a request, just reject the request
     // outright. There are no other authenticators to attempt, so calling
     // GetTouch() would not make sense.
@@ -456,7 +460,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
       HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     if (authenticator->Options() &&
         authenticator->Options()->is_platform_device) {
@@ -716,7 +720,7 @@ void MakeCredentialRequestHandler::HandleResponse(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (authenticator->IsWinNativeApiAuthenticator()) {
     state_ = State::kFinished;
     if (status != CtapDeviceResponseCode::kSuccess) {
@@ -955,7 +959,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       // storage space for another credential, and we can obtain UV via client
       // PIN or an internal modality.
       request->resident_key_required =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           // Windows does not yet support rk=preferred.
           !authenticator->IsWinNativeApiAuthenticator() &&
 #endif
@@ -1007,6 +1011,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
 
   if (request->large_blob_key && !auth_options->supports_large_blobs) {
     request->large_blob_key = false;
+  }
+
+  if (request->min_pin_length_requested &&
+      !auth_options->supports_min_pin_length_extension) {
+    request->min_pin_length_requested = false;
   }
 
   if (!authenticator->SupportsEnterpriseAttestation()) {

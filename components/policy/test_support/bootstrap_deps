@@ -7,8 +7,6 @@ deps = {
         "https://src.chromium.org/chrome/trunk/src/components/policy/test_support",
     "src/net/tools/testserver":
         "https://src.chromium.org/chrome/trunk/src/net/tools/testserver",
-    "src/third_party/tlslite/tlslite":
-        "https://src.chromium.org/chrome/trunk/src/third_party/tlslite/tlslite",
     "src/third_party/protobuf/python/google":
         "https://src.chromium.org/chrome/trunk/src/third_party/protobuf/python/google",
     "src/tools/telemetry":

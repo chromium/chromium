@@ -203,6 +203,8 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
       return "BrowserUploadPublicKey";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return "ChromeProfileReport";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";
@@ -308,12 +310,6 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   // If auth data is specified, use it to build the request.
   switch (auth_data_.token_type()) {
     case DMAuthTokenType::kNoAuth:
-      break;
-    case DMAuthTokenType::kGaia:
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          std::string(dm_protocol::kServiceTokenAuthHeaderPrefix) +
-              auth_data_.gaia_token());
       break;
     case DMAuthTokenType::kDm:
       rr->headers.SetHeader(dm_protocol::kAuthHeader,

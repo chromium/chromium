@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <tuple>
 #include <utility>
 
@@ -10,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,13 +23,13 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/local_frame_host_interceptor.h"
 #include "content/public/test/policy_container_utils.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/document_state.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/render_frame_impl.h"
@@ -44,7 +44,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -138,7 +137,7 @@ class RenderFrameImplTest : public RenderViewTest {
         main_frame.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
-    ignore_result(main_frame_host.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
     remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
     RenderFrameImpl::FromWebFrame(
@@ -280,7 +279,8 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(frame());
 
   widget_remote()->WasShown(
-      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      /* was_evicted=*/false,
+      /* in_active_window=*/true,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   base::RunLoop().RunUntilIdle();
 

@@ -17,7 +17,8 @@
 
 FocusTabAfterNavigationHelper::FocusTabAfterNavigationHelper(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<FocusTabAfterNavigationHelper>(*contents) {}
 
 FocusTabAfterNavigationHelper::~FocusTabAfterNavigationHelper() = default;
 

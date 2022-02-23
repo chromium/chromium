@@ -3,7 +3,7 @@
 *How to add block fragmentation support to a layout algorithm*
 
 This tutorial can be viewed in formatted form
-[here](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/ng/block-fragmentation-tutorial.md).
+[here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/block-fragmentation-tutorial.md).
 
 Main spec: https://www.w3.org/TR/css-break-3/
 

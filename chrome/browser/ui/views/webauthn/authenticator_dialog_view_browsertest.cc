@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -17,7 +18,9 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "device/fido/features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 
@@ -74,6 +77,7 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   void OnBack() override {}
   void OnAccept() override {}
   void OnCancel() override {}
+  void OnManageDevices() override {}
 };
 
 class TestSheetView : public AuthenticatorRequestSheetView {
@@ -106,31 +110,76 @@ class TestSheetView : public AuthenticatorRequestSheetView {
 
 class AuthenticatorDialogViewTest : public DialogBrowserTest {
  public:
-  AuthenticatorDialogViewTest() = default;
-
-  AuthenticatorDialogViewTest(const AuthenticatorDialogViewTest&) = delete;
-  AuthenticatorDialogViewTest& operator=(const AuthenticatorDialogViewTest&) =
-      delete;
+  void SetUp() override {
+    // Enable all upcoming features to excerise them for tests.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebAuthCable, device::kWebAuthCableSecondFactor,
+         device::kWebAuthPhoneSupport},
+        {});
+    DialogBrowserTest::SetUp();
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-
     auto dialog_model = std::make_unique<AuthenticatorRequestDialogModel>(
         /*relying_party_id=*/"example.com");
-    dialog_model->SetCurrentStepForTesting(
-        AuthenticatorRequestDialogModel::Step::kTimedOut);
-    AuthenticatorRequestDialogView* dialog =
-        test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
-            std::move(dialog_model), web_contents);
-    test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
-        dialog,
-        std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
+
+    if (name == "default") {
+      dialog_model->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kTimedOut);
+      AuthenticatorRequestDialogView* dialog =
+          test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
+              web_contents, std::move(dialog_model));
+      test::AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
+          dialog,
+          std::make_unique<TestSheetView>(std::make_unique<TestSheetModel>()));
+    } else if (name == "manage_devices") {
+      // Enable caBLE and add a paired phone. That should be sufficient for the
+      // "Manage devices" button to be shown.
+      device::FidoRequestHandlerBase::TransportAvailabilityInfo
+          transport_availability;
+      transport_availability.available_transports = {
+          AuthenticatorTransport::kUsbHumanInterfaceDevice,
+          AuthenticatorTransport::kInternal,
+          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+
+      std::array<uint8_t, device::kP256X962Length> public_key = {0};
+      AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
+                                                         public_key);
+      dialog_model->set_cable_transport_info(
+          /*extension_is_v2=*/absl::nullopt,
+          /*paired_phones=*/{phone},
+          /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
+      dialog_model->StartFlow(std::move(transport_availability),
+                              /*use_location_bar_bubble=*/false,
+                              /*prefer_native_api=*/false);
+
+      // The dialog is owned by the Views hierarchy so this is a non-owning
+      // pointer.
+      AuthenticatorRequestDialogView* dialog =
+          test::AuthenticatorRequestDialogViewTestApi::CreateDialogView(
+              browser()->tab_strip_model()->GetActiveWebContents(),
+              std::move(dialog_model));
+
+      // The "manage devices" button should have been shown on this sheet.
+      EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
+                      ->model()
+                      ->IsManageDevicesButtonVisible());
+    }
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test the dialog with a custom delegate.
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+// Test that the models decide to show the "Manage devices" button when a phone
+// is listed.
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_manage_devices) {
   ShowAndVerifyUi();
 }

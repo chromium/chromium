@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 
+#include "ui/gfx/image/image_skia_rep.h"
+
 namespace ash {
 
 HorizontalImageSequenceAnimationDecoder::

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
-#include "components/arc/mojom/file_system.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

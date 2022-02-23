@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 
+#include "base/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -4,6 +4,8 @@
 
 #include "net/base/net_module.h"
 
+#include "base/memory/ref_counted_memory.h"
+
 namespace net {
 
 static NetModule::ResourceProvider resource_provider;

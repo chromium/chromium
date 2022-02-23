@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -168,6 +167,11 @@ class ReportingServiceImpl : public ReportingService {
     std::vector<const net::ReportingReport*> reports;
     context_->cache()->GetReports(&reports);
     return reports;
+  }
+
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override {
+    return context_->cache()->GetV1ReportingEndpointsByOrigin();
   }
 
   void AddReportingCacheObserver(ReportingCacheObserver* observer) override {

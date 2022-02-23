@@ -33,8 +33,6 @@ const bool kDefaultUseFixedAspectRatio = false;
 constexpr media::VideoPixelFormat kDefaultPixelFormat =
     media::PIXEL_FORMAT_I420;
 
-constexpr gfx::ColorSpace kDefaultColorSpace = gfx::ColorSpace::CreateREC709();
-
 // Creates a ClientFrameSinkVideoCapturer via HostFrameSinkManager.
 std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateCapturer() {
   return GetHostFrameSinkManager()->CreateVideoCapturer();
@@ -53,8 +51,7 @@ DevToolsVideoConsumer::DevToolsVideoConsumer(OnFrameCapturedCallback callback)
       min_capture_period_(kDefaultMinCapturePeriod),
       min_frame_size_(kDefaultMinFrameSize),
       max_frame_size_(kDefaultMaxFrameSize),
-      pixel_format_(kDefaultPixelFormat),
-      color_space_(kDefaultColorSpace) {}
+      pixel_format_(kDefaultPixelFormat) {}
 
 DevToolsVideoConsumer::~DevToolsVideoConsumer() = default;
 
@@ -86,11 +83,7 @@ void DevToolsVideoConsumer::SetFrameSinkId(
     const viz::FrameSinkId& frame_sink_id) {
   frame_sink_id_ = frame_sink_id;
   if (capturer_) {
-    capturer_->ChangeTarget(
-        frame_sink_id_.is_valid()
-            ? absl::make_optional<viz::FrameSinkId>(frame_sink_id_)
-            : absl::nullopt,
-        nullptr);
+    capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id_));
   }
 }
 
@@ -112,12 +105,10 @@ void DevToolsVideoConsumer::SetMinAndMaxFrameSize(gfx::Size min_frame_size,
   }
 }
 
-void DevToolsVideoConsumer::SetFormat(media::VideoPixelFormat format,
-                                      gfx::ColorSpace color_space) {
+void DevToolsVideoConsumer::SetFormat(media::VideoPixelFormat format) {
   pixel_format_ = format;
-  color_space_ = color_space;
   if (capturer_) {
-    capturer_->SetFormat(pixel_format_, color_space_);
+    capturer_->SetFormat(pixel_format_);
   }
 }
 
@@ -130,11 +121,10 @@ void DevToolsVideoConsumer::InnerStartCapture(
   capturer_->SetMinSizeChangePeriod(kDefaultMinPeriod);
   capturer_->SetResolutionConstraints(min_frame_size_, max_frame_size_,
                                       kDefaultUseFixedAspectRatio);
-  capturer_->SetFormat(pixel_format_, color_space_);
+  capturer_->SetFormat(pixel_format_);
   if (frame_sink_id_.is_valid())
-    capturer_->ChangeTarget(frame_sink_id_, nullptr);
-
-  capturer_->Start(this);
+    capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id_));
+  capturer_->Start(this, viz::mojom::BufferFormatPreference::kDefault);
 }
 
 bool DevToolsVideoConsumer::IsValidMinAndMaxFrameSize(
@@ -150,15 +140,23 @@ bool DevToolsVideoConsumer::IsValidMinAndMaxFrameSize(
 }
 
 void DevToolsVideoConsumer::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    ::media::mojom::VideoBufferHandlePtr data,
     ::media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
         callbacks) {
-  if (!data.IsValid())
-    return;
+  CHECK(data->is_read_only_shmem_region());
+  base::ReadOnlySharedMemoryRegion& shmem_region =
+      data->get_read_only_shmem_region();
 
-  base::ReadOnlySharedMemoryMapping mapping = data.Map();
+  // The |data| parameter is not nullable and mojo type mapping for
+  // `base::ReadOnlySharedMemoryRegion` defines that nullable version of it is
+  // the same type, with null check being equivalent to IsValid() check. Given
+  // the above, we should never be able to receive a read only shmem region that
+  // is not valid - mojo will enforce it for us.
+  DCHECK(shmem_region.IsValid());
+
+  base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Shared memory mapping failed.";
     return;
@@ -187,10 +185,11 @@ void DevToolsVideoConsumer::OnFrameCaptured(
     return;
   }
   frame->AddDestructionObserver(base::BindOnce(
-      [](base::ReadOnlySharedMemoryMapping mapping,
+      [](media::mojom::VideoBufferHandlePtr data,
+         base::ReadOnlySharedMemoryMapping mapping,
          mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
              callbacks) {},
-      std::move(mapping), std::move(callbacks)));
+      std::move(data), std::move(mapping), std::move(callbacks)));
   frame->set_metadata(info->metadata);
   if (info->color_space.has_value())
     frame->set_color_space(info->color_space.value());

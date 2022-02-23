@@ -4,6 +4,8 @@
 
 #include "net/android/network_library.h"
 
+#include <dlfcn.h>
+
 #include <string>
 #include <vector>
 
@@ -13,7 +15,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/native_library.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
+#include "net/base/net_errors.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
 #include "net/net_jni_headers/DnsStatus_jni.h"
@@ -173,6 +178,124 @@ bool ReportBadDefaultNetwork() {
 
 void TagSocket(SocketDescriptor socket, uid_t uid, int32_t tag) {
   Java_AndroidNetworkLibrary_tagSocket(AttachCurrentThread(), socket, uid, tag);
+}
+
+namespace {
+
+using LollipopSetNetworkForSocket = int (*)(unsigned net_id, int socket_fd);
+using MarshmallowSetNetworkForSocket = int (*)(int64_t net_id, int socket_fd);
+
+MarshmallowSetNetworkForSocket GetMarshmallowSetNetworkForSocket() {
+  // On Android M and newer releases use supported NDK API.
+  base::FilePath file(base::GetNativeLibraryName("android"));
+  // See declaration of android_setsocknetwork() here:
+  // http://androidxref.com/6.0.0_r1/xref/development/ndk/platforms/android-M/include/android/multinetwork.h#65
+  // Function cannot be called directly as it will cause app to fail to load on
+  // pre-marshmallow devices.
+  void* dl = dlopen(file.value().c_str(), RTLD_NOW);
+  return reinterpret_cast<MarshmallowSetNetworkForSocket>(
+      dlsym(dl, "android_setsocknetwork"));
+}
+
+LollipopSetNetworkForSocket GetLollipopSetNetworkForSocket() {
+  // On Android L use setNetworkForSocket from libnetd_client.so. Android's netd
+  // client library should always be loaded in our address space as it shims
+  // socket().
+  base::FilePath file(base::GetNativeLibraryName("netd_client"));
+  // Use RTLD_NOW to match Android's prior loading of the library:
+  // http://androidxref.com/6.0.0_r5/xref/bionic/libc/bionic/NetdClient.cpp#37
+  // Use RTLD_NOLOAD to assert that the library is already loaded and avoid
+  // doing any disk IO.
+  void* dl = dlopen(file.value().c_str(), RTLD_NOW | RTLD_NOLOAD);
+  return reinterpret_cast<LollipopSetNetworkForSocket>(
+      dlsym(dl, "setNetworkForSocket"));
+}
+
+}  // namespace
+
+int BindToNetwork(SocketDescriptor socket,
+                  NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK_NE(socket, kInvalidSocket);
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    return ERR_INVALID_ARGUMENT;
+
+  // Android prior to Lollipop didn't have support for binding sockets to
+  // networks.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_LOLLIPOP)
+    return ERR_NOT_IMPLEMENTED;
+
+  int rv;
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    static MarshmallowSetNetworkForSocket marshmallow_set_network_for_socket =
+        GetMarshmallowSetNetworkForSocket();
+    if (!marshmallow_set_network_for_socket)
+      return ERR_NOT_IMPLEMENTED;
+    rv = marshmallow_set_network_for_socket(network, socket);
+    if (rv)
+      rv = errno;
+  } else {
+    static LollipopSetNetworkForSocket lollipop_set_network_for_socket =
+        GetLollipopSetNetworkForSocket();
+    if (!lollipop_set_network_for_socket)
+      return ERR_NOT_IMPLEMENTED;
+    rv = -lollipop_set_network_for_socket(network, socket);
+  }
+  // If |network| has since disconnected, |rv| will be ENONET.  Surface this as
+  // ERR_NETWORK_CHANGED, rather than MapSystemError(ENONET) which gives back
+  // the less descriptive ERR_FAILED.
+  if (rv == ENONET)
+    return ERR_NETWORK_CHANGED;
+  return MapSystemError(rv);
+}
+
+namespace {
+
+using MarshmallowGetAddrInfoForNetwork = int (*)(int64_t network,
+                                                 const char* node,
+                                                 const char* service,
+                                                 const struct addrinfo* hints,
+                                                 struct addrinfo** res);
+
+MarshmallowGetAddrInfoForNetwork GetMarshmallowGetAddrInfoForNetwork() {
+  // On Android M and newer releases use supported NDK API.
+  base::FilePath file(base::GetNativeLibraryName("android"));
+  // See declaration of android_getaddrinfofornetwork() here:
+  // https://developer.android.com/ndk/reference/group/networking#android_getaddrinfofornetwork
+  // Function cannot be called directly as it will cause app to fail to load on
+  // pre-marshmallow devices.
+  void* dl = dlopen(file.value().c_str(), RTLD_NOW);
+  return reinterpret_cast<MarshmallowGetAddrInfoForNetwork>(
+      dlsym(dl, "android_getaddrinfofornetwork"));
+}
+
+}  // namespace
+
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
+    NetworkChangeNotifier::NetworkHandle network,
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res) {
+  if (network == NetworkChangeNotifier::kInvalidNetworkHandle) {
+    errno = EINVAL;
+    return EAI_SYSTEM;
+  }
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    errno = ENOSYS;
+    return EAI_SYSTEM;
+  }
+
+  static MarshmallowGetAddrInfoForNetwork get_addrinfo_for_network =
+      GetMarshmallowGetAddrInfoForNetwork();
+  if (!get_addrinfo_for_network) {
+    errno = ENOSYS;
+    return EAI_SYSTEM;
+  }
+
+  return get_addrinfo_for_network(network, node, service, hints, res);
 }
 
 }  // namespace android

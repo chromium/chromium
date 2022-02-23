@@ -80,6 +80,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                         size_t num_output_frames) override;
   void OutputFrame(scoped_refptr<VideoFrame> frame,
                    const gfx::Rect& visible_rect,
+                   const VideoColorSpace& color_space,
                    base::TimeDelta timestamp) override;
   DmabufVideoFramePool* GetVideoFramePool() const override;
 
@@ -197,9 +198,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // Callbacks passed from Initialize().
   OutputCB output_cb_;
 
-  // Hold onto profile passed in from Initialize() so that
+  // Hold onto profile and color space passed in from Initialize() so that
   // it is available for InitializeBackend().
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoColorSpace color_space_;
 
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;

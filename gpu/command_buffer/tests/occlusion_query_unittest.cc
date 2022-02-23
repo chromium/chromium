@@ -5,6 +5,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,7 +67,7 @@ void OcclusionQueryTest::DrawRect(float x, float z, float scale, float* color) {
 }
 
 TEST_F(OcclusionQueryTest, Occlusion) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(GLTestHelper::HasExtension("GL_EXT_occlusion_query_boolean"))
       << "GL_EXT_occlusion_query_boolean is required on OSX";
 #endif

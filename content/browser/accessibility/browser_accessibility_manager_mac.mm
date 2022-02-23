@@ -82,10 +82,11 @@ void BrowserAccessibilityManagerMac::FireFocusEvent(
                             node);
 }
 
-void BrowserAccessibilityManagerMac::FireBlinkEvent(
-    ax::mojom::Event event_type,
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node);
+void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
+                                                    BrowserAccessibility* node,
+                                                    int action_request_id) {
+  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                              action_request_id);
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ax::mojom::Event::kAutocorrectionOccured:
@@ -125,7 +126,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     BrowserAccessibility* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
-  auto native_node = ToBrowserAccessibilityCocoa(node);
+  BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
   DCHECK(native_node);
 
   // Refer to |AXObjectCache::postPlatformNotification| in WebKit source code.
@@ -159,6 +160,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // There currently is none:
       // https://www.w3.org/TR/core-aam-1.2/#details-id-186
       return;
+    case ui::AXEventGenerator::Event::BUSY_CHANGED:
+      mac_notification = ui::NSAccessibilityElementBusyChangedNotification;
+      break;
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
@@ -188,9 +192,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
 
       NSAccessibilityPostNotificationWithUserInfo(
-          ToBrowserAccessibilityCocoa(focus), mac_notification, user_info);
+          focus->GetNativeViewAccessible(), mac_notification, user_info);
       NSAccessibilityPostNotificationWithUserInfo(
-          ToBrowserAccessibilityCocoa(root), mac_notification, user_info);
+          root->GetNativeViewAccessible(), mac_notification, user_info);
       return;
     }
     case ui::AXEventGenerator::Event::EXPANDED:
@@ -354,7 +358,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         NSAccessibilityPostNotificationWithUserInfo(
             native_node, mac_notification, user_info);
         NSAccessibilityPostNotificationWithUserInfo(
-            ToBrowserAccessibilityCocoa(root), mac_notification, user_info);
+            root->GetNativeViewAccessible(), mac_notification, user_info);
         return;
       }
       break;
@@ -367,7 +371,6 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::BUSY_CHANGED:
     case ui::AXEventGenerator::Event::CARET_BOUNDS_CHANGED:
     case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
@@ -431,7 +434,7 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility* node) {
   DCHECK(mac_notification);
-  auto native_node = ToBrowserAccessibilityCocoa(node);
+  BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
   DCHECK(native_node);
   NSAccessibilityPostNotification(native_node, mac_notification);
 }
@@ -451,12 +454,15 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
 
   std::set<const BrowserAccessibilityCocoa*> changed_editable_roots;
   for (const auto& change : changes) {
-    const BrowserAccessibility* obj = GetFromAXNode(change.node);
-    if (obj && obj->HasState(ax::mojom::State::kEditable)) {
-      const BrowserAccessibilityCocoa* editable_root =
-          [ToBrowserAccessibilityCocoa(obj) editableAncestor];
-      if (editable_root && [editable_root instanceActive])
-        changed_editable_roots.insert(editable_root);
+    if (change.node->HasState(ax::mojom::State::kEditable)) {
+      auto* ancestor = change.node->GetTextFieldAncestor();
+      if (ancestor) {
+        BrowserAccessibility* obj = GetFromAXNode(ancestor);
+        const BrowserAccessibilityCocoa* editable_root =
+            obj->GetNativeViewAccessible();
+        if ([editable_root instanceActive])
+          changed_editable_roots.insert(editable_root);
+      }
     }
   }
 
@@ -498,7 +504,8 @@ NSDictionary* BrowserAccessibilityManagerMac::
   }
 
   focus_object = focus_object->PlatformGetLowestPlatformAncestor();
-  auto native_focus_object = ToBrowserAccessibilityCocoa(focus_object);
+  BrowserAccessibilityCocoa* native_focus_object =
+      focus_object->GetNativeViewAccessible();
   if (native_focus_object && [native_focus_object instanceActive]) {
     [user_info setObject:native_focus_object
                   forKey:ui::NSAccessibilityTextChangeElement];

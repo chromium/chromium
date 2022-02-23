@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -65,7 +66,7 @@ class ExampleEmployer::ExampleWorker
   ~ExampleWorker() = default;
 
   // Only used on the origin thread (where DoSomething was called).
-  ExampleEmployer* employer_;
+  raw_ptr<ExampleEmployer> employer_;
   CompletionOnceCallback callback_;
   // Used to post ourselves onto the origin thread.
   const scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_ =

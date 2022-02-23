@@ -71,9 +71,9 @@ void RecentTabsPagePrefs::SetSyncPromoCollapsed(
 jboolean RecentTabsPagePrefs::GetForeignSessionCollapsed(
     JNIEnv* env,
     const JavaParamRef<jstring>& session_tag) {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile_->GetPrefs()->GetDictionary(prefs::kNtpCollapsedForeignSessions);
-  return dict && dict->HasKey(ConvertJavaStringToUTF8(env, session_tag));
+  return dict && dict->FindKey(ConvertJavaStringToUTF8(env, session_tag));
 }
 
 void RecentTabsPagePrefs::SetForeignSessionCollapsed(
@@ -85,7 +85,7 @@ void RecentTabsPagePrefs::SetForeignSessionCollapsed(
   PrefService* prefs = profile_->GetPrefs();
   DictionaryPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
   if (is_collapsed)
-    update.Get()->SetBoolean(ConvertJavaStringToUTF8(env, session_tag), true);
+    update.Get()->SetBoolKey(ConvertJavaStringToUTF8(env, session_tag), true);
   else
     update.Get()->RemoveKey(ConvertJavaStringToUTF8(env, session_tag));
 }

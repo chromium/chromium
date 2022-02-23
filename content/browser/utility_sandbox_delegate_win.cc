@@ -11,7 +11,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
-#include "media/mojo/mojom/cdm_service.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -230,14 +229,17 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     policy->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
   }
 
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
     auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(policy);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
+  }
 
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
     auto delayed_flags = policy->GetDelayedProcessMitigations();
     delayed_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-    result = policy->SetDelayedProcessMitigations(delayed_flags);
+    auto result = policy->SetDelayedProcessMitigations(delayed_flags);
     if (result != sandbox::SBOX_ALL_OK)
       return false;
   }
@@ -262,6 +264,9 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
+  // TODO(1268074) can remove once v8 is cet-compatible.
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
+    return false;
   auto utility_sub_type =
       cmd_line_.GetSwitchValueASCII(switches::kUtilitySubType);
   return GetContentClient()->browser()->IsUtilityCetCompatible(

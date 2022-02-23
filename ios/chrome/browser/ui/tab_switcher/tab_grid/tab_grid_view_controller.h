@@ -70,6 +70,17 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
+// YES to go fullscreen by hiding the thumbstrip bottom fake tab. NO to bring it
+// back.
+- (void)showFullscreen:(BOOL)fullscreen;
+
+// Asks the delegate to open history modal with results filtered by
+// |searchText|.
+- (void)showHistoryFilteredBySearchText:(NSString*)searchText;
+
+// Asks the delegate to open a new tab page with a web search for |searchText|.
+- (void)openSearchResultsPageForSearchText:(NSString*)searchText;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
@@ -168,6 +179,10 @@ enum class TabGridPageConfiguration {
 
 // Dismisses any modal UI which may be presented.
 - (void)dismissModals;
+
+// Sets both the current page and page control's selected page to |page|.
+// Animation is used if |animated| is YES.
+- (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated;
 
 @end
 

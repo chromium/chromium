@@ -7,12 +7,16 @@
 
 #include <string>
 
+#include "ash/components/login/auth/cryptohome_authenticator.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/login/auth/sync_trusted_vault_keys.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/components/login/auth/user_context.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
-#include "chromeos/login/auth/cryptohome_authenticator.h"
 #include "components/login/base_screen_handler_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -22,10 +26,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-class SyncTrustedVaultKeys;
-class UserContext;
-
 namespace login {
 
 // A class that's used to specify the way how Gaia should be loaded.

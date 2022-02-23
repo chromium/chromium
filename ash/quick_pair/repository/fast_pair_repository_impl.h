@@ -13,9 +13,15 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+namespace bluetooth_config {
+class DeviceImageInfo;
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace nearby {
 namespace fastpair {
@@ -26,6 +32,8 @@ class UserReadDevicesResponse;
 namespace ash {
 namespace quick_pair {
 
+class DeviceIdMap;
+class DeviceImageStore;
 class DeviceMetadataFetcher;
 class FastPairImageDecoder;
 class FootprintsFetcher;
@@ -50,6 +58,11 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
   bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  void FetchDeviceImages(scoped_refptr<Device> device) override;
+  bool PersistDeviceImages(scoped_refptr<Device> device) override;
+  bool EvictDeviceImages(const device::BluetoothDevice* device) override;
+  absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
+  GetImagesForDevice(const std::string& device_id) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -58,7 +71,8 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void OnMetadataFetched(
       const std::string& normalized_model_id,
       DeviceMetadataCallback callback,
-      absl::optional<nearby::fastpair::GetObservedDeviceResponse> response);
+      absl::optional<nearby::fastpair::GetObservedDeviceResponse> response,
+      bool has_retryable_error);
   void OnImageDecoded(const std::string& normalized_model_id,
                       DeviceMetadataCallback callback,
                       nearby::fastpair::GetObservedDeviceResponse response,
@@ -71,18 +85,27 @@ class FastPairRepositoryImpl : public FastPairRepository {
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
   void CompleteAccountKeyLookup(CheckAccountKeysCallback callback,
                                 const std::vector<uint8_t> account_key,
-                                DeviceMetadata* device_metadata);
+                                DeviceMetadata* device_metadata,
+                                bool has_retryable_error);
   void AddToFootprints(const std::string& hex_model_id,
                        const std::string& mac_address,
                        const std::vector<uint8_t>& account_key,
-                       DeviceMetadata* metadata);
+                       DeviceMetadata* metadata,
+                       bool has_retryable_error);
   void OnAddToFootprintsComplete(const std::string& mac_address,
                                  const std::vector<uint8_t>& account_key,
                                  bool success);
+  // Fethces the |device_metadata| images to the DeviceImageStore for
+  // |hex_model_id|.
+  void CompleteFetchDeviceImages(const std::string& hex_model_id,
+                                 DeviceMetadata* device_metadata,
+                                 bool has_retryable_error);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
   std::unique_ptr<FastPairImageDecoder> image_decoder_;
+  std::unique_ptr<DeviceIdMap> device_id_map_;
+  std::unique_ptr<DeviceImageStore> device_image_store_;
   std::unique_ptr<SavedDeviceRegistry> saved_device_registry_;
 
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;

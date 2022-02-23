@@ -288,22 +288,24 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
     if (supports_requests_) {
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264>(this, device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
     } else {
       decoder_ = std::make_unique<H264Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateH264Legacy>(this,
                                                                device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
     }
   } else if (video_profile_ >= VP8PROFILE_MIN &&
              video_profile_ <= VP8PROFILE_MAX) {
     if (supports_requests_) {
       decoder_ = std::make_unique<VP8Decoder>(
-          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()));
+          std::make_unique<V4L2VideoDecoderDelegateVP8>(this, device_.get()),
+          config.container_color_space);
     } else {
       decoder_ = std::make_unique<VP8Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP8Legacy>(this,
-                                                              device_.get()));
+                                                              device_.get()),
+          config.container_color_space);
     }
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
@@ -311,12 +313,12 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Chromium>(this,
                                                                 device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
     } else {
       decoder_ = std::make_unique<VP9Decoder>(
           std::make_unique<V4L2VideoDecoderDelegateVP9Legacy>(this,
                                                               device_.get()),
-          video_profile_);
+          video_profile_, config.container_color_space);
     }
   } else {
     NOTREACHED() << "Unsupported profile " << GetProfileName(video_profile_);
@@ -1979,11 +1981,12 @@ void V4L2SliceVideoDecodeAccelerator::SurfaceReady(
     scoped_refptr<V4L2DecodeSurface> dec_surface,
     int32_t bitstream_id,
     const gfx::Rect& visible_rect,
-    const VideoColorSpace& /* color_space */) {
+    const VideoColorSpace& color_space) {
   DVLOGF(4);
   DCHECK(decoder_thread_task_runner_->BelongsToCurrentThread());
 
   dec_surface->SetVisibleRect(visible_rect);
+  dec_surface->SetColorSpace(color_space);
   decoder_display_queue_.push(std::make_pair(bitstream_id, dec_surface));
   TryOutputSurfaces();
 }
@@ -2030,10 +2033,9 @@ void V4L2SliceVideoDecodeAccelerator::OutputSurface(
   DCHECK_NE(output_record.picture_id, -1);
   ++output_record.num_times_sent_to_client;
 
-  // TODO(hubbe): Insert correct color space. http://crbug.com/647725
-  Picture picture(output_record.picture_id, bitstream_id,
-                  dec_surface->visible_rect(), gfx::ColorSpace(),
-                  true /* allow_overlay */);
+  Picture picture(
+      output_record.picture_id, bitstream_id, dec_surface->visible_rect(),
+      dec_surface->color_space().ToGfxColorSpace(), true /* allow_overlay */);
   DVLOGF(4) << dec_surface->ToString()
             << ", bitstream_id: " << picture.bitstream_buffer_id()
             << ", picture_id: " << picture.picture_buffer_id()

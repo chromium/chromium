@@ -27,7 +27,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryFuchsia
       const VideoCaptureDeviceFactoryFuchsia&) = delete;
 
   // VideoCaptureDeviceFactory implementation.
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,7 +138,7 @@ class WindowsSystemProxyResolverImpl::Request {
   // The WindowsSystemProxyResolverImpl manages the lifetime of this object. The
   // Request cannot outlive the WindowsSystemProxyResolverImpl. Thus, it is safe
   // to hold on to a raw pointer.
-  WindowsSystemProxyResolverImpl* const parent_;
+  const raw_ptr<WindowsSystemProxyResolverImpl> parent_;
   GetProxyForUrlCallback callback_;
   HINTERNET resolver_handle_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

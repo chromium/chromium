@@ -10,4 +10,6 @@ test("storage_unittests") {
   ]
 
   data = [ "//storage/test/data/" ]
+
+  data_deps = [ "//testing/buildbot/filters:storage_unittests_filters" ]
 }

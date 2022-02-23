@@ -43,7 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/file_select_helper_contacts_android.h"
 #endif
 
@@ -69,7 +69,7 @@ using content::WebContents;
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The MIME type for selecting contacts.
 constexpr char16_t kContactsMimeType[] = u"text/json+contacts";
 #endif
@@ -190,14 +190,14 @@ void FileSelectHelper::FileSelectedWithExtraInfo(
   std::vector<ui::SelectedFileInfo> files;
   files.push_back(file);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FileSelectHelper::ProcessSelectedFilesMac, this, files));
 #else
   ConvertToFileChooserFileInfoList(files);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void FileSelectHelper::MultiFilesSelected(
@@ -218,14 +218,14 @@ void FileSelectHelper::MultiFilesSelectedWithExtraInfo(
       path = path.DirName();
     profile_->set_last_selected_directory(path);
   }
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FileSelectHelper::ProcessSelectedFilesMac, this, files));
 #else
   ConvertToFileChooserFileInfoList(files);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void FileSelectHelper::FileSelectionCanceled(void* params) {
@@ -508,7 +508,7 @@ void FileSelectHelper::RunFileChooser(
   Profile* profile = Profile::FromBrowserContext(
       render_frame_host->GetProcess()->GetBrowserContext());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (params.accept_types.size() == 1 &&
       params.accept_types[0] == kContactsMimeType) {
     scoped_refptr<FileSelectHelperContactsAndroid> file_select_helper_android(
@@ -690,7 +690,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   gfx::NativeWindow owning_window =
       platform_util::GetTopLevel(web_contents_->GetNativeView());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android needs the original MIME types and an additional capture value.
   std::pair<std::vector<std::u16string>, bool> accept_types =
       std::make_pair(params->accept_types, params->use_media_capture);
@@ -707,7 +707,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
           ? 1
           : 0,  // 1-based index of default extension to show.
       base::FilePath::StringType(), owning_window,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       &accept_types);
 #else
       NULL);

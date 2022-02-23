@@ -11,14 +11,14 @@ import tempfile
 from devil.utils import reraiser_thread
 
 
-class Datatype(object):
+class Datatype:
   HTML = 'text/html'
   JSON = 'application/json'
   PNG = 'image/png'
   TEXT = 'text/plain'
 
 
-class OutputManager(object):
+class OutputManager:
 
   def __init__(self):
     """OutputManager Constructor.
@@ -88,14 +88,17 @@ class OutputManager(object):
     self.TearDown()
 
 
-class ArchivedFile(object):
+class ArchivedFile:
 
   def __init__(self, out_filename, out_subdir, datatype):
     self._out_filename = out_filename
     self._out_subdir = out_subdir
     self._datatype = datatype
 
-    self._f = tempfile.NamedTemporaryFile(delete=False)
+    mode = 'w+'
+    if datatype == Datatype.PNG:
+      mode = 'w+b'
+    self._f = tempfile.NamedTemporaryFile(mode=mode, delete=False)
     self._ready_to_archive = False
 
   @property
@@ -141,7 +144,6 @@ class ArchivedFile(object):
     content addressed files. This is called after the file is written but
     before archiving has begun.
     """
-    pass
 
   def Archive(self):
     """Archives file."""

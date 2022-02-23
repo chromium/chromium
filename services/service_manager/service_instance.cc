@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
@@ -19,10 +20,10 @@
 #include "services/service_manager/service_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/service_manager/service_process_launcher.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace service_manager {
 
@@ -129,7 +130,7 @@ ServiceInstance::~ServiceInstance() {
 }
 
 void ServiceInstance::SetPID(base::ProcessId pid) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // iOS does not support base::Process and simply passes 0 here, so elide
   // this check on that platform.
   if (pid == base::kNullProcessId) {
@@ -154,7 +155,7 @@ void ServiceInstance::StartWithRemote(
   service_manager_->NotifyServiceCreated(*this);
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 bool ServiceInstance::StartWithProcessHost(
     std::unique_ptr<ServiceProcessHost> host,
     sandbox::mojom::Sandbox sandbox_type) {
@@ -185,7 +186,7 @@ bool ServiceInstance::StartWithProcessHost(
   StartWithRemote(std::move(remote));
   return true;
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void ServiceInstance::BindProcessMetadataReceiver(
     mojo::PendingReceiver<mojom::ProcessMetadata> receiver) {

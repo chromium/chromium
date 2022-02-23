@@ -1,0 +1,62 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("accessibility_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "font_size_prefs_android.cc",
+    "font_size_prefs_android.h",
+  ]
+  deps = [
+    ":accessibility_jni_headers",
+    "//base",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+  ]
+}
+
+# Constants only target without dependencies to allow embedders to only include relevant code.
+android_library("constants_java") {
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityConstants.java" ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  deps = [
+    ":constants_java",
+    ":java_resources",
+    "//base:base_java",
+    "//components/browser_ui/settings/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+  resources_package = "org.chromium.components.browser_ui.accessibility"
+}
+
+android_resources("java_resources") {
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+  sources = [
+    "java/res/layout/custom_preference.xml",
+    "java/res/layout/preference_text_scale.xml",
+    "java/res/values/styles.xml",
+    "java/res/xml/accessibility_preferences.xml",
+  ]
+}

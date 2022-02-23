@@ -25,22 +25,22 @@
 #include "build/build_config.h"
 #include "util/misc/implicit_cast.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/uio.h>
 #include <unistd.h>
 #include "base/posix/eintr_wrapper.h"
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace crashpad {
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Ensure type compatibility between WritableIoVec and iovec.
 static_assert(sizeof(WritableIoVec) == sizeof(iovec), "WritableIoVec size");
 static_assert(offsetof(WritableIoVec, iov_base) == offsetof(iovec, iov_base),
               "WritableIoVec base offset");
 static_assert(offsetof(WritableIoVec, iov_len) == offsetof(iovec, iov_len),
               "WritableIoVec len offset");
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 WeakFileHandleFileWriter::WeakFileHandleFileWriter(FileHandle file_handle)
     : file_handle_(file_handle) {
@@ -62,7 +62,7 @@ bool WeakFileHandleFileWriter::WriteIoVec(std::vector<WritableIoVec>* iovecs) {
     return false;
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
   ssize_t size = 0;
   for (const WritableIoVec& iov : *iovecs) {
@@ -79,7 +79,7 @@ bool WeakFileHandleFileWriter::WriteIoVec(std::vector<WritableIoVec>* iovecs) {
   iovec* iov = reinterpret_cast<iovec*>(&(*iovecs)[0]);
   size_t remaining_iovecs = iovecs->size();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android does not expose the IOV_MAX macro, but makes its value available
   // via sysconf(). See Android 7.0.0 bionic/libc/bionic/sysconf.cpp sysconf().
   // Bionic defines IOV_MAX at bionic/libc/include/limits.h, but does not ship
@@ -127,14 +127,14 @@ bool WeakFileHandleFileWriter::WriteIoVec(std::vector<WritableIoVec>* iovecs) {
 
   DCHECK_EQ(remaining_iovecs, 0u);
 
-#else  // !OS_POSIX
+#else  // !BUILDFLAG(IS_POSIX)
 
   for (const WritableIoVec& iov : *iovecs) {
     if (!Write(iov.iov_base, iov.iov_len))
       return false;
   }
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 #ifndef NDEBUG
   // The interface says that |iovecs| is not sacred, so scramble it to make sure
@@ -171,7 +171,7 @@ bool FileWriter::Open(const base::FilePath& path,
   return true;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool FileWriter::OpenMemfd(const base::FilePath& path) {
   CHECK(!file_.is_valid());
   file_.reset(LoggingOpenMemoryFileForReadAndWrite(path));

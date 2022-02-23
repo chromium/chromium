@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_SUBSCRIPTION_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PUSH_MESSAGING_PUSH_SUBSCRIPTION_CALLBACKS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 

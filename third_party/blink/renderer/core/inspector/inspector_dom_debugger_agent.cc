@@ -152,7 +152,8 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
     v8::Local<v8::Value> value,
     V8EventListenerInfoList* event_information) {
   InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
-      isolate, value, 1, false, event_information);
+      isolate, value, 1, false, InspectorDOMAgent::IncludeWhitespaceEnum::NONE,
+      event_information);
 }
 
 static bool FilterNodesWithListeners(Node* node) {
@@ -171,6 +172,7 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
     v8::Local<v8::Value> value,
     int depth,
     bool pierce,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace,
     V8EventListenerInfoList* event_information) {
   // Special-case nodes, respect depth and pierce parameters in case of nodes.
   Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
@@ -179,8 +181,8 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
       depth = INT_MAX;
     HeapVector<Member<Node>> nodes;
     InspectorDOMAgent::CollectNodes(
-        node, depth, pierce, WTF::BindRepeating(&FilterNodesWithListeners),
-        &nodes);
+        node, depth, pierce, include_whitespace,
+        WTF::BindRepeating(&FilterNodesWithListeners), &nodes);
     for (Node* n : nodes) {
       // We are only interested in listeners from the current context.
       CollectEventListeners(isolate, n, v8::Local<v8::Value>(), n, pierce,
@@ -301,15 +303,20 @@ void InspectorDOMDebuggerAgent::DidRemoveDOMNode(Node* node) {
   if (dom_breakpoints_.size()) {
     // Remove subtree breakpoints.
     dom_breakpoints_.erase(node);
-    HeapVector<Member<Node>> stack(1, InspectorDOMAgent::InnerFirstChild(node));
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+        dom_agent_->IncludeWhitespace();
+    HeapVector<Member<Node>> stack(
+        1, InspectorDOMAgent::InnerFirstChild(node, include_whitespace));
     do {
       Node* child_node = stack.back();
       stack.pop_back();
       if (!child_node)
         continue;
       dom_breakpoints_.erase(child_node);
-      stack.push_back(InspectorDOMAgent::InnerFirstChild(child_node));
-      stack.push_back(InspectorDOMAgent::InnerNextSibling(child_node));
+      stack.push_back(
+          InspectorDOMAgent::InnerFirstChild(child_node, include_whitespace));
+      stack.push_back(
+          InspectorDOMAgent::InnerNextSibling(child_node, include_whitespace));
     } while (!stack.IsEmpty());
   }
 }
@@ -393,8 +400,12 @@ Response InspectorDOMDebuggerAgent::setDOMBreakpoint(
   uint32_t root_bit = 1 << type;
   dom_breakpoints_.Set(node, FindBreakpointMask(node) | root_bit);
   if (root_bit & inheritableDOMBreakpointTypesMask) {
-    for (Node* child = InspectorDOMAgent::InnerFirstChild(node); child;
-         child = InspectorDOMAgent::InnerNextSibling(child))
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+        dom_agent_->IncludeWhitespace();
+    for (Node* child =
+             InspectorDOMAgent::InnerFirstChild(node, include_whitespace);
+         child;
+         child = InspectorDOMAgent::InnerNextSibling(child, include_whitespace))
       UpdateSubtreeBreakpoints(child, root_bit, true);
   }
   DidAddBreakpoint();
@@ -423,8 +434,12 @@ Response InspectorDOMDebuggerAgent::removeDOMBreakpoint(
 
   if ((root_bit & inheritableDOMBreakpointTypesMask) &&
       !(mask & (root_bit << domBreakpointDerivedTypeShift))) {
-    for (Node* child = InspectorDOMAgent::InnerFirstChild(node); child;
-         child = InspectorDOMAgent::InnerNextSibling(child))
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+        dom_agent_->IncludeWhitespace();
+    for (Node* child =
+             InspectorDOMAgent::InnerFirstChild(node, include_whitespace);
+         child;
+         child = InspectorDOMAgent::InnerNextSibling(child, include_whitespace))
       UpdateSubtreeBreakpoints(child, root_bit, false);
   }
   DidRemoveBreakpoint();
@@ -450,7 +465,8 @@ Response InspectorDOMDebuggerAgent::getEventListeners(
   V8EventListenerInfoList event_information;
   InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
       context->GetIsolate(), object, depth.fromMaybe(1),
-      pierce.fromMaybe(false), &event_information);
+      pierce.fromMaybe(false), dom_agent_->IncludeWhitespace(),
+      &event_information);
   *listeners_array = BuildObjectsForEventListeners(event_information, context,
                                                    object_group->string());
   return Response::Success();
@@ -618,8 +634,12 @@ void InspectorDOMDebuggerAgent::UpdateSubtreeBreakpoints(Node* node,
   if (!new_root_mask)
     return;
 
-  for (Node* child = InspectorDOMAgent::InnerFirstChild(node); child;
-       child = InspectorDOMAgent::InnerNextSibling(child))
+  InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+      dom_agent_->IncludeWhitespace();
+  for (Node* child =
+           InspectorDOMAgent::InnerFirstChild(node, include_whitespace);
+       child;
+       child = InspectorDOMAgent::InnerNextSibling(child, include_whitespace))
     UpdateSubtreeBreakpoints(child, new_root_mask, set);
 }
 

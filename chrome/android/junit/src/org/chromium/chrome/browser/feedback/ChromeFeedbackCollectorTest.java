@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -53,6 +54,7 @@ import java.util.Map;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeFeedbackCollectorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -246,7 +248,7 @@ public class ChromeFeedbackCollectorTest {
         // ChromeFeedbackCollector implementation.
         @Override
         protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                ChromeFeedbackCollector.InitParams initParams) {
+                Activity activity, ChromeFeedbackCollector.InitParams initParams) {
             return new ArrayList<>();
         }
 
@@ -303,7 +305,7 @@ public class ChromeFeedbackCollectorTest {
                         DESCRIPTION, null, null, (result) -> callback.onResult(result)) {
                     @Override
                     protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                            ChromeFeedbackCollector.InitParams initParams) {
+                            Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                         return ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources();
                     }
                 };
@@ -332,7 +334,7 @@ public class ChromeFeedbackCollectorTest {
                 (result) -> callback.onResult(result)) {
             @Override
             protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                    ChromeFeedbackCollector.InitParams initParams) {
+                    Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                 ArrayList<FeedbackSource> list = new ArrayList<>(
                         ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources());
                 list.add(new FeedbackContextFeedbackSource(FEEDBACK_CONTEXT));
@@ -404,7 +406,7 @@ public class ChromeFeedbackCollectorTest {
 
                     @Override
                     protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                            ChromeFeedbackCollector.InitParams initParams) {
+                            Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                         return ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources();
                     }
                 };

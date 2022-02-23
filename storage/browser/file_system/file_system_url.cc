@@ -12,6 +12,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -69,10 +70,9 @@ FileSystemURL::FileSystemURL(const GURL& url,
   GURL origin_url;
   // URL should be able to be parsed and the parsed origin should match the
   // StorageKey's origin member.
-  is_valid_ =
-      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
-                               &virtual_path_) &&
-      storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url));
+  is_valid_ = ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
+                                       &virtual_path_) &&
+              storage_key.origin().IsSameOriginWith(origin_url);
   storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;
@@ -113,10 +113,11 @@ GURL FileSystemURL::ToGURL() const {
   if (!is_valid_)
     return GURL();
 
-  std::string url =
-      GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_).spec();
-  if (url.empty())
+  GURL url = GetFileSystemRootURI(storage_key_.origin().GetURL(), mount_type_);
+  if (!url.is_valid())
     return GURL();
+
+  std::string url_string = url.spec();
 
   // Exactly match with DOMFileSystemBase::createFileSystemURL()'s encoding
   // behavior, where the path is escaped by KURL::encodeWithURLEscapeSequences
@@ -125,10 +126,10 @@ GURL FileSystemURL::ToGURL() const {
       virtual_path_.NormalizePathSeparatorsTo('/').AsUTF8Unsafe(),
       false /* use_plus */);
   base::ReplaceSubstringsAfterOffset(&escaped, 0, "%2F", "/");
-  url.append(escaped);
+  url_string.append(escaped);
 
   // Build nested GURL.
-  return GURL(url);
+  return GURL(url_string);
 }
 
 std::string FileSystemURL::DebugString() const {

@@ -199,7 +199,7 @@ std::unique_ptr<FFmpegDemuxerStream> FFmpegDemuxerStream::Create(
   std::unique_ptr<AudioDecoderConfig> audio_config;
   std::unique_ptr<VideoDecoderConfig> video_config;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kDeprecateLowUsageCodecs)) {
     const auto codec_id = stream->codecpar->codec_id;
     if (codec_id == AV_CODEC_ID_AMR_NB || codec_id == AV_CODEC_ID_AMR_WB ||
@@ -494,6 +494,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
       int discard_front_samples = base::ByteSwapToLE32(*skip_samples_ptr);
       if (last_packet_timestamp_ != kNoTimestamp && discard_front_samples) {
         DLOG(ERROR) << "Skip samples are only allowed for the first packet.";
+        discard_front_samples = 0;
+      }
+
+      if (discard_front_samples < 0) {
+        // See https://crbug.com/1189939 and https://trac.ffmpeg.org/ticket/9622
+        DLOG(ERROR) << "Negative skip samples are not allowed.";
         discard_front_samples = 0;
       }
 
@@ -1239,7 +1245,7 @@ void FFmpegDemuxer::OnOpenContextDone(bool result) {
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (glue_->detected_hls()) {
     MEDIA_LOG(INFO, media_log_)
         << GetDisplayName() << ": detected HLS manifest";

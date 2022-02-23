@@ -4,13 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/dom_window_web_database.h"
 
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -71,73 +66,6 @@ TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrame) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             static_cast<int>(DOMExceptionCode::kSecurityError));
-}
-
-TEST(DOMWindowWebDatabaseTest,
-     ThirdPartyContextWebSQLIFrameAndThrowingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWebSQLInThirdPartyContextThrowsWhenDisabled);
-  V8TestingScope scope;
-  OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                          "first_party/nested-originA.html",
-                          "http://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // This case is identical to `ThirdPartyContextWebSQLIFrame`, except that
-  // no exception should be thrown whena access is denied.
-  EXPECT_FALSE(scope.GetExceptionState().HadException());
-}
-
-TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrameWithFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWebSQLInThirdPartyContextEnabled);
-  V8TestingScope scope;
-  OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                          "first_party/nested-originA.html",
-                          "http://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrameWithSwitch) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      blink::switches::kWebSQLInThirdPartyContextEnabled);
-  V8TestingScope scope;
-  OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                          "first_party/nested-originA.html",
-                          "http://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
-}
-
-TEST(DOMWindowWebDatabaseTest,
-     ThirdPartyContextWebSQLIFrameWithFeatureAndSwitch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWebSQLInThirdPartyContextEnabled);
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      blink::switches::kWebSQLInThirdPartyContextEnabled);
-  V8TestingScope scope;
-  OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                          "first_party/nested-originA.html",
-                          "http://example.test:0/", "first_party/empty.html",
-                          scope.GetExceptionState());
-  // Insufficient state exists to actually open a database, but this error
-  // means it was tried.
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            static_cast<int>(DOMExceptionCode::kInvalidStateError));
 }
 
 }  // namespace blink

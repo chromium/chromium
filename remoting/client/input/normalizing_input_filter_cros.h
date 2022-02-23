@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/input_filter.h"
 

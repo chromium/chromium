@@ -30,7 +30,7 @@ bool TrimDotSpaceSuffix(const base::FilePath::StringType& path,
 
 // Returns true if this system/OS's file access is case sensitive.
 constexpr bool IsFileAccessCaseSensitive() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return false;
 #else
   return true;
@@ -40,7 +40,7 @@ constexpr bool IsFileAccessCaseSensitive() {
 // Returns true if this system/OS ignores (.| )+ suffix in a filepath while
 // accessing the file.
 constexpr bool IsDotSpaceFilenameSuffixIgnored() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static_assert(!IsFileAccessCaseSensitive(),
                 "DotSpace suffix should only be ignored in case-insensitive"
                 "systems");

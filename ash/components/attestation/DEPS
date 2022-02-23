@@ -1,0 +1,12 @@
+noparent = True
+
+include_rules = [
+  "+ash/components/cryptohome",
+  "+base",
+  "+chromeos/dbus",
+  "+components/account_id",
+  "+crypto",
+  "+testing",
+  "+third_party/abseil-cpp/absl",
+  "+third_party/cros_system_api",
+]

@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
@@ -182,8 +181,8 @@ class COMPONENT_EXPORT(TRACING_CPP) HprofParser {
   ClassObject* FindClassObject(ObjectId id);
   // Returns true after setting the position of |hprof_buffer_| to point to the
   // |field_name| in class.
-  bool SeekToFieldPosition(ClassInstance* instance,
-                           base::StringPiece field_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SeekToFieldPosition(ClassInstance* instance,
+                                         base::StringPiece field_name);
 
   std::unordered_map<ObjectId, std::unique_ptr<StringReference>> strings_;
 

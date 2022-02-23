@@ -34,23 +34,29 @@ class MockTextInputDelegate : public TextInput::Delegate {
   MockTextInputDelegate& operator=(const MockTextInputDelegate&) = delete;
 
   // TextInput::Delegate:
-  MOCK_METHOD0(Activated, void());
-  MOCK_METHOD0(Deactivated, void());
-  MOCK_METHOD1(OnVirtualKeyboardVisibilityChanged, void(bool));
-  MOCK_METHOD1(SetCompositionText, void(const ui::CompositionText&));
-  MOCK_METHOD1(Commit, void(const std::u16string&));
-  MOCK_METHOD2(SetCursor, void(base::StringPiece16, const gfx::Range&));
-  MOCK_METHOD2(DeleteSurroundingText,
-               void(base::StringPiece16, const gfx::Range&));
-  MOCK_METHOD1(SendKey, void(const ui::KeyEvent&));
-  MOCK_METHOD1(OnLanguageChanged, void(const std::string&));
-  MOCK_METHOD1(OnTextDirectionChanged,
-               void(base::i18n::TextDirection direction));
-  MOCK_METHOD4(SetCompositionFromExistingText,
-               void(base::StringPiece16,
-                    const gfx::Range&,
-                    const gfx::Range&,
-                    const std::vector<ui::ImeTextSpan>& ui_ime_text_spans));
+  MOCK_METHOD(void, Activated, (), ());
+  MOCK_METHOD(void, Deactivated, (), ());
+  MOCK_METHOD(void, OnVirtualKeyboardVisibilityChanged, (bool), ());
+  MOCK_METHOD(void, SetCompositionText, (const ui::CompositionText&), ());
+  MOCK_METHOD(void, Commit, (const std::u16string&), ());
+  MOCK_METHOD(void, SetCursor, (base::StringPiece16, const gfx::Range&), ());
+  MOCK_METHOD(void,
+              DeleteSurroundingText,
+              (base::StringPiece16, const gfx::Range&),
+              ());
+  MOCK_METHOD(void, SendKey, (const ui::KeyEvent&), ());
+  MOCK_METHOD(void, OnLanguageChanged, (const std::string&), ());
+  MOCK_METHOD(void,
+              OnTextDirectionChanged,
+              (base::i18n::TextDirection direction),
+              ());
+  MOCK_METHOD(void,
+              SetCompositionFromExistingText,
+              (base::StringPiece16,
+               const gfx::Range&,
+               const gfx::Range&,
+               const std::vector<ui::ImeTextSpan>& ui_ime_text_spans),
+              ());
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -69,12 +75,12 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
   }
 
   // ui::InputMethodObserver
-  MOCK_METHOD0(OnFocus, void());
-  MOCK_METHOD0(OnBlur, void());
-  MOCK_METHOD1(OnCaretBoundsChanged, void(const ui::TextInputClient*));
-  MOCK_METHOD1(OnTextInputStateChanged, void(const ui::TextInputClient*));
-  MOCK_METHOD1(OnInputMethodDestroyed, void(const ui::InputMethod*));
-  MOCK_METHOD0(OnShowVirtualKeyboardIfEnabled, void());
+  MOCK_METHOD(void, OnFocus, (), ());
+  MOCK_METHOD(void, OnBlur, (), ());
+  MOCK_METHOD(void, OnCaretBoundsChanged, (const ui::TextInputClient*), ());
+  MOCK_METHOD(void, OnTextInputStateChanged, (const ui::TextInputClient*), ());
+  MOCK_METHOD(void, OnInputMethodDestroyed, (const ui::InputMethod*), ());
+  MOCK_METHOD(void, OnVirtualKeyboardVisibilityChangedIfEnabled, (bool), ());
 
  private:
   ui::InputMethod* input_method_ = nullptr;
@@ -156,12 +162,16 @@ TEST_F(TextInputTest, Activate) {
 
   EXPECT_CALL(*delegate(), Activated).Times(1);
   text_input()->Activate(surface());
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_TEXT, text_input()->GetTextInputMode());
   EXPECT_EQ(0, text_input()->GetTextInputFlags());
 
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
   text_input()->Deactivate();
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
 }
@@ -172,16 +182,31 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
   text_input()->Activate(surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 
-  EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
-      .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
+  // Currently, Virtual Keyboard Controller is not set up, and so
+  // the virtual keyboard events are gone. Here, we capture the callback
+  // from the observer and translate it to the ones of
+  // VirtualKeyboardControllerObserver event as if it is done via
+  // real VirtualKeyboardController implementation.
+  EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
+      .WillOnce(testing::Invoke([this](bool should_show) {
+        if (should_show)
+          text_input()->OnKeyboardVisible(gfx::Rect());
+        else
+          text_input()->OnKeyboardHidden();
+      }));
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->ShowVirtualKeyboardIfEnabled();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(1);
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
   text_input()->Deactivate();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
@@ -191,12 +216,24 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   text_input()->ShowVirtualKeyboardIfEnabled();
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
-  EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
-      .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
+
+  // Currently, Virtual Keyboard Controller is not set up, and so
+  // the virtual keyboard events are gone. Here, we capture the callback
+  // from the observer and translate it to the ones of
+  // VirtualKeyboardControllerObserver event as if it is done via
+  // real VirtualKeyboardController implementation.
+  EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
+      .WillOnce(testing::Invoke([this](bool should_show) {
+        if (should_show)
+          text_input()->OnKeyboardVisible(gfx::Rect());
+        else
+          text_input()->OnKeyboardHidden();
+      }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->Activate(surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
 }
@@ -207,6 +244,9 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
   text_input()->Activate(surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_TEXT, text_input()->GetTextInputMode());
   EXPECT_EQ(0, text_input()->GetTextInputFlags());
@@ -217,6 +257,7 @@ TEST_F(TextInputTest, SetTypeModeFlag) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   text_input()->SetTypeModeFlags(ui::TEXT_INPUT_TYPE_URL,
                                  ui::TEXT_INPUT_MODE_URL, flags, false);
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_URL, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_URL, text_input()->GetTextInputMode());
@@ -232,10 +273,13 @@ TEST_F(TextInputTest, CaretBounds) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(*delegate(), Activated).Times(1);
   text_input()->Activate(surface());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 
   gfx::Rect bounds(10, 10, 0, 16);
   EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   text_input()->SetCaretBounds(bounds);
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_EQ(bounds.size().ToString(),
             text_input()->GetCaretBounds().size().ToString());
@@ -319,12 +363,13 @@ TEST_F(TextInputTest, InsertCharNormalKey) {
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
 
-  EXPECT_CALL(*delegate(), Commit(std::u16string(1, ch))).Times(1);
-  EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+  EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
 }
 
 TEST_F(TextInputTest, SurroundingText) {
+  TestingInputMethodObserver observer(GetInputMethod());
+
   gfx::Range range;
   EXPECT_FALSE(text_input()->GetTextRange(&range));
   EXPECT_FALSE(text_input()->GetCompositionTextRange(&range));
@@ -332,8 +377,12 @@ TEST_F(TextInputTest, SurroundingText) {
   std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
+  text_input()->Activate(surface());
+
+  EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   std::u16string text = u"surrounding\u3000text";
   text_input()->SetSurroundingText(text, gfx::Range(11, 12));
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_TRUE(text_input()->GetTextRange(&range));
   EXPECT_EQ(gfx::Range(0, text.size()).ToString(), range.ToString());
@@ -348,6 +397,7 @@ TEST_F(TextInputTest, SurroundingText) {
                                                  gfx::Range(11, 12)))
       .Times(1);
   text_input()->ExtendSelectionAndDelete(0, 0);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 
   size_t composition_size = std::string("composition").size();
   SetCompositionText(u"composition");

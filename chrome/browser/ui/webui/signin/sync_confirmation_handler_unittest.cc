@@ -10,9 +10,11 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
@@ -30,6 +32,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 
@@ -165,9 +168,8 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
 
   void ExpectAccountInfoChanged(const content::TestWebUI::CallData& call_data) {
     EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
-    std::string event;
-    ASSERT_TRUE(call_data.arg1()->GetAsString(&event));
-    EXPECT_EQ("account-info-changed", event);
+    ASSERT_TRUE(call_data.arg1()->is_string());
+    EXPECT_EQ("account-info-changed", call_data.arg1()->GetString());
 
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
@@ -202,7 +204,7 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<SyncConfirmationUI> sync_confirmation_ui_;
-  TestingSyncConfirmationHandler* handler_;  // Not owned.
+  raw_ptr<TestingSyncConfirmationHandler> handler_;  // Not owned.
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
@@ -210,6 +212,11 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
   base::HistogramTester histogram_tester_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList feature_list_{
+      switches::kLacrosNonSyncingProfiles};
+#endif
 };
 
 const char SyncConfirmationHandlerTest::kConsentText1[] = "consentText1";
@@ -225,7 +232,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
       "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());
@@ -235,7 +242,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoIfPrimaryAccountReady) {
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIfPrimaryAccountReadyLater) {
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   // No callback called when there's no account image available.
@@ -253,7 +260,7 @@ TEST_F(SyncConfirmationHandlerTest,
 TEST_F(SyncConfirmationHandlerTest,
        TestSetAccountInfoIgnoredIfSecondaryAccountUpdated) {
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
   EXPECT_EQ(0U, web_ui()->call_data().size());
 
@@ -286,7 +293,7 @@ TEST_F(SyncConfirmationHandlerTest, TestSetAccountInfoManaged) {
       "http://picture.example.com/picture.jpg");
 
   base::ListValue args;
-  args.Set(0, std::make_unique<base::Value>(kDefaultDialogHeight));
+  args.Append(kDefaultDialogHeight);
   handler()->HandleInitializedWithSize(&args);
 
   ASSERT_EQ(1U, web_ui()->call_data().size());

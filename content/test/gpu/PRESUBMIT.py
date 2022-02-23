@@ -10,14 +10,26 @@ for more details about the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
+EXTRA_PATHS_COMPONENTS = [
+    tuple(['build']),
+    ('build', 'fuchsia'),
+    tuple(['testing']),
+    ('third_party', 'catapult', 'common', 'py_utils'),
+    ('third_party', 'catapult', 'devil'),
+    ('third_party', 'catapult', 'telemetry'),
+    ('third_party', 'catapult', 'third_party', 'typ'),
+    ('tools', 'perf'),
+]
+
 
 def CommonChecks(input_api, output_api):
   results = []
 
   gpu_env = dict(input_api.environ)
   current_path = input_api.PresubmitLocalPath()
-  testing_path = input_api.os_path.realpath(
-      input_api.os_path.join(current_path, '..', '..', '..', 'testing'))
+  chromium_src_path = input_api.os_path.realpath(
+      input_api.os_path.join(current_path, '..', '..', '..'))
+  testing_path = input_api.os_path.join(chromium_src_path, 'testing')
   gpu_env.update({
       'PYTHONPATH':
       input_api.os_path.pathsep.join([testing_path, current_path]),
@@ -28,17 +40,18 @@ def CommonChecks(input_api, output_api):
   gpu_tests = [
       input_api.Command(
           name='run_content_test_gpu_unittests',
-          cmd=[input_api.python_executable, 'run_unittests.py', 'gpu_tests'],
+          cmd=[input_api.python3_executable, 'run_unittests.py', 'gpu_tests'],
           kwargs={'env': gpu_env},
-          message=output_api.PresubmitError),
+          message=output_api.PresubmitError,
+          python3=True),
       input_api.Command(name='validate_tag_consistency',
                         cmd=[
-                            input_api.python_executable,
-                            'validate_tag_consistency.py',
-                            'validate',
+                            input_api.python3_executable,
+                            'validate_tag_consistency.py', 'validate'
                         ],
                         kwargs={},
-                        message=output_api.PresubmitError),
+                        message=output_api.PresubmitError,
+                        python3=True),
   ]
   results.extend(input_api.RunTests(gpu_tests))
 
@@ -48,7 +61,10 @@ def CommonChecks(input_api, output_api):
           output_api,
           input_api.os_path.join(input_api.PresubmitLocalPath(),
                                  'unexpected_passes'), [r'^.+_unittest\.py$'],
-          env=gpu_env))
+          env=gpu_env,
+          run_on_python2=False,
+          run_on_python3=True,
+          skip_shebang_check=True))
 
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
@@ -57,9 +73,20 @@ def CommonChecks(input_api, output_api):
           input_api.os_path.join(input_api.PresubmitLocalPath(),
                                  'flake_suppressor'), [r'^.+_unittest\.py$'],
           env=gpu_env,
-          run_on_python2=False))
+          run_on_python2=False,
+          run_on_python3=True,
+          skip_shebang_check=True))
 
-  pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
+  pylint_extra_paths = [
+      input_api.os_path.join(chromium_src_path, *component)
+      for component in EXTRA_PATHS_COMPONENTS
+  ]
+  pylint_checks = input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      extra_paths_list=pylint_extra_paths,
+      pylintrc='pylintrc',
+      version='2.7')
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(CheckForNewSkipExpectations(input_api, output_api))

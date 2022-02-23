@@ -18,39 +18,6 @@
 
 using MainApplicationDelegateTest = PlatformTest;
 
-// Tests that the application does not crash if |applicationDidEnterBackground|
-// is called when the application is launched in background.
-// http://crbug.com/437307
-TEST_F(MainApplicationDelegateTest, CrashIfNotInitialized) {
-  // Skip for scene API for now.
-  // TODO(crbug.com/1093755) : Support this test in with the scene API.
-  if (base::ios::IsSceneStartupSupported())
-    return;
-
-  // Save both ChromeBrowserProvider as MainController register new instance.
-  ios::ChromeBrowserProvider* stashed_chrome_browser_provider =
-      ios::SetChromeBrowserProvider(nullptr);
-
-  id application = [OCMockObject niceMockForClass:[UIApplication class]];
-  UIApplicationState backgroundState = UIApplicationStateBackground;
-  [[[application stub] andReturnValue:OCMOCK_VALUE(backgroundState)]
-      applicationState];
-
-  MainApplicationDelegate* delegate = [[MainApplicationDelegate alloc] init];
-  [delegate application:application didFinishLaunchingWithOptions:nil];
-  [delegate applicationDidEnterBackground:application];
-
-  // Restore both ChromeBrowserProvider to its original value and destroy
-  // instances created by MainController.
-  DCHECK_NE(&ios::GetChromeBrowserProvider(), stashed_chrome_browser_provider);
-
-  ios::ChromeBrowserProvider* registered_provider =
-      ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
-
-  EXPECT_TRUE(registered_provider);
-  delete registered_provider;
-}
-
 // Tests that the application does not crash if |applicationWillTerminate:| is
 // called before a previous call to |application:didFinishLaunchingWithOptions:|
 // set up the ChromeBrowserProvider. This can happen if the app is force-quit

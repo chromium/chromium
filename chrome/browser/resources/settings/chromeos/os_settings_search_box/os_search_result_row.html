@@ -45,7 +45,7 @@
   <div focus-row-control
       focus-type="rowWrapper"
       id="searchResultContainer"
-      on-click="navigateToSearchResultRoute"
+      on-click="onSearchResultSelected"
       on-keypress="onKeyPress_"
       aria-disabled="true"
       selectable>
@@ -54,7 +54,7 @@
     <div id="resultText" aria-hidden="true"
         inner-h-t-m-l="[[getResultInnerHtml_(searchResult)]]">
     </div>
-    <iron-icon id="actionTypeIcon" icon="cr:arrow-forward">
+    <iron-icon id="actionTypeIcon" icon="[[getActionTypeIcon_(searchResult)]]">
     </iron-icon>
   </div>
 </div>

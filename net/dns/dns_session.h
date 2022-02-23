@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
@@ -70,7 +70,7 @@ class NET_EXPORT_PRIVATE DnsSession : public base::RefCounted<DnsSession> {
   std::unique_ptr<DnsSocketAllocator> socket_allocator_;
   DnsUdpTracker udp_tracker_;
   RandCallback rand_callback_;
-  NetLog* net_log_;
+  raw_ptr<NetLog> net_log_;
 
   mutable base::WeakPtrFactory<DnsSession> weak_ptr_factory_{this};
 };

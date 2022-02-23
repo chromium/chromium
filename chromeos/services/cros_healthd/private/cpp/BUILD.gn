@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+source_set("cpp") {
+  sources = [
+    "internal_service_factory.cc",
+    "internal_service_factory.h",
+    "internal_service_factory_impl.cc",
+    "internal_service_factory_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/services/cros_healthd/private/mojom",
+    "//chromeos/services/network_health/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "internal_service_factory_impl_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//chromeos/services/cros_healthd/private/mojom",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
